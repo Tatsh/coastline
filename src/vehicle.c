@@ -1198,84 +1198,84 @@ void UpdateVehicleEngineAndGearbox(Vehicle *vehicle) {
 #pragma GCC diagnostic pop
 
 /* Set up the body of a wheel at rest at a place under the vehicle. */
-static inline void InitWheelBody(RigidBody *wheel, f32 x, f32 y) {
-    wheel->ground = NULL;
-    wheel->kind = RIGID_BODY_NO_ROTATION;
-    wheel->mass = 0.0f;
-    wheel->size.x = 0.0f;
-    wheel->size.y = 0.0f;
-    wheel->size.z = 0.0f;
-    wheel->suspension = 0.0f;
-    wheel->spinRate = 0.0f;
-    InitRigidBody(wheel);
-    wheel->state.position.x = x;
-    wheel->state.position.y = y;
-    wheel->state.position.z = -0.1f;
-    wheel->state.velocity.x = wheel->state.velocity.y = wheel->state.velocity.z = 0.0f;
-    wheel->state.orientation.x = wheel->state.orientation.y = wheel->state.orientation.z = 0.0f;
-    wheel->state.orientation.w = 1.0f;
-    wheel->state.angularVelocity.x = wheel->state.angularVelocity.y =
-        wheel->state.angularVelocity.z = 0.0f;
-    QuaternionToMatrix(wheel->orientation, &wheel->state);
-}
+#define INIT_WHEEL_BODY(wheel, px, py)                                                             \
+    (wheel)->ground = NULL;                                                                        \
+    (wheel)->kind = RIGID_BODY_NO_ROTATION;                                                        \
+    (wheel)->spinRate = 0;                                                                         \
+    (wheel)->suspension = 0;                                                                       \
+    (wheel)->mass = 0.0f;                                                                          \
+    (wheel)->size.x = 0.0f;                                                                        \
+    (wheel)->size.y = 0.0f;                                                                        \
+    (wheel)->size.z = 0.0f;                                                                        \
+    InitRigidBody(wheel);                                                                          \
+    (wheel)->state.position.x = (px);                                                              \
+    (wheel)->state.position.y = (py);                                                              \
+    (wheel)->state.position.z = -0.1f;                                                             \
+    (wheel)->state.angularVelocity.x = 0.0f;                                                       \
+    (wheel)->state.angularVelocity.y = 0.0f;                                                       \
+    (wheel)->state.angularVelocity.z = 0.0f;                                                       \
+    (wheel)->state.orientation.w = 1.0f;                                                           \
+    (wheel)->state.orientation.x = 0.0f;                                                           \
+    (wheel)->state.orientation.y = 0.0f;                                                           \
+    (wheel)->state.orientation.z = 0.0f;                                                           \
+    (wheel)->state.velocity.x = 0.0f;                                                              \
+    (wheel)->state.velocity.y = 0.0f;                                                              \
+    (wheel)->state.velocity.z = 0.0f;                                                              \
+    QuaternionToMatrix((wheel)->orientation, &(wheel)->state)
 
 /* A force at a point of the body, which the physics sets each step. */
-static inline void InitBodyForce(RigidBodyForce *force, f32 x, f32 y) {
-    SetRigidBodyForce(force, 0.0f, 0.0f, 0.0f, x, y, 0.0f, RIGID_BODY_FORCE_BODY);
-}
+#define INIT_BODY_FORCE(force, px, py)                                                             \
+    SetRigidBodyForce(force, 0.0f, 0.0f, 0.0f, px, py, 0.0f, RIGID_BODY_FORCE_BODY)
 
 void InitVehiclePhysics(Vehicle *vehicle) {
-    RigidBody *body = &vehicle->body;
-    RigidBodyForce *forces = vehicle->forces;
-
     vehicle->skipDrive = 1;
     vehicle->gear = 0;
     vehicle->steerAngle = 0.0f;
     vehicle->engineRpm = 0.0f;
     if (vehicle->model != NULL) {
-        body->kind = RIGID_BODY_BOX_1;
-        body->size.y = 2.0f;
-        body->mass = 1000.0f;
-        body->size.x = 3.5f;
-        body->size.z = 1.5f;
-        InitRigidBody(body);
-        body->state.position.x = 0.0f;
-        body->state.position.y = 0.0f;
-        body->state.position.z = 2.0f;
-        body->state.velocity.x = 0.0f;
-        body->state.velocity.y = 0.0f;
-        body->state.velocity.z = 0.0f;
-        body->state.orientation.x = 0.0f;
-        body->state.orientation.y = 0.0f;
-        body->state.orientation.z = 0.0f;
-        body->state.angularVelocity.x = 0.0f;
-        body->state.angularVelocity.y = 0.0f;
-        body->state.angularVelocity.z = 0.0f;
-        body->state.orientation.w = 1.0f;
-        QuaternionToMatrix(body->orientation, &body->state);
-        body->springRate = ((f32)vehicle->suspensionStiffness * 4.0f + 20.0f) * 16000.0f;
-        body->damping = -3000.0f;
+        vehicle->body.kind = RIGID_BODY_BOX_1;
+        vehicle->body.size.y = 2.0f;
+        vehicle->body.mass = 1000.0f;
+        vehicle->body.size.x = 3.5f;
+        vehicle->body.size.z = 1.5f;
+        InitRigidBody(&vehicle->body);
+        vehicle->body.state.position.x = 0.0f;
+        vehicle->body.state.position.y = 0.0f;
+        vehicle->body.state.position.z = 2.0f;
+        vehicle->body.state.velocity.x = 0.0f;
+        vehicle->body.state.velocity.y = 0.0f;
+        vehicle->body.state.velocity.z = 0.0f;
+        vehicle->body.state.orientation.x = 0.0f;
+        vehicle->body.state.orientation.y = 0.0f;
+        vehicle->body.state.orientation.z = 0.0f;
+        vehicle->body.state.angularVelocity.x = 0.0f;
+        vehicle->body.state.angularVelocity.y = 0.0f;
+        vehicle->body.state.angularVelocity.z = 0.0f;
+        vehicle->body.state.orientation.w = 1.0f;
+        QuaternionToMatrix(vehicle->body.orientation, &vehicle->body.state);
+        vehicle->body.springRate = ((f32)vehicle->suspensionStiffness * 4.0f + 20.0f) * 16000.0f;
+        vehicle->body.damping = -3000.0f;
 
         /* The rear and the front wheel of the model, and those of the other side mirrored. */
-        InitWheelBody(
+        INIT_WHEEL_BODY(
             &vehicle->wheelBodies[0], vehicle->model->wheels[2].x, vehicle->model->wheels[2].y);
-        InitWheelBody(
+        INIT_WHEEL_BODY(
             &vehicle->wheelBodies[2], vehicle->model->wheels[2].x, -vehicle->model->wheels[2].y);
-        InitWheelBody(
+        INIT_WHEEL_BODY(
             &vehicle->wheelBodies[1], vehicle->model->wheels[1].x, vehicle->model->wheels[1].y);
-        InitWheelBody(
+        INIT_WHEEL_BODY(
             &vehicle->wheelBodies[3], vehicle->model->wheels[1].x, -vehicle->model->wheels[1].y);
-        body->wheels[0] = &vehicle->wheelBodies[0];
-        body->wheels[1] = &vehicle->wheelBodies[2];
-        body->wheels[2] = &vehicle->wheelBodies[1];
-        body->wheels[3] = &vehicle->wheelBodies[3];
+        vehicle->body.wheels[0] = &vehicle->wheelBodies[0];
+        vehicle->body.wheels[1] = &vehicle->wheelBodies[2];
+        vehicle->body.wheels[2] = &vehicle->wheelBodies[1];
+        vehicle->body.wheels[3] = &vehicle->wheelBodies[3];
 
         /* The springs over the wheels, then gravity. */
-        InitBodyForce(&forces[VEHICLE_FORCE_SPRING_0], -1.5f, -1.0f);
-        InitBodyForce(&forces[VEHICLE_FORCE_SPRING_2], -1.5f, 1.0f);
-        InitBodyForce(&forces[VEHICLE_FORCE_SPRING_1], 1.5f, -1.0f);
-        InitBodyForce(&forces[VEHICLE_FORCE_SPRING_3], 1.5f, 1.0f);
-        SetRigidBodyForce(&forces[VEHICLE_FORCE_GRAVITY],
+        INIT_BODY_FORCE(&vehicle->forces[VEHICLE_FORCE_SPRING_0], -1.5f, -1.0f);
+        INIT_BODY_FORCE(&vehicle->forces[VEHICLE_FORCE_SPRING_2], -1.5f, 1.0f);
+        INIT_BODY_FORCE(&vehicle->forces[VEHICLE_FORCE_SPRING_1], 1.5f, -1.0f);
+        INIT_BODY_FORCE(&vehicle->forces[VEHICLE_FORCE_SPRING_3], 1.5f, 1.0f);
+        SetRigidBodyForce(&vehicle->forces[VEHICLE_FORCE_GRAVITY],
                           0.0f,
                           0.0f,
                           -15450.75f,
@@ -1283,7 +1283,7 @@ void InitVehiclePhysics(Vehicle *vehicle) {
                           0.0f,
                           0.0f,
                           RIGID_BODY_FORCE_WORLD);
-        SetRigidBodyForce(&forces[VEHICLE_FORCE_FRONT_WHEEL_GRAVITY],
+        SetRigidBodyForce(&vehicle->forces[VEHICLE_FORCE_FRONT_WHEEL_GRAVITY],
                           0.0f,
                           0.0f,
                           -(10.5f * 9.81f),
@@ -1291,7 +1291,7 @@ void InitVehiclePhysics(Vehicle *vehicle) {
                           0.0f,
                           0.0f,
                           RIGID_BODY_FORCE_WORLD);
-        SetRigidBodyForce(&forces[VEHICLE_FORCE_REAR_WHEEL_GRAVITY],
+        SetRigidBodyForce(&vehicle->forces[VEHICLE_FORCE_REAR_WHEEL_GRAVITY],
                           0.0f,
                           0.0f,
                           -(10.5f * 9.81f),
@@ -1299,35 +1299,39 @@ void InitVehiclePhysics(Vehicle *vehicle) {
                           0.0f,
                           0.0f,
                           RIGID_BODY_FORCE_WORLD);
-        forces[VEHICLE_FORCE_SPRING_0].next = &forces[VEHICLE_FORCE_SPRING_2];
-        forces[VEHICLE_FORCE_SPRING_2].next = &forces[VEHICLE_FORCE_SPRING_1];
-        forces[VEHICLE_FORCE_SPRING_1].next = &forces[VEHICLE_FORCE_SPRING_3];
-        forces[VEHICLE_FORCE_GRAVITY].next = NULL;
-        forces[VEHICLE_FORCE_SPRING_3].next = &forces[VEHICLE_FORCE_GRAVITY];
-        body->forces = &forces[VEHICLE_FORCE_SPRING_0];
+        vehicle->forces[VEHICLE_FORCE_SPRING_0].next = &vehicle->forces[VEHICLE_FORCE_SPRING_2];
+        vehicle->forces[VEHICLE_FORCE_SPRING_2].next = &vehicle->forces[VEHICLE_FORCE_SPRING_1];
+        vehicle->forces[VEHICLE_FORCE_SPRING_1].next = &vehicle->forces[VEHICLE_FORCE_SPRING_3];
+        vehicle->forces[VEHICLE_FORCE_GRAVITY].next = NULL;
+        vehicle->forces[VEHICLE_FORCE_SPRING_3].next = &vehicle->forces[VEHICLE_FORCE_GRAVITY];
+        vehicle->body.forces = &vehicle->forces[VEHICLE_FORCE_SPRING_0];
 
         /* The drive of each wheel, then the gravity of its axle. */
-        InitBodyForce(&forces[VEHICLE_FORCE_WHEEL_0], 0.0f, 0.0f);
-        InitBodyForce(&forces[VEHICLE_FORCE_WHEEL_2], 0.0f, 0.0f);
-        InitBodyForce(&forces[VEHICLE_FORCE_WHEEL_1], 0.0f, 0.0f);
-        InitBodyForce(&forces[VEHICLE_FORCE_WHEEL_3], 0.0f, 0.0f);
-        vehicle->wheelBodies[0].forces = &forces[VEHICLE_FORCE_WHEEL_0];
-        vehicle->wheelBodies[2].forces = &forces[VEHICLE_FORCE_WHEEL_2];
-        vehicle->wheelBodies[1].forces = &forces[VEHICLE_FORCE_WHEEL_1];
-        forces[VEHICLE_FORCE_REAR_WHEEL_GRAVITY].next = NULL;
-        forces[VEHICLE_FORCE_FRONT_WHEEL_GRAVITY].next = NULL;
-        forces[VEHICLE_FORCE_WHEEL_0].next = &forces[VEHICLE_FORCE_REAR_WHEEL_GRAVITY];
-        forces[VEHICLE_FORCE_WHEEL_2].next = &forces[VEHICLE_FORCE_REAR_WHEEL_GRAVITY];
-        forces[VEHICLE_FORCE_WHEEL_1].next = &forces[VEHICLE_FORCE_FRONT_WHEEL_GRAVITY];
-        forces[VEHICLE_FORCE_WHEEL_3].next = &forces[VEHICLE_FORCE_FRONT_WHEEL_GRAVITY];
-        vehicle->wheelBodies[3].forces = &forces[VEHICLE_FORCE_WHEEL_3];
+        INIT_BODY_FORCE(&vehicle->forces[VEHICLE_FORCE_WHEEL_0], 0.0f, 0.0f);
+        INIT_BODY_FORCE(&vehicle->forces[VEHICLE_FORCE_WHEEL_2], 0.0f, 0.0f);
+        INIT_BODY_FORCE(&vehicle->forces[VEHICLE_FORCE_WHEEL_1], 0.0f, 0.0f);
+        INIT_BODY_FORCE(&vehicle->forces[VEHICLE_FORCE_WHEEL_3], 0.0f, 0.0f);
+        vehicle->wheelBodies[0].forces = &vehicle->forces[VEHICLE_FORCE_WHEEL_0];
+        vehicle->wheelBodies[2].forces = &vehicle->forces[VEHICLE_FORCE_WHEEL_2];
+        vehicle->wheelBodies[1].forces = &vehicle->forces[VEHICLE_FORCE_WHEEL_1];
+        vehicle->forces[VEHICLE_FORCE_REAR_WHEEL_GRAVITY].next = NULL;
+        vehicle->forces[VEHICLE_FORCE_FRONT_WHEEL_GRAVITY].next = NULL;
+        vehicle->forces[VEHICLE_FORCE_WHEEL_0].next =
+            &vehicle->forces[VEHICLE_FORCE_REAR_WHEEL_GRAVITY];
+        vehicle->forces[VEHICLE_FORCE_WHEEL_2].next =
+            &vehicle->forces[VEHICLE_FORCE_REAR_WHEEL_GRAVITY];
+        vehicle->forces[VEHICLE_FORCE_WHEEL_1].next =
+            &vehicle->forces[VEHICLE_FORCE_FRONT_WHEEL_GRAVITY];
+        vehicle->forces[VEHICLE_FORCE_WHEEL_3].next =
+            &vehicle->forces[VEHICLE_FORCE_FRONT_WHEEL_GRAVITY];
+        vehicle->wheelBodies[3].forces = &vehicle->forces[VEHICLE_FORCE_WHEEL_3];
 
         /* The dampers over the wheels, then the drag. */
-        InitBodyForce(&forces[VEHICLE_FORCE_DAMPER_0], -1.5f, -1.0f);
-        InitBodyForce(&forces[VEHICLE_FORCE_DAMPER_2], -1.5f, 1.0f);
-        InitBodyForce(&forces[VEHICLE_FORCE_DAMPER_1], 1.5f, -1.0f);
-        InitBodyForce(&forces[VEHICLE_FORCE_DAMPER_3], 1.5f, 1.0f);
-        SetRigidBodyForce(&forces[VEHICLE_FORCE_DRAG],
+        INIT_BODY_FORCE(&vehicle->forces[VEHICLE_FORCE_DAMPER_0], -1.5f, -1.0f);
+        INIT_BODY_FORCE(&vehicle->forces[VEHICLE_FORCE_DAMPER_2], -1.5f, 1.0f);
+        INIT_BODY_FORCE(&vehicle->forces[VEHICLE_FORCE_DAMPER_1], 1.5f, -1.0f);
+        INIT_BODY_FORCE(&vehicle->forces[VEHICLE_FORCE_DAMPER_3], 1.5f, 1.0f);
+        SetRigidBodyForce(&vehicle->forces[VEHICLE_FORCE_DRAG],
                           0.0f,
                           0.0f,
                           0.0f,
@@ -1335,15 +1339,15 @@ void InitVehiclePhysics(Vehicle *vehicle) {
                           0.0f,
                           0.0f,
                           RIGID_BODY_FORCE_WORLD);
-        forces[VEHICLE_FORCE_DAMPER_0].next = &forces[VEHICLE_FORCE_DAMPER_2];
-        forces[VEHICLE_FORCE_DAMPER_2].next = &forces[VEHICLE_FORCE_DAMPER_1];
-        forces[VEHICLE_FORCE_DRAG].next = NULL;
+        vehicle->forces[VEHICLE_FORCE_DAMPER_0].next = &vehicle->forces[VEHICLE_FORCE_DAMPER_2];
+        vehicle->forces[VEHICLE_FORCE_DAMPER_2].next = &vehicle->forces[VEHICLE_FORCE_DAMPER_1];
+        vehicle->forces[VEHICLE_FORCE_DRAG].next = NULL;
         vehicle->steerReturn = 0;
-        vehicle->frontLoad = 0.0f;
-        vehicle->rearLoad = 0.0f;
-        forces[VEHICLE_FORCE_DAMPER_3].next = &forces[VEHICLE_FORCE_DRAG];
-        body->tireType = vehicle->tireType;
-        forces[VEHICLE_FORCE_DAMPER_1].next = &forces[VEHICLE_FORCE_DAMPER_3];
+        vehicle->frontLoad = 0;
+        vehicle->rearLoad = 0;
+        vehicle->forces[VEHICLE_FORCE_DAMPER_3].next = &vehicle->forces[VEHICLE_FORCE_DRAG];
+        vehicle->body.tireType = vehicle->tireType;
+        vehicle->forces[VEHICLE_FORCE_DAMPER_1].next = &vehicle->forces[VEHICLE_FORCE_DAMPER_3];
     }
     vehicle->rearSliding = 0;
     vehicle->frontSliding = 0;
