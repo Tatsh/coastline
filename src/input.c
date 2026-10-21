@@ -84,26 +84,27 @@ void CheatToggleBilinearFilter(void) {
 
 void ProcessInputCommandBuffer(PlayerInputState *state) {
     u16 buttons = (u16)state->buttons;
-    CheatCode *cheat;
     u16 *code;
+    u16 *history;
+    u16 *sequence;
     s32 i;
+    s32 j;
 
-    if (buttons == state->history[state->historyIndex]) {
-        return;
-    }
-    state->historyIndex = (state->historyIndex - 1) & (INPUT_HISTORY_SIZE - 1);
-    state->history[state->historyIndex] = buttons;
+    if (buttons != state->history[state->historyIndex]) {
+        state->historyIndex = (state->historyIndex - 1) & (INPUT_HISTORY_SIZE - 1);
+        state->history[state->historyIndex] = buttons;
 
-    for (cheat = g_aCheatCodes; cheat->sequence != NULL; cheat++) {
-        i = state->historyIndex;
-        for (code = cheat->sequence; *code != CHEAT_SEQUENCE_END; code++) {
-            if (*code != state->history[i]) {
-                break;
+        for (j = 0; (sequence = g_aCheatCodes[j].sequence) != NULL; j++) {
+            i = state->historyIndex;
+            history = state->history;
+            for (code = sequence; *code != CHEAT_SEQUENCE_END;
+                 code++, i = (i + 1) & (INPUT_HISTORY_SIZE - 1)) {
+                if (*code != history[i]) {
+                    goto next;
+                }
             }
-            i = (i + 1) & (INPUT_HISTORY_SIZE - 1);
-        }
-        if (*code == CHEAT_SEQUENCE_END) {
-            cheat->apply();
+            g_aCheatCodes[j].apply();
+        next:;
         }
     }
 }
@@ -371,7 +372,7 @@ void TransferFlags(PlayerInputState *state, u32 mask) {
 void ConsumeInputFlags(PlayerInputState *state) {
     u32 buttons = state->buttons;
 
-    state->buttons = buttons ^ (buttons & state->heldButtons);
+    state->buttons ^= buttons & state->heldButtons;
     state->heldButtons &= buttons;
 }
 
@@ -460,12 +461,12 @@ void ReadControllers(void) {
 }
 
 void UpdateControllerState(void) {
-    PlayerInputState *state;
+    s32 i;
 
     ReadControllers();
-    for (state = g_aPlayerInputState; state != &g_aPlayerInputState[MAX_PLAYERS]; state++) {
-        TranslateControllerInput(state);
-        ConsumeInputFlags(state);
+    for (i = 0; i < MAX_PLAYERS; i++) {
+        TranslateControllerInput(&g_aPlayerInputState[i]);
+        ConsumeInputFlags(&g_aPlayerInputState[i]);
     }
 }
 

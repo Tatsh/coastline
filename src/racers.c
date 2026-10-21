@@ -89,60 +89,55 @@ typedef struct {
     s32 slot;     /*!< The index of the racer in g_aRacerSlots. */
 } RacerProgress;
 
-/* Whether a segment crosses a gate, seen from above. */
-static s32 CrossesGate(TrackGate *gate, Vec3f *from, Vec3f *to) {
-    /* The original hands the positions themselves to the flat test, which reads only x and y. */
-    return TestLineSegmentIntersection(&gate->ends[1], &gate->ends[0], (Vec2f *)from, (Vec2f *)to);
-}
+/* Whether a segment crosses a gate, seen from above. The original hands the positions themselves
+ * to the flat test, which reads only x and y. */
+#define CROSSES_GATE(gate, from, to)                                                               \
+    TestLineSegmentIntersection(&(gate)->ends[1], &(gate)->ends[0], (Vec2f *)(from), (Vec2f *)(to))
 
 /* Count the gate after the ones counted if the segment crosses it, and a lap at the first. */
-static void CountRouteGate(Vec3f *from, Vec3f *to) {
-    TrackGate *gate;
-
-    if (g_LoadedTrack.gateCount) {
-        gate = &g_LoadedTrack.gates[(g_dwTrackRouteGates + 1) % g_LoadedTrack.gateCount];
-        if (CrossesGate(gate, from, to)) {
-            g_dwTrackRouteGates++;
-            if (gate == &g_LoadedTrack.gates[0]) {
-                g_dwTrackRouteLaps++;
-            }
-        }
+#define COUNT_ROUTE_GATE(next, from, to)                                                           \
+    if (g_LoadedTrack.gateCount) {                                                                 \
+        next = (g_dwTrackRouteGates + 1) % g_LoadedTrack.gateCount;                                \
+        if (CROSSES_GATE(&g_LoadedTrack.gates[next], from, to)) {                                  \
+            g_dwTrackRouteGates++;                                                                 \
+            if (&g_LoadedTrack.gates[next] == g_LoadedTrack.gates) {                               \
+                g_dwTrackRouteLaps++;                                                              \
+            }                                                                                      \
+        }                                                                                          \
     }
-}
 
 /* Skip the alternate branches from a section on. */
-static TrackSection *SkipAlternateSections(TrackSection *section) {
-    if (section != NULL && (section->flags & TRACK_SECTION_ALTERNATE)) {
-        section = section->next;
-        while (section != NULL && (section->flags & TRACK_SECTION_ALTERNATE)) {
-            section = section->next;
-        }
+#define SKIP_ALTERNATE_SECTIONS(section)                                                           \
+    while ((section) != NULL && ((section)->flags & TRACK_SECTION_ALTERNATE)) {                    \
+        section = (section)->next;                                                                 \
     }
-    return section;
-}
 
 void FindTrackRoutePoint(TrackSection *section, f32 distance) {
-    TrackPoint *point;
     f32 span;
+    s32 next;
     s32 i;
 
     g_dwTrackRouteGates = 0;
     g_dwTrackRouteLaps = 0;
     for (;;) {
-        section = SkipAlternateSections(section);
+        SKIP_ALTERNATE_SECTIONS(section);
         if (section == NULL) {
             return;
         }
         /* The last point of a section reads the point after it. */
-        for (i = 0, point = section->points; i < section->pointCount; i++, point++) {
-            span = point[0].distance - point[1].distance;
+        for (i = 0; i < section->pointCount; i++) {
+            span = section->points[i].distance - section->points[i + 1].distance;
             if (span < distance) {
                 distance -= span;
-                CountRouteGate(&point[0].position, &point[1].position);
+                COUNT_ROUTE_GATE(
+                    next, &section->points[i].position, &section->points[i + 1].position);
                 continue;
             }
-            Vec3fLerp(&g_vTrackRoutePoint, &point[1].position, &point[0].position, distance / span);
-            CountRouteGate(&point[0].position, &g_vTrackRoutePoint);
+            Vec3fLerp(&g_vTrackRoutePoint,
+                      &section->points[i + 1].position,
+                      &section->points[i].position,
+                      distance / span);
+            COUNT_ROUTE_GATE(next, &section->points[i].position, &g_vTrackRoutePoint);
             g_pTrackRouteSection = section;
             g_dwTrackRoutePointIndex = i;
             return;
@@ -152,25 +147,30 @@ void FindTrackRoutePoint(TrackSection *section, f32 distance) {
 }
 
 void AdvanceAlongTrackRoute(TrackSection *section, s32 pointIndex, f32 fraction, f32 distance) {
-    TrackPoint *point;
     f32 length;
 
     for (;;) {
-        section = SkipAlternateSections(section);
+        SKIP_ALTERNATE_SECTIONS(section);
         if (section == NULL) {
             return;
         }
-        for (point = &section->points[pointIndex]; pointIndex < section->pointCount;
-             pointIndex++, point++) {
-            length = (point[0].distance - point[1].distance) * fraction;
+        for (; pointIndex < section->pointCount; pointIndex++) {
+            length =
+                (section->points[pointIndex].distance - section->points[pointIndex + 1].distance) *
+                fraction;
             if (length < distance) {
                 fraction = 1.0f;
                 distance -= length;
                 continue;
             }
-            Vec3fLerp(&g_vTrackRoutePoint, &point[0].position, &point[1].position, fraction);
-            Vec3fLerp(
-                &g_vTrackRoutePoint, &point[1].position, &g_vTrackRoutePoint, distance / length);
+            Vec3fLerp(&g_vTrackRoutePoint,
+                      &section->points[pointIndex].position,
+                      &section->points[pointIndex + 1].position,
+                      fraction);
+            Vec3fLerp(&g_vTrackRoutePoint,
+                      &section->points[pointIndex + 1].position,
+                      &g_vTrackRoutePoint,
+                      distance / length);
             g_pTrackRouteSection = section;
             g_dwTrackRoutePointIndex = pointIndex;
             return;
@@ -180,39 +180,39 @@ void AdvanceAlongTrackRoute(TrackSection *section, s32 pointIndex, f32 fraction,
     }
 }
 
-/* The clamped index of the weather of the arcade times. */
-static s16 ArcadeWeather(void) {
-    s16 weather = g_dwCurrentWeather - 1;
-
-    if (weather >= ARCADE_WEATHERS || weather < 0) {
-        weather = 0;
+/* Set weather to the clamped index of the weather of the arcade times. */
+#define ARCADE_WEATHER(weather)                                                                    \
+    weather = g_dwCurrentWeather - 1;                                                              \
+    if ((weather) >= ARCADE_WEATHERS || (weather) < 0) {                                           \
+        weather = 0;                                                                               \
     }
-    return weather;
-}
 
-/* The arcade times of the selected track. */
-static TrackMenuItem *SelectedTrackItem(void) {
-    /* The descriptor of a track starts with its menu item. */
-    return (TrackMenuItem *)g_apTrackMenuItems[g_dwSelectedTrackId];
-}
+/* The arcade times of the selected track. The descriptor of a track starts with its menu item. */
+#define SELECTED_TRACK_ITEM() ((TrackMenuItem *)g_apTrackMenuItems[g_dwSelectedTrackId])
 
 void InitRacerSlot(RacerSlot *slot) {
     s32 count;
     s32 index;
+    s16 weather;
 
-    if (g_dwGameMode == GAME_MODE_CHAMPIONSHIP) {
-        count = g_dwNumLocalPlayers;
-    } else if (g_dwGameMode == GAME_MODE_ARCADE) {
-        count = ARCADE_VEHICLES;
-    } else {
+    /* The original compares the mode as a signed value. */
+    switch ((s32)g_dwGameMode) {
+    default:
         count = g_dwNumActiveVehicles;
+        break;
+    case GAME_MODE_ARCADE:
+        count = ARCADE_VEHICLES;
+        break;
+    case GAME_MODE_CHAMPIONSHIP:
+        count = g_dwNumLocalPlayers;
+        break;
     }
     index = slot - g_aRacerSlots;
     slot->index = index;
     slot->color[0] = g_abPlayerColorsRgb[index][0];
     slot->color[1] = g_abPlayerColorsRgb[index][1];
-    slot->status = 0;
     slot->color[2] = g_abPlayerColorsRgb[index][2];
+    slot->status = 0;
     slot->straggler = index < (s32)g_dwNumLocalPlayers + LEADING_RACERS ? 0 : 1;
     if (slot->index < count) {
         slot->vehicle = &g_aVehicles[slot->index];
@@ -231,10 +231,12 @@ void InitRacerSlot(RacerSlot *slot) {
         slot->distance = (f32)(slot->index * RACER_SPACING);
     }
     FindTrackRoutePoint(g_LoadedTrack.rootSection, slot->distance);
-    slot->position = g_vTrackRoutePoint;
+    slot->position.x = g_vTrackRoutePoint.x;
+    slot->position.y = g_vTrackRoutePoint.y;
+    slot->position.z = g_vTrackRoutePoint.z;
     slot->section = g_pTrackRouteSection;
     slot->pointIndex = g_dwTrackRoutePointIndex;
-    slot->gate = slot->maxGate = g_dwTrackRouteGates;
+    slot->maxGate = slot->gate = g_dwTrackRouteGates;
     slot->lap = slot->distanceLaps = g_dwTrackRouteLaps;
     osSyncPrintf("Initial lap.gate for %d(%d): %d.%d (dist=%f)\n",
                  slot->index,
@@ -242,12 +244,15 @@ void InitRacerSlot(RacerSlot *slot) {
                  slot->lap,
                  slot->gate,
                  (double)slot->distance);
-    slot->previousPosition = slot->position;
+    slot->previousPosition.x = slot->position.x;
+    slot->previousPosition.y = slot->position.y;
+    slot->previousPosition.z = slot->position.z;
     slot->lapTime = 0.0f;
     slot->totalTime = 0.0f;
     slot->bestLapTime = 0.0f;
+    ARCADE_WEATHER(weather);
     slot->timeLeft =
-        SelectedTrackItem()->arcadeTimes[g_aVehicles[0].tableIndex][ArcadeWeather()].startTime;
+        SELECTED_TRACK_ITEM()->arcadeTimes[g_aVehicles[0].tableIndex][weather].startTime;
     slot->racePosition = g_dwNumVehicles - slot->index - 1;
 }
 
@@ -588,6 +593,7 @@ static void PassArcadeCheckpoint(RacerSlot *slot, s32 gate) {
     f32 gap;
     f32 pace;
     s32 i;
+    s16 weather;
 
     if (!gInstantReplayActive) {
         PlayBeepSound();
@@ -606,8 +612,9 @@ static void PassArcadeCheckpoint(RacerSlot *slot, s32 gate) {
         other = g_aRacerSlots[i].vehicle;
         other->message = "%ryCheck Point!";
         other->messageTime = CHECKPOINT_MESSAGE_TIME;
-        other->timeLeft += SelectedTrackItem()
-                               ->arcadeTimes[g_aVehicles[0].tableIndex][ArcadeWeather()]
+        ARCADE_WEATHER(weather);
+        other->timeLeft += SELECTED_TRACK_ITEM()
+                               ->arcadeTimes[g_aVehicles[0].tableIndex][weather]
                                .gateBonuses[gate];
         if (g_dwNumLocalPlayers == 1) {
             sprintf(other->messageText, "%%ry");
@@ -774,7 +781,7 @@ void UpdateRaceProgress(RacerSlot *slot) {
     next = (current + 1) % g_LoadedTrack.gateCount;
     lapTime = (f32)FloatToInt(slot->lapTime * LAP_TIME_SCALE) / LAP_TIME_SCALE;
 
-    if (CrossesGate(&g_LoadedTrack.gates[current], &slot->previousPosition, &slot->position)) {
+    if (CROSSES_GATE(&g_LoadedTrack.gates[current], &slot->previousPosition, &slot->position)) {
         osSyncPrintf("%d went backwards, from gate %d to gate %d\n",
                      slot->index,
                      slot->gate,
@@ -802,7 +809,7 @@ void UpdateRaceProgress(RacerSlot *slot) {
         slot->gate--;
     } else {
         gate = &g_LoadedTrack.gates[next];
-        if (CrossesGate(gate, &slot->previousPosition, &slot->position)) {
+        if (CROSSES_GATE(gate, &slot->previousPosition, &slot->position)) {
             osSyncPrintf("%d went forward, from gate %d to gate %d\n",
                          slot->index,
                          slot->gate,
@@ -829,12 +836,18 @@ void UpdateRaceProgress(RacerSlot *slot) {
 
 /* Step the vehicle of a racer, retaining its last position and letting its driver drive it. The
  * vehicle is read from the racer at each use. */
-static void DriveRacerVehicle(RacerSlot *slot) {
-    slot->vehicle->previousPosition = slot->vehicle->frame.position;
-    if (slot->vehicle->driver != NULL) {
-        slot->vehicle->driver(slot->vehicle);
+#define DRIVE_RACER_VEHICLE(slot)                                                                  \
+    {                                                                                              \
+        Vehicle *vehicle = (slot)->vehicle;                                                        \
+        Vec3f *from = &vehicle->frame.position;                                                    \
+        Vec3f *to = &vehicle->previousPosition;                                                    \
+        to->x = from->x;                                                                           \
+        to->y = from->y;                                                                           \
+        to->z = from->z;                                                                           \
+    }                                                                                              \
+    if ((slot)->vehicle->driver != NULL) {                                                         \
+        (slot)->vehicle->driver((slot)->vehicle);                                                  \
     }
-}
 
 void UpdateRacerSlotMotion(RacerSlot *slot) {
     Vehicle *pacer;
@@ -850,7 +863,7 @@ void UpdateRacerSlotMotion(RacerSlot *slot) {
         slot->vehicle->input->steering = 0.0f;
     }
     if (g_dwRacePauseState) {
-        for (i = 0; i < 5; i++) {
+        for (i = 0; i != 5; i++) {
             g_aSoundEffectChannels[i].step = 0;
             g_aSoundEffectChannels[i].volume = 0;
         }
@@ -862,7 +875,7 @@ void UpdateRacerSlotMotion(RacerSlot *slot) {
         }
         slot->vehicle->input->buttons |= INPUT_BRAKE;
         slot->vehicle->gear = 0;
-        DriveRacerVehicle(slot);
+        DRIVE_RACER_VEHICLE(slot);
         slot->vehicle->gear = 0;
         return;
     }
@@ -882,7 +895,7 @@ void UpdateRacerSlotMotion(RacerSlot *slot) {
                 slot->vehicle->opacity = 0.0f;
             }
         }
-        DriveRacerVehicle(slot);
+        DRIVE_RACER_VEHICLE(slot);
         return;
     }
     if (slot->vehicle != NULL) {
@@ -898,7 +911,7 @@ void UpdateRacerSlotMotion(RacerSlot *slot) {
                 slot->vehicle->ghostMode = 0;
             }
         }
-        DriveRacerVehicle(slot);
+        DRIVE_RACER_VEHICLE(slot);
         slot->vehicle->odometer += slot->vehicle->speedKph * g_fFrameDeltaTime;
         return;
     }
