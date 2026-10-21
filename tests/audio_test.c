@@ -303,7 +303,7 @@ int main(void) {
     }
     assert(FindFreeSoundChannel() == -1);
     SetSoundChannelVolume(1, 0x00400010);
-    assert(g_aSoundEffectChannels[1].volume == 0x00200010);
+    assert(g_aSoundEffectChannels[1].volume == 0x00000010);
     SetSoundChannelVolume(1, 0x00100030);
     assert(g_aSoundEffectChannels[1].volume == 0x00100020);
     g_aSoundEffectChannels[0].sample = (s8 *)work + 100;

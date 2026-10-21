@@ -548,11 +548,12 @@ void StartSoundChannelMuted(s16 channel, s8 *sample, u32 length, u32 loopLength)
 }
 
 void SetSoundChannelVolume(s16 channel, u32 levels) {
+    /* The original masks a level that is too high with the maximum rather than clamping it. */
     if ((levels & 0xFFFF) > SOUND_LEVEL_MAX) {
-        levels = (levels & 0xFFFF0000) | SOUND_LEVEL_MAX;
+        levels &= 0xFFFF0000 | SOUND_LEVEL_MAX;
     }
     if ((levels >> 16) > SOUND_LEVEL_MAX) {
-        levels = (levels & 0xFFFF) | (SOUND_LEVEL_MAX << 16);
+        levels &= (SOUND_LEVEL_MAX << 16) | 0xFFFF;
     }
     g_aSoundEffectChannels[channel].volume = levels;
 }

@@ -19,7 +19,7 @@
 #include "vehicle.h"
 
 /** The sample rate the audio interface is asked for. */
-#define AUDIO_FREQUENCY 22000
+#define AUDIO_FREQUENCY 21998
 
 /* The size of the table of steps. */
 #define MUSIC_OCTAVES 10 /*!< The octaves of the table of steps. */
