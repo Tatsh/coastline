@@ -33632,14 +33632,14 @@ dlabel D_8028BDB4
     /* 8CDBC 8028BDBC 00000000 */ .word 0x00000000
 enddlabel D_8028BDB4
 
-nonmatching gTextStyleBold
+nonmatching g_bTextStyleBold
 
-dlabel gTextStyleBold
+dlabel g_bTextStyleBold
     /* 8CDC0 8028BDC0 */ .byte 0x00
     /* 8CDC1 8028BDC1 */ .byte 0x00
     /* 8CDC2 8028BDC2 */ .byte 0x00
     /* 8CDC3 8028BDC3 */ .byte 0x00
-enddlabel gTextStyleBold
+enddlabel g_bTextStyleBold
 
 nonmatching g_nTextAlignment
 
@@ -33709,9 +33709,9 @@ dlabel D_8028BDE8
     /* 8CDEC 8028BDEC 00000000 */ .word 0x00000000
 enddlabel D_8028BDE8
 
-nonmatching g_awLargeFontPalette
+nonmatching g_abLargeFontGradient
 
-dlabel g_awLargeFontPalette
+dlabel g_abLargeFontGradient
     /* 8CDF0 8028BDF0 FFFFFFFF */ .word 0xFFFFFFFF
     /* 8CDF4 8028BDF4 FFFFFFFF */ .word 0xFFFFFFFF
     /* 8CDF8 8028BDF8 FFFFFFFF */ .word 0xFFFFFFFF
@@ -33792,11 +33792,11 @@ dlabel g_awLargeFontPalette
     /* 8CF24 8028BF24 00000000 */ .word 0x00000000
     /* 8CF28 8028BF28 00000000 */ .word 0x00000000
     /* 8CF2C 8028BF2C 00000000 */ .word 0x00000000
-enddlabel g_awLargeFontPalette
+enddlabel g_abLargeFontGradient
 
-nonmatching g_awLargeFontShadowPalette
+nonmatching g_abLargeFontShadowGradient
 
-dlabel g_awLargeFontShadowPalette
+dlabel g_abLargeFontShadowGradient
     /* 8CF30 8028BF30 88888888 */ .word 0x88888888
     /* 8CF34 8028BF34 88888888 */ .word 0x88888888
     /* 8CF38 8028BF38 88888888 */ .word 0x88888888
@@ -33877,11 +33877,11 @@ dlabel g_awLargeFontShadowPalette
     /* 8D064 8028C064 77777777 */ .word 0x77777777
     /* 8D068 8028C068 77777777 */ .word 0x77777777
     /* 8D06C 8028C06C 77777777 */ .word 0x77777777
-enddlabel g_awLargeFontShadowPalette
+enddlabel g_abLargeFontShadowGradient
 
-nonmatching g_abTextGlyphTexWhite1
+nonmatching g_abSmallFontGradient
 
-dlabel g_abTextGlyphTexWhite1
+dlabel g_abSmallFontGradient
     /* 8D070 8028C070 FFFFFFFF */ .word 0xFFFFFFFF
     /* 8D074 8028C074 FFFFFFFF */ .word 0xFFFFFFFF
     /* 8D078 8028C078 FFFFFFFF */ .word 0xFFFFFFFF
@@ -33962,11 +33962,11 @@ dlabel g_abTextGlyphTexWhite1
     /* 8D1A4 8028C1A4 00000000 */ .word 0x00000000
     /* 8D1A8 8028C1A8 00000000 */ .word 0x00000000
     /* 8D1AC 8028C1AC 00000000 */ .word 0x00000000
-enddlabel g_abTextGlyphTexWhite1
+enddlabel g_abSmallFontGradient
 
-nonmatching g_abTextGlyphTexShade1
+nonmatching g_abSmallFontShadowGradient
 
-dlabel g_abTextGlyphTexShade1
+dlabel g_abSmallFontShadowGradient
     /* 8D1B0 8028C1B0 88888888 */ .word 0x88888888
     /* 8D1B4 8028C1B4 88888888 */ .word 0x88888888
     /* 8D1B8 8028C1B8 88888888 */ .word 0x88888888
@@ -33979,7 +33979,7 @@ dlabel g_abTextGlyphTexShade1
     /* 8D1D4 8028C1D4 */ .byte 0x88
     /* 8D1D5 8028C1D5 */ .byte 0x77
     /* 8D1D6 8028C1D6 */ .byte 0x88
-enddlabel g_abTextGlyphTexShade1
+enddlabel g_abSmallFontShadowGradient
 
 nonmatching g_szDecalMenuText
 
@@ -42518,11 +42518,6 @@ dlabel g_aLargeFontTexture
     /* 90FF4 8028FFF4 00000000 */ .word 0x00000000
     /* 90FF8 8028FFF8 00000000 */ .word 0x00000000
     /* 90FFC 8028FFFC 00000000 */ .word 0x00000000
-enddlabel g_aLargeFontTexture
-
-nonmatching g_aLargeFontTextureMid
-
-dlabel g_aLargeFontTextureMid
     /* 91000 80290000 00000000 */ .word 0x00000000
     /* 91004 80290004 00000000 */ .word 0x00000000
     /* 91008 80290008 00000000 */ .word 0x00000000
@@ -56475,7 +56470,7 @@ dlabel g_aLargeFontTextureMid
     /* 9E9F4 8029D9F4 00000000 */ .word 0x00000000
     /* 9E9F8 8029D9F8 00000000 */ .word 0x00000000
     /* 9E9FC 8029D9FC 00000000 */ .word 0x00000000
-enddlabel g_aLargeFontTextureMid
+enddlabel g_aLargeFontTexture
 
 nonmatching g_aSmallFontTexture
 
@@ -60516,9 +60511,9 @@ dlabel g_abHudFontCharToGlyph
     /* A279F 802A179F */ .byte 0x0B
 enddlabel g_abHudFontCharToGlyph
 
-nonmatching D_802A17A0
+nonmatching g_adwLargeFontGlyphOffsets
 
-dlabel D_802A17A0
+dlabel g_adwLargeFontGlyphOffsets
     /* A27A0 802A17A0 00000000 */ .word 0x00000000
     /* A27A4 802A17A4 0000001A */ .word 0x0000001A
     /* A27A8 802A17A8 00000034 */ .word 0x00000034
@@ -60574,7 +60569,7 @@ dlabel D_802A17A0
     /* A2870 802A1870 00000281 */ .word 0x00000281
     /* A2874 802A1874 0000029F */ .word 0x0000029F
     /* A2878 802A1878 000002B9 */ .word 0x000002B9
-enddlabel D_802A17A0
+enddlabel g_adwLargeFontGlyphOffsets
 
 nonmatching g_adwSmallFontGlyphOffsets
 

@@ -39,12 +39,16 @@ CopyVec4
 DebugFrameStubA
 DebugFrameStubB
 DecalCharToAscii
+DisableTextShadow
 DrawBitmapTextToFramebuffer
 DrawColoredTexturedRect
 DrawControllerLayoutDiagram
+DrawHudLabelAtFraction
 DrawRedIntensityRect
+DrawText
 DrawTexturedRect
 DrawTimingBars
+EnableTextShadow
 ExchangeByteBuffers
 ExchangeHalfwordBuffers
 ExchangeWordBuffers
@@ -67,6 +71,7 @@ MainMenuEntry
 MarkModelNodes
 MarkVisibleCell
 MarkVisibleEdge
+MeasureTextWidth
 MemFill64Aligned
 MixAudioReverbChannels
 MixAudioSamples
@@ -101,6 +106,7 @@ QuaternionNormalize
 QuaternionToMatrix
 QuickSort
 RenderSkybox
+RenderTextToDisplayList
 ResetAllPlayers
 ResetFrameBlocks
 ResetHeap
@@ -109,6 +115,14 @@ SegmentCrossesLine2D
 SetHeapCurrentAddress
 SetRigidBodyForce
 SetRngSeed
+SetTextAlignCenter
+SetTextAlignLeft
+SetTextAlignRight
+SetTextCustomColors
+SetTextGradientColorsFromBytes
+SetTextSize
+SetTextStyleBold
+SetTextStyleNormal
 ShortSort
 SolveLinearSystem3x3
 StartChampionshipRace

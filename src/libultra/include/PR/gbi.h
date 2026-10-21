@@ -82,6 +82,7 @@ typedef union {
 #define G_LOADBLOCK 0xF3
 #define G_SETPRIMCOLOR 0xFA
 #define G_SETTIMG 0xFD
+#define G_LOADTILE 0xF4
 #define G_FILLRECT 0xF6
 #define G_SETFILLCOLOR 0xF7
 #define G_SETCIMG 0xFF
@@ -115,6 +116,7 @@ typedef union {
 
 #define G_CYC_1CYCLE (0 << G_MDSFT_CYCLETYPE)
 #define G_CYC_FILL (3 << G_MDSFT_CYCLETYPE)
+#define G_CYC_2CYCLE (1 << G_MDSFT_CYCLETYPE)
 #define G_TL_TILE (0 << G_MDSFT_TEXTLOD)
 #define G_TT_NONE (0 << G_MDSFT_TEXTLUT)
 #define G_TP_NONE (0 << G_MDSFT_TEXTPERSP)
@@ -176,6 +178,7 @@ typedef union {
 /* The texture formats, sizes and tiles. */
 #define G_IM_FMT_RGBA 0
 #define G_IM_FMT_CI 2
+#define G_IM_FMT_IA 3
 #define G_IM_FMT_I 4
 #define G_IM_SIZ_4b 0
 #define G_IM_SIZ_8b 1
@@ -324,6 +327,11 @@ typedef union {
 #define gDPSetTileSize(pkt, t, uls, ult, lrs, lrt)                                                 \
     gDisplayListWords(pkt,                                                                         \
                       _SHIFTL(G_SETTILESIZE, 24, 8) | _SHIFTL(uls, 12, 12) | _SHIFTL(ult, 0, 12),  \
+                      _SHIFTL(t, 24, 3) | _SHIFTL(lrs, 12, 12) | _SHIFTL(lrt, 0, 12))
+/** Load a rectangle of texels. The coordinates are in 10.2 fixed point. */
+#define gDPLoadTile(pkt, t, uls, ult, lrs, lrt)                                                    \
+    gDisplayListWords(pkt,                                                                         \
+                      _SHIFTL(G_LOADTILE, 24, 8) | _SHIFTL(uls, 12, 12) | _SHIFTL(ult, 0, 12),     \
                       _SHIFTL(t, 24, 3) | _SHIFTL(lrs, 12, 12) | _SHIFTL(lrt, 0, 12))
 
 /** Load a 4-bit texture into the texture memory and set up the render tile to draw it. */
