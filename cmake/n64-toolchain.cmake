@@ -16,11 +16,12 @@ find_program(
   REQUIRED)
 set(CMAKE_ASM_COMPILER "${CMAKE_C_COMPILER}")
 
-# The VR4300 with the o32 ABI, as the original. The ROM has no dynamic linking and no C library of
-# the compiler's. The small data section is unused. The original refers to every datum by its full
-# address.
+# The code targets the VR4300 with the o32 ABI, as the original does. The ROM has no dynamic
+# linking and no C library from the compiler. The small data section is unused. The original refers
+# to every datum by its full address.
 set(_n64_flags "-march=vr4300 -mtune=vr4300 -mabi=32 -mno-abicalls -fno-pic -ffreestanding -G0")
-set(CMAKE_C_FLAGS_INIT "${_n64_flags}")
+# The program must fit before the first asset of the cartridge. The code is built for size.
+set(CMAKE_C_FLAGS_INIT "${_n64_flags} -Os")
 set(CMAKE_ASM_FLAGS_INIT "${_n64_flags}")
 
 set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)

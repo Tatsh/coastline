@@ -1,0 +1,188 @@
+name: Top Gear Rally (North America)
+sha1: bfc51f086ebdb78904dc24ad0c3a2d946e26d022
+options:
+  basename: coastline-us
+  target_path: .wiswa-ci/roms/usa.z64
+  base_path: ../..
+  platform: n64
+  compiler: IDO
+  asm_path: asm/us
+  src_path: .wiswa-ci/splat/src
+  build_path: build/splat
+  ld_script_path: .wiswa-ci/splat/coastline-us.ld
+  symbol_addrs_path: [tools/splat/symbol_addrs.us.txt]
+  undefined_funcs_auto_path: asm/us/undefined_funcs.ld
+  undefined_syms_auto_path: asm/us/undefined_syms.ld
+  asset_path: .wiswa-ci/splat/assets
+  find_file_boundaries: False
+  mips_abi_float_regs: numeric
+  o_as_suffix: True
+  use_legacy_include_asm: False
+  migrate_rodata_to_functions: False
+  rodata_string_guesser_level: 2
+  data_string_guesser_level: 2
+  create_undefined_funcs_auto: True
+  create_undefined_syms_auto: True
+  disasm_unknown: True
+  gfx_ucode: f3dex
+segments:
+  - name: header
+    type: bin
+    start: 0x0
+  - name: boot
+    type: bin
+    start: 0x40
+  - name: main
+    type: code
+    start: 0x1000
+    vram: 0x80200000
+    bss_size: 0xD67B0
+    subsegments:
+      - [0x1000, hasm, entry]
+      - [0x1050, asm, '01050']
+      - [0x1320, asm, '01320']
+      - [0x7830, asm, '07830']
+      - [0x9900, asm, '09900']
+      - [0xD460, asm, '0D460']
+      - [0x11F80, asm, '11F80']
+      - [0x12150, asm, '12150']
+      - [0x124E0, asm, '124E0']
+      - [0x12840, asm, '12840']
+      - [0x177E0, asm, '177E0']
+      - [0x182D0, asm, '182D0']
+      - [0x1FB30, asm, '1FB30']
+      - [0x21810, asm, '21810']
+      - [0x22940, asm, '22940']
+      - [0x252E0, asm, '252E0']
+      - [0x26F30, asm, '26F30']
+      - [0x2E090, asm, '2E090']
+      - [0x2E7E0, asm, '2E7E0']
+      - [0x2F4E0, asm, '2F4E0']
+      - [0x30900, asm, '30900']
+      - [0x30EF0, asm, '30EF0']
+      - [0x34E10, asm, '34E10']
+      - [0x38980, asm, '38980']
+      - [0x3A220, asm, '3A220']
+      - [0x3ACF0, asm, '3ACF0']
+      - [0x3C130, asm, '3C130']
+      - [0x3EF00, asm, '3EF00']
+      - [0x3FDB0, asm, '3FDB0']
+      - [0x40F80, asm, '40F80']
+      - [0x41A30, asm, '41A30']
+      - [0x42590, asm, '42590']
+      - [0x42FC0, asm, '42FC0']
+      - [0x43640, asm, '43640']
+      - [0x43810, asm, '43810']
+      - [0x43890, asm, '43890']
+      - [0x43940, asm, '43940']
+      - [0x43B10, asm, '43B10']
+      - [0x54460, asm, '54460']
+      - [0x55870, asm, '55870']
+      - [0x55F40, asm, '55F40']
+      - [0x56BA0, asm, '56BA0']
+      - [0x57270, asm, '57270']
+      - [0x57290, asm, '57290']
+      - [0x572E0, asm, '572E0']
+      - [0x572F0, asm, '572F0']
+      - [0x57720, asm, '57720']
+      - [0x59070, asm, '59070']
+      - [0x5A350, asm, '5A350']
+      - [0x61490, asm, '61490']
+      - [0x617C0, asm, '617C0']
+      - [0x61800, asm, '61800']
+      - [0x618A0, asm, '618A0']
+      - [0x61AB0, asm, '61AB0']
+      - [0x61BC0, asm, '61BC0']
+      - [0x61DB0, asm, '61DB0']
+      - [0x61E30, asm, '61E30']
+      - [0x61ED0, asm, '61ED0']
+      - [0x62140, asm, '62140']
+      - [0x62150, asm, '62150']
+      - [0x62610, asm, '62610']
+      - [0x62940, asm, '62940']
+      - [0x62CB0, asm, '62CB0']
+      - [0x62F20, asm, '62F20']
+      - [0x63540, asm, '63540']
+      - [0x63660, asm, '63660']
+      - [0x638C0, asm, '638C0']
+      - [0x63A80, asm, '63A80']
+      - [0x649E0, asm, '649E0']
+      - [0x64B30, asm, '64B30']
+      - [0x652E0, asm, '652E0']
+      - [0x65420, asm, '65420']
+      - [0x65650, asm, '65650']
+      - [0x65760, asm, '65760']
+      - [0x659C0, asm, '659C0']
+      - [0x659F0, asm, '659F0']
+      - [0x65A60, asm, '65A60']
+      - [0x65AD0, asm, '65AD0']
+      - [0x65E50, asm, '65E50']
+      - [0x66410, asm, '66410']
+      - [0x66440, asm, '66440']
+      - [0x664B0, asm, '664B0']
+      - [0x66600, asm, '66600']
+      - [0x66670, asm, '66670']
+      - [0x667C0, asm, '667C0']
+      - [0x66CD0, asm, '66CD0']
+      - [0x67020, asm, '67020']
+      - [0x67390, asm, '67390']
+      - [0x673A0, asm, '673A0']
+      - [0x67400, asm, '67400']
+      - [0x67760, asm, '67760']
+      - [0x678F0, asm, '678F0']
+      - [0x67BE0, asm, '67BE0']
+      - [0x68410, asm, '68410']
+      - [0x684D0, asm, '684D0']
+      - [0x687E0, asm, '687E0']
+      - [0x68930, asm, '68930']
+      - [0x69230, asm, '69230']
+      - [0x69470, asm, '69470']
+      - [0x69520, asm, '69520']
+      - [0x69530, asm, '69530']
+      - [0x69540, asm, '69540']
+      - [0x69580, asm, '69580']
+      - [0x696C0, asm, '696C0']
+      - [0x69750, asm, '69750']
+      - [0x6A410, asm, '6A410']
+      - [0x6A580, asm, '6A580']
+      - [0x6A690, asm, '6A690']
+      - [0x6B3F0, asm, '6B3F0']
+      - [0x6B780, asm, '6B780']
+      - [0x6C5D0, asm, '6C5D0']
+      - [0x6C750, asm, '6C750']
+      - [0x6C7D0, asm, '6C7D0']
+      - [0x6C850, asm, '6C850']
+      - [0x6C860, asm, '6C860']
+      - [0x6C8A0, asm, '6C8A0']
+      - [0x6C930, asm, '6C930']
+      - [0x6C960, asm, '6C960']
+      - [0x6C9F0, asm, '6C9F0']
+      - [0x6CA10, asm, '6CA10']
+      - [0x6CAC0, asm, '6CAC0']
+      - [0x6CB40, asm, '6CB40']
+      - [0x6CBA0, asm, '6CBA0']
+      - [0x6CC40, asm, '6CC40']
+      - [0x6D060, asm, '6D060']
+      - [0x6D070, asm, '6D070']
+      - [0x6D3D0, asm, '6D3D0']
+      - [0x6D4C0, asm, '6D4C0']
+      - [0x6D5C0, asm, '6D5C0']
+      - [0x6D990, asm, '6D990']
+      - [0x6E0F0, asm, '6E0F0']
+      - [0x6EBB0, asm, '6EBB0']
+      - [0x6EBE0, asm, '6EBE0']
+      - [0x6F460, asm, '6F460']
+      - [0x6F600, asm, '6F600']
+      - [0x6F6C0, asm, '6F6C0']
+      - [0x6F6D0, asm, '6F6D0']
+      - [0x6F730, asm, '6F730']
+      - [0x6F780, asm, '6F780']
+      - [0x6F820, asm, '6F820']
+      - [0x6F870, asm, '6F870']
+      - [0x6FA00, data, data]
+      - [0xA7454, rodata, rodata]
+      - { type: bss, vram: 0x802AC400, name: bss }
+  - name: assets
+    type: bin
+    start: 0xAD400
+  - [0x800000]

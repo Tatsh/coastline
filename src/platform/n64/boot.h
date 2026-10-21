@@ -6,8 +6,15 @@
 /** Start of the BSS segment, from the link script. */
 extern u8 _bss_start[];
 
-/** Length of the BSS segment in bytes, from the link script. */
+/** Length of the BSS segment in bytes, from the link script. A multiple of 8. */
 extern u8 _bss_size[];
+
+/**
+ * Top of the stack ramMain() hands to OsBootEntry(), from the link script.
+ *
+ * @ghidraAddress USA: 0x803168d0
+ */
+extern u8 g_abBootStackTop[];
 
 /**
  * Initialise the operating system, then create and start the boot thread.

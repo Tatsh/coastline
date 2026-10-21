@@ -114,24 +114,24 @@
   },
   // ROM images used for comparison.
   shared_ignore+: ['*.n64', '*.v64', '*.z64', '__pycache__/'],
-  // The generated progress tables list every routine name and prototype, the exported data of the
-  // original image is hexadecimal, and the vendored sources retain their upstream style.
+  // The generated progress tables list every routine name and prototype, the assembly splat
+  // generated is not prose, and the vendored sources retain their upstream style.
   package_json+: {
     cspell+: {
-      ignorePaths+: ['3rdparty/**', 'progress/**', 'src/platform/n64/data-*.s'],
+      ignorePaths+: ['3rdparty/**', 'asm/**', 'progress/**', 'tools/splat/symbol_addrs.*.txt'],
     },
     'markdownlint-cli2'+: {
       ignores: ['3rdparty/**'],
     },
   },
   pre_commit_config+: {
-    exclude: '^(3rdparty/|src/platform/n64/data-.*\\.s$)',
+    exclude: '^(3rdparty|asm)/',
   },
   gitattributes+: [
     '/3rdparty/** -text linguist-vendored',
-    '/src/platform/n64/data-*.s linguist-generated',
+    '/asm/** linguist-generated',
   ],
-  prettierignore+: ['/3rdparty/'],
+  prettierignore+: ['/3rdparty/', '/asm/'],
   // The host tools under tools/ need these packages to build. The N64 build does not use vcpkg.
   vcpkg+: {
     dependencies: [

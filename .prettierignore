@@ -44,6 +44,7 @@
 /3rdparty/
 /CMakeUserPresets.json
 /HANDOFF.md
+/asm/
 /build/
 /dist/
 /session-recover.yaml

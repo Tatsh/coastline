@@ -1,7 +1,7 @@
 {
   "_wiswa": {
     "commandLine": "wiswa --skip-remote -q",
-    "lastRun": "2026-10-21T04:12:52Z",
+    "lastRun": "2026-10-21T04:34:42Z",
     "version": "7f9c68f"
   },
   "contributors": ["Andrew Udvare <audvare@gmail.com>"],
@@ -31,8 +31,9 @@
       "dist/**",
       "man/**",
       "3rdparty/**",
+      "asm/**",
       "progress/**",
-      "src/platform/n64/data-*.s"
+      "tools/splat/symbol_addrs.*.txt"
     ],
     "language": "en-GB",
     "languageSettings": [

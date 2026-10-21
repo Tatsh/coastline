@@ -7,11 +7,11 @@
 #include "platform/n64/boot.h"
 
 /**
- * Clears the BSS segment, two words at a time, and enters the OS boot.
+ * Clears the BSS segment, two words at a time, moves the stack to the boot stack, and enters the
+ * OS boot.
  *
- * The original is hand-written assembly. It sets the stack pointer (0x803168d0 in the USA
- * release, 0x803171e0 in the JPN release, and 0x803185b0 in the EUR release) before it jumps to
- * OsBootEntry(). A C body cannot set the stack pointer. The link script provides the stack.
+ * The original is hand-written assembly. The stack switch is the last statement. The call compiles
+ * to a jump, and ramMain() has no frame to lose.
  *
  * @ghidraAddress USA: 0x80200000
  * @ghidraAddress JPN: 0x80200000
@@ -27,5 +27,6 @@ void ramMain(void) {
         pWord[1] = 0;
         pWord += 2;
     } while (nRemaining != 0);
+    __asm__ volatile("move $sp, %0" : : "r"(g_abBootStackTop));
     OsBootEntry();
 }
