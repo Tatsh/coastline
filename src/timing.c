@@ -39,6 +39,13 @@
 /* The RSP takes physical addresses, which are the KSEG0 addresses less its base. */
 #define TO_RSP_ADDRESS(p) ((u32)(p) - K0BASE)
 
+/* The left and top edges of the bars, read from the globals at every use. */
+#define BARS_LEFT ((g_dwScreenWidth - 16) << g_dwScreenScaleShift)
+#define BARS_TOP (16 << g_dwScreenScaleShift)
+
+/* The frame the bars show, which is the one before the frame being timed. */
+#define SHOWN_FRAME (g_dwTimingFrame ^ 1)
+
 void AddTimingMarker(s32 bar, s32 red, s32 green, s32 blue, s32 alpha) {
     TimingMarker *marker =
         &g_aTimingMarkers[g_dwTimingFrame][bar][g_aTimingMarkerCounts[g_dwTimingFrame][bar]];
@@ -66,9 +73,8 @@ void BeginTimingFrame(void) {
 }
 
 void DrawTimingBars(void) {
-    s32 shown = g_dwTimingFrame ^ 1;
     TimingMarker *markers;
-    s32 bar, i, count, length, left, top;
+    s32 bar, i, count, length;
     u32 longest, lowered, time, y;
 
     gDPPipeSync(gDisplayListPtr++);
@@ -86,8 +92,8 @@ void DrawTimingBars(void) {
     /* The longest part of the frame shown, after the start of each bar. */
     longest = 0;
     for (bar = 0; bar < TIMING_BARS; bar++) {
-        markers = g_aTimingMarkers[shown][bar];
-        count = g_aTimingMarkerCounts[shown][bar];
+        markers = g_aTimingMarkers[SHOWN_FRAME][bar];
+        count = g_aTimingMarkerCounts[SHOWN_FRAME][bar];
         for (i = 1; i < count; i++) {
             if (longest < markers[i].time) {
                 longest = markers[i].time;
@@ -119,29 +125,31 @@ void DrawTimingBars(void) {
     length = (g_dwScreenHeight << g_dwScreenScaleShift) * BAR_ROWS / SCREEN_ROWS;
 
     gDPSetFillColor(gDisplayListPtr++, BOX_COLOR);
-    left = (g_dwScreenWidth - 16) << g_dwScreenScaleShift;
-    top = 16 << g_dwScreenScaleShift;
-    gDPFillRectangle(gDisplayListPtr++, left - 22, top - 2, left - 3, top + length + 2);
+    gDPFillRectangle(
+        gDisplayListPtr++, BARS_LEFT - 22, BARS_TOP - 2, BARS_LEFT - 3, BARS_TOP + length + 2);
     gDPPipeSync(gDisplayListPtr++);
     gDPSetFillColor(gDisplayListPtr++, TICK_COLOR);
     if (longest != 0) {
         for (time = 0, y = 0; time < longest; time += FRAME_COUNTS, y += length * FRAME_COUNTS) {
-            gDPFillRectangle(
-                gDisplayListPtr++, left - 21, top + y / longest, left - 20, top + y / longest);
+            gDPFillRectangle(gDisplayListPtr++,
+                             BARS_LEFT - 21,
+                             BARS_TOP + y / longest,
+                             BARS_LEFT - 20,
+                             BARS_TOP + y / longest);
         }
     }
     gDPPipeSync(gDisplayListPtr++);
 
     for (bar = 0; bar < TIMING_BARS; bar++) {
-        markers = g_aTimingMarkers[shown][bar];
-        count = g_aTimingMarkerCounts[shown][bar];
+        markers = g_aTimingMarkers[SHOWN_FRAME][bar];
+        count = g_aTimingMarkerCounts[SHOWN_FRAME][bar];
         for (i = 1; i < count; i++) {
             gDPSetFillColor(gDisplayListPtr++, markers[i].color);
             gDPFillRectangle(gDisplayListPtr++,
-                             left + bar * 4 - 18,
-                             top + markers[i - 1].time * length / longest,
-                             left + bar * 4 - 16,
-                             top + markers[i].time * length / longest);
+                             BARS_LEFT + bar * 4 - 18,
+                             BARS_TOP + markers[i - 1].time * length / longest,
+                             BARS_LEFT + bar * 4 - 16,
+                             BARS_TOP + markers[i].time * length / longest);
             gDPPipeSync(gDisplayListPtr++);
         }
     }

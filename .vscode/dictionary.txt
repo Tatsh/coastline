@@ -545,6 +545,7 @@ writeback
 writebackdcache
 writebackdcacheall
 wrongway
+wtype
 wuninitialized
 wwensure
 wwis

@@ -14,8 +14,8 @@
 #include "text.h"
 
 Sprite g_texBackground, g_texLogo, g_texButtonA, g_texButtonB, g_texButtonBSmall;
-const char g_szDecalCharMap[66] =
-    "\0               0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ!\"#'*+,-./:=?@";
+const DecalCharMap g_szDecalCharMap = {
+    "\0               0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ!\"#'*+,-./:=?@"};
 u8 g_bPakMenuInitialized, g_bPakDirLoaded, g_bPakSelectedNote, g_bPakFirstValidNote,
     g_bPakLastValidNote, g_bPakMenuState, g_aabSavePakIds[2][32];
 u16 g_wPakEmptySlotMask, g_wPakScanEmptyMask;

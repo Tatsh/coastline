@@ -85,11 +85,12 @@ void FixupVehicleModelPointers(VehicleModel *model) {
 void LoadVehicleModelFromRom(VehicleModel *model, s32 car) {
     CarModel *carModel = &g_aCarModels[car];
     char message[LOAD_MESSAGE_SIZE];
+    u32 size;
 
-    carModel->modelSize = DmaReadAssetSize(carModel->modelRom);
-    if (carModel->modelSize > sizeof(VehicleModel)) {
-        sprintf(
-            message, "Car %d too big (%d vs. %d)", car, carModel->modelSize, sizeof(VehicleModel));
+    size = DmaReadAssetSize(carModel->modelRom);
+    carModel->modelSize = size;
+    if (size > sizeof(VehicleModel)) {
+        sprintf(message, "Car %d too big (%d vs. %d)", car, size, sizeof(VehicleModel));
         SetDebugMessage(message);
     } else {
         osSyncPrintf("Loading car %d (%d / %d)\n", car, carModel->modelSize, sizeof(VehicleModel));

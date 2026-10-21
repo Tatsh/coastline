@@ -72,58 +72,59 @@
 /* The kilometers in a mile. */
 #define KM_PER_MILE 1.609344f
 
+/* The dashboard of the current view and the car of the active camera, read afresh at every use. */
+#define DASHBOARD_FACE g_aDashboardTextures[g_dwCurrentSplitScreenIndex]
+#define DASHBOARD_GEAR g_aDashboardGearTextures[g_dwCurrentSplitScreenIndex]
+#define ACTIVE_CAR_MODEL g_aCarModels[g_pActiveCameraVehicle->carModel]
+
 void RenderDashboardGauges(void) {
-    Texture *face = &g_aDashboardTextures[g_dwCurrentSplitScreenIndex];
-    Texture *cell = &g_aDashboardGearTextures[g_dwCurrentSplitScreenIndex];
     ViewportRect *rect = &g_aViewportRects[g_dwCurrentSplitScreenIndex];
-    Vehicle *vehicle = g_pActiveCameraVehicle;
     CarModel *car;
     Vtx *verts;
     u16 *palette;
     s32 x, y, gear, key, reload, jitter, first, lit, i;
-    f32 rpm, angle, tipLength, baseLength, centerX, centerY;
+    f32 rpm, angle, tipLength, baseLength;
 
-    x = HUD_RIGHT - face->width;
-    y = rect->y + rect->height - face->height - HUD_BOTTOM_MARGIN;
+    x = HUD_RIGHT - DASHBOARD_FACE.width;
+    y = rect->y + rect->height - DASHBOARD_FACE.height - HUD_BOTTOM_MARGIN;
     gear = 0;
-    if (vehicle->throttle >= 0.0f) {
-        gear = vehicle->gear + 1;
+    if (g_pActiveCameraVehicle->throttle >= 0.0f) {
+        gear = g_pActiveCameraVehicle->gear + 1;
     }
 
     /* Load the face and the palette when the car or the time of day changes. */
-    key = vehicle->carModel | (g_dwNightMode << 8);
+    key = g_pActiveCameraVehicle->carModel | (g_dwNightMode << 8);
     reload = key != g_adwDashboardLoadedKey[g_dwCurrentSplitScreenIndex];
     if (reload) {
-        car = &g_aCarModels[vehicle->carModel];
-        face->width = car->dashboardWidth;
-        face->height = car->dashboardHeight;
-        DmaRead(
-            face->pixels, car->dashboardRom + DASHBOARD_PALETTES_BYTES, face->height * face->width);
+        DASHBOARD_FACE.width = ACTIVE_CAR_MODEL.dashboardWidth;
+        DASHBOARD_FACE.height = ACTIVE_CAR_MODEL.dashboardHeight;
+        DmaRead(DASHBOARD_FACE.pixels,
+                ACTIVE_CAR_MODEL.dashboardRom + DASHBOARD_PALETTES_BYTES,
+                DASHBOARD_FACE.height * DASHBOARD_FACE.width);
         DmaRead(g_aawDashboardPalettes[g_dwCurrentSplitScreenIndex],
-                car->dashboardRom + g_dwNightMode * DASHBOARD_PALETTE_BYTES,
+                ACTIVE_CAR_MODEL.dashboardRom + g_dwNightMode * DASHBOARD_PALETTE_BYTES,
                 DASHBOARD_PALETTE_BYTES);
-        cell->width = car->gearWidth;
-        cell->height = car->gearHeight;
+        DASHBOARD_GEAR.width = ACTIVE_CAR_MODEL.gearWidth;
+        DASHBOARD_GEAR.height = ACTIVE_CAR_MODEL.gearHeight;
         g_adwDashboardLoadedKey[g_dwCurrentSplitScreenIndex] = key;
     }
     if (reload || gear != g_adwDashboardLoadedGear[g_dwCurrentSplitScreenIndex]) {
-        car = &g_aCarModels[vehicle->carModel];
-        DmaRead(cell->pixels,
-                car->dashboardRom + DASHBOARD_PALETTES_BYTES + face->height * face->width +
-                    cell->height * cell->width * gear,
-                cell->height * cell->width);
+        DmaRead(DASHBOARD_GEAR.pixels,
+                ACTIVE_CAR_MODEL.dashboardRom + DASHBOARD_PALETTES_BYTES +
+                    DASHBOARD_FACE.height * DASHBOARD_FACE.width +
+                    DASHBOARD_GEAR.height * DASHBOARD_GEAR.width * gear,
+                DASHBOARD_GEAR.height * DASHBOARD_GEAR.width);
         g_adwDashboardLoadedGear[g_dwCurrentSplitScreenIndex] = gear;
     }
 
     gDPPipeSync(gDisplayListPtr++);
     gDPLoadTLUT_pal256(gDisplayListPtr++, g_aawDashboardPalettes[g_dwCurrentSplitScreenIndex]);
-    car = &g_aCarModels[g_pActiveCameraVehicle->carModel];
     if (g_dwNumViewports == 1) {
-        DrawTexturedRect(face,
+        DrawTexturedRect(&DASHBOARD_FACE,
                          x,
                          y,
-                         face->width,
-                         face->height,
+                         DASHBOARD_FACE.width,
+                         DASHBOARD_FACE.height,
                          0,
                          0,
                          0,
@@ -133,11 +134,11 @@ void RenderDashboardGauges(void) {
                          0xFF,
                          0xFF,
                          TEXRECT_BLEND_TEXTURE);
-        DrawTexturedRect(cell,
-                         car->gearX + x,
-                         car->gearY + y,
-                         cell->width,
-                         cell->height,
+        DrawTexturedRect(&DASHBOARD_GEAR,
+                         ACTIVE_CAR_MODEL.gearX + x,
+                         ACTIVE_CAR_MODEL.gearY + y,
+                         DASHBOARD_GEAR.width,
+                         DASHBOARD_GEAR.height,
                          0,
                          0,
                          0,
@@ -149,13 +150,13 @@ void RenderDashboardGauges(void) {
                          TEXRECT_BLEND_TEXTURE);
     } else {
         /* A smaller dashboard, three quarters of the size, with its bottom right in place. */
-        x += face->width / 4;
-        y += face->height / 4;
-        DrawTexturedRect(face,
+        x += DASHBOARD_FACE.width / 4;
+        y += DASHBOARD_FACE.height / 4;
+        DrawTexturedRect(&DASHBOARD_FACE,
                          x,
                          y,
-                         face->width * 3 / 4,
-                         face->height * 3 / 4,
+                         DASHBOARD_FACE.width * 3 / 4,
+                         DASHBOARD_FACE.height * 3 / 4,
                          0,
                          0,
                          0,
@@ -165,11 +166,11 @@ void RenderDashboardGauges(void) {
                          0xFF,
                          0xFF,
                          TEXRECT_BLEND_TEXTURE);
-        DrawTexturedRect(cell,
-                         car->gearX * 3 / 4 + x,
-                         car->gearY * 3 / 4 + y,
-                         cell->width * 3 / 4,
-                         cell->height * 3 / 4,
+        DrawTexturedRect(&DASHBOARD_GEAR,
+                         ACTIVE_CAR_MODEL.gearX * 3 / 4 + x,
+                         ACTIVE_CAR_MODEL.gearY * 3 / 4 + y,
+                         DASHBOARD_GEAR.width * 3 / 4,
+                         DASHBOARD_GEAR.height * 3 / 4,
                          0,
                          0,
                          0,
@@ -205,19 +206,17 @@ void RenderDashboardGauges(void) {
         }
 
         /* A narrow quad from the tip on one side of the center to the base on the other. */
-        centerX = x;
-        centerY = y;
-        verts[0].v.ob[0] = (s32)(cosf(angle - NEEDLE_TIP_HALF) * tipLength + centerX);
-        verts[0].v.ob[1] = (s32)(sinf(angle - NEEDLE_TIP_HALF) * tipLength + centerY);
+        verts[0].v.ob[0] = (s32)(cosf(angle - NEEDLE_TIP_HALF) * tipLength + x);
+        verts[0].v.ob[1] = (s32)(sinf(angle - NEEDLE_TIP_HALF) * tipLength + y);
         verts[0].v.ob[2] = 0;
-        verts[1].v.ob[0] = (s32)(cosf(angle + NEEDLE_TIP_HALF) * tipLength + centerX);
-        verts[1].v.ob[1] = (s32)(sinf(angle + NEEDLE_TIP_HALF) * tipLength + centerY);
+        verts[1].v.ob[0] = (s32)(cosf(angle + NEEDLE_TIP_HALF) * tipLength + x);
+        verts[1].v.ob[1] = (s32)(sinf(angle + NEEDLE_TIP_HALF) * tipLength + y);
         verts[1].v.ob[2] = 0;
-        verts[2].v.ob[0] = (s32)(cosf(angle + NEEDLE_BASE_HALF) * baseLength + centerX);
-        verts[2].v.ob[1] = (s32)(sinf(angle + NEEDLE_BASE_HALF) * baseLength + centerY);
+        verts[2].v.ob[0] = (s32)(cosf(angle + NEEDLE_BASE_HALF) * baseLength + x);
+        verts[2].v.ob[1] = (s32)(sinf(angle + NEEDLE_BASE_HALF) * baseLength + y);
         verts[2].v.ob[2] = 0;
-        verts[3].v.ob[0] = (s32)(cosf(angle - NEEDLE_BASE_HALF) * baseLength + centerX);
-        verts[3].v.ob[1] = (s32)(sinf(angle - NEEDLE_BASE_HALF) * baseLength + centerY);
+        verts[3].v.ob[0] = (s32)(cosf(angle - NEEDLE_BASE_HALF) * baseLength + x);
+        verts[3].v.ob[1] = (s32)(sinf(angle - NEEDLE_BASE_HALF) * baseLength + y);
         verts[3].v.ob[2] = 0;
         for (i = 0; i < 4; i++) {
             verts[i].v.cn[0] = 0;
@@ -266,7 +265,7 @@ void RenderDashboardGauges(void) {
     for (i = first; i < lit; i++) {
         palette[i] = g_awDashboardBarPalette[i];
     }
-    if (car->tachometer == TACHOMETER_BAR_DIMMED) {
+    if (ACTIVE_CAR_MODEL.tachometer == TACHOMETER_BAR_DIMMED) {
         for (i = lit; i < DASHBOARD_PALETTE_COLORS; i++) {
             palette[i] =
                 ((g_awDashboardBarPalette[i] >> 3) & PALETTE_QUARTER_MASK) | PALETTE_OPAQUE;
@@ -446,7 +445,6 @@ void DrawHudMessage(void) {
 
 void DrawSpeedAndHudOverlay(void) {
     ViewportRect *rect = &g_aViewportRects[g_dwCurrentSplitScreenIndex];
-    CameraFrame *bumper;
     f32 speed = g_pActiveCameraVehicle->speedKph;
     s32 x, y;
 
@@ -471,17 +469,16 @@ void DrawSpeedAndHudOverlay(void) {
     /* The speed sits above the dashboard when it shows, and its unit beside it. */
     rect = &g_aViewportRects[g_dwCurrentSplitScreenIndex];
     y = rect->height + rect->y - HUD_BOTTOM_MARGIN;
-    bumper = &g_pActiveCameraVehicle->cameras[VEHICLE_CAMERA_BUMPER];
     if (g_dwNumViewports == 2) {
-        if (g_pActiveCamera != bumper) {
-            y -= g_aDashboardTextures[g_dwCurrentSplitScreenIndex].height * 3 / 4 + 1;
+        if (g_pActiveCamera != &g_pActiveCameraVehicle->cameras[VEHICLE_CAMERA_BUMPER]) {
+            y = y - g_aDashboardTextures[g_dwCurrentSplitScreenIndex].height * 3 / 4 - 1;
         }
         SetTextSize(SPEED_TEXT_SIZE_SPLIT);
         DrawText(g_szHudSpeedTextBuf, HUD_RIGHT, y);
         return;
     }
     x = HUD_RIGHT;
-    if (g_pActiveCamera != bumper) {
+    if (g_pActiveCamera != &g_pActiveCameraVehicle->cameras[VEHICLE_CAMERA_BUMPER]) {
         x = SPEED_DASHBOARD_RIGHT;
         y -= g_aDashboardTextures[g_dwCurrentSplitScreenIndex].height;
     }

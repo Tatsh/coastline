@@ -59,16 +59,17 @@
 /* The tracks whose names are mirrored ones, past the first five. */
 #define MIRRORED_TRACKS 5
 
-/** Choose a car of the season for each of the two slots, and load them at once. */
-static inline void LoadSeasonCars(s32 season) {
-    s32 slot;
-
-    for (slot = 0; slot < 2; slot++) {
-        LoadVehicleModel(&g_aVehicleModelSlots[slot], slot, g_SeasonTable[season].cars[slot], slot);
-        while (PollVehicleModelDma(&g_aVehicleModelSlots[slot]) != 0) {
-        }
+/*
+ * Choose a car of the season of a profile for each of the two slots, and load them at once. The
+ * original reads the season from the profile for each slot.
+ */
+#define LOAD_SEASON_CARS(profile, slot)                                                            \
+    for (slot = 0; slot < 2; slot++) {                                                             \
+        LoadVehicleModel(                                                                          \
+            &g_aVehicleModelSlots[slot], slot, g_SeasonTable[(profile)->season].cars[slot], slot); \
+        while (PollVehicleModelDma(&g_aVehicleModelSlots[slot]) != 0) {                            \
+        }                                                                                          \
     }
-}
 
 /** Play a sound of the screen on a free channel. */
 static inline void PlayScreenSound(s8 *sample, u32 length) {
@@ -101,21 +102,18 @@ s32 IsTrackUnlocked(s32 track) {
         if (g_bSeasonFirstRace) {
             return track == (s32)g_dwSelectedTrackId;
         }
-        if (track == (s32)g_dwSelectedTrackId) {
-            return TRUE;
-        }
-        return !(track < g_dwNumTracks);
+        return track == (s32)g_dwSelectedTrackId || !(track < g_dwNumTracks);
     }
     if (g_dwGameMode == GAME_MODE_TIME_ATTACK &&
         (track == g_dwNumTracks || track == g_dwNumTracks + 2)) {
         return TRUE;
     }
-    if (!(g_pActiveProfile->unlockedTracks & (1 << track))) {
-        return FALSE;
-    }
-    return IsTrackIndexValid(track) != 0;
+    return (g_pActiveProfile->unlockedTracks & (1 << track)) && IsTrackIndexValid(track);
 }
 
+/* The original tests the unsigned season and round for being negative. */
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wtype-limits"
 void ValidateChampionshipProgress(void) {
     PlayerProfile *profile = g_aVehicles[0].profile;
 
@@ -127,11 +125,12 @@ void ValidateChampionshipProgress(void) {
     }
     for (;;) {
         profile = g_aVehicles[0].profile;
-        if (profile->season >= SEASONS) {
+        if (profile->season < 0 || profile->season >= SEASONS) {
             profile->season = 0;
             g_aVehicles[0].profile->round = 0;
             g_aVehicles[0].profile->seasonPoints[g_aVehicles[0].profile->season] = 0;
-        } else if (profile->round >= g_SeasonTable[profile->season].raceCount) {
+        } else if (profile->round < 0 ||
+                   profile->round >= g_SeasonTable[profile->season].raceCount) {
             profile->round = 0;
             g_aVehicles[0].profile->seasonPoints[g_aVehicles[0].profile->season] = 0;
         } else {
@@ -139,9 +138,10 @@ void ValidateChampionshipProgress(void) {
         }
     }
 }
+#pragma GCC diagnostic pop
 
 void TrackMenuPostDraw(s32 item) {
-    s32 needed, season;
+    s32 needed, season, slot;
 
     if (g_dwGameMode == GAME_MODE_ARCADE) {
         SetTextSize(10);
@@ -180,7 +180,7 @@ void TrackMenuPostDraw(s32 item) {
     if (g_dwGameMode == GAME_MODE_CHAMPIONSHIP) {
         ValidateChampionshipProgress();
         StartChampionshipRace();
-        LoadSeasonCars(g_pActiveProfile->season);
+        LOAD_SEASON_CARS(g_pActiveProfile, slot);
         g_bSeasonFirstRace = TRUE;
     } else if (g_dwGameMode == GAME_MODE_TIME_ATTACK) {
         StartTimeAttack();
@@ -213,7 +213,12 @@ void SeasonRecordsPreDrawCallback(void) {
     /* The columns move right when a name is of the longer, mirrored tracks. */
     shift = 0;
     for (i = 0; i < season->raceCount; i++) {
-        if ((season->races[i][0] < MIRRORED_TRACKS) == ((flags & 1) != 0)) {
+        if (season->races[i][0] < MIRRORED_TRACKS) {
+            if (flags & 1) {
+                shift = g_dwScreenWidth * 3 / 64;
+                break;
+            }
+        } else if (!(flags & 1)) {
             shift = g_dwScreenWidth * 3 / 64;
             break;
         }
@@ -301,12 +306,14 @@ void SeasonRecordsPreDrawCallback(void) {
     SetScissorRect(0, 0, g_dwScreenWidth, g_dwScreenHeight);
 }
 
+/* The original sets the named item only in the modes that restore its name at the end. */
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
 void ProcessTrackMenu(void) {
     CameraFrame *camera;
     Vehicle *vehicle;
-    PlayerProfile *profile;
-    const char *name = NULL;
-    s32 named = 0, result, i, selection;
+    const char *name;
+    s32 named, result, i, selection;
 
     if (g_dwTrackMenuInitState <= 0) {
         ResetAndInitDisplay(g_apTrackMenuItems, &g_dwTrackMenuItemCount);
@@ -430,34 +437,47 @@ void ProcessTrackMenu(void) {
     switch (result) {
     case MENU_RESULT_CHOSEN:
         selection = g_dwTrackMenuSelection;
-        profile = g_aVehicles[0].profile;
         if (selection == g_dwNumTracks) {
             g_bTrackMenuPakScreen = TRUE;
             break;
         }
-        if (selection > g_dwNumTracks && selection <= g_dwNumTracks + 3) {
+
+        /* Reset to the first round, season, or year, each reset including the ones before it. */
+        if (selection == g_dwNumTracks + 1) {
             g_dwTrackMenuSelection = selection;
             if (g_dwGameMode == GAME_MODE_CHAMPIONSHIP) {
-                /* Reset to the first year, season, or round. */
-                if (selection == g_dwNumTracks + 3) {
-                    profile->championshipFlags = 0;
-                }
-                if (selection >= g_dwNumTracks + 2) {
-                    g_aVehicles[0].profile->season = 0;
-                }
-                g_aVehicles[0].profile->round = 0;
-                g_aVehicles[0].profile->seasonPoints[g_aVehicles[0].profile->season] = 0;
-                StartChampionshipRace();
-                g_dwTrackMenuSelection = g_dwSelectedTrackId;
-                SetScreenPendingSelection(g_dwSelectedTrackId);
-                LoadSeasonCars(g_aVehicles[0].profile->season);
-                g_bSeasonFirstRace = TRUE;
-            } else if (selection == g_dwNumTracks + 2 && g_dwGameMode == GAME_MODE_TIME_ATTACK) {
+                goto resetRound;
+            }
+            break;
+        }
+        if (selection == g_dwNumTracks + 2) {
+            g_dwTrackMenuSelection = selection;
+            if (g_dwGameMode == GAME_MODE_CHAMPIONSHIP) {
+                goto resetSeason;
+            }
+            if (g_dwGameMode == GAME_MODE_TIME_ATTACK) {
                 /* Reset the ghost car. */
                 g_dwGhostRecordingSize = 8;
                 StartTimeAttack();
                 g_dwTrackMenuSelection = g_dwSelectedTrackId;
                 SetScreenPendingSelection(g_dwSelectedTrackId);
+            }
+            break;
+        }
+        if (selection == g_dwNumTracks + 3) {
+            g_dwTrackMenuSelection = selection;
+            if (g_dwGameMode == GAME_MODE_CHAMPIONSHIP) {
+                g_aVehicles[0].profile->championshipFlags = 0;
+            resetSeason:
+                g_aVehicles[0].profile->season = 0;
+            resetRound:
+                g_aVehicles[0].profile->round = 0;
+                g_aVehicles[0].profile->seasonPoints[g_aVehicles[0].profile->season] = 0;
+                StartChampionshipRace();
+                g_dwTrackMenuSelection = g_dwSelectedTrackId;
+                SetScreenPendingSelection(g_dwSelectedTrackId);
+                LOAD_SEASON_CARS(g_aVehicles[0].profile, i);
+                g_bSeasonFirstRace = TRUE;
             }
             break;
         }
@@ -499,6 +519,7 @@ void ProcessTrackMenu(void) {
         g_apTrackMenuItems[named]->name = name;
     }
 }
+#pragma GCC diagnostic pop
 
 void DrawModelList(Model *model, f32 m[4][4]) {
     ModelPart *part;
@@ -506,7 +527,6 @@ void DrawModelList(Model *model, f32 m[4][4]) {
     Mtx *block;
     u32 i;
     s32 pass;
-    u16 flags;
 
     gDPPipeSync(gDisplayListPtr++);
     gDPSetCycleType(gDisplayListPtr++, G_CYC_2CYCLE);
@@ -578,23 +598,22 @@ void DrawModelList(Model *model, f32 m[4][4]) {
     /* The opaque parts, then the translucent ones. */
     for (pass = 0; pass < 2; pass++) {
         for (i = 0, part = model->parts; i < model->partCount; i++, part++) {
-            flags = part->flags;
-            if (((flags & MODEL_PART_TRANSLUCENT) == 0) != (pass == 0)) {
+            if (((part->flags & MODEL_PART_TRANSLUCENT) == 0) != (pass == 0)) {
                 continue;
             }
             if (part->displayList == NULL) {
                 continue;
             }
-            if (flags & MODEL_PART_RAMPED) {
+            if (part->flags & MODEL_PART_RAMPED) {
                 gSPLightColor(gDisplayListPtr++, LIGHT_1, 0);
                 gSPLightColor(gDisplayListPtr++,
                               LIGHT_2,
                               g_adwModelShadeColors[part->flags & MODEL_PART_LIGHT_RAMP]);
             }
-            if (flags & MODEL_PART_TWO_SIDED) {
+            if (part->flags & MODEL_PART_TWO_SIDED) {
                 gSPClearGeometryMode(gDisplayListPtr++, G_CULL_BACK | G_CULL_FRONT);
             }
-            if ((flags & MODEL_PART_FLAT) && g_bSmoothShading) {
+            if ((part->flags & MODEL_PART_FLAT) && g_bSmoothShading) {
                 gSPClearGeometryMode(gDisplayListPtr++, G_SHADING_SMOOTH);
             }
             gSPTexture(gDisplayListPtr++, 0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON);
@@ -605,18 +624,15 @@ void DrawModelList(Model *model, f32 m[4][4]) {
             gSPMatrix(gDisplayListPtr++, block, G_MTX_MODELVIEW | G_MTX_MUL | G_MTX_PUSH);
             gSPDisplayList(gDisplayListPtr++, part->displayList);
             gSPPopMatrix(gDisplayListPtr++, G_MTX_MODELVIEW);
-            flags = part->flags;
-            if ((flags & MODEL_PART_FLAT) && g_bSmoothShading) {
+            if ((part->flags & MODEL_PART_FLAT) && g_bSmoothShading) {
                 gSPSetGeometryMode(gDisplayListPtr++, G_SHADING_SMOOTH);
             }
-            if (flags & MODEL_PART_TWO_SIDED) {
-                if (g_dwViewportMirrored != g_dwTrackMirrored) {
-                    gSPSetGeometryMode(gDisplayListPtr++, G_CULL_FRONT);
-                } else {
-                    gSPSetGeometryMode(gDisplayListPtr++, G_CULL_BACK);
-                }
+            if (part->flags & MODEL_PART_TWO_SIDED) {
+                gSPSetGeometryMode(gDisplayListPtr++,
+                                   g_dwViewportMirrored != g_dwTrackMirrored ? G_CULL_FRONT :
+                                                                               G_CULL_BACK);
             }
-            if (flags & MODEL_PART_RAMPED) {
+            if (part->flags & MODEL_PART_RAMPED) {
                 gSPLightColor(gDisplayListPtr++, LIGHT_1, 0xFFFFFF00);
                 gSPLightColor(gDisplayListPtr++, LIGHT_2, 0x40404000);
             }
@@ -725,28 +741,30 @@ static inline void LoadScreenAssets(void) {
     }
 }
 
-/** Draw an item that slides with the cursor: its model turning, or its name. */
-static inline void DrawSlidingItem(MenuItem *item, f32 offset, char *text) {
-    if (item->model != NULL) {
-        AdvanceModelAnimations(item->model);
-        if (item->flags & MENU_ITEM_MIRRORED) {
-            g_dwViewportMirrored = TRUE;
-        }
-        DrawRotatedModel(item->model,
-                         (f32)(g_dwScreenWidth / 2) - offset * (f32)g_dwScreenWidth / 6.0f,
-                         (f32)(g_dwScreenHeight * 6 / 16),
-                         0.0f,
-                         g_fScreenRotationAngle);
-        g_dwViewportMirrored = FALSE;
-    } else {
-        sprintf(text, "%%ww%s", item->name);
-        SetTextStyleNormal();
-        SetTextAlignCenter();
-        DrawText(text,
-                 g_dwScreenWidth / 2 - (s32)(offset * (f32)g_dwScreenWidth / 6.0f),
-                 g_dwScreenHeight * 9 / 16);
+/*
+ * Draw an item that slides with the cursor: its model turning, or its name. The item is an
+ * expression the original indexes afresh after each call.
+ */
+#define DRAW_SLIDING_ITEM(item, offset, text)                                                      \
+    if ((item)->model != NULL) {                                                                   \
+        AdvanceModelAnimations((item)->model);                                                     \
+        if ((item)->flags & MENU_ITEM_MIRRORED) {                                                  \
+            g_dwViewportMirrored = TRUE;                                                           \
+        }                                                                                          \
+        DrawRotatedModel((item)->model,                                                            \
+                         (f32)(g_dwScreenWidth / 2) - (offset) * (f32)g_dwScreenWidth / 6.0f,      \
+                         (f32)(g_dwScreenHeight * 6 / 16),                                         \
+                         0.0f,                                                                     \
+                         g_fScreenRotationAngle);                                                  \
+        g_dwViewportMirrored = FALSE;                                                              \
+    } else {                                                                                       \
+        sprintf(text, "%%ww%s", (item)->name);                                                     \
+        SetTextStyleNormal();                                                                      \
+        SetTextAlignCenter();                                                                      \
+        DrawText(text,                                                                             \
+                 g_dwScreenWidth / 2 - (s32)((offset) * (f32)g_dwScreenWidth / 6.0f),              \
+                 g_dwScreenHeight * 9 / 16);                                                       \
     }
-}
 
 /** Fade the screen and the sound effects out. */
 static inline void FadeScreenOut(void) {
@@ -754,24 +772,8 @@ static inline void FadeScreenOut(void) {
     FadeSfxTo(0.0f, SCREEN_FADE_RATE);
 }
 
-/**
- * Move the cursor of the screen by a step, past the items that may not be chosen, and slide the
- * items when it moves.
- *
- * @return Whether it moved.
- */
-static inline s32
-StepScreenCursor(s32 step, s32 itemCount, MenuItemFilter isSelectable, f32 slide) {
-    g_nPrevScreenSelection = g_nScreenCursor;
-    do {
-        g_nScreenCursor = (g_nScreenCursor + itemCount + step) % itemCount;
-    } while (isSelectable != NULL && !isSelectable(g_nScreenCursor));
-    if (g_nScreenCursor == g_nPrevScreenSelection) {
-        return FALSE;
-    }
-    g_fScreenSlideOffset = slide;
-    return TRUE;
-}
+/* The input of a player, which the original reads from the vehicle at every use. */
+#define PLAYER_INPUT(player) (g_aVehicles[player].input)
 
 s32 ProcessScreenState(const char *title,
                        s32 itemCount,
@@ -785,11 +787,10 @@ s32 ProcessScreenState(const char *title,
                        s32 bottomGreen,
                        s32 bottomBlue) {
     char text[112];
-    PlayerInputState *input;
     MenuItem *item;
     Mtx *block;
     f32 step, slide, ease;
-    s32 result, shown, other, player, moved, i;
+    s32 result, shown, other, player, i;
     u32 buttons;
 
     result = 0;
@@ -927,8 +928,8 @@ s32 ProcessScreenState(const char *title,
             }
         } else if (ease != 0.0f) {
             /* The item slides in, and the one the cursor left slides out. */
-            DrawSlidingItem(item, ease, text);
-            DrawSlidingItem(
+            DRAW_SLIDING_ITEM(items[g_nScreenCursor], ease, text);
+            DRAW_SLIDING_ITEM(
                 items[g_nPrevScreenSelection], (ease < 0.0f ? 5.0f : -5.0f) + ease, text);
             goto popMatrix;
         } else {
@@ -988,51 +989,61 @@ s32 ProcessScreenState(const char *title,
             if (g_dwScreenPlayerIdx != -1 && !((1 << player) & g_dwMenuInputPlayerMask)) {
                 continue;
             }
-            input = g_aVehicles[player].input;
-            UpdateStickRepeat(input);
-            buttons = input->buttons;
+            UpdateStickRepeat(PLAYER_INPUT(player));
+            buttons = PLAYER_INPUT(player)->buttons;
             if (buttons != 0) {
                 g_fScreenIdleTime = 0.0f;
             }
             if (g_fScreenSlideOffset == 0.0f) {
-                /* Left and right move the cursor; the presses of up and down are taken too. */
-                moved = FALSE;
+                /*
+                 * Left and right move the cursor past the items that may not be chosen, and the
+                 * presses of up and down are taken too. Right is not tried once left has moved.
+                 */
                 if (buttons & INPUT_LEFT) {
-                    TransferFlags(input, INPUT_UP | INPUT_DOWN);
-                    input->buttons &= ~(INPUT_UP | INPUT_DOWN);
-                    moved = StepScreenCursor(-1, itemCount, isSelectable, 1.0f);
+                    TransferFlags(PLAYER_INPUT(player), INPUT_UP | INPUT_DOWN);
+                    PLAYER_INPUT(player)->buttons &= ~(INPUT_UP | INPUT_DOWN);
+                    g_nPrevScreenSelection = g_nScreenCursor;
+                    do {
+                        g_nScreenCursor = (g_nScreenCursor + itemCount - 1) % itemCount;
+                    } while (isSelectable != NULL && !isSelectable(g_nScreenCursor));
+                    if (g_nScreenCursor != g_nPrevScreenSelection) {
+                        g_fScreenSlideOffset = 1.0f;
+                        goto scrolled;
+                    }
                 }
-                if (!moved && (input->buttons & INPUT_RIGHT)) {
-                    TransferFlags(input, INPUT_UP | INPUT_DOWN);
-                    input->buttons &= ~(INPUT_UP | INPUT_DOWN);
-                    moved = StepScreenCursor(1, itemCount, isSelectable, -1.0f);
+                if (PLAYER_INPUT(player)->buttons & INPUT_RIGHT) {
+                    TransferFlags(PLAYER_INPUT(player), INPUT_UP | INPUT_DOWN);
+                    PLAYER_INPUT(player)->buttons &= ~(INPUT_UP | INPUT_DOWN);
+                    g_nPrevScreenSelection = g_nScreenCursor;
+                    do {
+                        g_nScreenCursor = (g_nScreenCursor + 1) % itemCount;
+                    } while (isSelectable != NULL && !isSelectable(g_nScreenCursor));
+                    if (g_nScreenCursor != g_nPrevScreenSelection) {
+                        g_fScreenSlideOffset = -1.0f;
+                    scrolled:
+                        PlayScreenSound(g_pScreenScrollSoundBuf, g_dwScreenScrollSoundSize);
+                    }
                 }
-                if (moved) {
-                    PlayScreenSound(g_pScreenScrollSoundBuf, g_dwScreenScrollSoundSize);
-                }
-                buttons = input->buttons;
+                buttons = PLAYER_INPUT(player)->buttons;
                 if (items[g_nScreenCursor]->flags & MENU_ITEM_ADJUSTABLE) {
                     if (buttons & INPUT_UP) {
                         *selection = g_nScreenCursor;
                         result = MENU_RESULT_UP;
-                        TransferFlags(input, INPUT_UP);
-                        PlayScreenSound(g_pScreenSelectSoundBuf, g_dwScreenSelectSoundSize);
-                        continue;
+                        TransferFlags(PLAYER_INPUT(player), INPUT_UP);
+                        goto selected;
                     }
                     if (buttons & INPUT_DOWN) {
                         *selection = g_nScreenCursor;
                         result = MENU_RESULT_DOWN;
-                        TransferFlags(input, INPUT_DOWN);
-                        PlayScreenSound(g_pScreenSelectSoundBuf, g_dwScreenSelectSoundSize);
-                        continue;
+                        TransferFlags(PLAYER_INPUT(player), INPUT_DOWN);
+                        goto selected;
                     }
                 }
                 if (buttons & INPUT_B) {
-                    TransferFlags(input, INPUT_B);
+                    TransferFlags(PLAYER_INPUT(player), INPUT_B);
                     g_bScreenItemChosen = FALSE;
                     FadeScreenOut();
-                    PlayScreenSound(g_pScreenSelectSoundBuf, g_dwScreenSelectSoundSize);
-                    continue;
+                    goto selected;
                 }
             }
             item = items[g_nScreenCursor];
@@ -1040,7 +1051,7 @@ s32 ProcessScreenState(const char *title,
                 !(buttons & (INPUT_A | INPUT_START | INPUT_Z))) {
                 continue;
             }
-            TransferFlags(input, INPUT_A | INPUT_START | INPUT_Z);
+            TransferFlags(PLAYER_INPUT(player), INPUT_A | INPUT_START | INPUT_Z);
             if (player != 0 && (items[g_nScreenCursor]->flags & MENU_ITEM_FIRST_PLAYER)) {
                 continue;
             }
@@ -1053,6 +1064,7 @@ s32 ProcessScreenState(const char *title,
                 FadeSfxTo(0.0f, SCREEN_FADE_RATE);
                 SetFadeTarget(0.0f, SCREEN_FADE_RATE);
             }
+        selected:
             PlayScreenSound(g_pScreenSelectSoundBuf, g_dwScreenSelectSoundSize);
         }
     }
@@ -1104,8 +1116,9 @@ void LoadMenuItemModels(MenuItem **items, s32 *itemCount) {
             }
         }
         if (i == *itemCount) {
-            item->model = AllocHeapAligned(DmaReadAssetSize(item->romStart));
-            DecompressModel(item->model, item->romStart);
+            items[*itemCount]->model =
+                AllocHeapAligned(DmaReadAssetSize(items[*itemCount]->romStart));
+            DecompressModel(items[*itemCount]->model, items[*itemCount]->romStart);
         }
     }
 }

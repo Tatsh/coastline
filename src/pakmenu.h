@@ -47,12 +47,18 @@ extern Sprite g_texButtonB;
 /** @ghidraAddress USA: 0x8028dd20 */
 extern Sprite g_texButtonBSmall;
 
+/** The table of the characters of the names of notes, which is copied whole to read one. */
+typedef struct DecalCharMap {
+    /** The ASCII of each of the 66 characters, a space for those it lacks. */
+    char chars[66];
+} DecalCharMap;
+
 /**
  * The ASCII of the 66 characters of the names of notes, a space for those it lacks.
  *
  * @ghidraAddress USA: 0x8028dd50
  */
-extern const char g_szDecalCharMap[66];
+extern const DecalCharMap g_szDecalCharMap;
 
 /** @ghidraAddress USA: 0x8028dd94 */
 extern u8 g_bPakMenuInitialized;

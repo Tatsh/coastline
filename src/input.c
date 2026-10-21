@@ -108,10 +108,13 @@ void ProcessInputCommandBuffer(PlayerInputState *state) {
     }
 }
 
-/* The brake, which becomes the e-brake while the car accelerates. */
-static u32 BrakeAction(u32 buttons) {
-    return (buttons & INPUT_ACCELERATE) ? INPUT_EBRAKE : INPUT_BRAKE;
-}
+/* Add the brake, which becomes the e-brake while the car accelerates. */
+#define ADD_BRAKE_ACTION(state)                                                                    \
+    if ((state)->buttons & INPUT_ACCELERATE) {                                                     \
+        (state)->buttons |= INPUT_EBRAKE;                                                          \
+    } else {                                                                                       \
+        (state)->buttons |= INPUT_BRAKE;                                                           \
+    }
 
 void TranslateControllerInput(PlayerInputState *state) {
     OSContPad *pad = state->pad;
@@ -175,18 +178,23 @@ void TranslateControllerInput(PlayerInputState *state) {
     /* Map the buttons to the actions of a race by the layout of the player. */
     if (IsCurrentScreen(ProcessRacingScreen)) {
         switch (state->controllerLayout) {
-        case 0:
         case 4:
-            if (state->controllerLayout == 0) {
-                if (state->buttons & INPUT_Z) {
-                    state->buttons |= INPUT_GEAR_DOWN;
-                }
-            } else if (state->buttons & INPUT_L) {
+            if (state->buttons & INPUT_L) {
                 state->buttons |= INPUT_GEAR_DOWN;
             }
             if (state->buttons & INPUT_R) {
                 state->buttons |= INPUT_GEAR_UP;
             }
+            /* The fifth layout differs from the first only in its gear down button. */
+            goto firstLayout;
+        case 0:
+            if (state->buttons & INPUT_Z) {
+                state->buttons |= INPUT_GEAR_DOWN;
+            }
+            if (state->buttons & INPUT_R) {
+                state->buttons |= INPUT_GEAR_UP;
+            }
+        firstLayout:
             state->steeringInput = state->pad->stick_x;
             if (state->buttons & INPUT_A) {
                 if (state->pad->stick_y < REVERSE_STICK_Y) {
@@ -195,7 +203,7 @@ void TranslateControllerInput(PlayerInputState *state) {
                 state->buttons |= INPUT_ACCELERATE;
             }
             if (state->buttons & INPUT_B) {
-                state->buttons |= BrakeAction(state->buttons);
+                ADD_BRAKE_ACTION(state);
             }
             if (state->buttons & INPUT_C_UP) {
                 state->buttons |= INPUT_VIEW_COCKPIT;
@@ -240,9 +248,15 @@ void TranslateControllerInput(PlayerInputState *state) {
         case 2:
             /* The directional pad steers, and both of its sides cancel out. */
             if (state->buttons & INPUT_LEFT) {
-                state->steeringInput = (state->buttons & INPUT_RIGHT) ? 0 : -DPAD_STEERING;
+                if (state->buttons & INPUT_RIGHT) {
+                    state->steeringInput = 0;
+                } else {
+                    state->steeringInput = -DPAD_STEERING;
+                }
+            } else if (state->buttons & INPUT_RIGHT) {
+                state->steeringInput = DPAD_STEERING;
             } else {
-                state->steeringInput = (state->buttons & INPUT_RIGHT) ? DPAD_STEERING : 0;
+                state->steeringInput = 0;
             }
             if (state->buttons & INPUT_A) {
                 if (state->buttons & INPUT_DOWN) {
@@ -251,7 +265,7 @@ void TranslateControllerInput(PlayerInputState *state) {
                 state->buttons |= INPUT_ACCELERATE;
             }
             if (state->buttons & INPUT_B) {
-                state->buttons |= BrakeAction(state->buttons);
+                ADD_BRAKE_ACTION(state);
             }
             if (state->buttons & INPUT_L) {
                 state->buttons |= INPUT_GEAR_DOWN;
@@ -278,7 +292,7 @@ void TranslateControllerInput(PlayerInputState *state) {
             }
             state->steeringInput = state->pad->stick_x;
             if (state->buttons & INPUT_Z) {
-                state->buttons |= BrakeAction(state->buttons);
+                ADD_BRAKE_ACTION(state);
             }
             if (state->buttons & (INPUT_A | INPUT_DOWN)) {
                 state->buttons |= INPUT_GEAR_DOWN;
@@ -357,67 +371,59 @@ void TransferFlags(PlayerInputState *state, u32 mask) {
 void ConsumeInputFlags(PlayerInputState *state) {
     u32 buttons = state->buttons;
 
-    state->buttons = buttons & ~state->heldButtons;
+    state->buttons = buttons ^ (buttons & state->heldButtons);
     state->heldButtons &= buttons;
 }
 
 void CheckAnalogStickPositive(PlayerInputState *state, s32 *timer, f32 *axis, u32 button) {
     s32 time = *timer;
 
-    if (time == 0) {
-        if (*axis > STICK_PRESS) {
-            state->buttons |= button;
-            *timer = STICK_FIRST_DELAY;
+    if (time != 0) {
+        if (*axis < STICK_RELEASE) {
+            *timer = 0;
+        } else if (time > 0) {
+            /* A positive time counts down to a press, and a negative one counts up to it. */
+            *timer = time - g_dwFrameDeltaMs;
+            if (*timer <= 0) {
+                state->buttons |= button;
+                *timer = -STICK_REPEAT_DELAY;
+            }
+        } else {
+            *timer = time + g_dwFrameDeltaMs;
+            if (*timer >= 0) {
+                state->buttons |= button;
+                *timer = -STICK_REPEAT_DELAY;
+            }
         }
-        return;
+    } else if (*axis > STICK_PRESS) {
+        state->buttons |= button;
+        *timer = STICK_FIRST_DELAY;
     }
-    if (*axis < STICK_RELEASE) {
-        *timer = 0;
-        return;
-    }
-    /* A positive time counts down to a press, and a negative one counts up to it. */
-    if (time > 0) {
-        *timer = time - g_dwFrameDeltaMs;
-        if (*timer > 0) {
-            return;
-        }
-    } else {
-        *timer = time + g_dwFrameDeltaMs;
-        if (*timer < 0) {
-            return;
-        }
-    }
-    state->buttons |= button;
-    *timer = -STICK_REPEAT_DELAY;
 }
 
 void CheckAnalogStickNegative(PlayerInputState *state, s32 *timer, f32 *axis, u32 button) {
     s32 time = *timer;
 
-    if (time == 0) {
-        if (*axis < -STICK_PRESS) {
-            state->buttons |= button;
-            *timer = STICK_FIRST_DELAY;
+    if (time != 0) {
+        if (*axis > -STICK_RELEASE) {
+            *timer = 0;
+        } else if (time > 0) {
+            *timer = time - g_dwFrameDeltaMs;
+            if (*timer <= 0) {
+                state->buttons |= button;
+                *timer = -STICK_REPEAT_DELAY;
+            }
+        } else {
+            *timer = time + g_dwFrameDeltaMs;
+            if (*timer >= 0) {
+                state->buttons |= button;
+                *timer = -STICK_REPEAT_DELAY;
+            }
         }
-        return;
+    } else if (*axis < -STICK_PRESS) {
+        state->buttons |= button;
+        *timer = STICK_FIRST_DELAY;
     }
-    if (*axis > -STICK_RELEASE) {
-        *timer = 0;
-        return;
-    }
-    if (time > 0) {
-        *timer = time - g_dwFrameDeltaMs;
-        if (*timer > 0) {
-            return;
-        }
-    } else {
-        *timer = time + g_dwFrameDeltaMs;
-        if (*timer < 0) {
-            return;
-        }
-    }
-    state->buttons |= button;
-    *timer = -STICK_REPEAT_DELAY;
 }
 
 void UpdateStickRepeat(PlayerInputState *state) {

@@ -27,7 +27,10 @@
 #define DIALOG_SCREEN_WIDTH 0x280
 
 u8 DecalCharToAscii(u8 c) {
-    return c < sizeof(g_szDecalCharMap) ? g_szDecalCharMap[c] : ' ';
+    /* The original copies the whole table to the stack to read one character of it. */
+    DecalCharMap map = g_szDecalCharMap;
+
+    return c < sizeof(map.chars) ? map.chars[c] : ' ';
 }
 
 /* The note under the cursor is green on a white table, which is otherwise gray. */
