@@ -65,9 +65,6 @@ extern u8 g_bPakMenuInitialized;
 /** The notes the menu found empty, a bit for each. @ghidraAddress USA: 0x8028dd98 */
 extern u16 g_wPakEmptySlotMask;
 
-/** The notes InitPakAndEnumerateFiles() found empty. @ghidraAddress USA: 0x8028dda0 */
-extern u16 g_wPakScanEmptyMask;
-
 /** @ghidraAddress USA: 0x8036a060 */
 extern u8 g_bPakDirLoaded;
 

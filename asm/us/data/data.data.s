@@ -36897,12 +36897,6 @@ dlabel D_8028DD9A
     /* 8ED9C 8028DD9C 00000000 */ .word 0x00000000
 enddlabel D_8028DD9A
 
-nonmatching g_wPakScanEmptyMask
-
-dlabel g_wPakScanEmptyMask
-    /* 8EDA0 8028DDA0 */ .short 0x0000
-enddlabel g_wPakScanEmptyMask
-
 nonmatching D_8028DDA2
 
 /* Automatically generated and unreferenced pad */

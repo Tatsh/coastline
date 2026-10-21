@@ -700,6 +700,7 @@ g_dwWeatherMenuSelection:0x4
 g_dwWeatherSelectState:0x4
 g_eControllerScreenSelection:0x4
 g_qwTimestampBase:8
+g_wPakScanEmptyMask:2
 guLookAt
 guLookAtF
 guLookAtHilite

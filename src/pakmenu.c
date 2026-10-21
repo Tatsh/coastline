@@ -411,9 +411,17 @@ void ProcessPakMenuScreen(void) {
 }
 
 s32 InitPakAndEnumerateFiles(void) {
-    s32 maxFiles, note;
+    /* The original reserves stack for 64 bytes of locals it does not use, around maxFiles. */
+    s32 unusedAbove[6];
+    s32 maxFiles;
+    s32 unusedBelow[10];
+    s32 note;
     OSPfsState *state;
+    /** The notes found empty. @ghidraAddress USA: 0x8028dda0 */
+    static u16 g_wPakScanEmptyMask = 0;
 
+    (void)unusedAbove;
+    (void)unusedBelow;
     g_wSerialInterfaceIdle = 0;
     gControllerPakState = osPfsInitPak(&g_SiMesgQueue, &g_aPakPfs[0], 0);
     if (gControllerPakState != 0 && gControllerPakState == PFS_ERR_ID_FATAL) {
@@ -451,14 +459,13 @@ s32 InitPakAndEnumerateFiles(void) {
         }
     }
     for (note = 0; note < PAK_NOTES; note++) {
-        if (g_wPakScanEmptyMask & (1 << note)) {
-            continue;
-        }
-        state = &g_aPakFileStates[note];
-        osSyncPrintf("%d: %08x %04x\n", note, state->game_code, state->company_code);
-        if (state->game_code != GAME_CODE || state->company_code != COMPANY_CODE) {
-            g_wSerialInterfaceIdle = 1;
-            return FALSE;
+        if (!(g_wPakScanEmptyMask & (1 << note))) {
+            state = &g_aPakFileStates[note];
+            osSyncPrintf("%d: %08x %04x\n", note, state->game_code, state->company_code);
+            if (state->game_code != GAME_CODE || state->company_code != COMPANY_CODE) {
+                g_wSerialInterfaceIdle = 1;
+                return FALSE;
+            }
         }
     }
     g_wSerialInterfaceIdle = 1;
