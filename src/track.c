@@ -58,7 +58,7 @@ u32 LookupInstanceCellAtPoint(f32 x, f32 y) {
 
 u32 FindTrackGridCellByIndex(s32 column, s32 row) {
     u16 cell;
-    u16 start;
+    u32 start;
 
     if (IS_OFF_GRID_CELL(column, row)) {
         return 0;
@@ -70,7 +70,7 @@ u32 FindTrackGridCellByIndex(s32 column, s32 row) {
 
 u32 LookupInstanceGridCell(s32 column, s32 row) {
     u16 cell;
-    u16 start;
+    u32 start;
 
     if (IS_OFF_GRID_CELL(column, row)) {
         return 0;

@@ -568,19 +568,22 @@ void InitVehicleOrientationFromAngle(Vehicle *vehicle, f32 angle) {
     f32 sideX = cosf(angle + HALF_PI);
     f32 sideY = sinf(angle + HALF_PI);
     f32 half = angle * 0.5f;
+    /* The original reserves stack for 44 bytes of locals it does not use. */
+    f32 unused[11];
 
+    (void)unused;
     vehicle->frame.forward.x = forwardX;
     vehicle->frame.forward.y = forwardY;
     vehicle->frame.forward.z = 0.0f;
     vehicle->frame.side.x = sideX;
     vehicle->frame.side.y = sideY;
     vehicle->frame.side.z = 0.0f;
-    vehicle->frame.up.x = 0.0f;
     vehicle->frame.up.y = 0.0f;
+    vehicle->frame.up.x = 0.0f;
     vehicle->frame.up.z = 1.0f;
     vehicle->body.state.orientation.w = cosf(half);
-    vehicle->body.state.orientation.x = 0.0f;
     vehicle->body.state.orientation.y = 0.0f;
+    vehicle->body.state.orientation.x = 0.0f;
     vehicle->body.state.orientation.z = sinf(half);
     COPY_ORIENTATION_TO_STEPS(vehicle);
     QuaternionToMatrix(vehicle->body.orientation, &vehicle->body.state);

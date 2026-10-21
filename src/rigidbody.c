@@ -379,8 +379,8 @@ void SubtractMatrix3x3(f32 out[3][3], f32 a[3][3], f32 b[3][3]) {
 }
 
 void MtxBuildScaledInverse(f32 m[4][4], f32 out[4][4], Vec3f *scale) {
-    Vec3f negated;
     s32 i, j;
+    Vec3f negated;
 
     for (i = 0; i < 3; i++) {
         for (j = 0; j < 3; j++) {

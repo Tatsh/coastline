@@ -162,21 +162,26 @@ void SumWheelForces(RigidBody *body, RigidBody *wheel) {
 }
 
 void ComputeVehicleAccelerations(RigidBody *body) {
-    Vec3f local, acceleration, angular, spin;
+    Vec3f local;
+    /* The original reserves stack for twelve bytes of locals it does not use. */
+    f32 unused[3];
+    Vec3f angular, spin;
 
+    (void)unused;
     Mtx4fInverseRotate(&local, body->orientation, &body->force);
     body->force.x = local.x;
     body->force.y = local.y;
     body->force.z = local.z;
-    /* The wheels carry the body along the ground, not up and down. */
-    acceleration.x = (body->force.x + body->wheels[0]->force.x + body->wheels[1]->force.x +
-                      body->wheels[2]->force.x + body->wheels[3]->force.x) /
-                     body->mass;
-    acceleration.y = (body->force.y + body->wheels[0]->force.y + body->wheels[1]->force.y +
-                      body->wheels[2]->force.y + body->wheels[3]->force.y) /
-                     body->mass;
-    acceleration.z = body->force.z / body->mass;
-    Mtx3x3MulVec3f(&body->force, body->orientation, &acceleration);
+    /* The wheels move the body along the ground, not up and down. The acceleration reuses the
+     * vector of the local force. */
+    local.x = (body->force.x + body->wheels[0]->force.x + body->wheels[1]->force.x +
+               body->wheels[2]->force.x + body->wheels[3]->force.x) /
+              body->mass;
+    local.y = (body->force.y + body->wheels[0]->force.y + body->wheels[1]->force.y +
+               body->wheels[2]->force.y + body->wheels[3]->force.y) /
+              body->mass;
+    local.z = body->force.z / body->mass;
+    Mtx3x3MulVec3f(&body->force, body->orientation, &local);
     Mtx4fInverseRotate(&angular, body->orientation, &body->torque);
     Mtx3fMulVec3f(&spin, body->inverseInertia, &angular);
     Mtx3x3MulVec3f(&body->torque, body->orientation, &spin);
@@ -1533,10 +1538,13 @@ f32 CastWheelRay(RigidBody *body, RigidBody *wheel) {
 #pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
 #pragma GCC diagnostic ignored "-Wuninitialized"
 void UpdateWheelHeights(RigidBody *body) {
+    /* The original reserves stack for sixteen bytes of locals it does not use. */
+    f32 unused[4];
     RigidBody *wheel;
     f32 height;
     s32 i;
 
+    (void)unused;
     for (i = 0; i < VEHICLE_WHEELS; i++) {
         switch (i) {
         case 0:
@@ -1618,12 +1626,15 @@ void ComputeSpringForces(RigidBody *body) {
 }
 
 void ComputeDampingForces(RigidBody *body) {
+    /* The original reserves stack for sixteen bytes of locals it does not use. */
+    f32 unused[4];
     RigidBodyForce *force = body->forces;
     RigidBody *wheel;
     f32 velocity[3];
     s32 i;
     f32 damping;
 
+    (void)unused;
     for (i = 0; i < VEHICLE_WHEELS; i++) {
         force->vector.y = 0.0f;
         force->vector.x = 0.0f;
