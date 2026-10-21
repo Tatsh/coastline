@@ -79,6 +79,7 @@ coastline_add_test(bcopy "${_src}/libultra/libc/bcopy.c" "${_src}/libultra/libc/
 set_source_files_properties(
   "${_src}/libultra/libc/bcopy.c" "${_src}/libultra/libc/bzero.c" "${_src}/libultra/libc/bcmp.c"
   PROPERTIES COMPILE_DEFINITIONS "bcopy=lu_bcopy;bzero=lu_bzero;bcmp=lu_bcmp")
+coastline_add_test(llcvt "${_src}/libultra/libc/llcvt.c")
 coastline_add_test(
   printf "${_src}/libultra/libc/sprintf.c" "${_src}/libultra/libc/xprintf.c"
   "${_src}/libultra/libc/xlitob.c" "${_src}/libultra/libc/xldtob.c")
