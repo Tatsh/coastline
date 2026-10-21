@@ -25,6 +25,7 @@ typedef struct {
     s8 pad3;    /*!< Padding after the direction. */
 } Light_t;
 
+/** A directional light, aligned for the RSP. */
 typedef union {
     Light_t l;                              /*!< The light. */
     long long force_structure_alignment[2]; /*!< Aligns the light to 8 bytes for the RSP. */
@@ -41,6 +42,7 @@ typedef struct {
                              fixed point texels. */
 } Hilite_t;
 
+/** The coordinates of two specular highlights, aligned for the RSP. */
 typedef union {
     Hilite_t h;                       /*!< The coordinates of the highlights. */
     s32 force_structure_alignment[4]; /*!< Aligns the highlights to 4 bytes. */
@@ -63,6 +65,7 @@ typedef struct {
     u8 a;      /*!< The alpha of the vertex. */
 } Vtx_tn;
 
+/** A vertex for the RSP, with a colour or with a normal. */
 typedef union {
     Vtx_t v;                             /*!< The vertex with a colour. */
     Vtx_tn n;                            /*!< The vertex with a normal. */
@@ -351,6 +354,7 @@ typedef struct {
     s16 vtrans[4]; /*!< The x and y of the centre and the middle of the depth range, then 0. */
 } Vp_t;
 
+/** A viewport, aligned for the RSP. */
 typedef union {
     Vp_t vp;                                /*!< The viewport. */
     long long force_structure_alignment[2]; /*!< Aligns the viewport to 8 bytes for the RSP. */
@@ -367,6 +371,7 @@ typedef struct {
     char pad2;  /*!< Padding after the copy of the colour. */
 } Ambient_t;
 
+/** An ambient light, aligned for the RSP. */
 typedef union {
     Ambient_t l;                            /*!< The light. */
     long long force_structure_alignment[1]; /*!< Aligns the light to 8 bytes for the RSP. */
@@ -380,11 +385,11 @@ typedef struct {
 
 /** Write a command of two words at pkt, which is evaluated once. */
 #define gDisplayListWords(pkt, c0, c1)                                                             \
-    do {                                                                                           \
+    {                                                                                              \
         Gfx *_g = (Gfx *)(pkt);                                                                    \
         _g->words.w0 = (c0);                                                                       \
         _g->words.w1 = (c1);                                                                       \
-    } while (0)
+    }
 
 #define gDPNoParam(pkt, cmd) gDisplayListWords(pkt, _SHIFTL(cmd, 24, 8), 0)
 #define gImmp1(pkt, cmd, data) gDisplayListWords(pkt, _SHIFTL(cmd, 24, 8), (u32)(data))
@@ -430,22 +435,22 @@ typedef struct {
 
 /* The ratio of the guard band to the screen, which takes four commands. */
 #define gSPClipRatio(pkt, r)                                                                       \
-    do {                                                                                           \
+    {                                                                                              \
         gMoveWd(pkt, G_MW_CLIP, G_MWO_CLIP_RNX, (u16)(r));                                         \
         gMoveWd(pkt, G_MW_CLIP, G_MWO_CLIP_RNY, (u16)(r));                                         \
         gMoveWd(pkt, G_MW_CLIP, G_MWO_CLIP_RPX, (u16) - (r));                                      \
         gMoveWd(pkt, G_MW_CLIP, G_MWO_CLIP_RPY, (u16) - (r));                                      \
-    } while (0)
+    }
 
 /** Set the number of directional lights. */
 #define gSPNumLights(pkt, n) gMoveWd(pkt, G_MW_NUMLIGHT, G_MWO_NUMLIGHT, NUML(n))
 
 /** Set the colour of light n, from 1, as its two copies. */
 #define gSPLightColor(pkt, n, col)                                                                 \
-    do {                                                                                           \
+    {                                                                                              \
         gMoveWd(pkt, G_MW_LIGHTCOL, ((n) - 1) * 0x20, col);                                        \
         gMoveWd(pkt, G_MW_LIGHTCOL, ((n) - 1) * 0x20 + 4, col);                                    \
-    } while (0)
+    }
 
 /** Set the normalisation of the perspective, which gu's perspective routines return. */
 #define gSPPerspNormalize(pkt, s) gMoveWd(pkt, G_MW_PERSPNORM, 0, s)
@@ -468,7 +473,7 @@ typedef struct {
 
 /** Load the look-at of the reflections, its x then its y. */
 #define gSPLookAt(pkt, la)                                                                         \
-    do {                                                                                           \
+    {                                                                                              \
         gDisplayListWords(pkt,                                                                     \
                           _SHIFTL(G_MOVEMEM, 24, 8) | _SHIFTL(G_MV_LOOKATX, 16, 8) |               \
                               _SHIFTL(sizeof(Light), 0, 16),                                       \
@@ -477,11 +482,11 @@ typedef struct {
                           _SHIFTL(G_MOVEMEM, 24, 8) | _SHIFTL(G_MV_LOOKATY, 16, 8) |               \
                               _SHIFTL(sizeof(Light), 0, 16),                                       \
                           (u32)(la) + 16);                                                         \
-    } while (0)
+    }
 
 /** Load a matrix as the product of the model view and the projection, a row pair at a time. */
 #define gSPForceMatrix(pkt, m)                                                                     \
-    do {                                                                                           \
+    {                                                                                              \
         gDisplayListWords(                                                                         \
             pkt, _SHIFTL(G_MOVEMEM, 24, 8) | _SHIFTL(G_MV_MATRIX_1, 16, 8) | 16, (u32)(m));        \
         gDisplayListWords(                                                                         \
@@ -490,7 +495,7 @@ typedef struct {
             pkt, _SHIFTL(G_MOVEMEM, 24, 8) | _SHIFTL(G_MV_MATRIX_3, 16, 8) | 16, (u32)(m) + 32);   \
         gDisplayListWords(                                                                         \
             pkt, _SHIFTL(G_MOVEMEM, 24, 8) | _SHIFTL(G_MV_MATRIX_4, 16, 8) | 16, (u32)(m) + 48);   \
-    } while (0)
+    }
 
 /** Load a light into light slot n, from 1. The ambient light follows the directional ones. */
 #define gSPLight(pkt, l, n)                                                                        \
@@ -619,25 +624,25 @@ typedef struct {
 
 /** Load a palette of 256 colors into the upper half of the texture memory. */
 #define gDPLoadTLUT_pal256(pkt, dram)                                                              \
-    do {                                                                                           \
+    {                                                                                              \
         gDPSetTextureImage(pkt, G_IM_FMT_RGBA, G_IM_SIZ_16b, 1, dram);                             \
         gDPTileSync(pkt);                                                                          \
         gDPSetTile(pkt, 0, 0, 0, 256, G_TX_LOADTILE, 0, 0, 0, 0, 0, 0, 0);                         \
         gDPLoadSync(pkt);                                                                          \
         gDPLoadTLUTCmd(pkt, G_TX_LOADTILE, 255);                                                   \
         gDPPipeSync(pkt);                                                                          \
-    } while (0)
+    }
 
 /** Load a palette of 16 colors into one of the sixteen palettes of the upper texture memory. */
 #define gDPLoadTLUT_pal16(pkt, pal, dram)                                                          \
-    do {                                                                                           \
+    {                                                                                              \
         gDPSetTextureImage(pkt, G_IM_FMT_RGBA, G_IM_SIZ_16b, 1, dram);                             \
         gDPTileSync(pkt);                                                                          \
         gDPSetTile(pkt, 0, 0, 0, 256 + (((pal) & 0xF) * 16), G_TX_LOADTILE, 0, 0, 0, 0, 0, 0, 0);  \
         gDPLoadSync(pkt);                                                                          \
         gDPLoadTLUTCmd(pkt, G_TX_LOADTILE, 15);                                                    \
         gDPPipeSync(pkt);                                                                          \
-    } while (0)
+    }
 
 /** Place a tile of a size at the first specular highlight. */
 #define gDPSetHilite1Tile(pkt, tile, hilite, width, height)                                        \
@@ -657,7 +662,7 @@ typedef struct {
 /** Load a 4-bit texture into the texture memory and set up the render tile to draw it. */
 #define gDPLoadTextureBlock_4b(                                                                    \
     pkt, timg, fmt, width, height, pal, cms, cmt, masks, maskt, shifts, shiftt)                    \
-    do {                                                                                           \
+    {                                                                                              \
         gDPSetTextureImage(pkt, fmt, G_IM_SIZ_16b, 1, timg);                                       \
         gDPSetTile(pkt,                                                                            \
                    fmt,                                                                            \
@@ -695,12 +700,12 @@ typedef struct {
                        0,                                                                          \
                        ((width) - 1) << G_TEXTURE_IMAGE_FRAC,                                      \
                        ((height) - 1) << G_TEXTURE_IMAGE_FRAC);                                    \
-    } while (0)
+    }
 
 /** Load an 8-bit or 16-bit texture into the texture memory and set up the render tile. */
 #define gDPLoadTextureBlock(                                                                       \
     pkt, timg, fmt, siz, width, height, pal, cms, cmt, masks, maskt, shifts, shiftt)               \
-    do {                                                                                           \
+    {                                                                                              \
         gDPSetTextureImage(pkt, fmt, siz##_LOAD_BLOCK, 1, timg);                                   \
         gDPSetTile(pkt,                                                                            \
                    fmt,                                                                            \
@@ -742,7 +747,7 @@ typedef struct {
                        0,                                                                          \
                        ((width) - 1) << G_TEXTURE_IMAGE_FRAC,                                      \
                        ((height) - 1) << G_TEXTURE_IMAGE_FRAC);                                    \
-    } while (0)
+    }
 
 /** Load a rectangle of a 4-bit texture into the texture memory and set up the render tile. */
 #define gDPLoadTextureTile_4b(pkt,                                                                 \
@@ -761,7 +766,7 @@ typedef struct {
                               maskt,                                                               \
                               shifts,                                                              \
                               shiftt)                                                              \
-    do {                                                                                           \
+    {                                                                                              \
         gDPSetTextureImage(pkt, fmt, G_IM_SIZ_8b, ((width) >> 1), timg);                           \
         gDPSetTile(pkt,                                                                            \
                    fmt,                                                                            \
@@ -803,16 +808,16 @@ typedef struct {
                        (ult) << G_TEXTURE_IMAGE_FRAC,                                              \
                        (lrs) << G_TEXTURE_IMAGE_FRAC,                                              \
                        (lrt) << G_TEXTURE_IMAGE_FRAC);                                             \
-    } while (0)
+    }
 
 /** Draw a textured rectangle in screen coordinates of 10.2 fixed point. */
 #define gSPTextureRectangle(pkt, xl, yl, xh, yh, tile, s, t, dsdx, dtdy)                           \
-    do {                                                                                           \
+    {                                                                                              \
         gDisplayListWords(pkt,                                                                     \
                           _SHIFTL(G_TEXRECT, 24, 8) | _SHIFTL(xh, 12, 12) | _SHIFTL(yh, 0, 12),    \
                           _SHIFTL(tile, 24, 3) | _SHIFTL(xl, 12, 12) | _SHIFTL(yl, 0, 12));        \
         gImmp1(pkt, G_RDPHALF_1, _SHIFTL(s, 16, 16) | _SHIFTL(t, 0, 16));                          \
         gImmp1(pkt, G_RDPHALF_2, _SHIFTL(dsdx, 16, 16) | _SHIFTL(dtdy, 0, 16));                    \
-    } while (0)
+    }
 
 #endif
