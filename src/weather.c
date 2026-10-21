@@ -107,14 +107,17 @@ void UpdateWindDirection(void) {
 
 void SubdivideLightningBolt(s32 index, s32 span) {
     s32 mask = span * 8 - 1;
+    Vec3f *point;
     f32 half = (f32)mask * 0.5f;
-    Vec3f *point = &g_avLightningBolt[index];
-    Vec3f *before = &g_avLightningBolt[index - span];
-    Vec3f *after = &g_avLightningBolt[index + span];
 
-    point->x = (f32)(s32)(AdvanceRng() & mask) + (before->x + after->x) * 0.5f - half;
-    point->y = (f32)(s32)(AdvanceRng() & mask) + (before->y + after->y) * 0.5f - half;
-    point->z = (after->z + before->z) * 0.5f;
+    g_avLightningBolt[index].x =
+        (g_avLightningBolt[index - span].x + g_avLightningBolt[index + span].x) * 0.5f +
+        (f32)(s32)(AdvanceRng() & mask) - half;
+    g_avLightningBolt[index].y =
+        (g_avLightningBolt[index - span].y + g_avLightningBolt[index + span].y) * 0.5f +
+        (f32)(s32)(AdvanceRng() & mask) - half;
+    point = &g_avLightningBolt[index];
+    point->z = (g_avLightningBolt[index - span].z + g_avLightningBolt[index + span].z) * 0.5f;
     span >>= 1;
     if (span != 0) {
         g_nLightningBoltDepth += 4;

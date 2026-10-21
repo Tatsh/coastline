@@ -459,11 +459,11 @@ void DrawHudLabelAtFraction(const char *text, f32 x, f32 y, s32 unused) {
 }
 
 s32 MeasureTextWidth(const char *text, s32 size) {
-    const u8 *s = (const u8 *)text;
     s32 width = 0;
-    s32 cell, padding, glyph;
+    s32 cell, padding;
     s32 *offsets;
-    u8 c;
+    s32 c, next;
+    u8 glyph;
 
     if (g_dwScreenScaleShift) {
         size *= 2;
@@ -477,20 +477,21 @@ s32 MeasureTextWidth(const char *text, s32 size) {
         padding = LARGE_FONT_PADDING;
         offsets = g_adwLargeFontGlyphOffsets;
     }
-    for (; *s != '\0'; s++) {
-        c = *s;
+    for (; *text != '\0'; text++) {
+        c = (u8)*text;
         if (c < '!' || c >= 0x80) {
             width += (size * SPACE_ADVANCE) / SIZE_UNITS;
             continue;
         }
-        if (c == '%' && s[1] != '\0') {
-            if (s[1] == '%') {
-                s++;
-            } else if (s[1] == 'i' || s[1] == 'n') {
-                s++;
+        if (c == '%' && text[1] != '\0') {
+            next = text[1];
+            if (next == '%') {
+                text++;
+            } else if (next == 'i' || next == 'n') {
+                text++;
                 continue;
-            } else if (s[2] != '\0') {
-                s += 2;
+            } else if (text[2] != '\0') {
+                text += 2;
                 continue;
             }
         }

@@ -802,15 +802,18 @@ void DrawDecalCircleOutline(s32 x, s32 y, s32 radius) {
 }
 
 void DrawDashedLine(s32 x0, s32 y0, s32 x1, s32 y1) {
-    s32 dx, dy, startX, startY, endX, endY, stepX, stepY, x, y, error, phase;
+    s32 diffX, diffY, dx, dy, stepX, stepY, startX, endX, startY, endY, x, y, error, phase;
+    u8 color;
 
     phase = 0;
     startX = x0;
     startY = y0;
     endX = x1;
     endY = y1;
-    dx = x1 - x0 > 0 ? x1 - x0 : -(x1 - x0);
-    dy = y1 - y0 > 0 ? y1 - y0 : -(y1 - y0);
+    diffX = x1 - x0;
+    dx = diffX > 0 ? diffX : -diffX;
+    diffY = y1 - y0;
+    dy = diffY > 0 ? diffY : -diffY;
     AdvanceDashes();
     if ((dx >= dy && x1 < x0) || (dx < dy && y1 < y0)) {
         startX = x1;
@@ -833,8 +836,9 @@ void DrawDashedLine(s32 x0, s32 y0, s32 x1, s32 y1) {
                 y += stepY;
             }
             phase = (phase + 1) % DASH_PERIOD;
+            color = DashColor(phase);
             if (x & 1) {
-                DrawPixel(x, y, DashColor(phase));
+                DrawPixel(x, y, color);
             }
             error += dy;
         }
@@ -845,8 +849,9 @@ void DrawDashedLine(s32 x0, s32 y0, s32 x1, s32 y1) {
                 x += stepX;
             }
             phase = (phase + 1) % DASH_PERIOD;
+            color = DashColor(phase);
             if (y & 1) {
-                DrawPixel(x, y, DashColor(phase));
+                DrawPixel(x, y, color);
             }
             error += dx;
         }
