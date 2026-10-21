@@ -16,7 +16,7 @@
 #include "weather.h"
 
 /* The cartridge offset of the music of the menus. */
-#define ROM_MENU_MUSIC 0xEBC00
+#define ROM_MENU_MUSIC ((u32)_menuMusicSegmentRomStart)
 
 void ApplyWeather(u32 weather) {
     g_dwSnowMode = 0;

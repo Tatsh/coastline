@@ -14,7 +14,7 @@
 #include "weather.h"
 
 /* Assets at fixed cartridge offsets. */
-#define ROM_MENU_MUSIC 0xEBC00
+#define ROM_MENU_MUSIC ((u32)_menuMusicSegmentRomStart)
 
 /* The items of the main menu. */
 enum {

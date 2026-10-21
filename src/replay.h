@@ -21,8 +21,12 @@ extern u8 g_abGhostRecording[];
 /** The bytes of g_abGhostRecording in use. @ghidraAddress USA: 0x80270784 */
 extern u32 g_dwGhostRecordingSize;
 
+extern u8 _ghostRecordingSegmentRomStart[];
+extern u8 _creditsRecordingSegmentRomStart[];
+extern u8 _endingRecordingSegmentRomStart[];
+
 /** The cartridge offset of the ghost recording, which the race after the splash screens replays. */
-#define ROM_GHOST_RECORDING 0xAD400
+#define ROM_GHOST_RECORDING ((u32)_ghostRecordingSegmentRomStart)
 
 /** The bytes a recording of input starts with: the track, the car and its setup. */
 #define RECORDING_HEADER_SIZE 8

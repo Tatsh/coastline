@@ -83,6 +83,9 @@ extern s32 g_dwPauseMenuSelection;
  */
 extern u32 g_adwTrackMusicRom[12];
 
+extern u8 _startLightsSegmentRomStart[];
+extern u8 _startLightsSegmentRomEnd[];
+
 /** The model of the start lights. @ghidraAddress USA: 0x8026ff54 */
 extern Model *g_pStartLightsModel;
 

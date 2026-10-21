@@ -3,6 +3,7 @@
  * that does nothing whatever the prototype it stands in for.
  */
 static char heap[1 << 16];
+char _scrollSoundSegmentRomStart[1], _selectSoundSegmentRomStart[1];
 
 void AddTimingMarker(void) {
 }

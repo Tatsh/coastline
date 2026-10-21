@@ -77,12 +77,15 @@ typedef struct {
 } SoundEffectSample;
 
 /**
- * The menu music, an XM module the game decompresses below the program. The link script places
- * it.
+ * The menu music, an XM module the game decompresses below the program, at a fixed address.
  *
  * @ghidraAddress USA: 0x80025c00
  */
-extern u8 g_abMenuMusicModule[];
+#define g_abMenuMusicModule ((u8 *)0x80025C00)
+
+extern u8 _menuMusicSegmentRomStart[];
+extern u8 _scrollSoundSegmentRomStart[];
+extern u8 _selectSoundSegmentRomStart[];
 
 /** The work memory of the music player, at the start of the BSS. @ghidraAddress USA: 0x802ac400 */
 extern u8 g_abMusicModuleWorkBuffer[];

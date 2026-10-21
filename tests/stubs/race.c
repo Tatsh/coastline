@@ -2,6 +2,10 @@
  * Stubs for the host check of src/race.c, kept apart from the headers, so each is a routine that
  * does nothing whatever the prototype it stands in for.
  */
+char _creditsRecordingSegmentRomStart[1], _endingRecordingSegmentRomStart[1];
+char _ghostRecordingSegmentRomStart[1];
+char _startLightsSegmentRomEnd[1], _startLightsSegmentRomStart[1];
+
 void AddTimingMarker(void) {
 }
 void AdvanceModelAnimations(void) {

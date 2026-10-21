@@ -39,12 +39,12 @@
 #define FADE_SECONDS 0.2f
 
 /* The cartridge range of the model of the start lights. */
-#define ROM_START_LIGHTS 0x1CB410
-#define ROM_START_LIGHTS_END 0x1D9CF0
+#define ROM_START_LIGHTS ((u32)_startLightsSegmentRomStart)
+#define ROM_START_LIGHTS_END ((u32)_startLightsSegmentRomEnd)
 
 /* The cartridge offsets of the recordings the credits replay. */
-#define ROM_CREDITS_RECORDING 0xAD740
-#define ROM_ENDING_RECORDING 0xADB00
+#define ROM_CREDITS_RECORDING ((u32)_creditsRecordingSegmentRomStart)
+#define ROM_ENDING_RECORDING ((u32)_endingRecordingSegmentRomStart)
 
 /* The track the race after a season is driven on. */
 #define AFTER_SEASON_TRACK 10

@@ -57,7 +57,7 @@ s32 g_adwReplayGhostSizes[4];
 u8 g_abGhostRecording[0x100];
 u32 g_dwGhostRecordingSize;
 u8 g_abPlaybackRecording[0x100], g_aabInputRecordings[2][0xF000];
-u8 g_abMenuMusicModule[4], g_abMusicModuleWorkBuffer[4], g_aDmaWorkBuffers[4];
+u8 g_abMusicModuleWorkBuffer[4], g_aDmaWorkBuffers[4];
 s8 g_SilenceSampleData[4];
 MixerChannel g_aSoundEffectChannels[SOUND_EFFECT_CHANNELS];
 s32 g_dwSoundEffectEchoOffset;

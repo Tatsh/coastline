@@ -50,6 +50,16 @@ SECTIONS
     }
 }
 
+/* The assets the game reads from the cartridge by their segment symbols. */
+_ghostRecordingSegmentRomStart = 0xAD400;
+_creditsRecordingSegmentRomStart = 0xAD740;
+_endingRecordingSegmentRomStart = 0xADB00;
+_menuMusicSegmentRomStart = 0xEBC00;
+_scrollSoundSegmentRomStart = 0x1BF480;
+_selectSoundSegmentRomStart = 0x1BFEC0;
+_startLightsSegmentRomStart = 0x1CB410;
+_startLightsSegmentRomEnd = 0x1D9CF0;
+
 /* The original boot stack, inside the BSS. */
 g_abBootStackTop = 0x803168D0;
 
