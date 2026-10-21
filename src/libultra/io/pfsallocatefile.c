@@ -76,6 +76,10 @@ static s32 __osPfsDeclearPage(OSPfs *pfs,
     return ret;
 }
 
+/* The original reads the first page uninitialised when no bank is searched. */
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
+#pragma GCC diagnostic ignored "-Wuninitialized"
 s32 osPfsAllocateFile(OSPfs *pfs,
                       u16 company_code,
                       u32 game_code,
@@ -83,9 +87,7 @@ s32 osPfsAllocateFile(OSPfs *pfs,
                       u8 *ext_name,
                       int file_size_in_bytes,
                       s32 *file_no) {
-    /* The original leaves this unset. A Pak without banks fails on the page count before it is
-     * read, so the value cannot change the result. */
-    int start_page = -1;
+    int start_page;
     int decleared;
     int last_page;
     int old_last_page = 0;
@@ -187,3 +189,4 @@ s32 osPfsAllocateFile(OSPfs *pfs,
     ERRCK(__osContRamWrite(pfs->queue, pfs->channel, pfs->dir_table + *file_no, (u8 *)&dir, FALSE));
     return ret;
 }
+#pragma GCC diagnostic pop

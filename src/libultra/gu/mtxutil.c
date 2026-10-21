@@ -24,6 +24,7 @@ void guMtxF2L(float mf[4][4], Mtx *m) {
 void guMtxL2F(float mf[4][4], Mtx *m) {
     int i, j;
     u32 e1, e2;
+    s32 q1, q2;
     u32 *ai = (u32 *)&m->m[0][0];
     u32 *af = (u32 *)&m->m[2][0];
 
@@ -31,8 +32,11 @@ void guMtxL2F(float mf[4][4], Mtx *m) {
         for (j = 0; j < 2; j++) {
             e1 = (*ai & 0xFFFF0000) | ((*af >> 16) & 0xFFFF);
             e2 = ((*(ai++) << 16) & 0xFFFF0000) | (*(af++) & 0xFFFF);
-            mf[i][j * 2] = FIX32TOF((s32)e1);
-            mf[i][j * 2 + 1] = FIX32TOF((s32)e2);
+            /* The original reads the halves back through their addresses, from the stack. */
+            q1 = *(s32 *)&e1;
+            q2 = *(s32 *)&e2;
+            mf[i][j * 2] = FIX32TOF(q1);
+            mf[i][j * 2 + 1] = FIX32TOF(q2);
         }
     }
 }

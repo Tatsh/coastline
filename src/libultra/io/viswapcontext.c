@@ -10,6 +10,8 @@ void __osViSwapContext(void) {
     u32 nomValue;
     u32 field;
 
+    /* The original clears the field before it reads the current line. */
+    field = 0;
     vc = __osViNext;
     vm = vc->modep;
     field = IO_READ(VI_V_CURRENT_LINE_REG) & 1;

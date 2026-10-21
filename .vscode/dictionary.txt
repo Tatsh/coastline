@@ -271,7 +271,6 @@ modelpartpos
 modelparts
 modelptrs
 modeltex
-modeltexsize
 modelview
 motorstartbuf
 motorstopbuf
@@ -443,8 +442,6 @@ sprayvel
 sprayvtx
 sprintf
 spritedepth
-spritedraw
-spriteoption
 spriteorigin
 spritewh
 sptask
@@ -541,10 +538,13 @@ winget
 winmain
 wiswa
 wiswa's
+wmaybe
 writeback
 writebackdcache
 writebackdcacheall
 wrongway
+wtype
+wuninitialized
 wwensure
 wwis
 wwkph
