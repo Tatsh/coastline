@@ -101,6 +101,7 @@ typedef union {
 #define G_LOADTILE 0xF4
 #define G_FILLRECT 0xF6
 #define G_SETFILLCOLOR 0xF7
+#define G_SETSCISSOR 0xED
 #define G_SETCIMG 0xFF
 
 /* The parameters of gSPMatrix(). */
@@ -124,6 +125,7 @@ typedef union {
 
 /* The fields of the other modes, by their lowest bit. */
 #define G_MDSFT_RENDERMODE 3
+#define G_MDSFT_RGBDITHER 6
 #define G_MDSFT_TEXTFILT 12
 #define G_MDSFT_TEXTLUT 14
 #define G_MDSFT_TEXTLOD 16
@@ -133,6 +135,10 @@ typedef union {
 #define G_CYC_1CYCLE (0 << G_MDSFT_CYCLETYPE)
 #define G_CYC_FILL (3 << G_MDSFT_CYCLETYPE)
 #define G_CYC_2CYCLE (1 << G_MDSFT_CYCLETYPE)
+#define G_CD_DISABLE (3 << G_MDSFT_RGBDITHER)
+
+/* The scissor modes. */
+#define G_SC_NON_INTERLACE 0
 #define G_TL_TILE (0 << G_MDSFT_TEXTLOD)
 #define G_TT_NONE (0 << G_MDSFT_TEXTLUT)
 #define G_TP_NONE (0 << G_MDSFT_TEXTPERSP)
@@ -341,6 +347,16 @@ typedef struct {
 #define gDPSetTextureFilter(pkt, type)                                                             \
     gSPSetOtherMode(pkt, G_SETOTHERMODE_H, G_MDSFT_TEXTFILT, 2, type)
 #define gDPSetTextureLOD(pkt, type) gSPSetOtherMode(pkt, G_SETOTHERMODE_H, G_MDSFT_TEXTLOD, 1, type)
+#define gDPSetColorDither(pkt, mode)                                                               \
+    gSPSetOtherMode(pkt, G_SETOTHERMODE_H, G_MDSFT_RGBDITHER, 2, mode)
+
+/** Set the scissor rectangle, whose corners are converted to 10.2 fixed point. */
+#define gDPSetScissor(pkt, mode, ulx, uly, lrx, lry)                                               \
+    gDisplayListWords(pkt,                                                                         \
+                      _SHIFTL(G_SETSCISSOR, 24, 8) | _SHIFTL((s32)((f32)(ulx) * 4.0f), 12, 12) |   \
+                          _SHIFTL((s32)((f32)(uly) * 4.0f), 0, 12),                                \
+                      _SHIFTL(mode, 24, 2) | _SHIFTL((s32)((f32)(lrx) * 4.0f), 12, 12) |           \
+                          _SHIFTL((s32)((f32)(lry) * 4.0f), 0, 12))
 #define gDPSetRenderMode(pkt, c0, c1)                                                              \
     gSPSetOtherMode(pkt, G_SETOTHERMODE_L, G_MDSFT_RENDERMODE, 29, (c0) | (c1))
 #define gDPSetEnvColor(pkt, r, g, b, a)                                                            \

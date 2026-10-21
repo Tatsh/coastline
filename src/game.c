@@ -70,7 +70,7 @@ void InitGameAndShowMenus(void *arg) {
     StubRenderCallback();
     ResetAllPlayers();
     InitControllersAndPaks();
-    SetScreenFadeValues(0.0f);
+    SnapScreenFade(0.0f);
     SetCurrentScreenCallback(ProcessSplashScreens);
 
     /* The cartridge holds a ghost recording. The size the game sets afterwards marks the buffer

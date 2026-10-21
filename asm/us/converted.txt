@@ -8,6 +8,7 @@ AllocLightBlock
 AnimateSplashModels
 ApplyAllForcesToBody
 ApplyRigidBodyImpulse
+ApplyScreenFade
 ApplySingleForceWithDebug
 ApplyWeather
 Atan2f
@@ -57,6 +58,7 @@ DrawLabelWithTime
 DrawLapCounterHud
 DrawRaceTimerHud
 DrawRedIntensityRect
+DrawScreenFadeOverlay
 DrawSpeedAndHudOverlay
 DrawText
 DrawTexturedRect
@@ -65,10 +67,13 @@ EnableTextShadow
 ExchangeByteBuffers
 ExchangeHalfwordBuffers
 ExchangeWordBuffers
+FadeMusicTo
+FadeSfxTo
 FindFreeSoundChannel
 FinishFrameMatrix
 FloatToInt
 GetHeapCurrentAddress
+HasSfxFadeFinished
 InitAudioSystem
 InitBitmapText
 InitCameraForVehicle
@@ -84,6 +89,11 @@ InitVehicleOrientationFromAngle
 InstallVehicleModel
 IntegrateRigidBodyState
 IsCellVisible
+IsFadeComplete
+IsFadedToBlack
+IsFadedToWhite
+IsFadingIn
+IsFadingOut
 IsPointInsideTriangle
 IsPointVisible
 IsSkyFogFilled
@@ -137,6 +147,7 @@ QuaternionToMatrix
 QuickSort
 RenderDashboardGauges
 RenderPrecipitationEffect
+RenderScreenFog
 RenderSkybox
 RenderTextToDisplayList
 ResetAllPlayers
@@ -144,13 +155,16 @@ ResetFrameBlocks
 ResetHeap
 ResetMusicChannels
 ResetMusicPlaybackState
+ResetScreenFog
 ResetVehicleState
 ResolveVehicleTrackCollision
 RotateVehicleByEuler
 SegmentCrossesLine2D
+SetFadeTarget
 SetHeapCurrentAddress
 SetRigidBodyForce
 SetRngSeed
+SetSfxFadeLevelImmediate
 SetSoundChannelVolume
 SetTextAlignCenter
 SetTextAlignLeft
@@ -166,6 +180,7 @@ SetVehiclePosition
 SetVehicleTurnRate
 SetVehicleVelocity
 ShortSort
+SnapScreenFade
 SolveLinearSystem3x3
 StartChampionshipRace
 StartRaceWithPlayerCount
@@ -186,9 +201,11 @@ TransposeCopyMatrix3x3
 TwoControllersPostDrawCallback
 UnmarkTrackSections
 UnusedAudioMixingStub
+UnusedScreenFadeStub
 UpdateCameraChase
 UpdateCameraLookAtTarget
 UpdateCameraSystem
+UpdateFadeTransitions
 UpdateHudMessageTimers
 UpdateLightningFlash
 UpdateMusicPlayback

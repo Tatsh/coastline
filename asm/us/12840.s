@@ -982,7 +982,7 @@ glabel ProcessDataSaveLoadMenu
     /* 135E8 802125E8 100008B2 */  b          .L802148B4
     /* 135EC 802125EC A02C2554 */   sb        $t4, %lo(gPakFileOperation)($at)
   jlabel .L802125F0
-    /* 135F0 802125F0 0C088E14 */  jal        IsFadeSecondaryComplete
+    /* 135F0 802125F0 0C088E14 */  jal        HasSfxFadeFinished
     /* 135F4 802125F4 00000000 */   nop
     /* 135F8 802125F8 104008AE */  beqz       $v0, .L802148B4
     /* 135FC 802125FC 3C038031 */   lui       $v1, %hi(g_bSaveLoadFadeDelayFrames)
@@ -3818,7 +3818,7 @@ glabel ProcessPakDataScreen
     /* 15FAC 80214FAC 10000601 */  b          .L802167B4
     /* 15FB0 80214FB0 A02B6430 */   sb        $t3, %lo(g_bPakScreenState)($at)
   jlabel .L80214FB4
-    /* 15FB4 80214FB4 0C088E14 */  jal        IsFadeSecondaryComplete
+    /* 15FB4 80214FB4 0C088E14 */  jal        HasSfxFadeFinished
     /* 15FB8 80214FB8 00000000 */   nop
     /* 15FBC 80214FBC 104005FD */  beqz       $v0, .L802167B4
     /* 15FC0 80214FC0 3C038031 */   lui       $v1, %hi(g_bSaveLoadFadeWaitFrames)

@@ -184,6 +184,13 @@ extern u16 g_wScreenFrameCount;
  */
 extern s32 g_dwScreenScaleShift;
 
+/**
+ * The color dither the screens draw with, as the other-mode bits gDPSetColorDither() takes.
+ *
+ * @ghidraAddress USA: 0x8028a8a0
+ */
+extern u32 g_dwColorDitherMode;
+
 /** The two frame buffers. @ghidraAddress USA: 0x8031aa28 */
 extern u16 *g_apFramebuffers[2];
 

@@ -6927,7 +6927,7 @@ glabel ProcessDecalSaveLoad
     /* 4A0B8 802490B8 100006E8 */  b          .L8024AC5C
     /* 4A0BC 802490BC A0389E60 */   sb        $t8, %lo(gOsSchedulerState)($at)
   jlabel .L802490C0
-    /* 4A0C0 802490C0 0C088E14 */  jal        IsFadeSecondaryComplete
+    /* 4A0C0 802490C0 0C088E14 */  jal        HasSfxFadeFinished
     /* 4A0C4 802490C4 00000000 */   nop
     /* 4A0C8 802490C8 104006E4 */  beqz       $v0, .L8024AC5C
     /* 4A0CC 802490CC 3C038037 */   lui       $v1, %hi(g_bCheatReserved2)

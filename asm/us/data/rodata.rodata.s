@@ -7105,23 +7105,23 @@ enddlabel g_fWheelInitPosZ3
     /* AA618 802A9618 00000000 */ .float 0
     /* AA61C 802A961C 00000000 */ .float 0
 
-nonmatching g_flScreenFogMinLevel
+nonmatching g_fConst0p1_802a9620
 
-dlabel g_flScreenFogMinLevel
+dlabel g_fConst0p1_802a9620
     /* AA620 802A9620 3DCCCCCD */ .float 0.1000000015
-enddlabel g_flScreenFogMinLevel
+enddlabel g_fConst0p1_802a9620
 
-nonmatching g_flScreenFogMaxLevel
+nonmatching g_fConst0p7_802a9624
 
-dlabel g_flScreenFogMaxLevel
+dlabel g_fConst0p7_802a9624
     /* AA624 802A9624 3F333333 */ .float 0.6999999881
-enddlabel g_flScreenFogMaxLevel
+enddlabel g_fConst0p7_802a9624
 
-nonmatching g_dblMaxVolume
+nonmatching g_dConst255_802a9628
 
-dlabel g_dblMaxVolume
+dlabel g_dConst255_802a9628
     /* AA628 802A9628 406FE00000000000 */ .double 255
-enddlabel g_dblMaxVolume
+enddlabel g_dConst255_802a9628
 
 .align 2
 nonmatching g_szMatrix4InverseSingular

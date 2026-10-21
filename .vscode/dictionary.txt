@@ -305,6 +305,7 @@ reques
 resetglobalintmask
 resf
 restartfrom
+rgbdither
 rigidbody
 ripgreprc
 rmonspin
@@ -325,6 +326,7 @@ setglobalintmask
 setintmask
 setjmp
 setprimcolor
+setscissor
 setsr
 setthreadpri
 settilesize

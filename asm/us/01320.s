@@ -4078,7 +4078,7 @@ glabel ProcessRaceHud
     /* 4F18 80203F18 00003825 */   or        $a3, $zero, $zero
     /* 4F1C 80203F1C 0C08BE5A */  jal        RenderSkybox
     /* 4F20 80203F20 00000000 */   nop
-    /* 4F24 80203F24 0C088D1C */  jal        ResetFadeState
+    /* 4F24 80203F24 0C088D1C */  jal        ResetScreenFog
     /* 4F28 80203F28 00000000 */   nop
     /* 4F2C 80203F2C 0C08B527 */  jal        BuildVisibleGrid
     /* 4F30 80203F30 00000000 */   nop
@@ -4587,7 +4587,7 @@ glabel ProcessRaceHud
     /* 56A0 802046A0 00003825 */   or        $a3, $zero, $zero
     /* 56A4 802046A4 0C08BE5A */  jal        RenderSkybox
     /* 56A8 802046A8 00000000 */   nop
-    /* 56AC 802046AC 0C088D1C */  jal        ResetFadeState
+    /* 56AC 802046AC 0C088D1C */  jal        ResetScreenFog
     /* 56B0 802046B0 00000000 */   nop
     /* 56B4 802046B4 0C08B527 */  jal        BuildVisibleGrid
     /* 56B8 802046B8 00000000 */   nop
