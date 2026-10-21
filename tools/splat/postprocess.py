@@ -23,6 +23,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from remove import remove  # noqa: E402
+from symbols import IMAGE_BASE, REGIONS  # noqa: E402
 
 ROOT = Path(__file__).resolve().parent.parent.parent
 LABEL = re.compile(r'^\s*(?:glabel|dlabel|alabel|jlabel)\s+(\S+)', re.M)
@@ -51,7 +52,6 @@ def join_pointer_bytes(lines: list[str], exact: dict[int, str]) -> list[str]:
     out.append(lines[index])
     index += 1
   return out
-IMAGE = (0x80200000, 0x802AC400)
 
 
 def collect_labels(sources: list[Path]) -> tuple[list[tuple[int, str]], dict[int, tuple[Path, int]]]:
@@ -73,7 +73,7 @@ def collect_labels(sources: list[Path]) -> tuple[list[tuple[int, str]], dict[int
   return labels, lines_at
 
 
-def symbolize(data_sources: list[Path], text_sources: list[Path]) -> int:
+def symbolize(data_sources: list[Path], text_sources: list[Path], image: tuple[int, int]) -> int:
   labels, lines_at = collect_labels(text_sources + data_sources)
   exact = {address: name for address, name in labels}
   starts = [address for address, _ in labels]
@@ -84,7 +84,7 @@ def symbolize(data_sources: list[Path], text_sources: list[Path]) -> int:
     for line in join_pointer_bytes(source.read_text(encoding='utf-8').splitlines(), exact):
       match = RAW_WORD.match(line)
       value = int(match.group(2), 16) if match else 0
-      if not match or not IMAGE[0] <= value < IMAGE[1]:
+      if not match or not image[0] <= value < image[1]:
         out.append(line)
         continue
       if value in exact:
@@ -120,7 +120,8 @@ def main() -> int:
   text_sources = sorted(asm.glob('[0-9A-F]*.s'))
   data_sources = [asm / 'data' / name for name in ('data.data.s', 'rodata.rodata.s')]
   sources = text_sources + data_sources + [asm / 'data' / 'bss.bss.s']
-  print(f'{symbolize(data_sources, text_sources)} raw pointer words now reference symbols.')
+  image = (IMAGE_BASE, REGIONS[args.region].bss_start)
+  print(f'{symbolize(data_sources, text_sources, image)} raw pointer words now reference symbols.')
   defined = set()
   for source in sources + [asm / 'entry.s']:
     defined |= set(LABEL.findall(source.read_text(encoding='utf-8')))
@@ -138,10 +139,41 @@ def main() -> int:
   listing += [f'    {source.relative_to(ROOT).as_posix()}' for source in sources]
   listing[-1] += ')'
   (asm / 'sources.cmake').write_text('\n'.join(listing) + '\n', encoding='utf-8')
+  labels, _ = collect_labels(text_sources + data_sources)
   converted = asm / 'converted.txt'
   if converted.exists():
     remove(args.region, converted.read_text(encoding='utf-8').split(), record=False)
+  print(f'{relocate_physical(asm, labels, image)} physical addresses of the image now follow '
+        'their labels.')
   return 0
+
+
+def relocate_physical(asm: Path, labels: list[tuple[int, str]], image: tuple[int, int]) -> int:
+  """
+  Make each absolute symbol that is the physical address of a datum of the image follow the datum.
+
+  The game passes the physical address of some data to the RCP, and splat defines such a constant
+  as an absolute symbol, which would retain its value when the data moves. Only symbols the
+  remaining assembly still references are rewritten.
+  """
+  text = '\n'.join(source.read_text(encoding='utf-8') for source in asm.rglob('*.s'))
+  starts = [address for address, _ in labels]
+  path = asm / 'undefined_syms.ld'
+  lines = path.read_text(encoding='utf-8').splitlines()
+  rewritten = 0
+  for index, line in enumerate(lines):
+    match = re.fullmatch(r'(D_[0-9A-F]+) = 0x([0-9A-F]+);', line)
+    if not match:
+      continue
+    name, value = match.group(1), int(match.group(2), 16) | 0x80000000
+    if not image[0] <= value < image[1] or not re.search(rf'\b{name}\b', text):
+      continue
+    at = bisect.bisect_right(starts, value) - 1
+    base, label = labels[at]
+    lines[index] = f'{name} = {label} - 0x80000000 + 0x{value - base:X};'
+    rewritten += 1
+  path.write_text(''.join(f'{line}\n' for line in lines), encoding='utf-8')
+  return rewritten
 
 
 if __name__ == '__main__':
