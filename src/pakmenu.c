@@ -30,7 +30,10 @@ u8 DecalCharToAscii(u8 c) {
     /* The original copies the whole table to the stack to read one character of it. */
     DecalCharMap map = g_szDecalCharMap;
 
-    return c < sizeof(map.chars) ? map.chars[c] : ' ';
+    if (c < (s32)sizeof(map.chars)) {
+        return map.chars[c];
+    }
+    return ' ';
 }
 
 /* The note under the cursor is green on a white table, which is otherwise gray. */
@@ -412,9 +415,17 @@ s32 InitPakAndEnumerateFiles(void) {
     OSPfsState *state;
 
     g_wSerialInterfaceIdle = 0;
-    if (!MountPak()) {
-        g_wSerialInterfaceIdle = 1;
-        return TRUE;
+    gControllerPakState = osPfsInitPak(&g_SiMesgQueue, &g_aPakPfs[0], 0);
+    if (gControllerPakState != 0 && gControllerPakState == PFS_ERR_ID_FATAL) {
+        if (osMotorInit(&g_SiMesgQueue, &g_aContPfs[0], 0) == 0) {
+            g_wSerialInterfaceIdle = 1;
+            return TRUE;
+        }
+        gControllerPakState = osPfsRepairId(&g_aPakPfs[0]);
+        if (gControllerPakState == 0) {
+            /* The result is discarded, and the state remains that of the repair. */
+            osPfsInitPak(&g_SiMesgQueue, &g_aPakPfs[0], 0);
+        }
     }
     if (gControllerPakState != 0) {
         g_wSerialInterfaceIdle = 1;
@@ -422,9 +433,16 @@ s32 InitPakAndEnumerateFiles(void) {
     }
     bcopy(g_aPakPfs[0].id, g_aabSavePakIds[0], sizeof(g_aPakPfs[0].id));
     gControllerPakState = osPfsNumFiles(&g_aPakPfs[0], &maxFiles, &g_nPakFilesUsed);
-    if (!PakCallSucceeded()) {
-        g_wSerialInterfaceIdle = 1;
-        return TRUE;
+    if (gControllerPakState != 0) {
+        if (gControllerPakState == PFS_ERR_INCONSISTENT) {
+            if (osPfsChecker(&g_aPakPfs[0]) != 0) {
+                g_wSerialInterfaceIdle = 1;
+                return TRUE;
+            }
+        } else {
+            g_wSerialInterfaceIdle = 1;
+            return TRUE;
+        }
     }
 
     for (note = 0; note < PAK_NOTES; note++) {
