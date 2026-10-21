@@ -1,7 +1,7 @@
 {
   "configurations": [
     {
-      "cStandard": "gnu23",
+      "cStandard": "gnu89",
       "compilerArgs": [
         "-G0",
         "-ffreestanding",

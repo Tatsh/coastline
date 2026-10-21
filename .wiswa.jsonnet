@@ -160,7 +160,7 @@
     c_cpp: {
       configurations: [
         {
-          cStandard: 'gnu23',
+          cStandard: 'gnu89',
           compilerArgs: ['-G0', '-ffreestanding', '-fno-pic', '-mabi=32', '-march=vr4300', '-mno-abicalls'],
           compilerPath: 'mips64-libdragon-elf-gcc',
           configurationProvider: 'ms-vscode.cmake-tools',

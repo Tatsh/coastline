@@ -29,6 +29,10 @@ set(_n64_flags "-march=vr4300 -mtune=vr4300 -mabi=32 -mno-abicalls -fno-pic -ffr
 # original stores offsets and pointers through a u32 pointer and reads the field back as a pointer.
 set(CMAKE_C_FLAGS_INIT "${_n64_flags} -Os -fno-strict-aliasing")
 set(CMAKE_ASM_FLAGS_INIT "${_n64_flags}")
+# The game is C89 as IDO accepted it, with the GNU extensions the reconstruction uses.
+set(CMAKE_C_STANDARD 90)
+set(CMAKE_C_STANDARD_REQUIRED ON)
+set(CMAKE_C_EXTENSIONS ON)
 
 set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
 set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)
