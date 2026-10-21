@@ -62,7 +62,7 @@ void Vec3fCross(Vec3f *out, Vec3f *a, Vec3f *b) {
 }
 
 f32 Vec3fDot(Vec3f *a, Vec3f *b) {
-    return a->x * b->x + a->y * b->y + a->z * b->z;
+    return b->z * a->z + (a->x * b->x + a->y * b->y);
 }
 
 void Vec3fNegate(Vec3f *out, Vec3f *v) {
@@ -106,19 +106,17 @@ void Vec3fScaleInPlace(Vec3f *v, f32 scale) {
 }
 
 void Vec3fScaleByInverse(Vec3f *out, Vec3f *v, f32 divisor) {
-    f32 inverse = 1.0f / divisor;
-
-    out->x = v->x * inverse;
-    out->y = v->y * inverse;
-    out->z = v->z * inverse;
+    divisor = 1.0f / divisor;
+    out->x = v->x * divisor;
+    out->y = v->y * divisor;
+    out->z = v->z * divisor;
 }
 
 void Vec3fDivideInPlace(Vec3f *v, f32 divisor) {
-    f32 inverse = 1.0f / divisor;
-
-    v->x *= inverse;
-    v->y *= inverse;
-    v->z *= inverse;
+    divisor = 1.0f / divisor;
+    v->x *= divisor;
+    v->y *= divisor;
+    v->z *= divisor;
 }
 
 void Vec3fCopy(Vec3f *out, Vec3f *v) {
@@ -132,50 +130,47 @@ void Vec3fDirection(Vec3f *out, Vec3f *from, Vec3f *to) {
     f32 dy = to->y - from->y;
     f32 dz = to->z - from->z;
     f32 length = sqrtf(dx * dx + dy * dy + dz * dz);
-    f32 inverse;
 
-    if (length == 0.0f) {
+    if (length != 0.0f) {
+        length = 1.0f / length;
+        out->x = dx * length;
+        out->y = dy * length;
+        out->z = dz * length;
+    } else {
         out->x = 0.0f;
         out->y = 0.0f;
         out->z = 1.0f;
-        return;
     }
-    inverse = 1.0f / length;
-    out->x = dx * inverse;
-    out->y = dy * inverse;
-    out->z = dz * inverse;
 }
 
 void Vec3fNormalizeSafe(Vec3f *out, Vec3f *v) {
-    f32 length = sqrtf(v->x * v->x + v->y * v->y + v->z * v->z);
-    f32 inverse;
+    f32 length = sqrtf(v->z * v->z + (v->x * v->x + v->y * v->y));
 
-    if (length == 0.0f) {
+    if (length != 0.0f) {
+        length = 1.0f / length;
+        out->x = v->x * length;
+        out->y = v->y * length;
+        out->z = v->z * length;
+    } else {
         out->x = 0.0f;
         out->y = 0.0f;
         out->z = 1.0f;
-        return;
     }
-    inverse = 1.0f / length;
-    out->x = v->x * inverse;
-    out->y = v->y * inverse;
-    out->z = v->z * inverse;
 }
 
 void Vec3fNormalize(Vec3f *v) {
-    f32 length = sqrtf(v->x * v->x + v->y * v->y + v->z * v->z);
-    f32 inverse;
+    f32 length = sqrtf(v->z * v->z + (v->x * v->x + v->y * v->y));
 
-    if (length == 0.0f) {
+    if (length != 0.0f) {
+        length = 1.0f / length;
+        v->x *= length;
+        v->y *= length;
+        v->z *= length;
+    } else {
         v->x = 0.0f;
         v->y = 0.0f;
         v->z = 1.0f;
-        return;
     }
-    inverse = 1.0f / length;
-    v->x *= inverse;
-    v->y *= inverse;
-    v->z *= inverse;
 }
 
 void Vec3fSubtract(Vec3f *out, Vec3f *a, Vec3f *b) {
@@ -261,7 +256,7 @@ f32 Vec3fDistanceSquared(Vec3f *a, Vec3f *b) {
 }
 
 f32 Vec3fLength(Vec3f *v) {
-    return sqrtf(v->x * v->x + v->y * v->y + v->z * v->z);
+    return sqrtf(v->z * v->z + (v->x * v->x + v->y * v->y));
 }
 
 f32 Vec2fLength(Vec2f *v) {

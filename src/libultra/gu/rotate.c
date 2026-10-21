@@ -1,9 +1,11 @@
 #include "guint.h"
 
 void guRotateF(float mf[4][4], float a, float x, float y, float z) {
+    /* IDO stores the radians in a degree on each call before it reads them back. */
+    /** @ghidraAddress USA: 0x8037f0a0 */
+    static float g_fGuRotateDtor = 3.1415926 / 180.0;
     float sine, cosine, ab, bc, ca, t;
 
-    g_fGuRotateDtor = 3.1415926f / 180.0f;
     guNormalize(&x, &y, &z);
     a *= g_fGuRotateDtor;
     sine = sinf(a);

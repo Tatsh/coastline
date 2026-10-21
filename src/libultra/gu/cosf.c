@@ -3,13 +3,10 @@
 float cosf(float x) {
     double dx, xsq, poly, dn, result;
     float xabs;
-    int n, xpt;
-    union {
-        float f; /*!< The argument. */
-        s32 i;   /*!< The bits of the argument, for its exponent. */
-    } u = {x};
+    int n, ix, xpt;
 
-    xpt = (u.i >> 22) & 0x1FF;
+    ix = *(s32 *)&x;
+    xpt = (ix >> 22) & 0x1FF;
 
     if (xpt < 0x136) {
         /* The cosine is the sine shifted by half pi, so reduce by an odd multiple of it. */

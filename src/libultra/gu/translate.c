@@ -10,9 +10,6 @@ void guTranslateF(float mf[4][4], float x, float y, float z) {
 void guTranslate(Mtx *m, float x, float y, float z) {
     float mf[4][4];
 
-    guMtxIdentF(mf);
-    mf[3][0] = x;
-    mf[3][1] = y;
-    mf[3][2] = z;
+    guTranslateF(mf, x, y, z);
     guMtxF2L(mf, m);
 }

@@ -2,14 +2,11 @@
 
 float sinf(float x) {
     double dx, xsq, poly, dn, result;
-    int n, xpt;
-    union {
-        float f; /*!< The argument. */
-        s32 i;   /*!< The bits of the argument, read for its exponent. */
-    } u = {x};
+    int n, ix, xpt;
 
     /* The top bits of the exponent sort the argument into ranges. */
-    xpt = (u.i >> 22) & 0x1FF;
+    ix = *(s32 *)&x;
+    xpt = (ix >> 22) & 0x1FF;
 
     if (xpt < 0xFF) {
         /* Below about 0.5 in magnitude the polynomial applies without reduction. */
