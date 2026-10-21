@@ -12,14 +12,14 @@
 
 /** The quotient and remainder of ldiv(). */
 typedef struct {
-    long quot;
-    long rem;
+    long quot; /*!< The quotient. */
+    long rem;  /*!< The remainder, the dividend less the divisor times quot. */
 } ldiv_t;
 
 /** The quotient and remainder of lldiv(). */
 typedef struct {
-    long long quot;
-    long long rem;
+    long long quot; /*!< The quotient. */
+    long long rem;  /*!< The remainder, the dividend less the divisor times quot. */
 } lldiv_t;
 
 /**

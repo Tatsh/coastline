@@ -85,8 +85,8 @@
 
 /* The progress of a racer for sorting. */
 typedef struct {
-    f32 progress;
-    s32 slot;
+    f32 progress; /*!< The sort key, the distance covered or a key derived from it. */
+    s32 slot;     /*!< The index of the racer in g_aRacerSlots. */
 } RacerProgress;
 
 /* Whether a segment crosses a gate, seen from above. */

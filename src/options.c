@@ -53,40 +53,40 @@
 
 /* The steps of the save and load menu. */
 enum {
-    SAVE_LOAD_STEP_FADE_IN,
-    SAVE_LOAD_STEP_CHOOSE,
-    SAVE_LOAD_STEP_QUIET,
-    SAVE_LOAD_STEP_WAIT_QUIET,
-    SAVE_LOAD_STEP_MOUNT,
-    SAVE_LOAD_STEP_REPAIR,
-    SAVE_LOAD_STEP_NEW_PAK,
-    SAVE_LOAD_STEP_FIND,
-    SAVE_LOAD_STEP_LOAD,
-    SAVE_LOAD_STEP_ALLOCATE,
-    SAVE_LOAD_STEP_CONFIRM_OVERWRITE,
-    SAVE_LOAD_STEP_SAVE,
-    SAVE_LOAD_STEP_ERROR,
-    SAVE_LOAD_STEP_DONE,
-    SAVE_LOAD_STEP_RUMBLE_PAK,
-    SAVE_LOAD_STEP_FADE_OUT,
-    SAVE_LOAD_STEP_LEAVE,
+    SAVE_LOAD_STEP_FADE_IN,           /*!< Wait for the screen to fade in. */
+    SAVE_LOAD_STEP_CHOOSE,            /*!< Choose what to load or save. */
+    SAVE_LOAD_STEP_QUIET,             /*!< Start fading out the sound and the music. */
+    SAVE_LOAD_STEP_WAIT_QUIET,        /*!< Wait for the sound to fade out, then 4 more frames. */
+    SAVE_LOAD_STEP_MOUNT,             /*!< Open the Controller Pak of the choosing player. */
+    SAVE_LOAD_STEP_REPAIR,            /*!< Repair the identification of the Controller Pak. */
+    SAVE_LOAD_STEP_NEW_PAK,           /*!< Report that a different Controller Pak is inserted. */
+    SAVE_LOAD_STEP_FIND,              /*!< Look for the note of the chosen data. */
+    SAVE_LOAD_STEP_LOAD,              /*!< Read the chosen data from its note. */
+    SAVE_LOAD_STEP_ALLOCATE,          /*!< Create the note of the chosen data. */
+    SAVE_LOAD_STEP_CONFIRM_OVERWRITE, /*!< Request confirmation to overwrite the note. */
+    SAVE_LOAD_STEP_SAVE,              /*!< Write the chosen data to its note. */
+    SAVE_LOAD_STEP_ERROR,             /*!< Show the message of a Controller Pak error. */
+    SAVE_LOAD_STEP_DONE,              /*!< Show the message of a successful load or save. */
+    SAVE_LOAD_STEP_RUMBLE_PAK,        /*!< Prompt the player to swap in the Rumble Pak. */
+    SAVE_LOAD_STEP_FADE_OUT,          /*!< Start fading the screen out. */
+    SAVE_LOAD_STEP_LEAVE,             /*!< Fade the sound back in until the screen is black. */
 };
 
 /* The steps of the screen of the Controller Pak data. */
 enum {
-    PAK_DATA_STEP_START,
-    PAK_DATA_STEP_WAIT_QUIET,
-    PAK_DATA_STEP_MOUNT,
-    PAK_DATA_STEP_REPAIR,
-    PAK_DATA_STEP_NEW_PAK,
-    PAK_DATA_STEP_FIND,
-    PAK_DATA_STEP_LOAD,
-    PAK_DATA_STEP_ALLOCATE,
-    PAK_DATA_STEP_SAVE,
-    PAK_DATA_STEP_ERROR,
-    PAK_DATA_STEP_RUMBLE_PAK,
-    PAK_DATA_STEP_DONE,
-    PAK_DATA_STEP_FINISH,
+    PAK_DATA_STEP_START,      /*!< Start fading out the sound and the music unless quiet. */
+    PAK_DATA_STEP_WAIT_QUIET, /*!< Wait for the sound to fade out. */
+    PAK_DATA_STEP_MOUNT,      /*!< Open the Controller Pak of the choosing player. */
+    PAK_DATA_STEP_REPAIR,     /*!< Repair the identification of the Controller Pak. */
+    PAK_DATA_STEP_NEW_PAK,    /*!< Report that a different Controller Pak is inserted. */
+    PAK_DATA_STEP_FIND,       /*!< Look for the note of the data. */
+    PAK_DATA_STEP_LOAD,       /*!< Read the data from its note. */
+    PAK_DATA_STEP_ALLOCATE,   /*!< Create the note of the data. */
+    PAK_DATA_STEP_SAVE,       /*!< Write the data to its note. */
+    PAK_DATA_STEP_ERROR,      /*!< Show the message of a Controller Pak error unless quiet. */
+    PAK_DATA_STEP_RUMBLE_PAK, /*!< Prompt the player to swap in the Rumble Pak. */
+    PAK_DATA_STEP_DONE,       /*!< Show the message of a successful load or save unless quiet. */
+    PAK_DATA_STEP_FINISH,     /*!< Restore the sound and report the screen finished. */
 };
 
 /* The text of the messages: white, with a light gray shadow. */

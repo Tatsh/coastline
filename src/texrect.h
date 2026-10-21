@@ -10,17 +10,13 @@
 
 /** A compressed texture of the cartridge and the memory it is loaded into. */
 typedef struct {
-    /** Where the compressed texture starts on the cartridge. */
-    u32 romStart;
-    /** Where it ends, which is where the next asset starts. */
-    u32 romEnd;
-    /** The decompressed texels, or NULL before the texture is loaded. */
-    u8 *pixels;
-    u16 width;
-    u16 height;
-    /** The format and texel size, as the G_IM_FMT_ and G_IM_SIZ_ values. */
-    u8 format;
-    u8 size;
+    u32 romStart; /*!< The cartridge offset of the compressed texture. */
+    u32 romEnd; /*!< The cartridge offset of the end of the texture and start of the next asset. */
+    u8 *pixels; /*!< The decompressed texels, or NULL before the texture is loaded. */
+    u16 width;  /*!< The width in texels. */
+    u16 height; /*!< The height in texels. */
+    u8 format;  /*!< The texel format, a G_IM_FMT_* value. */
+    u8 size;    /*!< The texel size, a G_IM_SIZ_* value. */
 } Texture;
 
 /** An allocator of memory for a loaded asset. */
@@ -28,16 +24,11 @@ typedef void *(*AssetAllocator)(u32 size);
 
 /** How DrawTexturedRect() combines the texels with its colors. */
 enum {
-    /** The texels as they are, blended over the picture. */
-    TEXRECT_BLEND_TEXTURE,
-    /** The primitive color through the texels as a mask. */
-    TEXRECT_BLEND_COLOR_THROUGH_TEXTURE,
-    /** The same as TEXRECT_BLEND_TEXTURE. */
-    TEXRECT_BLEND_TEXTURE_2,
-    /** The texels shading from the primitive color to the environment color, blended. */
-    TEXRECT_BLEND_SHADED,
-    /** The same shading, opaque, with the alpha of the texels times the shade. */
-    TEXRECT_BLEND_SHADED_OPAQUE,
+    TEXRECT_BLEND_TEXTURE,               /*!< The texels as they are, blended over the picture. */
+    TEXRECT_BLEND_COLOR_THROUGH_TEXTURE, /*!< The primitive color through the texels as a mask. */
+    TEXRECT_BLEND_TEXTURE_2,             /*!< The same as TEXRECT_BLEND_TEXTURE. */
+    TEXRECT_BLEND_SHADED, /*!< The texels shading from the primitive to the environment color. */
+    TEXRECT_BLEND_SHADED_OPAQUE, /*!< The same shading, opaque, alpha times shade. */
 };
 
 /**

@@ -26,22 +26,22 @@ typedef void *(*outfun)(void *arg, const char *s, size_t count);
  */
 typedef struct {
     union {
-        long long ll;
-        double ld;
-        u16 hw[4];
-    } v;
-    char *s;
-    int n0;
-    int nz0;
-    int n1;
-    int nz1;
-    int n2;
-    int nz2;
-    int prec;
-    int width;
-    size_t nchar;
-    unsigned int flags;
-    char qual;
+        long long ll;   /*!< The value of an integer conversion. */
+        double ld;      /*!< The value of a floating-point conversion. */
+        u16 hw[4];      /*!< The halfwords of the floating-point value, most significant first. */
+    } v;                /*!< The argument of the conversion. */
+    char *s;            /*!< The converted characters. */
+    int n0;             /*!< The number of prefix characters. */
+    int nz0;            /*!< The number of zeroes after the prefix. */
+    int n1;             /*!< The number of characters of the first run from s. */
+    int nz1;            /*!< The number of zeroes after the first run. */
+    int n2;             /*!< The number of characters of the second run from s. */
+    int nz2;            /*!< The number of zeroes after the second run. */
+    int prec;           /*!< The precision, or -1 when the format gives none. */
+    int width;          /*!< The minimum field width. */
+    size_t nchar;       /*!< The number of characters written so far. */
+    unsigned int flags; /*!< The FLAGS_* bits of the conversion. */
+    char qual;          /*!< The size qualifier, 'h', 'l', 'L', or 0. */
 } _Pft;
 
 /**

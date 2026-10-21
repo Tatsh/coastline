@@ -70,8 +70,9 @@ extern s32 g_adwReplayGhostSizes[4];
  * its start, which the instant replay plays from.
  */
 typedef struct {
-    u8 recordings[INPUT_RECORDERS][LAST_LAP_RECORDING_SIZE];
-    u8 snapshot[sizeof(VehicleModel) - INPUT_RECORDERS * LAST_LAP_RECORDING_SIZE];
+    u8 recordings[INPUT_RECORDERS][LAST_LAP_RECORDING_SIZE]; /*!< The input of each local player. */
+    u8 snapshot[sizeof(VehicleModel) - INPUT_RECORDERS * LAST_LAP_RECORDING_SIZE]; /*!< The race at
+                                                                                       lap start. */
 } LastLapBuffer;
 
 /**
@@ -85,8 +86,8 @@ extern LastLapBuffer g_aLastLapBuffers[];
 
 /** A block of variables a snapshot saves, in a list ending in a NULL block. */
 typedef struct {
-    void *data;
-    u32 size;
+    void *data; /*!< The first byte of the block, or NULL at the end of the list. */
+    u32 size;   /*!< The length of the block in bytes. */
 } SaveField;
 
 /**

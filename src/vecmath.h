@@ -11,15 +11,15 @@
 
 /** A point or direction in space. */
 typedef struct {
-    f32 x;
-    f32 y;
-    f32 z;
+    f32 x; /*!< The component along the x axis. */
+    f32 y; /*!< The component along the y axis. */
+    f32 z; /*!< The component along the z axis. */
 } Vec3f;
 
 /** A point or direction in a plane. */
 typedef struct {
-    f32 x;
-    f32 y;
+    f32 x; /*!< The component along the x axis. */
+    f32 y; /*!< The component along the y axis. */
 } Vec2f;
 
 /** @ghidraAddress USA: 0x8028b790 */

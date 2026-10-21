@@ -78,43 +78,45 @@
 
 /** What osContInit() learns of a controller. */
 typedef struct {
-    u16 type;
-    u8 status;
-    u8 errno;
+    u16 type;  /*!< The controller type, from the CONT_ABSOLUTE, CONT_RELATIVE, and CONT_JOYPORT
+                  bits. */
+    u8 status; /*!< The accessory status, from the CONT_CARD_ON, CONT_CARD_PULL, and
+                  CONT_ADDR_CRC_ER bits. */
+    u8 errno;  /*!< The channel error of the query, 0 or CONT_NO_RESPONSE_ERROR. */
 } OSContStatus;
 
 /** The buttons and stick of a controller. */
 typedef struct {
-    u16 button;
-    s8 stick_x;
-    s8 stick_y;
-    u8 errno;
+    u16 button; /*!< The pressed buttons, from the CONT_* button bits. */
+    s8 stick_x; /*!< The horizontal stick position, positive to the right. */
+    s8 stick_y; /*!< The vertical stick position, positive upward. */
+    u8 errno;   /*!< The channel error of the read, 0 or CONT_NO_RESPONSE_ERROR. */
 } OSContPad;
 
 /** An open Controller Pak. */
 typedef struct {
-    int status;
-    OSMesgQueue *queue;
-    int channel;
-    u8 id[32];
-    u8 label[32];
-    int version;
-    int dir_size;
-    int inode_table;
-    int minode_table;
-    int dir_table;
-    int inode_start_page;
-    u8 banks;
-    u8 activebank;
+    int status; /*!< The state of the pak, from the PFS_INITIALIZED and PFS_CORRUPTED bits. */
+    OSMesgQueue *queue;   /*!< The queue of SI events the pak routines wait on. */
+    int channel;          /*!< The controller port of the pak, 0 to 3. */
+    u8 id[32];            /*!< A copy of the identification block of the pak. */
+    u8 label[32];         /*!< A copy of the label area of the pak. */
+    int version;          /*!< The file system version from the identification block. */
+    int dir_size;         /*!< The number of entries of the directory. */
+    int inode_table;      /*!< The block address of the inode table of bank 0. */
+    int minode_table;     /*!< The block address of the mirror of the inode table of bank 0. */
+    int dir_table;        /*!< The block address of the directory. */
+    int inode_start_page; /*!< The first page of bank 0 available for file data. */
+    u8 banks;             /*!< The number of 32 KiB banks of the pak. */
+    u8 activebank;        /*!< The bank last selected on the pak, 0xFF when none is known. */
 } OSPfs;
 
 /** What osPfsFileState() reports of a file. */
 typedef struct {
-    u32 file_size;
-    u32 game_code;
-    u16 company_code;
-    char ext_name[4];
-    char game_name[16];
+    u32 file_size;      /*!< The size of the file in bytes. */
+    u32 game_code;      /*!< The game code of the game that created the file. */
+    u16 company_code;   /*!< The company code of the game that created the file. */
+    char ext_name[4];   /*!< The extension of the file name, in the pak character set. */
+    char game_name[16]; /*!< The file name, in the pak character set. */
 } OSPfsState;
 
 /**

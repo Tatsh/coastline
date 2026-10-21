@@ -5,8 +5,8 @@ float cosf(float x) {
     float xabs;
     int n, xpt;
     union {
-        float f;
-        s32 i;
+        float f; /*!< The argument. */
+        s32 i;   /*!< The bits of the argument, for its exponent. */
     } u = {x};
 
     xpt = (u.i >> 22) & 0x1FF;

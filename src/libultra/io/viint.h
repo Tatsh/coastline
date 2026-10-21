@@ -31,21 +31,21 @@
 #define VI_SUBPIXEL_SH 0x10
 
 typedef struct {
-    f32 factor;
-    u16 offset;
-    u32 scale;
+    f32 factor; /*!< The factor the nominal scale of the mode is multiplied by. */
+    u16 offset; /*!< The subpixel offset, a 2.10 fixed-point fraction. */
+    u32 scale;  /*!< The value of the scale register. */
 } __OSViScale;
 
 typedef struct {
-    u16 state;
-    u16 retraceCount;
-    void *framep;
-    OSViMode *modep;
-    u32 control;
-    OSMesgQueue *msgq;
-    OSMesg msg;
-    __OSViScale x;
-    __OSViScale y;
+    u16 state;         /*!< The VI_STATE_* bits of the changes to apply at the next retrace. */
+    u16 retraceCount;  /*!< The number of retraces between event messages. */
+    void *framep;      /*!< The frame buffer to show. */
+    OSViMode *modep;   /*!< The video mode. */
+    u32 control;       /*!< The value of the VI control register. */
+    OSMesgQueue *msgq; /*!< The queue osViSetEvent() registered, or NULL. */
+    OSMesg msg;        /*!< The message sent to msgq after every retraceCount retraces. */
+    __OSViScale x;     /*!< The horizontal scale. */
+    __OSViScale y;     /*!< The vertical scale. */
 } __OSViContext;
 
 /**

@@ -25,18 +25,18 @@
 
 /* A run of texels the flood fill has still to look beyond, on the row dy away. */
 typedef struct {
-    s32 y;
-    s32 x1;
-    s32 x2;
-    s32 dy;
+    s32 y;  /*!< The row of the run. */
+    s32 x1; /*!< The first column of the run. */
+    s32 x2; /*!< The last column of the run. */
+    s32 dy; /*!< The step to the row to look at, 1 or -1. */
 } FillSpan;
 
 /* The texels of a rectangle given by two corners on the screen, each edge included. */
 typedef struct {
-    s32 minX;
-    s32 minY;
-    s32 maxX;
-    s32 maxY;
+    s32 minX; /*!< The leftmost column. */
+    s32 minY; /*!< The top row. */
+    s32 maxX; /*!< The rightmost column. */
+    s32 maxY; /*!< The bottom row. */
 } TexelBox;
 
 /* The middle of two coordinates, worked out again at each use as the original does. */

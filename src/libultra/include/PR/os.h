@@ -15,34 +15,34 @@ typedef s32 OSId;
 
 typedef union {
     struct {
-        f32 f_odd;
-        f32 f_even;
-    } f;
-    f64 d;
+        f32 f_odd;  /*!< The odd single-precision register of the pair. */
+        f32 f_even; /*!< The even single-precision register of the pair. */
+    } f;            /*!< The pair as two single-precision registers. */
+    f64 d;          /*!< The pair as one double-precision register. */
 } __OSfp;
 
 typedef struct {
-    u64 at, v0, v1, a0, a1, a2, a3;
-    u64 t0, t1, t2, t3, t4, t5, t6, t7;
-    u64 s0, s1, s2, s3, s4, s5, s6, s7;
-    u64 t8, t9, gp, sp, s8, ra;
-    u64 lo, hi;
-    u32 sr, pc, cause, badvaddr, rcp;
-    u32 fpcsr;
-    __OSfp fp0, fp2, fp4, fp6, fp8, fp10, fp12, fp14;
-    __OSfp fp16, fp18, fp20, fp22, fp24, fp26, fp28, fp30;
+    u64 at, v0, v1, a0, a1, a2, a3; /*!< The saved assembler temporary, results, and arguments. */
+    u64 t0, t1, t2, t3, t4, t5, t6, t7; /*!< The saved temporaries t0 to t7. */
+    u64 s0, s1, s2, s3, s4, s5, s6, s7; /*!< The saved callee-saved registers s0 to s7. */
+    u64 t8, t9, gp, sp, s8, ra; /*!< The saved t8, t9, global, stack, frame, and return address. */
+    u64 lo, hi;                 /*!< The saved multiply and divide result registers. */
+    u32 sr, pc, cause, badvaddr, rcp; /*!< The status, PC, cause, bad address, and RCP mask. */
+    u32 fpcsr;                        /*!< The saved floating-point control and status register. */
+    __OSfp fp0, fp2, fp4, fp6, fp8, fp10, fp12, fp14;      /*!< The saved FPU pairs 0 to 14. */
+    __OSfp fp16, fp18, fp20, fp22, fp24, fp26, fp28, fp30; /*!< The saved FPU pairs 16 to 30. */
 } __OSThreadContext;
 
 typedef struct OSThread_s {
-    struct OSThread_s *next;
-    OSPri priority;
-    struct OSThread_s **queue;
-    struct OSThread_s *tlnext;
-    u16 state;
-    u16 flags;
-    OSId id;
-    int fp;
-    __OSThreadContext context;
+    struct OSThread_s *next;   /*!< The next thread of the queue the thread waits on. */
+    OSPri priority;            /*!< The priority, from OS_PRIORITY_IDLE to OS_PRIORITY_MAX. */
+    struct OSThread_s **queue; /*!< The queue the thread is on, or NULL. */
+    struct OSThread_s *tlnext; /*!< The next thread of the active queue. */
+    u16 state;                 /*!< The run state, one of the OS_STATE_* values. */
+    u16 flags;                 /*!< The flags of a CPU break or fault in the thread. */
+    OSId id;                   /*!< The identifier osCreateThread() received. */
+    int fp;                    /*!< Whether the thread has used the FPU and its context saves it. */
+    __OSThreadContext context; /*!< The registers saved while the thread does not run. */
 } OSThread;
 
 #define OS_STATE_STOPPED 1
@@ -66,12 +66,12 @@ typedef u32 OSPageMask;
 typedef void *OSMesg;
 
 typedef struct OSMesgQueue_s {
-    OSThread *mtqueue;
-    OSThread *fullqueue;
-    s32 validCount;
-    s32 first;
-    s32 msgCount;
-    OSMesg *msg;
+    OSThread *mtqueue;   /*!< The threads blocked receiving from the empty queue. */
+    OSThread *fullqueue; /*!< The threads blocked sending to the full queue. */
+    s32 validCount;      /*!< The number of messages in the queue. */
+    s32 first;           /*!< The index in msg of the first message. */
+    s32 msgCount;        /*!< The capacity of the buffer in messages. */
+    OSMesg *msg;         /*!< The circular buffer of messages. */
 } OSMesgQueue;
 
 #define OS_MESG_NOBLOCK 0
@@ -120,12 +120,12 @@ typedef struct OSMesgQueue_s {
 typedef u64 OSTime;
 
 typedef struct OSTimer_s {
-    struct OSTimer_s *next;
-    struct OSTimer_s *prev;
-    OSTime interval;
-    OSTime value;
-    OSMesgQueue *mq;
-    OSMesg msg;
+    struct OSTimer_s *next; /*!< The next timer of the list of active timers. */
+    struct OSTimer_s *prev; /*!< The previous timer of the list of active timers. */
+    OSTime interval;        /*!< The period of repetition in CPU counter cycles, or 0 for once. */
+    OSTime value;    /*!< The cycles remaining after the previous timer of the list expires. */
+    OSMesgQueue *mq; /*!< The queue the timer sends to on expiry. */
+    OSMesg msg;      /*!< The message the timer sends on expiry. */
 } OSTimer;
 
 #define OS_CLOCK_RATE 62500000LL
@@ -139,66 +139,66 @@ typedef struct OSTimer_s {
 
 /* Peripheral access. */
 typedef struct {
-    u32 errStatus;
-    void *dramAddr;
-    void *C2Addr;
-    u32 sectorSize;
-    u32 C1ErrNum;
-    u32 C1ErrSector[4];
+    u32 errStatus;      /*!< The error code of the block transfer, 0 on success. */
+    void *dramAddr;     /*!< The RDRAM address of the sector data. */
+    void *C2Addr;       /*!< The RDRAM address of the C2 error correction data. */
+    u32 sectorSize;     /*!< The size of a sector in bytes. */
+    u32 C1ErrNum;       /*!< The number of sectors with a C1 error. */
+    u32 C1ErrSector[4]; /*!< The sectors with a C1 error. */
 } __OSBlockInfo;
 
 typedef struct {
-    u32 cmdType;
-    u16 transferMode;
-    u16 blockNum;
-    s32 sectorNum;
-    u32 devAddr;
-    u32 bmCtlShadow;
-    u32 seqCtlShadow;
-    __OSBlockInfo block[2];
+    u32 cmdType;            /*!< The 64DD command type of the transfer. */
+    u16 transferMode;       /*!< The 64DD transfer mode, by sector or by track. */
+    u16 blockNum;           /*!< The index in block of the block in transfer. */
+    s32 sectorNum;          /*!< The sector the transfer is on, or -1 before the first. */
+    u32 devAddr;            /*!< The device address of the transfer. */
+    u32 bmCtlShadow;        /*!< The last value written to the 64DD buffer manager control. */
+    u32 seqCtlShadow;       /*!< The last value written to the 64DD sequencer control. */
+    __OSBlockInfo block[2]; /*!< The state of each block of the transfer. */
 } __OSTranxInfo;
 
 typedef struct OSPiHandle_s {
-    struct OSPiHandle_s *next;
-    u8 type;
-    u8 latency;
-    u8 pageSize;
-    u8 relDuration;
-    u8 pulse;
-    u8 domain;
-    u32 baseAddress;
-    u32 speed;
-    __OSTranxInfo transferInfo;
+    struct OSPiHandle_s *next;  /*!< The next handle of the list of handles. */
+    u8 type;                    /*!< The device type, one of the DEVICE_TYPE_* values. */
+    u8 latency;                 /*!< The PI domain latency register value. */
+    u8 pageSize;                /*!< The PI domain page size register value. */
+    u8 relDuration;             /*!< The PI domain release duration register value. */
+    u8 pulse;                   /*!< The PI domain pulse width register value. */
+    u8 domain;                  /*!< The PI domain, PI_DOMAIN1 or PI_DOMAIN2. */
+    u32 baseAddress;            /*!< The uncached base address of the device. */
+    u32 speed;                  /*!< The transfer speed of the device. */
+    __OSTranxInfo transferInfo; /*!< The state of the current 64DD transfer. */
 } OSPiHandle;
 
 typedef struct {
-    u8 type;
-    u32 address;
+    u8 type;     /*!< The device type, one of the DEVICE_TYPE_* values. */
+    u32 address; /*!< The base address of the device. */
 } OSPiInfo;
 
 typedef struct {
-    u16 type;
-    u8 pri;
-    u8 status;
-    OSMesgQueue *retQueue;
+    u16 type;              /*!< The request type, one of the OS_MESG_TYPE_* values. */
+    u8 pri;                /*!< The priority, OS_MESG_PRI_NORMAL or OS_MESG_PRI_HIGH. */
+    u8 status;             /*!< The status of the request. */
+    OSMesgQueue *retQueue; /*!< The queue the manager sends the finished request to, or NULL. */
 } OSIoMesgHdr;
 
 typedef struct {
-    OSIoMesgHdr hdr;
-    void *dramAddr;
-    u32 devAddr;
-    u32 size;
-    OSPiHandle *piHandle;
+    OSIoMesgHdr hdr;      /*!< The header of the request. */
+    void *dramAddr;       /*!< The RDRAM address of the transfer. */
+    u32 devAddr;          /*!< The device address of the transfer. */
+    u32 size;             /*!< The length of the transfer in bytes. */
+    OSPiHandle *piHandle; /*!< The handle of the device of an EDMA request. */
 } OSIoMesg;
 
 typedef struct {
-    s32 active;
-    OSThread *thread;
-    OSMesgQueue *cmdQueue;
-    OSMesgQueue *evtQueue;
-    OSMesgQueue *acsQueue;
-    s32 (*dma)(s32, u32, void *, u32);
-    s32 (*edma)(OSPiHandle *, s32, u32, void *, u32);
+    s32 active;                        /*!< Whether the manager thread runs. */
+    OSThread *thread;                  /*!< The manager thread. */
+    OSMesgQueue *cmdQueue;             /*!< The queue of requests to the manager. */
+    OSMesgQueue *evtQueue;             /*!< The queue of interrupt events. */
+    OSMesgQueue *acsQueue;             /*!< The queue that serialises device access. */
+    s32 (*dma)(s32, u32, void *, u32); /*!< The routine that starts a raw DMA. */
+    s32 (*edma)(OSPiHandle *, s32, u32, void *, u32); /*!< The routine that starts a handle DMA. */
 } OSDevMgr;
 
 #define OS_READ 0
@@ -247,29 +247,29 @@ extern u8 osAppNMIBuffer[64];
 
 /* Video modes. */
 typedef struct {
-    u32 ctrl;
-    u32 width;
-    u32 burst;
-    u32 vSync;
-    u32 hSync;
-    u32 leap;
-    u32 hStart;
-    u32 xScale;
-    u32 vCurrent;
+    u32 ctrl;     /*!< The VI control register value. */
+    u32 width;    /*!< The VI width register value, the width of the frame buffer in pixels. */
+    u32 burst;    /*!< The VI colour burst register value. */
+    u32 vSync;    /*!< The VI vertical sync register value. */
+    u32 hSync;    /*!< The VI horizontal sync register value. */
+    u32 leap;     /*!< The VI horizontal sync leap register value. */
+    u32 hStart;   /*!< The VI horizontal video start and end register value. */
+    u32 xScale;   /*!< The VI horizontal scale register value. */
+    u32 vCurrent; /*!< The VI current line register value. */
 } OSViCommonRegs;
 
 typedef struct {
-    u32 origin;
-    u32 yScale;
-    u32 vStart;
-    u32 vBurst;
-    u32 vIntr;
+    u32 origin; /*!< The offset of the first displayed line in the frame buffer, in bytes. */
+    u32 yScale; /*!< The VI vertical scale register value. */
+    u32 vStart; /*!< The VI vertical video start and end register value. */
+    u32 vBurst; /*!< The VI vertical burst register value. */
+    u32 vIntr;  /*!< The VI interrupt half-line register value. */
 } OSViFieldRegs;
 
 typedef struct {
-    u8 type;
-    OSViCommonRegs comRegs;
-    OSViFieldRegs fldRegs[2];
+    u8 type;                  /*!< The number of the mode in the table of video modes. */
+    OSViCommonRegs comRegs;   /*!< The registers common to both fields. */
+    OSViFieldRegs fldRegs[2]; /*!< The registers of each field. */
 } OSViMode;
 
 /* Features osViSetSpecialFeatures() turns on and off. */

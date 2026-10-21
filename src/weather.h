@@ -12,11 +12,11 @@
 
 /** The weathers, in the order of the weather menu. */
 enum {
-    WEATHER_SUNNY,
-    WEATHER_FOG,
-    WEATHER_RAIN,
-    WEATHER_SNOW,
-    WEATHER_NIGHT,
+    WEATHER_SUNNY, /*!< Clear weather by day. */
+    WEATHER_FOG,   /*!< Fog. */
+    WEATHER_RAIN,  /*!< Rain. */
+    WEATHER_SNOW,  /*!< Snow. */
+    WEATHER_NIGHT, /*!< Night. */
 };
 
 /** The weather the player chose. @ghidraAddress USA: 0x8028c800 */

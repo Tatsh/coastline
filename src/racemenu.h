@@ -43,14 +43,11 @@
 
 /** An item of a menu screen. */
 typedef struct {
-    const char *name;
-    /** The MENU_ITEM_ flags. */
-    u32 flags;
-    /** The model of the item, or NULL to show its name. */
-    Model *model;
-    /** The cartridge range of the item's model. */
-    u32 romStart;
-    u32 romEnd;
+    const char *name; /*!< The text of the item. */
+    u32 flags;        /*!< The MENU_ITEM_* flags. */
+    Model *model;     /*!< The model of the item, or NULL to show its name. */
+    u32 romStart;     /*!< The cartridge offset of the model of the item. */
+    u32 romEnd;       /*!< The cartridge offset of the end of the model of the item. */
 } MenuItem;
 
 /** The classes of cars an arcade race keeps times for, by the tableIndex of their physics. */
@@ -61,10 +58,8 @@ typedef struct {
 
 /** The times of an arcade race on a track for a class of car and a weather. */
 typedef struct {
-    /** The time each gate adds, by its index; the first is the line of the lap. */
-    f32 gateBonuses[6];
-    /** The time the race starts with, in seconds. */
-    f32 startTime;
+    f32 gateBonuses[6]; /*!< The seconds each gate adds, gate 0 being the lap line. */
+    f32 startTime;      /*!< The time the race starts with, in seconds. */
 } ArcadeTimes;
 
 /**
@@ -73,14 +68,15 @@ typedef struct {
  * exist.
  */
 typedef struct {
-    MenuItem item;
-    u32 trackRom;
-    u32 trackRomEnd;
-    u32 sectionARom;
-    u32 sectionARomEnd;
-    u32 sectionBRom;
-    u32 sectionBRomEnd;
-    ArcadeTimes arcadeTimes[ARCADE_CAR_CLASSES][ARCADE_WEATHERS];
+    MenuItem item;      /*!< The item of the track menu. */
+    u32 trackRom;       /*!< The cartridge offset of the compressed geometry. */
+    u32 trackRomEnd;    /*!< The cartridge offset of the end of the geometry, 0 for no track. */
+    u32 sectionARom;    /*!< The cartridge offset of the first section of route. */
+    u32 sectionARomEnd; /*!< The cartridge offset of the end of the first section of route. */
+    u32 sectionBRom;    /*!< The cartridge offset of the second section of route. */
+    u32 sectionBRomEnd; /*!< The cartridge offset of the end of the second section of route. */
+    ArcadeTimes arcadeTimes[ARCADE_CAR_CLASSES][ARCADE_WEATHERS]; /*!< The arcade times by car
+                                                                     class and by weather less 1. */
 } TrackMenuItem;
 
 /** The tracks. @ghidraAddress USA: 0x80270854 */
@@ -232,17 +228,13 @@ extern Mtx g_MenuChoiceMarkerMtx;
 
 /** A season of the championship. */
 typedef struct {
-    const char *name;
-    const char *subtitle;
-    s32 raceCount;
-    /** The points a season needs to advance to the next. */
-    s32 pointsNeeded;
-    /** The two cars of the season, which its records show. */
-    u8 cars[2];
-    /** The cars a profile unlocks by passing the season, as bits of its unlocks. */
-    u16 unlocks;
-    /** The track and the weather of each race. */
-    u8 races[SEASON_RACES][2];
+    const char *name;          /*!< The name of the season. */
+    const char *subtitle;      /*!< The heading of the records of the season. */
+    s32 raceCount;             /*!< The number of races of the season. */
+    s32 pointsNeeded;          /*!< The points a season needs to advance to the next. */
+    u8 cars[2];                /*!< The two cars of the season, shown in its records. */
+    u16 unlocks;               /*!< The cars passing the season unlocks, as bits of the unlocks. */
+    u8 races[SEASON_RACES][2]; /*!< The track and the weather of each race. */
 } Season;
 
 /** @ghidraAddress USA: 0x8028b944 */

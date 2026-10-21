@@ -17,16 +17,15 @@
  * cameras has one.
  */
 typedef struct {
-    Vec3f forward;
-    f32 forwardW;
-    Vec3f side;
-    f32 sideW;
-    Vec3f up;
-    f32 upW;
-    Vec3f position;
-    f32 positionW;
-    /** The field of view of a camera, in radians. */
-    f32 fov;
+    Vec3f forward;  /*!< The axis pointing forward. */
+    f32 forwardW;   /*!< The fourth column of the forward row, 0 after FinishFrameMatrix(). */
+    Vec3f side;     /*!< The axis pointing to the side. */
+    f32 sideW;      /*!< The fourth column of the side row, 0 after FinishFrameMatrix(). */
+    Vec3f up;       /*!< The axis pointing up. */
+    f32 upW;        /*!< The fourth column of the up row, 0 after FinishFrameMatrix(). */
+    Vec3f position; /*!< The position in the world. */
+    f32 positionW;  /*!< The fourth column of the position row, 1 after FinishFrameMatrix(). */
+    f32 fov;        /*!< The field of view of a camera, in radians. */
 } CameraFrame;
 
 /**
@@ -34,56 +33,45 @@ typedef struct {
  * its palette are on the cartridge, from g_dwTrackTextureRomOffset, or -1 for none.
  */
 typedef struct {
-    u32 time;
-    u32 imageRom;
-    u32 paletteRom;
+    u32 time;       /*!< The time the frame starts at, in milliseconds. */
+    u32 imageRom;   /*!< The offset of the texels from g_dwTrackTextureRomOffset, or -1. */
+    u32 paletteRom; /*!< The offset of the palette from g_dwTrackTextureRomOffset, or -1. */
 } TextureAnimationFrame;
 
 /** The frames of an animated texture. Its fields join this structure as they are reconstructed. */
 typedef struct {
-    u8 unreconstructed0[0x2 - 0x0];
-    u16 frameCount;
-    u8 unreconstructed4[0x8 - 0x4];
-    TextureAnimationFrame frames[];
+    u8 unreconstructed0[0x2 - 0x0]; /*!< Bytes not yet reconstructed. */
+    u16 frameCount;                 /*!< The number of frames. */
+    u8 unreconstructed4[0x8 - 0x4]; /*!< Bytes not yet reconstructed. */
+    TextureAnimationFrame frames[]; /*!< The frames, in order of their start times. */
 } TextureAnimation;
 
 /**
  * A texture of a model and its palette. Its fields join this structure as they are reconstructed.
  */
 typedef struct {
-    /** The texels. */
-    u8 *image;
-    /** The 16 colors of the palette, in RGBA 5551. */
-    u16 *palette;
-    /**
-     * Where the palette is on the cartridge, in units of 32 bytes in the low 12 bits, or the frames
-     * of an animated texture.
-     */
+    u8 *image;    /*!< The texels. */
+    u16 *palette; /*!< The 16 colors of the palette, in RGBA 5551. */
     union {
-        u32 paletteRomIndex;
-        TextureAnimation *animation;
-    } source;
-    /** The size, in texels. */
-    u16 width;
-    u16 height;
-    /** The texels the tile covers, in t and s, from the first to the last. */
-    s16 tileT0;
-    s16 tileS0;
-    s16 tileT1;
-    s16 tileS1;
-    u8 unreconstructed18[0x20 - 0x18];
-    /** How the texture wraps and repeats, by bits from the highest. */
-    unsigned mirrorS : 1;
-    unsigned mirrorT : 1;
-    unsigned clampS : 1;
-    unsigned clampT : 1;
-    /** The TEXTURE_FORMAT_ values. */
-    unsigned format : 4;
-    unsigned : 3;
-    unsigned animated : 1;
-    unsigned : 2;
-    /** The bytes of the texels. */
-    unsigned size : 18;
+        u32 paletteRomIndex; /*!< The palette offset, in units of 32 bytes in the low 12 bits. */
+        TextureAnimation *animation; /*!< The frames of an animated texture. */
+    } source;   /*!< The source of the palette, or of the frames of an animated texture. */
+    u16 width;  /*!< The width in texels. */
+    u16 height; /*!< The height in texels. */
+    s16 tileT0; /*!< The first texel row the tile covers. */
+    s16 tileS0; /*!< The first texel column the tile covers. */
+    s16 tileT1; /*!< The last texel row the tile covers. */
+    s16 tileS1; /*!< The last texel column the tile covers. */
+    u8 unreconstructed18[0x20 - 0x18]; /*!< Bytes not yet reconstructed. */
+    unsigned mirrorS : 1;              /*!< Whether the texture repeats mirrored in s. */
+    unsigned mirrorT : 1;              /*!< Whether the texture repeats mirrored in t. */
+    unsigned clampS : 1;               /*!< Whether the texture clamps in s rather than wrapping. */
+    unsigned clampT : 1;               /*!< Whether the texture clamps in t rather than wrapping. */
+    unsigned format : 4;               /*!< The format, a TEXTURE_FORMAT_* value. */
+    unsigned : 3;                      /*!< Bits not yet reconstructed. */
+    unsigned animated : 1; /*!< Whether source points to the frames of an animated texture. */
+    unsigned : 2;          /*!< Bits not yet reconstructed. */
+    unsigned size : 18;    /*!< The length of the texels in bytes. */
 } ModelTexture;
 
 /** The formats of a texture of a model: 4-bit with a palette of 16, and 8-bit intensity. */
@@ -101,12 +89,11 @@ typedef struct {
 
 /** The rectangle of the screen a view fills. */
 typedef struct {
-    s32 x;
-    s32 y;
-    s32 width;
-    s32 height;
-    /** The vehicle of the player the view follows. */
-    s32 vehicleIndex;
+    s32 x;            /*!< The left edge, in screen pixels. */
+    s32 y;            /*!< The top edge, in screen pixels. */
+    s32 width;        /*!< The width, in screen pixels. */
+    s32 height;       /*!< The height, in screen pixels. */
+    s32 vehicleIndex; /*!< The vehicle of the player the view follows. */
 } ViewportRect;
 
 /** The next command of the display list. @ghidraAddress USA: 0x8028a858 */
