@@ -31054,11 +31054,11 @@ dlabel D_8028AA90
     /* 8BA90 8028AA90 00000001 */ .word 0x00000001
 enddlabel D_8028AA90
 
-nonmatching g_dwHudMessageColor
+nonmatching g_bShowRamOnScreen
 
-dlabel g_dwHudMessageColor
+dlabel g_bShowRamOnScreen
     /* 8BA94 8028AA94 00000000 */ .word 0x00000000
-enddlabel g_dwHudMessageColor
+enddlabel g_bShowRamOnScreen
 
 nonmatching g_dwHudDebugLevel
 
@@ -38310,9 +38310,9 @@ dlabel D_8028DDE4
     /* 8EDEC 8028DDEC 00000000 */ .word 0x00000000
 enddlabel D_8028DDE4
 
-nonmatching g_awCheatCodeSeqDisplayToggle
+nonmatching g_awCheatSeqRamView
 
-dlabel g_awCheatCodeSeqDisplayToggle
+dlabel g_awCheatSeqRamView
     /* 8EDF0 8028DDF0 00010000 */ .word 0x00010000
     /* 8EDF4 8028DDF4 00080000 */ .word 0x00080000
     /* 8EDF8 8028DDF8 00080000 */ .word 0x00080000
@@ -38320,13 +38320,13 @@ dlabel g_awCheatCodeSeqDisplayToggle
     /* 8EE00 8028DE00 80000000 */ .word D_80000000
     /* 8EE04 8028DE04 04000000 */ .word 0x04000000
     /* 8EE08 8028DE08 FFFF0000 */ .word 0xFFFF0000
-enddlabel g_awCheatCodeSeqDisplayToggle
+enddlabel g_awCheatSeqRamView
 
-nonmatching g_pfnTlbRefill_8028de0c
+nonmatching g_awCheatSeqTracks0To4
 
-dlabel g_pfnTlbRefill_8028de0c
+dlabel g_awCheatSeqTracks0To4
     /* 8EE0C 8028DE0C 80000000 */ .word D_80000000
-enddlabel g_pfnTlbRefill_8028de0c
+enddlabel g_awCheatSeqTracks0To4
 
 nonmatching D_8028DE10
 
@@ -38340,11 +38340,11 @@ dlabel D_8028DE10
     /* 8EE24 8028DE24 FFFF0000 */ .word 0xFFFF0000
 enddlabel D_8028DE10
 
-nonmatching g_pfnTlbRefill_8028de28
+nonmatching g_awCheatSeqCars0To8
 
-dlabel g_pfnTlbRefill_8028de28
+dlabel g_awCheatSeqCars0To8
     /* 8EE28 8028DE28 80000000 */ .word D_80000000
-enddlabel g_pfnTlbRefill_8028de28
+enddlabel g_awCheatSeqCars0To8
 
 nonmatching D_8028DE2C
 
@@ -38359,9 +38359,9 @@ dlabel D_8028DE2C
     /* 8EE44 8028DE44 FFFF0000 */ .word 0xFFFF0000
 enddlabel D_8028DE2C
 
-nonmatching g_awCheatCodeSeqUnlockA
+nonmatching g_awCheatSeqUnlockBit200
 
-dlabel g_awCheatCodeSeqUnlockA
+dlabel g_awCheatSeqUnlockBit200
     /* 8EE48 8028DE48 00040000 */ .word 0x00040000
     /* 8EE4C 8028DE4C 00040000 */ .word 0x00040000
     /* 8EE50 8028DE50 00100000 */ .word 0x00100000
@@ -38370,13 +38370,13 @@ dlabel g_awCheatCodeSeqUnlockA
     /* 8EE5C 8028DE5C 00080000 */ .word 0x00080000
     /* 8EE60 8028DE60 00080000 */ .word 0x00080000
     /* 8EE64 8028DE64 FFFF0000 */ .word 0xFFFF0000
-enddlabel g_awCheatCodeSeqUnlockA
+enddlabel g_awCheatSeqUnlockBit200
 
-nonmatching g_wHudElement0
+nonmatching g_awCheatSeqUnlockBit1000
 
-dlabel g_wHudElement0
+dlabel g_awCheatSeqUnlockBit1000
     /* 8EE68 8028DE68 */ .short 0x0001
-enddlabel g_wHudElement0
+enddlabel g_awCheatSeqUnlockBit1000
 
 nonmatching D_8028DE6A
 
@@ -38393,15 +38393,16 @@ dlabel D_8028DE6A
     /* 8EE88 8028DE88 FFFF0000 */ .word 0xFFFF0000
 enddlabel D_8028DE6A
 
-nonmatching g_wHudSpeedDigit0
+nonmatching g_awCheatSeqUnlockBit800
 
-dlabel g_wHudSpeedDigit0
+dlabel g_awCheatSeqUnlockBit800
     /* 8EE8C 8028DE8C */ .short 0x0001
-enddlabel g_wHudSpeedDigit0
+enddlabel g_awCheatSeqUnlockBit800
 
-nonmatching g_wHudSpeedDigit1
+nonmatching D_8028DE8E
 
-dlabel g_wHudSpeedDigit1
+/* Automatically generated and unreferenced pad */
+dlabel D_8028DE8E
     /* 8EE8E 8028DE8E */ .short 0x0000
     /* 8EE90 8028DE90 00100000 */ .word 0x00100000
     /* 8EE94 8028DE94 04000000 */ .word 0x04000000
@@ -38411,11 +38412,11 @@ dlabel g_wHudSpeedDigit1
     /* 8EEA4 8028DEA4 00080000 */ .word 0x00080000
     /* 8EEA8 8028DEA8 04000000 */ .word 0x04000000
     /* 8EEAC 8028DEAC FFFF0000 */ .word 0xFFFF0000
-enddlabel g_wHudSpeedDigit1
+enddlabel D_8028DE8E
 
-nonmatching g_awCheatCodeSeqUnlockB
+nonmatching g_awCheatSeqUnlockBit400
 
-dlabel g_awCheatCodeSeqUnlockB
+dlabel g_awCheatSeqUnlockBit400
     /* 8EEB0 8028DEB0 04000000 */ .word 0x04000000
     /* 8EEB4 8028DEB4 00080000 */ .word 0x00080000
     /* 8EEB8 8028DEB8 00010000 */ .word 0x00010000
@@ -38424,13 +38425,13 @@ dlabel g_awCheatCodeSeqUnlockB
     /* 8EEC4 8028DEC4 00100000 */ .word 0x00100000
     /* 8EEC8 8028DEC8 00020000 */ .word 0x00020000
     /* 8EECC 8028DECC FFFF0000 */ .word 0xFFFF0000
-enddlabel g_awCheatCodeSeqUnlockB
+enddlabel g_awCheatSeqUnlockBit400
 
-nonmatching g_pfnTlbRefill_8028ded0
+nonmatching g_awCheatSeqTracks5To9
 
-dlabel g_pfnTlbRefill_8028ded0
+dlabel g_awCheatSeqTracks5To9
     /* 8EED0 8028DED0 80000000 */ .word D_80000000
-enddlabel g_pfnTlbRefill_8028ded0
+enddlabel g_awCheatSeqTracks5To9
 
 nonmatching D_8028DED4
 
@@ -38445,11 +38446,11 @@ dlabel D_8028DED4
     /* 8EEEC 8028DEEC FFFF0000 */ .word 0xFFFF0000
 enddlabel D_8028DED4
 
-nonmatching g_pfnTlbRefill_8028def0
+nonmatching g_awCheatSeqUnlockBit8000
 
-dlabel g_pfnTlbRefill_8028def0
+dlabel g_awCheatSeqUnlockBit8000
     /* 8EEF0 8028DEF0 80000000 */ .word D_80000000
-enddlabel g_pfnTlbRefill_8028def0
+enddlabel g_awCheatSeqUnlockBit8000
 
 nonmatching D_8028DEF4
 
@@ -38465,11 +38466,11 @@ dlabel D_8028DEF4
     /* 8EF10 8028DF10 FFFF0000 */ .word 0xFFFF0000
 enddlabel D_8028DEF4
 
-nonmatching g_pfnTlbRefill_8028df14
+nonmatching g_awCheatSeqMultiplayer
 
-dlabel g_pfnTlbRefill_8028df14
+dlabel g_awCheatSeqMultiplayer
     /* 8EF14 8028DF14 80000000 */ .word D_80000000
-enddlabel g_pfnTlbRefill_8028df14
+enddlabel g_awCheatSeqMultiplayer
 
 nonmatching D_8028DF18
 
@@ -38481,9 +38482,9 @@ dlabel D_8028DF18
     /* 8EF24 8028DF24 FFFF0000 */ .word 0xFFFF0000
 enddlabel D_8028DF18
 
-nonmatching g_awCheatCodeSeqDisplayModeToggle
+nonmatching g_awCheatSeqBilinearFilter
 
-dlabel g_awCheatCodeSeqDisplayModeToggle
+dlabel g_awCheatSeqBilinearFilter
     /* 8EF28 8028DF28 00010000 */ .word 0x00010000
     /* 8EF2C 8028DF2C 80000000 */ .word D_80000000
     /* 8EF30 8028DF30 00040000 */ .word 0x00040000
@@ -38492,150 +38493,43 @@ dlabel g_awCheatCodeSeqDisplayModeToggle
     /* 8EF3C 8028DF3C 00040000 */ .word 0x00040000
     /* 8EF40 8028DF40 00200000 */ .word 0x00200000
     /* 8EF44 8028DF44 FFFF0000 */ .word 0xFFFF0000
-enddlabel g_awCheatCodeSeqDisplayModeToggle
+enddlabel g_awCheatSeqBilinearFilter
 
-nonmatching D_8028DF48
+nonmatching g_aCheatCodes
 
-dlabel D_8028DF48
+dlabel g_aCheatCodes
     /* 8EF48 8028DF48 80255000 */ .word CheatSetUnlockBit8000
-enddlabel D_8028DF48
+enddlabel g_aCheatCodes
 
-nonmatching g_pDlPtr0
+nonmatching D_8028DF4C
 
-dlabel g_pDlPtr0
-    /* 8EF4C 8028DF4C 8028DEF0 */ .word g_pfnTlbRefill_8028def0
-enddlabel g_pDlPtr0
-
-nonmatching g_pfnEnableRumblePak
-
-dlabel g_pfnEnableRumblePak
-    /* 8EF50 8028DF50 80254FB8 */ .word EnableRumblePak
-enddlabel g_pfnEnableRumblePak
-
-nonmatching g_pDlPtr1
-
-dlabel g_pDlPtr1
-    /* 8EF54 8028DF54 8028DE8C */ .word g_wHudSpeedDigit0
-enddlabel g_pDlPtr1
-
-nonmatching D_8028DF58
-
-/* Automatically generated and unreferenced pad */
-dlabel D_8028DF58
+dlabel D_8028DF4C
+    /* 8EF4C 8028DF4C 8028DEF0 */ .word g_awCheatSeqUnlockBit8000
+    /* 8EF50 8028DF50 80254FB8 */ .word CheatSetUnlockBit800
+    /* 8EF54 8028DF54 8028DE8C */ .word g_awCheatSeqUnlockBit800
     /* 8EF58 8028DF58 80254FA0 */ .word CheatSetUnlockBit1000
-enddlabel D_8028DF58
-
-nonmatching g_pDlPtr2
-
-dlabel g_pDlPtr2
-    /* 8EF5C 8028DF5C 8028DE68 */ .word g_wHudElement0
-enddlabel g_pDlPtr2
-
-nonmatching g_pDlPtr3
-
-dlabel g_pDlPtr3
+    /* 8EF5C 8028DF5C 8028DE68 */ .word g_awCheatSeqUnlockBit1000
     /* 8EF60 8028DF60 80254F88 */ .word CheatSetUnlockBit200
-enddlabel g_pDlPtr3
-
-nonmatching g_pDlPtr4
-
-dlabel g_pDlPtr4
-    /* 8EF64 8028DF64 8028DE48 */ .word g_awCheatCodeSeqUnlockA
-enddlabel g_pDlPtr4
-
-nonmatching g_pDlPtr5
-
-dlabel g_pDlPtr5
-    /* 8EF68 8028DF68 80254F70 */ .word CheatSetUnlockBits1FF
-enddlabel g_pDlPtr5
-
-nonmatching g_pDlPtr6
-
-dlabel g_pDlPtr6
-    /* 8EF6C 8028DF6C 8028DE28 */ .word g_pfnTlbRefill_8028de28
-enddlabel g_pDlPtr6
-
-nonmatching g_pDlPtr7
-
-dlabel g_pDlPtr7
+    /* 8EF64 8028DF64 8028DE48 */ .word g_awCheatSeqUnlockBit200
+    /* 8EF68 8028DF68 80254F70 */ .word CheatUnlockCars0To8
+    /* 8EF6C 8028DF6C 8028DE28 */ .word g_awCheatSeqCars0To8
     /* 8EF70 8028DF70 80254FE8 */ .word CheatUnlockTracks5To9
-enddlabel g_pDlPtr7
-
-nonmatching g_pDlPtr8
-
-dlabel g_pDlPtr8
-    /* 8EF74 8028DF74 8028DED0 */ .word g_pfnTlbRefill_8028ded0
-enddlabel g_pDlPtr8
-
-nonmatching g_pDlPtr9
-
-dlabel g_pDlPtr9
+    /* 8EF74 8028DF74 8028DED0 */ .word g_awCheatSeqTracks5To9
     /* 8EF78 8028DF78 80254FD0 */ .word CheatSetUnlockBit400
-enddlabel g_pDlPtr9
-
-nonmatching g_pDlPtr10
-
-dlabel g_pDlPtr10
-    /* 8EF7C 8028DF7C 8028DEB0 */ .word g_awCheatCodeSeqUnlockB
-enddlabel g_pDlPtr10
-
-nonmatching g_pDlPtr11
-
-dlabel g_pDlPtr11
+    /* 8EF7C 8028DF7C 8028DEB0 */ .word g_awCheatSeqUnlockBit400
     /* 8EF80 8028DF80 80255030 */ .word CheatToggleBilinearFilter
-enddlabel g_pDlPtr11
-
-nonmatching g_pDlPtr12
-
-dlabel g_pDlPtr12
-    /* 8EF84 8028DF84 8028DF28 */ .word g_awCheatCodeSeqDisplayModeToggle
-enddlabel g_pDlPtr12
-
-nonmatching g_pDlPtr13
-
-dlabel g_pDlPtr13
-    /* 8EF88 8028DF88 80254F58 */ .word CheatUnlockAllTracks
-enddlabel g_pDlPtr13
-
-nonmatching g_pDlPtr14
-
-dlabel g_pDlPtr14
-    /* 8EF8C 8028DF8C 8028DE0C */ .word g_pfnTlbRefill_8028de0c
-enddlabel g_pDlPtr14
-
-nonmatching g_pDlPtr15
-
-dlabel g_pDlPtr15
-    /* 8EF90 8028DF90 80254F40 */ .word CheatToggleDisplayListStats
-enddlabel g_pDlPtr15
-
-nonmatching g_pDlPtr16
-
-dlabel g_pDlPtr16
-    /* 8EF94 8028DF94 8028DDF0 */ .word g_awCheatCodeSeqDisplayToggle
-enddlabel g_pDlPtr16
-
-nonmatching g_pDlPtr17
-
-dlabel g_pDlPtr17
+    /* 8EF84 8028DF84 8028DF28 */ .word g_awCheatSeqBilinearFilter
+    /* 8EF88 8028DF88 80254F58 */ .word CheatUnlockTracks0To4
+    /* 8EF8C 8028DF8C 8028DE0C */ .word g_awCheatSeqTracks0To4
+    /* 8EF90 8028DF90 80254F40 */ .word CheatToggleRamView
+    /* 8EF94 8028DF94 8028DDF0 */ .word g_awCheatSeqRamView
     /* 8EF98 8028DF98 80255018 */ .word CheatToggleMultiplayerMode
-enddlabel g_pDlPtr17
-
-nonmatching g_pDlPtr18
-
-dlabel g_pDlPtr18
-    /* 8EF9C 8028DF9C 8028DF14 */ .word g_pfnTlbRefill_8028df14
-enddlabel g_pDlPtr18
-
-nonmatching D_8028DFA0
-
-/* Automatically generated and unreferenced pad */
-dlabel D_8028DFA0
+    /* 8EF9C 8028DF9C 8028DF14 */ .word g_awCheatSeqMultiplayer
     /* 8EFA0 8028DFA0 00000000 */ .word 0x00000000
     /* 8EFA4 8028DFA4 00000000 */ .word 0x00000000
     /* 8EFA8 8028DFA8 00000000 */ .word 0x00000000
     /* 8EFAC 8028DFAC 00000000 */ .word 0x00000000
-enddlabel D_8028DFA0
+enddlabel D_8028DF4C
 
 nonmatching g_dwDisplayListBlockCount
 

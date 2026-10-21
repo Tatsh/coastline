@@ -552,7 +552,7 @@ glabel ProcessPakMenuScreen
   jlabel .L80253C30
     /* 54C30 80253C30 3C108037 */  lui        $s0, %hi(g_aPlayerInputState)
     /* 54C34 80253C34 2610A8E0 */  addiu      $s0, $s0, %lo(g_aPlayerInputState)
-    /* 54C38 80253C38 0C0956B7 */  jal        UpdateSoundMixer
+    /* 54C38 80253C38 0C0956B7 */  jal        UpdateStickRepeat
     /* 54C3C 80253C3C 02002025 */   or        $a0, $s0, $zero
     /* 54C40 80253C40 8E020000 */  lw         $v0, 0x0($s0)
     /* 54C44 80253C44 02002025 */  or         $a0, $s0, $zero

@@ -5755,7 +5755,7 @@ glabel ProcessFillClearMenu
     /* 48FF4 80247FF4 2610A8E0 */  addiu      $s0, $s0, %lo(g_aPlayerInputState)
     /* 48FF8 80247FF8 00006812 */  mflo       $t5
     /* 48FFC 80247FFC 020D2021 */  addu       $a0, $s0, $t5
-    /* 49000 80248000 0C0956B7 */  jal        UpdateSoundMixer
+    /* 49000 80248000 0C0956B7 */  jal        UpdateStickRepeat
     /* 49004 80248004 00000000 */   nop
     /* 49008 80248008 92390000 */  lbu        $t9, 0x0($s1)
     /* 4900C 8024800C 03320019 */  multu      $t9, $s2
@@ -6415,7 +6415,7 @@ glabel ProcessMirrorFlipMenu
     /* 49990 80248990 0019C8C0 */  sll        $t9, $t9, 3
     /* 49994 80248994 0338C823 */  subu       $t9, $t9, $t8
     /* 49998 80248998 0019C880 */  sll        $t9, $t9, 2
-    /* 4999C 8024899C 0C0956B7 */  jal        UpdateSoundMixer
+    /* 4999C 8024899C 0C0956B7 */  jal        UpdateStickRepeat
     /* 499A0 802489A0 02192021 */   addu      $a0, $s0, $t9
     /* 499A4 802489A4 3C0E8029 */  lui        $t6, %hi(gDecalBrushState)
     /* 499A8 802489A8 91CEDBBC */  lbu        $t6, %lo(gDecalBrushState)($t6)
@@ -12056,7 +12056,7 @@ glabel ProcessBrushStyleMenu
     /* 4EBA4 8024DBA4 000E70C0 */  sll        $t6, $t6, 3
     /* 4EBA8 8024DBA8 01D87023 */  subu       $t6, $t6, $t8
     /* 4EBAC 8024DBAC 000E7080 */  sll        $t6, $t6, 2
-    /* 4EBB0 8024DBB0 0C0956B7 */  jal        UpdateSoundMixer
+    /* 4EBB0 8024DBB0 0C0956B7 */  jal        UpdateStickRepeat
     /* 4EBB4 8024DBB4 01CF2021 */   addu      $a0, $t6, $t7
     /* 4EBB8 8024DBB8 3C088029 */  lui        $t0, %hi(gDecalBrushState)
     /* 4EBBC 8024DBBC 9108DBBC */  lbu        $t0, %lo(gDecalBrushState)($t0)
@@ -12738,7 +12738,7 @@ glabel ProcessTextStyleMenu
     /* 4F5BC 8024E5BC 000948C0 */  sll        $t1, $t1, 3
     /* 4F5C0 8024E5C0 01284823 */  subu       $t1, $t1, $t0
     /* 4F5C4 8024E5C4 00094880 */  sll        $t1, $t1, 2
-    /* 4F5C8 8024E5C8 0C0956B7 */  jal        UpdateSoundMixer
+    /* 4F5C8 8024E5C8 0C0956B7 */  jal        UpdateStickRepeat
     /* 4F5CC 8024E5CC 02292021 */   addu      $a0, $s1, $t1
     /* 4F5D0 8024E5D0 3C0B8029 */  lui        $t3, %hi(gDecalBrushState)
     /* 4F5D4 8024E5D4 916BDBBC */  lbu        $t3, %lo(gDecalBrushState)($t3)
@@ -12942,7 +12942,7 @@ glabel ProcessTextStyleMenu
     /* 4F8DC 8024E8DC 000A50C0 */  sll        $t2, $t2, 3
     /* 4F8E0 8024E8E0 014C5023 */  subu       $t2, $t2, $t4
     /* 4F8E4 8024E8E4 000A5080 */  sll        $t2, $t2, 2
-    /* 4F8E8 8024E8E8 0C0956B7 */  jal        UpdateSoundMixer
+    /* 4F8E8 8024E8E8 0C0956B7 */  jal        UpdateStickRepeat
     /* 4F8EC 8024E8EC 022A2021 */   addu      $a0, $s1, $t2
     /* 4F8F0 8024E8F0 3C0D8029 */  lui        $t5, %hi(gDecalBrushState)
     /* 4F8F4 8024E8F4 91ADDBBC */  lbu        $t5, %lo(gDecalBrushState)($t5)
@@ -13886,7 +13886,7 @@ glabel ProcessRectStyleMenu
     /* 5064C 8024F64C 2610A8E0 */  addiu      $s0, $s0, %lo(g_aPlayerInputState)
     /* 50650 8024F650 00005812 */  mflo       $t3
     /* 50654 8024F654 020B2021 */  addu       $a0, $s0, $t3
-    /* 50658 8024F658 0C0956B7 */  jal        UpdateSoundMixer
+    /* 50658 8024F658 0C0956B7 */  jal        UpdateStickRepeat
     /* 5065C 8024F65C 00000000 */   nop
     /* 50660 8024F660 922D0000 */  lbu        $t5, 0x0($s1)
     /* 50664 8024F664 01B20019 */  multu      $t5, $s2
@@ -15279,7 +15279,7 @@ glabel ProcessOvalStyleMenu
     /* 519C0 802509C0 000B58C0 */  sll        $t3, $t3, 3
     /* 519C4 802509C4 01695823 */  subu       $t3, $t3, $t1
     /* 519C8 802509C8 000B5880 */  sll        $t3, $t3, 2
-    /* 519CC 802509CC 0C0956B7 */  jal        UpdateSoundMixer
+    /* 519CC 802509CC 0C0956B7 */  jal        UpdateStickRepeat
     /* 519D0 802509D0 020B2021 */   addu      $a0, $s0, $t3
     /* 519D4 802509D4 922D0000 */  lbu        $t5, 0x0($s1)
     /* 519D8 802509D8 000D6080 */  sll        $t4, $t5, 2

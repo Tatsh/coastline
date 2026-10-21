@@ -3620,7 +3620,7 @@ glabel ProcessScreenState
     /* CD60 8020BD60 2739B760 */  addiu      $t9, $t9, %lo(g_aVehicles)
     /* CD64 8020BD64 0018C100 */  sll        $t8, $t8, 4
     /* CD68 8020BD68 03198821 */  addu       $s1, $t8, $t9
-    /* CD6C 8020BD6C 0C0956B7 */  jal        UpdateSoundMixer
+    /* CD6C 8020BD6C 0C0956B7 */  jal        UpdateStickRepeat
     /* CD70 8020BD70 8E242074 */   lw        $a0, 0x2074($s1)
     /* CD74 8020BD74 8E242074 */  lw         $a0, 0x2074($s1)
     /* CD78 8020BD78 44804000 */  mtc1       $zero, $f8

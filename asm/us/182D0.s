@@ -4070,8 +4070,8 @@ glabel FlushDisplayList
     /* 1BCD0 8021ACD0 00002825 */  or         $a1, $zero, $zero
     /* 1BCD4 8021ACD4 0C0990B8 */  jal        osRecvMesg
     /* 1BCD8 8021ACD8 24060001 */   addiu     $a2, $zero, 0x1
-    /* 1BCDC 8021ACDC 3C188029 */  lui        $t8, %hi(g_dwHudMessageColor)
-    /* 1BCE0 8021ACE0 8F18AA94 */  lw         $t8, %lo(g_dwHudMessageColor)($t8)
+    /* 1BCDC 8021ACDC 3C188029 */  lui        $t8, %hi(g_bShowRamOnScreen)
+    /* 1BCE0 8021ACE0 8F18AA94 */  lw         $t8, %lo(g_bShowRamOnScreen)($t8)
     /* 1BCE4 8021ACE4 1300003D */  beqz       $t8, .L8021ADDC
     /* 1BCE8 8021ACE8 3C0D8029 */   lui       $t5, %hi(g_dwScreenScaleShift)
     /* 1BCEC 8021ACEC 8DADA850 */  lw         $t5, %lo(g_dwScreenScaleShift)($t5)

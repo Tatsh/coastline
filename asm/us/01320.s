@@ -5019,7 +5019,7 @@ glabel ProcessRaceHud
     /* 5D08 80204D08 0019C900 */  sll        $t9, $t9, 4
     /* 5D0C 80204D0C 3C048032 */  lui        $a0, %hi(D_8031D7D4)
     /* 5D10 80204D10 00992021 */  addu       $a0, $a0, $t9
-    /* 5D14 80204D14 0C0956B7 */  jal        UpdateSoundMixer
+    /* 5D14 80204D14 0C0956B7 */  jal        UpdateStickRepeat
     /* 5D18 80204D18 8C84D7D4 */   lw        $a0, %lo(D_8031D7D4)($a0)
     /* 5D1C 80204D1C 00117180 */  sll        $t6, $s1, 6
     /* 5D20 80204D20 01D17021 */  addu       $t6, $t6, $s1

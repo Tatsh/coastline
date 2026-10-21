@@ -76,6 +76,7 @@ dtdy
 dtgr
 dvcpkg
 dzlib
+ebrake
 edma
 edmaread
 edmawrite
@@ -140,6 +141,7 @@ jammesg
 jinja
 jlabel
 joybus
+jpad
 jsonnet
 jsonschema
 jtbl

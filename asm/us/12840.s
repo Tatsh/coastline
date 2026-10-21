@@ -885,7 +885,7 @@ glabel ProcessDataSaveLoadMenu
     /* 1347C 8021247C 0019C8C0 */  sll        $t9, $t9, 3
     /* 13480 80212480 0329C823 */  subu       $t9, $t9, $t1
     /* 13484 80212484 0019C880 */  sll        $t9, $t9, 2
-    /* 13488 80212488 0C0956B7 */  jal        UpdateSoundMixer
+    /* 13488 80212488 0C0956B7 */  jal        UpdateStickRepeat
     /* 1348C 8021248C 032A2021 */   addu      $a0, $t9, $t2
     /* 13490 80212490 3C0B8027 */  lui        $t3, %hi(g_dwMenuChoosingPlayer)
     /* 13494 80212494 8D6B1FA8 */  lw         $t3, %lo(g_dwMenuChoosingPlayer)($t3)

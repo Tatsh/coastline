@@ -4253,7 +4253,7 @@ glabel ProcessTrackSelectScreen
     /* 11274 80210274 10000003 */  b          .L80210284
     /* 11278 80210278 AC8C0000 */   sw        $t4, 0x0($a0)
   .L8021027C:
-    /* 1127C 8021027C 0C0956B7 */  jal        UpdateSoundMixer
+    /* 1127C 8021027C 0C0956B7 */  jal        UpdateStickRepeat
     /* 11280 80210280 8E242074 */   lw        $a0, 0x2074($s1)
   .L80210284:
     /* 11284 80210284 8EC20000 */  lw         $v0, 0x0($s6)

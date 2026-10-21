@@ -11305,36 +11305,36 @@ enddlabel D_802AB3F4
 nonmatching switchdataD_802ab400
 
 dlabel switchdataD_802ab400
-    /* AC400 802AB400 802552F4 */ .word .L802552F4
-    /* AC404 802AB404 802553E4 */ .word .L802553E4
-    /* AC408 802AB408 802554D0 */ .word .L802554D0
-    /* AC40C 802AB40C 802555F0 */ .word .L802555F0
-    /* AC410 802AB410 802552BC */ .word .L802552BC
+    /* AC400 802AB400 802552F4 */ .word 0
+    /* AC404 802AB404 802553E4 */ .word 0
+    /* AC408 802AB408 802554D0 */ .word 0
+    /* AC40C 802AB40C 802555F0 */ .word 0
+    /* AC410 802AB410 802552BC */ .word 0
 enddlabel switchdataD_802ab400
 
-nonmatching g_dwRaceReserved108
+nonmatching g_fStickReleaseThreshold
 
-dlabel g_dwRaceReserved108
+dlabel g_fStickReleaseThreshold
     /* AC414 802AB414 3E99999A */ .float 0.3000000119
-enddlabel g_dwRaceReserved108
+enddlabel g_fStickReleaseThreshold
 
-nonmatching g_dwRaceReserved109
+nonmatching g_fStickPressThreshold
 
-dlabel g_dwRaceReserved109
+dlabel g_fStickPressThreshold
     /* AC418 802AB418 3F19999A */ .float 0.6000000238
-enddlabel g_dwRaceReserved109
+enddlabel g_fStickPressThreshold
 
-nonmatching g_dwRaceReserved110
+nonmatching g_fStickReleaseThresholdNeg
 
-dlabel g_dwRaceReserved110
+dlabel g_fStickReleaseThresholdNeg
     /* AC41C 802AB41C BE99999A */ .float -0.3000000119
-enddlabel g_dwRaceReserved110
+enddlabel g_fStickReleaseThresholdNeg
 
-nonmatching g_dwRaceReserved111
+nonmatching g_fStickPressThresholdNeg
 
-dlabel g_dwRaceReserved111
+dlabel g_fStickPressThresholdNeg
     /* AC420 802AB420 BF19999A */ .float -0.6000000238
-enddlabel g_dwRaceReserved111
+enddlabel g_fStickPressThresholdNeg
     /* AC424 802AB424 00000000 */ .float 0
     /* AC428 802AB428 00000000 */ .float 0
     /* AC42C 802AB42C 00000000 */ .float 0

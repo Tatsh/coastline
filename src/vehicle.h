@@ -28,7 +28,12 @@ typedef struct {
  * use them are reconstructed.
  */
 typedef struct {
-    u8 unreconstructed0[0xE4];
+    u8 unreconstructed0[0xCC];
+    /** The unlocked cars, a bit for each from bit 0, and further unlocks above them. */
+    u16 unlocks;
+    /** The unlocked tracks, a bit for each. */
+    u16 unlockedTracks;
+    u8 unreconstructedD0[0xE4 - 0xD0];
     /** The button layout the player chose on the controller screen. */
     s32 controllerLayout;
 } PlayerProfile;
