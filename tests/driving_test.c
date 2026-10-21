@@ -102,6 +102,21 @@ int main(void) {
     TraceTrackSplineRecursive(vehicle, 0, 2, section);
     assert(g_bTraceBlocked);
 
+    /* The weight at the corner (1, 1, 0) was predicted at (1.5, 1, 0), so its velocity becomes
+     * the corner less the prediction, with gravity. */
+    {
+        static Vehicle swung;
+
+        swung.frame.forward.x = 1.0f;
+        swung.frame.side.y = 1.0f;
+        swung.joltPosition.x = swung.joltPosition.y = 1.0f;
+        swung.joltVelocity.x = 0.5f;
+        SwingJoltWeight(&swung);
+        assert(NEAR(swung.joltVelocity.x, -0.5f) && NEAR(swung.joltVelocity.y, 0.0f));
+        assert(NEAR(swung.joltVelocity.z, -JOLT_GRAVITY));
+        assert(swung.joltPosition.x == 1.0f && swung.joltPosition.y == 1.0f);
+    }
+
     puts("driving ok");
     return 0;
 }

@@ -337,7 +337,8 @@ static void SwingJoltWeight(Vehicle *vehicle) {
         AddVehicleJolt(vehicle->index, jolt + jolt);
     }
     vehicle->joltPosition = corner;
-    Vec3fSubtract(&vehicle->joltVelocity, &predicted, &vehicle->joltPosition);
+    /* The new position less the predicted one, not the reverse. */
+    Vec3fSubtract(&vehicle->joltVelocity, &vehicle->joltPosition, &predicted);
     vehicle->joltVelocity.z -= JOLT_GRAVITY;
 }
 
@@ -895,7 +896,7 @@ static f32 PassAiVehicles(Vehicle *vehicle, f32 sideOffset) {
                 }
                 found = i;
             } else if (-AI_PASS_SIDE < sideGap) {
-                /* Never reached: a gap of at least 3 is above -3. */
+                /* Always true here: a gap of at least 3 is above -3. */
                 push = (1.0f - gap * (1.0f / AI_PASS_RANGE)) * AI_PASS_PUSH;
                 if (AI_PASS_PUSH_MAX < push) {
                     push = AI_PASS_PUSH_MAX;
@@ -958,6 +959,7 @@ static void PlanAiDrive(Vehicle *vehicle) {
     Vec3f direction;
     Vec3f up;
     Vec3f across;
+    Vec3f unread;
     Vec3f edge;
     TrackPoint *point;
     f32 forwardSpeed;
@@ -990,6 +992,8 @@ static void PlanAiDrive(Vehicle *vehicle) {
     Vec3fDirection(&direction, &vehicle->frame.position, &vehicle->aiTarget);
     up = g_vUpAxis;
     Vec3fCross(&across, &up, &direction);
+    /* The original computes this product and never reads it. */
+    Vec3fCross(&unread, &direction, &across);
     side = Vec3fDot(&vehicle->frame.side, &direction);
     vehicle->accelerator = Vec3fDot(&vehicle->frame.forward, &direction);
     vehicle->input->buttons |= INPUT_ACCELERATE;

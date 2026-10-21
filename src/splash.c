@@ -59,6 +59,9 @@
 #define LOGO_LEAVE_TIME 3.5f
 #define LOGO_END_TIME 6.0f
 
+/* The developer logo is gone a second sooner than the other two. */
+#define DEVELOPER_LOGO_END_TIME 5.0f
+
 /* The depth of a logo at rest, and its scale. */
 #define LOGO_DEPTH (-50.0f)
 #define LOGO_SCALE 0.03125f
@@ -119,7 +122,8 @@ static s16 PlaySplashSound(s8 *sample, u32 length, s32 volume) {
  * Fly a logo in with a spin from the distance and two sounds, hold it, then slide it off to the
  * right with a sound that pans after it.
  */
-static void UpdateSplashLogo(Model *logo, f32 start, s32 *voice, s32 *soundA, s32 *soundB) {
+static void
+UpdateSplashLogo(Model *logo, f32 start, f32 end, s32 *voice, s32 *soundA, s32 *soundB) {
     f32 t = g_fSplashTime;
     f32 left;
     f32 since;
@@ -146,7 +150,7 @@ static void UpdateSplashLogo(Model *logo, f32 start, s32 *voice, s32 *soundA, s3
                     LOGO_SCALE);
         return;
     }
-    if (t >= start + LOGO_END_TIME) {
+    if (t >= start + end) {
         return;
     }
 
@@ -409,6 +413,7 @@ void ProcessSplashScreens(void) {
     if (g_fSplashTime >= FIRST_LOGO_START) {
         UpdateSplashLogo(g_pSplashFirstLogo,
                          FIRST_LOGO_START,
+                         LOGO_END_TIME,
                          &g_dwSplashFirstLogoVoice,
                          &g_dwSplashFirstLogoSoundA,
                          &g_bSplashFirstLogoSoundB);
@@ -417,6 +422,7 @@ void ProcessSplashScreens(void) {
         DrawSplashCaption("Produced by", PRODUCER_LOGO_START, 70);
         UpdateSplashLogo(g_pSplashProducerLogo,
                          PRODUCER_LOGO_START,
+                         LOGO_END_TIME,
                          &g_dwSplashProducerVoice,
                          &g_dwSplashProducerSoundA,
                          &g_bSplashProducerSoundB);
@@ -425,6 +431,7 @@ void ProcessSplashScreens(void) {
         DrawSplashCaption("Developed by", DEVELOPER_LOGO_START, 60);
         UpdateSplashLogo(g_pSplashDeveloperLogo,
                          DEVELOPER_LOGO_START,
+                         DEVELOPER_LOGO_END_TIME,
                          &g_dwSplashDeveloperVoice,
                          &g_dwSplashDeveloperSoundA,
                          &g_bSplashDeveloperSoundB);
