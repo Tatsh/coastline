@@ -9,12 +9,13 @@ Gfx *gDisplayListPtr;
 u32 g_dwTextureFilterMode = 0x2000;
 s32 g_dwScreenScaleShift;
 
-void DmaRead(void *dst, u32 rom, u32 size) {
+void DmaRead(void *dst, u32 rom, s32 size) {
 }
 u32 DmaReadAssetSize(u32 rom) {
     return 0;
 }
-void DecompressFromRom(void *dst, u32 rom, DecompressJob *job) {
+u32 DecompressFromRom(void *dst, u32 rom, DecompressJob *job) {
+    return 0;
 }
 
 void GetTextureScaleAndMask(s32 size, s32 *scale, s32 *maskBits) {

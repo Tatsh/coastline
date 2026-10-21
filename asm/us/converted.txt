@@ -7,6 +7,7 @@ AllocAndDmaLoadAsset
 AllocDisplayListBlock
 AllocHeapAligned
 AllocHiliteBlock
+AllocIoMessage
 AllocLightBlock
 AnimateSplashModels
 AnimateStartLights
@@ -23,6 +24,7 @@ AudioMixingThreadMain
 BeginDebugStats
 BeginTimingFrame
 BindPlayerInputToVehicle
+BootIdleThread
 BounceModelAnimations
 BounceOffPlane
 BuildFrequencyScaleTable
@@ -31,6 +33,7 @@ BuildTrackTriangleCache
 BuildVisibleGrid
 BuildVisibleInstanceList
 CalculateScrollPositions
+CallCurrentGameMode
 CastRayAgainstTrack
 CastWheelRay
 CheatSetUnlockBit1000
@@ -85,6 +88,7 @@ CountTriangleWinding
 DebugFrameStubA
 DebugFrameStubB
 DecalCharToAscii
+DecompressFromRom
 DecompressInterleavedRle
 DecompressModel
 DecreaseBgmVolume
@@ -92,7 +96,10 @@ DecreaseSfxVolume
 DeformVehicleMeshByImpact
 DeserializeSaveData
 DisableTextShadow
+DmaRead
 DmaReadAndFixupTrackModel
+DmaReadAssetSize
+DmaReadWord
 DoesSegmentCrossUnitCube
 DoesTriangleCrossUnitCube
 DrawBitmapTextToFramebuffer
@@ -131,6 +138,7 @@ ExchangeWordBuffers
 ExtractVehicleBaseColor
 FadeMusicTo
 FadeSfxTo
+FaultThread
 FindFreeSoundChannel
 FindTrackGridCellByIndex
 FindTrackRoutePoint
@@ -139,6 +147,7 @@ FixupDisplayListPointers
 FixupVehicleModelPointers
 FloatToInt
 FormatLapTime
+GameModeMainLoop
 GetBodyPointVelocity
 GetHeapCurrentAddress
 GetInstanceGridCellCount
@@ -151,6 +160,7 @@ InitAllRumblePaks
 InitAudioSystem
 InitBitmapText
 InitCameraForVehicle
+InitDmaRequest
 InitGameAndShowMenus
 InitMusicPlayback
 InitPakAndEnumerateFiles
@@ -159,6 +169,7 @@ InitPlayerInputState
 InitPlayerVehicleSlot
 InitRacerSlot
 InitRandomRainParticles
+InitRenderingSubsystem
 InitRigidBody
 InitSoundChannel
 InitVehicleColor
@@ -170,6 +181,7 @@ IntegrateRigidBodyState
 InvalidateTriCacheSectorAt
 IsCarUnlocked
 IsCellVisible
+IsCurrentScreen
 IsFadeComplete
 IsFadedToBlack
 IsFadedToWhite
@@ -227,6 +239,7 @@ NegateVectorInPlace
 NextGridCellInstance
 NextGridCellTriangle
 OptionsMenuPostDraw
+OsBootEntry
 ParseMusicPatternRow
 PlaceTrackCamera
 PlaneDistance
@@ -266,6 +279,7 @@ QuaternionMultiply
 QuaternionNormalize
 QuaternionToMatrix
 QuickSort
+RdpDoneThread
 RelocateModelPointers
 RemapPointer
 RenderBillboardParticles
@@ -290,6 +304,7 @@ ResetAllSoundState
 ResetAndInitDisplay
 ResetCollisionCaches
 ResetFrameBlocks
+ResetFrameClock
 ResetHeadlightGlare
 ResetHeap
 ResetMusicChannels
@@ -304,6 +319,7 @@ RestoreClockAfterPause
 RestoreRaceResultsFromSlots
 RestoreRaceSnapshot
 RotateVehicleByEuler
+RspDoneThread
 SaveClockForPause
 SaveLastLapSnapshot
 SaveRaceResultsToSlots
@@ -312,13 +328,17 @@ ScrollTextUp
 SeasonRecordsPreDrawCallback
 SegmentCrossesLine2D
 SerializeSaveData
+SetCurrentScreenCallback
+SetDebugMessage
 SetFadeTarget
 SetHeapCurrentAddress
 SetMaterialColor
 SetModelAnimationFlags
+SetNextScreenCallback
 SetRigidBodyForce
 SetRngSeed
 SetScreenPendingSelection
+SetSecondaryScreenCallback
 SetSfxFadeLevelImmediate
 SetSoundChannelVolume
 SetTextAlignCenter
@@ -353,9 +373,12 @@ StartTimeAttack
 StepDebugHiddenInstance
 StepVehicleCollisions
 StubDashboard
+StubFunction
 StubPhysics1
 StubPhysics2
+StubRenderCallback
 StubSoundUpdate
+StubUpdateCallback
 StubWeatherUpdate
 SubdivideLightningBolt
 SubtractMatrix3x3
@@ -375,10 +398,18 @@ TransposeCopyMatrix3x3
 TwoControllersPostDrawCallback
 UnmarkTrackSections
 UnusedAudioMixingStub
+UnusedBootIdleStub
 UnusedCollisionResponseStub
+UnusedDpInterruptStub
+UnusedFrameTimingStub
+UnusedGameModeLoopStub
+UnusedPreNmiStub
 UnusedRaceStartStub
 UnusedScreenFadeStub
+UnusedSpInterruptStub
 UnusedTrackCollisionStub
+UnusedVblankQueryStub
+UnusedVblankRetraceStub
 UpdateAiVehicleBehavior
 UpdateAirplaneSound
 UpdateAllVehicleEffects
@@ -389,6 +420,7 @@ UpdateCameraSystem
 UpdateClosestSoundSource
 UpdateExhaustParticles
 UpdateFadeTransitions
+UpdateFrameTiming
 UpdateHudMessageTimers
 UpdateLightningFlash
 UpdateMusicPlayback
@@ -444,6 +476,9 @@ Vec3fSubtract
 Vec3fSubtractInPlace
 Vec3fTransformByMatrix
 Vec3sTransformToVec4f
+ViRetraceThread
+WaitForDmaMessages
+WaitForVblankMessage
 _Genld
 _Ldtob
 _Litob

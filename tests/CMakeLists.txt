@@ -22,8 +22,11 @@ set(_vecmath "${_src}/vecmath.c")
 function(coastline_add_test name)
   add_executable(${name}_test ${name}_test.c ${ARGN})
   target_include_directories(${name}_test PRIVATE "${_src}" "${_src}/libultra/include")
-  target_compile_options(${name}_test PRIVATE -w -fno-pie -fsanitize=address,undefined)
-  target_link_options(${name}_test PRIVATE -no-pie -fsanitize=address,undefined)
+  # The routines a test does not reach are dropped, so they need no stubs.
+  target_compile_options(${name}_test PRIVATE -w -fno-pie -fsanitize=address,undefined
+                                              -ffunction-sections -fdata-sections)
+  target_link_options(${name}_test PRIVATE -no-pie -fsanitize=address,undefined
+                      -Wl,--gc-sections)
   target_link_libraries(${name}_test PRIVATE m)
   # A test may be given arguments in NAME_TEST_ARGS.
   add_test(NAME ${name} COMMAND ${name}_test ${${name}_TEST_ARGS})
@@ -52,6 +55,7 @@ coastline_add_test(rigidbody ${_common} "${_src}/rigidbody.c")
 coastline_add_test(sky ${_common} "${_src}/sky.c")
 coastline_add_test(sort "${_src}/util.c")
 coastline_add_test(splash ${_common})
+coastline_add_test(system)
 coastline_add_test(texrect "${_src}/texrect.c")
 coastline_add_test(text "${_src}/text.c")
 coastline_add_test(timing "${_src}/timing.c")

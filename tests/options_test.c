@@ -34,7 +34,7 @@ OSPfs g_aPakPfs[MAXCONTROLLERS], g_aContPfs[MAXCONTROLLERS];
 s32 gControllerPakState;
 u8 g_aabSavePakIds[2][32];
 OSMesgQueue g_SiMesgQueue;
-u8 g_abRumblePakPresent[RUMBLE_CHANNELS];
+u8 g_abRumblePakPresent[MAXCONTROLLERS];
 s16 g_wSerialInterfaceIdle;
 PlayerInputState g_aPlayerInputState[MAX_PLAYERS];
 u32 g_dwNumLocalPlayers = 1;

@@ -266,4 +266,11 @@ void UpdateStickRepeat(PlayerInputState *state);
  */
 void InitPlayerInputState(PlayerInputState *state);
 
+/**
+ * Read the controllers and turn their state into the input of the players.
+ *
+ * @ghidraAddress USA: 0x8021a9b4
+ */
+void UpdateControllerState(void);
+
 #endif

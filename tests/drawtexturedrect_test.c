@@ -22,9 +22,10 @@ void GetTextureScaleAndMask(s32 size, s32 *scale, s32 *maskBits) {
 u32 DmaReadAssetSize(u32 romOffset) {
     return 0;
 }
-void DmaRead(void *dst, u32 romOffset, u32 size) {
+void DmaRead(void *dst, u32 romOffset, s32 size) {
 }
-void DecompressFromRom(void *dst, u32 romOffset, DecompressJob *job) {
+u32 DecompressFromRom(void *dst, u32 romOffset, DecompressJob *job) {
+    return 0;
 }
 
 static const u32 expected[][2] = {

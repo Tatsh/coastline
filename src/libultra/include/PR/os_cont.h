@@ -11,6 +11,11 @@
 
 #define MAXCONTROLLERS 4
 
+/* Bits of OSContStatus.type. */
+#define CONT_ABSOLUTE 0x0001
+#define CONT_RELATIVE 0x0002
+#define CONT_JOYPORT 0x0004
+
 /* Bits of OSContStatus.status. */
 #define CONT_CARD_ON 0x01
 #define CONT_CARD_PULL 0x02

@@ -6,6 +6,9 @@
  * The display, DMA and decompression state of the system file of the N64 releases.
  */
 
+#include <PR/gbi.h>
+#include <PR/os.h>
+#include <PR/os_cont.h>
 #include <PR/ultratypes.h>
 
 /** The bump allocator zcalloc() draws from. */
@@ -109,7 +112,7 @@ void GameModeMainLoop(void);
  * @param size The number of bytes to copy.
  * @ghidraAddress USA: 0x8021c748
  */
-void DmaRead(void *dst, u32 romOffset, u32 size);
+void DmaRead(void *dst, u32 romOffset, s32 size);
 
 /**
  * Read a word from the cartridge.
@@ -129,22 +132,23 @@ u32 DmaReadWord(u32 romOffset);
  */
 u32 DmaReadAssetSize(u32 romOffset);
 
-/**
- * A decompression that runs over several calls of DecompressFromRom(). Its fields join this
- * structure as they are reconstructed.
- */
+/** A decompression that runs over several calls of DecompressFromRom(), a step a call. */
 typedef struct {
+    /** Where the next chunk is on the cartridge. */
     u32 romOffset;
     /** Where the decompression writes next, or NULL before it starts. */
     void *dst;
-    /** The memory the compressed data is read into. */
+    /** The memory the compressed data is read into, two halves of 16000 bytes. */
     u8 *buffer;
-    u32 unreconstructedC;
-    u32 unreconstructed10;
-    u32 unreconstructed14;
+    /** The half being read into, 0 or 16000. */
+    u32 bufferHalf;
+    /** The sizes of the asset, compressed and decompressed. */
+    u32 compressedSize;
+    u32 decompressedSize;
     /** The compressed bytes left to read, 0 once the decompression is done. */
     u32 remaining;
-    u32 unreconstructed1C;
+    /** The size of the chunk being read. */
+    u32 pendingChunkSize;
 } DecompressJob;
 
 /** The size of each of g_aDmaWorkBuffers. */
@@ -173,9 +177,10 @@ void InitDmaRequest(DecompressJob *job, u8 *buffer);
  * @param romOffset The cartridge offset of the asset.
  * @param job The decompression to continue, which DecompressFromRom() leaves where it stopped, or
  * NULL to decompress the asset whole.
+ * @return The size of the asset once decompressed.
  * @ghidraAddress USA: 0x8021cd30
  */
-void DecompressFromRom(void *dst, u32 romOffset, DecompressJob *job);
+u32 DecompressFromRom(void *dst, u32 romOffset, DecompressJob *job);
 
 /**
  * Patch the render modes of the track and vehicle display lists for the current weather.
@@ -355,8 +360,8 @@ void StubUpdateCallback(void);
 void StubRenderCallback(void);
 
 /**
- * Whether the screen of a race runs, which makes UpdateFrameTiming() count from the timer of the
- * CPU.
+ * Whether the screen of a race runs, which makes UpdateFrameTiming() step a fixed 1/30 of a second
+ * a frame rather than count the timer of the CPU.
  *
  * @ghidraAddress USA: 0x8028ab10
  */
@@ -379,5 +384,299 @@ void ClearZBufferRect(s32 x, s32 y, s32 width, s32 height);
  * @ghidraAddress USA: 0x8021c46c
  */
 void ResetFrameClock(void);
+
+/**
+ * The messages of the DMA, which AllocIoMessage() hands out in turn.
+ *
+ * @ghidraAddress USA: 0x8031a020
+ */
+extern OSIoMesg g_aIoMessagePool[32];
+
+/** The DMA started and not yet waited for. @ghidraAddress USA: 0x80272d44 */
+extern s32 g_dwIoMessagePendingCount;
+
+/** The message of g_aIoMessagePool last handed out. @ghidraAddress USA: 0x80272d40 */
+extern s32 g_dwIoMessagePoolIndex;
+
+/** The queue a finished DMA sends to. @ghidraAddress USA: 0x80319f88 */
+extern OSMesgQueue g_DmaMessageQueue;
+
+/** @ghidraAddress USA: 0x80319fa0 */
+extern OSMesg g_aDmaMsgBuf[32];
+
+/**
+ * The queue the RSP event reaches, and the queue the thread forwards it to.
+ *
+ * @ghidraAddress USA: 0x8031a338
+ */
+extern OSMesgQueue g_RspEventMsgQueue;
+
+/** @ghidraAddress USA: 0x8031a354 */
+extern OSMesg g_aRspEventMsgBuf[1];
+
+/** @ghidraAddress USA: 0x8031a320 */
+extern OSMesgQueue g_RspDoneMsgQueue;
+
+/** @ghidraAddress USA: 0x8031a350 */
+extern OSMesg g_aRspDoneMsgBuf[1];
+
+/**
+ * The queue the RDP event reaches, and the queue the thread forwards it to.
+ *
+ * @ghidraAddress USA: 0x8031a370
+ */
+extern OSMesgQueue g_RdpEventMsgQueue;
+
+/** @ghidraAddress USA: 0x8031a38c */
+extern OSMesg g_aRdpEventMsgBuf[1];
+
+/** @ghidraAddress USA: 0x8031a358 */
+extern OSMesgQueue g_RdpDoneMsgQueue;
+
+/** @ghidraAddress USA: 0x8031a388 */
+extern OSMesg g_aRdpDoneMsgBuf[1];
+
+/**
+ * The queue of the retrace of ViRetraceThread(), which nothing starts, and the queue each retrace
+ * reaches.
+ *
+ * @ghidraAddress USA: 0x8031a3b0
+ */
+extern OSMesgQueue g_ViRetracePollMesgQueue;
+
+/** @ghidraAddress USA: 0x8031a3c8 */
+extern OSMesg g_ViRetracePollMesgBuf[1];
+
+/** @ghidraAddress USA: 0x8031a390 */
+extern OSMesgQueue g_ViRetraceMesgQueue;
+
+/** @ghidraAddress USA: 0x8031a3a8 */
+extern OSMesg g_ViRetraceMesgBuf[1];
+
+/** The value the events send. @ghidraAddress USA: 0x8031a3cc */
+extern u32 g_dwDummyOsMesg;
+
+/** The retraces ViRetraceThread() forwarded, from 0 to 15. @ghidraAddress USA: 0x8028adec */
+extern s32 g_dwVblankCounter;
+
+/** The threads of the system. @ghidraAddress USA: 0x802729e0 */
+extern OSThread g_RspDoneThreadObj;
+
+/** @ghidraAddress USA: 0x80272b90 */
+extern OSThread g_RdpDoneThreadObj;
+
+/** @ghidraAddress USA: 0x80272830 */
+extern OSThread g_MainGameThreadObj;
+
+/** @ghidraAddress USA: 0x80272680 */
+extern OSThread g_BootIdleThreadObj;
+
+/** @ghidraAddress USA: 0x8031ac00 */
+extern OSThread g_FaultThreadObj;
+
+/** The words of the stacks of the threads. */
+#define THREAD_STACK_WORDS 0x200
+#define MAIN_STACK_WORDS 0x800
+#define IDLE_STACK_WORDS 0x100
+#define FAULT_STACK_WORDS 0x100
+
+/** The stacks of the threads. @ghidraAddress USA: 0x80318ed0 */
+extern u32 g_adwRspDoneThreadStack[THREAD_STACK_WORDS];
+
+/** @ghidraAddress USA: 0x803196d0 */
+extern u32 g_adwRdpDoneThreadStack[THREAD_STACK_WORDS];
+
+/** @ghidraAddress USA: 0x80316cd0 */
+extern u32 g_adwMainThreadStack[MAIN_STACK_WORDS];
+
+/** @ghidraAddress USA: 0x803168d0 */
+extern u32 g_adwIdleThreadStack[IDLE_STACK_WORDS];
+
+/** @ghidraAddress USA: 0x8031adb0 */
+extern u32 g_adwFaultThreadStack[FAULT_STACK_WORDS];
+
+/** The memory the display lists are built in. @ghidraAddress USA: 0x80272d68 */
+extern Gfx g_aGfxDisplayListPool[];
+
+/** The start of the display lists. @ghidraAddress USA: 0x8028a848 */
+extern Gfx *g_pDisplayListBase;
+
+/** The counts of the CPU counter a millisecond. @ghidraAddress USA: 0x8028a8b0 */
+extern f32 g_fCountsPerMillisecond;
+
+/** What the controllers reported at the start. @ghidraAddress USA: 0x8031a3d0 */
+extern OSContStatus g_aContStatus[MAXCONTROLLERS];
+
+/** @ghidraAddress USA: 0x80272d60 */
+extern OSMesg g_aSiEventMesgBuf[1];
+
+/** The clock of the frames, in counts of the CPU counter. @ghidraAddress USA: 0x8028adf8 */
+extern u64 g_qwTimestampBase;
+
+/** The CPU counter at the last frame. @ghidraAddress USA: 0x8028ae00 */
+extern u32 g_dwFrameTimestamp;
+
+/** The time of the frame before, in milliseconds. @ghidraAddress USA: 0x8028aad0 */
+extern s32 g_dwPrevElapsedTimeMs;
+
+/**
+ * The routines of the screen: the current one, the next, and a second.
+ *
+ * @ghidraAddress USA: 0x8031b318
+ */
+extern ScreenCallback g_pfnCurrentScreen;
+
+/** @ghidraAddress USA: 0x8031b31c */
+extern ScreenCallback g_pfnNextScreen;
+
+/** @ghidraAddress USA: 0x8031b320 */
+extern ScreenCallback g_pfnSecondaryScreen;
+
+/** The words the DMA reads sizes and chunk lengths into. @ghidraAddress USA: 0x8031b328 */
+extern u32 g_dwDmaAssetSizeBuffer;
+
+/** @ghidraAddress USA: 0x8031b330 */
+extern u32 g_dwDmaReadWordBuffer;
+
+/** @ghidraAddress USA: 0x8031b348 */
+extern u32 g_dwDmaChunkSize;
+
+/** The message the debug display shows. @ghidraAddress USA: 0x8028a88c */
+extern const char *g_pszDebugMessage;
+
+/** The queue of the fault event and the thread that faulted. @ghidraAddress USA: 0x8031b1b0 */
+extern OSMesgQueue g_FaultMsgQueue;
+
+/** @ghidraAddress USA: 0x8031b1c8 */
+extern OSMesg g_aFaultMsgBuf[1];
+
+/** @ghidraAddress USA: 0x8031b1cc */
+extern OSThread *g_pFaultedThread;
+
+/** Cleared once by the fault thread. @ghidraAddress USA: 0x8031b1d0 */
+extern s32 g_dwFaultState;
+
+/**
+ * The arguments of a development kit and their count, which starts at 1, and the copies of the
+ * argument vector and of the address of the count given to the threads.
+ *
+ * @ghidraAddress USA: 0x80316450
+ */
+extern char *g_apszBootArgv[];
+
+/** @ghidraAddress USA: 0x8028b2ec */
+extern s32 g_dwBootArgc;
+
+/** @ghidraAddress USA: 0x8028b2f0 */
+extern char **g_ppszBootArgv;
+
+/** @ghidraAddress USA: 0x8026ff04 */
+extern char **g_ppszMainArgv;
+
+/** @ghidraAddress USA: 0x8026ff00 */
+extern s32 *g_pdwMainArgc;
+
+/** The queue of the commands of the PI manager. @ghidraAddress USA: 0x80319ed0 */
+extern OSMesgQueue g_PiMgrCmdQueue;
+
+/** @ghidraAddress USA: 0x80319ee8 */
+extern OSMesg g_aPiMgrCmdMsgBuf[32];
+
+/** The video modes of the NTSC and the MPAL consoles. @ghidraAddress USA: 0x802a54b0 */
+extern OSViMode g_ViModeNtscLan1;
+
+/** @ghidraAddress USA: 0x802a5d70 */
+extern OSViMode g_ViModeMpalLan1;
+
+/**
+ * Take a message of the DMA, waiting for a DMA to finish when every one is in flight.
+ *
+ * @return The message.
+ * @ghidraAddress USA: 0x802172d0
+ */
+OSIoMesg *AllocIoMessage(void);
+
+/**
+ * Wait for every DMA started to finish.
+ *
+ * @ghidraAddress USA: 0x8021735c
+ */
+void WaitForDmaMessages(void);
+
+/**
+ * Return 0. Nothing calls it.
+ *
+ * @param unused0 Not read.
+ * @param unused1 Not read.
+ * @return 0.
+ * @ghidraAddress USA: 0x802173b8
+ */
+s32 UnusedVblankQueryStub(s32 unused0, s32 unused1);
+
+/**
+ * Forward each finished task of the RSP to g_RspDoneMsgQueue, marking the timing bars.
+ *
+ * @param arg Not read.
+ * @ghidraAddress USA: 0x8021bbdc
+ */
+void RspDoneThread(void *arg);
+
+/**
+ * Forward each finished frame of the RDP to g_RdpDoneMsgQueue, marking the timing bars.
+ *
+ * @param arg Not read.
+ * @ghidraAddress USA: 0x8021bca8
+ */
+void RdpDoneThread(void *arg);
+
+/**
+ * Forward each retrace to g_ViRetraceMesgQueue and count it. Nothing starts it.
+ *
+ * @param arg Not read.
+ * @ghidraAddress USA: 0x8021bd68
+ */
+void ViRetraceThread(void *arg);
+
+/** Do nothing. @ghidraAddress USA: 0x8021c6a8 */
+void UnusedFrameTimingStub(void);
+
+/**
+ * Set the second routine of the screen.
+ *
+ * @param callback The routine.
+ * @ghidraAddress USA: 0x8021c6c4
+ */
+void SetSecondaryScreenCallback(ScreenCallback callback);
+
+/** Call the routine of the current screen. @ghidraAddress USA: 0x8021c6f0 */
+void CallCurrentGameMode(void);
+
+/** Wait for the next retrace. @ghidraAddress USA: 0x8021e1c0 */
+void WaitForVblankMessage(void);
+
+/**
+ * Do nothing; where a debugger would stop.
+ *
+ * @param unused Not read.
+ * @ghidraAddress USA: 0x8021e1ec
+ */
+void StubFunction(s32 unused);
+
+/**
+ * Wait for faults and keep the thread that faulted.
+ *
+ * @param arg Not read.
+ * @ghidraAddress USA: 0x8021e21c
+ */
+void FaultThread(void *arg);
+
+/**
+ * Read the arguments of a development kit, start the managers, the fault thread and the main
+ * thread, and become the idle thread.
+ *
+ * @param arg The argument of the main thread.
+ * @ghidraAddress USA: 0x8021e2c8
+ */
+void BootIdleThread(void *arg);
 
 #endif

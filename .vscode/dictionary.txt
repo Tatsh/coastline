@@ -127,7 +127,9 @@ excmask
 exhaustpos
 extraout
 fcntl
+fdata
 ffreestanding
+ffunction
 finalrom
 finetune
 fixedh
@@ -183,6 +185,7 @@ jammesg
 jinja
 jlabel
 joybus
+joyport
 jpad
 jsonnet
 jsonschema
@@ -331,6 +334,7 @@ pirawread
 placedvel
 playerselect
 popmtx
+ppsz
 preapproved
 prenmi
 probetlb

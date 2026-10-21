@@ -784,120 +784,35 @@ nonmatching D_80316448, 0x8
 dlabel D_80316448
     /* 80316448 */ .space 0x08
 
-nonmatching g_apszBootArgv, 0x4
+nonmatching g_apszBootArgv, 0x480
 
 dlabel g_apszBootArgv
-    /* 80316450 */ .space 0x04
+    /* 80316450 */ .space 0x480
 
-nonmatching g_dwPhysicsReserved53, 0x4
+nonmatching g_adwIdleThreadStack, 0x400
 
-dlabel g_dwPhysicsReserved53
-    /* 80316454 */ .space 0x04
-
-nonmatching g_dwPhysicsReserved54, 0x4
-
-dlabel g_dwPhysicsReserved54
-    /* 80316458 */ .space 0x04
-
-nonmatching D_8031645C, 0x474
-
-/* Automatically generated and unreferenced pad */
-dlabel D_8031645C
-    /* 8031645C */ .space 0x474
-
-nonmatching D_803168D0, 0x400
-
-dlabel D_803168D0
+dlabel g_adwIdleThreadStack
     /* 803168D0 */ .space 0x400
 
-nonmatching g_abMainThreadStack, 0x4
+nonmatching g_adwMainThreadStack, 0x2000
 
-dlabel g_abMainThreadStack
-    /* 80316CD0 */ .space 0x04
-
-nonmatching D_80316CD4, 0x1FFC
-
-/* Automatically generated and unreferenced pad */
-dlabel D_80316CD4
-    /* 80316CD4 */ .space 0x1FFC
+dlabel g_adwMainThreadStack
+    /* 80316CD0 */ .space 0x2000
 
 nonmatching g_aViewports, 0x200
 
 dlabel g_aViewports
     /* 80318CD0 */ .space 0x200
 
-nonmatching g_abRspDoneThreadStack, 0x4
+nonmatching g_adwRspDoneThreadStack, 0x800
 
-dlabel g_abRspDoneThreadStack
-    /* 80318ED0 */ .space 0x04
+dlabel g_adwRspDoneThreadStack
+    /* 80318ED0 */ .space 0x800
 
-nonmatching D_80318ED4, 0x7FC
+nonmatching g_adwRdpDoneThreadStack, 0x800
 
-/* Automatically generated and unreferenced pad */
-dlabel D_80318ED4
-    /* 80318ED4 */ .space 0x7FC
-
-nonmatching g_abRdpDoneThreadStack, 0x4
-
-dlabel g_abRdpDoneThreadStack
-    /* 803196D0 */ .space 0x04
-
-nonmatching D_803196D4, 0x18
-
-/* Automatically generated and unreferenced pad */
-dlabel D_803196D4
-    /* 803196D4 */ .space 0x18
-
-nonmatching g_dwArenaCount, 0x4
-
-dlabel g_dwArenaCount
-    /* 803196EC */ .space 0x04
-
-nonmatching g_dwArenaFlags, 0x4
-
-dlabel g_dwArenaFlags
-    /* 803196F0 */ .space 0x04
-
-nonmatching g_dwArenaPad, 0x4
-
-dlabel g_dwArenaPad
-    /* 803196F4 */ .space 0x04
-
-nonmatching g_dwArenaReserved0, 0x4
-
-dlabel g_dwArenaReserved0
-    /* 803196F8 */ .space 0x04
-
-nonmatching g_dwArenaReserved1, 0x4
-
-dlabel g_dwArenaReserved1
-    /* 803196FC */ .space 0x04
-
-nonmatching g_dwArenaReserved2, 0x4
-
-dlabel g_dwArenaReserved2
-    /* 80319700 */ .space 0x04
-
-nonmatching g_dwArenaReserved3, 0x4
-
-dlabel g_dwArenaReserved3
-    /* 80319704 */ .space 0x04
-
-nonmatching g_dwArenaReserved4, 0x4
-
-dlabel g_dwArenaReserved4
-    /* 80319708 */ .space 0x04
-
-nonmatching g_dwArenaReserved5, 0x4
-
-dlabel g_dwArenaReserved5
-    /* 8031970C */ .space 0x04
-
-nonmatching D_80319710, 0x7C0
-
-/* Automatically generated and unreferenced pad */
-dlabel D_80319710
-    /* 80319710 */ .space 0x7C0
+dlabel g_adwRdpDoneThreadStack
+    /* 803196D0 */ .space 0x800
 
 nonmatching g_PiMgrCmdQueue, 0x18
 
@@ -1102,10 +1017,9 @@ nonmatching g_FaultThreadObj, 0x1B0
 dlabel g_FaultThreadObj
     /* 8031AC00 */ .space 0x1B0
 
-nonmatching D_8031ADB0, 0x400
+nonmatching g_adwFaultThreadStack, 0x400
 
-/* Automatically generated and unreferenced pad */
-dlabel D_8031ADB0
+dlabel g_adwFaultThreadStack
     /* 8031ADB0 */ .space 0x400
 
 nonmatching g_FaultMsgQueue, 0x18

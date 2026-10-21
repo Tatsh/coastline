@@ -15,9 +15,10 @@ s32 g_adwVehicleModelSlotCars[2];
 u32 DmaReadAssetSize(u32 romOffset) {
     return 0;
 }
-void DmaRead(void *dst, u32 romOffset, u32 size) {
+void DmaRead(void *dst, u32 romOffset, s32 size) {
 }
-void DecompressFromRom(void *dst, u32 romOffset, DecompressJob *job) {
+u32 DecompressFromRom(void *dst, u32 romOffset, DecompressJob *job) {
+    return 0;
 }
 void osSyncPrintf(const char *format, ...) {
 }

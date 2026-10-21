@@ -95,10 +95,11 @@ void ResetHeap(void) {
 u32 DmaReadAssetSize(u32 rom) {
     return rom == ROM_SPLASH_SOUND_A ? 100 : 60;
 }
-void DecompressFromRom(void *dst, u32 rom, DecompressJob *job) {
+u32 DecompressFromRom(void *dst, u32 rom, DecompressJob *job) {
     assert(job == NULL);
     /* Fill the sound and what lies after it, so that the check sees the silence written. */
     __builtin_memset(dst, 0x55, (rom == ROM_SPLASH_SOUND_A ? 100 : 60) + SOUND_PADDING);
+    return 0;
 }
 s16 FindFreeSoundChannel(void) {
     return nextChannel;

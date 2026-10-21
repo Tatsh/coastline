@@ -126,8 +126,9 @@ void InitDmaRequest(DecompressJob *job, u8 *buffer) {
     initBuffer = buffer;
     job->remaining = 2;
 }
-void DecompressFromRom(void *dst, u32 rom, DecompressJob *job) {
+u32 DecompressFromRom(void *dst, u32 rom, DecompressJob *job) {
     job->remaining--;
+    return 0;
 }
 void TransferFlags(PlayerInputState *s, u32 m) {
     transferred = m;

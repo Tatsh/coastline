@@ -19,8 +19,13 @@ extern OSPfs g_aContPfs[MAXCONTROLLERS];
 /** The queue of SI events. @ghidraAddress USA: 0x80272d48 */
 extern OSMesgQueue g_SiMesgQueue;
 
-/** Whether each controller holds a Rumble Pak. @ghidraAddress USA: 0x8031b1e8 */
-extern u8 g_abRumblePakPresent[RUMBLE_CHANNELS];
+/**
+ * Whether each controller holds a Rumble Pak. The start of the system checks all four; the rumble
+ * reads the first RUMBLE_CHANNELS.
+ *
+ * @ghidraAddress USA: 0x8031b1e8
+ */
+extern u8 g_abRumblePakPresent[MAXCONTROLLERS];
 
 /**
  * Whether the serial interface is free of Controller Pak transfers, so the motors may run.

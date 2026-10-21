@@ -22,7 +22,8 @@ void StartSoundChannelMuted(s16 c, s8 *s, u32 l, u32 ll) {
 u32 DmaReadAssetSize(u32 r) {
     return 0;
 }
-void DecompressFromRom(void *d, u32 r, DecompressJob *j) {
+u32 DecompressFromRom(void *d, u32 r, DecompressJob *j) {
+    return 0;
 }
 void osSyncPrintf(const char *f, ...) {
 }

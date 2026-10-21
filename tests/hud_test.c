@@ -79,7 +79,7 @@ void SetTextCustomColors(s32 a, s32 b, s32 c, s32 d, s32 e, s32 f) {
 s32 MeasureTextWidth(const char *text, s32 size) {
     return (s32)strlen(text) * size / 2;
 }
-void DmaRead(void *dst, u32 rom, u32 size) {
+void DmaRead(void *dst, u32 rom, s32 size) {
     dmas[dmaCount].dst = dst;
     dmas[dmaCount].rom = rom;
     dmas[dmaCount++].size = size;
