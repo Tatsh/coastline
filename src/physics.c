@@ -90,63 +90,73 @@ void ResetCollisionCaches(void) {
 
 void SumBodyForces(RigidBody *body) {
     RigidBodyForce *force;
-    Vec3f vector, arm, torque;
+    f32 vector[3];
+    Vec3f arm;
+    f32 torque[3];
 
     for (force = body->forces; force != NULL; force = force->next) {
-        if (force->frame == RIGID_BODY_FORCE_WORLD) {
-            vector.x = force->vector.x;
-            vector.y = force->vector.y;
-            vector.z = force->vector.z;
-        } else if (force->frame == RIGID_BODY_FORCE_BODY) {
-            Mtx3x3MulVec3f(&vector, body->orientation, &force->vector);
+        switch (force->frame) {
+        case RIGID_BODY_FORCE_WORLD:
+            vector[0] = force->vector.x;
+            vector[1] = force->vector.y;
+            vector[2] = force->vector.z;
+            break;
+        case RIGID_BODY_FORCE_BODY:
+            /* The original keeps the force as an array of three and rotates it in place. */
+            Mtx3x3MulVec3f((Vec3f *)vector, body->orientation, &force->vector);
+            break;
         }
-        body->force.x = vector.x + body->force.x;
-        body->force.y = vector.y + body->force.y;
-        body->force.z = vector.z + body->force.z;
+        body->force.x = vector[0] + body->force.x;
+        body->force.y = vector[1] + body->force.y;
+        body->force.z = vector[2] + body->force.z;
         if (body->kind != RIGID_BODY_NO_ROTATION) {
             Mtx3x3MulVec3f(&arm, body->orientation, &force->point);
-            torque.x = arm.y * vector.z - vector.y * arm.z;
-            torque.y = arm.z * vector.x - vector.z * arm.x;
-            torque.z = arm.x * vector.y - vector.x * arm.y;
-            body->torque.x = torque.x + body->torque.x;
-            body->torque.y = torque.y + body->torque.y;
-            body->torque.z = torque.z + body->torque.z;
+            torque[0] = arm.y * vector[2] - vector[1] * arm.z;
+            torque[1] = arm.z * vector[0] - vector[2] * arm.x;
+            torque[2] = arm.x * vector[1] - vector[0] * arm.y;
+            body->torque.x = torque[0] + body->torque.x;
+            body->torque.y = torque[1] + body->torque.y;
+            body->torque.z = torque[2] + body->torque.z;
         }
     }
 }
 
 void SumWheelForces(RigidBody *body, RigidBody *wheel) {
     RigidBodyForce *force;
-    Vec3f local, flat, along, position, arm, torque;
+    Vec3f along, flat;
+    f32 local[3];
+    Vec3f position, arm;
+    f32 torque[3];
 
     for (force = wheel->forces; force != NULL; force = force->next) {
         if (force->frame == RIGID_BODY_FORCE_WORLD) {
-            Mtx4fInverseRotate(&local, body->orientation, &force->vector);
+            /* The original keeps the force as an array of three and rotates it in place. */
+            Mtx4fInverseRotate((Vec3f *)local, body->orientation, &force->vector);
         }
         if (force->frame == RIGID_BODY_FORCE_BODY) {
-            local.x = force->vector.x;
-            local.y = force->vector.y;
-            local.z = force->vector.z;
+            local[0] = force->vector.x;
+            local[1] = force->vector.y;
+            local[2] = force->vector.z;
         }
         /* The part of the force along the ground turns the body. */
-        flat.x = local.x;
-        flat.y = local.y;
+        flat.x = local[0];
+        flat.y = local[1];
         flat.z = 0.0f;
         Mtx3x3MulVec3f(&along, body->orientation, &flat);
-        wheel->force.x = local.x + wheel->force.x;
-        wheel->force.y = local.y + wheel->force.y;
-        wheel->force.z = local.z + wheel->force.z;
+        wheel->force.x = local[0] + wheel->force.x;
+        wheel->force.y = local[1] + wheel->force.y;
+        wheel->force.z = local[2] + wheel->force.z;
         if (wheel->contactFrames) {
             position.x = wheel->orientation[3][0];
             position.y = wheel->orientation[3][1];
             position.z = wheel->orientation[3][2];
             Mtx3x3MulVec3f(&arm, body->orientation, &position);
-            torque.x = arm.y * along.z - along.y * arm.z;
-            torque.y = arm.z * along.x - along.z * arm.x;
-            torque.z = arm.x * along.y - along.x * arm.y;
-            body->torque.x = torque.x + body->torque.x;
-            body->torque.y = torque.y + body->torque.y;
-            body->torque.z = torque.z + body->torque.z;
+            torque[0] = arm.y * along.z - along.y * arm.z;
+            torque[1] = arm.z * along.x - along.z * arm.x;
+            torque[2] = arm.x * along.y - along.x * arm.y;
+            body->torque.x = torque[0] + body->torque.x;
+            body->torque.y = torque[1] + body->torque.y;
+            body->torque.z = torque[2] + body->torque.z;
         }
     }
 }
@@ -173,23 +183,29 @@ void ComputeVehicleAccelerations(RigidBody *body) {
 }
 
 void ComputeVehicleForces(RigidBody *body) {
-    s32 i;
-
     body->force.z = 0.0f;
     body->force.y = 0.0f;
     body->force.x = 0.0f;
     body->torque.z = 0.0f;
     body->torque.y = 0.0f;
     body->torque.x = 0.0f;
-    for (i = 0; i < VEHICLE_WHEELS; i++) {
-        body->wheels[i]->force.x = 0.0f;
-        body->wheels[i]->force.y = 0.0f;
-        body->wheels[i]->force.z = 0.0f;
-    }
+    body->wheels[0]->force.x = 0.0f;
+    body->wheels[0]->force.y = 0.0f;
+    body->wheels[0]->force.z = 0.0f;
+    body->wheels[1]->force.x = 0.0f;
+    body->wheels[1]->force.y = 0.0f;
+    body->wheels[1]->force.z = 0.0f;
+    body->wheels[2]->force.x = 0.0f;
+    body->wheels[2]->force.y = 0.0f;
+    body->wheels[2]->force.z = 0.0f;
+    body->wheels[3]->force.x = 0.0f;
+    body->wheels[3]->force.y = 0.0f;
+    body->wheels[3]->force.z = 0.0f;
     SumBodyForces(body);
-    for (i = 0; i < VEHICLE_WHEELS; i++) {
-        SumWheelForces(body, body->wheels[i]);
-    }
+    SumWheelForces(body, body->wheels[0]);
+    SumWheelForces(body, body->wheels[1]);
+    SumWheelForces(body, body->wheels[2]);
+    SumWheelForces(body, body->wheels[3]);
     ComputeVehicleAccelerations(body);
 }
 
@@ -284,11 +300,10 @@ static inline f32 SlideShare(RigidBody *body, f32 grip, s32 weather, s32 surface
 }
 
 /* The speed of the body of a vehicle. */
-static inline f32 BodySpeed(RigidBody *body) {
-    Vec3f *v = &body->state.velocity;
-
-    return sqrtf(v->z * v->z + (v->x * v->x + v->y * v->y));
-}
+#define BODY_SPEED(body)                                                                           \
+    sqrtf((body)->state.velocity.z *(body)->state.velocity.z +                                     \
+          ((body)->state.velocity.x * (body)->state.velocity.x +                                   \
+           (body)->state.velocity.y * (body)->state.velocity.y))
 
 void ApplySideGrip(
     RigidBody *body, f32 dt, f32 *rearLoad, f32 *frontLoad, u8 *rearSliding, u8 *frontSliding) {
@@ -364,7 +379,7 @@ void ApplySideGrip(
             skid = 0.0f;
             lateralSpeed = 0.0f;
         } else {
-            speed = BodySpeed(body);
+            speed = BODY_SPEED(body);
             if (speed < SLOW_GRIP_SPEED) {
                 slowGrip = (SLOW_GRIP_SPEED - speed) * 0.1f / SLOW_GRIP_SPEED;
                 if (keep < slowGrip) {
@@ -437,7 +452,7 @@ void ApplySideGrip(
             frontSurface = (frontSurfaceA + frontSurfaceB + 1) >> 1;
             grip = g_afSurfaceGrip[weather][frontSurface] - 0.002f * (f32)(body->tireType - 1);
             keep = SlideShare(body, grip, weather, frontSurface, load);
-            speed = BodySpeed(body);
+            speed = BODY_SPEED(body);
             if (speed < SLOW_GRIP_SPEED) {
                 slowGrip = (SLOW_GRIP_SPEED - speed) * 0.1f / SLOW_GRIP_SPEED;
                 if (keep < slowGrip) {
@@ -1433,26 +1448,25 @@ void StepVehicleCollisions(RigidBody *body) {
 }
 
 void ComputeDragForce(RigidBody *body, RigidBodyForce *force) {
-    Vec3f *velocity = &body->state.velocity;
-    Vec3f extra;
     s32 surface0, surface1, surface2, surface3;
+    f32 extra[3];
 
-    force->vector.x = velocity->x * -110.0f;
-    force->vector.y = velocity->y * -110.0f;
-    force->vector.z = velocity->z * -110.0f;
+    force->vector.x = body->state.velocity.x * -110.0f;
+    force->vector.y = body->state.velocity.y * -110.0f;
+    force->vector.z = body->state.velocity.z * -110.0f;
     surface0 = body->wheels[0]->surface;
     surface1 = body->wheels[1]->surface;
     surface2 = body->wheels[2]->surface;
     surface3 = body->wheels[3]->surface;
-    if (4.0f < BodySpeed(body) && g_dwCurrentWeather != WEATHER_SNOW &&
+    if (4.0f < BODY_SPEED(body) && g_dwCurrentWeather != WEATHER_SNOW &&
         (surface0 == TRACK_SURFACE_SLOW || surface1 == TRACK_SURFACE_SLOW ||
          surface2 == TRACK_SURFACE_SLOW || surface3 == TRACK_SURFACE_SLOW)) {
-        extra.x = velocity->x * -220.0f;
-        extra.y = velocity->y * -220.0f;
-        extra.z = velocity->z * -220.0f;
-        force->vector.x = force->vector.x + extra.x;
-        force->vector.y = force->vector.y + extra.y;
-        force->vector.z = force->vector.z + extra.z;
+        extra[0] = body->state.velocity.x * -220.0f;
+        extra[1] = body->state.velocity.y * -220.0f;
+        extra[2] = body->state.velocity.z * -220.0f;
+        force->vector.x += extra[0];
+        force->vector.y += extra[1];
+        force->vector.z += extra[2];
     }
 }
 
@@ -1606,35 +1620,40 @@ void ComputeSpringForces(RigidBody *body) {
 void ComputeDampingForces(RigidBody *body) {
     RigidBodyForce *force = body->forces;
     RigidBody *wheel;
-    Vec3f velocity;
+    f32 velocity[3];
     s32 i;
+    f32 damping;
 
     for (i = 0; i < VEHICLE_WHEELS; i++) {
         force->vector.y = 0.0f;
         force->vector.x = 0.0f;
+        /* The original keeps the velocity as an array of three. */
         switch (i) {
         case 0:
-            ComputeWheelLocalVelocity(&velocity, body, body->wheels[0]);
+            ComputeWheelLocalVelocity((Vec3f *)velocity, body, body->wheels[0]);
             wheel = body->wheels[0];
             break;
         case 1:
-            ComputeWheelLocalVelocity(&velocity, body, body->wheels[1]);
+            ComputeWheelLocalVelocity((Vec3f *)velocity, body, body->wheels[1]);
             wheel = body->wheels[1];
             break;
         case 2:
-            ComputeWheelLocalVelocity(&velocity, body, body->wheels[2]);
+            ComputeWheelLocalVelocity((Vec3f *)velocity, body, body->wheels[2]);
             wheel = body->wheels[2];
             break;
         default:
-            ComputeWheelLocalVelocity(&velocity, body, body->wheels[3]);
+            ComputeWheelLocalVelocity((Vec3f *)velocity, body, body->wheels[3]);
             wheel = body->wheels[3];
             break;
         }
-        if (!wheel->contactFrames || velocity.z < 0.0f) {
-            force->vector.z = 0.0f;
+        if (wheel->contactFrames == 0) {
+            damping = 0.0f;
+        } else if (velocity[2] < 0.0f) {
+            damping = 0.0f;
         } else {
-            force->vector.z = velocity.z * body->damping;
+            damping = velocity[2] * body->damping;
         }
+        force->vector.z = damping;
         force = force->next;
     }
 }
