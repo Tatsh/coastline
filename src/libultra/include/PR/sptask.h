@@ -54,18 +54,14 @@ typedef union {
  */
 extern OSTask tmp_task;
 
-/**
- * Copy a task to tmp_task with each of its pointers turned physical.
- *
- * @return tmp_task.
- * @ghidraAddress USA: 0x80264b60
- */
+/** @ghidraAddress USA: 0x80264b60 */
 OSTask *_VirtualToPhysicalTask(OSTask *intp);
 
 /**
  * Load a task into the RSP, copying its header to the end of the DMEM and its boot microcode to
  * the IMEM. A yielded task resumes from its yield buffer.
  *
+ * @param tp The task, with virtual addresses. Its OS_TASK_YIELDED flag is cleared.
  * @ghidraAddress USA: 0x80264c7c
  */
 void osSpTaskLoad(OSTask *tp);
@@ -73,39 +69,21 @@ void osSpTaskLoad(OSTask *tp);
 /**
  * Start the RSP on the task osSpTaskLoad() loaded.
  *
+ * @param tp The task loaded, not read.
  * @ghidraAddress USA: 0x80264e0c
  */
 void osSpTaskStartGo(OSTask *tp);
 
-/**
- * Write the RSP status register.
- *
- * @ghidraAddress USA: 0x8026b850
- */
+/** @ghidraAddress USA: 0x8026b850 */
 void __osSpSetStatus(u32 data);
 
-/**
- * Set the RSP program counter.
- *
- * @return 0, or -1 when the RSP is not halted.
- * @ghidraAddress USA: 0x8026b860
- */
+/** @ghidraAddress USA: 0x8026b860 */
 s32 __osSpSetPc(u32 pc);
 
-/**
- * Start a DMA between RDRAM and the RSP memories.
- *
- * @param direction OS_READ to read the RSP memory, OS_WRITE to write it.
- * @return 0, or -1 when the RSP DMA is busy.
- * @ghidraAddress USA: 0x8026b8a0
- */
+/** @ghidraAddress USA: 0x8026b8a0 */
 s32 __osSpRawStartDma(s32 direction, u32 devAddr, void *dramAddr, u32 size);
 
-/**
- * Return whether the RSP DMA is busy or full, or the RSP I/O is full.
- *
- * @ghidraAddress USA: 0x8026b930
- */
+/** @ghidraAddress USA: 0x8026b930 */
 u32 __osSpDeviceBusy(void);
 
 #endif

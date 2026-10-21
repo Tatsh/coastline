@@ -81,7 +81,6 @@ typedef union {
     long long force_structure_alignment; /*!< Aligns the command to 8 bytes for the RSP. */
 } Gfx;
 
-/** Place the low siz bits of v at bit s. */
 #define _SHIFTL(v, s, siz) (((u32)(v) & ((0x01 << (siz)) - 1)) << (s))
 
 /* The command opcodes of the F3DEX microcode, which keeps those of Fast3D. */
@@ -410,7 +409,6 @@ typedef struct {
                           _SHIFTL(sizeof(Vtx) * (n) - 1, 0, 10),                                   \
                       (u32)(v))
 
-/** The vertex indices of a triangle, rotated so the flat-shading vertex comes first. */
 #define __gsSP1Triangle_w1f(v0, v1, v2, flag)                                                      \
     ((flag) == 0 ? _SHIFTL((v0) * 2, 16, 8) | _SHIFTL((v1) * 2, 8, 8) | _SHIFTL((v2) * 2, 0, 8) :  \
      (flag) == 1 ? _SHIFTL((v1) * 2, 16, 8) | _SHIFTL((v2) * 2, 8, 8) | _SHIFTL((v0) * 2, 0, 8) :  \

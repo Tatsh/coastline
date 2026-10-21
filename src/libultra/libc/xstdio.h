@@ -20,10 +20,6 @@
 /** A routine that appends count characters to arg and returns the new position, or NULL. */
 typedef void *(*outfun)(void *arg, const char *s, size_t count);
 
-/**
- * One conversion in progress. A field is n0 prefix characters from the caller's buffer, nz0
- * zeroes, n1 characters from s, nz1 zeroes, n2 more characters from s and nz2 zeroes.
- */
 typedef struct {
     union {
         long long ll;   /*!< The value of an integer conversion. */
@@ -44,26 +40,13 @@ typedef struct {
     char qual;          /*!< The size qualifier, 'h', 'l', 'L', or 0. */
 } _Pft;
 
-/**
- * Format the arguments, passing each run of output to prout.
- *
- * @return The number of characters written.
- * @ghidraAddress USA: 0x80268dc0
- */
+/** @ghidraAddress USA: 0x80268dc0 */
 int _Printf(outfun prout, char *arg, const char *fmt, va_list args);
 
-/**
- * Convert the integer in px to digits in the base of the conversion code.
- *
- * @ghidraAddress USA: 0x8026ce50
- */
+/** @ghidraAddress USA: 0x8026ce50 */
 void _Litob(_Pft *px, char code);
 
-/**
- * Convert the double in px to digits in the form of the conversion code.
- *
- * @ghidraAddress USA: 0x8026d660
- */
+/** @ghidraAddress USA: 0x8026d660 */
 void _Ldtob(_Pft *px, char code);
 
 /**

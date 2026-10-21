@@ -70,11 +70,7 @@ extern const double g_dCosfPio2Lo;
 /** @ghidraAddress USA: 0x802ab930 */
 extern const float g_fCosfZero;
 
-/**
- * The quiet NaN the trigonometric routines return for a NaN argument.
- *
- * @ghidraAddress USA: 0x802aba80
- */
+/** @ghidraAddress USA: 0x802aba80 */
 extern const float __libm_qnan_f;
 
 #endif

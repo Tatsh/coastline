@@ -12,6 +12,8 @@
 /**
  * Convert a floating-point matrix to the fixed-point form of the RSP.
  *
+ * @param mf The source matrix, as f32[4][4] in row-major order.
+ * @param m Receives the matrix in s15.16 fixed point, integer halves first and fractions after.
  * @ghidraAddress USA: 0x80260ed0
  */
 void guMtxF2L(float mf[4][4], Mtx *m);
@@ -19,6 +21,8 @@ void guMtxF2L(float mf[4][4], Mtx *m);
 /**
  * Convert a fixed-point matrix to floating point.
  *
+ * @param mf Receives the matrix as f32[4][4].
+ * @param m The source matrix in s15.16 fixed point.
  * @ghidraAddress USA: 0x80261088
  */
 void guMtxL2F(float mf[4][4], Mtx *m);
@@ -26,6 +30,7 @@ void guMtxL2F(float mf[4][4], Mtx *m);
 /**
  * Set a floating-point matrix to the identity.
  *
+ * @param mf The f32[4][4] matrix set.
  * @ghidraAddress USA: 0x80260fd0
  */
 void guMtxIdentF(float mf[4][4]);
@@ -33,6 +38,7 @@ void guMtxIdentF(float mf[4][4]);
 /**
  * Set a fixed-point matrix to the identity.
  *
+ * @param m The fixed-point matrix set.
  * @ghidraAddress USA: 0x80261058
  */
 void guMtxIdent(Mtx *m);
@@ -40,6 +46,9 @@ void guMtxIdent(Mtx *m);
 /**
  * Multiply two floating-point matrices. The result may alias either operand.
  *
+ * @param mf The left operand, as f32[4][4].
+ * @param nf The right operand, as f32[4][4].
+ * @param res Receives the product mf times nf.
  * @ghidraAddress USA: 0x80260940
  */
 void guMtxCatF(float mf[4][4], float nf[4][4], float res[4][4]);
@@ -47,6 +56,9 @@ void guMtxCatF(float mf[4][4], float nf[4][4], float res[4][4]);
 /**
  * Multiply two fixed-point matrices.
  *
+ * @param m The left operand, in s15.16 fixed point.
+ * @param n The right operand, in s15.16 fixed point.
+ * @param res Receives the product m times n.
  * @ghidraAddress USA: 0x80267470
  */
 void guMtxCatL(Mtx *m, Mtx *n, Mtx *res);
@@ -54,6 +66,13 @@ void guMtxCatL(Mtx *m, Mtx *n, Mtx *res);
 /**
  * Transform a point by a floating-point matrix.
  *
+ * @param mf The transform, as f32[4][4].
+ * @param x The X coordinate of the point.
+ * @param y The Y coordinate of the point.
+ * @param z The Z coordinate of the point.
+ * @param ox Receives the transformed X coordinate.
+ * @param oy Receives the transformed Y coordinate.
+ * @param oz Receives the transformed Z coordinate.
  * @ghidraAddress USA: 0x802608a0
  */
 void guMtxXFMF(float mf[4][4], float x, float y, float z, float *ox, float *oy, float *oz);
@@ -61,6 +80,13 @@ void guMtxXFMF(float mf[4][4], float x, float y, float z, float *ox, float *oy, 
 /**
  * Transform a point by a fixed-point matrix.
  *
+ * @param m The transform, in s15.16 fixed point.
+ * @param x The X coordinate of the point.
+ * @param y The Y coordinate of the point.
+ * @param z The Z coordinate of the point.
+ * @param ox Receives the transformed X coordinate.
+ * @param oy Receives the transformed Y coordinate.
+ * @param oz Receives the transformed Z coordinate.
  * @ghidraAddress USA: 0x80267410
  */
 void guMtxXFML(Mtx *m, float x, float y, float z, float *ox, float *oy, float *oz);
@@ -68,6 +94,10 @@ void guMtxXFML(Mtx *m, float x, float y, float z, float *ox, float *oy, float *o
 /**
  * Build a floating-point scale matrix.
  *
+ * @param mf Receives the matrix, as f32[4][4].
+ * @param x The scale along X.
+ * @param y The scale along Y.
+ * @param z The scale along Z.
  * @ghidraAddress USA: 0x80260800
  */
 void guScaleF(float mf[4][4], float x, float y, float z);
@@ -75,6 +105,10 @@ void guScaleF(float mf[4][4], float x, float y, float z);
 /**
  * Build a fixed-point scale matrix.
  *
+ * @param m Receives the matrix in s15.16 fixed point.
+ * @param x The scale along X.
+ * @param y The scale along Y.
+ * @param z The scale along Z.
  * @ghidraAddress USA: 0x80260854
  */
 void guScale(Mtx *m, float x, float y, float z);
@@ -82,6 +116,10 @@ void guScale(Mtx *m, float x, float y, float z);
 /**
  * Build a floating-point translation matrix.
  *
+ * @param mf Receives the matrix, as f32[4][4].
+ * @param x The translation along X.
+ * @param y The translation along Y.
+ * @param z The translation along Z.
  * @ghidraAddress USA: 0x80260e30
  */
 void guTranslateF(float mf[4][4], float x, float y, float z);
@@ -89,6 +127,10 @@ void guTranslateF(float mf[4][4], float x, float y, float z);
 /**
  * Build a fixed-point translation matrix.
  *
+ * @param m Receives the matrix in s15.16 fixed point.
+ * @param x The translation along X.
+ * @param y The translation along Y.
+ * @param z The translation along Z.
  * @ghidraAddress USA: 0x80260e78
  */
 void guTranslate(Mtx *m, float x, float y, float z);
@@ -96,6 +138,11 @@ void guTranslate(Mtx *m, float x, float y, float z);
 /**
  * Build a floating-point matrix that rotates by a degrees about an axis.
  *
+ * @param mf Receives the matrix, as f32[4][4].
+ * @param a The angle of the rotation in degrees.
+ * @param x The X component of the axis, normalised before use.
+ * @param y The Y component of the axis.
+ * @param z The Z component of the axis.
  * @ghidraAddress USA: 0x80260bc0
  */
 void guRotateF(float mf[4][4], float a, float x, float y, float z);
@@ -103,6 +150,11 @@ void guRotateF(float mf[4][4], float a, float x, float y, float z);
 /**
  * Build a fixed-point matrix that rotates by a degrees about an axis.
  *
+ * @param m Receives the matrix in s15.16 fixed point.
+ * @param a The angle of the rotation in degrees.
+ * @param x The X component of the axis, normalised before use.
+ * @param y The Y component of the axis.
+ * @param z The Z component of the axis.
  * @ghidraAddress USA: 0x80260d54
  */
 void guRotate(Mtx *m, float a, float x, float y, float z);
@@ -110,6 +162,9 @@ void guRotate(Mtx *m, float a, float x, float y, float z);
 /**
  * Scale a vector to unit length in place.
  *
+ * @param x The X component, replaced by the normalised value.
+ * @param y The Y component, replaced by the normalised value.
+ * @param z The Z component, replaced by the normalised value.
  * @ghidraAddress USA: 0x802686c0
  */
 void guNormalize(float *x, float *y, float *z);
@@ -117,7 +172,13 @@ void guNormalize(float *x, float *y, float *z);
 /**
  * Build a floating-point perspective projection.
  *
+ * @param mf Receives the matrix, as f32[4][4].
  * @param perspNorm Receives the factor that normalises the projected W, unless it is NULL.
+ * @param fovy The vertical field of view in degrees.
+ * @param aspect The ratio of the width of the view to its height.
+ * @param near The distance to the near clipping plane.
+ * @param far The distance to the far clipping plane.
+ * @param scale The factor applied to every element of the matrix.
  * @ghidraAddress USA: 0x80265180
  */
 void guPerspectiveF(
@@ -126,6 +187,13 @@ void guPerspectiveF(
 /**
  * Build a fixed-point perspective projection.
  *
+ * @param m Receives the matrix in s15.16 fixed point.
+ * @param perspNorm Receives the factor that normalises the projected W, unless it is NULL.
+ * @param fovy The vertical field of view in degrees.
+ * @param aspect The ratio of the width of the view to its height.
+ * @param near The distance to the near clipping plane.
+ * @param far The distance to the far clipping plane.
+ * @param scale The factor applied to every element of the matrix.
  * @ghidraAddress USA: 0x802653b0
  */
 void guPerspective(
@@ -134,6 +202,16 @@ void guPerspective(
 /**
  * Build a floating-point viewing matrix from the eye, the point it looks at and the up vector.
  *
+ * @param mf Receives the matrix, as f32[4][4].
+ * @param xEye The X coordinate of the eye.
+ * @param yEye The Y coordinate of the eye.
+ * @param zEye The Z coordinate of the eye.
+ * @param xAt The X coordinate of the point looked at.
+ * @param yAt The Y coordinate of the point looked at.
+ * @param zAt The Z coordinate of the point looked at.
+ * @param xUp The X component of the up vector.
+ * @param yUp The Y component of the up vector.
+ * @param zUp The Z component of the up vector.
  * @ghidraAddress USA: 0x80264e50
  */
 void guLookAtF(float mf[4][4],
@@ -150,6 +228,16 @@ void guLookAtF(float mf[4][4],
 /**
  * Build a fixed-point viewing matrix.
  *
+ * @param m Receives the matrix in s15.16 fixed point.
+ * @param xEye The X coordinate of the eye.
+ * @param yEye The Y coordinate of the eye.
+ * @param zEye The Z coordinate of the eye.
+ * @param xAt The X coordinate of the point looked at.
+ * @param yAt The Y coordinate of the point looked at.
+ * @param zAt The Z coordinate of the point looked at.
+ * @param xUp The X component of the up vector.
+ * @param yUp The Y component of the up vector.
+ * @param zUp The Z component of the up vector.
  * @ghidraAddress USA: 0x80265108
  */
 void guLookAt(Mtx *m,
@@ -166,6 +254,17 @@ void guLookAt(Mtx *m,
 /**
  * Build a floating-point viewing matrix and the directions for reflection mapping.
  *
+ * @param mf Receives the matrix, as f32[4][4].
+ * @param l Receives the right and up vectors of the view as the two reflection directions.
+ * @param xEye The X coordinate of the eye.
+ * @param yEye The Y coordinate of the eye.
+ * @param zEye The Z coordinate of the eye.
+ * @param xAt The X coordinate of the point looked at.
+ * @param yAt The Y coordinate of the point looked at.
+ * @param zAt The Z coordinate of the point looked at.
+ * @param xUp The X component of the up vector.
+ * @param yUp The Y component of the up vector.
+ * @param zUp The Z component of the up vector.
  * @ghidraAddress USA: 0x80261150
  */
 void guLookAtReflectF(float mf[4][4],
@@ -183,6 +282,17 @@ void guLookAtReflectF(float mf[4][4],
 /**
  * Build a fixed-point viewing matrix and the directions for reflection mapping.
  *
+ * @param m Receives the matrix in s15.16 fixed point.
+ * @param l Receives the right and up vectors of the view as the two reflection directions.
+ * @param xEye The X coordinate of the eye.
+ * @param yEye The Y coordinate of the eye.
+ * @param zEye The Z coordinate of the eye.
+ * @param xAt The X coordinate of the point looked at.
+ * @param yAt The Y coordinate of the point looked at.
+ * @param zAt The Z coordinate of the point looked at.
+ * @param xUp The X component of the up vector.
+ * @param yUp The Y component of the up vector.
+ * @param zUp The Z component of the up vector.
  * @ghidraAddress USA: 0x80261590
  */
 void guLookAtReflect(Mtx *m,
@@ -201,6 +311,26 @@ void guLookAtReflect(Mtx *m,
  * Build a floating-point viewing matrix, the reflection directions and the positions of the
  * highlights of two lights on a texture of the given size.
  *
+ * @param mf Receives the matrix, as f32[4][4].
+ * @param l Receives the right and up vectors of the view as the two reflection directions.
+ * @param h Receives the texture coordinates of the two highlights, in units of 1/4 texel.
+ * @param xEye The X coordinate of the eye.
+ * @param yEye The Y coordinate of the eye.
+ * @param zEye The Z coordinate of the eye.
+ * @param xAt The X coordinate of the point looked at.
+ * @param yAt The Y coordinate of the point looked at.
+ * @param zAt The Z coordinate of the point looked at.
+ * @param xUp The X component of the up vector.
+ * @param yUp The Y component of the up vector.
+ * @param zUp The Z component of the up vector.
+ * @param xl1 The X component of the direction of the first light.
+ * @param yl1 The Y component of the direction of the first light.
+ * @param zl1 The Z component of the direction of the first light.
+ * @param xl2 The X component of the direction of the second light.
+ * @param yl2 The Y component of the direction of the second light.
+ * @param zl2 The Z component of the direction of the second light.
+ * @param twidth The width of the highlight texture in texels.
+ * @param theight The height of the highlight texture in texels.
  * @ghidraAddress USA: 0x80266be0
  */
 void guLookAtHiliteF(float mf[4][4],
@@ -227,6 +357,26 @@ void guLookAtHiliteF(float mf[4][4],
 /**
  * Build a fixed-point viewing matrix with reflection directions and highlights.
  *
+ * @param m Receives the matrix in s15.16 fixed point.
+ * @param l Receives the right and up vectors of the view as the two reflection directions.
+ * @param h Receives the texture coordinates of the two highlights, in units of 1/4 texel.
+ * @param xEye The X coordinate of the eye.
+ * @param yEye The Y coordinate of the eye.
+ * @param zEye The Z coordinate of the eye.
+ * @param xAt The X coordinate of the point looked at.
+ * @param yAt The Y coordinate of the point looked at.
+ * @param zAt The Z coordinate of the point looked at.
+ * @param xUp The X component of the up vector.
+ * @param yUp The Y component of the up vector.
+ * @param zUp The Z component of the up vector.
+ * @param xl1 The X component of the direction of the first light.
+ * @param yl1 The Y component of the direction of the first light.
+ * @param zl1 The Z component of the direction of the first light.
+ * @param xl2 The X component of the direction of the second light.
+ * @param yl2 The Y component of the direction of the second light.
+ * @param zl2 The Z component of the direction of the second light.
+ * @param twidth The width of the highlight texture in texels.
+ * @param theight The height of the highlight texture in texels.
  * @ghidraAddress USA: 0x8026734c
  */
 void guLookAtHilite(Mtx *m,
@@ -253,6 +403,8 @@ void guLookAtHilite(Mtx *m,
 /**
  * Return the sine of an angle in radians.
  *
+ * @param x The angle in radians.
+ * @return The sine of the angle, from -1 to 1.
  * @ghidraAddress USA: 0x80261610
  */
 float sinf(float x);
@@ -260,6 +412,8 @@ float sinf(float x);
 /**
  * Return the cosine of an angle in radians.
  *
+ * @param x The angle in radians.
+ * @return The cosine of the angle, from -1 to 1.
  * @ghidraAddress USA: 0x802617d0
  */
 float cosf(float x);
@@ -267,6 +421,8 @@ float cosf(float x);
 /**
  * Return the square root.
  *
+ * @param x The value, at least 0.
+ * @return The square root of the value.
  * @ghidraAddress USA: 0x80261140
  */
 float sqrtf(float x);
@@ -274,6 +430,8 @@ float sqrtf(float x);
 /**
  * Return the sine of an angle where 0x10000 is a full turn, in s1.15 fixed point.
  *
+ * @param x The angle, where 0x10000 is a full turn and the low 4 bits are ignored.
+ * @return The sine of the angle from -0x7fff to 0x7fff, where 0x7fff is 1.
  * @ghidraAddress USA: 0x80264420
  */
 s16 sins(u16 x);

@@ -77,7 +77,6 @@ typedef struct {
     u32 pifstatus;    /*!< The control word, set to CONT_CMD_EXE to run the commands. */
 } OSPifRam;
 
-/** The request and answer of a status command. */
 typedef struct {
     u8 dummy;  /*!< A CONT_CMD_NOP byte of padding before the command. */
     u8 txsize; /*!< The bytes sent, CONT_CMD_REQUEST_STATUS_TX. */
@@ -89,7 +88,6 @@ typedef struct {
     u8 dummy1; /*!< A CONT_CMD_NOP byte of padding after the response. */
 } __OSContRequesFormat;
 
-/** The request and answer of a button read. */
 typedef struct {
     u8 dummy;   /*!< A CONT_CMD_NOP byte of padding before the command. */
     u8 txsize;  /*!< The bytes sent, CONT_CMD_READ_BUTTON_TX. */
@@ -100,7 +98,6 @@ typedef struct {
     s8 stick_y; /*!< The received vertical position of the control stick. */
 } __OSContReadFormat;
 
-/** The request and answer of a read or a write of a Controller Pak block. */
 typedef struct {
     u8 dummy;    /*!< A CONT_CMD_NOP byte of padding before the command. */
     u8 txsize;   /*!< The bytes sent. */
@@ -111,7 +108,6 @@ typedef struct {
     u8 datacrc;         /*!< The CRC of the data, received from the Pak. */
 } __OSContRamReadFormat;
 
-/** The identification block of a Controller Pak. */
 typedef struct {
     u32 repaired;          /*!< Set to 0xFFFFFFFF when a repair rewrites the block. */
     u32 random;            /*!< The count register at the time of a repair. */
@@ -125,7 +121,6 @@ typedef struct {
                                 checksums. */
 } __OSPackId;
 
-/** An entry of the page table of a Controller Pak. */
 typedef union {
     struct {
         u8 bank; /*!< The bank of the page. */
@@ -134,12 +129,10 @@ typedef union {
     u16 ipage;   /*!< The entry as one number, or PFS_EOF or PFS_PAGE_NOT_USED. */
 } __OSInodeUnit;
 
-/** The page table of one bank. */
 typedef struct {
     __OSInodeUnit inode_page[128]; /*!< The page that follows each page in its file, by page. */
 } __OSInode;
 
-/** A directory entry of a Controller Pak. */
 typedef struct {
     u32 game_code;            /*!< The game code of the file, or 0 for a free entry. */
     u16 company_code;         /*!< The company code of the file, or 0 for a free entry. */
@@ -151,42 +144,25 @@ typedef struct {
     u8 game_name[16]; /*!< The file name, in the character set of the Pak. */
 } __OSDir;
 
-/**
- * The page table of the bank osPfsChecker() last read, and for each group of four pages a bit for
- * every other bank whose table points into the group.
- */
 typedef struct {
     __OSInode inode; /*!< The page table of the bank last read. */
     u8 bank;         /*!< The bank whose page table is in inode, or 0xFF for none. */
     u8 map[256];     /*!< For each four pages, a bit for each bank modulo 8 pointing into them. */
 } __OSInodeCache;
 
-/**
- * The PIF RAM image of the controller commands.
- *
- * @ghidraAddress USA: 0x8037f3f0
- */
+/** @ghidraAddress USA: 0x8037f3f0 */
 extern OSPifRam __osContPifRam;
 
-/**
- * The PIF RAM image of the Controller Pak commands.
- *
- * @ghidraAddress USA: 0x8037f0b0
- */
+/** @ghidraAddress USA: 0x8037f0b0 */
 extern OSPifRam __osPfsPifRam;
 
-/**
- * The command the controller PIF RAM image last held, so that a repeated button read skips the
- * write.
- *
- * @ghidraAddress USA: 0x8037f430
- */
+/** @ghidraAddress USA: 0x8037f430 */
 extern u8 __osContLastCmd;
 
 /** @ghidraAddress USA: 0x8037f431 */
 extern u8 __osMaxControllers;
 
-/** Whether osContInit() has run. @ghidraAddress USA: 0x802a6130 */
+/** @ghidraAddress USA: 0x802a6130 */
 extern u32 __osContinitialized;
 
 /** @ghidraAddress USA: 0x8037f458 */
@@ -195,165 +171,76 @@ extern OSMesgQueue __osEepromTimerQ;
 /** @ghidraAddress USA: 0x8037f470 */
 extern OSMesg __osEepromTimerMsg;
 
-/**
- * The PIF RAM image of the command that stops the motor of each channel.
- *
- * @ghidraAddress USA: 0x8037f0f0
- */
+/** @ghidraAddress USA: 0x8037f0f0 */
 extern OSPifRam _MotorStopData[MAXCONTROLLERS];
 
-/**
- * The PIF RAM image of the command that starts the motor of each channel.
- *
- * @ghidraAddress USA: 0x8037f1f0
- */
+/** @ghidraAddress USA: 0x8037f1f0 */
 extern OSPifRam _MotorStartData[MAXCONTROLLERS];
 
-/** The block written to stop a motor. @ghidraAddress USA: 0x8037f2f0 */
+/** @ghidraAddress USA: 0x8037f2f0 */
 extern u8 _motorstopbuf[BLOCKSIZE];
 
-/** The block written to start a motor. @ghidraAddress USA: 0x8037f310 */
+/** @ghidraAddress USA: 0x8037f310 */
 extern u8 _motorstartbuf[BLOCKSIZE];
 
-/**
- * Decode the answers of a status command.
- *
- * @ghidraAddress USA: 0x80265b08
- */
+/** @ghidraAddress USA: 0x80265b08 */
 void __osContGetInitData(u8 *pattern, OSContStatus *data);
 
-/**
- * Fill the controller PIF RAM image with a status command for every controller.
- *
- * @ghidraAddress USA: 0x80265bd8
- */
+/** @ghidraAddress USA: 0x80265bd8 */
 void __osPackRequestData(u8 cmd);
 
-/**
- * Fill the controller PIF RAM image with a button read for every controller.
- *
- * @ghidraAddress USA: 0x802648cc
- */
+/** @ghidraAddress USA: 0x802648cc */
 void __osPackReadData(void);
 
-/**
- * Return the 5-bit CRC of a Controller Pak address.
- *
- * @ghidraAddress USA: 0x8026a780
- */
+/** @ghidraAddress USA: 0x8026a780 */
 u8 __osContAddressCrc(u16 addr);
 
-/**
- * Return the CRC of a 32-byte block.
- *
- * @ghidraAddress USA: 0x8026a830
- */
+/** @ghidraAddress USA: 0x8026a830 */
 u8 __osContDataCrc(u8 *data);
 
-/**
- * Read a 32-byte block of a Controller Pak.
- *
- * @ghidraAddress USA: 0x8026a3f0
- */
+/** @ghidraAddress USA: 0x8026a3f0 */
 s32 __osContRamRead(OSMesgQueue *mq, int channel, u16 address, u8 *buffer);
 
-/**
- * Fill the Pak PIF RAM image with a block read.
- *
- * @ghidraAddress USA: 0x8026a60c
- */
+/** @ghidraAddress USA: 0x8026a60c */
 void __osPackRamReadData(int channel, u16 address);
 
-/**
- * Write a 32-byte block of a Controller Pak. The ID and label blocks are written only when force
- * is TRUE.
- *
- * @ghidraAddress USA: 0x8026a900
- */
+/** @ghidraAddress USA: 0x8026a900 */
 s32 __osContRamWrite(OSMesgQueue *mq, int channel, u16 address, u8 *buffer, int force);
 
-/**
- * Fill the Pak PIF RAM image with a block write.
- *
- * @ghidraAddress USA: 0x8026ab04
- */
+/** @ghidraAddress USA: 0x8026ab04 */
 void __osPackRamWriteData(int channel, u16 address, u8 *buffer);
 
-/**
- * Return why a Controller Pak did not answer, or 0.
- *
- * @ghidraAddress USA: 0x80269580
- */
+/** @ghidraAddress USA: 0x80269580 */
 s32 __osPfsGetStatus(OSMesgQueue *queue, int channel);
 
-/**
- * Fill the Pak PIF RAM image with a command for every controller.
- *
- * @ghidraAddress USA: 0x80261ae0
- */
+/** @ghidraAddress USA: 0x80261ae0 */
 void __osPfsRequestData(u8 cmd);
 
-/**
- * Decode the answers of a status command in the Pak PIF RAM image.
- *
- * @ghidraAddress USA: 0x80261bdc
- */
+/** @ghidraAddress USA: 0x80261bdc */
 void __osPfsGetInitData(u8 *pattern, OSContStatus *data);
 
-/**
- * Return the 16-bit sum of the bytes of a buffer.
- *
- * @ghidraAddress USA: 0x80269690
- */
+/** @ghidraAddress USA: 0x80269690 */
 u16 __osSumcalc(u8 *ptr, int length);
 
-/**
- * Compute the checksum and inverted checksum of an ID block.
- *
- * @ghidraAddress USA: 0x802696ec
- */
+/** @ghidraAddress USA: 0x802696ec */
 s32 __osIdCheckSum(u16 *ptr, u16 *csum, u16 *icsum);
 
-/**
- * Write a new ID block after counting the banks of the Pak.
- *
- * @ghidraAddress USA: 0x80269754
- */
+/** @ghidraAddress USA: 0x80269754 */
 s32 __osRepairPackId(OSPfs *pfs, __OSPackId *badid, __OSPackId *newid);
 
-/**
- * Find a valid copy of the ID block and restore the others from it.
- *
- * @ghidraAddress USA: 0x80269b6c
- */
+/** @ghidraAddress USA: 0x80269b6c */
 s32 __osCheckPackId(OSPfs *pfs, __OSPackId *temp);
 
-/**
- * Read the ID block, repairing it if needed, and set up the layout of the Pak.
- *
- * @ghidraAddress USA: 0x80269d04
- */
+/** @ghidraAddress USA: 0x80269d04 */
 s32 __osGetId(OSPfs *pfs);
 
-/**
- * Return whether the Pak still has the ID osPfsInit() read.
- *
- * @ghidraAddress USA: 0x80269f60
- */
+/** @ghidraAddress USA: 0x80269f60 */
 s32 __osCheckId(OSPfs *pfs);
 
-/**
- * Read or write the page table of a bank, keeping the main and mirror copies consistent.
- *
- * @ghidraAddress USA: 0x8026a05c
- */
+/** @ghidraAddress USA: 0x8026a05c */
 s32 __osPfsRWInode(OSPfs *pfs, __OSInode *inode, u8 flag, u8 bank);
 
-/**
- * Select the active bank of the Pak.
- *
- * @ghidraAddress USA: 0x8026a37c
- */
+/** @ghidraAddress USA: 0x8026a37c */
 s32 __osPfsSelectBank(OSPfs *pfs);
 
 #endif

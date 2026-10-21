@@ -48,12 +48,7 @@ typedef struct {
     __OSViScale y;     /*!< The vertical scale. */
 } __OSViContext;
 
-/**
- * The two contexts. The one __osViCurr points to drives the screen, and the one __osViNext points
- * to collects the changes for the next retrace.
- *
- * @ghidraAddress USA: 0x802a61c0
- */
+/** @ghidraAddress USA: 0x802a61c0 */
 extern __OSViContext __osViContexts[2];
 
 /** @ghidraAddress USA: 0x802a6220 */
@@ -90,32 +85,20 @@ extern OSIoMesg viCounterMsg;
  */
 extern u16 viMgrRetrace;
 
-/**
- * Clear both contexts, select the default mode of the television standard, and blank the screen.
- *
- * @ghidraAddress USA: 0x80268580
- */
+/** @ghidraAddress USA: 0x80268580 */
 void __osViInit(void);
 
-/**
- * Write the next context to the VI registers, then make it the current one and copy it to the
- * next.
- *
- * @ghidraAddress USA: 0x8026c070
- */
+/** @ghidraAddress USA: 0x8026c070 */
 void __osViSwapContext(void);
 
-/**
- * Return the context that drives the screen.
- *
- * @ghidraAddress USA: 0x8026c060
- */
+/** @ghidraAddress USA: 0x8026c060 */
 __OSViContext *__osViGetCurrentContext(void);
 
 /**
  * Body of the VI manager thread. It swaps the contexts on every retrace, sends the message of
  * osViSetEvent(), advances the time, and services the timers.
  *
+ * @param arg The OSDevMgr of the VI manager, __osViDevMgr.
  * @ghidraAddress USA: 0x80266588
  */
 void viMgrMain(void *arg);

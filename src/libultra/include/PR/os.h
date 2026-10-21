@@ -302,6 +302,12 @@ extern u64 osClockRate;
  * Create a stopped thread on the active queue. It runs entry(arg) on the stack that ends at sp,
  * and destroys itself when entry returns.
  *
+ * @param t The thread to create.
+ * @param id The identifier of the thread, for the debugger.
+ * @param entry The routine the thread runs.
+ * @param arg The argument passed to entry.
+ * @param sp The end of the stack of the thread, aligned to 8 bytes.
+ * @param pri The priority, from OS_PRIORITY_IDLE to OS_PRIORITY_MAX.
  * @ghidraAddress USA: 0x80265670
  */
 void osCreateThread(OSThread *t, OSId id, void (*entry)(void *), void *arg, void *sp, OSPri pri);
@@ -310,6 +316,7 @@ void osCreateThread(OSThread *t, OSId id, void (*entry)(void *), void *arg, void
  * Remove a thread from its queue and from the active queue. A NULL thread is the running one,
  * and destroying the running thread dispatches the next.
  *
+ * @param t The thread to destroy, or NULL for the running thread.
  * @ghidraAddress USA: 0x8026e500
  */
 void osDestroyThread(OSThread *t);
@@ -324,6 +331,7 @@ void osYieldThread(void);
 /**
  * Make a stopped or waiting thread runnable, and yield to it when its priority is higher.
  *
+ * @param t The thread to start.
  * @ghidraAddress USA: 0x802657c0
  */
 void osStartThread(OSThread *t);
@@ -332,6 +340,8 @@ void osStartThread(OSThread *t);
  * Change the priority of a thread, a NULL thread being the running one, and yield when a
  * runnable thread now has a higher priority than the running one.
  *
+ * @param t The thread, or NULL for the running thread.
+ * @param pri The new priority, from OS_PRIORITY_IDLE to OS_PRIORITY_MAX.
  * @ghidraAddress USA: 0x802668f0
  */
 void osSetThreadPri(OSThread *t, OSPri pri);
@@ -339,6 +349,8 @@ void osSetThreadPri(OSThread *t, OSPri pri);
 /**
  * Return the priority of a thread, a NULL thread being the running one.
  *
+ * @param t The thread, or NULL for the running thread.
+ * @return The priority of the thread.
  * @ghidraAddress USA: 0x8026c040
  */
 OSPri osGetThreadPri(OSThread *t);
@@ -346,6 +358,9 @@ OSPri osGetThreadPri(OSThread *t);
 /**
  * Initialise an empty message queue over a buffer of count messages.
  *
+ * @param mq The queue to initialise.
+ * @param msg The buffer of the messages.
+ * @param count The number of messages the buffer has room for.
  * @ghidraAddress USA: 0x80265410
  */
 void osCreateMesgQueue(OSMesgQueue *mq, OSMesg *msg, s32 count);
@@ -353,6 +368,9 @@ void osCreateMesgQueue(OSMesgQueue *mq, OSMesg *msg, s32 count);
 /**
  * Append a message to a queue and make its first receiver runnable.
  *
+ * @param mq The queue.
+ * @param msg The message.
+ * @param flag OS_MESG_BLOCK to wait while the queue is full, or OS_MESG_NOBLOCK to return.
  * @return 0, or -1 when the queue is full and flag is OS_MESG_NOBLOCK.
  * @ghidraAddress USA: 0x802654b0
  */
@@ -361,6 +379,9 @@ s32 osSendMesg(OSMesgQueue *mq, OSMesg msg, s32 flag);
 /**
  * Insert a message at the front of a queue and make its first receiver runnable.
  *
+ * @param mq The queue.
+ * @param msg The message.
+ * @param flag OS_MESG_BLOCK to wait while the queue is full, or OS_MESG_NOBLOCK to return.
  * @return 0, or -1 when the queue is full and flag is OS_MESG_NOBLOCK.
  * @ghidraAddress USA: 0x8026b5d0
  */
@@ -370,6 +391,9 @@ s32 osJamMesg(OSMesgQueue *mq, OSMesg msg, s32 flag);
  * Take the first message of a queue, store it unless msg is NULL, and make its first sender
  * runnable.
  *
+ * @param mq The queue.
+ * @param msg Receives the message, unless it is NULL.
+ * @param flag OS_MESG_BLOCK to wait while the queue is empty, or OS_MESG_NOBLOCK to return.
  * @return 0, or -1 when the queue is empty and flag is OS_MESG_NOBLOCK.
  * @ghidraAddress USA: 0x802642e0
  */
@@ -378,16 +402,26 @@ s32 osRecvMesg(OSMesgQueue *mq, OSMesg *msg, s32 flag);
 /**
  * Register the queue and message that event e sends.
  *
+ * @param e The event, such as OS_EVENT_SI or OS_EVENT_PI.
+ * @param mq The queue the event sends to.
+ * @param m The message the event sends.
  * @ghidraAddress USA: 0x80265440
  */
 void osSetEventMesg(OSEvent e, OSMesgQueue *mq, OSMesg m);
 
 /* Interrupts and the processor. */
+
+/**
+ * Return the CPU and RCP interrupts that may occur. The game does not link this routine.
+ *
+ * @return The interrupt mask.
+ */
 OSIntMask osGetIntMask(void);
 
 /**
  * Set the CPU and RCP interrupts that may occur, within the global mask.
  *
+ * @param im The new interrupt mask, from the OS_IM_* bits.
  * @return The previous mask.
  * @ghidraAddress USA: 0x8026e460
  */
@@ -396,6 +430,7 @@ OSIntMask osSetIntMask(OSIntMask im);
 /**
  * Read the Count register, which increments at half the CPU clock.
  *
+ * @return The value of the Count register.
  * @ghidraAddress USA: 0x802649f0
  */
 u32 osGetCount(void);
@@ -403,6 +438,8 @@ u32 osGetCount(void);
 /**
  * Invalidate the data cache over a range.
  *
+ * @param vaddr The start of the range, a virtual address.
+ * @param nbytes The length of the range in bytes. A length of 0 or less does nothing.
  * @ghidraAddress USA: 0x802662e0
  */
 void osInvalDCache(void *vaddr, s32 nbytes);
@@ -410,6 +447,8 @@ void osInvalDCache(void *vaddr, s32 nbytes);
 /**
  * Invalidate the instruction cache over a range.
  *
+ * @param vaddr The start of the range, a virtual address.
+ * @param nbytes The length of the range in bytes. A length of 0 or less does nothing.
  * @ghidraAddress USA: 0x8026bac0
  */
 void osInvalICache(void *vaddr, s32 nbytes);
@@ -417,6 +456,8 @@ void osInvalICache(void *vaddr, s32 nbytes);
 /**
  * Write back the data cache over a range.
  *
+ * @param vaddr The start of the range, a virtual address.
+ * @param nbytes The length of the range in bytes. A length of 0 or less does nothing.
  * @ghidraAddress USA: 0x8026b7d0
  */
 void osWritebackDCache(void *vaddr, s32 nbytes);
@@ -431,6 +472,8 @@ void osWritebackDCacheAll(void);
 /**
  * Translate a virtual address to a physical one.
  *
+ * @param vaddr The virtual address, in KSEG0, KSEG1, or a segment the TLB maps.
+ * @return The physical address, or -1 when the TLB does not map the address.
  * @ghidraAddress USA: 0x8026b750
  */
 u32 osVirtualToPhysical(void *vaddr);
@@ -445,6 +488,7 @@ void osMapTLBRdb(void);
 /**
  * Return the time since the VI manager started, in CPU counter cycles.
  *
+ * @return The time in CPU counter cycles, OS_CPU_COUNTER of them per second.
  * @ghidraAddress USA: 0x8026b960
  */
 OSTime osGetTime(void);
@@ -453,6 +497,11 @@ OSTime osGetTime(void);
  * Start a timer that sends msg to mq after countdown cycles, or after interval cycles when
  * countdown is 0, and again every interval cycles unless interval is 0.
  *
+ * @param t The timer, not reused until it expires for the last time.
+ * @param countdown The cycles of the CPU counter until the first message.
+ * @param interval The cycles between later messages, or 0 for a single message.
+ * @param mq The queue the timer sends to.
+ * @param msg The message the timer sends.
  * @return 0.
  * @ghidraAddress USA: 0x80268390
  */
@@ -464,6 +513,7 @@ int osSetTimer(OSTimer *t, OSTime countdown, OSTime interval, OSMesgQueue *mq, O
  * Start the VI manager thread at priority pri. The call raises the calling thread to pri while
  * it creates the manager, and does nothing once the manager runs.
  *
+ * @param pri The priority of the manager thread.
  * @ghidraAddress USA: 0x80266400
  */
 void osCreateViManager(OSPri pri);
@@ -471,6 +521,7 @@ void osCreateViManager(OSPri pri);
 /**
  * Blank the screen from the next field on, or show it again.
  *
+ * @param active TRUE to blank the screen, FALSE to show it.
  * @ghidraAddress USA: 0x80260ab0
  */
 void osViBlack(u8 active);
@@ -478,6 +529,7 @@ void osViBlack(u8 active);
 /**
  * Select the video mode from the next field on.
  *
+ * @param modep The mode, such as osViModeNtscLan1.
  * @ghidraAddress USA: 0x80264a60
  */
 void osViSetMode(OSViMode *modep);
@@ -485,6 +537,7 @@ void osViSetMode(OSViMode *modep);
 /**
  * Show a frame buffer from the next field on.
  *
+ * @param frameBufPtr The virtual address of the frame buffer.
  * @ghidraAddress USA: 0x80264ad0
  */
 void osViSwapBuffer(void *frameBufPtr);
@@ -492,6 +545,7 @@ void osViSwapBuffer(void *frameBufPtr);
 /**
  * Return the frame buffer the screen shows.
  *
+ * @return The frame buffer of the current context.
  * @ghidraAddress USA: 0x80264b20
  */
 void *osViGetCurrentFramebuffer(void);
@@ -499,6 +553,9 @@ void *osViGetCurrentFramebuffer(void);
 /**
  * Send m to mq every retraceCount vertical retraces.
  *
+ * @param mq The queue the VI manager sends to.
+ * @param m The message the VI manager sends.
+ * @param retraceCount The number of retraces between messages, 1 for every retrace.
  * @ghidraAddress USA: 0x80265600
  */
 void osViSetEvent(OSMesgQueue *mq, OSMesg m, u32 retraceCount);
@@ -507,6 +564,7 @@ void osViSetEvent(OSMesgQueue *mq, OSMesg m, u32 retraceCount);
  * Turn the gamma, gamma dither, divot, and dither filter features on and off, from the
  * OS_VI_* flags.
  *
+ * @param func The OS_VI_*_ON and OS_VI_*_OFF flags to apply.
  * @ghidraAddress USA: 0x80264490
  */
 void osViSetSpecialFeatures(u32 func);
@@ -516,6 +574,7 @@ void osViSetSpecialFeatures(u32 func);
 /**
  * Return the handle of the cartridge ROM, creating it from the timing its first word records.
  *
+ * @return The handle of the cartridge ROM.
  * @ghidraAddress USA: 0x8026c3d0
  */
 OSPiHandle *osCartRomInit(void);
@@ -523,14 +582,19 @@ OSPiHandle *osCartRomInit(void);
 /**
  * Create the handle of the 64DD and select its domain 2 timing.
  *
+ * @return The handle of the 64DD.
  * @ghidraAddress USA: 0x8026c4c0
  */
 OSPiHandle *osLeoDiskInit(void);
 
 /**
- * Start the PI manager thread at priority pri, serving the requests of cmdQ. The call does
- * nothing once the manager runs.
+ * Start the PI manager thread at priority pri, serving the requests of cmdQ. The call raises the
+ * calling thread to pri while it creates the manager, and does nothing once the manager runs.
  *
+ * @param pri The priority of the manager thread.
+ * @param cmdQ The queue the manager receives requests on, created by the call.
+ * @param cmdBuf The buffer of the messages of cmdQ.
+ * @param cmdMsgCnt The number of messages cmdBuf has room for.
  * @ghidraAddress USA: 0x80266760
  */
 void osCreatePiManager(OSPri pri, OSMesgQueue *cmdQ, OSMesg *cmdBuf, s32 cmdMsgCnt);
@@ -538,6 +602,7 @@ void osCreatePiManager(OSPri pri, OSMesgQueue *cmdQ, OSMesg *cmdBuf, s32 cmdMsgC
 /**
  * Return the command queue of the PI manager, or NULL when it does not run.
  *
+ * @return The command queue, or NULL.
  * @ghidraAddress USA: 0x8026b720
  */
 OSMesgQueue *osPiGetCmdQueue(void);
@@ -545,6 +610,8 @@ OSMesgQueue *osPiGetCmdQueue(void);
 /**
  * Read a word of the cartridge domain at an offset from the ROM base.
  *
+ * @param devAddr The offset from the ROM base, a multiple of 4.
+ * @param data Receives the word.
  * @return 0.
  * @ghidraAddress USA: 0x802663a0
  */
@@ -553,6 +620,10 @@ s32 osPiRawReadIo(u32 devAddr, u32 *data);
 /**
  * Start a DMA between RDRAM and the cartridge domain at an offset from the ROM base.
  *
+ * @param direction OS_READ to read the cartridge, OS_WRITE to write it.
+ * @param devAddr The offset from the ROM base, a multiple of 2.
+ * @param dramAddr The virtual address of the buffer in RDRAM, aligned to 8 bytes.
+ * @param size The count of bytes to move.
  * @return 0, or -1 for a direction other than OS_READ and OS_WRITE.
  * @ghidraAddress USA: 0x8026c680
  */
@@ -562,6 +633,13 @@ s32 osPiRawStartDma(s32 direction, u32 devAddr, void *dramAddr, u32 size);
  * Queue a DMA request with the PI manager. A request of priority OS_MESG_PRI_HIGH goes to the
  * front of the queue.
  *
+ * @param mb The request, not reused until the manager sends it to mq.
+ * @param priority OS_MESG_PRI_NORMAL or OS_MESG_PRI_HIGH.
+ * @param direction OS_READ to read the cartridge, OS_WRITE to write it.
+ * @param devAddr The offset from the ROM base, a multiple of 2.
+ * @param vAddr The virtual address of the buffer in RDRAM, aligned to 8 bytes.
+ * @param nbytes The count of bytes to move.
+ * @param mq The queue the manager sends mb to when the transfer ends.
  * @return The result of the send, or -1 when the PI manager does not run.
  * @ghidraAddress USA: 0x80264650
  */
@@ -576,6 +654,9 @@ s32 osPiStartDma(OSIoMesg *mb,
 /**
  * Read a word of the device a handle describes.
  *
+ * @param pihandle The handle of the device.
+ * @param devAddr The offset from the base address of the device, a multiple of 4.
+ * @param data Receives the word.
  * @return 0.
  * @ghidraAddress USA: 0x8026e780
  */
@@ -584,6 +665,9 @@ s32 osEPiRawReadIo(OSPiHandle *pihandle, u32 devAddr, u32 *data);
 /**
  * Write a word of the device a handle describes.
  *
+ * @param pihandle The handle of the device.
+ * @param devAddr The offset from the base address of the device, a multiple of 4.
+ * @param data The word to write.
  * @return 0.
  * @ghidraAddress USA: 0x8026e730
  */
@@ -593,6 +677,11 @@ s32 osEPiRawWriteIo(OSPiHandle *pihandle, u32 devAddr, u32 data);
  * Start a DMA with the device a handle describes, selecting its domain timing when another
  * handle selected different timing.
  *
+ * @param pihandle The handle of the device.
+ * @param direction OS_READ to read the device, OS_WRITE to write it.
+ * @param devAddr The offset from the base address of the device, a multiple of 2.
+ * @param dramAddr The virtual address of the buffer in RDRAM, aligned to 8 bytes.
+ * @param size The count of bytes to move.
  * @return 0, or -1 for a direction other than OS_READ and OS_WRITE.
  * @ghidraAddress USA: 0x8026c760
  */
@@ -603,7 +692,8 @@ s32 osEPiRawStartDma(OSPiHandle *pihandle, s32 direction, u32 devAddr, void *dra
 /**
  * Set the sample rate of the audio DAC to the nearest the video clock allows.
  *
- * @return The rate set, or -1 when the frequency is too high.
+ * @param frequency The requested sample rate in hertz.
+ * @return The rate set in hertz, or -1 when the frequency is too high.
  * @ghidraAddress USA: 0x80268230
  */
 s32 osAiSetFrequency(u32 frequency);
@@ -611,6 +701,8 @@ s32 osAiSetFrequency(u32 frequency);
 /**
  * Queue a buffer of samples for the audio DMA.
  *
+ * @param bufPtr The virtual address of the samples, aligned to 8 bytes.
+ * @param size The length of the buffer in bytes, a multiple of 8.
  * @return 0, or -1 when the queue of the audio interface is full.
  * @ghidraAddress USA: 0x80268470
  */
@@ -619,6 +711,7 @@ s32 osAiSetNextBuffer(void *bufPtr, u32 size);
 /**
  * Return the audio status register.
  *
+ * @return The value of the AI status register.
  * @ghidraAddress USA: 0x80268520
  */
 u32 osAiGetStatus(void);
@@ -626,15 +719,12 @@ u32 osAiGetStatus(void);
 /**
  * Return the remaining length of the buffer the audio DMA plays.
  *
+ * @return The bytes the audio DMA has yet to play.
  * @ghidraAddress USA: 0x80268530
  */
 u32 osAiGetLength(void);
 
-/**
- * Return whether the queue of the audio interface is full.
- *
- * @ghidraAddress USA: 0x8026ce20
- */
+/** @ghidraAddress USA: 0x8026ce20 */
 s32 __osAiDeviceBusy(void);
 
 /**
@@ -662,6 +752,7 @@ void osInitialize(void);
 /**
  * Print to the debugger. The retail library discards the output.
  *
+ * @param fmt The printf format, followed by its arguments.
  * @ghidraAddress USA: 0x802607dc
  */
 void osSyncPrintf(const char *fmt, ...);
@@ -669,184 +760,66 @@ void osSyncPrintf(const char *fmt, ...);
 /**
  * Print to the remote monitor. The retail library discards the output.
  *
+ * @param fmt The printf format, followed by its arguments.
  * @ghidraAddress USA: 0x802607c0
  */
 void rmonPrintf(const char *fmt, ...);
 
-/**
- * Shift an unsigned 64-bit value right. IDO calls this for long long arithmetic.
- *
- * @param a0 The value.
- * @param a1 The number of bits.
- * @return The shifted value.
- * @ghidraAddress USA: 0x80266020
- */
+/** @ghidraAddress USA: 0x80266020 */
 unsigned long long __ull_rshift(unsigned long long a0, unsigned long long a1);
 
-/**
- * Divide two unsigned 64-bit values and take the remainder.
- *
- * @param a0 The dividend.
- * @param a1 The divisor.
- * @return The remainder.
- * @ghidraAddress USA: 0x8026604c
- */
+/** @ghidraAddress USA: 0x8026604c */
 unsigned long long __ull_rem(unsigned long long a0, unsigned long long a1);
 
-/**
- * Divide two unsigned 64-bit values.
- *
- * @param a0 The dividend.
- * @param a1 The divisor.
- * @return The quotient.
- * @ghidraAddress USA: 0x80266088
- */
+/** @ghidraAddress USA: 0x80266088 */
 unsigned long long __ull_div(unsigned long long a0, unsigned long long a1);
 
-/**
- * Shift a 64-bit value left.
- *
- * @param a0 The value.
- * @param a1 The number of bits.
- * @return The shifted value.
- * @ghidraAddress USA: 0x802660c4
- */
+/** @ghidraAddress USA: 0x802660c4 */
 long long __ll_lshift(long long a0, long long a1);
 
-/**
- * Divide a 64-bit value and take the remainder. Both operands are divided as unsigned values.
- *
- * @param a0 The dividend.
- * @param a1 The divisor, taken as unsigned.
- * @return The remainder.
- * @ghidraAddress USA: 0x802660f0
- */
+/** @ghidraAddress USA: 0x802660f0 */
 long long __ll_rem(unsigned long long a0, long long a1);
 
-/**
- * Divide two signed 64-bit values.
- *
- * @param a0 The dividend.
- * @param a1 The divisor.
- * @return The quotient.
- * @ghidraAddress USA: 0x8026612c
- */
+/** @ghidraAddress USA: 0x8026612c */
 long long __ll_div(long long a0, long long a1);
 
-/**
- * Multiply two 64-bit values.
- *
- * @param a0 The first factor.
- * @param a1 The second factor.
- * @return The product, modulo 2 to the 64th power.
- * @ghidraAddress USA: 0x80266188
- */
+/** @ghidraAddress USA: 0x80266188 */
 long long __ll_mul(long long a0, long long a1);
 
-/**
- * Divide an unsigned 64-bit value by a 16-bit divisor and give the quotient and the remainder.
- *
- * @param quotient Receives the quotient.
- * @param remainder Receives the remainder.
- * @param dividend The dividend.
- * @param divisor The divisor, sign-extended from 16 bits.
- * @ghidraAddress USA: 0x802661b8
- */
+/** @ghidraAddress USA: 0x802661b8 */
 void __ull_divremi(unsigned long long *quotient,
                    unsigned long long *remainder,
                    unsigned long long dividend,
                    short divisor);
 
-/**
- * Divide two signed 64-bit values and take the modulus, with the sign of the divisor.
- *
- * @param a0 The dividend.
- * @param a1 The divisor.
- * @return The modulus.
- * @ghidraAddress USA: 0x80266218
- */
+/** @ghidraAddress USA: 0x80266218 */
 long long __ll_mod(long long a0, long long a1);
 
-/**
- * Shift a signed 64-bit value right, extending the sign.
- *
- * @param a0 The value.
- * @param a1 The number of bits.
- * @return The shifted value.
- * @ghidraAddress USA: 0x802662b4
- */
+/** @ghidraAddress USA: 0x802662b4 */
 long long __ll_rshift(long long a0, long long a1);
 
-/**
- * Convert a double to a signed 64-bit integer, truncating towards zero.
- *
- * @param d The value.
- * @return The integer.
- * @ghidraAddress USA: 0x802669d0
- */
+/** @ghidraAddress USA: 0x802669d0 */
 long long __d_to_ll(double d);
 
-/**
- * Convert a float to a signed 64-bit integer, truncating towards zero.
- *
- * @param f The value.
- * @return The integer.
- * @ghidraAddress USA: 0x802669ec
- */
+/** @ghidraAddress USA: 0x802669ec */
 long long __f_to_ll(float f);
 
-/**
- * Convert a double to an unsigned 64-bit integer, truncating towards zero.
- *
- * @param d The value.
- * @return The integer, or all bits set for a value out of range or a NaN.
- * @ghidraAddress USA: 0x80266a08
- */
+/** @ghidraAddress USA: 0x80266a08 */
 unsigned long long __d_to_ull(double d);
 
-/**
- * Convert a float to an unsigned 64-bit integer, truncating towards zero.
- *
- * @param f The value.
- * @return The integer, or all bits set for a value out of range or a NaN.
- * @ghidraAddress USA: 0x80266aa8
- */
+/** @ghidraAddress USA: 0x80266aa8 */
 unsigned long long __f_to_ull(float f);
 
-/**
- * Convert a signed 64-bit integer to a double.
- *
- * @param s The integer.
- * @return The nearest double.
- * @ghidraAddress USA: 0x80266b44
- */
+/** @ghidraAddress USA: 0x80266b44 */
 double __ll_to_d(long long s);
 
-/**
- * Convert a signed 64-bit integer to a float.
- *
- * @param s The integer.
- * @return The nearest float.
- * @ghidraAddress USA: 0x80266b5c
- */
+/** @ghidraAddress USA: 0x80266b5c */
 float __ll_to_f(long long s);
 
-/**
- * Convert an unsigned 64-bit integer to a double.
- *
- * @param u The integer.
- * @return The converted value. A set top bit is corrected by adding 2 to the 32nd power.
- * @ghidraAddress USA: 0x80266b74
- */
+/** @ghidraAddress USA: 0x80266b74 */
 double __ull_to_d(unsigned long long u);
 
-/**
- * Convert an unsigned 64-bit integer to a float.
- *
- * @param u The integer.
- * @return The converted value. A set top bit is corrected by adding 2 to the 32nd power.
- * @ghidraAddress USA: 0x80266ba8
- */
+/** @ghidraAddress USA: 0x80266ba8 */
 float __ull_to_f(unsigned long long u);
 
 #endif
