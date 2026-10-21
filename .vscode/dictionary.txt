@@ -11,13 +11,16 @@ andi
 argparse
 asciz
 atexit
+audiomix
 autobrief
 badvaddr
 balign
 bcmp
 bcopy
 beqz
+bgtz
 blez
+bnel
 bnez
 bsky
 bufbusy
@@ -38,6 +41,7 @@ createmesgqueue
 createthread
 ctype
 dacrate
+daddu
 dashcam
 datacrc
 datarootdir
@@ -56,6 +60,7 @@ dllmain
 dmaread
 dmawrite
 docstrings
+doubleword
 dsll
 dsra
 dsrl
@@ -166,6 +171,7 @@ mabi
 mainpage
 maptlbrdb
 math
+mathutil
 maxcontrollers
 mdebug
 mdfile
@@ -189,6 +195,7 @@ mtune
 mtxcatf
 mtxcatl
 mtxutil
+mult
 mypy
 ngre
 noat

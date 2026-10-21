@@ -64002,17 +64002,17 @@ dlabel g_dwCh5RightVolume
     /* A5914 802A4914 00000000 */ .word 0x00000000
 enddlabel g_dwCh5RightVolume
 
-nonmatching g_dwAudioLeftVolume
+nonmatching g_qwReverbSampleMask
 
-dlabel g_dwAudioLeftVolume
+dlabel g_qwReverbSampleMask
     /* A5918 802A4918 FFFEFFFE */ .word 0xFFFEFFFE
-enddlabel g_dwAudioLeftVolume
+enddlabel g_qwReverbSampleMask
 
-nonmatching g_dwAudioRightVolume
+nonmatching D_802A491C
 
-dlabel g_dwAudioRightVolume
+dlabel D_802A491C
     /* A591C 802A491C FFFEFFFE */ .word 0xFFFEFFFE
-enddlabel g_dwAudioRightVolume
+enddlabel D_802A491C
 
 nonmatching g_aSoundChannelRequested
 

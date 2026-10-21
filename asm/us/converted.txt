@@ -2,9 +2,15 @@ AllocHeapAligned
 ApplyWeather
 ClearFramebuffersForNormalMode
 ClearFramebuffersForWideMode
+CopyVec4
+FloatToInt
 GetHeapCurrentAddress
 InitGameAndShowMenus
 MainMenuEntry
+MemFill64Aligned
+MixAudioReverbChannels
+MixAudioSamples
+MixAudioStereoSamples
 ResetAllPlayers
 ResetHeap
 SetHeapCurrentAddress

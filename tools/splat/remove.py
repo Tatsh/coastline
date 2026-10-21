@@ -29,7 +29,10 @@ def remove_routine(lines: list[str], name: str) -> tuple[list[str], set[str]] | 
   end = next(index for index in range(start, len(lines))
              if re.match(rf'^endlabel {re.escape(name)}\s*$', lines[index]))
   labels = {match.group(1) for line in lines[start:end] if (match := LOCAL_LABEL.match(line))}
-  aliases = [line.split()[1] for line in lines[start:end] if line.strip().startswith('alabel ')]
+  # spimdisasm names the target of a jump within a hand-written routine func_ADDRESS. Such a target
+  # is internal to the routine, and a reference from elsewhere would fail the link.
+  aliases = [line.split()[1] for line in lines[start:end] if line.strip().startswith('alabel ')
+             and not re.fullmatch(r'func_[0-9A-F]{8}', line.split()[1])]
   if aliases:
     raise SystemExit(f'{name} has the alternative entries {", ".join(aliases)}. The C body must '
                      'define them before the routine is removed from the assembly.')

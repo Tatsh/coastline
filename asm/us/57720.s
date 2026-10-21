@@ -1062,13 +1062,13 @@ glabel InitAudioSystem
     /* 585C4 802575C4 3C0EFFFE */  lui        $t6, (0xFFFEFFFE >> 16)
     /* 585C8 802575C8 27BDFFB0 */  addiu      $sp, $sp, -0x50
     /* 585CC 802575CC 35CEFFFE */  ori        $t6, $t6, (0xFFFEFFFE & 0xFFFF)
-    /* 585D0 802575D0 3C01802A */  lui        $at, %hi(g_dwAudioLeftVolume)
-    /* 585D4 802575D4 AC2E4918 */  sw         $t6, %lo(g_dwAudioLeftVolume)($at)
+    /* 585D0 802575D0 3C01802A */  lui        $at, %hi(g_qwReverbSampleMask)
+    /* 585D4 802575D4 AC2E4918 */  sw         $t6, %lo(g_qwReverbSampleMask)($at)
     /* 585D8 802575D8 AFBF0024 */  sw         $ra, 0x24($sp)
     /* 585DC 802575DC AFA40050 */  sw         $a0, 0x50($sp)
-    /* 585E0 802575E0 3C01802A */  lui        $at, %hi(g_dwAudioRightVolume)
+    /* 585E0 802575E0 3C01802A */  lui        $at, %hi(D_802A491C)
     /* 585E4 802575E4 AFA50054 */  sw         $a1, 0x54($sp)
-    /* 585E8 802575E8 AC2E491C */  sw         $t6, %lo(g_dwAudioRightVolume)($at)
+    /* 585E8 802575E8 AC2E491C */  sw         $t6, %lo(D_802A491C)($at)
     /* 585EC 802575EC 0C09A08C */  jal        osAiSetFrequency
     /* 585F0 802575F0 240455EE */   addiu     $a0, $zero, 0x55EE
     /* 585F4 802575F4 3C04802B */  lui        $a0, %hi(g_szRealFrequencyIs)
