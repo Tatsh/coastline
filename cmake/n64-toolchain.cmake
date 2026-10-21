@@ -20,8 +20,10 @@ set(CMAKE_ASM_COMPILER "${CMAKE_C_COMPILER}")
 # linking and no C library from the compiler. The small data section is unused. The original refers
 # to every datum by its full address.
 set(_n64_flags "-march=vr4300 -mtune=vr4300 -mabi=32 -mno-abicalls -fno-pic -ffreestanding -G0")
-# The program must fit before the first asset of the cartridge. The code is built for size.
-set(CMAKE_C_FLAGS_INIT "${_n64_flags} -Os")
+# The program must fit before the first asset of the cartridge. The code is built for size. IDO
+# does not assume that stores through one type leave objects of another type unchanged. The
+# original stores offsets and pointers through a u32 pointer and reads the field back as a pointer.
+set(CMAKE_C_FLAGS_INIT "${_n64_flags} -Os -fno-strict-aliasing")
 set(CMAKE_ASM_FLAGS_INIT "${_n64_flags}")
 
 set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
