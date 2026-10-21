@@ -47,8 +47,15 @@
 #define PFS_INODE_SIZE_PER_PAGE 128
 #define DEF_DIR_PAGES 2
 
-#define PFS_READ 0
-#define PFS_WRITE 1
+/* Page table entries with special meanings. */
+#define PFS_EOF 1
+#define PFS_PAGE_NOT_USED 3
+
+/* The bit of a directory entry that marks a file as written. */
+#define DIR_STATUS_OCCUPIED 0x02
+
+/* The address the motor of a Rumble Pak listens at. */
+#define MOTOR_ADDRESS 0x600
 
 /* Return the result of a call unless it is 0. */
 #define ERRCK(fn)                                                                                  \
@@ -131,6 +138,28 @@ typedef struct {
     __OSInodeUnit inode_page[128];
 } __OSInode;
 
+/** A directory entry of a Controller Pak. */
+typedef struct {
+    u32 game_code;
+    u16 company_code;
+    __OSInodeUnit start_page;
+    u8 status;
+    s8 reserved;
+    u16 data_sum;
+    u8 ext_name[4];
+    u8 game_name[16];
+} __OSDir;
+
+/**
+ * The page table of the bank osPfsChecker() last read, and for each group of four pages a bit for
+ * every other bank whose table points into the group.
+ */
+typedef struct {
+    __OSInode inode;
+    u8 bank;
+    u8 map[256];
+} __OSInodeCache;
+
 /**
  * The PIF RAM image of the controller commands.
  *
@@ -164,6 +193,26 @@ extern OSMesgQueue __osEepromTimerQ;
 
 /** @ghidraAddress USA: 0x8037f470 */
 extern OSMesg __osEepromTimerMsg;
+
+/**
+ * The PIF RAM image of the command that stops the motor of each channel.
+ *
+ * @ghidraAddress USA: 0x8037f0f0
+ */
+extern OSPifRam _MotorStopData[MAXCONTROLLERS];
+
+/**
+ * The PIF RAM image of the command that starts the motor of each channel.
+ *
+ * @ghidraAddress USA: 0x8037f1f0
+ */
+extern OSPifRam _MotorStartData[MAXCONTROLLERS];
+
+/** The block written to stop a motor. @ghidraAddress USA: 0x8037f2f0 */
+extern u8 _motorstopbuf[BLOCKSIZE];
+
+/** The block written to start a motor. @ghidraAddress USA: 0x8037f310 */
+extern u8 _motorstartbuf[BLOCKSIZE];
 
 /**
  * Decode the answers of a status command.

@@ -29,6 +29,14 @@
 #define PFS_ERR_ID_FATAL 10
 #define PFS_ERR_DEVICE 11
 
+/* Directions of osPfsReadWriteFile(). */
+#define PFS_READ 0
+#define PFS_WRITE 1
+
+/* Bits of OSPfs.status. */
+#define PFS_INITIALIZED 0x01
+#define PFS_CORRUPTED 0x02
+
 /** What osContInit() learns of a controller. */
 typedef struct {
     u16 type;
@@ -61,6 +69,15 @@ typedef struct {
     u8 activebank;
 } OSPfs;
 
+/** What osPfsFileState() reports of a file. */
+typedef struct {
+    u32 file_size;
+    u32 game_code;
+    u16 company_code;
+    char ext_name[4];
+    char game_name[16];
+} OSPfsState;
+
 /**
  * Wait until the controllers have powered up, then find which are present.
  *
@@ -90,5 +107,116 @@ void osContGetReadData(OSContPad *data);
  * @ghidraAddress USA: 0x80261940
  */
 s32 osPfsIsPlug(OSMesgQueue *queue, u8 *pattern);
+
+/**
+ * Open the Controller Pak of a channel, repairing its ID if needed, and check its file system.
+ *
+ * @ghidraAddress USA: 0x80265cd0
+ */
+s32 osPfsInit(OSMesgQueue *queue, OSPfs *pfs, int channel);
+
+/**
+ * Open the Controller Pak of a channel like osPfsInit(), starting from the ID checksum of the
+ * caller's stack.
+ *
+ * @ghidraAddress USA: 0x80261cb0
+ */
+s32 osPfsInitPak(OSMesgQueue *queue, OSPfs *pfs, int channel);
+
+/**
+ * Read the ID block again, repairing it if needed.
+ *
+ * @ghidraAddress USA: 0x80262660
+ */
+s32 osPfsRepairId(OSPfs *pfs);
+
+/**
+ * Remove directory entries whose page chains are broken, and rebuild the page tables from the
+ * chains that remain.
+ *
+ * @ghidraAddress USA: 0x80262a80
+ */
+s32 osPfsChecker(OSPfs *pfs);
+
+/**
+ * Find a file by its codes, and by its names unless they are NULL.
+ *
+ * @param file_no Receives the directory index, or -1.
+ * @ghidraAddress USA: 0x802628c0
+ */
+s32 osPfsFindFile(
+    OSPfs *pfs, u16 company_code, u32 game_code, u8 *game_name, u8 *ext_name, s32 *file_no);
+
+/**
+ * Read or write whole blocks of a file.
+ *
+ * @param flag PFS_READ or PFS_WRITE.
+ * @ghidraAddress USA: 0x802635dc
+ */
+s32 osPfsReadWriteFile(
+    OSPfs *pfs, s32 file_no, u8 flag, int offset, int size_in_bytes, u8 *data_buffer);
+
+/**
+ * Return the bytes of the pages no file uses.
+ *
+ * @ghidraAddress USA: 0x802639e0
+ */
+s32 osPfsFreeBlocks(OSPfs *pfs, s32 *bytes_not_used);
+
+/**
+ * Create a file of at least the given size.
+ *
+ * @param file_no Receives the directory index of the new file.
+ * @ghidraAddress USA: 0x80263b30
+ */
+s32 osPfsAllocateFile(OSPfs *pfs,
+                      u16 company_code,
+                      u32 game_code,
+                      u8 *game_name,
+                      u8 *ext_name,
+                      int file_size_in_bytes,
+                      s32 *file_no);
+
+/**
+ * Count the directory entries and the files that use them.
+ *
+ * @ghidraAddress USA: 0x802677e0
+ */
+s32 osPfsNumFiles(OSPfs *pfs, s32 *max_files, s32 *files_used);
+
+/**
+ * Report the size, codes and names of a file.
+ *
+ * @ghidraAddress USA: 0x80267930
+ */
+s32 osPfsFileState(OSPfs *pfs, s32 file_no, OSPfsState *state);
+
+/**
+ * Delete a file and free its pages.
+ *
+ * @ghidraAddress USA: 0x80267c20
+ */
+s32 osPfsDeleteFile(OSPfs *pfs, u16 company_code, u32 game_code, u8 *game_name, u8 *ext_name);
+
+/**
+ * Open the Rumble Pak of a channel and build the commands that start and stop its motor.
+ *
+ * @ghidraAddress USA: 0x80262370
+ */
+s32 osMotorInit(OSMesgQueue *mq, OSPfs *pfs, int channel);
+
+/**
+ * Start the motor of a Rumble Pak.
+ *
+ * @ghidraAddress USA: 0x80262088
+ */
+s32 osMotorStart(OSPfs *pfs);
+
+/**
+ * Stop the motor of a Rumble Pak.
+ *
+ * @ghidraAddress USA: 0x80261f20
+ */
+s32 osMotorStop(OSPfs *pfs);
 
 #endif

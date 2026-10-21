@@ -31,8 +31,20 @@ add_library(
   io/epirawwrite.c
   io/leodiskinit.c
   io/leointerrupt.c
+  io/motor.c
+  io/pfsallocatefile.c
+  io/pfschecker.c
+  io/pfsdeletefile.c
+  io/pfsfilestate.c
+  io/pfsfindfile.c
+  io/pfsfreeblocks.c
   io/pfsgetstatus.c
+  io/pfsinit.c
+  io/pfsinitpak.c
   io/pfsisplug.c
+  io/pfsnumfiles.c
+  io/pfsreadwritefile.c
+  io/pfsrepairid.c
   io/piacs.c
   io/pidma.c
   io/pigetcmdq.c

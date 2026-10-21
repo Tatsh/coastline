@@ -44,6 +44,8 @@ datarootdir
 dbuild
 dcmake
 ddivu
+declear
+decleared
 destroythread
 devmgr
 disasm
@@ -175,6 +177,8 @@ mflo
 minode
 mktemp
 moddi
+motorstartbuf
+motorstopbuf
 mpal
 msvc
 msystem
@@ -203,8 +207,19 @@ outfun
 pacboy
 pathlib
 persp
+pfsallocatefile
+pfschecker
+pfsdeletefile
+pfsfilestate
+pfsfindfile
+pfsfreeblocks
 pfsgetstatus
+pfsinit
+pfsinitpak
 pfsisplug
+pfsnumfiles
+pfsreadwritefile
+pfsrepairid
 piacs
 pidma
 pifdata

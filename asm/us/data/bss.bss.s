@@ -5090,24 +5090,24 @@ nonmatching D_8037F0EC, 0x4
 dlabel D_8037F0EC
     /* 8037F0EC */ .space 0x04
 
-nonmatching D_8037F0F0, 0x100
+nonmatching _MotorStopData, 0x100
 
-dlabel D_8037F0F0
+dlabel _MotorStopData
     /* 8037F0F0 */ .space 0x100
 
-nonmatching D_8037F1F0, 0x100
+nonmatching _MotorStartData, 0x100
 
-dlabel D_8037F1F0
+dlabel _MotorStartData
     /* 8037F1F0 */ .space 0x100
 
-nonmatching g_abPakInitZerosBuf, 0x20
+nonmatching _motorstopbuf, 0x20
 
-dlabel g_abPakInitZerosBuf
+dlabel _motorstopbuf
     /* 8037F2F0 */ .space 0x20
 
-nonmatching g_abPakInitOnesBuf, 0x20
+nonmatching _motorstartbuf, 0x20
 
-dlabel g_abPakInitOnesBuf
+dlabel _motorstartbuf
     /* 8037F310 */ .space 0x20
 
 nonmatching tmp_task, 0x10
