@@ -35,10 +35,10 @@ void TwoControllersPostDrawCallback(s32 item) {
 void ProcessPlayerCountSelect(void) {
     if (g_dwPlayerCountSelectState <= 0) {
         ResetAndInitDisplay(g_apPlayerCountMenuItems, &g_dwPlayerCountMenuItemCount);
-        g_pfnScreenPostDrawCallback = TwoControllersPostDrawCallback;
         if (g_dwPlayerCountSelectState == 0) {
             g_dwPlayerCountMenuSelection = 0;
         }
+        g_pfnScreenPostDrawCallback = TwoControllersPostDrawCallback;
         g_dwPlayerCountSelectState = 1;
     }
 

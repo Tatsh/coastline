@@ -125,37 +125,41 @@ s32 IsCarUnlocked(s32 car) {
 
 /** Light a model on a stage, from an eye, with the four lights of the stage and its ambient light.
  */
-static inline void LightStageModel(f32 eyeX, f32 eyeY, f32 eyeZ, f32 upY, f32 upZ) {
-    LookAt *lookAt = AllocLightBlock();
-
-    guLookAtReflectF(g_afScratchMatrix, lookAt, eyeX, eyeY, eyeZ, 0.0f, 0.0f, 0.0f, 0.0f, upY, upZ);
-    gSPLookAt(gDisplayListPtr++, lookAt);
-    gSPNumLights(gDisplayListPtr++, NUMLIGHTS_4);
-    gSPLight(gDisplayListPtr++, &g_CameraViewLight1, 1);
-    gSPLight(gDisplayListPtr++, &g_CameraViewLight2, 2);
-    gSPLight(gDisplayListPtr++, &g_CameraViewLight3, 3);
-    gSPLight(gDisplayListPtr++, &g_CameraViewLight4, 4);
-    gSPLight(gDisplayListPtr++, &g_CameraViewAmbientLight, 5);
-    /* The block is taken and left unused. */
-    AllocDisplayListBlock();
-}
+#define LIGHT_STAGE_MODEL(eyeX, eyeY, eyeZ, upY, upZ)                                              \
+    {                                                                                              \
+        LookAt *lookAt = AllocLightBlock();                                                        \
+                                                                                                   \
+        guLookAtReflectF(                                                                          \
+            g_afScratchMatrix, lookAt, eyeX, eyeY, eyeZ, 0.0f, 0.0f, 0.0f, 0.0f, upY, upZ);        \
+        gSPLookAt(gDisplayListPtr++, lookAt);                                                      \
+        gSPNumLights(gDisplayListPtr++, NUMLIGHTS_4);                                              \
+        gSPLight(gDisplayListPtr++, &g_CameraViewLight1, 1);                                       \
+        gSPLight(gDisplayListPtr++, &g_CameraViewLight2, 2);                                       \
+        gSPLight(gDisplayListPtr++, &g_CameraViewLight3, 3);                                       \
+        gSPLight(gDisplayListPtr++, &g_CameraViewLight4, 4);                                       \
+        gSPLight(gDisplayListPtr++, &g_CameraViewAmbientLight, 5);                                 \
+        /* The block is taken and left unused. */                                                  \
+        AllocDisplayListBlock();                                                                   \
+    }
 
 /** Draw a model on a stage, turned and placed. */
-static inline void DrawStageModel(Model *model, f32 degrees, f32 x, f32 y) {
-    guScaleF(g_afMvpMatrix, STAGE_MODEL_SCALE, STAGE_MODEL_SCALE, STAGE_MODEL_SCALE);
-    guRotateF(g_afScratchMatrix, degrees, 0.0f, 0.0f, 1.0f);
-    guMtxCatF(g_afMvpMatrix, g_afScratchMatrix, g_afMvpMatrix);
-    guTranslateF(g_afScratchMatrix, x, y, 0.0f);
-    guMtxCatF(g_afMvpMatrix, g_afScratchMatrix, g_afMvpMatrix);
-    DrawModelList(model, g_afMvpMatrix);
-}
+#define DRAW_STAGE_MODEL(model, degrees, x, y)                                                     \
+    {                                                                                              \
+        guScaleF(g_afMvpMatrix, STAGE_MODEL_SCALE, STAGE_MODEL_SCALE, STAGE_MODEL_SCALE);          \
+        guRotateF(g_afScratchMatrix, degrees, 0.0f, 0.0f, 1.0f);                                   \
+        guMtxCatF(g_afMvpMatrix, g_afScratchMatrix, g_afMvpMatrix);                                \
+        guTranslateF(g_afScratchMatrix, x, y, 0.0f);                                               \
+        guMtxCatF(g_afMvpMatrix, g_afScratchMatrix, g_afMvpMatrix);                                \
+        DrawModelList(model, g_afMvpMatrix);                                                       \
+    }
 
 /** Draw the vehicle of the camera with the car of its slot, and its shadow. */
-static inline void DrawStageVehicle(void) {
-    RenderTrackShadow(g_pActiveCameraVehicle);
-    CheckVehicleVisibility(g_pActiveCameraVehicle);
-    RenderVehicleModel(g_pActiveCameraVehicle, 0);
-}
+#define DRAW_STAGE_VEHICLE()                                                                       \
+    {                                                                                              \
+        RenderTrackShadow(g_pActiveCameraVehicle);                                                 \
+        CheckVehicleVisibility(g_pActiveCameraVehicle);                                            \
+        RenderVehicleModel(g_pActiveCameraVehicle, 0);                                             \
+    }
 
 void RenderCameraView(Model *model,
                       Model *secondModel,
@@ -216,11 +220,11 @@ void RenderCameraView(Model *model,
         EmitTachometerDisplayList(g_pActiveCameraVehicle);
     }
     if (model != NULL) {
-        LightStageModel(11.0f, 11.0f, 1.0f, 0.0f, 1.0f);
-        DrawStageModel(model, angle * RAD_TO_DEG, offset, otherOffset);
+        LIGHT_STAGE_MODEL(11.0f, 11.0f, 1.0f, 0.0f, 1.0f);
+        DRAW_STAGE_MODEL(model, angle * RAD_TO_DEG, offset, otherOffset);
     } else if (IsVehicleModelLoaded(load)) {
         SetVehicleModelSlot(g_pActiveCameraVehicle, slot);
-        DrawStageVehicle();
+        DRAW_STAGE_VEHICLE();
     }
 
     /* The second car comes in from the far side as the first slides out. */
@@ -231,7 +235,7 @@ void RenderCameraView(Model *model,
     }
     if (secondModel != NULL) {
         angle *= RAD_TO_DEG;
-        LightStageModel(0.0f, -1.0f, 15.0f, 1.0f, 0.0f);
+        LIGHT_STAGE_MODEL(0.0f, -1.0f, 15.0f, 1.0f, 0.0f);
         guScaleF(g_afMvpMatrix, STAGE_MODEL_SCALE, STAGE_MODEL_SCALE, STAGE_MODEL_SCALE);
         guRotateF(g_afScratchMatrix, angle, 0.0f, 0.0f, 1.0f);
         guMtxCatF(g_afMvpMatrix, g_afScratchMatrix, g_afMvpMatrix);
@@ -260,7 +264,7 @@ void RenderCameraView(Model *model,
         g_pActiveCameraVehicle->frame.position.z = STAGE_HEIGHT;
     }
     TransformWheelPositions(vehicleIndex);
-    DrawStageVehicle();
+    DRAW_STAGE_VEHICLE();
     if (IsVehicleModelLoaded(load)) {
         SetVehicleModelSlot(g_pActiveCameraVehicle, slot);
     }

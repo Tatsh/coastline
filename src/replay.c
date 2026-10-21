@@ -86,15 +86,15 @@ s32 CompressRleChannels(u8 *dst, s32 dstSize, u8 *src, s32 srcSize, s32 channels
 }
 #pragma GCC diagnostic pop
 
-s32 DecompressInterleavedRle(u8 *dst, s32 dstSize, u8 *src, s32 channels) {
+s32 DecompressInterleavedRle(u8 *dst, s32 dstSize, u8 *packed, s32 channels) {
+    s32 end;
+    s32 code;
     s32 out = 0;
     s32 used = 0;
-    s32 channel;
+    u32 count;
     s32 length;
-    s32 end;
-    s32 count;
-    s8 code;
-    s8 value;
+    s32 channel;
+    s8 *src = (s8 *)packed;
 
     for (channel = 0; channel < channels; channel++, dst++) {
         out = 0;
@@ -112,10 +112,12 @@ s32 DecompressInterleavedRle(u8 *dst, s32 dstSize, u8 *src, s32 channels) {
                     used++;
                 }
             } else {
-                value = *src++;
+                count = code + RLE_MIN_RUN;
+                /* The repeated byte replaces the code it follows. */
+                code = *src++;
                 used++;
-                for (count = code + RLE_MIN_RUN; count != 0; count--) {
-                    dst[out] = value;
+                for (; count != 0; count--) {
+                    dst[out] = code;
                     out += channels;
                 }
             }
