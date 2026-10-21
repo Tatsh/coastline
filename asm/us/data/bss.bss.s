@@ -1093,21 +1093,10 @@ nonmatching g_aContPfs, 0x68
 dlabel g_aContPfs
     /* 8031A3F8 */ .space 0x68
 
-nonmatching g_PfsFileState1, 0xCC
+nonmatching D_8031A460, 0x138
 
-dlabel g_PfsFileState1
-    /* 8031A460 */ .space 0xCC
-
-nonmatching g_dwVehicleArrayMinus1Field0E5C, 0x4
-
-dlabel g_dwVehicleArrayMinus1Field0E5C
-    /* 8031A52C */ .space 0x04
-
-nonmatching D_8031A530, 0x68
-
-/* Automatically generated and unreferenced pad */
-dlabel D_8031A530
-    /* 8031A530 */ .space 0x68
+dlabel D_8031A460
+    /* 8031A460 */ .space 0x138
 
 nonmatching D_8031A598, 0x8
 
@@ -2317,9 +2306,9 @@ nonmatching D_8031D7CC, 0x8
 dlabel D_8031D7CC
     /* 8031D7CC */ .space 0x08
 
-nonmatching g_pVehicleArrayBase, 0x4
+nonmatching D_8031D7D4, 0x4
 
-dlabel g_pVehicleArrayBase
+dlabel D_8031D7D4
     /* 8031D7D4 */ .space 0x04
 
 nonmatching g_dwSuspensionTravel1, 0x4

@@ -64590,26 +64590,26 @@ dlabel g_awRumbleActive
     /* A5BEE 802A4BEE */ .short 0x0000
 enddlabel g_awRumbleActive
 
-nonmatching D_802A4BF0
+nonmatching g_awRumbleMotorOn
 
-dlabel D_802A4BF0
+dlabel g_awRumbleMotorOn
     /* A5BF0 802A4BF0 */ .short 0x0000
     /* A5BF2 802A4BF2 */ .short 0x0000
-enddlabel D_802A4BF0
+enddlabel g_awRumbleMotorOn
 
-nonmatching D_802A4BF4
+nonmatching g_awRumbleOnFrames
 
-dlabel D_802A4BF4
+dlabel g_awRumbleOnFrames
     /* A5BF4 802A4BF4 */ .short 0x0000
     /* A5BF6 802A4BF6 */ .short 0x0000
-enddlabel D_802A4BF4
+enddlabel g_awRumbleOnFrames
 
-nonmatching D_802A4BF8
+nonmatching g_awRumbleOffFrames
 
-dlabel D_802A4BF8
+dlabel g_awRumbleOffFrames
     /* A5BF8 802A4BF8 */ .short 0x0000
     /* A5BFA 802A4BFA */ .short 0x0000
-enddlabel D_802A4BF8
+enddlabel g_awRumbleOffFrames
 
 nonmatching g_awRumbleCounter
 
@@ -64618,18 +64618,18 @@ dlabel g_awRumbleCounter
     /* A5BFE 802A4BFE */ .short 0x0000
 enddlabel g_awRumbleCounter
 
-nonmatching D_802A4C00
+nonmatching g_awRumbleFramesLeft
 
-dlabel D_802A4C00
+dlabel g_awRumbleFramesLeft
     /* A5C00 802A4C00 */ .short 0x0000
     /* A5C02 802A4C02 */ .short 0x0000
-enddlabel D_802A4C00
+enddlabel g_awRumbleFramesLeft
 
-nonmatching g_bRaceScreenLoopExited
+nonmatching g_wRaceScreenLoopExited
 
-dlabel g_bRaceScreenLoopExited
+dlabel g_wRaceScreenLoopExited
     /* A5C04 802A4C04 */ .short 0x0000
-enddlabel g_bRaceScreenLoopExited
+enddlabel g_wRaceScreenLoopExited
 
 nonmatching D_802A4C06
 
@@ -64638,11 +64638,11 @@ dlabel D_802A4C06
     /* A5C06 802A4C06 */ .short 0x0000
 enddlabel D_802A4C06
 
-nonmatching g_dwOsPiStatus
+nonmatching g_dwRumbleProbeTimer
 
-dlabel g_dwOsPiStatus
+dlabel g_dwRumbleProbeTimer
     /* A5C08 802A4C08 00000000 */ .word 0x00000000
-enddlabel g_dwOsPiStatus
+enddlabel g_dwRumbleProbeTimer
 
 nonmatching D_802A4C0C
 

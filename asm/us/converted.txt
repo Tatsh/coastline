@@ -11,10 +11,12 @@ MemFill64Aligned
 MixAudioReverbChannels
 MixAudioSamples
 MixAudioStereoSamples
+PrepareRumblePaks
 ResetAllPlayers
 ResetHeap
 SetHeapCurrentAddress
 StartRaceWithPlayerCount
+UpdateRumblePaks
 _Genld
 _Ldtob
 _Litob

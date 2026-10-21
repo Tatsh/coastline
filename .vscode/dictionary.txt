@@ -247,6 +247,7 @@ pyinstaller
 pylock
 pyproject
 qstringbuilder
+racehud
 racemenu
 ramarray
 ramreadformat

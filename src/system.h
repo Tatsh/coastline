@@ -68,6 +68,13 @@ void InitRenderingSubsystem(void);
 void SetCurrentScreenCallback(ScreenCallback callback);
 
 /**
+ * Return whether a routine is the current screen.
+ *
+ * @ghidraAddress USA: 0x8021c6d0
+ */
+s32 IsCurrentScreen(ScreenCallback callback);
+
+/**
  * Call the current screen routine forever.
  *
  * @ghidraAddress USA: 0x8021c718

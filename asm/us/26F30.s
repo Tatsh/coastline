@@ -6897,31 +6897,31 @@ glabel UpdateVehicleCollisionSound
     /* 2D0F4 8022C0F4 24E74BFC */  addiu      $a3, $a3, %lo(g_awRumbleCounter)
     /* 2D0F8 8022C0F8 0059082A */  slt        $at, $v0, $t9
     /* 2D0FC 8022C0FC 10200023 */  beqz       $at, .L8022C18C
-    /* 2D100 8022C100 3C0A802A */   lui       $t2, %hi(D_802A4BF0)
+    /* 2D100 8022C100 3C0A802A */   lui       $t2, %hi(g_awRumbleMotorOn)
     /* 2D104 8022C104 0002C040 */  sll        $t8, $v0, 1
     /* 2D108 8022C108 00F87021 */  addu       $t6, $a3, $t8
     /* 2D10C 8022C10C A5C00000 */  sh         $zero, 0x0($t6)
     /* 2D110 8022C110 8E0F0140 */  lw         $t7, 0x140($s0)
-    /* 2D114 8022C114 254A4BF0 */  addiu      $t2, $t2, %lo(D_802A4BF0)
-    /* 2D118 8022C118 3C0B802A */  lui        $t3, %hi(D_802A4BF4)
+    /* 2D114 8022C114 254A4BF0 */  addiu      $t2, $t2, %lo(g_awRumbleMotorOn)
+    /* 2D118 8022C118 3C0B802A */  lui        $t3, %hi(g_awRumbleOnFrames)
     /* 2D11C 8022C11C 000FC840 */  sll        $t9, $t7, 1
     /* 2D120 8022C120 0159C021 */  addu       $t8, $t2, $t9
     /* 2D124 8022C124 A7000000 */  sh         $zero, 0x0($t8)
     /* 2D128 8022C128 8E0F0140 */  lw         $t7, 0x140($s0)
-    /* 2D12C 8022C12C 256B4BF4 */  addiu      $t3, $t3, %lo(D_802A4BF4)
+    /* 2D12C 8022C12C 256B4BF4 */  addiu      $t3, $t3, %lo(g_awRumbleOnFrames)
     /* 2D130 8022C130 240E0005 */  addiu      $t6, $zero, 0x5
     /* 2D134 8022C134 000FC840 */  sll        $t9, $t7, 1
     /* 2D138 8022C138 0179C021 */  addu       $t8, $t3, $t9
     /* 2D13C 8022C13C A70E0000 */  sh         $t6, 0x0($t8)
     /* 2D140 8022C140 8E0F0140 */  lw         $t7, 0x140($s0)
-    /* 2D144 8022C144 3C0C802A */  lui        $t4, %hi(D_802A4BF8)
-    /* 2D148 8022C148 258C4BF8 */  addiu      $t4, $t4, %lo(D_802A4BF8)
+    /* 2D144 8022C144 3C0C802A */  lui        $t4, %hi(g_awRumbleOffFrames)
+    /* 2D148 8022C148 258C4BF8 */  addiu      $t4, $t4, %lo(g_awRumbleOffFrames)
     /* 2D14C 8022C14C 000FC840 */  sll        $t9, $t7, 1
     /* 2D150 8022C150 01997021 */  addu       $t6, $t4, $t9
     /* 2D154 8022C154 A5C90000 */  sh         $t1, 0x0($t6)
     /* 2D158 8022C158 8E0F0140 */  lw         $t7, 0x140($s0)
-    /* 2D15C 8022C15C 3C0D802A */  lui        $t5, %hi(D_802A4C00)
-    /* 2D160 8022C160 25AD4C00 */  addiu      $t5, $t5, %lo(D_802A4C00)
+    /* 2D15C 8022C15C 3C0D802A */  lui        $t5, %hi(g_awRumbleFramesLeft)
+    /* 2D160 8022C160 25AD4C00 */  addiu      $t5, $t5, %lo(g_awRumbleFramesLeft)
     /* 2D164 8022C164 000FC840 */  sll        $t9, $t7, 1
     /* 2D168 8022C168 01B97021 */  addu       $t6, $t5, $t9
     /* 2D16C 8022C16C 2418001E */  addiu      $t8, $zero, 0x1E
@@ -6939,15 +6939,15 @@ glabel UpdateVehicleCollisionSound
     /* 2D194 8022C194 3C04802A */  lui        $a0, %hi(g_awRumbleActive)
     /* 2D198 8022C198 3C068027 */  lui        $a2, %hi(g_dwNumLocalPlayers)
     /* 2D19C 8022C19C 3C07802A */  lui        $a3, %hi(g_awRumbleCounter)
-    /* 2D1A0 8022C1A0 3C0A802A */  lui        $t2, %hi(D_802A4BF0)
-    /* 2D1A4 8022C1A4 3C0B802A */  lui        $t3, %hi(D_802A4BF4)
-    /* 2D1A8 8022C1A8 3C0C802A */  lui        $t4, %hi(D_802A4BF8)
-    /* 2D1AC 8022C1AC 3C0D802A */  lui        $t5, %hi(D_802A4C00)
+    /* 2D1A0 8022C1A0 3C0A802A */  lui        $t2, %hi(g_awRumbleMotorOn)
+    /* 2D1A4 8022C1A4 3C0B802A */  lui        $t3, %hi(g_awRumbleOnFrames)
+    /* 2D1A8 8022C1A8 3C0C802A */  lui        $t4, %hi(g_awRumbleOffFrames)
+    /* 2D1AC 8022C1AC 3C0D802A */  lui        $t5, %hi(g_awRumbleFramesLeft)
     /* 2D1B0 8022C1B0 01C2082A */  slt        $at, $t6, $v0
-    /* 2D1B4 8022C1B4 25AD4C00 */  addiu      $t5, $t5, %lo(D_802A4C00)
-    /* 2D1B8 8022C1B8 258C4BF8 */  addiu      $t4, $t4, %lo(D_802A4BF8)
-    /* 2D1BC 8022C1BC 256B4BF4 */  addiu      $t3, $t3, %lo(D_802A4BF4)
-    /* 2D1C0 8022C1C0 254A4BF0 */  addiu      $t2, $t2, %lo(D_802A4BF0)
+    /* 2D1B4 8022C1B4 25AD4C00 */  addiu      $t5, $t5, %lo(g_awRumbleFramesLeft)
+    /* 2D1B8 8022C1B8 258C4BF8 */  addiu      $t4, $t4, %lo(g_awRumbleOffFrames)
+    /* 2D1BC 8022C1BC 256B4BF4 */  addiu      $t3, $t3, %lo(g_awRumbleOnFrames)
+    /* 2D1C0 8022C1C0 254A4BF0 */  addiu      $t2, $t2, %lo(g_awRumbleMotorOn)
     /* 2D1C4 8022C1C4 24E74BFC */  addiu      $a3, $a3, %lo(g_awRumbleCounter)
     /* 2D1C8 8022C1C8 24C6FF08 */  addiu      $a2, $a2, %lo(g_dwNumLocalPlayers)
     /* 2D1CC 8022C1CC 24844BEC */  addiu      $a0, $a0, %lo(g_awRumbleActive)

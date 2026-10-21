@@ -44,6 +44,11 @@ def remove_routine(lines: list[str], name: str) -> tuple[list[str], set[str]] | 
 def remove(region: str, routines: list[str], *, record: bool = True) -> None:
   """Remove routines from the assembly of a release and, unless told not to, record them."""
   asm = ROOT / 'asm' / region
+  # Check every name first, so that a mistake leaves the assembly and converted.txt untouched.
+  text = '\n'.join(source.read_text(encoding='utf-8') for source in asm.glob('[0-9A-F]*.s'))
+  if missing := [name for name in routines
+                 if not re.search(rf'^nonmatching {re.escape(name)}\b', text, re.M)]:
+    raise SystemExit(f'{", ".join(missing)} not in the assembly of {region}.')
   removed_labels: set[str] = set()
   for name in routines:
     for source in sorted(asm.glob('[0-9A-F]*.s')):

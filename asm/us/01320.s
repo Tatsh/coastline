@@ -516,33 +516,33 @@ glabel ProcessRaceHud
     /* 19DC 802009DC 000C6100 */  sll        $t4, $t4, 4
     /* 19E0 802009E0 00115080 */  sll        $t2, $s1, 2
     /* 19E4 802009E4 3C0B8031 */  lui        $t3, %hi(g_apReplayGhostPtrs)
-    /* 19E8 802009E8 3C0D8032 */  lui        $t5, %hi(g_pVehicleArrayBase)
+    /* 19E8 802009E8 3C0D8032 */  lui        $t5, %hi(D_8031D7D4)
     /* 19EC 802009EC 01AC6821 */  addu       $t5, $t5, $t4
     /* 19F0 802009F0 016A5821 */  addu       $t3, $t3, $t2
     /* 19F4 802009F4 0011C180 */  sll        $t8, $s1, 6
     /* 19F8 802009F8 8D6B5E48 */  lw         $t3, %lo(g_apReplayGhostPtrs)($t3)
-    /* 19FC 802009FC 8DADD7D4 */  lw         $t5, %lo(g_pVehicleArrayBase)($t5)
+    /* 19FC 802009FC 8DADD7D4 */  lw         $t5, %lo(D_8031D7D4)($t5)
     /* 1A00 80200A00 0311C021 */  addu       $t8, $t8, $s1
     /* 1A04 80200A04 0018C0C0 */  sll        $t8, $t8, 3
     /* 1A08 80200A08 0311C021 */  addu       $t8, $t8, $s1
     /* 1A0C 80200A0C 0018C100 */  sll        $t8, $t8, 4
     /* 1A10 80200A10 00117080 */  sll        $t6, $s1, 2
     /* 1A14 80200A14 3C0F8031 */  lui        $t7, %hi(g_adwReplayGhostSizes)
-    /* 1A18 80200A18 3C198032 */  lui        $t9, %hi(g_pVehicleArrayBase)
+    /* 1A18 80200A18 3C198032 */  lui        $t9, %hi(D_8031D7D4)
     /* 1A1C 80200A1C 00114180 */  sll        $t0, $s1, 6
     /* 1A20 80200A20 ADAB0044 */  sw         $t3, 0x44($t5)
     /* 1A24 80200A24 0338C821 */  addu       $t9, $t9, $t8
     /* 1A28 80200A28 01EE7821 */  addu       $t7, $t7, $t6
     /* 1A2C 80200A2C 01114021 */  addu       $t0, $t0, $s1
     /* 1A30 80200A30 8DEF5E58 */  lw         $t7, %lo(g_adwReplayGhostSizes)($t7)
-    /* 1A34 80200A34 8F39D7D4 */  lw         $t9, %lo(g_pVehicleArrayBase)($t9)
+    /* 1A34 80200A34 8F39D7D4 */  lw         $t9, %lo(D_8031D7D4)($t9)
     /* 1A38 80200A38 000840C0 */  sll        $t0, $t0, 3
     /* 1A3C 80200A3C 01114021 */  addu       $t0, $t0, $s1
     /* 1A40 80200A40 00084100 */  sll        $t0, $t0, 4
-    /* 1A44 80200A44 3C098032 */  lui        $t1, %hi(g_pVehicleArrayBase)
+    /* 1A44 80200A44 3C098032 */  lui        $t1, %hi(D_8031D7D4)
     /* 1A48 80200A48 01284821 */  addu       $t1, $t1, $t0
     /* 1A4C 80200A4C AF2F004C */  sw         $t7, 0x4C($t9)
-    /* 1A50 80200A50 8D29D7D4 */  lw         $t1, %lo(g_pVehicleArrayBase)($t1)
+    /* 1A50 80200A50 8D29D7D4 */  lw         $t1, %lo(D_8031D7D4)($t1)
     /* 1A54 80200A54 3C0A8027 */  lui        $t2, %hi(g_dwNumLocalPlayers)
     /* 1A58 80200A58 26310001 */  addiu      $s1, $s1, 0x1
     /* 1A5C 80200A5C AD200048 */  sw         $zero, 0x48($t1)
@@ -564,27 +564,27 @@ glabel ProcessRaceHud
     /* 1A94 80200A94 000B58C0 */  sll        $t3, $t3, 3
     /* 1A98 80200A98 01715821 */  addu       $t3, $t3, $s1
     /* 1A9C 80200A9C 000B5900 */  sll        $t3, $t3, 4
-    /* 1AA0 80200AA0 3C0D8032 */  lui        $t5, %hi(g_pVehicleArrayBase)
+    /* 1AA0 80200AA0 3C0D8032 */  lui        $t5, %hi(D_8031D7D4)
     /* 1AA4 80200AA4 00117180 */  sll        $t6, $s1, 6
     /* 1AA8 80200AA8 01AB6821 */  addu       $t5, $t5, $t3
     /* 1AAC 80200AAC 01D17021 */  addu       $t6, $t6, $s1
-    /* 1AB0 80200AB0 8DADD7D4 */  lw         $t5, %lo(g_pVehicleArrayBase)($t5)
+    /* 1AB0 80200AB0 8DADD7D4 */  lw         $t5, %lo(D_8031D7D4)($t5)
     /* 1AB4 80200AB4 000E70C0 */  sll        $t6, $t6, 3
     /* 1AB8 80200AB8 01D17021 */  addu       $t6, $t6, $s1
     /* 1ABC 80200ABC 000E7100 */  sll        $t6, $t6, 4
-    /* 1AC0 80200AC0 3C188032 */  lui        $t8, %hi(g_pVehicleArrayBase)
+    /* 1AC0 80200AC0 3C188032 */  lui        $t8, %hi(D_8031D7D4)
     /* 1AC4 80200AC4 00117980 */  sll        $t7, $s1, 6
     /* 1AC8 80200AC8 030EC021 */  addu       $t8, $t8, $t6
     /* 1ACC 80200ACC 01F17821 */  addu       $t7, $t7, $s1
     /* 1AD0 80200AD0 ADA00044 */  sw         $zero, 0x44($t5)
-    /* 1AD4 80200AD4 8F18D7D4 */  lw         $t8, %lo(g_pVehicleArrayBase)($t8)
+    /* 1AD4 80200AD4 8F18D7D4 */  lw         $t8, %lo(D_8031D7D4)($t8)
     /* 1AD8 80200AD8 000F78C0 */  sll        $t7, $t7, 3
     /* 1ADC 80200ADC 01F17821 */  addu       $t7, $t7, $s1
     /* 1AE0 80200AE0 000F7900 */  sll        $t7, $t7, 4
-    /* 1AE4 80200AE4 3C198032 */  lui        $t9, %hi(g_pVehicleArrayBase)
+    /* 1AE4 80200AE4 3C198032 */  lui        $t9, %hi(D_8031D7D4)
     /* 1AE8 80200AE8 032FC821 */  addu       $t9, $t9, $t7
     /* 1AEC 80200AEC AF00002C */  sw         $zero, 0x2C($t8)
-    /* 1AF0 80200AF0 8F39D7D4 */  lw         $t9, %lo(g_pVehicleArrayBase)($t9)
+    /* 1AF0 80200AF0 8F39D7D4 */  lw         $t9, %lo(D_8031D7D4)($t9)
     /* 1AF4 80200AF4 3C088027 */  lui        $t0, %hi(g_dwNumLocalPlayers)
     /* 1AF8 80200AF8 26310001 */  addiu      $s1, $s1, 0x1
     /* 1AFC 80200AFC AF200030 */  sw         $zero, 0x30($t9)
@@ -809,7 +809,7 @@ glabel ProcessRaceHud
     /* 1E38 80200E38 3C0A8027 */  lui        $t2, %hi(g_dwNumLocalPlayers)
     /* 1E3C 80200E3C 8D4AFF08 */  lw         $t2, %lo(g_dwNumLocalPlayers)($t2)
     /* 1E40 80200E40 3C018029 */  lui        $at, %hi(g_dwNumVehicles)
-    /* 1E44 80200E44 3C0F8032 */  lui        $t7, %hi(g_pVehicleArrayBase)
+    /* 1E44 80200E44 3C0F8032 */  lui        $t7, %hi(D_8031D7D4)
     /* 1E48 80200E48 000A6980 */  sll        $t5, $t2, 6
     /* 1E4C 80200E4C 254E0001 */  addiu      $t6, $t2, 0x1
     /* 1E50 80200E50 01AA6821 */  addu       $t5, $t5, $t2
@@ -821,7 +821,7 @@ glabel ProcessRaceHud
     /* 1E68 80200E68 000D6900 */  sll        $t5, $t5, 4
     /* 1E6C 80200E6C 3C018027 */  lui        $at, %hi(g_dwRaceSaveReplayFlag)
     /* 1E70 80200E70 01ED7821 */  addu       $t7, $t7, $t5
-    /* 1E74 80200E74 8DEFD7D4 */  lw         $t7, %lo(g_pVehicleArrayBase)($t7)
+    /* 1E74 80200E74 8DEFD7D4 */  lw         $t7, %lo(D_8031D7D4)($t7)
     /* 1E78 80200E78 AC20078C */  sw         $zero, %lo(g_dwRaceSaveReplayFlag)($at)
     /* 1E7C 80200E7C 3C018027 */  lui        $at, %hi(g_dwSaveAvailable)
     /* 1E80 80200E80 3C088019 */  lui        $t0, (0x80197000 >> 16)
@@ -835,7 +835,7 @@ glabel ProcessRaceHud
     /* 1EA0 80200EA0 24846D68 */   addiu     $a0, $a0, %lo(g_szSavedRecordingLength)
     /* 1EA4 80200EA4 3C198027 */  lui        $t9, %hi(g_dwNumLocalPlayers)
     /* 1EA8 80200EA8 8F39FF08 */  lw         $t9, %lo(g_dwNumLocalPlayers)($t9)
-    /* 1EAC 80200EAC 3C188032 */  lui        $t8, %hi(g_pVehicleArrayBase)
+    /* 1EAC 80200EAC 3C188032 */  lui        $t8, %hi(D_8031D7D4)
     /* 1EB0 80200EB0 3C058030 */  lui        $a1, %hi(g_abGhostRecording)
     /* 1EB4 80200EB4 00194980 */  sll        $t1, $t9, 6
     /* 1EB8 80200EB8 01394821 */  addu       $t1, $t1, $t9
@@ -843,7 +843,7 @@ glabel ProcessRaceHud
     /* 1EC0 80200EC0 01394821 */  addu       $t1, $t1, $t9
     /* 1EC4 80200EC4 00094900 */  sll        $t1, $t1, 4
     /* 1EC8 80200EC8 0309C021 */  addu       $t8, $t8, $t1
-    /* 1ECC 80200ECC 8F18D7D4 */  lw         $t8, %lo(g_pVehicleArrayBase)($t8)
+    /* 1ECC 80200ECC 8F18D7D4 */  lw         $t8, %lo(D_8031D7D4)($t8)
     /* 1ED0 80200ED0 3C068027 */  lui        $a2, %hi(g_dwGhostRecordingSize)
     /* 1ED4 80200ED4 8CC60784 */  lw         $a2, %lo(g_dwGhostRecordingSize)($a2)
     /* 1ED8 80200ED8 24A57F00 */  addiu      $a1, $a1, %lo(g_abGhostRecording)
@@ -864,7 +864,7 @@ glabel ProcessRaceHud
     /* 1F14 80200F14 3C098027 */  lui        $t1, %hi(g_dwNumLocalPlayers)
     /* 1F18 80200F18 8DA80044 */  lw         $t0, 0x44($t5)
     /* 1F1C 80200F1C 3C018032 */  lui        $at, %hi(g_dwWheelPosRearR)
-    /* 1F20 80200F20 3C0C8032 */  lui        $t4, %hi(g_pVehicleArrayBase)
+    /* 1F20 80200F20 3C0C8032 */  lui        $t4, %hi(D_8031D7D4)
     /* 1F24 80200F24 91170001 */  lbu        $s7, 0x1($t0)
     /* 1F28 80200F28 3C0D8029 */  lui        $t5, %hi(g_dwSelectedTrackId)
     /* 1F2C 80200F2C AD572058 */  sw         $s7, 0x2058($t2)
@@ -884,7 +884,7 @@ glabel ProcessRaceHud
     /* 1F64 80200F64 0018C100 */  sll        $t8, $t8, 4
     /* 1F68 80200F68 01986021 */  addu       $t4, $t4, $t8
     /* 1F6C 80200F6C AC37D7BC */  sw         $s7, %lo(g_dwWheelPosRearR)($at)
-    /* 1F70 80200F70 8D8CD7D4 */  lw         $t4, %lo(g_pVehicleArrayBase)($t4)
+    /* 1F70 80200F70 8D8CD7D4 */  lw         $t4, %lo(D_8031D7D4)($t4)
     /* 1F74 80200F74 8D8B0044 */  lw         $t3, 0x44($t4)
     /* 1F78 80200F78 916E0000 */  lbu        $t6, 0x0($t3)
     /* 1F7C 80200F7C 11CD0011 */  beq        $t6, $t5, .L80200FC4
@@ -895,20 +895,20 @@ glabel ProcessRaceHud
     /* 1F90 80200F90 01A03025 */   or        $a2, $t5, $zero
     /* 1F94 80200F94 3C088027 */  lui        $t0, %hi(g_dwNumLocalPlayers)
     /* 1F98 80200F98 8D08FF08 */  lw         $t0, %lo(g_dwNumLocalPlayers)($t0)
-    /* 1F9C 80200F9C 3C0F8032 */  lui        $t7, %hi(g_pVehicleArrayBase)
+    /* 1F9C 80200F9C 3C0F8032 */  lui        $t7, %hi(D_8031D7D4)
     /* 1FA0 80200FA0 00085180 */  sll        $t2, $t0, 6
     /* 1FA4 80200FA4 01485021 */  addu       $t2, $t2, $t0
     /* 1FA8 80200FA8 000A50C0 */  sll        $t2, $t2, 3
     /* 1FAC 80200FAC 01485021 */  addu       $t2, $t2, $t0
     /* 1FB0 80200FB0 000A5100 */  sll        $t2, $t2, 4
     /* 1FB4 80200FB4 01EA7821 */  addu       $t7, $t7, $t2
-    /* 1FB8 80200FB8 8DEFD7D4 */  lw         $t7, %lo(g_pVehicleArrayBase)($t7)
+    /* 1FB8 80200FB8 8DEFD7D4 */  lw         $t7, %lo(D_8031D7D4)($t7)
     /* 1FBC 80200FBC 1000002E */  b          .L80201078
     /* 1FC0 80200FC0 ADE00044 */   sw        $zero, 0x44($t7)
   .L80200FC4:
     /* 1FC4 80200FC4 3C198027 */  lui        $t9, %hi(g_dwNumLocalPlayers)
     /* 1FC8 80200FC8 8F39FF08 */  lw         $t9, %lo(g_dwNumLocalPlayers)($t9)
-    /* 1FCC 80200FCC 3C188032 */  lui        $t8, %hi(g_pVehicleArrayBase)
+    /* 1FCC 80200FCC 3C188032 */  lui        $t8, %hi(D_8031D7D4)
     /* 1FD0 80200FD0 3C04802A */  lui        $a0, %hi(g_szTrack)
     /* 1FD4 80200FD4 00194980 */  sll        $t1, $t9, 6
     /* 1FD8 80200FD8 01394821 */  addu       $t1, $t1, $t9
@@ -916,14 +916,14 @@ glabel ProcessRaceHud
     /* 1FE0 80200FE0 01394821 */  addu       $t1, $t1, $t9
     /* 1FE4 80200FE4 00094900 */  sll        $t1, $t1, 4
     /* 1FE8 80200FE8 0309C021 */  addu       $t8, $t8, $t1
-    /* 1FEC 80200FEC 8F18D7D4 */  lw         $t8, %lo(g_pVehicleArrayBase)($t8)
+    /* 1FEC 80200FEC 8F18D7D4 */  lw         $t8, %lo(D_8031D7D4)($t8)
     /* 1FF0 80200FF0 24846D9C */  addiu      $a0, $a0, %lo(g_szTrack)
     /* 1FF4 80200FF4 8F0C0044 */  lw         $t4, 0x44($t8)
     /* 1FF8 80200FF8 0C0981F7 */  jal        osSyncPrintf
     /* 1FFC 80200FFC 91850000 */   lbu       $a1, 0x0($t4)
     /* 2000 80201000 3C0E8027 */  lui        $t6, %hi(g_dwNumLocalPlayers)
     /* 2004 80201004 8DCEFF08 */  lw         $t6, %lo(g_dwNumLocalPlayers)($t6)
-    /* 2008 80201008 3C088032 */  lui        $t0, %hi(g_pVehicleArrayBase)
+    /* 2008 80201008 3C088032 */  lui        $t0, %hi(D_8031D7D4)
     /* 200C 8020100C 240B0008 */  addiu      $t3, $zero, 0x8
     /* 2010 80201010 000E6980 */  sll        $t5, $t6, 6
     /* 2014 80201014 01AE6821 */  addu       $t5, $t5, $t6
@@ -931,7 +931,7 @@ glabel ProcessRaceHud
     /* 201C 8020101C 01AE6821 */  addu       $t5, $t5, $t6
     /* 2020 80201020 000D6900 */  sll        $t5, $t5, 4
     /* 2024 80201024 010D4021 */  addu       $t0, $t0, $t5
-    /* 2028 80201028 8D08D7D4 */  lw         $t0, %lo(g_pVehicleArrayBase)($t0)
+    /* 2028 80201028 8D08D7D4 */  lw         $t0, %lo(D_8031D7D4)($t0)
     /* 202C 8020102C 3C04802A */  lui        $a0, %hi(g_szPlayLimit)
     /* 2030 80201030 3C058027 */  lui        $a1, %hi(g_dwGhostRecordingSize)
     /* 2034 80201034 AD0B0048 */  sw         $t3, 0x48($t0)
@@ -940,7 +940,7 @@ glabel ProcessRaceHud
     /* 2040 80201040 24846DA8 */   addiu     $a0, $a0, %lo(g_szPlayLimit)
     /* 2044 80201044 3C0F8027 */  lui        $t7, %hi(g_dwNumLocalPlayers)
     /* 2048 80201048 8DEFFF08 */  lw         $t7, %lo(g_dwNumLocalPlayers)($t7)
-    /* 204C 8020104C 3C098032 */  lui        $t1, %hi(g_pVehicleArrayBase)
+    /* 204C 8020104C 3C098032 */  lui        $t1, %hi(D_8031D7D4)
     /* 2050 80201050 3C0A8027 */  lui        $t2, %hi(g_dwGhostRecordingSize)
     /* 2054 80201054 000FC980 */  sll        $t9, $t7, 6
     /* 2058 80201058 032FC821 */  addu       $t9, $t9, $t7
@@ -948,7 +948,7 @@ glabel ProcessRaceHud
     /* 2060 80201060 032FC821 */  addu       $t9, $t9, $t7
     /* 2064 80201064 0019C900 */  sll        $t9, $t9, 4
     /* 2068 80201068 01394821 */  addu       $t1, $t1, $t9
-    /* 206C 8020106C 8D29D7D4 */  lw         $t1, %lo(g_pVehicleArrayBase)($t1)
+    /* 206C 8020106C 8D29D7D4 */  lw         $t1, %lo(D_8031D7D4)($t1)
     /* 2070 80201070 8D4A0784 */  lw         $t2, %lo(g_dwGhostRecordingSize)($t2)
     /* 2074 80201074 AD2A004C */  sw         $t2, 0x4C($t1)
   .L80201078:
@@ -963,10 +963,10 @@ glabel ProcessRaceHud
     /* 2094 80201094 000D68C0 */  sll        $t5, $t5, 3
     /* 2098 80201098 01B16821 */  addu       $t5, $t5, $s1
     /* 209C 8020109C 000D6900 */  sll        $t5, $t5, 4
-    /* 20A0 802010A0 3C0B8032 */  lui        $t3, %hi(g_pVehicleArrayBase)
+    /* 20A0 802010A0 3C0B8032 */  lui        $t3, %hi(D_8031D7D4)
     /* 20A4 802010A4 016D5821 */  addu       $t3, $t3, $t5
     /* 20A8 802010A8 00115180 */  sll        $t2, $s1, 6
-    /* 20AC 802010AC 8D6BD7D4 */  lw         $t3, %lo(g_pVehicleArrayBase)($t3)
+    /* 20AC 802010AC 8D6BD7D4 */  lw         $t3, %lo(D_8031D7D4)($t3)
     /* 20B0 802010B0 00116100 */  sll        $t4, $s1, 4
     /* 20B4 802010B4 01515021 */  addu       $t2, $t2, $s1
     /* 20B8 802010B8 01916023 */  subu       $t4, $t4, $s1
@@ -978,11 +978,11 @@ glabel ProcessRaceHud
     /* 20D0 802010D0 01515021 */  addu       $t2, $t2, $s1
     /* 20D4 802010D4 01817021 */  addu       $t6, $t4, $at
     /* 20D8 802010D8 000A5100 */  sll        $t2, $t2, 4
-    /* 20DC 802010DC 3C098032 */  lui        $t1, %hi(g_pVehicleArrayBase)
+    /* 20DC 802010DC 3C098032 */  lui        $t1, %hi(D_8031D7D4)
     /* 20E0 802010E0 01687821 */  addu       $t7, $t3, $t0
     /* 20E4 802010E4 ADEE002C */  sw         $t6, 0x2C($t7)
     /* 20E8 802010E8 012A4821 */  addu       $t1, $t1, $t2
-    /* 20EC 802010EC 8D29D7D4 */  lw         $t1, %lo(g_pVehicleArrayBase)($t1)
+    /* 20EC 802010EC 8D29D7D4 */  lw         $t1, %lo(D_8031D7D4)($t1)
     /* 20F0 802010F0 0011C080 */  sll        $t8, $s1, 2
     /* 20F4 802010F4 00115180 */  sll        $t2, $s1, 6
     /* 20F8 802010F8 3C198029 */  lui        $t9, %hi(g_dwSelectedTrackId)
@@ -1118,22 +1118,22 @@ glabel ProcessRaceHud
     /* 2300 80201300 000840C0 */  sll        $t0, $t0, 3
     /* 2304 80201304 01114021 */  addu       $t0, $t0, $s1
     /* 2308 80201308 00084100 */  sll        $t0, $t0, 4
-    /* 230C 8020130C 3C0A8032 */  lui        $t2, %hi(g_pVehicleArrayBase)
+    /* 230C 8020130C 3C0A8032 */  lui        $t2, %hi(D_8031D7D4)
     /* 2310 80201310 01485021 */  addu       $t2, $t2, $t0
     /* 2314 80201314 00114980 */  sll        $t1, $s1, 6
     /* 2318 80201318 A1AC0006 */  sb         $t4, 0x6($t5)
-    /* 231C 8020131C 8D4AD7D4 */  lw         $t2, %lo(g_pVehicleArrayBase)($t2)
+    /* 231C 8020131C 8D4AD7D4 */  lw         $t2, %lo(D_8031D7D4)($t2)
     /* 2320 80201320 01314821 */  addu       $t1, $t1, $s1
     /* 2324 80201324 000948C0 */  sll        $t1, $t1, 3
     /* 2328 80201328 00117080 */  sll        $t6, $s1, 2
     /* 232C 8020132C 01314821 */  addu       $t1, $t1, $s1
     /* 2330 80201330 240B0008 */  addiu      $t3, $zero, 0x8
     /* 2334 80201334 00094900 */  sll        $t1, $t1, 4
-    /* 2338 80201338 3C198032 */  lui        $t9, %hi(g_pVehicleArrayBase)
+    /* 2338 80201338 3C198032 */  lui        $t9, %hi(D_8031D7D4)
     /* 233C 8020133C 014E7821 */  addu       $t7, $t2, $t6
     /* 2340 80201340 ADEB0034 */  sw         $t3, 0x34($t7)
     /* 2344 80201344 0329C821 */  addu       $t9, $t9, $t1
-    /* 2348 80201348 8F39D7D4 */  lw         $t9, %lo(g_pVehicleArrayBase)($t9)
+    /* 2348 80201348 8F39D7D4 */  lw         $t9, %lo(D_8031D7D4)($t9)
     /* 234C 8020134C 00116080 */  sll        $t4, $s1, 2
     /* 2350 80201350 3418DE5C */  ori        $t8, $zero, 0xDE5C
     /* 2354 80201354 032C6821 */  addu       $t5, $t9, $t4
@@ -1625,10 +1625,10 @@ glabel ProcessRaceHud
     /* 2A7C 80201A7C 01B16821 */  addu       $t5, $t5, $s1
     /* 2A80 80201A80 002F0821 */  addu       $at, $at, $t7
     /* 2A84 80201A84 000D6900 */  sll        $t5, $t5, 4
-    /* 2A88 80201A88 3C0B8032 */  lui        $t3, %hi(g_pVehicleArrayBase)
+    /* 2A88 80201A88 3C0B8032 */  lui        $t3, %hi(D_8031D7D4)
     /* 2A8C 80201A8C AC20C5C8 */  sw         $zero, %lo(g_bCollisionLayer2)($at)
     /* 2A90 80201A90 016D5821 */  addu       $t3, $t3, $t5
-    /* 2A94 80201A94 8D6BD7D4 */  lw         $t3, %lo(g_pVehicleArrayBase)($t3)
+    /* 2A94 80201A94 8D6BD7D4 */  lw         $t3, %lo(D_8031D7D4)($t3)
     /* 2A98 80201A98 3C0E8029 */  lui        $t6, %hi(g_dwNumRacers)
     /* 2A9C 80201A9C 26310001 */  addiu      $s1, $s1, 0x1
     /* 2AA0 80201AA0 A1600025 */  sb         $zero, 0x25($t3)
@@ -2013,8 +2013,8 @@ glabel ProcessRaceHud
   .L80202048:
     /* 3048 80202048 3C0C8031 */  lui        $t4, %hi(gRacePhase)
     /* 304C 8020204C 8D8C5E78 */  lw         $t4, %lo(gRacePhase)($t4)
-    /* 3050 80202050 3C01802A */  lui        $at, %hi(g_bRaceScreenLoopExited)
-    /* 3054 80202054 A4204C04 */  sh         $zero, %lo(g_bRaceScreenLoopExited)($at)
+    /* 3050 80202050 3C01802A */  lui        $at, %hi(g_wRaceScreenLoopExited)
+    /* 3054 80202054 A4204C04 */  sh         $zero, %lo(g_wRaceScreenLoopExited)($at)
     /* 3058 80202058 24010004 */  addiu      $at, $zero, 0x4
     /* 305C 8020205C 15810014 */  bne        $t4, $at, .L802020B0
     /* 3060 80202060 3C0A8027 */   lui       $t2, %hi(g_dwNumLocalPlayers)
@@ -2071,9 +2071,9 @@ glabel ProcessRaceHud
     /* 3120 80202120 0018C0C0 */  sll        $t8, $t8, 3
     /* 3124 80202124 0309C021 */  addu       $t8, $t8, $t1
     /* 3128 80202128 0018C100 */  sll        $t8, $t8, 4
-    /* 312C 8020212C 3C198032 */  lui        $t9, %hi(g_pVehicleArrayBase)
+    /* 312C 8020212C 3C198032 */  lui        $t9, %hi(D_8031D7D4)
     /* 3130 80202130 0338C821 */  addu       $t9, $t9, $t8
-    /* 3134 80202134 8F39D7D4 */  lw         $t9, %lo(g_pVehicleArrayBase)($t9)
+    /* 3134 80202134 8F39D7D4 */  lw         $t9, %lo(D_8031D7D4)($t9)
     /* 3138 80202138 8F2D004C */  lw         $t5, 0x4C($t9)
     /* 313C 8020213C 8F2F0048 */  lw         $t7, 0x48($t9)
     /* 3140 80202140 15AF0065 */  bne        $t5, $t7, .L802022D8
@@ -2544,9 +2544,9 @@ glabel ProcessRaceHud
     /* 3820 80202820 000D68C0 */  sll        $t5, $t5, 3
     /* 3824 80202824 01B16821 */  addu       $t5, $t5, $s1
     /* 3828 80202828 000D6900 */  sll        $t5, $t5, 4
-    /* 382C 8020282C 3C198032 */  lui        $t9, %hi(g_pVehicleArrayBase)
+    /* 382C 8020282C 3C198032 */  lui        $t9, %hi(D_8031D7D4)
     /* 3830 80202830 032DC821 */  addu       $t9, $t9, $t5
-    /* 3834 80202834 8F39D7D4 */  lw         $t9, %lo(g_pVehicleArrayBase)($t9)
+    /* 3834 80202834 8F39D7D4 */  lw         $t9, %lo(D_8031D7D4)($t9)
     /* 3838 80202838 00115080 */  sll        $t2, $s1, 2
     /* 383C 8020283C AFA000E8 */  sw         $zero, 0xE8($sp)
     /* 3840 80202840 032A7021 */  addu       $t6, $t9, $t2
@@ -2588,10 +2588,10 @@ glabel ProcessRaceHud
     /* 38CC 802028CC 000840C0 */  sll        $t0, $t0, 3
     /* 38D0 802028D0 01114021 */  addu       $t0, $t0, $s1
     /* 38D4 802028D4 00084100 */  sll        $t0, $t0, 4
-    /* 38D8 802028D8 3C098032 */  lui        $t1, %hi(g_pVehicleArrayBase)
+    /* 38D8 802028D8 3C098032 */  lui        $t1, %hi(D_8031D7D4)
     /* 38DC 802028DC 8FAE00E8 */  lw         $t6, 0xE8($sp)
     /* 38E0 802028E0 01284821 */  addu       $t1, $t1, $t0
-    /* 38E4 802028E4 8D29D7D4 */  lw         $t1, %lo(g_pVehicleArrayBase)($t1)
+    /* 38E4 802028E4 8D29D7D4 */  lw         $t1, %lo(D_8031D7D4)($t1)
     /* 38E8 802028E8 00117880 */  sll        $t7, $s1, 2
     /* 38EC 802028EC 25CB0002 */  addiu      $t3, $t6, 0x2
     /* 38F0 802028F0 AFAB00E8 */  sw         $t3, 0xE8($sp)
@@ -2607,9 +2607,9 @@ glabel ProcessRaceHud
     /* 3914 80202914 000D68C0 */  sll        $t5, $t5, 3
     /* 3918 80202918 01B16821 */  addu       $t5, $t5, $s1
     /* 391C 8020291C 000D6900 */  sll        $t5, $t5, 4
-    /* 3920 80202920 3C0A8032 */  lui        $t2, %hi(g_pVehicleArrayBase)
+    /* 3920 80202920 3C0A8032 */  lui        $t2, %hi(D_8031D7D4)
     /* 3924 80202924 014D5021 */  addu       $t2, $t2, $t5
-    /* 3928 80202928 8D4AD7D4 */  lw         $t2, %lo(g_pVehicleArrayBase)($t2)
+    /* 3928 80202928 8D4AD7D4 */  lw         $t2, %lo(D_8031D7D4)($t2)
     /* 392C 8020292C 0011C880 */  sll        $t9, $s1, 2
     /* 3930 80202930 3C098027 */  lui        $t1, %hi(g_dwGhostRecordingSize)
     /* 3934 80202934 01597021 */  addu       $t6, $t2, $t9
@@ -2773,9 +2773,9 @@ glabel ProcessRaceHud
     /* 3BA4 80202BA4 000F78C0 */  sll        $t7, $t7, 3
     /* 3BA8 80202BA8 01F17821 */  addu       $t7, $t7, $s1
     /* 3BAC 80202BAC 000F7900 */  sll        $t7, $t7, 4
-    /* 3BB0 80202BB0 3C0E8032 */  lui        $t6, %hi(g_pVehicleArrayBase)
+    /* 3BB0 80202BB0 3C0E8032 */  lui        $t6, %hi(D_8031D7D4)
     /* 3BB4 80202BB4 01CF7021 */  addu       $t6, $t6, $t7
-    /* 3BB8 80202BB8 8DCED7D4 */  lw         $t6, %lo(g_pVehicleArrayBase)($t6)
+    /* 3BB8 80202BB8 8DCED7D4 */  lw         $t6, %lo(D_8031D7D4)($t6)
     /* 3BBC 80202BBC 00116080 */  sll        $t4, $s1, 2
     /* 3BC0 80202BC0 01CCC021 */  addu       $t8, $t6, $t4
     /* 3BC4 80202BC4 10000029 */  b          .L80202C6C
@@ -5017,10 +5017,10 @@ glabel ProcessRaceHud
     /* 5D00 80204D00 0019C8C0 */  sll        $t9, $t9, 3
     /* 5D04 80204D04 0331C821 */  addu       $t9, $t9, $s1
     /* 5D08 80204D08 0019C900 */  sll        $t9, $t9, 4
-    /* 5D0C 80204D0C 3C048032 */  lui        $a0, %hi(g_pVehicleArrayBase)
+    /* 5D0C 80204D0C 3C048032 */  lui        $a0, %hi(D_8031D7D4)
     /* 5D10 80204D10 00992021 */  addu       $a0, $a0, $t9
     /* 5D14 80204D14 0C0956B7 */  jal        UpdateSoundMixer
-    /* 5D18 80204D18 8C84D7D4 */   lw        $a0, %lo(g_pVehicleArrayBase)($a0)
+    /* 5D18 80204D18 8C84D7D4 */   lw        $a0, %lo(D_8031D7D4)($a0)
     /* 5D1C 80204D1C 00117180 */  sll        $t6, $s1, 6
     /* 5D20 80204D20 01D17021 */  addu       $t6, $t6, $s1
     /* 5D24 80204D24 000E70C0 */  sll        $t6, $t6, 3
@@ -5088,9 +5088,9 @@ glabel ProcessRaceHud
     /* 5E14 80204E14 0018C0C0 */  sll        $t8, $t8, 3
     /* 5E18 80204E18 0311C021 */  addu       $t8, $t8, $s1
     /* 5E1C 80204E1C 0018C100 */  sll        $t8, $t8, 4
-    /* 5E20 80204E20 3C048032 */  lui        $a0, %hi(g_pVehicleArrayBase)
+    /* 5E20 80204E20 3C048032 */  lui        $a0, %hi(D_8031D7D4)
     /* 5E24 80204E24 00982021 */  addu       $a0, $a0, $t8
-    /* 5E28 80204E28 8C84D7D4 */  lw         $a0, %lo(g_pVehicleArrayBase)($a0)
+    /* 5E28 80204E28 8C84D7D4 */  lw         $a0, %lo(D_8031D7D4)($a0)
     /* 5E2C 80204E2C 0C095644 */  jal        TransferFlags
     /* 5E30 80204E30 3405C010 */   ori       $a1, $zero, 0xC010
   .L80204E34:
@@ -5196,11 +5196,11 @@ glabel ProcessRaceHud
     /* 5FAC 80204FAC 2401FFFA */  addiu      $at, $zero, -0x6
     /* 5FB0 80204FB0 0311C021 */  addu       $t8, $t8, $s1
     /* 5FB4 80204FB4 0018C100 */  sll        $t8, $t8, 4
-    /* 5FB8 80204FB8 3C048032 */  lui        $a0, %hi(g_pVehicleArrayBase)
+    /* 5FB8 80204FB8 3C048032 */  lui        $a0, %hi(D_8031D7D4)
     /* 5FBC 80204FBC 01015824 */  and        $t3, $t0, $at
     /* 5FC0 80204FC0 00982021 */  addu       $a0, $a0, $t8
     /* 5FC4 80204FC4 ADAB0000 */  sw         $t3, 0x0($t5)
-    /* 5FC8 80204FC8 8C84D7D4 */  lw         $a0, %lo(g_pVehicleArrayBase)($a0)
+    /* 5FC8 80204FC8 8C84D7D4 */  lw         $a0, %lo(D_8031D7D4)($a0)
     /* 5FCC 80204FCC 0C095644 */  jal        TransferFlags
     /* 5FD0 80204FD0 24050008 */   addiu     $a1, $zero, 0x8
     /* 5FD4 80204FD4 3C098027 */  lui        $t1, %hi(g_dwPauseMenuSelection)
@@ -5256,11 +5256,11 @@ glabel ProcessRaceHud
     /* 6098 80205098 2401FFFA */  addiu      $at, $zero, -0x6
     /* 609C 8020509C 01314821 */  addu       $t1, $t1, $s1
     /* 60A0 802050A0 00094900 */  sll        $t1, $t1, 4
-    /* 60A4 802050A4 3C048032 */  lui        $a0, %hi(g_pVehicleArrayBase)
+    /* 60A4 802050A4 3C048032 */  lui        $a0, %hi(D_8031D7D4)
     /* 60A8 802050A8 01415824 */  and        $t3, $t2, $at
     /* 60AC 802050AC 00892021 */  addu       $a0, $a0, $t1
     /* 60B0 802050B0 AF2B0000 */  sw         $t3, 0x0($t9)
-    /* 60B4 802050B4 8C84D7D4 */  lw         $a0, %lo(g_pVehicleArrayBase)($a0)
+    /* 60B4 802050B4 8C84D7D4 */  lw         $a0, %lo(D_8031D7D4)($a0)
     /* 60B8 802050B8 0C095644 */  jal        TransferFlags
     /* 60BC 802050BC 24050002 */   addiu     $a1, $zero, 0x2
     /* 60C0 802050C0 3C0C8027 */  lui        $t4, %hi(g_dwPauseMenuSelection)
@@ -5589,9 +5589,9 @@ glabel ProcessRaceHud
     /* 655C 8020555C 0019C8C0 */  sll        $t9, $t9, 3
     /* 6560 80205560 0331C821 */  addu       $t9, $t9, $s1
     /* 6564 80205564 0019C900 */  sll        $t9, $t9, 4
-    /* 6568 80205568 3C098032 */  lui        $t1, %hi(g_pVehicleArrayBase)
+    /* 6568 80205568 3C098032 */  lui        $t1, %hi(D_8031D7D4)
     /* 656C 8020556C 01394821 */  addu       $t1, $t1, $t9
-    /* 6570 80205570 8D29D7D4 */  lw         $t1, %lo(g_pVehicleArrayBase)($t1)
+    /* 6570 80205570 8D29D7D4 */  lw         $t1, %lo(D_8031D7D4)($t1)
     /* 6574 80205574 8D2A0000 */  lw         $t2, 0x0($t1)
     /* 6578 80205578 314D4000 */  andi       $t5, $t2, 0x4000
     /* 657C 8020557C 11A00026 */  beqz       $t5, .L80205618
@@ -5641,9 +5641,9 @@ glabel ProcessRaceHud
     /* 6620 80205620 000B58C0 */  sll        $t3, $t3, 3
     /* 6624 80205624 01715821 */  addu       $t3, $t3, $s1
     /* 6628 80205628 000B5900 */  sll        $t3, $t3, 4
-    /* 662C 8020562C 3C198032 */  lui        $t9, %hi(g_pVehicleArrayBase)
+    /* 662C 8020562C 3C198032 */  lui        $t9, %hi(D_8031D7D4)
     /* 6630 80205630 032BC821 */  addu       $t9, $t9, $t3
-    /* 6634 80205634 8F39D7D4 */  lw         $t9, %lo(g_pVehicleArrayBase)($t9)
+    /* 6634 80205634 8F39D7D4 */  lw         $t9, %lo(D_8031D7D4)($t9)
     /* 6638 80205638 8F290000 */  lw         $t1, 0x0($t9)
     /* 663C 8020563C 312A0010 */  andi       $t2, $t1, 0x10
     /* 6640 80205640 1140001A */  beqz       $t2, .L802056AC
@@ -6051,24 +6051,24 @@ glabel ProcessRaceHud
     /* 6C2C 80205C2C 000D68C0 */  sll        $t5, $t5, 3
     /* 6C30 80205C30 01B16821 */  addu       $t5, $t5, $s1
     /* 6C34 80205C34 000D6900 */  sll        $t5, $t5, 4
-    /* 6C38 80205C38 3C088032 */  lui        $t0, %hi(g_pVehicleArrayBase)
+    /* 6C38 80205C38 3C088032 */  lui        $t0, %hi(D_8031D7D4)
     /* 6C3C 80205C3C 3C0B8031 */  lui        $t3, %hi(gBestReplayPlayerIdx)
     /* 6C40 80205C40 00117180 */  sll        $t6, $s1, 6
     /* 6C44 80205C44 8D6B5E40 */  lw         $t3, %lo(gBestReplayPlayerIdx)($t3)
     /* 6C48 80205C48 010D4021 */  addu       $t0, $t0, $t5
     /* 6C4C 80205C4C 01D17021 */  addu       $t6, $t6, $s1
-    /* 6C50 80205C50 8D08D7D4 */  lw         $t0, %lo(g_pVehicleArrayBase)($t0)
+    /* 6C50 80205C50 8D08D7D4 */  lw         $t0, %lo(D_8031D7D4)($t0)
     /* 6C54 80205C54 000E70C0 */  sll        $t6, $t6, 3
     /* 6C58 80205C58 01D17021 */  addu       $t6, $t6, $s1
     /* 6C5C 80205C5C 000E7100 */  sll        $t6, $t6, 4
-    /* 6C60 80205C60 3C0F8032 */  lui        $t7, %hi(g_pVehicleArrayBase)
+    /* 6C60 80205C60 3C0F8032 */  lui        $t7, %hi(D_8031D7D4)
     /* 6C64 80205C64 3C188031 */  lui        $t8, %hi(gBestReplayPlayerIdx)
     /* 6C68 80205C68 000B4880 */  sll        $t1, $t3, 2
     /* 6C6C 80205C6C 8F185E40 */  lw         $t8, %lo(gBestReplayPlayerIdx)($t8)
     /* 6C70 80205C70 01EE7821 */  addu       $t7, $t7, $t6
     /* 6C74 80205C74 01096021 */  addu       $t4, $t0, $t1
     /* 6C78 80205C78 8D99002C */  lw         $t9, 0x2C($t4)
-    /* 6C7C 80205C7C 8DEFD7D4 */  lw         $t7, %lo(g_pVehicleArrayBase)($t7)
+    /* 6C7C 80205C7C 8DEFD7D4 */  lw         $t7, %lo(D_8031D7D4)($t7)
     /* 6C80 80205C80 00115080 */  sll        $t2, $s1, 2
     /* 6C84 80205C84 3C018031 */  lui        $at, %hi(g_apReplayGhostPtrs)
     /* 6C88 80205C88 002A0821 */  addu       $at, $at, $t2
@@ -6103,9 +6103,9 @@ glabel ProcessRaceHud
     /* 6CF0 80205CF0 000E70C0 */  sll        $t6, $t6, 3
     /* 6CF4 80205CF4 01D17021 */  addu       $t6, $t6, $s1
     /* 6CF8 80205CF8 000E7100 */  sll        $t6, $t6, 4
-    /* 6CFC 80205CFC 3C078032 */  lui        $a3, %hi(g_pVehicleArrayBase)
+    /* 6CFC 80205CFC 3C078032 */  lui        $a3, %hi(D_8031D7D4)
     /* 6D00 80205D00 00EE3821 */  addu       $a3, $a3, $t6
-    /* 6D04 80205D04 8CE7D7D4 */  lw         $a3, %lo(g_pVehicleArrayBase)($a3)
+    /* 6D04 80205D04 8CE7D7D4 */  lw         $a3, %lo(D_8031D7D4)($a3)
     /* 6D08 80205D08 3C04802A */  lui        $a0, %hi(g_szFmtVehRecIndex)
     /* 6D0C 80205D0C 24846FBC */  addiu      $a0, $a0, %lo(g_szFmtVehRecIndex)
     /* 6D10 80205D10 02202825 */  or         $a1, $s1, $zero
@@ -6117,10 +6117,10 @@ glabel ProcessRaceHud
     /* 6D28 80205D28 0018C0C0 */  sll        $t8, $t8, 3
     /* 6D2C 80205D2C 0311C021 */  addu       $t8, $t8, $s1
     /* 6D30 80205D30 0018C100 */  sll        $t8, $t8, 4
-    /* 6D34 80205D34 3C0F8032 */  lui        $t7, %hi(g_pVehicleArrayBase)
+    /* 6D34 80205D34 3C0F8032 */  lui        $t7, %hi(D_8031D7D4)
     /* 6D38 80205D38 8FAD007C */  lw         $t5, 0x7C($sp)
     /* 6D3C 80205D3C 01F87821 */  addu       $t7, $t7, $t8
-    /* 6D40 80205D40 8DEFD7D4 */  lw         $t7, %lo(g_pVehicleArrayBase)($t7)
+    /* 6D40 80205D40 8DEFD7D4 */  lw         $t7, %lo(D_8031D7D4)($t7)
     /* 6D44 80205D44 000D5880 */  sll        $t3, $t5, 2
     /* 6D48 80205D48 3C198027 */  lui        $t9, %hi(g_dwNumLocalPlayers)
     /* 6D4C 80205D4C 01EB4021 */  addu       $t0, $t7, $t3
@@ -6255,8 +6255,8 @@ glabel ProcessRaceHud
     /* 6F18 80205F18 AC2007C8 */  sw         $zero, %lo(g_dwRaceInitialized)($at)
   .L80205F1C:
     /* 6F1C 80205F1C 24080001 */  addiu      $t0, $zero, 0x1
-    /* 6F20 80205F20 3C01802A */  lui        $at, %hi(g_bRaceScreenLoopExited)
-    /* 6F24 80205F24 A4284C04 */  sh         $t0, %lo(g_bRaceScreenLoopExited)($at)
+    /* 6F20 80205F20 3C01802A */  lui        $at, %hi(g_wRaceScreenLoopExited)
+    /* 6F24 80205F24 A4284C04 */  sh         $t0, %lo(g_wRaceScreenLoopExited)($at)
     /* 6F28 80205F28 28010004 */  slti       $at, $zero, 0x4
     /* 6F2C 80205F2C 1020000D */  beqz       $at, .L80205F64
     /* 6F30 80205F30 00008825 */   or        $s1, $zero, $zero
@@ -6266,9 +6266,9 @@ glabel ProcessRaceHud
     /* 6F3C 80205F3C 000948C0 */  sll        $t1, $t1, 3
     /* 6F40 80205F40 01314821 */  addu       $t1, $t1, $s1
     /* 6F44 80205F44 00094900 */  sll        $t1, $t1, 4
-    /* 6F48 80205F48 3C0C8032 */  lui        $t4, %hi(g_pVehicleArrayBase)
+    /* 6F48 80205F48 3C0C8032 */  lui        $t4, %hi(D_8031D7D4)
     /* 6F4C 80205F4C 01896021 */  addu       $t4, $t4, $t1
-    /* 6F50 80205F50 8D8CD7D4 */  lw         $t4, %lo(g_pVehicleArrayBase)($t4)
+    /* 6F50 80205F50 8D8CD7D4 */  lw         $t4, %lo(D_8031D7D4)($t4)
     /* 6F54 80205F54 26310001 */  addiu      $s1, $s1, 0x1
     /* 6F58 80205F58 2A210004 */  slti       $at, $s1, 0x4
     /* 6F5C 80205F5C 1420FFF5 */  bnez       $at, .L80205F34

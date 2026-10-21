@@ -9,6 +9,13 @@
 #include <PR/ultratypes.h>
 
 /**
+ * The mode of play the main menu chose. The main menu starts a season with mode 0.
+ *
+ * @ghidraAddress USA: 0x8026ff18
+ */
+extern u32 g_dwGameMode;
+
+/**
  * Set the weather flags for a weather of the weather menu, and patch the display lists to match.
  *
  * @ghidraAddress USA: 0x80200050

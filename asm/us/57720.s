@@ -1797,7 +1797,7 @@ glabel AudioMixingThreadMain
     /* 59010 80258010 3C01802A */  lui        $at, %hi(g_dwReverbBufferOffset)
     /* 59014 80258014 AC264A14 */  sw         $a2, %lo(g_dwReverbBufferOffset)($at)
   .L80258018:
-    /* 59018 80258018 0C098124 */  jal        UpdateControllerPakState
+    /* 59018 80258018 0C098124 */  jal        UpdateRumblePaks
     /* 5901C 8025801C 00002025 */   or        $a0, $zero, $zero
     /* 59020 80258020 1000FF56 */  b          .L80257D7C
     /* 59024 80258024 00000000 */   nop

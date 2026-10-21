@@ -5451,7 +5451,7 @@ glabel InitRenderingSubsystem
     /* 1D070 8021C070 02602825 */  or         $a1, $s3, $zero
     /* 1D074 8021C074 0C099510 */  jal        osSetEventMesg
     /* 1D078 8021C078 00003025 */   or        $a2, $zero, $zero
-    /* 1D07C 8021C07C 0C0981EB */  jal        StubEmptyFunction
+    /* 1D07C 8021C07C 0C0981EB */  jal        PrepareRumblePaks
     /* 1D080 8021C080 00000000 */   nop
     /* 1D084 8021C084 3C128032 */  lui        $s2, %hi(g_abRumblePakPresent)
     /* 1D088 8021C088 3C148032 */  lui        $s4, %hi(g_aContPfs)
@@ -5658,8 +5658,8 @@ glabel InitControllersAndPaks
     /* 1D364 8021C364 2401000A */  addiu      $at, $zero, 0xA
     /* 1D368 8021C368 14410011 */  bne        $v0, $at, .L8021C3B0
     /* 1D36C 8021C36C 3C048027 */   lui       $a0, %hi(g_SiMesgQueue)
-    /* 1D370 8021C370 3C058032 */  lui        $a1, %hi(g_PfsFileState1)
-    /* 1D374 8021C374 24A5A460 */  addiu      $a1, $a1, %lo(g_PfsFileState1)
+    /* 1D370 8021C370 3C058032 */  lui        $a1, %hi(D_8031A460)
+    /* 1D374 8021C374 24A5A460 */  addiu      $a1, $a1, %lo(D_8031A460)
     /* 1D378 8021C378 24842D48 */  addiu      $a0, $a0, %lo(g_SiMesgQueue)
     /* 1D37C 8021C37C 0C0988DC */  jal        osMotorInit
     /* 1D380 8021C380 24060001 */   addiu     $a2, $zero, 0x1
