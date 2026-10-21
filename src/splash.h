@@ -28,9 +28,9 @@ extern Ambient g_SplashAmbientLight;
 extern Light g_SplashDirectionalLight;
 
 /* The warnings of the controller check. */
-#define CONTROLLER_WARNING_NO_CONTROLLER 0
-#define CONTROLLER_WARNING_NO_PAK 1
-#define CONTROLLER_WARNING_FOREIGN_PAK 2
+#define CONTROLLER_WARNING_NO_CONTROLLER 0 /*!< No controller is plugged in. */
+#define CONTROLLER_WARNING_NO_PAK 1        /*!< The controller has no Controller Pak. */
+#define CONTROLLER_WARNING_FOREIGN_PAK 2   /*!< The Controller Pak has no notes of this game. */
 
 /**
  * What the controller check warns of, as the CONTROLLER_WARNING_ values: no controller, no

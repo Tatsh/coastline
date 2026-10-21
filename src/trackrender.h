@@ -13,9 +13,9 @@
 #include "vecmath.h"
 #include "vehicle.h"
 
-/** The commands and vertices the shadows of a frame can use, in each of two frames. */
-#define SHADOW_COMMANDS 500
-#define SHADOW_VERTICES 1000
+/* The room for the shadows, in each of two frames. */
+#define SHADOW_COMMANDS 500  /*!< The display list commands the shadows of a frame can use. */
+#define SHADOW_VERTICES 1000 /*!< The vertices the shadows of a frame can use. */
 
 /**
  * The display lists and vertices of the shadows, one of each for each frame buffer.

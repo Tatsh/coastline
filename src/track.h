@@ -303,12 +303,13 @@ void LoadTrackGeometryFromRom(s32 track);
 /** The size of the header of a track. */
 #define TRACK_HEADER_SIZE 0x230
 
-/** The most bytes a track may take, and the most placed models it may have. */
-#define TRACK_MAX_SIZE 0x171400
-#define TRACK_MAX_INSTANCES 0x800
+/* The limits of a track. */
+#define TRACK_MAX_SIZE 0x171400   /*!< The most bytes a track may take. */
+#define TRACK_MAX_INSTANCES 0x800 /*!< The most placed models a track may have. */
 
-/** The header and the data of the two sections of the route of the loaded track. */
+/** The bytes of the header of each of the two sections of the route of the loaded track. */
 #define TRACK_SECTION_HEADER_SIZE 0x20
+/** The bytes of the data of each of the two sections of the route of the loaded track. */
 #define TRACK_SECTION_DATA_SIZE 0x800
 
 /** @ghidraAddress USA: 0x80373eb0 */

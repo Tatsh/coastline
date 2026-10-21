@@ -42,10 +42,10 @@ typedef struct {
     s16 positions[][3]; /*!< The position of each vertex, followed by the normals. */
 } ModelKeyframe;
 
-/** The flags of an animation: it repeats, it turns back at its end, and it runs backwards. */
-#define MODEL_ANIMATION_REPEAT 0x1
-#define MODEL_ANIMATION_BOUNCE 0x2
-#define MODEL_ANIMATION_REVERSING 0x4
+/* The flags of an animation. */
+#define MODEL_ANIMATION_REPEAT 0x1    /*!< The animation starts again at its end. */
+#define MODEL_ANIMATION_BOUNCE 0x2    /*!< The animation turns back at its end. */
+#define MODEL_ANIMATION_REVERSING 0x4 /*!< The animation runs backwards. */
 
 /** An animation of vertices of a model, blended between its keys. */
 typedef struct {

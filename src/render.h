@@ -74,9 +74,9 @@ typedef struct {
     unsigned size : 18;    /*!< The length of the texels in bytes. */
 } ModelTexture;
 
-/** The formats of a texture of a model: 4-bit with a palette of 16, and 8-bit intensity. */
-#define TEXTURE_FORMAT_CI4 1
-#define TEXTURE_FORMAT_I8 4
+/* The formats of a texture of a model. */
+#define TEXTURE_FORMAT_CI4 1 /*!< 4-bit texels with a palette of 16 colors. */
+#define TEXTURE_FORMAT_I8 4  /*!< 8-bit intensity texels. */
 
 /** The format of an animated texture of the track that stays on its first frame in the snow. */
 #define TEXTURE_FORMAT_SNOW_STILL 0xB

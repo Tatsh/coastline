@@ -12,10 +12,10 @@
 
 #include "track.h"
 
-/** The blocks of each kind a frame can allocate before they run out. */
-#define FRAME_DISPLAY_LIST_BLOCKS 256
-#define FRAME_HILITE_BLOCKS 20
-#define FRAME_LIGHT_BLOCKS 20
+/* The blocks of each kind a frame can allocate before they run out. */
+#define FRAME_DISPLAY_LIST_BLOCKS 256 /*!< The display list blocks of a frame. */
+#define FRAME_HILITE_BLOCKS 20        /*!< The specular highlight blocks of a frame. */
+#define FRAME_LIGHT_BLOCKS 20         /*!< The light blocks of a frame. */
 
 /** A block of eight display list commands. */
 typedef struct {

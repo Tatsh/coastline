@@ -21,9 +21,9 @@
 /** The sample rate the audio interface is asked for. */
 #define AUDIO_FREQUENCY 22000
 
-/** The octaves and notes of the table of steps. */
-#define MUSIC_OCTAVES 10
-#define MUSIC_NOTES 12
+/* The size of the table of steps. */
+#define MUSIC_OCTAVES 10 /*!< The octaves of the table of steps. */
+#define MUSIC_NOTES 12   /*!< The notes of each octave of the table of steps. */
 
 /** The header of an XM sample as the player keeps it, followed by its decoded data. */
 typedef struct {
@@ -334,9 +334,11 @@ enum {
     SOUND_EFFECT_WATERFALL,      /*!< The waterfall of the jungle track. */
 };
 
-/** The first skid and rolling sound, and the end of the rolling sounds. */
+/** The first skid sound. */
 #define SOUND_EFFECT_FIRST_SKID SOUND_EFFECT_SKID_SURFACE_2
+/** The first rolling sound. */
 #define SOUND_EFFECT_FIRST_ROLL SOUND_EFFECT_ROLL_SURFACE_1
+/** The end of the rolling sounds. */
 #define SOUND_EFFECT_ROLL_END (SOUND_EFFECT_SLOW_SURFACE + 1)
 
 /** A sound effect of a race, as LoadAllSoundEffects() loads it. */

@@ -19,9 +19,9 @@
 /** The number of vehicles a race can hold. */
 #define MAX_VEHICLES 4
 
-/** The seasons of the championship, and the most races of a season. */
-#define SEASONS 6
-#define SEASON_RACES 4
+/* The size of the championship. */
+#define SEASONS 6      /*!< The seasons of the championship. */
+#define SEASON_RACES 4 /*!< The most races of a season. */
 
 /** The laps of a race whose times a vehicle keeps. */
 #define VEHICLE_LAP_TIMES 5
@@ -35,9 +35,9 @@
 /** The sides around a car that dent apart, by the direction of the blow. */
 #define VEHICLE_DENT_SIDES 8
 
-/** The levels of detail of the model of a car, the nearest first, and its display lists in each. */
-#define VEHICLE_LODS 3
-#define VEHICLE_DISPLAY_LISTS 10
+/* The detail of the model of a car. */
+#define VEHICLE_LODS 3           /*!< The levels of detail of the model, the nearest first. */
+#define VEHICLE_DISPLAY_LISTS 10 /*!< The display lists of each level of detail. */
 
 /** The display lists of a wheel of a car: the plain wheel, one not drawn, and one in the snow. */
 enum {
@@ -47,11 +47,11 @@ enum {
     VEHICLE_WHEEL_DISPLAY_LISTS, /*!< The number of display lists of a wheel. */
 };
 
-/** The textures whose palettes hold the colors of a car: the paint, and the lights at 10 and 11. */
-#define VEHICLE_MATERIALS 12
-#define VEHICLE_MATERIAL_PAINT 2
-#define VEHICLE_MATERIAL_HEADLIGHTS 10
-#define VEHICLE_MATERIAL_REAR_LIGHTS 11
+/* The textures whose palettes give the colors of a car. */
+#define VEHICLE_MATERIALS 12            /*!< The textures of the materials of a car. */
+#define VEHICLE_MATERIAL_PAINT 2        /*!< The texture whose palette is the paint. */
+#define VEHICLE_MATERIAL_HEADLIGHTS 10  /*!< The texture whose palette is the headlights. */
+#define VEHICLE_MATERIAL_REAR_LIGHTS 11 /*!< The texture whose palette is the rear lights. */
 
 /** The display lists of the model of a car that the renderer draws. */
 enum {
@@ -323,11 +323,9 @@ typedef struct {
     f32 positionW;  /*!< 1, the last column of the matrix. */
 } WheelFrame;
 
-/**
- * The segments of the spray a wheel throws, and the vertices of each, of which the first two are
- * drawn.
- */
+/** The segments of the spray a wheel throws. */
 #define SPRAY_SEGMENTS 9
+/** The vertices of each segment of the spray, of which the first two are drawn. */
 #define SPRAY_SEGMENT_VERTICES 4
 
 /** The forces on the bodies of a vehicle. */

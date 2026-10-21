@@ -15,9 +15,9 @@
 /** The rows of a glyph. */
 #define BITMAP_FONT_ROWS 7
 
-/** The columns of a glyph of each font. */
-#define BITMAP_FONT_WIDE_COLUMNS 5
-#define BITMAP_FONT_NARROW_COLUMNS 3
+/* The columns of a glyph of each font. */
+#define BITMAP_FONT_WIDE_COLUMNS 5   /*!< The columns of a glyph of the wide font. */
+#define BITMAP_FONT_NARROW_COLUMNS 3 /*!< The columns of a glyph of the narrow font. */
 
 /**
  * The wide font. A pixel is drawn in the text colour where its entry is not zero.

@@ -13,35 +13,35 @@
 #define MAX_PLAYERS 4
 
 /* The buttons of the input, which the menus read. The stick also presses the four directions. */
-#define INPUT_RIGHT 0x0001
-#define INPUT_DOWN 0x0002
-#define INPUT_LEFT 0x0004
-#define INPUT_UP 0x0008
-#define INPUT_A 0x0010
-#define INPUT_B 0x0020
-#define INPUT_C_UP 0x0100
-#define INPUT_C_RIGHT 0x0200
-#define INPUT_C_DOWN 0x0400
-#define INPUT_C_LEFT 0x0800
-#define INPUT_L 0x1000
-#define INPUT_R 0x2000
-#define INPUT_START 0x4000
-#define INPUT_Z 0x8000
+#define INPUT_RIGHT 0x0001   /*!< The right of the directional pad or the stick. */
+#define INPUT_DOWN 0x0002    /*!< The down of the directional pad or the stick. */
+#define INPUT_LEFT 0x0004    /*!< The left of the directional pad or the stick. */
+#define INPUT_UP 0x0008      /*!< The up of the directional pad or the stick. */
+#define INPUT_A 0x0010       /*!< The A button. */
+#define INPUT_B 0x0020       /*!< The B button. */
+#define INPUT_C_UP 0x0100    /*!< The up C button. */
+#define INPUT_C_RIGHT 0x0200 /*!< The right C button. */
+#define INPUT_C_DOWN 0x0400  /*!< The down C button. */
+#define INPUT_C_LEFT 0x0800  /*!< The left C button. */
+#define INPUT_L 0x1000       /*!< The L trigger. */
+#define INPUT_R 0x2000       /*!< The R trigger. */
+#define INPUT_START 0x4000   /*!< The Start button. */
+#define INPUT_Z 0x8000       /*!< The Z trigger. */
 
 /* The actions of a race, which the button layout maps the buttons to. */
-#define INPUT_ACCELERATE 0x00010000
-#define INPUT_REVERSE 0x00020000
-#define INPUT_BRAKE 0x00040000
-#define INPUT_EBRAKE 0x00080000
-#define INPUT_GEAR_UP 0x00100000
-#define INPUT_GEAR_DOWN 0x00200000
+#define INPUT_ACCELERATE 0x00010000 /*!< Accelerate. */
+#define INPUT_REVERSE 0x00020000    /*!< Drive in reverse. */
+#define INPUT_BRAKE 0x00040000      /*!< Brake. */
+#define INPUT_EBRAKE 0x00080000     /*!< Pull the handbrake. */
+#define INPUT_GEAR_UP 0x00100000    /*!< Shift up a gear. */
+#define INPUT_GEAR_DOWN 0x00200000  /*!< Shift down a gear. */
 /* The views the C buttons choose: the cockpit, the trackside camera, the chase camera and the
- * bumper. The computer's drivers ask for the trackside camera. */
-#define INPUT_VIEW_COCKPIT 0x01000000
-#define INPUT_VIEW_TRACKSIDE 0x02000000
-#define INPUT_VIEW_CHASE 0x04000000
-#define INPUT_VIEW_BUMPER 0x08000000
-#define INPUT_VIEWS 0x0F000000
+ * bumper. The computer's drivers request the trackside camera. */
+#define INPUT_VIEW_COCKPIT 0x01000000   /*!< Choose the view from the cockpit. */
+#define INPUT_VIEW_TRACKSIDE 0x02000000 /*!< Choose the trackside camera. */
+#define INPUT_VIEW_CHASE 0x04000000     /*!< Choose the chase camera. */
+#define INPUT_VIEW_BUMPER 0x08000000    /*!< Choose the view from the bumper. */
+#define INPUT_VIEWS 0x0F000000          /*!< Every bit that chooses a view. */
 
 /** The actions a recording keeps, with the steering. */
 #define INPUT_RECORDED_ACTIONS 0x003F0000

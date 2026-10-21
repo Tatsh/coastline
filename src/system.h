@@ -470,11 +470,11 @@ extern OSThread g_BootIdleThreadObj;
 /** @ghidraAddress USA: 0x8031ac00 */
 extern OSThread g_FaultThreadObj;
 
-/** The words of the stacks of the threads. */
-#define THREAD_STACK_WORDS 0x200
-#define MAIN_STACK_WORDS 0x800
-#define IDLE_STACK_WORDS 0x100
-#define FAULT_STACK_WORDS 0x100
+/* The words of the stacks of the threads. */
+#define THREAD_STACK_WORDS 0x200 /*!< The words of the stack of each service thread. */
+#define MAIN_STACK_WORDS 0x800   /*!< The words of the stack of the main thread. */
+#define IDLE_STACK_WORDS 0x100   /*!< The words of the stack of the idle thread. */
+#define FAULT_STACK_WORDS 0x100  /*!< The words of the stack of the fault thread. */
 
 /** The stacks of the threads. @ghidraAddress USA: 0x80318ed0 */
 extern u32 g_adwRspDoneThreadStack[THREAD_STACK_WORDS];
@@ -714,9 +714,9 @@ void StubEmptyVoid(s32 unused0, s32 unused1, s32 unused2, s32 unused3);
  */
 s32 ProcessDisplayList(Gfx *displayList, Gfx table[][4]);
 
-/** The rows of a table of render modes of ProcessDisplayList(), and the first translucent one. */
-#define RENDER_MODE_ROWS 6
-#define RENDER_MODE_TRANSLUCENT_ROW 3
+/* The tables of render modes of ProcessDisplayList(). */
+#define RENDER_MODE_ROWS 6            /*!< The rows of each table of render modes. */
+#define RENDER_MODE_TRANSLUCENT_ROW 3 /*!< The first row of a translucent render mode. */
 
 /**
  * The colour combine of the clear weather and the night replaces, and its replacement.

@@ -35,11 +35,11 @@
 /** The flag of an item that cannot be chosen, without a reason shown. */
 #define MENU_ITEM_LOCKED 0x40
 
-/** The results of ProcessScreenState(). */
-#define MENU_RESULT_CHOSEN 1
-#define MENU_RESULT_CANCELLED 2
-#define MENU_RESULT_UP 3
-#define MENU_RESULT_DOWN 4
+/* The results of ProcessScreenState(). */
+#define MENU_RESULT_CHOSEN 1    /*!< The player chose the item under the cursor. */
+#define MENU_RESULT_CANCELLED 2 /*!< The player left the screen. */
+#define MENU_RESULT_UP 3        /*!< The player moved up. */
+#define MENU_RESULT_DOWN 4      /*!< The player moved down. */
 
 /** An item of a menu screen. */
 typedef struct {

@@ -13,14 +13,14 @@
 /** The cells along each side of the grid. */
 #define VISIBLE_GRID_SIZE 64
 
-/** The points of the view frustum: the camera, the four corners and the far point. */
-#define FRUSTUM_POINTS 6
-#define FRUSTUM_CAMERA 0
-#define FRUSTUM_RIGHT_TOP 1
-#define FRUSTUM_LEFT_TOP 2
-#define FRUSTUM_LEFT_BOTTOM 3
-#define FRUSTUM_RIGHT_BOTTOM 4
-#define FRUSTUM_FAR 5
+/* The points of the view frustum. */
+#define FRUSTUM_POINTS 6       /*!< The number of points of the frustum. */
+#define FRUSTUM_CAMERA 0       /*!< The point of the camera. */
+#define FRUSTUM_RIGHT_TOP 1    /*!< The far corner at the top right. */
+#define FRUSTUM_LEFT_TOP 2     /*!< The far corner at the top left. */
+#define FRUSTUM_LEFT_BOTTOM 3  /*!< The far corner at the bottom left. */
+#define FRUSTUM_RIGHT_BOTTOM 4 /*!< The far corner at the bottom right. */
+#define FRUSTUM_FAR 5          /*!< The centre of the far plane. */
 
 /** @ghidraAddress USA: 0x8031b1f0 */
 extern Vec3f g_avFrustumPoints[FRUSTUM_POINTS];

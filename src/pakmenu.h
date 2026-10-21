@@ -15,9 +15,9 @@
 /** The notes a Controller Pak holds. */
 #define PAK_NOTES 16
 
-/** The codes of the notes of this game. */
-#define GAME_CODE 0x4E475245
-#define COMPANY_CODE 0x3544
+/* The codes of the notes of this game. */
+#define GAME_CODE 0x4E475245 /*!< The game code of the notes, "NGRE" in ASCII. */
+#define COMPANY_CODE 0x3544  /*!< The company code of the notes, "5D" in ASCII. */
 
 /** The states of the Controller Pak menu. */
 enum {
