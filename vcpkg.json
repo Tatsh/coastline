@@ -1,0 +1,14 @@
+{
+  "dependencies": [
+
+  ],
+  "description": "Reconstructed source of the Nintendo 64 game Top Gear Rally.",
+  "documentation": "https://coastline.readthedocs.org",
+  "homepage": "https://tatsh.github.io/coastline/",
+  "license": "MIT",
+  "maintainers": [
+    "Andrew Udvare <audvare@gmail.com>"
+  ],
+  "name": "coastline",
+  "version": "0.0.0"
+}

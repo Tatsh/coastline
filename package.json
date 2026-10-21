@@ -1,0 +1,126 @@
+{
+  "_wiswa": {
+    "commandLine": "wiswa --skip-remote -q -o .wiswa-ci/dryrun .wiswa.jsonnet",
+    "lastRun": "2026-10-21T02:46:48Z",
+    "version": "7f9c68f"
+  },
+  "contributors": ["Andrew Udvare <audvare@gmail.com>"],
+  "cspell": {
+    "cache": {
+      "useCache": true
+    },
+    "dictionaryDefinitions": [
+      {
+        "name": "main",
+        "path": ".vscode/dictionary.txt"
+      }
+    ],
+    "enableFileTypes": {
+      "*": true
+    },
+    "enableGlobDot": true,
+    "files": ["**"],
+    "ignorePaths": [
+      "*.1",
+      "*.har",
+      "*.lock",
+      ".git/**",
+      ".yarn/**/*.cjs",
+      ".vscode/extensions.json",
+      ".wiswa-ci/**",
+      "dist/**",
+      "man/**"
+    ],
+    "language": "en-GB",
+    "languageSettings": [
+      {
+        "dictionaries": ["main"],
+        "languageId": "*"
+      }
+    ],
+    "useGitignore": true
+  },
+  "description": "Reconstructed source of the Nintendo 64 game Top Gear Rally.",
+  "devDependencies": {
+    "@prettier/plugin-xml": "^3.4.2",
+    "cspell": "^10.3.6",
+    "markdownlint-cli2": "^0.23.3",
+    "prettier": "^3.9.10",
+    "prettier-plugin-ini": "^1.3.0",
+    "prettier-plugin-sort-json": "^4.2.0",
+    "prettier-plugin-toml": "^3.0.2"
+  },
+  "files": ["LICENSE.txt", "README.md"],
+  "homepage": "https://tatsh.github.io/coastline/",
+  "keywords": ["decompilation", "game", "nintendo 64", "reverse engineering", "top gear rally"],
+  "license": "MIT",
+  "markdownlint-cli2": {
+    "config": {
+      "MD024": {
+        "siblings_only": true
+      },
+      "MD033": {
+        "allowed_elements": ["kbd"]
+      },
+      "default": true,
+      "line-length": {
+        "code_blocks": false,
+        "line_length": 100,
+        "tables": false
+      }
+    },
+    "gitignore": true,
+    "globs": ["**/*.md", "**/*.mdc"],
+    "noBanner": true,
+    "showFound": true
+  },
+  "name": "coastline",
+  "packageManager": "yarn@4.18.1",
+  "prettier": {
+    "endOfLine": "lf",
+    "iniSpaceAroundEquals": true,
+    "jsonRecursiveSort": true,
+    "overrides": [
+      {
+        "files": ["*.json.dist", "package.json"],
+        "options": {
+          "parser": "json"
+        }
+      },
+      {
+        "files": ["*.toml"],
+        "options": {
+          "singleQuote": false
+        }
+      },
+      {
+        "files": [".clang-format"],
+        "options": {
+          "parser": "yaml"
+        }
+      }
+    ],
+    "plugins": [
+      "@prettier/plugin-xml",
+      "prettier-plugin-ini",
+      "prettier-plugin-sort-json",
+      "prettier-plugin-toml"
+    ],
+    "printWidth": 100,
+    "reorderKeys": true,
+    "singleQuote": true
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Tatsh/coastline.git"
+  },
+  "scripts": {
+    "build": "cmake --preset=default -DBUILD_DOCS=ON && cmake --build build",
+    "check-formatting": "clang-format --dry-run --Werror $(git ls-files 'src/*.c' 'src/*.h') && prettier --check . && markdownlint-cli2 --config package.json --configPointer /markdownlint-cli2",
+    "check-spelling": "cspell --no-progress .",
+    "dict:update": "rm -f .vscode/dictionary.txt && cspell lint --no-progress --no-summary --unique --words-only | LC_ALL=C tr '[:upper:]' '[:lower:]' | LC_ALL=C sort -u > .vscode/dictionary.txt",
+    "format": "clang-format -i $(git ls-files 'src/*.c' 'src/*.h') && prettier --write . && markdownlint-cli2 --config package.json --configPointer /markdownlint-cli2 --fix",
+    "qa": "yarn check-spelling && yarn check-formatting"
+  },
+  "version": "0.0.0"
+}

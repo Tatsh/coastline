@@ -1,0 +1,45 @@
+---
+concurrency:
+  cancel-in-progress: true
+  group: build-${{ github.ref }}
+jobs:
+  compile:
+    name: 'Compile (${{ matrix.region }}, ${{ matrix.build-type }})'
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        build-type: ['Debug', 'Release']
+        region: ['USA', 'JPN', 'EUR']
+    steps:
+      - uses: 'actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1'
+        with:
+          persist-credentials: false
+      - name: 'Install build dependencies'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y cmake ninja-build
+      - name: 'Toolchain versions'
+        run: cmake --version
+      # No cross toolchain is chosen yet. The configure step gains its toolchain file when the build
+      # is set up.
+      - name: 'Configure'
+        run: |
+          cmake -B build -G Ninja \
+            -DCMAKE_BUILD_TYPE="$BUILD_TYPE" \
+            -DREGION="$REGION"
+        env:
+          BUILD_TYPE: '${{ matrix.build-type }}'
+          REGION: '${{ matrix.region }}'
+      - name: 'Compile'
+        run: cmake --build build --target archives -- -k 0
+name: 'Build'
+'on':
+  push:
+    branches: ['master']
+    tags:
+      - 'v*.*.*'
+  pull_request:
+    branches: ['master']
+permissions:
+  contents: read

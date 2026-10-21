@@ -1,0 +1,26 @@
+{
+  "buildPresets": [
+    {
+      "configurePreset": "n64",
+      "name": "archives",
+      "targets": ["archives"]
+    }
+  ],
+  "configurePresets": [
+    {
+      "binaryDir": "${sourceDir}/build",
+      "cacheVariables": {
+        "CMAKE_TOOLCHAIN_FILE": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake"
+      },
+      "generator": "Ninja",
+      "hidden": true,
+      "name": "vcpkg"
+    },
+    {
+      "binaryDir": "${sourceDir}/build/${presetName}",
+      "generator": "Ninja",
+      "name": "n64"
+    }
+  ],
+  "version": 2
+}

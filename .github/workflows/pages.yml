@@ -1,0 +1,49 @@
+---
+concurrency:
+  cancel-in-progress: false
+  group: pages
+jobs:
+  pages:
+    name: 'Pages'
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    permissions:
+      contents: read
+      id-token: write
+      pages: write
+    runs-on: ubuntu-latest
+    steps:
+      - uses: 'actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1'
+        with:
+          persist-credentials: false
+      - name: 'Setup Pages'
+        uses: 'actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d'
+      - name: 'Install dependencies'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y doxygen graphviz
+      - name: 'Configure'
+        # A docs-only configure skips the sources entirely. The cross toolchain is not needed here
+        # and this job runs on the plain runner.
+        run: cmake -B "$GITHUB_WORKSPACE/build" -DBUILD_DOCS_ONLY=ON
+      - name: 'Build documentation'
+        run: cmake --build "$GITHUB_WORKSPACE/build" --target docs
+      - name: 'Page count'
+        # Doxygen reports success over an empty output. The page count is therefore recorded.
+        run: |
+          COUNT=$(find "$GITHUB_WORKSPACE/build/html" -name '*.html' | wc -l)
+          echo "Generated $COUNT page(s)"
+          test "$COUNT" -gt 0
+      - name: 'Upload artifact'
+        uses: 'actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9'
+        with:
+          path: ${{ github.workspace }}/build/html
+      - id: deployment
+        name: 'Deploy to GitHub Pages'
+        uses: 'actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346'
+name: 'GitHub Pages'
+'on':
+  push:
+    branches: ['master']
+permissions: {}
