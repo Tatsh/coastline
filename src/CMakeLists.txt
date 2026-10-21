@@ -23,19 +23,15 @@ foreach(SUBSYSTEM ${COASTLINE_SUBSYSTEMS})
   add_subdirectory(${SUBSYSTEM})
 endforeach()
 
-# The entry points sit outside the subsystems. The Windows entry points are under platform/win. A
-# routine that differs substantially between targets has one translation unit per target, suffixed
-# with the target, and the build selects the unit. A routine whose difference is a few lines,
-# DllMain() for one, stays in one unit. The Windows port is C++ and exports RallyMain from each
-# renderer's library. The Nintendo 64 entry is C.
+# The entry points sit outside the subsystems. The Windows port is C++, and this directory links its
+# libraries, so the language is enabled here. The Nintendo 64 entry is C.
 if(TGR_PLATFORM STREQUAL "win")
   enable_language(CXX)
-  add_library(coastline_main OBJECT platform/win/dllmain.c
-                                    platform/win/winmain-${TGR_RENDERER}.cpp)
+  add_subdirectory(platform/win)
 else()
   add_library(coastline_main OBJECT main.c)
+  target_link_libraries(coastline_main PRIVATE coastline_common)
 endif()
-target_link_libraries(coastline_main PRIVATE coastline_common)
 
 # Every archive the build produces, for a target that builds all of them at once.
 set(COASTLINE_LIBRARIES coastline_main)
