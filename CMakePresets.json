@@ -1,9 +1,33 @@
 {
   "buildPresets": [
     {
-      "configurePreset": "n64",
-      "name": "archives",
+      "configurePreset": "n64-us",
+      "name": "n64-us",
       "targets": ["archives"]
+    },
+    {
+      "configurePreset": "n64-jp",
+      "name": "n64-jp",
+      "targets": ["archives"]
+    },
+    {
+      "configurePreset": "n64-eu",
+      "name": "n64-eu",
+      "targets": ["archives"]
+    },
+    {
+      "configurePreset": "win-d3d",
+      "name": "win-d3d",
+      "targets": ["archives"]
+    },
+    {
+      "configurePreset": "win-glide",
+      "name": "win-glide",
+      "targets": ["archives"]
+    },
+    {
+      "configurePreset": "all",
+      "name": "all"
     }
   ],
   "configurePresets": [
@@ -19,8 +43,147 @@
     {
       "binaryDir": "${sourceDir}/build/${presetName}",
       "generator": "Ninja",
+      "hidden": true,
+      "name": "base"
+    },
+    {
+      "cacheVariables": {
+        "TGR_PLATFORM": "n64"
+      },
+      "hidden": true,
+      "inherits": "base",
       "name": "n64"
+    },
+    {
+      "cacheVariables": {
+        "TGR_PLATFORM": "win"
+      },
+      "hidden": true,
+      "inherits": "base",
+      "name": "win"
+    },
+    {
+      "cacheVariables": {
+        "TGR_REGION": "us"
+      },
+      "inherits": "n64",
+      "name": "n64-us"
+    },
+    {
+      "cacheVariables": {
+        "TGR_REGION": "jp"
+      },
+      "inherits": "n64",
+      "name": "n64-jp"
+    },
+    {
+      "cacheVariables": {
+        "TGR_REGION": "eu"
+      },
+      "inherits": "n64",
+      "name": "n64-eu"
+    },
+    {
+      "cacheVariables": {
+        "TGR_RENDERER": "d3d"
+      },
+      "inherits": "win",
+      "name": "win-d3d"
+    },
+    {
+      "cacheVariables": {
+        "TGR_RENDERER": "glide"
+      },
+      "inherits": "win",
+      "name": "win-glide"
+    },
+    {
+      "cacheVariables": {
+        "TGR_VARIANTS": "all"
+      },
+      "inherits": "base",
+      "name": "all"
     }
   ],
-  "version": 2
+  "version": 6,
+  "workflowPresets": [
+    {
+      "name": "n64-us",
+      "steps": [
+        {
+          "name": "n64-us",
+          "type": "configure"
+        },
+        {
+          "name": "n64-us",
+          "type": "build"
+        }
+      ]
+    },
+    {
+      "name": "n64-jp",
+      "steps": [
+        {
+          "name": "n64-jp",
+          "type": "configure"
+        },
+        {
+          "name": "n64-jp",
+          "type": "build"
+        }
+      ]
+    },
+    {
+      "name": "n64-eu",
+      "steps": [
+        {
+          "name": "n64-eu",
+          "type": "configure"
+        },
+        {
+          "name": "n64-eu",
+          "type": "build"
+        }
+      ]
+    },
+    {
+      "name": "win-d3d",
+      "steps": [
+        {
+          "name": "win-d3d",
+          "type": "configure"
+        },
+        {
+          "name": "win-d3d",
+          "type": "build"
+        }
+      ]
+    },
+    {
+      "name": "win-glide",
+      "steps": [
+        {
+          "name": "win-glide",
+          "type": "configure"
+        },
+        {
+          "name": "win-glide",
+          "type": "build"
+        }
+      ]
+    },
+    {
+      "name": "all",
+      "steps": [
+        {
+          "name": "all",
+          "type": "configure"
+        },
+        {
+          "name": "all",
+          "type": "build"
+        }
+      ]
+    }
+  ]
 }

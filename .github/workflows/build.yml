@@ -10,7 +10,7 @@ jobs:
       fail-fast: false
       matrix:
         build-type: ['Debug', 'Release']
-        region: ['USA', 'JPN', 'EUR']
+        region: ['us', 'jp', 'eu']
     steps:
       - uses: 'actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1'
         with:
@@ -24,15 +24,14 @@ jobs:
       # No cross toolchain is chosen yet. The configure step gains its toolchain file when the build
       # is set up.
       - name: 'Configure'
-        run: |
-          cmake -B build -G Ninja \
-            -DCMAKE_BUILD_TYPE="$BUILD_TYPE" \
-            -DREGION="$REGION"
+        run: cmake --preset "n64-$TGR_REGION" -DCMAKE_BUILD_TYPE="$BUILD_TYPE"
         env:
           BUILD_TYPE: '${{ matrix.build-type }}'
-          REGION: '${{ matrix.region }}'
+          TGR_REGION: '${{ matrix.region }}'
       - name: 'Compile'
-        run: cmake --build build --target archives -- -k 0
+        run: cmake --build --preset "n64-$TGR_REGION" -- -k 0
+        env:
+          TGR_REGION: '${{ matrix.region }}'
 name: 'Build'
 'on':
   push:

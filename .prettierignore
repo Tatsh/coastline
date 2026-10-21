@@ -47,6 +47,7 @@
 /dist/
 /session-recover.yaml
 /vcpkg_installed/
+__pycache__/
 node_modules/
 pylock*.toml
 vcpkg*.json

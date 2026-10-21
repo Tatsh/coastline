@@ -1,7 +1,7 @@
 {
   "_wiswa": {
-    "commandLine": "wiswa --skip-remote -q -o .wiswa-ci/dryrun .wiswa.jsonnet",
-    "lastRun": "2026-10-21T02:46:48Z",
+    "commandLine": "wiswa --skip-remote -q",
+    "lastRun": "2026-10-21T03:19:25Z",
     "version": "7f9c68f"
   },
   "contributors": ["Andrew Udvare <audvare@gmail.com>"],
@@ -29,7 +29,8 @@
       ".vscode/extensions.json",
       ".wiswa-ci/**",
       "dist/**",
-      "man/**"
+      "man/**",
+      "progress/**"
     ],
     "language": "en-GB",
     "languageSettings": [
@@ -116,10 +117,10 @@
   },
   "scripts": {
     "build": "cmake --preset=default -DBUILD_DOCS=ON && cmake --build build",
-    "check-formatting": "clang-format --dry-run --Werror $(git ls-files 'src/*.c' 'src/*.h') && prettier --check . && markdownlint-cli2 --config package.json --configPointer /markdownlint-cli2",
+    "check-formatting": "clang-format --dry-run --Werror $(git ls-files 'src/*.c' 'src/*.cpp' 'src/*.h') && prettier --check . && markdownlint-cli2 --config package.json --configPointer /markdownlint-cli2",
     "check-spelling": "cspell --no-progress .",
     "dict:update": "rm -f .vscode/dictionary.txt && cspell lint --no-progress --no-summary --unique --words-only | LC_ALL=C tr '[:upper:]' '[:lower:]' | LC_ALL=C sort -u > .vscode/dictionary.txt",
-    "format": "clang-format -i $(git ls-files 'src/*.c' 'src/*.h') && prettier --write . && markdownlint-cli2 --config package.json --configPointer /markdownlint-cli2 --fix",
+    "format": "clang-format -i $(git ls-files 'src/*.c' 'src/*.cpp' 'src/*.h') && prettier --write . && markdownlint-cli2 --config package.json --configPointer /markdownlint-cli2 --fix",
     "qa": "yarn check-spelling && yarn check-formatting"
   },
   "version": "0.0.0"

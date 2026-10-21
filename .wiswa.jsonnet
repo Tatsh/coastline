@@ -8,7 +8,7 @@
   want_codeql: false,
   want_tests: false,
   want_winget: false,
-  clang_format_args: "$(git ls-files 'src/*.c' 'src/*.h')",
+  clang_format_args: "$(git ls-files 'src/*.c' 'src/*.cpp' 'src/*.h')",
   clang_format+: {
     IncludeBlocks: 'Regroup',
     // The C and POSIX headers come before the SDK headers (ultra64.h and the others).
@@ -54,20 +54,52 @@
     ],
     ReflowComments: true,
   },
-  // No cross toolchain is chosen yet. The vcpkg preset is kept for inheritance and hidden. The n64
-  // preset gains its toolchain file when the build is set up.
+  // One configure and build preset per variant, the all preset that builds every variant as a
+  // superbuild, and a workflow for each that configures and builds in one command. No cross
+  // toolchain is chosen yet. The vcpkg preset is kept for inheritance and hidden. The n64 and win
+  // presets gain their toolchain files when the builds are set up.
+  local variants = ['n64-' + region for region in ['us', 'jp', 'eu']] +
+                   ['win-' + renderer for renderer in ['d3d', 'glide']],
   cmake_presets+: {
-    buildPresets: [{ configurePreset: 'n64', name: 'archives', targets: ['archives'] }],
+    version: 6,
     configurePresets: [super.configurePresets[0] { hidden: true }] + [
       {
         binaryDir: '${sourceDir}/build/${presetName}',
         generator: 'Ninja',
-        name: 'n64',
+        hidden: true,
+        name: 'base',
       },
+      { cacheVariables: { TGR_PLATFORM: 'n64' }, hidden: true, inherits: 'base', name: 'n64' },
+      { cacheVariables: { TGR_PLATFORM: 'win' }, hidden: true, inherits: 'base', name: 'win' },
+    ] + [
+      { cacheVariables: { TGR_REGION: region }, inherits: 'n64', name: 'n64-' + region }
+      for region in ['us', 'jp', 'eu']
+    ] + [
+      { cacheVariables: { TGR_RENDERER: renderer }, inherits: 'win', name: 'win-' + renderer }
+      for renderer in ['d3d', 'glide']
+    ] + [
+      { cacheVariables: { TGR_VARIANTS: 'all' }, inherits: 'base', name: 'all' },
+    ],
+    buildPresets: [
+      { configurePreset: variant, name: variant, targets: ['archives'] }
+      for variant in variants
+    ] + [{ configurePreset: 'all', name: 'all' }],
+    workflowPresets: [
+      {
+        name: preset,
+        steps: [{ name: preset, type: 'configure' }, { name: preset, type: 'build' }],
+      }
+      for preset in variants + ['all']
     ],
   },
   // ROM images used for comparison.
-  shared_ignore+: ['*.n64', '*.v64', '*.z64'],
+  shared_ignore+: ['*.n64', '*.v64', '*.z64', '__pycache__/'],
+  // The generated progress tables list every routine name and prototype.
+  package_json+: {
+    cspell+: {
+      ignorePaths+: ['progress/**'],
+    },
+  },
   // No host tools yet, so nothing comes from vcpkg.
   vcpkg+: { dependencies: [] },
   vscode+: {
