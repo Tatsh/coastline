@@ -3,6 +3,24 @@
 #include "../os/osint.h"
 #include "viint.h"
 
+OSThread viThread;
+u64 viThreadStack[0x1000 / sizeof(u64)];
+OSMesgQueue viEventQueue;
+OSMesg viEventBuf[5];
+OSIoMesg viRetraceMsg;
+OSIoMesg viCounterMsg;
+u16 viMgrRetrace;
+OSDevMgr __osViDevMgr = {0};
+
+/**
+ * Body of the VI manager thread. It swaps the contexts on every retrace, sends the message of
+ * osViSetEvent(), advances the time, and services the timers.
+ *
+ * @param arg The OSDevMgr of the VI manager, __osViDevMgr.
+ * @ghidraAddress USA: 0x80266588
+ */
+static void viMgrMain(void *arg);
+
 void osCreateViManager(OSPri pri) {
     u32 savedMask;
     OSPri oldPri;
@@ -49,7 +67,7 @@ void osCreateViManager(OSPri pri) {
     }
 }
 
-void viMgrMain(void *arg) {
+static void viMgrMain(void *arg) {
     __OSViContext *vc;
     OSDevMgr *dm;
     OSIoMesg *mb = NULL;

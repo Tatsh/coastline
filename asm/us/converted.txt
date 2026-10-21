@@ -605,6 +605,7 @@ __osContDataCrc
 __osContGetInitData
 __osContRamRead
 __osContRamWrite
+__osCurrentHandle:0x10
 __osCurrentTime:0x8
 __osDequeueThread
 __osDevMgrMain
@@ -636,8 +637,10 @@ __osPfsReleasePages
 __osPfsRequestData
 __osPfsSelectBank
 __osPiCreateAccessQueue
+__osPiDevMgr:0x1C
 __osPiGetAccess
 __osPiRelAccess
+__osPiTable:0x4
 __osPopThread
 __osProbeTLB
 __osRepairPackId
@@ -665,6 +668,7 @@ __osTimerCounter:0x10
 __osTimerInterrupt
 __osTimerList:0x10
 __osTimerServicesInit
+__osViDevMgr:0x20
 __osViGetCurrentContext
 __osViInit
 __osViIntrCount:0x4
@@ -797,6 +801,10 @@ osVirtualToPhysical
 osWritebackDCache
 osWritebackDCacheAll
 osYieldThread
+piEventBuf:0x8
+piEventQueue:0x18
+piThread:0x1B0
+piThreadStack:0x1000
 proutSprintf
 rmonPrintf
 send_mesg
@@ -807,7 +815,13 @@ sqrtf
 strchr
 strlen
 uncompress
+viCounterMsg:0x28
+viEventBuf:0x18
+viEventQueue:0x18
 viMgrMain
+viRetraceMsg:0x18
+viThread:0x1B0
+viThreadStack:0x1000
 zcalloc
 zcfree
 zlibVersion

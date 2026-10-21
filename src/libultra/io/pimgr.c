@@ -3,6 +3,14 @@
 #include "../os/osint.h"
 #include "piint.h"
 
+OSDevMgr __osPiDevMgr = {0};
+OSPiHandle *__osPiTable = NULL;
+OSPiHandle *__osCurrentHandle[2] = {&CartRomHandle, &LeoDiskHandle};
+OSThread piThread;
+u64 piThreadStack[0x1000 / sizeof(u64)];
+OSMesgQueue piEventQueue;
+OSMesg piEventBuf[1];
+
 void osCreatePiManager(OSPri pri, OSMesgQueue *cmdQ, OSMesg *cmdBuf, s32 cmdMsgCnt) {
     u32 savedMask;
     OSPri oldPri;

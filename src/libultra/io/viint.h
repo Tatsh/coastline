@@ -94,13 +94,4 @@ void __osViSwapContext(void);
 /** @ghidraAddress USA: 0x8026c060 */
 __OSViContext *__osViGetCurrentContext(void);
 
-/**
- * Body of the VI manager thread. It swaps the contexts on every retrace, sends the message of
- * osViSetEvent(), advances the time, and services the timers.
- *
- * @param arg The OSDevMgr of the VI manager, __osViDevMgr.
- * @ghidraAddress USA: 0x80266588
- */
-void viMgrMain(void *arg);
-
 #endif
