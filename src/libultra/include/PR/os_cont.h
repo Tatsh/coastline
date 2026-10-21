@@ -129,6 +129,8 @@ typedef struct {
  * @param data Receives the status of each of the MAXCONTROLLERS controllers.
  * @return 0, or -1 when the SI was busy. A second call returns 0 without a query.
  * @ghidraAddress USA: 0x80265910
+ * @ghidraAddress JPN: 0x80266ba0
+ * @ghidraAddress EUR: 0x802670a0
  */
 s32 osContInit(OSMesgQueue *mq, u8 *bitpattern, OSContStatus *data);
 
@@ -139,6 +141,8 @@ s32 osContInit(OSMesgQueue *mq, u8 *bitpattern, OSContStatus *data);
  *     written first, and the caller waits on it for the end of the read.
  * @return 0, or -1 when the SI was busy.
  * @ghidraAddress USA: 0x80264760
+ * @ghidraAddress JPN: 0x802659f0
+ * @ghidraAddress EUR: 0x80265fc0
  */
 s32 osContStartReadData(OSMesgQueue *mq);
 
@@ -148,6 +152,8 @@ s32 osContStartReadData(OSMesgQueue *mq);
  * @param data Receives the pad of each of the MAXCONTROLLERS controllers. A pad with a nonzero
  *     errno is not otherwise written.
  * @ghidraAddress USA: 0x80264824
+ * @ghidraAddress JPN: 0x80265ab4
+ * @ghidraAddress EUR: 0x80266084
  */
 void osContGetReadData(OSContPad *data);
 
@@ -158,6 +164,8 @@ void osContGetReadData(OSContPad *data);
  * @param pattern Receives a bit for each controller with a Pak.
  * @return 0, or -1 when the SI was busy.
  * @ghidraAddress USA: 0x80261940
+ * @ghidraAddress JPN: 0x80262b60
+ * @ghidraAddress EUR: 0x802630c0
  */
 s32 osPfsIsPlug(OSMesgQueue *queue, u8 *pattern);
 
@@ -170,6 +178,8 @@ s32 osPfsIsPlug(OSMesgQueue *queue, u8 *pattern);
  * @return 0, or PFS_ERR_NOPACK, PFS_ERR_NEW_PACK, PFS_ERR_CONTRFAIL, PFS_ERR_ID_FATAL,
  *     PFS_ERR_DEVICE, or PFS_ERR_INCONSISTENT.
  * @ghidraAddress USA: 0x80265cd0
+ * @ghidraAddress JPN: 0x80266f60
+ * @ghidraAddress EUR: 0x80267460
  */
 s32 osPfsInit(OSMesgQueue *queue, OSPfs *pfs, int channel);
 
@@ -183,6 +193,8 @@ s32 osPfsInit(OSMesgQueue *queue, OSPfs *pfs, int channel);
  * @return 0, or PFS_ERR_NOPACK, PFS_ERR_NEW_PACK, PFS_ERR_CONTRFAIL, PFS_ERR_ID_FATAL,
  *     PFS_ERR_DEVICE, or PFS_ERR_INCONSISTENT.
  * @ghidraAddress USA: 0x80261cb0
+ * @ghidraAddress JPN: 0x80262ed0
+ * @ghidraAddress EUR: 0x80263430
  */
 s32 osPfsInitPak(OSMesgQueue *queue, OSPfs *pfs, int channel);
 
@@ -192,6 +204,8 @@ s32 osPfsInitPak(OSMesgQueue *queue, OSPfs *pfs, int channel);
  * @param pfs The open Pak, updated with the ID, the geometry, and the label.
  * @return 0, or PFS_ERR_NEW_PACK, PFS_ERR_CONTRFAIL, PFS_ERR_ID_FATAL, or PFS_ERR_DEVICE.
  * @ghidraAddress USA: 0x80262660
+ * @ghidraAddress JPN: 0x80263880
+ * @ghidraAddress EUR: 0x80263de0
  */
 s32 osPfsRepairId(OSPfs *pfs);
 
@@ -202,6 +216,8 @@ s32 osPfsRepairId(OSPfs *pfs);
  * @param pfs The open Pak. PFS_CORRUPTED in its status is set when the check finds damage.
  * @return 0, or PFS_ERR_NEW_PACK, PFS_ERR_CONTRFAIL, or PFS_ERR_ID_FATAL.
  * @ghidraAddress USA: 0x80262a80
+ * @ghidraAddress JPN: 0x80263ca0
+ * @ghidraAddress EUR: 0x80264200
  */
 s32 osPfsChecker(OSPfs *pfs);
 
@@ -216,6 +232,8 @@ s32 osPfsChecker(OSPfs *pfs);
  * @param file_no Receives the directory index, or -1.
  * @return 0, PFS_ERR_INVALID when no file matches, or PFS_ERR_NEW_PACK or PFS_ERR_CONTRFAIL.
  * @ghidraAddress USA: 0x802628c0
+ * @ghidraAddress JPN: 0x80263ae0
+ * @ghidraAddress EUR: 0x80264040
  */
 s32 osPfsFindFile(
     OSPfs *pfs, u16 company_code, u32 game_code, u8 *game_name, u8 *ext_name, s32 *file_no);
@@ -232,6 +250,8 @@ s32 osPfsFindFile(
  * @return 0, or PFS_ERR_INVALID, PFS_ERR_NEW_PACK, PFS_ERR_INCONSISTENT, PFS_ERR_BAD_DATA, or
  *     PFS_ERR_CONTRFAIL.
  * @ghidraAddress USA: 0x802635dc
+ * @ghidraAddress JPN: 0x802647fc
+ * @ghidraAddress EUR: 0x80264d5c
  */
 s32 osPfsReadWriteFile(
     OSPfs *pfs, s32 file_no, u8 flag, int offset, int size_in_bytes, u8 *data_buffer);
@@ -243,6 +263,8 @@ s32 osPfsReadWriteFile(
  * @param bytes_not_used Receives the free space in bytes, a multiple of 256.
  * @return 0, or PFS_ERR_INVALID, PFS_ERR_NEW_PACK, PFS_ERR_INCONSISTENT, or PFS_ERR_CONTRFAIL.
  * @ghidraAddress USA: 0x802639e0
+ * @ghidraAddress JPN: 0x80264c00
+ * @ghidraAddress EUR: 0x80265160
  */
 s32 osPfsFreeBlocks(OSPfs *pfs, s32 *bytes_not_used);
 
@@ -259,6 +281,8 @@ s32 osPfsFreeBlocks(OSPfs *pfs, s32 *bytes_not_used);
  * @return 0, or PFS_ERR_INVALID, PFS_ERR_NEW_PACK, PFS_ERR_EXIST, PFS_DATA_FULL, PFS_DIR_FULL,
  *     PFS_ERR_INCONSISTENT, or PFS_ERR_CONTRFAIL.
  * @ghidraAddress USA: 0x80263b30
+ * @ghidraAddress JPN: 0x80264d50
+ * @ghidraAddress EUR: 0x802652b0
  */
 s32 osPfsAllocateFile(OSPfs *pfs,
                       u16 company_code,
@@ -276,6 +300,8 @@ s32 osPfsAllocateFile(OSPfs *pfs,
  * @param files_used Receives the number of entries with nonzero codes.
  * @return 0, or PFS_ERR_INVALID, PFS_ERR_NEW_PACK, or PFS_ERR_CONTRFAIL.
  * @ghidraAddress USA: 0x802677e0
+ * @ghidraAddress JPN: 0x80268a80
+ * @ghidraAddress EUR: 0x80268fd0
  */
 s32 osPfsNumFiles(OSPfs *pfs, s32 *max_files, s32 *files_used);
 
@@ -287,6 +313,8 @@ s32 osPfsNumFiles(OSPfs *pfs, s32 *max_files, s32 *files_used);
  * @param state Receives the size, codes, and names of the file.
  * @return 0, or PFS_ERR_INVALID, PFS_ERR_NEW_PACK, PFS_ERR_INCONSISTENT, or PFS_ERR_CONTRFAIL.
  * @ghidraAddress USA: 0x80267930
+ * @ghidraAddress JPN: 0x80268bd0
+ * @ghidraAddress EUR: 0x80269120
  */
 s32 osPfsFileState(OSPfs *pfs, s32 file_no, OSPfsState *state);
 
@@ -300,6 +328,8 @@ s32 osPfsFileState(OSPfs *pfs, s32 file_no, OSPfsState *state);
  * @param ext_name The 4-byte extension in the Pak character set.
  * @return 0, or PFS_ERR_INVALID, PFS_ERR_NEW_PACK, PFS_ERR_INCONSISTENT, or PFS_ERR_CONTRFAIL.
  * @ghidraAddress USA: 0x80267c20
+ * @ghidraAddress JPN: 0x80268ec0
+ * @ghidraAddress EUR: 0x80269410
  */
 s32 osPfsDeleteFile(OSPfs *pfs, u16 company_code, u32 game_code, u8 *game_name, u8 *ext_name);
 
@@ -312,6 +342,8 @@ s32 osPfsDeleteFile(OSPfs *pfs, u16 company_code, u32 game_code, u8 *game_name, 
  * @return 0, or PFS_ERR_NOPACK, PFS_ERR_CONTRFAIL, or PFS_ERR_DEVICE when the Pak is not a Rumble
  *     Pak.
  * @ghidraAddress USA: 0x80262370
+ * @ghidraAddress JPN: 0x80263590
+ * @ghidraAddress EUR: 0x80263af0
  */
 s32 osMotorInit(OSMesgQueue *mq, OSPfs *pfs, int channel);
 
@@ -321,6 +353,8 @@ s32 osMotorInit(OSMesgQueue *mq, OSPfs *pfs, int channel);
  * @param pfs The Rumble Pak osMotorInit() opened.
  * @return 0, or the channel error, or PFS_ERR_CONTRFAIL when the Pak returns a wrong CRC.
  * @ghidraAddress USA: 0x80262088
+ * @ghidraAddress JPN: 0x802632a8
+ * @ghidraAddress EUR: 0x80263808
  */
 s32 osMotorStart(OSPfs *pfs);
 
@@ -330,6 +364,8 @@ s32 osMotorStart(OSPfs *pfs);
  * @param pfs The Rumble Pak osMotorInit() opened.
  * @return 0, or the channel error, or PFS_ERR_CONTRFAIL when the Pak returns a wrong CRC.
  * @ghidraAddress USA: 0x80261f20
+ * @ghidraAddress JPN: 0x80263140
+ * @ghidraAddress EUR: 0x802636a0
  */
 s32 osMotorStop(OSPfs *pfs);
 

@@ -19,31 +19,75 @@ enum {
     WEATHER_NIGHT, /*!< Night. */
 };
 
-/** The weather the player chose. @ghidraAddress USA: 0x8028c800 */
+/**
+ * The weather the player chose.
+ *
+ * @ghidraAddress USA: 0x8028c800
+ * @ghidraAddress JPN: 0x8028e9b0
+ * @ghidraAddress EUR: 0x8028ef60
+ */
 extern u32 g_dwCurrentWeather;
 
-/** Whether the weather is anything but sunny. @ghidraAddress USA: 0x8028aa78 */
+/**
+ * Whether the weather is anything but sunny.
+ *
+ * @ghidraAddress USA: 0x8028aa78
+ * @ghidraAddress JPN: 0x8028c750
+ * @ghidraAddress EUR: 0x8028cc80
+ */
 extern u32 g_dwWeatherActive;
 
-/** @ghidraAddress USA: 0x8028aa80 */
+/**
+ * @ghidraAddress USA: 0x8028aa80
+ * @ghidraAddress JPN: 0x8028c758
+ * @ghidraAddress EUR: 0x8028cc88
+ */
 extern u32 g_dwNightMode;
 
-/** @ghidraAddress USA: 0x8028aa84 */
+/**
+ * @ghidraAddress USA: 0x8028aa84
+ * @ghidraAddress JPN: 0x8028c75c
+ * @ghidraAddress EUR: 0x8028cc8c
+ */
 extern u32 g_dwSnowMode;
 
-/** @ghidraAddress USA: 0x8028aa8c */
+/**
+ * @ghidraAddress USA: 0x8028aa8c
+ * @ghidraAddress JPN: 0x8028c764
+ * @ghidraAddress EUR: 0x8028cc94
+ */
 extern u32 g_dwRainMode;
 
-/** The colour of the fog. @ghidraAddress USA: 0x8028ab20 */
+/**
+ * The colour of the fog.
+ *
+ * @ghidraAddress USA: 0x8028ab20
+ * @ghidraAddress JPN: 0x8028c7f8
+ * @ghidraAddress EUR: 0x8028cd28
+ */
 extern u8 g_bFogR;
 
-/** @ghidraAddress USA: 0x8028ab24 */
+/**
+ * @ghidraAddress USA: 0x8028ab24
+ * @ghidraAddress JPN: 0x8028c7fc
+ * @ghidraAddress EUR: 0x8028cd2c
+ */
 extern u8 g_bFogG;
 
-/** @ghidraAddress USA: 0x8028ab28 */
+/**
+ * @ghidraAddress USA: 0x8028ab28
+ * @ghidraAddress JPN: 0x8028c800
+ * @ghidraAddress EUR: 0x8028cd30
+ */
 extern u8 g_bFogB;
 
-/** How far the fog colour covers the sky. @ghidraAddress USA: 0x8028ab2c */
+/**
+ * How far the fog colour covers the sky.
+ *
+ * @ghidraAddress USA: 0x8028ab2c
+ * @ghidraAddress JPN: 0x8028c804
+ * @ghidraAddress EUR: 0x8028cd34
+ */
 extern u8 g_bFogIntensity;
 
 /**
@@ -51,6 +95,8 @@ extern u8 g_bFogIntensity;
  * the next strike is allowed, and is -1 while a strike may come.
  *
  * @ghidraAddress USA: 0x8028c818
+ * @ghidraAddress JPN: 0x8028e9c8
+ * @ghidraAddress EUR: 0x8028ef78
  */
 extern s32 g_dwLightningFlashCounter;
 
@@ -73,6 +119,8 @@ extern s32 g_dwLightningFlashCounter;
  * The particles each view draws.
  *
  * @ghidraAddress USA: 0x8028c804
+ * @ghidraAddress JPN: 0x8028e9b4
+ * @ghidraAddress EUR: 0x8028ef64
  */
 extern s32 g_dwRainParticleCount;
 
@@ -80,6 +128,8 @@ extern s32 g_dwRainParticleCount;
  * The direction the wind blows towards, in radians.
  *
  * @ghidraAddress USA: 0x8028c808
+ * @ghidraAddress JPN: 0x8028e9b8
+ * @ghidraAddress EUR: 0x8028ef68
  */
 extern f32 g_fWindAngle;
 
@@ -87,6 +137,8 @@ extern f32 g_fWindAngle;
  * The strength of the wind, from 0.5 to 1.
  *
  * @ghidraAddress USA: 0x8028c80c
+ * @ghidraAddress JPN: 0x8028e9bc
+ * @ghidraAddress EUR: 0x8028ef6c
  */
 extern f32 g_fWindStrength;
 
@@ -94,6 +146,8 @@ extern f32 g_fWindStrength;
  * The speed of the camera of the last view through the rain, limited.
  *
  * @ghidraAddress USA: 0x8028c810
+ * @ghidraAddress JPN: 0x8028e9c0
+ * @ghidraAddress EUR: 0x8028ef70
  */
 extern f32 g_fRainCameraSpeed;
 
@@ -101,6 +155,8 @@ extern f32 g_fRainCameraSpeed;
  * The share of its movement the camera of the last view passes on to the rain.
  *
  * @ghidraAddress USA: 0x8028c814
+ * @ghidraAddress JPN: 0x8028e9c4
+ * @ghidraAddress EUR: 0x8028ef74
  */
 extern f32 g_fRainCameraSpeedScale;
 
@@ -108,6 +164,8 @@ extern f32 g_fRainCameraSpeedScale;
  * Four times the depth of the lightning bolt being divided.
  *
  * @ghidraAddress USA: 0x8028c81c
+ * @ghidraAddress JPN: 0x8028e9cc
+ * @ghidraAddress EUR: 0x8028ef7c
  */
 extern s32 g_nLightningBoltDepth;
 
@@ -115,6 +173,8 @@ extern s32 g_nLightningBoltDepth;
  * The time since the last strike, in 343 units a second.
  *
  * @ghidraAddress USA: 0x8028c820
+ * @ghidraAddress JPN: 0x8028e9d0
+ * @ghidraAddress EUR: 0x8028ef80
  */
 extern f32 g_fLightningFlashTimer;
 
@@ -122,6 +182,8 @@ extern f32 g_fLightningFlashTimer;
  * Whether the rain particles have their first positions.
  *
  * @ghidraAddress USA: 0x8028c824
+ * @ghidraAddress JPN: 0x8028e9d4
+ * @ghidraAddress EUR: 0x8028ef84
  */
 extern s32 g_bRainParticlesInitialized;
 
@@ -129,6 +191,8 @@ extern s32 g_bRainParticlesInitialized;
  * The texture of the snowflakes and other particles, 64 texels square.
  *
  * @ghidraAddress USA: 0x802a3790
+ * @ghidraAddress JPN: 0x802a59f0
+ * @ghidraAddress EUR: 0x802a5f50
  */
 extern u8 g_aParticleTexture[];
 
@@ -145,6 +209,8 @@ extern u8 g_aParticleTexture[];
  * The positions of the rain particles of each view, in a cube around the camera that wraps.
  *
  * @ghidraAddress USA: 0x80361c40
+ * @ghidraAddress JPN: 0x80362db0
+ * @ghidraAddress EUR: 0x80364140
  */
 extern s16 g_awRainParticlePos[WEATHER_VIEWS][RAIN_PARTICLE_SLOTS][3];
 
@@ -152,6 +218,8 @@ extern s16 g_awRainParticlePos[WEATHER_VIEWS][RAIN_PARTICLE_SLOTS][3];
  * The point ahead of the camera of each view last frame.
  *
  * @ghidraAddress USA: 0x803634b8
+ * @ghidraAddress JPN: 0x80364628
+ * @ghidraAddress EUR: 0x803659b8
  */
 extern Vec3f g_avRainPrevCameraPos[WEATHER_VIEWS];
 
@@ -159,6 +227,8 @@ extern Vec3f g_avRainPrevCameraPos[WEATHER_VIEWS];
  * How far the wind moves things in a frame.
  *
  * @ghidraAddress USA: 0x803634d0
+ * @ghidraAddress JPN: 0x80364640
+ * @ghidraAddress EUR: 0x803659d0
  */
 extern Vec3f g_vWindVelocity;
 
@@ -166,6 +236,8 @@ extern Vec3f g_vWindVelocity;
  * How far the rain of each view falls in a frame, against its camera.
  *
  * @ghidraAddress USA: 0x803634e0
+ * @ghidraAddress JPN: 0x80364650
+ * @ghidraAddress EUR: 0x803659e0
  */
 extern Vec3f g_avRainVelocity[WEATHER_VIEWS];
 
@@ -173,6 +245,8 @@ extern Vec3f g_avRainVelocity[WEATHER_VIEWS];
  * The points of the lightning bolt. The first is the point the lightning strikes.
  *
  * @ghidraAddress USA: 0x803634f8
+ * @ghidraAddress JPN: 0x80364668
+ * @ghidraAddress EUR: 0x803659f8
  */
 extern Vec3f g_avLightningBolt[LIGHTNING_BOLT_POINTS];
 
@@ -180,6 +254,8 @@ extern Vec3f g_avLightningBolt[LIGHTNING_BOLT_POINTS];
  * The texture of the rain streaks of each view, drawn along the fall of the rain.
  *
  * @ghidraAddress USA: 0x80364a80
+ * @ghidraAddress JPN: 0x80365bf0
+ * @ghidraAddress EUR: 0x80366f80
  */
 extern u8 g_abPrecipitationTextures[WEATHER_VIEWS]
                                    [RAIN_STREAK_TEXTURE_SIDE * RAIN_STREAK_TEXTURE_SIDE];
@@ -188,6 +264,8 @@ extern u8 g_abPrecipitationTextures[WEATHER_VIEWS]
  * Scatter the rain particles of every view.
  *
  * @ghidraAddress USA: 0x80239cf0
+ * @ghidraAddress JPN: 0x8023ad00
+ * @ghidraAddress EUR: 0x8023b200
  */
 void InitRandomRainParticles(void);
 
@@ -195,6 +273,8 @@ void InitRandomRainParticles(void);
  * Turn the wind and change its strength at random, and set its velocity for the frame.
  *
  * @ghidraAddress USA: 0x80239d84
+ * @ghidraAddress JPN: 0x8023ad94
+ * @ghidraAddress EUR: 0x8023b294
  */
 void UpdateWindDirection(void);
 
@@ -205,6 +285,8 @@ void UpdateWindDirection(void);
  * @param index The index of the point in the bolt.
  * @param span The distance in points to the neighbours, halved at each level.
  * @ghidraAddress USA: 0x80239f28
+ * @ghidraAddress JPN: 0x8023af38
+ * @ghidraAddress EUR: 0x8023b438
  */
 void SubdivideLightningBolt(s32 index, s32 span);
 
@@ -212,6 +294,8 @@ void SubdivideLightningBolt(s32 index, s32 span);
  * Count down the flash of a strike, and strike at random when the last strike is long enough ago.
  *
  * @ghidraAddress USA: 0x8023a0bc
+ * @ghidraAddress JPN: 0x8023b0cc
+ * @ghidraAddress EUR: 0x8023b5cc
  */
 void UpdateLightningFlash(void);
 
@@ -219,6 +303,8 @@ void UpdateLightningFlash(void);
  * Called each frame of rain before the rain is drawn. It does nothing.
  *
  * @ghidraAddress USA: 0x8023a1c0
+ * @ghidraAddress JPN: 0x8023b1d0
+ * @ghidraAddress EUR: 0x8023b6d0
  */
 void StubWeatherUpdate(void);
 
@@ -226,6 +312,8 @@ void StubWeatherUpdate(void);
  * Move the wind and the lightning, and move the rain or snow of each view against its camera.
  *
  * @ghidraAddress USA: 0x8023a1c8
+ * @ghidraAddress JPN: 0x8023b1d8
+ * @ghidraAddress EUR: 0x8023b6d8
  */
 void UpdatePrecipitationParticles(void);
 
@@ -233,6 +321,8 @@ void UpdatePrecipitationParticles(void);
  * Draw the rain or snow of the current view, unless a placed model shelters the camera.
  *
  * @ghidraAddress USA: 0x8023a784
+ * @ghidraAddress JPN: 0x8023b794
+ * @ghidraAddress EUR: 0x8023bc94
  */
 void RenderPrecipitationEffect(void);
 

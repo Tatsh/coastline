@@ -14,6 +14,8 @@
  * @param value The value to convert.
  * @return The truncated value.
  * @ghidraAddress USA: 0x802562e0
+ * @ghidraAddress JPN: 0x80257240
+ * @ghidraAddress EUR: 0x802578b0
  */
 s32 FloatToInt(float value);
 

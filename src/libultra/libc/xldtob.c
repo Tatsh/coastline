@@ -8,7 +8,11 @@
 #define _DMAX 0x7FF
 #define _DOFF 4
 
-/** @ghidraAddress USA: 0x8026d0f0 */
+/**
+ * @ghidraAddress USA: 0x8026d0f0
+ * @ghidraAddress JPN: 0x8026eb70
+ * @ghidraAddress EUR: 0x8026f0c0
+ */
 static void _Genld(_Pft *px, char code, char *p, s16 nsig, s16 xexp) {
     const char point = '.';
 

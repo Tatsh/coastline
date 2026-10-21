@@ -186,11 +186,23 @@ void OptionsMenuPostDraw(s32 item) {
 void ProcessOptionsMenu(void) {
     /* The state of the options menu: 0 to set it up with the first item selected, -1 to set it up
      * keeping the selection, and 1 once it is set up. */
-    /** @ghidraAddress USA: 0x802724e0 */
+    /**
+     * @ghidraAddress USA: 0x802724e0
+     * @ghidraAddress JPN: 0x80273f44
+     * @ghidraAddress EUR: 0x80274494
+     */
     static s32 g_dwOptionsMenuState = 0;
-    /** @ghidraAddress USA: 0x803163a8 */
+    /**
+     * @ghidraAddress USA: 0x803163a8
+     * @ghidraAddress JPN: 0x80316cb8
+     * @ghidraAddress EUR: 0x80318088
+     */
     static s32 g_dwOptionsMenuItemCount;
-    /** @ghidraAddress USA: 0x803163ac */
+    /**
+     * @ghidraAddress USA: 0x803163ac
+     * @ghidraAddress JPN: 0x80316cbc
+     * @ghidraAddress EUR: 0x8031808c
+     */
     static s32 g_dwOptionsMenuSelection;
 
     if (g_dwOptionsMenuState <= 0) {

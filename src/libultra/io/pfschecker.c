@@ -127,7 +127,10 @@ s32 osPfsChecker(OSPfs *pfs) {
 }
 
 /* Record which banks point into the pages of which other banks.
- * @ghidraAddress USA: 0x80263144 */
+ * @ghidraAddress USA: 0x80263144
+ * @ghidraAddress JPN: 0x80264364
+ * @ghidraAddress EUR: 0x802648c4
+ */
 static s32 corrupted_init(OSPfs *pfs, __OSInodeCache *cache) {
     int i;
     int n;
@@ -160,7 +163,10 @@ static s32 corrupted_init(OSPfs *pfs, __OSInodeCache *cache) {
 }
 
 /* Return how many page table entries point at fpage, or PFS_ERR_NEW_PACK once two do.
- * @ghidraAddress USA: 0x802632f8 */
+ * @ghidraAddress USA: 0x802632f8
+ * @ghidraAddress JPN: 0x80264518
+ * @ghidraAddress EUR: 0x80264a78
+ */
 static s32 corrupted(OSPfs *pfs, __OSInodeUnit fpage, __OSInodeCache *cache) {
     int j;
     int n;

@@ -30,41 +30,81 @@ extern const s16 sintable[0x400];
  * The coefficients of the sine polynomial of sinf().
  *
  * @ghidraAddress USA: 0x802ab8a0
+ * @ghidraAddress JPN: 0x802abfd0
+ * @ghidraAddress EUR: 0x802ad590
  */
 extern const double g_adSinfP[5];
 
-/** @ghidraAddress USA: 0x802ab8c8 */
+/**
+ * @ghidraAddress USA: 0x802ab8c8
+ * @ghidraAddress JPN: 0x802abff8
+ * @ghidraAddress EUR: 0x802ad5b8
+ */
 extern const double g_dSinfRpi;
 
-/** @ghidraAddress USA: 0x802ab8d0 */
+/**
+ * @ghidraAddress USA: 0x802ab8d0
+ * @ghidraAddress JPN: 0x802ac000
+ * @ghidraAddress EUR: 0x802ad5c0
+ */
 extern const double g_dSinfPio2Hi;
 
-/** @ghidraAddress USA: 0x802ab8d8 */
+/**
+ * @ghidraAddress USA: 0x802ab8d8
+ * @ghidraAddress JPN: 0x802ac008
+ * @ghidraAddress EUR: 0x802ad5c8
+ */
 extern const double g_dSinfPio2Lo;
 
-/** @ghidraAddress USA: 0x802ab8e0 */
+/**
+ * @ghidraAddress USA: 0x802ab8e0
+ * @ghidraAddress JPN: 0x802ac010
+ * @ghidraAddress EUR: 0x802ad5d0
+ */
 extern const float g_fSinfZero;
 
 /**
  * The coefficients of the sine polynomial of cosf().
  *
  * @ghidraAddress USA: 0x802ab8f0
+ * @ghidraAddress JPN: 0x802ac020
+ * @ghidraAddress EUR: 0x802ad5e0
  */
 extern const double g_adCosfP[5];
 
-/** @ghidraAddress USA: 0x802ab918 */
+/**
+ * @ghidraAddress USA: 0x802ab918
+ * @ghidraAddress JPN: 0x802ac048
+ * @ghidraAddress EUR: 0x802ad608
+ */
 extern const double g_dCosfRpi;
 
-/** @ghidraAddress USA: 0x802ab920 */
+/**
+ * @ghidraAddress USA: 0x802ab920
+ * @ghidraAddress JPN: 0x802ac050
+ * @ghidraAddress EUR: 0x802ad610
+ */
 extern const double g_dCosfPio2Hi;
 
-/** @ghidraAddress USA: 0x802ab928 */
+/**
+ * @ghidraAddress USA: 0x802ab928
+ * @ghidraAddress JPN: 0x802ac058
+ * @ghidraAddress EUR: 0x802ad618
+ */
 extern const double g_dCosfPio2Lo;
 
-/** @ghidraAddress USA: 0x802ab930 */
+/**
+ * @ghidraAddress USA: 0x802ab930
+ * @ghidraAddress JPN: 0x802ac060
+ * @ghidraAddress EUR: 0x802ad620
+ */
 extern const float g_fCosfZero;
 
-/** @ghidraAddress USA: 0x802aba80 */
+/**
+ * @ghidraAddress USA: 0x802aba80
+ * @ghidraAddress JPN: 0x802ac1b0
+ * @ghidraAddress EUR: 0x802ad770
+ */
 extern const float __libm_qnan_f;
 
 #endif

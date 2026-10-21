@@ -20,6 +20,8 @@
  * @param y The row of the texel.
  * @return The texel.
  * @ghidraAddress USA: 0x8024d7d8
+ * @ghidraAddress JPN: 0x8024e71c
+ * @ghidraAddress EUR: 0x8024ed3c
  */
 u8 GetPixel4Bit(s32 x, s32 y);
 
@@ -31,6 +33,8 @@ u8 GetPixel4Bit(s32 x, s32 y);
  * @param y The row of the texel.
  * @return The texel.
  * @ghidraAddress USA: 0x8024d844
+ * @ghidraAddress JPN: 0x8024e788
+ * @ghidraAddress EUR: 0x8024eda8
  */
 u8 ReadPixel4Bit(u8 *texels, s32 x, s32 y);
 
@@ -41,6 +45,8 @@ u8 ReadPixel4Bit(u8 *texels, s32 x, s32 y);
  * @param x The X coordinate of the point on the screen.
  * @param y The Y coordinate of the point on the screen.
  * @ghidraAddress USA: 0x8024dca0
+ * @ghidraAddress JPN: 0x8024eb64
+ * @ghidraAddress EUR: 0x8024f204
  */
 void FloodFill4Bit(s32 x, s32 y);
 
@@ -50,6 +56,8 @@ void FloodFill4Bit(s32 x, s32 y);
  * @param x The X coordinate of the point on the screen.
  * @param y The Y coordinate of the point on the screen.
  * @ghidraAddress USA: 0x8024ec30
+ * @ghidraAddress JPN: 0x8024fa58
+ * @ghidraAddress EUR: 0x80250194
  */
 void StampTextOnDecal(s32 x, s32 y);
 
@@ -61,6 +69,8 @@ void StampTextOnDecal(s32 x, s32 y);
  * @param x1 The X coordinate of the end on the screen.
  * @param y1 The Y coordinate of the end on the screen.
  * @ghidraAddress USA: 0x8024f000
+ * @ghidraAddress JPN: 0x8024fe28
+ * @ghidraAddress EUR: 0x80250564
  */
 void DrawLine4Bit(s32 x0, s32 y0, s32 x1, s32 y1);
 
@@ -71,6 +81,8 @@ void DrawLine4Bit(s32 x0, s32 y0, s32 x1, s32 y1);
  * @param y The row of the texel.
  * @param color The color, an index of the palette.
  * @ghidraAddress USA: 0x8024f25c
+ * @ghidraAddress JPN: 0x80250084
+ * @ghidraAddress EUR: 0x802507c0
  */
 void SetPixel4Bit(s32 x, s32 y, u8 color);
 
@@ -82,6 +94,8 @@ void SetPixel4Bit(s32 x, s32 y, u8 color);
  * @param x1 The X coordinate of the opposite corner on the screen.
  * @param y1 The Y coordinate of the opposite corner on the screen.
  * @ghidraAddress USA: 0x8024f7d4
+ * @ghidraAddress JPN: 0x80250570
+ * @ghidraAddress EUR: 0x80250d38
  */
 void FillRect4Bit(s32 x0, s32 y0, s32 x1, s32 y1);
 
@@ -93,6 +107,8 @@ void FillRect4Bit(s32 x0, s32 y0, s32 x1, s32 y1);
  * @param x1 The X coordinate of the opposite corner on the screen.
  * @param y1 The Y coordinate of the opposite corner on the screen.
  * @ghidraAddress USA: 0x8024f8cc
+ * @ghidraAddress JPN: 0x80250668
+ * @ghidraAddress EUR: 0x80250e30
  */
 void StrokeDecalRectangle(s32 x0, s32 y0, s32 x1, s32 y1);
 
@@ -104,6 +120,8 @@ void StrokeDecalRectangle(s32 x0, s32 y0, s32 x1, s32 y1);
  * @param x1 The X coordinate of the opposite corner on the screen.
  * @param y1 The Y coordinate of the opposite corner on the screen.
  * @ghidraAddress USA: 0x8024fbc8
+ * @ghidraAddress JPN: 0x80250964
+ * @ghidraAddress EUR: 0x8025112c
  */
 void FillDecalRoundRect(s32 x0, s32 y0, s32 x1, s32 y1);
 
@@ -115,6 +133,8 @@ void FillDecalRoundRect(s32 x0, s32 y0, s32 x1, s32 y1);
  * @param x1 The X coordinate of the opposite corner on the screen.
  * @param y1 The Y coordinate of the opposite corner on the screen.
  * @ghidraAddress USA: 0x8024feb8
+ * @ghidraAddress JPN: 0x80250c54
+ * @ghidraAddress EUR: 0x8025141c
  */
 void DrawDecalRoundedRectOutline(s32 x0, s32 y0, s32 x1, s32 y1);
 
@@ -126,6 +146,8 @@ void DrawDecalRoundedRectOutline(s32 x0, s32 y0, s32 x1, s32 y1);
  * @param x1 The X coordinate of the opposite corner on the screen.
  * @param y1 The Y coordinate of the opposite corner on the screen.
  * @ghidraAddress USA: 0x80250b58
+ * @ghidraAddress JPN: 0x8025186c
+ * @ghidraAddress EUR: 0x802520c0
  */
 void DrawDecalFilledEllipse(s32 x0, s32 y0, s32 x1, s32 y1);
 
@@ -137,6 +159,8 @@ void DrawDecalFilledEllipse(s32 x0, s32 y0, s32 x1, s32 y1);
  * @param x1 The X coordinate of the opposite corner on the screen.
  * @param y1 The Y coordinate of the opposite corner on the screen.
  * @ghidraAddress USA: 0x80250fcc
+ * @ghidraAddress JPN: 0x80251ce0
+ * @ghidraAddress EUR: 0x80252534
  */
 void DrawDecalEllipseOutline(s32 x0, s32 y0, s32 x1, s32 y1);
 
@@ -148,6 +172,8 @@ void DrawDecalEllipseOutline(s32 x0, s32 y0, s32 x1, s32 y1);
  * @param radius The radius, in texels.
  * @param fromScreen Whether the center is on the screen rather than in texels.
  * @ghidraAddress USA: 0x8025159c
+ * @ghidraAddress JPN: 0x802522b0
+ * @ghidraAddress EUR: 0x80252b04
  */
 void FillCircle4Bit(s32 x, s32 y, s32 radius, u8 fromScreen);
 
@@ -158,6 +184,8 @@ void FillCircle4Bit(s32 x, s32 y, s32 radius, u8 fromScreen);
  * @param y The Y coordinate of the center on the screen.
  * @param radius The radius, in texels.
  * @ghidraAddress USA: 0x802517b4
+ * @ghidraAddress JPN: 0x802524c8
+ * @ghidraAddress EUR: 0x80252d1c
  */
 void DrawDecalCircleOutline(s32 x, s32 y, s32 radius);
 
@@ -169,6 +197,8 @@ void DrawDecalCircleOutline(s32 x, s32 y, s32 radius);
  * @param x1 The X coordinate of the end on the screen.
  * @param y1 The Y coordinate of the end on the screen.
  * @ghidraAddress USA: 0x80251a54
+ * @ghidraAddress JPN: 0x80252768
+ * @ghidraAddress EUR: 0x80252fbc
  */
 void DrawDashedLine(s32 x0, s32 y0, s32 x1, s32 y1);
 
@@ -180,6 +210,8 @@ void DrawDashedLine(s32 x0, s32 y0, s32 x1, s32 y1);
  * @param x1 The X coordinate of the opposite corner on the screen.
  * @param y1 The Y coordinate of the opposite corner on the screen.
  * @ghidraAddress USA: 0x80251cd4
+ * @ghidraAddress JPN: 0x802529e8
+ * @ghidraAddress EUR: 0x8025323c
  */
 void DrawDashedRectangle(s32 x0, s32 y0, s32 x1, s32 y1);
 
@@ -191,6 +223,8 @@ void DrawDashedRectangle(s32 x0, s32 y0, s32 x1, s32 y1);
  * @param x1 The X coordinate of the opposite corner on the screen.
  * @param y1 The Y coordinate of the opposite corner on the screen.
  * @ghidraAddress USA: 0x80251f68
+ * @ghidraAddress JPN: 0x80252c7c
+ * @ghidraAddress EUR: 0x802534d0
  */
 void DrawDashedRoundedRect(s32 x0, s32 y0, s32 x1, s32 y1);
 
@@ -202,6 +236,8 @@ void DrawDashedRoundedRect(s32 x0, s32 y0, s32 x1, s32 y1);
  * @param x1 The X coordinate of the opposite corner on the screen.
  * @param y1 The Y coordinate of the opposite corner on the screen.
  * @ghidraAddress USA: 0x802523cc
+ * @ghidraAddress JPN: 0x802530e0
+ * @ghidraAddress EUR: 0x80253934
  */
 void DrawDashedEllipse(s32 x0, s32 y0, s32 x1, s32 y1);
 
@@ -212,6 +248,8 @@ void DrawDashedEllipse(s32 x0, s32 y0, s32 x1, s32 y1);
  * @param y The Y coordinate of the center on the screen.
  * @param radius The radius, in pixels of the screen.
  * @ghidraAddress USA: 0x802528f8
+ * @ghidraAddress JPN: 0x8025360c
+ * @ghidraAddress EUR: 0x80253e60
  */
 void DrawDashedCircle(s32 x, s32 y, s32 radius);
 
@@ -222,6 +260,8 @@ void DrawDashedCircle(s32 x, s32 y, s32 radius);
  * @param x The X coordinate of the point on the screen.
  * @param y The Y coordinate of the point on the screen.
  * @ghidraAddress USA: 0x80252c9c
+ * @ghidraAddress JPN: 0x802539b0
+ * @ghidraAddress EUR: 0x80254204
  */
 void DrawDecalTextPreview(s32 x, s32 y);
 
@@ -231,6 +271,8 @@ void DrawDecalTextPreview(s32 x, s32 y);
  * @param a The first byte.
  * @param b The second byte.
  * @ghidraAddress USA: 0x80252f50
+ * @ghidraAddress JPN: 0x80253c64
+ * @ghidraAddress EUR: 0x802544b8
  */
 void SwapBytes(u8 *a, u8 *b);
 
@@ -245,6 +287,8 @@ void SwapBytes(u8 *a, u8 *b);
  * @param width The width of the rectangle.
  * @param height The height of the rectangle.
  * @ghidraAddress USA: 0x80252f64
+ * @ghidraAddress JPN: 0x80253c78
+ * @ghidraAddress EUR: 0x802544cc
  */
 void EmitScaledTextureRect(
     s32 textureWidth, s32 textureHeight, s32 x, s32 y, s32 width, s32 height);

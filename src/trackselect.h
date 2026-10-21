@@ -25,10 +25,22 @@ enum {
 /** The places between a track and its mirrored version. */
 #define TRACK_MIRRORED 5
 
-/** The track chosen for the next race. @ghidraAddress USA: 0x8028b940 */
+/**
+ * The track chosen for the next race.
+ *
+ * @ghidraAddress USA: 0x8028b940
+ * @ghidraAddress JPN: 0x8028d620
+ * @ghidraAddress EUR: 0x8028dbf0
+ */
 extern u32 g_dwSelectedTrackId;
 
-/** The number of tracks. @ghidraAddress USA: 0x8028ae04 */
+/**
+ * The number of tracks.
+ *
+ * @ghidraAddress USA: 0x8028ae04
+ * @ghidraAddress JPN: 0x8028cae4
+ * @ghidraAddress EUR: 0x8028d0b4
+ */
 extern s32 g_dwNumTracks;
 
 /**
@@ -37,6 +49,8 @@ extern s32 g_dwNumTracks;
  * @param track The index of the track.
  * @return Whether it is below g_dwNumTracks and has data.
  * @ghidraAddress USA: 0x8021e180
+ * @ghidraAddress JPN: 0x8021ec50
+ * @ghidraAddress EUR: 0x8021f380
  */
 s32 IsTrackIndexValid(s32 track);
 

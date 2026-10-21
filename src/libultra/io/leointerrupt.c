@@ -164,7 +164,10 @@ s32 __osLeoInterrupt(void) {
 }
 
 /* Reset the buffer manager after an error and end the transfer.
- * @ghidraAddress USA: 0x8026e284 */
+ * @ghidraAddress USA: 0x8026e284
+ * @ghidraAddress JPN: 0x8026fd04
+ * @ghidraAddress EUR: 0x80270254
+ */
 static void __osLeoAbnormalResume(void) {
     __OSTranxInfo *info = &__osDiskHandle->transferInfo;
     u32 pi_stat;
@@ -179,7 +182,10 @@ static void __osLeoAbnormalResume(void) {
 }
 
 /* Post the PI event, as the exception handler does for a PI interrupt.
- * @ghidraAddress USA: 0x8026e36c */
+ * @ghidraAddress USA: 0x8026e36c
+ * @ghidraAddress JPN: 0x8026fdec
+ * @ghidraAddress EUR: 0x8027033c
+ */
 static void __osLeoResume(void) {
     __OSEventState *es = &__osEventStateTab[OS_EVENT_PI];
     OSMesgQueue *mq = es->messageQueue;

@@ -27,10 +27,22 @@ enum {
                                          championship or from the options menu. */
 };
 
-/** The mode of play the main menu chose. @ghidraAddress USA: 0x8026ff18 */
+/**
+ * The mode of play the main menu chose.
+ *
+ * @ghidraAddress USA: 0x8026ff18
+ * @ghidraAddress JPN: 0x80271998
+ * @ghidraAddress EUR: 0x80271ee8
+ */
 extern s32 g_dwGameMode;
 
-/** The race the computer drives, by the RACE_SESSION_ values. @ghidraAddress USA: 0x8026ff1c */
+/**
+ * The race the computer drives, by the RACE_SESSION_ values.
+ *
+ * @ghidraAddress USA: 0x8026ff1c
+ * @ghidraAddress JPN: 0x8027199c
+ * @ghidraAddress EUR: 0x80271eec
+ */
 extern s32 g_dwRaceSessionType;
 
 /**
@@ -38,6 +50,8 @@ extern s32 g_dwRaceSessionType;
  *
  * @param weather The weather, a `WEATHER_*` value.
  * @ghidraAddress USA: 0x80200050
+ * @ghidraAddress JPN: 0x80200050
+ * @ghidraAddress EUR: 0x80200050
  */
 void ApplyWeather(u32 weather);
 
@@ -45,6 +59,8 @@ void ApplyWeather(u32 weather);
  * The screen routine of the main menu.
  *
  * @ghidraAddress USA: 0x80200108
+ * @ghidraAddress JPN: 0x80200108
+ * @ghidraAddress EUR: 0x80200108
  */
 void MainMenuEntry(void);
 
@@ -53,6 +69,8 @@ void MainMenuEntry(void);
  *
  * @param players The number of local players.
  * @ghidraAddress USA: 0x80200128
+ * @ghidraAddress JPN: 0x80200128
+ * @ghidraAddress EUR: 0x80200128
  */
 void StartRaceWithPlayerCount(u32 players);
 
@@ -60,6 +78,8 @@ void StartRaceWithPlayerCount(u32 players);
  * Reset the vehicle and the input of every player.
  *
  * @ghidraAddress USA: 0x80200154
+ * @ghidraAddress JPN: 0x80200154
+ * @ghidraAddress EUR: 0x80200154
  */
 void ResetAllPlayers(void);
 
@@ -68,6 +88,8 @@ void ResetAllPlayers(void);
  * enter the main loop. The routine takes no parameter, and the argument of the thread is ignored.
  *
  * @ghidraAddress USA: 0x802001b4
+ * @ghidraAddress JPN: 0x802001b4
+ * @ghidraAddress EUR: 0x802001b4
  */
 void InitGameAndShowMenus(void);
 
@@ -75,6 +97,8 @@ void InitGameAndShowMenus(void);
  * Start the race the computer drives after the splash screens.
  *
  * @ghidraAddress USA: 0x802005fc
+ * @ghidraAddress JPN: 0x802005ec
+ * @ghidraAddress EUR: 0x8020062c
  */
 void StartAttractDemo(void);
 
@@ -83,6 +107,8 @@ void StartAttractDemo(void);
  * scrolling credits in two-player mode and the captions otherwise.
  *
  * @ghidraAddress USA: 0x80200634
+ * @ghidraAddress JPN: 0x80200624
+ * @ghidraAddress EUR: 0x80200664
  */
 void StartCreditsRace(void);
 
@@ -90,6 +116,8 @@ void StartCreditsRace(void);
  * Start the race under the scrolling credits, after the last season of the championship.
  *
  * @ghidraAddress USA: 0x8020068c
+ * @ghidraAddress JPN: 0x8020067c
+ * @ghidraAddress EUR: 0x802006bc
  */
 void StartEndingCredits(void);
 
