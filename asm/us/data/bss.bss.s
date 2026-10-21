@@ -1467,117 +1467,83 @@ nonmatching g_adwFadeRectRightPerBuffer, 0x8
 dlabel g_adwFadeRectRightPerBuffer
     /* 8031B418 */ .space 0x08
 
-nonmatching g_abUnusedFrameBlock, 0x10
+nonmatching g_abUnusedFrameBlock, 0xC
 
 dlabel g_abUnusedFrameBlock
-    /* 8031B420 */ .space 0x10
+    /* 8031B420 */ .space 0x0C
+
+nonmatching D_8031B42C, 0x4
+
+/* Automatically generated and unreferenced pad */
+dlabel D_8031B42C
+    /* 8031B42C */ .space 0x04
 
 nonmatching g_avBestLeftLane, 0x60
 
 dlabel g_avBestLeftLane
     /* 8031B430 */ .space 0x60
 
-nonmatching g_avBestCenterLine, 0xC
+nonmatching g_avBestCenterLine, 0x60
 
 dlabel g_avBestCenterLine
-    /* 8031B490 */ .space 0x0C
-
-nonmatching D_8031B49C, 0x54
-
-dlabel D_8031B49C
-    /* 8031B49C */ .space 0x54
+    /* 8031B490 */ .space 0x60
 
 nonmatching g_avBestRightLane, 0x60
 
 dlabel g_avBestRightLane
     /* 8031B4F0 */ .space 0x60
 
-nonmatching g_avTraceLeftLane, 0xC
+nonmatching g_avTraceLeftLane, 0x60
 
 dlabel g_avTraceLeftLane
-    /* 8031B550 */ .space 0x0C
+    /* 8031B550 */ .space 0x60
 
-nonmatching D_8031B55C, 0x54
-
-dlabel D_8031B55C
-    /* 8031B55C */ .space 0x54
-
-nonmatching g_avTraceLeftHalf, 0xC
+nonmatching g_avTraceLeftHalf, 0x60
 
 dlabel g_avTraceLeftHalf
-    /* 8031B5B0 */ .space 0x0C
+    /* 8031B5B0 */ .space 0x60
 
-nonmatching D_8031B5BC, 0x54
-
-dlabel D_8031B5BC
-    /* 8031B5BC */ .space 0x54
-
-nonmatching g_avTraceCenterLine, 0x18
+nonmatching g_avTraceCenterLine, 0x60
 
 dlabel g_avTraceCenterLine
-    /* 8031B610 */ .space 0x18
+    /* 8031B610 */ .space 0x60
 
-nonmatching D_8031B628, 0x48
-
-dlabel D_8031B628
-    /* 8031B628 */ .space 0x48
-
-nonmatching g_avTraceRightHalf, 0xC
+nonmatching g_avTraceRightHalf, 0x60
 
 dlabel g_avTraceRightHalf
-    /* 8031B670 */ .space 0x0C
+    /* 8031B670 */ .space 0x60
 
-nonmatching D_8031B67C, 0x54
-
-dlabel D_8031B67C
-    /* 8031B67C */ .space 0x54
-
-nonmatching g_avTraceRightLane, 0xC
+nonmatching g_avTraceRightLane, 0x60
 
 dlabel g_avTraceRightLane
-    /* 8031B6D0 */ .space 0x0C
+    /* 8031B6D0 */ .space 0x60
 
-nonmatching D_8031B6DC, 0x54
-
-dlabel D_8031B6DC
-    /* 8031B6DC */ .space 0x54
-
-nonmatching g_vTraceFarPoint, 0x4
+nonmatching g_vTraceFarPoint, 0xC
 
 dlabel g_vTraceFarPoint
-    /* 8031B730 */ .space 0x04
+    /* 8031B730 */ .space 0x0C
 
-nonmatching D_8031B734, 0xC
+nonmatching D_8031B73C, 0x4
 
 /* Automatically generated and unreferenced pad */
-dlabel D_8031B734
-    /* 8031B734 */ .space 0x0C
+dlabel D_8031B73C
+    /* 8031B73C */ .space 0x04
 
-nonmatching g_vTraceHalfwayPoint, 0x4
+nonmatching g_vTraceHalfwayPoint, 0xC
 
 dlabel g_vTraceHalfwayPoint
-    /* 8031B740 */ .space 0x04
+    /* 8031B740 */ .space 0x0C
 
-nonmatching D_8031B744, 0xC
+nonmatching D_8031B74C, 0x4
 
 /* Automatically generated and unreferenced pad */
-dlabel D_8031B744
-    /* 8031B744 */ .space 0x0C
+dlabel D_8031B74C
+    /* 8031B74C */ .space 0x04
 
-nonmatching g_dwCameraRoll, 0x4
+nonmatching g_vTrackRoutePoint, 0xC
 
-dlabel g_dwCameraRoll
-    /* 8031B750 */ .space 0x04
-
-nonmatching g_dwCameraPitch, 0x4
-
-dlabel g_dwCameraPitch
-    /* 8031B754 */ .space 0x04
-
-nonmatching g_dwCameraYaw, 0x4
-
-dlabel g_dwCameraYaw
-    /* 8031B758 */ .space 0x04
+dlabel g_vTrackRoutePoint
+    /* 8031B750 */ .space 0x0C
 
 nonmatching D_8031B75C, 0x4
 
@@ -1669,16 +1635,10 @@ nonmatching D_8031B79C, 0xDF8
 dlabel D_8031B79C
     /* 8031B79C */ .space 0xDF8
 
-nonmatching g_aVehicles_TrackRouteIndex, 0x4
+nonmatching D_8031C594, 0x24
 
-dlabel g_aVehicles_TrackRouteIndex
-    /* 8031C594 */ .space 0x04
-
-nonmatching D_8031C598, 0x20
-
-/* Automatically generated and unreferenced pad */
-dlabel D_8031C598
-    /* 8031C598 */ .space 0x20
+dlabel D_8031C594
+    /* 8031C594 */ .space 0x24
 
 nonmatching D_8031C5B8, 0x4
 
@@ -1710,9 +1670,9 @@ nonmatching D_8031C5CC, 0x64
 dlabel D_8031C5CC
     /* 8031C5CC */ .space 0x64
 
-nonmatching g_aVehicles_pRacerSlot, 0x8
+nonmatching D_8031C630, 0x8
 
-dlabel g_aVehicles_pRacerSlot
+dlabel D_8031C630
     /* 8031C630 */ .space 0x08
 
 nonmatching g_pCollisionNormal, 0x74
@@ -2099,9 +2059,9 @@ nonmatching D_8031E794, 0x4
 dlabel D_8031E794
     /* 8031E794 */ .space 0x04
 
-nonmatching g_aVehicles1_RaceDistance, 0x4
+nonmatching D_8031E798, 0x4
 
-dlabel g_aVehicles1_RaceDistance
+dlabel D_8031E798
     /* 8031E798 */ .space 0x04
 
 nonmatching g_dwLightReserved1, 0x4

@@ -272,16 +272,49 @@ enum {
     VEHICLE_CAMERAS,
 };
 
-/** A racer of a race. Its fields join this structure as they are reconstructed. */
+/** The racers of a race. */
+#define RACER_SLOTS 20
+
+/**
+ * A racer of a race. A racer with a vehicle copies the progress of the vehicle; one without moves
+ * along the route by itself, and keeps the progress a vehicle takes up when it gets one.
+ */
 typedef struct {
-    u8 unreconstructed0[0x60];
+    Vec3f position;
+    Vec3f previousPosition;
+    /** How far the racer moves a second. */
+    Vec3f velocity;
+    f32 speedKph;
+    /** The section of the route the racer is on, and its point there. */
+    TrackSection *section;
+    s32 pointIndex;
+    /** The times of the lap, the best lap and the race, and the time left, in seconds. */
+    f32 lapTime;
+    f32 bestLapTime;
+    f32 totalTime;
+    f32 timeLeft;
+    /** The laps finished and the laps the distance counts, as in the vehicle. */
+    s32 lap;
+    s32 distanceLaps;
+    /** The farthest gate reached and the gate last crossed, counted across laps. */
+    s32 maxGate;
+    s32 gate;
+    f32 distance;
+    s32 racePosition;
+    u8 unreconstructed58[0x5C - 0x58];
+    /** The color of the vehicle the racer drives. */
+    u8 color[3];
     /** The vehicle of the racer, or NULL. */
     struct Vehicle *vehicle;
-    u8 unreconstructed64[0x68 - 0x64];
+    /** The index of the racer in g_aRacerSlots. */
+    s32 index;
     /** The clock of the racer runs while the bits of RACER_CLOCK_STOPPED are clear. */
     u32 status;
     u8 unreconstructed6C[0x74 - 0x6C];
-    /** Set for a racer past the thirteenth after the players, whom the championship slows more. */
+    /**
+     * Set for a racer past the thirteenth after the players. The championship slows the vehicle of
+     * such a racer more, and the racers of each kind share their own vehicles.
+     */
     s32 straggler;
 } RacerSlot;
 
@@ -369,7 +402,8 @@ typedef struct Vehicle {
     };
     /** The index of the vehicle in g_aVehicles. The players have the first. */
     s32 index;
-    u8 unreconstructed144[0x148 - 0x144];
+    /** The frames the tires have skidded, up to 16, which swell the sound of the skid. */
+    s16 skidFrames;
     RigidBody body;
     /**
      * The bodies of the wheels: the rear and the front wheel of one side, then of the other. The
@@ -429,9 +463,12 @@ typedef struct Vehicle {
     s32 forcedReverseFrames;
     s32 reverseFrames;
     s32 forwardFrames;
-    u8 unreconstructedE80[0xED0 - 0xE80];
+    /** The racers nearest a player's vehicle, the nearest first, as the vehicles were shared out.
+     */
+    RacerSlot *nearestRacers[RACER_SLOTS];
     RacerSlot *racer;
-    u8 unreconstructedED4[0xED8 - 0xED4];
+    /** The frames before a computer's vehicle that left its racer may be taken from another. */
+    s32 slotCooldown;
     /** The routine that drives the vehicle each frame, the player's or the computer's, or NULL. */
     void (*driver)(struct Vehicle *vehicle);
     /** The point a computer's vehicle steers towards. */
@@ -449,7 +486,17 @@ typedef struct Vehicle {
     /** The vehicle from that point. */
     Vec3f trackOffset;
     f32 trackSideOffset;
-    u8 unreconstructedF2C[0xF48 - 0xF2C];
+    /** Where the camera that heard the vehicle was the last frame. */
+    Vec3f previousListenerPosition;
+    /**
+     * The sound effect the vehicle plays, from 0 for none, how loud, and how much it matters: a
+     * louder or more important sound takes its place.
+     */
+    s32 effectSound;
+    s32 effectVolume;
+    s32 effectPriority;
+    /** How much the motion of the vehicle and the camera raise its sounds. */
+    f32 dopplerFactor;
     /** Set when the active camera changes: to 1 when a view is chosen, to 2 by the cameras. */
     s32 cameraChanged;
     /**
@@ -464,7 +511,9 @@ typedef struct Vehicle {
     s32 pointIndex;
     /** The direction of the track at that point. */
     Vec3f trackDirection;
-    u8 unreconstructedF70[0xF78 - 0xF70];
+    /** The farthest gate reached and the gate last crossed, counted across laps. */
+    s32 maxGate;
+    s32 gate;
     /** The laps finished. */
     s32 lap;
     /** The laps the distance travelled has counted. */
@@ -498,7 +547,8 @@ typedef struct Vehicle {
     Vec3f placedVelocity;
     /** The speed the display shows, in kilometers an hour. */
     f32 speedKph;
-    u8 unreconstructedFE8[0xFEC - 0xFE8];
+    /** The distance the speedometer has counted. */
+    f32 odometer;
     /**
      * A weight on a spring at a corner of the vehicle, whose jolts damage it: where it is, how far
      * it moves a frame, and how far it hangs from the corner.
@@ -692,7 +742,7 @@ void InitVehicleOrientationFromAngle(Vehicle *vehicle, f32 angle);
  * @param m The matrix, whose rows are the axes and the position.
  * @ghidraAddress USA: 0x80220150
  */
-void SetVehicleFrameMatrix(Vehicle *vehicle, f32 m[4][4]);
+void SetVehicleFrameMatrix(Vehicle *vehicle, f32 (*m)[4]);
 
 /**
  * Set the velocity of a vehicle.
@@ -986,6 +1036,14 @@ void ClearVehicleDamageState(Vehicle *vehicle);
  * @ghidraAddress USA: 0x80228a6c
  */
 void SetupVehicleForRaceStart(Vehicle *vehicle);
+
+/**
+ * Do nothing. Nothing calls it.
+ *
+ * @param unused Not read.
+ * @ghidraAddress USA: 0x80228e44
+ */
+void UnusedRaceStartStub(s32 unused);
 
 /**
  * Set up a racer slot for the start of the race: attach its vehicle, or place it on the route of

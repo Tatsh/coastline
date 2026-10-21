@@ -62,6 +62,9 @@ g_LoadedTrack = 0x80025C00;
 /* The models of the cars the vehicles drive, above the program. */
 g_aVehicleModels = 0x803C8000;
 
+/* The last laps the instant replay plays, kept in the last slots of the models. */
+g_aLastLapBuffers = 0x803C8000;
+
 /* The recording a race replays, and those the local players record into, below the frame buffers.
  * The recording of the second player runs over the first frame buffer. */
 g_abPlaybackRecording = 0x80197000;

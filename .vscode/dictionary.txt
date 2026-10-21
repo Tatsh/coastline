@@ -299,6 +299,7 @@ pylock
 pyproject
 qstringbuilder
 racemenu
+racesound
 ramarray
 ramreadformat
 rdbread

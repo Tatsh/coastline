@@ -332,6 +332,155 @@ void AudioMixingThreadMain(void *arg);
  */
 void UnusedAudioMixingStub(void);
 
+/** The sound effects of a race. */
+#define SOUND_EFFECTS 16
+
+/**
+ * The sound effects: the engine, which the airplane shares, the hits, the skids and the rolling on
+ * each surface of the track, the countdown and the waterfall. The skids run from 4 to 7 and the
+ * rolling from 8 to 12; surfaces 0 and 3 share theirs.
+ */
+enum {
+    SOUND_EFFECT_NONE,
+    SOUND_EFFECT_ENGINE = SOUND_EFFECT_NONE,
+    SOUND_EFFECT_VEHICLE_IMPACT,
+    SOUND_EFFECT_IMPACT,
+    SOUND_EFFECT_LANDING,
+    SOUND_EFFECT_SKID_SURFACE_2,
+    SOUND_EFFECT_SKID_SURFACE_1,
+    SOUND_EFFECT_6,
+    SOUND_EFFECT_SKID_SURFACE_0,
+    SOUND_EFFECT_ROLL_SURFACE_1,
+    SOUND_EFFECT_ROLL_SURFACE_2,
+    SOUND_EFFECT_ROLL_SURFACE_0,
+    SOUND_EFFECT_ROLL_SNOW,
+    SOUND_EFFECT_SLOW_SURFACE,
+    SOUND_EFFECT_BEEP,
+    SOUND_EFFECT_GO,
+    SOUND_EFFECT_WATERFALL,
+};
+
+/** The first skid and rolling sound, and the end of the rolling sounds. */
+#define SOUND_EFFECT_FIRST_SKID SOUND_EFFECT_SKID_SURFACE_2
+#define SOUND_EFFECT_FIRST_ROLL SOUND_EFFECT_ROLL_SURFACE_1
+#define SOUND_EFFECT_ROLL_END (SOUND_EFFECT_SLOW_SURFACE + 1)
+
+/** A sound effect of a race, as LoadAllSoundEffects() loads it. */
+typedef struct {
+    /** The samples, signed 8-bit, followed by guardLength samples of its start. */
+    s8 *sample;
+    u32 romStart;
+    u32 romEnd;
+    u32 length;
+    /** The samples a loop repeats, and those copied after the end; -1 for the whole sound. */
+    s32 loopLength;
+    s32 guardLength;
+} SoundEffect;
+
+/** The sound effects of a race. @ghidraAddress USA: 0x8028bc04 */
+extern SoundEffect g_aSoundEffects[SOUND_EFFECTS];
+
+/** The sound effect channel 3 plays once, or -1. @ghidraAddress USA: 0x8028b7ec */
+extern s32 g_dwChannel3PlayingSfxId;
+
+/**
+ * The nearest sound of the track this frame and the last: where it is and was, the camera that
+ * hears it, where that camera was, the effect and the source, how far it is, its frequency in hertz
+ * (negative for a source that does not move), its volume out of 256, and whether it plays.
+ *
+ * @ghidraAddress USA: 0x8028b7a0
+ */
+extern Vec3f g_vClosestSoundPos;
+
+/** @ghidraAddress USA: 0x8028b7ac */
+extern Vec3f g_vPrevSoundPos;
+
+/** @ghidraAddress USA: 0x8028b7b8 */
+extern CameraFrame *g_pClosestSoundListener;
+
+/** @ghidraAddress USA: 0x8028b7bc */
+extern CameraFrame *g_pPrevSoundListener;
+
+/** @ghidraAddress USA: 0x8028b7c0 */
+extern Vec3f g_vPrevListenerPos;
+
+/** @ghidraAddress USA: 0x8028b7cc */
+extern s32 g_dwClosestSoundSfxId;
+
+/** @ghidraAddress USA: 0x8028b7d0 */
+extern s32 g_dwPrevSoundSfxId;
+
+/** @ghidraAddress USA: 0x8028b7d4 */
+extern s32 g_dwClosestSoundSourceId;
+
+/** @ghidraAddress USA: 0x8028b7d8 */
+extern s32 g_dwPrevSoundSourceId;
+
+/** @ghidraAddress USA: 0x8028b7dc */
+extern f32 g_fClosestSoundDistance;
+
+/** @ghidraAddress USA: 0x8028b7e0 */
+extern f32 g_fClosestSoundFrequency;
+
+/** @ghidraAddress USA: 0x8028b7e4 */
+extern s32 g_dwClosestSoundVolume;
+
+/** @ghidraAddress USA: 0x8028b7e8 */
+extern s32 g_bClosestSoundPlaying;
+
+/**
+ * The factor the Doppler effect raises a sound by, from the motion of the source and the listener
+ * along the line between them over the frame.
+ *
+ * @param source The source.
+ * @param previousSource Where the source was.
+ * @param listener The listener.
+ * @param previousListener Where the listener was.
+ * @return The factor.
+ * @ghidraAddress USA: 0x8022b0f8
+ */
+f32 ComputeDopplerFactor(Vec3f *source,
+                         Vec3f *previousSource,
+                         Vec3f *listener,
+                         Vec3f *previousListener);
+
+/**
+ * Pan a sound between the two halves of the volume of a channel by where it is across a camera, and
+ * set its volume by its distance.
+ *
+ * @param source The source.
+ * @param camera The camera that hears it.
+ * @param upper The share of the upper half of the volume.
+ * @param lower The share of the lower half.
+ * @param volume The volume, 1024 over the distance, from at least 32.
+ * @param narrow Whether to pan only a little.
+ * @ghidraAddress USA: 0x8022b1d4
+ */
+void ComputeStereoPan(
+    Vec3f *source, CameraFrame *camera, f32 *upper, f32 *lower, s32 *volume, s32 narrow);
+
+/**
+ * Play a sound effect once on channel 3.
+ *
+ * @param sound The sound effect.
+ * @ghidraAddress USA: 0x8022b370
+ */
+void PlaySoundEffect(s32 sound);
+
+/**
+ * Offer a sound of the track as the nearest this frame; the nearest plays.
+ *
+ * @param source The source the sound is kept under.
+ * @param sound The sound effect.
+ * @param volume The volume, out of 256.
+ * @param frequency The frequency, in hertz, negative for a source that does not move.
+ * @param position The position of the source.
+ * @param listener The camera that hears it.
+ * @ghidraAddress USA: 0x8022b494
+ */
+void UpdateClosestSoundSource(
+    s32 source, s32 sound, s32 volume, f32 frequency, Vec3f *position, CameraFrame *listener);
+
 /**
  * Play the beep of the countdown, and of the laps.
  *

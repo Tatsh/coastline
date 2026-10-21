@@ -548,7 +548,7 @@ static s32 CompareSides(f32 side1, f32 side2) {
     return side1 == side2 ? 2 : 1;
 }
 
-s32 TestLineSegmentIntersection(Vec3f *p1, Vec3f *p2, Vec3f *q1, Vec3f *q2) {
+s32 TestLineSegmentIntersection(Vec2f *p1, Vec2f *p2, Vec2f *q1, Vec2f *q2) {
     f32 side1, side2, side3, side4;
 
     /* The boxes of the two segments must overlap on each axis. */

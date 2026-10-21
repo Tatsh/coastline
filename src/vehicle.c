@@ -587,7 +587,7 @@ void MatrixToQuaternion(f32 m[4][4], Quaternion *q) {
     QuaternionNormalize(q);
 }
 
-void SetVehicleFrameMatrix(Vehicle *vehicle, f32 m[4][4]) {
+void SetVehicleFrameMatrix(Vehicle *vehicle, f32 (*m)[4]) {
     memcpy(vehicle->matrix, m, sizeof(vehicle->matrix));
     MatrixToQuaternion(m, &vehicle->body.state.orientation);
     vehicle->body.stepStates[1].orientation = vehicle->body.state.orientation;

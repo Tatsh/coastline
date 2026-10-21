@@ -437,3 +437,7 @@ void InitCameraForVehicle(Vehicle *vehicle) {
     vehicle->collisionPull = 0.0f;
     vehicle->lookAhead = START_LOOK_AHEAD;
 }
+
+void ClearCameraChanged(Vehicle *vehicle) {
+    vehicle->cameraChanged = 0;
+}

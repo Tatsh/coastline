@@ -360,6 +360,25 @@ void UpdatePhysicsStep(Vehicle *vehicle) {
     ProcessVehicleInputAndPhysics(vehicle);
 }
 
+/* Whether two segments of points cross seen from above. The game hands the positions to the flat
+ * test, which reads their x and y. */
+static s32 CrossesFromAbove(Vec3f *p1, Vec3f *p2, Vec3f *q1, Vec3f *q2) {
+    Vec2f a;
+    Vec2f b;
+    Vec2f c;
+    Vec2f d;
+
+    a.x = p1->x;
+    a.y = p1->y;
+    b.x = p2->x;
+    b.y = p2->y;
+    c.x = q1->x;
+    c.y = q1->y;
+    d.x = q2->x;
+    d.y = q2->y;
+    return TestLineSegmentIntersection(&a, &b, &c, &d);
+}
+
 /* Keep the line of a search as the deepest so far, and nudge the computer away from the side the
  * line passes close to. */
 static void KeepBestTrace(Vehicle *vehicle, s32 depth, s32 pointIndex, TrackSection *section) {
@@ -367,16 +386,16 @@ static void KeepBestTrace(Vehicle *vehicle, s32 depth, s32 pointIndex, TrackSect
     g_pBestTraceSection = section;
     g_dwBestTracePoint = pointIndex;
     if (depth >= 3) {
-        if (TestLineSegmentIntersection(&vehicle->frame.position,
-                                        &g_avTraceCenterLine[2],
-                                        &g_avTraceLeftHalf[1],
-                                        &g_avTraceLeftLane[1])) {
+        if (CrossesFromAbove(&vehicle->frame.position,
+                             &g_avTraceCenterLine[2],
+                             &g_avTraceLeftHalf[1],
+                             &g_avTraceLeftLane[1])) {
             g_bAiNudgeLeft = FALSE;
             g_bAiNudgeRight = TRUE;
-        } else if (TestLineSegmentIntersection(&vehicle->frame.position,
-                                               &g_avTraceCenterLine[2],
-                                               &g_avTraceRightHalf[1],
-                                               &g_avTraceRightLane[1])) {
+        } else if (CrossesFromAbove(&vehicle->frame.position,
+                                    &g_avTraceCenterLine[2],
+                                    &g_avTraceRightHalf[1],
+                                    &g_avTraceRightLane[1])) {
             g_bAiNudgeLeft = TRUE;
             g_bAiNudgeRight = FALSE;
         } else {
@@ -429,10 +448,10 @@ s32 TraceTrackSplineRecursive(Vehicle *vehicle, s32 depth, s32 pointIndex, Track
         middle.x = (point->right.x + point->left.x) * 0.5f;
         middle.y = (point->right.y + point->left.y) * 0.5f;
         for (i = 1; i < last; i++) {
-            if (!TestLineSegmentIntersection(&vehicle->frame.position,
-                                             &middle,
-                                             &g_avTraceLeftLane[i],
-                                             &g_avTraceRightLane[i])) {
+            if (!CrossesFromAbove(&vehicle->frame.position,
+                                  &middle,
+                                  &g_avTraceLeftLane[i],
+                                  &g_avTraceRightLane[i])) {
                 g_bTraceBlocked = TRUE;
                 break;
             }

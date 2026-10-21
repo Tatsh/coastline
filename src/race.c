@@ -240,7 +240,7 @@ static void SetupRaceVehicles(void) {
     replays:
         if (gInstantReplayActive) {
             /* The replay starts from the snapshot of the last lap of the best player. */
-            RestoreRaceSnapshot(&g_aVehicleModels[3 - g_dwBestReplayPlayer]);
+            RestoreRaceSnapshot(&g_aLastLapBuffers[LAST_LAP_FIRST_SLOT - g_dwBestReplayPlayer]);
             for (i = 0; i < RACE_SOUND_CHANNELS; i++) {
                 g_aSoundEffectChannels[i].mixVolume = 0;
                 g_aSoundEffectChannels[i].volume = 0;

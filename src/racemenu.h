@@ -61,7 +61,8 @@ typedef struct {
 
 /** The times of an arcade race on a track for a class of car and a weather. */
 typedef struct {
-    u8 unreconstructed0[0x18];
+    /** The time each gate adds, by its index; the first is the line of the lap. */
+    f32 gateBonuses[6];
     /** The time the race starts with, in seconds. */
     f32 startTime;
 } ArcadeTimes;

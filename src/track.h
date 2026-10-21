@@ -175,6 +175,16 @@ typedef struct {
     u8 type;
 } TrackSpecial;
 
+/** The gates a track can have. */
+#define TRACK_GATES 10
+
+/** A gate of a lap: a line across the route, seen from above. */
+typedef struct {
+    Vec2f ends[2];
+    /** A time the debug output prints when a racer first crosses the gate. */
+    f32 seconds;
+} TrackGate;
+
 /** The header of the loaded track. Its fields join this structure as they are reconstructed. */
 typedef struct {
     u8 unreconstructed0[0xC];
@@ -222,7 +232,9 @@ typedef struct {
     u16 *triangleNearbyInstances;
     /** The flags of each triangle, by its index; the low 3 bits are its surface. */
     u8 *triangleFlags;
-    u8 unreconstructed98[0x164 - 0x98];
+    /** The gates of a lap, in order; the first is the line of the lap. */
+    TrackGate gates[TRACK_GATES];
+    s32 gateCount;
     /** The objects of the track that move or sound, by the TRACK_SPECIAL_ values. */
     TrackSpecial specials[TRACK_SPECIALS];
     s32 specialCount;

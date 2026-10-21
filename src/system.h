@@ -25,6 +25,14 @@ extern u16 g_aFramebuffer0[];
 extern u16 g_aFramebuffer1[];
 
 /**
+ * The room the heap of zlib takes while the game loads, and that the sound effects of a race are
+ * loaded into.
+ *
+ * @ghidraAddress USA: 0x80324550
+ */
+extern u8 g_aInflateHeapBuffer[];
+
+/**
  * The heap DecompressFromRom() lends to zlib, or NULL to let inflateInit2_() borrow the frame
  * buffers.
  *

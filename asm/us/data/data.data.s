@@ -32119,41 +32119,21 @@ dlabel D_8028B794
     /* 8C79C 8028B79C 00000000 */ .word 0x00000000
 enddlabel D_8028B794
 
-nonmatching g_vClosestSoundPosX
+nonmatching g_vClosestSoundPos
 
-dlabel g_vClosestSoundPosX
+dlabel g_vClosestSoundPos
     /* 8C7A0 8028B7A0 00000000 */ .word 0x00000000
-enddlabel g_vClosestSoundPosX
-
-nonmatching g_vClosestSoundPosY
-
-dlabel g_vClosestSoundPosY
     /* 8C7A4 8028B7A4 00000000 */ .word 0x00000000
-enddlabel g_vClosestSoundPosY
-
-nonmatching g_vClosestSoundPosZ
-
-dlabel g_vClosestSoundPosZ
     /* 8C7A8 8028B7A8 00000000 */ .word 0x00000000
-enddlabel g_vClosestSoundPosZ
+enddlabel g_vClosestSoundPos
 
-nonmatching g_vPrevSoundPosX
+nonmatching g_vPrevSoundPos
 
-dlabel g_vPrevSoundPosX
+dlabel g_vPrevSoundPos
     /* 8C7AC 8028B7AC 00000000 */ .word 0x00000000
-enddlabel g_vPrevSoundPosX
-
-nonmatching g_vPrevSoundPosY
-
-dlabel g_vPrevSoundPosY
     /* 8C7B0 8028B7B0 00000000 */ .word 0x00000000
-enddlabel g_vPrevSoundPosY
-
-nonmatching g_vPrevSoundPosZ
-
-dlabel g_vPrevSoundPosZ
     /* 8C7B4 8028B7B4 00000000 */ .word 0x00000000
-enddlabel g_vPrevSoundPosZ
+enddlabel g_vPrevSoundPos
 
 nonmatching g_pClosestSoundListener
 
@@ -32167,23 +32147,13 @@ dlabel g_pPrevSoundListener
     /* 8C7BC 8028B7BC 00000000 */ .word 0x00000000
 enddlabel g_pPrevSoundListener
 
-nonmatching g_vPrevListenerPosX
+nonmatching g_vPrevListenerPos
 
-dlabel g_vPrevListenerPosX
+dlabel g_vPrevListenerPos
     /* 8C7C0 8028B7C0 00000000 */ .word 0x00000000
-enddlabel g_vPrevListenerPosX
-
-nonmatching g_vPrevListenerPosY
-
-dlabel g_vPrevListenerPosY
     /* 8C7C4 8028B7C4 00000000 */ .word 0x00000000
-enddlabel g_vPrevListenerPosY
-
-nonmatching g_vPrevListenerPosZ
-
-dlabel g_vPrevListenerPosZ
     /* 8C7C8 8028B7C8 00000000 */ .word 0x00000000
-enddlabel g_vPrevListenerPosZ
+enddlabel g_vPrevListenerPos
 
 nonmatching g_dwClosestSoundSfxId
 
@@ -32215,11 +32185,11 @@ dlabel g_fClosestSoundDistance
     /* 8C7DC 8028B7DC 00000000 */ .float 0
 enddlabel g_fClosestSoundDistance
 
-nonmatching g_fClosestSoundDopplerScale
+nonmatching g_fClosestSoundFrequency
 
-dlabel g_fClosestSoundDopplerScale
+dlabel g_fClosestSoundFrequency
     /* 8C7E0 8028B7E0 00000000 */ .word 0x00000000
-enddlabel g_fClosestSoundDopplerScale
+enddlabel g_fClosestSoundFrequency
 
 nonmatching g_dwClosestSoundVolume
 
@@ -32317,40 +32287,34 @@ dlabel g_bTraceBlocked
     /* 8C820 8028B820 00000000 */ .word 0x00000000
 enddlabel g_bTraceBlocked
 
-nonmatching g_pSplineEvalWaypoint
+nonmatching g_pTrackRouteSection
 
-dlabel g_pSplineEvalWaypoint
+dlabel g_pTrackRouteSection
     /* 8C824 8028B824 00000000 */ .word 0x00000000
-enddlabel g_pSplineEvalWaypoint
+enddlabel g_pTrackRouteSection
 
-nonmatching g_dwSplineEvalSegment
+nonmatching g_dwTrackRoutePointIndex
 
-dlabel g_dwSplineEvalSegment
+dlabel g_dwTrackRoutePointIndex
     /* 8C828 8028B828 00000000 */ .word 0x00000000
-enddlabel g_dwSplineEvalSegment
+enddlabel g_dwTrackRoutePointIndex
 
-nonmatching g_dwSplineCheckpointCount
+nonmatching g_dwTrackRouteGates
 
-dlabel g_dwSplineCheckpointCount
+dlabel g_dwTrackRouteGates
     /* 8C82C 8028B82C 00000000 */ .word 0x00000000
-enddlabel g_dwSplineCheckpointCount
+enddlabel g_dwTrackRouteGates
 
-nonmatching g_dwSplineLapCount
+nonmatching g_dwTrackRouteLaps
 
-dlabel g_dwSplineLapCount
+dlabel g_dwTrackRouteLaps
     /* 8C830 8028B830 00000000 */ .word 0x00000000
-enddlabel g_dwSplineLapCount
+enddlabel g_dwTrackRouteLaps
 
 nonmatching g_aPerFrameVariables
 
 dlabel g_aPerFrameVariables
     /* 8C834 8028B834 8031B420 */ .word g_abUnusedFrameBlock
-enddlabel g_aPerFrameVariables
-
-nonmatching D_8028B838
-
-/* Automatically generated and unreferenced pad */
-dlabel D_8028B838
     /* 8C838 8028B838 0000000C */ .word 0x0000000C
     /* 8C83C 8028B83C 8031B430 */ .word g_avBestLeftLane
     /* 8C840 8028B840 00000060 */ .word 0x00000060
@@ -32390,19 +32354,19 @@ dlabel D_8028B838
     /* 8C8C8 8028B8C8 0000000C */ .word 0x0000000C
     /* 8C8CC 8028B8CC 8031B740 */ .word g_vTraceHalfwayPoint
     /* 8C8D0 8028B8D0 0000000C */ .word 0x0000000C
-    /* 8C8D4 8028B8D4 8031B750 */ .word g_dwCameraRoll
+    /* 8C8D4 8028B8D4 8031B750 */ .word g_vTrackRoutePoint
     /* 8C8D8 8028B8D8 0000000C */ .word 0x0000000C
-    /* 8C8DC 8028B8DC 8028B824 */ .word g_pSplineEvalWaypoint
+    /* 8C8DC 8028B8DC 8028B824 */ .word g_pTrackRouteSection
     /* 8C8E0 8028B8E0 00000004 */ .word 0x00000004
-    /* 8C8E4 8028B8E4 8028B828 */ .word g_dwSplineEvalSegment
+    /* 8C8E4 8028B8E4 8028B828 */ .word g_dwTrackRoutePointIndex
     /* 8C8E8 8028B8E8 00000004 */ .word 0x00000004
-    /* 8C8EC 8028B8EC 8028B82C */ .word g_dwSplineCheckpointCount
+    /* 8C8EC 8028B8EC 8028B82C */ .word g_dwTrackRouteGates
     /* 8C8F0 8028B8F0 00000004 */ .word 0x00000004
-    /* 8C8F4 8028B8F4 8028B830 */ .word g_dwSplineLapCount
+    /* 8C8F4 8028B8F4 8028B830 */ .word g_dwTrackRouteLaps
     /* 8C8F8 8028B8F8 00000004 */ .word 0x00000004
     /* 8C8FC 8028B8FC 00000000 */ .word 0x00000000
     /* 8C900 8028B900 00000000 */ .word 0x00000000
-enddlabel D_8028B838
+enddlabel g_aPerFrameVariables
 
 nonmatching g_abPlayerColorsRgb
 
@@ -32684,146 +32648,39 @@ nonmatching g_vUpAxis
 
 dlabel g_vUpAxis
     /* 8CAB0 8028BAB0 00000000 */ .word 0x00000000
-enddlabel g_vUpAxis
-
-nonmatching D_8028BAB4
-
-/* Automatically generated and unreferenced pad */
-dlabel D_8028BAB4
     /* 8CAB4 8028BAB4 00000000 */ .word 0x00000000
     /* 8CAB8 8028BAB8 3F800000 */ .word 0x3F800000
-enddlabel D_8028BAB4
+enddlabel g_vUpAxis
 
 nonmatching g_apszRaceProgressStrings
 
 dlabel g_apszRaceProgressStrings
     /* 8CABC 8028BABC 802A992C */ .word g_szFirst
+    /* 8CAC0 8028BAC0 802A9938 */ .word g_szSecond
+    /* 8CAC4 8028BAC4 802A9944 */ .word g_szThird
+    /* 8CAC8 8028BAC8 802A9950 */ .word g_szFourth
+    /* 8CACC 8028BACC 802A995C */ .word g_szFifth
+    /* 8CAD0 8028BAD0 802A9968 */ .word g_szSixth
+    /* 8CAD4 8028BAD4 802A9974 */ .word g_sz7th
+    /* 8CAD8 8028BAD8 802A997C */ .word g_sz8th
+    /* 8CADC 8028BADC 802A9984 */ .word g_sz9th
+    /* 8CAE0 8028BAE0 802A998C */ .word g_sz10th
+    /* 8CAE4 8028BAE4 802A9994 */ .word g_sz11th
+    /* 8CAE8 8028BAE8 802A999C */ .word g_sz12th
+    /* 8CAEC 8028BAEC 802A99A4 */ .word g_sz13th
+    /* 8CAF0 8028BAF0 802A99AC */ .word g_sz14th
+    /* 8CAF4 8028BAF4 802A99B4 */ .word g_sz15th
+    /* 8CAF8 8028BAF8 802A99BC */ .word g_sz16th
+    /* 8CAFC 8028BAFC 802A99C4 */ .word g_sz17th
+    /* 8CB00 8028BB00 802A99CC */ .word g_sz18th
+    /* 8CB04 8028BB04 802A99D4 */ .word g_sz19th
+    /* 8CB08 8028BB08 802A99DC */ .word g_sz20th
 enddlabel g_apszRaceProgressStrings
 
-nonmatching g_pStringTableData
+nonmatching g_aRaceSnapshotFields
 
-dlabel g_pStringTableData
-    /* 8CAC0 8028BAC0 802A9938 */ .word g_szSecond
-enddlabel g_pStringTableData
-
-nonmatching g_pStringTableEntries
-
-dlabel g_pStringTableEntries
-    /* 8CAC4 8028BAC4 802A9944 */ .word g_szThird
-enddlabel g_pStringTableEntries
-
-nonmatching g_pStringTableFont
-
-dlabel g_pStringTableFont
-    /* 8CAC8 8028BAC8 802A9950 */ .word g_szFourth
-enddlabel g_pStringTableFont
-
-nonmatching g_pStringTableRender
-
-dlabel g_pStringTableRender
-    /* 8CACC 8028BACC 802A995C */ .word g_szFifth
-enddlabel g_pStringTableRender
-
-nonmatching g_pStringTableWidth
-
-dlabel g_pStringTableWidth
-    /* 8CAD0 8028BAD0 802A9968 */ .word g_szSixth
-enddlabel g_pStringTableWidth
-
-nonmatching g_pStringTableHeight
-
-dlabel g_pStringTableHeight
-    /* 8CAD4 8028BAD4 802A9974 */ .word g_sz7th
-enddlabel g_pStringTableHeight
-
-nonmatching g_pStringTableColor
-
-dlabel g_pStringTableColor
-    /* 8CAD8 8028BAD8 802A997C */ .word g_sz8th
-enddlabel g_pStringTableColor
-
-nonmatching g_pStringTableScale
-
-dlabel g_pStringTableScale
-    /* 8CADC 8028BADC 802A9984 */ .word g_sz9th
-enddlabel g_pStringTableScale
-
-nonmatching g_pStringTableAlign
-
-dlabel g_pStringTableAlign
-    /* 8CAE0 8028BAE0 802A998C */ .word g_sz10th
-enddlabel g_pStringTableAlign
-
-nonmatching g_pStringTableWrap
-
-dlabel g_pStringTableWrap
-    /* 8CAE4 8028BAE4 802A9994 */ .word g_sz11th
-enddlabel g_pStringTableWrap
-
-nonmatching g_pStringTableShadow
-
-dlabel g_pStringTableShadow
-    /* 8CAE8 8028BAE8 802A999C */ .word g_sz12th
-enddlabel g_pStringTableShadow
-
-nonmatching g_pStringTableX
-
-dlabel g_pStringTableX
-    /* 8CAEC 8028BAEC 802A99A4 */ .word g_sz13th
-enddlabel g_pStringTableX
-
-nonmatching g_pStringTableY
-
-dlabel g_pStringTableY
-    /* 8CAF0 8028BAF0 802A99AC */ .word g_sz14th
-enddlabel g_pStringTableY
-
-nonmatching g_pStringTableZ
-
-dlabel g_pStringTableZ
-    /* 8CAF4 8028BAF4 802A99B4 */ .word g_sz15th
-enddlabel g_pStringTableZ
-
-nonmatching g_pStringTableClip
-
-dlabel g_pStringTableClip
-    /* 8CAF8 8028BAF8 802A99BC */ .word g_sz16th
-enddlabel g_pStringTableClip
-
-nonmatching g_pStringTableScroll
-
-dlabel g_pStringTableScroll
-    /* 8CAFC 8028BAFC 802A99C4 */ .word g_sz17th
-enddlabel g_pStringTableScroll
-
-nonmatching g_pStringTableTimer
-
-dlabel g_pStringTableTimer
-    /* 8CB00 8028BB00 802A99CC */ .word g_sz18th
-enddlabel g_pStringTableTimer
-
-nonmatching g_pStringTableAnim
-
-dlabel g_pStringTableAnim
-    /* 8CB04 8028BB04 802A99D4 */ .word g_sz19th
-enddlabel g_pStringTableAnim
-
-nonmatching g_pStringTablePriority
-
-dlabel g_pStringTablePriority
-    /* 8CB08 8028BB08 802A99DC */ .word g_sz20th
-enddlabel g_pStringTablePriority
-
-nonmatching g_SaveDataFieldTable
-
-dlabel g_SaveDataFieldTable
+dlabel g_aRaceSnapshotFields
     /* 8CB0C 8028BB0C 8031B760 */ .word g_aVehicles
-enddlabel g_SaveDataFieldTable
-
-nonmatching D_8028BB10
-
-/* Automatically generated and unreferenced pad */
-dlabel D_8028BB10
     /* 8CB10 8028BB10 000061B0 */ .word 0x000061B0
     /* 8CB14 8028BB14 803239A0 */ .word g_aRacerSlots
     /* 8CB18 8028BB18 00000960 */ .word 0x00000960
@@ -32863,17 +32720,17 @@ dlabel D_8028BB10
     /* 8CBA0 8028BBA0 00000050 */ .word 0x00000050
     /* 8CBA4 8028BBA4 8028B7EC */ .word g_dwChannel3PlayingSfxId
     /* 8CBA8 8028BBA8 00000004 */ .word 0x00000004
-    /* 8CBAC 8028BBAC 8028B7A0 */ .word g_vClosestSoundPosX
+    /* 8CBAC 8028BBAC 8028B7A0 */ .word g_vClosestSoundPos
     /* 8CBB0 8028BBB0 0000004C */ .word 0x0000004C
     /* 8CBB4 8028BBB4 802A4A30 */ .word g_bTrackCollisionFrameToggle
     /* 8CBB8 8028BBB8 00000004 */ .word 0x00000004
     /* 8CBBC 8028BBBC 00000000 */ .word 0x00000000
     /* 8CBC0 8028BBC0 00000000 */ .word 0x00000000
-enddlabel D_8028BB10
+enddlabel g_aRaceSnapshotFields
 
-nonmatching D_8028BBC4
+nonmatching g_aPausedClockFields
 
-dlabel D_8028BBC4
+dlabel g_aPausedClockFields
     /* 8CBC4 8028BBC4 8028B790 */ .word g_dwRandomSeed
     /* 8CBC8 8028BBC8 00000004 */ .word 0x00000004
     /* 8CBCC 8028BBCC 8028ADF8 */ .word g_qwTimestampBaseHi
@@ -32890,124 +32747,34 @@ dlabel D_8028BBC4
     /* 8CBF8 8028BBF8 00000004 */ .word 0x00000004
     /* 8CBFC 8028BBFC 00000000 */ .word 0x00000000
     /* 8CC00 8028BC00 00000000 */ .word 0x00000000
-enddlabel D_8028BBC4
+enddlabel g_aPausedClockFields
 
 nonmatching g_aSoundEffects
 
 dlabel g_aSoundEffects
     /* 8CC04 8028BC04 00000000 */ .word 0x00000000
-enddlabel g_aSoundEffects
-
-nonmatching g_dwRaceCameraDistance
-
-dlabel g_dwRaceCameraDistance
     /* 8CC08 8028BC08 0019F7D0 */ .word 0x0019F7D0
-enddlabel g_dwRaceCameraDistance
-
-nonmatching D_8028BC0C
-
-/* Automatically generated and unreferenced pad */
-dlabel D_8028BC0C
     /* 8CC0C 8028BC0C 001A60F0 */ .word 0x001A60F0
-enddlabel D_8028BC0C
-
-nonmatching g_SoundEffectTable_LoopStart
-
-dlabel g_SoundEffectTable_LoopStart
     /* 8CC10 8028BC10 00000000 */ .word 0x00000000
-enddlabel g_SoundEffectTable_LoopStart
-
-nonmatching g_SoundEffectTable_LoopEnd
-
-dlabel g_SoundEffectTable_LoopEnd
     /* 8CC14 8028BC14 FFFFFFFF */ .word 0xFFFFFFFF
-enddlabel g_SoundEffectTable_LoopEnd
-
-nonmatching g_dwRaceCameraYaw
-
-dlabel g_dwRaceCameraYaw
     /* 8CC18 8028BC18 FFFFFFFF */ .word 0xFFFFFFFF
-enddlabel g_dwRaceCameraYaw
-
-nonmatching g_dwRaceCameraFov
-
-dlabel g_dwRaceCameraFov
     /* 8CC1C 8028BC1C 00000000 */ .word 0x00000000
-enddlabel g_dwRaceCameraFov
-
-nonmatching g_dwRaceCameraRoll
-
-dlabel g_dwRaceCameraRoll
     /* 8CC20 8028BC20 001A60F0 */ .word 0x001A60F0
-enddlabel g_dwRaceCameraRoll
-
-nonmatching D_8028BC24
-
-/* Automatically generated and unreferenced pad */
-dlabel D_8028BC24
     /* 8CC24 8028BC24 001A6C00 */ .word 0x001A6C00
-enddlabel D_8028BC24
-
-nonmatching g_dwRaceCameraTargetX
-
-dlabel g_dwRaceCameraTargetX
     /* 8CC28 8028BC28 00000000 */ .word 0x00000000
-enddlabel g_dwRaceCameraTargetX
-
-nonmatching g_dwRaceCameraTargetY
-
-dlabel g_dwRaceCameraTargetY
     /* 8CC2C 8028BC2C 00000000 */ .word 0x00000000
-enddlabel g_dwRaceCameraTargetY
-
-nonmatching g_dwRaceCameraTargetZ
-
-dlabel g_dwRaceCameraTargetZ
     /* 8CC30 8028BC30 00000200 */ .word 0x00000200
-enddlabel g_dwRaceCameraTargetZ
-
-nonmatching D_8028BC34
-
-/* Automatically generated and unreferenced pad */
-dlabel D_8028BC34
     /* 8CC34 8028BC34 00000000 */ .word 0x00000000
     /* 8CC38 8028BC38 001A6C00 */ .word 0x001A6C00
     /* 8CC3C 8028BC3C 001A7C40 */ .word 0x001A7C40
     /* 8CC40 8028BC40 00000000 */ .word 0x00000000
     /* 8CC44 8028BC44 00000000 */ .word 0x00000000
     /* 8CC48 8028BC48 00000200 */ .word 0x00000200
-enddlabel D_8028BC34
-
-nonmatching g_dwRaceCameraLookAtX
-
-dlabel g_dwRaceCameraLookAtX
     /* 8CC4C 8028BC4C 00000000 */ .word 0x00000000
-enddlabel g_dwRaceCameraLookAtX
-
-nonmatching D_8028BC50
-
-/* Automatically generated and unreferenced pad */
-dlabel D_8028BC50
     /* 8CC50 8028BC50 001A7C40 */ .word 0x001A7C40
     /* 8CC54 8028BC54 001A8600 */ .word 0x001A8600
-enddlabel D_8028BC50
-
-nonmatching g_dwRaceCameraLookAtY
-
-dlabel g_dwRaceCameraLookAtY
     /* 8CC58 8028BC58 00000000 */ .word 0x00000000
-enddlabel g_dwRaceCameraLookAtY
-
-nonmatching g_dwRaceCameraLookAtZ
-
-dlabel g_dwRaceCameraLookAtZ
     /* 8CC5C 8028BC5C 00000000 */ .word 0x00000000
-enddlabel g_dwRaceCameraLookAtZ
-
-nonmatching D_8028BC60
-
-/* Automatically generated and unreferenced pad */
-dlabel D_8028BC60
     /* 8CC60 8028BC60 00000200 */ .word 0x00000200
     /* 8CC64 8028BC64 00000000 */ .word 0x00000000
     /* 8CC68 8028BC68 001AAA90 */ .word 0x001AAA90
@@ -33081,10 +32848,16 @@ dlabel D_8028BC60
     /* 8CD78 8028BD78 00000000 */ .word 0x00000000
     /* 8CD7C 8028BD7C FFFFFFFF */ .word 0xFFFFFFFF
     /* 8CD80 8028BD80 00000200 */ .word 0x00000200
+enddlabel g_aSoundEffects
+
+nonmatching D_8028BD84
+
+/* Automatically generated and unreferenced pad */
+dlabel D_8028BD84
     /* 8CD84 8028BD84 00000000 */ .word 0x00000000
     /* 8CD88 8028BD88 00000000 */ .word 0x00000000
     /* 8CD8C 8028BD8C 00000000 */ .word 0x00000000
-enddlabel D_8028BC60
+enddlabel D_8028BD84
 
 nonmatching g_dwVisibleGridMinCol
 
