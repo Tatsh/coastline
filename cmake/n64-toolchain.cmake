@@ -10,8 +10,12 @@ if(DEFINED ENV{N64_INST})
       "$ENV{N64_INST}"
       CACHE PATH "libdragon distribution root that provides the cross compiler.")
 endif()
+# Packaged builds of the libdragon toolchain name the compiler mips64-libdragon-elf-gcc, and the
+# libdragon distribution names it mips64-elf-gcc. The assembler, linker, and object tools share the
+# prefix of the compiler that is found.
 find_program(
-  CMAKE_C_COMPILER mips64-elf-gcc
+  CMAKE_C_COMPILER
+  NAMES mips64-libdragon-elf-gcc mips64-elf-gcc
   PATHS "${N64_INST}/bin" "${CMAKE_CURRENT_LIST_DIR}/../.wiswa-ci/toolchains/n64/opt/libdragon/bin"
   REQUIRED)
 set(CMAKE_ASM_COMPILER "${CMAKE_C_COMPILER}")

@@ -155,6 +155,39 @@
     ],
   },
   vscode+: {
+    // IntelliSense targets the USA cartridge build with the packaged libdragon compiler on PATH.
+    // CMake Tools supplies the flags of each file once a preset is configured.
+    c_cpp: {
+      configurations: [
+        {
+          cStandard: 'gnu23',
+          compilerArgs: ['-G0', '-ffreestanding', '-fno-pic', '-mabi=32', '-march=vr4300', '-mno-abicalls'],
+          compilerPath: 'mips64-libdragon-elf-gcc',
+          configurationProvider: 'ms-vscode.cmake-tools',
+          defines: [
+            'TGR_PLATFORM=1',
+            'TGR_PLATFORM_N64=1',
+            'TGR_PLATFORM_WIN=2',
+            'TGR_REGION=1',
+            'TGR_REGION_EU=3',
+            'TGR_REGION_JP=2',
+            'TGR_REGION_US=1',
+            'TGR_RENDERER=1',
+            'TGR_RENDERER_D3D=1',
+            'TGR_RENDERER_GLIDE=2',
+          ],
+          includePath: [
+            '${workspaceFolder}/3rdparty/zlib-1.0.4',
+            '${workspaceFolder}/src',
+            '${workspaceFolder}/src/libultra/include',
+          ],
+          intelliSenseMode: 'linux-gcc-x86',
+          name: 'N64 (USA)',
+        },
+      ],
+      env: {},
+      version: 4,
+    },
     settings+: { 'cmake.useCMakePresets': 'always' },
   },
 }

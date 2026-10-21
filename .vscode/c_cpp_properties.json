@@ -2,21 +2,35 @@
   "configurations": [
     {
       "cStandard": "gnu23",
-      "compilerPath": "/usr/bin/gcc",
-      "cppStandard": "gnu++23",
-      "defines": [
-        "QT_NO_CAST_FROM_ASCII",
-        "QT_NO_CAST_FROM_BYTEARRAY",
-        "QT_NO_CAST_TO_ASCII",
-        "QT_NO_SIGNALS_SLOTS_KEYWORDS",
-        "QT_NO_URL_CAST_FROM_STRING",
-        "QT_STRICT_ITERATORS",
-        "QT_USE_FAST_OPERATOR_PLUS",
-        "QT_USE_QSTRINGBUILDER",
-        "VERSION=\"unknown\""
+      "compilerArgs": [
+        "-G0",
+        "-ffreestanding",
+        "-fno-pic",
+        "-mabi=32",
+        "-march=vr4300",
+        "-mno-abicalls"
       ],
-      "includePath": ["${workspaceFolder}/build/generated", "${workspaceFolder}/src/**"],
-      "name": "Linux"
+      "compilerPath": "mips64-libdragon-elf-gcc",
+      "configurationProvider": "ms-vscode.cmake-tools",
+      "defines": [
+        "TGR_PLATFORM=1",
+        "TGR_PLATFORM_N64=1",
+        "TGR_PLATFORM_WIN=2",
+        "TGR_REGION=1",
+        "TGR_REGION_EU=3",
+        "TGR_REGION_JP=2",
+        "TGR_REGION_US=1",
+        "TGR_RENDERER=1",
+        "TGR_RENDERER_D3D=1",
+        "TGR_RENDERER_GLIDE=2"
+      ],
+      "includePath": [
+        "${workspaceFolder}/3rdparty/zlib-1.0.4",
+        "${workspaceFolder}/src",
+        "${workspaceFolder}/src/libultra/include"
+      ],
+      "intelliSenseMode": "linux-gcc-x86",
+      "name": "N64 (USA)"
     }
   ],
   "env": {},
