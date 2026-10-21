@@ -98,34 +98,32 @@ f32 ComputeDopplerFactor(Vec3f *source,
 void ComputeStereoPan(
     Vec3f *source, CameraFrame *camera, f32 *upper, f32 *lower, s32 *volume, s32 narrow) {
     Vec3f offset;
-    f32 across;
     f32 share;
     f32 rest;
-    f32 a;
-    f32 b;
     f32 distance;
 
     Vec3fSubtract(&offset, source, &camera->position);
-    across = offset.x * camera->side.x + offset.y * camera->side.y + camera->side.z * offset.z;
-    if (PAN_RANGE < across) {
-        across = PAN_RANGE;
-    } else if (across < -PAN_RANGE) {
-        across = -PAN_RANGE;
+    /* The distance across the camera first, then the share of the upper half. */
+    share = camera->side.z * offset.z + (offset.x * camera->side.x + offset.y * camera->side.y);
+    if (PAN_RANGE < share) {
+        share = PAN_RANGE;
+    } else if (share < -PAN_RANGE) {
+        share = -PAN_RANGE;
     }
     if (narrow) {
-        across *= PAN_NARROW;
+        share *= PAN_NARROW;
     }
-    share = (across + PAN_RANGE) / (PAN_RANGE + PAN_RANGE);
+    share = (share + PAN_RANGE) / (PAN_RANGE + PAN_RANGE);
     rest = 1.0f - share;
     if (share < rest) {
-        a = share * PAN_LOUD;
-        b = rest + PAN_QUIET_RAISE * (1.0f - rest);
+        share *= PAN_LOUD;
+        rest += PAN_QUIET_RAISE * (1.0f - rest);
     } else {
-        b = rest * PAN_LOUD;
-        a = share + PAN_QUIET_RAISE * rest;
+        rest *= PAN_LOUD;
+        share += PAN_QUIET_RAISE * (1.0f - share);
     }
-    *upper = a;
-    *lower = b;
+    *upper = share;
+    *lower = rest;
     distance = Vec3fLength(&offset);
     if ((double)distance < SOUND_NEAREST) {
         distance = SOUND_NEAREST;
