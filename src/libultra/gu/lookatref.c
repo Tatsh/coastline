@@ -18,7 +18,8 @@ void guLookAtReflectF(float mf[4][4],
     xLook = xAt - xEye;
     yLook = yAt - yEye;
     zLook = zAt - zEye;
-    len = -1.0f / sqrtf(xLook * xLook + yLook * yLook + zLook * zLook);
+    /* The reciprocals are taken in double precision. */
+    len = -1.0 / sqrtf(xLook * xLook + yLook * yLook + zLook * zLook);
     xLook *= len;
     yLook *= len;
     zLook *= len;
@@ -26,7 +27,7 @@ void guLookAtReflectF(float mf[4][4],
     xRight = yUp * zLook - zUp * yLook;
     yRight = zUp * xLook - xUp * zLook;
     zRight = xUp * yLook - yUp * xLook;
-    len = 1.0f / sqrtf(xRight * xRight + yRight * yRight + zRight * zRight);
+    len = 1.0 / sqrtf(xRight * xRight + yRight * yRight + zRight * zRight);
     xRight *= len;
     yRight *= len;
     zRight *= len;
@@ -34,7 +35,7 @@ void guLookAtReflectF(float mf[4][4],
     xUp = yLook * zRight - zLook * yRight;
     yUp = zLook * xRight - xLook * zRight;
     zUp = xLook * yRight - yLook * xRight;
-    len = 1.0f / sqrtf(xUp * xUp + yUp * yUp + zUp * zUp);
+    len = 1.0 / sqrtf(xUp * xUp + yUp * yUp + zUp * zUp);
     xUp *= len;
     yUp *= len;
     zUp *= len;
