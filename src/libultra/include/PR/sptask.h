@@ -34,20 +34,22 @@ typedef union {
     long long int force_structure_alignment; /*!< Aligns the task to 8 bytes. */
 } OSTask;
 
-#define OS_TASK_YIELDED 0x0001
-#define OS_TASK_DP_WAIT 0x0002
-#define OS_TASK_LOADABLE 0x0004
-#define OS_TASK_SP_ONLY 0x0008
+/* The flags of a task. */
+#define OS_TASK_YIELDED 0x0001  /*!< The task yielded and resumes from its yield buffer. */
+#define OS_TASK_DP_WAIT 0x0002  /*!< The task waits for the RDP before it ends. */
+#define OS_TASK_LOADABLE 0x0004 /*!< The microcode of the task loads further microcode. */
+#define OS_TASK_SP_ONLY 0x0008  /*!< The task runs on the RSP alone. */
 
+/** The bytes of the buffer a yielding graphics task saves its state to. */
 #define OS_YIELD_DATA_SIZE 0xC00
 
 /** The type of a graphics task. */
 #define M_GFXTASK 1
 
-/** The bytes of the microcode text and data an RSP task loads, and of its matrix stack. */
-#define SP_UCODE_SIZE 4096
-#define SP_UCODE_DATA_SIZE 2048
-#define SP_DRAM_STACK_SIZE8 0x400
+/* The sizes of what an RSP task loads. */
+#define SP_UCODE_SIZE 4096        /*!< The bytes of the microcode text a task loads. */
+#define SP_UCODE_DATA_SIZE 2048   /*!< The bytes of the microcode data a task loads. */
+#define SP_DRAM_STACK_SIZE8 0x400 /*!< The bytes of the matrix stack of the microcode. */
 
 /**
  * The physical copy of the last task osSpTaskLoad() loaded.

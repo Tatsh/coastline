@@ -10,61 +10,61 @@
 #include <ultra64.h>
 
 /* Commands of the joybus. */
-#define CONT_CMD_REQUEST_STATUS 0
-#define CONT_CMD_READ_BUTTON 1
-#define CONT_CMD_READ_MEMPACK 2
-#define CONT_CMD_WRITE_MEMPACK 3
-#define CONT_CMD_RESET 0xFF
+#define CONT_CMD_REQUEST_STATUS 0 /*!< Request the type and status of a device. */
+#define CONT_CMD_READ_BUTTON 1    /*!< Read the buttons and the stick. */
+#define CONT_CMD_READ_MEMPACK 2   /*!< Read a block of the Pak. */
+#define CONT_CMD_WRITE_MEMPACK 3  /*!< Write a block of the Pak. */
+#define CONT_CMD_RESET 0xFF       /*!< Reset the device. */
 
 /* The bytes each command sends and receives. */
-#define CONT_CMD_REQUEST_STATUS_TX 1
-#define CONT_CMD_REQUEST_STATUS_RX 3
-#define CONT_CMD_READ_BUTTON_TX 1
-#define CONT_CMD_READ_BUTTON_RX 4
-#define CONT_CMD_READ_MEMPACK_TX 3
-#define CONT_CMD_READ_MEMPACK_RX 33
-#define CONT_CMD_WRITE_MEMPACK_TX 35
-#define CONT_CMD_WRITE_MEMPACK_RX 1
+#define CONT_CMD_REQUEST_STATUS_TX 1 /*!< The bytes a status request sends. */
+#define CONT_CMD_REQUEST_STATUS_RX 3 /*!< The bytes a status request receives. */
+#define CONT_CMD_READ_BUTTON_TX 1    /*!< The bytes a button read sends. */
+#define CONT_CMD_READ_BUTTON_RX 4    /*!< The bytes a button read receives. */
+#define CONT_CMD_READ_MEMPACK_TX 3   /*!< The bytes a Pak read sends. */
+#define CONT_CMD_READ_MEMPACK_RX 33  /*!< The bytes a Pak read receives: a block and its CRC. */
+#define CONT_CMD_WRITE_MEMPACK_TX 35 /*!< The bytes a Pak write sends: an address and a block. */
+#define CONT_CMD_WRITE_MEMPACK_RX 1  /*!< The bytes a Pak write receives: the CRC of the block. */
 
 /* Bytes of the PIF RAM that are not commands. */
-#define CONT_CMD_EXE 1
-#define CONT_CMD_NOP 0xFF
-#define CONT_CMD_END 0xFE
+#define CONT_CMD_EXE 1    /*!< The flag that starts the commands of the PIF RAM. */
+#define CONT_CMD_NOP 0xFF /*!< A byte that skips to the next. */
+#define CONT_CMD_END 0xFE /*!< The end of the commands. */
 
-/* The error bits of a channel are the top two bits of its receive size. */
+/** The error bits of a channel, the top two bits of its receive size, as 0x0 to 0xC. */
 #define CHNL_ERR(format) (((format).rxsize & 0xC0) >> 4)
 
-/* The Controller Pak is read and written in blocks of 32 bytes. */
-#define BLOCKSIZE 32
-#define PFS_ONE_PAGE 8
-#define PFS_ID_0AREA 1
-#define PFS_ID_1AREA 3
-#define PFS_ID_2AREA 4
-#define PFS_ID_3AREA 6
-#define PFS_LABEL_AREA 7
-#define PFS_BANK_LAPPED_BY 0x400
-#define PFS_MAX_BANKS 62
-#define PFS_INODE_SIZE_PER_PAGE 128
-#define DEF_DIR_PAGES 2
+/* The layout of the Controller Pak, read and written in blocks of 32 bytes. */
+#define BLOCKSIZE 32                /*!< The bytes of a block. */
+#define PFS_ONE_PAGE 8              /*!< The blocks of a page. */
+#define PFS_ID_0AREA 1              /*!< The block of the first copy of the identity. */
+#define PFS_ID_1AREA 3              /*!< The block of the second copy of the identity. */
+#define PFS_ID_2AREA 4              /*!< The block of the third copy of the identity. */
+#define PFS_ID_3AREA 6              /*!< The block of the fourth copy of the identity. */
+#define PFS_LABEL_AREA 7            /*!< The block of the label. */
+#define PFS_BANK_LAPPED_BY 0x400    /*!< The blocks after which a bank wraps around. */
+#define PFS_MAX_BANKS 62            /*!< The most banks a Pak may have. */
+#define PFS_INODE_SIZE_PER_PAGE 128 /*!< The entries of a page of the page table. */
+#define DEF_DIR_PAGES 2             /*!< The pages of the directory. */
 
 /* Page table entries with special meanings. */
-#define PFS_EOF 1
-#define PFS_PAGE_NOT_USED 3
+#define PFS_EOF 1           /*!< The last page of a file. */
+#define PFS_PAGE_NOT_USED 3 /*!< A free page. */
 
-/* The bit of a directory entry that marks a file as written. */
+/** The bit of a directory entry that marks a file as written. */
 #define DIR_STATUS_OCCUPIED 0x02
 
-/* The address the motor of a Rumble Pak listens at. */
+/** The address the motor of a Rumble Pak listens at. */
 #define MOTOR_ADDRESS 0x600
 
-/* Return the result of a call unless it is 0. */
+/** Return the result of a call unless it is 0. */
 #define ERRCK(fn)                                                                                  \
     ret = (fn);                                                                                    \
     if (ret != 0) {                                                                                \
         return ret;                                                                                \
     }
 
-/* Select bank 0 unless it is already active. */
+/** Select bank 0 unless it is already active, returning any error. */
 #define SET_ACTIVEBANK_TO_ZERO                                                                     \
     if (pfs->activebank != 0) {                                                                    \
         pfs->activebank = 0;                                                                       \

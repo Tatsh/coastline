@@ -59,48 +59,53 @@ void __osPiRelAccess(void);
 /** @ghidraAddress USA: 0x8026c990 */
 void __osDevMgrMain(void *arg);
 
-/* Wait while the PI is busy with a DMA or an I/O access. The status is read once before the loop
- * tests it, and again on each pass. */
+/**
+ * Wait while the PI is busy with a DMA or an I/O access. The status is read once before the loop
+ * tests it, and again on each pass.
+ */
 #define WAIT_ON_IOBUSY(stat)                                                                       \
     stat = IO_READ(PI_STATUS_REG);                                                                 \
     while (stat & (PI_STATUS_IO_BUSY | PI_STATUS_DMA_BUSY))                                        \
     stat = IO_READ(PI_STATUS_REG)
 
-/* The registers and bits of the 64DD. */
-#define LEO_BASE_REG 0x05000000
-#define LEO_C2_BUFF (LEO_BASE_REG + 0x000)
-#define LEO_SECTOR_BUFF (LEO_BASE_REG + 0x400)
-#define LEO_STATUS (LEO_BASE_REG + 0x508)
-#define LEO_BM_CTL (LEO_BASE_REG + 0x510)
-#define LEO_BM_STATUS (LEO_BASE_REG + 0x510)
+/* The registers of the 64DD. */
+#define LEO_BASE_REG 0x05000000                /*!< The base address of the 64DD registers. */
+#define LEO_C2_BUFF (LEO_BASE_REG + 0x000)     /*!< The buffer of the C2 error correction. */
+#define LEO_SECTOR_BUFF (LEO_BASE_REG + 0x400) /*!< The buffer of a sector. */
+#define LEO_STATUS (LEO_BASE_REG + 0x508)      /*!< The status register. */
+#define LEO_BM_CTL (LEO_BASE_REG + 0x510)      /*!< The buffer manager control, on write. */
+#define LEO_BM_STATUS (LEO_BASE_REG + 0x510)   /*!< The buffer manager status, on read. */
 
-#define LEO_STATUS_DATA_REQUEST 0x40000000
-#define LEO_STATUS_C2_TRANSFER 0x10000000
-#define LEO_STATUS_BUFFER_MANAGER_ERROR 0x08000000
-#define LEO_STATUS_MECHANIC_INTERRUPT 0x02000000
+/* Bits of the status register. */
+#define LEO_STATUS_DATA_REQUEST 0x40000000         /*!< The drive requests data. */
+#define LEO_STATUS_C2_TRANSFER 0x10000000          /*!< A C2 transfer is ready. */
+#define LEO_STATUS_BUFFER_MANAGER_ERROR 0x08000000 /*!< The buffer manager reported an error. */
+#define LEO_STATUS_MECHANIC_INTERRUPT 0x02000000   /*!< The mechanism raised an interrupt. */
 
-#define LEO_BM_CTL_START 0x80000000
-#define LEO_BM_CTL_RESET 0x10000000
-#define LEO_BM_CTL_CLR_MECHANIC_INTR 0x01000000
+/* Bits of the buffer manager control. */
+#define LEO_BM_CTL_START 0x80000000             /*!< Start the buffer manager. */
+#define LEO_BM_CTL_RESET 0x10000000             /*!< Reset the buffer manager. */
+#define LEO_BM_CTL_CLR_MECHANIC_INTR 0x01000000 /*!< Clear the interrupt of the mechanism. */
 
-#define LEO_BM_STATUS_MICRO 0x02000000
-#define LEO_BM_STATUS_C1DOUBLE 0x00400000
-#define LEO_BM_STATUS_C1SINGLE 0x00200000
+/* Bits of the buffer manager status. */
+#define LEO_BM_STATUS_MICRO 0x02000000    /*!< The micro error. */
+#define LEO_BM_STATUS_C1DOUBLE 0x00400000 /*!< A C1 double error. */
+#define LEO_BM_STATUS_C1SINGLE 0x00200000 /*!< A C1 single error. */
 
 /* Transfer commands and modes. */
-#define LEO_CMD_TYPE_0 0
-#define LEO_CMD_TYPE_1 1
-#define LEO_CMD_TYPE_2 2
-#define LEO_TRACK_MODE 2
-#define LEO_SECTOR_MODE 3
+#define LEO_CMD_TYPE_0 0  /*!< A transfer command of type 0. */
+#define LEO_CMD_TYPE_1 1  /*!< A transfer command of type 1. */
+#define LEO_CMD_TYPE_2 2  /*!< A transfer command of type 2. */
+#define LEO_TRACK_MODE 2  /*!< Transfer a whole track. */
+#define LEO_SECTOR_MODE 3 /*!< Transfer one sector. */
 
 /* Results of a block transfer. */
-#define LEO_ERROR_GOOD 0
-#define LEO_ERROR_4 4
-#define LEO_ERROR_22 22
-#define LEO_ERROR_23 23
-#define LEO_ERROR_24 24
-#define LEO_ERROR_29 29
+#define LEO_ERROR_GOOD 0 /*!< The transfer succeeded. */
+#define LEO_ERROR_4 4    /*!< Error 4 of the 64DD. */
+#define LEO_ERROR_22 22  /*!< Error 22 of the 64DD. */
+#define LEO_ERROR_23 23  /*!< Error 23 of the 64DD. */
+#define LEO_ERROR_24 24  /*!< Error 24 of the 64DD. */
+#define LEO_ERROR_29 29  /*!< Error 29 of the 64DD. */
 
 /** @ghidraAddress USA: 0x8026dbe0 */
 s32 __osLeoInterrupt(void);

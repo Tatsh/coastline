@@ -9,72 +9,74 @@
 #include <PR/os.h>
 #include <PR/ultratypes.h>
 
+/** The ports of the console. */
 #define MAXCONTROLLERS 4
 
 /* Bits of OSContStatus.type. */
-#define CONT_ABSOLUTE 0x0001
-#define CONT_RELATIVE 0x0002
-#define CONT_JOYPORT 0x0004
+#define CONT_ABSOLUTE 0x0001 /*!< The device reports absolute positions, as a controller does. */
+#define CONT_RELATIVE 0x0002 /*!< The device reports relative movement, as a mouse does. */
+#define CONT_JOYPORT 0x0004  /*!< The device has a port for a Pak. */
 
 /* Bits of OSContStatus.status. */
-#define CONT_CARD_ON 0x01
-#define CONT_CARD_PULL 0x02
-#define CONT_ADDR_CRC_ER 0x04
+#define CONT_CARD_ON 0x01     /*!< A Pak is plugged in. */
+#define CONT_CARD_PULL 0x02   /*!< A Pak was pulled out since the last check. */
+#define CONT_ADDR_CRC_ER 0x04 /*!< The CRC of the last address was wrong. */
 
 /* Results of the Controller Pak routines. */
-#define PFS_ERR_NOPACK 1
-#define PFS_ERR_NEW_PACK 2
-#define PFS_ERR_INCONSISTENT 3
-#define PFS_ERR_CONTRFAIL 4
-#define PFS_ERR_INVALID 5
-#define PFS_ERR_BAD_DATA 6
-#define PFS_DATA_FULL 7
-#define PFS_DIR_FULL 8
-#define PFS_ERR_EXIST 9
-#define PFS_ERR_ID_FATAL 10
-#define PFS_ERR_DEVICE 11
+#define PFS_ERR_NOPACK 1       /*!< No Pak is plugged in. */
+#define PFS_ERR_NEW_PACK 2     /*!< The Pak was changed. */
+#define PFS_ERR_INCONSISTENT 3 /*!< The file system needs repair. */
+#define PFS_ERR_CONTRFAIL 4    /*!< The transfer with the controller failed. */
+#define PFS_ERR_INVALID 5      /*!< An argument is invalid or the file does not exist. */
+#define PFS_ERR_BAD_DATA 6     /*!< The data read is wrong. */
+#define PFS_DATA_FULL 7        /*!< No pages are free. */
+#define PFS_DIR_FULL 8         /*!< No entries of the directory are free. */
+#define PFS_ERR_EXIST 9        /*!< The file already exists. */
+#define PFS_ERR_ID_FATAL 10    /*!< The identity area cannot be repaired. */
+#define PFS_ERR_DEVICE 11      /*!< The Pak is not a Controller Pak. */
 
 /* Directions of osPfsReadWriteFile(). */
-#define PFS_READ 0
-#define PFS_WRITE 1
+#define PFS_READ 0  /*!< Read from the file. */
+#define PFS_WRITE 1 /*!< Write to the file. */
 
 /* Bits of OSContPad.button. */
-#define CONT_A 0x8000
-#define CONT_B 0x4000
-#define CONT_G 0x2000
-#define CONT_START 0x1000
-#define CONT_UP 0x0800
-#define CONT_DOWN 0x0400
-#define CONT_LEFT 0x0200
-#define CONT_RIGHT 0x0100
-#define CONT_L 0x0020
-#define CONT_R 0x0010
-#define CONT_E 0x0008
-#define CONT_D 0x0004
-#define CONT_C 0x0002
-#define CONT_F 0x0001
+#define CONT_A 0x8000     /*!< The A button. */
+#define CONT_B 0x4000     /*!< The B button. */
+#define CONT_G 0x2000     /*!< The Z trigger. */
+#define CONT_START 0x1000 /*!< The Start button. */
+#define CONT_UP 0x0800    /*!< Up on the directional pad. */
+#define CONT_DOWN 0x0400  /*!< Down on the directional pad. */
+#define CONT_LEFT 0x0200  /*!< Left on the directional pad. */
+#define CONT_RIGHT 0x0100 /*!< Right on the directional pad. */
+#define CONT_L 0x0020     /*!< The L trigger. */
+#define CONT_R 0x0010     /*!< The R trigger. */
+#define CONT_E 0x0008     /*!< The up C button. */
+#define CONT_D 0x0004     /*!< The down C button. */
+#define CONT_C 0x0002     /*!< The left C button. */
+#define CONT_F 0x0001     /*!< The right C button. */
 
-#define A_BUTTON CONT_A
-#define B_BUTTON CONT_B
-#define L_TRIG CONT_L
-#define R_TRIG CONT_R
-#define Z_TRIG CONT_G
-#define START_BUTTON CONT_START
-#define U_JPAD CONT_UP
-#define L_JPAD CONT_LEFT
-#define R_JPAD CONT_RIGHT
-#define D_JPAD CONT_DOWN
-#define U_CBUTTONS CONT_E
-#define L_CBUTTONS CONT_C
-#define R_CBUTTONS CONT_F
-#define D_CBUTTONS CONT_D
+/* The names of the buttons the SDK documents. */
+#define A_BUTTON CONT_A         /*!< The A button. */
+#define B_BUTTON CONT_B         /*!< The B button. */
+#define L_TRIG CONT_L           /*!< The L trigger. */
+#define R_TRIG CONT_R           /*!< The R trigger. */
+#define Z_TRIG CONT_G           /*!< The Z trigger. */
+#define START_BUTTON CONT_START /*!< The Start button. */
+#define U_JPAD CONT_UP          /*!< Up on the directional pad. */
+#define L_JPAD CONT_LEFT        /*!< Left on the directional pad. */
+#define R_JPAD CONT_RIGHT       /*!< Right on the directional pad. */
+#define D_JPAD CONT_DOWN        /*!< Down on the directional pad. */
+#define U_CBUTTONS CONT_E       /*!< The up C button. */
+#define L_CBUTTONS CONT_C       /*!< The left C button. */
+#define R_CBUTTONS CONT_F       /*!< The right C button. */
+#define D_CBUTTONS CONT_D       /*!< The down C button. */
 
-/* OSContPad.errno of a controller that does not answer. */
+/** OSContPad.errno of a controller that does not respond. */
 #define CONT_NO_RESPONSE_ERROR 8
 
 /* Bits of OSPfs.status. */
-#define PFS_INITIALIZED 0x01
-#define PFS_CORRUPTED 0x02
+#define PFS_INITIALIZED 0x01 /*!< The file system was initialised. */
+#define PFS_CORRUPTED 0x02   /*!< The file system is corrupted. */
 
 /** What osContInit() learns of a controller. */
 typedef struct {

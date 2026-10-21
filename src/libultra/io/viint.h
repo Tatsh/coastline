@@ -9,26 +9,26 @@
 #include <ultra64.h>
 
 /* What a context changes when the manager swaps it in. */
-#define VI_STATE_MODE_UPDATED 0x01
-#define VI_STATE_XSCALE_UPDATED 0x02
-#define VI_STATE_YSCALE_UPDATED 0x04
-#define VI_STATE_CTRL_UPDATED 0x08
-#define VI_STATE_BUFFER_UPDATED 0x10
-#define VI_STATE_BLACK 0x20
-#define VI_STATE_REPEATLINE 0x40
-#define VI_STATE_FADE 0x80
+#define VI_STATE_MODE_UPDATED 0x01   /*!< The video mode changed. */
+#define VI_STATE_XSCALE_UPDATED 0x02 /*!< The horizontal scale changed. */
+#define VI_STATE_YSCALE_UPDATED 0x04 /*!< The vertical scale changed. */
+#define VI_STATE_CTRL_UPDATED 0x08   /*!< The control register changed. */
+#define VI_STATE_BUFFER_UPDATED 0x10 /*!< The frame buffer changed. */
+#define VI_STATE_BLACK 0x20          /*!< The screen is black. */
+#define VI_STATE_REPEATLINE 0x40     /*!< Every line repeats the first. */
+#define VI_STATE_FADE 0x80           /*!< The screen fades. */
 
 /* Bits of the control register. */
-#define VI_CTRL_GAMMA_DITHER_ON 0x00004
-#define VI_CTRL_GAMMA_ON 0x00008
-#define VI_CTRL_DIVOT_ON 0x00010
-#define VI_CTRL_ANTIALIAS_MASK 0x00300
-#define VI_CTRL_DITHER_FILTER_ON 0x10000
+#define VI_CTRL_GAMMA_DITHER_ON 0x00004  /*!< Dither before the gamma correction. */
+#define VI_CTRL_GAMMA_ON 0x00008         /*!< Apply the gamma correction. */
+#define VI_CTRL_DIVOT_ON 0x00010         /*!< Remove the divots the anti-aliasing leaves. */
+#define VI_CTRL_ANTIALIAS_MASK 0x00300   /*!< The bits of the anti-aliasing mode. */
+#define VI_CTRL_DITHER_FILTER_ON 0x10000 /*!< Filter the dithering of 16-bit frame buffers. */
 
 /* The scale registers store a 2.10 fixed-point factor in their low 12 bits. */
-#define VI_SCALE_MASK 0xFFF
-#define VI_2_10_FPART_MASK 0x3FF
-#define VI_SUBPIXEL_SH 0x10
+#define VI_SCALE_MASK 0xFFF      /*!< The bits of the scale factor. */
+#define VI_2_10_FPART_MASK 0x3FF /*!< The bits of the fraction of the scale factor. */
+#define VI_SUBPIXEL_SH 0x10      /*!< The shift of the subpixel offset in a scale register. */
 
 typedef struct {
     f32 factor; /*!< The factor the nominal scale of the mode is multiplied by. */

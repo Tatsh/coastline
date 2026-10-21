@@ -11,11 +11,11 @@
 #include <ultra64.h>
 
 /* Conversion flags. */
-#define FLAGS_SPACE 0x01
-#define FLAGS_PLUS 0x02
-#define FLAGS_MINUS 0x04
-#define FLAGS_HASH 0x08
-#define FLAGS_ZERO 0x10
+#define FLAGS_SPACE 0x01 /*!< The space flag: a space before a positive number. */
+#define FLAGS_PLUS 0x02  /*!< The plus flag: a sign before every number. */
+#define FLAGS_MINUS 0x04 /*!< The minus flag: the field is aligned left. */
+#define FLAGS_HASH 0x08  /*!< The hash flag: the alternative form of the conversion. */
+#define FLAGS_ZERO 0x10  /*!< The zero flag: the field is padded with zeros. */
 
 /* The indices of the halfwords of a double in memory, most significant first. */
 #if defined(__BYTE_ORDER__) && __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__

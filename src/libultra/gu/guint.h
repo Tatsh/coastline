@@ -9,13 +9,14 @@
 #include <ultra64.h>
 
 #ifndef MIN
+/** The lesser of a and b, each evaluated twice. */
 #define MIN(a, b) ((a) < (b) ? (a) : (b))
 #endif
 
-/* Clamp a direction component to a signed byte, where 1.0 is 128. */
+/** Clamp a direction component to a signed byte, where 1.0 is 128. */
 #define FTOFRAC8(x) ((int)MIN(((x) * (128.0)), 127.0) & 0xff)
 
-/* Round half away from zero. */
+/** Round d half away from zero to an int. */
 #define ROUND(d) (int)(((d) >= 0.0) ? ((d) + 0.5) : ((d) - 0.5))
 
 /**
