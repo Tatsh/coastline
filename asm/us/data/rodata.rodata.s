@@ -7138,11 +7138,11 @@ dlabel g_flMtxInvertDetEpsilon
     /* AA650 802A9650 26901D7D */ .float 1.000000004e-15
 enddlabel g_flMtxInvertDetEpsilon
 
-nonmatching g_dwTimerFreq
+nonmatching g_flPi
 
-dlabel g_dwTimerFreq
+dlabel g_flPi
     /* AA654 802A9654 40490FDB */ .float 3.141592741
-enddlabel g_dwTimerFreq
+enddlabel g_flPi
 
 nonmatching g_flHalfPi
 

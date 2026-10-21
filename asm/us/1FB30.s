@@ -101,7 +101,7 @@ glabel FindNearestTrackSegment
     /* 1FC6C 8021EC6C 000E70C0 */  sll        $t6, $t6, 3
     /* 1FC70 8021EC70 018E1021 */  addu       $v0, $t4, $t6
     /* 1FC74 8021EC74 24440040 */  addiu      $a0, $v0, 0x40
-    /* 1FC78 8021EC78 0C089787 */  jal        PointSideOfLine2D
+    /* 1FC78 8021EC78 0C089787 */  jal        SegmentCrossesLine2D
     /* 1FC7C 8021EC7C 24450058 */   addiu     $a1, $v0, 0x58
     /* 1FC80 8021EC80 14400021 */  bnez       $v0, .L8021ED08
     /* 1FC84 8021EC84 02003025 */   or        $a2, $s0, $zero
@@ -113,7 +113,7 @@ glabel FindNearestTrackSegment
     /* 1FC9C 8021EC9C 0019C8C0 */  sll        $t9, $t9, 3
     /* 1FCA0 8021ECA0 01F91021 */  addu       $v0, $t7, $t9
     /* 1FCA4 8021ECA4 24440068 */  addiu      $a0, $v0, 0x68
-    /* 1FCA8 8021ECA8 0C089787 */  jal        PointSideOfLine2D
+    /* 1FCA8 8021ECA8 0C089787 */  jal        SegmentCrossesLine2D
     /* 1FCAC 8021ECAC 24450080 */   addiu     $a1, $v0, 0x80
     /* 1FCB0 8021ECB0 14400015 */  bnez       $v0, .L8021ED08
     /* 1FCB4 8021ECB4 00000000 */   nop

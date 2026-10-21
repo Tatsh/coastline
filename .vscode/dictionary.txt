@@ -41,6 +41,7 @@ contreaddata
 contrfail
 controllerscreen
 cosf
+counterclockwise
 coveragerc
 createmesgqueue
 createthread
@@ -376,6 +377,7 @@ unistd
 urllib
 urlopen
 vars
+vecmath
 vendored
 venv
 viblack
