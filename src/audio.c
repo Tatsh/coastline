@@ -193,33 +193,35 @@ void LoadMusicModule(u8 *module, u8 *work) {
 void BuildFrequencyScaleTable(void) {
     s32 octave, note;
     f32 scale;
+    f64 frequency;
 
     for (octave = 0; octave < MUSIC_OCTAVES; octave++) {
         scale = 1 << octave;
         for (note = 0; note < MUSIC_NOTES; note++) {
+            frequency = (f64)(g_afNoteFrequencies[note] * scale) * NOTE_FREQUENCY_SCALE;
             g_aFreqScaleTable[octave][note] =
-                (u64)((f64)(g_afNoteFrequencies[note] * scale) * NOTE_FREQUENCY_SCALE /
-                      NOTE_BASE_FREQUENCY * NOTE_STEP_SCALE * FIXED_32_32);
+                (u64)(frequency / NOTE_BASE_FREQUENCY * NOTE_STEP_SCALE * FIXED_32_32);
         }
     }
 }
 
 void CheckMusicLoopPoints(void) {
-    MusicChannel *state;
-    MixerChannel *mixer = g_aMixerChannels;
+    s32 i;
+    s8 *end;
     XmSample *sample;
+    s32 instrument;
 
-    for (state = g_MusicChannelStates; state < &g_MusicChannelStates[g_nAudioChannelCount];
-         state++, mixer++) {
-        if (state->instrument == 0) {
-            continue;
-        }
-        sample = g_apInstrumentData[state->instrument - 1];
-        if ((s8 *)(sample + 1) + sample->length < mixer->sample) {
-            if (sample->type == XM_SAMPLE_NO_LOOP) {
-                mixer->step = 0;
-            } else {
-                mixer->sample -= sample->loopLength;
+    for (i = 0; i < g_nAudioChannelCount; i++) {
+        instrument = g_MusicChannelStates[i].instrument;
+        if (instrument != 0) {
+            sample = g_apInstrumentData[instrument - 1];
+            end = (s8 *)sample + sample->length + sizeof(XmSample);
+            if (end < g_aMixerChannels[i].sample) {
+                if (sample->type == XM_SAMPLE_NO_LOOP) {
+                    g_aMixerChannels[i].step = 0;
+                } else {
+                    g_aMixerChannels[i].sample -= sample->loopLength;
+                }
             }
         }
     }
@@ -354,16 +356,15 @@ u8 *ParseMusicPatternRow(u8 *row) {
 }
 
 void ResetMusicChannels(void) {
-    MusicChannel *state;
+    s32 i;
 
     g_MusicPlayer.tick = 1;
     g_MusicPlayer.rowsLeft = 0;
     g_MusicPlayer.order = 0xFF;
-    for (state = g_MusicChannelStates; state < &g_MusicChannelStates[g_nAudioChannelCount];
-         state++) {
-        state->instrument = 0;
-        state->volume = NOTE_VOLUME;
-        state->portamentoTarget = 0;
+    for (i = 0; i < g_nAudioChannelCount; i++) {
+        g_MusicChannelStates[i].instrument = 0;
+        g_MusicChannelStates[i].volume = NOTE_VOLUME;
+        g_MusicChannelStates[i].portamentoTarget = 0;
     }
 }
 
@@ -449,8 +450,8 @@ void InitAudioSystem(void *module, void *work) {
     osSyncPrintf("Real Frequency is = %d\n", frequency);
     osCreateMesgQueue(&g_AudioMsgQueue, g_aAudioMsgBuf, 2);
     osSetTimer(&g_AudioTimer,
-               osClockRate * AUDIO_TIMER_USEC / 1000000,
-               osClockRate * AUDIO_TIMER_USEC / 1000000,
+               AUDIO_TIMER_USEC * osClockRate / 1000000,
+               AUDIO_TIMER_USEC * osClockRate / 1000000,
                &g_AudioMsgQueue,
                NULL);
     for (i = 0; i < g_nAudioChannelCount; i++) {
@@ -557,18 +558,16 @@ void SetSoundChannelVolume(s16 channel, u32 levels) {
 }
 
 void CheckSoundEffectLoopPoints(void) {
-    MixerChannel *channel;
-    SoundEffectSample *sample;
     s32 i;
 
     for (i = 0; i < SOUND_EFFECT_CHANNELS; i++) {
-        channel = &g_aSoundEffectChannels[i];
-        sample = &g_aSoundEffectSamples[i];
-        if (channel->step != 0 && channel->sample >= sample->start + sample->length) {
-            if (sample->loopLength != 0) {
-                channel->sample -= sample->loopLength;
+        if (g_aSoundEffectChannels[i].step != 0 &&
+            g_aSoundEffectChannels[i].sample >=
+                g_aSoundEffectSamples[i].start + g_aSoundEffectSamples[i].length) {
+            if (g_aSoundEffectSamples[i].loopLength != 0) {
+                g_aSoundEffectChannels[i].sample -= g_aSoundEffectSamples[i].loopLength;
             } else {
-                channel->step = 0;
+                g_aSoundEffectChannels[i].step = 0;
             }
         }
     }

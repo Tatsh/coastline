@@ -124,10 +124,9 @@ void UpdateRaceAnimations(void) {
 }
 
 void RenderStartLights(void) {
-    TrackSection *start;
     f32 m[4][4];
 
-    if (!g_bStartLightsVisible || (start = g_LoadedTrack.rootSection) == NULL) {
+    if (!g_bStartLightsVisible || g_LoadedTrack.rootSection == NULL) {
         return;
     }
     /* Face the lights across the track from the right edge of its first point. */
@@ -138,13 +137,14 @@ void RenderStartLights(void) {
     m[2][1] = 0.0f;
     m[3][3] = 1.0f;
     m[2][2] = 1.0f;
-    Vec3fDirection((Vec3f *)m[1], &start->points[0].position, &start->points[0].right);
+    Vec3fDirection((Vec3f *)m[1],
+                   &g_LoadedTrack.rootSection->points[0].position,
+                   &g_LoadedTrack.rootSection->points[0].right);
     Vec3fCross((Vec3f *)m[0], (Vec3f *)m[1], (Vec3f *)m[2]);
     Vec3fCross((Vec3f *)m[1], (Vec3f *)m[2], (Vec3f *)m[0]);
-    start = g_LoadedTrack.rootSection;
-    m[3][0] = start->points[0].position.x;
-    m[3][1] = start->points[0].position.y;
-    m[3][2] = start->points[0].position.z + 2.0f + g_fStartLightsDrop;
+    m[3][0] = g_LoadedTrack.rootSection->points[0].position.x;
+    m[3][1] = g_LoadedTrack.rootSection->points[0].position.y;
+    m[3][2] = g_LoadedTrack.rootSection->points[0].position.z + 2.0f + g_fStartLightsDrop;
     Vec3fMulAdd((Vec3f *)m[3], (Vec3f *)m[3], (Vec3f *)m[0], -0.3f);
     Vec3fMulAdd((Vec3f *)m[3], (Vec3f *)m[3], (Vec3f *)m[1], -0.6f);
     gSPMatrix(gDisplayListPtr++, &g_mtxIdentity, G_MTX_MODELVIEW | G_MTX_LOAD | G_MTX_PUSH);
@@ -178,28 +178,31 @@ void StartEndingCredits(void) {
 
 void CalculateScrollPositions(void) {
     CreditLine *line;
-    s32 y, above;
+    s32 i;
+    s32 y, above, size;
 
     y = 240;
-    for (line = g_aCreditScrollLines; line->text != NULL; line++) {
+    for (i = 0; g_aCreditScrollLines[i].text != NULL; i++) {
+        line = &g_aCreditScrollLines[i];
+        size = line->size;
         /* A line sits on its baseline, three quarters of its size down. */
-        above = line->size * 3 / 4;
+        above = size * 3 / 4;
         y += above;
         line->y = y;
-        y = y + line->size - above + line->gap;
+        y = y + size - above + line->gap;
     }
 }
 
 void ScrollTextUp(void) {
-    CreditLine *line;
+    s32 i;
 
-    for (line = g_aCreditScrollLines; line->text != NULL; line++) {
-        line->y--;
+    for (i = 0; g_aCreditScrollLines[i].text != NULL; i++) {
+        g_aCreditScrollLines[i].y--;
     }
 }
 
 void DrawScrollingText(void) {
-    CreditLine *line;
+    s32 i;
 
     SetTextCustomColors(0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF);
     SetTextStyleNormal();
@@ -208,10 +211,10 @@ void DrawScrollingText(void) {
                    g_aViewportRects[0].y,
                    g_aViewportRects[0].width,
                    g_aViewportRects[0].height);
-    for (line = g_aCreditScrollLines; line->text != NULL; line++) {
-        if (line->y >= -0x4F && line->y < 0x118) {
-            SetTextSize(line->size);
-            DrawText(line->text, SCREEN_CENTER_X, line->y);
+    for (i = 0; g_aCreditScrollLines[i].text != NULL; i++) {
+        if (g_aCreditScrollLines[i].y >= -0x4F && g_aCreditScrollLines[i].y < 0x118) {
+            SetTextSize(g_aCreditScrollLines[i].size);
+            DrawText(g_aCreditScrollLines[i].text, SCREEN_CENTER_X, g_aCreditScrollLines[i].y);
         }
     }
 }
@@ -1592,18 +1595,16 @@ void ProcessRacingScreen(void) {
 }
 
 void SaveRaceResultsToSlots(void) {
-    Vehicle *vehicle;
     s32 i, j;
 
     for (i = 0; i < (s32)g_dwNumLocalPlayers; i++) {
-        vehicle = &g_aVehicles[i];
-        g_adwSavedResultPositions[i] = vehicle->racePosition;
-        g_afSavedResultTimes[i] = vehicle->totalTime;
-        g_afSavedResultBestLapTimes[i] = vehicle->bestLapTime;
-        g_adwSavedResultBestLaps[i] = vehicle->bestLap;
-        g_adwSavedResultLaps[i] = vehicle->lap;
+        g_adwSavedResultPositions[i] = g_aVehicles[i].racePosition;
+        g_afSavedResultTimes[i] = g_aVehicles[i].totalTime;
+        g_afSavedResultBestLapTimes[i] = g_aVehicles[i].bestLapTime;
+        g_adwSavedResultBestLaps[i] = g_aVehicles[i].bestLap;
+        g_adwSavedResultLaps[i] = g_aVehicles[i].lap;
         for (j = 0; j < g_dwTotalLaps; j++) {
-            g_aafSavedResultLapTimes[i][j] = vehicle->lapTimes[j];
+            g_aafSavedResultLapTimes[i][j] = g_aVehicles[i].lapTimes[j];
         }
     }
     g_dwSavedResultsValid = TRUE;
@@ -1611,7 +1612,6 @@ void SaveRaceResultsToSlots(void) {
 
 void RestoreRaceResultsFromSlots(void) {
     PlayerProfile *profile;
-    Vehicle *vehicle;
     s32 i, j;
 
     if (g_dwGameMode == GAME_MODE_CHAMPIONSHIP && g_dwSavedResultsValid) {
@@ -1629,14 +1629,13 @@ void RestoreRaceResultsFromSlots(void) {
     }
     /* The best lap time is kept but not given back. */
     for (i = 0; i < (s32)g_dwNumLocalPlayers; i++) {
-        vehicle = &g_aVehicles[i];
         for (j = 0; j < g_dwTotalLaps; j++) {
-            vehicle->lapTimes[j] = g_aafSavedResultLapTimes[i][j];
+            g_aVehicles[i].lapTimes[j] = g_aafSavedResultLapTimes[i][j];
         }
-        vehicle->lap = g_adwSavedResultLaps[i];
-        vehicle->bestLap = g_adwSavedResultBestLaps[i];
-        vehicle->totalTime = g_afSavedResultTimes[i];
-        vehicle->racePosition = g_adwSavedResultPositions[i];
+        g_aVehicles[i].lap = g_adwSavedResultLaps[i];
+        g_aVehicles[i].bestLap = g_adwSavedResultBestLaps[i];
+        g_aVehicles[i].totalTime = g_afSavedResultTimes[i];
+        g_aVehicles[i].racePosition = g_adwSavedResultPositions[i];
     }
 }
 
@@ -1655,13 +1654,13 @@ void SetTrackFromSeason(void) {
 }
 
 /* Add a line of the bonus of a finished championship, after a blank line when others precede it. */
-static s32 AddBonusLine(s32 count, const char *line) {
-    if (count) {
-        g_apszSeasonResultMsgLines[count++] = "";
+#define ADD_BONUS_LINE(line)                                                                       \
+    {                                                                                              \
+        if (count) {                                                                               \
+            g_apszSeasonResultMsgLines[count++] = "";                                              \
+        }                                                                                          \
+        g_apszSeasonResultMsgLines[count++] = line;                                                \
     }
-    g_apszSeasonResultMsgLines[count++] = line;
-    return count;
-}
 
 void ProcessSeasonResults(void) {
     s32 count, i, race, base;
@@ -1689,7 +1688,7 @@ void ProcessSeasonResults(void) {
                         if (g_aVehicles[i].profile->championshipFlags & 1) {
                             if (!(g_aVehicles[i].profile->unlockedTracks &
                                   (1 << TRACK_MIRROR_STRIP_MINE))) {
-                                count = AddBonusLine(count, "You Won all races this season!");
+                                ADD_BONUS_LINE("You Won all races this season!");
                                 g_apszSeasonResultMsgLines[count++] =
                                     "Bonus: Mirror Mine Track Added!";
                                 g_aVehicles[i].profile->unlockedTracks |=
@@ -1697,47 +1696,39 @@ void ProcessSeasonResults(void) {
                             }
                         } else if (!(g_aVehicles[i].profile->unlockedTracks &
                                      (1 << TRACK_STRIP_MINE))) {
-                            count = AddBonusLine(count, "You Won all races this season!");
+                            ADD_BONUS_LINE("You Won all races this season!");
                             g_apszSeasonResultMsgLines[count++] = "Bonus: Mine Track Added!";
                             g_aVehicles[i].profile->unlockedTracks |= 1 << TRACK_STRIP_MINE;
                         }
                     cars:
                         /* Each championship of the years unlocks a car. */
-                        switch (g_aVehicles[i].profile->championshipFlags) {
-                        case 0:
-                            count = AddBonusLine(count, "Bonus: Milk Truck Added!");
+                        if (g_aVehicles[i].profile->championshipFlags == 0) {
+                            ADD_BONUS_LINE("Bonus: Milk Truck Added!");
                             g_aVehicles[i].profile->unlocks |= 0x400;
-                            break;
-                        case 1:
-                            count = AddBonusLine(count, "Bonus: Helmet Car Added!");
+                        } else if (g_aVehicles[i].profile->championshipFlags == 1) {
+                            ADD_BONUS_LINE("Bonus: Helmet Car Added!");
                             g_aVehicles[i].profile->unlocks |= 0x200;
-                            break;
-                        case 2:
-                            count = AddBonusLine(count, "Bonus: Cupra Car Added!");
+                        } else if (g_aVehicles[i].profile->championshipFlags == 2) {
+                            ADD_BONUS_LINE("Bonus: Cupra Car Added!");
                             g_aVehicles[i].profile->unlocks |= 0x800;
-                            break;
-                        case 3:
-                            count = AddBonusLine(count, "Bonus: Beach Ball Car Added!");
+                        } else if (g_aVehicles[i].profile->championshipFlags == 3) {
+                            ADD_BONUS_LINE("Bonus: Beach Ball Car Added!");
                             g_aVehicles[i].profile->unlocks |= 0x1000;
-                            break;
-                        case 4:
-                            count = AddBonusLine(count, "Bonus: Mirrored Cars Added!");
+                        } else if (g_aVehicles[i].profile->championshipFlags == 4) {
+                            ADD_BONUS_LINE("Bonus: Mirrored Cars Added!");
                             g_aVehicles[i].profile->unlocks |= 0x8000;
-                            break;
                         }
                         g_aVehicles[i].profile->season = 0;
                         g_aVehicles[i].profile->championshipFlags++;
                     } else {
-                        g_apszSeasonResultMsgLines[count] = "SEASON COMPLETED!";
-                        g_apszSeasonResultMsgLines[count + 1] = "";
-                        g_apszSeasonResultMsgLines[count + 2] = "PROGRESS TO THE NEXT SEASON";
-                        count += 3;
+                        g_apszSeasonResultMsgLines[count++] = "SEASON COMPLETED!";
+                        g_apszSeasonResultMsgLines[count++] = "";
+                        g_apszSeasonResultMsgLines[count++] = "PROGRESS TO THE NEXT SEASON";
                     }
                 } else {
-                    g_apszSeasonResultMsgLines[count] = "Sorry, you don't have enough points to";
-                    g_apszSeasonResultMsgLines[count + 1] =
+                    g_apszSeasonResultMsgLines[count++] = "Sorry, you don't have enough points to";
+                    g_apszSeasonResultMsgLines[count++] =
                         "pass this season.  You'll have to try again.";
-                    count += 2;
                 }
                 g_aVehicles[i].profile->seasonPoints[g_aVehicles[i].profile->season] = 0;
             }

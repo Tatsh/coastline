@@ -77,9 +77,9 @@ f32 ComputeDopplerFactor(Vec3f *source,
                          Vec3f *listener,
                          Vec3f *previousListener) {
     Vec3f direction;
-    Vec3f listenerStep;
-    Vec3f sourceStep;
     f32 length;
+    Vec3f sourceStep;
+    Vec3f listenerStep;
     f32 approach;
     f32 listenerSpeed;
 
@@ -322,6 +322,7 @@ void UpdateAirplaneSound(s32 instance, Vec3f *position, CameraFrame *camera) {
 
 void UpdateWaterfallSound(s32 instance, Vec3f *position, CameraFrame *camera) {
     s32 sound = -1;
+    f32 frequency = TRACK_SOUND_FREQUENCY;
     s32 volume = DEFAULT_SOUND_VOLUME;
 
     if (g_dwSelectedTrackId == TRACK_JUNGLE || g_dwSelectedTrackId == TRACK_MIRROR_JUNGLE) {
@@ -329,7 +330,7 @@ void UpdateWaterfallSound(s32 instance, Vec3f *position, CameraFrame *camera) {
         volume = WATERFALL_VOLUME;
     }
     if (sound != -1) {
-        UpdateClosestSoundSource(instance, sound, volume, TRACK_SOUND_FREQUENCY, position, camera);
+        UpdateClosestSoundSource(instance, sound, volume, frequency, position, camera);
     }
 }
 
