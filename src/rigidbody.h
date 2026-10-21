@@ -53,8 +53,11 @@ enum {
 };
 
 /** A rigid body. Its fields join this structure as they are reconstructed. */
-typedef struct {
-    u8 unreconstructed0[0x18];
+typedef struct RigidBody {
+    u32 unreconstructed0;
+    /** The bodies of the wheels of the body of a vehicle. */
+    struct RigidBody *wheels[4];
+    u32 unreconstructed14;
     RigidBodyForce *forces;
     s32 kind;
     /** The sides of the box. */
@@ -62,12 +65,14 @@ typedef struct {
     f32 mass;
     f32 inertia[3][3];
     f32 inverseInertia[3][3];
-    u8 unreconstructed78[0xBC - 0x78];
+    RigidBodyState state;
+    /** The matrix of the orientation and position of the state. */
     f32 orientation[4][4];
     /** The sums of the forces and torques of a step. */
     Vec3f force;
     Vec3f torque;
-    u8 unreconstructed114[0x19C - 0x114];
+    /** The states of the steps of the integration. */
+    RigidBodyState stepStates[2];
     s32 resetWord19C;
     u8 unreconstructed1A0[0x1B4 - 0x1A0];
     s32 resetWord1B4;
@@ -75,14 +80,23 @@ typedef struct {
     f32 friction;
     f32 resetFloat1C4;
     f32 resetFloat1C8;
-    f32 resetFloat1CC;
-    f32 resetFloat1D0;
+    /** The drive the throttle gives a wheel. */
+    f32 drive;
+    /** The braking of a wheel. */
+    f32 brake;
     f32 resetFloat1D4;
     f32 resetFloat1D8;
 } RigidBody;
 
 /** An empty hook the inertia setup calls. @ghidraAddress USA: 0x80258070 */
 void StubPhysics1(void *data);
+
+/**
+ * The unit quaternion of the rotation of a matrix, from the largest of its diagonal terms.
+ *
+ * @ghidraAddress USA: 0x8021ff90
+ */
+void MatrixToQuaternion(f32 m[4][4], Quaternion *q);
 
 /** An empty hook QuaternionToMatrix() calls. @ghidraAddress USA: 0x80258078 */
 void StubPhysics2(void *data);

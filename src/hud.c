@@ -85,7 +85,7 @@ void RenderDashboardGauges(void) {
     x = HUD_RIGHT - face->width;
     y = rect->y + rect->height - face->height - HUD_BOTTOM_MARGIN;
     gear = 0;
-    if (vehicle->forwardSpeed >= 0.0f) {
+    if (vehicle->throttle >= 0.0f) {
         gear = vehicle->gear + 1;
     }
 

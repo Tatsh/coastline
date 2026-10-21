@@ -31186,17 +31186,17 @@ dlabel g_pActiveCamera
     /* 8BAF4 8028AAF4 00000000 */ .word 0x00000000
 enddlabel g_pActiveCamera
 
-nonmatching g_dwHudRaycastSurface
+nonmatching g_fCameraRayGroundDistance
 
-dlabel g_dwHudRaycastSurface
+dlabel g_fCameraRayGroundDistance
     /* 8BAF8 8028AAF8 00000000 */ .word 0x00000000
-enddlabel g_dwHudRaycastSurface
+enddlabel g_fCameraRayGroundDistance
 
-nonmatching g_dwHudRaycastNormal
+nonmatching g_dwCameraRayGroundSurface
 
-dlabel g_dwHudRaycastNormal
+dlabel g_dwCameraRayGroundSurface
     /* 8BAFC 8028AAFC 00000000 */ .word 0x00000000
-enddlabel g_dwHudRaycastNormal
+enddlabel g_dwCameraRayGroundSurface
 
 nonmatching g_dwCameraRayHitCount
 
@@ -31204,11 +31204,11 @@ dlabel g_dwCameraRayHitCount
     /* 8BB00 8028AB00 00000000 */ .word 0x00000000
 enddlabel g_dwCameraRayHitCount
 
-nonmatching g_dwHudRaycastResult
+nonmatching g_dwCameraRayNearbyCount
 
-dlabel g_dwHudRaycastResult
+dlabel g_dwCameraRayNearbyCount
     /* 8BB04 8028AB04 00000000 */ .word 0x00000000
-enddlabel g_dwHudRaycastResult
+enddlabel g_dwCameraRayNearbyCount
 
 nonmatching g_pCurrentVehicleModelData
 
@@ -32088,41 +32088,33 @@ dlabel g_szWrongWay
 enddlabel g_szWrongWay
 .align 2
 
-nonmatching g_dwGarageZoom
+nonmatching g_vRayCeilingNormalInit
 
-dlabel g_dwGarageZoom
+dlabel g_vRayCeilingNormalInit
     /* 8C318 8028B318 00000000 */ .word 0x00000000
-enddlabel g_dwGarageZoom
+enddlabel g_vRayCeilingNormalInit
 
-nonmatching g_dwGarageRotateX
+nonmatching D_8028B31C
 
-dlabel g_dwGarageRotateX
+/* Automatically generated and unreferenced pad */
+dlabel D_8028B31C
     /* 8C31C 8028B31C 00000000 */ .word 0x00000000
-enddlabel g_dwGarageRotateX
-
-nonmatching g_dwGarageRotateY
-
-dlabel g_dwGarageRotateY
     /* 8C320 8028B320 3F800000 */ .word 0x3F800000
-enddlabel g_dwGarageRotateY
+enddlabel D_8028B31C
 
-nonmatching g_dwGarageRotateZ
+nonmatching g_vRayGroundNormalInit
 
-dlabel g_dwGarageRotateZ
+dlabel g_vRayGroundNormalInit
     /* 8C324 8028B324 00000000 */ .word 0x00000000
-enddlabel g_dwGarageRotateZ
+enddlabel g_vRayGroundNormalInit
 
-nonmatching g_dwGarageLightX
+nonmatching D_8028B328
 
-dlabel g_dwGarageLightX
+/* Automatically generated and unreferenced pad */
+dlabel D_8028B328
     /* 8C328 8028B328 00000000 */ .word 0x00000000
-enddlabel g_dwGarageLightX
-
-nonmatching g_dwGarageLightY
-
-dlabel g_dwGarageLightY
     /* 8C32C 8028B32C 3F800000 */ .word 0x3F800000
-enddlabel g_dwGarageLightY
+enddlabel D_8028B328
 
 nonmatching g_aCarPhysicsSpecs
 

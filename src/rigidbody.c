@@ -249,18 +249,19 @@ void ApplyAllForcesToBody(RigidBody *body) {
 }
 
 void InitRigidBody(RigidBody *body) {
-    f32 *words = (f32 *)body->unreconstructed0;
     f32 boxShare, xx, yy, zz;
     s32 i, j;
 
-    for (i = 0; i < 6; i++) {
-        words[i] = 0.0f;
+    body->unreconstructed0 = 0;
+    for (i = 0; i < 4; i++) {
+        body->wheels[i] = NULL;
     }
+    body->unreconstructed14 = 0;
     body->resetWord1B4 = 0;
     body->resetWord19C = 0;
     body->resetFloat1C4 = 0.0f;
-    body->resetFloat1CC = 0.0f;
-    body->resetFloat1D0 = 0.0f;
+    body->drive = 0.0f;
+    body->brake = 0.0f;
     body->friction = DEFAULT_FRICTION;
     body->resetFloat1C8 = 0.5f;
     for (i = 0; i < 3; i++) {

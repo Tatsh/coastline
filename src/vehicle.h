@@ -3,28 +3,21 @@
 
 /**
  * @file
- * The vehicles of a race.
+ * The vehicles of a race, the cars they are, and their place on the track.
  */
 
+#include <PR/gbi.h>
 #include <PR/ultratypes.h>
 
+#include "input.h"
 #include "render.h"
+#include "rigidbody.h"
+#include "system.h"
+#include "track.h"
 #include "vecmath.h"
 
 /** The number of vehicles a race can hold. */
 #define MAX_VEHICLES 4
-
-/**
- * The replay state of a vehicle. Its fields join this structure as the routines that use them are
- * reconstructed.
- */
-typedef struct {
-    u8 unreconstructed0[0x44];
-    /** The ghost recording the vehicle plays back, or NULL. */
-    u8 *ghostData;
-    u8 unreconstructed48[0x4];
-    u32 ghostSize;
-} ReplayState;
 
 /**
  * The saved settings and progress of a player. Its fields join this structure as the routines that
@@ -41,7 +34,10 @@ typedef struct {
     s32 controllerLayout;
 } PlayerProfile;
 
-/** The model of a car. Its fields join this structure as they are reconstructed. */
+/**
+ * The model of a car as it is loaded from the cartridge. Its fields join this structure as they are
+ * reconstructed.
+ */
 typedef struct {
     u8 unreconstructed0[0xB0];
     /** How far forward of the vehicle the cockpit camera sits. */
@@ -50,7 +46,8 @@ typedef struct {
     f32 mirrorForward;
     /** How far above the vehicle the cockpit and mirror cameras sit. */
     f32 cockpitUp;
-} VehicleSpec;
+    u8 unreconstructedBC[0xDF88 - 0xBC];
+} VehicleModel;
 
 /** How a car shows the revolutions of its engine. */
 enum {
@@ -65,7 +62,12 @@ enum {
 /** A car the players can choose. Its fields join this structure as they are reconstructed. */
 typedef struct {
     const char *name;
-    u8 unreconstructed4[0x20 - 0x4];
+    u8 unreconstructed4[0x14 - 0x4];
+    /** Where the model of the car is on the cartridge, and where the next asset starts. */
+    u32 modelRom;
+    u32 modelRomEnd;
+    /** The size of the model once decompressed. */
+    u32 modelSize;
     /**
      * Where the dashboard starts on the cartridge: the palettes of day and night, 256 colors
      * each, the face, and a cell for each gear, reverse first.
@@ -101,6 +103,44 @@ typedef struct {
 /** @ghidraAddress USA: 0x8028ae0c */
 extern CarModel g_aCarModels[CAR_MODELS];
 
+/** The gears of a gearbox, neutral first. */
+#define CAR_GEAR_RATIOS 7
+
+/** The physics of a car. */
+typedef struct {
+    f32 gearRatios[CAR_GEAR_RATIOS];
+    /** The torque of the engine as a cubic of its revolutions, the highest power first. */
+    f32 torqueCurve[4];
+    f32 finalDrive;
+    s32 gearCount;
+    /** Whether the throttle drives the front wheels alone. */
+    s32 frontWheelDrive;
+    /** Four values the physics of the vehicle keeps after its body. */
+    f32 tuning[4];
+    /** An index that picks an entry of tables kept for each track. */
+    s32 tableIndex;
+} CarPhysicsSpec;
+
+/** @ghidraAddress USA: 0x8028b330 */
+extern CarPhysicsSpec g_aCarPhysicsSpecs[CAR_MODELS];
+
+/**
+ * The models of the cars the vehicles drive, in slots. The link script places them.
+ *
+ * @ghidraAddress USA: 0x803c8000
+ */
+extern VehicleModel g_aVehicleModels[];
+
+/** The car whose model each slot holds. @ghidraAddress USA: 0x8031b238 */
+extern s32 g_adwVehicleModelSlotCars[];
+
+/** The decompression of the model of a car into a slot. */
+typedef struct {
+    DecompressJob job;
+    s32 slot;
+    s32 car;
+} VehicleModelLoad;
+
 /** The cameras of a vehicle. */
 enum {
     VEHICLE_CAMERA_COCKPIT,
@@ -115,39 +155,90 @@ enum {
     VEHICLE_CAMERAS,
 };
 
+/** A racer of a race. Its fields join this structure as they are reconstructed. */
+typedef struct {
+    u8 unreconstructed0[0x68];
+    /** The clock of the racer runs while the bits of RACER_CLOCK_STOPPED are clear. */
+    u32 status;
+} RacerSlot;
+
+/** The bits of the status of a racer that stop its clock. */
+#define RACER_CLOCK_STOPPED 0x3
+
+/** The wheels of a vehicle: the front two, then the rear two. */
+#define VEHICLE_WHEELS 4
+
 /**
  * A vehicle. The game prints its size, 0x2090 bytes, at start-up. Its fields join this structure as
  * the routines that use them are reconstructed.
  */
 typedef struct {
-    /** The axes and position of the vehicle. */
-    CameraFrame frame;
-    u8 unreconstructed44[0x1CC - 0x44];
-    /** A vector whose length slows the chase camera. */
-    Vec3f chaseLagSource;
-    u8 unreconstructed1D8[0x1E8 - 0x1D8];
-    Vec3f velocity;
-    u8 unreconstructed1F4[0xDF4 - 0x1F4];
+    union {
+        /** The axes and position of the vehicle. */
+        CameraFrame frame;
+        struct {
+            /** The frame as a matrix. */
+            f32 matrix[4][4];
+            f32 wheelMatrices[VEHICLE_WHEELS][4][4];
+        };
+    };
+    /** The index of the vehicle in g_aVehicles. The players have the first. */
+    s32 index;
+    u8 unreconstructed144[0x148 - 0x144];
+    RigidBody body;
+    /** The tuning of the physics spec of the car. */
+    f32 tuning[4];
+    u8 unreconstructed334[0x70C - 0x334];
+    /** Set while the physics measure the speed of the vehicle. */
+    s32 physicsActive;
+    u8 unreconstructed710[0xDF0 - 0x710];
+    /** The friction the engine and gearbox give the rear wheels. */
+    f32 rearWheelFriction;
     /** The revolutions of the engine a minute. */
     f32 engineRpm;
-    u8 unreconstructedDF8[0xE38 - 0xDF8];
-    /** The speed along the vehicle, below 0 in reverse. */
-    f32 forwardSpeed;
-    u8 unreconstructedE3C[0xE40 - 0xE3C];
+    /** The gearbox and engine, from the physics spec of the car. */
+    f32 gearRatios[CAR_GEAR_RATIOS];
+    f32 torqueCurve[4];
+    f32 finalDrive;
+    s32 gearCount;
+    s32 frontWheelDrive;
+    /** The gearbox the player chose. */
+    s32 transmission;
+    s32 tableIndex;
+    /** The throttle, below 0 in reverse. */
+    f32 throttle;
+    /** The brake, below 0 when braking. */
+    f32 brake;
     /** The forward gear, from 0. */
     s32 gear;
     u8 unreconstructedE44[0xE5C - 0xE44];
     /** The profile of the player who drives the vehicle. */
     PlayerProfile *profile;
-    u8 unreconstructedE60[0xF48 - 0xE60];
+    u8 unreconstructedE60[0xE6C - 0xE60];
+    /** The gearbox of the recording or the settings, which ResetVehicleState() takes. */
+    s32 chosenTransmission;
+    u8 unreconstructedE70[0xED0 - 0xE70];
+    RacerSlot *racer;
+    u8 unreconstructedED4[0xF48 - 0xED4];
     /** Set to 2 when the active camera changes. */
     s32 cameraChanged;
-    /** Whether the cameras hold rigidly to the frame of the vehicle. */
-    s32 cameraLocked;
-    u8 unreconstructedF50[0xF78 - 0xF50];
+    /**
+     * Whether the vehicle flies freely with the controls, without physics, and the cameras hold
+     * rigidly to its frame.
+     */
+    s32 flyMode;
+    /** The position of the last frame. */
+    Vec3f previousPosition;
+    /** The section of the route the vehicle is on, and its nearest point there. */
+    TrackSection *section;
+    s32 pointIndex;
+    /** The direction of the track at that point. */
+    Vec3f trackDirection;
+    u8 unreconstructedF70[0xF78 - 0xF70];
     /** The laps finished. */
     s32 lap;
-    u8 unreconstructedF7C[0xF80 - 0xF7C];
+    /** The laps the distance travelled has counted. */
+    s32 distanceLaps;
     /** The time of the lap being driven, in seconds. */
     f32 lapTime;
     u8 unreconstructedF84[0xF98 - 0xF84];
@@ -158,18 +249,36 @@ typedef struct {
     f32 totalTime;
     /** The time left, in seconds. */
     f32 timeLeft;
-    u8 unreconstructedFA8[0xFAC - 0xFA8];
+    /** The distance travelled along the route. */
+    f32 distance;
     /** The place in the race, from 0 for the leader. */
     s32 racePosition;
-    /** The message shown large in the middle of the view, or NULL. */
+    /** The message shown large in the middle of the view, or NULL, and the time it has left. */
     const char *message;
-    u8 unreconstructedFB4[0xFB8 - 0xFB4];
-    /** The message shown smaller when there is no large one, or NULL. */
+    f32 messageTime;
+    /** The message shown smaller when there is no large one, or NULL, and the time it has left. */
     const char *subMessage;
-    u8 unreconstructedFBC[0xFE4 - 0xFBC];
+    f32 subMessageTime;
+    u8 unreconstructedFC0[0xFD4 - 0xFC0];
+    /** The triangles of the track below the vehicle this frame. */
+    s32 groundHits;
+    /** The velocity SetVehicleVelocity() last gave. */
+    Vec3f placedVelocity;
     /** The speed the display shows, in kilometers an hour. */
     f32 speedKph;
-    u8 unreconstructedFE8[0x1DE8 - 0xFE8];
+    u8 unreconstructedFE8[0x1D78 - 0xFE8];
+    /** The position SetVehiclePosition() last gave. */
+    Vec3f placedPosition;
+    u8 unreconstructed1D84[0x1D88 - 0x1D84];
+    /** A matrix of the vehicle for the display lists, the identity until it is set. */
+    Mtx transformMtx;
+    u8 unreconstructed1DC8[0x1DD4 - 0x1DC8];
+    /** The controls: the steering, the pitch, the accelerator and the roll. */
+    f32 steering;
+    f32 pitchInput;
+    f32 accelerator;
+    f32 rollInput;
+    u8 unreconstructed1DE4[0x1DE8 - 0x1DE4];
     CameraFrame *activeCamera;
     /** The camera of the last frame. */
     CameraFrame *previousCamera;
@@ -189,17 +298,227 @@ typedef struct {
     u8 unreconstructed1FB0[0x1FB4 - 0x1FB0];
     /** Where the chase camera started. */
     Vec3f initialChasePosition;
-    u8 unreconstructed1FC0[0x205C - 0x1FC0];
+    /** What CastRayAgainstTrack() found below the vehicle. */
+    u16 groundInstances[RAY_INSTANCES];
+    s32 rayDone;
+    u16 nearbyInstances[RAY_INSTANCES];
+    s32 nearbyInstanceCount;
+    f32 groundDistance;
+    s32 groundSurface;
+    u8 unreconstructed2050[0x205C - 0x2050];
     /** The index of the car in g_aCarModels. */
     s32 carModel;
-    u8 unreconstructed2060[0x2074 - 0x2060];
-    ReplayState *replay;
-    VehicleSpec *spec;
+    /** The color of the paint of the car. */
+    u8 color[3];
+    u8 unreconstructed2063[0x206C - 0x2063];
+    /** The frames the vehicle has faced against the track. */
+    s32 wrongWayFrames;
+    /** The cell of the 32-unit grid of the track the vehicle is in. */
+    u8 gridX;
+    u8 gridY;
+    u8 unreconstructed2072[0x2074 - 0x2072];
+    PlayerInputState *input;
+    VehicleModel *model;
     u8 unreconstructed207C[0x2090 - 0x207C];
 } Vehicle;
 
 /** @ghidraAddress USA: 0x8031b760 */
 extern Vehicle g_aVehicles[MAX_VEHICLES];
+
+/**
+ * Find the nearest point of the route to a vehicle and add how far it went along the route to its
+ * distance. A vehicle that has not crossed out of its point and stays near it keeps it.
+ *
+ * @return 0 if no point is near enough, 1 otherwise.
+ * @ghidraAddress USA: 0x8021eb50
+ */
+s32 UpdateVehicleTrackPosition(Vehicle *vehicle);
+
+/**
+ * Run the clocks of a vehicle as the mode of play keeps them.
+ *
+ * @ghidraAddress USA: 0x8021f0a8
+ */
+void UpdateRaceTimers(Vehicle *vehicle);
+
+/**
+ * Count down the time of the message of a vehicle, or failing one its smaller message, and clear it
+ * at the end.
+ *
+ * @ghidraAddress USA: 0x8021f158
+ */
+void UpdateHudMessageTimers(Vehicle *vehicle);
+
+/**
+ * Show "WRONG WAY", flashing, once a vehicle has faced against the track for a while.
+ *
+ * @ghidraAddress USA: 0x8021f1f0
+ */
+void CheckWrongWayWarning(Vehicle *vehicle);
+
+/**
+ * Find the cell of the grid a vehicle is in, then its place on the route.
+ *
+ * @ghidraAddress USA: 0x8021f2d8
+ */
+void UpdateVehicleGridPosition(Vehicle *vehicle);
+
+/**
+ * Run a frame of a vehicle: fly it, or put it on the ground, drive its wheels and step its
+ * physics. Then place its wheels, set its speed, and update its cameras if a view follows it.
+ *
+ * @ghidraAddress USA: 0x8021f998
+ */
+void UpdateVehiclePhysicsFrame(Vehicle *vehicle);
+
+/**
+ * Put a vehicle at a position, with its body and the states of its steps.
+ *
+ * @ghidraAddress USA: 0x8021fe04
+ */
+void SetVehiclePosition(Vehicle *vehicle, f32 x, f32 y, f32 z);
+
+/**
+ * Turn a vehicle upright to face an angle about the vertical.
+ *
+ * @ghidraAddress USA: 0x8021fe80
+ */
+void InitVehicleOrientationFromAngle(Vehicle *vehicle, f32 angle);
+
+/**
+ * Set the frame of a vehicle and the orientation of its body from a matrix.
+ *
+ * @ghidraAddress USA: 0x80220150
+ */
+void SetVehicleFrameMatrix(Vehicle *vehicle, f32 m[4][4]);
+
+/**
+ * Set the velocity of a vehicle.
+ *
+ * @ghidraAddress USA: 0x802201c8
+ */
+void SetVehicleVelocity(Vehicle *vehicle, f32 x, f32 y, f32 z);
+
+/**
+ * Turn the body of a vehicle by angles about its vertical, sideways and forward axes, in turn.
+ *
+ * @ghidraAddress USA: 0x8022021c
+ */
+void RotateVehicleByEuler(Vehicle *vehicle, f32 yaw, f32 pitch, f32 roll);
+
+/**
+ * Set the angular velocity of a vehicle.
+ *
+ * @ghidraAddress USA: 0x80220358
+ */
+void SetVehicleTurnRate(Vehicle *vehicle, f32 x, f32 y, f32 z);
+
+/**
+ * Paint the model of a vehicle its color and set up its physics.
+ *
+ * @ghidraAddress USA: 0x80220398
+ */
+void InitVehicleColorAndPhysics(Vehicle *vehicle);
+
+/**
+ * Give a vehicle the model of a slot.
+ *
+ * @ghidraAddress USA: 0x802203f0
+ */
+void SetVehicleModelSlot(Vehicle *vehicle, s32 slot);
+
+/**
+ * Load the model of a car into a slot and give it to a vehicle.
+ *
+ * @ghidraAddress USA: 0x80220438
+ */
+void InstallVehicleModel(Vehicle *vehicle, s32 slot, s32 car);
+
+/**
+ * Start loading the model of a car into a slot through a buffer of g_aDmaWorkBuffers.
+ *
+ * @ghidraAddress USA: 0x80220474
+ */
+void LoadVehicleModel(VehicleModelLoad *load, s32 slot, s32 car, s32 buffer);
+
+/**
+ * Whether the load of a model is done.
+ *
+ * @ghidraAddress USA: 0x80220534
+ */
+s32 IsVehicleModelLoaded(VehicleModelLoad *load);
+
+/**
+ * Continue the load of a model, and once it is done, record the car of its slot and fix up its
+ * pointers.
+ *
+ * @return The compressed bytes left to read.
+ * @ghidraAddress USA: 0x80220544
+ */
+u32 PollVehicleModelDma(VehicleModelLoad *load);
+
+/**
+ * Reset the frames, cameras, velocity, place on the route and gearbox of a vehicle for its car.
+ *
+ * @ghidraAddress USA: 0x80220620
+ */
+void ResetVehicleState(Vehicle *vehicle);
+
+/**
+ * Give a vehicle the input of the player of the same index.
+ *
+ * @ghidraAddress USA: 0x802207a4
+ */
+void BindPlayerInputToVehicle(Vehicle *vehicle);
+
+/**
+ * Paint the materials of a model a color of 5 bits a channel.
+ *
+ * @ghidraAddress USA: 0x8021d140
+ */
+void SetMaterialColor(VehicleModel *model, s32 red, s32 green, s32 blue);
+
+/**
+ * Turn the offsets of a loaded model into pointers.
+ *
+ * @ghidraAddress USA: 0x8021d32c
+ */
+void FixupVehicleModelPointers(VehicleModel *model);
+
+/**
+ * Load the model of a car into a slot, or copy it from a slot that holds it.
+ *
+ * @ghidraAddress USA: 0x8021d5e4
+ */
+void LoadOrCopyVehicleModel(s32 slot, s32 car, s32 unused);
+
+/**
+ * Step the physics of a vehicle on the ground.
+ *
+ * @ghidraAddress USA: 0x80221940
+ */
+void SimulateVehiclePhysicsSubstep(Vehicle *vehicle);
+
+/**
+ * Place the matrices of the wheels of a vehicle.
+ *
+ * @ghidraAddress USA: 0x80221e0c
+ */
+void TransformAllWheelMatrices(Vehicle *vehicle);
+
+/**
+ * Run the engine and the gearbox of a vehicle.
+ *
+ * @ghidraAddress USA: 0x80222050
+ */
+void UpdateVehicleEngineAndGearbox(Vehicle *vehicle);
+
+/**
+ * Set up the bodies of a vehicle and its wheels.
+ *
+ * @ghidraAddress USA: 0x80222d54
+ */
+void InitVehiclePhysics(Vehicle *vehicle);
 
 /**
  * Bind a vehicle to the input of its player and reset it for a race.

@@ -214,6 +214,13 @@ void CopyMatrix4x4(f32 out[4][4], f32 in[4][4]);
 s32 MtxInvert4x4(f32 out[4][4], f32 in[4][4]);
 
 /**
+ * Set the last column of a matrix to that of an affine transform: 0, 0, 0 and 1.
+ *
+ * @ghidraAddress USA: 0x8021eb30
+ */
+void FinishFrameMatrix(f32 m[4][4]);
+
+/**
  * The angle of a point counterclockwise from the x axis, from 0 to two pi, found by a search of
  * the sine. Unlike atan2() of the C library, it takes x first.
  *

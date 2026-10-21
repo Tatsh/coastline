@@ -148,7 +148,7 @@ void UpdateCameraChase(Vehicle *vehicle, CameraFrame *camera, f32 share) {
     Vec3f previous, offset;
     f32 length;
 
-    if (vehicle->cameraLocked) {
+    if (vehicle->flyMode) {
         Vec3fMulAdd(&camera->position, &vehicle->frame.position, &vehicle->frame.up, CHASE_HEIGHT);
         Vec3fMulAdd(&camera->position,
                     &camera->position,
@@ -194,7 +194,7 @@ void UpdateCameraChase(Vehicle *vehicle, CameraFrame *camera, f32 share) {
 void UpdateCameraLookAtTarget(Vehicle *vehicle) {
     f32 speed, target;
 
-    if (vehicle->cameraLocked) {
+    if (vehicle->flyMode) {
         Vec3fMulAdd(
             &vehicle->lookAt, &vehicle->frame.position, &vehicle->frame.up, LOCKED_LOOK_AT_HEIGHT);
         return;
@@ -202,7 +202,7 @@ void UpdateCameraLookAtTarget(Vehicle *vehicle) {
     vehicle->lookAt.x = vehicle->frame.position.x;
     vehicle->lookAt.y = vehicle->frame.position.y;
     vehicle->lookAt.z = vehicle->frame.position.z + LOOK_AT_HEIGHT;
-    speed = Vec3fLength(&vehicle->velocity);
+    speed = Vec3fLength(&vehicle->body.state.angularVelocity);
     if (g_dwGameMode == GAME_MODE_AFTER_SEASON) {
         return;
     }
@@ -240,7 +240,7 @@ void ComputeCameraBasis(Vehicle *vehicle, CameraFrame *camera) {
     } else if (Vec3fLength(&camera->forward) == 0.0f) {
         camera->forward = vehicle->frame.forward;
     }
-    if (vehicle->cameraLocked) {
+    if (vehicle->flyMode) {
         Vec3fCross(&camera->side, &vehicle->frame.up, &camera->forward);
     } else {
         worldUp.x = 0.0f;
@@ -268,14 +268,14 @@ void UpdateCameraSystem(Vehicle *vehicle) {
     CameraFrame *bumper = &vehicle->cameras[VEHICLE_CAMERA_BUMPER];
     CameraFrame *trackside = &vehicle->cameras[VEHICLE_CAMERA_TRACKSIDE];
     CameraFrame *mirror = &vehicle->cameras[VEHICLE_CAMERA_MIRROR];
-    VehicleSpec *spec;
+    VehicleModel *model;
     Vec3f target, previousCockpit;
     f32 speed, lagSource, lag, lagNumerator, chaseTerm, lagTerm, pull, distance, zoom;
 
     /* The smoothed speed and lag of the chase camera. */
     target = chase->position;
-    speed = Vec3fLength(&vehicle->velocity);
-    lagSource = Vec3fLength(&vehicle->chaseLagSource) * CHASE_LAG_SCALE;
+    speed = Vec3fLength(&vehicle->body.state.angularVelocity);
+    lagSource = Vec3fLength(&vehicle->body.state.velocity) * CHASE_LAG_SCALE;
     lag = lagSource;
     speed = speed > CHASE_SPEED_FLOOR ? speed - CHASE_SPEED_FLOOR : 0.0f;
     if (CHASE_SPEED_MAX < speed) {
@@ -306,7 +306,7 @@ void UpdateCameraSystem(Vehicle *vehicle) {
     vehicle->chasePosition = chase->position;
 
     /* Keep the chase camera out of the track, and pull it in harder while it hits. */
-    if (!vehicle->cameraLocked) {
+    if (!vehicle->flyMode) {
         ResolveVehicleTrackCollision(vehicle, chase, &target);
         if (g_bVehicleTrackCollisionCorrected) {
             if (gInstantReplayActive) {
@@ -343,19 +343,19 @@ void UpdateCameraSystem(Vehicle *vehicle) {
     /* The cockpit camera sits at the eye of the driver and looks along the vehicle. */
     previousCockpit = cockpit->position;
     (void)previousCockpit;
-    if (vehicle->cameraLocked) {
+    if (vehicle->flyMode) {
         memcpy(cockpit, &vehicle->frame, sizeof(CameraFrame));
     } else {
-        spec = vehicle->spec;
+        model = vehicle->model;
         cockpit->position.x =
-            spec->cockpitUp * vehicle->frame.up.x +
-            (vehicle->frame.position.x + vehicle->frame.forward.x * spec->cockpitForward);
+            model->cockpitUp * vehicle->frame.up.x +
+            (vehicle->frame.position.x + vehicle->frame.forward.x * model->cockpitForward);
         cockpit->position.y =
-            spec->cockpitUp * vehicle->frame.up.y +
-            (vehicle->frame.position.y + vehicle->frame.forward.y * spec->cockpitForward);
+            model->cockpitUp * vehicle->frame.up.y +
+            (vehicle->frame.position.y + vehicle->frame.forward.y * model->cockpitForward);
         cockpit->position.z =
-            spec->cockpitUp * vehicle->frame.up.z +
-            (vehicle->frame.position.z + vehicle->frame.forward.z * spec->cockpitForward);
+            model->cockpitUp * vehicle->frame.up.z +
+            (vehicle->frame.position.z + vehicle->frame.forward.z * model->cockpitForward);
         Vec3fMulAddInPlace(&cockpit->forward, &vehicle->frame.forward, COCKPIT_AIM_DISTANCE);
         Vec3fNegate(&cockpit->forward, &cockpit->forward);
         Vec3fNormalize(&cockpit->forward);
@@ -393,19 +393,19 @@ void UpdateCameraSystem(Vehicle *vehicle) {
     mirror->fov = g_fCameraFovRadians;
 
     /* The mirror looks back from above and ahead of the driver. */
-    spec = vehicle->spec;
+    model = vehicle->model;
     mirror->position.x =
-        spec->cockpitUp * vehicle->frame.up.x +
-        (vehicle->frame.position.x + (vehicle->frame.forward.x * spec->mirrorForward +
-                                      vehicle->frame.forward.x * spec->mirrorForward));
+        model->cockpitUp * vehicle->frame.up.x +
+        (vehicle->frame.position.x + (vehicle->frame.forward.x * model->mirrorForward +
+                                      vehicle->frame.forward.x * model->mirrorForward));
     mirror->position.y =
-        spec->cockpitUp * vehicle->frame.up.y +
-        (vehicle->frame.position.y + (vehicle->frame.forward.y * spec->mirrorForward +
-                                      vehicle->frame.forward.y * spec->mirrorForward));
+        model->cockpitUp * vehicle->frame.up.y +
+        (vehicle->frame.position.y + (vehicle->frame.forward.y * model->mirrorForward +
+                                      vehicle->frame.forward.y * model->mirrorForward));
     mirror->position.z =
-        spec->cockpitUp * vehicle->frame.up.z +
-        (vehicle->frame.position.z + (vehicle->frame.forward.z * spec->mirrorForward +
-                                      vehicle->frame.forward.z * spec->mirrorForward));
+        model->cockpitUp * vehicle->frame.up.z +
+        (vehicle->frame.position.z + (vehicle->frame.forward.z * model->mirrorForward +
+                                      vehicle->frame.forward.z * model->mirrorForward));
     mirror->forward.x = -vehicle->frame.forward.x;
     mirror->forward.y = -vehicle->frame.forward.y;
     mirror->forward.z = -vehicle->frame.forward.z;

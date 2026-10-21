@@ -1499,9 +1499,9 @@ nonmatching g_afShadowFrustumFarCenter, 0xC
 dlabel g_afShadowFrustumFarCenter
     /* 8031B22C */ .space 0x0C
 
-nonmatching g_aSlotToVehicleSpecMap, 0x8
+nonmatching g_adwVehicleModelSlotCars, 0x8
 
-dlabel g_aSlotToVehicleSpecMap
+dlabel g_adwVehicleModelSlotCars
     /* 8031B238 */ .space 0x08
 
 nonmatching D_8031B240, 0x8
@@ -1526,9 +1526,9 @@ nonmatching D_8031B24C, 0x3C
 dlabel D_8031B24C
     /* 8031B24C */ .space 0x3C
 
-nonmatching g_afHudRaycastHitPoint, 0x40
+nonmatching g_awCameraRayNearbyInstances, 0x40
 
-dlabel g_afHudRaycastHitPoint
+dlabel g_awCameraRayNearbyInstances
     /* 8031B288 */ .space 0x40
 
 nonmatching g_aViewportRects, 0x4

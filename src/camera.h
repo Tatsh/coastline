@@ -36,14 +36,15 @@ extern s32 g_dwReplayCameraHoldTimer;
 extern s32 g_dwReplayCameraSwitchTimer;
 
 /**
- * The placed models the ray cast from the active camera met this frame.
+ * Set to 1 by the ray cast down from the active camera each frame. RenderPrecipitationEffect()
+ * checks that many of g_awCameraRayHitInstances.
  *
  * @ghidraAddress USA: 0x8028ab00
  */
 extern s32 g_dwCameraRayHitCount;
 
 /**
- * The indices of the placed models the ray cast from the active camera met.
+ * The placed models of the ground below the active camera, the nearest first.
  *
  * @ghidraAddress USA: 0x8031b248
  */

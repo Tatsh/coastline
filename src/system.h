@@ -96,12 +96,48 @@ void DmaRead(void *dst, u32 romOffset, u32 size);
 u32 DmaReadAssetSize(u32 romOffset);
 
 /**
+ * A decompression that runs over several calls of DecompressFromRom(). Its fields join this
+ * structure as they are reconstructed.
+ */
+typedef struct {
+    u32 romOffset;
+    /** Where the decompression writes next, or NULL before it starts. */
+    void *dst;
+    /** The memory the compressed data is read into. */
+    u8 *buffer;
+    u32 unreconstructedC;
+    u32 unreconstructed10;
+    u32 unreconstructed14;
+    /** The compressed bytes left to read, 0 once the decompression is done. */
+    u32 remaining;
+    u32 unreconstructed1C;
+} DecompressJob;
+
+/** The size of each of g_aDmaWorkBuffers. */
+#define DMA_WORK_BUFFER_SIZE 0x8000
+
+/**
+ * The buffers that decompressions read their compressed data into.
+ *
+ * @ghidraAddress USA: 0x802f7f00
+ */
+extern u8 g_aDmaWorkBuffers[];
+
+/**
+ * Start a decompression with a buffer for its compressed data.
+ *
+ * @ghidraAddress USA: 0x8021cd24
+ */
+void InitDmaRequest(DecompressJob *job, u8 *buffer);
+
+/**
  * Decompress the asset at a cartridge offset into RAM.
  *
- * @param stats Receives eight words of timing figures, unless it is NULL.
+ * @param job The decompression to continue, which DecompressFromRom() leaves where it stopped, or
+ * NULL to decompress the asset whole.
  * @ghidraAddress USA: 0x8021cd30
  */
-void DecompressFromRom(void *dst, u32 romOffset, void *stats);
+void DecompressFromRom(void *dst, u32 romOffset, DecompressJob *job);
 
 /**
  * Patch the render modes of the track and vehicle display lists for the current weather.

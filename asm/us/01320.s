@@ -1780,7 +1780,7 @@ glabel ProcessRaceHud
     /* 2CD4 80201CD4 00094900 */  sll        $t1, $t1, 4
     /* 2CD8 80201CD8 01382021 */  addu       $a0, $t1, $t8
     /* 2CDC 80201CDC 8F26205C */  lw         $a2, 0x205C($t9)
-    /* 2CE0 80201CE0 0C08810E */  jal        LoadAndActivateTrack
+    /* 2CE0 80201CE0 0C08810E */  jal        InstallVehicleModel
     /* 2CE4 80201CE4 02202825 */   or        $a1, $s1, $zero
   .L80201CE8:
     /* 2CE8 80201CE8 00117980 */  sll        $t7, $s1, 6
@@ -3896,18 +3896,18 @@ glabel ProcessRaceHud
     /* 4C48 80203C48 AC2BAAF0 */  sw         $t3, %lo(g_pActiveCameraVehicle)($at)
     /* 4C4C 80203C4C 8D681DE8 */  lw         $t0, 0x1DE8($t3)
     /* 4C50 80203C50 3C018029 */  lui        $at, %hi(g_pActiveCamera)
-    /* 4C54 80203C54 3C188029 */  lui        $t8, %hi(g_dwHudRaycastNormal)
+    /* 4C54 80203C54 3C188029 */  lui        $t8, %hi(g_dwCameraRayGroundSurface)
     /* 4C58 80203C58 3C098029 */  lui        $t1, %hi(g_dwCameraRayHitCount)
-    /* 4C5C 80203C5C 3C0D8032 */  lui        $t5, %hi(g_afHudRaycastHitPoint)
-    /* 4C60 80203C60 3C0A8029 */  lui        $t2, %hi(g_dwHudRaycastResult)
-    /* 4C64 80203C64 3C0E8029 */  lui        $t6, %hi(g_dwHudRaycastSurface)
+    /* 4C5C 80203C5C 3C0D8032 */  lui        $t5, %hi(g_awCameraRayNearbyInstances)
+    /* 4C60 80203C60 3C0A8029 */  lui        $t2, %hi(g_dwCameraRayNearbyCount)
+    /* 4C64 80203C64 3C0E8029 */  lui        $t6, %hi(g_fCameraRayGroundDistance)
     /* 4C68 80203C68 AC28AAF4 */  sw         $t0, %lo(g_pActiveCamera)($at)
     /* 4C6C 80203C6C 3C018029 */  lui        $at, %hi(g_dwCurrentSplitScreenIndex)
-    /* 4C70 80203C70 25CEAAF8 */  addiu      $t6, $t6, %lo(g_dwHudRaycastSurface)
-    /* 4C74 80203C74 254AAB04 */  addiu      $t2, $t2, %lo(g_dwHudRaycastResult)
-    /* 4C78 80203C78 25ADB288 */  addiu      $t5, $t5, %lo(g_afHudRaycastHitPoint)
+    /* 4C70 80203C70 25CEAAF8 */  addiu      $t6, $t6, %lo(g_fCameraRayGroundDistance)
+    /* 4C74 80203C74 254AAB04 */  addiu      $t2, $t2, %lo(g_dwCameraRayNearbyCount)
+    /* 4C78 80203C78 25ADB288 */  addiu      $t5, $t5, %lo(g_awCameraRayNearbyInstances)
     /* 4C7C 80203C7C 2529AB00 */  addiu      $t1, $t1, %lo(g_dwCameraRayHitCount)
-    /* 4C80 80203C80 2718AAFC */  addiu      $t8, $t8, %lo(g_dwHudRaycastNormal)
+    /* 4C80 80203C80 2718AAFC */  addiu      $t8, $t8, %lo(g_dwCameraRayGroundSurface)
     /* 4C84 80203C84 3C078032 */  lui        $a3, %hi(g_awCameraRayHitInstances)
     /* 4C88 80203C88 AC30AAEC */  sw         $s0, %lo(g_dwCurrentSplitScreenIndex)($at)
     /* 4C8C 80203C8C 24E7B248 */  addiu      $a3, $a3, %lo(g_awCameraRayHitInstances)

@@ -7099,12 +7099,12 @@ glabel LoadOrCopyVehicleModel
     /* 1E694 8021D694 8FAD0020 */  lw         $t5, 0x20($sp)
     /* 1E698 8021D698 8FBF0014 */  lw         $ra, 0x14($sp)
     /* 1E69C 8021D69C 8FAC0024 */  lw         $t4, 0x24($sp)
-    /* 1E6A0 8021D6A0 3C018032 */  lui        $at, %hi(g_aSlotToVehicleSpecMap)
+    /* 1E6A0 8021D6A0 3C018032 */  lui        $at, %hi(g_adwVehicleModelSlotCars)
     /* 1E6A4 8021D6A4 000D7080 */  sll        $t6, $t5, 2
     /* 1E6A8 8021D6A8 002E0821 */  addu       $at, $at, $t6
     /* 1E6AC 8021D6AC 27BD0020 */  addiu      $sp, $sp, 0x20
     /* 1E6B0 8021D6B0 03E00008 */  jr         $ra
-    /* 1E6B4 8021D6B4 AC2CB238 */   sw        $t4, %lo(g_aSlotToVehicleSpecMap)($at)
+    /* 1E6B4 8021D6B4 AC2CB238 */   sw        $t4, %lo(g_adwVehicleModelSlotCars)($at)
 endlabel LoadOrCopyVehicleModel
 
 nonmatching IsVehicleModelValid, 0x24
@@ -7875,7 +7875,7 @@ glabel LoadTrackGeometryFromRom
     /* 1F144 8021E144 0C08787D */  jal        SetDebugMessage
     /* 1F148 8021E148 02002025 */   or        $a0, $s0, $zero
   .L8021E14C:
-    /* 1F14C 8021E14C 0C095728 */  jal        PrepareTrackModelNodes
+    /* 1F14C 8021E14C 0C095728 */  jal        PrepareTrackSections
     /* 1F150 8021E150 00000000 */   nop
     /* 1F154 8021E154 8FBF004C */  lw         $ra, 0x4C($sp)
     /* 1F158 8021E158 D7B40020 */  ldc1       $f20, 0x20($sp)

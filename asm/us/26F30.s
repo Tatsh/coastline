@@ -330,14 +330,14 @@ glabel RespawnVehicle
     /* 27388 80226388 44050000 */  mfc1       $a1, $f0
     /* 2738C 8022638C 44060000 */  mfc1       $a2, $f0
     /* 27390 80226390 44070000 */  mfc1       $a3, $f0
-    /* 27394 80226394 0C088072 */  jal        SetVehicleOrientation
+    /* 27394 80226394 0C088072 */  jal        SetVehicleVelocity
     /* 27398 80226398 00000000 */   nop
     /* 2739C 8022639C 44800000 */  mtc1       $zero, $f0
     /* 273A0 802263A0 02002025 */  or         $a0, $s0, $zero
     /* 273A4 802263A4 44050000 */  mfc1       $a1, $f0
     /* 273A8 802263A8 44060000 */  mfc1       $a2, $f0
     /* 273AC 802263AC 44070000 */  mfc1       $a3, $f0
-    /* 273B0 802263B0 0C0880D6 */  jal        SetWheelAngularVelocity
+    /* 273B0 802263B0 0C0880D6 */  jal        SetVehicleTurnRate
     /* 273B4 802263B4 00000000 */   nop
     /* 273B8 802263B8 8E0D014C */  lw         $t5, 0x14C($s0)
     /* 273BC 802263BC 24020002 */  addiu      $v0, $zero, 0x2
@@ -923,7 +923,7 @@ glabel ProcessVehicleInputAndPhysics
     /* 27BF8 80226BF8 46023282 */  mul.s      $f10, $f6, $f2
     /* 27BFC 80226BFC 460A4181 */  sub.s      $f6, $f8, $f10
     /* 27C00 80226C00 44063000 */  mfc1       $a2, $f6
-    /* 27C04 80226C04 0C088072 */  jal        SetVehicleOrientation
+    /* 27C04 80226C04 0C088072 */  jal        SetVehicleVelocity
     /* 27C08 80226C08 E7A60080 */   swc1      $f6, 0x80($sp)
   .L80226C0C:
     /* 27C0C 80226C0C 0C087E66 */  jal        UpdateVehiclePhysicsFrame
@@ -3062,7 +3062,7 @@ glabel SetupVehicleForRaceStart
   .L80228AC4:
     /* 29AC4 80228AC4 02002025 */  or         $a0, $s0, $zero
   .L80228AC8:
-    /* 29AC8 80228AC8 0C0880FC */  jal        SetActiveTrackSlot
+    /* 29AC8 80228AC8 0C0880FC */  jal        SetVehicleModelSlot
     /* 29ACC 80228ACC 8E050140 */   lw        $a1, 0x140($s0)
     /* 29AD0 80228AD0 4480A000 */  mtc1       $zero, $f20
     /* 29AD4 80228AD4 3C013F00 */  lui        $at, (0x3F000000 >> 16)
@@ -3071,7 +3071,7 @@ glabel SetupVehicleForRaceStart
     /* 29AE0 80228AE0 1000000E */  b          .L80228B1C
     /* 29AE4 80228AE4 E7B20038 */   swc1      $f18, 0x38($sp)
   .L80228AE8:
-    /* 29AE8 80228AE8 0C0880FC */  jal        SetActiveTrackSlot
+    /* 29AE8 80228AE8 0C0880FC */  jal        SetVehicleModelSlot
     /* 29AEC 80228AEC 8E050140 */   lw        $a1, 0x140($s0)
     /* 29AF0 80228AF0 8E020140 */  lw         $v0, 0x140($s0)
     /* 29AF4 80228AF4 4480A000 */  mtc1       $zero, $f20
@@ -3175,7 +3175,7 @@ glabel SetupVehicleForRaceStart
     /* 29C78 80228C78 AE000E74 */  sw         $zero, 0xE74($s0)
     /* 29C7C 80228C7C AE000E78 */  sw         $zero, 0xE78($s0)
     /* 29C80 80228C80 AE080E7C */  sw         $t0, 0xE7C($s0)
-    /* 29C84 80228C84 0C088072 */  jal        SetVehicleOrientation
+    /* 29C84 80228C84 0C088072 */  jal        SetVehicleVelocity
     /* 29C88 80228C88 02002025 */   or        $a0, $s0, $zero
     /* 29C8C 80228C8C 8E290070 */  lw         $t1, 0x70($s1)
     /* 29C90 80228C90 3C038029 */  lui        $v1, %hi(g_dwCurrentWeather)
@@ -4490,7 +4490,7 @@ glabel ManageAiRacerSlots
     /* 2AF48 80229F48 02002825 */  or         $a1, $s0, $zero
     /* 2AF4C 80229F4C E6040F64 */  swc1       $f4, 0xF64($s0)
     /* 2AF50 80229F50 E6080F68 */  swc1       $f8, 0xF68($s0)
-    /* 2AF54 80229F54 0C088054 */  jal        InitRigidBodyFromMatrix
+    /* 2AF54 80229F54 0C088054 */  jal        SetVehicleFrameMatrix
     /* 2AF58 80229F58 E6100F6C */   swc1      $f16, 0xF6C($s0)
     /* 2AF5C 80229F5C 8E0C0ED0 */  lw         $t4, 0xED0($s0)
     /* 2AF60 80229F60 8D8F0068 */  lw         $t7, 0x68($t4)
@@ -4500,7 +4500,7 @@ glabel ManageAiRacerSlots
     /* 2AF70 80229F70 4405A000 */  mfc1       $a1, $f20
     /* 2AF74 80229F74 4406A000 */  mfc1       $a2, $f20
     /* 2AF78 80229F78 4407A000 */  mfc1       $a3, $f20
-    /* 2AF7C 80229F7C 0C088072 */  jal        SetVehicleOrientation
+    /* 2AF7C 80229F7C 0C088072 */  jal        SetVehicleVelocity
     /* 2AF80 80229F80 02002025 */   or        $a0, $s0, $zero
     /* 2AF84 80229F84 1000000F */  b          .L80229FC4
     /* 2AF88 80229F88 8E18014C */   lw        $t8, 0x14C($s0)
@@ -4516,7 +4516,7 @@ glabel ManageAiRacerSlots
     /* 2AFAC 80229FAC 44059000 */  mfc1       $a1, $f18
     /* 2AFB0 80229FB0 44062000 */  mfc1       $a2, $f4
     /* 2AFB4 80229FB4 44078000 */  mfc1       $a3, $f16
-    /* 2AFB8 80229FB8 0C088072 */  jal        SetVehicleOrientation
+    /* 2AFB8 80229FB8 0C088072 */  jal        SetVehicleVelocity
     /* 2AFBC 80229FBC 00000000 */   nop
     /* 2AFC0 80229FC0 8E18014C */  lw         $t8, 0x14C($s0)
   .L80229FC4:

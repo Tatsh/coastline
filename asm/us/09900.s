@@ -882,7 +882,7 @@ glabel ProcessRaceState
     /* A54C 8020954C 0018C080 */  sll        $t8, $t8, 2
     /* A550 80209550 0311C821 */  addu       $t9, $t8, $s1
     /* A554 80209554 00D93021 */  addu       $a2, $a2, $t9
-    /* A558 80209558 0C08810E */  jal        LoadAndActivateTrack
+    /* A558 80209558 0C08810E */  jal        InstallVehicleModel
     /* A55C 8020955C 90C6B954 */   lbu       $a2, %lo(D_8028B954)($a2)
     /* A560 80209560 AE002000 */  sw         $zero, 0x2000($s0)
     /* A564 80209564 AE002044 */  sw         $zero, 0x2044($s0)

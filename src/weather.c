@@ -145,7 +145,7 @@ void UpdateLightningFlash(void) {
         g_fLightningFlashTimer = 0.0f;
         g_avLightningBolt[0].x = (f32)(s32)(AdvanceRng() & LIGHTNING_AREA_MASK);
         g_avLightningBolt[0].y = (f32)(s32)(AdvanceRng() & LIGHTNING_AREA_MASK);
-        g_avLightningBolt[0].z = g_LoadedTrack.lightningHeight;
+        g_avLightningBolt[0].z = g_LoadedTrack.minZ;
     }
 }
 

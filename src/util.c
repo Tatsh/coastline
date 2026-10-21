@@ -2,8 +2,8 @@
 
 #include "trackselect.h"
 
-/* The node kind that tracks 3 and 8 replace with kind 0. */
-#define MODEL_NODE_KIND_REPLACED 2
+/* The first grid row of the sections that tracks 3 and 8 extend to row 0. */
+#define TRACK_SECTION_ROW_EXTENDED 2
 
 /* QuickSort() hands ranges of this many elements or fewer to ShortSort(). */
 #define SHORT_SORT_LIMIT 8
@@ -11,35 +11,35 @@
 /* The ranges QuickSort() can defer, enough for any count that fits in 32 bits. */
 #define SORT_STACK_SIZE 30
 
-void MarkModelNodes(ModelNode *node) {
-    for (; node != NULL; node = node->next) {
-        if (node->flags & MODEL_NODE_VISITED) {
+void MarkTrackSections(TrackSection *section) {
+    for (; section != NULL; section = section->next) {
+        if (section->flags & TRACK_SECTION_VISITED) {
             continue;
         }
-        if (node->flags & MODEL_NODE_SKIP) {
+        if (section->flags & TRACK_SECTION_ALTERNATE) {
             continue;
         }
-        node->flags |= MODEL_NODE_VISITED;
-        if (node->kind == MODEL_NODE_KIND_REPLACED &&
+        section->flags |= TRACK_SECTION_VISITED;
+        if (section->gridMinY == TRACK_SECTION_ROW_EXTENDED &&
             (g_dwSelectedTrackId == 3 || g_dwSelectedTrackId == 8)) {
-            node->kind = 0;
+            section->gridMinY = 0;
         }
-        MarkModelNodes(node->child);
+        MarkTrackSections(section->child);
     }
 }
 
-void UnmarkModelNodes(ModelNode *node) {
-    for (; node != NULL; node = node->next) {
-        if (node->flags & MODEL_NODE_VISITED) {
-            node->flags &= ~MODEL_NODE_VISITED;
-            UnmarkModelNodes(node->child);
+void UnmarkTrackSections(TrackSection *section) {
+    for (; section != NULL; section = section->next) {
+        if (section->flags & TRACK_SECTION_VISITED) {
+            section->flags &= ~TRACK_SECTION_VISITED;
+            UnmarkTrackSections(section->child);
         }
     }
 }
 
-void PrepareTrackModelNodes(void) {
-    MarkModelNodes(g_LoadedTrack.modelRoot);
-    UnmarkModelNodes(g_LoadedTrack.modelRoot);
+void PrepareTrackSections(void) {
+    MarkTrackSections(g_LoadedTrack.rootSection);
+    UnmarkTrackSections(g_LoadedTrack.rootSection);
 }
 
 DisplayListBlock *AllocDisplayListBlock(void) {

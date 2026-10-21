@@ -21,7 +21,9 @@ typedef struct {
     Vec3f normal;
     f32 unreconstructedC;
     Vec3f *vertices[3];
-    u32 unreconstructed1C;
+    /** The index of the triangle in the track, for its TrackSurface and its nearby models. */
+    s16 index;
+    u16 unreconstructed1E;
 } TrackTriangle;
 
 /** @ghidraAddress USA: 0x80379f80 */

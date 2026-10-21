@@ -6680,35 +6680,35 @@ enddlabel g_dwAudioReserved1
     /* AA4E8 802A94E8 00000000 */ .float 0
     /* AA4EC 802A94EC 00000000 */ .float 0
 
-nonmatching g_dwAudioReserved2
+nonmatching g_fConstPi_802a94f0
 
-dlabel g_dwAudioReserved2
+dlabel g_fConstPi_802a94f0
     /* AA4F0 802A94F0 40490FDB */ .float 3.141592741
-enddlabel g_dwAudioReserved2
+enddlabel g_fConstPi_802a94f0
 
-nonmatching g_dwAudioReserved3
+nonmatching g_fConst0p4_802a94f4
 
-dlabel g_dwAudioReserved3
+dlabel g_fConst0p4_802a94f4
     /* AA4F4 802A94F4 3ECCCCCD */ .float 0.400000006
-enddlabel g_dwAudioReserved3
+enddlabel g_fConst0p4_802a94f4
 
-nonmatching g_dwAudioReserved4
+nonmatching g_fConst1em4_802a94f8
 
-dlabel g_dwAudioReserved4
+dlabel g_fConst1em4_802a94f8
     /* AA4F8 802A94F8 38D1B717 */ .float 9.999999747e-05
-enddlabel g_dwAudioReserved4
+enddlabel g_fConst1em4_802a94f8
 
-nonmatching g_dwAudioReserved5
+nonmatching g_fConst2p24_802a94fc
 
-dlabel g_dwAudioReserved5
+dlabel g_fConst2p24_802a94fc
     /* AA4FC 802A94FC 400F5C29 */ .float 2.24000001
-enddlabel g_dwAudioReserved5
+enddlabel g_fConst2p24_802a94fc
 
-nonmatching g_dwAudioReserved6
+nonmatching g_fConstHalfPi_802a9500
 
-dlabel g_dwAudioReserved6
+dlabel g_fConstHalfPi_802a9500
     /* AA500 802A9500 3FC90FDB */ .float 1.570796371
-enddlabel g_dwAudioReserved6
+enddlabel g_fConstHalfPi_802a9500
 
 nonmatching g_flDefaultCameraFov
 

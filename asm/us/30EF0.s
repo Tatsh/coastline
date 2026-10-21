@@ -3798,9 +3798,9 @@ glabel RenderTrackShadow
     /* 34768 80233768 01C1001A */  div        $zero, $t6, $at
     /* 3476C 8023376C 00007812 */  mflo       $t7
     /* 34770 80233770 000FC080 */  sll        $t8, $t7, 2
-    /* 34774 80233774 3C088032 */  lui        $t0, %hi(g_aSlotToVehicleSpecMap)
+    /* 34774 80233774 3C088032 */  lui        $t0, %hi(g_adwVehicleModelSlotCars)
     /* 34778 80233778 01184021 */  addu       $t0, $t0, $t8
-    /* 3477C 8023377C 8D08B238 */  lw         $t0, %lo(g_aSlotToVehicleSpecMap)($t0)
+    /* 3477C 8023377C 8D08B238 */  lw         $t0, %lo(g_adwVehicleModelSlotCars)($t0)
     /* 34780 80233780 3C098029 */  lui        $t1, %hi(g_aCarModels)
     /* 34784 80233784 2529AE0C */  addiu      $t1, $t1, %lo(g_aCarModels)
     /* 34788 80233788 0008C880 */  sll        $t9, $t0, 2

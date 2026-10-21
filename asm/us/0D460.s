@@ -464,12 +464,12 @@ glabel RenderCameraView
     /* DB28 8020CB28 10000010 */  b          .L8020CB6C
     /* DB2C 8020CB2C 8FB80108 */   lw        $t8, 0x108($sp)
   .L8020CB30:
-    /* DB30 8020CB30 0C08814D */  jal        IsTrackSegmentEmpty
+    /* DB30 8020CB30 0C08814D */  jal        IsVehicleModelLoaded
     /* DB34 8020CB34 8FA40054 */   lw        $a0, 0x54($sp)
     /* DB38 8020CB38 5040000C */  beql       $v0, $zero, .L8020CB6C
     /* DB3C 8020CB3C 8FB80108 */   lw        $t8, 0x108($sp)
     /* DB40 8020CB40 8E040000 */  lw         $a0, 0x0($s0)
-    /* DB44 8020CB44 0C0880FC */  jal        SetActiveTrackSlot
+    /* DB44 8020CB44 0C0880FC */  jal        SetVehicleModelSlot
     /* DB48 8020CB48 8FA50104 */   lw        $a1, 0x104($sp)
     /* DB4C 8020CB4C 0C08CDB8 */  jal        RenderTrackShadow
     /* DB50 8020CB50 8E040000 */   lw        $a0, 0x0($s0)
@@ -671,7 +671,7 @@ glabel RenderCameraView
     /* DE54 8020CE54 10000037 */  b          .L8020CF34
     /* DE58 8020CE58 8FBF003C */   lw        $ra, 0x3C($sp)
   .L8020CE5C:
-    /* DE5C 8020CE5C 0C08814D */  jal        IsTrackSegmentEmpty
+    /* DE5C 8020CE5C 0C08814D */  jal        IsVehicleModelLoaded
     /* DE60 8020CE60 8FA40058 */   lw        $a0, 0x58($sp)
     /* DE64 8020CE64 54400006 */  bnel       $v0, $zero, .L8020CE80
     /* DE68 8020CE68 8E040000 */   lw        $a0, 0x0($s0)
@@ -681,7 +681,7 @@ glabel RenderCameraView
     /* DE78 8020CE78 8FBF003C */   lw        $ra, 0x3C($sp)
     /* DE7C 8020CE7C 8E040000 */  lw         $a0, 0x0($s0)
   .L8020CE80:
-    /* DE80 8020CE80 0C0880FC */  jal        SetActiveTrackSlot
+    /* DE80 8020CE80 0C0880FC */  jal        SetVehicleModelSlot
     /* DE84 8020CE84 8FA50108 */   lw        $a1, 0x108($sp)
     /* DE88 8020CE88 44805000 */  mtc1       $zero, $f10
     /* DE8C 8020CE8C C7B200FC */  lwc1       $f18, 0xFC($sp)
@@ -721,11 +721,11 @@ glabel RenderCameraView
     /* DF0C 8020CF0C 8E040000 */  lw         $a0, 0x0($s0)
     /* DF10 8020CF10 0C08C155 */  jal        RenderVehicleModel
     /* DF14 8020CF14 00002825 */   or        $a1, $zero, $zero
-    /* DF18 8020CF18 0C08814D */  jal        IsTrackSegmentEmpty
+    /* DF18 8020CF18 0C08814D */  jal        IsVehicleModelLoaded
     /* DF1C 8020CF1C 8FA40054 */   lw        $a0, 0x54($sp)
     /* DF20 8020CF20 10400003 */  beqz       $v0, .L8020CF30
     /* DF24 8020CF24 8FA50104 */   lw        $a1, 0x104($sp)
-    /* DF28 8020CF28 0C0880FC */  jal        SetActiveTrackSlot
+    /* DF28 8020CF28 0C0880FC */  jal        SetVehicleModelSlot
     /* DF2C 8020CF2C 8E040000 */   lw        $a0, 0x0($s0)
   .L8020CF30:
     /* DF30 8020CF30 8FBF003C */  lw         $ra, 0x3C($sp)
@@ -976,7 +976,7 @@ glabel ProcessTrackSelectScreen
     /* E2A0 8020D2A0 AE302058 */  sw         $s0, 0x2058($s1)
     /* E2A4 8020D2A4 02202025 */  or         $a0, $s1, $zero
     /* E2A8 8020D2A8 02A02825 */  or         $a1, $s5, $zero
-    /* E2AC 8020D2AC 0C08810E */  jal        LoadAndActivateTrack
+    /* E2AC 8020D2AC 0C08810E */  jal        InstallVehicleModel
     /* E2B0 8020D2B0 02003025 */   or        $a2, $s0, $zero
     /* E2B4 8020D2B4 3C038027 */  lui        $v1, %hi(g_dwNumLocalPlayers)
     /* E2B8 8020D2B8 8C63FF08 */  lw         $v1, %lo(g_dwNumLocalPlayers)($v1)

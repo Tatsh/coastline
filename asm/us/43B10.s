@@ -554,7 +554,7 @@ glabel ProcessPaintShopScreen
     /* 4430C 8024330C 00B20019 */  multu      $a1, $s2
     /* 44310 80243310 0000C012 */  mflo       $t8
     /* 44314 80243314 02382021 */  addu       $a0, $s1, $t8
-    /* 44318 80243318 0C08810E */  jal        LoadAndActivateTrack
+    /* 44318 80243318 0C08810E */  jal        InstallVehicleModel
     /* 4431C 8024331C AC86205C */   sw        $a2, 0x205C($a0)
     /* 44320 80243320 3C068029 */  lui        $a2, %hi(gDecalBrushState)
     /* 44324 80243324 24C6DBBC */  addiu      $a2, $a2, %lo(gDecalBrushState)

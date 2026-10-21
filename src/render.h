@@ -12,18 +12,19 @@
 #include "vecmath.h"
 
 /**
- * A frame of reference: three axes and a position, each padded to four words, and a field of view.
- * The world is z up. A vehicle and each of its cameras has one.
+ * A frame of reference: three axes and a position, the rows of a 4 by 4 matrix whose last column
+ * FinishFrameMatrix() sets, and a field of view. The world is z up. A vehicle and each of its
+ * cameras has one.
  */
 typedef struct {
     Vec3f forward;
-    f32 unreconstructedC;
+    f32 forwardW;
     Vec3f side;
-    f32 unreconstructed1C;
+    f32 sideW;
     Vec3f up;
-    f32 unreconstructed2C;
+    f32 upW;
     Vec3f position;
-    f32 unreconstructed3C;
+    f32 positionW;
     /** The field of view of a camera, in radians. */
     f32 fov;
 } CameraFrame;

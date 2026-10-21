@@ -55,26 +55,26 @@ typedef s32 (*CompareFunc)(const void *a, const void *b);
 typedef void (*SwapFunc)(void *a, void *b, u32 size);
 
 /**
- * Mark every node of a tree as visited, skipping nodes already visited or flagged to be skipped.
- * On tracks 3 and 8, a node of kind 2 becomes kind 0.
+ * Mark every section of a tree of the route as visited, skipping sections already visited and
+ * alternate branches. On tracks 3 and 8, a section whose grid starts at row 2 starts at row 0.
  *
  * @ghidraAddress USA: 0x80255ba0
  */
-void MarkModelNodes(ModelNode *node);
+void MarkTrackSections(TrackSection *section);
 
 /**
- * Clear the visited mark of every node of a tree.
+ * Clear the visited mark of every section of a tree of the route.
  *
  * @ghidraAddress USA: 0x80255c50
  */
-void UnmarkModelNodes(ModelNode *node);
+void UnmarkTrackSections(TrackSection *section);
 
 /**
- * Apply the node kinds of the current track to the loaded track model.
+ * Adjust the route of the loaded track for the current track.
  *
  * @ghidraAddress USA: 0x80255ca0
  */
-void PrepareTrackModelNodes(void);
+void PrepareTrackSections(void);
 
 /**
  * Allocate a block of display list commands for the current frame.

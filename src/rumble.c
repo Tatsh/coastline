@@ -26,13 +26,13 @@ void UpdateRumblePaks(s32 unused) {
         }
     }
 
-    /* Pulse each motor that is rumbling, unless its vehicle plays back a ghost. */
+    /* Pulse each motor that is rumbling, unless its vehicle plays back a recording. */
     if (g_wSerialInterfaceIdle && !g_wRaceScreenLoopExited && !g_dwRacePauseState) {
         for (i = 0; i < RUMBLE_CHANNELS; i++) {
             if (!g_abRumblePakPresent[i] || !g_awRumbleActive[i]) {
                 continue;
             }
-            if (g_aVehicles[i].replay->ghostData != NULL) {
+            if (g_aVehicles[i].input->playbackBuffer != NULL) {
                 continue;
             }
             if (g_awRumbleCounter[i] == 0) {
