@@ -59,7 +59,7 @@ extern s32 g_bBitmapTextNarrow;
  *
  * @ghidraAddress USA: 0x8028dddc
  */
-extern u16 g_wBitmapTextColour;
+extern u16 g_wBitmapTextColor;
 
 /**
  * The step StepDebugHiddenInstance() takes through the placed models, or 0 to stay.

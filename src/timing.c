@@ -27,8 +27,8 @@
 #define SCREEN_ROWS 240
 
 /* The colour of the box behind the bars, and of the ticks. */
-#define BOX_COLOUR 0x00010001
-#define TICK_COLOUR 0xFFFFFFFF
+#define BOX_COLOR 0x00010001
+#define TICK_COLOR 0xFFFFFFFF
 
 /* The colour that ends each frame on every bar. */
 #define END_RED 0xFF
@@ -42,11 +42,11 @@
 void AddTimingMarker(s32 bar, s32 red, s32 green, s32 blue, s32 alpha) {
     TimingMarker *marker =
         &g_aTimingMarkers[g_dwTimingFrame][bar][g_aTimingMarkerCounts[g_dwTimingFrame][bar]];
-    u32 colour = ((red << 8) & 0xF800) | ((green << 3) & 0x07C0) | ((blue >> 2) & 0x003E) |
-                 ((alpha >> 7) & 0x0001);
+    u32 color = ((red << 8) & 0xF800) | ((green << 3) & 0x07C0) | ((blue >> 2) & 0x003E) |
+                ((alpha >> 7) & 0x0001);
 
     g_aTimingMarkerCounts[g_dwTimingFrame][bar]++;
-    marker[1].colour = colour | (colour << 16);
+    marker[1].color = color | (color << 16);
     marker[0].time = osGetCount() - g_dwTimingFrameStart;
 }
 
@@ -118,12 +118,12 @@ void DrawTimingBars(void) {
 
     length = (g_dwScreenHeight << g_dwScreenScaleShift) * BAR_ROWS / SCREEN_ROWS;
 
-    gDPSetFillColor(gDisplayListPtr++, BOX_COLOUR);
+    gDPSetFillColor(gDisplayListPtr++, BOX_COLOR);
     left = (g_dwScreenWidth - 16) << g_dwScreenScaleShift;
     top = 16 << g_dwScreenScaleShift;
     gDPFillRectangle(gDisplayListPtr++, left - 22, top - 2, left - 3, top + length + 2);
     gDPPipeSync(gDisplayListPtr++);
-    gDPSetFillColor(gDisplayListPtr++, TICK_COLOUR);
+    gDPSetFillColor(gDisplayListPtr++, TICK_COLOR);
     if (longest != 0) {
         for (time = 0, y = 0; time < longest; time += FRAME_COUNTS, y += length * FRAME_COUNTS) {
             gDPFillRectangle(
@@ -136,7 +136,7 @@ void DrawTimingBars(void) {
         markers = g_aTimingMarkers[shown][bar];
         count = g_aTimingMarkerCounts[shown][bar];
         for (i = 1; i < count; i++) {
-            gDPSetFillColor(gDisplayListPtr++, markers[i].colour);
+            gDPSetFillColor(gDisplayListPtr++, markers[i].color);
             gDPFillRectangle(gDisplayListPtr++,
                              left + bar * 4 - 18,
                              top + markers[i - 1].time * length / longest,

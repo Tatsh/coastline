@@ -38282,11 +38282,11 @@ dlabel g_bBitmapTextNarrow
     /* 8EDD8 8028DDD8 00000000 */ .word 0x00000000
 enddlabel g_bBitmapTextNarrow
 
-nonmatching g_wBitmapTextColour
+nonmatching g_wBitmapTextColor
 
-dlabel g_wBitmapTextColour
+dlabel g_wBitmapTextColor
     /* 8EDDC 8028DDDC */ .short 0xFFFF
-enddlabel g_wBitmapTextColour
+enddlabel g_wBitmapTextColor
 
 nonmatching D_8028DDDE
 

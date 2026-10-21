@@ -8,7 +8,7 @@
 #include "util.h"
 
 /* The colour of the outline around each pixel of a glyph: opaque black. */
-#define OUTLINE_COLOUR 0x0001
+#define OUTLINE_COLOR 0x0001
 
 /* The rows a newline moves down before the shift of the frame buffer is added. */
 #define NEWLINE_ROWS 8
@@ -28,7 +28,7 @@ void DebugFrameStubA(void) {
  * of the next row cannot cover it.
  */
 static void
-DrawBitmapGlyph(u16 *dst, s32 stride, const u16 *rows, s32 columns, s32 ownColours, u16 colour) {
+DrawBitmapGlyph(u16 *dst, s32 stride, const u16 *rows, s32 columns, s32 ownColors, u16 color) {
     s32 row, column;
     u16 *block;
 
@@ -37,17 +37,17 @@ DrawBitmapGlyph(u16 *dst, s32 stride, const u16 *rows, s32 columns, s32 ownColou
             for (column = 0; column < columns; column++) {
                 if (rows[column] != 0) {
                     block = dst + column;
-                    block[0] = block[1] = block[2] = OUTLINE_COLOUR;
-                    block[stride] = block[stride + 2] = OUTLINE_COLOUR;
+                    block[0] = block[1] = block[2] = OUTLINE_COLOR;
+                    block[stride] = block[stride + 2] = OUTLINE_COLOR;
                     block[stride * 2] = block[stride * 2 + 1] = block[stride * 2 + 2] =
-                        OUTLINE_COLOUR;
+                        OUTLINE_COLOR;
                 }
             }
         }
         if (row != 0) {
             for (column = 0; column < columns; column++) {
                 if (rows[column - columns] != 0) {
-                    dst[column + 1] = ownColours ? rows[column - columns] : colour;
+                    dst[column + 1] = ownColors ? rows[column - columns] : color;
                 }
             }
         }
@@ -61,7 +61,7 @@ void DrawBitmapTextToFramebuffer(const char *text) {
     s32 stride = g_dwScreenWidth << shift;
     s32 lineX = g_dwBitmapTextX;
     s32 y = g_dwBitmapTextY;
-    u16 colour = g_wBitmapTextColour;
+    u16 color = g_wBitmapTextColor;
     u16 *dst = g_apFramebuffers[g_dwFrameBufferIndex ^ 1] + y * stride + lineX;
     const u8 *p;
     u32 c;
@@ -93,7 +93,7 @@ void DrawBitmapTextToFramebuffer(const char *text) {
                             &g_aBitmapFontNarrow[glyph][0][0],
                             BITMAP_FONT_NARROW_COLUMNS,
                             TRUE,
-                            colour);
+                            color);
             dst += BITMAP_FONT_NARROW_COLUMNS + 1 + shift;
         } else {
             DrawBitmapGlyph(dst,
@@ -101,7 +101,7 @@ void DrawBitmapTextToFramebuffer(const char *text) {
                             &g_aBitmapFontWide[glyph][0][0],
                             BITMAP_FONT_WIDE_COLUMNS,
                             FALSE,
-                            colour);
+                            color);
             dst += BITMAP_FONT_WIDE_COLUMNS + 1 + shift;
         }
     }
@@ -113,7 +113,7 @@ void DrawBitmapTextToFramebuffer(const char *text) {
 void InitBitmapText(void) {
     s32 shift = g_dwScreenScaleShift;
 
-    g_wBitmapTextColour = 0xFFFF;
+    g_wBitmapTextColor = 0xFFFF;
     g_dwBitmapTextX = TEXT_MARGIN << (shift * 2);
     g_dwBitmapTextY = TEXT_MARGIN << shift;
     g_bBitmapTextNarrow = FALSE;

@@ -17,7 +17,7 @@
 /** The end of a part of a frame, and the colour of the part after it. */
 typedef struct {
     /** The colour of the part that ends here, as two RGBA5551 pixels for a fill. */
-    u32 colour;
+    u32 color;
     /** The count of the CPU timer since the start of the frame. */
     u32 time;
 } TimingMarker;
