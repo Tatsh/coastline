@@ -29,6 +29,7 @@
 /.claude/standing-instructions.md
 /.claude/statusline-quota-cache.sh
 /.claude/stop-failure-events.jsonl
+/.claude/worktrees/
 /.gitconfig
 /.gitmodules
 /.idea

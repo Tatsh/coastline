@@ -24,6 +24,7 @@
       "*.1",
       "*.har",
       "*.lock",
+      ".claude/worktrees/**",
       ".git/**",
       ".yarn/**/*.cjs",
       ".vscode/extensions.json",
@@ -75,7 +76,7 @@
     },
     "gitignore": true,
     "globs": ["**/*.md", "**/*.mdc"],
-    "ignores": ["3rdparty/**"],
+    "ignores": [".claude/worktrees/**", "3rdparty/**"],
     "noBanner": true,
     "showFound": true
   },

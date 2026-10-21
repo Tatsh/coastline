@@ -256,7 +256,6 @@ mainmenu
 mainpage
 maptlbrdb
 maskt
-matchscan
 math
 mathutil
 maxcontrollers
@@ -549,6 +548,7 @@ winmain
 wiswa
 wiswa's
 wmaybe
+worktrees
 writeback
 writebackdcache
 writebackdcacheall
