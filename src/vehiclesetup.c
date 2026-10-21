@@ -139,11 +139,12 @@ void RespawnVehicle(Vehicle *vehicle) {
         return;
     }
     InitVehiclePhysics(vehicle);
-    point = &vehicle->section->points[vehicle->pointIndex];
     if (g_dwGameMode == GAME_MODE_TIME_ATTACK) {
+        point = &vehicle->section->points[vehicle->pointIndex];
         SetVehiclePosition(
             vehicle, point->position.x, point->position.y, point->position.z + RESPAWN_HEIGHT);
     } else {
+        point = &vehicle->section->points[vehicle->pointIndex];
         SetVehiclePosition(vehicle,
                            point->position.x + (f32)vehicle->index * RESPAWN_SPREAD,
                            point->position.y,

@@ -44,7 +44,8 @@ void RenderTextToDisplayList(const char *text) {
     s32 size = g_nFontSize;
     s32 y = g_nTextDrawY - (size * ASCENT) / SIZE_UNITS;
     s32 x = g_nTextDrawX;
-    s32 cell, padding, textureWidth, glyph, row, left, columns, width, dsdx, dtdy, offset, sStart;
+    s32 cell, padding, textureWidth, glyph, row, left, right, columns, width, dsdx, dtdy, offset;
+    s32 sStart;
     s16 left4, top4, right4, bottom4;
     s32 *offsets;
     u8 *texture, *gradient, *shadowGradient;
@@ -282,12 +283,14 @@ void RenderTextToDisplayList(const char *text) {
         row = glyph < FIRST_ROW_GLYPH ? cell : 0;
         left = offsets[glyph];
         columns = offsets[glyph + 1] - left + 1;
+        right = left + columns;
         dtdy = -(((cell << 10) - TEXEL_STEP) / size);
         gDPSetTextureImage(gDisplayListPtr++, G_IM_FMT_IA, G_IM_SIZ_8b, textureWidth, texture);
+        /* The original takes the width of the load back out of its right edge. */
         gDPSetTile(gDisplayListPtr++,
                    G_IM_FMT_IA,
                    G_IM_SIZ_8b,
-                   (columns + 8) >> 3,
+                   (right - left + 8) >> 3,
                    0,
                    G_TX_LOADTILE,
                    0,
@@ -298,12 +301,8 @@ void RenderTextToDisplayList(const char *text) {
                    6,
                    G_TX_NOLOD);
         gDPLoadSync(gDisplayListPtr++);
-        gDPLoadTile(gDisplayListPtr++,
-                    G_TX_LOADTILE,
-                    left * 4,
-                    row * 4,
-                    (left + columns) * 4,
-                    (row + cell) * 4);
+        gDPLoadTile(
+            gDisplayListPtr++, G_TX_LOADTILE, left * 4, row * 4, right * 4, (row + cell) * 4);
         gDPTileSync(gDisplayListPtr++);
         gDPSetTile(gDisplayListPtr++,
                    G_IM_FMT_IA,
@@ -322,8 +321,9 @@ void RenderTextToDisplayList(const char *text) {
             gDisplayListPtr++, G_TX_RENDERTILE, 2, 2, (columns - 1) * 4 + 2, (cell - 1) * 4 + 2);
 
         /* The glyph is stored upside down, so t starts at its last row and steps back. */
-        width = (columns * size) / cell;
-        if (x >= 0 && x + width <= SCREEN_WIDTH && y >= 0 && y + size <= SCREEN_HEIGHT) {
+        if (x >= 0 && x + (columns * size) / cell <= SCREEN_WIDTH && y >= 0 &&
+            y + size <= SCREEN_HEIGHT) {
+            width = (columns * size) / cell;
             gSPTextureRectangle(gDisplayListPtr++,
                                 x * 4,
                                 y * 4,
@@ -336,23 +336,28 @@ void RenderTextToDisplayList(const char *text) {
                                 dtdy);
         } else {
             /* A corner off the screen moves to its edge, and the texture start moves with it. */
+            width = (columns * size) / cell;
             left4 = x * 4;
             top4 = y * 4;
             right4 = (x + width) * 4;
             bottom4 = (y + size) * 4;
-            dsdx = (columns << 10) / width;
-            offset = 0;
             if (left4 < 0) {
-                offset = (left4 * (s16)dsdx) >> 7;
-                if ((s16)dsdx >= 0) {
-                    offset = offset < 0 ? offset : 0;
-                } else {
+                dsdx = (columns << 10) / width;
+                if ((s16)dsdx < 0) {
+                    offset = (left4 * (s16)dsdx) >> 7;
                     offset = offset > 0 ? offset : 0;
+                } else {
+                    offset = (left4 * (s16)dsdx) >> 7;
+                    offset = offset < 0 ? offset : 0;
                 }
+            } else {
+                dsdx = (columns << 10) / width;
+                offset = 0;
             }
             sStart = HALF_TEXEL - offset;
             offset = 0;
-            if (y < 0) {
+            /* The original tests the top edge before it is narrowed to 16 bits. */
+            if (y * 4 < 0) {
                 offset = (top4 * (s16)dtdy) >> 7;
                 if ((s16)dtdy < 0) {
                     offset = offset > 0 ? offset : 0;

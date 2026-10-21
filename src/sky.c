@@ -28,7 +28,6 @@ s32 IsSkyFogFilled(void) {
 void RenderSkybox(void) {
     ViewportRect *rect;
     Mtx *mtx;
-    u32 cullOn, cullOff;
 
     gSPClipRatio(gDisplayListPtr++, FRUSTRATIO_1);
     if (g_dwSkyboxDisabled) {
@@ -98,15 +97,10 @@ void RenderSkybox(void) {
                              G_TEXTURE_GEN | G_TEXTURE_GEN_LINEAR);
 
     /* Cull the back faces, or the front faces when only one of the track and view is mirrored. */
-    if (g_dwTrackMirrored == g_dwViewportMirrored) {
-        cullOn = G_CULL_BACK;
-        cullOff = G_CULL_FRONT;
-    } else {
-        cullOn = G_CULL_FRONT;
-        cullOff = G_CULL_BACK;
-    }
-    gSPSetGeometryMode(gDisplayListPtr++, cullOn);
-    gSPClearGeometryMode(gDisplayListPtr++, cullOff);
+    gSPSetGeometryMode(gDisplayListPtr++,
+                       g_dwTrackMirrored == g_dwViewportMirrored ? G_CULL_BACK : G_CULL_FRONT);
+    gSPClearGeometryMode(gDisplayListPtr++,
+                         g_dwTrackMirrored == g_dwViewportMirrored ? G_CULL_FRONT : G_CULL_BACK);
 
     gDPSetTextureLOD(gDisplayListPtr++, G_TL_TILE);
     gSPTexture(gDisplayListPtr++, 0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON);

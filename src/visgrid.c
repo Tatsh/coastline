@@ -6,22 +6,12 @@
 #define CELL_SIZE 32.0f
 #define CELL_SCALE (1.0f / 32.0f)
 
-/* The edges of the frustum, as pairs of its points: from the camera and from the far point to each
- * corner, then around the corners. */
-static const u8 sFrustumEdges[][2] = {
-    {0, 1},
-    {0, 2},
-    {0, 3},
-    {0, 4},
-    {5, 1},
-    {5, 2},
-    {5, 3},
-    {5, 4},
-    {1, 2},
-    {2, 3},
-    {3, 4},
-    {4, 1},
-};
+/* Mark the edge of the frustum between two of its points. */
+#define MARK_FRUSTUM_EDGE(from, to)                                                                \
+    MarkVisibleEdge(g_avFrustumPoints[from].x,                                                     \
+                    g_avFrustumPoints[from].y,                                                     \
+                    g_avFrustumPoints[to].x,                                                       \
+                    g_avFrustumPoints[to].y)
 
 void MarkVisibleCell(s32 col, s32 row) {
     if (col < 0) {
@@ -54,9 +44,10 @@ void MarkVisibleEdge(f32 x0, f32 y0, f32 x1, f32 y1) {
     first = FloatToInt(x0 * CELL_SCALE);
     last = FloatToInt(x1 * CELL_SCALE);
     if (last < first) {
-        col = first;
-        first = last;
-        last = col;
+        /* The original swaps the columns with three exclusive ors. */
+        last ^= first;
+        first ^= last;
+        last ^= first;
     }
     if (first < g_dwVisibleGridMinCol) {
         g_dwVisibleGridMinCol = first;
@@ -120,7 +111,6 @@ s32 IsPointVisible(f32 x, f32 y) {
 
 void BuildVisibleGrid(void) {
     s32 i, col, first, last;
-    const Vec3f *from, *to;
 
     g_dwVisibleGridMaxCol = 0;
     g_dwVisibleGridMaxRow = 0;
@@ -133,11 +123,20 @@ void BuildVisibleGrid(void) {
         g_adwVisibleGridColMaxRow[i] = 0;
     }
 
-    for (i = 0; i < (s32)(sizeof(sFrustumEdges) / sizeof(sFrustumEdges[0])); i++) {
-        from = &g_avFrustumPoints[sFrustumEdges[i][0]];
-        to = &g_avFrustumPoints[sFrustumEdges[i][1]];
-        MarkVisibleEdge(from->x, from->y, to->x, to->y);
-    }
+    /* The edges of the frustum: from the camera and from the far point to each corner, then
+     * around the corners. */
+    MARK_FRUSTUM_EDGE(0, 1);
+    MARK_FRUSTUM_EDGE(0, 2);
+    MARK_FRUSTUM_EDGE(0, 3);
+    MARK_FRUSTUM_EDGE(0, 4);
+    MARK_FRUSTUM_EDGE(5, 1);
+    MARK_FRUSTUM_EDGE(5, 2);
+    MARK_FRUSTUM_EDGE(5, 3);
+    MARK_FRUSTUM_EDGE(5, 4);
+    MARK_FRUSTUM_EDGE(1, 2);
+    MARK_FRUSTUM_EDGE(2, 3);
+    MARK_FRUSTUM_EDGE(3, 4);
+    MARK_FRUSTUM_EDGE(4, 1);
 
     if (g_dwVisibleGridMinCol < 0) {
         g_dwVisibleGridMinCol = 0;

@@ -42,13 +42,13 @@ f32 Powf(f32 base, f32 exponent) {
     n = 1.0f;
     term = exponent * x;
     sum = 1.0f + term;
-    do {
+    while (n < POWF_TERMS) {
         f32 factor = (exponent - n) * x;
 
         n += 1.0f;
         term = term * factor / n;
         sum += term;
-    } while (n < POWF_TERMS);
+    }
     return result * sum;
 }
 
@@ -285,7 +285,7 @@ void Vec3fRotateAroundAxis(Vec3f *v, f32 angle, Vec3f *axis) {
 
     /* The rotation matrix about the axis by the formula of Rodrigues. */
     v->x = (tx * x + c) * vx + (txy + sz) * vy + (txz - sy) * vz;
-    v->y = (txy - sz) * vx + (ty * y + c) * vy + (tyz + sx) * vz;
+    v->y = (txy - sz) * vx + (t * y * y + c) * vy + (tyz + sx) * vz;
     v->z = (sy + txz) * vx + (tyz - sx) * vy + (t * z * z + c) * vz;
 }
 
@@ -379,29 +379,36 @@ void CopyMatrix4x4(f32 out[4][4], f32 in[4][4]) {
     memcpy(out, in, sizeof(f32[4][4]));
 }
 
+/* Add a term to the sum of the positive terms or of the negative ones. */
+#define ADD_BY_SIGN(term, positive, negative)                                                      \
+    do {                                                                                           \
+        if ((term) >= 0.0f) {                                                                      \
+            (positive) += (term);                                                                  \
+        } else {                                                                                   \
+            (negative) += (term);                                                                  \
+        }                                                                                          \
+    } while (0)
+
 s32 MtxInvert4x4(f32 out[4][4], f32 in[4][4]) {
     f32 m00 = in[0][0], m11 = in[1][1], m22 = in[2][2];
     f32 m01 = in[0][1], m12 = in[1][2], m20 = in[2][0];
     f32 m02 = in[0][2], m10 = in[1][0], m21 = in[2][1];
-    f32 terms[6];
     f32 positive = 0.0f, negative = 0.0f;
-    f32 determinant, precision, inverse;
-    s32 i;
+    f32 term, determinant, precision, inverse;
 
     /* The determinant of the 3 by 3 part, summed by sign to measure its precision. */
-    terms[0] = m22 * (m00 * m11);
-    terms[1] = m20 * (m01 * m12);
-    terms[2] = m21 * (m02 * m10);
-    terms[3] = m20 * (-m02 * m11);
-    terms[4] = m22 * (-m01 * m10);
-    terms[5] = m21 * (-m00 * m12);
-    for (i = 0; i < 6; i++) {
-        if (terms[i] >= 0.0f) {
-            positive += terms[i];
-        } else {
-            negative += terms[i];
-        }
-    }
+    term = m22 * (m00 * m11);
+    ADD_BY_SIGN(term, positive, negative);
+    term = m20 * (m01 * m12);
+    ADD_BY_SIGN(term, positive, negative);
+    term = m21 * (m02 * m10);
+    ADD_BY_SIGN(term, positive, negative);
+    term = m20 * (-m02 * m11);
+    ADD_BY_SIGN(term, positive, negative);
+    term = m22 * (-m01 * m10);
+    ADD_BY_SIGN(term, positive, negative);
+    term = m21 * (-m00 * m12);
+    ADD_BY_SIGN(term, positive, negative);
     determinant = positive + negative;
     precision = determinant / (positive - negative);
     if (precision < 0.0f) {
@@ -467,7 +474,7 @@ f32 Atan2f(f32 x, f32 y) {
 
     /* Search for the angle whose sine is y, halving the step each time. */
     angle = EIGHTH_PI_F;
-    step = EIGHTH_PI_F * 0.5f;
+    step = angle * 0.5f;
     for (i = 0; i < ATAN2_STEPS;) {
         s = sinf(angle);
         i++;
@@ -540,14 +547,6 @@ s32 IsPointInsideTriangle(
     return TRUE;
 }
 
-/* The sides of two points relative to the line through a and b, as in SegmentCrossesLine2D(). */
-static s32 CompareSides(f32 side1, f32 side2) {
-    if (side1 != 0.0f && side2 != 0.0f && side1 * side2 > 0.0f) {
-        return 0;
-    }
-    return side1 == side2 ? 2 : 1;
-}
-
 s32 TestLineSegmentIntersection(Vec2f *p1, Vec2f *p2, Vec2f *q1, Vec2f *q2) {
     f32 side1, side2, side3, side4;
 
@@ -582,9 +581,13 @@ s32 TestLineSegmentIntersection(Vec2f *p1, Vec2f *p2, Vec2f *q1, Vec2f *q2) {
 s32 SegmentCrossesLine2D(Vec3f *a, Vec3f *b, Vec3f *p, Vec3f *q) {
     f32 dx = b->x - a->x;
     f32 dy = b->y - a->y;
+    f32 side1 = (p->x - a->x) * dy - dx * (p->y - a->y);
+    f32 side2 = (q->x - a->x) * dy - dx * (q->y - a->y);
 
-    return CompareSides((p->x - a->x) * dy - dx * (p->y - a->y),
-                        (q->x - a->x) * dy - dx * (q->y - a->y));
+    if (side1 != 0.0f && side2 != 0.0f && side1 * side2 > 0.0f) {
+        return 0;
+    }
+    return side1 == side2 ? 2 : 1;
 }
 
 void SetRngSeed(u32 seed) {
