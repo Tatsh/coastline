@@ -237,9 +237,12 @@ void RenderWheelModels(Vehicle *vehicle) {
 }
 
 void CheckVehicleVisibility(Vehicle *vehicle) {
+    f32 distance;
     Vec3f ahead;
 
-    Vec3fDistance(&vehicle->frame.position, &g_pActiveCamera->position);
+    /* The distance to the camera is computed and not used. */
+    distance = Vec3fDistance(&vehicle->frame.position, &g_pActiveCamera->position);
+    (void)distance;
     g_adwVehicleVisible[vehicle->index] = FALSE;
     g_adwVehicleInViewRange[vehicle->index] = FALSE;
     vehicle->fogFactor = ComputeFogFactorAtPoint(&vehicle->frame.position);
