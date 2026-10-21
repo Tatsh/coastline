@@ -71,31 +71,27 @@
         }                                                                                          \
     }
 
-/** Play a sound of the screen on a free channel. */
-static inline void PlayScreenSound(s8 *sample, u32 length) {
-    s16 channel = FindFreeSoundChannel();
-
-    if (channel != -1) {
-        InitSoundChannel(channel, sample, length, 0);
+/* Play a sound of the screen on a free channel. */
+#define PLAY_SCREEN_SOUND(sample, length)                                                          \
+    {                                                                                              \
+        s16 channel = FindFreeSoundChannel();                                                      \
+                                                                                                   \
+        if (channel != -1) {                                                                       \
+            InitSoundChannel(channel, sample, length, 0);                                          \
+        }                                                                                          \
     }
-}
 
-/** Draw the buttons at the bottom of a screen and their names. */
-static inline void DrawFooterButtons(s32 leftX,
-                                     s32 rightX,
-                                     const char *leftText,
-                                     s32 leftTextX,
-                                     const char *rightText,
-                                     s32 rightTextX) {
-    SetTextStyleNormal();
-    SetTextAlignLeft();
-    DrawTexturedRect(&g_ArrowLeftTextureDesc, leftX, 216, 12, 12, 0, 0, 0, 0xFF, 0, 0, 0, 0xFF, 0);
-    DrawTexturedRect(
-        &g_ArrowRightTextureDesc, rightX, 216, 12, 12, 0, 0, 0, 0xFF, 0, 0, 0, 0xFF, 0);
-    SetTextSize(11);
-    DrawText(leftText, leftTextX, g_dwScreenHeight * 19 / 20 - 3);
-    DrawText(rightText, rightTextX, g_dwScreenHeight * 19 / 20 - 3);
-}
+/* Draw the buttons at the bottom of a screen and their names. */
+#define DRAW_FOOTER_BUTTONS(leftX, rightX, leftText, leftTextX, rightText, rightTextX)             \
+    SetTextStyleNormal();                                                                          \
+    SetTextAlignLeft();                                                                            \
+    DrawTexturedRect(                                                                              \
+        &g_ArrowLeftTextureDesc, leftX, 216, 12, 12, 0, 0, 0, 0xFF, 0, 0, 0, 0xFF, 0);             \
+    DrawTexturedRect(                                                                              \
+        &g_ArrowRightTextureDesc, rightX, 216, 12, 12, 0, 0, 0, 0xFF, 0, 0, 0, 0xFF, 0);           \
+    SetTextSize(11);                                                                               \
+    DrawText(leftText, leftTextX, g_dwScreenHeight * 19 / 20 - 3);                                 \
+    DrawText(rightText, rightTextX, g_dwScreenHeight * 19 / 20 - 3)
 
 s32 IsTrackUnlocked(s32 track) {
     if (g_dwGameMode == GAME_MODE_CHAMPIONSHIP) {
@@ -115,33 +111,26 @@ s32 IsTrackUnlocked(s32 track) {
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wtype-limits"
 void ValidateChampionshipProgress(void) {
-    PlayerProfile *profile = g_aVehicles[0].profile;
-
-    if (profile->championshipFlags < 0) {
-        profile->championshipFlags = 0;
+    if (g_aVehicles[0].profile->championshipFlags < 0) {
+        g_aVehicles[0].profile->championshipFlags = 0;
+    resetSeason:
         g_aVehicles[0].profile->season = 0;
+    resetRound:
         g_aVehicles[0].profile->round = 0;
         g_aVehicles[0].profile->seasonPoints[g_aVehicles[0].profile->season] = 0;
     }
-    for (;;) {
-        profile = g_aVehicles[0].profile;
-        if (profile->season < 0 || profile->season >= SEASONS) {
-            profile->season = 0;
-            g_aVehicles[0].profile->round = 0;
-            g_aVehicles[0].profile->seasonPoints[g_aVehicles[0].profile->season] = 0;
-        } else if (profile->round < 0 ||
-                   profile->round >= g_SeasonTable[profile->season].raceCount) {
-            profile->round = 0;
-            g_aVehicles[0].profile->seasonPoints[g_aVehicles[0].profile->season] = 0;
-        } else {
-            return;
-        }
+    if (g_aVehicles[0].profile->season < 0 || g_aVehicles[0].profile->season >= SEASONS) {
+        goto resetSeason;
+    }
+    if (g_aVehicles[0].profile->round < 0 ||
+        g_aVehicles[0].profile->round >= g_SeasonTable[g_aVehicles[0].profile->season].raceCount) {
+        goto resetRound;
     }
 }
 #pragma GCC diagnostic pop
 
 void TrackMenuPostDraw(s32 item) {
-    s32 needed, season, slot;
+    s32 needed, slot;
 
     if (g_dwGameMode == GAME_MODE_ARCADE) {
         SetTextSize(10);
@@ -153,8 +142,8 @@ void TrackMenuPostDraw(s32 item) {
         SetTextSize(10);
         SetTextStyleNormal();
         SetTextAlignCenter();
-        season = g_pActiveProfile->season;
-        needed = g_SeasonTable[season].pointsNeeded - g_pActiveProfile->seasonPoints[season];
+        needed = g_SeasonTable[g_pActiveProfile->season].pointsNeeded -
+                 g_pActiveProfile->seasonPoints[g_pActiveProfile->season];
         if (needed <= 0) {
             sprintf(g_szTrackSelectPointsTextBuf,
                     "%%wwYou have enough points to advance to next season");
@@ -170,26 +159,26 @@ void TrackMenuPostDraw(s32 item) {
     if (!g_bTrackMenuPakScreen) {
         return;
     }
-    if (!ProcessPakDataScreen(g_dwGameMode == GAME_MODE_TIME_ATTACK, 0)) {
+    if (ProcessPakDataScreen(g_dwGameMode == GAME_MODE_TIME_ATTACK, 0)) {
+        g_bTrackMenuPakScreen = FALSE;
+        if (g_dwGameMode == GAME_MODE_CHAMPIONSHIP) {
+            ValidateChampionshipProgress();
+            StartChampionshipRace();
+            LOAD_SEASON_CARS(g_pActiveProfile, slot);
+            g_bSeasonFirstRace = TRUE;
+        } else if (g_dwGameMode == GAME_MODE_TIME_ATTACK) {
+            StartTimeAttack();
+            /* The loaded ghost picks its track when that track is unlocked. */
+            if (g_pActiveProfile->unlockedTracks & (1 << g_abGhostRecording[0])) {
+                g_dwSelectedTrackId = g_abGhostRecording[0];
+            }
+        }
+        SetScreenPendingSelection(g_dwSelectedTrackId);
+    } else {
         /* The menu takes no input while the screen of the controller pak runs. */
         g_aPlayerInputState[0].buttons = 0;
         g_aPlayerInputState[0].stickX = 0.0f;
-        return;
     }
-    g_bTrackMenuPakScreen = FALSE;
-    if (g_dwGameMode == GAME_MODE_CHAMPIONSHIP) {
-        ValidateChampionshipProgress();
-        StartChampionshipRace();
-        LOAD_SEASON_CARS(g_pActiveProfile, slot);
-        g_bSeasonFirstRace = TRUE;
-    } else if (g_dwGameMode == GAME_MODE_TIME_ATTACK) {
-        StartTimeAttack();
-        /* The loaded ghost picks its track when that track is unlocked. */
-        if (g_pActiveProfile->unlockedTracks & (1 << g_abGhostRecording[0])) {
-            g_dwSelectedTrackId = g_abGhostRecording[0];
-        }
-    }
-    SetScreenPendingSelection(g_dwSelectedTrackId);
 }
 
 void SeasonRecordsPreDrawCallback(void) {
@@ -709,37 +698,37 @@ void DrawMenuChoiceMarker(void) {
 }
 
 void DrawMenuFooterButtons(void) {
-    DrawFooterButtons(100, 160, "%wwSelect", 115, "%wwGo Back", 175);
+    DRAW_FOOTER_BUTTONS(100, 160, "%wwSelect", 115, "%wwGo Back", 175);
 }
 
 void DrawPauseMenuButtons(void) {
-    DrawFooterButtons(102, 178, "%wwContinue", 118, "%wwExit", 193);
+    DRAW_FOOTER_BUTTONS(102, 178, "%wwContinue", 118, "%wwExit", 193);
 }
 
 void SetScreenPendingSelection(s32 item) {
     g_nScreenPendingSelection = item;
 }
 
-/** Load the textures and the sounds of the screens, and silence the end of each sound. */
-static inline void LoadScreenAssets(void) {
-    s32 i;
-
-    LoadAndDecompressAsset(&g_ArrowLeftTextureDesc, AllocHeapAligned);
-    LoadAndDecompressAsset(&g_ArrowRightTextureDesc, AllocHeapAligned);
-    LoadAndDecompressAsset(&g_BgTextureDesc, AllocHeapAligned);
-    g_dwScreenScrollSoundSize = DmaReadAssetSize(ROM_SCROLL_SOUND);
-    g_pScreenScrollSoundBuf =
-        AllocHeapAligned(g_dwScreenScrollSoundSize + g_dwScreenScrollSoundSize);
-    DecompressFromRom(g_pScreenScrollSoundBuf, ROM_SCROLL_SOUND, NULL);
-    g_dwScreenSelectSoundSize = DmaReadAssetSize(ROM_SELECT_SOUND);
-    g_pScreenSelectSoundBuf =
-        AllocHeapAligned(g_dwScreenSelectSoundSize + g_dwScreenSelectSoundSize);
-    DecompressFromRom(g_pScreenSelectSoundBuf, ROM_SELECT_SOUND, NULL);
-    for (i = 0; i < SOUND_TAIL_BYTES; i++) {
-        g_pScreenScrollSoundBuf[g_dwScreenScrollSoundSize + i] = 0;
-        g_pScreenSelectSoundBuf[g_dwScreenSelectSoundSize + i] = 0;
+/*
+ * Load the textures and the sounds of the screens, and silence the end of each sound, counting
+ * with i.
+ */
+#define LOAD_SCREEN_ASSETS(i)                                                                      \
+    LoadAndDecompressAsset(&g_ArrowLeftTextureDesc, AllocHeapAligned);                             \
+    LoadAndDecompressAsset(&g_ArrowRightTextureDesc, AllocHeapAligned);                            \
+    LoadAndDecompressAsset(&g_BgTextureDesc, AllocHeapAligned);                                    \
+    g_dwScreenScrollSoundSize = DmaReadAssetSize(ROM_SCROLL_SOUND);                                \
+    g_pScreenScrollSoundBuf =                                                                      \
+        AllocHeapAligned(g_dwScreenScrollSoundSize + g_dwScreenScrollSoundSize);                   \
+    DecompressFromRom(g_pScreenScrollSoundBuf, ROM_SCROLL_SOUND, NULL);                            \
+    g_dwScreenSelectSoundSize = DmaReadAssetSize(ROM_SELECT_SOUND);                                \
+    g_pScreenSelectSoundBuf =                                                                      \
+        AllocHeapAligned(g_dwScreenSelectSoundSize + g_dwScreenSelectSoundSize);                   \
+    DecompressFromRom(g_pScreenSelectSoundBuf, ROM_SELECT_SOUND, NULL);                            \
+    for (i = 0; i < SOUND_TAIL_BYTES; i++) {                                                       \
+        g_pScreenScrollSoundBuf[g_dwScreenScrollSoundSize + i] = 0;                                \
+        g_pScreenSelectSoundBuf[g_dwScreenSelectSoundSize + i] = 0;                                \
     }
-}
 
 /*
  * Draw an item that slides with the cursor: its model turning, or its name. The item is an
@@ -766,11 +755,10 @@ static inline void LoadScreenAssets(void) {
                  g_dwScreenHeight * 9 / 16);                                                       \
     }
 
-/** Fade the screen and the sound effects out. */
-static inline void FadeScreenOut(void) {
-    SetFadeTarget(0.0f, SCREEN_FADE_RATE);
-    FadeSfxTo(0.0f, SCREEN_FADE_RATE);
-}
+/* Fade the screen and the sound effects out. */
+#define FADE_SCREEN_OUT()                                                                          \
+    SetFadeTarget(0.0f, SCREEN_FADE_RATE);                                                         \
+    FadeSfxTo(0.0f, SCREEN_FADE_RATE)
 
 /* The input of a player, which the original reads from the vehicle at every use. */
 #define PLAYER_INPUT(player) (g_aVehicles[player].input)
@@ -801,7 +789,7 @@ s32 ProcessScreenState(const char *title,
         g_nScreenCursor = *selection;
         g_fScreenRotationAngle = 4.712388992f;
         g_fScreenSlideOffset = 0.0f;
-        LoadScreenAssets();
+        LOAD_SCREEN_ASSETS(i);
         if (g_pMenuTitleImage != NULL) {
             LoadAndDecompressAsset(g_pMenuTitleImage, AllocHeapAligned);
         }
@@ -814,7 +802,7 @@ s32 ProcessScreenState(const char *title,
         g_nScreenCursor = g_nScreenPendingSelection;
         if (g_nScreenPendingSelection != g_nPrevScreenSelection) {
             g_fScreenSlideOffset = -1.0f;
-            PlayScreenSound(g_pScreenScrollSoundBuf, g_dwScreenScrollSoundSize);
+            PLAY_SCREEN_SOUND(g_pScreenScrollSoundBuf, g_dwScreenScrollSoundSize);
         }
         g_nScreenPendingSelection = -1;
     }
@@ -1021,7 +1009,7 @@ s32 ProcessScreenState(const char *title,
                     if (g_nScreenCursor != g_nPrevScreenSelection) {
                         g_fScreenSlideOffset = -1.0f;
                     scrolled:
-                        PlayScreenSound(g_pScreenScrollSoundBuf, g_dwScreenScrollSoundSize);
+                        PLAY_SCREEN_SOUND(g_pScreenScrollSoundBuf, g_dwScreenScrollSoundSize);
                     }
                 }
                 buttons = PLAYER_INPUT(player)->buttons;
@@ -1042,7 +1030,7 @@ s32 ProcessScreenState(const char *title,
                 if (buttons & INPUT_B) {
                     TransferFlags(PLAYER_INPUT(player), INPUT_B);
                     g_bScreenItemChosen = FALSE;
-                    FadeScreenOut();
+                    FADE_SCREEN_OUT();
                     goto selected;
                 }
             }
@@ -1065,7 +1053,7 @@ s32 ProcessScreenState(const char *title,
                 SetFadeTarget(0.0f, SCREEN_FADE_RATE);
             }
         selected:
-            PlayScreenSound(g_pScreenSelectSoundBuf, g_dwScreenSelectSoundSize);
+            PLAY_SCREEN_SOUND(g_pScreenSelectSoundBuf, g_dwScreenSelectSoundSize);
         }
     }
 
@@ -1074,7 +1062,7 @@ s32 ProcessScreenState(const char *title,
         g_fScreenIdleTime += g_fFrameDeltaTime;
         if (g_fScreenIdleTimeout <= g_fScreenIdleTime && !IsFadingOut()) {
             g_bScreenItemChosen = FALSE;
-            FadeScreenOut();
+            FADE_SCREEN_OUT();
         }
     }
     g_nScreenLastActiveIndex = g_nScreenCursor;
@@ -1082,7 +1070,6 @@ s32 ProcessScreenState(const char *title,
 }
 
 void LoadMenuItemModels(MenuItem **items, s32 *itemCount) {
-    MenuItem *item;
     s32 i;
 
     /* Two frames of black in the mode of the screen. */
@@ -1105,13 +1092,13 @@ void LoadMenuItemModels(MenuItem **items, s32 *itemCount) {
     g_dwKeepScreenBlanked = FALSE;
 
     /* Items with the same model on the cartridge share it. */
-    for (*itemCount = 0; (item = items[*itemCount]) != NULL; (*itemCount)++) {
-        if (item->romStart == 0) {
+    for (*itemCount = 0; items[*itemCount] != NULL; (*itemCount)++) {
+        if (items[*itemCount]->romStart == 0) {
             continue;
         }
         for (i = 0; i < *itemCount; i++) {
-            if (item->romStart == items[i]->romStart) {
-                item->model = items[i]->model;
+            if (items[*itemCount]->romStart == items[i]->romStart) {
+                items[*itemCount]->model = items[i]->model;
                 break;
             }
         }

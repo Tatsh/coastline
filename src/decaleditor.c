@@ -55,24 +55,17 @@
 /* Whether a decal has a mirror image. */
 #define HAS_MIRROR(slot) ((slot) != 4 && (slot) != 5 && (slot) != 8 && (slot) != 9)
 
-static inline PlayerInputState *PaintShopInput(void) {
-    return &g_aPlayerInputState[g_bPaintShopPlayer];
-}
+#define PaintShopInput() (&g_aPlayerInputState[g_bPaintShopPlayer])
 
-static inline u32 GetTimeMilliseconds(void) {
-    return (u64)osGetCount() * 1000000 / osClockRate / 1000;
-}
+#define GetTimeMilliseconds() ((u32)((u64)osGetCount() * 1000000 / osClockRate / 1000))
 
 /* A color of the palette in RGBA 5551 from 8-bit channels, with the alpha of the old entry. */
-static inline u16 PackPaletteColor(u16 old, s32 red, s32 green, s32 blue) {
-    return (old & 1) | ((red & 0xF8) << 8) | ((green & 0xF8) << 3) | ((blue & 0xF8) >> 2);
-}
+#define PackPaletteColor(old, red, green, blue)                                                    \
+    ((u16)(((old) & 1) | (((red) & 0xF8) << 8) | (((green) & 0xF8) << 3) | (((blue) & 0xF8) >> 2)))
 
-static inline u16 *MaterialPalette(s32 material) {
-    return g_pCurrentVehicleModelData
-        ->textures[g_pCurrentVehicleModelData->materialTextures[material]]
-        .palette;
-}
+#define MaterialPalette(material)                                                                  \
+    (g_pCurrentVehicleModelData->textures[g_pCurrentVehicleModelData->materialTextures[material]]  \
+         .palette)
 
 /* The colours of the bars and the names of the channels, as the colour editor copies them. */
 typedef struct {
@@ -93,19 +86,17 @@ typedef struct {
 } FourStyleNames;
 
 /* Copy the first two colors of the palette into the palettes of the lights of the car. */
-static inline void CopyLightPalettes(void) {
-    MaterialPalette(VEHICLE_MATERIAL_HEADLIGHTS)[0] = g_pDecalPalette[0];
-    MaterialPalette(VEHICLE_MATERIAL_HEADLIGHTS)[1] = g_pDecalPalette[1];
-    MaterialPalette(VEHICLE_MATERIAL_REAR_LIGHTS)[0] = g_pDecalPalette[0];
-    /* The second color of the rear lights is never set; the first is set again. */
-    MaterialPalette(VEHICLE_MATERIAL_REAR_LIGHTS)[0] = g_pDecalPalette[0];
-}
+#define CopyLightPalettes()                                                                        \
+    MaterialPalette(VEHICLE_MATERIAL_HEADLIGHTS)[0] = g_pDecalPalette[0];                          \
+    MaterialPalette(VEHICLE_MATERIAL_HEADLIGHTS)[1] = g_pDecalPalette[1];                          \
+    MaterialPalette(VEHICLE_MATERIAL_REAR_LIGHTS)[0] = g_pDecalPalette[0];                         \
+    /* The second color of the rear lights is never set; the first is set again. */                \
+    MaterialPalette(VEHICLE_MATERIAL_REAR_LIGHTS)[0] = g_pDecalPalette[0]
 
 /* The tools whose styles a double click opens. */
-static inline s32 HasStyleMenu(s32 tool) {
-    return tool == PAINT_TOOL_RECTANGLE || tool == PAINT_TOOL_OVAL || tool == PAINT_TOOL_BRUSH ||
-           tool == PAINT_TOOL_TEXT;
-}
+#define HasStyleMenu(tool)                                                                         \
+    ((tool) == PAINT_TOOL_RECTANGLE || (tool) == PAINT_TOOL_OVAL || (tool) == PAINT_TOOL_BRUSH ||  \
+     (tool) == PAINT_TOOL_TEXT)
 
 /* Make a decal the one edited, and center it in its frame. */
 static inline void SelectDecalSlot(s32 slot) {
@@ -791,73 +782,42 @@ void ProcessDecalEditorInput(void) {
 }
 
 s32 IsCursorInButton(Sprite *sprite) {
-    s32 width;
-
-    if (g_texPaintCursor.originX < sprite->originX) {
-        return FALSE;
+    if (g_texPaintCursor.originX >= sprite->originX &&
+        (sprite->drawWidth > 0 ? sprite->drawWidth : -sprite->drawWidth) + sprite->originX >=
+            g_texPaintCursor.originX &&
+        g_texPaintCursor.originY >= sprite->originY &&
+        sprite->originY + sprite->drawHeight >= g_texPaintCursor.originY) {
+        return TRUE;
     }
-    width = sprite->drawWidth;
-    if (width <= 0) {
-        width = -width;
-    }
-    if (sprite->originX + width < g_texPaintCursor.originX) {
-        return FALSE;
-    }
-    if (g_texPaintCursor.originY < sprite->originY) {
-        return FALSE;
-    }
-    if (sprite->originY + sprite->drawHeight < g_texPaintCursor.originY) {
-        return FALSE;
-    }
-    return TRUE;
+    return FALSE;
 }
 
 s32 IsCursorInRect(ScreenRect *rect) {
-    if (g_texPaintCursor.originX < rect->x) {
-        return FALSE;
+    if (g_texPaintCursor.originX >= rect->x && rect->x + rect->width >= g_texPaintCursor.originX &&
+        g_texPaintCursor.originY >= rect->y && rect->y + rect->height >= g_texPaintCursor.originY) {
+        return TRUE;
     }
-    if (rect->x + rect->width < g_texPaintCursor.originX) {
-        return FALSE;
-    }
-    if (g_texPaintCursor.originY < rect->y) {
-        return FALSE;
-    }
-    if (rect->y + rect->height < g_texPaintCursor.originY) {
-        return FALSE;
-    }
-    return TRUE;
+    return FALSE;
 }
 
 s32 IsCursorInSwatch(PaletteSwatch *swatch) {
-    if (g_texPaintCursor.originX < swatch->rect.x) {
-        return FALSE;
+    if (g_texPaintCursor.originX >= swatch->rect.x &&
+        swatch->rect.x + swatch->rect.width >= g_texPaintCursor.originX &&
+        g_texPaintCursor.originY >= swatch->rect.y &&
+        swatch->rect.y + swatch->rect.height >= g_texPaintCursor.originY) {
+        return TRUE;
     }
-    if (swatch->rect.x + swatch->rect.width < g_texPaintCursor.originX) {
-        return FALSE;
-    }
-    if (g_texPaintCursor.originY < swatch->rect.y) {
-        return FALSE;
-    }
-    if (swatch->rect.y + swatch->rect.height < g_texPaintCursor.originY) {
-        return FALSE;
-    }
-    return TRUE;
+    return FALSE;
 }
 
 s32 IsCursorOnKeyboardKey(DecalGlyph *key) {
-    if (g_texPaintCursor.originX < key->x) {
-        return FALSE;
+    if (g_texPaintCursor.originX >= key->x &&
+        key->x + g_texKeyboardHighlight.drawWidth >= g_texPaintCursor.originX &&
+        g_texPaintCursor.originY >= key->y &&
+        key->y + g_texKeyboardHighlight.drawHeight >= g_texPaintCursor.originY) {
+        return TRUE;
     }
-    if (key->x + g_texKeyboardHighlight.drawWidth < g_texPaintCursor.originX) {
-        return FALSE;
-    }
-    if (g_texPaintCursor.originY < key->y) {
-        return FALSE;
-    }
-    if (key->y + g_texKeyboardHighlight.drawHeight < g_texPaintCursor.originY) {
-        return FALSE;
-    }
-    return TRUE;
+    return FALSE;
 }
 
 void ConvertPaletteToRgb(void) {
@@ -866,11 +826,11 @@ void ConvertPaletteToRgb(void) {
     /* Each 5-bit channel fills the 8 bits by repeating its highest bits. */
     for (i = 0; i < DECAL_SWATCHES; i++) {
         g_aDecalSwatches[i].color[0] =
-            ((g_pDecalPalette[i] >> 13) & 7) | ((g_pDecalPalette[i] >> 8) & 0xF8);
+            ((g_pDecalPalette[i] >> 8) & 0xF8) | ((g_pDecalPalette[i] >> 13) & 7);
         g_aDecalSwatches[i].color[1] =
-            ((g_pDecalPalette[i] >> 8) & 7) | ((g_pDecalPalette[i] >> 3) & 0xF8);
+            ((g_pDecalPalette[i] >> 3) & 0xF8) | ((g_pDecalPalette[i] >> 8) & 7);
         g_aDecalSwatches[i].color[2] =
-            ((g_pDecalPalette[i] >> 3) & 7) | ((g_pDecalPalette[i] << 2) & 0xF8);
+            ((g_pDecalPalette[i] << 2) & 0xF8) | ((g_pDecalPalette[i] >> 3) & 7);
     }
 }
 
@@ -878,15 +838,20 @@ void DrawDecalColorPalette(void) {
     PaletteSwatch *swatch;
     s32 i;
 
-    for (i = 0; i < 2; i++) {
-        DrawFilledRectHiRes(g_aPaletteFrameRects[i].x,
-                            g_aPaletteFrameRects[i].y,
-                            g_aPaletteFrameRects[i].width,
-                            g_aPaletteFrameRects[i].height,
-                            0,
-                            0,
-                            0);
-    }
+    DrawFilledRectHiRes(g_aPaletteFrameRects[0].x,
+                        g_aPaletteFrameRects[0].y,
+                        g_aPaletteFrameRects[0].width,
+                        g_aPaletteFrameRects[0].height,
+                        0,
+                        0,
+                        0);
+    DrawFilledRectHiRes(g_aPaletteFrameRects[1].x,
+                        g_aPaletteFrameRects[1].y,
+                        g_aPaletteFrameRects[1].width,
+                        g_aPaletteFrameRects[1].height,
+                        0,
+                        0,
+                        0);
     for (i = 0; i < DECAL_SWATCHES; i++) {
         swatch = &g_aDecalSwatches[i];
         DrawFilledRectHiRes(swatch->rect.x,
@@ -909,39 +874,38 @@ void DrawDecalColorPalette(void) {
 }
 
 /* Move the cursor of a menu of four styles with left and right, around the ends. */
-static inline void MoveStyleMenuCursor(void) {
-    PlayerInputState *input = PaintShopInput();
-
-    if (input->buttons & INPUT_LEFT) {
-        TransferFlags(input, INPUT_LEFT);
-        if (g_bStyleMenuCursor == 0) {
-            g_bStyleMenuCursor = 3;
-        } else {
-            g_bStyleMenuCursor--;
-        }
-    } else if (input->buttons & INPUT_RIGHT) {
-        TransferFlags(input, INPUT_RIGHT);
-        if (g_bStyleMenuCursor == 3) {
-            g_bStyleMenuCursor = 0;
-        } else {
-            g_bStyleMenuCursor++;
-        }
+#define MoveStyleMenuCursor(input)                                                                 \
+    input = PaintShopInput();                                                                      \
+    if (input->buttons & INPUT_LEFT) {                                                             \
+        TransferFlags(input, INPUT_LEFT);                                                          \
+        if (g_bStyleMenuCursor == 0) {                                                             \
+            g_bStyleMenuCursor = 3;                                                                \
+        } else {                                                                                   \
+            g_bStyleMenuCursor--;                                                                  \
+        }                                                                                          \
+    } else if (input->buttons & INPUT_RIGHT) {                                                     \
+        TransferFlags(input, INPUT_RIGHT);                                                         \
+        if (g_bStyleMenuCursor == 3) {                                                             \
+            g_bStyleMenuCursor = 0;                                                                \
+        } else {                                                                                   \
+            g_bStyleMenuCursor++;                                                                  \
+        }                                                                                          \
     }
-}
 
 /* A sets the style of a tool to the cursor of its menu, and A or B closes the menu. */
-static inline void CloseStyleMenu(Sprite *tool) {
-    PlayerInputState *input = PaintShopInput();
-
-    if (input->buttons & INPUT_A) {
-        TransferFlags(input, INPUT_A);
-        tool->style = g_bStyleMenuCursor;
-        g_bStyleMenuOpen = FALSE;
-    } else if (input->buttons & INPUT_B) {
-        TransferFlags(input, INPUT_B);
-        g_bStyleMenuOpen = FALSE;
+#define CloseStyleMenu(tool)                                                                       \
+    {                                                                                              \
+        PlayerInputState *input = PaintShopInput();                                                \
+                                                                                                   \
+        if (input->buttons & INPUT_A) {                                                            \
+            TransferFlags(input, INPUT_A);                                                         \
+            (tool)->style = g_bStyleMenuCursor;                                                    \
+            g_bStyleMenuOpen = FALSE;                                                              \
+        } else if (input->buttons & INPUT_B) {                                                     \
+            TransferFlags(input, INPUT_B);                                                         \
+            g_bStyleMenuOpen = FALSE;                                                              \
+        }                                                                                          \
     }
-}
 
 void ProcessBrushStyleMenu(void) {
     TwoStyleNames names;
@@ -1232,6 +1196,7 @@ void ProcessTextStyleMenu(void) {
 
 void ProcessRectStyleMenu(void) {
     FourStyleNames names;
+    PlayerInputState *input;
     s32 buttonY, cancelX, textY, i, x;
 
     /* The names are read from a copy on the stack. */
@@ -1275,12 +1240,13 @@ void ProcessRectStyleMenu(void) {
     DrawTexturedSprite(&g_texButtonB, cancelX, buttonY);
 
     UpdateStickRepeat(PaintShopInput());
-    MoveStyleMenuCursor();
+    MoveStyleMenuCursor(input);
     CloseStyleMenu(&g_texPaintToolRect);
 }
 
 void ProcessOvalStyleMenu(void) {
     FourStyleNames names;
+    PlayerInputState *input;
     Sprite *icon;
     s32 buttonY, cancelX, textY, i, x;
 
@@ -1336,7 +1302,7 @@ void ProcessOvalStyleMenu(void) {
     DrawTexturedSprite(&g_texButtonB, cancelX, buttonY);
 
     UpdateStickRepeat(PaintShopInput());
-    MoveStyleMenuCursor();
+    MoveStyleMenuCursor(input);
     CloseStyleMenu(&g_texPaintToolOval);
 }
 
