@@ -139,8 +139,7 @@ void RespawnVehicle(Vehicle *vehicle) {
         return;
     }
     InitVehiclePhysics(vehicle);
-    /* The original compares the mode as a signed value. */
-    if ((s32)g_dwGameMode == GAME_MODE_TIME_ATTACK) {
+    if (g_dwGameMode == GAME_MODE_TIME_ATTACK) {
         SetVehiclePosition(vehicle,
                            vehicle->section->points[vehicle->pointIndex].position.x,
                            vehicle->section->points[vehicle->pointIndex].position.y,
