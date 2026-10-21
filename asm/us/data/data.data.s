@@ -32384,35 +32384,35 @@ dlabel D_8028B714
     /* 8C71C 8028B71C 00000000 */ .word 0x00000000
 enddlabel D_8028B714
 
-nonmatching g_fEngineGearRatioParam
+nonmatching g_fSteerLock
 
-dlabel g_fEngineGearRatioParam
+dlabel g_fSteerLock
     /* 8C720 8028B720 41600000 */ .float 14
-enddlabel g_fEngineGearRatioParam
+enddlabel g_fSteerLock
 
-nonmatching g_fEngineRpmScale
+nonmatching g_fSteerRate
 
-dlabel g_fEngineRpmScale
+dlabel g_fSteerRate
     /* 8C724 8028B724 3C23D70A */ .float 0.009999999776
-enddlabel g_fEngineRpmScale
+enddlabel g_fSteerRate
 
-nonmatching g_dwMenuCursorTargetY
+nonmatching g_fSteerGain
 
-dlabel g_dwMenuCursorTargetY
+dlabel g_fSteerGain
     /* 8C728 8028B728 40C00000 */ .float 6
-enddlabel g_dwMenuCursorTargetY
+enddlabel g_fSteerGain
 
-nonmatching g_fEngineTorqueParam
+nonmatching g_fSteerLockLoss
 
-dlabel g_fEngineTorqueParam
+dlabel g_fSteerLockLoss
     /* 8C72C 8028B72C 41200000 */ .float 10
-enddlabel g_fEngineTorqueParam
+enddlabel g_fSteerLockLoss
 
-nonmatching g_wMenuCursorSpriteId
+nonmatching g_wSteerGainSpeedShare
 
-dlabel g_wMenuCursorSpriteId
+dlabel g_wSteerGainSpeedShare
     /* 8C730 8028B730 */ .short 0x0000
-enddlabel g_wMenuCursorSpriteId
+enddlabel g_wSteerGainSpeedShare
 
 nonmatching D_8028B732
 

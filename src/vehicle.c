@@ -6,7 +6,9 @@
 #include "camera.h"
 #include "game.h"
 #include "mathutil.h"
+#include "physics.h"
 #include "racehud.h"
+#include "timing.h"
 #include "trackselect.h"
 #include "tricache.h"
 
@@ -737,4 +739,587 @@ void ResetVehicleState(Vehicle *vehicle) {
 void BindPlayerInputToVehicle(Vehicle *vehicle) {
     vehicle->input = &g_aPlayerInputState[vehicle - g_aVehicles];
     guMtxIdent(&vehicle->transformMtx);
+}
+
+/* The step of the physics of a frame, in seconds. */
+#define PHYSICS_STEP (1.0f / 30.0f)
+
+/* How far below where the physics hangs them the wheels are drawn. */
+#define WHEEL_DRAW_DROP 0.254f
+
+/* The front wheels are drawn steered twice as far as they steer, in degrees. */
+#define TWO_RAD_TO_DEG 114.5915527f
+
+#define PI_F 3.141592741f
+#define TWO_PI_F 6.283185482f
+
+/* The button layout that steers straight with the stick. */
+#define STICK_STEERING_LAYOUT 4
+
+/* The middle of the stick that does not steer. */
+#define STICK_DEAD_ZONE 0.07f
+
+/* The revolutions of the engine: idle, the least and the most, the change of the automatic
+ * gearbox, and the most they change a frame. */
+#define IDLE_RPM 800.0f
+#define MIN_RPM 900.0f
+#define MAX_RPM 8000.0f
+#define SHIFT_DOWN_RPM 4000.0f
+#define SHIFT_UP_RPM 6000.0f
+#define MAX_RPM_CHANGE 400.0f
+
+/* The sign of a value: 0, 1 or -1. */
+static inline f32 SignOf(f32 x) {
+    return x == 0.0f ? 0.0f : (0.0f < x ? 1.0f : -1.0f);
+}
+
+static inline f32 AbsOf(f32 x) {
+    return x < 0.0f ? -x : x;
+}
+
+/* A coordinate of a vector by its axis. */
+static inline f32 *VectorAxis(Vec3f *v, s32 axis) {
+    return axis == 0 ? &v->x : (axis == 1 ? &v->y : &v->z);
+}
+
+/* Keep a velocity at a damped one while the damping does not turn it back, and stop it if it does.
+ */
+static inline void KeepUnreversed(f32 *velocity, f32 damped) {
+    *velocity = SignOf(damped) == SignOf(*velocity) ? damped : 0.0f;
+}
+
+void SimulateVehiclePhysicsSubstep(Vehicle *vehicle) {
+    RigidBody *body = &vehicle->body;
+    RigidBodyState *state = &body->state;
+    s32 i;
+    s16 axis;
+
+    AddTimingMarker(0, 0x80, 0x80, 0, 0xFF);
+    /* The first pass: the springs, the drive of the wheels and the grip. */
+    body->forces = &vehicle->forces[VEHICLE_FORCE_SPRING_0];
+    body->wheels[0]->forces = &vehicle->forces[VEHICLE_FORCE_WHEEL_0];
+    body->wheels[1]->forces = &vehicle->forces[VEHICLE_FORCE_WHEEL_2];
+    body->wheels[2]->forces = &vehicle->forces[VEHICLE_FORCE_WHEEL_1];
+    body->wheels[3]->forces = &vehicle->forces[VEHICLE_FORCE_WHEEL_3];
+    for (i = 0; i < VEHICLE_WHEELS; i++) {
+        body->wheels[i]->forces->vector.x = 0.0f;
+        body->wheels[i]->forces->vector.y = 0.0f;
+        body->wheels[i]->forces->vector.z = 0.0f;
+    }
+    ComputeSpringForces(body);
+    if (vehicle->skipDrive) {
+        vehicle->skipDrive = 0;
+    } else {
+        vehicle->frontLoad = 0.0f;
+        vehicle->rearLoad = 0.0f;
+        vehicle->rearSliding = 0;
+        DriveWheel(body, body->wheels[0], &vehicle->rearLoad, &vehicle->rearSliding, PHYSICS_STEP);
+        DriveWheel(body, body->wheels[1], &vehicle->rearLoad, &vehicle->rearSliding, PHYSICS_STEP);
+        DriveWheel(
+            body, body->wheels[2], &vehicle->frontLoad, &vehicle->frontSliding, PHYSICS_STEP);
+        DriveWheel(
+            body, body->wheels[3], &vehicle->frontLoad, &vehicle->frontSliding, PHYSICS_STEP);
+        vehicle->skipDrive = 0;
+    }
+    body->force.x = 0.0f;
+    body->force.y = 0.0f;
+    body->force.z = 0.0f;
+    body->torque.x = 0.0f;
+    body->torque.y = 0.0f;
+    body->torque.z = 0.0f;
+    ComputeVehicleForces(body);
+    ApplyRigidBodyImpulse(state, body, PHYSICS_STEP);
+    ApplySideGrip(body,
+                  PHYSICS_STEP,
+                  &vehicle->rearLoad,
+                  &vehicle->frontLoad,
+                  &vehicle->rearSliding,
+                  &vehicle->frontSliding);
+    ComputeDeltaQuaternion(state);
+
+    /* The second pass: the dampers and the drag, which stop the velocities, not turn them back. */
+    body->forces = &vehicle->forces[VEHICLE_FORCE_DAMPER_0];
+    body->wheels[0]->forces = NULL;
+    body->wheels[2]->forces = NULL;
+    body->wheels[1]->forces = NULL;
+    body->wheels[3]->forces = NULL;
+    ComputeDragForce(body, &vehicle->forces[VEHICLE_FORCE_DRAG]);
+    ComputeDampingForces(body);
+    body->force.x = 0.0f;
+    body->force.y = 0.0f;
+    body->force.z = 0.0f;
+    body->torque.x = 0.0f;
+    body->torque.y = 0.0f;
+    body->torque.z = 0.0f;
+    ComputeVehicleForces(body);
+    memcpy(&body->stepStates[1], state, sizeof(RigidBodyState));
+    ApplyRigidBodyImpulse(&body->stepStates[1], body, PHYSICS_STEP);
+    for (axis = 0; axis < 3; axis++) {
+        KeepUnreversed(VectorAxis(&state->angularVelocity, axis),
+                       *VectorAxis(&body->stepStates[1].angularVelocity, axis));
+        KeepUnreversed(VectorAxis(&state->velocity, axis),
+                       *VectorAxis(&body->stepStates[1].velocity, axis));
+    }
+
+    /* Move it through the frame against the track and the others, and hang the wheels. */
+    memcpy(&body->stepStates[0], state, sizeof(RigidBodyState));
+    ComputeDeltaQuaternion(&body->stepStates[0]);
+    ComputeDeltaQuaternion(&body->stepStates[0]);
+    StepVehicleCollisions(body);
+    memcpy(state, &body->stepStates[1], sizeof(RigidBodyState));
+    UpdateWheelHeights(body);
+    for (i = 0; i < VEHICLE_WHEELS; i++) {
+        QuaternionToMatrix(body->wheels[i]->orientation, &body->wheels[i]->state);
+    }
+    AddTimingMarker(0, 0, 0x80, 0, 0xFF);
+}
+
+/* Place the matrix of a wheel at the wheel, in the frame of the vehicle. */
+static inline void PlaceWheel(f32 out[4][4], RigidBody *body, RigidBody *wheel) {
+    Vec3f position, placed;
+
+    position.x = wheel->orientation[3][0];
+    position.y = wheel->orientation[3][1];
+    position.z = wheel->orientation[3][2];
+    Mtx4x4TransformPoint(&placed, body->orientation, &position);
+    out[3][0] = placed.x;
+    out[3][1] = placed.y;
+    out[3][2] = placed.z;
+}
+
+/* The turn of a front wheel: its roll, then its steering. */
+static inline void SteerWheel(f32 out[4][4], RigidBody *wheel) {
+    f32 roll[4][4], steer[4][4];
+
+    guRotateF(roll, wheel->rollAngle, 0.0f, 1.0f, 0.0f);
+    guRotateF(steer, wheel->steerAngle * TWO_RAD_TO_DEG, 0.0f, 0.0f, 1.0f);
+    guMtxCatF(roll, steer, out);
+}
+
+void TransformAllWheelMatrices(Vehicle *vehicle) {
+    RigidBody *body = &vehicle->body;
+    f32 turn[4][4];
+    s32 i;
+
+    guRotateF(turn, body->rollAngle, 1.0f, 0.0f, 0.0f);
+    guMtxCatF(turn, body->orientation, vehicle->matrix);
+    for (i = 0; i < VEHICLE_WHEELS; i++) {
+        vehicle->wheelBodies[i].orientation[3][2] =
+            vehicle->wheelBodies[i].orientation[3][2] + WHEEL_DRAW_DROP;
+    }
+    /* The rear wheels by their roll, then the front ones by their roll and steering. */
+    guRotateF(turn, vehicle->wheelBodies[0].rollAngle, 0.0f, 1.0f, 0.0f);
+    guMtxCatF(turn, body->orientation, vehicle->wheelMatrices[2]);
+    PlaceWheel(vehicle->wheelMatrices[2], body, &vehicle->wheelBodies[0]);
+    guRotateF(turn, vehicle->wheelBodies[2].rollAngle, 0.0f, 1.0f, 0.0f);
+    guMtxCatF(turn, body->orientation, vehicle->wheelMatrices[3]);
+    PlaceWheel(vehicle->wheelMatrices[3], body, &vehicle->wheelBodies[2]);
+    SteerWheel(turn, &vehicle->wheelBodies[1]);
+    guMtxCatF(turn, body->orientation, vehicle->wheelMatrices[1]);
+    PlaceWheel(vehicle->wheelMatrices[1], body, &vehicle->wheelBodies[1]);
+    SteerWheel(turn, &vehicle->wheelBodies[3]);
+    guMtxCatF(turn, body->orientation, vehicle->wheelMatrices[0]);
+    PlaceWheel(vehicle->wheelMatrices[0], body, &vehicle->wheelBodies[3]);
+    for (i = 0; i < VEHICLE_WHEELS; i++) {
+        vehicle->wheelBodies[i].orientation[3][2] =
+            vehicle->wheelBodies[i].orientation[3][2] - WHEEL_DRAW_DROP;
+    }
+}
+
+/* Steer the front wheels towards the stick, faster back towards the middle. */
+static inline void SteerByStick(Vehicle *vehicle, f32 stick) {
+    Vec3f local;
+    f32 forward, kph, rate, lock, gain, most, least, target, current;
+    s32 down, up;
+    s16 share = 1, returning;
+
+    /* The middle of the stick does not steer. */
+    if (0.0f < stick) {
+        stick = stick - STICK_DEAD_ZONE;
+        if (stick < 0.0f) {
+            stick = 0.0f;
+        }
+    } else {
+        stick = stick + STICK_DEAD_ZONE;
+        if (0.0f < stick) {
+            stick = 0.0f;
+        }
+    }
+    Mtx4fInverseRotate(&local, vehicle->body.orientation, &vehicle->body.state.velocity);
+    forward = local.x;
+    if (forward < 10.0f) {
+        forward = 10.0f;
+    }
+    if (70.0f < forward) {
+        forward = 70.0f;
+    }
+    kph = vehicle->speedKph;
+    if (kph < 140.0f) {
+        kph = 140.0f;
+    }
+    if (340.0f < kph) {
+        kph = 340.0f;
+    }
+    kph = kph - 140.0f;
+    /* The original leaves the gain unset for a mode beyond the three. */
+    gain = 0.0f;
+    switch (vehicle->steeringMode) {
+    case 0:
+        g_fSteerLock = 14.0f;
+        g_fSteerRate = 0.01f;
+        g_fSteerGain = 6.0f;
+        g_fSteerLockLoss = 10.0f;
+        gain = g_fSteerGain;
+        g_wSteerGainSpeedShare = 0;
+        share = g_wSteerGainSpeedShare;
+        break;
+    case 1:
+        g_fSteerLock = 14.0f;
+        g_fSteerRate = 0.01f;
+        g_fSteerGain = 6.0f;
+        g_fSteerLockLoss = 10.0f;
+        gain = 3.0f;
+        g_wSteerGainSpeedShare = 0;
+        share = g_wSteerGainSpeedShare;
+        break;
+    case 2:
+        g_fSteerLock = 17.0f;
+        g_fSteerRate = 0.1f;
+        g_fSteerGain = 16.0f;
+        g_fSteerLockLoss = 14.0f;
+        gain = g_fSteerGain;
+        g_wSteerGainSpeedShare = 0;
+        share = g_wSteerGainSpeedShare;
+        break;
+    }
+    rate = g_fSteerRate;
+
+    /* The lock narrows with the speed; a hard push takes all of it, a soft one the gain. */
+    lock = g_fSteerLock - forward / 90.0f * g_fSteerLockLoss;
+    if (AbsOf(stick) < 0.001f) {
+        most = lock * PI_F / 180.0f;
+        least = -lock * PI_F / 180.0f;
+        target = 0.0f;
+    } else if (stick < -0.75f) {
+        most = lock * PI_F / 180.0f;
+        least = -lock * PI_F / 180.0f;
+        target = most;
+    } else if (0.75f < stick) {
+        least = -lock * PI_F / 180.0f;
+        most = lock * PI_F / 180.0f;
+        target = least;
+    } else {
+        gain = gain - (f32)share * (gain / 2.0f) * (kph / 200.0f);
+        target = -stick * (gain * PI_F / 180.0f);
+        most = lock * PI_F / 180.0f;
+        least = -lock * PI_F / 180.0f;
+    }
+    if (most < target) {
+        target = most;
+    }
+    if (target < least) {
+        target = least;
+    }
+
+    /* Back towards the middle, or across it, the wheels turn a radian a frame. */
+    current = vehicle->steerAngle;
+    returning = SignOf(current) != SignOf(target);
+    if (!returning) {
+        returning = (0.0f < current && target < current) || (current < 0.0f && current < target);
+    }
+    if (current == 0.0f) {
+        returning = 0;
+        vehicle->steerReturn = 0;
+        current = vehicle->steerAngle;
+    }
+    down = target < current;
+    up = current < target;
+    if (down && vehicle->steerReturn < 0) {
+        returning = 1;
+    }
+    if (up && vehicle->steerReturn > 0) {
+        returning = 1;
+    }
+    if (returning) {
+        vehicle->steerReturn = down ? -1 : 1;
+        rate = 1.0f;
+        current = vehicle->steerAngle;
+        if (SignOf(target) != SignOf(current)) {
+            target = 0.0f;
+        }
+    } else {
+        vehicle->steerReturn = 0;
+        current = vehicle->steerAngle;
+    }
+    if (AbsOf(current - target) < rate) {
+        vehicle->steerAngle = target;
+    } else if (target < current) {
+        vehicle->steerAngle = current - rate;
+    } else {
+        vehicle->steerAngle = current + rate;
+    }
+}
+
+void UpdateVehicleEngineAndGearbox(Vehicle *vehicle) {
+    PlayerInputState *input = vehicle->input;
+    f32 stick = input->steering;
+    f32 amount, root, previous, rpm, extra, gap, torque, change;
+    u32 buttons;
+    s32 gear;
+
+    if (input->controllerLayout == STICK_STEERING_LAYOUT) {
+        /* Steer straight from the stick, by a curve of it. */
+        amount = AbsOf(stick);
+        root = sqrtf(amount);
+        vehicle->steerAngle =
+            -(sqrtf(sqrtf(sqrtf(amount) * amount) * root) * SignOf(stick)) * 10.0f * PI_F / 180.0f;
+    } else {
+        SteerByStick(vehicle, stick);
+    }
+
+    previous = vehicle->engineRpm;
+    if (vehicle->engineRpm < IDLE_RPM) {
+        vehicle->engineRpm = IDLE_RPM;
+    }
+    if (vehicle->transmission) {
+        /* The automatic gearbox changes down and up by the revolutions, not up in reverse. */
+        if (vehicle->gear >= 2 && vehicle->engineRpm < SHIFT_DOWN_RPM) {
+            vehicle->gear--;
+        } else if (vehicle->gear < vehicle->gearCount && SHIFT_UP_RPM < vehicle->engineRpm &&
+                   !(vehicle->input->buttons & INPUT_REVERSE)) {
+            vehicle->gear++;
+        }
+    } else if (vehicle->gear > 0 && (vehicle->input->buttons & INPUT_GEAR_DOWN)) {
+        TransferFlags(vehicle->input, INPUT_GEAR_DOWN);
+        vehicle->gear--;
+    } else if (vehicle->gear < vehicle->gearCount && (vehicle->input->buttons & INPUT_GEAR_UP) &&
+               !(vehicle->input->buttons & INPUT_REVERSE)) {
+        TransferFlags(vehicle->input, INPUT_GEAR_UP);
+        vehicle->gear++;
+    }
+    buttons = vehicle->input->buttons;
+
+    /* The torque of the engine, with a push for the second in arcade by its gap to the first. */
+    extra = 0.0f;
+    rpm = vehicle->engineRpm;
+    if (g_dwGameMode == GAME_MODE_ARCADE && vehicle->racePosition == 1) {
+        gap = AbsOf(g_aVehicles[vehicle->index ^ 1].distance - vehicle->distance) * 0.5f;
+        if (gap < 18.0f) {
+            extra = 0.0f;
+        } else {
+            extra = gap - 18.0f;
+            if (30.0f < extra) {
+                extra = 30.0f;
+            }
+        }
+    }
+    torque = vehicle->torqueCurve[0] * rpm * rpm * rpm + vehicle->torqueCurve[1] * rpm * rpm +
+             vehicle->torqueCurve[2] * rpm + vehicle->torqueCurve[3] + extra;
+    if (!vehicle->transmission) {
+        torque = (f32)((f64)torque * 1.03);
+    }
+    if (!(buttons & INPUT_ACCELERATE)) {
+        torque = 0.0f;
+    }
+    vehicle->throttle = torque * 7.0f;
+    if (vehicle->racer->status & RACER_HELD) {
+        vehicle->gear = 0;
+        gear = 0;
+    } else {
+        gear = vehicle->gear;
+        if (gear == 0) {
+            vehicle->gear = 1;
+            gear = 1;
+        }
+    }
+    if (gear) {
+        /* In gear the engine turns with the first front wheel. */
+        vehicle->engineRpm =
+            vehicle->gearRatios[gear] *
+            (-(vehicle->wheelBodies[1].spinRate / TWO_PI_F) * 60.0f * vehicle->finalDrive);
+    } else {
+        if (vehicle->input->buttons & INPUT_ACCELERATE) {
+            vehicle->engineRpm = vehicle->engineRpm + 300.0f;
+        } else {
+            vehicle->engineRpm = vehicle->engineRpm - 200.0f;
+        }
+        vehicle->throttle = 0.0f;
+    }
+
+    /* The revolutions stay in range and change no more than a step a frame. */
+    if (vehicle->engineRpm < 0.0f) {
+        vehicle->engineRpm = -vehicle->engineRpm;
+    }
+    if (vehicle->engineRpm < MIN_RPM) {
+        vehicle->engineRpm = MIN_RPM;
+    }
+    if (MAX_RPM < vehicle->engineRpm) {
+        vehicle->engineRpm = MAX_RPM;
+    }
+    change = vehicle->engineRpm - previous;
+    if (MAX_RPM_CHANGE < AbsOf(change)) {
+        change = SignOf(change) * MAX_RPM_CHANGE;
+    }
+    vehicle->brake = 0.0f;
+    vehicle->engineRpm = previous + change;
+    if (vehicle->input->buttons & INPUT_BRAKE) {
+        vehicle->brake = -140000.0f;
+    }
+}
+
+/* Set up the body of a wheel at rest at a place under the vehicle. */
+static inline void InitWheelBody(RigidBody *wheel, f32 x, f32 y) {
+    wheel->ground = NULL;
+    wheel->kind = RIGID_BODY_NO_ROTATION;
+    wheel->mass = 0.0f;
+    wheel->size.x = 0.0f;
+    wheel->size.y = 0.0f;
+    wheel->size.z = 0.0f;
+    wheel->suspension = 0.0f;
+    wheel->spinRate = 0.0f;
+    InitRigidBody(wheel);
+    wheel->state.position.x = x;
+    wheel->state.position.y = y;
+    wheel->state.position.z = -0.1f;
+    wheel->state.velocity.x = 0.0f;
+    wheel->state.velocity.y = 0.0f;
+    wheel->state.velocity.z = 0.0f;
+    wheel->state.orientation.w = 1.0f;
+    wheel->state.orientation.x = 0.0f;
+    wheel->state.orientation.y = 0.0f;
+    wheel->state.orientation.z = 0.0f;
+    wheel->state.angularVelocity.x = 0.0f;
+    wheel->state.angularVelocity.y = 0.0f;
+    wheel->state.angularVelocity.z = 0.0f;
+    QuaternionToMatrix(wheel->orientation, &wheel->state);
+}
+
+/* A force at a point of the body, which the physics sets each step. */
+static inline void InitBodyForce(RigidBodyForce *force, f32 x, f32 y) {
+    SetRigidBodyForce(force, 0.0f, 0.0f, 0.0f, x, y, 0.0f, RIGID_BODY_FORCE_BODY);
+}
+
+void InitVehiclePhysics(Vehicle *vehicle) {
+    RigidBody *body = &vehicle->body;
+    RigidBodyForce *forces = vehicle->forces;
+
+    vehicle->skipDrive = 1;
+    vehicle->gear = 0;
+    vehicle->steerAngle = 0.0f;
+    vehicle->engineRpm = 0.0f;
+    if (vehicle->model != NULL) {
+        body->kind = RIGID_BODY_BOX_1;
+        body->size.y = 2.0f;
+        body->mass = 1000.0f;
+        body->size.x = 3.5f;
+        body->size.z = 1.5f;
+        InitRigidBody(body);
+        body->state.position.x = 0.0f;
+        body->state.position.y = 0.0f;
+        body->state.position.z = 2.0f;
+        body->state.velocity.x = 0.0f;
+        body->state.velocity.y = 0.0f;
+        body->state.velocity.z = 0.0f;
+        body->state.orientation.x = 0.0f;
+        body->state.orientation.y = 0.0f;
+        body->state.orientation.z = 0.0f;
+        body->state.angularVelocity.x = 0.0f;
+        body->state.angularVelocity.y = 0.0f;
+        body->state.angularVelocity.z = 0.0f;
+        body->state.orientation.w = 1.0f;
+        QuaternionToMatrix(body->orientation, &body->state);
+        body->springRate = ((f32)vehicle->suspensionStiffness * 4.0f + 20.0f) * 16000.0f;
+        body->damping = -3000.0f;
+
+        /* The wheels of the model, those of the other side mirrored. */
+        InitWheelBody(
+            &vehicle->wheelBodies[0], vehicle->model->rearWheel.x, vehicle->model->rearWheel.y);
+        InitWheelBody(
+            &vehicle->wheelBodies[2], vehicle->model->rearWheel.x, -vehicle->model->rearWheel.y);
+        InitWheelBody(
+            &vehicle->wheelBodies[1], vehicle->model->frontWheel.x, vehicle->model->frontWheel.y);
+        InitWheelBody(
+            &vehicle->wheelBodies[3], vehicle->model->frontWheel.x, -vehicle->model->frontWheel.y);
+        body->wheels[0] = &vehicle->wheelBodies[0];
+        body->wheels[1] = &vehicle->wheelBodies[2];
+        body->wheels[2] = &vehicle->wheelBodies[1];
+        body->wheels[3] = &vehicle->wheelBodies[3];
+
+        /* The springs over the wheels, then gravity. */
+        InitBodyForce(&forces[VEHICLE_FORCE_SPRING_0], -1.5f, -1.0f);
+        InitBodyForce(&forces[VEHICLE_FORCE_SPRING_2], -1.5f, 1.0f);
+        InitBodyForce(&forces[VEHICLE_FORCE_SPRING_1], 1.5f, -1.0f);
+        InitBodyForce(&forces[VEHICLE_FORCE_SPRING_3], 1.5f, 1.0f);
+        SetRigidBodyForce(&forces[VEHICLE_FORCE_GRAVITY],
+                          0.0f,
+                          0.0f,
+                          -15450.75f,
+                          0.0f,
+                          0.0f,
+                          0.0f,
+                          RIGID_BODY_FORCE_WORLD);
+        SetRigidBodyForce(&forces[VEHICLE_FORCE_FRONT_WHEEL_GRAVITY],
+                          0.0f,
+                          0.0f,
+                          -(10.5f * 9.81f),
+                          0.0f,
+                          0.0f,
+                          0.0f,
+                          RIGID_BODY_FORCE_WORLD);
+        SetRigidBodyForce(&forces[VEHICLE_FORCE_REAR_WHEEL_GRAVITY],
+                          0.0f,
+                          0.0f,
+                          -(10.5f * 9.81f),
+                          0.0f,
+                          0.0f,
+                          0.0f,
+                          RIGID_BODY_FORCE_WORLD);
+        forces[VEHICLE_FORCE_SPRING_0].next = &forces[VEHICLE_FORCE_SPRING_2];
+        forces[VEHICLE_FORCE_SPRING_2].next = &forces[VEHICLE_FORCE_SPRING_1];
+        forces[VEHICLE_FORCE_SPRING_1].next = &forces[VEHICLE_FORCE_SPRING_3];
+        forces[VEHICLE_FORCE_GRAVITY].next = NULL;
+        forces[VEHICLE_FORCE_SPRING_3].next = &forces[VEHICLE_FORCE_GRAVITY];
+        body->forces = &forces[VEHICLE_FORCE_SPRING_0];
+
+        /* The drive of each wheel, then the gravity of its axle. */
+        InitBodyForce(&forces[VEHICLE_FORCE_WHEEL_0], 0.0f, 0.0f);
+        InitBodyForce(&forces[VEHICLE_FORCE_WHEEL_2], 0.0f, 0.0f);
+        InitBodyForce(&forces[VEHICLE_FORCE_WHEEL_1], 0.0f, 0.0f);
+        InitBodyForce(&forces[VEHICLE_FORCE_WHEEL_3], 0.0f, 0.0f);
+        vehicle->wheelBodies[0].forces = &forces[VEHICLE_FORCE_WHEEL_0];
+        vehicle->wheelBodies[2].forces = &forces[VEHICLE_FORCE_WHEEL_2];
+        vehicle->wheelBodies[1].forces = &forces[VEHICLE_FORCE_WHEEL_1];
+        forces[VEHICLE_FORCE_REAR_WHEEL_GRAVITY].next = NULL;
+        forces[VEHICLE_FORCE_FRONT_WHEEL_GRAVITY].next = NULL;
+        forces[VEHICLE_FORCE_WHEEL_0].next = &forces[VEHICLE_FORCE_REAR_WHEEL_GRAVITY];
+        forces[VEHICLE_FORCE_WHEEL_2].next = &forces[VEHICLE_FORCE_REAR_WHEEL_GRAVITY];
+        forces[VEHICLE_FORCE_WHEEL_1].next = &forces[VEHICLE_FORCE_FRONT_WHEEL_GRAVITY];
+        forces[VEHICLE_FORCE_WHEEL_3].next = &forces[VEHICLE_FORCE_FRONT_WHEEL_GRAVITY];
+        vehicle->wheelBodies[3].forces = &forces[VEHICLE_FORCE_WHEEL_3];
+
+        /* The dampers over the wheels, then the drag. */
+        InitBodyForce(&forces[VEHICLE_FORCE_DAMPER_0], -1.5f, -1.0f);
+        InitBodyForce(&forces[VEHICLE_FORCE_DAMPER_2], -1.5f, 1.0f);
+        InitBodyForce(&forces[VEHICLE_FORCE_DAMPER_1], 1.5f, -1.0f);
+        InitBodyForce(&forces[VEHICLE_FORCE_DAMPER_3], 1.5f, 1.0f);
+        SetRigidBodyForce(&forces[VEHICLE_FORCE_DRAG],
+                          0.0f,
+                          0.0f,
+                          0.0f,
+                          0.0f,
+                          0.0f,
+                          0.0f,
+                          RIGID_BODY_FORCE_WORLD);
+        forces[VEHICLE_FORCE_DAMPER_0].next = &forces[VEHICLE_FORCE_DAMPER_2];
+        forces[VEHICLE_FORCE_DAMPER_2].next = &forces[VEHICLE_FORCE_DAMPER_1];
+        forces[VEHICLE_FORCE_DRAG].next = NULL;
+        vehicle->steerReturn = 0;
+        vehicle->frontLoad = 0.0f;
+        vehicle->rearLoad = 0.0f;
+        forces[VEHICLE_FORCE_DAMPER_3].next = &forces[VEHICLE_FORCE_DRAG];
+        body->tyreType = vehicle->tyreType;
+        forces[VEHICLE_FORCE_DAMPER_1].next = &forces[VEHICLE_FORCE_DAMPER_3];
+    }
+    vehicle->rearSliding = 0;
+    vehicle->frontSliding = 0;
 }

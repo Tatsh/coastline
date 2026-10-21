@@ -2070,9 +2070,9 @@ nonmatching g_dwPhysicsVelX, 0x4
 dlabel g_dwPhysicsVelX
     /* 8031C704 */ .space 0x04
 
-nonmatching g_aVehicles_RaceDistance, 0x4
+nonmatching D_8031C708, 0x4
 
-dlabel g_aVehicles_RaceDistance
+dlabel D_8031C708
     /* 8031C708 */ .space 0x04
 
 nonmatching g_aVehicles_RacePosition, 0x4

@@ -6910,197 +6910,197 @@ dlabel g_flCamFovSpeedScale
     /* AA58C 802A958C 3B83126F */ .float 0.00400000019
 enddlabel g_flCamFovSpeedScale
 
-nonmatching g_flPhysicsTimestep0
+nonmatching g_fConstThirtieth_802a9590
 
-dlabel g_flPhysicsTimestep0
+dlabel g_fConstThirtieth_802a9590
     /* AA590 802A9590 3D088889 */ .float 0.03333333507
-enddlabel g_flPhysicsTimestep0
+enddlabel g_fConstThirtieth_802a9590
 
-nonmatching g_flPhysicsTimestep1
+nonmatching g_fConstThirtieth_802a9594
 
-dlabel g_flPhysicsTimestep1
+dlabel g_fConstThirtieth_802a9594
     /* AA594 802A9594 3D088889 */ .float 0.03333333507
-enddlabel g_flPhysicsTimestep1
+enddlabel g_fConstThirtieth_802a9594
 
-nonmatching g_flPhysicsTimestep2
+nonmatching g_fConstThirtieth_802a9598
 
-dlabel g_flPhysicsTimestep2
+dlabel g_fConstThirtieth_802a9598
     /* AA598 802A9598 3D088889 */ .float 0.03333333507
-enddlabel g_flPhysicsTimestep2
+enddlabel g_fConstThirtieth_802a9598
 
-nonmatching g_flPhysicsTimestep3
+nonmatching g_fConstThirtieth_802a959c
 
-dlabel g_flPhysicsTimestep3
+dlabel g_fConstThirtieth_802a959c
     /* AA59C 802A959C 3D088889 */ .float 0.03333333507
-enddlabel g_flPhysicsTimestep3
+enddlabel g_fConstThirtieth_802a959c
 
-nonmatching g_flWheelRadiusOffset
+nonmatching g_fConst0p254_802a95a0
 
-dlabel g_flWheelRadiusOffset
+dlabel g_fConst0p254_802a95a0
     /* AA5A0 802A95A0 3E820C4A */ .float 0.2540000081
-enddlabel g_flWheelRadiusOffset
+enddlabel g_fConst0p254_802a95a0
 
-nonmatching g_flTwoRadToDeg
+nonmatching g_fConstTwoRadToDeg_802a95a4
 
-dlabel g_flTwoRadToDeg
+dlabel g_fConstTwoRadToDeg_802a95a4
     /* AA5A4 802A95A4 42E52EE0 */ .float 114.5915527
-enddlabel g_flTwoRadToDeg
+enddlabel g_fConstTwoRadToDeg_802a95a4
 
-nonmatching g_flTwoRadToDeg2
+nonmatching g_fConstTwoRadToDeg_802a95a8
 
-dlabel g_flTwoRadToDeg2
+dlabel g_fConstTwoRadToDeg_802a95a8
     /* AA5A8 802A95A8 42E52EE0 */ .float 114.5915527
-enddlabel g_flTwoRadToDeg2
+enddlabel g_fConstTwoRadToDeg_802a95a8
 
-nonmatching g_dwMisc31
+nonmatching g_fConstPi_802a95ac
 
-dlabel g_dwMisc31
+dlabel g_fConstPi_802a95ac
     /* AA5AC 802A95AC 40490FDB */ .float 3.141592741
-enddlabel g_dwMisc31
+enddlabel g_fConstPi_802a95ac
 
-nonmatching g_flEngine0p07a
+nonmatching g_fConst0p07_802a95b0
 
-dlabel g_flEngine0p07a
+dlabel g_fConst0p07_802a95b0
     /* AA5B0 802A95B0 3D8F5C29 */ .float 0.0700000003
-enddlabel g_flEngine0p07a
+enddlabel g_fConst0p07_802a95b0
 
-nonmatching g_flEngine0p07b
+nonmatching g_fConst0p07_802a95b4
 
-dlabel g_flEngine0p07b
+dlabel g_fConst0p07_802a95b4
     /* AA5B4 802A95B4 3D8F5C29 */ .float 0.0700000003
-enddlabel g_flEngine0p07b
+enddlabel g_fConst0p07_802a95b4
 
-nonmatching g_flEngineRpmScaleGear0
+nonmatching g_fConst0p01_802a95b8
 
-dlabel g_flEngineRpmScaleGear0
+dlabel g_fConst0p01_802a95b8
     /* AA5B8 802A95B8 3C23D70A */ .float 0.009999999776
-enddlabel g_flEngineRpmScaleGear0
+enddlabel g_fConst0p01_802a95b8
 
-nonmatching g_flEngineRpmScaleGear1
+nonmatching g_fConst0p01_802a95bc
 
-dlabel g_flEngineRpmScaleGear1
+dlabel g_fConst0p01_802a95bc
     /* AA5BC 802A95BC 3C23D70A */ .float 0.009999999776
-enddlabel g_flEngineRpmScaleGear1
+enddlabel g_fConst0p01_802a95bc
 
-nonmatching g_flEngineRpmScaleGear2
+nonmatching g_fConst0p1_802a95c0
 
-dlabel g_flEngineRpmScaleGear2
+dlabel g_fConst0p1_802a95c0
     /* AA5C0 802A95C0 3DCCCCCD */ .float 0.1000000015
-enddlabel g_flEngineRpmScaleGear2
+enddlabel g_fConst0p1_802a95c0
 
-nonmatching g_flEngineSlipEpsilon
+nonmatching g_fConst0p001_802a95c4
 
-dlabel g_flEngineSlipEpsilon
+dlabel g_fConst0p001_802a95c4
     /* AA5C4 802A95C4 3A83126F */ .float 0.001000000047
-enddlabel g_flEngineSlipEpsilon
+enddlabel g_fConst0p001_802a95c4
 
-nonmatching g_flPiDegToRad0
+nonmatching g_fConstPi_802a95c8
 
-dlabel g_flPiDegToRad0
+dlabel g_fConstPi_802a95c8
     /* AA5C8 802A95C8 40490FDB */ .float 3.141592741
-enddlabel g_flPiDegToRad0
+enddlabel g_fConstPi_802a95c8
 
-nonmatching g_dwMisc39
+nonmatching g_fConstPi_802a95cc
 
-dlabel g_dwMisc39
+dlabel g_fConstPi_802a95cc
     /* AA5CC 802A95CC 40490FDB */ .float 3.141592741
-enddlabel g_dwMisc39
+enddlabel g_fConstPi_802a95cc
 
-nonmatching g_dwMisc40
+nonmatching g_fConstPi_802a95d0
 
-dlabel g_dwMisc40
+dlabel g_fConstPi_802a95d0
     /* AA5D0 802A95D0 40490FDB */ .float 3.141592741
-enddlabel g_dwMisc40
+enddlabel g_fConstPi_802a95d0
 
-nonmatching g_dwMisc41
+nonmatching g_fConstPi_802a95d4
 
-dlabel g_dwMisc41
+dlabel g_fConstPi_802a95d4
     /* AA5D4 802A95D4 40490FDB */ .float 3.141592741
-enddlabel g_dwMisc41
+enddlabel g_fConstPi_802a95d4
 
-nonmatching g_dwMisc42
+nonmatching g_fConstPi_802a95d8
 
-dlabel g_dwMisc42
+dlabel g_fConstPi_802a95d8
     /* AA5D8 802A95D8 40490FDB */ .float 3.141592741
-enddlabel g_dwMisc42
+enddlabel g_fConstPi_802a95d8
 
-nonmatching g_dwMisc43
+nonmatching g_fConstPi_802a95dc
 
-dlabel g_dwMisc43
+dlabel g_fConstPi_802a95dc
     /* AA5DC 802A95DC 40490FDB */ .float 3.141592741
-enddlabel g_dwMisc43
+enddlabel g_fConstPi_802a95dc
 
-nonmatching g_dwMisc44
+nonmatching g_fConstPi_802a95e0
 
-dlabel g_dwMisc44
+dlabel g_fConstPi_802a95e0
     /* AA5E0 802A95E0 40490FDB */ .float 3.141592741
-enddlabel g_dwMisc44
+enddlabel g_fConstPi_802a95e0
 
-nonmatching g_dwMisc45
+nonmatching g_fConstPi_802a95e4
 
-dlabel g_dwMisc45
+dlabel g_fConstPi_802a95e4
     /* AA5E4 802A95E4 40490FDB */ .float 3.141592741
-enddlabel g_dwMisc45
+enddlabel g_fConstPi_802a95e4
 
-nonmatching g_dwMisc46
+nonmatching g_fConstPi_802a95e8
 
-dlabel g_dwMisc46
+dlabel g_fConstPi_802a95e8
     /* AA5E8 802A95E8 40490FDB */ .float 3.141592741
-enddlabel g_dwMisc46
+enddlabel g_fConstPi_802a95e8
 
-nonmatching g_flEngineRpm6000
+nonmatching g_fConst6000_802a95ec
 
-dlabel g_flEngineRpm6000
+dlabel g_fConst6000_802a95ec
     /* AA5EC 802A95EC 45BB8000 */ .float 6000
-enddlabel g_flEngineRpm6000
+enddlabel g_fConst6000_802a95ec
 
-nonmatching g_dblEngineFactor1p03
+nonmatching g_dConst1p03_802a95f0
 
-dlabel g_dblEngineFactor1p03
+dlabel g_dConst1p03_802a95f0
     /* AA5F0 802A95F0 3FF07AE147AE147B */ .double 1.03000000000000003
-enddlabel g_dblEngineFactor1p03
+enddlabel g_dConst1p03_802a95f0
 
-nonmatching g_flTwoPi
+nonmatching g_fConstTwoPi_802a95f8
 
-dlabel g_flTwoPi
+dlabel g_fConstTwoPi_802a95f8
     /* AA5F8 802A95F8 40C90FDB */ .float 6.283185482
-enddlabel g_flTwoPi
+enddlabel g_fConstTwoPi_802a95f8
 
-nonmatching g_flEngineNeg140000
+nonmatching g_fConstNeg140000_802a95fc
 
-dlabel g_flEngineNeg140000
+dlabel g_fConstNeg140000_802a95fc
     /* AA5FC 802A95FC C808B800 */ .float -140000
-enddlabel g_flEngineNeg140000
+enddlabel g_fConstNeg140000_802a95fc
 
-nonmatching g_fChassisDampingCoeff
+nonmatching g_fConstNeg3000_802a9600
 
-dlabel g_fChassisDampingCoeff
+dlabel g_fConstNeg3000_802a9600
     /* AA600 802A9600 C53B8000 */ .float -3000
-enddlabel g_fChassisDampingCoeff
+enddlabel g_fConstNeg3000_802a9600
 
-nonmatching g_fWheelInitPosZ0
+nonmatching g_fConstNeg0p1_802a9604
 
-dlabel g_fWheelInitPosZ0
+dlabel g_fConstNeg0p1_802a9604
     /* AA604 802A9604 BDCCCCCD */ .float -0.1000000015
-enddlabel g_fWheelInitPosZ0
+enddlabel g_fConstNeg0p1_802a9604
 
-nonmatching g_fWheelInitPosZ1
+nonmatching g_fConstNeg0p1_802a9608
 
-dlabel g_fWheelInitPosZ1
+dlabel g_fConstNeg0p1_802a9608
     /* AA608 802A9608 BDCCCCCD */ .float -0.1000000015
-enddlabel g_fWheelInitPosZ1
+enddlabel g_fConstNeg0p1_802a9608
 
-nonmatching g_fWheelInitPosZ2
+nonmatching g_fConstNeg0p1_802a960c
 
-dlabel g_fWheelInitPosZ2
+dlabel g_fConstNeg0p1_802a960c
     /* AA60C 802A960C BDCCCCCD */ .float -0.1000000015
-enddlabel g_fWheelInitPosZ2
+enddlabel g_fConstNeg0p1_802a960c
 
-nonmatching g_fWheelInitPosZ3
+nonmatching g_fConstNeg0p1_802a9610
 
-dlabel g_fWheelInitPosZ3
+dlabel g_fConstNeg0p1_802a9610
     /* AA610 802A9610 BDCCCCCD */ .float -0.1000000015
-enddlabel g_fWheelInitPosZ3
+enddlabel g_fConstNeg0p1_802a9610
     /* AA614 802A9614 00000000 */ .float 0
     /* AA618 802A9618 00000000 */ .float 0
     /* AA61C 802A961C 00000000 */ .float 0

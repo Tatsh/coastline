@@ -5130,8 +5130,8 @@ glabel UpdateRaceProgress
     /* 2B8A0 8022A8A0 8C63FF08 */  lw         $v1, %lo(g_dwNumLocalPlayers)($v1)
     /* 2B8A4 8022A8A4 8E420060 */  lw         $v0, 0x60($s2)
   .L8022A8A8:
-    /* 2B8A8 8022A8A8 3C018032 */  lui        $at, %hi(g_aVehicles_RaceDistance)
-    /* 2B8AC 8022A8AC C424C708 */  lwc1       $f4, %lo(g_aVehicles_RaceDistance)($at)
+    /* 2B8A8 8022A8A8 3C018032 */  lui        $at, %hi(D_8031C708)
+    /* 2B8AC 8022A8AC C424C708 */  lwc1       $f4, %lo(D_8031C708)($at)
     /* 2B8B0 8022A8B0 3C018032 */  lui        $at, %hi(g_aVehicles1_RaceDistance)
     /* 2B8B4 8022A8B4 C426E798 */  lwc1       $f6, %lo(g_aVehicles1_RaceDistance)($at)
     /* 2B8B8 8022A8B8 44804000 */  mtc1       $zero, $f8

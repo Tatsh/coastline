@@ -46,7 +46,11 @@ typedef struct {
     f32 mirrorForward;
     /** How far above the vehicle the cockpit and mirror cameras sit. */
     f32 cockpitUp;
-    u8 unreconstructedBC[0xDF88 - 0xBC];
+    u8 unreconstructedBC[0xEC - 0xBC];
+    /** A front and a rear wheel of one side; those of the other side mirror them across. */
+    Vec3f frontWheel;
+    Vec3f rearWheel;
+    u8 unreconstructed104[0xDF88 - 0x104];
 } VehicleModel;
 
 /** How a car shows the revolutions of its engine. */
@@ -176,6 +180,9 @@ extern s32 g_dwNumVehicles;
 /** The bits of the status of a racer that stop its clock. */
 #define RACER_CLOCK_STOPPED 0x3
 
+/** The bit of the status of a racer whose vehicle is held out of gear. */
+#define RACER_HELD 0x1
+
 /** The wheels of a vehicle: the front two, then the rear two. */
 #define VEHICLE_WHEELS 4
 
@@ -260,10 +267,10 @@ typedef struct Vehicle {
     u8 frontSliding;
     f32 rearLoad;
     u8 rearSliding;
-    /** The way the gearbox last changed gear: 1 up, -1 down, 0 none. */
-    s8 shiftDirection;
-    /** Whether the next step sets the loads afresh. */
-    s32 resetLoads;
+    /** The way the steering returns towards the middle: 1, -1, or 0 while it does not. */
+    s8 steerReturn;
+    /** Whether the next step leaves the wheels undriven. */
+    s32 skipDrive;
     u8 unreconstructedE58[0xE5C - 0xE58];
     /** The profile of the player who drives the vehicle. */
     PlayerProfile *profile;
@@ -553,28 +560,58 @@ void FixupVehicleModelPointers(VehicleModel *model);
 void LoadOrCopyVehicleModel(s32 slot, s32 car, s32 unused);
 
 /**
- * Step the physics of a vehicle on the ground.
+ * How the steering answers the stick, as the steering mode of a vehicle sets it: the lock at rest
+ * and how much of it the speed takes, in degrees, how fast the wheels turn a frame, in radians,
+ * and the angle each unit of the stick steers, in degrees.
+ *
+ * @ghidraAddress USA: 0x8028b720
+ */
+extern f32 g_fSteerLock;
+
+/** @ghidraAddress USA: 0x8028b724 */
+extern f32 g_fSteerRate;
+
+/** @ghidraAddress USA: 0x8028b728 */
+extern f32 g_fSteerGain;
+
+/** @ghidraAddress USA: 0x8028b72c */
+extern f32 g_fSteerLockLoss;
+
+/**
+ * How much the speed halves the gain, which the modes leave at 0.
+ *
+ * @ghidraAddress USA: 0x8028b730
+ */
+extern s16 g_wSteerGainSpeedShare;
+
+/**
+ * Step the physics of a vehicle on the ground for a frame: drive its wheels, push it by its
+ * springs, grip and dampers, collide it with the track and the other vehicles, and hang its
+ * wheels to the ground.
  *
  * @ghidraAddress USA: 0x80221940
  */
 void SimulateVehiclePhysicsSubstep(Vehicle *vehicle);
 
 /**
- * Place the matrices of the wheels of a vehicle.
+ * Place the matrix of a vehicle, leant into its skid, and the matrices of its wheels, turned by
+ * their roll and the front ones by their steering.
  *
  * @ghidraAddress USA: 0x80221e0c
  */
 void TransformAllWheelMatrices(Vehicle *vehicle);
 
 /**
- * Run the engine and the gearbox of a vehicle.
+ * Steer a vehicle by the stick, change its gears, and run its engine: its revolutions follow the
+ * front wheels in gear, and its throttle the torque at them.
  *
  * @ghidraAddress USA: 0x80222050
  */
 void UpdateVehicleEngineAndGearbox(Vehicle *vehicle);
 
 /**
- * Set up the bodies of a vehicle and its wheels.
+ * Set up the body of a vehicle and the bodies of its wheels, and their forces, for the model of its
+ * car.
  *
  * @ghidraAddress USA: 0x80222d54
  */
