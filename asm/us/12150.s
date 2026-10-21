@@ -197,10 +197,10 @@ glabel ProcessMainMenu
     /* 123DC 802113DC 3C018027 */  lui        $at, %hi(g_dwNumLocalPlayers)
     /* 123E0 802113E0 AC28FF08 */  sw         $t0, %lo(g_dwNumLocalPlayers)($at)
     /* 123E4 802113E4 3C018027 */  lui        $at, %hi(g_dwGameMode)
-    /* 123E8 802113E8 3C048021 */  lui        $a0, %hi(ProcessDifficultySelect)
+    /* 123E8 802113E8 3C048021 */  lui        $a0, %hi(ProcessPlayerCountSelect)
     /* 123EC 802113EC AC23FF18 */  sw         $v1, %lo(g_dwGameMode)($at)
     /* 123F0 802113F0 0C0871B9 */  jal        SetCurrentScreenCallback
-    /* 123F4 802113F4 248416E0 */   addiu     $a0, $a0, %lo(ProcessDifficultySelect)
+    /* 123F4 802113F4 248416E0 */   addiu     $a0, $a0, %lo(ProcessPlayerCountSelect)
     /* 123F8 802113F8 1000002B */  b          .L802114A8
     /* 123FC 802113FC 240EFFFF */   addiu     $t6, $zero, -0x1
   jlabel .L80211400
@@ -214,10 +214,10 @@ glabel ProcessMainMenu
     /* 12418 80211418 AC29FF08 */  sw         $t1, %lo(g_dwNumLocalPlayers)($at)
     /* 1241C 8021141C 3C018027 */  lui        $at, %hi(g_dwGameMode)
     /* 12420 80211420 240A0003 */  addiu      $t2, $zero, 0x3
-    /* 12424 80211424 3C048021 */  lui        $a0, %hi(ProcessDifficultySelect)
+    /* 12424 80211424 3C048021 */  lui        $a0, %hi(ProcessPlayerCountSelect)
     /* 12428 80211428 AC2AFF18 */  sw         $t2, %lo(g_dwGameMode)($at)
     /* 1242C 8021142C 0C0871B9 */  jal        SetCurrentScreenCallback
-    /* 12430 80211430 248416E0 */   addiu     $a0, $a0, %lo(ProcessDifficultySelect)
+    /* 12430 80211430 248416E0 */   addiu     $a0, $a0, %lo(ProcessPlayerCountSelect)
     /* 12434 80211434 1000001C */  b          .L802114A8
     /* 12438 80211438 240EFFFF */   addiu     $t6, $zero, -0x1
   jlabel .L8021143C

@@ -117,6 +117,19 @@ void InitControllersAndPaks(void);
  */
 extern u32 g_dwKeepScreenBlanked;
 
+/** The size of the frame in pixels. @ghidraAddress USA: 0x8028aab0 */
+extern s32 g_dwScreenWidth;
+
+/** @ghidraAddress USA: 0x8028aab4 */
+extern s32 g_dwScreenHeight;
+
+/**
+ * Limit drawing to a rectangle, clipped to the frame.
+ *
+ * @ghidraAddress USA: 0x80219a78
+ */
+void SetScissorRect(s32 x, s32 y, s32 width, s32 height);
+
 /**
  * Show a message on the debug display.
  *

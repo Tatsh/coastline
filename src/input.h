@@ -6,6 +6,7 @@
  * The input of each player, the cheat codes, and the translation of controller data.
  */
 
+#include <PR/os_cont.h>
 #include <PR/ultratypes.h>
 
 /** The number of players the input state holds. */
@@ -16,7 +17,12 @@
  * reconstructed.
  */
 typedef struct {
-    u8 raw[0x15C];
+    u8 unreconstructed0[0x28];
+    /** Set when the controller of the player does not respond. */
+    s32 controllerMissing;
+    u8 unreconstructed2C[0x158 - 0x2C];
+    /** The pad the controller reads fill. */
+    OSContPad *pad;
 } PlayerInputState;
 
 /** @ghidraAddress USA: 0x8036a8e0 */

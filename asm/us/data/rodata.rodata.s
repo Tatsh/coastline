@@ -4210,11 +4210,11 @@ dlabel g_sz1P2PSelect
 enddlabel g_sz1P2PSelect
 .align 2
 
-nonmatching g_dwOsSpTaskNum
+nonmatching g_fConst0p4_802a8050
 
-dlabel g_dwOsSpTaskNum
+dlabel g_fConst0p4_802a8050
     /* A9050 802A8050 3ECCCCCD */ .float 0.400000006
-enddlabel g_dwOsSpTaskNum
+enddlabel g_fConst0p4_802a8050
     /* A9054 802A8054 00000000 */ .float 0
     /* A9058 802A8058 00000000 */ .float 0
     /* A905C 802A805C 00000000 */ .float 0

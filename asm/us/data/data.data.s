@@ -4844,11 +4844,11 @@ dlabel D_802722A8
     /* 732B8 802722B8 00000000 */ .word 0x00000000
 enddlabel D_802722A8
 
-nonmatching g_dwTrackSelectFlags
+nonmatching g_dwWeatherSelectState
 
-dlabel g_dwTrackSelectFlags
+dlabel g_dwWeatherSelectState
     /* 732BC 802722BC 00000000 */ .word 0x00000000
-enddlabel g_dwTrackSelectFlags
+enddlabel g_dwWeatherSelectState
 
 nonmatching g_MainMenuLayoutImage
 
@@ -5041,11 +5041,11 @@ dlabel D_80272388
     /* 7338C 8027238C 00000000 */ .word 0x00000000
 enddlabel D_80272388
 
-nonmatching g_pszOnePlayer
+nonmatching g_OnePlayerMenuItem
 
-dlabel g_pszOnePlayer
+dlabel g_OnePlayerMenuItem
     /* 73390 80272390 802A7FF0 */ .word g_szOnePlayer
-enddlabel g_pszOnePlayer
+enddlabel g_OnePlayerMenuItem
 
 nonmatching D_80272394
 
@@ -5057,11 +5057,11 @@ dlabel D_80272394
     /* 733A0 802723A0 00209590 */ .word 0x00209590
 enddlabel D_80272394
 
-nonmatching g_pszTwoPlayers
+nonmatching g_TwoPlayersMenuItem
 
-dlabel g_pszTwoPlayers
+dlabel g_TwoPlayersMenuItem
     /* 733A4 802723A4 802A7FFC */ .word g_szTwoPlayers
-enddlabel g_pszTwoPlayers
+enddlabel g_TwoPlayersMenuItem
 
 nonmatching g_dwDifficultySelectFlags
 
@@ -5078,16 +5078,16 @@ dlabel D_802723AC
     /* 733B4 802723B4 0020AE20 */ .word 0x0020AE20
 enddlabel D_802723AC
 
-nonmatching g_pDifficultySelectScreenData
+nonmatching g_apPlayerCountMenuItems
 
-dlabel g_pDifficultySelectScreenData
-    /* 733B8 802723B8 80272390 */ .word g_pszOnePlayer
-enddlabel g_pDifficultySelectScreenData
+dlabel g_apPlayerCountMenuItems
+    /* 733B8 802723B8 80272390 */ .word g_OnePlayerMenuItem
+enddlabel g_apPlayerCountMenuItems
 
 nonmatching g_pDifficultySelectState2
 
 dlabel g_pDifficultySelectState2
-    /* 733BC 802723BC 802723A4 */ .word g_pszTwoPlayers
+    /* 733BC 802723BC 802723A4 */ .word g_TwoPlayersMenuItem
 enddlabel g_pDifficultySelectState2
 
 nonmatching D_802723C0
@@ -5097,11 +5097,11 @@ dlabel D_802723C0
     /* 733C0 802723C0 00000000 */ .word 0x00000000
 enddlabel D_802723C0
 
-nonmatching g_dwMenuScreenFlags
+nonmatching g_dwPlayerCountSelectState
 
-dlabel g_dwMenuScreenFlags
+dlabel g_dwPlayerCountSelectState
     /* 733C4 802723C4 00000000 */ .word 0x00000000
-enddlabel g_dwMenuScreenFlags
+enddlabel g_dwPlayerCountSelectState
 
 nonmatching D_802723C8
 

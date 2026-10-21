@@ -4164,9 +4164,9 @@ glabel ProcessTrackSelectScreen
     /* 11124 80210124 1000037D */  b          .L80210F1C
     /* 11128 80210128 8FBF006C */   lw        $ra, 0x6C($sp)
   .L8021012C:
-    /* 1112C 8021012C 3C048021 */  lui        $a0, %hi(ProcessGameModeSelect)
+    /* 1112C 8021012C 3C048021 */  lui        $a0, %hi(ProcessWeatherSelect)
     /* 11130 80210130 0C0871B9 */  jal        SetCurrentScreenCallback
-    /* 11134 80210134 24840FC8 */   addiu     $a0, $a0, %lo(ProcessGameModeSelect)
+    /* 11134 80210134 24840FC8 */   addiu     $a0, $a0, %lo(ProcessWeatherSelect)
     /* 11138 80210138 10000378 */  b          .L80210F1C
     /* 1113C 8021013C 8FBF006C */   lw        $ra, 0x6C($sp)
   .L80210140:

@@ -13,4 +13,11 @@
  */
 void SetScreenFadeValues(float level);
 
+/**
+ * Draw the fade overlay over the scissor rectangle at a level from 0 to 1.
+ *
+ * @ghidraAddress USA: 0x80223de0
+ */
+void DrawScreenFadeOverlay(float level);
+
 #endif

@@ -238,6 +238,7 @@ pipebusy
 pipx
 pirawdma
 pirawread
+playerselect
 preapproved
 prenmi
 probetlb
@@ -344,6 +345,7 @@ visetspecial
 viswapbuf
 viswapcontext
 vretrace
+weatherselect
 werror
 wextra
 winget

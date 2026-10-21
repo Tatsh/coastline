@@ -1383,9 +1383,9 @@ glabel ProcessRaceState
     /* ACA8 80209CA8 10000004 */  b          .L80209CBC
     /* ACAC 80209CAC 00000000 */   nop
   .L80209CB0:
-    /* ACB0 80209CB0 3C048021 */  lui        $a0, %hi(ProcessGameModeSelect)
+    /* ACB0 80209CB0 3C048021 */  lui        $a0, %hi(ProcessWeatherSelect)
     /* ACB4 80209CB4 0C0871B9 */  jal        SetCurrentScreenCallback
-    /* ACB8 80209CB8 24840FC8 */   addiu     $a0, $a0, %lo(ProcessGameModeSelect)
+    /* ACB8 80209CB8 24840FC8 */   addiu     $a0, $a0, %lo(ProcessWeatherSelect)
   .L80209CBC:
     /* ACBC 80209CBC 3C028027 */  lui        $v0, %hi(g_dwGameMode)
     /* ACC0 80209CC0 8C42FF18 */  lw         $v0, %lo(g_dwGameMode)($v0)
@@ -1408,9 +1408,9 @@ glabel ProcessRaceState
     /* ACFC 80209CFC 10000004 */  b          .L80209D10
     /* AD00 80209D00 00000000 */   nop
   .L80209D04:
-    /* AD04 80209D04 3C048021 */  lui        $a0, %hi(ProcessDifficultySelect)
+    /* AD04 80209D04 3C048021 */  lui        $a0, %hi(ProcessPlayerCountSelect)
     /* AD08 80209D08 0C0871B9 */  jal        SetCurrentScreenCallback
-    /* AD0C 80209D0C 248416E0 */   addiu     $a0, $a0, %lo(ProcessDifficultySelect)
+    /* AD0C 80209D0C 248416E0 */   addiu     $a0, $a0, %lo(ProcessPlayerCountSelect)
   .L80209D10:
     /* AD10 80209D10 3C028027 */  lui        $v0, %hi(g_dwGameMode)
     /* AD14 80209D14 8C42FF18 */  lw         $v0, %lo(g_dwGameMode)($v0)

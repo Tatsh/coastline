@@ -670,14 +670,14 @@ nonmatching g_szResultsBuf, 0x58
 dlabel g_szResultsBuf
     /* 80316318 */ .space 0x58
 
-nonmatching g_dwPhysicsReserved41, 0x4
+nonmatching g_dwWeatherMenuItemCount, 0x4
 
-dlabel g_dwPhysicsReserved41
+dlabel g_dwWeatherMenuItemCount
     /* 80316370 */ .space 0x04
 
-nonmatching g_dwPhysicsReserved42, 0x4
+nonmatching g_dwWeatherMenuSelection, 0x4
 
-dlabel g_dwPhysicsReserved42
+dlabel g_dwWeatherMenuSelection
     /* 80316374 */ .space 0x04
 
 nonmatching D_80316378, 0x8
@@ -702,14 +702,14 @@ nonmatching D_80316388, 0x8
 dlabel D_80316388
     /* 80316388 */ .space 0x08
 
-nonmatching g_dwPhysicsReserved44, 0x4
+nonmatching g_dwPlayerCountMenuItemCount, 0x4
 
-dlabel g_dwPhysicsReserved44
+dlabel g_dwPlayerCountMenuItemCount
     /* 80316390 */ .space 0x04
 
-nonmatching g_dwPhysicsReserved45, 0x4
+nonmatching g_dwPlayerCountMenuSelection, 0x4
 
-dlabel g_dwPhysicsReserved45
+dlabel g_dwPlayerCountMenuSelection
     /* 80316394 */ .space 0x04
 
 nonmatching D_80316398, 0x8
