@@ -1,7 +1,7 @@
 # The C library: memory and string routines, formatted output, and 64-bit arithmetic.
-target_sources(
-  coastline_libultra
-  PRIVATE bcmp.c
+add_library(
+  coastline_libultra_libc STATIC
+          bcmp.c
           bcopy.c
           bzero.c
           divdi3.c
@@ -13,3 +13,4 @@ target_sources(
           xldtob.c
           xlitob.c
           xprintf.c)
+target_link_libraries(coastline_libultra_libc PRIVATE coastline_libultra_options)

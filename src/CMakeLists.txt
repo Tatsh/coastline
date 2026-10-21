@@ -72,7 +72,7 @@ if(TGR_PLATFORM STREQUAL "n64")
   list(APPEND COASTLINE_LIBRARIES coastline_zlib)
 
   add_subdirectory(libultra)
-  list(APPEND COASTLINE_LIBRARIES coastline_libultra)
+  list(APPEND COASTLINE_LIBRARIES ${COASTLINE_LIBULTRA_LIBRARIES})
 
   # The game code of the Nintendo 64 releases. A routine joins this list when its body moves from
   # the assembly of the original into C.

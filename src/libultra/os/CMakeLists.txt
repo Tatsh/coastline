@@ -1,7 +1,7 @@
 # The operating system: threads, messages, interrupts and exceptions, timers, and the caches.
-target_sources(
-  coastline_libultra
-  PRIVATE createmesgqueue.c
+add_library(
+  coastline_libultra_os STATIC
+          createmesgqueue.c
           createthread.c
           destroythread.c
           exceptasm.s
@@ -35,3 +35,4 @@ target_sources(
           writebackdcache.s
           writebackdcacheall.s
           yieldthread.c)
+target_link_libraries(coastline_libultra_os PRIVATE coastline_libultra_options)

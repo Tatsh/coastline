@@ -1,7 +1,7 @@
 # The graphics utilities: matrices, views, and the trigonometry they use.
-target_sources(
-  coastline_libultra
-  PRIVATE cosf.c
+add_library(
+  coastline_libultra_gu STATIC
+          cosf.c
           lookat.c
           lookathil.c
           lookatref.c
@@ -16,3 +16,4 @@ target_sources(
           sins.c
           sqrtf.c
           translate.c)
+target_link_libraries(coastline_libultra_gu PRIVATE coastline_libultra_options)

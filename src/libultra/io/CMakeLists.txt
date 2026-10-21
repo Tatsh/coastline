@@ -1,8 +1,8 @@
 # The input and output managers: audio, the cartridge and disk interfaces, the controllers and
 # their Paks, the serial interface, the signal processor, and video.
-target_sources(
-  coastline_libultra
-  PRIVATE ai.c
+add_library(
+  coastline_libultra_io STATIC
+          ai.c
           cartrominit.c
           contpfs.c
           contramread.c
@@ -49,3 +49,4 @@ target_sources(
           visetspecial.c
           viswapbuf.c
           viswapcontext.c)
+target_link_libraries(coastline_libultra_io PRIVATE coastline_libultra_options)
