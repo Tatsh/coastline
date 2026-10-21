@@ -1,5 +1,9 @@
 #include "controller.h"
 
+/* The original reads the page unset when the first bank of the chain is out of range. */
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wuninitialized"
+#pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
 s32 osPfsFileState(OSPfs *pfs, s32 file_no, OSPfsState *state) {
     s32 ret;
     int pages;
@@ -29,13 +33,10 @@ s32 osPfsFileState(OSPfs *pfs, s32 file_no, OSPfsState *state) {
         return PFS_ERR_INCONSISTENT;
     }
 
-    /* Count the pages of the chain, reading the page table of each bank it passes through. The
-     * original reads page without setting it when the first bank is out of range. It starts at 0
-     * here, so that case always reports PFS_ERR_INCONSISTENT. */
+    /* Count the pages of the chain, reading the page table of each bank it passes through. */
     pages = 0;
     start = dir.start_page.inode_t.page;
     bank = dir.start_page.inode_t.bank;
-    page.ipage = 0;
     while (bank < pfs->banks) {
         ERRCK(__osPfsRWInode(pfs, &inode, PFS_READ, bank));
         page = inode.inode_page[start];
@@ -68,3 +69,4 @@ s32 osPfsFileState(OSPfs *pfs, s32 file_no, OSPfsState *state) {
     }
     return 0;
 }
+#pragma GCC diagnostic pop
