@@ -4,7 +4,8 @@
  * picks one of 8 rows. */
 #define CACHE_INDEX(unit) ((unit).inode_t.page / 4 + ((unit).inode_t.bank % 8) * BLOCKSIZE)
 
-/* Record which banks point into the pages of which other banks. */
+/* Record which banks point into the pages of which other banks.
+ * @ghidraAddress USA: 0x80263144 */
 static s32 corrupted_init(OSPfs *pfs, __OSInodeCache *cache) {
     int i;
     int n;
@@ -36,7 +37,8 @@ static s32 corrupted_init(OSPfs *pfs, __OSInodeCache *cache) {
     return 0;
 }
 
-/* Return how many page table entries point at fpage, or PFS_ERR_NEW_PACK once two do. */
+/* Return how many page table entries point at fpage, or PFS_ERR_NEW_PACK once two do.
+ * @ghidraAddress USA: 0x802632f8 */
 static s32 corrupted(OSPfs *pfs, __OSInodeUnit fpage, __OSInodeCache *cache) {
     int j;
     int n;

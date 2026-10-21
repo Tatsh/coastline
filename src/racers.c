@@ -259,7 +259,8 @@ void InitRacerSlot(RacerSlot *slot) {
     slot->racePosition = g_dwNumVehicles - slot->index - 1;
 }
 
-/* Order racers by their progress, the least first. */
+/* Order racers by their progress, the least first.
+ * @ghidraAddress USA: 0x80229510 */
 static s32 CompareRacerProgressAsc(const void *a, const void *b) {
     const RacerProgress *first = a;
     const RacerProgress *second = b;

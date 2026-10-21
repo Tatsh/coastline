@@ -924,15 +924,10 @@ nonmatching D_8031A460, 0x138
 dlabel D_8031A460
     /* 8031A460 */ .space 0x138
 
-nonmatching D_8031A598, 0x8
+nonmatching g_abRspDramStackBuffer, 0x410
 
-dlabel D_8031A598
-    /* 8031A598 */ .space 0x08
-
-nonmatching g_abRspDramStack, 0x408
-
-dlabel g_abRspDramStack
-    /* 8031A5A0 */ .space 0x408
+dlabel g_abRspDramStackBuffer
+    /* 8031A598 */ .space 0x410
 
 nonmatching g_aGfxTask, 0x80
 

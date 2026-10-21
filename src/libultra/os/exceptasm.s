@@ -416,6 +416,7 @@ __osException:
     nop
     .size __osException, . - __osException
 
+    # @ghidraAddress USA: 0x8026b204
     .globl send_mesg
     .type send_mesg, @function
 send_mesg:

@@ -25,7 +25,7 @@ EOF
 converted="$(cat "${root}/asm/us/converted.txt" 2> /dev/null || true)"
 rm -rf "${root}/asm/us"
 mkdir -p "${root}/asm/us"
-printf '%s' "${converted}" > "${root}/asm/us/converted.txt"
+printf '%s\n' "${converted}" > "${root}/asm/us/converted.txt"
 (cd "${root}/tools/splat" && "${root}/.sbclaude-venv/bin/splat" split us.yaml > /dev/null)
 rm -rf "${root}/include"
 "${python}" -I "${root}/tools/splat/postprocess.py" us

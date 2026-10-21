@@ -36,14 +36,14 @@ The programs are `usa.z64`, `jpn.z64`, `eur.z64`.
 
 | Measure                                                                           | Count |
 | --------------------------------------------------------------------------------- | ----: |
-| Functions in the programs                                                         |   846 |
+| Functions in the programs                                                         |   840 |
 | Excluded as Exception vector (copied from the SDK exception preamble at run time) |     1 |
 | Excluded as PIF ROM (console boot ROM, not part of the cartridge)                 |     5 |
-| To reconstruct                                                                    |   840 |
-| Done                                                                              |   671 |
+| To reconstruct                                                                    |   834 |
+| Done                                                                              |   784 |
 | Stubbed (not counted as done)                                                     |     0 |
-| Declared only (not counted as done)                                               |    40 |
-| Share done                                                                        | 79.9% |
+| Declared only (not counted as done)                                               |     0 |
+| Share done                                                                        | 94.0% |
 | Only in JPN                                                                       |     6 |
 | Only in EUR                                                                       |     2 |
 
@@ -51,9 +51,9 @@ The programs are `usa.z64`, `jpn.z64`, `eur.z64`.
 
 | Component      | Routines | Done | Stubbed |  Share |
 | -------------- | -------: | ---: | ------: | -----: |
-| Game code      |      600 |  478 |       0 |  79.7% |
+| Game code      |      594 |  577 |       0 |  97.1% |
 | IPL3 boot code |        7 |    0 |       0 |   0.0% |
-| SDK (libultra) |      208 |  168 |       0 |  80.8% |
+| SDK (libultra) |      208 |  182 |       0 |  87.5% |
 | zlib           |       25 |   25 |       0 | 100.0% |
 
 ## PC port
@@ -88,15 +88,15 @@ block of the master program.
 | Part                                                                      | Group       | Component      | Range                     | Routines | Done |  Share |
 | ------------------------------------------------------------------------- | ----------- | -------------- | ------------------------- | -------: | ---: | -----: |
 | [n64-game-code-80200000.md](progress/n64-game-code-80200000.md)           | Nintendo 64 | Game code      | `0x80200000`-`0x80210000` |       45 |   45 | 100.0% |
-| [n64-game-code-80210000.md](progress/n64-game-code-80210000.md)           | Nintendo 64 | Game code      | `0x80210000`-`0x80220000` |      142 |   92 |  64.8% |
-| [n64-game-code-80220000.md](progress/n64-game-code-80220000.md)           | Nintendo 64 | Game code      | `0x80220000`-`0x80230000` |      169 |  160 |  94.7% |
+| [n64-game-code-80210000.md](progress/n64-game-code-80210000.md)           | Nintendo 64 | Game code      | `0x80210000`-`0x80220000` |      136 |  129 |  94.9% |
+| [n64-game-code-80220000.md](progress/n64-game-code-80220000.md)           | Nintendo 64 | Game code      | `0x80220000`-`0x80230000` |      169 |  161 |  95.3% |
 | [n64-game-code-80230000.md](progress/n64-game-code-80230000.md)           | Nintendo 64 | Game code      | `0x80230000`-`0x80240000` |       45 |   45 | 100.0% |
 | [n64-zlib-80230000.md](progress/n64-zlib-80230000.md)                     | Nintendo 64 | zlib           | `0x80230000`-`0x80240000` |        7 |    7 | 100.0% |
-| [n64-game-code-80240000.md](progress/n64-game-code-80240000.md)           | Nintendo 64 | Game code      | `0x80240000`-`0x80250000` |       56 |    9 |  16.1% |
+| [n64-game-code-80240000.md](progress/n64-game-code-80240000.md)           | Nintendo 64 | Game code      | `0x80240000`-`0x80250000` |       56 |   55 |  98.2% |
 | [n64-zlib-80240000.md](progress/n64-zlib-80240000.md)                     | Nintendo 64 | zlib           | `0x80240000`-`0x80250000` |       18 |   18 | 100.0% |
-| [n64-game-code-80250000.md](progress/n64-game-code-80250000.md)           | Nintendo 64 | Game code      | `0x80250000`-`0x80260000` |      141 |  125 |  88.7% |
+| [n64-game-code-80250000.md](progress/n64-game-code-80250000.md)           | Nintendo 64 | Game code      | `0x80250000`-`0x80260000` |      141 |  140 |  99.3% |
 | [n64-game-code-80260000.md](progress/n64-game-code-80260000.md)           | Nintendo 64 | Game code      | `0x80260000`-`0x80270000` |        2 |    2 | 100.0% |
-| [n64-sdk-libultra-80260000.md](progress/n64-sdk-libultra-80260000.md)     | Nintendo 64 | SDK (libultra) | `0x80260000`-`0x80270000` |      208 |  168 |  80.8% |
+| [n64-sdk-libultra-80260000.md](progress/n64-sdk-libultra-80260000.md)     | Nintendo 64 | SDK (libultra) | `0x80260000`-`0x80270000` |      208 |  182 |  87.5% |
 | [n64-ipl3-boot-code-a4000000.md](progress/n64-ipl3-boot-code-a4000000.md) | Nintendo 64 | IPL3 boot code | `0xa4000000`-`0xa4010000` |        7 |    0 |   0.0% |
 | [pc-game-code-10000000.md](progress/pc-game-code-10000000.md)             | PC port     | Game code      | `0x10000000`-`0x10010000` |      246 |    0 |   0.0% |
 | [pc-zlib-10000000.md](progress/pc-zlib-10000000.md)                       | PC port     | zlib           | `0x10000000`-`0x10010000` |        1 |    0 |   0.0% |

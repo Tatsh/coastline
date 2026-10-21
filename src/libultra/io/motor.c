@@ -48,7 +48,8 @@ s32 osMotorStart(OSPfs *pfs) {
 }
 
 /* Build the PIF RAM image of a block write to the motor. Unlike the other packing routines, it
- * leaves the status word to the store after the loop. */
+ * leaves the status word to the store after the loop.
+ * @ghidraAddress USA: 0x802621f4 */
 static void _MakeMotorData(int channel, u16 address, u8 *buffer, OSPifRam *mdata) {
     u8 *ptr = (u8 *)mdata->ramarray;
     __OSContRamReadFormat ramreadformat;

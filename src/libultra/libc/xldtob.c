@@ -11,6 +11,7 @@
 /* Round up to a multiple of align. */
 #define ALIGN(s, align) (((u32)(s) + ((align) - 1)) & ~((align) - 1))
 
+/** @ghidraAddress USA: 0x8026d0f0 */
 static void _Genld(_Pft *px, char code, const char *p, s16 nsig, s16 xexp) {
     const char point = '.';
 

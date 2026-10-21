@@ -1,6 +1,7 @@
 #include "controller.h"
 
-/* Add the byte sums of the 8 blocks of a page to *sum, then select bank 0 again. */
+/* Add the byte sums of the 8 blocks of a page to *sum, then select bank 0 again.
+ * @ghidraAddress USA: 0x80268138 */
 static s32 __osBlockSum(OSPfs *pfs, u8 page_no, u16 *sum, u8 bank) {
     int i;
     s32 ret = 0;
@@ -22,7 +23,8 @@ static s32 __osBlockSum(OSPfs *pfs, u8 page_no, u16 *sum, u8 bank) {
     return ret;
 }
 
-/* Free the pages of a chain within one bank, and report where the chain continues. */
+/* Free the pages of a chain within one bank, and report where the chain continues.
+ * @ghidraAddress USA: 0x80267f00 */
 static s32 __osPfsReleasePages(OSPfs *pfs,
                                __OSInode *inode,
                                u8 start_page,

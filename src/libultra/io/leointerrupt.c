@@ -1,7 +1,8 @@
 #include "../os/osint.h"
 #include "piint.h"
 
-/* Post the PI event, as the exception handler does for a PI interrupt. */
+/* Post the PI event, as the exception handler does for a PI interrupt.
+ * @ghidraAddress USA: 0x8026e36c */
 static void __osLeoResume(void) {
     __OSEventState *es = &__osEventStateTab[OS_EVENT_PI];
     OSMesgQueue *mq = es->messageQueue;
@@ -18,7 +19,8 @@ static void __osLeoResume(void) {
     }
 }
 
-/* Reset the buffer manager after an error and end the transfer. */
+/* Reset the buffer manager after an error and end the transfer.
+ * @ghidraAddress USA: 0x8026e284 */
 static void __osLeoAbnormalResume(void) {
     __OSTranxInfo *info = &__osDiskHandle->transferInfo;
     u32 pi_stat;

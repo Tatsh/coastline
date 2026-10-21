@@ -5,7 +5,8 @@
     ((unit).ipage >= (pfs)->inode_start_page && (unit).inode_t.bank < (pfs)->banks &&              \
      (unit).inode_t.page > 0 && (unit).inode_t.page < PFS_INODE_SIZE_PER_PAGE)
 
-/* Follow a page chain one step, reading the page table of a bank the chain enters. */
+/* Follow a page chain one step, reading the page table of a bank the chain enters.
+ * @ghidraAddress USA: 0x802634e0 */
 static s32 __osPfsGetNextPage(OSPfs *pfs, u8 *bank, __OSInode *inode, __OSInodeUnit *page) {
     s32 ret;
 

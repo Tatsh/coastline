@@ -1,5 +1,6 @@
 #include "xstdio.h"
 
+/** @ghidraAddress USA: 0x80260db0 */
 static void *proutSprintf(void *dst, const char *src, size_t count) {
     return (char *)memcpy(dst, src, count) + count;
 }

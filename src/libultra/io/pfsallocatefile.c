@@ -1,7 +1,8 @@
 #include "controller.h"
 
 /* Write a page of zeroes to a page of a bank, then select bank 0 again. The result is that of
- * selecting bank 0, whatever the writes returned. */
+ * selecting bank 0, whatever the writes returned.
+ * @ghidraAddress USA: 0x80264218 */
 static s32 __osClearPage(OSPfs *pfs, int page_no, u8 *data, u8 bank) {
     int i;
     s32 ret = 0;
@@ -19,7 +20,8 @@ static s32 __osClearPage(OSPfs *pfs, int page_no, u8 *data, u8 bank) {
     return ret;
 }
 
-/* Claim free pages of one bank for a file, chaining and clearing them. */
+/* Claim free pages of one bank for a file, chaining and clearing them.
+ * @ghidraAddress USA: 0x80263fb4 */
 static s32 __osPfsDeclearPage(OSPfs *pfs,
                               __OSInode *inode,
                               int file_size_in_pages,
