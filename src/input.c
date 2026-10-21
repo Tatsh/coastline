@@ -42,6 +42,13 @@ void CheatToggleRamView(void) {
     g_bShowDepthBuffer = !g_bShowDepthBuffer;
 }
 
+#if TGR_REGION == TGR_REGION_JP || TGR_REGION == TGR_REGION_EU
+void CheatFinishRace(void) {
+    g_dwCheatFinishRacePending = TRUE;
+    osSyncPrintf("FINISH!");
+}
+#endif
+
 void CheatUnlockTracks0To4(void) {
     g_aVehicles[0].profile->unlockedTracks |= UNLOCKED_TRACKS_0_TO_4;
 }

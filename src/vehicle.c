@@ -697,6 +697,23 @@ void InstallVehicleModel(Vehicle *vehicle, s32 slot, s32 car) {
     SetVehicleModelSlot(vehicle, slot);
 }
 
+#if TGR_REGION == TGR_REGION_EU
+/* The European release has a second, identical copy of InstallVehicleModel(). */
+void InstallVehicleModelCopy(Vehicle *vehicle, s32 slot, s32 car) {
+    LoadOrCopyVehicleModel(slot, car, NULL);
+    SetVehicleModelSlot(vehicle, slot);
+}
+#endif
+
+#if TGR_REGION == TGR_REGION_JP
+void LoadAndActivateTrackWithPaintColor(Vehicle *vehicle, s32 slot, s32 car) {
+    LoadOrCopyVehicleModel(slot, car, NULL);
+    SetVehicleModelSlot(vehicle, slot);
+    SetMaterialColor(
+        vehicle->model, vehicle->color[0] >> 3, vehicle->color[1] >> 3, vehicle->color[2] >> 3);
+}
+#endif
+
 void LoadVehicleModel(VehicleModelLoad *load, s32 slot, s32 car, s32 buffer) {
     g_aCarModels[car].modelSize = DmaReadAssetSize(g_aCarModels[car].modelRom);
     InitDmaRequest(&load->job, &g_aDmaWorkBuffers[buffer * DMA_WORK_BUFFER_SIZE]);

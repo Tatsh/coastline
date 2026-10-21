@@ -795,6 +795,31 @@ void SetVehicleModelSlot(Vehicle *vehicle, s32 slot);
  */
 void InstallVehicleModel(Vehicle *vehicle, s32 slot, s32 car);
 
+#if TGR_REGION == TGR_REGION_EU
+/**
+ * Load the model of a car into a slot and give it to a vehicle, as InstallVehicleModel() does.
+ *
+ * @param vehicle The vehicle.
+ * @param slot The slot of g_aVehicleModels.
+ * @param car The index of the car in g_aCarModels.
+ * @ghidraAddress EUR: 0x80221774
+ */
+void InstallVehicleModelCopy(Vehicle *vehicle, s32 slot, s32 car);
+#endif
+
+#if TGR_REGION == TGR_REGION_JP
+/**
+ * Load the model of a car into a slot, give it to a vehicle, and paint it the color of the
+ * vehicle.
+ *
+ * @param vehicle The vehicle.
+ * @param slot The slot of g_aVehicleModels.
+ * @param car The index of the car in g_aCarModels.
+ * @ghidraAddress JPN: 0x80220f38
+ */
+void LoadAndActivateTrackWithPaintColor(Vehicle *vehicle, s32 slot, s32 car);
+#endif
+
 /**
  * Start loading the model of a car into a slot through a buffer of g_aDmaWorkBuffers.
  *

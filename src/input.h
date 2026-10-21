@@ -150,6 +150,24 @@ extern s32 g_bBilinearFiltering;
  */
 void CheatToggleRamView(void);
 
+#if TGR_REGION == TGR_REGION_JP || TGR_REGION == TGR_REGION_EU
+/**
+ * Set by CheatFinishRace() to finish the race.
+ *
+ * @ghidraAddress JPN: 0x80272248
+ * @ghidraAddress EUR: 0x80272798
+ */
+extern s32 g_dwCheatFinishRacePending;
+
+/**
+ * Request that the race finish.
+ *
+ * @ghidraAddress JPN: 0x80255e88
+ * @ghidraAddress EUR: 0x802564f8
+ */
+void CheatFinishRace(void);
+#endif
+
 /**
  * Unlock the first five tracks.
  *
