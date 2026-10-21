@@ -233,27 +233,24 @@ void UpdateHudMessageTimers(Vehicle *vehicle) {
 }
 
 void CheckWrongWayWarning(Vehicle *vehicle) {
-    if (g_LoadedTrack.rootSection == NULL) {
-        return;
-    }
-    if (vehicle->lap >= g_dwTotalLaps || vehicle->flyMode ||
-        !((f64)Vec3fDot(&vehicle->trackDirection, &vehicle->frame.forward) < 0.0)) {
-        vehicle->wrongWayFrames = 0;
-        return;
-    }
-    vehicle->wrongWayFrames++;
-    if (vehicle->wrongWayFrames >= WRONG_WAY_FRAMES &&
-        (vehicle->wrongWayFrames & WRONG_WAY_FLASH) == WRONG_WAY_FLASH) {
-        if (vehicle->message == NULL) {
-            vehicle->message = sWrongWay;
-            vehicle->subMessage = NULL;
-            vehicle->messageTime = WRONG_WAY_TIME;
+    if (g_LoadedTrack.rootSection != NULL) {
+        if (vehicle->lap < g_dwTotalLaps && !vehicle->flyMode &&
+            (f64)Vec3fDot(&vehicle->trackDirection, &vehicle->frame.forward) < 0.0) {
+            vehicle->wrongWayFrames++;
+            if (vehicle->wrongWayFrames >= WRONG_WAY_FRAMES &&
+                (vehicle->wrongWayFrames & WRONG_WAY_FLASH) == WRONG_WAY_FLASH) {
+                if (vehicle->message == NULL) {
+                    vehicle->message = sWrongWay;
+                    vehicle->subMessage = NULL;
+                    vehicle->messageTime = WRONG_WAY_TIME;
+                }
+            } else if (vehicle->message == sWrongWay) {
+                vehicle->subMessage = NULL;
+                vehicle->message = NULL;
+            }
+        } else {
+            vehicle->wrongWayFrames = 0;
         }
-        return;
-    }
-    if (vehicle->message == sWrongWay) {
-        vehicle->subMessage = NULL;
-        vehicle->message = NULL;
     }
 }
 
@@ -722,8 +719,7 @@ u32 PollVehicleModelDma(VehicleModelLoad *load) {
 }
 
 void ResetVehicleState(Vehicle *vehicle) {
-    CarPhysicsSpec *spec;
-    s32 i;
+    s32 car;
 
     /* The frames of the vehicle and its cameras, all but camera 4, and of its wheels. */
     FinishFrameMatrix(vehicle->matrix);
@@ -737,31 +733,33 @@ void ResetVehicleState(Vehicle *vehicle) {
     vehicle->cameras[VEHICLE_CAMERA_TRACKSIDE].fov = DEFAULT_CAMERA_FOV;
     FinishFrameMatrix((f32(*)[4]) & vehicle->cameras[VEHICLE_CAMERA_MIRROR]);
     vehicle->cameras[VEHICLE_CAMERA_MIRROR].fov = DEFAULT_CAMERA_FOV;
-    vehicle->model = NULL;
     vehicle->activeCamera = &vehicle->cameras[VEHICLE_CAMERA_COCKPIT];
-    for (i = 0; i < VEHICLE_WHEELS; i++) {
-        FinishFrameMatrix(vehicle->wheelMatrices[i]);
-    }
+    vehicle->model = NULL;
+    FinishFrameMatrix(vehicle->wheelMatrices[0]);
+    FinishFrameMatrix(vehicle->wheelMatrices[1]);
+    FinishFrameMatrix(vehicle->wheelMatrices[2]);
+    FinishFrameMatrix(vehicle->wheelMatrices[3]);
     SetVehicleVelocity(vehicle, 0.0f, 0.0f, 0.0f);
     vehicle->section = NULL;
     vehicle->pointIndex = 0;
     vehicle->previousCamera = NULL;
 
     /* The gearbox and engine of the car. */
-    spec = &g_aCarPhysicsSpecs[vehicle->carModel];
-    memcpy(vehicle->gearRatios, spec->gearRatios, sizeof(vehicle->gearRatios));
-    for (i = 0; i < 4; i++) {
-        vehicle->torqueCurve[i] = spec->torqueCurve[i];
-    }
-    vehicle->finalDrive = spec->finalDrive;
+    car = vehicle->carModel;
+    memcpy(vehicle->gearRatios, g_aCarPhysicsSpecs[car].gearRatios, sizeof(vehicle->gearRatios));
+    vehicle->torqueCurve[0] = g_aCarPhysicsSpecs[car].torqueCurve[0];
+    vehicle->torqueCurve[1] = g_aCarPhysicsSpecs[car].torqueCurve[1];
+    vehicle->torqueCurve[2] = g_aCarPhysicsSpecs[car].torqueCurve[2];
+    vehicle->torqueCurve[3] = g_aCarPhysicsSpecs[car].torqueCurve[3];
+    vehicle->finalDrive = g_aCarPhysicsSpecs[car].finalDrive;
+    vehicle->gearCount = g_aCarPhysicsSpecs[car].gearCount;
     vehicle->transmission = vehicle->chosenTransmission;
-    vehicle->gearCount = spec->gearCount;
-    vehicle->rearWheelDrive = spec->rearWheelDrive;
-    vehicle->body.boxSize.x = spec->boxSize.x;
-    vehicle->body.boxSize.y = spec->boxSize.y;
-    vehicle->body.boxSize.z = spec->boxSize.z;
-    vehicle->body.boxCenterZ = spec->boxCenterZ;
-    vehicle->tableIndex = spec->tableIndex;
+    vehicle->rearWheelDrive = g_aCarPhysicsSpecs[car].rearWheelDrive;
+    vehicle->body.boxSize.x = g_aCarPhysicsSpecs[car].boxSize.x;
+    vehicle->body.boxSize.y = g_aCarPhysicsSpecs[car].boxSize.y;
+    vehicle->body.boxSize.z = g_aCarPhysicsSpecs[car].boxSize.z;
+    vehicle->body.boxCenterZ = g_aCarPhysicsSpecs[car].boxCenterZ;
+    vehicle->tableIndex = g_aCarPhysicsSpecs[car].tableIndex;
 }
 
 void BindPlayerInputToVehicle(Vehicle *vehicle) {

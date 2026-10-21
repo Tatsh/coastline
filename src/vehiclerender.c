@@ -910,18 +910,19 @@ void EmitTachometerDisplayList(Vehicle *vehicle) {
 }
 
 void RenderTrackShadow(Vehicle *vehicle) {
-    CarModel *car;
     Mtx *block;
+    s32 car;
 
     gSPMatrix(gDisplayListPtr++, g_pProjectionMtx, G_MTX_PROJECTION | G_MTX_LOAD | G_MTX_NOPUSH);
     /* The address of the normalisation is sent, not its value. */
     gSPPerspNormalize(gDisplayListPtr++, (u32)&g_wPerspNorm);
     block = (Mtx *)AllocDisplayListBlock();
-    car = &g_aCarModels[g_adwVehicleModelSlotCars[vehicle->model - g_aVehicleModels]];
-    guScaleF(g_afMvpMatrix,
-             (f32)(car->shadowLength / 256.0),
-             (f32)(((f64)car->shadowHalfWidth + car->shadowHalfWidth) / 256.0),
-             1.0f / 256.0f);
+    car = g_adwVehicleModelSlotCars[vehicle->model - g_aVehicleModels];
+    guScaleF(
+        g_afMvpMatrix,
+        (f32)((f64)g_aCarModels[car].shadowLength / 256),
+        (f32)(((f64)g_aCarModels[car].shadowHalfWidth + g_aCarModels[car].shadowHalfWidth) / 256),
+        1.0f / 256.0f);
     memcpy(g_afScratchMatrix, vehicle->matrix, sizeof(g_afScratchMatrix));
     g_afMvpMatrix[3][2] -= 0.18f;
     guMtxCatF(g_afMvpMatrix, g_afScratchMatrix, g_afScratchMatrix);
