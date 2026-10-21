@@ -1307,9 +1307,12 @@ void ProcessOvalStyleMenu(void) {
 }
 
 void ProcessPaintShopExitConfirm(void) {
+    /* The original reserves stack for 24 bytes of locals it does not use. */
+    char unused[24];
     PlayerInputState *input;
-    s32 buttonY, cancelX, textY;
+    s32 textY, buttonY, cancelX;
 
+    (void)unused;
     if (g_bPaintShopExiting) {
         return;
     }

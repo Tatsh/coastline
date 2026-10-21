@@ -77,18 +77,19 @@ void DrawSpriteAtOrigin(Sprite *sprite) {
 
 void DrawTexturedSprite(Sprite *sprite, s32 x, s32 y) {
     u32 total, stripBytes, offset;
-    s32 strips, stripDrawHeight, i;
+    s32 strips, stripDrawHeight, row, i;
 
     SPRITE_STRIP_BYTES(sprite, total, stripBytes);
     strips = sprite->height / sprite->stripHeight;
     stripDrawHeight = sprite->drawHeight / strips;
-    for (i = 1, offset = stripBytes; i <= strips; i++, offset += stripBytes, y += stripDrawHeight) {
+    for (i = 1, offset = stripBytes, row = y; i <= strips;
+         i++, offset += stripBytes, row += stripDrawHeight) {
         DrawSpriteStrip(sprite,
                         sprite->pixels + total - offset,
                         sprite->width,
                         sprite->stripHeight,
                         x,
-                        y,
+                        row,
                         sprite->drawWidth,
                         stripDrawHeight,
                         0,
@@ -110,9 +111,12 @@ void DrawSpriteTinted(Sprite *sprite, u8 red, u8 green, u8 blue) {
 
 void DrawSpriteRegion(
     Sprite *sprite, s32 x, s32 y, s32 width, s32 height, u8 red, u8 green, u8 blue) {
+    /* The original reserves stack for four bytes of locals it does not use. */
+    char unused[4];
     u32 total, stripBytes, offset;
     s32 strips, stripDrawHeight, row, i;
 
+    (void)unused;
     SPRITE_STRIP_BYTES(sprite, total, stripBytes);
     strips = sprite->height / sprite->stripHeight;
     stripDrawHeight = height / strips;
