@@ -54,6 +54,8 @@ extern f32 g_aafAiVelocityRetention[SEASONS][SEASON_RACES][2];
  * camera.
  *
  * @ghidraAddress USA: 0x8028b9ec
+ * @ghidraAddress JPN: 0x8028d6d0
+ * @ghidraAddress EUR: 0x8028dca0
  */
 extern s32 g_bReplayCockpitNext;
 
@@ -221,6 +223,19 @@ void ClearPerFrameVariables(void);
  * @ghidraAddress EUR: 0x8021d008
  */
 void AddVehicleJolt(s32 index, f32 amount);
+
+#if TGR_REGION == TGR_REGION_JP || TGR_REGION == TGR_REGION_EU
+/**
+ * Stand the trackside camera of a vehicle at the nearest point of the track no more than 10 below
+ * the vehicle and within 150 of it, or switch from the trackside camera to the cockpit or the
+ * chase camera when there is none.
+ *
+ * @param vehicle The vehicle the camera watches.
+ * @ghidraAddress JPN: 0x80226fc0
+ * @ghidraAddress EUR: 0x802277d0
+ */
+void ChooseReplayCamera(Vehicle *vehicle);
+#endif
 
 /**
  * Read the controls of a vehicle, choose the view of a replay, and step the vehicle.

@@ -137,6 +137,34 @@ extern SaveField g_aPausedClockFields[];
 /** Where a pause keeps them. @ghidraAddress USA: 0x8034e570 */
 extern u8 g_abPausedClockState[PAUSED_CLOCK_STATE_SIZE];
 
+#if TGR_REGION == TGR_REGION_JP || TGR_REGION == TGR_REGION_EU
+/**
+ * Copy the variables of a list one after another into a buffer, and report when they overflow it.
+ *
+ * @param fields The list of variables.
+ * @param buffer The buffer.
+ * @param capacity The size of the buffer in bytes.
+ * @param offset The bytes past the start of each variable to copy from.
+ * @return The bytes written.
+ * @ghidraAddress USA: 0x8022adcc
+ * @ghidraAddress JPN: 0x8022b8fc
+ * @ghidraAddress EUR: 0x8022c144
+ */
+s32 SerializeSaveData(SaveField *fields, u8 *buffer, s32 capacity, s32 offset);
+
+/**
+ * Copy the variables of a list back from a buffer SerializeSaveData() filled.
+ *
+ * @param fields The list of variables.
+ * @param buffer The buffer.
+ * @param offset The bytes past the start of each variable to copy to.
+ * @return The bytes read.
+ * @ghidraAddress USA: 0x8022ae70
+ * @ghidraAddress JPN: 0x8022b9b0
+ * @ghidraAddress EUR: 0x8022c1f8
+ */
+s32 DeserializeSaveData(SaveField *fields, u8 *buffer, s32 offset);
+#else
 /**
  * Copy the variables of a list one after another into a buffer, and report when they overflow it.
  *
@@ -159,6 +187,7 @@ void SerializeSaveData(SaveField *fields, u8 *buffer, s32 capacity);
  * @ghidraAddress EUR: 0x8022c1f8 (stub)
  */
 void DeserializeSaveData(SaveField *fields, u8 *buffer);
+#endif
 
 /**
  * Take a snapshot of the race into the buffer of a last lap.
@@ -190,6 +219,45 @@ void RestoreRaceSnapshot(LastLapBuffer *buffer);
  * @ghidraAddress EUR: 0x8022c4a0
  */
 void SaveLastLapSnapshot(Vehicle *vehicle);
+
+#if TGR_REGION == TGR_REGION_JP || TGR_REGION == TGR_REGION_EU
+/**
+ * The frames RestoreReplayKeyframeState() has run.
+ *
+ * @ghidraAddress JPN: 0x8028d8f0
+ * @ghidraAddress EUR: 0x8028dec0
+ */
+extern s32 g_dwReplayKeyframeFrameCount;
+
+/**
+ * The variables a keyframe of the recording of the demo restores, in the order of the keyframe.
+ *
+ * @ghidraAddress JPN: 0x8028dcfc
+ * @ghidraAddress EUR: 0x8028e2cc
+ */
+extern SaveField g_aReplayKeyframeDescTable1[];
+
+/**
+ * @ghidraAddress JPN: 0x8028dc5c
+ * @ghidraAddress EUR: 0x8028e22c
+ */
+extern SaveField g_aReplayKeyframeDescTable2[];
+
+/**
+ * @ghidraAddress JPN: 0x8028d8f4
+ * @ghidraAddress EUR: 0x8028dec4
+ */
+extern SaveField g_aReplayKeyframeDescTable3[];
+
+/**
+ * In the demo, restore the race from a keyframe when the recording of the first vehicle reaches
+ * one, then place the trackside camera of the first vehicle anew.
+ *
+ * @ghidraAddress JPN: 0x8022baf8
+ * @ghidraAddress EUR: 0x8022c340
+ */
+void RestoreReplayKeyframeState(void);
+#endif
 
 /**
  * Compress interleaved data with run lengths, each channel on its own.

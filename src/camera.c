@@ -305,6 +305,33 @@ void PlaceTrackCamera(Vehicle *vehicle) {
     vehicle->cameraChanged = 2;
 }
 
+#if TGR_REGION == TGR_REGION_JP || TGR_REGION == TGR_REGION_EU
+void UpdateCameraViewBasisAndFov(Vehicle *vehicle, CameraFrame *camera) {
+    f32 distance;
+
+    camera->up.x = 0.0f;
+    camera->up.y = 0.0f;
+    camera->up.z = 1.0f;
+    Vec3fAdd(&camera->forward, &vehicle->frame.position, &vehicle->frame.up);
+    Vec3fSubtractInPlace(&camera->forward, &camera->position);
+    distance = Vec3fLength(&camera->forward);
+    Vec3fDivideInPlace(&camera->forward, distance);
+    Vec3fCross(&camera->side, &camera->up, &camera->forward);
+    Vec3fCross(&camera->up, &camera->forward, &camera->side);
+    if (distance <= TRACKSIDE_NEAR) {
+        distance = 0.0f;
+    } else if (TRACKSIDE_FAR <= distance) {
+        distance = TRACKSIDE_FAR_DISTANCE;
+    } else {
+        distance -= TRACKSIDE_NEAR;
+    }
+    camera->fov =
+        ((cosf((distance - 1.0f) * TRACKSIDE_COS_SCALE) * TRACKSIDE_COS_WEIGHT + TRACKSIDE_BIAS) +
+         (TRACKSIDE_MID - distance) * TRACKSIDE_DISTANCE_SCALE) *
+        g_fCameraFovRadians;
+}
+#endif
+
 void UpdateCameraSystem(Vehicle *vehicle) {
     f32 previousCockpit[3];
     Vec3f target;

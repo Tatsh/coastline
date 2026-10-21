@@ -132,6 +132,19 @@ void ComputeCameraBasis(Vehicle *vehicle, CameraFrame *camera);
  */
 void PlaceTrackCamera(Vehicle *vehicle);
 
+#if TGR_REGION == TGR_REGION_JP || TGR_REGION == TGR_REGION_EU
+/**
+ * Point a camera at a point one unit above a vehicle, build its axes about the world up, and zoom
+ * it with its distance from that point, as the trackside camera does.
+ *
+ * @param vehicle The vehicle the camera watches.
+ * @param camera The camera whose axes and field of view to set.
+ * @ghidraAddress JPN: 0x80221ca0
+ * @ghidraAddress EUR: 0x802224b0
+ */
+void UpdateCameraViewBasisAndFov(Vehicle *vehicle, CameraFrame *camera);
+#endif
+
 /**
  * Update every camera of a vehicle for a frame.
  *

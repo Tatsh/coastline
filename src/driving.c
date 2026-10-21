@@ -127,11 +127,16 @@ static s32 IsVehicleViewed(Vehicle *vehicle) {
            (g_dwNumViewports >= 2 && vehicle->index == g_aViewportRects[1].vehicleIndex);
 }
 
-/* Stand the trackside camera at the nearest point of the track, or leave it when there is none. */
+#if TGR_REGION == TGR_REGION_US
+/* Stand the trackside camera at the nearest point of the track, or switch away from it when there
+ * is none. The USA release compiles the routine into its caller. */
+static void ChooseReplayCamera(Vehicle *vehicle);
+#endif
+
 /* A point is always chosen when the range test passes, which the compiler cannot prove. */
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
-static void ChooseReplayCamera(Vehicle *vehicle) {
+void ChooseReplayCamera(Vehicle *vehicle) {
     CameraFrame *trackside = &vehicle->cameras[VEHICLE_CAMERA_TRACKSIDE];
     Vec3f *point = g_LoadedTrack.cameraPoints;
     Vec3f chosen;
