@@ -3,7 +3,8 @@
 
 s32 __osContRamWrite(OSMesgQueue *mq, int channel, u16 address, u8 *buffer, int force) {
     s32 ret = 0;
-    u8 *ptr;
+    int i;
+    u8 *ptr = (u8 *)&__osPfsPifRam;
     __OSContRamReadFormat ramreadformat;
     int retry = 2;
 
@@ -21,8 +22,13 @@ s32 __osContRamWrite(OSMesgQueue *mq, int channel, u16 address, u8 *buffer, int 
         ret = __osSiRawStartDma(OS_READ, &__osPfsPifRam);
         osRecvMesg(mq, NULL, OS_MESG_BLOCK);
 
-        ptr = (u8 *)&__osPfsPifRam + channel;
-        bcopy(ptr, &ramreadformat, sizeof(ramreadformat));
+        ptr = (u8 *)&__osPfsPifRam;
+        if (channel != 0) {
+            for (i = 0; i < channel; i++) {
+                ptr++;
+            }
+        }
+        ramreadformat = *(__OSContRamReadFormat *)ptr;
         ret = CHNL_ERR(ramreadformat);
         if (ret == 0) {
             /* The Pak answers with the CRC of the data it received. */
@@ -62,10 +68,12 @@ void __osPackRamWriteData(int channel, u16 address, u8 *buffer) {
         ramreadformat.data[i] = *buffer++;
     }
 
-    for (i = 0; i < channel; i++) {
-        *ptr++ = 0;
+    if (channel != 0) {
+        for (i = 0; i < channel; i++) {
+            *ptr++ = 0;
+        }
     }
-    bcopy(&ramreadformat, ptr, sizeof(ramreadformat));
+    *(__OSContRamReadFormat *)ptr = ramreadformat;
     ptr += sizeof(ramreadformat);
     *ptr = CONT_CMD_END;
 }

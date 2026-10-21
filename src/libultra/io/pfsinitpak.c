@@ -29,6 +29,10 @@ s32 osPfsInitPak(OSMesgQueue *queue, OSPfs *pfs, int channel) {
     id = (__OSPackId *)temp;
     if (id->checksum != sum || id->inverted_checksum != isum) {
         ERRCK(__osCheckPackId(pfs, id));
+        /* The original tests the result a second time. */
+        if (ret != 0) {
+            return ret;
+        }
     }
     if (!(id->deviceid & 1)) {
         ERRCK(__osRepairPackId(pfs, id, &newid));

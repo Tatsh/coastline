@@ -27,7 +27,10 @@ u8 __osContDataCrc(u8 *data) {
         for (j = 7; j >= 0; j--) {
             temp2 = (temp & 0x80) ? 0x85 : 0;
             temp <<= 1;
-            if (i != BLOCKSIZE) {
+            if (i == BLOCKSIZE) {
+                /* The original masks the shifted value to a byte, which it already is. */
+                temp &= 0xFF;
+            } else {
                 temp |= (*data & (1 << j)) ? 1 : 0;
             }
             temp ^= temp2;

@@ -23,7 +23,7 @@ void guPerspectiveF(
     }
 
     if (perspNorm != NULL) {
-        if (near + far <= 2.0f) {
+        if (near + far <= 2.0) {
             *perspNorm = 0xFFFF;
         } else {
             *perspNorm = (u16)((2.0 * 65536.0) / (near + far));

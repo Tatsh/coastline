@@ -2,8 +2,9 @@
 #include "siint.h"
 
 s32 osMotorStop(OSPfs *pfs) {
+    int i;
     s32 ret;
-    u8 *ptr;
+    u8 *ptr = (u8 *)&__osPfsPifRam;
     __OSContRamReadFormat ramreadformat;
 
     __osSiGetAccess();
@@ -13,8 +14,13 @@ s32 osMotorStop(OSPfs *pfs) {
     ret = __osSiRawStartDma(OS_READ, &__osPfsPifRam);
     osRecvMesg(pfs->queue, NULL, OS_MESG_BLOCK);
 
-    ptr = (u8 *)&__osPfsPifRam + pfs->channel;
-    bcopy(ptr, &ramreadformat, sizeof(ramreadformat));
+    ptr = (u8 *)&__osPfsPifRam;
+    if (pfs->channel != 0) {
+        for (i = 0; i < pfs->channel; i++) {
+            ptr++;
+        }
+    }
+    ramreadformat = *(__OSContRamReadFormat *)ptr;
     ret = CHNL_ERR(ramreadformat);
     /* The Pak answers with the CRC of the block it received, which is 0 for the block of 0s. */
     if (ret == 0 && ramreadformat.datacrc != 0) {
@@ -25,8 +31,9 @@ s32 osMotorStop(OSPfs *pfs) {
 }
 
 s32 osMotorStart(OSPfs *pfs) {
+    int i;
     s32 ret;
-    u8 *ptr;
+    u8 *ptr = (u8 *)&__osPfsPifRam;
     __OSContRamReadFormat ramreadformat;
 
     __osSiGetAccess();
@@ -36,8 +43,13 @@ s32 osMotorStart(OSPfs *pfs) {
     ret = __osSiRawStartDma(OS_READ, &__osPfsPifRam);
     osRecvMesg(pfs->queue, NULL, OS_MESG_BLOCK);
 
-    ptr = (u8 *)&__osPfsPifRam + pfs->channel;
-    bcopy(ptr, &ramreadformat, sizeof(ramreadformat));
+    ptr = (u8 *)&__osPfsPifRam;
+    if (pfs->channel != 0) {
+        for (i = 0; i < pfs->channel; i++) {
+            ptr++;
+        }
+    }
+    ramreadformat = *(__OSContRamReadFormat *)ptr;
     ret = CHNL_ERR(ramreadformat);
     /* 0xEB is the CRC of the block of 1s. */
     if (ret == 0 && ramreadformat.datacrc != 0xEB) {
@@ -70,10 +82,12 @@ static void _MakeMotorData(int channel, u16 address, u8 *buffer, OSPifRam *mdata
         ramreadformat.data[i] = *buffer++;
     }
 
-    for (i = 0; i < channel; i++) {
-        *ptr++ = 0;
+    if (channel != 0) {
+        for (i = 0; i < channel; i++) {
+            *ptr++ = 0;
+        }
     }
-    bcopy(&ramreadformat, ptr, sizeof(ramreadformat));
+    *(__OSContRamReadFormat *)ptr = ramreadformat;
     ptr += sizeof(ramreadformat);
     *ptr = CONT_CMD_END;
 }
