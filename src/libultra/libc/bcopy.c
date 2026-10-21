@@ -3,13 +3,13 @@
 /* A word that may alias the bytes of any buffer. */
 typedef u32 __attribute__((may_alias)) word;
 
-void bcopy(const void *src, void *dst, int n) {
+void *bcopy(const void *src, void *dst, int n) {
     const u8 *s = src;
     u8 *d = dst;
     int aligned = (((u32)s | (u32)d) & 3) == 0;
 
     if (d == s || n <= 0) {
-        return;
+        return dst;
     }
     if (d < s || d >= s + n) {
         /* Forwards when the destination does not overlap the end of the source. */
@@ -37,4 +37,5 @@ void bcopy(const void *src, void *dst, int n) {
             *--d = *--s;
         }
     }
+    return dst;
 }

@@ -111,13 +111,15 @@ static void GetEquipment(s32 *equipment, PlayerProfile *profile) {
     equipment[4] = profile->controllerLayout;
 }
 
-static void SetEquipment(PlayerProfile *profile, s32 *equipment) {
-    profile->handling = equipment[0];
-    profile->transmission = equipment[1];
-    profile->tires = equipment[2];
-    profile->suspension = equipment[3];
-    profile->controllerLayout = equipment[4];
-}
+/* The original looks the profile of the vehicle up again for every field. */
+#define SET_EQUIPMENT(vehicle, equipment)                                                          \
+    do {                                                                                           \
+        g_aVehicles[vehicle].profile->handling = (equipment)[0];                                   \
+        g_aVehicles[vehicle].profile->transmission = (equipment)[1];                               \
+        g_aVehicles[vehicle].profile->tires = (equipment)[2];                                      \
+        g_aVehicles[vehicle].profile->suspension = (equipment)[3];                                 \
+        g_aVehicles[vehicle].profile->controllerLayout = (equipment)[4];                           \
+    } while (0)
 
 void IncreaseBgmVolume(void) {
     if (g_OptionSettings.musicVolume < VOLUME_LEVELS - 1) {
@@ -340,7 +342,66 @@ static void DrawDoneMessage(s32 boxX, s32 boxWidth, s32 top, const char *line1, 
     DrawText(line2, 0x9F, textY + 0xE);
 }
 
+/* A choice out of range sets no note. */
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
 void ProcessDataSaveLoadMenu(void) {
+    /* TOP GEAR SEASON, TOP GEAR GHOST and TOP GEAR OPTIONS in the font of the Controller Pak. */
+    u8 seasonName[16] = {0x2D,
+                         0x28,
+                         0x29,
+                         0x0F,
+                         0x20,
+                         0x1E,
+                         0x1A,
+                         0x2B,
+                         0x0F,
+                         0x2C,
+                         0x1E,
+                         0x1A,
+                         0x2C,
+                         0x28,
+                         0x27,
+                         0x00};
+    u8 ghostName[16] = {0x2D,
+                        0x28,
+                        0x29,
+                        0x0F,
+                        0x20,
+                        0x1E,
+                        0x1A,
+                        0x2B,
+                        0x0F,
+                        0x20,
+                        0x21,
+                        0x28,
+                        0x2C,
+                        0x2D,
+                        0x00,
+                        0x00};
+    u8 optionsName[16] = {0x2D,
+                          0x28,
+                          0x29,
+                          0x0F,
+                          0x20,
+                          0x1E,
+                          0x1A,
+                          0x2B,
+                          0x0F,
+                          0x28,
+                          0x29,
+                          0x2D,
+                          0x22,
+                          0x28,
+                          0x27,
+                          0x2C};
+    u8 extension[4] = {0};
+    const char *choices[SAVE_LOAD_CHOICES] = {"LOAD SEASON DATA",
+                                              "SAVE SEASON DATA",
+                                              "LOAD GHOST CAR DATA",
+                                              "SAVE GHOST CAR DATA",
+                                              "LOAD OPTIONS",
+                                              "SAVE OPTIONS"};
     PlayerInputState *input;
     PlayerProfile *other;
     u8 *noteName;
@@ -397,17 +458,17 @@ void ProcessDataSaveLoadMenu(void) {
     switch (g_bSaveLoadChoice) {
     case SAVE_LOAD_LOAD_SEASON:
     case SAVE_LOAD_SAVE_SEASON:
-        noteName = g_abSaveLoadSeasonNoteName;
+        noteName = seasonName;
         noteSize = SEASON_NOTE_SIZE;
         break;
     case SAVE_LOAD_LOAD_GHOST:
     case SAVE_LOAD_SAVE_GHOST:
-        noteName = g_abSaveLoadGhostNoteName;
+        noteName = ghostName;
         noteSize = PAK_DATA_BUFFER_SIZE;
         break;
-    default:
-        /* The options, the only choices left. */
-        noteName = g_abSaveLoadOptionsNoteName;
+    case SAVE_LOAD_LOAD_OPTIONS:
+    case SAVE_LOAD_SAVE_OPTIONS:
+        noteName = optionsName;
         noteSize = OPTIONS_NOTE_SIZE;
         break;
     }
@@ -436,7 +497,7 @@ void ProcessDataSaveLoadMenu(void) {
             } else {
                 SetTextCustomColors(0x80, 0x78, 0x00, 0x64, 0x00, 0x00);
             }
-            DrawText(g_apszSaveLoadChoices[choice], 0x9E, 0x57 + choice * 18);
+            DrawText(choices[choice], 0x9E, 0x57 + choice * 18);
         }
         DrawTexturedSprite(&g_texButtonA, 0xCA, 0x1B0);
         DrawTexturedSprite(&g_texButtonB, 0x142, 0x1B0);
@@ -588,7 +649,7 @@ void ProcessDataSaveLoadMenu(void) {
                                             COMPANY_CODE,
                                             GAME_CODE,
                                             noteName,
-                                            g_abSaveLoadNoteExtension,
+                                            extension,
                                             &g_dwSaveLoadNoteIndex);
         if (gControllerPakState == PFS_ERR_INCONSISTENT) {
             osSyncPrintf("File system is corrupted, attempting repair...\n");
@@ -597,7 +658,7 @@ void ProcessDataSaveLoadMenu(void) {
                                                 COMPANY_CODE,
                                                 GAME_CODE,
                                                 noteName,
-                                                g_abSaveLoadNoteExtension,
+                                                extension,
                                                 &g_dwSaveLoadNoteIndex);
         }
         if (gControllerPakState == 0) {
@@ -673,7 +734,7 @@ void ProcessDataSaveLoadMenu(void) {
             memcpy(g_aVehicles[0].profile, g_pPakDataBuffer, sizeof(PlayerProfile));
             memcpy(g_aVehicles[1].profile, g_pPakDataBuffer, sizeof(PlayerProfile));
             if (g_bSaveLoadEntryPoint == SAVE_LOAD_FROM_MAIN_MENU) {
-                SetEquipment(g_aVehicles[g_dwMenuChoosingPlayer ^ 1].profile, equipment);
+                SET_EQUIPMENT(g_dwMenuChoosingPlayer ^ 1, equipment);
             }
             osSyncPrintf("Done!\n");
             /* A loaded season or ghost car starts its race at once, without a message, unless the
@@ -712,7 +773,7 @@ void ProcessDataSaveLoadMenu(void) {
                 break;
             }
             memcpy(equipment, g_pPakDataBuffer, sizeof(equipment));
-            SetEquipment(g_aVehicles[g_dwMenuChoosingPlayer].profile, equipment);
+            SET_EQUIPMENT(g_dwMenuChoosingPlayer, equipment);
             osSyncPrintf("Done!\n");
             ApplyVolumeSettings();
             g_bSaveLoadStep = SAVE_LOAD_STEP_DONE;
@@ -741,7 +802,7 @@ void ProcessDataSaveLoadMenu(void) {
                                                 COMPANY_CODE,
                                                 GAME_CODE,
                                                 noteName,
-                                                g_abSaveLoadNoteExtension,
+                                                extension,
                                                 noteSize,
                                                 &g_dwSaveLoadNoteIndex);
         if (gControllerPakState == PFS_ERR_INCONSISTENT) {
@@ -750,7 +811,7 @@ void ProcessDataSaveLoadMenu(void) {
                                                     COMPANY_CODE,
                                                     GAME_CODE,
                                                     noteName,
-                                                    g_abSaveLoadNoteExtension,
+                                                    extension,
                                                     noteSize,
                                                     &g_dwSaveLoadNoteIndex);
         }
@@ -1081,6 +1142,7 @@ void ProcessDataSaveLoadMenu(void) {
      * another screen frees the serial interface. */
     g_wSerialInterfaceIdle = FALSE;
 }
+#pragma GCC diagnostic pop
 
 void PreparePakDataScreen(void) {
     LoadTextureFromRom(&g_texButtonA);
@@ -1153,7 +1215,61 @@ s32 IsRumblePakMissing(void) {
     return FALSE;
 }
 
+/* The original reads a byte of its stack that is never set, and other data types set no note. */
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wuninitialized"
+#pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
 s32 ProcessPakDataScreen(s32 dataType, u8 quiet) {
+    /* TOP GEAR SEASON, TOP GEAR GHOST and TOP GEAR OPTIONS in the font of the Controller Pak. */
+    u8 seasonName[16] = {0x2D,
+                         0x28,
+                         0x29,
+                         0x0F,
+                         0x20,
+                         0x1E,
+                         0x1A,
+                         0x2B,
+                         0x0F,
+                         0x2C,
+                         0x1E,
+                         0x1A,
+                         0x2C,
+                         0x28,
+                         0x27,
+                         0x00};
+    u8 ghostName[16] = {0x2D,
+                        0x28,
+                        0x29,
+                        0x0F,
+                        0x20,
+                        0x1E,
+                        0x1A,
+                        0x2B,
+                        0x0F,
+                        0x20,
+                        0x21,
+                        0x28,
+                        0x2C,
+                        0x2D,
+                        0x00,
+                        0x00};
+    u8 configurationName[16] = {0x2D,
+                                0x28,
+                                0x29,
+                                0x0F,
+                                0x20,
+                                0x1E,
+                                0x1A,
+                                0x2B,
+                                0x0F,
+                                0x28,
+                                0x29,
+                                0x2D,
+                                0x22,
+                                0x28,
+                                0x27,
+                                0x2C};
+    u8 extension[4] = {0};
     PlayerInputState *input;
     PlayerProfile *other;
     u8 *noteName;
@@ -1162,9 +1278,7 @@ s32 ProcessPakDataScreen(s32 dataType, u8 quiet) {
     s32 freeBlocks;
     s32 top;
     u8 plugged;
-    /* The original adds a byte of its stack that nothing sets to the top of a message; it is
-     * taken as 0 here. */
-    u8 unsetOffset = 0;
+    u8 unsetOffset;
 
     g_wSerialInterfaceIdle = FALSE;
     if (!g_bSaveLoadMenuInitialized) {
@@ -1174,14 +1288,13 @@ s32 ProcessPakDataScreen(s32 dataType, u8 quiet) {
         g_bPakDataWaitFrames = 0;
     }
     if (dataType == PAK_DATA_LOAD_SEASON) {
-        noteName = g_abPakDataSeasonNoteName;
+        noteName = seasonName;
         noteSize = SEASON_NOTE_SIZE;
     } else if (dataType == PAK_DATA_LOAD_GHOST) {
-        noteName = g_abPakDataGhostNoteName;
+        noteName = ghostName;
         noteSize = PAK_DATA_BUFFER_SIZE;
-    } else {
-        /* The configuration, loaded or saved. */
-        noteName = g_abPakDataConfigurationNoteName;
+    } else if (dataType == PAK_DATA_LOAD_CONFIGURATION || dataType == PAK_DATA_SAVE_CONFIGURATION) {
+        noteName = configurationName;
         noteSize = OPTIONS_NOTE_SIZE;
     }
 
@@ -1278,7 +1391,7 @@ s32 ProcessPakDataScreen(s32 dataType, u8 quiet) {
                                             COMPANY_CODE,
                                             GAME_CODE,
                                             noteName,
-                                            g_abPakDataNoteExtension,
+                                            extension,
                                             &g_dwPakDataNoteIndex);
         if (gControllerPakState == PFS_ERR_INCONSISTENT) {
             osPfsChecker(&g_aPakPfs[g_dwMenuChoosingPlayer]);
@@ -1286,7 +1399,7 @@ s32 ProcessPakDataScreen(s32 dataType, u8 quiet) {
                                                 COMPANY_CODE,
                                                 GAME_CODE,
                                                 noteName,
-                                                g_abPakDataNoteExtension,
+                                                extension,
                                                 &g_dwPakDataNoteIndex);
         }
         if (gControllerPakState == 0) {
@@ -1338,7 +1451,7 @@ s32 ProcessPakDataScreen(s32 dataType, u8 quiet) {
             GetEquipment(equipment, other);
             memcpy(g_aVehicles[0].profile, g_pPakDataBuffer, sizeof(PlayerProfile));
             memcpy(g_aVehicles[1].profile, g_pPakDataBuffer, sizeof(PlayerProfile));
-            SetEquipment(g_aVehicles[g_dwMenuChoosingPlayer ^ 1].profile, equipment);
+            SET_EQUIPMENT(g_dwMenuChoosingPlayer ^ 1, equipment);
             osSyncPrintf("Done!\n");
         } else if (dataType == PAK_DATA_LOAD_GHOST) {
             osSyncPrintf("Extracting ghost data...\n");
@@ -1360,7 +1473,7 @@ s32 ProcessPakDataScreen(s32 dataType, u8 quiet) {
                 g_bPakDataStep = PAK_DATA_STEP_ERROR;
             } else {
                 memcpy(equipment, g_pPakDataBuffer, sizeof(equipment));
-                SetEquipment(g_aVehicles[g_dwMenuChoosingPlayer].profile, equipment);
+                SET_EQUIPMENT(g_dwMenuChoosingPlayer, equipment);
                 osSyncPrintf("Done!\n");
             }
         }
@@ -1392,7 +1505,7 @@ s32 ProcessPakDataScreen(s32 dataType, u8 quiet) {
                                                 COMPANY_CODE,
                                                 GAME_CODE,
                                                 noteName,
-                                                g_abPakDataNoteExtension,
+                                                extension,
                                                 OPTIONS_NOTE_SIZE,
                                                 &g_dwPakDataNoteIndex);
         if (gControllerPakState == PFS_ERR_INCONSISTENT) {
@@ -1401,7 +1514,7 @@ s32 ProcessPakDataScreen(s32 dataType, u8 quiet) {
                                                     COMPANY_CODE,
                                                     GAME_CODE,
                                                     noteName,
-                                                    g_abPakDataNoteExtension,
+                                                    extension,
                                                     OPTIONS_NOTE_SIZE,
                                                     &g_dwPakDataNoteIndex);
         }
@@ -1571,3 +1684,4 @@ s32 ProcessPakDataScreen(s32 dataType, u8 quiet) {
     g_wSerialInterfaceIdle = TRUE;
     return FALSE;
 }
+#pragma GCC diagnostic pop

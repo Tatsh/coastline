@@ -120,21 +120,29 @@ s32 osPfsChecker(OSPfs *pfs) {
                 cl = 1;
                 next_node.ipage = tmp_inode.inode_page[next_node.inode_t.page].ipage;
             }
-            if (cc == 0 && next_node.ipage == PFS_EOF) {
-                continue;
+            if (cc != 0 || next_node.ipage != PFS_EOF) {
+                tmp_dir.company_code = 0;
+                tmp_dir.game_code = 0;
+                tmp_dir.start_page.ipage = 0;
+                tmp_dir.status = 0;
+                tmp_dir.data_sum = 0;
+                SET_ACTIVEBANK_TO_ZERO;
+                ERRCK(__osContRamWrite(
+                    pfs->queue, pfs->channel, pfs->dir_table + j, (u8 *)&tmp_dir, FALSE));
+                fixed++;
             }
-        } else if (tmp_dir.company_code == 0 && tmp_dir.game_code == 0) {
-            continue;
+        } else if (tmp_dir.company_code != 0 || tmp_dir.game_code != 0) {
+            /* The original clears an entry with a half-set code in a copy of its own. */
+            tmp_dir.company_code = 0;
+            tmp_dir.game_code = 0;
+            tmp_dir.start_page.ipage = 0;
+            tmp_dir.status = 0;
+            tmp_dir.data_sum = 0;
+            SET_ACTIVEBANK_TO_ZERO;
+            ERRCK(__osContRamWrite(
+                pfs->queue, pfs->channel, pfs->dir_table + j, (u8 *)&tmp_dir, FALSE));
+            fixed++;
         }
-        tmp_dir.company_code = 0;
-        tmp_dir.game_code = 0;
-        tmp_dir.start_page.ipage = 0;
-        tmp_dir.status = 0;
-        tmp_dir.data_sum = 0;
-        SET_ACTIVEBANK_TO_ZERO;
-        ERRCK(
-            __osContRamWrite(pfs->queue, pfs->channel, pfs->dir_table + j, (u8 *)&tmp_dir, FALSE));
-        fixed++;
     }
 
     for (j = 0; j < pfs->dir_size; j++) {

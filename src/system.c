@@ -280,6 +280,10 @@ void GetTextureScaleAndMask(s32 size, s32 *scale, s32 *maskBits) {
 }
 #pragma GCC diagnostic pop
 
+/* The original sets the palette only for a 4-bit texture, and the others read it unset. */
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wuninitialized"
+#pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
 void DrawTexturedTile(s32 index, ModelTexture *textures) {
     ModelTexture *texture;
     s32 width, height, scaleS, scaleT, maskS, maskT, cms, cmt, tmem, palette, format, size, tile;
@@ -342,7 +346,6 @@ void DrawTexturedTile(s32 index, ModelTexture *textures) {
         break;
     }
     tile = g_dwTextureRenderTile;
-    /* The palette is set only for a 4-bit texture. The others take whatever is on the stack. */
     gDPSetTile(gDisplayListPtr++,
                format,
                size,
@@ -364,6 +367,7 @@ void DrawTexturedTile(s32 index, ModelTexture *textures) {
                    texture->tileT1 * 4 + 2);
     gSPTexture(gDisplayListPtr++, scaleS, scaleT, 0, tile, G_ON);
 }
+#pragma GCC diagnostic pop
 
 void StubEmpty(void) {
 }
@@ -1474,7 +1478,8 @@ u32 DecompressFromRom(void *dst, u32 romOffset, DecompressJob *job) {
         }
     }
     /* The time it took, in microseconds, is worked out and not kept. */
-    (void)((u64)(osGetCount() - start) * 1000000 / osClockRate);
+    start = osGetCount() - start;
+    (void)((u64)start * 1000000 / osClockRate);
 
     if (job != NULL) {
         job->romOffset = romOffset;

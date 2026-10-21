@@ -25,9 +25,14 @@ typedef struct {
 /**
  * Copy n bytes between buffers that may overlap.
  *
+ * @param src The buffer to copy from.
+ * @param dst The buffer to copy to.
+ * @param n The count of bytes.
+ * @return dst.
+ *
  * @ghidraAddress USA: 0x802674d0
  */
-void bcopy(const void *src, void *dst, int n);
+void *bcopy(const void *src, void *dst, int n);
 
 /**
  * Compare n bytes of two buffers.

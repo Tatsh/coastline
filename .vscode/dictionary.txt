@@ -37,7 +37,6 @@ boxz
 bsky
 bufbusy
 buildsystems
-bytearray
 bzero
 camframe
 campoints
@@ -351,7 +350,6 @@ pycache
 pyinstaller
 pylock
 pyproject
-qstringbuilder
 racedata
 racemenu
 racerecords

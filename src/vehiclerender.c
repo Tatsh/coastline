@@ -285,6 +285,7 @@ void RenderVehicleModel(Vehicle *vehicle, s32 lodOffset) {
     LookAt *reflectLookAt, *hiliteLookAt;
     f32 distance, divisor, length, eyeX, nudgeX, nudgeZ;
     u32 dirColor, ambientColor, reflection;
+    u8 ambient[3];
     u16 *palette;
     s32 lod, inTunnel, near, offset, lit, i;
 
@@ -341,7 +342,8 @@ void RenderVehicleModel(Vehicle *vehicle, s32 lodOffset) {
     }
     g_anVehicleLod[vehicle->index] = lod;
 
-    /* The light of the sun dims with the distance at night, and is gone in a tunnel. */
+    /* The light of the sun dims with the distance at night, and is gone in a tunnel. The ambient
+     * colour is also stored in a local that is never read again. */
     if (g_dwNightMode) {
         divisor = distance / NIGHT_LIGHT_DISTANCE;
         if (divisor < 1.0f) {
@@ -350,15 +352,22 @@ void RenderVehicleModel(Vehicle *vehicle, s32 lodOffset) {
         dirColor = PackLightColor(DimLightPart(g_bDirLightR, divisor),
                                   DimLightPart(g_bDirLightG, divisor),
                                   DimLightPart(g_bDirLightB, divisor));
-        ambientColor = PackLightColor(g_bAmbientLightR, g_bAmbientLightG, g_bAmbientLightB);
+        ambient[0] = g_bAmbientLightR;
+        ambient[1] = g_bAmbientLightG;
+        ambient[2] = g_bAmbientLightB;
+        ambientColor = PackLightColor(ambient[0], ambient[1], ambient[2]);
     } else if (inTunnel) {
-        dirColor = 0;
-        ambientColor = PackLightColor((g_bAmbientLightR * 4 / 5) & 0xFF,
-                                      (g_bAmbientLightG * 4 / 5) & 0xFF,
-                                      (g_bAmbientLightB * 4 / 5) & 0xFF);
+        dirColor = PackLightColor(0, 0, 0);
+        ambient[0] = g_bAmbientLightR * 4 / 5;
+        ambient[1] = g_bAmbientLightG * 4 / 5;
+        ambient[2] = g_bAmbientLightB * 4 / 5;
+        ambientColor = PackLightColor(ambient[0], ambient[1], ambient[2]);
     } else {
         dirColor = PackLightColor(g_bDirLightR, g_bDirLightG, g_bDirLightB);
-        ambientColor = PackLightColor(g_bAmbientLightR, g_bAmbientLightG, g_bAmbientLightB);
+        ambient[0] = g_bAmbientLightR;
+        ambient[1] = g_bAmbientLightG;
+        ambient[2] = g_bAmbientLightB;
+        ambientColor = PackLightColor(ambient[0], ambient[1], ambient[2]);
     }
     gSPMatrix(gDisplayListPtr++,
               g_apVehicleModelMatrix[vehicle->index],
