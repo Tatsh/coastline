@@ -828,15 +828,15 @@ glabel ProcessRaceHud
     /* 1E84 80200E84 AC2007A8 */  sw         $zero, %lo(g_dwSaveAvailable)($at)
     /* 1E88 80200E88 35087000 */  ori        $t0, $t0, (0x80197000 & 0xFFFF)
     /* 1E8C 80200E8C 3C04802A */  lui        $a0, %hi(g_szSavedRecordingLength)
-    /* 1E90 80200E90 3C058027 */  lui        $a1, %hi(g_dwGhostDataSize)
+    /* 1E90 80200E90 3C058027 */  lui        $a1, %hi(g_dwGhostRecordingSize)
     /* 1E94 80200E94 ADE80044 */  sw         $t0, 0x44($t7)
-    /* 1E98 80200E98 8CA50784 */  lw         $a1, %lo(g_dwGhostDataSize)($a1)
+    /* 1E98 80200E98 8CA50784 */  lw         $a1, %lo(g_dwGhostRecordingSize)($a1)
     /* 1E9C 80200E9C 0C0981F7 */  jal        osSyncPrintf
     /* 1EA0 80200EA0 24846D68 */   addiu     $a0, $a0, %lo(g_szSavedRecordingLength)
     /* 1EA4 80200EA4 3C198027 */  lui        $t9, %hi(g_dwNumLocalPlayers)
     /* 1EA8 80200EA8 8F39FF08 */  lw         $t9, %lo(g_dwNumLocalPlayers)($t9)
     /* 1EAC 80200EAC 3C188032 */  lui        $t8, %hi(g_pVehicleArrayBase)
-    /* 1EB0 80200EB0 3C058030 */  lui        $a1, %hi(g_GhostFileHeader)
+    /* 1EB0 80200EB0 3C058030 */  lui        $a1, %hi(g_abGhostRecording)
     /* 1EB4 80200EB4 00194980 */  sll        $t1, $t9, 6
     /* 1EB8 80200EB8 01394821 */  addu       $t1, $t1, $t9
     /* 1EBC 80200EBC 000948C0 */  sll        $t1, $t1, 3
@@ -844,9 +844,9 @@ glabel ProcessRaceHud
     /* 1EC4 80200EC4 00094900 */  sll        $t1, $t1, 4
     /* 1EC8 80200EC8 0309C021 */  addu       $t8, $t8, $t1
     /* 1ECC 80200ECC 8F18D7D4 */  lw         $t8, %lo(g_pVehicleArrayBase)($t8)
-    /* 1ED0 80200ED0 3C068027 */  lui        $a2, %hi(g_dwGhostDataSize)
-    /* 1ED4 80200ED4 8CC60784 */  lw         $a2, %lo(g_dwGhostDataSize)($a2)
-    /* 1ED8 80200ED8 24A57F00 */  addiu      $a1, $a1, %lo(g_GhostFileHeader)
+    /* 1ED0 80200ED0 3C068027 */  lui        $a2, %hi(g_dwGhostRecordingSize)
+    /* 1ED4 80200ED4 8CC60784 */  lw         $a2, %lo(g_dwGhostRecordingSize)($a2)
+    /* 1ED8 80200ED8 24A57F00 */  addiu      $a1, $a1, %lo(g_abGhostRecording)
     /* 1EDC 80200EDC 0C0982C8 */  jal        memcpy
     /* 1EE0 80200EE0 8F040044 */   lw        $a0, 0x44($t8)
     /* 1EE4 80200EE4 3C0C8027 */  lui        $t4, %hi(g_dwNumLocalPlayers)
@@ -933,15 +933,15 @@ glabel ProcessRaceHud
     /* 2024 80201024 010D4021 */  addu       $t0, $t0, $t5
     /* 2028 80201028 8D08D7D4 */  lw         $t0, %lo(g_pVehicleArrayBase)($t0)
     /* 202C 8020102C 3C04802A */  lui        $a0, %hi(g_szPlayLimit)
-    /* 2030 80201030 3C058027 */  lui        $a1, %hi(g_dwGhostDataSize)
+    /* 2030 80201030 3C058027 */  lui        $a1, %hi(g_dwGhostRecordingSize)
     /* 2034 80201034 AD0B0048 */  sw         $t3, 0x48($t0)
-    /* 2038 80201038 8CA50784 */  lw         $a1, %lo(g_dwGhostDataSize)($a1)
+    /* 2038 80201038 8CA50784 */  lw         $a1, %lo(g_dwGhostRecordingSize)($a1)
     /* 203C 8020103C 0C0981F7 */  jal        osSyncPrintf
     /* 2040 80201040 24846DA8 */   addiu     $a0, $a0, %lo(g_szPlayLimit)
     /* 2044 80201044 3C0F8027 */  lui        $t7, %hi(g_dwNumLocalPlayers)
     /* 2048 80201048 8DEFFF08 */  lw         $t7, %lo(g_dwNumLocalPlayers)($t7)
     /* 204C 8020104C 3C098032 */  lui        $t1, %hi(g_pVehicleArrayBase)
-    /* 2050 80201050 3C0A8027 */  lui        $t2, %hi(g_dwGhostDataSize)
+    /* 2050 80201050 3C0A8027 */  lui        $t2, %hi(g_dwGhostRecordingSize)
     /* 2054 80201054 000FC980 */  sll        $t9, $t7, 6
     /* 2058 80201058 032FC821 */  addu       $t9, $t9, $t7
     /* 205C 8020105C 0019C8C0 */  sll        $t9, $t9, 3
@@ -949,7 +949,7 @@ glabel ProcessRaceHud
     /* 2064 80201064 0019C900 */  sll        $t9, $t9, 4
     /* 2068 80201068 01394821 */  addu       $t1, $t1, $t9
     /* 206C 8020106C 8D29D7D4 */  lw         $t1, %lo(g_pVehicleArrayBase)($t1)
-    /* 2070 80201070 8D4A0784 */  lw         $t2, %lo(g_dwGhostDataSize)($t2)
+    /* 2070 80201070 8D4A0784 */  lw         $t2, %lo(g_dwGhostRecordingSize)($t2)
     /* 2074 80201074 AD2A004C */  sw         $t2, 0x4C($t1)
   .L80201078:
     /* 2078 80201078 3C188027 */  lui        $t8, %hi(g_dwNumLocalPlayers)
@@ -1934,7 +1934,7 @@ glabel ProcessRaceHud
     /* 2F1C 80201F1C 00115900 */   sll       $t3, $s1, 4
   .L80201F20:
     /* 2F20 80201F20 3C048029 */  lui        $a0, %hi(g_dwCurrentWeather)
-    /* 2F24 80201F24 0C080014 */  jal        DispatchGameMode
+    /* 2F24 80201F24 0C080014 */  jal        ApplyWeather
     /* 2F28 80201F28 8C84C800 */   lw        $a0, %lo(g_dwCurrentWeather)($a0)
     /* 2F2C 80201F2C 3C088029 */  lui        $t0, %hi(g_dwNightMode)
     /* 2F30 80201F30 8D08AA80 */  lw         $t0, %lo(g_dwNightMode)($t0)
@@ -2611,14 +2611,14 @@ glabel ProcessRaceHud
     /* 3924 80202924 014D5021 */  addu       $t2, $t2, $t5
     /* 3928 80202928 8D4AD7D4 */  lw         $t2, %lo(g_pVehicleArrayBase)($t2)
     /* 392C 8020292C 0011C880 */  sll        $t9, $s1, 2
-    /* 3930 80202930 3C098027 */  lui        $t1, %hi(g_dwGhostDataSize)
+    /* 3930 80202930 3C098027 */  lui        $t1, %hi(g_dwGhostRecordingSize)
     /* 3934 80202934 01597021 */  addu       $t6, $t2, $t9
     /* 3938 80202938 8DC80034 */  lw         $t0, 0x34($t6)
-    /* 393C 8020293C 8D290784 */  lw         $t1, %lo(g_dwGhostDataSize)($t1)
+    /* 393C 8020293C 8D290784 */  lw         $t1, %lo(g_dwGhostRecordingSize)($t1)
     /* 3940 80202940 0109082A */  slt        $at, $t0, $t1
     /* 3944 80202944 14200008 */  bnez       $at, .L80202968
-    /* 3948 80202948 3C0F8030 */   lui       $t7, %hi(g_GhostFileHeader)
-    /* 394C 8020294C 25EF7F00 */  addiu      $t7, $t7, %lo(g_GhostFileHeader)
+    /* 3948 80202948 3C0F8030 */   lui       $t7, %hi(g_abGhostRecording)
+    /* 394C 8020294C 25EF7F00 */  addiu      $t7, $t7, %lo(g_abGhostRecording)
     /* 3950 80202950 3C0B8029 */  lui        $t3, %hi(g_dwSelectedTrackId)
     /* 3954 80202954 8D6BB940 */  lw         $t3, %lo(g_dwSelectedTrackId)($t3)
     /* 3958 80202958 91EC0000 */  lbu        $t4, 0x0($t7)
@@ -2644,21 +2644,21 @@ glabel ProcessRaceHud
     /* 39A4 802029A4 8D692074 */  lw         $t1, 0x2074($t3)
     /* 39A8 802029A8 0011C080 */  sll        $t8, $s1, 2
     /* 39AC 802029AC 00117080 */  sll        $t6, $s1, 2
-    /* 39B0 802029B0 3C0F8027 */  lui        $t7, %hi(g_dwGhostDataSize)
+    /* 39B0 802029B0 3C0F8027 */  lui        $t7, %hi(g_dwGhostRecordingSize)
     /* 39B4 802029B4 032E4021 */  addu       $t0, $t9, $t6
     /* 39B8 802029B8 01385021 */  addu       $t2, $t1, $t8
     /* 39BC 802029BC 8D590034 */  lw         $t9, 0x34($t2)
-    /* 39C0 802029C0 8DE70784 */  lw         $a3, %lo(g_dwGhostDataSize)($t7)
+    /* 39C0 802029C0 8DE70784 */  lw         $a3, %lo(g_dwGhostRecordingSize)($t7)
     /* 39C4 802029C4 8D060034 */  lw         $a2, 0x34($t0)
-    /* 39C8 802029C8 3C088030 */  lui        $t0, %hi(g_GhostFileHeader)
+    /* 39C8 802029C8 3C088030 */  lui        $t0, %hi(g_abGhostRecording)
     /* 39CC 802029CC 0327702A */  slt        $t6, $t9, $a3
     /* 39D0 802029D0 AFAE0010 */  sw         $t6, 0x10($sp)
-    /* 39D4 802029D4 25087F00 */  addiu      $t0, $t0, %lo(g_GhostFileHeader)
+    /* 39D4 802029D4 25087F00 */  addiu      $t0, $t0, %lo(g_abGhostRecording)
     /* 39D8 802029D8 3C0D8029 */  lui        $t5, %hi(g_dwSelectedTrackId)
     /* 39DC 802029DC 8DADB940 */  lw         $t5, %lo(g_dwSelectedTrackId)($t5)
     /* 39E0 802029E0 910C0000 */  lbu        $t4, 0x0($t0)
-    /* 39E4 802029E4 3C0B8030 */  lui        $t3, %hi(g_GhostFileHeader)
-    /* 39E8 802029E8 256B7F00 */  addiu      $t3, $t3, %lo(g_GhostFileHeader)
+    /* 39E4 802029E4 3C0B8030 */  lui        $t3, %hi(g_abGhostRecording)
+    /* 39E8 802029E8 256B7F00 */  addiu      $t3, $t3, %lo(g_abGhostRecording)
     /* 39EC 802029EC AFAD0018 */  sw         $t5, 0x18($sp)
     /* 39F0 802029F0 AFAC0014 */  sw         $t4, 0x14($sp)
     /* 39F4 802029F4 91690000 */  lbu        $t1, 0x0($t3)
@@ -2690,17 +2690,17 @@ glabel ProcessRaceHud
     /* 3A5C 80202A5C 8DA60034 */  lw         $a2, 0x34($t5)
     /* 3A60 80202A60 000A50C0 */  sll        $t2, $t2, 3
     /* 3A64 80202A64 01515021 */  addu       $t2, $t2, $s1
-    /* 3A68 80202A68 3C018027 */  lui        $at, %hi(g_dwGhostDataSize)
+    /* 3A68 80202A68 3C018027 */  lui        $at, %hi(g_dwGhostRecordingSize)
     /* 3A6C 80202A6C 000A5100 */  sll        $t2, $t2, 4
     /* 3A70 80202A70 01487821 */  addu       $t7, $t2, $t0
-    /* 3A74 80202A74 AC260784 */  sw         $a2, %lo(g_dwGhostDataSize)($at)
+    /* 3A74 80202A74 AC260784 */  sw         $a2, %lo(g_dwGhostRecordingSize)($at)
     /* 3A78 80202A78 8DF92074 */  lw         $t9, 0x2074($t7)
     /* 3A7C 80202A7C 00117080 */  sll        $t6, $s1, 2
-    /* 3A80 80202A80 3C048030 */  lui        $a0, %hi(g_GhostFileHeader)
+    /* 3A80 80202A80 3C048030 */  lui        $a0, %hi(g_abGhostRecording)
     /* 3A84 80202A84 032E6021 */  addu       $t4, $t9, $t6
     /* 3A88 80202A88 8D85002C */  lw         $a1, 0x2C($t4)
     /* 3A8C 80202A8C 0C0982C8 */  jal        memcpy
-    /* 3A90 80202A90 24847F00 */   addiu     $a0, $a0, %lo(g_GhostFileHeader)
+    /* 3A90 80202A90 24847F00 */   addiu     $a0, $a0, %lo(g_abGhostRecording)
     /* 3A94 80202A94 00114980 */  sll        $t1, $s1, 6
     /* 3A98 80202A98 01314821 */  addu       $t1, $t1, $s1
     /* 3A9C 80202A9C 000948C0 */  sll        $t1, $t1, 3

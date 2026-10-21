@@ -56,9 +56,9 @@ nonmatching g_aDmaWorkBuffers, 0x10000
 dlabel g_aDmaWorkBuffers
     /* 802F7F00 */ .space 0x10000
 
-nonmatching g_GhostFileHeader, 0x1
+nonmatching g_abGhostRecording, 0x1
 
-dlabel g_GhostFileHeader
+dlabel g_abGhostRecording
     /* 80307F00 */ .space 0x01
 
 nonmatching g_bGhostHeaderWeatherIndex, 0x80FF
@@ -793,9 +793,9 @@ nonmatching g_dwPhysicsReserved50, 0x4
 dlabel g_dwPhysicsReserved50
     /* 8031642C */ .space 0x04
 
-nonmatching gWeatherState, 0x1
+nonmatching g_bPakScreenState, 0x1
 
-dlabel gWeatherState
+dlabel g_bPakScreenState
     /* 80316430 */ .space 0x01
 
 nonmatching g_bSaveLoadFadeWaitFrames, 0xF

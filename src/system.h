@@ -50,4 +50,63 @@ extern InflateAllocator g_inflateAllocator;
  */
 extern u32 g_dwScreenUnblankDelay;
 
+/** A routine the main loop calls once per frame. */
+typedef void (*ScreenCallback)(void);
+
+/**
+ * Set up the display, the RSP and RDP state, and the system threads.
+ *
+ * @ghidraAddress USA: 0x8021be88
+ */
+void InitRenderingSubsystem(void);
+
+/**
+ * Set the routine the main loop calls each frame.
+ *
+ * @ghidraAddress USA: 0x8021c6e4
+ */
+void SetCurrentScreenCallback(ScreenCallback callback);
+
+/**
+ * Call the current screen routine forever.
+ *
+ * @ghidraAddress USA: 0x8021c718
+ */
+void GameModeMainLoop(void);
+
+/**
+ * Read the decompressed size from the header of the asset at a cartridge offset.
+ *
+ * @ghidraAddress USA: 0x8021c814
+ */
+u32 DmaReadAssetSize(u32 romOffset);
+
+/**
+ * Decompress the asset at a cartridge offset into RAM.
+ *
+ * @param stats Receives eight words of timing figures, unless it is NULL.
+ * @ghidraAddress USA: 0x8021cd30
+ */
+void DecompressFromRom(void *dst, u32 romOffset, void *stats);
+
+/**
+ * Patch the render modes of the track and vehicle display lists for the current weather.
+ *
+ * @ghidraAddress USA: 0x8021b97c
+ */
+void ProcessAllDisplayLists(void);
+
+/**
+ * Probe the controllers and the Controller and Rumble Paks.
+ *
+ * @ghidraAddress USA: 0x8021c188
+ */
+void InitControllersAndPaks(void);
+
+/** @ghidraAddress USA: 0x8021c740 */
+void StubUpdateCallback(void);
+
+/** @ghidraAddress USA: 0x8021c6b0 */
+void StubRenderCallback(void);
+
 #endif

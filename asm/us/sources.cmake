@@ -2,7 +2,6 @@
 # A routine is removed from its file when it is reconstructed in C, and a file is removed
 # from this list when it is empty. The order is the address order of the original image.
 set(COASTLINE_ASM_US
-    asm/us/01050.s
     asm/us/01320.s
     asm/us/07830.s
     asm/us/09900.s

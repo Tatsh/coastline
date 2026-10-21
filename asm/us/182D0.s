@@ -6280,9 +6280,9 @@ glabel CompressRleChannels
     /* 1DB48 8021CB48 27BD0080 */   addiu     $sp, $sp, 0x80
 endlabel CompressRleChannels
 
-nonmatching DecompressRleTexture, 0x1D8
+nonmatching DecompressInterleavedRle, 0x1D8
 
-glabel DecompressRleTexture
+glabel DecompressInterleavedRle
     /* 1DB4C 8021CB4C 27BDFF90 */  addiu      $sp, $sp, -0x70
     /* 1DB50 8021CB50 AFB5002C */  sw         $s5, 0x2C($sp)
     /* 1DB54 8021CB54 AFB40028 */  sw         $s4, 0x28($sp)
@@ -6412,7 +6412,7 @@ glabel DecompressRleTexture
     /* 1DD18 8021CD18 8FB60030 */  lw         $s6, 0x30($sp)
     /* 1DD1C 8021CD1C 03E00008 */  jr         $ra
     /* 1DD20 8021CD20 27BD0070 */   addiu     $sp, $sp, 0x70
-endlabel DecompressRleTexture
+endlabel DecompressInterleavedRle
 
 nonmatching InitDmaRequest, 0xC
 

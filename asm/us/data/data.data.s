@@ -2193,11 +2193,11 @@ dlabel D_802701C4
     /* 71780 80270780 00000000 */ .word 0x00000000
 enddlabel D_802701C4
 
-nonmatching g_dwGhostDataSize
+nonmatching g_dwGhostRecordingSize
 
-dlabel g_dwGhostDataSize
+dlabel g_dwGhostRecordingSize
     /* 71784 80270784 00000000 */ .word 0x00000000
-enddlabel g_dwGhostDataSize
+enddlabel g_dwGhostRecordingSize
 
 nonmatching gInstantReplayActive
 
@@ -4771,11 +4771,11 @@ dlabel D_8027223C
     /* 7323C 8027223C 00000000 */ .word 0x00000000
 enddlabel D_8027223C
 
-nonmatching g_pszSunny
+nonmatching g_aWeatherMenuItems
 
-dlabel g_pszSunny
+dlabel g_aWeatherMenuItems
     /* 73240 80272240 802A7F30 */ .word g_szSunny
-enddlabel g_pszSunny
+enddlabel g_aWeatherMenuItems
 
 nonmatching D_80272244
 
@@ -4787,106 +4787,62 @@ dlabel D_80272244
     /* 73250 80272250 001FD960 */ .word 0x001FD960
 enddlabel D_80272244
 
-nonmatching g_pTrackSelectScreenData
+nonmatching D_80272254
 
-dlabel g_pTrackSelectScreenData
+dlabel D_80272254
     /* 73254 80272254 802A7F38 */ .word g_szWeatherFog
-enddlabel g_pTrackSelectScreenData
-
-nonmatching D_80272258
-
-/* Automatically generated and unreferenced pad */
-dlabel D_80272258
     /* 73258 80272258 00000000 */ .word 0x00000000
     /* 7325C 8027225C 00000000 */ .word 0x00000000
     /* 73260 80272260 001FB4C0 */ .word 0x001FB4C0
     /* 73264 80272264 001FC6F0 */ .word 0x001FC6F0
-enddlabel D_80272258
+enddlabel D_80272254
 
-nonmatching g_pTrackSelectState2
+nonmatching D_80272268
 
-dlabel g_pTrackSelectState2
+dlabel D_80272268
     /* 73268 80272268 802A7F3C */ .word g_szWeatherRain
-enddlabel g_pTrackSelectState2
-
-nonmatching D_8027226C
-
-/* Automatically generated and unreferenced pad */
-dlabel D_8027226C
     /* 7326C 8027226C 00000000 */ .word 0x00000000
     /* 73270 80272270 00000000 */ .word 0x00000000
     /* 73274 80272274 001F9D40 */ .word 0x001F9D40
     /* 73278 80272278 001FB4C0 */ .word 0x001FB4C0
-enddlabel D_8027226C
+enddlabel D_80272268
 
-nonmatching g_pTrackSelectState3
+nonmatching D_8027227C
 
-dlabel g_pTrackSelectState3
+dlabel D_8027227C
     /* 7327C 8027227C 802A7F44 */ .word g_szWeatherSnow
-enddlabel g_pTrackSelectState3
-
-nonmatching D_80272280
-
-/* Automatically generated and unreferenced pad */
-dlabel D_80272280
     /* 73280 80272280 00000000 */ .word 0x00000000
     /* 73284 80272284 00000000 */ .word 0x00000000
     /* 73288 80272288 001F8F40 */ .word 0x001F8F40
     /* 7328C 8027228C 001F9D40 */ .word 0x001F9D40
-enddlabel D_80272280
+enddlabel D_8027227C
 
-nonmatching g_pszNight
+nonmatching D_80272290
 
-dlabel g_pszNight
+dlabel D_80272290
     /* 73290 80272290 802A7F4C */ .word g_szNight
-enddlabel g_pszNight
-
-nonmatching D_80272294
-
-/* Automatically generated and unreferenced pad */
-dlabel D_80272294
     /* 73294 80272294 00000000 */ .word 0x00000000
     /* 73298 80272298 00000000 */ .word 0x00000000
     /* 7329C 8027229C 001FD960 */ .word 0x001FD960
     /* 732A0 802722A0 001FEB90 */ .word 0x001FEB90
-enddlabel D_80272294
+enddlabel D_80272290
 
-nonmatching g_apszCarNames
+nonmatching g_apWeatherMenuItems
 
-dlabel g_apszCarNames
-    /* 732A4 802722A4 80272240 */ .word g_pszSunny
-enddlabel g_apszCarNames
+dlabel g_apWeatherMenuItems
+    /* 732A4 802722A4 80272240 */ .word g_aWeatherMenuItems
+enddlabel g_apWeatherMenuItems
 
-nonmatching g_pTrackSelectState4
-
-dlabel g_pTrackSelectState4
-    /* 732A8 802722A8 80272254 */ .word g_pTrackSelectScreenData
-enddlabel g_pTrackSelectState4
-
-nonmatching g_pTrackSelectState5
-
-dlabel g_pTrackSelectState5
-    /* 732AC 802722AC 80272268 */ .word g_pTrackSelectState2
-enddlabel g_pTrackSelectState5
-
-nonmatching g_pTrackSelectState6
-
-dlabel g_pTrackSelectState6
-    /* 732B0 802722B0 8027227C */ .word g_pTrackSelectState3
-enddlabel g_pTrackSelectState6
-
-nonmatching g_pTrackSelectState7
-
-dlabel g_pTrackSelectState7
-    /* 732B4 802722B4 80272290 */ .word g_pszNight
-enddlabel g_pTrackSelectState7
-
-nonmatching D_802722B8
+nonmatching D_802722A8
 
 /* Automatically generated and unreferenced pad */
-dlabel D_802722B8
+dlabel D_802722A8
+    /* 732A8 802722A8 80272254 */ .word D_80272254
+    /* 732AC 802722AC 80272268 */ .word D_80272268
+    /* 732B0 802722B0 8027227C */ .word D_8027227C
+    /* 732B4 802722B4 80272290 */ .word D_80272290
     /* 732B8 802722B8 00000000 */ .word 0x00000000
-enddlabel D_802722B8
+enddlabel D_802722A8
 
 nonmatching g_dwTrackSelectFlags
 

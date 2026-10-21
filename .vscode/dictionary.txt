@@ -205,6 +205,7 @@ objcopy
 oneline
 outfun
 pacboy
+paks
 pathlib
 persp
 pfsallocatefile
@@ -239,6 +240,7 @@ pyinstaller
 pylock
 pyproject
 qstringbuilder
+racemenu
 ramarray
 ramreadformat
 rdbread

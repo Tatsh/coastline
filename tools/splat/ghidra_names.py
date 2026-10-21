@@ -44,6 +44,10 @@ def main() -> int:
       old, new = fields[1], fields[2]
       result = post('rename_label', args.program,
                     {'address': f'0x{addresses[old]}', 'old_name': old, 'new_name': new})
+      if 'Label not found' in result.get('error', ''):
+        # The name belongs to a function, which the bridge renames by address.
+        result = post('rename_function_by_address', args.program,
+                      {'function_address': f'0x{addresses[old]}', 'new_name': new})
     elif action == 'create':
       result = post('create_label', args.program, {'address': fields[1], 'name': fields[2]})
     elif action == 'delete':

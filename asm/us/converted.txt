@@ -1,3 +1,8 @@
+ApplyWeather
+InitGameAndShowMenus
+MainMenuEntry
+ResetAllPlayers
+StartRaceWithPlayerCount
 _Genld
 _Ldtob
 _Litob

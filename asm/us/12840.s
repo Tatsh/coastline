@@ -137,7 +137,7 @@ glabel ProcessAudioOptionsScreen
     /* 129B4 802119B4 3C0F8031 */  lui        $t7, %hi(g_dwPhysicsReserved47)
     /* 129B8 802119B8 11C0000D */  beqz       $t6, .L802119F0
     /* 129BC 802119BC 00000000 */   nop
-    /* 129C0 802119C0 0C085383 */  jal        ProcessMenuScreen
+    /* 129C0 802119C0 0C085383 */  jal        ProcessPakDataScreen
     /* 129C4 802119C4 00002825 */   or        $a1, $zero, $zero
     /* 129C8 802119C8 10400003 */  beqz       $v0, .L802119D8
     /* 129CC 802119CC 3C018031 */   lui       $at, %hi(g_dwPhysicsReserved46)
@@ -155,7 +155,7 @@ glabel ProcessAudioOptionsScreen
     /* 129F4 802119F4 24040003 */  addiu      $a0, $zero, 0x3
     /* 129F8 802119F8 51E0000D */  beql       $t7, $zero, .L80211A30
     /* 129FC 802119FC 8FBF0014 */   lw        $ra, 0x14($sp)
-    /* 12A00 80211A00 0C085383 */  jal        ProcessMenuScreen
+    /* 12A00 80211A00 0C085383 */  jal        ProcessPakDataScreen
     /* 12A04 80211A04 00002825 */   or        $a1, $zero, $zero
     /* 12A08 80211A08 10400003 */  beqz       $v0, .L80211A18
     /* 12A0C 80211A0C 3C018031 */   lui       $at, %hi(g_dwPhysicsReserved47)
@@ -1595,17 +1595,17 @@ glabel ProcessDataSaveLoadMenu
     /* 13EF8 80212EF8 3C04802B */   lui       $a0, %hi(g_szExtractingGhostData)
     /* 13EFC 80212EFC 0C0981F7 */  jal        osSyncPrintf
     /* 13F00 80212F00 24848310 */   addiu     $a0, $a0, %lo(g_szExtractingGhostData)
-    /* 13F04 80212F04 3C048030 */  lui        $a0, %hi(g_GhostFileHeader)
+    /* 13F04 80212F04 3C048030 */  lui        $a0, %hi(g_abGhostRecording)
     /* 13F08 80212F08 3C068027 */  lui        $a2, %hi(gPakMenuState)
     /* 13F0C 80212F0C 8CC62500 */  lw         $a2, %lo(gPakMenuState)($a2)
-    /* 13F10 80212F10 24847F00 */  addiu      $a0, $a0, %lo(g_GhostFileHeader)
+    /* 13F10 80212F10 24847F00 */  addiu      $a0, $a0, %lo(g_abGhostRecording)
     /* 13F14 80212F14 3405DE5C */  ori        $a1, $zero, 0xDE5C
-    /* 13F18 80212F18 0C0872D3 */  jal        DecompressRleTexture
+    /* 13F18 80212F18 0C0872D3 */  jal        DecompressInterleavedRle
     /* 13F1C 80212F1C 24070002 */   addiu     $a3, $zero, 0x2
-    /* 13F20 80212F20 3C068030 */  lui        $a2, %hi(g_GhostFileHeader)
-    /* 13F24 80212F24 3C018027 */  lui        $at, %hi(g_dwGhostDataSize)
-    /* 13F28 80212F28 AC220784 */  sw         $v0, %lo(g_dwGhostDataSize)($at)
-    /* 13F2C 80212F2C 24C67F00 */  addiu      $a2, $a2, %lo(g_GhostFileHeader)
+    /* 13F20 80212F20 3C068030 */  lui        $a2, %hi(g_abGhostRecording)
+    /* 13F24 80212F24 3C018027 */  lui        $at, %hi(g_dwGhostRecordingSize)
+    /* 13F28 80212F28 AC220784 */  sw         $v0, %lo(g_dwGhostRecordingSize)($at)
+    /* 13F2C 80212F2C 24C67F00 */  addiu      $a2, $a2, %lo(g_abGhostRecording)
     /* 13F30 80212F30 90C50000 */  lbu        $a1, 0x0($a2)
     /* 13F34 80212F34 3C078032 */  lui        $a3, %hi(g_aVehicles)
     /* 13F38 80212F38 3C018029 */  lui        $at, %hi(g_dwSelectedTrackId)
@@ -2076,12 +2076,12 @@ glabel ProcessDataSaveLoadMenu
     /* 14630 80213630 0C0981F7 */  jal        osSyncPrintf
     /* 14634 80213634 24848400 */   addiu     $a0, $a0, %lo(g_szCompressingGhostData)
     /* 14638 80213638 3C048027 */  lui        $a0, %hi(gPakMenuState)
-    /* 1463C 8021363C 3C068030 */  lui        $a2, %hi(g_GhostFileHeader)
-    /* 14640 80213640 3C078027 */  lui        $a3, %hi(g_dwGhostDataSize)
+    /* 1463C 8021363C 3C068030 */  lui        $a2, %hi(g_abGhostRecording)
+    /* 14640 80213640 3C078027 */  lui        $a3, %hi(g_dwGhostRecordingSize)
     /* 14644 80213644 240F0002 */  addiu      $t7, $zero, 0x2
     /* 14648 80213648 AFAF0010 */  sw         $t7, 0x10($sp)
-    /* 1464C 8021364C 8CE70784 */  lw         $a3, %lo(g_dwGhostDataSize)($a3)
-    /* 14650 80213650 24C67F00 */  addiu      $a2, $a2, %lo(g_GhostFileHeader)
+    /* 1464C 8021364C 8CE70784 */  lw         $a3, %lo(g_dwGhostRecordingSize)($a3)
+    /* 14650 80213650 24C67F00 */  addiu      $a2, $a2, %lo(g_abGhostRecording)
     /* 14654 80213654 8C842500 */  lw         $a0, %lo(gPakMenuState)($a0)
     /* 14658 80213658 0C08721E */  jal        CompressRleChannels
     /* 1465C 8021365C 24053A00 */   addiu     $a1, $zero, 0x3A00
@@ -3701,9 +3701,9 @@ glabel InitAllControllerPaks
     /* 15E08 80214E08 27BD0050 */   addiu     $sp, $sp, 0x50
 endlabel InitAllControllerPaks
 
-nonmatching ProcessMenuScreen, 0x19C8
+nonmatching ProcessPakDataScreen, 0x19C8
 
-glabel ProcessMenuScreen
+glabel ProcessPakDataScreen
     /* 15E0C 80214E0C 27BDFF48 */  addiu      $sp, $sp, -0xB8
     /* 15E10 80214E10 3C0F8027 */  lui        $t7, %hi(g_dwControllerConfigState)
     /* 15E14 80214E14 AFBF002C */  sw         $ra, 0x2C($sp)
@@ -3757,8 +3757,8 @@ glabel ProcessMenuScreen
     /* 15ED4 80214ED4 AFA9003C */   sw        $t1, 0x3C($sp)
     /* 15ED8 80214ED8 A0EB0000 */  sb         $t3, 0x0($a3)
     /* 15EDC 80214EDC AC2024F0 */  sw         $zero, %lo(gControllerPakState)($at)
-    /* 15EE0 80214EE0 3C018031 */  lui        $at, %hi(gWeatherState)
-    /* 15EE4 80214EE4 A0206430 */  sb         $zero, %lo(gWeatherState)($at)
+    /* 15EE0 80214EE0 3C018031 */  lui        $at, %hi(g_bPakScreenState)
+    /* 15EE4 80214EE4 A0206430 */  sb         $zero, %lo(g_bPakScreenState)($at)
     /* 15EE8 80214EE8 3C018031 */  lui        $at, %hi(g_bSaveLoadFadeWaitFrames)
     /* 15EEC 80214EEC A0206431 */  sb         $zero, %lo(g_bSaveLoadFadeWaitFrames)($at)
   .L80214EF0:
@@ -3788,8 +3788,8 @@ glabel ProcessMenuScreen
     /* 15F40 80214F40 AFA80090 */  sw         $t0, 0x90($sp)
     /* 15F44 80214F44 AFAF0084 */  sw         $t7, 0x84($sp)
   .L80214F48:
-    /* 15F48 80214F48 3C098031 */  lui        $t1, %hi(gWeatherState)
-    /* 15F4C 80214F4C 91296430 */  lbu        $t1, %lo(gWeatherState)($t1)
+    /* 15F48 80214F48 3C098031 */  lui        $t1, %hi(g_bPakScreenState)
+    /* 15F4C 80214F4C 91296430 */  lbu        $t1, %lo(g_bPakScreenState)($t1)
     /* 15F50 80214F50 2D21000D */  sltiu      $at, $t1, 0xD
     /* 15F54 80214F54 10200617 */  beqz       $at, .L802167B4
     /* 15F58 80214F58 00094880 */   sll       $t1, $t1, 2
@@ -3802,21 +3802,21 @@ glabel ProcessMenuScreen
     /* 15F70 80214F70 14A0000D */  bnez       $a1, .L80214FA8
     /* 15F74 80214F74 240B0002 */   addiu     $t3, $zero, 0x2
     /* 15F78 80214F78 44806000 */  mtc1       $zero, $f12
-    /* 15F7C 80214F7C 3C01802B */  lui        $at, %hi(g_dwGfxViewportCount)
+    /* 15F7C 80214F7C 3C01802B */  lui        $at, %hi(g_fConst0p2_802a8fe4)
     /* 15F80 80214F80 0C088DD4 */  jal        SetFadeTargetSecondary
-    /* 15F84 80214F84 C42E8FE4 */   lwc1      $f14, %lo(g_dwGfxViewportCount)($at)
+    /* 15F84 80214F84 C42E8FE4 */   lwc1      $f14, %lo(g_fConst0p2_802a8fe4)($at)
     /* 15F88 80214F88 44806000 */  mtc1       $zero, $f12
-    /* 15F8C 80214F8C 3C01802B */  lui        $at, %hi(g_dwGfxViewportActive)
+    /* 15F8C 80214F8C 3C01802B */  lui        $at, %hi(g_fConst0p2_802a8fe8)
     /* 15F90 80214F90 0C088DF4 */  jal        SetFadeTargetTertiary
-    /* 15F94 80214F94 C42E8FE8 */   lwc1      $f14, %lo(g_dwGfxViewportActive)($at)
+    /* 15F94 80214F94 C42E8FE8 */   lwc1      $f14, %lo(g_fConst0p2_802a8fe8)($at)
     /* 15F98 80214F98 240C0001 */  addiu      $t4, $zero, 0x1
-    /* 15F9C 80214F9C 3C018031 */  lui        $at, %hi(gWeatherState)
+    /* 15F9C 80214F9C 3C018031 */  lui        $at, %hi(g_bPakScreenState)
     /* 15FA0 80214FA0 10000604 */  b          .L802167B4
-    /* 15FA4 80214FA4 A02C6430 */   sb        $t4, %lo(gWeatherState)($at)
+    /* 15FA4 80214FA4 A02C6430 */   sb        $t4, %lo(g_bPakScreenState)($at)
   .L80214FA8:
-    /* 15FA8 80214FA8 3C018031 */  lui        $at, %hi(gWeatherState)
+    /* 15FA8 80214FA8 3C018031 */  lui        $at, %hi(g_bPakScreenState)
     /* 15FAC 80214FAC 10000601 */  b          .L802167B4
-    /* 15FB0 80214FB0 A02B6430 */   sb        $t3, %lo(gWeatherState)($at)
+    /* 15FB0 80214FB0 A02B6430 */   sb        $t3, %lo(g_bPakScreenState)($at)
   jlabel .L80214FB4
     /* 15FB4 80214FB4 0C088E14 */  jal        IsFadeSecondaryComplete
     /* 15FB8 80214FB8 00000000 */   nop
@@ -3829,9 +3829,9 @@ glabel ProcessMenuScreen
     /* 15FD4 80214FD4 246A0001 */  addiu      $t2, $v1, 0x1
     /* 15FD8 80214FD8 144005F6 */  bnez       $v0, .L802167B4
     /* 15FDC 80214FDC A02A6431 */   sb        $t2, %lo(g_bSaveLoadFadeWaitFrames)($at)
-    /* 15FE0 80214FE0 3C018031 */  lui        $at, %hi(gWeatherState)
+    /* 15FE0 80214FE0 3C018031 */  lui        $at, %hi(g_bPakScreenState)
     /* 15FE4 80214FE4 100005F3 */  b          .L802167B4
-    /* 15FE8 80214FE8 A02D6430 */   sb        $t5, %lo(gWeatherState)($at)
+    /* 15FE8 80214FE8 A02D6430 */   sb        $t5, %lo(g_bPakScreenState)($at)
   jlabel .L80214FEC
     /* 15FEC 80214FEC 3C048027 */  lui        $a0, %hi(g_SiMesgQueue)
     /* 15FF0 80214FF0 24842D48 */  addiu      $a0, $a0, %lo(g_SiMesgQueue)
@@ -3848,10 +3848,10 @@ glabel ProcessMenuScreen
     /* 1601C 8021501C 240C0001 */  addiu      $t4, $zero, 0x1
     /* 16020 80215020 3C018027 */  lui        $at, %hi(gControllerPakState)
     /* 16024 80215024 AC2C24F0 */  sw         $t4, %lo(gControllerPakState)($at)
-    /* 16028 80215028 3C018031 */  lui        $at, %hi(gWeatherState)
+    /* 16028 80215028 3C018031 */  lui        $at, %hi(g_bPakScreenState)
     /* 1602C 8021502C 240B0009 */  addiu      $t3, $zero, 0x9
     /* 16030 80215030 100005E0 */  b          .L802167B4
-    /* 16034 80215034 A02B6430 */   sb        $t3, %lo(gWeatherState)($at)
+    /* 16034 80215034 A02B6430 */   sb        $t3, %lo(g_bPakScreenState)($at)
   .L80215038:
     /* 16038 80215038 0C0981F7 */  jal        osSyncPrintf
     /* 1603C 8021503C 24848A60 */   addiu     $a0, $a0, %lo(g_szInitializingControllerPak2)
@@ -3911,25 +3911,25 @@ glabel ProcessMenuScreen
     /* 16114 80215114 3C018027 */  lui        $at, %hi(g_bSaveLoadRumbleSwapPending)
     /* 16118 80215118 240B0001 */  addiu      $t3, $zero, 0x1
     /* 1611C 8021511C A02B24FC */  sb         $t3, %lo(g_bSaveLoadRumbleSwapPending)($at)
-    /* 16120 80215120 3C018031 */  lui        $at, %hi(gWeatherState)
+    /* 16120 80215120 3C018031 */  lui        $at, %hi(g_bPakScreenState)
     /* 16124 80215124 240A0009 */  addiu      $t2, $zero, 0x9
     /* 16128 80215128 100005A2 */  b          .L802167B4
-    /* 1612C 8021512C A02A6430 */   sb        $t2, %lo(gWeatherState)($at)
+    /* 1612C 8021512C A02A6430 */   sb        $t2, %lo(g_bPakScreenState)($at)
   .L80215130:
     /* 16130 80215130 AC2024F0 */  sw         $zero, %lo(gControllerPakState)($at)
-    /* 16134 80215134 3C018031 */  lui        $at, %hi(gWeatherState)
+    /* 16134 80215134 3C018031 */  lui        $at, %hi(g_bPakScreenState)
     /* 16138 80215138 240D0003 */  addiu      $t5, $zero, 0x3
     /* 1613C 8021513C 1000059D */  b          .L802167B4
-    /* 16140 80215140 A02D6430 */   sb        $t5, %lo(gWeatherState)($at)
+    /* 16140 80215140 A02D6430 */   sb        $t5, %lo(g_bPakScreenState)($at)
   .L80215144:
     /* 16144 80215144 8DCE1FA8 */  lw         $t6, %lo(gMenuContext)($t6)
     /* 16148 80215148 3C018032 */  lui        $at, %hi(g_abRumblePakPresent)
     /* 1614C 8021514C 24190009 */  addiu      $t9, $zero, 0x9
     /* 16150 80215150 002E0821 */  addu       $at, $at, $t6
     /* 16154 80215154 A020B1E8 */  sb         $zero, %lo(g_abRumblePakPresent)($at)
-    /* 16158 80215158 3C018031 */  lui        $at, %hi(gWeatherState)
+    /* 16158 80215158 3C018031 */  lui        $at, %hi(g_bPakScreenState)
     /* 1615C 8021515C 10000595 */  b          .L802167B4
-    /* 16160 80215160 A0396430 */   sb        $t9, %lo(gWeatherState)($at)
+    /* 16160 80215160 A0396430 */   sb        $t9, %lo(g_bPakScreenState)($at)
   .L80215164:
     /* 16164 80215164 14600593 */  bnez       $v1, .L802167B4
     /* 16168 80215168 3C078027 */   lui       $a3, %hi(gMenuContext)
@@ -3963,9 +3963,9 @@ glabel ProcessMenuScreen
     /* 161D8 802151D8 0C0982C8 */  jal        memcpy
     /* 161DC 802151DC 24060020 */   addiu     $a2, $zero, 0x20
     /* 161E0 802151E0 24190005 */  addiu      $t9, $zero, 0x5
-    /* 161E4 802151E4 3C018031 */  lui        $at, %hi(gWeatherState)
+    /* 161E4 802151E4 3C018031 */  lui        $at, %hi(g_bPakScreenState)
     /* 161E8 802151E8 10000572 */  b          .L802167B4
-    /* 161EC 802151EC A0396430 */   sb        $t9, %lo(gWeatherState)($at)
+    /* 161EC 802151EC A0396430 */   sb        $t9, %lo(g_bPakScreenState)($at)
   .L802151F0:
     /* 161F0 802151F0 00094880 */  sll        $t1, $t1, 2
     /* 161F4 802151F4 01274821 */  addu       $t1, $t1, $a3
@@ -3999,13 +3999,13 @@ glabel ProcessMenuScreen
     /* 16264 80215264 0C0982C8 */  jal        memcpy
     /* 16268 80215268 24060020 */   addiu     $a2, $zero, 0x20
     /* 1626C 8021526C 240F0004 */  addiu      $t7, $zero, 0x4
-    /* 16270 80215270 3C018031 */  lui        $at, %hi(gWeatherState)
+    /* 16270 80215270 3C018031 */  lui        $at, %hi(g_bPakScreenState)
     /* 16274 80215274 1000054F */  b          .L802167B4
-    /* 16278 80215278 A02F6430 */   sb        $t7, %lo(gWeatherState)($at)
+    /* 16278 80215278 A02F6430 */   sb        $t7, %lo(g_bPakScreenState)($at)
   .L8021527C:
-    /* 1627C 8021527C 3C018031 */  lui        $at, %hi(gWeatherState)
+    /* 1627C 8021527C 3C018031 */  lui        $at, %hi(g_bPakScreenState)
     /* 16280 80215280 1000054C */  b          .L802167B4
-    /* 16284 80215284 A0296430 */   sb        $t1, %lo(gWeatherState)($at)
+    /* 16284 80215284 A0296430 */   sb        $t1, %lo(g_bPakScreenState)($at)
   jlabel .L80215288
     /* 16288 80215288 3C0C8027 */  lui        $t4, %hi(gMenuContext)
     /* 1628C 8021528C 8D8C1FA8 */  lw         $t4, %lo(gMenuContext)($t4)
@@ -4023,21 +4023,21 @@ glabel ProcessMenuScreen
     /* 162BC 802152BC 3C0D8027 */  lui        $t5, %hi(gControllerPakState)
     /* 162C0 802152C0 8DAD24F0 */  lw         $t5, %lo(gControllerPakState)($t5)
     /* 162C4 802152C4 240E0009 */  addiu      $t6, $zero, 0x9
-    /* 162C8 802152C8 3C018031 */  lui        $at, %hi(gWeatherState)
+    /* 162C8 802152C8 3C018031 */  lui        $at, %hi(g_bPakScreenState)
     /* 162CC 802152CC 11A00004 */  beqz       $t5, .L802152E0
     /* 162D0 802152D0 24190002 */   addiu     $t9, $zero, 0x2
-    /* 162D4 802152D4 3C018031 */  lui        $at, %hi(gWeatherState)
+    /* 162D4 802152D4 3C018031 */  lui        $at, %hi(g_bPakScreenState)
     /* 162D8 802152D8 10000536 */  b          .L802167B4
-    /* 162DC 802152DC A02E6430 */   sb        $t6, %lo(gWeatherState)($at)
+    /* 162DC 802152DC A02E6430 */   sb        $t6, %lo(g_bPakScreenState)($at)
   .L802152E0:
     /* 162E0 802152E0 10000534 */  b          .L802167B4
-    /* 162E4 802152E4 A0396430 */   sb        $t9, %lo(gWeatherState)($at)
+    /* 162E4 802152E4 A0396430 */   sb        $t9, %lo(g_bPakScreenState)($at)
   jlabel .L802152E8
     /* 162E8 802152E8 10A00004 */  beqz       $a1, .L802152FC
     /* 162EC 802152EC 24180005 */   addiu     $t8, $zero, 0x5
-    /* 162F0 802152F0 3C018031 */  lui        $at, %hi(gWeatherState)
+    /* 162F0 802152F0 3C018031 */  lui        $at, %hi(g_bPakScreenState)
     /* 162F4 802152F4 1000052F */  b          .L802167B4
-    /* 162F8 802152F8 A0386430 */   sb        $t8, %lo(gWeatherState)($at)
+    /* 162F8 802152F8 A0386430 */   sb        $t8, %lo(g_bPakScreenState)($at)
   .L802152FC:
     /* 162FC 802152FC 0C08BD3E */  jal        SetTextStyleNormal
     /* 16300 80215300 00000000 */   nop
@@ -4107,9 +4107,9 @@ glabel ProcessMenuScreen
     /* 16400 80215400 0C095644 */  jal        TransferFlags
     /* 16404 80215404 34058030 */   ori       $a1, $zero, 0x8030
     /* 16408 80215408 24090005 */  addiu      $t1, $zero, 0x5
-    /* 1640C 8021540C 3C018031 */  lui        $at, %hi(gWeatherState)
+    /* 1640C 8021540C 3C018031 */  lui        $at, %hi(g_bPakScreenState)
     /* 16410 80215410 100004E8 */  b          .L802167B4
-    /* 16414 80215414 A0296430 */   sb        $t1, %lo(gWeatherState)($at)
+    /* 16414 80215414 A0296430 */   sb        $t1, %lo(g_bPakScreenState)($at)
   jlabel .L80215418
     /* 16418 80215418 3C04802B */  lui        $a0, %hi(g_szFindingFile)
     /* 1641C 8021541C 24848AD0 */  addiu      $a0, $a0, %lo(g_szFindingFile)
@@ -4185,31 +4185,31 @@ glabel ProcessMenuScreen
     /* 16530 80215530 24190008 */  addiu      $t9, $zero, 0x8
     /* 16534 80215534 24180006 */  addiu      $t8, $zero, 0x6
     /* 16538 80215538 15C50004 */  bne        $t6, $a1, .L8021554C
-    /* 1653C 8021553C 3C018031 */   lui       $at, %hi(gWeatherState)
-    /* 16540 80215540 3C018031 */  lui        $at, %hi(gWeatherState)
+    /* 1653C 8021553C 3C018031 */   lui       $at, %hi(g_bPakScreenState)
+    /* 16540 80215540 3C018031 */  lui        $at, %hi(g_bPakScreenState)
     /* 16544 80215544 1000049B */  b          .L802167B4
-    /* 16548 80215548 A0396430 */   sb        $t9, %lo(gWeatherState)($at)
+    /* 16548 80215548 A0396430 */   sb        $t9, %lo(g_bPakScreenState)($at)
   .L8021554C:
     /* 1654C 8021554C 10000499 */  b          .L802167B4
-    /* 16550 80215550 A0386430 */   sb        $t8, %lo(gWeatherState)($at)
+    /* 16550 80215550 A0386430 */   sb        $t8, %lo(g_bPakScreenState)($at)
   .L80215554:
     /* 16554 80215554 15E50005 */  bne        $t7, $a1, .L8021556C
     /* 16558 80215558 93AC00BF */   lbu       $t4, 0xBF($sp)
     /* 1655C 8021555C 24090007 */  addiu      $t1, $zero, 0x7
-    /* 16560 80215560 3C018031 */  lui        $at, %hi(gWeatherState)
+    /* 16560 80215560 3C018031 */  lui        $at, %hi(g_bPakScreenState)
     /* 16564 80215564 10000493 */  b          .L802167B4
-    /* 16568 80215568 A0296430 */   sb        $t1, %lo(gWeatherState)($at)
+    /* 16568 80215568 A0296430 */   sb        $t1, %lo(g_bPakScreenState)($at)
   .L8021556C:
     /* 1656C 8021556C 11800005 */  beqz       $t4, .L80215584
     /* 16570 80215570 240A0009 */   addiu     $t2, $zero, 0x9
     /* 16574 80215574 240B000C */  addiu      $t3, $zero, 0xC
-    /* 16578 80215578 3C018031 */  lui        $at, %hi(gWeatherState)
+    /* 16578 80215578 3C018031 */  lui        $at, %hi(g_bPakScreenState)
     /* 1657C 8021557C 1000048D */  b          .L802167B4
-    /* 16580 80215580 A02B6430 */   sb        $t3, %lo(gWeatherState)($at)
+    /* 16580 80215580 A02B6430 */   sb        $t3, %lo(g_bPakScreenState)($at)
   .L80215584:
-    /* 16584 80215584 3C018031 */  lui        $at, %hi(gWeatherState)
+    /* 16584 80215584 3C018031 */  lui        $at, %hi(g_bPakScreenState)
     /* 16588 80215588 1000048A */  b          .L802167B4
-    /* 1658C 8021558C A02A6430 */   sb        $t2, %lo(gWeatherState)($at)
+    /* 1658C 8021558C A02A6430 */   sb        $t2, %lo(g_bPakScreenState)($at)
   jlabel .L80215590
     /* 16590 80215590 8FAD00B8 */  lw         $t5, 0xB8($sp)
     /* 16594 80215594 3C04802B */  lui        $a0, %hi(g_szLoadingSeasonData2)
@@ -4291,7 +4291,7 @@ glabel ProcessMenuScreen
     /* 166AC 802156AC 8FAC00B8 */  lw         $t4, 0xB8($sp)
     /* 166B0 802156B0 24180009 */  addiu      $t8, $zero, 0x9
     /* 166B4 802156B4 152000EA */  bnez       $t1, .L80215A60
-    /* 166B8 802156B8 3C018031 */   lui       $at, %hi(gWeatherState)
+    /* 166B8 802156B8 3C018031 */   lui       $at, %hi(g_bPakScreenState)
     /* 166BC 802156BC 15800053 */  bnez       $t4, .L8021580C
     /* 166C0 802156C0 8FB800B8 */   lw        $t8, 0xB8($sp)
     /* 166C4 802156C4 3C0B8027 */  lui        $t3, %hi(gMenuContext)
@@ -4383,20 +4383,20 @@ glabel ProcessMenuScreen
     /* 16818 80215818 3C04802B */  lui        $a0, %hi(g_szExtractingGhostData2)
     /* 1681C 8021581C 0C0981F7 */  jal        osSyncPrintf
     /* 16820 80215820 24848B38 */   addiu     $a0, $a0, %lo(g_szExtractingGhostData2)
-    /* 16824 80215824 3C048030 */  lui        $a0, %hi(g_GhostFileHeader)
+    /* 16824 80215824 3C048030 */  lui        $a0, %hi(g_abGhostRecording)
     /* 16828 80215828 3C068027 */  lui        $a2, %hi(gPakMenuState)
     /* 1682C 8021582C 8CC62500 */  lw         $a2, %lo(gPakMenuState)($a2)
-    /* 16830 80215830 24847F00 */  addiu      $a0, $a0, %lo(g_GhostFileHeader)
+    /* 16830 80215830 24847F00 */  addiu      $a0, $a0, %lo(g_abGhostRecording)
     /* 16834 80215834 3405DE5C */  ori        $a1, $zero, 0xDE5C
-    /* 16838 80215838 0C0872D3 */  jal        DecompressRleTexture
+    /* 16838 80215838 0C0872D3 */  jal        DecompressInterleavedRle
     /* 1683C 8021583C 24070002 */   addiu     $a3, $zero, 0x2
     /* 16840 80215840 3C078032 */  lui        $a3, %hi(g_aVehicles)
-    /* 16844 80215844 3C018027 */  lui        $at, %hi(g_dwGhostDataSize)
-    /* 16848 80215848 AC220784 */  sw         $v0, %lo(g_dwGhostDataSize)($at)
+    /* 16844 80215844 3C018027 */  lui        $at, %hi(g_dwGhostRecordingSize)
+    /* 16848 80215848 AC220784 */  sw         $v0, %lo(g_dwGhostRecordingSize)($at)
     /* 1684C 8021584C 24E7B760 */  addiu      $a3, $a3, %lo(g_aVehicles)
     /* 16850 80215850 8CE30E5C */  lw         $v1, 0xE5C($a3)
-    /* 16854 80215854 3C058030 */  lui        $a1, %hi(g_GhostFileHeader)
-    /* 16858 80215858 24A57F00 */  addiu      $a1, $a1, %lo(g_GhostFileHeader)
+    /* 16854 80215854 3C058030 */  lui        $a1, %hi(g_abGhostRecording)
+    /* 16858 80215858 24A57F00 */  addiu      $a1, $a1, %lo(g_abGhostRecording)
     /* 1685C 8021585C 90A90000 */  lbu        $t1, 0x0($a1)
     /* 16860 80215860 946D00CE */  lhu        $t5, 0xCE($v1)
     /* 16864 80215864 24190001 */  addiu      $t9, $zero, 0x1
@@ -4452,7 +4452,7 @@ glabel ProcessMenuScreen
     /* 16928 80215928 3C0E8027 */  lui        $t6, %hi(gControllerPakState)
     /* 1692C 8021592C 8DCE24F0 */  lw         $t6, %lo(gControllerPakState)($t6)
     /* 16930 80215930 27A40070 */  addiu      $a0, $sp, 0x70
-    /* 16934 80215934 3C018031 */  lui        $at, %hi(gWeatherState)
+    /* 16934 80215934 3C018031 */  lui        $at, %hi(g_bPakScreenState)
     /* 16938 80215938 15C00032 */  bnez       $t6, .L80215A04
     /* 1693C 8021593C 240F0009 */   addiu     $t7, $zero, 0x9
     /* 16940 80215940 3C058027 */  lui        $a1, %hi(gPakMenuState)
@@ -4505,10 +4505,10 @@ glabel ProcessMenuScreen
     /* 169FC 802159FC 10000002 */  b          .L80215A08
     /* 16A00 80215A00 00000000 */   nop
   .L80215A04:
-    /* 16A04 80215A04 A02F6430 */  sb         $t7, %lo(gWeatherState)($at)
+    /* 16A04 80215A04 A02F6430 */  sb         $t7, %lo(g_bPakScreenState)($at)
   .L80215A08:
-    /* 16A08 80215A08 3C198031 */  lui        $t9, %hi(gWeatherState)
-    /* 16A0C 80215A0C 93396430 */  lbu        $t9, %lo(gWeatherState)($t9)
+    /* 16A08 80215A08 3C198031 */  lui        $t9, %hi(g_bPakScreenState)
+    /* 16A0C 80215A0C 93396430 */  lbu        $t9, %lo(g_bPakScreenState)($t9)
     /* 16A10 80215A10 24010009 */  addiu      $at, $zero, 0x9
     /* 16A14 80215A14 8FAC00B8 */  lw         $t4, 0xB8($sp)
     /* 16A18 80215A18 13210366 */  beq        $t9, $at, .L802167B4
@@ -4516,24 +4516,24 @@ glabel ProcessMenuScreen
     /* 16A20 80215A20 15810005 */  bne        $t4, $at, .L80215A38
     /* 16A24 80215A24 3C0A8027 */   lui       $t2, %hi(g_bSaveLoadRumbleSwapPending)
     /* 16A28 80215A28 240D000B */  addiu      $t5, $zero, 0xB
-    /* 16A2C 80215A2C 3C018031 */  lui        $at, %hi(gWeatherState)
+    /* 16A2C 80215A2C 3C018031 */  lui        $at, %hi(g_bPakScreenState)
     /* 16A30 80215A30 10000360 */  b          .L802167B4
-    /* 16A34 80215A34 A02D6430 */   sb        $t5, %lo(gWeatherState)($at)
+    /* 16A34 80215A34 A02D6430 */   sb        $t5, %lo(g_bPakScreenState)($at)
   .L80215A38:
     /* 16A38 80215A38 914A24FC */  lbu        $t2, %lo(g_bSaveLoadRumbleSwapPending)($t2)
     /* 16A3C 80215A3C 2409000C */  addiu      $t1, $zero, 0xC
     /* 16A40 80215A40 240B000B */  addiu      $t3, $zero, 0xB
     /* 16A44 80215A44 15400004 */  bnez       $t2, .L80215A58
-    /* 16A48 80215A48 3C018031 */   lui       $at, %hi(gWeatherState)
-    /* 16A4C 80215A4C 3C018031 */  lui        $at, %hi(gWeatherState)
+    /* 16A48 80215A48 3C018031 */   lui       $at, %hi(g_bPakScreenState)
+    /* 16A4C 80215A4C 3C018031 */  lui        $at, %hi(g_bPakScreenState)
     /* 16A50 80215A50 10000358 */  b          .L802167B4
-    /* 16A54 80215A54 A0296430 */   sb        $t1, %lo(gWeatherState)($at)
+    /* 16A54 80215A54 A0296430 */   sb        $t1, %lo(g_bPakScreenState)($at)
   .L80215A58:
     /* 16A58 80215A58 10000356 */  b          .L802167B4
-    /* 16A5C 80215A5C A02B6430 */   sb        $t3, %lo(gWeatherState)($at)
+    /* 16A5C 80215A5C A02B6430 */   sb        $t3, %lo(g_bPakScreenState)($at)
   .L80215A60:
     /* 16A60 80215A60 10000354 */  b          .L802167B4
-    /* 16A64 80215A64 A0386430 */   sb        $t8, %lo(gWeatherState)($at)
+    /* 16A64 80215A64 A0386430 */   sb        $t8, %lo(g_bPakScreenState)($at)
   jlabel .L80215A68
     /* 16A68 80215A68 3C0E8027 */  lui        $t6, %hi(gMenuContext)
     /* 16A6C 80215A6C 8DCE1FA8 */  lw         $t6, %lo(gMenuContext)($t6)
@@ -4559,9 +4559,9 @@ glabel ProcessMenuScreen
     /* 16ABC 80215ABC 24848B88 */   addiu     $a0, $a0, %lo(g_szFmtAllocatingBytesForConfig)
     /* 16AC0 80215AC0 AC6A0000 */  sw         $t2, 0x0($v1)
     /* 16AC4 80215AC4 24090009 */  addiu      $t1, $zero, 0x9
-    /* 16AC8 80215AC8 3C018031 */  lui        $at, %hi(gWeatherState)
+    /* 16AC8 80215AC8 3C018031 */  lui        $at, %hi(g_bPakScreenState)
     /* 16ACC 80215ACC 10000339 */  b          .L802167B4
-    /* 16AD0 80215AD0 A0296430 */   sb        $t1, %lo(gWeatherState)($at)
+    /* 16AD0 80215AD0 A0296430 */   sb        $t1, %lo(g_bPakScreenState)($at)
   .L80215AD4:
     /* 16AD4 80215AD4 0C0981F7 */  jal        osSyncPrintf
     /* 16AD8 80215AD8 24050100 */   addiu     $a1, $zero, 0x100
@@ -4635,18 +4635,18 @@ glabel ProcessMenuScreen
     /* 16BE4 80215BE4 14600005 */  bnez       $v1, .L80215BFC
     /* 16BE8 80215BE8 240A0009 */   addiu     $t2, $zero, 0x9
     /* 16BEC 80215BEC 240D0008 */  addiu      $t5, $zero, 0x8
-    /* 16BF0 80215BF0 3C018031 */  lui        $at, %hi(gWeatherState)
+    /* 16BF0 80215BF0 3C018031 */  lui        $at, %hi(g_bPakScreenState)
     /* 16BF4 80215BF4 100002EF */  b          .L802167B4
-    /* 16BF8 80215BF8 A02D6430 */   sb        $t5, %lo(gWeatherState)($at)
+    /* 16BF8 80215BF8 A02D6430 */   sb        $t5, %lo(g_bPakScreenState)($at)
   .L80215BFC:
-    /* 16BFC 80215BFC 3C018031 */  lui        $at, %hi(gWeatherState)
+    /* 16BFC 80215BFC 3C018031 */  lui        $at, %hi(g_bPakScreenState)
     /* 16C00 80215C00 100002EC */  b          .L802167B4
-    /* 16C04 80215C04 A02A6430 */   sb        $t2, %lo(gWeatherState)($at)
+    /* 16C04 80215C04 A02A6430 */   sb        $t2, %lo(g_bPakScreenState)($at)
   .L80215C08:
     /* 16C08 80215C08 24090009 */  addiu      $t1, $zero, 0x9
-    /* 16C0C 80215C0C 3C018031 */  lui        $at, %hi(gWeatherState)
+    /* 16C0C 80215C0C 3C018031 */  lui        $at, %hi(g_bPakScreenState)
     /* 16C10 80215C10 100002E8 */  b          .L802167B4
-    /* 16C14 80215C14 A0296430 */   sb        $t1, %lo(gWeatherState)($at)
+    /* 16C14 80215C14 A0296430 */   sb        $t1, %lo(g_bPakScreenState)($at)
   jlabel .L80215C18
     /* 16C18 80215C18 3C04802B */  lui        $a0, %hi(g_szSavingConfiguration)
     /* 16C1C 80215C1C 0C0981F7 */  jal        osSyncPrintf
@@ -4682,9 +4682,9 @@ glabel ProcessMenuScreen
     /* 16C94 80215C94 10400005 */  beqz       $v0, .L80215CAC
     /* 16C98 80215C98 AD020000 */   sw        $v0, 0x0($t0)
     /* 16C9C 80215C9C 240D0009 */  addiu      $t5, $zero, 0x9
-    /* 16CA0 80215CA0 3C018031 */  lui        $at, %hi(gWeatherState)
+    /* 16CA0 80215CA0 3C018031 */  lui        $at, %hi(g_bPakScreenState)
     /* 16CA4 80215CA4 100002C3 */  b          .L802167B4
-    /* 16CA8 80215CA8 A02D6430 */   sb        $t5, %lo(gWeatherState)($at)
+    /* 16CA8 80215CA8 A02D6430 */   sb        $t5, %lo(g_bPakScreenState)($at)
   .L80215CAC:
     /* 16CAC 80215CAC 3C0A8027 */  lui        $t2, %hi(gMenuContext)
     /* 16CB0 80215CB0 8D4A1FA8 */  lw         $t2, %lo(gMenuContext)($t2)
@@ -4738,20 +4738,20 @@ glabel ProcessMenuScreen
     /* 16D70 80215D70 0C0981F7 */  jal        osSyncPrintf
     /* 16D74 80215D74 24848BD0 */   addiu     $a0, $a0, %lo(g_szDone10)
     /* 16D78 80215D78 240F000B */  addiu      $t7, $zero, 0xB
-    /* 16D7C 80215D7C 3C018031 */  lui        $at, %hi(gWeatherState)
+    /* 16D7C 80215D7C 3C018031 */  lui        $at, %hi(g_bPakScreenState)
     /* 16D80 80215D80 1000028C */  b          .L802167B4
-    /* 16D84 80215D84 A02F6430 */   sb        $t7, %lo(gWeatherState)($at)
+    /* 16D84 80215D84 A02F6430 */   sb        $t7, %lo(g_bPakScreenState)($at)
   .L80215D88:
     /* 16D88 80215D88 24190009 */  addiu      $t9, $zero, 0x9
-    /* 16D8C 80215D8C 3C018031 */  lui        $at, %hi(gWeatherState)
+    /* 16D8C 80215D8C 3C018031 */  lui        $at, %hi(g_bPakScreenState)
     /* 16D90 80215D90 10000288 */  b          .L802167B4
-    /* 16D94 80215D94 A0396430 */   sb        $t9, %lo(gWeatherState)($at)
+    /* 16D94 80215D94 A0396430 */   sb        $t9, %lo(g_bPakScreenState)($at)
   jlabel .L80215D98
     /* 16D98 80215D98 10A00004 */  beqz       $a1, .L80215DAC
     /* 16D9C 80215D9C 240C000C */   addiu     $t4, $zero, 0xC
-    /* 16DA0 80215DA0 3C018031 */  lui        $at, %hi(gWeatherState)
+    /* 16DA0 80215DA0 3C018031 */  lui        $at, %hi(g_bPakScreenState)
     /* 16DA4 80215DA4 10000283 */  b          .L802167B4
-    /* 16DA8 80215DA8 A02C6430 */   sb        $t4, %lo(gWeatherState)($at)
+    /* 16DA8 80215DA8 A02C6430 */   sb        $t4, %lo(g_bPakScreenState)($at)
   .L80215DAC:
     /* 16DAC 80215DAC 0C08BD3E */  jal        SetTextStyleNormal
     /* 16DB0 80215DB0 00000000 */   nop
@@ -5146,14 +5146,14 @@ glabel ProcessMenuScreen
     /* 17390 80216390 14010005 */  bne        $zero, $at, .L802163A8
     /* 17394 80216394 AC400000 */   sw        $zero, 0x0($v0)
     /* 17398 80216398 24180002 */  addiu      $t8, $zero, 0x2
-    /* 1739C 8021639C 3C018031 */  lui        $at, %hi(gWeatherState)
+    /* 1739C 8021639C 3C018031 */  lui        $at, %hi(g_bPakScreenState)
     /* 173A0 802163A0 10000104 */  b          .L802167B4
-    /* 173A4 802163A4 A0386430 */   sb        $t8, %lo(gWeatherState)($at)
+    /* 173A4 802163A4 A0386430 */   sb        $t8, %lo(g_bPakScreenState)($at)
   .L802163A8:
     /* 173A8 802163A8 240E000C */  addiu      $t6, $zero, 0xC
-    /* 173AC 802163AC 3C018031 */  lui        $at, %hi(gWeatherState)
+    /* 173AC 802163AC 3C018031 */  lui        $at, %hi(g_bPakScreenState)
     /* 173B0 802163B0 10000100 */  b          .L802167B4
-    /* 173B4 802163B4 A02E6430 */   sb        $t6, %lo(gWeatherState)($at)
+    /* 173B4 802163B4 A02E6430 */   sb        $t6, %lo(g_bPakScreenState)($at)
   .L802163B8:
     /* 173B8 802163B8 3C0F8027 */  lui        $t7, %hi(gMenuContext)
     /* 173BC 802163BC 8DEF1FA8 */  lw         $t7, %lo(gMenuContext)($t7)
@@ -5175,25 +5175,25 @@ glabel ProcessMenuScreen
     /* 173FC 802163FC 24050010 */   addiu     $a1, $zero, 0x10
     /* 17400 80216400 3C018027 */  lui        $at, %hi(gControllerPakState)
     /* 17404 80216404 AC2024F0 */  sw         $zero, %lo(gControllerPakState)($at)
-    /* 17408 80216408 3C018031 */  lui        $at, %hi(gWeatherState)
+    /* 17408 80216408 3C018031 */  lui        $at, %hi(g_bPakScreenState)
     /* 1740C 8021640C 240A0002 */  addiu      $t2, $zero, 0x2
     /* 17410 80216410 100000E8 */  b          .L802167B4
-    /* 17414 80216414 A02A6430 */   sb        $t2, %lo(gWeatherState)($at)
+    /* 17414 80216414 A02A6430 */   sb        $t2, %lo(g_bPakScreenState)($at)
   .L80216418:
     /* 17418 80216418 516000E7 */  beql       $t3, $zero, .L802167B8
     /* 1741C 8021641C 24190001 */   addiu     $t9, $zero, 0x1
     /* 17420 80216420 0C095644 */  jal        TransferFlags
     /* 17424 80216424 24050020 */   addiu     $a1, $zero, 0x20
     /* 17428 80216428 2409000C */  addiu      $t1, $zero, 0xC
-    /* 1742C 8021642C 3C018031 */  lui        $at, %hi(gWeatherState)
+    /* 1742C 8021642C 3C018031 */  lui        $at, %hi(g_bPakScreenState)
     /* 17430 80216430 100000E0 */  b          .L802167B4
-    /* 17434 80216434 A0296430 */   sb        $t1, %lo(gWeatherState)($at)
+    /* 17434 80216434 A0296430 */   sb        $t1, %lo(g_bPakScreenState)($at)
   jlabel .L80216438
     /* 17438 80216438 10A00004 */  beqz       $a1, .L8021644C
     /* 1743C 8021643C 2418000C */   addiu     $t8, $zero, 0xC
-    /* 17440 80216440 3C018031 */  lui        $at, %hi(gWeatherState)
+    /* 17440 80216440 3C018031 */  lui        $at, %hi(g_bPakScreenState)
     /* 17444 80216444 100000DB */  b          .L802167B4
-    /* 17448 80216448 A0386430 */   sb        $t8, %lo(gWeatherState)($at)
+    /* 17448 80216448 A0386430 */   sb        $t8, %lo(g_bPakScreenState)($at)
   .L8021644C:
     /* 1744C 8021644C 0C08BD41 */  jal        SetTextAlignCenter
     /* 17450 80216450 00000000 */   nop
@@ -5369,13 +5369,13 @@ glabel ProcessMenuScreen
     /* 176CC 802166CC 240C000A */  addiu      $t4, $zero, 0xA
     /* 176D0 802166D0 240D000C */  addiu      $t5, $zero, 0xC
     /* 176D4 802166D4 13200004 */  beqz       $t9, .L802166E8
-    /* 176D8 802166D8 3C018031 */   lui       $at, %hi(gWeatherState)
-    /* 176DC 802166DC 3C018031 */  lui        $at, %hi(gWeatherState)
+    /* 176D8 802166D8 3C018031 */   lui       $at, %hi(g_bPakScreenState)
+    /* 176DC 802166DC 3C018031 */  lui        $at, %hi(g_bPakScreenState)
     /* 176E0 802166E0 10000034 */  b          .L802167B4
-    /* 176E4 802166E4 A02C6430 */   sb        $t4, %lo(gWeatherState)($at)
+    /* 176E4 802166E4 A02C6430 */   sb        $t4, %lo(g_bPakScreenState)($at)
   .L802166E8:
     /* 176E8 802166E8 10000032 */  b          .L802167B4
-    /* 176EC 802166EC A02D6430 */   sb        $t5, %lo(gWeatherState)($at)
+    /* 176EC 802166EC A02D6430 */   sb        $t5, %lo(g_bPakScreenState)($at)
   jlabel .L802166F0
     /* 176F0 802166F0 0C0852A2 */  jal        DrawRumblePakPrompt
     /* 176F4 802166F4 00002025 */   or        $a0, $zero, $zero
@@ -5405,9 +5405,9 @@ glabel ProcessMenuScreen
     /* 17754 80216754 00380821 */  addu       $at, $at, $t8
     /* 17758 80216758 A029B1E8 */  sb         $t1, %lo(g_abRumblePakPresent)($at)
   .L8021675C:
-    /* 1775C 8021675C 3C018031 */  lui        $at, %hi(gWeatherState)
+    /* 1775C 8021675C 3C018031 */  lui        $at, %hi(g_bPakScreenState)
     /* 17760 80216760 10000014 */  b          .L802167B4
-    /* 17764 80216764 A02E6430 */   sb        $t6, %lo(gWeatherState)($at)
+    /* 17764 80216764 A02E6430 */   sb        $t6, %lo(g_bPakScreenState)($at)
   jlabel .L80216768
     /* 17768 80216768 3C018027 */  lui        $at, %hi(gControllerPakState)
     /* 1776C 8021676C AC2024F0 */  sw         $zero, %lo(gControllerPakState)($at)
@@ -5440,7 +5440,7 @@ glabel ProcessMenuScreen
     /* 177C8 802167C8 27BD00B8 */  addiu      $sp, $sp, 0xB8
     /* 177CC 802167CC 03E00008 */  jr         $ra
     /* 177D0 802167D0 00000000 */   nop
-endlabel ProcessMenuScreen
+endlabel ProcessPakDataScreen
     /* 177D4 802167D4 00000000 */  nop
     /* 177D8 802167D8 00000000 */  nop
     /* 177DC 802167DC 00000000 */  nop

@@ -212,7 +212,7 @@ glabel ProcessTrackSelectUI
     /* 9BB0 80208BB0 8C84FF18 */  lw         $a0, %lo(g_dwGameMode)($a0)
     /* 9BB4 80208BB4 00002825 */  or         $a1, $zero, $zero
     /* 9BB8 80208BB8 388B0002 */  xori       $t3, $a0, 0x2
-    /* 9BBC 80208BBC 0C085383 */  jal        ProcessMenuScreen
+    /* 9BBC 80208BBC 0C085383 */  jal        ProcessPakDataScreen
     /* 9BC0 80208BC0 2D640001 */   sltiu     $a0, $t3, 0x1
     /* 9BC4 80208BC4 50400041 */  beql       $v0, $zero, .L80208CCC
     /* 9BC8 80208BC8 44802000 */   mtc1      $zero, $f4
@@ -269,8 +269,8 @@ glabel ProcessTrackSelectUI
     /* 9C84 80208C84 00000000 */   nop
     /* 9C88 80208C88 3C098032 */  lui        $t1, %hi(gChampionshipData)
     /* 9C8C 80208C8C 8D29C5BC */  lw         $t1, %lo(gChampionshipData)($t1)
-    /* 9C90 80208C90 3C028030 */  lui        $v0, %hi(g_GhostFileHeader)
-    /* 9C94 80208C94 90427F00 */  lbu        $v0, %lo(g_GhostFileHeader)($v0)
+    /* 9C90 80208C90 3C028030 */  lui        $v0, %hi(g_abGhostRecording)
+    /* 9C94 80208C94 90427F00 */  lbu        $v0, %lo(g_abGhostRecording)($v0)
     /* 9C98 80208C98 952A00CE */  lhu        $t2, 0xCE($t1)
     /* 9C9C 80208C9C 24080001 */  addiu      $t0, $zero, 0x1
     /* 9CA0 80208CA0 0048C004 */  sllv       $t8, $t0, $v0
@@ -546,12 +546,12 @@ glabel SeasonRecordsPreDrawCallback
     /* A070 80209070 92790015 */  lbu        $t9, 0x15($s3)
     /* A074 80209074 00108880 */  sll        $s1, $s0, 2
     /* A078 80209078 3C188027 */  lui        $t8, %hi(g_apTrackDefs)
-    /* A07C 8020907C 3C098027 */  lui        $t1, %hi(g_apszCarNames)
+    /* A07C 8020907C 3C098027 */  lui        $t1, %hi(g_apWeatherMenuItems)
     /* A080 80209080 00194080 */  sll        $t0, $t9, 2
     /* A084 80209084 01284821 */  addu       $t1, $t1, $t0
     /* A088 80209088 0311C021 */  addu       $t8, $t8, $s1
     /* A08C 8020908C 8F181D1C */  lw         $t8, %lo(g_apTrackDefs)($t8)
-    /* A090 80209090 8D2922A4 */  lw         $t1, %lo(g_apszCarNames)($t1)
+    /* A090 80209090 8D2922A4 */  lw         $t1, %lo(g_apWeatherMenuItems)($t1)
     /* A094 80209094 3C05802A */  lui        $a1, %hi(g_szFmtTrackCar)
     /* A098 80209098 24A577B4 */  addiu      $a1, $a1, %lo(g_szFmtTrackCar)
     /* A09C 8020909C 02402025 */  or         $a0, $s2, $zero
@@ -1093,11 +1093,11 @@ glabel ProcessRaceState
     /* A874 80209874 3C0D8029 */  lui        $t5, %hi(g_dwCurrentWeather)
     /* A878 80209878 8DADC800 */  lw         $t5, %lo(g_dwCurrentWeather)($t5)
     /* A87C 8020987C 3C018027 */  lui        $at, %hi(g_pfnScreenPreDrawCallback)
-    /* A880 80209880 3C0A8027 */  lui        $t2, %hi(g_apszCarNames)
+    /* A880 80209880 3C0A8027 */  lui        $t2, %hi(g_apWeatherMenuItems)
     /* A884 80209884 000D4880 */  sll        $t1, $t5, 2
     /* A888 80209888 AC201FCC */  sw         $zero, %lo(g_pfnScreenPreDrawCallback)($at)
     /* A88C 8020988C 01495021 */  addu       $t2, $t2, $t1
-    /* A890 80209890 8D4A22A4 */  lw         $t2, %lo(g_apszCarNames)($t2)
+    /* A890 80209890 8D4A22A4 */  lw         $t2, %lo(g_apWeatherMenuItems)($t2)
     /* A894 80209894 8E480E5C */  lw         $t0, 0xE5C($s2)
     /* A898 80209898 26315F98 */  addiu      $s1, $s1, %lo(g_szRaceStateTextBuf)
     /* A89C 8020989C 8D4C0000 */  lw         $t4, 0x0($t2)
@@ -1274,9 +1274,9 @@ glabel ProcessRaceState
     /* AB18 80209B18 24010002 */   addiu     $at, $zero, 0x2
     /* AB1C 80209B1C 14410081 */  bne        $v0, $at, .L80209D24
     /* AB20 80209B20 240B0008 */   addiu     $t3, $zero, 0x8
-    /* AB24 80209B24 3C018027 */  lui        $at, %hi(g_dwGhostDataSize)
+    /* AB24 80209B24 3C018027 */  lui        $at, %hi(g_dwGhostRecordingSize)
     /* AB28 80209B28 0C084465 */  jal        StartGhostRaceAfterLoad
-    /* AB2C 80209B2C AC2B0784 */   sw        $t3, %lo(g_dwGhostDataSize)($at)
+    /* AB2C 80209B2C AC2B0784 */   sw        $t3, %lo(g_dwGhostRecordingSize)($at)
     /* AB30 80209B30 3C048029 */  lui        $a0, %hi(g_dwSelectedTrackId)
     /* AB34 80209B34 8C84B940 */  lw         $a0, %lo(g_dwSelectedTrackId)($a0)
     /* AB38 80209B38 3C018031 */  lui        $at, %hi(g_dwTrackMenuSelection)

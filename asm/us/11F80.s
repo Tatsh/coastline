@@ -41,11 +41,11 @@ glabel ProcessGameModeSelect
     /* 11FD4 80210FD4 AFBF003C */  sw         $ra, 0x3C($sp)
     /* 11FD8 80210FD8 1DC0002C */  bgtz       $t6, .L8021108C
     /* 11FDC 80210FDC AFB00038 */   sw        $s0, 0x38($sp)
-    /* 11FE0 80210FE0 3C048027 */  lui        $a0, %hi(g_apszCarNames)
+    /* 11FE0 80210FE0 3C048027 */  lui        $a0, %hi(g_apWeatherMenuItems)
     /* 11FE4 80210FE4 3C058031 */  lui        $a1, %hi(g_dwPhysicsReserved41)
     /* 11FE8 80210FE8 24A56370 */  addiu      $a1, $a1, %lo(g_dwPhysicsReserved41)
     /* 11FEC 80210FEC 0C083102 */  jal        ResetAndInitDisplay
-    /* 11FF0 80210FF0 248422A4 */   addiu     $a0, $a0, %lo(g_apszCarNames)
+    /* 11FF0 80210FF0 248422A4 */   addiu     $a0, $a0, %lo(g_apWeatherMenuItems)
     /* 11FF4 80210FF4 3C0F8027 */  lui        $t7, %hi(g_dwTrackSelectFlags)
     /* 11FF8 80210FF8 8DEF22BC */  lw         $t7, %lo(g_dwTrackSelectFlags)($t7)
     /* 11FFC 80210FFC 3C058029 */  lui        $a1, %hi(g_dwCurrentWeather)
@@ -94,14 +94,14 @@ glabel ProcessGameModeSelect
     /* 12090 80211090 25290F80 */  addiu      $t1, $t1, %lo(IsMultiplayerOrSpecialMode)
     /* 12094 80211094 3C04802A */  lui        $a0, %hi(g_szWeatherSelect)
     /* 12098 80211098 3C058031 */  lui        $a1, %hi(g_dwPhysicsReserved41)
-    /* 1209C 8021109C 3C068027 */  lui        $a2, %hi(g_apszCarNames)
+    /* 1209C 8021109C 3C068027 */  lui        $a2, %hi(g_apWeatherMenuItems)
     /* 120A0 802110A0 3C078031 */  lui        $a3, %hi(g_dwPhysicsReserved42)
     /* 120A4 802110A4 240A0020 */  addiu      $t2, $zero, 0x20
     /* 120A8 802110A8 240B00A0 */  addiu      $t3, $zero, 0xA0
     /* 120AC 802110AC AFAB0028 */  sw         $t3, 0x28($sp)
     /* 120B0 802110B0 AFAA0020 */  sw         $t2, 0x20($sp)
     /* 120B4 802110B4 24E76374 */  addiu      $a3, $a3, %lo(g_dwPhysicsReserved42)
-    /* 120B8 802110B8 24C622A4 */  addiu      $a2, $a2, %lo(g_apszCarNames)
+    /* 120B8 802110B8 24C622A4 */  addiu      $a2, $a2, %lo(g_apWeatherMenuItems)
     /* 120BC 802110BC 8CA56370 */  lw         $a1, %lo(g_dwPhysicsReserved41)($a1)
     /* 120C0 802110C0 24847F54 */  addiu      $a0, $a0, %lo(g_szWeatherSelect)
     /* 120C4 802110C4 AFA90010 */  sw         $t1, 0x10($sp)

@@ -38,14 +38,14 @@ glabel ProcessSplashScreens
     /* 787C 8020687C 15C000B9 */  bnez       $t6, .L80206B64
     /* 7880 80206880 3C013F80 */   lui       $at, (0x3F800000 >> 16)
     /* 7884 80206884 44816000 */  mtc1       $at, $f12
-    /* 7888 80206888 3C01802A */  lui        $at, %hi(g_dwOsViNextBuf)
+    /* 7888 80206888 3C01802A */  lui        $at, %hi(g_fConst0p2_802a73a0)
     /* 788C 8020688C 0C088DA2 */  jal        SetFadeTarget
-    /* 7890 80206890 C42E73A0 */   lwc1      $f14, %lo(g_dwOsViNextBuf)($at)
+    /* 7890 80206890 C42E73A0 */   lwc1      $f14, %lo(g_fConst0p2_802a73a0)($at)
     /* 7894 80206894 3C013F80 */  lui        $at, (0x3F800000 >> 16)
     /* 7898 80206898 44816000 */  mtc1       $at, $f12
-    /* 789C 8020689C 3C01802A */  lui        $at, %hi(g_dwOsViCurrBuf)
+    /* 789C 8020689C 3C01802A */  lui        $at, %hi(g_fConst0p2_802a73a4)
     /* 78A0 802068A0 0C088DF4 */  jal        SetFadeTargetTertiary
-    /* 78A4 802068A4 C42E73A4 */   lwc1      $f14, %lo(g_dwOsViCurrBuf)($at)
+    /* 78A4 802068A4 C42E73A4 */   lwc1      $f14, %lo(g_fConst0p2_802a73a4)($at)
     /* 78A8 802068A8 3C013F80 */  lui        $at, (0x3F800000 >> 16)
     /* 78AC 802068AC 44816000 */  mtc1       $at, $f12
     /* 78B0 802068B0 3C01802A */  lui        $at, %hi(g_dwOsViRetraceCount)

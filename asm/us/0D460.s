@@ -1824,12 +1824,12 @@ glabel ProcessTrackSelectScreen
   .L8020DEFC:
     /* EEFC 8020DEFC 3C0E8031 */  lui        $t6, %hi(g_dwSelectedCarIndex)
     /* EF00 8020DF00 8DCE630C */  lw         $t6, %lo(g_dwSelectedCarIndex)($t6)
-    /* EF04 8020DF04 3C0B8027 */  lui        $t3, %hi(g_apszCarNames)
+    /* EF04 8020DF04 3C0B8027 */  lui        $t3, %hi(g_apWeatherMenuItems)
     /* EF08 8020DF08 00105080 */  sll        $t2, $s0, 2
     /* EF0C 8020DF0C 000E6080 */  sll        $t4, $t6, 2
     /* EF10 8020DF10 016C5821 */  addu       $t3, $t3, $t4
     /* EF14 8020DF14 3C0F8027 */  lui        $t7, %hi(g_apTrackDefs)
-    /* EF18 8020DF18 8D6B22A4 */  lw         $t3, %lo(g_apszCarNames)($t3)
+    /* EF18 8020DF18 8D6B22A4 */  lw         $t3, %lo(g_apWeatherMenuItems)($t3)
     /* EF1C 8020DF1C 01EA7821 */  addu       $t7, $t7, $t2
     /* EF20 8020DF20 8DEF1D1C */  lw         $t7, %lo(g_apTrackDefs)($t7)
     /* EF24 8020DF24 8D790000 */  lw         $t9, 0x0($t3)
@@ -2486,12 +2486,12 @@ glabel ProcessTrackSelectScreen
     /* F894 8020E894 922B0015 */  lbu        $t3, 0x15($s1)
     /* F898 8020E898 00107080 */  sll        $t6, $s0, 2
     /* F89C 8020E89C 3C0D8027 */  lui        $t5, %hi(g_apTrackDefs)
-    /* F8A0 8020E8A0 3C098027 */  lui        $t1, %hi(g_apszCarNames)
+    /* F8A0 8020E8A0 3C098027 */  lui        $t1, %hi(g_apWeatherMenuItems)
     /* F8A4 8020E8A4 000BC080 */  sll        $t8, $t3, 2
     /* F8A8 8020E8A8 01384821 */  addu       $t1, $t1, $t8
     /* F8AC 8020E8AC 01AE6821 */  addu       $t5, $t5, $t6
     /* F8B0 8020E8B0 8DAD1D1C */  lw         $t5, %lo(g_apTrackDefs)($t5)
-    /* F8B4 8020E8B4 8D2922A4 */  lw         $t1, %lo(g_apszCarNames)($t1)
+    /* F8B4 8020E8B4 8D2922A4 */  lw         $t1, %lo(g_apWeatherMenuItems)($t1)
     /* F8B8 8020E8B8 3C05802A */  lui        $a1, %hi(g_szFmtTrackCar2)
     /* F8BC 8020E8BC 24A57BA0 */  addiu      $a1, $a1, %lo(g_szFmtTrackCar2)
     /* F8C0 8020E8C0 02602025 */  or         $a0, $s3, $zero
