@@ -281,10 +281,10 @@ void StubDashboard(void) {
 }
 
 void DrawLabelWithTime(const char *label, const char *color, f32 seconds, s32 x, s32 y) {
-    char text[44];
     s32 hundredths = (s32)(seconds * 100.0f);
     s32 whole = hundredths / 100;
     s32 minutes = whole / 60;
+    char text[32];
 
     sprintf(
         text, "%s%d'%02d\"%02d", color, minutes, whole - minutes * 60, hundredths - whole * 100);
@@ -344,8 +344,6 @@ void DrawRaceTimerHud(void) {
 void DrawLapCounterHud(void) {
     char text[20];
     const char *suffix;
-    Vehicle *vehicle;
-    ViewportRect *rect;
     s32 x, y, nudge, width;
 
     if (g_dwGameMode == GAME_MODE_PRACTICE) {
@@ -353,16 +351,15 @@ void DrawLapCounterHud(void) {
     }
 
     /* The lap, at the left of the first view, unless the camera is on the bumper. */
-    vehicle = g_pActiveCameraVehicle;
     x = g_aViewportRects[0].x + 16;
-    if (g_pActiveCamera != &vehicle->cameras[VEHICLE_CAMERA_BUMPER] &&
-        (vehicle->lap < g_dwTotalLaps || g_dwNumViewports == 1)) {
+    if (g_pActiveCamera != &g_pActiveCameraVehicle->cameras[VEHICLE_CAMERA_BUMPER] &&
+        (g_pActiveCameraVehicle->lap < g_dwTotalLaps || g_dwNumViewports == 1)) {
         y = g_aViewportRects[g_dwCurrentSplitScreenIndex].y + 5;
-        if (vehicle->lap < g_dwTotalLaps) {
+        if (g_pActiveCameraVehicle->lap < g_dwTotalLaps) {
             sprintf(text,
                     "%%y1%s%d/%d",
                     g_dwNumViewports == 2 ? "L" : "LAP ",
-                    vehicle->lap + 1,
+                    g_pActiveCameraVehicle->lap + 1,
                     g_dwTotalLaps);
         } else {
             sprintf(text, "FINISHED");
@@ -375,9 +372,9 @@ void DrawLapCounterHud(void) {
     }
 
     /* The place, at the bottom left, with its ordinal suffix raised beside it. */
-    rect = &g_aViewportRects[g_dwCurrentSplitScreenIndex];
+    y = g_aViewportRects[g_dwCurrentSplitScreenIndex].y +
+        g_aViewportRects[g_dwCurrentSplitScreenIndex].height - 12;
     x -= 2;
-    y = rect->height + rect->y - 12;
     EnableTextShadow();
     SetTextAlignLeft();
     SetTextCustomColors(0xFF, 0xF0, 0x7D, 0xFF, 0x78, 0);
@@ -411,14 +408,13 @@ void DrawLapCounterHud(void) {
         width = MeasureTextWidth(text, PLACE_TEXT_SIZE_SPLIT);
         DrawText(text, x, y);
         SetTextSize(PLACE_SUFFIX_TEXT_SIZE_SPLIT);
-        DrawText(suffix, x + nudge * 2 / 3 + width + 3, y - 10);
+        DrawText(suffix, x + 2 * nudge / 3 + width + 3, y - 10);
     }
     DisableTextShadow();
 }
 
 void DrawHudMessage(void) {
-    ViewportRect *rect;
-    s32 large, small, x, top;
+    s32 x, top, large, small;
 
     if (g_dwRacePauseState != 0) {
         return;
@@ -430,9 +426,10 @@ void DrawHudMessage(void) {
         large = 20;
         small = 15;
     }
-    rect = &g_aViewportRects[g_dwCurrentSplitScreenIndex];
-    x = rect->width / 2 + rect->x;
-    top = rect->height / 3 + rect->y;
+    x = g_aViewportRects[g_dwCurrentSplitScreenIndex].x +
+        g_aViewportRects[g_dwCurrentSplitScreenIndex].width / 2;
+    top = g_aViewportRects[g_dwCurrentSplitScreenIndex].y +
+          g_aViewportRects[g_dwCurrentSplitScreenIndex].height / 3;
     SetTextAlignCenter();
     if (g_pActiveCameraVehicle->message != NULL) {
         SetTextSize(large);

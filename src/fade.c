@@ -81,7 +81,7 @@ void SetFadeTarget(float target, float seconds) {
 void FadeSfxTo(float target, float seconds) {
     g_dwSfxFadeSkipFrame = 1;
     g_fSfxFadeTarget = target;
-    if (g_fSfxFadeTarget < g_fSfxFadeCurrent || 0.0f == g_fSfxFadeTarget) {
+    if (g_fSfxFadeTarget < g_fSfxFadeCurrent || g_fSfxFadeTarget == 0.0f) {
         g_fSfxFadeSpeed = -1.0f / seconds;
     } else {
         g_fSfxFadeSpeed = 1.0f / seconds;
@@ -91,7 +91,7 @@ void FadeSfxTo(float target, float seconds) {
 void FadeMusicTo(float target, float seconds) {
     g_dwMusicFadeSkipFrame = 1;
     g_fMusicFadeTarget = target;
-    if (g_fMusicFadeTarget < g_fMusicFadeCurrent || 0.0f == g_fMusicFadeTarget) {
+    if (g_fMusicFadeTarget < g_fMusicFadeCurrent || g_fMusicFadeTarget == 0.0f) {
         g_fMusicFadeSpeed = -1.0f / seconds;
     } else {
         g_fMusicFadeSpeed = 1.0f / seconds;
@@ -136,17 +136,17 @@ void UnusedScreenFadeStub(void) {
 }
 
 /* Fill the full height of the screen with the colour set, between two columns of pixels. */
-static inline void FillScreenColumns(s32 left, s32 right) {
-    gDPFillRectangle(gDisplayListPtr++,
-                     left << g_dwScreenScaleShift,
-                     0,
-                     (right << g_dwScreenScaleShift) - 1,
-                     (g_dwScreenHeight << g_dwScreenScaleShift) - 1);
-}
+#define FillScreenColumns(left, right)                                                             \
+    gDPFillRectangle(gDisplayListPtr++,                                                            \
+                     (left) << g_dwScreenScaleShift,                                               \
+                     0,                                                                            \
+                     ((right) << g_dwScreenScaleShift) - 1,                                        \
+                     (g_dwScreenHeight << g_dwScreenScaleShift) - 1)
 
 void ApplyScreenFade(void) {
+    s32 coveredLeft;
     s32 left;
-    s32 previousLeft;
+    s32 right;
 
     if (g_fFadeLevel == 1.0f) {
         return;
@@ -179,33 +179,36 @@ void ApplyScreenFade(void) {
                   0,
                   g_dwScreenWidth << g_dwScreenScaleShift,
                   g_dwScreenHeight << g_dwScreenScaleShift);
-    gDPSetPrimColor(gDisplayListPtr++, 0, 0xFF, 0, 0, 0, 0);
+    gDPSetPrimColor(gDisplayListPtr++, 0xFF, 0xFF, 0, 0, 0, 0);
 
     /* Black from where the other framebuffer was covered to the left edge of the picture. */
-    left = g_dwFadeRectLeft;
-    if (left) {
-        previousLeft = g_adwFadeRectLeftPerBuffer[g_dwFrameBufferIndex ^ 1];
-        if (left < previousLeft) {
-            previousLeft = 0;
+    coveredLeft = g_dwFadeRectLeft;
+    if (coveredLeft) {
+        left = g_adwFadeRectLeftPerBuffer[g_dwFrameBufferIndex ^ 1];
+        if (coveredLeft < left) {
+            left = 0;
         }
-        if (previousLeft) {
-            previousLeft--;
+        right = coveredLeft;
+        if (left) {
+            left--;
         }
         if (IsFadedToBlack()) {
             g_dwScreenFadeFramesRemaining = BLACK_FRAMES;
         }
-        FillScreenColumns(previousLeft, left);
+        FillScreenColumns(left, right);
     }
 
     /* Black right of the picture, or the whole screen once faded out, for a few frames. */
-    if (g_dwFadeRectRight < g_dwScreenWidth) {
+    left = g_dwFadeRectRight;
+    right = g_dwScreenWidth;
+    if (left < right) {
         if (g_dwScreenFadeFramesRemaining) {
             g_dwScreenFadeFramesRemaining--;
-            FillScreenColumns(g_dwFadeRectRight, g_dwScreenWidth);
+            FillScreenColumns(left, right);
         }
     } else if (g_fFadeLevel == 0.0f && g_dwScreenFadeFramesRemaining) {
         g_dwScreenFadeFramesRemaining--;
-        FillScreenColumns(0, g_dwScreenWidth);
+        FillScreenColumns(0, right);
     }
     gDPPipeSync(gDisplayListPtr++);
 }
@@ -234,7 +237,7 @@ void DrawScreenFadeOverlay(float level) {
                       0,
                       0,
                       COMBINED);
-    gDPSetPrimColor(gDisplayListPtr++, 0, 0xFF, 0, 0, 0, 0xFF - (s32)(255.0f * level));
+    gDPSetPrimColor(gDisplayListPtr++, 0xFF, 0xFF, 0, 0, 0, 0xFF - (s32)(255.0f * level));
     gDPSetColorDither(gDisplayListPtr++, G_CD_DISABLE);
     gDPFillRectangle(gDisplayListPtr++,
                      0,

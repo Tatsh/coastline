@@ -18,7 +18,7 @@
 /* Draw every strip of a sprite over a rectangle of the screen, the last strip in memory first. The
  * original reads the position and width again for every strip, and the height once. */
 #define DRAW_SPRITE_STRIPS(sprite, x, y, drawWidth, drawHeight, red, green, blue)                  \
-    do {                                                                                           \
+    {                                                                                              \
         u32 total, stripBytes, offset;                                                             \
         s32 strips, stripDrawHeight, top, i;                                                       \
                                                                                                    \
@@ -45,7 +45,7 @@
                             (green),                                                               \
                             (blue));                                                               \
         }                                                                                          \
-    } while (0)
+    }
 
 void DrawSpriteAtOrigin(Sprite *sprite) {
     DRAW_SPRITE_STRIPS(

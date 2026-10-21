@@ -846,11 +846,10 @@ void SaveDecalUndo(void) {
 }
 
 void UndoDecalEdit(void) {
-    VehicleModel *model;
-
     if (g_bUndoAvailable) {
-        model = g_pCurrentVehicleModelData;
-        memcpy(model->textures[model->materialTextures[g_bUndoDecalSlot]].image,
+        memcpy(g_pCurrentVehicleModelData
+                   ->textures[g_pCurrentVehicleModelData->materialTextures[g_bUndoDecalSlot]]
+                   .image,
                g_pDecalUndoBuffer,
                DECAL_BUFFER_SIZE);
         g_bDecalEditCount--;

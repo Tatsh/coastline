@@ -441,11 +441,11 @@ void DrawText(const char *text, s32 x, s32 y) {
     case TEXT_ALIGN_LEFT:
         g_nTextDrawX = x;
         break;
-    case TEXT_ALIGN_RIGHT:
-        g_nTextDrawX = x - MeasureTextWidth(text, g_nFontSize);
-        break;
     case TEXT_ALIGN_CENTER:
         g_nTextDrawX = x - (MeasureTextWidth(text, g_nFontSize) >> 1);
+        break;
+    case TEXT_ALIGN_RIGHT:
+        g_nTextDrawX = x - MeasureTextWidth(text, g_nFontSize);
         break;
     }
     g_nTextDrawY = y;
@@ -455,7 +455,7 @@ void DrawText(const char *text, s32 x, s32 y) {
 void DrawHudLabelAtFraction(const char *text, f32 x, f32 y, s32 unused) {
     DrawText(text,
              (s32)((f32)g_dwScreenWidth * x * 0.0009267578134f) + 8,
-             g_dwScreenHeight - (s32)(y * (f32)g_dwScreenHeight * 0.001214843825f) - 9);
+             g_dwScreenHeight - (s32)((f32)g_dwScreenHeight * y * 0.001214843825f) - 9);
 }
 
 s32 MeasureTextWidth(const char *text, s32 size) {

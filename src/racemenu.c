@@ -102,7 +102,7 @@ s32 IsTrackUnlocked(s32 track) {
         if (g_bSeasonFirstRace) {
             return track == (s32)g_dwSelectedTrackId;
         }
-        return track == (s32)g_dwSelectedTrackId || !(track < g_dwNumTracks);
+        return track == (s32)g_dwSelectedTrackId || track >= g_dwNumTracks;
     }
     if (g_dwGameMode == GAME_MODE_TIME_ATTACK &&
         (track == g_dwNumTracks || track == g_dwNumTracks + 2)) {
