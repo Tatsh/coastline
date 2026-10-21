@@ -76,9 +76,9 @@ void FixupVehicleModelPointers(VehicleModel *model) {
         RemapModelPointer(&model->textures[i].image, model);
         RemapModelPointer(&model->textures[i].palette, model);
     }
-    RemapModelPointer(&model->unreconstructed11C, model);
+    RemapModelPointer(&model->decalMasks, model);
     for (i = 0; i < VEHICLE_MATERIALS; i++) {
-        RemapModelPointer(&model->unreconstructed11C[i], model);
+        RemapModelPointer(&model->decalMasks[i], model);
     }
 }
 

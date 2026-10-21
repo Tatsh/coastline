@@ -21,7 +21,11 @@ typedef struct {
     /** Where the picture is drawn from. */
     s32 originX;
     s32 originY;
-    u8 unreconstructed24[0x30 - 0x24];
+    /** The size the picture is drawn at on the screen. A negative width flips it. */
+    s32 drawWidth;
+    s32 drawHeight;
+    /** The style a paint tool is set to, on the pictures of the tools. */
+    u8 style;
 } Sprite;
 
 /**

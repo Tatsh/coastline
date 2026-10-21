@@ -158,8 +158,11 @@ typedef struct {
      * values: the paint, the headlights and the rear lights among them.
      */
     u8 materialTextures[VEHICLE_MATERIALS];
-    /** A table of pointers turned into pointers with the rest; not read yet. */
-    void **unreconstructed11C;
+    /**
+     * The masks of the materials that the paint shop paints, one bit a texel with a set bit
+     * protecting it, or NULL where every texel can be painted.
+     */
+    u8 **decalMasks;
     u8 unreconstructed120[0xDF88 - 0x120];
 } VehicleModel;
 

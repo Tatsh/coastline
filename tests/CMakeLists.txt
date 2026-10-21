@@ -38,6 +38,8 @@ coastline_add_test(camera ${_vecmath} ${_gu} "${_src}/libultra/gu/lookat.c"
 coastline_add_test(carselect stubs/carselect.c ${_vecmath} ${_gu})
 coastline_add_test(controllerscreen "${_src}/controllerscreen.c")
 coastline_add_test(debugtext "${_src}/debugtext.c")
+coastline_add_test(decaldraw "${_src}/decaldraw.c")
+coastline_add_test(decaleditor "${_src}/decaleditor.c" "${_src}/decaldraw.c")
 coastline_add_test(drawtexturedrect "${_src}/texrect.c")
 coastline_add_test(driving ${_vecmath} ${_common})
 coastline_add_test(effects ${_vecmath})

@@ -82,6 +82,8 @@ dcmake
 dcosf
 ddivu
 debugtext
+decaldraw
+decaleditor
 declear
 decleared
 destroythread

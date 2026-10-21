@@ -168,7 +168,7 @@ _Static_assert(offsetof(VehicleModel, wheelDisplayLists[0][VEHICLE_WHEEL_DL_SNOW
                "snowdl");
 _Static_assert(offsetof(VehicleModel, textureCount) == 0x10 &&
                    offsetof(VehicleModel, unreconstructed94) == 0x94 &&
-                   offsetof(VehicleModel, unreconstructed11C) == 0x11C,
+                   offsetof(VehicleModel, decalMasks) == 0x11C,
                "modelptrs");
 _Static_assert(offsetof(VehicleModel, wheels) == 0xE0, "wheels");
 _Static_assert(offsetof(VehicleModel, wheels[1]) == 0xEC, "frontwheel");
@@ -237,6 +237,16 @@ _Static_assert(sizeof(OSPfs) == 0x68 && offsetof(OSPfs, id) == 0xC, "pfs");
 _Static_assert(offsetof(Sprite, width) == 0x10 && offsetof(Sprite, height) == 0x14, "spritewh");
 _Static_assert(offsetof(Sprite, originX) == 0x1C && offsetof(Sprite, originY) == 0x20,
                "spriteorigin");
+#include "decaleditor.h"
+_Static_assert(offsetof(Sprite, drawWidth) == 0x24 && offsetof(Sprite, drawHeight) == 0x28 &&
+                   offsetof(Sprite, style) == 0x2C && sizeof(Sprite) == 0x30,
+               "sprite draw");
+_Static_assert(sizeof(ScreenRect) == 0x10 && sizeof(PaletteSwatch) == 0x14 &&
+                   offsetof(PaletteSwatch, color) == 0x10,
+               "swatch");
+_Static_assert(sizeof(DecalGlyph) == 0x1C && offsetof(DecalGlyph, character) == 8 &&
+                   offsetof(DecalGlyph, cellX) == 0xC && offsetof(DecalGlyph, kernRight) == 0x18,
+               "glyph");
 _Static_assert(offsetof(Vehicle, profile) == 0xE5C && sizeof(Vehicle) == 0x2090, "vehprofile");
 #include "audiomix.h"
 #include "race.h"
