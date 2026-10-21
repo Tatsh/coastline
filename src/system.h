@@ -9,6 +9,7 @@
 #include <PR/gbi.h>
 #include <PR/os.h>
 #include <PR/os_cont.h>
+#include <PR/sptask.h>
 #include <PR/ultratypes.h>
 
 /** The bump allocator zcalloc() draws from. */
@@ -26,6 +27,13 @@ extern u16 g_aFramebuffer0[];
 
 /** @ghidraAddress USA: 0x801da800 */
 extern u16 g_aFramebuffer1[];
+
+/**
+ * The depth buffer, of 16-bit depths, near the start of the memory. The link script places it.
+ *
+ * @ghidraAddress USA: 0x80000400
+ */
+extern u16 g_aDepthBuffer[];
 
 /**
  * The room the heap of zlib takes while the game loads, and that the sound effects of a race are
@@ -673,5 +681,172 @@ void FaultThread(void *arg);
  * @ghidraAddress USA: 0x8021e2c8
  */
 void BootIdleThread(void *arg);
+
+/** The commands of the display list of each frame. */
+#define DISPLAY_LIST_COMMANDS 6000
+
+/** The commands at the start of the display list of each frame that the frame does not use. */
+#define DISPLAY_LIST_RESERVED 64
+
+/**
+ * Start the display list of a frame in a resolution, with the render modes every frame starts
+ * with. A change of resolution takes effect at the next FlushDisplayList().
+ *
+ * @param highRes 1 for the high resolution, 0 for the low.
+ * @ghidraAddress USA: 0x80219470
+ */
+void BeginDisplayList(s32 highRes);
+
+/**
+ * Do nothing.
+ *
+ * @param unused0 Not read.
+ * @param unused1 Not read.
+ * @param unused2 Not read.
+ * @param unused3 Not read.
+ * @ghidraAddress USA: 0x80219a5c
+ */
+void StubEmptyVoid(s32 unused0, s32 unused1, s32 unused2, s32 unused3);
+
+/**
+ * Patch the render modes and the colour combines of a display list in place for the weather. A
+ * render mode found in the first column of a table becomes the one of the column of the weather.
+ *
+ * @param displayList The display list, or NULL.
+ * @param table The render modes: a row for each mode, with the mode first, then its replacements
+ * for the clear weather, for a weather, and for a weather with the rain or the night. The last
+ * three rows are translucent.
+ * @return 1 if a translucent render mode was found, 0 otherwise.
+ * @ghidraAddress USA: 0x8021b72c
+ */
+s32 ProcessDisplayList(Gfx *displayList, Gfx table[][4]);
+
+/** The rows of a table of render modes of ProcessDisplayList(), and the first translucent one. */
+#define RENDER_MODE_ROWS 6
+#define RENDER_MODE_TRANSLUCENT_ROW 3
+
+/**
+ * The colour combine of the clear weather and the night replaces, and its replacement.
+ *
+ * @ghidraAddress USA: 0x8028ab88
+ */
+extern Gfx g_aDlClearCombinePatch[1][2];
+
+/** The colour combines that the snow tints. @ghidraAddress USA: 0x8028ab98 */
+extern Gfx g_aDlSnowTintCombines[2];
+
+/** The render modes of the track and of the vehicles. @ghidraAddress USA: 0x8028aba8 */
+extern Gfx g_aaDlTrackRenderModes[RENDER_MODE_ROWS][4];
+
+/** The render modes of the body of a ghost. @ghidraAddress USA: 0x8028ac68 */
+extern Gfx g_aaDlGhostRenderModes[RENDER_MODE_ROWS][4];
+
+/** The render modes of the wheels of a ghost. @ghidraAddress USA: 0x8028ad28 */
+extern Gfx g_aaDlGhostWheelRenderModes[RENDER_MODE_ROWS][4];
+
+/**
+ * Whether ProcessDisplayList() tints the colour combines of the snow. It clears this.
+ *
+ * @ghidraAddress USA: 0x8028ade8
+ */
+extern s32 g_bDisplayListSnowTint;
+
+/** The tasks of the RSP, one for each frame buffer. @ghidraAddress USA: 0x8031a9a8 */
+extern OSTask g_aGfxTask[2];
+
+/**
+ * The boot microcode of the RSP. The text of the graphics microcode follows it.
+ *
+ * @ghidraAddress USA: 0x8026ea00
+ */
+extern u64 g_aRspBootUcode[];
+
+/** @ghidraAddress USA: 0x8026ead0 */
+extern u64 g_aGspUcodeText[];
+
+/** The data of the graphics microcode. @ghidraAddress USA: 0x802abc00 */
+extern u64 g_abRspUcodeData[];
+
+/**
+ * The memory of the matrix stack of the RSP, 16 bytes more than the stack to align it.
+ *
+ * @ghidraAddress USA: 0x8031a598
+ */
+extern u8 g_abRspDramStackBuffer[];
+
+/** The buffer the RDP commands go to, and its end. @ghidraAddress USA: 0x8028a860 */
+extern u64 *g_pRdpOutputBuffer;
+
+/** @ghidraAddress USA: 0x8028a864 */
+extern u64 *g_pRdpOutputBufferEnd;
+
+/**
+ * The doublewords at the end of the output buffer the tasks do not use.
+ *
+ * @ghidraAddress USA: 0x8028ab84
+ */
+extern s32 g_dwOutputBuffReserve;
+
+/** The commands of the display list of the last frame. @ghidraAddress USA: 0x8028ab70 */
+extern s32 g_dwDisplayListCommandCount;
+
+/**
+ * The most commands of a shadow, vertices of a shadow, and commands of a frame seen.
+ *
+ * @ghidraAddress USA: 0x8028ab74
+ */
+extern s32 g_dwPeakShadowCommandCount;
+
+/** @ghidraAddress USA: 0x8028ab78 */
+extern s32 g_dwPeakShadowVertexCount;
+
+/** @ghidraAddress USA: 0x8028ab7c */
+extern s32 g_dwPeakDisplayListCommands;
+
+/** Whether a frame has been sent to the RSP. @ghidraAddress USA: 0x8028ab80 */
+extern s32 g_dwFirstFlushDone;
+
+/**
+ * The counts of the CPU counter the end of a frame took, between the ends of two frames, and at
+ * the end of the last frame.
+ *
+ * @ghidraAddress USA: 0x8028aae8
+ */
+extern u32 g_dwFlushDuration;
+
+/** @ghidraAddress USA: 0x8028aae0 */
+extern u32 g_dwFlushInterval;
+
+/** @ghidraAddress USA: 0x8028aae4 */
+extern u32 g_dwFlushStartTime;
+
+/**
+ * A word FlushDisplayList() copies each frame, and the copy. No other routine reads either.
+ *
+ * @ghidraAddress USA: 0x8028aa20
+ */
+extern u32 g_dwFlushValueSource;
+
+/** @ghidraAddress USA: 0x8028aa24 */
+extern u32 g_dwLastFlushValue;
+
+/**
+ * The frames until the video mode changes to the resolution BeginDisplayList() was given, or 0.
+ *
+ * @ghidraAddress USA: 0x8028a84c
+ */
+extern s32 g_dwDisplayModeChangeCountdown;
+
+/** The resolution the video mode was last set to. @ghidraAddress USA: 0x8028a854 */
+extern s32 g_dwAppliedScreenScaleShift;
+
+/** The video modes of the high resolution. @ghidraAddress USA: 0x802a5780 */
+extern OSViMode g_ViModeNtscHaf1;
+
+/** @ghidraAddress USA: 0x802a6040 */
+extern OSViMode g_ViModeMpalHaf1;
+
+/** Whether the video interface corrects the gamma. @ghidraAddress USA: 0x8028aa4c */
+extern s32 g_dwViGammaEnabled;
 
 #endif

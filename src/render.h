@@ -30,6 +30,24 @@ typedef struct {
 } CameraFrame;
 
 /**
+ * A frame of an animated texture: the time it starts at, in milliseconds, and where its texels and
+ * its palette are on the cartridge, from g_dwTrackTextureRomOffset, or -1 for none.
+ */
+typedef struct {
+    u32 time;
+    u32 imageRom;
+    u32 paletteRom;
+} TextureAnimationFrame;
+
+/** The frames of an animated texture. Its fields join this structure as they are reconstructed. */
+typedef struct {
+    u8 unreconstructed0[0x2 - 0x0];
+    u16 frameCount;
+    u8 unreconstructed4[0x8 - 0x4];
+    TextureAnimationFrame frames[];
+} TextureAnimation;
+
+/**
  * A texture of a model and its palette. Its fields join this structure as they are reconstructed.
  */
 typedef struct {
@@ -37,7 +55,23 @@ typedef struct {
     u8 *image;
     /** The 16 colors of the palette, in RGBA 5551. */
     u16 *palette;
-    u8 unreconstructed8[0x20 - 0x8];
+    /**
+     * Where the palette is on the cartridge, in units of 32 bytes in the low 12 bits, or the frames
+     * of an animated texture.
+     */
+    union {
+        u32 paletteRomIndex;
+        TextureAnimation *animation;
+    } source;
+    /** The size, in texels. */
+    u16 width;
+    u16 height;
+    /** The texels the tile covers, in t and s, from the first to the last. */
+    s16 tileT0;
+    s16 tileS0;
+    s16 tileT1;
+    s16 tileS1;
+    u8 unreconstructed18[0x20 - 0x18];
     /** How the texture wraps and repeats, by bits from the highest. */
     unsigned mirrorS : 1;
     unsigned mirrorT : 1;
@@ -55,6 +89,12 @@ typedef struct {
 /** The formats of a texture of a model: 4-bit with a palette of 16, and 8-bit intensity. */
 #define TEXTURE_FORMAT_CI4 1
 #define TEXTURE_FORMAT_I8 4
+
+/** The format of an animated texture of the track that stays on its first frame in the snow. */
+#define TEXTURE_FORMAT_SNOW_STILL 0xB
+
+/** The palette of the texture memory a 4-bit texture of a model loads its colors into. */
+#define TEXTURE_CI4_PALETTE 15
 
 /** The clipping ratios from 1 to 6, each a display list that sets it. */
 #define CLIP_RATIOS 6
@@ -216,6 +256,88 @@ extern s32 g_dwVehicleCullingDisabled;
 extern s32 g_dwStatVehicleTriangles;
 
 /**
+ * Counts of a frame that ClearRenderStats() clears. No routine reads them.
+ *
+ * @ghidraAddress USA: 0x8028aa0c
+ */
+extern s32 g_dwStatUnused0;
+
+/** @ghidraAddress USA: 0x8028aa2c */
+extern s32 g_dwStatUnused1;
+
+/** @ghidraAddress USA: 0x8028aa30 */
+extern s32 g_dwStatUnused2;
+
+/** @ghidraAddress USA: 0x8028aa34 */
+extern s32 g_dwStatUnused3;
+
+/** The address in the texture memory DrawTexturedTile() loads to. @ghidraAddress USA: 0x8028ab1c */
+extern u32 g_dwTextureTmemAddress;
+
+/** The tile DrawTexturedTile() sets up to draw with. @ghidraAddress USA: 0x8028ab18 */
+extern u32 g_dwTextureRenderTile;
+
+/**
+ * The depths the fog starts and ends at, from 0 at the near plane to 1000 at the far.
+ *
+ * @ghidraAddress USA: 0x8028ab30
+ */
+extern s32 g_dwFogMinDistance;
+
+/** @ghidraAddress USA: 0x8028ab34 */
+extern s32 g_dwFogMaxDistance;
+
+/**
+ * The offset and the scale that turn the depth of a point into its fog, from 0 to 255, as the
+ * microcode does.
+ *
+ * @ghidraAddress USA: 0x8028ab38
+ */
+extern s32 g_dwFogFactorOffset;
+
+/** @ghidraAddress USA: 0x8028ab3c */
+extern s32 g_dwFogFactorScale;
+
+/**
+ * The light ramps of the placed models, in parts, by the index of the ramp.
+ *
+ * @ghidraAddress USA: 0x8031b350
+ */
+extern u8 g_abLightRampR[4];
+
+/** @ghidraAddress USA: 0x8031b354 */
+extern u8 g_abLightRampG[4];
+
+/** @ghidraAddress USA: 0x8031b358 */
+extern u8 g_abLightRampB[4];
+
+/** The viewports. The display lists of the last frames may still use them. */
+#define VIEWPORTS 32
+
+/** @ghidraAddress USA: 0x80318cd0 */
+extern Vp g_aViewports[VIEWPORTS];
+
+/** The viewport set last. @ghidraAddress USA: 0x8028ab60 */
+extern s32 g_dwViewportIndex;
+
+/**
+ * The display list of g_aClipRatioDisplayLists a frame starts with.
+ *
+ * @ghidraAddress USA: 0x8028a8a4
+ */
+extern s32 g_dwClipRatioIndex;
+
+/** Whether the microcode clips the triangles. @ghidraAddress USA: 0x8028aa50 */
+extern s32 g_bGbiClipping;
+
+/**
+ * Clear the counts of the vertices, triangles, and polygons drawn in a frame.
+ *
+ * @ghidraAddress USA: 0x802173c8
+ */
+void ClearRenderStats(void);
+
+/**
  * Blank the screen and clear both frame buffers in the low resolution.
  *
  * @ghidraAddress USA: 0x8021a540
@@ -302,7 +424,7 @@ void DrawFilledRect(s32 x, s32 y, s32 width, s32 height, s32 red, s32 green, s32
 void StubEmpty(void);
 
 /**
- * Set the scissor to a rectangle, and the viewport to the whole of the high-resolution screen.
+ * Set the scissor to a rectangle, and the viewport to the whole of the low-resolution screen.
  *
  * @param x The left edge of the scissor.
  * @param y The upper edge of the scissor.

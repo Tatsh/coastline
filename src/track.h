@@ -14,6 +14,7 @@
 #include <PR/gbi.h>
 #include <PR/ultratypes.h>
 
+#include "render.h"
 #include "vecmath.h"
 
 /** A point of the route, across the track. */
@@ -197,7 +198,9 @@ typedef struct {
     TrackSurface *surfaces;
     u8 unreconstructed10[0x14 - 0x10];
     Vec3f *vertices;
-    u8 unreconstructed18[0x20 - 0x18];
+    /** The textures of the placed models. */
+    s32 textureCount;
+    ModelTexture *textures;
     /** The triangles of each cell of the 64 by 64 grid, and where the list of each cell starts. */
     u16 *gridTriangles;
     u16 *gridCellStarts;
@@ -227,7 +230,9 @@ typedef struct {
     /** Every section, for a search. */
     TrackSection **sections;
     s32 sectionCount;
-    u8 unreconstructed80[0x84 - 0x80];
+    /** The colour of the fog of the track, in parts. */
+    u8 fogColor[3];
+    u8 unreconstructed83[0x84 - 0x83];
     /** The points the trackside camera of a replay may stand at. */
     Vec3f *cameraPoints;
     s32 cameraPointCount;

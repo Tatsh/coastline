@@ -342,3 +342,22 @@ _Static_assert(sizeof(TrackMenuItem) == 0x17C && offsetof(TrackMenuItem, trackRo
 _Static_assert(offsetof(TrackHeader, size) == 0 && offsetof(TrackHeader, headerSize) == 4 &&
                    offsetof(TrackInstance, invScale) == 0x40,
                "trackhead");
+_Static_assert(offsetof(ModelTexture, source) == 0x8 && offsetof(ModelTexture, width) == 0xC &&
+                   offsetof(ModelTexture, height) == 0xE &&
+                   offsetof(ModelTexture, tileT0) == 0x10 &&
+                   offsetof(ModelTexture, tileS0) == 0x12 &&
+                   offsetof(ModelTexture, tileT1) == 0x14 && offsetof(ModelTexture, tileS1) == 0x16,
+               "texturetile");
+_Static_assert(offsetof(TextureAnimation, frameCount) == 0x2 &&
+                   offsetof(TextureAnimation, frames) == 0x8 &&
+                   sizeof(TextureAnimationFrame) == 0xC &&
+                   offsetof(TextureAnimationFrame, paletteRom) == 0x8,
+               "textureanim");
+_Static_assert(offsetof(TrackHeader, textureCount) == 0x18 &&
+                   offsetof(TrackHeader, textures) == 0x1C &&
+                   offsetof(TrackHeader, fogColor) == 0x80,
+               "tracktextures");
+_Static_assert(sizeof(Vp) == 0x10 && sizeof(OSTask) == 0x40 &&
+                   offsetof(OSTask_t, output_buff_size) == 0x2C &&
+                   offsetof(OSTask_t, data_size) == 0x34,
+               "task");

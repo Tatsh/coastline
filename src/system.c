@@ -1,17 +1,30 @@
 #include "system.h"
 
+#include <PR/R4300.h>
+#include <PR/gu.h>
 #include <PR/os.h>
 #include <PR/os_cont.h>
 #include <PR/os_libc.h>
 
+#include "camera.h"
 #include "debugtext.h"
+#include "fade.h"
 #include "game.h"
 #include "input.h"
 #include "libultra/os/osint.h"
 #include "platform/n64/boot.h"
+#include "race.h"
 #include "render.h"
 #include "rumble.h"
+#include "texrect.h"
 #include "timing.h"
+#include "track.h"
+#include "trackrender.h"
+#include "trackselect.h"
+#include "util.h"
+#include "vecmath.h"
+#include "vehicle.h"
+#include "weather.h"
 #include "zlib.h"
 
 /* The messages of the DMA that may wait at once. */
@@ -65,6 +78,76 @@
 #define BOOT_SCREEN_WIDTH 320
 #define BOOT_SCREEN_HEIGHT 240
 
+#define ARRAY_COUNT(array) (s32)(sizeof(array) / sizeof((array)[0]))
+
+/* The address the RSP and the RDP read memory of KSEG0 at. */
+#define TO_RSP_ADDRESS(p) ((u32)(p) - K0BASE)
+
+/* A fill of the frame buffer with a colour of 8-bit components, as two pixels. */
+#define FILL_COLOR(red, green, blue)                                                               \
+    ((u32)GPACK_RGBA5551(red, green, blue, 1) << 16 | GPACK_RGBA5551(red, green, blue, 1))
+
+/* A fill of the depth buffer with the farthest depth, as two depths. */
+#define FARTHEST_DEPTHS ((u32)GPACK_ZDZ(G_MAXFIXED, 0) << 16 | GPACK_ZDZ(G_MAXFIXED, 0))
+
+/* A colour of a light, as the microcode reads it. */
+#define LIGHT_COLOR(red, green, blue) ((u32)(red) << 24 | (u32)(green) << 16 | (u32)(blue) << 8)
+
+/* A blend of the colour of the frame buffer and the colour drawn, by the alpha of the fog. */
+#define RENDER_MODE_FOG_BLEND_C1                                                                   \
+    (IM_RD | CVG_DST_FULL | ZMODE_OPA | FORCE_BL |                                                 \
+     GBL_c1(G_BL_CLR_MEM, G_BL_A_FOG, G_BL_CLR_IN, G_BL_1MA))
+#define RENDER_MODE_FOG_BLEND_C2 GBL_c2(G_BL_CLR_MEM, G_BL_A_FOG, G_BL_CLR_IN, G_BL_1MA)
+
+/* NormalizeLightMatrix() scales a matrix to this range, less a margin, for the lighting. */
+#define LIGHT_MATRIX_RANGE 1.9997559f
+#define LIGHT_MATRIX_MARGIN 0.375f
+
+/* The y past which the fog of the desert turns grey. */
+#define DESERT_HAZE_Y 1024.0f
+
+/* The gap between the views and the edges of the screen. */
+#define VIEWPORT_MARGIN 8
+
+/* The size of the low resolution, the viewport of SetupViewportAndScissor(). */
+#define LOW_RES_WIDTH 320
+#define LOW_RES_HEIGHT 240
+
+/* Half of the range of depths of a viewport. */
+#define VIEWPORT_HALF_DEPTH 0x1FF
+
+/* A frame of an animated texture with no texels or no palette on the cartridge. */
+#define TEXTURE_ROM_NONE ((u32) - 1)
+
+/* The bytes of the palettes of a 4-bit texture and of an 8-bit one. */
+#define CI4_PALETTE_BYTES (16 * sizeof(u16))
+#define PALETTE_BYTES (256 * sizeof(u16))
+
+/* The primitive and environment colours of the colour combines the snow tints. */
+#define SNOW_PRIM_COLOR 0x60789000
+#define SNOW_ENV_COLOR 0x8C9CA800
+
+/* Draw the four edges of a rectangle, a pixel wide, inside it. */
+static inline void DrawRectEdges(s32 x, s32 y, s32 width, s32 height) {
+    gDPFillRectangle(gDisplayListPtr++, x, y, x + width, y + 1);
+    gDPFillRectangle(gDisplayListPtr++, x, y + height - 1, x + width, y + height);
+    gDPFillRectangle(gDisplayListPtr++, x, y, x + 1, y + height);
+    gDPFillRectangle(gDisplayListPtr++, x + width - 1, y, x + width, y + height);
+}
+
+/* Set a light ramp to a quarter, a half, three quarters, and all of a part of the light. */
+static inline void SetLightRamp(u8 ramp[4], s32 light) {
+    ramp[0] = light >> 2;
+    ramp[1] = light >> 1;
+    ramp[2] = (light >> 1) + (light >> 2);
+    ramp[3] = light;
+}
+
+/* Whether two commands of a display list are the same. */
+static inline s32 IsSameCommand(Gfx *a, Gfx *b) {
+    return a->words.w0 == b->words.w0 && a->words.w1 == b->words.w1;
+}
+
 OSIoMesg *AllocIoMessage(void) {
     if (g_dwIoMessagePendingCount == IO_MESSAGES) {
         /* With every message in flight, one finished DMA frees its message. */
@@ -86,6 +169,1021 @@ void WaitForDmaMessages(void) {
 
 s32 UnusedVblankQueryStub(s32 unused0, s32 unused1) {
     return 0;
+}
+
+void ClearRenderStats(void) {
+    g_dwStatUnused3 = 0;
+    g_dwStatUnused2 = 0;
+    g_dwStatUnused1 = 0;
+    g_dwStatVehicleTriangles = 0;
+    g_dwStatPolygonsDrawn = 0;
+    g_dwStatUnused0 = 0;
+    g_dwStatVerticesDrawn = 0;
+    g_dwStatTrianglesDrawn = 0;
+}
+
+f32 GetMaxAbsValue12(f32 m[4][4]) {
+    f32 *element;
+    f32 max, min;
+
+    max = 0.0f;
+    min = 0.0f;
+    for (element = &m[0][0]; element < &m[3][0]; element++) {
+        if (*element < 0.0f) {
+            if (*element < min) {
+                min = *element;
+            }
+        } else if (max < *element) {
+            max = *element;
+        }
+    }
+    min = -min;
+    if (max < min) {
+        return min;
+    }
+    return max;
+}
+
+void NormalizeLightMatrix(f32 m[4][4]) {
+    f32 *element;
+    f32 max, min, scale;
+    s32 row, column;
+
+    max = 0.0f;
+    min = 0.0f;
+    for (element = &m[0][0]; element < &m[3][0]; element++) {
+        if (*element < 0.0f) {
+            if (*element < min) {
+                min = *element;
+            }
+        } else if (max < *element) {
+            max = *element;
+        }
+    }
+    min = -min;
+    if (max < min) {
+        max = min;
+    }
+    scale = LIGHT_MATRIX_RANGE / (max + LIGHT_MATRIX_MARGIN);
+    for (row = 0; row < 4; row++) {
+        for (column = 0; column < 4; column++) {
+            m[row][column] *= scale;
+        }
+    }
+}
+
+/* The original stores the address of a local message for the debug display. */
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdangling-pointer"
+void GetTextureScaleAndMask(s32 size, s32 *scale, s32 *maskBits) {
+    char message[40];
+    u32 last;
+
+    last = size - 1;
+    if (last >> 8) {
+        if (last >> 10) {
+            /* The message may overrun the buffer, and the debug display retains a pointer to the
+             * stack this returns from. */
+            sprintf(message, "ERROR: unhandled texture size: %d", last);
+            SetDebugMessage(message);
+        } else if (last >> 9) {
+            *maskBits = 10;
+        } else {
+            *maskBits = 9;
+        }
+    } else if (last & 0xF0) {
+        if (last & 0xC0) {
+            if (last & 0x80) {
+                *maskBits = 8;
+            } else {
+                *maskBits = 7;
+            }
+        } else if (last & 0xE0) {
+            *maskBits = 6;
+        } else {
+            *maskBits = 5;
+        }
+    } else if (last & 0xFC) {
+        if (last & 0xF8) {
+            *maskBits = 4;
+        } else {
+            *maskBits = 3;
+        }
+    } else if (last & 0xFE) {
+        *maskBits = 2;
+    } else if (last != 0) {
+        *maskBits = 1;
+    } else {
+        *maskBits = 0;
+    }
+    *scale = 0xFFFF;
+}
+#pragma GCC diagnostic pop
+
+void DrawTexturedTile(s32 index, ModelTexture *textures) {
+    ModelTexture *texture;
+    s32 width, height, scaleS, scaleT, maskS, maskT, cms, cmt, tmem, palette, format, size, tile;
+
+    texture = &textures[index];
+    width = texture->width;
+    GetTextureScaleAndMask(width, &scaleS, &maskS);
+    height = texture->height;
+    GetTextureScaleAndMask(height, &scaleT, &maskT);
+    cms = texture->clampS ? G_TX_CLAMP : G_TX_WRAP;
+    if (texture->mirrorS) {
+        cms |= G_TX_MIRROR;
+    }
+    cmt = texture->clampT ? G_TX_CLAMP : G_TX_WRAP;
+    if (texture->mirrorT) {
+        cmt |= G_TX_MIRROR;
+    }
+    gDPTileSync(gDisplayListPtr++);
+    gDPSetTextureImage(gDisplayListPtr++, G_IM_FMT_RGBA, G_IM_SIZ_16b, 1, texture->image);
+    tmem = g_dwTextureTmemAddress & 0x1FF;
+    gDPSetTile(gDisplayListPtr++,
+               G_IM_FMT_RGBA,
+               G_IM_SIZ_16b,
+               0,
+               tmem,
+               G_TX_LOADTILE,
+               0,
+               G_TX_WRAP,
+               maskT,
+               G_TX_NOLOD,
+               G_TX_WRAP,
+               maskS,
+               G_TX_NOLOD);
+    gDPLoadSync(gDisplayListPtr++);
+    switch (texture->format) {
+    case TEXTURE_FORMAT_CI4:
+        gDPLoadBlock(gDisplayListPtr++, G_TX_LOADTILE, 0, 0, ((width * height + 3) >> 2) - 1, 0);
+        palette = TEXTURE_CI4_PALETTE;
+        gDPLoadSync(gDisplayListPtr++);
+        gDPLoadTLUT_pal16(gDisplayListPtr++, TEXTURE_CI4_PALETTE, texture->palette);
+        gDPSetTextureLUT(gDisplayListPtr++, G_TT_RGBA16);
+        format = G_IM_FMT_CI;
+        size = G_IM_SIZ_4b;
+        break;
+    case TEXTURE_FORMAT_I8:
+        cms = cmt = G_TX_CLAMP;
+        /* The sine is discarded. */
+        sins(0);
+        gDPLoadBlock(gDisplayListPtr++, G_TX_LOADTILE, 0, 0, ((width * height + 1) >> 1) - 1, 0);
+        gDPSetTextureLUT(gDisplayListPtr++, G_TT_NONE);
+        tmem = g_dwTextureTmemAddress & 0x1FF;
+        format = G_IM_FMT_I;
+        size = G_IM_SIZ_8b;
+        break;
+    default:
+        gDPLoadBlock(gDisplayListPtr++, G_TX_LOADTILE, 0, 0, width * height - 1, 0);
+        gDPSetTextureLUT(gDisplayListPtr++, G_TT_NONE);
+        format = G_IM_FMT_RGBA;
+        size = G_IM_SIZ_16b;
+        break;
+    }
+    tile = g_dwTextureRenderTile;
+    /* The palette is set only for a 4-bit texture. The others take whatever is on the stack. */
+    gDPSetTile(gDisplayListPtr++,
+               format,
+               size,
+               (width * (4 << size) + 63) >> 6,
+               tmem,
+               tile,
+               palette,
+               cmt,
+               maskT,
+               G_TX_NOLOD,
+               cms,
+               maskS,
+               G_TX_NOLOD);
+    gDPSetTileSize(gDisplayListPtr++,
+                   tile,
+                   texture->tileS0 * 4 + 2,
+                   texture->tileT0 * 4 + 2,
+                   texture->tileS1 * 4 + 2,
+                   texture->tileT1 * 4 + 2);
+    gSPTexture(gDisplayListPtr++, scaleS, scaleT, 0, tile, G_ON);
+}
+
+void StubEmpty(void) {
+}
+
+void ClearDepthBuffer(void) {
+    gDPPipeSync(gDisplayListPtr++);
+    gDPSetCycleType(gDisplayListPtr++, G_CYC_FILL);
+    gDPSetRenderMode(gDisplayListPtr++, G_RM_OPA_SURF, G_RM_OPA_SURF2);
+    gDPSetColorImage(gDisplayListPtr++,
+                     G_IM_FMT_RGBA,
+                     G_IM_SIZ_16b,
+                     g_dwScreenWidth << g_dwScreenScaleShift,
+                     TO_RSP_ADDRESS(g_aDepthBuffer));
+    gDPSetFillColor(gDisplayListPtr++, FARTHEST_DEPTHS);
+    gDPFillRectangle(gDisplayListPtr++,
+                     0,
+                     0,
+                     (g_dwScreenWidth << g_dwScreenScaleShift) - 1,
+                     (g_dwScreenHeight << g_dwScreenScaleShift) - 1);
+    gDPPipeSync(gDisplayListPtr++);
+    gDPSetColorImage(gDisplayListPtr++,
+                     G_IM_FMT_RGBA,
+                     G_IM_SIZ_16b,
+                     g_dwScreenWidth << g_dwScreenScaleShift,
+                     TO_RSP_ADDRESS(g_apFramebuffers[g_dwFrameBufferIndex]));
+}
+
+void ClearZBufferRect(s32 x, s32 y, s32 width, s32 height) {
+    gDPPipeSync(gDisplayListPtr++);
+    gDPSetCycleType(gDisplayListPtr++, G_CYC_FILL);
+    gDPSetRenderMode(gDisplayListPtr++, G_RM_OPA_SURF, G_RM_OPA_SURF2);
+    gDPSetColorImage(gDisplayListPtr++,
+                     G_IM_FMT_RGBA,
+                     G_IM_SIZ_16b,
+                     g_dwScreenWidth << g_dwScreenScaleShift,
+                     TO_RSP_ADDRESS(g_aDepthBuffer));
+    gDPSetFillColor(gDisplayListPtr++, FARTHEST_DEPTHS);
+    /* The bottom edge is taken from x, not y. */
+    gDPFillRectangle(gDisplayListPtr++, x, y, x + width - 1, x + height - 1);
+    gDPPipeSync(gDisplayListPtr++);
+    gDPSetColorImage(gDisplayListPtr++,
+                     G_IM_FMT_RGBA,
+                     G_IM_SIZ_16b,
+                     g_dwScreenWidth << g_dwScreenScaleShift,
+                     TO_RSP_ADDRESS(g_apFramebuffers[g_dwFrameBufferIndex]));
+}
+
+void ClearScreen(s32 red, s32 green, s32 blue) {
+    gDPPipeSync(gDisplayListPtr++);
+    gDPSetRenderMode(gDisplayListPtr++, G_RM_OPA_SURF, G_RM_OPA_SURF2);
+    gDPSetCycleType(gDisplayListPtr++, G_CYC_FILL);
+    gDPSetFillColor(gDisplayListPtr++, FILL_COLOR(red, green, blue));
+    gDPFillRectangle(gDisplayListPtr++,
+                     0,
+                     0,
+                     (g_dwScreenWidth << g_dwScreenScaleShift) - 1,
+                     (g_dwScreenHeight << g_dwScreenScaleShift) - 1);
+    gDPPipeSync(gDisplayListPtr++);
+    gDPSetCycleType(gDisplayListPtr++, G_CYC_1CYCLE);
+}
+
+void DrawFilledRect(s32 x, s32 y, s32 width, s32 height, s32 red, s32 green, s32 blue) {
+    if (g_dwScreenScaleShift) {
+        x *= 2;
+        y *= 2;
+        width *= 2;
+        height *= 2;
+    }
+    gDPPipeSync(gDisplayListPtr++);
+    gDPSetRenderMode(gDisplayListPtr++, G_RM_OPA_SURF, G_RM_OPA_SURF2);
+    gDPSetCycleType(gDisplayListPtr++, G_CYC_FILL);
+    gDPSetFillColor(gDisplayListPtr++, FILL_COLOR(red, green, blue));
+    /* The lower right corner is doubled a second time in the high resolution. */
+    gDPFillRectangle(gDisplayListPtr++,
+                     x,
+                     y,
+                     ((x + width) << g_dwScreenScaleShift) - 1,
+                     ((y + height) << g_dwScreenScaleShift) - 1);
+    gDPPipeSync(gDisplayListPtr++);
+    gDPSetCycleType(gDisplayListPtr++, G_CYC_1CYCLE);
+}
+
+void SetupFog(void) {
+    Vehicle *vehicle;
+    f32 flash, fade, haze, y, level;
+    s32 intensity;
+
+    if (g_dwNightMode) {
+        g_bFogR = g_bFogG = g_bFogB = 0;
+        g_bFogIntensity = 0x40;
+        if (g_dwNumLocalPlayers == 2) {
+            g_dwFogMinDistance = 992;
+            g_dwFogMaxDistance = 1020;
+        } else {
+            g_dwFogMinDistance = 968;
+            g_dwFogMaxDistance = 1020;
+        }
+    } else if (g_dwSnowMode) {
+        g_bFogR = 0xB8;
+        g_bFogG = 0xB8;
+        g_bFogB = 0xD8;
+        g_bFogIntensity = 0x40;
+        if (g_dwNumLocalPlayers == 2) {
+            g_dwFogMinDistance = 950;
+            g_dwFogMaxDistance = 1000;
+        } else {
+            g_dwFogMinDistance = 800;
+            g_dwFogMaxDistance = 1050;
+        }
+    } else if (g_dwRainMode) {
+        g_bFogR = 0x60;
+        g_bFogG = 0x68;
+        g_bFogB = 0x70;
+        g_bFogIntensity = 0x40;
+        if (g_dwLightningFlashCounter > 0 && (g_dwLightningFlashCounter & 1)) {
+            /* A flash of lightning lights the fog, the more the nearer the bolt. */
+            flash = 100.0f / (Vec2fDistance((Vec2f *)&g_pActiveCamera->position,
+                                            (Vec2f *)g_avLightningBolt) +
+                              100.0f);
+            fade = 1.0f - flash;
+            g_bFogR = g_bFogR * fade + 240.0f * flash;
+            g_bFogG = g_bFogG * fade + 248.0f * flash;
+            g_bFogB = g_bFogB * fade + 255.0f * flash;
+        }
+        if (g_dwNumLocalPlayers == 2) {
+            g_dwFogMinDistance = 930;
+            g_dwFogMaxDistance = 1000;
+        } else {
+            g_dwFogMinDistance = 850;
+            g_dwFogMaxDistance = 1025;
+        }
+    } else if (g_dwWeatherActive) {
+        /* The intensity follows the height of the vehicle of the view within the track. */
+        vehicle = g_pActiveCameraVehicle;
+        level = (vehicle->frame.position.z - g_LoadedTrack.minZ) /
+                (g_LoadedTrack.maxZ - g_LoadedTrack.minZ) * 255.0f;
+        intensity = (s32)level;
+        if (intensity < 0) {
+            intensity = 0;
+        } else if (intensity >= 0x100) {
+            intensity = 0xFF;
+        }
+        if (g_dwSelectedTrackId == TRACK_DESERT) {
+            /* Past a y of 1024, the fog of the desert turns grey by an amount with no limit. */
+            y = g_pActiveCamera->position.y;
+            if (DESERT_HAZE_Y < y) {
+                haze = (y - DESERT_HAZE_Y) * 0.00087890622f *
+                       (g_pActiveCamera->position.x * 0.00043945311f);
+            } else {
+                haze = 0.0f;
+            }
+            fade = 1.0f - haze;
+            haze = 160.0f * haze;
+            g_bFogR = g_LoadedTrack.fogColor[0] * fade + haze;
+            g_bFogG = g_LoadedTrack.fogColor[1] * fade + haze;
+            g_bFogB = g_LoadedTrack.fogColor[2] * fade + haze;
+        } else {
+            g_bFogR = g_LoadedTrack.fogColor[0];
+            g_bFogG = g_LoadedTrack.fogColor[1];
+            g_bFogB = g_LoadedTrack.fogColor[2];
+        }
+        g_bFogIntensity = intensity;
+        if (g_dwNumLocalPlayers == 2) {
+            g_dwFogMinDistance = 995;
+            g_dwFogMaxDistance = 1000;
+        } else {
+            g_dwFogMinDistance = 980;
+            g_dwFogMaxDistance = 1000;
+        }
+    } else {
+        g_bFogR = 0;
+        g_bFogG = 0;
+        g_bFogB = 0;
+        g_bFogIntensity = 0xFF;
+        g_dwFogMinDistance = 0;
+        g_dwFogMaxDistance = 1000;
+    }
+    g_dwFogFactorScale = 128000 / (g_dwFogMaxDistance - g_dwFogMinDistance);
+    g_dwFogFactorOffset =
+        (500 - g_dwFogMinDistance) * 256 / (g_dwFogMaxDistance - g_dwFogMinDistance);
+    gSPFogPosition(gDisplayListPtr++, g_dwFogMinDistance, g_dwFogMaxDistance);
+    gDPSetFogColor(gDisplayListPtr++, g_bFogR, g_bFogG, g_bFogB, 0xFF);
+}
+
+f32 ComputeFogFactorAtPoint(Vec3f *point) {
+    f32 clip[4];
+    f32 fog;
+
+    if (!g_dwWeatherActive) {
+        return 0.0f;
+    }
+    Vec3fTransformByMatrix(clip, point, g_afViewProjMatrix);
+    fog = (clip[2] / clip[3] * g_dwFogFactorScale + g_dwFogFactorOffset) * (1.0 / 255.0);
+    if (fog < 0.0f) {
+        return 0.0f;
+    }
+    if (1.0f < fog) {
+        return 1.0f;
+    }
+    return fog;
+}
+
+void SetupWeatherLights(void) {
+    s32 i;
+
+    if (!g_dwNightMode) {
+        g_afLightDirection[0] = 15.0f;
+        g_afLightDirection[1] = 10.0f;
+        g_afLightDirection[2] = 20.0f;
+        Vec3fNormalize((Vec3f *)g_afLightDirection);
+    }
+    if (g_dwSnowMode || g_dwRainMode) {
+        g_bDirLightR = (g_bFogR + 765) >> 2;
+        g_bDirLightG = (g_bFogG + 765) >> 2;
+        g_bDirLightB = (g_bFogB + 612) >> 2;
+        g_bAmbientLightR = g_bFogR * 5 / 8;
+        g_bAmbientLightG = g_bFogG * 5 / 8;
+        g_bAmbientLightB = g_bFogB * 5 / 8;
+    } else if (g_dwNightMode) {
+        g_bDirLightR = 0xDD;
+        g_bDirLightG = 0xEE;
+        g_bDirLightB = 0xFF;
+        g_bAmbientLightR = 0x3C;
+        g_bAmbientLightG = 0x39;
+        g_bAmbientLightB = 0x36;
+    } else if (g_dwWeatherActive) {
+        /* The fog blends the lights of a clear day toward its colour by its intensity. */
+        g_bDirLightR =
+            (((g_bFogR + 255) >> 1) * g_bFogIntensity + (255 - g_bFogIntensity) * 255) / 255;
+        g_bDirLightG =
+            (((g_bFogG + 255) >> 1) * g_bFogIntensity + (255 - g_bFogIntensity) * 255) / 255;
+        g_bDirLightB =
+            (((g_bFogB + 204) >> 1) * g_bFogIntensity + (255 - g_bFogIntensity) * 204) / 255;
+        g_bAmbientLightR =
+            (g_bFogR * 4 / 5 * g_bFogIntensity + (255 - g_bFogIntensity) * 102) / 255;
+        g_bAmbientLightG =
+            (g_bFogG * 4 / 5 * g_bFogIntensity + (255 - g_bFogIntensity) * 102) / 255;
+        g_bAmbientLightB =
+            (g_bFogB * 4 / 5 * g_bFogIntensity + (255 - g_bFogIntensity) * 119) / 255;
+    } else {
+        g_bDirLightR = 255;
+        g_bDirLightG = 255;
+        g_bDirLightB = 204;
+        g_bAmbientLightR = 102;
+        g_bAmbientLightG = 102;
+        g_bAmbientLightB = 119;
+    }
+    if (g_dwNightMode) {
+        g_abLightRampR[0] = g_abLightRampG[0] = g_abLightRampB[0] = 0x22;
+        g_abLightRampR[1] = g_abLightRampG[1] = g_abLightRampB[1] = 0x44;
+        g_abLightRampR[2] = g_abLightRampG[2] = g_abLightRampB[2] = 0x66;
+        g_abLightRampR[3] = g_abLightRampG[3] = g_abLightRampB[3] = 0xFF;
+    } else if (g_dwSnowMode) {
+        g_abLightRampR[0] = g_abLightRampG[0] = 0xD0;
+        g_abLightRampB[0] = 0xF0;
+        g_abLightRampR[1] = g_abLightRampG[1] = 0xE0;
+        g_abLightRampB[1] = 0xFF;
+        g_abLightRampR[2] = g_abLightRampG[2] = 0xF0;
+        g_abLightRampB[2] = 0xFF;
+        g_abLightRampR[3] = g_abLightRampG[3] = g_abLightRampB[3] = 0xFF;
+    } else {
+        SetLightRamp(g_abLightRampR, g_bDirLightR);
+        SetLightRamp(g_abLightRampG, g_bDirLightG);
+        SetLightRamp(g_abLightRampB, g_bDirLightB);
+    }
+    g_dwAmbientLightColor = LIGHT_COLOR(g_bAmbientLightR, g_bAmbientLightG, g_bAmbientLightB);
+    g_dwDirLightColor = LIGHT_COLOR(g_bDirLightR, g_bDirLightG, g_bDirLightB);
+    for (i = 0; i < 4; i++) {
+        g_adwLightRampColors[i] =
+            LIGHT_COLOR(g_abLightRampR[i], g_abLightRampG[i], g_abLightRampB[i]);
+    }
+}
+
+void BeginDisplayList(s32 highRes) {
+    if (highRes != g_dwScreenScaleShift) {
+        g_dwDisplayModeChangeCountdown = 1;
+        g_dwScreenScaleShift = highRes;
+    }
+    AddTimingMarker(0, 0, 0x82, 0, 0xFF);
+    switch (g_dwNumViewports) {
+    case 1:
+        g_aViewportRects[0].x = VIEWPORT_MARGIN;
+        g_aViewportRects[0].y = VIEWPORT_MARGIN;
+        g_aViewportRects[0].width = g_dwScreenWidth - 2 * VIEWPORT_MARGIN;
+        g_aViewportRects[0].height = g_dwScreenHeight - 2 * VIEWPORT_MARGIN;
+        break;
+    case 2:
+        /* The two views stop 88 pixels short of the right of the screen. */
+        g_aViewportRects[1].x = VIEWPORT_MARGIN;
+        g_aViewportRects[1].y = (g_dwScreenHeight >> 1) + 1;
+        g_aViewportRects[1].width = g_dwScreenWidth - 96;
+        g_aViewportRects[1].height = (g_dwScreenHeight >> 1) - VIEWPORT_MARGIN;
+        g_aViewportRects[0].x = VIEWPORT_MARGIN;
+        g_aViewportRects[0].y = VIEWPORT_MARGIN;
+        g_aViewportRects[0].width = g_dwScreenWidth - 96;
+        g_aViewportRects[0].height = (g_dwScreenHeight >> 1) - VIEWPORT_MARGIN;
+        break;
+    }
+    ClearRenderStats();
+    ResetFrameBlocks();
+    if (g_dwDisplayModeChangeCountdown != 0 && g_dwDisplayModeChangeCountdown - 1 == 0) {
+        if (g_dwScreenScaleShift) {
+            /* The frame buffers of the high resolution end where the first of the low starts. */
+            g_apFramebuffers[0] = g_aFramebuffer0 - (g_aFramebuffer1 - g_aFramebuffer0) * 6;
+            g_apFramebuffers[1] = g_aFramebuffer0 - (g_aFramebuffer1 - g_aFramebuffer0) * 2;
+        } else {
+            g_apFramebuffers[0] = g_aFramebuffer0;
+            g_apFramebuffers[1] = g_aFramebuffer1;
+        }
+    }
+    gDisplayListPtr =
+        g_pDisplayListBase + g_dwFrameBufferIndex * DISPLAY_LIST_COMMANDS + DISPLAY_LIST_RESERVED;
+    g_dwTextureFilterMode = g_bBilinearFiltering ? G_TF_BILERP : G_TF_POINT;
+    g_dwColorDitherMode = G_CD_BAYER;
+    g_dwAlphaDitherMode = G_AD_PATTERN;
+    gSPSegment(gDisplayListPtr++, 0, 0);
+    gDPPipeSync(gDisplayListPtr++);
+    SetScissorRect(0, 0, g_dwScreenWidth, g_dwScreenHeight);
+    gDPSetCombineLERP(gDisplayListPtr++,
+                      0,
+                      0,
+                      0,
+                      PRIMITIVE,
+                      0,
+                      0,
+                      0,
+                      PRIMITIVE,
+                      0,
+                      0,
+                      0,
+                      COMBINED,
+                      0,
+                      0,
+                      0,
+                      COMBINED);
+    gDPSetTextureLOD(gDisplayListPtr++, G_TL_TILE);
+    gDPSetTextureLUT(gDisplayListPtr++, G_TT_NONE);
+    gDPSetTextureDetail(gDisplayListPtr++, G_TD_CLAMP);
+    gDPSetTexturePersp(gDisplayListPtr++, G_TP_PERSP);
+    gDPSetTextureFilter(gDisplayListPtr++, g_dwTextureFilterMode);
+    gDPSetTextureConvert(gDisplayListPtr++, G_TC_FILT);
+    gDPSetCombineKey(gDisplayListPtr++, G_CK_NONE);
+    gDPSetAlphaCompare(gDisplayListPtr++, G_AC_THRESHOLD);
+    gDPSetRenderMode(gDisplayListPtr++, G_RM_OPA_SURF, G_RM_OPA_SURF2);
+    gDPSetColorDither(gDisplayListPtr++, g_dwColorDitherMode);
+    /* The alpha dither goes to the field of the colour dither. */
+    gDPSetColorDither(gDisplayListPtr++, g_dwAlphaDitherMode);
+    gDPSetCycleType(gDisplayListPtr++, G_CYC_1CYCLE);
+    gDPSetBlendColor(gDisplayListPtr++, 0, 0, 0, 0);
+    gSPMatrix(gDisplayListPtr++,
+              TO_RSP_ADDRESS(&g_mtxIdentity),
+              G_MTX_MODELVIEW | G_MTX_LOAD | G_MTX_NOPUSH);
+    gSPClearGeometryMode(gDisplayListPtr++,
+                         G_SHADE | G_SHADING_SMOOTH | G_CULL_BOTH | G_FOG | G_LIGHTING |
+                             G_TEXTURE_GEN | G_TEXTURE_GEN_LINEAR | G_LOD);
+    gSPSetGeometryMode(gDisplayListPtr++, G_CULL_BACK);
+    if (g_bGbiClipping) {
+        gSPSetGeometryMode(gDisplayListPtr++, G_CLIPPING);
+    } else {
+        gSPClearGeometryMode(gDisplayListPtr++, G_CLIPPING);
+    }
+    gSPDisplayList(gDisplayListPtr++, g_aClipRatioDisplayLists[g_dwClipRatioIndex]);
+    gSPTexture(gDisplayListPtr++, 0, 0, 0, G_TX_RENDERTILE, G_OFF);
+    gDPSetColorImage(gDisplayListPtr++,
+                     G_IM_FMT_RGBA,
+                     G_IM_SIZ_16b,
+                     g_dwScreenWidth << g_dwScreenScaleShift,
+                     TO_RSP_ADDRESS(g_apFramebuffers[g_dwFrameBufferIndex]));
+    gDPSetDepthImage(gDisplayListPtr++, TO_RSP_ADDRESS(g_aDepthBuffer));
+    osViSetSpecialFeatures(OS_VI_DITHER_FILTER_ON);
+    osViSetSpecialFeatures(OS_VI_DIVOT_ON);
+    osViSetSpecialFeatures(g_dwViGammaEnabled ? OS_VI_GAMMA_ON : OS_VI_GAMMA_OFF);
+}
+
+void StartLowResFrame(void) {
+    BeginDisplayList(0);
+}
+
+void StartHighResFrame(void) {
+    BeginDisplayList(1);
+}
+
+void StubEmptyVoid(s32 unused0, s32 unused1, s32 unused2, s32 unused3) {
+}
+
+void SetScissorRect(s32 x, s32 y, s32 width, s32 height) {
+    if (x < g_dwFadeRectLeft) {
+        width = width - g_dwFadeRectLeft + x;
+        x = g_dwFadeRectLeft;
+    }
+    if (g_dwFadeRectRight < x + width) {
+        width = g_dwFadeRectRight - x;
+    }
+    if (width < 0) {
+        width = 0;
+    }
+    if (y < g_dwFadeRectTop) {
+        height = height - g_dwFadeRectTop + y;
+        y = g_dwFadeRectTop;
+    }
+    if (g_dwFadeRectBottom < y + height) {
+        height = g_dwFadeRectBottom - y;
+    }
+    if (height < 0) {
+        height = 0;
+    }
+    if (g_dwScreenScaleShift) {
+        x *= 2;
+        y *= 2;
+        width *= 2;
+        height *= 2;
+    }
+    gDPPipeSync(gDisplayListPtr++);
+    gDPSetScissor(gDisplayListPtr++, G_SC_NON_INTERLACE, x, y, x + width, y + height);
+}
+
+void SetViewport(s32 x, s32 y, s32 width, s32 height, s32 setScissor) {
+    Vp *viewport;
+
+    g_dwViewportIndex = (g_dwViewportIndex + 1) & (VIEWPORTS - 1);
+    if (setScissor) {
+        SetScissorRect(x, y, width < 0 ? -width : width, height);
+    }
+    if (g_dwScreenScaleShift) {
+        x *= 2;
+        y *= 2;
+        width *= 2;
+        height *= 2;
+    }
+    viewport = &g_aViewports[g_dwViewportIndex];
+    /* A negative width mirrors the view, and a mirrored track mirrors it again. */
+    if (g_dwTrackMirrored) {
+        viewport->vp.vscale[0] = -width * 2;
+    } else {
+        viewport->vp.vscale[0] = width * 2;
+    }
+    if (width < 0) {
+        g_dwViewportMirrored = TRUE;
+        width = -width;
+    } else {
+        g_dwViewportMirrored = FALSE;
+    }
+    viewport->vp.vscale[1] = height * 2;
+    viewport->vp.vscale[2] = VIEWPORT_HALF_DEPTH;
+    viewport->vp.vscale[3] = 0;
+    viewport->vp.vtrans[0] = (x * 2 + width) * 2;
+    viewport->vp.vtrans[1] = (y * 2 + height) * 2;
+    viewport->vp.vtrans[2] = VIEWPORT_HALF_DEPTH;
+    viewport->vp.vtrans[3] = 0;
+    gSPViewport(gDisplayListPtr++, &g_aViewports[g_dwViewportIndex]);
+    g_dwViewportScaleZ = g_aViewports[g_dwViewportIndex].vp.vscale[2];
+    g_dwViewportTransZ = g_aViewports[g_dwViewportIndex].vp.vtrans[2];
+}
+
+void SetupViewportAndScissor(s32 x, s32 y, s32 width, s32 height, s32 setScissor) {
+    Vp *viewport;
+
+    g_dwViewportIndex = (g_dwViewportIndex + 1) & (VIEWPORTS - 1);
+    if (setScissor) {
+        gDPPipeSync(gDisplayListPtr++);
+        SetScissorRect(x, y, width < 0 ? -width : width, height);
+    }
+    g_dwViewportMirrored = FALSE;
+    viewport = &g_aViewports[g_dwViewportIndex];
+    viewport->vp.vscale[0] = LOW_RES_WIDTH * 2;
+    viewport->vp.vscale[1] = LOW_RES_HEIGHT * 2;
+    viewport->vp.vscale[2] = VIEWPORT_HALF_DEPTH;
+    viewport->vp.vscale[3] = 0;
+    viewport->vp.vtrans[0] = LOW_RES_WIDTH * 2;
+    viewport->vp.vtrans[1] = LOW_RES_HEIGHT * 2;
+    viewport->vp.vtrans[2] = VIEWPORT_HALF_DEPTH;
+    viewport->vp.vtrans[3] = 0;
+    gSPViewport(gDisplayListPtr++, &g_aViewports[g_dwViewportIndex]);
+    g_dwViewportScaleZ = g_aViewports[g_dwViewportIndex].vp.vscale[2];
+    g_dwViewportTransZ = g_aViewports[g_dwViewportIndex].vp.vtrans[2];
+}
+
+void RestoreCurrentViewport(void) {
+    gSPViewport(gDisplayListPtr++, &g_aViewports[g_dwViewportIndex]);
+    g_dwViewportScaleZ = g_aViewports[g_dwViewportIndex].vp.vscale[2];
+    g_dwViewportTransZ = g_aViewports[g_dwViewportIndex].vp.vtrans[2];
+}
+
+void DrawRdpOutlineRect(s32 x, s32 y, s32 width, s32 height) {
+    gDPPipeSync(gDisplayListPtr++);
+    /* With the alpha of the fog at 255, the blend retains the colour of the frame buffer. */
+    gDPSetRenderMode(gDisplayListPtr++, RENDER_MODE_FOG_BLEND_C1, RENDER_MODE_FOG_BLEND_C2);
+    gDPSetCycleType(gDisplayListPtr++, G_CYC_1CYCLE);
+    gDPSetFogColor(gDisplayListPtr++, 0, 0, 0, 0xFF);
+    DrawRectEdges(x, y, width, height);
+}
+
+void DrawRdpBorderRect(s32 x, s32 y, s32 width, s32 height) {
+    gDPPipeSync(gDisplayListPtr++);
+    gDPSetRenderMode(gDisplayListPtr++, G_RM_OPA_SURF, G_RM_OPA_SURF2);
+    gDPSetCycleType(gDisplayListPtr++, G_CYC_FILL);
+    gDPSetFillColor(gDisplayListPtr++, FILL_COLOR(0, 0, 0));
+    gDPSetFogColor(gDisplayListPtr++, 0, 0, 0, 0xFF);
+    gDPFillRectangle(gDisplayListPtr++, x - 1, y - 2, x + width, y - 1);
+    gDPFillRectangle(gDisplayListPtr++, x - 1, y + height, x + width, y + height + 1);
+    gDPFillRectangle(gDisplayListPtr++, x - 2, y - 1, x - 1, y + height);
+    gDPFillRectangle(gDisplayListPtr++, x + width, y - 1, x + width + 1, y + height);
+    gDPPipeSync(gDisplayListPtr++);
+    gDPSetRenderMode(gDisplayListPtr++, RENDER_MODE_FOG_BLEND_C1, RENDER_MODE_FOG_BLEND_C2);
+    gDPSetCycleType(gDisplayListPtr++, G_CYC_1CYCLE);
+    gDPSetFogColor(gDisplayListPtr++, 0, 0, 0, 0xFF);
+    DrawRectEdges(x, y, width, height);
+    gDPFillRectangle(gDisplayListPtr++, x - 3, y - 3, x + width + 3, y - 2);
+    gDPFillRectangle(gDisplayListPtr++, x - 3, y + height + 2, x + width + 3, y + height + 3);
+    gDPFillRectangle(gDisplayListPtr++, x - 3, y - 3, x - 2, y + height + 3);
+    gDPFillRectangle(gDisplayListPtr++, x + width + 2, y - 3, x + width + 3, y + height + 3);
+}
+
+void ClearFramebuffersHighRes(void) {
+    g_dwKeepScreenBlanked = TRUE;
+    osViBlack(TRUE);
+    StartHighResFrame();
+    ClearScreen(0, 0, 0);
+    FlushDisplayList();
+    osViBlack(TRUE);
+    StartHighResFrame();
+    ClearScreen(0, 0, 0);
+    FlushDisplayList();
+    g_dwKeepScreenBlanked = FALSE;
+}
+
+void ClearFramebuffersLowRes(void) {
+    g_dwKeepScreenBlanked = TRUE;
+    osViBlack(TRUE);
+    StartLowResFrame();
+    ClearScreen(0, 0, 0);
+    FlushDisplayList();
+    osViBlack(TRUE);
+    StartLowResFrame();
+    ClearScreen(0, 0, 0);
+    FlushDisplayList();
+    g_dwKeepScreenBlanked = FALSE;
+}
+
+void StreamAnimatedTrackTextures(void) {
+    ModelTexture *texture;
+    TextureAnimation *animation;
+    OSIoMesg *message;
+    s32 snowTint, i, frame, frameCount;
+    u32 phase, imageRom, paletteRom;
+
+    snowTint = g_dwSnowMode != 0 && g_dwSelectedTrackId != TRACK_COASTLINE &&
+               g_dwSelectedTrackId != TRACK_MIRROR_COASTLINE;
+    for (i = 0; i < g_LoadedTrack.textureCount; i++) {
+        texture = &g_LoadedTrack.textures[i];
+        if (texture->image == NULL) {
+            continue;
+        }
+        if (!texture->animated) {
+            if (g_dwSnowMode == (u32)g_dwStreamedSnowMode) {
+                continue;
+            }
+            paletteRom = (texture->source.paletteRomIndex & 0xFFF) << 5;
+        } else {
+            animation = texture->source.animation;
+            frameCount = animation->frameCount;
+            /* The phase is taken from the time of the first frame onward, as if it were 0. */
+            phase = (u32)g_dwElapsedTimeMs %
+                    (animation->frames[frameCount - 1].time - animation->frames[0].time);
+            if (frameCount == 2 && animation->frames[0].time == TEXTURE_ROM_NONE) {
+                /* A texture of the snow, then the texture of the other weathers. */
+                if ((u32)g_dwStreamedSnowMode == g_dwSnowMode) {
+                    continue;
+                }
+                frame = g_dwSnowMode == 0;
+                imageRom = frame ? TEXTURE_ROM_NONE : animation->frames[frame].imageRom;
+                paletteRom = animation->frames[frame].paletteRom;
+            } else {
+                if (g_dwRacePauseState) {
+                    continue;
+                }
+                if (snowTint && texture->format == TEXTURE_FORMAT_SNOW_STILL) {
+                    frame = 0;
+                } else {
+                    for (frame = 1; frame < frameCount; frame++) {
+                        if (phase < animation->frames[frame].time) {
+                            break;
+                        }
+                    }
+                    frame--;
+                }
+                imageRom = animation->frames[frame].imageRom;
+                paletteRom = animation->frames[frame].paletteRom;
+            }
+            if (texture->size != 0 && imageRom != TEXTURE_ROM_NONE) {
+                message = AllocIoMessage();
+                texture = &g_LoadedTrack.textures[i];
+                osPiStartDma(message,
+                             OS_MESG_PRI_NORMAL,
+                             OS_READ,
+                             imageRom + g_dwTrackTextureRomOffset,
+                             texture->image,
+                             texture->size,
+                             &g_DmaMessageQueue);
+                texture = &g_LoadedTrack.textures[i];
+            }
+        }
+        if (texture->palette != NULL && paletteRom != TEXTURE_ROM_NONE) {
+            message = AllocIoMessage();
+            texture = &g_LoadedTrack.textures[i];
+            osPiStartDma(message,
+                         OS_MESG_PRI_NORMAL,
+                         OS_READ,
+                         paletteRom + g_dwTrackTextureRomOffset,
+                         texture->palette,
+                         texture->format == TEXTURE_FORMAT_CI4 ? CI4_PALETTE_BYTES : PALETTE_BYTES,
+                         &g_DmaMessageQueue);
+        }
+    }
+    g_dwStreamedSnowMode = g_dwSnowMode;
+}
+
+void FlushDisplayList(void) {
+    OSTask *task;
+    Gfx *start;
+    u16 *framebuffer;
+    s32 commands, count, pairs, i;
+
+    gDPFullSync(gDisplayListPtr++);
+    gSPEndDisplayList(gDisplayListPtr++);
+    task = &g_aGfxTask[g_dwFrameBufferIndex];
+    task->t.type = M_GFXTASK;
+    task->t.flags = OS_TASK_DP_WAIT | OS_TASK_LOADABLE;
+    task->t.ucode = g_aGspUcodeText;
+    task->t.ucode_data = g_abRspUcodeData;
+    task->t.output_buff = g_pRdpOutputBuffer;
+    task->t.ucode_size = SP_UCODE_SIZE;
+    task->t.output_buff_size = g_pRdpOutputBufferEnd - g_dwOutputBuffReserve;
+    task->t.ucode_data_size = SP_UCODE_DATA_SIZE;
+    task->t.dram_stack = (u64 *)(((u32)g_abRspDramStackBuffer + 15) & ~15);
+    task->t.dram_stack_size = SP_DRAM_STACK_SIZE8;
+    task->t.ucode_boot = g_aRspBootUcode;
+    task->t.ucode_boot_size = (g_aGspUcodeText - g_aRspBootUcode) * sizeof(u64);
+    start =
+        g_pDisplayListBase + g_dwFrameBufferIndex * DISPLAY_LIST_COMMANDS + DISPLAY_LIST_RESERVED;
+    task->t.data_ptr = (u64 *)start;
+    task->t.data_size = (gDisplayListPtr - start) * sizeof(Gfx);
+    commands = gDisplayListPtr - start;
+    if (g_dwPeakDisplayListCommands < commands) {
+        g_dwPeakDisplayListCommands = commands;
+    }
+    count = g_pShadowDisplayListWritePtr - g_pShadowDisplayListStart;
+    if (g_dwPeakShadowCommandCount < count) {
+        g_dwPeakShadowCommandCount = count;
+    }
+    count = g_pShadowVertexWritePtr - g_pShadowVertexStart;
+    if (g_dwPeakShadowVertexCount < count) {
+        g_dwPeakShadowVertexCount = count;
+    }
+    g_dwDisplayListCommandCount = commands;
+    if (commands > DISPLAY_LIST_COMMANDS) {
+        SetDebugMessage("HUGE GLIST ERROR");
+    }
+    osWritebackDCacheAll();
+    if (g_dwFirstFlushDone) {
+        AddTimingMarker(0, 0, 0, 0, 0xFF);
+        osRecvMesg(&g_RspDoneMsgQueue, NULL, OS_MESG_BLOCK);
+        AddTimingMarker(0, 0xFF, 0xFF, 0, 0xFF);
+        if (g_pfnNextScreen != NULL) {
+            g_pfnNextScreen();
+            g_pfnNextScreen = NULL;
+        }
+        AddTimingMarker(0, 0, 0, 0, 0xFF);
+        osRecvMesg(&g_RdpDoneMsgQueue, NULL, OS_MESG_BLOCK);
+        if (g_bShowDepthBuffer) {
+            /* The depth buffer is copied over the frame about to show, two depths at a time. */
+            pairs = ((g_dwScreenScaleShift ? 4 : 1) * g_dwScreenWidth * g_dwScreenHeight) >> 1;
+            framebuffer = g_apFramebuffers[g_dwFrameBufferIndex ^ 1];
+            for (i = 0; i < pairs * 2; i++) {
+                framebuffer[i] = g_aDepthBuffer[i];
+            }
+        }
+        /* The test is of the second routine, but the call is of the next. The next is NULL here
+         * unless a routine has set it since it was cleared. */
+        if (g_pfnSecondaryScreen != NULL) {
+            g_pfnNextScreen();
+            g_pfnNextScreen = NULL;
+        }
+        osWritebackDCacheAll();
+        g_dwFlushDuration = osGetCount();
+        g_dwFlushInterval = g_dwFlushDuration - g_dwFlushStartTime;
+        if (g_dwDisplayModeChangeCountdown != 0 && --g_dwDisplayModeChangeCountdown == 0) {
+            if (g_dwScreenScaleShift) {
+                osViSetMode(osTvType == OS_TV_MPAL ? &g_ViModeMpalHaf1 : &g_ViModeNtscHaf1);
+            } else {
+                osViSetMode(osTvType == OS_TV_MPAL ? &g_ViModeMpalLan1 : &g_ViModeNtscLan1);
+            }
+            osViBlack(TRUE);
+            g_dwAppliedScreenScaleShift = g_dwScreenScaleShift;
+        }
+        AddTimingMarker(1, 0x20, 0x20, 0x20, 0xFF);
+        AddTimingMarker(2, 0x20, 0x20, 0x20, 0xFF);
+        AddTimingMarker(0, 0x20, 0x20, 0x20, 0xFF);
+        framebuffer = g_apFramebuffers[g_dwFrameBufferIndex ^ 1];
+        osRecvMesg(&g_ViRetraceMesgQueue, NULL, OS_MESG_BLOCK);
+        osViSwapBuffer(framebuffer);
+        osRecvMesg(&g_ViRetraceMesgQueue, NULL, OS_MESG_BLOCK);
+        if (osViGetCurrentFramebuffer() != framebuffer) {
+            osRecvMesg(&g_ViRetraceMesgQueue, NULL, OS_MESG_BLOCK);
+        }
+        if (!g_dwKeepScreenBlanked && !g_dwScreenUnblankDelay) {
+            osViBlack(FALSE);
+        }
+        if (g_dwScreenUnblankDelay) {
+            g_dwScreenUnblankDelay--;
+        }
+        BeginTimingFrame();
+        g_dwFlushStartTime = osGetCount();
+        g_dwFlushDuration = osGetCount() - g_dwFlushDuration;
+    } else {
+        g_dwFirstFlushDone++;
+    }
+    AddTimingMarker(0, 0xC8, 0, 0xC8, 0xFF);
+    g_dwLastFlushValue = g_dwFlushValueSource;
+    AddTimingMarker(2, 0xC8, 0, 0, 0xFF);
+    AddTimingMarker(1, 0xC8, 0x64, 0, 0xFF);
+    osSpTaskLoad(task);
+    osSpTaskStartGo(task);
+    g_dwFrameBufferIndex ^= 1;
+}
+
+s32 ProcessDisplayList(Gfx *displayList, Gfx table[][4]) {
+    s32 clear, column, translucent, snowTint, row, i;
+
+    clear = !g_dwNightMode && !g_dwRainMode;
+    column = g_dwWeatherActive + !clear + 1;
+    translucent = FALSE;
+    snowTint = FALSE;
+    if (displayList != NULL) {
+        for (; (displayList->words.w0 >> 24) != G_ENDDL; displayList++) {
+            switch (displayList->words.w0 >> 24) {
+            case G_SETOTHERMODE_L:
+                for (row = 0; row < RENDER_MODE_ROWS; row++) {
+                    if (IsSameCommand(displayList, &table[row][0])) {
+                        *displayList = table[row][column];
+                        if (row >= RENDER_MODE_TRANSLUCENT_ROW) {
+                            translucent = TRUE;
+                        }
+                        break;
+                    }
+                }
+                break;
+            case G_SETCOMBINE:
+                if (clear) {
+                    for (i = 0; i < ARRAY_COUNT(g_aDlClearCombinePatch); i++) {
+                        if (IsSameCommand(displayList, &g_aDlClearCombinePatch[i][0])) {
+                            *displayList = g_aDlClearCombinePatch[i][1];
+                            break;
+                        }
+                    }
+                }
+                if (g_dwSnowMode && g_bDisplayListSnowTint) {
+                    for (i = 0; i < ARRAY_COUNT(g_aDlSnowTintCombines); i++) {
+                        if (IsSameCommand(displayList, &g_aDlSnowTintCombines[i])) {
+                            break;
+                        }
+                    }
+                    snowTint = i < ARRAY_COUNT(g_aDlSnowTintCombines);
+                }
+                break;
+            case G_SETPRIMCOLOR:
+                if (snowTint && g_dwSnowMode) {
+                    displayList->words.w1 = SNOW_PRIM_COLOR;
+                }
+                break;
+            case G_SETENVCOLOR:
+                if (snowTint && g_dwSnowMode) {
+                    displayList->words.w1 = SNOW_ENV_COLOR;
+                }
+                break;
+            }
+        }
+    }
+    g_bDisplayListSnowTint = FALSE;
+    return translucent;
+}
+
+void ProcessAllDisplayLists(void) {
+    Vehicle *vehicle;
+    s32 snowTint, i, lod, k;
+
+    snowTint =
+        g_dwSelectedTrackId != TRACK_COASTLINE && g_dwSelectedTrackId != TRACK_MIRROR_COASTLINE;
+    for (i = 0; i < g_LoadedTrack.instanceCount; i++) {
+        if (!(g_LoadedTrack.instances[i].flags & TRACK_INSTANCE_TWO_SIDED)) {
+            g_bDisplayListSnowTint = snowTint;
+        }
+        if (ProcessDisplayList(g_LoadedTrack.instances[i].displayList, g_aaDlTrackRenderModes)) {
+            g_LoadedTrack.instances[i].flags |= TRACK_INSTANCE_TRANSLUCENT;
+        }
+    }
+    /* The models the vehicles share are patched for good. */
+    for (i = 0, vehicle = g_aVehicles; i < g_dwNumActiveVehicles; i++, vehicle++) {
+        for (lod = 0; lod < VEHICLE_LODS; lod++) {
+            if (vehicle->ghostMode == VEHICLE_GHOST) {
+                for (k = 0; k < VEHICLE_DISPLAY_LISTS; k++) {
+                    ProcessDisplayList(vehicle->model->displayLists[lod][k],
+                                       g_aaDlGhostRenderModes);
+                }
+                for (k = 0; k < VEHICLE_WHEEL_DISPLAY_LISTS; k++) {
+                    ProcessDisplayList(vehicle->model->wheelDisplayLists[lod][k],
+                                       g_aaDlGhostWheelRenderModes);
+                }
+            } else {
+                for (k = 0; k < VEHICLE_DISPLAY_LISTS; k++) {
+                    ProcessDisplayList(vehicle->model->displayLists[lod][k],
+                                       g_aaDlTrackRenderModes);
+                }
+                for (k = 0; k < VEHICLE_WHEEL_DISPLAY_LISTS; k++) {
+                    ProcessDisplayList(vehicle->model->wheelDisplayLists[lod][k],
+                                       g_aaDlTrackRenderModes);
+                }
+            }
+        }
+    }
 }
 
 void RspDoneThread(void *arg) {

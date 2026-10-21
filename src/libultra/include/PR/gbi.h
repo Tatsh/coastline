@@ -118,6 +118,8 @@ typedef union {
 #define G_SETFILLCOLOR 0xF7
 #define G_SETSCISSOR 0xED
 #define G_SETCIMG 0xFF
+#define G_SETZIMG 0xFE
+#define G_RDPFULLSYNC 0xE9
 
 /* The parameters of gSPMatrix(). */
 #define G_MTX_MODELVIEW 0x00
@@ -133,10 +135,12 @@ typedef union {
 #define G_SHADING_SMOOTH 0x00000200
 #define G_CULL_FRONT 0x00001000
 #define G_CULL_BACK 0x00002000
+#define G_CULL_BOTH 0x00003000
 #define G_FOG 0x00010000
 #define G_LIGHTING 0x00020000
 #define G_TEXTURE_GEN 0x00040000
 #define G_TEXTURE_GEN_LINEAR 0x00080000
+#define G_LOD 0x00100000
 #define G_CLIPPING 0x00800000
 
 /* The fields of the other modes, by their lowest bit. */
@@ -174,6 +178,10 @@ typedef union {
 #define G_TT_NONE (0 << G_MDSFT_TEXTLUT)
 #define G_TP_NONE (0 << G_MDSFT_TEXTPERSP)
 #define G_TP_PERSP (1 << G_MDSFT_TEXTPERSP)
+#define G_TF_POINT (0 << G_MDSFT_TEXTFILT)
+#define G_TF_BILERP (2 << G_MDSFT_TEXTFILT)
+#define G_CD_BAYER (1 << G_MDSFT_RGBDITHER)
+#define G_AD_PATTERN (0 << G_MDSFT_ALPHADITHER)
 #define G_TT_RGBA16 (2 << G_MDSFT_TEXTLUT)
 
 /* The coverage, depth and blending bits of a render mode. */
@@ -213,6 +221,12 @@ typedef union {
 #define GBL_c2(m1a, m1b, m2a, m2b)                                                                 \
     ((u32)(m1a) << 28 | (u32)(m1b) << 24 | (u32)(m2a) << 20 | (u32)(m2b) << 16)
 
+/** The opaque surface without antialiasing or depth, for each cycle. */
+#define G_RM_OPA_SURF                                                                              \
+    (CVG_DST_CLAMP | FORCE_BL | ZMODE_OPA | GBL_c1(G_BL_CLR_IN, G_BL_0, G_BL_CLR_IN, G_BL_1))
+#define G_RM_OPA_SURF2                                                                             \
+    (CVG_DST_CLAMP | FORCE_BL | ZMODE_OPA | GBL_c2(G_BL_CLR_IN, G_BL_0, G_BL_CLR_IN, G_BL_1))
+
 /* The inputs of the colour combiner, named for G_CCMUX_ and G_ACMUX_ by gDPSetCombineLERP(). */
 #define G_CCMUX_COMBINED 0
 #define G_CCMUX_TEXEL0 1
@@ -249,9 +263,11 @@ typedef union {
 #define G_TX_RENDERTILE 0
 #define G_TX_LOADTILE 7
 #define G_TX_WRAP 0
+#define G_TX_MIRROR 1
 #define G_TX_CLAMP 2
 #define G_TX_NOLOD 0
 #define G_ON 1
+#define G_OFF 0
 
 /* The fixed-point fractions of texture coordinates and of the load stride. */
 #define G_TEXTURE_IMAGE_FRAC 2
@@ -302,6 +318,20 @@ typedef union {
 #define G_MW_SEGMENT 0x06
 #define G_MW_LIGHTCOL 0x0A
 #define G_MW_PERSPNORM 0x0E
+#define G_MV_VIEWPORT 0x80
+#define G_MW_FOG 0x08
+#define G_MWO_FOG 0x00
+
+/** The scale and translation of a viewport, in 10.2 fixed point, each with the depth third. */
+typedef struct {
+    s16 vscale[4];
+    s16 vtrans[4];
+} Vp_t;
+
+typedef union {
+    Vp_t vp;
+    long long force_structure_alignment[2];
+} Vp;
 
 /** The word gSPNumLights() sends for a number of directional lights. */
 #define NUML(n) (((n) + 1) * 32 + 0x80000000)
@@ -397,6 +427,19 @@ typedef struct {
 
 /** Set the normalisation of the perspective, which gu's perspective routines return. */
 #define gSPPerspNormalize(pkt, s) gMoveWd(pkt, G_MW_PERSPNORM, 0, s)
+
+/** Load a viewport. */
+#define gSPViewport(pkt, v)                                                                        \
+    gDisplayListWords(                                                                             \
+        pkt, _SHIFTL(G_MOVEMEM, 24, 8) | _SHIFTL(G_MV_VIEWPORT, 16, 8) | sizeof(Vp), (u32)(v))
+
+/** Set the depths the fog starts and ends at, from 0 at the near plane to 1000 at the far. */
+#define gSPFogPosition(pkt, min, max)                                                              \
+    gMoveWd(pkt,                                                                                   \
+            G_MW_FOG,                                                                              \
+            G_MWO_FOG,                                                                             \
+            (_SHIFTL((128000 / ((max) - (min))), 16, 16) |                                         \
+             _SHIFTL(((500 - (min)) * 256 / ((max) - (min))), 0, 16)))
 
 /** Set the base of a segment. */
 #define gSPSegment(pkt, segment, base) gMoveWd(pkt, G_MW_SEGMENT, (segment) * 4, base)
@@ -502,11 +545,23 @@ typedef struct {
                           _SHIFTL(G_ACMUX_##Ab1, 3, 3) | _SHIFTL(G_ACMUX_##Ad1, 0, 3))
 
 #define gDPLoadSync(pkt) gDPNoParam(pkt, G_RDPLOADSYNC)
+#define gDPFullSync(pkt) gDPNoParam(pkt, G_RDPFULLSYNC)
+#define gDPSetDepthImage(pkt, i) gDisplayListWords(pkt, _SHIFTL(G_SETZIMG, 24, 8), (u32)(i))
 #define gDPSetColorImage(pkt, f, s, w, i)                                                          \
     gDisplayListWords(pkt,                                                                         \
                       _SHIFTL(G_SETCIMG, 24, 8) | _SHIFTL(f, 21, 3) | _SHIFTL(s, 19, 2) |          \
                           _SHIFTL((w) - 1, 0, 12),                                                 \
                       (u32)(i))
+/** A colour of RGBA 5551 from components of 8 bits and an alpha of 1 bit. */
+#define GPACK_RGBA5551(r, g, b, a)                                                                 \
+    ((((r) << 8) & 0xF800) | (((g) << 3) & 0x7C0) | (((b) >> 2) & 0x3E) | ((a) & 0x1))
+
+/** A depth and its slope, as the depth buffer stores them. */
+#define GPACK_ZDZ(z, dz) ((z) << 2 | (dz))
+
+/** The farthest depth. */
+#define G_MAXFIXED 0x3FFF
+
 #define gDPSetFillColor(pkt, d) gDisplayListWords(pkt, _SHIFTL(G_SETFILLCOLOR, 24, 8), (u32)(d))
 #define gDPFillRectangle(pkt, ulx, uly, lrx, lry)                                                  \
     gDisplayListWords(pkt,                                                                         \

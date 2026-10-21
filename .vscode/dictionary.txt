@@ -29,6 +29,7 @@ bcopy
 beqz
 bestlaptime
 bgtz
+bilerp
 blez
 bnel
 bnez
@@ -147,9 +148,12 @@ getcount
 getcurrfaultedthread
 getthreadpri
 gettime
+gfxtask
 ghidra
 glabel
+glist
 globl
+gpack
 graphviz
 gridstarts
 grounddist
@@ -354,6 +358,7 @@ raydone
 rdbread
 rdbwrite
 rdparty
+rdpfullsync
 rdphalf
 rdploadsync
 rdppipesync
@@ -407,6 +412,7 @@ setthreadpri
 settilesize
 settimer
 settimg
+setzimg
 shellcheck
 shellformat
 shiftl
@@ -462,6 +468,7 @@ textfilt
 textlod
 textlut
 textpersp
+textureanim
 thiscall
 timerintr
 tiretype
@@ -518,6 +525,7 @@ vmodeldl
 vmodeltex
 vretrace
 vsince
+wdangling
 weatherselect
 werror
 wextra

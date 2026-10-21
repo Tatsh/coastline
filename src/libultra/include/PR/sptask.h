@@ -39,6 +39,14 @@ typedef union {
 
 #define OS_YIELD_DATA_SIZE 0xC00
 
+/** The type of a graphics task. */
+#define M_GFXTASK 1
+
+/** The bytes of the microcode text and data an RSP task loads, and of its matrix stack. */
+#define SP_UCODE_SIZE 4096
+#define SP_UCODE_DATA_SIZE 2048
+#define SP_DRAM_STACK_SIZE8 0x400
+
 /**
  * The physical copy of the last task osSpTaskLoad() loaded.
  *

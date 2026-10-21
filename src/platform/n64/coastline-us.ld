@@ -53,6 +53,12 @@ SECTIONS
 /* The original boot stack, inside the BSS. */
 g_abBootStackTop = 0x803168D0;
 
+/* The memory of the matrix stack of the RSP, inside the BSS, before it is aligned. */
+g_abRspDramStackBuffer = 0x8031A598;
+
+/* The depth buffer, below the program. */
+g_aDepthBuffer = 0x80000400;
+
 /* The menu music module, which the main thread decompresses below the program. */
 g_abMenuMusicModule = 0x80025C00;
 
