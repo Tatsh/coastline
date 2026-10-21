@@ -100,8 +100,8 @@ glabel RenderDecalPreview3D
     /* 43C4C 80242C4C 916BDB68 */  lbu        $t3, %lo(g_bObjectDirty4)($t3)
     /* 43C50 80242C50 3C068029 */  lui        $a2, %hi(g_aDecalPreviewLightDirs)
     /* 43C54 80242C54 24C6DC08 */  addiu      $a2, $a2, %lo(g_aDecalPreviewLightDirs)
-    /* 43C58 80242C58 3C058029 */  lui        $a1, %hi(gDecalToolColor)
-    /* 43C5C 80242C5C 24A5DBB0 */  addiu      $a1, $a1, %lo(gDecalToolColor)
+    /* 43C58 80242C58 3C058029 */  lui        $a1, %hi(g_wScreenFrameCount)
+    /* 43C5C 80242C5C 24A5DBB0 */  addiu      $a1, $a1, %lo(g_wScreenFrameCount)
     /* 43C60 80242C60 94AD0000 */  lhu        $t5, 0x0($a1)
     /* 43C64 80242C64 27A400CC */  addiu      $a0, $sp, 0xCC
     /* 43C68 80242C68 25AE0001 */  addiu      $t6, $t5, 0x1
@@ -146,8 +146,8 @@ glabel RenderDecalPreview3D
     /* 43D04 80242D04 E7A00090 */  swc1       $f0, 0x90($sp)
     /* 43D08 80242D08 0C0890E7 */  jal        Vec3fCross
     /* 43D0C 80242D0C E7A80094 */   swc1      $f8, 0x94($sp)
-    /* 43D10 80242D10 3C0F8029 */  lui        $t7, %hi(gDecalToolColor)
-    /* 43D14 80242D14 95EFDBB0 */  lhu        $t7, %lo(gDecalToolColor)($t7)
+    /* 43D10 80242D10 3C0F8029 */  lui        $t7, %hi(g_wScreenFrameCount)
+    /* 43D14 80242D14 95EFDBB0 */  lhu        $t7, %lo(g_wScreenFrameCount)($t7)
     /* 43D18 80242D18 27A50098 */  addiu      $a1, $sp, 0x98
     /* 43D1C 80242D1C 29E10008 */  slti       $at, $t7, 0x8
     /* 43D20 80242D20 10200005 */  beqz       $at, .L80242D38
@@ -167,11 +167,11 @@ glabel RenderDecalPreview3D
     /* 43D50 80242D50 46105481 */  sub.s      $f18, $f10, $f16
     /* 43D54 80242D54 C7A400C4 */  lwc1       $f4, 0xC4($sp)
     /* 43D58 80242D58 C7A600D0 */  lwc1       $f6, 0xD0($sp)
-    /* 43D5C 80242D5C 3C028029 */  lui        $v0, %hi(gDecalToolColor)
+    /* 43D5C 80242D5C 3C028029 */  lui        $v0, %hi(g_wScreenFrameCount)
     /* 43D60 80242D60 460E9003 */  div.s      $f0, $f18, $f14
     /* 43D64 80242D64 C7B200D4 */  lwc1       $f18, 0xD4($sp)
     /* 43D68 80242D68 C7AA00C8 */  lwc1       $f10, 0xC8($sp)
-    /* 43D6C 80242D6C 2442DBB0 */  addiu      $v0, $v0, %lo(gDecalToolColor)
+    /* 43D6C 80242D6C 2442DBB0 */  addiu      $v0, $v0, %lo(g_wScreenFrameCount)
     /* 43D70 80242D70 46062201 */  sub.s      $f8, $f4, $f6
     /* 43D74 80242D74 94580000 */  lhu        $t8, 0x0($v0)
     /* 43D78 80242D78 46125101 */  sub.s      $f4, $f10, $f18
@@ -290,11 +290,11 @@ glabel RenderDecalPreview3D
     /* 43F20 80242F20 46068201 */  sub.s      $f8, $f16, $f6
     /* 43F24 80242F24 C7AA006C */  lwc1       $f10, 0x6C($sp)
     /* 43F28 80242F28 C7B20078 */  lwc1       $f18, 0x78($sp)
-    /* 43F2C 80242F2C 3C028029 */  lui        $v0, %hi(gDecalToolColor)
+    /* 43F2C 80242F2C 3C028029 */  lui        $v0, %hi(g_wScreenFrameCount)
     /* 43F30 80242F30 460E4003 */  div.s      $f0, $f8, $f14
     /* 43F34 80242F34 C7A8007C */  lwc1       $f8, 0x7C($sp)
     /* 43F38 80242F38 C7B00070 */  lwc1       $f16, 0x70($sp)
-    /* 43F3C 80242F3C 2442DBB0 */  addiu      $v0, $v0, %lo(gDecalToolColor)
+    /* 43F3C 80242F3C 2442DBB0 */  addiu      $v0, $v0, %lo(g_wScreenFrameCount)
     /* 43F40 80242F40 46125101 */  sub.s      $f4, $f10, $f18
     /* 43F44 80242F44 944B0000 */  lhu        $t3, 0x0($v0)
     /* 43F48 80242F48 3C014F80 */  lui        $at, (0x4F800000 >> 16)
@@ -343,12 +343,12 @@ glabel RenderDecalPreview3D
     /* 43FE8 80242FE8 8E040000 */  lw         $a0, 0x0($s0)
     /* 43FEC 80242FEC 0C0891D8 */  jal        Vec3fNormalize
     /* 43FF0 80242FF0 24840020 */   addiu     $a0, $a0, 0x20
-    /* 43FF4 80242FF4 3C188029 */  lui        $t8, %hi(gDecalToolColor)
-    /* 43FF8 80242FF8 9718DBB0 */  lhu        $t8, %lo(gDecalToolColor)($t8)
+    /* 43FF4 80242FF4 3C188029 */  lui        $t8, %hi(g_wScreenFrameCount)
+    /* 43FF8 80242FF8 9718DBB0 */  lhu        $t8, %lo(g_wScreenFrameCount)($t8)
     /* 43FFC 80242FFC 24010010 */  addiu      $at, $zero, 0x10
     /* 44000 80243000 17010016 */  bne        $t8, $at, .L8024305C
-    /* 44004 80243004 3C018029 */   lui       $at, %hi(gDecalToolColor)
-    /* 44008 80243008 A420DBB0 */  sh         $zero, %lo(gDecalToolColor)($at)
+    /* 44004 80243004 3C018029 */   lui       $at, %hi(g_wScreenFrameCount)
+    /* 44008 80243008 A420DBB0 */  sh         $zero, %lo(g_wScreenFrameCount)($at)
     /* 4400C 8024300C 3C018029 */  lui        $at, %hi(g_bObjectDirty15)
     /* 44010 80243010 10000012 */  b          .L8024305C
     /* 44014 80243014 A020DBD0 */   sb        $zero, %lo(g_bObjectDirty15)($at)
@@ -2231,8 +2231,8 @@ glabel ResetPaintShopState
     /* 45C20 80244C20 A023DB64 */  sb         $v1, %lo(g_bObjectDirty3)($at)
     /* 45C24 80244C24 3C018029 */  lui        $at, %hi(g_bObjectDirty2)
     /* 45C28 80244C28 A023DB60 */  sb         $v1, %lo(g_bObjectDirty2)($at)
-    /* 45C2C 80244C2C 3C018029 */  lui        $at, %hi(gDecalToolColor)
-    /* 45C30 80244C30 A420DBB0 */  sh         $zero, %lo(gDecalToolColor)($at)
+    /* 45C2C 80244C2C 3C018029 */  lui        $at, %hi(g_wScreenFrameCount)
+    /* 45C30 80244C30 A420DBB0 */  sh         $zero, %lo(g_wScreenFrameCount)($at)
     /* 45C34 80244C34 3C018029 */  lui        $at, %hi(g_bController1Connected)
     /* 45C38 80244C38 A020CF5C */  sb         $zero, %lo(g_bController1Connected)($at)
     /* 45C3C 80244C3C 3C018029 */  lui        $at, %hi(g_bController2Connected)
@@ -6690,8 +6690,8 @@ glabel MirrorDecalToOppositePanel
     /* 49D74 80248D74 A02BDBD0 */  sb         $t3, %lo(g_bObjectDirty15)($at)
     /* 49D78 80248D78 3C098029 */  lui        $t1, %hi(g_bObjectDirty3)
     /* 49D7C 80248D7C 9129DB64 */  lbu        $t1, %lo(g_bObjectDirty3)($t1)
-    /* 49D80 80248D80 3C018029 */  lui        $at, %hi(gDecalToolColor)
-    /* 49D84 80248D84 A420DBB0 */  sh         $zero, %lo(gDecalToolColor)($at)
+    /* 49D80 80248D80 3C018029 */  lui        $at, %hi(g_wScreenFrameCount)
+    /* 49D84 80248D84 A420DBB0 */  sh         $zero, %lo(g_wScreenFrameCount)($at)
     /* 49D88 80248D88 3C018029 */  lui        $at, %hi(g_bObjectDirty2)
     /* 49D8C 80248D8C A029DB60 */  sb         $t1, %lo(g_bObjectDirty2)($at)
     /* 49D90 80248D90 3C018029 */  lui        $at, %hi(g_dwFontCharWidth)
@@ -6916,11 +6916,11 @@ glabel ProcessDecalSaveLoad
   jlabel .L80249090
     /* 4A090 80249090 44806000 */  mtc1       $zero, $f12
     /* 4A094 80249094 3C01802B */  lui        $at, %hi(g_dwRaceReserved99)
-    /* 4A098 80249098 0C088DD4 */  jal        SetFadeTargetSecondary
+    /* 4A098 80249098 0C088DD4 */  jal        FadeSfxTo
     /* 4A09C 8024909C C42EB1D0 */   lwc1      $f14, %lo(g_dwRaceReserved99)($at)
     /* 4A0A0 802490A0 44806000 */  mtc1       $zero, $f12
     /* 4A0A4 802490A4 3C01802B */  lui        $at, %hi(g_dwRaceReserved100)
-    /* 4A0A8 802490A8 0C088DF4 */  jal        SetFadeTargetTertiary
+    /* 4A0A8 802490A8 0C088DF4 */  jal        FadeMusicTo
     /* 4A0AC 802490AC C42EB1D4 */   lwc1      $f14, %lo(g_dwRaceReserved100)($at)
     /* 4A0B0 802490B0 24180001 */  addiu      $t8, $zero, 0x1
     /* 4A0B4 802490B4 3C018037 */  lui        $at, %hi(gOsSchedulerState)
@@ -8730,12 +8730,12 @@ glabel ProcessDecalSaveLoad
     /* 4BB7C 8024AB7C 44816000 */  mtc1       $at, $f12
     /* 4BB80 8024AB80 3C01802B */  lui        $at, %hi(g_dwRaceReserved101)
     /* 4BB84 8024AB84 C42EB200 */  lwc1       $f14, %lo(g_dwRaceReserved101)($at)
-    /* 4BB88 8024AB88 0C088DD4 */  jal        SetFadeTargetSecondary
+    /* 4BB88 8024AB88 0C088DD4 */  jal        FadeSfxTo
     /* 4BB8C 8024AB8C AFAF003C */   sw        $t7, 0x3C($sp)
     /* 4BB90 8024AB90 3C013F80 */  lui        $at, (0x3F800000 >> 16)
     /* 4BB94 8024AB94 44816000 */  mtc1       $at, $f12
     /* 4BB98 8024AB98 3C01802B */  lui        $at, %hi(g_dwRaceReserved102)
-    /* 4BB9C 8024AB9C 0C088DF4 */  jal        SetFadeTargetTertiary
+    /* 4BB9C 8024AB9C 0C088DF4 */  jal        FadeMusicTo
     /* 4BBA0 8024ABA0 C42EB204 */   lwc1      $f14, %lo(g_dwRaceReserved102)($at)
     /* 4BBA4 8024ABA4 3C188037 */  lui        $t8, %hi(gOsTaskState)
     /* 4BBA8 8024ABA8 8F189E54 */  lw         $t8, %lo(gOsTaskState)($t8)
@@ -8824,8 +8824,8 @@ glabel ProcessTextInputKeyboard
     /* 4BCC8 8024ACC8 3C168029 */  lui        $s6, %hi(g_texKeyboardKeyHighlight)
     /* 4BCCC 8024ACCC 26D6D290 */  addiu      $s6, $s6, %lo(g_texKeyboardKeyHighlight)
     /* 4BCD0 8024ACD0 92CE002C */  lbu        $t6, 0x2C($s6)
-    /* 4BCD4 8024ACD4 3C088029 */  lui        $t0, %hi(gDecalToolColor)
-    /* 4BCD8 8024ACD8 2508DBB0 */  addiu      $t0, $t0, %lo(gDecalToolColor)
+    /* 4BCD4 8024ACD4 3C088029 */  lui        $t0, %hi(g_wScreenFrameCount)
+    /* 4BCD8 8024ACD8 2508DBB0 */  addiu      $t0, $t0, %lo(g_wScreenFrameCount)
     /* 4BCDC 8024ACDC 11C00015 */  beqz       $t6, .L8024AD34
     /* 4BCE0 8024ACE0 00000000 */   nop
     /* 4BCE4 8024ACE4 95030000 */  lhu        $v1, 0x0($t0)
@@ -8937,8 +8937,8 @@ glabel ProcessTextInputKeyboard
     /* 4BE78 8024AE78 0C095644 */  jal        TransferFlags
     /* 4BE7C 8024AE7C 34058010 */   ori       $a1, $zero, 0x8010
     /* 4BE80 8024AE80 240F0003 */  addiu      $t7, $zero, 0x3
-    /* 4BE84 8024AE84 3C018029 */  lui        $at, %hi(gDecalToolColor)
-    /* 4BE88 8024AE88 A42FDBB0 */  sh         $t7, %lo(gDecalToolColor)($at)
+    /* 4BE84 8024AE84 3C018029 */  lui        $at, %hi(g_wScreenFrameCount)
+    /* 4BE88 8024AE88 A42FDBB0 */  sh         $t7, %lo(g_wScreenFrameCount)($at)
     /* 4BE8C 8024AE8C 93C20000 */  lbu        $v0, 0x0($fp)
     /* 4BE90 8024AE90 24010031 */  addiu      $at, $zero, 0x31
     /* 4BE94 8024AE94 14410012 */  bne        $v0, $at, .L8024AEE0
@@ -10350,8 +10350,8 @@ glabel ProcessDecalEditorInput
     /* 4D304 8024C304 8C42AB08 */  lw         $v0, %lo(g_pCurrentVehicleModelData)($v0)
     /* 4D308 8024C308 3C018029 */  lui        $at, %hi(g_bObjectDirty15)
     /* 4D30C 8024C30C A02DDBD0 */  sb         $t5, %lo(g_bObjectDirty15)($at)
-    /* 4D310 8024C310 3C018029 */  lui        $at, %hi(gDecalToolColor)
-    /* 4D314 8024C314 A420DBB0 */  sh         $zero, %lo(gDecalToolColor)($at)
+    /* 4D310 8024C310 3C018029 */  lui        $at, %hi(g_wScreenFrameCount)
+    /* 4D314 8024C314 A420DBB0 */  sh         $zero, %lo(g_wScreenFrameCount)($at)
     /* 4D318 8024C318 00481821 */  addu       $v1, $v0, $t0
     /* 4D31C 8024C31C 906F0110 */  lbu        $t7, 0x110($v1)
     /* 4D320 8024C320 24060024 */  addiu      $a2, $zero, 0x24
@@ -10852,8 +10852,8 @@ glabel ProcessDecalEditorInput
     /* 4DA64 8024CA64 032B6821 */  addu       $t5, $t9, $t3
     /* 4DA68 8024CA68 AD4F001C */  sw         $t7, 0x1C($t2)
     /* 4DA6C 8024CA6C AD4D0020 */  sw         $t5, 0x20($t2)
-    /* 4DA70 8024CA70 3C018029 */  lui        $at, %hi(gDecalToolColor)
-    /* 4DA74 8024CA74 A420DBB0 */  sh         $zero, %lo(gDecalToolColor)($at)
+    /* 4DA70 8024CA70 3C018029 */  lui        $at, %hi(g_wScreenFrameCount)
+    /* 4DA74 8024CA74 A420DBB0 */  sh         $zero, %lo(g_wScreenFrameCount)($at)
   .L8024CA78:
     /* 4DA78 8024CA78 0C092B1C */  jal        ProcessTextInputKeyboard
     /* 4DA7C 8024CA7C 00000000 */   nop
@@ -16481,8 +16481,8 @@ glabel DrawDashedLine
     /* 52ABC 80251ABC 10000001 */  b          .L80251AC4
     /* 52AC0 80251AC0 0040A025 */   or        $s4, $v0, $zero
   .L80251AC4:
-    /* 52AC4 80251AC4 3C028029 */  lui        $v0, %hi(gDecalToolColor)
-    /* 52AC8 80251AC8 2442DBB0 */  addiu      $v0, $v0, %lo(gDecalToolColor)
+    /* 52AC4 80251AC4 3C028029 */  lui        $v0, %hi(g_wScreenFrameCount)
+    /* 52AC8 80251AC8 2442DBB0 */  addiu      $v0, $v0, %lo(g_wScreenFrameCount)
     /* 52ACC 80251ACC 944E0000 */  lhu        $t6, 0x0($v0)
     /* 52AD0 80251AD0 3C168029 */  lui        $s6, %hi(g_bObjectVisible0)
     /* 52AD4 80251AD4 26C4DAB8 */  addiu      $a0, $s6, %lo(g_bObjectVisible0)
@@ -16643,8 +16643,8 @@ nonmatching DrawDashedRectangle, 0x294
 
 glabel DrawDashedRectangle
     /* 52CD4 80251CD4 27BDFF98 */  addiu      $sp, $sp, -0x68
-    /* 52CD8 80251CD8 3C028029 */  lui        $v0, %hi(gDecalToolColor)
-    /* 52CDC 80251CDC 2442DBB0 */  addiu      $v0, $v0, %lo(gDecalToolColor)
+    /* 52CD8 80251CD8 3C028029 */  lui        $v0, %hi(g_wScreenFrameCount)
+    /* 52CDC 80251CDC 2442DBB0 */  addiu      $v0, $v0, %lo(g_wScreenFrameCount)
     /* 52CE0 80251CE0 944E0000 */  lhu        $t6, 0x0($v0)
     /* 52CE4 80251CE4 AFBE0048 */  sw         $fp, 0x48($sp)
     /* 52CE8 80251CE8 AFB1002C */  sw         $s1, 0x2C($sp)
@@ -16832,8 +16832,8 @@ nonmatching DrawDashedRoundedRect, 0x464
 
 glabel DrawDashedRoundedRect
     /* 52F68 80251F68 27BDFF70 */  addiu      $sp, $sp, -0x90
-    /* 52F6C 80251F6C 3C028029 */  lui        $v0, %hi(gDecalToolColor)
-    /* 52F70 80251F70 2442DBB0 */  addiu      $v0, $v0, %lo(gDecalToolColor)
+    /* 52F6C 80251F6C 3C028029 */  lui        $v0, %hi(g_wScreenFrameCount)
+    /* 52F70 80251F70 2442DBB0 */  addiu      $v0, $v0, %lo(g_wScreenFrameCount)
     /* 52F74 80251F74 944E0000 */  lhu        $t6, 0x0($v0)
     /* 52F78 80251F78 AFB30034 */  sw         $s3, 0x34($sp)
     /* 52F7C 80251F7C AFBF004C */  sw         $ra, 0x4C($sp)
@@ -17204,10 +17204,10 @@ glabel DrawDashedEllipse
   .L80252480:
     /* 53480 80252480 8FAE0098 */  lw         $t6, 0x98($sp)
     /* 53484 80252484 8FB90094 */  lw         $t9, 0x94($sp)
-    /* 53488 80252488 3C028029 */  lui        $v0, %hi(gDecalToolColor)
+    /* 53488 80252488 3C028029 */  lui        $v0, %hi(g_wScreenFrameCount)
     /* 5348C 8025248C 01CE0019 */  multu      $t6, $t6
     /* 53490 80252490 000E8040 */  sll        $s0, $t6, 1
-    /* 53494 80252494 2442DBB0 */  addiu      $v0, $v0, %lo(gDecalToolColor)
+    /* 53494 80252494 2442DBB0 */  addiu      $v0, $v0, %lo(g_wScreenFrameCount)
     /* 53498 80252498 944B0000 */  lhu        $t3, 0x0($v0)
     /* 5349C 8025249C 0200A025 */  or         $s4, $s0, $zero
     /* 534A0 802524A0 00009825 */  or         $s3, $zero, $zero
@@ -17516,8 +17516,8 @@ nonmatching DrawDashedCircle, 0x3A4
 glabel DrawDashedCircle
     /* 538F8 802528F8 27BDFF78 */  addiu      $sp, $sp, -0x88
     /* 538FC 802528FC 3C078029 */  lui        $a3, %hi(g_dwDecalEditorFlags)
-    /* 53900 80252900 3C098029 */  lui        $t1, %hi(gDecalToolColor)
-    /* 53904 80252904 2529DBB0 */  addiu      $t1, $t1, %lo(gDecalToolColor)
+    /* 53900 80252900 3C098029 */  lui        $t1, %hi(g_wScreenFrameCount)
+    /* 53904 80252904 2529DBB0 */  addiu      $t1, $t1, %lo(g_wScreenFrameCount)
     /* 53908 80252908 24E7DB94 */  addiu      $a3, $a3, %lo(g_dwDecalEditorFlags)
     /* 5390C 8025290C 95380000 */  lhu        $t8, 0x0($t1)
     /* 53910 80252910 AFB60030 */  sw         $s6, 0x30($sp)

@@ -823,12 +823,12 @@ glabel ProcessTrackSelectScreen
     /* E064 8020D064 3C013F80 */  lui        $at, (0x3F800000 >> 16)
     /* E068 8020D068 44816000 */  mtc1       $at, $f12
     /* E06C 8020D06C 3C01802A */  lui        $at, %hi(g_fFadeInRate2)
-    /* E070 8020D070 0C088DD4 */  jal        SetFadeTargetSecondary
+    /* E070 8020D070 0C088DD4 */  jal        FadeSfxTo
     /* E074 8020D074 C42E7EC8 */   lwc1      $f14, %lo(g_fFadeInRate2)($at)
     /* E078 8020D078 3C013F80 */  lui        $at, (0x3F800000 >> 16)
     /* E07C 8020D07C 44816000 */  mtc1       $at, $f12
     /* E080 8020D080 3C01802A */  lui        $at, %hi(g_fFadeInRate3)
-    /* E084 8020D084 0C088DF4 */  jal        SetFadeTargetTertiary
+    /* E084 8020D084 0C088DF4 */  jal        FadeMusicTo
     /* E088 8020D088 C42E7ECC */   lwc1      $f14, %lo(g_fFadeInRate3)($at)
     /* E08C 8020D08C 3C078032 */  lui        $a3, %hi(g_aVehicles)
     /* E090 8020D090 24E7B760 */  addiu      $a3, $a3, %lo(g_aVehicles)
@@ -4646,7 +4646,7 @@ glabel ProcessTrackSelectScreen
     /* 117E8 802107E8 AC206298 */  sw         $zero, %lo(g_dwResultsReady)($at)
     /* 117EC 802107EC 3C01802A */  lui        $at, %hi(g_fFadeBackRate)
     /* 117F0 802107F0 C42E7EF0 */  lwc1       $f14, %lo(g_fFadeBackRate)($at)
-    /* 117F4 802107F4 0C088DD4 */  jal        SetFadeTargetSecondary
+    /* 117F4 802107F4 0C088DD4 */  jal        FadeSfxTo
     /* 117F8 802107F8 4600A306 */   mov.s     $f12, $f20
     /* 117FC 802107FC 3C01802A */  lui        $at, %hi(g_fFadeBackRate2)
     /* 11800 80210800 C42E7EF4 */  lwc1       $f14, %lo(g_fFadeBackRate2)($at)
@@ -5098,14 +5098,14 @@ glabel ProcessTrackSelectScreen
     /* 11E78 80210E78 AC2D6298 */  sw         $t5, %lo(g_dwResultsReady)($at)
     /* 11E7C 80210E7C 3C01802A */  lui        $at, %hi(g_fFadeOutRate)
     /* 11E80 80210E80 C42E7F24 */  lwc1       $f14, %lo(g_fFadeOutRate)($at)
-    /* 11E84 80210E84 0C088DD4 */  jal        SetFadeTargetSecondary
+    /* 11E84 80210E84 0C088DD4 */  jal        FadeSfxTo
     /* 11E88 80210E88 4600A306 */   mov.s     $f12, $f20
     /* 11E8C 80210E8C 3C188027 */  lui        $t8, %hi(g_dwIsPaintMode)
     /* 11E90 80210E90 8F182070 */  lw         $t8, %lo(g_dwIsPaintMode)($t8)
     /* 11E94 80210E94 17000004 */  bnez       $t8, .L80210EA8
     /* 11E98 80210E98 3C01802A */   lui       $at, %hi(g_fFadeOutRate2)
     /* 11E9C 80210E9C C42E7F28 */  lwc1       $f14, %lo(g_fFadeOutRate2)($at)
-    /* 11EA0 80210EA0 0C088DF4 */  jal        SetFadeTargetTertiary
+    /* 11EA0 80210EA0 0C088DF4 */  jal        FadeMusicTo
     /* 11EA4 80210EA4 4600A306 */   mov.s     $f12, $f20
   .L80210EA8:
     /* 11EA8 80210EA8 3C01802A */  lui        $at, %hi(g_fFadeOutRate3)

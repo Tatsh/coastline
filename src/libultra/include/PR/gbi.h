@@ -234,6 +234,36 @@ typedef union {
 #define G_MWO_CLIP_RPX 0x14
 #define G_MWO_CLIP_RPY 0x1C
 #define FRUSTRATIO_1 1
+#define FRUSTRATIO_6 6
+
+/* The lights of the F3DEX microcode. */
+#define G_MOVEMEM 0x03
+#define G_MV_L0 0x86
+#define G_MW_NUMLIGHT 0x02
+#define G_MWO_NUMLIGHT 0x00
+#define NUMLIGHTS_1 1
+
+/** The word gSPNumLights() sends for a number of directional lights. */
+#define NUML(n) (((n) + 1) * 32 + 0x80000000)
+
+/** An ambient light: its color, twice. */
+typedef struct {
+    u8 col[3];
+    char pad1;
+    u8 colc[3];
+    char pad2;
+} Ambient_t;
+
+typedef union {
+    Ambient_t l;
+    long long force_structure_alignment[1];
+} Ambient;
+
+/** An ambient light and one directional light. */
+typedef struct {
+    Ambient a;
+    Light l[1];
+} Lights1;
 
 /** Write a command of two words at pkt, which is evaluated once. */
 #define gDisplayListWords(pkt, c0, c1)                                                             \
@@ -293,6 +323,16 @@ typedef union {
         gMoveWd(pkt, G_MW_CLIP, G_MWO_CLIP_RPX, (u16) - (r));                                      \
         gMoveWd(pkt, G_MW_CLIP, G_MWO_CLIP_RPY, (u16) - (r));                                      \
     } while (0)
+
+/** Set the number of directional lights. */
+#define gSPNumLights(pkt, n) gMoveWd(pkt, G_MW_NUMLIGHT, G_MWO_NUMLIGHT, NUML(n))
+
+/** Load a light into light slot n, from 1. The ambient light follows the directional ones. */
+#define gSPLight(pkt, l, n)                                                                        \
+    gDisplayListWords(pkt,                                                                         \
+                      _SHIFTL(G_MOVEMEM, 24, 8) | _SHIFTL(((n) - 1) * 2 + G_MV_L0, 16, 8) |        \
+                          _SHIFTL(sizeof(Light), 0, 16),                                           \
+                      (u32)(l))
 
 #define gDPPipeSync(pkt) gDPNoParam(pkt, G_RDPPIPESYNC)
 #define gDPTileSync(pkt) gDPNoParam(pkt, G_RDPTILESYNC)

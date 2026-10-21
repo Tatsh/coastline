@@ -53,7 +53,7 @@ glabel LoadTrackConditional
     /* 13A8 802003A8 E7A4001C */  swc1       $f4, 0x1C($sp)
     /* 13AC 802003AC E426AAD8 */  swc1       $f6, %lo(g_fFrameDeltaTime)($at)
   .L802003B0:
-    /* 13B0 802003B0 0C087613 */  jal        InterpolateTrackAnimation
+    /* 13B0 802003B0 0C087613 */  jal        AdvanceModelAnimations
     /* 13B4 802003B4 8C84FF54 */   lw        $a0, %lo(g_pModelLightsBlob)($a0)
     /* 13B8 802003B8 3C0E8027 */  lui        $t6, %hi(g_dwRaceCountdownState)
     /* 13BC 802003BC 8DCEFF58 */  lw         $t6, %lo(g_dwRaceCountdownState)($t6)
@@ -215,9 +215,9 @@ glabel RenderTrackCheckpointModel
     /* 15F8 802005F8 00000000 */   nop
 endlabel RenderTrackCheckpointModel
 
-nonmatching StartTimeTrialMode, 0x38
+nonmatching StartAttractDemo, 0x38
 
-glabel StartTimeTrialMode
+glabel StartAttractDemo
     /* 15FC 802005FC 240E0004 */  addiu      $t6, $zero, 0x4
     /* 1600 80200600 3C018027 */  lui        $at, %hi(g_dwGameMode)
     /* 1604 80200604 27BDFFE8 */  addiu      $sp, $sp, -0x18
@@ -232,7 +232,7 @@ glabel StartTimeTrialMode
     /* 1628 80200628 27BD0018 */  addiu      $sp, $sp, 0x18
     /* 162C 8020062C 03E00008 */  jr         $ra
     /* 1630 80200630 00000000 */   nop
-endlabel StartTimeTrialMode
+endlabel StartAttractDemo
 
 nonmatching StartMultiplayerMode, 0x58
 
@@ -1956,12 +1956,12 @@ glabel ProcessRaceHud
     /* 2F68 80201F68 3C013F80 */  lui        $at, (0x3F800000 >> 16)
     /* 2F6C 80201F6C 44816000 */  mtc1       $at, $f12
     /* 2F70 80201F70 3C01802A */  lui        $at, %hi(g_fConst0p2_802a7204)
-    /* 2F74 80201F74 0C088DD4 */  jal        SetFadeTargetSecondary
+    /* 2F74 80201F74 0C088DD4 */  jal        FadeSfxTo
     /* 2F78 80201F78 C42E7204 */   lwc1      $f14, %lo(g_fConst0p2_802a7204)($at)
     /* 2F7C 80201F7C 3C013F80 */  lui        $at, (0x3F800000 >> 16)
     /* 2F80 80201F80 44816000 */  mtc1       $at, $f12
     /* 2F84 80201F84 3C01802A */  lui        $at, %hi(g_fConst0p2_802a7208)
-    /* 2F88 80201F88 0C088DF4 */  jal        SetFadeTargetTertiary
+    /* 2F88 80201F88 0C088DF4 */  jal        FadeMusicTo
     /* 2F8C 80201F8C C42E7208 */   lwc1      $f14, %lo(g_fConst0p2_802a7208)($at)
     /* 2F90 80201F90 24180002 */  addiu      $t8, $zero, 0x2
     /* 2F94 80201F94 3C018031 */  lui        $at, %hi(gScreenClearCounter)
@@ -2092,7 +2092,7 @@ glabel ProcessRaceHud
     /* 3170 80202170 AC20078C */  sw         $zero, %lo(g_dwRaceSaveReplayFlag)($at)
     /* 3174 80202174 3C01802A */  lui        $at, %hi(g_fConst0p2_802a720c)
     /* 3178 80202178 44806000 */  mtc1       $zero, $f12
-    /* 317C 8020217C 0C088DD4 */  jal        SetFadeTargetSecondary
+    /* 317C 8020217C 0C088DD4 */  jal        FadeSfxTo
     /* 3180 80202180 C42E720C */   lwc1      $f14, %lo(g_fConst0p2_802a720c)($at)
     /* 3184 80202184 44806000 */  mtc1       $zero, $f12
     /* 3188 80202188 3C01802A */  lui        $at, %hi(g_fConst0p2_802a7210)
@@ -2176,7 +2176,7 @@ glabel ProcessRaceHud
     /* 32B4 802022B4 AC20078C */  sw         $zero, %lo(g_dwRaceSaveReplayFlag)($at)
     /* 32B8 802022B8 3C01802A */  lui        $at, %hi(g_fConst0p2_802a7214)
     /* 32BC 802022BC 44806000 */  mtc1       $zero, $f12
-    /* 32C0 802022C0 0C088DD4 */  jal        SetFadeTargetSecondary
+    /* 32C0 802022C0 0C088DD4 */  jal        FadeSfxTo
     /* 32C4 802022C4 C42E7214 */   lwc1      $f14, %lo(g_fConst0p2_802a7214)($at)
     /* 32C8 802022C8 44806000 */  mtc1       $zero, $f12
     /* 32CC 802022CC 3C01802A */  lui        $at, %hi(g_fConst0p2_802a7218)
@@ -2482,7 +2482,7 @@ glabel ProcessRaceHud
     /* 3730 80202730 C42E7220 */   lwc1      $f14, %lo(g_fConst0p2_802a7220)($at)
     /* 3734 80202734 44806000 */  mtc1       $zero, $f12
     /* 3738 80202738 3C01802A */  lui        $at, %hi(g_fConst0p2_802a7224)
-    /* 373C 8020273C 0C088DD4 */  jal        SetFadeTargetSecondary
+    /* 373C 8020273C 0C088DD4 */  jal        FadeSfxTo
     /* 3740 80202740 C42E7224 */   lwc1      $f14, %lo(g_fConst0p2_802a7224)($at)
     /* 3744 80202744 240D0001 */  addiu      $t5, $zero, 0x1
     /* 3748 80202748 3C018027 */  lui        $at, %hi(g_dwRaceExitState)
@@ -2908,7 +2908,7 @@ glabel ProcessRaceHud
     /* 3DA0 80202DA0 240800FF */   addiu     $t0, $zero, 0xFF
     /* 3DA4 80202DA4 44806000 */  mtc1       $zero, $f12
     /* 3DA8 80202DA8 3C01802A */  lui        $at, %hi(g_fConst0p2_802a7228)
-    /* 3DAC 80202DAC 0C088DD4 */  jal        SetFadeTargetSecondary
+    /* 3DAC 80202DAC 0C088DD4 */  jal        FadeSfxTo
     /* 3DB0 80202DB0 C42E7228 */   lwc1      $f14, %lo(g_fConst0p2_802a7228)($at)
     /* 3DB4 80202DB4 3C0E8027 */  lui        $t6, %hi(g_dwRaceSaveReplayFlag)
     /* 3DB8 80202DB8 8DCE078C */  lw         $t6, %lo(g_dwRaceSaveReplayFlag)($t6)
@@ -2916,7 +2916,7 @@ glabel ProcessRaceHud
     /* 3DC0 80202DC0 44806000 */   mtc1      $zero, $f12
     /* 3DC4 80202DC4 44806000 */  mtc1       $zero, $f12
     /* 3DC8 80202DC8 3C01802A */  lui        $at, %hi(g_fConst0p2_802a722c)
-    /* 3DCC 80202DCC 0C088DF4 */  jal        SetFadeTargetTertiary
+    /* 3DCC 80202DCC 0C088DF4 */  jal        FadeMusicTo
     /* 3DD0 80202DD0 C42E722C */   lwc1      $f14, %lo(g_fConst0p2_802a722c)($at)
     /* 3DD4 80202DD4 44806000 */  mtc1       $zero, $f12
   .L80202DD8:
@@ -5045,12 +5045,12 @@ glabel ProcessRaceHud
     /* 5D70 80204D70 3C013F80 */  lui        $at, (0x3F800000 >> 16)
     /* 5D74 80204D74 44816000 */  mtc1       $at, $f12
     /* 5D78 80204D78 3C01802A */  lui        $at, %hi(g_fConst0p2_802a724c)
-    /* 5D7C 80204D7C 0C088DD4 */  jal        SetFadeTargetSecondary
+    /* 5D7C 80204D7C 0C088DD4 */  jal        FadeSfxTo
     /* 5D80 80204D80 C42E724C */   lwc1      $f14, %lo(g_fConst0p2_802a724c)($at)
     /* 5D84 80204D84 3C013F80 */  lui        $at, (0x3F800000 >> 16)
     /* 5D88 80204D88 44816000 */  mtc1       $at, $f12
     /* 5D8C 80204D8C 3C01802A */  lui        $at, %hi(g_fConst0p2_802a7250)
-    /* 5D90 80204D90 0C088DF4 */  jal        SetFadeTargetTertiary
+    /* 5D90 80204D90 0C088DF4 */  jal        FadeMusicTo
     /* 5D94 80204D94 C42E7250 */   lwc1      $f14, %lo(g_fConst0p2_802a7250)($at)
     /* 5D98 80204D98 240B0002 */  addiu      $t3, $zero, 0x2
     /* 5D9C 80204D9C 3C018031 */  lui        $at, %hi(gScreenClearCounter)
@@ -5108,12 +5108,12 @@ glabel ProcessRaceHud
     /* 5E5C 80204E5C 3C013F80 */  lui        $at, (0x3F800000 >> 16)
     /* 5E60 80204E60 44816000 */  mtc1       $at, $f12
     /* 5E64 80204E64 3C01802A */  lui        $at, %hi(g_fConst0p2_802a7254)
-    /* 5E68 80204E68 0C088DD4 */  jal        SetFadeTargetSecondary
+    /* 5E68 80204E68 0C088DD4 */  jal        FadeSfxTo
     /* 5E6C 80204E6C C42E7254 */   lwc1      $f14, %lo(g_fConst0p2_802a7254)($at)
     /* 5E70 80204E70 3C013F80 */  lui        $at, (0x3F800000 >> 16)
     /* 5E74 80204E74 44816000 */  mtc1       $at, $f12
     /* 5E78 80204E78 3C01802A */  lui        $at, %hi(g_fConst0p2_802a7258)
-    /* 5E7C 80204E7C 0C088DF4 */  jal        SetFadeTargetTertiary
+    /* 5E7C 80204E7C 0C088DF4 */  jal        FadeMusicTo
     /* 5E80 80204E80 C42E7258 */   lwc1      $f14, %lo(g_fConst0p2_802a7258)($at)
     /* 5E84 80204E84 24090002 */  addiu      $t1, $zero, 0x2
     /* 5E88 80204E88 3C018031 */  lui        $at, %hi(gScreenClearCounter)
@@ -5139,11 +5139,11 @@ glabel ProcessRaceHud
     /* 5ED0 80204ED0 C42E7260 */   lwc1      $f14, %lo(g_fConst0p2_802a7260)($at)
     /* 5ED4 80204ED4 44806000 */  mtc1       $zero, $f12
     /* 5ED8 80204ED8 3C01802A */  lui        $at, %hi(g_fConst0p2_802a7264)
-    /* 5EDC 80204EDC 0C088DD4 */  jal        SetFadeTargetSecondary
+    /* 5EDC 80204EDC 0C088DD4 */  jal        FadeSfxTo
     /* 5EE0 80204EE0 C42E7264 */   lwc1      $f14, %lo(g_fConst0p2_802a7264)($at)
     /* 5EE4 80204EE4 44806000 */  mtc1       $zero, $f12
     /* 5EE8 80204EE8 3C01802A */  lui        $at, %hi(g_fConst0p2_802a7268)
-    /* 5EEC 80204EEC 0C088DF4 */  jal        SetFadeTargetTertiary
+    /* 5EEC 80204EEC 0C088DF4 */  jal        FadeMusicTo
     /* 5EF0 80204EF0 C42E7268 */   lwc1      $f14, %lo(g_fConst0p2_802a7268)($at)
     /* 5EF4 80204EF4 3C018027 */  lui        $at, %hi(g_dwRaceSaveReplayFlag)
     /* 5EF8 80204EF8 AC20078C */  sw         $zero, %lo(g_dwRaceSaveReplayFlag)($at)
@@ -5564,7 +5564,7 @@ glabel ProcessRaceHud
     /* 6504 80205504 AC20078C */  sw         $zero, %lo(g_dwRaceSaveReplayFlag)($at)
     /* 6508 80205508 3C01802A */  lui        $at, %hi(g_fConst0p2_802a7270)
     /* 650C 8020550C 44806000 */  mtc1       $zero, $f12
-    /* 6510 80205510 0C088DD4 */  jal        SetFadeTargetSecondary
+    /* 6510 80205510 0C088DD4 */  jal        FadeSfxTo
     /* 6514 80205514 C42E7270 */   lwc1      $f14, %lo(g_fConst0p2_802a7270)($at)
     /* 6518 80205518 44806000 */  mtc1       $zero, $f12
     /* 651C 8020551C 3C01802A */  lui        $at, %hi(g_fConst0p2_802a7274)
@@ -5617,11 +5617,11 @@ glabel ProcessRaceHud
   .L802055C8:
     /* 65C8 802055C8 44806000 */  mtc1       $zero, $f12
     /* 65CC 802055CC 3C01802A */  lui        $at, %hi(g_fConst0p2_802a727c)
-    /* 65D0 802055D0 0C088DD4 */  jal        SetFadeTargetSecondary
+    /* 65D0 802055D0 0C088DD4 */  jal        FadeSfxTo
     /* 65D4 802055D4 C42E727C */   lwc1      $f14, %lo(g_fConst0p2_802a727c)($at)
     /* 65D8 802055D8 44806000 */  mtc1       $zero, $f12
     /* 65DC 802055DC 3C01802A */  lui        $at, %hi(g_fConst0p2_802a7280)
-    /* 65E0 802055E0 0C088DF4 */  jal        SetFadeTargetTertiary
+    /* 65E0 802055E0 0C088DF4 */  jal        FadeMusicTo
     /* 65E4 802055E4 C42E7280 */   lwc1      $f14, %lo(g_fConst0p2_802a7280)($at)
     /* 65E8 802055E8 3C0F8032 */  lui        $t7, %hi(g_aVehicles)
     /* 65EC 802055EC 25EFB760 */  addiu      $t7, $t7, %lo(g_aVehicles)

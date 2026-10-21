@@ -1965,266 +1965,266 @@ dlabel g_fConst0p2_802a73a4
     /* A83A4 802A73A4 3E4CCCCD */ .float 0.200000003
 enddlabel g_fConst0p2_802a73a4
 
-nonmatching g_dwOsViRetraceCount
+nonmatching g_fConst0p2_802a73a8
 
-dlabel g_dwOsViRetraceCount
+dlabel g_fConst0p2_802a73a8
     /* A83A8 802A73A8 3E4CCCCD */ .float 0.200000003
-enddlabel g_dwOsViRetraceCount
+enddlabel g_fConst0p2_802a73a8
 
-nonmatching g_dwOsViWidth
+nonmatching g_fConst5000_802a73ac
 
-dlabel g_dwOsViWidth
+dlabel g_fConst5000_802a73ac
     /* A83AC 802A73AC 459C4000 */ .float 5000
-enddlabel g_dwOsViWidth
+enddlabel g_fConst5000_802a73ac
 
-nonmatching g_dwOsViHeight
+nonmatching g_fConst0p35_802a73b0
 
-dlabel g_dwOsViHeight
+dlabel g_fConst0p35_802a73b0
     /* A83B0 802A73B0 3EB33333 */ .float 0.349999994
-enddlabel g_dwOsViHeight
+enddlabel g_fConst0p35_802a73b0
 
-nonmatching g_dwOsViOrigin
+nonmatching g_fConst750_802a73b4
 
-dlabel g_dwOsViOrigin
+dlabel g_fConst750_802a73b4
     /* A83B4 802A73B4 443B8000 */ .float 750
-enddlabel g_dwOsViOrigin
+enddlabel g_fConst750_802a73b4
 
-nonmatching g_dwOsViYScale
+nonmatching g_fConstHalfPi_802a73b8
 
-dlabel g_dwOsViYScale
+dlabel g_fConstHalfPi_802a73b8
     /* A83B8 802A73B8 3FC90FDB */ .float 1.570796371
-enddlabel g_dwOsViYScale
+enddlabel g_fConstHalfPi_802a73b8
 
-nonmatching g_dwOsViXScale
+nonmatching g_fConstMinusPi_802a73bc
 
-dlabel g_dwOsViXScale
+dlabel g_fConstMinusPi_802a73bc
     /* A83BC 802A73BC C0490FDB */ .float -3.141592741
-enddlabel g_dwOsViXScale
+enddlabel g_fConstMinusPi_802a73bc
 
-nonmatching g_dwOsViStatus
+nonmatching g_fConstMinusHalfPi_802a73c0
 
-dlabel g_dwOsViStatus
+dlabel g_fConstMinusHalfPi_802a73c0
     /* A83C0 802A73C0 BFC90FDB */ .float -1.570796371
-enddlabel g_dwOsViStatus
+enddlabel g_fConstMinusHalfPi_802a73c0
     /* A83C4 802A73C4 00000000 */ .float 0
 
-nonmatching g_qwOsViTvMode
+nonmatching g_dConst255_802a73c8
 
-dlabel g_qwOsViTvMode
+dlabel g_dConst255_802a73c8
     /* A83C8 802A73C8 406FE00000000000 */ .double 255
-enddlabel g_qwOsViTvMode
+enddlabel g_dConst255_802a73c8
 
-nonmatching g_qwOsViSpecial
+nonmatching g_dConst255_802a73d0
 
-dlabel g_qwOsViSpecial
+dlabel g_dConst255_802a73d0
     /* A83D0 802A73D0 406FE00000000000 */ .double 255
-enddlabel g_qwOsViSpecial
+enddlabel g_dConst255_802a73d0
 
-nonmatching g_dwOsViField
+nonmatching g_fConst4p35_802a73d8
 
-dlabel g_dwOsViField
+dlabel g_fConst4p35_802a73d8
     /* A83D8 802A73D8 408B3333 */ .float 4.349999905
-enddlabel g_dwOsViField
+enddlabel g_fConst4p35_802a73d8
 
-nonmatching g_dwOsViCount
+nonmatching g_fConst750_802a73dc
 
-dlabel g_dwOsViCount
+dlabel g_fConst750_802a73dc
     /* A83DC 802A73DC 443B8000 */ .float 750
-enddlabel g_dwOsViCount
+enddlabel g_fConst750_802a73dc
 
-nonmatching g_dwOsViBlack
+nonmatching g_fConstHalfPi_802a73e0
 
-dlabel g_dwOsViBlack
+dlabel g_fConstHalfPi_802a73e0
     /* A83E0 802A73E0 3FC90FDB */ .float 1.570796371
-enddlabel g_dwOsViBlack
+enddlabel g_fConstHalfPi_802a73e0
 
-nonmatching g_dwOsViHStart
+nonmatching g_fConstMinusPi_802a73e4
 
-dlabel g_dwOsViHStart
+dlabel g_fConstMinusPi_802a73e4
     /* A83E4 802A73E4 C0490FDB */ .float -3.141592741
-enddlabel g_dwOsViHStart
+enddlabel g_fConstMinusPi_802a73e4
 
-nonmatching g_dwOsViXOffset
+nonmatching g_fConstMinusHalfPi_802a73e8
 
-dlabel g_dwOsViXOffset
+dlabel g_fConstMinusHalfPi_802a73e8
     /* A83E8 802A73E8 BFC90FDB */ .float -1.570796371
-enddlabel g_dwOsViXOffset
+enddlabel g_fConstMinusHalfPi_802a73e8
     /* A83EC 802A73EC 00000000 */ .float 0
 
-nonmatching g_qwOsViPalette0
+nonmatching g_dConst255_802a73f0
 
-dlabel g_qwOsViPalette0
+dlabel g_dConst255_802a73f0
     /* A83F0 802A73F0 406FE00000000000 */ .double 255
-enddlabel g_qwOsViPalette0
+enddlabel g_dConst255_802a73f0
 
-nonmatching g_qwOsViPalette1
+nonmatching g_dConst255_802a73f8
 
-dlabel g_qwOsViPalette1
+dlabel g_dConst255_802a73f8
     /* A83F8 802A73F8 406FE00000000000 */ .double 255
-enddlabel g_qwOsViPalette1
+enddlabel g_dConst255_802a73f8
 
-nonmatching g_dwOsViFeatures
+nonmatching g_fConst8p35_802a7400
 
-dlabel g_dwOsViFeatures
+dlabel g_fConst8p35_802a7400
     /* A8400 802A7400 4105999A */ .float 8.350000381
-enddlabel g_dwOsViFeatures
+enddlabel g_fConst8p35_802a7400
 
-nonmatching g_dwOsViFeatures2
+nonmatching g_fConst750_802a7404
 
-dlabel g_dwOsViFeatures2
+dlabel g_fConst750_802a7404
     /* A8404 802A7404 443B8000 */ .float 750
-enddlabel g_dwOsViFeatures2
+enddlabel g_fConst750_802a7404
 
-nonmatching g_dwOsViFeatures3
+nonmatching g_fConstHalfPi_802a7408
 
-dlabel g_dwOsViFeatures3
+dlabel g_fConstHalfPi_802a7408
     /* A8408 802A7408 3FC90FDB */ .float 1.570796371
-enddlabel g_dwOsViFeatures3
+enddlabel g_fConstHalfPi_802a7408
 
-nonmatching g_dwOsViFeatures4
+nonmatching g_fConstMinusPi_802a740c
 
-dlabel g_dwOsViFeatures4
+dlabel g_fConstMinusPi_802a740c
     /* A840C 802A740C C0490FDB */ .float -3.141592741
-enddlabel g_dwOsViFeatures4
+enddlabel g_fConstMinusPi_802a740c
 
-nonmatching g_dwOsViFeatures5
+nonmatching g_fConstMinusHalfPi_802a7410
 
-dlabel g_dwOsViFeatures5
+dlabel g_fConstMinusHalfPi_802a7410
     /* A8410 802A7410 BFC90FDB */ .float -1.570796371
-enddlabel g_dwOsViFeatures5
+enddlabel g_fConstMinusHalfPi_802a7410
 
-nonmatching g_dwOsViFeatures6
+nonmatching g_fConst0p01_802a7414
 
-dlabel g_dwOsViFeatures6
+dlabel g_fConst0p01_802a7414
     /* A8414 802A7414 3C23D70A */ .float 0.009999999776
-enddlabel g_dwOsViFeatures6
+enddlabel g_fConst0p01_802a7414
 
-nonmatching g_dwOsViFeatures7
+nonmatching g_fConstMinusHalfPi_802a7418
 
-dlabel g_dwOsViFeatures7
+dlabel g_fConstMinusHalfPi_802a7418
     /* A8418 802A7418 BFC90FDB */ .float -1.570796371
-enddlabel g_dwOsViFeatures7
+enddlabel g_fConstMinusHalfPi_802a7418
 
-nonmatching g_dwOsViFeatures8
+nonmatching g_fConst0p05_802a741c
 
-dlabel g_dwOsViFeatures8
+dlabel g_fConst0p05_802a741c
     /* A841C 802A741C 3D4CCCCD */ .float 0.05000000075
-enddlabel g_dwOsViFeatures8
+enddlabel g_fConst0p05_802a741c
 
-nonmatching g_dwOsViFeatures9
+nonmatching g_fConstMinusHalfPi_802a7420
 
-dlabel g_dwOsViFeatures9
+dlabel g_fConstMinusHalfPi_802a7420
     /* A8420 802A7420 BFC90FDB */ .float -1.570796371
-enddlabel g_dwOsViFeatures9
+enddlabel g_fConstMinusHalfPi_802a7420
 
-nonmatching g_dwOsViFeatures10
+nonmatching g_fConstTwelfth_802a7424
 
-dlabel g_dwOsViFeatures10
+dlabel g_fConstTwelfth_802a7424
     /* A8424 802A7424 3DAAAAAB */ .float 0.08333333582
-enddlabel g_dwOsViFeatures10
+enddlabel g_fConstTwelfth_802a7424
 
-nonmatching g_dwOsViFeatures11
+nonmatching g_fConst15p2_802a7428
 
-dlabel g_dwOsViFeatures11
+dlabel g_fConst15p2_802a7428
     /* A8428 802A7428 41733333 */ .float 15.19999981
-enddlabel g_dwOsViFeatures11
+enddlabel g_fConst15p2_802a7428
 
-nonmatching g_dwOsViFeatures12
+nonmatching g_fConst16p2_802a742c
 
-dlabel g_dwOsViFeatures12
+dlabel g_fConst16p2_802a742c
     /* A842C 802A742C 4181999A */ .float 16.20000076
-enddlabel g_dwOsViFeatures12
+enddlabel g_fConst16p2_802a742c
 
-nonmatching g_dwOsViFeatures13
+nonmatching g_fConst1p000001_802a7430
 
-dlabel g_dwOsViFeatures13
+dlabel g_fConst1p000001_802a7430
     /* A8430 802A7430 3F800008 */ .float 1.000000954
-enddlabel g_dwOsViFeatures13
+enddlabel g_fConst1p000001_802a7430
 
-nonmatching g_dwOsViFeatures14
+nonmatching g_fConst15p2_802a7434
 
-dlabel g_dwOsViFeatures14
+dlabel g_fConst15p2_802a7434
     /* A8434 802A7434 41733333 */ .float 15.19999981
-enddlabel g_dwOsViFeatures14
+enddlabel g_fConst15p2_802a7434
 
-nonmatching g_dwOsViFeatures15
+nonmatching g_fConstMinusHalfPi_802a7438
 
-dlabel g_dwOsViFeatures15
+dlabel g_fConstMinusHalfPi_802a7438
     /* A8438 802A7438 BFC90FDB */ .float -1.570796371
-enddlabel g_dwOsViFeatures15
+enddlabel g_fConstMinusHalfPi_802a7438
 
-nonmatching g_dwOsViFeatures16
+nonmatching g_fConstTwelfth_802a743c
 
-dlabel g_dwOsViFeatures16
+dlabel g_fConstTwelfth_802a743c
     /* A843C 802A743C 3DAAAAAB */ .float 0.08333333582
-enddlabel g_dwOsViFeatures16
+enddlabel g_fConstTwelfth_802a743c
 
-nonmatching g_dwOsViFeatures17
+nonmatching g_fConstMinusHalfPi_802a7440
 
-dlabel g_dwOsViFeatures17
+dlabel g_fConstMinusHalfPi_802a7440
     /* A8440 802A7440 BFC90FDB */ .float -1.570796371
-enddlabel g_dwOsViFeatures17
+enddlabel g_fConstMinusHalfPi_802a7440
 
-nonmatching g_dwOsViFeatures18
+nonmatching g_fConstTwelfth_802a7444
 
-dlabel g_dwOsViFeatures18
+dlabel g_fConstTwelfth_802a7444
     /* A8444 802A7444 3DAAAAAB */ .float 0.08333333582
-enddlabel g_dwOsViFeatures18
+enddlabel g_fConstTwelfth_802a7444
 
-nonmatching g_dwOsViFeatures19
+nonmatching g_fConst17p2_802a7448
 
-dlabel g_dwOsViFeatures19
+dlabel g_fConst17p2_802a7448
     /* A8448 802A7448 4189999A */ .float 17.20000076
-enddlabel g_dwOsViFeatures19
+enddlabel g_fConst17p2_802a7448
 
-nonmatching g_dwOsViFeatures20
+nonmatching g_fConst17p2_802a744c
 
-dlabel g_dwOsViFeatures20
+dlabel g_fConst17p2_802a744c
     /* A844C 802A744C 4189999A */ .float 17.20000076
-enddlabel g_dwOsViFeatures20
+enddlabel g_fConst17p2_802a744c
 
-nonmatching g_qwOsViFeatures21
+nonmatching g_dConst255_802a7450
 
-dlabel g_qwOsViFeatures21
+dlabel g_dConst255_802a7450
     /* A8450 802A7450 406FE00000000000 */ .double 255
-enddlabel g_qwOsViFeatures21
+enddlabel g_dConst255_802a7450
 
-nonmatching g_dwOsViFeatures22
+nonmatching g_fConst19p2_802a7458
 
-dlabel g_dwOsViFeatures22
+dlabel g_fConst19p2_802a7458
     /* A8458 802A7458 4199999A */ .float 19.20000076
-enddlabel g_dwOsViFeatures22
+enddlabel g_fConst19p2_802a7458
     /* A845C 802A745C 4189999A */ .float 17.20000076
 
-nonmatching g_dwOsViFeatures23
+nonmatching g_fConst17p2_802a7460
 
-dlabel g_dwOsViFeatures23
+dlabel g_fConst17p2_802a7460
     /* A8460 802A7460 4189999A */ .float 17.20000076
-enddlabel g_dwOsViFeatures23
+enddlabel g_fConst17p2_802a7460
 
-nonmatching g_dwOsViFeatures24
+nonmatching g_fConst19p2_802a7464
 
-dlabel g_dwOsViFeatures24
+dlabel g_fConst19p2_802a7464
     /* A8464 802A7464 4199999A */ .float 19.20000076
-enddlabel g_dwOsViFeatures24
+enddlabel g_fConst19p2_802a7464
 
-nonmatching g_dwOsViFeatures25
+nonmatching g_fConst24p2_802a7468
 
-dlabel g_dwOsViFeatures25
+dlabel g_fConst24p2_802a7468
     /* A8468 802A7468 41C1999A */ .float 24.20000076
-enddlabel g_dwOsViFeatures25
+enddlabel g_fConst24p2_802a7468
 
-nonmatching g_dwOsViFeatures26
+nonmatching g_fConst0p2_802a746c
 
-dlabel g_dwOsViFeatures26
+dlabel g_fConst0p2_802a746c
     /* A846C 802A746C 3E4CCCCD */ .float 0.200000003
-enddlabel g_dwOsViFeatures26
+enddlabel g_fConst0p2_802a746c
 
-nonmatching g_dwOsViFeatures27
+nonmatching g_fConst0p2_802a7470
 
-dlabel g_dwOsViFeatures27
+dlabel g_fConst0p2_802a7470
     /* A8470 802A7470 3E4CCCCD */ .float 0.200000003
-enddlabel g_dwOsViFeatures27
+enddlabel g_fConst0p2_802a7470
     /* A8474 802A7474 00000000 */ .float 0
     /* A8478 802A7478 00000000 */ .float 0
     /* A847C 802A747C 00000000 */ .float 0
@@ -2328,23 +2328,23 @@ dlabel g_szProceed
 enddlabel g_szProceed
 .align 2
 
-nonmatching g_dwOsAiBufPtr
+nonmatching g_fConst0p2_802a75bc
 
-dlabel g_dwOsAiBufPtr
+dlabel g_fConst0p2_802a75bc
     /* A85BC 802A75BC 3E4CCCCD */ .float 0.200000003
-enddlabel g_dwOsAiBufPtr
+enddlabel g_fConst0p2_802a75bc
 
-nonmatching g_dwOsAiBufSize
+nonmatching g_fConst0p2_802a75c0
 
-dlabel g_dwOsAiBufSize
+dlabel g_fConst0p2_802a75c0
     /* A85C0 802A75C0 3E4CCCCD */ .float 0.200000003
-enddlabel g_dwOsAiBufSize
+enddlabel g_fConst0p2_802a75c0
 
-nonmatching g_dwOsAiSampleRate
+nonmatching g_fConst0p2_802a75c4
 
-dlabel g_dwOsAiSampleRate
+dlabel g_fConst0p2_802a75c4
     /* A85C4 802A75C4 3E4CCCCD */ .float 0.200000003
-enddlabel g_dwOsAiSampleRate
+enddlabel g_fConst0p2_802a75c4
     /* A85C8 802A75C8 00000000 */ .float 0
     /* A85CC 802A75CC 00000000 */ .float 0
 
@@ -2799,17 +2799,17 @@ dlabel g_dwOsSiPifSize
     /* A88F8 802A78F8 42652EE0 */ .float 57.29577637
 enddlabel g_dwOsSiPifSize
 
-nonmatching g_dwOsSiStatus
+nonmatching g_fConstRadToDeg_802a78fc
 
-dlabel g_dwOsSiStatus
+dlabel g_fConstRadToDeg_802a78fc
     /* A88FC 802A78FC 42652EE0 */ .float 57.29577637
-enddlabel g_dwOsSiStatus
+enddlabel g_fConstRadToDeg_802a78fc
 
-nonmatching g_dwOsSiDmaAddr
+nonmatching g_fConstRadToDeg_802a7900
 
-dlabel g_dwOsSiDmaAddr
+dlabel g_fConstRadToDeg_802a7900
     /* A8900 802A7900 42652EE0 */ .float 57.29577637
-enddlabel g_dwOsSiDmaAddr
+enddlabel g_fConstRadToDeg_802a7900
 
 nonmatching g_flMinimapAngleStep
 

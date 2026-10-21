@@ -14,6 +14,8 @@ enum {
     GAME_MODE_ARCADE,
     GAME_MODE_TIME_ATTACK,
     GAME_MODE_PRACTICE,
+    /** The race the computer drives after the splash screens. */
+    GAME_MODE_DEMO,
     /** The race that follows the results of a finished season. */
     GAME_MODE_AFTER_SEASON = 5,
 };
@@ -56,5 +58,12 @@ void ResetAllPlayers(void);
  * @ghidraAddress USA: 0x802001b4
  */
 void InitGameAndShowMenus(void *arg);
+
+/**
+ * Start the race the computer drives after the splash screens.
+ *
+ * @ghidraAddress USA: 0x802005fc
+ */
+void StartAttractDemo(void);
 
 #endif

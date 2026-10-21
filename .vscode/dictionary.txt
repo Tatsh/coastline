@@ -149,6 +149,7 @@ jpad
 jsonnet
 jsonschema
 jtbl
+kemco
 kilometers
 kseg
 kuseg
@@ -236,6 +237,9 @@ nostartfiles
 nostdlib
 ntrj
 ntrp
+numl
+numlight
+numlights
 numpydoc
 objcopy
 oneline

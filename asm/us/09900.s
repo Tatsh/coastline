@@ -2058,9 +2058,9 @@ glabel DrawRotatedModel
     /* B6A0 8020A6A0 27BD0028 */   addiu     $sp, $sp, 0x28
 endlabel DrawRotatedModel
 
-nonmatching SetupSpriteTransform, 0x17C
+nonmatching DrawModelAt, 0x17C
 
-glabel SetupSpriteTransform
+glabel DrawModelAt
     /* B6A4 8020A6A4 27BDFFD8 */  addiu      $sp, $sp, -0x28
     /* B6A8 8020A6A8 3C0E8029 */  lui        $t6, %hi(g_dwViewportMirrored)
     /* B6AC 8020A6AC 3C0F8029 */  lui        $t7, %hi(g_dwTrackMirrored)
@@ -2075,8 +2075,8 @@ glabel SetupSpriteTransform
     /* B6D0 8020A6D0 11CF001C */  beq        $t6, $t7, .L8020A744
     /* B6D4 8020A6D4 AFA70034 */   sw        $a3, 0x34($sp)
     /* B6D8 8020A6D8 C7A40038 */  lwc1       $f4, 0x38($sp)
-    /* B6DC 8020A6DC 3C01802A */  lui        $at, %hi(g_dwOsSiStatus)
-    /* B6E0 8020A6E0 C42878FC */  lwc1       $f8, %lo(g_dwOsSiStatus)($at)
+    /* B6DC 8020A6DC 3C01802A */  lui        $at, %hi(g_fConstRadToDeg_802a78fc)
+    /* B6E0 8020A6E0 C42878FC */  lwc1       $f8, %lo(g_fConstRadToDeg_802a78fc)($at)
     /* B6E4 8020A6E4 46002187 */  neg.s      $f6, $f4
     /* B6E8 8020A6E8 44800000 */  mtc1       $zero, $f0
     /* B6EC 8020A6EC 46083282 */  mul.s      $f10, $f6, $f8
@@ -2102,8 +2102,8 @@ glabel SetupSpriteTransform
     /* B73C 8020A73C 10000019 */  b          .L8020A7A4
     /* B740 8020A740 02002025 */   or        $a0, $s0, $zero
   .L8020A744:
-    /* B744 8020A744 3C01802A */  lui        $at, %hi(g_dwOsSiDmaAddr)
-    /* B748 8020A748 C4267900 */  lwc1       $f6, %lo(g_dwOsSiDmaAddr)($at)
+    /* B744 8020A744 3C01802A */  lui        $at, %hi(g_fConstRadToDeg_802a7900)
+    /* B748 8020A748 C4267900 */  lwc1       $f6, %lo(g_fConstRadToDeg_802a7900)($at)
     /* B74C 8020A74C C7A40038 */  lwc1       $f4, 0x38($sp)
     /* B750 8020A750 3C013F80 */  lui        $at, (0x3F800000 >> 16)
     /* B754 8020A754 44815000 */  mtc1       $at, $f10
@@ -2158,7 +2158,7 @@ glabel SetupSpriteTransform
     /* B814 8020A814 8FB10020 */  lw         $s1, 0x20($sp)
     /* B818 8020A818 03E00008 */  jr         $ra
     /* B81C 8020A81C 27BD0028 */   addiu     $sp, $sp, 0x28
-endlabel SetupSpriteTransform
+endlabel DrawModelAt
 
 nonmatching BuildMinimapGeometry, 0x1B0
 
@@ -2553,12 +2553,12 @@ glabel ProcessScreenState
     /* BDAC 8020ADAC 3C013F80 */  lui        $at, (0x3F800000 >> 16)
     /* BDB0 8020ADB0 44816000 */  mtc1       $at, $f12
     /* BDB4 8020ADB4 3C01802A */  lui        $at, %hi(g_dwOsSiDmaStatus)
-    /* BDB8 8020ADB8 0C088DF4 */  jal        SetFadeTargetTertiary
+    /* BDB8 8020ADB8 0C088DF4 */  jal        FadeMusicTo
     /* BDBC 8020ADBC C42E7910 */   lwc1      $f14, %lo(g_dwOsSiDmaStatus)($at)
     /* BDC0 8020ADC0 3C013F80 */  lui        $at, (0x3F800000 >> 16)
     /* BDC4 8020ADC4 44816000 */  mtc1       $at, $f12
     /* BDC8 8020ADC8 3C01802A */  lui        $at, %hi(g_dwOsSiContStatus)
-    /* BDCC 8020ADCC 0C088DD4 */  jal        SetFadeTargetSecondary
+    /* BDCC 8020ADCC 0C088DD4 */  jal        FadeSfxTo
     /* BDD0 8020ADD0 C42E7914 */   lwc1      $f14, %lo(g_dwOsSiContStatus)($at)
     /* BDD4 8020ADD4 8FAF010C */  lw         $t7, 0x10C($sp)
     /* BDD8 8020ADD8 3C01802A */  lui        $at, %hi(g_dwOsSiContData0)
@@ -2827,21 +2827,21 @@ glabel ProcessScreenState
     /* C1C4 8020B1C4 AC4E0000 */  sw         $t6, 0x0($v0)
     /* C1C8 8020B1C8 AC4F0004 */  sw         $t7, 0x4($v0)
     /* C1CC 8020B1CC 8E620000 */  lw         $v0, 0x0($s3)
-    /* C1D0 8020B1D0 3C0D8027 */  lui        $t5, %hi(g_afRdpBlendColor)
+    /* C1D0 8020B1D0 3C0D8027 */  lui        $t5, %hi(g_MenuDirectionalLight)
     /* C1D4 8020B1D4 3C190386 */  lui        $t9, (0x3860010 >> 16)
     /* C1D8 8020B1D8 24580008 */  addiu      $t8, $v0, 0x8
     /* C1DC 8020B1DC AE780000 */  sw         $t8, 0x0($s3)
     /* C1E0 8020B1E0 37390010 */  ori        $t9, $t9, (0x3860010 & 0xFFFF)
-    /* C1E4 8020B1E4 25AD1F90 */  addiu      $t5, $t5, %lo(g_afRdpBlendColor)
+    /* C1E4 8020B1E4 25AD1F90 */  addiu      $t5, $t5, %lo(g_MenuDirectionalLight)
     /* C1E8 8020B1E8 AC4D0004 */  sw         $t5, 0x4($v0)
     /* C1EC 8020B1EC AC590000 */  sw         $t9, 0x0($v0)
     /* C1F0 8020B1F0 8E620000 */  lw         $v0, 0x0($s3)
-    /* C1F4 8020B1F4 3C188027 */  lui        $t8, %hi(g_afRdpEnvColor)
+    /* C1F4 8020B1F4 3C188027 */  lui        $t8, %hi(g_MenuAmbientLight)
     /* C1F8 8020B1F8 3C0F0388 */  lui        $t7, (0x3880010 >> 16)
     /* C1FC 8020B1FC 244E0008 */  addiu      $t6, $v0, 0x8
     /* C200 8020B200 AE6E0000 */  sw         $t6, 0x0($s3)
     /* C204 8020B204 35EF0010 */  ori        $t7, $t7, (0x3880010 & 0xFFFF)
-    /* C208 8020B208 27181F88 */  addiu      $t8, $t8, %lo(g_afRdpEnvColor)
+    /* C208 8020B208 27181F88 */  addiu      $t8, $t8, %lo(g_MenuAmbientLight)
     /* C20C 8020B20C AC580004 */  sw         $t8, 0x4($v0)
     /* C210 8020B210 AC4F0000 */  sw         $t7, 0x0($v0)
     /* C214 8020B214 8E620000 */  lw         $v0, 0x0($s3)
@@ -3038,7 +3038,7 @@ glabel ProcessScreenState
     /* C4E4 8020B4E4 00027080 */  sll        $t6, $v0, 2
     /* C4E8 8020B4E8 01AE8821 */  addu       $s1, $t5, $t6
     /* C4EC 8020B4EC 8E2F0000 */  lw         $t7, 0x0($s1)
-    /* C4F0 8020B4F0 0C087613 */  jal        InterpolateTrackAnimation
+    /* C4F0 8020B4F0 0C087613 */  jal        AdvanceModelAnimations
     /* C4F4 8020B4F4 8DE40008 */   lw        $a0, 0x8($t7)
     /* C4F8 8020B4F8 8E220000 */  lw         $v0, 0x0($s1)
     /* C4FC 8020B4FC 240D0001 */  addiu      $t5, $zero, 0x1
@@ -3105,7 +3105,7 @@ glabel ProcessScreenState
     /* C5E0 8020B5E0 8C640008 */  lw         $a0, 0x8($v1)
     /* C5E4 8020B5E4 1080003C */  beqz       $a0, .L8020B6D8
     /* C5E8 8020B5E8 00000000 */   nop
-    /* C5EC 8020B5EC 0C087613 */  jal        InterpolateTrackAnimation
+    /* C5EC 8020B5EC 0C087613 */  jal        AdvanceModelAnimations
     /* C5F0 8020B5F0 00000000 */   nop
     /* C5F4 8020B5F4 3C078031 */  lui        $a3, %hi(gActiveTrackIndex)
     /* C5F8 8020B5F8 8CE76244 */  lw         $a3, %lo(gActiveTrackIndex)($a3)
@@ -3219,7 +3219,7 @@ glabel ProcessScreenState
     /* C78C 8020B78C 8C640008 */  lw         $a0, 0x8($v1)
     /* C790 8020B790 10800044 */  beqz       $a0, .L8020B8A4
     /* C794 8020B794 00000000 */   nop
-    /* C798 8020B798 0C087613 */  jal        InterpolateTrackAnimation
+    /* C798 8020B798 0C087613 */  jal        AdvanceModelAnimations
     /* C79C 8020B79C 00000000 */   nop
     /* C7A0 8020B7A0 3C058031 */  lui        $a1, %hi(g_nPrevScreenSelection)
     /* C7A4 8020B7A4 8CA56220 */  lw         $a1, %lo(g_nPrevScreenSelection)($a1)
@@ -3361,7 +3361,7 @@ glabel ProcessScreenState
     /* C998 8020B998 8C640008 */  lw         $a0, 0x8($v1)
     /* C99C 8020B99C 10800032 */  beqz       $a0, .L8020BA68
     /* C9A0 8020B9A0 00000000 */   nop
-    /* C9A4 8020B9A4 0C087613 */  jal        InterpolateTrackAnimation
+    /* C9A4 8020B9A4 0C087613 */  jal        AdvanceModelAnimations
     /* C9A8 8020B9A8 00000000 */   nop
     /* C9AC 8020B9AC 3C078031 */  lui        $a3, %hi(gActiveTrackIndex)
     /* C9B0 8020B9B0 8CE76244 */  lw         $a3, %lo(gActiveTrackIndex)($a3)
@@ -3815,7 +3815,7 @@ glabel ProcessScreenState
     /* D034 8020C034 4600A306 */   mov.s     $f12, $f20
     /* D038 8020C038 3C01802A */  lui        $at, %hi(g_dwOsSiContPresent)
     /* D03C 8020C03C C42E792C */  lwc1       $f14, %lo(g_dwOsSiContPresent)($at)
-    /* D040 8020C040 0C088DD4 */  jal        SetFadeTargetSecondary
+    /* D040 8020C040 0C088DD4 */  jal        FadeSfxTo
     /* D044 8020C044 4600A306 */   mov.s     $f12, $f20
     /* D048 8020C048 10000040 */  b          .L8020C14C
     /* D04C 8020C04C 00000000 */   nop
@@ -3873,7 +3873,7 @@ glabel ProcessScreenState
     /* D114 8020C114 AC38622C */  sw         $t8, %lo(g_bScreenReverbActive)($at)
     /* D118 8020C118 3C01802A */  lui        $at, %hi(g_dwOsSiContLatency)
     /* D11C 8020C11C C42E7930 */  lwc1       $f14, %lo(g_dwOsSiContLatency)($at)
-    /* D120 8020C120 0C088DD4 */  jal        SetFadeTargetSecondary
+    /* D120 8020C120 0C088DD4 */  jal        FadeSfxTo
     /* D124 8020C124 4600A306 */   mov.s     $f12, $f20
     /* D128 8020C128 3C01802A */  lui        $at, %hi(g_dwOsSiContPulse)
     /* D12C 8020C12C C42E7934 */  lwc1       $f14, %lo(g_dwOsSiContPulse)($at)
@@ -3950,7 +3950,7 @@ glabel ProcessScreenState
     /* D234 8020C234 4600A306 */   mov.s     $f12, $f20
     /* D238 8020C238 3C01802A */  lui        $at, %hi(g_dwOsSiContCount)
     /* D23C 8020C23C C42E793C */  lwc1       $f14, %lo(g_dwOsSiContCount)($at)
-    /* D240 8020C240 0C088DD4 */  jal        SetFadeTargetSecondary
+    /* D240 8020C240 0C088DD4 */  jal        FadeSfxTo
     /* D244 8020C244 4600A306 */   mov.s     $f12, $f20
   .L8020C248:
     /* D248 8020C248 3C078031 */  lui        $a3, %hi(gActiveTrackIndex)
@@ -4061,7 +4061,7 @@ glabel InitGameDisplay
     /* D3BC 8020C3BC 02295021 */  addu       $t2, $s1, $t1
     /* D3C0 8020C3C0 8D470000 */  lw         $a3, 0x0($t2)
     /* D3C4 8020C3C4 8CE40008 */  lw         $a0, 0x8($a3)
-    /* D3C8 8020C3C8 0C08778B */  jal        DecompressAndFixup
+    /* D3C8 8020C3C8 0C08778B */  jal        DecompressModel
     /* D3CC 8020C3CC 8CE5000C */   lw        $a1, 0xC($a3)
     /* D3D0 8020C3D0 8E060000 */  lw         $a2, 0x0($s0)
   .L8020C3D4:

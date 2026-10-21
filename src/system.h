@@ -68,6 +68,14 @@ void InitRenderingSubsystem(void);
 void SetCurrentScreenCallback(ScreenCallback callback);
 
 /**
+ * Set a routine FlushDisplayList() calls once, when the RDP has finished the frame before, so that
+ * it can change data that frame drew from.
+ *
+ * @ghidraAddress USA: 0x8021c6b8
+ */
+void SetNextScreenCallback(ScreenCallback callback);
+
+/**
  * Return whether a routine is the current screen.
  *
  * @ghidraAddress USA: 0x8021c6d0
@@ -166,6 +174,9 @@ extern s32 g_dwScreenWidth;
 /** @ghidraAddress USA: 0x8028aab4 */
 extern s32 g_dwScreenHeight;
 
+/** The frames a screen has shown, for screens that count them. @ghidraAddress USA: 0x8028dbb0 */
+extern u16 g_wScreenFrameCount;
+
 /**
  * The shift from the size of the frame to the size of the frame buffer, 1 in high resolution.
  *
@@ -237,6 +248,27 @@ void SetViewport(s32 x, s32 y, s32 width, s32 height, s32 setScissor);
  * @ghidraAddress USA: 0x8021b458
  */
 void SetupProjectionMatrix(f32 width, f32 height);
+
+/**
+ * Set up the projection of a menu that draws models, looking at the middle of the screen.
+ *
+ * @ghidraAddress USA: 0x8021b5a4
+ */
+void SetupMenuProjection(f32 width, f32 height);
+
+/**
+ * Whether SetupMenuProjection() keeps the near scale and far distance set before it once,
+ * instead of its defaults. It clears this.
+ *
+ * @ghidraAddress USA: 0x8028a868
+ */
+extern s32 g_dwKeepCustomClipPlanes;
+
+/** The near plane SetupMenuProjection() uses. @ghidraAddress USA: 0x8028a86c */
+extern f32 g_fCameraNearScale;
+
+/** The far plane SetupMenuProjection() uses. @ghidraAddress USA: 0x8028a870 */
+extern f32 g_fCameraFarDistance;
 
 /**
  * Emit the render modes a menu frame starts with.

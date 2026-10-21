@@ -71,4 +71,11 @@ void BeginTimingFrame(void);
  */
 void DrawTimingBars(void);
 
+/**
+ * How much the debugging displays show. The screens draw the timing bars from 2.
+ *
+ * @ghidraAddress USA: 0x8028aa98
+ */
+extern s32 g_dwHudDebugLevel;
+
 #endif

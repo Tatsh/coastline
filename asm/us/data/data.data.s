@@ -2337,11 +2337,11 @@ dlabel D_80270800
     /* 7180C 8027080C 00000000 */ .word 0x00000000
 enddlabel D_80270800
 
-nonmatching g_dwSaveLoadRetryCount
+nonmatching g_bSplashStarted
 
-dlabel g_dwSaveLoadRetryCount
+dlabel g_bSplashStarted
     /* 71810 80270810 00000000 */ .word 0x00000000
-enddlabel g_dwSaveLoadRetryCount
+enddlabel g_bSplashStarted
 
 nonmatching D_80270814
 
@@ -2351,11 +2351,11 @@ dlabel D_80270814
     /* 71818 80270818 00000000 */ .word 0x00000000
 enddlabel D_80270814
 
-nonmatching g_dwSaveLoadErrorCode
+nonmatching g_bSplashFadingOut
 
-dlabel g_dwSaveLoadErrorCode
+dlabel g_bSplashFadingOut
     /* 7181C 8027081C 00000000 */ .word 0x00000000
-enddlabel g_dwSaveLoadErrorCode
+enddlabel g_bSplashFadingOut
 
 .align 2
 nonmatching g_SplashAmbientLight
@@ -2390,13 +2390,13 @@ dlabel g_bControllerWarningType
     /* 71843 80270843 */ .byte 0x00
 enddlabel g_bControllerWarningType
 
-nonmatching g_bSaveLoadInProgress
+nonmatching g_bControllerCheckStarted
 
-dlabel g_bSaveLoadInProgress
+dlabel g_bControllerCheckStarted
     /* 71844 80270844 00000000 */ .word 0x00000000
     /* 71848 80270848 00000000 */ .word 0x00000000
     /* 7184C 8027084C 00000000 */ .word 0x00000000
-enddlabel g_bSaveLoadInProgress
+enddlabel g_bControllerCheckStarted
 
 nonmatching g_dwContinueFromResults
 
@@ -4140,9 +4140,9 @@ dlabel g_aSpeedometer3DDisplayList
 enddlabel g_aSpeedometer3DDisplayList
 
 .align 2
-nonmatching g_afRdpEnvColor
+nonmatching g_MenuAmbientLight
 
-dlabel g_afRdpEnvColor
+dlabel g_MenuAmbientLight
     /* 72F88 80271F88 */ .asciz "@@@"
     /* 40404000 */
 .align 2
@@ -4150,16 +4150,16 @@ dlabel g_afRdpEnvColor
     /* 72F8C 80271F8C */ .asciz "@@@"
     /* 40404000 */
 .align 2
-enddlabel g_afRdpEnvColor
+enddlabel g_MenuAmbientLight
 
-nonmatching g_afRdpBlendColor
+nonmatching g_MenuDirectionalLight
 
-dlabel g_afRdpBlendColor
+dlabel g_MenuDirectionalLight
     /* 72F90 80271F90 FFFFFF00 */ .word 0xFFFFFF00
     /* 72F94 80271F94 FFFFFF00 */ .word 0xFFFFFF00
     /* 72F98 80271F98 60606000 */ .word 0x60606000
     /* 72F9C 80271F9C 00000000 */ .word 0x00000000
-enddlabel g_afRdpBlendColor
+enddlabel g_MenuDirectionalLight
 
 nonmatching g_dwScreenPlayerIdx
 
@@ -37640,11 +37640,11 @@ dlabel g_bObjectDirty10
     /* 8EBAF 8028DBAF */ .byte 0x00
 enddlabel g_bObjectDirty10
 
-nonmatching gDecalToolColor
+nonmatching g_wScreenFrameCount
 
-dlabel gDecalToolColor
+dlabel g_wScreenFrameCount
     /* 8EBB0 8028DBB0 */ .short 0x0000
-enddlabel gDecalToolColor
+enddlabel g_wScreenFrameCount
 
 nonmatching D_8028DBB2
 

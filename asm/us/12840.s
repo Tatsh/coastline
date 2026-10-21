@@ -971,11 +971,11 @@ glabel ProcessDataSaveLoadMenu
   jlabel .L802125C0
     /* 135C0 802125C0 44806000 */  mtc1       $zero, $f12
     /* 135C4 802125C4 3C01802B */  lui        $at, %hi(g_dwSaveLoadFadeOutSpeedSecondary)
-    /* 135C8 802125C8 0C088DD4 */  jal        SetFadeTargetSecondary
+    /* 135C8 802125C8 0C088DD4 */  jal        FadeSfxTo
     /* 135CC 802125CC C42E8F20 */   lwc1      $f14, %lo(g_dwSaveLoadFadeOutSpeedSecondary)($at)
     /* 135D0 802125D0 44806000 */  mtc1       $zero, $f12
     /* 135D4 802125D4 3C01802B */  lui        $at, %hi(g_dwSaveLoadFadeOutSpeedTertiary)
-    /* 135D8 802125D8 0C088DF4 */  jal        SetFadeTargetTertiary
+    /* 135D8 802125D8 0C088DF4 */  jal        FadeMusicTo
     /* 135DC 802125DC C42E8F24 */   lwc1      $f14, %lo(g_dwSaveLoadFadeOutSpeedTertiary)($at)
     /* 135E0 802125E0 240C0003 */  addiu      $t4, $zero, 0x3
     /* 135E4 802125E4 3C018027 */  lui        $at, %hi(gPakFileOperation)
@@ -2001,12 +2001,12 @@ glabel ProcessDataSaveLoadMenu
     /* 14514 80213514 3C013F80 */   lui       $at, (0x3F800000 >> 16)
     /* 14518 80213518 44816000 */  mtc1       $at, $f12
     /* 1451C 8021351C 3C01802B */  lui        $at, %hi(g_dwSaveLoadOverwriteCancelFadeSec)
-    /* 14520 80213520 0C088DD4 */  jal        SetFadeTargetSecondary
+    /* 14520 80213520 0C088DD4 */  jal        FadeSfxTo
     /* 14524 80213524 C42E8F40 */   lwc1      $f14, %lo(g_dwSaveLoadOverwriteCancelFadeSec)($at)
     /* 14528 80213528 3C013F80 */  lui        $at, (0x3F800000 >> 16)
     /* 1452C 8021352C 44816000 */  mtc1       $at, $f12
     /* 14530 80213530 3C01802B */  lui        $at, %hi(g_dwSaveLoadOverwriteCancelFadeTer)
-    /* 14534 80213534 0C088DF4 */  jal        SetFadeTargetTertiary
+    /* 14534 80213534 0C088DF4 */  jal        FadeMusicTo
     /* 14538 80213538 C42E8F44 */   lwc1      $f14, %lo(g_dwSaveLoadOverwriteCancelFadeTer)($at)
     /* 1453C 8021353C 240C0001 */  addiu      $t4, $zero, 0x1
     /* 14540 80213540 3C018027 */  lui        $at, %hi(gPakFileOperation)
@@ -2858,12 +2858,12 @@ glabel ProcessDataSaveLoadMenu
     /* 151E8 802141E8 3C013F80 */  lui        $at, (0x3F800000 >> 16)
     /* 151EC 802141EC 44816000 */  mtc1       $at, $f12
     /* 151F0 802141F0 3C01802B */  lui        $at, %hi(g_dwSaveLoadRumbleSwapFadeSec)
-    /* 151F4 802141F4 0C088DD4 */  jal        SetFadeTargetSecondary
+    /* 151F4 802141F4 0C088DD4 */  jal        FadeSfxTo
     /* 151F8 802141F8 C42E8F74 */   lwc1      $f14, %lo(g_dwSaveLoadRumbleSwapFadeSec)($at)
     /* 151FC 802141FC 3C013F80 */  lui        $at, (0x3F800000 >> 16)
     /* 15200 80214200 44816000 */  mtc1       $at, $f12
     /* 15204 80214204 3C01802B */  lui        $at, %hi(g_dwSaveLoadRumbleSwapFadeTer)
-    /* 15208 80214208 0C088DF4 */  jal        SetFadeTargetTertiary
+    /* 15208 80214208 0C088DF4 */  jal        FadeMusicTo
     /* 1520C 8021420C C42E8F78 */   lwc1      $f14, %lo(g_dwSaveLoadRumbleSwapFadeTer)($at)
     /* 15210 80214210 24190001 */  addiu      $t9, $zero, 0x1
     /* 15214 80214214 3C018027 */  lui        $at, %hi(gPakFileOperation)
@@ -3142,12 +3142,12 @@ glabel ProcessDataSaveLoadMenu
     /* 15610 80214610 3C013F80 */  lui        $at, (0x3F800000 >> 16)
     /* 15614 80214614 44816000 */  mtc1       $at, $f12
     /* 15618 80214618 3C01802B */  lui        $at, %hi(g_dwSaveLoadSuccessFadeSec)
-    /* 1561C 8021461C 0C088DD4 */  jal        SetFadeTargetSecondary
+    /* 1561C 8021461C 0C088DD4 */  jal        FadeSfxTo
     /* 15620 80214620 C42E8F94 */   lwc1      $f14, %lo(g_dwSaveLoadSuccessFadeSec)($at)
     /* 15624 80214624 3C013F80 */  lui        $at, (0x3F800000 >> 16)
     /* 15628 80214628 44816000 */  mtc1       $at, $f12
     /* 1562C 8021462C 3C01802B */  lui        $at, %hi(g_dwSaveLoadSuccessFadeTer)
-    /* 15630 80214630 0C088DF4 */  jal        SetFadeTargetTertiary
+    /* 15630 80214630 0C088DF4 */  jal        FadeMusicTo
     /* 15634 80214634 C42E8F98 */   lwc1      $f14, %lo(g_dwSaveLoadSuccessFadeTer)($at)
     /* 15638 80214638 240B0001 */  addiu      $t3, $zero, 0x1
     /* 1563C 8021463C 3C018027 */  lui        $at, %hi(gPakFileOperation)
@@ -3257,12 +3257,12 @@ glabel ProcessDataSaveLoadMenu
     /* 157C8 802147C8 3C013F80 */  lui        $at, (0x3F800000 >> 16)
     /* 157CC 802147CC 44816000 */  mtc1       $at, $f12
     /* 157D0 802147D0 3C01802B */  lui        $at, %hi(g_dwSaveLoadRumbleContinueFadeSec)
-    /* 157D4 802147D4 0C088DD4 */  jal        SetFadeTargetSecondary
+    /* 157D4 802147D4 0C088DD4 */  jal        FadeSfxTo
     /* 157D8 802147D8 C42E8F9C */   lwc1      $f14, %lo(g_dwSaveLoadRumbleContinueFadeSec)($at)
     /* 157DC 802147DC 3C013F80 */  lui        $at, (0x3F800000 >> 16)
     /* 157E0 802147E0 44816000 */  mtc1       $at, $f12
     /* 157E4 802147E4 3C01802B */  lui        $at, %hi(g_dwSaveLoadRumbleContinueFadeTer)
-    /* 157E8 802147E8 0C088DF4 */  jal        SetFadeTargetTertiary
+    /* 157E8 802147E8 0C088DF4 */  jal        FadeMusicTo
     /* 157EC 802147EC C42E8FA0 */   lwc1      $f14, %lo(g_dwSaveLoadRumbleContinueFadeTer)($at)
     /* 157F0 802147F0 240A0001 */  addiu      $t2, $zero, 0x1
     /* 157F4 802147F4 3C018027 */  lui        $at, %hi(gPakFileOperation)
@@ -3310,12 +3310,12 @@ glabel ProcessDataSaveLoadMenu
     /* 1588C 8021488C 3C013F80 */  lui        $at, (0x3F800000 >> 16)
     /* 15890 80214890 44816000 */  mtc1       $at, $f12
     /* 15894 80214894 3C01802B */  lui        $at, %hi(g_dwSaveLoadExitRestoreFadeSec)
-    /* 15898 80214898 0C088DD4 */  jal        SetFadeTargetSecondary
+    /* 15898 80214898 0C088DD4 */  jal        FadeSfxTo
     /* 1589C 8021489C C42E8FA8 */   lwc1      $f14, %lo(g_dwSaveLoadExitRestoreFadeSec)($at)
     /* 158A0 802148A0 3C013F80 */  lui        $at, (0x3F800000 >> 16)
     /* 158A4 802148A4 44816000 */  mtc1       $at, $f12
     /* 158A8 802148A8 3C01802B */  lui        $at, %hi(g_dwSaveLoadExitRestoreFadeTer)
-    /* 158AC 802148AC 0C088DF4 */  jal        SetFadeTargetTertiary
+    /* 158AC 802148AC 0C088DF4 */  jal        FadeMusicTo
     /* 158B0 802148B0 C42E8FAC */   lwc1      $f14, %lo(g_dwSaveLoadExitRestoreFadeTer)($at)
   .L802148B4:
     /* 158B4 802148B4 3C048029 */  lui        $a0, %hi(gDisplayListPtr)
@@ -3803,11 +3803,11 @@ glabel ProcessPakDataScreen
     /* 15F74 80214F74 240B0002 */   addiu     $t3, $zero, 0x2
     /* 15F78 80214F78 44806000 */  mtc1       $zero, $f12
     /* 15F7C 80214F7C 3C01802B */  lui        $at, %hi(g_fConst0p2_802a8fe4)
-    /* 15F80 80214F80 0C088DD4 */  jal        SetFadeTargetSecondary
+    /* 15F80 80214F80 0C088DD4 */  jal        FadeSfxTo
     /* 15F84 80214F84 C42E8FE4 */   lwc1      $f14, %lo(g_fConst0p2_802a8fe4)($at)
     /* 15F88 80214F88 44806000 */  mtc1       $zero, $f12
     /* 15F8C 80214F8C 3C01802B */  lui        $at, %hi(g_fConst0p2_802a8fe8)
-    /* 15F90 80214F90 0C088DF4 */  jal        SetFadeTargetTertiary
+    /* 15F90 80214F90 0C088DF4 */  jal        FadeMusicTo
     /* 15F94 80214F94 C42E8FE8 */   lwc1      $f14, %lo(g_fConst0p2_802a8fe8)($at)
     /* 15F98 80214F98 240C0001 */  addiu      $t4, $zero, 0x1
     /* 15F9C 80214F9C 3C018031 */  lui        $at, %hi(g_bPakScreenState)
@@ -5416,12 +5416,12 @@ glabel ProcessPakDataScreen
     /* 17778 80216778 3C013F80 */  lui        $at, (0x3F800000 >> 16)
     /* 1777C 8021677C 44816000 */  mtc1       $at, $f12
     /* 17780 80216780 3C01802B */  lui        $at, %hi(g_dwGfxDlPoolSize)
-    /* 17784 80216784 0C088DD4 */  jal        SetFadeTargetSecondary
+    /* 17784 80216784 0C088DD4 */  jal        FadeSfxTo
     /* 17788 80216788 C42E9018 */   lwc1      $f14, %lo(g_dwGfxDlPoolSize)($at)
     /* 1778C 8021678C 3C013F80 */  lui        $at, (0x3F800000 >> 16)
     /* 17790 80216790 44816000 */  mtc1       $at, $f12
     /* 17794 80216794 3C01802B */  lui        $at, %hi(g_dwGfxDlAllocCount)
-    /* 17798 80216798 0C088DF4 */  jal        SetFadeTargetTertiary
+    /* 17798 80216798 0C088DF4 */  jal        FadeMusicTo
     /* 1779C 8021679C C42E901C */   lwc1      $f14, %lo(g_dwGfxDlAllocCount)($at)
   .L802167A0:
     /* 177A0 802167A0 240F0001 */  addiu      $t7, $zero, 0x1

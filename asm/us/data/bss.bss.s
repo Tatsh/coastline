@@ -214,114 +214,114 @@ nonmatching D_80315E7C, 0x4
 dlabel D_80315E7C
     /* 80315E7C */ .space 0x04
 
-nonmatching g_dwPhysicsReserved19, 0x4
+nonmatching g_pSplashFirstLogo, 0x4
 
-dlabel g_dwPhysicsReserved19
+dlabel g_pSplashFirstLogo
     /* 80315E80 */ .space 0x04
 
-nonmatching g_dwPhysicsReserved20, 0x4
+nonmatching g_pSplashProducerLogo, 0x4
 
-dlabel g_dwPhysicsReserved20
+dlabel g_pSplashProducerLogo
     /* 80315E84 */ .space 0x04
 
-nonmatching g_pSplashAnimData, 0x4
+nonmatching g_pSplashDeveloperLogo, 0x4
 
-dlabel g_pSplashAnimData
+dlabel g_pSplashDeveloperLogo
     /* 80315E88 */ .space 0x04
 
-nonmatching g_pTrackAnimLod1, 0x4
+nonmatching g_pSplashTitleModelA, 0x4
 
-dlabel g_pTrackAnimLod1
+dlabel g_pSplashTitleModelA
     /* 80315E8C */ .space 0x04
 
-nonmatching g_pTrackAnimLod2, 0x4
+nonmatching g_pSplashTitleModelB, 0x4
 
-dlabel g_pTrackAnimLod2
+dlabel g_pSplashTitleModelB
     /* 80315E90 */ .space 0x04
 
-nonmatching g_dwPhysicsReserved21, 0x4
+nonmatching g_pSplashTitleModelD, 0x4
 
-dlabel g_dwPhysicsReserved21
+dlabel g_pSplashTitleModelD
     /* 80315E94 */ .space 0x04
 
-nonmatching g_dwPhysicsReserved22, 0x4
+nonmatching g_pSplashTitleModelC, 0x4
 
-dlabel g_dwPhysicsReserved22
+dlabel g_pSplashTitleModelC
     /* 80315E98 */ .space 0x04
 
-nonmatching gSplashScreenState, 0x4
+nonmatching g_fSplashTime, 0x4
 
-dlabel gSplashScreenState
+dlabel g_fSplashTime
     /* 80315E9C */ .space 0x04
 
-nonmatching g_dwPhysicsReserved23, 0x4
+nonmatching g_dwSplashSoundALength, 0x4
 
-dlabel g_dwPhysicsReserved23
+dlabel g_dwSplashSoundALength
     /* 80315EA0 */ .space 0x04
 
-nonmatching g_dwPhysicsReserved24, 0x4
+nonmatching g_pSplashSoundA, 0x4
 
-dlabel g_dwPhysicsReserved24
+dlabel g_pSplashSoundA
     /* 80315EA4 */ .space 0x04
 
-nonmatching g_dwPhysicsReserved25, 0x4
+nonmatching g_dwSplashSoundBLength, 0x4
 
-dlabel g_dwPhysicsReserved25
+dlabel g_dwSplashSoundBLength
     /* 80315EA8 */ .space 0x04
 
-nonmatching g_dwPhysicsReserved26, 0x4
+nonmatching g_pSplashSoundB, 0x4
 
-dlabel g_dwPhysicsReserved26
+dlabel g_pSplashSoundB
     /* 80315EAC */ .space 0x04
 
-nonmatching g_dwPhysicsReserved27, 0x4
+nonmatching g_dwSplashFirstLogoVoice, 0x4
 
-dlabel g_dwPhysicsReserved27
+dlabel g_dwSplashFirstLogoVoice
     /* 80315EB0 */ .space 0x04
 
-nonmatching g_dwPhysicsReserved28, 0x4
+nonmatching g_dwSplashFirstLogoSoundA, 0x4
 
-dlabel g_dwPhysicsReserved28
+dlabel g_dwSplashFirstLogoSoundA
     /* 80315EB4 */ .space 0x04
 
-nonmatching g_dwPhysicsReserved29, 0x4
+nonmatching g_bSplashFirstLogoSoundB, 0x4
 
-dlabel g_dwPhysicsReserved29
+dlabel g_bSplashFirstLogoSoundB
     /* 80315EB8 */ .space 0x04
 
-nonmatching g_dwPhysicsReserved30, 0x4
+nonmatching g_dwSplashProducerVoice, 0x4
 
-dlabel g_dwPhysicsReserved30
+dlabel g_dwSplashProducerVoice
     /* 80315EBC */ .space 0x04
 
-nonmatching g_dwPhysicsReserved31, 0x4
+nonmatching g_dwSplashProducerSoundA, 0x4
 
-dlabel g_dwPhysicsReserved31
+dlabel g_dwSplashProducerSoundA
     /* 80315EC0 */ .space 0x04
 
-nonmatching g_dwPhysicsReserved32, 0x4
+nonmatching g_bSplashProducerSoundB, 0x4
 
-dlabel g_dwPhysicsReserved32
+dlabel g_bSplashProducerSoundB
     /* 80315EC4 */ .space 0x04
 
-nonmatching g_dwPhysicsReserved33, 0x4
+nonmatching g_dwSplashDeveloperVoice, 0x4
 
-dlabel g_dwPhysicsReserved33
+dlabel g_dwSplashDeveloperVoice
     /* 80315EC8 */ .space 0x04
 
-nonmatching g_dwPhysicsReserved34, 0x4
+nonmatching g_dwSplashDeveloperSoundA, 0x4
 
-dlabel g_dwPhysicsReserved34
+dlabel g_dwSplashDeveloperSoundA
     /* 80315ECC */ .space 0x04
 
-nonmatching g_dwPhysicsReserved35, 0x4
+nonmatching g_bSplashDeveloperSoundB, 0x4
 
-dlabel g_dwPhysicsReserved35
+dlabel g_bSplashDeveloperSoundB
     /* 80315ED0 */ .space 0x04
 
-nonmatching g_dwPhysicsReserved36, 0x4
+nonmatching g_bSplashSkipped, 0x4
 
-dlabel g_dwPhysicsReserved36
+dlabel g_bSplashSkipped
     /* 80315ED4 */ .space 0x04
 
 nonmatching D_80315ED8, 0x8
@@ -3976,14 +3976,13 @@ nonmatching D_8036AA68, 0x130
 dlabel D_8036AA68
     /* 8036AA68 */ .space 0x130
 
-nonmatching g_dwNetPlayReserved, 0x4
+nonmatching D_8036AB98, 0x4
 
-dlabel g_dwNetPlayReserved
+dlabel D_8036AB98
     /* 8036AB98 */ .space 0x04
 
 nonmatching D_8036AB9C, 0x21
 
-/* Automatically generated and unreferenced pad */
 dlabel D_8036AB9C
     /* 8036AB9C */ .space 0x21
 

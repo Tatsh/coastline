@@ -2077,9 +2077,9 @@ glabel SetFadeTarget
     /* 2474C 8022374C 00000000 */   nop
 endlabel SetFadeTarget
 
-nonmatching SetFadeTargetSecondary, 0x80
+nonmatching FadeSfxTo, 0x80
 
-glabel SetFadeTargetSecondary
+glabel FadeSfxTo
     /* 24750 80223750 3C028029 */  lui        $v0, %hi(g_fSfxFadeTarget)
     /* 24754 80223754 240E0001 */  addiu      $t6, $zero, 0x1
     /* 24758 80223758 3C018029 */  lui        $at, %hi(g_dwSfxFadeSkipFrame)
@@ -2114,11 +2114,11 @@ glabel SetFadeTargetSecondary
     /* 247C4 802237C4 E432B770 */  swc1       $f18, %lo(g_fSfxFadeSpeed)($at)
     /* 247C8 802237C8 03E00008 */  jr         $ra
     /* 247CC 802237CC 00000000 */   nop
-endlabel SetFadeTargetSecondary
+endlabel FadeSfxTo
 
-nonmatching SetFadeTargetTertiary, 0x80
+nonmatching FadeMusicTo, 0x80
 
-glabel SetFadeTargetTertiary
+glabel FadeMusicTo
     /* 247D0 802237D0 3C028029 */  lui        $v0, %hi(g_fMusicFadeTarget)
     /* 247D4 802237D4 240E0001 */  addiu      $t6, $zero, 0x1
     /* 247D8 802237D8 3C018029 */  lui        $at, %hi(g_dwMusicFadeSkipFrame)
@@ -2153,7 +2153,7 @@ glabel SetFadeTargetTertiary
     /* 24844 80223844 E432B764 */  swc1       $f18, %lo(g_fMusicFadeSpeed)($at)
     /* 24848 80223848 03E00008 */  jr         $ra
     /* 2484C 8022384C 00000000 */   nop
-endlabel SetFadeTargetTertiary
+endlabel FadeMusicTo
 
 nonmatching IsFadeSecondaryComplete, 0x30
 

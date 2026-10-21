@@ -7121,9 +7121,9 @@ glabel IsVehicleModelValid
     /* 1E6D8 8021D6D8 01E01025 */   or        $v0, $t7, $zero
 endlabel IsVehicleModelValid
 
-nonmatching SetModelNodeFlags, 0x104
+nonmatching SetModelAnimationFlags, 0x104
 
-glabel SetModelNodeFlags
+glabel SetModelAnimationFlags
     /* 1E6DC 8021D6DC 27BDFFF8 */  addiu      $sp, $sp, -0x8
     /* 1E6E0 8021D6E0 AFB00004 */  sw         $s0, 0x4($sp)
     /* 1E6E4 8021D6E4 8C820004 */  lw         $v0, 0x4($a0)
@@ -7194,7 +7194,7 @@ glabel SetModelNodeFlags
   .L8021D7D8:
     /* 1E7D8 8021D7D8 03E00008 */  jr         $ra
     /* 1E7DC 8021D7DC 27BD0008 */   addiu     $sp, $sp, 0x8
-endlabel SetModelNodeFlags
+endlabel SetModelAnimationFlags
 
 nonmatching SetModelHidden, 0x24
 
@@ -7202,7 +7202,7 @@ glabel SetModelHidden
     /* 1E7E0 8021D7E0 27BDFFE8 */  addiu      $sp, $sp, -0x18
     /* 1E7E4 8021D7E4 AFBF0014 */  sw         $ra, 0x14($sp)
     /* 1E7E8 8021D7E8 00002825 */  or         $a1, $zero, $zero
-    /* 1E7EC 8021D7EC 0C0875B7 */  jal        SetModelNodeFlags
+    /* 1E7EC 8021D7EC 0C0875B7 */  jal        SetModelAnimationFlags
     /* 1E7F0 8021D7F0 24060003 */   addiu     $a2, $zero, 0x3
     /* 1E7F4 8021D7F4 8FBF0014 */  lw         $ra, 0x14($sp)
     /* 1E7F8 8021D7F8 27BD0018 */  addiu      $sp, $sp, 0x18
@@ -7210,19 +7210,19 @@ glabel SetModelHidden
     /* 1E800 8021D800 00000000 */   nop
 endlabel SetModelHidden
 
-nonmatching LoadTrackDefault, 0x24
+nonmatching LoopModelAnimations, 0x24
 
-glabel LoadTrackDefault
+glabel LoopModelAnimations
     /* 1E804 8021D804 27BDFFE8 */  addiu      $sp, $sp, -0x18
     /* 1E808 8021D808 AFBF0014 */  sw         $ra, 0x14($sp)
     /* 1E80C 8021D80C 24050001 */  addiu      $a1, $zero, 0x1
-    /* 1E810 8021D810 0C0875B7 */  jal        SetModelNodeFlags
+    /* 1E810 8021D810 0C0875B7 */  jal        SetModelAnimationFlags
     /* 1E814 8021D814 24060002 */   addiu     $a2, $zero, 0x2
     /* 1E818 8021D818 8FBF0014 */  lw         $ra, 0x14($sp)
     /* 1E81C 8021D81C 27BD0018 */  addiu      $sp, $sp, 0x18
     /* 1E820 8021D820 03E00008 */  jr         $ra
     /* 1E824 8021D824 00000000 */   nop
-endlabel LoadTrackDefault
+endlabel LoopModelAnimations
 
 nonmatching ShowModelNode, 0x24
 
@@ -7230,7 +7230,7 @@ glabel ShowModelNode
     /* 1E828 8021D828 27BDFFE8 */  addiu      $sp, $sp, -0x18
     /* 1E82C 8021D82C AFBF0014 */  sw         $ra, 0x14($sp)
     /* 1E830 8021D830 24050003 */  addiu      $a1, $zero, 0x3
-    /* 1E834 8021D834 0C0875B7 */  jal        SetModelNodeFlags
+    /* 1E834 8021D834 0C0875B7 */  jal        SetModelAnimationFlags
     /* 1E838 8021D838 00003025 */   or        $a2, $zero, $zero
     /* 1E83C 8021D83C 8FBF0014 */  lw         $ra, 0x14($sp)
     /* 1E840 8021D840 27BD0018 */  addiu      $sp, $sp, 0x18
@@ -7238,9 +7238,9 @@ glabel ShowModelNode
     /* 1E848 8021D848 00000000 */   nop
 endlabel ShowModelNode
 
-nonmatching InterpolateTrackAnimation, 0x3E8
+nonmatching AdvanceModelAnimations, 0x3E8
 
-glabel InterpolateTrackAnimation
+glabel AdvanceModelAnimations
     /* 1E84C 8021D84C 27BDFFD8 */  addiu      $sp, $sp, -0x28
     /* 1E850 8021D850 AFB30024 */  sw         $s3, 0x24($sp)
     /* 1E854 8021D854 AFB20020 */  sw         $s2, 0x20($sp)
@@ -7514,7 +7514,7 @@ glabel InterpolateTrackAnimation
     /* 1EC28 8021DC28 8FB30024 */  lw         $s3, 0x24($sp)
     /* 1EC2C 8021DC2C 03E00008 */  jr         $ra
     /* 1EC30 8021DC30 27BD0028 */   addiu     $sp, $sp, 0x28
-endlabel InterpolateTrackAnimation
+endlabel AdvanceModelAnimations
 
 nonmatching FixupTrackModelPointers, 0x1C8
 
@@ -7659,9 +7659,9 @@ glabel DmaReadAndFixupTrackModel
     /* 1EE28 8021DE28 00000000 */   nop
 endlabel DmaReadAndFixupTrackModel
 
-nonmatching DecompressAndFixup, 0x30
+nonmatching DecompressModel, 0x30
 
-glabel DecompressAndFixup
+glabel DecompressModel
     /* 1EE2C 8021DE2C 27BDFFE8 */  addiu      $sp, $sp, -0x18
     /* 1EE30 8021DE30 AFBF0014 */  sw         $ra, 0x14($sp)
     /* 1EE34 8021DE34 AFA40018 */  sw         $a0, 0x18($sp)
@@ -7674,7 +7674,7 @@ glabel DecompressAndFixup
     /* 1EE50 8021DE50 27BD0018 */  addiu      $sp, $sp, 0x18
     /* 1EE54 8021DE54 03E00008 */  jr         $ra
     /* 1EE58 8021DE58 00000000 */   nop
-endlabel DecompressAndFixup
+endlabel DecompressModel
 
 nonmatching LoadTrackGeometryFromRom, 0x324
 

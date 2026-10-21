@@ -5,6 +5,7 @@ AllocDisplayListBlock
 AllocHeapAligned
 AllocHiliteBlock
 AllocLightBlock
+AnimateSplashModels
 ApplyAllForcesToBody
 ApplyRigidBodyImpulse
 ApplySingleForceWithDebug
@@ -121,11 +122,13 @@ PollVehicleModelDma
 Powf
 PrepareRumblePaks
 PrepareTrackSections
+ProcessControllerCheck
 ProcessControllerConfigScreen
 ProcessInputCommandBuffer
 ProcessMainMenu
 ProcessPakMenuScreen
 ProcessPlayerCountSelect
+ProcessSplashScreens
 ProcessWeatherSelect
 ProjectVec3fToScreen
 QuaternionMultiply
