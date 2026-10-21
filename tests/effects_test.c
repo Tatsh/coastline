@@ -28,7 +28,6 @@ Vehicle g_aVehicles[MAX_VEHICLES];
 Particle g_aParticlePool[PARTICLES];
 u16 g_wParticleFreeListHead, g_wExhaustParticleListHead, g_wTireSmokeListHead;
 u16 g_wPavedTireSmokeListHead;
-s32 g_dwVehicleEffectsInitialized;
 f32 g_afBillboardMatrix[4][4];
 u32 g_dwRandomSeed;
 
@@ -527,7 +526,6 @@ int main(void) {
 
     /* The effects of the racers by the weather. */
     InitParticleSystem();
-    g_dwVehicleEffectsInitialized = FALSE;
     g_wParticleFreeListHead = 0;
     v = Racer();
     v->engineRpm = 6000.0f;
@@ -535,7 +533,8 @@ int main(void) {
     g_dwSnowMode = 1;
     g_dwSelectedTrackId = 2;
     UpdateAllVehicleEffects();
-    assert(g_dwVehicleEffectsInitialized && g_wExhaustParticleListHead == 1);
+    /* The first call rebuilt the emptied pool before the puff was taken from it. */
+    assert(g_wExhaustParticleListHead == 1);
     g_dwSnowMode = 0;
     v->body.skidding = 1;
     v->speedKph = 100.0f;
@@ -543,7 +542,8 @@ int main(void) {
     v->wheelBodies[3].surface = 1;
     v->smokeTimers[0] = 0.76f;
     UpdateAllVehicleEffects();
-    assert(g_wTireSmokeListHead != 0);
+    /* Later calls do not rebuild the pool, and the exhaust list is not emptied. */
+    assert(g_wTireSmokeListHead != 0 && g_wExhaustParticleListHead == 1);
     index = g_wTireSmokeListHead;
     g_dwNightMode = 1;
     v->smokeTimers[0] = 0.76f;

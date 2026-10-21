@@ -757,6 +757,9 @@ void InitParticleSystem(void) {
 }
 
 void UpdateAllVehicleEffects(void) {
+    /* Whether InitParticleSystem() has run. */
+    /** @ghidraAddress USA: 0x8028c840 */
+    static s32 g_dwVehicleEffectsInitialized = FALSE;
     s32 i;
 
     if (!g_dwVehicleEffectsInitialized) {

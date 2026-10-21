@@ -88,9 +88,6 @@ extern s32 g_dwSfxFadeSkipFrame;
  */
 extern s32 g_dwFadeAutoReverse;
 
-/** The frames left that the wipe blacks the uncovered screen. @ghidraAddress USA: 0x8028b788 */
-extern s32 g_dwScreenFadeFramesRemaining;
-
 /** The edges of the wipe when each framebuffer was last drawn. @ghidraAddress USA: 0x8031b410 */
 extern s32 g_adwFadeRectLeftPerBuffer[2];
 

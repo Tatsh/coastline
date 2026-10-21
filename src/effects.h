@@ -42,9 +42,6 @@ extern u16 g_wTireSmokeListHead;
 /** The list of the tyre smoke on the paved road. @ghidraAddress USA: 0x8028c83c */
 extern u16 g_wPavedTireSmokeListHead;
 
-/** Whether InitParticleSystem() has run. @ghidraAddress USA: 0x8028c840 */
-extern s32 g_dwVehicleEffectsInitialized;
-
 /**
  * The matrix from the world to the screen of the current view, with the axes of the screen as the
  * puffs take them.

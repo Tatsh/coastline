@@ -18,7 +18,7 @@ f32 g_fHeadlightGlare, g_fFadeTarget, g_fFadeRate, g_fFadeLevel;
 f32 g_fMusicFadeTarget, g_fMusicFadeSpeed, g_fMusicFadeCurrent;
 f32 g_fSfxFadeTarget, g_fSfxFadeSpeed, g_fSfxFadeCurrent;
 s32 g_dwFadeSkipFrame, g_dwMusicFadeSkipFrame, g_dwSfxFadeSkipFrame, g_dwFadeAutoReverse;
-s32 g_dwScreenFadeFramesRemaining, g_adwFadeRectLeftPerBuffer[2], g_adwFadeRectRightPerBuffer[2];
+s32 g_adwFadeRectLeftPerBuffer[2], g_adwFadeRectRightPerBuffer[2];
 
 static u32 Count(void) {
     return (u32)(gDisplayListPtr - gfx);
@@ -43,6 +43,22 @@ static void Fill(u32 i, u32 ulx, u32 uly, u32 lrx, u32 lry) {
     }
     assert(gfx[i].words.w0 == (0xF6000000 | lrx << 14 | lry << 2));
     assert(gfx[i].words.w1 == (ulx << 14 | uly << 2));
+}
+
+/* The frames of black over the whole faded-out screen that ApplyScreenFade() still draws. */
+static u32 BlackFramesLeft(void) {
+    u32 frames = 0;
+
+    for (;;) {
+        Reset();
+        ApplyScreenFade();
+        if (Count() == 7) {
+            return frames;
+        }
+        assert(Count() == 8 && frames < BLACK_FRAMES);
+        Fill(6, 0, 0, 319, 239);
+        frames++;
+    }
 }
 
 static void Update(f32 dt) {
@@ -117,27 +133,34 @@ int main(void) {
     g_dwFadeRectRight = 320;
     Reset();
     ApplyScreenFade();
-    assert(g_dwScreenFadeFramesRemaining == BLACK_FRAMES - 1);
     Fill(6, 159, 0, 319, 239);
     Fill(7, 0, 0, 319, 239);
     assert(gfx[8].words.w0 == 0xE7000000 && Count() == 9);
+    g_dwFadeRectLeft = 0;
+    assert(BlackFramesLeft() == BLACK_FRAMES - 1);
     /* While black covers the left, each frame starts the count again. */
+    g_dwFadeRectLeft = 320;
     Reset();
     ApplyScreenFade();
-    assert(g_dwScreenFadeFramesRemaining == BLACK_FRAMES - 1);
+    Fill(7, 0, 0, 319, 239);
+    assert(Count() == 9);
     g_dwFadeRectLeft = 0;
     Reset();
     ApplyScreenFade();
     Fill(5 + 1, 0, 0, 319, 239);
-    assert(Count() == 8 && g_dwScreenFadeFramesRemaining == BLACK_FRAMES - 2);
+    assert(Count() == 8 && BlackFramesLeft() == BLACK_FRAMES - 2);
     Reset();
     ApplyScreenFade();
-    Reset();
-    ApplyScreenFade();
-    assert(Count() == 7 && g_dwScreenFadeFramesRemaining == 0);
+    assert(Count() == 7 && BlackFramesLeft() == 0);
 
     /* A fade in again leaves the right black while frames remain. */
-    g_dwScreenFadeFramesRemaining = 1;
+    g_dwFadeRectLeft = 320;
+    Reset();
+    ApplyScreenFade();
+    g_dwFadeRectLeft = 0;
+    Reset();
+    ApplyScreenFade();
+    Fill(6, 0, 0, 319, 239);
     SetFadeTarget(1.0f, 1.0f);
     Update(0.0f);
     Update(0.5f);
@@ -145,7 +168,10 @@ int main(void) {
     Reset();
     ApplyScreenFade();
     Fill(6, 160, 0, 319, 239);
-    assert(g_dwScreenFadeFramesRemaining == 0 && Count() == 8);
+    assert(Count() == 8);
+    Reset();
+    ApplyScreenFade();
+    assert(Count() == 7);
     Update(0.5f);
     assert(IsFadedToWhite() && !IsFadedToBlack());
 

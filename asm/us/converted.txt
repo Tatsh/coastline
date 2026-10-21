@@ -693,6 +693,8 @@ g_dwOptionsMenuItemCount:0x4
 g_dwOptionsMenuSelection:0x4
 g_dwOptionsMenuState:0x4
 g_dwPlayerCountSelectState:0x4
+g_dwScreenFadeFramesRemaining:4
+g_dwVehicleEffectsInitialized:4
 g_dwWeatherMenuItemCount:0x4
 g_dwWeatherMenuSelection:0x4
 g_dwWeatherSelectState:0x4

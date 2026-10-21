@@ -31994,12 +31994,6 @@ dlabel g_dwFadeAutoReverse
     /* 8C784 8028B784 00000000 */ .word 0x00000000
 enddlabel g_dwFadeAutoReverse
 
-nonmatching g_dwScreenFadeFramesRemaining
-
-dlabel g_dwScreenFadeFramesRemaining
-    /* 8C788 8028B788 00000002 */ .word 0x00000002
-enddlabel g_dwScreenFadeFramesRemaining
-
 nonmatching D_8028B78C
 
 /* Automatically generated and unreferenced pad */
@@ -33922,12 +33916,6 @@ nonmatching D_8028C83E
 dlabel D_8028C83E
     /* 8D83E 8028C83E */ .short 0x0000
 enddlabel D_8028C83E
-
-nonmatching g_dwVehicleEffectsInitialized
-
-dlabel g_dwVehicleEffectsInitialized
-    /* 8D840 8028C840 00000000 */ .word 0x00000000
-enddlabel g_dwVehicleEffectsInitialized
 
 nonmatching D_8028C844
 
