@@ -6,6 +6,7 @@
 
 #include "audio.h"
 #include "audiomix.h"
+#include "carselect.h"
 #include "fade.h"
 #include "game.h"
 #include "heap.h"
@@ -469,7 +470,7 @@ void ProcessTrackMenu(void) {
         g_dwSelectedTrackId = selection;
         g_dwTrackMenuSelection = selection;
         if (g_dwGameMode == GAME_MODE_TIME_ATTACK || g_dwGameMode == GAME_MODE_CHAMPIONSHIP) {
-            SetCurrentScreenCallback(ProcessTrackSelectScreen);
+            SetCurrentScreenCallback(ProcessCarSelectScreen);
         } else {
             SetCurrentScreenCallback(ProcessWeatherSelect);
         }

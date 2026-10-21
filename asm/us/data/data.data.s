@@ -4652,11 +4652,11 @@ dlabel g_dwSuspensionOptionCount
     /* 7319C 8027219C 00000000 */ .word 0x00000000
 enddlabel g_dwSuspensionOptionCount
 
-nonmatching g_pszDefault
+nonmatching g_DefaultDecalItem
 
-dlabel g_pszDefault
+dlabel g_DefaultDecalItem
     /* 731A0 802721A0 802A7A54 */ .word g_szDefault
-enddlabel g_pszDefault
+enddlabel g_DefaultDecalItem
 
 nonmatching D_802721A4
 
@@ -4681,7 +4681,7 @@ enddlabel D_802721B4
 nonmatching D_802721C8
 
 dlabel D_802721C8
-    /* 731C8 802721C8 802A7A64 */ .word g_szDebugMsg7
+    /* 731C8 802721C8 802A7A64 */ .word g_szCustom
     /* 731CC 802721CC 00000000 */ .word 0x00000000
     /* 731D0 802721D0 00000000 */ .word 0x00000000
     /* 731D4 802721D4 00000000 */ .word 0x00000000
@@ -4691,7 +4691,7 @@ enddlabel D_802721C8
 nonmatching g_apDecalOptions
 
 dlabel g_apDecalOptions
-    /* 731DC 802721DC 802721A0 */ .word g_pszDefault
+    /* 731DC 802721DC 802721A0 */ .word g_DefaultDecalItem
 enddlabel g_apDecalOptions
 
 nonmatching D_802721E0
@@ -4758,11 +4758,11 @@ dlabel g_CameraViewLight4
     /* 73234 80272234 00000000 */ .word 0x00000000
 enddlabel g_CameraViewLight4
 
-nonmatching g_dwTrackSelectInitialized
+nonmatching g_bCarSelectInitialized
 
-dlabel g_dwTrackSelectInitialized
+dlabel g_bCarSelectInitialized
     /* 73238 80272238 00000000 */ .word 0x00000000
-enddlabel g_dwTrackSelectInitialized
+enddlabel g_bCarSelectInitialized
 
 nonmatching D_8027223C
 
@@ -31723,11 +31723,11 @@ dlabel g_dwNumTracks
     /* 8BE04 8028AE04 0000000A */ .word 0x0000000A
 enddlabel g_dwNumTracks
 
-nonmatching g_dwWeatherCount
+nonmatching g_dwCarCount
 
-dlabel g_dwWeatherCount
+dlabel g_dwCarCount
     /* 8BE08 8028AE08 0000000D */ .word 0x0000000D
-enddlabel g_dwWeatherCount
+enddlabel g_dwCarCount
 
 nonmatching g_aCarModels
 

@@ -39,9 +39,9 @@ glabel ClearBssSegments
     /* 26F84 80225F84 00000000 */   nop
 endlabel ClearBssSegments
 
-nonmatching SetVehicleLodLevel, 0x118
+nonmatching ChooseVehicleCar, 0x118
 
-glabel SetVehicleLodLevel
+glabel ChooseVehicleCar
     /* 26F88 80225F88 3C078032 */  lui        $a3, %hi(g_aVehicles)
     /* 26F8C 80225F8C 24E7B760 */  addiu      $a3, $a3, %lo(g_aVehicles)
     /* 26F90 80225F90 8CEE0E5C */  lw         $t6, 0xE5C($a3)
@@ -120,7 +120,7 @@ glabel SetVehicleLodLevel
   .L80226098:
     /* 27098 80226098 03E00008 */  jr         $ra
     /* 2709C 8022609C 00000000 */   nop
-endlabel SetVehicleLodLevel
+endlabel ChooseVehicleCar
 
 nonmatching InitVehicleColor, 0x60
 
@@ -231,7 +231,7 @@ glabel InitPlayerVehicleSlot
   .L80226224:
     /* 27224 80226224 AC800E5C */  sw         $zero, 0xE5C($a0)
   .L80226228:
-    /* 27228 80226228 0C0897E2 */  jal        SetVehicleLodLevel
+    /* 27228 80226228 0C0897E2 */  jal        ChooseVehicleCar
     /* 2722C 8022622C AFA40018 */   sw        $a0, 0x18($sp)
     /* 27230 80226230 8FA40018 */  lw         $a0, 0x18($sp)
     /* 27234 80226234 AC800E58 */  sw         $zero, 0xE58($a0)
@@ -2903,9 +2903,9 @@ glabel UpdateAiVehicleBehavior
     /* 298B0 802288B0 27BD01A0 */   addiu     $sp, $sp, 0x1A0
 endlabel UpdateAiVehicleBehavior
 
-nonmatching InitRaceCountdown, 0x20
+nonmatching DriveAiVehicle, 0x20
 
-glabel InitRaceCountdown
+glabel DriveAiVehicle
     /* 298B4 802288B4 27BDFFE8 */  addiu      $sp, $sp, -0x18
     /* 298B8 802288B8 AFBF0014 */  sw         $ra, 0x14($sp)
     /* 298BC 802288BC 0C089D8B */  jal        UpdateAiVehicleBehavior
@@ -2914,7 +2914,7 @@ glabel InitRaceCountdown
     /* 298C8 802288C8 27BD0018 */  addiu      $sp, $sp, 0x18
     /* 298CC 802288CC 03E00008 */  jr         $ra
     /* 298D0 802288D0 00000000 */   nop
-endlabel InitRaceCountdown
+endlabel DriveAiVehicle
 
 nonmatching ResetVehicleEffects, 0x168
 
@@ -7543,8 +7543,8 @@ glabel UpdateAiVehicleState
     /* 2DA14 8022CA14 10400014 */  beqz       $v0, .L8022CA68
     /* 2DA18 8022CA18 240C0000 */   addiu     $t4, $zero, 0x0
     /* 2DA1C 8022CA1C 8C4F0ED8 */  lw         $t7, 0xED8($v0)
-    /* 2DA20 8022CA20 3C0E8023 */  lui        $t6, %hi(InitRaceCountdown)
-    /* 2DA24 8022CA24 25CE88B4 */  addiu      $t6, $t6, %lo(InitRaceCountdown)
+    /* 2DA20 8022CA20 3C0E8023 */  lui        $t6, %hi(DriveAiVehicle)
+    /* 2DA24 8022CA24 25CE88B4 */  addiu      $t6, $t6, %lo(DriveAiVehicle)
     /* 2DA28 8022CA28 15CF000F */  bne        $t6, $t7, .L8022CA68
     /* 2DA2C 8022CA2C 3C048027 */   lui       $a0, %hi(g_dwGameMode)
     /* 2DA30 8022CA30 2484FF18 */  addiu      $a0, $a0, %lo(g_dwGameMode)

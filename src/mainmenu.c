@@ -1,6 +1,7 @@
 #include "mainmenu.h"
 
 #include "audio.h"
+#include "carselect.h"
 #include "game.h"
 #include "input.h"
 #include "options.h"
@@ -118,7 +119,7 @@ void ProcessMainMenu(void) {
             g_dwNumLocalPlayers = 1;
             g_dwScreenPlayerIdx = g_dwMenuChoosingPlayer;
             g_dwMenuInputPlayerMask = 1 << g_dwMenuChoosingPlayer;
-            SetCurrentScreenCallback(ProcessTrackSelectScreen);
+            SetCurrentScreenCallback(ProcessCarSelectScreen);
             break;
         case MAIN_MENU_LOAD_SAVE:
             g_bSaveLoadEntryPoint = 0;

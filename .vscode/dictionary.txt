@@ -12,6 +12,7 @@ alabel
 alphadither
 andi
 anim
+apsz
 argparse
 asciz
 atexit
@@ -31,6 +32,7 @@ bufbusy
 buildsystems
 bytearray
 bzero
+carselect
 cartrominit
 ccmux
 centered
@@ -255,6 +257,7 @@ objcopy
 oneline
 outfun
 pacboy
+paintshop
 pakmenu
 paks
 pathlib
@@ -438,8 +441,13 @@ wiswa's
 writeback
 writebackdcache
 writebackdcacheall
+wwensure
+wwis
 wwkph
 wwmph
+wwpressing
+wwshould
+wwthe
 xabs
 xchar
 xexp

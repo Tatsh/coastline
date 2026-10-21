@@ -114,4 +114,17 @@ void UpdateCameraSystem(Vehicle *vehicle);
  */
 void InitCameraForVehicle(Vehicle *vehicle);
 
+/**
+ * Build the view and the perspective of a camera for a rectangle of the screen, and set the far
+ * distance.
+ *
+ * @param camera The camera.
+ * @param fov The field of view, in radians, for a screen of 4 by 3.
+ * @param farDistance The distance of the far plane.
+ * @param width The width of the rectangle.
+ * @param height The height of the rectangle.
+ * @ghidraAddress USA: 0x8021b2f8
+ */
+void SetupCameraMatrix(CameraFrame *camera, f32 fov, f32 farDistance, f32 width, f32 height);
+
 #endif

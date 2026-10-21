@@ -278,6 +278,7 @@ typedef union {
 #define G_MW_NUMLIGHT 0x02
 #define G_MWO_NUMLIGHT 0x00
 #define NUMLIGHTS_1 1
+#define NUMLIGHTS_4 4
 #define LIGHT_1 1
 #define LIGHT_2 2
 

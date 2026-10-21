@@ -66,8 +66,8 @@
 /* The placed model under a vehicle that is a tunnel. */
 #define TRACK_INSTANCE_TUNNEL 0x10
 
-/* The buttons that light the rear lights as brakes. */
-#define BRAKE_BUTTONS 0xC0000
+/* The actions that light the rear lights as brakes. */
+#define BRAKE_BUTTONS (INPUT_BRAKE | INPUT_EBRAKE)
 
 /* The deepest a side is dented before it dents no more. */
 #define MAX_DENT 0x100

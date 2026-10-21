@@ -208,7 +208,7 @@ typedef struct {
     u8 cars[2];
     u8 unreconstructed12[0x14 - 0x12];
     /** The track and the weather of each race. */
-    u8 races[4][2];
+    u8 races[SEASON_RACES][2];
 } Season;
 
 /** @ghidraAddress USA: 0x8028b944 */
@@ -258,8 +258,13 @@ extern char g_szTrackSelectPointsTextBuf[];
 /** @ghidraAddress USA: 0x80315f38 */
 extern char g_szTrackSelectRecordTextBuf[];
 
-/** The loads of the models of the two cars the screens show. @ghidraAddress USA: 0x8031b370 */
-extern VehicleModelLoad g_aVehicleModelSlots[2];
+/**
+ * The loads of the models of the cars the screens show: a slot for each player, and another for
+ * each that its next car loads into.
+ *
+ * @ghidraAddress USA: 0x8031b370
+ */
+extern VehicleModelLoad g_aVehicleModelSlots[VEHICLE_MODEL_SLOTS];
 
 /** Set to 0 by the track menu. @ghidraAddress USA: 0x8028c328 */
 extern s32 g_dwVehicleViewModeIndex;

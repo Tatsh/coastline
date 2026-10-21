@@ -1732,7 +1732,7 @@ glabel ProcessRaceHud
     /* 2C18 80201C18 3C0A8032 */  lui        $t2, %hi(g_aVehicles)
     /* 2C1C 80201C1C 254AB760 */  addiu      $t2, $t2, %lo(g_aVehicles)
     /* 2C20 80201C20 0018C100 */  sll        $t8, $t8, 4
-    /* 2C24 80201C24 0C0897E2 */  jal        SetVehicleLodLevel
+    /* 2C24 80201C24 0C0897E2 */  jal        ChooseVehicleCar
     /* 2C28 80201C28 030A2021 */   addu      $a0, $t8, $t2
     /* 2C2C 80201C2C 00114180 */  sll        $t0, $s1, 6
     /* 2C30 80201C30 01114021 */  addu       $t0, $t0, $s1
@@ -1745,10 +1745,10 @@ glabel ProcessRaceHud
     /* 2C4C 80201C4C 00084100 */  sll        $t0, $t0, 4
     /* 2C50 80201C50 000F78C0 */  sll        $t7, $t7, 3
     /* 2C54 80201C54 0109C821 */  addu       $t9, $t0, $t1
-    /* 2C58 80201C58 3C0D8023 */  lui        $t5, %hi(InitRaceCountdown)
+    /* 2C58 80201C58 3C0D8023 */  lui        $t5, %hi(DriveAiVehicle)
     /* 2C5C 80201C5C 01F17821 */  addu       $t7, $t7, $s1
     /* 2C60 80201C60 3C0E8032 */  lui        $t6, %hi(g_aVehicles)
-    /* 2C64 80201C64 25AD88B4 */  addiu      $t5, $t5, %lo(InitRaceCountdown)
+    /* 2C64 80201C64 25AD88B4 */  addiu      $t5, $t5, %lo(DriveAiVehicle)
     /* 2C68 80201C68 AFB90100 */  sw         $t9, 0x100($sp)
     /* 2C6C 80201C6C 25CEB760 */  addiu      $t6, $t6, %lo(g_aVehicles)
     /* 2C70 80201C70 000F7900 */  sll        $t7, $t7, 4
@@ -6208,9 +6208,9 @@ glabel ProcessRaceHud
   .L80205E74:
     /* 6E74 80205E74 0C081837 */  jal        RestoreRaceResultsFromSlots
     /* 6E78 80205E78 00000000 */   nop
-    /* 6E7C 80205E7C 3C048021 */  lui        $a0, %hi(ProcessTrackSelectWithFlag)
+    /* 6E7C 80205E7C 3C048021 */  lui        $a0, %hi(ProcessRaceResultsScreen)
     /* 6E80 80205E80 0C0871B9 */  jal        SetCurrentScreenCallback
-    /* 6E84 80205E84 24840F4C */   addiu     $a0, $a0, %lo(ProcessTrackSelectWithFlag)
+    /* 6E84 80205E84 24840F4C */   addiu     $a0, $a0, %lo(ProcessRaceResultsScreen)
     /* 6E88 80205E88 10000020 */  b          .L80205F0C
     /* 6E8C 80205E8C 00000000 */   nop
   .L80205E90:

@@ -19,8 +19,12 @@
 /** The number of vehicles a race can hold. */
 #define MAX_VEHICLES 4
 
-/** The seasons of the championship. */
+/** The seasons of the championship, and the most races of a season. */
 #define SEASONS 6
+#define SEASON_RACES 4
+
+/** The laps of a race whose times a vehicle keeps. */
+#define VEHICLE_LAP_TIMES 5
 
 /** The tracks a profile keeps records for: the five tracks and their mirrored versions. */
 #define PROFILE_RECORD_TRACKS 10
@@ -65,10 +69,13 @@ typedef struct {
     u8 season;
     /** The race of the season being raced, from 0. */
     u8 round;
-    u8 unreconstructed6[0x1E - 0x6];
+    /** The place of each race of each season, from 0 for the winner. */
+    u8 seasonPlaces[SEASONS][SEASON_RACES];
     /** The points scored in each season. */
     u16 seasonPoints[SEASONS];
-    u8 unreconstructed2A[0x8C - 0x2A];
+    u8 unreconstructed2A[0x2C - 0x2A];
+    /** The time of each race of each season, in seconds. */
+    f32 seasonTimes[SEASONS][SEASON_RACES];
     /** The best lap on each track, in seconds, or 0 when none was set. */
     f32 lapRecords[PROFILE_RECORD_TRACKS];
     u8 unreconstructedB4[0xCC - 0xB4];
@@ -76,7 +83,13 @@ typedef struct {
     u16 unlocks;
     /** The unlocked tracks, a bit for each. */
     u16 unlockedTracks;
-    u8 unreconstructedD0[0xE4 - 0xD0];
+    u8 unreconstructedD0[0xD4 - 0xD0];
+    /** The options of the car the player chose last: the handling, gearbox, tyres and suspension.
+     */
+    s32 handling;
+    s32 transmission;
+    s32 tires;
+    s32 suspension;
     /** The button layout the player chose on the controller screen. */
     s32 controllerLayout;
     /** The best race on each track, in seconds, or 0 when none was set. */
@@ -116,7 +129,10 @@ typedef struct {
      * first.
      */
     Vec3f wheels[VEHICLE_WHEELS];
-    u8 unreconstructed110[0x11A - 0x110];
+    u8 unreconstructed110[0x112 - 0x110];
+    /** The texture whose palette holds the colour of the paint. */
+    u8 paintTexture;
+    u8 unreconstructed113[0x11A - 0x113];
     /** The textures whose palettes hold the colors of the headlights and of the rear lights. */
     u8 headlightTexture;
     u8 rearLightTexture;
@@ -168,7 +184,15 @@ typedef struct {
     /** The angles of the needle at 8000 revolutions a minute and at rest, in radians. */
     f32 needleFullAngle;
     f32 needleRestAngle;
-    u8 unreconstructed3C[0x58 - 0x3C];
+    /** The wheels driven and the layout of the engine, as indices of their names. */
+    s32 driveType;
+    s32 engineLayout;
+    /** The acceleration and the top speed, as the car selection screen shows them. */
+    f32 acceleration;
+    f32 maxSpeed;
+    u8 unreconstructed4C[0x54 - 0x4C];
+    /** The gears of the gearbox. */
+    s32 gearCount;
     /** The length and half the width of the shadow of the car on the stage of a menu. */
     f32 shadowLength;
     f32 shadowHalfWidth;
@@ -179,6 +203,9 @@ typedef struct {
 
 /** @ghidraAddress USA: 0x8028ae0c */
 extern CarModel g_aCarModels[CAR_MODELS];
+
+/** The number of cars in g_aCarModels. @ghidraAddress USA: 0x8028ae08 */
+extern s32 g_dwCarCount;
 
 /** The gears of a gearbox, neutral first. */
 #define CAR_GEAR_RATIOS 7
@@ -218,6 +245,9 @@ typedef struct {
     s32 slot;
     s32 car;
 } VehicleModelLoad;
+
+/** The slots the models of the cars of the menus load into. */
+#define VEHICLE_MODEL_SLOTS 4
 
 /** The cameras of a vehicle. */
 enum {
@@ -366,7 +396,8 @@ typedef struct Vehicle {
     s8 steerReturn;
     /** Whether the next step leaves the wheels undriven. */
     s32 skipDrive;
-    u8 unreconstructedE58[0xE5C - 0xE58];
+    /** Whether the player chose the custom decals of the car. */
+    s32 customDecals;
     /** The profile of the player who drives the vehicle. */
     PlayerProfile *profile;
     /** The tyres, the stiffness of the springs, and how the steering answers the stick. */
@@ -402,10 +433,11 @@ typedef struct Vehicle {
     s32 distanceLaps;
     /** The time of the lap being driven, in seconds. */
     f32 lapTime;
-    u8 unreconstructedF84[0xF98 - 0xF84];
-    /** The time of the best lap, in seconds. */
+    /** The time of each lap finished, in seconds. */
+    f32 lapTimes[VEHICLE_LAP_TIMES];
+    /** The time of the best lap, in seconds, and which lap it was, from 0. */
     f32 bestLapTime;
-    u8 unreconstructedF9C[0xFA0 - 0xF9C];
+    s32 bestLap;
     /** The time of the race so far, in seconds. */
     f32 totalTime;
     /** The time left, in seconds. */
@@ -502,7 +534,8 @@ typedef struct Vehicle {
      * drawn: the left and the lower edge, then the right and the upper edge.
      */
     s16 shadowCorners[2][2];
-    u8 unreconstructed2058[0x205C - 0x2058];
+    /** The car under the cursor of the car selection screen. */
+    s32 selectedCar;
     /** The index of the car in g_aCarModels. */
     s32 carModel;
     /** The color of the paint of the car. */
@@ -731,6 +764,44 @@ void BindPlayerInputToVehicle(Vehicle *vehicle);
  * @ghidraAddress USA: 0x8021d140
  */
 void SetMaterialColor(VehicleModel *model, s32 red, s32 green, s32 blue);
+
+/**
+ * Set the colour of the paint of a vehicle from the first colour of the palette of the paint
+ * texture of a model, when that texture has a palette and is of the format 1.
+ *
+ * @param vehicle The vehicle.
+ * @param model The model.
+ * @ghidraAddress USA: 0x8021d2a0
+ */
+void ExtractVehicleBaseColor(Vehicle *vehicle, VehicleModel *model);
+
+/**
+ * Whether the model of a car is on the cartridge.
+ *
+ * @param car The index of the car in g_aCarModels.
+ * @return Whether its model has an offset on the cartridge.
+ * @ghidraAddress USA: 0x8021d6b8
+ */
+s32 IsVehicleModelValid(s32 car);
+
+/**
+ * Choose the car of a vehicle. A player's vehicle takes the first car of the season in the
+ * championship and keeps its own otherwise. A computer's vehicle takes the car of the first player
+ * in the arcade; otherwise the first takes the first car of the season, and the others the lowest
+ * car of a set the season allows.
+ *
+ * @param vehicle The vehicle.
+ * @ghidraAddress USA: 0x80225f88
+ */
+void ChooseVehicleCar(Vehicle *vehicle);
+
+/**
+ * The driver of a computer's vehicle, which runs its behaviour for the frame.
+ *
+ * @param vehicle The vehicle.
+ * @ghidraAddress USA: 0x802288b4
+ */
+void DriveAiVehicle(Vehicle *vehicle);
 
 /**
  * Turn the offsets of a loaded model into pointers.

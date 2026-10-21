@@ -82,6 +82,14 @@ extern CameraFrame *g_pActiveCamera;
 /** The field of view of the cameras, in radians. @ghidraAddress USA: 0x8028aac0 */
 extern f32 g_fCameraFovRadians;
 
+/**
+ * The distance the far planes of the cameras are taken from; the stages of the menus see a fifth of
+ * it.
+ *
+ * @ghidraAddress USA: 0x8028aac8
+ */
+extern f32 g_fCameraProjectionScale;
+
 /** The views on the screen, one for each player. @ghidraAddress USA: 0x8028ab0c */
 extern s32 g_dwNumViewports;
 
@@ -183,6 +191,13 @@ extern s32 g_dwVehicleCullingDisabled;
 
 /** The triangles of the vehicles drawn this frame. @ghidraAddress USA: 0x8028aa3c */
 extern s32 g_dwStatVehicleTriangles;
+
+/**
+ * Blank the screen and clear both framebuffers in the normal display mode.
+ *
+ * @ghidraAddress USA: 0x8021a540
+ */
+void ClearDisplayBuffers(void);
 
 /**
  * Scale a whole matrix down by the largest magnitude of its first three rows, plus 0.375, so that

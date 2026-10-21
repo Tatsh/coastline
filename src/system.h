@@ -220,6 +220,9 @@ extern s32 g_dwFrameDeltaMs;
 /** The time the last frame took, in seconds. @ghidraAddress USA: 0x8028aad8 */
 extern f32 g_fFrameDeltaTime;
 
+/** The time UpdateFrameTiming() counts, in milliseconds. @ghidraAddress USA: 0x8028aad4 */
+extern s32 g_dwElapsedTimeMs;
+
 /**
  * Limit drawing to a rectangle, clipped to the frame.
  *

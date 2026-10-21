@@ -1,5 +1,6 @@
 #include "weatherselect.h"
 
+#include "carselect.h"
 #include "input.h"
 #include "racemenu.h"
 #include "system.h"
@@ -43,7 +44,7 @@ void ProcessWeatherSelect(void) {
                                0xA0)) {
     case MENU_RESULT_CHOSEN:
         g_dwCurrentWeather = g_dwWeatherMenuSelection;
-        SetCurrentScreenCallback(ProcessTrackSelectScreen);
+        SetCurrentScreenCallback(ProcessCarSelectScreen);
         g_dwWeatherSelectState = -1;
         break;
     case MENU_RESULT_CANCELLED:

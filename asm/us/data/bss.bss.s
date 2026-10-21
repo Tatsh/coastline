@@ -479,9 +479,9 @@ nonmatching D_80316248, 0x8
 dlabel D_80316248
     /* 80316248 */ .space 0x08
 
-nonmatching g_dwSavedDeltaTime, 0x4
+nonmatching g_dwCarSelectStartTime, 0x4
 
-dlabel g_dwSavedDeltaTime
+dlabel g_dwCarSelectStartTime
     /* 80316250 */ .space 0x04
 
 nonmatching D_80316254, 0x4
@@ -490,9 +490,9 @@ nonmatching D_80316254, 0x4
 dlabel D_80316254
     /* 80316254 */ .space 0x04
 
-nonmatching g_dwModelSlot1, 0x4
+nonmatching g_adwCarSelectModelSlots, 0x4
 
-dlabel g_dwModelSlot1
+dlabel g_adwCarSelectModelSlots
     /* 80316258 */ .space 0x04
 
 nonmatching g_dwModelSlot2, 0x4
@@ -500,19 +500,19 @@ nonmatching g_dwModelSlot2, 0x4
 dlabel g_dwModelSlot2
     /* 8031625C */ .space 0x04
 
-nonmatching g_afWeatherTransition, 0x4
+nonmatching g_afCarSelectSlide, 0x4
 
-dlabel g_afWeatherTransition
+dlabel g_afCarSelectSlide
     /* 80316260 */ .space 0x04
 
-nonmatching g_flPhysicsReserved0, 0x4
+nonmatching D_80316264, 0x4
 
-dlabel g_flPhysicsReserved0
+dlabel D_80316264
     /* 80316264 */ .space 0x04
 
-nonmatching g_afCameraAngle, 0x4
+nonmatching g_afCarSelectAngle, 0x4
 
-dlabel g_afCameraAngle
+dlabel g_afCarSelectAngle
     /* 80316268 */ .space 0x04
 
 nonmatching g_flPhysicsReserved1, 0x4
@@ -520,39 +520,39 @@ nonmatching g_flPhysicsReserved1, 0x4
 dlabel g_flPhysicsReserved1
     /* 8031626C */ .space 0x04
 
-nonmatching g_apCategoryList, 0x4
+nonmatching g_aapCarSelectOptions, 0x4
 
-dlabel g_apCategoryList
+dlabel g_aapCarSelectOptions
     /* 80316270 */ .space 0x04
 
-nonmatching g_dwPhysicsReserved39, 0x4
+nonmatching D_80316274, 0x4
 
-dlabel g_dwPhysicsReserved39
+dlabel D_80316274
     /* 80316274 */ .space 0x04
 
-nonmatching gTrackRomOffset, 0x4
+nonmatching g_anCarSelectCursor, 0x4
 
-dlabel gTrackRomOffset
+dlabel g_anCarSelectCursor
     /* 80316278 */ .space 0x04
 
-nonmatching g_dwP2CategoryItemIdx, 0x4
+nonmatching D_8031627C, 0x4
 
-dlabel g_dwP2CategoryItemIdx
+dlabel D_8031627C
     /* 8031627C */ .space 0x04
 
-nonmatching g_adwCategoryItemIdx, 0x4
+nonmatching g_anCarSelectPrevCursor, 0x4
 
-dlabel g_adwCategoryItemIdx
+dlabel g_anCarSelectPrevCursor
     /* 80316280 */ .space 0x04
 
-nonmatching g_dwPrevItemIdx2, 0x4
+nonmatching D_80316284, 0x4
 
-dlabel g_dwPrevItemIdx2
+dlabel D_80316284
     /* 80316284 */ .space 0x04
 
-nonmatching g_dwItemListCount1, 0x4
+nonmatching g_anCarSelectOptionCount, 0x4
 
-dlabel g_dwItemListCount1
+dlabel g_anCarSelectOptionCount
     /* 80316288 */ .space 0x04
 
 nonmatching g_dwItemListCount2, 0x4
@@ -560,19 +560,19 @@ nonmatching g_dwItemListCount2, 0x4
 dlabel g_dwItemListCount2
     /* 8031628C */ .space 0x04
 
-nonmatching g_szCategoryLabel1, 0x4
+nonmatching g_apszCarSelectCategory, 0x4
 
-dlabel g_szCategoryLabel1
+dlabel g_apszCarSelectCategory
     /* 80316290 */ .space 0x04
 
-nonmatching g_szCategoryLabel2, 0x4
+nonmatching D_80316294, 0x4
 
-dlabel g_szCategoryLabel2
+dlabel D_80316294
     /* 80316294 */ .space 0x04
 
-nonmatching g_dwResultsReady, 0x4
+nonmatching g_bCarSelectDone, 0x4
 
-dlabel g_dwResultsReady
+dlabel g_bCarSelectDone
     /* 80316298 */ .space 0x04
 
 nonmatching g_pScrollSoundBuf, 0x4
@@ -595,19 +595,19 @@ nonmatching g_dwSelectSoundSize, 0x4
 dlabel g_dwSelectSoundSize
     /* 803162A8 */ .space 0x04
 
-nonmatching g_dwFadeFramesRemaining, 0x4
+nonmatching g_dwTitleRedrawFrames, 0x4
 
-dlabel g_dwFadeFramesRemaining
+dlabel g_dwTitleRedrawFrames
     /* 803162AC */ .space 0x04
 
-nonmatching g_adwPlayerSelectState, 0x4
+nonmatching g_adwCarSelectState, 0x4
 
-dlabel g_adwPlayerSelectState
+dlabel g_adwCarSelectState
     /* 803162B0 */ .space 0x04
 
-nonmatching g_dwPhysicsReserved40, 0x4
+nonmatching D_803162B4, 0x4
 
-dlabel g_dwPhysicsReserved40
+dlabel D_803162B4
     /* 803162B4 */ .space 0x04
 
 nonmatching g_dwPakDialogActive, 0x4
@@ -625,44 +625,44 @@ nonmatching g_dwPakDialogResult, 0x4
 dlabel g_dwPakDialogResult
     /* 803162C0 */ .space 0x04
 
-nonmatching g_bPakDialogInitialized, 0x38
+nonmatching g_bPakDialogDone, 0x38
 
-dlabel g_bPakDialogInitialized
+dlabel g_bPakDialogDone
     /* 803162C4 */ .space 0x38
 
-nonmatching g_dwCurrentSeason, 0x4
+nonmatching g_dwResultsSeason, 0x4
 
-dlabel g_dwCurrentSeason
+dlabel g_dwResultsSeason
     /* 803162FC */ .space 0x04
 
-nonmatching g_dwCurrentRound, 0x4
+nonmatching g_dwResultsRound, 0x4
 
-dlabel g_dwCurrentRound
+dlabel g_dwResultsRound
     /* 80316300 */ .space 0x04
 
-nonmatching g_dwChampionshipFlags, 0x4
+nonmatching g_dwResultsChampionshipFlags, 0x4
 
-dlabel g_dwChampionshipFlags
+dlabel g_dwResultsChampionshipFlags
     /* 80316304 */ .space 0x04
 
-nonmatching g_dwSelectedTrackIndex, 0x4
+nonmatching g_dwResultsTrack, 0x4
 
-dlabel g_dwSelectedTrackIndex
+dlabel g_dwResultsTrack
     /* 80316308 */ .space 0x04
 
-nonmatching g_dwSelectedCarIndex, 0x4
+nonmatching g_dwCarSelectWeather, 0x4
 
-dlabel g_dwSelectedCarIndex
+dlabel g_dwCarSelectWeather
     /* 8031630C */ .space 0x04
 
-nonmatching g_dwReturnFromResults, 0x4
+nonmatching g_bSeasonResultsShown, 0x4
 
-dlabel g_dwReturnFromResults
+dlabel g_bSeasonResultsShown
     /* 80316310 */ .space 0x04
 
-nonmatching g_dwScreenPhase, 0x4
+nonmatching g_dwResultsPage, 0x4
 
-dlabel g_dwScreenPhase
+dlabel g_dwResultsPage
     /* 80316314 */ .space 0x04
 
 nonmatching g_szResultsBuf, 0x58
@@ -1486,9 +1486,10 @@ nonmatching g_aVehicleModelSlots, 0x50
 dlabel g_aVehicleModelSlots
     /* 8031B370 */ .space 0x50
 
-nonmatching g_aTrackSelectVehicleModelSlots, 0x50
+nonmatching D_8031B3C0, 0x50
 
-dlabel g_aTrackSelectVehicleModelSlots
+/* Automatically generated and unreferenced pad */
+dlabel D_8031B3C0
     /* 8031B3C0 */ .space 0x50
 
 nonmatching g_adwFadeRectLeftPerBuffer, 0x8
@@ -1764,9 +1765,9 @@ nonmatching D_8031C598, 0x20
 dlabel D_8031C598
     /* 8031C598 */ .space 0x20
 
-nonmatching g_dwCollisionCount, 0x4
+nonmatching D_8031C5B8, 0x4
 
-dlabel g_dwCollisionCount
+dlabel D_8031C5B8
     /* 8031C5B8 */ .space 0x04
 
 nonmatching g_pActiveProfile, 0x4
@@ -1820,9 +1821,9 @@ nonmatching D_8031C6DC, 0x8
 dlabel D_8031C6DC
     /* 8031C6DC */ .space 0x08
 
-nonmatching g_aVehicles_aLapTimes, 0x14
+nonmatching D_8031C6E4, 0x14
 
-dlabel g_aVehicles_aLapTimes
+dlabel D_8031C6E4
     /* 8031C6E4 */ .space 0x14
 
 nonmatching g_aVehicles_BestLapTime, 0x4
@@ -1981,9 +1982,9 @@ nonmatching D_8031D7A8, 0x10
 dlabel D_8031D7A8
     /* 8031D7A8 */ .space 0x10
 
-nonmatching g_dwPlayer1VehicleSpecIdx, 0x4
+nonmatching D_8031D7B8, 0x4
 
-dlabel g_dwPlayer1VehicleSpecIdx
+dlabel D_8031D7B8
     /* 8031D7B8 */ .space 0x04
 
 nonmatching g_dwWheelPosRearR, 0x4
@@ -2264,9 +2265,9 @@ nonmatching D_8031F838, 0x10
 dlabel D_8031F838
     /* 8031F838 */ .space 0x10
 
-nonmatching g_dwPlayer2VehicleSpecIdx, 0x4
+nonmatching D_8031F848, 0x4
 
-dlabel g_dwPlayer2VehicleSpecIdx
+dlabel D_8031F848
     /* 8031F848 */ .space 0x04
 
 nonmatching g_dwMenuScroll, 0x4

@@ -3253,12 +3253,12 @@ dlabel D_802A7A5C
 enddlabel D_802A7A5C
 
 .align 2
-nonmatching g_szDebugMsg7
+nonmatching g_szCustom
 
-dlabel g_szDebugMsg7
+dlabel g_szCustom
     /* A8A64 802A7A64 */ .asciz "Custom"
     /* 437573746F6D0000 */
-enddlabel g_szDebugMsg7
+enddlabel g_szCustom
 .align 2
 
 .align 2
@@ -3271,36 +3271,36 @@ enddlabel g_szFmtTime
 .align 2
 
 .align 2
-nonmatching g_szFmtCarTrack
+nonmatching g_szFmtRedPrefixTrackWeather
 
-dlabel g_szFmtCarTrack
+dlabel g_szFmtRedPrefixTrackWeather
     /* A8A7C 802A7A7C */ .asciz "%%ry%s%s/%s"
     /* 25257279257325732F257300 */
-enddlabel g_szFmtCarTrack
+enddlabel g_szFmtRedPrefixTrackWeather
 .align 2
 
 .align 2
-nonmatching g_szPlayerPrefix2
+nonmatching g_szMirroredPrefix
 
-dlabel g_szPlayerPrefix2
+dlabel g_szMirroredPrefix
     /* A8A88 802A7A88 */ .asciz "M-"
     /* 4D2D0000 */
 .align 2
-enddlabel g_szPlayerPrefix2
+enddlabel g_szMirroredPrefix
 
-nonmatching g_szPlayerPrefix
+nonmatching g_szNoPrefix
 
-dlabel g_szPlayerPrefix
+dlabel g_szNoPrefix
     /* A8A8C 802A7A8C 00000000 */ .word 0x00000000
-enddlabel g_szPlayerPrefix
+enddlabel g_szNoPrefix
 
 .align 2
-nonmatching g_szFmtCar
+nonmatching g_szFmtRedText3
 
-dlabel g_szFmtCar
+dlabel g_szFmtRedText3
     /* A8A90 802A7A90 */ .asciz "%%ry%s"
     /* 2525727925730000 */
-enddlabel g_szFmtCar
+enddlabel g_szFmtRedText3
 .align 2
 
 .align 2
@@ -3427,12 +3427,12 @@ enddlabel g_szRecordLap
 .align 2
 
 .align 2
-nonmatching g_szBestLapTrackSelect
+nonmatching g_szBestLap
 
-dlabel g_szBestLapTrackSelect
+dlabel g_szBestLap
     /* A8B7C 802A7B7C */ .asciz "  %yyBEST LAP!"
     /* 202025797942455354204C4150210000 */
-enddlabel g_szBestLapTrackSelect
+enddlabel g_szBestLap
 .align 2
 
 .align 2
@@ -3445,12 +3445,12 @@ enddlabel g_szSeasonResults
 .align 2
 
 .align 2
-nonmatching g_szFmtTrackCar2
+nonmatching g_szFmtTrackWeather2
 
-dlabel g_szFmtTrackCar2
+dlabel g_szFmtTrackWeather2
     /* A8BA0 802A7BA0 */ .asciz "%s/%s"
     /* 25732F2573000000 */
-enddlabel g_szFmtTrackCar2
+enddlabel g_szFmtTrackWeather2
 .align 2
 
 .align 2
@@ -3490,12 +3490,12 @@ enddlabel g_szTotalPts
 .align 2
 
 .align 2
-nonmatching g_szFmtPlayerReady
+nonmatching g_szFmtRedItalic
 
-dlabel g_szFmtPlayerReady
+dlabel g_szFmtRedItalic
     /* A8BCC 802A7BCC */ .asciz "%%ry%%i%s"
     /* 252572792525692573000000 */
-enddlabel g_szFmtPlayerReady
+enddlabel g_szFmtRedItalic
 .align 2
 
 .align 2
@@ -3508,21 +3508,21 @@ enddlabel g_szReady
 .align 2
 
 .align 2
-nonmatching g_szFmtPlayerReady2
+nonmatching g_szFmtRedLabelItalic
 
-dlabel g_szFmtPlayerReady2
+dlabel g_szFmtRedLabelItalic
     /* A8BE4 802A7BE4 */ .asciz "%%ry%s: %%i%s"
     /* 2525727925733A202525692573000000 */
-enddlabel g_szFmtPlayerReady2
+enddlabel g_szFmtRedLabelItalic
 .align 2
 
 .align 2
-nonmatching g_szFmtPlayerReady3
+nonmatching g_szFmtRedItalic2
 
-dlabel g_szFmtPlayerReady3
+dlabel g_szFmtRedItalic2
     /* A8BF4 802A7BF4 */ .asciz "%%ry%%i%s"
     /* 252572792525692573000000 */
-enddlabel g_szFmtPlayerReady3
+enddlabel g_szFmtRedItalic2
 .align 2
 
 .align 2
@@ -3535,12 +3535,12 @@ enddlabel g_szReady2
 .align 2
 
 .align 2
-nonmatching g_szFmtPlayerReady4
+nonmatching g_szFmtRedLabelItalic2
 
-dlabel g_szFmtPlayerReady4
+dlabel g_szFmtRedLabelItalic2
     /* A8C0C 802A7C0C */ .asciz "%%ry%s: %%i%s"
     /* 2525727925733A202525692573000000 */
-enddlabel g_szFmtPlayerReady4
+enddlabel g_szFmtRedLabelItalic2
 .align 2
 
 .align 2
@@ -3688,21 +3688,21 @@ enddlabel g_szFmtSpeedTrans2
 .align 2
 
 .align 2
-nonmatching g_szFmtPlayerReady5
+nonmatching g_szFmtRedItalic3
 
-dlabel g_szFmtPlayerReady5
+dlabel g_szFmtRedItalic3
     /* A8D64 802A7D64 */ .asciz "%%ry%%i%s"
     /* 252572792525692573000000 */
-enddlabel g_szFmtPlayerReady5
+enddlabel g_szFmtRedItalic3
 .align 2
 
 .align 2
-nonmatching g_szFmtPlayerReady6
+nonmatching g_szFmtRedItalic4
 
-dlabel g_szFmtPlayerReady6
+dlabel g_szFmtRedItalic4
     /* A8D70 802A7D70 */ .asciz "%%ry%%i%s"
     /* 252572792525692573000000 */
-enddlabel g_szFmtPlayerReady6
+enddlabel g_szFmtRedItalic4
 .align 2
 
 .align 2
@@ -3715,12 +3715,12 @@ enddlabel g_szLetsGo
 .align 2
 
 .align 2
-nonmatching g_szFmtPlayerReady7
+nonmatching g_szFmtRedLabelItalic3
 
-dlabel g_szFmtPlayerReady7
+dlabel g_szFmtRedLabelItalic3
     /* A8D8C 802A7D8C */ .asciz "%%ry%s: %%i%s"
     /* 2525727925733A202525692573000000 */
-enddlabel g_szFmtPlayerReady7
+enddlabel g_szFmtRedLabelItalic3
 .align 2
 
 .align 2
@@ -3858,152 +3858,152 @@ dlabel g_szDecals2
 enddlabel g_szDecals2
 .align 2
 
-nonmatching g_dwOsSpTaskList
+nonmatching g_fConst0p2_802a7ea4
 
-dlabel g_dwOsSpTaskList
+dlabel g_fConst0p2_802a7ea4
     /* A8EA4 802A7EA4 3E4CCCCD */ .float 0.200000003
-enddlabel g_dwOsSpTaskList
+enddlabel g_fConst0p2_802a7ea4
 
-nonmatching g_dwOsSpTaskCount
+nonmatching g_fConst0p254_802a7ea8
 
-dlabel g_dwOsSpTaskCount
+dlabel g_fConst0p254_802a7ea8
     /* A8EA8 802A7EA8 3E820C4A */ .float 0.2540000081
-enddlabel g_dwOsSpTaskCount
+enddlabel g_fConst0p254_802a7ea8
 
-nonmatching g_dwOsSpTaskState
+nonmatching g_fConstInv768_802a7eac
 
-dlabel g_dwOsSpTaskState
+dlabel g_fConstInv768_802a7eac
     /* A8EAC 802A7EAC 3AAAAAAB */ .float 0.001302083372
-enddlabel g_dwOsSpTaskState
+enddlabel g_fConstInv768_802a7eac
 
-nonmatching g_dwOsSpTaskFlags
+nonmatching g_fConstRadToDeg_802a7eb0
 
-dlabel g_dwOsSpTaskFlags
+dlabel g_fConstRadToDeg_802a7eb0
     /* A8EB0 802A7EB0 42652EE0 */ .float 57.29577637
-enddlabel g_dwOsSpTaskFlags
+enddlabel g_fConstRadToDeg_802a7eb0
 
-nonmatching g_dwOsSpTaskReserved0
+nonmatching g_fConstRadToDeg_802a7eb4
 
-dlabel g_dwOsSpTaskReserved0
+dlabel g_fConstRadToDeg_802a7eb4
     /* A8EB4 802A7EB4 42652EE0 */ .float 57.29577637
-enddlabel g_dwOsSpTaskReserved0
+enddlabel g_fConstRadToDeg_802a7eb4
 
-nonmatching g_dwOsSpTaskReserved1
+nonmatching g_fConstInv768_802a7eb8
 
-dlabel g_dwOsSpTaskReserved1
+dlabel g_fConstInv768_802a7eb8
     /* A8EB8 802A7EB8 3AAAAAAB */ .float 0.001302083372
-enddlabel g_dwOsSpTaskReserved1
+enddlabel g_fConstInv768_802a7eb8
 
-nonmatching g_dwOsSpTaskReserved2
+nonmatching g_fConst0p254_802a7ebc
 
-dlabel g_dwOsSpTaskReserved2
+dlabel g_fConst0p254_802a7ebc
     /* A8EBC 802A7EBC 3E820C4A */ .float 0.2540000081
-enddlabel g_dwOsSpTaskReserved2
+enddlabel g_fConst0p254_802a7ebc
 
-nonmatching g_dwOsSpTaskReserved3
+nonmatching g_fConst0p254_802a7ec0
 
-dlabel g_dwOsSpTaskReserved3
+dlabel g_fConst0p254_802a7ec0
     /* A8EC0 802A7EC0 3E820C4A */ .float 0.2540000081
-enddlabel g_dwOsSpTaskReserved3
+enddlabel g_fConst0p254_802a7ec0
 
-nonmatching g_fFadeInRate
+nonmatching g_fConst0p2_802a7ec4
 
-dlabel g_fFadeInRate
+dlabel g_fConst0p2_802a7ec4
     /* A8EC4 802A7EC4 3E4CCCCD */ .float 0.200000003
-enddlabel g_fFadeInRate
+enddlabel g_fConst0p2_802a7ec4
 
-nonmatching g_fFadeInRate2
+nonmatching g_fConst0p2_802a7ec8
 
-dlabel g_fFadeInRate2
+dlabel g_fConst0p2_802a7ec8
     /* A8EC8 802A7EC8 3E4CCCCD */ .float 0.200000003
-enddlabel g_fFadeInRate2
+enddlabel g_fConst0p2_802a7ec8
 
-nonmatching g_fFadeInRate3
+nonmatching g_fConst0p2_802a7ecc
 
-dlabel g_fFadeInRate3
+dlabel g_fConst0p2_802a7ecc
     /* A8ECC 802A7ECC 3E4CCCCD */ .float 0.200000003
-enddlabel g_fFadeInRate3
+enddlabel g_fConst0p2_802a7ecc
 
-nonmatching g_fScrollWrapThreshold
+nonmatching g_fConst0p254_802a7ed0
 
-dlabel g_fScrollWrapThreshold
+dlabel g_fConst0p254_802a7ed0
     /* A8ED0 802A7ED0 3E820C4A */ .float 0.2540000081
-enddlabel g_fScrollWrapThreshold
+enddlabel g_fConst0p254_802a7ed0
 
-nonmatching g_fScrollSpeedMax
+nonmatching g_fConstTwoPi_802a7ed4
 
-dlabel g_fScrollSpeedMax
+dlabel g_fConstTwoPi_802a7ed4
     /* A8ED4 802A7ED4 40C90FDB */ .float 6.283185482
-enddlabel g_fScrollSpeedMax
+enddlabel g_fConstTwoPi_802a7ed4
 
-nonmatching g_qwOsSpTaskUcode
+nonmatching g_dConst500_802a7ed8
 
-dlabel g_qwOsSpTaskUcode
+dlabel g_dConst500_802a7ed8
     /* A8ED8 802A7ED8 407F400000000000 */ .double 500
-enddlabel g_qwOsSpTaskUcode
+enddlabel g_dConst500_802a7ed8
 
-nonmatching g_qwOsSpTaskUcodeData
+nonmatching g_dConst500_802a7ee0
 
-dlabel g_qwOsSpTaskUcodeData
+dlabel g_dConst500_802a7ee0
     /* A8EE0 802A7EE0 407F400000000000 */ .double 500
-enddlabel g_qwOsSpTaskUcodeData
+enddlabel g_dConst500_802a7ee0
 
-nonmatching g_qwOsSpTaskDramStack
+nonmatching g_dConst500_802a7ee8
 
-dlabel g_qwOsSpTaskDramStack
+dlabel g_dConst500_802a7ee8
     /* A8EE8 802A7EE8 407F400000000000 */ .double 500
-enddlabel g_qwOsSpTaskDramStack
+enddlabel g_dConst500_802a7ee8
 
-nonmatching g_fFadeBackRate
+nonmatching g_fConst0p2_802a7ef0
 
-dlabel g_fFadeBackRate
+dlabel g_fConst0p2_802a7ef0
     /* A8EF0 802A7EF0 3E4CCCCD */ .float 0.200000003
-enddlabel g_fFadeBackRate
+enddlabel g_fConst0p2_802a7ef0
 
-nonmatching g_fFadeBackRate2
+nonmatching g_fConst0p2_802a7ef4
 
-dlabel g_fFadeBackRate2
+dlabel g_fConst0p2_802a7ef4
     /* A8EF4 802A7EF4 3E4CCCCD */ .float 0.200000003
-enddlabel g_fFadeBackRate2
+enddlabel g_fConst0p2_802a7ef4
 
 nonmatching switchdataD_802a7ef8
 
 dlabel switchdataD_802a7ef8
-    /* A8EF8 802A7EF8 80210858 */ .word .L80210858
-    /* A8EFC 802A7EFC 802108A4 */ .word .L802108A4
-    /* A8F00 802A7F00 802108F0 */ .word .L802108F0
-    /* A8F04 802A7F04 8021093C */ .word .L8021093C
-    /* A8F08 802A7F08 80210988 */ .word .L80210988
+    /* A8EF8 802A7EF8 80210858 */ .word 0
+    /* A8EFC 802A7EFC 802108A4 */ .word 0
+    /* A8F00 802A7F00 802108F0 */ .word 0
+    /* A8F04 802A7F04 8021093C */ .word 0
+    /* A8F08 802A7F08 80210988 */ .word 0
 enddlabel switchdataD_802a7ef8
 
 nonmatching jtbl_802A7F0C
 
 dlabel jtbl_802A7F0C
-    /* A8F0C 802A7F0C 802109F0 */ .word .L802109F0
-    /* A8F10 802A7F10 80210A44 */ .word .L80210A44
-    /* A8F14 802A7F14 80210A9C */ .word .L80210A9C
-    /* A8F18 802A7F18 80210AF4 */ .word .L80210AF4
-    /* A8F1C 802A7F1C 80210B4C */ .word .L80210B4C
-    /* A8F20 802A7F20 80210C9C */ .word .L80210C9C
+    /* A8F0C 802A7F0C 802109F0 */ .word 0
+    /* A8F10 802A7F10 80210A44 */ .word 0
+    /* A8F14 802A7F14 80210A9C */ .word 0
+    /* A8F18 802A7F18 80210AF4 */ .word 0
+    /* A8F1C 802A7F1C 80210B4C */ .word 0
+    /* A8F20 802A7F20 80210C9C */ .word 0
 enddlabel jtbl_802A7F0C
 
-nonmatching g_fFadeOutRate
+nonmatching g_fConst0p2_802a7f24
 
-dlabel g_fFadeOutRate
+dlabel g_fConst0p2_802a7f24
     /* A8F24 802A7F24 3E4CCCCD */ .float 0.200000003
-enddlabel g_fFadeOutRate
+enddlabel g_fConst0p2_802a7f24
 
-nonmatching g_fFadeOutRate2
+nonmatching g_fConst0p2_802a7f28
 
-dlabel g_fFadeOutRate2
+dlabel g_fConst0p2_802a7f28
     /* A8F28 802A7F28 3E4CCCCD */ .float 0.200000003
-enddlabel g_fFadeOutRate2
+enddlabel g_fConst0p2_802a7f28
 
-nonmatching g_fFadeOutRate3
+nonmatching g_fConst0p2_802a7f2c
 
-dlabel g_fFadeOutRate3
+dlabel g_fConst0p2_802a7f2c
     /* A8F2C 802A7F2C 3E4CCCCD */ .float 0.200000003
-enddlabel g_fFadeOutRate3
+enddlabel g_fConst0p2_802a7f2c
 
 .align 2
 nonmatching g_szSunny
@@ -8609,12 +8609,12 @@ dlabel g_szHudColorPrefixTotalTime
 enddlabel g_szHudColorPrefixTotalTime
 
 .align 2
-nonmatching g_szBestLap
+nonmatching g_szBestLap_802aa064
 
-dlabel g_szBestLap
+dlabel g_szBestLap_802aa064
     /* AB064 802AA064 */ .asciz "%15BEST LAP"
     /* 25313542455354204C415000 */
-enddlabel g_szBestLap
+enddlabel g_szBestLap_802aa064
 .align 2
 
 .align 2

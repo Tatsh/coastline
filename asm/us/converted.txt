@@ -86,6 +86,7 @@ DrawMenuSpotlight
 DrawModelAt
 DrawModelList
 DrawPauseMenuButtons
+DrawProgressBar
 DrawRaceTimerHud
 DrawRedIntensityRect
 DrawRotatedModel
@@ -107,6 +108,7 @@ FadeSfxTo
 FindFreeSoundChannel
 FinishFrameMatrix
 FloatToInt
+FormatLapTime
 GetBodyPointVelocity
 GetHeapCurrentAddress
 GetWheelWorldVelocity
@@ -128,6 +130,7 @@ InitVehiclePhysics
 InstallVehicleModel
 IntegrateRigidBodyState
 InvalidateTriCacheSectorAt
+IsCarUnlocked
 IsCellVisible
 IsFadeComplete
 IsFadedToBlack
@@ -179,12 +182,14 @@ Powf
 PrepareRumblePaks
 PrepareTrackSections
 PrintCollisionTriangleCount
+ProcessCarSelectScreen
 ProcessControllerCheck
 ProcessControllerConfigScreen
 ProcessInputCommandBuffer
 ProcessMainMenu
 ProcessPakMenuScreen
 ProcessPlayerCountSelect
+ProcessRaceResultsScreen
 ProcessScreenState
 ProcessSplashScreens
 ProcessTrackMenu
@@ -197,6 +202,7 @@ QuaternionNormalize
 QuaternionToMatrix
 QuickSort
 RenderBillboardParticles
+RenderCameraView
 RenderDashboardGauges
 RenderExhaustAndTireSpray
 RenderHeadlightGlare
