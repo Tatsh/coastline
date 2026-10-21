@@ -62,6 +62,15 @@ add_compile_definitions(
   TGR_RENDERER_GLIDE=2
   TGR_RENDERER=TGR_RENDERER_${_tgr_renderer})
 
+# The tests build the reconstructed C of the Nintendo 64 release for the host, with the host
+# compiler, in place of a variant.
+option(TGR_TESTS "Build the tests for the host in place of a variant." OFF)
+if(TGR_TESTS)
+  enable_testing()
+  add_subdirectory(tests)
+  return()
+endif()
+
 if(BUILD_DOCS OR BUILD_DOCS_ONLY)
   set(DOXYGEN_GENERATE_HTML YES)
   set(DOXYGEN_HTML_OUTPUT "${CMAKE_BINARY_DIR}/html")
@@ -103,4 +112,12 @@ if(NOT BUILD_DOCS_ONLY)
     include(cmake/assets.cmake)
   endif()
   add_subdirectory(src)
+  if(TGR_PLATFORM STREQUAL "n64")
+    # The offsets of the structures the assembly reads, which need the 32-bit pointers of the
+    # console and so are checked by the cross compiler. A wrong offset fails the build.
+    add_library(coastline_layout OBJECT tests/layout.c)
+    target_include_directories(
+      coastline_layout PRIVATE "${CMAKE_SOURCE_DIR}/src" "${CMAKE_SOURCE_DIR}/src/libultra/include"
+                               "${CMAKE_SOURCE_DIR}/3rdparty/zlib-1.0.4")
+  endif()
 endif()

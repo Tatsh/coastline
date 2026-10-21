@@ -99,10 +99,15 @@
       for renderer in ['d3d', 'glide']
     ] + [
       { cacheVariables: { TGR_VARIANTS: 'all' }, inherits: 'base', name: 'all' },
+      // The tests build for the host with the host compiler.
+      { cacheVariables: { TGR_TESTS: 'ON' }, inherits: 'base', name: 'tests' },
     ],
     buildPresets: [
       { configurePreset: preset, name: preset }
-      for preset in variants + ['all']
+      for preset in variants + ['all', 'tests']
+    ],
+    testPresets: [
+      { configurePreset: 'tests', name: 'tests', output: { outputOnFailure: true } },
     ],
     workflowPresets: [
       {
@@ -110,6 +115,15 @@
         steps: [{ name: preset, type: 'configure' }, { name: preset, type: 'build' }],
       }
       for preset in variants + ['all']
+    ] + [
+      {
+        name: 'tests',
+        steps: [
+          { name: 'tests', type: 'configure' },
+          { name: 'tests', type: 'build' },
+          { name: 'tests', type: 'test' },
+        ],
+      },
     ],
   },
   // ROM images used for comparison.

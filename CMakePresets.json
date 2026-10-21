@@ -23,6 +23,10 @@
     {
       "configurePreset": "all",
       "name": "all"
+    },
+    {
+      "configurePreset": "tests",
+      "name": "tests"
     }
   ],
   "configurePresets": [
@@ -100,6 +104,22 @@
       },
       "inherits": "base",
       "name": "all"
+    },
+    {
+      "cacheVariables": {
+        "TGR_TESTS": "ON"
+      },
+      "inherits": "base",
+      "name": "tests"
+    }
+  ],
+  "testPresets": [
+    {
+      "configurePreset": "tests",
+      "name": "tests",
+      "output": {
+        "outputOnFailure": true
+      }
     }
   ],
   "version": 6,
@@ -179,6 +199,23 @@
         {
           "name": "all",
           "type": "build"
+        }
+      ]
+    },
+    {
+      "name": "tests",
+      "steps": [
+        {
+          "name": "tests",
+          "type": "configure"
+        },
+        {
+          "name": "tests",
+          "type": "build"
+        },
+        {
+          "name": "tests",
+          "type": "test"
         }
       ]
     }

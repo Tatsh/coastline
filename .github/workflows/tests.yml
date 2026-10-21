@@ -1,0 +1,28 @@
+---
+concurrency:
+  cancel-in-progress: true
+  group: tests-${{ github.ref }}
+jobs:
+  tests:
+    name: 'Tests'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: 'actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1'
+        with:
+          persist-credentials: false
+      # The tests build the reconstructed C for the host with the host compiler, so no cross
+      # toolchain is needed.
+      - name: 'Install the tools'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y cmake ninja-build
+      - name: 'Configure, build and test'
+        run: cmake --workflow --preset tests
+name: 'Tests'
+'on':
+  push:
+    branches: ['master']
+  pull_request:
+    branches: ['master']
+permissions:
+  contents: read

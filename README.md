@@ -58,3 +58,25 @@ when its C body is written.
 
 The host tools under `tools/` are built with the host compiler during the configure step. They
 need argparse, spdlog, and zlib, from vcpkg, the system, or a pinned download.
+
+## Testing
+
+The tests under `tests/` build the reconstructed C for the host with the host compiler and check
+it against the branches and command words of the disassembly. The `tests` workflow preset
+configures, builds, and runs them with CTest, with the address and undefined behaviour sanitizers.
+
+```shell
+cmake --workflow --preset tests
+```
+
+The test of zlib inflates the assets extracted from a cartridge image and compares them with the
+extractor's output. It runs only when `TGR_TEST_ASSETS` names the asset directory of a build.
+
+```shell
+cmake --preset tests -DTGR_TEST_ASSETS="$PWD/build/n64-us/assets"
+cmake --build --preset tests && ctest --preset tests
+```
+
+The offsets of the structures the assembly reads depend on the 32-bit pointers of the console, so
+`tests/layout.c` is compiled by the cross compiler as part of each Nintendo 64 build, where a
+wrong offset fails the build.
