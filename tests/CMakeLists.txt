@@ -14,7 +14,8 @@ set(_gu
     "${_src}/libultra/gu/rotate.c"
     "${_src}/libultra/gu/scale.c"
     "${_src}/libultra/gu/translate.c"
-    "${_src}/libultra/gu/normalize.c")
+    "${_src}/libultra/gu/normalize.c"
+    "${CMAKE_CURRENT_SOURCE_DIR}/stubs/gu.c")
 set(_common "${CMAKE_CURRENT_SOURCE_DIR}/stubs/common.c")
 set(_vecmath "${_src}/vecmath.c")
 
@@ -86,7 +87,8 @@ coastline_add_test(
 set_source_files_properties("${_src}/libultra/libc/sprintf.c" PROPERTIES COMPILE_DEFINITIONS
                                                                          sprintf=lu_sprintf)
 coastline_add_test(gu "${_src}/libultra/gu/sinf.c" "${_src}/libultra/gu/cosf.c"
-                   "${_src}/libultra/gu/mtxutil.c")
+                   "${_src}/libultra/gu/mtxutil.c" "${_src}/libultra/gu/rotate.c"
+                   "${_src}/libultra/gu/normalize.c" stubs/gu.c)
 set_source_files_properties("${_src}/libultra/gu/sinf.c" PROPERTIES COMPILE_DEFINITIONS sinf=gu_sinf)
 set_source_files_properties("${_src}/libultra/gu/cosf.c" PROPERTIES COMPILE_DEFINITIONS cosf=gu_cosf)
 

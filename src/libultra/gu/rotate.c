@@ -1,10 +1,11 @@
-#include <ultra64.h>
+#include "guint.h"
 
 void guRotateF(float mf[4][4], float a, float x, float y, float z) {
     float sine, cosine, ab, bc, ca, t;
 
+    g_fGuRotateDtor = 3.1415926f / 180.0f;
     guNormalize(&x, &y, &z);
-    a *= 3.1415926f / 180.0f;
+    a *= g_fGuRotateDtor;
     sine = sinf(a);
     cosine = cosf(a);
     t = 1.0f - cosine;

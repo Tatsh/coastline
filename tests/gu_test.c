@@ -36,6 +36,16 @@ int main(void) {
     for (int i = 0; i < 16; i++) {
         assert(fabsf(back[i / 4][i % 4] - mf[i / 4][i % 4]) < 1e-4f);
     }
+    /* guRotateF() stores the radians in a degree, 0x3C8EFA35, before it scales the angle. */
+    g_fGuRotateDtor = 0.0f;
+    guRotateF(mf, 90.0f, 0.0f, 0.0f, 2.0f);
+    union {
+        float f;
+        unsigned u;
+    } dtor = {g_fGuRotateDtor};
+    assert(dtor.u == 0x3C8EFA35u);
+    assert(fabsf(mf[0][1] - 1.0f) < 1e-5f && fabsf(mf[1][0] + 1.0f) < 1e-5f);
+    assert(fabsf(mf[0][0]) < 1e-5f && fabsf(mf[2][2] - 1.0f) < 1e-5f);
     puts("gu check passed");
     return 0;
 }

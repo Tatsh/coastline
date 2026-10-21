@@ -32,6 +32,13 @@ extern const s16 sintable[0x400];
  */
 extern const double g_adSinfP[5];
 
+/**
+ * The radians in a degree, which guRotateF() stores on each call before it reads it back.
+ *
+ * @ghidraAddress USA: 0x8037f0a0
+ */
+extern float g_fGuRotateDtor;
+
 /** @ghidraAddress USA: 0x802ab8c8 */
 extern const double g_dSinfRpi;
 
