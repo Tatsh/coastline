@@ -85,10 +85,12 @@ decaldraw
 decaleditor
 declear
 decleared
+decomp
 destroythread
 devmgr
 dfrac
 dialogs
+dinline
 disasm
 divdi
 divremi
@@ -99,6 +101,7 @@ dllmain
 dlnear
 dmaread
 dmawrite
+dndebug
 docstrings
 doubleword
 drawtexturedrect
@@ -171,6 +174,7 @@ hilite
 hinstance
 histk
 huft
+iasm
 iconerror
 icsum
 immp
@@ -185,6 +189,7 @@ inval
 invaldcache
 invalicache
 iobusy
+isrc
 iwyu
 jalr
 jammesg
@@ -251,6 +256,7 @@ mainmenu
 mainpage
 maptlbrdb
 maskt
+matchscan
 math
 mathutil
 maxcontrollers
@@ -296,6 +302,7 @@ nonmatching
 noone
 noreorder
 nostartfiles
+nostdinc
 nostdlib
 ntrj
 ntrp
@@ -304,6 +311,7 @@ numlight
 numlights
 numpydoc
 objcopy
+objdump
 oneline
 otherlook
 outfun
@@ -313,6 +321,7 @@ painttex
 pakmenu
 paks
 pathlib
+permuter
 persp
 perspnorm
 pfsallocatefile
@@ -463,6 +472,7 @@ superbuild
 swwwwfgdafch
 syms
 syncprintf
+szlong
 tagfile
 tatsh
 texrect
@@ -554,6 +564,7 @@ wwshould
 wwthe
 xabs
 xchar
+xcpluscomm
 xexp
 xfmf
 xfml

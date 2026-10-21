@@ -1018,9 +1018,9 @@ __metadata:
   linkType: hard
 
 "fast-equals@npm:^6.1.1":
-  version: 6.2.0
-  resolution: "fast-equals@npm:6.2.0"
-  checksum: 10c0/6adf868f83dea0d12c0040981ea1f4fb86cfb4505a9b74b2a0698ca211d8794ba3900771d1b2568f3ccbe81496f73169d2e7ad5c39951ab9f1624ff736ee592f
+  version: 6.2.1
+  resolution: "fast-equals@npm:6.2.1"
+  checksum: 10c0/48b58dcc3d2cf0862ef20e5ea02db7efe4c8fea8d0bbdd32707994398c9d06f788d2950bafd050b0572088e4ecbc6747864e43d63f9e985109def680b7fe0fdf
   languageName: node
   linkType: hard
 
