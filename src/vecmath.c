@@ -378,8 +378,12 @@ void CopyMatrix4x4(f32 out[4][4], f32 in[4][4]) {
 }
 
 s32 MtxInvert4x4(f32 out[4][4], f32 in[4][4]) {
-    f32 positive = 0.0f, negative = 0.0f;
-    f32 term, determinant, precision, inverse;
+    f32 negative = 0.0f, positive = 0.0f;
+    f32 term, determinant, precision;
+    /* The original reserves stack for a word of locals it does not use. */
+    f32 unused;
+
+    (void)unused;
 
     /* The determinant of the 3 by 3 part, summed by sign to measure its precision. */
     term = in[0][0] * in[1][1] * in[2][2];
@@ -428,25 +432,26 @@ s32 MtxInvert4x4(f32 out[4][4], f32 in[4][4]) {
         return 0;
     }
 
-    inverse = 1.0f / determinant;
-    out[0][0] = (in[1][1] * in[2][2] - in[2][1] * in[1][2]) * inverse;
-    out[1][0] = -(in[1][0] * in[2][2] - in[2][0] * in[1][2]) * inverse;
-    out[2][0] = (in[1][0] * in[2][1] - in[2][0] * in[1][1]) * inverse;
-    out[0][1] = -(in[0][1] * in[2][2] - in[2][1] * in[0][2]) * inverse;
-    out[1][1] = (in[0][0] * in[2][2] - in[2][0] * in[0][2]) * inverse;
-    out[2][1] = -(in[0][0] * in[2][1] - in[2][0] * in[0][1]) * inverse;
-    out[0][2] = (in[0][1] * in[1][2] - in[1][1] * in[0][2]) * inverse;
-    out[1][2] = -(in[0][0] * in[1][2] - in[1][0] * in[0][2]) * inverse;
-    out[2][2] = (in[0][0] * in[1][1] - in[1][0] * in[0][1]) * inverse;
+    /* The determinant becomes its reciprocal. */
+    determinant = 1.0f / determinant;
+    out[0][0] = (in[1][1] * in[2][2] - in[1][2] * in[2][1]) * determinant;
+    out[1][0] = -(in[1][0] * in[2][2] - in[1][2] * in[2][0]) * determinant;
+    out[2][0] = (in[1][0] * in[2][1] - in[1][1] * in[2][0]) * determinant;
+    out[0][1] = -(in[0][1] * in[2][2] - in[0][2] * in[2][1]) * determinant;
+    out[1][1] = (in[0][0] * in[2][2] - in[0][2] * in[2][0]) * determinant;
+    out[2][1] = -(in[0][0] * in[2][1] - in[0][1] * in[2][0]) * determinant;
+    out[0][2] = (in[0][1] * in[1][2] - in[0][2] * in[1][1]) * determinant;
+    out[1][2] = -(in[0][0] * in[1][2] - in[0][2] * in[1][0]) * determinant;
+    out[2][2] = (in[0][0] * in[1][1] - in[0][1] * in[1][0]) * determinant;
 
     /* The translation is the old one carried back through the inverted rotation. */
     out[3][0] = -(in[3][0] * out[0][0] + in[3][1] * out[1][0] + in[3][2] * out[2][0]);
     out[3][1] = -(in[3][0] * out[0][1] + in[3][1] * out[1][1] + in[3][2] * out[2][1]);
+    out[3][2] = -(in[3][0] * out[0][2] + in[3][1] * out[1][2] + in[3][2] * out[2][2]);
     out[0][3] = 0.0f;
     out[1][3] = 0.0f;
     out[2][3] = 0.0f;
     out[3][3] = 1.0f;
-    out[3][2] = -(in[3][0] * out[0][2] + in[3][1] * out[1][2] + in[3][2] * out[2][2]);
     return 1;
 }
 
