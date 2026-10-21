@@ -44,6 +44,13 @@ void SetTextAlignRight(void);
 void SetTextSize(s32 size);
 
 /**
+ * Set the two colors of the text.
+ *
+ * @ghidraAddress USA: 0x8022f530
+ */
+void SetTextCustomColors(s32 red, s32 green, s32 blue, s32 red2, s32 green2, s32 blue2);
+
+/**
  * Draw text at a position, aligned as the last alignment set.
  *
  * @ghidraAddress USA: 0x8022f5dc

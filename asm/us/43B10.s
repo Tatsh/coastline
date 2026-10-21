@@ -5459,10 +5459,10 @@ glabel ProcessFillClearMenu
     /* 48B64 80247B64 27A90068 */  addiu      $t1, $sp, 0x68
     /* 48B68 80247B68 AD2D0004 */  sw         $t5, 0x4($t1)
     /* 48B6C 80247B6C AD210000 */  sw         $at, 0x0($t1)
-    /* 48B70 80247B70 3C198029 */  lui        $t9, %hi(g_dwGfxBufferUsed)
-    /* 48B74 80247B74 3C0F8029 */  lui        $t7, %hi(g_dwGfxDisplayListSize)
-    /* 48B78 80247B78 8F39D0C4 */  lw         $t9, %lo(g_dwGfxBufferUsed)($t9)
-    /* 48B7C 80247B7C 8DEFD0F0 */  lw         $t7, %lo(g_dwGfxDisplayListSize)($t7)
+    /* 48B70 80247B70 3C198029 */  lui        $t9, %hi(g_texButtonA + 0x14)
+    /* 48B74 80247B74 3C0F8029 */  lui        $t7, %hi(g_texButtonB + 0x10)
+    /* 48B78 80247B78 8F39D0C4 */  lw         $t9, %lo(g_texButtonA + 0x14)($t9)
+    /* 48B7C 80247B7C 8DEFD0F0 */  lw         $t7, %lo(g_texButtonB + 0x10)($t7)
     /* 48B80 80247B80 24180160 */  addiu      $t8, $zero, 0x160
     /* 48B84 80247B84 24080161 */  addiu      $t0, $zero, 0x161
     /* 48B88 80247B88 03197023 */  subu       $t6, $t8, $t9
@@ -5713,8 +5713,8 @@ glabel ProcessFillClearMenu
     /* 48F4C 80247F4C 2404000A */   addiu     $a0, $zero, 0xA
     /* 48F50 80247F50 0C08BD45 */  jal        SetTextAlignLeft
     /* 48F54 80247F54 00000000 */   nop
-    /* 48F58 80247F58 3C058029 */  lui        $a1, %hi(g_dwGfxBufferSize)
-    /* 48F5C 80247F5C 8CA5D0C0 */  lw         $a1, %lo(g_dwGfxBufferSize)($a1)
+    /* 48F58 80247F58 3C058029 */  lui        $a1, %hi(g_texButtonA + 0x10)
+    /* 48F5C 80247F5C 8CA5D0C0 */  lw         $a1, %lo(g_texButtonA + 0x10)($a1)
     /* 48F60 80247F60 8FB000BC */  lw         $s0, 0xBC($sp)
     /* 48F64 80247F64 3C04802B */  lui        $a0, %hi(g_szSelect2)
     /* 48F68 80247F68 24A500D9 */  addiu      $a1, $a1, 0xD9
@@ -5725,8 +5725,8 @@ glabel ProcessFillClearMenu
     /* 48F7C 80247F7C 00C08025 */  or         $s0, $a2, $zero
     /* 48F80 80247F80 0C08BD77 */  jal        DrawText
     /* 48F84 80247F84 2484A964 */   addiu     $a0, $a0, %lo(g_szSelect2)
-    /* 48F88 80247F88 3C0B8029 */  lui        $t3, %hi(g_dwGfxDisplayListSize)
-    /* 48F8C 80247F8C 8D6BD0F0 */  lw         $t3, %lo(g_dwGfxDisplayListSize)($t3)
+    /* 48F88 80247F88 3C0B8029 */  lui        $t3, %hi(g_texButtonB + 0x10)
+    /* 48F8C 80247F8C 8D6BD0F0 */  lw         $t3, %lo(g_texButtonB + 0x10)($t3)
     /* 48F90 80247F90 8FAF00B8 */  lw         $t7, 0xB8($sp)
     /* 48F94 80247F94 3C04802B */  lui        $a0, %hi(g_szCancel4)
     /* 48F98 80247F98 2484A970 */  addiu      $a0, $a0, %lo(g_szCancel4)
@@ -6073,10 +6073,10 @@ glabel ProcessMirrorFlipMenu
     /* 49478 80248478 AD2D0004 */  sw         $t5, 0x4($t1)
     /* 4947C 8024847C AD210000 */  sw         $at, 0x0($t1)
     /* 49480 80248480 3C028029 */  lui        $v0, %hi(gDecalCanvasHeight)
-    /* 49484 80248484 3C198029 */  lui        $t9, %hi(g_dwGfxBufferSize)
-    /* 49488 80248488 3C0F8029 */  lui        $t7, %hi(g_dwGfxDisplayListSize)
-    /* 4948C 8024848C 8F39D0C0 */  lw         $t9, %lo(g_dwGfxBufferSize)($t9)
-    /* 49490 80248490 8DEFD0F0 */  lw         $t7, %lo(g_dwGfxDisplayListSize)($t7)
+    /* 49484 80248484 3C198029 */  lui        $t9, %hi(g_texButtonA + 0x10)
+    /* 49488 80248488 3C0F8029 */  lui        $t7, %hi(g_texButtonB + 0x10)
+    /* 4948C 8024848C 8F39D0C0 */  lw         $t9, %lo(g_texButtonA + 0x10)($t9)
+    /* 49490 80248490 8DEFD0F0 */  lw         $t7, %lo(g_texButtonB + 0x10)($t7)
     /* 49494 80248494 2442DBC0 */  addiu      $v0, $v0, %lo(gDecalCanvasHeight)
     /* 49498 80248498 904B0000 */  lbu        $t3, 0x0($v0)
     /* 4949C 8024849C 24180155 */  addiu      $t8, $zero, 0x155
@@ -6371,8 +6371,8 @@ glabel ProcessMirrorFlipMenu
     /* 498E0 802488E0 2404000A */   addiu     $a0, $zero, 0xA
     /* 498E4 802488E4 0C08BD45 */  jal        SetTextAlignLeft
     /* 498E8 802488E8 00000000 */   nop
-    /* 498EC 802488EC 3C058029 */  lui        $a1, %hi(g_dwGfxBufferSize)
-    /* 498F0 802488F0 8CA5D0C0 */  lw         $a1, %lo(g_dwGfxBufferSize)($a1)
+    /* 498EC 802488EC 3C058029 */  lui        $a1, %hi(g_texButtonA + 0x10)
+    /* 498F0 802488F0 8CA5D0C0 */  lw         $a1, %lo(g_texButtonA + 0x10)($a1)
     /* 498F4 802488F4 8FB00088 */  lw         $s0, 0x88($sp)
     /* 498F8 802488F8 3C04802B */  lui        $a0, %hi(g_szSelect3)
     /* 498FC 802488FC 24A500D9 */  addiu      $a1, $a1, 0xD9
@@ -6383,8 +6383,8 @@ glabel ProcessMirrorFlipMenu
     /* 49910 80248910 00C08025 */  or         $s0, $a2, $zero
     /* 49914 80248914 0C08BD77 */  jal        DrawText
     /* 49918 80248918 2484AB50 */   addiu     $a0, $a0, %lo(g_szSelect3)
-    /* 4991C 8024891C 3C0A8029 */  lui        $t2, %hi(g_dwGfxDisplayListSize)
-    /* 49920 80248920 8D4AD0F0 */  lw         $t2, %lo(g_dwGfxDisplayListSize)($t2)
+    /* 4991C 8024891C 3C0A8029 */  lui        $t2, %hi(g_texButtonB + 0x10)
+    /* 49920 80248920 8D4AD0F0 */  lw         $t2, %lo(g_texButtonB + 0x10)($t2)
     /* 49924 80248924 8FA90084 */  lw         $t1, 0x84($sp)
     /* 49928 80248928 3C04802B */  lui        $a0, %hi(g_szCancel5)
     /* 4992C 8024892C 2484AB5C */  addiu      $a0, $a0, %lo(g_szCancel5)
@@ -6944,8 +6944,8 @@ glabel ProcessDecalSaveLoad
     /* 4A0F8 802490F8 100006D8 */  b          .L8024AC5C
     /* 4A0FC 802490FC A0209E62 */   sb        $zero, %lo(g_bCheatReserved2)($at)
   jlabel .L80249100
-    /* 4A100 80249100 3C0E8029 */  lui        $t6, %hi(g_dwGfxBufferSize)
-    /* 4A104 80249104 8DCED0C0 */  lw         $t6, %lo(g_dwGfxBufferSize)($t6)
+    /* 4A100 80249100 3C0E8029 */  lui        $t6, %hi(g_texButtonA + 0x10)
+    /* 4A104 80249104 8DCED0C0 */  lw         $t6, %lo(g_texButtonA + 0x10)($t6)
     /* 4A108 80249108 24180110 */  addiu      $t8, $zero, 0x110
     /* 4A10C 8024910C 240F0003 */  addiu      $t7, $zero, 0x3
     /* 4A110 80249110 030EC823 */  subu       $t9, $t8, $t6
@@ -6997,8 +6997,8 @@ glabel ProcessDecalSaveLoad
   .L802491C4:
     /* 4A1C4 802491C4 0C08BD74 */  jal        SetTextSize
     /* 4A1C8 802491C8 2404000A */   addiu     $a0, $zero, 0xA
-    /* 4A1CC 802491CC 3C058029 */  lui        $a1, %hi(g_dwGfxBufferSize)
-    /* 4A1D0 802491D0 8CA5D0C0 */  lw         $a1, %lo(g_dwGfxBufferSize)($a1)
+    /* 4A1CC 802491CC 3C058029 */  lui        $a1, %hi(g_texButtonA + 0x10)
+    /* 4A1D0 802491D0 8CA5D0C0 */  lw         $a1, %lo(g_texButtonA + 0x10)($a1)
     /* 4A1D4 802491D4 8FA60088 */  lw         $a2, 0x88($sp)
     /* 4A1D8 802491D8 3C04802B */  lui        $a0, %hi(g_szOk4)
     /* 4A1DC 802491DC 24A500F2 */  addiu      $a1, $a1, 0xF2
@@ -7010,8 +7010,8 @@ glabel ProcessDecalSaveLoad
     /* 4A1F4 802491F4 AFB90038 */  sw         $t9, 0x38($sp)
     /* 4A1F8 802491F8 0C08BD77 */  jal        DrawText
     /* 4A1FC 802491FC 2484ABB4 */   addiu     $a0, $a0, %lo(g_szOk4)
-    /* 4A200 80249200 3C058029 */  lui        $a1, %hi(g_dwGfxDisplayListSize)
-    /* 4A204 80249204 8CA5D0F0 */  lw         $a1, %lo(g_dwGfxDisplayListSize)($a1)
+    /* 4A200 80249200 3C058029 */  lui        $a1, %hi(g_texButtonB + 0x10)
+    /* 4A204 80249204 8CA5D0F0 */  lw         $a1, %lo(g_texButtonB + 0x10)($a1)
     /* 4A208 80249208 3C04802B */  lui        $a0, %hi(g_szCancel6)
     /* 4A20C 8024920C 8FA60038 */  lw         $a2, 0x38($sp)
     /* 4A210 80249210 24A50136 */  addiu      $a1, $a1, 0x136
@@ -7460,8 +7460,8 @@ glabel ProcessDecalSaveLoad
     /* 4A8A8 802498A8 100004EC */  b          .L8024AC5C
     /* 4A8AC 802498AC A0399E60 */   sb        $t9, %lo(gOsSchedulerState)($at)
   jlabel .L802498B0
-    /* 4A8B0 802498B0 3C0F8029 */  lui        $t7, %hi(g_dwGfxBufferSize)
-    /* 4A8B4 802498B4 8DEFD0C0 */  lw         $t7, %lo(g_dwGfxBufferSize)($t7)
+    /* 4A8B0 802498B0 3C0F8029 */  lui        $t7, %hi(g_texButtonA + 0x10)
+    /* 4A8B4 802498B4 8DEFD0C0 */  lw         $t7, %lo(g_texButtonA + 0x10)($t7)
     /* 4A8B8 802498B8 240E011D */  addiu      $t6, $zero, 0x11D
     /* 4A8BC 802498BC 24190003 */  addiu      $t9, $zero, 0x3
     /* 4A8C0 802498C0 01CFC023 */  subu       $t8, $t6, $t7
@@ -7506,8 +7506,8 @@ glabel ProcessDecalSaveLoad
     /* 4A95C 8024995C 2406007A */   addiu     $a2, $zero, 0x7A
     /* 4A960 80249960 0C08BD74 */  jal        SetTextSize
     /* 4A964 80249964 2404000A */   addiu     $a0, $zero, 0xA
-    /* 4A968 80249968 3C058029 */  lui        $a1, %hi(g_dwGfxBufferSize)
-    /* 4A96C 8024996C 8CA5D0C0 */  lw         $a1, %lo(g_dwGfxBufferSize)($a1)
+    /* 4A968 80249968 3C058029 */  lui        $a1, %hi(g_texButtonA + 0x10)
+    /* 4A96C 8024996C 8CA5D0C0 */  lw         $a1, %lo(g_texButtonA + 0x10)($a1)
     /* 4A970 80249970 8FA60088 */  lw         $a2, 0x88($sp)
     /* 4A974 80249974 3C04802B */  lui        $a0, %hi(g_szOk5)
     /* 4A978 80249978 24A500EE */  addiu      $a1, $a1, 0xEE
@@ -8447,13 +8447,13 @@ glabel ProcessDecalSaveLoad
     /* 4B734 8024A734 2401270F */  addiu      $at, $zero, 0x270F
     /* 4B738 8024A738 8FB9003C */  lw         $t9, 0x3C($sp)
     /* 4B73C 8024A73C 15E10055 */  bne        $t7, $at, .L8024A894
-    /* 4B740 8024A740 3C188029 */   lui       $t8, %hi(g_dwGfxBufferSize)
+    /* 4B740 8024A740 3C188029 */   lui       $t8, %hi(g_texButtonA + 0x10)
     /* 4B744 8024A744 24010001 */  addiu      $at, $zero, 0x1
     /* 4B748 8024A748 17210002 */  bne        $t9, $at, .L8024A754
     /* 4B74C 8024A74C 240500A0 */   addiu     $a1, $zero, 0xA0
     /* 4B750 8024A750 240500C8 */  addiu      $a1, $zero, 0xC8
   .L8024A754:
-    /* 4B754 8024A754 8F18D0C0 */  lw         $t8, %lo(g_dwGfxBufferSize)($t8)
+    /* 4B754 8024A754 8F18D0C0 */  lw         $t8, %lo(g_texButtonA + 0x10)($t8)
     /* 4B758 8024A758 24190003 */  addiu      $t9, $zero, 0x3
     /* 4B75C 8024A75C AFB90010 */  sw         $t9, 0x10($sp)
     /* 4B760 8024A760 00B87023 */  subu       $t6, $a1, $t8
@@ -8501,8 +8501,8 @@ glabel ProcessDecalSaveLoad
     /* 4B808 8024A808 24C60027 */   addiu     $a2, $a2, 0x27
     /* 4B80C 8024A80C 0C08BD74 */  jal        SetTextSize
     /* 4B810 8024A810 2404000A */   addiu     $a0, $zero, 0xA
-    /* 4B814 8024A814 3C058029 */  lui        $a1, %hi(g_dwGfxBufferSize)
-    /* 4B818 8024A818 8CA5D0C0 */  lw         $a1, %lo(g_dwGfxBufferSize)($a1)
+    /* 4B814 8024A814 3C058029 */  lui        $a1, %hi(g_texButtonA + 0x10)
+    /* 4B818 8024A818 8CA5D0C0 */  lw         $a1, %lo(g_texButtonA + 0x10)($a1)
     /* 4B81C 8024A81C 8FA60088 */  lw         $a2, 0x88($sp)
     /* 4B820 8024A820 3C04802B */  lui        $a0, %hi(g_szOk6)
     /* 4B824 8024A824 24A500DE */  addiu      $a1, $a1, 0xDE
@@ -8514,8 +8514,8 @@ glabel ProcessDecalSaveLoad
     /* 4B83C 8024A83C AFAE0038 */  sw         $t6, 0x38($sp)
     /* 4B840 8024A840 0C08BD77 */  jal        DrawText
     /* 4B844 8024A844 2484ADF0 */   addiu     $a0, $a0, %lo(g_szOk6)
-    /* 4B848 8024A848 3C058029 */  lui        $a1, %hi(g_dwGfxDisplayListSize)
-    /* 4B84C 8024A84C 8CA5D0F0 */  lw         $a1, %lo(g_dwGfxDisplayListSize)($a1)
+    /* 4B848 8024A848 3C058029 */  lui        $a1, %hi(g_texButtonB + 0x10)
+    /* 4B84C 8024A84C 8CA5D0F0 */  lw         $a1, %lo(g_texButtonB + 0x10)($a1)
     /* 4B850 8024A850 3C04802B */  lui        $a0, %hi(g_szCancel8)
     /* 4B854 8024A854 8FA60038 */  lw         $a2, 0x38($sp)
     /* 4B858 8024A858 24A5014A */  addiu      $a1, $a1, 0x14A
@@ -9158,13 +9158,13 @@ glabel ProcessColorEditorDialog
     /* 4C19C 8024B19C AD810000 */  sw         $at, 0x0($t4)
     /* 4C1A0 8024B1A0 8DA10008 */  lw         $at, 0x8($t5)
     /* 4C1A4 8024B1A4 AD8E0004 */  sw         $t6, 0x4($t4)
-    /* 4C1A8 8024B1A8 3C0F8029 */  lui        $t7, %hi(g_dwGfxDisplayListSize)
+    /* 4C1A8 8024B1A8 3C0F8029 */  lui        $t7, %hi(g_texButtonB + 0x10)
     /* 4C1AC 8024B1AC AD810008 */  sw         $at, 0x8($t4)
-    /* 4C1B0 8024B1B0 8DEFD0F0 */  lw         $t7, %lo(g_dwGfxDisplayListSize)($t7)
+    /* 4C1B0 8024B1B0 8DEFD0F0 */  lw         $t7, %lo(g_texButtonB + 0x10)($t7)
     /* 4C1B4 8024B1B4 240B0151 */  addiu      $t3, $zero, 0x151
-    /* 4C1B8 8024B1B8 3C198029 */  lui        $t9, %hi(g_dwGfxBufferUsed)
+    /* 4C1B8 8024B1B8 3C198029 */  lui        $t9, %hi(g_texButtonA + 0x14)
     /* 4C1BC 8024B1BC 016FC023 */  subu       $t8, $t3, $t7
-    /* 4C1C0 8024B1C0 8F39D0C4 */  lw         $t9, %lo(g_dwGfxBufferUsed)($t9)
+    /* 4C1C0 8024B1C0 8F39D0C4 */  lw         $t9, %lo(g_texButtonA + 0x14)($t9)
     /* 4C1C4 8024B1C4 AFB800A4 */  sw         $t8, 0xA4($sp)
     /* 4C1C8 8024B1C8 240C0122 */  addiu      $t4, $zero, 0x122
     /* 4C1CC 8024B1CC 24180080 */  addiu      $t8, $zero, 0x80
@@ -9425,8 +9425,8 @@ glabel ProcessColorEditorDialog
     /* 4C5A8 8024B5A8 00000000 */   nop
     /* 4C5AC 8024B5AC 0C08BD74 */  jal        SetTextSize
     /* 4C5B0 8024B5B0 2404000A */   addiu     $a0, $zero, 0xA
-    /* 4C5B4 8024B5B4 3C058029 */  lui        $a1, %hi(g_dwGfxBufferSize)
-    /* 4C5B8 8024B5B8 8CA5D0C0 */  lw         $a1, %lo(g_dwGfxBufferSize)($a1)
+    /* 4C5B4 8024B5B4 3C058029 */  lui        $a1, %hi(g_texButtonA + 0x10)
+    /* 4C5B8 8024B5B8 8CA5D0C0 */  lw         $a1, %lo(g_texButtonA + 0x10)($a1)
     /* 4C5BC 8024B5BC 8FB000A0 */  lw         $s0, 0xA0($sp)
     /* 4C5C0 8024B5C0 3C04802B */  lui        $a0, %hi(g_szOk7)
     /* 4C5C4 8024B5C4 24A500EB */  addiu      $a1, $a1, 0xEB
@@ -9437,8 +9437,8 @@ glabel ProcessColorEditorDialog
     /* 4C5D8 8024B5D8 00C08025 */  or         $s0, $a2, $zero
     /* 4C5DC 8024B5DC 0C08BD77 */  jal        DrawText
     /* 4C5E0 8024B5E0 2484AEA8 */   addiu     $a0, $a0, %lo(g_szOk7)
-    /* 4C5E4 8024B5E4 3C0F8029 */  lui        $t7, %hi(g_dwGfxDisplayListSize)
-    /* 4C5E8 8024B5E8 8DEFD0F0 */  lw         $t7, %lo(g_dwGfxDisplayListSize)($t7)
+    /* 4C5E4 8024B5E4 3C0F8029 */  lui        $t7, %hi(g_texButtonB + 0x10)
+    /* 4C5E8 8024B5E8 8DEFD0F0 */  lw         $t7, %lo(g_texButtonB + 0x10)($t7)
     /* 4C5EC 8024B5EC 8FAB00A4 */  lw         $t3, 0xA4($sp)
     /* 4C5F0 8024B5F0 3C04802B */  lui        $a0, %hi(g_szCancel9)
     /* 4C5F4 8024B5F4 2484AEB0 */  addiu      $a0, $a0, %lo(g_szCancel9)
@@ -11863,10 +11863,10 @@ glabel ProcessBrushStyleMenu
     /* 4E8B4 8024D8B4 27AE003C */  addiu      $t6, $sp, 0x3C
     /* 4E8B8 8024D8B8 ADC80004 */  sw         $t0, 0x4($t6)
     /* 4E8BC 8024D8BC ADC10000 */  sw         $at, 0x0($t6)
-    /* 4E8C0 8024D8C0 3C098029 */  lui        $t1, %hi(g_dwGfxBufferSize)
-    /* 4E8C4 8024D8C4 3C0C8029 */  lui        $t4, %hi(g_dwGfxDisplayListSize)
-    /* 4E8C8 8024D8C8 8D29D0C0 */  lw         $t1, %lo(g_dwGfxBufferSize)($t1)
-    /* 4E8CC 8024D8CC 8D8CD0F0 */  lw         $t4, %lo(g_dwGfxDisplayListSize)($t4)
+    /* 4E8C0 8024D8C0 3C098029 */  lui        $t1, %hi(g_texButtonA + 0x10)
+    /* 4E8C4 8024D8C4 3C0C8029 */  lui        $t4, %hi(g_texButtonB + 0x10)
+    /* 4E8C8 8024D8C8 8D29D0C0 */  lw         $t1, %lo(g_texButtonA + 0x10)($t1)
+    /* 4E8CC 8024D8CC 8D8CD0F0 */  lw         $t4, %lo(g_texButtonB + 0x10)($t4)
     /* 4E8D0 8024D8D0 240A0142 */  addiu      $t2, $zero, 0x142
     /* 4E8D4 8024D8D4 240D015D */  addiu      $t5, $zero, 0x15D
     /* 4E8D8 8024D8D8 240E0080 */  addiu      $t6, $zero, 0x80
@@ -12021,8 +12021,8 @@ glabel ProcessBrushStyleMenu
     /* 4EB18 8024DB18 2404000A */   addiu     $a0, $zero, 0xA
     /* 4EB1C 8024DB1C 0C08BD45 */  jal        SetTextAlignLeft
     /* 4EB20 8024DB20 00000000 */   nop
-    /* 4EB24 8024DB24 3C058029 */  lui        $a1, %hi(g_dwGfxBufferSize)
-    /* 4EB28 8024DB28 8CA5D0C0 */  lw         $a1, %lo(g_dwGfxBufferSize)($a1)
+    /* 4EB24 8024DB24 3C058029 */  lui        $a1, %hi(g_texButtonA + 0x10)
+    /* 4EB28 8024DB28 8CA5D0C0 */  lw         $a1, %lo(g_texButtonA + 0x10)($a1)
     /* 4EB2C 8024DB2C 8FA60048 */  lw         $a2, 0x48($sp)
     /* 4EB30 8024DB30 3C04802B */  lui        $a0, %hi(g_szSelect4)
     /* 4EB34 8024DB34 24A500DE */  addiu      $a1, $a1, 0xDE
@@ -12034,8 +12034,8 @@ glabel ProcessBrushStyleMenu
     /* 4EB4C 8024DB4C AFAB0038 */  sw         $t3, 0x38($sp)
     /* 4EB50 8024DB50 0C08BD77 */  jal        DrawText
     /* 4EB54 8024DB54 2484AF10 */   addiu     $a0, $a0, %lo(g_szSelect4)
-    /* 4EB58 8024DB58 3C0C8029 */  lui        $t4, %hi(g_dwGfxDisplayListSize)
-    /* 4EB5C 8024DB5C 8D8CD0F0 */  lw         $t4, %lo(g_dwGfxDisplayListSize)($t4)
+    /* 4EB58 8024DB58 3C0C8029 */  lui        $t4, %hi(g_texButtonB + 0x10)
+    /* 4EB5C 8024DB5C 8D8CD0F0 */  lw         $t4, %lo(g_texButtonB + 0x10)($t4)
     /* 4EB60 8024DB60 8FAD0044 */  lw         $t5, 0x44($sp)
     /* 4EB64 8024DB64 3C04802B */  lui        $a0, %hi(g_szCancel10)
     /* 4EB68 8024DB68 8FA60038 */  lw         $a2, 0x38($sp)
@@ -12688,8 +12688,8 @@ glabel ProcessTextStyleMenu
     /* 4F4F4 8024E4F4 2404000A */   addiu     $a0, $zero, 0xA
     /* 4F4F8 8024E4F8 0C08BD45 */  jal        SetTextAlignLeft
     /* 4F4FC 8024E4FC 00000000 */   nop
-    /* 4F500 8024E500 3C028029 */  lui        $v0, %hi(g_dwGfxBufferSize)
-    /* 4F504 8024E504 8C42D0C0 */  lw         $v0, %lo(g_dwGfxBufferSize)($v0)
+    /* 4F500 8024E500 3C028029 */  lui        $v0, %hi(g_texButtonA + 0x10)
+    /* 4F504 8024E504 8C42D0C0 */  lw         $v0, %lo(g_texButtonA + 0x10)($v0)
     /* 4F508 8024E508 3C0A8029 */  lui        $t2, %hi(g_dwGfxDisplayListUsed)
     /* 4F50C 8024E50C 8D4AD0F4 */  lw         $t2, %lo(g_dwGfxDisplayListUsed)($t2)
     /* 4F510 8024E510 2409014A */  addiu      $t1, $zero, 0x14A
@@ -12706,8 +12706,8 @@ glabel ProcessTextStyleMenu
     /* 4F53C 8024E53C 00C08025 */  or         $s0, $a2, $zero
     /* 4F540 8024E540 0C08BD77 */  jal        DrawText
     /* 4F544 8024E544 01A02825 */   or        $a1, $t5, $zero
-    /* 4F548 8024E548 3C0E8029 */  lui        $t6, %hi(g_dwGfxDisplayListSize)
-    /* 4F54C 8024E54C 8DCED0F0 */  lw         $t6, %lo(g_dwGfxDisplayListSize)($t6)
+    /* 4F548 8024E548 3C0E8029 */  lui        $t6, %hi(g_texButtonB + 0x10)
+    /* 4F54C 8024E54C 8DCED0F0 */  lw         $t6, %lo(g_texButtonB + 0x10)($t6)
     /* 4F550 8024E550 8FB801E0 */  lw         $t8, 0x1E0($sp)
     /* 4F554 8024E554 3C04802B */  lui        $a0, %hi(g_szCancel11)
     /* 4F558 8024E558 2484AF68 */  addiu      $a0, $a0, %lo(g_szCancel11)
@@ -12907,8 +12907,8 @@ glabel ProcessTextStyleMenu
     /* 4F850 8024E850 2404000A */   addiu     $a0, $zero, 0xA
     /* 4F854 8024E854 0C08BD45 */  jal        SetTextAlignLeft
     /* 4F858 8024E858 00000000 */   nop
-    /* 4F85C 8024E85C 3C188029 */  lui        $t8, %hi(g_dwGfxBufferSize)
-    /* 4F860 8024E860 8F18D0C0 */  lw         $t8, %lo(g_dwGfxBufferSize)($t8)
+    /* 4F85C 8024E85C 3C188029 */  lui        $t8, %hi(g_texButtonA + 0x10)
+    /* 4F860 8024E860 8F18D0C0 */  lw         $t8, %lo(g_texButtonA + 0x10)($t8)
     /* 4F864 8024E864 8FB9004C */  lw         $t9, 0x4C($sp)
     /* 4F868 8024E868 26300012 */  addiu      $s0, $s1, 0x12
     /* 4F86C 8024E86C 00103043 */  sra        $a2, $s0, 1
@@ -12920,8 +12920,8 @@ glabel ProcessTextStyleMenu
     /* 4F884 8024E884 01C02825 */  or         $a1, $t6, $zero
     /* 4F888 8024E888 0C08BD77 */  jal        DrawText
     /* 4F88C 8024E88C 00C08025 */   or        $s0, $a2, $zero
-    /* 4F890 8024E890 3C0B8029 */  lui        $t3, %hi(g_dwGfxDisplayListSize)
-    /* 4F894 8024E894 8D6BD0F0 */  lw         $t3, %lo(g_dwGfxDisplayListSize)($t3)
+    /* 4F890 8024E890 3C0B8029 */  lui        $t3, %hi(g_texButtonB + 0x10)
+    /* 4F894 8024E894 8D6BD0F0 */  lw         $t3, %lo(g_texButtonB + 0x10)($t3)
     /* 4F898 8024E898 8FA801E0 */  lw         $t0, 0x1E0($sp)
     /* 4F89C 8024E89C 3C04802B */  lui        $a0, %hi(g_szCancel12)
     /* 4F8A0 8024E8A0 2484AF94 */  addiu      $a0, $a0, %lo(g_szCancel12)
@@ -13723,11 +13723,11 @@ glabel ProcessRectStyleMenu
     /* 503D0 8024F3D0 ADC10000 */  sw         $at, 0x0($t6)
     /* 503D4 8024F3D4 8DE10008 */  lw         $at, 0x8($t7)
     /* 503D8 8024F3D8 ADC8000C */  sw         $t0, 0xC($t6)
-    /* 503DC 8024F3DC 3C098029 */  lui        $t1, %hi(g_dwGfxBufferSize)
+    /* 503DC 8024F3DC 3C098029 */  lui        $t1, %hi(g_texButtonA + 0x10)
     /* 503E0 8024F3E0 ADC10008 */  sw         $at, 0x8($t6)
-    /* 503E4 8024F3E4 3C0C8029 */  lui        $t4, %hi(g_dwGfxDisplayListSize)
-    /* 503E8 8024F3E8 8D29D0C0 */  lw         $t1, %lo(g_dwGfxBufferSize)($t1)
-    /* 503EC 8024F3EC 8D8CD0F0 */  lw         $t4, %lo(g_dwGfxDisplayListSize)($t4)
+    /* 503E4 8024F3E4 3C0C8029 */  lui        $t4, %hi(g_texButtonB + 0x10)
+    /* 503E8 8024F3E8 8D29D0C0 */  lw         $t1, %lo(g_texButtonA + 0x10)($t1)
+    /* 503EC 8024F3EC 8D8CD0F0 */  lw         $t4, %lo(g_texButtonB + 0x10)($t4)
     /* 503F0 8024F3F0 240A0143 */  addiu      $t2, $zero, 0x143
     /* 503F4 8024F3F4 240D0161 */  addiu      $t5, $zero, 0x161
     /* 503F8 8024F3F8 240E0080 */  addiu      $t6, $zero, 0x80
@@ -13844,8 +13844,8 @@ glabel ProcessRectStyleMenu
     /* 505A4 8024F5A4 2404000A */   addiu     $a0, $zero, 0xA
     /* 505A8 8024F5A8 0C08BD45 */  jal        SetTextAlignLeft
     /* 505AC 8024F5AC 00000000 */   nop
-    /* 505B0 8024F5B0 3C058029 */  lui        $a1, %hi(g_dwGfxBufferSize)
-    /* 505B4 8024F5B4 8CA5D0C0 */  lw         $a1, %lo(g_dwGfxBufferSize)($a1)
+    /* 505B0 8024F5B0 3C058029 */  lui        $a1, %hi(g_texButtonA + 0x10)
+    /* 505B4 8024F5B4 8CA5D0C0 */  lw         $a1, %lo(g_texButtonA + 0x10)($a1)
     /* 505B8 8024F5B8 8FB00064 */  lw         $s0, 0x64($sp)
     /* 505BC 8024F5BC 3C04802B */  lui        $a0, %hi(g_szSelect7)
     /* 505C0 8024F5C0 24A500DB */  addiu      $a1, $a1, 0xDB
@@ -13856,8 +13856,8 @@ glabel ProcessRectStyleMenu
     /* 505D4 8024F5D4 00C08025 */  or         $s0, $a2, $zero
     /* 505D8 8024F5D8 0C08BD77 */  jal        DrawText
     /* 505DC 8024F5DC 2484B00C */   addiu     $a0, $a0, %lo(g_szSelect7)
-    /* 505E0 8024F5E0 3C088029 */  lui        $t0, %hi(g_dwGfxDisplayListSize)
-    /* 505E4 8024F5E4 8D08D0F0 */  lw         $t0, %lo(g_dwGfxDisplayListSize)($t0)
+    /* 505E0 8024F5E0 3C088029 */  lui        $t0, %hi(g_texButtonB + 0x10)
+    /* 505E4 8024F5E4 8D08D0F0 */  lw         $t0, %lo(g_texButtonB + 0x10)($t0)
     /* 505E8 8024F5E8 8FAF0060 */  lw         $t7, 0x60($sp)
     /* 505EC 8024F5EC 3C04802B */  lui        $a0, %hi(g_szCancel13)
     /* 505F0 8024F5F0 2484B018 */  addiu      $a0, $a0, %lo(g_szCancel13)
@@ -15083,11 +15083,11 @@ glabel ProcessOvalStyleMenu
     /* 516C8 802506C8 ADC10000 */  sw         $at, 0x0($t6)
     /* 516CC 802506CC 8DE10008 */  lw         $at, 0x8($t7)
     /* 516D0 802506D0 ADC8000C */  sw         $t0, 0xC($t6)
-    /* 516D4 802506D4 3C098029 */  lui        $t1, %hi(g_dwGfxBufferSize)
+    /* 516D4 802506D4 3C098029 */  lui        $t1, %hi(g_texButtonA + 0x10)
     /* 516D8 802506D8 ADC10008 */  sw         $at, 0x8($t6)
-    /* 516DC 802506DC 3C0C8029 */  lui        $t4, %hi(g_dwGfxDisplayListSize)
-    /* 516E0 802506E0 8D29D0C0 */  lw         $t1, %lo(g_dwGfxBufferSize)($t1)
-    /* 516E4 802506E4 8D8CD0F0 */  lw         $t4, %lo(g_dwGfxDisplayListSize)($t4)
+    /* 516DC 802506DC 3C0C8029 */  lui        $t4, %hi(g_texButtonB + 0x10)
+    /* 516E0 802506E0 8D29D0C0 */  lw         $t1, %lo(g_texButtonA + 0x10)($t1)
+    /* 516E4 802506E4 8D8CD0F0 */  lw         $t4, %lo(g_texButtonB + 0x10)($t4)
     /* 516E8 802506E8 240A0143 */  addiu      $t2, $zero, 0x143
     /* 516EC 802506EC 240D0160 */  addiu      $t5, $zero, 0x160
     /* 516F0 802506F0 240E0080 */  addiu      $t6, $zero, 0x80
@@ -15234,8 +15234,8 @@ glabel ProcessOvalStyleMenu
     /* 5190C 8025090C 2404000A */   addiu     $a0, $zero, 0xA
     /* 51910 80250910 0C08BD45 */  jal        SetTextAlignLeft
     /* 51914 80250914 00000000 */   nop
-    /* 51918 80250918 3C058029 */  lui        $a1, %hi(g_dwGfxBufferSize)
-    /* 5191C 8025091C 8CA5D0C0 */  lw         $a1, %lo(g_dwGfxBufferSize)($a1)
+    /* 51918 80250918 3C058029 */  lui        $a1, %hi(g_texButtonA + 0x10)
+    /* 5191C 8025091C 8CA5D0C0 */  lw         $a1, %lo(g_texButtonA + 0x10)($a1)
     /* 51920 80250920 8FB00064 */  lw         $s0, 0x64($sp)
     /* 51924 80250924 3C04802B */  lui        $a0, %hi(g_szSelect8)
     /* 51928 80250928 24A500DC */  addiu      $a1, $a1, 0xDC
@@ -15246,8 +15246,8 @@ glabel ProcessOvalStyleMenu
     /* 5193C 8025093C 00C08025 */  or         $s0, $a2, $zero
     /* 51940 80250940 0C08BD77 */  jal        DrawText
     /* 51944 80250944 2484B070 */   addiu     $a0, $a0, %lo(g_szSelect8)
-    /* 51948 80250948 3C088029 */  lui        $t0, %hi(g_dwGfxDisplayListSize)
-    /* 5194C 8025094C 8D08D0F0 */  lw         $t0, %lo(g_dwGfxDisplayListSize)($t0)
+    /* 51948 80250948 3C088029 */  lui        $t0, %hi(g_texButtonB + 0x10)
+    /* 5194C 8025094C 8D08D0F0 */  lw         $t0, %lo(g_texButtonB + 0x10)($t0)
     /* 51950 80250950 8FAF0060 */  lw         $t7, 0x60($sp)
     /* 51954 80250954 3C04802B */  lui        $a0, %hi(g_szCancel14)
     /* 51958 80250958 2484B07C */  addiu      $a0, $a0, %lo(g_szCancel14)
@@ -18135,10 +18135,10 @@ glabel ProcessPaintShopExitConfirm
     /* 541D4 802531D4 15C00083 */  bnez       $t6, .L802533E4
     /* 541D8 802531D8 3C0F8029 */   lui       $t7, %hi(g_bObjectDirty11)
     /* 541DC 802531DC 91EFDBB4 */  lbu        $t7, %lo(g_bObjectDirty11)($t7)
-    /* 541E0 802531E0 3C198029 */  lui        $t9, %hi(g_dwGfxBufferSize)
+    /* 541E0 802531E0 3C198029 */  lui        $t9, %hi(g_texButtonA + 0x10)
     /* 541E4 802531E4 2408011D */  addiu      $t0, $zero, 0x11D
     /* 541E8 802531E8 1DE00009 */  bgtz       $t7, .L80253210
-    /* 541EC 802531EC 3C0A8029 */   lui       $t2, %hi(g_dwGfxDisplayListSize)
+    /* 541EC 802531EC 3C0A8029 */   lui       $t2, %hi(g_texButtonB + 0x10)
     /* 541F0 802531F0 24180001 */  addiu      $t8, $zero, 0x1
     /* 541F4 802531F4 A0580000 */  sb         $t8, 0x0($v0)
     /* 541F8 802531F8 44806000 */  mtc1       $zero, $f12
@@ -18148,8 +18148,8 @@ glabel ProcessPaintShopExitConfirm
     /* 54208 80253208 10000077 */  b          .L802533E8
     /* 5420C 8025320C 8FBF002C */   lw        $ra, 0x2C($sp)
   .L80253210:
-    /* 54210 80253210 8F39D0C0 */  lw         $t9, %lo(g_dwGfxBufferSize)($t9)
-    /* 54214 80253214 8D4AD0F0 */  lw         $t2, %lo(g_dwGfxDisplayListSize)($t2)
+    /* 54210 80253210 8F39D0C0 */  lw         $t9, %lo(g_texButtonA + 0x10)($t9)
+    /* 54214 80253214 8D4AD0F0 */  lw         $t2, %lo(g_texButtonB + 0x10)($t2)
     /* 54218 80253218 240B0169 */  addiu      $t3, $zero, 0x169
     /* 5421C 8025321C 240D0003 */  addiu      $t5, $zero, 0x3
     /* 54220 80253220 240E0080 */  addiu      $t6, $zero, 0x80

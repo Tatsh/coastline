@@ -38,6 +38,7 @@ CopyMatrix4x4To3x3
 CopyVec4
 DebugFrameStubA
 DebugFrameStubB
+DecalCharToAscii
 DrawBitmapTextToFramebuffer
 DrawColoredTexturedRect
 DrawControllerLayoutDiagram
@@ -52,6 +53,7 @@ GetHeapCurrentAddress
 InitBitmapText
 InitCameraForVehicle
 InitGameAndShowMenus
+InitPakAndEnumerateFiles
 InitPlayerInputState
 InitRigidBody
 IntegrateRigidBodyState
@@ -90,6 +92,7 @@ PrepareTrackModelNodes
 ProcessControllerConfigScreen
 ProcessInputCommandBuffer
 ProcessMainMenu
+ProcessPakMenuScreen
 ProcessPlayerCountSelect
 ProcessWeatherSelect
 ProjectVec3fToScreen

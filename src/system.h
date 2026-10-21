@@ -185,6 +185,34 @@ void SetDisplayModeWide(void);
  */
 void FlushDisplayList(void);
 
+/**
+ * Set the view to a rectangle of the screen, and the scissor to it as well if asked.
+ *
+ * @ghidraAddress USA: 0x80219bf0
+ */
+void SetViewport(s32 x, s32 y, s32 width, s32 height, s32 setScissor);
+
+/**
+ * Set up the projection for a screen of a size.
+ *
+ * @ghidraAddress USA: 0x8021b458
+ */
+void SetupProjectionMatrix(f32 width, f32 height);
+
+/**
+ * Emit the render modes a menu frame starts with.
+ *
+ * @ghidraAddress USA: 0x80217c94
+ */
+void SetupFillMode(void);
+
+/**
+ * Update the timing of the frames from the CPU timer.
+ *
+ * @ghidraAddress USA: 0x8021c4b4
+ */
+void UpdateFrameTiming(void);
+
 /** @ghidraAddress USA: 0x8021c740 */
 void StubUpdateCallback(void);
 

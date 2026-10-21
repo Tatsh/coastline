@@ -35921,22 +35921,12 @@ dlabel g_texButtonA
     /* 8E0B4 8028D0B4 001C77A0 */ .word 0x001C77A0
     /* 8E0B8 8028D0B8 001C79B0 */ .word 0x001C79B0
     /* 8E0BC 8028D0BC 10000000 */ .word 0x10000000
-enddlabel g_texButtonA
-
-nonmatching g_dwGfxBufferSize
-
-dlabel g_dwGfxBufferSize
     /* 8E0C0 8028D0C0 00000018 */ .word 0x00000018
-enddlabel g_dwGfxBufferSize
-
-nonmatching g_dwGfxBufferUsed
-
-dlabel g_dwGfxBufferUsed
     /* 8E0C4 8028D0C4 00000018 */ .word 0x00000018
     /* 8E0C8 8028D0C8 00000018 */ .word 0x00000018
     /* 8E0CC 8028D0CC 0000006C */ .word 0x0000006C
     /* 8E0D0 8028D0D0 000000DC */ .word 0x000000DC
-enddlabel g_dwGfxBufferUsed
+enddlabel g_texButtonA
 
 nonmatching g_nGfxBufferOffset
 
@@ -35953,13 +35943,8 @@ dlabel g_texButtonB
     /* 8E0E4 8028D0E4 001C79B0 */ .word 0x001C79B0
     /* 8E0E8 8028D0E8 001C7BA0 */ .word 0x001C7BA0
     /* 8E0EC 8028D0EC 10000000 */ .word 0x10000000
-enddlabel g_texButtonB
-
-nonmatching g_dwGfxDisplayListSize
-
-dlabel g_dwGfxDisplayListSize
     /* 8E0F0 8028D0F0 00000018 */ .word 0x00000018
-enddlabel g_dwGfxDisplayListSize
+enddlabel g_texButtonB
 
 nonmatching g_dwGfxDisplayListUsed
 
@@ -38155,60 +38140,24 @@ enddlabel g_texButtonBSmall
 nonmatching g_szDecalCharMap
 
 dlabel g_szDecalCharMap
-    /* 8ED50 8028DD50 */ .byte 0x00
-enddlabel g_szDecalCharMap
-
-nonmatching g_szDecalToolMenu
-
-dlabel g_szDecalToolMenu
-    /* 8ED51 8028DD51 */ .byte 0x20
-    /* 8ED52 8028DD52 */ .short 0x2020
-enddlabel g_szDecalToolMenu
-
-nonmatching g_dwDecalCharMapWord1
-
-dlabel g_dwDecalCharMapWord1
+    /* 8ED50 8028DD50 00202020 */ .word 0x00202020
     /* 8ED54 8028DD54 20202020 */ .word 0x20202020
-enddlabel g_dwDecalCharMapWord1
-
-nonmatching g_dwDecalCharMapWord2
-
-dlabel g_dwDecalCharMapWord2
     /* 8ED58 8028DD58 20202020 */ .word 0x20202020
-enddlabel g_dwDecalCharMapWord2
-
-nonmatching g_dwDecalCharMapWord3
-
-dlabel g_dwDecalCharMapWord3
     /* 8ED5C 8028DD5C 20202020 */ .word 0x20202020
-enddlabel g_dwDecalCharMapWord3
-
-nonmatching g_dwDecalCharMapWord4
-
-dlabel g_dwDecalCharMapWord4
     /* 8ED60 8028DD60 30313233 */ .word 0x30313233
-enddlabel g_dwDecalCharMapWord4
-
-nonmatching g_dwDecalCharMapWord5
-
-dlabel g_dwDecalCharMapWord5
     /* 8ED64 8028DD64 34353637 */ .word 0x34353637
-enddlabel g_dwDecalCharMapWord5
-
-nonmatching g_dwDecalCharMapWord6
-
-dlabel g_dwDecalCharMapWord6
     /* 8ED68 8028DD68 38394142 */ .word 0x38394142
-enddlabel g_dwDecalCharMapWord6
-
-.align 2
-nonmatching g_szCdefghijklmnopqrstuvwxyz
-
-dlabel g_szCdefghijklmnopqrstuvwxyz
-    /* 8ED6C 8028DD6C */ .asciz "CDEFGHIJKLMNOPQRSTUVWXYZ!\"#'*+,-./:=?@"
-    /* 434445464748494A4B4C4D4E4F505152535455565758595A212223272A2B2C2D2E2F3A3D3F400000 */
-enddlabel g_szCdefghijklmnopqrstuvwxyz
-.align 2
+    /* 8ED6C 8028DD6C 43444546 */ .word 0x43444546
+    /* 8ED70 8028DD70 4748494A */ .word 0x4748494A
+    /* 8ED74 8028DD74 4B4C4D4E */ .word 0x4B4C4D4E
+    /* 8ED78 8028DD78 4F505152 */ .word 0x4F505152
+    /* 8ED7C 8028DD7C 53545556 */ .word 0x53545556
+    /* 8ED80 8028DD80 5758595A */ .word 0x5758595A
+    /* 8ED84 8028DD84 21222327 */ .word 0x21222327
+    /* 8ED88 8028DD88 2A2B2C2D */ .word 0x2A2B2C2D
+    /* 8ED8C 8028DD8C 2E2F3A3D */ .word 0x2E2F3A3D
+    /* 8ED90 8028DD90 3F400000 */ .word 0x3F400000
+enddlabel g_szDecalCharMap
 
 nonmatching g_bPakMenuInitialized
 
@@ -38230,11 +38179,11 @@ dlabel D_8028DD9A
     /* 8ED9C 8028DD9C 00000000 */ .word 0x00000000
 enddlabel D_8028DD9A
 
-nonmatching g_wRaceLapCount
+nonmatching g_wPakScanEmptyMask
 
-dlabel g_wRaceLapCount
+dlabel g_wPakScanEmptyMask
     /* 8EDA0 8028DDA0 */ .short 0x0000
-enddlabel g_wRaceLapCount
+enddlabel g_wPakScanEmptyMask
 
 nonmatching D_8028DDA2
 

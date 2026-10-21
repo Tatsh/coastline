@@ -3920,9 +3920,9 @@ nonmatching g_aPakPfs, 0xC
 dlabel g_aPakPfs
     /* 80369EC0 */ .space 0x0C
 
-nonmatching g_PfsId0, 0x5C
+nonmatching D_80369ECC, 0x5C
 
-dlabel g_PfsId0
+dlabel D_80369ECC
     /* 80369ECC */ .space 0x5C
 
 nonmatching g_PfsState1, 0xC

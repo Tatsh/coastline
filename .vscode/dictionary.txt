@@ -30,6 +30,7 @@ bytearray
 bzero
 cartrominit
 ccmux
+centered
 chnl
 cleargeometrymode
 colc
@@ -60,6 +61,7 @@ declear
 decleared
 destroythread
 devmgr
+dialogs
 disasm
 divdi
 divremi
@@ -236,6 +238,7 @@ objcopy
 oneline
 outfun
 pacboy
+pakmenu
 paks
 pathlib
 persp

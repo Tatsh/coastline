@@ -1884,8 +1884,8 @@ glabel ProcessDataSaveLoadMenu
     /* 14348 80213348 240500BF */   addiu     $a1, $zero, 0xBF
     /* 1434C 8021334C 240500C9 */  addiu      $a1, $zero, 0xC9
   .L80213350:
-    /* 14350 80213350 3C198029 */  lui        $t9, %hi(g_dwGfxBufferSize)
-    /* 14354 80213354 8F39D0C0 */  lw         $t9, %lo(g_dwGfxBufferSize)($t9)
+    /* 14350 80213350 3C198029 */  lui        $t9, %hi(g_texButtonA + 0x10)
+    /* 14354 80213354 8F39D0C0 */  lw         $t9, %lo(g_texButtonA + 0x10)($t9)
     /* 14358 80213358 24180003 */  addiu      $t8, $zero, 0x3
     /* 1435C 8021335C 240A0080 */  addiu      $t2, $zero, 0x80
     /* 14360 80213360 00B96023 */  subu       $t4, $a1, $t9
@@ -1935,8 +1935,8 @@ glabel ProcessDataSaveLoadMenu
     /* 14410 80213410 24E6000E */   addiu     $a2, $a3, 0xE
     /* 14414 80213414 0C08BD74 */  jal        SetTextSize
     /* 14418 80213418 2404000A */   addiu     $a0, $zero, 0xA
-    /* 1441C 8021341C 3C058029 */  lui        $a1, %hi(g_dwGfxBufferSize)
-    /* 14420 80213420 8CA5D0C0 */  lw         $a1, %lo(g_dwGfxBufferSize)($a1)
+    /* 1441C 8021341C 3C058029 */  lui        $a1, %hi(g_texButtonA + 0x10)
+    /* 14420 80213420 8CA5D0C0 */  lw         $a1, %lo(g_texButtonA + 0x10)($a1)
     /* 14424 80213424 8FA600BC */  lw         $a2, 0xBC($sp)
     /* 14428 80213428 3C04802B */  lui        $a0, %hi(g_szOk)
     /* 1442C 8021342C 24A500ED */  addiu      $a1, $a1, 0xED
@@ -2374,8 +2374,8 @@ glabel ProcessDataSaveLoadMenu
     /* 14AA0 80213AA0 10000191 */  b          .L802140E8
     /* 14AA4 80213AA4 8C6324F0 */   lw        $v1, %lo(gControllerPakState)($v1)
   .L80213AA8:
-    /* 14AA8 80213AA8 3C0F8029 */  lui        $t7, %hi(g_dwGfxBufferSize)
-    /* 14AAC 80213AAC 8DEFD0C0 */  lw         $t7, %lo(g_dwGfxBufferSize)($t7)
+    /* 14AA8 80213AA8 3C0F8029 */  lui        $t7, %hi(g_texButtonA + 0x10)
+    /* 14AAC 80213AAC 8DEFD0C0 */  lw         $t7, %lo(g_texButtonA + 0x10)($t7)
     /* 14AB0 80213AB0 24180146 */  addiu      $t8, $zero, 0x146
     /* 14AB4 80213AB4 240D0003 */  addiu      $t5, $zero, 0x3
     /* 14AB8 80213AB8 240B0080 */  addiu      $t3, $zero, 0x80
@@ -2418,8 +2418,8 @@ glabel ProcessDataSaveLoadMenu
     /* 14B4C 80213B4C 00000000 */   nop
     /* 14B50 80213B50 0C08BD74 */  jal        SetTextSize
     /* 14B54 80213B54 2404000A */   addiu     $a0, $zero, 0xA
-    /* 14B58 80213B58 3C058029 */  lui        $a1, %hi(g_dwGfxBufferSize)
-    /* 14B5C 80213B5C 8CA5D0C0 */  lw         $a1, %lo(g_dwGfxBufferSize)($a1)
+    /* 14B58 80213B58 3C058029 */  lui        $a1, %hi(g_texButtonA + 0x10)
+    /* 14B5C 80213B5C 8CA5D0C0 */  lw         $a1, %lo(g_texButtonA + 0x10)($a1)
     /* 14B60 80213B60 8FA600BC */  lw         $a2, 0xBC($sp)
     /* 14B64 80213B64 3C04802B */  lui        $a0, %hi(g_szOk2)
     /* 14B68 80213B68 24A500E3 */  addiu      $a1, $a1, 0xE3
@@ -2431,8 +2431,8 @@ glabel ProcessDataSaveLoadMenu
     /* 14B80 80213B80 AFAC0038 */  sw         $t4, 0x38($sp)
     /* 14B84 80213B84 0C08BD77 */  jal        DrawText
     /* 14B88 80213B88 24848564 */   addiu     $a0, $a0, %lo(g_szOk2)
-    /* 14B8C 80213B8C 3C058029 */  lui        $a1, %hi(g_dwGfxDisplayListSize)
-    /* 14B90 80213B90 8CA5D0F0 */  lw         $a1, %lo(g_dwGfxDisplayListSize)($a1)
+    /* 14B8C 80213B8C 3C058029 */  lui        $a1, %hi(g_texButtonB + 0x10)
+    /* 14B90 80213B90 8CA5D0F0 */  lw         $a1, %lo(g_texButtonB + 0x10)($a1)
     /* 14B94 80213B94 3C04802B */  lui        $a0, %hi(g_szCancel2)
     /* 14B98 80213B98 8FA60038 */  lw         $a2, 0x38($sp)
     /* 14B9C 80213B9C 24A50144 */  addiu      $a1, $a1, 0x144
@@ -4774,7 +4774,7 @@ glabel ProcessPakDataScreen
     /* 16DF4 80215DF4 244AFFFF */   addiu     $t2, $v0, -0x1
     /* 16DF8 80215DF8 2401270F */  addiu      $at, $zero, 0x270F
     /* 16DFC 80215DFC 1041004B */  beq        $v0, $at, .L80215F2C
-    /* 16E00 80215E00 3C098029 */   lui       $t1, %hi(g_dwGfxBufferSize)
+    /* 16E00 80215E00 3C098029 */   lui       $t1, %hi(g_texButtonA + 0x10)
     /* 16E04 80215E04 10000130 */  b          .L802162C8
     /* 16E08 80215E08 240B0003 */   addiu     $t3, $zero, 0x3
   .L80215E0C:
@@ -4854,7 +4854,7 @@ glabel ProcessPakDataScreen
     /* 16F24 80215F24 10000100 */  b          .L80216328
     /* 16F28 80215F28 00000000 */   nop
   .L80215F2C:
-    /* 16F2C 80215F2C 8D29D0C0 */  lw         $t1, %lo(g_dwGfxBufferSize)($t1)
+    /* 16F2C 80215F2C 8D29D0C0 */  lw         $t1, %lo(g_texButtonA + 0x10)($t1)
     /* 16F30 80215F30 240B0148 */  addiu      $t3, $zero, 0x148
     /* 16F34 80215F34 240E0003 */  addiu      $t6, $zero, 0x3
     /* 16F38 80215F38 240F0080 */  addiu      $t7, $zero, 0x80
@@ -4897,8 +4897,8 @@ glabel ProcessPakDataScreen
     /* 16FCC 80215FCC 00000000 */   nop
     /* 16FD0 80215FD0 0C08BD74 */  jal        SetTextSize
     /* 16FD4 80215FD4 2404000A */   addiu     $a0, $zero, 0xA
-    /* 16FD8 80215FD8 3C058029 */  lui        $a1, %hi(g_dwGfxBufferSize)
-    /* 16FDC 80215FDC 8CA5D0C0 */  lw         $a1, %lo(g_dwGfxBufferSize)($a1)
+    /* 16FD8 80215FD8 3C058029 */  lui        $a1, %hi(g_texButtonA + 0x10)
+    /* 16FDC 80215FDC 8CA5D0C0 */  lw         $a1, %lo(g_texButtonA + 0x10)($a1)
     /* 16FE0 80215FE0 8FA60098 */  lw         $a2, 0x98($sp)
     /* 16FE4 80215FE4 3C04802B */  lui        $a0, %hi(g_szOk3)
     /* 16FE8 80215FE8 24A500E3 */  addiu      $a1, $a1, 0xE3
@@ -4910,8 +4910,8 @@ glabel ProcessPakDataScreen
     /* 17000 80216000 AFAA0034 */  sw         $t2, 0x34($sp)
     /* 17004 80216004 0C08BD77 */  jal        DrawText
     /* 17008 80216008 24848CC4 */   addiu     $a0, $a0, %lo(g_szOk3)
-    /* 1700C 8021600C 3C058029 */  lui        $a1, %hi(g_dwGfxDisplayListSize)
-    /* 17010 80216010 8CA5D0F0 */  lw         $a1, %lo(g_dwGfxDisplayListSize)($a1)
+    /* 1700C 8021600C 3C058029 */  lui        $a1, %hi(g_texButtonB + 0x10)
+    /* 17010 80216010 8CA5D0F0 */  lw         $a1, %lo(g_texButtonB + 0x10)($a1)
     /* 17014 80216014 3C04802B */  lui        $a0, %hi(g_szCancel3)
     /* 17018 80216018 8FA60034 */  lw         $a2, 0x34($sp)
     /* 1701C 8021601C 24A50144 */  addiu      $a1, $a1, 0x144
