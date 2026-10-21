@@ -6,12 +6,13 @@ s32 osJamMesg(OSMesgQueue *mq, OSMesg msg, s32 flag) {
     register OSIntMask saveMask = __osDisableInt();
 
     while (MQ_IS_FULL(mq)) {
-        if (flag != OS_MESG_BLOCK) {
+        if (flag == OS_MESG_BLOCK) {
+            __osRunningThread->state = OS_STATE_WAITING;
+            __osEnqueueAndYield(&mq->fullqueue);
+        } else {
             __osRestoreInt(saveMask);
             return -1;
         }
-        __osRunningThread->state = OS_STATE_WAITING;
-        __osEnqueueAndYield(&mq->fullqueue);
     }
     mq->first = (mq->first + mq->msgCount - 1) % mq->msgCount;
     mq->msg[mq->first] = msg;

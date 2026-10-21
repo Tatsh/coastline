@@ -28,6 +28,7 @@ typedef struct {
     union {
         long long ll;
         double ld;
+        u16 hw[4];
     } v;
     char *s;
     int n0;

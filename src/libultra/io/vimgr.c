@@ -51,8 +51,9 @@ void osCreateViManager(OSPri pri) {
 
 void viMgrMain(void *arg) {
     __OSViContext *vc;
-    OSDevMgr *dm = arg;
+    OSDevMgr *dm;
     OSIoMesg *mb = NULL;
+    s32 first = 0;
     u32 count;
 
     vc = __osViGetCurrentContext();
@@ -60,6 +61,7 @@ void viMgrMain(void *arg) {
     if (viMgrRetrace == 0) {
         viMgrRetrace = 1;
     }
+    dm = arg;
     for (;;) {
         osRecvMesg(dm->evtQueue, (OSMesg *)&mb, OS_MESG_BLOCK);
         switch (mb->hdr.type) {
@@ -74,8 +76,12 @@ void viMgrMain(void *arg) {
                 viMgrRetrace = vc->retraceCount;
             }
             __osViIntrCount++;
-            /* The SDK sets the time from the counter on the first retrace, behind a flag the
-             * original never sets. The binary also skips the step. */
+            /* The flag starts clear and is never set, so the time is never taken here. */
+            if (first) {
+                count = osGetCount();
+                __osCurrentTime = count;
+                first = 0;
+            }
             count = __osBaseCounter;
             __osBaseCounter = osGetCount();
             count = __osBaseCounter - count;

@@ -83,11 +83,12 @@ void __osPiRelAccess(void);
  */
 void __osDevMgrMain(void *arg);
 
-/* Wait while the PI is busy with a DMA or an I/O access. */
+/* Wait while the PI is busy with a DMA or an I/O access. The status is read once before the loop
+ * tests it, and again on each pass. */
 #define WAIT_ON_IOBUSY(stat)                                                                       \
-    do {                                                                                           \
-        stat = IO_READ(PI_STATUS_REG);                                                             \
-    } while (stat & (PI_STATUS_IO_BUSY | PI_STATUS_DMA_BUSY))
+    stat = IO_READ(PI_STATUS_REG);                                                                 \
+    while (stat & (PI_STATUS_IO_BUSY | PI_STATUS_DMA_BUSY))                                        \
+    stat = IO_READ(PI_STATUS_REG)
 
 /* The registers and bits of the 64DD. */
 #define LEO_BASE_REG 0x05000000

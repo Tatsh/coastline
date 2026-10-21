@@ -31,7 +31,7 @@ s32 __osRepairPackId(OSPfs *pfs, __OSPackId *badid, __OSPackId *newid) {
     u8 comp[BLOCKSIZE];
     u8 mask = 0;
     int i;
-    int j = 0;
+    int j;
     u16 index[4];
 
     SET_ACTIVEBANK_TO_ZERO;
