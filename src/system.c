@@ -89,7 +89,7 @@
 
 /* A fill of the frame buffer with a colour of 8-bit components, as two pixels. */
 #define FILL_COLOR(red, green, blue)                                                               \
-    ((u32)GPACK_RGBA5551(red, green, blue, 1) << 16 | GPACK_RGBA5551(red, green, blue, 1))
+    ((u16)GPACK_RGBA5551(red, green, blue, 1) | (u16)GPACK_RGBA5551(red, green, blue, 1) << 16)
 
 /* A fill of the depth buffer with the farthest depth, as two depths. */
 #define FARTHEST_DEPTHS ((u32)GPACK_ZDZ(G_MAXFIXED, 0) << 16 | GPACK_ZDZ(G_MAXFIXED, 0))
@@ -134,20 +134,22 @@
 u64 g_qwTimestampBase = 0;
 
 /* Draw the four edges of a rectangle, a pixel wide, inside it. */
-static inline void DrawRectEdges(s32 x, s32 y, s32 width, s32 height) {
-    gDPFillRectangle(gDisplayListPtr++, x, y, x + width, y + 1);
-    gDPFillRectangle(gDisplayListPtr++, x, y + height - 1, x + width, y + height);
-    gDPFillRectangle(gDisplayListPtr++, x, y, x + 1, y + height);
-    gDPFillRectangle(gDisplayListPtr++, x + width - 1, y, x + width, y + height);
-}
+#define DRAW_RECT_EDGES(x, y, width, height)                                                       \
+    {                                                                                              \
+        gDPFillRectangle(gDisplayListPtr++, x, y, (x) + (width), (y) + 1);                         \
+        gDPFillRectangle(gDisplayListPtr++, x, (y) + (height) - 1, (x) + (width), (y) + (height)); \
+        gDPFillRectangle(gDisplayListPtr++, x, y, (x) + 1, (y) + (height));                        \
+        gDPFillRectangle(gDisplayListPtr++, (x) + (width) - 1, y, (x) + (width), (y) + (height));  \
+    }
 
 /* Set a light ramp to a quarter, a half, three quarters, and all of a part of the light. */
-static inline void SetLightRamp(u8 ramp[4], s32 light) {
-    ramp[0] = light >> 2;
-    ramp[1] = light >> 1;
-    ramp[2] = (light >> 1) + (light >> 2);
-    ramp[3] = light;
-}
+#define SET_LIGHT_RAMP(ramp, light)                                                                \
+    {                                                                                              \
+        (ramp)[0] = (light) >> 2;                                                                  \
+        (ramp)[1] = (light) >> 1;                                                                  \
+        (ramp)[2] = ((light) >> 1) + ((light) >> 2);                                               \
+        (ramp)[3] = (light);                                                                       \
+    }
 
 /* Whether two commands of a display list are the same. */
 static inline s32 IsSameCommand(Gfx *a, Gfx *b) {
@@ -205,10 +207,18 @@ f32 GetMaxAbsValue12(f32 m[4][4]) {
     return max;
 }
 
+/* Scale the four elements of a row of a matrix. */
+#define SCALE_ROW(row, scale)                                                                      \
+    {                                                                                              \
+        (row)[0] *= scale;                                                                         \
+        (row)[1] *= scale;                                                                         \
+        (row)[2] *= scale;                                                                         \
+        (row)[3] *= scale;                                                                         \
+    }
+
 void NormalizeLightMatrix(f32 m[4][4]) {
     f32 *element;
-    f32 max, min, scale;
-    s32 row, column;
+    f32 max, min;
 
     max = 0.0f;
     min = 0.0f;
@@ -225,12 +235,12 @@ void NormalizeLightMatrix(f32 m[4][4]) {
     if (max < min) {
         max = min;
     }
-    scale = LIGHT_MATRIX_RANGE / (max + LIGHT_MATRIX_MARGIN);
-    for (row = 0; row < 4; row++) {
-        for (column = 0; column < 4; column++) {
-            m[row][column] *= scale;
-        }
-    }
+    /* The largest magnitude becomes the scale. */
+    max = LIGHT_MATRIX_RANGE / (max + LIGHT_MATRIX_MARGIN);
+    SCALE_ROW(m[0], max);
+    SCALE_ROW(m[1], max);
+    SCALE_ROW(m[2], max);
+    SCALE_ROW(m[3], max);
 }
 
 /* The original stores the address of a local message for the debug display. */
@@ -633,9 +643,9 @@ void SetupWeatherLights(void) {
         g_abLightRampB[2] = 0xFF;
         g_abLightRampR[3] = g_abLightRampG[3] = g_abLightRampB[3] = 0xFF;
     } else {
-        SetLightRamp(g_abLightRampR, g_bDirLightR);
-        SetLightRamp(g_abLightRampG, g_bDirLightG);
-        SetLightRamp(g_abLightRampB, g_bDirLightB);
+        SET_LIGHT_RAMP(g_abLightRampR, g_bDirLightR);
+        SET_LIGHT_RAMP(g_abLightRampG, g_bDirLightG);
+        SET_LIGHT_RAMP(g_abLightRampB, g_bDirLightB);
     }
     g_dwAmbientLightColor = LIGHT_COLOR(g_bAmbientLightR, g_bAmbientLightG, g_bAmbientLightB);
     g_dwDirLightColor = LIGHT_COLOR(g_bDirLightR, g_bDirLightG, g_bDirLightB);
@@ -859,7 +869,7 @@ void DrawRdpOutlineRect(s32 x, s32 y, s32 width, s32 height) {
     gDPSetRenderMode(gDisplayListPtr++, RENDER_MODE_FOG_BLEND_C1, RENDER_MODE_FOG_BLEND_C2);
     gDPSetCycleType(gDisplayListPtr++, G_CYC_1CYCLE);
     gDPSetFogColor(gDisplayListPtr++, 0, 0, 0, 0xFF);
-    DrawRectEdges(x, y, width, height);
+    DRAW_RECT_EDGES(x, y, width, height);
 }
 
 void DrawRdpBorderRect(s32 x, s32 y, s32 width, s32 height) {
@@ -876,7 +886,7 @@ void DrawRdpBorderRect(s32 x, s32 y, s32 width, s32 height) {
     gDPSetRenderMode(gDisplayListPtr++, RENDER_MODE_FOG_BLEND_C1, RENDER_MODE_FOG_BLEND_C2);
     gDPSetCycleType(gDisplayListPtr++, G_CYC_1CYCLE);
     gDPSetFogColor(gDisplayListPtr++, 0, 0, 0, 0xFF);
-    DrawRectEdges(x, y, width, height);
+    DRAW_RECT_EDGES(x, y, width, height);
     gDPFillRectangle(gDisplayListPtr++, x - 3, y - 3, x + width + 3, y - 2);
     gDPFillRectangle(gDisplayListPtr++, x - 3, y + height + 2, x + width + 3, y + height + 3);
     gDPFillRectangle(gDisplayListPtr++, x - 3, y - 3, x - 2, y + height + 3);
