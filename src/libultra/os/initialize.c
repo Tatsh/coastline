@@ -1,6 +1,12 @@
 #include "../io/siint.h"
 #include "osint.h"
 
+u64 osClockRate = OS_CLOCK_RATE;
+s32 osViClock = VI_NTSC_CLOCK;
+/** @ghidraAddress USA: 0x802a614c */
+u32 __osShutdown = 0;
+u32 __OSGlobalIntMask = OS_IM_ALL;
+
 /* The four exception vectors, each of which receives a copy of __osExceptionPreamble(). */
 #define UT_VEC 0x80000000
 #define XUT_VEC 0x80000080

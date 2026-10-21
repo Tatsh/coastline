@@ -36,3 +36,6 @@ add_library(
           writebackdcacheall.s
           yieldthread.c)
 target_link_libraries(coastline_libultra_os PRIVATE coastline_libultra_options)
+# The data of osInitialize() includes a zero word, which belongs in the data with the rest, as the
+# BSS may not grow.
+set_source_files_properties(initialize.c PROPERTIES COMPILE_OPTIONS -fno-zero-initialized-in-bss)

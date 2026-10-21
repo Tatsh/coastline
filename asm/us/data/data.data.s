@@ -64962,40 +64962,6 @@ dlabel D_802A6134
     /* A713C 802A613C 00000000 */ .word 0x00000000
 enddlabel D_802A6134
 
-nonmatching osClockRate
-
-dlabel osClockRate
-    /* A7140 802A6140 00000000 */ .word 0x00000000
-    /* A7144 802A6144 03B9ACA0 */ .word 0x03B9ACA0
-enddlabel osClockRate
-
-nonmatching osViClock
-
-dlabel osViClock
-    /* A7148 802A6148 02E6D354 */ .word 0x02E6D354
-enddlabel osViClock
-
-nonmatching __osShutdown
-
-dlabel __osShutdown
-    /* A714C 802A614C 00000000 */ .word 0x00000000
-enddlabel __osShutdown
-
-nonmatching __OSGlobalIntMask
-
-dlabel __OSGlobalIntMask
-    /* A7150 802A6150 003FFF01 */ .word 0x003FFF01
-enddlabel __OSGlobalIntMask
-
-nonmatching D_802A6154
-
-/* Automatically generated and unreferenced pad */
-dlabel D_802A6154
-    /* A7154 802A6154 00000000 */ .word 0x00000000
-    /* A7158 802A6158 00000000 */ .word 0x00000000
-    /* A715C 802A615C 00000000 */ .word 0x00000000
-enddlabel D_802A6154
-
 nonmatching __osViDevMgr
 
 dlabel __osViDevMgr
