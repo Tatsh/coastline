@@ -308,21 +308,18 @@ void UpdateAmbientSoundChannel(void) {
 }
 
 void UpdateAirplaneSound(s32 instance, Vec3f *position, CameraFrame *camera) {
+    s32 sound = -1;
     f32 frequency = TRACK_SOUND_FREQUENCY;
     s32 volume = DEFAULT_SOUND_VOLUME;
-    s32 sound = -1;
 
     switch (g_dwSelectedTrackId) {
     case TRACK_COASTLINE:
     case TRACK_MIRROR_COASTLINE:
         sound = SOUND_EFFECT_ENGINE;
-        volume = LOUD_SOUND_VOLUME;
         frequency = FAST_AIRPLANE_FREQUENCY;
+        volume = LOUD_SOUND_VOLUME;
         break;
     case TRACK_JUNGLE:
-        sound = SOUND_EFFECT_ENGINE;
-        volume = LOUD_SOUND_VOLUME;
-        break;
     case TRACK_MIRROR_JUNGLE:
         sound = SOUND_EFFECT_ENGINE;
         volume = LOUD_SOUND_VOLUME;
