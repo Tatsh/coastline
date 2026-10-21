@@ -527,10 +527,10 @@ glabel ProcessPaintShopScreen
     /* 442A0 802432A0 3C028029 */  lui        $v0, %hi(gDecalBrushState)
     /* 442A4 802432A4 AC20C328 */  sw         $zero, %lo(g_dwVehicleViewModeIndex)($at)
     /* 442A8 802432A8 2442DBBC */  addiu      $v0, $v0, %lo(gDecalBrushState)
-    /* 442AC 802432AC 3C018029 */  lui        $at, %hi(g_dwNumRacers)
+    /* 442AC 802432AC 3C018029 */  lui        $at, %hi(g_dwNumActiveVehicles)
     /* 442B0 802432B0 24180001 */  addiu      $t8, $zero, 0x1
     /* 442B4 802432B4 A04F0000 */  sb         $t7, 0x0($v0)
-    /* 442B8 802432B8 AC38B7F4 */  sw         $t8, %lo(g_dwNumRacers)($at)
+    /* 442B8 802432B8 AC38B7F4 */  sw         $t8, %lo(g_dwNumActiveVehicles)($at)
     /* 442BC 802432BC 90590000 */  lbu        $t9, 0x0($v0)
     /* 442C0 802432C0 24122090 */  addiu      $s2, $zero, 0x2090
     /* 442C4 802432C4 3C118032 */  lui        $s1, %hi(g_aVehicles)

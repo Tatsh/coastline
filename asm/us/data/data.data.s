@@ -32689,11 +32689,11 @@ dlabel g_dwNumVehicles
     /* 8C7F0 8028B7F0 00000001 */ .word 0x00000001
 enddlabel g_dwNumVehicles
 
-nonmatching g_dwNumRacers
+nonmatching g_dwNumActiveVehicles
 
-dlabel g_dwNumRacers
+dlabel g_dwNumActiveVehicles
     /* 8C7F4 8028B7F4 00000002 */ .word 0x00000002
-enddlabel g_dwNumRacers
+enddlabel g_dwNumActiveVehicles
 
 nonmatching g_dwReplayCameraSwitchTimer
 
@@ -34768,11 +34768,11 @@ dlabel D_8028C83A
     /* 8D83A 8028C83A */ .short 0x0000
 enddlabel D_8028C83A
 
-nonmatching g_wTireSmokeListHeadSurface3
+nonmatching g_wPavedTireSmokeListHead
 
-dlabel g_wTireSmokeListHeadSurface3
+dlabel g_wPavedTireSmokeListHead
     /* 8D83C 8028C83C */ .short 0x0000
-enddlabel g_wTireSmokeListHeadSurface3
+enddlabel g_wPavedTireSmokeListHead
 
 nonmatching D_8028C83E
 
@@ -61665,9 +61665,9 @@ dlabel g_aVehicleEnvMapTexture
     /* A3974 802A2974 00000000 */ .word 0x00000000
 enddlabel g_aVehicleEnvMapTexture
 
-nonmatching g_aTireTrailTexture
+nonmatching g_aTireSprayTexture
 
-dlabel g_aTireTrailTexture
+dlabel g_aTireSprayTexture
     /* A3978 802A2978 00001232 */ .word 0x00001232
     /* A397C 802A297C 31235889 */ .word 0x31235889
     /* A3980 802A2980 74467856 */ .word 0x74467856
@@ -61926,7 +61926,7 @@ dlabel g_aTireTrailTexture
     /* A3D74 802A2D74 84688675 */ .word 0x84688675
     /* A3D78 802A2D78 B8000000 */ .word 0xB8000000
     /* A3D7C 802A2D7C 00000000 */ .word 0x00000000
-enddlabel g_aTireTrailTexture
+enddlabel g_aTireSprayTexture
 
 nonmatching g_aGameStateGfxBuffer
 

@@ -934,8 +934,8 @@ glabel ProcessTrackSelectScreen
     /* E210 8020D210 8C63FF08 */  lw         $v1, %lo(g_dwNumLocalPlayers)($v1)
   .L8020D214:
     /* E214 8020D214 240C0002 */  addiu      $t4, $zero, 0x2
-    /* E218 8020D218 3C018029 */  lui        $at, %hi(g_dwNumRacers)
-    /* E21C 8020D21C AC2CB7F4 */  sw         $t4, %lo(g_dwNumRacers)($at)
+    /* E218 8020D218 3C018029 */  lui        $at, %hi(g_dwNumActiveVehicles)
+    /* E21C 8020D21C AC2CB7F4 */  sw         $t4, %lo(g_dwNumActiveVehicles)($at)
     /* E220 8020D220 1440002E */  bnez       $v0, .L8020D2DC
     /* E224 8020D224 0000A825 */   or        $s5, $zero, $zero
     /* E228 8020D228 1860002C */  blez       $v1, .L8020D2DC

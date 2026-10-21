@@ -78,6 +78,12 @@ extern ViewportRect g_aViewportRects[];
 /** The view being drawn. @ghidraAddress USA: 0x8028aaec */
 extern s32 g_dwCurrentSplitScreenIndex;
 
+/** The depth scale of the viewport SetViewport() last set. @ghidraAddress USA: 0x8028ab64 */
+extern s32 g_dwViewportScaleZ;
+
+/** The depth offset of the viewport SetViewport() last set. @ghidraAddress USA: 0x8028ab68 */
+extern s32 g_dwViewportTransZ;
+
 /**
  * Fill a rectangle of the screen with a colour.
  *

@@ -93,7 +93,7 @@ glabel DrawRaceHud
     /* 142C 8020042C 00003025 */  or         $a2, $zero, $zero
     /* 1430 80200430 0C08B5F8 */  jal        AddTimingMarker
     /* 1434 80200434 240700C0 */   addiu     $a3, $zero, 0xC0
-    /* 1438 80200438 0C08EFD8 */  jal        UpdateVehicleTireTrails
+    /* 1438 80200438 0C08EFD8 */  jal        MoveTireSpray
     /* 143C 8020043C 00000000 */   nop
     /* 1440 80200440 241900FF */  addiu      $t9, $zero, 0xFF
     /* 1444 80200444 AFB90010 */  sw         $t9, 0x10($sp)
@@ -458,9 +458,9 @@ glabel ProcessRaceHud
     /* 1904 80200904 24090014 */  addiu      $t1, $zero, 0x14
     /* 1908 80200908 3C018029 */  lui        $at, %hi(g_dwNumVehicles)
     /* 190C 8020090C AC29B7F0 */  sw         $t1, %lo(g_dwNumVehicles)($at)
-    /* 1910 80200910 3C018029 */  lui        $at, %hi(g_dwNumRacers)
+    /* 1910 80200910 3C018029 */  lui        $at, %hi(g_dwNumActiveVehicles)
     /* 1914 80200914 240A0003 */  addiu      $t2, $zero, 0x3
-    /* 1918 80200918 AC2AB7F4 */  sw         $t2, %lo(g_dwNumRacers)($at)
+    /* 1918 80200918 AC2AB7F4 */  sw         $t2, %lo(g_dwNumActiveVehicles)($at)
   .L8020091C:
     /* 191C 8020091C 3C0B8027 */  lui        $t3, %hi(gInstantReplayActive)
     /* 1920 80200920 8D6B0788 */  lw         $t3, %lo(gInstantReplayActive)($t3)
@@ -603,10 +603,10 @@ glabel ProcessRaceHud
     /* 1B28 80200B28 240A0002 */  addiu      $t2, $zero, 0x2
     /* 1B2C 80200B2C 3C018029 */  lui        $at, %hi(g_dwNumVehicles)
     /* 1B30 80200B30 AC2AB7F0 */  sw         $t2, %lo(g_dwNumVehicles)($at)
-    /* 1B34 80200B34 3C018029 */  lui        $at, %hi(g_dwNumRacers)
+    /* 1B34 80200B34 3C018029 */  lui        $at, %hi(g_dwNumActiveVehicles)
     /* 1B38 80200B38 240C0002 */  addiu      $t4, $zero, 0x2
     /* 1B3C 80200B3C 1000FF77 */  b          .L8020091C
-    /* 1B40 80200B40 AC2CB7F4 */   sw        $t4, %lo(g_dwNumRacers)($at)
+    /* 1B40 80200B40 AC2CB7F4 */   sw        $t4, %lo(g_dwNumActiveVehicles)($at)
   jlabel .L80200B44
     /* 1B44 80200B44 240B0001 */  addiu      $t3, $zero, 0x1
     /* 1B48 80200B48 3C018027 */  lui        $at, %hi(g_dwNumLocalPlayers)
@@ -614,9 +614,9 @@ glabel ProcessRaceHud
     /* 1B50 80200B50 3C018029 */  lui        $at, %hi(g_dwNumVehicles)
     /* 1B54 80200B54 240D0001 */  addiu      $t5, $zero, 0x1
     /* 1B58 80200B58 AC2DB7F0 */  sw         $t5, %lo(g_dwNumVehicles)($at)
-    /* 1B5C 80200B5C 3C018029 */  lui        $at, %hi(g_dwNumRacers)
+    /* 1B5C 80200B5C 3C018029 */  lui        $at, %hi(g_dwNumActiveVehicles)
     /* 1B60 80200B60 240E0001 */  addiu      $t6, $zero, 0x1
-    /* 1B64 80200B64 AC2EB7F4 */  sw         $t6, %lo(g_dwNumRacers)($at)
+    /* 1B64 80200B64 AC2EB7F4 */  sw         $t6, %lo(g_dwNumActiveVehicles)($at)
     /* 1B68 80200B68 3C018027 */  lui        $at, %hi(g_dwRaceSaveReplayFlag)
     /* 1B6C 80200B6C AC20078C */  sw         $zero, %lo(g_dwRaceSaveReplayFlag)($at)
     /* 1B70 80200B70 3C018027 */  lui        $at, %hi(gInstantReplayActive)
@@ -642,9 +642,9 @@ glabel ProcessRaceHud
     /* 1BBC 80200BBC 3C018029 */  lui        $at, %hi(g_dwNumVehicles)
     /* 1BC0 80200BC0 240C0001 */  addiu      $t4, $zero, 0x1
     /* 1BC4 80200BC4 AC2CB7F0 */  sw         $t4, %lo(g_dwNumVehicles)($at)
-    /* 1BC8 80200BC8 3C018029 */  lui        $at, %hi(g_dwNumRacers)
+    /* 1BC8 80200BC8 3C018029 */  lui        $at, %hi(g_dwNumActiveVehicles)
     /* 1BCC 80200BCC 240B0001 */  addiu      $t3, $zero, 0x1
-    /* 1BD0 80200BD0 AC2BB7F4 */  sw         $t3, %lo(g_dwNumRacers)($at)
+    /* 1BD0 80200BD0 AC2BB7F4 */  sw         $t3, %lo(g_dwNumActiveVehicles)($at)
     /* 1BD4 80200BD4 3C018027 */  lui        $at, %hi(g_dwRaceSaveReplayFlag)
     /* 1BD8 80200BD8 3C0D8032 */  lui        $t5, %hi(g_aVehicles)
     /* 1BDC 80200BDC AC20078C */  sw         $zero, %lo(g_dwRaceSaveReplayFlag)($at)
@@ -815,9 +815,9 @@ glabel ProcessRaceHud
     /* 1E50 80200E50 01AA6821 */  addu       $t5, $t5, $t2
     /* 1E54 80200E54 AC2EB7F0 */  sw         $t6, %lo(g_dwNumVehicles)($at)
     /* 1E58 80200E58 000D68C0 */  sll        $t5, $t5, 3
-    /* 1E5C 80200E5C 3C018029 */  lui        $at, %hi(g_dwNumRacers)
+    /* 1E5C 80200E5C 3C018029 */  lui        $at, %hi(g_dwNumActiveVehicles)
     /* 1E60 80200E60 01AA6821 */  addu       $t5, $t5, $t2
-    /* 1E64 80200E64 AC2EB7F4 */  sw         $t6, %lo(g_dwNumRacers)($at)
+    /* 1E64 80200E64 AC2EB7F4 */  sw         $t6, %lo(g_dwNumActiveVehicles)($at)
     /* 1E68 80200E68 000D6900 */  sll        $t5, $t5, 4
     /* 1E6C 80200E6C 3C018027 */  lui        $at, %hi(g_dwRaceSaveReplayFlag)
     /* 1E70 80200E70 01ED7821 */  addu       $t7, $t7, $t5
@@ -1151,8 +1151,8 @@ glabel ProcessRaceHud
     /* 2380 80201380 8D4AFF08 */  lw         $t2, %lo(g_dwNumLocalPlayers)($t2)
     /* 2384 80201384 3C018029 */  lui        $at, %hi(g_dwNumVehicles)
     /* 2388 80201388 AC2AB7F0 */  sw         $t2, %lo(g_dwNumVehicles)($at)
-    /* 238C 8020138C 3C018029 */  lui        $at, %hi(g_dwNumRacers)
-    /* 2390 80201390 AC2AB7F4 */  sw         $t2, %lo(g_dwNumRacers)($at)
+    /* 238C 8020138C 3C018029 */  lui        $at, %hi(g_dwNumActiveVehicles)
+    /* 2390 80201390 AC2AB7F4 */  sw         $t2, %lo(g_dwNumActiveVehicles)($at)
     /* 2394 80201394 3C018027 */  lui        $at, %hi(g_dwRaceSaveReplayFlag)
     /* 2398 80201398 AC20078C */  sw         $zero, %lo(g_dwRaceSaveReplayFlag)($at)
   .L8020139C:
@@ -1581,8 +1581,8 @@ glabel ProcessRaceHud
     /* 29D4 802019D4 10000037 */  b          .L80201AB4
     /* 29D8 802019D8 A16D0025 */   sb        $t5, 0x25($t3)
   .L802019DC:
-    /* 29DC 802019DC 3C0E8029 */  lui        $t6, %hi(g_dwNumRacers)
-    /* 29E0 802019E0 8DCEB7F4 */  lw         $t6, %lo(g_dwNumRacers)($t6)
+    /* 29DC 802019DC 3C0E8029 */  lui        $t6, %hi(g_dwNumActiveVehicles)
+    /* 29E0 802019E0 8DCEB7F4 */  lw         $t6, %lo(g_dwNumActiveVehicles)($t6)
     /* 29E4 802019E4 022E082A */  slt        $at, $s1, $t6
     /* 29E8 802019E8 10200032 */  beqz       $at, .L80201AB4
     /* 29EC 802019EC 0011C180 */   sll       $t8, $s1, 6
@@ -1629,10 +1629,10 @@ glabel ProcessRaceHud
     /* 2A8C 80201A8C AC20C5C8 */  sw         $zero, %lo(g_bCollisionLayer2)($at)
     /* 2A90 80201A90 016D5821 */  addu       $t3, $t3, $t5
     /* 2A94 80201A94 8D6BD7D4 */  lw         $t3, %lo(D_8031D7D4)($t3)
-    /* 2A98 80201A98 3C0E8029 */  lui        $t6, %hi(g_dwNumRacers)
+    /* 2A98 80201A98 3C0E8029 */  lui        $t6, %hi(g_dwNumActiveVehicles)
     /* 2A9C 80201A9C 26310001 */  addiu      $s1, $s1, 0x1
     /* 2AA0 80201AA0 A1600025 */  sb         $zero, 0x25($t3)
-    /* 2AA4 80201AA4 8DCEB7F4 */  lw         $t6, %lo(g_dwNumRacers)($t6)
+    /* 2AA4 80201AA4 8DCEB7F4 */  lw         $t6, %lo(g_dwNumActiveVehicles)($t6)
     /* 2AA8 80201AA8 022E082A */  slt        $at, $s1, $t6
     /* 2AAC 80201AAC 5420FFD0 */  bnel       $at, $zero, .L802019F0
     /* 2AB0 80201AB0 0011C180 */   sll       $t8, $s1, 6
@@ -1640,8 +1640,8 @@ glabel ProcessRaceHud
     /* 2AB4 80201AB4 3C0C8027 */  lui        $t4, %hi(gInstantReplayActive)
     /* 2AB8 80201AB8 8D8C0788 */  lw         $t4, %lo(gInstantReplayActive)($t4)
     /* 2ABC 80201ABC 158000B3 */  bnez       $t4, .L80201D8C
-    /* 2AC0 80201AC0 3C188029 */   lui       $t8, %hi(g_dwNumRacers)
-    /* 2AC4 80201AC4 8F18B7F4 */  lw         $t8, %lo(g_dwNumRacers)($t8)
+    /* 2AC0 80201AC0 3C188029 */   lui       $t8, %hi(g_dwNumActiveVehicles)
+    /* 2AC4 80201AC4 8F18B7F4 */  lw         $t8, %lo(g_dwNumActiveVehicles)($t8)
     /* 2AC8 80201AC8 3C018027 */  lui        $at, %hi(g_dwSavedResultsValid)
     /* 2ACC 80201ACC AC200790 */  sw         $zero, %lo(g_dwSavedResultsValid)($at)
     /* 2AD0 80201AD0 0018082A */  slt        $at, $zero, $t8
@@ -1810,10 +1810,10 @@ glabel ProcessRaceHud
     /* 2D48 80201D48 01515021 */  addu       $t2, $t2, $s1
     /* 2D4C 80201D4C 002C0821 */  addu       $at, $at, $t4
     /* 2D50 80201D50 000A50C0 */  sll        $t2, $t2, 3
-    /* 2D54 80201D54 3C088029 */  lui        $t0, %hi(g_dwNumRacers)
+    /* 2D54 80201D54 3C088029 */  lui        $t0, %hi(g_dwNumActiveVehicles)
     /* 2D58 80201D58 AC20C710 */  sw         $zero, %lo(g_pszVehicle0HudMessage)($at)
     /* 2D5C 80201D5C 01515021 */  addu       $t2, $t2, $s1
-    /* 2D60 80201D60 8D08B7F4 */  lw         $t0, %lo(g_dwNumRacers)($t0)
+    /* 2D60 80201D60 8D08B7F4 */  lw         $t0, %lo(g_dwNumActiveVehicles)($t0)
     /* 2D64 80201D64 000A5100 */  sll        $t2, $t2, 4
     /* 2D68 80201D68 3C018032 */  lui        $at, %hi(D_8031C718)
     /* 2D6C 80201D6C 002A0821 */  addu       $at, $at, $t2
@@ -1826,8 +1826,8 @@ glabel ProcessRaceHud
     /* 2D88 80201D88 00000000 */   nop
   .L80201D8C:
     /* 2D8C 80201D8C 3C118027 */  lui        $s1, %hi(g_dwNumLocalPlayers)
-    /* 2D90 80201D90 3C098029 */  lui        $t1, %hi(g_dwNumRacers)
-    /* 2D94 80201D94 8D29B7F4 */  lw         $t1, %lo(g_dwNumRacers)($t1)
+    /* 2D90 80201D90 3C098029 */  lui        $t1, %hi(g_dwNumActiveVehicles)
+    /* 2D94 80201D94 8D29B7F4 */  lw         $t1, %lo(g_dwNumActiveVehicles)($t1)
     /* 2D98 80201D98 8E31FF08 */  lw         $s1, %lo(g_dwNumLocalPlayers)($s1)
     /* 2D9C 80201D9C 0229082A */  slt        $at, $s1, $t1
     /* 2DA0 80201DA0 1020002B */  beqz       $at, .L80201E50
@@ -1869,8 +1869,8 @@ glabel ProcessRaceHud
     /* 2E2C 80201E2C 01003025 */  or         $a2, $t0, $zero
     /* 2E30 80201E30 0C087450 */  jal        SetMaterialColor
     /* 2E34 80201E34 01602825 */   or        $a1, $t3, $zero
-    /* 2E38 80201E38 3C0F8029 */  lui        $t7, %hi(g_dwNumRacers)
-    /* 2E3C 80201E3C 8DEFB7F4 */  lw         $t7, %lo(g_dwNumRacers)($t7)
+    /* 2E38 80201E38 3C0F8029 */  lui        $t7, %hi(g_dwNumActiveVehicles)
+    /* 2E3C 80201E3C 8DEFB7F4 */  lw         $t7, %lo(g_dwNumActiveVehicles)($t7)
     /* 2E40 80201E40 26310001 */  addiu      $s1, $s1, 0x1
     /* 2E44 80201E44 022F082A */  slt        $at, $s1, $t7
     /* 2E48 80201E48 5420FFD7 */  bnel       $at, $zero, .L80201DA8
@@ -2937,8 +2937,8 @@ glabel ProcessRaceHud
     /* 3E08 80202E08 240700C8 */   addiu     $a3, $zero, 0xC8
     /* 3E0C 80202E0C 0C0897CC */  jal        ClearBssSegments
     /* 3E10 80202E10 00000000 */   nop
-    /* 3E14 80202E14 3C0F8029 */  lui        $t7, %hi(g_dwNumRacers)
-    /* 3E18 80202E18 8DEFB7F4 */  lw         $t7, %lo(g_dwNumRacers)($t7)
+    /* 3E14 80202E14 3C0F8029 */  lui        $t7, %hi(g_dwNumActiveVehicles)
+    /* 3E18 80202E18 8DEFB7F4 */  lw         $t7, %lo(g_dwNumActiveVehicles)($t7)
     /* 3E1C 80202E1C 00008825 */  or         $s1, $zero, $zero
     /* 3E20 80202E20 000F082A */  slt        $at, $zero, $t7
     /* 3E24 80202E24 1020000F */  beqz       $at, .L80202E64
@@ -2952,8 +2952,8 @@ glabel ProcessRaceHud
     /* 3E40 80202E40 0019C900 */  sll        $t9, $t9, 4
     /* 3E44 80202E44 0C08AF2B */  jal        ClearCollisionSoundFlag
     /* 3E48 80202E48 032C2021 */   addu      $a0, $t9, $t4
-    /* 3E4C 80202E4C 3C0D8029 */  lui        $t5, %hi(g_dwNumRacers)
-    /* 3E50 80202E50 8DADB7F4 */  lw         $t5, %lo(g_dwNumRacers)($t5)
+    /* 3E4C 80202E4C 3C0D8029 */  lui        $t5, %hi(g_dwNumActiveVehicles)
+    /* 3E50 80202E50 8DADB7F4 */  lw         $t5, %lo(g_dwNumActiveVehicles)($t5)
     /* 3E54 80202E54 26310001 */  addiu      $s1, $s1, 0x1
     /* 3E58 80202E58 022D082A */  slt        $at, $s1, $t5
     /* 3E5C 80202E5C 5420FFF3 */  bnel       $at, $zero, .L80202E2C
@@ -3686,8 +3686,8 @@ glabel ProcessRaceHud
     /* 4934 80203934 5420FDF8 */  bnel       $at, $zero, .L80203118
     /* 4938 80203938 0011C080 */   sll       $t8, $s1, 2
   .L8020393C:
-    /* 493C 8020393C 3C088029 */  lui        $t0, %hi(g_dwNumRacers)
-    /* 4940 80203940 8D08B7F4 */  lw         $t0, %lo(g_dwNumRacers)($t0)
+    /* 493C 8020393C 3C088029 */  lui        $t0, %hi(g_dwNumActiveVehicles)
+    /* 4940 80203940 8D08B7F4 */  lw         $t0, %lo(g_dwNumActiveVehicles)($t0)
     /* 4944 80203944 00008825 */  or         $s1, $zero, $zero
     /* 4948 80203948 0008082A */  slt        $at, $zero, $t0
     /* 494C 8020394C 1020000F */  beqz       $at, .L8020398C
@@ -3701,8 +3701,8 @@ glabel ProcessRaceHud
     /* 4968 80203968 000F7900 */  sll        $t7, $t7, 4
     /* 496C 8020396C 0C08AF2D */  jal        UpdateVehicleCollisionSound
     /* 4970 80203970 01EB2021 */   addu      $a0, $t7, $t3
-    /* 4974 80203974 3C0C8029 */  lui        $t4, %hi(g_dwNumRacers)
-    /* 4978 80203978 8D8CB7F4 */  lw         $t4, %lo(g_dwNumRacers)($t4)
+    /* 4974 80203974 3C0C8029 */  lui        $t4, %hi(g_dwNumActiveVehicles)
+    /* 4978 80203978 8D8CB7F4 */  lw         $t4, %lo(g_dwNumActiveVehicles)($t4)
     /* 497C 8020397C 26310001 */  addiu      $s1, $s1, 0x1
     /* 4980 80203980 022C082A */  slt        $at, $s1, $t4
     /* 4984 80203984 5420FFF3 */  bnel       $at, $zero, .L80203954
@@ -4094,8 +4094,8 @@ glabel ProcessRaceHud
     /* 4F54 80203F54 3C018029 */  lui        $at, %hi(g_dwVehicleViewModeIndex)
     /* 4F58 80203F58 AC28C328 */  sw         $t0, %lo(g_dwVehicleViewModeIndex)($at)
   .L80203F5C:
-    /* 4F5C 80203F5C 3C0E8029 */  lui        $t6, %hi(g_dwNumRacers)
-    /* 4F60 80203F60 8DCEB7F4 */  lw         $t6, %lo(g_dwNumRacers)($t6)
+    /* 4F5C 80203F5C 3C0E8029 */  lui        $t6, %hi(g_dwNumActiveVehicles)
+    /* 4F60 80203F60 8DCEB7F4 */  lw         $t6, %lo(g_dwNumActiveVehicles)($t6)
     /* 4F64 80203F64 00008825 */  or         $s1, $zero, $zero
     /* 4F68 80203F68 000E082A */  slt        $at, $zero, $t6
     /* 4F6C 80203F6C 1020000F */  beqz       $at, .L80203FAC
@@ -4109,8 +4109,8 @@ glabel ProcessRaceHud
     /* 4F88 80203F88 0019C900 */  sll        $t9, $t9, 4
     /* 4F8C 80203F8C 0C08C0F5 */  jal        CheckVehicleVisibility
     /* 4F90 80203F90 032B2021 */   addu      $a0, $t9, $t3
-    /* 4F94 80203F94 3C0F8029 */  lui        $t7, %hi(g_dwNumRacers)
-    /* 4F98 80203F98 8DEFB7F4 */  lw         $t7, %lo(g_dwNumRacers)($t7)
+    /* 4F94 80203F94 3C0F8029 */  lui        $t7, %hi(g_dwNumActiveVehicles)
+    /* 4F98 80203F98 8DEFB7F4 */  lw         $t7, %lo(g_dwNumActiveVehicles)($t7)
     /* 4F9C 80203F9C 26310001 */  addiu      $s1, $s1, 0x1
     /* 4FA0 80203FA0 022F082A */  slt        $at, $s1, $t7
     /* 4FA4 80203FA4 5420FFF3 */  bnel       $at, $zero, .L80203F74
@@ -4184,7 +4184,7 @@ glabel ProcessRaceHud
     /* 50A0 802040A0 24060080 */  addiu      $a2, $zero, 0x80
     /* 50A4 802040A4 0C08B5F8 */  jal        AddTimingMarker
     /* 50A8 802040A8 00003825 */   or        $a3, $zero, $zero
-    /* 50AC 802040AC 0C08F5C5 */  jal        RenderParticleEffects
+    /* 50AC 802040AC 0C08F5C5 */  jal        RenderTireSmoke
     /* 50B0 802040B0 00000000 */   nop
     /* 50B4 802040B4 241900FF */  addiu      $t9, $zero, 0xFF
   .L802040B8:
@@ -4263,7 +4263,7 @@ glabel ProcessRaceHud
     /* 51CC 802041CC 24060080 */  addiu      $a2, $zero, 0x80
     /* 51D0 802041D0 0C08B5F8 */  jal        AddTimingMarker
     /* 51D4 802041D4 00003825 */   or        $a3, $zero, $zero
-    /* 51D8 802041D8 0C08F5C5 */  jal        RenderParticleEffects
+    /* 51D8 802041D8 0C08F5C5 */  jal        RenderTireSmoke
     /* 51DC 802041DC 00000000 */   nop
   .L802041E0:
     /* 51E0 802041E0 240A00FF */  addiu      $t2, $zero, 0xFF
@@ -4353,7 +4353,7 @@ glabel ProcessRaceHud
     /* 5314 80204314 24060080 */  addiu      $a2, $zero, 0x80
     /* 5318 80204318 0C08B5F8 */  jal        AddTimingMarker
     /* 531C 8020431C 00003825 */   or        $a3, $zero, $zero
-    /* 5320 80204320 0C08F6F0 */  jal        SetupAndRenderParticles
+    /* 5320 80204320 0C08F6F0 */  jal        RenderExhaustAndTireSpray
     /* 5324 80204324 00000000 */   nop
     /* 5328 80204328 240900FF */  addiu      $t1, $zero, 0xFF
     /* 532C 8020432C AFA90010 */  sw         $t1, 0x10($sp)
@@ -4598,8 +4598,8 @@ glabel ProcessRaceHud
     /* 56CC 802046CC 24060082 */  addiu      $a2, $zero, 0x82
     /* 56D0 802046D0 0C08B5F8 */  jal        AddTimingMarker
     /* 56D4 802046D4 00003825 */   or        $a3, $zero, $zero
-    /* 56D8 802046D8 3C0B8029 */  lui        $t3, %hi(g_dwNumRacers)
-    /* 56DC 802046DC 8D6BB7F4 */  lw         $t3, %lo(g_dwNumRacers)($t3)
+    /* 56D8 802046D8 3C0B8029 */  lui        $t3, %hi(g_dwNumActiveVehicles)
+    /* 56DC 802046DC 8D6BB7F4 */  lw         $t3, %lo(g_dwNumActiveVehicles)($t3)
     /* 56E0 802046E0 00008825 */  or         $s1, $zero, $zero
     /* 56E4 802046E4 000B082A */  slt        $at, $zero, $t3
     /* 56E8 802046E8 1020000F */  beqz       $at, .L80204728
@@ -4613,8 +4613,8 @@ glabel ProcessRaceHud
     /* 5704 80204704 000D6900 */  sll        $t5, $t5, 4
     /* 5708 80204708 0C08C0F5 */  jal        CheckVehicleVisibility
     /* 570C 8020470C 01AA2021 */   addu      $a0, $t5, $t2
-    /* 5710 80204710 3C188029 */  lui        $t8, %hi(g_dwNumRacers)
-    /* 5714 80204714 8F18B7F4 */  lw         $t8, %lo(g_dwNumRacers)($t8)
+    /* 5710 80204710 3C188029 */  lui        $t8, %hi(g_dwNumActiveVehicles)
+    /* 5714 80204714 8F18B7F4 */  lw         $t8, %lo(g_dwNumActiveVehicles)($t8)
     /* 5718 80204718 26310001 */  addiu      $s1, $s1, 0x1
     /* 571C 8020471C 0238082A */  slt        $at, $s1, $t8
     /* 5720 80204720 5420FFF3 */  bnel       $at, $zero, .L802046F0
@@ -4688,7 +4688,7 @@ glabel ProcessRaceHud
     /* 581C 8020481C 24060080 */  addiu      $a2, $zero, 0x80
     /* 5820 80204820 0C08B5F8 */  jal        AddTimingMarker
     /* 5824 80204824 00003825 */   or        $a3, $zero, $zero
-    /* 5828 80204828 0C08F5C5 */  jal        RenderParticleEffects
+    /* 5828 80204828 0C08F5C5 */  jal        RenderTireSmoke
     /* 582C 8020482C 00000000 */   nop
   .L80204830:
     /* 5830 80204830 0C08D6EB */  jal        RenderTrackGeometry

@@ -132,6 +132,14 @@ extern s32 g_bRainParticlesInitialized;
  */
 extern u8 g_aParticleTexture[];
 
+/** The last texel of the particle texture, in the fixed point of a coordinate and of a step. */
+#define PARTICLE_TEXTURE_LAST_T (63 << 5)
+#define PARTICLE_TEXTURE_STEPS (63 << 12)
+
+/** The texels of the particle texture as 16-bit texels for a load, less one. */
+#define PARTICLE_LOAD_TEXELS 2047
+#define PARTICLE_LOAD_DXT 0x100
+
 /**
  * The positions of the rain particles of each view, in a cube around the camera that wraps.
  *

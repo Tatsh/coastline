@@ -1578,8 +1578,8 @@ glabel BuildVisibleInstanceList
     /* 36508 80235508 54C1FFA1 */  bnel       $a2, $at, .L80235390
     /* 3650C 8023550C 86020002 */   lh        $v0, 0x2($s0)
   .L80235510:
-    /* 36510 80235510 3C028029 */  lui        $v0, %hi(g_dwNumRacers)
-    /* 36514 80235514 8C42B7F4 */  lw         $v0, %lo(g_dwNumRacers)($v0)
+    /* 36510 80235510 3C028029 */  lui        $v0, %hi(g_dwNumActiveVehicles)
+    /* 36514 80235514 8C42B7F4 */  lw         $v0, %lo(g_dwNumActiveVehicles)($v0)
     /* 36518 80235518 3C018036 */  lui        $at, %hi(g_nNearbyVehicleCount)
     /* 3651C 8023551C 3C098029 */  lui        $t1, %hi(g_pActiveCamera)
     /* 36520 80235520 AC20D4FC */  sw         $zero, %lo(g_nNearbyVehicleCount)($at)
@@ -1622,8 +1622,8 @@ glabel BuildVisibleInstanceList
     /* 365B0 802355B0 45000006 */  bc1f       .L802355CC
     /* 365B4 802355B4 00000000 */   nop
     /* 365B8 802355B8 3C098029 */  lui        $t1, %hi(g_pActiveCamera)
-    /* 365BC 802355BC 3C028029 */  lui        $v0, %hi(g_dwNumRacers)
-    /* 365C0 802355C0 8C42B7F4 */  lw         $v0, %lo(g_dwNumRacers)($v0)
+    /* 365BC 802355BC 3C028029 */  lui        $v0, %hi(g_dwNumActiveVehicles)
+    /* 365C0 802355C0 8C42B7F4 */  lw         $v0, %lo(g_dwNumActiveVehicles)($v0)
     /* 365C4 802355C4 10000026 */  b          .L80235660
     /* 365C8 802355C8 8D29AAF4 */   lw        $t1, %lo(g_pActiveCamera)($t1)
   .L802355CC:
@@ -1662,8 +1662,8 @@ glabel BuildVisibleInstanceList
     /* 36640 80235640 02E57821 */  addu       $t7, $s7, $a1
     /* 36644 80235644 ADF60004 */  sw         $s6, 0x4($t7)
     /* 36648 80235648 8F18D4FC */  lw         $t8, %lo(g_nNearbyVehicleCount)($t8)
-    /* 3664C 8023564C 3C028029 */  lui        $v0, %hi(g_dwNumRacers)
-    /* 36650 80235650 8C42B7F4 */  lw         $v0, %lo(g_dwNumRacers)($v0)
+    /* 3664C 8023564C 3C028029 */  lui        $v0, %hi(g_dwNumActiveVehicles)
+    /* 36650 80235650 8C42B7F4 */  lw         $v0, %lo(g_dwNumActiveVehicles)($v0)
     /* 36654 80235654 270B0001 */  addiu      $t3, $t8, 0x1
     /* 36658 80235658 8D29AAF4 */  lw         $t1, %lo(g_pActiveCamera)($t1)
     /* 3665C 8023565C AC2BD4FC */  sw         $t3, %lo(g_nNearbyVehicleCount)($at)

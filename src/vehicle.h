@@ -177,6 +177,9 @@ extern RacerSlot g_aRacerSlots[];
 /** The racers in the race. @ghidraAddress USA: 0x8028b7f0 */
 extern s32 g_dwNumVehicles;
 
+/** The vehicles of g_aVehicles the race uses. @ghidraAddress USA: 0x8028b7f4 */
+extern s32 g_dwNumActiveVehicles;
+
 /** The bits of the status of a racer that stop its clock. */
 #define RACER_CLOCK_STOPPED 0x3
 
@@ -188,6 +191,25 @@ extern s32 g_dwNumVehicles;
 
 /** The ghost mode of a vehicle that other vehicles pass through and that fades back in. */
 #define VEHICLE_GHOST 2
+
+/** The axes and the position of a wheel, the rows of its matrix. */
+typedef struct {
+    Vec3f forward;
+    f32 forwardW;
+    Vec3f side;
+    f32 sideW;
+    Vec3f up;
+    f32 upW;
+    Vec3f position;
+    f32 positionW;
+} WheelFrame;
+
+/**
+ * The segments of the spray a wheel throws, and the vertices of each, of which the first two are
+ * drawn.
+ */
+#define SPRAY_SEGMENTS 9
+#define SPRAY_SEGMENT_VERTICES 4
 
 /** The forces on the bodies of a vehicle. */
 enum {
@@ -225,7 +247,10 @@ typedef struct Vehicle {
         struct {
             /** The frame as a matrix. */
             f32 matrix[4][4];
-            f32 wheelMatrices[VEHICLE_WHEELS][4][4];
+            union {
+                f32 wheelMatrices[VEHICLE_WHEELS][4][4];
+                WheelFrame wheelFrames[VEHICLE_WHEELS];
+            };
         };
     };
     /** The index of the vehicle in g_aVehicles. The players have the first. */
@@ -329,12 +354,37 @@ typedef struct Vehicle {
     Vec3f placedVelocity;
     /** The speed the display shows, in kilometers an hour. */
     f32 speedKph;
-    u8 unreconstructedFE8[0x1D78 - 0xFE8];
-    /** The position SetVehiclePosition() last gave. */
-    Vec3f placedPosition;
+    u8 unreconstructedFE8[0x1010 - 0xFE8];
+    /** The time towards the next puff of exhaust, and where the last left the exhaust. */
+    f32 exhaustTimer;
+    Vec3f exhaustPosition;
+    /**
+     * The effects of each wheel number the wheels as the front two, then the rear two. The time
+     * towards the next puff of smoke of each wheel, and where the last puff was.
+     */
+    f32 smokeTimers[VEHICLE_WHEELS];
+    Vec3f smokePositions[VEHICLE_WHEELS];
+    /** The frames the spray of each wheel goes on after it leaves the ground, and its surface. */
+    f32 sprayFramesLeft[VEHICLE_WHEELS];
+    s32 spraySurfaces[VEHICLE_WHEELS];
+    /** The time towards the next segment of each spray, and whether one began this frame. */
+    f32 sprayPhases[VEHICLE_WHEELS];
+    s32 sprayAdvanced[VEHICLE_WHEELS];
+    /** Where the newest segment of each spray was thrown from. */
+    Vec3f sprayPositions[VEHICLE_WHEELS];
+    /**
+     * The segments of each spray, the newest first: their vertices, in 127ths of a unit from
+     * sprayOrigin, how far those move a second, in the same units, and the surface each segment
+     * was thrown from, or -1 when it was thrown from none.
+     */
+    Vtx sprayVertices[VEHICLE_WHEELS][SPRAY_SEGMENTS][SPRAY_SEGMENT_VERTICES];
+    s16 sprayVelocities[VEHICLE_WHEELS][SPRAY_SEGMENTS][SPRAY_SEGMENT_VERTICES][3];
+    s16 spraySegmentSurfaces[VEHICLE_WHEELS][SPRAY_SEGMENTS];
+    /** The point the spray is kept around, which SetVehiclePosition() puts at the vehicle. */
+    Vec3f sprayOrigin;
     u8 unreconstructed1D84[0x1D88 - 0x1D84];
-    /** A matrix of the vehicle for the display lists, the identity until it is set. */
-    Mtx transformMtx;
+    /** The matrix of the spray, the identity until it is set. */
+    Mtx sprayMtx;
     u8 unreconstructed1DC8[0x1DD4 - 0x1DC8];
     /** The controls: the steering, the pitch, the accelerator and the roll. */
     f32 steering;

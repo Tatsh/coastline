@@ -8982,179 +8982,179 @@ enddlabel g_fPrecipNearW
     /* AB1A8 802AA1A8 00000000 */ .float 0
     /* AB1AC 802AA1AC 00000000 */ .float 0
 
-nonmatching g_fExhaustRpmScale
+nonmatching g_fConst0p001_802aa1b0
 
-dlabel g_fExhaustRpmScale
+dlabel g_fConst0p001_802aa1b0
     /* AB1B0 802AA1B0 3A83126F */ .float 0.001000000047
-enddlabel g_fExhaustRpmScale
+enddlabel g_fConst0p001_802aa1b0
 
-nonmatching g_fExhaustRandScale
+nonmatching g_fConstInv65535_802aa1b4
 
-dlabel g_fExhaustRandScale
+dlabel g_fConstInv65535_802aa1b4
     /* AB1B4 802AA1B4 37800080 */ .float 1.525902189e-05
-enddlabel g_fExhaustRandScale
+enddlabel g_fConstInv65535_802aa1b4
 
-nonmatching g_fExhaustSizeBase
+nonmatching g_fConst0p1_802aa1b8
 
-dlabel g_fExhaustSizeBase
+dlabel g_fConst0p1_802aa1b8
     /* AB1B8 802AA1B8 3DCCCCCD */ .float 0.1000000015
-enddlabel g_fExhaustSizeBase
+enddlabel g_fConst0p1_802aa1b8
 
-nonmatching g_fExhaustSizeRand
+nonmatching g_fConst0p15_802aa1bc
 
-dlabel g_fExhaustSizeRand
+dlabel g_fConst0p15_802aa1bc
     /* AB1BC 802AA1BC 3E19999A */ .float 0.150000006
-enddlabel g_fExhaustSizeRand
+enddlabel g_fConst0p15_802aa1bc
 
-nonmatching g_fWheelSpinWrapMax
+nonmatching g_fConst1p7_802aa1c0
 
-dlabel g_fWheelSpinWrapMax
+dlabel g_fConst1p7_802aa1c0
     /* AB1C0 802AA1C0 3FD9999A */ .float 1.700000048
-enddlabel g_fWheelSpinWrapMax
+enddlabel g_fConst1p7_802aa1c0
 
-nonmatching g_fWheelEffectSpeedScale
+nonmatching g_fConst2p24_802aa1c4
 
-dlabel g_fWheelEffectSpeedScale
+dlabel g_fConst2p24_802aa1c4
     /* AB1C4 802AA1C4 400F5C29 */ .float 2.24000001
-enddlabel g_fWheelEffectSpeedScale
+enddlabel g_fConst2p24_802aa1c4
 
-nonmatching g_fWheelEffectOffsetScale
+nonmatching g_fConst0p3_802aa1c8
 
-dlabel g_fWheelEffectOffsetScale
+dlabel g_fConst0p3_802aa1c8
     /* AB1C8 802AA1C8 3E99999A */ .float 0.3000000119
-enddlabel g_fWheelEffectOffsetScale
+enddlabel g_fConst0p3_802aa1c8
 
-nonmatching g_fWheelSideOffsetNeg
+nonmatching g_fConstNeg0p15_802aa1cc
 
-dlabel g_fWheelSideOffsetNeg
+dlabel g_fConstNeg0p15_802aa1cc
     /* AB1CC 802AA1CC BE19999A */ .float -0.150000006
-enddlabel g_fWheelSideOffsetNeg
+enddlabel g_fConstNeg0p15_802aa1cc
 
-nonmatching g_fWheelSideOffsetPos
+nonmatching g_fConst0p15_802aa1d0
 
-dlabel g_fWheelSideOffsetPos
+dlabel g_fConst0p15_802aa1d0
     /* AB1D0 802AA1D0 3E19999A */ .float 0.150000006
-enddlabel g_fWheelSideOffsetPos
+enddlabel g_fConst0p15_802aa1d0
 
-nonmatching g_fRandScaleU16
+nonmatching g_fConstInv65535_802aa1d4
 
-dlabel g_fRandScaleU16
+dlabel g_fConstInv65535_802aa1d4
     /* AB1D4 802AA1D4 37800080 */ .float 1.525902189e-05
-enddlabel g_fRandScaleU16
+enddlabel g_fConstInv65535_802aa1d4
 
-nonmatching g_fGravity
+nonmatching g_fConst9p81_802aa1d8
 
-dlabel g_fGravity
+dlabel g_fConst9p81_802aa1d8
     /* AB1D8 802AA1D8 411CF5C3 */ .float 9.81000042
-enddlabel g_fGravity
+enddlabel g_fConst9p81_802aa1d8
 
-nonmatching g_fInv127
+nonmatching g_fConstInv127_802aa1dc
 
-dlabel g_fInv127
+dlabel g_fConstInv127_802aa1dc
     /* AB1DC 802AA1DC 3C010204 */ .float 0.007874015719
-enddlabel g_fInv127
+enddlabel g_fConstInv127_802aa1dc
 
-nonmatching g_fTireSmokeSpeedRateScale
+nonmatching g_fConst0p00066_802aa1e0
 
-dlabel g_fTireSmokeSpeedRateScale
+dlabel g_fConst0p00066_802aa1e0
     /* AB1E0 802AA1E0 3A2D0848 */ .float 0.0006600660272
-enddlabel g_fTireSmokeSpeedRateScale
+enddlabel g_fConst0p00066_802aa1e0
 
-nonmatching g_fTireSmokeWheelRateScale
+nonmatching g_fConst0p03_802aa1e4
 
-dlabel g_fTireSmokeWheelRateScale
+dlabel g_fConst0p03_802aa1e4
     /* AB1E4 802AA1E4 3CF5C28F */ .float 0.02999999933
-enddlabel g_fTireSmokeWheelRateScale
+enddlabel g_fConst0p03_802aa1e4
 
-nonmatching g_fRandU16Scale
+nonmatching g_fConstInv65535_802aa1e8
 
-dlabel g_fRandU16Scale
+dlabel g_fConstInv65535_802aa1e8
     /* AB1E8 802AA1E8 37800080 */ .float 1.525902189e-05
-enddlabel g_fRandU16Scale
+enddlabel g_fConstInv65535_802aa1e8
 
-nonmatching g_fTireSmokeInitSize
+nonmatching g_fConst0p4_802aa1ec
 
-dlabel g_fTireSmokeInitSize
+dlabel g_fConst0p4_802aa1ec
     /* AB1EC 802AA1EC 3ECCCCCD */ .float 0.400000006
-enddlabel g_fTireSmokeInitSize
+enddlabel g_fConst0p4_802aa1ec
 
-nonmatching g_fTireSmokeAlphaScale
+nonmatching g_fConst0p7_802aa1f0
 
-dlabel g_fTireSmokeAlphaScale
+dlabel g_fConst0p7_802aa1f0
     /* AB1F0 802AA1F0 3F333333 */ .float 0.6999999881
-enddlabel g_fTireSmokeAlphaScale
+enddlabel g_fConst0p7_802aa1f0
 
-nonmatching g_fParticleSizeGrowRate
+nonmatching g_fConst0p3_802aa1f4
 
-dlabel g_fParticleSizeGrowRate
+dlabel g_fConst0p3_802aa1f4
     /* AB1F4 802AA1F4 3E99999A */ .float 0.3000000119
-enddlabel g_fParticleSizeGrowRate
+enddlabel g_fConst0p3_802aa1f4
 
-nonmatching g_fParticleAlphaScale
+nonmatching g_fConst5p7375_802aa1f8
 
-dlabel g_fParticleAlphaScale
+dlabel g_fConst5p7375_802aa1f8
     /* AB1F8 802AA1F8 40B7999A */ .float 5.737500191
-enddlabel g_fParticleAlphaScale
+enddlabel g_fConst5p7375_802aa1f8
 
-nonmatching g_fParticleRiseSpeed
+nonmatching g_fConst0p8_802aa1fc
 
-dlabel g_fParticleRiseSpeed
+dlabel g_fConst0p8_802aa1fc
     /* AB1FC 802AA1FC 3F4CCCCD */ .float 0.8000000119
-enddlabel g_fParticleRiseSpeed
+enddlabel g_fConst0p8_802aa1fc
 
-nonmatching g_fInv255Squared
+nonmatching g_fConstInv65280_802aa200
 
-dlabel g_fInv255Squared
+dlabel g_fConstInv65280_802aa200
     /* AB200 802AA200 37808081 */ .float 1.531862836e-05
-enddlabel g_fInv255Squared
+enddlabel g_fConstInv65280_802aa200
 
-nonmatching g_fSmokeGrowthRate
+nonmatching g_fConst0p7_802aa204
 
-dlabel g_fSmokeGrowthRate
+dlabel g_fConst0p7_802aa204
     /* AB204 802AA204 3F333333 */ .float 0.6999999881
-enddlabel g_fSmokeGrowthRate
+enddlabel g_fConst0p7_802aa204
 
-nonmatching g_fSmokeGravity
+nonmatching g_fConst19p62_802aa208
 
-dlabel g_fSmokeGravity
+dlabel g_fConst19p62_802aa208
     /* AB208 802AA208 419CF5C3 */ .float 19.62000084
-enddlabel g_fSmokeGravity
+enddlabel g_fConst19p62_802aa208
 
-nonmatching g_fSmokeBuoyancy
+nonmatching g_fConst0p8_802aa20c
 
-dlabel g_fSmokeBuoyancy
+dlabel g_fConst0p8_802aa20c
     /* AB20C 802AA20C 3F4CCCCD */ .float 0.8000000119
-enddlabel g_fSmokeBuoyancy
+enddlabel g_fConst0p8_802aa20c
 
-nonmatching g_fSmokeAlphaScale
+nonmatching g_fConstInv65280_802aa210
 
-dlabel g_fSmokeAlphaScale
+dlabel g_fConstInv65280_802aa210
     /* AB210 802AA210 37808081 */ .float 1.531862836e-05
-enddlabel g_fSmokeAlphaScale
+enddlabel g_fConstInv65280_802aa210
 
-nonmatching g_fBillboardDepthEpsilon
+nonmatching g_fConst0p001_802aa214
 
-dlabel g_fBillboardDepthEpsilon
+dlabel g_fConst0p001_802aa214
     /* AB214 802AA214 3A83126F */ .float 0.001000000047
-enddlabel g_fBillboardDepthEpsilon
+enddlabel g_fConst0p001_802aa214
 
-nonmatching g_fBillboardDepthEpsilonNeg
+nonmatching g_fConstNeg0p001_802aa218
 
-dlabel g_fBillboardDepthEpsilonNeg
+dlabel g_fConstNeg0p001_802aa218
     /* AB218 802AA218 BA83126F */ .float -0.001000000047
-enddlabel g_fBillboardDepthEpsilonNeg
+enddlabel g_fConstNeg0p001_802aa218
 
-nonmatching g_fBillboardCullMinY
+nonmatching g_fConstNeg0p3_802aa21c
 
-dlabel g_fBillboardCullMinY
+dlabel g_fConstNeg0p3_802aa21c
     /* AB21C 802AA21C BE99999A */ .float -0.3000000119
-enddlabel g_fBillboardCullMinY
+enddlabel g_fConstNeg0p3_802aa21c
 
-nonmatching g_fBillboardPrimDepthScale
+nonmatching g_fConst16352_802aa220
 
-dlabel g_fBillboardPrimDepthScale
+dlabel g_fConst16352_802aa220
     /* AB220 802AA220 467F8000 */ .float 16352
-enddlabel g_fBillboardPrimDepthScale
+enddlabel g_fConst16352_802aa220
     /* AB224 802AA224 00000000 */ .float 0
     /* AB228 802AA228 00000000 */ .float 0
     /* AB22C 802AA22C 00000000 */ .float 0

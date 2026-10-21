@@ -2916,9 +2916,9 @@ glabel InitRaceCountdown
     /* 298D0 802288D0 00000000 */   nop
 endlabel InitRaceCountdown
 
-nonmatching InitWheelSuspension, 0x168
+nonmatching ResetVehicleEffects, 0x168
 
-glabel InitWheelSuspension
+glabel ResetVehicleEffects
     /* 298D4 802288D4 8C8E0140 */  lw         $t6, 0x140($a0)
     /* 298D8 802288D8 3C01802B */  lui        $at, %hi(g_fConst_0p034_9c7c)
     /* 298DC 802288DC C42E9C7C */  lwc1       $f14, %lo(g_fConst_0p034_9c7c)($at)
@@ -3013,7 +3013,7 @@ glabel InitWheelSuspension
     /* 29A30 80228A30 A4471D28 */   sh        $a3, 0x1D28($v0)
     /* 29A34 80228A34 03E00008 */  jr         $ra
     /* 29A38 80228A38 00000000 */   nop
-endlabel InitWheelSuspension
+endlabel ResetVehicleEffects
 
 nonmatching ClearVehicleDamageState, 0x30
 
@@ -3277,7 +3277,7 @@ glabel SetupVehicleForRaceStart
     /* 29DF4 80228DF4 E6141008 */  swc1       $f20, 0x1008($s0)
     /* 29DF8 80228DF8 E614100C */  swc1       $f20, 0x100C($s0)
     /* 29DFC 80228DFC AE000FD4 */  sw         $zero, 0xFD4($s0)
-    /* 29E00 80228E00 0C08A235 */  jal        InitWheelSuspension
+    /* 29E00 80228E00 0C08A235 */  jal        ResetVehicleEffects
     /* 29E04 80228E04 AE000ED4 */   sw        $zero, 0xED4($s0)
     /* 29E08 80228E08 0C08A28F */  jal        ClearVehicleDamageState
     /* 29E0C 80228E0C 02002025 */   or        $a0, $s0, $zero
@@ -3583,11 +3583,11 @@ glabel InitRacerSlot
     /* 2A214 80229214 24050001 */  addiu      $a1, $zero, 0x1
     /* 2A218 80229218 10450006 */  beq        $v0, $a1, .L80229234
     /* 2A21C 8022921C 24040002 */   addiu     $a0, $zero, 0x2
-    /* 2A220 80229220 3C048029 */  lui        $a0, %hi(g_dwNumRacers)
+    /* 2A220 80229220 3C048029 */  lui        $a0, %hi(g_dwNumActiveVehicles)
     /* 2A224 80229224 3C068027 */  lui        $a2, %hi(g_dwNumLocalPlayers)
     /* 2A228 80229228 24C6FF08 */  addiu      $a2, $a2, %lo(g_dwNumLocalPlayers)
     /* 2A22C 8022922C 10000008 */  b          .L80229250
-    /* 2A230 80229230 8C84B7F4 */   lw        $a0, %lo(g_dwNumRacers)($a0)
+    /* 2A230 80229230 8C84B7F4 */   lw        $a0, %lo(g_dwNumActiveVehicles)($a0)
   .L80229234:
     /* 2A234 80229234 3C068027 */  lui        $a2, %hi(g_dwNumLocalPlayers)
     /* 2A238 80229238 10000005 */  b          .L80229250
@@ -4403,7 +4403,7 @@ glabel ManageAiRacerSlots
     /* 2ADEC 80229DEC AE0E0F48 */  sw         $t6, 0xF48($s0)
     /* 2ADF0 80229DF0 0C088B55 */  jal        InitVehiclePhysics
     /* 2ADF4 80229DF4 AE0C0FAC */   sw        $t4, 0xFAC($s0)
-    /* 2ADF8 80229DF8 0C08A235 */  jal        InitWheelSuspension
+    /* 2ADF8 80229DF8 0C08A235 */  jal        ResetVehicleEffects
     /* 2ADFC 80229DFC 02002025 */   or        $a0, $s0, $zero
     /* 2AE00 80229E00 C628000C */  lwc1       $f8, 0xC($s1)
     /* 2AE04 80229E04 02002025 */  or         $a0, $s0, $zero
@@ -6549,8 +6549,8 @@ glabel LoadAllSoundEffects
     /* 2CC10 8022BC10 8CA5BC04 */  lw         $a1, %lo(g_dwRaceCameraMode)($a1)
     /* 2CC14 8022BC14 0C095EDE */  jal        StartSoundChannelMuted
     /* 2CC18 8022BC18 00002025 */   or        $a0, $zero, $zero
-    /* 2CC1C 8022BC1C 3C028029 */  lui        $v0, %hi(g_dwNumRacers)
-    /* 2CC20 8022BC20 8C42B7F4 */  lw         $v0, %lo(g_dwNumRacers)($v0)
+    /* 2CC1C 8022BC1C 3C028029 */  lui        $v0, %hi(g_dwNumActiveVehicles)
+    /* 2CC20 8022BC20 8C42B7F4 */  lw         $v0, %lo(g_dwNumActiveVehicles)($v0)
     /* 2CC24 8022BC24 24040002 */  addiu      $a0, $zero, 0x2
     /* 2CC28 8022BC28 3C058029 */  lui        $a1, %hi(g_dwRaceCameraMode)
     /* 2CC2C 8022BC2C 28410002 */  slti       $at, $v0, 0x2
@@ -6561,8 +6561,8 @@ glabel LoadAllSoundEffects
     /* 2CC40 8022BC40 8CA5BC04 */  lw         $a1, %lo(g_dwRaceCameraMode)($a1)
     /* 2CC44 8022BC44 0C095EDE */  jal        StartSoundChannelMuted
     /* 2CC48 8022BC48 8CC6BC10 */   lw        $a2, %lo(g_SoundEffectTable_LoopStart)($a2)
-    /* 2CC4C 8022BC4C 3C028029 */  lui        $v0, %hi(g_dwNumRacers)
-    /* 2CC50 8022BC50 8C42B7F4 */  lw         $v0, %lo(g_dwNumRacers)($v0)
+    /* 2CC4C 8022BC4C 3C028029 */  lui        $v0, %hi(g_dwNumActiveVehicles)
+    /* 2CC50 8022BC50 8C42B7F4 */  lw         $v0, %lo(g_dwNumActiveVehicles)($v0)
   .L8022BC54:
     /* 2CC54 8022BC54 28410003 */  slti       $at, $v0, 0x3
     /* 2CC58 8022BC58 14200008 */  bnez       $at, .L8022BC7C

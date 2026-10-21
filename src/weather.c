@@ -73,14 +73,6 @@
 #define SCREEN_HALF_WIDTH 640.0f
 #define SCREEN_HALF_HEIGHT 480.0f
 
-/* The last texel of the particle texture, in the fixed point of a coordinate and of a step. */
-#define PARTICLE_TEXTURE_LAST_T (63 << 5)
-#define PARTICLE_TEXTURE_STEPS (63 << 12)
-
-/* The texels of the particle texture as 16-bit texels for a load, less one. */
-#define PARTICLE_LOAD_TEXELS 2047
-#define PARTICLE_LOAD_DXT 0x100
-
 void InitRandomRainParticles(void) {
     s32 view, i;
 

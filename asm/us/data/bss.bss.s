@@ -3180,52 +3180,14 @@ nonmatching g_abPrecipitationTextures, 0x2000
 dlabel g_abPrecipitationTextures
     /* 80364A80 */ .space 0x2000
 
-nonmatching g_aParticlePool, 0x20
+nonmatching g_aParticlePool, 0x2000
 
 dlabel g_aParticlePool
-    /* 80366A80 */ .space 0x20
+    /* 80366A80 */ .space 0x2000
 
-nonmatching D_80366AA0, 0x1C
+nonmatching g_afBillboardMatrix, 0x40
 
-dlabel D_80366AA0
-    /* 80366AA0 */ .space 0x1C
-
-nonmatching g_wPowerupType0, 0x2
-
-dlabel g_wPowerupType0
-    /* 80366ABC */ .space 0x02
-
-nonmatching D_80366ABE, 0x1E
-
-/* Automatically generated and unreferenced pad */
-dlabel D_80366ABE
-    /* 80366ABE */ .space 0x1E
-
-nonmatching g_wPowerupType1, 0x2
-
-dlabel g_wPowerupType1
-    /* 80366ADC */ .space 0x02
-
-nonmatching D_80366ADE, 0x1F9E
-
-/* Automatically generated and unreferenced pad */
-dlabel D_80366ADE
-    /* 80366ADE */ .space 0x1F9E
-
-nonmatching g_wPowerupCount, 0x2
-
-dlabel g_wPowerupCount
-    /* 80368A7C */ .space 0x02
-
-nonmatching D_80368A7E, 0x2
-
-/* Automatically generated and unreferenced pad */
-dlabel D_80368A7E
-    /* 80368A7E */ .space 0x02
-
-nonmatching g_ParticleBillboardMtx, 0x40
-
-dlabel g_ParticleBillboardMtx
+dlabel g_afBillboardMatrix
     /* 80368A80 */ .space 0x40
 
 nonmatching g_pInflateHeapBase, 0x4

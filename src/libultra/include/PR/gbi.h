@@ -89,6 +89,8 @@ typedef union {
 #define G_RDPTILESYNC 0xE8
 #define G_SETTILE 0xF5
 #define G_SETENVCOLOR 0xFB
+#define G_SETBLENDCOLOR 0xF9
+#define G_SETPRIMDEPTH 0xEE
 #define G_SETCOMBINE 0xFC
 #define G_RDPHALF_2 0xB3
 #define G_RDPHALF_1 0xB4
@@ -124,7 +126,10 @@ typedef union {
 #define G_TEXTURE_GEN_LINEAR 0x00080000
 
 /* The fields of the other modes, by their lowest bit. */
+#define G_MDSFT_ALPHACOMPARE 0
+#define G_MDSFT_ZSRCSEL 2
 #define G_MDSFT_RENDERMODE 3
+#define G_MDSFT_ALPHADITHER 4
 #define G_MDSFT_RGBDITHER 6
 #define G_MDSFT_TEXTFILT 12
 #define G_MDSFT_TEXTLUT 14
@@ -135,7 +140,12 @@ typedef union {
 #define G_CYC_1CYCLE (0 << G_MDSFT_CYCLETYPE)
 #define G_CYC_FILL (3 << G_MDSFT_CYCLETYPE)
 #define G_CYC_2CYCLE (1 << G_MDSFT_CYCLETYPE)
+#define G_CD_BAYER (2 << G_MDSFT_RGBDITHER)
 #define G_CD_DISABLE (3 << G_MDSFT_RGBDITHER)
+#define G_AC_THRESHOLD (1 << G_MDSFT_ALPHACOMPARE)
+#define G_AC_DITHER (3 << G_MDSFT_ALPHACOMPARE)
+#define G_ZS_PIXEL (0 << G_MDSFT_ZSRCSEL)
+#define G_ZS_PRIM (1 << G_MDSFT_ZSRCSEL)
 
 /* The scissor modes. */
 #define G_SC_NON_INTERLACE 0
@@ -156,6 +166,7 @@ typedef union {
 #define CVG_DST_FULL 0x0200
 #define CVG_DST_SAVE 0x0300
 #define ZMODE_OPA 0x0000
+#define ZMODE_XLU 0x0800
 #define CVG_X_ALPHA 0x1000
 #define ALPHA_CVG_SEL 0x2000
 #define FORCE_BL 0x4000
@@ -349,6 +360,18 @@ typedef struct {
 #define gDPSetTextureLOD(pkt, type) gSPSetOtherMode(pkt, G_SETOTHERMODE_H, G_MDSFT_TEXTLOD, 1, type)
 #define gDPSetColorDither(pkt, mode)                                                               \
     gSPSetOtherMode(pkt, G_SETOTHERMODE_H, G_MDSFT_RGBDITHER, 2, mode)
+#define gDPSetAlphaDither(pkt, mode)                                                               \
+    gSPSetOtherMode(pkt, G_SETOTHERMODE_H, G_MDSFT_ALPHADITHER, 2, mode)
+#define gDPSetAlphaCompare(pkt, type)                                                              \
+    gSPSetOtherMode(pkt, G_SETOTHERMODE_L, G_MDSFT_ALPHACOMPARE, 2, type)
+#define gDPSetDepthSource(pkt, src) gSPSetOtherMode(pkt, G_SETOTHERMODE_L, G_MDSFT_ZSRCSEL, 1, src)
+#define gDPSetBlendColor(pkt, r, g, b, a)                                                          \
+    gDisplayListWords(pkt,                                                                         \
+                      _SHIFTL(G_SETBLENDCOLOR, 24, 8),                                             \
+                      _SHIFTL(r, 24, 8) | _SHIFTL(g, 16, 8) | _SHIFTL(b, 8, 8) | _SHIFTL(a, 0, 8))
+/** Set the depth of a primitive whose depth source is G_ZS_PRIM. */
+#define gDPSetPrimDepth(pkt, z, dz)                                                                \
+    gDisplayListWords(pkt, _SHIFTL(G_SETPRIMDEPTH, 24, 8), _SHIFTL(z, 16, 16) | _SHIFTL(dz, 0, 16))
 
 /** Set the scissor rectangle, whose corners are converted to 10.2 fixed point. */
 #define gDPSetScissor(pkt, mode, ulx, uly, lrx, lry)                                               \

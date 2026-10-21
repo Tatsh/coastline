@@ -1,0 +1,166 @@
+#ifndef COASTLINE_EFFECTS_H
+#define COASTLINE_EFFECTS_H
+
+/**
+ * @file
+ * What the wheels and the exhausts of the vehicles throw up: the spray of the tyres, the smoke of
+ * the tyres in the dry, and the exhaust in the snow.
+ */
+
+#include <PR/ultratypes.h>
+
+#include "vecmath.h"
+#include "vehicle.h"
+
+/** A puff of smoke or exhaust, in a list of the pool linked by index. */
+typedef struct {
+    Vec3f position;
+    /** How far the puff moves a second at its full opacity; it slows as it fades. */
+    Vec3f velocity;
+    /** The size, which grows as the puff fades. */
+    f32 size;
+    /** The index of the next puff of its list in g_aParticlePool, or 0 at its end. */
+    u16 next;
+    /** How far the puff has faded, and its opacity when it began; their product is its opacity. */
+    u8 fade;
+    u8 alpha;
+} Particle;
+
+/** The puffs of the pool. The first is never used, so that index 0 ends a list. */
+#define PARTICLES 256
+
+/** @ghidraAddress USA: 0x80366a80 */
+extern Particle g_aParticlePool[PARTICLES];
+
+/** The list of the free puffs of the pool. @ghidraAddress USA: 0x8028c830 */
+extern u16 g_wParticleFreeListHead;
+
+/** The list of the exhaust. @ghidraAddress USA: 0x8028c834 */
+extern u16 g_wExhaustParticleListHead;
+
+/** The list of the tyre smoke off the paved road. @ghidraAddress USA: 0x8028c838 */
+extern u16 g_wTireSmokeListHead;
+
+/** The list of the tyre smoke on the paved road. @ghidraAddress USA: 0x8028c83c */
+extern u16 g_wPavedTireSmokeListHead;
+
+/** Whether InitParticleSystem() has run. @ghidraAddress USA: 0x8028c840 */
+extern s32 g_dwVehicleEffectsInitialized;
+
+/**
+ * The matrix from the world to the screen of the current view, with the axes of the screen as the
+ * puffs take them.
+ *
+ * @ghidraAddress USA: 0x80368a80
+ */
+extern f32 g_afBillboardMatrix[4][4];
+
+/** The texture of the spray, 32 by 64 texels of 4-bit intensity. @ghidraAddress USA: 0x802a2978 */
+extern u8 g_aTireSprayTexture[];
+
+/**
+ * Take a depth to the units of the depth buffer through the viewport.
+ *
+ * @param z The depth.
+ * @param w The w it is divided by.
+ * @return The depth in the units of the depth buffer.
+ * @ghidraAddress USA: 0x8023b130
+ */
+s32 ComputeScreenDepthZ(f32 z, f32 w);
+
+/**
+ * Count down to the next puff of exhaust, faster as the engine revs, and blow it out behind the
+ * vehicle when the pool has a free puff.
+ *
+ * @ghidraAddress USA: 0x8023b178
+ */
+void SpawnExhaustParticle(Vehicle *vehicle);
+
+/**
+ * Throw the newest segment of the spray of each wheel from the surface under it, while the wheel
+ * is on the ground and a few frames after.
+ *
+ * @ghidraAddress USA: 0x8023b418
+ */
+void EmitTireSpray(Vehicle *vehicle);
+
+/**
+ * Draw the spray of the wheels of every racer, except in the snow away from the tracks that show
+ * it there.
+ *
+ * @ghidraAddress USA: 0x8023bb50
+ */
+void DrawTireSpray(void);
+
+/**
+ * Keep the spray of every racer around its vehicle, move each segment by its velocity, age the
+ * segments by one when a wheel begins a new one, and fade the old.
+ *
+ * @ghidraAddress USA: 0x8023bf60
+ */
+void MoveTireSpray(void);
+
+/**
+ * Count down to the next puff of smoke of each wheel, faster with the speed of the vehicle and the
+ * spin of the wheel, and raise one from a wheel on a surface that smokes.
+ *
+ * @ghidraAddress USA: 0x8023c800
+ */
+void SpawnTireSmoke(Vehicle *vehicle);
+
+/**
+ * Drift, grow, and fade the exhaust, and free the puffs that have faded.
+ *
+ * @ghidraAddress USA: 0x8023cbfc
+ */
+void UpdateExhaustParticles(void);
+
+/**
+ * Drift, grow, and fade the tyre smoke, and free the puffs that have faded or fall too fast.
+ *
+ * @ghidraAddress USA: 0x8023cd60
+ */
+void UpdateTireSmoke(void);
+
+/**
+ * Free every puff of the pool and stop the exhaust of the vehicles.
+ *
+ * @ghidraAddress USA: 0x8023cf30
+ */
+void InitParticleSystem(void);
+
+/**
+ * Update the effects of every racer for the weather: the exhaust in the snow, the tyre smoke in
+ * the dry, and the spray in all.
+ *
+ * @ghidraAddress USA: 0x8023cfc4
+ */
+void UpdateAllVehicleEffects(void);
+
+/**
+ * Draw a list of puffs of the pool as rectangles of the particle texture facing the screen.
+ *
+ * @param head The index of the first puff.
+ * @param red The red of the colour of the puffs, of which the low 8 bits count.
+ * @param green The green of the colour.
+ * @param blue The blue of the colour.
+ * @ghidraAddress USA: 0x8023d134
+ */
+void RenderBillboardParticles(u16 head, s32 red, s32 green, s32 blue);
+
+/**
+ * Set g_afBillboardMatrix for the current view, and draw the tyre smoke in the colours of the
+ * track, except at night.
+ *
+ * @ghidraAddress USA: 0x8023d714
+ */
+void RenderTireSmoke(void);
+
+/**
+ * Draw the exhaust in the snow with the matrix RenderTireSmoke() set, then the spray.
+ *
+ * @ghidraAddress USA: 0x8023dbc0
+ */
+void RenderExhaustAndTireSpray(void);
+
+#endif

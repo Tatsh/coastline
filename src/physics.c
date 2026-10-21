@@ -29,9 +29,6 @@
 /* The speed a hit is counted up to for its sound. */
 #define MAX_IMPACT_SPEED 27.0f
 
-/* The surface that slows a vehicle, except in snow. */
-#define TRACK_SURFACE_SLOW 4
-
 /* The weather of the grip of the dry surfaces, which fog and night share. */
 #define GRIP_WEATHER_DRY 0
 

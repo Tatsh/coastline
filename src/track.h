@@ -67,6 +67,12 @@ typedef struct {
 /** The flag of a placed model that keeps rain and snow off a camera under it, and echoes. */
 #define TRACK_INSTANCE_SHELTER 0x0010
 
+/** The surface whose tyre smoke is pale and that throws spray only in the rain: the paved road. */
+#define TRACK_SURFACE_PAVED 3
+
+/** The surface that slows a vehicle, except in snow. */
+#define TRACK_SURFACE_SLOW 4
+
 /** A triangle of the track: its corners and what it belongs to. */
 typedef struct {
     /** The indices of its corners in the vertices of the track. */

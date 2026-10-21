@@ -191,6 +191,13 @@ extern s32 g_dwScreenScaleShift;
  */
 extern u32 g_dwColorDitherMode;
 
+/**
+ * The alpha dither the screens draw with, as the other-mode bits gDPSetAlphaDither() takes.
+ *
+ * @ghidraAddress USA: 0x8028a89c
+ */
+extern u32 g_dwAlphaDitherMode;
+
 /** The two frame buffers. @ghidraAddress USA: 0x8031aa28 */
 extern u16 *g_apFramebuffers[2];
 

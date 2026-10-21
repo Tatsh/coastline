@@ -5000,8 +5000,8 @@ glabel ProcessAllDisplayLists
     /* 1CA40 8021BA40 5420FFEA */  bnel       $at, $zero, .L8021B9EC
     /* 1CA44 8021BA44 8E2F0060 */   lw        $t7, 0x60($s1)
   .L8021BA48:
-    /* 1CA48 8021BA48 3C0C8029 */  lui        $t4, %hi(g_dwNumRacers)
-    /* 1CA4C 8021BA4C 8D8CB7F4 */  lw         $t4, %lo(g_dwNumRacers)($t4)
+    /* 1CA48 8021BA48 3C0C8029 */  lui        $t4, %hi(g_dwNumActiveVehicles)
+    /* 1CA4C 8021BA4C 8D8CB7F4 */  lw         $t4, %lo(g_dwNumActiveVehicles)($t4)
     /* 1CA50 8021BA50 3C138029 */  lui        $s3, %hi(g_aDlWeatherRenderModeTable0)
     /* 1CA54 8021BA54 2673ABA8 */  addiu      $s3, $s3, %lo(g_aDlWeatherRenderModeTable0)
     /* 1CA58 8021BA58 19800054 */  blez       $t4, .L8021BBAC
@@ -5090,8 +5090,8 @@ glabel ProcessAllDisplayLists
     /* 1CB84 8021BB84 5621FFC0 */  bnel       $s1, $at, .L8021BA88
     /* 1CB88 8021BB88 924D2063 */   lbu       $t5, 0x2063($s2)
     /* 1CB8C 8021BB8C 8FAA0044 */  lw         $t2, 0x44($sp)
-    /* 1CB90 8021BB90 3C0C8029 */  lui        $t4, %hi(g_dwNumRacers)
-    /* 1CB94 8021BB94 8D8CB7F4 */  lw         $t4, %lo(g_dwNumRacers)($t4)
+    /* 1CB90 8021BB90 3C0C8029 */  lui        $t4, %hi(g_dwNumActiveVehicles)
+    /* 1CB94 8021BB94 8D8CB7F4 */  lw         $t4, %lo(g_dwNumActiveVehicles)($t4)
     /* 1CB98 8021BB98 254B0001 */  addiu      $t3, $t2, 0x1
     /* 1CB9C 8021BB9C AFAB0044 */  sw         $t3, 0x44($sp)
     /* 1CBA0 8021BBA0 016C082A */  slt        $at, $t3, $t4

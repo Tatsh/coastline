@@ -518,17 +518,17 @@ void UpdateVehiclePhysicsFrame(Vehicle *vehicle) {
 
 void SetVehiclePosition(Vehicle *vehicle, f32 x, f32 y, f32 z) {
     vehicle->frame.position.y = y;
-    vehicle->placedPosition.y = y;
+    vehicle->sprayOrigin.y = y;
     vehicle->body.state.position.y = y;
     vehicle->body.stepStates[1].position.y = y;
     vehicle->body.stepStates[0].position.y = y;
     vehicle->frame.position.z = z;
-    vehicle->placedPosition.z = z;
+    vehicle->sprayOrigin.z = z;
     vehicle->body.state.position.z = z;
     vehicle->body.stepStates[1].position.z = z;
     vehicle->body.stepStates[0].position.z = z;
     vehicle->frame.position.x = x;
-    vehicle->placedPosition.x = x;
+    vehicle->sprayOrigin.x = x;
     vehicle->body.state.position.x = x;
     vehicle->body.stepStates[1].position.x = x;
     vehicle->body.stepStates[0].position.x = x;
@@ -738,7 +738,7 @@ void ResetVehicleState(Vehicle *vehicle) {
 
 void BindPlayerInputToVehicle(Vehicle *vehicle) {
     vehicle->input = &g_aPlayerInputState[vehicle - g_aVehicles];
-    guMtxIdent(&vehicle->transformMtx);
+    guMtxIdent(&vehicle->sprayMtx);
 }
 
 /* The step of the physics of a frame, in seconds. */

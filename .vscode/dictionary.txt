@@ -8,6 +8,7 @@ addiu
 addrs
 addu
 alabel
+alphadither
 andi
 argparse
 asciz
@@ -318,6 +319,7 @@ rxsize
 sbclaude
 schemafile
 sendmesg
+setblendcolor
 setcimg
 setcompare
 seteventmesg
@@ -327,6 +329,7 @@ setglobalintmask
 setintmask
 setjmp
 setprimcolor
+setprimdepth
 setscissor
 setsr
 setthreadpri
@@ -437,5 +440,6 @@ yscale
 zbuffer
 zizmor
 zmode
+zsrcsel
 zutil
 Ångström
