@@ -9,6 +9,7 @@ AllocHeapAligned
 AllocHiliteBlock
 AllocIoMessage
 AllocLightBlock
+AllocateEditorBuffers
 AnimateSplashModels
 AnimateStartLights
 ApplyAllForcesToBody
@@ -126,6 +127,7 @@ DrawDecalFilledEllipse
 DrawDecalRoundedRectOutline
 DrawDecalTextPreview
 DrawFilledRect
+DrawFilledRectHiRes
 DrawHudLabelAtFraction
 DrawHudMessage
 DrawLabelWithTime
@@ -136,19 +138,29 @@ DrawMenuFooterButtons
 DrawMenuSpotlight
 DrawModelAt
 DrawModelList
+DrawPakErrorMessage
 DrawPauseMenuButtons
+DrawPixel
 DrawProgressBar
 DrawRaceTimerHud
 DrawRdpBorderRect
 DrawRdpOutlineRect
+DrawRectBorder
+DrawRectOutline
 DrawRedIntensityRect
 DrawRotatedModel
 DrawRumblePakPrompt
+DrawScaledTexturedRect
 DrawScreenFadeOverlay
 DrawScrollingText
 DrawSpeedAndHudOverlay
+DrawSpriteAtOrigin
+DrawSpriteRegion
+DrawSpriteStrip
+DrawSpriteTinted
 DrawText
 DrawTexturedRect
+DrawTexturedSprite
 DrawTexturedTile
 DrawTimingBars
 DrawTireSpray
@@ -174,6 +186,7 @@ FindTrackRoutePoint
 FinishFrameMatrix
 FixupDisplayListPointers
 FixupVehicleModelPointers
+FlipDecalPixels
 FloatToInt
 FloodFill4Bit
 FlushDisplayList
@@ -243,6 +256,7 @@ LoadAndPlayTrackBgm
 LoadMenuItemModels
 LoadMusicModule
 LoadOrCopyVehicleModel
+LoadTextureFromRom
 LoadTrackGeometryFromRom
 LoadVehicleModel
 LoadVehicleModelFromRom
@@ -258,6 +272,7 @@ MarkVisibleEdge
 MatrixToQuaternion
 MeasureTextWidth
 MemFill64Aligned
+MirrorDecalToOppositePanel
 MixAudioSamples
 MixAudioStereoSamples
 MixSoundEffectChannels
@@ -302,12 +317,16 @@ ProcessControllerCheck
 ProcessControllerConfigScreen
 ProcessDataSaveLoadMenu
 ProcessDecalEditorInput
+ProcessDecalSaveLoad
 ProcessDisplayList
+ProcessFillClearMenu
 ProcessInputCommandBuffer
 ProcessMainMenu
+ProcessMirrorFlipMenu
 ProcessOptionsMenu
 ProcessOvalStyleMenu
 ProcessPaintShopExitConfirm
+ProcessPaintShopScreen
 ProcessPakDataScreen
 ProcessPakMenuScreen
 ProcessPlayerCountSelect
@@ -317,6 +336,7 @@ ProcessRectStyleMenu
 ProcessScreenState
 ProcessSeasonResults
 ProcessSplashScreens
+ProcessTextInputKeyboard
 ProcessTextStyleMenu
 ProcessTrackMenu
 ProcessVehicleInputAndPhysics
@@ -336,6 +356,7 @@ RemapPointer
 RenderBillboardParticles
 RenderCameraView
 RenderDashboardGauges
+RenderDecalPreview3D
 RenderExhaustAndTireSpray
 RenderHeadlightGlare
 RenderPrecipitationEffect
@@ -361,6 +382,7 @@ ResetHeadlightGlare
 ResetHeap
 ResetMusicChannels
 ResetMusicPlaybackState
+ResetPaintShopState
 ResetShadowBuffers
 ResetSoundSourceTracking
 ResetVehicleEffects
@@ -374,6 +396,7 @@ RestoreRaceSnapshot
 RotateVehicleByEuler
 RspDoneThread
 SaveClockForPause
+SaveDecalUndo
 SaveLastLapSnapshot
 SaveRaceResultsToSlots
 SaveRaceSnapshot
@@ -468,6 +491,7 @@ TranslateControllerInput
 Transpose4x4Into3x3
 TransposeCopyMatrix3x3
 TwoControllersPostDrawCallback
+UndoDecalEdit
 UnmarkTrackSections
 UnusedAudioMixingStub
 UnusedBootIdleStub

@@ -227,6 +227,14 @@ typedef union {
 #define G_RM_OPA_SURF2                                                                             \
     (CVG_DST_CLAMP | FORCE_BL | ZMODE_OPA | GBL_c2(G_BL_CLR_IN, G_BL_0, G_BL_CLR_IN, G_BL_1))
 
+/** The translucent surface without antialiasing, for each cycle. */
+#define G_RM_XLU_SURF                                                                              \
+    (IM_RD | CVG_DST_FULL | FORCE_BL | ZMODE_OPA |                                                 \
+     GBL_c1(G_BL_CLR_IN, G_BL_A_IN, G_BL_CLR_MEM, G_BL_1MA))
+#define G_RM_XLU_SURF2                                                                             \
+    (IM_RD | CVG_DST_FULL | FORCE_BL | ZMODE_OPA |                                                 \
+     GBL_c2(G_BL_CLR_IN, G_BL_A_IN, G_BL_CLR_MEM, G_BL_1MA))
+
 /* The inputs of the colour combiner, named for G_CCMUX_ and G_ACMUX_ by gDPSetCombineLERP(). */
 #define G_CCMUX_COMBINED 0
 #define G_CCMUX_TEXEL0 1
@@ -260,6 +268,20 @@ typedef union {
 #define G_IM_SIZ_4b 0
 #define G_IM_SIZ_8b 1
 #define G_IM_SIZ_16b 2
+
+/* A load block moves texels of 8 and 16 bits as 16-bit texels. These are the size it loads them
+ * as, the rounding and the shift of the count, the bytes of a texel, and the bytes of a texel in
+ * a row of the texture memory. */
+#define G_IM_SIZ_8b_LOAD_BLOCK G_IM_SIZ_16b
+#define G_IM_SIZ_8b_INCR 1
+#define G_IM_SIZ_8b_SHIFT 1
+#define G_IM_SIZ_8b_BYTES 1
+#define G_IM_SIZ_8b_LINE_BYTES 1
+#define G_IM_SIZ_16b_LOAD_BLOCK G_IM_SIZ_16b
+#define G_IM_SIZ_16b_INCR 0
+#define G_IM_SIZ_16b_SHIFT 0
+#define G_IM_SIZ_16b_BYTES 2
+#define G_IM_SIZ_16b_LINE_BYTES 2
 #define G_TX_RENDERTILE 0
 #define G_TX_LOADTILE 7
 #define G_TX_WRAP 0
@@ -673,6 +695,114 @@ typedef struct {
                        0,                                                                          \
                        ((width) - 1) << G_TEXTURE_IMAGE_FRAC,                                      \
                        ((height) - 1) << G_TEXTURE_IMAGE_FRAC);                                    \
+    } while (0)
+
+/** Load an 8-bit or 16-bit texture into the texture memory and set up the render tile. */
+#define gDPLoadTextureBlock(                                                                       \
+    pkt, timg, fmt, siz, width, height, pal, cms, cmt, masks, maskt, shifts, shiftt)               \
+    do {                                                                                           \
+        gDPSetTextureImage(pkt, fmt, siz##_LOAD_BLOCK, 1, timg);                                   \
+        gDPSetTile(pkt,                                                                            \
+                   fmt,                                                                            \
+                   siz##_LOAD_BLOCK,                                                               \
+                   0,                                                                              \
+                   0,                                                                              \
+                   G_TX_LOADTILE,                                                                  \
+                   0,                                                                              \
+                   cmt,                                                                            \
+                   maskt,                                                                          \
+                   shiftt,                                                                         \
+                   cms,                                                                            \
+                   masks,                                                                          \
+                   shifts);                                                                        \
+        gDPLoadSync(pkt);                                                                          \
+        gDPLoadBlock(pkt,                                                                          \
+                     G_TX_LOADTILE,                                                                \
+                     0,                                                                            \
+                     0,                                                                            \
+                     (((width) * (height) + siz##_INCR) >> siz##_SHIFT) - 1,                       \
+                     CALC_DXT(width, siz##_BYTES));                                                \
+        gDPPipeSync(pkt);                                                                          \
+        gDPSetTile(pkt,                                                                            \
+                   fmt,                                                                            \
+                   siz,                                                                            \
+                   (((width) * siz##_LINE_BYTES) + 7) >> 3,                                        \
+                   0,                                                                              \
+                   G_TX_RENDERTILE,                                                                \
+                   pal,                                                                            \
+                   cmt,                                                                            \
+                   maskt,                                                                          \
+                   shiftt,                                                                         \
+                   cms,                                                                            \
+                   masks,                                                                          \
+                   shifts);                                                                        \
+        gDPSetTileSize(pkt,                                                                        \
+                       G_TX_RENDERTILE,                                                            \
+                       0,                                                                          \
+                       0,                                                                          \
+                       ((width) - 1) << G_TEXTURE_IMAGE_FRAC,                                      \
+                       ((height) - 1) << G_TEXTURE_IMAGE_FRAC);                                    \
+    } while (0)
+
+/** Load a rectangle of a 4-bit texture into the texture memory and set up the render tile. */
+#define gDPLoadTextureTile_4b(pkt,                                                                 \
+                              timg,                                                                \
+                              fmt,                                                                 \
+                              width,                                                               \
+                              height,                                                              \
+                              uls,                                                                 \
+                              ult,                                                                 \
+                              lrs,                                                                 \
+                              lrt,                                                                 \
+                              pal,                                                                 \
+                              cms,                                                                 \
+                              cmt,                                                                 \
+                              masks,                                                               \
+                              maskt,                                                               \
+                              shifts,                                                              \
+                              shiftt)                                                              \
+    do {                                                                                           \
+        gDPSetTextureImage(pkt, fmt, G_IM_SIZ_8b, ((width) >> 1), timg);                           \
+        gDPSetTile(pkt,                                                                            \
+                   fmt,                                                                            \
+                   G_IM_SIZ_8b,                                                                    \
+                   (((((lrs) - (uls) + 1) >> 1) + 7) >> 3),                                        \
+                   0,                                                                              \
+                   G_TX_LOADTILE,                                                                  \
+                   0,                                                                              \
+                   cmt,                                                                            \
+                   maskt,                                                                          \
+                   shiftt,                                                                         \
+                   cms,                                                                            \
+                   masks,                                                                          \
+                   shifts);                                                                        \
+        gDPLoadSync(pkt);                                                                          \
+        gDPLoadTile(pkt,                                                                           \
+                    G_TX_LOADTILE,                                                                 \
+                    (uls) << (G_TEXTURE_IMAGE_FRAC - 1),                                           \
+                    (ult) << (G_TEXTURE_IMAGE_FRAC),                                               \
+                    (lrs) << (G_TEXTURE_IMAGE_FRAC - 1),                                           \
+                    (lrt) << (G_TEXTURE_IMAGE_FRAC));                                              \
+        gDPPipeSync(pkt);                                                                          \
+        gDPSetTile(pkt,                                                                            \
+                   fmt,                                                                            \
+                   G_IM_SIZ_4b,                                                                    \
+                   (((((lrs) - (uls) + 1) >> 1) + 7) >> 3),                                        \
+                   0,                                                                              \
+                   G_TX_RENDERTILE,                                                                \
+                   pal,                                                                            \
+                   cmt,                                                                            \
+                   maskt,                                                                          \
+                   shiftt,                                                                         \
+                   cms,                                                                            \
+                   masks,                                                                          \
+                   shifts);                                                                        \
+        gDPSetTileSize(pkt,                                                                        \
+                       G_TX_RENDERTILE,                                                            \
+                       (uls) << G_TEXTURE_IMAGE_FRAC,                                              \
+                       (ult) << G_TEXTURE_IMAGE_FRAC,                                              \
+                       (lrs) << G_TEXTURE_IMAGE_FRAC,                                              \
+                       (lrt) << G_TEXTURE_IMAGE_FRAC);                                             \
     } while (0)
 
 /** Draw a textured rectangle in screen coordinates of 10.2 fixed point. */

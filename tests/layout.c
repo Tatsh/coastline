@@ -221,6 +221,7 @@ _Static_assert(sizeof(Ambient) == 8 && sizeof(Light) == 16, "lights2");
 #include <PR/os_cont.h>
 
 #include "options.h"
+#include "paintshop.h"
 #include "sprite.h"
 _Static_assert(sizeof(PlayerProfile) == 0x128, "profilesize");
 _Static_assert(offsetof(PlayerProfile, unlocks) == 0xCC &&
@@ -241,6 +242,8 @@ _Static_assert(offsetof(Sprite, originX) == 0x1C && offsetof(Sprite, originY) ==
 _Static_assert(offsetof(Sprite, drawWidth) == 0x24 && offsetof(Sprite, drawHeight) == 0x28 &&
                    offsetof(Sprite, style) == 0x2C && sizeof(Sprite) == 0x30,
                "sprite draw");
+_Static_assert(offsetof(Sprite, bitsPerTexel) == 0xC && offsetof(Sprite, stripHeight) == 0x18,
+               "spritedepth");
 _Static_assert(sizeof(ScreenRect) == 0x10 && sizeof(PaletteSwatch) == 0x14 &&
                    offsetof(PaletteSwatch, color) == 0x10,
                "swatch");

@@ -207,8 +207,8 @@ void ProcessColorEditorDialog(void) {
     DrawTexturedSprite(&g_texButtonB, cancelX, buttonY);
     SetTextAlignLeft();
     SetTextSize(10);
-    DrawText("%wwOK", (u32)(g_texButtonA.width + 0xEB) >> 1, (buttonY + 0x12) >> 1);
-    DrawText("%wwCANCEL", (u32)(cancelX + g_texButtonB.width + 6) >> 1, (buttonY + 0x12) >> 1);
+    DrawText("%wwOK", (g_texButtonA.width + 0xEB) >> 1, (buttonY + 0x12) >> 1);
+    DrawText("%wwCANCEL", (cancelX + g_texButtonB.width + 6) >> 1, (buttonY + 0x12) >> 1);
 
     input = PaintShopInput();
     CheckAnalogStickPositive(input, &input->repeatUp, &input->stickY, INPUT_UP);
@@ -965,8 +965,8 @@ void ProcessBrushStyleMenu(void) {
     SetTextSize(10);
     SetTextAlignLeft();
     textY = (buttonY + 0x12) >> 1;
-    DrawText("%wwSELECT", (u32)(g_texButtonA.width + 0xDE) >> 1, textY);
-    DrawText("%wwCANCEL", (u32)(cancelX + g_texButtonB.width + 6) >> 1, textY);
+    DrawText("%wwSELECT", (g_texButtonA.width + 0xDE) >> 1, textY);
+    DrawText("%wwCANCEL", (cancelX + g_texButtonB.width + 6) >> 1, textY);
 
     UpdateStickRepeat(PaintShopInput());
     input = PaintShopInput();
@@ -1079,8 +1079,8 @@ void ProcessTextStyleMenu(void) {
         buttonY = 0x14A - g_texButtonA.width;
         cancelX = 0x160 - g_texButtonB.height;
         textY = (buttonY + 0x12) >> 1;
-        DrawText("%wwSELECT", (u32)(g_texButtonA.width + 0xDC) >> 1, textY);
-        DrawText("%wwCANCEL", (u32)(cancelX + g_texButtonB.width + 6) >> 1, textY);
+        DrawText("%wwSELECT", (g_texButtonA.width + 0xDC) >> 1, textY);
+        DrawText("%wwCANCEL", (cancelX + g_texButtonB.width + 6) >> 1, textY);
         DrawTexturedSprite(&g_texButtonA, 0xD6, buttonY);
         DrawTexturedSprite(&g_texButtonB, cancelX, buttonY);
         UpdateStickRepeat(PaintShopInput());
@@ -1128,8 +1128,8 @@ void ProcessTextStyleMenu(void) {
         SetTextSize(10);
         SetTextAlignLeft();
         textY = (buttonY + 0x12) >> 1;
-        DrawText("%wwSELECT", (u32)(0xE6 + g_texButtonA.width + 6) >> 1, textY);
-        DrawText("%wwCANCEL", (u32)(cancelX + g_texButtonB.width + 6) >> 1, textY);
+        DrawText("%wwSELECT", (0xE6 + g_texButtonA.width + 6) >> 1, textY);
+        DrawText("%wwCANCEL", (cancelX + g_texButtonB.width + 6) >> 1, textY);
 
         UpdateStickRepeat(PaintShopInput());
         input = PaintShopInput();
@@ -1225,8 +1225,8 @@ void ProcessRectStyleMenu(void) {
     SetTextSize(10);
     SetTextAlignLeft();
     textY = (buttonY + 0x12) >> 1;
-    DrawText("%wwSELECT", (u32)(g_texButtonA.width + 0xDB) >> 1, textY);
-    DrawText("%wwCANCEL", (u32)(cancelX + g_texButtonB.width + 6) >> 1, textY);
+    DrawText("%wwSELECT", (g_texButtonA.width + 0xDB) >> 1, textY);
+    DrawText("%wwCANCEL", (cancelX + g_texButtonB.width + 6) >> 1, textY);
     DrawTexturedSprite(&g_texButtonA, 0xD5, buttonY);
     DrawTexturedSprite(&g_texButtonB, cancelX, buttonY);
 
@@ -1283,8 +1283,8 @@ void ProcessOvalStyleMenu(void) {
     SetTextSize(10);
     SetTextAlignLeft();
     textY = (buttonY + 0x12) >> 1;
-    DrawText("%wwSELECT", (u32)(g_texButtonA.width + 0xDC) >> 1, textY);
-    DrawText("%wwCANCEL", (u32)(cancelX + g_texButtonB.width + 6) >> 1, textY);
+    DrawText("%wwSELECT", (g_texButtonA.width + 0xDC) >> 1, textY);
+    DrawText("%wwCANCEL", (cancelX + g_texButtonB.width + 6) >> 1, textY);
     DrawTexturedSprite(&g_texButtonA, 0xD6, buttonY);
     DrawTexturedSprite(&g_texButtonB, cancelX, buttonY);
 

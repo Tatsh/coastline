@@ -75,7 +75,7 @@ void SetTextSize(s32 size) {
 }
 void SetTextCustomColors(s32 r, s32 g, s32 b, s32 r2, s32 g2, s32 b2) {
 }
-void DrawRectBorder(s32 x, s32 y, s32 w, s32 h, s32 b, s32 c0, s32 c1, s32 c2, s32 c3, s32 c4) {
+void DrawRectBorder(s32 x, s32 y, s32 w, s32 h, s32 b, u8 c0, u8 c1, u8 c2, u8 c3, u8 c4) {
 }
 void DrawText(const char *text, s32 x, s32 y) {
     if (textCount < 64) {
@@ -84,7 +84,7 @@ void DrawText(const char *text, s32 x, s32 y) {
 }
 void DrawTexturedSprite(Sprite *sprite, s32 x, s32 y) {
 }
-void DrawSpriteTinted(Sprite *sprite, s32 level, s32 unused2, s32 unused3) {
+void DrawSpriteTinted(Sprite *sprite, u8 red, u8 green, u8 blue) {
 }
 void LoadTextureFromRom(Sprite *sprite) {
 }

@@ -36264,80 +36264,25 @@ dlabel g_rcBrush
     /* 8EAC8 8028DAC8 00000000 */ .word 0x00000000
     /* 8EACC 8028DACC 00000000 */ .word 0x00000000
     /* 8EAD0 8028DAD0 00000000 */ .word 0x00000000
-    /* 8EAD4 8028DAD4 8028CE10 */ .word g_texBrushSizeRound
 enddlabel g_rcBrush
 
-nonmatching D_8028DAD8
+nonmatching g_apPaintToolIcons
 
-dlabel D_8028DAD8
+dlabel g_apPaintToolIcons
+    /* 8EAD4 8028DAD4 8028CE10 */ .word g_texBrushSizeRound
     /* 8EAD8 8028DAD8 8028CE70 */ .word g_texPaintToolBrush
-enddlabel D_8028DAD8
-
-nonmatching g_pObjectMatrix1
-
-dlabel g_pObjectMatrix1
     /* 8EADC 8028DADC 8028CED0 */ .word g_texPaintToolFill
-enddlabel g_pObjectMatrix1
-
-nonmatching g_pObjectMatrix2
-
-dlabel g_pObjectMatrix2
     /* 8EAE0 8028DAE0 8028CEA0 */ .word g_texPaintToolLine
-enddlabel g_pObjectMatrix2
-
-nonmatching g_pObjectMatrix3
-
-dlabel g_pObjectMatrix3
     /* 8EAE4 8028DAE4 8028CF00 */ .word g_texPaintToolText
-enddlabel g_pObjectMatrix3
-
-nonmatching g_pObjectMatrix4
-
-dlabel g_pObjectMatrix4
     /* 8EAE8 8028DAE8 8028CF30 */ .word g_texPaintToolRect
-enddlabel g_pObjectMatrix4
-
-nonmatching g_pObjectMatrix5
-
-dlabel g_pObjectMatrix5
     /* 8EAEC 8028DAEC 8028CF60 */ .word g_texPaintToolOval
-enddlabel g_pObjectMatrix5
-
-nonmatching g_pObjectMatrix6
-
-dlabel g_pObjectMatrix6
     /* 8EAF0 8028DAF0 8028CF90 */ .word g_texPaintToolMirror
-enddlabel g_pObjectMatrix6
-
-nonmatching g_pObjectMatrix7
-
-dlabel g_pObjectMatrix7
     /* 8EAF4 8028DAF4 8028CFC0 */ .word g_texPaintToolClear
-enddlabel g_pObjectMatrix7
-
-nonmatching g_pObjectMatrix8
-
-dlabel g_pObjectMatrix8
     /* 8EAF8 8028DAF8 8028CFF0 */ .word g_texPaintToolLoad
-enddlabel g_pObjectMatrix8
-
-nonmatching g_pObjectMatrix9
-
-dlabel g_pObjectMatrix9
     /* 8EAFC 8028DAFC 8028D020 */ .word g_texPaintToolSave
-enddlabel g_pObjectMatrix9
-
-nonmatching g_pObjectMatrix10
-
-dlabel g_pObjectMatrix10
     /* 8EB00 8028DB00 8028D050 */ .word g_texPaintToolUndo
-enddlabel g_pObjectMatrix10
-
-nonmatching g_pObjectMatrix11
-
-dlabel g_pObjectMatrix11
     /* 8EB04 8028DB04 8028D080 */ .word g_texPaintToolExit
-enddlabel g_pObjectMatrix11
+enddlabel g_apPaintToolIcons
 
 nonmatching g_pDecalSlotIcon
 

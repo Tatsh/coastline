@@ -151,7 +151,7 @@ static inline s32 GlyphAdvance(DecalGlyph *glyph, DecalGlyph *next) {
 
 /* A texel of the font, read without the swap of odd rows. */
 static inline u8 FontTexel(s32 column, u32 row) {
-    u8 pair = g_texDecalFont.pixels[(column >> 1) + row * ((u32)g_texDecalFont.width >> 1)];
+    u8 pair = g_texDecalFont.pixels[(column >> 1) + row * (g_texDecalFont.width >> 1)];
 
     return (column & 1) ? (pair & 0xF) : (pair >> 4);
 }
@@ -292,7 +292,7 @@ void StampTextOnDecal(s32 x, s32 y) {
 
         /* The bounds are checked before the shadow is moved off by one texel. */
         if (g_texPaintToolText.style) {
-            for (row = 0; row < (u32)g_texDecalFont.height; row++) {
+            for (row = 0; row < g_texDecalFont.height; row++) {
                 for (column = firstColumn, texelX = penX; column <= lastColumn;
                      column++, texelX++) {
                     texelY = row + baseY;
@@ -306,7 +306,7 @@ void StampTextOnDecal(s32 x, s32 y) {
                 }
             }
         }
-        for (row = 0; row < (u32)g_texDecalFont.height; row++) {
+        for (row = 0; row < g_texDecalFont.height; row++) {
             for (column = firstColumn, texelX = penX; column <= lastColumn; column++, texelX++) {
                 texelY = row + baseY;
                 if (texelX < 0 || texelX >= g_bDecalWidth || texelY < 0 ||
@@ -1113,7 +1113,7 @@ void DrawDecalTextPreview(s32 x, s32 y) {
          * top of the decal is unsigned. */
         if (g_rcDecalCanvas.x < left + (glyph->cellX << 2) + (glyph->width << 2) &&
             left + (glyph->cellX << 2) < g_rcDecalCanvas.x + g_rcDecalCanvas.width &&
-            (u32)g_rcDecalCanvas.y < (u32)(bottom + (g_texDecalFont.height << 2)) &&
+            (u32)g_rcDecalCanvas.y < bottom + (g_texDecalFont.height << 2) &&
             bottom < g_rcDecalCanvas.y + g_rcDecalCanvas.height) {
             if (g_texPaintToolText.style) {
                 swatch = &g_aDecalSwatches[g_bTextShadowColor];

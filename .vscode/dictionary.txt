@@ -271,6 +271,7 @@ modelpartpos
 modelparts
 modelptrs
 modeltex
+modeltexsize
 modelview
 motorstartbuf
 motorstopbuf
@@ -441,6 +442,9 @@ spraysurf
 sprayvel
 sprayvtx
 sprintf
+spritedepth
+spritedraw
+spriteoption
 spriteorigin
 spritewh
 sptask

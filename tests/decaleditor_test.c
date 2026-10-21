@@ -107,18 +107,18 @@ void DrawTexturedSprite(Sprite *sprite, s32 x, s32 y) {
 void DrawSpriteAtOrigin(Sprite *sprite) {
 }
 void DrawSpriteRegion(
-    Sprite *sprite, s32 x, s32 y, s32 width, s32 height, s32 red, s32 green, s32 blue) {
+    Sprite *sprite, s32 x, s32 y, s32 width, s32 height, u8 red, u8 green, u8 blue) {
 }
 void DrawRectBorder(s32 x,
                     s32 y,
                     s32 width,
                     s32 height,
                     s32 border,
-                    s32 color0,
-                    s32 color1,
-                    s32 color2,
-                    s32 color3,
-                    s32 color4) {
+                    u8 transparent,
+                    u8 sunken,
+                    u8 red,
+                    u8 green,
+                    u8 blue) {
     lastBorderWidth = width;
 }
 void DrawRectOutline(

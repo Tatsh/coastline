@@ -112,13 +112,13 @@ void ClearScreen(s32 r, s32 g, s32 b) {
 void FlushDisplayList(void) {
     gDisplayListPtr = list;
 }
-void DrawSpriteTinted(Sprite *s, s32 a, s32 b, s32 c) {
+void DrawSpriteTinted(Sprite *s, u8 a, u8 b, u8 c) {
 }
-void DrawSpriteRegion(Sprite *s, s32 x, s32 y, s32 w, s32 h, s32 r, s32 g, s32 b) {
+void DrawSpriteRegion(Sprite *s, s32 x, s32 y, s32 w, s32 h, u8 r, u8 g, u8 b) {
 }
 void DrawTexturedSprite(Sprite *s, s32 x, s32 y) {
 }
-void DrawRectBorder(s32 x, s32 y, s32 w, s32 h, s32 b, s32 c0, s32 c1, s32 c2, s32 c3, s32 c4) {
+void DrawRectBorder(s32 x, s32 y, s32 w, s32 h, s32 b, u8 c0, u8 c1, u8 c2, u8 c3, u8 c4) {
 }
 void SetTextAlignCenter(void) {
 }
