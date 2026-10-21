@@ -176,14 +176,9 @@ s32 UnusedVblankQueryStub(s32 unused0, s32 unused1) {
 }
 
 void ClearRenderStats(void) {
-    g_dwStatUnused3 = 0;
-    g_dwStatUnused2 = 0;
-    g_dwStatUnused1 = 0;
-    g_dwStatVehicleTriangles = 0;
-    g_dwStatPolygonsDrawn = 0;
-    g_dwStatUnused0 = 0;
-    g_dwStatVerticesDrawn = 0;
-    g_dwStatTrianglesDrawn = 0;
+    g_dwStatUnused1 = g_dwStatUnused2 = g_dwStatUnused3 = 0;
+    g_dwStatPolygonsDrawn = g_dwStatVehicleTriangles = 0;
+    g_dwStatTrianglesDrawn = g_dwStatVerticesDrawn = g_dwStatUnused0 = 0;
 }
 
 f32 GetMaxAbsValue12(f32 m[4][4]) {
@@ -1293,8 +1288,7 @@ void InitRenderingSubsystem(void) {
 void ResetFrameClock(void) {
     g_qwTimestampBase = 0;
     g_dwFrameTimestamp = 0;
-    g_dwElapsedTimeMs = 0;
-    g_dwPrevElapsedTimeMs = 0;
+    g_dwPrevElapsedTimeMs = g_dwElapsedTimeMs = 0;
     g_dwFrameDeltaMs = 0;
     g_fFrameDeltaTime = 0.0f;
 }
@@ -1603,7 +1597,7 @@ void BootIdleThread(void *arg) {
     FillStack(g_adwRdpDoneThreadStack, THREAD_STACK_WORDS);
     osCreateThread(&g_MainGameThreadObj,
                    MAIN_THREAD_ID,
-                   InitGameAndShowMenus,
+                   (void (*)(void *))InitGameAndShowMenus,
                    arg,
                    &g_adwMainThreadStack[MAIN_STACK_WORDS],
                    MAIN_THREAD_PRIORITY);

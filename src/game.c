@@ -19,9 +19,7 @@
 #define ROM_MENU_MUSIC ((u32)_menuMusicSegmentRomStart)
 
 void ApplyWeather(u32 weather) {
-    g_dwSnowMode = 0;
-    g_dwRainMode = 0;
-    g_dwNightMode = 0;
+    g_dwNightMode = g_dwRainMode = g_dwSnowMode = 0;
     switch (weather) {
     case WEATHER_SUNNY:
         g_dwWeatherActive = 0;
@@ -63,7 +61,7 @@ void ResetAllPlayers(void) {
     }
 }
 
-void InitGameAndShowMenus(void *arg) {
+void InitGameAndShowMenus(void) {
     InitRenderingSubsystem();
     StubUpdateCallback();
     StubRenderCallback();

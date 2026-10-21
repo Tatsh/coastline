@@ -100,49 +100,46 @@
 
 /*
  * Find the nearest triangle of the cached slots that the line from start along direction crosses
- * between 0 and limit, and the point where it does.
+ * between 0 and limit, and the point where it does, in hit and hitPoint.
  */
-static TrackTriangle *FindTrackHit(
-    s32 *slots, s32 slotCount, Vec3f *start, Vec3f *direction, f32 limit, Vec3f *hitPoint) {
-    TrackTriangle *triangle, *end, *hit = NULL;
-    Vec3f toVertex, point;
-    f32 facing, t;
-    s32 i;
-
-    for (i = 0; i < slotCount; i++) {
-        triangle = g_aTriCacheTriangles[slots[i]];
-        end = triangle + g_awTriCacheTriCount[slots[i]];
-        for (; triangle != end; triangle++) {
-            facing = Vec3fDot(direction, &triangle->normal);
-            if (!(facing < 0.0f)) {
-                continue;
-            }
-            Vec3fSubtract(&toVertex, triangle->vertices[0], start);
-            t = Vec3fDot(&toVertex, &triangle->normal) / facing;
-            if (!(0.0f < t) || !(t < limit)) {
-                continue;
-            }
-            Vec3fMulAdd(&point, start, direction, t);
-            if (PointInTriangle3D(&point,
-                                  triangle->vertices[0],
-                                  triangle->vertices[1],
-                                  triangle->vertices[2],
-                                  &triangle->normal)) {
-                limit = t;
-                hit = triangle;
-                *hitPoint = point;
-            }
-        }
+#define FIND_TRACK_HIT(start)                                                                      \
+    {                                                                                              \
+        hit = NULL;                                                                                \
+        for (i = 0; i < slotCount; i++) {                                                          \
+            triangle = g_aTriCacheTriangles[slots[i]];                                             \
+            end = triangle + g_awTriCacheTriCount[slots[i]];                                       \
+            for (; triangle != end; triangle++) {                                                  \
+                facing = Vec3fDot(&direction, &triangle->normal);                                  \
+                if (!(facing < 0.0f)) {                                                            \
+                    continue;                                                                      \
+                }                                                                                  \
+                Vec3fSubtract(&toVertex, triangle->vertices[0], start);                            \
+                t = Vec3fDot(&toVertex, &triangle->normal) / facing;                               \
+                if (!(0.0f < t) || !(t < limit)) {                                                 \
+                    continue;                                                                      \
+                }                                                                                  \
+                Vec3fMulAdd(&point, start, &direction, t);                                         \
+                if (PointInTriangle3D(&point,                                                      \
+                                      triangle->vertices[0],                                       \
+                                      triangle->vertices[1],                                       \
+                                      triangle->vertices[2],                                       \
+                                      &triangle->normal)) {                                        \
+                    limit = t;                                                                     \
+                    hit = triangle;                                                                \
+                    hitPoint = point;                                                              \
+                }                                                                                  \
+            }                                                                                      \
+        }                                                                                          \
     }
-    return hit;
-}
 
 void ResolveVehicleTrackCollision(Vehicle *vehicle, CameraFrame *camera, Vec3f *target) {
+    Vec3f direction, point, toVertex;
+    s32 i;
     s32 slots[2];
     s32 slotCount;
-    Vec3f direction, hitPoint, offset;
-    TrackTriangle *hit;
-    f32 length, limit, distance, newLength;
+    Vec3f hitPoint, offset;
+    TrackTriangle *hit, *triangle, *end;
+    f32 length, limit, distance, newLength, facing, t;
 
     g_bVehicleTrackCollisionCorrected = FALSE;
     slots[0] = BuildTrackTriangleCache(vehicle->lookAt.x, vehicle->lookAt.y);
@@ -152,14 +149,16 @@ void ResolveVehicleTrackCollision(Vehicle *vehicle, CameraFrame *camera, Vec3f *
     /* The line from the look-at point to just beyond the camera. */
     Vec3fSubtract(&direction, &camera->position, &vehicle->lookAt);
     length = Vec3fLength(&direction);
-    limit = length == 0.0f ? 1.0f : (length + TRACK_CLEARANCE) / length;
-    if (FindTrackHit(slots, slotCount, &vehicle->lookAt, &direction, limit, &hitPoint) == NULL) {
+    limit = length != 0.0f ? (length + TRACK_CLEARANCE) / length : 1.0f;
+    FIND_TRACK_HIT(&vehicle->lookAt);
+    if (hit == NULL) {
         return;
     }
 
     /* The line from the target to the camera. */
     Vec3fSubtract(&direction, &camera->position, target);
-    hit = FindTrackHit(slots, slotCount, target, &direction, 1.0f, &hitPoint);
+    limit = 1.0f;
+    FIND_TRACK_HIT(target);
     if (hit == NULL) {
         return;
     }
@@ -262,35 +261,41 @@ void UpdateCameraLookAtTarget(Vehicle *vehicle) {
 
 void ComputeCameraBasis(Vehicle *vehicle, CameraFrame *camera) {
     Vec3f direction;
-    Vec3f worldUp;
     f32 length;
+    /* The original reserves stack for eight bytes of locals it does not use. */
+    f32 unused[2];
 
+    (void)unused;
     Vec3fSubtract(&direction, &vehicle->lookAt, &camera->position);
     length = Vec3fLength(&direction);
     if (length != 0.0f) {
         Vec3fScaleByInverse(&camera->forward, &direction, length);
     } else if (Vec3fLength(&camera->forward) == 0.0f) {
-        camera->forward = vehicle->frame.forward;
+        camera->forward.x = vehicle->frame.forward.x;
+        camera->forward.y = vehicle->frame.forward.y;
+        camera->forward.z = vehicle->frame.forward.z;
     }
     if (vehicle->flyMode) {
         Vec3fCross(&camera->side, &vehicle->frame.up, &camera->forward);
     } else {
-        worldUp.x = 0.0f;
-        worldUp.y = 0.0f;
-        worldUp.z = 1.0f;
-        Vec3fCross(&camera->side, &worldUp, &camera->forward);
+        /* The direction is reused for the world up. */
+        direction.x = 0.0f;
+        direction.y = 0.0f;
+        direction.z = 1.0f;
+        Vec3fCross(&camera->side, &direction, &camera->forward);
     }
     Vec3fCross(&camera->up, &camera->forward, &camera->side);
 }
 
 void PlaceTrackCamera(Vehicle *vehicle) {
-    CameraFrame *camera = &vehicle->cameras[VEHICLE_CAMERA_TRACKSIDE];
-
-    vehicle->activeCamera = camera;
-    Vec3fMulAdd(
-        &camera->position, &vehicle->frame.position, &vehicle->frame.forward, TRACKSIDE_FORWARD);
-    Vec3fMulAddInPlace(&camera->position, &vehicle->frame.side, TRACKSIDE_SIDE);
-    Vec3fAddInPlace(&camera->position, &vehicle->frame.up);
+    vehicle->activeCamera = &vehicle->cameras[VEHICLE_CAMERA_TRACKSIDE];
+    Vec3fMulAdd(&vehicle->cameras[VEHICLE_CAMERA_TRACKSIDE].position,
+                &vehicle->frame.position,
+                &vehicle->frame.forward,
+                TRACKSIDE_FORWARD);
+    Vec3fMulAddInPlace(
+        &vehicle->cameras[VEHICLE_CAMERA_TRACKSIDE].position, &vehicle->frame.side, TRACKSIDE_SIDE);
+    Vec3fAddInPlace(&vehicle->cameras[VEHICLE_CAMERA_TRACKSIDE].position, &vehicle->frame.up);
     vehicle->cameraChanged = 2;
 }
 
@@ -545,30 +550,30 @@ void SetupCameraMatrix(CameraFrame *camera, f32 fov, f32 farDistance, f32 width,
 }
 
 /* Look at a point of a flat screen from in front of it, with y up. */
-static void LookAtScreen(f32 x, f32 y, f32 distance) {
-    guLookAtF(g_ViewLookAtMtx, x, y, distance, x, y, 0.0f, 0.0f, 1.0f, 0.0f);
-}
+#define LOOK_AT_SCREEN(x, y, distance)                                                             \
+    guLookAtF(g_ViewLookAtMtx, x, y, distance, x, y, 0.0f, 0.0f, 1.0f, 0.0f)
 
 /* Load the view and projection of the current view into the display list. */
-static void LoadViewProjection(void) {
-    gSPPerspNormalize(gDisplayListPtr++, g_wPerspNorm);
-    g_pProjectionMtx = (Mtx *)AllocDisplayListBlock();
-    guMtxF2L(g_afViewProjMatrix, g_pProjectionMtx);
-    gSPMatrix(gDisplayListPtr++,
-              TO_RSP_ADDRESS(g_pProjectionMtx),
-              G_MTX_PROJECTION | G_MTX_LOAD | G_MTX_NOPUSH);
-}
+#define LOAD_VIEW_PROJECTION()                                                                     \
+    {                                                                                              \
+        gSPPerspNormalize(gDisplayListPtr++, g_wPerspNorm);                                        \
+        g_pProjectionMtx = (Mtx *)AllocDisplayListBlock();                                         \
+        guMtxF2L(g_afViewProjMatrix, g_pProjectionMtx);                                            \
+        gSPMatrix(gDisplayListPtr++,                                                               \
+                  TO_RSP_ADDRESS(g_pProjectionMtx),                                                \
+                  G_MTX_PROJECTION | G_MTX_LOAD | G_MTX_NOPUSH);                                   \
+    }
 
 void SetupProjectionMatrix(f32 width, f32 height) {
-    LookAtScreen(SCREEN_CENTER_X, SCREEN_CENTER_Y, SCREEN_DISTANCE);
+    LOOK_AT_SCREEN(SCREEN_CENTER_X, SCREEN_CENTER_Y, SCREEN_DISTANCE);
     guPerspectiveF(
         g_afScratchMatrix, &g_wPerspNorm, SCREEN_FOV, ASPECT_4_3, SCREEN_NEAR, SCREEN_FAR, 1.0f);
     guMtxCatF(g_ViewLookAtMtx, g_afScratchMatrix, g_afViewProjMatrix);
-    LoadViewProjection();
+    LOAD_VIEW_PROJECTION();
 }
 
 void SetupMenuProjection(f32 width, f32 height) {
-    LookAtScreen(MENU_CENTER_X, MENU_CENTER_Y, MENU_DISTANCE);
+    LOOK_AT_SCREEN(MENU_CENTER_X, MENU_CENTER_Y, MENU_DISTANCE);
     if (g_dwKeepCustomClipPlanes) {
         g_dwKeepCustomClipPlanes = FALSE;
     } else {
@@ -583,5 +588,5 @@ void SetupMenuProjection(f32 width, f32 height) {
                    g_fCameraFarDistance,
                    1.0f);
     guMtxCatF(g_ViewLookAtMtx, g_afPerspectiveMatrix, g_afViewProjMatrix);
-    LoadViewProjection();
+    LOAD_VIEW_PROJECTION();
 }

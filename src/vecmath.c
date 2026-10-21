@@ -582,10 +582,8 @@ s32 TestLineSegmentIntersection(Vec2f *p1, Vec2f *p2, Vec2f *q1, Vec2f *q2) {
 }
 
 s32 SegmentCrossesLine2D(Vec3f *a, Vec3f *b, Vec3f *p, Vec3f *q) {
-    f32 dx = b->x - a->x;
-    f32 dy = b->y - a->y;
-    f32 side1 = (p->x - a->x) * dy - dx * (p->y - a->y);
-    f32 side2 = (q->x - a->x) * dy - dx * (q->y - a->y);
+    f32 side1 = (p->x - a->x) * (b->y - a->y) - (b->x - a->x) * (p->y - a->y);
+    f32 side2 = (q->x - a->x) * (b->y - a->y) - (b->x - a->x) * (q->y - a->y);
 
     if (side1 != 0.0f && side2 != 0.0f && side1 * side2 > 0.0f) {
         return 0;

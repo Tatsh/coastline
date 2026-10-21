@@ -65,12 +65,11 @@ void ResetAllPlayers(void);
 
 /**
  * The entry of the main thread. Set up the system, run the opening menus, start the music, and
- * enter the main loop.
+ * enter the main loop. The routine takes no parameter, and the argument of the thread is ignored.
  *
- * @param arg The argument of the thread, which is not read.
  * @ghidraAddress USA: 0x802001b4
  */
-void InitGameAndShowMenus(void *arg);
+void InitGameAndShowMenus(void);
 
 /**
  * Start the race the computer drives after the splash screens.
