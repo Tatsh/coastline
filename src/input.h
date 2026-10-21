@@ -107,8 +107,11 @@ extern u32 g_dwNumLocalPlayers;
 /** The cheats, ending with a NULL sequence. @ghidraAddress USA: 0x8028df48 */
 extern CheatCode g_aCheatCodes[];
 
-/** Whether each frame shows the start of memory in place of the picture. @ghidraAddress USA:
- * 0x8028aa94 */
+/**
+ * Whether each frame shows the start of memory in place of the picture.
+ *
+ * @ghidraAddress USA: 0x8028aa94
+ */
 extern s32 g_bShowRamOnScreen;
 
 /** @ghidraAddress USA: 0x8026ff20 */

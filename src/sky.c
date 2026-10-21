@@ -53,9 +53,9 @@ void RenderSkybox(void) {
 
     /* Centre the sky on the camera. */
     guTranslateF(g_afMvpMatrix,
-                 g_pActiveCamera->x,
-                 g_pActiveCamera->y,
-                 g_pActiveCamera->z * SKY_DEPTH_SCALE);
+                 g_pActiveCamera->position.x,
+                 g_pActiveCamera->position.y,
+                 g_pActiveCamera->position.z * SKY_DEPTH_SCALE);
     mtx = (Mtx *)AllocDisplayListBlock();
     guMtxF2L(g_afMvpMatrix, mtx);
     gSPMatrix(gDisplayListPtr++,

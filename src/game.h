@@ -14,6 +14,8 @@ enum {
     GAME_MODE_ARCADE,
     GAME_MODE_TIME_ATTACK,
     GAME_MODE_PRACTICE,
+    /** The race that follows the results of a finished season. */
+    GAME_MODE_AFTER_SEASON = 5,
 };
 
 /** The mode of play the main menu chose. @ghidraAddress USA: 0x8026ff18 */

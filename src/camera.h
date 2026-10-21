@@ -1,0 +1,87 @@
+#ifndef COASTLINE_CAMERA_H
+#define COASTLINE_CAMERA_H
+
+/**
+ * @file
+ * The cameras that follow each vehicle.
+ */
+
+#include <PR/ultratypes.h>
+
+#include "render.h"
+#include "vecmath.h"
+#include "vehicle.h"
+
+/**
+ * Whether the last call of ResolveVehicleTrackCollision() moved the camera.
+ *
+ * @ghidraAddress USA: 0x8028b710
+ */
+extern s32 g_bVehicleTrackCollisionCorrected;
+
+/** Whether an instant replay is playing. @ghidraAddress USA: 0x80270788 */
+extern s32 gInstantReplayActive;
+
+/**
+ * Counts down the frames after the chase camera hits the track in a replay.
+ *
+ * @ghidraAddress USA: 0x8028b7fc
+ */
+extern s32 g_dwReplayCameraHoldTimer;
+
+/** @ghidraAddress USA: 0x8028b7f8 */
+extern s32 g_dwReplayCameraSwitchTimer;
+
+/**
+ * Keep a camera out of the track: if the line from the look-at point of a vehicle to the camera
+ * passes through a triangle, and so does the line from a target point, put the camera just in
+ * front of the triangle, no farther from the look-at point than it was.
+ *
+ * @ghidraAddress USA: 0x80220810
+ */
+void ResolveVehicleTrackCollision(Vehicle *vehicle, CameraFrame *camera, Vec3f *target);
+
+/**
+ * Move the chase camera behind a vehicle, blending the direction it was in towards the one behind
+ * the vehicle by a share.
+ *
+ * @ghidraAddress USA: 0x80220c58
+ */
+void UpdateCameraChase(Vehicle *vehicle, CameraFrame *camera, f32 share);
+
+/**
+ * Put the look-at point above a vehicle, ahead of it by a lead that shrinks with its speed.
+ *
+ * @ghidraAddress USA: 0x80220e84
+ */
+void UpdateCameraLookAtTarget(Vehicle *vehicle);
+
+/**
+ * Point a camera at the look-at point of a vehicle and build its axes about the world up.
+ *
+ * @ghidraAddress USA: 0x80220ff4
+ */
+void ComputeCameraBasis(Vehicle *vehicle, CameraFrame *camera);
+
+/**
+ * Make the trackside camera active, placed ahead of and beside a vehicle.
+ *
+ * @ghidraAddress USA: 0x80221108
+ */
+void PlaceTrackCamera(Vehicle *vehicle);
+
+/**
+ * Update every camera of a vehicle for a frame.
+ *
+ * @ghidraAddress USA: 0x80221170
+ */
+void UpdateCameraSystem(Vehicle *vehicle);
+
+/**
+ * Set up the cameras of a vehicle at the start of a race.
+ *
+ * @ghidraAddress USA: 0x80221864
+ */
+void InitCameraForVehicle(Vehicle *vehicle);
+
+#endif

@@ -25,6 +25,7 @@ CheckAnalogStickNegative
 CheckAnalogStickPositive
 ClearFramebuffersForNormalMode
 ClearFramebuffersForWideMode
+ComputeCameraBasis
 ConsumeInputFlags
 CopyMatrix4x4
 CopyVec4
@@ -42,6 +43,7 @@ ExchangeWordBuffers
 FloatToInt
 GetHeapCurrentAddress
 InitBitmapText
+InitCameraForVehicle
 InitGameAndShowMenus
 InitPlayerInputState
 IsCellVisible
@@ -65,6 +67,7 @@ Mtx4x4ProjectPoint
 Mtx4x4TransformNoTranslation
 MtxInvert4x4
 NegateVectorInPlace
+PlaceTrackCamera
 PointInTriangle3D
 Powf
 PrepareRumblePaks
@@ -80,6 +83,7 @@ RenderSkybox
 ResetAllPlayers
 ResetFrameBlocks
 ResetHeap
+ResolveVehicleTrackCollision
 SegmentCrossesLine2D
 SetHeapCurrentAddress
 SetRngSeed
@@ -93,6 +97,9 @@ TransferFlags
 TranslateControllerInput
 TwoControllersPostDrawCallback
 UnmarkModelNodes
+UpdateCameraChase
+UpdateCameraLookAtTarget
+UpdateCameraSystem
 UpdateRumblePaks
 UpdateStickRepeat
 Vec2fAdd

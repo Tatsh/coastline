@@ -5,9 +5,6 @@
 #include "system.h"
 #include "vehicle.h"
 
-/* The game mode that follows the results of a finished season. The motors stay off in it. */
-#define GAME_MODE_AFTER_SEASON 5
-
 /* The motors are probed again every 64 calls. */
 #define RUMBLE_PROBE_INTERVAL 64
 

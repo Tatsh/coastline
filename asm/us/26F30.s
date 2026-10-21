@@ -664,7 +664,7 @@ glabel ProcessVehicleInputAndPhysics
     /* 2783C 8022683C 00027980 */  sll        $t7, $v0, 6
     /* 27840 80226840 05E3000B */  bgezl      $t7, .L80226870
     /* 27844 80226844 0002C940 */   sll       $t9, $v0, 5
-    /* 27848 80226848 0C088442 */  jal        SetVehicleRespawnPosition
+    /* 27848 80226848 0C088442 */  jal        PlaceTrackCamera
     /* 2784C 8022684C 02002025 */   or        $a0, $s0, $zero
     /* 27850 80226850 24180001 */  addiu      $t8, $zero, 0x1
     /* 27854 80226854 AE180F48 */  sw         $t8, 0xF48($s0)
@@ -1643,7 +1643,7 @@ glabel UpdateAiVehicleBehavior
     /* 28678 80227678 00084980 */  sll        $t1, $t0, 6
     /* 2867C 8022767C 05210003 */  bgez       $t1, .L8022768C
     /* 28680 80227680 24150001 */   addiu     $s5, $zero, 0x1
-    /* 28684 80227684 0C088442 */  jal        SetVehicleRespawnPosition
+    /* 28684 80227684 0C088442 */  jal        PlaceTrackCamera
     /* 28688 80227688 AC950F48 */   sw        $s5, 0xF48($a0)
   .L8022768C:
     /* 2868C 8022768C 240A00FF */  addiu      $t2, $zero, 0xFF

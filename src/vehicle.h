@@ -8,6 +8,9 @@
 
 #include <PR/ultratypes.h>
 
+#include "render.h"
+#include "vecmath.h"
+
 /** The number of vehicles a race can hold. */
 #define MAX_VEHICLES 4
 
@@ -38,17 +41,75 @@ typedef struct {
     s32 controllerLayout;
 } PlayerProfile;
 
+/** The model of a car. Its fields join this structure as they are reconstructed. */
+typedef struct {
+    u8 unreconstructed0[0xB0];
+    /** How far forward of the vehicle the cockpit camera sits. */
+    f32 cockpitForward;
+    /** Half of how far forward of the vehicle the mirror camera sits. */
+    f32 mirrorForward;
+    /** How far above the vehicle the cockpit and mirror cameras sit. */
+    f32 cockpitUp;
+} VehicleSpec;
+
+/** The cameras of a vehicle. */
+enum {
+    VEHICLE_CAMERA_COCKPIT,
+    VEHICLE_CAMERA_CHASE,
+    /** The cockpit camera moved forward to the bumper. */
+    VEHICLE_CAMERA_BUMPER,
+    /** A camera by the track that watches the vehicle and zooms with its distance. */
+    VEHICLE_CAMERA_TRACKSIDE,
+    VEHICLE_CAMERA_4,
+    /** The rear-view mirror. */
+    VEHICLE_CAMERA_MIRROR,
+    VEHICLE_CAMERAS,
+};
+
 /**
  * A vehicle. The game prints its size, 0x2090 bytes, at start-up. Its fields join this structure as
  * the routines that use them are reconstructed.
  */
 typedef struct {
-    u8 unreconstructed0[0xE5C];
+    /** The axes and position of the vehicle. */
+    CameraFrame frame;
+    u8 unreconstructed44[0x1CC - 0x44];
+    /** A vector whose length slows the chase camera. */
+    Vec3f chaseLagSource;
+    u8 unreconstructed1D8[0x1E8 - 0x1D8];
+    Vec3f velocity;
+    u8 unreconstructed1F4[0xE5C - 0x1F4];
     /** The profile of the player who drives the vehicle. */
     PlayerProfile *profile;
-    u8 unreconstructedE60[0x2074 - 0xE60];
+    u8 unreconstructedE60[0xF48 - 0xE60];
+    /** Set to 2 when the active camera changes. */
+    s32 cameraChanged;
+    /** Whether the cameras hold rigidly to the frame of the vehicle. */
+    s32 cameraLocked;
+    u8 unreconstructedF50[0x1DE8 - 0xF50];
+    CameraFrame *activeCamera;
+    /** The camera of the last frame. */
+    CameraFrame *previousCamera;
+    CameraFrame cameras[VEHICLE_CAMERAS];
+    /** The speed the chase camera follows, smoothed. */
+    f32 chaseSpeed;
+    /** The lag of the chase camera, smoothed. */
+    f32 chaseLag;
+    /** How far the look-at point leads the vehicle. */
+    f32 lookAhead;
+    /** The point the chase camera looks at. */
+    Vec3f lookAt;
+    /** Where the chase camera was before the track pushed it. */
+    Vec3f chasePosition;
+    /** How hard the track has been pushing the chase camera. */
+    f32 collisionPull;
+    u8 unreconstructed1FB0[0x1FB4 - 0x1FB0];
+    /** Where the chase camera started. */
+    Vec3f initialChasePosition;
+    u8 unreconstructed1FC0[0x2074 - 0x1FC0];
     ReplayState *replay;
-    u8 unreconstructed2078[0x2090 - 0x2078];
+    VehicleSpec *spec;
+    u8 unreconstructed207C[0x2090 - 0x207C];
 } Vehicle;
 
 /** @ghidraAddress USA: 0x8031b760 */
