@@ -36,19 +36,19 @@ python3 .wiswa-ci/progress/progress.py
 
 The programs are `usa.z64`, `jpn.z64`, `eur.z64`.
 
-| Measure                                                                           | Count |
-| --------------------------------------------------------------------------------- | ----: |
-| Functions in the programs                                                         |   836 |
-| Excluded as Exception vector (copied from the SDK exception preamble at run time) |     1 |
-| Excluded as IPL3 boot code (copied from the cartridge by the ROM builder)         |     7 |
-| Excluded as PIF ROM (console boot ROM, not part of the cartridge)                 |     5 |
-| To reconstruct                                                                    |   823 |
-| Done                                                                              |   801 |
-| Stubbed (not counted as done)                                                     |     0 |
-| Declared only (not counted as done)                                               |     0 |
-| Share done                                                                        | 97.3% |
-| Only in JPN                                                                       |     4 |
-| Only in EUR                                                                       |     1 |
+| Measure                                                                           |  Count |
+| --------------------------------------------------------------------------------- | -----: |
+| Functions in the programs                                                         |    836 |
+| Excluded as Exception vector (copied from the SDK exception preamble at run time) |      1 |
+| Excluded as IPL3 boot code (copied from the cartridge by the ROM builder)         |      7 |
+| Excluded as PIF ROM (console boot ROM, not part of the cartridge)                 |      5 |
+| To reconstruct                                                                    |    823 |
+| Done                                                                              |    823 |
+| Stubbed (not counted as done)                                                     |      0 |
+| Declared only (not counted as done)                                               |      0 |
+| Share done                                                                        | 100.0% |
+| Only in JPN                                                                       |      4 |
+| Only in EUR                                                                       |      1 |
 
 ### By release
 
@@ -57,8 +57,8 @@ A routine counts for a release when its address in that release is tagged.
 | Release   | Routines | Done |  Share |
 | --------- | -------: | ---: | -----: |
 | `usa.z64` |      801 |  801 | 100.0% |
-| `jpn.z64` |      821 |  639 |  77.8% |
-| `eur.z64` |      819 |  664 |  81.1% |
+| `jpn.z64` |      821 |  666 |  81.1% |
+| `eur.z64` |      819 |  688 |  84.0% |
 
 ### Matching
 
@@ -81,8 +81,8 @@ scan under `.wiswa-ci/tools` before this report to regenerate the table.
 
 | Component      | Routines | Done | Stubbed |  Share |
 | -------------- | -------: | ---: | ------: | -----: |
-| Game code      |      590 |  576 |       0 |  97.6% |
-| SDK (libultra) |      208 |  200 |       0 |  96.2% |
+| Game code      |      590 |  590 |       0 | 100.0% |
+| SDK (libultra) |      208 |  208 |       0 | 100.0% |
 | zlib           |       25 |   25 |       0 | 100.0% |
 
 ## PC port
@@ -126,15 +126,15 @@ block of the master program.
 | Part                                                                  | Group       | Component      | Range                     | Routines | Done |  Share |
 | --------------------------------------------------------------------- | ----------- | -------------- | ------------------------- | -------: | ---: | -----: |
 | [n64-game-code-80200000.md](progress/n64-game-code-80200000.md)       | Nintendo 64 | Game code      | `0x80200000`-`0x80210000` |       45 |   45 | 100.0% |
-| [n64-game-code-80210000.md](progress/n64-game-code-80210000.md)       | Nintendo 64 | Game code      | `0x80210000`-`0x80220000` |      134 |  129 |  96.3% |
-| [n64-game-code-80220000.md](progress/n64-game-code-80220000.md)       | Nintendo 64 | Game code      | `0x80220000`-`0x80230000` |      169 |  161 |  95.3% |
+| [n64-game-code-80210000.md](progress/n64-game-code-80210000.md)       | Nintendo 64 | Game code      | `0x80210000`-`0x80220000` |      134 |  134 | 100.0% |
+| [n64-game-code-80220000.md](progress/n64-game-code-80220000.md)       | Nintendo 64 | Game code      | `0x80220000`-`0x80230000` |      169 |  169 | 100.0% |
 | [n64-game-code-80230000.md](progress/n64-game-code-80230000.md)       | Nintendo 64 | Game code      | `0x80230000`-`0x80240000` |       45 |   45 | 100.0% |
 | [n64-zlib-80230000.md](progress/n64-zlib-80230000.md)                 | Nintendo 64 | zlib           | `0x80230000`-`0x80240000` |        7 |    7 | 100.0% |
 | [n64-game-code-80240000.md](progress/n64-game-code-80240000.md)       | Nintendo 64 | Game code      | `0x80240000`-`0x80250000` |       55 |   55 | 100.0% |
 | [n64-zlib-80240000.md](progress/n64-zlib-80240000.md)                 | Nintendo 64 | zlib           | `0x80240000`-`0x80250000` |       18 |   18 | 100.0% |
-| [n64-game-code-80250000.md](progress/n64-game-code-80250000.md)       | Nintendo 64 | Game code      | `0x80250000`-`0x80260000` |      140 |  139 |  99.3% |
+| [n64-game-code-80250000.md](progress/n64-game-code-80250000.md)       | Nintendo 64 | Game code      | `0x80250000`-`0x80260000` |      140 |  140 | 100.0% |
 | [n64-game-code-80260000.md](progress/n64-game-code-80260000.md)       | Nintendo 64 | Game code      | `0x80260000`-`0x80270000` |        2 |    2 | 100.0% |
-| [n64-sdk-libultra-80260000.md](progress/n64-sdk-libultra-80260000.md) | Nintendo 64 | SDK (libultra) | `0x80260000`-`0x80270000` |      208 |  200 |  96.2% |
+| [n64-sdk-libultra-80260000.md](progress/n64-sdk-libultra-80260000.md) | Nintendo 64 | SDK (libultra) | `0x80260000`-`0x80270000` |      208 |  208 | 100.0% |
 | [pc-game-code-10000000.md](progress/pc-game-code-10000000.md)         | PC port     | Game code      | `0x10000000`-`0x10010000` |      246 |    0 |   0.0% |
 | [pc-zlib-10000000.md](progress/pc-zlib-10000000.md)                   | PC port     | zlib           | `0x10000000`-`0x10010000` |        1 |    0 |   0.0% |
 | [pc-game-code-10010000.md](progress/pc-game-code-10010000.md)         | PC port     | Game code      | `0x10010000`-`0x10020000` |      158 |    0 |   0.0% |
