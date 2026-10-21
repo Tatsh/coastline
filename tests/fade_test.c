@@ -108,7 +108,7 @@ int main(void) {
     assert(Count() == 8 && gfx[7].words.w0 == 0xE7000000);
     assert(gfx[2].words.w1 == 0x0F0A4000);
     assert(gfx[4].words.w0 == (0xED000000) && gfx[4].words.w1 == ((320 * 4) << 12 | 240 * 4));
-    assert(gfx[5].words.w0 == 0xFA0000FF && gfx[5].words.w1 == 0);
+    assert(gfx[5].words.w0 == 0xFA00FFFF && gfx[5].words.w1 == 0);
     Fill(6, 99, 0, 159, 239);
     Update(0.25f);
     assert(g_fFadeLevel == 0.0f && IsFadedToBlack() && IsFadeComplete());
@@ -155,7 +155,7 @@ int main(void) {
     assert(Count() == 9);
     assert(gfx[1].words.w1 == 0x00100000 && gfx[2].words.w1 == 0x0C184340);
     assert(gfx[3].words.w1 == 0xFFFDF638);
-    assert(gfx[4].words.w0 == 0xFA0000FF && gfx[4].words.w1 == (u32)(0xFF - (s32)(255.0f * 0.5f)));
+    assert(gfx[4].words.w0 == 0xFA00FFFF && gfx[4].words.w1 == (u32)(0xFF - (s32)(255.0f * 0.5f)));
     Fill(6, 0, 0, 320, 240);
 
     /* The volumes follow their fades, which stop at their targets. */
