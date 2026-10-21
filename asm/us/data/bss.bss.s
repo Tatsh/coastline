@@ -693,16 +693,6 @@ nonmatching g_bSaveConfigurationPending, 0x4
 dlabel g_bSaveConfigurationPending
     /* 803163A4 */ .space 0x04
 
-nonmatching g_dwOptionsMenuItemCount, 0x4
-
-dlabel g_dwOptionsMenuItemCount
-    /* 803163A8 */ .space 0x04
-
-nonmatching g_dwOptionsMenuSelection, 0x4
-
-dlabel g_dwOptionsMenuSelection
-    /* 803163AC */ .space 0x04
-
 nonmatching g_szBgmVolumeTextBuf, 0x18
 
 dlabel g_szBgmVolumeTextBuf

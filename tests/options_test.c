@@ -13,7 +13,6 @@ MenuItem g_aOptionsMenuItems[OPTIONS_ITEMS];
 MenuItem *g_apOptionsMenuItems[OPTIONS_ITEMS + 1];
 s32 g_adwBgmVolumeLevels[VOLUME_LEVELS] = {0, 4, 9, 14, 19, 24, 28, 33, 38, 43, 48};
 s32 g_adwSfxVolumeLevels[VOLUME_LEVELS] = {0, 25, 51, 76, 102, 127, 153, 178, 204, 229, 255};
-s32 g_dwOptionsMenuState;
 u8 g_bSaveLoadEntryPoint, g_bSaveLoadMenuInitialized, g_bSaveLoadRumbleSwapPending;
 u8 *g_pPakDataBuffer;
 u8 g_abSaveLoadSeasonNoteName[16] = {1}, g_abSaveLoadGhostNoteName[16] = {2};
@@ -23,7 +22,6 @@ u8 g_bSaveLoadChoice, g_bSaveLoadStep;
 u8 g_abPakDataSeasonNoteName[16] = {4}, g_abPakDataGhostNoteName[16] = {5};
 u8 g_abPakDataConfigurationNoteName[16] = {6}, g_abPakDataNoteExtension[4];
 s32 g_bLoadConfigurationPending, g_bSaveConfigurationPending;
-s32 g_dwOptionsMenuItemCount, g_dwOptionsMenuSelection;
 char g_szBgmVolumeTextBuf[0x18], g_szSfxVolumeTextBuf[0x18];
 u8 g_abSavePakIdKnown[2], g_bSaveLoadDataWasLoaded, g_bSaveLoadInputEnabled;
 s32 g_dwSaveLoadNoteIndex, g_dwPakDataNoteIndex;
@@ -54,7 +52,8 @@ s32 g_dwMenuTitleImageX, g_dwMenuTitleImageY, g_dwMenuTitleImageWidth, g_dwMenuT
 static PlayerProfile profiles[2];
 static Gfx gfx[64];
 static u8 heap[0x4000];
-static s32 menuResult;
+static s32 menuResult, setups;
+static s32 *menuSelection;
 static ScreenCallback screen;
 static s32 fadedToBlack, fadedToWhite = 1, credits;
 static const char *texts[64];
@@ -130,6 +129,7 @@ void SetCurrentScreenCallback(ScreenCallback callback) {
     screen = callback;
 }
 void ResetAndInitDisplay(MenuItem **items, s32 *itemCount) {
+    setups++;
     *itemCount = OPTIONS_ITEMS;
 }
 s32 ProcessScreenState(const char *title,
@@ -143,6 +143,7 @@ s32 ProcessScreenState(const char *title,
                        s32 r2,
                        s32 g2,
                        s32 b2) {
+    menuSelection = selection;
     return menuResult;
 }
 void ProcessControllerConfigScreen(void) {
@@ -253,34 +254,38 @@ static void TestVolumes(void) {
 }
 
 static void TestOptionsMenu(void) {
-    g_dwOptionsMenuState = 0;
     g_OptionSettings.speedInMph = 1;
-    g_dwOptionsMenuSelection = 4;
     menuResult = 0;
+    setups = 0;
     ProcessOptionsMenu();
-    assert(g_dwOptionsMenuState == 1 && g_dwOptionsMenuSelection == 0);
+    assert(setups == 1 && *menuSelection == 0);
     assert(g_pfnScreenPostDrawCallback == OptionsMenuPostDraw && g_dwMenuTitleImageWidth == 280);
     assert(strcmp(g_aOptionsMenuItems[OPTIONS_ITEM_BGM].name, "BGM Volume: 9") == 0);
     assert(strcmp(g_aOptionsMenuItems[OPTIONS_ITEM_UNITS].name, "Units: mph") == 0);
-    g_dwOptionsMenuSelection = OPTIONS_ITEM_UNITS;
+    *menuSelection = OPTIONS_ITEM_UNITS;
     menuResult = MENU_RESULT_DOWN;
     ProcessOptionsMenu();
-    assert(g_OptionSettings.speedInMph == 0);
+    assert(setups == 1 && g_OptionSettings.speedInMph == 0);
     menuResult = MENU_RESULT_CHOSEN;
-    g_dwOptionsMenuSelection = OPTIONS_ITEM_LOAD_CONFIGURATION;
+    *menuSelection = OPTIONS_ITEM_LOAD_CONFIGURATION;
     ProcessOptionsMenu();
     assert(g_bLoadConfigurationPending && !g_bSaveConfigurationPending);
     g_bLoadConfigurationPending = FALSE;
-    g_dwOptionsMenuSelection = OPTIONS_ITEM_CREDITS;
+    *menuSelection = OPTIONS_ITEM_CREDITS;
     ProcessOptionsMenu();
-    assert(credits == 1 && g_dwOptionsMenuState == -1);
-    /* Coming back keeps the selection. */
+    assert(credits == 1);
+    /* Coming back sets the menu up again and keeps the selection. */
     menuResult = 0;
     ProcessOptionsMenu();
-    assert(g_dwOptionsMenuSelection == OPTIONS_ITEM_CREDITS && g_dwOptionsMenuState == 1);
+    assert(setups == 2 && *menuSelection == OPTIONS_ITEM_CREDITS);
     menuResult = MENU_RESULT_CANCELLED;
     ProcessOptionsMenu();
-    assert(screen == ProcessMainMenu && g_dwOptionsMenuState == 0);
+    assert(screen == ProcessMainMenu);
+    /* After leaving, the menu starts again on the first item. */
+    *menuSelection = 4;
+    menuResult = 0;
+    ProcessOptionsMenu();
+    assert(setups == 3 && *menuSelection == 0);
 }
 
 /* Save the configuration to a Pak that lacks the note, then load it back quietly. */

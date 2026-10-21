@@ -184,6 +184,15 @@ void OptionsMenuPostDraw(s32 item) {
 }
 
 void ProcessOptionsMenu(void) {
+    /* The state of the options menu: 0 to set it up with the first item selected, -1 to set it up
+     * keeping the selection, and 1 once it is set up. */
+    /** @ghidraAddress USA: 0x802724e0 */
+    static s32 g_dwOptionsMenuState = 0;
+    /** @ghidraAddress USA: 0x803163a8 */
+    static s32 g_dwOptionsMenuItemCount;
+    /** @ghidraAddress USA: 0x803163ac */
+    static s32 g_dwOptionsMenuSelection;
+
     if (g_dwOptionsMenuState <= 0) {
         g_dwMenuInputPlayerMask = -1;
         g_dwScreenPlayerIdx = -1;
@@ -231,7 +240,7 @@ void ProcessOptionsMenu(void) {
             DecreaseSfxVolume();
             break;
         case OPTIONS_ITEM_UNITS:
-            g_OptionSettings.speedInMph = g_OptionSettings.speedInMph == 0;
+            g_OptionSettings.speedInMph = !g_OptionSettings.speedInMph;
             break;
         }
         break;
@@ -244,19 +253,19 @@ void ProcessOptionsMenu(void) {
             IncreaseSfxVolume();
             break;
         case OPTIONS_ITEM_UNITS:
-            g_OptionSettings.speedInMph = g_OptionSettings.speedInMph == 0;
+            g_OptionSettings.speedInMph = !g_OptionSettings.speedInMph;
             break;
         }
         break;
     case MENU_RESULT_CHOSEN:
         switch (g_dwOptionsMenuSelection) {
         case OPTIONS_ITEM_UNITS:
-            g_OptionSettings.speedInMph = g_OptionSettings.speedInMph == 0;
+            g_OptionSettings.speedInMph = !g_OptionSettings.speedInMph;
             break;
         case OPTIONS_ITEM_CONTROLLER:
             g_dwOptionsMenuState = -1;
             g_dwScreenPlayerIdx = g_dwMenuChoosingPlayer;
-            g_dwMenuInputPlayerMask = 1 << g_dwMenuChoosingPlayer;
+            g_dwMenuInputPlayerMask = 1 << g_dwScreenPlayerIdx;
             SetCurrentScreenCallback(ProcessControllerConfigScreen);
             break;
         case OPTIONS_ITEM_SAVE_CONFIGURATION:

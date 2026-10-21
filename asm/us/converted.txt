@@ -689,6 +689,9 @@ cosf
 falloc
 g_dwControllerScreenInitState:0x4
 g_dwControllerScreenItemCount:0x4
+g_dwOptionsMenuItemCount:0x4
+g_dwOptionsMenuSelection:0x4
+g_dwOptionsMenuState:0x4
 g_dwPlayerCountSelectState:0x4
 g_dwWeatherMenuItemCount:0x4
 g_dwWeatherMenuSelection:0x4

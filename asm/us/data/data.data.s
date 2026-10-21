@@ -5004,12 +5004,6 @@ dlabel g_adwSfxVolumeLevels
     /* 734DC 802724DC 000000FF */ .word 0x000000FF
 enddlabel g_adwSfxVolumeLevels
 
-nonmatching g_dwOptionsMenuState
-
-dlabel g_dwOptionsMenuState
-    /* 734E0 802724E0 00000000 */ .word 0x00000000
-enddlabel g_dwOptionsMenuState
-
 nonmatching D_802724E4
 
 /* Automatically generated and unreferenced pad */

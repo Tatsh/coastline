@@ -81,14 +81,6 @@ extern s32 g_adwBgmVolumeLevels[VOLUME_LEVELS];
 extern s32 g_adwSfxVolumeLevels[VOLUME_LEVELS];
 
 /**
- * The state of the options menu: 0 to set it up with the first item selected, -1 to set it up
- * keeping the selection, and 1 once it is set up.
- *
- * @ghidraAddress USA: 0x802724e0
- */
-extern s32 g_dwOptionsMenuState;
-
-/**
  * Which screen opened the save and load menu, by the SAVE_LOAD_FROM_ values.
  *
  * @ghidraAddress USA: 0x802724f4
@@ -169,12 +161,6 @@ extern s32 g_bLoadConfigurationPending;
 
 /** @ghidraAddress USA: 0x803163a4 */
 extern s32 g_bSaveConfigurationPending;
-
-/** The number of items of the options menu, and the selected one. @ghidraAddress USA: 0x803163a8 */
-extern s32 g_dwOptionsMenuItemCount;
-
-/** @ghidraAddress USA: 0x803163ac */
-extern s32 g_dwOptionsMenuSelection;
 
 /** The names of the volume items. @ghidraAddress USA: 0x803163b0 */
 extern char g_szBgmVolumeTextBuf[0x18];
