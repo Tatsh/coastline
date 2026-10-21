@@ -820,7 +820,7 @@ long long __ll_mul(long long a0, long long a1);
 void __ull_divremi(unsigned long long *quotient,
                    unsigned long long *remainder,
                    unsigned long long dividend,
-                   short divisor);
+                   unsigned short divisor);
 
 /** @ghidraAddress USA: 0x80266218 */
 long long __ll_mod(long long a0, long long a1);
