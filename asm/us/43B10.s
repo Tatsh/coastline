@@ -3295,11 +3295,11 @@ glabel DrawSpriteStrip
     /* 46B30 80245B30 8FA40100 */  lw         $a0, 0x100($sp)
     /* 46B34 80245B34 27A500EC */  addiu      $a1, $sp, 0xEC
     /* 46B38 80245B38 27A600F4 */  addiu      $a2, $sp, 0xF4
-    /* 46B3C 80245B3C 0C085D85 */  jal        SetupRspGeometry
+    /* 46B3C 80245B3C 0C085D85 */  jal        GetTextureScaleAndMask
     /* 46B40 80245B40 AFA200E4 */   sw        $v0, 0xE4($sp)
     /* 46B44 80245B44 8FA40104 */  lw         $a0, 0x104($sp)
     /* 46B48 80245B48 27A500E8 */  addiu      $a1, $sp, 0xE8
-    /* 46B4C 80245B4C 0C085D85 */  jal        SetupRspGeometry
+    /* 46B4C 80245B4C 0C085D85 */  jal        GetTextureScaleAndMask
     /* 46B50 80245B50 27A600F0 */   addiu     $a2, $sp, 0xF0
     /* 46B54 80245B54 3C038029 */  lui        $v1, %hi(gDisplayListPtr)
     /* 46B58 80245B58 2463A858 */  addiu      $v1, $v1, %lo(gDisplayListPtr)

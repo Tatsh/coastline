@@ -59,7 +59,7 @@ typedef union {
 /** Place the low siz bits of v at bit s. */
 #define _SHIFTL(v, s, siz) (((u32)(v) & ((0x01 << (siz)) - 1)) << (s))
 
-/* The command opcodes of the Fast3D microcode. */
+/* The command opcodes of the F3DEX microcode, which keeps those of Fast3D. */
 #define G_MTX 0x01
 #define G_DL 0x06
 #define G_TEXTURE 0xBB
@@ -74,6 +74,14 @@ typedef union {
 #define G_SETTILE 0xF5
 #define G_SETENVCOLOR 0xFB
 #define G_SETCOMBINE 0xFC
+#define G_RDPHALF_2 0xB3
+#define G_RDPHALF_1 0xB4
+#define G_TEXRECT 0xE4
+#define G_RDPLOADSYNC 0xE6
+#define G_SETTILESIZE 0xF2
+#define G_LOADBLOCK 0xF3
+#define G_SETPRIMCOLOR 0xFA
+#define G_SETTIMG 0xFD
 
 /* The parameters of gSPMatrix(). */
 #define G_MTX_MODELVIEW 0x00
@@ -97,11 +105,16 @@ typedef union {
 /* The fields of the other modes, by their lowest bit. */
 #define G_MDSFT_RENDERMODE 3
 #define G_MDSFT_TEXTFILT 12
+#define G_MDSFT_TEXTLUT 14
 #define G_MDSFT_TEXTLOD 16
+#define G_MDSFT_TEXTPERSP 19
 #define G_MDSFT_CYCLETYPE 20
 
 #define G_CYC_1CYCLE (0 << G_MDSFT_CYCLETYPE)
 #define G_TL_TILE (0 << G_MDSFT_TEXTLOD)
+#define G_TT_NONE (0 << G_MDSFT_TEXTLUT)
+#define G_TP_NONE (0 << G_MDSFT_TEXTPERSP)
+#define G_TP_PERSP (1 << G_MDSFT_TEXTPERSP)
 
 /* The coverage, depth and blending bits of a render mode. */
 #define AA_EN 0x0008
@@ -157,11 +170,27 @@ typedef union {
 
 /* The texture formats, sizes and tiles. */
 #define G_IM_FMT_RGBA 0
+#define G_IM_FMT_I 4
 #define G_IM_SIZ_4b 0
 #define G_IM_SIZ_16b 2
 #define G_TX_RENDERTILE 0
 #define G_TX_LOADTILE 7
+#define G_TX_WRAP 0
+#define G_TX_NOLOD 0
 #define G_ON 1
+
+/* The fixed-point fractions of texture coordinates and of the load stride. */
+#define G_TEXTURE_IMAGE_FRAC 2
+#define G_TX_DXT_FRAC 11
+
+/** The most texels one load block takes, less one. */
+#define G_TX_LDBLK_MAX_TXL 2047
+
+/** The 64-bit words of a row of a 4-bit texture, at least one. */
+#define TXL2WORDS_4b(txls) ((txls) / 16 > 1 ? (txls) / 16 : 1)
+
+/** The step of the row counter of a load block for a 4-bit texture of a width. */
+#define CALC_DXT_4b(width) (((1 << G_TX_DXT_FRAC) + TXL2WORDS_4b(width) - 1) / TXL2WORDS_4b(width))
 
 /* The words of the clipping ratio. */
 #define G_MW_CLIP 0x04
@@ -246,5 +275,83 @@ typedef union {
                           _SHIFTL(G_CCMUX_##d0, 15, 3) | _SHIFTL(G_ACMUX_##Ab0, 12, 3) |           \
                           _SHIFTL(G_ACMUX_##Ad0, 9, 3) | _SHIFTL(G_CCMUX_##d1, 6, 3) |             \
                           _SHIFTL(G_ACMUX_##Ab1, 3, 3) | _SHIFTL(G_ACMUX_##Ad1, 0, 3))
+
+#define gDPLoadSync(pkt) gDPNoParam(pkt, G_RDPLOADSYNC)
+#define gDPSetTextureLUT(pkt, type) gSPSetOtherMode(pkt, G_SETOTHERMODE_H, G_MDSFT_TEXTLUT, 2, type)
+#define gDPSetTexturePersp(pkt, type)                                                              \
+    gSPSetOtherMode(pkt, G_SETOTHERMODE_H, G_MDSFT_TEXTPERSP, 1, type)
+#define gDPSetPrimColor(pkt, m, l, r, g, b, a)                                                     \
+    gDisplayListWords(pkt,                                                                         \
+                      _SHIFTL(G_SETPRIMCOLOR, 24, 8) | _SHIFTL(m, 8, 8) | _SHIFTL(l, 0, 8),        \
+                      _SHIFTL(r, 24, 8) | _SHIFTL(g, 16, 8) | _SHIFTL(b, 8, 8) | _SHIFTL(a, 0, 8))
+#define gDPSetTextureImage(pkt, f, s, w, i)                                                        \
+    gDisplayListWords(pkt,                                                                         \
+                      _SHIFTL(G_SETTIMG, 24, 8) | _SHIFTL(f, 21, 3) | _SHIFTL(s, 19, 2) |          \
+                          _SHIFTL((w) - 1, 0, 12),                                                 \
+                      (u32)(i))
+#define gDPLoadBlock(pkt, tile, uls, ult, lrs, dxt)                                                \
+    gDisplayListWords(                                                                             \
+        pkt,                                                                                       \
+        _SHIFTL(G_LOADBLOCK, 24, 8) | _SHIFTL(uls, 12, 12) | _SHIFTL(ult, 0, 12),                  \
+        _SHIFTL(tile, 24, 3) |                                                                     \
+            _SHIFTL((lrs) < G_TX_LDBLK_MAX_TXL ? (lrs) : G_TX_LDBLK_MAX_TXL, 12, 12) |             \
+            _SHIFTL(dxt, 0, 12))
+#define gDPSetTileSize(pkt, t, uls, ult, lrs, lrt)                                                 \
+    gDisplayListWords(pkt,                                                                         \
+                      _SHIFTL(G_SETTILESIZE, 24, 8) | _SHIFTL(uls, 12, 12) | _SHIFTL(ult, 0, 12),  \
+                      _SHIFTL(t, 24, 3) | _SHIFTL(lrs, 12, 12) | _SHIFTL(lrt, 0, 12))
+
+/** Load a 4-bit texture into the texture memory and set up the render tile to draw it. */
+#define gDPLoadTextureBlock_4b(                                                                    \
+    pkt, timg, fmt, width, height, pal, cms, cmt, masks, maskt, shifts, shiftt)                    \
+    do {                                                                                           \
+        gDPSetTextureImage(pkt, fmt, G_IM_SIZ_16b, 1, timg);                                       \
+        gDPSetTile(pkt,                                                                            \
+                   fmt,                                                                            \
+                   G_IM_SIZ_16b,                                                                   \
+                   0,                                                                              \
+                   0,                                                                              \
+                   G_TX_LOADTILE,                                                                  \
+                   0,                                                                              \
+                   cmt,                                                                            \
+                   maskt,                                                                          \
+                   shiftt,                                                                         \
+                   cms,                                                                            \
+                   masks,                                                                          \
+                   shifts);                                                                        \
+        gDPLoadSync(pkt);                                                                          \
+        gDPLoadBlock(                                                                              \
+            pkt, G_TX_LOADTILE, 0, 0, (((width) * (height) + 3) >> 2) - 1, CALC_DXT_4b(width));    \
+        gDPPipeSync(pkt);                                                                          \
+        gDPSetTile(pkt,                                                                            \
+                   fmt,                                                                            \
+                   G_IM_SIZ_4b,                                                                    \
+                   (((width) >> 1) + 7) >> 3,                                                      \
+                   0,                                                                              \
+                   G_TX_RENDERTILE,                                                                \
+                   pal,                                                                            \
+                   cmt,                                                                            \
+                   maskt,                                                                          \
+                   shiftt,                                                                         \
+                   cms,                                                                            \
+                   masks,                                                                          \
+                   shifts);                                                                        \
+        gDPSetTileSize(pkt,                                                                        \
+                       G_TX_RENDERTILE,                                                            \
+                       0,                                                                          \
+                       0,                                                                          \
+                       ((width) - 1) << G_TEXTURE_IMAGE_FRAC,                                      \
+                       ((height) - 1) << G_TEXTURE_IMAGE_FRAC);                                    \
+    } while (0)
+
+/** Draw a textured rectangle in screen coordinates of 10.2 fixed point. */
+#define gSPTextureRectangle(pkt, xl, yl, xh, yh, tile, s, t, dsdx, dtdy)                           \
+    do {                                                                                           \
+        gDisplayListWords(pkt,                                                                     \
+                          _SHIFTL(G_TEXRECT, 24, 8) | _SHIFTL(xh, 12, 12) | _SHIFTL(yh, 0, 12),    \
+                          _SHIFTL(tile, 24, 3) | _SHIFTL(xl, 12, 12) | _SHIFTL(yl, 0, 12));        \
+        gImmp1(pkt, G_RDPHALF_1, _SHIFTL(s, 16, 16) | _SHIFTL(t, 0, 16));                          \
+        gImmp1(pkt, G_RDPHALF_2, _SHIFTL(dsdx, 16, 16) | _SHIFTL(dtdy, 0, 16));                    \
+    } while (0)
 
 #endif

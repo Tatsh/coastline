@@ -262,9 +262,9 @@ glabel NormalizeLightMatrix
     /* 18610 80217610 E490003C */   swc1      $f16, 0x3C($a0)
 endlabel NormalizeLightMatrix
 
-nonmatching SetupRspGeometry, 0x120
+nonmatching GetTextureScaleAndMask, 0x120
 
-glabel SetupRspGeometry
+glabel GetTextureScaleAndMask
     /* 18614 80217614 2487FFFF */  addiu      $a3, $a0, -0x1
     /* 18618 80217618 27BDFFC0 */  addiu      $sp, $sp, -0x40
     /* 1861C 8021761C 00077202 */  srl        $t6, $a3, 8
@@ -350,7 +350,7 @@ glabel SetupRspGeometry
     /* 18728 80217728 27BD0040 */  addiu      $sp, $sp, 0x40
     /* 1872C 8021772C 03E00008 */  jr         $ra
     /* 18730 80217730 00000000 */   nop
-endlabel SetupRspGeometry
+endlabel GetTextureScaleAndMask
 
 nonmatching DrawTexturedTile, 0x558
 
@@ -366,12 +366,12 @@ glabel DrawTexturedTile
     /* 18754 80217754 9604000C */  lhu        $a0, 0xC($s0)
     /* 18758 80217758 27A500B0 */  addiu      $a1, $sp, 0xB0
     /* 1875C 8021775C 27A600A8 */  addiu      $a2, $sp, 0xA8
-    /* 18760 80217760 0C085D85 */  jal        SetupRspGeometry
+    /* 18760 80217760 0C085D85 */  jal        GetTextureScaleAndMask
     /* 18764 80217764 AFA40098 */   sw        $a0, 0x98($sp)
     /* 18768 80217768 9604000E */  lhu        $a0, 0xE($s0)
     /* 1876C 8021776C 27A500AC */  addiu      $a1, $sp, 0xAC
     /* 18770 80217770 27A600A4 */  addiu      $a2, $sp, 0xA4
-    /* 18774 80217774 0C085D85 */  jal        SetupRspGeometry
+    /* 18774 80217774 0C085D85 */  jal        GetTextureScaleAndMask
     /* 18778 80217778 AFA40094 */   sw        $a0, 0x94($sp)
     /* 1877C 8021777C 8E020020 */  lw         $v0, 0x20($s0)
     /* 18780 80217780 8FA90094 */  lw         $t1, 0x94($sp)

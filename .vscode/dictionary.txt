@@ -33,6 +33,7 @@ ccmux
 chnl
 cleargeometrymode
 colc
+colored
 contpfs
 contramread
 contramwrite
@@ -66,9 +67,11 @@ dmaread
 dmawrite
 docstrings
 doubleword
+dsdx
 dsll
 dsra
 dsrl
+dtdy
 dtgr
 dvcpkg
 dzlib
@@ -143,6 +146,7 @@ kseg
 kuseg
 lcart
 lcounter
+ldblk
 ldiv
 ldtob
 lenqueue
@@ -215,6 +219,7 @@ mypy
 ngre
 noat
 noload
+nolod
 nonmatching
 noone
 noreorder
@@ -271,6 +276,8 @@ ramreadformat
 rdbread
 rdbwrite
 rdparty
+rdphalf
+rdploadsync
 rdppipesync
 rdptilesync
 rdram
@@ -300,9 +307,12 @@ setgeometrymode
 setglobalintmask
 setintmask
 setjmp
+setprimcolor
 setsr
 setthreadpri
+settilesize
 settimer
+settimg
 shellcheck
 shellformat
 shiftl
@@ -332,8 +342,11 @@ syms
 syncprintf
 tagfile
 tatsh
+texrect
 textfilt
 textlod
+textlut
+textpersp
 thiscall
 timerintr
 tlbp
@@ -344,6 +357,7 @@ tlnext
 tolower
 toupper
 tranx
+txls
 typeh
 typel
 ucode

@@ -80,11 +80,11 @@ glabel DrawTexturedRect
   .L8023DFE0:
     /* 3EFE0 8023DFE0 9604000C */  lhu        $a0, 0xC($s0)
     /* 3EFE4 8023DFE4 27A5015C */  addiu      $a1, $sp, 0x15C
-    /* 3EFE8 8023DFE8 0C085D85 */  jal        SetupRspGeometry
+    /* 3EFE8 8023DFE8 0C085D85 */  jal        GetTextureScaleAndMask
     /* 3EFEC 8023DFEC 27A60164 */   addiu     $a2, $sp, 0x164
     /* 3EFF0 8023DFF0 9604000E */  lhu        $a0, 0xE($s0)
     /* 3EFF4 8023DFF4 27A50158 */  addiu      $a1, $sp, 0x158
-    /* 3EFF8 8023DFF8 0C085D85 */  jal        SetupRspGeometry
+    /* 3EFF8 8023DFF8 0C085D85 */  jal        GetTextureScaleAndMask
     /* 3EFFC 8023DFFC 27A60160 */   addiu     $a2, $sp, 0x160
     /* 3F000 8023E000 3C038029 */  lui        $v1, %hi(gDisplayListPtr)
     /* 3F004 8023E004 2463A858 */  addiu      $v1, $v1, %lo(gDisplayListPtr)

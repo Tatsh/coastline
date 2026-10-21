@@ -11,6 +11,8 @@ CopyVec4
 DebugFrameStubA
 DebugFrameStubB
 DrawBitmapTextToFramebuffer
+DrawColoredTexturedRect
+DrawRedIntensityRect
 ExchangeByteBuffers
 ExchangeHalfwordBuffers
 ExchangeWordBuffers
