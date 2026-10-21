@@ -160,6 +160,7 @@ InitAllRumblePaks
 InitAudioSystem
 InitBitmapText
 InitCameraForVehicle
+InitControllersAndPaks
 InitDmaRequest
 InitGameAndShowMenus
 InitMusicPlayback
@@ -280,6 +281,7 @@ QuaternionNormalize
 QuaternionToMatrix
 QuickSort
 RdpDoneThread
+ReadControllers
 RelocateModelPointers
 RemapPointer
 RenderBillboardParticles
@@ -355,6 +357,10 @@ SetVehicleModelSlot
 SetVehiclePosition
 SetVehicleTurnRate
 SetVehicleVelocity
+SetupCameraMatrix
+SetupFrustumCorners
+SetupMenuProjection
+SetupProjectionMatrix
 SetupVehicleForRaceStart
 ShortSort
 SimulateVehiclePhysicsSubstep
@@ -365,6 +371,7 @@ SpawnExhaustParticle
 SpawnTireSmoke
 StartAttractDemo
 StartChampionshipRace
+StartControllerRead
 StartCreditsRace
 StartEndingCredits
 StartRaceWithPlayerCount
@@ -418,6 +425,7 @@ UpdateCameraChase
 UpdateCameraLookAtTarget
 UpdateCameraSystem
 UpdateClosestSoundSource
+UpdateControllerState
 UpdateExhaustParticles
 UpdateFadeTransitions
 UpdateFrameTiming

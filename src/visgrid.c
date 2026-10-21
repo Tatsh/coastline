@@ -120,7 +120,7 @@ s32 IsPointVisible(f32 x, f32 y) {
 
 void BuildVisibleGrid(void) {
     s32 i, col, first, last;
-    const f32 *from, *to;
+    const Vec3f *from, *to;
 
     g_dwVisibleGridMaxCol = 0;
     g_dwVisibleGridMaxRow = 0;
@@ -134,9 +134,9 @@ void BuildVisibleGrid(void) {
     }
 
     for (i = 0; i < (s32)(sizeof(sFrustumEdges) / sizeof(sFrustumEdges[0])); i++) {
-        from = g_avFrustumPoints[sFrustumEdges[i][0]];
-        to = g_avFrustumPoints[sFrustumEdges[i][1]];
-        MarkVisibleEdge(from[0], from[1], to[0], to[1]);
+        from = &g_avFrustumPoints[sFrustumEdges[i][0]];
+        to = &g_avFrustumPoints[sFrustumEdges[i][1]];
+        MarkVisibleEdge(from->x, from->y, to->x, to->y);
     }
 
     if (g_dwVisibleGridMinCol < 0) {

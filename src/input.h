@@ -267,10 +267,46 @@ void UpdateStickRepeat(PlayerInputState *state);
 void InitPlayerInputState(PlayerInputState *state);
 
 /**
+ * Whether a read of the controllers is started and not yet received.
+ *
+ * @ghidraAddress USA: 0x8028ab6c
+ */
+extern s32 g_dwContReadPending;
+
+/**
+ * Whether InitControllersAndPaks() has mounted the Controller Pak of the first controller.
+ *
+ * @ghidraAddress USA: 0x8028adf0
+ */
+extern u8 g_bPakPort0Initialized;
+
+/**
+ * Start a read of the controllers, unless one is already pending.
+ *
+ * @ghidraAddress USA: 0x8021a920
+ */
+void StartControllerRead(void);
+
+/**
+ * Wait for a read of the controllers, starting one if none is pending, and fill the pads.
+ *
+ * @ghidraAddress USA: 0x8021a964
+ */
+void ReadControllers(void);
+
+/**
  * Read the controllers and turn their state into the input of the players.
  *
  * @ghidraAddress USA: 0x8021a9b4
  */
 void UpdateControllerState(void);
+
+/**
+ * Probe the controllers and the Controller and Rumble Paks, running the controller check until each
+ * warning is dismissed and the Controller Pak menu while the first player holds start.
+ *
+ * @ghidraAddress USA: 0x8021c188
+ */
+void InitControllersAndPaks(void);
 
 #endif

@@ -1,10 +1,14 @@
 #include "camera.h"
 
+#include <PR/R4300.h>
 #include <PR/gu.h>
 #include <PR/os_libc.h>
 
 #include "game.h"
+#include "system.h"
 #include "tricache.h"
+#include "util.h"
+#include "visgrid.h"
 
 /* How far in front of a triangle the track puts a camera. */
 #define TRACK_CLEARANCE 0.1f
@@ -67,6 +71,32 @@
 #define START_LOOK_AHEAD 2.0f
 #define TRACKSIDE_FORWARD 6.0f
 #define TRACKSIDE_SIDE 2.0f
+
+/* The share of the way from the camera to each corner of the far rectangle the frustum keeps. */
+#define FRUSTUM_CORNER_SHARE 0.75f
+
+/* The perspective of a camera: its near plane, the shape of the screen, and degrees a radian. */
+#define CAMERA_NEAR 2.4f
+#define ASPECT_4_3 1.3333334f
+#define DEGREES_PER_RADIAN 57.295776f
+
+/* The point SetupProjectionMatrix() looks at, its distance, and the perspective, in degrees. */
+#define SCREEN_CENTER_X 512.0f
+#define SCREEN_CENTER_Y 384.0f
+#define SCREEN_DISTANCE 1000.0f
+#define SCREEN_FOV 45.0f
+#define SCREEN_NEAR 10.0f
+#define SCREEN_FAR 2000.0f
+
+/* The point SetupMenuProjection() looks at, its distance, and its default clip planes. */
+#define MENU_CENTER_X 160.0f
+#define MENU_CENTER_Y 120.0f
+#define MENU_DISTANCE 290.0f
+#define MENU_NEAR 1.0f
+#define MENU_FAR 500.0f
+
+/* The RSP takes physical addresses, which are the KSEG0 addresses less its base. */
+#define TO_RSP_ADDRESS(p) ((u32)(p) - K0BASE)
 
 /*
  * Find the nearest triangle of the cached slots that the line from start along direction crosses
@@ -440,4 +470,116 @@ void InitCameraForVehicle(Vehicle *vehicle) {
 
 void ClearCameraChanged(Vehicle *vehicle) {
     vehicle->cameraChanged = 0;
+}
+
+void SetupFrustumCorners(CameraFrame *camera, f32 fov, f32 farDistance, f32 width, f32 height) {
+    f32 halfWidth = sinf(fov) * farDistance;
+    f32 halfHeight = halfWidth * height / width;
+
+    if (g_dwNumViewports == 2) {
+        halfHeight *= 0.5f;
+    }
+    g_avFrustumPoints[FRUSTUM_CAMERA] = camera->position;
+    Vec3fMulAdd(
+        &g_afFrustumCenter, &g_avFrustumPoints[FRUSTUM_CAMERA], &camera->forward, farDistance);
+    Vec3fScale(&g_vFrustumHalfRight, &camera->side, halfWidth);
+    Vec3fScale(&g_vFrustumHalfUp, &camera->up, halfHeight);
+    g_avFrustumPoints[FRUSTUM_FAR] = g_afFrustumCenter;
+
+    Vec3fAdd(&g_avFrustumPoints[FRUSTUM_RIGHT_TOP], &g_afFrustumCenter, &g_vFrustumHalfRight);
+    Vec3fAddInPlace(&g_avFrustumPoints[FRUSTUM_RIGHT_TOP], &g_vFrustumHalfUp);
+    Vec3fAdd(&g_avFrustumPoints[FRUSTUM_RIGHT_BOTTOM], &g_afFrustumCenter, &g_vFrustumHalfRight);
+    Vec3fSubtractInPlace(&g_avFrustumPoints[FRUSTUM_RIGHT_BOTTOM], &g_vFrustumHalfUp);
+    Vec3fSubtract(&g_avFrustumPoints[FRUSTUM_LEFT_TOP], &g_afFrustumCenter, &g_vFrustumHalfRight);
+    Vec3fAddInPlace(&g_avFrustumPoints[FRUSTUM_LEFT_TOP], &g_vFrustumHalfUp);
+    Vec3fSubtract(
+        &g_avFrustumPoints[FRUSTUM_LEFT_BOTTOM], &g_afFrustumCenter, &g_vFrustumHalfRight);
+    Vec3fSubtractInPlace(&g_avFrustumPoints[FRUSTUM_LEFT_BOTTOM], &g_vFrustumHalfUp);
+
+    /* The corners are pulled a quarter of the way back towards the camera; the far point is not. */
+    Vec3fLerp(&g_avFrustumPoints[FRUSTUM_LEFT_TOP],
+              &g_avFrustumPoints[FRUSTUM_LEFT_TOP],
+              &g_avFrustumPoints[FRUSTUM_CAMERA],
+              FRUSTUM_CORNER_SHARE);
+    Vec3fLerp(&g_avFrustumPoints[FRUSTUM_LEFT_BOTTOM],
+              &g_avFrustumPoints[FRUSTUM_LEFT_BOTTOM],
+              &g_avFrustumPoints[FRUSTUM_CAMERA],
+              FRUSTUM_CORNER_SHARE);
+    Vec3fLerp(&g_avFrustumPoints[FRUSTUM_RIGHT_TOP],
+              &g_avFrustumPoints[FRUSTUM_RIGHT_TOP],
+              &g_avFrustumPoints[FRUSTUM_CAMERA],
+              FRUSTUM_CORNER_SHARE);
+    Vec3fLerp(&g_avFrustumPoints[FRUSTUM_RIGHT_BOTTOM],
+              &g_avFrustumPoints[FRUSTUM_RIGHT_BOTTOM],
+              &g_avFrustumPoints[FRUSTUM_CAMERA],
+              FRUSTUM_CORNER_SHARE);
+    gFrustumFar = farDistance;
+    g_fFrustumFovAngle = fov;
+}
+
+void SetupCameraMatrix(CameraFrame *camera, f32 fov, f32 farDistance, f32 width, f32 height) {
+    guLookAtF(g_ViewLookAtMtx,
+              camera->position.x,
+              camera->position.y,
+              camera->position.z,
+              camera->forward.x + camera->position.x,
+              camera->forward.y + camera->position.y,
+              camera->forward.z + camera->position.z,
+              camera->up.x,
+              camera->up.y,
+              camera->up.z);
+    g_fCameraFarDistance = farDistance;
+    g_fCameraNearScale = CAMERA_NEAR;
+    guPerspectiveF(g_afPerspectiveMatrix,
+                   &g_wPerspNorm,
+                   fov * ASPECT_4_3 * (height / width) * DEGREES_PER_RADIAN,
+                   width / height,
+                   g_fCameraNearScale,
+                   g_fCameraFarDistance,
+                   1.0f);
+    guMtxCatF(g_ViewLookAtMtx, g_afPerspectiveMatrix, g_afViewProjMatrix);
+    g_pProjectionMtx = (Mtx *)AllocDisplayListBlock();
+    guMtxF2L(g_afViewProjMatrix, g_pProjectionMtx);
+}
+
+/* Look at a point of a flat screen from in front of it, with y up. */
+static void LookAtScreen(f32 x, f32 y, f32 distance) {
+    guLookAtF(g_ViewLookAtMtx, x, y, distance, x, y, 0.0f, 0.0f, 1.0f, 0.0f);
+}
+
+/* Load the view and projection of the current view into the display list. */
+static void LoadViewProjection(void) {
+    gSPPerspNormalize(gDisplayListPtr++, g_wPerspNorm);
+    g_pProjectionMtx = (Mtx *)AllocDisplayListBlock();
+    guMtxF2L(g_afViewProjMatrix, g_pProjectionMtx);
+    gSPMatrix(gDisplayListPtr++,
+              TO_RSP_ADDRESS(g_pProjectionMtx),
+              G_MTX_PROJECTION | G_MTX_LOAD | G_MTX_NOPUSH);
+}
+
+void SetupProjectionMatrix(f32 width, f32 height) {
+    LookAtScreen(SCREEN_CENTER_X, SCREEN_CENTER_Y, SCREEN_DISTANCE);
+    guPerspectiveF(
+        g_afScratchMatrix, &g_wPerspNorm, SCREEN_FOV, ASPECT_4_3, SCREEN_NEAR, SCREEN_FAR, 1.0f);
+    guMtxCatF(g_ViewLookAtMtx, g_afScratchMatrix, g_afViewProjMatrix);
+    LoadViewProjection();
+}
+
+void SetupMenuProjection(f32 width, f32 height) {
+    LookAtScreen(MENU_CENTER_X, MENU_CENTER_Y, MENU_DISTANCE);
+    if (g_dwKeepCustomClipPlanes) {
+        g_dwKeepCustomClipPlanes = FALSE;
+    } else {
+        g_fCameraNearScale = MENU_NEAR;
+        g_fCameraFarDistance = MENU_FAR;
+    }
+    guPerspectiveF(g_afPerspectiveMatrix,
+                   &g_wPerspNorm,
+                   SCREEN_FOV,
+                   ASPECT_4_3,
+                   g_fCameraNearScale,
+                   g_fCameraFarDistance,
+                   1.0f);
+    guMtxCatF(g_ViewLookAtMtx, g_afPerspectiveMatrix, g_afViewProjMatrix);
+    LoadViewProjection();
 }

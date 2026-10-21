@@ -151,6 +151,15 @@ extern s32 g_dwCameraRayNearbyCount;
 /** @ghidraAddress USA: 0x8031b288 */
 extern u16 g_awCameraRayNearbyInstances[];
 
+/** The middle of the far rectangle of the view. @ghidraAddress USA: 0x8031abf0 */
+extern Vec3f g_afFrustumCenter;
+
+/** Half the far rectangle of the view, across. @ghidraAddress USA: 0x8031abd0 */
+extern Vec3f g_vFrustumHalfRight;
+
+/** Half the far rectangle of the view, up. @ghidraAddress USA: 0x8031abe0 */
+extern Vec3f g_vFrustumHalfUp;
+
 /**
  * Set up the corners of the far rectangle of the view of a camera, which the shadows clip to.
  *

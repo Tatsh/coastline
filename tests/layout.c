@@ -264,6 +264,8 @@ _Static_assert(sizeof(ViewportRect) == 0x14 && offsetof(ViewportRect, vehicleInd
 _Static_assert(offsetof(PlayerInputState, recordBuffers) == 0x2C &&
                    offsetof(PlayerInputState, playbackLimit) == 0x4C,
                "rec");
+_Static_assert(offsetof(PlayerInputState, controllerMissing) == 0x28, "missing");
+_Static_assert(offsetof(CameraFrame, side) == 0x10 && offsetof(CameraFrame, up) == 0x20, "axes");
 _Static_assert(offsetof(Vehicle, cameras) == 0x1DF0 && sizeof(CameraFrame) == 0x44, "cams");
 _Static_assert(offsetof(CameraFrame, position) == 0x30 && offsetof(CameraFrame, fov) == 0x40,
                "camframe");

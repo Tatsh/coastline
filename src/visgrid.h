@@ -8,14 +8,22 @@
 
 #include <PR/ultratypes.h>
 
+#include "vecmath.h"
+
 /** The cells along each side of the grid. */
 #define VISIBLE_GRID_SIZE 64
 
 /** The points of the view frustum: the camera, the four corners and the far point. */
 #define FRUSTUM_POINTS 6
+#define FRUSTUM_CAMERA 0
+#define FRUSTUM_RIGHT_TOP 1
+#define FRUSTUM_LEFT_TOP 2
+#define FRUSTUM_LEFT_BOTTOM 3
+#define FRUSTUM_RIGHT_BOTTOM 4
+#define FRUSTUM_FAR 5
 
 /** @ghidraAddress USA: 0x8031b1f0 */
-extern f32 g_avFrustumPoints[FRUSTUM_POINTS][3];
+extern Vec3f g_avFrustumPoints[FRUSTUM_POINTS];
 
 /** The bounds of the covered cells. @ghidraAddress USA: 0x8028bd90 */
 extern s32 g_dwVisibleGridMinCol;

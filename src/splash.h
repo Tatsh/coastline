@@ -27,9 +27,14 @@ extern Ambient g_SplashAmbientLight;
 /** @ghidraAddress USA: 0x80270828 */
 extern Light g_SplashDirectionalLight;
 
+/* The warnings of the controller check. */
+#define CONTROLLER_WARNING_NO_CONTROLLER 0
+#define CONTROLLER_WARNING_NO_PAK 1
+#define CONTROLLER_WARNING_FOREIGN_PAK 2
+
 /**
- * What the controller check warns of: 0 for no controller, 1 for no Controller Pak, 2 for a
- * Controller Pak with the data of another game.
+ * What the controller check warns of, as the CONTROLLER_WARNING_ values: no controller, no
+ * Controller Pak, or a Controller Pak with the data of another game.
  *
  * @ghidraAddress USA: 0x80270840
  */

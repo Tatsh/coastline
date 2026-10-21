@@ -131,6 +131,12 @@ extern u16 g_wPerspNorm;
 /** The distance of the far plane of the cameras. @ghidraAddress USA: 0x8028aacc */
 extern f32 gFrustumFar;
 
+/** The angle SetupFrustumCorners() was last given. @ghidraAddress USA: 0x8028aac4 */
+extern f32 g_fFrustumFovAngle;
+
+/** The view of the current view, before its perspective. @ghidraAddress USA: 0x8031aad0 */
+extern f32 g_ViewLookAtMtx[4][4];
+
 /** @ghidraAddress USA: 0x8028a8c0 */
 extern Mtx g_mtxIdentity;
 

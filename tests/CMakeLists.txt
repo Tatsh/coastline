@@ -33,6 +33,8 @@ function(coastline_add_test name)
 endfunction()
 
 coastline_add_test(audio)
+coastline_add_test(camera ${_vecmath} ${_gu} "${_src}/libultra/gu/lookat.c"
+                   "${_src}/libultra/gu/perspective.c")
 coastline_add_test(carselect stubs/carselect.c ${_vecmath} ${_gu})
 coastline_add_test(controllerscreen "${_src}/controllerscreen.c")
 coastline_add_test(debugtext "${_src}/debugtext.c")

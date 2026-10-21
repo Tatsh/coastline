@@ -190,13 +190,6 @@ u32 DecompressFromRom(void *dst, u32 romOffset, DecompressJob *job);
 void ProcessAllDisplayLists(void);
 
 /**
- * Probe the controllers and the Controller and Rumble Paks.
- *
- * @ghidraAddress USA: 0x8021c188
- */
-void InitControllersAndPaks(void);
-
-/**
  * Whether the display stays black whatever a frame would show.
  *
  * @ghidraAddress USA: 0x8028a884
@@ -308,19 +301,21 @@ void FlushDisplayList(void);
 void SetViewport(s32 x, s32 y, s32 width, s32 height, s32 setScissor);
 
 /**
- * Set up the projection for a screen of a size.
+ * Set up a fixed projection, looking at (512, 384) from 1000 along z, and load it into the display
+ * list.
  *
- * @param width The width of the screen.
- * @param height The height of the screen.
+ * @param width The width of the screen, which is not read.
+ * @param height The height of the screen, which is not read.
  * @ghidraAddress USA: 0x8021b458
  */
 void SetupProjectionMatrix(f32 width, f32 height);
 
 /**
- * Set up the projection of a menu that draws models, looking at the middle of the screen.
+ * Set up the projection of a menu that draws models, looking at the middle of the screen, and load
+ * it into the display list.
  *
- * @param width The width of the screen.
- * @param height The height of the screen.
+ * @param width The width of the screen, which is not read.
+ * @param height The height of the screen, which is not read.
  * @ghidraAddress USA: 0x8021b5a4
  */
 void SetupMenuProjection(f32 width, f32 height);
