@@ -1,6 +1,7 @@
 #include "options.h"
 
 #include <PR/os.h>
+#include <PR/os_cont.h>
 #include <PR/os_libc.h>
 
 #include "audio.h"
@@ -368,6 +369,104 @@ void ProcessOptionsMenu(void) {
 /* A choice out of range sets no note. */
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
+#if TGR_REGION == TGR_REGION_JP || TGR_REGION == TGR_REGION_EU
+/* The sum the checksum of the EEPROM starts from. */
+#define EEPROM_CHECKSUM_SEED 0x0BFED812
+
+/* The data of the EEPROM, after the checksum at the start of the buffer. */
+typedef struct {
+    PlayerProfile profile;           /*!< The profile of the first player. */
+    s32 equipment[EQUIPMENT_FIELDS]; /*!< The equipment of the car of the second player. */
+    OptionSettings options;          /*!< The settings of the options menu. */
+} EepromSaveData;
+
+s32 LoadSaveDataFromEeprom(void) {
+    EepromSaveData *save = (EepromSaveData *)(g_pPakDataBuffer + 4);
+    s32 size = ((u8 *)save - g_pPakDataBuffer + sizeof(EepromSaveData) + 7) & ~7;
+    u32 checksum;
+    u32 sum;
+    s32 i;
+
+    g_wSerialInterfaceIdle = FALSE;
+    if (osEepromProbe(&g_SiMesgQueue) &&
+        osEepromLongRead(&g_SiMesgQueue, 0, g_pPakDataBuffer, size) == 0) {
+        memcpy(&checksum, g_pPakDataBuffer, sizeof(checksum));
+        sum = EEPROM_CHECKSUM_SEED;
+        for (i = 4; i < size; i++) {
+            sum += g_pPakDataBuffer[i];
+        }
+        if (sum == checksum) {
+            memcpy(g_aVehicles[0].profile, &save->profile, sizeof(PlayerProfile));
+            memcpy(g_aVehicles[1].profile, &save->profile, sizeof(PlayerProfile));
+            SET_EQUIPMENT(1, save->equipment);
+            memcpy(&g_OptionSettings, &save->options, sizeof(OptionSettings));
+            g_wSerialInterfaceIdle = TRUE;
+            return TRUE;
+        }
+    }
+    g_wSerialInterfaceIdle = TRUE;
+    return FALSE;
+}
+
+void SaveGameDataToEeprom(void) {
+    EepromSaveData *save = (EepromSaveData *)(g_pPakDataBuffer + 4);
+    s32 size = ((u8 *)save - g_pPakDataBuffer + sizeof(EepromSaveData) + 7) & ~7;
+    u32 checksum;
+    u32 sum;
+    s32 i;
+
+    g_wSerialInterfaceIdle = FALSE;
+    if (osEepromProbe(&g_SiMesgQueue) &&
+        osEepromLongRead(&g_SiMesgQueue, 0, g_pPakDataBuffer, size) == 0) {
+        memcpy(&checksum, g_pPakDataBuffer, sizeof(checksum));
+        sum = EEPROM_CHECKSUM_SEED;
+        for (i = 4; i < size; i++) {
+            sum += g_pPakDataBuffer[i];
+        }
+        /* An EEPROM that fails its checksum takes the whole profile, a valid one only the
+         * equipment. */
+        if (sum != checksum) {
+#if TGR_REGION == TGR_REGION_EU
+            osSyncPrintf("checksum fail (%08x vs %08x/%02x%02x%02x%02x) (%d)\n",
+                         sum,
+                         checksum,
+                         g_pPakDataBuffer[0],
+                         g_pPakDataBuffer[1],
+                         g_pPakDataBuffer[2],
+                         g_pPakDataBuffer[3],
+                         size);
+#endif
+            memcpy(&save->profile, g_aVehicles[0].profile, sizeof(PlayerProfile));
+            GET_EQUIPMENT(save->equipment, g_aVehicles[1].profile);
+            memcpy(&save->options, &g_OptionSettings, sizeof(OptionSettings));
+        }
+        save->profile.handling = g_aVehicles[0].profile->handling;
+        save->profile.transmission = g_aVehicles[0].profile->transmission;
+        save->profile.tires = g_aVehicles[0].profile->tires;
+        save->profile.suspension = g_aVehicles[0].profile->suspension;
+        save->profile.controllerLayout = g_aVehicles[0].profile->controllerLayout;
+        memcpy(&save->options, &g_OptionSettings, sizeof(OptionSettings));
+        GET_EQUIPMENT(save->equipment, g_aVehicles[1].profile);
+        checksum = EEPROM_CHECKSUM_SEED;
+        for (i = 4; i < size; i++) {
+            checksum += g_pPakDataBuffer[i];
+        }
+        memcpy(g_pPakDataBuffer, &checksum, sizeof(checksum));
+#if TGR_REGION == TGR_REGION_EU
+        osSyncPrintf("checksum is (%08x/%02x%02x%02x%02x) (%d)\n",
+                     checksum,
+                     g_pPakDataBuffer[0],
+                     g_pPakDataBuffer[1],
+                     g_pPakDataBuffer[2],
+                     g_pPakDataBuffer[3],
+                     size);
+#endif
+        osEepromLongWrite(&g_SiMesgQueue, 0, g_pPakDataBuffer, size);
+    }
+    g_wSerialInterfaceIdle = TRUE;
+}
+#endif
+
 void ProcessDataSaveLoadMenu(void) {
     /* TOP GEAR SEASON, TOP GEAR GHOST and TOP GEAR OPTIONS in the font of the Controller Pak. */
     u8 seasonName[16] = {0x2D,

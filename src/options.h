@@ -394,6 +394,28 @@ void ProcessOptionsMenu(void);
  */
 void ProcessDataSaveLoadMenu(void);
 
+#if TGR_REGION == TGR_REGION_JP || TGR_REGION == TGR_REGION_EU
+/**
+ * Load the profile of both players, the equipment of the second player, and the options from the
+ * EEPROM of the cartridge, when the EEPROM responds and passes its checksum.
+ *
+ * @return TRUE when the data was loaded, FALSE when the EEPROM is missing, unreadable, or fails
+ *     its checksum.
+ * @ghidraAddress JPN: 0x80211b60
+ * @ghidraAddress EUR: 0x80211ca0
+ */
+s32 LoadSaveDataFromEeprom(void);
+
+/**
+ * Write the equipment of both players and the options to the EEPROM of the cartridge, with the
+ * whole profile of the first player when the EEPROM fails its checksum.
+ *
+ * @ghidraAddress JPN: 0x80211d38
+ * @ghidraAddress EUR: 0x80211e78
+ */
+void SaveGameDataToEeprom(void);
+#endif
+
 /**
  * Load the pictures of the A and B buttons, and allocate the buffer of the Controller Pak data.
  *
