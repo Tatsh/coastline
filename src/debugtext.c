@@ -128,31 +128,24 @@ void InitBitmapText(void) {
 }
 
 void StepDebugHiddenInstance(void) {
-    s32 step = g_nDebugInstanceCycleStep;
-    s32 count, index, visible, i;
+    s32 i;
 
-    if (step == 0) {
+    if (g_nDebugInstanceCycleStep == 0) {
         return;
     }
-    count = g_LoadedTrack.instanceCount;
-    index = g_nDebugHiddenInstanceIndex;
     for (;;) {
-        index += step;
-        g_nDebugHiddenInstanceIndex = index;
-        if (index >= count) {
-            index = 0;
+        g_nDebugHiddenInstanceIndex += g_nDebugInstanceCycleStep;
+        if (g_nDebugHiddenInstanceIndex >= g_LoadedTrack.instanceCount) {
             g_nDebugHiddenInstanceIndex = 0;
         }
-        if (index < 0) {
-            index = count - 1;
-            g_nDebugHiddenInstanceIndex = index;
+        if (g_nDebugHiddenInstanceIndex < 0) {
+            g_nDebugHiddenInstanceIndex = g_LoadedTrack.instanceCount - 1;
         }
-        if (index == 0) {
+        if (g_nDebugHiddenInstanceIndex == 0) {
             break;
         }
-        visible = g_nOpaqueVisibleInstanceCount;
-        for (i = 0; i < visible; i++) {
-            if (g_awVisibleInstanceList[i] == index) {
+        for (i = 0; i < g_nOpaqueVisibleInstanceCount; i++) {
+            if (g_awVisibleInstanceList[i] == g_nDebugHiddenInstanceIndex) {
                 goto found;
             }
         }

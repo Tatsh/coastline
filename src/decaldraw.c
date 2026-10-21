@@ -44,151 +44,116 @@ typedef struct {
 #define BOX_CENTER_X(box) MIDPOINT((box).minX, (box).maxX)
 #define BOX_CENTER_Y(box) MIDPOINT((box).minY, (box).maxY)
 
-static inline s32 ScreenToTexelX(s32 x) {
-    return (x - g_rcDecalCanvas.x) >> 2;
-}
+#define ScreenToTexelX(screenX) (((screenX) - g_rcDecalCanvas.x) >> 2)
 
-static inline s32 ScreenToTexelY(s32 y) {
-    return (g_rcDecalCanvas.y + g_rcDecalCanvas.height - y) >> 2;
-}
+#define ScreenToTexelY(screenY) ((g_rcDecalCanvas.y + g_rcDecalCanvas.height - (screenY)) >> 2)
 
 /* The byte of a texel. The words of an odd row are swapped, as the RDP expects of a 4-bit
  * texture loaded in one block. */
-static inline s32 TexelOffset(s32 x, s32 y) {
-    return ((((y & 1) << 3) ^ x) >> 1) + y * (g_bDecalWidth >> 1);
-}
+#define TexelOffset(x, y) ((((((y) & 1) << 3) ^ (x)) >> 1) + (y) * (g_bDecalWidth >> 1))
 
-static inline void ToTexelBox(TexelBox *box, s32 x0, s32 y0, s32 x1, s32 y1) {
-    s32 swap;
+#define SWAP(a, b, swap)                                                                           \
+    swap = a;                                                                                      \
+    a = b;                                                                                         \
+    b = swap
 
-    box->minX = ScreenToTexelX(x0);
-    box->maxX = ScreenToTexelX(x1);
-    box->minY = ScreenToTexelY(y0);
-    box->maxY = ScreenToTexelY(y1);
-    if (box->maxX < box->minX) {
-        swap = box->minX;
-        box->minX = box->maxX;
-        box->maxX = swap;
-    }
-    if (box->maxY < box->minY) {
-        swap = box->minY;
-        box->minY = box->maxY;
-        box->maxY = swap;
-    }
-}
+/* Turn a point on the screen into a texel in place. */
+#define ScreenToTexel(x, y)                                                                        \
+    x = ScreenToTexelX(x);                                                                         \
+    y = ScreenToTexelY(y)
 
 /* Paint the texels from (x0, y0) up to (x1, y1), excluding the far column and row. */
-static void FillTexels(s32 x0, s32 y0, s32 x1, s32 y1) {
-    s32 x, y;
-
-    for (y = y0; y < y1; y++) {
-        for (x = x0; x < x1; x++) {
-            SetPixel4Bit(x, y, g_bDecalColor);
-        }
+#define FillTexels(x, y, x0, y0, x1, y1)                                                           \
+    for (y = (y0); y < (y1); y++) {                                                                \
+        for (x = (x0); x < (x1); x++) {                                                            \
+            SetPixel4Bit(x, y, g_bDecalColor);                                                     \
+        }                                                                                          \
     }
-}
 
-static void FillTexelRow(s32 x0, s32 x1, s32 y) {
-    s32 x;
-
-    for (x = x0; x < x1; x++) {
-        SetPixel4Bit(x, y, g_bDecalColor);
+#define FillTexelRow(x, x0, x1, y)                                                                 \
+    for (x = (x0); x < (x1); x++) {                                                                \
+        SetPixel4Bit(x, y, g_bDecalColor);                                                         \
     }
-}
 
 /* Paint the texels from x0 to x1 of a row, both included. */
-static void FillTexelSpan(s32 x0, s32 x1, s32 y) {
-    s32 x;
-
-    for (x = x0; x <= x1; x++) {
-        SetPixel4Bit(x, y, g_bDecalColor);
+#define FillTexelSpan(x, x0, x1, y)                                                                \
+    for (x = (x0); x <= (x1); x++) {                                                               \
+        SetPixel4Bit(x, y, g_bDecalColor);                                                         \
     }
-}
 
-static void FillTexelColumn(s32 x, s32 y0, s32 y1) {
-    s32 y;
-
-    for (y = y0; y < y1; y++) {
-        SetPixel4Bit(x, y, g_bDecalColor);
+#define FillTexelColumn(y, x, y0, y1)                                                              \
+    for (y = (y0); y < (y1); y++) {                                                                \
+        SetPixel4Bit(x, y, g_bDecalColor);                                                         \
     }
-}
 
 /* Paint a run of texels from a point in a direction, as long as the brush is wide, or the point
  * alone for the smallest brush. */
-static void PaintRun(s32 x, s32 y, s32 dx, s32 dy, s32 half) {
-    s32 i;
-
-    if (half == 0) {
-        SetPixel4Bit(x, y, g_bDecalColor);
-        return;
+#define PaintRun(i, x, y, dx, dy, half)                                                            \
+    if ((half) == 0) {                                                                             \
+        SetPixel4Bit(x, y, g_bDecalColor);                                                         \
+    } else {                                                                                       \
+        for (i = 0; i < (half) * 2; i++) {                                                         \
+            SetPixel4Bit((x) + i * (dx), (y) + i * (dy), g_bDecalColor);                           \
+        }                                                                                          \
     }
-    for (i = 0; i < half * 2; i++) {
-        SetPixel4Bit(x + i * dx, y + i * dy, g_bDecalColor);
-    }
-}
 
 /* Paint a run of texels from a point in a direction, as long as the brush. */
-static void PaintBrushRun(s32 x, s32 y, s32 dx, s32 dy, s32 brush) {
-    s32 i;
-
-    for (i = 0; i < brush; i++) {
-        SetPixel4Bit(x + i * dx, y + i * dy, g_bDecalColor);
+#define PaintBrushRun(i, x, y, dx, dy, brush)                                                      \
+    for (i = 0; i < (brush); i++) {                                                                \
+        SetPixel4Bit((x) + i * (dx), (y) + i * (dy), g_bDecalColor);                               \
     }
-}
 
-static inline FillSpan *PushSpan(FillSpan *top, s32 y, s32 x1, s32 x2, s32 dy) {
-    top->y = y;
-    top->x1 = x1;
-    top->x2 = x2;
-    top->dy = dy;
-    return top + 1;
-}
+#define PushSpan(top, y_, x1_, x2_, dy_)                                                           \
+    (top)->y = (y_);                                                                               \
+    (top)->x1 = (x1_);                                                                             \
+    (top)->x2 = (x2_);                                                                             \
+    (top)->dy = (dy_);                                                                             \
+    (top)++
 
 /* The space from a glyph to the next. */
-static inline s32 GlyphAdvance(DecalGlyph *glyph, DecalGlyph *next) {
-    return glyph->width - (glyph->kernRight < next->kernLeft ? glyph->kernRight : next->kernLeft) +
-           2;
-}
+#define GlyphAdvance(glyph, next)                                                                  \
+    ((glyph)->width -                                                                              \
+     ((glyph)->kernRight < (next)->kernLeft ? (glyph)->kernRight : (next)->kernLeft) + 2)
 
 /* A texel of the font, read without the swap of odd rows. */
-static inline u8 FontTexel(s32 column, u32 row) {
-    u8 pair = g_texDecalFont.pixels[(column >> 1) + row * (g_texDecalFont.width >> 1)];
-
-    return (column & 1) ? (pair & 0xF) : (pair >> 4);
-}
+#define FontTexel(column, row)                                                                     \
+    (((column) & 1) ?                                                                              \
+         (g_texDecalFont.pixels[((column) >> 1) + (row) * (g_texDecalFont.width >> 1)] & 0xF) :    \
+         (g_texDecalFont.pixels[((column) >> 1) + (row) * (g_texDecalFont.width >> 1)] >> 4))
 
 /* Count a frame of the dashes. Their colors swap every 8 frames. */
-static inline void AdvanceDashes(void) {
-    g_wScreenFrameCount++;
-    if ((g_wScreenFrameCount & 7) == 0) {
-        SwapBytes(&g_bDashColorA, &g_bDashColorB);
+#define AdvanceDashes()                                                                            \
+    g_wScreenFrameCount++;                                                                         \
+    if ((g_wScreenFrameCount & 7) == 0) {                                                          \
+        SwapBytes(&g_bDashColorA, &g_bDashColorB);                                                 \
     }
-}
 
-static inline u8 DashColor(s32 phase) {
-    return phase < DASH_LENGTH ? g_bDashColorA : g_bDashColorB;
-}
+#define DashColor(phase) ((phase) < DASH_LENGTH ? g_bDashColorA : g_bDashColorB)
 
-static inline u8 AlternateDashColor(s32 phase) {
-    return phase ? g_bDashColorA : g_bDashColorB;
-}
+#define AlternateDashColor(phase) ((phase) ? g_bDashColorA : g_bDashColorB)
 
 u8 GetPixel4Bit(s32 x, s32 y) {
     s32 offset = TexelOffset(x, y);
+    u8 texel;
 
     if (x & 1) {
-        return g_pDecalTexels[offset] & 0xF;
+        texel = g_pDecalTexels[offset] & 0xF;
+    } else {
+        texel = g_pDecalTexels[offset] >> 4;
     }
-    return g_pDecalTexels[offset] >> 4;
+    return texel;
 }
 
 u8 ReadPixel4Bit(u8 *texels, s32 x, s32 y) {
     s32 offset = TexelOffset(x, y);
+    u8 texel;
 
     if (x & 1) {
-        return texels[offset] & 0xF;
+        texel = texels[offset] & 0xF;
+    } else {
+        texel = texels[offset] >> 4;
     }
-    return texels[offset] >> 4;
+    return texel;
 }
 
 void FloodFill4Bit(s32 x, s32 y) {
@@ -240,7 +205,7 @@ void FloodFill4Bit(s32 x, s32 y) {
         }
         left = x + 1;
         if (left < x1) {
-            top = PushSpan(top, y, left, x1 - 1, -dy);
+            PushSpan(top, y, left, x1 - 1, -dy);
             count++;
         }
         x = x1 + 1;
@@ -249,10 +214,10 @@ void FloodFill4Bit(s32 x, s32 y) {
                  x++) {
                 SetPixel4Bit(x, y, g_bDecalColor);
             }
-            top = PushSpan(top, y, left, x - 1, dy);
+            PushSpan(top, y, left, x - 1, dy);
             count++;
             if (x2 + 1 < x) {
-                top = PushSpan(top, y, x2 + 1, x - 1, -dy);
+                PushSpan(top, y, x2 + 1, x - 1, -dy);
                 count++;
             }
         skip:
@@ -418,46 +383,63 @@ void SetPixel4Bit(s32 x, s32 y, u8 color) {
 }
 
 void FillRect4Bit(s32 x0, s32 y0, s32 x1, s32 y1) {
-    TexelBox box;
+    s32 swap, x, y;
 
-    ToTexelBox(&box, x0, y0, x1, y1);
-    FillTexels(box.minX, box.minY, box.maxX, box.maxY);
+    ScreenToTexel(x0, y0);
+    ScreenToTexel(x1, y1);
+    if (x1 < x0) {
+        SWAP(x0, x1, swap);
+    }
+    if (y1 < y0) {
+        SWAP(y0, y1, swap);
+    }
+    FillTexels(x, y, x0, y0, x1, y1);
 }
 
 void StrokeDecalRectangle(s32 x0, s32 y0, s32 x1, s32 y1) {
-    TexelBox box;
-    s32 half;
+    s32 swap, x, half, y;
 
-    ToTexelBox(&box, x0, y0, x1, y1);
+    ScreenToTexel(x0, y0);
+    ScreenToTexel(x1, y1);
+    if (x1 < x0) {
+        SWAP(x0, x1, swap);
+    }
+    if (y1 < y0) {
+        SWAP(y0, y1, swap);
+    }
     half = g_aBrushSizeRects[g_bBrushSize].width >> 1;
     if (half == 0) {
-        /* Only the edge at maxY includes the corner at maxX. */
-        FillTexelColumn(box.minX, box.minY, box.maxY);
-        FillTexelRow(box.minX, box.maxX + 1, box.maxY);
-        FillTexelColumn(box.maxX, box.minY, box.maxY);
-        FillTexelRow(box.minX, box.maxX, box.minY);
+        /* Only the edge at y1 includes the corner at x1. */
+        FillTexelColumn(y, x0, y0, y1);
+        FillTexelSpan(x, x0, x1, y1);
+        FillTexelColumn(y, x1, y0, y1);
+        FillTexelRow(x, x0, x1, y0);
         return;
     }
-    FillTexels(box.minX - half, box.minY - half, box.minX + half, box.maxY + half);
-    FillTexels(box.minX, box.maxY - half, box.maxX, box.maxY + half);
-    FillTexels(box.maxX - half, box.minY - half, box.maxX + half, box.maxY + half);
-    FillTexels(box.minX, box.minY - half, box.maxX, box.minY + half);
+    FillTexels(x, y, x0 - half, y0 - half, x0 + half, y1 + half);
+    FillTexels(x, y, x0, y1 - half, x1, y1 + half);
+    FillTexels(x, y, x1 - half, y0 - half, x1 + half, y1 + half);
+    FillTexels(x, y, x0, y0 - half, x1, y0 + half);
 }
 
 void FillDecalRoundRect(s32 x0, s32 y0, s32 x1, s32 y1) {
-    TexelBox box;
-    s32 radius, i, j, error, a, b;
+    s32 swap, radius, i, j, error, a, b, x, y;
 
-    ToTexelBox(&box, x0, y0, x1, y1);
-    radius =
-        (box.maxX - box.minX < box.maxY - box.minY ? box.maxX - box.minX : box.maxY - box.minY) >>
-        2;
-    FillTexels(box.minX, box.minY + radius, box.maxX, box.maxY - radius);
+    ScreenToTexel(x0, y0);
+    ScreenToTexel(x1, y1);
+    if (x1 < x0) {
+        SWAP(x0, x1, swap);
+    }
+    if (y1 < y0) {
+        SWAP(y0, y1, swap);
+    }
+    radius = (x1 - x0 < y1 - y0 ? x1 - x0 : y1 - y0) >> 2;
+    FillTexels(x, y, x0, y0 + radius, x1, y1 - radius);
 
-    box.minX += radius;
-    box.maxX -= radius;
-    box.minY += radius;
-    box.maxY -= radius;
+    x0 += radius;
+    x1 -= radius;
+    y0 += radius;
+    y1 -= radius;
     /* The corners are stepped at twice the resolution and drawn on the even steps. Most rows are
      * drawn twice. */
     j = radius * 2;
@@ -470,10 +452,10 @@ void FillDecalRoundRect(s32 x0, s32 y0, s32 x1, s32 y1) {
         if ((i & 1) == 0) {
             a = i >> 1;
             b = j >> 1;
-            FillTexelRow(box.minX - a, box.maxX + a, box.minY - b);
-            FillTexelRow(box.minX - b, box.maxX + b, box.minY - a);
-            FillTexelRow(box.minX - a, box.maxX + a, box.maxY + b);
-            FillTexelRow(box.minX - b, box.maxX + b, box.maxY + a);
+            FillTexelRow(x, x0 - a, x1 + a, y0 - b);
+            FillTexelRow(x, x0 - b, x1 + b, y0 - a);
+            FillTexelRow(x, x0 - a, x1 + a, y1 + b);
+            FillTexelRow(x, x0 - b, x1 + b, y1 + a);
         }
         error += i;
         i++;
@@ -485,49 +467,52 @@ void FillDecalRoundRect(s32 x0, s32 y0, s32 x1, s32 y1) {
 }
 
 void DrawDecalRoundedRectOutline(s32 x0, s32 y0, s32 x1, s32 y1) {
-    TexelBox box;
-    s32 half, quarter, radius, i, j, error, a, b, x, y;
+    s32 swap, half, quarter, radius, i, j, error, a, b, x, y, run;
 
-    ToTexelBox(&box, x0, y0, x1, y1);
+    ScreenToTexel(x0, y0);
+    ScreenToTexel(x1, y1);
+    if (x1 < x0) {
+        SWAP(x0, x1, swap);
+    }
+    if (y1 < y0) {
+        SWAP(y0, y1, swap);
+    }
     half = g_aBrushSizeRects[g_bBrushSize].width >> 1;
     quarter = half >> 1;
-    radius =
-        ((box.maxX - box.minX < box.maxY - box.minY ? box.maxX - box.minX : box.maxY - box.minY) >>
-         2) +
-        quarter;
+    radius = ((x1 - x0 < y1 - y0 ? x1 - x0 : y1 - y0) >> 2) + quarter;
     if (half == 0) {
-        FillTexelColumn(box.minX, box.minY + radius, box.maxY - radius);
-        FillTexelColumn(box.maxX, box.minY + radius, box.maxY - radius);
-        FillTexelRow(box.minX + radius, box.maxX - radius, box.maxY);
-        FillTexelRow(box.minX + radius, box.maxX - radius, box.minY);
+        FillTexelColumn(y, x0, y0 + radius, y1 - radius);
+        FillTexelColumn(y, x1, y0 + radius, y1 - radius);
+        FillTexelRow(x, x0 + radius, x1 - radius, y1);
+        FillTexelRow(x, x0 + radius, x1 - radius, y0);
     } else {
         /* The thick edges extend one texel further than the thin ones. */
-        for (y = box.minY + radius; y <= box.maxY - radius; y++) {
-            FillTexelRow(box.minX - half, box.minX + half, y);
+        for (y = y0 + radius; y <= y1 - radius; y++) {
+            FillTexelRow(x, x0 - half, x0 + half, y);
         }
-        for (y = box.minY + radius; y <= box.maxY - radius; y++) {
-            FillTexelRow(box.maxX - half, box.maxX + half, y);
+        for (y = y0 + radius; y <= y1 - radius; y++) {
+            FillTexelRow(x, x1 - half, x1 + half, y);
         }
-        for (y = box.maxY - half; y < box.maxY + half; y++) {
-            for (x = box.minX + radius; x <= box.maxX - radius; x++) {
+        for (y = y1 - half; y < y1 + half; y++) {
+            for (x = x0 + radius; x <= x1 - radius; x++) {
                 SetPixel4Bit(x, y, g_bDecalColor);
             }
         }
-        for (y = box.minY - half; y < box.minY + half; y++) {
-            for (x = box.minX + radius; x <= box.maxX - radius; x++) {
+        for (y = y0 - half; y < y0 + half; y++) {
+            for (x = x0 + radius; x <= x1 - radius; x++) {
                 SetPixel4Bit(x, y, g_bDecalColor);
             }
         }
     }
 
-    box.minX += radius;
-    box.maxX -= radius;
-    box.minY += radius;
-    box.maxY -= radius;
-    /* The two largest brushes move the corners on the left and at minY by a texel. */
+    x0 += radius;
+    x1 -= radius;
+    y0 += radius;
+    y1 -= radius;
+    /* The two largest brushes move the corners on the left and at y0 by a texel. */
     if (g_bBrushSize >= 3) {
-        box.minX--;
-        box.minY--;
+        x0--;
+        y0--;
     }
     radius += quarter;
     j = radius * 2;
@@ -540,14 +525,14 @@ void DrawDecalRoundedRectOutline(s32 x0, s32 y0, s32 x1, s32 y1) {
         if ((i & 1) == 0) {
             a = i >> 1;
             b = j >> 1;
-            PaintRun(box.minX - a, box.minY - b, 0, 1, half);
-            PaintRun(box.minX - a, box.maxY + b, 0, -1, half);
-            PaintRun(box.maxX + a, box.maxY + b, 0, -1, half);
-            PaintRun(box.maxX + a, box.minY - b, 0, 1, half);
-            PaintRun(box.maxX + b, box.maxY + a, -1, 0, half);
-            PaintRun(box.maxX + b, box.minY - a, -1, 0, half);
-            PaintRun(box.minX - b, box.minY - a, 1, 0, half);
-            PaintRun(box.minX - b, box.maxY + a, 1, 0, half);
+            PaintRun(run, x0 - a, y0 - b, 0, 1, half);
+            PaintRun(run, x0 - a, y1 + b, 0, -1, half);
+            PaintRun(run, x1 + a, y1 + b, 0, -1, half);
+            PaintRun(run, x1 + a, y0 - b, 0, 1, half);
+            PaintRun(run, x1 + b, y1 + a, -1, 0, half);
+            PaintRun(run, x1 + b, y0 - a, -1, 0, half);
+            PaintRun(run, x0 - b, y0 - a, 1, 0, half);
+            PaintRun(run, x0 - b, y1 + a, 1, 0, half);
         }
         error += i;
         i++;
@@ -559,16 +544,22 @@ void DrawDecalRoundedRectOutline(s32 x0, s32 y0, s32 x1, s32 y1) {
 }
 
 void DrawDecalFilledEllipse(s32 x0, s32 y0, s32 x1, s32 y1) {
-    TexelBox box;
-    s32 radiusX, radiusY, squareX, squareY, stepSquareX, stepSquareY, x, y, error, stepX, stepY;
-    s32 increment;
+    s32 swap, radiusX, radiusY, squareX, squareY, stepSquareX, stepSquareY, x, y, error, stepX;
+    s32 stepY, increment, column;
 
-    ToTexelBox(&box, x0, y0, x1, y1);
-    radiusY = (box.maxY - box.minY) >> 1;
+    ScreenToTexel(x0, y0);
+    ScreenToTexel(x1, y1);
+    if (x1 < x0) {
+        SWAP(x0, x1, swap);
+    }
+    if (y1 < y0) {
+        SWAP(y0, y1, swap);
+    }
+    radiusY = (y1 - y0) >> 1;
     if (radiusY < 2) {
         radiusY = 1;
     }
-    radiusX = (box.maxX - box.minX) >> 1;
+    radiusX = (x1 - x0) >> 1;
     if (radiusX < 2) {
         radiusX = 1;
     }
@@ -587,12 +578,14 @@ void DrawDecalFilledEllipse(s32 x0, s32 y0, s32 x1, s32 y1) {
         increment = 0;
         do {
             if ((x & 1) == 0) {
-                FillTexelRow(BOX_CENTER_X(box) - (x >> 1),
-                             BOX_CENTER_X(box) + (x >> 1),
-                             (y >> 1) + BOX_CENTER_Y(box));
-                FillTexelRow(BOX_CENTER_X(box) - (x >> 1),
-                             BOX_CENTER_X(box) + (x >> 1),
-                             BOX_CENTER_Y(box) - (y >> 1));
+                FillTexelRow(column,
+                             MIDPOINT(x0, x1) - (x >> 1),
+                             MIDPOINT(x0, x1) + (x >> 1),
+                             (y >> 1) + MIDPOINT(y0, y1));
+                FillTexelRow(column,
+                             MIDPOINT(x0, x1) - (x >> 1),
+                             MIDPOINT(x0, x1) + (x >> 1),
+                             MIDPOINT(y0, y1) - (y >> 1));
             }
             error += increment;
             stepX += stepSquareY;
@@ -619,12 +612,14 @@ void DrawDecalFilledEllipse(s32 x0, s32 y0, s32 x1, s32 y1) {
     increment = 0;
     do {
         if ((y & 1) == 0) {
-            FillTexelRow(BOX_CENTER_X(box) - (x >> 1),
-                         BOX_CENTER_X(box) + (x >> 1),
-                         (y >> 1) + BOX_CENTER_Y(box));
-            FillTexelRow(BOX_CENTER_X(box) - (x >> 1),
-                         BOX_CENTER_X(box) + (x >> 1),
-                         BOX_CENTER_Y(box) - (y >> 1));
+            FillTexelRow(column,
+                         MIDPOINT(x0, x1) - (x >> 1),
+                         MIDPOINT(x0, x1) + (x >> 1),
+                         (y >> 1) + MIDPOINT(y0, y1));
+            FillTexelRow(column,
+                         MIDPOINT(x0, x1) - (x >> 1),
+                         MIDPOINT(x0, x1) + (x >> 1),
+                         MIDPOINT(y0, y1) - (y >> 1));
         }
         error += increment;
         y++;
@@ -641,31 +636,30 @@ void DrawDecalFilledEllipse(s32 x0, s32 y0, s32 x1, s32 y1) {
 }
 
 void DrawDecalEllipseOutline(s32 x0, s32 y0, s32 x1, s32 y1) {
-    TexelBox box;
     s32 brush, radiusX, radiusY, squareX, squareY, stepSquareX, stepSquareY, x, y, error, stepX;
-    s32 stepY, increment, swap;
+    s32 stepY, increment, swap, run;
 
-    box.minX = ScreenToTexelX(x0);
-    box.maxX = ScreenToTexelX(x1);
-    box.minY = ScreenToTexelY(y0);
-    box.maxY = ScreenToTexelY(y1);
+    x0 = ScreenToTexelX(x0);
+    x1 = ScreenToTexelX(x1);
+    y0 = ScreenToTexelY(y0);
+    y1 = ScreenToTexelY(y1);
     /* The corners are ordered by the sign of their difference here. */
-    if (box.maxX - box.minX < 0) {
-        swap = box.minX;
-        box.minX = box.maxX;
-        box.maxX = swap;
+    if (x1 - x0 < 0) {
+        swap = x0;
+        x0 = x1;
+        x1 = swap;
     }
-    if (box.maxY - box.minY < 0) {
-        swap = box.minY;
-        box.minY = box.maxY;
-        box.maxY = swap;
+    if (y1 - y0 < 0) {
+        swap = y0;
+        y0 = y1;
+        y1 = swap;
     }
     brush = g_aBrushSizeRects[g_bBrushSize].width;
-    radiusY = (box.maxY - box.minY + brush) >> 1;
+    radiusY = (y1 - y0 + brush) >> 1;
     if (radiusY < 2) {
         radiusY = 1;
     }
-    radiusX = (box.maxX - box.minX + brush) >> 1;
+    radiusX = (x1 - x0 + brush) >> 1;
     if (radiusX < 2) {
         radiusX = 1;
     }
@@ -684,13 +678,13 @@ void DrawDecalEllipseOutline(s32 x0, s32 y0, s32 x1, s32 y1) {
         do {
             if ((x & 1) == 0) {
                 PaintBrushRun(
-                    BOX_CENTER_X(box) + (x >> 1), BOX_CENTER_Y(box) + (y >> 1), 0, -1, brush);
+                    run, MIDPOINT(x0, x1) + (x >> 1), MIDPOINT(y0, y1) + (y >> 1), 0, -1, brush);
                 PaintBrushRun(
-                    BOX_CENTER_X(box) + (x >> 1), BOX_CENTER_Y(box) - (y >> 1), 0, 1, brush);
+                    run, MIDPOINT(x0, x1) + (x >> 1), MIDPOINT(y0, y1) - (y >> 1), 0, 1, brush);
                 PaintBrushRun(
-                    BOX_CENTER_X(box) - (x >> 1), BOX_CENTER_Y(box) - (y >> 1), 0, 1, brush);
+                    run, MIDPOINT(x0, x1) - (x >> 1), MIDPOINT(y0, y1) - (y >> 1), 0, 1, brush);
                 PaintBrushRun(
-                    BOX_CENTER_X(box) - (x >> 1), BOX_CENTER_Y(box) + (y >> 1), 0, -1, brush);
+                    run, MIDPOINT(x0, x1) - (x >> 1), MIDPOINT(y0, y1) + (y >> 1), 0, -1, brush);
             }
             error += increment;
             stepX += stepSquareY;
@@ -717,10 +711,14 @@ void DrawDecalEllipseOutline(s32 x0, s32 y0, s32 x1, s32 y1) {
     increment = 0;
     do {
         if ((y & 1) == 0) {
-            PaintBrushRun(BOX_CENTER_X(box) + (x >> 1), BOX_CENTER_Y(box) + (y >> 1), -1, 0, brush);
-            PaintBrushRun(BOX_CENTER_X(box) + (x >> 1), BOX_CENTER_Y(box) - (y >> 1), -1, 0, brush);
-            PaintBrushRun(BOX_CENTER_X(box) - (x >> 1), BOX_CENTER_Y(box) - (y >> 1), 1, 0, brush);
-            PaintBrushRun(BOX_CENTER_X(box) - (x >> 1), BOX_CENTER_Y(box) + (y >> 1), 1, 0, brush);
+            PaintBrushRun(
+                run, MIDPOINT(x0, x1) + (x >> 1), MIDPOINT(y0, y1) + (y >> 1), -1, 0, brush);
+            PaintBrushRun(
+                run, MIDPOINT(x0, x1) + (x >> 1), MIDPOINT(y0, y1) - (y >> 1), -1, 0, brush);
+            PaintBrushRun(
+                run, MIDPOINT(x0, x1) - (x >> 1), MIDPOINT(y0, y1) - (y >> 1), 1, 0, brush);
+            PaintBrushRun(
+                run, MIDPOINT(x0, x1) - (x >> 1), MIDPOINT(y0, y1) + (y >> 1), 1, 0, brush);
         }
         error += increment;
         stepY += stepSquareX;
@@ -737,7 +735,7 @@ void DrawDecalEllipseOutline(s32 x0, s32 y0, s32 x1, s32 y1) {
 }
 
 void FillCircle4Bit(s32 x, s32 y, s32 radius, u8 fromScreen) {
-    s32 i, j, error, a, b;
+    s32 i, j, error, a, b, column;
 
     if (fromScreen) {
         x = ScreenToTexelX(x);
@@ -753,10 +751,10 @@ void FillCircle4Bit(s32 x, s32 y, s32 radius, u8 fromScreen) {
         if ((i & 1) == 0) {
             a = i >> 1;
             b = j >> 1;
-            FillTexelSpan(x - a, x + a, y + b);
-            FillTexelSpan(x - b, x + b, y + a);
-            FillTexelSpan(x - a, x + a, y - b);
-            FillTexelSpan(x - b, x + b, y - a);
+            FillTexelSpan(column, x - a, x + a, y + b);
+            FillTexelSpan(column, x - b, x + b, y + a);
+            FillTexelSpan(column, x - a, x + a, y - b);
+            FillTexelSpan(column, x - b, x + b, y - a);
         }
         error += i;
         i++;
@@ -768,7 +766,7 @@ void FillCircle4Bit(s32 x, s32 y, s32 radius, u8 fromScreen) {
 }
 
 void DrawDecalCircleOutline(s32 x, s32 y, s32 radius) {
-    s32 brush, i, j, error, a, b;
+    s32 brush, i, j, error, a, b, run;
 
     brush = g_aBrushSizeRects[g_bBrushSize].width;
     x = ScreenToTexelX(x);
@@ -783,14 +781,14 @@ void DrawDecalCircleOutline(s32 x, s32 y, s32 radius) {
         if ((i & 1) == 0) {
             a = i >> 1;
             b = j >> 1;
-            PaintBrushRun(x + a, y + b, 0, -1, brush);
-            PaintBrushRun(x + a, y - b, 0, 1, brush);
-            PaintBrushRun(x - a, y - b, 0, 1, brush);
-            PaintBrushRun(x - a, y + b, 0, -1, brush);
-            PaintBrushRun(x + b, y + a, -1, 0, brush);
-            PaintBrushRun(x + b, y - a, -1, 0, brush);
-            PaintBrushRun(x - b, y - a, 1, 0, brush);
-            PaintBrushRun(x - b, y + a, 1, 0, brush);
+            PaintBrushRun(run, x + a, y + b, 0, -1, brush);
+            PaintBrushRun(run, x + a, y - b, 0, 1, brush);
+            PaintBrushRun(run, x - a, y - b, 0, 1, brush);
+            PaintBrushRun(run, x - a, y + b, 0, -1, brush);
+            PaintBrushRun(run, x + b, y + a, -1, 0, brush);
+            PaintBrushRun(run, x + b, y - a, -1, 0, brush);
+            PaintBrushRun(run, x - b, y - a, 1, 0, brush);
+            PaintBrushRun(run, x - b, y + a, 1, 0, brush);
         }
         error += i;
         i++;

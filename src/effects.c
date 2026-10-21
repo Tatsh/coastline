@@ -134,73 +134,71 @@ static inline s32 ClampToScreen(s32 coordinate) {
     return clamped > 0 ? clamped : 0;
 }
 
-/** Load the particle texture to be drawn as rectangles of the primitive colour. */
-static inline void LoadParticleTexture(void) {
-    gDPPipeSync(gDisplayListPtr++);
-    gDPSetCycleType(gDisplayListPtr++, G_CYC_1CYCLE);
-    gSPTexture(gDisplayListPtr++, 0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON);
-    gDPSetTextureFilter(gDisplayListPtr++, g_dwTextureFilterMode);
-    gDPSetCombineLERP(gDisplayListPtr++,
-                      0,
-                      0,
-                      0,
-                      PRIMITIVE,
-                      TEXEL0,
-                      0,
-                      PRIMITIVE,
-                      0,
-                      0,
-                      0,
-                      0,
-                      PRIMITIVE,
-                      TEXEL0,
-                      0,
-                      PRIMITIVE,
-                      0);
-    gDPSetTextureImage(gDisplayListPtr++, G_IM_FMT_I, G_IM_SIZ_16b, 1, g_aParticleTexture);
-    gDPSetTile(gDisplayListPtr++,
-               G_IM_FMT_I,
-               G_IM_SIZ_16b,
-               0,
-               0,
-               G_TX_LOADTILE,
-               0,
-               G_TX_WRAP,
-               6,
-               G_TX_NOLOD,
-               G_TX_WRAP,
-               6,
-               G_TX_NOLOD);
-    gDPLoadSync(gDisplayListPtr++);
-    gDPLoadBlock(gDisplayListPtr++, G_TX_LOADTILE, 0, 0, PARTICLE_LOAD_TEXELS, PARTICLE_LOAD_DXT);
-    gDPPipeSync(gDisplayListPtr++);
-    gDPSetTile(gDisplayListPtr++,
-               G_IM_FMT_I,
-               G_IM_SIZ_8b,
-               8,
-               0,
-               G_TX_RENDERTILE,
-               0,
-               G_TX_WRAP,
-               6,
-               G_TX_NOLOD,
-               G_TX_WRAP,
-               6,
-               G_TX_NOLOD);
-    gDPSetTileSize(gDisplayListPtr++, G_TX_RENDERTILE, 0, 0, 63 << 2, 63 << 2);
-    gDPSetTextureLUT(gDisplayListPtr++, G_TT_NONE);
-    gDPSetTexturePersp(gDisplayListPtr++, G_TP_NONE);
-}
+/* Load the particle texture to be drawn as rectangles of the primitive colour. */
+#define LoadParticleTexture()                                                                      \
+    gDPPipeSync(gDisplayListPtr++);                                                                \
+    gDPSetCycleType(gDisplayListPtr++, G_CYC_1CYCLE);                                              \
+    gSPTexture(gDisplayListPtr++, 0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON);                       \
+    gDPSetTextureFilter(gDisplayListPtr++, g_dwTextureFilterMode);                                 \
+    gDPSetCombineLERP(gDisplayListPtr++,                                                           \
+                      0,                                                                           \
+                      0,                                                                           \
+                      0,                                                                           \
+                      PRIMITIVE,                                                                   \
+                      TEXEL0,                                                                      \
+                      0,                                                                           \
+                      PRIMITIVE,                                                                   \
+                      0,                                                                           \
+                      0,                                                                           \
+                      0,                                                                           \
+                      0,                                                                           \
+                      PRIMITIVE,                                                                   \
+                      TEXEL0,                                                                      \
+                      0,                                                                           \
+                      PRIMITIVE,                                                                   \
+                      0);                                                                          \
+    gDPSetTextureImage(gDisplayListPtr++, G_IM_FMT_I, G_IM_SIZ_16b, 1, g_aParticleTexture);        \
+    gDPSetTile(gDisplayListPtr++,                                                                  \
+               G_IM_FMT_I,                                                                         \
+               G_IM_SIZ_16b,                                                                       \
+               0,                                                                                  \
+               0,                                                                                  \
+               G_TX_LOADTILE,                                                                      \
+               0,                                                                                  \
+               G_TX_WRAP,                                                                          \
+               6,                                                                                  \
+               G_TX_NOLOD,                                                                         \
+               G_TX_WRAP,                                                                          \
+               6,                                                                                  \
+               G_TX_NOLOD);                                                                        \
+    gDPLoadSync(gDisplayListPtr++);                                                                \
+    gDPLoadBlock(gDisplayListPtr++, G_TX_LOADTILE, 0, 0, PARTICLE_LOAD_TEXELS, PARTICLE_LOAD_DXT); \
+    gDPPipeSync(gDisplayListPtr++);                                                                \
+    gDPSetTile(gDisplayListPtr++,                                                                  \
+               G_IM_FMT_I,                                                                         \
+               G_IM_SIZ_8b,                                                                        \
+               8,                                                                                  \
+               0,                                                                                  \
+               G_TX_RENDERTILE,                                                                    \
+               0,                                                                                  \
+               G_TX_WRAP,                                                                          \
+               6,                                                                                  \
+               G_TX_NOLOD,                                                                         \
+               G_TX_WRAP,                                                                          \
+               6,                                                                                  \
+               G_TX_NOLOD);                                                                        \
+    gDPSetTileSize(gDisplayListPtr++, G_TX_RENDERTILE, 0, 0, 63 << 2, 63 << 2);                    \
+    gDPSetTextureLUT(gDisplayListPtr++, G_TT_NONE);                                                \
+    gDPSetTexturePersp(gDisplayListPtr++, G_TP_NONE)
 
-/** Put back the modes the rest of the frame draws with. */
-static inline void RestoreParticleModes(void) {
-    gDPPipeSync(gDisplayListPtr++);
-    gDPSetTexturePersp(gDisplayListPtr++, G_TP_PERSP);
-    gDPSetDepthSource(gDisplayListPtr++, G_ZS_PIXEL);
-    gDPSetColorDither(gDisplayListPtr++, g_dwColorDitherMode);
-    gDPSetAlphaDither(gDisplayListPtr++, g_dwAlphaDitherMode);
-    gDPSetAlphaCompare(gDisplayListPtr++, G_AC_THRESHOLD);
-}
+/* Put back the modes the rest of the frame draws with. */
+#define RestoreParticleModes()                                                                     \
+    gDPPipeSync(gDisplayListPtr++);                                                                \
+    gDPSetTexturePersp(gDisplayListPtr++, G_TP_PERSP);                                             \
+    gDPSetDepthSource(gDisplayListPtr++, G_ZS_PIXEL);                                              \
+    gDPSetColorDither(gDisplayListPtr++, g_dwColorDitherMode);                                     \
+    gDPSetAlphaDither(gDisplayListPtr++, g_dwAlphaDitherMode);                                     \
+    gDPSetAlphaCompare(gDisplayListPtr++, G_AC_THRESHOLD)
 
 s32 ComputeScreenDepthZ(f32 z, f32 w) {
     return (s32)((z / w * (f32)g_dwViewportScaleZ + (f32)g_dwViewportTransZ) * 32.0f);
@@ -675,7 +673,8 @@ void SpawnTireSmoke(Vehicle *vehicle) {
 void UpdateExhaustParticles(void) {
     Particle *particle;
     u16 *link;
-    u16 index, next;
+    s32 index;
+    u16 next;
     f32 grow, share, step;
 
     grow = 0.3f * g_fFrameDeltaTime;
@@ -691,7 +690,7 @@ void UpdateExhaustParticles(void) {
         particle->position.z += g_vWindVelocity.z + (particle->velocity.z * share + 0.8f) * step;
         particle->fade = (s32)(5.7375f / (particle->size * particle->size));
         if (share < PARTICLE_MIN_SHARE) {
-            *link = next;
+            *link = particle->next;
             particle->next = g_wParticleFreeListHead;
             g_wParticleFreeListHead = index;
         } else {
@@ -734,7 +733,6 @@ void UpdateTireSmoke(void) {
 }
 
 void InitParticleSystem(void) {
-    Vehicle *vehicle;
     s32 i;
 
     for (i = 1; i < PARTICLES; i++) {
@@ -743,8 +741,8 @@ void InitParticleSystem(void) {
     /* The loop links the last puff past the pool, and this ends the list there. */
     g_aParticlePool[PARTICLES - 1].next = 0;
     g_wParticleFreeListHead = 1;
-    for (vehicle = g_aVehicles; vehicle < &g_aVehicles[g_dwNumActiveVehicles]; vehicle++) {
-        vehicle->exhaustTimer = 0.0f;
+    for (i = 0; i < g_dwNumActiveVehicles; i++) {
+        g_aVehicles[i].exhaustTimer = 0.0f;
     }
     g_wExhaustParticleListHead = 0;
     g_wTireSmokeListHead = 0;
