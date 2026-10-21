@@ -12,6 +12,7 @@ DebugFrameStubA
 DebugFrameStubB
 DrawBitmapTextToFramebuffer
 DrawColoredTexturedRect
+DrawControllerLayoutDiagram
 DrawRedIntensityRect
 ExchangeByteBuffers
 ExchangeHalfwordBuffers
@@ -34,6 +35,7 @@ MixAudioSamples
 MixAudioStereoSamples
 PrepareRumblePaks
 PrepareTrackModelNodes
+ProcessControllerConfigScreen
 ProcessMainMenu
 ProcessPlayerCountSelect
 ProcessWeatherSelect

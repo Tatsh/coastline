@@ -38,11 +38,12 @@ extern MenuPostDrawCallback g_pfnScreenPostDrawCallback;
 extern s32 g_dwMenuChoosingPlayer;
 
 /**
- * The player whose car the paint shop paints, or -1.
+ * The player a screen belongs to, such as the player whose car the paint shop paints or whose
+ * controller the controller screen sets up, or -1.
  *
  * @ghidraAddress USA: 0x80271fa0
  */
-extern s32 g_dwPaintSourcePlayerIdx;
+extern s32 g_dwScreenPlayerIdx;
 
 /**
  * A bit for each player whose input the menu screens read, or -1 for all.

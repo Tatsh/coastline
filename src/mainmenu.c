@@ -52,7 +52,7 @@ void StartTimeAttack(void) {
 void ProcessMainMenu(void) {
     if (g_dwMainMenuInitState <= 0) {
         g_dwMenuInputPlayerMask = -1;
-        g_dwPaintSourcePlayerIdx = -1;
+        g_dwScreenPlayerIdx = -1;
         g_dwNumLocalPlayers = 2;
         ResetAndInitDisplay(g_apMainMenuItems, &g_dwMainMenuItemCount);
 
@@ -116,7 +116,7 @@ void ProcessMainMenu(void) {
             /* The paint shop takes the input of the player who chose it, and no other. */
             g_dwIsPaintMode = TRUE;
             g_dwNumLocalPlayers = 1;
-            g_dwPaintSourcePlayerIdx = g_dwMenuChoosingPlayer;
+            g_dwScreenPlayerIdx = g_dwMenuChoosingPlayer;
             g_dwMenuInputPlayerMask = 1 << g_dwMenuChoosingPlayer;
             SetCurrentScreenCallback(ProcessTrackSelectScreen);
             break;

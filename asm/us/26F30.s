@@ -2809,8 +2809,8 @@ glabel UpdateAiVehicleBehavior
     /* 29754 80228754 262401CC */  addiu      $a0, $s1, 0x1CC
     /* 29758 80228758 14400012 */  bnez       $v0, .L802287A4
     /* 2975C 8022875C 00000000 */   nop
-    /* 29760 80228760 3C028032 */  lui        $v0, %hi(gChampionshipData)
-    /* 29764 80228764 8C42C5BC */  lw         $v0, %lo(gChampionshipData)($v0)
+    /* 29760 80228760 3C028032 */  lui        $v0, %hi(D_8031C5BC)
+    /* 29764 80228764 8C42C5BC */  lw         $v0, %lo(D_8031C5BC)($v0)
     /* 29768 80228768 8E2D0ED0 */  lw         $t5, 0xED0($s1)
     /* 2976C 8022876C 3C058029 */  lui        $a1, %hi(D_8028B9F0)
     /* 29770 80228770 904C0004 */  lbu        $t4, 0x4($v0)
@@ -4913,10 +4913,10 @@ glabel UpdateRaceProgress
     /* 2B564 8022A564 8E4A0040 */  lw         $t2, 0x40($s2)
     /* 2B568 8022A568 8E4C0060 */  lw         $t4, 0x60($s2)
     /* 2B56C 8022A56C 3C0E8029 */  lui        $t6, %hi(g_dwSelectedTrackId)
-    /* 2B570 8022A570 3C0D8032 */  lui        $t5, %hi(gChampionshipData)
+    /* 2B570 8022A570 3C0D8032 */  lui        $t5, %hi(D_8031C5BC)
     /* 2B574 8022A574 AD8A0F9C */  sw         $t2, 0xF9C($t4)
     /* 2B578 8022A578 8DCEB940 */  lw         $t6, %lo(g_dwSelectedTrackId)($t6)
-    /* 2B57C 8022A57C 8DADC5BC */  lw         $t5, %lo(gChampionshipData)($t5)
+    /* 2B57C 8022A57C 8DADC5BC */  lw         $t5, %lo(D_8031C5BC)($t5)
     /* 2B580 8022A580 44804000 */  mtc1       $zero, $f8
     /* 2B584 8022A584 000EC080 */  sll        $t8, $t6, 2
     /* 2B588 8022A588 01B81021 */  addu       $v0, $t5, $t8
@@ -5063,11 +5063,11 @@ glabel UpdateRaceProgress
     /* 2B7A0 8022A7A0 00000000 */   nop
     /* 2B7A4 8022A7A4 8F18B304 */  lw         $t8, %lo(g_dwTotalLaps)($t8)
     /* 2B7A8 8022A7A8 24010003 */  addiu      $at, $zero, 0x3
-    /* 2B7AC 8022A7AC 3C198032 */  lui        $t9, %hi(gChampionshipData)
+    /* 2B7AC 8022A7AC 3C198032 */  lui        $t9, %hi(D_8031C5BC)
     /* 2B7B0 8022A7B0 1701001A */  bne        $t8, $at, .L8022A81C
     /* 2B7B4 8022A7B4 3C0F8029 */   lui       $t7, %hi(g_dwSelectedTrackId)
     /* 2B7B8 8022A7B8 8DEFB940 */  lw         $t7, %lo(g_dwSelectedTrackId)($t7)
-    /* 2B7BC 8022A7BC 8F39C5BC */  lw         $t9, %lo(gChampionshipData)($t9)
+    /* 2B7BC 8022A7BC 8F39C5BC */  lw         $t9, %lo(D_8031C5BC)($t9)
     /* 2B7C0 8022A7C0 44809000 */  mtc1       $zero, $f18
     /* 2B7C4 8022A7C4 000F4880 */  sll        $t1, $t7, 2
     /* 2B7C8 8022A7C8 03291021 */  addu       $v0, $t9, $t1
@@ -5346,10 +5346,10 @@ glabel UpdateRaceProgress
     /* 2BBC4 8022ABC4 8E4D0040 */  lw         $t5, 0x40($s2)
     /* 2BBC8 8022ABC8 8E580060 */  lw         $t8, 0x60($s2)
     /* 2BBCC 8022ABCC 3C0F8029 */  lui        $t7, %hi(g_dwSelectedTrackId)
-    /* 2BBD0 8022ABD0 3C198032 */  lui        $t9, %hi(gChampionshipData)
+    /* 2BBD0 8022ABD0 3C198032 */  lui        $t9, %hi(D_8031C5BC)
     /* 2BBD4 8022ABD4 AF0D0F9C */  sw         $t5, 0xF9C($t8)
     /* 2BBD8 8022ABD8 8DEFB940 */  lw         $t7, %lo(g_dwSelectedTrackId)($t7)
-    /* 2BBDC 8022ABDC 8F39C5BC */  lw         $t9, %lo(gChampionshipData)($t9)
+    /* 2BBDC 8022ABDC 8F39C5BC */  lw         $t9, %lo(D_8031C5BC)($t9)
     /* 2BBE0 8022ABE0 44802000 */  mtc1       $zero, $f4
     /* 2BBE4 8022ABE4 000F4880 */  sll        $t1, $t7, 2
     /* 2BBE8 8022ABE8 03291021 */  addu       $v0, $t9, $t1

@@ -4161,11 +4161,11 @@ dlabel g_afRdpBlendColor
     /* 72F9C 80271F9C 00000000 */ .word 0x00000000
 enddlabel g_afRdpBlendColor
 
-nonmatching g_dwPaintSourcePlayerIdx
+nonmatching g_dwScreenPlayerIdx
 
-dlabel g_dwPaintSourcePlayerIdx
+dlabel g_dwScreenPlayerIdx
     /* 72FA0 80271FA0 FFFFFFFF */ .word 0xFFFFFFFF
-enddlabel g_dwPaintSourcePlayerIdx
+enddlabel g_dwScreenPlayerIdx
 
 nonmatching g_dwMenuInputPlayerMask
 
@@ -5749,11 +5749,11 @@ dlabel D_80272648
     /* 73654 80272654 001F4450 */ .word 0x001F4450
 enddlabel D_80272648
 
-nonmatching g_pControllerConfigScreenData
+nonmatching g_apControllerScreenItems
 
-dlabel g_pControllerConfigScreenData
+dlabel g_apControllerScreenItems
     /* 73658 80272658 802725F4 */ .word g_pszTypeA
-enddlabel g_pControllerConfigScreenData
+enddlabel g_apControllerScreenItems
 
 nonmatching g_pControllerConfigScreenData2
 
@@ -5786,11 +5786,11 @@ dlabel D_8027266C
     /* 7366C 8027266C 00000000 */ .word 0x00000000
 enddlabel D_8027266C
 
-nonmatching g_dwControllerConfigFlags2
+nonmatching g_dwControllerScreenInitState
 
-dlabel g_dwControllerConfigFlags2
+dlabel g_dwControllerScreenInitState
     /* 73670 80272670 00000000 */ .word 0x00000000
-enddlabel g_dwControllerConfigFlags2
+enddlabel g_dwControllerScreenInitState
 
 nonmatching D_80272674
 

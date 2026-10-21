@@ -22,8 +22,8 @@ endlabel CheatToggleDisplayListStats
 nonmatching CheatUnlockAllTracks, 0x18
 
 glabel CheatUnlockAllTracks
-    /* 55F58 80254F58 3C028032 */  lui        $v0, %hi(gChampionshipData)
-    /* 55F5C 80254F5C 8C42C5BC */  lw         $v0, %lo(gChampionshipData)($v0)
+    /* 55F58 80254F58 3C028032 */  lui        $v0, %hi(D_8031C5BC)
+    /* 55F5C 80254F5C 8C42C5BC */  lw         $v0, %lo(D_8031C5BC)($v0)
     /* 55F60 80254F60 944E00CE */  lhu        $t6, 0xCE($v0)
     /* 55F64 80254F64 35CF001F */  ori        $t7, $t6, 0x1F
     /* 55F68 80254F68 03E00008 */  jr         $ra
@@ -33,8 +33,8 @@ endlabel CheatUnlockAllTracks
 nonmatching CheatSetUnlockBits1FF, 0x18
 
 glabel CheatSetUnlockBits1FF
-    /* 55F70 80254F70 3C028032 */  lui        $v0, %hi(gChampionshipData)
-    /* 55F74 80254F74 8C42C5BC */  lw         $v0, %lo(gChampionshipData)($v0)
+    /* 55F70 80254F70 3C028032 */  lui        $v0, %hi(D_8031C5BC)
+    /* 55F74 80254F74 8C42C5BC */  lw         $v0, %lo(D_8031C5BC)($v0)
     /* 55F78 80254F78 944E00CC */  lhu        $t6, 0xCC($v0)
     /* 55F7C 80254F7C 35CF01FF */  ori        $t7, $t6, 0x1FF
     /* 55F80 80254F80 03E00008 */  jr         $ra
@@ -44,8 +44,8 @@ endlabel CheatSetUnlockBits1FF
 nonmatching CheatSetUnlockBit200, 0x18
 
 glabel CheatSetUnlockBit200
-    /* 55F88 80254F88 3C028032 */  lui        $v0, %hi(gChampionshipData)
-    /* 55F8C 80254F8C 8C42C5BC */  lw         $v0, %lo(gChampionshipData)($v0)
+    /* 55F88 80254F88 3C028032 */  lui        $v0, %hi(D_8031C5BC)
+    /* 55F8C 80254F8C 8C42C5BC */  lw         $v0, %lo(D_8031C5BC)($v0)
     /* 55F90 80254F90 944E00CC */  lhu        $t6, 0xCC($v0)
     /* 55F94 80254F94 35CF0200 */  ori        $t7, $t6, 0x200
     /* 55F98 80254F98 03E00008 */  jr         $ra
@@ -55,8 +55,8 @@ endlabel CheatSetUnlockBit200
 nonmatching CheatSetUnlockBit1000, 0x18
 
 glabel CheatSetUnlockBit1000
-    /* 55FA0 80254FA0 3C028032 */  lui        $v0, %hi(gChampionshipData)
-    /* 55FA4 80254FA4 8C42C5BC */  lw         $v0, %lo(gChampionshipData)($v0)
+    /* 55FA0 80254FA0 3C028032 */  lui        $v0, %hi(D_8031C5BC)
+    /* 55FA4 80254FA4 8C42C5BC */  lw         $v0, %lo(D_8031C5BC)($v0)
     /* 55FA8 80254FA8 944E00CC */  lhu        $t6, 0xCC($v0)
     /* 55FAC 80254FAC 35CF1000 */  ori        $t7, $t6, 0x1000
     /* 55FB0 80254FB0 03E00008 */  jr         $ra
@@ -66,8 +66,8 @@ endlabel CheatSetUnlockBit1000
 nonmatching EnableRumblePak, 0x18
 
 glabel EnableRumblePak
-    /* 55FB8 80254FB8 3C028032 */  lui        $v0, %hi(gChampionshipData)
-    /* 55FBC 80254FBC 8C42C5BC */  lw         $v0, %lo(gChampionshipData)($v0)
+    /* 55FB8 80254FB8 3C028032 */  lui        $v0, %hi(D_8031C5BC)
+    /* 55FBC 80254FBC 8C42C5BC */  lw         $v0, %lo(D_8031C5BC)($v0)
     /* 55FC0 80254FC0 944E00CC */  lhu        $t6, 0xCC($v0)
     /* 55FC4 80254FC4 35CF0800 */  ori        $t7, $t6, 0x800
     /* 55FC8 80254FC8 03E00008 */  jr         $ra
@@ -77,8 +77,8 @@ endlabel EnableRumblePak
 nonmatching CheatSetUnlockBit400, 0x18
 
 glabel CheatSetUnlockBit400
-    /* 55FD0 80254FD0 3C028032 */  lui        $v0, %hi(gChampionshipData)
-    /* 55FD4 80254FD4 8C42C5BC */  lw         $v0, %lo(gChampionshipData)($v0)
+    /* 55FD0 80254FD0 3C028032 */  lui        $v0, %hi(D_8031C5BC)
+    /* 55FD4 80254FD4 8C42C5BC */  lw         $v0, %lo(D_8031C5BC)($v0)
     /* 55FD8 80254FD8 944E00CC */  lhu        $t6, 0xCC($v0)
     /* 55FDC 80254FDC 35CF0400 */  ori        $t7, $t6, 0x400
     /* 55FE0 80254FE0 03E00008 */  jr         $ra
@@ -88,8 +88,8 @@ endlabel CheatSetUnlockBit400
 nonmatching CheatUnlockTracks5To9, 0x18
 
 glabel CheatUnlockTracks5To9
-    /* 55FE8 80254FE8 3C028032 */  lui        $v0, %hi(gChampionshipData)
-    /* 55FEC 80254FEC 8C42C5BC */  lw         $v0, %lo(gChampionshipData)($v0)
+    /* 55FE8 80254FE8 3C028032 */  lui        $v0, %hi(D_8031C5BC)
+    /* 55FEC 80254FEC 8C42C5BC */  lw         $v0, %lo(D_8031C5BC)($v0)
     /* 55FF0 80254FF0 944E00CE */  lhu        $t6, 0xCE($v0)
     /* 55FF4 80254FF4 35CF03E0 */  ori        $t7, $t6, 0x3E0
     /* 55FF8 80254FF8 03E00008 */  jr         $ra
@@ -99,8 +99,8 @@ endlabel CheatUnlockTracks5To9
 nonmatching CheatSetUnlockBit8000, 0x18
 
 glabel CheatSetUnlockBit8000
-    /* 56000 80255000 3C028032 */  lui        $v0, %hi(gChampionshipData)
-    /* 56004 80255004 8C42C5BC */  lw         $v0, %lo(gChampionshipData)($v0)
+    /* 56000 80255000 3C028032 */  lui        $v0, %hi(D_8031C5BC)
+    /* 56004 80255004 8C42C5BC */  lw         $v0, %lo(D_8031C5BC)($v0)
     /* 56008 80255008 944E00CC */  lhu        $t6, 0xCC($v0)
     /* 5600C 8025500C 35CF8000 */  ori        $t7, $t6, 0x8000
     /* 56010 80255010 03E00008 */  jr         $ra

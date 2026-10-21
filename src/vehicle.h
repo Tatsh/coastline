@@ -24,11 +24,24 @@ typedef struct {
 } ReplayState;
 
 /**
+ * The saved settings and progress of a player. Its fields join this structure as the routines that
+ * use them are reconstructed.
+ */
+typedef struct {
+    u8 unreconstructed0[0xE4];
+    /** The button layout the player chose on the controller screen. */
+    s32 controllerLayout;
+} PlayerProfile;
+
+/**
  * A vehicle. The game prints its size, 0x2090 bytes, at start-up. Its fields join this structure as
  * the routines that use them are reconstructed.
  */
 typedef struct {
-    u8 unreconstructed0[0x2074];
+    u8 unreconstructed0[0xE5C];
+    /** The profile of the player who drives the vehicle. */
+    PlayerProfile *profile;
+    u8 unreconstructedE60[0x2074 - 0xE60];
     ReplayState *replay;
     u8 unreconstructed2078[0x2090 - 0x2078];
 } Vehicle;

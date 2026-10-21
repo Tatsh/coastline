@@ -803,14 +803,14 @@ nonmatching g_bSaveLoadFadeWaitFrames, 0xF
 dlabel g_bSaveLoadFadeWaitFrames
     /* 80316431 */ .space 0x0F
 
-nonmatching g_dwPhysicsReserved51, 0x4
+nonmatching g_dwControllerScreenItemCount, 0x4
 
-dlabel g_dwPhysicsReserved51
+dlabel g_dwControllerScreenItemCount
     /* 80316440 */ .space 0x04
 
-nonmatching g_dwPhysicsReserved52, 0x4
+nonmatching g_eControllerScreenSelection, 0x4
 
-dlabel g_dwPhysicsReserved52
+dlabel g_eControllerScreenSelection
     /* 80316444 */ .space 0x04
 
 nonmatching D_80316448, 0x8
@@ -2030,9 +2030,9 @@ nonmatching g_dwCollisionCount, 0x4
 dlabel g_dwCollisionCount
     /* 8031C5B8 */ .space 0x04
 
-nonmatching gChampionshipData, 0x4
+nonmatching D_8031C5BC, 0x4
 
-dlabel gChampionshipData
+dlabel D_8031C5BC
     /* 8031C5BC */ .space 0x04
 
 nonmatching g_bCollisionLayer0, 0x4
@@ -2065,16 +2065,10 @@ nonmatching g_pCollisionNormal, 0x74
 dlabel g_pCollisionNormal
     /* 8031C638 */ .space 0x74
 
-nonmatching D_8031C6AC, 0x20
+nonmatching D_8031C6AC, 0x2C
 
 dlabel D_8031C6AC
-    /* 8031C6AC */ .space 0x20
-
-nonmatching D_8031C6CC, 0xC
-
-/* Automatically generated and unreferenced pad */
-dlabel D_8031C6CC
-    /* 8031C6CC */ .space 0x0C
+    /* 8031C6AC */ .space 0x2C
 
 nonmatching g_aVehicles_LapCount, 0x4
 

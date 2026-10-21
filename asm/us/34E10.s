@@ -2090,8 +2090,8 @@ glabel RenderTrackGeometry
     /* 36C74 80235C74 1041000B */  beq        $v0, $at, .L80235CA4
     /* 36C78 80235C78 24010005 */   addiu     $at, $zero, 0x5
     /* 36C7C 80235C7C 14410004 */  bne        $v0, $at, .L80235C90
-    /* 36C80 80235C80 3C188032 */   lui       $t8, %hi(gChampionshipData)
-    /* 36C84 80235C84 8F18C5BC */  lw         $t8, %lo(gChampionshipData)($t8)
+    /* 36C80 80235C80 3C188032 */   lui       $t8, %hi(D_8031C5BC)
+    /* 36C84 80235C84 8F18C5BC */  lw         $t8, %lo(D_8031C5BC)($t8)
     /* 36C88 80235C88 930E0004 */  lbu        $t6, 0x4($t8)
     /* 36C8C 80235C8C 11C00005 */  beqz       $t6, .L80235CA4
   .L80235C90:

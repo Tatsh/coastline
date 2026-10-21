@@ -186,10 +186,10 @@ glabel ProcessOptionsMenu
     /* 12A50 80211A50 2402FFFF */   addiu     $v0, $zero, -0x1
     /* 12A54 80211A54 3C018027 */  lui        $at, %hi(g_dwMenuInputPlayerMask)
     /* 12A58 80211A58 AC221FA4 */  sw         $v0, %lo(g_dwMenuInputPlayerMask)($at)
-    /* 12A5C 80211A5C 3C018027 */  lui        $at, %hi(g_dwPaintSourcePlayerIdx)
+    /* 12A5C 80211A5C 3C018027 */  lui        $at, %hi(g_dwScreenPlayerIdx)
     /* 12A60 80211A60 3C048027 */  lui        $a0, %hi(g_pMenuScreenState3)
     /* 12A64 80211A64 3C058031 */  lui        $a1, %hi(g_dwPhysicsReserved48)
-    /* 12A68 80211A68 AC221FA0 */  sw         $v0, %lo(g_dwPaintSourcePlayerIdx)($at)
+    /* 12A68 80211A68 AC221FA0 */  sw         $v0, %lo(g_dwScreenPlayerIdx)($at)
     /* 12A6C 80211A6C 24A563A8 */  addiu      $a1, $a1, %lo(g_dwPhysicsReserved48)
     /* 12A70 80211A70 0C083102 */  jal        ResetAndInitDisplay
     /* 12A74 80211A74 24842468 */   addiu     $a0, $a0, %lo(g_pMenuScreenState3)
@@ -365,9 +365,9 @@ glabel ProcessOptionsMenu
     /* 12CE4 80211CE4 240BFFFF */  addiu      $t3, $zero, -0x1
     /* 12CE8 80211CE8 3C018027 */  lui        $at, %hi(g_dwControllerConfigButtonMask)
     /* 12CEC 80211CEC AC2B24E0 */  sw         $t3, %lo(g_dwControllerConfigButtonMask)($at)
-    /* 12CF0 80211CF0 3C018027 */  lui        $at, %hi(g_dwPaintSourcePlayerIdx)
+    /* 12CF0 80211CF0 3C018027 */  lui        $at, %hi(g_dwScreenPlayerIdx)
     /* 12CF4 80211CF4 240D0001 */  addiu      $t5, $zero, 0x1
-    /* 12CF8 80211CF8 AC2C1FA0 */  sw         $t4, %lo(g_dwPaintSourcePlayerIdx)($at)
+    /* 12CF8 80211CF8 AC2C1FA0 */  sw         $t4, %lo(g_dwScreenPlayerIdx)($at)
     /* 12CFC 80211CFC 3C018027 */  lui        $at, %hi(g_dwMenuInputPlayerMask)
     /* 12D00 80211D00 3C048021 */  lui        $a0, %hi(ProcessControllerConfigScreen)
     /* 12D04 80211D04 018D7004 */  sllv       $t6, $t5, $t4

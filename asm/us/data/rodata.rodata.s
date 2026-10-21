@@ -6398,11 +6398,11 @@ enddlabel g_szController1
 nonmatching switchdataD_802a92cc
 
 dlabel switchdataD_802a92cc
-    /* AA2CC 802A92CC 80216820 */ .word .L80216820
-    /* AA2D0 802A92D0 802169D4 */ .word .L802169D4
-    /* AA2D4 802A92D4 80216B88 */ .word .L80216B88
-    /* AA2D8 802A92D8 80216D3C */ .word .L80216D3C
-    /* AA2DC 802A92DC 80216F04 */ .word .L80216F04
+    /* AA2CC 802A92CC 80216820 */ .word 0
+    /* AA2D0 802A92D0 802169D4 */ .word 0
+    /* AA2D4 802A92D4 80216B88 */ .word 0
+    /* AA2D8 802A92D8 80216D3C */ .word 0
+    /* AA2DC 802A92DC 80216F04 */ .word 0
 enddlabel switchdataD_802a92cc
 
 .align 2

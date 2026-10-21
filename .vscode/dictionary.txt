@@ -39,6 +39,7 @@ contramread
 contramwrite
 contreaddata
 contrfail
+controllerscreen
 cosf
 coveragerc
 createmesgqueue

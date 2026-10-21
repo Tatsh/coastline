@@ -23,6 +23,20 @@ void SetTextStyleNormal(void);
 void SetTextAlignCenter(void);
 
 /**
+ * Start text at its position.
+ *
+ * @ghidraAddress USA: 0x8022f514
+ */
+void SetTextAlignLeft(void);
+
+/**
+ * End text at its position.
+ *
+ * @ghidraAddress USA: 0x8022f520
+ */
+void SetTextAlignRight(void);
+
+/**
  * Set the size of the font.
  *
  * @ghidraAddress USA: 0x8022f5d0

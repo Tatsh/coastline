@@ -6534,8 +6534,8 @@ endlabel RestoreRaceResultsFromSlots
 nonmatching SetTrackFromSeason, 0xA0
 
 glabel SetTrackFromSeason
-    /* 7304 80206304 3C028032 */  lui        $v0, %hi(gChampionshipData)
-    /* 7308 80206308 8C42C5BC */  lw         $v0, %lo(gChampionshipData)($v0)
+    /* 7304 80206304 3C028032 */  lui        $v0, %hi(D_8031C5BC)
+    /* 7308 80206308 8C42C5BC */  lw         $v0, %lo(D_8031C5BC)($v0)
     /* 730C 8020630C 3C058029 */  lui        $a1, %hi(g_SeasonTable)
     /* 7310 80206310 24A5B944 */  addiu      $a1, $a1, %lo(g_SeasonTable)
     /* 7314 80206314 904E0004 */  lbu        $t6, 0x4($v0)

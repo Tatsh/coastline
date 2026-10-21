@@ -156,8 +156,8 @@ glabel IsWeatherUnlocked
     /* D684 8020C684 28820009 */   slti      $v0, $a0, 0x9
     /* D688 8020C688 1040000D */  beqz       $v0, .L8020C6C0
   .L8020C68C:
-    /* D68C 8020C68C 3C0F8032 */   lui       $t7, %hi(gChampionshipData)
-    /* D690 8020C690 8DEFC5BC */  lw         $t7, %lo(gChampionshipData)($t7)
+    /* D68C 8020C68C 3C0F8032 */   lui       $t7, %hi(D_8031C5BC)
+    /* D690 8020C690 8DEFC5BC */  lw         $t7, %lo(D_8031C5BC)($t7)
     /* D694 8020C694 24190001 */  addiu      $t9, $zero, 0x1
     /* D698 8020C698 00994004 */  sllv       $t0, $t9, $a0
     /* D69C 8020C69C 95F800CC */  lhu        $t8, 0xCC($t7)
@@ -2150,8 +2150,8 @@ glabel ProcessTrackSelectScreen
     /* F3B8 8020E3B8 16B90021 */  bne        $s5, $t9, .L8020E440
     /* F3BC 8020E3BC 3C058031 */   lui       $a1, %hi(g_dwSelectedTrackIndex)
     /* F3C0 8020E3C0 8CA56308 */  lw         $a1, %lo(g_dwSelectedTrackIndex)($a1)
-    /* F3C4 8020E3C4 3C0F8032 */  lui        $t7, %hi(gChampionshipData)
-    /* F3C8 8020E3C8 8DEFC5BC */  lw         $t7, %lo(gChampionshipData)($t7)
+    /* F3C4 8020E3C4 3C0F8032 */  lui        $t7, %hi(D_8031C5BC)
+    /* F3C8 8020E3C8 8DEFC5BC */  lw         $t7, %lo(D_8031C5BC)($t7)
     /* F3CC 8020E3CC 00057080 */  sll        $t6, $a1, 2
     /* F3D0 8020E3D0 C6860FA0 */  lwc1       $f6, 0xFA0($s4)
     /* F3D4 8020E3D4 01EE6021 */  addu       $t4, $t7, $t6
@@ -2237,8 +2237,8 @@ glabel ProcessTrackSelectScreen
     /* F4FC 8020E4FC 16AD0027 */  bne        $s5, $t5, .L8020E59C
     /* F500 8020E500 3C058031 */   lui       $a1, %hi(g_dwSelectedTrackIndex)
     /* F504 8020E504 8CA56308 */  lw         $a1, %lo(g_dwSelectedTrackIndex)($a1)
-    /* F508 8020E508 3C188032 */  lui        $t8, %hi(gChampionshipData)
-    /* F50C 8020E50C 8F18C5BC */  lw         $t8, %lo(gChampionshipData)($t8)
+    /* F508 8020E508 3C188032 */  lui        $t8, %hi(D_8031C5BC)
+    /* F50C 8020E50C 8F18C5BC */  lw         $t8, %lo(D_8031C5BC)($t8)
     /* F510 8020E510 00054880 */  sll        $t1, $a1, 2
     /* F514 8020E514 C68A0F98 */  lwc1       $f10, 0xF98($s4)
     /* F518 8020E518 03095021 */  addu       $t2, $t8, $t1
@@ -2516,8 +2516,8 @@ glabel ProcessTrackSelectScreen
     /* F908 8020E908 8FAC00BC */  lw         $t4, 0xBC($sp)
     /* F90C 8020E90C 0195082A */  slt        $at, $t4, $s5
     /* F910 8020E910 1420000B */  bnez       $at, .L8020E940
-    /* F914 8020E914 3C0E8032 */   lui       $t6, %hi(gChampionshipData)
-    /* F918 8020E918 8DCEC5BC */  lw         $t6, %lo(gChampionshipData)($t6)
+    /* F914 8020E914 3C0E8032 */   lui       $t6, %hi(D_8031C5BC)
+    /* F918 8020E918 8DCEC5BC */  lw         $t6, %lo(D_8031C5BC)($t6)
     /* F91C 8020E91C 00166900 */  sll        $t5, $s6, 4
     /* F920 8020E920 0015C080 */  sll        $t8, $s5, 2
     /* F924 8020E924 01CD5821 */  addu       $t3, $t6, $t5
@@ -2549,8 +2549,8 @@ glabel ProcessTrackSelectScreen
     /* F980 8020E980 8FAC00BC */  lw         $t4, 0xBC($sp)
     /* F984 8020E984 0195082A */  slt        $at, $t4, $s5
     /* F988 8020E988 1420000B */  bnez       $at, .L8020E9B8
-    /* F98C 8020E98C 3C0E8032 */   lui       $t6, %hi(gChampionshipData)
-    /* F990 8020E990 8DCEC5BC */  lw         $t6, %lo(gChampionshipData)($t6)
+    /* F98C 8020E98C 3C0E8032 */   lui       $t6, %hi(D_8031C5BC)
+    /* F990 8020E990 8DCEC5BC */  lw         $t6, %lo(D_8031C5BC)($t6)
     /* F994 8020E994 00166880 */  sll        $t5, $s6, 2
     /* F998 8020E998 3C108027 */  lui        $s0, %hi(g_apszPlaceNames)
     /* F99C 8020E99C 01CD5821 */  addu       $t3, $t6, $t5
@@ -2584,8 +2584,8 @@ glabel ProcessTrackSelectScreen
     /* FA00 8020EA00 8FAE00BC */  lw         $t6, 0xBC($sp)
     /* FA04 8020EA04 01D5082A */  slt        $at, $t6, $s5
     /* FA08 8020EA08 14200015 */  bnez       $at, .L8020EA60
-    /* FA0C 8020EA0C 3C0D8032 */   lui       $t5, %hi(gChampionshipData)
-    /* FA10 8020EA10 8DADC5BC */  lw         $t5, %lo(gChampionshipData)($t5)
+    /* FA0C 8020EA0C 3C0D8032 */   lui       $t5, %hi(D_8031C5BC)
+    /* FA10 8020EA10 8DADC5BC */  lw         $t5, %lo(D_8031C5BC)($t5)
     /* FA14 8020EA14 00165880 */  sll        $t3, $s6, 2
     /* FA18 8020EA18 3C05802A */  lui        $a1, %hi(g_szPts)
     /* FA1C 8020EA1C 01ABC021 */  addu       $t8, $t5, $t3
@@ -2596,8 +2596,8 @@ glabel ProcessTrackSelectScreen
     /* FA30 8020EA30 02EAC821 */  addu       $t9, $s7, $t2
     /* FA34 8020EA34 0C098375 */  jal        sprintf
     /* FA38 8020EA38 93260000 */   lbu       $a2, 0x0($t9)
-    /* FA3C 8020EA3C 3C0F8032 */  lui        $t7, %hi(gChampionshipData)
-    /* FA40 8020EA40 8DEFC5BC */  lw         $t7, %lo(gChampionshipData)($t7)
+    /* FA3C 8020EA3C 3C0F8032 */  lui        $t7, %hi(D_8031C5BC)
+    /* FA40 8020EA40 8DEFC5BC */  lw         $t7, %lo(D_8031C5BC)($t7)
     /* FA44 8020EA44 00166080 */  sll        $t4, $s6, 2
     /* FA48 8020EA48 01EC7021 */  addu       $t6, $t7, $t4
     /* FA4C 8020EA4C 01D56821 */  addu       $t5, $t6, $s5
@@ -4048,8 +4048,8 @@ glabel ProcessTrackSelectScreen
     /* 10F7C 8020FF7C 8C42FF18 */  lw         $v0, %lo(g_dwGameMode)($v0)
     /* 10F80 8020FF80 54400024 */  bnel       $v0, $zero, .L80210014
     /* 10F84 8020FF84 24010002 */   addiu     $at, $zero, 0x2
-    /* 10F88 8020FF88 3C028032 */  lui        $v0, %hi(gChampionshipData)
-    /* 10F8C 8020FF8C 8C42C5BC */  lw         $v0, %lo(gChampionshipData)($v0)
+    /* 10F88 8020FF88 3C028032 */  lui        $v0, %hi(D_8031C5BC)
+    /* 10F8C 8020FF8C 8C42C5BC */  lw         $v0, %lo(D_8031C5BC)($v0)
     /* 10F90 8020FF90 240D0001 */  addiu      $t5, $zero, 0x1
     /* 10F94 8020FF94 3C018027 */  lui        $at, %hi(g_dwNumLocalPlayers)
     /* 10F98 8020FF98 AC2DFF08 */  sw         $t5, %lo(g_dwNumLocalPlayers)($at)
@@ -4186,8 +4186,8 @@ glabel ProcessTrackSelectScreen
     /* 11170 80210170 8D8C2070 */  lw         $t4, %lo(g_dwIsPaintMode)($t4)
     /* 11174 80210174 0000A825 */  or         $s5, $zero, $zero
     /* 11178 80210178 11800029 */  beqz       $t4, .L80210220
-    /* 1117C 8021017C 3C028027 */   lui       $v0, %hi(g_dwPaintSourcePlayerIdx)
-    /* 11180 80210180 24421FA0 */  addiu      $v0, $v0, %lo(g_dwPaintSourcePlayerIdx)
+    /* 1117C 8021017C 3C028027 */   lui       $v0, %hi(g_dwScreenPlayerIdx)
+    /* 11180 80210180 24421FA0 */  addiu      $v0, $v0, %lo(g_dwScreenPlayerIdx)
     /* 11184 80210184 8C4D0000 */  lw         $t5, 0x0($v0)
     /* 11188 80210188 3C198032 */  lui        $t9, %hi(D_8031D7D4)
     /* 1118C 8021018C 3C0B8032 */  lui        $t3, %hi(D_8031D7D4)
