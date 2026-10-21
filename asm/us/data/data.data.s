@@ -5315,12 +5315,6 @@ dlabel D_8027266C
     /* 7366C 8027266C 00000000 */ .word 0x00000000
 enddlabel D_8027266C
 
-nonmatching g_dwControllerScreenInitState
-
-dlabel g_dwControllerScreenInitState
-    /* 73670 80272670 00000000 */ .word 0x00000000
-enddlabel g_dwControllerScreenInitState
-
 nonmatching D_80272674
 
 /* Automatically generated and unreferenced pad */

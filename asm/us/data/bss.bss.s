@@ -758,16 +758,6 @@ nonmatching g_bPakDataWaitFrames, 0xF
 dlabel g_bPakDataWaitFrames
     /* 80316431 */ .space 0x0F
 
-nonmatching g_dwControllerScreenItemCount, 0x4
-
-dlabel g_dwControllerScreenItemCount
-    /* 80316440 */ .space 0x04
-
-nonmatching g_eControllerScreenSelection, 0x4
-
-dlabel g_eControllerScreenSelection
-    /* 80316444 */ .space 0x04
-
 nonmatching D_80316448, 0x8
 
 /* Automatically generated and unreferenced pad */

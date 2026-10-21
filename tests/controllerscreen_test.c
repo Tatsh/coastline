@@ -13,7 +13,6 @@
 Texture g_texControllerLayout0, g_texControllerLayout1, g_texControllerLayout2,
     g_texControllerLayout3, g_texControllerLayout4, g_TitleBarTextureDesc;
 MenuItem *g_apControllerScreenItems[6];
-s32 g_dwControllerScreenInitState, g_dwControllerScreenItemCount, g_eControllerScreenSelection;
 s32 g_dwScreenPlayerIdx, g_dwMenuTitleImageX, g_dwMenuTitleImageY, g_dwMenuTitleImageWidth,
     g_dwMenuTitleImageHeight;
 Texture *g_pMenuTitleImage;
@@ -22,6 +21,7 @@ Vehicle g_aVehicles[MAX_VEHICLES];
 static PlayerProfile profile;
 static s32 result, loads, texts, pictures;
 static const char *lastTitle;
+static s32 *selection;
 static ScreenCallback lastCallback;
 
 void ResetAndInitDisplay(MenuItem **items, s32 *itemCount) {
@@ -78,6 +78,7 @@ s32 ProcessScreenState(const char *title,
                        s32 bg,
                        s32 bb) {
     lastTitle = title;
+    selection = sel;
     assert(tr == 8 && br == 0xA0 && bg == 0x80 && bb == 0x20);
     return result;
 }
@@ -89,15 +90,21 @@ int main(void) {
 
     result = 0;
     ProcessControllerConfigScreen();
-    assert(loads == 5 && g_eControllerScreenSelection == 3 && g_dwControllerScreenInitState == 1);
+    assert(loads == 5 && *selection == 3);
     assert(strcmp(lastTitle, "Controller 2") == 0);
     assert(g_pfnScreenPostDrawCallback == DrawControllerLayoutDiagram);
+    /* A running screen does not start again. */
+    ProcessControllerConfigScreen();
+    assert(loads == 5);
 
-    g_eControllerScreenSelection = 2;
+    *selection = 2;
     result = MENU_RESULT_CHOSEN;
     ProcessControllerConfigScreen();
     assert(profile.controllerLayout == 2 && lastCallback == ProcessOptionsMenu);
-    assert(g_dwControllerScreenInitState == 0);
+    /* Leaving the screen returns it to the state before it starts. */
+    result = 0;
+    ProcessControllerConfigScreen();
+    assert(loads == 10 && *selection == 2);
 
     DrawControllerLayoutDiagram(3);
     assert(pictures == 3 && texts == 8);

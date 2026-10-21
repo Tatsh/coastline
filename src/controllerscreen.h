@@ -33,19 +33,6 @@ extern Texture g_TitleBarTextureDesc;
 extern MenuItem *g_apControllerScreenItems[];
 
 /**
- * The state of the screen: 0 before it starts, 1 while it runs.
- *
- * @ghidraAddress USA: 0x80272670
- */
-extern s32 g_dwControllerScreenInitState;
-
-/** @ghidraAddress USA: 0x80316440 */
-extern s32 g_dwControllerScreenItemCount;
-
-/** The layout under the cursor. @ghidraAddress USA: 0x80316444 */
-extern s32 g_eControllerScreenSelection;
-
-/**
  * Draw the picture of a button layout with the action of each button.
  *
  * @param layout The index of the layout, from 0 to 4.
