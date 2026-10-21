@@ -3,6 +3,9 @@
 #include "../os/osint.h"
 #include "piint.h"
 
+OSPiHandle LeoDiskHandle;
+OSPiHandle *__osDiskHandle;
+
 OSPiHandle *osLeoDiskInit(void) {
     u32 saveMask;
 

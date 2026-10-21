@@ -3,6 +3,8 @@
 #include "../os/osint.h"
 #include "piint.h"
 
+OSPiHandle CartRomHandle;
+
 OSPiHandle *osCartRomInit(void) {
     u32 domain = 0;
     u32 saveMask;

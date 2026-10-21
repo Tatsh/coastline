@@ -2,6 +2,13 @@
 
 #include "osint.h"
 
+OSTimer __osBaseTimer;
+OSTime __osCurrentTime;
+u32 __osBaseCounter;
+u32 __osViIntrCount;
+u32 __osTimerCounter;
+OSTimer *__osTimerList = &__osBaseTimer;
+
 void __osTimerServicesInit(void) {
     __osCurrentTime = 0;
     __osBaseCounter = 0;

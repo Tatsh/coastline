@@ -65279,21 +65279,6 @@ dlabel D_802A62B8
     /* A72CC 802A62CC 00000000 */ .word 0x00000000
 enddlabel D_802A62B8
 
-nonmatching __osTimerList
-
-dlabel __osTimerList
-    /* A72D0 802A62D0 803818A0 */ .word __osBaseTimer
-enddlabel __osTimerList
-
-nonmatching D_802A62D4
-
-/* Automatically generated and unreferenced pad */
-dlabel D_802A62D4
-    /* A72D4 802A62D4 00000000 */ .word 0x00000000
-    /* A72D8 802A62D8 00000000 */ .word 0x00000000
-    /* A72DC 802A62DC 00000000 */ .word 0x00000000
-enddlabel D_802A62D4
-
 nonmatching __osPiAccessQueueEnabled
 
 dlabel __osPiAccessQueueEnabled
