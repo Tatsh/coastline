@@ -317,7 +317,7 @@ void ProcessTrackMenu(void) {
                 g_apTrackMenuItems[i]->flags &= ~MENU_ITEM_ADJUSTABLE;
             }
         }
-        LoadMenuTextures();
+        PreparePakDataScreen();
         ValidateChampionshipProgress();
 
         /* The two cars of the season stand at the origin. */

@@ -15,10 +15,6 @@
 /* The step of the fades of the menu. */
 #define PAK_MENU_FADE_STEP 0.2f
 
-/* The codes of the notes of this game. */
-#define GAME_CODE 0x4E475245
-#define COMPANY_CODE 0x3544
-
 /* The pages of a Controller Pak, and the bytes of a page. */
 #define PAK_PAGES 123
 #define PAK_PAGE_SHIFT 8
@@ -46,14 +42,14 @@ static void SetNoteColors(s32 note) {
 /* Mount the Pak, repairing its identity if it is fatal, unless the controller holds a Rumble
  * Pak. Return FALSE for a Rumble Pak. */
 static s32 MountPak(void) {
-    gControllerPakState = osPfsInitPak(&g_SiMesgQueue, &g_aPakPfs, 0);
+    gControllerPakState = osPfsInitPak(&g_SiMesgQueue, &g_aPakPfs[0], 0);
     if (gControllerPakState != 0 && gControllerPakState == PFS_ERR_ID_FATAL) {
         if (osMotorInit(&g_SiMesgQueue, &g_aContPfs[0], 0) == 0) {
             return FALSE;
         }
-        gControllerPakState = osPfsRepairId(&g_aPakPfs);
+        gControllerPakState = osPfsRepairId(&g_aPakPfs[0]);
         if (gControllerPakState == 0) {
-            gControllerPakState = osPfsInitPak(&g_SiMesgQueue, &g_aPakPfs, 0);
+            gControllerPakState = osPfsInitPak(&g_SiMesgQueue, &g_aPakPfs[0], 0);
         }
     }
     return TRUE;
@@ -64,7 +60,7 @@ static s32 PakCallSucceeded(void) {
     if (gControllerPakState == 0) {
         return TRUE;
     }
-    return gControllerPakState == PFS_ERR_INCONSISTENT && osPfsChecker(&g_aPakPfs) == 0;
+    return gControllerPakState == PFS_ERR_INCONSISTENT && osPfsChecker(&g_aPakPfs[0]) == 0;
 }
 
 static s32 IsNoteEmpty(s32 note) {
@@ -187,18 +183,18 @@ void ProcessPakMenuScreen(void) {
             g_bPakMenuState = PAK_MENU_ERROR;
             break;
         }
-        bcopy(g_aPakPfs.id, g_aSaveIdPort0, sizeof(g_aPakPfs.id));
+        bcopy(g_aPakPfs[0].id, g_aabSavePakIds[0], sizeof(g_aPakPfs[0].id));
         g_bPakMenuState = PAK_MENU_READ_DIRECTORY;
         break;
 
     case PAK_MENU_READ_DIRECTORY:
-        gControllerPakState = osPfsNumFiles(&g_aPakPfs, &maxFiles, &g_dwPakNoteCount);
+        gControllerPakState = osPfsNumFiles(&g_aPakPfs[0], &maxFiles, &g_dwPakNoteCount);
         if (!PakCallSucceeded()) {
             g_bPakMenuState = PAK_MENU_ERROR;
             break;
         }
         for (note = 0; note < PAK_NOTES; note++) {
-            if (osPfsFileState(&g_aPakPfs, note, &g_aPakDirEntries[note]) != 0) {
+            if (osPfsFileState(&g_aPakPfs[0], note, &g_aPakDirEntries[note]) != 0) {
                 g_wPakEmptySlotMask |= 1 << note;
             }
         }
@@ -215,7 +211,7 @@ void ProcessPakMenuScreen(void) {
                 g_bPakLastValidNote = note;
             }
         }
-        gControllerPakState = osPfsFreeBlocks(&g_aPakPfs, &g_dwPakFreeBlocks);
+        gControllerPakState = osPfsFreeBlocks(&g_aPakPfs[0], &g_dwPakFreeBlocks);
         if (!PakCallSucceeded()) {
             g_bPakMenuState = PAK_MENU_ERROR;
             break;
@@ -305,7 +301,7 @@ void ProcessPakMenuScreen(void) {
         OSPfsState *entry = &g_aPakDirEntries[g_bPakSelectedNote];
         u8 selected;
 
-        gControllerPakState = osPfsDeleteFile(&g_aPakPfs,
+        gControllerPakState = osPfsDeleteFile(&g_aPakPfs[0],
                                               entry->company_code,
                                               entry->game_code,
                                               (u8 *)entry->game_name,
@@ -420,15 +416,15 @@ s32 InitPakAndEnumerateFiles(void) {
         g_wSerialInterfaceIdle = 1;
         return TRUE;
     }
-    bcopy(g_aPakPfs.id, g_aSaveIdPort0, sizeof(g_aPakPfs.id));
-    gControllerPakState = osPfsNumFiles(&g_aPakPfs, &maxFiles, &g_nPakFilesUsed);
+    bcopy(g_aPakPfs[0].id, g_aabSavePakIds[0], sizeof(g_aPakPfs[0].id));
+    gControllerPakState = osPfsNumFiles(&g_aPakPfs[0], &maxFiles, &g_nPakFilesUsed);
     if (!PakCallSucceeded()) {
         g_wSerialInterfaceIdle = 1;
         return TRUE;
     }
 
     for (note = 0; note < PAK_NOTES; note++) {
-        if (osPfsFileState(&g_aPakPfs, note, &g_aPakFileStates[note]) != 0) {
+        if (osPfsFileState(&g_aPakPfs[0], note, &g_aPakFileStates[note]) != 0) {
             g_wPakScanEmptyMask |= 1 << note;
         }
     }

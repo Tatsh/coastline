@@ -122,7 +122,7 @@ void ProcessMainMenu(void) {
             SetCurrentScreenCallback(ProcessCarSelectScreen);
             break;
         case MAIN_MENU_LOAD_SAVE:
-            g_bSaveLoadEntryPoint = 0;
+            g_bSaveLoadEntryPoint = SAVE_LOAD_FROM_MAIN_MENU;
             SetCurrentScreenCallback(ProcessDataSaveLoadMenu);
             break;
         case MAIN_MENU_OPTIONS:

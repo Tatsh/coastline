@@ -5603,10 +5603,10 @@ glabel InitControllersAndPaks
   .L8021C29C:
     /* 1D29C 8021C29C 3C038027 */  lui        $v1, %hi(gControllerPakState)
     /* 1D2A0 8021C2A0 8C6324F0 */  lw         $v1, %lo(gControllerPakState)($v1)
-    /* 1D2A4 8021C2A4 3C048031 */  lui        $a0, %hi(g_aSaveIdPort0)
-    /* 1D2A8 8021C2A8 248463E0 */  addiu      $a0, $a0, %lo(g_aSaveIdPort0)
+    /* 1D2A4 8021C2A4 3C048031 */  lui        $a0, %hi(g_aabSavePakIds)
+    /* 1D2A8 8021C2A8 248463E0 */  addiu      $a0, $a0, %lo(g_aabSavePakIds)
     /* 1D2AC 8021C2AC 1060001A */  beqz       $v1, .L8021C318
-    /* 1D2B0 8021C2B0 3C058037 */   lui       $a1, %hi(D_80369ECC)
+    /* 1D2B0 8021C2B0 3C058037 */   lui       $a1, %hi(g_aPakPfs + 0xC)
     /* 1D2B4 8021C2B4 3C108021 */  lui        $s0, %hi(ProcessControllerCheck)
     /* 1D2B8 8021C2B8 2401000A */  addiu      $at, $zero, 0xA
     /* 1D2BC 8021C2BC 14610007 */  bne        $v1, $at, .L8021C2DC
@@ -5635,20 +5635,20 @@ glabel InitControllersAndPaks
     /* 1D310 8021C310 10000008 */  b          .L8021C334
     /* 1D314 8021C314 93A8002F */   lbu       $t0, 0x2F($sp)
   .L8021C318:
-    /* 1D318 8021C318 24A59ECC */  addiu      $a1, $a1, %lo(D_80369ECC)
+    /* 1D318 8021C318 24A59ECC */  addiu      $a1, $a1, %lo(g_aPakPfs + 0xC)
     /* 1D31C 8021C31C 0C0982C8 */  jal        memcpy
     /* 1D320 8021C320 24060020 */   addiu     $a2, $zero, 0x20
     /* 1D324 8021C324 24190001 */  addiu      $t9, $zero, 0x1
-    /* 1D328 8021C328 3C018031 */  lui        $at, %hi(g_bPakDataValid0)
-    /* 1D32C 8021C32C A0396420 */  sb         $t9, %lo(g_bPakDataValid0)($at)
+    /* 1D328 8021C328 3C018031 */  lui        $at, %hi(g_abSavePakIdKnown)
+    /* 1D32C 8021C32C A0396420 */  sb         $t9, %lo(g_abSavePakIdKnown)($at)
     /* 1D330 8021C330 93A8002F */  lbu        $t0, 0x2F($sp)
   .L8021C334:
     /* 1D334 8021C334 3C048027 */  lui        $a0, %hi(g_SiMesgQueue)
     /* 1D338 8021C338 24842D48 */  addiu      $a0, $a0, %lo(g_SiMesgQueue)
     /* 1D33C 8021C33C 31090002 */  andi       $t1, $t0, 0x2
     /* 1D340 8021C340 1120001B */  beqz       $t1, .L8021C3B0
-    /* 1D344 8021C344 3C058037 */   lui       $a1, %hi(g_PfsState1)
-    /* 1D348 8021C348 24A59F28 */  addiu      $a1, $a1, %lo(g_PfsState1)
+    /* 1D344 8021C344 3C058037 */   lui       $a1, %hi(g_aPakPfs + 0x68)
+    /* 1D348 8021C348 24A59F28 */  addiu      $a1, $a1, %lo(g_aPakPfs + 0x68)
     /* 1D34C 8021C34C 0C09872C */  jal        osPfsInitPak
     /* 1D350 8021C350 24060001 */   addiu     $a2, $zero, 0x1
     /* 1D354 8021C354 3C048027 */  lui        $a0, %hi(gControllerPakState)
@@ -5666,15 +5666,15 @@ glabel InitControllersAndPaks
     /* 1D384 8021C384 1000000A */  b          .L8021C3B0
     /* 1D388 8021C388 00000000 */   nop
   .L8021C38C:
-    /* 1D38C 8021C38C 3C048031 */  lui        $a0, %hi(g_aSaveIdPort1)
-    /* 1D390 8021C390 3C058037 */  lui        $a1, %hi(g_PfsId1)
-    /* 1D394 8021C394 24A59F34 */  addiu      $a1, $a1, %lo(g_PfsId1)
-    /* 1D398 8021C398 24846400 */  addiu      $a0, $a0, %lo(g_aSaveIdPort1)
+    /* 1D38C 8021C38C 3C048031 */  lui        $a0, %hi(g_aabSavePakIds + 0x20)
+    /* 1D390 8021C390 3C058037 */  lui        $a1, %hi(g_aPakPfs + 0x74)
+    /* 1D394 8021C394 24A59F34 */  addiu      $a1, $a1, %lo(g_aPakPfs + 0x74)
+    /* 1D398 8021C398 24846400 */  addiu      $a0, $a0, %lo(g_aabSavePakIds + 0x20)
     /* 1D39C 8021C39C 0C0982C8 */  jal        memcpy
     /* 1D3A0 8021C3A0 24060020 */   addiu     $a2, $zero, 0x20
     /* 1D3A4 8021C3A4 240A0001 */  addiu      $t2, $zero, 0x1
-    /* 1D3A8 8021C3A8 3C018031 */  lui        $at, %hi(g_bPakDataValid1)
-    /* 1D3AC 8021C3AC A02A6421 */  sb         $t2, %lo(g_bPakDataValid1)($at)
+    /* 1D3A8 8021C3A8 3C018031 */  lui        $at, %hi(g_abSavePakIdKnown + 0x1)
+    /* 1D3AC 8021C3AC A02A6421 */  sb         $t2, %lo(g_abSavePakIdKnown + 0x1)($at)
   .L8021C3B0:
     /* 1D3B0 8021C3B0 3C0B8037 */  lui        $t3, %hi(g_aPlayerInputState)
     /* 1D3B4 8021C3B4 8D6BA8E0 */  lw         $t3, %lo(g_aPlayerInputState)($t3)

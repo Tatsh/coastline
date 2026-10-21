@@ -5111,184 +5111,66 @@ dlabel D_802723C8
     /* 733CC 802723CC 00000000 */ .word 0x00000000
 enddlabel D_802723C8
 
-nonmatching g_dwMusicVolume
+nonmatching g_OptionSettings
 
-dlabel g_dwMusicVolume
+dlabel g_OptionSettings
     /* 733D0 802723D0 0000000A */ .word 0x0000000A
-enddlabel g_dwMusicVolume
-
-nonmatching g_dwSfxVolume
-
-dlabel g_dwSfxVolume
     /* 733D4 802723D4 0000000A */ .word 0x0000000A
-enddlabel g_dwSfxVolume
-
-nonmatching g_bSpeedUnitsMph
-
-dlabel g_bSpeedUnitsMph
     /* 733D8 802723D8 00000001 */ .word 0x00000001
-enddlabel g_bSpeedUnitsMph
+enddlabel g_OptionSettings
 
-nonmatching g_pMenuScreenData
+nonmatching g_aOptionsMenuItems
 
-dlabel g_pMenuScreenData
+dlabel g_aOptionsMenuItems
     /* 733DC 802723DC 802A8060 */ .word g_szOptionBgm
-enddlabel g_pMenuScreenData
-
-nonmatching D_802723E0
-
-/* Automatically generated and unreferenced pad */
-dlabel D_802723E0
     /* 733E0 802723E0 00000043 */ .word 0x00000043
     /* 733E4 802723E4 00000000 */ .word 0x00000000
     /* 733E8 802723E8 001FEB90 */ .word 0x001FEB90
     /* 733EC 802723EC 001FF680 */ .word 0x001FF680
-enddlabel D_802723E0
-
-nonmatching g_pMenuScreenState2
-
-dlabel g_pMenuScreenState2
     /* 733F0 802723F0 802A8064 */ .word g_szOptionSfx
-enddlabel g_pMenuScreenState2
-
-nonmatching D_802723F4
-
-/* Automatically generated and unreferenced pad */
-dlabel D_802723F4
     /* 733F4 802723F4 00000043 */ .word 0x00000043
     /* 733F8 802723F8 00000000 */ .word 0x00000000
     /* 733FC 802723FC 00200270 */ .word 0x00200270
     /* 73400 80272400 00201270 */ .word 0x00201270
-enddlabel D_802723F4
-
-nonmatching g_pszUnits
-
-dlabel g_pszUnits
     /* 73404 80272404 802A8068 */ .word g_szUnits
-enddlabel g_pszUnits
-
-nonmatching D_80272408
-
-/* Automatically generated and unreferenced pad */
-dlabel D_80272408
     /* 73408 80272408 00000003 */ .word 0x00000003
     /* 7340C 8027240C 00000000 */ .word 0x00000000
     /* 73410 80272410 00201270 */ .word 0x00201270
     /* 73414 80272414 00201A00 */ .word 0x00201A00
-enddlabel D_80272408
-
-nonmatching g_pszControllerConfiguration
-
-dlabel g_pszControllerConfiguration
     /* 73418 80272418 802A8070 */ .word g_szControllerConfiguration
-enddlabel g_pszControllerConfiguration
-
-nonmatching D_8027241C
-
-/* Automatically generated and unreferenced pad */
-dlabel D_8027241C
     /* 7341C 8027241C 00000000 */ .word 0x00000000
     /* 73420 80272420 00000000 */ .word 0x00000000
     /* 73424 80272424 001F4450 */ .word 0x001F4450
     /* 73428 80272428 001F60A0 */ .word 0x001F60A0
-enddlabel D_8027241C
-
-nonmatching g_pszSaveConfiguration
-
-dlabel g_pszSaveConfiguration
     /* 7342C 8027242C 802A808C */ .word g_szSaveConfiguration
-enddlabel g_pszSaveConfiguration
-
-nonmatching D_80272430
-
-/* Automatically generated and unreferenced pad */
-dlabel D_80272430
     /* 73430 80272430 00000002 */ .word 0x00000002
     /* 73434 80272434 00000000 */ .word 0x00000000
     /* 73438 80272438 001F7680 */ .word 0x001F7680
     /* 7343C 8027243C 001F8190 */ .word 0x001F8190
-enddlabel D_80272430
-
-nonmatching g_pszLoadConfiguration
-
-dlabel g_pszLoadConfiguration
     /* 73440 80272440 802A80A0 */ .word g_szLoadConfiguration
-enddlabel g_pszLoadConfiguration
-
-nonmatching D_80272444
-
-/* Automatically generated and unreferenced pad */
-dlabel D_80272444
     /* 73444 80272444 00000002 */ .word 0x00000002
     /* 73448 80272448 00000000 */ .word 0x00000000
     /* 7344C 8027244C 001F6B70 */ .word 0x001F6B70
     /* 73450 80272450 001F7680 */ .word 0x001F7680
-enddlabel D_80272444
-
-nonmatching g_pszCredits
-
-dlabel g_pszCredits
     /* 73454 80272454 802A80B4 */ .word g_szCredits
-enddlabel g_pszCredits
-
-nonmatching D_80272458
-
-/* Automatically generated and unreferenced pad */
-dlabel D_80272458
     /* 73458 80272458 00000000 */ .word 0x00000000
     /* 7345C 8027245C 00000000 */ .word 0x00000000
     /* 73460 80272460 001FF680 */ .word 0x001FF680
     /* 73464 80272464 00200270 */ .word 0x00200270
-enddlabel D_80272458
+enddlabel g_aOptionsMenuItems
 
-nonmatching g_pMenuScreenState3
+nonmatching g_apOptionsMenuItems
 
-dlabel g_pMenuScreenState3
-    /* 73468 80272468 802723DC */ .word g_pMenuScreenData
-enddlabel g_pMenuScreenState3
-
-nonmatching g_pMenuScreenState4
-
-dlabel g_pMenuScreenState4
-    /* 7346C 8027246C 802723F0 */ .word g_pMenuScreenState2
-enddlabel g_pMenuScreenState4
-
-nonmatching g_pMenuScreenState5
-
-dlabel g_pMenuScreenState5
-    /* 73470 80272470 80272404 */ .word g_pszUnits
-enddlabel g_pMenuScreenState5
-
-nonmatching g_pMenuScreenState6
-
-dlabel g_pMenuScreenState6
-    /* 73474 80272474 80272418 */ .word g_pszControllerConfiguration
-enddlabel g_pMenuScreenState6
-
-nonmatching g_pMenuScreenState7
-
-dlabel g_pMenuScreenState7
-    /* 73478 80272478 8027242C */ .word g_pszSaveConfiguration
-enddlabel g_pMenuScreenState7
-
-nonmatching g_pMenuScreenState8
-
-dlabel g_pMenuScreenState8
-    /* 7347C 8027247C 80272440 */ .word g_pszLoadConfiguration
-enddlabel g_pMenuScreenState8
-
-nonmatching g_pMenuScreenState9
-
-dlabel g_pMenuScreenState9
-    /* 73480 80272480 80272454 */ .word g_pszCredits
-enddlabel g_pMenuScreenState9
-
-nonmatching D_80272484
-
-/* Automatically generated and unreferenced pad */
-dlabel D_80272484
+dlabel g_apOptionsMenuItems
+    /* 73468 80272468 802723DC */ .word g_aOptionsMenuItems
+    /* 7346C 8027246C 802723F0 */ .word g_aOptionsMenuItems + 0x14
+    /* 73470 80272470 80272404 */ .word g_aOptionsMenuItems + 0x28
+    /* 73474 80272474 80272418 */ .word g_aOptionsMenuItems + 0x3C
+    /* 73478 80272478 8027242C */ .word g_aOptionsMenuItems + 0x50
+    /* 7347C 8027247C 80272440 */ .word g_aOptionsMenuItems + 0x64
+    /* 73480 80272480 80272454 */ .word g_aOptionsMenuItems + 0x78
     /* 73484 80272484 00000000 */ .word 0x00000000
-enddlabel D_80272484
+enddlabel g_apOptionsMenuItems
 
 nonmatching g_adwBgmVolumeLevels
 
@@ -5302,30 +5184,14 @@ dlabel g_adwBgmVolumeLevels
     /* 734A0 802724A0 0000001C */ .word 0x0000001C
     /* 734A4 802724A4 00000021 */ .word 0x00000021
     /* 734A8 802724A8 00000026 */ .word 0x00000026
-enddlabel g_adwBgmVolumeLevels
-
-nonmatching g_dwMenuScreenStateId
-
-dlabel g_dwMenuScreenStateId
     /* 734AC 802724AC 0000002B */ .word 0x0000002B
-enddlabel g_dwMenuScreenStateId
-
-nonmatching g_dwMenuScreenTransition
-
-dlabel g_dwMenuScreenTransition
     /* 734B0 802724B0 00000030 */ .word 0x00000030
-enddlabel g_dwMenuScreenTransition
+enddlabel g_adwBgmVolumeLevels
 
 nonmatching g_adwSfxVolumeLevels
 
 dlabel g_adwSfxVolumeLevels
     /* 734B4 802724B4 00000000 */ .word 0x00000000
-enddlabel g_adwSfxVolumeLevels
-
-nonmatching D_802724B8
-
-/* Automatically generated and unreferenced pad */
-dlabel D_802724B8
     /* 734B8 802724B8 00000019 */ .word 0x00000019
     /* 734BC 802724BC 00000033 */ .word 0x00000033
     /* 734C0 802724C0 0000004C */ .word 0x0000004C
@@ -5334,25 +5200,15 @@ dlabel D_802724B8
     /* 734CC 802724CC 00000099 */ .word 0x00000099
     /* 734D0 802724D0 000000B2 */ .word 0x000000B2
     /* 734D4 802724D4 000000CC */ .word 0x000000CC
-enddlabel D_802724B8
-
-nonmatching g_dwControllerConfigFlags
-
-dlabel g_dwControllerConfigFlags
     /* 734D8 802724D8 000000E5 */ .word 0x000000E5
-enddlabel g_dwControllerConfigFlags
-
-nonmatching g_dwControllerConfigPort
-
-dlabel g_dwControllerConfigPort
     /* 734DC 802724DC 000000FF */ .word 0x000000FF
-enddlabel g_dwControllerConfigPort
+enddlabel g_adwSfxVolumeLevels
 
-nonmatching g_dwControllerConfigButtonMask
+nonmatching g_dwOptionsMenuState
 
-dlabel g_dwControllerConfigButtonMask
+dlabel g_dwOptionsMenuState
     /* 734E0 802724E0 00000000 */ .word 0x00000000
-enddlabel g_dwControllerConfigButtonMask
+enddlabel g_dwOptionsMenuState
 
 nonmatching D_802724E4
 
@@ -5390,227 +5246,100 @@ dlabel g_bSaveLoadRumbleSwapPending
     /* 734FC 802724FC 00000000 */ .word 0x00000000
 enddlabel g_bSaveLoadRumbleSwapPending
 
-nonmatching gPakMenuState
+nonmatching g_pPakDataBuffer
 
-dlabel gPakMenuState
+dlabel g_pPakDataBuffer
     /* 73500 80272500 00000000 */ .word 0x00000000
-enddlabel gPakMenuState
+enddlabel g_pPakDataBuffer
 
-nonmatching g_dwPakSeasonExt0
+nonmatching g_abSaveLoadSeasonNoteName
 
-dlabel g_dwPakSeasonExt0
+dlabel g_abSaveLoadSeasonNoteName
     /* 73504 80272504 2D28290F */ .word 0x2D28290F
-enddlabel g_dwPakSeasonExt0
-
-nonmatching g_dwPakSeasonExt1
-
-dlabel g_dwPakSeasonExt1
     /* 73508 80272508 201E1A2B */ .word 0x201E1A2B
-enddlabel g_dwPakSeasonExt1
-
-nonmatching g_dwPakSeasonExt2
-
-dlabel g_dwPakSeasonExt2
     /* 7350C 8027250C 0F2C1E1A */ .word 0x0F2C1E1A
-enddlabel g_dwPakSeasonExt2
+    /* 73510 80272510 2C282700 */ .word 0x2C282700
+enddlabel g_abSaveLoadSeasonNoteName
 
-.align 2
-nonmatching g_dwPakSeasonExt3
+nonmatching g_abSaveLoadGhostNoteName
 
-dlabel g_dwPakSeasonExt3
-    /* 73510 80272510 */ .asciz ",('"
-    /* 2C282700 */
-enddlabel g_dwPakSeasonExt3
-.align 2
-
-nonmatching g_dwPakGhostExt0
-
-dlabel g_dwPakGhostExt0
+dlabel g_abSaveLoadGhostNoteName
     /* 73514 80272514 2D28290F */ .word 0x2D28290F
-enddlabel g_dwPakGhostExt0
-
-nonmatching g_dwPakGhostExt1
-
-dlabel g_dwPakGhostExt1
     /* 73518 80272518 201E1A2B */ .word 0x201E1A2B
-enddlabel g_dwPakGhostExt1
-
-nonmatching g_dwPakGhostExt2
-
-dlabel g_dwPakGhostExt2
     /* 7351C 8027251C 0F202128 */ .word 0x0F202128
-enddlabel g_dwPakGhostExt2
+    /* 73520 80272520 2C2D0000 */ .word 0x2C2D0000
+enddlabel g_abSaveLoadGhostNoteName
 
-.align 2
-nonmatching g_dwPakGhostExt3
+nonmatching g_abSaveLoadOptionsNoteName
 
-dlabel g_dwPakGhostExt3
-    /* 73520 80272520 */ .asciz ",-"
-    /* 2C2D0000 */
-enddlabel g_dwPakGhostExt3
-.align 2
-
-nonmatching g_dwPakOptionsExt0
-
-dlabel g_dwPakOptionsExt0
+dlabel g_abSaveLoadOptionsNoteName
     /* 73524 80272524 2D28290F */ .word 0x2D28290F
-enddlabel g_dwPakOptionsExt0
-
-nonmatching g_dwPakOptionsExt1
-
-dlabel g_dwPakOptionsExt1
     /* 73528 80272528 201E1A2B */ .word 0x201E1A2B
-enddlabel g_dwPakOptionsExt1
-
-nonmatching g_dwPakOptionsExt2
-
-dlabel g_dwPakOptionsExt2
     /* 7352C 8027252C 0F28292D */ .word 0x0F28292D
-enddlabel g_dwPakOptionsExt2
-
-nonmatching g_dwPakOptionsExt3
-
-dlabel g_dwPakOptionsExt3
     /* 73530 80272530 2228272C */ .word 0x2228272C
-enddlabel g_dwPakOptionsExt3
+enddlabel g_abSaveLoadOptionsNoteName
 
-nonmatching g_dwPakNoteSize
+nonmatching g_abSaveLoadNoteExtension
 
-dlabel g_dwPakNoteSize
+dlabel g_abSaveLoadNoteExtension
     /* 73534 80272534 00000000 */ .word 0x00000000
-enddlabel g_dwPakNoteSize
+enddlabel g_abSaveLoadNoteExtension
 
-nonmatching g_pszLoadSeasonData
+nonmatching g_apszSaveLoadChoices
 
-dlabel g_pszLoadSeasonData
+dlabel g_apszSaveLoadChoices
     /* 73538 80272538 802A8130 */ .word g_szLoadSeasonData_SaveLoadMenu
-enddlabel g_pszLoadSeasonData
-
-nonmatching g_pszSaveSeasonData
-
-dlabel g_pszSaveSeasonData
     /* 7353C 8027253C 802A8144 */ .word g_szSaveSeasonData
-enddlabel g_pszSaveSeasonData
-
-nonmatching g_pszLoadGhostCarData
-
-dlabel g_pszLoadGhostCarData
     /* 73540 80272540 802A8158 */ .word g_szLoadGhostCarData_SaveLoadMenu
-enddlabel g_pszLoadGhostCarData
-
-nonmatching g_pszSaveGhostCarData
-
-dlabel g_pszSaveGhostCarData
     /* 73544 80272544 802A816C */ .word g_szSaveGhostCarData
-enddlabel g_pszSaveGhostCarData
-
-nonmatching g_pszLoadOptions
-
-dlabel g_pszLoadOptions
     /* 73548 80272548 802A8180 */ .word g_szLoadOptions
-enddlabel g_pszLoadOptions
-
-nonmatching g_pszSaveOptions
-
-dlabel g_pszSaveOptions
     /* 7354C 8027254C 802A8190 */ .word g_szSaveOptions
-enddlabel g_pszSaveOptions
+enddlabel g_apszSaveLoadChoices
 
-nonmatching gPakFileType
+nonmatching g_bSaveLoadChoice
 
-dlabel gPakFileType
+dlabel g_bSaveLoadChoice
     /* 73550 80272550 00000000 */ .word 0x00000000
-enddlabel gPakFileType
+enddlabel g_bSaveLoadChoice
 
-nonmatching gPakFileOperation
+nonmatching g_bSaveLoadStep
 
-dlabel gPakFileOperation
+dlabel g_bSaveLoadStep
     /* 73554 80272554 01000000 */ .word 0x01000000
-enddlabel gPakFileOperation
+enddlabel g_bSaveLoadStep
 
-nonmatching g_dwControllerConfigState
+nonmatching g_abPakDataSeasonNoteName
 
-dlabel g_dwControllerConfigState
+dlabel g_abPakDataSeasonNoteName
     /* 73558 80272558 2D28290F */ .word 0x2D28290F
-enddlabel g_dwControllerConfigState
-
-nonmatching g_dwControllerConfigTimer
-
-dlabel g_dwControllerConfigTimer
     /* 7355C 8027255C 201E1A2B */ .word 0x201E1A2B
-enddlabel g_dwControllerConfigTimer
-
-nonmatching g_dwControllerConfigStep
-
-dlabel g_dwControllerConfigStep
     /* 73560 80272560 0F2C1E1A */ .word 0x0F2C1E1A
-enddlabel g_dwControllerConfigStep
+    /* 73564 80272564 2C282700 */ .word 0x2C282700
+enddlabel g_abPakDataSeasonNoteName
 
-.align 2
-nonmatching g_dwControllerConfigStickX
+nonmatching g_abPakDataGhostNoteName
 
-dlabel g_dwControllerConfigStickX
-    /* 73564 80272564 */ .asciz ",('"
-    /* 2C282700 */
-enddlabel g_dwControllerConfigStickX
-.align 2
-
-nonmatching g_dwControllerConfigStickY
-
-dlabel g_dwControllerConfigStickY
+dlabel g_abPakDataGhostNoteName
     /* 73568 80272568 2D28290F */ .word 0x2D28290F
-enddlabel g_dwControllerConfigStickY
-
-nonmatching g_dwControllerConfigButtons
-
-dlabel g_dwControllerConfigButtons
     /* 7356C 8027256C 201E1A2B */ .word 0x201E1A2B
-enddlabel g_dwControllerConfigButtons
-
-nonmatching g_dwControllerConfigCallback
-
-dlabel g_dwControllerConfigCallback
     /* 73570 80272570 0F202128 */ .word 0x0F202128
-enddlabel g_dwControllerConfigCallback
+    /* 73574 80272574 2C2D0000 */ .word 0x2C2D0000
+enddlabel g_abPakDataGhostNoteName
 
-.align 2
-nonmatching g_dwControllerConfigState2
+nonmatching g_abPakDataConfigurationNoteName
 
-dlabel g_dwControllerConfigState2
-    /* 73574 80272574 */ .asciz ",-"
-    /* 2C2D0000 */
-enddlabel g_dwControllerConfigState2
-.align 2
-
-nonmatching g_dwControllerConfigTimer2
-
-dlabel g_dwControllerConfigTimer2
+dlabel g_abPakDataConfigurationNoteName
     /* 73578 80272578 2D28290F */ .word 0x2D28290F
-enddlabel g_dwControllerConfigTimer2
-
-nonmatching g_dwControllerConfigStep2
-
-dlabel g_dwControllerConfigStep2
     /* 7357C 8027257C 201E1A2B */ .word 0x201E1A2B
-enddlabel g_dwControllerConfigStep2
-
-nonmatching g_dwControllerConfigStickX2
-
-dlabel g_dwControllerConfigStickX2
     /* 73580 80272580 0F28292D */ .word 0x0F28292D
-enddlabel g_dwControllerConfigStickX2
-
-nonmatching g_dwControllerConfigStickY2
-
-dlabel g_dwControllerConfigStickY2
     /* 73584 80272584 2228272C */ .word 0x2228272C
-enddlabel g_dwControllerConfigStickY2
+enddlabel g_abPakDataConfigurationNoteName
 
-nonmatching g_dwControllerConfigButtons2
+nonmatching g_abPakDataNoteExtension
 
-dlabel g_dwControllerConfigButtons2
+dlabel g_abPakDataNoteExtension
     /* 73588 80272588 00000000 */ .word 0x00000000
-enddlabel g_dwControllerConfigButtons2
+enddlabel g_abPakDataNoteExtension
 
 nonmatching D_8027258C
 
@@ -35935,16 +35664,11 @@ dlabel g_texButtonB
     /* 8E0E8 8028D0E8 001C7BA0 */ .word 0x001C7BA0
     /* 8E0EC 8028D0EC 10000000 */ .word 0x10000000
     /* 8E0F0 8028D0F0 00000018 */ .word 0x00000018
-enddlabel g_texButtonB
-
-nonmatching g_dwGfxDisplayListUsed
-
-dlabel g_dwGfxDisplayListUsed
     /* 8E0F4 8028D0F4 00000018 */ .word 0x00000018
     /* 8E0F8 8028D0F8 00000018 */ .word 0x00000018
     /* 8E0FC 8028D0FC 000000AE */ .word 0x000000AE
     /* 8E100 8028D100 000000DC */ .word 0x000000DC
-enddlabel g_dwGfxDisplayListUsed
+enddlabel g_texButtonB
 
 nonmatching g_nGfxDisplayListOffset
 

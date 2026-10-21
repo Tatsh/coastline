@@ -234,9 +234,9 @@ glabel StartAttractDemo
     /* 1630 80200630 00000000 */   nop
 endlabel StartAttractDemo
 
-nonmatching StartMultiplayerMode, 0x58
+nonmatching StartCreditsRace, 0x58
 
-glabel StartMultiplayerMode
+glabel StartCreditsRace
     /* 1634 80200634 3C0F8027 */  lui        $t7, %hi(g_dwMultiplayerMode)
     /* 1638 80200638 8DEFFF20 */  lw         $t7, %lo(g_dwMultiplayerMode)($t7)
     /* 163C 8020063C 27BDFFE8 */  addiu      $sp, $sp, -0x18
@@ -261,7 +261,7 @@ glabel StartMultiplayerMode
     /* 1680 80200680 27BD0018 */  addiu      $sp, $sp, 0x18
     /* 1684 80200684 03E00008 */  jr         $ra
     /* 1688 80200688 00000000 */   nop
-endlabel StartMultiplayerMode
+endlabel StartCreditsRace
 
 nonmatching StartChampionshipMode, 0x3C
 
@@ -5455,8 +5455,8 @@ glabel ProcessRaceHud
   .L80205370:
     /* 6370 80205370 3C048031 */  lui        $a0, %hi(g_szFormatBuffer)
     /* 6374 80205374 3C05802A */  lui        $a1, %hi(g_szFmtBgmVolume_PauseMenu)
-    /* 6378 80205378 3C078027 */  lui        $a3, %hi(g_dwMusicVolume)
-    /* 637C 8020537C 8CE723D0 */  lw         $a3, %lo(g_dwMusicVolume)($a3)
+    /* 6378 80205378 3C078027 */  lui        $a3, %hi(g_OptionSettings)
+    /* 637C 8020537C 8CE723D0 */  lw         $a3, %lo(g_OptionSettings)($a3)
     /* 6380 80205380 24A56F54 */  addiu      $a1, $a1, %lo(g_szFmtBgmVolume_PauseMenu)
     /* 6384 80205384 24845DD8 */  addiu      $a0, $a0, %lo(g_szFormatBuffer)
     /* 6388 80205388 0C098375 */  jal        sprintf
@@ -5482,8 +5482,8 @@ glabel ProcessRaceHud
   .L802053D4:
     /* 63D4 802053D4 3C048031 */  lui        $a0, %hi(g_szFormatBuffer)
     /* 63D8 802053D8 3C05802A */  lui        $a1, %hi(g_szFmtSfxVolume_PauseMenu)
-    /* 63DC 802053DC 3C078027 */  lui        $a3, %hi(g_dwSfxVolume)
-    /* 63E0 802053E0 8CE723D4 */  lw         $a3, %lo(g_dwSfxVolume)($a3)
+    /* 63DC 802053DC 3C078027 */  lui        $a3, %hi(g_OptionSettings + 0x4)
+    /* 63E0 802053E0 8CE723D4 */  lw         $a3, %lo(g_OptionSettings + 0x4)($a3)
     /* 63E4 802053E4 24A56F70 */  addiu      $a1, $a1, %lo(g_szFmtSfxVolume_PauseMenu)
     /* 63E8 802053E8 24845DD8 */  addiu      $a0, $a0, %lo(g_szFormatBuffer)
     /* 63EC 802053EC 0C098375 */  jal        sprintf

@@ -94,6 +94,7 @@ typedef struct {
     s32 controllerLayout;
     /** The best race on each track, in seconds, or 0 when none was set. */
     f32 raceRecords[PROFILE_RECORD_TRACKS];
+    u8 unreconstructed110[0x128 - 0x110];
 } PlayerProfile;
 
 /** The profile of the player being played. @ghidraAddress USA: 0x8031c5bc */

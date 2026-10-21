@@ -4339,11 +4339,11 @@ enddlabel g_szOptions2
 nonmatching switchdataD_802a811c
 
 dlabel switchdataD_802a811c
-    /* A911C 802A811C 80211CCC */ .word .L80211CCC
-    /* A9120 802A8120 80211CDC */ .word .L80211CDC
-    /* A9124 802A8124 80211D1C */ .word .L80211D1C
-    /* A9128 802A8128 80211D28 */ .word .L80211D28
-    /* A912C 802A812C 80211D34 */ .word .L80211D34
+    /* A911C 802A811C 80211CCC */ .word 0
+    /* A9120 802A8120 80211CDC */ .word 0
+    /* A9124 802A8124 80211D1C */ .word 0
+    /* A9128 802A8128 80211D28 */ .word 0
+    /* A912C 802A812C 80211D34 */ .word 0
 enddlabel switchdataD_802a811c
 
 .align 2
@@ -5795,177 +5795,177 @@ dlabel g_szSavedOk3
 enddlabel g_szSavedOk3
 .align 2
 
-nonmatching g_dwSaveLoadFadeInSpeed
+nonmatching g_fConst0p2_802a8ec0
 
-dlabel g_dwSaveLoadFadeInSpeed
+dlabel g_fConst0p2_802a8ec0
     /* A9EC0 802A8EC0 3E4CCCCD */ .float 0.200000003
-enddlabel g_dwSaveLoadFadeInSpeed
+enddlabel g_fConst0p2_802a8ec0
 
 nonmatching switchdataD_802a8ec4
 
 dlabel switchdataD_802a8ec4
-    /* A9EC4 802A8EC4 80212030 */ .word .L80212030
-    /* A9EC8 802A8EC8 80212030 */ .word .L80212030
-    /* A9ECC 802A8ECC 80212044 */ .word .L80212044
-    /* A9ED0 802A8ED0 80212044 */ .word .L80212044
-    /* A9ED4 802A8ED4 80212058 */ .word .L80212058
-    /* A9ED8 802A8ED8 80212058 */ .word .L80212058
+    /* A9EC4 802A8EC4 80212030 */ .word 0
+    /* A9EC8 802A8EC8 80212030 */ .word 0
+    /* A9ECC 802A8ECC 80212044 */ .word 0
+    /* A9ED0 802A8ED0 80212044 */ .word 0
+    /* A9ED4 802A8ED4 80212058 */ .word 0
+    /* A9ED8 802A8ED8 80212058 */ .word 0
 enddlabel switchdataD_802a8ec4
 
 nonmatching jtbl_802A8EDC
 
 dlabel jtbl_802A8EDC
-    /* A9EDC 802A8EDC 80212428 */ .word .L80212428
-    /* A9EE0 802A8EE0 80212444 */ .word .L80212444
-    /* A9EE4 802A8EE4 802125C0 */ .word .L802125C0
-    /* A9EE8 802A8EE8 802125F0 */ .word .L802125F0
-    /* A9EEC 802A8EEC 80212630 */ .word .L80212630
-    /* A9EF0 802A8EF0 802128C8 */ .word .L802128C8
-    /* A9EF4 802A8EF4 80212928 */ .word .L80212928
-    /* A9EF8 802A8EF8 80212A48 */ .word .L80212A48
-    /* A9EFC 802A8EFC 80212C08 */ .word .L80212C08
-    /* A9F00 802A8F00 80213128 */ .word .L80213128
-    /* A9F04 802A8F04 80213334 */ .word .L80213334
-    /* A9F08 802A8F08 8021355C */ .word .L8021355C
-    /* A9F0C 802A8F0C 802138C4 */ .word .L802138C4
-    /* A9F10 802A8F10 80214220 */ .word .L80214220
-    /* A9F14 802A8F14 80214674 */ .word .L80214674
-    /* A9F18 802A8F18 8021486C */ .word .L8021486C
-    /* A9F1C 802A8F1C 8021488C */ .word .L8021488C
+    /* A9EDC 802A8EDC 80212428 */ .word 0
+    /* A9EE0 802A8EE0 80212444 */ .word 0
+    /* A9EE4 802A8EE4 802125C0 */ .word 0
+    /* A9EE8 802A8EE8 802125F0 */ .word 0
+    /* A9EEC 802A8EEC 80212630 */ .word 0
+    /* A9EF0 802A8EF0 802128C8 */ .word 0
+    /* A9EF4 802A8EF4 80212928 */ .word 0
+    /* A9EF8 802A8EF8 80212A48 */ .word 0
+    /* A9EFC 802A8EFC 80212C08 */ .word 0
+    /* A9F00 802A8F00 80213128 */ .word 0
+    /* A9F04 802A8F04 80213334 */ .word 0
+    /* A9F08 802A8F08 8021355C */ .word 0
+    /* A9F0C 802A8F0C 802138C4 */ .word 0
+    /* A9F10 802A8F10 80214220 */ .word 0
+    /* A9F14 802A8F14 80214674 */ .word 0
+    /* A9F18 802A8F18 8021486C */ .word 0
+    /* A9F1C 802A8F1C 8021488C */ .word 0
 enddlabel jtbl_802A8EDC
 
-nonmatching g_dwSaveLoadFadeOutSpeedSecondary
+nonmatching g_fConst0p2_802a8f20
 
-dlabel g_dwSaveLoadFadeOutSpeedSecondary
+dlabel g_fConst0p2_802a8f20
     /* A9F20 802A8F20 3E4CCCCD */ .float 0.200000003
-enddlabel g_dwSaveLoadFadeOutSpeedSecondary
+enddlabel g_fConst0p2_802a8f20
 
-nonmatching g_dwSaveLoadFadeOutSpeedTertiary
+nonmatching g_fConst0p2_802a8f24
 
-dlabel g_dwSaveLoadFadeOutSpeedTertiary
+dlabel g_fConst0p2_802a8f24
     /* A9F24 802A8F24 3E4CCCCD */ .float 0.200000003
-enddlabel g_dwSaveLoadFadeOutSpeedTertiary
+enddlabel g_fConst0p2_802a8f24
 
 nonmatching switchdataD_802a8f28
 
 dlabel switchdataD_802a8f28
-    /* A9F28 802A8F28 80212B74 */ .word .L80212B74
-    /* A9F2C 802A8F2C 80212B84 */ .word .L80212B84
-    /* A9F30 802A8F30 80212B74 */ .word .L80212B74
-    /* A9F34 802A8F34 80212B84 */ .word .L80212B84
-    /* A9F38 802A8F38 80212B74 */ .word .L80212B74
-    /* A9F3C 802A8F3C 80212B94 */ .word .L80212B94
+    /* A9F28 802A8F28 80212B74 */ .word 0
+    /* A9F2C 802A8F2C 80212B84 */ .word 0
+    /* A9F30 802A8F30 80212B74 */ .word 0
+    /* A9F34 802A8F34 80212B84 */ .word 0
+    /* A9F38 802A8F38 80212B74 */ .word 0
+    /* A9F3C 802A8F3C 80212B94 */ .word 0
 enddlabel switchdataD_802a8f28
 
-nonmatching g_dwSaveLoadOverwriteCancelFadeSec
+nonmatching g_fConst0p2_802a8f40
 
-dlabel g_dwSaveLoadOverwriteCancelFadeSec
+dlabel g_fConst0p2_802a8f40
     /* A9F40 802A8F40 3E4CCCCD */ .float 0.200000003
-enddlabel g_dwSaveLoadOverwriteCancelFadeSec
+enddlabel g_fConst0p2_802a8f40
 
-nonmatching g_dwSaveLoadOverwriteCancelFadeTer
+nonmatching g_fConst0p2_802a8f44
 
-dlabel g_dwSaveLoadOverwriteCancelFadeTer
+dlabel g_fConst0p2_802a8f44
     /* A9F44 802A8F44 3E4CCCCD */ .float 0.200000003
-enddlabel g_dwSaveLoadOverwriteCancelFadeTer
+enddlabel g_fConst0p2_802a8f44
 
 nonmatching switchdataD_802a8f48
 
 dlabel switchdataD_802a8f48
-    /* A9F48 802A8F48 802139E4 */ .word .L802139E4
-    /* A9F4C 802A8F4C 80213FE4 */ .word .L80213FE4
-    /* A9F50 802A8F50 8021407C */ .word .L8021407C
-    /* A9F54 802A8F54 80213E5C */ .word .L80213E5C
-    /* A9F58 802A8F58 80213ECC */ .word .L80213ECC
-    /* A9F5C 802A8F5C 8021407C */ .word .L8021407C
-    /* A9F60 802A8F60 80213BE4 */ .word .L80213BE4
-    /* A9F64 802A8F64 80213BE4 */ .word .L80213BE4
-    /* A9F68 802A8F68 8021407C */ .word .L8021407C
-    /* A9F6C 802A8F6C 80213974 */ .word .L80213974
-    /* A9F70 802A8F70 802139E4 */ .word .L802139E4
+    /* A9F48 802A8F48 802139E4 */ .word 0
+    /* A9F4C 802A8F4C 80213FE4 */ .word 0
+    /* A9F50 802A8F50 8021407C */ .word 0
+    /* A9F54 802A8F54 80213E5C */ .word 0
+    /* A9F58 802A8F58 80213ECC */ .word 0
+    /* A9F5C 802A8F5C 8021407C */ .word 0
+    /* A9F60 802A8F60 80213BE4 */ .word 0
+    /* A9F64 802A8F64 80213BE4 */ .word 0
+    /* A9F68 802A8F68 8021407C */ .word 0
+    /* A9F6C 802A8F6C 80213974 */ .word 0
+    /* A9F70 802A8F70 802139E4 */ .word 0
 enddlabel switchdataD_802a8f48
 
-nonmatching g_dwSaveLoadRumbleSwapFadeSec
+nonmatching g_fConst0p2_802a8f74
 
-dlabel g_dwSaveLoadRumbleSwapFadeSec
+dlabel g_fConst0p2_802a8f74
     /* A9F74 802A8F74 3E4CCCCD */ .float 0.200000003
-enddlabel g_dwSaveLoadRumbleSwapFadeSec
+enddlabel g_fConst0p2_802a8f74
 
-nonmatching g_dwSaveLoadRumbleSwapFadeTer
+nonmatching g_fConst0p2_802a8f78
 
-dlabel g_dwSaveLoadRumbleSwapFadeTer
+dlabel g_fConst0p2_802a8f78
     /* A9F78 802A8F78 3E4CCCCD */ .float 0.200000003
-enddlabel g_dwSaveLoadRumbleSwapFadeTer
+enddlabel g_fConst0p2_802a8f78
 
 nonmatching switchdataD_802a8f7c
 
 dlabel switchdataD_802a8f7c
-    /* A9F7C 802A8F7C 80214264 */ .word .L80214264
-    /* A9F80 802A8F80 802143A4 */ .word .L802143A4
-    /* A9F84 802A8F84 80214304 */ .word .L80214304
-    /* A9F88 802A8F88 80214444 */ .word .L80214444
-    /* A9F8C 802A8F8C 802144E4 */ .word .L802144E4
-    /* A9F90 802A8F90 8021453C */ .word .L8021453C
+    /* A9F7C 802A8F7C 80214264 */ .word 0
+    /* A9F80 802A8F80 802143A4 */ .word 0
+    /* A9F84 802A8F84 80214304 */ .word 0
+    /* A9F88 802A8F88 80214444 */ .word 0
+    /* A9F8C 802A8F8C 802144E4 */ .word 0
+    /* A9F90 802A8F90 8021453C */ .word 0
 enddlabel switchdataD_802a8f7c
 
-nonmatching g_dwSaveLoadSuccessFadeSec
+nonmatching g_fConst0p2_802a8f94
 
-dlabel g_dwSaveLoadSuccessFadeSec
+dlabel g_fConst0p2_802a8f94
     /* A9F94 802A8F94 3E4CCCCD */ .float 0.200000003
-enddlabel g_dwSaveLoadSuccessFadeSec
+enddlabel g_fConst0p2_802a8f94
 
-nonmatching g_dwSaveLoadSuccessFadeTer
+nonmatching g_fConst0p2_802a8f98
 
-dlabel g_dwSaveLoadSuccessFadeTer
+dlabel g_fConst0p2_802a8f98
     /* A9F98 802A8F98 3E4CCCCD */ .float 0.200000003
-enddlabel g_dwSaveLoadSuccessFadeTer
+enddlabel g_fConst0p2_802a8f98
 
-nonmatching g_dwSaveLoadRumbleContinueFadeSec
+nonmatching g_fConst0p2_802a8f9c
 
-dlabel g_dwSaveLoadRumbleContinueFadeSec
+dlabel g_fConst0p2_802a8f9c
     /* A9F9C 802A8F9C 3E4CCCCD */ .float 0.200000003
-enddlabel g_dwSaveLoadRumbleContinueFadeSec
+enddlabel g_fConst0p2_802a8f9c
 
-nonmatching g_dwSaveLoadRumbleContinueFadeTer
+nonmatching g_fConst0p2_802a8fa0
 
-dlabel g_dwSaveLoadRumbleContinueFadeTer
+dlabel g_fConst0p2_802a8fa0
     /* A9FA0 802A8FA0 3E4CCCCD */ .float 0.200000003
-enddlabel g_dwSaveLoadRumbleContinueFadeTer
+enddlabel g_fConst0p2_802a8fa0
 
-nonmatching g_dwSaveLoadExitFadeSpeed
+nonmatching g_fConst0p2_802a8fa4
 
-dlabel g_dwSaveLoadExitFadeSpeed
+dlabel g_fConst0p2_802a8fa4
     /* A9FA4 802A8FA4 3E4CCCCD */ .float 0.200000003
-enddlabel g_dwSaveLoadExitFadeSpeed
+enddlabel g_fConst0p2_802a8fa4
 
-nonmatching g_dwSaveLoadExitRestoreFadeSec
+nonmatching g_fConst0p2_802a8fa8
 
-dlabel g_dwSaveLoadExitRestoreFadeSec
+dlabel g_fConst0p2_802a8fa8
     /* A9FA8 802A8FA8 3E4CCCCD */ .float 0.200000003
-enddlabel g_dwSaveLoadExitRestoreFadeSec
+enddlabel g_fConst0p2_802a8fa8
 
-nonmatching g_dwSaveLoadExitRestoreFadeTer
+nonmatching g_fConst0p2_802a8fac
 
-dlabel g_dwSaveLoadExitRestoreFadeTer
+dlabel g_fConst0p2_802a8fac
     /* A9FAC 802A8FAC 3E4CCCCD */ .float 0.200000003
-enddlabel g_dwSaveLoadExitRestoreFadeTer
+enddlabel g_fConst0p2_802a8fac
 
 nonmatching switchdataD_802a8fb0
 
 dlabel switchdataD_802a8fb0
-    /* A9FB0 802A8FB0 80214F70 */ .word .L80214F70
-    /* A9FB4 802A8FB4 80214FB4 */ .word .L80214FB4
-    /* A9FB8 802A8FB8 80214FEC */ .word .L80214FEC
-    /* A9FBC 802A8FBC 80215288 */ .word .L80215288
-    /* A9FC0 802A8FC0 802152E8 */ .word .L802152E8
-    /* A9FC4 802A8FC4 80215418 */ .word .L80215418
-    /* A9FC8 802A8FC8 80215590 */ .word .L80215590
-    /* A9FCC 802A8FCC 80215A68 */ .word .L80215A68
-    /* A9FD0 802A8FD0 80215C18 */ .word .L80215C18
-    /* A9FD4 802A8FD4 80215D98 */ .word .L80215D98
-    /* A9FD8 802A8FD8 802166F0 */ .word .L802166F0
-    /* A9FDC 802A8FDC 80216438 */ .word .L80216438
-    /* A9FE0 802A8FE0 80216768 */ .word .L80216768
+    /* A9FB0 802A8FB0 80214F70 */ .word 0
+    /* A9FB4 802A8FB4 80214FB4 */ .word 0
+    /* A9FB8 802A8FB8 80214FEC */ .word 0
+    /* A9FBC 802A8FBC 80215288 */ .word 0
+    /* A9FC0 802A8FC0 802152E8 */ .word 0
+    /* A9FC4 802A8FC4 80215418 */ .word 0
+    /* A9FC8 802A8FC8 80215590 */ .word 0
+    /* A9FCC 802A8FCC 80215A68 */ .word 0
+    /* A9FD0 802A8FD0 80215C18 */ .word 0
+    /* A9FD4 802A8FD4 80215D98 */ .word 0
+    /* A9FD8 802A8FD8 802166F0 */ .word 0
+    /* A9FDC 802A8FDC 80216438 */ .word 0
+    /* A9FE0 802A8FE0 80216768 */ .word 0
 enddlabel switchdataD_802a8fb0
 
 nonmatching g_fConst0p2_802a8fe4
@@ -5983,30 +5983,30 @@ enddlabel g_fConst0p2_802a8fe8
 nonmatching switchdataD_802a8fec
 
 dlabel switchdataD_802a8fec
-    /* A9FEC 802A8FEC 80215E98 */ .word .L80215E98
-    /* A9FF0 802A8FF0 80216230 */ .word .L80216230
-    /* A9FF4 802A8FF4 802162C4 */ .word .L802162C4
-    /* A9FF8 802A8FF8 8021611C */ .word .L8021611C
-    /* A9FFC 802A8FFC 80216188 */ .word .L80216188
-    /* AA000 802A9000 802162C4 */ .word .L802162C4
-    /* AA004 802A9004 80216060 */ .word .L80216060
-    /* AA008 802A9008 80216060 */ .word .L80216060
-    /* AA00C 802A900C 802162C4 */ .word .L802162C4
-    /* AA010 802A9010 80215E2C */ .word .L80215E2C
-    /* AA014 802A9014 80215E98 */ .word .L80215E98
+    /* A9FEC 802A8FEC 80215E98 */ .word 0
+    /* A9FF0 802A8FF0 80216230 */ .word 0
+    /* A9FF4 802A8FF4 802162C4 */ .word 0
+    /* A9FF8 802A8FF8 8021611C */ .word 0
+    /* A9FFC 802A8FFC 80216188 */ .word 0
+    /* AA000 802A9000 802162C4 */ .word 0
+    /* AA004 802A9004 80216060 */ .word 0
+    /* AA008 802A9008 80216060 */ .word 0
+    /* AA00C 802A900C 802162C4 */ .word 0
+    /* AA010 802A9010 80215E2C */ .word 0
+    /* AA014 802A9014 80215E98 */ .word 0
 enddlabel switchdataD_802a8fec
 
-nonmatching g_dwGfxDlPoolSize
+nonmatching g_fConst0p2_802a9018
 
-dlabel g_dwGfxDlPoolSize
+dlabel g_fConst0p2_802a9018
     /* AA018 802A9018 3E4CCCCD */ .float 0.200000003
-enddlabel g_dwGfxDlPoolSize
+enddlabel g_fConst0p2_802a9018
 
-nonmatching g_dwGfxDlAllocCount
+nonmatching g_fConst0p2_802a901c
 
-dlabel g_dwGfxDlAllocCount
+dlabel g_fConst0p2_802a901c
     /* AA01C 802A901C 3E4CCCCD */ .float 0.200000003
-enddlabel g_dwGfxDlAllocCount
+enddlabel g_fConst0p2_802a901c
 
 .align 2
 nonmatching g_szTypeA

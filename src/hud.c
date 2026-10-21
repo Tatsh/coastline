@@ -6,6 +6,7 @@
 #include "camera.h"
 #include "game.h"
 #include "input.h"
+#include "options.h"
 #include "racehud.h"
 #include "render.h"
 #include "system.h"
@@ -461,7 +462,7 @@ void DrawSpeedAndHudOverlay(void) {
     DrawHudMessage();
     SetTextStyleNormal();
     SetTextAlignRight();
-    if (g_bSpeedUnitsMph) {
+    if (g_OptionSettings.speedInMph) {
         sprintf(g_szHudSpeedTextBuf, "%%yw%.0f", (f64)(speed / KM_PER_MILE));
     } else {
         sprintf(g_szHudSpeedTextBuf, "%%yw%.0f", (f64)speed);
@@ -485,7 +486,7 @@ void DrawSpeedAndHudOverlay(void) {
         y -= g_aDashboardTextures[g_dwCurrentSplitScreenIndex].height;
     }
     SetTextSize(SPEED_TEXT_SIZE);
-    if (g_bSpeedUnitsMph) {
+    if (g_OptionSettings.speedInMph) {
         DrawText(g_szHudSpeedTextBuf, x, y - 3);
     } else {
         DrawText(g_szHudSpeedTextBuf, x - 3, y - 3);
@@ -495,7 +496,7 @@ void DrawSpeedAndHudOverlay(void) {
     }
     SetTextSize(SPEED_UNIT_TEXT_SIZE);
     SetTextAlignLeft();
-    if (g_bSpeedUnitsMph) {
+    if (g_OptionSettings.speedInMph) {
         DrawText("%wwmph", x, y - 3);
     } else {
         DrawText("%wwkph", x - 3, y - 3);

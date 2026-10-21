@@ -81,12 +81,12 @@ void InitGameAndShowMenus(void *arg) {
 
     /* Load the season data and the configuration from a Controller Pak, if one holds them. */
     ResetHeap();
-    LoadMenuTextures();
-    while (!ProcessPakDataScreen(PAK_DATA_SEASON, TRUE)) {
+    PreparePakDataScreen();
+    while (!ProcessPakDataScreen(PAK_DATA_LOAD_SEASON, TRUE)) {
     }
     ResetHeap();
-    LoadMenuTextures();
-    while (!ProcessPakDataScreen(PAK_DATA_CONFIGURATION, TRUE)) {
+    PreparePakDataScreen();
+    while (!ProcessPakDataScreen(PAK_DATA_LOAD_CONFIGURATION, TRUE)) {
     }
 
     ApplyVolumeSettings();

@@ -7110,8 +7110,8 @@ glabel ProcessDecalSaveLoad
     /* 4A378 80249378 8DCE1FA8 */  lw         $t6, %lo(g_dwMenuChoosingPlayer)($t6)
     /* 4A37C 8024937C 93B800B7 */  lbu        $t8, 0xB7($sp)
     /* 4A380 80249380 3C018032 */  lui        $at, %hi(g_abRumblePakPresent)
-    /* 4A384 80249384 3C198031 */  lui        $t9, %hi(g_bPakDataValid0)
-    /* 4A388 80249388 27396420 */  addiu      $t9, $t9, %lo(g_bPakDataValid0)
+    /* 4A384 80249384 3C198031 */  lui        $t9, %hi(g_abSavePakIdKnown)
+    /* 4A388 80249388 27396420 */  addiu      $t9, $t9, %lo(g_abSavePakIdKnown)
     /* 4A38C 8024938C 002E0821 */  addu       $at, $at, $t6
     /* 4A390 80249390 A020B1E8 */  sb         $zero, %lo(g_abRumblePakPresent)($at)
     /* 4A394 80249394 03191021 */  addu       $v0, $t8, $t9
@@ -7122,9 +7122,9 @@ glabel ProcessDecalSaveLoad
     /* 4A3A8 802493A8 0018C940 */   sll       $t9, $t8, 5
     /* 4A3AC 802493AC 93B800B7 */  lbu        $t8, 0xB7($sp)
     /* 4A3B0 802493B0 8FA50034 */  lw         $a1, 0x34($sp)
-    /* 4A3B4 802493B4 3C0F8031 */  lui        $t7, %hi(g_aSaveIdPort0)
+    /* 4A3B4 802493B4 3C0F8031 */  lui        $t7, %hi(g_aabSavePakIds)
     /* 4A3B8 802493B8 240E0001 */  addiu      $t6, $zero, 0x1
-    /* 4A3BC 802493BC 25EF63E0 */  addiu      $t7, $t7, %lo(g_aSaveIdPort0)
+    /* 4A3BC 802493BC 25EF63E0 */  addiu      $t7, $t7, %lo(g_aabSavePakIds)
     /* 4A3C0 802493C0 0018C940 */  sll        $t9, $t8, 5
     /* 4A3C4 802493C4 A04E0000 */  sb         $t6, 0x0($v0)
     /* 4A3C8 802493C8 032F2021 */  addu       $a0, $t9, $t7
@@ -7136,8 +7136,8 @@ glabel ProcessDecalSaveLoad
     /* 4A3E0 802493E0 1000061E */  b          .L8024AC5C
     /* 4A3E4 802493E4 A02E9E60 */   sb        $t6, %lo(gOsSchedulerState)($at)
   .L802493E8:
-    /* 4A3E8 802493E8 3C0F8031 */  lui        $t7, %hi(g_aSaveIdPort0)
-    /* 4A3EC 802493EC 25EF63E0 */  addiu      $t7, $t7, %lo(g_aSaveIdPort0)
+    /* 4A3E8 802493E8 3C0F8031 */  lui        $t7, %hi(g_aabSavePakIds)
+    /* 4A3EC 802493EC 25EF63E0 */  addiu      $t7, $t7, %lo(g_aabSavePakIds)
     /* 4A3F0 802493F0 032F2021 */  addu       $a0, $t9, $t7
     /* 4A3F4 802493F4 24A5000C */  addiu      $a1, $a1, 0xC
     /* 4A3F8 802493F8 AFA50038 */  sw         $a1, 0x38($sp)
@@ -7519,8 +7519,8 @@ glabel ProcessDecalSaveLoad
     /* 4A990 80249990 AFAF0038 */  sw         $t7, 0x38($sp)
     /* 4A994 80249994 0C08BD77 */  jal        DrawText
     /* 4A998 80249998 2484AC34 */   addiu     $a0, $a0, %lo(g_szOk5)
-    /* 4A99C 8024999C 3C058029 */  lui        $a1, %hi(g_dwGfxDisplayListUsed)
-    /* 4A9A0 802499A0 8CA5D0F4 */  lw         $a1, %lo(g_dwGfxDisplayListUsed)($a1)
+    /* 4A99C 8024999C 3C058029 */  lui        $a1, %hi(g_texButtonB + 0x14)
+    /* 4A9A0 802499A0 8CA5D0F4 */  lw         $a1, %lo(g_texButtonB + 0x14)($a1)
     /* 4A9A4 802499A4 3C04802B */  lui        $a0, %hi(g_szCancel7)
     /* 4A9A8 802499A8 8FA60038 */  lw         $a2, 0x38($sp)
     /* 4A9AC 802499AC 24A5013A */  addiu      $a1, $a1, 0x13A
@@ -12690,8 +12690,8 @@ glabel ProcessTextStyleMenu
     /* 4F4FC 8024E4FC 00000000 */   nop
     /* 4F500 8024E500 3C028029 */  lui        $v0, %hi(g_texButtonA + 0x10)
     /* 4F504 8024E504 8C42D0C0 */  lw         $v0, %lo(g_texButtonA + 0x10)($v0)
-    /* 4F508 8024E508 3C0A8029 */  lui        $t2, %hi(g_dwGfxDisplayListUsed)
-    /* 4F50C 8024E50C 8D4AD0F4 */  lw         $t2, %lo(g_dwGfxDisplayListUsed)($t2)
+    /* 4F508 8024E508 3C0A8029 */  lui        $t2, %hi(g_texButtonB + 0x14)
+    /* 4F50C 8024E50C 8D4AD0F4 */  lw         $t2, %lo(g_texButtonB + 0x14)($t2)
     /* 4F510 8024E510 2409014A */  addiu      $t1, $zero, 0x14A
     /* 4F514 8024E514 01228823 */  subu       $s1, $t1, $v0
     /* 4F518 8024E518 240B0160 */  addiu      $t3, $zero, 0x160
@@ -12886,9 +12886,9 @@ glabel ProcessTextStyleMenu
     /* 4F7FC 8024E7FC 24E70006 */   addiu     $a3, $a3, 0x6
     /* 4F800 8024E800 3C048029 */  lui        $a0, %hi(g_texButtonA)
     /* 4F804 8024E804 2484D0B0 */  addiu      $a0, $a0, %lo(g_texButtonA)
-    /* 4F808 8024E808 3C0A8029 */  lui        $t2, %hi(g_dwGfxDisplayListUsed)
+    /* 4F808 8024E808 3C0A8029 */  lui        $t2, %hi(g_texButtonB + 0x14)
     /* 4F80C 8024E80C 8C890014 */  lw         $t1, 0x14($a0)
-    /* 4F810 8024E810 8D4AD0F4 */  lw         $t2, %lo(g_dwGfxDisplayListUsed)($t2)
+    /* 4F810 8024E810 8D4AD0F4 */  lw         $t2, %lo(g_texButtonB + 0x14)($t2)
     /* 4F814 8024E814 240B0182 */  addiu      $t3, $zero, 0x182
     /* 4F818 8024E818 240C016E */  addiu      $t4, $zero, 0x16E
     /* 4F81C 8024E81C 240500E6 */  addiu      $a1, $zero, 0xE6

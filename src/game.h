@@ -69,4 +69,11 @@ void InitGameAndShowMenus(void *arg);
  */
 void StartAttractDemo(void);
 
+/**
+ * Start the race the computer drives under the credits, which the options menu offers.
+ *
+ * @ghidraAddress USA: 0x80200634
+ */
+void StartCreditsRace(void);
+
 #endif

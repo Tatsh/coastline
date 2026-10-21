@@ -19,13 +19,6 @@
 #define DASHBOARD_PALETTE_COLORS 256
 
 /**
- * Whether speeds show in miles an hour rather than kilometers.
- *
- * @ghidraAddress USA: 0x802723d8
- */
-extern s32 g_bSpeedUnitsMph;
-
-/**
  * The car and the night flag of the dashboard each view has loaded, the car in the low byte.
  *
  * @ghidraAddress USA: 0x8028c790

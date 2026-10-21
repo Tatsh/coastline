@@ -718,24 +718,24 @@ nonmatching D_80316398, 0x8
 dlabel D_80316398
     /* 80316398 */ .space 0x08
 
-nonmatching g_dwPhysicsReserved46, 0x4
+nonmatching g_bLoadConfigurationPending, 0x4
 
-dlabel g_dwPhysicsReserved46
+dlabel g_bLoadConfigurationPending
     /* 803163A0 */ .space 0x04
 
-nonmatching g_dwPhysicsReserved47, 0x4
+nonmatching g_bSaveConfigurationPending, 0x4
 
-dlabel g_dwPhysicsReserved47
+dlabel g_bSaveConfigurationPending
     /* 803163A4 */ .space 0x04
 
-nonmatching g_dwPhysicsReserved48, 0x4
+nonmatching g_dwOptionsMenuItemCount, 0x4
 
-dlabel g_dwPhysicsReserved48
+dlabel g_dwOptionsMenuItemCount
     /* 803163A8 */ .space 0x04
 
-nonmatching g_dwPhysicsReserved49, 0x4
+nonmatching g_dwOptionsMenuSelection, 0x4
 
-dlabel g_dwPhysicsReserved49
+dlabel g_dwOptionsMenuSelection
     /* 803163AC */ .space 0x04
 
 nonmatching g_szBgmVolumeTextBuf, 0x18
@@ -748,25 +748,15 @@ nonmatching g_szSfxVolumeTextBuf, 0x18
 dlabel g_szSfxVolumeTextBuf
     /* 803163C8 */ .space 0x18
 
-nonmatching g_aSaveIdPort0, 0x20
+nonmatching g_aabSavePakIds, 0x40
 
-dlabel g_aSaveIdPort0
-    /* 803163E0 */ .space 0x20
+dlabel g_aabSavePakIds
+    /* 803163E0 */ .space 0x40
 
-nonmatching g_aSaveIdPort1, 0x20
+nonmatching g_abSavePakIdKnown, 0x2
 
-dlabel g_aSaveIdPort1
-    /* 80316400 */ .space 0x20
-
-nonmatching g_bPakDataValid0, 0x1
-
-dlabel g_bPakDataValid0
-    /* 80316420 */ .space 0x01
-
-nonmatching g_bPakDataValid1, 0x1
-
-dlabel g_bPakDataValid1
-    /* 80316421 */ .space 0x01
+dlabel g_abSavePakIdKnown
+    /* 80316420 */ .space 0x02
 
 nonmatching g_bSaveLoadDataWasLoaded, 0x1
 
@@ -778,9 +768,9 @@ nonmatching g_bSaveLoadInputEnabled, 0x1
 dlabel g_bSaveLoadInputEnabled
     /* 80316423 */ .space 0x01
 
-nonmatching g_dwPakSaveLoadNoteIndex, 0x4
+nonmatching g_dwSaveLoadNoteIndex, 0x4
 
-dlabel g_dwPakSaveLoadNoteIndex
+dlabel g_dwSaveLoadNoteIndex
     /* 80316424 */ .space 0x04
 
 nonmatching g_bSaveLoadFadeDelayFrames, 0x4
@@ -788,19 +778,19 @@ nonmatching g_bSaveLoadFadeDelayFrames, 0x4
 dlabel g_bSaveLoadFadeDelayFrames
     /* 80316428 */ .space 0x04
 
-nonmatching g_dwPhysicsReserved50, 0x4
+nonmatching g_dwPakDataNoteIndex, 0x4
 
-dlabel g_dwPhysicsReserved50
+dlabel g_dwPakDataNoteIndex
     /* 8031642C */ .space 0x04
 
-nonmatching g_bPakScreenState, 0x1
+nonmatching g_bPakDataStep, 0x1
 
-dlabel g_bPakScreenState
+dlabel g_bPakDataStep
     /* 80316430 */ .space 0x01
 
-nonmatching g_bSaveLoadFadeWaitFrames, 0xF
+nonmatching g_bPakDataWaitFrames, 0xF
 
-dlabel g_bSaveLoadFadeWaitFrames
+dlabel g_bPakDataWaitFrames
     /* 80316431 */ .space 0x0F
 
 nonmatching g_dwControllerScreenItemCount, 0x4
@@ -3551,25 +3541,10 @@ nonmatching g_bNetPlayHost, 0x18
 dlabel g_bNetPlayHost
     /* 80369EA8 */ .space 0x18
 
-nonmatching g_aPakPfs, 0xC
+nonmatching g_aPakPfs, 0x1A0
 
 dlabel g_aPakPfs
-    /* 80369EC0 */ .space 0x0C
-
-nonmatching D_80369ECC, 0x5C
-
-dlabel D_80369ECC
-    /* 80369ECC */ .space 0x5C
-
-nonmatching g_PfsState1, 0xC
-
-dlabel g_PfsState1
-    /* 80369F28 */ .space 0x0C
-
-nonmatching g_PfsId1, 0x12C
-
-dlabel g_PfsId1
-    /* 80369F34 */ .space 0x12C
+    /* 80369EC0 */ .space 0x1A0
 
 nonmatching g_bPakDirLoaded, 0x1
 

@@ -798,7 +798,7 @@ static inline void LeaveCarSelect(void) {
                 g_dwContinueFromResults = g_pActiveProfile->round != 0;
                 if (g_dwResultsSeason == g_pActiveProfile->season) {
                     SetTrackFromSeason();
-                    g_bSaveLoadEntryPoint = 1;
+                    g_bSaveLoadEntryPoint = SAVE_LOAD_FROM_SEASON;
                     SetCurrentScreenCallback(ProcessDataSaveLoadMenu);
                 } else {
                     ClearDisplayBuffers();
@@ -806,7 +806,7 @@ static inline void LeaveCarSelect(void) {
                     SetCurrentScreenCallback(ProcessRaceHud);
                 }
             } else if (g_dwGameMode == GAME_MODE_TIME_ATTACK && g_dwSaveAvailable) {
-                g_bSaveLoadEntryPoint = 2;
+                g_bSaveLoadEntryPoint = SAVE_LOAD_FROM_TIME_ATTACK;
                 SetCurrentScreenCallback(ProcessDataSaveLoadMenu);
             } else {
                 SetCurrentScreenCallback(ProcessMainMenu);

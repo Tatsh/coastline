@@ -15,6 +15,10 @@
 /** The notes a Controller Pak holds. */
 #define PAK_NOTES 16
 
+/** The codes of the notes of this game. */
+#define GAME_CODE 0x4E475245
+#define COMPANY_CODE 0x3544
+
 /** The states of the Controller Pak menu. */
 enum {
     PAK_MENU_MOUNT,
@@ -89,14 +93,19 @@ extern s32 g_nPakFilesUsed;
 /** The notes InitPakAndEnumerateFiles() reads. @ghidraAddress USA: 0x8036a280 */
 extern OSPfsState g_aPakFileStates[PAK_NOTES];
 
-/** The file system of the Pak of the first controller. @ghidraAddress USA: 0x80369ec0 */
-extern OSPfs g_aPakPfs;
+/** The file system of the Pak of each controller. @ghidraAddress USA: 0x80369ec0 */
+extern OSPfs g_aPakPfs[MAXCONTROLLERS];
 
 /** The result of the last Controller Pak call. @ghidraAddress USA: 0x802724f0 */
 extern s32 gControllerPakState;
 
-/** The identity of the Pak the game saves to. @ghidraAddress USA: 0x803163e0 */
-extern u8 g_aSaveIdPort0[32];
+/**
+ * The identity of the Pak each of the first two players saves to, to tell when another Pak is
+ * inserted.
+ *
+ * @ghidraAddress USA: 0x803163e0
+ */
+extern u8 g_aabSavePakIds[2][32];
 
 /**
  * The ASCII of a character of the name of a note.
