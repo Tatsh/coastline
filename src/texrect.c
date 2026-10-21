@@ -32,6 +32,10 @@ void LoadAndDecompressAsset(Texture *texture, AssetAllocator alloc) {
     DecompressFromRom(texture->pixels, texture->romStart, NULL);
 }
 
+/* A 32-bit texture reads the unset count of texels a word, as the original does. */
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
+#pragma GCC diagnostic ignored "-Wuninitialized"
 void DrawTexturedRect(Texture *texture,
                       s32 x,
                       s32 y,
@@ -48,7 +52,6 @@ void DrawTexturedRect(Texture *texture,
                       s32 blendMode) {
     s32 scaleS, scaleT, maskS, maskT;
     s32 texelsPerWord, rowBytes, rows, remaining, done, dsdx, dtdy, bottom, stripHeight;
-    s32 texWidth;
 
     if (width < 0) {
         width = -width;
@@ -80,6 +83,12 @@ void DrawTexturedRect(Texture *texture,
                           0,
                           TEXEL0);
         gDPSetPrimColor(gDisplayListPtr++, 0xFF, 0xFF, primRed, primGreen, primBlue, primAlpha);
+        gDPSetRenderMode(gDisplayListPtr++, RENDER_MODE_XLU_C1, RENDER_MODE_XLU_C2);
+        break;
+    case TEXRECT_BLEND_TEXTURE_2:
+        /* The original repeats the default case here. */
+        gDPSetCombineLERP(
+            gDisplayListPtr++, 0, 0, 0, TEXEL0, 0, 0, 0, TEXEL0, 0, 0, 0, TEXEL0, 0, 0, 0, TEXEL0);
         gDPSetRenderMode(gDisplayListPtr++, RENDER_MODE_XLU_C1, RENDER_MODE_XLU_C2);
         break;
     case TEXRECT_BLEND_SHADED:
@@ -155,18 +164,18 @@ void DrawTexturedRect(Texture *texture,
         texelsPerWord = 4;
         break;
     default:
-        /* The original reads an unset value here. A 32-bit texel fills half a word. */
-        texelsPerWord = 2;
+        /* A 32-bit texture does not set the count of texels a word, as in the original. */
         break;
     }
-    texWidth = texture->width;
-    rowBytes = (texWidth + texelsPerWord - 1) / texelsPerWord * 8;
+    rowBytes = (texture->width + texelsPerWord - 1) / texelsPerWord * 8;
     /* Each strip loads one row more than it draws, for the filter to blend with. */
-    rows = (texture->format == G_IM_FMT_CI ? TMEM_BYTES_WITH_PALETTE : TMEM_BYTES) / rowBytes - 1;
-    dsdx = (texWidth << 10) / width;
+    rows = (texture->format == G_IM_FMT_CI ? TMEM_BYTES_WITH_PALETTE / rowBytes :
+                                             TMEM_BYTES / rowBytes) -
+           1;
+    dsdx = (texture->width << 10) / width;
     dtdy = (texture->height << 10) / height;
     /* The strips go up from the bottom of the rectangle, in 10.10 fixed point. */
-    bottom = (y + height) << 10;
+    bottom = ((y + height) << 2) << 8;
     remaining = texture->height;
     done = 0;
 
@@ -203,13 +212,13 @@ void DrawTexturedRect(Texture *texture,
                          G_TX_LOADTILE,
                          0,
                          0,
-                         ((texWidth * (rows + 1) + 3) >> 2) - 1,
-                         CALC_DXT_4b(texWidth));
+                         ((texture->width * (rows + 1) + 3) >> 2) - 1,
+                         CALC_DXT_4b(texture->width));
             gDPPipeSync(gDisplayListPtr++);
             gDPSetTile(gDisplayListPtr++,
                        texture->format,
                        G_IM_SIZ_4b,
-                       ((texWidth >> 1) + 7) >> 3,
+                       ((texture->width >> 1) + 7) >> 3,
                        0,
                        G_TX_RENDERTILE,
                        0,
@@ -220,7 +229,7 @@ void DrawTexturedRect(Texture *texture,
                        maskS,
                        G_TX_NOLOD);
             gDPSetTileSize(
-                gDisplayListPtr++, G_TX_RENDERTILE, 0, 0, (texWidth - 1) << 2, rows << 2);
+                gDisplayListPtr++, G_TX_RENDERTILE, 0, 0, (texture->width - 1) << 2, rows << 2);
             break;
         case G_IM_SIZ_8b:
             gDPSetTextureImage(gDisplayListPtr++,
@@ -246,13 +255,13 @@ void DrawTexturedRect(Texture *texture,
                          G_TX_LOADTILE,
                          0,
                          0,
-                         ((texWidth * (rows + 1) + 1) >> 1) - 1,
-                         CALC_DXT(texWidth, 1));
+                         ((texture->width * (rows + 1) + 1) >> 1) - 1,
+                         CALC_DXT(texture->width, 1));
             gDPPipeSync(gDisplayListPtr++);
             gDPSetTile(gDisplayListPtr++,
                        texture->format,
                        G_IM_SIZ_8b,
-                       (texWidth + 7) >> 3,
+                       (texture->width + 7) >> 3,
                        0,
                        G_TX_RENDERTILE,
                        0,
@@ -263,7 +272,7 @@ void DrawTexturedRect(Texture *texture,
                        maskS,
                        G_TX_NOLOD);
             gDPSetTileSize(
-                gDisplayListPtr++, G_TX_RENDERTILE, 0, 0, (texWidth - 1) << 2, rows << 2);
+                gDisplayListPtr++, G_TX_RENDERTILE, 0, 0, (texture->width - 1) << 2, rows << 2);
             break;
         case G_IM_SIZ_16b:
             gDPSetTextureImage(gDisplayListPtr++,
@@ -289,13 +298,13 @@ void DrawTexturedRect(Texture *texture,
                          G_TX_LOADTILE,
                          0,
                          0,
-                         texWidth * (rows + 1) - 1,
-                         CALC_DXT(texWidth, 2));
+                         texture->width * (rows + 1) - 1,
+                         CALC_DXT(texture->width, 2));
             gDPPipeSync(gDisplayListPtr++);
             gDPSetTile(gDisplayListPtr++,
                        texture->format,
                        G_IM_SIZ_16b,
-                       ((texWidth * 2) + 7) >> 3,
+                       ((texture->width * 2) + 7) >> 3,
                        0,
                        G_TX_RENDERTILE,
                        0,
@@ -306,7 +315,7 @@ void DrawTexturedRect(Texture *texture,
                        maskS,
                        G_TX_NOLOD);
             gDPSetTileSize(
-                gDisplayListPtr++, G_TX_RENDERTILE, 0, 0, (texWidth - 1) << 2, rows << 2);
+                gDisplayListPtr++, G_TX_RENDERTILE, 0, 0, (texture->width - 1) << 2, rows << 2);
             break;
         }
 
@@ -327,6 +336,7 @@ void DrawTexturedRect(Texture *texture,
     gDPPipeSync(gDisplayListPtr++);
     gDPSetTexturePersp(gDisplayListPtr++, G_TP_PERSP);
 }
+#pragma GCC diagnostic pop
 
 void DrawRedIntensityRect(
     u8 *texture, s32 width, s32 height, s32 x, s32 y, s32 drawWidth, s32 drawHeight) {

@@ -96,7 +96,7 @@ s32 UpdateVehicleTrackPosition(Vehicle *vehicle) {
     s32 checked = TRUE;
     s32 bestPoint = -1;
     s32 bestSection = 0;
-    s32 i, p;
+    s32 i, p, count;
     u8 gridX = vehicle->gridX;
     u8 gridY = vehicle->gridY;
 
@@ -113,19 +113,19 @@ s32 UpdateVehicleTrackPosition(Vehicle *vehicle) {
 
     /* Keep the point while the vehicle has not crossed out of it and stays near it. */
     if (checked) {
-        section = vehicle->section;
-        i = vehicle->pointIndex;
-        if (!SegmentCrossesLine2D(&section->points[i].left,
-                                  &section->points[i].right,
+        if (!SegmentCrossesLine2D(&vehicle->section->points[vehicle->pointIndex].left,
+                                  &vehicle->section->points[vehicle->pointIndex].right,
                                   &vehicle->previousPosition,
                                   &vehicle->frame.position) &&
-            !SegmentCrossesLine2D(&section->points[i + 1].left,
-                                  &section->points[i + 1].right,
+            !SegmentCrossesLine2D(&vehicle->section->points[vehicle->pointIndex + 1].left,
+                                  &vehicle->section->points[vehicle->pointIndex + 1].right,
                                   &vehicle->previousPosition,
                                   &vehicle->frame.position) &&
-            Vec3fDistance(&vehicle->frame.position, &section->points[i].position) <
+            Vec3fDistance(&vehicle->frame.position,
+                          &vehicle->section->points[vehicle->pointIndex].position) <
                 POINT_KEEP_DISTANCE) {
-            p = i;
+            section = vehicle->section;
+            p = vehicle->pointIndex;
             goto found;
         }
     }
@@ -134,11 +134,11 @@ s32 UpdateVehicleTrackPosition(Vehicle *vehicle) {
     best = g_LoadedTrack.maxX - g_LoadedTrack.minX;
     best *= best;
     for (i = 0; i < g_LoadedTrack.sectionCount; i++) {
-        section = g_LoadedTrack.sections[i];
         if (vehicle->index >= (s32)g_dwNumLocalPlayers && g_dwGameMode != GAME_MODE_TIME_ATTACK &&
-            (section->flags & TRACK_SECTION_ALTERNATE)) {
+            (g_LoadedTrack.sections[i]->flags & TRACK_SECTION_ALTERNATE)) {
             continue;
         }
+        section = g_LoadedTrack.sections[i];
         if (gridX < section->gridMinX || section->gridMaxX < gridX || gridY < section->gridMinY ||
             section->gridMaxY < gridY) {
             continue;
@@ -153,7 +153,8 @@ s32 UpdateVehicleTrackPosition(Vehicle *vehicle) {
                 continue;
             }
         }
-        for (p = 0; p < section->pointCount; p++) {
+        count = section->pointCount;
+        for (p = 0; p < count; p++) {
             point = &section->points[p];
             dx = point->position.x - x;
             dy = point->position.y - y;
@@ -191,7 +192,9 @@ found:
     }
     vehicle->section = section;
     vehicle->pointIndex = p;
-    vehicle->trackDirection = direction;
+    vehicle->trackDirection.x = direction.x;
+    vehicle->trackDirection.y = direction.y;
+    vehicle->trackDirection.z = direction.z;
     return 1;
 }
 
@@ -254,20 +257,28 @@ void CheckWrongWayWarning(Vehicle *vehicle) {
     }
 }
 
+/* The original tests the unsigned cells against zero as well. */
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wtype-limits"
 void UpdateVehicleGridPosition(Vehicle *vehicle) {
     if (g_LoadedTrack.rootSection == NULL) {
         return;
     }
     vehicle->gridX = FloatToInt(vehicle->frame.position.x / GRID_CELL);
     vehicle->gridY = FloatToInt(vehicle->frame.position.y / GRID_CELL);
-    if (vehicle->gridX >= GRID_CELLS) {
+    if (vehicle->gridX < 0) {
+        vehicle->gridX = 0;
+    } else if (vehicle->gridX >= GRID_CELLS) {
         vehicle->gridX = GRID_CELLS - 1;
     }
-    if (vehicle->gridY >= GRID_CELLS) {
+    if (vehicle->gridY < 0) {
+        vehicle->gridY = 0;
+    } else if (vehicle->gridY >= GRID_CELLS) {
         vehicle->gridY = GRID_CELLS - 1;
     }
     UpdateVehicleTrackPosition(vehicle);
 }
+#pragma GCC diagnostic pop
 
 s32 CastRayAgainstTrack(Vec3f *outPoint,
                         Vec3f *outNormal,
@@ -333,20 +344,22 @@ s32 CastRayAgainstTrack(Vec3f *outPoint,
                 if (triangle->normal.z < 0.0f) {
                     Vec3fNegate(&groundNormal, &triangle->normal);
                 } else {
-                    groundNormal = triangle->normal;
+                    groundNormal.x = triangle->normal.x;
+                    groundNormal.y = triangle->normal.y;
+                    groundNormal.z = triangle->normal.z;
                 }
                 if (groundCount < RAY_INSTANCES) {
                     groundInstances[groundCount++] = groundInstances[0];
                 }
                 groundInstances[0] = g_LoadedTrack.surfaces[triangle->index].instance + 1;
                 if (below < RAY_NEARBY_DISTANCE) {
-                    j = g_LoadedTrack.triangleNearbyInstances[triangle->index];
-                    for (instance = g_LoadedTrack.nearbyInstances[j]; instance != 0;
-                         instance = g_LoadedTrack.nearbyInstances[++j]) {
+                    for (j = g_LoadedTrack.triangleNearbyInstances[triangle->index];
+                         g_LoadedTrack.nearbyInstances[j] != 0;
+                         j++) {
                         if (nearby < RAY_INSTANCES) {
                             nearbyInstances[nearby++] = nearbyInstances[0];
                         }
-                        nearbyInstances[0] = instance;
+                        nearbyInstances[0] = g_LoadedTrack.nearbyInstances[j];
                     }
                 }
             } else if (groundCount < RAY_INSTANCES) {
@@ -375,7 +388,9 @@ s32 CastRayAgainstTrack(Vec3f *outPoint,
                 if (triangle->normal.z < 0.0f) {
                     Vec3fNegate(&ceilingNormal, &triangle->normal);
                 } else {
-                    ceilingNormal = triangle->normal;
+                    ceilingNormal.x = triangle->normal.x;
+                    ceilingNormal.y = triangle->normal.y;
+                    ceilingNormal.z = triangle->normal.z;
                 }
             }
         }
@@ -387,7 +402,9 @@ s32 CastRayAgainstTrack(Vec3f *outPoint,
             *groundDistance = nearest - RAY_HEADROOM;
         }
         if (outNormal != NULL) {
-            *outNormal = groundNormal;
+            outNormal->x = groundNormal.x;
+            outNormal->y = groundNormal.y;
+            outNormal->z = groundNormal.z;
         }
     } else {
         /* Without ground, the ceiling stands in for it. */
@@ -409,7 +426,9 @@ s32 CastRayAgainstTrack(Vec3f *outPoint,
             outPoint->z = ceilingZ;
         }
         if (outNormal != NULL) {
-            *outNormal = ceilingNormal;
+            outNormal->x = ceilingNormal.x;
+            outNormal->y = ceilingNormal.y;
+            outNormal->z = ceilingNormal.z;
         }
     }
     *groundInstanceCount = 1;
@@ -504,8 +523,8 @@ void UpdateVehiclePhysicsFrame(Vehicle *vehicle) {
     /* The speed changes while the first front wheel is on the ground. */
     if (vehicle->wheelBodies[1].contactFrames) {
         velocity = &vehicle->body.state.velocity;
-        vehicle->speedKph = sqrtf(velocity->x * velocity->x + velocity->y * velocity->y +
-                                  velocity->z * velocity->z) *
+        vehicle->speedKph = sqrtf(velocity->z * velocity->z +
+                                  (velocity->x * velocity->x + velocity->y * velocity->y)) *
                             SPEED_TO_DISPLAY;
     }
     for (i = 0; i < g_dwNumViewports; i++) {
@@ -535,6 +554,18 @@ void SetVehiclePosition(Vehicle *vehicle, f32 x, f32 y, f32 z) {
     QuaternionToMatrix(vehicle->body.orientation, &vehicle->body.state);
 }
 
+/* Copy the orientation of the body into both of its step states, a coordinate at a time. */
+static inline void CopyOrientationToSteps(Vehicle *vehicle) {
+    vehicle->body.stepStates[1].orientation.w = vehicle->body.state.orientation.w;
+    vehicle->body.stepStates[0].orientation.w = vehicle->body.state.orientation.w;
+    vehicle->body.stepStates[1].orientation.x = vehicle->body.state.orientation.x;
+    vehicle->body.stepStates[0].orientation.x = vehicle->body.state.orientation.x;
+    vehicle->body.stepStates[1].orientation.y = vehicle->body.state.orientation.y;
+    vehicle->body.stepStates[0].orientation.y = vehicle->body.state.orientation.y;
+    vehicle->body.stepStates[1].orientation.z = vehicle->body.state.orientation.z;
+    vehicle->body.stepStates[0].orientation.z = vehicle->body.state.orientation.z;
+}
+
 void InitVehicleOrientationFromAngle(Vehicle *vehicle, f32 angle) {
     f32 forwardX = cosf(angle);
     f32 forwardY = sinf(angle);
@@ -555,8 +586,7 @@ void InitVehicleOrientationFromAngle(Vehicle *vehicle, f32 angle) {
     vehicle->body.state.orientation.x = 0.0f;
     vehicle->body.state.orientation.y = 0.0f;
     vehicle->body.state.orientation.z = sinf(half);
-    vehicle->body.stepStates[1].orientation = vehicle->body.state.orientation;
-    vehicle->body.stepStates[0].orientation = vehicle->body.state.orientation;
+    CopyOrientationToSteps(vehicle);
     QuaternionToMatrix(vehicle->body.orientation, &vehicle->body.state);
 }
 
@@ -590,8 +620,7 @@ void MatrixToQuaternion(f32 m[4][4], Quaternion *q) {
 void SetVehicleFrameMatrix(Vehicle *vehicle, f32 (*m)[4]) {
     memcpy(vehicle->matrix, m, sizeof(vehicle->matrix));
     MatrixToQuaternion(m, &vehicle->body.state.orientation);
-    vehicle->body.stepStates[1].orientation = vehicle->body.state.orientation;
-    vehicle->body.stepStates[0].orientation = vehicle->body.state.orientation;
+    CopyOrientationToSteps(vehicle);
     QuaternionToMatrix(vehicle->body.orientation, &vehicle->body.state);
 }
 
@@ -637,8 +666,7 @@ void RotateVehicleByEuler(Vehicle *vehicle, f32 yaw, f32 pitch, f32 roll) {
     turn.z = 0.0f;
     QuaternionMultiply(orientation, orientation, &turn);
     QuaternionNormalize(orientation);
-    vehicle->body.stepStates[1].orientation = *orientation;
-    vehicle->body.stepStates[0].orientation = *orientation;
+    CopyOrientationToSteps(vehicle);
 }
 
 void SetVehicleTurnRate(Vehicle *vehicle, f32 x, f32 y, f32 z) {
@@ -731,7 +759,9 @@ void ResetVehicleState(Vehicle *vehicle) {
     vehicle->transmission = vehicle->chosenTransmission;
     vehicle->gearCount = spec->gearCount;
     vehicle->rearWheelDrive = spec->rearWheelDrive;
-    vehicle->body.boxSize = spec->boxSize;
+    vehicle->body.boxSize.x = spec->boxSize.x;
+    vehicle->body.boxSize.y = spec->boxSize.y;
+    vehicle->body.boxSize.z = spec->boxSize.z;
     vehicle->body.boxCenterZ = spec->boxCenterZ;
     vehicle->tableIndex = spec->tableIndex;
 }
@@ -779,7 +809,8 @@ static inline f32 AbsOf(f32 x) {
 
 /* A coordinate of a vector by its axis. */
 static inline f32 *VectorAxis(Vec3f *v, s32 axis) {
-    return axis == 0 ? &v->x : (axis == 1 ? &v->y : &v->z);
+    /* The original indexes the coordinates as an array rather than choosing among them. */
+    return &(&v->x)[axis];
 }
 
 /* Keep a velocity at a damped one while the damping does not turn it back, and stop it if it does.
@@ -876,15 +907,8 @@ void SimulateVehiclePhysicsSubstep(Vehicle *vehicle) {
 
 /* Place the matrix of a wheel at the wheel, in the frame of the vehicle. */
 static inline void PlaceWheel(f32 out[4][4], RigidBody *body, RigidBody *wheel) {
-    Vec3f position, placed;
-
-    position.x = wheel->orientation[3][0];
-    position.y = wheel->orientation[3][1];
-    position.z = wheel->orientation[3][2];
-    Mtx4x4TransformPoint(&placed, body->orientation, &position);
-    out[3][0] = placed.x;
-    out[3][1] = placed.y;
-    out[3][2] = placed.z;
+    /* The original transforms the translation rows in place, as points. */
+    Mtx4x4TransformPoint((Vec3f *)out[3], body->orientation, (Vec3f *)wheel->orientation[3]);
 }
 
 /* The turn of a front wheel: its roll, then its steering. */
@@ -926,6 +950,11 @@ void TransformAllWheelMatrices(Vehicle *vehicle) {
     }
 }
 
+/* The gain of SteerByStick() is read unset for an unknown steering mode, as in the original. */
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
+#pragma GCC diagnostic ignored "-Wuninitialized"
+
 /* Steer the front wheels towards the stick, faster back towards the middle. */
 static inline void SteerByStick(Vehicle *vehicle, f32 stick) {
     Vec3f local;
@@ -945,6 +974,11 @@ static inline void SteerByStick(Vehicle *vehicle, f32 stick) {
             stick = 0.0f;
         }
     }
+    kph = vehicle->speedKph;
+    /* The original computes the speed of the body and discards it. */
+    sqrtf(vehicle->body.state.velocity.z * vehicle->body.state.velocity.z +
+          (vehicle->body.state.velocity.x * vehicle->body.state.velocity.x +
+           vehicle->body.state.velocity.y * vehicle->body.state.velocity.y));
     Mtx4fInverseRotate(&local, vehicle->body.orientation, &vehicle->body.state.velocity);
     forward = local.x;
     if (forward < 10.0f) {
@@ -953,7 +987,6 @@ static inline void SteerByStick(Vehicle *vehicle, f32 stick) {
     if (70.0f < forward) {
         forward = 70.0f;
     }
-    kph = vehicle->speedKph;
     if (kph < 140.0f) {
         kph = 140.0f;
     }
@@ -962,7 +995,6 @@ static inline void SteerByStick(Vehicle *vehicle, f32 stick) {
     }
     kph = kph - 140.0f;
     /* The original leaves the gain unset for a mode beyond the three. */
-    gain = 0.0f;
     switch (vehicle->steeringMode) {
     case 0:
         g_fSteerLock = 14.0f;
@@ -1166,6 +1198,7 @@ void UpdateVehicleEngineAndGearbox(Vehicle *vehicle) {
         vehicle->brake = -140000.0f;
     }
 }
+#pragma GCC diagnostic pop
 
 /* Set up the body of a wheel at rest at a place under the vehicle. */
 static inline void InitWheelBody(RigidBody *wheel, f32 x, f32 y) {
@@ -1181,16 +1214,11 @@ static inline void InitWheelBody(RigidBody *wheel, f32 x, f32 y) {
     wheel->state.position.x = x;
     wheel->state.position.y = y;
     wheel->state.position.z = -0.1f;
-    wheel->state.velocity.x = 0.0f;
-    wheel->state.velocity.y = 0.0f;
-    wheel->state.velocity.z = 0.0f;
+    wheel->state.velocity.x = wheel->state.velocity.y = wheel->state.velocity.z = 0.0f;
+    wheel->state.orientation.x = wheel->state.orientation.y = wheel->state.orientation.z = 0.0f;
     wheel->state.orientation.w = 1.0f;
-    wheel->state.orientation.x = 0.0f;
-    wheel->state.orientation.y = 0.0f;
-    wheel->state.orientation.z = 0.0f;
-    wheel->state.angularVelocity.x = 0.0f;
-    wheel->state.angularVelocity.y = 0.0f;
-    wheel->state.angularVelocity.z = 0.0f;
+    wheel->state.angularVelocity.x = wheel->state.angularVelocity.y =
+        wheel->state.angularVelocity.z = 0.0f;
     QuaternionToMatrix(wheel->orientation, &wheel->state);
 }
 

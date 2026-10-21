@@ -196,9 +196,11 @@ void UpdateCameraChase(Vehicle *vehicle, CameraFrame *camera, f32 share) {
     Vec3fSubtract(&offset, &camera->position, &vehicle->frame.position);
     length = Vec3fLength(&offset);
     if (length != 0.0f) {
-        Vec3fScaleInPlace(&offset,
-                          (g_dwNumViewports == 1 ? CHASE_DISTANCE : CHASE_DISTANCE_SPLIT_SCREEN) /
-                              length);
+        if (g_dwNumViewports == 1) {
+            Vec3fScaleInPlace(&offset, CHASE_DISTANCE / length);
+        } else {
+            Vec3fScaleInPlace(&offset, CHASE_DISTANCE_SPLIT_SCREEN / length);
+        }
     }
 
     /* The direction behind the vehicle, or ahead of it in an instant replay. */

@@ -90,15 +90,19 @@ void LoadAndPlayTrackBgm(void) {
     InitMusicPlayback(g_abMenuMusicModule, g_abMusicModuleWorkBuffer);
 }
 
+/* The original saves the frame time only when the lights are held. A step that holds the lights
+ * restores an uninitialised value. */
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
 void AnimateStartLights(void) {
     f32 delta;
 
     if (g_dwStartLightsAnimation == 0) {
         return;
     }
-    delta = g_fFrameDeltaTime;
     if (g_dwStartLightsAnimation == -1) {
         /* Held, the lights take their first pose without moving on. */
+        delta = g_fFrameDeltaTime;
         g_fFrameDeltaTime = 0.0f;
     }
     AdvanceModelAnimations(g_pStartLightsModel);
@@ -106,6 +110,7 @@ void AnimateStartLights(void) {
         g_fFrameDeltaTime = delta;
     }
 }
+#pragma GCC diagnostic pop
 
 void UpdateRaceAnimations(void) {
     if (g_dwRacePauseState) {
@@ -213,13 +218,11 @@ void DrawScrollingText(void) {
 
 /* Read the car and its setup from the header of the recording a vehicle replays. */
 static void SetupFromRecording(Vehicle *vehicle) {
-    u8 *recording = vehicle->input->playbackBuffer;
-
-    vehicle->steeringMode = recording[2];
-    vehicle->chosenTransmission = recording[3];
-    vehicle->tireType = recording[4];
-    vehicle->suspensionStiffness = recording[5];
-    vehicle->input->controllerLayout = recording[6];
+    vehicle->steeringMode = vehicle->input->playbackBuffer[2];
+    vehicle->chosenTransmission = vehicle->input->playbackBuffer[3];
+    vehicle->tireType = vehicle->input->playbackBuffer[4];
+    vehicle->suspensionStiffness = vehicle->input->playbackBuffer[5];
+    vehicle->input->controllerLayout = vehicle->input->playbackBuffer[6];
 }
 
 /* Set up the vehicles, the recordings and the replays of the mode of play. */
@@ -242,8 +245,8 @@ static void SetupRaceVehicles(void) {
             /* The replay starts from the snapshot of the last lap of the best player. */
             RestoreRaceSnapshot(&g_aLastLapBuffers[LAST_LAP_FIRST_SLOT - g_dwBestReplayPlayer]);
             for (i = 0; i < RACE_SOUND_CHANNELS; i++) {
-                g_aSoundEffectChannels[i].mixVolume = 0;
                 g_aSoundEffectChannels[i].volume = 0;
+                g_aSoundEffectChannels[i].mixVolume = 0;
             }
             for (i = 0; i < (s32)g_dwNumLocalPlayers; i++) {
                 g_aVehicles[i].input->playbackBuffer = g_apReplayGhostPtrs[i];
@@ -301,9 +304,9 @@ static void SetupRaceVehicles(void) {
         vehicle->color[0] = 0xFF;
         vehicle->color[1] = 0xFF;
         vehicle->color[2] = 0xFF;
-        recording = g_aVehicles[0].input->playbackBuffer;
-        g_dwSelectedTrackId = recording[0];
-        g_aVehicles[0].selectedCar = g_aVehicles[0].carModel = recording[1];
+        g_dwSelectedTrackId = g_aVehicles[0].input->playbackBuffer[0];
+        g_aVehicles[0].carModel = g_aVehicles[0].selectedCar =
+            g_aVehicles[0].input->playbackBuffer[1];
         SetupFromRecording(&g_aVehicles[0]);
         break;
 
@@ -325,8 +328,8 @@ static void SetupRaceVehicles(void) {
                g_abGhostRecording,
                g_dwGhostRecordingSize);
         recording = g_aVehicles[g_dwNumLocalPlayers].input->playbackBuffer;
-        g_aVehicles[g_dwNumLocalPlayers].selectedCar = recording[1];
-        g_aVehicles[g_dwNumLocalPlayers].carModel = recording[1];
+        g_aVehicles[g_dwNumLocalPlayers].carModel = g_aVehicles[g_dwNumLocalPlayers].selectedCar =
+            recording[1];
         if (g_aVehicles[g_dwNumLocalPlayers].input->playbackBuffer[0] != g_dwSelectedTrackId) {
             osSyncPrintf("WRONG TRACK (%d!=%d)\n",
                          g_aVehicles[g_dwNumLocalPlayers].input->playbackBuffer[0],
@@ -340,18 +343,16 @@ static void SetupRaceVehicles(void) {
         }
         /* Each player records into a buffer of their own, under the same index. */
         for (i = 0; i < (s32)g_dwNumLocalPlayers; i++) {
-            vehicle = &g_aVehicles[i];
-            vehicle->input->recordBuffers[i] = g_aabInputRecordings[i];
-            recording = vehicle->input->recordBuffers[i];
-            recording[0] = g_dwSelectedTrackId;
-            recording[1] = vehicle->carModel;
-            recording[2] = vehicle->profile->handling;
-            recording[3] = vehicle->profile->transmission;
-            recording[4] = vehicle->profile->tires;
-            recording[5] = vehicle->profile->suspension;
-            recording[6] = vehicle->profile->controllerLayout;
-            vehicle->input->recordPositions[i] = RECORDING_HEADER_SIZE;
-            vehicle->input->recordLimits[i] = RECORDING_CAPACITY;
+            g_aVehicles[i].input->recordBuffers[i] = g_aabInputRecordings[i];
+            g_aVehicles[i].input->recordBuffers[i][0] = g_dwSelectedTrackId;
+            g_aVehicles[i].input->recordBuffers[i][1] = g_aVehicles[i].carModel;
+            g_aVehicles[i].input->recordBuffers[i][2] = g_aVehicles[i].profile->handling;
+            g_aVehicles[i].input->recordBuffers[i][3] = g_aVehicles[i].profile->transmission;
+            g_aVehicles[i].input->recordBuffers[i][4] = g_aVehicles[i].profile->tires;
+            g_aVehicles[i].input->recordBuffers[i][5] = g_aVehicles[i].profile->suspension;
+            g_aVehicles[i].input->recordBuffers[i][6] = g_aVehicles[i].profile->controllerLayout;
+            g_aVehicles[i].input->recordPositions[i] = RECORDING_HEADER_SIZE;
+            g_aVehicles[i].input->recordLimits[i] = RECORDING_CAPACITY;
         }
         break;
 
@@ -365,7 +366,6 @@ static void SetupRaceVehicles(void) {
 
 /* Find the special objects of the track: the airplane, its path and trigger, and the waterfalls. */
 static void FindTrackSpecials(void) {
-    TrackSpecial *special;
     Vec3f axis;
     s32 i;
 
@@ -381,28 +381,28 @@ static void FindTrackSpecials(void) {
     osSyncPrintf("specials: %d\n", g_LoadedTrack.specialCount);
     g_dwWaterfallCount = 0;
     for (i = 0; i < g_LoadedTrack.specialCount; i++) {
-        special = &g_LoadedTrack.specials[i];
-        switch (special->type) {
+        switch (g_LoadedTrack.specials[i].type) {
         case TRACK_SPECIAL_AIRPLANE:
-            g_dwAirplaneInstance = special->target.instance;
+            g_dwAirplaneInstance = g_LoadedTrack.specials[i].target.instance;
             osSyncPrintf("airplane = %d\n", g_dwAirplaneInstance);
             break;
         case TRACK_SPECIAL_AIRPLANE_PATH_LEFT:
-            g_dwAirplaneNodeCount = special->param.pathLength;
-            g_pAirplanePathLeft = special->target.path;
+            g_dwAirplaneNodeCount = g_LoadedTrack.specials[i].param.pathLength;
+            g_pAirplanePathLeft = g_LoadedTrack.specials[i].target.path;
             osSyncPrintf("airplanePathLeft = %08x\n", g_pAirplanePathLeft);
             break;
         case TRACK_SPECIAL_AIRPLANE_PATH_RIGHT:
-            g_pAirplanePathRight = special->target.path;
+            g_pAirplanePathRight = g_LoadedTrack.specials[i].target.path;
             osSyncPrintf("airplanePathRight = %08x\n", g_pAirplanePathRight);
             break;
         case TRACK_SPECIAL_AIRPLANE_TRIGGER:
-            g_dwAirplaneTrigger = special->target.instance;
+            g_dwAirplaneTrigger = g_LoadedTrack.specials[i].target.instance;
             osSyncPrintf("airplanetrigger = %d\n", g_dwAirplaneTrigger);
             break;
         case TRACK_SPECIAL_WATERFALL:
-            g_adwWaterfallInstances[g_dwWaterfallCount++] = special->target.instance;
-            osSyncPrintf("waterfall = %d\n", special->target.instance);
+            g_adwWaterfallInstances[g_dwWaterfallCount] = g_LoadedTrack.specials[i].target.instance;
+            g_dwWaterfallCount++;
+            osSyncPrintf("waterfall = %d\n", g_LoadedTrack.specials[i].target.instance);
             break;
         }
     }
@@ -422,7 +422,6 @@ static void FindTrackSpecials(void) {
 
 /* Set the race up, the first frame of its screen. */
 static void InitRace(void) {
-    Vehicle *vehicle;
     s32 i;
 
     g_dwKeepScreenBlanked = TRUE;
@@ -470,12 +469,11 @@ static void InitRace(void) {
         g_dwReplayCameraSwitchTimer = 180;
     } else {
         for (i = 0; i < (s32)g_dwNumLocalPlayers; i++) {
-            vehicle = &g_aVehicles[i];
-            vehicle->chosenTransmission = vehicle->profile->transmission;
-            vehicle->suspensionStiffness = vehicle->profile->suspension;
-            vehicle->tireType = vehicle->profile->tires;
-            vehicle->steeringMode = vehicle->profile->handling;
-            vehicle->input->controllerLayout = vehicle->profile->controllerLayout;
+            g_aVehicles[i].chosenTransmission = g_aVehicles[i].profile->transmission;
+            g_aVehicles[i].suspensionStiffness = g_aVehicles[i].profile->suspension;
+            g_aVehicles[i].tireType = g_aVehicles[i].profile->tires;
+            g_aVehicles[i].steeringMode = g_aVehicles[i].profile->handling;
+            g_aVehicles[i].input->controllerLayout = g_aVehicles[i].profile->controllerLayout;
         }
         /* The ghost of a time attack drives with the setup it was recorded with, from the
          * vehicle after the first player whatever the number of players. */
@@ -483,12 +481,11 @@ static void InitRace(void) {
             SetupFromRecording(&g_aVehicles[1]);
         } else {
             for (; i < g_dwNumActiveVehicles; i++) {
-                vehicle = &g_aVehicles[i];
-                vehicle->chosenTransmission = 1;
-                vehicle->suspensionStiffness = 1;
-                vehicle->tireType = 2;
-                vehicle->steeringMode = 0;
-                vehicle->input->controllerLayout = 0;
+                g_aVehicles[i].chosenTransmission = 1;
+                g_aVehicles[i].suspensionStiffness = 1;
+                g_aVehicles[i].tireType = 2;
+                g_aVehicles[i].steeringMode = 0;
+                g_aVehicles[i].input->controllerLayout = 0;
             }
         }
     }
@@ -496,35 +493,33 @@ static void InitRace(void) {
     if (!gInstantReplayActive) {
         g_dwSavedResultsValid = FALSE;
         for (i = 0; i < g_dwNumActiveVehicles; i++) {
-            vehicle = &g_aVehicles[i];
-            vehicle->opacity = 1.0f;
+            g_aVehicles[i].opacity = 1.0f;
             if (i < (s32)g_dwNumLocalPlayers) {
-                vehicle->driver = UpdatePhysicsStep;
-                vehicle->ghostMode = 0;
+                g_aVehicles[i].driver = UpdatePhysicsStep;
+                g_aVehicles[i].ghostMode = 0;
             } else if (g_dwGameMode == GAME_MODE_TIME_ATTACK) {
-                vehicle->driver = UpdatePhysicsStep;
-                vehicle->ghostMode = VEHICLE_GHOST;
-                vehicle->opacity = 0.375f;
+                g_aVehicles[i].driver = UpdatePhysicsStep;
+                g_aVehicles[i].ghostMode = VEHICLE_GHOST;
+                g_aVehicles[i].opacity = 0.375f;
             } else {
-                ChooseVehicleCar(vehicle);
-                vehicle->driver = DriveAiVehicle;
-                vehicle->ghostMode = 0;
+                ChooseVehicleCar(&g_aVehicles[i]);
+                g_aVehicles[i].driver = DriveAiVehicle;
+                g_aVehicles[i].ghostMode = 0;
             }
-            if (!vehicle->customDecals) {
-                InstallVehicleModel(vehicle, i, vehicle->carModel);
+            if (!g_aVehicles[i].customDecals) {
+                InstallVehicleModel(&g_aVehicles[i], i, g_aVehicles[i].carModel);
             }
-            SetupVehicleForRaceStart(vehicle);
-            vehicle->flyMode = FALSE;
-            vehicle->message = NULL;
-            vehicle->subMessage = NULL;
+            SetupVehicleForRaceStart(&g_aVehicles[i]);
+            g_aVehicles[i].flyMode = FALSE;
+            g_aVehicles[i].message = NULL;
+            g_aVehicles[i].subMessage = NULL;
         }
     } else {
         for (i = g_dwNumLocalPlayers; i < g_dwNumActiveVehicles; i++) {
-            vehicle = &g_aVehicles[i];
-            SetMaterialColor(vehicle->model,
-                             vehicle->color[0] >> 3,
-                             vehicle->color[1] >> 3,
-                             vehicle->color[2] >> 3);
+            SetMaterialColor(g_aVehicles[i].model,
+                             g_aVehicles[i].color[0] >> 3,
+                             g_aVehicles[i].color[1] >> 3,
+                             g_aVehicles[i].color[2] >> 3);
         }
     }
 
@@ -556,8 +551,9 @@ static void InitRace(void) {
     FadeMusicTo(1.0f, FADE_SECONDS);
     g_dwScreenClearFrames = 2;
     g_dwRaceInitialized = TRUE;
-    g_pStartLightsModel =
-        DmaReadAndFixupTrackModel(g_aDmaWorkBuffers, ROM_START_LIGHTS, ROM_START_LIGHTS_END);
+    /* The original takes the buffer as the model and discards the return of the read. */
+    g_pStartLightsModel = (Model *)g_aDmaWorkBuffers;
+    DmaReadAndFixupTrackModel(g_aDmaWorkBuffers, ROM_START_LIGHTS, ROM_START_LIGHTS_END);
     PlayModelAnimationsOnce(g_pStartLightsModel);
     InitParticleSystem();
     ResetCollisionCaches();
@@ -596,16 +592,15 @@ static void CheckInstantReplayEnd(void) {
             return;
         }
         /* Once the best recording ends, the view turns to the other player's. */
-        other = g_dwBestReplayPlayer == 0;
-        if (input->playbackLimit + 0xF0 != g_aVehicles[other].input->playbackPosition) {
+        if (g_aVehicles[g_dwBestReplayPlayer].input->playbackLimit + 0xF0 !=
+            g_aVehicles[g_dwBestReplayPlayer == 0].input->playbackPosition) {
             return;
         }
         g_aViewportRects[1].vehicleIndex = g_dwBestReplayPlayer;
         g_aViewportRects[0].vehicleIndex = g_aViewportRects[1].vehicleIndex == 0;
     }
     other = g_dwBestReplayPlayer == 0;
-    input = g_aVehicles[other].input;
-    if (input->playbackLimit == input->playbackPosition) {
+    if (g_aVehicles[other].input->playbackLimit == g_aVehicles[other].input->playbackPosition) {
         LeaveRace();
     }
 }
@@ -640,6 +635,9 @@ static void HoldBeforeStart(void) {
             g_dwStartLightsAnimation = -1;
             g_dwStartLightsStep = 0;
             break;
+        case RACE_PHASE_WAIT:
+            /* The original tests for the phase and does nothing in it. */
+            break;
         case RACE_PHASE_COUNTDOWN:
             g_dwStartLightsAnimation = 1;
             if (g_fRacePhaseTimer < g_afStartLightThresholds[g_dwStartLightsStep]) {
@@ -659,32 +657,35 @@ static void HoldBeforeStart(void) {
 /* Keep a time attack's recording of the first player when it beats the ghost, or when there is
  * none worth keeping. */
 static void KeepTimeAttackRecording(s32 player) {
-    PlayerInputState *input = g_aVehicles[player].input;
-    s32 position, j;
+    s32 j;
 
-    osSyncPrintf("# Format SB BitSize 24 Rows %d Columns 1\n", input->recordPositions[player] >> 1);
-    for (j = 0; j < input->recordPositions[player]; j += 2) {
-        osSyncPrintf(
-            "%.02x %.02x\n", input->recordBuffers[player][j], input->recordBuffers[player][j + 1]);
+    osSyncPrintf("# Format SB BitSize 24 Rows %d Columns 1\n",
+                 g_aVehicles[player].input->recordPositions[player] >> 1);
+    for (j = 0; j < g_aVehicles[player].input->recordPositions[player]; j += 2) {
+        osSyncPrintf("%.02x %.02x\n",
+                     g_aVehicles[player].input->recordBuffers[player][j],
+                     g_aVehicles[player].input->recordBuffers[player][j + 1]);
     }
     if (player == 0) {
-        position = input->recordPositions[player];
-        if (position < (s32)g_dwGhostRecordingSize ||
+        if (g_aVehicles[player].input->recordPositions[player] < (s32)g_dwGhostRecordingSize ||
             g_abGhostRecording[0] != g_dwSelectedTrackId ||
             (s32)g_dwGhostRecordingSize <= RECORDING_HEADER_SIZE) {
             osSyncPrintf("%d: %d<%d=%d || %d!=%d=%d || %d<=%d=%d\n",
                          player,
-                         position,
+                         g_aVehicles[player].input->recordPositions[player],
                          g_dwGhostRecordingSize,
-                         position < (s32)g_dwGhostRecordingSize,
+                         g_aVehicles[player].input->recordPositions[player] <
+                             (s32)g_dwGhostRecordingSize,
                          g_abGhostRecording[0],
                          g_dwSelectedTrackId,
                          g_abGhostRecording[0] != g_dwSelectedTrackId,
                          g_dwGhostRecordingSize,
                          RECORDING_HEADER_SIZE,
                          (s32)g_dwGhostRecordingSize <= RECORDING_HEADER_SIZE);
-            g_dwGhostRecordingSize = input->recordPositions[player];
-            memcpy(g_abGhostRecording, input->recordBuffers[player], g_dwGhostRecordingSize);
+            g_dwGhostRecordingSize = g_aVehicles[player].input->recordPositions[player];
+            memcpy(g_abGhostRecording,
+                   g_aVehicles[player].input->recordBuffers[player],
+                   g_dwGhostRecordingSize);
             g_aVehicles[player].message = "NEW RECORD!";
             g_aVehicles[player].messageTime = 1.0f;
             FormatLapTime(g_aVehicles[player].messageText, g_aVehicles[player].totalTime);
@@ -693,12 +694,11 @@ static void KeepTimeAttackRecording(s32 player) {
             g_dwSaveAvailable = TRUE;
         }
     }
-    input->recordBuffers[player] = NULL;
+    g_aVehicles[player].input->recordBuffers[player] = NULL;
 }
 
 /* Run the race, and tell whether to go on to the next phase. */
 static s32 RunRacingPhase(void) {
-    PlayerInputState *input;
     s32 allFinished, i, j;
 
     allFinished = TRUE;
@@ -723,13 +723,13 @@ static s32 RunRacingPhase(void) {
             allFinished = FALSE;
             continue;
         }
-        input = g_aVehicles[i].input;
-        if (g_dwGameMode == GAME_MODE_TIME_ATTACK && input->recordBuffers[i] != NULL) {
+        if (g_dwGameMode == GAME_MODE_TIME_ATTACK &&
+            g_aVehicles[i].input->recordBuffers[i] != NULL) {
             KeepTimeAttackRecording(i);
         } else if (g_dwGameMode == GAME_MODE_ARCADE) {
             /* A finished player records no further. */
             for (j = 0; j < (s32)g_dwNumLocalPlayers; j++) {
-                input->recordLimits[j] = input->recordPositions[j];
+                g_aVehicles[i].input->recordLimits[j] = g_aVehicles[i].input->recordPositions[j];
             }
         }
     }
@@ -749,13 +749,19 @@ static s32 RunRacingPhase(void) {
 
 /* Step the phases of the race. */
 static void StepRacePhases(void) {
-    s32 advance, tick, i;
+    s32 i;
 
-    advance = FALSE;
-    tick = FALSE;
+    /* The phases share the countdown of the timer and the step to the next phase. */
     if (g_dwRacePhase < RACE_PHASE_GO) {
         HoldBeforeStart();
-        tick = TRUE;
+    tick:
+        if (!g_dwRacePauseState) {
+            g_fRacePhaseTimer -= g_fFrameDeltaTime;
+            if (g_fRacePhaseTimer < 0.0f) {
+            advance:
+                AdvanceRacePhase();
+            }
+        }
     } else if (g_dwRacePhase == RACE_PHASE_GO) {
         g_dwStartLightsAnimation = 1;
         g_bStartLightsVisible = TRUE;
@@ -766,18 +772,20 @@ static void StepRacePhases(void) {
         g_fStartLightsDrop = (g_aRacePhaseTable[g_dwRacePhaseIndex].seconds - g_fRacePhaseTimer) /
                              g_aRacePhaseTable[g_dwRacePhaseIndex].seconds;
         g_fStartLightsDrop = g_fStartLightsDrop * (15.0f * g_fStartLightsDrop);
-        tick = TRUE;
+        goto tick;
     } else if (g_dwRacePhase == RACE_PHASE_RACING) {
-        advance = RunRacingPhase();
+        if (RunRacingPhase()) {
+            goto advance;
+        }
     } else if (g_dwRacePhase == RACE_PHASE_FINISHED) {
         if ((g_dwGameMode == GAME_MODE_TIME_ATTACK || g_dwGameMode == GAME_MODE_ARCADE ||
              g_dwGameMode == GAME_MODE_CHAMPIONSHIP) &&
             !gInstantReplayActive) {
             SaveRaceResultsToSlots();
         }
-        advance = TRUE;
+        goto advance;
     } else if (g_dwRacePhase == RACE_PHASE_AFTER) {
-        tick = TRUE;
+        goto tick;
     } else if (g_dwRacePhase == RACE_PHASE_LEAVE) {
         if (!g_dwRaceExitState) {
             FadeSfxTo(0.0f, FADE_SECONDS);
@@ -788,20 +796,10 @@ static void StepRacePhases(void) {
             g_dwRaceExitState = TRUE;
         }
     }
-    if (tick && !g_dwRacePauseState) {
-        g_fRacePhaseTimer -= g_fFrameDeltaTime;
-        if (g_fRacePhaseTimer < 0.0f) {
-            advance = TRUE;
-        }
-    }
-    if (advance) {
-        AdvanceRacePhase();
-    }
 }
 
 /* Fly the airplane along its path and orient it along the legs of the path. */
 static void FlyAirplane(void) {
-    TrackInstance *airplane;
     Vec3f a, b, c;
     f32 t;
 
@@ -854,31 +852,39 @@ static void FlyAirplane(void) {
               &g_pAirplanePathRight[g_dwAirplaneNode],
               &g_pAirplanePathRight[g_dwAirplaneNode - 1],
               t);
-    airplane = &g_LoadedTrack.instances[g_dwAirplaneInstance];
-    Vec3fMidpoint((Vec3f *)airplane->matrix[3], &a, &b);
+    Vec3fMidpoint((Vec3f *)g_LoadedTrack.instances[g_dwAirplaneInstance].matrix[3], &a, &b);
     /* The nose turns from the leg before to the leg after across the middle of each leg. */
     if (0.5f < t) {
-        Vec3fLerp((Vec3f *)airplane->matrix[0], &g_vAirplaneDirNext, &g_vAirplaneDir, t - 0.5f);
+        Vec3fLerp((Vec3f *)g_LoadedTrack.instances[g_dwAirplaneInstance].matrix[0],
+                  &g_vAirplaneDirNext,
+                  &g_vAirplaneDir,
+                  t - 0.5f);
     } else {
-        Vec3fLerp((Vec3f *)airplane->matrix[0], &g_vAirplaneDir, &g_vAirplaneDirPrev, t + 0.5f);
+        Vec3fLerp((Vec3f *)g_LoadedTrack.instances[g_dwAirplaneInstance].matrix[0],
+                  &g_vAirplaneDir,
+                  &g_vAirplaneDirPrev,
+                  t + 0.5f);
     }
-    Vec3fNormalize((Vec3f *)airplane->matrix[0]);
-    Vec3fSubtract((Vec3f *)airplane->matrix[2], &a, &b);
-    Vec3fCross(
-        (Vec3f *)airplane->matrix[1], (Vec3f *)airplane->matrix[0], (Vec3f *)airplane->matrix[2]);
-    Vec3fNormalize((Vec3f *)airplane->matrix[1]);
-    Vec3fCross(
-        (Vec3f *)airplane->matrix[2], (Vec3f *)airplane->matrix[1], (Vec3f *)airplane->matrix[0]);
-    Vec3fNormalize((Vec3f *)airplane->matrix[2]);
-    Vec3fScaleInPlace((Vec3f *)airplane->matrix[0], g_fAirplaneScale);
-    Vec3fScaleInPlace((Vec3f *)airplane->matrix[2], -g_fAirplaneScale);
-    Vec3fScaleInPlace((Vec3f *)airplane->matrix[1], g_fAirplaneScale);
+    Vec3fNormalize((Vec3f *)g_LoadedTrack.instances[g_dwAirplaneInstance].matrix[0]);
+    Vec3fSubtract((Vec3f *)g_LoadedTrack.instances[g_dwAirplaneInstance].matrix[2], &a, &b);
+    Vec3fCross((Vec3f *)g_LoadedTrack.instances[g_dwAirplaneInstance].matrix[1],
+               (Vec3f *)g_LoadedTrack.instances[g_dwAirplaneInstance].matrix[0],
+               (Vec3f *)g_LoadedTrack.instances[g_dwAirplaneInstance].matrix[2]);
+    Vec3fNormalize((Vec3f *)g_LoadedTrack.instances[g_dwAirplaneInstance].matrix[1]);
+    Vec3fCross((Vec3f *)g_LoadedTrack.instances[g_dwAirplaneInstance].matrix[2],
+               (Vec3f *)g_LoadedTrack.instances[g_dwAirplaneInstance].matrix[1],
+               (Vec3f *)g_LoadedTrack.instances[g_dwAirplaneInstance].matrix[0]);
+    Vec3fNormalize((Vec3f *)g_LoadedTrack.instances[g_dwAirplaneInstance].matrix[2]);
+    Vec3fScaleInPlace((Vec3f *)g_LoadedTrack.instances[g_dwAirplaneInstance].matrix[0],
+                      g_fAirplaneScale);
+    Vec3fScaleInPlace((Vec3f *)g_LoadedTrack.instances[g_dwAirplaneInstance].matrix[2],
+                      -g_fAirplaneScale);
+    Vec3fScaleInPlace((Vec3f *)g_LoadedTrack.instances[g_dwAirplaneInstance].matrix[1],
+                      g_fAirplaneScale);
 }
 
 /* Move the special objects of the track. */
 static void UpdateTrackSpecials(void) {
-    TrackSpecial *special;
-    TrackInstance *instance;
     s32 i, j;
 
     if (g_dwAirplaneInstance && !g_bAirplaneFlying &&
@@ -897,21 +903,22 @@ static void UpdateTrackSpecials(void) {
         }
     }
     for (i = 0; i < g_LoadedTrack.specialCount; i++) {
-        special = &g_LoadedTrack.specials[i];
-        switch (special->type) {
+        switch (g_LoadedTrack.specials[i].type) {
         case TRACK_SPECIAL_SPIN_Z:
+            guRotateF(g_afMvpMatrix, g_LoadedTrack.specials[i].param.spinAngle, 0.0f, 0.0f, 1.0f);
+            goto spin;
         case TRACK_SPECIAL_SPIN_X:
+            guRotateF(g_afMvpMatrix, g_LoadedTrack.specials[i].param.spinAngle, 1.0f, 0.0f, 0.0f);
+            goto spin;
         case TRACK_SPECIAL_SPIN_Y:
-            if (special->type == TRACK_SPECIAL_SPIN_Z) {
-                guRotateF(g_afMvpMatrix, special->param.spinAngle, 0.0f, 0.0f, 1.0f);
-            } else if (special->type == TRACK_SPECIAL_SPIN_X) {
-                guRotateF(g_afMvpMatrix, special->param.spinAngle, 1.0f, 0.0f, 0.0f);
-            } else {
-                guRotateF(g_afMvpMatrix, special->param.spinAngle, 0.0f, 1.0f, 0.0f);
-            }
-            instance = &g_LoadedTrack.instances[special->target.instance];
-            guMtxCatF(g_afMvpMatrix, instance->matrix, instance->matrix);
-            instance->flags &= ~TRACK_INSTANCE_UNROTATED;
+            guRotateF(g_afMvpMatrix, g_LoadedTrack.specials[i].param.spinAngle, 0.0f, 1.0f, 0.0f);
+        spin:
+            /* The three spins share the turn of the instance. */
+            guMtxCatF(g_afMvpMatrix,
+                      g_LoadedTrack.instances[g_LoadedTrack.specials[i].target.instance].matrix,
+                      g_LoadedTrack.instances[g_LoadedTrack.specials[i].target.instance].matrix);
+            g_LoadedTrack.instances[g_LoadedTrack.specials[i].target.instance].flags &=
+                ~TRACK_INSTANCE_UNROTATED;
             break;
         case TRACK_SPECIAL_AIRPLANE:
             if (g_dwAirplaneInstance && g_bAirplaneFlying) {
@@ -924,13 +931,12 @@ static void UpdateTrackSpecials(void) {
 
 /* Draw the vehicles of the racers that are, or are not, ghosts. */
 static void RenderRacerVehicles(s32 ghosts) {
-    Vehicle *vehicle;
     s32 i;
 
     for (i = 0; i < g_dwNumVehicles; i++) {
-        vehicle = g_aRacerSlots[i].vehicle;
-        if (vehicle != NULL && (vehicle->ghostMode == VEHICLE_GHOST) == ghosts) {
-            RenderVehicleModel(vehicle, 0);
+        if (g_aRacerSlots[i].vehicle != NULL &&
+            (g_aRacerSlots[i].vehicle->ghostMode == VEHICLE_GHOST) == ghosts) {
+            RenderVehicleModel(g_aRacerSlots[i].vehicle, 0);
         }
     }
 }
@@ -982,20 +988,20 @@ static void RenderRaceScene(s32 mainView) {
 }
 
 /* Draw the rear-view mirror over a view whose camera is the bumper camera. */
-static void RenderRearViewMirror(ViewportRect *view) {
+static void RenderRearViewMirror(s32 index) {
     CameraFrame *saved;
     s32 x, y, width, height;
 
     if (g_dwRearViewMirrorMode == 1) {
-        width = view->width / 4;
+        width = g_aViewportRects[index].width / 4;
     } else if (g_dwRearViewMirrorMode == 2) {
-        width = view->width * 5 / 16;
+        width = g_aViewportRects[index].width * 5 / 16;
     } else {
-        width = view->width * 3 / 8 + 2;
+        width = g_aViewportRects[index].width * 3 / 8 + 2;
     }
     height = width >> 2;
-    x = ((view->width - width) >> 1) + view->x;
-    y = view->height / 16 + view->y;
+    x = ((g_aViewportRects[index].width - width) >> 1) + g_aViewportRects[index].x;
+    y = g_aViewportRects[index].height / 16 + g_aViewportRects[index].y;
     saved = g_pActiveCamera;
     g_pActiveCameraVehicle->activeCamera = &g_pActiveCameraVehicle->cameras[VEHICLE_CAMERA_MIRROR];
     g_pActiveCamera = g_pActiveCameraVehicle->activeCamera;
@@ -1021,7 +1027,11 @@ static void RenderRearViewMirror(ViewportRect *view) {
     AddTimingMarker(0, 0, 0x82, 0, 0xFF);
     g_pActiveCameraVehicle->activeCamera = saved;
     g_pActiveCamera = g_pActiveCameraVehicle->activeCamera;
-    SetViewport(view->x, view->y, view->width, view->height, TRUE);
+    SetViewport(g_aViewportRects[index].x,
+                g_aViewportRects[index].y,
+                g_aViewportRects[index].width,
+                g_aViewportRects[index].height,
+                TRUE);
     DrawRdpBorderRect(x, y, width, height);
 }
 
@@ -1063,8 +1073,6 @@ static void DrawViewOverlay(void) {
 
 /* Draw a view of the race. */
 static void RenderRaceView(s32 index) {
-    ViewportRect *view = &g_aViewportRects[index];
-
     AddTimingMarker(0, 0, 0, 0, 0xFF);
     g_pActiveCameraVehicle = &g_aVehicles[g_aViewportRects[index].vehicleIndex];
     g_pActiveCamera = g_pActiveCameraVehicle->activeCamera;
@@ -1078,30 +1086,34 @@ static void RenderRaceView(s32 index) {
                         &g_dwCameraRayNearbyCount,
                         &g_fCameraRayGroundDistance,
                         &g_dwCameraRayGroundSurface);
-    SetViewport(view->x, view->y, view->width, view->height, TRUE);
+    SetViewport(g_aViewportRects[index].x,
+                g_aViewportRects[index].y,
+                g_aViewportRects[index].width,
+                g_aViewportRects[index].height,
+                TRUE);
     if (g_dwNumViewports >= 2) {
         /* Split views look narrower and not as far. */
         SetupFrustumCorners(g_pActiveCamera,
                             g_pActiveCamera->fov * 0.7f,
                             g_fCameraProjectionScale * 0.65f,
-                            (f32)view->width,
-                            (f32)view->height);
+                            (f32)g_aViewportRects[index].width,
+                            (f32)g_aViewportRects[index].height);
         SetupCameraMatrix(g_pActiveCamera,
                           g_pActiveCamera->fov * 0.7f,
                           g_fCameraProjectionScale * 0.65f,
-                          (f32)view->width,
-                          (f32)view->height);
+                          (f32)g_aViewportRects[index].width,
+                          (f32)g_aViewportRects[index].height);
     } else {
         SetupFrustumCorners(g_pActiveCamera,
                             g_pActiveCamera->fov,
                             g_fCameraProjectionScale,
-                            (f32)view->width,
-                            (f32)view->height);
+                            (f32)g_aViewportRects[index].width,
+                            (f32)g_aViewportRects[index].height);
         SetupCameraMatrix(g_pActiveCamera,
                           g_pActiveCamera->fov,
                           g_fCameraProjectionScale,
-                          (f32)view->width,
-                          (f32)view->height);
+                          (f32)g_aViewportRects[index].width,
+                          (f32)g_aViewportRects[index].height);
     }
     SetupFog();
     SetupWeatherLights();
@@ -1124,14 +1136,21 @@ static void RenderRaceView(s32 index) {
     RenderPrecipitationEffect();
     AddTimingMarker(0, 0, 0x82, 0, 0xFF);
     RenderHeadlightGlare();
-    SetupMenuProjection((f32)view->width, (f32)view->height);
-    SetupViewportAndScissor(view->x, view->y, view->width, view->height, TRUE);
+    SetupMenuProjection((f32)g_aViewportRects[index].width, (f32)g_aViewportRects[index].height);
+    SetupViewportAndScissor(g_aViewportRects[index].x,
+                            g_aViewportRects[index].y,
+                            g_aViewportRects[index].width,
+                            g_aViewportRects[index].height,
+                            TRUE);
     if (g_pActiveCamera == &g_pActiveCameraVehicle->cameras[VEHICLE_CAMERA_BUMPER] &&
         g_dwNumViewports == 1 && g_dwRearViewMirrorMode) {
-        RenderRearViewMirror(view);
+        RenderRearViewMirror(index);
     }
     DrawViewOverlay();
-    DrawRdpOutlineRect(view->x, view->y, view->width, view->height);
+    DrawRdpOutlineRect(g_aViewportRects[index].x,
+                       g_aViewportRects[index].y,
+                       g_aViewportRects[index].width,
+                       g_aViewportRects[index].height);
 }
 
 /* Draw the pause menu over the race. */
@@ -1165,18 +1184,18 @@ static void DrawPauseMenu(void) {
     DrawText(g_dwPauseMenuSelection == PAUSE_EXIT ? "%y1Exit to Main Menu" : "%ryExit to Main Menu",
              x,
              y);
+    /* The original steps past the last item and does not use the result. */
+    y += 20;
 }
 
 /* Take the input of the pause menu, and tell whether the race stays paused. */
 static s32 ProcessPauseMenu(s32 paused) {
-    PlayerInputState *input;
     s32 i;
 
     for (i = 0; i < (s32)g_dwNumLocalPlayers; i++) {
-        input = g_aVehicles[i].input;
-        UpdateStickRepeat(input);
-        if (input->buttons & INPUT_B) {
-            TransferFlags(input, INPUT_B);
+        UpdateStickRepeat(g_aVehicles[i].input);
+        if (g_aVehicles[i].input->buttons & INPUT_B) {
+            TransferFlags(g_aVehicles[i].input, INPUT_B);
             FadeSfxTo(1.0f, FADE_SECONDS);
             FadeMusicTo(1.0f, FADE_SECONDS);
             g_dwScreenClearFrames = 2;
@@ -1249,7 +1268,6 @@ static s32 ProcessPauseMenu(s32 paused) {
 
 /* Take the buttons of the players while the race runs, and tell whether it is paused. */
 static s32 ProcessRaceButtons(s32 paused) {
-    PlayerInputState *input;
     s32 i;
 
     if (g_dwGameMode == GAME_MODE_DEMO || g_dwGameMode == GAME_MODE_AFTER_SEASON) {
@@ -1270,8 +1288,7 @@ static s32 ProcessRaceButtons(s32 paused) {
         return paused;
     }
     for (i = 0; i < (s32)g_dwNumLocalPlayers; i++) {
-        input = g_aVehicles[i].input;
-        if (input->buttons & INPUT_START) {
+        if (g_aVehicles[i].input->buttons & INPUT_START) {
             if (gInstantReplayActive) {
                 SetFadeTarget(0.0f, FADE_SECONDS);
                 g_bReplayAfterRace = FALSE;
@@ -1286,7 +1303,7 @@ static s32 ProcessRaceButtons(s32 paused) {
             TransferFlags(g_aVehicles[1].input, INPUT_START);
             return paused;
         }
-        if (input->buttons & INPUT_A) {
+        if (g_aVehicles[i].input->buttons & INPUT_A) {
             /* A restarts the instant replay. */
             if (gInstantReplayActive) {
                 SetFadeTarget(0.0f, FADE_SECONDS);
@@ -1303,7 +1320,6 @@ static s32 ProcessRaceButtons(s32 paused) {
 
 /* Show the captions of the credits over the race. */
 static void DrawCreditCaption(void) {
-    RaceCaption *caption = &g_aCreditCaptions[g_dwRaceCaptionIndex];
     s32 lines, top;
 
     if (0.5f < g_fRaceCaptionTimer) {
@@ -1316,7 +1332,7 @@ static void DrawCreditCaption(void) {
             }
         }
         top = 132 - lines * 40 / 4;
-        if (caption->title[0] == '\0') {
+        if (g_aCreditCaptions[g_dwRaceCaptionIndex].title[0] == '\0') {
             top -= 5;
         }
         for (lines--; lines >= 0; lines--) {
@@ -1373,8 +1389,8 @@ static void FinishRace(void) {
     }
     g_dwSoundEffectEchoOffset = 0;
     for (i = 0; i < RACE_SOUND_CHANNELS; i++) {
-        g_aSoundEffectChannels[i].mixVolume = 0;
         g_aSoundEffectChannels[i].volume = 0;
+        g_aSoundEffectChannels[i].mixVolume = 0;
         g_aSoundEffectChannels[i].step = 0;
         g_aSoundEffectChannels[i].sample = g_SilenceSampleData;
     }
@@ -1388,17 +1404,22 @@ static void FinishRace(void) {
         } else {
             ClearFramebuffersHighRes();
             g_dwTrackMirrored = FALSE;
-            if ((g_dwGameMode == GAME_MODE_AFTER_SEASON && g_aVehicles[0].profile->season) ||
-                (g_dwGameMode == GAME_MODE_DEMO &&
-                 g_dwRaceSessionType == RACE_SESSION_SCROLLING_CREDITS)) {
-                /* After the race of a season or the credits, the championship goes on. */
-                g_dwGameMode = GAME_MODE_CHAMPIONSHIP;
-                SetTrackFromSeason();
-                g_bSaveLoadEntryPoint = SAVE_LOAD_FROM_SEASON;
-                SetCurrentScreenCallback(ProcessDataSaveLoadMenu);
-            } else if (g_dwGameMode == GAME_MODE_AFTER_SEASON) {
-                /* The last season ends with the credits. */
-                StartEndingCredits();
+            if (g_dwGameMode == GAME_MODE_AFTER_SEASON) {
+                if (g_aVehicles[0].profile->season) {
+                season:
+                    /* After the race of a season or the credits, the championship goes on. */
+                    g_dwGameMode = GAME_MODE_CHAMPIONSHIP;
+                    SetTrackFromSeason();
+                    g_bSaveLoadEntryPoint = SAVE_LOAD_FROM_SEASON;
+                    SetCurrentScreenCallback(ProcessDataSaveLoadMenu);
+                } else {
+                    /* The last season ends with the credits. */
+                    StartEndingCredits();
+                }
+            } else if (g_dwGameMode == GAME_MODE_DEMO &&
+                       g_dwRaceSessionType == RACE_SESSION_SCROLLING_CREDITS) {
+                /* The credits share the return to the championship of the race after a season. */
+                goto season;
             } else if (g_dwSavedResultsValid &&
                        (g_dwGameMode == GAME_MODE_TIME_ATTACK || g_dwGameMode == GAME_MODE_ARCADE ||
                         g_dwGameMode == GAME_MODE_CHAMPIONSHIP)) {
@@ -1643,68 +1664,69 @@ static s32 AddBonusLine(s32 count, const char *line) {
 }
 
 void ProcessSeasonResults(void) {
-    PlayerProfile *profile;
-    Season *season;
     s32 count, i, race, base;
 
     count = 0;
     if (g_dwGameMode == GAME_MODE_CHAMPIONSHIP && g_dwSavedResultsValid) {
         for (i = 0; i < (s32)g_dwNumLocalPlayers; i++) {
-            profile = g_aVehicles[i].profile;
-            profile->round++;
-            season = &g_SeasonTable[profile->season];
-            if (profile->round == season->raceCount) {
-                profile->round = 0;
-                if (profile->seasonPoints[profile->season] >= season->pointsNeeded) {
-                    profile->unlocks |= season->unlocks;
-                    profile->season++;
-                    if (profile->season == SEASONS) {
+            g_aVehicles[i].profile->round++;
+            if (g_aVehicles[i].profile->round ==
+                g_SeasonTable[g_aVehicles[i].profile->season].raceCount) {
+                g_aVehicles[i].profile->round = 0;
+                if (g_aVehicles[i].profile->seasonPoints[g_aVehicles[i].profile->season] >=
+                    g_SeasonTable[g_aVehicles[i].profile->season].pointsNeeded) {
+                    g_aVehicles[i].profile->unlocks |=
+                        g_SeasonTable[g_aVehicles[i].profile->season].unlocks;
+                    g_aVehicles[i].profile->season++;
+                    if (g_aVehicles[i].profile->season == SEASONS) {
                         g_apszSeasonResultMsgLines[count++] = "ALL SEASONS COMPLETED!";
                         /* Winning every race of the last season adds the strip mine. */
                         for (race = 0; race < g_SeasonTable[SEASONS - 1].raceCount; race++) {
-                            if (profile->seasonPlaces[SEASONS - 1][race] != 0) {
-                                break;
+                            if (g_aVehicles[i].profile->seasonPlaces[SEASONS - 1][race] != 0) {
+                                goto cars;
                             }
                         }
-                        if (race >= g_SeasonTable[SEASONS - 1].raceCount) {
-                            if (profile->championshipFlags & 1) {
-                                if (!(profile->unlockedTracks & (1 << TRACK_MIRROR_STRIP_MINE))) {
-                                    count = AddBonusLine(count, "You Won all races this season!");
-                                    g_apszSeasonResultMsgLines[count++] =
-                                        "Bonus: Mirror Mine Track Added!";
-                                    profile->unlockedTracks |= 1 << TRACK_MIRROR_STRIP_MINE;
-                                }
-                            } else if (!(profile->unlockedTracks & (1 << TRACK_STRIP_MINE))) {
+                        if (g_aVehicles[i].profile->championshipFlags & 1) {
+                            if (!(g_aVehicles[i].profile->unlockedTracks &
+                                  (1 << TRACK_MIRROR_STRIP_MINE))) {
                                 count = AddBonusLine(count, "You Won all races this season!");
-                                g_apszSeasonResultMsgLines[count++] = "Bonus: Mine Track Added!";
-                                profile->unlockedTracks |= 1 << TRACK_STRIP_MINE;
+                                g_apszSeasonResultMsgLines[count++] =
+                                    "Bonus: Mirror Mine Track Added!";
+                                g_aVehicles[i].profile->unlockedTracks |=
+                                    1 << TRACK_MIRROR_STRIP_MINE;
                             }
+                        } else if (!(g_aVehicles[i].profile->unlockedTracks &
+                                     (1 << TRACK_STRIP_MINE))) {
+                            count = AddBonusLine(count, "You Won all races this season!");
+                            g_apszSeasonResultMsgLines[count++] = "Bonus: Mine Track Added!";
+                            g_aVehicles[i].profile->unlockedTracks |= 1 << TRACK_STRIP_MINE;
                         }
+                    cars:
                         /* Each championship of the years unlocks a car. */
-                        switch (profile->championshipFlags) {
+                        switch (g_aVehicles[i].profile->championshipFlags) {
                         case 0:
                             count = AddBonusLine(count, "Bonus: Milk Truck Added!");
-                            profile->unlocks |= 0x400;
+                            g_aVehicles[i].profile->unlocks |= 0x400;
                             break;
                         case 1:
                             count = AddBonusLine(count, "Bonus: Helmet Car Added!");
-                            profile->unlocks |= 0x200;
+                            g_aVehicles[i].profile->unlocks |= 0x200;
                             break;
                         case 2:
                             count = AddBonusLine(count, "Bonus: Cupra Car Added!");
-                            profile->unlocks |= 0x800;
+                            g_aVehicles[i].profile->unlocks |= 0x800;
                             break;
                         case 3:
                             count = AddBonusLine(count, "Bonus: Beach Ball Car Added!");
-                            profile->unlocks |= 0x1000;
+                            g_aVehicles[i].profile->unlocks |= 0x1000;
                             break;
                         case 4:
                             count = AddBonusLine(count, "Bonus: Mirrored Cars Added!");
-                            profile->unlocks |= 0x8000;
+                            g_aVehicles[i].profile->unlocks |= 0x8000;
                             break;
                         }
-                        profile->season = 0;
-                        profile->championshipFlags++;
+                        g_aVehicles[i].profile->season = 0;
+                        g_aVehicles[i].profile->championshipFlags++;
                     } else {
                         g_apszSeasonResultMsgLines[count] = "SEASON COMPLETED!";
                         g_apszSeasonResultMsgLines[count + 1] = "";
@@ -1717,14 +1739,17 @@ void ProcessSeasonResults(void) {
                         "pass this season.  You'll have to try again.";
                     count += 2;
                 }
-                profile->seasonPoints[profile->season] = 0;
+                g_aVehicles[i].profile->seasonPoints[g_aVehicles[i].profile->season] = 0;
             }
             /* The track and the weather of the next race become available. */
-            base = profile->championshipFlags & 1 ? TRACK_MIRRORED : 0;
-            profile->unlockedTracks |=
-                1 << (g_SeasonTable[profile->season].races[profile->round][0] + base);
-            profile->unlockedWeathers |= 1
-                                         << g_SeasonTable[profile->season].races[profile->round][1];
+            base = g_aVehicles[i].profile->championshipFlags & 1 ? TRACK_MIRRORED : 0;
+            g_aVehicles[i].profile->unlockedTracks |=
+                1 << (g_SeasonTable[g_aVehicles[i].profile->season]
+                          .races[g_aVehicles[i].profile->round][0] +
+                      base);
+            g_aVehicles[i].profile->unlockedWeathers |=
+                1 << g_SeasonTable[g_aVehicles[i].profile->season]
+                         .races[g_aVehicles[i].profile->round][1];
         }
     }
     g_dwSeasonResultMsgLineCount = count;

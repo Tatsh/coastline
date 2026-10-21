@@ -114,7 +114,7 @@ void SubdivideLightningBolt(s32 index, s32 span) {
 
     point->x = (f32)(s32)(AdvanceRng() & mask) + (before->x + after->x) * 0.5f - half;
     point->y = (f32)(s32)(AdvanceRng() & mask) + (before->y + after->y) * 0.5f - half;
-    point->z = (before->z + after->z) * 0.5f;
+    point->z = (after->z + before->z) * 0.5f;
     span >>= 1;
     if (span != 0) {
         g_nLightningBoltDepth += 4;
@@ -132,7 +132,7 @@ void UpdateLightningFlash(void) {
         } else if (g_fLightningFlashTimer > LIGHTNING_TIMER_LIMIT) {
             g_dwLightningFlashCounter = -1;
         }
-    } else if ((AdvanceRng() & 0xFFFF) < LIGHTNING_CHANCE) {
+    } else if ((s32)(AdvanceRng() & 0xFFFF) < LIGHTNING_CHANCE) {
         g_dwLightningFlashCounter = LIGHTNING_FLASH_FRAMES;
         g_fLightningFlashTimer = 0.0f;
         g_avLightningBolt[0].x = (f32)(s32)(AdvanceRng() & LIGHTNING_AREA_MASK);
@@ -151,7 +151,7 @@ void UpdatePrecipitationParticles(void) {
     s16 *particle;
     s16 driftX, driftY, moveX, moveY, moveZ;
     s32 view, i, holdX, holdY;
-    f32 dx, dy, dz, speed, scale, sine, driftStepX, driftStepY;
+    f32 dx, dy, dz, scale, sine, driftStepX, driftStepY;
 
     UpdateWindDirection();
     if (g_dwRainMode) {
@@ -176,15 +176,16 @@ void UpdatePrecipitationParticles(void) {
         dx = eye.x - previous->x;
         dy = eye.y - previous->y;
         dz = eye.z - previous->z;
+        /* The speed is read from its global at each use, and again after the square root. */
         g_fRainCameraSpeed = sqrtf(dx * dx + dy * dy + dz * dz) / g_fFrameDeltaTime;
-        speed = g_fRainCameraSpeed;
-        if (speed > RAIN_MIN_CAMERA_SPEED) {
-            scale = sqrtf(speed * RAIN_CAMERA_SPEED_MUL) * RAIN_MIN_CAMERA_SPEED / speed;
+        if (g_fRainCameraSpeed > RAIN_MIN_CAMERA_SPEED) {
+            scale = sqrtf(g_fRainCameraSpeed * RAIN_CAMERA_SPEED_MUL) * RAIN_MIN_CAMERA_SPEED /
+                    g_fRainCameraSpeed;
             g_fRainCameraSpeedScale = scale;
             dx *= scale;
             dy *= scale;
             dz *= scale;
-            g_fRainCameraSpeed = speed * scale;
+            g_fRainCameraSpeed = g_fRainCameraSpeed * scale;
         } else {
             g_fRainCameraSpeedScale = 1.0f;
         }
@@ -237,7 +238,7 @@ void UpdatePrecipitationParticles(void) {
                 holdX--;
                 particle[0] += moveX;
             } else {
-                particle[0] += moveX + driftX;
+                particle[0] = particle[0] + moveX + driftX;
                 driftX = -driftX;
                 holdX = AdvanceRng() & DRIFT_HOLD_MASK;
             }
@@ -245,7 +246,7 @@ void UpdatePrecipitationParticles(void) {
                 holdY--;
                 particle[1] += moveY;
             } else {
-                particle[1] += moveY + driftY;
+                particle[1] = particle[1] + moveY + driftY;
                 driftY = -driftY;
                 holdY = AdvanceRng() & DRIFT_HOLD_MASK;
             }
@@ -259,7 +260,7 @@ void RenderPrecipitationEffect(void) {
     s16 *particle;
     u8 *texel;
     u8 shade;
-    s32 i, step, row, column, dx, dy, sizeX, sizeY, x, y;
+    s32 i, step, row, column, sizeX, sizeY, x, y;
     f32 u, v, du, dv, width, height, halfWidth, px, py, pz, clipX, clipY, clipW, scale;
 
     if (!g_dwSnowMode && !g_dwRainMode) {
@@ -363,8 +364,8 @@ void RenderPrecipitationEffect(void) {
     g_afScratchMatrix[3][1] = 0.0f;
     g_afScratchMatrix[3][2] = 0.0f;
     g_afScratchMatrix[3][3] = 1.0f;
-    g_afMvpMatrix[3][1] = 0.0f;
-    g_afMvpMatrix[3][0] = 0.0f;
+    /* The other two terms of the translation are read back from the one cleared. */
+    g_afMvpMatrix[3][0] = g_afMvpMatrix[3][1] = g_afMvpMatrix[3][2];
     Mtx4x4Multiply(g_afMvpMatrix, g_afMvpMatrix, g_afScratchMatrix);
 
     /* A streak along the fall of the rain on the screen, brighter towards its end. */
@@ -389,18 +390,31 @@ void RenderPrecipitationEffect(void) {
             if (row >= STREAK_MARGIN && row < RAIN_STREAK_TEXTURE_SIDE - STREAK_MARGIN) {
                 column = (s32)u;
                 if (column >= STREAK_MARGIN && column < RAIN_STREAK_TEXTURE_SIDE - STREAK_MARGIN) {
-                    /* A disc five texels across without its corners. */
+                    /* A disc five texels across without its corners, a store for each texel. */
                     shade = (step << 4) | step;
                     texel = &g_abPrecipitationTextures[g_dwCurrentSplitScreenIndex]
                                                       [row * RAIN_STREAK_TEXTURE_SIDE + column];
-                    for (dy = -2; dy <= 2; dy++) {
-                        for (dx = -2; dx <= 2; dx++) {
-                            if ((dy == -2 || dy == 2) && (dx == -2 || dx == 2)) {
-                                continue;
-                            }
-                            texel[dy * RAIN_STREAK_TEXTURE_SIDE + dx] = shade;
-                        }
-                    }
+                    texel[-2 * RAIN_STREAK_TEXTURE_SIDE - 1] = shade;
+                    texel[-2 * RAIN_STREAK_TEXTURE_SIDE] = shade;
+                    texel[-2 * RAIN_STREAK_TEXTURE_SIDE + 1] = shade;
+                    texel[-RAIN_STREAK_TEXTURE_SIDE - 2] = shade;
+                    texel[-RAIN_STREAK_TEXTURE_SIDE - 1] = shade;
+                    texel[-RAIN_STREAK_TEXTURE_SIDE] = shade;
+                    texel[-RAIN_STREAK_TEXTURE_SIDE + 1] = shade;
+                    texel[-RAIN_STREAK_TEXTURE_SIDE + 2] = shade;
+                    texel[-2] = shade;
+                    texel[-1] = shade;
+                    texel[0] = shade;
+                    texel[1] = shade;
+                    texel[2] = shade;
+                    texel[RAIN_STREAK_TEXTURE_SIDE - 2] = shade;
+                    texel[RAIN_STREAK_TEXTURE_SIDE - 1] = shade;
+                    texel[RAIN_STREAK_TEXTURE_SIDE] = shade;
+                    texel[RAIN_STREAK_TEXTURE_SIDE + 1] = shade;
+                    texel[RAIN_STREAK_TEXTURE_SIDE + 2] = shade;
+                    texel[2 * RAIN_STREAK_TEXTURE_SIDE - 1] = shade;
+                    texel[2 * RAIN_STREAK_TEXTURE_SIDE] = shade;
+                    texel[2 * RAIN_STREAK_TEXTURE_SIDE + 1] = shade;
                 }
             }
             v += dv;

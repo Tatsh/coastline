@@ -36,12 +36,14 @@ void FixupDisplayListPointers(Gfx *displayList, u32 lo, u32 hi, u32 base) {
 
 void SetModelAnimationFlags(Model *model, u16 set, u16 clear) {
     ModelAnimation *animation;
+    s32 count;
     s32 i;
 
     if (model->animations == NULL) {
         return;
     }
-    for (i = 0; i < model->animations->count; i++) {
+    count = model->animations->count;
+    for (i = 0; i < count; i++) {
         animation = model->animations->entries[i];
         animation->flags |= set;
         animation->flags &= ~clear;
@@ -191,12 +193,14 @@ static void AdvanceForwardAnimation(ModelAnimation *animation) {
 
 void AdvanceModelAnimations(Model *model) {
     ModelAnimation *animation;
+    s32 count;
     s32 i;
 
     if (model->animations == NULL) {
         return;
     }
-    for (i = 0; i < model->animations->count; i++) {
+    count = model->animations->count;
+    for (i = 0; i < count; i++) {
         animation = model->animations->entries[i];
         if (animation->flags & MODEL_ANIMATION_REVERSING) {
             AdvanceReversingAnimation(animation);
@@ -208,7 +212,6 @@ void AdvanceModelAnimations(Model *model) {
 
 void RelocateModelPointers(Model *model) {
     u32 base = (u32)model;
-    ModelAnimation *animation;
     ModelPart *part;
     s32 i;
     s32 k;
@@ -225,9 +228,9 @@ void RelocateModelPointers(Model *model) {
                          0,
                          MODEL_OFFSET_LIMIT,
                          base);
-            animation = model->animations->entries[i];
-            for (k = 0; k < animation->keyCount; k++) {
-                RemapPointer((u32 *)&animation->keys[k], 0, MODEL_OFFSET_LIMIT, base);
+            for (k = 0; k < model->animations->entries[i]->keyCount; k++) {
+                RemapPointer(
+                    (u32 *)&model->animations->entries[i]->keys[k], 0, MODEL_OFFSET_LIMIT, base);
             }
         }
     }

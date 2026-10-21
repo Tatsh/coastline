@@ -39,6 +39,11 @@ typedef struct {
     s32 maxY;
 } TexelBox;
 
+/* The middle of two coordinates, worked out again at each use as the original does. */
+#define MIDPOINT(a, b) (((a) + (b)) >> 1)
+#define BOX_CENTER_X(box) MIDPOINT((box).minX, (box).maxX)
+#define BOX_CENTER_Y(box) MIDPOINT((box).minY, (box).maxY)
+
 static inline s32 ScreenToTexelX(s32 x) {
     return (x - g_rcDecalCanvas.x) >> 2;
 }
@@ -91,6 +96,15 @@ static void FillTexelRow(s32 x0, s32 x1, s32 y) {
     }
 }
 
+/* Paint the texels from x0 to x1 of a row, both included. */
+static void FillTexelSpan(s32 x0, s32 x1, s32 y) {
+    s32 x;
+
+    for (x = x0; x <= x1; x++) {
+        SetPixel4Bit(x, y, g_bDecalColor);
+    }
+}
+
 static void FillTexelColumn(s32 x, s32 y0, s32 y1) {
     s32 y;
 
@@ -128,19 +142,6 @@ static inline FillSpan *PushSpan(FillSpan *top, s32 y, s32 x1, s32 x2, s32 dy) {
     top->x2 = x2;
     top->dy = dy;
     return top + 1;
-}
-
-/* The font index of the character of a glyph. A character missing from the font takes the index
- * found before. */
-static inline s32 FindGlyphIndex(DecalGlyph *glyph, s32 previous) {
-    s32 i;
-
-    for (i = 0; i < DECAL_GLYPHS; i++) {
-        if (glyph->character == g_aDecalGlyphs[i].character) {
-            return i;
-        }
-    }
-    return previous;
 }
 
 /* The space from a glyph to the next. */
@@ -225,7 +226,8 @@ void FloodFill4Bit(s32 x, s32 y) {
     do {
         top--;
         count--;
-        dy = top->dy;
+        /* The original reads the direction by the count and the rest through the pointer. */
+        dy = stack[count].dy;
         y = top->y + dy;
         x1 = top->x1;
         x2 = top->x2;
@@ -274,27 +276,35 @@ void FloodFill4Bit(s32 x, s32 y) {
     g_pDecalTexels = texels;
 }
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
+#pragma GCC diagnostic ignored "-Wuninitialized"
 void StampTextOnDecal(s32 x, s32 y) {
     DecalGlyph **glyphs;
     DecalGlyph *glyph;
-    s32 penX, baseY, i, glyphIndex, column, firstColumn, lastColumn, texelX, texelY;
+    s32 penX, baseY, i, entry, glyphIndex, column, firstColumn, lastColumn, texelX, texelY;
     u32 row;
 
     penX = ScreenToTexelX(x) + 1 - (g_bDecalTextWidth >> 1);
     baseY = ScreenToTexelY(y);
-    /* The original does not set the index until a character is found in the font. */
-    glyphIndex = 0;
     for (i = 0, glyphs = g_apDecalTextGlyphs; i < g_bDecalTextLength; i++, glyphs++) {
         glyph = *glyphs;
-        glyphIndex = FindGlyphIndex(glyph, glyphIndex);
+        /* A character missing from the font reuses the index of the glyph before, unset for the
+         * first, as in the original. */
+        for (entry = 0; entry < DECAL_GLYPHS; entry++) {
+            if (glyph->character == g_aDecalGlyphs[entry].character) {
+                glyphIndex = entry;
+                break;
+            }
+        }
         firstColumn = glyph->cellX + glyphIndex * FONT_CELL;
         lastColumn = glyph->width + firstColumn;
 
         /* The bounds are checked before the shadow is moved off by one texel. */
         if (g_texPaintToolText.style) {
             for (row = 0; row < g_texDecalFont.height; row++) {
-                for (column = firstColumn, texelX = penX; column <= lastColumn;
-                     column++, texelX++) {
+                for (column = firstColumn; column <= lastColumn; column++) {
+                    texelX = column - firstColumn + penX;
                     texelY = row + baseY;
                     if (texelX < 0 || texelX >= g_bDecalWidth || texelY < 0 ||
                         texelY >= g_bDecalHeight) {
@@ -307,7 +317,8 @@ void StampTextOnDecal(s32 x, s32 y) {
             }
         }
         for (row = 0; row < g_texDecalFont.height; row++) {
-            for (column = firstColumn, texelX = penX; column <= lastColumn; column++, texelX++) {
+            for (column = firstColumn; column <= lastColumn; column++) {
+                texelX = column - firstColumn + penX;
                 texelY = row + baseY;
                 if (texelX < 0 || texelX >= g_bDecalWidth || texelY < 0 ||
                     texelY >= g_bDecalHeight) {
@@ -320,10 +331,14 @@ void StampTextOnDecal(s32 x, s32 y) {
         }
 
         if (i < g_bDecalTextLength - 1) {
-            penX += GlyphAdvance(glyphs[0], glyphs[1]);
+            penX = penX + glyphs[0]->width -
+                   (glyphs[0]->kernRight < glyphs[1]->kernLeft ? glyphs[0]->kernRight :
+                                                                 glyphs[1]->kernLeft) +
+                   2;
         }
     }
 }
+#pragma GCC diagnostic pop
 
 void DrawLine4Bit(s32 x0, s32 y0, s32 x1, s32 y1) {
     s32 radius, dx, dy, stepX, stepY, x, y, error, swap;
@@ -346,6 +361,9 @@ void DrawLine4Bit(s32 x0, s32 y0, s32 x1, s32 y1) {
     }
     stepY = y1 < y0 ? -1 : 1;
     stepX = x1 < x0 ? -1 : 1;
+    /* The original sets the start here and again for the first loop. */
+    x = x0;
+    y = y0;
 
     error = 0;
     if (dy < dx) {
@@ -362,7 +380,7 @@ void DrawLine4Bit(s32 x0, s32 y0, s32 x1, s32 y1) {
             error += dy;
         }
     } else {
-        for (y = y0, x = x0; y <= y1; y++) {
+        for (; y <= y1; y++) {
             if (error >= dy) {
                 error -= dy;
                 x += stepX;
@@ -444,7 +462,7 @@ void FillDecalRoundRect(s32 x0, s32 y0, s32 x1, s32 y1) {
      * drawn twice. */
     j = radius * 2;
     i = 0;
-    error = -radius * 2;
+    error = -j;
     if (j < 0) {
         return;
     }
@@ -542,7 +560,8 @@ void DrawDecalRoundedRectOutline(s32 x0, s32 y0, s32 x1, s32 y1) {
 
 void DrawDecalFilledEllipse(s32 x0, s32 y0, s32 x1, s32 y1) {
     TexelBox box;
-    s32 radiusX, radiusY, squareX, squareY, x, y, error, stepX, stepY, increment, centerX, centerY;
+    s32 radiusX, radiusY, squareX, squareY, stepSquareX, stepSquareY, x, y, error, stepX, stepY;
+    s32 increment;
 
     ToTexelBox(&box, x0, y0, x1, y1);
     radiusY = (box.maxY - box.minY) >> 1;
@@ -553,8 +572,9 @@ void DrawDecalFilledEllipse(s32 x0, s32 y0, s32 x1, s32 y1) {
     if (radiusX < 2) {
         radiusX = 1;
     }
-    squareY = radiusY * radiusY;
-    squareX = radiusX * radiusX;
+    /* The steps use their own copies of the squares, as in the original. */
+    squareY = stepSquareY = radiusY * radiusY;
+    squareX = stepSquareX = radiusX * radiusX;
 
     /* Both regions step at twice the resolution and draw on the even steps. The step adds the
      * square of the radius where the midpoint method adds twice it. */
@@ -562,25 +582,27 @@ void DrawDecalFilledEllipse(s32 x0, s32 y0, s32 x1, s32 y1) {
     y = radiusY * 2;
     error = -squareX * (radiusY * 2);
     if (squareX * (radiusY * 2) >= 0) {
-        stepY = squareX * (radiusY * 2);
+        stepY = stepSquareX * (radiusY * 2);
         stepX = 0;
         increment = 0;
         do {
             if ((x & 1) == 0) {
-                centerX = (box.minX + box.maxX) >> 1;
-                centerY = (box.minY + box.maxY) >> 1;
-                FillTexelRow(centerX - (x >> 1), centerX + (x >> 1), (y >> 1) + centerY);
-                FillTexelRow(centerX - (x >> 1), centerX + (x >> 1), centerY - (y >> 1));
+                FillTexelRow(BOX_CENTER_X(box) - (x >> 1),
+                             BOX_CENTER_X(box) + (x >> 1),
+                             (y >> 1) + BOX_CENTER_Y(box));
+                FillTexelRow(BOX_CENTER_X(box) - (x >> 1),
+                             BOX_CENTER_X(box) + (x >> 1),
+                             BOX_CENTER_Y(box) - (y >> 1));
             }
             error += increment;
-            stepX += squareY;
+            stepX += stepSquareY;
             x++;
             increment += radiusY * radiusY;
             error += increment;
             if (error > 0) {
                 error -= squareX * y;
                 y--;
-                stepY -= squareX;
+                stepY -= stepSquareX;
                 error -= squareX * y;
             }
         } while (stepY >= stepX);
@@ -592,25 +614,27 @@ void DrawDecalFilledEllipse(s32 x0, s32 y0, s32 x1, s32 y1) {
     if (x * squareY < 0) {
         return;
     }
-    stepX = squareY * x;
+    stepX = stepSquareY * x;
     stepY = 0;
     increment = 0;
     do {
         if ((y & 1) == 0) {
-            centerX = (box.minX + box.maxX) >> 1;
-            centerY = (box.minY + box.maxY) >> 1;
-            FillTexelRow(centerX - (x >> 1), centerX + (x >> 1), (y >> 1) + centerY);
-            FillTexelRow(centerX - (x >> 1), centerX + (x >> 1), centerY - (y >> 1));
+            FillTexelRow(BOX_CENTER_X(box) - (x >> 1),
+                         BOX_CENTER_X(box) + (x >> 1),
+                         (y >> 1) + BOX_CENTER_Y(box));
+            FillTexelRow(BOX_CENTER_X(box) - (x >> 1),
+                         BOX_CENTER_X(box) + (x >> 1),
+                         BOX_CENTER_Y(box) - (y >> 1));
         }
         error += increment;
         y++;
-        stepY += squareX;
+        stepY += stepSquareX;
         increment += radiusX * radiusX;
         error += increment;
         if (error > 0) {
             error -= squareY * x;
             x--;
-            stepX -= squareY;
+            stepX -= stepSquareY;
             error -= squareY * x;
         }
     } while (stepX >= stepY);
@@ -618,10 +642,24 @@ void DrawDecalFilledEllipse(s32 x0, s32 y0, s32 x1, s32 y1) {
 
 void DrawDecalEllipseOutline(s32 x0, s32 y0, s32 x1, s32 y1) {
     TexelBox box;
-    s32 brush, radiusX, radiusY, squareX, squareY, x, y, error, stepX, stepY, increment;
-    s32 centerX, centerY;
+    s32 brush, radiusX, radiusY, squareX, squareY, stepSquareX, stepSquareY, x, y, error, stepX;
+    s32 stepY, increment, swap;
 
-    ToTexelBox(&box, x0, y0, x1, y1);
+    box.minX = ScreenToTexelX(x0);
+    box.maxX = ScreenToTexelX(x1);
+    box.minY = ScreenToTexelY(y0);
+    box.maxY = ScreenToTexelY(y1);
+    /* The corners are ordered by the sign of their difference here. */
+    if (box.maxX - box.minX < 0) {
+        swap = box.minX;
+        box.minX = box.maxX;
+        box.maxX = swap;
+    }
+    if (box.maxY - box.minY < 0) {
+        swap = box.minY;
+        box.minY = box.maxY;
+        box.maxY = swap;
+    }
     brush = g_aBrushSizeRects[g_bBrushSize].width;
     radiusY = (box.maxY - box.minY + brush) >> 1;
     if (radiusY < 2) {
@@ -631,35 +669,38 @@ void DrawDecalEllipseOutline(s32 x0, s32 y0, s32 x1, s32 y1) {
     if (radiusX < 2) {
         radiusX = 1;
     }
-    squareY = radiusY * radiusY;
-    squareX = radiusX * radiusX;
-    centerX = (box.minX + box.maxX) >> 1;
-    centerY = (box.minY + box.maxY) >> 1;
+    /* The steps use their own copies of the squares, as in the original. */
+    squareY = stepSquareY = radiusY * radiusY;
+    squareX = stepSquareX = radiusX * radiusX;
 
     /* The runs of the brush point into the ellipse. */
     x = 0;
     y = radiusY * 2;
     error = -squareX * (radiusY * 2);
     if (squareX * (radiusY * 2) >= 0) {
-        stepY = squareX * (radiusY * 2);
+        stepY = stepSquareX * (radiusY * 2);
         stepX = 0;
         increment = 0;
         do {
             if ((x & 1) == 0) {
-                PaintBrushRun(centerX + (x >> 1), centerY + (y >> 1), 0, -1, brush);
-                PaintBrushRun(centerX + (x >> 1), centerY - (y >> 1), 0, 1, brush);
-                PaintBrushRun(centerX - (x >> 1), centerY - (y >> 1), 0, 1, brush);
-                PaintBrushRun(centerX - (x >> 1), centerY + (y >> 1), 0, -1, brush);
+                PaintBrushRun(
+                    BOX_CENTER_X(box) + (x >> 1), BOX_CENTER_Y(box) + (y >> 1), 0, -1, brush);
+                PaintBrushRun(
+                    BOX_CENTER_X(box) + (x >> 1), BOX_CENTER_Y(box) - (y >> 1), 0, 1, brush);
+                PaintBrushRun(
+                    BOX_CENTER_X(box) - (x >> 1), BOX_CENTER_Y(box) - (y >> 1), 0, 1, brush);
+                PaintBrushRun(
+                    BOX_CENTER_X(box) - (x >> 1), BOX_CENTER_Y(box) + (y >> 1), 0, -1, brush);
             }
             error += increment;
-            stepX += squareY;
+            stepX += stepSquareY;
             x++;
             increment += radiusY * radiusY;
             error += increment;
             if (error > 0) {
                 error -= squareX * y;
                 y--;
-                stepY -= squareX;
+                stepY -= stepSquareX;
                 error -= squareX * y;
             }
         } while (stepY >= stepX);
@@ -671,25 +712,25 @@ void DrawDecalEllipseOutline(s32 x0, s32 y0, s32 x1, s32 y1) {
     if (x * squareY < 0) {
         return;
     }
-    stepX = squareY * x;
+    stepX = stepSquareY * x;
     stepY = 0;
     increment = 0;
     do {
         if ((y & 1) == 0) {
-            PaintBrushRun(centerX + (x >> 1), centerY + (y >> 1), -1, 0, brush);
-            PaintBrushRun(centerX + (x >> 1), centerY - (y >> 1), -1, 0, brush);
-            PaintBrushRun(centerX - (x >> 1), centerY - (y >> 1), 1, 0, brush);
-            PaintBrushRun(centerX - (x >> 1), centerY + (y >> 1), 1, 0, brush);
+            PaintBrushRun(BOX_CENTER_X(box) + (x >> 1), BOX_CENTER_Y(box) + (y >> 1), -1, 0, brush);
+            PaintBrushRun(BOX_CENTER_X(box) + (x >> 1), BOX_CENTER_Y(box) - (y >> 1), -1, 0, brush);
+            PaintBrushRun(BOX_CENTER_X(box) - (x >> 1), BOX_CENTER_Y(box) - (y >> 1), 1, 0, brush);
+            PaintBrushRun(BOX_CENTER_X(box) - (x >> 1), BOX_CENTER_Y(box) + (y >> 1), 1, 0, brush);
         }
         error += increment;
-        stepY += squareX;
+        stepY += stepSquareX;
         y++;
         increment += radiusX * radiusX;
         error += increment;
         if (error > 0) {
             error -= squareY * x;
             x--;
-            stepX -= squareY;
+            stepX -= stepSquareY;
             error -= squareY * x;
         }
     } while (stepX >= stepY);
@@ -704,7 +745,7 @@ void FillCircle4Bit(s32 x, s32 y, s32 radius, u8 fromScreen) {
     }
     i = 0;
     j = radius * 2;
-    error = -radius * 2;
+    error = -j;
     if (j < 0) {
         return;
     }
@@ -712,10 +753,10 @@ void FillCircle4Bit(s32 x, s32 y, s32 radius, u8 fromScreen) {
         if ((i & 1) == 0) {
             a = i >> 1;
             b = j >> 1;
-            FillTexelRow(x - a, x + a + 1, y + b);
-            FillTexelRow(x - b, x + b + 1, y + a);
-            FillTexelRow(x - a, x + a + 1, y - b);
-            FillTexelRow(x - b, x + b + 1, y - a);
+            FillTexelSpan(x - a, x + a, y + b);
+            FillTexelSpan(x - b, x + b, y + a);
+            FillTexelSpan(x - a, x + a, y - b);
+            FillTexelSpan(x - b, x + b, y - a);
         }
         error += i;
         i++;
@@ -763,13 +804,14 @@ void DrawDecalCircleOutline(s32 x, s32 y, s32 radius) {
 void DrawDashedLine(s32 x0, s32 y0, s32 x1, s32 y1) {
     s32 dx, dy, startX, startY, endX, endY, stepX, stepY, x, y, error, phase;
 
-    dx = x1 - x0 > 0 ? x1 - x0 : -(x1 - x0);
-    dy = y1 - y0 > 0 ? y1 - y0 : -(y1 - y0);
-    AdvanceDashes();
+    phase = 0;
     startX = x0;
     startY = y0;
     endX = x1;
     endY = y1;
+    dx = x1 - x0 > 0 ? x1 - x0 : -(x1 - x0);
+    dy = y1 - y0 > 0 ? y1 - y0 : -(y1 - y0);
+    AdvanceDashes();
     if ((dx >= dy && x1 < x0) || (dx < dy && y1 < y0)) {
         startX = x1;
         endX = x0;
@@ -779,9 +821,11 @@ void DrawDashedLine(s32 x0, s32 y0, s32 x1, s32 y1) {
     stepY = endY - startY < 0 ? -1 : 1;
     stepX = endX - startX < 0 ? -1 : 1;
 
+    /* The original sets the start here and again for the first loop. */
+    x = startX;
+
     /* Only the odd pixels along the line are drawn. */
     error = 0;
-    phase = 0;
     if (dx >= dy) {
         for (x = startX, y = startY; x <= endX; x++) {
             if (error >= dx) {
@@ -795,7 +839,7 @@ void DrawDashedLine(s32 x0, s32 y0, s32 x1, s32 y1) {
             error += dy;
         }
     } else {
-        for (y = startY, x = startX; y <= endY; y++) {
+        for (y = startY; y <= endY; y++) {
             if (error >= dy) {
                 error -= dy;
                 x += stepX;
@@ -809,6 +853,10 @@ void DrawDashedLine(s32 x0, s32 y0, s32 x1, s32 y1) {
     }
 }
 
+/* With no dash drawn, the corners read the unset colour, as the original does. */
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
+#pragma GCC diagnostic ignored "-Wuninitialized"
 void DrawDashedRectangle(s32 x0, s32 y0, s32 x1, s32 y1) {
     s32 phase, x, y, swap;
     u8 color;
@@ -825,8 +873,6 @@ void DrawDashedRectangle(s32 x0, s32 y0, s32 x1, s32 y1) {
         y0 = y1;
         y1 = swap;
     }
-    /* The original reads the color unset at the corners when no dash is drawn. */
-    color = 0;
     for (x = x0; x < x1 - 4; x += 4) {
         phase = (phase + 1) & 1;
         color = AlternateDashColor(phase);
@@ -850,6 +896,7 @@ void DrawDashedRectangle(s32 x0, s32 y0, s32 x1, s32 y1) {
     }
     DrawFilledRectHiRes(x0, y1 - 1, 1, 2, color, color, color);
 }
+#pragma GCC diagnostic pop
 
 void DrawDashedRoundedRect(s32 x0, s32 y0, s32 x1, s32 y1) {
     s32 radius, i, j, error, a, b, x, y, swap;
@@ -941,73 +988,68 @@ void DrawDashedRoundedRect(s32 x0, s32 y0, s32 x1, s32 y1) {
 }
 
 void DrawDashedEllipse(s32 x0, s32 y0, s32 x1, s32 y1) {
-    s32 dx, dy, radiusX, radiusY, squareX, squareY, x, y, error, stepX, stepY, increment, phase;
-    s32 centerX, centerY, swap;
+    s32 radiusX, radiusY, squareX, squareY, stepSquareX, stepSquareY, x, y, error, stepX, stepY;
+    s32 increment, phase, swap;
     u8 color;
 
     phase = 0;
-    dx = x1 - x0;
-    if (dx < 0) {
+    if (x1 - x0 < 0) {
         swap = x0;
         x0 = x1;
         x1 = swap;
-        dx = -dx;
     }
-    dy = y1 - y0;
-    if (dy < 0) {
+    if (y1 - y0 < 0) {
         swap = y0;
         y0 = y1;
         y1 = swap;
-        dy = -dy;
     }
-    radiusY = dy >> 1;
+    radiusY = (y1 - y0) >> 1;
     if (radiusY < 2) {
         radiusY = 1;
     }
-    radiusX = dx >> 1;
+    radiusX = (x1 - x0) >> 1;
     if (radiusX < 2) {
         radiusX = 1;
     }
-    squareY = radiusY * radiusY;
-    squareX = radiusX * radiusX;
-    AdvanceDashes();
-    centerX = (x0 + x1) >> 1;
-    centerY = (y0 + y1) >> 1;
+    /* The steps use their own copies of the squares, as in the original. */
+    squareY = stepSquareY = radiusY * radiusY;
+    squareX = stepSquareX = radiusX * radiusX;
 
     /* The points are drawn where X is odd in the first region and where Y is odd in the second. */
     x = 0;
     y = radiusY * 2;
     error = -squareX * y;
+    AdvanceDashes();
     if (squareX * y >= 0) {
-        stepY = squareX * y;
-        stepX = x * squareY;
+        stepY = stepSquareX * y;
+        stepX = x * stepSquareY;
         increment = squareY * x;
         do {
             if ((x & 1) == 0) {
                 phase = (phase + 1) % DASH_PERIOD;
                 color = DashColor(phase);
-                if ((centerX + (x >> 1)) & 1) {
-                    DrawPixel(centerX + (x >> 1), centerY + (y >> 1), color);
+                if ((MIDPOINT(x0, x1) + (x >> 1)) & 1) {
+                    DrawPixel(MIDPOINT(x0, x1) + (x >> 1), MIDPOINT(y0, y1) + (y >> 1), color);
                 }
-                if ((centerX + (x >> 1)) & 1) {
-                    DrawPixel(centerX + (x >> 1), centerY - (y >> 1), color);
+                if ((MIDPOINT(x0, x1) + (x >> 1)) & 1) {
+                    DrawPixel(MIDPOINT(x0, x1) + (x >> 1), MIDPOINT(y0, y1) - (y >> 1), color);
                 }
-                if ((centerX - (x >> 1)) & 1) {
-                    DrawPixel(centerX - (x >> 1), centerY - (y >> 1), color);
+                if ((MIDPOINT(x0, x1) - (x >> 1)) & 1) {
+                    DrawPixel(MIDPOINT(x0, x1) - (x >> 1), MIDPOINT(y0, y1) - (y >> 1), color);
                 }
-                if ((centerX - (x >> 1)) & 1) {
-                    DrawPixel(centerX - (x >> 1), centerY + (y >> 1), color);
+                if ((MIDPOINT(x0, x1) - (x >> 1)) & 1) {
+                    DrawPixel(MIDPOINT(x0, x1) - (x >> 1), MIDPOINT(y0, y1) + (y >> 1), color);
                 }
             }
             error += increment;
-            stepX += squareY;
+            stepX += stepSquareY;
             x++;
             increment += radiusY * radiusY;
             error += increment;
             if (error > 0) {
                 error -= squareX * y;
                 y--;
-                stepY -= squareX;
+                stepY -= stepSquareX;
                 error -= squareX * y;
             }
         } while (stepY >= stepX);
@@ -1021,50 +1063,55 @@ void DrawDashedEllipse(s32 x0, s32 y0, s32 x1, s32 y1) {
     }
     stepY = 0;
     increment = 0;
-    stepX = x * squareY;
+    stepX = x * stepSquareY;
     do {
         if ((y & 1) == 0) {
             phase = (phase + 1) % DASH_PERIOD;
             color = DashColor(phase);
-            if ((centerY + (y >> 1)) & 1) {
-                DrawPixel(centerX + (x >> 1), centerY + (y >> 1), color);
+            if ((MIDPOINT(y0, y1) + (y >> 1)) & 1) {
+                DrawPixel(MIDPOINT(x0, x1) + (x >> 1), MIDPOINT(y0, y1) + (y >> 1), color);
             }
-            if ((centerY - (y >> 1)) & 1) {
-                DrawPixel(centerX + (x >> 1), centerY - (y >> 1), color);
+            if ((MIDPOINT(y0, y1) - (y >> 1)) & 1) {
+                DrawPixel(MIDPOINT(x0, x1) + (x >> 1), MIDPOINT(y0, y1) - (y >> 1), color);
             }
-            if ((centerY - (y >> 1)) & 1) {
-                DrawPixel(centerX - (x >> 1), centerY - (y >> 1), color);
+            if ((MIDPOINT(y0, y1) - (y >> 1)) & 1) {
+                DrawPixel(MIDPOINT(x0, x1) - (x >> 1), MIDPOINT(y0, y1) - (y >> 1), color);
             }
-            if ((centerY + (y >> 1)) & 1) {
-                DrawPixel(centerX - (x >> 1), centerY + (y >> 1), color);
+            if ((MIDPOINT(y0, y1) + (y >> 1)) & 1) {
+                DrawPixel(MIDPOINT(x0, x1) - (x >> 1), MIDPOINT(y0, y1) + (y >> 1), color);
             }
         }
         error += increment;
-        stepY += squareX;
+        stepY += stepSquareX;
         y++;
         increment += radiusX * radiusX;
         error += increment;
         if (error > 0) {
             error -= squareY * x;
             x--;
-            stepX -= squareY;
+            stepX -= stepSquareY;
             error -= squareY * x;
         }
     } while (stepX >= stepY);
 }
 
 /* Draw a point of the dashed circle where it is odd along the arc and over the decal. */
-static inline void DrawDashedCirclePoint(s32 x, s32 y, s32 along, u8 color) {
-    if ((along & 1) && x >= g_rcDecalCanvas.x && x < g_rcDecalCanvas.x + g_rcDecalCanvas.width &&
-        y >= g_rcDecalCanvas.y && y < g_rcDecalCanvas.y + g_rcDecalCanvas.height) {
+static inline void
+DrawDashedCirclePoint(s32 x, s32 y, s32 along, u8 color, s32 left, s32 top, s32 right, s32 bottom) {
+    if ((along & 1) && x >= left && x < right && y >= top && y < bottom) {
         DrawPixel(x, y, color);
     }
 }
 
 void DrawDashedCircle(s32 x, s32 y, s32 radius) {
-    s32 phase, i, j, error, a, b;
+    s32 phase, i, j, error, a, b, left, top, right, bottom;
     u8 color;
 
+    /* The bounds of the decal are read once, before the dashes advance. */
+    left = g_rcDecalCanvas.x;
+    top = g_rcDecalCanvas.y;
+    right = left + g_rcDecalCanvas.width;
+    bottom = top + g_rcDecalCanvas.height;
     phase = 0;
     AdvanceDashes();
     i = 0;
@@ -1079,14 +1126,14 @@ void DrawDashedCircle(s32 x, s32 y, s32 radius) {
             color = DashColor(phase);
             a = i >> 1;
             b = j >> 1;
-            DrawDashedCirclePoint(x + a, y + b, x + a, color);
-            DrawDashedCirclePoint(x + a, y - b, x + a, color);
-            DrawDashedCirclePoint(x - a, y - b, x - a, color);
-            DrawDashedCirclePoint(x - a, y + b, x - a, color);
-            DrawDashedCirclePoint(x + b, y + a, y + a, color);
-            DrawDashedCirclePoint(x + b, y - a, y - a, color);
-            DrawDashedCirclePoint(x - b, y - a, y - a, color);
-            DrawDashedCirclePoint(x - b, y + a, y + a, color);
+            DrawDashedCirclePoint(x + a, y + b, x + a, color, left, top, right, bottom);
+            DrawDashedCirclePoint(x + a, y - b, x + a, color, left, top, right, bottom);
+            DrawDashedCirclePoint(x - a, y - b, x - a, color, left, top, right, bottom);
+            DrawDashedCirclePoint(x - a, y + b, x - a, color, left, top, right, bottom);
+            DrawDashedCirclePoint(x + b, y + a, y + a, color, left, top, right, bottom);
+            DrawDashedCirclePoint(x + b, y - a, y - a, color, left, top, right, bottom);
+            DrawDashedCirclePoint(x - b, y - a, y - a, color, left, top, right, bottom);
+            DrawDashedCirclePoint(x - b, y + a, y + a, color, left, top, right, bottom);
         }
         error += i;
         i++;
@@ -1097,18 +1144,26 @@ void DrawDashedCircle(s32 x, s32 y, s32 radius) {
     } while (i <= j);
 }
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
+#pragma GCC diagnostic ignored "-Wuninitialized"
 void DrawDecalTextPreview(s32 x, s32 y) {
     DecalGlyph *glyph;
     PaletteSwatch *swatch;
-    s32 left, bottom, i, glyphIndex;
+    s32 left, bottom, i, entry, glyphIndex;
 
     left = x - ((g_bDecalTextWidth >> 1) << 2);
     bottom = y - (g_texDecalFont.height << 2);
-    /* The original does not set the index until a character is found in the font. */
-    glyphIndex = 0;
     for (i = 0; i < g_bDecalTextLength; i++) {
         glyph = g_apDecalTextGlyphs[i];
-        glyphIndex = FindGlyphIndex(glyph, glyphIndex);
+        /* A character missing from the font reuses the index of the glyph before, unset for the
+         * first, as in the original. */
+        for (entry = 0; entry < DECAL_GLYPHS; entry++) {
+            if (glyph->character == g_aDecalGlyphs[entry].character) {
+                glyphIndex = entry;
+                break;
+            }
+        }
         /* The glyph is tested at its cell moved right, but drawn moved left; the test at the
          * top of the decal is unsigned. */
         if (g_rcDecalCanvas.x < left + (glyph->cellX << 2) + (glyph->width << 2) &&
@@ -1149,6 +1204,7 @@ void DrawDecalTextPreview(s32 x, s32 y) {
         }
     }
 }
+#pragma GCC diagnostic pop
 
 void SwapBytes(u8 *a, u8 *b) {
     u8 swap = *a;
