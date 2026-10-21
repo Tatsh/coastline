@@ -156,6 +156,8 @@ void _Ldtob(_Pft *px, char code) {
     } else {
         int i, n;
 
+        /* The stored value is scaled into [1, 2), and no caller reads it again. */
+        px->v.ll = (bits & ~(DBL_EXP_MASK << DBL_EXP_SHIFT)) | ((u64)0x3FF << DBL_EXP_SHIFT);
         if (ldval < 0) {
             ldval = -ldval;
         }
