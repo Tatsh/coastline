@@ -3,8 +3,8 @@ concurrency:
   cancel-in-progress: true
   group: build-${{ github.ref }}
 jobs:
-  compile:
-    name: 'Compile (${{ matrix.region }}, ${{ matrix.build-type }})'
+  n64:
+    name: 'Nintendo 64 (${{ matrix.region }}, ${{ matrix.build-type }})'
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -15,23 +15,69 @@ jobs:
       - uses: 'actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1'
         with:
           persist-credentials: false
-      - name: 'Install build dependencies'
+      # The compiler is libdragon's GCC. No other part of libdragon is used, and the package is
+      # pinned by digest.
+      - name: 'Install the toolchain'
         run: |
           sudo apt-get update
-          sudo apt-get install -y cmake ninja-build
+          sudo apt-get install -y cmake ninja-build zlib1g-dev
+          curl -sSL -o gcc-toolchain-mips64-x86_64.deb \
+            https://github.com/DragonMinded/libdragon/releases/download/toolchain-continuous-prerelease/gcc-toolchain-mips64-x86_64.deb
+          echo 'fac8e6572493a66468b7d45df41b042f90b1a630ec96aa218bd5fb1f320a0a4d  gcc-toolchain-mips64-x86_64.deb' \
+            | sha256sum -c
+          sudo apt-get install -y ./gcc-toolchain-mips64-x86_64.deb
       - name: 'Toolchain versions'
-        run: cmake --version
-      # No cross toolchain is chosen yet. The configure step gains its toolchain file when the build
-      # is set up.
+        run: |
+          /opt/libdragon/bin/mips64-elf-gcc --version
+          cmake --version
       - name: 'Configure'
         run: cmake --preset "n64-$TGR_REGION" -DCMAKE_BUILD_TYPE="$BUILD_TYPE"
         env:
           BUILD_TYPE: '${{ matrix.build-type }}'
+          N64_INST: '/opt/libdragon'
           TGR_REGION: '${{ matrix.region }}'
       - name: 'Compile'
         run: cmake --build --preset "n64-$TGR_REGION" -- -k 0
         env:
           TGR_REGION: '${{ matrix.region }}'
+  win:
+    name: 'Windows (${{ matrix.renderer }}, ${{ matrix.build-type }})'
+    runs-on: windows-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        build-type: ['Debug', 'Release']
+        renderer: ['d3d', 'glide']
+    steps:
+      # The compiler is the i686 mingw-w64 GCC of MSYS2's mingw32 system.
+      - uses: 'msys2/setup-msys2@66cd2cce69caa17b53920067426061ca1de3a884'
+        with:
+          install: 'git'
+          msystem: 'mingw32'
+          pacboy: >-
+            cmake:p
+            ninja:p
+            toolchain:p
+          update: true
+      - uses: 'actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1'
+        with:
+          persist-credentials: false
+      - name: 'Toolchain versions'
+        run: |
+          i686-w64-mingw32-gcc --version
+          cmake --version
+        shell: 'msys2 {0}'
+      - name: 'Configure'
+        run: cmake --preset "win-$TGR_RENDERER" -DCMAKE_BUILD_TYPE="$BUILD_TYPE"
+        env:
+          BUILD_TYPE: '${{ matrix.build-type }}'
+          TGR_RENDERER: '${{ matrix.renderer }}'
+        shell: 'msys2 {0}'
+      - name: 'Compile'
+        run: cmake --build --preset "win-$TGR_RENDERER" -- -k 0
+        env:
+          TGR_RENDERER: '${{ matrix.renderer }}'
+        shell: 'msys2 {0}'
 name: 'Build'
 'on':
   push:

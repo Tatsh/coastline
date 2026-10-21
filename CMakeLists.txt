@@ -4,6 +4,7 @@ project(coastline VERSION 0.0.0 LANGUAGES C ASM)
 option(BUILD_DOCS "Build documentation alongside the sources." OFF)
 option(BUILD_DOCS_ONLY "Build documentation and nothing else." OFF)
 option(INSTALL_DOCS "Install documentation." OFF)
+option(TGR_LINK "Link the ROM or the Windows library. Off until every routine has a body." OFF)
 set(TGR_VARIANTS
     ""
     CACHE STRING "Variants to build in one step, as a list of n64-us, n64-jp, n64-eu, win-d3d, \
@@ -97,9 +98,9 @@ if(NOT BUILD_DOCS_ONLY)
   include(FeatureSummary)
   include(GNUInstallDirs)
   feature_summary(WHAT ALL FATAL_ON_MISSING_REQUIRED_PACKAGES)
-  add_subdirectory(src)
   if(TGR_PLATFORM STREQUAL "n64")
     include(cmake/tools.cmake)
     include(cmake/assets.cmake)
   endif()
+  add_subdirectory(src)
 endif()

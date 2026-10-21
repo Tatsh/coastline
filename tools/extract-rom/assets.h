@@ -56,7 +56,8 @@ std::vector<Asset> scan(const Rom &rom);
  *
  * A raw asset is written as `OFFSET.bin`. A compressed asset is written as `OFFSET.z`, the bytes
  * of the cartridge, and `OFFSET.bin`, the decompressed data. `manifest.txt` lists every asset as
- * `OFFSET KIND SIZE DECOMPRESSED CHUNKS`, in cartridge order.
+ * `OFFSET KIND SIZE DECOMPRESSED CHUNKS`, in cartridge order. `boot.bin` is the first 0x1000 bytes
+ * of the cartridge, the header and the IPL3, which the ROM build copies as they are.
  *
  * @param rom The cartridge.
  * @param assets The assets scan() found.

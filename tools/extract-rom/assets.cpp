@@ -19,6 +19,7 @@ using Common::readBig32;
 
 constexpr std::uint32_t kHeaderSize = 8;
 constexpr std::uint32_t kChunkHeaderSize = 4;
+constexpr std::size_t kBootSize = 0x1000;
 constexpr std::size_t kInflateStep = 16000;
 constexpr std::uint8_t kZlibDeflate = 0x78;
 
@@ -138,6 +139,10 @@ extract(const Rom &rom, const std::vector<Asset> &assets, const std::filesystem:
     if (error) {
         return std::unexpected(
             Error{ErrorCode::Io, std::format("Cannot create {}.", directory.string())});
+    }
+    const std::span<const std::uint8_t> boot(rom.bytes.data(), kBootSize);
+    if (auto written = Common::writeFile(directory / "boot.bin", boot); !written) {
+        return written;
     }
     std::string manifest;
     for (const auto &asset : assets) {

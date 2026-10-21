@@ -28,6 +28,7 @@ if(_coastline_tools_vcpkg_root)
 endif()
 
 set(COASTLINE_TOOLS_DIR "${CMAKE_BINARY_DIR}/tools")
+set(COASTLINE_TOOL_BUILD_ROM "${COASTLINE_TOOLS_DIR}/build-rom/build-rom")
 set(COASTLINE_TOOL_EXTRACT_ROM "${COASTLINE_TOOLS_DIR}/extract-rom/extract-rom")
 
 # The host build does not receive the cross toolchain file, on the command line or through the
@@ -49,6 +50,6 @@ endif()
 add_custom_target(
   coastline_tools
   COMMAND "${CMAKE_COMMAND}" --build "${COASTLINE_TOOLS_DIR}"
-  BYPRODUCTS "${COASTLINE_TOOL_EXTRACT_ROM}"
+  BYPRODUCTS "${COASTLINE_TOOL_BUILD_ROM}" "${COASTLINE_TOOL_EXTRACT_ROM}"
   COMMENT "Building the host tools"
   VERBATIM)

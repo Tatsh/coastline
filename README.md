@@ -29,21 +29,26 @@ its assets. Building this source alone will not result in a playable game.
 
 Each release is a variant: `n64-us`, `n64-jp`, and `n64-eu` for the Nintendo 64 releases, and
 `win-d3d` and `win-glide` for the two Windows libraries. A workflow preset configures and builds
-one variant. The cartridge image of the release is passed as `TGR_ROM`, and its assets are
-extracted into the build directory on every build. The image is checked against the SHA-1 of the
-unmodified release before anything is read from it.
+one variant. The cartridge image of the release is read from the `TGR_ROM` environment variable,
+and its assets are extracted into the build directory on every build. The image is checked
+against the SHA-1 of the unmodified release before anything is read from it.
 
 ```shell
-cmake --workflow --preset n64-us -DTGR_ROM=/path/to/usa.z64
+TGR_ROM=/path/to/usa.z64 cmake --workflow --preset n64-us
 ```
 
 The `all` preset builds every variant in one step. Each Nintendo 64 variant takes its image from
 `TGR_ROM_US`, `TGR_ROM_JP`, or `TGR_ROM_EU`.
 
 ```shell
-cmake --preset all -DTGR_ROM_US=usa.z64 -DTGR_ROM_JP=jpn.z64 -DTGR_ROM_EU=eur.z64
-cmake --build --preset all
+TGR_ROM_US=usa.z64 TGR_ROM_JP=jpn.z64 TGR_ROM_EU=eur.z64 cmake --workflow --preset all
 ```
+
+The Nintendo 64 compiler is libdragon's GCC, found through `N64_INST`, and no other part of
+libdragon is used. The Windows compiler is an i686 mingw-w64 GCC, found through `MINGW_ROOT` or
+on the path. The Windows build is 32-bit only, and its `BRD3D.dll` and `BRGlide.dll` are meant
+as drop-in replacements for the files of the installed game. Every routine compiles into an
+archive. The final link is off until every routine has a body, and `TGR_LINK=ON` turns it on.
 
 The host tools under `tools/` are built with the host compiler during the configure step. They
 need argparse, spdlog, and zlib, from vcpkg, the system, or a pinned download.

@@ -5,7 +5,13 @@
 set(TGR_ROM
     ""
     CACHE FILEPATH "Original cartridge image of the TGR_REGION release, in .z64, .v64, or .n64 \
-order. Its assets are extracted into the build directory.")
+order. Its assets are extracted into the build directory. The TGR_ROM environment variable fills \
+an empty value, since a workflow preset takes no cache arguments.")
+if(NOT TGR_ROM AND DEFINED ENV{TGR_ROM})
+  set(TGR_ROM
+      "$ENV{TGR_ROM}"
+      CACHE FILEPATH "Original cartridge image of the TGR_REGION release." FORCE)
+endif()
 
 if(NOT TGR_ROM)
   message(STATUS "TGR_ROM is not set. The assets are not extracted, and no ROM can be built.")

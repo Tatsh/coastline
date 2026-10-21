@@ -2,28 +2,23 @@
   "buildPresets": [
     {
       "configurePreset": "n64-us",
-      "name": "n64-us",
-      "targets": ["archives"]
+      "name": "n64-us"
     },
     {
       "configurePreset": "n64-jp",
-      "name": "n64-jp",
-      "targets": ["archives"]
+      "name": "n64-jp"
     },
     {
       "configurePreset": "n64-eu",
-      "name": "n64-eu",
-      "targets": ["archives"]
+      "name": "n64-eu"
     },
     {
       "configurePreset": "win-d3d",
-      "name": "win-d3d",
-      "targets": ["archives"]
+      "name": "win-d3d"
     },
     {
       "configurePreset": "win-glide",
-      "name": "win-glide",
-      "targets": ["archives"]
+      "name": "win-glide"
     },
     {
       "configurePreset": "all",
@@ -48,6 +43,7 @@
     },
     {
       "cacheVariables": {
+        "CMAKE_TOOLCHAIN_FILE": "${sourceDir}/cmake/n64-toolchain.cmake",
         "TGR_PLATFORM": "n64"
       },
       "hidden": true,
@@ -56,6 +52,7 @@
     },
     {
       "cacheVariables": {
+        "CMAKE_TOOLCHAIN_FILE": "${sourceDir}/cmake/win-toolchain.cmake",
         "TGR_PLATFORM": "win"
       },
       "hidden": true,

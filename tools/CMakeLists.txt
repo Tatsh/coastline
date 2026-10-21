@@ -61,4 +61,5 @@ list(GET ZLIB_INCLUDE_DIRS 0 _zlib_location)
 coastline_tools_report_source(zlib "${_zlib_location}")
 
 add_subdirectory(common)
+add_subdirectory(build-rom)
 add_subdirectory(extract-rom)

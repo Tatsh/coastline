@@ -10,7 +10,12 @@ foreach(_region us jp eu)
   set(TGR_ROM_${_upper}
       ""
       CACHE FILEPATH "Original cartridge image of the ${_region} release, passed to the n64-\
-${_region} variant as TGR_ROM.")
+${_region} variant as TGR_ROM. The TGR_ROM_${_upper} environment variable fills an empty value.")
+  if(NOT TGR_ROM_${_upper} AND DEFINED ENV{TGR_ROM_${_upper}})
+    set(TGR_ROM_${_upper}
+        "$ENV{TGR_ROM_${_upper}}"
+        CACHE FILEPATH "Original cartridge image of the ${_region} release." FORCE)
+  endif()
 endforeach()
 
 set(_tgr_all_variants n64-us n64-jp n64-eu win-d3d win-glide)
@@ -40,6 +45,7 @@ foreach(_variant ${TGR_VARIANTS})
     BINARY_DIR "${CMAKE_BINARY_DIR}/${_variant}"
     CMAKE_ARGS -DTGR_PLATFORM=${_platform} ${_choice_arg}
                -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
+               -DCMAKE_TOOLCHAIN_FILE=${CMAKE_SOURCE_DIR}/cmake/${_platform}-toolchain.cmake
     BUILD_ALWAYS ON
     INSTALL_COMMAND ""
     TEST_COMMAND "")
