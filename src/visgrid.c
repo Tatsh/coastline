@@ -104,9 +104,7 @@ s32 IsCellVisible(s32 col, s32 row) {
 }
 
 s32 IsPointVisible(f32 x, f32 y) {
-    s32 col = FloatToInt(x * CELL_SCALE);
-
-    return IsCellVisible(col, FloatToInt(y * CELL_SCALE));
+    return IsCellVisible(FloatToInt(x * CELL_SCALE), FloatToInt(y * CELL_SCALE));
 }
 
 void BuildVisibleGrid(void) {

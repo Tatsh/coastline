@@ -212,6 +212,7 @@ lbcmp
 lbcopy
 lbzero
 lcart
+lclear
 lcounter
 ldblk
 ldiv
@@ -502,6 +503,7 @@ toupper
 trackrender
 tranx
 trisurface
+trunc
 txls
 typeh
 typel

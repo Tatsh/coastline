@@ -31,7 +31,7 @@ void MarkTrackSections(TrackSection *section) {
 void UnmarkTrackSections(TrackSection *section) {
     for (; section != NULL; section = section->next) {
         if (section->flags & TRACK_SECTION_VISITED) {
-            section->flags &= ~TRACK_SECTION_VISITED;
+            section->flags &= (u16)~TRACK_SECTION_VISITED;
             UnmarkTrackSections(section->child);
         }
     }
@@ -43,35 +43,26 @@ void PrepareTrackSections(void) {
 }
 
 DisplayListBlock *AllocDisplayListBlock(void) {
-    s32 count = g_dwDisplayListBlockCount;
-
-    if (count < FRAME_DISPLAY_LIST_BLOCKS) {
-        g_dwDisplayListBlockCount = count + 1;
-        return &g_aDisplayListBlocks[g_dwFrameBufferIndex][count];
+    if (g_dwDisplayListBlockCount < FRAME_DISPLAY_LIST_BLOCKS) {
+        return &g_aDisplayListBlocks[g_dwFrameBufferIndex][g_dwDisplayListBlockCount++];
     }
-    g_dwDisplayListBlockCount = count + 1;
+    g_dwDisplayListBlockCount++;
     return &g_aDisplayListBlocks[g_dwFrameBufferIndex][FRAME_DISPLAY_LIST_BLOCKS];
 }
 
 Hilite *AllocHiliteBlock(void) {
-    s32 count = g_dwHiliteBlockCount;
-
-    if (count < FRAME_HILITE_BLOCKS) {
-        g_dwHiliteBlockCount = count + 1;
-        return &g_aHiliteBlocks[g_dwFrameBufferIndex][count];
+    if (g_dwHiliteBlockCount < FRAME_HILITE_BLOCKS) {
+        return &g_aHiliteBlocks[g_dwFrameBufferIndex][g_dwHiliteBlockCount++];
     }
-    g_dwHiliteBlockCount = count + 1;
+    g_dwHiliteBlockCount++;
     return &g_aHiliteBlocks[g_dwFrameBufferIndex][FRAME_HILITE_BLOCKS];
 }
 
 LookAt *AllocLightBlock(void) {
-    s32 count = g_dwLightBlockCount;
-
-    if (count < FRAME_LIGHT_BLOCKS) {
-        g_dwLightBlockCount = count + 1;
-        return &g_aLightBlocks[g_dwFrameBufferIndex][count];
+    if (g_dwLightBlockCount < FRAME_LIGHT_BLOCKS) {
+        return &g_aLightBlocks[g_dwFrameBufferIndex][g_dwLightBlockCount++];
     }
-    g_dwLightBlockCount = count + 1;
+    g_dwLightBlockCount++;
     return &g_aLightBlocks[g_dwFrameBufferIndex][FRAME_LIGHT_BLOCKS];
 }
 
@@ -89,13 +80,14 @@ void QuickSort(void *base, u32 count, u32 size, CompareFunc compare) {
     s32 stkptr;
     SwapFunc swap;
 
-    /* Exchange whole words or halfwords when the size allows. */
+    /* Exchange whole words or halfwords when the size allows. The exchanges take typed buffers,
+     * which the swap pointer passes as untyped ones. */
     if ((size & 3) == 0) {
-        swap = ExchangeWordBuffers;
+        swap = (SwapFunc)ExchangeWordBuffers;
     } else if ((size & 1) == 0) {
-        swap = ExchangeHalfwordBuffers;
+        swap = (SwapFunc)ExchangeHalfwordBuffers;
     } else {
-        swap = ExchangeByteBuffers;
+        swap = (SwapFunc)ExchangeByteBuffers;
     }
 
     if (count < 2 || size == 0) {
@@ -177,49 +169,40 @@ void ShortSort(u8 *lo, u8 *hi, u32 size, CompareFunc compare, SwapFunc swap) {
     }
 }
 
-void ExchangeByteBuffers(void *a, void *b, u32 size) {
-    u8 *pa = a;
-    u8 *pb = b;
+void ExchangeByteBuffers(u8 *a, u8 *b, u32 size) {
     u8 tmp;
 
-    if (pa == pb) {
-        return;
-    }
-    while (size-- != 0) {
-        tmp = *pa;
-        *pa++ = *pb;
-        *pb++ = tmp;
+    if (a != b) {
+        while (size--) {
+            tmp = *a;
+            *a++ = *b;
+            *b++ = tmp;
+        }
     }
 }
 
-void ExchangeHalfwordBuffers(void *a, void *b, u32 size) {
-    s16 *pa = a;
-    s16 *pb = b;
+void ExchangeHalfwordBuffers(s16 *a, s16 *b, u32 size) {
     s16 tmp;
 
     size >>= 1;
-    if (pa == pb) {
-        return;
-    }
-    while (size-- != 0) {
-        tmp = *pa;
-        *pa++ = *pb;
-        *pb++ = tmp;
+    if (a != b) {
+        while (size--) {
+            tmp = *a;
+            *a++ = *b;
+            *b++ = tmp;
+        }
     }
 }
 
-void ExchangeWordBuffers(void *a, void *b, u32 size) {
-    u32 *pa = a;
-    u32 *pb = b;
+void ExchangeWordBuffers(u32 *a, u32 *b, u32 size) {
     u32 tmp;
 
     size >>= 2;
-    if (pa == pb) {
-        return;
-    }
-    while (size-- != 0) {
-        tmp = *pa;
-        *pa++ = *pb;
-        *pb++ = tmp;
+    if (a != b) {
+        while (size--) {
+            tmp = *a;
+            *a++ = *b;
+            *b++ = tmp;
+        }
     }
 }

@@ -14,8 +14,7 @@ set(_gu
     "${_src}/libultra/gu/rotate.c"
     "${_src}/libultra/gu/scale.c"
     "${_src}/libultra/gu/translate.c"
-    "${_src}/libultra/gu/normalize.c"
-    "${CMAKE_CURRENT_SOURCE_DIR}/stubs/gu.c")
+    "${_src}/libultra/gu/normalize.c")
 set(_common "${CMAKE_CURRENT_SOURCE_DIR}/stubs/common.c")
 set(_vecmath "${_src}/vecmath.c")
 
@@ -69,9 +68,9 @@ coastline_add_test(timing "${_src}/timing.c")
 coastline_add_test(track ${_vecmath} ${_common})
 coastline_add_test(trackrender ${_vecmath})
 coastline_add_test(vecmath ${_vecmath})
-coastline_add_test(vehicle ${_vecmath} "${_src}/rigidbody.c" "${_src}/mathutil.c")
+coastline_add_test(vehicle ${_vecmath} "${_src}/rigidbody.c" stubs/mathutil.c)
 coastline_add_test(vehiclerender ${_vecmath} ${_gu})
-coastline_add_test(visgrid "${_src}/visgrid.c" "${_src}/mathutil.c")
+coastline_add_test(visgrid "${_src}/visgrid.c" stubs/mathutil.c)
 coastline_add_test(weather ${_common})
 
 # The libultra C library, renamed apart from the host's.
@@ -84,7 +83,7 @@ set_source_files_properties("${_src}/libultra/libc/sprintf.c" PROPERTIES COMPILE
                                                                          sprintf=lu_sprintf)
 coastline_add_test(gu "${_src}/libultra/gu/sinf.c" "${_src}/libultra/gu/cosf.c"
                    "${_src}/libultra/gu/mtxutil.c" "${_src}/libultra/gu/rotate.c"
-                   "${_src}/libultra/gu/normalize.c" stubs/gu.c)
+                   "${_src}/libultra/gu/normalize.c")
 set_source_files_properties("${_src}/libultra/gu/sinf.c" PROPERTIES COMPILE_DEFINITIONS sinf=gu_sinf)
 set_source_files_properties("${_src}/libultra/gu/cosf.c" PROPERTIES COMPILE_DEFINITIONS cosf=gu_cosf)
 

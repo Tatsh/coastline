@@ -140,7 +140,7 @@ void ShortSort(u8 *lo, u8 *hi, u32 size, CompareFunc compare, SwapFunc swap);
  * @param size The size of each buffer, in bytes.
  * @ghidraAddress USA: 0x802561a8
  */
-void ExchangeByteBuffers(void *a, void *b, u32 size);
+void ExchangeByteBuffers(u8 *a, u8 *b, u32 size);
 
 /**
  * Exchange two buffers halfword by halfword.
@@ -150,7 +150,7 @@ void ExchangeByteBuffers(void *a, void *b, u32 size);
  * @param size The size of each buffer, in bytes.
  * @ghidraAddress USA: 0x802561e4
  */
-void ExchangeHalfwordBuffers(void *a, void *b, u32 size);
+void ExchangeHalfwordBuffers(s16 *a, s16 *b, u32 size);
 
 /**
  * Exchange two buffers word by word.
@@ -160,6 +160,6 @@ void ExchangeHalfwordBuffers(void *a, void *b, u32 size);
  * @param size The size of each buffer, in bytes.
  * @ghidraAddress USA: 0x80256228
  */
-void ExchangeWordBuffers(void *a, void *b, u32 size);
+void ExchangeWordBuffers(u32 *a, u32 *b, u32 size);
 
 #endif

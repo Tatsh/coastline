@@ -180,7 +180,7 @@ void RelocateModelPointers(Model *model);
  * @param clear The flags to clear.
  * @ghidraAddress USA: 0x8021d6dc
  */
-void SetModelAnimationFlags(Model *model, u16 set, u16 clear);
+void SetModelAnimationFlags(Model *model, s32 set, s32 clear);
 
 /**
  * Make every animation of a model wrap to its start at its end, instead of turning back.

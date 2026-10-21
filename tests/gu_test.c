@@ -36,14 +36,15 @@ int main(void) {
     for (int i = 0; i < 16; i++) {
         assert(fabsf(back[i / 4][i % 4] - mf[i / 4][i % 4]) < 1e-4f);
     }
-    /* guRotateF() stores the radians in a degree, 0x3C8EFA35, before it scales the angle. */
-    g_fGuRotateDtor = 0.0f;
-    guRotateF(mf, 90.0f, 0.0f, 0.0f, 2.0f);
+    /* guRotateF() scales the angle by the radians in a degree, 0x3C8EFA35. About the z axis the
+     * sine and the cosine land unchanged in the matrix, so they must equal those of that angle. */
     union {
-        float f;
         unsigned u;
-    } dtor = {g_fGuRotateDtor};
-    assert(dtor.u == 0x3C8EFA35u);
+        float f;
+    } dtor = {0x3C8EFA35u};
+    float angle = 90.0f * dtor.f;
+    guRotateF(mf, 90.0f, 0.0f, 0.0f, 2.0f);
+    assert(mf[0][1] == sinf(angle) && mf[1][0] == -sinf(angle) && mf[0][0] == cosf(angle));
     assert(fabsf(mf[0][1] - 1.0f) < 1e-5f && fabsf(mf[1][0] + 1.0f) < 1e-5f);
     assert(fabsf(mf[0][0]) < 1e-5f && fabsf(mf[2][2] - 1.0f) < 1e-5f);
     puts("gu check passed");

@@ -17,6 +17,16 @@ extern u8 _bss_size[];
 extern u8 g_abBootStackTop[];
 
 /**
+ * Clear the BSS segment, two words at a time, move the stack to the boot stack, and jump to
+ * OsBootEntry(). The routine is hand-written assembly in main.s.
+ *
+ * @ghidraAddress USA: 0x80200000
+ * @ghidraAddress JPN: 0x80200000
+ * @ghidraAddress EUR: 0x80200000
+ */
+void ramMain(void);
+
+/**
  * Initialise the operating system, then create and start the boot thread.
  *
  * @ghidraAddress USA: 0x8021e5c4

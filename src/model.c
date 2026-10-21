@@ -16,37 +16,35 @@ void RemapPointer(u32 *pointer, u32 lo, u32 hi, u32 base) {
 }
 
 void FixupDisplayListPointers(Gfx *displayList, u32 lo, u32 hi, u32 base) {
-    u8 opcode;
-
     if (displayList == NULL) {
         return;
     }
     /* The display lists it calls are not followed. */
     for (;; displayList++) {
-        opcode = displayList->words.w0 >> 24;
-        if (opcode == G_VTX) {
+        switch ((u8)(displayList->words.w0 >> 24)) {
+        case G_VTX:
+        case G_SETTIMG:
             RemapPointer(&displayList->words.w1, lo, hi, base);
-        } else if (opcode == G_ENDDL) {
             break;
-        } else if (opcode == G_SETTIMG) {
-            RemapPointer(&displayList->words.w1, lo, hi, base);
+        case G_ENDDL:
+            return;
         }
     }
 }
 
-void SetModelAnimationFlags(Model *model, u16 set, u16 clear) {
+void SetModelAnimationFlags(Model *model, s32 set, s32 clear) {
     ModelAnimation *animation;
     s32 count;
     s32 i;
 
-    if (model->animations == NULL) {
-        return;
-    }
-    count = model->animations->count;
-    for (i = 0; i < count; i++) {
-        animation = model->animations->entries[i];
-        animation->flags |= set;
-        animation->flags &= ~clear;
+    clear = ~clear;
+    if (model->animations != NULL) {
+        count = model->animations->count;
+        for (i = 0; i < count; i++) {
+            animation = model->animations->entries[i];
+            animation->flags |= set;
+            animation->flags &= clear;
+        }
     }
 }
 
@@ -212,10 +210,8 @@ void AdvanceModelAnimations(Model *model) {
 
 void RelocateModelPointers(Model *model) {
     u32 base = (u32)model;
-    ModelPart *part;
     s32 i;
     s32 k;
-    u32 p;
 
     /* The fields of the file hold offsets from its start until they are remapped. */
     if (model->animations != NULL) {
@@ -234,13 +230,12 @@ void RelocateModelPointers(Model *model) {
             }
         }
     }
-    for (p = 0; p < model->partCount; p++) {
-        part = &model->parts[p];
-        RemapPointer((u32 *)&part->displayList, 0, MODEL_OFFSET_LIMIT, base);
+    for (i = 0; (u32)i < model->partCount; i++) {
+        RemapPointer((u32 *)&model->parts[i].displayList, 0, MODEL_OFFSET_LIMIT, base);
         /* An offset of 0 has become the model itself, and is walked as a display list. */
-        if (part->displayList != NULL) {
-            RemapPointer((u32 *)&part->displayList, 0, MODEL_OFFSET_LIMIT, base);
-            FixupDisplayListPointers(part->displayList, 0, MODEL_OFFSET_LIMIT, base);
+        if (model->parts[i].displayList != NULL) {
+            RemapPointer((u32 *)&model->parts[i].displayList, 0, MODEL_OFFSET_LIMIT, base);
+            FixupDisplayListPointers(model->parts[i].displayList, 0, MODEL_OFFSET_LIMIT, base);
         }
     }
 }

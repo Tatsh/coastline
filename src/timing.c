@@ -53,7 +53,7 @@ void AddTimingMarker(s32 bar, s32 red, s32 green, s32 blue, s32 alpha) {
                 ((alpha >> 7) & 0x0001);
 
     g_aTimingMarkerCounts[g_dwTimingFrame][bar]++;
-    marker[1].color = color | (color << 16);
+    marker[1].color = (color << 16) | color;
     marker[0].time = osGetCount() - g_dwTimingFrameStart;
 }
 

@@ -25,7 +25,7 @@ void *AllocHeapAligned(u32 size) {
     u8 *p = (u8 *)(((u32)g_pHeapCurrent + 7) & ~7);
     char message[120];
 
-    g_pHeapCurrent = p + size;
+    g_pHeapCurrent = size + p;
     if (g_pHeapCurrent > HEAP_END) {
         sprintf(message, "Insufficient interface memory (need %d, have %d)", size, HEAP_END - p);
         SetDebugMessage(message);

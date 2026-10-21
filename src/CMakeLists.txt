@@ -24,12 +24,12 @@ foreach(SUBSYSTEM ${COASTLINE_SUBSYSTEMS})
 endforeach()
 
 # The entry points sit outside the subsystems. The Windows port is C++, and this directory links its
-# libraries, so the language is enabled here. The Nintendo 64 entry is C.
+# libraries, so the language is enabled here. The Nintendo 64 entry is assembly.
 if(TGR_PLATFORM STREQUAL "win")
   enable_language(CXX)
   add_subdirectory(platform/win)
 else()
-  add_library(coastline_main OBJECT main.c)
+  add_library(coastline_main OBJECT main.s)
   target_link_libraries(coastline_main PRIVATE coastline_common)
 endif()
 
@@ -76,7 +76,7 @@ if(TGR_PLATFORM STREQUAL "n64")
 
   # The game code of the Nintendo 64 releases. A routine joins this list when its body moves from
   # the assembly of the original into C.
-  add_library(coastline_game STATIC audio.c audiomix.s camera.c carselect.c controllerscreen.c debugtext.c decaldraw.c decaleditor.c driving.c effects.c fade.c game.c hud.c input.c heap.c mainmenu.c mathutil.c model.c options.c paintshop.c pakmenu.c physics.c playerselect.c race.c
+  add_library(coastline_game STATIC audio.c audiomix.s camera.c carselect.c controllerscreen.c debugtext.c decaldraw.c decaleditor.c driving.c effects.c fade.c game.c hud.c input.c heap.c mainmenu.c mathutil.s model.c options.c paintshop.c pakmenu.c physics.c playerselect.c race.c
                                     racemenu.c racers.c racesound.c replay.c rigidbody.c rumble.c sky.c snapshot.c splash.c sprite.c system.c text.c texrect.c timing.c track.c trackrender.c util.c vecmath.c vehicle.c vehiclemodel.c vehiclerender.c vehiclesetup.c visgrid.c weather.c weatherselect.c)
   target_link_libraries(coastline_game PRIVATE coastline_common)
   list(APPEND COASTLINE_LIBRARIES coastline_game)
