@@ -480,18 +480,18 @@ next:
 }
 
 void ComputeTrackPosition(Vehicle *vehicle) {
+    f32 span;
+    Vec3f fromTangent;
+    Vec3f toTangent;
     TrackSection *fromSection;
     TrackSection *toSection;
     s32 from;
     s32 to;
-    Vec3f fromTangent;
-    Vec3f toTangent;
     Vec3f fromMiddle;
     Vec3f toMiddle;
     Vec3f flat;
     Vec3f fromOffset;
     Vec3f toOffset;
-    f32 span;
     f32 fromAlong;
     f32 toAlong;
     f32 length;
@@ -533,11 +533,11 @@ void ComputeTrackPosition(Vehicle *vehicle) {
             to = from + 1;
         }
     } else {
+        /* The point before the first of a section is read from before its array. */
+        fromSection = vehicle->section;
+        from = vehicle->pointIndex - 1;
         toSection = vehicle->section;
         to = vehicle->pointIndex;
-        fromSection = toSection;
-        /* The point before the first of a section is read from before its array. */
-        from = to - 1;
     }
 
     Vec3fDirection(
