@@ -18,6 +18,7 @@ __ll_to_d
 __ll_to_f
 __osAiDeviceBusy
 __osCleanupThread
+__osDevMgrMain
 __osDisableInt
 __osDispatchThread
 __osEnqueueAndYield
@@ -27,6 +28,9 @@ __osExceptionPreamble
 __osGetCurrFaultedThread
 __osGetSR
 __osInsertTimer
+__osLeoAbnormalResume
+__osLeoInterrupt
+__osLeoResume
 __osPiCreateAccessQueue
 __osPiGetAccess
 __osPiRelAccess
@@ -82,6 +86,7 @@ guMtxXFML
 guNormalize
 guPerspective
 guPerspectiveF
+guRotate
 guRotateF
 guScale
 guScaleF
@@ -106,6 +111,7 @@ osEPiRawWriteIo
 osGetCount
 osGetThreadPri
 osGetTime
+osInitialize
 osInvalDCache
 osInvalICache
 osJamMesg

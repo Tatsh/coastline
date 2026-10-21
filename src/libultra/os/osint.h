@@ -121,6 +121,13 @@ void __osSetCompare(u32 value);
 extern u32 __OSGlobalIntMask;
 
 /**
+ * Set by osInitialize(). The development library uses it to tell a retail cartridge apart.
+ *
+ * @ghidraAddress USA: 0x8037f480
+ */
+extern u32 __osFinalrom;
+
+/**
  * The thread that last raised a CPU exception.
  *
  * @ghidraAddress USA: 0x802a62a4

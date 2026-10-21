@@ -101,6 +101,13 @@ void guTranslate(Mtx *m, float x, float y, float z);
 void guRotateF(float mf[4][4], float a, float x, float y, float z);
 
 /**
+ * Build a fixed-point matrix that rotates by a degrees about an axis.
+ *
+ * @ghidraAddress USA: 0x80260d54
+ */
+void guRotate(Mtx *m, float a, float x, float y, float z);
+
+/**
  * Scale a vector to unit length in place.
  *
  * @ghidraAddress USA: 0x802686c0

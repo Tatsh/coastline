@@ -29,10 +29,10 @@ glabel osContInit
     /* 66948 80265948 AC2F6130 */   sw        $t7, %lo(g_dwOsPiDmaAddr)($at)
     /* 6694C 8026594C 3C050007 */  lui        $a1, (0x7A120 >> 16)
     /* 66950 80265950 3C06802A */  lui        $a2, %hi(osClockRate)
-    /* 66954 80265954 3C07802A */  lui        $a3, %hi(D_802A6144)
+    /* 66954 80265954 3C07802A */  lui        $a3, %hi(osClockRate + 0x4)
     /* 66958 80265958 AFA20070 */  sw         $v0, 0x70($sp)
     /* 6695C 8026595C AFA30074 */  sw         $v1, 0x74($sp)
-    /* 66960 80265960 8CE76144 */  lw         $a3, %lo(D_802A6144)($a3)
+    /* 66960 80265960 8CE76144 */  lw         $a3, %lo(osClockRate + 0x4)($a3)
     /* 66964 80265964 8CC66140 */  lw         $a2, %lo(osClockRate)($a2)
     /* 66968 80265968 34A5A120 */  ori        $a1, $a1, (0x7A120 & 0xFFFF)
     /* 6696C 8026596C 0C099862 */  jal        __ll_mul
@@ -61,8 +61,8 @@ glabel osContInit
     /* 669C4 802659C4 24060001 */   addiu     $a2, $zero, 0x1
     /* 669C8 802659C8 3C050007 */  lui        $a1, (0x7A120 >> 16)
     /* 669CC 802659CC 3C06802A */  lui        $a2, %hi(osClockRate)
-    /* 669D0 802659D0 3C07802A */  lui        $a3, %hi(D_802A6144)
-    /* 669D4 802659D4 8CE76144 */  lw         $a3, %lo(D_802A6144)($a3)
+    /* 669D0 802659D0 3C07802A */  lui        $a3, %hi(osClockRate + 0x4)
+    /* 669D4 802659D4 8CE76144 */  lw         $a3, %lo(osClockRate + 0x4)($a3)
     /* 669D8 802659D8 8CC66140 */  lw         $a2, %lo(osClockRate)($a2)
     /* 669DC 802659DC 34A5A120 */  ori        $a1, $a1, (0x7A120 & 0xFFFF)
     /* 669E0 802659E0 0C099862 */  jal        __ll_mul

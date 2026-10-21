@@ -89,4 +89,48 @@ void __osDevMgrMain(void *arg);
         stat = IO_READ(PI_STATUS_REG);                                                             \
     } while (stat & (PI_STATUS_IO_BUSY | PI_STATUS_DMA_BUSY))
 
+/* The registers and bits of the 64DD. */
+#define LEO_BASE_REG 0x05000000
+#define LEO_C2_BUFF (LEO_BASE_REG + 0x000)
+#define LEO_SECTOR_BUFF (LEO_BASE_REG + 0x400)
+#define LEO_STATUS (LEO_BASE_REG + 0x508)
+#define LEO_BM_CTL (LEO_BASE_REG + 0x510)
+#define LEO_BM_STATUS (LEO_BASE_REG + 0x510)
+
+#define LEO_STATUS_DATA_REQUEST 0x40000000
+#define LEO_STATUS_C2_TRANSFER 0x10000000
+#define LEO_STATUS_BUFFER_MANAGER_ERROR 0x08000000
+#define LEO_STATUS_MECHANIC_INTERRUPT 0x02000000
+
+#define LEO_BM_CTL_START 0x80000000
+#define LEO_BM_CTL_RESET 0x10000000
+#define LEO_BM_CTL_CLR_MECHANIC_INTR 0x01000000
+
+#define LEO_BM_STATUS_MICRO 0x02000000
+#define LEO_BM_STATUS_C1DOUBLE 0x00400000
+#define LEO_BM_STATUS_C1SINGLE 0x00200000
+
+/* Transfer commands and modes. */
+#define LEO_CMD_TYPE_0 0
+#define LEO_CMD_TYPE_1 1
+#define LEO_CMD_TYPE_2 2
+#define LEO_TRACK_MODE 2
+#define LEO_SECTOR_MODE 3
+
+/* Results of a block transfer. */
+#define LEO_ERROR_GOOD 0
+#define LEO_ERROR_4 4
+#define LEO_ERROR_22 22
+#define LEO_ERROR_23 23
+#define LEO_ERROR_24 24
+#define LEO_ERROR_29 29
+
+/**
+ * Service an interrupt of the 64DD on behalf of the exception handler.
+ *
+ * @return 1 when the interrupt was the 64DD's, and 0 to pass it on as a cartridge interrupt.
+ * @ghidraAddress USA: 0x8026dbe0
+ */
+s32 __osLeoInterrupt(void);
+
 #endif

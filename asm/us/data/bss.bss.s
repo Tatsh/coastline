@@ -5251,9 +5251,9 @@ nonmatching g_abSiFlashMsgBuf, 0x10
 dlabel g_abSiFlashMsgBuf
     /* 8037F470 */ .space 0x10
 
-nonmatching g_dwSysReserved21, 0x4
+nonmatching __osFinalrom, 0x4
 
-dlabel g_dwSysReserved21
+dlabel __osFinalrom
     /* 8037F480 */ .space 0x04
 
 nonmatching D_8037F484, 0xC

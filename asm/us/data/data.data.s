@@ -66707,13 +66707,8 @@ nonmatching osClockRate
 
 dlabel osClockRate
     /* A7140 802A6140 00000000 */ .word 0x00000000
-enddlabel osClockRate
-
-nonmatching D_802A6144
-
-dlabel D_802A6144
     /* A7144 802A6144 03B9ACA0 */ .word 0x03B9ACA0
-enddlabel D_802A6144
+enddlabel osClockRate
 
 nonmatching osViClock
 

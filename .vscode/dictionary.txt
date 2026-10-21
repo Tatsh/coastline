@@ -37,6 +37,7 @@ dbuild
 dcmake
 ddivu
 destroythread
+devmgr
 disasm
 divdi
 divremi
@@ -67,6 +68,7 @@ excmask
 extraout
 fcntl
 ffreestanding
+finalrom
 fovy
 foxundermoon
 fpart
@@ -118,6 +120,7 @@ ldiv
 ldtob
 lenqueue
 leodiskinit
+leointerrupt
 lfirst
 lhandle
 libc
@@ -189,6 +192,7 @@ pathlib
 persp
 piacs
 pidma
+pifdata
 pigetcmdq
 pimgr
 pipebusy

@@ -10517,8 +10517,8 @@ glabel ProcessDecalEditorInput
     /* 4D584 8024C584 0C099862 */  jal        __ll_mul
     /* 4D588 8024C588 24060000 */   addiu     $a2, $zero, 0x0
     /* 4D58C 8024C58C 3C06802A */  lui        $a2, %hi(osClockRate)
-    /* 4D590 8024C590 3C07802A */  lui        $a3, %hi(D_802A6144)
-    /* 4D594 8024C594 8CE76144 */  lw         $a3, %lo(D_802A6144)($a3)
+    /* 4D590 8024C590 3C07802A */  lui        $a3, %hi(osClockRate + 0x4)
+    /* 4D594 8024C594 8CE76144 */  lw         $a3, %lo(osClockRate + 0x4)($a3)
     /* 4D598 8024C598 8CC66140 */  lw         $a2, %lo(osClockRate)($a2)
     /* 4D59C 8024C59C 00402025 */  or         $a0, $v0, $zero
     /* 4D5A0 8024C5A0 0C099822 */  jal        __ull_div
@@ -10541,8 +10541,8 @@ glabel ProcessDecalEditorInput
     /* 4D5E0 8024C5E0 0C099862 */  jal        __ll_mul
     /* 4D5E4 8024C5E4 24060000 */   addiu     $a2, $zero, 0x0
     /* 4D5E8 8024C5E8 3C06802A */  lui        $a2, %hi(osClockRate)
-    /* 4D5EC 8024C5EC 3C07802A */  lui        $a3, %hi(D_802A6144)
-    /* 4D5F0 8024C5F0 8CE76144 */  lw         $a3, %lo(D_802A6144)($a3)
+    /* 4D5EC 8024C5EC 3C07802A */  lui        $a3, %hi(osClockRate + 0x4)
+    /* 4D5F0 8024C5F0 8CE76144 */  lw         $a3, %lo(osClockRate + 0x4)($a3)
     /* 4D5F4 8024C5F4 8CC66140 */  lw         $a2, %lo(osClockRate)($a2)
     /* 4D5F8 8024C5F8 00402025 */  or         $a0, $v0, $zero
     /* 4D5FC 8024C5FC 0C099822 */  jal        __ull_div
@@ -10659,8 +10659,8 @@ glabel ProcessDecalEditorInput
     /* 4D7A0 8024C7A0 0C099862 */  jal        __ll_mul
     /* 4D7A4 8024C7A4 24060000 */   addiu     $a2, $zero, 0x0
     /* 4D7A8 8024C7A8 3C06802A */  lui        $a2, %hi(osClockRate)
-    /* 4D7AC 8024C7AC 3C07802A */  lui        $a3, %hi(D_802A6144)
-    /* 4D7B0 8024C7B0 8CE76144 */  lw         $a3, %lo(D_802A6144)($a3)
+    /* 4D7AC 8024C7AC 3C07802A */  lui        $a3, %hi(osClockRate + 0x4)
+    /* 4D7B0 8024C7B0 8CE76144 */  lw         $a3, %lo(osClockRate + 0x4)($a3)
     /* 4D7B4 8024C7B4 8CC66140 */  lw         $a2, %lo(osClockRate)($a2)
     /* 4D7B8 8024C7B8 00402025 */  or         $a0, $v0, $zero
     /* 4D7BC 8024C7BC 0C099822 */  jal        __ull_div
@@ -10693,8 +10693,8 @@ glabel ProcessDecalEditorInput
     /* 4D820 8024C820 0C099862 */  jal        __ll_mul
     /* 4D824 8024C824 24060000 */   addiu     $a2, $zero, 0x0
     /* 4D828 8024C828 3C06802A */  lui        $a2, %hi(osClockRate)
-    /* 4D82C 8024C82C 3C07802A */  lui        $a3, %hi(D_802A6144)
-    /* 4D830 8024C830 8CE76144 */  lw         $a3, %lo(D_802A6144)($a3)
+    /* 4D82C 8024C82C 3C07802A */  lui        $a3, %hi(osClockRate + 0x4)
+    /* 4D830 8024C830 8CE76144 */  lw         $a3, %lo(osClockRate + 0x4)($a3)
     /* 4D834 8024C834 8CC66140 */  lw         $a2, %lo(osClockRate)($a2)
     /* 4D838 8024C838 00402025 */  or         $a0, $v0, $zero
     /* 4D83C 8024C83C 0C099822 */  jal        __ull_div

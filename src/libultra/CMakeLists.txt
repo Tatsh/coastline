@@ -19,10 +19,12 @@ add_library(
   gu/translate.c
   io/ai.c
   io/cartrominit.c
+  io/devmgr.c
   io/epirawdma.c
   io/epirawread.c
   io/epirawwrite.c
   io/leodiskinit.c
+  io/leointerrupt.c
   io/piacs.c
   io/pidma.c
   io/pigetcmdq.c
@@ -62,6 +64,7 @@ add_library(
   os/getcurrfaultedthread.c
   os/getthreadpri.c
   os/gettime.c
+  os/initialize.c
   os/interrupt.s
   os/invaldcache.s
   os/invalicache.s

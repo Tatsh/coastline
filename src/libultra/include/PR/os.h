@@ -652,7 +652,11 @@ extern s32 osViClock;
  */
 extern u8 aiHdwrBugFlag;
 
-/* Start-up. */
+/**
+ * Initialise the system: the FPU, the PIF, the exception vectors and the clock rates.
+ *
+ * @ghidraAddress USA: 0x80265d90
+ */
 void osInitialize(void);
 
 /**

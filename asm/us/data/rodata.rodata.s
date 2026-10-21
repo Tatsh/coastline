@@ -12211,13 +12211,13 @@ enddlabel __osIntTable
 nonmatching switchdataD_802abae0
 
 dlabel switchdataD_802abae0
-    /* ACAE0 802ABAE0 8026CD8C */ .word .L8026CD8C
-    /* ACAE4 802ABAE4 8026CC84 */ .word .L8026CC84
-    /* ACAE8 802ABAE8 8026CCC0 */ .word .L8026CCC0
-    /* ACAEC 802ABAEC 8026CDAC */ .word .L8026CDAC
-    /* ACAF0 802ABAF0 8026CDAC */ .word .L8026CDAC
-    /* ACAF4 802ABAF4 8026CCFC */ .word .L8026CCFC
-    /* ACAF8 802ABAF8 8026CD44 */ .word .L8026CD44
+    /* ACAE0 802ABAE0 8026CD8C */ .word 0
+    /* ACAE4 802ABAE4 8026CC84 */ .word 0
+    /* ACAE8 802ABAE8 8026CCC0 */ .word 0
+    /* ACAEC 802ABAEC 8026CDAC */ .word 0
+    /* ACAF0 802ABAF0 8026CDAC */ .word 0
+    /* ACAF4 802ABAF4 8026CCFC */ .word 0
+    /* ACAF8 802ABAF8 8026CD44 */ .word 0
     /* ACAFC 802ABAFC 00000000 */ .word 0x00000000
 enddlabel switchdataD_802abae0
 
