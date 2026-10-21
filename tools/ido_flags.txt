@@ -1,0 +1,8 @@
+# The IDO 5.3 flags each source of the USA cartridge was compiled with, for matching. Each line is
+# a glob of paths from the root of the tree and the flags. Alternatives separated by | are flags not
+# settled yet, and each is tried. The first line whose glob matches a path applies.
+src/libultra/libc/ll.c -O1 -mips3 -32 | -O2 -mips3 -32 | -O3 -mips3 -32
+src/libultra/libc/llcvt.c -O1 -mips3 -32 | -O2 -mips3 -32 | -O3 -mips3 -32
+src/libultra/* -O1 | -O2 | -O3 | -O2 -g3 | -O1 -mips1
+3rdparty/zlib-1.0.4/* -O1 | -O2 | -O3
+src/* -O2
