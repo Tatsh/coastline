@@ -1,0 +1,13 @@
+# Settings for decomp-permuter (import.py), which runs these commands from the root of the tree.
+# The game is matched against IDO 5.3 at -O2. IDO has no inline keyword, so a helper that the GCC
+# build inlines compiles as a static function. The IDO compilers and their headers live in
+# .wiswa-ci/ido, and the original's assembly of each routine comes from a full split of the image.
+compiler_type = "ido"
+compiler_command = ".wiswa-ci/ido/5.3/cc -c -nostdinc -Dinline= -non_shared -G 0 -Xcpluscomm -mips2 -O2 -Wab,-r4300_mul -I.wiswa-ci/ido/include -Isrc -Isrc/libultra/include -I3rdparty/zlib-1.0.4 -DTGR_PLATFORM_N64=1 -DTGR_PLATFORM_WIN=2 -DTGR_PLATFORM=1 -DTGR_REGION_US=1 -DTGR_REGION_JP=2 -DTGR_REGION_EU=3 -DTGR_REGION=1 -DTGR_RENDERER_D3D=1 -DTGR_RENDERER_GLIDE=2 -DTGR_RENDERER=0 -D_LANGUAGE_C -DF3DEX_GBI -D_MIPS_SZLONG=32 -D__sgi -DNDEBUG"
+assembler_command = ".wiswa-ci/toolchains/n64/opt/libdragon/bin/mips64-elf-as -march=vr4300 -mabi=32 -Iasm"
+objdump_command = ".wiswa-ci/toolchains/n64/opt/libdragon/bin/mips64-elf-objdump -drz -m mips:4300"
+
+[preserve_macros]
+"g[DS]P.*" = "void"
+"gDma.*" = "void"
+"_SHIFTL" = "unsigned int"
