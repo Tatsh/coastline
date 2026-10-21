@@ -74,18 +74,8 @@ typedef struct RigidBody {
     /** The sums of the forces and torques of a step, then the accelerations they give. */
     Vec3f force;
     Vec3f torque;
-    union {
-        /** The states of the steps of the integration. */
-        RigidBodyState states[2];
-        /**
-         * The index in g_aVehicles of the vehicle whose chassis this is, which shares the memory
-         * of the spin of the first step state with the physics.
-         */
-        struct {
-            u8 unreconstructed0[0x2C];
-            s32 vehicleIndex;
-        } owner;
-    } steps;
+    /** The states of the steps of the integration. */
+    RigidBodyState stepStates[2];
     /** The triangle of the track under a wheel, or NULL. */
     struct TrackTriangle *ground;
     /** The surface of that triangle, and its plane. */

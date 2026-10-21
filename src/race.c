@@ -620,7 +620,7 @@ static void HoldBeforeStart(void) {
     for (i = 0; i < g_dwNumVehicles; i++) {
         g_aRacerSlots[i].status |= RACER_HELD;
         vehicle = g_aRacerSlots[i].vehicle;
-        if (vehicle == NULL || vehicle->body.steps.owner.vehicleIndex >= (s32)g_dwNumLocalPlayers) {
+        if (vehicle == NULL || vehicle->index >= (s32)g_dwNumLocalPlayers) {
             continue;
         }
         if (g_dwGameMode == GAME_MODE_ARCADE) {

@@ -591,8 +591,8 @@ static inline void RecordImpactVolume(RigidBody *body, f32 speed) {
 }
 
 s32 BounceOffPlane(RigidBody *body, Vec3f *normal, s32 damp, s32 spin) {
-    Vec3f *velocity = &body->steps.states[1].velocity;
-    Vec3f *angular = &body->steps.states[1].angularVelocity;
+    Vec3f *velocity = &body->stepStates[1].velocity;
+    Vec3f *angular = &body->stepStates[1].angularVelocity;
     Vec3f impulse, pivot, scale, turn;
     f32 basis[4][4];
     f32 into, damping, speed;
@@ -660,8 +660,8 @@ s32 UnusedCollisionResponseStub(void *body, void *normal, void *damp) {
 
 s32 ApplyCollisionImpulse(
     RigidBody *body, Vec3f *point, Vec3f *normal, s32 friction, f32 restitution) {
-    Vec3f *velocity = &body->steps.states[1].velocity;
-    Vec3f *angular = &body->steps.states[1].angularVelocity;
+    Vec3f *velocity = &body->stepStates[1].velocity;
+    Vec3f *angular = &body->stepStates[1].angularVelocity;
     f32 transpose[3][3], rotation[3][3], skew[3][3], a[3][3], b[3][3], k[3][3], unit[3][3];
     Vec3f arm, copy, motion, across, slide, target, impulse, linear, turn, spin;
     f32 into, speed, bounce;
@@ -1111,7 +1111,7 @@ s32 TipBalancedVehicle(RigidBody *body) {
     s32 touching, i;
     Vec3f *spin;
 
-    QuaternionToMatrix(body->orientation, &body->steps.states[0]);
+    QuaternionToMatrix(body->orientation, &body->stepStates[0]);
     nearest = 100.0f;
     touching = 0;
     /* The nearest of the corners of the box over the wheels on the ground to their ground. */
@@ -1153,13 +1153,13 @@ s32 TipBalancedVehicle(RigidBody *body) {
     nudge.y = 0.0f < tilt ? 0.1f : -0.1f;
     osSyncPrintf("-- Stand Point = %f\n", (f64)tilt);
     Mtx3x3MulVec3f(&point, body->orientation, &nudge);
-    spin = &body->steps.states[0].angularVelocity;
+    spin = &body->stepStates[0].angularVelocity;
     for (i = 0; i < 2; i++) {
         spin->x = point.x + spin->x;
         spin->y = point.y + spin->y;
         spin->z = point.z + spin->z;
     }
-    ComputeDeltaQuaternion(&body->steps.states[0]);
+    ComputeDeltaQuaternion(&body->stepStates[0]);
     return 1;
 }
 
@@ -1266,24 +1266,24 @@ s32 CollideBodyWithTriangles(RigidBody *body, f32 box[4][4]) {
         if (moved) {
             hit = 1;
             /* Move the step back out along the normal by a tenth more than it moved in. */
-            back.x = body->steps.states[1].position.x - body->steps.states[0].position.x;
-            back.y = body->steps.states[1].position.y - body->steps.states[0].position.y;
-            back.z = body->steps.states[1].position.z - body->steps.states[0].position.z;
+            back.x = body->stepStates[1].position.x - body->stepStates[0].position.x;
+            back.y = body->stepStates[1].position.y - body->stepStates[0].position.y;
+            back.z = body->stepStates[1].position.z - body->stepStates[0].position.z;
             push = (f32)((f64)(triangle->normal.z * back.z +
                                (back.x * triangle->normal.x + back.y * triangle->normal.y)) *
                          1.1);
             back.x = triangle->normal.x * push;
             back.y = triangle->normal.y * push;
             back.z = triangle->normal.z * push;
-            body->steps.states[1].position.x = body->steps.states[1].position.x - back.x;
-            body->steps.states[1].position.y = body->steps.states[1].position.y - back.y;
-            body->steps.states[1].position.z = body->steps.states[1].position.z - back.z;
+            body->stepStates[1].position.x = body->stepStates[1].position.x - back.x;
+            body->stepStates[1].position.y = body->stepStates[1].position.y - back.y;
+            body->stepStates[1].position.z = body->stepStates[1].position.z - back.z;
             /* The original takes back three of the four parts of the orientation. */
-            body->steps.states[1].orientation.w = body->steps.states[0].orientation.w;
-            body->steps.states[1].orientation.y = body->steps.states[0].orientation.y;
-            body->steps.states[1].orientation.x = body->steps.states[0].orientation.x;
-            ComputeDeltaQuaternion(&body->steps.states[1]);
-            QuaternionToMatrix(body->orientation, &body->steps.states[1]);
+            body->stepStates[1].orientation.w = body->stepStates[0].orientation.w;
+            body->stepStates[1].orientation.y = body->stepStates[0].orientation.y;
+            body->stepStates[1].orientation.x = body->stepStates[0].orientation.x;
+            ComputeDeltaQuaternion(&body->stepStates[1]);
+            QuaternionToMatrix(body->orientation, &body->stepStates[1]);
         }
     }
     if (hits) {
@@ -1328,21 +1328,21 @@ void StepVehicleCollisions(RigidBody *body) {
                 osSyncPrintf("Standing on it's F'in Nose damnit\n");
             }
             CollideVehicles();
-            IntegrateRigidBodyState(&body->steps.states[1], &body->steps.states[0], step);
-            QuaternionToMatrix(body->orientation, &body->steps.states[1]);
+            IntegrateRigidBodyState(&body->stepStates[1], &body->stepStates[0], step);
+            QuaternionToMatrix(body->orientation, &body->stepStates[1]);
             MtxBuildScaledInverse(body->orientation, box, &scale);
             box[3][2] = box[3][2] - body->boxCenterZ;
             if (CollideBodyWithTriangles(body, box)) {
-                ComputeDeltaQuaternion(&body->steps.states[1]);
-                QuaternionToMatrix(body->orientation, &body->steps.states[1]);
+                ComputeDeltaQuaternion(&body->stepStates[1]);
+                QuaternionToMatrix(body->orientation, &body->stepStates[1]);
             }
-            memcpy(&body->steps.states[0], &body->steps.states[1], sizeof(RigidBodyState));
+            memcpy(&body->stepStates[0], &body->stepStates[1], sizeof(RigidBodyState));
             remaining = remaining - step;
         } while (0.002f < remaining);
     }
-    QuaternionToMatrix(body->orientation, &body->steps.states[1]);
+    QuaternionToMatrix(body->orientation, &body->stepStates[1]);
     AddTimingMarker(0, 0x80, 0x80, 0, 0xFF);
-    memcpy(&body->steps.states[0], &body->steps.states[1], sizeof(RigidBodyState));
+    memcpy(&body->stepStates[0], &body->stepStates[1], sizeof(RigidBodyState));
     if (body->orientation[2][2] < UPRIGHT_LIMIT) {
         if (body->uprightFrames < 0) {
             body->uprightFrames = -1;
@@ -1645,15 +1645,15 @@ static inline void PushVehicle(Vehicle *vehicle, Vec3f *shared, Vec3f *towards, 
     body->state.velocity.x = body->state.velocity.x - shared->x;
     body->state.velocity.y = body->state.velocity.y - shared->y;
     body->state.velocity.z = body->state.velocity.z - shared->z;
-    memcpy(&body->steps.states[1], &body->state, sizeof(RigidBodyState));
+    memcpy(&body->stepStates[1], &body->state, sizeof(RigidBodyState));
     ApplyCollisionImpulse(body, &local, normal, 0, 0.45f);
-    memcpy(&body->state, &body->steps.states[1], sizeof(RigidBodyState));
-    body->steps.states[1].velocity.x = shared->x + body->steps.states[1].velocity.x;
-    body->steps.states[1].velocity.y = shared->y + body->steps.states[1].velocity.y;
-    body->steps.states[1].velocity.z = shared->z + body->steps.states[1].velocity.z;
-    body->steps.states[0].velocity.x = body->steps.states[1].velocity.x;
-    body->steps.states[0].velocity.y = body->steps.states[1].velocity.y;
-    body->steps.states[0].velocity.z = body->steps.states[1].velocity.z;
+    memcpy(&body->state, &body->stepStates[1], sizeof(RigidBodyState));
+    body->stepStates[1].velocity.x = shared->x + body->stepStates[1].velocity.x;
+    body->stepStates[1].velocity.y = shared->y + body->stepStates[1].velocity.y;
+    body->stepStates[1].velocity.z = shared->z + body->stepStates[1].velocity.z;
+    body->stepStates[0].velocity.x = body->stepStates[1].velocity.x;
+    body->stepStates[0].velocity.y = body->stepStates[1].velocity.y;
+    body->stepStates[0].velocity.z = body->stepStates[1].velocity.z;
     body->state.velocity.x = shared->x + body->state.velocity.x;
     body->state.velocity.y = shared->y + body->state.velocity.y;
     body->state.velocity.z = shared->z + body->state.velocity.z;
