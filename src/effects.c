@@ -702,14 +702,21 @@ void UpdateExhaustParticles(void) {
 void UpdateTireSmoke(void) {
     Particle *particle;
     u16 *link;
-    u16 index, next;
+    s32 index;
+    u16 next;
     s32 list;
     f32 grow, share, step, rise;
 
     grow = 0.7f * g_fFrameDeltaTime;
     for (list = 0; list < 2; list++) {
-        link = list == 0 ? &g_wPavedTireSmokeListHead : &g_wTireSmokeListHead;
-        for (index = *link; index != 0; index = next) {
+        if (list != 0) {
+            link = &g_wTireSmokeListHead;
+            index = g_wTireSmokeListHead;
+        } else {
+            link = &g_wPavedTireSmokeListHead;
+            index = g_wPavedTireSmokeListHead;
+        }
+        for (; index != 0; index = next) {
             particle = &g_aParticlePool[index];
             step = g_fFrameDeltaTime;
             rise = particle->velocity.z;

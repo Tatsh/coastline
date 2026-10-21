@@ -565,10 +565,11 @@ void DrawModelList(Model *model, f32 m[4][4]) {
     gSPClearGeometryMode(gDisplayListPtr++,
                          G_CLIPPING | G_TEXTURE_GEN | G_FOG | G_CULL_BACK | G_CULL_FRONT |
                              G_SHADING_SMOOTH);
-    gSPSetGeometryMode(gDisplayListPtr++,
-                       (g_dwViewportMirrored != g_dwTrackMirrored ? G_CULL_FRONT : G_CULL_BACK) |
-                           G_ZBUFFER | G_SHADE | G_LIGHTING | G_TEXTURE_GEN_LINEAR |
-                           G_SHADING_SMOOTH);
+    gSPSetGeometryMode(
+        gDisplayListPtr++,
+        G_ZBUFFER | G_SHADE | G_LIGHTING | G_TEXTURE_GEN_LINEAR |
+            (g_dwViewportMirrored != g_dwTrackMirrored ? G_CULL_FRONT : G_CULL_BACK) |
+            G_SHADING_SMOOTH);
     lookAt = AllocLightBlock();
     guLookAtReflectF(
         g_afScratchMatrix, lookAt, 0.0f, -1.0f, 15.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f);
