@@ -208,7 +208,7 @@ extern u8 g_aabSavePakIds[2][32];
  * @param c The character code of the note name.
  * @return The ASCII character, or a space for a code outside the map.
  * @ghidraAddress USA: 0x80253460
- * @ghidraAddress JPN: 0x802541b0
+ * @ghidraAddress JPN: 0x802541b0 (stub)
  * @ghidraAddress EUR: 0x802549c0
  */
 u8 DecalCharToAscii(u8 c);
@@ -218,8 +218,8 @@ u8 DecalCharToAscii(u8 c);
  * the main menu.
  *
  * @ghidraAddress USA: 0x802534dc
- * @ghidraAddress JPN: 0x8025422c
- * @ghidraAddress EUR: 0x80254a3c
+ * @ghidraAddress JPN: 0x8025422c (stub)
+ * @ghidraAddress EUR: 0x80254a3c (stub)
  */
 void ProcessPakMenuScreen(void);
 
@@ -229,7 +229,7 @@ void ProcessPakMenuScreen(void);
  *
  * @return 0 if a note of another game was found, and 1 otherwise, failures included.
  * @ghidraAddress USA: 0x80254620
- * @ghidraAddress JPN: 0x802554c0
+ * @ghidraAddress JPN: 0x802554c0 (stub)
  * @ghidraAddress EUR: 0x80255bc0
  */
 s32 InitPakAndEnumerateFiles(void);

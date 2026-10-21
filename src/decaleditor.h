@@ -703,8 +703,8 @@ void UndoDecalEdit(void);
  * Run one frame of the keyboard of the text tool.
  *
  * @ghidraAddress USA: 0x8024ac70
- * @ghidraAddress JPN: 0x8024bbd0
- * @ghidraAddress EUR: 0x8024c1d0
+ * @ghidraAddress JPN: 0x8024bbd0 (stub)
+ * @ghidraAddress EUR: 0x8024c1d0 (stub)
  */
 void ProcessTextInputKeyboard(void);
 
@@ -731,7 +731,7 @@ void UpdateCursorFromInput(void);
  * painting.
  *
  * @ghidraAddress USA: 0x8024c184
- * @ghidraAddress JPN: 0x8024d0e8
+ * @ghidraAddress JPN: 0x8024d0e8 (stub)
  * @ghidraAddress EUR: 0x8024d6e8
  */
 void ProcessDecalEditorInput(void);
@@ -802,7 +802,7 @@ void DrawDecalColorPalette(void);
  * Run one frame of the menu of the styles of the brush tool.
  *
  * @ghidraAddress USA: 0x8024d89c
- * @ghidraAddress JPN: 0x8024e7e0
+ * @ghidraAddress JPN: 0x8024e7e0 (stub)
  * @ghidraAddress EUR: 0x8024ee00
  */
 void ProcessBrushStyleMenu(void);
@@ -811,7 +811,7 @@ void ProcessBrushStyleMenu(void);
  * Run one frame of the menu of the styles of the text tool, and of its colors of the shadow.
  *
  * @ghidraAddress USA: 0x8024e128
- * @ghidraAddress JPN: 0x8024efec
+ * @ghidraAddress JPN: 0x8024efec (stub)
  * @ghidraAddress EUR: 0x8024f68c
  */
 void ProcessTextStyleMenu(void);
@@ -820,7 +820,7 @@ void ProcessTextStyleMenu(void);
  * Run one frame of the menu of the styles of the rectangle tool.
  *
  * @ghidraAddress USA: 0x8024f39c
- * @ghidraAddress JPN: 0x802501c4
+ * @ghidraAddress JPN: 0x802501c4 (stub)
  * @ghidraAddress EUR: 0x80250900
  */
 void ProcessRectStyleMenu(void);
@@ -829,8 +829,8 @@ void ProcessRectStyleMenu(void);
  * Run one frame of the menu of the styles of the oval tool.
  *
  * @ghidraAddress USA: 0x80250698
- * @ghidraAddress JPN: 0x80251434
- * @ghidraAddress EUR: 0x80251bfc
+ * @ghidraAddress JPN: 0x80251434 (stub)
+ * @ghidraAddress EUR: 0x80251bfc (stub)
  */
 void ProcessOvalStyleMenu(void);
 
@@ -839,8 +839,8 @@ void ProcessOvalStyleMenu(void);
  * out at once when there are none.
  *
  * @ghidraAddress USA: 0x802531c0
- * @ghidraAddress JPN: 0x80253ed4
- * @ghidraAddress EUR: 0x80254728
+ * @ghidraAddress JPN: 0x80253ed4 (stub)
+ * @ghidraAddress EUR: 0x80254728 (stub)
  */
 void ProcessPaintShopExitConfirm(void);
 

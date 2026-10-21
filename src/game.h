@@ -50,8 +50,8 @@ extern s32 g_dwRaceSessionType;
  *
  * @param weather The weather, a `WEATHER_*` value.
  * @ghidraAddress USA: 0x80200050
- * @ghidraAddress JPN: 0x80200050
- * @ghidraAddress EUR: 0x80200050
+ * @ghidraAddress JPN: 0x80200050 (stub)
+ * @ghidraAddress EUR: 0x80200050 (stub)
  */
 void ApplyWeather(u32 weather);
 
@@ -88,8 +88,8 @@ void ResetAllPlayers(void);
  * enter the main loop. The routine takes no parameter, and the argument of the thread is ignored.
  *
  * @ghidraAddress USA: 0x802001b4
- * @ghidraAddress JPN: 0x802001b4
- * @ghidraAddress EUR: 0x802001b4
+ * @ghidraAddress JPN: 0x802001b4 (stub)
+ * @ghidraAddress EUR: 0x802001b4 (stub)
  */
 void InitGameAndShowMenus(void);
 

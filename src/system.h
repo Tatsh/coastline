@@ -94,8 +94,8 @@ typedef void (*ScreenCallback)(void);
  * Set up the display, the RSP and RDP state, and the system threads.
  *
  * @ghidraAddress USA: 0x8021be88
- * @ghidraAddress JPN: 0x8021c938
- * @ghidraAddress EUR: 0x8021d068
+ * @ghidraAddress JPN: 0x8021c938 (stub)
+ * @ghidraAddress EUR: 0x8021d068 (stub)
  */
 void InitRenderingSubsystem(void);
 
@@ -385,8 +385,8 @@ void StartHighResFrame(void);
  * End the display list of the frame and run it.
  *
  * @ghidraAddress USA: 0x8021aa08
- * @ghidraAddress JPN: 0x8021b3fc
- * @ghidraAddress EUR: 0x8021bb20
+ * @ghidraAddress JPN: 0x8021b3fc (stub)
+ * @ghidraAddress EUR: 0x8021bb20 (stub)
  */
 void FlushDisplayList(void);
 
@@ -1052,8 +1052,8 @@ void FaultThread(void *arg);
  *
  * @param arg The argument of the main thread.
  * @ghidraAddress USA: 0x8021e2c8
- * @ghidraAddress JPN: 0x8021ed98
- * @ghidraAddress EUR: 0x8021f4c8
+ * @ghidraAddress JPN: 0x8021ed98 (stub)
+ * @ghidraAddress EUR: 0x8021f4c8 (stub)
  */
 void BootIdleThread(void *arg);
 
@@ -1069,7 +1069,7 @@ void BootIdleThread(void *arg);
  *
  * @param highRes 1 for the high resolution, 0 for the low.
  * @ghidraAddress USA: 0x80219470
- * @ghidraAddress JPN: 0x80219de0
+ * @ghidraAddress JPN: 0x80219de0 (stub)
  * @ghidraAddress EUR: 0x8021a490
  */
 void BeginDisplayList(s32 highRes);

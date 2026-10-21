@@ -767,7 +767,7 @@ void SetVehicleTurnRate(Vehicle *vehicle, f32 x, f32 y, f32 z);
  *
  * @param vehicle The vehicle.
  * @ghidraAddress USA: 0x80220398
- * @ghidraAddress JPN: 0x80220e88
+ * @ghidraAddress JPN: 0x80220e88 (stub)
  * @ghidraAddress EUR: 0x80221698
  */
 void InitVehicleColorAndPhysics(Vehicle *vehicle);
@@ -790,7 +790,7 @@ void SetVehicleModelSlot(Vehicle *vehicle, s32 slot);
  * @param slot The slot of g_aVehicleModels.
  * @param car The index of the car in g_aCarModels.
  * @ghidraAddress USA: 0x80220438
- * @ghidraAddress JPN: 0x80220ef0
+ * @ghidraAddress JPN: 0x80220ef0 (stub)
  * @ghidraAddress EUR: 0x80221738
  */
 void InstallVehicleModel(Vehicle *vehicle, s32 slot, s32 car);
@@ -1066,8 +1066,8 @@ void UpdatePhysicsStep(Vehicle *vehicle);
  *
  * @param vehicle The vehicle.
  * @ghidraAddress USA: 0x80226248
- * @ghidraAddress JPN: 0x80226d78
- * @ghidraAddress EUR: 0x80227588
+ * @ghidraAddress JPN: 0x80226d78 (stub)
+ * @ghidraAddress EUR: 0x80227588 (stub)
  */
 void RespawnVehicle(Vehicle *vehicle);
 
@@ -1115,7 +1115,7 @@ void UnusedRaceStartStub(s32 unused);
  *
  * @param slot The slot of g_aRacerSlots.
  * @ghidraAddress USA: 0x802291f8
- * @ghidraAddress JPN: 0x80229d4c
+ * @ghidraAddress JPN: 0x80229d4c (stub)
  * @ghidraAddress EUR: 0x8022a570
  */
 void InitRacerSlot(RacerSlot *slot);

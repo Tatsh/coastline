@@ -622,8 +622,8 @@ void ClearRenderStats(void);
  * Blank the screen and clear both frame buffers in the low resolution.
  *
  * @ghidraAddress USA: 0x8021a540
- * @ghidraAddress JPN: 0x8021af0c
- * @ghidraAddress EUR: 0x8021b630
+ * @ghidraAddress JPN: 0x8021af0c (stub)
+ * @ghidraAddress EUR: 0x8021b630 (stub)
  */
 void ClearFramebuffersLowRes(void);
 
@@ -769,8 +769,8 @@ void DrawRdpBorderRect(s32 x, s32 y, s32 width, s32 height);
  * Black out the screen and clear both frame buffers in the high resolution.
  *
  * @ghidraAddress USA: 0x8021a4c8
- * @ghidraAddress JPN: 0x8021ae8c
- * @ghidraAddress EUR: 0x8021b5b0
+ * @ghidraAddress JPN: 0x8021ae8c (stub)
+ * @ghidraAddress EUR: 0x8021b5b0 (stub)
  */
 void ClearFramebuffersHighRes(void);
 

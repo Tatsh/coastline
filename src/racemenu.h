@@ -531,7 +531,7 @@ void ValidateChampionshipProgress(void);
  *
  * @param item The item under the cursor.
  * @ghidraAddress USA: 0x80208a58
- * @ghidraAddress JPN: 0x80208458
+ * @ghidraAddress JPN: 0x80208458 (stub)
  * @ghidraAddress EUR: 0x80208838
  */
 void TrackMenuPostDraw(s32 item);
@@ -550,7 +550,7 @@ void SeasonRecordsPreDrawCallback(void);
  * Run one frame of the track menu: set it up on its first frame, then act on its items.
  *
  * @ghidraAddress USA: 0x80209434
- * @ghidraAddress JPN: 0x80208e20
+ * @ghidraAddress JPN: 0x80208e20 (stub)
  * @ghidraAddress EUR: 0x80209214
  */
 void ProcessTrackMenu(void);
@@ -641,8 +641,8 @@ s32 ProcessScreenState(const char *title,
  * @param items The items of the menu, ended by a null pointer.
  * @param itemCount Receives the number of items.
  * @ghidraAddress USA: 0x8020c27c
- * @ghidraAddress JPN: 0x8020bc5c
- * @ghidraAddress EUR: 0x8020c05c
+ * @ghidraAddress JPN: 0x8020bc5c (stub)
+ * @ghidraAddress EUR: 0x8020c05c (stub)
  */
 void LoadMenuItemModels(MenuItem **items, s32 *itemCount);
 

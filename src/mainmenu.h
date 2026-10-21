@@ -92,8 +92,8 @@ void StartTimeAttack(void);
  * Run one frame of the main menu.
  *
  * @ghidraAddress USA: 0x802111e0
- * @ghidraAddress JPN: 0x80210f30
- * @ghidraAddress EUR: 0x80211040
+ * @ghidraAddress JPN: 0x80210f30 (stub)
+ * @ghidraAddress EUR: 0x80211040 (stub)
  */
 void ProcessMainMenu(void);
 

@@ -265,8 +265,8 @@ void GetBodyPointVelocity(Vec3f *out, RigidBody *body, Vec3f *point);
  * @param rearSliding Whether the rear tyres slid, updated for the next step.
  * @param frontSliding Whether the front tyres slid, updated for the next step.
  * @ghidraAddress USA: 0x80259d14
- * @ghidraAddress JPN: 0x8025ac74
- * @ghidraAddress EUR: 0x8025b2e4
+ * @ghidraAddress JPN: 0x8025ac74 (stub)
+ * @ghidraAddress EUR: 0x8025b2e4 (stub)
  */
 void ApplySideGrip(
     RigidBody *body, f32 dt, f32 *rearLoad, f32 *frontLoad, u8 *rearSliding, u8 *frontSliding);
@@ -491,8 +491,8 @@ void ComputeCollisionPenetration(
  * @param box The matrix that takes the track into the unit cube of the box.
  * @return Whether it hit one.
  * @ghidraAddress USA: 0x8025dfcc
- * @ghidraAddress JPN: 0x8025ef40
- * @ghidraAddress EUR: 0x8025f5b0
+ * @ghidraAddress JPN: 0x8025ef40 (stub)
+ * @ghidraAddress EUR: 0x8025f5b0 (stub)
  */
 s32 CollideBodyWithTriangles(RigidBody *body, f32 box[4][4]);
 

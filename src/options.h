@@ -371,7 +371,7 @@ void DecreaseSfxVolume(void);
  *
  * @param item The selected item, by the OPTIONS_ITEM_ values.
  * @ghidraAddress USA: 0x8021196c
- * @ghidraAddress JPN: 0x8021174c
+ * @ghidraAddress JPN: 0x8021174c (stub)
  * @ghidraAddress EUR: 0x8021185c
  */
 void OptionsMenuPostDraw(s32 item);
@@ -380,8 +380,8 @@ void OptionsMenuPostDraw(s32 item);
  * Run one frame of the options menu.
  *
  * @ghidraAddress USA: 0x80211a3c
- * @ghidraAddress JPN: 0x802117e8
- * @ghidraAddress EUR: 0x8021192c
+ * @ghidraAddress JPN: 0x802117e8 (stub)
+ * @ghidraAddress EUR: 0x8021192c (stub)
  */
 void ProcessOptionsMenu(void);
 
@@ -389,8 +389,8 @@ void ProcessOptionsMenu(void);
  * Run one frame of the save and load menu.
  *
  * @ghidraAddress USA: 0x80211d70
- * @ghidraAddress JPN: 0x80212058
- * @ghidraAddress EUR: 0x80212208
+ * @ghidraAddress JPN: 0x80212058 (stub)
+ * @ghidraAddress EUR: 0x80212208 (stub)
  */
 void ProcessDataSaveLoadMenu(void);
 
@@ -398,7 +398,7 @@ void ProcessDataSaveLoadMenu(void);
  * Load the pictures of the A and B buttons, and allocate the buffer of the Controller Pak data.
  *
  * @ghidraAddress USA: 0x80214a3c
- * @ghidraAddress JPN: 0x802155cc
+ * @ghidraAddress JPN: 0x802155cc (stub)
  * @ghidraAddress EUR: 0x80215b08
  */
 void PreparePakDataScreen(void);
@@ -409,8 +409,8 @@ void PreparePakDataScreen(void);
  * @param anyPlayer Take A from either of the first two players rather than the choosing one.
  * @return Whether A was pressed.
  * @ghidraAddress USA: 0x80214a88
- * @ghidraAddress JPN: 0x80215608
- * @ghidraAddress EUR: 0x80215b54
+ * @ghidraAddress JPN: 0x80215608 (stub)
+ * @ghidraAddress EUR: 0x80215b54 (stub)
  */
 s32 DrawRumblePakPrompt(s32 anyPlayer);
 
@@ -439,8 +439,8 @@ s32 IsRumblePakMissing(void);
  * missing.
  * @return Nonzero once the screen is finished.
  * @ghidraAddress USA: 0x80214e0c
- * @ghidraAddress JPN: 0x80215964
- * @ghidraAddress EUR: 0x80215ed8
+ * @ghidraAddress JPN: 0x80215964 (stub)
+ * @ghidraAddress EUR: 0x80215ed8 (stub)
  */
 s32 ProcessPakDataScreen(s32 dataType, u8 quiet);
 

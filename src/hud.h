@@ -144,7 +144,7 @@ void DrawHudMessage(void);
  * the lap, place and message, and the speed.
  *
  * @ghidraAddress USA: 0x80238f30
- * @ghidraAddress JPN: 0x80239f40
+ * @ghidraAddress JPN: 0x80239f40 (stub)
  * @ghidraAddress EUR: 0x8023a440
  */
 void DrawSpeedAndHudOverlay(void);

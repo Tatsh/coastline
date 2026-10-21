@@ -31,7 +31,7 @@ void ramMain(void);
  *
  * @ghidraAddress USA: 0x8021e5c4
  * @ghidraAddress JPN: 0x8021f0b4
- * @ghidraAddress EUR: 0x8021f8a4
+ * @ghidraAddress EUR: 0x8021f8a4 (stub)
  */
 void OsBootEntry(void);
 

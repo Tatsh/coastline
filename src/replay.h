@@ -144,8 +144,8 @@ extern u8 g_abPausedClockState[PAUSED_CLOCK_STATE_SIZE];
  * @param buffer The buffer.
  * @param capacity The bytes the buffer holds.
  * @ghidraAddress USA: 0x8022adcc
- * @ghidraAddress JPN: 0x8022b8fc
- * @ghidraAddress EUR: 0x8022c144
+ * @ghidraAddress JPN: 0x8022b8fc (stub)
+ * @ghidraAddress EUR: 0x8022c144 (stub)
  */
 void SerializeSaveData(SaveField *fields, u8 *buffer, s32 capacity);
 
@@ -155,8 +155,8 @@ void SerializeSaveData(SaveField *fields, u8 *buffer, s32 capacity);
  * @param fields The list of variables.
  * @param buffer The buffer.
  * @ghidraAddress USA: 0x8022ae70
- * @ghidraAddress JPN: 0x8022b9b0
- * @ghidraAddress EUR: 0x8022c1f8
+ * @ghidraAddress JPN: 0x8022b9b0 (stub)
+ * @ghidraAddress EUR: 0x8022c1f8 (stub)
  */
 void DeserializeSaveData(SaveField *fields, u8 *buffer);
 
@@ -165,8 +165,8 @@ void DeserializeSaveData(SaveField *fields, u8 *buffer);
  *
  * @param buffer The buffer of the last lap.
  * @ghidraAddress USA: 0x8022aed8
- * @ghidraAddress JPN: 0x8022ba2c
- * @ghidraAddress EUR: 0x8022c274
+ * @ghidraAddress JPN: 0x8022ba2c (stub)
+ * @ghidraAddress EUR: 0x8022c274 (stub)
  */
 void SaveRaceSnapshot(LastLapBuffer *buffer);
 
@@ -175,8 +175,8 @@ void SaveRaceSnapshot(LastLapBuffer *buffer);
  *
  * @param buffer The buffer of the last lap holding the snapshot.
  * @ghidraAddress USA: 0x8022af08
- * @ghidraAddress JPN: 0x8022ba64
- * @ghidraAddress EUR: 0x8022c2ac
+ * @ghidraAddress JPN: 0x8022ba64 (stub)
+ * @ghidraAddress EUR: 0x8022c2ac (stub)
  */
 void RestoreRaceSnapshot(LastLapBuffer *buffer);
 

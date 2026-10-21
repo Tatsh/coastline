@@ -95,8 +95,8 @@ extern u32 g_dwRumbleProbeTimer;
  *
  * @param unused The routine never reads it. Its caller passes 0.
  * @ghidraAddress USA: 0x80260490
- * @ghidraAddress JPN: 0x80261420
- * @ghidraAddress EUR: 0x80261970
+ * @ghidraAddress JPN: 0x80261420 (stub)
+ * @ghidraAddress EUR: 0x80261970 (stub)
  */
 void UpdateRumblePaks(s32 unused);
 

@@ -59,8 +59,8 @@ void *AllocHeapAligned(u32 size);
  * Blank the display and clear the frame buffers in the wide display mode.
  *
  * @ghidraAddress USA: 0x802429ec
- * @ghidraAddress JPN: 0x802439fc
- * @ghidraAddress EUR: 0x80243efc
+ * @ghidraAddress JPN: 0x802439fc (stub)
+ * @ghidraAddress EUR: 0x80243efc (stub)
  */
 void ClearFramebuffersForWideMode(void);
 
@@ -68,8 +68,8 @@ void ClearFramebuffersForWideMode(void);
  * Blank the display and clear the frame buffers in the normal display mode.
  *
  * @ghidraAddress USA: 0x80242a7c
- * @ghidraAddress JPN: 0x80243a88
- * @ghidraAddress EUR: 0x80243f88
+ * @ghidraAddress JPN: 0x80243a88 (stub)
+ * @ghidraAddress EUR: 0x80243f88 (stub)
  */
 void ClearFramebuffersForNormalMode(void);
 
