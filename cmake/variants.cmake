@@ -1,9 +1,17 @@
-# Builds every variant TGR_VARIANTS lists as its own configure and build under
+# Builds every variant TGR_VARIANTS lists as a separate configure and build under
 # ${CMAKE_BINARY_DIR}/<variant>, from this source tree. Each variant is <platform>-<choice>, with
 # n64-us, n64-jp, and n64-eu for the Nintendo 64 releases and win-d3d and win-glide for the
 # Windows libraries. The word all selects the five.
 
 include(ExternalProject)
+
+foreach(_region us jp eu)
+  string(TOUPPER "${_region}" _upper)
+  set(TGR_ROM_${_upper}
+      ""
+      CACHE FILEPATH "Original cartridge image of the ${_region} release, passed to the n64-\
+${_region} variant as TGR_ROM.")
+endforeach()
 
 set(_tgr_all_variants n64-us n64-jp n64-eu win-d3d win-glide)
 if(TGR_VARIANTS STREQUAL "all")
@@ -19,11 +27,13 @@ foreach(_variant ${TGR_VARIANTS})
   set(_platform "${CMAKE_MATCH_1}")
   set(_choice "${CMAKE_MATCH_2}")
   if(_platform STREQUAL "n64")
-    set(_choice_arg "-DTGR_REGION=${_choice}")
+    string(TOUPPER "${_choice}" _upper)
+    set(_choice_arg "-DTGR_REGION=${_choice}" "-DTGR_ROM=${TGR_ROM_${_upper}}")
   else()
     set(_choice_arg "-DTGR_RENDERER=${_choice}")
   endif()
-  # The sources change between builds of the superbuild, and the variant rebuilds every time.
+  # The sources change between builds of the superbuild, and the variant rebuilds every time. The
+  # default build of a variant produces its archives and extracts its assets.
   ExternalProject_Add(
     ${_variant}
     SOURCE_DIR "${CMAKE_SOURCE_DIR}"
@@ -31,7 +41,6 @@ foreach(_variant ${TGR_VARIANTS})
     CMAKE_ARGS -DTGR_PLATFORM=${_platform} ${_choice_arg}
                -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
     BUILD_ALWAYS ON
-    BUILD_COMMAND "${CMAKE_COMMAND}" --build <BINARY_DIR> --target archives
     INSTALL_COMMAND ""
     TEST_COMMAND "")
 endforeach()

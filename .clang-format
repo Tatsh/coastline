@@ -56,6 +56,9 @@ IncludeCategories:
     Priority: 1
     Regex: "^<(assert|ctype|errno|fcntl|float|inttypes|limits|locale|math|setjmp|signal|stdarg|stdbool|stddef|stdint|stdio|stdlib|string|strings|sys/[a-z_]+|time|unistd)\\.h>$"
   - CaseSensitive: true
+    Priority: 1
+    Regex: '^<[a-z_]+>$'
+  - CaseSensitive: true
     Priority: 2
     Regex: '^<'
   - CaseSensitive: true

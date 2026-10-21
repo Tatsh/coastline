@@ -1,6 +1,17 @@
 {
   "dependencies": [
-
+    {
+      "host": true,
+      "name": "argparse"
+    },
+    {
+      "host": true,
+      "name": "spdlog"
+    },
+    {
+      "host": true,
+      "name": "zlib"
+    }
   ],
   "description": "Reconstructed source of the Nintendo 64 game Top Gear Rally.",
   "documentation": "https://coastline.readthedocs.org",

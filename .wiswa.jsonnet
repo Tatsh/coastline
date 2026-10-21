@@ -8,7 +8,7 @@
   want_codeql: false,
   want_tests: false,
   want_winget: false,
-  clang_format_args: "$(git ls-files 'src/*.c' 'src/*.cpp' 'src/*.h')",
+  clang_format_args: "$(git ls-files 'src/*.c' 'src/*.cpp' 'src/*.h' 'tools/*.cpp' 'tools/*.h')",
   clang_format+: {
     IncludeBlocks: 'Regroup',
     // The C and POSIX headers come before the SDK headers (ultra64.h and the others).
@@ -40,6 +40,11 @@
           'time',
           'unistd',
         ]),
+      },
+      {
+        CaseSensitive: true,
+        Priority: 1,
+        Regex: '^<[a-z_]+>$',
       },
       {
         CaseSensitive: true,
@@ -100,8 +105,14 @@
       ignorePaths+: ['progress/**'],
     },
   },
-  // No host tools yet, so nothing comes from vcpkg.
-  vcpkg+: { dependencies: [] },
+  // The host tools under tools/ need these packages to build. The N64 build does not use vcpkg.
+  vcpkg+: {
+    dependencies: [
+      { host: true, name: 'argparse' },
+      { host: true, name: 'spdlog' },
+      { host: true, name: 'zlib' },
+    ],
+  },
   vscode+: {
     settings+: { 'cmake.useCMakePresets': 'always' },
   },
