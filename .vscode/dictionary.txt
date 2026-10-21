@@ -294,6 +294,7 @@ rendertile
 reques
 resetglobalintmask
 resf
+rigidbody
 ripgreprc
 rmonspin
 rodata

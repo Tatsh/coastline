@@ -244,7 +244,7 @@ glabel AccumulateForces
     /* 5A698 80259698 02602825 */  or         $a1, $s3, $zero
     /* 5A69C 8025969C 14400004 */  bnez       $v0, .L802596B0
     /* 5A6A0 802596A0 00000000 */   nop
-    /* 5A6A4 802596A4 0C0961B0 */  jal        Mtx3x3Mul
+    /* 5A6A4 802596A4 0C0961B0 */  jal        Mtx4fInverseRotate
     /* 5A6A8 802596A8 26260008 */   addiu     $a2, $s1, 0x8
     /* 5A6AC 802596AC 8E220004 */  lw         $v0, 0x4($s1)
   .L802596B0:
@@ -353,7 +353,7 @@ glabel IntegrateRigidBodyForces
     /* 5A828 80259828 00E03025 */  or         $a2, $a3, $zero
     /* 5A82C 8025982C AFA70020 */  sw         $a3, 0x20($sp)
     /* 5A830 80259830 02202825 */  or         $a1, $s1, $zero
-    /* 5A834 80259834 0C0961B0 */  jal        Mtx3x3Mul
+    /* 5A834 80259834 0C0961B0 */  jal        Mtx4fInverseRotate
     /* 5A838 80259838 27A4004C */   addiu     $a0, $sp, 0x4C
     /* 5A83C 8025983C C7A4004C */  lwc1       $f4, 0x4C($sp)
     /* 5A840 80259840 8FA40020 */  lw         $a0, 0x20($sp)
@@ -404,11 +404,11 @@ glabel IntegrateRigidBodyForces
     /* 5A8F4 802598F4 26060108 */  addiu      $a2, $s0, 0x108
     /* 5A8F8 802598F8 AFA60020 */  sw         $a2, 0x20($sp)
     /* 5A8FC 802598FC 27A40034 */  addiu      $a0, $sp, 0x34
-    /* 5A900 80259900 0C0961B0 */  jal        Mtx3x3Mul
+    /* 5A900 80259900 0C0961B0 */  jal        Mtx4fInverseRotate
     /* 5A904 80259904 02202825 */   or        $a1, $s1, $zero
     /* 5A908 80259908 27A40028 */  addiu      $a0, $sp, 0x28
     /* 5A90C 8025990C 26050054 */  addiu      $a1, $s0, 0x54
-    /* 5A910 80259910 0C09622E */  jal        Mtx3x3MulTranspose
+    /* 5A910 80259910 0C09622E */  jal        Mtx3fMulVec3f
     /* 5A914 80259914 27A60034 */   addiu     $a2, $sp, 0x34
     /* 5A918 80259918 8FA40020 */  lw         $a0, 0x20($sp)
     /* 5A91C 8025991C 02202825 */  or         $a1, $s1, $zero
@@ -542,7 +542,7 @@ glabel ComputeContactVelocity
     /* 5AAF4 80259AF4 E7A40040 */  swc1       $f4, 0x40($sp)
     /* 5AAF8 80259AF8 C6120008 */  lwc1       $f18, 0x8($s0)
     /* 5AAFC 80259AFC 46124180 */  add.s      $f6, $f8, $f18
-    /* 5AB00 80259B00 0C0961B0 */  jal        Mtx3x3Mul
+    /* 5AB00 80259B00 0C0961B0 */  jal        Mtx4fInverseRotate
     /* 5AB04 80259B04 E7A60044 */   swc1      $f6, 0x44($sp)
     /* 5AB08 80259B08 8FBF001C */  lw         $ra, 0x1C($sp)
     /* 5AB0C 80259B0C 8FB00018 */  lw         $s0, 0x18($sp)
@@ -945,7 +945,7 @@ glabel ComputeSteeringFriction
     /* 5B0A0 8025A0A0 27A4011C */  addiu      $a0, $sp, 0x11C
     /* 5B0A4 8025A0A4 27A60140 */  addiu      $a2, $sp, 0x140
     /* 5B0A8 8025A0A8 24A500BC */  addiu      $a1, $a1, 0xBC
-    /* 5B0AC 8025A0AC 0C0961B0 */  jal        Mtx3x3Mul
+    /* 5B0AC 8025A0AC 0C0961B0 */  jal        Mtx4fInverseRotate
     /* 5B0B0 8025A0B0 AFA50024 */   sw        $a1, 0x24($sp)
     /* 5B0B4 8025A0B4 8FA70158 */  lw         $a3, 0x158($sp)
     /* 5B0B8 8025A0B8 3C098029 */  lui        $t1, %hi(g_dwCurrentWeather)
@@ -1380,7 +1380,7 @@ glabel ComputeSteeringFriction
     /* 5B6C0 8025A6C0 E7A80134 */   swc1      $f8, 0x134($sp)
     /* 5B6C4 8025A6C4 27A40128 */  addiu      $a0, $sp, 0x128
     /* 5B6C8 8025A6C8 8FA50024 */  lw         $a1, 0x24($sp)
-    /* 5B6CC 8025A6CC 0C0961B0 */  jal        Mtx3x3Mul
+    /* 5B6CC 8025A6CC 0C0961B0 */  jal        Mtx4fInverseRotate
     /* 5B6D0 8025A6D0 27A6014C */   addiu     $a2, $sp, 0x14C
     /* 5B6D4 8025A6D4 8FA80158 */  lw         $t0, 0x158($sp)
     /* 5B6D8 8025A6D8 87A900C2 */  lh         $t1, 0xC2($sp)
@@ -1662,7 +1662,7 @@ glabel ComputeSteeringFriction
     /* 5BAEC 8025AAEC AFA7002C */  sw         $a3, 0x2C($sp)
     /* 5BAF0 8025AAF0 46045182 */  mul.s      $f6, $f10, $f4
     /* 5BAF4 8025AAF4 46064281 */  sub.s      $f10, $f8, $f6
-    /* 5BAF8 8025AAF8 0C0961B0 */  jal        Mtx3x3Mul
+    /* 5BAF8 8025AAF8 0C0961B0 */  jal        Mtx4fInverseRotate
     /* 5BAFC 8025AAFC E7AA00E4 */   swc1      $f10, 0xE4($sp)
     /* 5BB00 8025AB00 C7A400E8 */  lwc1       $f4, 0xE8($sp)
     /* 5BB04 8025AB04 8FA4002C */  lw         $a0, 0x2C($sp)
@@ -1675,7 +1675,7 @@ glabel ComputeSteeringFriction
     /* 5BB20 8025AB20 8FA50024 */  lw         $a1, 0x24($sp)
     /* 5BB24 8025AB24 25070084 */  addiu      $a3, $t0, 0x84
     /* 5BB28 8025AB28 00E03025 */  or         $a2, $a3, $zero
-    /* 5BB2C 8025AB2C 0C0961B0 */  jal        Mtx3x3Mul
+    /* 5BB2C 8025AB2C 0C0961B0 */  jal        Mtx4fInverseRotate
     /* 5BB30 8025AB30 AFA7002C */   sw        $a3, 0x2C($sp)
     /* 5BB34 8025AB34 C7A800E0 */  lwc1       $f8, 0xE0($sp)
     /* 5BB38 8025AB38 C7A600E4 */  lwc1       $f6, 0xE4($sp)
@@ -2061,7 +2061,7 @@ glabel UpdateWheelSteering
     /* 5C0D4 8025B0D4 46005182 */  mul.s      $f6, $f10, $f0
     /* 5C0D8 8025B0D8 E7B00068 */  swc1       $f16, 0x68($sp)
     /* 5C0DC 8025B0DC E7A400B4 */  swc1       $f4, 0xB4($sp)
-    /* 5C0E0 8025B0E0 0C0961B0 */  jal        Mtx3x3Mul
+    /* 5C0E0 8025B0E0 0C0961B0 */  jal        Mtx4fInverseRotate
     /* 5C0E4 8025B0E4 E7A600B8 */   swc1      $f6, 0xB8($sp)
     /* 5C0E8 8025B0E8 8E020018 */  lw         $v0, 0x18($s0)
     /* 5C0EC 8025B0EC C7A800D4 */  lwc1       $f8, 0xD4($sp)
@@ -2809,7 +2809,7 @@ glabel ResolveCollisionResponse
     /* 5CB78 8025BB78 E7A80078 */  swc1       $f8, 0x78($sp)
     /* 5CB7C 8025BB7C 46065202 */  mul.s      $f8, $f10, $f6
     /* 5CB80 8025BB80 E7A4007C */  swc1       $f4, 0x7C($sp)
-    /* 5CB84 8025BB84 0C0961B0 */  jal        Mtx3x3Mul
+    /* 5CB84 8025BB84 0C0961B0 */  jal        Mtx4fInverseRotate
     /* 5CB88 8025BB88 E7A80080 */   swc1      $f8, 0x80($sp)
     /* 5CB8C 8025BB8C 24020001 */  addiu      $v0, $zero, 0x1
   .L8025BB90:
@@ -2862,7 +2862,7 @@ glabel ApplyCollisionImpulse
     /* 5CC20 8025BC20 E7B200B8 */   swc1      $f18, 0xB8($sp)
     /* 5CC24 8025BC24 27A4008C */  addiu      $a0, $sp, 0x8C
     /* 5CC28 8025BC28 27A50194 */  addiu      $a1, $sp, 0x194
-    /* 5CC2C 8025BC2C 0C09622E */  jal        Mtx3x3MulTranspose
+    /* 5CC2C 8025BC2C 0C09622E */  jal        Mtx3fMulVec3f
     /* 5CC30 8025BC30 27A600B0 */   addiu     $a2, $sp, 0xB0
     /* 5CC34 8025BC34 C6040184 */  lwc1       $f4, 0x184($s0)
     /* 5CC38 8025BC38 C7A80094 */  lwc1       $f8, 0x94($sp)
@@ -2923,19 +2923,19 @@ glabel ApplyCollisionImpulse
     /* 5CD10 8025BD10 27A5008C */   addiu     $a1, $sp, 0x8C
     /* 5CD14 8025BD14 27A400E0 */  addiu      $a0, $sp, 0xE0
     /* 5CD18 8025BD18 26050054 */  addiu      $a1, $s0, 0x54
-    /* 5CD1C 8025BD1C 0C0963BE */  jal        Mtx3x3TripleMul
+    /* 5CD1C 8025BD1C 0C0963BE */  jal        Mtx3fMultiply
     /* 5CD20 8025BD20 27A60170 */   addiu     $a2, $sp, 0x170
     /* 5CD24 8025BD24 27A400BC */  addiu      $a0, $sp, 0xBC
     /* 5CD28 8025BD28 27A50194 */  addiu      $a1, $sp, 0x194
-    /* 5CD2C 8025BD2C 0C0963BE */  jal        Mtx3x3TripleMul
+    /* 5CD2C 8025BD2C 0C0963BE */  jal        Mtx3fMultiply
     /* 5CD30 8025BD30 27A600E0 */   addiu     $a2, $sp, 0xE0
     /* 5CD34 8025BD34 27A40104 */  addiu      $a0, $sp, 0x104
     /* 5CD38 8025BD38 27A500BC */  addiu      $a1, $sp, 0xBC
-    /* 5CD3C 8025BD3C 0C0963BE */  jal        Mtx3x3TripleMul
+    /* 5CD3C 8025BD3C 0C0963BE */  jal        Mtx3fMultiply
     /* 5CD40 8025BD40 27A6014C */   addiu     $a2, $sp, 0x14C
     /* 5CD44 8025BD44 27A400E0 */  addiu      $a0, $sp, 0xE0
     /* 5CD48 8025BD48 27A5014C */  addiu      $a1, $sp, 0x14C
-    /* 5CD4C 8025BD4C 0C0963BE */  jal        Mtx3x3TripleMul
+    /* 5CD4C 8025BD4C 0C0963BE */  jal        Mtx3fMultiply
     /* 5CD50 8025BD50 27A60104 */   addiu     $a2, $sp, 0x104
     /* 5CD54 8025BD54 3C013F80 */  lui        $at, (0x3F800000 >> 16)
     /* 5CD58 8025BD58 44801000 */  mtc1       $zero, $f2
@@ -3219,7 +3219,7 @@ glabel ApplyCollisionImpulse
     /* 5D168 8025C168 C7A80024 */  lwc1       $f8, 0x24($sp)
     /* 5D16C 8025C16C 46082182 */  mul.s      $f6, $f4, $f8
     /* 5D170 8025C170 46069281 */  sub.s      $f10, $f18, $f6
-    /* 5D174 8025C174 0C09622E */  jal        Mtx3x3MulTranspose
+    /* 5D174 8025C174 0C09622E */  jal        Mtx3fMulVec3f
     /* 5D178 8025C178 E7AA00B8 */   swc1      $f10, 0xB8($sp)
     /* 5D17C 8025C17C 3C01802B */  lui        $at, %hi(g_fConst1p05)
     /* 5D180 8025C180 C424B804 */  lwc1       $f4, %lo(g_fConst1p05)($at)
@@ -7593,7 +7593,7 @@ glabel ProcessVehicleCollisions
     /* 60F78 8025FF78 24A50204 */  addiu      $a1, $a1, 0x204
     /* 60F7C 8025FF7C AFCC0004 */  sw         $t4, 0x4($fp)
     /* 60F80 8025FF80 8D410008 */  lw         $at, 0x8($t2)
-    /* 60F84 8025FF84 0C096399 */  jal        TransposeMatrix3x3Into4x4
+    /* 60F84 8025FF84 0C096399 */  jal        Transpose4x4Into3x3
     /* 60F88 8025FF88 AFC10008 */   sw        $at, 0x8($fp)
     /* 60F8C 8025FF8C 8E850060 */  lw         $a1, 0x60($s4)
     /* 60F90 8025FF90 27A40114 */  addiu      $a0, $sp, 0x114
@@ -7601,7 +7601,7 @@ glabel ProcessVehicleCollisions
     /* 60F98 8025FF98 24A50204 */   addiu     $a1, $a1, 0x204
     /* 60F9C 8025FF9C 27A400CC */  addiu      $a0, $sp, 0xCC
     /* 60FA0 8025FFA0 27A500F0 */  addiu      $a1, $sp, 0xF0
-    /* 60FA4 8025FFA4 0C0963BE */  jal        Mtx3x3TripleMul
+    /* 60FA4 8025FFA4 0C0963BE */  jal        Mtx3fMultiply
     /* 60FA8 8025FFA8 27A60114 */   addiu     $a2, $sp, 0x114
     /* 60FAC 8025FFAC C6520000 */  lwc1       $f18, 0x0($s2)
     /* 60FB0 8025FFB0 C6300000 */  lwc1       $f16, 0x0($s1)
@@ -7617,7 +7617,7 @@ glabel ProcessVehicleCollisions
     /* 60FD8 8025FFD8 C6300008 */  lwc1       $f16, 0x8($s1)
     /* 60FDC 8025FFDC C6520008 */  lwc1       $f18, 0x8($s2)
     /* 60FE0 8025FFE0 46109101 */  sub.s      $f4, $f18, $f16
-    /* 60FE4 8025FFE4 0C09622E */  jal        Mtx3x3MulTranspose
+    /* 60FE4 8025FFE4 0C09622E */  jal        Mtx3fMulVec3f
     /* 60FE8 8025FFE8 E7A400C8 */   swc1      $f4, 0xC8($sp)
     /* 60FEC 8025FFEC 27A400CC */  addiu      $a0, $sp, 0xCC
     /* 60FF0 8025FFF0 02C02825 */  or         $a1, $s6, $zero
@@ -7744,7 +7744,7 @@ glabel ProcessVehicleCollisions
     /* 611B8 802601B8 46142482 */  mul.s      $f18, $f4, $f20
     /* 611BC 802601BC E7AA00B4 */  swc1       $f10, 0xB4($sp)
     /* 611C0 802601C0 E7B000B8 */  swc1       $f16, 0xB8($sp)
-    /* 611C4 802601C4 0C0961B0 */  jal        Mtx3x3Mul
+    /* 611C4 802601C4 0C0961B0 */  jal        Mtx4fInverseRotate
     /* 611C8 802601C8 E7B200BC */   swc1      $f18, 0xBC($sp)
     /* 611CC 802601CC C648000C */  lwc1       $f8, 0xC($s2)
     /* 611D0 802601D0 C7AA009C */  lwc1       $f10, 0x9C($sp)
@@ -7823,7 +7823,7 @@ glabel ProcessVehicleCollisions
     /* 612F4 802602F4 46142482 */  mul.s      $f18, $f4, $f20
     /* 612F8 802602F8 E7AA00B4 */  swc1       $f10, 0xB4($sp)
     /* 612FC 802602FC E7B000B8 */  swc1       $f16, 0xB8($sp)
-    /* 61300 80260300 0C0961B0 */  jal        Mtx3x3Mul
+    /* 61300 80260300 0C0961B0 */  jal        Mtx4fInverseRotate
     /* 61304 80260304 E7B200BC */   swc1      $f18, 0xBC($sp)
     /* 61308 80260308 C628000C */  lwc1       $f8, 0xC($s1)
     /* 6130C 8026030C C7AA009C */  lwc1       $f10, 0x9C($sp)

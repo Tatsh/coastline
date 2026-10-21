@@ -141,7 +141,7 @@ glabel SimulateVehiclePhysicsSubstep
     /* 22B38 80221B38 3C063D08 */  lui        $a2, (0x3D088889 >> 16)
     /* 22B3C 80221B3C 34C68889 */  ori        $a2, $a2, (0x3D088889 & 0xFFFF)
     /* 22B40 80221B40 AFA40030 */  sw         $a0, 0x30($sp)
-    /* 22B44 80221B44 0C0960C9 */  jal        AccumulateLinearImpulse
+    /* 22B44 80221B44 0C0960C9 */  jal        ApplyRigidBodyImpulse
     /* 22B48 80221B48 8FA50044 */   lw        $a1, 0x44($sp)
     /* 22B4C 80221B4C 8FAD003C */  lw         $t5, 0x3C($sp)
     /* 22B50 80221B50 8FAE0034 */  lw         $t6, 0x34($sp)
@@ -186,7 +186,7 @@ glabel SimulateVehiclePhysicsSubstep
     /* 22BEC 80221BEC 3C063D08 */  lui        $a2, (0x3D088889 >> 16)
     /* 22BF0 80221BF0 34C68889 */  ori        $a2, $a2, (0x3D088889 & 0xFFFF)
     /* 22BF4 80221BF4 8FA40040 */  lw         $a0, 0x40($sp)
-    /* 22BF8 80221BF8 0C0960C9 */  jal        AccumulateLinearImpulse
+    /* 22BF8 80221BF8 0C0960C9 */  jal        ApplyRigidBodyImpulse
     /* 22BFC 80221BFC 8FA50044 */   lw        $a1, 0x44($sp)
     /* 22C00 80221C00 3C01BF80 */  lui        $at, (0xBF800000 >> 16)
     /* 22C04 80221C04 44819000 */  mtc1       $at, $f18
@@ -603,7 +603,7 @@ glabel UpdateVehicleEngineAndGearbox
     /* 231F0 802221F0 8FA70088 */  lw         $a3, 0x88($sp)
     /* 231F4 802221F4 27A40064 */  addiu      $a0, $sp, 0x64
     /* 231F8 802221F8 24E50204 */  addiu      $a1, $a3, 0x204
-    /* 231FC 802221FC 0C0961B0 */  jal        Mtx3x3Mul
+    /* 231FC 802221FC 0C0961B0 */  jal        Mtx4fInverseRotate
     /* 23200 80222200 24E601CC */   addiu     $a2, $a3, 0x1CC
     /* 23204 80222204 3C014120 */  lui        $at, (0x41200000 >> 16)
     /* 23208 80222208 44816000 */  mtc1       $at, $f12
@@ -1634,7 +1634,7 @@ glabel InitVehiclePhysics
     /* 240B8 802230B8 AFA40054 */  sw         $a0, 0x54($sp)
     /* 240BC 802230BC E7B40018 */  swc1       $f20, 0x18($sp)
     /* 240C0 802230C0 E7A80010 */  swc1       $f8, 0x10($sp)
-    /* 240C4 802230C4 0C0961A0 */  jal        SetTransformPose
+    /* 240C4 802230C4 0C0961A0 */  jal        SetRigidBodyForce
     /* 240C8 802230C8 E7AA0014 */   swc1      $f10, 0x14($sp)
     /* 240CC 802230CC 3C01BFC0 */  lui        $at, (0xBFC00000 >> 16)
     /* 240D0 802230D0 44818000 */  mtc1       $at, $f16
@@ -1647,7 +1647,7 @@ glabel InitVehiclePhysics
     /* 240EC 802230EC AFA40064 */  sw         $a0, 0x64($sp)
     /* 240F0 802230F0 E7B80014 */  swc1       $f24, 0x14($sp)
     /* 240F4 802230F4 E7B40018 */  swc1       $f20, 0x18($sp)
-    /* 240F8 802230F8 0C0961A0 */  jal        SetTransformPose
+    /* 240F8 802230F8 0C0961A0 */  jal        SetRigidBodyForce
     /* 240FC 802230FC E7B00010 */   swc1      $f16, 0x10($sp)
     /* 24100 80223100 3C013FC0 */  lui        $at, (0x3FC00000 >> 16)
     /* 24104 80223104 44819000 */  mtc1       $at, $f18
@@ -1662,7 +1662,7 @@ glabel InitVehiclePhysics
     /* 24128 80223128 AFA40060 */  sw         $a0, 0x60($sp)
     /* 2412C 8022312C E7B40018 */  swc1       $f20, 0x18($sp)
     /* 24130 80223130 E7B20010 */  swc1       $f18, 0x10($sp)
-    /* 24134 80223134 0C0961A0 */  jal        SetTransformPose
+    /* 24134 80223134 0C0961A0 */  jal        SetRigidBodyForce
     /* 24138 80223138 E7A40014 */   swc1      $f4, 0x14($sp)
     /* 2413C 8022313C 3C013FC0 */  lui        $at, (0x3FC00000 >> 16)
     /* 24140 80223140 44813000 */  mtc1       $at, $f6
@@ -1675,7 +1675,7 @@ glabel InitVehiclePhysics
     /* 2415C 8022315C AFA4005C */  sw         $a0, 0x5C($sp)
     /* 24160 80223160 E7B80014 */  swc1       $f24, 0x14($sp)
     /* 24164 80223164 E7B40018 */  swc1       $f20, 0x18($sp)
-    /* 24168 80223168 0C0961A0 */  jal        SetTransformPose
+    /* 24168 80223168 0C0961A0 */  jal        SetRigidBodyForce
     /* 2416C 8022316C E7A60010 */   swc1      $f6, 0x10($sp)
     /* 24170 80223170 26040C70 */  addiu      $a0, $s0, 0xC70
     /* 24174 80223174 4405A000 */  mfc1       $a1, $f20
@@ -1686,7 +1686,7 @@ glabel InitVehiclePhysics
     /* 24188 80223188 E7B40010 */  swc1       $f20, 0x10($sp)
     /* 2418C 8022318C E7B40014 */  swc1       $f20, 0x14($sp)
     /* 24190 80223190 E7B40018 */  swc1       $f20, 0x18($sp)
-    /* 24194 80223194 0C0961A0 */  jal        SetTransformPose
+    /* 24194 80223194 0C0961A0 */  jal        SetRigidBodyForce
     /* 24198 80223198 AFA0001C */   sw        $zero, 0x1C($sp)
     /* 2419C 8022319C 26040C90 */  addiu      $a0, $s0, 0xC90
     /* 241A0 802231A0 4405A000 */  mfc1       $a1, $f20
@@ -1697,7 +1697,7 @@ glabel InitVehiclePhysics
     /* 241B4 802231B4 E7B40010 */  swc1       $f20, 0x10($sp)
     /* 241B8 802231B8 E7B40014 */  swc1       $f20, 0x14($sp)
     /* 241BC 802231BC E7B40018 */  swc1       $f20, 0x18($sp)
-    /* 241C0 802231C0 0C0961A0 */  jal        SetTransformPose
+    /* 241C0 802231C0 0C0961A0 */  jal        SetRigidBodyForce
     /* 241C4 802231C4 AFA0001C */   sw        $zero, 0x1C($sp)
     /* 241C8 802231C8 26040CB0 */  addiu      $a0, $s0, 0xCB0
     /* 241CC 802231CC 4405A000 */  mfc1       $a1, $f20
@@ -1708,7 +1708,7 @@ glabel InitVehiclePhysics
     /* 241E0 802231E0 E7B40010 */  swc1       $f20, 0x10($sp)
     /* 241E4 802231E4 E7B40014 */  swc1       $f20, 0x14($sp)
     /* 241E8 802231E8 E7B40018 */  swc1       $f20, 0x18($sp)
-    /* 241EC 802231EC 0C0961A0 */  jal        SetTransformPose
+    /* 241EC 802231EC 0C0961A0 */  jal        SetRigidBodyForce
     /* 241F0 802231F0 AFA0001C */   sw        $zero, 0x1C($sp)
     /* 241F4 802231F4 8FA80064 */  lw         $t0, 0x64($sp)
     /* 241F8 802231F8 26040CF0 */  addiu      $a0, $s0, 0xCF0
@@ -1730,7 +1730,7 @@ glabel InitVehiclePhysics
     /* 24238 80223238 AFAD001C */  sw         $t5, 0x1C($sp)
     /* 2423C 8022323C E7B40018 */  swc1       $f20, 0x18($sp)
     /* 24240 80223240 E7B40014 */  swc1       $f20, 0x14($sp)
-    /* 24244 80223244 0C0961A0 */  jal        SetTransformPose
+    /* 24244 80223244 0C0961A0 */  jal        SetRigidBodyForce
     /* 24248 80223248 E7B40010 */   swc1      $f20, 0x10($sp)
     /* 2424C 8022324C 26040D30 */  addiu      $a0, $s0, 0xD30
     /* 24250 80223250 4405A000 */  mfc1       $a1, $f20
@@ -1741,7 +1741,7 @@ glabel InitVehiclePhysics
     /* 24264 80223264 AFA40064 */  sw         $a0, 0x64($sp)
     /* 24268 80223268 E7B40010 */  swc1       $f20, 0x10($sp)
     /* 2426C 8022326C E7B40014 */  swc1       $f20, 0x14($sp)
-    /* 24270 80223270 0C0961A0 */  jal        SetTransformPose
+    /* 24270 80223270 0C0961A0 */  jal        SetRigidBodyForce
     /* 24274 80223274 E7B40018 */   swc1      $f20, 0x18($sp)
     /* 24278 80223278 26040D10 */  addiu      $a0, $s0, 0xD10
     /* 2427C 8022327C 4405A000 */  mfc1       $a1, $f20
@@ -1752,7 +1752,7 @@ glabel InitVehiclePhysics
     /* 24290 80223290 AFA40060 */  sw         $a0, 0x60($sp)
     /* 24294 80223294 E7B40010 */  swc1       $f20, 0x10($sp)
     /* 24298 80223298 E7B40014 */  swc1       $f20, 0x14($sp)
-    /* 2429C 8022329C 0C0961A0 */  jal        SetTransformPose
+    /* 2429C 8022329C 0C0961A0 */  jal        SetRigidBodyForce
     /* 242A0 802232A0 E7B40018 */   swc1      $f20, 0x18($sp)
     /* 242A4 802232A4 26040D50 */  addiu      $a0, $s0, 0xD50
     /* 242A8 802232A8 4405A000 */  mfc1       $a1, $f20
@@ -1763,7 +1763,7 @@ glabel InitVehiclePhysics
     /* 242BC 802232BC AFA4005C */  sw         $a0, 0x5C($sp)
     /* 242C0 802232C0 E7B40010 */  swc1       $f20, 0x10($sp)
     /* 242C4 802232C4 E7B40014 */  swc1       $f20, 0x14($sp)
-    /* 242C8 802232C8 0C0961A0 */  jal        SetTransformPose
+    /* 242C8 802232C8 0C0961A0 */  jal        SetRigidBodyForce
     /* 242CC 802232CC E7B40018 */   swc1      $f20, 0x18($sp)
     /* 242D0 802232D0 8FB90048 */  lw         $t9, 0x48($sp)
     /* 242D4 802232D4 8FA2004C */  lw         $v0, 0x4C($sp)
@@ -1793,7 +1793,7 @@ glabel InitVehiclePhysics
     /* 24334 80223334 E7B40018 */  swc1       $f20, 0x18($sp)
     /* 24338 80223338 26040BF0 */  addiu      $a0, $s0, 0xBF0
     /* 2433C 8022333C E7A80010 */  swc1       $f8, 0x10($sp)
-    /* 24340 80223340 0C0961A0 */  jal        SetTransformPose
+    /* 24340 80223340 0C0961A0 */  jal        SetRigidBodyForce
     /* 24344 80223344 E7AA0014 */   swc1      $f10, 0x14($sp)
     /* 24348 80223348 3C01BFC0 */  lui        $at, (0xBFC00000 >> 16)
     /* 2434C 8022334C 44818000 */  mtc1       $at, $f16
@@ -1806,7 +1806,7 @@ glabel InitVehiclePhysics
     /* 24368 80223368 AFA40064 */  sw         $a0, 0x64($sp)
     /* 2436C 8022336C E7B80014 */  swc1       $f24, 0x14($sp)
     /* 24370 80223370 E7B40018 */  swc1       $f20, 0x18($sp)
-    /* 24374 80223374 0C0961A0 */  jal        SetTransformPose
+    /* 24374 80223374 0C0961A0 */  jal        SetRigidBodyForce
     /* 24378 80223378 E7B00010 */   swc1      $f16, 0x10($sp)
     /* 2437C 8022337C 3C013FC0 */  lui        $at, (0x3FC00000 >> 16)
     /* 24380 80223380 44819000 */  mtc1       $at, $f18
@@ -1821,7 +1821,7 @@ glabel InitVehiclePhysics
     /* 243A4 802233A4 AFA40060 */  sw         $a0, 0x60($sp)
     /* 243A8 802233A8 E7B40018 */  swc1       $f20, 0x18($sp)
     /* 243AC 802233AC E7B20010 */  swc1       $f18, 0x10($sp)
-    /* 243B0 802233B0 0C0961A0 */  jal        SetTransformPose
+    /* 243B0 802233B0 0C0961A0 */  jal        SetRigidBodyForce
     /* 243B4 802233B4 E7A40014 */   swc1      $f4, 0x14($sp)
     /* 243B8 802233B8 3C013FC0 */  lui        $at, (0x3FC00000 >> 16)
     /* 243BC 802233BC 44813000 */  mtc1       $at, $f6
@@ -1834,7 +1834,7 @@ glabel InitVehiclePhysics
     /* 243D8 802233D8 AFA4005C */  sw         $a0, 0x5C($sp)
     /* 243DC 802233DC E7B80014 */  swc1       $f24, 0x14($sp)
     /* 243E0 802233E0 E7B40018 */  swc1       $f20, 0x18($sp)
-    /* 243E4 802233E4 0C0961A0 */  jal        SetTransformPose
+    /* 243E4 802233E4 0C0961A0 */  jal        SetRigidBodyForce
     /* 243E8 802233E8 E7A60010 */   swc1      $f6, 0x10($sp)
     /* 243EC 802233EC 26040CD0 */  addiu      $a0, $s0, 0xCD0
     /* 243F0 802233F0 4405A000 */  mfc1       $a1, $f20
@@ -1844,7 +1844,7 @@ glabel InitVehiclePhysics
     /* 24400 80223400 E7B40010 */  swc1       $f20, 0x10($sp)
     /* 24404 80223404 E7B40014 */  swc1       $f20, 0x14($sp)
     /* 24408 80223408 E7B40018 */  swc1       $f20, 0x18($sp)
-    /* 2440C 8022340C 0C0961A0 */  jal        SetTransformPose
+    /* 2440C 8022340C 0C0961A0 */  jal        SetRigidBodyForce
     /* 24410 80223410 AFA0001C */   sw        $zero, 0x1C($sp)
     /* 24414 80223414 8FAF0064 */  lw         $t7, 0x64($sp)
     /* 24418 80223418 8FA40058 */  lw         $a0, 0x58($sp)
