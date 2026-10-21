@@ -192,6 +192,7 @@ void CheatToggleBilinearFilter(void);
 /**
  * Remember a change of the buttons and apply each cheat whose sequence the latest changes match.
  *
+ * @param state The input of the player.
  * @ghidraAddress USA: 0x80255048
  */
 void ProcessInputCommandBuffer(PlayerInputState *state);
@@ -200,6 +201,7 @@ void ProcessInputCommandBuffer(PlayerInputState *state);
  * Read the pad of a player into buttons, race actions for the button layout, and the stick, record
  * the input or replay a recording in its place, and check the cheats.
  *
+ * @param state The input of the player.
  * @ghidraAddress USA: 0x80255120
  */
 void TranslateControllerInput(PlayerInputState *state);
@@ -207,6 +209,8 @@ void TranslateControllerInput(PlayerInputState *state);
 /**
  * Move buttons out of the input until they are released, so that they act once.
  *
+ * @param state The input of the player.
+ * @param mask The buttons to move.
  * @ghidraAddress USA: 0x80255910
  */
 void TransferFlags(PlayerInputState *state, u32 mask);
@@ -215,6 +219,7 @@ void TransferFlags(PlayerInputState *state, u32 mask);
  * Drop from the input the held buttons that are still pressed, and forget the held buttons that
  * are released.
  *
+ * @param state The input of the player.
  * @ghidraAddress USA: 0x80255934
  */
 void ConsumeInputFlags(PlayerInputState *state);
@@ -223,6 +228,10 @@ void ConsumeInputFlags(PlayerInputState *state);
  * Press a direction when a stick axis passes 0.6, then again after half a second and every 0.2
  * seconds while the axis stays above 0.3.
  *
+ * @param state The input of the player.
+ * @param timer The time to the next repeat in milliseconds, 0 while the axis is released.
+ * @param axis The position of the axis, from -1 to 1.
+ * @param button The direction to press.
  * @ghidraAddress USA: 0x80255954
  */
 void CheckAnalogStickPositive(PlayerInputState *state, s32 *timer, f32 *axis, u32 button);
@@ -230,6 +239,10 @@ void CheckAnalogStickPositive(PlayerInputState *state, s32 *timer, f32 *axis, u3
 /**
  * The same as CheckAnalogStickPositive() for the negative side of an axis.
  *
+ * @param state The input of the player.
+ * @param timer The time to the next repeat in milliseconds, 0 while the axis is released.
+ * @param axis The position of the axis, from -1 to 1.
+ * @param button The direction to press.
  * @ghidraAddress USA: 0x80255a18
  */
 void CheckAnalogStickNegative(PlayerInputState *state, s32 *timer, f32 *axis, u32 button);
@@ -237,6 +250,7 @@ void CheckAnalogStickNegative(PlayerInputState *state, s32 *timer, f32 *axis, u3
 /**
  * Press the directions of the stick with repeat, as the menus read them.
  *
+ * @param state The input of the player.
  * @ghidraAddress USA: 0x80255adc
  */
 void UpdateStickRepeat(PlayerInputState *state);
@@ -244,6 +258,7 @@ void UpdateStickRepeat(PlayerInputState *state);
 /**
  * Reset the input of a player.
  *
+ * @param state The input to reset.
  * @ghidraAddress USA: 0x80255b54
  */
 void InitPlayerInputState(PlayerInputState *state);

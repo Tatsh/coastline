@@ -29,49 +29,133 @@ extern u32 g_dwRandomSeed;
  * Raise a number to a power: by multiplication for the whole part of the exponent and by the
  * binomial series for the rest.
  *
+ * @param base The number raised.
+ * @param exponent The power, at least 0.
+ * @return The base raised to the exponent.
  * @ghidraAddress USA: 0x802242e0
  */
 f32 Powf(f32 base, f32 exponent);
 
-/** @ghidraAddress USA: 0x8022439c */
+/**
+ * Take the cross product of two vectors.
+ *
+ * @param out The vector that receives the cross product of a and b.
+ * @param a The first vector.
+ * @param b The second vector.
+ * @ghidraAddress USA: 0x8022439c
+ */
 void Vec3fCross(Vec3f *out, Vec3f *a, Vec3f *b);
 
-/** @ghidraAddress USA: 0x80224404 */
+/**
+ * Take the dot product of two vectors.
+ *
+ * @param a The first vector.
+ * @param b The second vector.
+ * @return The dot product of the vectors.
+ * @ghidraAddress USA: 0x80224404
+ */
 f32 Vec3fDot(Vec3f *a, Vec3f *b);
 
-/** @ghidraAddress USA: 0x80224434 */
+/**
+ * Negate a vector.
+ *
+ * @param out The vector that receives -v.
+ * @param v The vector negated.
+ * @ghidraAddress USA: 0x80224434
+ */
 void Vec3fNegate(Vec3f *out, Vec3f *v);
 
-/** @ghidraAddress USA: 0x8022445c */
+/**
+ * Negate a vector in place.
+ *
+ * @param v The vector negated.
+ * @ghidraAddress USA: 0x8022445c
+ */
 void NegateVectorInPlace(Vec3f *v);
 
-/** Multiply two vectors component by component. @ghidraAddress USA: 0x80224484 */
+/**
+ * Multiply two vectors component by component.
+ *
+ * @param out The vector that receives the product.
+ * @param a The first vector.
+ * @param b The second vector.
+ * @ghidraAddress USA: 0x80224484
+ */
 void Vec2fMul(Vec2f *out, Vec2f *a, Vec2f *b);
 
-/** @ghidraAddress USA: 0x802244a8 */
+/**
+ * Multiply a vector by a number.
+ *
+ * @param out The vector that receives v * scale.
+ * @param v The vector scaled.
+ * @param scale The factor.
+ * @ghidraAddress USA: 0x802244a8
+ */
 void Vec2fScale(Vec2f *out, Vec2f *v, f32 scale);
 
-/** Multiply two vectors component by component. @ghidraAddress USA: 0x802244c8 */
+/**
+ * Multiply two vectors component by component.
+ *
+ * @param out The vector that receives the product.
+ * @param a The first vector.
+ * @param b The second vector.
+ * @ghidraAddress USA: 0x802244c8
+ */
 void Vec3fComponentProduct(Vec3f *out, Vec3f *a, Vec3f *b);
 
-/** @ghidraAddress USA: 0x802244fc */
+/**
+ * Multiply a vector by a number.
+ *
+ * @param out The vector that receives v * scale.
+ * @param v The vector scaled.
+ * @param scale The factor.
+ * @ghidraAddress USA: 0x802244fc
+ */
 void Vec3fScale(Vec3f *out, Vec3f *v, f32 scale);
 
-/** @ghidraAddress USA: 0x80224528 */
+/**
+ * Multiply a vector by a number in place.
+ *
+ * @param v The vector scaled.
+ * @param scale The factor.
+ * @ghidraAddress USA: 0x80224528
+ */
 void Vec3fScaleInPlace(Vec3f *v, f32 scale);
 
-/** Multiply a vector by the reciprocal of a number. @ghidraAddress USA: 0x8022455c */
+/**
+ * Multiply a vector by the reciprocal of a number.
+ *
+ * @param out The vector that receives v / divisor.
+ * @param v The vector divided.
+ * @param divisor The number the vector is divided by.
+ * @ghidraAddress USA: 0x8022455c
+ */
 void Vec3fScaleByInverse(Vec3f *out, Vec3f *v, f32 divisor);
 
-/** @ghidraAddress USA: 0x80224594 */
+/**
+ * Divide a vector by a number in place.
+ *
+ * @param v The vector divided.
+ * @param divisor The number the vector is divided by.
+ * @ghidraAddress USA: 0x80224594
+ */
 void Vec3fDivideInPlace(Vec3f *v, f32 divisor);
 
-/** @ghidraAddress USA: 0x802245d4 */
+/**
+ * Copy a vector.
+ *
+ * @param out The vector that receives the copy.
+ * @param v The vector copied.
+ * @ghidraAddress USA: 0x802245d4
+ */
 void Vec3fCopy(Vec3f *out, Vec3f *v);
 
 /**
  * The unit vector from one point towards another, or (0, 0, 1) when they coincide.
  *
+ * @param out The vector that receives the direction.
+ * @param from The point the direction starts at.
+ * @param to The point the direction runs towards.
  * @ghidraAddress USA: 0x802245f0
  */
 void Vec3fDirection(Vec3f *out, Vec3f *from, Vec3f *to);
@@ -79,6 +163,8 @@ void Vec3fDirection(Vec3f *out, Vec3f *from, Vec3f *to);
 /**
  * The unit vector along a vector, or (0, 0, 1) for the zero vector.
  *
+ * @param out The vector that receives the unit vector.
+ * @param v The vector normalised.
  * @ghidraAddress USA: 0x802246bc
  */
 void Vec3fNormalizeSafe(Vec3f *out, Vec3f *v);
@@ -86,62 +172,163 @@ void Vec3fNormalizeSafe(Vec3f *out, Vec3f *v);
 /**
  * Make a vector a unit vector, or (0, 0, 1) if it is the zero vector.
  *
+ * @param v The vector normalised in place.
  * @ghidraAddress USA: 0x80224760
  */
 void Vec3fNormalize(Vec3f *v);
 
-/** @ghidraAddress USA: 0x80224808 */
+/**
+ * Subtract one vector from another.
+ *
+ * @param out The vector that receives a - b.
+ * @param a The vector subtracted from.
+ * @param b The vector subtracted.
+ * @ghidraAddress USA: 0x80224808
+ */
 void Vec3fSubtract(Vec3f *out, Vec3f *a, Vec3f *b);
 
-/** @ghidraAddress USA: 0x8022483c */
+/**
+ * Subtract one vector from another in place.
+ *
+ * @param v The vector subtracted from, which receives v - b.
+ * @param b The vector subtracted.
+ * @ghidraAddress USA: 0x8022483c
+ */
 void Vec3fSubtractInPlace(Vec3f *v, Vec3f *b);
 
-/** @ghidraAddress USA: 0x80224870 */
+/**
+ * Add two vectors.
+ *
+ * @param out The vector that receives a + b.
+ * @param a The first vector.
+ * @param b The second vector.
+ * @ghidraAddress USA: 0x80224870
+ */
 void Vec2fAdd(Vec2f *out, Vec2f *a, Vec2f *b);
 
-/** @ghidraAddress USA: 0x80224894 */
+/**
+ * Add two vectors.
+ *
+ * @param out The vector that receives a + b.
+ * @param a The first vector.
+ * @param b The second vector.
+ * @ghidraAddress USA: 0x80224894
+ */
 void Vec3fAdd(Vec3f *out, Vec3f *a, Vec3f *b);
 
-/** @ghidraAddress USA: 0x802248c8 */
+/**
+ * Add one vector to another in place.
+ *
+ * @param v The vector added to, which receives v + b.
+ * @param b The vector added.
+ * @ghidraAddress USA: 0x802248c8
+ */
 void Vec3fAddInPlace(Vec3f *v, Vec3f *b);
 
 /**
  * The point a share of the way from b to a: b + (a - b) * t.
  *
+ * @param out The vector that receives the point.
+ * @param a The point reached when t is 1.
+ * @param b The point reached when t is 0.
+ * @param t The share of the way from b to a.
  * @ghidraAddress USA: 0x802248fc
  */
 void Vec3fLerp(Vec3f *out, Vec3f *a, Vec3f *b, f32 t);
 
-/** a + b * scale. @ghidraAddress USA: 0x8022494c */
+/**
+ * Add a scaled vector to another.
+ *
+ * @param out The vector that receives a + b * scale.
+ * @param a The vector added to.
+ * @param b The vector scaled and added.
+ * @param scale The factor for b.
+ * @ghidraAddress USA: 0x8022494c
+ */
 void Vec3fMulAdd(Vec3f *out, Vec3f *a, Vec3f *b, f32 scale);
 
-/** v + b * scale. @ghidraAddress USA: 0x80224990 */
+/**
+ * Add a scaled vector to another in place.
+ *
+ * @param v The vector added to, which receives v + b * scale.
+ * @param b The vector scaled and added.
+ * @param scale The factor for b.
+ * @ghidraAddress USA: 0x80224990
+ */
 void Vec3fMulAddInPlace(Vec3f *v, Vec3f *b, f32 scale);
 
-/** @ghidraAddress USA: 0x802249d4 */
+/**
+ * The point halfway between two points.
+ *
+ * @param out The vector that receives the midpoint.
+ * @param a The first point.
+ * @param b The second point.
+ * @ghidraAddress USA: 0x802249d4
+ */
 void Vec3fMidpoint(Vec3f *out, Vec3f *a, Vec3f *b);
 
-/** @ghidraAddress USA: 0x80224a1c */
+/**
+ * Set a vector to zero.
+ *
+ * @param v The vector cleared.
+ * @ghidraAddress USA: 0x80224a1c
+ */
 void Vec3fClear(Vec3f *v);
 
-/** @ghidraAddress USA: 0x80224a34 */
+/**
+ * The distance between two points of the plane.
+ *
+ * @param a The first point.
+ * @param b The second point.
+ * @return The distance between the points.
+ * @ghidraAddress USA: 0x80224a34
+ */
 f32 Vec2fDistance(Vec2f *a, Vec2f *b);
 
-/** @ghidraAddress USA: 0x80224a78 */
+/**
+ * The distance between two points.
+ *
+ * @param a The first point.
+ * @param b The second point.
+ * @return The distance between the points.
+ * @ghidraAddress USA: 0x80224a78
+ */
 f32 Vec3fDistance(Vec3f *a, Vec3f *b);
 
-/** @ghidraAddress USA: 0x80224acc */
+/**
+ * The square of the distance between two points.
+ *
+ * @param a The first point.
+ * @param b The second point.
+ * @return The squared distance between the points.
+ * @ghidraAddress USA: 0x80224acc
+ */
 f32 Vec3fDistanceSquared(Vec3f *a, Vec3f *b);
 
-/** @ghidraAddress USA: 0x80224b08 */
+/**
+ * The length of a vector.
+ *
+ * @param v The vector measured.
+ * @return The length of the vector.
+ * @ghidraAddress USA: 0x80224b08
+ */
 f32 Vec3fLength(Vec3f *v);
 
-/** @ghidraAddress USA: 0x80224b48 */
+/**
+ * The length of a vector of the plane.
+ *
+ * @param v The vector measured.
+ * @return The length of the vector.
+ * @ghidraAddress USA: 0x80224b48
+ */
 f32 Vec2fLength(Vec2f *v);
 
 /**
  * Rotate a vector by an angle about a unit axis, clockwise as seen from the tip of the axis.
  *
+ * @param v The vector rotated in place.
+ * @param angle The angle of the rotation, in radians.
+ * @param axis The unit axis of the rotation.
  * @ghidraAddress USA: 0x80224b7c
  */
 void Vec3fRotateAroundAxis(Vec3f *v, f32 angle, Vec3f *axis);
@@ -149,6 +336,9 @@ void Vec3fRotateAroundAxis(Vec3f *v, f32 angle, Vec3f *axis);
 /**
  * Transform a point by a matrix and divide by w.
  *
+ * @param out The vector that receives the transformed point.
+ * @param in The point transformed.
+ * @param m The matrix, applied to a row vector with its translation in the last row.
  * @ghidraAddress USA: 0x80224d00
  */
 void Mtx4x4ProjectPoint(Vec3f *out, Vec3f *in, f32 m[4][4]);
@@ -156,6 +346,9 @@ void Mtx4x4ProjectPoint(Vec3f *out, Vec3f *in, f32 m[4][4]);
 /**
  * Transform a point by a matrix into four components.
  *
+ * @param out The x, y, z, and w of the transformed point.
+ * @param in The point transformed.
+ * @param m The matrix, applied to a row vector with its translation in the last row.
  * @ghidraAddress USA: 0x80224ddc
  */
 void Vec3fTransformByMatrix(f32 out[4], Vec3f *in, f32 m[4][4]);
@@ -163,6 +356,9 @@ void Vec3fTransformByMatrix(f32 out[4], Vec3f *in, f32 m[4][4]);
 /**
  * Transform a point of short integers by a matrix into four components.
  *
+ * @param out The x, y, z, and w of the transformed point.
+ * @param in The x, y, and z of the point transformed.
+ * @param m The matrix, applied to a row vector with its translation in the last row.
  * @ghidraAddress USA: 0x80224ea8
  */
 void Vec3sTransformToVec4f(f32 out[4], s16 in[3], f32 m[4][4]);
@@ -170,6 +366,9 @@ void Vec3sTransformToVec4f(f32 out[4], s16 in[3], f32 m[4][4]);
 /**
  * Transform a point by a matrix, divide by w, and keep x and y.
  *
+ * @param out The vector that receives the x and y of the transformed point.
+ * @param in The point transformed.
+ * @param m The matrix, applied to a row vector with its translation in the last row.
  * @ghidraAddress USA: 0x80224f90
  */
 void ProjectVec3fToScreen(Vec2f *out, Vec3f *in, f32 m[4][4]);
@@ -177,6 +376,9 @@ void ProjectVec3fToScreen(Vec2f *out, Vec3f *in, f32 m[4][4]);
 /**
  * Transform a direction by a matrix without its translation, and divide by w.
  *
+ * @param out The vector that receives the transformed direction.
+ * @param in The direction transformed.
+ * @param m The matrix, applied to a row vector.
  * @ghidraAddress USA: 0x80225038
  */
 void Mtx4x4TransformNoTranslation(Vec3f *out, Vec3f *in, f32 m[4][4]);
@@ -184,6 +386,9 @@ void Mtx4x4TransformNoTranslation(Vec3f *out, Vec3f *in, f32 m[4][4]);
 /**
  * Transform a direction by the 3 by 3 part of a matrix.
  *
+ * @param out The vector that receives the transformed direction.
+ * @param in The direction transformed.
+ * @param m The matrix, applied to a row vector.
  * @ghidraAddress USA: 0x802250fc
  */
 void Mtx3x3TransformVec(Vec3f *out, Vec3f *in, f32 m[4][4]);
@@ -191,6 +396,9 @@ void Mtx3x3TransformVec(Vec3f *out, Vec3f *in, f32 m[4][4]);
 /**
  * Multiply two matrices. The result may replace either of them.
  *
+ * @param out The matrix that receives a * b.
+ * @param a The matrix on the left.
+ * @param b The matrix on the right.
  * @ghidraAddress USA: 0x80225180
  */
 void Mtx4x4Multiply(f32 out[4][4], f32 a[4][4], f32 b[4][4]);
@@ -198,16 +406,26 @@ void Mtx4x4Multiply(f32 out[4][4], f32 a[4][4], f32 b[4][4]);
 /**
  * Transpose a matrix but its diagonal, which it leaves as it is in the result.
  *
+ * @param out The matrix that receives the transpose.
+ * @param in The matrix transposed.
  * @ghidraAddress USA: 0x802252ec
  */
 void Mtx4fTranspose(f32 out[4][4], f32 in[4][4]);
 
-/** @ghidraAddress USA: 0x80225350 */
+/**
+ * Copy a matrix.
+ *
+ * @param out The matrix that receives the copy.
+ * @param in The matrix copied.
+ * @ghidraAddress USA: 0x80225350
+ */
 void CopyMatrix4x4(f32 out[4][4], f32 in[4][4]);
 
 /**
  * Invert an affine matrix. A singular matrix is reported on the debug display and left alone.
  *
+ * @param out The matrix that receives the inverse.
+ * @param in The matrix inverted.
  * @return 1 once inverted, 0 for a singular matrix.
  * @ghidraAddress USA: 0x80225370
  */
@@ -216,6 +434,7 @@ s32 MtxInvert4x4(f32 out[4][4], f32 in[4][4]);
 /**
  * Set the last column of a matrix to that of an affine transform: 0, 0, 0 and 1.
  *
+ * @param m The matrix completed in place.
  * @ghidraAddress USA: 0x8021eb30
  */
 void FinishFrameMatrix(f32 m[4][4]);
@@ -224,6 +443,9 @@ void FinishFrameMatrix(f32 m[4][4]);
  * The angle of a point counterclockwise from the x axis, from 0 to two pi, found by a search of
  * the sine. Unlike atan2() of the C library, it takes x first.
  *
+ * @param x The x of the point.
+ * @param y The y of the point.
+ * @return The angle in radians, or 0 for the origin.
  * @ghidraAddress USA: 0x8022576c
  */
 f32 Atan2f(f32 x, f32 y);
@@ -231,6 +453,12 @@ f32 Atan2f(f32 x, f32 y);
 /**
  * Whether a point lies within a triangle, on the side of each edge the normal gives.
  *
+ * @param point The point tested.
+ * @param v0 The first corner of the triangle.
+ * @param v1 The second corner of the triangle.
+ * @param v2 The third corner of the triangle.
+ * @param normal The normal of the triangle.
+ * @return TRUE if the point lies within the triangle, FALSE otherwise.
  * @ghidraAddress USA: 0x8022591c
  */
 s32 PointInTriangle3D(Vec3f *point, Vec3f *v0, Vec3f *v1, Vec3f *v2, Vec3f *normal);
@@ -238,6 +466,13 @@ s32 PointInTriangle3D(Vec3f *point, Vec3f *v0, Vec3f *v1, Vec3f *v2, Vec3f *norm
 /**
  * PointInTriangle3D() with a tolerance for each edge.
  *
+ * @param point The point tested.
+ * @param v0 The first corner of the triangle.
+ * @param v1 The second corner of the triangle.
+ * @param v2 The third corner of the triangle.
+ * @param normal The normal of the triangle.
+ * @param tolerance The least value of the test against each edge for the point to pass it.
+ * @return TRUE if the point passes the test against every edge, FALSE otherwise.
  * @ghidraAddress USA: 0x80225a40
  */
 s32 IsPointInsideTriangle(
@@ -246,6 +481,10 @@ s32 IsPointInsideTriangle(
 /**
  * Whether two segments of the plane meet.
  *
+ * @param p1 The first end of the first segment.
+ * @param p2 The second end of the first segment.
+ * @param q1 The first end of the second segment.
+ * @param q2 The second end of the second segment.
  * @return 0 if they do not, 2 if they lie along one line, and 1 if they cross.
  * @ghidraAddress USA: 0x80225b64
  */
@@ -254,17 +493,27 @@ s32 TestLineSegmentIntersection(Vec2f *p1, Vec2f *p2, Vec2f *q1, Vec2f *q2);
 /**
  * Whether two points lie across the line through two others.
  *
+ * @param a The first point of the line.
+ * @param b The second point of the line.
+ * @param p The first point tested.
+ * @param q The second point tested.
  * @return 0 if they lie strictly on one side, 2 if both lie on the line, and 1 otherwise.
  * @ghidraAddress USA: 0x80225e1c
  */
 s32 SegmentCrossesLine2D(Vec2f *a, Vec2f *b, Vec2f *p, Vec2f *q);
 
-/** @ghidraAddress USA: 0x80225ed8 */
+/**
+ * Set the seed of the random numbers.
+ *
+ * @param seed The new seed.
+ * @ghidraAddress USA: 0x80225ed8
+ */
 void SetRngSeed(u32 seed);
 
 /**
  * Advance the random numbers by the multiplier 16807 and keep 27 bits.
  *
+ * @return The new seed, from 0 to 0x7ffffff.
  * @ghidraAddress USA: 0x80225ee4
  */
 u32 AdvanceRng(void);

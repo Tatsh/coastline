@@ -15,6 +15,7 @@ extern s32 g_dwSkyboxDisabled;
  * Whether the sky is a fill of the fog colour: at night, in snow or rain, on a track without a
  * sky, or with two players.
  *
+ * @return Non-zero when the sky is a fill of the fog colour.
  * @ghidraAddress USA: 0x8022f900
  */
 s32 IsSkyFogFilled(void);

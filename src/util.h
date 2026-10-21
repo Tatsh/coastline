@@ -58,6 +58,7 @@ typedef void (*SwapFunc)(void *a, void *b, u32 size);
  * Mark every section of a tree of the route as visited, skipping sections already visited and
  * alternate branches. On tracks 3 and 8, a section whose grid starts at row 2 starts at row 0.
  *
+ * @param section The first section of the tree.
  * @ghidraAddress USA: 0x80255ba0
  */
 void MarkTrackSections(TrackSection *section);
@@ -65,6 +66,7 @@ void MarkTrackSections(TrackSection *section);
 /**
  * Clear the visited mark of every section of a tree of the route.
  *
+ * @param section The first section of the tree.
  * @ghidraAddress USA: 0x80255c50
  */
 void UnmarkTrackSections(TrackSection *section);
@@ -79,6 +81,7 @@ void PrepareTrackSections(void);
 /**
  * Allocate a block of display list commands for the current frame.
  *
+ * @return The block, or the spare block after the last once every block is taken.
  * @ghidraAddress USA: 0x80255cd0
  */
 DisplayListBlock *AllocDisplayListBlock(void);
@@ -86,6 +89,7 @@ DisplayListBlock *AllocDisplayListBlock(void);
 /**
  * Allocate a block of highlight coordinates for the current frame.
  *
+ * @return The block, or the spare block after the last once every block is taken.
  * @ghidraAddress USA: 0x80255d4c
  */
 Hilite *AllocHiliteBlock(void);
@@ -93,6 +97,7 @@ Hilite *AllocHiliteBlock(void);
 /**
  * Allocate a block of reflection directions for the current frame.
  *
+ * @return The block, or the spare block after the last once every block is taken.
  * @ghidraAddress USA: 0x80255dd8
  */
 LookAt *AllocLightBlock(void);
@@ -107,6 +112,10 @@ void ResetFrameBlocks(void);
 /**
  * Sort count elements of a size with a comparison.
  *
+ * @param base The first element.
+ * @param count The number of elements.
+ * @param size The size of each element, in bytes.
+ * @param compare The comparison that orders two elements.
  * @ghidraAddress USA: 0x80255e80
  */
 void QuickSort(void *base, u32 count, u32 size, CompareFunc compare);
@@ -114,6 +123,11 @@ void QuickSort(void *base, u32 count, u32 size, CompareFunc compare);
 /**
  * Sort the elements from lo to hi by selection, for the short ranges of QuickSort().
  *
+ * @param lo The first element.
+ * @param hi The last element, included in the sort.
+ * @param size The size of each element, in bytes.
+ * @param compare The comparison that orders two elements.
+ * @param swap The routine that exchanges two elements.
  * @ghidraAddress USA: 0x802560dc
  */
 void ShortSort(u8 *lo, u8 *hi, u32 size, CompareFunc compare, SwapFunc swap);
@@ -121,6 +135,9 @@ void ShortSort(u8 *lo, u8 *hi, u32 size, CompareFunc compare, SwapFunc swap);
 /**
  * Exchange two buffers byte by byte.
  *
+ * @param a The first buffer.
+ * @param b The second buffer.
+ * @param size The size of each buffer, in bytes.
  * @ghidraAddress USA: 0x802561a8
  */
 void ExchangeByteBuffers(void *a, void *b, u32 size);
@@ -128,6 +145,9 @@ void ExchangeByteBuffers(void *a, void *b, u32 size);
 /**
  * Exchange two buffers halfword by halfword.
  *
+ * @param a The first buffer.
+ * @param b The second buffer.
+ * @param size The size of each buffer, in bytes.
  * @ghidraAddress USA: 0x802561e4
  */
 void ExchangeHalfwordBuffers(void *a, void *b, u32 size);
@@ -135,6 +155,9 @@ void ExchangeHalfwordBuffers(void *a, void *b, u32 size);
 /**
  * Exchange two buffers word by word.
  *
+ * @param a The first buffer.
+ * @param b The second buffer.
+ * @param size The size of each buffer, in bytes.
  * @ghidraAddress USA: 0x80256228
  */
 void ExchangeWordBuffers(void *a, void *b, u32 size);

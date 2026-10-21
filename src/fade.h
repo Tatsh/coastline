@@ -111,6 +111,8 @@ void RenderScreenFog(void);
  * Fade the screen towards a level over a time in seconds. A fade out asked for while the screen
  * fades in waits until it has faded in.
  *
+ * @param target The level to fade to, from 0 for black to 1 for the whole picture.
+ * @param seconds The time a fade across the whole range takes, in seconds.
  * @ghidraAddress USA: 0x80223688
  */
 void SetFadeTarget(float target, float seconds);
@@ -118,6 +120,8 @@ void SetFadeTarget(float target, float seconds);
 /**
  * Fade the volume of the sound effects towards a level over a time in seconds.
  *
+ * @param target The volume to fade to, from 0 for silence to 1 for full volume.
+ * @param seconds The time a fade across the whole range takes, in seconds.
  * @ghidraAddress USA: 0x80223750
  */
 void FadeSfxTo(float target, float seconds);
@@ -125,6 +129,8 @@ void FadeSfxTo(float target, float seconds);
 /**
  * Fade the volume of the music towards a level over a time in seconds.
  *
+ * @param target The volume to fade to, from 0 for silence to 1 for full volume.
+ * @param seconds The time a fade across the whole range takes, in seconds.
  * @ghidraAddress USA: 0x802237d0
  */
 void FadeMusicTo(float target, float seconds);
@@ -132,6 +138,7 @@ void FadeMusicTo(float target, float seconds);
 /**
  * Whether the fade of the sound effects has reached its target.
  *
+ * @return 1 if the volume equals its target, 0 otherwise.
  * @ghidraAddress USA: 0x80223850
  */
 s32 HasSfxFadeFinished(void);
@@ -139,6 +146,7 @@ s32 HasSfxFadeFinished(void);
 /**
  * Set the volume of the sound effects and its target at once.
  *
+ * @param level The volume, from 0 for silence to 1 for full volume.
  * @ghidraAddress USA: 0x80223880
  */
 void SetSfxFadeLevelImmediate(float level);
@@ -146,6 +154,7 @@ void SetSfxFadeLevelImmediate(float level);
 /**
  * Set the level of the screen and its target at once.
  *
+ * @param level The level, from 0 for black to 1 for the whole picture.
  * @ghidraAddress USA: 0x8022389c
  */
 void SnapScreenFade(float level);
@@ -153,6 +162,7 @@ void SnapScreenFade(float level);
 /**
  * Whether the screen fades in and does not turn back by itself.
  *
+ * @return 1 if the screen fades in, 0 otherwise.
  * @ghidraAddress USA: 0x802238b8
  */
 s32 IsFadingIn(void);
@@ -160,6 +170,7 @@ s32 IsFadingIn(void);
 /**
  * Whether the screen fades out, or will once it has faded in.
  *
+ * @return 1 if the screen fades out or will, 0 otherwise.
  * @ghidraAddress USA: 0x802238fc
  */
 s32 IsFadingOut(void);
@@ -167,6 +178,7 @@ s32 IsFadingOut(void);
 /**
  * Whether the screen has reached its target and does not turn back by itself.
  *
+ * @return 1 if the fade is complete, 0 otherwise.
  * @ghidraAddress USA: 0x80223940
  */
 s32 IsFadeComplete(void);
@@ -174,6 +186,7 @@ s32 IsFadeComplete(void);
 /**
  * Whether the screen has faded out to black.
  *
+ * @return 1 if the screen is black, 0 otherwise.
  * @ghidraAddress USA: 0x80223988
  */
 s32 IsFadedToBlack(void);
@@ -181,6 +194,7 @@ s32 IsFadedToBlack(void);
 /**
  * Whether the screen has faded in to the whole picture.
  *
+ * @return 1 if the whole picture shows, 0 otherwise.
  * @ghidraAddress USA: 0x802239f4
  */
 s32 IsFadedToWhite(void);
@@ -198,6 +212,7 @@ void ApplyScreenFade(void);
 /**
  * Draw black over the whole screen, more opaque the lower a level from 0 to 1.
  *
+ * @param level The level, from 0 for opaque black to 1 for no overlay.
  * @ghidraAddress USA: 0x80223de0
  */
 void DrawScreenFadeOverlay(float level);

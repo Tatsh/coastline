@@ -63,6 +63,7 @@ void InitRenderingSubsystem(void);
 /**
  * Set the routine the main loop calls each frame.
  *
+ * @param callback The routine to call each frame.
  * @ghidraAddress USA: 0x8021c6e4
  */
 void SetCurrentScreenCallback(ScreenCallback callback);
@@ -71,6 +72,7 @@ void SetCurrentScreenCallback(ScreenCallback callback);
  * Set a routine FlushDisplayList() calls once, when the RDP has finished the frame before, so that
  * it can change data that frame drew from.
  *
+ * @param callback The routine to call once.
  * @ghidraAddress USA: 0x8021c6b8
  */
 void SetNextScreenCallback(ScreenCallback callback);
@@ -78,6 +80,8 @@ void SetNextScreenCallback(ScreenCallback callback);
 /**
  * Return whether a routine is the current screen.
  *
+ * @param callback The routine to compare with the current screen.
+ * @return 1 if the routine is the current screen, 0 otherwise.
  * @ghidraAddress USA: 0x8021c6d0
  */
 s32 IsCurrentScreen(ScreenCallback callback);
@@ -92,6 +96,9 @@ void GameModeMainLoop(void);
 /**
  * Copy bytes from the cartridge into memory by DMA, in blocks of 4 KB.
  *
+ * @param dst The memory to copy into.
+ * @param romOffset The cartridge offset to copy from.
+ * @param size The number of bytes to copy.
  * @ghidraAddress USA: 0x8021c748
  */
 void DmaRead(void *dst, u32 romOffset, u32 size);
@@ -99,6 +106,8 @@ void DmaRead(void *dst, u32 romOffset, u32 size);
 /**
  * Read the decompressed size from the header of the asset at a cartridge offset.
  *
+ * @param romOffset The cartridge offset of the asset.
+ * @return The size of the asset once decompressed, in bytes.
  * @ghidraAddress USA: 0x8021c814
  */
 u32 DmaReadAssetSize(u32 romOffset);
@@ -134,6 +143,8 @@ extern u8 g_aDmaWorkBuffers[];
 /**
  * Start a decompression with a buffer for its compressed data.
  *
+ * @param job The decompression to start.
+ * @param buffer The memory to read the compressed data into.
  * @ghidraAddress USA: 0x8021cd24
  */
 void InitDmaRequest(DecompressJob *job, u8 *buffer);
@@ -141,6 +152,8 @@ void InitDmaRequest(DecompressJob *job, u8 *buffer);
 /**
  * Decompress the asset at a cartridge offset into RAM.
  *
+ * @param dst The memory to decompress into.
+ * @param romOffset The cartridge offset of the asset.
  * @param job The decompression to continue, which DecompressFromRom() leaves where it stopped, or
  * NULL to decompress the asset whole.
  * @ghidraAddress USA: 0x8021cd30
@@ -210,6 +223,10 @@ extern f32 g_fFrameDeltaTime;
 /**
  * Limit drawing to a rectangle, clipped to the frame.
  *
+ * @param x The left edge, in pixels.
+ * @param y The top edge, in pixels.
+ * @param width The width, in pixels.
+ * @param height The height, in pixels.
  * @ghidraAddress USA: 0x80219a78
  */
 void SetScissorRect(s32 x, s32 y, s32 width, s32 height);
@@ -217,6 +234,7 @@ void SetScissorRect(s32 x, s32 y, s32 width, s32 height);
 /**
  * Show a message on the debug display.
  *
+ * @param message The message to show.
  * @ghidraAddress USA: 0x8021e1f4
  */
 void SetDebugMessage(const char *message);
@@ -224,6 +242,9 @@ void SetDebugMessage(const char *message);
 /**
  * Add a fill of the whole frame with a colour to the display list.
  *
+ * @param red The red component, from 0 to 255.
+ * @param green The green component, from 0 to 255.
+ * @param blue The blue component, from 0 to 255.
  * @ghidraAddress USA: 0x80217fb8
  */
 void ClearScreen(s32 red, s32 green, s32 blue);
@@ -252,6 +273,11 @@ void FlushDisplayList(void);
 /**
  * Set the view to a rectangle of the screen, and the scissor to it as well if asked.
  *
+ * @param x The left edge, in pixels.
+ * @param y The top edge, in pixels.
+ * @param width The width, in pixels.
+ * @param height The height, in pixels.
+ * @param setScissor Non-zero to set the scissor to the rectangle as well.
  * @ghidraAddress USA: 0x80219bf0
  */
 void SetViewport(s32 x, s32 y, s32 width, s32 height, s32 setScissor);
@@ -259,6 +285,8 @@ void SetViewport(s32 x, s32 y, s32 width, s32 height, s32 setScissor);
 /**
  * Set up the projection for a screen of a size.
  *
+ * @param width The width of the screen.
+ * @param height The height of the screen.
  * @ghidraAddress USA: 0x8021b458
  */
 void SetupProjectionMatrix(f32 width, f32 height);
@@ -266,6 +294,8 @@ void SetupProjectionMatrix(f32 width, f32 height);
 /**
  * Set up the projection of a menu that draws models, looking at the middle of the screen.
  *
+ * @param width The width of the screen.
+ * @param height The height of the screen.
  * @ghidraAddress USA: 0x8021b5a4
  */
 void SetupMenuProjection(f32 width, f32 height);

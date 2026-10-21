@@ -79,6 +79,7 @@ void DebugFrameStubA(void);
  * Draw text into the frame buffer on display, outlined in black. Lower case draws as upper case,
  * a newline moves down a line, and another control character draws as a space.
  *
+ * @param text The text, terminated by a null character.
  * @ghidraAddress USA: 0x80254878
  */
 void DrawBitmapTextToFramebuffer(const char *text);

@@ -54,6 +54,7 @@ enum {
 /**
  * Run one frame of the screen that loads or saves data on a Controller Pak.
  *
+ * @param dataType The data to load or save, a `PAK_DATA_*` value.
  * @param skipFade Start at once rather than fading the screen in first.
  * @return Nonzero once the screen is finished.
  * @ghidraAddress USA: 0x80214e0c

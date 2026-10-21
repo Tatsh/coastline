@@ -53,6 +53,11 @@ extern u32 g_dwTimingBarsRenderMode1;
  * Mark the time since the start of the frame on a bar, and colour the part that follows with
  * 8-bit components.
  *
+ * @param bar The index of the bar.
+ * @param red The red component.
+ * @param green The green component.
+ * @param blue The blue component.
+ * @param alpha The alpha component. Only its top bit is used.
  * @ghidraAddress USA: 0x8022d7e0
  */
 void AddTimingMarker(s32 bar, s32 red, s32 green, s32 blue, s32 alpha);

@@ -30,6 +30,7 @@ extern s32 g_dwPlayerCountMenuSelection;
  * Explain below the menu that two players need two controllers, while that item is selected and
  * unavailable.
  *
+ * @param item The index of the selected item of the player count menu.
  * @ghidraAddress USA: 0x802114e0
  */
 void TwoControllersPostDrawCallback(s32 item);

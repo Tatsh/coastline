@@ -73,6 +73,8 @@ extern s32 g_dwSoundEffectEchoOffset;
 /**
  * Copy 16 bytes between 8-byte aligned addresses.
  *
+ * @param dst The destination.
+ * @param src The source.
  * @ghidraAddress USA: 0x80256270
  */
 void CopyVec4(void *dst, const void *src);
@@ -80,6 +82,9 @@ void CopyVec4(void *dst, const void *src);
 /**
  * Fill a byte count rounded up to 64 with a 16-bit value. The address must be 8-byte aligned.
  *
+ * @param dst The start of the memory to fill.
+ * @param size The count of bytes to fill.
+ * @param value The value of each halfword.
  * @ghidraAddress USA: 0x80256290
  */
 void MemFill64Aligned(void *dst, u32 size, u16 value);
@@ -87,6 +92,8 @@ void MemFill64Aligned(void *dst, u32 size, u16 value);
 /**
  * Mix six channels into the ring buffer, replacing what it held.
  *
+ * @param ring The start of the ring buffer.
+ * @param bytes The count of bytes to mix from the write position.
  * @ghidraAddress USA: 0x802562f0
  */
 void MixAudioSamples(s16 *ring, u32 bytes);
@@ -94,6 +101,8 @@ void MixAudioSamples(s16 *ring, u32 bytes);
 /**
  * Add a pair of channels to the ring buffer.
  *
+ * @param ring The start of the ring buffer.
+ * @param bytes The count of bytes to mix from the write position.
  * @param pairOffset Offset of the pair's records from those of the first extra pair.
  * @ghidraAddress USA: 0x8025649c
  */
@@ -102,6 +111,9 @@ void MixAudioStereoSamples(s16 *ring, u32 bytes, u32 pairOffset);
 /**
  * Add the sound effect channels to the ring buffer from an offset.
  *
+ * @param ring The start of the ring buffer.
+ * @param bytes The count of bytes to mix.
+ * @param offset The offset in bytes into the ring buffer to start at.
  * @ghidraAddress USA: 0x8025658c
  */
 void MixSoundEffectChannels(s16 *ring, u32 bytes, u32 offset);

@@ -128,8 +128,11 @@ extern s32 g_dwMusicPatternRow;
 /** A silent sample that a channel at rest points at. @ghidraAddress USA: 0x802a4a08 */
 extern s8 g_SilenceSampleData[4];
 
-/** Toggled each message of the timer. The music ticks when it is set. @ghidraAddress USA:
- * 0x802a4a0c */
+/**
+ * Toggled each message of the timer. The music ticks when it is set.
+ *
+ * @ghidraAddress USA: 0x802a4a0c
+ */
 extern s32 g_dwAudioTickToggle;
 
 /** The place in the ring buffer the audio interface had reached. @ghidraAddress USA: 0x802a4a10 */
@@ -193,6 +196,8 @@ extern s32 g_dwAudioChannelLoopIdx;
  * Copy the order table, the patterns and the samples of an XM module into the work memory, decoding
  * the samples and following each with the start of its loop or with silence.
  *
+ * @param module The XM module.
+ * @param work The memory the player reads the module from.
  * @ghidraAddress USA: 0x80256720
  */
 void LoadMusicModule(u8 *module, u8 *work);
@@ -214,6 +219,7 @@ void CheckMusicLoopPoints(void);
 /**
  * Read a row of a pattern for every channel and start its notes and effects.
  *
+ * @param row The packed data of the row.
  * @return The data of the next row.
  * @ghidraAddress USA: 0x80256dec
  */
@@ -237,6 +243,8 @@ void UpdateMusicPlayback(void);
 /**
  * Start the audio interface, the music player and the mixing thread.
  *
+ * @param module The XM module to play.
+ * @param work The memory the player reads the module from.
  * @ghidraAddress USA: 0x802575c4
  */
 void InitAudioSystem(void *module, void *work);
@@ -251,6 +259,8 @@ void ResetMusicPlaybackState(void);
 /**
  * Start playing an XM module.
  *
+ * @param module The XM module to play.
+ * @param work The memory the player reads the module from.
  * @ghidraAddress USA: 0x80257964
  */
 void InitMusicPlayback(void *module, void *work);
@@ -266,6 +276,10 @@ s16 FindFreeSoundChannel(void);
 /**
  * Play a sample on a sound effect channel at its own rate and the middle levels.
  *
+ * @param channel The sound effect channel.
+ * @param sample The first byte of the sample.
+ * @param length The length of the sample, in bytes.
+ * @param loopLength The length of the loop at the end of the sample in bytes, or 0 to play once.
  * @ghidraAddress USA: 0x80257b04
  */
 void InitSoundChannel(s16 channel, s8 *sample, u32 length, u32 loopLength);
@@ -274,6 +288,10 @@ void InitSoundChannel(s16 channel, s8 *sample, u32 length, u32 loopLength);
  * Play a sample on a sound effect channel at its own rate and no level, for SetSoundChannelVolume()
  * to raise.
  *
+ * @param channel The sound effect channel.
+ * @param sample The first byte of the sample.
+ * @param length The length of the sample, in bytes.
+ * @param loopLength The length of the loop at the end of the sample in bytes, or 0 to play once.
  * @ghidraAddress USA: 0x80257b78
  */
 void StartSoundChannelMuted(s16 channel, s8 *sample, u32 length, u32 loopLength);
@@ -282,6 +300,8 @@ void StartSoundChannelMuted(s16 channel, s8 *sample, u32 length, u32 loopLength)
  * Set the levels of a sound effect channel, the right in the upper half and the left in the lower,
  * each at most 32.
  *
+ * @param channel The sound effect channel.
+ * @param levels The right level in the upper 16 bits and the left in the lower 16 bits.
  * @ghidraAddress USA: 0x80257be4
  */
 void SetSoundChannelVolume(s16 channel, u32 levels);
@@ -297,6 +317,7 @@ void CheckSoundEffectLoopPoints(void);
  * The mixing thread: on each message of the timer, scale the volumes, mix what the audio interface
  * has played, tick the music, and feed the Rumble Paks.
  *
+ * @param arg The argument of the thread, which is not read.
  * @ghidraAddress USA: 0x80257d3c
  */
 void AudioMixingThreadMain(void *arg);

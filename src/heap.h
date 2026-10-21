@@ -22,6 +22,7 @@ void ResetHeap(void);
 /**
  * Return the next free byte of the heap, to free what follows it later.
  *
+ * @return The next free byte.
  * @ghidraAddress USA: 0x80242954
  */
 u8 *GetHeapCurrentAddress(void);
@@ -29,6 +30,7 @@ u8 *GetHeapCurrentAddress(void);
 /**
  * Free everything after an address GetHeapCurrentAddress() returned.
  *
+ * @param address The new next free byte.
  * @ghidraAddress USA: 0x80242960
  */
 void SetHeapCurrentAddress(u8 *address);
@@ -37,6 +39,8 @@ void SetHeapCurrentAddress(u8 *address);
  * Allocate memory aligned to 8 bytes. Running out is reported on the debug display, and the
  * allocation succeeds regardless.
  *
+ * @param size The size in bytes.
+ * @return The start of the allocation.
  * @ghidraAddress USA: 0x8024296c
  */
 void *AllocHeapAligned(u32 size);

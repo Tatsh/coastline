@@ -34,6 +34,8 @@ extern s32 g_dwWeatherMenuSelection;
  * Return whether a weather may be chosen. Sunny is offered only to one player and off tracks 3
  * and 8.
  *
+ * @param weather The weather, a `WEATHER_*` value.
+ * @return Non-zero when the weather may be chosen.
  * @ghidraAddress USA: 0x80210f80
  */
 s32 IsWeatherSelectable(s32 weather);

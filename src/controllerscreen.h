@@ -48,6 +48,7 @@ extern s32 g_eControllerScreenSelection;
 /**
  * Draw the picture of a button layout with the action of each button.
  *
+ * @param layout The index of the layout, from 0 to 4.
  * @ghidraAddress USA: 0x802167e0
  */
 void DrawControllerLayoutDiagram(s32 layout);

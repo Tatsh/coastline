@@ -201,6 +201,8 @@ void UpdateWindDirection(void);
  * Put a point of the lightning bolt at random near the middle of the points a span before and
  * after it, then divide the two halves the same way.
  *
+ * @param index The index of the point in the bolt.
+ * @param span The distance in points to the neighbours, halved at each level.
  * @ghidraAddress USA: 0x80239f28
  */
 void SubdivideLightningBolt(s32 index, s32 span);

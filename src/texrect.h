@@ -43,6 +43,8 @@ enum {
 /**
  * Allocate memory for an uncompressed texture and copy it there from the cartridge.
  *
+ * @param texture The texture to load.
+ * @param alloc The allocator of the memory.
  * @ghidraAddress USA: 0x8023df00
  */
 void AllocAndDmaLoadAsset(Texture *texture, AssetAllocator alloc);
@@ -50,6 +52,8 @@ void AllocAndDmaLoadAsset(Texture *texture, AssetAllocator alloc);
 /**
  * Allocate memory for a texture and decompress it there from the cartridge.
  *
+ * @param texture The texture to load.
+ * @param alloc The allocator of the memory.
  * @ghidraAddress USA: 0x8023df4c
  */
 void LoadAndDecompressAsset(Texture *texture, AssetAllocator alloc);
@@ -59,6 +63,20 @@ void LoadAndDecompressAsset(Texture *texture, AssetAllocator alloc);
  * down. The width counts without its sign. The blend mode picks how the primitive and the
  * environment colors and the texels combine.
  *
+ * @param texture The loaded texture.
+ * @param x The left edge, in pixels of the low-resolution screen.
+ * @param y The top edge, in pixels of the low-resolution screen.
+ * @param width The width, in pixels of the low-resolution screen.
+ * @param height The height, in pixels of the low-resolution screen.
+ * @param primRed The red component of the primitive color, from 0 to 255.
+ * @param primGreen The green component of the primitive color, from 0 to 255.
+ * @param primBlue The blue component of the primitive color, from 0 to 255.
+ * @param primAlpha The alpha component of the primitive color, from 0 to 255.
+ * @param envRed The red component of the environment color, from 0 to 255.
+ * @param envGreen The green component of the environment color, from 0 to 255.
+ * @param envBlue The blue component of the environment color, from 0 to 255.
+ * @param envAlpha The alpha component of the environment color, from 0 to 255.
+ * @param blendMode One of the TEXRECT_BLEND_ values.
  * @ghidraAddress USA: 0x8023df9c
  */
 void DrawTexturedRect(Texture *texture,
@@ -80,6 +98,9 @@ void DrawTexturedRect(Texture *texture,
  * Get the texture coordinate scale of a texture side, and the bits of the mask that wraps it. A
  * side of more than 1024 texels is reported on the debug display and leaves the mask unset.
  *
+ * @param size The length of the side, in texels.
+ * @param scale Receives the texture coordinate scale.
+ * @param maskBits Receives the number of bits of the mask.
  * @ghidraAddress USA: 0x80217614
  */
 void GetTextureScaleAndMask(s32 size, s32 *scale, s32 *maskBits);
@@ -88,6 +109,13 @@ void GetTextureScaleAndMask(s32 size, s32 *scale, s32 *maskBits);
  * Draw a texture stretched over a rectangle and upside down, shaded from black to red by its
  * intensity. Nothing calls it.
  *
+ * @param texture The texels, 4-bit intensities.
+ * @param width The width of the texture, in texels.
+ * @param height The height of the texture, in texels.
+ * @param x The left edge, in pixels of the low-resolution screen.
+ * @param y The top edge, in pixels of the low-resolution screen.
+ * @param drawWidth The width drawn, in pixels of the low-resolution screen, without its sign.
+ * @param drawHeight The height drawn, in pixels of the low-resolution screen.
  * @ghidraAddress USA: 0x80239220
  */
 void DrawRedIntensityRect(
@@ -97,6 +125,16 @@ void DrawRedIntensityRect(
  * Draw a colour through a texture stretched over a rectangle and upside down, with the intensity
  * of the texture as its opacity. A negative drawn width also mirrors it. Nothing calls it.
  *
+ * @param texture The texels, 4-bit intensities.
+ * @param width The width of the texture, in texels.
+ * @param height The height of the texture, in texels.
+ * @param x The left edge, in pixels of the low-resolution screen.
+ * @param y The top edge, in pixels of the low-resolution screen.
+ * @param drawWidth The width drawn, in pixels of the low-resolution screen, negative to mirror.
+ * @param drawHeight The height drawn, in pixels of the low-resolution screen.
+ * @param red The red component of the colour, from 0 to 255.
+ * @param green The green component of the colour, from 0 to 255.
+ * @param blue The blue component of the colour, from 0 to 255.
  * @ghidraAddress USA: 0x80239750
  */
 void DrawColoredTexturedRect(u8 *texture,

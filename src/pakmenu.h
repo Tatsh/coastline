@@ -101,6 +101,8 @@ extern u8 g_aSaveIdPort0[32];
 /**
  * The ASCII of a character of the name of a note.
  *
+ * @param c The character code of the note name.
+ * @return The ASCII character, or a space for a code outside the map.
  * @ghidraAddress USA: 0x80253460
  */
 u8 DecalCharToAscii(u8 c);

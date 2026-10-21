@@ -80,6 +80,7 @@ void ProcessRaceState(void);
 /**
  * Reset the heap and the callbacks of the menu screen, and load the pictures of its items.
  *
+ * @param items The items of the menu, ended by a null pointer.
  * @param itemCount Receives the number of items.
  * @ghidraAddress USA: 0x8020c408
  */
@@ -88,7 +89,17 @@ void ResetAndInitDisplay(MenuItem **items, s32 *itemCount);
 /**
  * Run one frame of a menu screen over a background gradient.
  *
+ * @param title The title of the screen.
+ * @param itemCount The number of items.
+ * @param items The items of the menu.
+ * @param selection The index of the item under the cursor, updated as the cursor moves.
  * @param isSelectable Tells whether an item may be chosen, or NULL to allow every item.
+ * @param topRed The red component of the top of the gradient.
+ * @param topGreen The green component of the top of the gradient.
+ * @param topBlue The blue component of the top of the gradient.
+ * @param bottomRed The red component of the bottom of the gradient.
+ * @param bottomGreen The green component of the bottom of the gradient.
+ * @param bottomBlue The blue component of the bottom of the gradient.
  * @return MENU_RESULT_CHOSEN once an item is chosen, MENU_RESULT_CANCELLED once the screen is
  *         left, and another value while the screen runs.
  * @ghidraAddress USA: 0x8020ad5c

@@ -44,6 +44,8 @@ extern s32 g_adwVisibleGridColMaxRow[VISIBLE_GRID_SIZE];
 /**
  * Widen the covered columns of a row to take in a cell, clamped to the grid.
  *
+ * @param col The column of the cell.
+ * @param row The row of the cell.
  * @ghidraAddress USA: 0x8022d090
  */
 void MarkVisibleCell(s32 col, s32 row);
@@ -51,6 +53,10 @@ void MarkVisibleCell(s32 col, s32 row);
 /**
  * Mark the cells a line between two points of the track passes through.
  *
+ * @param x0 The X coordinate of the first point.
+ * @param y0 The Y coordinate of the first point.
+ * @param x1 The X coordinate of the second point.
+ * @param y1 The Y coordinate of the second point.
  * @ghidraAddress USA: 0x8022d104
  */
 void MarkVisibleEdge(f32 x0, f32 y0, f32 x1, f32 y1);
@@ -58,6 +64,9 @@ void MarkVisibleEdge(f32 x0, f32 y0, f32 x1, f32 y1);
 /**
  * Whether a cell is covered.
  *
+ * @param col The column of the cell.
+ * @param row The row of the cell.
+ * @return Non-zero when the cell is covered.
  * @ghidraAddress USA: 0x8022d3d4
  */
 s32 IsCellVisible(s32 col, s32 row);
@@ -65,6 +74,9 @@ s32 IsCellVisible(s32 col, s32 row);
 /**
  * Whether the cell under a point of the track is covered.
  *
+ * @param x The X coordinate of the point.
+ * @param y The Y coordinate of the point.
+ * @return Non-zero when the cell is covered.
  * @ghidraAddress USA: 0x8022d43c
  */
 s32 IsPointVisible(f32 x, f32 y);

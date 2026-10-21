@@ -98,7 +98,11 @@ void StubDashboard(void);
 /**
  * Draw a label with a time below it in minutes, seconds and hundredths.
  *
+ * @param label The label.
  * @param color The color code the time starts with.
+ * @param seconds The time in seconds.
+ * @param x The X coordinate of the label and the time.
+ * @param y The Y coordinate of the label.
  * @ghidraAddress USA: 0x80238714
  */
 void DrawLabelWithTime(const char *label, const char *color, f32 seconds, s32 x, s32 y);

@@ -179,6 +179,7 @@ extern s32 g_nFontSize;
 /**
  * Draw text at g_nTextDrawX and g_nTextDrawY.
  *
+ * @param text The text to draw.
  * @ghidraAddress USA: 0x8022e4e0
  */
 void RenderTextToDisplayList(const char *text);
@@ -235,6 +236,12 @@ void SetTextAlignRight(void);
 /**
  * Set the colors of the top and the bottom of text.
  *
+ * @param red The red component of the top, from 0 to 255.
+ * @param green The green component of the top, from 0 to 255.
+ * @param blue The blue component of the top, from 0 to 255.
+ * @param red2 The red component of the bottom, from 0 to 255.
+ * @param green2 The green component of the bottom, from 0 to 255.
+ * @param blue2 The blue component of the bottom, from 0 to 255.
  * @ghidraAddress USA: 0x8022f530
  */
 void SetTextCustomColors(s32 red, s32 green, s32 blue, s32 red2, s32 green2, s32 blue2);
@@ -242,6 +249,8 @@ void SetTextCustomColors(s32 red, s32 green, s32 blue, s32 red2, s32 green2, s32
 /**
  * Set the colors of the top and the bottom of text from two red, green and blue triplets.
  *
+ * @param color The red, green, and blue of the top.
+ * @param color2 The red, green, and blue of the bottom.
  * @ghidraAddress USA: 0x8022f578
  */
 void SetTextGradientColorsFromBytes(const u8 *color, const u8 *color2);
@@ -249,6 +258,7 @@ void SetTextGradientColorsFromBytes(const u8 *color, const u8 *color2);
 /**
  * Set the size of the font.
  *
+ * @param size The height of text in pixels of the low-resolution screen.
  * @ghidraAddress USA: 0x8022f5d0
  */
 void SetTextSize(s32 size);
@@ -256,6 +266,9 @@ void SetTextSize(s32 size);
 /**
  * Draw text at a position, aligned as the last alignment set.
  *
+ * @param text The text to draw.
+ * @param x The horizontal position the alignment applies to, in pixels.
+ * @param y The baseline, in pixels.
  * @ghidraAddress USA: 0x8022f5dc
  */
 void DrawText(const char *text, s32 x, s32 y);
@@ -264,6 +277,10 @@ void DrawText(const char *text, s32 x, s32 y);
  * Draw text at a position in fractions of the screen, measured from the bottom left. A unit is
  * a little under a thousandth of the screen.
  *
+ * @param text The text to draw.
+ * @param x The distance from the left edge, in units of the width.
+ * @param y The distance from the bottom edge, in units of the height.
+ * @param unused An argument that is not read.
  * @ghidraAddress USA: 0x8022f694
  */
 void DrawHudLabelAtFraction(const char *text, f32 x, f32 y, s32 unused);
@@ -271,6 +288,9 @@ void DrawHudLabelAtFraction(const char *text, f32 x, f32 y, s32 unused);
 /**
  * The width in pixels of text drawn at a size.
  *
+ * @param text The text to measure.
+ * @param size The height of text in pixels of the low-resolution screen.
+ * @return The width of the text, in pixels.
  * @ghidraAddress USA: 0x8022f720
  */
 s32 MeasureTextWidth(const char *text, s32 size);

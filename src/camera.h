@@ -55,6 +55,9 @@ extern u16 g_awCameraRayHitInstances[];
  * passes through a triangle, and so does the line from a target point, put the camera just in
  * front of the triangle, no farther from the look-at point than it was.
  *
+ * @param vehicle The vehicle the camera follows.
+ * @param camera The camera to move.
+ * @param target The point the second line starts from.
  * @ghidraAddress USA: 0x80220810
  */
 void ResolveVehicleTrackCollision(Vehicle *vehicle, CameraFrame *camera, Vec3f *target);
@@ -63,6 +66,9 @@ void ResolveVehicleTrackCollision(Vehicle *vehicle, CameraFrame *camera, Vec3f *
  * Move the chase camera behind a vehicle, blending the direction it was in towards the one behind
  * the vehicle by a share.
  *
+ * @param vehicle The vehicle the camera follows.
+ * @param camera The chase camera.
+ * @param share The share of the way to the direction behind, from 0 for none to 1 for all of it.
  * @ghidraAddress USA: 0x80220c58
  */
 void UpdateCameraChase(Vehicle *vehicle, CameraFrame *camera, f32 share);
@@ -70,6 +76,7 @@ void UpdateCameraChase(Vehicle *vehicle, CameraFrame *camera, f32 share);
 /**
  * Put the look-at point above a vehicle, ahead of it by a lead that shrinks with its speed.
  *
+ * @param vehicle The vehicle whose look-at point to move.
  * @ghidraAddress USA: 0x80220e84
  */
 void UpdateCameraLookAtTarget(Vehicle *vehicle);
@@ -77,6 +84,8 @@ void UpdateCameraLookAtTarget(Vehicle *vehicle);
 /**
  * Point a camera at the look-at point of a vehicle and build its axes about the world up.
  *
+ * @param vehicle The vehicle whose look-at point to point at.
+ * @param camera The camera whose axes to build.
  * @ghidraAddress USA: 0x80220ff4
  */
 void ComputeCameraBasis(Vehicle *vehicle, CameraFrame *camera);
@@ -84,6 +93,7 @@ void ComputeCameraBasis(Vehicle *vehicle, CameraFrame *camera);
 /**
  * Make the trackside camera active, placed ahead of and beside a vehicle.
  *
+ * @param vehicle The vehicle the camera watches.
  * @ghidraAddress USA: 0x80221108
  */
 void PlaceTrackCamera(Vehicle *vehicle);
@@ -91,6 +101,7 @@ void PlaceTrackCamera(Vehicle *vehicle);
 /**
  * Update every camera of a vehicle for a frame.
  *
+ * @param vehicle The vehicle whose cameras to update.
  * @ghidraAddress USA: 0x80221170
  */
 void UpdateCameraSystem(Vehicle *vehicle);
@@ -98,6 +109,7 @@ void UpdateCameraSystem(Vehicle *vehicle);
 /**
  * Set up the cameras of a vehicle at the start of a race.
  *
+ * @param vehicle The vehicle whose cameras to set up.
  * @ghidraAddress USA: 0x80221864
  */
 void InitCameraForVehicle(Vehicle *vehicle);

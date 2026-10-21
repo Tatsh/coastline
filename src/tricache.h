@@ -47,6 +47,8 @@ extern u32 g_dwTriCacheLruCounter;
 /**
  * Empty the slot that holds the cell under a point.
  *
+ * @param x The X coordinate of the point.
+ * @param y The Y coordinate of the point.
  * @return Whether a slot held it.
  * @ghidraAddress USA: 0x8025f0a4
  */
@@ -56,6 +58,8 @@ s32 InvalidateTriCacheSectorAt(f32 x, f32 y);
  * Find or fill the slot of the cache that holds the triangles of the cell under a point, filling
  * the slot used longest ago.
  *
+ * @param x The X coordinate of the point.
+ * @param y The Y coordinate of the point.
  * @return The slot that holds them.
  * @ghidraAddress USA: 0x8025f18c
  */
