@@ -192,7 +192,9 @@ voidpf zcalloc (opaque, items, size)
     u8 *p = (u8 *)(((unsigned long)heap->cur + 7) & ~7UL);
 
     /* The original advances from the unaligned position by the aligned size. */
-    heap->cur += (items * size + 7) & ~7;
+    size *= items;
+    size = (size + 7) & ~7;
+    heap->cur += size;
     if (heap->end < heap->cur) {
         osSyncPrintf("Insufficient memory for zcalloc\n");
         for (;;) {
