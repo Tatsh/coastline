@@ -70,10 +70,10 @@ scan under `.wiswa-ci/tools` before this report to regenerate the table.
 | ----------------------------------------------- | ----: |
 | Routines of the USA release                     |   801 |
 | Compiled by IDO or assembled                    |   801 |
-| Matching                                        |   609 |
-| Not matching                                    |   192 |
+| Matching                                        |   627 |
+| Not matching                                    |   174 |
 | Unknown (the source does not compile under IDO) |     0 |
-| Share matching                                  | 76.0% |
+| Share matching                                  | 78.3% |
 
 ### By component
 
