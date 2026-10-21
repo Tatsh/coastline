@@ -1169,8 +1169,10 @@ s32 DrawRumblePakPrompt(s32 anyPlayer) {
     SetTextCustomColors(0xFF, 0xFF, 0xFF, 0xFF, 0xF5, 0x00);
     DRAW_SWAP_FOR_RUMBLE_PAK_MESSAGE(0x73, 0xB4, 0x19A, 0x6A);
     for (player = 0; player != 2; player++) {
-        if ((anyPlayer || player == g_dwMenuChoosingPlayer) &&
-            (g_aPlayerInputState[player].buttons & DISMISS_BUTTONS)) {
+        if (!anyPlayer && player != g_dwMenuChoosingPlayer) {
+            continue;
+        }
+        if (g_aPlayerInputState[player].buttons & DISMISS_BUTTONS) {
             TransferFlags(&g_aPlayerInputState[player], DISMISS_BUTTONS);
             return TRUE;
         }
