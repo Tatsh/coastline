@@ -66727,11 +66727,11 @@ dlabel __osShutdown
     /* A714C 802A614C 00000000 */ .word 0x00000000
 enddlabel __osShutdown
 
-nonmatching g_dwOsClockTicks
+nonmatching __OSGlobalIntMask
 
-dlabel g_dwOsClockTicks
+dlabel __OSGlobalIntMask
     /* A7150 802A6150 003FFF01 */ .word 0x003FFF01
-enddlabel g_dwOsClockTicks
+enddlabel __OSGlobalIntMask
 
 nonmatching D_802A6154
 
@@ -67035,11 +67035,11 @@ dlabel D_802A62A8
     /* A72AC 802A62AC 00000000 */ .word 0x00000000
 enddlabel D_802A62A8
 
-nonmatching D_802A62B0
+nonmatching __osHwIntTable
 
-dlabel D_802A62B0
+dlabel __osHwIntTable
     /* A72B0 802A62B0 00000000 */ .word 0x00000000
-enddlabel D_802A62B0
+enddlabel __osHwIntTable
 
 nonmatching g_dwOsPiType
 

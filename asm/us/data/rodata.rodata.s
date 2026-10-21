@@ -12154,9 +12154,9 @@ enddlabel __libm_qnan_f
     /* ACA88 802ABA88 00000000 */ .float 0
     /* ACA8C 802ABA8C 00000000 */ .float 0
 
-nonmatching D_802ABA90
+nonmatching __osIntOffTable
 
-dlabel D_802ABA90
+dlabel __osIntOffTable
     /* ACA90 802ABA90 */ .byte 0x00
     /* ACA91 802ABA91 */ .byte 0x14
     /* ACA92 802ABA92 */ .byte 0x18
@@ -12189,64 +12189,24 @@ dlabel D_802ABA90
     /* ACAAD 802ABAAD */ .byte 0x10
     /* ACAAE 802ABAAE */ .byte 0x10
     /* ACAAF 802ABAAF */ .byte 0x10
-enddlabel D_802ABA90
+enddlabel __osIntOffTable
 
-nonmatching g_pRacePtr275
+nonmatching __osIntTable
 
-dlabel g_pRacePtr275
-    /* ACAB0 802ABAB0 8026B188 */ .word .L8026B188
-enddlabel g_pRacePtr275
-
-nonmatching g_pRacePtr276
-
-dlabel g_pRacePtr276
-    /* ACAB4 802ABAB4 8026B150 */ .word L_8026B150
-enddlabel g_pRacePtr276
-
-nonmatching g_pRacePtr277
-
-dlabel g_pRacePtr277
-    /* ACAB8 802ABAB8 8026B130 */ .word L_8026B130
-enddlabel g_pRacePtr277
-
-nonmatching g_pRacePtr278
-
-dlabel g_pRacePtr278
-    /* ACABC 802ABABC 8026AF94 */ .word L_8026AF94
-enddlabel g_pRacePtr278
-
-nonmatching g_pRacePtr279
-
-dlabel g_pRacePtr279
-    /* ACAC0 802ABAC0 8026AF40 */ .word L_8026AF40
-enddlabel g_pRacePtr279
-
-nonmatching g_pRacePtr280
-
-dlabel g_pRacePtr280
-    /* ACAC4 802ABAC4 8026B0D4 */ .word L_8026B0D4
-enddlabel g_pRacePtr280
-
-nonmatching g_pRacePtr281
-
-dlabel g_pRacePtr281
-    /* ACAC8 802ABAC8 8026AF08 */ .word L_8026AF08
-enddlabel g_pRacePtr281
-
-nonmatching g_pRacePtr282
-
-dlabel g_pRacePtr282
-    /* ACACC 802ABACC 8026AF14 */ .word L_8026AF14
-enddlabel g_pRacePtr282
-
-nonmatching g_pRacePtr283
-
-dlabel g_pRacePtr283
-    /* ACAD0 802ABAD0 8026AF20 */ .word L_8026AF20
-enddlabel g_pRacePtr283
+dlabel __osIntTable
+    /* ACAB0 802ABAB0 8026B188 */ .word 0
+    /* ACAB4 802ABAB4 8026B150 */ .word 0
+    /* ACAB8 802ABAB8 8026B130 */ .word 0
+    /* ACABC 802ABABC 8026AF94 */ .word 0
+    /* ACAC0 802ABAC0 8026AF40 */ .word 0
+    /* ACAC4 802ABAC4 8026B0D4 */ .word 0
+    /* ACAC8 802ABAC8 8026AF08 */ .word 0
+    /* ACACC 802ABACC 8026AF14 */ .word 0
+    /* ACAD0 802ABAD0 8026AF20 */ .word 0
     /* ACAD4 802ABAD4 00000000 */ .word 0x00000000
     /* ACAD8 802ABAD8 00000000 */ .word 0x00000000
     /* ACADC 802ABADC 00000000 */ .word 0x00000000
+enddlabel __osIntTable
 
 nonmatching switchdataD_802abae0
 
@@ -12313,9 +12273,9 @@ dlabel g_dLdtobTenToTheEighth
     /* ACB58 802ABB58 4197D78400000000 */ .double 100000000
 enddlabel g_dLdtobTenToTheEighth
 
-nonmatching D_802ABB60
+nonmatching __osRcpImTable
 
-dlabel D_802ABB60
+dlabel __osRcpImTable
     /* ACB60 802ABB60 */ .short 0x0555
     /* ACB62 802ABB62 */ .short 0x0556
     /* ACB64 802ABB64 */ .short 0x0559
@@ -12380,7 +12340,7 @@ dlabel D_802ABB60
     /* ACBDA 802ABBDA */ .short 0x0AA6
     /* ACBDC 802ABBDC */ .short 0x0AA9
     /* ACBDE 802ABBDE */ .short 0x0AAA
-enddlabel D_802ABB60
+enddlabel __osRcpImTable
 
 .align 2
 nonmatching g_szBuildDateTime

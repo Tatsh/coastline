@@ -101,6 +101,7 @@ typedef struct OSMesgQueue_s {
 #define OS_IM_NONE 0x00000001
 #define OS_IM_SW1 0x00000501
 #define OS_IM_SW2 0x00000601
+#define OS_IM_RCP 0x00000401
 #define OS_IM_CART 0x00000C01
 #define OS_IM_PRENMI 0x00001401
 #define OS_IM_RDBWRITE 0x00002401
@@ -383,13 +384,62 @@ void osSetEventMesg(OSEvent e, OSMesgQueue *mq, OSMesg m);
 
 /* Interrupts and the processor. */
 OSIntMask osGetIntMask(void);
+
+/**
+ * Set the CPU and RCP interrupts that may occur, within the global mask.
+ *
+ * @return The previous mask.
+ * @ghidraAddress USA: 0x8026e460
+ */
 OSIntMask osSetIntMask(OSIntMask im);
+
+/**
+ * Read the Count register, which increments at half the CPU clock.
+ *
+ * @ghidraAddress USA: 0x802649f0
+ */
 u32 osGetCount(void);
+
+/**
+ * Invalidate the data cache over a range.
+ *
+ * @ghidraAddress USA: 0x802662e0
+ */
 void osInvalDCache(void *vaddr, s32 nbytes);
+
+/**
+ * Invalidate the instruction cache over a range.
+ *
+ * @ghidraAddress USA: 0x8026bac0
+ */
 void osInvalICache(void *vaddr, s32 nbytes);
+
+/**
+ * Write back the data cache over a range.
+ *
+ * @ghidraAddress USA: 0x8026b7d0
+ */
 void osWritebackDCache(void *vaddr, s32 nbytes);
+
+/**
+ * Write back the whole data cache.
+ *
+ * @ghidraAddress USA: 0x802649c0
+ */
 void osWritebackDCacheAll(void);
+
+/**
+ * Translate a virtual address to a physical one.
+ *
+ * @ghidraAddress USA: 0x8026b750
+ */
 u32 osVirtualToPhysical(void *vaddr);
+
+/**
+ * Map the RDB port of the development hardware.
+ *
+ * @ghidraAddress USA: 0x8026bb40
+ */
 void osMapTLBRdb(void);
 
 /**

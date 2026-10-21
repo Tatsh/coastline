@@ -32,13 +32,13 @@ glabel __osLeoInterrupt
     /* 6EC28 8026DC28 318D0001 */  andi       $t5, $t4, 0x1
     /* 6EC2C 8026DC2C 11A0000C */  beqz       $t5, .L8026DC60
     /* 6EC30 8026DC30 00000000 */   nop
-    /* 6EC34 8026DC34 3C0E802A */  lui        $t6, %hi(g_dwOsClockTicks)
-    /* 6EC38 8026DC38 8DCE6150 */  lw         $t6, %lo(g_dwOsClockTicks)($t6)
+    /* 6EC34 8026DC34 3C0E802A */  lui        $t6, %hi(__OSGlobalIntMask)
+    /* 6EC38 8026DC38 8DCE6150 */  lw         $t6, %lo(__OSGlobalIntMask)($t6)
     /* 6EC3C 8026DC3C 2401F7FF */  addiu      $at, $zero, -0x801
     /* 6EC40 8026DC40 240F001D */  addiu      $t7, $zero, 0x1D
     /* 6EC44 8026DC44 01C1C024 */  and        $t8, $t6, $at
-    /* 6EC48 8026DC48 3C01802A */  lui        $at, %hi(g_dwOsClockTicks)
-    /* 6EC4C 8026DC4C AC386150 */  sw         $t8, %lo(g_dwOsClockTicks)($at)
+    /* 6EC48 8026DC48 3C01802A */  lui        $at, %hi(__OSGlobalIntMask)
+    /* 6EC4C 8026DC4C AC386150 */  sw         $t8, %lo(__OSGlobalIntMask)($at)
     /* 6EC50 8026DC50 0C09B8DB */  jal        __osLeoResume
     /* 6EC54 8026DC54 AD0F0018 */   sw        $t7, 0x18($t0)
     /* 6EC58 8026DC58 10000186 */  b          .L8026E274
@@ -134,13 +134,13 @@ glabel __osLeoInterrupt
     /* 6ED9C 8026DD9C 24090002 */  addiu      $t1, $zero, 0x2
     /* 6EDA0 8026DDA0 3C0AA460 */  lui        $t2, %hi(D_A4600010)
     /* 6EDA4 8026DDA4 AD490010 */  sw         $t1, %lo(D_A4600010)($t2)
-    /* 6EDA8 8026DDA8 3C0B802A */  lui        $t3, %hi(g_dwOsClockTicks)
-    /* 6EDAC 8026DDAC 8D6B6150 */  lw         $t3, %lo(g_dwOsClockTicks)($t3)
+    /* 6EDA8 8026DDA8 3C0B802A */  lui        $t3, %hi(__OSGlobalIntMask)
+    /* 6EDAC 8026DDAC 8D6B6150 */  lw         $t3, %lo(__OSGlobalIntMask)($t3)
     /* 6EDB0 8026DDB0 3C010010 */  lui        $at, (0x100401 >> 16)
     /* 6EDB4 8026DDB4 34210401 */  ori        $at, $at, (0x100401 & 0xFFFF)
     /* 6EDB8 8026DDB8 01616025 */  or         $t4, $t3, $at
-    /* 6EDBC 8026DDBC 3C01802A */  lui        $at, %hi(g_dwOsClockTicks)
-    /* 6EDC0 8026DDC0 AC2C6150 */  sw         $t4, %lo(g_dwOsClockTicks)($at)
+    /* 6EDBC 8026DDBC 3C01802A */  lui        $at, %hi(__OSGlobalIntMask)
+    /* 6EDC0 8026DDC0 AC2C6150 */  sw         $t4, %lo(__OSGlobalIntMask)($at)
     /* 6EDC4 8026DDC4 1000012B */  b          .L8026E274
     /* 6EDC8 8026DDC8 24020001 */   addiu     $v0, $zero, 0x1
   .L8026DDCC:
@@ -175,14 +175,14 @@ glabel __osLeoInterrupt
     /* 6EE38 8026DE38 240E0002 */  addiu      $t6, $zero, 0x2
     /* 6EE3C 8026DE3C 3C18A460 */  lui        $t8, %hi(D_A4600010)
     /* 6EE40 8026DE40 AF0E0010 */  sw         $t6, %lo(D_A4600010)($t8)
-    /* 6EE44 8026DE44 3C0F802A */  lui        $t7, %hi(g_dwOsClockTicks)
-    /* 6EE48 8026DE48 8DEF6150 */  lw         $t7, %lo(g_dwOsClockTicks)($t7)
+    /* 6EE44 8026DE44 3C0F802A */  lui        $t7, %hi(__OSGlobalIntMask)
+    /* 6EE48 8026DE48 8DEF6150 */  lw         $t7, %lo(__OSGlobalIntMask)($t7)
     /* 6EE4C 8026DE4C 3C010010 */  lui        $at, (0x100401 >> 16)
     /* 6EE50 8026DE50 34210401 */  ori        $at, $at, (0x100401 & 0xFFFF)
     /* 6EE54 8026DE54 01E14025 */  or         $t0, $t7, $at
     /* 6EE58 8026DE58 8FAD002C */  lw         $t5, 0x2C($sp)
-    /* 6EE5C 8026DE5C 3C01802A */  lui        $at, %hi(g_dwOsClockTicks)
-    /* 6EE60 8026DE60 AC286150 */  sw         $t0, %lo(g_dwOsClockTicks)($at)
+    /* 6EE5C 8026DE5C 3C01802A */  lui        $at, %hi(__OSGlobalIntMask)
+    /* 6EE60 8026DE60 AC286150 */  sw         $t0, %lo(__OSGlobalIntMask)($at)
     /* 6EE64 8026DE64 0C09B8DB */  jal        __osLeoResume
     /* 6EE68 8026DE68 ADA00000 */   sw        $zero, 0x0($t5)
     /* 6EE6C 8026DE6C 10000101 */  b          .L8026E274
@@ -344,14 +344,14 @@ glabel __osLeoInterrupt
     /* 6F0A8 8026E0A8 24090002 */  addiu      $t1, $zero, 0x2
     /* 6F0AC 8026E0AC 3C0AA460 */  lui        $t2, %hi(D_A4600010)
     /* 6F0B0 8026E0B0 AD490010 */  sw         $t1, %lo(D_A4600010)($t2)
-    /* 6F0B4 8026E0B4 3C0D802A */  lui        $t5, %hi(g_dwOsClockTicks)
-    /* 6F0B8 8026E0B8 8DAD6150 */  lw         $t5, %lo(g_dwOsClockTicks)($t5)
+    /* 6F0B4 8026E0B4 3C0D802A */  lui        $t5, %hi(__OSGlobalIntMask)
+    /* 6F0B8 8026E0B8 8DAD6150 */  lw         $t5, %lo(__OSGlobalIntMask)($t5)
     /* 6F0BC 8026E0BC 3C010010 */  lui        $at, (0x100401 >> 16)
     /* 6F0C0 8026E0C0 34210401 */  ori        $at, $at, (0x100401 & 0xFFFF)
     /* 6F0C4 8026E0C4 8FB80030 */  lw         $t8, 0x30($sp)
     /* 6F0C8 8026E0C8 01A17025 */  or         $t6, $t5, $at
-    /* 6F0CC 8026E0CC 3C01802A */  lui        $at, %hi(g_dwOsClockTicks)
-    /* 6F0D0 8026E0D0 AC2E6150 */  sw         $t6, %lo(g_dwOsClockTicks)($at)
+    /* 6F0CC 8026E0CC 3C01802A */  lui        $at, %hi(__OSGlobalIntMask)
+    /* 6F0D0 8026E0D0 AC2E6150 */  sw         $t6, %lo(__OSGlobalIntMask)($at)
     /* 6F0D4 8026E0D4 24080002 */  addiu      $t0, $zero, 0x2
     /* 6F0D8 8026E0D8 AF080000 */  sw         $t0, 0x0($t8)
     /* 6F0DC 8026E0DC 8FAB002C */  lw         $t3, 0x2C($sp)
@@ -526,14 +526,14 @@ glabel __osLeoAbnormalResume
     /* 6F338 8026E338 24090002 */  addiu      $t1, $zero, 0x2
     /* 6F33C 8026E33C 3C0AA460 */  lui        $t2, %hi(D_A4600010)
     /* 6F340 8026E340 AD490010 */  sw         $t1, %lo(D_A4600010)($t2)
-    /* 6F344 8026E344 3C0B802A */  lui        $t3, %hi(g_dwOsClockTicks)
-    /* 6F348 8026E348 8D6B6150 */  lw         $t3, %lo(g_dwOsClockTicks)($t3)
+    /* 6F344 8026E344 3C0B802A */  lui        $t3, %hi(__OSGlobalIntMask)
+    /* 6F348 8026E348 8D6B6150 */  lw         $t3, %lo(__OSGlobalIntMask)($t3)
     /* 6F34C 8026E34C 3C010010 */  lui        $at, (0x100401 >> 16)
     /* 6F350 8026E350 8FBF0014 */  lw         $ra, 0x14($sp)
     /* 6F354 8026E354 34210401 */  ori        $at, $at, (0x100401 & 0xFFFF)
     /* 6F358 8026E358 01616025 */  or         $t4, $t3, $at
-    /* 6F35C 8026E35C 3C01802A */  lui        $at, %hi(g_dwOsClockTicks)
-    /* 6F360 8026E360 AC2C6150 */  sw         $t4, %lo(g_dwOsClockTicks)($at)
+    /* 6F35C 8026E35C 3C01802A */  lui        $at, %hi(__OSGlobalIntMask)
+    /* 6F360 8026E360 AC2C6150 */  sw         $t4, %lo(__OSGlobalIntMask)($at)
     /* 6F364 8026E364 03E00008 */  jr         $ra
     /* 6F368 8026E368 27BD0020 */   addiu     $sp, $sp, 0x20
 endlabel __osLeoAbnormalResume

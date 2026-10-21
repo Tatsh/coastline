@@ -57,17 +57,34 @@ add_library(
   os/createmesgqueue.c
   os/createthread.c
   os/destroythread.c
+  os/exceptasm.s
+  os/getcount.s
+  os/getcurrfaultedthread.c
   os/getthreadpri.c
   os/gettime.c
+  os/interrupt.s
+  os/invaldcache.s
+  os/invalicache.s
   os/jammesg.c
+  os/maptlbrdb.s
+  os/probetlb.s
   os/recvmesg.c
+  os/resetglobalintmask.c
   os/sendmesg.c
+  os/setcompare.s
   os/seteventmesg.c
+  os/setfpccsr.s
+  os/setglobalintmask.c
+  os/setintmask.s
+  os/setsr.s
   os/setthreadpri.c
   os/settimer.c
   os/startthread.c
   os/syncprintf.c
   os/timerintr.c
+  os/virtualtophysical.c
+  os/writebackdcache.s
+  os/writebackdcacheall.s
   os/yieldthread.c)
 target_link_libraries(coastline_libultra PRIVATE coastline_common)
 # These routines are the C library, so GCC must not turn their loops into calls to memcpy or memset.

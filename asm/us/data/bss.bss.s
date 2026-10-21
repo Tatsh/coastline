@@ -5496,12 +5496,12 @@ nonmatching __osPiAccessQueue, 0x18
 dlabel __osPiAccessQueue
     /* 803819E8 */ .space 0x18
 
-nonmatching D_80381A00, 0x1B0
+nonmatching __osThreadSave, 0x1B0
 
-dlabel D_80381A00
+dlabel __osThreadSave
     /* 80381A00 */ .space 0x1B0
 
-nonmatching D_80381BB0, 0x1000
+nonmatching leoDiskStack, 0x1000
 
-dlabel D_80381BB0
+dlabel leoDiskStack
     /* 80381BB0 */ .space 0x1000

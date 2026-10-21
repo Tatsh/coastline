@@ -114,6 +114,85 @@ OSTime __osInsertTimer(OSTimer *t);
 void __osSetCompare(u32 value);
 
 /**
+ * The interrupts the system allows. osSetIntMask() and the exception handler mask with it.
+ *
+ * @ghidraAddress USA: 0x802a6150
+ */
+extern u32 __OSGlobalIntMask;
+
+/**
+ * The thread that last raised a CPU exception.
+ *
+ * @ghidraAddress USA: 0x802a62a4
+ */
+extern OSThread *__osFaultedThread;
+
+/**
+ * Allow more interrupts in the global mask.
+ *
+ * @ghidraAddress USA: 0x8026e7d0
+ */
+void __osSetGlobalIntMask(u32 mask);
+
+/**
+ * Remove interrupts from the global mask. The RCP interrupt and the interrupt enable bit remain.
+ *
+ * @ghidraAddress USA: 0x8026e6d0
+ */
+void __osResetGlobalIntMask(u32 mask);
+
+/**
+ * Return the thread that last raised a CPU exception.
+ *
+ * @ghidraAddress USA: 0x80266390
+ */
+OSThread *__osGetCurrFaultedThread(void);
+
+/**
+ * Write the Status register of coprocessor 0.
+ *
+ * @ghidraAddress USA: 0x8026b9f0
+ */
+void __osSetSR(u32 value);
+
+/**
+ * Read the Status register of coprocessor 0.
+ *
+ * @ghidraAddress USA: 0x8026ba00
+ */
+u32 __osGetSR(void);
+
+/**
+ * Replace the control and status register of the FPU.
+ *
+ * @return The previous value.
+ * @ghidraAddress USA: 0x8026ba10
+ */
+u32 __osSetFpcCsr(u32 value);
+
+/**
+ * Translate a virtual address through the TLB.
+ *
+ * @return The physical address, or -1 when no valid entry maps it.
+ * @ghidraAddress USA: 0x8026e600
+ */
+u32 __osProbeTLB(void *vaddr);
+
+/**
+ * The code osInitialize() copies to the exception vectors. It jumps to __osException().
+ *
+ * @ghidraAddress USA: 0x8026acc0
+ */
+void __osExceptionPreamble(void);
+
+/**
+ * Handle a CPU exception or interrupt, and resume the thread of highest priority.
+ *
+ * @ghidraAddress USA: 0x8026acd0
+ */
+void __osException(void);
+
+/**
  * Disable interrupts.
  *
  * @return The interrupt enable bit of the status register before the call.
