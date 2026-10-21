@@ -49,4 +49,9 @@ add_library(
           visetspecial.c
           viswapbuf.c
           viswapcontext.c)
+# The Japanese and European releases save to an EEPROM in the cartridge.
+if(TGR_REGION STREQUAL "jp" OR TGR_REGION STREQUAL "eu")
+  target_sources(coastline_libultra_io PRIVATE eepromlongread.c eepromlongwrite.c eepromprobe.c
+                                               eepromread.c eepromwrite.c)
+endif()
 target_link_libraries(coastline_libultra_io PRIVATE coastline_libultra_options)

@@ -369,4 +369,77 @@ s32 osMotorStart(OSPfs *pfs);
  */
 s32 osMotorStop(OSPfs *pfs);
 
+#if TGR_REGION == TGR_REGION_JP || TGR_REGION == TGR_REGION_EU
+/** The device type a 4 Kbit EEPROM reports. */
+#define CONT_EEPROM 0x8000
+/** The status bit of an EEPROM that is still writing. */
+#define CONT_EEPROM_BUSY 0x80
+/** The highest block address of the EEPROM routines accept. */
+#define EEPROM_MAXBLOCKS 64
+/** The bytes of a block of the EEPROM. */
+#define EEPROM_BLOCK_SIZE 8
+
+/**
+ * Find whether the cartridge has an EEPROM.
+ *
+ * @param mq The queue of SI events, blocked on for each transfer.
+ * @return 1 when a 4 Kbit EEPROM responds, otherwise 0.
+ * @ghidraAddress JPN: 0x80262870
+ * @ghidraAddress EUR: 0x80262dd0
+ */
+s32 osEepromProbe(OSMesgQueue *mq);
+
+/**
+ * Read consecutive blocks of the EEPROM, waiting 12 ms after each block.
+ *
+ * @param mq The queue of SI events, blocked on for each transfer.
+ * @param address The first block, at most EEPROM_MAXBLOCKS.
+ * @param buffer Receives the blocks.
+ * @param length The bytes to read, a multiple of EEPROM_BLOCK_SIZE.
+ * @return 0, -1 for an address out of range, or the error of osEepromRead().
+ * @ghidraAddress JPN: 0x802628e0
+ * @ghidraAddress EUR: 0x80262e40
+ */
+s32 osEepromLongRead(OSMesgQueue *mq, u8 address, u8 *buffer, int length);
+
+/**
+ * Write consecutive blocks of the EEPROM, waiting 12 ms after each block.
+ *
+ * @param mq The queue of SI events, blocked on for each transfer.
+ * @param address The first block, at most EEPROM_MAXBLOCKS.
+ * @param buffer The blocks to write.
+ * @param length The bytes to write, a multiple of EEPROM_BLOCK_SIZE.
+ * @return 0, -1 for an address out of range, or the error of osEepromWrite().
+ * @ghidraAddress JPN: 0x80262a20
+ * @ghidraAddress EUR: 0x80262f80
+ */
+s32 osEepromLongWrite(OSMesgQueue *mq, u8 address, u8 *buffer, int length);
+
+/**
+ * Write a block of the EEPROM once it is no longer busy.
+ *
+ * @param mq The queue of SI events, blocked on for each transfer.
+ * @param address The block, at most EEPROM_MAXBLOCKS.
+ * @param buffer The EEPROM_BLOCK_SIZE bytes to write.
+ * @return 0, -1 for an address out of range, CONT_NO_RESPONSE_ERROR when no EEPROM responds, or
+ *     the channel error. The SI is not released after CONT_NO_RESPONSE_ERROR.
+ * @ghidraAddress JPN: 0x8026a5f0
+ * @ghidraAddress EUR: 0x8026ab40
+ */
+s32 osEepromWrite(OSMesgQueue *mq, u8 address, u8 *buffer);
+
+/**
+ * Read a block of the EEPROM once it is no longer busy.
+ *
+ * @param mq The queue of SI events, blocked on for each transfer.
+ * @param address The block, at most EEPROM_MAXBLOCKS.
+ * @param buffer Receives the EEPROM_BLOCK_SIZE bytes, written only without an error.
+ * @return 0, -1 for an address out of range, CONT_NO_RESPONSE_ERROR when no EEPROM responds, or
+ *     the channel error. The SI is not released after CONT_NO_RESPONSE_ERROR.
+ * @ghidraAddress JPN: 0x8026aad0
+ * @ghidraAddress EUR: 0x8026b020
+ */
+s32 osEepromRead(OSMesgQueue *mq, u8 address, u8 *buffer);
+#endif
+
 #endif

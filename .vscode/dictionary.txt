@@ -119,6 +119,12 @@ ebrake
 edma
 edmaread
 edmawrite
+eepromformat
+eepromlongread
+eepromlongwrite
+eepromprobe
+eepromread
+eepromwrite
 enddl
 endforeach
 endfunction

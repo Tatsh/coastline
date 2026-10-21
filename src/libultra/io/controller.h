@@ -359,4 +359,57 @@ s32 __osPfsRWInode(OSPfs *pfs, __OSInode *inode, u8 flag, u8 bank);
  */
 s32 __osPfsSelectBank(OSPfs *pfs);
 
+#if TGR_REGION == TGR_REGION_JP || TGR_REGION == TGR_REGION_EU
+/* The joybus commands of the EEPROM. */
+#define CONT_CMD_READ_EEPROM 4  /*!< Read a block of the EEPROM. */
+#define CONT_CMD_WRITE_EEPROM 5 /*!< Write a block of the EEPROM. */
+
+/* The bytes each EEPROM command sends and receives. */
+#define CONT_CMD_READ_EEPROM_TX 2 /*!< The bytes a read sends: the command and the address. */
+#define CONT_CMD_READ_EEPROM_RX 8 /*!< The bytes a read receives: a block. */
+#define CONT_CMD_WRITE_EEPROM_TX                                                                   \
+    10                             /*!< The bytes a write sends: the command, address, and         \
+                                        block. */
+#define CONT_CMD_WRITE_EEPROM_RX 1 /*!< The bytes a write receives: the status. */
+
+typedef struct {
+    u8 txsize;                  /*!< The bytes sent. */
+    u8 rxsize;                  /*!< The bytes received, with the error bits of the channel in
+                                     the top two bits. */
+    u8 cmd;                     /*!< The command, CONT_CMD_READ_EEPROM or CONT_CMD_WRITE_EEPROM. */
+    u8 address;                 /*!< The block. */
+    u8 data[EEPROM_BLOCK_SIZE]; /*!< The block read or written. */
+} __OSContEepromFormat;
+
+/**
+ * @ghidraAddress JPN: 0x80382450
+ * @ghidraAddress EUR: 0x803837e0
+ */
+extern OSPifRam __osEepPifRam;
+
+/**
+ * @ghidraAddress JPN: 0x8037ffe8
+ * @ghidraAddress EUR: 0x80381378
+ */
+extern OSTimer __osEepromTimer;
+
+/**
+ * @ghidraAddress JPN: 0x8026a7a0
+ * @ghidraAddress EUR: 0x8026acf0
+ */
+void __osPackEepWriteData(u8 address, u8 *buffer);
+
+/**
+ * @ghidraAddress JPN: 0x8026a8ac
+ * @ghidraAddress EUR: 0x8026adfc
+ */
+s32 __osEepStatus(OSMesgQueue *mq, OSContStatus *data);
+
+/**
+ * @ghidraAddress JPN: 0x8026acc0
+ * @ghidraAddress EUR: 0x8026b210
+ */
+void __osPackEepReadData(u8 address);
+#endif
+
 #endif
