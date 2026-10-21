@@ -246,31 +246,30 @@ void FloodFill4Bit(s32 x, s32 y) {
 #pragma GCC diagnostic ignored "-Wuninitialized"
 void StampTextOnDecal(s32 x, s32 y) {
     DecalGlyph **glyphs;
-    DecalGlyph *glyph;
-    s32 penX, baseY, i, entry, glyphIndex, column, firstColumn, lastColumn, texelX, texelY;
+    s32 penX, i, entry, glyphIndex, column, firstColumn, lastColumn, texelX, texelY;
     u32 row;
 
-    penX = ScreenToTexelX(x) + 1 - (g_bDecalTextWidth >> 1);
-    baseY = ScreenToTexelY(y);
+    x = ScreenToTexelX(x) + 1;
+    y = ScreenToTexelY(y);
+    penX = x - (g_bDecalTextWidth >> 1);
     for (i = 0, glyphs = g_apDecalTextGlyphs; i < g_bDecalTextLength; i++, glyphs++) {
-        glyph = *glyphs;
         /* A character missing from the font reuses the index of the glyph before, unset for the
          * first, as in the original. */
         for (entry = 0; entry < DECAL_GLYPHS; entry++) {
-            if (glyph->character == g_aDecalGlyphs[entry].character) {
+            if ((*glyphs)->character == g_aDecalGlyphs[entry].character) {
                 glyphIndex = entry;
                 break;
             }
         }
-        firstColumn = glyph->cellX + glyphIndex * FONT_CELL;
-        lastColumn = glyph->width + firstColumn;
+        firstColumn = (*glyphs)->cellX + glyphIndex * FONT_CELL;
+        lastColumn = (*glyphs)->width + firstColumn;
 
         /* The bounds are checked before the shadow is moved off by one texel. */
         if (g_texPaintToolText.style) {
             for (row = 0; row < g_texDecalFont.height; row++) {
                 for (column = firstColumn; column <= lastColumn; column++) {
                     texelX = column - firstColumn + penX;
-                    texelY = row + baseY;
+                    texelY = row + y;
                     if (texelX < 0 || texelX >= g_bDecalWidth || texelY < 0 ||
                         texelY >= g_bDecalHeight) {
                         continue;
@@ -284,7 +283,7 @@ void StampTextOnDecal(s32 x, s32 y) {
         for (row = 0; row < g_texDecalFont.height; row++) {
             for (column = firstColumn; column <= lastColumn; column++) {
                 texelX = column - firstColumn + penX;
-                texelY = row + baseY;
+                texelY = row + y;
                 if (texelX < 0 || texelX >= g_bDecalWidth || texelY < 0 ||
                     texelY >= g_bDecalHeight) {
                     continue;
@@ -296,10 +295,7 @@ void StampTextOnDecal(s32 x, s32 y) {
         }
 
         if (i < g_bDecalTextLength - 1) {
-            penX = penX + glyphs[0]->width -
-                   (glyphs[0]->kernRight < glyphs[1]->kernLeft ? glyphs[0]->kernRight :
-                                                                 glyphs[1]->kernLeft) +
-                   2;
+            penX += GlyphAdvance(glyphs[0], glyphs[1]);
         }
     }
 }
@@ -1152,30 +1148,27 @@ void DrawDashedCircle(s32 x, s32 y, s32 radius) {
 #pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
 #pragma GCC diagnostic ignored "-Wuninitialized"
 void DrawDecalTextPreview(s32 x, s32 y) {
-    DecalGlyph *glyph;
-    PaletteSwatch *swatch;
-    s32 left, bottom, i, entry, glyphIndex;
+    s32 i, entry, glyphIndex, left, bottom, glyphLeft, advance;
 
     left = x - ((g_bDecalTextWidth >> 1) << 2);
     bottom = y - (g_texDecalFont.height << 2);
     for (i = 0; i < g_bDecalTextLength; i++) {
-        glyph = g_apDecalTextGlyphs[i];
         /* A character missing from the font reuses the index of the glyph before, unset for the
          * first, as in the original. */
         for (entry = 0; entry < DECAL_GLYPHS; entry++) {
-            if (glyph->character == g_aDecalGlyphs[entry].character) {
+            if (g_apDecalTextGlyphs[i]->character == g_aDecalGlyphs[entry].character) {
                 glyphIndex = entry;
                 break;
             }
         }
         /* The glyph is tested at its cell moved right, but drawn moved left; the test at the
          * top of the decal is unsigned. */
-        if (g_rcDecalCanvas.x < left + (glyph->cellX << 2) + (glyph->width << 2) &&
-            left + (glyph->cellX << 2) < g_rcDecalCanvas.x + g_rcDecalCanvas.width &&
+        glyphLeft = left + (g_apDecalTextGlyphs[i]->cellX << 2);
+        if (g_rcDecalCanvas.x < glyphLeft + (g_apDecalTextGlyphs[i]->width << 2) &&
+            glyphLeft < g_rcDecalCanvas.x + g_rcDecalCanvas.width &&
             (u32)g_rcDecalCanvas.y < bottom + (g_texDecalFont.height << 2) &&
             bottom < g_rcDecalCanvas.y + g_rcDecalCanvas.height) {
             if (g_texPaintToolText.style) {
-                swatch = &g_aDecalSwatches[g_bTextShadowColor];
                 DrawScaledTexturedRect(&g_texDecalFont,
                                        glyphIndex * FONT_CELL,
                                        0,
@@ -1185,11 +1178,10 @@ void DrawDecalTextPreview(s32 x, s32 y) {
                                        bottom + 4,
                                        FONT_CELL * 4,
                                        FONT_CELL * 4,
-                                       swatch->color[0],
-                                       swatch->color[1],
-                                       swatch->color[2]);
+                                       g_aDecalSwatches[g_bTextShadowColor].color[0],
+                                       g_aDecalSwatches[g_bTextShadowColor].color[1],
+                                       g_aDecalSwatches[g_bTextShadowColor].color[2]);
             }
-            swatch = &g_aDecalSwatches[g_bDecalColor];
             DrawScaledTexturedRect(&g_texDecalFont,
                                    glyphIndex * FONT_CELL,
                                    0,
@@ -1199,12 +1191,13 @@ void DrawDecalTextPreview(s32 x, s32 y) {
                                    bottom,
                                    FONT_CELL * 4,
                                    FONT_CELL * 4,
-                                   swatch->color[0],
-                                   swatch->color[1],
-                                   swatch->color[2]);
+                                   g_aDecalSwatches[g_bDecalColor].color[0],
+                                   g_aDecalSwatches[g_bDecalColor].color[1],
+                                   g_aDecalSwatches[g_bDecalColor].color[2]);
         }
         if (i < g_bDecalTextLength - 1) {
-            left += GlyphAdvance(g_apDecalTextGlyphs[i], g_apDecalTextGlyphs[i + 1]) << 2;
+            advance = GlyphAdvance(g_apDecalTextGlyphs[i], g_apDecalTextGlyphs[i + 1]);
+            left += advance << 2;
         }
     }
 }
