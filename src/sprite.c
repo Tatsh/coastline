@@ -15,6 +15,16 @@
 #define SPRITE_DEPTH_8 8
 #define SPRITE_DEPTH_16 16
 
+/* The bytes of a sprite, and of each strip, into total and stripBytes. */
+#define SPRITE_STRIP_BYTES(sprite, total, stripBytes)                                              \
+    if ((sprite)->bitsPerTexel == SPRITE_DEPTH_4) {                                                \
+        total = ((sprite)->width * (sprite)->height) >> 1;                                         \
+        stripBytes = ((sprite)->width * (sprite)->stripHeight) >> 1;                               \
+    } else {                                                                                       \
+        total = (sprite)->width * (sprite)->height * ((sprite)->bitsPerTexel >> 3);                \
+        stripBytes = (sprite)->width * (sprite)->stripHeight * ((sprite)->bitsPerTexel >> 3);      \
+    }
+
 /* Draw every strip of a sprite over a rectangle of the screen, the last strip in memory first. The
  * original reads the position and width again for every strip, and the height once. */
 #define DRAW_SPRITE_STRIPS(sprite, x, y, drawWidth, drawHeight, red, green, blue)                  \
@@ -22,13 +32,7 @@
         u32 total, stripBytes, offset;                                                             \
         s32 strips, stripDrawHeight, top, i;                                                       \
                                                                                                    \
-        if ((sprite)->bitsPerTexel == SPRITE_DEPTH_4) {                                            \
-            total = ((sprite)->width * (sprite)->height) >> 1;                                     \
-            stripBytes = ((sprite)->width * (sprite)->stripHeight) >> 1;                           \
-        } else {                                                                                   \
-            total = (sprite)->width * (sprite)->height * ((sprite)->bitsPerTexel >> 3);            \
-            stripBytes = (sprite)->width * (sprite)->stripHeight * ((sprite)->bitsPerTexel >> 3);  \
-        }                                                                                          \
+        SPRITE_STRIP_BYTES(sprite, total, stripBytes);                                             \
         strips = (sprite)->height / (sprite)->stripHeight;                                         \
         stripDrawHeight = (drawHeight) / strips;                                                   \
         for (i = 1, offset = stripBytes, top = 0; i <= strips;                                     \
@@ -48,12 +52,49 @@
     }
 
 void DrawSpriteAtOrigin(Sprite *sprite) {
-    DRAW_SPRITE_STRIPS(
-        sprite, sprite->originX, sprite->originY, sprite->drawWidth, sprite->drawHeight, 0, 0, 0);
+    u32 total, stripBytes, offset;
+    s32 strips, top, stripDrawHeight, i;
+
+    top = 0;
+    SPRITE_STRIP_BYTES(sprite, total, stripBytes);
+    strips = sprite->height / sprite->stripHeight;
+    stripDrawHeight = sprite->drawHeight / strips;
+    for (i = 1, offset = stripBytes; i <= strips;
+         i++, offset += stripBytes, top += stripDrawHeight) {
+        DrawSpriteStrip(sprite,
+                        sprite->pixels + total - offset,
+                        sprite->width,
+                        sprite->stripHeight,
+                        sprite->originX,
+                        sprite->originY + top,
+                        sprite->drawWidth,
+                        stripDrawHeight,
+                        0,
+                        0,
+                        0);
+    }
 }
 
 void DrawTexturedSprite(Sprite *sprite, s32 x, s32 y) {
-    DRAW_SPRITE_STRIPS(sprite, x, y, sprite->drawWidth, sprite->drawHeight, 0, 0, 0);
+    u32 total, stripBytes, offset;
+    s32 strips, stripDrawHeight, i;
+
+    SPRITE_STRIP_BYTES(sprite, total, stripBytes);
+    strips = sprite->height / sprite->stripHeight;
+    stripDrawHeight = sprite->drawHeight / strips;
+    for (i = 1, offset = stripBytes; i <= strips; i++, offset += stripBytes, y += stripDrawHeight) {
+        DrawSpriteStrip(sprite,
+                        sprite->pixels + total - offset,
+                        sprite->width,
+                        sprite->stripHeight,
+                        x,
+                        y,
+                        sprite->drawWidth,
+                        stripDrawHeight,
+                        0,
+                        0,
+                        0);
+    }
 }
 
 void DrawSpriteTinted(Sprite *sprite, u8 red, u8 green, u8 blue) {
@@ -69,7 +110,26 @@ void DrawSpriteTinted(Sprite *sprite, u8 red, u8 green, u8 blue) {
 
 void DrawSpriteRegion(
     Sprite *sprite, s32 x, s32 y, s32 width, s32 height, u8 red, u8 green, u8 blue) {
-    DRAW_SPRITE_STRIPS(sprite, x, y, width, height, red, green, blue);
+    u32 total, stripBytes, offset;
+    s32 strips, stripDrawHeight, row, i;
+
+    SPRITE_STRIP_BYTES(sprite, total, stripBytes);
+    strips = sprite->height / sprite->stripHeight;
+    stripDrawHeight = height / strips;
+    for (i = 1, offset = stripBytes, row = y; i <= strips;
+         i++, offset += stripBytes, row += stripDrawHeight) {
+        DrawSpriteStrip(sprite,
+                        sprite->pixels + total - offset,
+                        sprite->width,
+                        sprite->stripHeight,
+                        x,
+                        row,
+                        width,
+                        stripDrawHeight,
+                        red,
+                        green,
+                        blue);
+    }
 }
 
 void DrawSpriteStrip(Sprite *sprite,

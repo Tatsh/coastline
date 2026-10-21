@@ -309,12 +309,11 @@ void DrawLine4Bit(s32 x0, s32 y0, s32 x1, s32 y1) {
     s32 radius, dx, dy, stepX, stepY, x, y, error, swap;
 
     radius = g_aBrushSizeRects[g_bBrushSize].width >> 1;
-    x0 = ScreenToTexelX(x0);
-    y0 = ScreenToTexelY(y0);
-    x1 = ScreenToTexelX(x1);
-    y1 = ScreenToTexelY(y1);
+    ScreenToTexel(x0, y0);
+    ScreenToTexel(x1, y1);
     dx = x1 - x0 < 0 ? -(x1 - x0) : x1 - x0;
     dy = y1 - y0 < 0 ? -(y1 - y0) : y1 - y0;
+    stepY = 1;
     /* An exact diagonal drawn downwards is not swapped, and draws nothing. */
     if ((dy < dx && x1 < x0) || (dx < dy && y1 < y0)) {
         swap = x0;
@@ -324,15 +323,19 @@ void DrawLine4Bit(s32 x0, s32 y0, s32 x1, s32 y1) {
         y0 = y1;
         y1 = swap;
     }
-    stepY = y1 < y0 ? -1 : 1;
-    stepX = x1 < x0 ? -1 : 1;
+    stepX = 1;
+    if (y1 < y0) {
+        stepY = -1;
+    }
+    if (x1 < x0) {
+        stepX = -1;
+    }
     /* The original sets the start here and again for the first loop. */
     x = x0;
     y = y0;
 
-    error = 0;
     if (dy < dx) {
-        for (x = x0, y = y0; x <= x1; x++) {
+        for (x = x0, y = y0, error = 0; x <= x1; x++) {
             if (error >= dx) {
                 error -= dx;
                 y += stepY;
@@ -345,7 +348,7 @@ void DrawLine4Bit(s32 x0, s32 y0, s32 x1, s32 y1) {
             error += dy;
         }
     } else {
-        for (; y <= y1; y++) {
+        for (error = 0; y <= y1; y++) {
             if (error >= dy) {
                 error -= dy;
                 x += stepX;
@@ -738,7 +741,7 @@ void DrawDecalEllipseOutline(s32 x0, s32 y0, s32 x1, s32 y1) {
 }
 
 void FillCircle4Bit(s32 x, s32 y, s32 radius, u8 fromScreen) {
-    s32 i, j, error, a, b, column;
+    s32 a, b, column, i, j, error;
 
     if (fromScreen) {
         x = ScreenToTexelX(x);
