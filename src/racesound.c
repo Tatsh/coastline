@@ -149,42 +149,48 @@ void PlayGoSound(void) {
 }
 
 void ResetSoundSourceTracking(void) {
-    g_dwClosestSoundSfxId = -1;
-    g_dwClosestSoundSourceId = -1;
-    g_fClosestSoundDistance = SOUND_FAR;
+    g_ClosestSoundSource.sound = -1;
+    g_ClosestSoundSource.source = -1;
+    g_ClosestSoundSource.distance = SOUND_FAR;
 }
 
 void ResetAllSoundState(void) {
     g_dwChannel3PlayingSfxId = -1;
-    g_pClosestSoundListener = NULL;
-    g_pPrevSoundListener = NULL;
-    g_dwClosestSoundSfxId = -1;
-    g_dwPrevSoundSfxId = -1;
-    g_dwClosestSoundSourceId = -1;
-    g_dwPrevSoundSourceId = -1;
-    g_bClosestSoundPlaying = FALSE;
-    g_dwClosestSoundVolume = 0;
-    g_vClosestSoundPos.x = g_vClosestSoundPos.y = g_vClosestSoundPos.z = 0.0f;
-    g_vPrevSoundPos.x = g_vPrevSoundPos.y = g_vPrevSoundPos.z = 0.0f;
-    g_vPrevListenerPos.x = g_vPrevListenerPos.y = g_vPrevListenerPos.z = 0.0f;
+    g_ClosestSoundSource.listener = NULL;
+    g_ClosestSoundSource.previousListener = NULL;
+    g_ClosestSoundSource.sound = -1;
+    g_ClosestSoundSource.previousSound = -1;
+    g_ClosestSoundSource.source = -1;
+    g_ClosestSoundSource.previousSource = -1;
+    g_ClosestSoundSource.playing = FALSE;
+    g_ClosestSoundSource.volume = 0;
+    g_ClosestSoundSource.position.x = 0.0f;
+    g_ClosestSoundSource.position.y = 0.0f;
+    g_ClosestSoundSource.position.z = 0.0f;
+    g_ClosestSoundSource.previousPosition.x = 0.0f;
+    g_ClosestSoundSource.previousPosition.y = 0.0f;
+    g_ClosestSoundSource.previousPosition.z = 0.0f;
+    g_ClosestSoundSource.previousListenerPosition.x = 0.0f;
+    g_ClosestSoundSource.previousListenerPosition.y = 0.0f;
+    g_ClosestSoundSource.previousListenerPosition.z = 0.0f;
     /* The frequency is left as it was. */
-    g_fClosestSoundDistance = SOUND_FAR;
+    g_ClosestSoundSource.distance = SOUND_FAR;
 }
 
 void UpdateClosestSoundSource(
     s32 source, s32 sound, s32 volume, f32 frequency, Vec3f *position, CameraFrame *listener) {
     f32 distance = Vec3fDistance(position, &listener->position);
 
-    if (distance < g_fClosestSoundDistance) {
-        g_vClosestSoundPos.x = position->x;
-        g_vClosestSoundPos.y = position->y;
-        g_vClosestSoundPos.z = position->z;
-        g_pClosestSoundListener = listener;
-        g_fClosestSoundDistance = distance;
-        g_dwClosestSoundSfxId = sound;
-        g_dwClosestSoundSourceId = source;
-        g_fClosestSoundFrequency = frequency;
-        g_dwClosestSoundVolume = volume;
+    if (distance < g_ClosestSoundSource.distance) {
+        g_ClosestSoundSource.position.x = position->x;
+        g_ClosestSoundSource.position.y = position->y;
+        g_ClosestSoundSource.position.z = position->z;
+        g_ClosestSoundSource.listener = listener;
+        g_ClosestSoundSource.distance = distance;
+        g_ClosestSoundSource.sound = sound;
+        g_ClosestSoundSource.source = source;
+        g_ClosestSoundSource.frequency = frequency;
+        g_ClosestSoundSource.volume = volume;
     }
 }
 
@@ -230,43 +236,52 @@ void UpdateAmbientSoundChannel(void) {
             return;
         }
         g_dwChannel3PlayingSfxId = -1;
-        g_dwPrevSoundSourceId = -1;
-        g_bClosestSoundPlaying = FALSE;
+        g_ClosestSoundSource.previousSource = -1;
+        g_ClosestSoundSource.playing = FALSE;
     }
 
-    source = g_dwClosestSoundSourceId;
+    source = g_ClosestSoundSource.source;
     if (source == -1) {
         channel->volume = 0;
         channel->mixVolume = 0;
         channel->step = 0;
-        listener = g_pClosestSoundListener;
-    } else if (g_dwPrevSoundSourceId != source || g_pPrevSoundListener != g_pClosestSoundListener) {
+        listener = g_ClosestSoundSource.listener;
+    } else if (g_ClosestSoundSource.previousSource != source ||
+               g_ClosestSoundSource.previousListener != g_ClosestSoundSource.listener) {
         /* A new source fades the old one out first. */
-        g_bClosestSoundPlaying = FALSE;
-        listener = g_pClosestSoundListener;
+        g_ClosestSoundSource.playing = FALSE;
+        listener = g_ClosestSoundSource.listener;
         channel->volume = ((u32)channel->volume >> 1) & VOLUME_HALVES_MASK;
     } else {
-        if (g_fClosestSoundFrequency < 0.0f) {
-            factor = ComputeDopplerFactor(&g_vClosestSoundPos,
-                                          &g_vClosestSoundPos,
-                                          &g_pClosestSoundListener->position,
-                                          &g_vPrevListenerPos);
-            frequency = -g_fClosestSoundFrequency * factor;
-            ComputeStereoPan(
-                &g_vClosestSoundPos, g_pClosestSoundListener, &upper, &lower, &volume, TRUE);
+        if (g_ClosestSoundSource.frequency < 0.0f) {
+            factor = ComputeDopplerFactor(&g_ClosestSoundSource.position,
+                                          &g_ClosestSoundSource.position,
+                                          &g_ClosestSoundSource.listener->position,
+                                          &g_ClosestSoundSource.previousListenerPosition);
+            frequency = -g_ClosestSoundSource.frequency * factor;
+            ComputeStereoPan(&g_ClosestSoundSource.position,
+                             g_ClosestSoundSource.listener,
+                             &upper,
+                             &lower,
+                             &volume,
+                             TRUE);
         } else {
-            factor = ComputeDopplerFactor(&g_vClosestSoundPos,
-                                          &g_vPrevSoundPos,
-                                          &g_pClosestSoundListener->position,
-                                          &g_vPrevListenerPos);
-            frequency = g_fClosestSoundFrequency * factor;
-            ComputeStereoPan(
-                &g_vClosestSoundPos, g_pClosestSoundListener, &upper, &lower, &volume, FALSE);
+            factor = ComputeDopplerFactor(&g_ClosestSoundSource.position,
+                                          &g_ClosestSoundSource.previousPosition,
+                                          &g_ClosestSoundSource.listener->position,
+                                          &g_ClosestSoundSource.previousListenerPosition);
+            frequency = g_ClosestSoundSource.frequency * factor;
+            ComputeStereoPan(&g_ClosestSoundSource.position,
+                             g_ClosestSoundSource.listener,
+                             &upper,
+                             &lower,
+                             &volume,
+                             FALSE);
         }
-        volume = (s32)((u32)volume * (u32)g_dwClosestSoundVolume) >> 8;
-        if (!g_bClosestSoundPlaying) {
-            g_bClosestSoundPlaying = TRUE;
-            effect = &g_aSoundEffects[g_dwClosestSoundSfxId];
+        volume = (s32)((u32)volume * (u32)g_ClosestSoundSource.volume) >> 8;
+        if (!g_ClosestSoundSource.playing) {
+            g_ClosestSoundSource.playing = TRUE;
+            effect = &g_aSoundEffects[g_ClosestSoundSource.sound];
             StartSoundChannelMuted(
                 TRACK_SOUND_CHANNEL, effect->sample, effect->length, effect->loopLength);
         }
@@ -280,18 +295,18 @@ void UpdateAmbientSoundChannel(void) {
                 channel->volume = PackVolume(volume, upper, lower);
             }
         }
-        g_vPrevSoundPos.x = g_vClosestSoundPos.x;
-        g_vPrevSoundPos.y = g_vClosestSoundPos.y;
-        g_vPrevSoundPos.z = g_vClosestSoundPos.z;
-        g_vPrevListenerPos.x = g_pClosestSoundListener->position.x;
-        g_vPrevListenerPos.y = g_pClosestSoundListener->position.y;
-        g_vPrevListenerPos.z = g_pClosestSoundListener->position.z;
-        source = g_dwClosestSoundSourceId;
-        listener = g_pClosestSoundListener;
+        g_ClosestSoundSource.previousPosition.x = g_ClosestSoundSource.position.x;
+        g_ClosestSoundSource.previousPosition.y = g_ClosestSoundSource.position.y;
+        g_ClosestSoundSource.previousPosition.z = g_ClosestSoundSource.position.z;
+        g_ClosestSoundSource.previousListenerPosition.x = g_ClosestSoundSource.listener->position.x;
+        g_ClosestSoundSource.previousListenerPosition.y = g_ClosestSoundSource.listener->position.y;
+        g_ClosestSoundSource.previousListenerPosition.z = g_ClosestSoundSource.listener->position.z;
+        source = g_ClosestSoundSource.source;
+        listener = g_ClosestSoundSource.listener;
     }
-    g_dwPrevSoundSourceId = source;
-    g_pPrevSoundListener = listener;
-    g_dwPrevSoundSfxId = g_dwClosestSoundSfxId;
+    g_ClosestSoundSource.previousSource = source;
+    g_ClosestSoundSource.previousListener = listener;
+    g_ClosestSoundSource.previousSound = g_ClosestSoundSource.sound;
 }
 
 void UpdateAirplaneSound(s32 instance, Vec3f *position, CameraFrame *camera) {

@@ -7,11 +7,8 @@
 
 f32 g_fFrameDeltaTime = 1.0f;
 SoundEffect g_aSoundEffects[SOUND_EFFECTS];
-s32 g_dwChannel3PlayingSfxId, g_dwClosestSoundSfxId, g_dwPrevSoundSfxId, g_dwClosestSoundSourceId;
-s32 g_dwPrevSoundSourceId, g_dwClosestSoundVolume, g_bClosestSoundPlaying;
-f32 g_fClosestSoundDistance, g_fClosestSoundFrequency;
-Vec3f g_vClosestSoundPos, g_vPrevSoundPos, g_vPrevListenerPos;
-CameraFrame *g_pClosestSoundListener, *g_pPrevSoundListener;
+s32 g_dwChannel3PlayingSfxId;
+SoundSourceTracking g_ClosestSoundSource;
 
 #define NEAR(a, b) (fabsf((a) - (b)) < 0.001f)
 
@@ -49,7 +46,8 @@ int main(void) {
 
     ResetAllSoundState();
     UpdateClosestSoundSource(7, SOUND_EFFECT_WATERFALL, 0x180, 11000.0f, &at, &camera);
-    assert(g_dwClosestSoundSourceId == 7 && g_dwClosestSoundSfxId == SOUND_EFFECT_WATERFALL);
+    assert(g_ClosestSoundSource.source == 7 &&
+           g_ClosestSoundSource.sound == SOUND_EFFECT_WATERFALL);
 
     puts("racesound ok");
     return 0;

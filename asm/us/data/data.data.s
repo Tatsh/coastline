@@ -32058,89 +32058,29 @@ dlabel D_8028B794
     /* 8C79C 8028B79C 00000000 */ .word 0x00000000
 enddlabel D_8028B794
 
-nonmatching g_vClosestSoundPos
+nonmatching g_ClosestSoundSource
 
-dlabel g_vClosestSoundPos
-    /* 8C7A0 8028B7A0 00000000 */ .word 0x00000000
-    /* 8C7A4 8028B7A4 00000000 */ .word 0x00000000
-    /* 8C7A8 8028B7A8 00000000 */ .word 0x00000000
-enddlabel g_vClosestSoundPos
-
-nonmatching g_vPrevSoundPos
-
-dlabel g_vPrevSoundPos
-    /* 8C7AC 8028B7AC 00000000 */ .word 0x00000000
-    /* 8C7B0 8028B7B0 00000000 */ .word 0x00000000
-    /* 8C7B4 8028B7B4 00000000 */ .word 0x00000000
-enddlabel g_vPrevSoundPos
-
-nonmatching g_pClosestSoundListener
-
-dlabel g_pClosestSoundListener
-    /* 8C7B8 8028B7B8 00000000 */ .word 0x00000000
-enddlabel g_pClosestSoundListener
-
-nonmatching g_pPrevSoundListener
-
-dlabel g_pPrevSoundListener
-    /* 8C7BC 8028B7BC 00000000 */ .word 0x00000000
-enddlabel g_pPrevSoundListener
-
-nonmatching g_vPrevListenerPos
-
-dlabel g_vPrevListenerPos
-    /* 8C7C0 8028B7C0 00000000 */ .word 0x00000000
-    /* 8C7C4 8028B7C4 00000000 */ .word 0x00000000
-    /* 8C7C8 8028B7C8 00000000 */ .word 0x00000000
-enddlabel g_vPrevListenerPos
-
-nonmatching g_dwClosestSoundSfxId
-
-dlabel g_dwClosestSoundSfxId
-    /* 8C7CC 8028B7CC 00000000 */ .word 0x00000000
-enddlabel g_dwClosestSoundSfxId
-
-nonmatching g_dwPrevSoundSfxId
-
-dlabel g_dwPrevSoundSfxId
-    /* 8C7D0 8028B7D0 00000000 */ .word 0x00000000
-enddlabel g_dwPrevSoundSfxId
-
-nonmatching g_dwClosestSoundSourceId
-
-dlabel g_dwClosestSoundSourceId
-    /* 8C7D4 8028B7D4 00000000 */ .word 0x00000000
-enddlabel g_dwClosestSoundSourceId
-
-nonmatching g_dwPrevSoundSourceId
-
-dlabel g_dwPrevSoundSourceId
-    /* 8C7D8 8028B7D8 00000000 */ .word 0x00000000
-enddlabel g_dwPrevSoundSourceId
-
-nonmatching g_fClosestSoundDistance
-
-dlabel g_fClosestSoundDistance
+dlabel g_ClosestSoundSource
+    /* 8C7A0 8028B7A0 00000000 */ .float 0
+    /* 8C7A4 8028B7A4 00000000 */ .float 0
+    /* 8C7A8 8028B7A8 00000000 */ .float 0
+    /* 8C7AC 8028B7AC 00000000 */ .float 0
+    /* 8C7B0 8028B7B0 00000000 */ .float 0
+    /* 8C7B4 8028B7B4 00000000 */ .float 0
+    /* 8C7B8 8028B7B8 00000000 */ .float 0
+    /* 8C7BC 8028B7BC 00000000 */ .float 0
+    /* 8C7C0 8028B7C0 00000000 */ .float 0
+    /* 8C7C4 8028B7C4 00000000 */ .float 0
+    /* 8C7C8 8028B7C8 00000000 */ .float 0
+    /* 8C7CC 8028B7CC 00000000 */ .float 0
+    /* 8C7D0 8028B7D0 00000000 */ .float 0
+    /* 8C7D4 8028B7D4 00000000 */ .float 0
+    /* 8C7D8 8028B7D8 00000000 */ .float 0
     /* 8C7DC 8028B7DC 00000000 */ .float 0
-enddlabel g_fClosestSoundDistance
-
-nonmatching g_fClosestSoundFrequency
-
-dlabel g_fClosestSoundFrequency
-    /* 8C7E0 8028B7E0 00000000 */ .word 0x00000000
-enddlabel g_fClosestSoundFrequency
-
-nonmatching g_dwClosestSoundVolume
-
-dlabel g_dwClosestSoundVolume
-    /* 8C7E4 8028B7E4 00000000 */ .word 0x00000000
-enddlabel g_dwClosestSoundVolume
-
-nonmatching g_bClosestSoundPlaying
-
-dlabel g_bClosestSoundPlaying
-    /* 8C7E8 8028B7E8 00000000 */ .word 0x00000000
-enddlabel g_bClosestSoundPlaying
+    /* 8C7E0 8028B7E0 00000000 */ .float 0
+    /* 8C7E4 8028B7E4 00000000 */ .float 0
+    /* 8C7E8 8028B7E8 00000000 */ .float 0
+enddlabel g_ClosestSoundSource
 
 nonmatching g_dwChannel3PlayingSfxId
 
@@ -32659,7 +32599,7 @@ dlabel g_aRaceSnapshotFields
     /* 8CBA0 8028BBA0 00000050 */ .word 0x00000050
     /* 8CBA4 8028BBA4 8028B7EC */ .word g_dwChannel3PlayingSfxId
     /* 8CBA8 8028BBA8 00000004 */ .word 0x00000004
-    /* 8CBAC 8028BBAC 8028B7A0 */ .word g_vClosestSoundPos
+    /* 8CBAC 8028BBAC 8028B7A0 */ .word g_ClosestSoundSource
     /* 8CBB0 8028BBB0 0000004C */ .word 0x0000004C
     /* 8CBB4 8028BBB4 802A4A30 */ .word g_bTrackCollisionFrameToggle
     /* 8CBB8 8028BBB8 00000004 */ .word 0x00000004

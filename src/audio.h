@@ -361,50 +361,25 @@ extern SoundEffect g_aSoundEffects[SOUND_EFFECTS];
 /** The sound effect channel 3 plays once, or -1. @ghidraAddress USA: 0x8028b7ec */
 extern s32 g_dwChannel3PlayingSfxId;
 
-/**
- * The nearest sound of the track this frame and the last: where it is and was, the camera that
- * hears it, where that camera was, the effect and the source, how far it is, its frequency in hertz
- * (negative for a source that does not move), its volume out of 256, and whether it plays.
- *
- * @ghidraAddress USA: 0x8028b7a0
- */
-extern Vec3f g_vClosestSoundPos;
+/** The nearest sound of the track this frame and the last. */
+typedef struct {
+    Vec3f position;                 /*!< Where the nearest sound is. */
+    Vec3f previousPosition;         /*!< Where the sound was in the last frame. */
+    CameraFrame *listener;          /*!< The camera that hears the sound. */
+    CameraFrame *previousListener;  /*!< The camera that heard the sound in the last frame. */
+    Vec3f previousListenerPosition; /*!< Where the camera was in the last frame. */
+    s32 sound;                      /*!< The sound effect, or -1. */
+    s32 previousSound;              /*!< The sound effect of the last frame, or -1. */
+    s32 source;                     /*!< The source of the sound, or -1. */
+    s32 previousSource;             /*!< The source of the last frame, or -1. */
+    f32 distance;                   /*!< How far the sound is from its camera. */
+    f32 frequency; /*!< The frequency in hertz, negative for a source that does not move. */
+    s32 volume;    /*!< The volume out of 256. */
+    s32 playing;   /*!< Whether the sound plays. */
+} SoundSourceTracking;
 
-/** @ghidraAddress USA: 0x8028b7ac */
-extern Vec3f g_vPrevSoundPos;
-
-/** @ghidraAddress USA: 0x8028b7b8 */
-extern CameraFrame *g_pClosestSoundListener;
-
-/** @ghidraAddress USA: 0x8028b7bc */
-extern CameraFrame *g_pPrevSoundListener;
-
-/** @ghidraAddress USA: 0x8028b7c0 */
-extern Vec3f g_vPrevListenerPos;
-
-/** @ghidraAddress USA: 0x8028b7cc */
-extern s32 g_dwClosestSoundSfxId;
-
-/** @ghidraAddress USA: 0x8028b7d0 */
-extern s32 g_dwPrevSoundSfxId;
-
-/** @ghidraAddress USA: 0x8028b7d4 */
-extern s32 g_dwClosestSoundSourceId;
-
-/** @ghidraAddress USA: 0x8028b7d8 */
-extern s32 g_dwPrevSoundSourceId;
-
-/** @ghidraAddress USA: 0x8028b7dc */
-extern f32 g_fClosestSoundDistance;
-
-/** @ghidraAddress USA: 0x8028b7e0 */
-extern f32 g_fClosestSoundFrequency;
-
-/** @ghidraAddress USA: 0x8028b7e4 */
-extern s32 g_dwClosestSoundVolume;
-
-/** @ghidraAddress USA: 0x8028b7e8 */
-extern s32 g_bClosestSoundPlaying;
+/** The nearest sound of the track. @ghidraAddress USA: 0x8028b7a0 */
+extern SoundSourceTracking g_ClosestSoundSource;
 
 /**
  * The factor the Doppler effect raises a sound by, from the motion of the source and the listener
