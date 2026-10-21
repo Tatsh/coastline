@@ -1657,22 +1657,22 @@ enddlabel g_szPassThisSeason
 nonmatching switchdataD_802a71d4
 
 dlabel switchdataD_802a71d4
-    /* A81D4 802A71D4 80200904 */ .word .L80200904
-    /* A81D8 802A71D8 80200B28 */ .word .L80200B28
-    /* A81DC 802A71DC 80200E08 */ .word .L80200E08
-    /* A81E0 802A71E0 8020137C */ .word .L8020137C
-    /* A81E4 802A71E4 80200BA4 */ .word .L80200BA4
-    /* A81E8 802A71E8 80200B44 */ .word .L80200B44
+    /* A81D4 802A71D4 80200904 */ .word 0
+    /* A81D8 802A71D8 80200B28 */ .word 0
+    /* A81DC 802A71DC 80200E08 */ .word 0
+    /* A81E0 802A71E0 8020137C */ .word 0
+    /* A81E4 802A71E4 80200BA4 */ .word 0
+    /* A81E8 802A71E8 80200B44 */ .word 0
 enddlabel switchdataD_802a71d4
 
 nonmatching jtbl_802A71EC
 
 dlabel jtbl_802A71EC
-    /* A81EC 802A71EC 80201584 */ .word .L80201584
-    /* A81F0 802A71F0 802014FC */ .word .L802014FC
-    /* A81F4 802A71F4 80201550 */ .word .L80201550
-    /* A81F8 802A71F8 802015B8 */ .word .L802015B8
-    /* A81FC 802A71FC 802015EC */ .word .L802015EC
+    /* A81EC 802A71EC 80201584 */ .word 0
+    /* A81F0 802A71F0 802014FC */ .word 0
+    /* A81F4 802A71F4 80201550 */ .word 0
+    /* A81F8 802A71F8 802015B8 */ .word 0
+    /* A81FC 802A71FC 802015EC */ .word 0
 enddlabel jtbl_802A71EC
 
 nonmatching g_fConst0p2_802a7200
@@ -1717,11 +1717,11 @@ dlabel g_fConst0p2_802a7218
     /* A8218 802A7218 3E4CCCCD */ .float 0.200000003
 enddlabel g_fConst0p2_802a7218
 
-nonmatching gRaceTimeThreshold
+nonmatching g_fConst39p6_802a721c
 
-dlabel gRaceTimeThreshold
+dlabel g_fConst39p6_802a721c
     /* A821C 802A721C 421E6666 */ .float 39.59999847
-enddlabel gRaceTimeThreshold
+enddlabel g_fConst39p6_802a721c
 
 nonmatching g_fConst0p2_802a7220
 
@@ -11658,11 +11658,11 @@ dlabel g_fConst100000
     /* AC75C 802AB75C 47C35000 */ .float 100000
 enddlabel g_fConst100000
 
-nonmatching g_dTyreTypeGripStep
+nonmatching g_dTireTypeGripStep
 
-dlabel g_dTyreTypeGripStep
+dlabel g_dTireTypeGripStep
     /* AC760 802AB760 3F60624DD2F1A9FC */ .double 0.00200000000000000004
-enddlabel g_dTyreTypeGripStep
+enddlabel g_dTireTypeGripStep
 
 nonmatching g_fConst0p1_802ab768
 

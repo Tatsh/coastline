@@ -579,7 +579,7 @@ s32 TestLineSegmentIntersection(Vec2f *p1, Vec2f *p2, Vec2f *q1, Vec2f *q2) {
     return side1 == side2 ? 2 : 1;
 }
 
-s32 SegmentCrossesLine2D(Vec2f *a, Vec2f *b, Vec2f *p, Vec2f *q) {
+s32 SegmentCrossesLine2D(Vec3f *a, Vec3f *b, Vec3f *p, Vec3f *q) {
     f32 dx = b->x - a->x;
     f32 dy = b->y - a->y;
 

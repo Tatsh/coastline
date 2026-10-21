@@ -126,4 +126,23 @@ void LoopModelAnimations(Model *model);
  */
 void AdvanceModelAnimations(Model *model);
 
+/**
+ * Make the animations of a model stop at their ends rather than repeat.
+ *
+ * @param model The model.
+ * @ghidraAddress USA: 0x8021d7e0
+ */
+void PlayModelAnimationsOnce(Model *model);
+
+/**
+ * Read a model from the cartridge and turn its offsets into pointers.
+ *
+ * @param dst The memory to read it into.
+ * @param romStart The cartridge offset of the model.
+ * @param romEnd The cartridge offset of its end.
+ * @return The model, at dst.
+ * @ghidraAddress USA: 0x8021ddfc
+ */
+Model *DmaReadAndFixupTrackModel(void *dst, u32 romStart, u32 romEnd);
+
 #endif

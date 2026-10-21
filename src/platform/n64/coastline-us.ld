@@ -62,6 +62,11 @@ g_LoadedTrack = 0x80025C00;
 /* The models of the cars the vehicles drive, above the program. */
 g_aVehicleModels = 0x803C8000;
 
+/* The recording a race replays, and those the local players record into, below the frame buffers.
+ * The recording of the second player runs over the first frame buffer. */
+g_abPlaybackRecording = 0x80197000;
+g_aabInputRecordings = 0x801A6000;
+
 /* The two frame buffers, below the program. */
 g_aFramebuffer0 = 0x801B5000;
 g_aFramebuffer1 = 0x801DA800;

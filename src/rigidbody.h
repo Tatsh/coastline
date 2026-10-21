@@ -74,8 +74,18 @@ typedef struct RigidBody {
     /** The sums of the forces and torques of a step, then the accelerations they give. */
     Vec3f force;
     Vec3f torque;
-    /** The states of the steps of the integration. */
-    RigidBodyState stepStates[2];
+    union {
+        /** The states of the steps of the integration. */
+        RigidBodyState states[2];
+        /**
+         * The index in g_aVehicles of the vehicle whose chassis this is, which shares the memory
+         * of the spin of the first step state with the physics.
+         */
+        struct {
+            u8 unreconstructed0[0x2C];
+            s32 vehicleIndex;
+        } owner;
+    } steps;
     /** The triangle of the track under a wheel, or NULL. */
     struct TrackTriangle *ground;
     /** The surface of that triangle, and its plane. */
@@ -110,7 +120,7 @@ typedef struct RigidBody {
     /** How fast the last hit was, from 10 on. */
     u8 impactSpeed;
     /** The tyres of the car, from 1, which lose grip as they rise. */
-    u8 tyreType;
+    u8 tireType;
     /** The loudest hit of another vehicle and of the track since the sounds played. */
     u8 vehicleImpactVolume;
     u8 impactVolume;

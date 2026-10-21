@@ -491,7 +491,8 @@ s32 IsPointInsideTriangle(
 s32 TestLineSegmentIntersection(Vec2f *p1, Vec2f *p2, Vec2f *q1, Vec2f *q2);
 
 /**
- * Whether two points lie across the line through two others.
+ * Whether two points lie across the line through two others, seen from above: only x and y are
+ * read.
  *
  * @param a The first point of the line.
  * @param b The second point of the line.
@@ -500,7 +501,7 @@ s32 TestLineSegmentIntersection(Vec2f *p1, Vec2f *p2, Vec2f *q1, Vec2f *q2);
  * @return 0 if they lie strictly on one side, 2 if both lie on the line, and 1 otherwise.
  * @ghidraAddress USA: 0x80225e1c
  */
-s32 SegmentCrossesLine2D(Vec2f *a, Vec2f *b, Vec2f *p, Vec2f *q);
+s32 SegmentCrossesLine2D(Vec3f *a, Vec3f *b, Vec3f *p, Vec3f *q);
 
 /**
  * Set the seed of the random numbers.

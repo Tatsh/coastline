@@ -127,4 +127,40 @@ void InitCameraForVehicle(Vehicle *vehicle);
  */
 void SetupCameraMatrix(CameraFrame *camera, f32 fov, f32 farDistance, f32 width, f32 height);
 
+/**
+ * The size of the rear-view mirror over the bumper view: 0 for none, 1 small, 2 middling and 3
+ * large.
+ *
+ * @ghidraAddress USA: 0x8028aa54
+ */
+extern s32 g_dwRearViewMirrorMode;
+
+/**
+ * What CastRayAgainstTrack() found below the camera of the view being drawn.
+ *
+ * @ghidraAddress USA: 0x8028aaf8
+ */
+extern f32 g_fCameraRayGroundDistance;
+
+/** @ghidraAddress USA: 0x8028aafc */
+extern s32 g_dwCameraRayGroundSurface;
+
+/** @ghidraAddress USA: 0x8028ab04 */
+extern s32 g_dwCameraRayNearbyCount;
+
+/** @ghidraAddress USA: 0x8031b288 */
+extern u16 g_awCameraRayNearbyInstances[];
+
+/**
+ * Set up the corners of the far rectangle of the view of a camera, which the shadows clip to.
+ *
+ * @param camera The camera.
+ * @param fov The half angle of the view across, in radians.
+ * @param farDistance The distance of the far plane.
+ * @param width The width of the view.
+ * @param height The height of the view.
+ * @ghidraAddress USA: 0x8021b0c4
+ */
+void SetupFrustumCorners(CameraFrame *camera, f32 fov, f32 farDistance, f32 width, f32 height);
+
 #endif

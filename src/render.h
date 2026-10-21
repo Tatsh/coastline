@@ -271,4 +271,61 @@ void RestoreCurrentViewport(void);
  */
 void DrawFilledRect(s32 x, s32 y, s32 width, s32 height, s32 red, s32 green, s32 blue);
 
+/**
+ * Do nothing.
+ *
+ * @ghidraAddress USA: 0x80217c8c
+ */
+void StubEmpty(void);
+
+/**
+ * Set the scissor to a rectangle, and the viewport to the whole of the high-resolution screen.
+ *
+ * @param x The left edge of the scissor.
+ * @param y The upper edge of the scissor.
+ * @param width The width of the scissor, of which only the size counts.
+ * @param height The height of the scissor.
+ * @param setScissor Whether the scissor is set.
+ * @ghidraAddress USA: 0x80219df0
+ */
+void SetupViewportAndScissor(s32 x, s32 y, s32 width, s32 height, s32 setScissor);
+
+/**
+ * Outline a rectangle of the screen with lines a pixel wide.
+ *
+ * @param x The left edge.
+ * @param y The upper edge.
+ * @param width The width.
+ * @param height The height.
+ * @ghidraAddress USA: 0x80219f6c
+ */
+void DrawRdpOutlineRect(s32 x, s32 y, s32 width, s32 height);
+
+/**
+ * Frame a rectangle of the screen, such as the rear-view mirror, with a dark border and light
+ * rings.
+ *
+ * @param x The left edge.
+ * @param y The upper edge.
+ * @param width The width.
+ * @param height The height.
+ * @ghidraAddress USA: 0x8021a0f8
+ */
+void DrawRdpBorderRect(s32 x, s32 y, s32 width, s32 height);
+
+/**
+ * Black out the screen and clear both frame buffers.
+ *
+ * @ghidraAddress USA: 0x8021a4c8
+ */
+void ClearBothFramebuffers(void);
+
+/**
+ * Copy the current frames of the animated textures of the track, and their snow versions, from the
+ * cartridge.
+ *
+ * @ghidraAddress USA: 0x8021a5b8
+ */
+void StreamAnimatedTrackTextures(void);
+
 #endif

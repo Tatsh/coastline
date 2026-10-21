@@ -822,9 +822,9 @@ glabel SetupFillMode
     /* 18E1C 80217E1C AC580004 */   sw        $t8, 0x4($v0)
 endlabel SetupFillMode
 
-nonmatching DrawRdpFillRect, 0x198
+nonmatching ClearZBufferRect, 0x198
 
-glabel DrawRdpFillRect
+glabel ClearZBufferRect
     /* 18E20 80217E20 3C038029 */  lui        $v1, %hi(gDisplayListPtr)
     /* 18E24 80217E24 2463A858 */  addiu      $v1, $v1, %lo(gDisplayListPtr)
     /* 18E28 80217E28 8C620000 */  lw         $v0, 0x0($v1)
@@ -927,7 +927,7 @@ glabel DrawRdpFillRect
     /* 18FAC 80217FAC 01E17021 */  addu       $t6, $t7, $at
     /* 18FB0 80217FB0 03E00008 */  jr         $ra
     /* 18FB4 80217FB4 AC4E0004 */   sw        $t6, 0x4($v0)
-endlabel DrawRdpFillRect
+endlabel ClearZBufferRect
 
 nonmatching ClearScreen, 0x14C
 
@@ -3560,9 +3560,9 @@ glabel ClearDisplayBuffers
     /* 1B5B4 8021A5B4 27BD0018 */   addiu     $sp, $sp, 0x18
 endlabel ClearDisplayBuffers
 
-nonmatching ProcessStreamDmaRequests, 0x368
+nonmatching StreamAnimatedTrackTextures, 0x368
 
-glabel ProcessStreamDmaRequests
+glabel StreamAnimatedTrackTextures
     /* 1B5B8 8021A5B8 27BDFF90 */  addiu      $sp, $sp, -0x70
     /* 1B5BC 8021A5BC AFBE0048 */  sw         $fp, 0x48($sp)
     /* 1B5C0 8021A5C0 3C1E8029 */  lui        $fp, %hi(g_dwSnowMode)
@@ -3804,7 +3804,7 @@ glabel ProcessStreamDmaRequests
     /* 1B914 8021A914 8FBE0048 */  lw         $fp, 0x48($sp)
     /* 1B918 8021A918 03E00008 */  jr         $ra
     /* 1B91C 8021A91C 27BD0070 */   addiu     $sp, $sp, 0x70
-endlabel ProcessStreamDmaRequests
+endlabel StreamAnimatedTrackTextures
 
 nonmatching InitSerialInterface, 0x44
 
@@ -5730,9 +5730,9 @@ glabel InitControllersAndPaks
     /* 1D468 8021C468 27BD0030 */   addiu     $sp, $sp, 0x30
 endlabel InitControllersAndPaks
 
-nonmatching ClearWeatherState, 0x48
+nonmatching ResetFrameClock, 0x48
 
-glabel ClearWeatherState
+glabel ResetFrameClock
     /* 1D46C 8021C46C 3C018029 */  lui        $at, %hi(g_qwTimestampBaseLo)
     /* 1D470 8021C470 240E0000 */  addiu      $t6, $zero, 0x0
     /* 1D474 8021C474 240F0000 */  addiu      $t7, $zero, 0x0
@@ -5751,13 +5751,13 @@ glabel ClearWeatherState
     /* 1D4A8 8021C4A8 3C018029 */  lui        $at, %hi(g_fFrameDeltaTime)
     /* 1D4AC 8021C4AC 03E00008 */  jr         $ra
     /* 1D4B0 8021C4B0 E424AAD8 */   swc1      $f4, %lo(g_fFrameDeltaTime)($at)
-endlabel ClearWeatherState
+endlabel ResetFrameClock
 
 nonmatching UpdateFrameTiming, 0x1F4
 
 glabel UpdateFrameTiming
-    /* 1D4B4 8021C4B4 3C0E8029 */  lui        $t6, %hi(g_dwRaceInitInProgress)
-    /* 1D4B8 8021C4B8 8DCEAB10 */  lw         $t6, %lo(g_dwRaceInitInProgress)($t6)
+    /* 1D4B4 8021C4B4 3C0E8029 */  lui        $t6, %hi(g_bRaceScreenActive)
+    /* 1D4B8 8021C4B8 8DCEAB10 */  lw         $t6, %lo(g_bRaceScreenActive)($t6)
     /* 1D4BC 8021C4BC 27BDFFE8 */  addiu      $sp, $sp, -0x18
     /* 1D4C0 8021C4C0 AFBF0014 */  sw         $ra, 0x14($sp)
     /* 1D4C4 8021C4C4 11C00020 */  beqz       $t6, .L8021C548
@@ -7196,9 +7196,9 @@ glabel SetModelAnimationFlags
     /* 1E7DC 8021D7DC 27BD0008 */   addiu     $sp, $sp, 0x8
 endlabel SetModelAnimationFlags
 
-nonmatching SetModelHidden, 0x24
+nonmatching PlayModelAnimationsOnce, 0x24
 
-glabel SetModelHidden
+glabel PlayModelAnimationsOnce
     /* 1E7E0 8021D7E0 27BDFFE8 */  addiu      $sp, $sp, -0x18
     /* 1E7E4 8021D7E4 AFBF0014 */  sw         $ra, 0x14($sp)
     /* 1E7E8 8021D7E8 00002825 */  or         $a1, $zero, $zero
@@ -7208,7 +7208,7 @@ glabel SetModelHidden
     /* 1E7F8 8021D7F8 27BD0018 */  addiu      $sp, $sp, 0x18
     /* 1E7FC 8021D7FC 03E00008 */  jr         $ra
     /* 1E800 8021D800 00000000 */   nop
-endlabel SetModelHidden
+endlabel PlayModelAnimationsOnce
 
 nonmatching LoopModelAnimations, 0x24
 

@@ -296,7 +296,7 @@ void RenderVehicleModel(Vehicle *vehicle, s32 lodOffset) {
         gDPSetFogColor(gDisplayListPtr++, g_bFogR, g_bFogG, g_bFogB, g_dwVehicleFogAlpha);
     }
     vehicle->inTunnel = FALSE;
-    if (vehicle->rayDone &&
+    if (vehicle->groundInstanceCount &&
         (g_LoadedTrack.instances[vehicle->groundInstances[0]].flags & TRACK_INSTANCE_TUNNEL)) {
         vehicle->inTunnel = TRUE;
         inTunnel = TRUE;

@@ -337,4 +337,37 @@ void StubUpdateCallback(void);
 /** @ghidraAddress USA: 0x8021c6b0 */
 void StubRenderCallback(void);
 
+/**
+ * Whether the screen of a race runs, which makes UpdateFrameTiming() count from the timer of the
+ * CPU.
+ *
+ * @ghidraAddress USA: 0x8028ab10
+ */
+extern s32 g_bRaceScreenActive;
+
+/**
+ * Fill a rectangle of the depth buffer with the farthest depth.
+ *
+ * @param x The left edge.
+ * @param y The upper edge.
+ * @param width The width.
+ * @param height The height, which the bottom edge adds to x rather than y.
+ * @ghidraAddress USA: 0x80217e20
+ */
+void ClearZBufferRect(s32 x, s32 y, s32 width, s32 height);
+
+/**
+ * Restart the clock of the frames from zero.
+ *
+ * @ghidraAddress USA: 0x8021c46c
+ */
+void ResetFrameClock(void);
+
+/**
+ * Clear the variables the frames start from, which a table lists.
+ *
+ * @ghidraAddress USA: 0x80225f30
+ */
+void ClearPerFrameVariables(void);
+
 #endif

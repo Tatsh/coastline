@@ -19,13 +19,11 @@
 /** A point of the route, across the track. */
 typedef struct {
     /** The left edge of the track. */
-    Vec2f left;
-    f32 unreconstructed8;
+    Vec3f left;
     /** The middle of the track. */
     Vec3f position;
     /** The right edge of the track. */
-    Vec2f right;
-    f32 unreconstructed20;
+    Vec3f right;
     /** The distance left from the point to the finish line. */
     f32 distance;
 } TrackPoint;
@@ -138,6 +136,42 @@ typedef struct {
     u16 count;
 } TrackGridCursor;
 
+/** The special objects a track header lists. */
+#define TRACK_SPECIALS 16
+
+/** The kinds of the special objects of a track. */
+enum {
+    /** Placed models that turn each frame about the z, x or y axis. */
+    TRACK_SPECIAL_SPIN_Z,
+    TRACK_SPECIAL_SPIN_X,
+    TRACK_SPECIAL_SPIN_Y,
+    /** The placed model of the airplane, which flies along its path once triggered. */
+    TRACK_SPECIAL_AIRPLANE,
+    /** The left and right edges of the path of the airplane, a point for each node. */
+    TRACK_SPECIAL_AIRPLANE_PATH_LEFT,
+    TRACK_SPECIAL_AIRPLANE_PATH_RIGHT,
+    /** The placed model a vehicle must pass over on the last lap to send the airplane off. */
+    TRACK_SPECIAL_AIRPLANE_TRIGGER,
+    /** A placed model that sounds like a waterfall. */
+    TRACK_SPECIAL_WATERFALL,
+};
+
+/** A special object of a track. */
+typedef struct {
+    /** The placed model, or for the path of the airplane its points. */
+    union {
+        s32 instance;
+        Vec3f *path;
+    } target;
+    /** The angle a spinning model turns each frame, or the number of points of the path. */
+    union {
+        f32 spinAngle;
+        s32 pathLength;
+    } param;
+    /** The kind, by the TRACK_SPECIAL_ values. */
+    u8 type;
+} TrackSpecial;
+
 /** The header of the loaded track. Its fields join this structure as they are reconstructed. */
 typedef struct {
     u8 unreconstructed0[0xC];
@@ -180,6 +214,10 @@ typedef struct {
     u16 *triangleNearbyInstances;
     /** The flags of each triangle, by its index; the low 3 bits are its surface. */
     u8 *triangleFlags;
+    u8 unreconstructed98[0x164 - 0x98];
+    /** The objects of the track that move or sound, by the TRACK_SPECIAL_ values. */
+    TrackSpecial specials[TRACK_SPECIALS];
+    s32 specialCount;
 } TrackHeader;
 
 /**
@@ -209,7 +247,8 @@ extern s32 g_nDebugHiddenInstanceIndex;
  * @param outNormal Receives the normal of the ground, unless it is NULL.
  * @param origin The point the line drops through.
  * @param groundInstances Receives the placed models of the ground, the nearest first.
- * @param done Set to 1.
+ * @param groundInstanceCount Set to 1, however many groundInstances were found, so that its readers
+ * take only the nearest.
  * @param nearbyInstances Receives the placed models near the ground, the latest first.
  * @param nearbyCount Receives the number of nearbyInstances.
  * @param groundDistance Receives how far the ground is below the point.
@@ -221,7 +260,7 @@ s32 CastRayAgainstTrack(Vec3f *outPoint,
                         Vec3f *outNormal,
                         Vec3f *origin,
                         u16 *groundInstances,
-                        s32 *done,
+                        s32 *groundInstanceCount,
                         u16 *nearbyInstances,
                         s32 *nearbyCount,
                         f32 *groundDistance,
@@ -268,10 +307,11 @@ u32 LookupInstanceGridCell(s32 column, s32 row);
 u16 NextGridCellInstance(TrackGridCursor *cursor);
 
 /**
- * The placed model an animation flies along a spline, such as the airplane, or 0.
+ * Decompress a track and its sections from the cartridge into g_LoadedTrack, and prepare it.
  *
- * @ghidraAddress USA: 0x8026ff64
+ * @param track The index of the track among the descriptors of g_apTrackMenuItems.
+ * @ghidraAddress USA: 0x8021de5c
  */
-extern s32 g_dwSplineAnimInstance;
+void LoadTrackGeometryFromRom(s32 track);
 
 #endif

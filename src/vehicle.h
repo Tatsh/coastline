@@ -83,7 +83,9 @@ typedef struct {
     u16 unlocks;
     /** The unlocked tracks, a bit for each. */
     u16 unlockedTracks;
-    u8 unreconstructedD0[0xD4 - 0xD0];
+    /** The weathers the championship has raced in, a bit for each. */
+    u16 unlockedWeathers;
+    u8 unreconstructedD2[0xD4 - 0xD2];
     /** The options of the car the player chose last: the handling, gearbox, tyres and suspension.
      */
     s32 handling;
@@ -290,6 +292,9 @@ extern s32 g_dwNumActiveVehicles;
 /** The bit of the status of a racer whose vehicle is held out of gear. */
 #define RACER_HELD 0x1
 
+/** The bit of the status of a racer that finished the race. */
+#define RACER_FINISHED 0x2
+
 /** The ghost mode of a vehicle that other vehicles pass through and that fades back in. */
 #define VEHICLE_GHOST 2
 
@@ -402,7 +407,7 @@ typedef struct Vehicle {
     /** The profile of the player who drives the vehicle. */
     PlayerProfile *profile;
     /** The tyres, the stiffness of the springs, and how the steering answers the stick. */
-    s32 tyreType;
+    s32 tireType;
     s32 suspensionStiffness;
     s32 steeringMode;
     /** The gearbox of the recording or the settings, which ResetVehicleState() takes. */
@@ -453,7 +458,8 @@ typedef struct Vehicle {
     /** The message shown smaller when there is no large one, or NULL, and the time it has left. */
     const char *subMessage;
     f32 subMessageTime;
-    u8 unreconstructedFC0[0xFD4 - 0xFC0];
+    /** The text a message may show, such as the time of a record. */
+    char messageText[0xFD4 - 0xFC0];
     /** The triangles of the track below the vehicle this frame. */
     s32 groundHits;
     /** The velocity SetVehicleVelocity() last gave. */
@@ -525,7 +531,7 @@ typedef struct Vehicle {
     Vec3f initialChasePosition;
     /** What CastRayAgainstTrack() found below the vehicle. */
     u16 groundInstances[RAY_INSTANCES];
-    s32 rayDone;
+    s32 groundInstanceCount;
     u16 nearbyInstances[RAY_INSTANCES];
     s32 nearbyInstanceCount;
     f32 groundDistance;
@@ -908,5 +914,63 @@ void InitVehicleColor(Vehicle *vehicle);
  * @ghidraAddress USA: 0x80226d7c
  */
 void UpdatePhysicsStep(Vehicle *vehicle);
+
+/**
+ * Put a vehicle on the grid for the start of the race, with its model, cameras and effects reset.
+ *
+ * @param vehicle The vehicle.
+ * @ghidraAddress USA: 0x80228a6c
+ */
+void SetupVehicleForRaceStart(Vehicle *vehicle);
+
+/**
+ * Set up a racer slot for the start of the race: attach its vehicle, or place it on the route of
+ * the track when it has none.
+ *
+ * @param slot The slot of g_aRacerSlots.
+ * @ghidraAddress USA: 0x802291f8
+ */
+void InitRacerSlot(RacerSlot *slot);
+
+/**
+ * Give each racer its place in the race, by how far along the route it is.
+ *
+ * @ghidraAddress USA: 0x80229550
+ */
+void SortRacersByPosition(void);
+
+/**
+ * Move the vehicles the computer drives to the racers nearest a player, so that the racers around
+ * the player are driven in full.
+ *
+ * @param player The vehicle of the player.
+ * @ghidraAddress USA: 0x80229700
+ */
+void ManageAiRacerSlots(Vehicle *player);
+
+/**
+ * Clear the flag of a vehicle that marks the change of its camera.
+ *
+ * @param vehicle The vehicle.
+ * @ghidraAddress USA: 0x8022bcac
+ */
+void ClearCameraChanged(Vehicle *vehicle);
+
+/**
+ * Move a racer for a frame: drive its vehicle, or advance it along the route of the track when it
+ * has none.
+ *
+ * @param slot The slot of g_aRacerSlots.
+ * @ghidraAddress USA: 0x8022c9fc
+ */
+void UpdateRacerSlotMotion(RacerSlot *slot);
+
+/**
+ * Update the race of a racer's vehicle for a frame: its timers, messages, progress and velocity.
+ *
+ * @param slot The slot of g_aRacerSlots.
+ * @ghidraAddress USA: 0x8022cf88
+ */
+void UpdateRacerSlotRaceState(RacerSlot *slot);
 
 #endif

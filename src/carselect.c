@@ -16,7 +16,7 @@
 #include "options.h"
 #include "paintshop.h"
 #include "playerselect.h"
-#include "racehud.h"
+#include "race.h"
 #include "render.h"
 #include "system.h"
 #include "texrect.h"
@@ -322,7 +322,7 @@ static inline void StartCarSelect(void) {
         }
         g_adwCarSelectModelSlots[i] = i;
         g_adwCarSelectState[i] = CAR_SELECT_CAR;
-        vehicle->rayDone = 0;
+        vehicle->groundInstanceCount = 0;
         vehicle->nearbyInstanceCount = 0;
         g_afCarSelectSlide[i] = 0.0f;
         g_dwPakDialogActive = FALSE;
@@ -803,7 +803,7 @@ static inline void LeaveCarSelect(void) {
                 } else {
                     ClearDisplayBuffers();
                     g_dwGameMode = GAME_MODE_AFTER_SEASON;
-                    SetCurrentScreenCallback(ProcessRaceHud);
+                    SetCurrentScreenCallback(ProcessRacingScreen);
                 }
             } else if (g_dwGameMode == GAME_MODE_TIME_ATTACK && g_dwSaveAvailable) {
                 g_bSaveLoadEntryPoint = SAVE_LOAD_FROM_TIME_ATTACK;
@@ -815,7 +815,7 @@ static inline void LeaveCarSelect(void) {
             SetCurrentScreenCallback(ProcessPaintShopScreen);
         } else {
             ClearDisplayBuffers();
-            SetCurrentScreenCallback(ProcessRaceHud);
+            SetCurrentScreenCallback(ProcessRacingScreen);
         }
     } else if (g_dwIsReviewMode) {
         if (g_dwGameMode == GAME_MODE_CHAMPIONSHIP && !g_bSeasonResultsShown) {

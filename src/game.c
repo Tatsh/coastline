@@ -15,8 +15,7 @@
 #include "vehicle.h"
 #include "weather.h"
 
-/* Assets at fixed cartridge offsets. */
-#define ROM_GHOST_RECORDING 0xAD400
+/* The cartridge offset of the music of the menus. */
 #define ROM_MENU_MUSIC 0xEBC00
 
 void ApplyWeather(u32 weather) {

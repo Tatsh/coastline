@@ -8,6 +8,23 @@
 
 #include <PR/ultratypes.h>
 
+/** The tracks, the mirrored ones TRACK_MIRRORED places after the others. */
+enum {
+    TRACK_DESERT,
+    TRACK_MOUNTAIN,
+    TRACK_COASTLINE,
+    TRACK_STRIP_MINE,
+    TRACK_JUNGLE,
+    TRACK_MIRROR_DESERT,
+    TRACK_MIRROR_MOUNTAIN,
+    TRACK_MIRROR_COASTLINE,
+    TRACK_MIRROR_STRIP_MINE,
+    TRACK_MIRROR_JUNGLE,
+};
+
+/** The places between a track and its mirrored version. */
+#define TRACK_MIRRORED 5
+
 /** The track chosen for the next race. @ghidraAddress USA: 0x8028b940 */
 extern u32 g_dwSelectedTrackId;
 

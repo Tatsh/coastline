@@ -6,6 +6,7 @@ AllocHeapAligned
 AllocHiliteBlock
 AllocLightBlock
 AnimateSplashModels
+AnimateStartLights
 ApplyAllForcesToBody
 ApplyCollisionImpulse
 ApplyRigidBodyImpulse
@@ -25,6 +26,7 @@ BuildSkewSymmetricMatrix
 BuildTrackTriangleCache
 BuildVisibleGrid
 BuildVisibleInstanceList
+CalculateScrollPositions
 CastRayAgainstTrack
 CastWheelRay
 CheatSetUnlockBit1000
@@ -95,6 +97,7 @@ DrawRedIntensityRect
 DrawRotatedModel
 DrawRumblePakPrompt
 DrawScreenFadeOverlay
+DrawScrollingText
 DrawSpeedAndHudOverlay
 DrawText
 DrawTexturedRect
@@ -154,6 +157,7 @@ IsTriangleInUnitCube
 IsVehicleModelLoaded
 IsWeatherSelectable
 LoadAndDecompressAsset
+LoadAndPlayTrackBgm
 LoadMenuItemModels
 LoadMusicModule
 LoadVehicleModel
@@ -203,7 +207,9 @@ ProcessPakDataScreen
 ProcessPakMenuScreen
 ProcessPlayerCountSelect
 ProcessRaceResultsScreen
+ProcessRacingScreen
 ProcessScreenState
+ProcessSeasonResults
 ProcessSplashScreens
 ProcessTrackMenu
 ProcessWeatherSelect
@@ -222,6 +228,7 @@ RenderHeadlightGlare
 RenderPrecipitationEffect
 RenderSkybox
 RenderSpeedometerNeedle
+RenderStartLights
 RenderTextToDisplayList
 RenderTireSmoke
 RenderTrackGeometry
@@ -241,7 +248,10 @@ ResetMusicPlaybackState
 ResetShadowBuffers
 ResetVehicleState
 ResolveVehicleTrackCollision
+RestoreRaceResultsFromSlots
 RotateVehicleByEuler
+SaveRaceResultsToSlots
+ScrollTextUp
 SeasonRecordsPreDrawCallback
 SegmentCrossesLine2D
 SetFadeTarget
@@ -259,6 +269,7 @@ SetTextGradientColorsFromBytes
 SetTextSize
 SetTextStyleBold
 SetTextStyleNormal
+SetTrackFromSeason
 SetVehicleFrameMatrix
 SetVehicleModelSlot
 SetVehiclePosition
@@ -270,7 +281,10 @@ SnapScreenFade
 SolveLinearSystem3x3
 SpawnExhaustParticle
 SpawnTireSmoke
+StartAttractDemo
 StartChampionshipRace
+StartCreditsRace
+StartEndingCredits
 StartRaceWithPlayerCount
 StartSoundChannelMuted
 StartTimeAttack
@@ -310,6 +324,7 @@ UpdateHudMessageTimers
 UpdateLightningFlash
 UpdateMusicPlayback
 UpdatePrecipitationParticles
+UpdateRaceAnimations
 UpdateRaceTimers
 UpdateRumblePaks
 UpdateStickRepeat

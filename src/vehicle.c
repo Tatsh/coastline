@@ -7,7 +7,7 @@
 #include "game.h"
 #include "mathutil.h"
 #include "physics.h"
-#include "racehud.h"
+#include "race.h"
 #include "timing.h"
 #include "trackselect.h"
 #include "tricache.h"
@@ -117,12 +117,12 @@ s32 UpdateVehicleTrackPosition(Vehicle *vehicle) {
         i = vehicle->pointIndex;
         if (!SegmentCrossesLine2D(&section->points[i].left,
                                   &section->points[i].right,
-                                  (Vec2f *)&vehicle->previousPosition,
-                                  (Vec2f *)&vehicle->frame.position) &&
+                                  &vehicle->previousPosition,
+                                  &vehicle->frame.position) &&
             !SegmentCrossesLine2D(&section->points[i + 1].left,
                                   &section->points[i + 1].right,
-                                  (Vec2f *)&vehicle->previousPosition,
-                                  (Vec2f *)&vehicle->frame.position) &&
+                                  &vehicle->previousPosition,
+                                  &vehicle->frame.position) &&
             Vec3fDistance(&vehicle->frame.position, &section->points[i].position) <
                 POINT_KEEP_DISTANCE) {
             p = i;
@@ -273,7 +273,7 @@ s32 CastRayAgainstTrack(Vec3f *outPoint,
                         Vec3f *outNormal,
                         Vec3f *origin,
                         u16 *groundInstances,
-                        s32 *done,
+                        s32 *groundInstanceCount,
                         u16 *nearbyInstances,
                         s32 *nearbyCount,
                         f32 *groundDistance,
@@ -412,7 +412,7 @@ s32 CastRayAgainstTrack(Vec3f *outPoint,
             *outNormal = ceilingNormal;
         }
     }
-    *done = 1;
+    *groundInstanceCount = 1;
     *nearbyCount = nearby;
     return groundHits;
 }
@@ -455,7 +455,7 @@ void UpdateVehiclePhysicsFrame(Vehicle *vehicle) {
                                                   &vehicle->frame.up,
                                                   &vehicle->frame.position,
                                                   vehicle->groundInstances,
-                                                  &vehicle->rayDone,
+                                                  &vehicle->groundInstanceCount,
                                                   vehicle->nearbyInstances,
                                                   &vehicle->nearbyInstanceCount,
                                                   &vehicle->groundDistance,
@@ -520,18 +520,18 @@ void SetVehiclePosition(Vehicle *vehicle, f32 x, f32 y, f32 z) {
     vehicle->frame.position.y = y;
     vehicle->sprayOrigin.y = y;
     vehicle->body.state.position.y = y;
-    vehicle->body.stepStates[1].position.y = y;
-    vehicle->body.stepStates[0].position.y = y;
+    vehicle->body.steps.states[1].position.y = y;
+    vehicle->body.steps.states[0].position.y = y;
     vehicle->frame.position.z = z;
     vehicle->sprayOrigin.z = z;
     vehicle->body.state.position.z = z;
-    vehicle->body.stepStates[1].position.z = z;
-    vehicle->body.stepStates[0].position.z = z;
+    vehicle->body.steps.states[1].position.z = z;
+    vehicle->body.steps.states[0].position.z = z;
     vehicle->frame.position.x = x;
     vehicle->sprayOrigin.x = x;
     vehicle->body.state.position.x = x;
-    vehicle->body.stepStates[1].position.x = x;
-    vehicle->body.stepStates[0].position.x = x;
+    vehicle->body.steps.states[1].position.x = x;
+    vehicle->body.steps.states[0].position.x = x;
     QuaternionToMatrix(vehicle->body.orientation, &vehicle->body.state);
 }
 
@@ -555,8 +555,8 @@ void InitVehicleOrientationFromAngle(Vehicle *vehicle, f32 angle) {
     vehicle->body.state.orientation.x = 0.0f;
     vehicle->body.state.orientation.y = 0.0f;
     vehicle->body.state.orientation.z = sinf(half);
-    vehicle->body.stepStates[1].orientation = vehicle->body.state.orientation;
-    vehicle->body.stepStates[0].orientation = vehicle->body.state.orientation;
+    vehicle->body.steps.states[1].orientation = vehicle->body.state.orientation;
+    vehicle->body.steps.states[0].orientation = vehicle->body.state.orientation;
     QuaternionToMatrix(vehicle->body.orientation, &vehicle->body.state);
 }
 
@@ -590,21 +590,21 @@ void MatrixToQuaternion(f32 m[4][4], Quaternion *q) {
 void SetVehicleFrameMatrix(Vehicle *vehicle, f32 m[4][4]) {
     memcpy(vehicle->matrix, m, sizeof(vehicle->matrix));
     MatrixToQuaternion(m, &vehicle->body.state.orientation);
-    vehicle->body.stepStates[1].orientation = vehicle->body.state.orientation;
-    vehicle->body.stepStates[0].orientation = vehicle->body.state.orientation;
+    vehicle->body.steps.states[1].orientation = vehicle->body.state.orientation;
+    vehicle->body.steps.states[0].orientation = vehicle->body.state.orientation;
     QuaternionToMatrix(vehicle->body.orientation, &vehicle->body.state);
 }
 
 void SetVehicleVelocity(Vehicle *vehicle, f32 x, f32 y, f32 z) {
     vehicle->body.state.velocity.x = x;
     vehicle->body.state.velocity.y = y;
-    vehicle->body.stepStates[1].velocity.x = x;
-    vehicle->body.stepStates[1].velocity.y = y;
+    vehicle->body.steps.states[1].velocity.x = x;
+    vehicle->body.steps.states[1].velocity.y = y;
     vehicle->body.state.velocity.z = z;
-    vehicle->body.stepStates[0].velocity.x = x;
-    vehicle->body.stepStates[0].velocity.y = y;
-    vehicle->body.stepStates[1].velocity.z = z;
-    vehicle->body.stepStates[0].velocity.z = z;
+    vehicle->body.steps.states[0].velocity.x = x;
+    vehicle->body.steps.states[0].velocity.y = y;
+    vehicle->body.steps.states[1].velocity.z = z;
+    vehicle->body.steps.states[0].velocity.z = z;
     vehicle->placedVelocity.x = x;
     vehicle->placedVelocity.y = y;
     vehicle->placedVelocity.z = z;
@@ -637,20 +637,20 @@ void RotateVehicleByEuler(Vehicle *vehicle, f32 yaw, f32 pitch, f32 roll) {
     turn.z = 0.0f;
     QuaternionMultiply(orientation, orientation, &turn);
     QuaternionNormalize(orientation);
-    vehicle->body.stepStates[1].orientation = *orientation;
-    vehicle->body.stepStates[0].orientation = *orientation;
+    vehicle->body.steps.states[1].orientation = *orientation;
+    vehicle->body.steps.states[0].orientation = *orientation;
 }
 
 void SetVehicleTurnRate(Vehicle *vehicle, f32 x, f32 y, f32 z) {
     vehicle->body.state.angularVelocity.x = x;
     vehicle->body.state.angularVelocity.y = y;
-    vehicle->body.stepStates[1].angularVelocity.x = x;
-    vehicle->body.stepStates[1].angularVelocity.y = y;
+    vehicle->body.steps.states[1].angularVelocity.x = x;
+    vehicle->body.steps.states[1].angularVelocity.y = y;
     vehicle->body.state.angularVelocity.z = z;
-    vehicle->body.stepStates[0].angularVelocity.x = x;
-    vehicle->body.stepStates[0].angularVelocity.y = y;
-    vehicle->body.stepStates[1].angularVelocity.z = z;
-    vehicle->body.stepStates[0].angularVelocity.z = z;
+    vehicle->body.steps.states[0].angularVelocity.x = x;
+    vehicle->body.steps.states[0].angularVelocity.y = y;
+    vehicle->body.steps.states[1].angularVelocity.z = z;
+    vehicle->body.steps.states[0].angularVelocity.z = z;
 }
 
 void InitVehicleColorAndPhysics(Vehicle *vehicle) {
@@ -852,21 +852,21 @@ void SimulateVehiclePhysicsSubstep(Vehicle *vehicle) {
     body->torque.y = 0.0f;
     body->torque.z = 0.0f;
     ComputeVehicleForces(body);
-    memcpy(&body->stepStates[1], state, sizeof(RigidBodyState));
-    ApplyRigidBodyImpulse(&body->stepStates[1], body, PHYSICS_STEP);
+    memcpy(&body->steps.states[1], state, sizeof(RigidBodyState));
+    ApplyRigidBodyImpulse(&body->steps.states[1], body, PHYSICS_STEP);
     for (axis = 0; axis < 3; axis++) {
         KeepUnreversed(VectorAxis(&state->angularVelocity, axis),
-                       *VectorAxis(&body->stepStates[1].angularVelocity, axis));
+                       *VectorAxis(&body->steps.states[1].angularVelocity, axis));
         KeepUnreversed(VectorAxis(&state->velocity, axis),
-                       *VectorAxis(&body->stepStates[1].velocity, axis));
+                       *VectorAxis(&body->steps.states[1].velocity, axis));
     }
 
     /* Move it through the frame against the track and the others, and hang the wheels. */
-    memcpy(&body->stepStates[0], state, sizeof(RigidBodyState));
-    ComputeDeltaQuaternion(&body->stepStates[0]);
-    ComputeDeltaQuaternion(&body->stepStates[0]);
+    memcpy(&body->steps.states[0], state, sizeof(RigidBodyState));
+    ComputeDeltaQuaternion(&body->steps.states[0]);
+    ComputeDeltaQuaternion(&body->steps.states[0]);
     StepVehicleCollisions(body);
-    memcpy(state, &body->stepStates[1], sizeof(RigidBodyState));
+    memcpy(state, &body->steps.states[1], sizeof(RigidBodyState));
     UpdateWheelHeights(body);
     for (i = 0; i < VEHICLE_WHEELS; i++) {
         QuaternionToMatrix(body->wheels[i]->orientation, &body->wheels[i]->state);
@@ -1317,7 +1317,7 @@ void InitVehiclePhysics(Vehicle *vehicle) {
         vehicle->frontLoad = 0.0f;
         vehicle->rearLoad = 0.0f;
         forces[VEHICLE_FORCE_DAMPER_3].next = &forces[VEHICLE_FORCE_DRAG];
-        body->tyreType = vehicle->tyreType;
+        body->tireType = vehicle->tireType;
         forces[VEHICLE_FORCE_DAMPER_1].next = &forces[VEHICLE_FORCE_DAMPER_3];
     }
     vehicle->rearSliding = 0;

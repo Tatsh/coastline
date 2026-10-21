@@ -15,6 +15,8 @@
 #include <PR/ultratypes.h>
 
 #include "audiomix.h"
+#include "render.h"
+#include "vehicle.h"
 
 /** The sample rate the audio interface is asked for. */
 #define AUDIO_FREQUENCY 22000
@@ -329,5 +331,83 @@ void AudioMixingThreadMain(void *arg);
  * @ghidraAddress USA: 0x80258040
  */
 void UnusedAudioMixingStub(void);
+
+/**
+ * Play the beep of the countdown, and of the laps.
+ *
+ * @ghidraAddress USA: 0x8022b3c4
+ */
+void PlayBeepSound(void);
+
+/**
+ * Play the sound of the start of the race.
+ *
+ * @ghidraAddress USA: 0x8022b3e4
+ */
+void PlayGoSound(void);
+
+/**
+ * Forget the nearest sound of the track found the last frame.
+ *
+ * @ghidraAddress USA: 0x8022b404
+ */
+void ResetSoundSourceTracking(void);
+
+/**
+ * Stop the sounds of the track and forget their sources.
+ *
+ * @ghidraAddress USA: 0x8022b428
+ */
+void ResetAllSoundState(void);
+
+/**
+ * Play the nearest sound of the track on its channel, panned and pitched for the camera.
+ *
+ * @ghidraAddress USA: 0x8022b534
+ */
+void UpdateAmbientSoundChannel(void);
+
+/**
+ * Offer the sound of the airplane as the nearest sound of the track, on the tracks that have one.
+ *
+ * @param instance The placed model of the airplane.
+ * @param position Its position.
+ * @param camera The camera that hears it.
+ * @ghidraAddress USA: 0x8022b954
+ */
+void UpdateAirplaneSound(s32 instance, Vec3f *position, CameraFrame *camera);
+
+/**
+ * Offer the sound of a waterfall as the nearest sound of the track, on the tracks that have one.
+ *
+ * @param instance The source the sound is kept under.
+ * @param position The position of the waterfall.
+ * @param camera The camera that hears it.
+ * @ghidraAddress USA: 0x8022ba10
+ */
+void UpdateWaterfallSound(s32 instance, Vec3f *position, CameraFrame *camera);
+
+/**
+ * Do nothing with a camera.
+ *
+ * @param camera The camera.
+ * @ghidraAddress USA: 0x8022ba98
+ */
+void StubSoundUpdate(CameraFrame *camera);
+
+/**
+ * Load the sound effects of a race and start their channels muted.
+ *
+ * @ghidraAddress USA: 0x8022baa0
+ */
+void LoadAllSoundEffects(void);
+
+/**
+ * Play the engine, the impacts and the rumble of a vehicle for a frame.
+ *
+ * @param vehicle The vehicle.
+ * @ghidraAddress USA: 0x8022bcb4
+ */
+void UpdateVehicleSounds(Vehicle *vehicle);
 
 #endif

@@ -83,4 +83,18 @@ void DrawTimingBars(void);
  */
 extern s32 g_dwHudDebugLevel;
 
+/**
+ * Keep the random seed and the clock of the frames while the race is paused.
+ *
+ * @ghidraAddress USA: 0x8022af34
+ */
+void SaveClockForPause(void);
+
+/**
+ * Give the random seed and the clock of the frames back once the pause ends.
+ *
+ * @ghidraAddress USA: 0x8022af64
+ */
+void RestoreClockAfterPause(void);
+
 #endif

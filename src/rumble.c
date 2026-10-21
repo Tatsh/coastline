@@ -1,7 +1,7 @@
 #include "rumble.h"
 
 #include "game.h"
-#include "racehud.h"
+#include "race.h"
 #include "system.h"
 #include "vehicle.h"
 
@@ -12,7 +12,7 @@ void UpdateRumblePaks(s32 unused) {
     int i;
 
     /* Stop every motor outside a running race, and probe for each Pak again. */
-    if (!IsCurrentScreen(ProcessRaceHud) || g_dwGameMode == GAME_MODE_AFTER_SEASON ||
+    if (!IsCurrentScreen(ProcessRacingScreen) || g_dwGameMode == GAME_MODE_AFTER_SEASON ||
         g_wRaceScreenLoopExited || g_dwRacePauseState) {
         for (i = 0; i < RUMBLE_CHANNELS; i++) {
             if (g_wSerialInterfaceIdle) {

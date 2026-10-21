@@ -7,7 +7,7 @@
 #include "game.h"
 #include "input.h"
 #include "options.h"
-#include "racehud.h"
+#include "race.h"
 #include "render.h"
 #include "system.h"
 #include "text.h"

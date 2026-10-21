@@ -1,6 +1,6 @@
 #include "input.h"
 
-#include "racehud.h"
+#include "race.h"
 #include "system.h"
 #include "vehicle.h"
 
@@ -166,7 +166,7 @@ void TranslateControllerInput(PlayerInputState *state) {
     }
 
     /* Map the buttons to the actions of a race by the layout of the player. */
-    if (IsCurrentScreen(ProcessRaceHud)) {
+    if (IsCurrentScreen(ProcessRacingScreen)) {
         switch (state->controllerLayout) {
         case 0:
         case 4:

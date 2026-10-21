@@ -6,7 +6,7 @@
 #include "input.h"
 #include "options.h"
 #include "playerselect.h"
-#include "racehud.h"
+#include "race.h"
 #include "racemenu.h"
 #include "splash.h"
 #include "system.h"

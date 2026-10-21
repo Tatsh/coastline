@@ -14,7 +14,7 @@
 #include "mainmenu.h"
 #include "options.h"
 #include "playerselect.h"
-#include "racehud.h"
+#include "race.h"
 #include "render.h"
 #include "replay.h"
 #include "system.h"
@@ -325,7 +325,7 @@ void ProcessTrackMenu(void) {
             InitVehicleColor(vehicle);
             vehicle->driver = UpdatePhysicsStep;
             InstallVehicleModel(vehicle, i, g_SeasonTable[g_aVehicles[0].profile->season].cars[i]);
-            vehicle->rayDone = 0;
+            vehicle->groundInstanceCount = 0;
             vehicle->nearbyInstanceCount = 0;
             vehicle->frame.forward.x = 1.0f;
             vehicle->frame.forward.y = 0.0f;

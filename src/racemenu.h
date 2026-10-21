@@ -53,6 +53,26 @@ typedef struct {
     u32 romEnd;
 } MenuItem;
 
+/** The classes of cars an arcade race keeps times for, by the tableIndex of their physics. */
+#define ARCADE_CAR_CLASSES 4
+
+/** The weathers an arcade race keeps times for. */
+#define ARCADE_WEATHERS 3
+
+/** The times of an arcade race on a track for a class of car and a weather. */
+typedef struct {
+    u8 unreconstructed0[0x18];
+    /** The time the race starts with, in seconds. */
+    f32 startTime;
+} ArcadeTimes;
+
+/** A track as the track menu lists it. */
+typedef struct {
+    MenuItem item;
+    u8 unreconstructed14[0x2C - 0x14];
+    ArcadeTimes arcadeTimes[ARCADE_CAR_CLASSES][ARCADE_WEATHERS];
+} TrackMenuItem;
+
 /** A routine that tells whether a menu item may be chosen. */
 typedef s32 (*MenuItemFilter)(s32 item);
 
@@ -206,7 +226,8 @@ typedef struct {
     s32 pointsNeeded;
     /** The two cars of the season, which its records show. */
     u8 cars[2];
-    u8 unreconstructed12[0x14 - 0x12];
+    /** The cars a profile unlocks by passing the season, as bits of its unlocks. */
+    u16 unlocks;
     /** The track and the weather of each race. */
     u8 races[SEASON_RACES][2];
 } Season;

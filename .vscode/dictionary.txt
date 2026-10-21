@@ -8,10 +8,10 @@ addiu
 addrs
 addu
 airplane
+airplanetrigger
 alabel
 alphadither
 andi
-anim
 apsz
 argparse
 asciz
@@ -53,6 +53,7 @@ coveragerc
 createmesgqueue
 createthread
 ctype
+cupra
 cycletype
 dacrate
 daddu
@@ -297,7 +298,6 @@ pyinstaller
 pylock
 pyproject
 qstringbuilder
-racehud
 racemenu
 ramarray
 ramreadformat

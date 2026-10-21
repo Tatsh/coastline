@@ -424,7 +424,7 @@ glabel RenderDecalPreview3D
     /* 44124 80243124 00000000 */   nop
     /* 44128 80243128 3C0D8029 */  lui        $t5, %hi(gDecalBrushState)
     /* 4412C 8024312C 91ADDBBC */  lbu        $t5, %lo(gDecalBrushState)($t5)
-    /* 44130 80243130 3C028032 */  lui        $v0, %hi(g_dwWheelPosRearR)
+    /* 44130 80243130 3C028032 */  lui        $v0, %hi(D_8031D7BC)
     /* 44134 80243134 24010001 */  addiu      $at, $zero, 0x1
     /* 44138 80243138 000D6180 */  sll        $t4, $t5, 6
     /* 4413C 8024313C 018D6021 */  addu       $t4, $t4, $t5
@@ -432,7 +432,7 @@ glabel RenderDecalPreview3D
     /* 44144 80243144 018D6021 */  addu       $t4, $t4, $t5
     /* 44148 80243148 000C6100 */  sll        $t4, $t4, 4
     /* 4414C 8024314C 004C1021 */  addu       $v0, $v0, $t4
-    /* 44150 80243150 8C42D7BC */  lw         $v0, %lo(g_dwWheelPosRearR)($v0)
+    /* 44150 80243150 8C42D7BC */  lw         $v0, %lo(D_8031D7BC)($v0)
     /* 44154 80243154 00002025 */  or         $a0, $zero, $zero
     /* 44158 80243158 3C058029 */  lui        $a1, %hi(g_dwScreenHeight)
     /* 4415C 8024315C 1441000D */  bne        $v0, $at, .L80243194

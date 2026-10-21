@@ -11,6 +11,7 @@
 #include "game.h"
 #include "input.h"
 #include "mathutil.h"
+#include "race.h"
 #include "render.h"
 #include "system.h"
 #include "timing.h"
@@ -570,19 +571,18 @@ void BuildVisibleInstanceList(void) {
             g_nVisibleCellIdxFar = g_nVisibleInstanceCount;
         }
         /* The model an animation flies is listed with every cell while it is in view. */
-        if (g_dwSplineAnimInstance != 0 &&
-            g_abInstanceVisibilityMask[g_dwSplineAnimInstance] != 0 &&
-            IsPointVisible(g_LoadedTrack.instances[g_dwSplineAnimInstance].matrix[3][0],
-                           g_LoadedTrack.instances[g_dwSplineAnimInstance].matrix[3][1])) {
-            g_awVisibleInstanceList[g_nVisibleInstanceCount++] = g_dwSplineAnimInstance;
-            g_abInstanceVisibilityMask[g_dwSplineAnimInstance] = 0;
+        if (g_dwAirplaneInstance != 0 && g_abInstanceVisibilityMask[g_dwAirplaneInstance] != 0 &&
+            IsPointVisible(g_LoadedTrack.instances[g_dwAirplaneInstance].matrix[3][0],
+                           g_LoadedTrack.instances[g_dwAirplaneInstance].matrix[3][1])) {
+            g_awVisibleInstanceList[g_nVisibleInstanceCount++] = g_dwAirplaneInstance;
+            g_abInstanceVisibilityMask[g_dwAirplaneInstance] = 0;
         }
         found = LookupInstanceGridCell(cell->column, cell->row);
         cursor.start = found;
         cursor.count = found >> 16;
         if (found != 0) {
             while ((index = NextGridCellInstance(&cursor)) != 0) {
-                if (g_abInstanceVisibilityMask[index] != 0 && g_dwSplineAnimInstance != index) {
+                if (g_abInstanceVisibilityMask[index] != 0 && g_dwAirplaneInstance != index) {
                     g_awVisibleInstanceList[g_nVisibleInstanceCount++] = index;
                     g_abInstanceVisibilityMask[index] = 0;
                 }

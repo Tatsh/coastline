@@ -129,4 +129,11 @@ void DrawHudMessage(void);
  */
 void DrawSpeedAndHudOverlay(void);
 
+/**
+ * Whether the views draw the HUD and the help of the instant replay.
+ *
+ * @ghidraAddress USA: 0x8028aa6c
+ */
+extern s32 g_bShowHudHelpText;
+
 #endif

@@ -30,19 +30,19 @@ nonmatching D_802AC410, 0x4BAE0
 dlabel D_802AC410
     /* 802AC410 */ .space 0x4BAE0
 
-nonmatching gRacePhaseTimer, 0x4
+nonmatching g_fRacePhaseTimer, 0x4
 
-dlabel gRacePhaseTimer
+dlabel g_fRacePhaseTimer
     /* 802F7EF0 */ .space 0x04
 
-nonmatching gRacePhaseStep, 0x4
+nonmatching g_dwStartLightsStep, 0x4
 
-dlabel gRacePhaseStep
+dlabel g_dwStartLightsStep
     /* 802F7EF4 */ .space 0x04
 
-nonmatching gRacePhaseTableIdx, 0x4
+nonmatching g_dwRacePhaseIndex, 0x4
 
-dlabel gRacePhaseTableIdx
+dlabel g_dwRacePhaseIndex
     /* 802F7EF8 */ .space 0x04
 
 nonmatching D_802F7EFC, 0x4
@@ -71,60 +71,35 @@ nonmatching g_abScreenStateBssBase, 0x5D60
 dlabel g_abScreenStateBssBase
     /* 80310000 */ .space 0x5D60
 
-nonmatching g_dwPhysicsReserved0, 0x4
+nonmatching g_adwSavedResultPositions, 0x8
 
-dlabel g_dwPhysicsReserved0
-    /* 80315D60 */ .space 0x04
+dlabel g_adwSavedResultPositions
+    /* 80315D60 */ .space 0x08
 
-nonmatching g_dwPhysicsReserved1, 0x4
+nonmatching g_afSavedResultTimes, 0x8
 
-dlabel g_dwPhysicsReserved1
-    /* 80315D64 */ .space 0x04
+dlabel g_afSavedResultTimes
+    /* 80315D68 */ .space 0x08
 
-nonmatching g_dwPhysicsReserved2, 0x4
+nonmatching g_afSavedResultBestLapTimes, 0x8
 
-dlabel g_dwPhysicsReserved2
-    /* 80315D68 */ .space 0x04
+dlabel g_afSavedResultBestLapTimes
+    /* 80315D70 */ .space 0x08
 
-nonmatching g_dwPhysicsReserved3, 0x4
+nonmatching g_aafSavedResultLapTimes, 0x28
 
-dlabel g_dwPhysicsReserved3
-    /* 80315D6C */ .space 0x04
-
-nonmatching g_dwPhysicsReserved4, 0x4
-
-dlabel g_dwPhysicsReserved4
-    /* 80315D70 */ .space 0x04
-
-nonmatching g_dwPhysicsReserved5, 0x4
-
-dlabel g_dwPhysicsReserved5
-    /* 80315D74 */ .space 0x04
-
-nonmatching g_adwSavedResultLapTimes, 0x28
-
-dlabel g_adwSavedResultLapTimes
+dlabel g_aafSavedResultLapTimes
     /* 80315D78 */ .space 0x28
 
-nonmatching g_dwPhysicsReserved6, 0x4
+nonmatching g_adwSavedResultBestLaps, 0x8
 
-dlabel g_dwPhysicsReserved6
-    /* 80315DA0 */ .space 0x04
+dlabel g_adwSavedResultBestLaps
+    /* 80315DA0 */ .space 0x08
 
-nonmatching g_dwPhysicsReserved7, 0x4
+nonmatching g_adwSavedResultLaps, 0x8
 
-dlabel g_dwPhysicsReserved7
-    /* 80315DA4 */ .space 0x04
-
-nonmatching g_dwPhysicsReserved8, 0x4
-
-dlabel g_dwPhysicsReserved8
-    /* 80315DA8 */ .space 0x04
-
-nonmatching g_dwPhysicsReserved9, 0x4
-
-dlabel g_dwPhysicsReserved9
-    /* 80315DAC */ .space 0x04
+dlabel g_adwSavedResultLaps
+    /* 80315DA8 */ .space 0x08
 
 nonmatching g_apszSeasonResultMsgLines, 0x4
 
@@ -147,24 +122,24 @@ nonmatching g_szFormatBuffer, 0x20
 dlabel g_szFormatBuffer
     /* 80315DD8 */ .space 0x20
 
-nonmatching g_adwSoundAnimInstances, 0x40
+nonmatching g_adwWaterfallInstances, 0x40
 
-dlabel g_adwSoundAnimInstances
+dlabel g_adwWaterfallInstances
     /* 80315DF8 */ .space 0x40
 
-nonmatching gScreenClearCounter, 0x4
+nonmatching g_dwScreenClearFrames, 0x4
 
-dlabel gScreenClearCounter
+dlabel g_dwScreenClearFrames
     /* 80315E38 */ .space 0x04
 
-nonmatching gBestReplayTime, 0x4
+nonmatching g_dwBestReplayLength, 0x4
 
-dlabel gBestReplayTime
+dlabel g_dwBestReplayLength
     /* 80315E3C */ .space 0x04
 
-nonmatching gBestReplayPlayerIdx, 0x4
+nonmatching g_dwBestReplayPlayer, 0x4
 
-dlabel gBestReplayPlayerIdx
+dlabel g_dwBestReplayPlayer
     /* 80315E40 */ .space 0x04
 
 nonmatching D_80315E44, 0x4
@@ -193,19 +168,19 @@ nonmatching g_dwRaceCaptionIndex, 0x4
 dlabel g_dwRaceCaptionIndex
     /* 80315E6C */ .space 0x04
 
-nonmatching gPostRaceAction, 0x4
+nonmatching g_bDemoInterrupted, 0x4
 
-dlabel gPostRaceAction
+dlabel g_bDemoInterrupted
     /* 80315E70 */ .space 0x04
 
-nonmatching gPrevViewportCount, 0x4
+nonmatching g_dwPrevViewportCount, 0x4
 
-dlabel gPrevViewportCount
+dlabel g_dwPrevViewportCount
     /* 80315E74 */ .space 0x04
 
-nonmatching gRacePhase, 0x4
+nonmatching g_dwRacePhase, 0x4
 
-dlabel gRacePhase
+dlabel g_dwRacePhase
     /* 80315E78 */ .space 0x04
 
 nonmatching D_80315E7C, 0x4
@@ -1765,24 +1740,24 @@ nonmatching g_pActiveProfile, 0x4
 dlabel g_pActiveProfile
     /* 8031C5BC */ .space 0x04
 
-nonmatching g_bCollisionLayer0, 0x4
+nonmatching D_8031C5C0, 0x4
 
-dlabel g_bCollisionLayer0
+dlabel D_8031C5C0
     /* 8031C5C0 */ .space 0x04
 
-nonmatching g_bCollisionLayer1, 0x4
+nonmatching D_8031C5C4, 0x4
 
-dlabel g_bCollisionLayer1
+dlabel D_8031C5C4
     /* 8031C5C4 */ .space 0x04
 
-nonmatching g_bCollisionLayer2, 0x4
+nonmatching D_8031C5C8, 0x4
 
-dlabel g_bCollisionLayer2
+dlabel D_8031C5C8
     /* 8031C5C8 */ .space 0x04
 
-nonmatching g_bCollisionLayer3, 0x64
+nonmatching D_8031C5CC, 0x64
 
-dlabel g_bCollisionLayer3
+dlabel D_8031C5CC
     /* 8031C5CC */ .space 0x64
 
 nonmatching g_aVehicles_pRacerSlot, 0x8
@@ -1846,14 +1821,14 @@ nonmatching g_aVehicles_RacePosition, 0x4
 dlabel g_aVehicles_RacePosition
     /* 8031C70C */ .space 0x04
 
-nonmatching g_pszVehicle0HudMessage, 0x4
+nonmatching D_8031C710, 0x4
 
-dlabel g_pszVehicle0HudMessage
+dlabel D_8031C710
     /* 8031C710 */ .space 0x04
 
-nonmatching g_fVehicle0HudMessageScale, 0x4
+nonmatching D_8031C714, 0x4
 
-dlabel g_fVehicle0HudMessageScale
+dlabel D_8031C714
     /* 8031C714 */ .space 0x04
 
 nonmatching D_8031C718, 0x4
@@ -1950,16 +1925,10 @@ nonmatching g_awLapTimestamps, 0x40
 dlabel g_awLapTimestamps
     /* 8031D720 */ .space 0x40
 
-nonmatching g_dwWheelPosFrontR, 0x4
+nonmatching D_8031D760, 0x44
 
-dlabel g_dwWheelPosFrontR
-    /* 8031D760 */ .space 0x04
-
-nonmatching D_8031D764, 0x40
-
-/* Automatically generated and unreferenced pad */
-dlabel D_8031D764
-    /* 8031D764 */ .space 0x40
+dlabel D_8031D760
+    /* 8031D760 */ .space 0x44
 
 nonmatching g_dwWheelPosRearL, 0x4
 
@@ -1977,9 +1946,9 @@ nonmatching D_8031D7B8, 0x4
 dlabel D_8031D7B8
     /* 8031D7B8 */ .space 0x04
 
-nonmatching g_dwWheelPosRearR, 0x4
+nonmatching D_8031D7BC, 0x4
 
-dlabel g_dwWheelPosRearR
+dlabel D_8031D7BC
     /* 8031D7BC */ .space 0x04
 
 nonmatching g_bWheelOnGround0, 0x1
@@ -2002,9 +1971,9 @@ nonmatching g_bWheelOnGround3, 0x1
 dlabel g_bWheelOnGround3
     /* 8031D7C3 */ .space 0x01
 
-nonmatching g_aflVehicleSpeedScale, 0x4
+nonmatching D_8031D7C4, 0x4
 
-dlabel g_aflVehicleSpeedScale
+dlabel D_8031D7C4
     /* 8031D7C4 */ .space 0x04
 
 nonmatching g_dwSuspensionTravel0, 0x4
@@ -2322,100 +2291,10 @@ nonmatching D_803218F8, 0x20A8
 dlabel D_803218F8
     /* 803218F8 */ .space 0x20A8
 
-nonmatching g_aRacerSlots, 0x44
+nonmatching g_aRacerSlots, 0x960
 
 dlabel g_aRacerSlots
-    /* 803239A0 */ .space 0x44
-
-nonmatching g_aRacerSlots_Lap, 0xC
-
-dlabel g_aRacerSlots_Lap
-    /* 803239E4 */ .space 0x0C
-
-nonmatching g_aRacerSlots_RaceDistance, 0x10
-
-dlabel g_aRacerSlots_RaceDistance
-    /* 803239F0 */ .space 0x10
-
-nonmatching g_dwMinimapScale, 0x4
-
-dlabel g_dwMinimapScale
-    /* 80323A00 */ .space 0x04
-
-nonmatching g_aRacerSlots_RacerIndex, 0x4
-
-dlabel g_aRacerSlots_RacerIndex
-    /* 80323A04 */ .space 0x04
-
-nonmatching g_aRacerSlots_Flags, 0x4
-
-dlabel g_aRacerSlots_Flags
-    /* 80323A08 */ .space 0x04
-
-nonmatching D_80323A0C, 0xC
-
-/* Automatically generated and unreferenced pad */
-dlabel D_80323A0C
-    /* 80323A0C */ .space 0x0C
-
-nonmatching g_aRacerSlotEntry1, 0x44
-
-dlabel g_aRacerSlotEntry1
-    /* 80323A18 */ .space 0x44
-
-nonmatching g_dwMinimapPosY, 0x4
-
-dlabel g_dwMinimapPosY
-    /* 80323A5C */ .space 0x04
-
-nonmatching D_80323A60, 0x8
-
-/* Automatically generated and unreferenced pad */
-dlabel D_80323A60
-    /* 80323A60 */ .space 0x08
-
-nonmatching g_dwMinimapAlpha, 0x4
-
-dlabel g_dwMinimapAlpha
-    /* 80323A68 */ .space 0x04
-
-nonmatching D_80323A6C, 0xC
-
-/* Automatically generated and unreferenced pad */
-dlabel D_80323A6C
-    /* 80323A6C */ .space 0x0C
-
-nonmatching g_dwMinimapReserved0, 0x4
-
-dlabel g_dwMinimapReserved0
-    /* 80323A78 */ .space 0x04
-
-nonmatching g_dwMinimapReserved1, 0x4
-
-dlabel g_dwMinimapReserved1
-    /* 80323A7C */ .space 0x04
-
-nonmatching g_dwMinimapReserved2, 0x4
-
-dlabel g_dwMinimapReserved2
-    /* 80323A80 */ .space 0x04
-
-nonmatching D_80323A84, 0x6C
-
-/* Automatically generated and unreferenced pad */
-dlabel D_80323A84
-    /* 80323A84 */ .space 0x6C
-
-nonmatching g_dwMinimapReserved3, 0x4
-
-dlabel g_dwMinimapReserved3
-    /* 80323AF0 */ .space 0x04
-
-nonmatching D_80323AF4, 0x80C
-
-/* Automatically generated and unreferenced pad */
-dlabel D_80323AF4
-    /* 80323AF4 */ .space 0x80C
+    /* 803239A0 */ .space 0x960
 
 nonmatching g_aSeasonSaveBuffers, 0x250
 
@@ -2432,9 +2311,9 @@ nonmatching g_aInflateWindowBuffer, 0x11980
 dlabel g_aInflateWindowBuffer
     /* 8033CBF0 */ .space 0x11980
 
-nonmatching g_abCarDecalSaveData, 0x40
+nonmatching g_abPausedClockState, 0x40
 
-dlabel g_abCarDecalSaveData
+dlabel g_abPausedClockState
     /* 8034E570 */ .space 0x40
 
 nonmatching g_adwVisibleGridRowMinCol, 0x100

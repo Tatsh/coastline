@@ -4,7 +4,7 @@
 #include <PR/gu.h>
 #include <PR/os_libc.h>
 
-#include "racehud.h"
+#include "race.h"
 #include "render.h"
 #include "system.h"
 #include "track.h"
@@ -250,7 +250,7 @@ void EmitTireSpray(Vehicle *vehicle) {
     s32 sheltered, holding, throwing, surface, wheel;
 
     sheltered = FALSE;
-    if (vehicle->rayDone &&
+    if (vehicle->groundInstanceCount &&
         (g_LoadedTrack.instances[vehicle->groundInstances[0]].flags & TRACK_INSTANCE_SHELTER)) {
         sheltered = TRUE;
     }
