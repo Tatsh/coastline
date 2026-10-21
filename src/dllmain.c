@@ -1,0 +1,25 @@
+/**
+ * @file
+ * Entry point the C runtime calls when the library is loaded and unloaded.
+ */
+#include <windows.h>
+
+#if TGR_RENDERER == TGR_RENDERER_GLIDE
+extern BOOL(WINAPI *_pRawDllMain)(HINSTANCE, DWORD, LPVOID);
+#endif
+
+/**
+ * Accept every notification. The Glide library also turns off the thread attach and detach
+ * notifications on process attach, unless the runtime registered a raw entry point.
+ *
+ * @ghidraAddress BRD3D: 0x10086b90
+ * @ghidraAddress BRGlide: 0x10074b00
+ */
+BOOL WINAPI DllMain(HINSTANCE hInstance, DWORD dwReason, LPVOID pReserved) {
+#if TGR_RENDERER == TGR_RENDERER_GLIDE
+    if (dwReason == DLL_PROCESS_ATTACH && _pRawDllMain == NULL) {
+        DisableThreadLibraryCalls(hInstance);
+    }
+#endif
+    return TRUE;
+}
