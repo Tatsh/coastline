@@ -97,13 +97,13 @@
 #define AI_MAX_SPIN 1.0f
 
 void ClearPerFrameVariables(void) {
-    PerFrameVariable *entry;
+    s32 i;
     u8 *byte;
     u8 *end;
 
-    for (entry = g_aPerFrameVariables; entry->start != NULL; entry++) {
-        byte = entry->start;
-        end = byte + entry->size;
+    for (i = 0; g_aPerFrameVariables[i].start != NULL; i++) {
+        byte = g_aPerFrameVariables[i].start;
+        end = byte + g_aPerFrameVariables[i].size;
         while (byte < end) {
             *byte++ = 0;
         }

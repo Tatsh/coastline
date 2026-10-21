@@ -53,36 +53,36 @@
 
 void ChooseVehicleCar(Vehicle *vehicle) {
     s32 season = g_aVehicles[0].profile->season;
-    s32 unlockSeason = season < CAR_CHOICE_SEASONS ? season : CAR_CHOICE_SEASONS - 1;
+    s32 unlockSeason = season >= CAR_CHOICE_SEASONS ? CAR_CHOICE_SEASONS - 1 : season;
     s16 unlocks;
     s32 car;
 
-    if (vehicle->index < (s32)g_dwNumLocalPlayers) {
-        if (g_dwGameMode == GAME_MODE_CHAMPIONSHIP) {
-            vehicle->carModel = g_SeasonTable[season].cars[0];
+    if (vehicle->index >= (s32)g_dwNumLocalPlayers) {
+        if (g_dwGameMode == GAME_MODE_ARCADE) {
+            vehicle->carModel = g_aVehicles[0].carModel;
+            return;
         }
-        return;
-    }
-    if (g_dwGameMode == GAME_MODE_ARCADE) {
-        vehicle->carModel = g_aVehicles[0].carModel;
-        return;
-    }
-    /* The lowest car the season unlocks; the clamped season chooses it, the season itself the
-     * first car. */
-    unlocks = g_SeasonTable[unlockSeason].unlocks;
-    for (car = 0; car < UNLOCK_BITS; car++) {
-        if (unlocks & 1) {
-            break;
+        /* The lowest car the season unlocks; the clamped season chooses it, the season itself
+         * the first car. */
+        unlocks = g_SeasonTable[unlockSeason].unlocks;
+        for (car = 0; car < UNLOCK_BITS; car++) {
+            if (unlocks & 1) {
+                break;
+            }
+            unlocks >>= 1;
         }
-        unlocks >>= 1;
-    }
-    if (car == UNLOCK_BITS) {
-        car = FALLBACK_CAR;
-    }
-    if ((s32)g_dwNumLocalPlayers < vehicle->index) {
-        vehicle->carModel = car;
-    } else {
+        if (car == UNLOCK_BITS) {
+            car = FALLBACK_CAR;
+        }
+        if ((s32)g_dwNumLocalPlayers < vehicle->index) {
+            vehicle->carModel = car;
+            return;
+        }
         vehicle->carModel = g_SeasonTable[season].cars[vehicle->index - g_dwNumLocalPlayers];
+        return;
+    }
+    if (g_dwGameMode == GAME_MODE_CHAMPIONSHIP) {
+        vehicle->carModel = g_SeasonTable[season].cars[0];
     }
 }
 

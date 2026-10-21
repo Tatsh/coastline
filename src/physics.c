@@ -61,7 +61,6 @@ static inline u8 ImpactVolume(f32 speed) {
 
 void ResetCollisionCaches(void) {
     TrackTriangle *triangle;
-    CollisionTriangleNode *node;
     s32 slot, i;
 
     /* Every slot then holds cell 0, empty, until it is reused. */
@@ -80,11 +79,9 @@ void ResetCollisionCaches(void) {
             triangle->vertices[2] = NULL;
         }
     }
-    for (node = g_aCollisionTriangleNodes;
-         node < g_aCollisionTriangleNodes + COLLISION_TRIANGLE_NODES;
-         node++) {
-        node->triangle = NULL;
-        node->next = NULL;
+    for (slot = 0; slot < COLLISION_TRIANGLE_NODES; slot++) {
+        g_aCollisionTriangleNodes[slot].triangle = NULL;
+        g_aCollisionTriangleNodes[slot].next = NULL;
     }
     g_pCollisionTriangleList = NULL;
     g_pNextCollisionTriangleNode = NULL;
@@ -197,62 +194,67 @@ void ComputeVehicleForces(RigidBody *body) {
 }
 
 /* The velocity the spin of a body gives a point at an arm from its middle. */
-static inline void SpinVelocity(Vec3f *turn, RigidBody *body, Vec3f *arm) {
-    Vec3f *spin = &body->state.angularVelocity;
-
-    turn->x = spin->y * arm->z - arm->y * spin->z;
-    turn->y = spin->z * arm->x - arm->z * spin->x;
-    turn->z = spin->x * arm->y - arm->x * spin->y;
-}
+#define SPIN_VELOCITY(turn, body, arm)                                                             \
+    (turn)->x =                                                                                    \
+        (body)->state.angularVelocity.y * (arm)->z - (arm)->y * (body)->state.angularVelocity.z;   \
+    (turn)->y =                                                                                    \
+        (body)->state.angularVelocity.z * (arm)->x - (arm)->z * (body)->state.angularVelocity.x;   \
+    (turn)->z =                                                                                    \
+        (body)->state.angularVelocity.x * (arm)->y - (arm)->x * (body)->state.angularVelocity.y
 
 /* Copy the velocity of a body to a vector. */
-static inline void CopyBodyVelocity(Vec3f *out, RigidBody *body) {
-    out->x = body->state.velocity.x;
-    out->y = body->state.velocity.y;
-    out->z = body->state.velocity.z;
-}
+#define COPY_BODY_VELOCITY(out, body)                                                              \
+    (out)->x = (body)->state.velocity.x;                                                           \
+    (out)->y = (body)->state.velocity.y;                                                           \
+    (out)->z = (body)->state.velocity.z
 
 void ComputeWheelLocalVelocity(Vec3f *out, RigidBody *body, RigidBody *wheel) {
-    Vec3f point, arm, turn;
+    Vec3f point, spin, arm;
+    Vec3f *turn;
 
     point.x = wheel->state.position.x;
     point.y = wheel->state.position.y;
     point.z = 0.0f;
     Mtx3x3MulVec3f(&arm, body->orientation, &point);
-    CopyBodyVelocity(out, body);
-    SpinVelocity(&turn, body, &arm);
-    point.x = turn.x + out->x;
-    point.y = turn.y + out->y;
-    point.z = turn.z + out->z;
+    COPY_BODY_VELOCITY(out, body);
+    turn = &spin;
+    SPIN_VELOCITY(turn, body, &arm);
+    point.x = turn->x + out->x;
+    point.y = turn->y + out->y;
+    point.z = turn->z + out->z;
     Mtx4fInverseRotate(out, body->orientation, &point);
 }
 
 void GetWheelWorldVelocity(Vec3f *out, RigidBody *body, RigidBody *wheel) {
-    Vec3f point, arm, turn;
+    Vec3f point, spin, arm;
+    Vec3f *turn;
 
     point.x = wheel->state.position.x;
     point.y = wheel->state.position.y;
     point.z = wheel->state.position.z;
     Mtx3x3MulVec3f(&arm, body->orientation, &point);
-    CopyBodyVelocity(out, body);
-    SpinVelocity(&turn, body, &arm);
-    out->x = turn.x + out->x;
-    out->y = turn.y + out->y;
-    out->z = turn.z + out->z;
+    COPY_BODY_VELOCITY(out, body);
+    turn = &spin;
+    SPIN_VELOCITY(turn, body, &arm);
+    out->x = turn->x + out->x;
+    out->y = turn->y + out->y;
+    out->z = turn->z + out->z;
 }
 
 void GetBodyPointVelocity(Vec3f *out, RigidBody *body, Vec3f *point) {
-    Vec3f copy, arm, turn;
+    Vec3f copy, spin, arm;
+    Vec3f *turn;
 
     copy.x = point->x;
     copy.y = point->y;
     copy.z = point->z;
     Mtx3x3MulVec3f(&arm, body->orientation, &copy);
-    CopyBodyVelocity(out, body);
-    SpinVelocity(&turn, body, &arm);
-    out->x = turn.x + out->x;
-    out->y = turn.y + out->y;
-    out->z = turn.z + out->z;
+    COPY_BODY_VELOCITY(out, body);
+    turn = &spin;
+    SPIN_VELOCITY(turn, body, &arm);
+    out->x = turn->x + out->x;
+    out->y = turn->y + out->y;
+    out->z = turn->z + out->z;
 }
 
 /* The slowing a brake gives a wheel against its spin. */
