@@ -33,6 +33,20 @@ extern s32 g_dwReplayCameraHoldTimer;
 extern s32 g_dwReplayCameraSwitchTimer;
 
 /**
+ * The placed models the ray cast from the active camera met this frame.
+ *
+ * @ghidraAddress USA: 0x8028ab00
+ */
+extern s32 g_dwCameraRayHitCount;
+
+/**
+ * The indices of the placed models the ray cast from the active camera met.
+ *
+ * @ghidraAddress USA: 0x8031b248
+ */
+extern u16 g_awCameraRayHitInstances[];
+
+/**
  * Keep a camera out of the track: if the line from the look-at point of a vehicle to the camera
  * passes through a triangle, and so does the line from a target point, put the camera just in
  * front of the triangle, no farther from the look-at point than it was.

@@ -46,6 +46,12 @@ extern Mtx *g_pProjectionMtx;
 /** A matrix the renderer builds before converting it. @ghidraAddress USA: 0x8031ab10 */
 extern f32 g_afMvpMatrix[4][4];
 
+/** The perspective of the current view. @ghidraAddress USA: 0x8031aa90 */
+extern f32 g_afPerspectiveMatrix[4][4];
+
+/** A matrix the renderer fills as an operand. @ghidraAddress USA: 0x8031ab50 */
+extern f32 g_afScratchMatrix[4][4];
+
 /** The texture filter of the other modes. @ghidraAddress USA: 0x8028a898 */
 extern u32 g_dwTextureFilterMode;
 

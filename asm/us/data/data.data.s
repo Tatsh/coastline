@@ -31198,11 +31198,11 @@ dlabel g_dwHudRaycastNormal
     /* 8BAFC 8028AAFC 00000000 */ .word 0x00000000
 enddlabel g_dwHudRaycastNormal
 
-nonmatching g_dwHudRaycastHitCount
+nonmatching g_dwCameraRayHitCount
 
-dlabel g_dwHudRaycastHitCount
+dlabel g_dwCameraRayHitCount
     /* 8BB00 8028AB00 00000000 */ .word 0x00000000
-enddlabel g_dwHudRaycastHitCount
+enddlabel g_dwCameraRayHitCount
 
 nonmatching g_dwHudRaycastResult
 
@@ -34687,11 +34687,11 @@ dlabel g_fWindAngle
     /* 8D808 8028C808 00000000 */ .float 0
 enddlabel g_fWindAngle
 
-nonmatching g_fWindDirectionFactor
+nonmatching g_fWindStrength
 
-dlabel g_fWindDirectionFactor
+dlabel g_fWindStrength
     /* 8D80C 8028C80C 3F000000 */ .float 0.5
-enddlabel g_fWindDirectionFactor
+enddlabel g_fWindStrength
 
 nonmatching g_fRainCameraSpeed
 
@@ -34711,11 +34711,11 @@ dlabel g_dwLightningFlashCounter
     /* 8D818 8028C818 FFFFFFFF */ .word 0xFFFFFFFF
 enddlabel g_dwLightningFlashCounter
 
-nonmatching g_nRainSubdivideDepth
+nonmatching g_nLightningBoltDepth
 
-dlabel g_nRainSubdivideDepth
+dlabel g_nLightningBoltDepth
     /* 8D81C 8028C81C 00000000 */ .word 0x00000000
-enddlabel g_nRainSubdivideDepth
+enddlabel g_nLightningBoltDepth
 
 nonmatching g_fLightningFlashTimer
 

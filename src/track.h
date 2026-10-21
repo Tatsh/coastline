@@ -26,14 +26,28 @@ typedef struct ModelNode {
 /** The flag a walk sets on the nodes it has visited. */
 #define MODEL_NODE_VISITED 0x8000
 
+/** A model placed on the track. Its fields join this structure as they are reconstructed. */
+typedef struct {
+    u8 unreconstructed0[0x4C];
+    /** The TRACK_INSTANCE_ flags. */
+    u16 flags;
+    u8 unreconstructed4E[0x54 - 0x4E];
+} TrackInstance;
+
+/** The flag of a placed model that keeps rain and snow off a camera under it. */
+#define TRACK_INSTANCE_SHELTER 0x0010
+
 /** The header of the loaded track. Its fields join this structure as they are reconstructed. */
 typedef struct {
-    u8 unreconstructed0[0x50];
+    u8 unreconstructed0[0x38];
+    /** The height lightning strikes from. */
+    f32 lightningHeight;
+    u8 unreconstructed3C[0x50 - 0x3C];
     /** The display list of the sky, or NULL for a sky of the fog colour. */
     Gfx *skyDisplayList;
     u8 unreconstructed54[0x60 - 0x54];
-    /** The placed models, 0x54 bytes each. */
-    void *instances;
+    /** The placed models. */
+    TrackInstance *instances;
     s32 instanceCount;
     u8 unreconstructed68[0x70 - 0x68];
     ModelNode *modelRoot;

@@ -1219,79 +1219,79 @@ nonmatching g_afMvpMatrix, 0x4
 dlabel g_afMvpMatrix
     /* 8031AB10 */ .space 0x04
 
-nonmatching g_afMvpMatrix_01, 0x4
+nonmatching D_8031AB14, 0x4
 
-dlabel g_afMvpMatrix_01
+dlabel D_8031AB14
     /* 8031AB14 */ .space 0x04
 
-nonmatching g_afMvpMatrix_02, 0x4
+nonmatching D_8031AB18, 0x4
 
-dlabel g_afMvpMatrix_02
+dlabel D_8031AB18
     /* 8031AB18 */ .space 0x04
 
-nonmatching g_afMvpMatrix_03, 0x4
+nonmatching D_8031AB1C, 0x4
 
-dlabel g_afMvpMatrix_03
+dlabel D_8031AB1C
     /* 8031AB1C */ .space 0x04
 
-nonmatching g_afMvpMatrix_10, 0x4
+nonmatching D_8031AB20, 0x4
 
-dlabel g_afMvpMatrix_10
+dlabel D_8031AB20
     /* 8031AB20 */ .space 0x04
 
-nonmatching g_afMvpMatrix_11, 0x4
+nonmatching D_8031AB24, 0x4
 
-dlabel g_afMvpMatrix_11
+dlabel D_8031AB24
     /* 8031AB24 */ .space 0x04
 
-nonmatching g_afMvpMatrix_12, 0x4
+nonmatching D_8031AB28, 0x4
 
-dlabel g_afMvpMatrix_12
+dlabel D_8031AB28
     /* 8031AB28 */ .space 0x04
 
-nonmatching g_afMvpMatrix_13, 0x4
+nonmatching D_8031AB2C, 0x4
 
-dlabel g_afMvpMatrix_13
+dlabel D_8031AB2C
     /* 8031AB2C */ .space 0x04
 
-nonmatching g_afMvpMatrix_20, 0x4
+nonmatching D_8031AB30, 0x4
 
-dlabel g_afMvpMatrix_20
+dlabel D_8031AB30
     /* 8031AB30 */ .space 0x04
 
-nonmatching g_afMvpMatrix_21, 0x4
+nonmatching D_8031AB34, 0x4
 
-dlabel g_afMvpMatrix_21
+dlabel D_8031AB34
     /* 8031AB34 */ .space 0x04
 
-nonmatching g_afMvpMatrix_22, 0x4
+nonmatching D_8031AB38, 0x4
 
-dlabel g_afMvpMatrix_22
+dlabel D_8031AB38
     /* 8031AB38 */ .space 0x04
 
-nonmatching g_afMvpMatrix_23, 0x4
+nonmatching D_8031AB3C, 0x4
 
-dlabel g_afMvpMatrix_23
+dlabel D_8031AB3C
     /* 8031AB3C */ .space 0x04
 
-nonmatching g_afMvpMatrix_30, 0x4
+nonmatching D_8031AB40, 0x4
 
-dlabel g_afMvpMatrix_30
+dlabel D_8031AB40
     /* 8031AB40 */ .space 0x04
 
-nonmatching g_afMvpMatrix_31, 0x4
+nonmatching D_8031AB44, 0x4
 
-dlabel g_afMvpMatrix_31
+dlabel D_8031AB44
     /* 8031AB44 */ .space 0x04
 
-nonmatching g_afMvpMatrix_32, 0x4
+nonmatching D_8031AB48, 0x4
 
-dlabel g_afMvpMatrix_32
+dlabel D_8031AB48
     /* 8031AB48 */ .space 0x04
 
-nonmatching g_afMvpMatrix_33, 0x4
+nonmatching D_8031AB4C, 0x4
 
-dlabel g_afMvpMatrix_33
+dlabel D_8031AB4C
     /* 8031AB4C */ .space 0x04
 
 nonmatching g_afScratchMatrix, 0x4
@@ -1510,9 +1510,9 @@ nonmatching D_8031B240, 0x8
 dlabel D_8031B240
     /* 8031B240 */ .space 0x08
 
-nonmatching g_awHudRaycastTriangles, 0x2
+nonmatching g_awCameraRayHitInstances, 0x2
 
-dlabel g_awHudRaycastTriangles
+dlabel g_awCameraRayHitInstances
     /* 8031B248 */ .space 0x02
 
 nonmatching g_wInputStickRawY, 0x2
@@ -3167,103 +3167,49 @@ nonmatching g_awRainParticlePos, 0x2
 dlabel g_awRainParticlePos
     /* 80361C40 */ .space 0x02
 
-nonmatching g_awRainParticlePos_Y, 0x2
-
-dlabel g_awRainParticlePos_Y
-    /* 80361C42 */ .space 0x02
-
-nonmatching g_awRainParticlePos_Z, 0x2
-
-dlabel g_awRainParticlePos_Z
-    /* 80361C44 */ .space 0x02
-
-nonmatching g_awRainParticlePos_1_X, 0x2
-
-dlabel g_awRainParticlePos_1_X
-    /* 80361C46 */ .space 0x02
-
-nonmatching D_80361C48, 0x1870
+nonmatching D_80361C42, 0x1876
 
 /* Automatically generated and unreferenced pad */
-dlabel D_80361C48
-    /* 80361C48 */ .space 0x1870
+dlabel D_80361C42
+    /* 80361C42 */ .space 0x1876
 
-nonmatching g_afRainPrevCameraPos, 0x4
+nonmatching g_avRainPrevCameraPos, 0x4
 
-dlabel g_afRainPrevCameraPos
+dlabel g_avRainPrevCameraPos
     /* 803634B8 */ .space 0x04
 
-nonmatching g_dwWaypointPosY0, 0x4
+nonmatching D_803634BC, 0x14
 
-dlabel g_dwWaypointPosY0
-    /* 803634BC */ .space 0x04
+/* Automatically generated and unreferenced pad */
+dlabel D_803634BC
+    /* 803634BC */ .space 0x14
 
-nonmatching g_dwWaypointPosZ0, 0x4
+nonmatching g_vWindVelocity, 0x4
 
-dlabel g_dwWaypointPosZ0
-    /* 803634C0 */ .space 0x04
-
-nonmatching g_dwWaypointPosX1, 0x4
-
-dlabel g_dwWaypointPosX1
-    /* 803634C4 */ .space 0x04
-
-nonmatching g_dwWaypointPosY1, 0x4
-
-dlabel g_dwWaypointPosY1
-    /* 803634C8 */ .space 0x04
-
-nonmatching g_dwWaypointPosZ1, 0x4
-
-dlabel g_dwWaypointPosZ1
-    /* 803634CC */ .space 0x04
-
-nonmatching g_fWindVelocityX, 0x4
-
-dlabel g_fWindVelocityX
+dlabel g_vWindVelocity
     /* 803634D0 */ .space 0x04
 
-nonmatching g_fWindVelocityY, 0x4
-
-dlabel g_fWindVelocityY
-    /* 803634D4 */ .space 0x04
-
-nonmatching g_fWindVelocityZ, 0x4
-
-dlabel g_fWindVelocityZ
-    /* 803634D8 */ .space 0x04
-
-nonmatching D_803634DC, 0x4
+nonmatching D_803634D4, 0xC
 
 /* Automatically generated and unreferenced pad */
-dlabel D_803634DC
-    /* 803634DC */ .space 0x04
+dlabel D_803634D4
+    /* 803634D4 */ .space 0x0C
 
-nonmatching g_afRainVelocity, 0x18
+nonmatching g_avRainVelocity, 0x18
 
-dlabel g_afRainVelocity
+dlabel g_avRainVelocity
     /* 803634E0 */ .space 0x18
 
-nonmatching g_fLightningFlashPosX, 0x4
+nonmatching g_avLightningBolt, 0x4
 
-dlabel g_fLightningFlashPosX
+dlabel g_avLightningBolt
     /* 803634F8 */ .space 0x04
 
-nonmatching g_fLightningFlashPosY, 0x4
-
-dlabel g_fLightningFlashPosY
-    /* 803634FC */ .space 0x04
-
-nonmatching g_fLightningFlashPosZ, 0x4
-
-dlabel g_fLightningFlashPosZ
-    /* 80363500 */ .space 0x04
-
-nonmatching D_80363504, 0x157C
+nonmatching D_803634FC, 0x1584
 
 /* Automatically generated and unreferenced pad */
-dlabel D_80363504
-    /* 80363504 */ .space 0x157C
+dlabel D_803634FC
+    /* 803634FC */ .space 0x1584
 
 nonmatching g_abPrecipitationTextures, 0x2000
 

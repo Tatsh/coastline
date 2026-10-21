@@ -59,6 +59,7 @@ InitCameraForVehicle
 InitGameAndShowMenus
 InitPakAndEnumerateFiles
 InitPlayerInputState
+InitRandomRainParticles
 InitRigidBody
 IntegrateRigidBodyState
 IsCellVisible
@@ -105,6 +106,7 @@ QuaternionMultiply
 QuaternionNormalize
 QuaternionToMatrix
 QuickSort
+RenderPrecipitationEffect
 RenderSkybox
 RenderTextToDisplayList
 ResetAllPlayers
@@ -131,6 +133,8 @@ StartTimeAttack
 StepDebugHiddenInstance
 StubPhysics1
 StubPhysics2
+StubWeatherUpdate
+SubdivideLightningBolt
 SubtractMatrix3x3
 TestLineSegmentIntersection
 TransferFlags
@@ -142,8 +146,11 @@ UnmarkModelNodes
 UpdateCameraChase
 UpdateCameraLookAtTarget
 UpdateCameraSystem
+UpdateLightningFlash
+UpdatePrecipitationParticles
 UpdateRumblePaks
 UpdateStickRepeat
+UpdateWindDirection
 Vec2fAdd
 Vec2fDistance
 Vec2fLength

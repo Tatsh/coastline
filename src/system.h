@@ -143,6 +143,9 @@ extern u16 *g_apFramebuffers[2];
 /** The time the last frame took. @ghidraAddress USA: 0x8028aadc */
 extern s32 g_dwFrameDeltaMs;
 
+/** The time the last frame took, in seconds. @ghidraAddress USA: 0x8028aad8 */
+extern f32 g_fFrameDeltaTime;
+
 /**
  * Limit drawing to a rectangle, clipped to the frame.
  *

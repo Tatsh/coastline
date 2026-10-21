@@ -1241,8 +1241,8 @@ glabel SetRenderMode
     /* 19444 80218444 00000000 */   nop
     /* 19448 80218448 3C048029 */  lui        $a0, %hi(g_pActiveCamera)
     /* 1944C 8021844C 8C84AAF4 */  lw         $a0, %lo(g_pActiveCamera)($a0)
-    /* 19450 80218450 3C058036 */  lui        $a1, %hi(g_fLightningFlashPosX)
-    /* 19454 80218454 24A534F8 */  addiu      $a1, $a1, %lo(g_fLightningFlashPosX)
+    /* 19450 80218450 3C058036 */  lui        $a1, %hi(g_avLightningBolt)
+    /* 19454 80218454 24A534F8 */  addiu      $a1, $a1, %lo(g_avLightningBolt)
     /* 19458 80218458 0C08928D */  jal        Vec2fDistance
     /* 1945C 8021845C 24840030 */   addiu     $a0, $a0, 0x30
     /* 19460 80218460 3C0142C8 */  lui        $at, (0x42C80000 >> 16)
