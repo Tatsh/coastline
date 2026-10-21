@@ -41,10 +41,10 @@
 
 /** The display lists of a wheel of a car: the plain wheel, one not drawn, and one in the snow. */
 enum {
-    VEHICLE_WHEEL_DL_NORMAL,
-    VEHICLE_WHEEL_DL_1,
-    VEHICLE_WHEEL_DL_SNOW,
-    VEHICLE_WHEEL_DISPLAY_LISTS,
+    VEHICLE_WHEEL_DL_NORMAL,     /*!< The plain wheel. */
+    VEHICLE_WHEEL_DL_1,          /*!< A wheel the renderer does not draw. */
+    VEHICLE_WHEEL_DL_SNOW,       /*!< The wheel in the snow. */
+    VEHICLE_WHEEL_DISPLAY_LISTS, /*!< The number of display lists of a wheel. */
 };
 
 /** The textures whose palettes hold the colors of a car: the paint, and the lights at 10 and 11. */
@@ -55,18 +55,12 @@ enum {
 
 /** The display lists of the model of a car that the renderer draws. */
 enum {
-    /** The details drawn only near the camera, at the nearest level. */
-    VEHICLE_DL_NEAR_DETAIL = 3,
-    /** The paint, under the reflection of the sky. */
-    VEHICLE_DL_BODY,
-    /** The beams of the headlights, at night or in the rain. */
-    VEHICLE_DL_HEADLIGHT_BEAMS,
-    /** The underside, when the camera is below the car. */
-    VEHICLE_DL_UNDERSIDE,
-    /** The lit, textured parts, cut out by the alpha of their textures. */
-    VEHICLE_DL_TEXTURED = 8,
-    /** The parts that take the specular highlight. */
-    VEHICLE_DL_HIGHLIGHTED,
+    VEHICLE_DL_NEAR_DETAIL = 3, /*!< Details drawn only near the camera, at the nearest level. */
+    VEHICLE_DL_BODY,            /*!< The paint, under the reflection of the sky. */
+    VEHICLE_DL_HEADLIGHT_BEAMS, /*!< The beams of the headlights, at night or in the rain. */
+    VEHICLE_DL_UNDERSIDE,       /*!< The underside, when the camera is below the car. */
+    VEHICLE_DL_TEXTURED = 8,    /*!< Lit, textured parts, cut out by the alpha of their textures. */
+    VEHICLE_DL_HIGHLIGHTED,     /*!< The parts that take the specular highlight. */
 };
 
 /**
@@ -74,43 +68,37 @@ enum {
  * use them are reconstructed.
  */
 typedef struct {
-    /**
-     * The state of the championship across its years: negative when it was never set, and bit 0
-     * set while the seasons race the tracks mirrored.
-     */
-    s32 championshipFlags;
-    /** The season of the championship being raced, from 0. */
-    u8 season;
-    /** The race of the season being raced, from 0. */
-    u8 round;
-    /** The place of each race of each season, from 0 for the winner. */
-    u8 seasonPlaces[SEASONS][SEASON_RACES];
-    /** The points scored in each season. */
-    u16 seasonPoints[SEASONS];
-    u8 unreconstructed2A[0x2C - 0x2A];
-    /** The time of each race of each season, in seconds. */
-    f32 seasonTimes[SEASONS][SEASON_RACES];
-    /** The best lap on each track, in seconds, or 0 when none was set. */
-    f32 lapRecords[PROFILE_RECORD_TRACKS];
-    u8 unreconstructedB4[0xCC - 0xB4];
-    /** The unlocked cars, a bit for each from bit 0, and further unlocks above them. */
-    u16 unlocks;
-    /** The unlocked tracks, a bit for each. */
-    u16 unlockedTracks;
-    /** The weathers the championship has raced in, a bit for each. */
-    u16 unlockedWeathers;
-    u8 unreconstructedD2[0xD4 - 0xD2];
-    /** The options of the car the player chose last: the handling, gearbox, tyres and suspension.
-     */
-    s32 handling;
-    s32 transmission;
-    s32 tires;
-    s32 suspension;
-    /** The button layout the player chose on the controller screen. */
-    s32 controllerLayout;
-    /** The best race on each track, in seconds, or 0 when none was set. */
-    f32 raceRecords[PROFILE_RECORD_TRACKS];
-    u8 unreconstructed110[0x128 - 0x110];
+    s32 championshipFlags; /*!< The progress of the championship across its years, negative when
+                                never set, with bit 0 set while the seasons race the tracks
+                                mirrored. */
+    u8 season;             /*!< The season of the championship being raced, from 0. */
+    u8 round;              /*!< The race of the season being raced, from 0. */
+    u8 seasonPlaces[SEASONS][SEASON_RACES]; /*!< The place of each race of each season, from 0 for
+                                                 the winner. */
+    u16 seasonPoints[SEASONS];              /*!< The points scored in each season. */
+    u8 unreconstructed2A[0x2C - 0x2A];      /*!< Padding before seasonTimes. */
+    f32 seasonTimes[SEASONS][SEASON_RACES]; /*!< The time of each race of each season, in
+                                                 seconds. */
+    f32 lapRecords[PROFILE_RECORD_TRACKS];  /*!< The best lap on each track, in seconds, or 0 when
+                                                 none was set. */
+    u8 unreconstructedB4[0xCC - 0xB4];      /*!< Not read by the routines reconstructed so far. */
+    u16 unlocks;          /*!< The unlocked cars, a bit for each from bit 0, and further unlocks
+                               above them. */
+    u16 unlockedTracks;   /*!< The unlocked tracks, a bit for each. */
+    u16 unlockedWeathers; /*!< The weathers the championship has raced in, a bit for each. */
+    u8 unreconstructedD2[0xD4 - 0xD2]; /*!< Padding before handling. */
+    s32 handling;         /*!< The handling option the player chose last, the steering mode of
+                               the vehicle from 0. */
+    s32 transmission;     /*!< The gearbox option the player chose last, nonzero for the
+                               automatic. */
+    s32 tires;            /*!< The tyre option the player chose last; the grip falls by 0.002 for
+                               each option up. */
+    s32 suspension;       /*!< The suspension option the player chose last, from 0 for the
+                               softest springs. */
+    s32 controllerLayout; /*!< The button layout the player chose on the controller screen. */
+    f32 raceRecords[PROFILE_RECORD_TRACKS]; /*!< The best race on each track, in seconds, or 0 when
+                                                 none was set. */
+    u8 unreconstructed110[0x128 - 0x110];   /*!< Not read by the routines reconstructed so far. */
 } PlayerProfile;
 
 /** The profile of the player being played. @ghidraAddress USA: 0x8031c5bc */
@@ -127,102 +115,82 @@ extern u8 g_abPlayerColorsRgb[][3];
  * reconstructed.
  */
 typedef struct {
-    /** The triangles of the model, which the statistics of the frame count. */
-    u32 triangleCount;
-    u8 unreconstructed4[0x10 - 0x4];
-    /** The textures of the model. */
-    s32 textureCount;
-    ModelTexture *textures;
-    /** The display lists of each level of detail, by the VEHICLE_DL_ values. */
-    Gfx *displayLists[VEHICLE_LODS][VEHICLE_DISPLAY_LISTS];
-    /** Turned into pointers with the rest; not read yet. */
-    void *unreconstructed90;
-    void *unreconstructed94;
-    u8 unreconstructed98[0xB0 - 0x98];
-    /** How far forward of the vehicle the cockpit camera sits. */
-    f32 cockpitForward;
-    /** Half of how far forward of the vehicle the mirror camera sits. */
-    f32 mirrorForward;
-    /** How far above the vehicle the cockpit and mirror cameras sit. */
-    f32 cockpitUp;
-    /** The display lists of a wheel at each level of detail, by the VEHICLE_WHEEL_DL_ values. */
-    Gfx *wheelDisplayLists[VEHICLE_LODS][VEHICLE_WHEEL_DISPLAY_LISTS];
-    /**
-     * Where the four wheels are drawn. The physics takes the second and the third as a front and a
-     * rear wheel of one side and mirrors them across, and the shadow is sized by the x and y of the
-     * first.
-     */
-    Vec3f wheels[VEHICLE_WHEELS];
-    /**
-     * The textures whose palettes the colors of the car are set in, by the VEHICLE_MATERIAL_
-     * values: the paint, the headlights and the rear lights among them.
-     */
-    u8 materialTextures[VEHICLE_MATERIALS];
-    /**
-     * The masks of the materials that the paint shop paints, one bit a texel with a set bit
-     * protecting it, or NULL where every texel can be painted.
-     */
-    u8 **decalMasks;
-    u8 unreconstructed120[0xDF88 - 0x120];
+    u32 triangleCount; /*!< The triangles of the model, counted into the statistics of the frame. */
+    u8 unreconstructed4[0x10 - 0x4]; /*!< Not read by the routines reconstructed so far. */
+    s32 textureCount;                /*!< The number of textures of the model. */
+    ModelTexture *textures;          /*!< The textures of the model, textureCount of them. */
+    Gfx *displayLists[VEHICLE_LODS][VEHICLE_DISPLAY_LISTS]; /*!< The display lists of each level of
+                                                                 detail, by the VEHICLE_DL_
+                                                                 values. */
+    void *unreconstructed90; /*!< An offset turned into a pointer with the rest, not read by the
+                                  routines reconstructed so far. */
+    void *unreconstructed94; /*!< An offset turned into a pointer with the rest, not read by the
+                                  routines reconstructed so far. */
+    u8 unreconstructed98[0xB0 - 0x98]; /*!< Not read by the routines reconstructed so far. */
+    f32 cockpitForward; /*!< How far forward of the vehicle the cockpit camera sits. */
+    f32 mirrorForward;  /*!< Half of how far forward of the vehicle the mirror camera sits. */
+    f32 cockpitUp;      /*!< How far above the vehicle the cockpit and mirror cameras sit. */
+    Gfx *wheelDisplayLists[VEHICLE_LODS][VEHICLE_WHEEL_DISPLAY_LISTS]; /*!< The display lists of a
+                                                                            wheel at each level of
+                                                                            detail, by the
+                                                                            VEHICLE_WHEEL_DL_
+                                                                            values. */
+    Vec3f wheels[VEHICLE_WHEELS]; /*!< Where the four wheels are drawn. The physics takes the
+                                       second and the third as a front and a rear wheel of one side
+                                       and mirrors them across, and the shadow is sized by the x
+                                       and y of the first. */
+    u8 materialTextures[VEHICLE_MATERIALS]; /*!< The textures whose palettes the colors of the car
+                                                 are set in, by the VEHICLE_MATERIAL_ values. */
+    u8 **decalMasks; /*!< The masks of the materials that the paint shop paints, one bit a texel
+                          with a set bit protecting it, or NULL where every texel can be
+                          painted. */
+    u8 unreconstructed120[0xDF88 - 0x120]; /*!< The rest of the loaded model, not read as fields by
+                                                the routines reconstructed so far. */
 } VehicleModel;
 
 /** How a car shows the revolutions of its engine. */
 enum {
-    /** A needle over the dashboard. */
-    TACHOMETER_NEEDLE,
-    /** A bar of palette colors whose segments past the revolutions dim. */
-    TACHOMETER_BAR_DIMMED,
-    /** A bar of palette colors whose segments past the revolutions disappear. */
-    TACHOMETER_BAR_HIDDEN,
+    TACHOMETER_NEEDLE,     /*!< A needle over the dashboard. */
+    TACHOMETER_BAR_DIMMED, /*!< A bar of palette colors whose segments past the revolutions dim. */
+    TACHOMETER_BAR_HIDDEN, /*!< A bar of palette colors whose segments past the revolutions
+                                disappear. */
 };
 
 /** A car the players can choose. Its fields join this structure as they are reconstructed. */
 typedef struct {
-    const char *name;
-    u8 unreconstructed4[0x14 - 0x4];
-    /** Where the model of the car is on the cartridge, and where the next asset starts. */
-    u32 modelRom;
-    u32 modelRomEnd;
-    /** The size of the model once decompressed. */
-    u32 modelSize;
-    /**
-     * Where the dashboard starts on the cartridge: the palettes of day and night, 256 colors
-     * each, the face, and a cell for each gear, reverse first.
-     */
-    u32 dashboardRom;
-    u8 unreconstructed24[0x28 - 0x24];
-    u8 dashboardWidth;
-    u8 dashboardHeight;
-    /** Where the gear cell sits on the face. */
-    s8 gearX;
-    s8 gearY;
-    u8 gearWidth;
-    u8 gearHeight;
-    /** The TACHOMETER_ kind. */
-    u8 tachometer;
+    const char *name;                /*!< The name of the car, in capitals. */
+    u8 unreconstructed4[0x14 - 0x4]; /*!< Not read by the routines reconstructed so far. */
+    u32 modelRom;     /*!< Where the compressed model of the car starts on the cartridge. */
+    u32 modelRomEnd;  /*!< Where the asset after the model starts on the cartridge, or 0 for a car
+                           without a model. */
+    u32 modelSize;    /*!< The size of the model once decompressed, in bytes. */
+    u32 dashboardRom; /*!< Where the dashboard starts on the cartridge (the palettes of day and
+                           night, 256 colors each, the face, and a cell for each gear, reverse
+                           first). */
+    u8 unreconstructed24[0x28 - 0x24]; /*!< Not read by the routines reconstructed so far. */
+    u8 dashboardWidth;                 /*!< The width of the face of the dashboard, in texels. */
+    u8 dashboardHeight;                /*!< The height of the face of the dashboard, in texels. */
+    s8 gearX;                          /*!< The x of the gear cell on the face, in pixels. */
+    s8 gearY;                          /*!< The y of the gear cell on the face, in pixels. */
+    u8 gearWidth;                      /*!< The width of the gear cell, in texels. */
+    u8 gearHeight;                     /*!< The height of the gear cell, in texels. */
+    u8 tachometer;                     /*!< The TACHOMETER_ kind. */
     union {
-        /** Where the needle turns on the face. */
-        u8 needleX;
-        /** The segments of a bar, the last colors of the palette. */
-        u8 barSegments;
-    };
-    u8 needleY;
-    u8 unreconstructed31[0x34 - 0x31];
-    /** The angles of the needle at 8000 revolutions a minute and at rest, in radians. */
-    f32 needleFullAngle;
-    f32 needleRestAngle;
-    /** The wheels driven and the layout of the engine, as indices of their names. */
-    s32 driveType;
-    s32 engineLayout;
-    /** The acceleration and the top speed, as the car selection screen shows them. */
-    f32 acceleration;
-    f32 maxSpeed;
-    u8 unreconstructed4C[0x54 - 0x4C];
-    /** The gears of the gearbox. */
-    s32 gearCount;
-    /** The length and half the width of the shadow of the car on the stage of a menu. */
-    f32 shadowLength;
-    f32 shadowHalfWidth;
+        u8 needleX;     /*!< The x on the face the needle turns about, in pixels. */
+        u8 barSegments; /*!< The segments of a bar, the last colors of the palette. */
+    }; /*!< The needle or the bar of the tachometer, by its kind. */
+    u8 needleY;                        /*!< The y on the face the needle turns about, in pixels. */
+    u8 unreconstructed31[0x34 - 0x31]; /*!< Padding before needleFullAngle. */
+    f32 needleFullAngle; /*!< The angle of the needle at 8000 revolutions a minute, in radians. */
+    f32 needleRestAngle; /*!< The angle of the needle at rest, in radians. */
+    s32 driveType;       /*!< The wheels driven, as the index of their name. */
+    s32 engineLayout;    /*!< The layout of the engine, as the index of its name. */
+    f32 acceleration;    /*!< The acceleration the car selection screen shows, a full bar at 500. */
+    f32 maxSpeed;        /*!< The top speed the car selection screen shows, a full bar at 10. */
+    u8 unreconstructed4C[0x54 - 0x4C]; /*!< Not read by the routines reconstructed so far. */
+    s32 gearCount;                     /*!< The gears of the gearbox. */
+    f32 shadowLength;    /*!< The length of the shadow of the car on the stage of a menu. */
+    f32 shadowHalfWidth; /*!< Half the width of the shadow of the car on the stage of a menu. */
 } CarModel;
 
 /** The cars the players can choose. */
@@ -239,18 +207,16 @@ extern s32 g_dwCarCount;
 
 /** The physics of a car. */
 typedef struct {
-    f32 gearRatios[CAR_GEAR_RATIOS];
-    /** The torque of the engine as a cubic of its revolutions, the highest power first. */
-    f32 torqueCurve[4];
-    f32 finalDrive;
-    s32 gearCount;
-    /** Whether the throttle drives the rear wheels alone, rather than all four. */
-    s32 rearWheelDrive;
-    /** The box the track collides with, and the height of its middle. */
-    Vec3f boxSize;
-    f32 boxCenterZ;
-    /** An index that picks an entry of tables kept for each track. */
-    s32 tableIndex;
+    f32 gearRatios[CAR_GEAR_RATIOS]; /*!< The ratio of each gear, from 0 for neutral. */
+    f32 torqueCurve[4]; /*!< The torque of the engine as a cubic of its revolutions, the highest
+                             power first. */
+    f32 finalDrive;     /*!< The ratio of the final drive. */
+    s32 gearCount;      /*!< The number of forward gears. */
+    s32 rearWheelDrive; /*!< Whether the throttle drives the rear wheels alone, rather than all
+                             four. */
+    Vec3f boxSize;      /*!< The size of the box the track collides with. */
+    f32 boxCenterZ;     /*!< The height of the middle of the box. */
+    s32 tableIndex;     /*!< The class of the car among the arcade times of each track. */
 } CarPhysicsSpec;
 
 /** @ghidraAddress USA: 0x8028b330 */
@@ -268,9 +234,9 @@ extern s32 g_adwVehicleModelSlotCars[];
 
 /** The decompression of the model of a car into a slot. */
 typedef struct {
-    DecompressJob job;
-    s32 slot;
-    s32 car;
+    DecompressJob job; /*!< The decompression from the cartridge. */
+    s32 slot;          /*!< The slot of g_aVehicleModels the model loads into. */
+    s32 car;           /*!< The index of the car in g_aCarModels. */
 } VehicleModelLoad;
 
 /** The slots the models of the cars of the menus load into. */
@@ -278,16 +244,14 @@ typedef struct {
 
 /** The cameras of a vehicle. */
 enum {
-    VEHICLE_CAMERA_COCKPIT,
-    VEHICLE_CAMERA_CHASE,
-    /** The cockpit camera moved forward to the bumper. */
-    VEHICLE_CAMERA_BUMPER,
-    /** A camera by the track that watches the vehicle and zooms with its distance. */
-    VEHICLE_CAMERA_TRACKSIDE,
-    VEHICLE_CAMERA_4,
-    /** The rear-view mirror. */
-    VEHICLE_CAMERA_MIRROR,
-    VEHICLE_CAMERAS,
+    VEHICLE_CAMERA_COCKPIT,   /*!< The view from the driver's seat. */
+    VEHICLE_CAMERA_CHASE,     /*!< The camera that follows behind the vehicle. */
+    VEHICLE_CAMERA_BUMPER,    /*!< The cockpit camera moved forward to the bumper. */
+    VEHICLE_CAMERA_TRACKSIDE, /*!< A camera by the track that watches the vehicle and zooms with its
+                                   distance. */
+    VEHICLE_CAMERA_4,         /*!< A camera the routines reconstructed so far do not use. */
+    VEHICLE_CAMERA_MIRROR,    /*!< The rear-view mirror. */
+    VEHICLE_CAMERAS,          /*!< The number of cameras of a vehicle. */
 };
 
 /** The racers of a race. */
@@ -298,42 +262,32 @@ enum {
  * along the route by itself, and keeps the progress a vehicle takes up when it gets one.
  */
 typedef struct {
-    Vec3f position;
-    Vec3f previousPosition;
-    /** How far the racer moves a second. */
-    Vec3f velocity;
-    f32 speedKph;
-    /** The section of the route the racer is on, and its point there. */
-    TrackSection *section;
-    s32 pointIndex;
-    /** The times of the lap, the best lap and the race, and the time left, in seconds. */
-    f32 lapTime;
-    f32 bestLapTime;
-    f32 totalTime;
-    f32 timeLeft;
-    /** The laps finished and the laps the distance counts, as in the vehicle. */
-    s32 lap;
-    s32 distanceLaps;
-    /** The farthest gate reached and the gate last crossed, counted across laps. */
-    s32 maxGate;
-    s32 gate;
-    f32 distance;
-    s32 racePosition;
-    u8 unreconstructed58[0x5C - 0x58];
-    /** The color of the vehicle the racer drives. */
-    u8 color[3];
-    /** The vehicle of the racer, or NULL. */
-    struct Vehicle *vehicle;
-    /** The index of the racer in g_aRacerSlots. */
-    s32 index;
-    /** The clock of the racer runs while the bits of RACER_CLOCK_STOPPED are clear. */
-    u32 status;
-    u8 unreconstructed6C[0x74 - 0x6C];
-    /**
-     * Set for a racer past the thirteenth after the players. The championship slows the vehicle of
-     * such a racer more, and the racers of each kind share their own vehicles.
-     */
-    s32 straggler;
+    Vec3f position;                    /*!< The position of the racer. */
+    Vec3f previousPosition;            /*!< The position of the last frame. */
+    Vec3f velocity;                    /*!< How far the racer moves a second. */
+    f32 speedKph;                      /*!< The speed of the racer, in kilometres an hour. */
+    TrackSection *section;             /*!< The section of the route the racer is on. */
+    s32 pointIndex;                    /*!< The point of the racer in its section. */
+    f32 lapTime;                       /*!< The time of the lap being driven, in seconds. */
+    f32 bestLapTime;                   /*!< The time of the best lap, in seconds. */
+    f32 totalTime;                     /*!< The time of the race so far, in seconds. */
+    f32 timeLeft;                      /*!< The time remaining, in seconds. */
+    s32 lap;                           /*!< The laps finished. */
+    s32 distanceLaps;                  /*!< The laps the distance travelled has counted. */
+    s32 maxGate;                       /*!< The farthest gate passed, counted across laps. */
+    s32 gate;                          /*!< The gate last crossed, counted across laps. */
+    f32 distance;                      /*!< The distance travelled along the route. */
+    s32 racePosition;                  /*!< The place in the race, from 0 for the leader. */
+    u8 unreconstructed58[0x5C - 0x58]; /*!< Not read by the routines reconstructed so far. */
+    u8 color[3];                       /*!< The color of the vehicle the racer drives. */
+    struct Vehicle *vehicle;           /*!< The vehicle of the racer, or NULL. */
+    s32 index;                         /*!< The index of the racer in g_aRacerSlots. */
+    u32 status; /*!< The RACER_ bits. The clock of the racer runs while the bits of
+                     RACER_CLOCK_STOPPED are clear. */
+    u8 unreconstructed6C[0x74 - 0x6C]; /*!< Not read by the routines reconstructed so far. */
+    s32 straggler; /*!< Set for a racer past the thirteenth after the players. The championship
+                        slows the vehicle of a straggler more, and the racers of each kind share
+                        separate vehicles. */
 } RacerSlot;
 
 /** The racers of the race. @ghidraAddress USA: 0x803239a0 */
@@ -359,14 +313,14 @@ extern s32 g_dwNumActiveVehicles;
 
 /** The axes and the position of a wheel, the rows of its matrix. */
 typedef struct {
-    Vec3f forward;
-    f32 forwardW;
-    Vec3f side;
-    f32 sideW;
-    Vec3f up;
-    f32 upW;
-    Vec3f position;
-    f32 positionW;
+    Vec3f forward;  /*!< The forward axis of the wheel. */
+    f32 forwardW;   /*!< 0, the last column of the matrix. */
+    Vec3f side;     /*!< The sideways axis of the wheel. */
+    f32 sideW;      /*!< 0, the last column of the matrix. */
+    Vec3f up;       /*!< The upward axis of the wheel. */
+    f32 upW;        /*!< 0, the last column of the matrix. */
+    Vec3f position; /*!< The position of the wheel. */
+    f32 positionW;  /*!< 1, the last column of the matrix. */
 } WheelFrame;
 
 /**
@@ -378,27 +332,25 @@ typedef struct {
 
 /** The forces on the bodies of a vehicle. */
 enum {
-    /** The springs of the four wheels, then gravity: the list of the body for its first pass. */
-    VEHICLE_FORCE_SPRING_0,
-    VEHICLE_FORCE_SPRING_1,
-    VEHICLE_FORCE_SPRING_2,
-    VEHICLE_FORCE_SPRING_3,
-    /** The dampers of the four wheels, then the drag: the list for its second pass. */
-    VEHICLE_FORCE_DAMPER_0,
-    VEHICLE_FORCE_DAMPER_1,
-    VEHICLE_FORCE_DAMPER_2,
-    VEHICLE_FORCE_DAMPER_3,
-    VEHICLE_FORCE_GRAVITY,
-    /** The gravity of the front and of the rear wheels. */
-    VEHICLE_FORCE_FRONT_WHEEL_GRAVITY,
-    VEHICLE_FORCE_REAR_WHEEL_GRAVITY,
-    VEHICLE_FORCE_DRAG,
-    /** The drive of each wheel, before its gravity in its list. */
-    VEHICLE_FORCE_WHEEL_0,
-    VEHICLE_FORCE_WHEEL_1,
-    VEHICLE_FORCE_WHEEL_2,
-    VEHICLE_FORCE_WHEEL_3,
-    VEHICLE_FORCES,
+    VEHICLE_FORCE_SPRING_0, /*!< The spring of the rear wheel of the first side, first in the list
+                                 of the body for its first pass. */
+    VEHICLE_FORCE_SPRING_1, /*!< The spring of the front wheel of the first side. */
+    VEHICLE_FORCE_SPRING_2, /*!< The spring of the rear wheel of the second side. */
+    VEHICLE_FORCE_SPRING_3, /*!< The spring of the front wheel of the second side. */
+    VEHICLE_FORCE_DAMPER_0, /*!< The damper of the rear wheel of the first side, first in the list
+                                 of the body for its second pass. */
+    VEHICLE_FORCE_DAMPER_1, /*!< The damper of the front wheel of the first side. */
+    VEHICLE_FORCE_DAMPER_2, /*!< The damper of the rear wheel of the second side. */
+    VEHICLE_FORCE_DAMPER_3, /*!< The damper of the front wheel of the second side. */
+    VEHICLE_FORCE_GRAVITY,  /*!< The gravity of the body, last in the list of its first pass. */
+    VEHICLE_FORCE_FRONT_WHEEL_GRAVITY, /*!< The gravity of the front wheels. */
+    VEHICLE_FORCE_REAR_WHEEL_GRAVITY,  /*!< The gravity of the rear wheels. */
+    VEHICLE_FORCE_DRAG,    /*!< The drag of the body, last in the list of its second pass. */
+    VEHICLE_FORCE_WHEEL_0, /*!< The drive of wheelBodies[0], before the gravity of its wheel. */
+    VEHICLE_FORCE_WHEEL_1, /*!< The drive of wheelBodies[1], before the gravity of its wheel. */
+    VEHICLE_FORCE_WHEEL_2, /*!< The drive of wheelBodies[2], before the gravity of its wheel. */
+    VEHICLE_FORCE_WHEEL_3, /*!< The drive of wheelBodies[3], before the gravity of its wheel. */
+    VEHICLE_FORCES,        /*!< The number of forces of a vehicle. */
 };
 
 /**
@@ -407,275 +359,207 @@ enum {
  */
 typedef struct Vehicle {
     union {
-        /** The axes and position of the vehicle. */
-        CameraFrame frame;
+        CameraFrame frame; /*!< The axes and position of the vehicle. */
         struct {
-            /** The frame as a matrix. */
-            f32 matrix[4][4];
+            f32 matrix[4][4]; /*!< The frame as a matrix. */
             union {
-                f32 wheelMatrices[VEHICLE_WHEELS][4][4];
-                WheelFrame wheelFrames[VEHICLE_WHEELS];
-            };
-        };
-    };
-    /** The index of the vehicle in g_aVehicles. The players have the first. */
-    s32 index;
-    /** The frames the tires have skidded, up to 16, which swell the sound of the skid. */
-    s16 skidFrames;
-    RigidBody body;
-    /**
-     * The bodies of the wheels: the rear and the front wheel of one side, then of the other. The
-     * body lists them as the rear two, then the front two.
-     */
-    RigidBody wheelBodies[VEHICLE_WHEELS];
-    /** The forces on the bodies, by the VEHICLE_FORCE_ values. */
-    RigidBodyForce forces[VEHICLE_FORCES];
-    u8 unreconstructedD70[0xDF0 - 0xD70];
-    /** The angle the front wheels are steered to, in radians. */
-    f32 steerAngle;
-    /** The revolutions of the engine a minute. */
-    f32 engineRpm;
-    /** The gearbox and engine, from the physics spec of the car. */
-    f32 gearRatios[CAR_GEAR_RATIOS];
-    f32 torqueCurve[4];
-    f32 finalDrive;
-    s32 gearCount;
-    s32 rearWheelDrive;
-    /** The gearbox the player chose. */
-    s32 transmission;
-    s32 tableIndex;
-    /** The throttle, below 0 in reverse. */
-    f32 throttle;
-    /** The brake, below 0 when braking. */
-    f32 brake;
-    /** The forward gear, from 0. */
-    s32 gear;
-    /**
-     * The loads the front and rear tyres carried in the last step, and whether they slid; while
-     * they slid, they grip less.
-     */
-    f32 frontLoad;
-    u8 frontSliding;
-    f32 rearLoad;
-    u8 rearSliding;
-    /** The way the steering returns towards the middle: 1, -1, or 0 while it does not. */
-    s8 steerReturn;
-    /** Whether the next step leaves the wheels undriven. */
-    s32 skipDrive;
-    /** Whether the player chose the custom decals of the car. */
-    s32 customDecals;
-    /** The profile of the player who drives the vehicle. */
-    PlayerProfile *profile;
-    /** The tyres, the stiffness of the springs, and how the steering answers the stick. */
-    s32 tireType;
-    s32 suspensionStiffness;
-    s32 steeringMode;
-    /** The gearbox of the recording or the settings, which ResetVehicleState() takes. */
-    s32 chosenTransmission;
-    /**
-     * How a computer's vehicle gets unstuck: the frames left that it drives forward and that it
-     * reverses whatever else it wants, and the frames it has reversed and driven forward since it
-     * last checked whether it is stuck.
-     */
-    s32 forcedForwardFrames;
-    s32 forcedReverseFrames;
-    s32 reverseFrames;
-    s32 forwardFrames;
-    /** The racers nearest a player's vehicle, the nearest first, as the vehicles were shared out.
-     */
-    RacerSlot *nearestRacers[RACER_SLOTS];
-    RacerSlot *racer;
-    /** The frames before a computer's vehicle that left its racer may be taken from another. */
-    s32 slotCooldown;
-    /** The routine that drives the vehicle each frame, the player's or the computer's, or NULL. */
-    void (*driver)(struct Vehicle *vehicle);
-    /** The point a computer's vehicle steers towards. */
-    Vec3f aiTarget;
-    /**
-     * The point of the route nearest the vehicle, and the axes of the route there: along it, across
-     * it to the left, and up.
-     */
-    Vec3f trackPoint;
-    Vec3f trackForward;
-    Vec3f trackSide;
-    Vec3f trackUp;
-    /** How far the vehicle is from the middle of the route, without and with the side. */
-    f32 trackSideDistance;
-    /** The vehicle from that point. */
-    Vec3f trackOffset;
-    f32 trackSideOffset;
-    /** Where the camera that heard the vehicle was the last frame. */
-    Vec3f previousListenerPosition;
-    /**
-     * The sound effect the vehicle plays, from 0 for none, how loud, and how much it matters: a
-     * louder or more important sound takes its place.
-     */
-    s32 effectSound;
-    s32 effectVolume;
-    s32 effectPriority;
-    /** How much the motion of the vehicle and the camera raise its sounds. */
-    f32 dopplerFactor;
-    /** Set when the active camera changes: to 1 when a view is chosen, to 2 by the cameras. */
-    s32 cameraChanged;
-    /**
-     * Whether the vehicle flies freely with the controls, without physics, and the cameras hold
-     * rigidly to its frame.
-     */
-    s32 flyMode;
-    /** The position of the last frame. */
-    Vec3f previousPosition;
-    /** The section of the route the vehicle is on, and its nearest point there. */
-    TrackSection *section;
-    s32 pointIndex;
-    /** The direction of the track at that point. */
-    Vec3f trackDirection;
-    /** The farthest gate reached and the gate last crossed, counted across laps. */
-    s32 maxGate;
-    s32 gate;
-    /** The laps finished. */
-    s32 lap;
-    /** The laps the distance travelled has counted. */
-    s32 distanceLaps;
-    /** The time of the lap being driven, in seconds. */
-    f32 lapTime;
-    /** The time of each lap finished, in seconds. */
-    f32 lapTimes[VEHICLE_LAP_TIMES];
-    /** The time of the best lap, in seconds, and which lap it was, from 0. */
-    f32 bestLapTime;
-    s32 bestLap;
-    /** The time of the race so far, in seconds. */
-    f32 totalTime;
-    /** The time left, in seconds. */
-    f32 timeLeft;
-    /** The distance travelled along the route. */
-    f32 distance;
-    /** The place in the race, from 0 for the leader. */
-    s32 racePosition;
-    /** The message shown large in the middle of the view, or NULL, and the time it has left. */
-    const char *message;
-    f32 messageTime;
-    /** The message shown smaller when there is no large one, or NULL, and the time it has left. */
-    const char *subMessage;
-    f32 subMessageTime;
-    /** The text a message may show, such as the time of a record. */
-    char messageText[0xFD4 - 0xFC0];
-    /** The triangles of the track below the vehicle this frame. */
-    s32 groundHits;
-    /** The velocity SetVehicleVelocity() last gave. */
-    Vec3f placedVelocity;
-    /** The speed the display shows, in kilometers an hour. */
-    f32 speedKph;
-    /** The distance the speedometer has counted. */
-    f32 odometer;
-    /**
-     * A weight on a spring at a corner of the vehicle, whose jolts damage it: where it is, how far
-     * it moves a frame, and how far it hangs from the corner.
-     */
-    Vec3f joltPosition;
-    Vec3f joltVelocity;
-    Vec3f joltOffset;
-    /** The time towards the next puff of exhaust, and where the last left the exhaust. */
-    f32 exhaustTimer;
-    Vec3f exhaustPosition;
-    /**
-     * The effects of each wheel number the wheels as the front two, then the rear two. The time
-     * towards the next puff of smoke of each wheel, and where the last puff was.
-     */
-    f32 smokeTimers[VEHICLE_WHEELS];
-    Vec3f smokePositions[VEHICLE_WHEELS];
-    /** The frames the spray of each wheel goes on after it leaves the ground, and its surface. */
-    f32 sprayFramesLeft[VEHICLE_WHEELS];
-    s32 spraySurfaces[VEHICLE_WHEELS];
-    /** The time towards the next segment of each spray, and whether one began this frame. */
-    f32 sprayPhases[VEHICLE_WHEELS];
-    s32 sprayAdvanced[VEHICLE_WHEELS];
-    /** Where the newest segment of each spray was thrown from. */
-    Vec3f sprayPositions[VEHICLE_WHEELS];
-    /**
-     * The segments of each spray, the newest first: their vertices, in 127ths of a unit from
-     * sprayOrigin, how far those move a second, in the same units, and the surface each segment
-     * was thrown from, or -1 when it was thrown from none.
-     */
-    Vtx sprayVertices[VEHICLE_WHEELS][SPRAY_SEGMENTS][SPRAY_SEGMENT_VERTICES];
-    s16 sprayVelocities[VEHICLE_WHEELS][SPRAY_SEGMENTS][SPRAY_SEGMENT_VERTICES][3];
-    s16 spraySegmentSurfaces[VEHICLE_WHEELS][SPRAY_SEGMENTS];
-    /** The point the spray is kept around, which SetVehiclePosition() puts at the vehicle. */
-    Vec3f sprayOrigin;
-    u8 unreconstructed1D84[0x1D88 - 0x1D84];
-    /** The matrix of the spray, the identity until it is set. */
-    Mtx sprayMtx;
-    /** Whether the placed model under the vehicle is a tunnel, which darkens it. */
-    s32 inTunnel;
-    /** The heading of the camera of the vehicle, in radians, which turns the reflection of the sky.
-     */
-    f32 cameraHeading;
-    u8 unreconstructed1DD0[0x1DD4 - 0x1DD0];
-    /** The controls: the steering, the pitch, the accelerator and the roll. */
-    f32 steering;
-    f32 pitchInput;
-    f32 accelerator;
-    f32 rollInput;
-    /** How thick the fog is at the vehicle, from 0 to 1, which fades its shadow. */
-    f32 fogFactor;
-    CameraFrame *activeCamera;
-    /** The camera of the last frame. */
-    CameraFrame *previousCamera;
-    CameraFrame cameras[VEHICLE_CAMERAS];
-    /** The speed the chase camera follows, smoothed. */
-    f32 chaseSpeed;
-    /** The lag of the chase camera, smoothed. */
-    f32 chaseLag;
-    /** How far the look-at point leads the vehicle. */
-    f32 lookAhead;
-    /** The point the chase camera looks at. */
-    Vec3f lookAt;
-    /** Where the chase camera was before the track pushed it. */
-    Vec3f chasePosition;
-    /** How hard the track has been pushing the chase camera. */
-    f32 collisionPull;
-    u8 unreconstructed1FB0[0x1FB4 - 0x1FB0];
-    /** Where the chase camera started. */
-    Vec3f initialChasePosition;
-    /** What CastRayAgainstTrack() found below the vehicle. */
-    u16 groundInstances[RAY_INSTANCES];
-    s32 groundInstanceCount;
-    u16 nearbyInstances[RAY_INSTANCES];
-    s32 nearbyInstanceCount;
-    f32 groundDistance;
-    s32 groundSurface;
-    /**
-     * The corners of the rectangle of the screen the shadow of the vehicle covers in the view being
-     * drawn: the left and the lower edge, then the right and the upper edge.
-     */
-    s16 shadowCorners[2][2];
-    /** The car under the cursor of the car selection screen. */
-    s32 selectedCar;
-    /** The index of the car in g_aCarModels. */
-    s32 carModel;
-    /** The color of the paint of the car. */
-    u8 color[3];
-    /** VEHICLE_GHOST while the vehicle fades back in after it is put back on the track. */
-    u8 ghostMode;
-    /** How solid the vehicle is drawn, from 0 to 1. */
-    f32 opacity;
-    /**
-     * Whether the car is drawn in its other look, without its textured parts or the reflection of
-     * the sky, which a button switches once an unlock allows it.
-     */
-    s32 otherLook;
-    /** The frames the vehicle has faced against the track. */
-    s32 wrongWayFrames;
-    /** The cell of the 32-unit grid of the track the vehicle is in. */
-    u8 gridX;
-    u8 gridY;
-    u8 unreconstructed2072[0x2074 - 0x2072];
-    PlayerInputState *input;
-    VehicleModel *model;
-    /** How deeply each of eight sides around the car has been dented; up to 0x100 it dents more. */
-    s16 dents[VEHICLE_DENT_SIDES];
-    /** A small offset, from -4 to 3, that changes with each dent so that dents vary. */
-    s16 dentJitter;
-    u8 unreconstructed208E[0x2090 - 0x208E];
+                f32 wheelMatrices[VEHICLE_WHEELS][4][4]; /*!< The matrix of each wheel. */
+                WheelFrame wheelFrames[VEHICLE_WHEELS];  /*!< The axes and position of each
+                                                              wheel. */
+            }; /*!< The frame of each wheel, as a matrix or as its axes. */
+        }; /*!< The frame of the vehicle and of its wheels, as matrices. */
+    }; /*!< The frame of the vehicle, as axes or as matrices. */
+    s32 index;      /*!< The index of the vehicle in g_aVehicles. The players have the first. */
+    s16 skidFrames; /*!< The frames the tyres have skidded, up to 16, swelling the sound of the
+                         skid. */
+    RigidBody body; /*!< The rigid body of the vehicle. */
+    RigidBody wheelBodies[VEHICLE_WHEELS]; /*!< The bodies of the wheels, the rear and the front
+                                                wheel of one side, then of the other. The body
+                                                lists them as the rear two, then the front two. */
+    RigidBodyForce forces[VEHICLE_FORCES]; /*!< The forces on the bodies, by the VEHICLE_FORCE_
+                                                values. */
+    u8 unreconstructedD70[0xDF0 - 0xD70];  /*!< Not read by the routines reconstructed so far. */
+    f32 steerAngle;                  /*!< The angle the front wheels are steered to, in radians. */
+    f32 engineRpm;                   /*!< The revolutions of the engine a minute. */
+    f32 gearRatios[CAR_GEAR_RATIOS]; /*!< The ratio of each gear, from the physics spec of the
+                                          car. */
+    f32 torqueCurve[4];              /*!< The torque curve, from the physics spec of the car. */
+    f32 finalDrive;          /*!< The ratio of the final drive, from the physics spec of the car. */
+    s32 gearCount;           /*!< The number of forward gears, from the physics spec of the car. */
+    s32 rearWheelDrive;      /*!< Whether the rear wheels alone are driven, from the physics spec
+                                  of the car. */
+    s32 transmission;        /*!< The gearbox the player chose, nonzero for the automatic. */
+    s32 tableIndex;          /*!< The class of the car among the arcade times of each track. */
+    f32 throttle;            /*!< The throttle, below 0 in reverse. */
+    f32 brake;               /*!< The brake, below 0 when braking. */
+    s32 gear;                /*!< The gear, from 0 for neutral. */
+    f32 frontLoad;           /*!< The load the front tyres bore in the last step. */
+    u8 frontSliding;         /*!< Whether the front tyres slid in the last step; sliding tyres grip
+                                  less. */
+    f32 rearLoad;            /*!< The load the rear tyres bore in the last step. */
+    u8 rearSliding;          /*!< Whether the rear tyres slid in the last step; sliding tyres grip
+                                  less. */
+    s8 steerReturn;          /*!< The way the steering returns towards the middle, 1 or -1, or 0
+                                  while it does not return. */
+    s32 skipDrive;           /*!< Whether the next step does not drive the wheels. */
+    s32 customDecals;        /*!< Whether the player chose the custom decals of the car. */
+    PlayerProfile *profile;  /*!< The profile of the player who drives the vehicle. */
+    s32 tireType;            /*!< The tyres; the grip falls by 0.002 for each type up. */
+    s32 suspensionStiffness; /*!< The stiffness of the springs, from 0 for the softest. */
+    s32 steeringMode;        /*!< How the steering responds to the stick, from 0. */
+    s32 chosenTransmission;  /*!< The gearbox of the recording or the settings, taken by
+                                  ResetVehicleState(). */
+    s32 forcedForwardFrames; /*!< The remaining frames a computer's vehicle drives forward to get
+                                  unstuck, whatever else it wants. */
+    s32 forcedReverseFrames; /*!< The remaining frames a computer's vehicle reverses to get
+                                  unstuck, whatever else it wants. */
+    s32 reverseFrames;       /*!< The frames a computer's vehicle has reversed since it last
+                                  checked whether it is stuck. */
+    s32 forwardFrames;       /*!< The frames a computer's vehicle has driven forward since it last
+                                  checked whether it is stuck. */
+    RacerSlot *nearestRacers[RACER_SLOTS]; /*!< The racers nearest a player's vehicle, the nearest
+                                                first, as the vehicles were shared out. */
+    RacerSlot *racer;                      /*!< The racer the vehicle drives for. */
+    s32 slotCooldown; /*!< The frames before a computer's vehicle that departed its racer may be
+                           taken from another. */
+    void (*driver)(struct Vehicle *vehicle); /*!< The routine that drives the vehicle each frame,
+                                                  the player's or the computer's, or NULL. */
+    Vec3f aiTarget;                          /*!< The point a computer's vehicle steers towards. */
+    Vec3f trackPoint;                        /*!< The point of the route nearest the vehicle. */
+    Vec3f trackForward;                      /*!< The axis of the route at trackPoint along it. */
+    Vec3f trackSide;       /*!< The axis of the route at trackPoint across it to the left. */
+    Vec3f trackUp;         /*!< The axis of the route at trackPoint upwards. */
+    f32 trackSideDistance; /*!< How far the vehicle is from the middle of the route,
+                                trackSideOffset without its sign. */
+    Vec3f trackOffset;     /*!< The offset of the vehicle from trackPoint. */
+    f32 trackSideOffset;   /*!< How far the vehicle is from the middle of the route along
+                                trackSide, below 0 to the right. */
+    Vec3f previousListenerPosition; /*!< Where the camera that heard the vehicle was the last
+                                         frame. */
+    s32 effectSound;    /*!< The sound effect the vehicle plays, from 0 for none. A louder or more
+                             important sound takes its place. */
+    s32 effectVolume;   /*!< How loud the sound effect plays. */
+    s32 effectPriority; /*!< How much the sound effect matters. */
+    f32 dopplerFactor;  /*!< How much the motion of the vehicle and the camera raise its sounds. */
+    s32 cameraChanged;  /*!< Set when the active camera changes, to 1 when a view is chosen and to
+                             2 by the cameras. */
+    s32 flyMode;        /*!< Whether the vehicle flies freely with the controls, without physics,
+                             with the cameras fixed rigidly to its frame. */
+    Vec3f previousPosition;          /*!< The position of the last frame. */
+    TrackSection *section;           /*!< The section of the route the vehicle is on. */
+    s32 pointIndex;                  /*!< The nearest point of the vehicle in its section. */
+    Vec3f trackDirection;            /*!< The direction of the track at pointIndex. */
+    s32 maxGate;                     /*!< The farthest gate passed, counted across laps. */
+    s32 gate;                        /*!< The gate last crossed, counted across laps. */
+    s32 lap;                         /*!< The laps finished. */
+    s32 distanceLaps;                /*!< The laps the distance travelled has counted. */
+    f32 lapTime;                     /*!< The time of the lap being driven, in seconds. */
+    f32 lapTimes[VEHICLE_LAP_TIMES]; /*!< The time of each lap finished, in seconds. */
+    f32 bestLapTime;                 /*!< The time of the best lap, in seconds. */
+    s32 bestLap;                     /*!< The best lap, from 0. */
+    f32 totalTime;                   /*!< The time of the race so far, in seconds. */
+    f32 timeLeft;                    /*!< The time remaining, in seconds. */
+    f32 distance;                    /*!< The distance travelled along the route. */
+    s32 racePosition;                /*!< The place in the race, from 0 for the leader. */
+    const char *message;    /*!< The message shown large in the middle of the view, or NULL. */
+    f32 messageTime;        /*!< The remaining time of message, in seconds. */
+    const char *subMessage; /*!< The message shown smaller when there is no large one, or NULL. */
+    f32 subMessageTime;     /*!< The remaining time of subMessage, in seconds. */
+    char messageText[0xFD4 - 0xFC0]; /*!< The text a message may show, such as the time of a
+                                          record. */
+    s32 groundHits;        /*!< The triangles of the track below the vehicle this frame. */
+    Vec3f placedVelocity;  /*!< The velocity SetVehicleVelocity() last gave. */
+    f32 speedKph;          /*!< The speed the display shows, in kilometres an hour. */
+    f32 odometer;          /*!< The distance the speedometer has counted. */
+    Vec3f joltPosition;    /*!< Where a weight on a spring at a corner of the vehicle is. Its jolts
+                                damage the vehicle. */
+    Vec3f joltVelocity;    /*!< How far the jolt weight moves a frame. */
+    Vec3f joltOffset;      /*!< How far the jolt weight hangs from the corner. */
+    f32 exhaustTimer;      /*!< The time towards the next puff of exhaust. */
+    Vec3f exhaustPosition; /*!< Where the last puff departed the exhaust. */
+    f32 smokeTimers[VEHICLE_WHEELS]; /*!< The time towards the next puff of smoke of each wheel, the
+                                          front two first. */
+    Vec3f smokePositions[VEHICLE_WHEELS]; /*!< Where the last puff of smoke of each wheel was, the
+                                               front two first. */
+    f32 sprayFramesLeft[VEHICLE_WHEELS];  /*!< The frames the spray of each wheel goes on after the
+                                               wheel lifts off the ground. */
+    s32 spraySurfaces[VEHICLE_WHEELS];    /*!< The surface the spray of each wheel is thrown
+                                               from. */
+    f32 sprayPhases[VEHICLE_WHEELS];      /*!< The time towards the next segment of each spray. */
+    s32 sprayAdvanced[VEHICLE_WHEELS];    /*!< Whether a segment of each spray began this frame. */
+    Vec3f sprayPositions[VEHICLE_WHEELS]; /*!< Where the newest segment of each spray was thrown
+                                               from. */
+    Vtx sprayVertices[VEHICLE_WHEELS][SPRAY_SEGMENTS]
+                     [SPRAY_SEGMENT_VERTICES]; /*!< The vertices of the segments of each spray, the
+                                                    newest first, in 127ths of a unit from
+                                                    sprayOrigin. */
+    s16 sprayVelocities[VEHICLE_WHEELS][SPRAY_SEGMENTS][SPRAY_SEGMENT_VERTICES]
+                       [3]; /*!< How far the vertices of each spray move a second, in 127ths of a
+                                 unit. */
+    s16 spraySegmentSurfaces[VEHICLE_WHEELS][SPRAY_SEGMENTS]; /*!< The surface each segment was
+                                                                   thrown from, or -1 when it was
+                                                                   thrown from none. */
+    Vec3f sprayOrigin; /*!< The point the spray vertices are relative to, put at the vehicle by
+                            SetVehiclePosition(). */
+    u8 unreconstructed1D84[0x1D88 - 0x1D84]; /*!< Padding before the 8-byte alignment of
+                                                  sprayMtx. */
+    Mtx sprayMtx;      /*!< The matrix of the spray, the identity until it is set. */
+    s32 inTunnel;      /*!< Whether the placed model under the vehicle is a tunnel, darkening the
+                            vehicle. */
+    f32 cameraHeading; /*!< The heading of the camera of the vehicle, in radians, turning the
+                            reflection of the sky. */
+    u8 unreconstructed1DD0[0x1DD4 - 0x1DD0]; /*!< Not read by the routines reconstructed so far. */
+    f32 steering;                            /*!< The steering control. */
+    f32 pitchInput;                          /*!< The pitch control of the fly mode. */
+    f32 accelerator;                         /*!< The accelerator control. */
+    f32 rollInput;                           /*!< The roll control of the fly mode, 1, -1, or 0. */
+    f32 fogFactor; /*!< How thick the fog is at the vehicle, from 0 to 1, fading its shadow. */
+    CameraFrame *activeCamera;   /*!< The member of cameras the view of the vehicle is drawn
+                                      from. */
+    CameraFrame *previousCamera; /*!< The camera of the last frame. */
+    CameraFrame cameras[VEHICLE_CAMERAS]; /*!< The cameras, by the VEHICLE_CAMERA_ values. */
+    f32 chaseSpeed;                       /*!< The speed the chase camera follows, smoothed. */
+    f32 chaseLag;                         /*!< The lag of the chase camera, smoothed. */
+    f32 lookAhead;                        /*!< How far the look-at point leads the vehicle. */
+    Vec3f lookAt;                         /*!< The point the chase camera looks at. */
+    Vec3f chasePosition; /*!< Where the chase camera was before the track pushed it. */
+    f32 collisionPull;   /*!< How hard the track has been pushing the chase camera. */
+    u8 unreconstructed1FB0[0x1FB4 - 0x1FB0]; /*!< Not read by the routines reconstructed so far. */
+    Vec3f initialChasePosition;              /*!< Where the chase camera started. */
+    u16 groundInstances[RAY_INSTANCES]; /*!< The placed models of the ground below the vehicle, the
+                                             nearest first, from CastRayAgainstTrack(). */
+    s32 groundInstanceCount; /*!< The number of groundInstances to read, 1 once the ground is
+                                  found. */
+    u16 nearbyInstances[RAY_INSTANCES]; /*!< The placed models near the ground, the latest
+                                             first. */
+    s32 nearbyInstanceCount;            /*!< The number of nearbyInstances. */
+    f32 groundDistance;                 /*!< How far the ground is below the vehicle. */
+    s32 groundSurface;                  /*!< The index of the triangle of the ground. */
+    s16 shadowCorners[2][2]; /*!< The corners of the rectangle of the screen the shadow of the
+                                  vehicle covers in the view being drawn, the left and the lower
+                                  edge, then the right and the upper edge. */
+    s32 selectedCar;         /*!< The car under the cursor of the car selection screen. */
+    s32 carModel;            /*!< The index of the car in g_aCarModels. */
+    u8 color[3];             /*!< The color of the paint of the car, as red, green, and blue. */
+    u8 ghostMode;  /*!< VEHICLE_GHOST while the vehicle fades back in after it is put back on the
+                        track. */
+    f32 opacity;   /*!< How solid the vehicle is drawn, from 0 to 1. */
+    s32 otherLook; /*!< Whether the car is drawn in its other look, without its textured parts or
+                        the reflection of the sky. A button switches it once an unlock allows
+                        it. */
+    s32 wrongWayFrames; /*!< The frames the vehicle has faced against the track. */
+    u8 gridX;           /*!< The x of the cell of the 32-unit grid of the track the vehicle is
+                             in. */
+    u8 gridY;           /*!< The y of the cell of the 32-unit grid of the track the vehicle is
+                             in. */
+    u8 unreconstructed2072[0x2074 - 0x2072]; /*!< Padding before input. */
+    PlayerInputState *input;                 /*!< The input that drives the vehicle. */
+    VehicleModel *model;           /*!< The model of the car, in a slot of g_aVehicleModels. */
+    s16 dents[VEHICLE_DENT_SIDES]; /*!< How deeply each of eight sides around the car has been
+                                        dented; up to 0x100 it dents more. */
+    s16 dentJitter; /*!< A small offset, from -4 to 3, that changes with each dent to vary the
+                         dents. */
+    u8 unreconstructed208E[0x2090 - 0x208E]; /*!< Padding to the end of the vehicle. */
 } Vehicle;
 
 /** @ghidraAddress USA: 0x8031b760 */
