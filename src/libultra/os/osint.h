@@ -43,6 +43,77 @@ extern OSThread *__osRunningThread;
 extern __OSEventState __osEventStateTab[];
 
 /**
+ * The first timer of the list of pending timers, a sentinel that never expires.
+ *
+ * @ghidraAddress USA: 0x803818a0
+ */
+extern OSTimer __osBaseTimer;
+
+/** @ghidraAddress USA: 0x802a62d0 */
+extern OSTimer *__osTimerList;
+
+/**
+ * The time osGetTime() returns, as of the last retrace.
+ *
+ * @ghidraAddress USA: 0x803818c0
+ */
+extern OSTime __osCurrentTime;
+
+/**
+ * The CPU counter at the last retrace.
+ *
+ * @ghidraAddress USA: 0x803818c8
+ */
+extern u32 __osBaseCounter;
+
+/** @ghidraAddress USA: 0x803818cc */
+extern u32 __osViIntrCount;
+
+/**
+ * The CPU counter when the compare register was last set.
+ *
+ * @ghidraAddress USA: 0x803818d0
+ */
+extern u32 __osTimerCounter;
+
+/**
+ * Empty the timer list and clear the time.
+ *
+ * @ghidraAddress USA: 0x8026bc40
+ */
+void __osTimerServicesInit(void);
+
+/**
+ * Send the message of every timer that expired, restart the periodic ones, and set the compare
+ * register for the next.
+ *
+ * @ghidraAddress USA: 0x8026bccc
+ */
+void __osTimerInterrupt(void);
+
+/**
+ * Make the compare register raise its interrupt value cycles from now.
+ *
+ * @ghidraAddress USA: 0x8026be44
+ */
+void __osSetTimerIntr(OSTime value);
+
+/**
+ * Insert a timer into the list, whose values are relative to the timer before.
+ *
+ * @return The value of the timer relative to the one before it.
+ * @ghidraAddress USA: 0x8026beb8
+ */
+OSTime __osInsertTimer(OSTimer *t);
+
+/**
+ * Write the compare register of coprocessor 0.
+ *
+ * @ghidraAddress USA: 0x8026e6c0
+ */
+void __osSetCompare(u32 value);
+
+/**
  * Disable interrupts.
  *
  * @return The interrupt enable bit of the status register before the call.

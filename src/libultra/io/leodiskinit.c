@@ -1,0 +1,27 @@
+#include <ultra64.h>
+
+#include "../os/osint.h"
+#include "piint.h"
+
+OSPiHandle *osLeoDiskInit(void) {
+    u32 saveMask;
+
+    LeoDiskHandle.type = DEVICE_TYPE_64DD;
+    LeoDiskHandle.baseAddress = PHYS_TO_K1(0x05000000);
+    LeoDiskHandle.latency = 3;
+    LeoDiskHandle.pulse = 6;
+    LeoDiskHandle.pageSize = 6;
+    LeoDiskHandle.relDuration = 2;
+    LeoDiskHandle.domain = PI_DOMAIN2;
+    IO_WRITE(PI_BSD_DOM2_LAT_REG, LeoDiskHandle.latency);
+    IO_WRITE(PI_BSD_DOM2_PWD_REG, LeoDiskHandle.pulse);
+    IO_WRITE(PI_BSD_DOM2_PGS_REG, LeoDiskHandle.pageSize);
+    IO_WRITE(PI_BSD_DOM2_RLS_REG, LeoDiskHandle.relDuration);
+    bzero(&LeoDiskHandle.transferInfo, sizeof(LeoDiskHandle.transferInfo));
+    saveMask = __osDisableInt();
+    LeoDiskHandle.next = __osPiTable;
+    __osPiTable = &LeoDiskHandle;
+    __osDiskHandle = &LeoDiskHandle;
+    __osRestoreInt(saveMask);
+    return &LeoDiskHandle;
+}

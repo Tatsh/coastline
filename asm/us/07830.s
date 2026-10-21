@@ -637,12 +637,12 @@ glabel ProcessSplashScreens
     /* 81A4 802071A4 AC225EB0 */  sw         $v0, %lo(g_dwPhysicsReserved27)($at)
     /* 81A8 802071A8 2401FFFF */  addiu      $at, $zero, -0x1
     /* 81AC 802071AC 10410017 */  beq        $v0, $at, .L8020720C
-    /* 81B0 802071B0 3C048031 */   lui       $a0, %hi(g_dwPhysicsReserved27_2)
+    /* 81B0 802071B0 3C048031 */   lui       $a0, %hi(g_dwPhysicsReserved27 + 0x2)
     /* 81B4 802071B4 3C058031 */  lui        $a1, %hi(g_dwPhysicsReserved24)
     /* 81B8 802071B8 3C068031 */  lui        $a2, %hi(g_dwPhysicsReserved23)
     /* 81BC 802071BC 8CC65EA0 */  lw         $a2, %lo(g_dwPhysicsReserved23)($a2)
     /* 81C0 802071C0 8CA55EA4 */  lw         $a1, %lo(g_dwPhysicsReserved24)($a1)
-    /* 81C4 802071C4 84845EB2 */  lh         $a0, %lo(g_dwPhysicsReserved27_2)($a0)
+    /* 81C4 802071C4 84845EB2 */  lh         $a0, %lo(g_dwPhysicsReserved27 + 0x2)($a0)
     /* 81C8 802071C8 0C095EC1 */  jal        InitSoundChannel
     /* 81CC 802071CC 00003825 */   or        $a3, $zero, $zero
     /* 81D0 802071D0 3C0E8031 */  lui        $t6, %hi(g_dwPhysicsReserved27)
@@ -979,12 +979,12 @@ glabel ProcessSplashScreens
     /* 86C4 802076C4 AC225EBC */  sw         $v0, %lo(g_dwPhysicsReserved30)($at)
     /* 86C8 802076C8 2401FFFF */  addiu      $at, $zero, -0x1
     /* 86CC 802076CC 10410017 */  beq        $v0, $at, .L8020772C
-    /* 86D0 802076D0 3C048031 */   lui       $a0, %hi(g_dwPhysicsReserved30_2)
+    /* 86D0 802076D0 3C048031 */   lui       $a0, %hi(g_dwPhysicsReserved30 + 0x2)
     /* 86D4 802076D4 3C058031 */  lui        $a1, %hi(g_dwPhysicsReserved24)
     /* 86D8 802076D8 3C068031 */  lui        $a2, %hi(g_dwPhysicsReserved23)
     /* 86DC 802076DC 8CC65EA0 */  lw         $a2, %lo(g_dwPhysicsReserved23)($a2)
     /* 86E0 802076E0 8CA55EA4 */  lw         $a1, %lo(g_dwPhysicsReserved24)($a1)
-    /* 86E4 802076E4 84845EBE */  lh         $a0, %lo(g_dwPhysicsReserved30_2)($a0)
+    /* 86E4 802076E4 84845EBE */  lh         $a0, %lo(g_dwPhysicsReserved30 + 0x2)($a0)
     /* 86E8 802076E8 0C095EC1 */  jal        InitSoundChannel
     /* 86EC 802076EC 00003825 */   or        $a3, $zero, $zero
     /* 86F0 802076F0 3C188031 */  lui        $t8, %hi(g_dwPhysicsReserved30)
@@ -1321,12 +1321,12 @@ glabel ProcessSplashScreens
     /* 8BE4 80207BE4 AC225EC8 */  sw         $v0, %lo(g_dwPhysicsReserved33)($at)
     /* 8BE8 80207BE8 2401FFFF */  addiu      $at, $zero, -0x1
     /* 8BEC 80207BEC 10410017 */  beq        $v0, $at, .L80207C4C
-    /* 8BF0 80207BF0 3C048031 */   lui       $a0, %hi(g_dwPhysicsReserved33_2)
+    /* 8BF0 80207BF0 3C048031 */   lui       $a0, %hi(g_dwPhysicsReserved33 + 0x2)
     /* 8BF4 80207BF4 3C058031 */  lui        $a1, %hi(g_dwPhysicsReserved24)
     /* 8BF8 80207BF8 3C068031 */  lui        $a2, %hi(g_dwPhysicsReserved23)
     /* 8BFC 80207BFC 8CC65EA0 */  lw         $a2, %lo(g_dwPhysicsReserved23)($a2)
     /* 8C00 80207C00 8CA55EA4 */  lw         $a1, %lo(g_dwPhysicsReserved24)($a1)
-    /* 8C04 80207C04 84845ECA */  lh         $a0, %lo(g_dwPhysicsReserved33_2)($a0)
+    /* 8C04 80207C04 84845ECA */  lh         $a0, %lo(g_dwPhysicsReserved33 + 0x2)($a0)
     /* 8C08 80207C08 0C095EC1 */  jal        InitSoundChannel
     /* 8C0C 80207C0C 00003825 */   or        $a3, $zero, $zero
     /* 8C10 80207C10 3C0E8031 */  lui        $t6, %hi(g_dwPhysicsReserved33)

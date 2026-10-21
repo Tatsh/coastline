@@ -8402,17 +8402,17 @@ dlabel jtbl_802A9E0C
     /* AAEB4 802A9EB4 8022ECC4 */ .word .L8022ECC4
 enddlabel jtbl_802A9E0C
 
-nonmatching DAT_802a9eb8
+nonmatching D_802A9EB8
 
-dlabel DAT_802a9eb8
+dlabel D_802A9EB8
     /* AAEB8 802A9EB8 3A72F1AA */ .float 0.0009267578134
-enddlabel DAT_802a9eb8
+enddlabel D_802A9EB8
 
-nonmatching DAT_802a9ebc
+nonmatching D_802A9EBC
 
-dlabel DAT_802a9ebc
+dlabel D_802A9EBC
     /* AAEBC 802A9EBC 3A9F3B65 */ .float 0.001214843825
-enddlabel DAT_802a9ebc
+enddlabel D_802A9EBC
 
 nonmatching g_fSkyboxDepthScale
 
@@ -9512,13 +9512,13 @@ dlabel g_szZlibErrMsgTableEnd
 enddlabel g_szZlibErrMsgTableEnd
 
 .align 2
-nonmatching s_1_0_4_802aa5a8
+nonmatching D_802AA5A8
 
-dlabel s_1_0_4_802aa5a8
+dlabel D_802AA5A8
     /* AB5A8 802AA5A8 */ .asciz "1.0.4"
     /* 312E302E34000000 */
-enddlabel s_1_0_4_802aa5a8
 .align 2
+enddlabel D_802AA5A8
 
 .align 2
 nonmatching g_szZcallocOutOfMemory
@@ -12078,12 +12078,12 @@ dlabel g_pfnTLB_REFILL
 enddlabel g_pfnTLB_REFILL
     /* AC954 802AB954 00000000 */ .word 0x00000000
 
-nonmatching PTR_TLB_REFILL_802ab958
+nonmatching D_802AB958
 
-dlabel PTR_TLB_REFILL_802ab958
+dlabel D_802AB958
     /* AC958 802AB958 80000000 */ .word D_80000000
-enddlabel PTR_TLB_REFILL_802ab958
     /* AC95C 802AB95C 00000000 */ .word 0x00000000
+enddlabel D_802AB958
 
 nonmatching g_dConst0p1_2
 

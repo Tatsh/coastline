@@ -327,25 +327,6 @@ glabel UnusedDevManagerStub
     /* 6DE1C 8026CE1C 00000000 */   nop
 endlabel UnusedDevManagerStub
 
-nonmatching __osAiDeviceBusy, 0x30
-
-glabel __osAiDeviceBusy
-    /* 6DE20 8026CE20 3C0EA450 */  lui        $t6, %hi(D_A450000C)
-    /* 6DE24 8026CE24 8DC4000C */  lw         $a0, %lo(D_A450000C)($t6)
-    /* 6DE28 8026CE28 3C018000 */  lui        $at, (0x80000000 >> 16)
-    /* 6DE2C 8026CE2C 27BDFFF8 */  addiu      $sp, $sp, -0x8
-    /* 6DE30 8026CE30 00817824 */  and        $t7, $a0, $at
-    /* 6DE34 8026CE34 11E00003 */  beqz       $t7, .L8026CE44
-    /* 6DE38 8026CE38 00000000 */   nop
-    /* 6DE3C 8026CE3C 10000002 */  b          .L8026CE48
-    /* 6DE40 8026CE40 24020001 */   addiu     $v0, $zero, 0x1
-  .L8026CE44:
-    /* 6DE44 8026CE44 00001025 */  or         $v0, $zero, $zero
-  .L8026CE48:
-    /* 6DE48 8026CE48 03E00008 */  jr         $ra
-    /* 6DE4C 8026CE4C 27BD0008 */   addiu     $sp, $sp, 0x8
-endlabel __osAiDeviceBusy
-
 nonmatching _Litob, 0x298
 
 glabel _Litob

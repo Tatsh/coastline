@@ -6593,7 +6593,7 @@ glabel InvalidateTriCacheSectorAt
     /* 60108 8025F108 24020001 */   addiu     $v0, $zero, 0x1
   .L8025F10C:
     /* 6010C 8025F10C 95CEEA82 */  lhu        $t6, %lo(g_wSoundChannel1)($t6)
-    /* 60110 8025F110 3C0F8038 */  lui        $t7, %hi(DAT_8037ea84)
+    /* 60110 8025F110 3C0F8038 */  lui        $t7, %hi(D_8037EA84)
     /* 60114 8025F114 3C018038 */  lui        $at, %hi(g_dwSoundReserved0)
     /* 60118 8025F118 144E0006 */  bne        $v0, $t6, .L8025F134
     /* 6011C 8025F11C 00000000 */   nop
@@ -6603,24 +6603,24 @@ glabel InvalidateTriCacheSectorAt
     /* 6012C 8025F12C 03E00008 */  jr         $ra
     /* 60130 8025F130 24020001 */   addiu     $v0, $zero, 0x1
   .L8025F134:
-    /* 60134 8025F134 95EFEA84 */  lhu        $t7, %lo(DAT_8037ea84)($t7)
-    /* 60138 8025F138 3C188038 */  lui        $t8, %hi(DAT_8037ea86)
-    /* 6013C 8025F13C 3C018038 */  lui        $at, %hi(DAT_8037ea98)
+    /* 60134 8025F134 95EFEA84 */  lhu        $t7, %lo(D_8037EA84)($t7)
+    /* 60138 8025F138 3C188038 */  lui        $t8, %hi(D_8037EA84 + 0x2)
+    /* 6013C 8025F13C 3C018038 */  lui        $at, %hi(D_8037EA98)
     /* 60140 8025F140 144F0006 */  bne        $v0, $t7, .L8025F15C
     /* 60144 8025F144 00000000 */   nop
-    /* 60148 8025F148 AC20EA98 */  sw         $zero, %lo(DAT_8037ea98)($at)
-    /* 6014C 8025F14C 3C018038 */  lui        $at, %hi(DAT_8037ea84)
-    /* 60150 8025F150 A420EA84 */  sh         $zero, %lo(DAT_8037ea84)($at)
+    /* 60148 8025F148 AC20EA98 */  sw         $zero, %lo(D_8037EA98)($at)
+    /* 6014C 8025F14C 3C018038 */  lui        $at, %hi(D_8037EA84)
+    /* 60150 8025F150 A420EA84 */  sh         $zero, %lo(D_8037EA84)($at)
     /* 60154 8025F154 03E00008 */  jr         $ra
     /* 60158 8025F158 24020001 */   addiu     $v0, $zero, 0x1
   .L8025F15C:
-    /* 6015C 8025F15C 9718EA86 */  lhu        $t8, %lo(DAT_8037ea86)($t8)
-    /* 60160 8025F160 3C018038 */  lui        $at, %hi(DAT_8037ea9c)
+    /* 6015C 8025F15C 9718EA86 */  lhu        $t8, %lo(D_8037EA84 + 0x2)($t8)
+    /* 60160 8025F160 3C018038 */  lui        $at, %hi(D_8037EA9C)
     /* 60164 8025F164 54580007 */  bnel       $v0, $t8, .L8025F184
     /* 60168 8025F168 00001025 */   or        $v0, $zero, $zero
-    /* 6016C 8025F16C AC20EA9C */  sw         $zero, %lo(DAT_8037ea9c)($at)
-    /* 60170 8025F170 3C018038 */  lui        $at, %hi(DAT_8037ea86)
-    /* 60174 8025F174 A420EA86 */  sh         $zero, %lo(DAT_8037ea86)($at)
+    /* 6016C 8025F16C AC20EA9C */  sw         $zero, %lo(D_8037EA9C)($at)
+    /* 60170 8025F170 3C018038 */  lui        $at, %hi(D_8037EA84 + 0x2)
+    /* 60174 8025F174 A420EA86 */  sh         $zero, %lo(D_8037EA84 + 0x2)($at)
     /* 60178 8025F178 03E00008 */  jr         $ra
     /* 6017C 8025F17C 24020001 */   addiu     $v0, $zero, 0x1
     /* 60180 8025F180 00001025 */  or         $v0, $zero, $zero

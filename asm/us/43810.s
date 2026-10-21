@@ -11,9 +11,9 @@
 nonmatching zlibVersion, 0xC
 
 glabel zlibVersion
-    /* 43810 80242810 3C02802B */  lui        $v0, %hi(s_1_0_4_802aa5a8)
+    /* 43810 80242810 3C02802B */  lui        $v0, %hi(D_802AA5A8)
     /* 43814 80242814 03E00008 */  jr         $ra
-    /* 43818 80242818 2442A5A8 */   addiu     $v0, $v0, %lo(s_1_0_4_802aa5a8)
+    /* 43818 80242818 2442A5A8 */   addiu     $v0, $v0, %lo(D_802AA5A8)
 endlabel zlibVersion
 
 nonmatching zcalloc, 0x64

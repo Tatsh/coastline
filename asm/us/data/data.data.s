@@ -36811,19 +36811,9 @@ dlabel D_8028D4A8
     /* 8E4B4 8028D4B4 00000000 */ .word 0x00000000
     /* 8E4B8 8028D4B8 00000002 */ .word 0x00000002
     /* 8E4BC 8028D4BC 00000002 */ .word 0x00000002
-enddlabel D_8028D4A8
-
-nonmatching DAT_8028d4c0
-
-dlabel DAT_8028d4c0
     /* 8E4C0 8028D4C0 00000000 */ .word 0x00000000
-enddlabel DAT_8028d4c0
-
-nonmatching DAT_8028d4c4
-
-dlabel DAT_8028d4c4
     /* 8E4C4 8028D4C4 00000000 */ .word 0x00000000
-enddlabel DAT_8028d4c4
+enddlabel D_8028D4A8
 
 nonmatching g_dwGfxConvertK2
 
@@ -36831,9 +36821,10 @@ dlabel g_dwGfxConvertK2
     /* 8E4C8 8028D4C8 00000004 */ .word 0x00000004
 enddlabel g_dwGfxConvertK2
 
-nonmatching DAT_8028d4cc
+nonmatching D_8028D4CC
 
-dlabel DAT_8028d4cc
+/* Automatically generated and unreferenced pad */
+dlabel D_8028D4CC
     /* 8E4CC 8028D4CC 00000004 */ .word 0x00000004
     /* 8E4D0 8028D4D0 00000000 */ .word 0x00000000
     /* 8E4D4 8028D4D4 00000000 */ .word 0x00000000
@@ -36843,7 +36834,7 @@ dlabel DAT_8028d4cc
     /* 8E4E4 8028D4E4 00000000 */ .word 0x00000000
     /* 8E4E8 8028D4E8 00000008 */ .word 0x00000008
     /* 8E4EC 8028D4EC 00000008 */ .word 0x00000008
-enddlabel DAT_8028d4cc
+enddlabel D_8028D4CC
 
 nonmatching g_dwGfxKeyScaleR
 
@@ -37403,30 +37394,15 @@ dlabel g_bObjectVisible2
     /* 8EAC3 8028DAC3 */ .byte 0x00
 enddlabel g_bObjectVisible2
 
-nonmatching DAT_8028dac4
+nonmatching D_8028DAC4
 
-dlabel DAT_8028dac4
+dlabel D_8028DAC4
     /* 8EAC4 8028DAC4 00000000 */ .word 0x00000000
-enddlabel DAT_8028dac4
-
-nonmatching DAT_8028dac8
-
-dlabel DAT_8028dac8
     /* 8EAC8 8028DAC8 00000000 */ .word 0x00000000
-enddlabel DAT_8028dac8
-
-nonmatching DAT_8028dacc
-
-dlabel DAT_8028dacc
     /* 8EACC 8028DACC 00000000 */ .word 0x00000000
-enddlabel DAT_8028dacc
-
-nonmatching DAT_8028dad0
-
-dlabel DAT_8028dad0
     /* 8EAD0 8028DAD0 00000000 */ .word 0x00000000
     /* 8EAD4 8028DAD4 8028CE10 */ .word g_texPaintPaletteSelector
-enddlabel DAT_8028dad0
+enddlabel D_8028DAC4
 
 nonmatching g_pObjectMatrix0
 
@@ -63967,13 +63943,8 @@ nonmatching g_qwCh1PhaseIncrement
 
 dlabel g_qwCh1PhaseIncrement
     /* A57B8 802A47B8 00000000 */ .word 0x00000000
-enddlabel g_qwCh1PhaseIncrement
-
-nonmatching g_AudioChannels_1__dwPhaseAccumLo
-
-dlabel g_AudioChannels_1__dwPhaseAccumLo
     /* A57BC 802A47BC 00000000 */ .word 0x00000000
-enddlabel g_AudioChannels_1__dwPhaseAccumLo
+enddlabel g_qwCh1PhaseIncrement
 
 nonmatching g_dwCh1RightVolume
 
@@ -66732,23 +66703,23 @@ dlabel D_802A6134
     /* A713C 802A613C 00000000 */ .word 0x00000000
 enddlabel D_802A6134
 
-nonmatching g_dwOsClockRateLo
+nonmatching osClockRate
 
-dlabel g_dwOsClockRateLo
+dlabel osClockRate
     /* A7140 802A6140 00000000 */ .word 0x00000000
-enddlabel g_dwOsClockRateLo
+enddlabel osClockRate
 
-nonmatching g_dwOsClockRateHi
+nonmatching D_802A6144
 
-dlabel g_dwOsClockRateHi
+dlabel D_802A6144
     /* A7144 802A6144 03B9ACA0 */ .word 0x03B9ACA0
-enddlabel g_dwOsClockRateHi
+enddlabel D_802A6144
 
-nonmatching g_dwOsPiDmaLength
+nonmatching osViClock
 
-dlabel g_dwOsPiDmaLength
+dlabel osViClock
     /* A7148 802A6148 02E6D354 */ .word 0x02E6D354
-enddlabel g_dwOsPiDmaLength
+enddlabel osViClock
 
 nonmatching __osShutdown
 
@@ -66771,204 +66742,147 @@ dlabel D_802A6154
     /* A715C 802A615C 00000000 */ .word 0x00000000
 enddlabel D_802A6154
 
-nonmatching g_dwOsPiReadPulse
+nonmatching __osViDevMgr
 
-dlabel g_dwOsPiReadPulse
+dlabel __osViDevMgr
     /* A7160 802A6160 00000000 */ .word 0x00000000
-enddlabel g_dwOsPiReadPulse
+enddlabel __osViDevMgr
 
-nonmatching g_dwOsPiDomain1
+nonmatching D_802A6164
 
-dlabel g_dwOsPiDomain1
+dlabel D_802A6164
     /* A7164 802A6164 00000000 */ .word 0x00000000
-enddlabel g_dwOsPiDomain1
+enddlabel D_802A6164
 
-nonmatching g_dwOsPiDomain2
+nonmatching D_802A6168
 
-dlabel g_dwOsPiDomain2
+dlabel D_802A6168
     /* A7168 802A6168 00000000 */ .word 0x00000000
-enddlabel g_dwOsPiDomain2
+enddlabel D_802A6168
 
-nonmatching g_dwOsPiBsdDom1
+nonmatching D_802A616C
 
-dlabel g_dwOsPiBsdDom1
+dlabel D_802A616C
     /* A716C 802A616C 00000000 */ .word 0x00000000
-enddlabel g_dwOsPiBsdDom1
+enddlabel D_802A616C
 
-nonmatching g_dwOsPiBsdDom2
+nonmatching D_802A6170
 
-dlabel g_dwOsPiBsdDom2
+dlabel D_802A6170
     /* A7170 802A6170 00000000 */ .word 0x00000000
-enddlabel g_dwOsPiBsdDom2
+enddlabel D_802A6170
 
-nonmatching g_dwOsPiBsdDom3
+nonmatching D_802A6174
 
-dlabel g_dwOsPiBsdDom3
+dlabel D_802A6174
     /* A7174 802A6174 00000000 */ .word 0x00000000
-enddlabel g_dwOsPiBsdDom3
+enddlabel D_802A6174
 
-nonmatching g_dwOsPiBsdDom4
+nonmatching D_802A6178
 
-dlabel g_dwOsPiBsdDom4
+dlabel D_802A6178
     /* A7178 802A6178 00000000 */ .word 0x00000000
-enddlabel g_dwOsPiBsdDom4
-
-nonmatching D_802A617C
-
-/* Automatically generated and unreferenced pad */
-dlabel D_802A617C
     /* A717C 802A617C 00000000 */ .word 0x00000000
-enddlabel D_802A617C
+enddlabel D_802A6178
 
-nonmatching g_dwOsPiBsdDom5
+nonmatching __osPiDevMgr
 
-dlabel g_dwOsPiBsdDom5
+dlabel __osPiDevMgr
     /* A7180 802A6180 00000000 */ .word 0x00000000
-enddlabel g_dwOsPiBsdDom5
+enddlabel __osPiDevMgr
 
-nonmatching g_dwOsPiBsdDom6
+nonmatching D_802A6184
 
-dlabel g_dwOsPiBsdDom6
+dlabel D_802A6184
     /* A7184 802A6184 00000000 */ .word 0x00000000
-enddlabel g_dwOsPiBsdDom6
+enddlabel D_802A6184
 
-nonmatching g_dwOsPiBsdDom7
+nonmatching D_802A6188
 
-dlabel g_dwOsPiBsdDom7
+dlabel D_802A6188
     /* A7188 802A6188 00000000 */ .word 0x00000000
-enddlabel g_dwOsPiBsdDom7
+enddlabel D_802A6188
 
-nonmatching g_dwOsPiBsdDom8
+nonmatching D_802A618C
 
-dlabel g_dwOsPiBsdDom8
+dlabel D_802A618C
     /* A718C 802A618C 00000000 */ .word 0x00000000
-enddlabel g_dwOsPiBsdDom8
+enddlabel D_802A618C
 
-nonmatching g_dwOsPiBsdDom9
+nonmatching D_802A6190
 
-dlabel g_dwOsPiBsdDom9
+dlabel D_802A6190
     /* A7190 802A6190 00000000 */ .word 0x00000000
-enddlabel g_dwOsPiBsdDom9
+enddlabel D_802A6190
 
-nonmatching g_dwOsPiBsdDom10
+nonmatching D_802A6194
 
-dlabel g_dwOsPiBsdDom10
+dlabel D_802A6194
     /* A7194 802A6194 00000000 */ .word 0x00000000
-enddlabel g_dwOsPiBsdDom10
+enddlabel D_802A6194
 
-nonmatching g_dwOsPiBsdDom11
+nonmatching D_802A6198
 
-dlabel g_dwOsPiBsdDom11
+dlabel D_802A6198
     /* A7198 802A6198 00000000 */ .word 0x00000000
-enddlabel g_dwOsPiBsdDom11
+enddlabel D_802A6198
 
-nonmatching g_dwOsPiBsdDom12
+nonmatching __osPiTable
 
-dlabel g_dwOsPiBsdDom12
+dlabel __osPiTable
     /* A719C 802A619C 00000000 */ .word 0x00000000
-enddlabel g_dwOsPiBsdDom12
+enddlabel __osPiTable
 
-nonmatching D_802A61A0
+nonmatching __osCurrentHandle
 
-dlabel D_802A61A0
-    /* A71A0 802A61A0 803818E0 */ .word g_dwGfxReserved27
-    /* A71A4 802A61A4 80381960 */ .word DAT_80381960
+dlabel __osCurrentHandle
+    /* A71A0 802A61A0 803818E0 */ .word CartRomHandle
+    /* A71A4 802A61A4 80381960 */ .word LeoDiskHandle
     /* A71A8 802A61A8 00000000 */ .word 0x00000000
     /* A71AC 802A61AC 00000000 */ .word 0x00000000
-enddlabel D_802A61A0
+enddlabel __osCurrentHandle
 
-nonmatching g_bOsPiDmaBusy
+nonmatching aiHdwrBugFlag
 
-dlabel g_bOsPiDmaBusy
+dlabel aiHdwrBugFlag
     /* A71B0 802A61B0 00000000 */ .word 0x00000000
     /* A71B4 802A61B4 00000000 */ .word 0x00000000
     /* A71B8 802A61B8 00000000 */ .word 0x00000000
     /* A71BC 802A61BC 00000000 */ .word 0x00000000
-enddlabel g_bOsPiDmaBusy
+enddlabel aiHdwrBugFlag
 
-nonmatching g_dwOsPiCartAddr
+nonmatching __osViContexts
 
-dlabel g_dwOsPiCartAddr
+dlabel __osViContexts
     /* A71C0 802A61C0 */ .short 0x0000
-enddlabel g_dwOsPiCartAddr
-
-nonmatching g_dwOsPiCartAddr_2
-
-dlabel g_dwOsPiCartAddr_2
     /* A71C2 802A61C2 */ .short 0x0000
-enddlabel g_dwOsPiCartAddr_2
+enddlabel __osViContexts
 
-nonmatching g_dwOsPiCartSize
-
-dlabel g_dwOsPiCartSize
-    /* A71C4 802A61C4 00000000 */ .word 0x00000000
-enddlabel g_dwOsPiCartSize
-
-nonmatching g_dwOsPiLatency
-
-dlabel g_dwOsPiLatency
-    /* A71C8 802A61C8 00000000 */ .word 0x00000000
-enddlabel g_dwOsPiLatency
-
-nonmatching g_dwOsPiPageSize
-
-dlabel g_dwOsPiPageSize
-    /* A71CC 802A61CC 00000000 */ .word 0x00000000
-enddlabel g_dwOsPiPageSize
-
-nonmatching g_dwOsPiPulseWidth
-
-dlabel g_dwOsPiPulseWidth
-    /* A71D0 802A61D0 00000000 */ .word 0x00000000
-enddlabel g_dwOsPiPulseWidth
-
-nonmatching g_dwOsPiReleaseDuration
-
-dlabel g_dwOsPiReleaseDuration
-    /* A71D4 802A61D4 00000000 */ .word 0x00000000
-enddlabel g_dwOsPiReleaseDuration
-
-nonmatching D_802A61D8
+nonmatching D_802A61C4
 
 /* Automatically generated and unreferenced pad */
-dlabel D_802A61D8
+dlabel D_802A61C4
+    /* A71C4 802A61C4 00000000 */ .word 0x00000000
+    /* A71C8 802A61C8 00000000 */ .word 0x00000000
+    /* A71CC 802A61CC 00000000 */ .word 0x00000000
+    /* A71D0 802A61D0 00000000 */ .word 0x00000000
+    /* A71D4 802A61D4 00000000 */ .word 0x00000000
     /* A71D8 802A61D8 00000000 */ .word 0x00000000
     /* A71DC 802A61DC 00000000 */ .word 0x00000000
     /* A71E0 802A61E0 00000000 */ .word 0x00000000
     /* A71E4 802A61E4 00000000 */ .word 0x00000000
     /* A71E8 802A61E8 00000000 */ .word 0x00000000
     /* A71EC 802A61EC 00000000 */ .word 0x00000000
-enddlabel D_802A61D8
+enddlabel D_802A61C4
 
-nonmatching g_wOsPiDmaDevAddr
+nonmatching D_802A61F0
 
-dlabel g_wOsPiDmaDevAddr
-    /* A71F0 802A61F0 */ .short 0x0000
-enddlabel g_wOsPiDmaDevAddr
-
-nonmatching g_wOsViContext1RetraceCount
-
-dlabel g_wOsViContext1RetraceCount
-    /* A71F2 802A61F2 */ .short 0x0000
-enddlabel g_wOsViContext1RetraceCount
-
-nonmatching g_dwOsPiDmaCpuAddr
-
-dlabel g_dwOsPiDmaCpuAddr
+dlabel D_802A61F0
+    /* A71F0 802A61F0 00000000 */ .word 0x00000000
     /* A71F4 802A61F4 00000000 */ .word 0x00000000
-enddlabel g_dwOsPiDmaCpuAddr
-
-nonmatching g_dwOsPiDmaSize
-
-dlabel g_dwOsPiDmaSize
     /* A71F8 802A61F8 00000000 */ .word 0x00000000
-enddlabel g_dwOsPiDmaSize
-
-nonmatching g_dwOsTvMode
-
-dlabel g_dwOsTvMode
     /* A71FC 802A61FC 00000000 */ .word 0x00000000
-enddlabel g_dwOsTvMode
+enddlabel D_802A61F0
 
 nonmatching g_dwOsPiDmaDir
 
@@ -67021,17 +66935,17 @@ dlabel g_dwOsPiIntrMask
     /* A721C 802A621C 00000000 */ .word 0x00000000
 enddlabel g_dwOsPiIntrMask
 
-nonmatching g_pViCurrentFramebuffer
+nonmatching __osViCurr
 
-dlabel g_pViCurrentFramebuffer
-    /* A7220 802A6220 802A61C0 */ .word g_dwOsPiCartAddr
-enddlabel g_pViCurrentFramebuffer
+dlabel __osViCurr
+    /* A7220 802A6220 802A61C0 */ .word __osViContexts
+enddlabel __osViCurr
 
-nonmatching g_pViDisplayBuffer
+nonmatching __osViNext
 
-dlabel g_pViDisplayBuffer
-    /* A7224 802A6224 802A61F0 */ .word g_wOsPiDmaDevAddr
-enddlabel g_pViDisplayBuffer
+dlabel __osViNext
+    /* A7224 802A6224 802A61F0 */ .word D_802A61F0
+enddlabel __osViNext
 
 nonmatching D_802A6228
 
@@ -67067,11 +66981,11 @@ dlabel D_802A6278
     /* A727C 802A627C 00000000 */ .word 0x00000000
 enddlabel D_802A6278
 
-nonmatching g_dwOsPiAccessQueue
+nonmatching __osSiAccessQueueEnabled
 
-dlabel g_dwOsPiAccessQueue
+dlabel __osSiAccessQueueEnabled
     /* A7280 802A6280 00000000 */ .word 0x00000000
-enddlabel g_dwOsPiAccessQueue
+enddlabel __osSiAccessQueueEnabled
 
 nonmatching D_802A6284
 
@@ -67086,13 +67000,8 @@ nonmatching __osThreadTail
 
 dlabel __osThreadTail
     /* A7290 802A6290 00000000 */ .word 0x00000000
-enddlabel __osThreadTail
-
-nonmatching __osThreadTail_priority
-
-dlabel __osThreadTail_priority
     /* A7294 802A6294 FFFFFFFF */ .word 0xFFFFFFFF
-enddlabel __osThreadTail_priority
+enddlabel __osThreadTail
 
 nonmatching __osRunQueue
 
@@ -67150,11 +67059,11 @@ dlabel D_802A62B8
     /* A72CC 802A62CC 00000000 */ .word 0x00000000
 enddlabel D_802A62B8
 
-nonmatching g_pOsSchedulerHead
+nonmatching __osTimerList
 
-dlabel g_pOsSchedulerHead
-    /* A72D0 802A62D0 803818A0 */ .word g_dwGfxReserved14
-enddlabel g_pOsSchedulerHead
+dlabel __osTimerList
+    /* A72D0 802A62D0 803818A0 */ .word __osBaseTimer
+enddlabel __osTimerList
 
 nonmatching D_802A62D4
 
@@ -67165,11 +67074,11 @@ dlabel D_802A62D4
     /* A72DC 802A62DC 00000000 */ .word 0x00000000
 enddlabel D_802A62D4
 
-nonmatching g_dwOsPiHandle
+nonmatching __osPiAccessQueueEnabled
 
-dlabel g_dwOsPiHandle
+dlabel __osPiAccessQueueEnabled
     /* A72E0 802A62E0 00000000 */ .word 0x00000000
-enddlabel g_dwOsPiHandle
+enddlabel __osPiAccessQueueEnabled
 
 nonmatching D_802A62E4
 
@@ -67180,11 +67089,11 @@ dlabel D_802A62E4
     /* A72EC 802A62EC 00000000 */ .word 0x00000000
 enddlabel D_802A62E4
 
-nonmatching g_ViModeInitPalLan1
+nonmatching osViModePalLan1
 
-dlabel g_ViModeInitPalLan1
+dlabel osViModePalLan1
     /* A72F0 802A62F0 10000000 */ .word 0x10000000
-enddlabel g_ViModeInitPalLan1
+enddlabel osViModePalLan1
 
 nonmatching g_dwOsThreadPri
 
@@ -67216,11 +67125,11 @@ dlabel D_802A62F8
     /* A733C 802A633C 00000002 */ .word 0x00000002
 enddlabel D_802A62F8
 
-nonmatching g_ViModeInitMpalLan1
+nonmatching osViModeMpalLan1
 
-dlabel g_ViModeInitMpalLan1
+dlabel osViModeMpalLan1
     /* A7340 802A6340 1E000000 */ .word 0x1E000000
-enddlabel g_ViModeInitMpalLan1
+enddlabel osViModeMpalLan1
 
 nonmatching g_dwOsViFramebuffer
 
@@ -67252,11 +67161,11 @@ dlabel D_802A6348
     /* A738C 802A638C 00000002 */ .word 0x00000002
 enddlabel D_802A6348
 
-nonmatching g_ViModeInitNtscLan1
+nonmatching osViModeNtscLan1
 
-dlabel g_ViModeInitNtscLan1
+dlabel osViModeNtscLan1
     /* A7390 802A6390 02000000 */ .word 0x02000000
-enddlabel g_ViModeInitNtscLan1
+enddlabel osViModeNtscLan1
 
 nonmatching g_dwOsViMode
 
@@ -67347,16 +67256,7 @@ enddlabel g_szSizeofVehicle
 nonmatching g_szSizeofEnemy
 
 dlabel g_szSizeofEnemy
-    /* A7440 802A6440 73697A65 */ .word 0x73697A65
-    /* A7444 802A6444 6F662845 */ .word 0x6F662845
-    /* A7448 802A6448 6E656D79 */ .word 0x6E656D79
+    /* A7440 802A6440 */ .asciz "sizeof(Enemy)=%d\n"
+    /* 73697A656F6628456E656D79293D25640A000000 */
 enddlabel g_szSizeofEnemy
-
 .align 2
-nonmatching g_szSizeofEnemy_0xc
-
-dlabel g_szSizeofEnemy_0xc
-    /* A744C 802A644C */ .asciz ")=%d\n"
-    /* 293D25640A000000 */
-.align 2
-enddlabel g_szSizeofEnemy_0xc

@@ -72,68 +72,42 @@ set(COASTLINE_ASM_US
     asm/us/649E0.s
     asm/us/64B30.s
     asm/us/65420.s
-    asm/us/65650.s
     asm/us/65760.s
     asm/us/659C0.s
     asm/us/659F0.s
-    asm/us/65A60.s
-    asm/us/65AD0.s
     asm/us/65E50.s
-    asm/us/66600.s
     asm/us/667C0.s
     asm/us/66CD0.s
     asm/us/67020.s
     asm/us/67390.s
-    asm/us/673A0.s
     asm/us/67400.s
-    asm/us/67760.s
     asm/us/678F0.s
     asm/us/67BE0.s
     asm/us/68410.s
     asm/us/684D0.s
     asm/us/687E0.s
     asm/us/68930.s
-    asm/us/69230.s
-    asm/us/69470.s
-    asm/us/69520.s
-    asm/us/69530.s
     asm/us/69540.s
-    asm/us/69580.s
     asm/us/696C0.s
     asm/us/69750.s
-    asm/us/6A410.s
     asm/us/6A580.s
     asm/us/6A690.s
     asm/us/6B3F0.s
     asm/us/6B780.s
-    asm/us/6C5D0.s
     asm/us/6C750.s
     asm/us/6C7D0.s
-    asm/us/6C850.s
-    asm/us/6C860.s
-    asm/us/6C8A0.s
-    asm/us/6C930.s
-    asm/us/6C960.s
     asm/us/6C9F0.s
     asm/us/6CA10.s
     asm/us/6CAC0.s
     asm/us/6CB40.s
     asm/us/6CBA0.s
-    asm/us/6CC40.s
-    asm/us/6D060.s
-    asm/us/6D070.s
-    asm/us/6D3D0.s
-    asm/us/6D4C0.s
-    asm/us/6D5C0.s
     asm/us/6D990.s
     asm/us/6E0F0.s
-    asm/us/6EBB0.s
     asm/us/6EBE0.s
     asm/us/6F460.s
     asm/us/6F600.s
     asm/us/6F6C0.s
     asm/us/6F6D0.s
-    asm/us/6F730.s
     asm/us/6F780.s
     asm/us/6F870.s
     asm/us/data/data.data.s

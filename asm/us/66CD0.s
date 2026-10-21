@@ -177,16 +177,16 @@ glabel osInitialize
     /* 66F2C 80265F2C 0101C824 */  and        $t9, $t0, $at
     /* 66F30 80265F30 13200006 */  beqz       $t9, .L80265F4C
     /* 66F34 80265F34 AFB90030 */   sw        $t9, 0x30($sp)
-    /* 66F38 80265F38 3C01802A */  lui        $at, %hi(g_dwOsClockRateLo)
+    /* 66F38 80265F38 3C01802A */  lui        $at, %hi(osClockRate)
     /* 66F3C 80265F3C 03205825 */  or         $t3, $t9, $zero
     /* 66F40 80265F40 240A0000 */  addiu      $t2, $zero, 0x0
-    /* 66F44 80265F44 AC2A6140 */  sw         $t2, %lo(g_dwOsClockRateLo)($at)
-    /* 66F48 80265F48 AC2B6144 */  sw         $t3, %lo(g_dwOsClockRateHi)($at)
+    /* 66F44 80265F44 AC2A6140 */  sw         $t2, %lo(osClockRate)($at)
+    /* 66F48 80265F48 AC2B6144 */  sw         $t3, %lo(D_802A6144)($at)
   .L80265F4C:
-    /* 66F4C 80265F4C 3C04802A */  lui        $a0, %hi(g_dwOsClockRateLo)
-    /* 66F50 80265F50 3C05802A */  lui        $a1, %hi(g_dwOsClockRateHi)
-    /* 66F54 80265F54 8CA56144 */  lw         $a1, %lo(g_dwOsClockRateHi)($a1)
-    /* 66F58 80265F58 8C846140 */  lw         $a0, %lo(g_dwOsClockRateLo)($a0)
+    /* 66F4C 80265F4C 3C04802A */  lui        $a0, %hi(osClockRate)
+    /* 66F50 80265F50 3C05802A */  lui        $a1, %hi(D_802A6144)
+    /* 66F54 80265F54 8CA56144 */  lw         $a1, %lo(D_802A6144)($a1)
+    /* 66F58 80265F58 8C846140 */  lw         $a0, %lo(osClockRate)($a0)
     /* 66F5C 80265F5C 24060000 */  addiu      $a2, $zero, 0x0
     /* 66F60 80265F60 0C099862 */  jal        __ll_mul
     /* 66F64 80265F64 24070003 */   addiu     $a3, $zero, 0x3
@@ -199,10 +199,10 @@ glabel osInitialize
     /* 66F80 80265F80 24070004 */   addiu     $a3, $zero, 0x4
     /* 66F84 80265F84 3C098000 */  lui        $t1, %hi(D_8000030C)
     /* 66F88 80265F88 8D29030C */  lw         $t1, %lo(D_8000030C)($t1)
-    /* 66F8C 80265F8C 3C01802A */  lui        $at, %hi(g_dwOsClockRateLo)
-    /* 66F90 80265F90 AC226140 */  sw         $v0, %lo(g_dwOsClockRateLo)($at)
+    /* 66F8C 80265F8C 3C01802A */  lui        $at, %hi(osClockRate)
+    /* 66F90 80265F90 AC226140 */  sw         $v0, %lo(osClockRate)($at)
     /* 66F94 80265F94 15200005 */  bnez       $t1, .L80265FAC
-    /* 66F98 80265F98 AC236144 */   sw        $v1, %lo(g_dwOsClockRateHi)($at)
+    /* 66F98 80265F98 AC236144 */   sw        $v1, %lo(D_802A6144)($at)
     /* 66F9C 80265F9C 3C048000 */  lui        $a0, %hi(D_8000031C)
     /* 66FA0 80265FA0 2484031C */  addiu      $a0, $a0, %lo(D_8000031C)
     /* 66FA4 80265FA4 0C09AEE8 */  jal        bzero
@@ -214,9 +214,9 @@ glabel osInitialize
     /* 66FB8 80265FB8 00000000 */   nop
     /* 66FBC 80265FBC 3C0C02F5 */  lui        $t4, (0x2F5B2D2 >> 16)
     /* 66FC0 80265FC0 358CB2D2 */  ori        $t4, $t4, (0x2F5B2D2 & 0xFFFF)
-    /* 66FC4 80265FC4 3C01802A */  lui        $at, %hi(g_dwOsPiDmaLength)
+    /* 66FC4 80265FC4 3C01802A */  lui        $at, %hi(osViClock)
     /* 66FC8 80265FC8 1000000F */  b          .L80266008
-    /* 66FCC 80265FCC AC2C6148 */   sw        $t4, %lo(g_dwOsPiDmaLength)($at)
+    /* 66FCC 80265FCC AC2C6148 */   sw        $t4, %lo(osViClock)($at)
   .L80265FD0:
     /* 66FD0 80265FD0 3C0F8000 */  lui        $t7, %hi(D_80000300)
     /* 66FD4 80265FD4 8DEF0300 */  lw         $t7, %lo(D_80000300)($t7)
@@ -225,14 +225,14 @@ glabel osInitialize
     /* 66FE0 80265FE0 00000000 */   nop
     /* 66FE4 80265FE4 3C0E02E6 */  lui        $t6, (0x2E6025C >> 16)
     /* 66FE8 80265FE8 35CE025C */  ori        $t6, $t6, (0x2E6025C & 0xFFFF)
-    /* 66FEC 80265FEC 3C01802A */  lui        $at, %hi(g_dwOsPiDmaLength)
+    /* 66FEC 80265FEC 3C01802A */  lui        $at, %hi(osViClock)
     /* 66FF0 80265FF0 10000005 */  b          .L80266008
-    /* 66FF4 80265FF4 AC2E6148 */   sw        $t6, %lo(g_dwOsPiDmaLength)($at)
+    /* 66FF4 80265FF4 AC2E6148 */   sw        $t6, %lo(osViClock)($at)
   .L80265FF8:
     /* 66FF8 80265FF8 3C1802E6 */  lui        $t8, (0x2E6D354 >> 16)
     /* 66FFC 80265FFC 3718D354 */  ori        $t8, $t8, (0x2E6D354 & 0xFFFF)
-    /* 67000 80266000 3C01802A */  lui        $at, %hi(g_dwOsPiDmaLength)
-    /* 67004 80266004 AC386148 */  sw         $t8, %lo(g_dwOsPiDmaLength)($at)
+    /* 67000 80266000 3C01802A */  lui        $at, %hi(osViClock)
+    /* 67004 80266004 AC386148 */  sw         $t8, %lo(osViClock)($at)
   .L80266008:
     /* 67008 80266008 8FBF001C */  lw         $ra, 0x1C($sp)
     /* 6700C 8026600C 8FB00018 */  lw         $s0, 0x18($sp)

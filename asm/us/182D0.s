@@ -5763,10 +5763,10 @@ glabel UpdateFrameTiming
     /* 1D4C4 8021C4C4 11C00020 */  beqz       $t6, .L8021C548
     /* 1D4C8 8021C4C8 24040000 */   addiu     $a0, $zero, 0x0
     /* 1D4CC 8021C4CC 3C0501FC */  lui        $a1, (0x1FCA055 >> 16)
-    /* 1D4D0 8021C4D0 3C06802A */  lui        $a2, %hi(g_dwOsClockRateLo)
-    /* 1D4D4 8021C4D4 3C07802A */  lui        $a3, %hi(g_dwOsClockRateHi)
-    /* 1D4D8 8021C4D8 8CE76144 */  lw         $a3, %lo(g_dwOsClockRateHi)($a3)
-    /* 1D4DC 8021C4DC 8CC66140 */  lw         $a2, %lo(g_dwOsClockRateLo)($a2)
+    /* 1D4D0 8021C4D0 3C06802A */  lui        $a2, %hi(osClockRate)
+    /* 1D4D4 8021C4D4 3C07802A */  lui        $a3, %hi(D_802A6144)
+    /* 1D4D8 8021C4D8 8CE76144 */  lw         $a3, %lo(D_802A6144)($a3)
+    /* 1D4DC 8021C4DC 8CC66140 */  lw         $a2, %lo(osClockRate)($a2)
     /* 1D4E0 8021C4E0 0C099862 */  jal        __ll_mul
     /* 1D4E4 8021C4E4 34A5A055 */   ori       $a1, $a1, (0x1FCA055 & 0xFFFF)
     /* 1D4E8 8021C4E8 3C073B9A */  lui        $a3, (0x3B9ACA00 >> 16)
@@ -5844,10 +5844,10 @@ glabel UpdateFrameTiming
     /* 1D5F8 8021C5F8 34E74240 */  ori        $a3, $a3, (0xF4240 & 0xFFFF)
     /* 1D5FC 8021C5FC 0C099862 */  jal        __ll_mul
     /* 1D600 8021C600 24060000 */   addiu     $a2, $zero, 0x0
-    /* 1D604 8021C604 3C06802A */  lui        $a2, %hi(g_dwOsClockRateLo)
-    /* 1D608 8021C608 3C07802A */  lui        $a3, %hi(g_dwOsClockRateHi)
-    /* 1D60C 8021C60C 8CE76144 */  lw         $a3, %lo(g_dwOsClockRateHi)($a3)
-    /* 1D610 8021C610 8CC66140 */  lw         $a2, %lo(g_dwOsClockRateLo)($a2)
+    /* 1D604 8021C604 3C06802A */  lui        $a2, %hi(osClockRate)
+    /* 1D608 8021C608 3C07802A */  lui        $a3, %hi(D_802A6144)
+    /* 1D60C 8021C60C 8CE76144 */  lw         $a3, %lo(D_802A6144)($a3)
+    /* 1D610 8021C610 8CC66140 */  lw         $a2, %lo(osClockRate)($a2)
     /* 1D614 8021C614 00402025 */  or         $a0, $v0, $zero
     /* 1D618 8021C618 0C099822 */  jal        __ull_div
     /* 1D61C 8021C61C 00602825 */   or        $a1, $v1, $zero
@@ -6610,10 +6610,10 @@ glabel DecompressFromRom
     /* 1DFD4 8021CFD4 24040000 */  addiu      $a0, $zero, 0x0
     /* 1DFD8 8021CFD8 0C099862 */  jal        __ll_mul
     /* 1DFDC 8021CFDC 24060000 */   addiu     $a2, $zero, 0x0
-    /* 1DFE0 8021CFE0 3C06802A */  lui        $a2, %hi(g_dwOsClockRateLo)
-    /* 1DFE4 8021CFE4 3C07802A */  lui        $a3, %hi(g_dwOsClockRateHi)
-    /* 1DFE8 8021CFE8 8CE76144 */  lw         $a3, %lo(g_dwOsClockRateHi)($a3)
-    /* 1DFEC 8021CFEC 8CC66140 */  lw         $a2, %lo(g_dwOsClockRateLo)($a2)
+    /* 1DFE0 8021CFE0 3C06802A */  lui        $a2, %hi(osClockRate)
+    /* 1DFE4 8021CFE4 3C07802A */  lui        $a3, %hi(D_802A6144)
+    /* 1DFE8 8021CFE8 8CE76144 */  lw         $a3, %lo(D_802A6144)($a3)
+    /* 1DFEC 8021CFEC 8CC66140 */  lw         $a2, %lo(osClockRate)($a2)
     /* 1DFF0 8021CFF0 00402025 */  or         $a0, $v0, $zero
     /* 1DFF4 8021CFF4 0C099822 */  jal        __ull_div
     /* 1DFF8 8021CFF8 00602825 */   or        $a1, $v1, $zero

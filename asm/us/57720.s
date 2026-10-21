@@ -1081,10 +1081,10 @@ glabel InitAudioSystem
     /* 58610 80257610 248446F0 */  addiu      $a0, $a0, %lo(g_AudioMsgQueue)
     /* 58614 80257614 0C099504 */  jal        osCreateMesgQueue
     /* 58618 80257618 24060002 */   addiu     $a2, $zero, 0x2
-    /* 5861C 8025761C 3C06802A */  lui        $a2, %hi(g_dwOsClockRateLo)
-    /* 58620 80257620 3C07802A */  lui        $a3, %hi(g_dwOsClockRateHi)
-    /* 58624 80257624 8CE76144 */  lw         $a3, %lo(g_dwOsClockRateHi)($a3)
-    /* 58628 80257628 8CC66140 */  lw         $a2, %lo(g_dwOsClockRateLo)($a2)
+    /* 5861C 8025761C 3C06802A */  lui        $a2, %hi(osClockRate)
+    /* 58620 80257620 3C07802A */  lui        $a3, %hi(D_802A6144)
+    /* 58624 80257624 8CE76144 */  lw         $a3, %lo(D_802A6144)($a3)
+    /* 58628 80257628 8CC66140 */  lw         $a2, %lo(osClockRate)($a2)
     /* 5862C 8025762C 24040000 */  addiu      $a0, $zero, 0x0
     /* 58630 80257630 0C099862 */  jal        __ll_mul
     /* 58634 80257634 24052710 */   addiu     $a1, $zero, 0x2710
@@ -1094,10 +1094,10 @@ glabel InitAudioSystem
     /* 58644 80257644 00602825 */  or         $a1, $v1, $zero
     /* 58648 80257648 0C099822 */  jal        __ull_div
     /* 5864C 8025764C 24060000 */   addiu     $a2, $zero, 0x0
-    /* 58650 80257650 3C06802A */  lui        $a2, %hi(g_dwOsClockRateLo)
-    /* 58654 80257654 3C07802A */  lui        $a3, %hi(g_dwOsClockRateHi)
-    /* 58658 80257658 8CE76144 */  lw         $a3, %lo(g_dwOsClockRateHi)($a3)
-    /* 5865C 8025765C 8CC66140 */  lw         $a2, %lo(g_dwOsClockRateLo)($a2)
+    /* 58650 80257650 3C06802A */  lui        $a2, %hi(osClockRate)
+    /* 58654 80257654 3C07802A */  lui        $a3, %hi(D_802A6144)
+    /* 58658 80257658 8CE76144 */  lw         $a3, %lo(D_802A6144)($a3)
+    /* 5865C 8025765C 8CC66140 */  lw         $a2, %lo(osClockRate)($a2)
     /* 58660 80257660 AFA20028 */  sw         $v0, 0x28($sp)
     /* 58664 80257664 AFA3002C */  sw         $v1, 0x2C($sp)
     /* 58668 80257668 24040000 */  addiu      $a0, $zero, 0x0

@@ -239,6 +239,64 @@ extern u8 osAppNMIBuffer[64];
 #define OS_TV_NTSC 1
 #define OS_TV_MPAL 2
 
+/** The frequency of the video clock in Hz by television standard. osAiSetFrequency() uses it. */
+#define VI_NTSC_CLOCK 48681812
+#define VI_PAL_CLOCK 49656530
+#define VI_MPAL_CLOCK 48628316
+
+/* Video modes. */
+typedef struct {
+    u32 ctrl;
+    u32 width;
+    u32 burst;
+    u32 vSync;
+    u32 hSync;
+    u32 leap;
+    u32 hStart;
+    u32 xScale;
+    u32 vCurrent;
+} OSViCommonRegs;
+
+typedef struct {
+    u32 origin;
+    u32 yScale;
+    u32 vStart;
+    u32 vBurst;
+    u32 vIntr;
+} OSViFieldRegs;
+
+typedef struct {
+    u8 type;
+    OSViCommonRegs comRegs;
+    OSViFieldRegs fldRegs[2];
+} OSViMode;
+
+/* Features osViSetSpecialFeatures() turns on and off. */
+#define OS_VI_GAMMA_ON 0x0001
+#define OS_VI_GAMMA_OFF 0x0002
+#define OS_VI_GAMMA_DITHER_ON 0x0004
+#define OS_VI_GAMMA_DITHER_OFF 0x0008
+#define OS_VI_DIVOT_ON 0x0010
+#define OS_VI_DIVOT_OFF 0x0020
+#define OS_VI_DITHER_FILTER_ON 0x0040
+#define OS_VI_DITHER_FILTER_OFF 0x0080
+
+/** @ghidraAddress USA: 0x802a62f0 */
+extern OSViMode osViModePalLan1;
+
+/** @ghidraAddress USA: 0x802a6340 */
+extern OSViMode osViModeMpalLan1;
+
+/** @ghidraAddress USA: 0x802a6390 */
+extern OSViMode osViModeNtscLan1;
+
+/**
+ * The rate of the CPU counter, OS_CPU_COUNTER until osInitialize() sets it.
+ *
+ * @ghidraAddress USA: 0x802a6140
+ */
+extern u64 osClockRate;
+
 /**
  * Create a stopped thread on the active queue. It runs entry(arg) on the stack that ends at sp,
  * and destroys itself when entry returns.
@@ -292,7 +350,7 @@ OSPri osGetThreadPri(OSThread *t);
 void osCreateMesgQueue(OSMesgQueue *mq, OSMesg *msg, s32 count);
 
 /**
- * Append a message to a queue and wake its first receiver.
+ * Append a message to a queue and make its first receiver runnable.
  *
  * @return 0, or -1 when the queue is full and flag is OS_MESG_NOBLOCK.
  * @ghidraAddress USA: 0x802654b0
@@ -300,7 +358,7 @@ void osCreateMesgQueue(OSMesgQueue *mq, OSMesg *msg, s32 count);
 s32 osSendMesg(OSMesgQueue *mq, OSMesg msg, s32 flag);
 
 /**
- * Insert a message at the front of a queue and wake its first receiver.
+ * Insert a message at the front of a queue and make its first receiver runnable.
  *
  * @return 0, or -1 when the queue is full and flag is OS_MESG_NOBLOCK.
  * @ghidraAddress USA: 0x8026b5d0
@@ -308,7 +366,8 @@ s32 osSendMesg(OSMesgQueue *mq, OSMesg msg, s32 flag);
 s32 osJamMesg(OSMesgQueue *mq, OSMesg msg, s32 flag);
 
 /**
- * Take the first message of a queue, store it unless msg is NULL, and wake its first sender.
+ * Take the first message of a queue, store it unless msg is NULL, and make its first sender
+ * runnable.
  *
  * @return 0, or -1 when the queue is empty and flag is OS_MESG_NOBLOCK.
  * @ghidraAddress USA: 0x802642e0
@@ -333,19 +392,129 @@ void osWritebackDCacheAll(void);
 u32 osVirtualToPhysical(void *vaddr);
 void osMapTLBRdb(void);
 
-/* Time. */
+/**
+ * Return the time since the VI manager started, in CPU counter cycles.
+ *
+ * @ghidraAddress USA: 0x8026b960
+ */
 OSTime osGetTime(void);
-void osSetTime(OSTime time);
+
+/**
+ * Start a timer that sends msg to mq after countdown cycles, or after interval cycles when
+ * countdown is 0, and again every interval cycles unless interval is 0.
+ *
+ * @return 0.
+ * @ghidraAddress USA: 0x80268390
+ */
 int osSetTimer(OSTimer *t, OSTime countdown, OSTime interval, OSMesgQueue *mq, OSMesg msg);
-int osStopTimer(OSTimer *t);
+
+/* Video. */
+
+/**
+ * Start the VI manager thread at priority pri. The call raises the calling thread to pri while
+ * it creates the manager, and does nothing once the manager runs.
+ *
+ * @ghidraAddress USA: 0x80266400
+ */
+void osCreateViManager(OSPri pri);
+
+/**
+ * Blank the screen from the next field on, or show it again.
+ *
+ * @ghidraAddress USA: 0x80260ab0
+ */
+void osViBlack(u8 active);
+
+/**
+ * Select the video mode from the next field on.
+ *
+ * @ghidraAddress USA: 0x80264a60
+ */
+void osViSetMode(OSViMode *modep);
+
+/**
+ * Show a frame buffer from the next field on.
+ *
+ * @ghidraAddress USA: 0x80264ad0
+ */
+void osViSwapBuffer(void *frameBufPtr);
+
+/**
+ * Return the frame buffer the screen shows.
+ *
+ * @ghidraAddress USA: 0x80264b20
+ */
+void *osViGetCurrentFramebuffer(void);
+
+/**
+ * Send m to mq every retraceCount vertical retraces.
+ *
+ * @ghidraAddress USA: 0x80265600
+ */
+void osViSetEvent(OSMesgQueue *mq, OSMesg m, u32 retraceCount);
+
+/**
+ * Turn the gamma, gamma dither, divot, and dither filter features on and off, from the
+ * OS_VI_* flags.
+ *
+ * @ghidraAddress USA: 0x80264490
+ */
+void osViSetSpecialFeatures(u32 func);
 
 /* Peripheral access. */
+
+/**
+ * Return the handle of the cartridge ROM, creating it from the timing its first word records.
+ *
+ * @ghidraAddress USA: 0x8026c3d0
+ */
 OSPiHandle *osCartRomInit(void);
-OSPiHandle *osDriveRomInit(void);
+
+/**
+ * Create the handle of the 64DD and select its domain 2 timing.
+ *
+ * @ghidraAddress USA: 0x8026c4c0
+ */
+OSPiHandle *osLeoDiskInit(void);
+
+/**
+ * Start the PI manager thread at priority pri, serving the requests of cmdQ. The call does
+ * nothing once the manager runs.
+ *
+ * @ghidraAddress USA: 0x80266760
+ */
 void osCreatePiManager(OSPri pri, OSMesgQueue *cmdQ, OSMesg *cmdBuf, s32 cmdMsgCnt);
+
+/**
+ * Return the command queue of the PI manager, or NULL when it does not run.
+ *
+ * @ghidraAddress USA: 0x8026b720
+ */
 OSMesgQueue *osPiGetCmdQueue(void);
+
+/**
+ * Read a word of the cartridge domain at an offset from the ROM base.
+ *
+ * @return 0.
+ * @ghidraAddress USA: 0x802663a0
+ */
 s32 osPiRawReadIo(u32 devAddr, u32 *data);
+
+/**
+ * Start a DMA between RDRAM and the cartridge domain at an offset from the ROM base.
+ *
+ * @return 0, or -1 for a direction other than OS_READ and OS_WRITE.
+ * @ghidraAddress USA: 0x8026c680
+ */
 s32 osPiRawStartDma(s32 direction, u32 devAddr, void *dramAddr, u32 size);
+
+/**
+ * Queue a DMA request with the PI manager. A request of priority OS_MESG_PRI_HIGH goes to the
+ * front of the queue.
+ *
+ * @return The result of the send, or -1 when the PI manager does not run.
+ * @ghidraAddress USA: 0x80264650
+ */
 s32 osPiStartDma(OSIoMesg *mb,
                  s32 priority,
                  s32 direction,
@@ -353,9 +522,85 @@ s32 osPiStartDma(OSIoMesg *mb,
                  void *vAddr,
                  u32 nbytes,
                  OSMesgQueue *mq);
+
+/**
+ * Read a word of the device a handle describes.
+ *
+ * @return 0.
+ * @ghidraAddress USA: 0x8026e780
+ */
 s32 osEPiRawReadIo(OSPiHandle *pihandle, u32 devAddr, u32 *data);
+
+/**
+ * Write a word of the device a handle describes.
+ *
+ * @return 0.
+ * @ghidraAddress USA: 0x8026e730
+ */
 s32 osEPiRawWriteIo(OSPiHandle *pihandle, u32 devAddr, u32 data);
+
+/**
+ * Start a DMA with the device a handle describes, selecting its domain timing when another
+ * handle selected different timing.
+ *
+ * @return 0, or -1 for a direction other than OS_READ and OS_WRITE.
+ * @ghidraAddress USA: 0x8026c760
+ */
 s32 osEPiRawStartDma(OSPiHandle *pihandle, s32 direction, u32 devAddr, void *dramAddr, u32 size);
+
+/* Audio. */
+
+/**
+ * Set the sample rate of the audio DAC to the nearest the video clock allows.
+ *
+ * @return The rate set, or -1 when the frequency is too high.
+ * @ghidraAddress USA: 0x80268230
+ */
+s32 osAiSetFrequency(u32 frequency);
+
+/**
+ * Queue a buffer of samples for the audio DMA.
+ *
+ * @return 0, or -1 when the queue of the audio interface is full.
+ * @ghidraAddress USA: 0x80268470
+ */
+s32 osAiSetNextBuffer(void *bufPtr, u32 size);
+
+/**
+ * Return the audio status register.
+ *
+ * @ghidraAddress USA: 0x80268520
+ */
+u32 osAiGetStatus(void);
+
+/**
+ * Return the remaining length of the buffer the audio DMA plays.
+ *
+ * @ghidraAddress USA: 0x80268530
+ */
+u32 osAiGetLength(void);
+
+/**
+ * Return whether the queue of the audio interface is full.
+ *
+ * @ghidraAddress USA: 0x8026ce20
+ */
+s32 __osAiDeviceBusy(void);
+
+/**
+ * The frequency of the video clock. osInitialize() selects it by television standard.
+ *
+ * @ghidraAddress USA: 0x802a6148
+ */
+extern s32 osViClock;
+
+/**
+ * Whether the last buffer osAiSetNextBuffer() queued ended 0x2000 bytes into a 16 KiB page, a
+ * case the audio DMA mishandles.
+ *
+ * @ghidraAddress USA: 0x802a61b0
+ */
+extern u8 aiHdwrBugFlag;
 
 /* Start-up. */
 void osInitialize(void);

@@ -11,8 +11,8 @@
 nonmatching __osLeoInterrupt, 0x6A4
 
 glabel __osLeoInterrupt
-    /* 6EBE0 8026DBE0 3C0E8038 */  lui        $t6, %hi(g_dwGfxReserved29)
-    /* 6EBE4 8026DBE4 8DCE19D4 */  lw         $t6, %lo(g_dwGfxReserved29)($t6)
+    /* 6EBE0 8026DBE0 3C0E8038 */  lui        $t6, %hi(__osDiskHandle)
+    /* 6EBE4 8026DBE4 8DCE19D4 */  lw         $t6, %lo(__osDiskHandle)($t6)
     /* 6EBE8 8026DBE8 27BDFFC0 */  addiu      $sp, $sp, -0x40
     /* 6EBEC 8026DBEC AFBF001C */  sw         $ra, 0x1C($sp)
     /* 6EBF0 8026DBF0 25CF0014 */  addiu      $t7, $t6, 0x14
@@ -189,7 +189,7 @@ glabel __osLeoInterrupt
     /* 6EE70 8026DE70 24020001 */   addiu     $v0, $zero, 0x1
   .L8026DE74:
     /* 6EE74 8026DE74 8FA9002C */  lw         $t1, 0x2C($sp)
-    /* 6EE78 8026DE78 3C048038 */  lui        $a0, %hi(g_dwGfxReserved29)
+    /* 6EE78 8026DE78 3C048038 */  lui        $a0, %hi(__osDiskHandle)
     /* 6EE7C 8026DE7C 3C060500 */  lui        $a2, (0x5000400 >> 16)
     /* 6EE80 8026DE80 8D390004 */  lw         $t9, 0x4($t1)
     /* 6EE84 8026DE84 8D2A000C */  lw         $t2, 0xC($t1)
@@ -202,7 +202,7 @@ glabel __osLeoInterrupt
     /* 6EEA0 8026DEA0 25D80001 */  addiu      $t8, $t6, 0x1
     /* 6EEA4 8026DEA4 AD980008 */  sw         $t8, 0x8($t4)
     /* 6EEA8 8026DEA8 8FAF002C */  lw         $t7, 0x2C($sp)
-    /* 6EEAC 8026DEAC 8C8419D4 */  lw         $a0, %lo(g_dwGfxReserved29)($a0)
+    /* 6EEAC 8026DEAC 8C8419D4 */  lw         $a0, %lo(__osDiskHandle)($a0)
     /* 6EEB0 8026DEB0 8DE8000C */  lw         $t0, 0xC($t7)
     /* 6EEB4 8026DEB4 8DE70004 */  lw         $a3, 0x4($t7)
     /* 6EEB8 8026DEB8 0C09B1D8 */  jal        osEPiRawStartDma
@@ -358,8 +358,8 @@ glabel __osLeoInterrupt
     /* 6F0E0 8026E0E0 AD600000 */  sw         $zero, 0x0($t3)
   .L8026E0E4:
     /* 6F0E4 8026E0E4 8FB9002C */  lw         $t9, 0x2C($sp)
-    /* 6F0E8 8026E0E8 3C048038 */  lui        $a0, %hi(g_dwGfxReserved29)
-    /* 6F0EC 8026E0EC 8C8419D4 */  lw         $a0, %lo(g_dwGfxReserved29)($a0)
+    /* 6F0E8 8026E0E8 3C048038 */  lui        $a0, %hi(__osDiskHandle)
+    /* 6F0EC 8026E0EC 8C8419D4 */  lw         $a0, %lo(__osDiskHandle)($a0)
     /* 6F0F0 8026E0F0 8F2F000C */  lw         $t7, 0xC($t9)
     /* 6F0F4 8026E0F4 8F270008 */  lw         $a3, 0x8($t9)
     /* 6F0F8 8026E0F8 00002825 */  or         $a1, $zero, $zero
@@ -430,12 +430,12 @@ glabel __osLeoInterrupt
     /* 6F1F0 8026E1F0 24020001 */   addiu     $v0, $zero, 0x1
   .L8026E1F4:
     /* 6F1F4 8026E1F4 8FB9002C */  lw         $t9, 0x2C($sp)
-    /* 6F1F8 8026E1F8 3C048038 */  lui        $a0, %hi(g_dwGfxReserved29)
+    /* 6F1F8 8026E1F8 3C048038 */  lui        $a0, %hi(__osDiskHandle)
     /* 6F1FC 8026E1FC 3C060500 */  lui        $a2, (0x5000400 >> 16)
     /* 6F200 8026E200 8F2C000C */  lw         $t4, 0xC($t9)
     /* 6F204 8026E204 8F270004 */  lw         $a3, 0x4($t9)
     /* 6F208 8026E208 34C60400 */  ori        $a2, $a2, (0x5000400 & 0xFFFF)
-    /* 6F20C 8026E20C 8C8419D4 */  lw         $a0, %lo(g_dwGfxReserved29)($a0)
+    /* 6F20C 8026E20C 8C8419D4 */  lw         $a0, %lo(__osDiskHandle)($a0)
     /* 6F210 8026E210 00002825 */  or         $a1, $zero, $zero
     /* 6F214 8026E214 0C09B1D8 */  jal        osEPiRawStartDma
     /* 6F218 8026E218 AFAC0010 */   sw        $t4, 0x10($sp)
@@ -474,8 +474,8 @@ endlabel __osLeoInterrupt
 nonmatching __osLeoAbnormalResume, 0xE8
 
 glabel __osLeoAbnormalResume
-    /* 6F284 8026E284 3C0E8038 */  lui        $t6, %hi(g_dwGfxReserved29)
-    /* 6F288 8026E288 8DCE19D4 */  lw         $t6, %lo(g_dwGfxReserved29)($t6)
+    /* 6F284 8026E284 3C0E8038 */  lui        $t6, %hi(__osDiskHandle)
+    /* 6F288 8026E288 8DCE19D4 */  lw         $t6, %lo(__osDiskHandle)($t6)
     /* 6F28C 8026E28C 27BDFFE0 */  addiu      $sp, $sp, -0x20
     /* 6F290 8026E290 AFBF0014 */  sw         $ra, 0x14($sp)
     /* 6F294 8026E294 25CF0014 */  addiu      $t7, $t6, 0x14

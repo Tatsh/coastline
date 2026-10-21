@@ -456,17 +456,17 @@ glabel InitDebugStatsDisplay
     /* 55E80 80254E80 000F10C0 */  sll        $v0, $t7, 3
     /* 55E84 80254E84 284103E8 */  slti       $at, $v0, 0x3E8
     /* 55E88 80254E88 14200005 */  bnez       $at, .L80254EA0
-    /* 55E8C 80254E8C 3C06802A */   lui       $a2, %hi(g_dwOsClockRateLo)
+    /* 55E8C 80254E8C 3C06802A */   lui       $a2, %hi(osClockRate)
     /* 55E90 80254E90 2442BEE5 */  addiu      $v0, $v0, -0x411B
   .L80254E94:
     /* 55E94 80254E94 284103E8 */  slti       $at, $v0, 0x3E8
     /* 55E98 80254E98 5020FFFE */  beql       $at, $zero, .L80254E94
     /* 55E9C 80254E9C 2442BEE5 */   addiu     $v0, $v0, -0x411B
   .L80254EA0:
-    /* 55EA0 80254EA0 3C07802A */  lui        $a3, %hi(g_dwOsClockRateHi)
-    /* 55EA4 80254EA4 8CE76144 */  lw         $a3, %lo(g_dwOsClockRateHi)($a3)
+    /* 55EA0 80254EA0 3C07802A */  lui        $a3, %hi(D_802A6144)
+    /* 55EA4 80254EA4 8CE76144 */  lw         $a3, %lo(D_802A6144)($a3)
     /* 55EA8 80254EA8 0C099862 */  jal        __ll_mul
-    /* 55EAC 80254EAC 8CC66140 */   lw        $a2, %lo(g_dwOsClockRateLo)($a2)
+    /* 55EAC 80254EAC 8CC66140 */   lw        $a2, %lo(osClockRate)($a2)
     /* 55EB0 80254EB0 3C07000F */  lui        $a3, (0xF4240 >> 16)
     /* 55EB4 80254EB4 34E74240 */  ori        $a3, $a3, (0xF4240 & 0xFFFF)
     /* 55EB8 80254EB8 00402025 */  or         $a0, $v0, $zero
@@ -476,10 +476,10 @@ glabel InitDebugStatsDisplay
     /* 55EC8 80254EC8 00402025 */  or         $a0, $v0, $zero
     /* 55ECC 80254ECC 0C099AEA */  jal        __ull_to_f
     /* 55ED0 80254ED0 00602825 */   or        $a1, $v1, $zero
-    /* 55ED4 80254ED4 3C06802A */  lui        $a2, %hi(g_dwOsClockRateLo)
-    /* 55ED8 80254ED8 3C07802A */  lui        $a3, %hi(g_dwOsClockRateHi)
-    /* 55EDC 80254EDC 8CE76144 */  lw         $a3, %lo(g_dwOsClockRateHi)($a3)
-    /* 55EE0 80254EE0 8CC66140 */  lw         $a2, %lo(g_dwOsClockRateLo)($a2)
+    /* 55ED4 80254ED4 3C06802A */  lui        $a2, %hi(osClockRate)
+    /* 55ED8 80254ED8 3C07802A */  lui        $a3, %hi(D_802A6144)
+    /* 55EDC 80254EDC 8CE76144 */  lw         $a3, %lo(D_802A6144)($a3)
+    /* 55EE0 80254EE0 8CC66140 */  lw         $a2, %lo(osClockRate)($a2)
     /* 55EE4 80254EE4 24040000 */  addiu      $a0, $zero, 0x0
     /* 55EE8 80254EE8 0C099862 */  jal        __ll_mul
     /* 55EEC 80254EEC 240503E8 */   addiu     $a1, $zero, 0x3E8

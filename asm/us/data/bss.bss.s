@@ -274,15 +274,10 @@ nonmatching g_dwPhysicsReserved26, 0x4
 dlabel g_dwPhysicsReserved26
     /* 80315EAC */ .space 0x04
 
-nonmatching g_dwPhysicsReserved27, 0x2
+nonmatching g_dwPhysicsReserved27, 0x4
 
 dlabel g_dwPhysicsReserved27
-    /* 80315EB0 */ .space 0x02
-
-nonmatching g_dwPhysicsReserved27_2, 0x2
-
-dlabel g_dwPhysicsReserved27_2
-    /* 80315EB2 */ .space 0x02
+    /* 80315EB0 */ .space 0x04
 
 nonmatching g_dwPhysicsReserved28, 0x4
 
@@ -294,15 +289,10 @@ nonmatching g_dwPhysicsReserved29, 0x4
 dlabel g_dwPhysicsReserved29
     /* 80315EB8 */ .space 0x04
 
-nonmatching g_dwPhysicsReserved30, 0x2
+nonmatching g_dwPhysicsReserved30, 0x4
 
 dlabel g_dwPhysicsReserved30
-    /* 80315EBC */ .space 0x02
-
-nonmatching g_dwPhysicsReserved30_2, 0x2
-
-dlabel g_dwPhysicsReserved30_2
-    /* 80315EBE */ .space 0x02
+    /* 80315EBC */ .space 0x04
 
 nonmatching g_dwPhysicsReserved31, 0x4
 
@@ -314,15 +304,10 @@ nonmatching g_dwPhysicsReserved32, 0x4
 dlabel g_dwPhysicsReserved32
     /* 80315EC4 */ .space 0x04
 
-nonmatching g_dwPhysicsReserved33, 0x2
+nonmatching g_dwPhysicsReserved33, 0x4
 
 dlabel g_dwPhysicsReserved33
-    /* 80315EC8 */ .space 0x02
-
-nonmatching g_dwPhysicsReserved33_2, 0x2
-
-dlabel g_dwPhysicsReserved33_2
-    /* 80315ECA */ .space 0x02
+    /* 80315EC8 */ .space 0x04
 
 nonmatching g_dwPhysicsReserved34, 0x4
 
@@ -1139,15 +1124,10 @@ nonmatching g_aGfxTask, 0x80
 dlabel g_aGfxTask
     /* 8031A9A8 */ .space 0x80
 
-nonmatching g_apFramebuffers, 0x4
+nonmatching g_apFramebuffers, 0x8
 
 dlabel g_apFramebuffers
-    /* 8031AA28 */ .space 0x04
-
-nonmatching g_apFramebuffers_1_, 0x4
-
-dlabel g_apFramebuffers_1_
-    /* 8031AA2C */ .space 0x04
+    /* 8031AA28 */ .space 0x08
 
 nonmatching D_8031AA30, 0x20
 
@@ -1500,75 +1480,35 @@ nonmatching D_8031B1EA, 0x6
 dlabel D_8031B1EA
     /* 8031B1EA */ .space 0x06
 
-nonmatching g_afShadowFrustumApex, 0x4
+nonmatching g_afShadowFrustumApex, 0xC
 
 dlabel g_afShadowFrustumApex
-    /* 8031B1F0 */ .space 0x04
+    /* 8031B1F0 */ .space 0x0C
 
-nonmatching g_afShadowFrustumApex_1_, 0x4
-
-dlabel g_afShadowFrustumApex_1_
-    /* 8031B1F4 */ .space 0x04
-
-nonmatching g_afShadowFrustumApex_2_, 0x4
-
-dlabel g_afShadowFrustumApex_2_
-    /* 8031B1F8 */ .space 0x04
-
-nonmatching g_afShadowFrustumCorner0, 0x4
+nonmatching g_afShadowFrustumCorner0, 0xC
 
 dlabel g_afShadowFrustumCorner0
-    /* 8031B1FC */ .space 0x04
+    /* 8031B1FC */ .space 0x0C
 
-nonmatching g_afShadowFrustumCorner0_1_, 0x8
-
-dlabel g_afShadowFrustumCorner0_1_
-    /* 8031B200 */ .space 0x08
-
-nonmatching g_afShadowFrustumCorner1, 0x4
+nonmatching g_afShadowFrustumCorner1, 0xC
 
 dlabel g_afShadowFrustumCorner1
-    /* 8031B208 */ .space 0x04
+    /* 8031B208 */ .space 0x0C
 
-nonmatching g_afShadowFrustumCorner1_1_, 0x8
-
-dlabel g_afShadowFrustumCorner1_1_
-    /* 8031B20C */ .space 0x08
-
-nonmatching g_afShadowFrustumCorner2, 0x4
+nonmatching g_afShadowFrustumCorner2, 0xC
 
 dlabel g_afShadowFrustumCorner2
-    /* 8031B214 */ .space 0x04
+    /* 8031B214 */ .space 0x0C
 
-nonmatching g_afShadowFrustumCorner2_1_, 0x8
-
-dlabel g_afShadowFrustumCorner2_1_
-    /* 8031B218 */ .space 0x08
-
-nonmatching g_afShadowFrustumCorner3, 0x4
+nonmatching g_afShadowFrustumCorner3, 0xC
 
 dlabel g_afShadowFrustumCorner3
-    /* 8031B220 */ .space 0x04
+    /* 8031B220 */ .space 0x0C
 
-nonmatching g_afShadowFrustumCorner3_1_, 0x8
-
-dlabel g_afShadowFrustumCorner3_1_
-    /* 8031B224 */ .space 0x08
-
-nonmatching g_afShadowFrustumFarCenter, 0x4
+nonmatching g_afShadowFrustumFarCenter, 0xC
 
 dlabel g_afShadowFrustumFarCenter
-    /* 8031B22C */ .space 0x04
-
-nonmatching g_afShadowFrustumFarCenter_1_, 0x4
-
-dlabel g_afShadowFrustumFarCenter_1_
-    /* 8031B230 */ .space 0x04
-
-nonmatching g_afShadowFrustumFarCenter_2_, 0x4
-
-dlabel g_afShadowFrustumFarCenter_2_
-    /* 8031B234 */ .space 0x04
+    /* 8031B22C */ .space 0x0C
 
 nonmatching g_aSlotToVehicleSpecMap, 0x8
 
@@ -1813,15 +1753,10 @@ nonmatching g_adwLightRampColors_3, 0x4
 dlabel g_adwLightRampColors_3
     /* 8031B36C */ .space 0x04
 
-nonmatching g_aVehicleModelSlots, 0x28
+nonmatching g_aVehicleModelSlots, 0x50
 
 dlabel g_aVehicleModelSlots
-    /* 8031B370 */ .space 0x28
-
-nonmatching g_aVehicleModelSlots_1__dwRomReadPos, 0x28
-
-dlabel g_aVehicleModelSlots_1__dwRomReadPos
-    /* 8031B398 */ .space 0x28
+    /* 8031B370 */ .space 0x50
 
 nonmatching g_aTrackSelectVehicleModelSlots, 0x50
 
@@ -2801,170 +2736,30 @@ nonmatching g_abCarDecalSaveData, 0x40
 dlabel g_abCarDecalSaveData
     /* 8034E570 */ .space 0x40
 
-nonmatching g_adwShadowMapRowMinCol, 0x4
+nonmatching g_adwShadowMapRowMinCol, 0x100
 
 dlabel g_adwShadowMapRowMinCol
-    /* 8034E5B0 */ .space 0x04
+    /* 8034E5B0 */ .space 0x100
 
-nonmatching g_adwShadowMapRowMinCol_1_, 0x4
-
-dlabel g_adwShadowMapRowMinCol_1_
-    /* 8034E5B4 */ .space 0x04
-
-nonmatching g_adwShadowMapRowMinCol_2_, 0x4
-
-dlabel g_adwShadowMapRowMinCol_2_
-    /* 8034E5B8 */ .space 0x04
-
-nonmatching g_adwShadowMapRowMinCol_3_, 0x4
-
-dlabel g_adwShadowMapRowMinCol_3_
-    /* 8034E5BC */ .space 0x04
-
-nonmatching g_adwShadowMapRowMinCol_4_, 0x4
-
-dlabel g_adwShadowMapRowMinCol_4_
-    /* 8034E5C0 */ .space 0x04
-
-nonmatching g_adwShadowMapRowMinCol_5_, 0x4
-
-dlabel g_adwShadowMapRowMinCol_5_
-    /* 8034E5C4 */ .space 0x04
-
-nonmatching g_adwShadowMapRowMinCol_6_, 0x4
-
-dlabel g_adwShadowMapRowMinCol_6_
-    /* 8034E5C8 */ .space 0x04
-
-nonmatching g_adwShadowMapRowMinCol_7_, 0xE0
-
-dlabel g_adwShadowMapRowMinCol_7_
-    /* 8034E5CC */ .space 0xE0
-
-nonmatching g_adwShadowMapRowMinCol_63_, 0x4
-
-dlabel g_adwShadowMapRowMinCol_63_
-    /* 8034E6AC */ .space 0x04
-
-nonmatching g_adwShadowMapRowMaxCol, 0x4
+nonmatching g_adwShadowMapRowMaxCol, 0x10
 
 dlabel g_adwShadowMapRowMaxCol
-    /* 8034E6B0 */ .space 0x04
+    /* 8034E6B0 */ .space 0x10
 
-nonmatching g_adwShadowMapRowMaxCol_1_, 0x4
-
-dlabel g_adwShadowMapRowMaxCol_1_
-    /* 8034E6B4 */ .space 0x04
-
-nonmatching g_adwShadowMapRowMaxCol_2_, 0x4
-
-dlabel g_adwShadowMapRowMaxCol_2_
-    /* 8034E6B8 */ .space 0x04
-
-nonmatching g_adwShadowMapRowMaxCol_3_, 0x4
-
-dlabel g_adwShadowMapRowMaxCol_3_
-    /* 8034E6BC */ .space 0x04
-
-nonmatching g_aShadowSpanBuffer, 0x4
+nonmatching g_aShadowSpanBuffer, 0xF0
 
 dlabel g_aShadowSpanBuffer
-    /* 8034E6C0 */ .space 0x04
+    /* 8034E6C0 */ .space 0xF0
 
-nonmatching g_adwShadowMapRowMaxCol_5_, 0x4
-
-dlabel g_adwShadowMapRowMaxCol_5_
-    /* 8034E6C4 */ .space 0x04
-
-nonmatching g_adwShadowMapRowMaxCol_6_, 0x4
-
-dlabel g_adwShadowMapRowMaxCol_6_
-    /* 8034E6C8 */ .space 0x04
-
-nonmatching g_adwShadowMapRowMaxCol_7_, 0xE0
-
-dlabel g_adwShadowMapRowMaxCol_7_
-    /* 8034E6CC */ .space 0xE0
-
-nonmatching g_adwShadowMapRowMaxCol_63_, 0x4
-
-dlabel g_adwShadowMapRowMaxCol_63_
-    /* 8034E7AC */ .space 0x04
-
-nonmatching g_adwShadowMapColMinRow, 0x4
+nonmatching g_adwShadowMapColMinRow, 0x100
 
 dlabel g_adwShadowMapColMinRow
-    /* 8034E7B0 */ .space 0x04
+    /* 8034E7B0 */ .space 0x100
 
-nonmatching g_adwShadowMapColMinRow_1_, 0x4
-
-dlabel g_adwShadowMapColMinRow_1_
-    /* 8034E7B4 */ .space 0x04
-
-nonmatching g_adwShadowMapColMinRow_2_, 0x4
-
-dlabel g_adwShadowMapColMinRow_2_
-    /* 8034E7B8 */ .space 0x04
-
-nonmatching g_adwShadowMapColMinRow_3_, 0x8
-
-dlabel g_adwShadowMapColMinRow_3_
-    /* 8034E7BC */ .space 0x08
-
-nonmatching g_adwShadowMapColMinRow_5_, 0x4
-
-dlabel g_adwShadowMapColMinRow_5_
-    /* 8034E7C4 */ .space 0x04
-
-nonmatching g_adwShadowMapColMinRow_6_, 0x4
-
-dlabel g_adwShadowMapColMinRow_6_
-    /* 8034E7C8 */ .space 0x04
-
-nonmatching g_adwShadowMapColMinRow_7_, 0xE0
-
-dlabel g_adwShadowMapColMinRow_7_
-    /* 8034E7CC */ .space 0xE0
-
-nonmatching g_adwShadowMapColMinRow_63_, 0x4
-
-dlabel g_adwShadowMapColMinRow_63_
-    /* 8034E8AC */ .space 0x04
-
-nonmatching g_adwShadowMapColMaxRow, 0x4
+nonmatching g_adwShadowMapColMaxRow, 0xFC
 
 dlabel g_adwShadowMapColMaxRow
-    /* 8034E8B0 */ .space 0x04
-
-nonmatching g_adwShadowMapColMaxRow_1_, 0x4
-
-dlabel g_adwShadowMapColMaxRow_1_
-    /* 8034E8B4 */ .space 0x04
-
-nonmatching g_adwShadowMapColMaxRow_2_, 0x4
-
-dlabel g_adwShadowMapColMaxRow_2_
-    /* 8034E8B8 */ .space 0x04
-
-nonmatching g_adwShadowMapColMaxRow_3_, 0x8
-
-dlabel g_adwShadowMapColMaxRow_3_
-    /* 8034E8BC */ .space 0x08
-
-nonmatching g_adwShadowMapColMaxRow_5_, 0x4
-
-dlabel g_adwShadowMapColMaxRow_5_
-    /* 8034E8C4 */ .space 0x04
-
-nonmatching g_adwShadowMapColMaxRow_6_, 0x4
-
-dlabel g_adwShadowMapColMaxRow_6_
-    /* 8034E8C8 */ .space 0x04
-
-nonmatching g_adwShadowMapColMaxRow_7_, 0xE0
-
-dlabel g_adwShadowMapColMaxRow_7_
-    /* 8034E8CC */ .space 0xE0
+    /* 8034E8B0 */ .space 0xFC
 
 nonmatching g_dwRaceBestTime, 0x4
 
@@ -4555,15 +4350,10 @@ nonmatching g_bSaveReserved12, 0x1
 dlabel g_bSaveReserved12
     /* 80378DFD */ .space 0x01
 
-nonmatching g_bSaveReserved13, 0x2
+nonmatching g_bSaveReserved13, 0x27
 
 dlabel g_bSaveReserved13
-    /* 80378DFE */ .space 0x02
-
-nonmatching g_MusicChannelStates_2__dwPortamentoTargetHi, 0x25
-
-dlabel g_MusicChannelStates_2__dwPortamentoTargetHi
-    /* 80378E00 */ .space 0x25
+    /* 80378DFE */ .space 0x27
 
 nonmatching g_bEepromPresent, 0x12B
 
@@ -5124,15 +4914,10 @@ nonmatching g_wSoundChannel1, 0x2
 dlabel g_wSoundChannel1
     /* 8037EA82 */ .space 0x02
 
-nonmatching DAT_8037ea84, 0x2
+nonmatching D_8037EA84, 0x4
 
-dlabel DAT_8037ea84
-    /* 8037EA84 */ .space 0x02
-
-nonmatching DAT_8037ea86, 0x2
-
-dlabel DAT_8037ea86
-    /* 8037EA86 */ .space 0x02
+dlabel D_8037EA84
+    /* 8037EA84 */ .space 0x04
 
 nonmatching g_awTriCacheTriCount, 0x2
 
@@ -5160,14 +4945,14 @@ nonmatching g_dwSoundReserved0, 0x4
 dlabel g_dwSoundReserved0
     /* 8037EA94 */ .space 0x04
 
-nonmatching DAT_8037ea98, 0x4
+nonmatching D_8037EA98, 0x4
 
-dlabel DAT_8037ea98
+dlabel D_8037EA98
     /* 8037EA98 */ .space 0x04
 
-nonmatching DAT_8037ea9c, 0x4
+nonmatching D_8037EA9C, 0x4
 
-dlabel DAT_8037ea9c
+dlabel D_8037EA9C
     /* 8037EA9C */ .space 0x04
 
 nonmatching g_dwTriCacheLruCounter, 0x4
@@ -5254,40 +5039,20 @@ nonmatching g_bPfsPifRamByte2, 0x2
 dlabel g_bPfsPifRamByte2
     /* 8037F0B2 */ .space 0x02
 
-nonmatching g_dwSysReserved1, 0x1
+nonmatching g_dwSysReserved1, 0x4
 
 dlabel g_dwSysReserved1
-    /* 8037F0B4 */ .space 0x01
+    /* 8037F0B4 */ .space 0x04
 
-nonmatching g_dwSysReserved1_1, 0x1
-
-dlabel g_dwSysReserved1_1
-    /* 8037F0B5 */ .space 0x01
-
-nonmatching g_dwSysReserved1_2, 0x2
-
-dlabel g_dwSysReserved1_2
-    /* 8037F0B6 */ .space 0x02
-
-nonmatching g_dwSysReserved2, 0x1
+nonmatching g_dwSysReserved2, 0x4
 
 dlabel g_dwSysReserved2
-    /* 8037F0B8 */ .space 0x01
+    /* 8037F0B8 */ .space 0x04
 
-nonmatching g_dwSysReserved2_1, 0x3
-
-dlabel g_dwSysReserved2_1
-    /* 8037F0B9 */ .space 0x03
-
-nonmatching g_dwSysReserved3, 0x1
+nonmatching g_dwSysReserved3, 0x4
 
 dlabel g_dwSysReserved3
-    /* 8037F0BC */ .space 0x01
-
-nonmatching g_dwSysReserved3_1, 0x3
-
-dlabel g_dwSysReserved3_1
-    /* 8037F0BD */ .space 0x03
+    /* 8037F0BC */ .space 0x04
 
 nonmatching g_abPfsPifRamCmdData, 0x1
 
@@ -5345,9 +5110,9 @@ nonmatching g_abPakInitOnesBuf, 0x20
 dlabel g_abPakInitOnesBuf
     /* 8037F310 */ .space 0x20
 
-nonmatching g_RspTaskSubmitBuffer, 0x10
+nonmatching tmp_task, 0x10
 
-dlabel g_RspTaskSubmitBuffer
+dlabel tmp_task
     /* 8037F330 */ .space 0x10
 
 nonmatching g_dwSysReserved8, 0x4
@@ -5497,71 +5262,59 @@ nonmatching D_8037F484, 0xC
 dlabel D_8037F484
     /* 8037F484 */ .space 0x0C
 
-nonmatching g_ViManagerThread, 0x1B0
+nonmatching viThread, 0x1B0
 
-dlabel g_ViManagerThread
+dlabel viThread
     /* 8037F490 */ .space 0x1B0
 
-nonmatching D_8037F640, 0x1000
+nonmatching viThreadStack, 0x1000
 
-dlabel D_8037F640
+dlabel viThreadStack
     /* 8037F640 */ .space 0x1000
 
-nonmatching g_ViEventQueue, 0x18
+nonmatching viEventQueue, 0x18
 
-dlabel g_ViEventQueue
+dlabel viEventQueue
     /* 80380640 */ .space 0x18
 
-nonmatching g_aViEventMsgBuf, 0x18
+nonmatching viEventBuf, 0x18
 
-dlabel g_aViEventMsgBuf
+dlabel viEventBuf
     /* 80380658 */ .space 0x18
 
-nonmatching g_wRspReserved0, 0x2
+nonmatching viRetraceMsg, 0x2
 
-dlabel g_wRspReserved0
+dlabel viRetraceMsg
     /* 80380670 */ .space 0x02
 
-nonmatching g_bViRetraceMsgPri, 0x2
+nonmatching D_80380672, 0x2
 
-dlabel g_bViRetraceMsgPri
+dlabel D_80380672
     /* 80380672 */ .space 0x02
 
-nonmatching g_dwRspReserved0, 0x4
+nonmatching D_80380674, 0x14
 
-dlabel g_dwRspReserved0
-    /* 80380674 */ .space 0x04
+dlabel D_80380674
+    /* 80380674 */ .space 0x14
 
-nonmatching D_80380678, 0x10
+nonmatching viCounterMsg, 0x2
 
-/* Automatically generated and unreferenced pad */
-dlabel D_80380678
-    /* 80380678 */ .space 0x10
-
-nonmatching g_wRspReserved1, 0x2
-
-dlabel g_wRspReserved1
+dlabel viCounterMsg
     /* 80380688 */ .space 0x02
 
-nonmatching g_bViCounterMsgPri, 0x2
+nonmatching D_8038068A, 0x2
 
-dlabel g_bViCounterMsgPri
+dlabel D_8038068A
     /* 8038068A */ .space 0x02
 
-nonmatching g_dwRspReserved1, 0x4
+nonmatching D_8038068C, 0x14
 
-dlabel g_dwRspReserved1
-    /* 8038068C */ .space 0x04
+dlabel D_8038068C
+    /* 8038068C */ .space 0x14
 
-nonmatching D_80380690, 0x10
+nonmatching viMgrRetrace, 0x2
 
-/* Automatically generated and unreferenced pad */
-dlabel D_80380690
-    /* 80380690 */ .space 0x10
-
-nonmatching g_wRspReserved2, 0x2
-
-dlabel g_wRspReserved2
+dlabel viMgrRetrace
     /* 803806A0 */ .space 0x02
 
 nonmatching D_803806A2, 0xE
@@ -5570,99 +5323,70 @@ nonmatching D_803806A2, 0xE
 dlabel D_803806A2
     /* 803806A2 */ .space 0x0E
 
-nonmatching g_PiManagerThread, 0x1B0
+nonmatching piThread, 0x1B0
 
-dlabel g_PiManagerThread
+dlabel piThread
     /* 803806B0 */ .space 0x1B0
 
-nonmatching D_80380860, 0x1000
+nonmatching piThreadStack, 0x1000
 
-dlabel D_80380860
+dlabel piThreadStack
     /* 80380860 */ .space 0x1000
 
-nonmatching g_PiEventQueue, 0x18
+nonmatching piEventQueue, 0x18
 
-dlabel g_PiEventQueue
+dlabel piEventQueue
     /* 80381860 */ .space 0x18
 
-nonmatching g_aPiEventMsgBuf, 0x8
+nonmatching piEventBuf, 0x8
 
-dlabel g_aPiEventMsgBuf
+dlabel piEventBuf
     /* 80381878 */ .space 0x08
 
-nonmatching g_aSiAccessMsgBuf, 0x8
+nonmatching siAccessBuf, 0x8
 
-dlabel g_aSiAccessMsgBuf
+dlabel siAccessBuf
     /* 80381880 */ .space 0x08
 
-nonmatching g_SiAccessQueue, 0x18
+nonmatching __osSiAccessQueue, 0x18
 
-dlabel g_SiAccessQueue
+dlabel __osSiAccessQueue
     /* 80381888 */ .space 0x18
 
-nonmatching g_dwGfxReserved14, 0x4
+nonmatching __osBaseTimer, 0x4
 
-dlabel g_dwGfxReserved14
+dlabel __osBaseTimer
     /* 803818A0 */ .space 0x04
 
-nonmatching g_dwGfxReserved15, 0x4
+nonmatching D_803818A4, 0x1C
 
-dlabel g_dwGfxReserved15
-    /* 803818A4 */ .space 0x04
+/* Automatically generated and unreferenced pad */
+dlabel D_803818A4
+    /* 803818A4 */ .space 0x1C
 
-nonmatching g_dwGfxReserved16, 0x4
+nonmatching __osCurrentTime, 0x4
 
-dlabel g_dwGfxReserved16
-    /* 803818A8 */ .space 0x04
-
-nonmatching g_dwGfxReserved17, 0x4
-
-dlabel g_dwGfxReserved17
-    /* 803818AC */ .space 0x04
-
-nonmatching g_dwGfxReserved18, 0x4
-
-dlabel g_dwGfxReserved18
-    /* 803818B0 */ .space 0x04
-
-nonmatching g_dwGfxReserved19, 0x4
-
-dlabel g_dwGfxReserved19
-    /* 803818B4 */ .space 0x04
-
-nonmatching g_dwGfxReserved20, 0x4
-
-dlabel g_dwGfxReserved20
-    /* 803818B8 */ .space 0x04
-
-nonmatching g_dwGfxReserved21, 0x4
-
-dlabel g_dwGfxReserved21
-    /* 803818BC */ .space 0x04
-
-nonmatching g_dwGfxReserved22, 0x4
-
-dlabel g_dwGfxReserved22
+dlabel __osCurrentTime
     /* 803818C0 */ .space 0x04
 
-nonmatching g_dwGfxReserved23, 0x4
+nonmatching D_803818C4, 0x4
 
-dlabel g_dwGfxReserved23
+dlabel D_803818C4
     /* 803818C4 */ .space 0x04
 
-nonmatching g_dwGfxReserved24, 0x4
+nonmatching __osBaseCounter, 0x4
 
-dlabel g_dwGfxReserved24
+dlabel __osBaseCounter
     /* 803818C8 */ .space 0x04
 
-nonmatching g_dwGfxReserved25, 0x4
+nonmatching __osViIntrCount, 0x4
 
-dlabel g_dwGfxReserved25
+dlabel __osViIntrCount
     /* 803818CC */ .space 0x04
 
-nonmatching g_dwGfxReserved26, 0x4
+nonmatching __osTimerCounter, 0x4
 
-dlabel g_dwGfxReserved26
+dlabel __osTimerCounter
     /* 803818D0 */ .space 0x04
 
 nonmatching D_803818D4, 0xC
@@ -5671,105 +5395,89 @@ nonmatching D_803818D4, 0xC
 dlabel D_803818D4
     /* 803818D4 */ .space 0x0C
 
-nonmatching g_dwGfxReserved27, 0x4
+nonmatching CartRomHandle, 0x4
 
-dlabel g_dwGfxReserved27
+dlabel CartRomHandle
     /* 803818E0 */ .space 0x04
 
-nonmatching g_bCartRomHandleType, 0x1
+nonmatching D_803818E4, 0x1
 
-dlabel g_bCartRomHandleType
+dlabel D_803818E4
     /* 803818E4 */ .space 0x01
 
-nonmatching g_bCartRomLatency, 0x1
+nonmatching D_803818E5, 0x1
 
-dlabel g_bCartRomLatency
+dlabel D_803818E5
     /* 803818E5 */ .space 0x01
 
-nonmatching g_bCartRomPageSize, 0x1
+nonmatching D_803818E6, 0x1
 
-dlabel g_bCartRomPageSize
+dlabel D_803818E6
     /* 803818E6 */ .space 0x01
 
-nonmatching g_bCartRomRelDuration, 0x1
+nonmatching D_803818E7, 0x1
 
-dlabel g_bCartRomRelDuration
+dlabel D_803818E7
     /* 803818E7 */ .space 0x01
 
-nonmatching g_bCartRomPulse, 0x1
+nonmatching D_803818E8, 0x1
 
-dlabel g_bCartRomPulse
+dlabel D_803818E8
     /* 803818E8 */ .space 0x01
 
-nonmatching g_bCartRomDomain, 0x3
+nonmatching D_803818E9, 0x3
 
-dlabel g_bCartRomDomain
+dlabel D_803818E9
     /* 803818E9 */ .space 0x03
 
-nonmatching g_dwGfxReserved28, 0x4
+nonmatching D_803818EC, 0x8
 
-dlabel g_dwGfxReserved28
-    /* 803818EC */ .space 0x04
-
-nonmatching D_803818F0, 0x4
-
-/* Automatically generated and unreferenced pad */
-dlabel D_803818F0
-    /* 803818F0 */ .space 0x04
+dlabel D_803818EC
+    /* 803818EC */ .space 0x08
 
 nonmatching g_CartRomTransferInfo, 0x6C
 
 dlabel g_CartRomTransferInfo
     /* 803818F4 */ .space 0x6C
 
-nonmatching DAT_80381960, 0x4
+nonmatching LeoDiskHandle, 0x4
 
-dlabel DAT_80381960
+dlabel LeoDiskHandle
     /* 80381960 */ .space 0x04
 
-nonmatching DAT_80381964, 0x1
+nonmatching D_80381964, 0x1
 
-dlabel DAT_80381964
+dlabel D_80381964
     /* 80381964 */ .space 0x01
 
-nonmatching DAT_80381965, 0x1
+nonmatching D_80381965, 0x1
 
-dlabel DAT_80381965
+dlabel D_80381965
     /* 80381965 */ .space 0x01
 
-nonmatching DAT_80381966, 0x1
+nonmatching D_80381966, 0x2
 
-dlabel DAT_80381966
-    /* 80381966 */ .space 0x01
+dlabel D_80381966
+    /* 80381966 */ .space 0x02
 
-nonmatching DAT_80381967, 0x1
+nonmatching D_80381968, 0x1
 
-dlabel DAT_80381967
-    /* 80381967 */ .space 0x01
-
-nonmatching DAT_80381968, 0x1
-
-dlabel DAT_80381968
+dlabel D_80381968
     /* 80381968 */ .space 0x01
 
-nonmatching DAT_80381969, 0x3
+nonmatching D_80381969, 0x3
 
-dlabel DAT_80381969
+dlabel D_80381969
     /* 80381969 */ .space 0x03
 
-nonmatching DAT_8038196c, 0x8
+nonmatching D_8038196C, 0x68
 
-dlabel DAT_8038196c
-    /* 8038196C */ .space 0x08
+dlabel D_8038196C
+    /* 8038196C */ .space 0x68
 
-nonmatching DAT_80381974, 0x60
+nonmatching __osDiskHandle, 0x4
 
-dlabel DAT_80381974
-    /* 80381974 */ .space 0x60
-
-nonmatching g_dwGfxReserved29, 0x4
-
-dlabel g_dwGfxReserved29
+dlabel __osDiskHandle
     /* 803819D4 */ .space 0x04
 
 nonmatching D_803819D8, 0x8
@@ -5778,14 +5486,14 @@ nonmatching D_803819D8, 0x8
 dlabel D_803819D8
     /* 803819D8 */ .space 0x08
 
-nonmatching g_aPiAccessMsgBuf, 0x8
+nonmatching piAccessBuf, 0x8
 
-dlabel g_aPiAccessMsgBuf
+dlabel piAccessBuf
     /* 803819E0 */ .space 0x08
 
-nonmatching g_PiAccessQueue, 0x18
+nonmatching __osPiAccessQueue, 0x18
 
-dlabel g_PiAccessQueue
+dlabel __osPiAccessQueue
     /* 803819E8 */ .space 0x18
 
 nonmatching D_80381A00, 0x1B0

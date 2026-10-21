@@ -1300,19 +1300,19 @@ glabel DrawHudLabelAtFraction
     /* 306A0 8022F6A0 3C028029 */  lui        $v0, %hi(g_dwScreenHeight)
     /* 306A4 8022F6A4 448E2000 */  mtc1       $t6, $f4
     /* 306A8 8022F6A8 8C42AAB4 */  lw         $v0, %lo(g_dwScreenHeight)($v0)
-    /* 306AC 8022F6AC 3C01802B */  lui        $at, %hi(DAT_802a9eb8)
+    /* 306AC 8022F6AC 3C01802B */  lui        $at, %hi(D_802A9EB8)
     /* 306B0 8022F6B0 468021A0 */  cvt.s.w    $f6, $f4
     /* 306B4 8022F6B4 44822000 */  mtc1       $v0, $f4
-    /* 306B8 8022F6B8 C42A9EB8 */  lwc1       $f10, %lo(DAT_802a9eb8)($at)
+    /* 306B8 8022F6B8 C42A9EB8 */  lwc1       $f10, %lo(D_802A9EB8)($at)
     /* 306BC 8022F6BC 44867000 */  mtc1       $a2, $f14
-    /* 306C0 8022F6C0 3C01802B */  lui        $at, %hi(DAT_802a9ebc)
+    /* 306C0 8022F6C0 3C01802B */  lui        $at, %hi(D_802A9EBC)
     /* 306C4 8022F6C4 27BDFFE8 */  addiu      $sp, $sp, -0x18
     /* 306C8 8022F6C8 460C3202 */  mul.s      $f8, $f6, $f12
     /* 306CC 8022F6CC AFBF0014 */  sw         $ra, 0x14($sp)
     /* 306D0 8022F6D0 AFA70024 */  sw         $a3, 0x24($sp)
     /* 306D4 8022F6D4 468021A0 */  cvt.s.w    $f6, $f4
     /* 306D8 8022F6D8 460A4402 */  mul.s      $f16, $f8, $f10
-    /* 306DC 8022F6DC C42A9EBC */  lwc1       $f10, %lo(DAT_802a9ebc)($at)
+    /* 306DC 8022F6DC C42A9EBC */  lwc1       $f10, %lo(D_802A9EBC)($at)
     /* 306E0 8022F6E0 46067202 */  mul.s      $f8, $f14, $f6
     /* 306E4 8022F6E4 4600848D */  trunc.w.s  $f18, $f16
     /* 306E8 8022F6E8 460A4402 */  mul.s      $f16, $f8, $f10

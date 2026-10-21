@@ -1,0 +1,103 @@
+#ifndef PR_SPTASK_H
+#define PR_SPTASK_H
+
+/**
+ * @file
+ * RSP tasks.
+ */
+
+#include <PR/ultratypes.h>
+
+typedef struct {
+    u32 type;
+    u32 flags;
+    u64 *ucode_boot;
+    u32 ucode_boot_size;
+    u64 *ucode;
+    u32 ucode_size;
+    u64 *ucode_data;
+    u32 ucode_data_size;
+    u64 *dram_stack;
+    u32 dram_stack_size;
+    u64 *output_buff;
+    u64 *output_buff_size;
+    u64 *data_ptr;
+    u32 data_size;
+    u64 *yield_data_ptr;
+    u32 yield_data_size;
+} OSTask_t;
+
+typedef union {
+    OSTask_t t;
+    long long int force_structure_alignment;
+} OSTask;
+
+#define OS_TASK_YIELDED 0x0001
+#define OS_TASK_DP_WAIT 0x0002
+#define OS_TASK_LOADABLE 0x0004
+#define OS_TASK_SP_ONLY 0x0008
+
+#define OS_YIELD_DATA_SIZE 0xC00
+
+/**
+ * The physical copy of the last task osSpTaskLoad() loaded.
+ *
+ * @ghidraAddress USA: 0x8037f330
+ */
+extern OSTask tmp_task;
+
+/**
+ * Copy a task to tmp_task with each of its pointers turned physical.
+ *
+ * @return tmp_task.
+ * @ghidraAddress USA: 0x80264b60
+ */
+OSTask *_VirtualToPhysicalTask(OSTask *intp);
+
+/**
+ * Load a task into the RSP, copying its header to the end of the DMEM and its boot microcode to
+ * the IMEM. A yielded task resumes from its yield buffer.
+ *
+ * @ghidraAddress USA: 0x80264c7c
+ */
+void osSpTaskLoad(OSTask *tp);
+
+/**
+ * Start the RSP on the task osSpTaskLoad() loaded.
+ *
+ * @ghidraAddress USA: 0x80264e0c
+ */
+void osSpTaskStartGo(OSTask *tp);
+
+/**
+ * Write the RSP status register.
+ *
+ * @ghidraAddress USA: 0x8026b850
+ */
+void __osSpSetStatus(u32 data);
+
+/**
+ * Set the RSP program counter.
+ *
+ * @return 0, or -1 when the RSP is not halted.
+ * @ghidraAddress USA: 0x8026b860
+ */
+s32 __osSpSetPc(u32 pc);
+
+/**
+ * Start a DMA between RDRAM and the RSP memories.
+ *
+ * @param direction OS_READ to read the RSP memory, OS_WRITE to write it.
+ * @return 0, or -1 when the RSP DMA is busy.
+ * @ghidraAddress USA: 0x8026b8a0
+ */
+s32 __osSpRawStartDma(s32 direction, u32 devAddr, void *dramAddr, u32 size);
+
+/**
+ * Return whether the RSP DMA is busy or full, or the RSP I/O is full.
+ *
+ * @ghidraAddress USA: 0x8026b930
+ */
+u32 __osSpDeviceBusy(void);
+
+#endif

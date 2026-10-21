@@ -106,8 +106,8 @@ glabel __f_to_ull
     /* 67AF8 80266AF8 30420078 */  andi       $v0, $v0, 0x78
     /* 67AFC 80266AFC 14400006 */  bnez       $v0, .L80266B18
     /* 67B00 80266B00 00000000 */   nop
-    /* 67B04 80266B04 3C0F802B */  lui        $t7, %hi(PTR_TLB_REFILL_802ab958)
-    /* 67B08 80266B08 DDEFB958 */  ld         $t7, %lo(PTR_TLB_REFILL_802ab958)($t7)
+    /* 67B04 80266B04 3C0F802B */  lui        $t7, %hi(D_802AB958)
+    /* 67B08 80266B08 DDEFB958 */  ld         $t7, %lo(D_802AB958)($t7)
     /* 67B0C 80266B0C 44222000 */  dmfc1      $v0, $f4
     /* 67B10 80266B10 10000007 */  b          .L80266B30
     /* 67B14 80266B14 004F1025 */   or        $v0, $v0, $t7

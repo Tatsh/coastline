@@ -1,16 +1,44 @@
-# libultra as the game links it. A routine joins this list when its body moves from the assembly
-# of the original into C. The SDK's file names are retained.
+# This target builds libultra as the game links it. A routine joins this list when its body moves
+# from the assembly of the original into C. The SDK's file names are retained.
 add_library(
   coastline_libultra STATIC
+  io/ai.c
+  io/cartrominit.c
+  io/epirawdma.c
+  io/epirawread.c
+  io/epirawwrite.c
+  io/leodiskinit.c
+  io/piacs.c
+  io/pidma.c
+  io/pigetcmdq.c
+  io/pimgr.c
+  io/pirawdma.c
+  io/pirawread.c
+  io/si.c
+  io/sp.c
+  io/sptask.c
+  io/vi.c
+  io/viblack.c
+  io/vigetcurrcontext.c
+  io/vigetcurrframebuf.c
+  io/vimgr.c
+  io/visetevent.c
+  io/visetmode.c
+  io/visetspecial.c
+  io/viswapbuf.c
+  io/viswapcontext.c
   os/createmesgqueue.c
   os/createthread.c
   os/destroythread.c
   os/getthreadpri.c
+  os/gettime.c
   os/jammesg.c
   os/recvmesg.c
   os/sendmesg.c
   os/seteventmesg.c
   os/setthreadpri.c
+  os/settimer.c
   os/startthread.c
+  os/timerintr.c
   os/yieldthread.c)
 target_link_libraries(coastline_libultra PRIVATE coastline_common)
