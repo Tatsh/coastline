@@ -11946,35 +11946,11 @@ nonmatching g_adSinfP
 
 dlabel g_adSinfP
     /* AC8A0 802AB8A0 3FF0000000000000 */ .double 1
+    /* AC8A8 802AB8A8 BFC55554BC83656D */ .double -0.166666595504277565
+    /* AC8B0 802AB8B0 3F8110ED3804C2A0 */ .double 0.00833306624608215474
+    /* AC8B8 802AB8B8 BF29F6FFEEA56814 */ .double -0.000198096029019379492
+    /* AC8C0 802AB8C0 3EC5DBDF0E314BFE */ .double 2.60578063796803717e-06
 enddlabel g_adSinfP
-
-nonmatching g_qwRaceReserved32
-
-dlabel g_qwRaceReserved32
-    /* AC8A8 802AB8A8 BFC55554 */ .word 0xBFC55554
-    /* AC8AC 802AB8AC BC83656D */ .word 0xBC83656D
-enddlabel g_qwRaceReserved32
-
-nonmatching g_qwRaceReserved33
-
-dlabel g_qwRaceReserved33
-    /* AC8B0 802AB8B0 3F8110ED */ .word 0x3F8110ED
-    /* AC8B4 802AB8B4 3804C2A0 */ .word 0x3804C2A0
-enddlabel g_qwRaceReserved33
-
-nonmatching g_qwRaceReserved34
-
-dlabel g_qwRaceReserved34
-    /* AC8B8 802AB8B8 BF29F6FF */ .word 0xBF29F6FF
-    /* AC8BC 802AB8BC EEA56814 */ .word 0xEEA56814
-enddlabel g_qwRaceReserved34
-
-nonmatching g_qwRaceReserved35
-
-dlabel g_qwRaceReserved35
-    /* AC8C0 802AB8C0 3EC5DBDF */ .word 0x3EC5DBDF
-    /* AC8C4 802AB8C4 0E314BFE */ .word 0x0E314BFE
-enddlabel g_qwRaceReserved35
 
 nonmatching g_dSinfRpi
 
@@ -12007,35 +11983,11 @@ nonmatching g_adCosfP
 
 dlabel g_adCosfP
     /* AC8F0 802AB8F0 3FF0000000000000 */ .double 1
+    /* AC8F8 802AB8F8 BFC55554BC83656D */ .double -0.166666595504277565
+    /* AC900 802AB900 3F8110ED3804C2A0 */ .double 0.00833306624608215474
+    /* AC908 802AB908 BF29F6FFEEA56814 */ .double -0.000198096029019379492
+    /* AC910 802AB910 3EC5DBDF0E314BFE */ .double 2.60578063796803717e-06
 enddlabel g_adCosfP
-
-nonmatching g_qwRaceReserved39
-
-dlabel g_qwRaceReserved39
-    /* AC8F8 802AB8F8 BFC55554 */ .word 0xBFC55554
-    /* AC8FC 802AB8FC BC83656D */ .word 0xBC83656D
-enddlabel g_qwRaceReserved39
-
-nonmatching g_qwRaceReserved40
-
-dlabel g_qwRaceReserved40
-    /* AC900 802AB900 3F8110ED */ .word 0x3F8110ED
-    /* AC904 802AB904 3804C2A0 */ .word 0x3804C2A0
-enddlabel g_qwRaceReserved40
-
-nonmatching g_qwRaceReserved41
-
-dlabel g_qwRaceReserved41
-    /* AC908 802AB908 BF29F6FF */ .word 0xBF29F6FF
-    /* AC90C 802AB90C EEA56814 */ .word 0xEEA56814
-enddlabel g_qwRaceReserved41
-
-nonmatching g_qwRaceReserved42
-
-dlabel g_qwRaceReserved42
-    /* AC910 802AB910 3EC5DBDF */ .word 0x3EC5DBDF
-    /* AC914 802AB914 0E314BFE */ .word 0x0E314BFE
-enddlabel g_qwRaceReserved42
 
 nonmatching g_dCosfRpi
 

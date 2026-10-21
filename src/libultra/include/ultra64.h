@@ -8,6 +8,8 @@
  */
 
 #include <PR/R4300.h>
+#include <PR/gbi.h>
+#include <PR/gu.h>
 #include <PR/os.h>
 #include <PR/os_libc.h>
 #include <PR/rcp.h>

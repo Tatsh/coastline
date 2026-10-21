@@ -12,6 +12,8 @@ bufbusy
 buildsystems
 bytearray
 cartrominit
+colc
+cosf
 coveragerc
 createmesgqueue
 createthread
@@ -46,9 +48,11 @@ excmask
 extraout
 fcntl
 ffreestanding
+fovy
 foxundermoon
 fpart
 fpcsr
+ftofrac
 funclets
 funcs
 getthreadpri
@@ -56,9 +60,11 @@ gettime
 ghidra
 glabel
 graphviz
+guint
 handoff
 hasm
 hdwr
+hilite
 hinstance
 iconerror
 infblock
@@ -84,6 +90,9 @@ libera
 libgcc
 libsonnet
 libultra
+lookat
+lookathil
+lookatref
 lpcstr
 lshift
 mabi
@@ -98,6 +107,9 @@ msvc
 msystem
 mtqueue
 mtune
+mtxcatf
+mtxcatl
+mtxutil
 mypy
 ngre
 noload
@@ -112,6 +124,7 @@ objcopy
 oneline
 pacboy
 pathlib
+persp
 piacs
 pidma
 pigetcmdq
@@ -135,6 +148,7 @@ recvmesg
 reflow
 regen
 reginfo
+resf
 ripgreprc
 rmonspin
 rodata
@@ -152,9 +166,11 @@ shellcheck
 shellformat
 siint
 simgr
+sinf
 snapcraft
 spimdisasm
 sptask
+sqrtf
 startthread
 statusline
 stdarg
@@ -201,6 +217,9 @@ winget
 winmain
 wiswa
 wiswa's
+xabs
+xfmf
+xfml
 yarnrc
 yieldthread
 yscale

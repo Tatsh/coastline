@@ -64751,9 +64751,9 @@ dlabel D_802A4C0C
     /* A5C0C 802A4C0C 00000000 */ .word 0x00000000
 enddlabel D_802A4C0C
 
-nonmatching D_802A4C10
+nonmatching sintable
 
-dlabel D_802A4C10
+dlabel sintable
     /* A5C10 802A4C10 */ .short 0x0000
     /* A5C12 802A4C12 */ .short 0x0032
     /* A5C14 802A4C14 */ .short 0x0064
@@ -65777,7 +65777,7 @@ dlabel D_802A4C10
     /* A6408 802A5408 */ .short 0x7FFE
     /* A640A 802A540A */ .short 0x7FFE
     /* A640C 802A540C */ .short 0x7FFE
-enddlabel D_802A4C10
+enddlabel sintable
 
 nonmatching D_802A540E
 

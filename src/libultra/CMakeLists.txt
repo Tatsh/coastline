@@ -2,6 +2,21 @@
 # from the assembly of the original into C. The SDK's file names are retained.
 add_library(
   coastline_libultra STATIC
+  gu/cosf.c
+  gu/lookat.c
+  gu/lookathil.c
+  gu/lookatref.c
+  gu/mtxcatf.c
+  gu/mtxcatl.c
+  gu/mtxutil.c
+  gu/normalize.c
+  gu/perspective.c
+  gu/rotate.c
+  gu/scale.c
+  gu/sinf.c
+  gu/sins.c
+  gu/sqrtf.c
+  gu/translate.c
   io/ai.c
   io/cartrominit.c
   io/epirawdma.c

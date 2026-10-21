@@ -52,16 +52,9 @@ set(COASTLINE_ASM_US
     asm/us/5A350.s
     asm/us/61490.s
     asm/us/617C0.s
-    asm/us/61800.s
-    asm/us/618A0.s
     asm/us/61AB0.s
     asm/us/61BC0.s
     asm/us/61DB0.s
-    asm/us/61E30.s
-    asm/us/61ED0.s
-    asm/us/62140.s
-    asm/us/62150.s
-    asm/us/62610.s
     asm/us/62940.s
     asm/us/62CB0.s
     asm/us/62F20.s
@@ -71,24 +64,19 @@ set(COASTLINE_ASM_US
     asm/us/63A80.s
     asm/us/649E0.s
     asm/us/64B30.s
-    asm/us/65420.s
     asm/us/65760.s
     asm/us/659C0.s
     asm/us/659F0.s
-    asm/us/65E50.s
     asm/us/667C0.s
     asm/us/66CD0.s
     asm/us/67020.s
     asm/us/67390.s
     asm/us/67400.s
     asm/us/678F0.s
-    asm/us/67BE0.s
-    asm/us/68410.s
     asm/us/684D0.s
     asm/us/687E0.s
     asm/us/68930.s
     asm/us/69540.s
-    asm/us/696C0.s
     asm/us/69750.s
     asm/us/6A580.s
     asm/us/6A690.s
