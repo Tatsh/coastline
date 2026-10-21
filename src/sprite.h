@@ -52,7 +52,7 @@ void DrawTexturedSprite(Sprite *sprite, s32 x, s32 y);
  * @param unused3 Not read.
  * @ghidraAddress USA: 0x80245798
  */
-void DrawTiledSprite(Sprite *sprite, s32 level, s32 unused2, s32 unused3);
+void DrawSpriteTinted(Sprite *sprite, s32 level, s32 unused2, s32 unused3);
 
 /**
  * Draw a rectangle of a sprite in a color.

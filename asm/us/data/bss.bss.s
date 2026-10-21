@@ -2644,29 +2644,29 @@ nonmatching D_80369B74, 0xC
 dlabel D_80369B74
     /* 80369B74 */ .space 0x0C
 
-nonmatching g_dwPakPort0Status, 0x4
+nonmatching g_nPaintAnchorX, 0x4
 
-dlabel g_dwPakPort0Status
+dlabel g_nPaintAnchorX
     /* 80369B80 */ .space 0x04
 
-nonmatching g_dwPakPort1Status, 0x4
+nonmatching g_nPaintAnchorY, 0x4
 
-dlabel g_dwPakPort1Status
+dlabel g_nPaintAnchorY
     /* 80369B84 */ .space 0x04
 
-nonmatching g_dwEffectFrame, 0x4
+nonmatching g_dwLastClickTime, 0x4
 
-dlabel g_dwEffectFrame
+dlabel g_dwLastClickTime
     /* 80369B88 */ .space 0x04
 
-nonmatching g_dwEffectDuration, 0x4
+nonmatching g_dwAnchorXInitialized, 0x4
 
-dlabel g_dwEffectDuration
+dlabel g_dwAnchorXInitialized
     /* 80369B8C */ .space 0x04
 
-nonmatching g_dwEffectScale, 0x4
+nonmatching g_dwAnchorYInitialized, 0x4
 
-dlabel g_dwEffectScale
+dlabel g_dwAnchorYInitialized
     /* 80369B90 */ .space 0x04
 
 nonmatching D_80369B94, 0x4
@@ -2675,514 +2675,147 @@ nonmatching D_80369B94, 0x4
 dlabel D_80369B94
     /* 80369B94 */ .space 0x04
 
-nonmatching g_dwEffectAlpha, 0x4
+nonmatching g_aDecalSwatches, 0x4
 
-dlabel g_dwEffectAlpha
+dlabel g_aDecalSwatches
     /* 80369B98 */ .space 0x04
 
-nonmatching g_dwEffectReserved0, 0x4
+nonmatching D_80369B9C, 0x24
 
-dlabel g_dwEffectReserved0
-    /* 80369B9C */ .space 0x04
+/* Automatically generated and unreferenced pad */
+dlabel D_80369B9C
+    /* 80369B9C */ .space 0x24
 
-nonmatching g_dwEffectReserved1, 0x4
+nonmatching D_80369BC0, 0x4
 
-dlabel g_dwEffectReserved1
-    /* 80369BA0 */ .space 0x04
-
-nonmatching g_dwEffectReserved2, 0x4
-
-dlabel g_dwEffectReserved2
-    /* 80369BA4 */ .space 0x04
-
-nonmatching g_bEffectActive0, 0x1
-
-dlabel g_bEffectActive0
-    /* 80369BA8 */ .space 0x01
-
-nonmatching g_bEffectActive1, 0x1
-
-dlabel g_bEffectActive1
-    /* 80369BA9 */ .space 0x01
-
-nonmatching g_bEffectActive2, 0x2
-
-dlabel g_bEffectActive2
-    /* 80369BAA */ .space 0x02
-
-nonmatching g_dwEffectReserved3, 0x4
-
-dlabel g_dwEffectReserved3
-    /* 80369BAC */ .space 0x04
-
-nonmatching g_dwEffectReserved4, 0x4
-
-dlabel g_dwEffectReserved4
-    /* 80369BB0 */ .space 0x04
-
-nonmatching g_dwEffectReserved5, 0x4
-
-dlabel g_dwEffectReserved5
-    /* 80369BB4 */ .space 0x04
-
-nonmatching g_dwEffectReserved6, 0x4
-
-dlabel g_dwEffectReserved6
-    /* 80369BB8 */ .space 0x04
-
-nonmatching g_bEffectActive3, 0x1
-
-dlabel g_bEffectActive3
-    /* 80369BBC */ .space 0x01
-
-nonmatching g_bEffectActive4, 0x1
-
-dlabel g_bEffectActive4
-    /* 80369BBD */ .space 0x01
-
-nonmatching g_bEffectActive5, 0x2
-
-dlabel g_bEffectActive5
-    /* 80369BBE */ .space 0x02
-
-nonmatching g_dwParticleCount, 0x4
-
-dlabel g_dwParticleCount
+dlabel D_80369BC0
     /* 80369BC0 */ .space 0x04
 
-nonmatching g_dwParticleMax, 0x4
+nonmatching D_80369BC4, 0x4
 
-dlabel g_dwParticleMax
+dlabel D_80369BC4
     /* 80369BC4 */ .space 0x04
 
-nonmatching g_dwParticleReserved0, 0x4
+nonmatching D_80369BC8, 0x4
 
-dlabel g_dwParticleReserved0
+dlabel D_80369BC8
     /* 80369BC8 */ .space 0x04
 
-nonmatching g_dwParticleReserved1, 0x4
+nonmatching D_80369BCC, 0x8
 
-dlabel g_dwParticleReserved1
-    /* 80369BCC */ .space 0x04
+dlabel D_80369BCC
+    /* 80369BCC */ .space 0x08
 
-nonmatching g_bParticleEmit0, 0x1
+nonmatching D_80369BD4, 0x4
 
-dlabel g_bParticleEmit0
-    /* 80369BD0 */ .space 0x01
-
-nonmatching g_bParticleEmit1, 0x1
-
-dlabel g_bParticleEmit1
-    /* 80369BD1 */ .space 0x01
-
-nonmatching g_bParticleEmit2, 0x2
-
-dlabel g_bParticleEmit2
-    /* 80369BD2 */ .space 0x02
-
-nonmatching g_dwParticleReserved2, 0x4
-
-dlabel g_dwParticleReserved2
+dlabel D_80369BD4
     /* 80369BD4 */ .space 0x04
 
-nonmatching g_dwParticleReserved3, 0x4
+nonmatching D_80369BD8, 0x4
 
-dlabel g_dwParticleReserved3
+dlabel D_80369BD8
     /* 80369BD8 */ .space 0x04
 
-nonmatching g_dwParticleReserved4, 0x4
+nonmatching D_80369BDC, 0x4
 
-dlabel g_dwParticleReserved4
+dlabel D_80369BDC
     /* 80369BDC */ .space 0x04
 
-nonmatching g_dwParticleReserved5, 0x4
+nonmatching D_80369BE0, 0x8
 
-dlabel g_dwParticleReserved5
-    /* 80369BE0 */ .space 0x04
+dlabel D_80369BE0
+    /* 80369BE0 */ .space 0x08
 
-nonmatching g_bSmokeActive0, 0x1
+nonmatching D_80369BE8, 0xF0
 
-dlabel g_bSmokeActive0
-    /* 80369BE4 */ .space 0x01
+dlabel D_80369BE8
+    /* 80369BE8 */ .space 0xF0
 
-nonmatching g_bSmokeActive1, 0x1
+nonmatching g_aPaintToolButtonRects, 0x4
 
-dlabel g_bSmokeActive1
-    /* 80369BE5 */ .space 0x01
-
-nonmatching g_bSmokeActive2, 0x2
-
-dlabel g_bSmokeActive2
-    /* 80369BE6 */ .space 0x02
-
-nonmatching g_dwSmokeIntensity, 0x4
-
-dlabel g_dwSmokeIntensity
-    /* 80369BE8 */ .space 0x04
-
-nonmatching g_dwSmokeReserved0, 0x4
-
-dlabel g_dwSmokeReserved0
-    /* 80369BEC */ .space 0x04
-
-nonmatching g_dwSmokeReserved1, 0x4
-
-dlabel g_dwSmokeReserved1
-    /* 80369BF0 */ .space 0x04
-
-nonmatching g_dwSmokeReserved2, 0x4
-
-dlabel g_dwSmokeReserved2
-    /* 80369BF4 */ .space 0x04
-
-nonmatching g_bSkidMark0, 0x1
-
-dlabel g_bSkidMark0
-    /* 80369BF8 */ .space 0x01
-
-nonmatching g_bSkidMark1, 0x3
-
-dlabel g_bSkidMark1
-    /* 80369BF9 */ .space 0x03
-
-nonmatching g_dwSkidMarkCount, 0x4
-
-dlabel g_dwSkidMarkCount
-    /* 80369BFC */ .space 0x04
-
-nonmatching g_dwSkidMarkMax, 0x4
-
-dlabel g_dwSkidMarkMax
-    /* 80369C00 */ .space 0x04
-
-nonmatching g_dwSkidMarkReserved0, 0x4
-
-dlabel g_dwSkidMarkReserved0
-    /* 80369C04 */ .space 0x04
-
-nonmatching g_dwSkidMarkReserved1, 0x4
-
-dlabel g_dwSkidMarkReserved1
-    /* 80369C08 */ .space 0x04
-
-nonmatching D_80369C0C, 0x4
-
-/* Automatically generated and unreferenced pad */
-dlabel D_80369C0C
-    /* 80369C0C */ .space 0x04
-
-nonmatching g_dwSkidMarkReserved2, 0x4
-
-dlabel g_dwSkidMarkReserved2
-    /* 80369C10 */ .space 0x04
-
-nonmatching g_dwSkidMarkReserved3, 0x4
-
-dlabel g_dwSkidMarkReserved3
-    /* 80369C14 */ .space 0x04
-
-nonmatching g_dwSkidMarkReserved4, 0x4
-
-dlabel g_dwSkidMarkReserved4
-    /* 80369C18 */ .space 0x04
-
-nonmatching g_dwSkidMarkReserved5, 0x4
-
-dlabel g_dwSkidMarkReserved5
-    /* 80369C1C */ .space 0x04
-
-nonmatching D_80369C20, 0x4
-
-/* Automatically generated and unreferenced pad */
-dlabel D_80369C20
-    /* 80369C20 */ .space 0x04
-
-nonmatching g_dwRenderFlags, 0x4
-
-dlabel g_dwRenderFlags
-    /* 80369C24 */ .space 0x04
-
-nonmatching g_dwRenderReserved0, 0x4
-
-dlabel g_dwRenderReserved0
-    /* 80369C28 */ .space 0x04
-
-nonmatching g_dwRenderReserved1, 0x4
-
-dlabel g_dwRenderReserved1
-    /* 80369C2C */ .space 0x04
-
-nonmatching g_dwRenderReserved2, 0x4
-
-dlabel g_dwRenderReserved2
-    /* 80369C30 */ .space 0x04
-
-nonmatching D_80369C34, 0x4
-
-/* Automatically generated and unreferenced pad */
-dlabel D_80369C34
-    /* 80369C34 */ .space 0x04
-
-nonmatching g_dwRenderReserved3, 0x4
-
-dlabel g_dwRenderReserved3
-    /* 80369C38 */ .space 0x04
-
-nonmatching D_80369C3C, 0x10
-
-/* Automatically generated and unreferenced pad */
-dlabel D_80369C3C
-    /* 80369C3C */ .space 0x10
-
-nonmatching g_dwRenderReserved4, 0x4
-
-dlabel g_dwRenderReserved4
-    /* 80369C4C */ .space 0x04
-
-nonmatching g_dwRenderReserved5, 0x4
-
-dlabel g_dwRenderReserved5
-    /* 80369C50 */ .space 0x04
-
-nonmatching g_dwRenderReserved6, 0x4
-
-dlabel g_dwRenderReserved6
-    /* 80369C54 */ .space 0x04
-
-nonmatching g_dwRenderReserved7, 0x4
-
-dlabel g_dwRenderReserved7
-    /* 80369C58 */ .space 0x04
-
-nonmatching D_80369C5C, 0x4
-
-/* Automatically generated and unreferenced pad */
-dlabel D_80369C5C
-    /* 80369C5C */ .space 0x04
-
-nonmatching g_dwRenderReserved8, 0x4
-
-dlabel g_dwRenderReserved8
-    /* 80369C60 */ .space 0x04
-
-nonmatching g_dwRenderReserved9, 0x4
-
-dlabel g_dwRenderReserved9
-    /* 80369C64 */ .space 0x04
-
-nonmatching g_dwRenderReserved10, 0x4
-
-dlabel g_dwRenderReserved10
-    /* 80369C68 */ .space 0x04
-
-nonmatching g_dwRenderReserved11, 0x4
-
-dlabel g_dwRenderReserved11
-    /* 80369C6C */ .space 0x04
-
-nonmatching D_80369C70, 0x4
-
-/* Automatically generated and unreferenced pad */
-dlabel D_80369C70
-    /* 80369C70 */ .space 0x04
-
-nonmatching g_dwRenderReserved12, 0x4
-
-dlabel g_dwRenderReserved12
-    /* 80369C74 */ .space 0x04
-
-nonmatching D_80369C78, 0x4
-
-/* Automatically generated and unreferenced pad */
-dlabel D_80369C78
-    /* 80369C78 */ .space 0x04
-
-nonmatching g_dwRenderReserved13, 0x4
-
-dlabel g_dwRenderReserved13
-    /* 80369C7C */ .space 0x04
-
-nonmatching g_dwRenderReserved14, 0x4
-
-dlabel g_dwRenderReserved14
-    /* 80369C80 */ .space 0x04
-
-nonmatching D_80369C84, 0x50
-
-/* Automatically generated and unreferenced pad */
-dlabel D_80369C84
-    /* 80369C84 */ .space 0x50
-
-nonmatching g_bDebugDraw0, 0x1
-
-dlabel g_bDebugDraw0
-    /* 80369CD4 */ .space 0x01
-
-nonmatching g_bDebugDraw1, 0x1
-
-dlabel g_bDebugDraw1
-    /* 80369CD5 */ .space 0x01
-
-nonmatching g_bDebugDraw2, 0x2
-
-dlabel g_bDebugDraw2
-    /* 80369CD6 */ .space 0x02
-
-nonmatching g_dwDebugReserved0, 0x4
-
-dlabel g_dwDebugReserved0
+dlabel g_aPaintToolButtonRects
     /* 80369CD8 */ .space 0x04
 
-nonmatching g_dwDebugReserved1, 0x4
-
-dlabel g_dwDebugReserved1
-    /* 80369CDC */ .space 0x04
-
-nonmatching g_dwDebugReserved2, 0x4
-
-dlabel g_dwDebugReserved2
-    /* 80369CE0 */ .space 0x04
-
-nonmatching g_dwDebugReserved3, 0x4
-
-dlabel g_dwDebugReserved3
-    /* 80369CE4 */ .space 0x04
-
-nonmatching g_dwDebugReserved4, 0x4
-
-dlabel g_dwDebugReserved4
-    /* 80369CE8 */ .space 0x04
-
-nonmatching g_dwDebugReserved5, 0x4
-
-dlabel g_dwDebugReserved5
-    /* 80369CEC */ .space 0x04
-
-nonmatching g_dwDebugReserved6, 0x4
-
-dlabel g_dwDebugReserved6
-    /* 80369CF0 */ .space 0x04
-
-nonmatching g_dwDebugReserved7, 0x4
-
-dlabel g_dwDebugReserved7
-    /* 80369CF4 */ .space 0x04
-
-nonmatching g_dwDebugReserved8, 0x4
-
-dlabel g_dwDebugReserved8
-    /* 80369CF8 */ .space 0x04
-
-nonmatching g_dwDebugReserved9, 0x4
-
-dlabel g_dwDebugReserved9
-    /* 80369CFC */ .space 0x04
-
-nonmatching g_dwDebugReserved10, 0x4
-
-dlabel g_dwDebugReserved10
-    /* 80369D00 */ .space 0x04
-
-nonmatching g_dwDebugReserved11, 0x4
-
-dlabel g_dwDebugReserved11
-    /* 80369D04 */ .space 0x04
-
-nonmatching D_80369D08, 0xA0
+nonmatching D_80369CDC, 0xC
 
 /* Automatically generated and unreferenced pad */
-dlabel D_80369D08
-    /* 80369D08 */ .space 0xA0
+dlabel D_80369CDC
+    /* 80369CDC */ .space 0x0C
 
-nonmatching g_bProfileEnabled0, 0x1
+nonmatching D_80369CE8, 0xC0
 
-dlabel g_bProfileEnabled0
-    /* 80369DA8 */ .space 0x01
+dlabel D_80369CE8
+    /* 80369CE8 */ .space 0xC0
 
-nonmatching g_bProfileEnabled1, 0x1
+nonmatching g_abSavedSwatchColor, 0x3
 
-dlabel g_bProfileEnabled1
-    /* 80369DA9 */ .space 0x01
+dlabel g_abSavedSwatchColor
+    /* 80369DA8 */ .space 0x03
 
-nonmatching g_bProfileEnabled2, 0x1
+nonmatching g_bMirrorTargetPanel, 0x5
 
-dlabel g_bProfileEnabled2
-    /* 80369DAA */ .space 0x01
-
-nonmatching g_bProfileEnabled3, 0x5
-
-dlabel g_bProfileEnabled3
+dlabel g_bMirrorTargetPanel
     /* 80369DAB */ .space 0x05
 
-nonmatching g_aDecalEditorButtonRects, 0x10
+nonmatching g_aDecalSlotRects, 0xA0
 
-dlabel g_aDecalEditorButtonRects
-    /* 80369DB0 */ .space 0x10
+dlabel g_aDecalSlotRects
+    /* 80369DB0 */ .space 0xA0
 
-nonmatching g_aDecalEditorButtonRect1, 0x90
+nonmatching g_bPakRumbleSwapped, 0x1
 
-dlabel g_aDecalEditorButtonRect1
-    /* 80369DC0 */ .space 0x90
-
-nonmatching g_bCheatEnabled, 0x1
-
-dlabel g_bCheatEnabled
+dlabel g_bPakRumbleSwapped
     /* 80369E50 */ .space 0x01
 
-nonmatching g_bCheatGodMode, 0x3
+nonmatching g_bPakRetryNewPak, 0x3
 
-dlabel g_bCheatGodMode
+dlabel g_bPakRetryNewPak
     /* 80369E51 */ .space 0x03
 
-nonmatching gOsTaskState, 0x4
+nonmatching g_dwPakError, 0x4
 
-dlabel gOsTaskState
+dlabel g_dwPakError
     /* 80369E54 */ .space 0x04
 
-nonmatching g_dwCheatReserved0, 0x4
+nonmatching g_dwPakFileNo, 0x4
 
-dlabel g_dwCheatReserved0
+dlabel g_dwPakFileNo
     /* 80369E58 */ .space 0x04
 
-nonmatching g_dwCheatReserved1, 0x4
+nonmatching g_dwPakChunkSize, 0x4
 
-dlabel g_dwCheatReserved1
+dlabel g_dwPakChunkSize
     /* 80369E5C */ .space 0x04
 
-nonmatching gOsSchedulerState, 0x1
+nonmatching g_bPakDialogState, 0x1
 
-dlabel gOsSchedulerState
+dlabel g_bPakDialogState
     /* 80369E60 */ .space 0x01
 
-nonmatching g_bCheatReserved, 0x1
+nonmatching g_bPakDecalIndex, 0x1
 
-dlabel g_bCheatReserved
+dlabel g_bPakDecalIndex
     /* 80369E61 */ .space 0x01
 
-nonmatching g_bCheatReserved2, 0x6
+nonmatching g_bPakWaitFrames, 0x6
 
-dlabel g_bCheatReserved2
+dlabel g_bPakWaitFrames
     /* 80369E62 */ .space 0x06
 
-nonmatching g_dwCheatReserved3, 0x4
+nonmatching g_apDecalTextGlyphs, 0x4
 
-dlabel g_dwCheatReserved3
+dlabel g_apDecalTextGlyphs
     /* 80369E68 */ .space 0x04
 
-nonmatching g_dwCheatReserved4, 0x4
-
-dlabel g_dwCheatReserved4
-    /* 80369E6C */ .space 0x04
-
-nonmatching D_80369E70, 0x38
+nonmatching D_80369E6C, 0x3C
 
 /* Automatically generated and unreferenced pad */
-dlabel D_80369E70
-    /* 80369E70 */ .space 0x38
+dlabel D_80369E6C
+    /* 80369E6C */ .space 0x3C
 
-nonmatching g_bNetPlayHost, 0x18
+nonmatching g_szDecalText, 0x18
 
-dlabel g_bNetPlayHost
+dlabel g_szDecalText
     /* 80369EA8 */ .space 0x18
 
 nonmatching g_aPakPfs, 0x1A0

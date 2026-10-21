@@ -84,7 +84,7 @@ void DrawText(const char *text, s32 x, s32 y) {
 }
 void DrawTexturedSprite(Sprite *sprite, s32 x, s32 y) {
 }
-void DrawTiledSprite(Sprite *sprite, s32 level, s32 unused2, s32 unused3) {
+void DrawSpriteTinted(Sprite *sprite, s32 level, s32 unused2, s32 unused3) {
 }
 void LoadTextureFromRom(Sprite *sprite) {
 }

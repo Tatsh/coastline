@@ -468,7 +468,7 @@ void ProcessControllerCheck(void) {
     SetViewport(0, 0, g_dwScreenWidth, g_dwScreenHeight, 1);
     ClearDepthBuffer();
     ClearScreen(0, 0, 0);
-    DrawTiledSprite(&g_texBackground, 192, 0, 64);
+    DrawSpriteTinted(&g_texBackground, 192, 0, 64);
     DrawTexturedSprite(&g_texLogo, g_texLogo.originX, g_texLogo.originY + 8);
 
     SetTextStyleNormal();

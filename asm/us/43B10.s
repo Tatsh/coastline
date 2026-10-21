@@ -69,8 +69,8 @@ endlabel LoadTextureFromRom
 nonmatching RenderDecalPreview3D, 0x684
 
 glabel RenderDecalPreview3D
-    /* 43BDC 80242BDC 3C0E8029 */  lui        $t6, %hi(gDecalBrushState)
-    /* 43BE0 80242BE0 91CEDBBC */  lbu        $t6, %lo(gDecalBrushState)($t6)
+    /* 43BDC 80242BDC 3C0E8029 */  lui        $t6, %hi(g_bPaintShopPlayer)
+    /* 43BE0 80242BE0 91CEDBBC */  lbu        $t6, %lo(g_bPaintShopPlayer)($t6)
     /* 43BE4 80242BE4 27BDFF28 */  addiu      $sp, $sp, -0xD8
     /* 43BE8 80242BE8 3C188032 */  lui        $t8, %hi(g_aVehicles)
     /* 43BEC 80242BEC 000E7980 */  sll        $t7, $t6, 6
@@ -87,19 +87,19 @@ glabel RenderDecalPreview3D
     /* 43C18 80242C18 AE190000 */  sw         $t9, 0x0($s0)
     /* 43C1C 80242C1C 27221EBC */  addiu      $v0, $t9, 0x1EBC
     /* 43C20 80242C20 AF221DE8 */  sw         $v0, 0x1DE8($t9)
-    /* 43C24 80242C24 3C088029 */  lui        $t0, %hi(g_bObjectDirty15)
-    /* 43C28 80242C28 9108DBD0 */  lbu        $t0, %lo(g_bObjectDirty15)($t0)
+    /* 43C24 80242C24 3C088029 */  lui        $t0, %hi(g_bDecalSlotChanged)
+    /* 43C28 80242C28 9108DBD0 */  lbu        $t0, %lo(g_bDecalSlotChanged)($t0)
     /* 43C2C 80242C2C 3C018029 */  lui        $at, %hi(g_pActiveCamera)
     /* 43C30 80242C30 AC22AAF4 */  sw         $v0, %lo(g_pActiveCamera)($at)
     /* 43C34 80242C34 110000F8 */  beqz       $t0, .L80243018
-    /* 43C38 80242C38 3C098029 */   lui       $t1, %hi(g_bObjectDirty5)
-    /* 43C3C 80242C3C 9129DB6C */  lbu        $t1, %lo(g_bObjectDirty5)($t1)
+    /* 43C38 80242C38 3C098029 */   lui       $t1, %hi(g_bPreviousDecalSlot)
+    /* 43C3C 80242C3C 9129DB6C */  lbu        $t1, %lo(g_bPreviousDecalSlot)($t1)
     /* 43C40 80242C40 2407000C */  addiu      $a3, $zero, 0xC
-    /* 43C44 80242C44 3C0B8029 */  lui        $t3, %hi(g_bObjectDirty4)
+    /* 43C44 80242C44 3C0B8029 */  lui        $t3, %hi(g_bDecalSlot)
     /* 43C48 80242C48 01270019 */  multu      $t1, $a3
-    /* 43C4C 80242C4C 916BDB68 */  lbu        $t3, %lo(g_bObjectDirty4)($t3)
-    /* 43C50 80242C50 3C068029 */  lui        $a2, %hi(g_aDecalPreviewLightDirs)
-    /* 43C54 80242C54 24C6DC08 */  addiu      $a2, $a2, %lo(g_aDecalPreviewLightDirs)
+    /* 43C4C 80242C4C 916BDB68 */  lbu        $t3, %lo(g_bDecalSlot)($t3)
+    /* 43C50 80242C50 3C068029 */  lui        $a2, %hi(s_aPanelViewDirections)
+    /* 43C54 80242C54 24C6DC08 */  addiu      $a2, $a2, %lo(s_aPanelViewDirections)
     /* 43C58 80242C58 3C058029 */  lui        $a1, %hi(g_wScreenFrameCount)
     /* 43C5C 80242C5C 24A5DBB0 */  addiu      $a1, $a1, %lo(g_wScreenFrameCount)
     /* 43C60 80242C60 94AD0000 */  lhu        $t5, 0x0($a1)
@@ -129,8 +129,8 @@ glabel RenderDecalPreview3D
     /* 43CC0 80242CC0 27A400C0 */  addiu      $a0, $sp, 0xC0
     /* 43CC4 80242CC4 0C089101 */  jal        Vec3fDot
     /* 43CC8 80242CC8 27A500CC */   addiu     $a1, $sp, 0xCC
-    /* 43CCC 80242CCC 3C01802B */  lui        $at, %hi(g_qwRaceReserved6)
-    /* 43CD0 80242CD0 D426B0C0 */  ldc1       $f6, %lo(g_qwRaceReserved6)($at)
+    /* 43CCC 80242CCC 3C01802B */  lui        $at, %hi(g_dConstNeg0p9_802ab0c0)
+    /* 43CD0 80242CD0 D426B0C0 */  ldc1       $f6, %lo(g_dConstNeg0p9_802ab0c0)($at)
     /* 43CD4 80242CD4 46000121 */  cvt.d.s    $f4, $f0
     /* 43CD8 80242CD8 4626203C */  c.lt.d     $f4, $f6
     /* 43CDC 80242CDC 00000000 */  nop
@@ -219,28 +219,28 @@ glabel RenderDecalPreview3D
     /* 43E14 80242E14 E5640008 */  swc1       $f4, 0x8($t3)
     /* 43E18 80242E18 0C0891D8 */  jal        Vec3fNormalize
     /* 43E1C 80242E1C 8E040000 */   lw        $a0, 0x0($s0)
-    /* 43E20 80242E20 3C0C8029 */  lui        $t4, %hi(g_dwObjectScaleX)
-    /* 43E24 80242E24 258CDBF0 */  addiu      $t4, $t4, %lo(g_dwObjectScaleX)
+    /* 43E20 80242E20 3C0C8029 */  lui        $t4, %hi(D_8028DBF0)
+    /* 43E24 80242E24 258CDBF0 */  addiu      $t4, $t4, %lo(D_8028DBF0)
     /* 43E28 80242E28 8D810000 */  lw         $at, 0x0($t4)
     /* 43E2C 80242E2C 27A40074 */  addiu      $a0, $sp, 0x74
-    /* 43E30 80242E30 3C188029 */  lui        $t8, %hi(g_dwObjectAnimFrame)
+    /* 43E30 80242E30 3C188029 */  lui        $t8, %hi(D_8028DBFC)
     /* 43E34 80242E34 AC810000 */  sw         $at, 0x0($a0)
     /* 43E38 80242E38 8D8E0004 */  lw         $t6, 0x4($t4)
-    /* 43E3C 80242E3C 2718DBFC */  addiu      $t8, $t8, %lo(g_dwObjectAnimFrame)
+    /* 43E3C 80242E3C 2718DBFC */  addiu      $t8, $t8, %lo(D_8028DBFC)
     /* 43E40 80242E40 27AF0068 */  addiu      $t7, $sp, 0x68
     /* 43E44 80242E44 AC8E0004 */  sw         $t6, 0x4($a0)
     /* 43E48 80242E48 8D810008 */  lw         $at, 0x8($t4)
-    /* 43E4C 80242E4C 3C098029 */  lui        $t1, %hi(g_bObjectDirty4)
+    /* 43E4C 80242E4C 3C098029 */  lui        $t1, %hi(g_bDecalSlot)
     /* 43E50 80242E50 24020005 */  addiu      $v0, $zero, 0x5
     /* 43E54 80242E54 AC810008 */  sw         $at, 0x8($a0)
     /* 43E58 80242E58 8F010000 */  lw         $at, 0x0($t8)
     /* 43E5C 80242E5C 8F080004 */  lw         $t0, 0x4($t8)
-    /* 43E60 80242E60 3C0A8029 */  lui        $t2, %hi(g_bObjectDirty5)
+    /* 43E60 80242E60 3C0A8029 */  lui        $t2, %hi(g_bPreviousDecalSlot)
     /* 43E64 80242E64 ADE10000 */  sw         $at, 0x0($t7)
     /* 43E68 80242E68 8F010008 */  lw         $at, 0x8($t8)
     /* 43E6C 80242E6C ADE80004 */  sw         $t0, 0x4($t7)
     /* 43E70 80242E70 ADE10008 */  sw         $at, 0x8($t7)
-    /* 43E74 80242E74 9129DB68 */  lbu        $t1, %lo(g_bObjectDirty4)($t1)
+    /* 43E74 80242E74 9129DB68 */  lbu        $t1, %lo(g_bDecalSlot)($t1)
     /* 43E78 80242E78 3C013F80 */  lui        $at, (0x3F800000 >> 16)
     /* 43E7C 80242E7C 5449000A */  bnel       $v0, $t1, .L80242EA8
     /* 43E80 80242E80 44815000 */   mtc1      $at, $f10
@@ -262,7 +262,7 @@ glabel RenderDecalPreview3D
     /* 43EBC 80242EBC E7A60068 */  swc1       $f6, 0x68($sp)
     /* 43EC0 80242EC0 E7A8006C */  swc1       $f8, 0x6C($sp)
   .L80242EC4:
-    /* 43EC4 80242EC4 914ADB6C */  lbu        $t2, %lo(g_bObjectDirty5)($t2)
+    /* 43EC4 80242EC4 914ADB6C */  lbu        $t2, %lo(g_bPreviousDecalSlot)($t2)
     /* 43EC8 80242EC8 3C013FC0 */  lui        $at, (0x3FC00000 >> 16)
     /* 43ECC 80242ECC 544A0007 */  bnel       $v0, $t2, .L80242EEC
     /* 43ED0 80242ED0 44800000 */   mtc1      $zero, $f0
@@ -349,16 +349,16 @@ glabel RenderDecalPreview3D
     /* 44000 80243000 17010016 */  bne        $t8, $at, .L8024305C
     /* 44004 80243004 3C018029 */   lui       $at, %hi(g_wScreenFrameCount)
     /* 44008 80243008 A420DBB0 */  sh         $zero, %lo(g_wScreenFrameCount)($at)
-    /* 4400C 8024300C 3C018029 */  lui        $at, %hi(g_bObjectDirty15)
+    /* 4400C 8024300C 3C018029 */  lui        $at, %hi(g_bDecalSlotChanged)
     /* 44010 80243010 10000012 */  b          .L8024305C
-    /* 44014 80243014 A020DBD0 */   sb        $zero, %lo(g_bObjectDirty15)($at)
+    /* 44014 80243014 A020DBD0 */   sb        $zero, %lo(g_bDecalSlotChanged)($at)
   .L80243018:
-    /* 44018 80243018 3C088029 */  lui        $t0, %hi(g_bObjectDirty4)
-    /* 4401C 8024301C 9108DB68 */  lbu        $t0, %lo(g_bObjectDirty4)($t0)
+    /* 44018 80243018 3C088029 */  lui        $t0, %hi(g_bDecalSlot)
+    /* 4401C 8024301C 9108DB68 */  lbu        $t0, %lo(g_bDecalSlot)($t0)
     /* 44020 80243020 2407000C */  addiu      $a3, $zero, 0xC
-    /* 44024 80243024 3C068029 */  lui        $a2, %hi(g_aDecalPreviewLightDirs)
+    /* 44024 80243024 3C068029 */  lui        $a2, %hi(s_aPanelViewDirections)
     /* 44028 80243028 01070019 */  multu      $t0, $a3
-    /* 4402C 8024302C 24C6DC08 */  addiu      $a2, $a2, %lo(g_aDecalPreviewLightDirs)
+    /* 4402C 8024302C 24C6DC08 */  addiu      $a2, $a2, %lo(s_aPanelViewDirections)
     /* 44030 80243030 8E020000 */  lw         $v0, 0x0($s0)
     /* 44034 80243034 00004812 */  mflo       $t1
     /* 44038 80243038 00C91821 */  addu       $v1, $a2, $t1
@@ -406,8 +406,8 @@ glabel RenderDecalPreview3D
     /* 440DC 802430DC 24E50020 */   addiu     $a1, $a3, 0x20
     /* 440E0 802430E0 3C018029 */  lui        $at, %hi(g_fCameraProjectionScale)
     /* 440E4 802430E4 C430AAC8 */  lwc1       $f16, %lo(g_fCameraProjectionScale)($at)
-    /* 440E8 802430E8 3C01802B */  lui        $at, %hi(g_qwRaceReserved7)
-    /* 440EC 802430EC D42AB0C8 */  ldc1       $f10, %lo(g_qwRaceReserved7)($at)
+    /* 440E8 802430E8 3C01802B */  lui        $at, %hi(g_dConst0p2_802ab0c8)
+    /* 440EC 802430EC D42AB0C8 */  ldc1       $f10, %lo(g_dConst0p2_802ab0c8)($at)
     /* 440F0 802430F0 46008221 */  cvt.d.s    $f8, $f16
     /* 440F4 802430F4 3C014348 */  lui        $at, (0x43480000 >> 16)
     /* 440F8 802430F8 462A4182 */  mul.d      $f6, $f8, $f10
@@ -422,8 +422,8 @@ glabel RenderDecalPreview3D
     /* 4411C 8024311C 44069000 */  mfc1       $a2, $f18
     /* 44120 80243120 0C086CBE */  jal        SetupCameraMatrix
     /* 44124 80243124 00000000 */   nop
-    /* 44128 80243128 3C0D8029 */  lui        $t5, %hi(gDecalBrushState)
-    /* 4412C 8024312C 91ADDBBC */  lbu        $t5, %lo(gDecalBrushState)($t5)
+    /* 44128 80243128 3C0D8029 */  lui        $t5, %hi(g_bPaintShopPlayer)
+    /* 4412C 8024312C 91ADDBBC */  lbu        $t5, %lo(g_bPaintShopPlayer)($t5)
     /* 44130 80243130 3C028032 */  lui        $v0, %hi(D_8031D7BC)
     /* 44134 80243134 24010001 */  addiu      $at, $zero, 0x1
     /* 44138 80243138 000D6180 */  sll        $t4, $t5, 6
@@ -487,9 +487,9 @@ glabel RenderDecalPreview3D
   .L80243218:
     /* 44218 80243218 0C08B424 */  jal        MarkVisibleCell
     /* 4421C 8024321C 00002825 */   or        $a1, $zero, $zero
-    /* 44220 80243220 3C048029 */  lui        $a0, %hi(gDecalBrushState)
+    /* 44220 80243220 3C048029 */  lui        $a0, %hi(g_bPaintShopPlayer)
     /* 44224 80243224 0C08BFBC */  jal        TransformWheelPositions
-    /* 44228 80243228 9084DBBC */   lbu       $a0, %lo(gDecalBrushState)($a0)
+    /* 44228 80243228 9084DBBC */   lbu       $a0, %lo(g_bPaintShopPlayer)($a0)
     /* 4422C 8024322C 240C0001 */  addiu      $t4, $zero, 0x1
     /* 44230 80243230 3C018029 */  lui        $at, %hi(g_bPaintShopPreviewActive)
     /* 44234 80243234 AC2CC334 */  sw         $t4, %lo(g_bPaintShopPreviewActive)($at)
@@ -509,8 +509,8 @@ nonmatching ProcessPaintShopScreen, 0x1948
 
 glabel ProcessPaintShopScreen
     /* 44260 80243260 27BDFEF8 */  addiu      $sp, $sp, -0x108
-    /* 44264 80243264 3C0E8029 */  lui        $t6, %hi(g_bObjectDirty23)
-    /* 44268 80243268 91CEDC80 */  lbu        $t6, %lo(g_bObjectDirty23)($t6)
+    /* 44264 80243264 3C0E8029 */  lui        $t6, %hi(g_bPaintShopInitialized)
+    /* 44268 80243268 91CEDC80 */  lbu        $t6, %lo(g_bPaintShopInitialized)($t6)
     /* 4426C 8024326C 3C01802A */  lui        $at, %hi(g_wSerialInterfaceIdle)
     /* 44270 80243270 AFBF004C */  sw         $ra, 0x4C($sp)
     /* 44274 80243274 AFB40048 */  sw         $s4, 0x48($sp)
@@ -524,9 +524,9 @@ glabel ProcessPaintShopScreen
     /* 44294 80243294 3C0F8027 */  lui        $t7, %hi(g_dwMenuChoosingPlayer)
     /* 44298 80243298 8DEF1FA8 */  lw         $t7, %lo(g_dwMenuChoosingPlayer)($t7)
     /* 4429C 8024329C 3C018029 */  lui        $at, %hi(g_dwVehicleViewModeIndex)
-    /* 442A0 802432A0 3C028029 */  lui        $v0, %hi(gDecalBrushState)
+    /* 442A0 802432A0 3C028029 */  lui        $v0, %hi(g_bPaintShopPlayer)
     /* 442A4 802432A4 AC20C328 */  sw         $zero, %lo(g_dwVehicleViewModeIndex)($at)
-    /* 442A8 802432A8 2442DBBC */  addiu      $v0, $v0, %lo(gDecalBrushState)
+    /* 442A8 802432A8 2442DBBC */  addiu      $v0, $v0, %lo(g_bPaintShopPlayer)
     /* 442AC 802432AC 3C018029 */  lui        $at, %hi(g_dwNumActiveVehicles)
     /* 442B0 802432B0 24180001 */  addiu      $t8, $zero, 0x1
     /* 442B4 802432B4 A04F0000 */  sb         $t7, 0x0($v0)
@@ -540,8 +540,8 @@ glabel ProcessPaintShopScreen
     /* 442D4 802432D4 022C2021 */  addu       $a0, $s1, $t4
     /* 442D8 802432D8 0C089828 */  jal        InitVehicleColor
     /* 442DC 802432DC 00000000 */   nop
-    /* 442E0 802432E0 3C078029 */  lui        $a3, %hi(gDecalBrushState)
-    /* 442E4 802432E4 24E7DBBC */  addiu      $a3, $a3, %lo(gDecalBrushState)
+    /* 442E0 802432E0 3C078029 */  lui        $a3, %hi(g_bPaintShopPlayer)
+    /* 442E4 802432E4 24E7DBBC */  addiu      $a3, $a3, %lo(g_bPaintShopPlayer)
     /* 442E8 802432E8 90ED0000 */  lbu        $t5, 0x0($a3)
     /* 442EC 802432EC 3C0F8022 */  lui        $t7, %hi(UpdatePhysicsStep)
     /* 442F0 802432F0 25EF6D7C */  addiu      $t7, $t7, %lo(UpdatePhysicsStep)
@@ -556,8 +556,8 @@ glabel ProcessPaintShopScreen
     /* 44314 80243314 02382021 */  addu       $a0, $s1, $t8
     /* 44318 80243318 0C08810E */  jal        InstallVehicleModel
     /* 4431C 8024331C AC86205C */   sw        $a2, 0x205C($a0)
-    /* 44320 80243320 3C068029 */  lui        $a2, %hi(gDecalBrushState)
-    /* 44324 80243324 24C6DBBC */  addiu      $a2, $a2, %lo(gDecalBrushState)
+    /* 44320 80243320 3C068029 */  lui        $a2, %hi(g_bPaintShopPlayer)
+    /* 44324 80243324 24C6DBBC */  addiu      $a2, $a2, %lo(g_bPaintShopPlayer)
     /* 44328 80243328 90CC0000 */  lbu        $t4, 0x0($a2)
     /* 4432C 8024332C 3C013F80 */  lui        $at, (0x3F800000 >> 16)
     /* 44330 80243330 44816000 */  mtc1       $at, $f12
@@ -604,8 +604,8 @@ glabel ProcessPaintShopScreen
     /* 443D4 802433D4 02388021 */  addu       $s0, $s1, $t8
     /* 443D8 802433D8 8E19205C */  lw         $t9, 0x205C($s0)
     /* 443DC 802433DC 16990009 */  bne        $s4, $t9, .L80243404
-    /* 443E0 802433E0 3C01802B */   lui       $at, %hi(g_dwRaceReserved97)
-    /* 443E4 802433E4 C422B0D0 */  lwc1       $f2, %lo(g_dwRaceReserved97)($at)
+    /* 443E0 802433E0 3C01802B */   lui       $at, %hi(g_fConst7p3_802ab0d0)
+    /* 443E4 802433E4 C422B0D0 */  lwc1       $f2, %lo(g_fConst7p3_802ab0d0)($at)
     /* 443E8 802433E8 3C014000 */  lui        $at, (0x40000000 >> 16)
     /* 443EC 802433EC 44813000 */  mtc1       $at, $f6
     /* 443F0 802433F0 26021EEC */  addiu      $v0, $s0, 0x1EEC
@@ -630,15 +630,15 @@ glabel ProcessPaintShopScreen
     /* 44434 80243434 26041EBC */  addiu      $a0, $s0, 0x1EBC
     /* 44438 80243438 0C08910D */  jal        Vec3fNegate
     /* 4443C 8024343C 26051EEC */   addiu     $a1, $s0, 0x1EEC
-    /* 44440 80243440 3C0E8029 */  lui        $t6, %hi(gDecalBrushState)
-    /* 44444 80243444 91CEDBBC */  lbu        $t6, %lo(gDecalBrushState)($t6)
+    /* 44440 80243440 3C0E8029 */  lui        $t6, %hi(g_bPaintShopPlayer)
+    /* 44444 80243444 91CEDBBC */  lbu        $t6, %lo(g_bPaintShopPlayer)($t6)
     /* 44448 80243448 01D20019 */  multu      $t6, $s2
     /* 4444C 8024344C 00007812 */  mflo       $t7
     /* 44450 80243450 022F2021 */  addu       $a0, $s1, $t7
     /* 44454 80243454 0C0891D8 */  jal        Vec3fNormalize
     /* 44458 80243458 24841EBC */   addiu     $a0, $a0, 0x1EBC
-    /* 4445C 8024345C 3C038029 */  lui        $v1, %hi(gDecalBrushState)
-    /* 44460 80243460 2463DBBC */  addiu      $v1, $v1, %lo(gDecalBrushState)
+    /* 4445C 8024345C 3C038029 */  lui        $v1, %hi(g_bPaintShopPlayer)
+    /* 44460 80243460 2463DBBC */  addiu      $v1, $v1, %lo(g_bPaintShopPlayer)
     /* 44464 80243464 90780000 */  lbu        $t8, 0x0($v1)
     /* 44468 80243468 44800000 */  mtc1       $zero, $f0
     /* 4446C 8024346C 3C013F80 */  lui        $at, (0x3F800000 >> 16)
@@ -658,8 +658,8 @@ glabel ProcessPaintShopScreen
     /* 444A4 802434A4 26051EDC */  addiu      $a1, $s0, 0x1EDC
     /* 444A8 802434A8 0C0890E7 */  jal        Vec3fCross
     /* 444AC 802434AC 26061EBC */   addiu     $a2, $s0, 0x1EBC
-    /* 444B0 802434B0 3C0E8029 */  lui        $t6, %hi(gDecalBrushState)
-    /* 444B4 802434B4 91CEDBBC */  lbu        $t6, %lo(gDecalBrushState)($t6)
+    /* 444B0 802434B0 3C0E8029 */  lui        $t6, %hi(g_bPaintShopPlayer)
+    /* 444B4 802434B4 91CEDBBC */  lbu        $t6, %lo(g_bPaintShopPlayer)($t6)
     /* 444B8 802434B8 01D20019 */  multu      $t6, $s2
     /* 444BC 802434BC 00007812 */  mflo       $t7
     /* 444C0 802434C0 022F8021 */  addu       $s0, $s1, $t7
@@ -667,8 +667,8 @@ glabel ProcessPaintShopScreen
     /* 444C8 802434C8 26051EBC */  addiu      $a1, $s0, 0x1EBC
     /* 444CC 802434CC 0C0890E7 */  jal        Vec3fCross
     /* 444D0 802434D0 26061ECC */   addiu     $a2, $s0, 0x1ECC
-    /* 444D4 802434D4 3C188029 */  lui        $t8, %hi(gDecalBrushState)
-    /* 444D8 802434D8 9318DBBC */  lbu        $t8, %lo(gDecalBrushState)($t8)
+    /* 444D4 802434D4 3C188029 */  lui        $t8, %hi(g_bPaintShopPlayer)
+    /* 444D8 802434D8 9318DBBC */  lbu        $t8, %lo(g_bPaintShopPlayer)($t8)
     /* 444DC 802434DC 03120019 */  multu      $t8, $s2
     /* 444E0 802434E0 0000C812 */  mflo       $t9
     /* 444E4 802434E4 02398021 */  addu       $s0, $s1, $t9
@@ -681,81 +681,81 @@ glabel ProcessPaintShopScreen
     /* 44500 80243500 24050800 */   addiu     $a1, $zero, 0x800
     /* 44504 80243504 0C090A5B */  jal        AllocHeapAligned
     /* 44508 80243508 24040800 */   addiu     $a0, $zero, 0x800
-    /* 4450C 8024350C 3C018029 */  lui        $at, %hi(g_dwObjectPosX)
-    /* 44510 80243510 AC22DB80 */  sw         $v0, %lo(g_dwObjectPosX)($at)
+    /* 4450C 8024350C 3C018029 */  lui        $at, %hi(g_pDecalUndoBuffer)
+    /* 44510 80243510 AC22DB80 */  sw         $v0, %lo(g_pDecalUndoBuffer)($at)
     /* 44514 80243514 0C090A5B */  jal        AllocHeapAligned
     /* 44518 80243518 24040800 */   addiu     $a0, $zero, 0x800
-    /* 4451C 8024351C 3C018029 */  lui        $at, %hi(g_dwObjectPosY)
+    /* 4451C 8024351C 3C018029 */  lui        $at, %hi(g_pDecalScratchTexels)
     /* 44520 80243520 3C048029 */  lui        $a0, %hi(g_texBackground)
-    /* 44524 80243524 AC22DB84 */  sw         $v0, %lo(g_dwObjectPosY)($at)
+    /* 44524 80243524 AC22DB84 */  sw         $v0, %lo(g_pDecalScratchTexels)($at)
     /* 44528 80243528 0C090AC4 */  jal        LoadTextureFromRom
     /* 4452C 8024352C 2484CB40 */   addiu     $a0, $a0, %lo(g_texBackground)
     /* 44530 80243530 3C048029 */  lui        $a0, %hi(g_texLogo)
     /* 44534 80243534 0C090AC4 */  jal        LoadTextureFromRom
     /* 44538 80243538 2484CB70 */   addiu     $a0, $a0, %lo(g_texLogo)
-    /* 4453C 8024353C 3C108029 */  lui        $s0, %hi(g_texPaintShopBg)
-    /* 44540 80243540 2610CBA0 */  addiu      $s0, $s0, %lo(g_texPaintShopBg)
+    /* 4453C 8024353C 3C108029 */  lui        $s0, %hi(g_texPaintWholeCar)
+    /* 44540 80243540 2610CBA0 */  addiu      $s0, $s0, %lo(g_texPaintWholeCar)
     /* 44544 80243544 0C090AC4 */  jal        LoadTextureFromRom
     /* 44548 80243548 02002025 */   or        $a0, $s0, $zero
-    /* 4454C 8024354C 3C118029 */  lui        $s1, %hi(g_texTextureDescriptor)
-    /* 44550 80243550 2631CBD0 */  addiu      $s1, $s1, %lo(g_texTextureDescriptor)
+    /* 4454C 8024354C 3C118029 */  lui        $s1, %hi(g_texPanelLeftDoor)
+    /* 44550 80243550 2631CBD0 */  addiu      $s1, $s1, %lo(g_texPanelLeftDoor)
     /* 44554 80243554 24120063 */  addiu      $s2, $zero, 0x63
     /* 44558 80243558 A212002C */  sb         $s2, 0x2C($s0)
     /* 4455C 8024355C 0C090AC4 */  jal        LoadTextureFromRom
     /* 44560 80243560 02202025 */   or        $a0, $s1, $zero
     /* 44564 80243564 8E2C0000 */  lw         $t4, 0x0($s1)
-    /* 44568 80243568 3C108029 */  lui        $s0, %hi(g_texRdpTextureDescriptor)
-    /* 4456C 8024356C 2610CC30 */  addiu      $s0, $s0, %lo(g_texRdpTextureDescriptor)
-    /* 44570 80243570 3C018029 */  lui        $at, %hi(g_dwRdpCommandCount)
+    /* 44568 80243568 3C108029 */  lui        $s0, %hi(g_texPanelLeftFrontFender)
+    /* 4456C 8024356C 2610CC30 */  addiu      $s0, $s0, %lo(g_texPanelLeftFrontFender)
+    /* 44570 80243570 3C018029 */  lui        $at, %hi(g_texPanelRightDoor)
     /* 44574 80243574 02002025 */  or         $a0, $s0, $zero
     /* 44578 80243578 0C090AC4 */  jal        LoadTextureFromRom
-    /* 4457C 8024357C AC2CCC00 */   sw        $t4, %lo(g_dwRdpCommandCount)($at)
+    /* 4457C 8024357C AC2CCC00 */   sw        $t4, %lo(g_texPanelRightDoor)($at)
     /* 44580 80243580 8E0D0000 */  lw         $t5, 0x0($s0)
-    /* 44584 80243584 3C018029 */  lui        $at, %hi(g_dwRdpBlendMode)
-    /* 44588 80243588 3C048029 */  lui        $a0, %hi(g_texPaintLayerIcon4)
-    /* 4458C 8024358C 2484CC90 */  addiu      $a0, $a0, %lo(g_texPaintLayerIcon4)
+    /* 44584 80243584 3C018029 */  lui        $at, %hi(g_texPanelRightFrontFender)
+    /* 44588 80243588 3C048029 */  lui        $a0, %hi(g_texPanel4)
+    /* 4458C 8024358C 2484CC90 */  addiu      $a0, $a0, %lo(g_texPanel4)
     /* 44590 80243590 0C090AC4 */  jal        LoadTextureFromRom
-    /* 44594 80243594 AC2DCC60 */   sw        $t5, %lo(g_dwRdpBlendMode)($at)
-    /* 44598 80243598 3C048029 */  lui        $a0, %hi(g_texPaintLayerIcon5)
+    /* 44594 80243594 AC2DCC60 */   sw        $t5, %lo(g_texPanelRightFrontFender)($at)
+    /* 44598 80243598 3C048029 */  lui        $a0, %hi(g_texPanel5)
     /* 4459C 8024359C 0C090AC4 */  jal        LoadTextureFromRom
-    /* 445A0 802435A0 2484CCC0 */   addiu     $a0, $a0, %lo(g_texPaintLayerIcon5)
-    /* 445A4 802435A4 3C118029 */  lui        $s1, %hi(g_texRdpTileDescriptor)
-    /* 445A8 802435A8 2631CCF0 */  addiu      $s1, $s1, %lo(g_texRdpTileDescriptor)
+    /* 445A0 802435A0 2484CCC0 */   addiu     $a0, $a0, %lo(g_texPanel5)
+    /* 445A4 802435A4 3C118029 */  lui        $s1, %hi(g_texPanelLeftRearFender)
+    /* 445A8 802435A8 2631CCF0 */  addiu      $s1, $s1, %lo(g_texPanelLeftRearFender)
     /* 445AC 802435AC 0C090AC4 */  jal        LoadTextureFromRom
     /* 445B0 802435B0 02202025 */   or        $a0, $s1, $zero
     /* 445B4 802435B4 8E2E0000 */  lw         $t6, 0x0($s1)
-    /* 445B8 802435B8 3C108029 */  lui        $s0, %hi(g_texPaintLayerIcon8)
-    /* 445BC 802435BC 2610CD50 */  addiu      $s0, $s0, %lo(g_texPaintLayerIcon8)
-    /* 445C0 802435C0 3C018029 */  lui        $at, %hi(g_dwRdpEnvColorR)
+    /* 445B8 802435B8 3C108029 */  lui        $s0, %hi(g_texPanel8)
+    /* 445BC 802435BC 2610CD50 */  addiu      $s0, $s0, %lo(g_texPanel8)
+    /* 445C0 802435C0 3C018029 */  lui        $at, %hi(g_texPanelRightRearFender)
     /* 445C4 802435C4 02002025 */  or         $a0, $s0, $zero
     /* 445C8 802435C8 0C090AC4 */  jal        LoadTextureFromRom
-    /* 445CC 802435CC AC2ECD20 */   sw        $t6, %lo(g_dwRdpEnvColorR)($at)
-    /* 445D0 802435D0 3C138029 */  lui        $s3, %hi(g_texPaintLayerIcon9)
-    /* 445D4 802435D4 2673CD80 */  addiu      $s3, $s3, %lo(g_texPaintLayerIcon9)
+    /* 445CC 802435CC AC2ECD20 */   sw        $t6, %lo(g_texPanelRightRearFender)($at)
+    /* 445D0 802435D0 3C138029 */  lui        $s3, %hi(g_texPanel9)
+    /* 445D4 802435D4 2673CD80 */  addiu      $s3, $s3, %lo(g_texPanel9)
     /* 445D8 802435D8 0C090AC4 */  jal        LoadTextureFromRom
     /* 445DC 802435DC 02602025 */   or        $a0, $s3, $zero
-    /* 445E0 802435E0 3C048029 */  lui        $a0, %hi(g_texPaintLayerIcon8Overlay)
+    /* 445E0 802435E0 3C048029 */  lui        $a0, %hi(g_texPanel8Overlay)
     /* 445E4 802435E4 0C090AC4 */  jal        LoadTextureFromRom
-    /* 445E8 802435E8 2484CDB0 */   addiu     $a0, $a0, %lo(g_texPaintLayerIcon8Overlay)
+    /* 445E8 802435E8 2484CDB0 */   addiu     $a0, $a0, %lo(g_texPanel8Overlay)
     /* 445EC 802435EC 8E0F001C */  lw         $t7, 0x1C($s0)
     /* 445F0 802435F0 8E180020 */  lw         $t8, 0x20($s0)
-    /* 445F4 802435F4 3C028029 */  lui        $v0, %hi(g_texPaintLayerIcon8Overlay)
-    /* 445F8 802435F8 2442CDB0 */  addiu      $v0, $v0, %lo(g_texPaintLayerIcon8Overlay)
-    /* 445FC 802435FC 3C048029 */  lui        $a0, %hi(g_texPaintLayerIcon9Overlay)
-    /* 44600 80243600 2484CDE0 */  addiu      $a0, $a0, %lo(g_texPaintLayerIcon9Overlay)
+    /* 445F4 802435F4 3C028029 */  lui        $v0, %hi(g_texPanel8Overlay)
+    /* 445F8 802435F8 2442CDB0 */  addiu      $v0, $v0, %lo(g_texPanel8Overlay)
+    /* 445FC 802435FC 3C048029 */  lui        $a0, %hi(g_texPanel9Overlay)
+    /* 44600 80243600 2484CDE0 */  addiu      $a0, $a0, %lo(g_texPanel9Overlay)
     /* 44604 80243604 AC4F001C */  sw         $t7, 0x1C($v0)
     /* 44608 80243608 0C090AC4 */  jal        LoadTextureFromRom
     /* 4460C 8024360C AC580020 */   sw        $t8, 0x20($v0)
     /* 44610 80243610 8E6C0020 */  lw         $t4, 0x20($s3)
     /* 44614 80243614 8E79001C */  lw         $t9, 0x1C($s3)
-    /* 44618 80243618 3C058029 */  lui        $a1, %hi(g_texPaintLayerIcon9Overlay)
-    /* 4461C 8024361C 24A5CDE0 */  addiu      $a1, $a1, %lo(g_texPaintLayerIcon9Overlay)
-    /* 44620 80243620 3C118029 */  lui        $s1, %hi(g_pObjectMatrix12)
-    /* 44624 80243624 3C048037 */  lui        $a0, %hi(g_aDecalEditorButtonRects)
+    /* 44618 80243618 3C058029 */  lui        $a1, %hi(g_texPanel9Overlay)
+    /* 4461C 8024361C 24A5CDE0 */  addiu      $a1, $a1, %lo(g_texPanel9Overlay)
+    /* 44620 80243620 3C118029 */  lui        $s1, %hi(g_apDecalSlotIcons)
+    /* 44624 80243624 3C048037 */  lui        $a0, %hi(g_aDecalSlotRects)
     /* 44628 80243628 258D0008 */  addiu      $t5, $t4, 0x8
     /* 4462C 8024362C ACAD0020 */  sw         $t5, 0x20($a1)
-    /* 44630 80243630 24849DB0 */  addiu      $a0, $a0, %lo(g_aDecalEditorButtonRects)
-    /* 44634 80243634 2631DB0C */  addiu      $s1, $s1, %lo(g_pObjectMatrix12)
+    /* 44630 80243630 24849DB0 */  addiu      $a0, $a0, %lo(g_aDecalSlotRects)
+    /* 44634 80243634 2631DB0C */  addiu      $s1, $s1, %lo(g_apDecalSlotIcons)
     /* 44638 80243638 00008025 */  or         $s0, $zero, $zero
     /* 4463C 8024363C ACB9001C */  sw         $t9, 0x1C($a1)
   .L80243640:
@@ -893,21 +893,21 @@ glabel ProcessPaintShopScreen
     /* 44828 80243828 26310004 */  addiu      $s1, $s1, 0x4
     /* 4482C 8024382C 1614FF84 */  bne        $s0, $s4, .L80243640
     /* 44830 80243830 A052002C */   sb        $s2, 0x2C($v0)
-    /* 44834 80243834 3C098029 */  lui        $t1, %hi(g_dwGfxEnvColorR)
-    /* 44838 80243838 2529D470 */  addiu      $t1, $t1, %lo(g_dwGfxEnvColorR)
+    /* 44834 80243834 3C098029 */  lui        $t1, %hi(g_rcDecalCanvasFrame)
+    /* 44838 80243838 2529D470 */  addiu      $t1, $t1, %lo(g_rcDecalCanvasFrame)
     /* 4483C 8024383C 8D2C0000 */  lw         $t4, 0x0($t1)
     /* 44840 80243840 8D2D0004 */  lw         $t5, 0x4($t1)
     /* 44844 80243844 8D2E000C */  lw         $t6, 0xC($t1)
-    /* 44848 80243848 3C138037 */  lui        $s3, %hi(g_dwDebugReserved0)
-    /* 4484C 8024384C 26739CD8 */  addiu      $s3, $s3, %lo(g_dwDebugReserved0)
+    /* 44848 80243848 3C138037 */  lui        $s3, %hi(g_aPaintToolButtonRects)
+    /* 4484C 8024384C 26739CD8 */  addiu      $s3, $s3, %lo(g_aPaintToolButtonRects)
     /* 44850 80243850 AE6C0000 */  sw         $t4, 0x0($s3)
     /* 44854 80243854 01AE7821 */  addu       $t7, $t5, $t6
     /* 44858 80243858 8E6E0000 */  lw         $t6, 0x0($s3)
     /* 4485C 8024385C 25F80006 */  addiu      $t8, $t7, 0x6
     /* 44860 80243860 24190020 */  addiu      $t9, $zero, 0x20
-    /* 44864 80243864 3C038029 */  lui        $v1, %hi(g_dwGfxFillColorR)
+    /* 44864 80243864 3C038029 */  lui        $v1, %hi(g_aPaletteFrameRects)
     /* 44868 80243868 032E7821 */  addu       $t7, $t9, $t6
-    /* 4486C 8024386C 2463D480 */  addiu      $v1, $v1, %lo(g_dwGfxFillColorR)
+    /* 4486C 8024386C 2463D480 */  addiu      $v1, $v1, %lo(g_aPaletteFrameRects)
     /* 44870 80243870 AE780004 */  sw         $t8, 0x4($s3)
     /* 44874 80243874 AE790008 */  sw         $t9, 0x8($s3)
     /* 44878 80243878 8E620004 */  lw         $v0, 0x4($s3)
@@ -915,9 +915,9 @@ glabel ProcessPaintShopScreen
     /* 44880 80243880 25E80002 */  addiu      $t0, $t7, 0x2
     /* 44884 80243884 8C6F000C */  lw         $t7, 0xC($v1)
     /* 44888 80243888 240C005E */  addiu      $t4, $zero, 0x5E
-    /* 4488C 8024388C 3C0A8029 */  lui        $t2, %hi(g_dwGfxFogColorR)
+    /* 4488C 8024388C 3C0A8029 */  lui        $t2, %hi(D_8028D490)
     /* 44890 80243890 AE6C000C */  sw         $t4, 0xC($s3)
-    /* 44894 80243894 254AD490 */  addiu      $t2, $t2, %lo(g_dwGfxFogColorR)
+    /* 44894 80243894 254AD490 */  addiu      $t2, $t2, %lo(D_8028D490)
     /* 44898 80243898 01196021 */  addu       $t4, $t0, $t9
     /* 4489C 8024389C 258D000E */  addiu      $t5, $t4, 0xE
     /* 448A0 802438A0 004F2021 */  addu       $a0, $v0, $t7
@@ -951,23 +951,23 @@ glabel ProcessPaintShopScreen
     /* 44908 80243908 24840018 */   addiu     $a0, $a0, 0x18
     /* 4490C 8024390C 8E630004 */  lw         $v1, 0x4($s3)
     /* 44910 80243910 8E620000 */  lw         $v0, 0x0($s3)
-    /* 44914 80243914 3C048029 */  lui        $a0, %hi(g_texPaintPaletteSelector)
-    /* 44918 80243918 3C058029 */  lui        $a1, %hi(g_texPaintPaletteSelectorAlt)
-    /* 4491C 8024391C 24A5CE40 */  addiu      $a1, $a1, %lo(g_texPaintPaletteSelectorAlt)
-    /* 44920 80243920 2484CE10 */  addiu      $a0, $a0, %lo(g_texPaintPaletteSelector)
+    /* 44914 80243914 3C048029 */  lui        $a0, %hi(g_texBrushSizeRound)
+    /* 44918 80243918 3C058029 */  lui        $a1, %hi(g_texBrushSizeSquare)
+    /* 4491C 8024391C 24A5CE40 */  addiu      $a1, $a1, %lo(g_texBrushSizeSquare)
+    /* 44920 80243920 2484CE10 */  addiu      $a0, $a0, %lo(g_texBrushSizeRound)
     /* 44924 80243924 24630004 */  addiu      $v1, $v1, 0x4
     /* 44928 80243928 AC830020 */  sw         $v1, 0x20($a0)
     /* 4492C 8024392C ACA30020 */  sw         $v1, 0x20($a1)
     /* 44930 80243930 AC82001C */  sw         $v0, 0x1C($a0)
     /* 44934 80243934 0C090AC4 */  jal        LoadTextureFromRom
     /* 44938 80243938 ACA2001C */   sw        $v0, 0x1C($a1)
-    /* 4493C 8024393C 3C048029 */  lui        $a0, %hi(g_texPaintPaletteSelectorAlt)
+    /* 4493C 8024393C 3C048029 */  lui        $a0, %hi(g_texBrushSizeSquare)
     /* 44940 80243940 0C090AC4 */  jal        LoadTextureFromRom
-    /* 44944 80243944 2484CE40 */   addiu     $a0, $a0, %lo(g_texPaintPaletteSelectorAlt)
-    /* 44948 80243948 3C128029 */  lui        $s2, %hi(g_pObjectMatrix0)
-    /* 4494C 8024394C 3C118037 */  lui        $s1, %hi(g_dwDebugReserved4)
-    /* 44950 80243950 26319CE8 */  addiu      $s1, $s1, %lo(g_dwDebugReserved4)
-    /* 44954 80243954 2652DAD8 */  addiu      $s2, $s2, %lo(g_pObjectMatrix0)
+    /* 44944 80243944 2484CE40 */   addiu     $a0, $a0, %lo(g_texBrushSizeSquare)
+    /* 44948 80243948 3C128029 */  lui        $s2, %hi(D_8028DAD8)
+    /* 4494C 8024394C 3C118037 */  lui        $s1, %hi(D_80369CE8)
+    /* 44950 80243950 26319CE8 */  addiu      $s1, $s1, %lo(D_80369CE8)
+    /* 44954 80243954 2652DAD8 */  addiu      $s2, $s2, %lo(D_8028DAD8)
     /* 44958 80243958 2410000E */  addiu      $s0, $zero, 0xE
   .L8024395C:
     /* 4495C 8024395C 8E4D0000 */  lw         $t5, 0x0($s2)
@@ -996,8 +996,8 @@ glabel ProcessPaintShopScreen
     /* 449B8 802439B8 A180002C */  sb         $zero, 0x2C($t4)
     /* 449BC 802439BC 0C090AC4 */  jal        LoadTextureFromRom
     /* 449C0 802439C0 8E440000 */   lw        $a0, 0x0($s2)
-    /* 449C4 802439C4 3C0D8037 */  lui        $t5, %hi(g_bProfileEnabled0)
-    /* 449C8 802439C8 25AD9DA8 */  addiu      $t5, $t5, %lo(g_bProfileEnabled0)
+    /* 449C4 802439C4 3C0D8037 */  lui        $t5, %hi(g_abSavedSwatchColor)
+    /* 449C8 802439C8 25AD9DA8 */  addiu      $t5, $t5, %lo(g_abSavedSwatchColor)
     /* 449CC 802439CC 26310010 */  addiu      $s1, $s1, 0x10
     /* 449D0 802439D0 022D082B */  sltu       $at, $s1, $t5
     /* 449D4 802439D4 1420FFE1 */  bnez       $at, .L8024395C
@@ -1024,22 +1024,22 @@ glabel ProcessPaintShopScreen
     /* 44A28 80243A28 2631D230 */  addiu      $s1, $s1, %lo(g_texKeyboardPanel)
     /* 44A2C 80243A2C 0C090AC4 */  jal        LoadTextureFromRom
     /* 44A30 80243A30 02202025 */   or        $a0, $s1, $zero
-    /* 44A34 80243A34 3C128029 */  lui        $s2, %hi(g_texKeyboardKey)
-    /* 44A38 80243A38 2652D260 */  addiu      $s2, $s2, %lo(g_texKeyboardKey)
+    /* 44A34 80243A34 3C128029 */  lui        $s2, %hi(g_texKeyboardBackground)
+    /* 44A38 80243A38 2652D260 */  addiu      $s2, $s2, %lo(g_texKeyboardBackground)
     /* 44A3C 80243A3C 0C090AC4 */  jal        LoadTextureFromRom
     /* 44A40 80243A40 02402025 */   or        $a0, $s2, $zero
-    /* 44A44 80243A44 3C048029 */  lui        $a0, %hi(g_texKeyboardKeyHighlight)
+    /* 44A44 80243A44 3C048029 */  lui        $a0, %hi(g_texKeyboardHighlight)
     /* 44A48 80243A48 0C090AC4 */  jal        LoadTextureFromRom
-    /* 44A4C 80243A4C 2484D290 */   addiu     $a0, $a0, %lo(g_texKeyboardKeyHighlight)
+    /* 44A4C 80243A4C 2484D290 */   addiu     $a0, $a0, %lo(g_texKeyboardHighlight)
     /* 44A50 80243A50 3C048029 */  lui        $a0, %hi(g_texButtonA)
     /* 44A54 80243A54 0C090AC4 */  jal        LoadTextureFromRom
     /* 44A58 80243A58 2484D0B0 */   addiu     $a0, $a0, %lo(g_texButtonA)
     /* 44A5C 80243A5C 3C048029 */  lui        $a0, %hi(g_texButtonB)
     /* 44A60 80243A60 0C090AC4 */  jal        LoadTextureFromRom
     /* 44A64 80243A64 2484D0E0 */   addiu     $a0, $a0, %lo(g_texButtonB)
-    /* 44A68 80243A68 3C048029 */  lui        $a0, %hi(g_dwGfxLight2Color)
+    /* 44A68 80243A68 3C048029 */  lui        $a0, %hi(g_texDecalFont)
     /* 44A6C 80243A6C 0C090AC4 */  jal        LoadTextureFromRom
-    /* 44A70 80243A70 2484D2C0 */   addiu     $a0, $a0, %lo(g_dwGfxLight2Color)
+    /* 44A70 80243A70 2484D2C0 */   addiu     $a0, $a0, %lo(g_texDecalFont)
     /* 44A74 80243A74 8E2E001C */  lw         $t6, 0x1C($s1)
     /* 44A78 80243A78 8E380020 */  lw         $t8, 0x20($s1)
     /* 44A7C 80243A7C 8E2C0024 */  lw         $t4, 0x24($s1)
@@ -1052,12 +1052,12 @@ glabel ProcessPaintShopScreen
     /* 44A98 80243A98 AE590020 */  sw         $t9, 0x20($s2)
     /* 44A9C 80243A9C AE4D0024 */  sw         $t5, 0x24($s2)
     /* 44AA0 80243AA0 AE4F0028 */  sw         $t7, 0x28($s2)
-    /* 44AA4 80243AA4 3C128029 */  lui        $s2, %hi(g_pObjectMatrix24)
-    /* 44AA8 80243AA8 3C038029 */  lui        $v1, %hi(g_pObjectMatrix24)
-    /* 44AAC 80243AAC 3C028029 */  lui        $v0, %hi(g_pObjectMatrix22)
-    /* 44AB0 80243AB0 2442DB34 */  addiu      $v0, $v0, %lo(g_pObjectMatrix22)
-    /* 44AB4 80243AB4 2463DB44 */  addiu      $v1, $v1, %lo(g_pObjectMatrix24)
-    /* 44AB8 80243AB8 2652DB44 */  addiu      $s2, $s2, %lo(g_pObjectMatrix24)
+    /* 44AA4 80243AA4 3C128029 */  lui        $s2, %hi(g_apOvalStyleIcons)
+    /* 44AA8 80243AA8 3C038029 */  lui        $v1, %hi(g_apOvalStyleIcons)
+    /* 44AAC 80243AAC 3C028029 */  lui        $v0, %hi(g_apRectStyleIcons)
+    /* 44AB0 80243AB0 2442DB34 */  addiu      $v0, $v0, %lo(g_apRectStyleIcons)
+    /* 44AB4 80243AB4 2463DB44 */  addiu      $v1, $v1, %lo(g_apOvalStyleIcons)
+    /* 44AB8 80243AB8 2652DB44 */  addiu      $s2, $s2, %lo(g_apOvalStyleIcons)
     /* 44ABC 80243ABC 2411002A */  addiu      $s1, $zero, 0x2A
     /* 44AC0 80243AC0 24100004 */  addiu      $s0, $zero, 0x4
   .L80243AC4:
@@ -1111,8 +1111,8 @@ glabel ProcessPaintShopScreen
     /* 44B80 80243B80 0052082B */  sltu       $at, $v0, $s2
     /* 44B84 80243B84 1420FFCF */  bnez       $at, .L80243AC4
     /* 44B88 80243B88 24630004 */   addiu     $v1, $v1, 0x4
-    /* 44B8C 80243B8C 3C128029 */  lui        $s2, %hi(g_bObjectDirty4)
-    /* 44B90 80243B90 2652DB68 */  addiu      $s2, $s2, %lo(g_bObjectDirty4)
+    /* 44B8C 80243B8C 3C128029 */  lui        $s2, %hi(g_bDecalSlot)
+    /* 44B90 80243B90 2652DB68 */  addiu      $s2, $s2, %lo(g_bDecalSlot)
     /* 44B94 80243B94 3C038029 */  lui        $v1, %hi(g_pCurrentVehicleModelData)
     /* 44B98 80243B98 8C63AB08 */  lw         $v1, %lo(g_pCurrentVehicleModelData)($v1)
     /* 44B9C 80243B9C 92470000 */  lbu        $a3, 0x0($s2)
@@ -1120,59 +1120,59 @@ glabel ProcessPaintShopScreen
     /* 44BA4 80243BA4 8C6E0014 */  lw         $t6, 0x14($v1)
     /* 44BA8 80243BA8 00672821 */  addu       $a1, $v1, $a3
     /* 44BAC 80243BAC 90AF0110 */  lbu        $t7, 0x110($a1)
-    /* 44BB0 80243BB0 3C018029 */  lui        $at, %hi(gFramebufferPtr)
+    /* 44BB0 80243BB0 3C018029 */  lui        $at, %hi(g_pDecalTexels)
     /* 44BB4 80243BB4 00074080 */  sll        $t0, $a3, 2
     /* 44BB8 80243BB8 01E90019 */  multu      $t7, $t1
-    /* 44BBC 80243BBC 3C068029 */  lui        $a2, %hi(g_dwPaintPaletteScreenX)
-    /* 44BC0 80243BC0 8CC6CE2C */  lw         $a2, %lo(g_dwPaintPaletteScreenX)($a2)
-    /* 44BC4 80243BC4 3C0A8029 */  lui        $t2, %hi(g_dwGfxKeyScaleR)
-    /* 44BC8 80243BC8 254AD4F0 */  addiu      $t2, $t2, %lo(g_dwGfxKeyScaleR)
-    /* 44BCC 80243BCC 3C078029 */  lui        $a3, %hi(g_dwGfxFillColorG)
+    /* 44BBC 80243BBC 3C068029 */  lui        $a2, %hi(D_8028CE2C)
+    /* 44BC0 80243BC0 8CC6CE2C */  lw         $a2, %lo(D_8028CE2C)($a2)
+    /* 44BC4 80243BC4 3C0A8029 */  lui        $t2, %hi(g_aBrushSizeButtonRects)
+    /* 44BC8 80243BC8 254AD4F0 */  addiu      $t2, $t2, %lo(g_aBrushSizeButtonRects)
+    /* 44BCC 80243BCC 3C078029 */  lui        $a3, %hi(D_8028D484)
     /* 44BD0 80243BD0 0000C012 */  mflo       $t8
     /* 44BD4 80243BD4 01D8C821 */  addu       $t9, $t6, $t8
     /* 44BD8 80243BD8 8F2C0000 */  lw         $t4, 0x0($t9)
-    /* 44BDC 80243BDC AC2CDB78 */  sw         $t4, %lo(gFramebufferPtr)($at)
+    /* 44BDC 80243BDC AC2CDB78 */  sw         $t4, %lo(g_pDecalTexels)($at)
     /* 44BE0 80243BE0 8C6D011C */  lw         $t5, 0x11C($v1)
-    /* 44BE4 80243BE4 3C018029 */  lui        $at, %hi(gClipMaskPtr)
+    /* 44BE4 80243BE4 3C018029 */  lui        $at, %hi(g_pDecalMask)
     /* 44BE8 80243BE8 01A87821 */  addu       $t7, $t5, $t0
     /* 44BEC 80243BEC 8DEE0000 */  lw         $t6, 0x0($t7)
-    /* 44BF0 80243BF0 AC2EDB7C */  sw         $t6, %lo(gClipMaskPtr)($at)
+    /* 44BF0 80243BF0 AC2EDB7C */  sw         $t6, %lo(g_pDecalMask)($at)
     /* 44BF4 80243BF4 90B90110 */  lbu        $t9, 0x110($a1)
     /* 44BF8 80243BF8 8C780014 */  lw         $t8, 0x14($v1)
-    /* 44BFC 80243BFC 3C018029 */  lui        $at, %hi(gFramebufferWidth)
+    /* 44BFC 80243BFC 3C018029 */  lui        $at, %hi(g_bDecalWidth)
     /* 44C00 80243C00 03290019 */  multu      $t9, $t1
     /* 44C04 80243C04 00006012 */  mflo       $t4
     /* 44C08 80243C08 030C6821 */  addu       $t5, $t8, $t4
     /* 44C0C 80243C0C 95AF000C */  lhu        $t7, 0xC($t5)
-    /* 44C10 80243C10 A02FDB88 */  sb         $t7, %lo(gFramebufferWidth)($at)
+    /* 44C10 80243C10 A02FDB88 */  sb         $t7, %lo(g_bDecalWidth)($at)
     /* 44C14 80243C14 90B90110 */  lbu        $t9, 0x110($a1)
     /* 44C18 80243C18 8C6E0014 */  lw         $t6, 0x14($v1)
-    /* 44C1C 80243C1C 3C018029 */  lui        $at, %hi(gFramebufferHeight)
+    /* 44C1C 80243C1C 3C018029 */  lui        $at, %hi(g_bDecalHeight)
     /* 44C20 80243C20 03290019 */  multu      $t9, $t1
     /* 44C24 80243C24 0000C012 */  mflo       $t8
     /* 44C28 80243C28 01D86021 */  addu       $t4, $t6, $t8
     /* 44C2C 80243C2C 958D000E */  lhu        $t5, 0xE($t4)
-    /* 44C30 80243C30 A02DDB8C */  sb         $t5, %lo(gFramebufferHeight)($at)
+    /* 44C30 80243C30 A02DDB8C */  sb         $t5, %lo(g_bDecalHeight)($at)
     /* 44C34 80243C34 90B90110 */  lbu        $t9, 0x110($a1)
     /* 44C38 80243C38 8C6F0014 */  lw         $t7, 0x14($v1)
-    /* 44C3C 80243C3C 3C0D8029 */  lui        $t5, %hi(g_pObjectMatrix12)
+    /* 44C3C 80243C3C 3C0D8029 */  lui        $t5, %hi(g_apDecalSlotIcons)
     /* 44C40 80243C40 03290019 */  multu      $t9, $t1
     /* 44C44 80243C44 01A86821 */  addu       $t5, $t5, $t0
-    /* 44C48 80243C48 8DADDB0C */  lw         $t5, %lo(g_pObjectMatrix12)($t5)
-    /* 44C4C 80243C4C 3C018029 */  lui        $at, %hi(g_dwObjectPosZ)
-    /* 44C50 80243C50 3C198029 */  lui        $t9, %hi(g_dwRdpPrimColor)
-    /* 44C54 80243C54 3C058029 */  lui        $a1, %hi(g_dwGfxCoefR)
-    /* 44C58 80243C58 24A5D540 */  addiu      $a1, $a1, %lo(g_dwGfxCoefR)
+    /* 44C48 80243C48 8DADDB0C */  lw         $t5, %lo(g_apDecalSlotIcons)($t5)
+    /* 44C4C 80243C4C 3C018029 */  lui        $at, %hi(g_pDecalPalette)
+    /* 44C50 80243C50 3C198029 */  lui        $t9, %hi(D_8028CE30)
+    /* 44C54 80243C54 3C058029 */  lui        $a1, %hi(g_aDecalGlyphs)
+    /* 44C58 80243C58 24A5D540 */  addiu      $a1, $a1, %lo(g_aDecalGlyphs)
     /* 44C5C 80243C5C 00007012 */  mflo       $t6
     /* 44C60 80243C60 01EEC021 */  addu       $t8, $t7, $t6
     /* 44C64 80243C64 8F0C0004 */  lw         $t4, 0x4($t8)
-    /* 44C68 80243C68 3C0F8029 */  lui        $t7, %hi(g_dwGfxKeyScaleA)
-    /* 44C6C 80243C6C 25E2D500 */  addiu      $v0, $t7, %lo(g_dwGfxKeyScaleA)
-    /* 44C70 80243C70 AC2CDB90 */  sw         $t4, %lo(g_dwObjectPosZ)($at)
-    /* 44C74 80243C74 3C018029 */  lui        $at, %hi(g_dwObjectCount)
-    /* 44C78 80243C78 AC2DDB08 */  sw         $t5, %lo(g_dwObjectCount)($at)
+    /* 44C68 80243C68 3C0F8029 */  lui        $t7, %hi(D_8028D500)
+    /* 44C6C 80243C6C 25E2D500 */  addiu      $v0, $t7, %lo(D_8028D500)
+    /* 44C70 80243C70 AC2CDB90 */  sw         $t4, %lo(g_pDecalPalette)($at)
+    /* 44C74 80243C74 3C018029 */  lui        $at, %hi(g_pDecalSlotIcon)
+    /* 44C78 80243C78 AC2DDB08 */  sw         $t5, %lo(g_pDecalSlotIcon)($at)
     /* 44C7C 80243C7C AD460000 */  sw         $a2, 0x0($t2)
-    /* 44C80 80243C80 8F39CE30 */  lw         $t9, %lo(g_dwRdpPrimColor)($t9)
+    /* 44C80 80243C80 8F39CE30 */  lw         $t9, %lo(D_8028CE30)($t9)
     /* 44C84 80243C84 240D0010 */  addiu      $t5, $zero, 0x10
     /* 44C88 80243C88 24180010 */  addiu      $t8, $zero, 0x10
     /* 44C8C 80243C8C AD590004 */  sw         $t9, 0x4($t2)
@@ -1186,13 +1186,13 @@ glabel ProcessPaintShopScreen
     /* 44CA8 80243CA8 AC46FFF0 */  sw         $a2, -0x10($v0)
     /* 44CAC 80243CAC 1420FFF9 */  bnez       $at, .L80243C94
     /* 44CB0 80243CB0 AC43FFF4 */   sw        $v1, -0xC($v0)
-    /* 44CB4 80243CB4 3C038029 */  lui        $v1, %hi(g_dwGfxFillColorR)
-    /* 44CB8 80243CB8 8C63D480 */  lw         $v1, %lo(g_dwGfxFillColorR)($v1)
-    /* 44CBC 80243CBC 8CE7D484 */  lw         $a3, %lo(g_dwGfxFillColorG)($a3)
-    /* 44CC0 80243CC0 3C028037 */  lui        $v0, %hi(g_dwEffectAlpha)
-    /* 44CC4 80243CC4 3C068037 */  lui        $a2, %hi(g_dwParticleCount)
-    /* 44CC8 80243CC8 24C69BC0 */  addiu      $a2, $a2, %lo(g_dwParticleCount)
-    /* 44CCC 80243CCC 24429B98 */  addiu      $v0, $v0, %lo(g_dwEffectAlpha)
+    /* 44CB4 80243CB4 3C038029 */  lui        $v1, %hi(g_aPaletteFrameRects)
+    /* 44CB8 80243CB8 8C63D480 */  lw         $v1, %lo(g_aPaletteFrameRects)($v1)
+    /* 44CBC 80243CBC 8CE7D484 */  lw         $a3, %lo(D_8028D484)($a3)
+    /* 44CC0 80243CC0 3C028037 */  lui        $v0, %hi(g_aDecalSwatches)
+    /* 44CC4 80243CC4 3C068037 */  lui        $a2, %hi(D_80369BC0)
+    /* 44CC8 80243CC8 24C69BC0 */  addiu      $a2, $a2, %lo(D_80369BC0)
+    /* 44CCC 80243CCC 24429B98 */  addiu      $v0, $v0, %lo(g_aDecalSwatches)
     /* 44CD0 80243CD0 24050014 */  addiu      $a1, $zero, 0x14
     /* 44CD4 80243CD4 2404000E */  addiu      $a0, $zero, 0xE
     /* 44CD8 80243CD8 24630004 */  addiu      $v1, $v1, 0x4
@@ -1206,38 +1206,38 @@ glabel ProcessPaintShopScreen
     /* 44CF4 80243CF4 AC44FFF8 */  sw         $a0, -0x8($v0)
     /* 44CF8 80243CF8 1420FFF9 */  bnez       $at, .L80243CE0
     /* 44CFC 80243CFC AC47FFF0 */   sw        $a3, -0x10($v0)
-    /* 44D00 80243D00 3C0A8029 */  lui        $t2, %hi(g_dwGfxFogColorR)
-    /* 44D04 80243D04 8D4AD490 */  lw         $t2, %lo(g_dwGfxFogColorR)($t2)
-    /* 44D08 80243D08 3C018037 */  lui        $at, %hi(g_dwParticleReserved0)
-    /* 44D0C 80243D0C 3C058029 */  lui        $a1, %hi(g_dwGfxFogColorG)
-    /* 44D10 80243D10 8CA5D494 */  lw         $a1, %lo(g_dwGfxFogColorG)($a1)
-    /* 44D14 80243D14 AC389BC8 */  sw         $t8, %lo(g_dwParticleReserved0)($at)
-    /* 44D18 80243D18 AC249BCC */  sw         $a0, %lo(g_dwParticleReserved1)($at)
-    /* 44D1C 80243D1C 3C018037 */  lui        $at, %hi(g_dwParticleMax)
+    /* 44D00 80243D00 3C0A8029 */  lui        $t2, %hi(D_8028D490)
+    /* 44D04 80243D04 8D4AD490 */  lw         $t2, %lo(D_8028D490)($t2)
+    /* 44D08 80243D08 3C018037 */  lui        $at, %hi(D_80369BC8)
+    /* 44D0C 80243D0C 3C058029 */  lui        $a1, %hi(D_8028D494)
+    /* 44D10 80243D10 8CA5D494 */  lw         $a1, %lo(D_8028D494)($a1)
+    /* 44D14 80243D14 AC389BC8 */  sw         $t8, %lo(D_80369BC8)($at)
+    /* 44D18 80243D18 AC249BCC */  sw         $a0, %lo(D_80369BCC)($at)
+    /* 44D1C 80243D1C 3C018037 */  lui        $at, %hi(D_80369BC4)
     /* 44D20 80243D20 254B0020 */  addiu      $t3, $t2, 0x20
     /* 44D24 80243D24 256CFFE4 */  addiu      $t4, $t3, -0x1C
     /* 44D28 80243D28 24A50004 */  addiu      $a1, $a1, 0x4
-    /* 44D2C 80243D2C AC259BC4 */  sw         $a1, %lo(g_dwParticleMax)($at)
-    /* 44D30 80243D30 AC2C9BC0 */  sw         $t4, %lo(g_dwParticleCount)($at)
-    /* 44D34 80243D34 3C018037 */  lui        $at, %hi(g_dwParticleReserved4)
-    /* 44D38 80243D38 AC2D9BDC */  sw         $t5, %lo(g_dwParticleReserved4)($at)
+    /* 44D2C 80243D2C AC259BC4 */  sw         $a1, %lo(D_80369BC4)($at)
+    /* 44D30 80243D30 AC2C9BC0 */  sw         $t4, %lo(D_80369BC0)($at)
+    /* 44D34 80243D34 3C018037 */  lui        $at, %hi(D_80369BDC)
+    /* 44D38 80243D38 AC2D9BDC */  sw         $t5, %lo(D_80369BDC)($at)
     /* 44D3C 80243D3C 25430040 */  addiu      $v1, $t2, 0x40
-    /* 44D40 80243D40 3C018037 */  lui        $at, %hi(g_dwParticleReserved5)
-    /* 44D44 80243D44 AC249BE0 */  sw         $a0, %lo(g_dwParticleReserved5)($at)
-    /* 44D48 80243D48 3C018037 */  lui        $at, %hi(g_dwParticleReserved2)
+    /* 44D40 80243D40 3C018037 */  lui        $at, %hi(D_80369BE0)
+    /* 44D44 80243D44 AC249BE0 */  sw         $a0, %lo(D_80369BE0)($at)
+    /* 44D48 80243D48 3C018037 */  lui        $at, %hi(D_80369BD4)
     /* 44D4C 80243D4C 2579FFF4 */  addiu      $t9, $t3, -0xC
-    /* 44D50 80243D50 AC399BD4 */  sw         $t9, %lo(g_dwParticleReserved2)($at)
-    /* 44D54 80243D54 3C018037 */  lui        $at, %hi(g_dwParticleReserved3)
+    /* 44D50 80243D50 AC399BD4 */  sw         $t9, %lo(D_80369BD4)($at)
+    /* 44D54 80243D54 3C018037 */  lui        $at, %hi(D_80369BD8)
     /* 44D58 80243D58 2466FFE4 */  addiu      $a2, $v1, -0x1C
     /* 44D5C 80243D5C 2467FFF4 */  addiu      $a3, $v1, -0xC
     /* 44D60 80243D60 24680004 */  addiu      $t0, $v1, 0x4
     /* 44D64 80243D64 24690014 */  addiu      $t1, $v1, 0x14
-    /* 44D68 80243D68 3C0A8037 */  lui        $t2, %hi(g_dwDebugReserved0)
-    /* 44D6C 80243D6C 3C028037 */  lui        $v0, %hi(g_dwSmokeIntensity)
-    /* 44D70 80243D70 24429BE8 */  addiu      $v0, $v0, %lo(g_dwSmokeIntensity)
-    /* 44D74 80243D74 254A9CD8 */  addiu      $t2, $t2, %lo(g_dwDebugReserved0)
+    /* 44D68 80243D68 3C0A8037 */  lui        $t2, %hi(g_aPaintToolButtonRects)
+    /* 44D6C 80243D6C 3C028037 */  lui        $v0, %hi(D_80369BE8)
+    /* 44D70 80243D70 24429BE8 */  addiu      $v0, $v0, %lo(D_80369BE8)
+    /* 44D74 80243D74 254A9CD8 */  addiu      $t2, $t2, %lo(g_aPaintToolButtonRects)
     /* 44D78 80243D78 24030010 */  addiu      $v1, $zero, 0x10
-    /* 44D7C 80243D7C AC259BD8 */  sw         $a1, %lo(g_dwParticleReserved3)($at)
+    /* 44D7C 80243D7C AC259BD8 */  sw         $a1, %lo(D_80369BD8)($at)
   .L80243D80:
     /* 44D80 80243D80 AC470014 */  sw         $a3, 0x14($v0)
     /* 44D84 80243D84 AC480028 */  sw         $t0, 0x28($v0)
@@ -1263,15 +1263,15 @@ glabel ProcessPaintShopScreen
     /* 44DD4 80243DD4 AC45FFB4 */   sw        $a1, -0x4C($v0)
     /* 44DD8 80243DD8 0C09354F */  jal        ConvertPaletteToRgb
     /* 44DDC 80243DDC 00000000 */   nop
-    /* 44DE0 80243DE0 3C058029 */  lui        $a1, %hi(g_dwGfxFogColor)
-    /* 44DE4 80243DE4 3C068029 */  lui        $a2, %hi(g_dwGfxLight0Dir)
-    /* 44DE8 80243DE8 8CC6D27C */  lw         $a2, %lo(g_dwGfxLight0Dir)($a2)
-    /* 44DEC 80243DEC 8CA5D2B4 */  lw         $a1, %lo(g_dwGfxFogColor)($a1)
-    /* 44DF0 80243DF0 3C048029 */  lui        $a0, %hi(g_dwGfxLight0Color)
-    /* 44DF4 80243DF4 3C078029 */  lui        $a3, %hi(g_dwGfxCoefR)
+    /* 44DE0 80243DE0 3C058029 */  lui        $a1, %hi(D_8028D2B4)
+    /* 44DE4 80243DE4 3C068029 */  lui        $a2, %hi(D_8028D27C)
+    /* 44DE8 80243DE8 8CC6D27C */  lw         $a2, %lo(D_8028D27C)($a2)
+    /* 44DEC 80243DEC 8CA5D2B4 */  lw         $a1, %lo(D_8028D2B4)($a1)
+    /* 44DF0 80243DF0 3C048029 */  lui        $a0, %hi(D_8028D280)
+    /* 44DF4 80243DF4 3C078029 */  lui        $a3, %hi(g_aDecalGlyphs)
     /* 44DF8 80243DF8 24A50004 */  addiu      $a1, $a1, 0x4
-    /* 44DFC 80243DFC 24E7D540 */  addiu      $a3, $a3, %lo(g_dwGfxCoefR)
-    /* 44E00 80243E00 8C84D280 */  lw         $a0, %lo(g_dwGfxLight0Color)($a0)
+    /* 44DFC 80243DFC 24E7D540 */  addiu      $a3, $a3, %lo(g_aDecalGlyphs)
+    /* 44E00 80243E00 8C84D280 */  lw         $a0, %lo(D_8028D280)($a0)
     /* 44E04 80243E04 00008825 */  or         $s1, $zero, $zero
     /* 44E08 80243E08 00004025 */  or         $t0, $zero, $zero
     /* 44E0C 80243E0C 00A65021 */  addu       $t2, $a1, $a2
@@ -1280,8 +1280,8 @@ glabel ProcessPaintShopScreen
     /* 44E14 80243E14 000878C0 */  sll        $t7, $t0, 3
     /* 44E18 80243E18 01E87823 */  subu       $t7, $t7, $t0
     /* 44E1C 80243E1C 000F7880 */  sll        $t7, $t7, 2
-    /* 44E20 80243E20 3C188029 */  lui        $t8, %hi(g_dwGfxCoefR)
-    /* 44E24 80243E24 2718D540 */  addiu      $t8, $t8, %lo(g_dwGfxCoefR)
+    /* 44E20 80243E20 3C188029 */  lui        $t8, %hi(g_aDecalGlyphs)
+    /* 44E24 80243E24 2718D540 */  addiu      $t8, $t8, %lo(g_aDecalGlyphs)
     /* 44E28 80243E28 25EE0038 */  addiu      $t6, $t7, 0x38
     /* 44E2C 80243E2C 00056040 */  sll        $t4, $a1, 1
     /* 44E30 80243E30 01861821 */  addu       $v1, $t4, $a2
@@ -1307,8 +1307,8 @@ glabel ProcessPaintShopScreen
     /* 44E7C 80243E7C 03267821 */  addu       $t7, $t9, $a2
     /* 44E80 80243E80 AC4FFFAC */  sw         $t7, -0x54($v0)
     /* 44E84 80243E84 00AE0019 */  multu      $a1, $t6
-    /* 44E88 80243E88 3C0E8029 */  lui        $t6, %hi(g_texKeyboardKeyHighlight)
-    /* 44E8C 80243E8C 25CED290 */  addiu      $t6, $t6, %lo(g_texKeyboardKeyHighlight)
+    /* 44E88 80243E88 3C0E8029 */  lui        $t6, %hi(g_texKeyboardHighlight)
+    /* 44E8C 80243E8C 25CED290 */  addiu      $t6, $t6, %lo(g_texKeyboardHighlight)
     /* 44E90 80243E90 0000C012 */  mflo       $t8
     /* 44E94 80243E94 03066021 */  addu       $t4, $t8, $a2
     /* 44E98 80243E98 AC4CFFC8 */  sw         $t4, -0x38($v0)
@@ -1321,8 +1321,8 @@ glabel ProcessPaintShopScreen
     /* 44EB4 80243EB4 006C1821 */  addu       $v1, $v1, $t4
     /* 44EB8 80243EB8 1614FFE4 */  bne        $s0, $s4, .L80243E4C
     /* 44EBC 80243EBC 24630010 */   addiu     $v1, $v1, 0x10
-    /* 44EC0 80243EC0 3C0D8029 */  lui        $t5, %hi(g_texKeyboardKeyHighlight)
-    /* 44EC4 80243EC4 25ADD290 */  addiu      $t5, $t5, %lo(g_texKeyboardKeyHighlight)
+    /* 44EC0 80243EC0 3C0D8029 */  lui        $t5, %hi(g_texKeyboardHighlight)
+    /* 44EC4 80243EC4 25ADD290 */  addiu      $t5, $t5, %lo(g_texKeyboardHighlight)
     /* 44EC8 80243EC8 8DB90028 */  lw         $t9, 0x28($t5)
     /* 44ECC 80243ECC 26310001 */  addiu      $s1, $s1, 0x1
     /* 44ED0 80243ED0 24010005 */  addiu      $at, $zero, 0x5
@@ -1331,50 +1331,50 @@ glabel ProcessPaintShopScreen
     /* 44EDC 80243EDC 2508000A */  addiu      $t0, $t0, 0xA
     /* 44EE0 80243EE0 1621FFCC */  bne        $s1, $at, .L80243E14
     /* 44EE4 80243EE4 24E70118 */   addiu     $a3, $a3, 0x118
-    /* 44EE8 80243EE8 3C0F8029 */  lui        $t7, %hi(gFramebufferWidth)
-    /* 44EEC 80243EEC 91EFDB88 */  lbu        $t7, %lo(gFramebufferWidth)($t7)
-    /* 44EF0 80243EF0 3C148029 */  lui        $s4, %hi(g_dwDecalEditorFlags)
-    /* 44EF4 80243EF4 2694DB94 */  addiu      $s4, $s4, %lo(g_dwDecalEditorFlags)
+    /* 44EE8 80243EE8 3C0F8029 */  lui        $t7, %hi(g_bDecalWidth)
+    /* 44EEC 80243EEC 91EFDB88 */  lbu        $t7, %lo(g_bDecalWidth)($t7)
+    /* 44EF0 80243EF0 3C148029 */  lui        $s4, %hi(g_rcDecalCanvas)
+    /* 44EF4 80243EF4 2694DB94 */  addiu      $s4, $s4, %lo(g_rcDecalCanvas)
     /* 44EF8 80243EF8 000F7080 */  sll        $t6, $t7, 2
     /* 44EFC 80243EFC AE8E0008 */  sw         $t6, 0x8($s4)
-    /* 44F00 80243F00 3C188029 */  lui        $t8, %hi(gFramebufferHeight)
-    /* 44F04 80243F04 9318DB8C */  lbu        $t8, %lo(gFramebufferHeight)($t8)
-    /* 44F08 80243F08 3C0D8029 */  lui        $t5, %hi(g_dwGfxEnvColorB)
-    /* 44F0C 80243F0C 3C018029 */  lui        $at, %hi(g_bObjectDirty23)
+    /* 44F00 80243F00 3C188029 */  lui        $t8, %hi(g_bDecalHeight)
+    /* 44F04 80243F04 9318DB8C */  lbu        $t8, %lo(g_bDecalHeight)($t8)
+    /* 44F08 80243F08 3C0D8029 */  lui        $t5, %hi(D_8028D478)
+    /* 44F0C 80243F0C 3C018029 */  lui        $at, %hi(g_bPaintShopInitialized)
     /* 44F10 80243F10 00186080 */  sll        $t4, $t8, 2
     /* 44F14 80243F14 AE8C000C */  sw         $t4, 0xC($s4)
-    /* 44F18 80243F18 8DADD478 */  lw         $t5, %lo(g_dwGfxEnvColorB)($t5)
+    /* 44F18 80243F18 8DADD478 */  lw         $t5, %lo(D_8028D478)($t5)
     /* 44F1C 80243F1C 24180001 */  addiu      $t8, $zero, 0x1
     /* 44F20 80243F20 01AE1023 */  subu       $v0, $t5, $t6
-    /* 44F24 80243F24 3C0D8029 */  lui        $t5, %hi(g_dwGfxEnvColorR)
-    /* 44F28 80243F28 8DADD470 */  lw         $t5, %lo(g_dwGfxEnvColorR)($t5)
+    /* 44F24 80243F24 3C0D8029 */  lui        $t5, %hi(g_rcDecalCanvasFrame)
+    /* 44F28 80243F28 8DADD470 */  lw         $t5, %lo(g_rcDecalCanvasFrame)($t5)
     /* 44F2C 80243F2C 00027843 */  sra        $t7, $v0, 1
-    /* 44F30 80243F30 3C0E8029 */  lui        $t6, %hi(g_dwGfxEnvColorA)
-    /* 44F34 80243F34 8DCED47C */  lw         $t6, %lo(g_dwGfxEnvColorA)($t6)
+    /* 44F30 80243F30 3C0E8029 */  lui        $t6, %hi(D_8028D47C)
+    /* 44F34 80243F34 8DCED47C */  lw         $t6, %lo(D_8028D47C)($t6)
     /* 44F38 80243F38 01AFC821 */  addu       $t9, $t5, $t7
     /* 44F3C 80243F3C AE990000 */  sw         $t9, 0x0($s4)
-    /* 44F40 80243F40 3C0F8029 */  lui        $t7, %hi(g_dwGfxEnvColorG)
-    /* 44F44 80243F44 8DEFD474 */  lw         $t7, %lo(g_dwGfxEnvColorG)($t7)
+    /* 44F40 80243F40 3C0F8029 */  lui        $t7, %hi(D_8028D474)
+    /* 44F44 80243F44 8DEFD474 */  lw         $t7, %lo(D_8028D474)($t7)
     /* 44F48 80243F48 01CC1823 */  subu       $v1, $t6, $t4
     /* 44F4C 80243F4C 00036043 */  sra        $t4, $v1, 1
     /* 44F50 80243F50 01EC7021 */  addu       $t6, $t7, $t4
     /* 44F54 80243F54 AE8E0004 */  sw         $t6, 0x4($s4)
-    /* 44F58 80243F58 A038DC80 */  sb         $t8, %lo(g_bObjectDirty23)($at)
+    /* 44F58 80243F58 A038DC80 */  sb         $t8, %lo(g_bPaintShopInitialized)($at)
     /* 44F5C 80243F5C 3C018027 */  lui        $at, %hi(gControllerPakState)
     /* 44F60 80243F60 AC2024F0 */  sw         $zero, %lo(gControllerPakState)($at)
     /* 44F64 80243F64 3C013F80 */  lui        $at, (0x3F800000 >> 16)
     /* 44F68 80243F68 44816000 */  mtc1       $at, $f12
-    /* 44F6C 80243F6C 3C01802B */  lui        $at, %hi(g_dwRaceReserved98)
+    /* 44F6C 80243F6C 3C01802B */  lui        $at, %hi(g_fConst0p2_802ab0fc)
     /* 44F70 80243F70 0C088DA2 */  jal        SetFadeTarget
-    /* 44F74 80243F74 C42EB0FC */   lwc1      $f14, %lo(g_dwRaceReserved98)($at)
+    /* 44F74 80243F74 C42EB0FC */   lwc1      $f14, %lo(g_fConst0p2_802ab0fc)($at)
   .L80243F78:
-    /* 44F78 80243F78 3C128029 */  lui        $s2, %hi(g_bObjectDirty4)
-    /* 44F7C 80243F7C 3C138037 */  lui        $s3, %hi(g_dwDebugReserved0)
-    /* 44F80 80243F80 3C148029 */  lui        $s4, %hi(g_dwDecalEditorFlags)
-    /* 44F84 80243F84 2694DB94 */  addiu      $s4, $s4, %lo(g_dwDecalEditorFlags)
-    /* 44F88 80243F88 26739CD8 */  addiu      $s3, $s3, %lo(g_dwDebugReserved0)
+    /* 44F78 80243F78 3C128029 */  lui        $s2, %hi(g_bDecalSlot)
+    /* 44F7C 80243F7C 3C138037 */  lui        $s3, %hi(g_aPaintToolButtonRects)
+    /* 44F80 80243F80 3C148029 */  lui        $s4, %hi(g_rcDecalCanvas)
+    /* 44F84 80243F84 2694DB94 */  addiu      $s4, $s4, %lo(g_rcDecalCanvas)
+    /* 44F88 80243F88 26739CD8 */  addiu      $s3, $s3, %lo(g_aPaintToolButtonRects)
     /* 44F8C 80243F8C 0C08712D */  jal        UpdateFrameTiming
-    /* 44F90 80243F90 2652DB68 */   addiu     $s2, $s2, %lo(g_bObjectDirty4)
+    /* 44F90 80243F90 2652DB68 */   addiu     $s2, $s2, %lo(g_bDecalSlot)
     /* 44F94 80243F94 0C088FD5 */  jal        UpdateFadeTransitions
     /* 44F98 80243F98 00000000 */   nop
     /* 44F9C 80243F9C 0C08668F */  jal        StartHighResFrame
@@ -1407,10 +1407,10 @@ glabel ProcessPaintShopScreen
     /* 45008 80244008 2484CB40 */  addiu      $a0, $a0, %lo(g_texBackground)
     /* 4500C 8024400C 24050071 */  addiu      $a1, $zero, 0x71
     /* 45010 80244010 2406000B */  addiu      $a2, $zero, 0xB
-    /* 45014 80244014 0C0915E6 */  jal        DrawTiledSprite
+    /* 45014 80244014 0C0915E6 */  jal        DrawSpriteTinted
     /* 45018 80244018 24070040 */   addiu     $a3, $zero, 0x40
     /* 4501C 8024401C 3C048029 */  lui        $a0, %hi(g_texLogo)
-    /* 45020 80244020 0C09151C */  jal        DrawMultiStripSprite
+    /* 45020 80244020 0C09151C */  jal        DrawSpriteAtOrigin
     /* 45024 80244024 2484CB70 */   addiu     $a0, $a0, %lo(g_texLogo)
     /* 45028 80244028 0C08BD74 */  jal        SetTextSize
     /* 4502C 8024402C 24040022 */   addiu     $a0, $zero, 0x22
@@ -1423,8 +1423,8 @@ glabel ProcessPaintShopScreen
     /* 45048 80244048 240500A0 */  addiu      $a1, $zero, 0xA0
     /* 4504C 8024404C 0C08BD77 */  jal        DrawText
     /* 45050 80244050 24060026 */   addiu     $a2, $zero, 0x26
-    /* 45054 80244054 3C118029 */  lui        $s1, %hi(g_pObjectMatrix12)
-    /* 45058 80244058 2631DB0C */  addiu      $s1, $s1, %lo(g_pObjectMatrix12)
+    /* 45054 80244054 3C118029 */  lui        $s1, %hi(g_apDecalSlotIcons)
+    /* 45058 80244058 2631DB0C */  addiu      $s1, $s1, %lo(g_apDecalSlotIcons)
     /* 4505C 8024405C 00008025 */  or         $s0, $zero, $zero
   .L80244060:
     /* 45060 80244060 924F0000 */  lbu        $t7, 0x0($s2)
@@ -1435,38 +1435,38 @@ glabel ProcessPaintShopScreen
     /* 45074 80244074 8E240000 */  lw         $a0, 0x0($s1)
     /* 45078 80244078 24050020 */  addiu      $a1, $zero, 0x20
     /* 4507C 8024407C 240600C8 */  addiu      $a2, $zero, 0xC8
-    /* 45080 80244080 0C0915E6 */  jal        DrawTiledSprite
+    /* 45080 80244080 0C0915E6 */  jal        DrawSpriteTinted
     /* 45084 80244084 240700FF */   addiu     $a3, $zero, 0xFF
     /* 45088 80244088 10000004 */  b          .L8024409C
     /* 4508C 8024408C 26100001 */   addiu     $s0, $s0, 0x1
   .L80244090:
-    /* 45090 80244090 0C0915E6 */  jal        DrawTiledSprite
+    /* 45090 80244090 0C0915E6 */  jal        DrawSpriteTinted
     /* 45094 80244094 8E240000 */   lw        $a0, 0x0($s1)
     /* 45098 80244098 26100001 */  addiu      $s0, $s0, 0x1
   .L8024409C:
     /* 4509C 8024409C 2A01000A */  slti       $at, $s0, 0xA
     /* 450A0 802440A0 1420FFEF */  bnez       $at, .L80244060
     /* 450A4 802440A4 26310004 */   addiu     $s1, $s1, 0x4
-    /* 450A8 802440A8 3C048029 */  lui        $a0, %hi(g_texPaintLayerIcon8Overlay)
-    /* 450AC 802440AC 2484CDB0 */  addiu      $a0, $a0, %lo(g_texPaintLayerIcon8Overlay)
+    /* 450A8 802440A8 3C048029 */  lui        $a0, %hi(g_texPanel8Overlay)
+    /* 450AC 802440AC 2484CDB0 */  addiu      $a0, $a0, %lo(g_texPanel8Overlay)
     /* 450B0 802440B0 240500FF */  addiu      $a1, $zero, 0xFF
     /* 450B4 802440B4 240600FF */  addiu      $a2, $zero, 0xFF
-    /* 450B8 802440B8 0C0915E6 */  jal        DrawTiledSprite
+    /* 450B8 802440B8 0C0915E6 */  jal        DrawSpriteTinted
     /* 450BC 802440BC 240700FF */   addiu     $a3, $zero, 0xFF
-    /* 450C0 802440C0 3C048029 */  lui        $a0, %hi(g_texPaintLayerIcon9Overlay)
-    /* 450C4 802440C4 2484CDE0 */  addiu      $a0, $a0, %lo(g_texPaintLayerIcon9Overlay)
+    /* 450C0 802440C0 3C048029 */  lui        $a0, %hi(g_texPanel9Overlay)
+    /* 450C4 802440C4 2484CDE0 */  addiu      $a0, $a0, %lo(g_texPanel9Overlay)
     /* 450C8 802440C8 240500C0 */  addiu      $a1, $zero, 0xC0
     /* 450CC 802440CC 00003025 */  or         $a2, $zero, $zero
-    /* 450D0 802440D0 0C0915E6 */  jal        DrawTiledSprite
+    /* 450D0 802440D0 0C0915E6 */  jal        DrawSpriteTinted
     /* 450D4 802440D4 00003825 */   or        $a3, $zero, $zero
-    /* 450D8 802440D8 3C048029 */  lui        $a0, %hi(g_dwGfxEnvColorR)
-    /* 450DC 802440DC 3C058029 */  lui        $a1, %hi(g_dwGfxEnvColorG)
-    /* 450E0 802440E0 3C068029 */  lui        $a2, %hi(g_dwGfxEnvColorB)
-    /* 450E4 802440E4 3C078029 */  lui        $a3, %hi(g_dwGfxEnvColorA)
-    /* 450E8 802440E8 8CE7D47C */  lw         $a3, %lo(g_dwGfxEnvColorA)($a3)
-    /* 450EC 802440EC 8CC6D478 */  lw         $a2, %lo(g_dwGfxEnvColorB)($a2)
-    /* 450F0 802440F0 8CA5D474 */  lw         $a1, %lo(g_dwGfxEnvColorG)($a1)
-    /* 450F4 802440F4 8C84D470 */  lw         $a0, %lo(g_dwGfxEnvColorR)($a0)
+    /* 450D8 802440D8 3C048029 */  lui        $a0, %hi(g_rcDecalCanvasFrame)
+    /* 450DC 802440DC 3C058029 */  lui        $a1, %hi(D_8028D474)
+    /* 450E0 802440E0 3C068029 */  lui        $a2, %hi(D_8028D478)
+    /* 450E4 802440E4 3C078029 */  lui        $a3, %hi(D_8028D47C)
+    /* 450E8 802440E8 8CE7D47C */  lw         $a3, %lo(D_8028D47C)($a3)
+    /* 450EC 802440EC 8CC6D478 */  lw         $a2, %lo(D_8028D478)($a2)
+    /* 450F0 802440F0 8CA5D474 */  lw         $a1, %lo(D_8028D474)($a1)
+    /* 450F4 802440F4 8C84D470 */  lw         $a0, %lo(g_rcDecalCanvasFrame)($a0)
     /* 450F8 802440F8 AFA00010 */  sw         $zero, 0x10($sp)
     /* 450FC 802440FC AFA00014 */  sw         $zero, 0x14($sp)
     /* 45100 80244100 0C091B84 */  jal        DrawFilledRectHiRes
@@ -1480,10 +1480,10 @@ glabel ProcessPaintShopScreen
     /* 45120 80244120 93040110 */   lbu       $a0, 0x110($t8)
     /* 45124 80244124 8E8C0008 */  lw         $t4, 0x8($s4)
     /* 45128 80244128 8E8D000C */  lw         $t5, 0xC($s4)
-    /* 4512C 8024412C 3C048029 */  lui        $a0, %hi(gFramebufferWidth)
-    /* 45130 80244130 3C058029 */  lui        $a1, %hi(gFramebufferHeight)
-    /* 45134 80244134 90A5DB8C */  lbu        $a1, %lo(gFramebufferHeight)($a1)
-    /* 45138 80244138 9084DB88 */  lbu        $a0, %lo(gFramebufferWidth)($a0)
+    /* 4512C 8024412C 3C048029 */  lui        $a0, %hi(g_bDecalWidth)
+    /* 45130 80244130 3C058029 */  lui        $a1, %hi(g_bDecalHeight)
+    /* 45134 80244134 90A5DB8C */  lbu        $a1, %lo(g_bDecalHeight)($a1)
+    /* 45138 80244138 9084DB88 */  lbu        $a0, %lo(g_bDecalWidth)($a0)
     /* 4513C 8024413C 8E860000 */  lw         $a2, 0x0($s4)
     /* 45140 80244140 8E870004 */  lw         $a3, 0x4($s4)
     /* 45144 80244144 AFAC0010 */  sw         $t4, 0x10($sp)
@@ -1516,23 +1516,23 @@ glabel ProcessPaintShopScreen
     /* 451B0 802441B0 3C118029 */  lui        $s1, %hi(g_texPaintToolBrush)
     /* 451B4 802441B4 2631CE70 */  addiu      $s1, $s1, %lo(g_texPaintToolBrush)
     /* 451B8 802441B8 922E002C */  lbu        $t6, 0x2C($s1)
-    /* 451BC 802441BC 3C048029 */  lui        $a0, %hi(g_texPaintPaletteSelectorAlt)
+    /* 451BC 802441BC 3C048029 */  lui        $a0, %hi(g_texBrushSizeSquare)
     /* 451C0 802441C0 15C00006 */  bnez       $t6, .L802441DC
     /* 451C4 802441C4 00000000 */   nop
-    /* 451C8 802441C8 3C048029 */  lui        $a0, %hi(g_texPaintPaletteSelector)
-    /* 451CC 802441CC 0C09151C */  jal        DrawMultiStripSprite
-    /* 451D0 802441D0 2484CE10 */   addiu     $a0, $a0, %lo(g_texPaintPaletteSelector)
+    /* 451C8 802441C8 3C048029 */  lui        $a0, %hi(g_texBrushSizeRound)
+    /* 451CC 802441CC 0C09151C */  jal        DrawSpriteAtOrigin
+    /* 451D0 802441D0 2484CE10 */   addiu     $a0, $a0, %lo(g_texBrushSizeRound)
     /* 451D4 802441D4 10000003 */  b          .L802441E4
     /* 451D8 802441D8 00000000 */   nop
   .L802441DC:
-    /* 451DC 802441DC 0C09151C */  jal        DrawMultiStripSprite
-    /* 451E0 802441E0 2484CE40 */   addiu     $a0, $a0, %lo(g_texPaintPaletteSelectorAlt)
+    /* 451DC 802441DC 0C09151C */  jal        DrawSpriteAtOrigin
+    /* 451E0 802441E0 2484CE40 */   addiu     $a0, $a0, %lo(g_texBrushSizeSquare)
   .L802441E4:
-    /* 451E4 802441E4 3C108029 */  lui        $s0, %hi(g_bObjectVisible2)
-    /* 451E8 802441E8 2610DAC0 */  addiu      $s0, $s0, %lo(g_bObjectVisible2)
+    /* 451E4 802441E4 3C108029 */  lui        $s0, %hi(g_bBrushSize)
+    /* 451E8 802441E8 2610DAC0 */  addiu      $s0, $s0, %lo(g_bBrushSize)
     /* 451EC 802441EC 92180000 */  lbu        $t8, 0x0($s0)
-    /* 451F0 802441F0 3C0D8029 */  lui        $t5, %hi(g_dwGfxKeyScaleR)
-    /* 451F4 802441F4 25ADD4F0 */  addiu      $t5, $t5, %lo(g_dwGfxKeyScaleR)
+    /* 451F0 802441F0 3C0D8029 */  lui        $t5, %hi(g_aBrushSizeButtonRects)
+    /* 451F4 802441F4 25ADD4F0 */  addiu      $t5, $t5, %lo(g_aBrushSizeButtonRects)
     /* 451F8 802441F8 00186100 */  sll        $t4, $t8, 4
     /* 451FC 802441FC 018D1021 */  addu       $v0, $t4, $t5
     /* 45200 80244200 8C440000 */  lw         $a0, 0x0($v0)
@@ -1544,33 +1544,33 @@ glabel ProcessPaintShopScreen
     /* 45218 80244218 0C091B84 */  jal        DrawFilledRectHiRes
     /* 4521C 8024421C AFA00018 */   sw        $zero, 0x18($sp)
     /* 45220 80244220 9239002C */  lbu        $t9, 0x2C($s1)
-    /* 45224 80244224 3C048029 */  lui        $a0, %hi(g_texPaintPaletteSelectorAlt)
-    /* 45228 80244228 2484CE40 */  addiu      $a0, $a0, %lo(g_texPaintPaletteSelectorAlt)
+    /* 45224 80244224 3C048029 */  lui        $a0, %hi(g_texBrushSizeSquare)
+    /* 45228 80244228 2484CE40 */  addiu      $a0, $a0, %lo(g_texBrushSizeSquare)
     /* 4522C 8024422C 17200024 */  bnez       $t9, .L802442C0
     /* 45230 80244230 00002825 */   or        $a1, $zero, $zero
     /* 45234 80244234 920F0000 */  lbu        $t7, 0x0($s0)
-    /* 45238 80244238 3C188029 */  lui        $t8, %hi(g_dwGfxKeyScaleR)
-    /* 4523C 8024423C 2718D4F0 */  addiu      $t8, $t8, %lo(g_dwGfxKeyScaleR)
-    /* 45240 80244240 3C0C8029 */  lui        $t4, %hi(g_dwRdpPrimColor)
-    /* 45244 80244244 3C0D8029 */  lui        $t5, %hi(g_dwRdpOtherModeL)
+    /* 45238 80244238 3C188029 */  lui        $t8, %hi(g_aBrushSizeButtonRects)
+    /* 4523C 8024423C 2718D4F0 */  addiu      $t8, $t8, %lo(g_aBrushSizeButtonRects)
+    /* 45240 80244240 3C0C8029 */  lui        $t4, %hi(D_8028CE30)
+    /* 45244 80244244 3C0D8029 */  lui        $t5, %hi(D_8028CE24)
     /* 45248 80244248 000F7100 */  sll        $t6, $t7, 4
-    /* 4524C 8024424C 8DADCE24 */  lw         $t5, %lo(g_dwRdpOtherModeL)($t5)
-    /* 45250 80244250 8D8CCE30 */  lw         $t4, %lo(g_dwRdpPrimColor)($t4)
+    /* 4524C 8024424C 8DADCE24 */  lw         $t5, %lo(D_8028CE24)($t5)
+    /* 45250 80244250 8D8CCE30 */  lw         $t4, %lo(D_8028CE30)($t4)
     /* 45254 80244254 01D81021 */  addu       $v0, $t6, $t8
-    /* 45258 80244258 3C0E8029 */  lui        $t6, %hi(g_dwPaintPaletteScreenX)
-    /* 4525C 8024425C 8DCECE2C */  lw         $t6, %lo(g_dwPaintPaletteScreenX)($t6)
+    /* 45258 80244258 3C0E8029 */  lui        $t6, %hi(D_8028CE2C)
+    /* 4525C 8024425C 8DCECE2C */  lw         $t6, %lo(D_8028CE2C)($t6)
     /* 45260 80244260 8C480004 */  lw         $t0, 0x4($v0)
     /* 45264 80244264 8C43000C */  lw         $v1, 0xC($v0)
     /* 45268 80244268 018DC821 */  addu       $t9, $t4, $t5
-    /* 4526C 8024426C 3C078029 */  lui        $a3, %hi(g_dwRdpCombineMode)
-    /* 45270 80244270 8CE7CE20 */  lw         $a3, %lo(g_dwRdpCombineMode)($a3)
+    /* 4526C 8024426C 3C078029 */  lui        $a3, %hi(D_8028CE20)
+    /* 45270 80244270 8CE7CE20 */  lw         $a3, %lo(D_8028CE20)($a3)
     /* 45274 80244274 240D00CA */  addiu      $t5, $zero, 0xCA
     /* 45278 80244278 240C00FF */  addiu      $t4, $zero, 0xFF
-    /* 4527C 8024427C 3C048029 */  lui        $a0, %hi(g_texPaintPaletteSelector)
+    /* 4527C 8024427C 3C048029 */  lui        $a0, %hi(g_texBrushSizeRound)
     /* 45280 80244280 25D8FFFF */  addiu      $t8, $t6, -0x1
     /* 45284 80244284 03287823 */  subu       $t7, $t9, $t0
     /* 45288 80244288 AFB80014 */  sw         $t8, 0x14($sp)
-    /* 4528C 8024428C 2484CE10 */  addiu      $a0, $a0, %lo(g_texPaintPaletteSelector)
+    /* 4528C 8024428C 2484CE10 */  addiu      $a0, $a0, %lo(g_texBrushSizeRound)
     /* 45290 80244290 AFAC0024 */  sw         $t4, 0x24($sp)
     /* 45294 80244294 AFAD0028 */  sw         $t5, 0x28($sp)
     /* 45298 80244298 00002825 */  or         $a1, $zero, $zero
@@ -1585,21 +1585,21 @@ glabel ProcessPaintShopScreen
     /* 452BC 802442BC 00000000 */   nop
   .L802442C0:
     /* 452C0 802442C0 92190000 */  lbu        $t9, 0x0($s0)
-    /* 452C4 802442C4 3C0E8029 */  lui        $t6, %hi(g_dwGfxKeyScaleR)
-    /* 452C8 802442C8 25CED4F0 */  addiu      $t6, $t6, %lo(g_dwGfxKeyScaleR)
-    /* 452CC 802442CC 3C188029 */  lui        $t8, %hi(g_dwRdpEnvColor)
-    /* 452D0 802442D0 3C0C8029 */  lui        $t4, %hi(g_dwRdpFogColor)
+    /* 452C4 802442C4 3C0E8029 */  lui        $t6, %hi(g_aBrushSizeButtonRects)
+    /* 452C8 802442C8 25CED4F0 */  addiu      $t6, $t6, %lo(g_aBrushSizeButtonRects)
+    /* 452CC 802442CC 3C188029 */  lui        $t8, %hi(D_8028CE60)
+    /* 452D0 802442D0 3C0C8029 */  lui        $t4, %hi(D_8028CE54)
     /* 452D4 802442D4 00197900 */  sll        $t7, $t9, 4
-    /* 452D8 802442D8 8D8CCE54 */  lw         $t4, %lo(g_dwRdpFogColor)($t4)
-    /* 452DC 802442DC 8F18CE60 */  lw         $t8, %lo(g_dwRdpEnvColor)($t8)
+    /* 452D8 802442D8 8D8CCE54 */  lw         $t4, %lo(D_8028CE54)($t4)
+    /* 452DC 802442DC 8F18CE60 */  lw         $t8, %lo(D_8028CE60)($t8)
     /* 452E0 802442E0 01EE1021 */  addu       $v0, $t7, $t6
-    /* 452E4 802442E4 3C0F8029 */  lui        $t7, %hi(g_dwRdpFillColor)
-    /* 452E8 802442E8 8DEFCE5C */  lw         $t7, %lo(g_dwRdpFillColor)($t7)
+    /* 452E4 802442E4 3C0F8029 */  lui        $t7, %hi(D_8028CE5C)
+    /* 452E8 802442E8 8DEFCE5C */  lw         $t7, %lo(D_8028CE5C)($t7)
     /* 452EC 802442EC 8C480004 */  lw         $t0, 0x4($v0)
     /* 452F0 802442F0 8C43000C */  lw         $v1, 0xC($v0)
     /* 452F4 802442F4 030C6821 */  addu       $t5, $t8, $t4
-    /* 452F8 802442F8 3C078029 */  lui        $a3, %hi(g_dwRdpBlendColor)
-    /* 452FC 802442FC 8CE7CE50 */  lw         $a3, %lo(g_dwRdpBlendColor)($a3)
+    /* 452F8 802442F8 3C078029 */  lui        $a3, %hi(D_8028CE50)
+    /* 452FC 802442FC 8CE7CE50 */  lw         $a3, %lo(D_8028CE50)($a3)
     /* 45300 80244300 240C00CA */  addiu      $t4, $zero, 0xCA
     /* 45304 80244304 241800FF */  addiu      $t8, $zero, 0xFF
     /* 45308 80244308 25EEFFFF */  addiu      $t6, $t7, -0x1
@@ -1615,12 +1615,12 @@ glabel ProcessPaintShopScreen
     /* 45330 80244330 0C09197C */  jal        DrawScaledTexturedRect
     /* 45334 80244334 AFA7001C */   sw        $a3, 0x1C($sp)
   .L80244338:
-    /* 45338 80244338 3C128029 */  lui        $s2, %hi(g_pObjectMatrix0)
-    /* 4533C 8024433C 3C118037 */  lui        $s1, %hi(g_dwDebugReserved4)
-    /* 45340 80244340 3C138029 */  lui        $s3, %hi(g_bObjectDirty2)
-    /* 45344 80244344 2673DB60 */  addiu      $s3, $s3, %lo(g_bObjectDirty2)
-    /* 45348 80244348 26319CE8 */  addiu      $s1, $s1, %lo(g_dwDebugReserved4)
-    /* 4534C 8024434C 2652DAD8 */  addiu      $s2, $s2, %lo(g_pObjectMatrix0)
+    /* 45338 80244338 3C128029 */  lui        $s2, %hi(D_8028DAD8)
+    /* 4533C 8024433C 3C118037 */  lui        $s1, %hi(D_80369CE8)
+    /* 45340 80244340 3C138029 */  lui        $s3, %hi(g_bPaintTool)
+    /* 45344 80244344 2673DB60 */  addiu      $s3, $s3, %lo(g_bPaintTool)
+    /* 45348 80244348 26319CE8 */  addiu      $s1, $s1, %lo(D_80369CE8)
+    /* 4534C 8024434C 2652DAD8 */  addiu      $s2, $s2, %lo(D_8028DAD8)
     /* 45350 80244350 24100001 */  addiu      $s0, $zero, 0x1
   .L80244354:
     /* 45354 80244354 926D0000 */  lbu        $t5, 0x0($s3)
@@ -1662,15 +1662,15 @@ glabel ProcessPaintShopScreen
     /* 453DC 802443DC 24C6FFF8 */  addiu      $a2, $a2, -0x8
     /* 453E0 802443E0 0C091B84 */  jal        DrawFilledRectHiRes
     /* 453E4 802443E4 24E7FFF8 */   addiu     $a3, $a3, -0x8
-    /* 453E8 802443E8 0C09151C */  jal        DrawMultiStripSprite
+    /* 453E8 802443E8 0C09151C */  jal        DrawSpriteAtOrigin
     /* 453EC 802443EC 8E440000 */   lw        $a0, 0x0($s2)
     /* 453F0 802443F0 26100001 */  addiu      $s0, $s0, 0x1
     /* 453F4 802443F4 2A01000D */  slti       $at, $s0, 0xD
     /* 453F8 802443F8 26520004 */  addiu      $s2, $s2, 0x4
     /* 453FC 802443FC 1420FFD5 */  bnez       $at, .L80244354
     /* 45400 80244400 26310010 */   addiu     $s1, $s1, 0x10
-    /* 45404 80244404 3C128029 */  lui        $s2, %hi(g_bObjectDirty17)
-    /* 45408 80244408 2652DBD8 */  addiu      $s2, $s2, %lo(g_bObjectDirty17)
+    /* 45404 80244404 3C128029 */  lui        $s2, %hi(g_bShowPreview3D)
+    /* 45408 80244408 2652DBD8 */  addiu      $s2, $s2, %lo(g_bShowPreview3D)
     /* 4540C 8024440C 924D0000 */  lbu        $t5, 0x0($s2)
     /* 45410 80244410 3C018029 */  lui        $at, %hi(g_dwNightMode)
     /* 45414 80244414 11A00019 */  beqz       $t5, .L8024447C
@@ -1700,7 +1700,7 @@ glabel ProcessPaintShopScreen
     /* 45474 80244474 0C0866FC */  jal        SetViewport
     /* 45478 80244478 00002825 */   or        $a1, $zero, $zero
   .L8024447C:
-    /* 4547C 8024447C 0C0934FC */  jal        IsPointInRect
+    /* 4547C 8024447C 0C0934FC */  jal        IsCursorInRect
     /* 45480 80244480 02802025 */   or        $a0, $s4, $zero
     /* 45484 80244484 5040008A */  beql       $v0, $zero, .L802446B0
     /* 45488 80244488 92620000 */   lbu       $v0, 0x0($s3)
@@ -1719,8 +1719,8 @@ glabel ProcessPaintShopScreen
     /* 454BC 802444BC 01800008 */  jr         $t4
     /* 454C0 802444C0 00000000 */   nop
   jlabel .L802444C4
-    /* 454C4 802444C4 3C0D8029 */  lui        $t5, %hi(g_bObjectDirty22)
-    /* 454C8 802444C8 91ADDBEC */  lbu        $t5, %lo(g_bObjectDirty22)($t5)
+    /* 454C4 802444C4 3C0D8029 */  lui        $t5, %hi(g_bEyedropperActive)
+    /* 454C8 802444C8 91ADDBEC */  lbu        $t5, %lo(g_bEyedropperActive)($t5)
     /* 454CC 802444CC 11A0000C */  beqz       $t5, .L80244500
     /* 454D0 802444D0 3C028029 */   lui       $v0, %hi(g_texPaintCursor)
     /* 454D4 802444D4 2442D110 */  addiu      $v0, $v0, %lo(g_texPaintCursor)
@@ -1731,9 +1731,9 @@ glabel ProcessPaintShopScreen
     /* 454E8 802444E8 24A50001 */  addiu      $a1, $a1, 0x1
     /* 454EC 802444EC 0C091581 */  jal        DrawTexturedSprite
     /* 454F0 802444F0 24C6FFE8 */   addiu     $a2, $a2, -0x18
-    /* 454F4 802444F4 3C118029 */  lui        $s1, %hi(g_bObjectDirty12)
+    /* 454F4 802444F4 3C118029 */  lui        $s1, %hi(g_bDecalDragActive)
     /* 454F8 802444F8 10000112 */  b          .L80244944
-    /* 454FC 802444FC 2631DBC4 */   addiu     $s1, $s1, %lo(g_bObjectDirty12)
+    /* 454FC 802444FC 2631DBC4 */   addiu     $s1, $s1, %lo(g_bDecalDragActive)
   .L80244500:
     /* 45500 80244500 3C028029 */  lui        $v0, %hi(g_texPaintCursor)
     /* 45504 80244504 2442D110 */  addiu      $v0, $v0, %lo(g_texPaintCursor)
@@ -1744,12 +1744,12 @@ glabel ProcessPaintShopScreen
     /* 45518 80244518 24A50001 */  addiu      $a1, $a1, 0x1
     /* 4551C 8024451C 0C091581 */  jal        DrawTexturedSprite
     /* 45520 80244520 24C6FFE8 */   addiu     $a2, $a2, -0x18
-    /* 45524 80244524 3C118029 */  lui        $s1, %hi(g_bObjectDirty12)
+    /* 45524 80244524 3C118029 */  lui        $s1, %hi(g_bDecalDragActive)
     /* 45528 80244528 10000106 */  b          .L80244944
-    /* 4552C 8024452C 2631DBC4 */   addiu     $s1, $s1, %lo(g_bObjectDirty12)
+    /* 4552C 8024452C 2631DBC4 */   addiu     $s1, $s1, %lo(g_bDecalDragActive)
   jlabel .L80244530
-    /* 45530 80244530 3C198029 */  lui        $t9, %hi(g_bObjectDirty22)
-    /* 45534 80244534 9339DBEC */  lbu        $t9, %lo(g_bObjectDirty22)($t9)
+    /* 45530 80244530 3C198029 */  lui        $t9, %hi(g_bEyedropperActive)
+    /* 45534 80244534 9339DBEC */  lbu        $t9, %lo(g_bEyedropperActive)($t9)
     /* 45538 80244538 3C028029 */  lui        $v0, %hi(g_texPaintCursor)
     /* 4553C 8024453C 2442D110 */  addiu      $v0, $v0, %lo(g_texPaintCursor)
     /* 45540 80244540 1320000C */  beqz       $t9, .L80244574
@@ -1762,9 +1762,9 @@ glabel ProcessPaintShopScreen
     /* 4555C 8024455C 8C45001C */  lw         $a1, 0x1C($v0)
     /* 45560 80244560 0C091581 */  jal        DrawTexturedSprite
     /* 45564 80244564 24C6FFE8 */   addiu     $a2, $a2, -0x18
-    /* 45568 80244568 3C118029 */  lui        $s1, %hi(g_bObjectDirty12)
+    /* 45568 80244568 3C118029 */  lui        $s1, %hi(g_bDecalDragActive)
     /* 4556C 8024456C 100000F5 */  b          .L80244944
-    /* 45570 80244570 2631DBC4 */   addiu     $s1, $s1, %lo(g_bObjectDirty12)
+    /* 45570 80244570 2631DBC4 */   addiu     $s1, $s1, %lo(g_bDecalDragActive)
   .L80244574:
     /* 45574 80244574 8C45001C */  lw         $a1, 0x1C($v0)
     /* 45578 80244578 8C460020 */  lw         $a2, 0x20($v0)
@@ -1772,18 +1772,18 @@ glabel ProcessPaintShopScreen
     /* 45580 80244580 24A5FFF8 */  addiu      $a1, $a1, -0x8
     /* 45584 80244584 0C091581 */  jal        DrawTexturedSprite
     /* 45588 80244588 24C6FFF8 */   addiu     $a2, $a2, -0x8
-    /* 4558C 8024458C 3C118029 */  lui        $s1, %hi(g_bObjectDirty12)
+    /* 4558C 8024458C 3C118029 */  lui        $s1, %hi(g_bDecalDragActive)
     /* 45590 80244590 100000EC */  b          .L80244944
-    /* 45594 80244594 2631DBC4 */   addiu     $s1, $s1, %lo(g_bObjectDirty12)
+    /* 45594 80244594 2631DBC4 */   addiu     $s1, $s1, %lo(g_bDecalDragActive)
   jlabel .L80244598
-    /* 45598 80244598 3C118029 */  lui        $s1, %hi(g_bObjectDirty12)
-    /* 4559C 8024459C 2631DBC4 */  addiu      $s1, $s1, %lo(g_bObjectDirty12)
+    /* 45598 80244598 3C118029 */  lui        $s1, %hi(g_bDecalDragActive)
+    /* 4559C 8024459C 2631DBC4 */  addiu      $s1, $s1, %lo(g_bDecalDragActive)
     /* 455A0 802445A0 922F0000 */  lbu        $t7, 0x0($s1)
-    /* 455A4 802445A4 3C0E8029 */  lui        $t6, %hi(g_bObjectDirty22)
+    /* 455A4 802445A4 3C0E8029 */  lui        $t6, %hi(g_bEyedropperActive)
     /* 455A8 802445A8 3C048029 */  lui        $a0, %hi(g_texPaintCursor)
     /* 455AC 802445AC 15E0001B */  bnez       $t7, .L8024461C
     /* 455B0 802445B0 00000000 */   nop
-    /* 455B4 802445B4 91CEDBEC */  lbu        $t6, %lo(g_bObjectDirty22)($t6)
+    /* 455B4 802445B4 91CEDBEC */  lbu        $t6, %lo(g_bEyedropperActive)($t6)
     /* 455B8 802445B8 3C028029 */  lui        $v0, %hi(g_texPaintCursor)
     /* 455BC 802445BC 2442D110 */  addiu      $v0, $v0, %lo(g_texPaintCursor)
     /* 455C0 802445C0 11C0000B */  beqz       $t6, .L802445F0
@@ -1811,45 +1811,45 @@ glabel ProcessPaintShopScreen
     /* 45614 80244614 100000CB */  b          .L80244944
     /* 45618 80244618 00000000 */   nop
   .L8024461C:
-    /* 4561C 8024461C 0C09151C */  jal        DrawMultiStripSprite
+    /* 4561C 8024461C 0C09151C */  jal        DrawSpriteAtOrigin
     /* 45620 80244620 2484D110 */   addiu     $a0, $a0, %lo(g_texPaintCursor)
     /* 45624 80244624 100000C7 */  b          .L80244944
     /* 45628 80244628 00000000 */   nop
   jlabel .L8024462C
-    /* 4562C 8024462C 3C0E8029 */  lui        $t6, %hi(g_bObjectDirty22)
-    /* 45630 80244630 91CEDBEC */  lbu        $t6, %lo(g_bObjectDirty22)($t6)
+    /* 4562C 8024462C 3C0E8029 */  lui        $t6, %hi(g_bEyedropperActive)
+    /* 45630 80244630 91CEDBEC */  lbu        $t6, %lo(g_bEyedropperActive)($t6)
     /* 45634 80244634 11C0000B */  beqz       $t6, .L80244664
-    /* 45638 80244638 3C068029 */   lui       $a2, %hi(gCursorY)
-    /* 4563C 8024463C 8CC6D130 */  lw         $a2, %lo(gCursorY)($a2)
+    /* 45638 80244638 3C068029 */   lui       $a2, %hi(g_texPaintCursor + 0x20)
+    /* 4563C 8024463C 8CC6D130 */  lw         $a2, %lo(g_texPaintCursor + 0x20)($a2)
     /* 45640 80244640 3C048029 */  lui        $a0, %hi(g_texPaintEyedropperCursor)
-    /* 45644 80244644 3C058029 */  lui        $a1, %hi(gCursorX)
-    /* 45648 80244648 8CA5D12C */  lw         $a1, %lo(gCursorX)($a1)
+    /* 45644 80244644 3C058029 */  lui        $a1, %hi(g_texPaintCursor + 0x1C)
+    /* 45648 80244648 8CA5D12C */  lw         $a1, %lo(g_texPaintCursor + 0x1C)($a1)
     /* 4564C 8024464C 2484D200 */  addiu      $a0, $a0, %lo(g_texPaintEyedropperCursor)
     /* 45650 80244650 0C091581 */  jal        DrawTexturedSprite
     /* 45654 80244654 24C6FFE8 */   addiu     $a2, $a2, -0x18
-    /* 45658 80244658 3C118029 */  lui        $s1, %hi(g_bObjectDirty12)
+    /* 45658 80244658 3C118029 */  lui        $s1, %hi(g_bDecalDragActive)
     /* 4565C 8024465C 100000B9 */  b          .L80244944
-    /* 45660 80244660 2631DBC4 */   addiu     $s1, $s1, %lo(g_bObjectDirty12)
+    /* 45660 80244660 2631DBC4 */   addiu     $s1, $s1, %lo(g_bDecalDragActive)
   .L80244664:
-    /* 45664 80244664 3C058029 */  lui        $a1, %hi(gCursorX)
-    /* 45668 80244668 3C068029 */  lui        $a2, %hi(gCursorY)
-    /* 4566C 8024466C 8CC6D130 */  lw         $a2, %lo(gCursorY)($a2)
-    /* 45670 80244670 8CA5D12C */  lw         $a1, %lo(gCursorX)($a1)
+    /* 45664 80244664 3C058029 */  lui        $a1, %hi(g_texPaintCursor + 0x1C)
+    /* 45668 80244668 3C068029 */  lui        $a2, %hi(g_texPaintCursor + 0x20)
+    /* 4566C 8024466C 8CC6D130 */  lw         $a2, %lo(g_texPaintCursor + 0x20)($a2)
+    /* 45670 80244670 8CA5D12C */  lw         $a1, %lo(g_texPaintCursor + 0x1C)($a1)
     /* 45674 80244674 3C048029 */  lui        $a0, %hi(g_texPaintFillCursor)
     /* 45678 80244678 2484D140 */  addiu      $a0, $a0, %lo(g_texPaintFillCursor)
     /* 4567C 8024467C 24C6FFE9 */  addiu      $a2, $a2, -0x17
     /* 45680 80244680 0C091581 */  jal        DrawTexturedSprite
     /* 45684 80244684 24A5FFFA */   addiu     $a1, $a1, -0x6
-    /* 45688 80244688 3C118029 */  lui        $s1, %hi(g_bObjectDirty12)
+    /* 45688 80244688 3C118029 */  lui        $s1, %hi(g_bDecalDragActive)
     /* 4568C 8024468C 100000AD */  b          .L80244944
-    /* 45690 80244690 2631DBC4 */   addiu     $s1, $s1, %lo(g_bObjectDirty12)
+    /* 45690 80244690 2631DBC4 */   addiu     $s1, $s1, %lo(g_bDecalDragActive)
   .L80244694:
     /* 45694 80244694 3C048029 */  lui        $a0, %hi(g_texPaintCursor)
-    /* 45698 80244698 0C09151C */  jal        DrawMultiStripSprite
+    /* 45698 80244698 0C09151C */  jal        DrawSpriteAtOrigin
     /* 4569C 8024469C 2484D110 */   addiu     $a0, $a0, %lo(g_texPaintCursor)
-    /* 456A0 802446A0 3C118029 */  lui        $s1, %hi(g_bObjectDirty12)
+    /* 456A0 802446A0 3C118029 */  lui        $s1, %hi(g_bDecalDragActive)
     /* 456A4 802446A4 100000A7 */  b          .L80244944
-    /* 456A8 802446A8 2631DBC4 */   addiu     $s1, $s1, %lo(g_bObjectDirty12)
+    /* 456A8 802446A8 2631DBC4 */   addiu     $s1, $s1, %lo(g_bDecalDragActive)
     /* 456AC 802446AC 92620000 */  lbu        $v0, 0x0($s3)
   .L802446B0:
     /* 456B0 802446B0 244CFFF9 */  addiu      $t4, $v0, -0x7
@@ -1864,15 +1864,15 @@ glabel ProcessPaintShopScreen
   jlabel .L802446D4
     /* 456D4 802446D4 0C09210F */  jal        ProcessMirrorFlipMenu
     /* 456D8 802446D8 00000000 */   nop
-    /* 456DC 802446DC 3C118029 */  lui        $s1, %hi(g_bObjectDirty12)
+    /* 456DC 802446DC 3C118029 */  lui        $s1, %hi(g_bDecalDragActive)
     /* 456E0 802446E0 10000098 */  b          .L80244944
-    /* 456E4 802446E4 2631DBC4 */   addiu     $s1, $s1, %lo(g_bObjectDirty12)
+    /* 456E4 802446E4 2631DBC4 */   addiu     $s1, $s1, %lo(g_bDecalDragActive)
   jlabel .L802446E8
     /* 456E8 802446E8 0C091EC3 */  jal        ProcessFillClearMenu
     /* 456EC 802446EC 00000000 */   nop
-    /* 456F0 802446F0 3C118029 */  lui        $s1, %hi(g_bObjectDirty12)
+    /* 456F0 802446F0 3C118029 */  lui        $s1, %hi(g_bDecalDragActive)
     /* 456F4 802446F4 10000093 */  b          .L80244944
-    /* 456F8 802446F8 2631DBC4 */   addiu     $s1, $s1, %lo(g_bObjectDirty12)
+    /* 456F8 802446F8 2631DBC4 */   addiu     $s1, $s1, %lo(g_bDecalDragActive)
   jlabel .L802446FC
     /* 456FC 802446FC 3C048027 */  lui        $a0, %hi(gControllerPakState)
     /* 45700 80244700 8C8424F0 */  lw         $a0, %lo(gControllerPakState)($a0)
@@ -1881,22 +1881,22 @@ glabel ProcessPaintShopScreen
     /* 4570C 8024470C 1480000D */  bnez       $a0, .L80244744
     /* 45710 80244710 24050009 */   addiu     $a1, $zero, 0x9
     /* 45714 80244714 3C048029 */  lui        $a0, %hi(g_pCurrentVehicleModelData)
-    /* 45718 80244718 3C058029 */  lui        $a1, %hi(gDecalBrushState)
+    /* 45718 80244718 3C058029 */  lui        $a1, %hi(g_bPaintShopPlayer)
     /* 4571C 8024471C 27B800F3 */  addiu      $t8, $sp, 0xF3
     /* 45720 80244720 AFB80010 */  sw         $t8, 0x10($sp)
-    /* 45724 80244724 90A5DBBC */  lbu        $a1, %lo(gDecalBrushState)($a1)
+    /* 45724 80244724 90A5DBBC */  lbu        $a1, %lo(g_bPaintShopPlayer)($a1)
     /* 45728 80244728 0C0923E2 */  jal        ProcessDecalSaveLoad
     /* 4572C 8024472C 8C84AB08 */   lw        $a0, %lo(g_pCurrentVehicleModelData)($a0)
     /* 45730 80244730 3C018027 */  lui        $at, %hi(gControllerPakState)
-    /* 45734 80244734 3C118029 */  lui        $s1, %hi(g_bObjectDirty12)
+    /* 45734 80244734 3C118029 */  lui        $s1, %hi(g_bDecalDragActive)
     /* 45738 80244738 AC2224F0 */  sw         $v0, %lo(gControllerPakState)($at)
     /* 4573C 8024473C 10000081 */  b          .L80244944
-    /* 45740 80244740 2631DBC4 */   addiu     $s1, $s1, %lo(g_bObjectDirty12)
+    /* 45740 80244740 2631DBC4 */   addiu     $s1, $s1, %lo(g_bDecalDragActive)
   .L80244744:
     /* 45744 80244744 0C091361 */  jal        DrawPakErrorMessage
     /* 45748 80244748 00003025 */   or        $a2, $zero, $zero
-    /* 4574C 8024474C 3C0D8029 */  lui        $t5, %hi(gDecalBrushState)
-    /* 45750 80244750 91ADDBBC */  lbu        $t5, %lo(gDecalBrushState)($t5)
+    /* 4574C 8024474C 3C0D8029 */  lui        $t5, %hi(g_bPaintShopPlayer)
+    /* 45750 80244750 91ADDBBC */  lbu        $t5, %lo(g_bPaintShopPlayer)($t5)
     /* 45754 80244754 3C0F8037 */  lui        $t7, %hi(g_aPlayerInputState)
     /* 45758 80244758 25EFA8E0 */  addiu      $t7, $t7, %lo(g_aPlayerInputState)
     /* 4575C 8024475C 000DC880 */  sll        $t9, $t5, 2
@@ -1913,15 +1913,15 @@ glabel ProcessPaintShopScreen
     /* 45788 80244788 00000000 */   nop
     /* 4578C 8024478C 0C095644 */  jal        TransferFlags
     /* 45790 80244790 24050030 */   addiu     $a1, $zero, 0x30
-    /* 45794 80244794 3C188029 */  lui        $t8, %hi(g_bObjectDirty3)
-    /* 45798 80244798 9318DB64 */  lbu        $t8, %lo(g_bObjectDirty3)($t8)
+    /* 45794 80244794 3C188029 */  lui        $t8, %hi(g_bPreviousPaintTool)
+    /* 45798 80244798 9318DB64 */  lbu        $t8, %lo(g_bPreviousPaintTool)($t8)
     /* 4579C 8024479C 3C018027 */  lui        $at, %hi(gControllerPakState)
     /* 457A0 802447A0 AC2024F0 */  sw         $zero, %lo(gControllerPakState)($at)
     /* 457A4 802447A4 A2780000 */  sb         $t8, 0x0($s3)
   .L802447A8:
-    /* 457A8 802447A8 3C118029 */  lui        $s1, %hi(g_bObjectDirty12)
+    /* 457A8 802447A8 3C118029 */  lui        $s1, %hi(g_bDecalDragActive)
     /* 457AC 802447AC 10000065 */  b          .L80244944
-    /* 457B0 802447B0 2631DBC4 */   addiu     $s1, $s1, %lo(g_bObjectDirty12)
+    /* 457B0 802447B0 2631DBC4 */   addiu     $s1, $s1, %lo(g_bDecalDragActive)
   jlabel .L802447B4
     /* 457B4 802447B4 3C048027 */  lui        $a0, %hi(gControllerPakState)
     /* 457B8 802447B8 8C8424F0 */  lw         $a0, %lo(gControllerPakState)($a0)
@@ -1930,22 +1930,22 @@ glabel ProcessPaintShopScreen
     /* 457C4 802447C4 1480000D */  bnez       $a0, .L802447FC
     /* 457C8 802447C8 2405000A */   addiu     $a1, $zero, 0xA
     /* 457CC 802447CC 3C048029 */  lui        $a0, %hi(g_pCurrentVehicleModelData)
-    /* 457D0 802447D0 3C058029 */  lui        $a1, %hi(gDecalBrushState)
+    /* 457D0 802447D0 3C058029 */  lui        $a1, %hi(g_bPaintShopPlayer)
     /* 457D4 802447D4 27AD00F3 */  addiu      $t5, $sp, 0xF3
     /* 457D8 802447D8 AFAD0010 */  sw         $t5, 0x10($sp)
-    /* 457DC 802447DC 90A5DBBC */  lbu        $a1, %lo(gDecalBrushState)($a1)
+    /* 457DC 802447DC 90A5DBBC */  lbu        $a1, %lo(g_bPaintShopPlayer)($a1)
     /* 457E0 802447E0 0C0923E2 */  jal        ProcessDecalSaveLoad
     /* 457E4 802447E4 8C84AB08 */   lw        $a0, %lo(g_pCurrentVehicleModelData)($a0)
     /* 457E8 802447E8 3C018027 */  lui        $at, %hi(gControllerPakState)
-    /* 457EC 802447EC 3C118029 */  lui        $s1, %hi(g_bObjectDirty12)
+    /* 457EC 802447EC 3C118029 */  lui        $s1, %hi(g_bDecalDragActive)
     /* 457F0 802447F0 AC2224F0 */  sw         $v0, %lo(gControllerPakState)($at)
     /* 457F4 802447F4 10000053 */  b          .L80244944
-    /* 457F8 802447F8 2631DBC4 */   addiu     $s1, $s1, %lo(g_bObjectDirty12)
+    /* 457F8 802447F8 2631DBC4 */   addiu     $s1, $s1, %lo(g_bDecalDragActive)
   .L802447FC:
     /* 457FC 802447FC 0C091361 */  jal        DrawPakErrorMessage
     /* 45800 80244800 00003025 */   or        $a2, $zero, $zero
-    /* 45804 80244804 3C198029 */  lui        $t9, %hi(gDecalBrushState)
-    /* 45808 80244808 9339DBBC */  lbu        $t9, %lo(gDecalBrushState)($t9)
+    /* 45804 80244804 3C198029 */  lui        $t9, %hi(g_bPaintShopPlayer)
+    /* 45808 80244808 9339DBBC */  lbu        $t9, %lo(g_bPaintShopPlayer)($t9)
     /* 4580C 8024480C 3C0E8037 */  lui        $t6, %hi(g_aPlayerInputState)
     /* 45810 80244810 25CEA8E0 */  addiu      $t6, $t6, %lo(g_aPlayerInputState)
     /* 45814 80244814 00197880 */  sll        $t7, $t9, 2
@@ -1962,26 +1962,26 @@ glabel ProcessPaintShopScreen
     /* 45840 80244840 00000000 */   nop
     /* 45844 80244844 0C095644 */  jal        TransferFlags
     /* 45848 80244848 24050030 */   addiu     $a1, $zero, 0x30
-    /* 4584C 8024484C 3C0D8029 */  lui        $t5, %hi(g_bObjectDirty3)
-    /* 45850 80244850 91ADDB64 */  lbu        $t5, %lo(g_bObjectDirty3)($t5)
+    /* 4584C 8024484C 3C0D8029 */  lui        $t5, %hi(g_bPreviousPaintTool)
+    /* 45850 80244850 91ADDB64 */  lbu        $t5, %lo(g_bPreviousPaintTool)($t5)
     /* 45854 80244854 3C018027 */  lui        $at, %hi(gControllerPakState)
     /* 45858 80244858 AC2024F0 */  sw         $zero, %lo(gControllerPakState)($at)
     /* 4585C 8024485C A26D0000 */  sb         $t5, 0x0($s3)
   .L80244860:
-    /* 45860 80244860 3C118029 */  lui        $s1, %hi(g_bObjectDirty12)
+    /* 45860 80244860 3C118029 */  lui        $s1, %hi(g_bDecalDragActive)
     /* 45864 80244864 10000037 */  b          .L80244944
-    /* 45868 80244868 2631DBC4 */   addiu     $s1, $s1, %lo(g_bObjectDirty12)
+    /* 45868 80244868 2631DBC4 */   addiu     $s1, $s1, %lo(g_bDecalDragActive)
   jlabel .L8024486C
     /* 4586C 8024486C 0C094C70 */  jal        ProcessPaintShopExitConfirm
     /* 45870 80244870 00000000 */   nop
-    /* 45874 80244874 3C118029 */  lui        $s1, %hi(g_bObjectDirty12)
+    /* 45874 80244874 3C118029 */  lui        $s1, %hi(g_bDecalDragActive)
     /* 45878 80244878 10000032 */  b          .L80244944
-    /* 4587C 8024487C 2631DBC4 */   addiu     $s1, $s1, %lo(g_bObjectDirty12)
+    /* 4587C 8024487C 2631DBC4 */   addiu     $s1, $s1, %lo(g_bDecalDragActive)
   jlabel .L80244880
-    /* 45880 80244880 3C198029 */  lui        $t9, %hi(g_bObjectDirty19)
-    /* 45884 80244884 9339DBE0 */  lbu        $t9, %lo(g_bObjectDirty19)($t9)
+    /* 45880 80244880 3C198029 */  lui        $t9, %hi(g_bStyleMenuOpen)
+    /* 45884 80244884 9339DBE0 */  lbu        $t9, %lo(g_bStyleMenuOpen)($t9)
     /* 45888 80244888 24010001 */  addiu      $at, $zero, 0x1
-    /* 4588C 8024488C 3C0F8029 */  lui        $t7, %hi(g_bObjectDirty16)
+    /* 4588C 8024488C 3C0F8029 */  lui        $t7, %hi(g_bColorEditorOpen)
     /* 45890 80244890 1320001C */  beqz       $t9, .L80244904
     /* 45894 80244894 00000000 */   nop
     /* 45898 80244898 54410006 */  bnel       $v0, $at, .L802448B4
@@ -2015,7 +2015,7 @@ glabel ProcessPaintShopScreen
     /* 458FC 802448FC 1000000F */  b          .L8024493C
     /* 45900 80244900 00000000 */   nop
   .L80244904:
-    /* 45904 80244904 91EFDBD4 */  lbu        $t7, %lo(g_bObjectDirty16)($t7)
+    /* 45904 80244904 91EFDBD4 */  lbu        $t7, %lo(g_bColorEditorOpen)($t7)
     /* 45908 80244908 11E00005 */  beqz       $t7, .L80244920
     /* 4590C 8024490C 00000000 */   nop
     /* 45910 80244910 0C092C51 */  jal        ProcessColorEditorDialog
@@ -2028,11 +2028,11 @@ glabel ProcessPaintShopScreen
     /* 45928 80244928 0C092F9E */  jal        UpdateCursorFromInput
     /* 4592C 8024492C 00000000 */   nop
     /* 45930 80244930 3C048029 */  lui        $a0, %hi(g_texPaintCursor)
-    /* 45934 80244934 0C09151C */  jal        DrawMultiStripSprite
+    /* 45934 80244934 0C09151C */  jal        DrawSpriteAtOrigin
     /* 45938 80244938 2484D110 */   addiu     $a0, $a0, %lo(g_texPaintCursor)
   .L8024493C:
-    /* 4593C 8024493C 3C118029 */  lui        $s1, %hi(g_bObjectDirty12)
-    /* 45940 80244940 2631DBC4 */  addiu      $s1, $s1, %lo(g_bObjectDirty12)
+    /* 4593C 8024493C 3C118029 */  lui        $s1, %hi(g_bDecalDragActive)
+    /* 45940 80244940 2631DBC4 */  addiu      $s1, $s1, %lo(g_bDecalDragActive)
   .L80244944:
     /* 45944 80244944 3C048029 */  lui        $a0, %hi(gDisplayListPtr)
     /* 45948 80244948 2484A858 */  addiu      $a0, $a0, %lo(gDisplayListPtr)
@@ -2061,8 +2061,8 @@ glabel ProcessPaintShopScreen
   .L802449A4:
     /* 459A4 802449A4 0C086A82 */  jal        FlushDisplayList
     /* 459A8 802449A8 00000000 */   nop
-    /* 459AC 802449AC 3C198029 */  lui        $t9, %hi(gDecalBrushState)
-    /* 459B0 802449B0 9339DBBC */  lbu        $t9, %lo(gDecalBrushState)($t9)
+    /* 459AC 802449AC 3C198029 */  lui        $t9, %hi(g_bPaintShopPlayer)
+    /* 459B0 802449B0 9339DBBC */  lbu        $t9, %lo(g_bPaintShopPlayer)($t9)
     /* 459B4 802449B4 3C0E8037 */  lui        $t6, %hi(g_aPlayerInputState)
     /* 459B8 802449B8 00197880 */  sll        $t7, $t9, 2
     /* 459BC 802449BC 01F97823 */  subu       $t7, $t7, $t9
@@ -2076,11 +2076,11 @@ glabel ProcessPaintShopScreen
     /* 459DC 802449DC 31CC0020 */  andi       $t4, $t6, 0x20
     /* 459E0 802449E0 11800040 */  beqz       $t4, .L80244AE4
     /* 459E4 802449E4 00000000 */   nop
-    /* 459E8 802449E8 0C0934FC */  jal        IsPointInRect
+    /* 459E8 802449E8 0C0934FC */  jal        IsCursorInRect
     /* 459EC 802449EC 02802025 */   or        $a0, $s4, $zero
     /* 459F0 802449F0 1040001B */  beqz       $v0, .L80244A60
-    /* 459F4 802449F4 3C108029 */   lui       $s0, %hi(gDecalCanvasHeight)
-    /* 459F8 802449F8 2610DBC0 */  addiu      $s0, $s0, %lo(gDecalCanvasHeight)
+    /* 459F4 802449F4 3C108029 */   lui       $s0, %hi(g_bPaintToolStarted)
+    /* 459F8 802449F8 2610DBC0 */  addiu      $s0, $s0, %lo(g_bPaintToolStarted)
     /* 459FC 802449FC 92180000 */  lbu        $t8, 0x0($s0)
     /* 45A00 80244A00 17000017 */  bnez       $t8, .L80244A60
     /* 45A04 80244A04 00000000 */   nop
@@ -2100,17 +2100,17 @@ glabel ProcessPaintShopScreen
     /* 45A3C 80244A3C 00102083 */  sra        $a0, $s0, 2
     /* 45A40 80244A40 0C0935F6 */  jal        GetPixel4Bit
     /* 45A44 80244A44 00112883 */   sra       $a1, $s1, 2
-    /* 45A48 80244A48 3C018029 */  lui        $at, %hi(gDecalEditorState)
-    /* 45A4C 80244A4C A022DB58 */  sb         $v0, %lo(gDecalEditorState)($at)
+    /* 45A48 80244A48 3C018029 */  lui        $at, %hi(g_bDecalColor)
+    /* 45A4C 80244A4C A022DB58 */  sb         $v0, %lo(g_bDecalColor)($at)
     /* 45A50 80244A50 24030001 */  addiu      $v1, $zero, 0x1
-    /* 45A54 80244A54 3C018029 */  lui        $at, %hi(g_bObjectDirty22)
+    /* 45A54 80244A54 3C018029 */  lui        $at, %hi(g_bEyedropperActive)
     /* 45A58 80244A58 10000024 */  b          .L80244AEC
-    /* 45A5C 80244A5C A023DBEC */   sb        $v1, %lo(g_bObjectDirty22)($at)
+    /* 45A5C 80244A5C A023DBEC */   sb        $v1, %lo(g_bEyedropperActive)($at)
   .L80244A60:
-    /* 45A60 80244A60 3C108029 */  lui        $s0, %hi(gDecalCanvasHeight)
-    /* 45A64 80244A64 2610DBC0 */  addiu      $s0, $s0, %lo(gDecalCanvasHeight)
+    /* 45A60 80244A60 3C108029 */  lui        $s0, %hi(g_bPaintToolStarted)
+    /* 45A64 80244A64 2610DBC0 */  addiu      $s0, $s0, %lo(g_bPaintToolStarted)
     /* 45A68 80244A68 92190000 */  lbu        $t9, 0x0($s0)
-    /* 45A6C 80244A6C 3C0E8029 */  lui        $t6, %hi(gDecalBrushState)
+    /* 45A6C 80244A6C 3C0E8029 */  lui        $t6, %hi(g_bPaintShopPlayer)
     /* 45A70 80244A70 3C188037 */  lui        $t8, %hi(g_aPlayerInputState)
     /* 45A74 80244A74 17200004 */  bnez       $t9, .L80244A88
     /* 45A78 80244A78 00000000 */   nop
@@ -2118,7 +2118,7 @@ glabel ProcessPaintShopScreen
     /* 45A80 80244A80 11E0001A */  beqz       $t7, .L80244AEC
     /* 45A84 80244A84 00000000 */   nop
   .L80244A88:
-    /* 45A88 80244A88 91CEDBBC */  lbu        $t6, %lo(gDecalBrushState)($t6)
+    /* 45A88 80244A88 91CEDBBC */  lbu        $t6, %lo(g_bPaintShopPlayer)($t6)
     /* 45A8C 80244A8C 2718A8E0 */  addiu      $t8, $t8, %lo(g_aPlayerInputState)
     /* 45A90 80244A90 24050020 */  addiu      $a1, $zero, 0x20
     /* 45A94 80244A94 000E6080 */  sll        $t4, $t6, 2
@@ -2134,19 +2134,19 @@ glabel ProcessPaintShopScreen
     /* 45ABC 80244ABC A2200000 */  sb         $zero, 0x0($s1)
     /* 45AC0 80244AC0 A2000000 */  sb         $zero, 0x0($s0)
     /* 45AC4 80244AC4 A2430000 */  sb         $v1, 0x0($s2)
-    /* 45AC8 80244AC8 3C018029 */  lui        $at, %hi(g_bObjectDirty13)
-    /* 45ACC 80244ACC A023DBC8 */  sb         $v1, %lo(g_bObjectDirty13)($at)
-    /* 45AD0 80244AD0 3C018029 */  lui        $at, %hi(g_bObjectDirty9)
-    /* 45AD4 80244AD4 A020DBA8 */  sb         $zero, %lo(g_bObjectDirty9)($at)
-    /* 45AD8 80244AD8 3C018029 */  lui        $at, %hi(g_bObjectDirty10)
+    /* 45AC8 80244AC8 3C018029 */  lui        $at, %hi(g_bPaletteEnabled)
+    /* 45ACC 80244ACC A023DBC8 */  sb         $v1, %lo(g_bPaletteEnabled)($at)
+    /* 45AD0 80244AD0 3C018029 */  lui        $at, %hi(g_bDecalTextLength)
+    /* 45AD4 80244AD4 A020DBA8 */  sb         $zero, %lo(g_bDecalTextLength)($at)
+    /* 45AD8 80244AD8 3C018029 */  lui        $at, %hi(g_bDecalTextWidth)
     /* 45ADC 80244ADC 10000003 */  b          .L80244AEC
-    /* 45AE0 80244AE0 A020DBAC */   sb        $zero, %lo(g_bObjectDirty10)($at)
+    /* 45AE0 80244AE0 A020DBAC */   sb        $zero, %lo(g_bDecalTextWidth)($at)
   .L80244AE4:
-    /* 45AE4 80244AE4 3C018029 */  lui        $at, %hi(g_bObjectDirty22)
-    /* 45AE8 80244AE8 A020DBEC */  sb         $zero, %lo(g_bObjectDirty22)($at)
+    /* 45AE4 80244AE4 3C018029 */  lui        $at, %hi(g_bEyedropperActive)
+    /* 45AE8 80244AE8 A020DBEC */  sb         $zero, %lo(g_bEyedropperActive)($at)
   .L80244AEC:
-    /* 45AEC 80244AEC 3C108029 */  lui        $s0, %hi(g_bObjectDirty21)
-    /* 45AF0 80244AF0 2610DBE8 */  addiu      $s0, $s0, %lo(g_bObjectDirty21)
+    /* 45AEC 80244AEC 3C108029 */  lui        $s0, %hi(g_bPaintShopExiting)
+    /* 45AF0 80244AF0 2610DBE8 */  addiu      $s0, $s0, %lo(g_bPaintShopExiting)
     /* 45AF4 80244AF4 920D0000 */  lbu        $t5, 0x0($s0)
     /* 45AF8 80244AF8 51A00024 */  beql       $t5, $zero, .L80244B8C
     /* 45AFC 80244AFC 8FBF004C */   lw        $ra, 0x4C($sp)
@@ -2172,8 +2172,8 @@ glabel ProcessPaintShopScreen
     /* 45B4C 80244B4C 00000000 */   nop
     /* 45B50 80244B50 0C0912EA */  jal        ResetPaintShopState
     /* 45B54 80244B54 00000000 */   nop
-    /* 45B58 80244B58 3C018029 */  lui        $at, %hi(g_bObjectDirty23)
-    /* 45B5C 80244B5C A020DC80 */  sb         $zero, %lo(g_bObjectDirty23)($at)
+    /* 45B58 80244B58 3C018029 */  lui        $at, %hi(g_bPaintShopInitialized)
+    /* 45B5C 80244B5C A020DC80 */  sb         $zero, %lo(g_bPaintShopInitialized)($at)
     /* 45B60 80244B60 3C018027 */  lui        $at, %hi(gControllerPakState)
     /* 45B64 80244B64 AC2024F0 */  sw         $zero, %lo(gControllerPakState)($at)
     /* 45B68 80244B68 3C018029 */  lui        $at, %hi(g_bPaintShopPreviewActive)
@@ -2200,112 +2200,112 @@ nonmatching ResetPaintShopState, 0x100
 glabel ResetPaintShopState
     /* 45BA8 80244BA8 3C048029 */  lui        $a0, %hi(g_texPaintCursor)
     /* 45BAC 80244BAC 2484D110 */  addiu      $a0, $a0, %lo(g_texPaintCursor)
-    /* 45BB0 80244BB0 3C058029 */  lui        $a1, %hi(g_bObjectDirty4)
+    /* 45BB0 80244BB0 3C058029 */  lui        $a1, %hi(g_bDecalSlot)
     /* 45BB4 80244BB4 24060002 */  addiu      $a2, $zero, 0x2
-    /* 45BB8 80244BB8 24A5DB68 */  addiu      $a1, $a1, %lo(g_bObjectDirty4)
+    /* 45BB8 80244BB8 24A5DB68 */  addiu      $a1, $a1, %lo(g_bDecalSlot)
     /* 45BBC 80244BBC 240E00F4 */  addiu      $t6, $zero, 0xF4
     /* 45BC0 80244BC0 240F0110 */  addiu      $t7, $zero, 0x110
     /* 45BC4 80244BC4 30C200FF */  andi       $v0, $a2, 0xFF
     /* 45BC8 80244BC8 AC8E001C */  sw         $t6, 0x1C($a0)
     /* 45BCC 80244BCC AC8F0020 */  sw         $t7, 0x20($a0)
     /* 45BD0 80244BD0 A0A60000 */  sb         $a2, 0x0($a1)
-    /* 45BD4 80244BD4 3C018029 */  lui        $at, %hi(g_bObjectDirty5)
+    /* 45BD4 80244BD4 3C018029 */  lui        $at, %hi(g_bPreviousDecalSlot)
     /* 45BD8 80244BD8 0002C080 */  sll        $t8, $v0, 2
-    /* 45BDC 80244BDC 3C198029 */  lui        $t9, %hi(g_pObjectMatrix12)
-    /* 45BE0 80244BE0 A022DB6C */  sb         $v0, %lo(g_bObjectDirty5)($at)
+    /* 45BDC 80244BDC 3C198029 */  lui        $t9, %hi(g_apDecalSlotIcons)
+    /* 45BE0 80244BE0 A022DB6C */  sb         $v0, %lo(g_bPreviousDecalSlot)($at)
     /* 45BE4 80244BE4 0338C821 */  addu       $t9, $t9, $t8
-    /* 45BE8 80244BE8 8F39DB0C */  lw         $t9, %lo(g_pObjectMatrix12)($t9)
-    /* 45BEC 80244BEC 3C018029 */  lui        $at, %hi(g_bObjectDirty7)
-    /* 45BF0 80244BF0 A022DB74 */  sb         $v0, %lo(g_bObjectDirty7)($at)
-    /* 45BF4 80244BF4 3C018029 */  lui        $at, %hi(g_dwObjectCount)
-    /* 45BF8 80244BF8 AC39DB08 */  sw         $t9, %lo(g_dwObjectCount)($at)
-    /* 45BFC 80244BFC 3C018029 */  lui        $at, %hi(g_bObjectVisible2)
-    /* 45C00 80244C00 A026DAC0 */  sb         $a2, %lo(g_bObjectVisible2)($at)
-    /* 45C04 80244C04 3C018029 */  lui        $at, %hi(g_bObjectDirty0)
-    /* 45C08 80244C08 A020DB54 */  sb         $zero, %lo(g_bObjectDirty0)($at)
-    /* 45C0C 80244C0C 3C018029 */  lui        $at, %hi(gDecalEditorState)
+    /* 45BE8 80244BE8 8F39DB0C */  lw         $t9, %lo(g_apDecalSlotIcons)($t9)
+    /* 45BEC 80244BEC 3C018029 */  lui        $at, %hi(g_bUndoDecalSlot)
+    /* 45BF0 80244BF0 A022DB74 */  sb         $v0, %lo(g_bUndoDecalSlot)($at)
+    /* 45BF4 80244BF4 3C018029 */  lui        $at, %hi(g_pDecalSlotIcon)
+    /* 45BF8 80244BF8 AC39DB08 */  sw         $t9, %lo(g_pDecalSlotIcon)($at)
+    /* 45BFC 80244BFC 3C018029 */  lui        $at, %hi(g_bBrushSize)
+    /* 45C00 80244C00 A026DAC0 */  sb         $a2, %lo(g_bBrushSize)($at)
+    /* 45C04 80244C04 3C018029 */  lui        $at, %hi(g_bSavedColor)
+    /* 45C08 80244C08 A020DB54 */  sb         $zero, %lo(g_bSavedColor)($at)
+    /* 45C0C 80244C0C 3C018029 */  lui        $at, %hi(g_bDecalColor)
     /* 45C10 80244C10 24080003 */  addiu      $t0, $zero, 0x3
-    /* 45C14 80244C14 A028DB58 */  sb         $t0, %lo(gDecalEditorState)($at)
+    /* 45C14 80244C14 A028DB58 */  sb         $t0, %lo(g_bDecalColor)($at)
     /* 45C18 80244C18 24030001 */  addiu      $v1, $zero, 0x1
-    /* 45C1C 80244C1C 3C018029 */  lui        $at, %hi(g_bObjectDirty3)
-    /* 45C20 80244C20 A023DB64 */  sb         $v1, %lo(g_bObjectDirty3)($at)
-    /* 45C24 80244C24 3C018029 */  lui        $at, %hi(g_bObjectDirty2)
-    /* 45C28 80244C28 A023DB60 */  sb         $v1, %lo(g_bObjectDirty2)($at)
+    /* 45C1C 80244C1C 3C018029 */  lui        $at, %hi(g_bPreviousPaintTool)
+    /* 45C20 80244C20 A023DB64 */  sb         $v1, %lo(g_bPreviousPaintTool)($at)
+    /* 45C24 80244C24 3C018029 */  lui        $at, %hi(g_bPaintTool)
+    /* 45C28 80244C28 A023DB60 */  sb         $v1, %lo(g_bPaintTool)($at)
     /* 45C2C 80244C2C 3C018029 */  lui        $at, %hi(g_wScreenFrameCount)
     /* 45C30 80244C30 A420DBB0 */  sh         $zero, %lo(g_wScreenFrameCount)($at)
-    /* 45C34 80244C34 3C018029 */  lui        $at, %hi(g_bController1Connected)
-    /* 45C38 80244C38 A020CF5C */  sb         $zero, %lo(g_bController1Connected)($at)
-    /* 45C3C 80244C3C 3C018029 */  lui        $at, %hi(g_bController2Connected)
-    /* 45C40 80244C40 A020CF8C */  sb         $zero, %lo(g_bController2Connected)($at)
-    /* 45C44 80244C44 3C018029 */  lui        $at, %hi(g_bObjectDirty11)
-    /* 45C48 80244C48 A020DBB4 */  sb         $zero, %lo(g_bObjectDirty11)($at)
-    /* 45C4C 80244C4C 3C018029 */  lui        $at, %hi(gDecalCanvasHeight)
-    /* 45C50 80244C50 A020DBC0 */  sb         $zero, %lo(gDecalCanvasHeight)($at)
-    /* 45C54 80244C54 3C018029 */  lui        $at, %hi(g_bObjectDirty12)
-    /* 45C58 80244C58 A020DBC4 */  sb         $zero, %lo(g_bObjectDirty12)($at)
-    /* 45C5C 80244C5C 3C018029 */  lui        $at, %hi(g_bObjectDirty13)
-    /* 45C60 80244C60 A023DBC8 */  sb         $v1, %lo(g_bObjectDirty13)($at)
-    /* 45C64 80244C64 3C018029 */  lui        $at, %hi(g_bObjectDirty14)
-    /* 45C68 80244C68 A023DBCC */  sb         $v1, %lo(g_bObjectDirty14)($at)
-    /* 45C6C 80244C6C 3C018029 */  lui        $at, %hi(g_bObjectDirty15)
-    /* 45C70 80244C70 A020DBD0 */  sb         $zero, %lo(g_bObjectDirty15)($at)
-    /* 45C74 80244C74 3C018029 */  lui        $at, %hi(g_bObjectDirty16)
-    /* 45C78 80244C78 A020DBD4 */  sb         $zero, %lo(g_bObjectDirty16)($at)
-    /* 45C7C 80244C7C 3C018029 */  lui        $at, %hi(g_bObjectDirty17)
-    /* 45C80 80244C80 A023DBD8 */  sb         $v1, %lo(g_bObjectDirty17)($at)
-    /* 45C84 80244C84 3C018029 */  lui        $at, %hi(g_bObjectDirty18)
-    /* 45C88 80244C88 A020DBDC */  sb         $zero, %lo(g_bObjectDirty18)($at)
-    /* 45C8C 80244C8C 3C018029 */  lui        $at, %hi(g_bObjectDirty19)
-    /* 45C90 80244C90 A020DBE0 */  sb         $zero, %lo(g_bObjectDirty19)($at)
-    /* 45C94 80244C94 3C018029 */  lui        $at, %hi(g_bObjectDirty20)
-    /* 45C98 80244C98 A020DBE4 */  sb         $zero, %lo(g_bObjectDirty20)($at)
-    /* 45C9C 80244C9C 3C018029 */  lui        $at, %hi(g_bObjectDirty22)
+    /* 45C34 80244C34 3C018029 */  lui        $at, %hi(D_8028CF5C)
+    /* 45C38 80244C38 A020CF5C */  sb         $zero, %lo(D_8028CF5C)($at)
+    /* 45C3C 80244C3C 3C018029 */  lui        $at, %hi(D_8028CF8C)
+    /* 45C40 80244C40 A020CF8C */  sb         $zero, %lo(D_8028CF8C)($at)
+    /* 45C44 80244C44 3C018029 */  lui        $at, %hi(g_bDecalEditCount)
+    /* 45C48 80244C48 A020DBB4 */  sb         $zero, %lo(g_bDecalEditCount)($at)
+    /* 45C4C 80244C4C 3C018029 */  lui        $at, %hi(g_bPaintToolStarted)
+    /* 45C50 80244C50 A020DBC0 */  sb         $zero, %lo(g_bPaintToolStarted)($at)
+    /* 45C54 80244C54 3C018029 */  lui        $at, %hi(g_bDecalDragActive)
+    /* 45C58 80244C58 A020DBC4 */  sb         $zero, %lo(g_bDecalDragActive)($at)
+    /* 45C5C 80244C5C 3C018029 */  lui        $at, %hi(g_bPaletteEnabled)
+    /* 45C60 80244C60 A023DBC8 */  sb         $v1, %lo(g_bPaletteEnabled)($at)
+    /* 45C64 80244C64 3C018029 */  lui        $at, %hi(g_bDecalSlotHasMirror)
+    /* 45C68 80244C68 A023DBCC */  sb         $v1, %lo(g_bDecalSlotHasMirror)($at)
+    /* 45C6C 80244C6C 3C018029 */  lui        $at, %hi(g_bDecalSlotChanged)
+    /* 45C70 80244C70 A020DBD0 */  sb         $zero, %lo(g_bDecalSlotChanged)($at)
+    /* 45C74 80244C74 3C018029 */  lui        $at, %hi(g_bColorEditorOpen)
+    /* 45C78 80244C78 A020DBD4 */  sb         $zero, %lo(g_bColorEditorOpen)($at)
+    /* 45C7C 80244C7C 3C018029 */  lui        $at, %hi(g_bShowPreview3D)
+    /* 45C80 80244C80 A023DBD8 */  sb         $v1, %lo(g_bShowPreview3D)($at)
+    /* 45C84 80244C84 3C018029 */  lui        $at, %hi(g_bUndoAvailable)
+    /* 45C88 80244C88 A020DBDC */  sb         $zero, %lo(g_bUndoAvailable)($at)
+    /* 45C8C 80244C8C 3C018029 */  lui        $at, %hi(g_bStyleMenuOpen)
+    /* 45C90 80244C90 A020DBE0 */  sb         $zero, %lo(g_bStyleMenuOpen)($at)
+    /* 45C94 80244C94 3C018029 */  lui        $at, %hi(g_bTextShadowPickerOpen)
+    /* 45C98 80244C98 A020DBE4 */  sb         $zero, %lo(g_bTextShadowPickerOpen)($at)
+    /* 45C9C 80244C9C 3C018029 */  lui        $at, %hi(g_bEyedropperActive)
     /* 45CA0 80244CA0 03E00008 */  jr         $ra
-    /* 45CA4 80244CA4 A020DBEC */   sb        $zero, %lo(g_bObjectDirty22)($at)
+    /* 45CA4 80244CA4 A020DBEC */   sb        $zero, %lo(g_bEyedropperActive)($at)
 endlabel ResetPaintShopState
 
-nonmatching CommitFramebuffer, 0x5C
+nonmatching SaveDecalUndo, 0x5C
 
-glabel CommitFramebuffer
+glabel SaveDecalUndo
     /* 45CA8 80244CA8 27BDFFE8 */  addiu      $sp, $sp, -0x18
     /* 45CAC 80244CAC AFBF0014 */  sw         $ra, 0x14($sp)
-    /* 45CB0 80244CB0 3C048029 */  lui        $a0, %hi(g_dwObjectPosX)
-    /* 45CB4 80244CB4 3C058029 */  lui        $a1, %hi(gFramebufferPtr)
-    /* 45CB8 80244CB8 8CA5DB78 */  lw         $a1, %lo(gFramebufferPtr)($a1)
-    /* 45CBC 80244CBC 8C84DB80 */  lw         $a0, %lo(g_dwObjectPosX)($a0)
+    /* 45CB0 80244CB0 3C048029 */  lui        $a0, %hi(g_pDecalUndoBuffer)
+    /* 45CB4 80244CB4 3C058029 */  lui        $a1, %hi(g_pDecalTexels)
+    /* 45CB8 80244CB8 8CA5DB78 */  lw         $a1, %lo(g_pDecalTexels)($a1)
+    /* 45CBC 80244CBC 8C84DB80 */  lw         $a0, %lo(g_pDecalUndoBuffer)($a0)
     /* 45CC0 80244CC0 0C0982C8 */  jal        memcpy
     /* 45CC4 80244CC4 24060800 */   addiu     $a2, $zero, 0x800
-    /* 45CC8 80244CC8 3C0E8029 */  lui        $t6, %hi(g_bObjectDirty4)
-    /* 45CCC 80244CCC 91CEDB68 */  lbu        $t6, %lo(g_bObjectDirty4)($t6)
-    /* 45CD0 80244CD0 3C028029 */  lui        $v0, %hi(g_bObjectDirty11)
-    /* 45CD4 80244CD4 3C018029 */  lui        $at, %hi(g_bObjectDirty7)
-    /* 45CD8 80244CD8 2442DBB4 */  addiu      $v0, $v0, %lo(g_bObjectDirty11)
-    /* 45CDC 80244CDC A02EDB74 */  sb         $t6, %lo(g_bObjectDirty7)($at)
+    /* 45CC8 80244CC8 3C0E8029 */  lui        $t6, %hi(g_bDecalSlot)
+    /* 45CCC 80244CCC 91CEDB68 */  lbu        $t6, %lo(g_bDecalSlot)($t6)
+    /* 45CD0 80244CD0 3C028029 */  lui        $v0, %hi(g_bDecalEditCount)
+    /* 45CD4 80244CD4 3C018029 */  lui        $at, %hi(g_bUndoDecalSlot)
+    /* 45CD8 80244CD8 2442DBB4 */  addiu      $v0, $v0, %lo(g_bDecalEditCount)
+    /* 45CDC 80244CDC A02EDB74 */  sb         $t6, %lo(g_bUndoDecalSlot)($at)
     /* 45CE0 80244CE0 904F0000 */  lbu        $t7, 0x0($v0)
     /* 45CE4 80244CE4 8FBF0014 */  lw         $ra, 0x14($sp)
-    /* 45CE8 80244CE8 3C018029 */  lui        $at, %hi(g_bObjectDirty18)
+    /* 45CE8 80244CE8 3C018029 */  lui        $at, %hi(g_bUndoAvailable)
     /* 45CEC 80244CEC 25F80001 */  addiu      $t8, $t7, 0x1
     /* 45CF0 80244CF0 A0580000 */  sb         $t8, 0x0($v0)
     /* 45CF4 80244CF4 24190001 */  addiu      $t9, $zero, 0x1
-    /* 45CF8 80244CF8 A039DBDC */  sb         $t9, %lo(g_bObjectDirty18)($at)
+    /* 45CF8 80244CF8 A039DBDC */  sb         $t9, %lo(g_bUndoAvailable)($at)
     /* 45CFC 80244CFC 03E00008 */  jr         $ra
     /* 45D00 80244D00 27BD0018 */   addiu     $sp, $sp, 0x18
-endlabel CommitFramebuffer
+endlabel SaveDecalUndo
 
 nonmatching UndoDecalEdit, 0x80
 
 glabel UndoDecalEdit
-    /* 45D04 80244D04 3C0E8029 */  lui        $t6, %hi(g_bObjectDirty18)
-    /* 45D08 80244D08 91CEDBDC */  lbu        $t6, %lo(g_bObjectDirty18)($t6)
+    /* 45D04 80244D04 3C0E8029 */  lui        $t6, %hi(g_bUndoAvailable)
+    /* 45D08 80244D08 91CEDBDC */  lbu        $t6, %lo(g_bUndoAvailable)($t6)
     /* 45D0C 80244D0C 27BDFFE8 */  addiu      $sp, $sp, -0x18
     /* 45D10 80244D10 AFBF0014 */  sw         $ra, 0x14($sp)
     /* 45D14 80244D14 11C00017 */  beqz       $t6, .L80244D74
     /* 45D18 80244D18 3C028029 */   lui       $v0, %hi(g_pCurrentVehicleModelData)
-    /* 45D1C 80244D1C 3C188029 */  lui        $t8, %hi(g_bObjectDirty7)
-    /* 45D20 80244D20 9318DB74 */  lbu        $t8, %lo(g_bObjectDirty7)($t8)
+    /* 45D1C 80244D1C 3C188029 */  lui        $t8, %hi(g_bUndoDecalSlot)
+    /* 45D20 80244D20 9318DB74 */  lbu        $t8, %lo(g_bUndoDecalSlot)($t8)
     /* 45D24 80244D24 8C42AB08 */  lw         $v0, %lo(g_pCurrentVehicleModelData)($v0)
-    /* 45D28 80244D28 3C058029 */  lui        $a1, %hi(g_dwObjectPosX)
-    /* 45D2C 80244D2C 8CA5DB80 */  lw         $a1, %lo(g_dwObjectPosX)($a1)
+    /* 45D28 80244D28 3C058029 */  lui        $a1, %hi(g_pDecalUndoBuffer)
+    /* 45D2C 80244D2C 8CA5DB80 */  lw         $a1, %lo(g_pDecalUndoBuffer)($a1)
     /* 45D30 80244D30 0058C821 */  addu       $t9, $v0, $t8
     /* 45D34 80244D34 93280110 */  lbu        $t0, 0x110($t9)
     /* 45D38 80244D38 8C4F0014 */  lw         $t7, 0x14($v0)
@@ -2316,13 +2316,13 @@ glabel UndoDecalEdit
     /* 45D4C 80244D4C 01E95021 */  addu       $t2, $t7, $t1
     /* 45D50 80244D50 0C0982C8 */  jal        memcpy
     /* 45D54 80244D54 8D440000 */   lw        $a0, 0x0($t2)
-    /* 45D58 80244D58 3C028029 */  lui        $v0, %hi(g_bObjectDirty11)
-    /* 45D5C 80244D5C 2442DBB4 */  addiu      $v0, $v0, %lo(g_bObjectDirty11)
+    /* 45D58 80244D58 3C028029 */  lui        $v0, %hi(g_bDecalEditCount)
+    /* 45D5C 80244D5C 2442DBB4 */  addiu      $v0, $v0, %lo(g_bDecalEditCount)
     /* 45D60 80244D60 904B0000 */  lbu        $t3, 0x0($v0)
-    /* 45D64 80244D64 3C018029 */  lui        $at, %hi(g_bObjectDirty18)
+    /* 45D64 80244D64 3C018029 */  lui        $at, %hi(g_bUndoAvailable)
     /* 45D68 80244D68 256CFFFF */  addiu      $t4, $t3, -0x1
     /* 45D6C 80244D6C A04C0000 */  sb         $t4, 0x0($v0)
-    /* 45D70 80244D70 A020DBDC */  sb         $zero, %lo(g_bObjectDirty18)($at)
+    /* 45D70 80244D70 A020DBDC */  sb         $zero, %lo(g_bUndoAvailable)($at)
   .L80244D74:
     /* 45D74 80244D74 8FBF0014 */  lw         $ra, 0x14($sp)
     /* 45D78 80244D78 27BD0018 */  addiu      $sp, $sp, 0x18
@@ -2808,9 +2808,9 @@ glabel DrawPakErrorMessage
     /* 4646C 8024546C 27BD0068 */   addiu     $sp, $sp, 0x68
 endlabel DrawPakErrorMessage
 
-nonmatching DrawMultiStripSprite, 0x194
+nonmatching DrawSpriteAtOrigin, 0x194
 
-glabel DrawMultiStripSprite
+glabel DrawSpriteAtOrigin
     /* 46470 80245470 27BDFFA8 */  addiu      $sp, $sp, -0x58
     /* 46474 80245474 AFBF0054 */  sw         $ra, 0x54($sp)
     /* 46478 80245478 AFB70050 */  sw         $s7, 0x50($sp)
@@ -2919,7 +2919,7 @@ glabel DrawMultiStripSprite
     /* 465F8 802455F8 8FB70050 */  lw         $s7, 0x50($sp)
     /* 465FC 802455FC 03E00008 */  jr         $ra
     /* 46600 80245600 27BD0058 */   addiu     $sp, $sp, 0x58
-endlabel DrawMultiStripSprite
+endlabel DrawSpriteAtOrigin
 
 nonmatching DrawTexturedSprite, 0x194
 
@@ -3034,9 +3034,9 @@ glabel DrawTexturedSprite
     /* 46794 80245794 27BD0060 */   addiu     $sp, $sp, 0x60
 endlabel DrawTexturedSprite
 
-nonmatching DrawTiledSprite, 0x1B4
+nonmatching DrawSpriteTinted, 0x1B4
 
-glabel DrawTiledSprite
+glabel DrawSpriteTinted
     /* 46798 80245798 27BDFFA0 */  addiu      $sp, $sp, -0x60
     /* 4679C 8024579C AFBF005C */  sw         $ra, 0x5C($sp)
     /* 467A0 802457A0 AFBE0058 */  sw         $fp, 0x58($sp)
@@ -3153,7 +3153,7 @@ glabel DrawTiledSprite
     /* 46940 80245940 8FBE0058 */  lw         $fp, 0x58($sp)
     /* 46944 80245944 03E00008 */  jr         $ra
     /* 46948 80245948 27BD0060 */   addiu     $sp, $sp, 0x60
-endlabel DrawTiledSprite
+endlabel DrawSpriteTinted
 
 nonmatching DrawSpriteRegion, 0x1B4
 
@@ -5435,7 +5435,7 @@ nonmatching ProcessFillClearMenu, 0x930
 
 glabel ProcessFillClearMenu
     /* 48B0C 80247B0C 27BDFF00 */  addiu      $sp, $sp, -0x100
-    /* 48B10 80247B10 3C0F8029 */  lui        $t7, %hi(g_pszClearCurrentDecal)
+    /* 48B10 80247B10 3C0F8029 */  lui        $t7, %hi(D_8028DC84)
     /* 48B14 80247B14 AFBF0054 */  sw         $ra, 0x54($sp)
     /* 48B18 80247B18 AFBE0050 */  sw         $fp, 0x50($sp)
     /* 48B1C 80247B1C AFB7004C */  sw         $s7, 0x4C($sp)
@@ -5446,7 +5446,7 @@ glabel ProcessFillClearMenu
     /* 48B30 80247B30 AFB20038 */  sw         $s2, 0x38($sp)
     /* 48B34 80247B34 AFB10034 */  sw         $s1, 0x34($sp)
     /* 48B38 80247B38 AFB00030 */  sw         $s0, 0x30($sp)
-    /* 48B3C 80247B3C 25EFDC84 */  addiu      $t7, $t7, %lo(g_pszClearCurrentDecal)
+    /* 48B3C 80247B3C 25EFDC84 */  addiu      $t7, $t7, %lo(D_8028DC84)
     /* 48B40 80247B40 8DE10000 */  lw         $at, 0x0($t7)
     /* 48B44 80247B44 8DE80004 */  lw         $t0, 0x4($t7)
     /* 48B48 80247B48 27AE0070 */  addiu      $t6, $sp, 0x70
@@ -5538,22 +5538,22 @@ glabel ProcessFillClearMenu
   .L80247C94:
     /* 48C94 80247C94 1612FFE1 */  bne        $s0, $s2, .L80247C1C
     /* 48C98 80247C98 26310010 */   addiu     $s1, $s1, 0x10
-    /* 48C9C 80247C9C 3C0A8029 */  lui        $t2, %hi(g_bObjectDirty4)
-    /* 48CA0 80247CA0 914ADB68 */  lbu        $t2, %lo(g_bObjectDirty4)($t2)
-    /* 48CA4 80247CA4 3C048029 */  lui        $a0, %hi(g_pObjectMatrix12)
-    /* 48CA8 80247CA8 3C118029 */  lui        $s1, %hi(g_texPaintShopBg)
+    /* 48C9C 80247C9C 3C0A8029 */  lui        $t2, %hi(g_bDecalSlot)
+    /* 48CA0 80247CA0 914ADB68 */  lbu        $t2, %lo(g_bDecalSlot)($t2)
+    /* 48CA4 80247CA4 3C048029 */  lui        $a0, %hi(g_apDecalSlotIcons)
+    /* 48CA8 80247CA8 3C118029 */  lui        $s1, %hi(g_texPaintWholeCar)
     /* 48CAC 80247CAC 000A6880 */  sll        $t5, $t2, 2
     /* 48CB0 80247CB0 008D2021 */  addu       $a0, $a0, $t5
-    /* 48CB4 80247CB4 8C84DB0C */  lw         $a0, %lo(g_pObjectMatrix12)($a0)
-    /* 48CB8 80247CB8 2631CBA0 */  addiu      $s1, $s1, %lo(g_texPaintShopBg)
+    /* 48CB4 80247CB4 8C84DB0C */  lw         $a0, %lo(g_apDecalSlotIcons)($a0)
+    /* 48CB8 80247CB8 2631CBA0 */  addiu      $s1, $s1, %lo(g_texPaintWholeCar)
     /* 48CBC 80247CBC 8E2D0010 */  lw         $t5, 0x10($s1)
     /* 48CC0 80247CC0 8FAA00A0 */  lw         $t2, 0xA0($sp)
     /* 48CC4 80247CC4 8C990010 */  lw         $t9, 0x10($a0)
     /* 48CC8 80247CC8 8FB80080 */  lw         $t8, 0x80($sp)
     /* 48CCC 80247CCC 8C8C0014 */  lw         $t4, 0x14($a0)
-    /* 48CD0 80247CD0 3C148029 */  lui        $s4, %hi(gDecalEditorState)
+    /* 48CD0 80247CD0 3C148029 */  lui        $s4, %hi(g_bDecalColor)
     /* 48CD4 80247CD4 8FAF0084 */  lw         $t7, 0x84($sp)
-    /* 48CD8 80247CD8 2694DB58 */  addiu      $s4, $s4, %lo(gDecalEditorState)
+    /* 48CD8 80247CD8 2694DB58 */  addiu      $s4, $s4, %lo(g_bDecalColor)
     /* 48CDC 80247CDC 014DB823 */  subu       $s7, $t2, $t5
     /* 48CE0 80247CE0 00197042 */  srl        $t6, $t9, 1
     /* 48CE4 80247CE4 928D0000 */  lbu        $t5, 0x0($s4)
@@ -5566,10 +5566,10 @@ glabel ProcessFillClearMenu
     /* 48D00 80247D00 01EBB023 */  subu       $s6, $t7, $t3
     /* 48D04 80247D04 8FAF007C */  lw         $t7, 0x7C($sp)
     /* 48D08 80247D08 000DC880 */  sll        $t9, $t5, 2
-    /* 48D0C 80247D0C 3C128037 */  lui        $s2, %hi(g_dwEffectAlpha)
+    /* 48D0C 80247D0C 3C128037 */  lui        $s2, %hi(g_aDecalSwatches)
     /* 48D10 80247D10 00164842 */  srl        $t1, $s6, 1
     /* 48D14 80247D14 032DC821 */  addu       $t9, $t9, $t5
-    /* 48D18 80247D18 26529B98 */  addiu      $s2, $s2, %lo(g_dwEffectAlpha)
+    /* 48D18 80247D18 26529B98 */  addiu      $s2, $s2, %lo(g_aDecalSwatches)
     /* 48D1C 80247D1C 00134042 */  srl        $t0, $s3, 1
     /* 48D20 80247D20 0019C880 */  sll        $t9, $t9, 2
     /* 48D24 80247D24 030EF023 */  subu       $fp, $t8, $t6
@@ -5614,13 +5614,13 @@ glabel ProcessFillClearMenu
     /* 48DC0 80247DC0 AFB8001C */  sw         $t8, 0x1C($sp)
     /* 48DC4 80247DC4 0C091653 */  jal        DrawSpriteRegion
     /* 48DC8 80247DC8 AFAB0010 */   sw        $t3, 0x10($sp)
-    /* 48DCC 80247DCC 3C0E8029 */  lui        $t6, %hi(g_bObjectDirty4)
-    /* 48DD0 80247DD0 91CEDB68 */  lbu        $t6, %lo(g_bObjectDirty4)($t6)
-    /* 48DD4 80247DD4 3C048029 */  lui        $a0, %hi(g_pObjectMatrix12)
+    /* 48DCC 80247DCC 3C0E8029 */  lui        $t6, %hi(g_bDecalSlot)
+    /* 48DD0 80247DD0 91CEDB68 */  lbu        $t6, %lo(g_bDecalSlot)($t6)
+    /* 48DD4 80247DD4 3C048029 */  lui        $a0, %hi(g_apDecalSlotIcons)
     /* 48DD8 80247DD8 8FAC0088 */  lw         $t4, 0x88($sp)
     /* 48DDC 80247DDC 000E4080 */  sll        $t0, $t6, 2
     /* 48DE0 80247DE0 00882021 */  addu       $a0, $a0, $t0
-    /* 48DE4 80247DE4 8C84DB0C */  lw         $a0, %lo(g_pObjectMatrix12)($a0)
+    /* 48DE4 80247DE4 8C84DB0C */  lw         $a0, %lo(g_apDecalSlotIcons)($a0)
     /* 48DE8 80247DE8 8FAF008C */  lw         $t7, 0x8C($sp)
     /* 48DEC 80247DEC 924D0010 */  lbu        $t5, 0x10($s2)
     /* 48DF0 80247DF0 8C870024 */  lw         $a3, 0x24($a0)
@@ -5746,8 +5746,8 @@ glabel ProcessFillClearMenu
     /* 48FD0 80247FD0 8FA500B8 */  lw         $a1, 0xB8($sp)
     /* 48FD4 80247FD4 0C091581 */  jal        DrawTexturedSprite
     /* 48FD8 80247FD8 8FA600BC */   lw        $a2, 0xBC($sp)
-    /* 48FDC 80247FDC 3C118029 */  lui        $s1, %hi(gDecalBrushState)
-    /* 48FE0 80247FE0 2631DBBC */  addiu      $s1, $s1, %lo(gDecalBrushState)
+    /* 48FDC 80247FDC 3C118029 */  lui        $s1, %hi(g_bPaintShopPlayer)
+    /* 48FE0 80247FE0 2631DBBC */  addiu      $s1, $s1, %lo(g_bPaintShopPlayer)
     /* 48FE4 80247FE4 922A0000 */  lbu        $t2, 0x0($s1)
     /* 48FE8 80247FE8 2412015C */  addiu      $s2, $zero, 0x15C
     /* 48FEC 80247FEC 3C108037 */  lui        $s0, %hi(g_aPlayerInputState)
@@ -5769,7 +5769,7 @@ glabel ProcessFillClearMenu
     /* 4902C 8024802C 24050004 */   addiu     $a1, $zero, 0x4
     /* 49030 80248030 92A2002C */  lbu        $v0, 0x2C($s5)
     /* 49034 80248034 24080003 */  addiu      $t0, $zero, 0x3
-    /* 49038 80248038 3C0F8029 */  lui        $t7, %hi(gDecalBrushState)
+    /* 49038 80248038 3C0F8029 */  lui        $t7, %hi(g_bPaintShopPlayer)
     /* 4903C 8024803C 14400003 */  bnez       $v0, .L8024804C
     /* 49040 80248040 244CFFFF */   addiu     $t4, $v0, -0x1
     /* 49044 80248044 10000002 */  b          .L80248050
@@ -5777,7 +5777,7 @@ glabel ProcessFillClearMenu
   .L8024804C:
     /* 4904C 8024804C A2AC002C */  sb         $t4, 0x2C($s5)
   .L80248050:
-    /* 49050 80248050 91EFDBBC */  lbu        $t7, %lo(gDecalBrushState)($t7)
+    /* 49050 80248050 91EFDBBC */  lbu        $t7, %lo(g_bPaintShopPlayer)($t7)
     /* 49054 80248054 3C098037 */  lui        $t1, %hi(g_aPlayerInputState)
     /* 49058 80248058 2529A8E0 */  addiu      $t1, $t1, %lo(g_aPlayerInputState)
     /* 4905C 8024805C 000F5880 */  sll        $t3, $t7, 2
@@ -5797,12 +5797,12 @@ glabel ProcessFillClearMenu
     /* 49090 80248090 24050001 */   addiu     $a1, $zero, 0x1
     /* 49094 80248094 92A2002C */  lbu        $v0, 0x2C($s5)
     /* 49098 80248098 24010003 */  addiu      $at, $zero, 0x3
-    /* 4909C 8024809C 3C088029 */  lui        $t0, %hi(gDecalBrushState)
+    /* 4909C 8024809C 3C088029 */  lui        $t0, %hi(g_bPaintShopPlayer)
     /* 490A0 802480A0 14410010 */  bne        $v0, $at, .L802480E4
     /* 490A4 802480A4 244E0001 */   addiu     $t6, $v0, 0x1
     /* 490A8 802480A8 A2A0002C */  sb         $zero, 0x2C($s5)
-    /* 490AC 802480AC 3C0D8029 */  lui        $t5, %hi(gDecalBrushState)
-    /* 490B0 802480B0 91ADDBBC */  lbu        $t5, %lo(gDecalBrushState)($t5)
+    /* 490AC 802480AC 3C0D8029 */  lui        $t5, %hi(g_bPaintShopPlayer)
+    /* 490B0 802480B0 91ADDBBC */  lbu        $t5, %lo(g_bPaintShopPlayer)($t5)
     /* 490B4 802480B4 3C188037 */  lui        $t8, %hi(g_aPlayerInputState)
     /* 490B8 802480B8 2718A8E0 */  addiu      $t8, $t8, %lo(g_aPlayerInputState)
     /* 490BC 802480BC 000DC880 */  sll        $t9, $t5, 2
@@ -5817,7 +5817,7 @@ glabel ProcessFillClearMenu
     /* 490E0 802480E0 8C830000 */   lw        $v1, 0x0($a0)
   .L802480E4:
     /* 490E4 802480E4 A2AE002C */  sb         $t6, 0x2C($s5)
-    /* 490E8 802480E8 9108DBBC */  lbu        $t0, %lo(gDecalBrushState)($t0)
+    /* 490E8 802480E8 9108DBBC */  lbu        $t0, %lo(g_bPaintShopPlayer)($t0)
     /* 490EC 802480EC 3C0F8037 */  lui        $t7, %hi(g_aPlayerInputState)
     /* 490F0 802480F0 25EFA8E0 */  addiu      $t7, $t7, %lo(g_aPlayerInputState)
     /* 490F4 802480F4 00086080 */  sll        $t4, $t0, 2
@@ -5845,23 +5845,23 @@ glabel ProcessFillClearMenu
     /* 49144 80248144 10520031 */  beq        $v0, $s2, .L8024820C
     /* 49148 80248148 24010003 */   addiu     $at, $zero, 0x3
     /* 4914C 8024814C 1041002F */  beq        $v0, $at, .L8024820C
-    /* 49150 80248150 3C098029 */   lui       $t1, %hi(g_bObjectDirty3)
+    /* 49150 80248150 3C098029 */   lui       $t1, %hi(g_bPreviousPaintTool)
     /* 49154 80248154 A2A0002C */  sb         $zero, 0x2C($s5)
-    /* 49158 80248158 9129DB64 */  lbu        $t1, %lo(g_bObjectDirty3)($t1)
-    /* 4915C 8024815C 3C018029 */  lui        $at, %hi(g_bObjectDirty2)
+    /* 49158 80248158 9129DB64 */  lbu        $t1, %lo(g_bPreviousPaintTool)($t1)
+    /* 4915C 8024815C 3C018029 */  lui        $at, %hi(g_bPaintTool)
     /* 49160 80248160 100000AA */  b          .L8024840C
-    /* 49164 80248164 A029DB60 */   sb        $t1, %lo(g_bObjectDirty2)($at)
+    /* 49164 80248164 A029DB60 */   sb        $t1, %lo(g_bPaintTool)($at)
   .L80248168:
-    /* 49168 80248168 0C09132A */  jal        CommitFramebuffer
+    /* 49168 80248168 0C09132A */  jal        SaveDecalUndo
     /* 4916C 8024816C 00000000 */   nop
-    /* 49170 80248170 3C038029 */  lui        $v1, %hi(gFramebufferHeight)
-    /* 49174 80248174 9063DB8C */  lbu        $v1, %lo(gFramebufferHeight)($v1)
+    /* 49170 80248170 3C038029 */  lui        $v1, %hi(g_bDecalHeight)
+    /* 49174 80248174 9063DB8C */  lbu        $v1, %lo(g_bDecalHeight)($v1)
     /* 49178 80248178 00008825 */  or         $s1, $zero, $zero
-    /* 4917C 8024817C 3C028029 */  lui        $v0, %hi(gFramebufferWidth)
+    /* 4917C 8024817C 3C028029 */  lui        $v0, %hi(g_bDecalWidth)
     /* 49180 80248180 1860001D */  blez       $v1, .L802481F8
-    /* 49184 80248184 3C138029 */   lui       $s3, %hi(gFramebufferWidth)
-    /* 49188 80248188 9042DB88 */  lbu        $v0, %lo(gFramebufferWidth)($v0)
-    /* 4918C 8024818C 2673DB88 */  addiu      $s3, $s3, %lo(gFramebufferWidth)
+    /* 49184 80248184 3C138029 */   lui       $s3, %hi(g_bDecalWidth)
+    /* 49188 80248188 9042DB88 */  lbu        $v0, %lo(g_bDecalWidth)($v0)
+    /* 4918C 8024818C 2673DB88 */  addiu      $s3, $s3, %lo(g_bDecalWidth)
   .L80248190:
     /* 49190 80248190 18400015 */  blez       $v0, .L802481E8
     /* 49194 80248194 00008025 */   or        $s0, $zero, $zero
@@ -5886,51 +5886,51 @@ glabel ProcessFillClearMenu
     /* 491D4 802481D4 0202082A */  slt        $at, $s0, $v0
     /* 491D8 802481D8 5420FFF0 */  bnel       $at, $zero, .L8024819C
     /* 491DC 802481DC 92AA002C */   lbu       $t2, 0x2C($s5)
-    /* 491E0 802481E0 3C038029 */  lui        $v1, %hi(gFramebufferHeight)
-    /* 491E4 802481E4 9063DB8C */  lbu        $v1, %lo(gFramebufferHeight)($v1)
+    /* 491E0 802481E0 3C038029 */  lui        $v1, %hi(g_bDecalHeight)
+    /* 491E4 802481E4 9063DB8C */  lbu        $v1, %lo(g_bDecalHeight)($v1)
   .L802481E8:
     /* 491E8 802481E8 26310001 */  addiu      $s1, $s1, 0x1
     /* 491EC 802481EC 0223082A */  slt        $at, $s1, $v1
     /* 491F0 802481F0 1420FFE7 */  bnez       $at, .L80248190
     /* 491F4 802481F4 00000000 */   nop
   .L802481F8:
-    /* 491F8 802481F8 3C0D8029 */  lui        $t5, %hi(g_bObjectDirty3)
-    /* 491FC 802481FC 91ADDB64 */  lbu        $t5, %lo(g_bObjectDirty3)($t5)
-    /* 49200 80248200 3C018029 */  lui        $at, %hi(g_bObjectDirty2)
+    /* 491F8 802481F8 3C0D8029 */  lui        $t5, %hi(g_bPreviousPaintTool)
+    /* 491FC 802481FC 91ADDB64 */  lbu        $t5, %lo(g_bPreviousPaintTool)($t5)
+    /* 49200 80248200 3C018029 */  lui        $at, %hi(g_bPaintTool)
     /* 49204 80248204 10000081 */  b          .L8024840C
-    /* 49208 80248208 A02DDB60 */   sb        $t5, %lo(g_bObjectDirty2)($at)
+    /* 49208 80248208 A02DDB60 */   sb        $t5, %lo(g_bPaintTool)($at)
   .L8024820C:
-    /* 4920C 8024820C 3C198029 */  lui        $t9, %hi(g_bObjectDirty4)
-    /* 49210 80248210 9339DB68 */  lbu        $t9, %lo(g_bObjectDirty4)($t9)
-    /* 49214 80248214 3C018029 */  lui        $at, %hi(g_bObjectDirty6)
+    /* 4920C 8024820C 3C198029 */  lui        $t9, %hi(g_bDecalSlot)
+    /* 49210 80248210 9339DB68 */  lbu        $t9, %lo(g_bDecalSlot)($t9)
+    /* 49214 80248214 3C018029 */  lui        $at, %hi(g_bSavedDecalSlot)
     /* 49218 80248218 3C048029 */  lui        $a0, %hi(g_pCurrentVehicleModelData)
-    /* 4921C 8024821C 3C138029 */  lui        $s3, %hi(gFramebufferWidth)
-    /* 49220 80248220 2673DB88 */  addiu      $s3, $s3, %lo(gFramebufferWidth)
+    /* 4921C 8024821C 3C138029 */  lui        $s3, %hi(g_bDecalWidth)
+    /* 49220 80248220 2673DB88 */  addiu      $s3, $s3, %lo(g_bDecalWidth)
     /* 49224 80248224 8C84AB08 */  lw         $a0, %lo(g_pCurrentVehicleModelData)($a0)
     /* 49228 80248228 0000B025 */  or         $s6, $zero, $zero
     /* 4922C 8024822C 0000F025 */  or         $fp, $zero, $zero
     /* 49230 80248230 24170024 */  addiu      $s7, $zero, 0x24
-    /* 49234 80248234 A039DB70 */  sb         $t9, %lo(g_bObjectDirty6)($at)
+    /* 49234 80248234 A039DB70 */  sb         $t9, %lo(g_bSavedDecalSlot)($at)
   .L80248238:
     /* 49238 80248238 00961021 */  addu       $v0, $a0, $s6
     /* 4923C 8024823C 904E0110 */  lbu        $t6, 0x110($v0)
     /* 49240 80248240 8C980014 */  lw         $t8, 0x14($a0)
-    /* 49244 80248244 3C018029 */  lui        $at, %hi(gFramebufferPtr)
+    /* 49244 80248244 3C018029 */  lui        $at, %hi(g_pDecalTexels)
     /* 49248 80248248 01D70019 */  multu      $t6, $s7
-    /* 4924C 8024824C 3C038029 */  lui        $v1, %hi(gFramebufferHeight)
+    /* 4924C 8024824C 3C038029 */  lui        $v1, %hi(g_bDecalHeight)
     /* 49250 80248250 00008825 */  or         $s1, $zero, $zero
     /* 49254 80248254 00004012 */  mflo       $t0
     /* 49258 80248258 03086021 */  addu       $t4, $t8, $t0
     /* 4925C 8024825C 8D8F0000 */  lw         $t7, 0x0($t4)
-    /* 49260 80248260 AC2FDB78 */  sw         $t7, %lo(gFramebufferPtr)($at)
+    /* 49260 80248260 AC2FDB78 */  sw         $t7, %lo(g_pDecalTexels)($at)
     /* 49264 80248264 8C8B011C */  lw         $t3, 0x11C($a0)
-    /* 49268 80248268 3C018029 */  lui        $at, %hi(gClipMaskPtr)
+    /* 49268 80248268 3C018029 */  lui        $at, %hi(g_pDecalMask)
     /* 4926C 8024826C 017E4821 */  addu       $t1, $t3, $fp
     /* 49270 80248270 8D2A0000 */  lw         $t2, 0x0($t1)
-    /* 49274 80248274 AC2ADB7C */  sw         $t2, %lo(gClipMaskPtr)($at)
+    /* 49274 80248274 AC2ADB7C */  sw         $t2, %lo(g_pDecalMask)($at)
     /* 49278 80248278 90590110 */  lbu        $t9, 0x110($v0)
     /* 4927C 8024827C 8C8D0014 */  lw         $t5, 0x14($a0)
-    /* 49280 80248280 3C018029 */  lui        $at, %hi(gFramebufferHeight)
+    /* 49280 80248280 3C018029 */  lui        $at, %hi(g_bDecalHeight)
     /* 49284 80248284 03370019 */  multu      $t9, $s7
     /* 49288 80248288 00007012 */  mflo       $t6
     /* 4928C 8024828C 01AEC021 */  addu       $t8, $t5, $t6
@@ -5942,8 +5942,8 @@ glabel ProcessFillClearMenu
     /* 492A4 802482A4 00005812 */  mflo       $t3
     /* 492A8 802482A8 018B4821 */  addu       $t1, $t4, $t3
     /* 492AC 802482AC 952A000E */  lhu        $t2, 0xE($t1)
-    /* 492B0 802482B0 A02ADB8C */  sb         $t2, %lo(gFramebufferHeight)($at)
-    /* 492B4 802482B4 9063DB8C */  lbu        $v1, %lo(gFramebufferHeight)($v1)
+    /* 492B0 802482B0 A02ADB8C */  sb         $t2, %lo(g_bDecalHeight)($at)
+    /* 492B4 802482B4 9063DB8C */  lbu        $v1, %lo(g_bDecalHeight)($v1)
     /* 492B8 802482B8 5860001F */  blezl      $v1, .L80248338
     /* 492BC 802482BC 26D60001 */   addiu     $s6, $s6, 0x1
     /* 492C0 802482C0 92620000 */  lbu        $v0, 0x0($s3)
@@ -5971,8 +5971,8 @@ glabel ProcessFillClearMenu
     /* 49308 80248308 0202082A */  slt        $at, $s0, $v0
     /* 4930C 8024830C 5420FFF0 */  bnel       $at, $zero, .L802482D0
     /* 49310 80248310 92B9002C */   lbu       $t9, 0x2C($s5)
-    /* 49314 80248314 3C038029 */  lui        $v1, %hi(gFramebufferHeight)
-    /* 49318 80248318 9063DB8C */  lbu        $v1, %lo(gFramebufferHeight)($v1)
+    /* 49314 80248314 3C038029 */  lui        $v1, %hi(g_bDecalHeight)
+    /* 49318 80248318 9063DB8C */  lbu        $v1, %lo(g_bDecalHeight)($v1)
   .L8024831C:
     /* 4931C 8024831C 26310001 */  addiu      $s1, $s1, 0x1
     /* 49320 80248320 0223082A */  slt        $at, $s1, $v1
@@ -5985,28 +5985,28 @@ glabel ProcessFillClearMenu
     /* 49338 80248338 2401000A */  addiu      $at, $zero, 0xA
     /* 4933C 8024833C 16C1FFBE */  bne        $s6, $at, .L80248238
     /* 49340 80248340 27DE0004 */   addiu     $fp, $fp, 0x4
-    /* 49344 80248344 3C0D8029 */  lui        $t5, %hi(g_bObjectDirty6)
-    /* 49348 80248348 91ADDB70 */  lbu        $t5, %lo(g_bObjectDirty6)($t5)
-    /* 4934C 8024834C 3C018029 */  lui        $at, %hi(g_bObjectDirty4)
-    /* 49350 80248350 A02DDB68 */  sb         $t5, %lo(g_bObjectDirty4)($at)
+    /* 49344 80248344 3C0D8029 */  lui        $t5, %hi(g_bSavedDecalSlot)
+    /* 49348 80248348 91ADDB70 */  lbu        $t5, %lo(g_bSavedDecalSlot)($t5)
+    /* 4934C 8024834C 3C018029 */  lui        $at, %hi(g_bDecalSlot)
+    /* 49350 80248350 A02DDB68 */  sb         $t5, %lo(g_bDecalSlot)($at)
     /* 49354 80248354 008D1021 */  addu       $v0, $a0, $t5
     /* 49358 80248358 90580110 */  lbu        $t8, 0x110($v0)
     /* 4935C 8024835C 8C8E0014 */  lw         $t6, 0x14($a0)
-    /* 49360 80248360 3C018029 */  lui        $at, %hi(gFramebufferPtr)
+    /* 49360 80248360 3C018029 */  lui        $at, %hi(g_pDecalTexels)
     /* 49364 80248364 03170019 */  multu      $t8, $s7
     /* 49368 80248368 000D4880 */  sll        $t1, $t5, 2
     /* 4936C 8024836C 00004012 */  mflo       $t0
     /* 49370 80248370 01C87821 */  addu       $t7, $t6, $t0
     /* 49374 80248374 8DEC0000 */  lw         $t4, 0x0($t7)
-    /* 49378 80248378 AC2CDB78 */  sw         $t4, %lo(gFramebufferPtr)($at)
+    /* 49378 80248378 AC2CDB78 */  sw         $t4, %lo(g_pDecalTexels)($at)
     /* 4937C 8024837C 8C8B011C */  lw         $t3, 0x11C($a0)
-    /* 49380 80248380 3C018029 */  lui        $at, %hi(gClipMaskPtr)
+    /* 49380 80248380 3C018029 */  lui        $at, %hi(g_pDecalMask)
     /* 49384 80248384 01695021 */  addu       $t2, $t3, $t1
     /* 49388 80248388 8D590000 */  lw         $t9, 0x0($t2)
-    /* 4938C 8024838C AC39DB7C */  sw         $t9, %lo(gClipMaskPtr)($at)
+    /* 4938C 8024838C AC39DB7C */  sw         $t9, %lo(g_pDecalMask)($at)
     /* 49390 80248390 90580110 */  lbu        $t8, 0x110($v0)
     /* 49394 80248394 8C8D0014 */  lw         $t5, 0x14($a0)
-    /* 49398 80248398 3C018029 */  lui        $at, %hi(gFramebufferHeight)
+    /* 49398 80248398 3C018029 */  lui        $at, %hi(g_bDecalHeight)
     /* 4939C 8024839C 03170019 */  multu      $t8, $s7
     /* 493A0 802483A0 00007012 */  mflo       $t6
     /* 493A4 802483A4 01AE4021 */  addu       $t0, $t5, $t6
@@ -6018,24 +6018,24 @@ glabel ProcessFillClearMenu
     /* 493BC 802483BC 00004812 */  mflo       $t1
     /* 493C0 802483C0 01895021 */  addu       $t2, $t4, $t1
     /* 493C4 802483C4 9559000E */  lhu        $t9, 0xE($t2)
-    /* 493C8 802483C8 0C09132A */  jal        CommitFramebuffer
-    /* 493CC 802483CC A039DB8C */   sb        $t9, %lo(gFramebufferHeight)($at)
+    /* 493C8 802483C8 0C09132A */  jal        SaveDecalUndo
+    /* 493CC 802483CC A039DB8C */   sb        $t9, %lo(g_bDecalHeight)($at)
     /* 493D0 802483D0 A2A0002C */  sb         $zero, 0x2C($s5)
-    /* 493D4 802483D4 3C188029 */  lui        $t8, %hi(g_bObjectDirty3)
-    /* 493D8 802483D8 9318DB64 */  lbu        $t8, %lo(g_bObjectDirty3)($t8)
-    /* 493DC 802483DC 3C018029 */  lui        $at, %hi(g_bObjectDirty2)
+    /* 493D4 802483D4 3C188029 */  lui        $t8, %hi(g_bPreviousPaintTool)
+    /* 493D8 802483D8 9318DB64 */  lbu        $t8, %lo(g_bPreviousPaintTool)($t8)
+    /* 493DC 802483DC 3C018029 */  lui        $at, %hi(g_bPaintTool)
     /* 493E0 802483E0 1000000A */  b          .L8024840C
-    /* 493E4 802483E4 A038DB60 */   sb        $t8, %lo(g_bObjectDirty2)($at)
+    /* 493E4 802483E4 A038DB60 */   sb        $t8, %lo(g_bPaintTool)($at)
   .L802483E8:
     /* 493E8 802483E8 51A00009 */  beql       $t5, $zero, .L80248410
     /* 493EC 802483EC 8FBF0054 */   lw        $ra, 0x54($sp)
     /* 493F0 802483F0 0C095644 */  jal        TransferFlags
     /* 493F4 802483F4 24050020 */   addiu     $a1, $zero, 0x20
     /* 493F8 802483F8 A2A0002C */  sb         $zero, 0x2C($s5)
-    /* 493FC 802483FC 3C0E8029 */  lui        $t6, %hi(g_bObjectDirty3)
-    /* 49400 80248400 91CEDB64 */  lbu        $t6, %lo(g_bObjectDirty3)($t6)
-    /* 49404 80248404 3C018029 */  lui        $at, %hi(g_bObjectDirty2)
-    /* 49408 80248408 A02EDB60 */  sb         $t6, %lo(g_bObjectDirty2)($at)
+    /* 493FC 802483FC 3C0E8029 */  lui        $t6, %hi(g_bPreviousPaintTool)
+    /* 49400 80248400 91CEDB64 */  lbu        $t6, %lo(g_bPreviousPaintTool)($t6)
+    /* 49404 80248404 3C018029 */  lui        $at, %hi(g_bPaintTool)
+    /* 49408 80248408 A02EDB60 */  sb         $t6, %lo(g_bPaintTool)($at)
   .L8024840C:
     /* 4940C 8024840C 8FBF0054 */  lw         $ra, 0x54($sp)
   .L80248410:
@@ -6072,12 +6072,12 @@ glabel ProcessMirrorFlipMenu
     /* 49474 80248474 27A90044 */  addiu      $t1, $sp, 0x44
     /* 49478 80248478 AD2D0004 */  sw         $t5, 0x4($t1)
     /* 4947C 8024847C AD210000 */  sw         $at, 0x0($t1)
-    /* 49480 80248480 3C028029 */  lui        $v0, %hi(gDecalCanvasHeight)
+    /* 49480 80248480 3C028029 */  lui        $v0, %hi(g_bPaintToolStarted)
     /* 49484 80248484 3C198029 */  lui        $t9, %hi(g_texButtonA + 0x10)
     /* 49488 80248488 3C0F8029 */  lui        $t7, %hi(g_texButtonB + 0x10)
     /* 4948C 8024848C 8F39D0C0 */  lw         $t9, %lo(g_texButtonA + 0x10)($t9)
     /* 49490 80248490 8DEFD0F0 */  lw         $t7, %lo(g_texButtonB + 0x10)($t7)
-    /* 49494 80248494 2442DBC0 */  addiu      $v0, $v0, %lo(gDecalCanvasHeight)
+    /* 49494 80248494 2442DBC0 */  addiu      $v0, $v0, %lo(g_bPaintToolStarted)
     /* 49498 80248498 904B0000 */  lbu        $t3, 0x0($v0)
     /* 4949C 8024849C 24180155 */  addiu      $t8, $zero, 0x155
     /* 494A0 802484A0 24080163 */  addiu      $t0, $zero, 0x163
@@ -6086,10 +6086,10 @@ glabel ProcessMirrorFlipMenu
     /* 494AC 802484AC AFAE0088 */  sw         $t6, 0x88($sp)
     /* 494B0 802484B0 11600006 */  beqz       $t3, .L802484CC
     /* 494B4 802484B4 AFAC0084 */   sw        $t4, 0x84($sp)
-    /* 494B8 802484B8 3C098029 */  lui        $t1, %hi(g_bController3Connected)
-    /* 494BC 802484BC 9129CFBC */  lbu        $t1, %lo(g_bController3Connected)($t1)
-    /* 494C0 802484C0 3C018029 */  lui        $at, %hi(gDecalCanvasWidth)
-    /* 494C4 802484C4 A029DBB8 */  sb         $t1, %lo(gDecalCanvasWidth)($at)
+    /* 494B8 802484B8 3C098029 */  lui        $t1, %hi(D_8028CFBC)
+    /* 494BC 802484BC 9129CFBC */  lbu        $t1, %lo(D_8028CFBC)($t1)
+    /* 494C0 802484C0 3C018029 */  lui        $at, %hi(g_bStyleMenuCursor)
+    /* 494C4 802484C4 A029DBB8 */  sb         $t1, %lo(g_bStyleMenuCursor)($at)
     /* 494C8 802484C8 A0400000 */  sb         $zero, 0x0($v0)
   .L802484CC:
     /* 494CC 802484CC 240A0066 */  addiu      $t2, $zero, 0x66
@@ -6147,8 +6147,8 @@ glabel ProcessMirrorFlipMenu
     /* 49598 80248598 24060055 */   addiu     $a2, $zero, 0x55
     /* 4959C 8024859C 0C08BD74 */  jal        SetTextSize
     /* 495A0 802485A0 2404000E */   addiu     $a0, $zero, 0xE
-    /* 495A4 802485A4 3C088029 */  lui        $t0, %hi(g_bObjectDirty14)
-    /* 495A8 802485A8 9108DBCC */  lbu        $t0, %lo(g_bObjectDirty14)($t0)
+    /* 495A4 802485A4 3C088029 */  lui        $t0, %hi(g_bDecalSlotHasMirror)
+    /* 495A8 802485A8 9108DBCC */  lbu        $t0, %lo(g_bDecalSlotHasMirror)($t0)
     /* 495AC 802485AC 11000007 */  beqz       $t0, .L802485CC
     /* 495B0 802485B0 3C04802B */   lui       $a0, %hi(g_szMirror)
     /* 495B4 802485B4 2484A9D4 */  addiu      $a0, $a0, %lo(g_szMirror)
@@ -6177,8 +6177,8 @@ glabel ProcessMirrorFlipMenu
     /* 49608 80248608 00001825 */  or         $v1, $zero, $zero
     /* 4960C 8024860C 27B00054 */  addiu      $s0, $sp, 0x54
   .L80248610:
-    /* 49610 80248610 3C0F8029 */  lui        $t7, %hi(gDecalCanvasWidth)
-    /* 49614 80248614 91EFDBB8 */  lbu        $t7, %lo(gDecalCanvasWidth)($t7)
+    /* 49610 80248610 3C0F8029 */  lui        $t7, %hi(g_bStyleMenuCursor)
+    /* 49614 80248614 91EFDBB8 */  lbu        $t7, %lo(g_bStyleMenuCursor)($t7)
     /* 49618 80248618 240D0001 */  addiu      $t5, $zero, 0x1
     /* 4961C 8024861C 24180020 */  addiu      $t8, $zero, 0x20
     /* 49620 80248620 146F0011 */  bne        $v1, $t7, .L80248668
@@ -6244,20 +6244,20 @@ glabel ProcessMirrorFlipMenu
     /* 49708 80248708 240700FF */  addiu      $a3, $zero, 0xFF
     /* 4970C 8024870C 0C08BD4C */  jal        SetTextCustomColors
     /* 49710 80248710 AFA00014 */   sw        $zero, 0x14($sp)
-    /* 49714 80248714 3C028029 */  lui        $v0, %hi(gDecalCanvasWidth)
-    /* 49718 80248718 9042DBB8 */  lbu        $v0, %lo(gDecalCanvasWidth)($v0)
+    /* 49714 80248714 3C028029 */  lui        $v0, %hi(g_bStyleMenuCursor)
+    /* 49718 80248718 9042DBB8 */  lbu        $v0, %lo(g_bStyleMenuCursor)($v0)
     /* 4971C 8024871C 2405009F */  addiu      $a1, $zero, 0x9F
     /* 49720 80248720 24060087 */  addiu      $a2, $zero, 0x87
     /* 49724 80248724 14400062 */  bnez       $v0, .L802488B0
     /* 49728 80248728 00027080 */   sll       $t6, $v0, 2
-    /* 4972C 8024872C 3C188029 */  lui        $t8, %hi(g_bObjectDirty14)
-    /* 49730 80248730 9318DBCC */  lbu        $t8, %lo(g_bObjectDirty14)($t8)
+    /* 4972C 8024872C 3C188029 */  lui        $t8, %hi(g_bDecalSlotHasMirror)
+    /* 49730 80248730 9318DBCC */  lbu        $t8, %lo(g_bDecalSlotHasMirror)($t8)
     /* 49734 80248734 3C04802B */  lui        $a0, %hi(g_szMirrorNotApplicable)
     /* 49738 80248738 2484AB1C */  addiu      $a0, $a0, %lo(g_szMirrorNotApplicable)
     /* 4973C 8024873C 13000053 */  beqz       $t8, .L8024888C
     /* 49740 80248740 2405009F */   addiu     $a1, $zero, 0x9F
-    /* 49744 80248744 3C198029 */  lui        $t9, %hi(g_bObjectDirty4)
-    /* 49748 80248748 9339DB68 */  lbu        $t9, %lo(g_bObjectDirty4)($t9)
+    /* 49744 80248744 3C198029 */  lui        $t9, %hi(g_bDecalSlot)
+    /* 49748 80248748 9339DB68 */  lbu        $t9, %lo(g_bDecalSlot)($t9)
     /* 4974C 8024874C 2F210008 */  sltiu      $at, $t9, 0x8
     /* 49750 80248750 10200062 */  beqz       $at, .L802488DC
     /* 49754 80248754 0019C880 */   sll       $t9, $t9, 2
@@ -6358,8 +6358,8 @@ glabel ProcessMirrorFlipMenu
     /* 498B0 802488B0 03AE2021 */  addu       $a0, $sp, $t6
     /* 498B4 802488B4 0C08BD77 */  jal        DrawText
     /* 498B8 802488B8 8C840048 */   lw        $a0, 0x48($a0)
-    /* 498BC 802488BC 3C088029 */  lui        $t0, %hi(gDecalCanvasWidth)
-    /* 498C0 802488C0 9108DBB8 */  lbu        $t0, %lo(gDecalCanvasWidth)($t0)
+    /* 498BC 802488BC 3C088029 */  lui        $t0, %hi(g_bStyleMenuCursor)
+    /* 498C0 802488C0 9108DBB8 */  lbu        $t0, %lo(g_bStyleMenuCursor)($t0)
     /* 498C4 802488C4 2405009F */  addiu      $a1, $zero, 0x9F
     /* 498C8 802488C8 24060094 */  addiu      $a2, $zero, 0x94
     /* 498CC 802488CC 00087880 */  sll        $t7, $t0, 2
@@ -6404,8 +6404,8 @@ glabel ProcessMirrorFlipMenu
     /* 49964 80248964 8FA50084 */  lw         $a1, 0x84($sp)
     /* 49968 80248968 0C091581 */  jal        DrawTexturedSprite
     /* 4996C 8024896C 8FA60088 */   lw        $a2, 0x88($sp)
-    /* 49970 80248970 3C188029 */  lui        $t8, %hi(gDecalBrushState)
-    /* 49974 80248974 9318DBBC */  lbu        $t8, %lo(gDecalBrushState)($t8)
+    /* 49970 80248970 3C188029 */  lui        $t8, %hi(g_bPaintShopPlayer)
+    /* 49974 80248974 9318DBBC */  lbu        $t8, %lo(g_bPaintShopPlayer)($t8)
     /* 49978 80248978 3C108037 */  lui        $s0, %hi(g_aPlayerInputState)
     /* 4997C 8024897C 2610A8E0 */  addiu      $s0, $s0, %lo(g_aPlayerInputState)
     /* 49980 80248980 0018C880 */  sll        $t9, $t8, 2
@@ -6417,8 +6417,8 @@ glabel ProcessMirrorFlipMenu
     /* 49998 80248998 0019C880 */  sll        $t9, $t9, 2
     /* 4999C 8024899C 0C0956B7 */  jal        UpdateStickRepeat
     /* 499A0 802489A0 02192021 */   addu      $a0, $s0, $t9
-    /* 499A4 802489A4 3C0E8029 */  lui        $t6, %hi(gDecalBrushState)
-    /* 499A8 802489A8 91CEDBBC */  lbu        $t6, %lo(gDecalBrushState)($t6)
+    /* 499A4 802489A4 3C0E8029 */  lui        $t6, %hi(g_bPaintShopPlayer)
+    /* 499A8 802489A8 91CEDBBC */  lbu        $t6, %lo(g_bPaintShopPlayer)($t6)
     /* 499AC 802489AC 000E4080 */  sll        $t0, $t6, 2
     /* 499B0 802489B0 010E4023 */  subu       $t0, $t0, $t6
     /* 499B4 802489B4 00084080 */  sll        $t0, $t0, 2
@@ -6433,20 +6433,20 @@ glabel ProcessMirrorFlipMenu
     /* 499D8 802489D8 306D0004 */   andi      $t5, $v1, 0x4
     /* 499DC 802489DC 0C095644 */  jal        TransferFlags
     /* 499E0 802489E0 24050001 */   addiu     $a1, $zero, 0x1
-    /* 499E4 802489E4 3C028029 */  lui        $v0, %hi(gDecalCanvasWidth)
-    /* 499E8 802489E8 9042DBB8 */  lbu        $v0, %lo(gDecalCanvasWidth)($v0)
+    /* 499E4 802489E4 3C028029 */  lui        $v0, %hi(g_bStyleMenuCursor)
+    /* 499E8 802489E8 9042DBB8 */  lbu        $v0, %lo(g_bStyleMenuCursor)($v0)
     /* 499EC 802489EC 24010002 */  addiu      $at, $zero, 0x2
-    /* 499F0 802489F0 3C0B8029 */  lui        $t3, %hi(gDecalBrushState)
+    /* 499F0 802489F0 3C0B8029 */  lui        $t3, %hi(g_bPaintShopPlayer)
     /* 499F4 802489F4 14410004 */  bne        $v0, $at, .L80248A08
     /* 499F8 802489F8 244C0001 */   addiu     $t4, $v0, 0x1
-    /* 499FC 802489FC 3C018029 */  lui        $at, %hi(gDecalCanvasWidth)
+    /* 499FC 802489FC 3C018029 */  lui        $at, %hi(g_bStyleMenuCursor)
     /* 49A00 80248A00 10000003 */  b          .L80248A10
-    /* 49A04 80248A04 A020DBB8 */   sb        $zero, %lo(gDecalCanvasWidth)($at)
+    /* 49A04 80248A04 A020DBB8 */   sb        $zero, %lo(g_bStyleMenuCursor)($at)
   .L80248A08:
-    /* 49A08 80248A08 3C018029 */  lui        $at, %hi(gDecalCanvasWidth)
-    /* 49A0C 80248A0C A02CDBB8 */  sb         $t4, %lo(gDecalCanvasWidth)($at)
+    /* 49A08 80248A08 3C018029 */  lui        $at, %hi(g_bStyleMenuCursor)
+    /* 49A0C 80248A0C A02CDBB8 */  sb         $t4, %lo(g_bStyleMenuCursor)($at)
   .L80248A10:
-    /* 49A10 80248A10 916BDBBC */  lbu        $t3, %lo(gDecalBrushState)($t3)
+    /* 49A10 80248A10 916BDBBC */  lbu        $t3, %lo(g_bPaintShopPlayer)($t3)
     /* 49A14 80248A14 3C0A8037 */  lui        $t2, %hi(g_aPlayerInputState)
     /* 49A18 80248A18 254AA8E0 */  addiu      $t2, $t2, %lo(g_aPlayerInputState)
     /* 49A1C 80248A1C 000B4880 */  sll        $t1, $t3, 2
@@ -6464,14 +6464,14 @@ glabel ProcessMirrorFlipMenu
     /* 49A48 80248A48 306A0010 */   andi      $t2, $v1, 0x10
     /* 49A4C 80248A4C 0C095644 */  jal        TransferFlags
     /* 49A50 80248A50 24050004 */   addiu     $a1, $zero, 0x4
-    /* 49A54 80248A54 3C028029 */  lui        $v0, %hi(gDecalCanvasWidth)
-    /* 49A58 80248A58 9042DBB8 */  lbu        $v0, %lo(gDecalCanvasWidth)($v0)
-    /* 49A5C 80248A5C 3C018029 */  lui        $at, %hi(gDecalCanvasWidth)
-    /* 49A60 80248A60 3C0C8029 */  lui        $t4, %hi(gDecalBrushState)
+    /* 49A54 80248A54 3C028029 */  lui        $v0, %hi(g_bStyleMenuCursor)
+    /* 49A58 80248A58 9042DBB8 */  lbu        $v0, %lo(g_bStyleMenuCursor)($v0)
+    /* 49A5C 80248A5C 3C018029 */  lui        $at, %hi(g_bStyleMenuCursor)
+    /* 49A60 80248A60 3C0C8029 */  lui        $t4, %hi(g_bPaintShopPlayer)
     /* 49A64 80248A64 14400012 */  bnez       $v0, .L80248AB0
     /* 49A68 80248A68 244FFFFF */   addiu     $t7, $v0, -0x1
-    /* 49A6C 80248A6C 3C198029 */  lui        $t9, %hi(gDecalBrushState)
-    /* 49A70 80248A70 9339DBBC */  lbu        $t9, %lo(gDecalBrushState)($t9)
+    /* 49A6C 80248A6C 3C198029 */  lui        $t9, %hi(g_bPaintShopPlayer)
+    /* 49A70 80248A70 9339DBBC */  lbu        $t9, %lo(g_bPaintShopPlayer)($t9)
     /* 49A74 80248A74 3C088037 */  lui        $t0, %hi(g_aPlayerInputState)
     /* 49A78 80248A78 2508A8E0 */  addiu      $t0, $t0, %lo(g_aPlayerInputState)
     /* 49A7C 80248A7C 00197080 */  sll        $t6, $t9, 2
@@ -6482,13 +6482,13 @@ glabel ProcessMirrorFlipMenu
     /* 49A90 80248A90 01D97023 */  subu       $t6, $t6, $t9
     /* 49A94 80248A94 000E7080 */  sll        $t6, $t6, 2
     /* 49A98 80248A98 24180002 */  addiu      $t8, $zero, 0x2
-    /* 49A9C 80248A9C 3C018029 */  lui        $at, %hi(gDecalCanvasWidth)
-    /* 49AA0 80248AA0 A038DBB8 */  sb         $t8, %lo(gDecalCanvasWidth)($at)
+    /* 49A9C 80248A9C 3C018029 */  lui        $at, %hi(g_bStyleMenuCursor)
+    /* 49AA0 80248AA0 A038DBB8 */  sb         $t8, %lo(g_bStyleMenuCursor)($at)
     /* 49AA4 80248AA4 01C82021 */  addu       $a0, $t6, $t0
     /* 49AA8 80248AA8 1000000E */  b          .L80248AE4
     /* 49AAC 80248AAC 8C830000 */   lw        $v1, 0x0($a0)
   .L80248AB0:
-    /* 49AB0 80248AB0 918CDBBC */  lbu        $t4, %lo(gDecalBrushState)($t4)
+    /* 49AB0 80248AB0 918CDBBC */  lbu        $t4, %lo(g_bPaintShopPlayer)($t4)
     /* 49AB4 80248AB4 3C098037 */  lui        $t1, %hi(g_aPlayerInputState)
     /* 49AB8 80248AB8 2529A8E0 */  addiu      $t1, $t1, %lo(g_aPlayerInputState)
     /* 49ABC 80248ABC 000C5880 */  sll        $t3, $t4, 2
@@ -6499,7 +6499,7 @@ glabel ProcessMirrorFlipMenu
     /* 49AD0 80248AD0 016C5823 */  subu       $t3, $t3, $t4
     /* 49AD4 80248AD4 000B5880 */  sll        $t3, $t3, 2
     /* 49AD8 80248AD8 01692021 */  addu       $a0, $t3, $t1
-    /* 49ADC 80248ADC A02FDBB8 */  sb         $t7, %lo(gDecalCanvasWidth)($at)
+    /* 49ADC 80248ADC A02FDBB8 */  sb         $t7, %lo(g_bStyleMenuCursor)($at)
     /* 49AE0 80248AE0 8C830000 */  lw         $v1, 0x0($a0)
   .L80248AE4:
     /* 49AE4 80248AE4 306A0010 */  andi       $t2, $v1, 0x10
@@ -6508,13 +6508,13 @@ glabel ProcessMirrorFlipMenu
     /* 49AEC 80248AEC 30780020 */   andi      $t8, $v1, 0x20
     /* 49AF0 80248AF0 0C095644 */  jal        TransferFlags
     /* 49AF4 80248AF4 24050010 */   addiu     $a1, $zero, 0x10
-    /* 49AF8 80248AF8 3C028029 */  lui        $v0, %hi(gDecalCanvasWidth)
-    /* 49AFC 80248AFC 9042DBB8 */  lbu        $v0, %lo(gDecalCanvasWidth)($v0)
-    /* 49B00 80248B00 3C018029 */  lui        $at, %hi(g_bController3Connected)
-    /* 49B04 80248B04 3C0D8029 */  lui        $t5, %hi(g_bObjectDirty14)
+    /* 49AF8 80248AF8 3C028029 */  lui        $v0, %hi(g_bStyleMenuCursor)
+    /* 49AFC 80248AFC 9042DBB8 */  lbu        $v0, %lo(g_bStyleMenuCursor)($v0)
+    /* 49B00 80248B00 3C018029 */  lui        $at, %hi(D_8028CFBC)
+    /* 49B04 80248B04 3C0D8029 */  lui        $t5, %hi(g_bDecalSlotHasMirror)
     /* 49B08 80248B08 14400008 */  bnez       $v0, .L80248B2C
-    /* 49B0C 80248B0C A022CFBC */   sb        $v0, %lo(g_bController3Connected)($at)
-    /* 49B10 80248B10 91ADDBCC */  lbu        $t5, %lo(g_bObjectDirty14)($t5)
+    /* 49B0C 80248B0C A022CFBC */   sb        $v0, %lo(D_8028CFBC)($at)
+    /* 49B10 80248B10 91ADDBCC */  lbu        $t5, %lo(g_bDecalSlotHasMirror)($t5)
     /* 49B14 80248B14 51A00016 */  beql       $t5, $zero, .L80248B70
     /* 49B18 80248B18 8FBF0034 */   lw        $ra, 0x34($sp)
     /* 49B1C 80248B1C 0C0922E0 */  jal        MirrorDecalToOppositePanel
@@ -6531,14 +6531,14 @@ glabel ProcessMirrorFlipMenu
     /* 49B40 80248B40 8FBF0034 */   lw        $ra, 0x34($sp)
     /* 49B44 80248B44 0C095644 */  jal        TransferFlags
     /* 49B48 80248B48 24050020 */   addiu     $a1, $zero, 0x20
-    /* 49B4C 80248B4C 3C018029 */  lui        $at, %hi(g_bController3Connected)
-    /* 49B50 80248B50 A020CFBC */  sb         $zero, %lo(g_bController3Connected)($at)
-    /* 49B54 80248B54 3C198029 */  lui        $t9, %hi(g_bObjectDirty3)
-    /* 49B58 80248B58 9339DB64 */  lbu        $t9, %lo(g_bObjectDirty3)($t9)
-    /* 49B5C 80248B5C 3C018029 */  lui        $at, %hi(g_bObjectDirty19)
-    /* 49B60 80248B60 A020DBE0 */  sb         $zero, %lo(g_bObjectDirty19)($at)
-    /* 49B64 80248B64 3C018029 */  lui        $at, %hi(g_bObjectDirty2)
-    /* 49B68 80248B68 A039DB60 */  sb         $t9, %lo(g_bObjectDirty2)($at)
+    /* 49B4C 80248B4C 3C018029 */  lui        $at, %hi(D_8028CFBC)
+    /* 49B50 80248B50 A020CFBC */  sb         $zero, %lo(D_8028CFBC)($at)
+    /* 49B54 80248B54 3C198029 */  lui        $t9, %hi(g_bPreviousPaintTool)
+    /* 49B58 80248B58 9339DB64 */  lbu        $t9, %lo(g_bPreviousPaintTool)($t9)
+    /* 49B5C 80248B5C 3C018029 */  lui        $at, %hi(g_bStyleMenuOpen)
+    /* 49B60 80248B60 A020DBE0 */  sb         $zero, %lo(g_bStyleMenuOpen)($at)
+    /* 49B64 80248B64 3C018029 */  lui        $at, %hi(g_bPaintTool)
+    /* 49B68 80248B68 A039DB60 */  sb         $t9, %lo(g_bPaintTool)($at)
     /* 49B6C 80248B6C 8FBF0034 */  lw         $ra, 0x34($sp)
   .L80248B70:
     /* 49B70 80248B70 8FB00030 */  lw         $s0, 0x30($sp)
@@ -6551,22 +6551,22 @@ nonmatching MirrorDecalToOppositePanel, 0x234
 
 glabel MirrorDecalToOppositePanel
     /* 49B80 80248B80 27BDFFD8 */  addiu      $sp, $sp, -0x28
-    /* 49B84 80248B84 3C0E8029 */  lui        $t6, %hi(g_bObjectDirty14)
-    /* 49B88 80248B88 91CEDBCC */  lbu        $t6, %lo(g_bObjectDirty14)($t6)
+    /* 49B84 80248B84 3C0E8029 */  lui        $t6, %hi(g_bDecalSlotHasMirror)
+    /* 49B88 80248B88 91CEDBCC */  lbu        $t6, %lo(g_bDecalSlotHasMirror)($t6)
     /* 49B8C 80248B8C AFBF0024 */  sw         $ra, 0x24($sp)
     /* 49B90 80248B90 AFB30020 */  sw         $s3, 0x20($sp)
     /* 49B94 80248B94 AFB2001C */  sw         $s2, 0x1C($sp)
     /* 49B98 80248B98 AFB10018 */  sw         $s1, 0x18($sp)
     /* 49B9C 80248B9C 15C00006 */  bnez       $t6, .L80248BB8
     /* 49BA0 80248BA0 AFB00014 */   sw        $s0, 0x14($sp)
-    /* 49BA4 80248BA4 3C0F8029 */  lui        $t7, %hi(g_bObjectDirty3)
-    /* 49BA8 80248BA8 91EFDB64 */  lbu        $t7, %lo(g_bObjectDirty3)($t7)
-    /* 49BAC 80248BAC 3C018029 */  lui        $at, %hi(g_bObjectDirty2)
+    /* 49BA4 80248BA4 3C0F8029 */  lui        $t7, %hi(g_bPreviousPaintTool)
+    /* 49BA8 80248BA8 91EFDB64 */  lbu        $t7, %lo(g_bPreviousPaintTool)($t7)
+    /* 49BAC 80248BAC 3C018029 */  lui        $at, %hi(g_bPaintTool)
     /* 49BB0 80248BB0 10000079 */  b          .L80248D98
-    /* 49BB4 80248BB4 A02FDB60 */   sb        $t7, %lo(g_bObjectDirty2)($at)
+    /* 49BB4 80248BB4 A02FDB60 */   sb        $t7, %lo(g_bPaintTool)($at)
   .L80248BB8:
-    /* 49BB8 80248BB8 3C078029 */  lui        $a3, %hi(g_bObjectDirty4)
-    /* 49BBC 80248BBC 24E7DB68 */  addiu      $a3, $a3, %lo(g_bObjectDirty4)
+    /* 49BB8 80248BB8 3C078029 */  lui        $a3, %hi(g_bDecalSlot)
+    /* 49BBC 80248BBC 24E7DB68 */  addiu      $a3, $a3, %lo(g_bDecalSlot)
     /* 49BC0 80248BC0 90E40000 */  lbu        $a0, 0x0($a3)
     /* 49BC4 80248BC4 2C810008 */  sltiu      $at, $a0, 0x8
     /* 49BC8 80248BC8 1020001C */  beqz       $at, .L80248C3C
@@ -6578,35 +6578,35 @@ glabel MirrorDecalToOppositePanel
     /* 49BE0 80248BE0 00000000 */   nop
   jlabel .L80248BE4
     /* 49BE4 80248BE4 24190001 */  addiu      $t9, $zero, 0x1
-    /* 49BE8 80248BE8 3C018037 */  lui        $at, %hi(g_bProfileEnabled3)
+    /* 49BE8 80248BE8 3C018037 */  lui        $at, %hi(g_bMirrorTargetPanel)
     /* 49BEC 80248BEC 10000013 */  b          .L80248C3C
-    /* 49BF0 80248BF0 A0399DAB */   sb        $t9, %lo(g_bProfileEnabled3)($at)
+    /* 49BF0 80248BF0 A0399DAB */   sb        $t9, %lo(g_bMirrorTargetPanel)($at)
   jlabel .L80248BF4
-    /* 49BF4 80248BF4 3C018037 */  lui        $at, %hi(g_bProfileEnabled3)
+    /* 49BF4 80248BF4 3C018037 */  lui        $at, %hi(g_bMirrorTargetPanel)
     /* 49BF8 80248BF8 10000010 */  b          .L80248C3C
-    /* 49BFC 80248BFC A0209DAB */   sb        $zero, %lo(g_bProfileEnabled3)($at)
+    /* 49BFC 80248BFC A0209DAB */   sb        $zero, %lo(g_bMirrorTargetPanel)($at)
   jlabel .L80248C00
     /* 49C00 80248C00 24080003 */  addiu      $t0, $zero, 0x3
-    /* 49C04 80248C04 3C018037 */  lui        $at, %hi(g_bProfileEnabled3)
+    /* 49C04 80248C04 3C018037 */  lui        $at, %hi(g_bMirrorTargetPanel)
     /* 49C08 80248C08 1000000C */  b          .L80248C3C
-    /* 49C0C 80248C0C A0289DAB */   sb        $t0, %lo(g_bProfileEnabled3)($at)
+    /* 49C0C 80248C0C A0289DAB */   sb        $t0, %lo(g_bMirrorTargetPanel)($at)
   jlabel .L80248C10
     /* 49C10 80248C10 24090002 */  addiu      $t1, $zero, 0x2
-    /* 49C14 80248C14 3C018037 */  lui        $at, %hi(g_bProfileEnabled3)
+    /* 49C14 80248C14 3C018037 */  lui        $at, %hi(g_bMirrorTargetPanel)
     /* 49C18 80248C18 10000008 */  b          .L80248C3C
-    /* 49C1C 80248C1C A0299DAB */   sb        $t1, %lo(g_bProfileEnabled3)($at)
+    /* 49C1C 80248C1C A0299DAB */   sb        $t1, %lo(g_bMirrorTargetPanel)($at)
   jlabel .L80248C20
     /* 49C20 80248C20 240A0007 */  addiu      $t2, $zero, 0x7
-    /* 49C24 80248C24 3C018037 */  lui        $at, %hi(g_bProfileEnabled3)
+    /* 49C24 80248C24 3C018037 */  lui        $at, %hi(g_bMirrorTargetPanel)
     /* 49C28 80248C28 10000004 */  b          .L80248C3C
-    /* 49C2C 80248C2C A02A9DAB */   sb        $t2, %lo(g_bProfileEnabled3)($at)
+    /* 49C2C 80248C2C A02A9DAB */   sb        $t2, %lo(g_bMirrorTargetPanel)($at)
   jlabel .L80248C30
     /* 49C30 80248C30 240B0006 */  addiu      $t3, $zero, 0x6
-    /* 49C34 80248C34 3C018037 */  lui        $at, %hi(g_bProfileEnabled3)
-    /* 49C38 80248C38 A02B9DAB */  sb         $t3, %lo(g_bProfileEnabled3)($at)
+    /* 49C34 80248C34 3C018037 */  lui        $at, %hi(g_bMirrorTargetPanel)
+    /* 49C38 80248C38 A02B9DAB */  sb         $t3, %lo(g_bMirrorTargetPanel)($at)
   jlabel .L80248C3C
-    /* 49C3C 80248C3C 3C058029 */  lui        $a1, %hi(g_bObjectDirty5)
-    /* 49C40 80248C40 24A5DB6C */  addiu      $a1, $a1, %lo(g_bObjectDirty5)
+    /* 49C3C 80248C3C 3C058029 */  lui        $a1, %hi(g_bPreviousDecalSlot)
+    /* 49C40 80248C40 24A5DB6C */  addiu      $a1, $a1, %lo(g_bPreviousDecalSlot)
     /* 49C44 80248C44 A0A40000 */  sb         $a0, 0x0($a1)
     /* 49C48 80248C48 3C028029 */  lui        $v0, %hi(g_pCurrentVehicleModelData)
     /* 49C4C 80248C4C 8C42AB08 */  lw         $v0, %lo(g_pCurrentVehicleModelData)($v0)
@@ -6615,10 +6615,10 @@ glabel MirrorDecalToOppositePanel
     /* 49C58 80248C58 004D7021 */  addu       $t6, $v0, $t5
     /* 49C5C 80248C5C 91CF0110 */  lbu        $t7, 0x110($t6)
     /* 49C60 80248C60 8C4C0014 */  lw         $t4, 0x14($v0)
-    /* 49C64 80248C64 3C088037 */  lui        $t0, %hi(g_bProfileEnabled3)
+    /* 49C64 80248C64 3C088037 */  lui        $t0, %hi(g_bMirrorTargetPanel)
     /* 49C68 80248C68 01E60019 */  multu      $t7, $a2
-    /* 49C6C 80248C6C 91089DAB */  lbu        $t0, %lo(g_bProfileEnabled3)($t0)
-    /* 49C70 80248C70 3C018029 */  lui        $at, %hi(gFramebufferPtr)
+    /* 49C6C 80248C6C 91089DAB */  lbu        $t0, %lo(g_bMirrorTargetPanel)($t0)
+    /* 49C70 80248C70 3C018029 */  lui        $at, %hi(g_pDecalTexels)
     /* 49C74 80248C74 310400FF */  andi       $a0, $t0, 0xFF
     /* 49C78 80248C78 00445021 */  addu       $t2, $v0, $a0
     /* 49C7C 80248C7C 00041880 */  sll        $v1, $a0, 2
@@ -6628,41 +6628,41 @@ glabel MirrorDecalToOppositePanel
     /* 49C8C 80248C8C A0E80000 */  sb         $t0, 0x0($a3)
     /* 49C90 80248C90 914B0110 */  lbu        $t3, 0x110($t2)
     /* 49C94 80248C94 8C490014 */  lw         $t1, 0x14($v0)
-    /* 49C98 80248C98 3C088029 */  lui        $t0, %hi(g_pObjectMatrix12)
+    /* 49C98 80248C98 3C088029 */  lui        $t0, %hi(g_apDecalSlotIcons)
     /* 49C9C 80248C9C 01660019 */  multu      $t3, $a2
     /* 49CA0 80248CA0 01034021 */  addu       $t0, $t0, $v1
-    /* 49CA4 80248CA4 8D08DB0C */  lw         $t0, %lo(g_pObjectMatrix12)($t0)
+    /* 49CA4 80248CA4 8D08DB0C */  lw         $t0, %lo(g_apDecalSlotIcons)($t0)
     /* 49CA8 80248CA8 00006812 */  mflo       $t5
     /* 49CAC 80248CAC 012D7021 */  addu       $t6, $t1, $t5
     /* 49CB0 80248CB0 8DCF0000 */  lw         $t7, 0x0($t6)
-    /* 49CB4 80248CB4 AC2FDB78 */  sw         $t7, %lo(gFramebufferPtr)($at)
+    /* 49CB4 80248CB4 AC2FDB78 */  sw         $t7, %lo(g_pDecalTexels)($at)
     /* 49CB8 80248CB8 8C4C011C */  lw         $t4, 0x11C($v0)
-    /* 49CBC 80248CBC 3C018029 */  lui        $at, %hi(gClipMaskPtr)
+    /* 49CBC 80248CBC 3C018029 */  lui        $at, %hi(g_pDecalMask)
     /* 49CC0 80248CC0 0183C021 */  addu       $t8, $t4, $v1
     /* 49CC4 80248CC4 8F190000 */  lw         $t9, 0x0($t8)
-    /* 49CC8 80248CC8 AC39DB7C */  sw         $t9, %lo(gClipMaskPtr)($at)
-    /* 49CCC 80248CCC 3C018029 */  lui        $at, %hi(g_dwObjectCount)
-    /* 49CD0 80248CD0 AC28DB08 */  sw         $t0, %lo(g_dwObjectCount)($at)
-    /* 49CD4 80248CD4 3C018029 */  lui        $at, %hi(g_dwFontCharWidth)
-    /* 49CD8 80248CD8 0C09132A */  jal        CommitFramebuffer
-    /* 49CDC 80248CDC AC33DCA4 */   sw        $s3, %lo(g_dwFontCharWidth)($at)
-    /* 49CE0 80248CE0 3C038029 */  lui        $v1, %hi(gFramebufferHeight)
-    /* 49CE4 80248CE4 9063DB8C */  lbu        $v1, %lo(gFramebufferHeight)($v1)
+    /* 49CC8 80248CC8 AC39DB7C */  sw         $t9, %lo(g_pDecalMask)($at)
+    /* 49CCC 80248CCC 3C018029 */  lui        $at, %hi(g_pDecalSlotIcon)
+    /* 49CD0 80248CD0 AC28DB08 */  sw         $t0, %lo(g_pDecalSlotIcon)($at)
+    /* 49CD4 80248CD4 3C018029 */  lui        $at, %hi(s_pMirrorSource)
+    /* 49CD8 80248CD8 0C09132A */  jal        SaveDecalUndo
+    /* 49CDC 80248CDC AC33DCA4 */   sw        $s3, %lo(s_pMirrorSource)($at)
+    /* 49CE0 80248CE0 3C038029 */  lui        $v1, %hi(g_bDecalHeight)
+    /* 49CE4 80248CE4 9063DB8C */  lbu        $v1, %lo(g_bDecalHeight)($v1)
     /* 49CE8 80248CE8 00008825 */  or         $s1, $zero, $zero
-    /* 49CEC 80248CEC 3C028029 */  lui        $v0, %hi(gFramebufferWidth)
+    /* 49CEC 80248CEC 3C028029 */  lui        $v0, %hi(g_bDecalWidth)
     /* 49CF0 80248CF0 1860001E */  blez       $v1, .L80248D6C
-    /* 49CF4 80248CF4 3C138029 */   lui       $s3, %hi(g_dwFontCharWidth)
-    /* 49CF8 80248CF8 3C128029 */  lui        $s2, %hi(gFramebufferWidth)
-    /* 49CFC 80248CFC 2652DB88 */  addiu      $s2, $s2, %lo(gFramebufferWidth)
-    /* 49D00 80248D00 9042DB88 */  lbu        $v0, %lo(gFramebufferWidth)($v0)
-    /* 49D04 80248D04 8E73DCA4 */  lw         $s3, %lo(g_dwFontCharWidth)($s3)
+    /* 49CF4 80248CF4 3C138029 */   lui       $s3, %hi(s_pMirrorSource)
+    /* 49CF8 80248CF8 3C128029 */  lui        $s2, %hi(g_bDecalWidth)
+    /* 49CFC 80248CFC 2652DB88 */  addiu      $s2, $s2, %lo(g_bDecalWidth)
+    /* 49D00 80248D00 9042DB88 */  lbu        $v0, %lo(g_bDecalWidth)($v0)
+    /* 49D04 80248D04 8E73DCA4 */  lw         $s3, %lo(s_pMirrorSource)($s3)
   .L80248D08:
     /* 49D08 80248D08 18400012 */  blez       $v0, .L80248D54
     /* 49D0C 80248D0C 00008025 */   or        $s0, $zero, $zero
     /* 49D10 80248D10 02602025 */  or         $a0, $s3, $zero
   .L80248D14:
     /* 49D14 80248D14 02002825 */  or         $a1, $s0, $zero
-    /* 49D18 80248D18 0C093611 */  jal        ReadPixelFromBuffer
+    /* 49D18 80248D18 0C093611 */  jal        ReadPixel4Bit
     /* 49D1C 80248D1C 02203025 */   or        $a2, $s1, $zero
     /* 49D20 80248D20 924A0000 */  lbu        $t2, 0x0($s2)
     /* 49D24 80248D24 02202825 */  or         $a1, $s1, $zero
@@ -6675,27 +6675,27 @@ glabel MirrorDecalToOppositePanel
     /* 49D40 80248D40 0202082A */  slt        $at, $s0, $v0
     /* 49D44 80248D44 5420FFF3 */  bnel       $at, $zero, .L80248D14
     /* 49D48 80248D48 02602025 */   or        $a0, $s3, $zero
-    /* 49D4C 80248D4C 3C038029 */  lui        $v1, %hi(gFramebufferHeight)
-    /* 49D50 80248D50 9063DB8C */  lbu        $v1, %lo(gFramebufferHeight)($v1)
+    /* 49D4C 80248D4C 3C038029 */  lui        $v1, %hi(g_bDecalHeight)
+    /* 49D50 80248D50 9063DB8C */  lbu        $v1, %lo(g_bDecalHeight)($v1)
   .L80248D54:
     /* 49D54 80248D54 26310001 */  addiu      $s1, $s1, 0x1
     /* 49D58 80248D58 0223082A */  slt        $at, $s1, $v1
     /* 49D5C 80248D5C 1420FFEA */  bnez       $at, .L80248D08
     /* 49D60 80248D60 00000000 */   nop
-    /* 49D64 80248D64 3C018029 */  lui        $at, %hi(g_dwFontCharWidth)
-    /* 49D68 80248D68 AC33DCA4 */  sw         $s3, %lo(g_dwFontCharWidth)($at)
+    /* 49D64 80248D64 3C018029 */  lui        $at, %hi(s_pMirrorSource)
+    /* 49D68 80248D68 AC33DCA4 */  sw         $s3, %lo(s_pMirrorSource)($at)
   .L80248D6C:
     /* 49D6C 80248D6C 240B0001 */  addiu      $t3, $zero, 0x1
-    /* 49D70 80248D70 3C018029 */  lui        $at, %hi(g_bObjectDirty15)
-    /* 49D74 80248D74 A02BDBD0 */  sb         $t3, %lo(g_bObjectDirty15)($at)
-    /* 49D78 80248D78 3C098029 */  lui        $t1, %hi(g_bObjectDirty3)
-    /* 49D7C 80248D7C 9129DB64 */  lbu        $t1, %lo(g_bObjectDirty3)($t1)
+    /* 49D70 80248D70 3C018029 */  lui        $at, %hi(g_bDecalSlotChanged)
+    /* 49D74 80248D74 A02BDBD0 */  sb         $t3, %lo(g_bDecalSlotChanged)($at)
+    /* 49D78 80248D78 3C098029 */  lui        $t1, %hi(g_bPreviousPaintTool)
+    /* 49D7C 80248D7C 9129DB64 */  lbu        $t1, %lo(g_bPreviousPaintTool)($t1)
     /* 49D80 80248D80 3C018029 */  lui        $at, %hi(g_wScreenFrameCount)
     /* 49D84 80248D84 A420DBB0 */  sh         $zero, %lo(g_wScreenFrameCount)($at)
-    /* 49D88 80248D88 3C018029 */  lui        $at, %hi(g_bObjectDirty2)
-    /* 49D8C 80248D8C A029DB60 */  sb         $t1, %lo(g_bObjectDirty2)($at)
-    /* 49D90 80248D90 3C018029 */  lui        $at, %hi(g_dwFontCharWidth)
-    /* 49D94 80248D94 AC20DCA4 */  sw         $zero, %lo(g_dwFontCharWidth)($at)
+    /* 49D88 80248D88 3C018029 */  lui        $at, %hi(g_bPaintTool)
+    /* 49D8C 80248D8C A029DB60 */  sb         $t1, %lo(g_bPaintTool)($at)
+    /* 49D90 80248D90 3C018029 */  lui        $at, %hi(s_pMirrorSource)
+    /* 49D94 80248D94 AC20DCA4 */  sw         $zero, %lo(s_pMirrorSource)($at)
   .L80248D98:
     /* 49D98 80248D98 8FBF0024 */  lw         $ra, 0x24($sp)
     /* 49D9C 80248D9C 8FB00014 */  lw         $s0, 0x14($sp)
@@ -6715,30 +6715,30 @@ glabel FlipDecalPixels
     /* 49DC0 80248DC0 AFB30024 */  sw         $s3, 0x24($sp)
     /* 49DC4 80248DC4 AFB20020 */  sw         $s2, 0x20($sp)
     /* 49DC8 80248DC8 AFB1001C */  sw         $s1, 0x1C($sp)
-    /* 49DCC 80248DCC 0C09132A */  jal        CommitFramebuffer
+    /* 49DCC 80248DCC 0C09132A */  jal        SaveDecalUndo
     /* 49DD0 80248DD0 AFB00018 */   sw        $s0, 0x18($sp)
-    /* 49DD4 80248DD4 3C028029 */  lui        $v0, %hi(g_bController3Connected)
-    /* 49DD8 80248DD8 9042CFBC */  lbu        $v0, %lo(g_bController3Connected)($v0)
+    /* 49DD4 80248DD4 3C028029 */  lui        $v0, %hi(D_8028CFBC)
+    /* 49DD8 80248DD8 9042CFBC */  lbu        $v0, %lo(D_8028CFBC)($v0)
     /* 49DDC 80248DDC 24010001 */  addiu      $at, $zero, 0x1
-    /* 49DE0 80248DE0 3C148029 */  lui        $s4, %hi(gFramebufferHeight)
+    /* 49DE0 80248DE0 3C148029 */  lui        $s4, %hi(g_bDecalHeight)
     /* 49DE4 80248DE4 14410023 */  bne        $v0, $at, .L80248E74
-    /* 49DE8 80248DE8 2694DB8C */   addiu     $s4, $s4, %lo(gFramebufferHeight)
+    /* 49DE8 80248DE8 2694DB8C */   addiu     $s4, $s4, %lo(g_bDecalHeight)
     /* 49DEC 80248DEC 92830000 */  lbu        $v1, 0x0($s4)
     /* 49DF0 80248DF0 00008825 */  or         $s1, $zero, $zero
-    /* 49DF4 80248DF4 3C028029 */  lui        $v0, %hi(gFramebufferWidth)
+    /* 49DF4 80248DF4 3C028029 */  lui        $v0, %hi(g_bDecalWidth)
     /* 49DF8 80248DF8 18600041 */  blez       $v1, .L80248F00
-    /* 49DFC 80248DFC 3C138029 */   lui       $s3, %hi(g_dwObjectPosX)
-    /* 49E00 80248E00 3C128029 */  lui        $s2, %hi(gFramebufferWidth)
-    /* 49E04 80248E04 2652DB88 */  addiu      $s2, $s2, %lo(gFramebufferWidth)
-    /* 49E08 80248E08 9042DB88 */  lbu        $v0, %lo(gFramebufferWidth)($v0)
-    /* 49E0C 80248E0C 2673DB80 */  addiu      $s3, $s3, %lo(g_dwObjectPosX)
+    /* 49DFC 80248DFC 3C138029 */   lui       $s3, %hi(g_pDecalUndoBuffer)
+    /* 49E00 80248E00 3C128029 */  lui        $s2, %hi(g_bDecalWidth)
+    /* 49E04 80248E04 2652DB88 */  addiu      $s2, $s2, %lo(g_bDecalWidth)
+    /* 49E08 80248E08 9042DB88 */  lbu        $v0, %lo(g_bDecalWidth)($v0)
+    /* 49E0C 80248E0C 2673DB80 */  addiu      $s3, $s3, %lo(g_pDecalUndoBuffer)
   .L80248E10:
     /* 49E10 80248E10 18400012 */  blez       $v0, .L80248E5C
     /* 49E14 80248E14 00008025 */   or        $s0, $zero, $zero
     /* 49E18 80248E18 8E640000 */  lw         $a0, 0x0($s3)
   .L80248E1C:
     /* 49E1C 80248E1C 02002825 */  or         $a1, $s0, $zero
-    /* 49E20 80248E20 0C093611 */  jal        ReadPixelFromBuffer
+    /* 49E20 80248E20 0C093611 */  jal        ReadPixel4Bit
     /* 49E24 80248E24 02203025 */   or        $a2, $s1, $zero
     /* 49E28 80248E28 924E0000 */  lbu        $t6, 0x0($s2)
     /* 49E2C 80248E2C 02202825 */  or         $a1, $s1, $zero
@@ -6751,8 +6751,8 @@ glabel FlipDecalPixels
     /* 49E48 80248E48 0202082A */  slt        $at, $s0, $v0
     /* 49E4C 80248E4C 5420FFF3 */  bnel       $at, $zero, .L80248E1C
     /* 49E50 80248E50 8E640000 */   lw        $a0, 0x0($s3)
-    /* 49E54 80248E54 3C038029 */  lui        $v1, %hi(gFramebufferHeight)
-    /* 49E58 80248E58 9063DB8C */  lbu        $v1, %lo(gFramebufferHeight)($v1)
+    /* 49E54 80248E54 3C038029 */  lui        $v1, %hi(g_bDecalHeight)
+    /* 49E58 80248E58 9063DB8C */  lbu        $v1, %lo(g_bDecalHeight)($v1)
   .L80248E5C:
     /* 49E5C 80248E5C 26310001 */  addiu      $s1, $s1, 0x1
     /* 49E60 80248E60 0223082A */  slt        $at, $s1, $v1
@@ -6763,24 +6763,24 @@ glabel FlipDecalPixels
   .L80248E74:
     /* 49E74 80248E74 24010002 */  addiu      $at, $zero, 0x2
     /* 49E78 80248E78 14410021 */  bne        $v0, $at, .L80248F00
-    /* 49E7C 80248E7C 3C148029 */   lui       $s4, %hi(gFramebufferHeight)
-    /* 49E80 80248E80 2694DB8C */  addiu      $s4, $s4, %lo(gFramebufferHeight)
+    /* 49E7C 80248E7C 3C148029 */   lui       $s4, %hi(g_bDecalHeight)
+    /* 49E80 80248E80 2694DB8C */  addiu      $s4, $s4, %lo(g_bDecalHeight)
     /* 49E84 80248E84 92830000 */  lbu        $v1, 0x0($s4)
     /* 49E88 80248E88 00008825 */  or         $s1, $zero, $zero
-    /* 49E8C 80248E8C 3C028029 */  lui        $v0, %hi(gFramebufferWidth)
+    /* 49E8C 80248E8C 3C028029 */  lui        $v0, %hi(g_bDecalWidth)
     /* 49E90 80248E90 1860001B */  blez       $v1, .L80248F00
-    /* 49E94 80248E94 3C138029 */   lui       $s3, %hi(g_dwObjectPosX)
-    /* 49E98 80248E98 3C128029 */  lui        $s2, %hi(gFramebufferWidth)
-    /* 49E9C 80248E9C 2652DB88 */  addiu      $s2, $s2, %lo(gFramebufferWidth)
-    /* 49EA0 80248EA0 9042DB88 */  lbu        $v0, %lo(gFramebufferWidth)($v0)
-    /* 49EA4 80248EA4 2673DB80 */  addiu      $s3, $s3, %lo(g_dwObjectPosX)
+    /* 49E94 80248E94 3C138029 */   lui       $s3, %hi(g_pDecalUndoBuffer)
+    /* 49E98 80248E98 3C128029 */  lui        $s2, %hi(g_bDecalWidth)
+    /* 49E9C 80248E9C 2652DB88 */  addiu      $s2, $s2, %lo(g_bDecalWidth)
+    /* 49EA0 80248EA0 9042DB88 */  lbu        $v0, %lo(g_bDecalWidth)($v0)
+    /* 49EA4 80248EA4 2673DB80 */  addiu      $s3, $s3, %lo(g_pDecalUndoBuffer)
   .L80248EA8:
     /* 49EA8 80248EA8 18400011 */  blez       $v0, .L80248EF0
     /* 49EAC 80248EAC 00008025 */   or        $s0, $zero, $zero
     /* 49EB0 80248EB0 8E640000 */  lw         $a0, 0x0($s3)
   .L80248EB4:
     /* 49EB4 80248EB4 02002825 */  or         $a1, $s0, $zero
-    /* 49EB8 80248EB8 0C093611 */  jal        ReadPixelFromBuffer
+    /* 49EB8 80248EB8 0C093611 */  jal        ReadPixel4Bit
     /* 49EBC 80248EBC 02203025 */   or        $a2, $s1, $zero
     /* 49EC0 80248EC0 928F0000 */  lbu        $t7, 0x0($s4)
     /* 49EC4 80248EC4 02002025 */  or         $a0, $s0, $zero
@@ -6802,11 +6802,11 @@ glabel FlipDecalPixels
   .L80248F00:
     /* 49F00 80248F00 8FBF002C */  lw         $ra, 0x2C($sp)
   .L80248F04:
-    /* 49F04 80248F04 3C018029 */  lui        $at, %hi(g_bController3Connected)
-    /* 49F08 80248F08 3C188029 */  lui        $t8, %hi(g_bObjectDirty3)
-    /* 49F0C 80248F0C 9318DB64 */  lbu        $t8, %lo(g_bObjectDirty3)($t8)
-    /* 49F10 80248F10 A020CFBC */  sb         $zero, %lo(g_bController3Connected)($at)
-    /* 49F14 80248F14 3C018029 */  lui        $at, %hi(g_bObjectDirty2)
+    /* 49F04 80248F04 3C018029 */  lui        $at, %hi(D_8028CFBC)
+    /* 49F08 80248F08 3C188029 */  lui        $t8, %hi(g_bPreviousPaintTool)
+    /* 49F0C 80248F0C 9318DB64 */  lbu        $t8, %lo(g_bPreviousPaintTool)($t8)
+    /* 49F10 80248F10 A020CFBC */  sb         $zero, %lo(D_8028CFBC)($at)
+    /* 49F14 80248F14 3C018029 */  lui        $at, %hi(g_bPaintTool)
     /* 49F18 80248F18 8FB00018 */  lw         $s0, 0x18($sp)
     /* 49F1C 80248F1C 8FB1001C */  lw         $s1, 0x1C($sp)
     /* 49F20 80248F20 8FB20020 */  lw         $s2, 0x20($sp)
@@ -6814,7 +6814,7 @@ glabel FlipDecalPixels
     /* 49F28 80248F28 8FB40028 */  lw         $s4, 0x28($sp)
     /* 49F2C 80248F2C 27BD0030 */  addiu      $sp, $sp, 0x30
     /* 49F30 80248F30 03E00008 */  jr         $ra
-    /* 49F34 80248F34 A038DB60 */   sb        $t8, %lo(g_bObjectDirty2)($at)
+    /* 49F34 80248F34 A038DB60 */   sb        $t8, %lo(g_bPaintTool)($at)
 endlabel FlipDecalPixels
 
 nonmatching AllocateEditorBuffers, 0x50
@@ -6828,9 +6828,9 @@ glabel AllocateEditorBuffers
     /* 49F4C 80248F4C 24050800 */   addiu     $a1, $zero, 0x800
     /* 49F50 80248F50 0C090A5B */  jal        AllocHeapAligned
     /* 49F54 80248F54 24040800 */   addiu     $a0, $zero, 0x800
-    /* 49F58 80248F58 3C018029 */  lui        $at, %hi(g_dwObjectPosX)
+    /* 49F58 80248F58 3C018029 */  lui        $at, %hi(g_pDecalUndoBuffer)
     /* 49F5C 80248F5C 3C048029 */  lui        $a0, %hi(g_texButtonA)
-    /* 49F60 80248F60 AC22DB80 */  sw         $v0, %lo(g_dwObjectPosX)($at)
+    /* 49F60 80248F60 AC22DB80 */  sw         $v0, %lo(g_pDecalUndoBuffer)($at)
     /* 49F64 80248F64 0C090AC4 */  jal        LoadTextureFromRom
     /* 49F68 80248F68 2484D0B0 */   addiu     $a0, $a0, %lo(g_texButtonA)
     /* 49F6C 80248F6C 3C048029 */  lui        $a0, %hi(g_texButtonB)
@@ -6846,13 +6846,13 @@ nonmatching ProcessDecalSaveLoad, 0x1CE8
 
 glabel ProcessDecalSaveLoad
     /* 49F88 80248F88 27BDFF50 */  addiu      $sp, $sp, -0xB0
-    /* 49F8C 80248F8C 3C0F8029 */  lui        $t7, %hi(g_dwFontCharHeight)
+    /* 49F8C 80248F8C 3C0F8029 */  lui        $t7, %hi(D_8028DCA8)
     /* 49F90 80248F90 AFBF002C */  sw         $ra, 0x2C($sp)
     /* 49F94 80248F94 AFA400B0 */  sw         $a0, 0xB0($sp)
     /* 49F98 80248F98 AFA500B4 */  sw         $a1, 0xB4($sp)
     /* 49F9C 80248F9C AFA600B8 */  sw         $a2, 0xB8($sp)
     /* 49FA0 80248FA0 AFA700BC */  sw         $a3, 0xBC($sp)
-    /* 49FA4 80248FA4 25EFDCA8 */  addiu      $t7, $t7, %lo(g_dwFontCharHeight)
+    /* 49FA4 80248FA4 25EFDCA8 */  addiu      $t7, $t7, %lo(D_8028DCA8)
     /* 49FA8 80248FA8 8DE10000 */  lw         $at, 0x0($t7)
     /* 49FAC 80248FAC 8DF90004 */  lw         $t9, 0x4($t7)
     /* 49FB0 80248FB0 27AE004C */  addiu      $t6, $sp, 0x4C
@@ -6860,51 +6860,51 @@ glabel ProcessDecalSaveLoad
     /* 49FB8 80248FB8 ADD90004 */  sw         $t9, 0x4($t6)
     /* 49FBC 80248FBC 8DF9000C */  lw         $t9, 0xC($t7)
     /* 49FC0 80248FC0 8DE10008 */  lw         $at, 0x8($t7)
-    /* 49FC4 80248FC4 3C188029 */  lui        $t8, %hi(g_dwFontLineHeight)
-    /* 49FC8 80248FC8 2718DCB8 */  addiu      $t8, $t8, %lo(g_dwFontLineHeight)
+    /* 49FC4 80248FC4 3C188029 */  lui        $t8, %hi(D_8028DCB8)
+    /* 49FC8 80248FC8 2718DCB8 */  addiu      $t8, $t8, %lo(D_8028DCB8)
     /* 49FCC 80248FCC ADD9000C */  sw         $t9, 0xC($t6)
     /* 49FD0 80248FD0 ADC10008 */  sw         $at, 0x8($t6)
     /* 49FD4 80248FD4 8F010000 */  lw         $at, 0x0($t8)
     /* 49FD8 80248FD8 27A80048 */  addiu      $t0, $sp, 0x48
-    /* 49FDC 80248FDC 3C0F8029 */  lui        $t7, %hi(g_bFontMonospace)
+    /* 49FDC 80248FDC 3C0F8029 */  lui        $t7, %hi(g_bPakDialogActive)
     /* 49FE0 80248FE0 AD010000 */  sw         $at, 0x0($t0)
-    /* 49FE4 80248FE4 91EFDCBC */  lbu        $t7, %lo(g_bFontMonospace)($t7)
+    /* 49FE4 80248FE4 91EFDCBC */  lbu        $t7, %lo(g_bPakDialogActive)($t7)
     /* 49FE8 80248FE8 3C01802A */  lui        $at, %hi(g_wSerialInterfaceIdle)
     /* 49FEC 80248FEC A4204BE8 */  sh         $zero, %lo(g_wSerialInterfaceIdle)($at)
     /* 49FF0 80248FF0 15E0001A */  bnez       $t7, .L8024905C
     /* 49FF4 80248FF4 24090001 */   addiu     $t1, $zero, 0x1
     /* 49FF8 80248FF8 240E0001 */  addiu      $t6, $zero, 0x1
-    /* 49FFC 80248FFC 3C018029 */  lui        $at, %hi(g_bFontMonospace)
-    /* 4A000 80249000 A02EDCBC */  sb         $t6, %lo(g_bFontMonospace)($at)
-    /* 4A004 80249004 3C018037 */  lui        $at, %hi(g_bCheatEnabled)
-    /* 4A008 80249008 A0209E50 */  sb         $zero, %lo(g_bCheatEnabled)($at)
-    /* 4A00C 8024900C 3C018037 */  lui        $at, %hi(g_bCheatGodMode)
-    /* 4A010 80249010 A0209E51 */  sb         $zero, %lo(g_bCheatGodMode)($at)
-    /* 4A014 80249014 3C018037 */  lui        $at, %hi(gOsTaskState)
-    /* 4A018 80249018 AC209E54 */  sw         $zero, %lo(gOsTaskState)($at)
-    /* 4A01C 8024901C 3C018037 */  lui        $at, %hi(g_bCheatReserved)
-    /* 4A020 80249020 A0209E61 */  sb         $zero, %lo(g_bCheatReserved)($at)
-    /* 4A024 80249024 3C018029 */  lui        $at, %hi(g_dwFontShadowOffsetX)
-    /* 4A028 80249028 AC20DCC4 */  sw         $zero, %lo(g_dwFontShadowOffsetX)($at)
+    /* 49FFC 80248FFC 3C018029 */  lui        $at, %hi(g_bPakDialogActive)
+    /* 4A000 80249000 A02EDCBC */  sb         $t6, %lo(g_bPakDialogActive)($at)
+    /* 4A004 80249004 3C018037 */  lui        $at, %hi(g_bPakRumbleSwapped)
+    /* 4A008 80249008 A0209E50 */  sb         $zero, %lo(g_bPakRumbleSwapped)($at)
+    /* 4A00C 8024900C 3C018037 */  lui        $at, %hi(g_bPakRetryNewPak)
+    /* 4A010 80249010 A0209E51 */  sb         $zero, %lo(g_bPakRetryNewPak)($at)
+    /* 4A014 80249014 3C018037 */  lui        $at, %hi(g_dwPakError)
+    /* 4A018 80249018 AC209E54 */  sw         $zero, %lo(g_dwPakError)($at)
+    /* 4A01C 8024901C 3C018037 */  lui        $at, %hi(g_bPakDecalIndex)
+    /* 4A020 80249020 A0209E61 */  sb         $zero, %lo(g_bPakDecalIndex)($at)
+    /* 4A024 80249024 3C018029 */  lui        $at, %hi(g_dwPakFileOffset)
+    /* 4A028 80249028 AC20DCC4 */  sw         $zero, %lo(g_dwPakFileOffset)($at)
     /* 4A02C 8024902C 93B800BF */  lbu        $t8, 0xBF($sp)
-    /* 4A030 80249030 3C018037 */  lui        $at, %hi(g_dwCheatReserved1)
-    /* 4A034 80249034 AC209E5C */  sw         $zero, %lo(g_dwCheatReserved1)($at)
-    /* 4A038 80249038 3C018037 */  lui        $at, %hi(g_bCheatReserved2)
+    /* 4A030 80249030 3C018037 */  lui        $at, %hi(g_dwPakChunkSize)
+    /* 4A034 80249034 AC209E5C */  sw         $zero, %lo(g_dwPakChunkSize)($at)
+    /* 4A038 80249038 3C018037 */  lui        $at, %hi(g_bPakWaitFrames)
     /* 4A03C 8024903C 15380004 */  bne        $t1, $t8, .L80249050
-    /* 4A040 80249040 A0209E62 */   sb        $zero, %lo(g_bCheatReserved2)($at)
-    /* 4A044 80249044 3C018037 */  lui        $at, %hi(gOsSchedulerState)
+    /* 4A040 80249040 A0209E62 */   sb        $zero, %lo(g_bPakWaitFrames)($at)
+    /* 4A044 80249044 3C018037 */  lui        $at, %hi(g_bPakDialogState)
     /* 4A048 80249048 10000004 */  b          .L8024905C
-    /* 4A04C 8024904C A0209E60 */   sb        $zero, %lo(gOsSchedulerState)($at)
+    /* 4A04C 8024904C A0209E60 */   sb        $zero, %lo(g_bPakDialogState)($at)
   .L80249050:
     /* 4A050 80249050 24190002 */  addiu      $t9, $zero, 0x2
-    /* 4A054 80249054 3C018037 */  lui        $at, %hi(gOsSchedulerState)
-    /* 4A058 80249058 A0399E60 */  sb         $t9, %lo(gOsSchedulerState)($at)
+    /* 4A054 80249054 3C018037 */  lui        $at, %hi(g_bPakDialogState)
+    /* 4A058 80249058 A0399E60 */  sb         $t9, %lo(g_bPakDialogState)($at)
   .L8024905C:
     /* 4A05C 8024905C 8FAF00C0 */  lw         $t7, 0xC0($sp)
-    /* 4A060 80249060 3C0E8037 */  lui        $t6, %hi(gOsSchedulerState)
+    /* 4A060 80249060 3C0E8037 */  lui        $t6, %hi(g_bPakDialogState)
     /* 4A064 80249064 24090001 */  addiu      $t1, $zero, 0x1
     /* 4A068 80249068 A1E00000 */  sb         $zero, 0x0($t7)
-    /* 4A06C 8024906C 91CE9E60 */  lbu        $t6, %lo(gOsSchedulerState)($t6)
+    /* 4A06C 8024906C 91CE9E60 */  lbu        $t6, %lo(g_bPakDialogState)($t6)
     /* 4A070 80249070 2DC1000D */  sltiu      $at, $t6, 0xD
     /* 4A074 80249074 102006F9 */  beqz       $at, .L8024AC5C
     /* 4A078 80249078 000E7080 */   sll       $t6, $t6, 2
@@ -6915,34 +6915,34 @@ glabel ProcessDecalSaveLoad
     /* 4A08C 8024908C 00000000 */   nop
   jlabel .L80249090
     /* 4A090 80249090 44806000 */  mtc1       $zero, $f12
-    /* 4A094 80249094 3C01802B */  lui        $at, %hi(g_dwRaceReserved99)
+    /* 4A094 80249094 3C01802B */  lui        $at, %hi(g_fConst0p2_802ab1d0)
     /* 4A098 80249098 0C088DD4 */  jal        FadeSfxTo
-    /* 4A09C 8024909C C42EB1D0 */   lwc1      $f14, %lo(g_dwRaceReserved99)($at)
+    /* 4A09C 8024909C C42EB1D0 */   lwc1      $f14, %lo(g_fConst0p2_802ab1d0)($at)
     /* 4A0A0 802490A0 44806000 */  mtc1       $zero, $f12
-    /* 4A0A4 802490A4 3C01802B */  lui        $at, %hi(g_dwRaceReserved100)
+    /* 4A0A4 802490A4 3C01802B */  lui        $at, %hi(g_fConst0p2_802ab1d4)
     /* 4A0A8 802490A8 0C088DF4 */  jal        FadeMusicTo
-    /* 4A0AC 802490AC C42EB1D4 */   lwc1      $f14, %lo(g_dwRaceReserved100)($at)
+    /* 4A0AC 802490AC C42EB1D4 */   lwc1      $f14, %lo(g_fConst0p2_802ab1d4)($at)
     /* 4A0B0 802490B0 24180001 */  addiu      $t8, $zero, 0x1
-    /* 4A0B4 802490B4 3C018037 */  lui        $at, %hi(gOsSchedulerState)
+    /* 4A0B4 802490B4 3C018037 */  lui        $at, %hi(g_bPakDialogState)
     /* 4A0B8 802490B8 100006E8 */  b          .L8024AC5C
-    /* 4A0BC 802490BC A0389E60 */   sb        $t8, %lo(gOsSchedulerState)($at)
+    /* 4A0BC 802490BC A0389E60 */   sb        $t8, %lo(g_bPakDialogState)($at)
   jlabel .L802490C0
     /* 4A0C0 802490C0 0C088E14 */  jal        HasSfxFadeFinished
     /* 4A0C4 802490C4 00000000 */   nop
     /* 4A0C8 802490C8 104006E4 */  beqz       $v0, .L8024AC5C
-    /* 4A0CC 802490CC 3C038037 */   lui       $v1, %hi(g_bCheatReserved2)
-    /* 4A0D0 802490D0 90639E62 */  lbu        $v1, %lo(g_bCheatReserved2)($v1)
-    /* 4A0D4 802490D4 3C018037 */  lui        $at, %hi(g_bCheatReserved2)
+    /* 4A0CC 802490CC 3C038037 */   lui       $v1, %hi(g_bPakWaitFrames)
+    /* 4A0D0 802490D0 90639E62 */  lbu        $v1, %lo(g_bPakWaitFrames)($v1)
+    /* 4A0D4 802490D4 3C018037 */  lui        $at, %hi(g_bPakWaitFrames)
     /* 4A0D8 802490D8 240F0003 */  addiu      $t7, $zero, 0x3
     /* 4A0DC 802490DC 38620003 */  xori       $v0, $v1, 0x3
     /* 4A0E0 802490E0 24790001 */  addiu      $t9, $v1, 0x1
     /* 4A0E4 802490E4 144006DD */  bnez       $v0, .L8024AC5C
-    /* 4A0E8 802490E8 A0399E62 */   sb        $t9, %lo(g_bCheatReserved2)($at)
-    /* 4A0EC 802490EC 3C018037 */  lui        $at, %hi(gOsSchedulerState)
-    /* 4A0F0 802490F0 A02F9E60 */  sb         $t7, %lo(gOsSchedulerState)($at)
-    /* 4A0F4 802490F4 3C018037 */  lui        $at, %hi(g_bCheatReserved2)
+    /* 4A0E8 802490E8 A0399E62 */   sb        $t9, %lo(g_bPakWaitFrames)($at)
+    /* 4A0EC 802490EC 3C018037 */  lui        $at, %hi(g_bPakDialogState)
+    /* 4A0F0 802490F0 A02F9E60 */  sb         $t7, %lo(g_bPakDialogState)($at)
+    /* 4A0F4 802490F4 3C018037 */  lui        $at, %hi(g_bPakWaitFrames)
     /* 4A0F8 802490F8 100006D8 */  b          .L8024AC5C
-    /* 4A0FC 802490FC A0209E62 */   sb        $zero, %lo(g_bCheatReserved2)($at)
+    /* 4A0FC 802490FC A0209E62 */   sb        $zero, %lo(g_bPakWaitFrames)($at)
   jlabel .L80249100
     /* 4A100 80249100 3C0E8029 */  lui        $t6, %hi(g_texButtonA + 0x10)
     /* 4A104 80249104 8DCED0C0 */  lw         $t6, %lo(g_texButtonA + 0x10)($t6)
@@ -7046,9 +7046,9 @@ glabel ProcessDecalSaveLoad
     /* 4A284 80249284 30580020 */   andi      $t8, $v0, 0x20
     /* 4A288 80249288 0C095644 */  jal        TransferFlags
     /* 4A28C 8024928C 24050010 */   addiu     $a1, $zero, 0x10
-    /* 4A290 80249290 3C018037 */  lui        $at, %hi(gOsSchedulerState)
+    /* 4A290 80249290 3C018037 */  lui        $at, %hi(g_bPakDialogState)
     /* 4A294 80249294 10000671 */  b          .L8024AC5C
-    /* 4A298 80249298 A0209E60 */   sb        $zero, %lo(gOsSchedulerState)($at)
+    /* 4A298 80249298 A0209E60 */   sb        $zero, %lo(g_bPakDialogState)($at)
   .L8024929C:
     /* 4A29C 8024929C 53000670 */  beql       $t8, $zero, .L8024AC60
     /* 4A2A0 802492A0 00001025 */   or        $v0, $zero, $zero
@@ -7056,13 +7056,13 @@ glabel ProcessDecalSaveLoad
     /* 4A2A8 802492A8 24050020 */   addiu     $a1, $zero, 0x20
     /* 4A2AC 802492AC 8FB900C0 */  lw         $t9, 0xC0($sp)
     /* 4A2B0 802492B0 240E0001 */  addiu      $t6, $zero, 0x1
-    /* 4A2B4 802492B4 3C0F8029 */  lui        $t7, %hi(g_bObjectDirty3)
+    /* 4A2B4 802492B4 3C0F8029 */  lui        $t7, %hi(g_bPreviousPaintTool)
     /* 4A2B8 802492B8 A32E0000 */  sb         $t6, 0x0($t9)
-    /* 4A2BC 802492BC 91EFDB64 */  lbu        $t7, %lo(g_bObjectDirty3)($t7)
-    /* 4A2C0 802492C0 3C018029 */  lui        $at, %hi(g_bObjectDirty2)
+    /* 4A2BC 802492BC 91EFDB64 */  lbu        $t7, %lo(g_bPreviousPaintTool)($t7)
+    /* 4A2C0 802492C0 3C018029 */  lui        $at, %hi(g_bPaintTool)
     /* 4A2C4 802492C4 00001025 */  or         $v0, $zero, $zero
     /* 4A2C8 802492C8 10000665 */  b          .L8024AC60
-    /* 4A2CC 802492CC A02FDB60 */   sb        $t7, %lo(g_bObjectDirty2)($at)
+    /* 4A2CC 802492CC A02FDB60 */   sb        $t7, %lo(g_bPaintTool)($at)
   jlabel .L802492D0
     /* 4A2D0 802492D0 3C048027 */  lui        $a0, %hi(g_SiMesgQueue)
     /* 4A2D4 802492D4 24842D48 */  addiu      $a0, $a0, %lo(g_SiMesgQueue)
@@ -7076,12 +7076,12 @@ glabel ProcessDecalSaveLoad
     /* 4A2F4 802492F4 15E00008 */  bnez       $t7, .L80249318
     /* 4A2F8 802492F8 3C04802B */   lui       $a0, %hi(g_szInitializingControllerPak4)
     /* 4A2FC 802492FC 240E0001 */  addiu      $t6, $zero, 0x1
-    /* 4A300 80249300 3C018037 */  lui        $at, %hi(gOsTaskState)
-    /* 4A304 80249304 AC2E9E54 */  sw         $t6, %lo(gOsTaskState)($at)
-    /* 4A308 80249308 3C018037 */  lui        $at, %hi(gOsSchedulerState)
+    /* 4A300 80249300 3C018037 */  lui        $at, %hi(g_dwPakError)
+    /* 4A304 80249304 AC2E9E54 */  sw         $t6, %lo(g_dwPakError)($at)
+    /* 4A308 80249308 3C018037 */  lui        $at, %hi(g_bPakDialogState)
     /* 4A30C 8024930C 2418000C */  addiu      $t8, $zero, 0xC
     /* 4A310 80249310 10000652 */  b          .L8024AC5C
-    /* 4A314 80249314 A0389E60 */   sb        $t8, %lo(gOsSchedulerState)($at)
+    /* 4A314 80249314 A0389E60 */   sb        $t8, %lo(g_bPakDialogState)($at)
   .L80249318:
     /* 4A318 80249318 2484ABC8 */  addiu      $a0, $a0, %lo(g_szInitializingControllerPak4)
     /* 4A31C 8024931C 0C0981F7 */  jal        osSyncPrintf
@@ -7101,8 +7101,8 @@ glabel ProcessDecalSaveLoad
     /* 4A354 80249354 AFA50034 */  sw         $a1, 0x34($sp)
     /* 4A358 80249358 0C09872C */  jal        osPfsInitPak
     /* 4A35C 8024935C AFA30038 */   sw        $v1, 0x38($sp)
-    /* 4A360 80249360 3C018037 */  lui        $at, %hi(gOsTaskState)
-    /* 4A364 80249364 AC229E54 */  sw         $v0, %lo(gOsTaskState)($at)
+    /* 4A360 80249360 3C018037 */  lui        $at, %hi(g_dwPakError)
+    /* 4A364 80249364 AC229E54 */  sw         $v0, %lo(g_dwPakError)($at)
     /* 4A368 80249368 8FA30038 */  lw         $v1, 0x38($sp)
     /* 4A36C 8024936C 14400033 */  bnez       $v0, .L8024943C
     /* 4A370 80249370 8FA6003C */   lw        $a2, 0x3C($sp)
@@ -7132,9 +7132,9 @@ glabel ProcessDecalSaveLoad
     /* 4A3D0 802493D0 0C0982C8 */  jal        memcpy
     /* 4A3D4 802493D4 24A5000C */   addiu     $a1, $a1, 0xC
     /* 4A3D8 802493D8 240E0006 */  addiu      $t6, $zero, 0x6
-    /* 4A3DC 802493DC 3C018037 */  lui        $at, %hi(gOsSchedulerState)
+    /* 4A3DC 802493DC 3C018037 */  lui        $at, %hi(g_bPakDialogState)
     /* 4A3E0 802493E0 1000061E */  b          .L8024AC5C
-    /* 4A3E4 802493E4 A02E9E60 */   sb        $t6, %lo(gOsSchedulerState)($at)
+    /* 4A3E4 802493E4 A02E9E60 */   sb        $t6, %lo(g_bPakDialogState)($at)
   .L802493E8:
     /* 4A3E8 802493E8 3C0F8031 */  lui        $t7, %hi(g_aabSavePakIds)
     /* 4A3EC 802493EC 25EF63E0 */  addiu      $t7, $t7, %lo(g_aabSavePakIds)
@@ -7150,14 +7150,14 @@ glabel ProcessDecalSaveLoad
     /* 4A414 80249414 0C0982C8 */  jal        memcpy
     /* 4A418 80249418 24060020 */   addiu     $a2, $zero, 0x20
     /* 4A41C 8024941C 240E0009 */  addiu      $t6, $zero, 0x9
-    /* 4A420 80249420 3C018037 */  lui        $at, %hi(gOsSchedulerState)
+    /* 4A420 80249420 3C018037 */  lui        $at, %hi(g_bPakDialogState)
     /* 4A424 80249424 1000060D */  b          .L8024AC5C
-    /* 4A428 80249428 A02E9E60 */   sb        $t6, %lo(gOsSchedulerState)($at)
+    /* 4A428 80249428 A02E9E60 */   sb        $t6, %lo(g_bPakDialogState)($at)
   .L8024942C:
     /* 4A42C 8024942C 24180006 */  addiu      $t8, $zero, 0x6
-    /* 4A430 80249430 3C018037 */  lui        $at, %hi(gOsSchedulerState)
+    /* 4A430 80249430 3C018037 */  lui        $at, %hi(g_bPakDialogState)
     /* 4A434 80249434 10000609 */  b          .L8024AC5C
-    /* 4A438 80249438 A0389E60 */   sb        $t8, %lo(gOsSchedulerState)($at)
+    /* 4A438 80249438 A0389E60 */   sb        $t8, %lo(g_bPakDialogState)($at)
   .L8024943C:
     /* 4A43C 8024943C 2401000A */  addiu      $at, $zero, 0xA
     /* 4A440 80249440 14410021 */  bne        $v0, $at, .L802494C8
@@ -7174,15 +7174,15 @@ glabel ProcessDecalSaveLoad
     /* 4A46C 8024946C 0C0987C8 */  jal        osMotorStop
     /* 4A470 80249470 00A02025 */   or        $a0, $a1, $zero
     /* 4A474 80249474 240F270F */  addiu      $t7, $zero, 0x270F
-    /* 4A478 80249478 3C018037 */  lui        $at, %hi(gOsTaskState)
-    /* 4A47C 8024947C AC2F9E54 */  sw         $t7, %lo(gOsTaskState)($at)
-    /* 4A480 80249480 3C018037 */  lui        $at, %hi(g_bCheatEnabled)
+    /* 4A478 80249478 3C018037 */  lui        $at, %hi(g_dwPakError)
+    /* 4A47C 8024947C AC2F9E54 */  sw         $t7, %lo(g_dwPakError)($at)
+    /* 4A480 80249480 3C018037 */  lui        $at, %hi(g_bPakRumbleSwapped)
     /* 4A484 80249484 240E0001 */  addiu      $t6, $zero, 0x1
-    /* 4A488 80249488 A02E9E50 */  sb         $t6, %lo(g_bCheatEnabled)($at)
-    /* 4A48C 8024948C 3C018037 */  lui        $at, %hi(gOsSchedulerState)
+    /* 4A488 80249488 A02E9E50 */  sb         $t6, %lo(g_bPakRumbleSwapped)($at)
+    /* 4A48C 8024948C 3C018037 */  lui        $at, %hi(g_bPakDialogState)
     /* 4A490 80249490 2418000A */  addiu      $t8, $zero, 0xA
     /* 4A494 80249494 100005F1 */  b          .L8024AC5C
-    /* 4A498 80249498 A0389E60 */   sb        $t8, %lo(gOsSchedulerState)($at)
+    /* 4A498 80249498 A0389E60 */   sb        $t8, %lo(g_bPakDialogState)($at)
   .L8024949C:
     /* 4A49C 8024949C 3C198027 */  lui        $t9, %hi(g_dwMenuChoosingPlayer)
     /* 4A4A0 802494A0 8F391FA8 */  lw         $t9, %lo(g_dwMenuChoosingPlayer)($t9)
@@ -7190,20 +7190,20 @@ glabel ProcessDecalSaveLoad
     /* 4A4A8 802494A8 240F0004 */  addiu      $t7, $zero, 0x4
     /* 4A4AC 802494AC 00390821 */  addu       $at, $at, $t9
     /* 4A4B0 802494B0 A020B1E8 */  sb         $zero, %lo(g_abRumblePakPresent)($at)
-    /* 4A4B4 802494B4 3C018037 */  lui        $at, %hi(gOsTaskState)
-    /* 4A4B8 802494B8 AC209E54 */  sw         $zero, %lo(gOsTaskState)($at)
-    /* 4A4BC 802494BC 3C018037 */  lui        $at, %hi(gOsSchedulerState)
+    /* 4A4B4 802494B4 3C018037 */  lui        $at, %hi(g_dwPakError)
+    /* 4A4B8 802494B8 AC209E54 */  sw         $zero, %lo(g_dwPakError)($at)
+    /* 4A4BC 802494BC 3C018037 */  lui        $at, %hi(g_bPakDialogState)
     /* 4A4C0 802494C0 100005E6 */  b          .L8024AC5C
-    /* 4A4C4 802494C4 A02F9E60 */   sb        $t7, %lo(gOsSchedulerState)($at)
+    /* 4A4C4 802494C4 A02F9E60 */   sb        $t7, %lo(g_bPakDialogState)($at)
   .L802494C8:
     /* 4A4C8 802494C8 8DCE1FA8 */  lw         $t6, %lo(g_dwMenuChoosingPlayer)($t6)
     /* 4A4CC 802494CC 3C018032 */  lui        $at, %hi(g_abRumblePakPresent)
     /* 4A4D0 802494D0 2418000C */  addiu      $t8, $zero, 0xC
     /* 4A4D4 802494D4 002E0821 */  addu       $at, $at, $t6
     /* 4A4D8 802494D8 A020B1E8 */  sb         $zero, %lo(g_abRumblePakPresent)($at)
-    /* 4A4DC 802494DC 3C018037 */  lui        $at, %hi(gOsSchedulerState)
+    /* 4A4DC 802494DC 3C018037 */  lui        $at, %hi(g_bPakDialogState)
     /* 4A4E0 802494E0 100005DE */  b          .L8024AC5C
-    /* 4A4E4 802494E4 A0389E60 */   sb        $t8, %lo(gOsSchedulerState)($at)
+    /* 4A4E4 802494E4 A0389E60 */   sb        $t8, %lo(g_bPakDialogState)($at)
   jlabel .L802494E8
     /* 4A4E8 802494E8 93B900B7 */  lbu        $t9, 0xB7($sp)
     /* 4A4EC 802494EC 3C0E8037 */  lui        $t6, %hi(g_aPakPfs)
@@ -7215,51 +7215,51 @@ glabel ProcessDecalSaveLoad
     /* 4A504 80249504 000F78C0 */  sll        $t7, $t7, 3
     /* 4A508 80249508 0C098998 */  jal        osPfsRepairId
     /* 4A50C 8024950C 01EE2021 */   addu      $a0, $t7, $t6
-    /* 4A510 80249510 3C018037 */  lui        $at, %hi(gOsTaskState)
+    /* 4A510 80249510 3C018037 */  lui        $at, %hi(g_dwPakError)
     /* 4A514 80249514 10400005 */  beqz       $v0, .L8024952C
-    /* 4A518 80249518 AC229E54 */   sw        $v0, %lo(gOsTaskState)($at)
+    /* 4A518 80249518 AC229E54 */   sw        $v0, %lo(g_dwPakError)($at)
     /* 4A51C 8024951C 2418000A */  addiu      $t8, $zero, 0xA
-    /* 4A520 80249520 3C018037 */  lui        $at, %hi(gOsSchedulerState)
+    /* 4A520 80249520 3C018037 */  lui        $at, %hi(g_bPakDialogState)
     /* 4A524 80249524 100005CD */  b          .L8024AC5C
-    /* 4A528 80249528 A0389E60 */   sb        $t8, %lo(gOsSchedulerState)($at)
+    /* 4A528 80249528 A0389E60 */   sb        $t8, %lo(g_bPakDialogState)($at)
   .L8024952C:
     /* 4A52C 8024952C 24190003 */  addiu      $t9, $zero, 0x3
-    /* 4A530 80249530 3C018037 */  lui        $at, %hi(gOsSchedulerState)
+    /* 4A530 80249530 3C018037 */  lui        $at, %hi(g_bPakDialogState)
     /* 4A534 80249534 100005C9 */  b          .L8024AC5C
-    /* 4A538 80249538 A0399E60 */   sb        $t9, %lo(gOsSchedulerState)($at)
+    /* 4A538 80249538 A0399E60 */   sb        $t9, %lo(g_bPakDialogState)($at)
   jlabel .L8024953C
     /* 4A53C 8024953C 93AF00B7 */  lbu        $t7, 0xB7($sp)
-    /* 4A540 80249540 3C018029 */  lui        $at, %hi(g_dwFontShadowOffsetX)
-    /* 4A544 80249544 AC20DCC4 */  sw         $zero, %lo(g_dwFontShadowOffsetX)($at)
-    /* 4A548 80249548 3C018037 */  lui        $at, %hi(g_dwCheatReserved1)
-    /* 4A54C 8024954C AC209E5C */  sw         $zero, %lo(g_dwCheatReserved1)($at)
+    /* 4A540 80249540 3C018029 */  lui        $at, %hi(g_dwPakFileOffset)
+    /* 4A544 80249544 AC20DCC4 */  sw         $zero, %lo(g_dwPakFileOffset)($at)
+    /* 4A548 80249548 3C018037 */  lui        $at, %hi(g_dwPakChunkSize)
+    /* 4A54C 8024954C AC209E5C */  sw         $zero, %lo(g_dwPakChunkSize)($at)
     /* 4A550 80249550 000F7080 */  sll        $t6, $t7, 2
-    /* 4A554 80249554 3C018037 */  lui        $at, %hi(g_bCheatReserved)
+    /* 4A554 80249554 3C018037 */  lui        $at, %hi(g_bPakDecalIndex)
     /* 4A558 80249558 01CF7023 */  subu       $t6, $t6, $t7
-    /* 4A55C 8024955C A0209E61 */  sb         $zero, %lo(g_bCheatReserved)($at)
+    /* 4A55C 8024955C A0209E61 */  sb         $zero, %lo(g_bPakDecalIndex)($at)
     /* 4A560 80249560 000E7080 */  sll        $t6, $t6, 2
-    /* 4A564 80249564 3C018029 */  lui        $at, %hi(g_bFontShadow)
+    /* 4A564 80249564 3C018029 */  lui        $at, %hi(g_bPakFileNeedsCreate)
     /* 4A568 80249568 3C188037 */  lui        $t8, %hi(g_aPakPfs)
     /* 4A56C 8024956C 01CF7021 */  addu       $t6, $t6, $t7
-    /* 4A570 80249570 A020DCC0 */  sb         $zero, %lo(g_bFontShadow)($at)
+    /* 4A570 80249570 A020DCC0 */  sb         $zero, %lo(g_bPakFileNeedsCreate)($at)
     /* 4A574 80249574 000E70C0 */  sll        $t6, $t6, 3
     /* 4A578 80249578 27189EC0 */  addiu      $t8, $t8, %lo(g_aPakPfs)
-    /* 4A57C 8024957C 3C198037 */  lui        $t9, %hi(g_dwCheatReserved0)
-    /* 4A580 80249580 27399E58 */  addiu      $t9, $t9, %lo(g_dwCheatReserved0)
+    /* 4A57C 8024957C 3C198037 */  lui        $t9, %hi(g_dwPakFileNo)
+    /* 4A580 80249580 27399E58 */  addiu      $t9, $t9, %lo(g_dwPakFileNo)
     /* 4A584 80249584 01D82021 */  addu       $a0, $t6, $t8
-    /* 4A588 80249588 3C018037 */  lui        $at, %hi(g_bCheatReserved2)
+    /* 4A588 80249588 3C018037 */  lui        $at, %hi(g_bPakWaitFrames)
     /* 4A58C 8024958C 3C064E47 */  lui        $a2, (0x4E475245 >> 16)
     /* 4A590 80249590 34C65245 */  ori        $a2, $a2, (0x4E475245 & 0xFFFF)
-    /* 4A594 80249594 A0209E62 */  sb         $zero, %lo(g_bCheatReserved2)($at)
+    /* 4A594 80249594 A0209E62 */  sb         $zero, %lo(g_bPakWaitFrames)($at)
     /* 4A598 80249598 AFA40034 */  sw         $a0, 0x34($sp)
     /* 4A59C 8024959C AFB90014 */  sw         $t9, 0x14($sp)
     /* 4A5A0 802495A0 24053544 */  addiu      $a1, $zero, 0x3544
     /* 4A5A4 802495A4 27A7004C */  addiu      $a3, $sp, 0x4C
     /* 4A5A8 802495A8 0C098A30 */  jal        osPfsFindFile
     /* 4A5AC 802495AC AFA80010 */   sw        $t0, 0x10($sp)
-    /* 4A5B0 802495B0 3C018037 */  lui        $at, %hi(gOsTaskState)
+    /* 4A5B0 802495B0 3C018037 */  lui        $at, %hi(g_dwPakError)
     /* 4A5B4 802495B4 14400048 */  bnez       $v0, .L802496D8
-    /* 4A5B8 802495B8 AC229E54 */   sw        $v0, %lo(gOsTaskState)($at)
+    /* 4A5B8 802495B8 AC229E54 */   sw        $v0, %lo(g_dwPakError)($at)
     /* 4A5BC 802495BC 93AF00BB */  lbu        $t7, 0xBB($sp)
     /* 4A5C0 802495C0 24010009 */  addiu      $at, $zero, 0x9
     /* 4A5C4 802495C4 93AE00BF */  lbu        $t6, 0xBF($sp)
@@ -7326,13 +7326,13 @@ glabel ProcessDecalSaveLoad
     /* 4A6B4 802496B4 0C091BE4 */  jal        DrawRectBorder
     /* 4A6B8 802496B8 24A50034 */   addiu     $a1, $a1, 0x34
     /* 4A6BC 802496BC 24180007 */  addiu      $t8, $zero, 0x7
-    /* 4A6C0 802496C0 3C018037 */  lui        $at, %hi(gOsSchedulerState)
+    /* 4A6C0 802496C0 3C018037 */  lui        $at, %hi(g_bPakDialogState)
     /* 4A6C4 802496C4 10000565 */  b          .L8024AC5C
-    /* 4A6C8 802496C8 A0389E60 */   sb        $t8, %lo(gOsSchedulerState)($at)
+    /* 4A6C8 802496C8 A0389E60 */   sb        $t8, %lo(g_bPakDialogState)($at)
   .L802496CC:
-    /* 4A6CC 802496CC 3C018037 */  lui        $at, %hi(gOsSchedulerState)
+    /* 4A6CC 802496CC 3C018037 */  lui        $at, %hi(g_bPakDialogState)
     /* 4A6D0 802496D0 10000562 */  b          .L8024AC5C
-    /* 4A6D4 802496D4 A0399E60 */   sb        $t9, %lo(gOsSchedulerState)($at)
+    /* 4A6D4 802496D4 A0399E60 */   sb        $t9, %lo(g_bPakDialogState)($at)
   .L802496D8:
     /* 4A6D8 802496D8 24010005 */  addiu      $at, $zero, 0x5
     /* 4A6DC 802496DC 14410058 */  bne        $v0, $at, .L80249840
@@ -7341,9 +7341,9 @@ glabel ProcessDecalSaveLoad
     /* 4A6E8 802496E8 15E10005 */  bne        $t7, $at, .L80249700
     /* 4A6EC 802496EC 8FA40034 */   lw        $a0, 0x34($sp)
     /* 4A6F0 802496F0 240E000C */  addiu      $t6, $zero, 0xC
-    /* 4A6F4 802496F4 3C018037 */  lui        $at, %hi(gOsSchedulerState)
+    /* 4A6F4 802496F4 3C018037 */  lui        $at, %hi(g_bPakDialogState)
     /* 4A6F8 802496F8 10000558 */  b          .L8024AC5C
-    /* 4A6FC 802496FC A02E9E60 */   sb        $t6, %lo(gOsSchedulerState)($at)
+    /* 4A6FC 802496FC A02E9E60 */   sb        $t6, %lo(g_bPakDialogState)($at)
   .L80249700:
     /* 4A700 80249700 0C098E78 */  jal        osPfsFreeBlocks
     /* 4A704 80249704 27A50080 */   addiu     $a1, $sp, 0x80
@@ -7356,12 +7356,12 @@ glabel ProcessDecalSaveLoad
     /* 4A720 80249720 10200008 */  beqz       $at, .L80249744
     /* 4A724 80249724 240600D8 */   addiu     $a2, $zero, 0xD8
     /* 4A728 80249728 24190007 */  addiu      $t9, $zero, 0x7
-    /* 4A72C 8024972C 3C018037 */  lui        $at, %hi(gOsTaskState)
-    /* 4A730 80249730 AC399E54 */  sw         $t9, %lo(gOsTaskState)($at)
-    /* 4A734 80249734 3C018037 */  lui        $at, %hi(gOsSchedulerState)
+    /* 4A72C 8024972C 3C018037 */  lui        $at, %hi(g_dwPakError)
+    /* 4A730 80249730 AC399E54 */  sw         $t9, %lo(g_dwPakError)($at)
+    /* 4A734 80249734 3C018037 */  lui        $at, %hi(g_bPakDialogState)
     /* 4A738 80249738 240F000C */  addiu      $t7, $zero, 0xC
     /* 4A73C 8024973C 10000547 */  b          .L8024AC5C
-    /* 4A740 80249740 A02F9E60 */   sb        $t7, %lo(gOsSchedulerState)($at)
+    /* 4A740 80249740 A02F9E60 */   sb        $t7, %lo(g_bPakDialogState)($at)
   .L80249744:
     /* 4A744 80249744 240E0003 */  addiu      $t6, $zero, 0x3
     /* 4A748 80249748 24180080 */  addiu      $t8, $zero, 0x80
@@ -7412,53 +7412,53 @@ glabel ProcessDecalSaveLoad
     /* 4A7FC 802497FC 0C091BE4 */  jal        DrawRectBorder
     /* 4A800 80249800 24070014 */   addiu     $a3, $zero, 0x14
     /* 4A804 80249804 240F0001 */  addiu      $t7, $zero, 0x1
-    /* 4A808 80249808 3C018029 */  lui        $at, %hi(g_bFontShadow)
-    /* 4A80C 8024980C A02FDCC0 */  sb         $t7, %lo(g_bFontShadow)($at)
-    /* 4A810 80249810 3C018037 */  lui        $at, %hi(gOsSchedulerState)
+    /* 4A808 80249808 3C018029 */  lui        $at, %hi(g_bPakFileNeedsCreate)
+    /* 4A80C 8024980C A02FDCC0 */  sb         $t7, %lo(g_bPakFileNeedsCreate)($at)
+    /* 4A810 80249810 3C018037 */  lui        $at, %hi(g_bPakDialogState)
     /* 4A814 80249814 240E0007 */  addiu      $t6, $zero, 0x7
-    /* 4A818 80249818 A02E9E60 */  sb         $t6, %lo(gOsSchedulerState)($at)
-    /* 4A81C 8024981C 3C018037 */  lui        $at, %hi(g_bCheatReserved2)
+    /* 4A818 80249818 A02E9E60 */  sb         $t6, %lo(g_bPakDialogState)($at)
+    /* 4A81C 8024981C 3C018037 */  lui        $at, %hi(g_bPakWaitFrames)
     /* 4A820 80249820 1000050E */  b          .L8024AC5C
-    /* 4A824 80249824 A0209E62 */   sb        $zero, %lo(g_bCheatReserved2)($at)
+    /* 4A824 80249824 A0209E62 */   sb        $zero, %lo(g_bPakWaitFrames)($at)
   .L80249828:
-    /* 4A828 80249828 3C018037 */  lui        $at, %hi(gOsTaskState)
-    /* 4A82C 8024982C AC389E54 */  sw         $t8, %lo(gOsTaskState)($at)
-    /* 4A830 80249830 3C018037 */  lui        $at, %hi(gOsSchedulerState)
+    /* 4A828 80249828 3C018037 */  lui        $at, %hi(g_dwPakError)
+    /* 4A82C 8024982C AC389E54 */  sw         $t8, %lo(g_dwPakError)($at)
+    /* 4A830 80249830 3C018037 */  lui        $at, %hi(g_bPakDialogState)
     /* 4A834 80249834 2419000C */  addiu      $t9, $zero, 0xC
     /* 4A838 80249838 10000508 */  b          .L8024AC5C
-    /* 4A83C 8024983C A0399E60 */   sb        $t9, %lo(gOsSchedulerState)($at)
+    /* 4A83C 8024983C A0399E60 */   sb        $t9, %lo(g_bPakDialogState)($at)
   .L80249840:
     /* 4A840 80249840 24010003 */  addiu      $at, $zero, 0x3
     /* 4A844 80249844 5441000F */  bnel       $v0, $at, .L80249884
     /* 4A848 80249848 24010002 */   addiu     $at, $zero, 0x2
     /* 4A84C 8024984C 0C098AA0 */  jal        osPfsChecker
     /* 4A850 80249850 8FA40034 */   lw        $a0, 0x34($sp)
-    /* 4A854 80249854 3C018037 */  lui        $at, %hi(gOsTaskState)
+    /* 4A854 80249854 3C018037 */  lui        $at, %hi(g_dwPakError)
     /* 4A858 80249858 14400005 */  bnez       $v0, .L80249870
-    /* 4A85C 8024985C AC229E54 */   sw        $v0, %lo(gOsTaskState)($at)
+    /* 4A85C 8024985C AC229E54 */   sw        $v0, %lo(g_dwPakError)($at)
     /* 4A860 80249860 240F0006 */  addiu      $t7, $zero, 0x6
-    /* 4A864 80249864 3C018037 */  lui        $at, %hi(gOsSchedulerState)
+    /* 4A864 80249864 3C018037 */  lui        $at, %hi(g_bPakDialogState)
     /* 4A868 80249868 100004FC */  b          .L8024AC5C
-    /* 4A86C 8024986C A02F9E60 */   sb        $t7, %lo(gOsSchedulerState)($at)
+    /* 4A86C 8024986C A02F9E60 */   sb        $t7, %lo(g_bPakDialogState)($at)
   .L80249870:
     /* 4A870 80249870 240E000C */  addiu      $t6, $zero, 0xC
-    /* 4A874 80249874 3C018037 */  lui        $at, %hi(gOsSchedulerState)
+    /* 4A874 80249874 3C018037 */  lui        $at, %hi(g_bPakDialogState)
     /* 4A878 80249878 100004F8 */  b          .L8024AC5C
-    /* 4A87C 8024987C A02E9E60 */   sb        $t6, %lo(gOsSchedulerState)($at)
+    /* 4A87C 8024987C A02E9E60 */   sb        $t6, %lo(g_bPakDialogState)($at)
     /* 4A880 80249880 24010002 */  addiu      $at, $zero, 0x2
   .L80249884:
     /* 4A884 80249884 14410007 */  bne        $v0, $at, .L802498A4
     /* 4A888 80249888 2419000C */   addiu     $t9, $zero, 0xC
     /* 4A88C 8024988C 24180003 */  addiu      $t8, $zero, 0x3
-    /* 4A890 80249890 3C018037 */  lui        $at, %hi(gOsSchedulerState)
-    /* 4A894 80249894 A0389E60 */  sb         $t8, %lo(gOsSchedulerState)($at)
-    /* 4A898 80249898 3C018037 */  lui        $at, %hi(gOsTaskState)
+    /* 4A890 80249890 3C018037 */  lui        $at, %hi(g_bPakDialogState)
+    /* 4A894 80249894 A0389E60 */  sb         $t8, %lo(g_bPakDialogState)($at)
+    /* 4A898 80249898 3C018037 */  lui        $at, %hi(g_dwPakError)
     /* 4A89C 8024989C 100004EF */  b          .L8024AC5C
-    /* 4A8A0 802498A0 AC209E54 */   sw        $zero, %lo(gOsTaskState)($at)
+    /* 4A8A0 802498A0 AC209E54 */   sw        $zero, %lo(g_dwPakError)($at)
   .L802498A4:
-    /* 4A8A4 802498A4 3C018037 */  lui        $at, %hi(gOsSchedulerState)
+    /* 4A8A4 802498A4 3C018037 */  lui        $at, %hi(g_bPakDialogState)
     /* 4A8A8 802498A8 100004EC */  b          .L8024AC5C
-    /* 4A8AC 802498AC A0399E60 */   sb        $t9, %lo(gOsSchedulerState)($at)
+    /* 4A8AC 802498AC A0399E60 */   sb        $t9, %lo(g_bPakDialogState)($at)
   jlabel .L802498B0
     /* 4A8B0 802498B0 3C0F8029 */  lui        $t7, %hi(g_texButtonA + 0x10)
     /* 4A8B4 802498B4 8DEFD0C0 */  lw         $t7, %lo(g_texButtonA + 0x10)($t7)
@@ -7556,18 +7556,18 @@ glabel ProcessDecalSaveLoad
     /* 4AA24 80249A24 0C095644 */  jal        TransferFlags
     /* 4AA28 80249A28 24050010 */   addiu     $a1, $zero, 0x10
     /* 4AA2C 80249A2C 24190007 */  addiu      $t9, $zero, 0x7
-    /* 4AA30 80249A30 3C018037 */  lui        $at, %hi(gOsSchedulerState)
+    /* 4AA30 80249A30 3C018037 */  lui        $at, %hi(g_bPakDialogState)
     /* 4AA34 80249A34 10000489 */  b          .L8024AC5C
-    /* 4AA38 80249A38 A0399E60 */   sb        $t9, %lo(gOsSchedulerState)($at)
+    /* 4AA38 80249A38 A0399E60 */   sb        $t9, %lo(g_bPakDialogState)($at)
   .L80249A3C:
     /* 4AA3C 80249A3C 51C00488 */  beql       $t6, $zero, .L8024AC60
     /* 4AA40 80249A40 00001025 */   or        $v0, $zero, $zero
     /* 4AA44 80249A44 0C095644 */  jal        TransferFlags
     /* 4AA48 80249A48 24050020 */   addiu     $a1, $zero, 0x20
     /* 4AA4C 80249A4C 240F000C */  addiu      $t7, $zero, 0xC
-    /* 4AA50 80249A50 3C018037 */  lui        $at, %hi(gOsSchedulerState)
+    /* 4AA50 80249A50 3C018037 */  lui        $at, %hi(g_bPakDialogState)
     /* 4AA54 80249A54 10000481 */  b          .L8024AC5C
-    /* 4AA58 80249A58 A02F9E60 */   sb        $t7, %lo(gOsSchedulerState)($at)
+    /* 4AA58 80249A58 A02F9E60 */   sb        $t7, %lo(g_bPakDialogState)($at)
   jlabel .L80249A5C
     /* 4AA5C 80249A5C 93B900BF */  lbu        $t9, 0xBF($sp)
     /* 4AA60 80249A60 241800C5 */  addiu      $t8, $zero, 0xC5
@@ -7644,18 +7644,18 @@ glabel ProcessDecalSaveLoad
     /* 4AB70 80249B70 24070014 */  addiu      $a3, $zero, 0x14
     /* 4AB74 80249B74 0C091BE4 */  jal        DrawRectBorder
     /* 4AB78 80249B78 24A50034 */   addiu     $a1, $a1, 0x34
-    /* 4AB7C 80249B7C 3C038037 */  lui        $v1, %hi(g_bCheatReserved2)
-    /* 4AB80 80249B80 90639E62 */  lbu        $v1, %lo(g_bCheatReserved2)($v1)
-    /* 4AB84 80249B84 3C018037 */  lui        $at, %hi(g_bCheatReserved2)
+    /* 4AB7C 80249B7C 3C038037 */  lui        $v1, %hi(g_bPakWaitFrames)
+    /* 4AB80 80249B80 90639E62 */  lbu        $v1, %lo(g_bPakWaitFrames)($v1)
+    /* 4AB84 80249B84 3C018037 */  lui        $at, %hi(g_bPakWaitFrames)
     /* 4AB88 80249B88 8FAC00B0 */  lw         $t4, 0xB0($sp)
     /* 4AB8C 80249B8C 28620002 */  slti       $v0, $v1, 0x2
     /* 4AB90 80249B90 246F0001 */  addiu      $t7, $v1, 0x1
     /* 4AB94 80249B94 14400431 */  bnez       $v0, .L8024AC5C
-    /* 4AB98 80249B98 A02F9E62 */   sb        $t7, %lo(g_bCheatReserved2)($at)
-    /* 4AB9C 80249B9C 3C188029 */  lui        $t8, %hi(g_bFontShadow)
-    /* 4ABA0 80249BA0 9318DCC0 */  lbu        $t8, %lo(g_bFontShadow)($t8)
+    /* 4AB98 80249B98 A02F9E62 */   sb        $t7, %lo(g_bPakWaitFrames)($at)
+    /* 4AB9C 80249B9C 3C188029 */  lui        $t8, %hi(g_bPakFileNeedsCreate)
+    /* 4ABA0 80249BA0 9318DCC0 */  lbu        $t8, %lo(g_bPakFileNeedsCreate)($t8)
     /* 4ABA4 80249BA4 3C0F8037 */  lui        $t7, %hi(g_aPakPfs)
-    /* 4ABA8 80249BA8 3C018029 */  lui        $at, %hi(g_bFontShadow)
+    /* 4ABA8 80249BA8 3C018029 */  lui        $at, %hi(g_bPakFileNeedsCreate)
     /* 4ABAC 80249BAC 1300004B */  beqz       $t8, .L80249CDC
     /* 4ABB0 80249BB0 25EF9EC0 */   addiu     $t7, $t7, %lo(g_aPakPfs)
     /* 4ABB4 80249BB4 93B900B7 */  lbu        $t9, 0xB7($sp)
@@ -7667,10 +7667,10 @@ glabel ProcessDecalSaveLoad
     /* 4ABCC 80249BCC 01D97021 */  addu       $t6, $t6, $t9
     /* 4ABD0 80249BD0 000E70C0 */  sll        $t6, $t6, 3
     /* 4ABD4 80249BD4 01CF2021 */  addu       $a0, $t6, $t7
-    /* 4ABD8 80249BD8 3C0E8037 */  lui        $t6, %hi(g_dwCheatReserved0)
-    /* 4ABDC 80249BDC 25CE9E58 */  addiu      $t6, $t6, %lo(g_dwCheatReserved0)
+    /* 4ABD8 80249BD8 3C0E8037 */  lui        $t6, %hi(g_dwPakFileNo)
+    /* 4ABDC 80249BDC 25CE9E58 */  addiu      $t6, $t6, %lo(g_dwPakFileNo)
     /* 4ABE0 80249BE0 24193E00 */  addiu      $t9, $zero, 0x3E00
-    /* 4ABE4 80249BE4 A020DCC0 */  sb         $zero, %lo(g_bFontShadow)($at)
+    /* 4ABE4 80249BE4 A020DCC0 */  sb         $zero, %lo(g_bPakFileNeedsCreate)($at)
     /* 4ABE8 80249BE8 AFB90014 */  sw         $t9, 0x14($sp)
     /* 4ABEC 80249BEC AFAE0018 */  sw         $t6, 0x18($sp)
     /* 4ABF0 80249BF0 AFA40034 */  sw         $a0, 0x34($sp)
@@ -7679,8 +7679,8 @@ glabel ProcessDecalSaveLoad
     /* 4ABFC 80249BFC 24053544 */  addiu      $a1, $zero, 0x3544
     /* 4AC00 80249C00 0C098ECC */  jal        osPfsAllocateFile
     /* 4AC04 80249C04 27A7004C */   addiu     $a3, $sp, 0x4C
-    /* 4AC08 80249C08 3C018037 */  lui        $at, %hi(gOsTaskState)
-    /* 4AC0C 80249C0C AC229E54 */  sw         $v0, %lo(gOsTaskState)($at)
+    /* 4AC08 80249C08 3C018037 */  lui        $at, %hi(g_dwPakError)
+    /* 4AC0C 80249C0C AC229E54 */  sw         $v0, %lo(g_dwPakError)($at)
     /* 4AC10 80249C10 2C41000A */  sltiu      $at, $v0, 0xA
     /* 4AC14 80249C14 1020001E */  beqz       $at, .L80249C90
     /* 4AC18 80249C18 8FAC00B0 */   lw        $t4, 0xB0($sp)
@@ -7693,54 +7693,54 @@ glabel ProcessDecalSaveLoad
   jlabel .L80249C34
     /* 4AC34 80249C34 0C098AA0 */  jal        osPfsChecker
     /* 4AC38 80249C38 8FA40034 */   lw        $a0, 0x34($sp)
-    /* 4AC3C 80249C3C 3C018037 */  lui        $at, %hi(gOsTaskState)
+    /* 4AC3C 80249C3C 3C018037 */  lui        $at, %hi(g_dwPakError)
     /* 4AC40 80249C40 14400006 */  bnez       $v0, .L80249C5C
-    /* 4AC44 80249C44 AC229E54 */   sw        $v0, %lo(gOsTaskState)($at)
+    /* 4AC44 80249C44 AC229E54 */   sw        $v0, %lo(g_dwPakError)($at)
     /* 4AC48 80249C48 24180003 */  addiu      $t8, $zero, 0x3
-    /* 4AC4C 80249C4C 3C018037 */  lui        $at, %hi(gOsSchedulerState)
-    /* 4AC50 80249C50 A0389E60 */  sb         $t8, %lo(gOsSchedulerState)($at)
+    /* 4AC4C 80249C4C 3C018037 */  lui        $at, %hi(g_bPakDialogState)
+    /* 4AC50 80249C50 A0389E60 */  sb         $t8, %lo(g_bPakDialogState)($at)
     /* 4AC54 80249C54 10000402 */  b          .L8024AC60
     /* 4AC58 80249C58 00001025 */   or        $v0, $zero, $zero
   .L80249C5C:
     /* 4AC5C 80249C5C 24190002 */  addiu      $t9, $zero, 0x2
-    /* 4AC60 80249C60 3C018037 */  lui        $at, %hi(gOsSchedulerState)
-    /* 4AC64 80249C64 3C028037 */  lui        $v0, %hi(gOsTaskState)
-    /* 4AC68 80249C68 A0399E60 */  sb         $t9, %lo(gOsSchedulerState)($at)
+    /* 4AC60 80249C60 3C018037 */  lui        $at, %hi(g_bPakDialogState)
+    /* 4AC64 80249C64 3C028037 */  lui        $v0, %hi(g_dwPakError)
+    /* 4AC68 80249C68 A0399E60 */  sb         $t9, %lo(g_bPakDialogState)($at)
     /* 4AC6C 80249C6C 100003FC */  b          .L8024AC60
-    /* 4AC70 80249C70 8C429E54 */   lw        $v0, %lo(gOsTaskState)($v0)
+    /* 4AC70 80249C70 8C429E54 */   lw        $v0, %lo(g_dwPakError)($v0)
   jlabel .L80249C74
     /* 4AC74 80249C74 240E0003 */  addiu      $t6, $zero, 0x3
-    /* 4AC78 80249C78 3C018037 */  lui        $at, %hi(gOsTaskState)
+    /* 4AC78 80249C78 3C018037 */  lui        $at, %hi(g_dwPakError)
     /* 4AC7C 80249C7C 10000004 */  b          .L80249C90
-    /* 4AC80 80249C80 AC2E9E54 */   sw        $t6, %lo(gOsTaskState)($at)
+    /* 4AC80 80249C80 AC2E9E54 */   sw        $t6, %lo(g_dwPakError)($at)
   jlabel .L80249C84
     /* 4AC84 80249C84 240F0003 */  addiu      $t7, $zero, 0x3
-    /* 4AC88 80249C88 3C018037 */  lui        $at, %hi(gOsSchedulerState)
-    /* 4AC8C 80249C8C A02F9E60 */  sb         $t7, %lo(gOsSchedulerState)($at)
+    /* 4AC88 80249C88 3C018037 */  lui        $at, %hi(g_bPakDialogState)
+    /* 4AC8C 80249C8C A02F9E60 */  sb         $t7, %lo(g_bPakDialogState)($at)
   jlabel .L80249C90
-    /* 4AC90 80249C90 3C188037 */  lui        $t8, %hi(gOsTaskState)
-    /* 4AC94 80249C94 8F189E54 */  lw         $t8, %lo(gOsTaskState)($t8)
+    /* 4AC90 80249C90 3C188037 */  lui        $t8, %hi(g_dwPakError)
+    /* 4AC94 80249C94 8F189E54 */  lw         $t8, %lo(g_dwPakError)($t8)
     /* 4AC98 80249C98 24010002 */  addiu      $at, $zero, 0x2
     /* 4AC9C 80249C9C 1300000F */  beqz       $t8, .L80249CDC
     /* 4ACA0 80249CA0 00000000 */   nop
     /* 4ACA4 80249CA4 1701000A */  bne        $t8, $at, .L80249CD0
     /* 4ACA8 80249CA8 240F000C */   addiu     $t7, $zero, 0xC
-    /* 4ACAC 80249CAC 3C018037 */  lui        $at, %hi(gOsTaskState)
-    /* 4ACB0 80249CB0 AC209E54 */  sw         $zero, %lo(gOsTaskState)($at)
+    /* 4ACAC 80249CAC 3C018037 */  lui        $at, %hi(g_dwPakError)
+    /* 4ACB0 80249CB0 AC209E54 */  sw         $zero, %lo(g_dwPakError)($at)
     /* 4ACB4 80249CB4 8FAE00C0 */  lw         $t6, 0xC0($sp)
-    /* 4ACB8 80249CB8 3C018037 */  lui        $at, %hi(gOsSchedulerState)
+    /* 4ACB8 80249CB8 3C018037 */  lui        $at, %hi(g_bPakDialogState)
     /* 4ACBC 80249CBC 24190003 */  addiu      $t9, $zero, 0x3
-    /* 4ACC0 80249CC0 A0399E60 */  sb         $t9, %lo(gOsSchedulerState)($at)
+    /* 4ACC0 80249CC0 A0399E60 */  sb         $t9, %lo(g_bPakDialogState)($at)
     /* 4ACC4 80249CC4 00001025 */  or         $v0, $zero, $zero
     /* 4ACC8 80249CC8 100003E5 */  b          .L8024AC60
     /* 4ACCC 80249CCC A1C00000 */   sb        $zero, 0x0($t6)
   .L80249CD0:
-    /* 4ACD0 80249CD0 3C018037 */  lui        $at, %hi(gOsSchedulerState)
+    /* 4ACD0 80249CD0 3C018037 */  lui        $at, %hi(g_bPakDialogState)
     /* 4ACD4 80249CD4 100003E1 */  b          .L8024AC5C
-    /* 4ACD8 80249CD8 A02F9E60 */   sb        $t7, %lo(gOsSchedulerState)($at)
+    /* 4ACD8 80249CD8 A02F9E60 */   sb        $t7, %lo(g_bPakDialogState)($at)
   .L80249CDC:
-    /* 4ACDC 80249CDC 3C188037 */  lui        $t8, %hi(g_bCheatReserved)
-    /* 4ACE0 80249CE0 93189E61 */  lbu        $t8, %lo(g_bCheatReserved)($t8)
+    /* 4ACDC 80249CDC 3C188037 */  lui        $t8, %hi(g_bPakDecalIndex)
+    /* 4ACE0 80249CE0 93189E61 */  lbu        $t8, %lo(g_bPakDecalIndex)($t8)
     /* 4ACE4 80249CE4 240400E7 */  addiu      $a0, $zero, 0xE7
     /* 4ACE8 80249CE8 240600B2 */  addiu      $a2, $zero, 0xB2
     /* 4ACEC 80249CEC 2B01000A */  slti       $at, $t8, 0xA
@@ -7757,9 +7757,9 @@ glabel ProcessDecalSaveLoad
     /* 4AD18 80249D18 000F7880 */  sll        $t7, $t7, 2
     /* 4AD1C 80249D1C 01EE7821 */  addu       $t7, $t7, $t6
     /* 4AD20 80249D20 000F78C0 */  sll        $t7, $t7, 3
-    /* 4AD24 80249D24 3C0A8029 */  lui        $t2, %hi(g_dwObjectPosX)
+    /* 4AD24 80249D24 3C0A8029 */  lui        $t2, %hi(g_pDecalUndoBuffer)
     /* 4AD28 80249D28 24010001 */  addiu      $at, $zero, 0x1
-    /* 4AD2C 80249D2C 254ADB80 */  addiu      $t2, $t2, %lo(g_dwObjectPosX)
+    /* 4AD2C 80249D2C 254ADB80 */  addiu      $t2, $t2, %lo(g_pDecalUndoBuffer)
     /* 4AD30 80249D30 0000C012 */  mflo       $t8
     /* 4AD34 80249D34 03381821 */  addu       $v1, $t9, $t8
     /* 4AD38 80249D38 3C198037 */  lui        $t9, %hi(g_aPakPfs)
@@ -7776,46 +7776,46 @@ glabel ProcessDecalSaveLoad
     /* 4AD5C 80249D5C 012B0019 */  multu      $t1, $t3
     /* 4AD60 80249D60 8FAE0038 */  lw         $t6, 0x38($sp)
     /* 4AD64 80249D64 24010009 */  addiu      $at, $zero, 0x9
-    /* 4AD68 80249D68 3C058037 */  lui        $a1, %hi(g_dwCheatReserved0)
+    /* 4AD68 80249D68 3C058037 */  lui        $a1, %hi(g_dwPakFileNo)
     /* 4AD6C 80249D6C 00003025 */  or         $a2, $zero, $zero
-    /* 4AD70 80249D70 3C078029 */  lui        $a3, %hi(g_dwFontShadowOffsetX)
+    /* 4AD70 80249D70 3C078029 */  lui        $a3, %hi(g_dwPakFileOffset)
     /* 4AD74 80249D74 00001012 */  mflo       $v0
     /* 4AD78 80249D78 0002C043 */  sra        $t8, $v0, 1
     /* 4AD7C 80249D7C 15C10011 */  bne        $t6, $at, .L80249DC4
     /* 4AD80 80249D80 03001025 */   or        $v0, $t8, $zero
     /* 4AD84 80249D84 8D4F0000 */  lw         $t7, 0x0($t2)
-    /* 4AD88 80249D88 3C018037 */  lui        $at, %hi(g_dwCheatReserved1)
-    /* 4AD8C 80249D8C AC389E5C */  sw         $t8, %lo(g_dwCheatReserved1)($at)
-    /* 4AD90 80249D90 8CA59E58 */  lw         $a1, %lo(g_dwCheatReserved0)($a1)
-    /* 4AD94 80249D94 8CE7DCC4 */  lw         $a3, %lo(g_dwFontShadowOffsetX)($a3)
+    /* 4AD88 80249D88 3C018037 */  lui        $at, %hi(g_dwPakChunkSize)
+    /* 4AD8C 80249D8C AC389E5C */  sw         $t8, %lo(g_dwPakChunkSize)($at)
+    /* 4AD90 80249D90 8CA59E58 */  lw         $a1, %lo(g_dwPakFileNo)($a1)
+    /* 4AD94 80249D94 8CE7DCC4 */  lw         $a3, %lo(g_dwPakFileOffset)($a3)
     /* 4AD98 80249D98 AFB80010 */  sw         $t8, 0x10($sp)
     /* 4AD9C 80249D9C AFA40034 */  sw         $a0, 0x34($sp)
     /* 4ADA0 80249DA0 AFA9007C */  sw         $t1, 0x7C($sp)
     /* 4ADA4 80249DA4 AFAB0078 */  sw         $t3, 0x78($sp)
     /* 4ADA8 80249DA8 0C098D77 */  jal        osPfsReadWriteFile
     /* 4ADAC 80249DAC AFAF0014 */   sw        $t7, 0x14($sp)
-    /* 4ADB0 80249DB0 3C018037 */  lui        $at, %hi(gOsTaskState)
-    /* 4ADB4 80249DB4 AC229E54 */  sw         $v0, %lo(gOsTaskState)($at)
+    /* 4ADB0 80249DB0 3C018037 */  lui        $at, %hi(g_dwPakError)
+    /* 4ADB4 80249DB4 AC229E54 */  sw         $v0, %lo(g_dwPakError)($at)
     /* 4ADB8 80249DB8 8FA9007C */  lw         $t1, 0x7C($sp)
     /* 4ADBC 80249DBC 10000013 */  b          .L80249E0C
     /* 4ADC0 80249DC0 8FAB0078 */   lw        $t3, 0x78($sp)
   .L80249DC4:
     /* 4ADC4 80249DC4 AFA20010 */  sw         $v0, 0x10($sp)
     /* 4ADC8 80249DC8 8C790000 */  lw         $t9, 0x0($v1)
-    /* 4ADCC 80249DCC 3C058037 */  lui        $a1, %hi(g_dwCheatReserved0)
-    /* 4ADD0 80249DD0 3C078029 */  lui        $a3, %hi(g_dwFontShadowOffsetX)
-    /* 4ADD4 80249DD4 3C018037 */  lui        $at, %hi(g_dwCheatReserved1)
-    /* 4ADD8 80249DD8 AC229E5C */  sw         $v0, %lo(g_dwCheatReserved1)($at)
-    /* 4ADDC 80249DDC 8CE7DCC4 */  lw         $a3, %lo(g_dwFontShadowOffsetX)($a3)
-    /* 4ADE0 80249DE0 8CA59E58 */  lw         $a1, %lo(g_dwCheatReserved0)($a1)
+    /* 4ADCC 80249DCC 3C058037 */  lui        $a1, %hi(g_dwPakFileNo)
+    /* 4ADD0 80249DD0 3C078029 */  lui        $a3, %hi(g_dwPakFileOffset)
+    /* 4ADD4 80249DD4 3C018037 */  lui        $at, %hi(g_dwPakChunkSize)
+    /* 4ADD8 80249DD8 AC229E5C */  sw         $v0, %lo(g_dwPakChunkSize)($at)
+    /* 4ADDC 80249DDC 8CE7DCC4 */  lw         $a3, %lo(g_dwPakFileOffset)($a3)
+    /* 4ADE0 80249DE0 8CA59E58 */  lw         $a1, %lo(g_dwPakFileNo)($a1)
     /* 4ADE4 80249DE4 AFAB0078 */  sw         $t3, 0x78($sp)
     /* 4ADE8 80249DE8 AFA9007C */  sw         $t1, 0x7C($sp)
     /* 4ADEC 80249DEC AFA40034 */  sw         $a0, 0x34($sp)
     /* 4ADF0 80249DF0 24060001 */  addiu      $a2, $zero, 0x1
     /* 4ADF4 80249DF4 0C098D77 */  jal        osPfsReadWriteFile
     /* 4ADF8 80249DF8 AFB90014 */   sw        $t9, 0x14($sp)
-    /* 4ADFC 80249DFC 3C018037 */  lui        $at, %hi(gOsTaskState)
-    /* 4AE00 80249E00 AC229E54 */  sw         $v0, %lo(gOsTaskState)($at)
+    /* 4ADFC 80249DFC 3C018037 */  lui        $at, %hi(g_dwPakError)
+    /* 4AE00 80249E00 AC229E54 */  sw         $v0, %lo(g_dwPakError)($at)
     /* 4AE04 80249E04 8FA9007C */  lw         $t1, 0x7C($sp)
     /* 4AE08 80249E08 8FAB0078 */  lw         $t3, 0x78($sp)
   .L80249E0C:
@@ -7833,25 +7833,25 @@ glabel ProcessDecalSaveLoad
     /* 4AE34 80249E34 1701007D */  bne        $t8, $at, .L8024A02C
     /* 4AE38 80249E38 3C04802B */   lui       $a0, %hi(g_szFmtSavingDecal)
     /* 4AE3C 80249E3C 3C04802B */  lui        $a0, %hi(g_szFmtLoadingDecal)
-    /* 4AE40 80249E40 3C058037 */  lui        $a1, %hi(g_bCheatReserved)
-    /* 4AE44 80249E44 90A59E61 */  lbu        $a1, %lo(g_bCheatReserved)($a1)
+    /* 4AE40 80249E40 3C058037 */  lui        $a1, %hi(g_bPakDecalIndex)
+    /* 4AE44 80249E44 90A59E61 */  lbu        $a1, %lo(g_bPakDecalIndex)($a1)
     /* 4AE48 80249E48 2484AC70 */  addiu      $a0, $a0, %lo(g_szFmtLoadingDecal)
     /* 4AE4C 80249E4C AFA9007C */  sw         $t1, 0x7C($sp)
     /* 4AE50 80249E50 0C0981F7 */  jal        osSyncPrintf
     /* 4AE54 80249E54 AFAB0078 */   sw        $t3, 0x78($sp)
-    /* 4AE58 80249E58 3C0F8037 */  lui        $t7, %hi(g_bCheatReserved)
+    /* 4AE58 80249E58 3C0F8037 */  lui        $t7, %hi(g_bPakDecalIndex)
     /* 4AE5C 80249E5C 8FAC00B0 */  lw         $t4, 0xB0($sp)
-    /* 4AE60 80249E60 91EF9E61 */  lbu        $t7, %lo(g_bCheatReserved)($t7)
+    /* 4AE60 80249E60 91EF9E61 */  lbu        $t7, %lo(g_bPakDecalIndex)($t7)
     /* 4AE64 80249E64 240D0024 */  addiu      $t5, $zero, 0x24
     /* 4AE68 80249E68 8D8E0014 */  lw         $t6, 0x14($t4)
     /* 4AE6C 80249E6C 018FC821 */  addu       $t9, $t4, $t7
     /* 4AE70 80249E70 93380110 */  lbu        $t8, 0x110($t9)
-    /* 4AE74 80249E74 3C0A8029 */  lui        $t2, %hi(g_dwObjectPosX)
-    /* 4AE78 80249E78 254ADB80 */  addiu      $t2, $t2, %lo(g_dwObjectPosX)
+    /* 4AE74 80249E74 3C0A8029 */  lui        $t2, %hi(g_pDecalUndoBuffer)
+    /* 4AE78 80249E78 254ADB80 */  addiu      $t2, $t2, %lo(g_pDecalUndoBuffer)
     /* 4AE7C 80249E7C 030D0019 */  multu      $t8, $t5
     /* 4AE80 80249E80 8FA9007C */  lw         $t1, 0x7C($sp)
     /* 4AE84 80249E84 8FAB0078 */  lw         $t3, 0x78($sp)
-    /* 4AE88 80249E88 3C068037 */  lui        $a2, %hi(g_dwCheatReserved1)
+    /* 4AE88 80249E88 3C068037 */  lui        $a2, %hi(g_dwPakChunkSize)
     /* 4AE8C 80249E8C 0000C812 */  mflo       $t9
     /* 4AE90 80249E90 01D9C021 */  addu       $t8, $t6, $t9
     /* 4AE94 80249E94 8D8E011C */  lw         $t6, 0x11C($t4)
@@ -7864,7 +7864,7 @@ glabel ProcessDecalSaveLoad
     /* 4AEB0 80249EB0 00000000 */   nop
     /* 4AEB4 80249EB4 8D450000 */  lw         $a1, 0x0($t2)
     /* 4AEB8 80249EB8 0C0982C8 */  jal        memcpy
-    /* 4AEBC 80249EBC 8CC69E5C */   lw        $a2, %lo(g_dwCheatReserved1)($a2)
+    /* 4AEBC 80249EBC 8CC69E5C */   lw        $a2, %lo(g_dwPakChunkSize)($a2)
     /* 4AEC0 80249EC0 1000005E */  b          .L8024A03C
     /* 4AEC4 80249EC4 00000000 */   nop
   .L80249EC8:
@@ -7966,29 +7966,29 @@ glabel ProcessDecalSaveLoad
     /* 4B024 8024A024 10000005 */  b          .L8024A03C
     /* 4B028 8024A028 00000000 */   nop
   .L8024A02C:
-    /* 4B02C 8024A02C 3C058037 */  lui        $a1, %hi(g_bCheatReserved)
-    /* 4B030 8024A030 90A59E61 */  lbu        $a1, %lo(g_bCheatReserved)($a1)
+    /* 4B02C 8024A02C 3C058037 */  lui        $a1, %hi(g_bPakDecalIndex)
+    /* 4B030 8024A030 90A59E61 */  lbu        $a1, %lo(g_bPakDecalIndex)($a1)
     /* 4B034 8024A034 0C0981F7 */  jal        osSyncPrintf
     /* 4B038 8024A038 2484AC88 */   addiu     $a0, $a0, %lo(g_szFmtSavingDecal)
   .L8024A03C:
-    /* 4B03C 8024A03C 3C198029 */  lui        $t9, %hi(g_dwFontShadowOffsetX)
-    /* 4B040 8024A040 3C0F8037 */  lui        $t7, %hi(g_dwCheatReserved1)
-    /* 4B044 8024A044 8DEF9E5C */  lw         $t7, %lo(g_dwCheatReserved1)($t7)
-    /* 4B048 8024A048 8F39DCC4 */  lw         $t9, %lo(g_dwFontShadowOffsetX)($t9)
-    /* 4B04C 8024A04C 3C018029 */  lui        $at, %hi(g_dwFontShadowOffsetX)
+    /* 4B03C 8024A03C 3C198029 */  lui        $t9, %hi(g_dwPakFileOffset)
+    /* 4B040 8024A040 3C0F8037 */  lui        $t7, %hi(g_dwPakChunkSize)
+    /* 4B044 8024A044 8DEF9E5C */  lw         $t7, %lo(g_dwPakChunkSize)($t7)
+    /* 4B048 8024A048 8F39DCC4 */  lw         $t9, %lo(g_dwPakFileOffset)($t9)
+    /* 4B04C 8024A04C 3C018029 */  lui        $at, %hi(g_dwPakFileOffset)
     /* 4B050 8024A050 032FC021 */  addu       $t8, $t9, $t7
     /* 4B054 8024A054 10000027 */  b          .L8024A0F4
-    /* 4B058 8024A058 AC38DCC4 */   sw        $t8, %lo(g_dwFontShadowOffsetX)($at)
+    /* 4B058 8024A058 AC38DCC4 */   sw        $t8, %lo(g_dwPakFileOffset)($at)
   .L8024A05C:
     /* 4B05C 8024A05C 35CE869F */  ori        $t6, $t6, (0x1869F & 0xFFFF)
-    /* 4B060 8024A060 3C018037 */  lui        $at, %hi(gOsTaskState)
+    /* 4B060 8024A060 3C018037 */  lui        $at, %hi(g_dwPakError)
     /* 4B064 8024A064 10000023 */  b          .L8024A0F4
-    /* 4B068 8024A068 AC2E9E54 */   sw        $t6, %lo(gOsTaskState)($at)
+    /* 4B068 8024A068 AC2E9E54 */   sw        $t6, %lo(g_dwPakError)($at)
   .L8024A06C:
     /* 4B06C 8024A06C 0C098AA0 */  jal        osPfsChecker
     /* 4B070 8024A070 8FA40034 */   lw        $a0, 0x34($sp)
-    /* 4B074 8024A074 3C018037 */  lui        $at, %hi(gOsTaskState)
-    /* 4B078 8024A078 AC229E54 */  sw         $v0, %lo(gOsTaskState)($at)
+    /* 4B074 8024A074 3C018037 */  lui        $at, %hi(g_dwPakError)
+    /* 4B078 8024A078 AC229E54 */  sw         $v0, %lo(g_dwPakError)($at)
     /* 4B07C 8024A07C 24010001 */  addiu      $at, $zero, 0x1
     /* 4B080 8024A080 10410006 */  beq        $v0, $at, .L8024A09C
     /* 4B084 8024A084 2419000C */   addiu     $t9, $zero, 0xC
@@ -7996,34 +7996,34 @@ glabel ProcessDecalSaveLoad
     /* 4B08C 8024A08C 10410003 */  beq        $v0, $at, .L8024A09C
     /* 4B090 8024A090 24010003 */   addiu     $at, $zero, 0x3
     /* 4B094 8024A094 1441000A */  bne        $v0, $at, .L8024A0C0
-    /* 4B098 8024A098 3C0F8037 */   lui       $t7, %hi(g_bCheatReserved)
+    /* 4B098 8024A098 3C0F8037 */   lui       $t7, %hi(g_bPakDecalIndex)
   .L8024A09C:
-    /* 4B09C 8024A09C 3C018037 */  lui        $at, %hi(g_bCheatReserved)
-    /* 4B0A0 8024A0A0 A0209E61 */  sb         $zero, %lo(g_bCheatReserved)($at)
-    /* 4B0A4 8024A0A4 3C018029 */  lui        $at, %hi(g_dwFontShadowOffsetX)
-    /* 4B0A8 8024A0A8 AC20DCC4 */  sw         $zero, %lo(g_dwFontShadowOffsetX)($at)
-    /* 4B0AC 8024A0AC 3C018037 */  lui        $at, %hi(g_dwCheatReserved1)
-    /* 4B0B0 8024A0B0 AC209E5C */  sw         $zero, %lo(g_dwCheatReserved1)($at)
-    /* 4B0B4 8024A0B4 3C018037 */  lui        $at, %hi(gOsSchedulerState)
+    /* 4B09C 8024A09C 3C018037 */  lui        $at, %hi(g_bPakDecalIndex)
+    /* 4B0A0 8024A0A0 A0209E61 */  sb         $zero, %lo(g_bPakDecalIndex)($at)
+    /* 4B0A4 8024A0A4 3C018029 */  lui        $at, %hi(g_dwPakFileOffset)
+    /* 4B0A8 8024A0A8 AC20DCC4 */  sw         $zero, %lo(g_dwPakFileOffset)($at)
+    /* 4B0AC 8024A0AC 3C018037 */  lui        $at, %hi(g_dwPakChunkSize)
+    /* 4B0B0 8024A0B0 AC209E5C */  sw         $zero, %lo(g_dwPakChunkSize)($at)
+    /* 4B0B4 8024A0B4 3C018037 */  lui        $at, %hi(g_bPakDialogState)
     /* 4B0B8 8024A0B8 1000000E */  b          .L8024A0F4
-    /* 4B0BC 8024A0BC A0399E60 */   sb        $t9, %lo(gOsSchedulerState)($at)
+    /* 4B0BC 8024A0BC A0399E60 */   sb        $t9, %lo(g_bPakDialogState)($at)
   .L8024A0C0:
-    /* 4B0C0 8024A0C0 91EF9E61 */  lbu        $t7, %lo(g_bCheatReserved)($t7)
-    /* 4B0C4 8024A0C4 3C0E8029 */  lui        $t6, %hi(g_dwFontShadowOffsetX)
-    /* 4B0C8 8024A0C8 3C198037 */  lui        $t9, %hi(g_dwCheatReserved1)
-    /* 4B0CC 8024A0CC 8F399E5C */  lw         $t9, %lo(g_dwCheatReserved1)($t9)
-    /* 4B0D0 8024A0D0 8DCEDCC4 */  lw         $t6, %lo(g_dwFontShadowOffsetX)($t6)
-    /* 4B0D4 8024A0D4 3C018037 */  lui        $at, %hi(g_bCheatReserved)
+    /* 4B0C0 8024A0C0 91EF9E61 */  lbu        $t7, %lo(g_bPakDecalIndex)($t7)
+    /* 4B0C4 8024A0C4 3C0E8029 */  lui        $t6, %hi(g_dwPakFileOffset)
+    /* 4B0C8 8024A0C8 3C198037 */  lui        $t9, %hi(g_dwPakChunkSize)
+    /* 4B0CC 8024A0CC 8F399E5C */  lw         $t9, %lo(g_dwPakChunkSize)($t9)
+    /* 4B0D0 8024A0D0 8DCEDCC4 */  lw         $t6, %lo(g_dwPakFileOffset)($t6)
+    /* 4B0D4 8024A0D4 3C018037 */  lui        $at, %hi(g_bPakDecalIndex)
     /* 4B0D8 8024A0D8 25F8FFFF */  addiu      $t8, $t7, -0x1
-    /* 4B0DC 8024A0DC A0389E61 */  sb         $t8, %lo(g_bCheatReserved)($at)
-    /* 4B0E0 8024A0E0 3C018029 */  lui        $at, %hi(g_dwFontShadowOffsetX)
+    /* 4B0DC 8024A0DC A0389E61 */  sb         $t8, %lo(g_bPakDecalIndex)($at)
+    /* 4B0E0 8024A0E0 3C018029 */  lui        $at, %hi(g_dwPakFileOffset)
     /* 4B0E4 8024A0E4 01D97823 */  subu       $t7, $t6, $t9
-    /* 4B0E8 8024A0E8 AC2FDCC4 */  sw         $t7, %lo(g_dwFontShadowOffsetX)($at)
-    /* 4B0EC 8024A0EC 3C018037 */  lui        $at, %hi(gOsTaskState)
-    /* 4B0F0 8024A0F0 AC209E54 */  sw         $zero, %lo(gOsTaskState)($at)
+    /* 4B0E8 8024A0E8 AC2FDCC4 */  sw         $t7, %lo(g_dwPakFileOffset)($at)
+    /* 4B0EC 8024A0EC 3C018037 */  lui        $at, %hi(g_dwPakError)
+    /* 4B0F0 8024A0F0 AC209E54 */  sw         $zero, %lo(g_dwPakError)($at)
   .L8024A0F4:
-    /* 4B0F4 8024A0F4 3C188037 */  lui        $t8, %hi(gOsTaskState)
-    /* 4B0F8 8024A0F8 8F189E54 */  lw         $t8, %lo(gOsTaskState)($t8)
+    /* 4B0F4 8024A0F4 3C188037 */  lui        $t8, %hi(g_dwPakError)
+    /* 4B0F8 8024A0F8 8F189E54 */  lw         $t8, %lo(g_dwPakError)($t8)
     /* 4B0FC 8024A0FC 8FA500A0 */  lw         $a1, 0xA0($sp)
     /* 4B100 8024A100 240400E7 */  addiu      $a0, $zero, 0xE7
     /* 4B104 8024A104 13000013 */  beqz       $t8, .L8024A154
@@ -8031,25 +8031,25 @@ glabel ProcessDecalSaveLoad
     /* 4B10C 8024A10C 24010002 */  addiu      $at, $zero, 0x2
     /* 4B110 8024A110 1701000C */  bne        $t8, $at, .L8024A144
     /* 4B114 8024A114 240E0009 */   addiu     $t6, $zero, 0x9
-    /* 4B118 8024A118 3C018037 */  lui        $at, %hi(gOsTaskState)
-    /* 4B11C 8024A11C AC209E54 */  sw         $zero, %lo(gOsTaskState)($at)
-    /* 4B120 8024A120 3C018037 */  lui        $at, %hi(gOsSchedulerState)
-    /* 4B124 8024A124 A02E9E60 */  sb         $t6, %lo(gOsSchedulerState)($at)
+    /* 4B118 8024A118 3C018037 */  lui        $at, %hi(g_dwPakError)
+    /* 4B11C 8024A11C AC209E54 */  sw         $zero, %lo(g_dwPakError)($at)
+    /* 4B120 8024A120 3C018037 */  lui        $at, %hi(g_bPakDialogState)
+    /* 4B124 8024A124 A02E9E60 */  sb         $t6, %lo(g_bPakDialogState)($at)
     /* 4B128 8024A128 8FAF00C0 */  lw         $t7, 0xC0($sp)
-    /* 4B12C 8024A12C 3C018037 */  lui        $at, %hi(g_bCheatGodMode)
+    /* 4B12C 8024A12C 3C018037 */  lui        $at, %hi(g_bPakRetryNewPak)
     /* 4B130 8024A130 24190001 */  addiu      $t9, $zero, 0x1
-    /* 4B134 8024A134 A0399E51 */  sb         $t9, %lo(g_bCheatGodMode)($at)
+    /* 4B134 8024A134 A0399E51 */  sb         $t9, %lo(g_bPakRetryNewPak)($at)
     /* 4B138 8024A138 00001025 */  or         $v0, $zero, $zero
     /* 4B13C 8024A13C 100002C8 */  b          .L8024AC60
     /* 4B140 8024A140 A1E00000 */   sb        $zero, 0x0($t7)
   .L8024A144:
     /* 4B144 8024A144 2418000C */  addiu      $t8, $zero, 0xC
-    /* 4B148 8024A148 3C018037 */  lui        $at, %hi(gOsSchedulerState)
+    /* 4B148 8024A148 3C018037 */  lui        $at, %hi(g_bPakDialogState)
     /* 4B14C 8024A14C 100002C3 */  b          .L8024AC5C
-    /* 4B150 8024A150 A0389E60 */   sb        $t8, %lo(gOsSchedulerState)($at)
+    /* 4B150 8024A150 A0389E60 */   sb        $t8, %lo(g_bPakDialogState)($at)
   .L8024A154:
-    /* 4B154 8024A154 3C068029 */  lui        $a2, %hi(g_dwFontShadowOffsetX)
-    /* 4B158 8024A158 8CC6DCC4 */  lw         $a2, %lo(g_dwFontShadowOffsetX)($a2)
+    /* 4B154 8024A154 3C068029 */  lui        $a2, %hi(g_dwPakFileOffset)
+    /* 4B158 8024A158 8CC6DCC4 */  lw         $a2, %lo(g_dwPakFileOffset)($a2)
     /* 4B15C 8024A15C 24013D00 */  addiu      $at, $zero, 0x3D00
     /* 4B160 8024A160 240F00C0 */  addiu      $t7, $zero, 0xC0
     /* 4B164 8024A164 00067080 */  sll        $t6, $a2, 2
@@ -8066,17 +8066,17 @@ glabel ProcessDecalSaveLoad
     /* 4B190 8024A190 AFA00010 */  sw         $zero, 0x10($sp)
     /* 4B194 8024A194 0C091B84 */  jal        DrawFilledRectHiRes
     /* 4B198 8024A198 AFA00014 */   sw        $zero, 0x14($sp)
-    /* 4B19C 8024A19C 3C188037 */  lui        $t8, %hi(g_bCheatReserved)
-    /* 4B1A0 8024A1A0 93189E61 */  lbu        $t8, %lo(g_bCheatReserved)($t8)
-    /* 4B1A4 8024A1A4 3C018037 */  lui        $at, %hi(g_bCheatReserved)
+    /* 4B19C 8024A19C 3C188037 */  lui        $t8, %hi(g_bPakDecalIndex)
+    /* 4B1A0 8024A1A0 93189E61 */  lbu        $t8, %lo(g_bPakDecalIndex)($t8)
+    /* 4B1A4 8024A1A4 3C018037 */  lui        $at, %hi(g_bPakDecalIndex)
     /* 4B1A8 8024A1A8 270E0001 */  addiu      $t6, $t8, 0x1
     /* 4B1AC 8024A1AC 100002AB */  b          .L8024AC5C
-    /* 4B1B0 8024A1B0 A02E9E61 */   sb        $t6, %lo(g_bCheatReserved)($at)
+    /* 4B1B0 8024A1B0 A02E9E61 */   sb        $t6, %lo(g_bPakDecalIndex)($at)
   .L8024A1B4:
     /* 4B1B4 8024A1B4 8FA500A0 */  lw         $a1, 0xA0($sp)
-    /* 4B1B8 8024A1B8 3C018037 */  lui        $at, %hi(g_bCheatReserved)
+    /* 4B1B8 8024A1B8 3C018037 */  lui        $at, %hi(g_bPakDecalIndex)
     /* 4B1BC 8024A1BC 241900C0 */  addiu      $t9, $zero, 0xC0
-    /* 4B1C0 8024A1C0 A0209E61 */  sb         $zero, %lo(g_bCheatReserved)($at)
+    /* 4B1C0 8024A1C0 A0209E61 */  sb         $zero, %lo(g_bPakDecalIndex)($at)
     /* 4B1C4 8024A1C4 AFB90018 */  sw         $t9, 0x18($sp)
     /* 4B1C8 8024A1C8 24070012 */  addiu      $a3, $zero, 0x12
     /* 4B1CC 8024A1CC AFA00010 */  sw         $zero, 0x10($sp)
@@ -8084,9 +8084,9 @@ glabel ProcessDecalSaveLoad
     /* 4B1D4 8024A1D4 0C091B84 */  jal        DrawFilledRectHiRes
     /* 4B1D8 8024A1D8 24A50035 */   addiu     $a1, $a1, 0x35
     /* 4B1DC 8024A1DC 240F0008 */  addiu      $t7, $zero, 0x8
-    /* 4B1E0 8024A1E0 3C018037 */  lui        $at, %hi(gOsSchedulerState)
+    /* 4B1E0 8024A1E0 3C018037 */  lui        $at, %hi(g_bPakDialogState)
     /* 4B1E4 8024A1E4 1000029D */  b          .L8024AC5C
-    /* 4B1E8 8024A1E8 A02F9E60 */   sb        $t7, %lo(gOsSchedulerState)($at)
+    /* 4B1E8 8024A1E8 A02F9E60 */   sb        $t7, %lo(g_bPakDialogState)($at)
   jlabel .L8024A1EC
     /* 4B1EC 8024A1EC 93B800BB */  lbu        $t8, 0xBB($sp)
     /* 4B1F0 8024A1F0 24010009 */  addiu      $at, $zero, 0x9
@@ -8112,10 +8112,10 @@ glabel ProcessDecalSaveLoad
     /* 4B240 8024A240 240D0024 */  addiu      $t5, $zero, 0x24
     /* 4B244 8024A244 8D8E0014 */  lw         $t6, 0x14($t4)
     /* 4B248 8024A248 032D0019 */  multu      $t9, $t5
-    /* 4B24C 8024A24C 3C058037 */  lui        $a1, %hi(g_dwCheatReserved0)
-    /* 4B250 8024A250 3C078029 */  lui        $a3, %hi(g_dwFontShadowOffsetX)
-    /* 4B254 8024A254 8CE7DCC4 */  lw         $a3, %lo(g_dwFontShadowOffsetX)($a3)
-    /* 4B258 8024A258 8CA59E58 */  lw         $a1, %lo(g_dwCheatReserved0)($a1)
+    /* 4B24C 8024A24C 3C058037 */  lui        $a1, %hi(g_dwPakFileNo)
+    /* 4B250 8024A250 3C078029 */  lui        $a3, %hi(g_dwPakFileOffset)
+    /* 4B254 8024A254 8CE7DCC4 */  lw         $a3, %lo(g_dwPakFileOffset)($a3)
+    /* 4B258 8024A258 8CA59E58 */  lw         $a1, %lo(g_dwPakFileNo)($a1)
     /* 4B25C 8024A25C 00003025 */  or         $a2, $zero, $zero
     /* 4B260 8024A260 00007812 */  mflo       $t7
     /* 4B264 8024A264 01CFC021 */  addu       $t8, $t6, $t7
@@ -8123,8 +8123,8 @@ glabel ProcessDecalSaveLoad
     /* 4B26C 8024A26C AFA40034 */  sw         $a0, 0x34($sp)
     /* 4B270 8024A270 0C098D77 */  jal        osPfsReadWriteFile
     /* 4B274 8024A274 AFB90014 */   sw        $t9, 0x14($sp)
-    /* 4B278 8024A278 3C018037 */  lui        $at, %hi(gOsTaskState)
-    /* 4B27C 8024A27C AC229E54 */  sw         $v0, %lo(gOsTaskState)($at)
+    /* 4B278 8024A278 3C018037 */  lui        $at, %hi(g_dwPakError)
+    /* 4B27C 8024A27C AC229E54 */  sw         $v0, %lo(g_dwPakError)($at)
     /* 4B280 8024A280 8FAC00B0 */  lw         $t4, 0xB0($sp)
     /* 4B284 8024A284 1440004E */  bnez       $v0, .L8024A3C0
     /* 4B288 8024A288 240D0024 */   addiu     $t5, $zero, 0x24
@@ -8170,7 +8170,7 @@ glabel ProcessDecalSaveLoad
     /* 4B328 8024A328 00000000 */   nop
     /* 4B32C 8024A32C 0C09354F */  jal        ConvertPaletteToRgb
     /* 4B330 8024A330 00000000 */   nop
-    /* 4B334 8024A334 0C09132A */  jal        CommitFramebuffer
+    /* 4B334 8024A334 0C09132A */  jal        SaveDecalUndo
     /* 4B338 8024A338 00000000 */   nop
     /* 4B33C 8024A33C 10000020 */  b          .L8024A3C0
     /* 4B340 8024A340 00000000 */   nop
@@ -8193,10 +8193,10 @@ glabel ProcessDecalSaveLoad
     /* 4B380 8024A380 240D0024 */  addiu      $t5, $zero, 0x24
     /* 4B384 8024A384 8D8E0014 */  lw         $t6, 0x14($t4)
     /* 4B388 8024A388 030D0019 */  multu      $t8, $t5
-    /* 4B38C 8024A38C 3C058037 */  lui        $a1, %hi(g_dwCheatReserved0)
-    /* 4B390 8024A390 3C078029 */  lui        $a3, %hi(g_dwFontShadowOffsetX)
-    /* 4B394 8024A394 8CE7DCC4 */  lw         $a3, %lo(g_dwFontShadowOffsetX)($a3)
-    /* 4B398 8024A398 8CA59E58 */  lw         $a1, %lo(g_dwCheatReserved0)($a1)
+    /* 4B38C 8024A38C 3C058037 */  lui        $a1, %hi(g_dwPakFileNo)
+    /* 4B390 8024A390 3C078029 */  lui        $a3, %hi(g_dwPakFileOffset)
+    /* 4B394 8024A394 8CE7DCC4 */  lw         $a3, %lo(g_dwPakFileOffset)($a3)
+    /* 4B398 8024A398 8CA59E58 */  lw         $a1, %lo(g_dwPakFileNo)($a1)
     /* 4B39C 8024A39C 24060001 */  addiu      $a2, $zero, 0x1
     /* 4B3A0 8024A3A0 00007812 */  mflo       $t7
     /* 4B3A4 8024A3A4 01CFC821 */  addu       $t9, $t6, $t7
@@ -8204,11 +8204,11 @@ glabel ProcessDecalSaveLoad
     /* 4B3AC 8024A3AC AFA40034 */  sw         $a0, 0x34($sp)
     /* 4B3B0 8024A3B0 0C098D77 */  jal        osPfsReadWriteFile
     /* 4B3B4 8024A3B4 AFB80014 */   sw        $t8, 0x14($sp)
-    /* 4B3B8 8024A3B8 3C018037 */  lui        $at, %hi(gOsTaskState)
-    /* 4B3BC 8024A3BC AC229E54 */  sw         $v0, %lo(gOsTaskState)($at)
+    /* 4B3B8 8024A3B8 3C018037 */  lui        $at, %hi(g_dwPakError)
+    /* 4B3BC 8024A3BC AC229E54 */  sw         $v0, %lo(g_dwPakError)($at)
   .L8024A3C0:
-    /* 4B3C0 8024A3C0 3C0E8037 */  lui        $t6, %hi(gOsTaskState)
-    /* 4B3C4 8024A3C4 8DCE9E54 */  lw         $t6, %lo(gOsTaskState)($t6)
+    /* 4B3C0 8024A3C0 3C0E8037 */  lui        $t6, %hi(g_dwPakError)
+    /* 4B3C4 8024A3C4 8DCE9E54 */  lw         $t6, %lo(g_dwPakError)($t6)
     /* 4B3C8 8024A3C8 24010003 */  addiu      $at, $zero, 0x3
     /* 4B3CC 8024A3CC 51C00006 */  beql       $t6, $zero, .L8024A3E8
     /* 4B3D0 8024A3D0 8FB90038 */   lw        $t9, 0x38($sp)
@@ -8234,17 +8234,17 @@ glabel ProcessDecalSaveLoad
     /* 4B418 8024A418 8FAE003C */  lw         $t6, 0x3C($sp)
   .L8024A41C:
     /* 4B41C 8024A41C 2418000B */  addiu      $t8, $zero, 0xB
-    /* 4B420 8024A420 3C018037 */  lui        $at, %hi(gOsSchedulerState)
+    /* 4B420 8024A420 3C018037 */  lui        $at, %hi(g_bPakDialogState)
     /* 4B424 8024A424 15C0001E */  bnez       $t6, .L8024A4A0
-    /* 4B428 8024A428 A0389E60 */   sb        $t8, %lo(gOsSchedulerState)($at)
-    /* 4B42C 8024A42C 3C018029 */  lui        $at, %hi(g_bObjectDirty11)
+    /* 4B428 8024A428 A0389E60 */   sb        $t8, %lo(g_bPakDialogState)($at)
+    /* 4B42C 8024A42C 3C018029 */  lui        $at, %hi(g_bDecalEditCount)
     /* 4B430 8024A430 1000001B */  b          .L8024A4A0
-    /* 4B434 8024A434 A020DBB4 */   sb        $zero, %lo(g_bObjectDirty11)($at)
+    /* 4B434 8024A434 A020DBB4 */   sb        $zero, %lo(g_bDecalEditCount)($at)
   .L8024A438:
     /* 4B438 8024A438 0C098AA0 */  jal        osPfsChecker
     /* 4B43C 8024A43C 8FA40034 */   lw        $a0, 0x34($sp)
-    /* 4B440 8024A440 3C018037 */  lui        $at, %hi(gOsTaskState)
-    /* 4B444 8024A444 AC229E54 */  sw         $v0, %lo(gOsTaskState)($at)
+    /* 4B440 8024A440 3C018037 */  lui        $at, %hi(g_dwPakError)
+    /* 4B444 8024A444 AC229E54 */  sw         $v0, %lo(g_dwPakError)($at)
     /* 4B448 8024A448 24010001 */  addiu      $at, $zero, 0x1
     /* 4B44C 8024A44C 10410006 */  beq        $v0, $at, .L8024A468
     /* 4B450 8024A450 240F000C */   addiu     $t7, $zero, 0xC
@@ -8252,53 +8252,53 @@ glabel ProcessDecalSaveLoad
     /* 4B458 8024A458 10410003 */  beq        $v0, $at, .L8024A468
     /* 4B45C 8024A45C 24010003 */   addiu     $at, $zero, 0x3
     /* 4B460 8024A460 14410004 */  bne        $v0, $at, .L8024A474
-    /* 4B464 8024A464 3C198029 */   lui       $t9, %hi(g_dwFontShadowOffsetX)
+    /* 4B464 8024A464 3C198029 */   lui       $t9, %hi(g_dwPakFileOffset)
   .L8024A468:
-    /* 4B468 8024A468 3C018037 */  lui        $at, %hi(gOsSchedulerState)
+    /* 4B468 8024A468 3C018037 */  lui        $at, %hi(g_bPakDialogState)
     /* 4B46C 8024A46C 1000000C */  b          .L8024A4A0
-    /* 4B470 8024A470 A02F9E60 */   sb        $t7, %lo(gOsSchedulerState)($at)
+    /* 4B470 8024A470 A02F9E60 */   sb        $t7, %lo(g_bPakDialogState)($at)
   .L8024A474:
-    /* 4B474 8024A474 3C188037 */  lui        $t8, %hi(g_dwCheatReserved1)
-    /* 4B478 8024A478 8F189E5C */  lw         $t8, %lo(g_dwCheatReserved1)($t8)
-    /* 4B47C 8024A47C 8F39DCC4 */  lw         $t9, %lo(g_dwFontShadowOffsetX)($t9)
-    /* 4B480 8024A480 3C018029 */  lui        $at, %hi(g_dwFontShadowOffsetX)
+    /* 4B474 8024A474 3C188037 */  lui        $t8, %hi(g_dwPakChunkSize)
+    /* 4B478 8024A478 8F189E5C */  lw         $t8, %lo(g_dwPakChunkSize)($t8)
+    /* 4B47C 8024A47C 8F39DCC4 */  lw         $t9, %lo(g_dwPakFileOffset)($t9)
+    /* 4B480 8024A480 3C018029 */  lui        $at, %hi(g_dwPakFileOffset)
     /* 4B484 8024A484 240F0008 */  addiu      $t7, $zero, 0x8
     /* 4B488 8024A488 03387023 */  subu       $t6, $t9, $t8
-    /* 4B48C 8024A48C AC2EDCC4 */  sw         $t6, %lo(g_dwFontShadowOffsetX)($at)
-    /* 4B490 8024A490 3C018037 */  lui        $at, %hi(gOsTaskState)
-    /* 4B494 8024A494 AC209E54 */  sw         $zero, %lo(gOsTaskState)($at)
-    /* 4B498 8024A498 3C018037 */  lui        $at, %hi(gOsSchedulerState)
-    /* 4B49C 8024A49C A02F9E60 */  sb         $t7, %lo(gOsSchedulerState)($at)
+    /* 4B48C 8024A48C AC2EDCC4 */  sw         $t6, %lo(g_dwPakFileOffset)($at)
+    /* 4B490 8024A490 3C018037 */  lui        $at, %hi(g_dwPakError)
+    /* 4B494 8024A494 AC209E54 */  sw         $zero, %lo(g_dwPakError)($at)
+    /* 4B498 8024A498 3C018037 */  lui        $at, %hi(g_bPakDialogState)
+    /* 4B49C 8024A49C A02F9E60 */  sb         $t7, %lo(g_bPakDialogState)($at)
   .L8024A4A0:
-    /* 4B4A0 8024A4A0 3C198037 */  lui        $t9, %hi(gOsTaskState)
-    /* 4B4A4 8024A4A4 8F399E54 */  lw         $t9, %lo(gOsTaskState)($t9)
+    /* 4B4A0 8024A4A0 3C198037 */  lui        $t9, %hi(g_dwPakError)
+    /* 4B4A4 8024A4A4 8F399E54 */  lw         $t9, %lo(g_dwPakError)($t9)
     /* 4B4A8 8024A4A8 3C04802B */  lui        $a0, %hi(g_szFmtErrCode)
     /* 4B4AC 8024A4AC 2484AD20 */  addiu      $a0, $a0, %lo(g_szFmtErrCode)
     /* 4B4B0 8024A4B0 532001EB */  beql       $t9, $zero, .L8024AC60
     /* 4B4B4 8024A4B4 00001025 */   or        $v0, $zero, $zero
     /* 4B4B8 8024A4B8 0C0981F7 */  jal        osSyncPrintf
     /* 4B4BC 8024A4BC 03202825 */   or        $a1, $t9, $zero
-    /* 4B4C0 8024A4C0 3C188037 */  lui        $t8, %hi(gOsTaskState)
-    /* 4B4C4 8024A4C4 8F189E54 */  lw         $t8, %lo(gOsTaskState)($t8)
+    /* 4B4C0 8024A4C0 3C188037 */  lui        $t8, %hi(g_dwPakError)
+    /* 4B4C4 8024A4C4 8F189E54 */  lw         $t8, %lo(g_dwPakError)($t8)
     /* 4B4C8 8024A4C8 24010002 */  addiu      $at, $zero, 0x2
     /* 4B4CC 8024A4CC 240E0009 */  addiu      $t6, $zero, 0x9
     /* 4B4D0 8024A4D0 1701000B */  bne        $t8, $at, .L8024A500
     /* 4B4D4 8024A4D4 240F0001 */   addiu     $t7, $zero, 0x1
-    /* 4B4D8 8024A4D8 3C018037 */  lui        $at, %hi(gOsSchedulerState)
-    /* 4B4DC 8024A4DC A02E9E60 */  sb         $t6, %lo(gOsSchedulerState)($at)
+    /* 4B4D8 8024A4D8 3C018037 */  lui        $at, %hi(g_bPakDialogState)
+    /* 4B4DC 8024A4DC A02E9E60 */  sb         $t6, %lo(g_bPakDialogState)($at)
     /* 4B4E0 8024A4E0 8FB900C0 */  lw         $t9, 0xC0($sp)
-    /* 4B4E4 8024A4E4 3C018037 */  lui        $at, %hi(g_bCheatGodMode)
-    /* 4B4E8 8024A4E8 A02F9E51 */  sb         $t7, %lo(g_bCheatGodMode)($at)
-    /* 4B4EC 8024A4EC 3C018037 */  lui        $at, %hi(gOsTaskState)
+    /* 4B4E4 8024A4E4 3C018037 */  lui        $at, %hi(g_bPakRetryNewPak)
+    /* 4B4E8 8024A4E8 A02F9E51 */  sb         $t7, %lo(g_bPakRetryNewPak)($at)
+    /* 4B4EC 8024A4EC 3C018037 */  lui        $at, %hi(g_dwPakError)
     /* 4B4F0 8024A4F0 A3200000 */  sb         $zero, 0x0($t9)
-    /* 4B4F4 8024A4F4 AC209E54 */  sw         $zero, %lo(gOsTaskState)($at)
+    /* 4B4F4 8024A4F4 AC209E54 */  sw         $zero, %lo(g_dwPakError)($at)
     /* 4B4F8 8024A4F8 100001D9 */  b          .L8024AC60
     /* 4B4FC 8024A4FC 00001025 */   or        $v0, $zero, $zero
   .L8024A500:
     /* 4B500 8024A500 8FAE00C0 */  lw         $t6, 0xC0($sp)
     /* 4B504 8024A504 2418000C */  addiu      $t8, $zero, 0xC
-    /* 4B508 8024A508 3C018037 */  lui        $at, %hi(gOsSchedulerState)
-    /* 4B50C 8024A50C A0389E60 */  sb         $t8, %lo(gOsSchedulerState)($at)
+    /* 4B508 8024A508 3C018037 */  lui        $at, %hi(g_bPakDialogState)
+    /* 4B50C 8024A50C A0389E60 */  sb         $t8, %lo(g_bPakDialogState)($at)
     /* 4B510 8024A510 100001D2 */  b          .L8024AC5C
     /* 4B514 8024A514 A1C00000 */   sb        $zero, 0x0($t6)
   jlabel .L8024A518
@@ -8397,20 +8397,20 @@ glabel ProcessDecalSaveLoad
     /* 4B67C 8024A67C 00001025 */   or        $v0, $zero, $zero
     /* 4B680 8024A680 0C095644 */  jal        TransferFlags
     /* 4B684 8024A684 34058030 */   ori       $a1, $zero, 0x8030
-    /* 4B688 8024A688 3C198037 */  lui        $t9, %hi(g_bCheatGodMode)
-    /* 4B68C 8024A68C 93399E51 */  lbu        $t9, %lo(g_bCheatGodMode)($t9)
+    /* 4B688 8024A688 3C198037 */  lui        $t9, %hi(g_bPakRetryNewPak)
+    /* 4B68C 8024A68C 93399E51 */  lbu        $t9, %lo(g_bPakRetryNewPak)($t9)
     /* 4B690 8024A690 24180003 */  addiu      $t8, $zero, 0x3
     /* 4B694 8024A694 240E0006 */  addiu      $t6, $zero, 0x6
     /* 4B698 8024A698 13200006 */  beqz       $t9, .L8024A6B4
-    /* 4B69C 8024A69C 3C018037 */   lui       $at, %hi(gOsSchedulerState)
-    /* 4B6A0 8024A6A0 3C018037 */  lui        $at, %hi(g_bCheatGodMode)
-    /* 4B6A4 8024A6A4 A0209E51 */  sb         $zero, %lo(g_bCheatGodMode)($at)
-    /* 4B6A8 8024A6A8 3C018037 */  lui        $at, %hi(gOsSchedulerState)
+    /* 4B69C 8024A69C 3C018037 */   lui       $at, %hi(g_bPakDialogState)
+    /* 4B6A0 8024A6A0 3C018037 */  lui        $at, %hi(g_bPakRetryNewPak)
+    /* 4B6A4 8024A6A4 A0209E51 */  sb         $zero, %lo(g_bPakRetryNewPak)($at)
+    /* 4B6A8 8024A6A8 3C018037 */  lui        $at, %hi(g_bPakDialogState)
     /* 4B6AC 8024A6AC 1000016B */  b          .L8024AC5C
-    /* 4B6B0 8024A6B0 A0389E60 */   sb        $t8, %lo(gOsSchedulerState)($at)
+    /* 4B6B0 8024A6B0 A0389E60 */   sb        $t8, %lo(g_bPakDialogState)($at)
   .L8024A6B4:
     /* 4B6B4 8024A6B4 10000169 */  b          .L8024AC5C
-    /* 4B6B8 8024A6B8 A02E9E60 */   sb        $t6, %lo(gOsSchedulerState)($at)
+    /* 4B6B8 8024A6B8 A02E9E60 */   sb        $t6, %lo(g_bPakDialogState)($at)
   jlabel .L8024A6BC
     /* 4B6BC 8024A6BC 93AF00BF */  lbu        $t7, 0xBF($sp)
     /* 4B6C0 8024A6C0 0C08BD3E */  jal        SetTextStyleNormal
@@ -8442,8 +8442,8 @@ glabel ProcessDecalSaveLoad
     /* 4B724 8024A724 0C08BD4C */  jal        SetTextCustomColors
     /* 4B728 8024A728 AFA00014 */   sw        $zero, 0x14($sp)
   .L8024A72C:
-    /* 4B72C 8024A72C 3C0F8037 */  lui        $t7, %hi(gOsTaskState)
-    /* 4B730 8024A730 8DEF9E54 */  lw         $t7, %lo(gOsTaskState)($t7)
+    /* 4B72C 8024A72C 3C0F8037 */  lui        $t7, %hi(g_dwPakError)
+    /* 4B730 8024A730 8DEF9E54 */  lw         $t7, %lo(g_dwPakError)($t7)
     /* 4B734 8024A734 2401270F */  addiu      $at, $zero, 0x270F
     /* 4B738 8024A738 8FB9003C */  lw         $t9, 0x3C($sp)
     /* 4B73C 8024A73C 15E10055 */  bne        $t7, $at, .L8024A894
@@ -8534,8 +8534,8 @@ glabel ProcessDecalSaveLoad
     /* 4B88C 8024A88C 0C091581 */  jal        DrawTexturedSprite
     /* 4B890 8024A890 8FA60088 */   lw        $a2, 0x88($sp)
   .L8024A894:
-    /* 4B894 8024A894 3C198037 */  lui        $t9, %hi(gOsTaskState)
-    /* 4B898 8024A898 8F399E54 */  lw         $t9, %lo(gOsTaskState)($t9)
+    /* 4B894 8024A894 3C198037 */  lui        $t9, %hi(g_dwPakError)
+    /* 4B898 8024A898 8F399E54 */  lw         $t9, %lo(g_dwPakError)($t9)
     /* 4B89C 8024A89C 2401270F */  addiu      $at, $zero, 0x270F
     /* 4B8A0 8024A8A0 93AF00B7 */  lbu        $t7, 0xB7($sp)
     /* 4B8A4 8024A8A4 13210016 */  beq        $t9, $at, .L8024A900
@@ -8558,9 +8558,9 @@ glabel ProcessDecalSaveLoad
     /* 4B8E8 8024A8E8 0C095644 */  jal        TransferFlags
     /* 4B8EC 8024A8EC 34058030 */   ori       $a1, $zero, 0x8030
     /* 4B8F0 8024A8F0 240E000C */  addiu      $t6, $zero, 0xC
-    /* 4B8F4 8024A8F4 3C018037 */  lui        $at, %hi(gOsSchedulerState)
+    /* 4B8F4 8024A8F4 3C018037 */  lui        $at, %hi(g_bPakDialogState)
     /* 4B8F8 8024A8F8 100000D8 */  b          .L8024AC5C
-    /* 4B8FC 8024A8FC A02E9E60 */   sb        $t6, %lo(gOsSchedulerState)($at)
+    /* 4B8FC 8024A8FC A02E9E60 */   sb        $t6, %lo(g_bPakDialogState)($at)
   .L8024A900:
     /* 4B900 8024A900 000FC880 */  sll        $t9, $t7, 2
     /* 4B904 8024A904 032FC823 */  subu       $t9, $t9, $t7
@@ -8577,51 +8577,51 @@ glabel ProcessDecalSaveLoad
     /* 4B930 8024A930 30590020 */   andi      $t9, $v0, 0x20
     /* 4B934 8024A934 0C095644 */  jal        TransferFlags
     /* 4B938 8024A938 24050010 */   addiu     $a1, $zero, 0x10
-    /* 4B93C 8024A93C 3C018037 */  lui        $at, %hi(gOsTaskState)
-    /* 4B940 8024A940 AC209E54 */  sw         $zero, %lo(gOsTaskState)($at)
-    /* 4B944 8024A944 3C018037 */  lui        $at, %hi(gOsSchedulerState)
+    /* 4B93C 8024A93C 3C018037 */  lui        $at, %hi(g_dwPakError)
+    /* 4B940 8024A940 AC209E54 */  sw         $zero, %lo(g_dwPakError)($at)
+    /* 4B944 8024A944 3C018037 */  lui        $at, %hi(g_bPakDialogState)
     /* 4B948 8024A948 240F0003 */  addiu      $t7, $zero, 0x3
     /* 4B94C 8024A94C 100000C3 */  b          .L8024AC5C
-    /* 4B950 8024A950 A02F9E60 */   sb        $t7, %lo(gOsSchedulerState)($at)
+    /* 4B950 8024A950 A02F9E60 */   sb        $t7, %lo(g_bPakDialogState)($at)
   .L8024A954:
     /* 4B954 8024A954 532000C2 */  beql       $t9, $zero, .L8024AC60
     /* 4B958 8024A958 00001025 */   or        $v0, $zero, $zero
     /* 4B95C 8024A95C 0C095644 */  jal        TransferFlags
     /* 4B960 8024A960 24050020 */   addiu     $a1, $zero, 0x20
-    /* 4B964 8024A964 3C018037 */  lui        $at, %hi(gOsTaskState)
-    /* 4B968 8024A968 AC209E54 */  sw         $zero, %lo(gOsTaskState)($at)
+    /* 4B964 8024A964 3C018037 */  lui        $at, %hi(g_dwPakError)
+    /* 4B968 8024A968 AC209E54 */  sw         $zero, %lo(g_dwPakError)($at)
     /* 4B96C 8024A96C 8FAE003C */  lw         $t6, 0x3C($sp)
-    /* 4B970 8024A970 3C018037 */  lui        $at, %hi(gOsSchedulerState)
+    /* 4B970 8024A970 3C018037 */  lui        $at, %hi(g_bPakDialogState)
     /* 4B974 8024A974 2418000C */  addiu      $t8, $zero, 0xC
-    /* 4B978 8024A978 A0389E60 */  sb         $t8, %lo(gOsSchedulerState)($at)
+    /* 4B978 8024A978 A0389E60 */  sb         $t8, %lo(g_bPakDialogState)($at)
     /* 4B97C 8024A97C 24010001 */  addiu      $at, $zero, 0x1
     /* 4B980 8024A980 15C100B6 */  bne        $t6, $at, .L8024AC5C
     /* 4B984 8024A984 240F03E7 */   addiu     $t7, $zero, 0x3E7
-    /* 4B988 8024A988 3C018037 */  lui        $at, %hi(gOsTaskState)
+    /* 4B988 8024A988 3C018037 */  lui        $at, %hi(g_dwPakError)
     /* 4B98C 8024A98C 100000B3 */  b          .L8024AC5C
-    /* 4B990 8024A990 AC2F9E54 */   sw        $t7, %lo(gOsTaskState)($at)
+    /* 4B990 8024A990 AC2F9E54 */   sw        $t7, %lo(g_dwPakError)($at)
   jlabel .L8024A994
-    /* 4B994 8024A994 3C018037 */  lui        $at, %hi(g_bCheatReserved)
-    /* 4B998 8024A998 A0209E61 */  sb         $zero, %lo(g_bCheatReserved)($at)
-    /* 4B99C 8024A99C 3C018029 */  lui        $at, %hi(g_dwFontShadowOffsetX)
-    /* 4B9A0 8024A9A0 AC20DCC4 */  sw         $zero, %lo(g_dwFontShadowOffsetX)($at)
+    /* 4B994 8024A994 3C018037 */  lui        $at, %hi(g_bPakDecalIndex)
+    /* 4B998 8024A998 A0209E61 */  sb         $zero, %lo(g_bPakDecalIndex)($at)
+    /* 4B99C 8024A99C 3C018029 */  lui        $at, %hi(g_dwPakFileOffset)
+    /* 4B9A0 8024A9A0 AC20DCC4 */  sw         $zero, %lo(g_dwPakFileOffset)($at)
     /* 4B9A4 8024A9A4 93B900BF */  lbu        $t9, 0xBF($sp)
-    /* 4B9A8 8024A9A8 3C018037 */  lui        $at, %hi(g_dwCheatReserved1)
-    /* 4B9AC 8024A9AC AC209E5C */  sw         $zero, %lo(g_dwCheatReserved1)($at)
-    /* 4B9B0 8024A9B0 3C018037 */  lui        $at, %hi(g_bCheatReserved2)
+    /* 4B9A8 8024A9A8 3C018037 */  lui        $at, %hi(g_dwPakChunkSize)
+    /* 4B9AC 8024A9AC AC209E5C */  sw         $zero, %lo(g_dwPakChunkSize)($at)
+    /* 4B9B0 8024A9B0 3C018037 */  lui        $at, %hi(g_bPakWaitFrames)
     /* 4B9B4 8024A9B4 17200005 */  bnez       $t9, .L8024A9CC
-    /* 4B9B8 8024A9B8 A0209E62 */   sb        $zero, %lo(g_bCheatReserved2)($at)
+    /* 4B9B8 8024A9B8 A0209E62 */   sb        $zero, %lo(g_bPakWaitFrames)($at)
     /* 4B9BC 8024A9BC 2418000C */  addiu      $t8, $zero, 0xC
-    /* 4B9C0 8024A9C0 3C018037 */  lui        $at, %hi(gOsSchedulerState)
+    /* 4B9C0 8024A9C0 3C018037 */  lui        $at, %hi(g_bPakDialogState)
     /* 4B9C4 8024A9C4 100000A5 */  b          .L8024AC5C
-    /* 4B9C8 8024A9C8 A0389E60 */   sb        $t8, %lo(gOsSchedulerState)($at)
+    /* 4B9C8 8024A9C8 A0389E60 */   sb        $t8, %lo(g_bPakDialogState)($at)
   .L8024A9CC:
-    /* 4B9CC 8024A9CC 3C0E8037 */  lui        $t6, %hi(g_bCheatEnabled)
-    /* 4B9D0 8024A9D0 91CE9E50 */  lbu        $t6, %lo(g_bCheatEnabled)($t6)
+    /* 4B9CC 8024A9CC 3C0E8037 */  lui        $t6, %hi(g_bPakRumbleSwapped)
+    /* 4B9D0 8024A9D0 91CE9E50 */  lbu        $t6, %lo(g_bPakRumbleSwapped)($t6)
     /* 4B9D4 8024A9D4 24040073 */  addiu      $a0, $zero, 0x73
     /* 4B9D8 8024A9D8 240500CC */  addiu      $a1, $zero, 0xCC
     /* 4B9DC 8024A9DC 11C00060 */  beqz       $t6, .L8024AB60
-    /* 4B9E0 8024A9E0 3C018037 */   lui       $at, %hi(gOsSchedulerState)
+    /* 4B9E0 8024A9E0 3C018037 */   lui       $at, %hi(g_bPakDialogState)
     /* 4B9E4 8024A9E4 240F0003 */  addiu      $t7, $zero, 0x3
     /* 4B9E8 8024A9E8 24190080 */  addiu      $t9, $zero, 0x80
     /* 4B9EC 8024A9EC 24180080 */  addiu      $t8, $zero, 0x80
@@ -8692,18 +8692,18 @@ glabel ProcessDecalSaveLoad
     /* 4BAF0 8024AAF0 0C095644 */  jal        TransferFlags
     /* 4BAF4 8024AAF4 34058010 */   ori       $a1, $zero, 0x8010
     /* 4BAF8 8024AAF8 93A600B7 */  lbu        $a2, 0xB7($sp)
-    /* 4BAFC 8024AAFC 3C018037 */  lui        $at, %hi(g_bCheatEnabled)
-    /* 4BB00 8024AB00 A0209E50 */  sb         $zero, %lo(g_bCheatEnabled)($at)
+    /* 4BAFC 8024AAFC 3C018037 */  lui        $at, %hi(g_bPakRumbleSwapped)
+    /* 4BB00 8024AB00 A0209E50 */  sb         $zero, %lo(g_bPakRumbleSwapped)($at)
     /* 4BB04 8024AB04 0006C080 */  sll        $t8, $a2, 2
     /* 4BB08 8024AB08 0306C023 */  subu       $t8, $t8, $a2
     /* 4BB0C 8024AB0C 0018C080 */  sll        $t8, $t8, 2
     /* 4BB10 8024AB10 3C0E8032 */  lui        $t6, %hi(g_aContPfs)
     /* 4BB14 8024AB14 0306C021 */  addu       $t8, $t8, $a2
-    /* 4BB18 8024AB18 3C018037 */  lui        $at, %hi(gOsTaskState)
+    /* 4BB18 8024AB18 3C018037 */  lui        $at, %hi(g_dwPakError)
     /* 4BB1C 8024AB1C 0018C0C0 */  sll        $t8, $t8, 3
     /* 4BB20 8024AB20 25CEA3F8 */  addiu      $t6, $t6, %lo(g_aContPfs)
     /* 4BB24 8024AB24 3C048027 */  lui        $a0, %hi(g_SiMesgQueue)
-    /* 4BB28 8024AB28 AC209E54 */  sw         $zero, %lo(gOsTaskState)($at)
+    /* 4BB28 8024AB28 AC209E54 */  sw         $zero, %lo(g_dwPakError)($at)
     /* 4BB2C 8024AB2C 24842D48 */  addiu      $a0, $a0, %lo(g_SiMesgQueue)
     /* 4BB30 8024AB30 0C0988DC */  jal        osMotorInit
     /* 4BB34 8024AB34 030E2821 */   addu      $a1, $t8, $t6
@@ -8715,44 +8715,44 @@ glabel ProcessDecalSaveLoad
     /* 4BB4C 8024AB4C 00390821 */  addu       $at, $at, $t9
     /* 4BB50 8024AB50 A02FB1E8 */  sb         $t7, %lo(g_abRumblePakPresent)($at)
   .L8024AB54:
-    /* 4BB54 8024AB54 3C018037 */  lui        $at, %hi(gOsSchedulerState)
+    /* 4BB54 8024AB54 3C018037 */  lui        $at, %hi(g_bPakDialogState)
     /* 4BB58 8024AB58 10000040 */  b          .L8024AC5C
-    /* 4BB5C 8024AB5C A0389E60 */   sb        $t8, %lo(gOsSchedulerState)($at)
+    /* 4BB5C 8024AB5C A0389E60 */   sb        $t8, %lo(g_bPakDialogState)($at)
   .L8024AB60:
     /* 4BB60 8024AB60 240E000C */  addiu      $t6, $zero, 0xC
     /* 4BB64 8024AB64 1000003D */  b          .L8024AC5C
-    /* 4BB68 8024AB68 A02E9E60 */   sb        $t6, %lo(gOsSchedulerState)($at)
+    /* 4BB68 8024AB68 A02E9E60 */   sb        $t6, %lo(g_bPakDialogState)($at)
   jlabel .L8024AB6C
-    /* 4BB6C 8024AB6C 3C018029 */  lui        $at, %hi(g_bFontMonospace)
-    /* 4BB70 8024AB70 A020DCBC */  sb         $zero, %lo(g_bFontMonospace)($at)
+    /* 4BB6C 8024AB6C 3C018029 */  lui        $at, %hi(g_bPakDialogActive)
+    /* 4BB70 8024AB70 A020DCBC */  sb         $zero, %lo(g_bPakDialogActive)($at)
     /* 4BB74 8024AB74 3C013F80 */  lui        $at, (0x3F800000 >> 16)
     /* 4BB78 8024AB78 93AF00BF */  lbu        $t7, 0xBF($sp)
     /* 4BB7C 8024AB7C 44816000 */  mtc1       $at, $f12
-    /* 4BB80 8024AB80 3C01802B */  lui        $at, %hi(g_dwRaceReserved101)
-    /* 4BB84 8024AB84 C42EB200 */  lwc1       $f14, %lo(g_dwRaceReserved101)($at)
+    /* 4BB80 8024AB80 3C01802B */  lui        $at, %hi(g_fConst0p2_802ab200)
+    /* 4BB84 8024AB84 C42EB200 */  lwc1       $f14, %lo(g_fConst0p2_802ab200)($at)
     /* 4BB88 8024AB88 0C088DD4 */  jal        FadeSfxTo
     /* 4BB8C 8024AB8C AFAF003C */   sw        $t7, 0x3C($sp)
     /* 4BB90 8024AB90 3C013F80 */  lui        $at, (0x3F800000 >> 16)
     /* 4BB94 8024AB94 44816000 */  mtc1       $at, $f12
-    /* 4BB98 8024AB98 3C01802B */  lui        $at, %hi(g_dwRaceReserved102)
+    /* 4BB98 8024AB98 3C01802B */  lui        $at, %hi(g_fConst0p2_802ab204)
     /* 4BB9C 8024AB9C 0C088DF4 */  jal        FadeMusicTo
-    /* 4BBA0 8024ABA0 C42EB204 */   lwc1      $f14, %lo(g_dwRaceReserved102)($at)
-    /* 4BBA4 8024ABA4 3C188037 */  lui        $t8, %hi(gOsTaskState)
-    /* 4BBA8 8024ABA8 8F189E54 */  lw         $t8, %lo(gOsTaskState)($t8)
+    /* 4BBA0 8024ABA0 C42EB204 */   lwc1      $f14, %lo(g_fConst0p2_802ab204)($at)
+    /* 4BBA4 8024ABA4 3C188037 */  lui        $t8, %hi(g_dwPakError)
+    /* 4BBA8 8024ABA8 8F189E54 */  lw         $t8, %lo(g_dwPakError)($t8)
     /* 4BBAC 8024ABAC 24190001 */  addiu      $t9, $zero, 0x1
     /* 4BBB0 8024ABB0 3C01802A */  lui        $at, %hi(g_wSerialInterfaceIdle)
     /* 4BBB4 8024ABB4 1700000D */  bnez       $t8, .L8024ABEC
     /* 4BBB8 8024ABB8 A4394BE8 */   sh        $t9, %lo(g_wSerialInterfaceIdle)($at)
     /* 4BBBC 8024ABBC 8FAF00C0 */  lw         $t7, 0xC0($sp)
     /* 4BBC0 8024ABC0 240E0001 */  addiu      $t6, $zero, 0x1
-    /* 4BBC4 8024ABC4 3C188029 */  lui        $t8, %hi(g_bObjectDirty3)
+    /* 4BBC4 8024ABC4 3C188029 */  lui        $t8, %hi(g_bPreviousPaintTool)
     /* 4BBC8 8024ABC8 A1EE0000 */  sb         $t6, 0x0($t7)
     /* 4BBCC 8024ABCC 8FB9003C */  lw         $t9, 0x3C($sp)
     /* 4BBD0 8024ABD0 17200004 */  bnez       $t9, .L8024ABE4
     /* 4BBD4 8024ABD4 00000000 */   nop
-    /* 4BBD8 8024ABD8 9318DB64 */  lbu        $t8, %lo(g_bObjectDirty3)($t8)
-    /* 4BBDC 8024ABDC 3C018029 */  lui        $at, %hi(g_bObjectDirty2)
-    /* 4BBE0 8024ABE0 A038DB60 */  sb         $t8, %lo(g_bObjectDirty2)($at)
+    /* 4BBD8 8024ABD8 9318DB64 */  lbu        $t8, %lo(g_bPreviousPaintTool)($t8)
+    /* 4BBDC 8024ABDC 3C018029 */  lui        $at, %hi(g_bPaintTool)
+    /* 4BBE0 8024ABE0 A038DB60 */  sb         $t8, %lo(g_bPaintTool)($at)
   .L8024ABE4:
     /* 4BBE4 8024ABE4 1000001E */  b          .L8024AC60
     /* 4BBE8 8024ABE8 00001025 */   or        $v0, $zero, $zero
@@ -8776,17 +8776,17 @@ glabel ProcessDecalSaveLoad
     /* 4BC2C 8024AC2C 8FB800C0 */   lw        $t8, 0xC0($sp)
     /* 4BC30 8024AC30 0C095644 */  jal        TransferFlags
     /* 4BC34 8024AC34 34058030 */   ori       $a1, $zero, 0x8030
-    /* 4BC38 8024AC38 3C198029 */  lui        $t9, %hi(g_bObjectDirty3)
-    /* 4BC3C 8024AC3C 9339DB64 */  lbu        $t9, %lo(g_bObjectDirty3)($t9)
-    /* 4BC40 8024AC40 3C018029 */  lui        $at, %hi(g_bObjectDirty2)
-    /* 4BC44 8024AC44 A039DB60 */  sb         $t9, %lo(g_bObjectDirty2)($at)
+    /* 4BC38 8024AC38 3C198029 */  lui        $t9, %hi(g_bPreviousPaintTool)
+    /* 4BC3C 8024AC3C 9339DB64 */  lbu        $t9, %lo(g_bPreviousPaintTool)($t9)
+    /* 4BC40 8024AC40 3C018029 */  lui        $at, %hi(g_bPaintTool)
+    /* 4BC44 8024AC44 A039DB60 */  sb         $t9, %lo(g_bPaintTool)($at)
   .L8024AC48:
     /* 4BC48 8024AC48 8FB800C0 */  lw         $t8, 0xC0($sp)
   .L8024AC4C:
-    /* 4BC4C 8024AC4C 3C028037 */  lui        $v0, %hi(gOsTaskState)
+    /* 4BC4C 8024AC4C 3C028037 */  lui        $v0, %hi(g_dwPakError)
     /* 4BC50 8024AC50 A3000000 */  sb         $zero, 0x0($t8)
     /* 4BC54 8024AC54 10000002 */  b          .L8024AC60
-    /* 4BC58 8024AC58 8C429E54 */   lw        $v0, %lo(gOsTaskState)($v0)
+    /* 4BC58 8024AC58 8C429E54 */   lw        $v0, %lo(g_dwPakError)($v0)
   .L8024AC5C:
     /* 4BC5C 8024AC5C 00001025 */  or         $v0, $zero, $zero
   .L8024AC60:
@@ -8801,12 +8801,12 @@ nonmatching ProcessTextInputKeyboard, 0x4D4
 glabel ProcessTextInputKeyboard
     /* 4BC70 8024AC70 27BDFFA0 */  addiu      $sp, $sp, -0x60
     /* 4BC74 8024AC74 AFB1002C */  sw         $s1, 0x2C($sp)
-    /* 4BC78 8024AC78 3C018029 */  lui        $at, %hi(g_bObjectDirty17)
-    /* 4BC7C 8024AC7C 3C118029 */  lui        $s1, %hi(g_texKeyboardKey)
-    /* 4BC80 8024AC80 A020DBD8 */  sb         $zero, %lo(g_bObjectDirty17)($at)
-    /* 4BC84 8024AC84 2631D260 */  addiu      $s1, $s1, %lo(g_texKeyboardKey)
+    /* 4BC78 8024AC78 3C018029 */  lui        $at, %hi(g_bShowPreview3D)
+    /* 4BC7C 8024AC7C 3C118029 */  lui        $s1, %hi(g_texKeyboardBackground)
+    /* 4BC80 8024AC80 A020DBD8 */  sb         $zero, %lo(g_bShowPreview3D)($at)
+    /* 4BC84 8024AC84 2631D260 */  addiu      $s1, $s1, %lo(g_texKeyboardBackground)
     /* 4BC88 8024AC88 AFBF004C */  sw         $ra, 0x4C($sp)
-    /* 4BC8C 8024AC8C 3C018029 */  lui        $at, %hi(g_bObjectDirty13)
+    /* 4BC8C 8024AC8C 3C018029 */  lui        $at, %hi(g_bPaletteEnabled)
     /* 4BC90 8024AC90 AFBE0048 */  sw         $fp, 0x48($sp)
     /* 4BC94 8024AC94 AFB70044 */  sw         $s7, 0x44($sp)
     /* 4BC98 8024AC98 AFB60040 */  sw         $s6, 0x40($sp)
@@ -8815,14 +8815,14 @@ glabel ProcessTextInputKeyboard
     /* 4BCA4 8024ACA4 AFB30034 */  sw         $s3, 0x34($sp)
     /* 4BCA8 8024ACA8 AFB20030 */  sw         $s2, 0x30($sp)
     /* 4BCAC 8024ACAC AFB00028 */  sw         $s0, 0x28($sp)
-    /* 4BCB0 8024ACB0 A020DBC8 */  sb         $zero, %lo(g_bObjectDirty13)($at)
+    /* 4BCB0 8024ACB0 A020DBC8 */  sb         $zero, %lo(g_bPaletteEnabled)($at)
     /* 4BCB4 8024ACB4 02202025 */  or         $a0, $s1, $zero
     /* 4BCB8 8024ACB8 240500E0 */  addiu      $a1, $zero, 0xE0
     /* 4BCBC 8024ACBC 240600E0 */  addiu      $a2, $zero, 0xE0
-    /* 4BCC0 8024ACC0 0C0915E6 */  jal        DrawTiledSprite
+    /* 4BCC0 8024ACC0 0C0915E6 */  jal        DrawSpriteTinted
     /* 4BCC4 8024ACC4 240700E0 */   addiu     $a3, $zero, 0xE0
-    /* 4BCC8 8024ACC8 3C168029 */  lui        $s6, %hi(g_texKeyboardKeyHighlight)
-    /* 4BCCC 8024ACCC 26D6D290 */  addiu      $s6, $s6, %lo(g_texKeyboardKeyHighlight)
+    /* 4BCC8 8024ACC8 3C168029 */  lui        $s6, %hi(g_texKeyboardHighlight)
+    /* 4BCCC 8024ACCC 26D6D290 */  addiu      $s6, $s6, %lo(g_texKeyboardHighlight)
     /* 4BCD0 8024ACD0 92CE002C */  lbu        $t6, 0x2C($s6)
     /* 4BCD4 8024ACD4 3C088029 */  lui        $t0, %hi(g_wScreenFrameCount)
     /* 4BCD8 8024ACD8 2508DBB0 */  addiu      $t0, $t0, %lo(g_wScreenFrameCount)
@@ -8842,18 +8842,18 @@ glabel ProcessTextInputKeyboard
     /* 4BD0C 8024AD0C 02C02025 */  or         $a0, $s6, $zero
     /* 4BD10 8024AD10 24050020 */  addiu      $a1, $zero, 0x20
     /* 4BD14 8024AD14 240600C8 */  addiu      $a2, $zero, 0xC8
-    /* 4BD18 8024AD18 0C0915E6 */  jal        DrawTiledSprite
+    /* 4BD18 8024AD18 0C0915E6 */  jal        DrawSpriteTinted
     /* 4BD1C 8024AD1C 240700FF */   addiu     $a3, $zero, 0xFF
     /* 4BD20 8024AD20 10000004 */  b          .L8024AD34
     /* 4BD24 8024AD24 00000000 */   nop
   .L8024AD28:
     /* 4BD28 8024AD28 240600EB */  addiu      $a2, $zero, 0xEB
-    /* 4BD2C 8024AD2C 0C0915E6 */  jal        DrawTiledSprite
+    /* 4BD2C 8024AD2C 0C0915E6 */  jal        DrawSpriteTinted
     /* 4BD30 8024AD30 00003825 */   or        $a3, $zero, $zero
   .L8024AD34:
     /* 4BD34 8024AD34 3C108029 */  lui        $s0, %hi(g_texKeyboardPanel)
     /* 4BD38 8024AD38 2610D230 */  addiu      $s0, $s0, %lo(g_texKeyboardPanel)
-    /* 4BD3C 8024AD3C 0C09151C */  jal        DrawMultiStripSprite
+    /* 4BD3C 8024AD3C 0C09151C */  jal        DrawSpriteAtOrigin
     /* 4BD40 8024AD40 02002025 */   or        $a0, $s0, $zero
     /* 4BD44 8024AD44 8E180020 */  lw         $t8, 0x20($s0)
     /* 4BD48 8024AD48 8E190014 */  lw         $t9, 0x14($s0)
@@ -8890,21 +8890,21 @@ glabel ProcessTextInputKeyboard
     /* 4BDC4 8024ADC4 02202025 */   or        $a0, $s1, $zero
     /* 4BDC8 8024ADC8 104000AD */  beqz       $v0, .L8024B080
     /* 4BDCC 8024ADCC 0000A825 */   or        $s5, $zero, $zero
-    /* 4BDD0 8024ADD0 3C148029 */  lui        $s4, %hi(g_dwGfxCoefR)
-    /* 4BDD4 8024ADD4 3C1E8029 */  lui        $fp, %hi(g_bObjectDirty8)
-    /* 4BDD8 8024ADD8 3C178037 */  lui        $s7, %hi(g_bNetPlayHost)
-    /* 4BDDC 8024ADDC 3C128037 */  lui        $s2, %hi(g_dwCheatReserved3)
-    /* 4BDE0 8024ADE0 3C118029 */  lui        $s1, %hi(g_bObjectDirty10)
-    /* 4BDE4 8024ADE4 3C108029 */  lui        $s0, %hi(g_bObjectDirty9)
-    /* 4BDE8 8024ADE8 2610DBA8 */  addiu      $s0, $s0, %lo(g_bObjectDirty9)
-    /* 4BDEC 8024ADEC 2631DBAC */  addiu      $s1, $s1, %lo(g_bObjectDirty10)
-    /* 4BDF0 8024ADF0 26529E68 */  addiu      $s2, $s2, %lo(g_dwCheatReserved3)
-    /* 4BDF4 8024ADF4 26F79EA8 */  addiu      $s7, $s7, %lo(g_bNetPlayHost)
-    /* 4BDF8 8024ADF8 27DEDBA4 */  addiu      $fp, $fp, %lo(g_bObjectDirty8)
-    /* 4BDFC 8024ADFC 2694D540 */  addiu      $s4, $s4, %lo(g_dwGfxCoefR)
+    /* 4BDD0 8024ADD0 3C148029 */  lui        $s4, %hi(g_aDecalGlyphs)
+    /* 4BDD4 8024ADD4 3C1E8029 */  lui        $fp, %hi(g_bKeyboardHoverKey)
+    /* 4BDD8 8024ADD8 3C178037 */  lui        $s7, %hi(g_szDecalText)
+    /* 4BDDC 8024ADDC 3C128037 */  lui        $s2, %hi(g_apDecalTextGlyphs)
+    /* 4BDE0 8024ADE0 3C118029 */  lui        $s1, %hi(g_bDecalTextWidth)
+    /* 4BDE4 8024ADE4 3C108029 */  lui        $s0, %hi(g_bDecalTextLength)
+    /* 4BDE8 8024ADE8 2610DBA8 */  addiu      $s0, $s0, %lo(g_bDecalTextLength)
+    /* 4BDEC 8024ADEC 2631DBAC */  addiu      $s1, $s1, %lo(g_bDecalTextWidth)
+    /* 4BDF0 8024ADF0 26529E68 */  addiu      $s2, $s2, %lo(g_apDecalTextGlyphs)
+    /* 4BDF4 8024ADF4 26F79EA8 */  addiu      $s7, $s7, %lo(g_szDecalText)
+    /* 4BDF8 8024ADF8 27DEDBA4 */  addiu      $fp, $fp, %lo(g_bKeyboardHoverKey)
+    /* 4BDFC 8024ADFC 2694D540 */  addiu      $s4, $s4, %lo(g_aDecalGlyphs)
     /* 4BE00 8024AE00 24130001 */  addiu      $s3, $zero, 0x1
   .L8024AE04:
-    /* 4BE04 8024AE04 0C093532 */  jal        IsCursorInToolButton
+    /* 4BE04 8024AE04 0C093532 */  jal        IsCursorOnKeyboardKey
     /* 4BE08 8024AE08 02802025 */   or        $a0, $s4, $zero
     /* 4BE0C 8024AE0C 10400007 */  beqz       $v0, .L8024AE2C
     /* 4BE10 8024AE10 00000000 */   nop
@@ -8918,8 +8918,8 @@ glabel ProcessTextInputKeyboard
     /* 4BE2C 8024AE2C 0C0934DD */  jal        IsCursorInButton
     /* 4BE30 8024AE30 02C02025 */   or        $a0, $s6, $zero
     /* 4BE34 8024AE34 1040008E */  beqz       $v0, .L8024B070
-    /* 4BE38 8024AE38 3C0A8029 */   lui       $t2, %hi(gDecalBrushState)
-    /* 4BE3C 8024AE3C 914ADBBC */  lbu        $t2, %lo(gDecalBrushState)($t2)
+    /* 4BE38 8024AE38 3C0A8029 */   lui       $t2, %hi(g_bPaintShopPlayer)
+    /* 4BE3C 8024AE3C 914ADBBC */  lbu        $t2, %lo(g_bPaintShopPlayer)($t2)
     /* 4BE40 8024AE40 3C0C8037 */  lui        $t4, %hi(g_aPlayerInputState)
     /* 4BE44 8024AE44 258CA8E0 */  addiu      $t4, $t4, %lo(g_aPlayerInputState)
     /* 4BE48 8024AE48 000A5880 */  sll        $t3, $t2, 2
@@ -8944,24 +8944,24 @@ glabel ProcessTextInputKeyboard
     /* 4BE94 8024AE94 14410012 */  bne        $v0, $at, .L8024AEE0
     /* 4BE98 8024AE98 00401825 */   or        $v1, $v0, $zero
     /* 4BE9C 8024AE9C 92180000 */  lbu        $t8, 0x0($s0)
-    /* 4BEA0 8024AEA0 3C018029 */  lui        $at, %hi(gDecalCanvasHeight)
+    /* 4BEA0 8024AEA0 3C018029 */  lui        $at, %hi(g_bPaintToolStarted)
     /* 4BEA4 8024AEA4 1B000006 */  blez       $t8, .L8024AEC0
     /* 4BEA8 8024AEA8 00000000 */   nop
-    /* 4BEAC 8024AEAC 3C018029 */  lui        $at, %hi(gDecalCanvasHeight)
-    /* 4BEB0 8024AEB0 A033DBC0 */  sb         $s3, %lo(gDecalCanvasHeight)($at)
-    /* 4BEB4 8024AEB4 3C018029 */  lui        $at, %hi(g_bObjectDirty20)
+    /* 4BEAC 8024AEAC 3C018029 */  lui        $at, %hi(g_bPaintToolStarted)
+    /* 4BEB0 8024AEB0 A033DBC0 */  sb         $s3, %lo(g_bPaintToolStarted)($at)
+    /* 4BEB4 8024AEB4 3C018029 */  lui        $at, %hi(g_bTextShadowPickerOpen)
     /* 4BEB8 8024AEB8 10000004 */  b          .L8024AECC
-    /* 4BEBC 8024AEBC A033DBE4 */   sb        $s3, %lo(g_bObjectDirty20)($at)
+    /* 4BEBC 8024AEBC A033DBE4 */   sb        $s3, %lo(g_bTextShadowPickerOpen)($at)
   .L8024AEC0:
-    /* 4BEC0 8024AEC0 A020DBC0 */  sb         $zero, %lo(gDecalCanvasHeight)($at)
-    /* 4BEC4 8024AEC4 3C018029 */  lui        $at, %hi(g_bObjectDirty12)
-    /* 4BEC8 8024AEC8 A020DBC4 */  sb         $zero, %lo(g_bObjectDirty12)($at)
+    /* 4BEC0 8024AEC0 A020DBC0 */  sb         $zero, %lo(g_bPaintToolStarted)($at)
+    /* 4BEC4 8024AEC4 3C018029 */  lui        $at, %hi(g_bDecalDragActive)
+    /* 4BEC8 8024AEC8 A020DBC4 */  sb         $zero, %lo(g_bDecalDragActive)($at)
   .L8024AECC:
-    /* 4BECC 8024AECC 3C018029 */  lui        $at, %hi(g_bObjectDirty17)
-    /* 4BED0 8024AED0 A033DBD8 */  sb         $s3, %lo(g_bObjectDirty17)($at)
-    /* 4BED4 8024AED4 3C018029 */  lui        $at, %hi(g_bObjectDirty13)
+    /* 4BECC 8024AECC 3C018029 */  lui        $at, %hi(g_bShowPreview3D)
+    /* 4BED0 8024AED0 A033DBD8 */  sb         $s3, %lo(g_bShowPreview3D)($at)
+    /* 4BED4 8024AED4 3C018029 */  lui        $at, %hi(g_bPaletteEnabled)
     /* 4BED8 8024AED8 10000065 */  b          .L8024B070
-    /* 4BEDC 8024AEDC A033DBC8 */   sb        $s3, %lo(g_bObjectDirty13)($at)
+    /* 4BEDC 8024AEDC A033DBC8 */   sb        $s3, %lo(g_bPaletteEnabled)($at)
   .L8024AEE0:
     /* 4BEE0 8024AEE0 2401002F */  addiu      $at, $zero, 0x2F
     /* 4BEE4 8024AEE4 54610031 */  bnel       $v1, $at, .L8024AFAC
@@ -9020,14 +9020,14 @@ glabel ProcessTextInputKeyboard
     /* 4BFA8 8024AFA8 000250C0 */  sll        $t2, $v0, 3
   .L8024AFAC:
     /* 4BFAC 8024AFAC 01425023 */  subu       $t2, $t2, $v0
-    /* 4BFB0 8024AFB0 3C0B8029 */  lui        $t3, %hi(g_dwGfxCoefR)
-    /* 4BFB4 8024AFB4 256BD540 */  addiu      $t3, $t3, %lo(g_dwGfxCoefR)
+    /* 4BFB0 8024AFB0 3C0B8029 */  lui        $t3, %hi(g_aDecalGlyphs)
+    /* 4BFB4 8024AFB4 256BD540 */  addiu      $t3, $t3, %lo(g_aDecalGlyphs)
     /* 4BFB8 8024AFB8 000A5080 */  sll        $t2, $t2, 2
     /* 4BFBC 8024AFBC 014B2021 */  addu       $a0, $t2, $t3
     /* 4BFC0 8024AFC0 8C8C0010 */  lw         $t4, 0x10($a0)
     /* 4BFC4 8024AFC4 922E0000 */  lbu        $t6, 0x0($s1)
-    /* 4BFC8 8024AFC8 3C0D8029 */  lui        $t5, %hi(gFramebufferWidth)
-    /* 4BFCC 8024AFCC 91ADDB88 */  lbu        $t5, %lo(gFramebufferWidth)($t5)
+    /* 4BFC8 8024AFC8 3C0D8029 */  lui        $t5, %hi(g_bDecalWidth)
+    /* 4BFCC 8024AFCC 91ADDB88 */  lbu        $t5, %lo(g_bDecalWidth)($t5)
     /* 4BFD0 8024AFD0 018E3821 */  addu       $a3, $t4, $t6
     /* 4BFD4 8024AFD4 24EF0002 */  addiu      $t7, $a3, 0x2
     /* 4BFD8 8024AFD8 01ED082A */  slt        $at, $t7, $t5
@@ -9078,16 +9078,16 @@ glabel ProcessTextInputKeyboard
     /* 4C078 8024B078 16A1FF62 */  bne        $s5, $at, .L8024AE04
     /* 4C07C 8024B07C 2694001C */   addiu     $s4, $s4, 0x1C
   .L8024B080:
-    /* 4C080 8024B080 3C108029 */  lui        $s0, %hi(g_bObjectDirty9)
-    /* 4C084 8024B084 2610DBA8 */  addiu      $s0, $s0, %lo(g_bObjectDirty9)
+    /* 4C080 8024B080 3C108029 */  lui        $s0, %hi(g_bDecalTextLength)
+    /* 4C084 8024B084 2610DBA8 */  addiu      $s0, $s0, %lo(g_bDecalTextLength)
     /* 4C088 8024B088 920B0000 */  lbu        $t3, 0x0($s0)
-    /* 4C08C 8024B08C 3C178037 */  lui        $s7, %hi(g_bNetPlayHost)
-    /* 4C090 8024B090 26F79EA8 */  addiu      $s7, $s7, %lo(g_bNetPlayHost)
+    /* 4C08C 8024B08C 3C178037 */  lui        $s7, %hi(g_szDecalText)
+    /* 4C090 8024B090 26F79EA8 */  addiu      $s7, $s7, %lo(g_szDecalText)
     /* 4C094 8024B094 1960001F */  blez       $t3, .L8024B114
-    /* 4C098 8024B098 3C0C8029 */   lui       $t4, %hi(gDecalEditorState)
-    /* 4C09C 8024B09C 918CDB58 */  lbu        $t4, %lo(gDecalEditorState)($t4)
-    /* 4C0A0 8024B0A0 3C0D8037 */  lui        $t5, %hi(g_dwEffectAlpha)
-    /* 4C0A4 8024B0A4 25AD9B98 */  addiu      $t5, $t5, %lo(g_dwEffectAlpha)
+    /* 4C098 8024B098 3C0C8029 */   lui       $t4, %hi(g_bDecalColor)
+    /* 4C09C 8024B09C 918CDB58 */  lbu        $t4, %lo(g_bDecalColor)($t4)
+    /* 4C0A0 8024B0A0 3C0D8037 */  lui        $t5, %hi(g_aDecalSwatches)
+    /* 4C0A4 8024B0A4 25AD9B98 */  addiu      $t5, $t5, %lo(g_aDecalSwatches)
     /* 4C0A8 8024B0A8 000C7080 */  sll        $t6, $t4, 2
     /* 4C0AC 8024B0AC 01CC7021 */  addu       $t6, $t6, $t4
     /* 4C0B0 8024B0B0 000E7080 */  sll        $t6, $t6, 2
@@ -9134,7 +9134,7 @@ nonmatching ProcessColorEditorDialog, 0xD34
 
 glabel ProcessColorEditorDialog
     /* 4C144 8024B144 27BDFF30 */  addiu      $sp, $sp, -0xD0
-    /* 4C148 8024B148 3C0F8029 */  lui        $t7, %hi(g_dwFontShadowOffsetY)
+    /* 4C148 8024B148 3C0F8029 */  lui        $t7, %hi(g_aabColorEditorBars)
     /* 4C14C 8024B14C AFBF0044 */  sw         $ra, 0x44($sp)
     /* 4C150 8024B150 AFB50040 */  sw         $s5, 0x40($sp)
     /* 4C154 8024B154 AFB4003C */  sw         $s4, 0x3C($sp)
@@ -9142,14 +9142,14 @@ glabel ProcessColorEditorDialog
     /* 4C15C 8024B15C AFB20034 */  sw         $s2, 0x34($sp)
     /* 4C160 8024B160 AFB10030 */  sw         $s1, 0x30($sp)
     /* 4C164 8024B164 AFB0002C */  sw         $s0, 0x2C($sp)
-    /* 4C168 8024B168 25EFDCC8 */  addiu      $t7, $t7, %lo(g_dwFontShadowOffsetY)
+    /* 4C168 8024B168 25EFDCC8 */  addiu      $t7, $t7, %lo(g_aabColorEditorBars)
     /* 4C16C 8024B16C 8DE10000 */  lw         $at, 0x0($t7)
     /* 4C170 8024B170 27AE006C */  addiu      $t6, $sp, 0x6C
     /* 4C174 8024B174 8DEB0004 */  lw         $t3, 0x4($t7)
     /* 4C178 8024B178 ADC10000 */  sw         $at, 0x0($t6)
     /* 4C17C 8024B17C 91E10008 */  lbu        $at, 0x8($t7)
-    /* 4C180 8024B180 3C0D8029 */  lui        $t5, %hi(g_pFontTexturePtr)
-    /* 4C184 8024B184 25ADDCD4 */  addiu      $t5, $t5, %lo(g_pFontTexturePtr)
+    /* 4C180 8024B180 3C0D8029 */  lui        $t5, %hi(g_apszColorChannelNames)
+    /* 4C184 8024B184 25ADDCD4 */  addiu      $t5, $t5, %lo(g_apszColorChannelNames)
     /* 4C188 8024B188 ADCB0004 */  sw         $t3, 0x4($t6)
     /* 4C18C 8024B18C A1C10008 */  sb         $at, 0x8($t6)
     /* 4C190 8024B190 8DA10000 */  lw         $at, 0x0($t5)
@@ -9185,11 +9185,11 @@ glabel ProcessColorEditorDialog
     /* 4C208 8024B208 24060126 */  addiu      $a2, $zero, 0x126
     /* 4C20C 8024B20C 0C091BE4 */  jal        DrawRectBorder
     /* 4C210 8024B210 24070074 */   addiu     $a3, $zero, 0x74
-    /* 4C214 8024B214 3C158029 */  lui        $s5, %hi(gDecalEditorState)
-    /* 4C218 8024B218 26B5DB58 */  addiu      $s5, $s5, %lo(gDecalEditorState)
+    /* 4C214 8024B214 3C158029 */  lui        $s5, %hi(g_bDecalColor)
+    /* 4C218 8024B218 26B5DB58 */  addiu      $s5, $s5, %lo(g_bDecalColor)
     /* 4C21C 8024B21C 92AD0000 */  lbu        $t5, 0x0($s5)
-    /* 4C220 8024B220 3C148037 */  lui        $s4, %hi(g_dwEffectAlpha)
-    /* 4C224 8024B224 26949B98 */  addiu      $s4, $s4, %lo(g_dwEffectAlpha)
+    /* 4C220 8024B220 3C148037 */  lui        $s4, %hi(g_aDecalSwatches)
+    /* 4C224 8024B224 26949B98 */  addiu      $s4, $s4, %lo(g_aDecalSwatches)
     /* 4C228 8024B228 000D7080 */  sll        $t6, $t5, 2
     /* 4C22C 8024B22C 01CD7021 */  addu       $t6, $t6, $t5
     /* 4C230 8024B230 000E7080 */  sll        $t6, $t6, 2
@@ -9210,8 +9210,8 @@ glabel ProcessColorEditorDialog
     /* 4C26C 8024B26C AFAF0020 */  sw         $t7, 0x20($sp)
     /* 4C270 8024B270 0C091BE4 */  jal        DrawRectBorder
     /* 4C274 8024B274 AFB80024 */   sw        $t8, 0x24($sp)
-    /* 4C278 8024B278 3C0C8029 */  lui        $t4, %hi(g_bFontLoaded)
-    /* 4C27C 8024B27C 918CDCE0 */  lbu        $t4, %lo(g_bFontLoaded)($t4)
+    /* 4C278 8024B278 3C0C8029 */  lui        $t4, %hi(g_bColorEditorChannel)
+    /* 4C27C 8024B27C 918CDCE0 */  lbu        $t4, %lo(g_bColorEditorChannel)($t4)
     /* 4C280 8024B280 00009025 */  or         $s2, $zero, $zero
     /* 4C284 8024B284 241300C2 */  addiu      $s3, $zero, 0xC2
     /* 4C288 8024B288 AFAC0054 */  sw         $t4, 0x54($sp)
@@ -9355,8 +9355,8 @@ glabel ProcessColorEditorDialog
     /* 4C49C 8024B49C 24100068 */  addiu      $s0, $zero, 0x68
     /* 4C4A0 8024B4A0 27B30078 */  addiu      $s3, $sp, 0x78
   .L8024B4A4:
-    /* 4C4A4 8024B4A4 3C198029 */  lui        $t9, %hi(g_bFontLoaded)
-    /* 4C4A8 8024B4A8 9339DCE0 */  lbu        $t9, %lo(g_bFontLoaded)($t9)
+    /* 4C4A4 8024B4A4 3C198029 */  lui        $t9, %hi(g_bColorEditorChannel)
+    /* 4C4A8 8024B4A8 9339DCE0 */  lbu        $t9, %lo(g_bColorEditorChannel)($t9)
     /* 4C4AC 8024B4AC 240400C8 */  addiu      $a0, $zero, 0xC8
     /* 4C4B0 8024B4B0 240500C8 */  addiu      $a1, $zero, 0xC8
     /* 4C4B4 8024B4B4 1659000B */  bne        $s2, $t9, .L8024B4E4
@@ -9428,7 +9428,7 @@ glabel ProcessColorEditorDialog
     /* 4C5B4 8024B5B4 3C058029 */  lui        $a1, %hi(g_texButtonA + 0x10)
     /* 4C5B8 8024B5B8 8CA5D0C0 */  lw         $a1, %lo(g_texButtonA + 0x10)($a1)
     /* 4C5BC 8024B5BC 8FB000A0 */  lw         $s0, 0xA0($sp)
-    /* 4C5C0 8024B5C0 3C04802B */  lui        $a0, %hi(g_szOk7)
+    /* 4C5C0 8024B5C0 3C04802B */  lui        $a0, %hi(g_szColorEditorOk)
     /* 4C5C4 8024B5C4 24A500EB */  addiu      $a1, $a1, 0xEB
     /* 4C5C8 8024B5C8 26100012 */  addiu      $s0, $s0, 0x12
     /* 4C5CC 8024B5CC 00103043 */  sra        $a2, $s0, 1
@@ -9436,20 +9436,20 @@ glabel ProcessColorEditorDialog
     /* 4C5D4 8024B5D4 01A02825 */  or         $a1, $t5, $zero
     /* 4C5D8 8024B5D8 00C08025 */  or         $s0, $a2, $zero
     /* 4C5DC 8024B5DC 0C08BD77 */  jal        DrawText
-    /* 4C5E0 8024B5E0 2484AEA8 */   addiu     $a0, $a0, %lo(g_szOk7)
+    /* 4C5E0 8024B5E0 2484AEA8 */   addiu     $a0, $a0, %lo(g_szColorEditorOk)
     /* 4C5E4 8024B5E4 3C0F8029 */  lui        $t7, %hi(g_texButtonB + 0x10)
     /* 4C5E8 8024B5E8 8DEFD0F0 */  lw         $t7, %lo(g_texButtonB + 0x10)($t7)
     /* 4C5EC 8024B5EC 8FAB00A4 */  lw         $t3, 0xA4($sp)
-    /* 4C5F0 8024B5F0 3C04802B */  lui        $a0, %hi(g_szCancel9)
-    /* 4C5F4 8024B5F4 2484AEB0 */  addiu      $a0, $a0, %lo(g_szCancel9)
+    /* 4C5F0 8024B5F0 3C04802B */  lui        $a0, %hi(g_szColorEditorCancel)
+    /* 4C5F4 8024B5F4 2484AEB0 */  addiu      $a0, $a0, %lo(g_szColorEditorCancel)
     /* 4C5F8 8024B5F8 016F2821 */  addu       $a1, $t3, $t7
     /* 4C5FC 8024B5FC 24A50006 */  addiu      $a1, $a1, 0x6
     /* 4C600 8024B600 0005C042 */  srl        $t8, $a1, 1
     /* 4C604 8024B604 03002825 */  or         $a1, $t8, $zero
     /* 4C608 8024B608 0C08BD77 */  jal        DrawText
     /* 4C60C 8024B60C 02003025 */   or        $a2, $s0, $zero
-    /* 4C610 8024B610 3C0C8029 */  lui        $t4, %hi(gDecalBrushState)
-    /* 4C614 8024B614 918CDBBC */  lbu        $t4, %lo(gDecalBrushState)($t4)
+    /* 4C610 8024B610 3C0C8029 */  lui        $t4, %hi(g_bPaintShopPlayer)
+    /* 4C614 8024B614 918CDBBC */  lbu        $t4, %lo(g_bPaintShopPlayer)($t4)
     /* 4C618 8024B618 3C0D8037 */  lui        $t5, %hi(g_aPlayerInputState)
     /* 4C61C 8024B61C 25ADA8E0 */  addiu      $t5, $t5, %lo(g_aPlayerInputState)
     /* 4C620 8024B620 000CC880 */  sll        $t9, $t4, 2
@@ -9465,8 +9465,8 @@ glabel ProcessColorEditorDialog
     /* 4C648 8024B648 2606001C */  addiu      $a2, $s0, 0x1C
     /* 4C64C 8024B64C 0C095655 */  jal        CheckAnalogStickPositive
     /* 4C650 8024B650 24070008 */   addiu     $a3, $zero, 0x8
-    /* 4C654 8024B654 3C0E8029 */  lui        $t6, %hi(gDecalBrushState)
-    /* 4C658 8024B658 91CEDBBC */  lbu        $t6, %lo(gDecalBrushState)($t6)
+    /* 4C654 8024B654 3C0E8029 */  lui        $t6, %hi(g_bPaintShopPlayer)
+    /* 4C658 8024B658 91CEDBBC */  lbu        $t6, %lo(g_bPaintShopPlayer)($t6)
     /* 4C65C 8024B65C 3C0F8037 */  lui        $t7, %hi(g_aPlayerInputState)
     /* 4C660 8024B660 25EFA8E0 */  addiu      $t7, $t7, %lo(g_aPlayerInputState)
     /* 4C664 8024B664 000E5880 */  sll        $t3, $t6, 2
@@ -9482,8 +9482,8 @@ glabel ProcessColorEditorDialog
     /* 4C68C 8024B68C 2606001C */  addiu      $a2, $s0, 0x1C
     /* 4C690 8024B690 0C095686 */  jal        CheckAnalogStickNegative
     /* 4C694 8024B694 24070002 */   addiu     $a3, $zero, 0x2
-    /* 4C698 8024B698 3C188029 */  lui        $t8, %hi(gDecalBrushState)
-    /* 4C69C 8024B69C 9318DBBC */  lbu        $t8, %lo(gDecalBrushState)($t8)
+    /* 4C698 8024B698 3C188029 */  lui        $t8, %hi(g_bPaintShopPlayer)
+    /* 4C69C 8024B69C 9318DBBC */  lbu        $t8, %lo(g_bPaintShopPlayer)($t8)
     /* 4C6A0 8024B6A0 3C198037 */  lui        $t9, %hi(g_aPlayerInputState)
     /* 4C6A4 8024B6A4 2739A8E0 */  addiu      $t9, $t9, %lo(g_aPlayerInputState)
     /* 4C6A8 8024B6A8 00186080 */  sll        $t4, $t8, 2
@@ -9498,7 +9498,7 @@ glabel ProcessColorEditorDialog
     /* 4C6CC 8024B6CC 44803800 */  mtc1       $zero, $f7
     /* 4C6D0 8024B6D0 44803000 */  mtc1       $zero, $f6
     /* 4C6D4 8024B6D4 46000121 */  cvt.d.s    $f4, $f0
-    /* 4C6D8 8024B6D8 3C01802B */  lui        $at, %hi(g_dwRaceReserved103)
+    /* 4C6D8 8024B6D8 3C01802B */  lui        $at, %hi(g_fConst0p1_802ab208)
     /* 4C6DC 8024B6DC 4626203C */  c.lt.d     $f4, $f6
     /* 4C6E0 8024B6E0 02002025 */  or         $a0, $s0, $zero
     /* 4C6E4 8024B6E4 45020004 */  bc1fl      .L8024B6F8
@@ -9507,7 +9507,7 @@ glabel ProcessColorEditorDialog
     /* 4C6F0 8024B6F0 46000087 */   neg.s     $f2, $f0
     /* 4C6F4 8024B6F4 46000086 */  mov.s      $f2, $f0
   .L8024B6F8:
-    /* 4C6F8 8024B6F8 C428B208 */  lwc1       $f8, %lo(g_dwRaceReserved103)($at)
+    /* 4C6F8 8024B6F8 C428B208 */  lwc1       $f8, %lo(g_fConst0p1_802ab208)($at)
     /* 4C6FC 8024B6FC 3C014120 */  lui        $at, (0x41200000 >> 16)
     /* 4C700 8024B700 4602403E */  c.le.s     $f8, $f2
     /* 4C704 8024B704 00000000 */  nop
@@ -9550,47 +9550,47 @@ glabel ProcessColorEditorDialog
     /* 4C784 8024B784 304D0108 */   andi      $t5, $v0, 0x108
     /* 4C788 8024B788 0C095644 */  jal        TransferFlags
     /* 4C78C 8024B78C 24050402 */   addiu     $a1, $zero, 0x402
-    /* 4C790 8024B790 3C188029 */  lui        $t8, %hi(g_bFontLoaded)
-    /* 4C794 8024B794 9318DCE0 */  lbu        $t8, %lo(g_bFontLoaded)($t8)
+    /* 4C790 8024B790 3C188029 */  lui        $t8, %hi(g_bColorEditorChannel)
+    /* 4C794 8024B794 9318DCE0 */  lbu        $t8, %lo(g_bColorEditorChannel)($t8)
     /* 4C798 8024B798 24010002 */  addiu      $at, $zero, 0x2
-    /* 4C79C 8024B79C 3C0C8029 */  lui        $t4, %hi(g_bFontLoaded)
+    /* 4C79C 8024B79C 3C0C8029 */  lui        $t4, %hi(g_bColorEditorChannel)
     /* 4C7A0 8024B7A0 17010003 */  bne        $t8, $at, .L8024B7B0
-    /* 4C7A4 8024B7A4 3C018029 */   lui       $at, %hi(g_bFontLoaded)
+    /* 4C7A4 8024B7A4 3C018029 */   lui       $at, %hi(g_bColorEditorChannel)
     /* 4C7A8 8024B7A8 10000016 */  b          .L8024B804
-    /* 4C7AC 8024B7AC A020DCE0 */   sb        $zero, %lo(g_bFontLoaded)($at)
+    /* 4C7AC 8024B7AC A020DCE0 */   sb        $zero, %lo(g_bColorEditorChannel)($at)
   .L8024B7B0:
-    /* 4C7B0 8024B7B0 918CDCE0 */  lbu        $t4, %lo(g_bFontLoaded)($t4)
-    /* 4C7B4 8024B7B4 3C018029 */  lui        $at, %hi(g_bFontLoaded)
+    /* 4C7B0 8024B7B0 918CDCE0 */  lbu        $t4, %lo(g_bColorEditorChannel)($t4)
+    /* 4C7B4 8024B7B4 3C018029 */  lui        $at, %hi(g_bColorEditorChannel)
     /* 4C7B8 8024B7B8 25990001 */  addiu      $t9, $t4, 0x1
     /* 4C7BC 8024B7BC 10000011 */  b          .L8024B804
-    /* 4C7C0 8024B7C0 A039DCE0 */   sb        $t9, %lo(g_bFontLoaded)($at)
+    /* 4C7C0 8024B7C0 A039DCE0 */   sb        $t9, %lo(g_bColorEditorChannel)($at)
   .L8024B7C4:
     /* 4C7C4 8024B7C4 11A0000F */  beqz       $t5, .L8024B804
     /* 4C7C8 8024B7C8 02002025 */   or        $a0, $s0, $zero
     /* 4C7CC 8024B7CC 0C095644 */  jal        TransferFlags
     /* 4C7D0 8024B7D0 24050108 */   addiu     $a1, $zero, 0x108
-    /* 4C7D4 8024B7D4 3C0E8029 */  lui        $t6, %hi(g_bFontLoaded)
-    /* 4C7D8 8024B7D8 91CEDCE0 */  lbu        $t6, %lo(g_bFontLoaded)($t6)
+    /* 4C7D4 8024B7D4 3C0E8029 */  lui        $t6, %hi(g_bColorEditorChannel)
+    /* 4C7D8 8024B7D8 91CEDCE0 */  lbu        $t6, %lo(g_bColorEditorChannel)($t6)
     /* 4C7DC 8024B7DC 240B0002 */  addiu      $t3, $zero, 0x2
-    /* 4C7E0 8024B7E0 3C018029 */  lui        $at, %hi(g_bFontLoaded)
+    /* 4C7E0 8024B7E0 3C018029 */  lui        $at, %hi(g_bColorEditorChannel)
     /* 4C7E4 8024B7E4 15C00003 */  bnez       $t6, .L8024B7F4
-    /* 4C7E8 8024B7E8 3C0F8029 */   lui       $t7, %hi(g_bFontLoaded)
+    /* 4C7E8 8024B7E8 3C0F8029 */   lui       $t7, %hi(g_bColorEditorChannel)
     /* 4C7EC 8024B7EC 10000005 */  b          .L8024B804
-    /* 4C7F0 8024B7F0 A02BDCE0 */   sb        $t3, %lo(g_bFontLoaded)($at)
+    /* 4C7F0 8024B7F0 A02BDCE0 */   sb        $t3, %lo(g_bColorEditorChannel)($at)
   .L8024B7F4:
-    /* 4C7F4 8024B7F4 91EFDCE0 */  lbu        $t7, %lo(g_bFontLoaded)($t7)
-    /* 4C7F8 8024B7F8 3C018029 */  lui        $at, %hi(g_bFontLoaded)
+    /* 4C7F4 8024B7F4 91EFDCE0 */  lbu        $t7, %lo(g_bColorEditorChannel)($t7)
+    /* 4C7F8 8024B7F8 3C018029 */  lui        $at, %hi(g_bColorEditorChannel)
     /* 4C7FC 8024B7FC 25F8FFFF */  addiu      $t8, $t7, -0x1
-    /* 4C800 8024B800 A038DCE0 */  sb         $t8, %lo(g_bFontLoaded)($at)
+    /* 4C800 8024B800 A038DCE0 */  sb         $t8, %lo(g_bColorEditorChannel)($at)
   .L8024B804:
     /* 4C804 8024B804 92A50000 */  lbu        $a1, 0x0($s5)
     /* 4C808 8024B808 24010001 */  addiu      $at, $zero, 0x1
-    /* 4C80C 8024B80C 3C0C8029 */  lui        $t4, %hi(g_bFontLoaded)
+    /* 4C80C 8024B80C 3C0C8029 */  lui        $t4, %hi(g_bColorEditorChannel)
     /* 4C810 8024B810 14A1001A */  bne        $a1, $at, .L8024B87C
     /* 4C814 8024B814 00057880 */   sll       $t7, $a1, 2
     /* 4C818 8024B818 00056080 */  sll        $t4, $a1, 2
-    /* 4C81C 8024B81C 3C0D8029 */  lui        $t5, %hi(g_bFontLoaded)
-    /* 4C820 8024B820 91ADDCE0 */  lbu        $t5, %lo(g_bFontLoaded)($t5)
+    /* 4C81C 8024B81C 3C0D8029 */  lui        $t5, %hi(g_bColorEditorChannel)
+    /* 4C820 8024B820 91ADDCE0 */  lbu        $t5, %lo(g_bColorEditorChannel)($t5)
     /* 4C824 8024B824 01856021 */  addu       $t4, $t4, $a1
     /* 4C828 8024B828 000C6080 */  sll        $t4, $t4, 2
     /* 4C82C 8024B82C 028CC821 */  addu       $t9, $s4, $t4
@@ -9616,7 +9616,7 @@ glabel ProcessColorEditorDialog
     /* 4C874 8024B874 10000017 */  b          .L8024B8D4
     /* 4C878 8024B878 240700FF */   addiu     $a3, $zero, 0xFF
   .L8024B87C:
-    /* 4C87C 8024B87C 918CDCE0 */  lbu        $t4, %lo(g_bFontLoaded)($t4)
+    /* 4C87C 8024B87C 918CDCE0 */  lbu        $t4, %lo(g_bColorEditorChannel)($t4)
     /* 4C880 8024B880 01E57821 */  addu       $t7, $t7, $a1
     /* 4C884 8024B884 000F7880 */  sll        $t7, $t7, 2
     /* 4C888 8024B888 028FC021 */  addu       $t8, $s4, $t7
@@ -9642,8 +9642,8 @@ glabel ProcessColorEditorDialog
     /* 4C8D0 8024B8D0 240700FF */  addiu      $a3, $zero, 0xFF
   .L8024B8D4:
     /* 4C8D4 8024B8D4 8FAE0084 */  lw         $t6, 0x84($sp)
-    /* 4C8D8 8024B8D8 3C098029 */  lui        $t1, %hi(g_dwObjectPosZ)
-    /* 4C8DC 8024B8DC 2529DB90 */  addiu      $t1, $t1, %lo(g_dwObjectPosZ)
+    /* 4C8D8 8024B8D8 3C098029 */  lui        $t1, %hi(g_pDecalPalette)
+    /* 4C8DC 8024B8DC 2529DB90 */  addiu      $t1, $t1, %lo(g_pDecalPalette)
     /* 4C8E0 8024B8E0 11C0008D */  beqz       $t6, .L8024BB18
     /* 4C8E4 8024B8E4 00057840 */   sll       $t7, $a1, 1
     /* 4C8E8 8024B8E8 0005C080 */  sll        $t8, $a1, 2
@@ -9668,13 +9668,13 @@ glabel ProcessColorEditorDialog
     /* 4C934 8024B934 01D86025 */  or         $t4, $t6, $t8
     /* 4C938 8024B938 A48C0000 */  sh         $t4, 0x0($a0)
     /* 4C93C 8024B93C 92A30000 */  lbu        $v1, 0x0($s5)
-    /* 4C940 8024B940 3C028037 */  lui        $v0, %hi(g_dwEffectAlpha)
-    /* 4C944 8024B944 24429B98 */  addiu      $v0, $v0, %lo(g_dwEffectAlpha)
+    /* 4C940 8024B940 3C028037 */  lui        $v0, %hi(g_aDecalSwatches)
+    /* 4C944 8024B944 24429B98 */  addiu      $v0, $v0, %lo(g_aDecalSwatches)
     /* 4C948 8024B948 14600022 */  bnez       $v1, .L8024B9D4
     /* 4C94C 8024B94C 24010001 */   addiu     $at, $zero, 0x1
     /* 4C950 8024B950 8D230000 */  lw         $v1, 0x0($t1)
     /* 4C954 8024B954 92990010 */  lbu        $t9, 0x10($s4)
-    /* 4C958 8024B958 3C048037 */  lui        $a0, %hi(g_dwEffectAlpha + 0x3)
+    /* 4C958 8024B958 3C048037 */  lui        $a0, %hi(g_aDecalSwatches + 0x3)
     /* 4C95C 8024B95C 946F0002 */  lhu        $t7, 0x2($v1)
     /* 4C960 8024B960 00195843 */  sra        $t3, $t9, 1
     /* 4C964 8024B964 316E00F8 */  andi       $t6, $t3, 0xF8
@@ -9691,7 +9691,7 @@ glabel ProcessColorEditorDialog
     /* 4C990 8024B990 00195883 */  sra        $t3, $t9, 2
     /* 4C994 8024B994 018E6825 */  or         $t5, $t4, $t6
     /* 4C998 8024B998 01AB6025 */  or         $t4, $t5, $t3
-    /* 4C99C 8024B99C 24849B9B */  addiu      $a0, $a0, %lo(g_dwEffectAlpha + 0x3)
+    /* 4C99C 8024B99C 24849B9B */  addiu      $a0, $a0, %lo(g_aDecalSwatches + 0x3)
     /* 4C9A0 8024B9A0 241100FF */  addiu      $s1, $zero, 0xFF
     /* 4C9A4 8024B9A4 A46C0002 */  sh         $t4, 0x2($v1)
     /* 4C9A8 8024B9A8 90430010 */  lbu        $v1, 0x10($v0)
@@ -9710,10 +9710,10 @@ glabel ProcessColorEditorDialog
     /* 4C9D0 8024B9D0 92A30000 */   lbu       $v1, 0x0($s5)
   .L8024B9D4:
     /* 4C9D4 8024B9D4 14610022 */  bne        $v1, $at, .L8024BA60
-    /* 4C9D8 8024B9D8 3C028037 */   lui       $v0, %hi(g_dwEffectAlpha)
+    /* 4C9D8 8024B9D8 3C028037 */   lui       $v0, %hi(g_aDecalSwatches)
     /* 4C9DC 8024B9DC 8D230000 */  lw         $v1, 0x0($t1)
     /* 4C9E0 8024B9E0 92990024 */  lbu        $t9, 0x24($s4)
-    /* 4C9E4 8024B9E4 3C048037 */  lui        $a0, %hi(g_dwEffectAlpha + 0x3)
+    /* 4C9E4 8024B9E4 3C048037 */  lui        $a0, %hi(g_aDecalSwatches + 0x3)
     /* 4C9E8 8024B9E8 94780000 */  lhu        $t8, 0x0($v1)
     /* 4C9EC 8024B9EC 00196840 */  sll        $t5, $t9, 1
     /* 4C9F0 8024B9F0 31AB00F8 */  andi       $t3, $t5, 0xF8
@@ -9730,8 +9730,8 @@ glabel ProcessColorEditorDialog
     /* 4CA1C 8024BA1C 00196883 */  sra        $t5, $t9, 2
     /* 4CA20 8024BA20 01CB7825 */  or         $t7, $t6, $t3
     /* 4CA24 8024BA24 01ED7025 */  or         $t6, $t7, $t5
-    /* 4CA28 8024BA28 24849B9B */  addiu      $a0, $a0, %lo(g_dwEffectAlpha + 0x3)
-    /* 4CA2C 8024BA2C 24429B98 */  addiu      $v0, $v0, %lo(g_dwEffectAlpha)
+    /* 4CA28 8024BA28 24849B9B */  addiu      $a0, $a0, %lo(g_aDecalSwatches + 0x3)
+    /* 4CA2C 8024BA2C 24429B98 */  addiu      $v0, $v0, %lo(g_aDecalSwatches)
     /* 4CA30 8024BA30 2413007F */  addiu      $s3, $zero, 0x7F
     /* 4CA34 8024BA34 A46E0000 */  sh         $t6, 0x0($v1)
     /* 4CA38 8024BA38 90430024 */  lbu        $v1, 0x24($v0)
@@ -9796,8 +9796,8 @@ glabel ProcessColorEditorDialog
     /* 4CB10 8024BB10 8DAB0004 */  lw         $t3, 0x4($t5)
     /* 4CB14 8024BB14 A56E0000 */  sh         $t6, 0x0($t3)
   .L8024BB18:
-    /* 4CB18 8024BB18 3C0C8029 */  lui        $t4, %hi(gDecalBrushState)
-    /* 4CB1C 8024BB1C 918CDBBC */  lbu        $t4, %lo(gDecalBrushState)($t4)
+    /* 4CB18 8024BB18 3C0C8029 */  lui        $t4, %hi(g_bPaintShopPlayer)
+    /* 4CB1C 8024BB1C 918CDBBC */  lbu        $t4, %lo(g_bPaintShopPlayer)($t4)
     /* 4CB20 8024BB20 3C198037 */  lui        $t9, %hi(g_aPlayerInputState)
     /* 4CB24 8024BB24 2739A8E0 */  addiu      $t9, $t9, %lo(g_aPlayerInputState)
     /* 4CB28 8024BB28 000CC080 */  sll        $t8, $t4, 2
@@ -9818,12 +9818,12 @@ glabel ProcessColorEditorDialog
     /* 4CB64 8024BB64 02002025 */  or         $a0, $s0, $zero
     /* 4CB68 8024BB68 0C095644 */  jal        TransferFlags
     /* 4CB6C 8024BB6C 24050010 */   addiu     $a1, $zero, 0x10
-    /* 4CB70 8024BB70 3C018029 */  lui        $at, %hi(g_bFontLoaded)
-    /* 4CB74 8024BB74 A020DCE0 */  sb         $zero, %lo(g_bFontLoaded)($at)
-    /* 4CB78 8024BB78 3C028029 */  lui        $v0, %hi(g_bObjectDirty11)
-    /* 4CB7C 8024BB7C 3C018029 */  lui        $at, %hi(g_bObjectDirty16)
-    /* 4CB80 8024BB80 2442DBB4 */  addiu      $v0, $v0, %lo(g_bObjectDirty11)
-    /* 4CB84 8024BB84 A020DBD4 */  sb         $zero, %lo(g_bObjectDirty16)($at)
+    /* 4CB70 8024BB70 3C018029 */  lui        $at, %hi(g_bColorEditorChannel)
+    /* 4CB74 8024BB74 A020DCE0 */  sb         $zero, %lo(g_bColorEditorChannel)($at)
+    /* 4CB78 8024BB78 3C028029 */  lui        $v0, %hi(g_bDecalEditCount)
+    /* 4CB7C 8024BB7C 3C018029 */  lui        $at, %hi(g_bColorEditorOpen)
+    /* 4CB80 8024BB80 2442DBB4 */  addiu      $v0, $v0, %lo(g_bDecalEditCount)
+    /* 4CB84 8024BB84 A020DBD4 */  sb         $zero, %lo(g_bColorEditorOpen)($at)
     /* 4CB88 8024BB88 904D0000 */  lbu        $t5, 0x0($v0)
     /* 4CB8C 8024BB8C 25AE0001 */  addiu      $t6, $t5, 0x1
     /* 4CB90 8024BB90 100000B0 */  b          .L8024BE54
@@ -9834,12 +9834,12 @@ glabel ProcessColorEditorDialog
     /* 4CBA0 8024BBA0 02002025 */   or        $a0, $s0, $zero
     /* 4CBA4 8024BBA4 0C095644 */  jal        TransferFlags
     /* 4CBA8 8024BBA8 24050020 */   addiu     $a1, $zero, 0x20
-    /* 4CBAC 8024BBAC 3C098029 */  lui        $t1, %hi(g_dwObjectPosZ)
+    /* 4CBAC 8024BBAC 3C098029 */  lui        $t1, %hi(g_pDecalPalette)
     /* 4CBB0 8024BBB0 92B80000 */  lbu        $t8, 0x0($s5)
-    /* 4CBB4 8024BBB4 2529DB90 */  addiu      $t1, $t1, %lo(g_dwObjectPosZ)
+    /* 4CBB4 8024BBB4 2529DB90 */  addiu      $t1, $t1, %lo(g_pDecalPalette)
     /* 4CBB8 8024BBB8 8D2C0000 */  lw         $t4, 0x0($t1)
-    /* 4CBBC 8024BBBC 3C068037 */  lui        $a2, %hi(g_bProfileEnabled0)
-    /* 4CBC0 8024BBC0 24C69DA8 */  addiu      $a2, $a2, %lo(g_bProfileEnabled0)
+    /* 4CBBC 8024BBBC 3C068037 */  lui        $a2, %hi(g_abSavedSwatchColor)
+    /* 4CBC0 8024BBC0 24C69DA8 */  addiu      $a2, $a2, %lo(g_abSavedSwatchColor)
     /* 4CBC4 8024BBC4 0018C840 */  sll        $t9, $t8, 1
     /* 4CBC8 8024BBC8 90CE0000 */  lbu        $t6, 0x0($a2)
     /* 4CBCC 8024BBCC 01992021 */  addu       $a0, $t4, $t9
@@ -9858,18 +9858,18 @@ glabel ProcessColorEditorDialog
     /* 4CC00 8024BC00 01797825 */  or         $t7, $t3, $t9
     /* 4CC04 8024BC04 A48F0000 */  sh         $t7, 0x0($a0)
     /* 4CC08 8024BC08 92A50000 */  lbu        $a1, 0x0($s5)
-    /* 4CC0C 8024BC0C 3C0E8037 */  lui        $t6, %hi(g_dwEffectAlpha)
-    /* 4CC10 8024BC10 25CE9B98 */  addiu      $t6, $t6, %lo(g_dwEffectAlpha)
+    /* 4CC0C 8024BC0C 3C0E8037 */  lui        $t6, %hi(g_aDecalSwatches)
+    /* 4CC10 8024BC10 25CE9B98 */  addiu      $t6, $t6, %lo(g_aDecalSwatches)
     /* 4CC14 8024BC14 00056080 */  sll        $t4, $a1, 2
     /* 4CC18 8024BC18 01856021 */  addu       $t4, $t4, $a1
     /* 4CC1C 8024BC1C 000C6080 */  sll        $t4, $t4, 2
-    /* 4CC20 8024BC20 3C048037 */  lui        $a0, %hi(g_bProfileEnabled3)
-    /* 4CC24 8024BC24 3C028037 */  lui        $v0, %hi(g_bProfileEnabled0)
+    /* 4CC20 8024BC20 3C048037 */  lui        $a0, %hi(g_bMirrorTargetPanel)
+    /* 4CC24 8024BC24 3C028037 */  lui        $v0, %hi(g_abSavedSwatchColor)
     /* 4CC28 8024BC28 240700FF */  addiu      $a3, $zero, 0xFF
     /* 4CC2C 8024BC2C 2408007F */  addiu      $t0, $zero, 0x7F
     /* 4CC30 8024BC30 240A0024 */  addiu      $t2, $zero, 0x24
-    /* 4CC34 8024BC34 24429DA8 */  addiu      $v0, $v0, %lo(g_bProfileEnabled0)
-    /* 4CC38 8024BC38 24849DAB */  addiu      $a0, $a0, %lo(g_bProfileEnabled3)
+    /* 4CC34 8024BC34 24429DA8 */  addiu      $v0, $v0, %lo(g_abSavedSwatchColor)
+    /* 4CC38 8024BC38 24849DAB */  addiu      $a0, $a0, %lo(g_bMirrorTargetPanel)
     /* 4CC3C 8024BC3C 018E1821 */  addu       $v1, $t4, $t6
   .L8024BC40:
     /* 4CC40 8024BC40 904D0000 */  lbu        $t5, 0x0($v0)
@@ -9882,7 +9882,7 @@ glabel ProcessColorEditorDialog
     /* 4CC5C 8024BC5C 00A01825 */   or        $v1, $a1, $zero
     /* 4CC60 8024BC60 8D230000 */  lw         $v1, 0x0($t1)
     /* 4CC64 8024BC64 90D90000 */  lbu        $t9, 0x0($a2)
-    /* 4CC68 8024BC68 3C028037 */  lui        $v0, %hi(g_dwEffectAlpha)
+    /* 4CC68 8024BC68 3C028037 */  lui        $v0, %hi(g_aDecalSwatches)
     /* 4CC6C 8024BC6C 94780002 */  lhu        $t8, 0x2($v1)
     /* 4CC70 8024BC70 00197843 */  sra        $t7, $t9, 1
     /* 4CC74 8024BC74 31EC00F8 */  andi       $t4, $t7, 0xF8
@@ -9901,7 +9901,7 @@ glabel ProcessColorEditorDialog
     /* 4CCA8 8024BCA8 016F6825 */  or         $t5, $t3, $t7
     /* 4CCAC 8024BCAC A46D0002 */  sh         $t5, 0x2($v1)
     /* 4CCB0 8024BCB0 24030003 */  addiu      $v1, $zero, 0x3
-    /* 4CCB4 8024BCB4 24429B98 */  addiu      $v0, $v0, %lo(g_dwEffectAlpha)
+    /* 4CCB4 8024BCB4 24429B98 */  addiu      $v0, $v0, %lo(g_aDecalSwatches)
     /* 4CCB8 8024BCB8 00009025 */  or         $s2, $zero, $zero
   .L8024BCBC:
     /* 4CCBC 8024BCBC 904C0010 */  lbu        $t4, 0x10($v0)
@@ -9918,16 +9918,16 @@ glabel ProcessColorEditorDialog
     /* 4CCE0 8024BCE0 26520001 */  addiu      $s2, $s2, 0x1
     /* 4CCE4 8024BCE4 1643FFF5 */  bne        $s2, $v1, .L8024BCBC
     /* 4CCE8 8024BCE8 24420001 */   addiu     $v0, $v0, 0x1
-    /* 4CCEC 8024BCEC 3C038029 */  lui        $v1, %hi(gDecalEditorState)
+    /* 4CCEC 8024BCEC 3C038029 */  lui        $v1, %hi(g_bDecalColor)
     /* 4CCF0 8024BCF0 10000028 */  b          .L8024BD94
-    /* 4CCF4 8024BCF4 9063DB58 */   lbu       $v1, %lo(gDecalEditorState)($v1)
+    /* 4CCF4 8024BCF4 9063DB58 */   lbu       $v1, %lo(g_bDecalColor)($v1)
   .L8024BCF8:
     /* 4CCF8 8024BCF8 24010001 */  addiu      $at, $zero, 0x1
     /* 4CCFC 8024BCFC 14610025 */  bne        $v1, $at, .L8024BD94
     /* 4CD00 8024BD00 00009025 */   or        $s2, $zero, $zero
     /* 4CD04 8024BD04 8D230000 */  lw         $v1, 0x0($t1)
     /* 4CD08 8024BD08 90CD0000 */  lbu        $t5, 0x0($a2)
-    /* 4CD0C 8024BD0C 3C028037 */  lui        $v0, %hi(g_dwEffectAlpha)
+    /* 4CD0C 8024BD0C 3C028037 */  lui        $v0, %hi(g_aDecalSwatches)
     /* 4CD10 8024BD10 946B0000 */  lhu        $t3, 0x0($v1)
     /* 4CD14 8024BD14 000D6040 */  sll        $t4, $t5, 1
     /* 4CD18 8024BD18 318E00F8 */  andi       $t6, $t4, 0xF8
@@ -9946,7 +9946,7 @@ glabel ProcessColorEditorDialog
     /* 4CD4C 8024BD4C 01ECC825 */  or         $t9, $t7, $t4
     /* 4CD50 8024BD50 A4790000 */  sh         $t9, 0x0($v1)
     /* 4CD54 8024BD54 24030003 */  addiu      $v1, $zero, 0x3
-    /* 4CD58 8024BD58 24429B98 */  addiu      $v0, $v0, %lo(g_dwEffectAlpha)
+    /* 4CD58 8024BD58 24429B98 */  addiu      $v0, $v0, %lo(g_aDecalSwatches)
   .L8024BD5C:
     /* 4CD5C 8024BD5C 904E0024 */  lbu        $t6, 0x24($v0)
     /* 4CD60 8024BD60 00D2C021 */  addu       $t8, $a2, $s2
@@ -9962,8 +9962,8 @@ glabel ProcessColorEditorDialog
     /* 4CD80 8024BD80 26520001 */  addiu      $s2, $s2, 0x1
     /* 4CD84 8024BD84 1643FFF5 */  bne        $s2, $v1, .L8024BD5C
     /* 4CD88 8024BD88 24420001 */   addiu     $v0, $v0, 0x1
-    /* 4CD8C 8024BD8C 3C038029 */  lui        $v1, %hi(gDecalEditorState)
-    /* 4CD90 8024BD90 9063DB58 */  lbu        $v1, %lo(gDecalEditorState)($v1)
+    /* 4CD8C 8024BD8C 3C038029 */  lui        $v1, %hi(g_bDecalColor)
+    /* 4CD90 8024BD90 9063DB58 */  lbu        $v1, %lo(g_bDecalColor)($v1)
   .L8024BD94:
     /* 4CD94 8024BD94 10600003 */  beqz       $v1, .L8024BDA4
     /* 4CD98 8024BD98 24010001 */   addiu     $at, $zero, 0x1
@@ -10011,10 +10011,10 @@ glabel ProcessColorEditorDialog
     /* 4CE3C 8024BE3C 8F0D0004 */  lw         $t5, 0x4($t8)
     /* 4CE40 8024BE40 A5AB0000 */  sh         $t3, 0x0($t5)
   .L8024BE44:
-    /* 4CE44 8024BE44 3C018029 */  lui        $at, %hi(g_bFontLoaded)
-    /* 4CE48 8024BE48 A020DCE0 */  sb         $zero, %lo(g_bFontLoaded)($at)
-    /* 4CE4C 8024BE4C 3C018029 */  lui        $at, %hi(g_bObjectDirty16)
-    /* 4CE50 8024BE50 A020DBD4 */  sb         $zero, %lo(g_bObjectDirty16)($at)
+    /* 4CE44 8024BE44 3C018029 */  lui        $at, %hi(g_bColorEditorChannel)
+    /* 4CE48 8024BE48 A020DCE0 */  sb         $zero, %lo(g_bColorEditorChannel)($at)
+    /* 4CE4C 8024BE4C 3C018029 */  lui        $at, %hi(g_bColorEditorOpen)
+    /* 4CE50 8024BE50 A020DBD4 */  sb         $zero, %lo(g_bColorEditorOpen)($at)
   .L8024BE54:
     /* 4CE54 8024BE54 8FBF0044 */  lw         $ra, 0x44($sp)
     /* 4CE58 8024BE58 8FB0002C */  lw         $s0, 0x2C($sp)
@@ -10030,13 +10030,13 @@ endlabel ProcessColorEditorDialog
 nonmatching UpdateCursorFromInput, 0x30C
 
 glabel UpdateCursorFromInput
-    /* 4CE78 8024BE78 3C0E8029 */  lui        $t6, %hi(g_bObjectDirty21)
-    /* 4CE7C 8024BE7C 91CEDBE8 */  lbu        $t6, %lo(g_bObjectDirty21)($t6)
+    /* 4CE78 8024BE78 3C0E8029 */  lui        $t6, %hi(g_bPaintShopExiting)
+    /* 4CE7C 8024BE7C 91CEDBE8 */  lbu        $t6, %lo(g_bPaintShopExiting)($t6)
     /* 4CE80 8024BE80 27BDFFE8 */  addiu      $sp, $sp, -0x18
     /* 4CE84 8024BE84 AFBF0014 */  sw         $ra, 0x14($sp)
     /* 4CE88 8024BE88 15C000BA */  bnez       $t6, .L8024C174
-    /* 4CE8C 8024BE8C 3C068029 */   lui       $a2, %hi(gDecalBrushState)
-    /* 4CE90 8024BE90 24C6DBBC */  addiu      $a2, $a2, %lo(gDecalBrushState)
+    /* 4CE8C 8024BE8C 3C068029 */   lui       $a2, %hi(g_bPaintShopPlayer)
+    /* 4CE90 8024BE90 24C6DBBC */  addiu      $a2, $a2, %lo(g_bPaintShopPlayer)
     /* 4CE94 8024BE94 90CF0000 */  lbu        $t7, 0x0($a2)
     /* 4CE98 8024BE98 2407015C */  addiu      $a3, $zero, 0x15C
     /* 4CE9C 8024BE9C 3C058037 */  lui        $a1, %hi(g_aPlayerInputState)
@@ -10044,7 +10044,7 @@ glabel UpdateCursorFromInput
     /* 4CEA4 8024BEA4 24A5A8E0 */  addiu      $a1, $a1, %lo(g_aPlayerInputState)
     /* 4CEA8 8024BEA8 44806800 */  mtc1       $zero, $f13
     /* 4CEAC 8024BEAC 44806000 */  mtc1       $zero, $f12
-    /* 4CEB0 8024BEB0 3C01802B */  lui        $at, %hi(g_dwRaceReserved104)
+    /* 4CEB0 8024BEB0 3C01802B */  lui        $at, %hi(g_fConst0p05_802ab20c)
     /* 4CEB4 8024BEB4 0000C012 */  mflo       $t8
     /* 4CEB8 8024BEB8 00B82021 */  addu       $a0, $a1, $t8
     /* 4CEBC 8024BEBC C4800018 */  lwc1       $f0, 0x18($a0)
@@ -10057,24 +10057,24 @@ glabel UpdateCursorFromInput
     /* 4CED8 8024BED8 46000087 */   neg.s     $f2, $f0
     /* 4CEDC 8024BEDC 46000086 */  mov.s      $f2, $f0
   .L8024BEE0:
-    /* 4CEE0 8024BEE0 C426B20C */  lwc1       $f6, %lo(g_dwRaceReserved104)($at)
+    /* 4CEE0 8024BEE0 C426B20C */  lwc1       $f6, %lo(g_fConst0p05_802ab20c)($at)
     /* 4CEE4 8024BEE4 4602303E */  c.le.s     $f6, $f2
     /* 4CEE8 8024BEE8 00000000 */  nop
     /* 4CEEC 8024BEEC 45020033 */  bc1fl      .L8024BFBC
     /* 4CEF0 8024BEF0 8C820000 */   lw        $v0, 0x0($a0)
-    /* 4CEF4 8024BEF4 3C048029 */  lui        $a0, %hi(g_dwDecalEditorFlags)
-    /* 4CEF8 8024BEF8 0C0934FC */  jal        IsPointInRect
-    /* 4CEFC 8024BEFC 2484DB94 */   addiu     $a0, $a0, %lo(g_dwDecalEditorFlags)
+    /* 4CEF4 8024BEF4 3C048029 */  lui        $a0, %hi(g_rcDecalCanvas)
+    /* 4CEF8 8024BEF8 0C0934FC */  jal        IsCursorInRect
+    /* 4CEFC 8024BEFC 2484DB94 */   addiu     $a0, $a0, %lo(g_rcDecalCanvas)
     /* 4CF00 8024BF00 3C058037 */  lui        $a1, %hi(g_aPlayerInputState)
-    /* 4CF04 8024BF04 3C068029 */  lui        $a2, %hi(gDecalBrushState)
+    /* 4CF04 8024BF04 3C068029 */  lui        $a2, %hi(g_bPaintShopPlayer)
     /* 4CF08 8024BF08 44806800 */  mtc1       $zero, $f13
     /* 4CF0C 8024BF0C 44806000 */  mtc1       $zero, $f12
-    /* 4CF10 8024BF10 24C6DBBC */  addiu      $a2, $a2, %lo(gDecalBrushState)
+    /* 4CF10 8024BF10 24C6DBBC */  addiu      $a2, $a2, %lo(g_bPaintShopPlayer)
     /* 4CF14 8024BF14 24A5A8E0 */  addiu      $a1, $a1, %lo(g_aPlayerInputState)
     /* 4CF18 8024BF18 10400016 */  beqz       $v0, .L8024BF74
     /* 4CF1C 8024BF1C 2407015C */   addiu     $a3, $zero, 0x15C
-    /* 4CF20 8024BF20 3C198029 */  lui        $t9, %hi(g_bObjectDirty12)
-    /* 4CF24 8024BF24 9339DBC4 */  lbu        $t9, %lo(g_bObjectDirty12)($t9)
+    /* 4CF20 8024BF20 3C198029 */  lui        $t9, %hi(g_bDecalDragActive)
+    /* 4CF24 8024BF24 9339DBC4 */  lbu        $t9, %lo(g_bDecalDragActive)($t9)
     /* 4CF28 8024BF28 57200013 */  bnel       $t9, $zero, .L8024BF78
     /* 4CF2C 8024BF2C 90CE0000 */   lbu       $t6, 0x0($a2)
     /* 4CF30 8024BF30 90C80000 */  lbu        $t0, 0x0($a2)
@@ -10136,7 +10136,7 @@ glabel UpdateCursorFromInput
     /* 4CFFC 8024BFFC 3C038029 */  lui        $v1, %hi(g_texPaintCursor)
     /* 4D000 8024C000 2463D110 */  addiu      $v1, $v1, %lo(g_texPaintCursor)
     /* 4D004 8024C004 46000421 */  cvt.d.s    $f16, $f0
-    /* 4D008 8024C008 3C01802B */  lui        $at, %hi(g_dwRaceReserved105)
+    /* 4D008 8024C008 3C01802B */  lui        $at, %hi(g_fConst0p05_802ab210)
     /* 4D00C 8024C00C 462C803C */  c.lt.d     $f16, $f12
     /* 4D010 8024C010 00000000 */  nop
     /* 4D014 8024C014 45020004 */  bc1fl      .L8024C028
@@ -10145,24 +10145,24 @@ glabel UpdateCursorFromInput
     /* 4D020 8024C020 46000087 */   neg.s     $f2, $f0
     /* 4D024 8024C024 46000086 */  mov.s      $f2, $f0
   .L8024C028:
-    /* 4D028 8024C028 C432B210 */  lwc1       $f18, %lo(g_dwRaceReserved105)($at)
+    /* 4D028 8024C028 C432B210 */  lwc1       $f18, %lo(g_fConst0p05_802ab210)($at)
     /* 4D02C 8024C02C 4602903E */  c.le.s     $f18, $f2
     /* 4D030 8024C030 00000000 */  nop
     /* 4D034 8024C034 4502002F */  bc1fl      .L8024C0F4
     /* 4D038 8024C038 8C820000 */   lw        $v0, 0x0($a0)
-    /* 4D03C 8024C03C 3C048029 */  lui        $a0, %hi(g_dwDecalEditorFlags)
-    /* 4D040 8024C040 0C0934FC */  jal        IsPointInRect
-    /* 4D044 8024C044 2484DB94 */   addiu     $a0, $a0, %lo(g_dwDecalEditorFlags)
+    /* 4D03C 8024C03C 3C048029 */  lui        $a0, %hi(g_rcDecalCanvas)
+    /* 4D040 8024C040 0C0934FC */  jal        IsCursorInRect
+    /* 4D044 8024C044 2484DB94 */   addiu     $a0, $a0, %lo(g_rcDecalCanvas)
     /* 4D048 8024C048 3C038029 */  lui        $v1, %hi(g_texPaintCursor)
     /* 4D04C 8024C04C 3C058037 */  lui        $a1, %hi(g_aPlayerInputState)
-    /* 4D050 8024C050 3C068029 */  lui        $a2, %hi(gDecalBrushState)
-    /* 4D054 8024C054 24C6DBBC */  addiu      $a2, $a2, %lo(gDecalBrushState)
+    /* 4D050 8024C050 3C068029 */  lui        $a2, %hi(g_bPaintShopPlayer)
+    /* 4D054 8024C054 24C6DBBC */  addiu      $a2, $a2, %lo(g_bPaintShopPlayer)
     /* 4D058 8024C058 24A5A8E0 */  addiu      $a1, $a1, %lo(g_aPlayerInputState)
     /* 4D05C 8024C05C 2463D110 */  addiu      $v1, $v1, %lo(g_texPaintCursor)
     /* 4D060 8024C060 10400014 */  beqz       $v0, .L8024C0B4
     /* 4D064 8024C064 2407015C */   addiu     $a3, $zero, 0x15C
-    /* 4D068 8024C068 3C188029 */  lui        $t8, %hi(g_bObjectDirty12)
-    /* 4D06C 8024C06C 9318DBC4 */  lbu        $t8, %lo(g_bObjectDirty12)($t8)
+    /* 4D068 8024C068 3C188029 */  lui        $t8, %hi(g_bDecalDragActive)
+    /* 4D06C 8024C06C 9318DBC4 */  lbu        $t8, %lo(g_bDecalDragActive)($t8)
     /* 4D070 8024C070 57000011 */  bnel       $t8, $zero, .L8024C0B8
     /* 4D074 8024C074 90CE0000 */   lbu       $t6, 0x0($a2)
     /* 4D078 8024C078 90C80000 */  lbu        $t0, 0x0($a2)
@@ -10247,50 +10247,50 @@ endlabel UpdateCursorFromInput
 nonmatching ProcessDecalEditorInput, 0x11F0
 
 glabel ProcessDecalEditorInput
-    /* 4D184 8024C184 3C0E8037 */  lui        $t6, %hi(g_dwEffectDuration)
-    /* 4D188 8024C188 8DCE9B8C */  lw         $t6, %lo(g_dwEffectDuration)($t6)
+    /* 4D184 8024C184 3C0E8037 */  lui        $t6, %hi(g_dwAnchorXInitialized)
+    /* 4D188 8024C188 8DCE9B8C */  lw         $t6, %lo(g_dwAnchorXInitialized)($t6)
     /* 4D18C 8024C18C 27BDFF90 */  addiu      $sp, $sp, -0x70
     /* 4D190 8024C190 AFBF0014 */  sw         $ra, 0x14($sp)
     /* 4D194 8024C194 11C00004 */  beqz       $t6, .L8024C1A8
-    /* 4D198 8024C198 3C198037 */   lui       $t9, %hi(g_dwEffectScale)
+    /* 4D198 8024C198 3C198037 */   lui       $t9, %hi(g_dwAnchorYInitialized)
     /* 4D19C 8024C19C 3C0A8029 */  lui        $t2, %hi(g_texPaintCursor)
     /* 4D1A0 8024C1A0 10000009 */  b          .L8024C1C8
     /* 4D1A4 8024C1A4 254AD110 */   addiu     $t2, $t2, %lo(g_texPaintCursor)
   .L8024C1A8:
     /* 4D1A8 8024C1A8 3C0A8029 */  lui        $t2, %hi(g_texPaintCursor)
     /* 4D1AC 8024C1AC 240F0001 */  addiu      $t7, $zero, 0x1
-    /* 4D1B0 8024C1B0 3C018037 */  lui        $at, %hi(g_dwEffectDuration)
-    /* 4D1B4 8024C1B4 AC2F9B8C */  sw         $t7, %lo(g_dwEffectDuration)($at)
+    /* 4D1B0 8024C1B0 3C018037 */  lui        $at, %hi(g_dwAnchorXInitialized)
+    /* 4D1B4 8024C1B4 AC2F9B8C */  sw         $t7, %lo(g_dwAnchorXInitialized)($at)
     /* 4D1B8 8024C1B8 254AD110 */  addiu      $t2, $t2, %lo(g_texPaintCursor)
     /* 4D1BC 8024C1BC 8D58001C */  lw         $t8, 0x1C($t2)
-    /* 4D1C0 8024C1C0 3C018037 */  lui        $at, %hi(g_dwPakPort0Status)
-    /* 4D1C4 8024C1C4 AC389B80 */  sw         $t8, %lo(g_dwPakPort0Status)($at)
+    /* 4D1C0 8024C1C0 3C018037 */  lui        $at, %hi(g_nPaintAnchorX)
+    /* 4D1C4 8024C1C4 AC389B80 */  sw         $t8, %lo(g_nPaintAnchorX)($at)
   .L8024C1C8:
-    /* 4D1C8 8024C1C8 8F399B90 */  lw         $t9, %lo(g_dwEffectScale)($t9)
+    /* 4D1C8 8024C1C8 8F399B90 */  lw         $t9, %lo(g_dwAnchorYInitialized)($t9)
     /* 4D1CC 8024C1CC 240B0001 */  addiu      $t3, $zero, 0x1
-    /* 4D1D0 8024C1D0 3C018037 */  lui        $at, %hi(g_dwEffectScale)
+    /* 4D1D0 8024C1D0 3C018037 */  lui        $at, %hi(g_dwAnchorYInitialized)
     /* 4D1D4 8024C1D4 17200005 */  bnez       $t9, .L8024C1EC
-    /* 4D1D8 8024C1D8 3C0D8029 */   lui       $t5, %hi(g_bObjectDirty21)
-    /* 4D1DC 8024C1DC AC2B9B90 */  sw         $t3, %lo(g_dwEffectScale)($at)
+    /* 4D1D8 8024C1D8 3C0D8029 */   lui       $t5, %hi(g_bPaintShopExiting)
+    /* 4D1DC 8024C1DC AC2B9B90 */  sw         $t3, %lo(g_dwAnchorYInitialized)($at)
     /* 4D1E0 8024C1E0 8D4C0020 */  lw         $t4, 0x20($t2)
-    /* 4D1E4 8024C1E4 3C018037 */  lui        $at, %hi(g_dwPakPort1Status)
-    /* 4D1E8 8024C1E8 AC2C9B84 */  sw         $t4, %lo(g_dwPakPort1Status)($at)
+    /* 4D1E4 8024C1E4 3C018037 */  lui        $at, %hi(g_nPaintAnchorY)
+    /* 4D1E8 8024C1E8 AC2C9B84 */  sw         $t4, %lo(g_nPaintAnchorY)($at)
   .L8024C1EC:
-    /* 4D1EC 8024C1EC 91ADDBE8 */  lbu        $t5, %lo(g_bObjectDirty21)($t5)
-    /* 4D1F0 8024C1F0 3C0E8029 */  lui        $t6, %hi(g_bObjectDirty12)
+    /* 4D1EC 8024C1EC 91ADDBE8 */  lbu        $t5, %lo(g_bPaintShopExiting)($t5)
+    /* 4D1F0 8024C1F0 3C0E8029 */  lui        $t6, %hi(g_bDecalDragActive)
     /* 4D1F4 8024C1F4 55A0045C */  bnel       $t5, $zero, .L8024D368
     /* 4D1F8 8024C1F8 8FBF0014 */   lw        $ra, 0x14($sp)
-    /* 4D1FC 8024C1FC 91CEDBC4 */  lbu        $t6, %lo(g_bObjectDirty12)($t6)
-    /* 4D200 8024C200 3C0F8029 */  lui        $t7, %hi(g_bObjectDirty15)
+    /* 4D1FC 8024C1FC 91CEDBC4 */  lbu        $t6, %lo(g_bDecalDragActive)($t6)
+    /* 4D200 8024C200 3C0F8029 */  lui        $t7, %hi(g_bDecalSlotChanged)
     /* 4D204 8024C204 15C0009C */  bnez       $t6, .L8024C478
     /* 4D208 8024C208 00000000 */   nop
-    /* 4D20C 8024C20C 91EFDBD0 */  lbu        $t7, %lo(g_bObjectDirty15)($t7)
-    /* 4D210 8024C210 3C188029 */  lui        $t8, %hi(gDecalBrushState)
+    /* 4D20C 8024C20C 91EFDBD0 */  lbu        $t7, %lo(g_bDecalSlotChanged)($t7)
+    /* 4D210 8024C210 3C188029 */  lui        $t8, %hi(g_bPaintShopPlayer)
     /* 4D214 8024C214 15E00098 */  bnez       $t7, .L8024C478
     /* 4D218 8024C218 00000000 */   nop
-    /* 4D21C 8024C21C 9318DBBC */  lbu        $t8, %lo(gDecalBrushState)($t8)
+    /* 4D21C 8024C21C 9318DBBC */  lbu        $t8, %lo(g_bPaintShopPlayer)($t8)
     /* 4D220 8024C220 3C0B8037 */  lui        $t3, %hi(g_aPlayerInputState)
-    /* 4D224 8024C224 3C048037 */  lui        $a0, %hi(g_aDecalEditorButtonRects)
+    /* 4D224 8024C224 3C048037 */  lui        $a0, %hi(g_aDecalSlotRects)
     /* 4D228 8024C228 0018C880 */  sll        $t9, $t8, 2
     /* 4D22C 8024C22C 0338C823 */  subu       $t9, $t9, $t8
     /* 4D230 8024C230 0019C880 */  sll        $t9, $t9, 2
@@ -10300,20 +10300,20 @@ glabel ProcessDecalEditorInput
     /* 4D240 8024C240 0019C880 */  sll        $t9, $t9, 2
     /* 4D244 8024C244 01795821 */  addu       $t3, $t3, $t9
     /* 4D248 8024C248 8D6BA8E0 */  lw         $t3, %lo(g_aPlayerInputState)($t3)
-    /* 4D24C 8024C24C 24849DB0 */  addiu      $a0, $a0, %lo(g_aDecalEditorButtonRects)
+    /* 4D24C 8024C24C 24849DB0 */  addiu      $a0, $a0, %lo(g_aDecalSlotRects)
     /* 4D250 8024C250 00004025 */  or         $t0, $zero, $zero
     /* 4D254 8024C254 316C8010 */  andi       $t4, $t3, 0x8010
     /* 4D258 8024C258 11800087 */  beqz       $t4, .L8024C478
     /* 4D25C 8024C25C 00000000 */   nop
   .L8024C260:
     /* 4D260 8024C260 AFA40020 */  sw         $a0, 0x20($sp)
-    /* 4D264 8024C264 0C0934FC */  jal        IsPointInRect
+    /* 4D264 8024C264 0C0934FC */  jal        IsCursorInRect
     /* 4D268 8024C268 AFA80068 */   sw        $t0, 0x68($sp)
     /* 4D26C 8024C26C 8FA40020 */  lw         $a0, 0x20($sp)
     /* 4D270 8024C270 1040007D */  beqz       $v0, .L8024C468
     /* 4D274 8024C274 8FA80068 */   lw        $t0, 0x68($sp)
-    /* 4D278 8024C278 3C0D8029 */  lui        $t5, %hi(gDecalBrushState)
-    /* 4D27C 8024C27C 91ADDBBC */  lbu        $t5, %lo(gDecalBrushState)($t5)
+    /* 4D278 8024C278 3C0D8029 */  lui        $t5, %hi(g_bPaintShopPlayer)
+    /* 4D27C 8024C27C 91ADDBBC */  lbu        $t5, %lo(g_bPaintShopPlayer)($t5)
     /* 4D280 8024C280 3C0F8037 */  lui        $t7, %hi(g_aPlayerInputState)
     /* 4D284 8024C284 25EFA8E0 */  addiu      $t7, $t7, %lo(g_aPlayerInputState)
     /* 4D288 8024C288 000D7080 */  sll        $t6, $t5, 2
@@ -10327,20 +10327,20 @@ glabel ProcessDecalEditorInput
     /* 4D2A8 8024C2A8 34058010 */  ori        $a1, $zero, 0x8010
     /* 4D2AC 8024C2AC 0C095644 */  jal        TransferFlags
     /* 4D2B0 8024C2B0 AFA80068 */   sw        $t0, 0x68($sp)
-    /* 4D2B4 8024C2B4 3C028029 */  lui        $v0, %hi(g_bObjectDirty4)
+    /* 4D2B4 8024C2B4 3C028029 */  lui        $v0, %hi(g_bDecalSlot)
     /* 4D2B8 8024C2B8 8FA80068 */  lw         $t0, 0x68($sp)
-    /* 4D2BC 8024C2BC 2442DB68 */  addiu      $v0, $v0, %lo(g_bObjectDirty4)
+    /* 4D2BC 8024C2BC 2442DB68 */  addiu      $v0, $v0, %lo(g_bDecalSlot)
     /* 4D2C0 8024C2C0 90580000 */  lbu        $t8, 0x0($v0)
-    /* 4D2C4 8024C2C4 3C038029 */  lui        $v1, %hi(g_bObjectDirty5)
-    /* 4D2C8 8024C2C8 2463DB6C */  addiu      $v1, $v1, %lo(g_bObjectDirty5)
-    /* 4D2CC 8024C2CC 3C0B8029 */  lui        $t3, %hi(g_pObjectMatrix12)
+    /* 4D2C4 8024C2C4 3C038029 */  lui        $v1, %hi(g_bPreviousDecalSlot)
+    /* 4D2C8 8024C2C8 2463DB6C */  addiu      $v1, $v1, %lo(g_bPreviousDecalSlot)
+    /* 4D2CC 8024C2CC 3C0B8029 */  lui        $t3, %hi(g_apDecalSlotIcons)
     /* 4D2D0 8024C2D0 0008C880 */  sll        $t9, $t0, 2
     /* 4D2D4 8024C2D4 01795821 */  addu       $t3, $t3, $t9
     /* 4D2D8 8024C2D8 A0780000 */  sb         $t8, 0x0($v1)
-    /* 4D2DC 8024C2DC 8D6BDB0C */  lw         $t3, %lo(g_pObjectMatrix12)($t3)
-    /* 4D2E0 8024C2E0 3C018029 */  lui        $at, %hi(g_dwObjectCount)
+    /* 4D2DC 8024C2DC 8D6BDB0C */  lw         $t3, %lo(g_apDecalSlotIcons)($t3)
+    /* 4D2E0 8024C2E0 3C018029 */  lui        $at, %hi(g_pDecalSlotIcon)
     /* 4D2E4 8024C2E4 310700FF */  andi       $a3, $t0, 0xFF
-    /* 4D2E8 8024C2E8 AC2BDB08 */  sw         $t3, %lo(g_dwObjectCount)($at)
+    /* 4D2E8 8024C2E8 AC2BDB08 */  sw         $t3, %lo(g_pDecalSlotIcon)($at)
     /* 4D2EC 8024C2EC 906C0000 */  lbu        $t4, 0x0($v1)
     /* 4D2F0 8024C2F0 00E02825 */  or         $a1, $a3, $zero
     /* 4D2F4 8024C2F4 240D0001 */  addiu      $t5, $zero, 0x1
@@ -10348,8 +10348,8 @@ glabel ProcessDecalEditorInput
     /* 4D2FC 8024C2FC A0480000 */   sb        $t0, 0x0($v0)
     /* 4D300 8024C300 3C028029 */  lui        $v0, %hi(g_pCurrentVehicleModelData)
     /* 4D304 8024C304 8C42AB08 */  lw         $v0, %lo(g_pCurrentVehicleModelData)($v0)
-    /* 4D308 8024C308 3C018029 */  lui        $at, %hi(g_bObjectDirty15)
-    /* 4D30C 8024C30C A02DDBD0 */  sb         $t5, %lo(g_bObjectDirty15)($at)
+    /* 4D308 8024C308 3C018029 */  lui        $at, %hi(g_bDecalSlotChanged)
+    /* 4D30C 8024C30C A02DDBD0 */  sb         $t5, %lo(g_bDecalSlotChanged)($at)
     /* 4D310 8024C310 3C018029 */  lui        $at, %hi(g_wScreenFrameCount)
     /* 4D314 8024C314 A420DBB0 */  sh         $zero, %lo(g_wScreenFrameCount)($at)
     /* 4D318 8024C318 00481821 */  addu       $v1, $v0, $t0
@@ -10357,24 +10357,24 @@ glabel ProcessDecalEditorInput
     /* 4D320 8024C320 24060024 */  addiu      $a2, $zero, 0x24
     /* 4D324 8024C324 8C4E0014 */  lw         $t6, 0x14($v0)
     /* 4D328 8024C328 01E60019 */  multu      $t7, $a2
-    /* 4D32C 8024C32C 3C018029 */  lui        $at, %hi(gFramebufferPtr)
+    /* 4D32C 8024C32C 3C018029 */  lui        $at, %hi(g_pDecalTexels)
     /* 4D330 8024C330 00076880 */  sll        $t5, $a3, 2
-    /* 4D334 8024C334 3C098029 */  lui        $t1, %hi(gFramebufferWidth)
-    /* 4D338 8024C338 2529DB88 */  addiu      $t1, $t1, %lo(gFramebufferWidth)
+    /* 4D334 8024C334 3C098029 */  lui        $t1, %hi(g_bDecalWidth)
+    /* 4D338 8024C338 2529DB88 */  addiu      $t1, $t1, %lo(g_bDecalWidth)
     /* 4D33C 8024C33C 3C04802B */  lui        $a0, %hi(g_szFmtDecalWidth)
     /* 4D340 8024C340 2484AEBC */  addiu      $a0, $a0, %lo(g_szFmtDecalWidth)
     /* 4D344 8024C344 0000C012 */  mflo       $t8
     /* 4D348 8024C348 01D8C821 */  addu       $t9, $t6, $t8
     /* 4D34C 8024C34C 8F2B0000 */  lw         $t3, 0x0($t9)
-    /* 4D350 8024C350 AC2BDB78 */  sw         $t3, %lo(gFramebufferPtr)($at)
+    /* 4D350 8024C350 AC2BDB78 */  sw         $t3, %lo(g_pDecalTexels)($at)
     /* 4D354 8024C354 8C4C011C */  lw         $t4, 0x11C($v0)
-    /* 4D358 8024C358 3C018029 */  lui        $at, %hi(gClipMaskPtr)
+    /* 4D358 8024C358 3C018029 */  lui        $at, %hi(g_pDecalMask)
     /* 4D35C 8024C35C 018D7821 */  addu       $t7, $t4, $t5
     /* 4D360 8024C360 8DEE0000 */  lw         $t6, 0x0($t7)
-    /* 4D364 8024C364 AC2EDB7C */  sw         $t6, %lo(gClipMaskPtr)($at)
+    /* 4D364 8024C364 AC2EDB7C */  sw         $t6, %lo(g_pDecalMask)($at)
     /* 4D368 8024C368 90790110 */  lbu        $t9, 0x110($v1)
     /* 4D36C 8024C36C 8C580014 */  lw         $t8, 0x14($v0)
-    /* 4D370 8024C370 3C018029 */  lui        $at, %hi(gFramebufferHeight)
+    /* 4D370 8024C370 3C018029 */  lui        $at, %hi(g_bDecalHeight)
     /* 4D374 8024C374 03260019 */  multu      $t9, $a2
     /* 4D378 8024C378 00005812 */  mflo       $t3
     /* 4D37C 8024C37C 030B6021 */  addu       $t4, $t8, $t3
@@ -10386,28 +10386,28 @@ glabel ProcessDecalEditorInput
     /* 4D394 8024C394 0000C812 */  mflo       $t9
     /* 4D398 8024C398 01F9C021 */  addu       $t8, $t7, $t9
     /* 4D39C 8024C39C 970B000E */  lhu        $t3, 0xE($t8)
-    /* 4D3A0 8024C3A0 A02BDB8C */  sb         $t3, %lo(gFramebufferHeight)($at)
+    /* 4D3A0 8024C3A0 A02BDB8C */  sb         $t3, %lo(g_bDecalHeight)($at)
     /* 4D3A4 8024C3A4 0C0981F7 */  jal        osSyncPrintf
     /* 4D3A8 8024C3A8 91250000 */   lbu       $a1, 0x0($t1)
     /* 4D3AC 8024C3AC 3C04802B */  lui        $a0, %hi(g_szFmtDecalHeight)
-    /* 4D3B0 8024C3B0 3C058029 */  lui        $a1, %hi(gFramebufferHeight)
-    /* 4D3B4 8024C3B4 90A5DB8C */  lbu        $a1, %lo(gFramebufferHeight)($a1)
+    /* 4D3B0 8024C3B0 3C058029 */  lui        $a1, %hi(g_bDecalHeight)
+    /* 4D3B4 8024C3B4 90A5DB8C */  lbu        $a1, %lo(g_bDecalHeight)($a1)
     /* 4D3B8 8024C3B8 0C0981F7 */  jal        osSyncPrintf
     /* 4D3BC 8024C3BC 2484AED0 */   addiu     $a0, $a0, %lo(g_szFmtDecalHeight)
-    /* 4D3C0 8024C3C0 3C048029 */  lui        $a0, %hi(g_dwGfxEnvColorR)
-    /* 4D3C4 8024C3C4 3C028029 */  lui        $v0, %hi(gFramebufferWidth)
-    /* 4D3C8 8024C3C8 9042DB88 */  lbu        $v0, %lo(gFramebufferWidth)($v0)
-    /* 4D3CC 8024C3CC 2484D470 */  addiu      $a0, $a0, %lo(g_dwGfxEnvColorR)
+    /* 4D3C0 8024C3C0 3C048029 */  lui        $a0, %hi(g_rcDecalCanvasFrame)
+    /* 4D3C4 8024C3C4 3C028029 */  lui        $v0, %hi(g_bDecalWidth)
+    /* 4D3C8 8024C3C8 9042DB88 */  lbu        $v0, %lo(g_bDecalWidth)($v0)
+    /* 4D3CC 8024C3CC 2484D470 */  addiu      $a0, $a0, %lo(g_rcDecalCanvasFrame)
     /* 4D3D0 8024C3D0 8C8D0008 */  lw         $t5, 0x8($a0)
-    /* 4D3D4 8024C3D4 3C038029 */  lui        $v1, %hi(gFramebufferHeight)
-    /* 4D3D8 8024C3D8 9063DB8C */  lbu        $v1, %lo(gFramebufferHeight)($v1)
+    /* 4D3D4 8024C3D4 3C038029 */  lui        $v1, %hi(g_bDecalHeight)
+    /* 4D3D8 8024C3D8 9063DB8C */  lbu        $v1, %lo(g_bDecalHeight)($v1)
     /* 4D3DC 8024C3DC 8C99000C */  lw         $t9, 0xC($a0)
     /* 4D3E0 8024C3E0 00026080 */  sll        $t4, $v0, 2
     /* 4D3E4 8024C3E4 8C8B0000 */  lw         $t3, 0x0($a0)
-    /* 4D3E8 8024C3E8 3C088029 */  lui        $t0, %hi(g_dwDecalEditorFlags)
+    /* 4D3E8 8024C3E8 3C088029 */  lui        $t0, %hi(g_rcDecalCanvas)
     /* 4D3EC 8024C3EC 01AC3023 */  subu       $a2, $t5, $t4
     /* 4D3F0 8024C3F0 8C8D0004 */  lw         $t5, 0x4($a0)
-    /* 4D3F4 8024C3F4 2508DB94 */  addiu      $t0, $t0, %lo(g_dwDecalEditorFlags)
+    /* 4D3F4 8024C3F4 2508DB94 */  addiu      $t0, $t0, %lo(g_rcDecalCanvas)
     /* 4D3F8 8024C3F8 00037880 */  sll        $t7, $v1, 2
     /* 4D3FC 8024C3FC 00067043 */  sra        $t6, $a2, 1
     /* 4D400 8024C400 01801025 */  or         $v0, $t4, $zero
@@ -10419,8 +10419,8 @@ glabel ProcessDecalEditorInput
     /* 4D418 8024C418 AD0E0004 */  sw         $t6, 0x4($t0)
     /* 4D41C 8024C41C AD020008 */  sw         $v0, 0x8($t0)
     /* 4D420 8024C420 AD0F000C */  sw         $t7, 0xC($t0)
-    /* 4D424 8024C424 3C058029 */  lui        $a1, %hi(g_bObjectDirty4)
-    /* 4D428 8024C428 90A5DB68 */  lbu        $a1, %lo(g_bObjectDirty4)($a1)
+    /* 4D424 8024C424 3C058029 */  lui        $a1, %hi(g_bDecalSlot)
+    /* 4D428 8024C428 90A5DB68 */  lbu        $a1, %lo(g_bDecalSlot)($a1)
   .L8024C42C:
     /* 4D42C 8024C42C 24070004 */  addiu      $a3, $zero, 0x4
     /* 4D430 8024C430 10E50007 */  beq        $a3, $a1, .L8024C450
@@ -10432,36 +10432,36 @@ glabel ProcessDecalEditorInput
     /* 4D448 8024C448 14A10004 */  bne        $a1, $at, .L8024C45C
     /* 4D44C 8024C44C 240F0001 */   addiu     $t7, $zero, 0x1
   .L8024C450:
-    /* 4D450 8024C450 3C018029 */  lui        $at, %hi(g_bObjectDirty14)
+    /* 4D450 8024C450 3C018029 */  lui        $at, %hi(g_bDecalSlotHasMirror)
     /* 4D454 8024C454 100003C3 */  b          .L8024D364
-    /* 4D458 8024C458 A020DBCC */   sb        $zero, %lo(g_bObjectDirty14)($at)
+    /* 4D458 8024C458 A020DBCC */   sb        $zero, %lo(g_bDecalSlotHasMirror)($at)
   .L8024C45C:
-    /* 4D45C 8024C45C 3C018029 */  lui        $at, %hi(g_bObjectDirty14)
+    /* 4D45C 8024C45C 3C018029 */  lui        $at, %hi(g_bDecalSlotHasMirror)
     /* 4D460 8024C460 100003C0 */  b          .L8024D364
-    /* 4D464 8024C464 A02FDBCC */   sb        $t7, %lo(g_bObjectDirty14)($at)
+    /* 4D464 8024C464 A02FDBCC */   sb        $t7, %lo(g_bDecalSlotHasMirror)($at)
   .L8024C468:
     /* 4D468 8024C468 25080001 */  addiu      $t0, $t0, 0x1
     /* 4D46C 8024C46C 2401000A */  addiu      $at, $zero, 0xA
     /* 4D470 8024C470 1501FF7B */  bne        $t0, $at, .L8024C260
     /* 4D474 8024C474 24840010 */   addiu     $a0, $a0, 0x10
   .L8024C478:
-    /* 4D478 8024C478 3C048029 */  lui        $a0, %hi(g_dwGfxFillColorR)
-    /* 4D47C 8024C47C 0C0934FC */  jal        IsPointInRect
-    /* 4D480 8024C480 2484D480 */   addiu     $a0, $a0, %lo(g_dwGfxFillColorR)
+    /* 4D478 8024C478 3C048029 */  lui        $a0, %hi(g_aPaletteFrameRects)
+    /* 4D47C 8024C47C 0C0934FC */  jal        IsCursorInRect
+    /* 4D480 8024C480 2484D480 */   addiu     $a0, $a0, %lo(g_aPaletteFrameRects)
     /* 4D484 8024C484 14400004 */  bnez       $v0, .L8024C498
-    /* 4D488 8024C488 3C048029 */   lui       $a0, %hi(g_dwGfxFogColorR)
-    /* 4D48C 8024C48C 0C0934FC */  jal        IsPointInRect
-    /* 4D490 8024C490 2484D490 */   addiu     $a0, $a0, %lo(g_dwGfxFogColorR)
+    /* 4D488 8024C488 3C048029 */   lui       $a0, %hi(D_8028D490)
+    /* 4D48C 8024C48C 0C0934FC */  jal        IsCursorInRect
+    /* 4D490 8024C490 2484D490 */   addiu     $a0, $a0, %lo(D_8028D490)
     /* 4D494 8024C494 10400082 */  beqz       $v0, .L8024C6A0
   .L8024C498:
-    /* 4D498 8024C498 3C198029 */   lui       $t9, %hi(g_bObjectDirty13)
-    /* 4D49C 8024C49C 9339DBC8 */  lbu        $t9, %lo(g_bObjectDirty13)($t9)
-    /* 4D4A0 8024C4A0 3C188029 */  lui        $t8, %hi(gDecalBrushState)
+    /* 4D498 8024C498 3C198029 */   lui       $t9, %hi(g_bPaletteEnabled)
+    /* 4D49C 8024C49C 9339DBC8 */  lbu        $t9, %lo(g_bPaletteEnabled)($t9)
+    /* 4D4A0 8024C4A0 3C188029 */  lui        $t8, %hi(g_bPaintShopPlayer)
     /* 4D4A4 8024C4A4 1320007E */  beqz       $t9, .L8024C6A0
     /* 4D4A8 8024C4A8 00000000 */   nop
-    /* 4D4AC 8024C4AC 9318DBBC */  lbu        $t8, %lo(gDecalBrushState)($t8)
+    /* 4D4AC 8024C4AC 9318DBBC */  lbu        $t8, %lo(g_bPaintShopPlayer)($t8)
     /* 4D4B0 8024C4B0 3C0C8037 */  lui        $t4, %hi(g_aPlayerInputState)
-    /* 4D4B4 8024C4B4 3C048037 */  lui        $a0, %hi(g_dwEffectAlpha)
+    /* 4D4B4 8024C4B4 3C048037 */  lui        $a0, %hi(g_aDecalSwatches)
     /* 4D4B8 8024C4B8 00185880 */  sll        $t3, $t8, 2
     /* 4D4BC 8024C4BC 01785823 */  subu       $t3, $t3, $t8
     /* 4D4C0 8024C4C0 000B5880 */  sll        $t3, $t3, 2
@@ -10471,20 +10471,20 @@ glabel ProcessDecalEditorInput
     /* 4D4D0 8024C4D0 000B5880 */  sll        $t3, $t3, 2
     /* 4D4D4 8024C4D4 018B6021 */  addu       $t4, $t4, $t3
     /* 4D4D8 8024C4D8 8D8CA8E0 */  lw         $t4, %lo(g_aPlayerInputState)($t4)
-    /* 4D4DC 8024C4DC 24849B98 */  addiu      $a0, $a0, %lo(g_dwEffectAlpha)
+    /* 4D4DC 8024C4DC 24849B98 */  addiu      $a0, $a0, %lo(g_aDecalSwatches)
     /* 4D4E0 8024C4E0 00003025 */  or         $a2, $zero, $zero
     /* 4D4E4 8024C4E4 318D8010 */  andi       $t5, $t4, 0x8010
     /* 4D4E8 8024C4E8 11A0006D */  beqz       $t5, .L8024C6A0
     /* 4D4EC 8024C4EC 00000000 */   nop
   .L8024C4F0:
     /* 4D4F0 8024C4F0 AFA40020 */  sw         $a0, 0x20($sp)
-    /* 4D4F4 8024C4F4 0C093517 */  jal        IsCursorInRect
+    /* 4D4F4 8024C4F4 0C093517 */  jal        IsCursorInSwatch
     /* 4D4F8 8024C4F8 AFA6006C */   sw        $a2, 0x6C($sp)
     /* 4D4FC 8024C4FC 8FA40020 */  lw         $a0, 0x20($sp)
     /* 4D500 8024C500 10400063 */  beqz       $v0, .L8024C690
     /* 4D504 8024C504 8FA6006C */   lw        $a2, 0x6C($sp)
-    /* 4D508 8024C508 3C0E8029 */  lui        $t6, %hi(gDecalBrushState)
-    /* 4D50C 8024C50C 91CEDBBC */  lbu        $t6, %lo(gDecalBrushState)($t6)
+    /* 4D508 8024C508 3C0E8029 */  lui        $t6, %hi(g_bPaintShopPlayer)
+    /* 4D50C 8024C50C 91CEDBBC */  lbu        $t6, %lo(g_bPaintShopPlayer)($t6)
     /* 4D510 8024C510 3C198037 */  lui        $t9, %hi(g_aPlayerInputState)
     /* 4D514 8024C514 2739A8E0 */  addiu      $t9, $t9, %lo(g_aPlayerInputState)
     /* 4D518 8024C518 000E7880 */  sll        $t7, $t6, 2
@@ -10498,12 +10498,12 @@ glabel ProcessDecalEditorInput
     /* 4D538 8024C538 34058010 */  ori        $a1, $zero, 0x8010
     /* 4D53C 8024C53C 0C095644 */  jal        TransferFlags
     /* 4D540 8024C540 AFA6006C */   sw        $a2, 0x6C($sp)
-    /* 4D544 8024C544 3C038029 */  lui        $v1, %hi(gDecalEditorState)
-    /* 4D548 8024C548 2463DB58 */  addiu      $v1, $v1, %lo(gDecalEditorState)
+    /* 4D544 8024C544 3C038029 */  lui        $v1, %hi(g_bDecalColor)
+    /* 4D548 8024C548 2463DB58 */  addiu      $v1, $v1, %lo(g_bDecalColor)
     /* 4D54C 8024C54C 90780000 */  lbu        $t8, 0x0($v1)
     /* 4D550 8024C550 8FA6006C */  lw         $a2, 0x6C($sp)
-    /* 4D554 8024C554 3C028029 */  lui        $v0, %hi(g_bObjectDirty0)
-    /* 4D558 8024C558 2442DB54 */  addiu      $v0, $v0, %lo(g_bObjectDirty0)
+    /* 4D554 8024C554 3C028029 */  lui        $v0, %hi(g_bSavedColor)
+    /* 4D558 8024C558 2442DB54 */  addiu      $v0, $v0, %lo(g_bSavedColor)
     /* 4D55C 8024C55C 330B00FF */  andi       $t3, $t8, 0xFF
     /* 4D560 8024C560 A0580000 */  sb         $t8, 0x0($v0)
     /* 4D564 8024C564 10CB0018 */  beq        $a2, $t3, .L8024C5C8
@@ -10528,9 +10528,9 @@ glabel ProcessDecalEditorInput
     /* 4D5B0 8024C5B0 24060000 */  addiu      $a2, $zero, 0x0
     /* 4D5B4 8024C5B4 0C099822 */  jal        __ull_div
     /* 4D5B8 8024C5B8 240703E8 */   addiu     $a3, $zero, 0x3E8
-    /* 4D5BC 8024C5BC 3C018037 */  lui        $at, %hi(g_dwEffectFrame)
+    /* 4D5BC 8024C5BC 3C018037 */  lui        $at, %hi(g_dwLastClickTime)
     /* 4D5C0 8024C5C0 10000368 */  b          .L8024D364
-    /* 4D5C4 8024C5C4 AC239B88 */   sw        $v1, %lo(g_dwEffectFrame)($at)
+    /* 4D5C4 8024C5C4 AC239B88 */   sw        $v1, %lo(g_dwLastClickTime)($at)
   .L8024C5C8:
     /* 4D5C8 8024C5C8 0C09927C */  jal        osGetCount
     /* 4D5CC 8024C5CC 00000000 */   nop
@@ -10552,23 +10552,23 @@ glabel ProcessDecalEditorInput
     /* 4D60C 8024C60C 24060000 */  addiu      $a2, $zero, 0x0
     /* 4D610 8024C610 0C099822 */  jal        __ull_div
     /* 4D614 8024C614 240703E8 */   addiu     $a3, $zero, 0x3E8
-    /* 4D618 8024C618 3C0D8037 */  lui        $t5, %hi(g_dwEffectFrame)
-    /* 4D61C 8024C61C 8DAD9B88 */  lw         $t5, %lo(g_dwEffectFrame)($t5)
-    /* 4D620 8024C620 3C028037 */  lui        $v0, %hi(g_bProfileEnabled0)
+    /* 4D618 8024C618 3C0D8037 */  lui        $t5, %hi(g_dwLastClickTime)
+    /* 4D61C 8024C61C 8DAD9B88 */  lw         $t5, %lo(g_dwLastClickTime)($t5)
+    /* 4D620 8024C620 3C028037 */  lui        $v0, %hi(g_abSavedSwatchColor)
     /* 4D624 8024C624 00602025 */  or         $a0, $v1, $zero
     /* 4D628 8024C628 006D7023 */  subu       $t6, $v1, $t5
     /* 4D62C 8024C62C 2DC1015E */  sltiu      $at, $t6, 0x15E
     /* 4D630 8024C630 10200014 */  beqz       $at, .L8024C684
-    /* 4D634 8024C634 24429DA8 */   addiu     $v0, $v0, %lo(g_bProfileEnabled0)
-    /* 4D638 8024C638 3C0F8029 */  lui        $t7, %hi(gDecalEditorState)
-    /* 4D63C 8024C63C 91EFDB58 */  lbu        $t7, %lo(gDecalEditorState)($t7)
-    /* 4D640 8024C640 3C188037 */  lui        $t8, %hi(g_dwEffectAlpha)
-    /* 4D644 8024C644 27189B98 */  addiu      $t8, $t8, %lo(g_dwEffectAlpha)
+    /* 4D634 8024C634 24429DA8 */   addiu     $v0, $v0, %lo(g_abSavedSwatchColor)
+    /* 4D638 8024C638 3C0F8029 */  lui        $t7, %hi(g_bDecalColor)
+    /* 4D63C 8024C63C 91EFDB58 */  lbu        $t7, %lo(g_bDecalColor)($t7)
+    /* 4D640 8024C640 3C188037 */  lui        $t8, %hi(g_aDecalSwatches)
+    /* 4D644 8024C644 27189B98 */  addiu      $t8, $t8, %lo(g_aDecalSwatches)
     /* 4D648 8024C648 000FC880 */  sll        $t9, $t7, 2
     /* 4D64C 8024C64C 032FC821 */  addu       $t9, $t9, $t7
     /* 4D650 8024C650 0019C880 */  sll        $t9, $t9, 2
-    /* 4D654 8024C654 3C048037 */  lui        $a0, %hi(g_bProfileEnabled3)
-    /* 4D658 8024C658 24849DAB */  addiu      $a0, $a0, %lo(g_bProfileEnabled3)
+    /* 4D654 8024C654 3C048037 */  lui        $a0, %hi(g_bMirrorTargetPanel)
+    /* 4D658 8024C658 24849DAB */  addiu      $a0, $a0, %lo(g_bMirrorTargetPanel)
     /* 4D65C 8024C65C 03381821 */  addu       $v1, $t9, $t8
   .L8024C660:
     /* 4D660 8024C660 906B0010 */  lbu        $t3, 0x10($v1)
@@ -10577,34 +10577,34 @@ glabel ProcessDecalEditorInput
     /* 4D66C 8024C66C 1444FFFC */  bne        $v0, $a0, .L8024C660
     /* 4D670 8024C670 A04BFFFF */   sb        $t3, -0x1($v0)
     /* 4D674 8024C674 240C0001 */  addiu      $t4, $zero, 0x1
-    /* 4D678 8024C678 3C018029 */  lui        $at, %hi(g_bObjectDirty16)
+    /* 4D678 8024C678 3C018029 */  lui        $at, %hi(g_bColorEditorOpen)
     /* 4D67C 8024C67C 10000339 */  b          .L8024D364
-    /* 4D680 8024C680 A02CDBD4 */   sb        $t4, %lo(g_bObjectDirty16)($at)
+    /* 4D680 8024C680 A02CDBD4 */   sb        $t4, %lo(g_bColorEditorOpen)($at)
   .L8024C684:
-    /* 4D684 8024C684 3C018037 */  lui        $at, %hi(g_dwEffectFrame)
+    /* 4D684 8024C684 3C018037 */  lui        $at, %hi(g_dwLastClickTime)
     /* 4D688 8024C688 10000336 */  b          .L8024D364
-    /* 4D68C 8024C68C AC249B88 */   sw        $a0, %lo(g_dwEffectFrame)($at)
+    /* 4D68C 8024C68C AC249B88 */   sw        $a0, %lo(g_dwLastClickTime)($at)
   .L8024C690:
     /* 4D690 8024C690 24C60001 */  addiu      $a2, $a2, 0x1
     /* 4D694 8024C694 28C10010 */  slti       $at, $a2, 0x10
     /* 4D698 8024C698 1420FF95 */  bnez       $at, .L8024C4F0
     /* 4D69C 8024C69C 24840014 */   addiu     $a0, $a0, 0x14
   .L8024C6A0:
-    /* 4D6A0 8024C6A0 3C0D8029 */  lui        $t5, %hi(g_bObjectDirty12)
-    /* 4D6A4 8024C6A4 91ADDBC4 */  lbu        $t5, %lo(g_bObjectDirty12)($t5)
-    /* 4D6A8 8024C6A8 3C048037 */  lui        $a0, %hi(g_dwDebugReserved0)
-    /* 4D6AC 8024C6AC 24849CD8 */  addiu      $a0, $a0, %lo(g_dwDebugReserved0)
+    /* 4D6A0 8024C6A0 3C0D8029 */  lui        $t5, %hi(g_bDecalDragActive)
+    /* 4D6A4 8024C6A4 91ADDBC4 */  lbu        $t5, %lo(g_bDecalDragActive)($t5)
+    /* 4D6A8 8024C6A8 3C048037 */  lui        $a0, %hi(g_aPaintToolButtonRects)
+    /* 4D6AC 8024C6AC 24849CD8 */  addiu      $a0, $a0, %lo(g_aPaintToolButtonRects)
     /* 4D6B0 8024C6B0 15A000A8 */  bnez       $t5, .L8024C954
     /* 4D6B4 8024C6B4 00004025 */   or        $t0, $zero, $zero
   .L8024C6B8:
     /* 4D6B8 8024C6B8 AFA4001C */  sw         $a0, 0x1C($sp)
-    /* 4D6BC 8024C6BC 0C0934FC */  jal        IsPointInRect
+    /* 4D6BC 8024C6BC 0C0934FC */  jal        IsCursorInRect
     /* 4D6C0 8024C6C0 AFA80068 */   sw        $t0, 0x68($sp)
     /* 4D6C4 8024C6C4 8FA4001C */  lw         $a0, 0x1C($sp)
     /* 4D6C8 8024C6C8 1040009E */  beqz       $v0, .L8024C944
     /* 4D6CC 8024C6CC 8FA80068 */   lw        $t0, 0x68($sp)
-    /* 4D6D0 8024C6D0 3C0E8029 */  lui        $t6, %hi(gDecalBrushState)
-    /* 4D6D4 8024C6D4 91CEDBBC */  lbu        $t6, %lo(gDecalBrushState)($t6)
+    /* 4D6D0 8024C6D0 3C0E8029 */  lui        $t6, %hi(g_bPaintShopPlayer)
+    /* 4D6D4 8024C6D4 91CEDBBC */  lbu        $t6, %lo(g_bPaintShopPlayer)($t6)
     /* 4D6D8 8024C6D8 3C198037 */  lui        $t9, %hi(g_aPlayerInputState)
     /* 4D6DC 8024C6DC 2739A8E0 */  addiu      $t9, $t9, %lo(g_aPlayerInputState)
     /* 4D6E0 8024C6E0 000E7880 */  sll        $t7, $t6, 2
@@ -10624,19 +10624,19 @@ glabel ProcessDecalEditorInput
     /* 4D718 8024C718 0C095644 */  jal        TransferFlags
     /* 4D71C 8024C71C AFA80068 */   sw        $t0, 0x68($sp)
     /* 4D720 8024C720 8FA80068 */  lw         $t0, 0x68($sp)
-    /* 4D724 8024C724 3C018029 */  lui        $at, %hi(gDecalCanvasHeight)
-    /* 4D728 8024C728 A020DBC0 */  sb         $zero, %lo(gDecalCanvasHeight)($at)
+    /* 4D724 8024C724 3C018029 */  lui        $at, %hi(g_bPaintToolStarted)
+    /* 4D728 8024C728 A020DBC0 */  sb         $zero, %lo(g_bPaintToolStarted)($at)
     /* 4D72C 8024C72C 1100005A */  beqz       $t0, .L8024C898
-    /* 4D730 8024C730 3C0C8029 */   lui       $t4, %hi(g_bObjectDirty2)
-    /* 4D734 8024C734 918CDB60 */  lbu        $t4, %lo(g_bObjectDirty2)($t4)
-    /* 4D738 8024C738 3C018029 */  lui        $at, %hi(g_bObjectDirty3)
-    /* 4D73C 8024C73C 3C028029 */  lui        $v0, %hi(g_bObjectDirty2)
-    /* 4D740 8024C740 A02CDB64 */  sb         $t4, %lo(g_bObjectDirty3)($at)
-    /* 4D744 8024C744 3C018029 */  lui        $at, %hi(g_bObjectDirty2)
-    /* 4D748 8024C748 A028DB60 */  sb         $t0, %lo(g_bObjectDirty2)($at)
-    /* 4D74C 8024C74C 3C0D8029 */  lui        $t5, %hi(g_bObjectDirty3)
-    /* 4D750 8024C750 91ADDB64 */  lbu        $t5, %lo(g_bObjectDirty3)($t5)
-    /* 4D754 8024C754 9042DB60 */  lbu        $v0, %lo(g_bObjectDirty2)($v0)
+    /* 4D730 8024C730 3C0C8029 */   lui       $t4, %hi(g_bPaintTool)
+    /* 4D734 8024C734 918CDB60 */  lbu        $t4, %lo(g_bPaintTool)($t4)
+    /* 4D738 8024C738 3C018029 */  lui        $at, %hi(g_bPreviousPaintTool)
+    /* 4D73C 8024C73C 3C028029 */  lui        $v0, %hi(g_bPaintTool)
+    /* 4D740 8024C740 A02CDB64 */  sb         $t4, %lo(g_bPreviousPaintTool)($at)
+    /* 4D744 8024C744 3C018029 */  lui        $at, %hi(g_bPaintTool)
+    /* 4D748 8024C748 A028DB60 */  sb         $t0, %lo(g_bPaintTool)($at)
+    /* 4D74C 8024C74C 3C0D8029 */  lui        $t5, %hi(g_bPreviousPaintTool)
+    /* 4D750 8024C750 91ADDB64 */  lbu        $t5, %lo(g_bPreviousPaintTool)($t5)
+    /* 4D754 8024C754 9042DB60 */  lbu        $v0, %lo(g_bPaintTool)($v0)
     /* 4D758 8024C758 24010005 */  addiu      $at, $zero, 0x5
     /* 4D75C 8024C75C 11A20022 */  beq        $t5, $v0, .L8024C7E8
     /* 4D760 8024C760 00000000 */   nop
@@ -10670,8 +10670,8 @@ glabel ProcessDecalEditorInput
     /* 4D7CC 8024C7CC 24060000 */  addiu      $a2, $zero, 0x0
     /* 4D7D0 8024C7D0 0C099822 */  jal        __ull_div
     /* 4D7D4 8024C7D4 240703E8 */   addiu     $a3, $zero, 0x3E8
-    /* 4D7D8 8024C7D8 3C018037 */  lui        $at, %hi(g_dwEffectFrame)
-    /* 4D7DC 8024C7DC AC239B88 */  sw         $v1, %lo(g_dwEffectFrame)($at)
+    /* 4D7D8 8024C7D8 3C018037 */  lui        $at, %hi(g_dwLastClickTime)
+    /* 4D7DC 8024C7DC AC239B88 */  sw         $v1, %lo(g_dwLastClickTime)($at)
     /* 4D7E0 8024C7E0 1000002D */  b          .L8024C898
     /* 4D7E4 8024C7E4 8FA80068 */   lw        $t0, 0x68($sp)
   .L8024C7E8:
@@ -10704,23 +10704,23 @@ glabel ProcessDecalEditorInput
     /* 4D84C 8024C84C 24060000 */  addiu      $a2, $zero, 0x0
     /* 4D850 8024C850 0C099822 */  jal        __ull_div
     /* 4D854 8024C854 240703E8 */   addiu     $a3, $zero, 0x3E8
-    /* 4D858 8024C858 3C0F8037 */  lui        $t7, %hi(g_dwEffectFrame)
-    /* 4D85C 8024C85C 8DEF9B88 */  lw         $t7, %lo(g_dwEffectFrame)($t7)
+    /* 4D858 8024C858 3C0F8037 */  lui        $t7, %hi(g_dwLastClickTime)
+    /* 4D85C 8024C85C 8DEF9B88 */  lw         $t7, %lo(g_dwLastClickTime)($t7)
     /* 4D860 8024C860 8FA80068 */  lw         $t0, 0x68($sp)
     /* 4D864 8024C864 00602025 */  or         $a0, $v1, $zero
     /* 4D868 8024C868 006FC823 */  subu       $t9, $v1, $t7
     /* 4D86C 8024C86C 2F21015E */  sltiu      $at, $t9, 0x15E
     /* 4D870 8024C870 10200007 */  beqz       $at, .L8024C890
     /* 4D874 8024C874 24180001 */   addiu     $t8, $zero, 0x1
-    /* 4D878 8024C878 3C018029 */  lui        $at, %hi(gDecalCanvasHeight)
-    /* 4D87C 8024C87C A038DBC0 */  sb         $t8, %lo(gDecalCanvasHeight)($at)
-    /* 4D880 8024C880 3C018029 */  lui        $at, %hi(g_bObjectDirty19)
+    /* 4D878 8024C878 3C018029 */  lui        $at, %hi(g_bPaintToolStarted)
+    /* 4D87C 8024C87C A038DBC0 */  sb         $t8, %lo(g_bPaintToolStarted)($at)
+    /* 4D880 8024C880 3C018029 */  lui        $at, %hi(g_bStyleMenuOpen)
     /* 4D884 8024C884 240B0001 */  addiu      $t3, $zero, 0x1
     /* 4D888 8024C888 100002B6 */  b          .L8024D364
-    /* 4D88C 8024C88C A02BDBE0 */   sb        $t3, %lo(g_bObjectDirty19)($at)
+    /* 4D88C 8024C88C A02BDBE0 */   sb        $t3, %lo(g_bStyleMenuOpen)($at)
   .L8024C890:
-    /* 4D890 8024C890 3C018037 */  lui        $at, %hi(g_dwEffectFrame)
-    /* 4D894 8024C894 AC249B88 */  sw         $a0, %lo(g_dwEffectFrame)($at)
+    /* 4D890 8024C890 3C018037 */  lui        $at, %hi(g_dwLastClickTime)
+    /* 4D894 8024C894 AC249B88 */  sw         $a0, %lo(g_dwLastClickTime)($at)
   .L8024C898:
     /* 4D898 8024C898 2D01000D */  sltiu      $at, $t0, 0xD
   .L8024C89C:
@@ -10732,19 +10732,19 @@ glabel ProcessDecalEditorInput
     /* 4D8B0 8024C8B0 01800008 */  jr         $t4
     /* 4D8B4 8024C8B4 00000000 */   nop
   jlabel .L8024C8B8
-    /* 4D8B8 8024C8B8 3C048029 */  lui        $a0, %hi(g_dwGfxKeyScaleR)
-    /* 4D8BC 8024C8BC 2484D4F0 */  addiu      $a0, $a0, %lo(g_dwGfxKeyScaleR)
+    /* 4D8B8 8024C8B8 3C048029 */  lui        $a0, %hi(g_aBrushSizeButtonRects)
+    /* 4D8BC 8024C8BC 2484D4F0 */  addiu      $a0, $a0, %lo(g_aBrushSizeButtonRects)
     /* 4D8C0 8024C8C0 00003025 */  or         $a2, $zero, $zero
   .L8024C8C4:
     /* 4D8C4 8024C8C4 AFA40020 */  sw         $a0, 0x20($sp)
-    /* 4D8C8 8024C8C8 0C0934FC */  jal        IsPointInRect
+    /* 4D8C8 8024C8C8 0C0934FC */  jal        IsCursorInRect
     /* 4D8CC 8024C8CC AFA6006C */   sw        $a2, 0x6C($sp)
     /* 4D8D0 8024C8D0 8FA40020 */  lw         $a0, 0x20($sp)
     /* 4D8D4 8024C8D4 10400004 */  beqz       $v0, .L8024C8E8
     /* 4D8D8 8024C8D8 8FA6006C */   lw        $a2, 0x6C($sp)
-    /* 4D8DC 8024C8DC 3C018029 */  lui        $at, %hi(g_bObjectVisible2)
+    /* 4D8DC 8024C8DC 3C018029 */  lui        $at, %hi(g_bBrushSize)
     /* 4D8E0 8024C8E0 100002A0 */  b          .L8024D364
-    /* 4D8E4 8024C8E4 A026DAC0 */   sb        $a2, %lo(g_bObjectVisible2)($at)
+    /* 4D8E4 8024C8E4 A026DAC0 */   sb        $a2, %lo(g_bBrushSize)($at)
   .L8024C8E8:
     /* 4D8E8 8024C8E8 24C60001 */  addiu      $a2, $a2, 0x1
     /* 4D8EC 8024C8EC 24010005 */  addiu      $at, $zero, 0x5
@@ -10754,25 +10754,25 @@ glabel ProcessDecalEditorInput
     /* 4D8FC 8024C8FC 8FBF0014 */   lw        $ra, 0x14($sp)
   jlabel .L8024C900
     /* 4D900 8024C900 240D0001 */  addiu      $t5, $zero, 0x1
-    /* 4D904 8024C904 3C018029 */  lui        $at, %hi(gDecalCanvasHeight)
+    /* 4D904 8024C904 3C018029 */  lui        $at, %hi(g_bPaintToolStarted)
     /* 4D908 8024C908 10000296 */  b          .L8024D364
-    /* 4D90C 8024C90C A02DDBC0 */   sb        $t5, %lo(gDecalCanvasHeight)($at)
+    /* 4D90C 8024C90C A02DDBC0 */   sb        $t5, %lo(g_bPaintToolStarted)($at)
   jlabel .L8024C910
     /* 4D910 8024C910 0C091341 */  jal        UndoDecalEdit
     /* 4D914 8024C914 00000000 */   nop
-    /* 4D918 8024C918 3C0E8029 */  lui        $t6, %hi(g_bObjectDirty3)
-    /* 4D91C 8024C91C 91CEDB64 */  lbu        $t6, %lo(g_bObjectDirty3)($t6)
-    /* 4D920 8024C920 3C018029 */  lui        $at, %hi(g_bObjectDirty2)
+    /* 4D918 8024C918 3C0E8029 */  lui        $t6, %hi(g_bPreviousPaintTool)
+    /* 4D91C 8024C91C 91CEDB64 */  lbu        $t6, %lo(g_bPreviousPaintTool)($t6)
+    /* 4D920 8024C920 3C018029 */  lui        $at, %hi(g_bPaintTool)
     /* 4D924 8024C924 1000028F */  b          .L8024D364
-    /* 4D928 8024C928 A02EDB60 */   sb        $t6, %lo(g_bObjectDirty2)($at)
+    /* 4D928 8024C928 A02EDB60 */   sb        $t6, %lo(g_bPaintTool)($at)
   jlabel .L8024C92C
-    /* 4D92C 8024C92C 3C018029 */  lui        $at, %hi(g_bControllerPakConnected)
+    /* 4D92C 8024C92C 3C018029 */  lui        $at, %hi(D_8028CFEC)
     /* 4D930 8024C930 1000028C */  b          .L8024D364
-    /* 4D934 8024C934 A020CFEC */   sb        $zero, %lo(g_bControllerPakConnected)($at)
+    /* 4D934 8024C934 A020CFEC */   sb        $zero, %lo(D_8028CFEC)($at)
   jlabel .L8024C938
-    /* 4D938 8024C938 3C018029 */  lui        $at, %hi(gDecalCanvasHeight)
+    /* 4D938 8024C938 3C018029 */  lui        $at, %hi(g_bPaintToolStarted)
     /* 4D93C 8024C93C 10000289 */  b          .L8024D364
-    /* 4D940 8024C940 A020DBC0 */   sb        $zero, %lo(gDecalCanvasHeight)($at)
+    /* 4D940 8024C940 A020DBC0 */   sb        $zero, %lo(g_bPaintToolStarted)($at)
   .L8024C944:
     /* 4D944 8024C944 25080001 */  addiu      $t0, $t0, 0x1
   .L8024C948:
@@ -10780,24 +10780,24 @@ glabel ProcessDecalEditorInput
     /* 4D94C 8024C94C 1501FF5A */  bne        $t0, $at, .L8024C6B8
     /* 4D950 8024C950 24840010 */   addiu     $a0, $a0, 0x10
   .L8024C954:
-    /* 4D954 8024C954 3C028029 */  lui        $v0, %hi(g_bObjectDirty2)
-    /* 4D958 8024C958 9042DB60 */  lbu        $v0, %lo(g_bObjectDirty2)($v0)
+    /* 4D954 8024C954 3C028029 */  lui        $v0, %hi(g_bPaintTool)
+    /* 4D958 8024C958 9042DB60 */  lbu        $v0, %lo(g_bPaintTool)($v0)
     /* 4D95C 8024C95C 24070004 */  addiu      $a3, $zero, 0x4
-    /* 4D960 8024C960 3C048029 */  lui        $a0, %hi(g_dwDecalEditorFlags)
+    /* 4D960 8024C960 3C048029 */  lui        $a0, %hi(g_rcDecalCanvas)
     /* 4D964 8024C964 14E200A8 */  bne        $a3, $v0, .L8024CC08
-    /* 4D968 8024C968 2484DB94 */   addiu     $a0, $a0, %lo(g_dwDecalEditorFlags)
-    /* 4D96C 8024C96C 0C0934FC */  jal        IsPointInRect
+    /* 4D968 8024C968 2484DB94 */   addiu     $a0, $a0, %lo(g_rcDecalCanvas)
+    /* 4D96C 8024C96C 0C0934FC */  jal        IsCursorInRect
     /* 4D970 8024C970 A3A0003F */   sb        $zero, 0x3F($sp)
     /* 4D974 8024C974 3C0A8029 */  lui        $t2, %hi(g_texPaintCursor)
     /* 4D978 8024C978 254AD110 */  addiu      $t2, $t2, %lo(g_texPaintCursor)
     /* 4D97C 8024C97C 10400024 */  beqz       $v0, .L8024CA10
     /* 4D980 8024C980 93A5003F */   lbu       $a1, 0x3F($sp)
-    /* 4D984 8024C984 3C0F8029 */  lui        $t7, %hi(g_bObjectDirty12)
-    /* 4D988 8024C988 91EFDBC4 */  lbu        $t7, %lo(g_bObjectDirty12)($t7)
-    /* 4D98C 8024C98C 3C198029 */  lui        $t9, %hi(gDecalBrushState)
+    /* 4D984 8024C984 3C0F8029 */  lui        $t7, %hi(g_bDecalDragActive)
+    /* 4D988 8024C988 91EFDBC4 */  lbu        $t7, %lo(g_bDecalDragActive)($t7)
+    /* 4D98C 8024C98C 3C198029 */  lui        $t9, %hi(g_bPaintShopPlayer)
     /* 4D990 8024C990 15E0001F */  bnez       $t7, .L8024CA10
     /* 4D994 8024C994 00000000 */   nop
-    /* 4D998 8024C998 9339DBBC */  lbu        $t9, %lo(gDecalBrushState)($t9)
+    /* 4D998 8024C998 9339DBBC */  lbu        $t9, %lo(g_bPaintShopPlayer)($t9)
     /* 4D99C 8024C99C 3C0B8037 */  lui        $t3, %hi(g_aPlayerInputState)
     /* 4D9A0 8024C9A0 256BA8E0 */  addiu      $t3, $t3, %lo(g_aPlayerInputState)
     /* 4D9A4 8024C9A4 0019C080 */  sll        $t8, $t9, 2
@@ -10818,31 +10818,31 @@ glabel ProcessDecalEditorInput
     /* 4D9E0 8024C9E0 3C0A8029 */  lui        $t2, %hi(g_texPaintCursor)
     /* 4D9E4 8024C9E4 254AD110 */  addiu      $t2, $t2, %lo(g_texPaintCursor)
     /* 4D9E8 8024C9E8 8D4E001C */  lw         $t6, 0x1C($t2)
-    /* 4D9EC 8024C9EC 3C018037 */  lui        $at, %hi(g_dwPakPort0Status)
+    /* 4D9EC 8024C9EC 3C018037 */  lui        $at, %hi(g_nPaintAnchorX)
     /* 4D9F0 8024C9F0 24190001 */  addiu      $t9, $zero, 0x1
-    /* 4D9F4 8024C9F4 AC2E9B80 */  sw         $t6, %lo(g_dwPakPort0Status)($at)
+    /* 4D9F4 8024C9F4 AC2E9B80 */  sw         $t6, %lo(g_nPaintAnchorX)($at)
     /* 4D9F8 8024C9F8 8D4F0020 */  lw         $t7, 0x20($t2)
-    /* 4D9FC 8024C9FC 3C018037 */  lui        $at, %hi(g_dwPakPort1Status)
+    /* 4D9FC 8024C9FC 3C018037 */  lui        $at, %hi(g_nPaintAnchorY)
     /* 4DA00 8024CA00 24050001 */  addiu      $a1, $zero, 0x1
-    /* 4DA04 8024CA04 AC2F9B84 */  sw         $t7, %lo(g_dwPakPort1Status)($at)
-    /* 4DA08 8024CA08 3C018029 */  lui        $at, %hi(g_bObjectDirty12)
-    /* 4DA0C 8024CA0C A039DBC4 */  sb         $t9, %lo(g_bObjectDirty12)($at)
+    /* 4DA04 8024CA04 AC2F9B84 */  sw         $t7, %lo(g_nPaintAnchorY)($at)
+    /* 4DA08 8024CA08 3C018029 */  lui        $at, %hi(g_bDecalDragActive)
+    /* 4DA0C 8024CA0C A039DBC4 */  sb         $t9, %lo(g_bDecalDragActive)($at)
   .L8024CA10:
-    /* 4DA10 8024CA10 3C188029 */  lui        $t8, %hi(g_bObjectDirty12)
-    /* 4DA14 8024CA14 9318DBC4 */  lbu        $t8, %lo(g_bObjectDirty12)($t8)
-    /* 4DA18 8024CA18 3C0B8029 */  lui        $t3, %hi(gDecalCanvasHeight)
-    /* 4DA1C 8024CA1C 3C0C8029 */  lui        $t4, %hi(gDecalCanvasHeight)
+    /* 4DA10 8024CA10 3C188029 */  lui        $t8, %hi(g_bDecalDragActive)
+    /* 4DA14 8024CA14 9318DBC4 */  lbu        $t8, %lo(g_bDecalDragActive)($t8)
+    /* 4DA18 8024CA18 3C0B8029 */  lui        $t3, %hi(g_bPaintToolStarted)
+    /* 4DA1C 8024CA1C 3C0C8029 */  lui        $t4, %hi(g_bPaintToolStarted)
     /* 4DA20 8024CA20 13000019 */  beqz       $t8, .L8024CA88
     /* 4DA24 8024CA24 00000000 */   nop
-    /* 4DA28 8024CA28 916BDBC0 */  lbu        $t3, %lo(gDecalCanvasHeight)($t3)
+    /* 4DA28 8024CA28 916BDBC0 */  lbu        $t3, %lo(g_bPaintToolStarted)($t3)
     /* 4DA2C 8024CA2C 15600016 */  bnez       $t3, .L8024CA88
     /* 4DA30 8024CA30 00000000 */   nop
     /* 4DA34 8024CA34 10A00010 */  beqz       $a1, .L8024CA78
-    /* 4DA38 8024CA38 3C028029 */   lui       $v0, %hi(g_dwGfxCoefR)
-    /* 4DA3C 8024CA3C 3C038029 */  lui        $v1, %hi(g_texKeyboardKeyHighlight)
-    /* 4DA40 8024CA40 2463D290 */  addiu      $v1, $v1, %lo(g_texKeyboardKeyHighlight)
+    /* 4DA38 8024CA38 3C028029 */   lui       $v0, %hi(g_aDecalGlyphs)
+    /* 4DA3C 8024CA3C 3C038029 */  lui        $v1, %hi(g_texKeyboardHighlight)
+    /* 4DA40 8024CA40 2463D290 */  addiu      $v1, $v1, %lo(g_texKeyboardHighlight)
     /* 4DA44 8024CA44 8C6D0024 */  lw         $t5, 0x24($v1)
-    /* 4DA48 8024CA48 2442D540 */  addiu      $v0, $v0, %lo(g_dwGfxCoefR)
+    /* 4DA48 8024CA48 2442D540 */  addiu      $v0, $v0, %lo(g_aDecalGlyphs)
     /* 4DA4C 8024CA4C 8C780028 */  lw         $t8, 0x28($v1)
     /* 4DA50 8024CA50 8C4C02A0 */  lw         $t4, 0x2A0($v0)
     /* 4DA54 8024CA54 8C5902A4 */  lw         $t9, 0x2A4($v0)
@@ -10860,23 +10860,23 @@ glabel ProcessDecalEditorInput
     /* 4DA80 8024CA80 10000239 */  b          .L8024D368
     /* 4DA84 8024CA84 8FBF0014 */   lw        $ra, 0x14($sp)
   .L8024CA88:
-    /* 4DA88 8024CA88 918CDBC0 */  lbu        $t4, %lo(gDecalCanvasHeight)($t4)
-    /* 4DA8C 8024CA8C 3C048029 */  lui        $a0, %hi(g_dwGfxFillColorR)
+    /* 4DA88 8024CA88 918CDBC0 */  lbu        $t4, %lo(g_bPaintToolStarted)($t4)
+    /* 4DA8C 8024CA8C 3C048029 */  lui        $a0, %hi(g_aPaletteFrameRects)
     /* 4DA90 8024CA90 11800035 */  beqz       $t4, .L8024CB68
     /* 4DA94 8024CA94 00000000 */   nop
-    /* 4DA98 8024CA98 0C0934FC */  jal        IsPointInRect
-    /* 4DA9C 8024CA9C 2484D480 */   addiu     $a0, $a0, %lo(g_dwGfxFillColorR)
+    /* 4DA98 8024CA98 0C0934FC */  jal        IsCursorInRect
+    /* 4DA9C 8024CA9C 2484D480 */   addiu     $a0, $a0, %lo(g_aPaletteFrameRects)
     /* 4DAA0 8024CAA0 14400031 */  bnez       $v0, .L8024CB68
-    /* 4DAA4 8024CAA4 3C048029 */   lui       $a0, %hi(g_dwGfxFogColorR)
-    /* 4DAA8 8024CAA8 0C0934FC */  jal        IsPointInRect
-    /* 4DAAC 8024CAAC 2484D490 */   addiu     $a0, $a0, %lo(g_dwGfxFogColorR)
+    /* 4DAA4 8024CAA4 3C048029 */   lui       $a0, %hi(D_8028D490)
+    /* 4DAA8 8024CAA8 0C0934FC */  jal        IsCursorInRect
+    /* 4DAAC 8024CAAC 2484D490 */   addiu     $a0, $a0, %lo(D_8028D490)
     /* 4DAB0 8024CAB0 3C0A8029 */  lui        $t2, %hi(g_texPaintCursor)
     /* 4DAB4 8024CAB4 1440002C */  bnez       $v0, .L8024CB68
     /* 4DAB8 8024CAB8 254AD110 */   addiu     $t2, $t2, %lo(g_texPaintCursor)
-    /* 4DABC 8024CABC 3C0E8029 */  lui        $t6, %hi(gDecalBrushState)
-    /* 4DAC0 8024CAC0 91CEDBBC */  lbu        $t6, %lo(gDecalBrushState)($t6)
+    /* 4DABC 8024CABC 3C0E8029 */  lui        $t6, %hi(g_bPaintShopPlayer)
+    /* 4DAC0 8024CAC0 91CEDBBC */  lbu        $t6, %lo(g_bPaintShopPlayer)($t6)
     /* 4DAC4 8024CAC4 3C188037 */  lui        $t8, %hi(g_aPlayerInputState)
-    /* 4DAC8 8024CAC8 3C028029 */  lui        $v0, %hi(g_bObjectDirty9)
+    /* 4DAC8 8024CAC8 3C028029 */  lui        $v0, %hi(g_bDecalTextLength)
     /* 4DACC 8024CACC 000E7880 */  sll        $t7, $t6, 2
     /* 4DAD0 8024CAD0 01EE7823 */  subu       $t7, $t7, $t6
     /* 4DAD4 8024CAD4 000F7880 */  sll        $t7, $t7, 2
@@ -10889,19 +10889,19 @@ glabel ProcessDecalEditorInput
     /* 4DAF0 8024CAF0 33198010 */  andi       $t9, $t8, 0x8010
     /* 4DAF4 8024CAF4 1720001C */  bnez       $t9, .L8024CB68
     /* 4DAF8 8024CAF8 00000000 */   nop
-    /* 4DAFC 8024CAFC 9042DBA8 */  lbu        $v0, %lo(g_bObjectDirty9)($v0)
+    /* 4DAFC 8024CAFC 9042DBA8 */  lbu        $v0, %lo(g_bDecalTextLength)($v0)
     /* 4DB00 8024CB00 18400013 */  blez       $v0, .L8024CB50
     /* 4DB04 8024CB04 00000000 */   nop
-    /* 4DB08 8024CB08 3C028029 */  lui        $v0, %hi(g_bObjectDirty20)
-    /* 4DB0C 8024CB0C 2442DBE4 */  addiu      $v0, $v0, %lo(g_bObjectDirty20)
+    /* 4DB08 8024CB08 3C028029 */  lui        $v0, %hi(g_bTextShadowPickerOpen)
+    /* 4DB0C 8024CB0C 2442DBE4 */  addiu      $v0, $v0, %lo(g_bTextShadowPickerOpen)
     /* 4DB10 8024CB10 904B0000 */  lbu        $t3, 0x0($v0)
-    /* 4DB14 8024CB14 3C0D8037 */  lui        $t5, %hi(g_dwPakPort0Status)
+    /* 4DB14 8024CB14 3C0D8037 */  lui        $t5, %hi(g_nPaintAnchorX)
     /* 4DB18 8024CB18 51600008 */  beql       $t3, $zero, .L8024CB3C
     /* 4DB1C 8024CB1C 8D450020 */   lw        $a1, 0x20($t2)
-    /* 4DB20 8024CB20 8DAD9B80 */  lw         $t5, %lo(g_dwPakPort0Status)($t5)
-    /* 4DB24 8024CB24 3C0C8037 */  lui        $t4, %hi(g_dwPakPort1Status)
+    /* 4DB20 8024CB20 8DAD9B80 */  lw         $t5, %lo(g_nPaintAnchorX)($t5)
+    /* 4DB24 8024CB24 3C0C8037 */  lui        $t4, %hi(g_nPaintAnchorY)
     /* 4DB28 8024CB28 AD4D001C */  sw         $t5, 0x1C($t2)
-    /* 4DB2C 8024CB2C 8D8C9B84 */  lw         $t4, %lo(g_dwPakPort1Status)($t4)
+    /* 4DB2C 8024CB2C 8D8C9B84 */  lw         $t4, %lo(g_nPaintAnchorY)($t4)
     /* 4DB30 8024CB30 A0400000 */  sb         $zero, 0x0($v0)
     /* 4DB34 8024CB34 AD4C0020 */  sw         $t4, 0x20($t2)
     /* 4DB38 8024CB38 8D450020 */  lw         $a1, 0x20($t2)
@@ -10913,18 +10913,18 @@ glabel ProcessDecalEditorInput
     /* 4DB4C 8024CB4C 8FBF0014 */   lw        $ra, 0x14($sp)
   .L8024CB50:
     /* 4DB50 8024CB50 14400204 */  bnez       $v0, .L8024D364
-    /* 4DB54 8024CB54 3C018029 */   lui       $at, %hi(gDecalCanvasHeight)
-    /* 4DB58 8024CB58 A020DBC0 */  sb         $zero, %lo(gDecalCanvasHeight)($at)
-    /* 4DB5C 8024CB5C 3C018029 */  lui        $at, %hi(g_bObjectDirty12)
+    /* 4DB54 8024CB54 3C018029 */   lui       $at, %hi(g_bPaintToolStarted)
+    /* 4DB58 8024CB58 A020DBC0 */  sb         $zero, %lo(g_bPaintToolStarted)($at)
+    /* 4DB5C 8024CB5C 3C018029 */  lui        $at, %hi(g_bDecalDragActive)
     /* 4DB60 8024CB60 10000200 */  b          .L8024D364
-    /* 4DB64 8024CB64 A020DBC4 */   sb        $zero, %lo(g_bObjectDirty12)($at)
+    /* 4DB64 8024CB64 A020DBC4 */   sb        $zero, %lo(g_bDecalDragActive)($at)
   .L8024CB68:
-    /* 4DB68 8024CB68 3C0E8029 */  lui        $t6, %hi(gDecalCanvasHeight)
-    /* 4DB6C 8024CB6C 91CEDBC0 */  lbu        $t6, %lo(gDecalCanvasHeight)($t6)
-    /* 4DB70 8024CB70 3C0F8029 */  lui        $t7, %hi(gDecalBrushState)
+    /* 4DB68 8024CB68 3C0E8029 */  lui        $t6, %hi(g_bPaintToolStarted)
+    /* 4DB6C 8024CB6C 91CEDBC0 */  lbu        $t6, %lo(g_bPaintToolStarted)($t6)
+    /* 4DB70 8024CB70 3C0F8029 */  lui        $t7, %hi(g_bPaintShopPlayer)
     /* 4DB74 8024CB74 51C001FC */  beql       $t6, $zero, .L8024D368
     /* 4DB78 8024CB78 8FBF0014 */   lw        $ra, 0x14($sp)
-    /* 4DB7C 8024CB7C 91EFDBBC */  lbu        $t7, %lo(gDecalBrushState)($t7)
+    /* 4DB7C 8024CB7C 91EFDBBC */  lbu        $t7, %lo(g_bPaintShopPlayer)($t7)
     /* 4DB80 8024CB80 3C198037 */  lui        $t9, %hi(g_aPlayerInputState)
     /* 4DB84 8024CB84 2739A8E0 */  addiu      $t9, $t9, %lo(g_aPlayerInputState)
     /* 4DB88 8024CB88 000FC080 */  sll        $t8, $t7, 2
@@ -10942,7 +10942,7 @@ glabel ProcessDecalEditorInput
     /* 4DBB8 8024CBB8 8FBF0014 */   lw        $ra, 0x14($sp)
     /* 4DBBC 8024CBBC 0C095644 */  jal        TransferFlags
     /* 4DBC0 8024CBC0 34058010 */   ori       $a1, $zero, 0x8010
-    /* 4DBC4 8024CBC4 0C09132A */  jal        CommitFramebuffer
+    /* 4DBC4 8024CBC4 0C09132A */  jal        SaveDecalUndo
     /* 4DBC8 8024CBC8 00000000 */   nop
     /* 4DBCC 8024CBCC 3C0A8029 */  lui        $t2, %hi(g_texPaintCursor)
     /* 4DBD0 8024CBD0 254AD110 */  addiu      $t2, $t2, %lo(g_texPaintCursor)
@@ -10950,26 +10950,26 @@ glabel ProcessDecalEditorInput
     /* 4DBD8 8024CBD8 8D44001C */  lw         $a0, 0x1C($t2)
     /* 4DBDC 8024CBDC 0C093B0C */  jal        StampTextOnDecal
     /* 4DBE0 8024CBE0 24A50001 */   addiu     $a1, $a1, 0x1
-    /* 4DBE4 8024CBE4 3C018029 */  lui        $at, %hi(g_bObjectDirty9)
-    /* 4DBE8 8024CBE8 A020DBA8 */  sb         $zero, %lo(g_bObjectDirty9)($at)
-    /* 4DBEC 8024CBEC 3C018029 */  lui        $at, %hi(g_bObjectDirty10)
-    /* 4DBF0 8024CBF0 A020DBAC */  sb         $zero, %lo(g_bObjectDirty10)($at)
-    /* 4DBF4 8024CBF4 3C018029 */  lui        $at, %hi(gDecalCanvasHeight)
-    /* 4DBF8 8024CBF8 A020DBC0 */  sb         $zero, %lo(gDecalCanvasHeight)($at)
-    /* 4DBFC 8024CBFC 3C018029 */  lui        $at, %hi(g_bObjectDirty12)
+    /* 4DBE4 8024CBE4 3C018029 */  lui        $at, %hi(g_bDecalTextLength)
+    /* 4DBE8 8024CBE8 A020DBA8 */  sb         $zero, %lo(g_bDecalTextLength)($at)
+    /* 4DBEC 8024CBEC 3C018029 */  lui        $at, %hi(g_bDecalTextWidth)
+    /* 4DBF0 8024CBF0 A020DBAC */  sb         $zero, %lo(g_bDecalTextWidth)($at)
+    /* 4DBF4 8024CBF4 3C018029 */  lui        $at, %hi(g_bPaintToolStarted)
+    /* 4DBF8 8024CBF8 A020DBC0 */  sb         $zero, %lo(g_bPaintToolStarted)($at)
+    /* 4DBFC 8024CBFC 3C018029 */  lui        $at, %hi(g_bDecalDragActive)
     /* 4DC00 8024CC00 100001D8 */  b          .L8024D364
-    /* 4DC04 8024CC04 A020DBC4 */   sb        $zero, %lo(g_bObjectDirty12)($at)
+    /* 4DC04 8024CC04 A020DBC4 */   sb        $zero, %lo(g_bDecalDragActive)($at)
   .L8024CC08:
     /* 4DC08 8024CC08 10E20160 */  beq        $a3, $v0, .L8024D18C
-    /* 4DC0C 8024CC0C 3C048029 */   lui       $a0, %hi(g_dwDecalEditorFlags)
-    /* 4DC10 8024CC10 0C0934FC */  jal        IsPointInRect
-    /* 4DC14 8024CC14 2484DB94 */   addiu     $a0, $a0, %lo(g_dwDecalEditorFlags)
+    /* 4DC0C 8024CC0C 3C048029 */   lui       $a0, %hi(g_rcDecalCanvas)
+    /* 4DC10 8024CC10 0C0934FC */  jal        IsCursorInRect
+    /* 4DC14 8024CC14 2484DB94 */   addiu     $a0, $a0, %lo(g_rcDecalCanvas)
     /* 4DC18 8024CC18 3C0A8029 */  lui        $t2, %hi(g_texPaintCursor)
     /* 4DC1C 8024CC1C 254AD110 */  addiu      $t2, $t2, %lo(g_texPaintCursor)
     /* 4DC20 8024CC20 1040015A */  beqz       $v0, .L8024D18C
     /* 4DC24 8024CC24 24070004 */   addiu     $a3, $zero, 0x4
-    /* 4DC28 8024CC28 3C0C8029 */  lui        $t4, %hi(gDecalBrushState)
-    /* 4DC2C 8024CC2C 918CDBBC */  lbu        $t4, %lo(gDecalBrushState)($t4)
+    /* 4DC28 8024CC28 3C0C8029 */  lui        $t4, %hi(g_bPaintShopPlayer)
+    /* 4DC2C 8024CC2C 918CDBBC */  lbu        $t4, %lo(g_bPaintShopPlayer)($t4)
     /* 4DC30 8024CC30 3C0F8037 */  lui        $t7, %hi(g_aPlayerInputState)
     /* 4DC34 8024CC34 25EFA8E0 */  addiu      $t7, $t7, %lo(g_aPlayerInputState)
     /* 4DC38 8024CC38 000C7080 */  sll        $t6, $t4, 2
@@ -10981,11 +10981,11 @@ glabel ProcessDecalEditorInput
     /* 4DC50 8024CC50 000E7080 */  sll        $t6, $t6, 2
     /* 4DC54 8024CC54 01CF3021 */  addu       $a2, $t6, $t7
     /* 4DC58 8024CC58 8CD80000 */  lw         $t8, 0x0($a2)
-    /* 4DC5C 8024CC5C 3C0B8029 */  lui        $t3, %hi(g_bObjectDirty2)
+    /* 4DC5C 8024CC5C 3C0B8029 */  lui        $t3, %hi(g_bPaintTool)
     /* 4DC60 8024CC60 33198010 */  andi       $t9, $t8, 0x8010
     /* 4DC64 8024CC64 13200149 */  beqz       $t9, .L8024D18C
     /* 4DC68 8024CC68 00000000 */   nop
-    /* 4DC6C 8024CC6C 916BDB60 */  lbu        $t3, %lo(g_bObjectDirty2)($t3)
+    /* 4DC6C 8024CC6C 916BDB60 */  lbu        $t3, %lo(g_bPaintTool)($t3)
     /* 4DC70 8024CC70 256DFFFF */  addiu      $t5, $t3, -0x1
     /* 4DC74 8024CC74 2DA10006 */  sltiu      $at, $t5, 0x6
     /* 4DC78 8024CC78 102001BA */  beqz       $at, .L8024D364
@@ -10996,33 +10996,33 @@ glabel ProcessDecalEditorInput
     /* 4DC8C 8024CC8C 01A00008 */  jr         $t5
     /* 4DC90 8024CC90 00000000 */   nop
   jlabel .L8024CC94
-    /* 4DC94 8024CC94 3C0C8029 */  lui        $t4, %hi(gDecalCanvasHeight)
-    /* 4DC98 8024CC98 918CDBC0 */  lbu        $t4, %lo(gDecalCanvasHeight)($t4)
+    /* 4DC94 8024CC94 3C0C8029 */  lui        $t4, %hi(g_bPaintToolStarted)
+    /* 4DC98 8024CC98 918CDBC0 */  lbu        $t4, %lo(g_bPaintToolStarted)($t4)
     /* 4DC9C 8024CC9C 15800008 */  bnez       $t4, .L8024CCC0
     /* 4DCA0 8024CCA0 00000000 */   nop
-    /* 4DCA4 8024CCA4 0C09132A */  jal        CommitFramebuffer
+    /* 4DCA4 8024CCA4 0C09132A */  jal        SaveDecalUndo
     /* 4DCA8 8024CCA8 00000000 */   nop
     /* 4DCAC 8024CCAC 3C0A8029 */  lui        $t2, %hi(g_texPaintCursor)
     /* 4DCB0 8024CCB0 240E0001 */  addiu      $t6, $zero, 0x1
-    /* 4DCB4 8024CCB4 3C018029 */  lui        $at, %hi(gDecalCanvasHeight)
+    /* 4DCB4 8024CCB4 3C018029 */  lui        $at, %hi(g_bPaintToolStarted)
     /* 4DCB8 8024CCB8 254AD110 */  addiu      $t2, $t2, %lo(g_texPaintCursor)
-    /* 4DCBC 8024CCBC A02EDBC0 */  sb         $t6, %lo(gDecalCanvasHeight)($at)
+    /* 4DCBC 8024CCBC A02EDBC0 */  sb         $t6, %lo(g_bPaintToolStarted)($at)
   .L8024CCC0:
-    /* 4DCC0 8024CCC0 3C088029 */  lui        $t0, %hi(g_bObjectVisible2)
-    /* 4DCC4 8024CCC4 9108DAC0 */  lbu        $t0, %lo(g_bObjectVisible2)($t0)
+    /* 4DCC0 8024CCC0 3C088029 */  lui        $t0, %hi(g_bBrushSize)
+    /* 4DCC4 8024CCC4 9108DAC0 */  lbu        $t0, %lo(g_bBrushSize)($t0)
     /* 4DCC8 8024CCC8 15000014 */  bnez       $t0, .L8024CD1C
-    /* 4DCCC 8024CCCC 3C028029 */   lui       $v0, %hi(g_dwDecalEditorFlags)
-    /* 4DCD0 8024CCD0 2442DB94 */  addiu      $v0, $v0, %lo(g_dwDecalEditorFlags)
+    /* 4DCCC 8024CCCC 3C028029 */   lui       $v0, %hi(g_rcDecalCanvas)
+    /* 4DCD0 8024CCD0 2442DB94 */  addiu      $v0, $v0, %lo(g_rcDecalCanvas)
     /* 4DCD4 8024CCD4 8C590004 */  lw         $t9, 0x4($v0)
     /* 4DCD8 8024CCD8 8C4B000C */  lw         $t3, 0xC($v0)
     /* 4DCDC 8024CCDC 8D44001C */  lw         $a0, 0x1C($t2)
     /* 4DCE0 8024CCE0 8D450020 */  lw         $a1, 0x20($t2)
     /* 4DCE4 8024CCE4 8C4F0000 */  lw         $t7, 0x0($v0)
     /* 4DCE8 8024CCE8 032B6821 */  addu       $t5, $t9, $t3
-    /* 4DCEC 8024CCEC 3C038029 */  lui        $v1, %hi(gDecalEditorState)
+    /* 4DCEC 8024CCEC 3C038029 */  lui        $v1, %hi(g_bDecalColor)
     /* 4DCF0 8024CCF0 01A52823 */  subu       $a1, $t5, $a1
     /* 4DCF4 8024CCF4 008F2023 */  subu       $a0, $a0, $t7
-    /* 4DCF8 8024CCF8 2463DB58 */  addiu      $v1, $v1, %lo(gDecalEditorState)
+    /* 4DCF8 8024CCF8 2463DB58 */  addiu      $v1, $v1, %lo(g_bDecalColor)
     /* 4DCFC 8024CCFC 0004C083 */  sra        $t8, $a0, 2
     /* 4DD00 8024CD00 00056083 */  sra        $t4, $a1, 2
     /* 4DD04 8024CD04 01802825 */  or         $a1, $t4, $zero
@@ -11032,8 +11032,8 @@ glabel ProcessDecalEditorInput
     /* 4DD14 8024CD14 10000194 */  b          .L8024D368
     /* 4DD18 8024CD18 8FBF0014 */   lw        $ra, 0x14($sp)
   .L8024CD1C:
-    /* 4DD1C 8024CD1C 3C0E8029 */  lui        $t6, %hi(g_bRdpDepthUpdate)
-    /* 4DD20 8024CD20 91CECE9C */  lbu        $t6, %lo(g_bRdpDepthUpdate)($t6)
+    /* 4DD1C 8024CD1C 3C0E8029 */  lui        $t6, %hi(D_8028CE9C)
+    /* 4DD20 8024CD20 91CECE9C */  lbu        $t6, %lo(D_8028CE9C)($t6)
     /* 4DD24 8024CD24 0008C900 */  sll        $t9, $t0, 4
     /* 4DD28 8024CD28 3C098029 */  lui        $t1, %hi(D_8028D4A8)
     /* 4DD2C 8024CD2C 15C0000D */  bnez       $t6, .L8024CD64
@@ -11046,7 +11046,7 @@ glabel ProcessDecalEditorInput
     /* 4DD48 8024CD48 8D450020 */  lw         $a1, 0x20($t2)
     /* 4DD4C 8024CD4C 0006C043 */  sra        $t8, $a2, 1
     /* 4DD50 8024CD50 03003025 */  or         $a2, $t8, $zero
-    /* 4DD54 8024CD54 0C094567 */  jal        DrawCircle4Bit
+    /* 4DD54 8024CD54 0C094567 */  jal        FillCircle4Bit
     /* 4DD58 8024CD58 24070001 */   addiu     $a3, $zero, 0x1
     /* 4DD5C 8024CD5C 10000182 */  b          .L8024D368
     /* 4DD60 8024CD60 8FBF0014 */   lw        $ra, 0x14($sp)
@@ -11063,34 +11063,34 @@ glabel ProcessDecalEditorInput
     /* 4DD88 8024CD88 10000177 */  b          .L8024D368
     /* 4DD8C 8024CD8C 8FBF0014 */   lw        $ra, 0x14($sp)
   jlabel .L8024CD90
-    /* 4DD90 8024CD90 3C0D8029 */  lui        $t5, %hi(gDecalCanvasHeight)
-    /* 4DD94 8024CD94 91ADDBC0 */  lbu        $t5, %lo(gDecalCanvasHeight)($t5)
+    /* 4DD90 8024CD90 3C0D8029 */  lui        $t5, %hi(g_bPaintToolStarted)
+    /* 4DD94 8024CD94 91ADDBC0 */  lbu        $t5, %lo(g_bPaintToolStarted)($t5)
     /* 4DD98 8024CD98 15A0000B */  bnez       $t5, .L8024CDC8
     /* 4DD9C 8024CD9C 00000000 */   nop
     /* 4DDA0 8024CDA0 8D4C001C */  lw         $t4, 0x1C($t2)
-    /* 4DDA4 8024CDA4 3C018037 */  lui        $at, %hi(g_dwPakPort0Status)
+    /* 4DDA4 8024CDA4 3C018037 */  lui        $at, %hi(g_nPaintAnchorX)
     /* 4DDA8 8024CDA8 240F0001 */  addiu      $t7, $zero, 0x1
-    /* 4DDAC 8024CDAC AC2C9B80 */  sw         $t4, %lo(g_dwPakPort0Status)($at)
+    /* 4DDAC 8024CDAC AC2C9B80 */  sw         $t4, %lo(g_nPaintAnchorX)($at)
     /* 4DDB0 8024CDB0 8D4E0020 */  lw         $t6, 0x20($t2)
-    /* 4DDB4 8024CDB4 3C018037 */  lui        $at, %hi(g_dwPakPort1Status)
-    /* 4DDB8 8024CDB8 AC2E9B84 */  sw         $t6, %lo(g_dwPakPort1Status)($at)
-    /* 4DDBC 8024CDBC 3C018029 */  lui        $at, %hi(gDecalCanvasHeight)
+    /* 4DDB4 8024CDB4 3C018037 */  lui        $at, %hi(g_nPaintAnchorY)
+    /* 4DDB8 8024CDB8 AC2E9B84 */  sw         $t6, %lo(g_nPaintAnchorY)($at)
+    /* 4DDBC 8024CDBC 3C018029 */  lui        $at, %hi(g_bPaintToolStarted)
     /* 4DDC0 8024CDC0 1000001A */  b          .L8024CE2C
-    /* 4DDC4 8024CDC4 A02FDBC0 */   sb        $t7, %lo(gDecalCanvasHeight)($at)
+    /* 4DDC4 8024CDC4 A02FDBC0 */   sb        $t7, %lo(g_bPaintToolStarted)($at)
   .L8024CDC8:
-    /* 4DDC8 8024CDC8 0C09132A */  jal        CommitFramebuffer
+    /* 4DDC8 8024CDC8 0C09132A */  jal        SaveDecalUndo
     /* 4DDCC 8024CDCC 00000000 */   nop
     /* 4DDD0 8024CDD0 3C0A8029 */  lui        $t2, %hi(g_texPaintCursor)
     /* 4DDD4 8024CDD4 254AD110 */  addiu      $t2, $t2, %lo(g_texPaintCursor)
-    /* 4DDD8 8024CDD8 3C048037 */  lui        $a0, %hi(g_dwPakPort0Status)
-    /* 4DDDC 8024CDDC 3C058037 */  lui        $a1, %hi(g_dwPakPort1Status)
-    /* 4DDE0 8024CDE0 8CA59B84 */  lw         $a1, %lo(g_dwPakPort1Status)($a1)
-    /* 4DDE4 8024CDE4 8C849B80 */  lw         $a0, %lo(g_dwPakPort0Status)($a0)
+    /* 4DDD8 8024CDD8 3C048037 */  lui        $a0, %hi(g_nPaintAnchorX)
+    /* 4DDDC 8024CDDC 3C058037 */  lui        $a1, %hi(g_nPaintAnchorY)
+    /* 4DDE0 8024CDE0 8CA59B84 */  lw         $a1, %lo(g_nPaintAnchorY)($a1)
+    /* 4DDE4 8024CDE4 8C849B80 */  lw         $a0, %lo(g_nPaintAnchorX)($a0)
     /* 4DDE8 8024CDE8 8D46001C */  lw         $a2, 0x1C($t2)
     /* 4DDEC 8024CDEC 0C093C00 */  jal        DrawLine4Bit
     /* 4DDF0 8024CDF0 8D470020 */   lw        $a3, 0x20($t2)
-    /* 4DDF4 8024CDF4 3C188029 */  lui        $t8, %hi(gDecalBrushState)
-    /* 4DDF8 8024CDF8 9318DBBC */  lbu        $t8, %lo(gDecalBrushState)($t8)
+    /* 4DDF4 8024CDF4 3C188029 */  lui        $t8, %hi(g_bPaintShopPlayer)
+    /* 4DDF8 8024CDF8 9318DBBC */  lbu        $t8, %lo(g_bPaintShopPlayer)($t8)
     /* 4DDFC 8024CDFC 3C0B8037 */  lui        $t3, %hi(g_aPlayerInputState)
     /* 4DE00 8024CE00 256BA8E0 */  addiu      $t3, $t3, %lo(g_aPlayerInputState)
     /* 4DE04 8024CE04 0018C880 */  sll        $t9, $t8, 2
@@ -11100,8 +11100,8 @@ glabel ProcessDecalEditorInput
     /* 4DE14 8024CE14 0019C8C0 */  sll        $t9, $t9, 3
     /* 4DE18 8024CE18 0338C823 */  subu       $t9, $t9, $t8
     /* 4DE1C 8024CE1C 0019C880 */  sll        $t9, $t9, 2
-    /* 4DE20 8024CE20 3C018029 */  lui        $at, %hi(gDecalCanvasHeight)
-    /* 4DE24 8024CE24 A020DBC0 */  sb         $zero, %lo(gDecalCanvasHeight)($at)
+    /* 4DE20 8024CE20 3C018029 */  lui        $at, %hi(g_bPaintToolStarted)
+    /* 4DE24 8024CE24 A020DBC0 */  sb         $zero, %lo(g_bPaintToolStarted)($at)
     /* 4DE28 8024CE28 032B3021 */  addu       $a2, $t9, $t3
   .L8024CE2C:
     /* 4DE2C 8024CE2C 00C02025 */  or         $a0, $a2, $zero
@@ -11110,15 +11110,15 @@ glabel ProcessDecalEditorInput
     /* 4DE38 8024CE38 1000014B */  b          .L8024D368
     /* 4DE3C 8024CE3C 8FBF0014 */   lw        $ra, 0x14($sp)
   jlabel .L8024CE40
-    /* 4DE40 8024CE40 0C09132A */  jal        CommitFramebuffer
+    /* 4DE40 8024CE40 0C09132A */  jal        SaveDecalUndo
     /* 4DE44 8024CE44 00000000 */   nop
     /* 4DE48 8024CE48 3C0A8029 */  lui        $t2, %hi(g_texPaintCursor)
     /* 4DE4C 8024CE4C 254AD110 */  addiu      $t2, $t2, %lo(g_texPaintCursor)
     /* 4DE50 8024CE50 8D44001C */  lw         $a0, 0x1C($t2)
     /* 4DE54 8024CE54 0C093728 */  jal        FloodFill4Bit
     /* 4DE58 8024CE58 8D450020 */   lw        $a1, 0x20($t2)
-    /* 4DE5C 8024CE5C 3C0D8029 */  lui        $t5, %hi(gDecalBrushState)
-    /* 4DE60 8024CE60 91ADDBBC */  lbu        $t5, %lo(gDecalBrushState)($t5)
+    /* 4DE5C 8024CE5C 3C0D8029 */  lui        $t5, %hi(g_bPaintShopPlayer)
+    /* 4DE60 8024CE60 91ADDBBC */  lbu        $t5, %lo(g_bPaintShopPlayer)($t5)
     /* 4DE64 8024CE64 3C0E8037 */  lui        $t6, %hi(g_aPlayerInputState)
     /* 4DE68 8024CE68 25CEA8E0 */  addiu      $t6, $t6, %lo(g_aPlayerInputState)
     /* 4DE6C 8024CE6C 000D6080 */  sll        $t4, $t5, 2
@@ -11134,33 +11134,33 @@ glabel ProcessDecalEditorInput
     /* 4DE94 8024CE94 10000134 */  b          .L8024D368
     /* 4DE98 8024CE98 8FBF0014 */   lw        $ra, 0x14($sp)
   jlabel .L8024CE9C
-    /* 4DE9C 8024CE9C 3C0F8029 */  lui        $t7, %hi(gDecalCanvasHeight)
-    /* 4DEA0 8024CEA0 91EFDBC0 */  lbu        $t7, %lo(gDecalCanvasHeight)($t7)
+    /* 4DE9C 8024CE9C 3C0F8029 */  lui        $t7, %hi(g_bPaintToolStarted)
+    /* 4DEA0 8024CEA0 91EFDBC0 */  lbu        $t7, %lo(g_bPaintToolStarted)($t7)
     /* 4DEA4 8024CEA4 15E0000B */  bnez       $t7, .L8024CED4
     /* 4DEA8 8024CEA8 00000000 */   nop
     /* 4DEAC 8024CEAC 8D58001C */  lw         $t8, 0x1C($t2)
-    /* 4DEB0 8024CEB0 3C018037 */  lui        $at, %hi(g_dwPakPort0Status)
+    /* 4DEB0 8024CEB0 3C018037 */  lui        $at, %hi(g_nPaintAnchorX)
     /* 4DEB4 8024CEB4 240B0001 */  addiu      $t3, $zero, 0x1
-    /* 4DEB8 8024CEB8 AC389B80 */  sw         $t8, %lo(g_dwPakPort0Status)($at)
+    /* 4DEB8 8024CEB8 AC389B80 */  sw         $t8, %lo(g_nPaintAnchorX)($at)
     /* 4DEBC 8024CEBC 8D590020 */  lw         $t9, 0x20($t2)
-    /* 4DEC0 8024CEC0 3C018037 */  lui        $at, %hi(g_dwPakPort1Status)
-    /* 4DEC4 8024CEC4 AC399B84 */  sw         $t9, %lo(g_dwPakPort1Status)($at)
-    /* 4DEC8 8024CEC8 3C018029 */  lui        $at, %hi(gDecalCanvasHeight)
+    /* 4DEC0 8024CEC0 3C018037 */  lui        $at, %hi(g_nPaintAnchorY)
+    /* 4DEC4 8024CEC4 AC399B84 */  sw         $t9, %lo(g_nPaintAnchorY)($at)
+    /* 4DEC8 8024CEC8 3C018029 */  lui        $at, %hi(g_bPaintToolStarted)
     /* 4DECC 8024CECC 1000003E */  b          .L8024CFC8
-    /* 4DED0 8024CED0 A02BDBC0 */   sb        $t3, %lo(gDecalCanvasHeight)($at)
+    /* 4DED0 8024CED0 A02BDBC0 */   sb        $t3, %lo(g_bPaintToolStarted)($at)
   .L8024CED4:
-    /* 4DED4 8024CED4 0C09132A */  jal        CommitFramebuffer
+    /* 4DED4 8024CED4 0C09132A */  jal        SaveDecalUndo
     /* 4DED8 8024CED8 00000000 */   nop
-    /* 4DEDC 8024CEDC 3C028029 */  lui        $v0, %hi(g_bController1Connected)
-    /* 4DEE0 8024CEE0 9042CF5C */  lbu        $v0, %lo(g_bController1Connected)($v0)
+    /* 4DEDC 8024CEDC 3C028029 */  lui        $v0, %hi(D_8028CF5C)
+    /* 4DEE0 8024CEE0 9042CF5C */  lbu        $v0, %lo(D_8028CF5C)($v0)
     /* 4DEE4 8024CEE4 3C0A8029 */  lui        $t2, %hi(g_texPaintCursor)
     /* 4DEE8 8024CEE8 254AD110 */  addiu      $t2, $t2, %lo(g_texPaintCursor)
     /* 4DEEC 8024CEEC 1440000A */  bnez       $v0, .L8024CF18
     /* 4DEF0 8024CEF0 24030001 */   addiu     $v1, $zero, 0x1
-    /* 4DEF4 8024CEF4 3C048037 */  lui        $a0, %hi(g_dwPakPort0Status)
-    /* 4DEF8 8024CEF8 3C058037 */  lui        $a1, %hi(g_dwPakPort1Status)
-    /* 4DEFC 8024CEFC 8CA59B84 */  lw         $a1, %lo(g_dwPakPort1Status)($a1)
-    /* 4DF00 8024CF00 8C849B80 */  lw         $a0, %lo(g_dwPakPort0Status)($a0)
+    /* 4DEF4 8024CEF4 3C048037 */  lui        $a0, %hi(g_nPaintAnchorX)
+    /* 4DEF8 8024CEF8 3C058037 */  lui        $a1, %hi(g_nPaintAnchorY)
+    /* 4DEFC 8024CEFC 8CA59B84 */  lw         $a1, %lo(g_nPaintAnchorY)($a1)
+    /* 4DF00 8024CF00 8C849B80 */  lw         $a0, %lo(g_nPaintAnchorX)($a0)
     /* 4DF04 8024CF04 8D46001C */  lw         $a2, 0x1C($t2)
     /* 4DF08 8024CF08 0C093DF5 */  jal        FillRect4Bit
     /* 4DF0C 8024CF0C 8D470020 */   lw        $a3, 0x20($t2)
@@ -11169,39 +11169,39 @@ glabel ProcessDecalEditorInput
   .L8024CF18:
     /* 4DF18 8024CF18 1462000A */  bne        $v1, $v0, .L8024CF44
     /* 4DF1C 8024CF1C 24010002 */   addiu     $at, $zero, 0x2
-    /* 4DF20 8024CF20 3C048037 */  lui        $a0, %hi(g_dwPakPort0Status)
-    /* 4DF24 8024CF24 3C058037 */  lui        $a1, %hi(g_dwPakPort1Status)
-    /* 4DF28 8024CF28 8CA59B84 */  lw         $a1, %lo(g_dwPakPort1Status)($a1)
-    /* 4DF2C 8024CF2C 8C849B80 */  lw         $a0, %lo(g_dwPakPort0Status)($a0)
+    /* 4DF20 8024CF20 3C048037 */  lui        $a0, %hi(g_nPaintAnchorX)
+    /* 4DF24 8024CF24 3C058037 */  lui        $a1, %hi(g_nPaintAnchorY)
+    /* 4DF28 8024CF28 8CA59B84 */  lw         $a1, %lo(g_nPaintAnchorY)($a1)
+    /* 4DF2C 8024CF2C 8C849B80 */  lw         $a0, %lo(g_nPaintAnchorX)($a0)
     /* 4DF30 8024CF30 8D46001C */  lw         $a2, 0x1C($t2)
-    /* 4DF34 8024CF34 0C093E33 */  jal        DrawDecalRectangle
+    /* 4DF34 8024CF34 0C093E33 */  jal        StrokeDecalRectangle
     /* 4DF38 8024CF38 8D470020 */   lw        $a3, 0x20($t2)
     /* 4DF3C 8024CF3C 10000014 */  b          .L8024CF90
     /* 4DF40 8024CF40 00000000 */   nop
   .L8024CF44:
     /* 4DF44 8024CF44 14410009 */  bne        $v0, $at, .L8024CF6C
-    /* 4DF48 8024CF48 3C048037 */   lui       $a0, %hi(g_dwPakPort0Status)
-    /* 4DF4C 8024CF4C 3C058037 */  lui        $a1, %hi(g_dwPakPort1Status)
-    /* 4DF50 8024CF50 8CA59B84 */  lw         $a1, %lo(g_dwPakPort1Status)($a1)
-    /* 4DF54 8024CF54 8C849B80 */  lw         $a0, %lo(g_dwPakPort0Status)($a0)
+    /* 4DF48 8024CF48 3C048037 */   lui       $a0, %hi(g_nPaintAnchorX)
+    /* 4DF4C 8024CF4C 3C058037 */  lui        $a1, %hi(g_nPaintAnchorY)
+    /* 4DF50 8024CF50 8CA59B84 */  lw         $a1, %lo(g_nPaintAnchorY)($a1)
+    /* 4DF54 8024CF54 8C849B80 */  lw         $a0, %lo(g_nPaintAnchorX)($a0)
     /* 4DF58 8024CF58 8D46001C */  lw         $a2, 0x1C($t2)
-    /* 4DF5C 8024CF5C 0C093EF2 */  jal        DrawDecalRoundedRect
+    /* 4DF5C 8024CF5C 0C093EF2 */  jal        FillDecalRoundRect
     /* 4DF60 8024CF60 8D470020 */   lw        $a3, 0x20($t2)
     /* 4DF64 8024CF64 1000000A */  b          .L8024CF90
     /* 4DF68 8024CF68 00000000 */   nop
   .L8024CF6C:
     /* 4DF6C 8024CF6C 24010003 */  addiu      $at, $zero, 0x3
     /* 4DF70 8024CF70 14410007 */  bne        $v0, $at, .L8024CF90
-    /* 4DF74 8024CF74 3C048037 */   lui       $a0, %hi(g_dwPakPort0Status)
-    /* 4DF78 8024CF78 3C058037 */  lui        $a1, %hi(g_dwPakPort1Status)
-    /* 4DF7C 8024CF7C 8CA59B84 */  lw         $a1, %lo(g_dwPakPort1Status)($a1)
-    /* 4DF80 8024CF80 8C849B80 */  lw         $a0, %lo(g_dwPakPort0Status)($a0)
+    /* 4DF74 8024CF74 3C048037 */   lui       $a0, %hi(g_nPaintAnchorX)
+    /* 4DF78 8024CF78 3C058037 */  lui        $a1, %hi(g_nPaintAnchorY)
+    /* 4DF7C 8024CF7C 8CA59B84 */  lw         $a1, %lo(g_nPaintAnchorY)($a1)
+    /* 4DF80 8024CF80 8C849B80 */  lw         $a0, %lo(g_nPaintAnchorX)($a0)
     /* 4DF84 8024CF84 8D46001C */  lw         $a2, 0x1C($t2)
     /* 4DF88 8024CF88 0C093FAE */  jal        DrawDecalRoundedRectOutline
     /* 4DF8C 8024CF8C 8D470020 */   lw        $a3, 0x20($t2)
   .L8024CF90:
-    /* 4DF90 8024CF90 3C0D8029 */  lui        $t5, %hi(gDecalBrushState)
-    /* 4DF94 8024CF94 91ADDBBC */  lbu        $t5, %lo(gDecalBrushState)($t5)
+    /* 4DF90 8024CF90 3C0D8029 */  lui        $t5, %hi(g_bPaintShopPlayer)
+    /* 4DF94 8024CF94 91ADDBBC */  lbu        $t5, %lo(g_bPaintShopPlayer)($t5)
     /* 4DF98 8024CF98 3C0E8037 */  lui        $t6, %hi(g_aPlayerInputState)
     /* 4DF9C 8024CF9C 25CEA8E0 */  addiu      $t6, $t6, %lo(g_aPlayerInputState)
     /* 4DFA0 8024CFA0 000D6080 */  sll        $t4, $t5, 2
@@ -11211,8 +11211,8 @@ glabel ProcessDecalEditorInput
     /* 4DFB0 8024CFB0 000C60C0 */  sll        $t4, $t4, 3
     /* 4DFB4 8024CFB4 018D6023 */  subu       $t4, $t4, $t5
     /* 4DFB8 8024CFB8 000C6080 */  sll        $t4, $t4, 2
-    /* 4DFBC 8024CFBC 3C018029 */  lui        $at, %hi(gDecalCanvasHeight)
-    /* 4DFC0 8024CFC0 A020DBC0 */  sb         $zero, %lo(gDecalCanvasHeight)($at)
+    /* 4DFBC 8024CFBC 3C018029 */  lui        $at, %hi(g_bPaintToolStarted)
+    /* 4DFC0 8024CFC0 A020DBC0 */  sb         $zero, %lo(g_bPaintToolStarted)($at)
     /* 4DFC4 8024CFC4 018E3021 */  addu       $a2, $t4, $t6
   .L8024CFC8:
     /* 4DFC8 8024CFC8 00C02025 */  or         $a0, $a2, $zero
@@ -11221,25 +11221,25 @@ glabel ProcessDecalEditorInput
     /* 4DFD4 8024CFD4 100000E4 */  b          .L8024D368
     /* 4DFD8 8024CFD8 8FBF0014 */   lw        $ra, 0x14($sp)
   jlabel .L8024CFDC
-    /* 4DFDC 8024CFDC 3C028029 */  lui        $v0, %hi(gDecalCanvasHeight)
-    /* 4DFE0 8024CFE0 2442DBC0 */  addiu      $v0, $v0, %lo(gDecalCanvasHeight)
+    /* 4DFDC 8024CFDC 3C028029 */  lui        $v0, %hi(g_bPaintToolStarted)
+    /* 4DFE0 8024CFE0 2442DBC0 */  addiu      $v0, $v0, %lo(g_bPaintToolStarted)
     /* 4DFE4 8024CFE4 904F0000 */  lbu        $t7, 0x0($v0)
     /* 4DFE8 8024CFE8 15E0000A */  bnez       $t7, .L8024D014
     /* 4DFEC 8024CFEC 00000000 */   nop
     /* 4DFF0 8024CFF0 8D58001C */  lw         $t8, 0x1C($t2)
-    /* 4DFF4 8024CFF4 3C018037 */  lui        $at, %hi(g_dwPakPort0Status)
+    /* 4DFF4 8024CFF4 3C018037 */  lui        $at, %hi(g_nPaintAnchorX)
     /* 4DFF8 8024CFF8 240B0001 */  addiu      $t3, $zero, 0x1
-    /* 4DFFC 8024CFFC AC389B80 */  sw         $t8, %lo(g_dwPakPort0Status)($at)
+    /* 4DFFC 8024CFFC AC389B80 */  sw         $t8, %lo(g_nPaintAnchorX)($at)
     /* 4E000 8024D000 8D590020 */  lw         $t9, 0x20($t2)
-    /* 4E004 8024D004 3C018037 */  lui        $at, %hi(g_dwPakPort1Status)
-    /* 4E008 8024D008 AC399B84 */  sw         $t9, %lo(g_dwPakPort1Status)($at)
+    /* 4E004 8024D004 3C018037 */  lui        $at, %hi(g_nPaintAnchorY)
+    /* 4E008 8024D008 AC399B84 */  sw         $t9, %lo(g_nPaintAnchorY)($at)
     /* 4E00C 8024D00C 1000005A */  b          .L8024D178
     /* 4E010 8024D010 A04B0000 */   sb        $t3, 0x0($v0)
   .L8024D014:
-    /* 4E014 8024D014 0C09132A */  jal        CommitFramebuffer
+    /* 4E014 8024D014 0C09132A */  jal        SaveDecalUndo
     /* 4E018 8024D018 00000000 */   nop
-    /* 4E01C 8024D01C 3C028029 */  lui        $v0, %hi(g_bController2Connected)
-    /* 4E020 8024D020 9042CF8C */  lbu        $v0, %lo(g_bController2Connected)($v0)
+    /* 4E01C 8024D01C 3C028029 */  lui        $v0, %hi(D_8028CF8C)
+    /* 4E020 8024D020 9042CF8C */  lbu        $v0, %lo(D_8028CF8C)($v0)
     /* 4E024 8024D024 3C0A8029 */  lui        $t2, %hi(g_texPaintCursor)
     /* 4E028 8024D028 24010002 */  addiu      $at, $zero, 0x2
     /* 4E02C 8024D02C 10410003 */  beq        $v0, $at, .L8024D03C
@@ -11247,11 +11247,11 @@ glabel ProcessDecalEditorInput
     /* 4E034 8024D034 24010003 */  addiu      $at, $zero, 0x3
     /* 4E038 8024D038 1441001A */  bne        $v0, $at, .L8024D0A4
   .L8024D03C:
-    /* 4E03C 8024D03C 3C0C8037 */   lui       $t4, %hi(g_dwPakPort0Status)
-    /* 4E040 8024D040 8D8C9B80 */  lw         $t4, %lo(g_dwPakPort0Status)($t4)
+    /* 4E03C 8024D03C 3C0C8037 */   lui       $t4, %hi(g_nPaintAnchorX)
+    /* 4E040 8024D040 8D8C9B80 */  lw         $t4, %lo(g_nPaintAnchorX)($t4)
     /* 4E044 8024D044 8D4D001C */  lw         $t5, 0x1C($t2)
-    /* 4E048 8024D048 3C0F8037 */  lui        $t7, %hi(g_dwPakPort1Status)
-    /* 4E04C 8024D04C 8DEF9B84 */  lw         $t7, %lo(g_dwPakPort1Status)($t7)
+    /* 4E048 8024D048 3C0F8037 */  lui        $t7, %hi(g_nPaintAnchorY)
+    /* 4E04C 8024D04C 8DEF9B84 */  lw         $t7, %lo(g_nPaintAnchorY)($t7)
     /* 4E050 8024D050 01AC2023 */  subu       $a0, $t5, $t4
     /* 4E054 8024D054 00840019 */  multu      $a0, $a0
     /* 4E058 8024D058 8D4E0020 */  lw         $t6, 0x20($t2)
@@ -11267,19 +11267,19 @@ glabel ProcessDecalEditorInput
     /* 4E080 8024D080 46802320 */   cvt.s.w   $f12, $f4
     /* 4E084 8024D084 4600018D */  trunc.w.s  $f6, $f0
     /* 4E088 8024D088 3C0A8029 */  lui        $t2, %hi(g_texPaintCursor)
-    /* 4E08C 8024D08C 3C028029 */  lui        $v0, %hi(g_bController2Connected)
+    /* 4E08C 8024D08C 3C028029 */  lui        $v0, %hi(D_8028CF8C)
     /* 4E090 8024D090 254AD110 */  addiu      $t2, $t2, %lo(g_texPaintCursor)
     /* 4E094 8024D094 44063000 */  mfc1       $a2, $f6
-    /* 4E098 8024D098 9042CF8C */  lbu        $v0, %lo(g_bController2Connected)($v0)
+    /* 4E098 8024D098 9042CF8C */  lbu        $v0, %lo(D_8028CF8C)($v0)
     /* 4E09C 8024D09C 00066083 */  sra        $t4, $a2, 2
     /* 4E0A0 8024D0A0 AFAC005C */  sw         $t4, 0x5C($sp)
   .L8024D0A4:
     /* 4E0A4 8024D0A4 1440000A */  bnez       $v0, .L8024D0D0
     /* 4E0A8 8024D0A8 8FA6005C */   lw        $a2, 0x5C($sp)
-    /* 4E0AC 8024D0AC 3C048037 */  lui        $a0, %hi(g_dwPakPort0Status)
-    /* 4E0B0 8024D0B0 3C058037 */  lui        $a1, %hi(g_dwPakPort1Status)
-    /* 4E0B4 8024D0B4 8CA59B84 */  lw         $a1, %lo(g_dwPakPort1Status)($a1)
-    /* 4E0B8 8024D0B8 8C849B80 */  lw         $a0, %lo(g_dwPakPort0Status)($a0)
+    /* 4E0AC 8024D0AC 3C048037 */  lui        $a0, %hi(g_nPaintAnchorX)
+    /* 4E0B0 8024D0B0 3C058037 */  lui        $a1, %hi(g_nPaintAnchorY)
+    /* 4E0B4 8024D0B4 8CA59B84 */  lw         $a1, %lo(g_nPaintAnchorY)($a1)
+    /* 4E0B8 8024D0B8 8C849B80 */  lw         $a0, %lo(g_nPaintAnchorX)($a0)
     /* 4E0BC 8024D0BC 8D46001C */  lw         $a2, 0x1C($t2)
     /* 4E0C0 8024D0C0 0C0942D6 */  jal        DrawDecalFilledEllipse
     /* 4E0C4 8024D0C4 8D470020 */   lw        $a3, 0x20($t2)
@@ -11289,10 +11289,10 @@ glabel ProcessDecalEditorInput
     /* 4E0D0 8024D0D0 24030001 */  addiu      $v1, $zero, 0x1
     /* 4E0D4 8024D0D4 1462000A */  bne        $v1, $v0, .L8024D100
     /* 4E0D8 8024D0D8 24010002 */   addiu     $at, $zero, 0x2
-    /* 4E0DC 8024D0DC 3C048037 */  lui        $a0, %hi(g_dwPakPort0Status)
-    /* 4E0E0 8024D0E0 3C058037 */  lui        $a1, %hi(g_dwPakPort1Status)
-    /* 4E0E4 8024D0E4 8CA59B84 */  lw         $a1, %lo(g_dwPakPort1Status)($a1)
-    /* 4E0E8 8024D0E8 8C849B80 */  lw         $a0, %lo(g_dwPakPort0Status)($a0)
+    /* 4E0DC 8024D0DC 3C048037 */  lui        $a0, %hi(g_nPaintAnchorX)
+    /* 4E0E0 8024D0E0 3C058037 */  lui        $a1, %hi(g_nPaintAnchorY)
+    /* 4E0E4 8024D0E4 8CA59B84 */  lw         $a1, %lo(g_nPaintAnchorY)($a1)
+    /* 4E0E8 8024D0E8 8C849B80 */  lw         $a0, %lo(g_nPaintAnchorX)($a0)
     /* 4E0EC 8024D0EC 8D46001C */  lw         $a2, 0x1C($t2)
     /* 4E0F0 8024D0F0 0C0943F3 */  jal        DrawDecalEllipseOutline
     /* 4E0F4 8024D0F4 8D470020 */   lw        $a3, 0x20($t2)
@@ -11300,25 +11300,25 @@ glabel ProcessDecalEditorInput
     /* 4E0FC 8024D0FC 00000000 */   nop
   .L8024D100:
     /* 4E100 8024D100 14410008 */  bne        $v0, $at, .L8024D124
-    /* 4E104 8024D104 3C048037 */   lui       $a0, %hi(g_dwPakPort0Status)
-    /* 4E108 8024D108 3C058037 */  lui        $a1, %hi(g_dwPakPort1Status)
-    /* 4E10C 8024D10C 8CA59B84 */  lw         $a1, %lo(g_dwPakPort1Status)($a1)
-    /* 4E110 8024D110 8C849B80 */  lw         $a0, %lo(g_dwPakPort0Status)($a0)
-    /* 4E114 8024D114 0C094567 */  jal        DrawCircle4Bit
+    /* 4E104 8024D104 3C048037 */   lui       $a0, %hi(g_nPaintAnchorX)
+    /* 4E108 8024D108 3C058037 */  lui        $a1, %hi(g_nPaintAnchorY)
+    /* 4E10C 8024D10C 8CA59B84 */  lw         $a1, %lo(g_nPaintAnchorY)($a1)
+    /* 4E110 8024D110 8C849B80 */  lw         $a0, %lo(g_nPaintAnchorX)($a0)
+    /* 4E114 8024D114 0C094567 */  jal        FillCircle4Bit
     /* 4E118 8024D118 24070001 */   addiu     $a3, $zero, 0x1
     /* 4E11C 8024D11C 10000008 */  b          .L8024D140
     /* 4E120 8024D120 00000000 */   nop
   .L8024D124:
     /* 4E124 8024D124 24010003 */  addiu      $at, $zero, 0x3
     /* 4E128 8024D128 14410005 */  bne        $v0, $at, .L8024D140
-    /* 4E12C 8024D12C 3C048037 */   lui       $a0, %hi(g_dwPakPort0Status)
-    /* 4E130 8024D130 3C058037 */  lui        $a1, %hi(g_dwPakPort1Status)
-    /* 4E134 8024D134 8CA59B84 */  lw         $a1, %lo(g_dwPakPort1Status)($a1)
+    /* 4E12C 8024D12C 3C048037 */   lui       $a0, %hi(g_nPaintAnchorX)
+    /* 4E130 8024D130 3C058037 */  lui        $a1, %hi(g_nPaintAnchorY)
+    /* 4E134 8024D134 8CA59B84 */  lw         $a1, %lo(g_nPaintAnchorY)($a1)
     /* 4E138 8024D138 0C0945ED */  jal        DrawDecalCircleOutline
-    /* 4E13C 8024D13C 8C849B80 */   lw        $a0, %lo(g_dwPakPort0Status)($a0)
+    /* 4E13C 8024D13C 8C849B80 */   lw        $a0, %lo(g_nPaintAnchorX)($a0)
   .L8024D140:
-    /* 4E140 8024D140 3C0E8029 */  lui        $t6, %hi(gDecalBrushState)
-    /* 4E144 8024D144 91CEDBBC */  lbu        $t6, %lo(gDecalBrushState)($t6)
+    /* 4E140 8024D140 3C0E8029 */  lui        $t6, %hi(g_bPaintShopPlayer)
+    /* 4E144 8024D144 91CEDBBC */  lbu        $t6, %lo(g_bPaintShopPlayer)($t6)
     /* 4E148 8024D148 3C188037 */  lui        $t8, %hi(g_aPlayerInputState)
     /* 4E14C 8024D14C 2718A8E0 */  addiu      $t8, $t8, %lo(g_aPlayerInputState)
     /* 4E150 8024D150 000E7880 */  sll        $t7, $t6, 2
@@ -11328,8 +11328,8 @@ glabel ProcessDecalEditorInput
     /* 4E160 8024D160 000F78C0 */  sll        $t7, $t7, 3
     /* 4E164 8024D164 01EE7823 */  subu       $t7, $t7, $t6
     /* 4E168 8024D168 000F7880 */  sll        $t7, $t7, 2
-    /* 4E16C 8024D16C 3C018029 */  lui        $at, %hi(gDecalCanvasHeight)
-    /* 4E170 8024D170 A020DBC0 */  sb         $zero, %lo(gDecalCanvasHeight)($at)
+    /* 4E16C 8024D16C 3C018029 */  lui        $at, %hi(g_bPaintToolStarted)
+    /* 4E170 8024D170 A020DBC0 */  sb         $zero, %lo(g_bPaintToolStarted)($at)
     /* 4E174 8024D174 01F83021 */  addu       $a2, $t7, $t8
   .L8024D178:
     /* 4E178 8024D178 00C02025 */  or         $a0, $a2, $zero
@@ -11338,24 +11338,24 @@ glabel ProcessDecalEditorInput
     /* 4E184 8024D184 10000078 */  b          .L8024D368
     /* 4E188 8024D188 8FBF0014 */   lw        $ra, 0x14($sp)
   .L8024D18C:
-    /* 4E18C 8024D18C 3C198029 */  lui        $t9, %hi(g_bObjectDirty2)
-    /* 4E190 8024D190 9339DB60 */  lbu        $t9, %lo(g_bObjectDirty2)($t9)
-    /* 4E194 8024D194 3C0B8029 */  lui        $t3, %hi(gDecalCanvasHeight)
+    /* 4E18C 8024D18C 3C198029 */  lui        $t9, %hi(g_bPaintTool)
+    /* 4E190 8024D190 9339DB60 */  lbu        $t9, %lo(g_bPaintTool)($t9)
+    /* 4E194 8024D194 3C0B8029 */  lui        $t3, %hi(g_bPaintToolStarted)
     /* 4E198 8024D198 50F90073 */  beql       $a3, $t9, .L8024D368
     /* 4E19C 8024D19C 8FBF0014 */   lw        $ra, 0x14($sp)
-    /* 4E1A0 8024D1A0 916BDBC0 */  lbu        $t3, %lo(gDecalCanvasHeight)($t3)
-    /* 4E1A4 8024D1A4 3C048029 */  lui        $a0, %hi(g_dwDecalEditorFlags)
+    /* 4E1A0 8024D1A0 916BDBC0 */  lbu        $t3, %lo(g_bPaintToolStarted)($t3)
+    /* 4E1A4 8024D1A4 3C048029 */  lui        $a0, %hi(g_rcDecalCanvas)
     /* 4E1A8 8024D1A8 5160006F */  beql       $t3, $zero, .L8024D368
     /* 4E1AC 8024D1AC 8FBF0014 */   lw        $ra, 0x14($sp)
-    /* 4E1B0 8024D1B0 0C0934FC */  jal        IsPointInRect
-    /* 4E1B4 8024D1B4 2484DB94 */   addiu     $a0, $a0, %lo(g_dwDecalEditorFlags)
+    /* 4E1B0 8024D1B0 0C0934FC */  jal        IsCursorInRect
+    /* 4E1B4 8024D1B4 2484DB94 */   addiu     $a0, $a0, %lo(g_rcDecalCanvas)
     /* 4E1B8 8024D1B8 3C0A8029 */  lui        $t2, %hi(g_texPaintCursor)
     /* 4E1BC 8024D1BC 10400069 */  beqz       $v0, .L8024D364
     /* 4E1C0 8024D1C0 254AD110 */   addiu     $t2, $t2, %lo(g_texPaintCursor)
-    /* 4E1C4 8024D1C4 3C0D8029 */  lui        $t5, %hi(gDecalBrushState)
-    /* 4E1C8 8024D1C8 91ADDBBC */  lbu        $t5, %lo(gDecalBrushState)($t5)
+    /* 4E1C4 8024D1C4 3C0D8029 */  lui        $t5, %hi(g_bPaintShopPlayer)
+    /* 4E1C8 8024D1C8 91ADDBBC */  lbu        $t5, %lo(g_bPaintShopPlayer)($t5)
     /* 4E1CC 8024D1CC 3C0E8037 */  lui        $t6, %hi(g_aPlayerInputState)
-    /* 4E1D0 8024D1D0 3C028029 */  lui        $v0, %hi(g_bObjectDirty2)
+    /* 4E1D0 8024D1D0 3C028029 */  lui        $v0, %hi(g_bPaintTool)
     /* 4E1D4 8024D1D4 000D6080 */  sll        $t4, $t5, 2
     /* 4E1D8 8024D1D8 018D6023 */  subu       $t4, $t4, $t5
     /* 4E1DC 8024D1DC 000C6080 */  sll        $t4, $t4, 2
@@ -11368,14 +11368,14 @@ glabel ProcessDecalEditorInput
     /* 4E1F8 8024D1F8 31CF8010 */  andi       $t7, $t6, 0x8010
     /* 4E1FC 8024D1FC 55E0005A */  bnel       $t7, $zero, .L8024D368
     /* 4E200 8024D200 8FBF0014 */   lw        $ra, 0x14($sp)
-    /* 4E204 8024D204 9042DB60 */  lbu        $v0, %lo(g_bObjectDirty2)($v0)
+    /* 4E204 8024D204 9042DB60 */  lbu        $v0, %lo(g_bPaintTool)($v0)
     /* 4E208 8024D208 24030001 */  addiu      $v1, $zero, 0x1
-    /* 4E20C 8024D20C 3C018029 */  lui        $at, %hi(gDecalCanvasHeight)
+    /* 4E20C 8024D20C 3C018029 */  lui        $at, %hi(g_bPaintToolStarted)
     /* 4E210 8024D210 1043000B */  beq        $v0, $v1, .L8024D240
     /* 4E214 8024D214 00000000 */   nop
     /* 4E218 8024D218 24010003 */  addiu      $at, $zero, 0x3
     /* 4E21C 8024D21C 1041000A */  beq        $v0, $at, .L8024D248
-    /* 4E220 8024D220 3C048037 */   lui       $a0, %hi(g_dwPakPort0Status)
+    /* 4E220 8024D220 3C048037 */   lui       $a0, %hi(g_nPaintAnchorX)
     /* 4E224 8024D224 24010005 */  addiu      $at, $zero, 0x5
     /* 4E228 8024D228 1041000F */  beq        $v0, $at, .L8024D268
     /* 4E22C 8024D22C 24010006 */   addiu     $at, $zero, 0x6
@@ -11385,55 +11385,55 @@ glabel ProcessDecalEditorInput
     /* 4E23C 8024D23C 8FBF0014 */   lw        $ra, 0x14($sp)
   .L8024D240:
     /* 4E240 8024D240 10000048 */  b          .L8024D364
-    /* 4E244 8024D244 A020DBC0 */   sb        $zero, %lo(gDecalCanvasHeight)($at)
+    /* 4E244 8024D244 A020DBC0 */   sb        $zero, %lo(g_bPaintToolStarted)($at)
   .L8024D248:
-    /* 4E248 8024D248 3C058037 */  lui        $a1, %hi(g_dwPakPort1Status)
-    /* 4E24C 8024D24C 8CA59B84 */  lw         $a1, %lo(g_dwPakPort1Status)($a1)
-    /* 4E250 8024D250 8C849B80 */  lw         $a0, %lo(g_dwPakPort0Status)($a0)
+    /* 4E248 8024D248 3C058037 */  lui        $a1, %hi(g_nPaintAnchorY)
+    /* 4E24C 8024D24C 8CA59B84 */  lw         $a1, %lo(g_nPaintAnchorY)($a1)
+    /* 4E250 8024D250 8C849B80 */  lw         $a0, %lo(g_nPaintAnchorX)($a0)
     /* 4E254 8024D254 8D46001C */  lw         $a2, 0x1C($t2)
     /* 4E258 8024D258 0C094695 */  jal        DrawDashedLine
     /* 4E25C 8024D25C 8D470020 */   lw        $a3, 0x20($t2)
     /* 4E260 8024D260 10000041 */  b          .L8024D368
     /* 4E264 8024D264 8FBF0014 */   lw        $ra, 0x14($sp)
   .L8024D268:
-    /* 4E268 8024D268 3C028029 */  lui        $v0, %hi(g_bController1Connected)
-    /* 4E26C 8024D26C 9042CF5C */  lbu        $v0, %lo(g_bController1Connected)($v0)
-    /* 4E270 8024D270 3C048037 */  lui        $a0, %hi(g_dwPakPort0Status)
-    /* 4E274 8024D274 3C058037 */  lui        $a1, %hi(g_dwPakPort1Status)
+    /* 4E268 8024D268 3C028029 */  lui        $v0, %hi(D_8028CF5C)
+    /* 4E26C 8024D26C 9042CF5C */  lbu        $v0, %lo(D_8028CF5C)($v0)
+    /* 4E270 8024D270 3C048037 */  lui        $a0, %hi(g_nPaintAnchorX)
+    /* 4E274 8024D274 3C058037 */  lui        $a1, %hi(g_nPaintAnchorY)
     /* 4E278 8024D278 10400003 */  beqz       $v0, .L8024D288
     /* 4E27C 8024D27C 00000000 */   nop
     /* 4E280 8024D280 14620008 */  bne        $v1, $v0, .L8024D2A4
     /* 4E284 8024D284 00000000 */   nop
   .L8024D288:
-    /* 4E288 8024D288 8C849B80 */  lw         $a0, %lo(g_dwPakPort0Status)($a0)
-    /* 4E28C 8024D28C 8CA59B84 */  lw         $a1, %lo(g_dwPakPort1Status)($a1)
+    /* 4E288 8024D288 8C849B80 */  lw         $a0, %lo(g_nPaintAnchorX)($a0)
+    /* 4E28C 8024D28C 8CA59B84 */  lw         $a1, %lo(g_nPaintAnchorY)($a1)
     /* 4E290 8024D290 8D46001C */  lw         $a2, 0x1C($t2)
     /* 4E294 8024D294 0C094735 */  jal        DrawDashedRectangle
     /* 4E298 8024D298 8D470020 */   lw        $a3, 0x20($t2)
     /* 4E29C 8024D29C 10000032 */  b          .L8024D368
     /* 4E2A0 8024D2A0 8FBF0014 */   lw        $ra, 0x14($sp)
   .L8024D2A4:
-    /* 4E2A4 8024D2A4 3C048037 */  lui        $a0, %hi(g_dwPakPort0Status)
-    /* 4E2A8 8024D2A8 3C058037 */  lui        $a1, %hi(g_dwPakPort1Status)
-    /* 4E2AC 8024D2AC 8CA59B84 */  lw         $a1, %lo(g_dwPakPort1Status)($a1)
-    /* 4E2B0 8024D2B0 8C849B80 */  lw         $a0, %lo(g_dwPakPort0Status)($a0)
+    /* 4E2A4 8024D2A4 3C048037 */  lui        $a0, %hi(g_nPaintAnchorX)
+    /* 4E2A8 8024D2A8 3C058037 */  lui        $a1, %hi(g_nPaintAnchorY)
+    /* 4E2AC 8024D2AC 8CA59B84 */  lw         $a1, %lo(g_nPaintAnchorY)($a1)
+    /* 4E2B0 8024D2B0 8C849B80 */  lw         $a0, %lo(g_nPaintAnchorX)($a0)
     /* 4E2B4 8024D2B4 8D46001C */  lw         $a2, 0x1C($t2)
     /* 4E2B8 8024D2B8 0C0947DA */  jal        DrawDashedRoundedRect
     /* 4E2BC 8024D2BC 8D470020 */   lw        $a3, 0x20($t2)
     /* 4E2C0 8024D2C0 10000029 */  b          .L8024D368
     /* 4E2C4 8024D2C4 8FBF0014 */   lw        $ra, 0x14($sp)
   .L8024D2C8:
-    /* 4E2C8 8024D2C8 3C028029 */  lui        $v0, %hi(g_bController2Connected)
-    /* 4E2CC 8024D2CC 9042CF8C */  lbu        $v0, %lo(g_bController2Connected)($v0)
-    /* 4E2D0 8024D2D0 3C048037 */  lui        $a0, %hi(g_dwPakPort0Status)
-    /* 4E2D4 8024D2D4 3C058037 */  lui        $a1, %hi(g_dwPakPort1Status)
+    /* 4E2C8 8024D2C8 3C028029 */  lui        $v0, %hi(D_8028CF8C)
+    /* 4E2CC 8024D2CC 9042CF8C */  lbu        $v0, %lo(D_8028CF8C)($v0)
+    /* 4E2D0 8024D2D0 3C048037 */  lui        $a0, %hi(g_nPaintAnchorX)
+    /* 4E2D4 8024D2D4 3C058037 */  lui        $a1, %hi(g_nPaintAnchorY)
     /* 4E2D8 8024D2D8 10400003 */  beqz       $v0, .L8024D2E8
     /* 4E2DC 8024D2DC 00000000 */   nop
     /* 4E2E0 8024D2E0 14620008 */  bne        $v1, $v0, .L8024D304
-    /* 4E2E4 8024D2E4 3C198037 */   lui       $t9, %hi(g_dwPakPort0Status)
+    /* 4E2E4 8024D2E4 3C198037 */   lui       $t9, %hi(g_nPaintAnchorX)
   .L8024D2E8:
-    /* 4E2E8 8024D2E8 8C849B80 */  lw         $a0, %lo(g_dwPakPort0Status)($a0)
-    /* 4E2EC 8024D2EC 8CA59B84 */  lw         $a1, %lo(g_dwPakPort1Status)($a1)
+    /* 4E2E8 8024D2E8 8C849B80 */  lw         $a0, %lo(g_nPaintAnchorX)($a0)
+    /* 4E2EC 8024D2EC 8CA59B84 */  lw         $a1, %lo(g_nPaintAnchorY)($a1)
     /* 4E2F0 8024D2F0 8D46001C */  lw         $a2, 0x1C($t2)
     /* 4E2F4 8024D2F4 0C0948F3 */  jal        DrawDashedEllipse
     /* 4E2F8 8024D2F8 8D470020 */   lw        $a3, 0x20($t2)
@@ -11441,9 +11441,9 @@ glabel ProcessDecalEditorInput
     /* 4E300 8024D300 8FBF0014 */   lw        $ra, 0x14($sp)
   .L8024D304:
     /* 4E304 8024D304 8D58001C */  lw         $t8, 0x1C($t2)
-    /* 4E308 8024D308 8F399B80 */  lw         $t9, %lo(g_dwPakPort0Status)($t9)
-    /* 4E30C 8024D30C 3C0D8037 */  lui        $t5, %hi(g_dwPakPort1Status)
-    /* 4E310 8024D310 8DAD9B84 */  lw         $t5, %lo(g_dwPakPort1Status)($t5)
+    /* 4E308 8024D308 8F399B80 */  lw         $t9, %lo(g_nPaintAnchorX)($t9)
+    /* 4E30C 8024D30C 3C0D8037 */  lui        $t5, %hi(g_nPaintAnchorY)
+    /* 4E310 8024D310 8DAD9B84 */  lw         $t5, %lo(g_nPaintAnchorY)($t5)
     /* 4E314 8024D314 03192023 */  subu       $a0, $t8, $t9
     /* 4E318 8024D318 00840019 */  multu      $a0, $a0
     /* 4E31C 8024D31C 8D4B0020 */  lw         $t3, 0x20($t2)
@@ -11458,12 +11458,12 @@ glabel ProcessDecalEditorInput
     /* 4E340 8024D340 0C098450 */  jal        sqrtf
     /* 4E344 8024D344 46804320 */   cvt.s.w   $f12, $f8
     /* 4E348 8024D348 4600028D */  trunc.w.s  $f10, $f0
-    /* 4E34C 8024D34C 3C048037 */  lui        $a0, %hi(g_dwPakPort0Status)
-    /* 4E350 8024D350 3C058037 */  lui        $a1, %hi(g_dwPakPort1Status)
-    /* 4E354 8024D354 8CA59B84 */  lw         $a1, %lo(g_dwPakPort1Status)($a1)
+    /* 4E34C 8024D34C 3C048037 */  lui        $a0, %hi(g_nPaintAnchorX)
+    /* 4E350 8024D350 3C058037 */  lui        $a1, %hi(g_nPaintAnchorY)
+    /* 4E354 8024D354 8CA59B84 */  lw         $a1, %lo(g_nPaintAnchorY)($a1)
     /* 4E358 8024D358 44065000 */  mfc1       $a2, $f10
     /* 4E35C 8024D35C 0C094A3E */  jal        DrawDashedCircle
-    /* 4E360 8024D360 8C849B80 */   lw        $a0, %lo(g_dwPakPort0Status)($a0)
+    /* 4E360 8024D360 8C849B80 */   lw        $a0, %lo(g_nPaintAnchorX)($a0)
   jlabel .L8024D364
     /* 4E364 8024D364 8FBF0014 */  lw         $ra, 0x14($sp)
   .L8024D368:
@@ -11510,9 +11510,9 @@ glabel IsCursorInButton
     /* 4E3EC 8024D3EC 00000000 */   nop
 endlabel IsCursorInButton
 
-nonmatching IsPointInRect, 0x6C
+nonmatching IsCursorInRect, 0x6C
 
-glabel IsPointInRect
+glabel IsCursorInRect
     /* 4E3F0 8024D3F0 3C058029 */  lui        $a1, %hi(g_texPaintCursor)
     /* 4E3F4 8024D3F4 24A5D110 */  addiu      $a1, $a1, %lo(g_texPaintCursor)
     /* 4E3F8 8024D3F8 8CA2001C */  lw         $v0, 0x1C($a1)
@@ -11541,11 +11541,11 @@ glabel IsPointInRect
   .L8024D454:
     /* 4E454 8024D454 03E00008 */  jr         $ra
     /* 4E458 8024D458 00000000 */   nop
-endlabel IsPointInRect
+endlabel IsCursorInRect
 
-nonmatching IsCursorInRect, 0x6C
+nonmatching IsCursorInSwatch, 0x6C
 
-glabel IsCursorInRect
+glabel IsCursorInSwatch
     /* 4E45C 8024D45C 3C058029 */  lui        $a1, %hi(g_texPaintCursor)
     /* 4E460 8024D460 24A5D110 */  addiu      $a1, $a1, %lo(g_texPaintCursor)
     /* 4E464 8024D464 8CA2001C */  lw         $v0, 0x1C($a1)
@@ -11574,17 +11574,17 @@ glabel IsCursorInRect
   .L8024D4C0:
     /* 4E4C0 8024D4C0 03E00008 */  jr         $ra
     /* 4E4C4 8024D4C4 00000000 */   nop
-endlabel IsCursorInRect
+endlabel IsCursorInSwatch
 
-nonmatching IsCursorInToolButton, 0x74
+nonmatching IsCursorOnKeyboardKey, 0x74
 
-glabel IsCursorInToolButton
+glabel IsCursorOnKeyboardKey
     /* 4E4C8 8024D4C8 3C058029 */  lui        $a1, %hi(g_texPaintCursor)
     /* 4E4CC 8024D4CC 24A5D110 */  addiu      $a1, $a1, %lo(g_texPaintCursor)
     /* 4E4D0 8024D4D0 8CA2001C */  lw         $v0, 0x1C($a1)
     /* 4E4D4 8024D4D4 8C830000 */  lw         $v1, 0x0($a0)
-    /* 4E4D8 8024D4D8 3C068029 */  lui        $a2, %hi(g_texKeyboardKeyHighlight)
-    /* 4E4DC 8024D4DC 24C6D290 */  addiu      $a2, $a2, %lo(g_texKeyboardKeyHighlight)
+    /* 4E4D8 8024D4D8 3C068029 */  lui        $a2, %hi(g_texKeyboardHighlight)
+    /* 4E4DC 8024D4DC 24C6D290 */  addiu      $a2, $a2, %lo(g_texKeyboardHighlight)
     /* 4E4E0 8024D4E0 0043082A */  slt        $at, $v0, $v1
     /* 4E4E4 8024D4E4 54200013 */  bnel       $at, $zero, .L8024D534
     /* 4E4E8 8024D4E8 00001025 */   or        $v0, $zero, $zero
@@ -11609,17 +11609,17 @@ glabel IsCursorInToolButton
   .L8024D534:
     /* 4E534 8024D534 03E00008 */  jr         $ra
     /* 4E538 8024D538 00000000 */   nop
-endlabel IsCursorInToolButton
+endlabel IsCursorOnKeyboardKey
 
 nonmatching ConvertPaletteToRgb, 0x17C
 
 glabel ConvertPaletteToRgb
-    /* 4E53C 8024D53C 3C038037 */  lui        $v1, %hi(g_dwEffectAlpha)
-    /* 4E540 8024D540 3C048029 */  lui        $a0, %hi(g_dwObjectPosZ)
-    /* 4E544 8024D544 3C088037 */  lui        $t0, %hi(g_dwDebugReserved0)
-    /* 4E548 8024D548 25089CD8 */  addiu      $t0, $t0, %lo(g_dwDebugReserved0)
-    /* 4E54C 8024D54C 8C84DB90 */  lw         $a0, %lo(g_dwObjectPosZ)($a0)
-    /* 4E550 8024D550 24639B98 */  addiu      $v1, $v1, %lo(g_dwEffectAlpha)
+    /* 4E53C 8024D53C 3C038037 */  lui        $v1, %hi(g_aDecalSwatches)
+    /* 4E540 8024D540 3C048029 */  lui        $a0, %hi(g_pDecalPalette)
+    /* 4E544 8024D544 3C088037 */  lui        $t0, %hi(g_aPaintToolButtonRects)
+    /* 4E548 8024D548 25089CD8 */  addiu      $t0, $t0, %lo(g_aPaintToolButtonRects)
+    /* 4E54C 8024D54C 8C84DB90 */  lw         $a0, %lo(g_pDecalPalette)($a0)
+    /* 4E550 8024D550 24639B98 */  addiu      $v1, $v1, %lo(g_aDecalSwatches)
   .L8024D554:
     /* 4E554 8024D554 94820000 */  lhu        $v0, 0x0($a0)
     /* 4E558 8024D558 24630050 */  addiu      $v1, $v1, 0x50
@@ -11716,8 +11716,8 @@ nonmatching DrawDecalColorPalette, 0x120
 
 glabel DrawDecalColorPalette
     /* 4E6B8 8024D6B8 27BDFFD0 */  addiu      $sp, $sp, -0x30
-    /* 4E6BC 8024D6BC 3C028029 */  lui        $v0, %hi(g_dwGfxFillColorR)
-    /* 4E6C0 8024D6C0 2442D480 */  addiu      $v0, $v0, %lo(g_dwGfxFillColorR)
+    /* 4E6BC 8024D6BC 3C028029 */  lui        $v0, %hi(g_aPaletteFrameRects)
+    /* 4E6C0 8024D6C0 2442D480 */  addiu      $v0, $v0, %lo(g_aPaletteFrameRects)
     /* 4E6C4 8024D6C4 AFBF002C */  sw         $ra, 0x2C($sp)
     /* 4E6C8 8024D6C8 AFB10028 */  sw         $s1, 0x28($sp)
     /* 4E6CC 8024D6CC AFB00024 */  sw         $s0, 0x24($sp)
@@ -11729,8 +11729,8 @@ glabel DrawDecalColorPalette
     /* 4E6E4 8024D6E4 AFA00014 */  sw         $zero, 0x14($sp)
     /* 4E6E8 8024D6E8 0C091B84 */  jal        DrawFilledRectHiRes
     /* 4E6EC 8024D6EC AFA00018 */   sw        $zero, 0x18($sp)
-    /* 4E6F0 8024D6F0 3C028029 */  lui        $v0, %hi(g_dwGfxFogColorR)
-    /* 4E6F4 8024D6F4 2442D490 */  addiu      $v0, $v0, %lo(g_dwGfxFogColorR)
+    /* 4E6F0 8024D6F0 3C028029 */  lui        $v0, %hi(D_8028D490)
+    /* 4E6F4 8024D6F4 2442D490 */  addiu      $v0, $v0, %lo(D_8028D490)
     /* 4E6F8 8024D6F8 8C440000 */  lw         $a0, 0x0($v0)
     /* 4E6FC 8024D6FC 8C450004 */  lw         $a1, 0x4($v0)
     /* 4E700 8024D700 8C460008 */  lw         $a2, 0x8($v0)
@@ -11739,10 +11739,10 @@ glabel DrawDecalColorPalette
     /* 4E70C 8024D70C AFA00014 */  sw         $zero, 0x14($sp)
     /* 4E710 8024D710 0C091B84 */  jal        DrawFilledRectHiRes
     /* 4E714 8024D714 AFA00018 */   sw        $zero, 0x18($sp)
-    /* 4E718 8024D718 3C108037 */  lui        $s0, %hi(g_dwEffectAlpha)
-    /* 4E71C 8024D71C 3C118037 */  lui        $s1, %hi(g_dwDebugReserved0)
-    /* 4E720 8024D720 26319CD8 */  addiu      $s1, $s1, %lo(g_dwDebugReserved0)
-    /* 4E724 8024D724 26109B98 */  addiu      $s0, $s0, %lo(g_dwEffectAlpha)
+    /* 4E718 8024D718 3C108037 */  lui        $s0, %hi(g_aDecalSwatches)
+    /* 4E71C 8024D71C 3C118037 */  lui        $s1, %hi(g_aPaintToolButtonRects)
+    /* 4E720 8024D720 26319CD8 */  addiu      $s1, $s1, %lo(g_aPaintToolButtonRects)
+    /* 4E724 8024D724 26109B98 */  addiu      $s0, $s0, %lo(g_aDecalSwatches)
     /* 4E728 8024D728 920E0010 */  lbu        $t6, 0x10($s0)
   .L8024D72C:
     /* 4E72C 8024D72C 920F0011 */  lbu        $t7, 0x11($s0)
@@ -11758,10 +11758,10 @@ glabel DrawDecalColorPalette
     /* 4E754 8024D754 26100014 */  addiu      $s0, $s0, 0x14
     /* 4E758 8024D758 5611FFF4 */  bnel       $s0, $s1, .L8024D72C
     /* 4E75C 8024D75C 920E0010 */   lbu       $t6, 0x10($s0)
-    /* 4E760 8024D760 3C198029 */  lui        $t9, %hi(gDecalEditorState)
-    /* 4E764 8024D764 9339DB58 */  lbu        $t9, %lo(gDecalEditorState)($t9)
-    /* 4E768 8024D768 3C098037 */  lui        $t1, %hi(g_dwEffectAlpha)
-    /* 4E76C 8024D76C 25299B98 */  addiu      $t1, $t1, %lo(g_dwEffectAlpha)
+    /* 4E760 8024D760 3C198029 */  lui        $t9, %hi(g_bDecalColor)
+    /* 4E764 8024D764 9339DB58 */  lbu        $t9, %lo(g_bDecalColor)($t9)
+    /* 4E768 8024D768 3C098037 */  lui        $t1, %hi(g_aDecalSwatches)
+    /* 4E76C 8024D76C 25299B98 */  addiu      $t1, $t1, %lo(g_aDecalSwatches)
     /* 4E770 8024D770 00194080 */  sll        $t0, $t9, 2
     /* 4E774 8024D774 01194021 */  addu       $t0, $t0, $t9
     /* 4E778 8024D778 00084080 */  sll        $t0, $t0, 2
@@ -11793,8 +11793,8 @@ endlabel DrawDecalColorPalette
 nonmatching GetPixel4Bit, 0x6C
 
 glabel GetPixel4Bit
-    /* 4E7D8 8024D7D8 3C088029 */  lui        $t0, %hi(gFramebufferWidth)
-    /* 4E7DC 8024D7DC 9108DB88 */  lbu        $t0, %lo(gFramebufferWidth)($t0)
+    /* 4E7D8 8024D7D8 3C088029 */  lui        $t0, %hi(g_bDecalWidth)
+    /* 4E7DC 8024D7DC 9108DB88 */  lbu        $t0, %lo(g_bDecalWidth)($t0)
     /* 4E7E0 8024D7E0 30AE0001 */  andi       $t6, $a1, 0x1
     /* 4E7E4 8024D7E4 000E78C0 */  sll        $t7, $t6, 3
     /* 4E7E8 8024D7E8 00084843 */  sra        $t1, $t0, 1
@@ -11802,19 +11802,19 @@ glabel GetPixel4Bit
     /* 4E7F0 8024D7F0 01E4C026 */  xor        $t8, $t7, $a0
     /* 4E7F4 8024D7F4 0018C843 */  sra        $t9, $t8, 1
     /* 4E7F8 8024D7F8 308B0001 */  andi       $t3, $a0, 0x1
-    /* 4E7FC 8024D7FC 3C0C8029 */  lui        $t4, %hi(gFramebufferPtr)
-    /* 4E800 8024D800 3C188029 */  lui        $t8, %hi(gFramebufferPtr)
+    /* 4E7FC 8024D7FC 3C0C8029 */  lui        $t4, %hi(g_pDecalTexels)
+    /* 4E800 8024D800 3C188029 */  lui        $t8, %hi(g_pDecalTexels)
     /* 4E804 8024D804 00005012 */  mflo       $t2
     /* 4E808 8024D808 032A1021 */  addu       $v0, $t9, $t2
     /* 4E80C 8024D80C 11600006 */  beqz       $t3, .L8024D828
     /* 4E810 8024D810 00000000 */   nop
-    /* 4E814 8024D814 8D8CDB78 */  lw         $t4, %lo(gFramebufferPtr)($t4)
+    /* 4E814 8024D814 8D8CDB78 */  lw         $t4, %lo(g_pDecalTexels)($t4)
     /* 4E818 8024D818 01826821 */  addu       $t5, $t4, $v0
     /* 4E81C 8024D81C 91AE0000 */  lbu        $t6, 0x0($t5)
     /* 4E820 8024D820 03E00008 */  jr         $ra
     /* 4E824 8024D824 31C2000F */   andi      $v0, $t6, 0xF
   .L8024D828:
-    /* 4E828 8024D828 8F18DB78 */  lw         $t8, %lo(gFramebufferPtr)($t8)
+    /* 4E828 8024D828 8F18DB78 */  lw         $t8, %lo(g_pDecalTexels)($t8)
     /* 4E82C 8024D82C 03024021 */  addu       $t0, $t8, $v0
     /* 4E830 8024D830 91030000 */  lbu        $v1, 0x0($t0)
     /* 4E834 8024D834 00034903 */  sra        $t1, $v1, 4
@@ -11823,11 +11823,11 @@ glabel GetPixel4Bit
     /* 4E840 8024D840 00601025 */   or        $v0, $v1, $zero
 endlabel GetPixel4Bit
 
-nonmatching ReadPixelFromBuffer, 0x58
+nonmatching ReadPixel4Bit, 0x58
 
-glabel ReadPixelFromBuffer
-    /* 4E844 8024D844 3C088029 */  lui        $t0, %hi(gFramebufferWidth)
-    /* 4E848 8024D848 9108DB88 */  lbu        $t0, %lo(gFramebufferWidth)($t0)
+glabel ReadPixel4Bit
+    /* 4E844 8024D844 3C088029 */  lui        $t0, %hi(g_bDecalWidth)
+    /* 4E848 8024D848 9108DB88 */  lbu        $t0, %lo(g_bDecalWidth)($t0)
     /* 4E84C 8024D84C 30CE0001 */  andi       $t6, $a2, 0x1
     /* 4E850 8024D850 000E78C0 */  sll        $t7, $t6, 3
     /* 4E854 8024D854 00084843 */  sra        $t1, $t0, 1
@@ -11849,15 +11849,15 @@ glabel ReadPixelFromBuffer
     /* 4E890 8024D890 330300FF */  andi       $v1, $t8, 0xFF
     /* 4E894 8024D894 03E00008 */  jr         $ra
     /* 4E898 8024D898 00601025 */   or        $v0, $v1, $zero
-endlabel ReadPixelFromBuffer
+endlabel ReadPixel4Bit
 
 nonmatching ProcessBrushStyleMenu, 0x404
 
 glabel ProcessBrushStyleMenu
     /* 4E89C 8024D89C 27BDFF98 */  addiu      $sp, $sp, -0x68
-    /* 4E8A0 8024D8A0 3C0F8029 */  lui        $t7, %hi(g_pszRoundBrush)
+    /* 4E8A0 8024D8A0 3C0F8029 */  lui        $t7, %hi(g_apszBrushStyleNames)
     /* 4E8A4 8024D8A4 AFBF002C */  sw         $ra, 0x2C($sp)
-    /* 4E8A8 8024D8A8 25EFDCE4 */  addiu      $t7, $t7, %lo(g_pszRoundBrush)
+    /* 4E8A8 8024D8A8 25EFDCE4 */  addiu      $t7, $t7, %lo(g_apszBrushStyleNames)
     /* 4E8AC 8024D8AC 8DE80004 */  lw         $t0, 0x4($t7)
     /* 4E8B0 8024D8B0 8DE10000 */  lw         $at, 0x0($t7)
     /* 4E8B4 8024D8B4 27AE003C */  addiu      $t6, $sp, 0x3C
@@ -11888,14 +11888,14 @@ glabel ProcessBrushStyleMenu
     /* 4E918 8024D918 240600F0 */  addiu      $a2, $zero, 0xF0
     /* 4E91C 8024D91C 0C091BE4 */  jal        DrawRectBorder
     /* 4E920 8024D920 240700B4 */   addiu     $a3, $zero, 0xB4
-    /* 4E924 8024D924 3C028029 */  lui        $v0, %hi(gDecalCanvasHeight)
-    /* 4E928 8024D928 2442DBC0 */  addiu      $v0, $v0, %lo(gDecalCanvasHeight)
+    /* 4E924 8024D924 3C028029 */  lui        $v0, %hi(g_bPaintToolStarted)
+    /* 4E928 8024D928 2442DBC0 */  addiu      $v0, $v0, %lo(g_bPaintToolStarted)
     /* 4E92C 8024D92C 904A0000 */  lbu        $t2, 0x0($v0)
     /* 4E930 8024D930 11400005 */  beqz       $t2, .L8024D948
-    /* 4E934 8024D934 3C098029 */   lui       $t1, %hi(g_bRdpDepthUpdate)
-    /* 4E938 8024D938 9129CE9C */  lbu        $t1, %lo(g_bRdpDepthUpdate)($t1)
-    /* 4E93C 8024D93C 3C018029 */  lui        $at, %hi(gDecalCanvasWidth)
-    /* 4E940 8024D940 A029DBB8 */  sb         $t1, %lo(gDecalCanvasWidth)($at)
+    /* 4E934 8024D934 3C098029 */   lui       $t1, %hi(D_8028CE9C)
+    /* 4E938 8024D938 9129CE9C */  lbu        $t1, %lo(D_8028CE9C)($t1)
+    /* 4E93C 8024D93C 3C018029 */  lui        $at, %hi(g_bStyleMenuCursor)
+    /* 4E940 8024D940 A029DBB8 */  sb         $t1, %lo(g_bStyleMenuCursor)($at)
     /* 4E944 8024D944 A0400000 */  sb         $zero, 0x0($v0)
   .L8024D948:
     /* 4E948 8024D948 0C08BD74 */  jal        SetTextSize
@@ -11909,8 +11909,8 @@ glabel ProcessBrushStyleMenu
     /* 4E968 8024D968 2405009F */  addiu      $a1, $zero, 0x9F
     /* 4E96C 8024D96C 0C08BD77 */  jal        DrawText
     /* 4E970 8024D970 2406005B */   addiu     $a2, $zero, 0x5B
-    /* 4E974 8024D974 3C0B8029 */  lui        $t3, %hi(gDecalCanvasWidth)
-    /* 4E978 8024D978 916BDBB8 */  lbu        $t3, %lo(gDecalCanvasWidth)($t3)
+    /* 4E974 8024D974 3C0B8029 */  lui        $t3, %hi(g_bStyleMenuCursor)
+    /* 4E978 8024D978 916BDBB8 */  lbu        $t3, %lo(g_bStyleMenuCursor)($t3)
     /* 4E97C 8024D97C 15600010 */  bnez       $t3, .L8024D9C0
     /* 4E980 8024D980 3C048029 */   lui       $a0, %hi(g_texPaintShapeFilledCircle)
     /* 4E984 8024D984 2484D410 */  addiu      $a0, $a0, %lo(g_texPaintShapeFilledCircle)
@@ -11941,12 +11941,12 @@ glabel ProcessBrushStyleMenu
     /* 4E9E4 8024D9E4 0C091653 */  jal        DrawSpriteRegion
     /* 4E9E8 8024D9E8 AFAE0010 */   sw        $t6, 0x10($sp)
   .L8024D9EC:
-    /* 4E9EC 8024D9EC 3C0F8029 */  lui        $t7, %hi(gDecalCanvasWidth)
-    /* 4E9F0 8024D9F0 91EFDBB8 */  lbu        $t7, %lo(gDecalCanvasWidth)($t7)
+    /* 4E9EC 8024D9EC 3C0F8029 */  lui        $t7, %hi(g_bStyleMenuCursor)
+    /* 4E9F0 8024D9F0 91EFDBB8 */  lbu        $t7, %lo(g_bStyleMenuCursor)($t7)
     /* 4E9F4 8024D9F4 24010001 */  addiu      $at, $zero, 0x1
     /* 4E9F8 8024D9F8 15E1000F */  bne        $t7, $at, .L8024DA38
-    /* 4E9FC 8024D9FC 3C048029 */   lui       $a0, %hi(g_dwGfxPrimColorR)
-    /* 4EA00 8024DA00 8C84D434 */  lw         $a0, %lo(g_dwGfxPrimColorR)($a0)
+    /* 4E9FC 8024D9FC 3C048029 */   lui       $a0, %hi(D_8028D434)
+    /* 4EA00 8024DA00 8C84D434 */  lw         $a0, %lo(D_8028D434)($a0)
     /* 4EA04 8024DA04 24080020 */  addiu      $t0, $zero, 0x20
     /* 4EA08 8024DA08 240A00C8 */  addiu      $t2, $zero, 0xC8
     /* 4EA0C 8024DA0C 240900FF */  addiu      $t1, $zero, 0xFF
@@ -11961,8 +11961,8 @@ glabel ProcessBrushStyleMenu
     /* 4EA30 8024DA30 1000000C */  b          .L8024DA64
     /* 4EA34 8024DA34 240B0001 */   addiu     $t3, $zero, 0x1
   .L8024DA38:
-    /* 4EA38 8024DA38 3C048029 */  lui        $a0, %hi(g_dwGfxPrimColorR)
-    /* 4EA3C 8024DA3C 8C84D434 */  lw         $a0, %lo(g_dwGfxPrimColorR)($a0)
+    /* 4EA38 8024DA38 3C048029 */  lui        $a0, %hi(D_8028D434)
+    /* 4EA3C 8024DA3C 8C84D434 */  lw         $a0, %lo(D_8028D434)($a0)
     /* 4EA40 8024DA40 240500CA */  addiu      $a1, $zero, 0xCA
     /* 4EA44 8024DA44 24060026 */  addiu      $a2, $zero, 0x26
     /* 4EA48 8024DA48 24070026 */  addiu      $a3, $zero, 0x26
@@ -11999,8 +11999,8 @@ glabel ProcessBrushStyleMenu
     /* 4EAC0 8024DAC0 240700FF */  addiu      $a3, $zero, 0xFF
     /* 4EAC4 8024DAC4 0C08BD4C */  jal        SetTextCustomColors
     /* 4EAC8 8024DAC8 AFA00014 */   sw        $zero, 0x14($sp)
-    /* 4EACC 8024DACC 3C088029 */  lui        $t0, %hi(gDecalCanvasWidth)
-    /* 4EAD0 8024DAD0 9108DBB8 */  lbu        $t0, %lo(gDecalCanvasWidth)($t0)
+    /* 4EACC 8024DACC 3C088029 */  lui        $t0, %hi(g_bStyleMenuCursor)
+    /* 4EAD0 8024DAD0 9108DBB8 */  lbu        $t0, %lo(g_bStyleMenuCursor)($t0)
     /* 4EAD4 8024DAD4 2405009F */  addiu      $a1, $zero, 0x9F
     /* 4EAD8 8024DAD8 2406008A */  addiu      $a2, $zero, 0x8A
     /* 4EADC 8024DADC 00085080 */  sll        $t2, $t0, 2
@@ -12024,7 +12024,7 @@ glabel ProcessBrushStyleMenu
     /* 4EB24 8024DB24 3C058029 */  lui        $a1, %hi(g_texButtonA + 0x10)
     /* 4EB28 8024DB28 8CA5D0C0 */  lw         $a1, %lo(g_texButtonA + 0x10)($a1)
     /* 4EB2C 8024DB2C 8FA60048 */  lw         $a2, 0x48($sp)
-    /* 4EB30 8024DB30 3C04802B */  lui        $a0, %hi(g_szSelect4)
+    /* 4EB30 8024DB30 3C04802B */  lui        $a0, %hi(g_szSelectButton)
     /* 4EB34 8024DB34 24A500DE */  addiu      $a1, $a1, 0xDE
     /* 4EB38 8024DB38 24C60012 */  addiu      $a2, $a2, 0x12
     /* 4EB3C 8024DB3C 00065843 */  sra        $t3, $a2, 1
@@ -12033,20 +12033,20 @@ glabel ProcessBrushStyleMenu
     /* 4EB48 8024DB48 01603025 */  or         $a2, $t3, $zero
     /* 4EB4C 8024DB4C AFAB0038 */  sw         $t3, 0x38($sp)
     /* 4EB50 8024DB50 0C08BD77 */  jal        DrawText
-    /* 4EB54 8024DB54 2484AF10 */   addiu     $a0, $a0, %lo(g_szSelect4)
+    /* 4EB54 8024DB54 2484AF10 */   addiu     $a0, $a0, %lo(g_szSelectButton)
     /* 4EB58 8024DB58 3C0C8029 */  lui        $t4, %hi(g_texButtonB + 0x10)
     /* 4EB5C 8024DB5C 8D8CD0F0 */  lw         $t4, %lo(g_texButtonB + 0x10)($t4)
     /* 4EB60 8024DB60 8FAD0044 */  lw         $t5, 0x44($sp)
-    /* 4EB64 8024DB64 3C04802B */  lui        $a0, %hi(g_szCancel10)
+    /* 4EB64 8024DB64 3C04802B */  lui        $a0, %hi(g_szCancelButton)
     /* 4EB68 8024DB68 8FA60038 */  lw         $a2, 0x38($sp)
     /* 4EB6C 8024DB6C 01AC2821 */  addu       $a1, $t5, $t4
     /* 4EB70 8024DB70 24A50006 */  addiu      $a1, $a1, 0x6
     /* 4EB74 8024DB74 0005C842 */  srl        $t9, $a1, 1
     /* 4EB78 8024DB78 03202825 */  or         $a1, $t9, $zero
     /* 4EB7C 8024DB7C 0C08BD77 */  jal        DrawText
-    /* 4EB80 8024DB80 2484AF1C */   addiu     $a0, $a0, %lo(g_szCancel10)
-    /* 4EB84 8024DB84 3C188029 */  lui        $t8, %hi(gDecalBrushState)
-    /* 4EB88 8024DB88 9318DBBC */  lbu        $t8, %lo(gDecalBrushState)($t8)
+    /* 4EB80 8024DB80 2484AF1C */   addiu     $a0, $a0, %lo(g_szCancelButton)
+    /* 4EB84 8024DB84 3C188029 */  lui        $t8, %hi(g_bPaintShopPlayer)
+    /* 4EB88 8024DB88 9318DBBC */  lbu        $t8, %lo(g_bPaintShopPlayer)($t8)
     /* 4EB8C 8024DB8C 3C0F8037 */  lui        $t7, %hi(g_aPlayerInputState)
     /* 4EB90 8024DB90 25EFA8E0 */  addiu      $t7, $t7, %lo(g_aPlayerInputState)
     /* 4EB94 8024DB94 00187080 */  sll        $t6, $t8, 2
@@ -12058,8 +12058,8 @@ glabel ProcessBrushStyleMenu
     /* 4EBAC 8024DBAC 000E7080 */  sll        $t6, $t6, 2
     /* 4EBB0 8024DBB0 0C0956B7 */  jal        UpdateStickRepeat
     /* 4EBB4 8024DBB4 01CF2021 */   addu      $a0, $t6, $t7
-    /* 4EBB8 8024DBB8 3C088029 */  lui        $t0, %hi(gDecalBrushState)
-    /* 4EBBC 8024DBBC 9108DBBC */  lbu        $t0, %lo(gDecalBrushState)($t0)
+    /* 4EBB8 8024DBB8 3C088029 */  lui        $t0, %hi(g_bPaintShopPlayer)
+    /* 4EBBC 8024DBBC 9108DBBC */  lbu        $t0, %lo(g_bPaintShopPlayer)($t0)
     /* 4EBC0 8024DBC0 3C098037 */  lui        $t1, %hi(g_aPlayerInputState)
     /* 4EBC4 8024DBC4 2529A8E0 */  addiu      $t1, $t1, %lo(g_aPlayerInputState)
     /* 4EBC8 8024DBC8 00085080 */  sll        $t2, $t0, 2
@@ -12076,10 +12076,10 @@ glabel ProcessBrushStyleMenu
     /* 4EBF4 8024DBF4 304F0010 */   andi      $t7, $v0, 0x10
     /* 4EBF8 8024DBF8 0C095644 */  jal        TransferFlags
     /* 4EBFC 8024DBFC 24050005 */   addiu     $a1, $zero, 0x5
-    /* 4EC00 8024DC00 3C198029 */  lui        $t9, %hi(gDecalBrushState)
-    /* 4EC04 8024DC04 9339DBBC */  lbu        $t9, %lo(gDecalBrushState)($t9)
-    /* 4EC08 8024DC08 3C0D8029 */  lui        $t5, %hi(gDecalCanvasWidth)
-    /* 4EC0C 8024DC0C 91ADDBB8 */  lbu        $t5, %lo(gDecalCanvasWidth)($t5)
+    /* 4EC00 8024DC00 3C198029 */  lui        $t9, %hi(g_bPaintShopPlayer)
+    /* 4EC04 8024DC04 9339DBBC */  lbu        $t9, %lo(g_bPaintShopPlayer)($t9)
+    /* 4EC08 8024DC08 3C0D8029 */  lui        $t5, %hi(g_bStyleMenuCursor)
+    /* 4EC0C 8024DC0C 91ADDBB8 */  lbu        $t5, %lo(g_bStyleMenuCursor)($t5)
     /* 4EC10 8024DC10 0019C080 */  sll        $t8, $t9, 2
     /* 4EC14 8024DC14 0319C023 */  subu       $t8, $t8, $t9
     /* 4EC18 8024DC18 0018C080 */  sll        $t8, $t8, 2
@@ -12089,9 +12089,9 @@ glabel ProcessBrushStyleMenu
     /* 4EC28 8024DC28 0319C023 */  subu       $t8, $t8, $t9
     /* 4EC2C 8024DC2C 0018C080 */  sll        $t8, $t8, 2
     /* 4EC30 8024DC30 25CEA8E0 */  addiu      $t6, $t6, %lo(g_aPlayerInputState)
-    /* 4EC34 8024DC34 3C018029 */  lui        $at, %hi(gDecalCanvasWidth)
+    /* 4EC34 8024DC34 3C018029 */  lui        $at, %hi(g_bStyleMenuCursor)
     /* 4EC38 8024DC38 39AC0001 */  xori       $t4, $t5, 0x1
-    /* 4EC3C 8024DC3C A02CDBB8 */  sb         $t4, %lo(gDecalCanvasWidth)($at)
+    /* 4EC3C 8024DC3C A02CDBB8 */  sb         $t4, %lo(g_bStyleMenuCursor)($at)
     /* 4EC40 8024DC40 030E2021 */  addu       $a0, $t8, $t6
     /* 4EC44 8024DC44 8C820000 */  lw         $v0, 0x0($a0)
     /* 4EC48 8024DC48 304F0010 */  andi       $t7, $v0, 0x10
@@ -12100,20 +12100,20 @@ glabel ProcessBrushStyleMenu
     /* 4EC50 8024DC50 304A0020 */   andi      $t2, $v0, 0x20
     /* 4EC54 8024DC54 0C095644 */  jal        TransferFlags
     /* 4EC58 8024DC58 24050010 */   addiu     $a1, $zero, 0x10
-    /* 4EC5C 8024DC5C 3C088029 */  lui        $t0, %hi(gDecalCanvasWidth)
-    /* 4EC60 8024DC60 9108DBB8 */  lbu        $t0, %lo(gDecalCanvasWidth)($t0)
-    /* 4EC64 8024DC64 3C018029 */  lui        $at, %hi(g_bRdpDepthUpdate)
-    /* 4EC68 8024DC68 A028CE9C */  sb         $t0, %lo(g_bRdpDepthUpdate)($at)
-    /* 4EC6C 8024DC6C 3C018029 */  lui        $at, %hi(g_bObjectDirty19)
+    /* 4EC5C 8024DC5C 3C088029 */  lui        $t0, %hi(g_bStyleMenuCursor)
+    /* 4EC60 8024DC60 9108DBB8 */  lbu        $t0, %lo(g_bStyleMenuCursor)($t0)
+    /* 4EC64 8024DC64 3C018029 */  lui        $at, %hi(D_8028CE9C)
+    /* 4EC68 8024DC68 A028CE9C */  sb         $t0, %lo(D_8028CE9C)($at)
+    /* 4EC6C 8024DC6C 3C018029 */  lui        $at, %hi(g_bStyleMenuOpen)
     /* 4EC70 8024DC70 10000007 */  b          .L8024DC90
-    /* 4EC74 8024DC74 A020DBE0 */   sb        $zero, %lo(g_bObjectDirty19)($at)
+    /* 4EC74 8024DC74 A020DBE0 */   sb        $zero, %lo(g_bStyleMenuOpen)($at)
   .L8024DC78:
     /* 4EC78 8024DC78 51400006 */  beql       $t2, $zero, .L8024DC94
     /* 4EC7C 8024DC7C 8FBF002C */   lw        $ra, 0x2C($sp)
     /* 4EC80 8024DC80 0C095644 */  jal        TransferFlags
     /* 4EC84 8024DC84 24050020 */   addiu     $a1, $zero, 0x20
-    /* 4EC88 8024DC88 3C018029 */  lui        $at, %hi(g_bObjectDirty19)
-    /* 4EC8C 8024DC8C A020DBE0 */  sb         $zero, %lo(g_bObjectDirty19)($at)
+    /* 4EC88 8024DC88 3C018029 */  lui        $at, %hi(g_bStyleMenuOpen)
+    /* 4EC8C 8024DC8C A020DBE0 */  sb         $zero, %lo(g_bStyleMenuOpen)($at)
   .L8024DC90:
     /* 4EC90 8024DC90 8FBF002C */  lw         $ra, 0x2C($sp)
   .L8024DC94:
@@ -12126,8 +12126,8 @@ nonmatching FloodFill4Bit, 0x488
 
 glabel FloodFill4Bit
     /* 4ECA0 8024DCA0 27BDE690 */  addiu      $sp, $sp, -0x1970
-    /* 4ECA4 8024DCA4 3C028029 */  lui        $v0, %hi(g_dwDecalEditorFlags)
-    /* 4ECA8 8024DCA8 2442DB94 */  addiu      $v0, $v0, %lo(g_dwDecalEditorFlags)
+    /* 4ECA4 8024DCA4 3C028029 */  lui        $v0, %hi(g_rcDecalCanvas)
+    /* 4ECA8 8024DCA8 2442DB94 */  addiu      $v0, $v0, %lo(g_rcDecalCanvas)
     /* 4ECAC 8024DCAC 8C580004 */  lw         $t8, 0x4($v0)
     /* 4ECB0 8024DCB0 8C59000C */  lw         $t9, 0xC($v0)
     /* 4ECB4 8024DCB4 8C4E0000 */  lw         $t6, 0x0($v0)
@@ -12149,17 +12149,17 @@ glabel FloodFill4Bit
     /* 4ECF4 8024DCF4 00A08825 */  or         $s1, $a1, $zero
     /* 4ECF8 8024DCF8 0C0935F6 */  jal        GetPixel4Bit
     /* 4ECFC 8024DCFC 00808025 */   or        $s0, $a0, $zero
-    /* 4ED00 8024DD00 3C0A8029 */  lui        $t2, %hi(gDecalEditorState)
-    /* 4ED04 8024DD04 914ADB58 */  lbu        $t2, %lo(gDecalEditorState)($t2)
-    /* 4ED08 8024DD08 3C128029 */  lui        $s2, %hi(gFramebufferPtr)
+    /* 4ED00 8024DD00 3C0A8029 */  lui        $t2, %hi(g_bDecalColor)
+    /* 4ED04 8024DD04 914ADB58 */  lbu        $t2, %lo(g_bDecalColor)($t2)
+    /* 4ED08 8024DD08 3C128029 */  lui        $s2, %hi(g_pDecalTexels)
     /* 4ED0C 8024DD0C A3A2196F */  sb         $v0, 0x196F($sp)
     /* 4ED10 8024DD10 114200F9 */  beq        $t2, $v0, .L8024E0F8
-    /* 4ED14 8024DD14 2652DB78 */   addiu     $s2, $s2, %lo(gFramebufferPtr)
-    /* 4ED18 8024DD18 3C028029 */  lui        $v0, %hi(gClipMaskPtr)
-    /* 4ED1C 8024DD1C 2442DB7C */  addiu      $v0, $v0, %lo(gClipMaskPtr)
+    /* 4ED14 8024DD14 2652DB78 */   addiu     $s2, $s2, %lo(g_pDecalTexels)
+    /* 4ED18 8024DD18 3C028029 */  lui        $v0, %hi(g_pDecalMask)
+    /* 4ED1C 8024DD1C 2442DB7C */  addiu      $v0, $v0, %lo(g_pDecalMask)
     /* 4ED20 8024DD20 8C4F0000 */  lw         $t7, 0x0($v0)
-    /* 4ED24 8024DD24 3C158029 */  lui        $s5, %hi(g_dwObjectPosY)
-    /* 4ED28 8024DD28 26B5DB84 */  addiu      $s5, $s5, %lo(g_dwObjectPosY)
+    /* 4ED24 8024DD24 3C158029 */  lui        $s5, %hi(g_pDecalScratchTexels)
+    /* 4ED28 8024DD28 26B5DB84 */  addiu      $s5, $s5, %lo(g_pDecalScratchTexels)
     /* 4ED2C 8024DD2C 240B0001 */  addiu      $t3, $zero, 0x1
     /* 4ED30 8024DD30 262C0001 */  addiu      $t4, $s1, 0x1
     /* 4ED34 8024DD34 240DFFFF */  addiu      $t5, $zero, -0x1
@@ -12183,12 +12183,12 @@ glabel FloodFill4Bit
     /* 4ED7C 8024DD7C 8EB80000 */  lw         $t8, 0x0($s5)
     /* 4ED80 8024DD80 8E540000 */  lw         $s4, 0x0($s2)
     /* 4ED84 8024DD84 27A90058 */  addiu      $t1, $sp, 0x58
-    /* 4ED88 8024DD88 3C178029 */  lui        $s7, %hi(gFramebufferHeight)
-    /* 4ED8C 8024DD8C 3C138029 */  lui        $s3, %hi(gFramebufferWidth)
+    /* 4ED88 8024DD88 3C178029 */  lui        $s7, %hi(g_bDecalHeight)
+    /* 4ED8C 8024DD8C 3C138029 */  lui        $s3, %hi(g_bDecalWidth)
     /* 4ED90 8024DD90 00194100 */  sll        $t0, $t9, 4
     /* 4ED94 8024DD94 0109F021 */  addu       $fp, $t0, $t1
-    /* 4ED98 8024DD98 2673DB88 */  addiu      $s3, $s3, %lo(gFramebufferWidth)
-    /* 4ED9C 8024DD9C 26F7DB8C */  addiu      $s7, $s7, %lo(gFramebufferHeight)
+    /* 4ED98 8024DD98 2673DB88 */  addiu      $s3, $s3, %lo(g_bDecalWidth)
+    /* 4ED9C 8024DD9C 26F7DB8C */  addiu      $s7, $s7, %lo(g_bDecalHeight)
     /* 4EDA0 8024DDA0 AE580000 */  sw         $t8, 0x0($s2)
     /* 4EDA4 8024DDA4 8FA21964 */  lw         $v0, 0x1964($sp)
   .L8024DDA8:
@@ -12220,8 +12220,8 @@ glabel FloodFill4Bit
     /* 4EE0C 8024DE0C 16C20012 */  bne        $s6, $v0, .L8024DE58
     /* 4EE10 8024DE10 02002025 */   or        $a0, $s0, $zero
   .L8024DE14:
-    /* 4EE14 8024DE14 3C068029 */  lui        $a2, %hi(gDecalEditorState)
-    /* 4EE18 8024DE18 90C6DB58 */  lbu        $a2, %lo(gDecalEditorState)($a2)
+    /* 4EE14 8024DE14 3C068029 */  lui        $a2, %hi(g_bDecalColor)
+    /* 4EE18 8024DE18 90C6DB58 */  lbu        $a2, %lo(g_bDecalColor)($a2)
     /* 4EE1C 8024DE1C 2610FFFF */  addiu      $s0, $s0, -0x1
     /* 4EE20 8024DE20 0C093C97 */  jal        SetPixel4Bit
     /* 4EE24 8024DE24 02202825 */   or        $a1, $s1, $zero
@@ -12280,8 +12280,8 @@ glabel FloodFill4Bit
     /* 4EEE8 8024DEE8 16C20015 */  bne        $s6, $v0, .L8024DF40
     /* 4EEEC 8024DEEC 02002025 */   or        $a0, $s0, $zero
   .L8024DEF0:
-    /* 4EEF0 8024DEF0 3C068029 */  lui        $a2, %hi(gDecalEditorState)
-    /* 4EEF4 8024DEF4 90C6DB58 */  lbu        $a2, %lo(gDecalEditorState)($a2)
+    /* 4EEF0 8024DEF0 3C068029 */  lui        $a2, %hi(g_bDecalColor)
+    /* 4EEF4 8024DEF4 90C6DB58 */  lbu        $a2, %lo(g_bDecalColor)($a2)
     /* 4EEF8 8024DEF8 26100001 */  addiu      $s0, $s0, 0x1
     /* 4EEFC 8024DEFC 0C093C97 */  jal        SetPixel4Bit
     /* 4EF00 8024DF00 02202825 */   or        $a1, $s1, $zero
@@ -12383,13 +12383,13 @@ glabel FloodFill4Bit
     /* 4F06C 8024E06C 8FA21964 */   lw        $v0, 0x1964($sp)
   .L8024E070:
     /* 4F070 8024E070 8FB90054 */  lw         $t9, 0x54($sp)
-    /* 4F074 8024E074 3C178029 */  lui        $s7, %hi(gFramebufferHeight)
-    /* 4F078 8024E078 3C018029 */  lui        $at, %hi(gClipMaskPtr)
-    /* 4F07C 8024E07C 26F7DB8C */  addiu      $s7, $s7, %lo(gFramebufferHeight)
-    /* 4F080 8024E080 AC39DB7C */  sw         $t9, %lo(gClipMaskPtr)($at)
+    /* 4F074 8024E074 3C178029 */  lui        $s7, %hi(g_bDecalHeight)
+    /* 4F078 8024E078 3C018029 */  lui        $at, %hi(g_pDecalMask)
+    /* 4F07C 8024E07C 26F7DB8C */  addiu      $s7, $s7, %lo(g_bDecalHeight)
+    /* 4F080 8024E080 AC39DB7C */  sw         $t9, %lo(g_pDecalMask)($at)
     /* 4F084 8024E084 92E30000 */  lbu        $v1, 0x0($s7)
-    /* 4F088 8024E088 3C138029 */  lui        $s3, %hi(gFramebufferWidth)
-    /* 4F08C 8024E08C 2673DB88 */  addiu      $s3, $s3, %lo(gFramebufferWidth)
+    /* 4F088 8024E088 3C138029 */  lui        $s3, %hi(g_bDecalWidth)
+    /* 4F08C 8024E08C 2673DB88 */  addiu      $s3, $s3, %lo(g_bDecalWidth)
     /* 4F090 8024E090 18600018 */  blez       $v1, .L8024E0F4
     /* 4F094 8024E094 00008825 */   or        $s1, $zero, $zero
     /* 4F098 8024E098 92620000 */  lbu        $v0, 0x0($s3)
@@ -12411,8 +12411,8 @@ glabel FloodFill4Bit
     /* 4F0D0 8024E0D0 0202082A */  slt        $at, $s0, $v0
     /* 4F0D4 8024E0D4 1420FFF3 */  bnez       $at, .L8024E0A4
     /* 4F0D8 8024E0D8 AE480000 */   sw        $t0, 0x0($s2)
-    /* 4F0DC 8024E0DC 3C038029 */  lui        $v1, %hi(gFramebufferHeight)
-    /* 4F0E0 8024E0E0 9063DB8C */  lbu        $v1, %lo(gFramebufferHeight)($v1)
+    /* 4F0DC 8024E0DC 3C038029 */  lui        $v1, %hi(g_bDecalHeight)
+    /* 4F0E0 8024E0E0 9063DB8C */  lbu        $v1, %lo(g_bDecalHeight)($v1)
   .L8024E0E4:
     /* 4F0E4 8024E0E4 26310001 */  addiu      $s1, $s1, 0x1
     /* 4F0E8 8024E0E8 0223082A */  slt        $at, $s1, $v1
@@ -12439,11 +12439,11 @@ nonmatching ProcessTextStyleMenu, 0xB08
 
 glabel ProcessTextStyleMenu
     /* 4F128 8024E128 27BDFE08 */  addiu      $sp, $sp, -0x1F8
-    /* 4F12C 8024E12C 3C0F8029 */  lui        $t7, %hi(g_pszNormalText)
+    /* 4F12C 8024E12C 3C0F8029 */  lui        $t7, %hi(g_apszTextStyleNames)
     /* 4F130 8024E130 AFBF003C */  sw         $ra, 0x3C($sp)
     /* 4F134 8024E134 AFB10038 */  sw         $s1, 0x38($sp)
     /* 4F138 8024E138 AFB00034 */  sw         $s0, 0x34($sp)
-    /* 4F13C 8024E13C 25EFDCEC */  addiu      $t7, $t7, %lo(g_pszNormalText)
+    /* 4F13C 8024E13C 25EFDCEC */  addiu      $t7, $t7, %lo(g_apszTextStyleNames)
     /* 4F140 8024E140 8DE10000 */  lw         $at, 0x0($t7)
     /* 4F144 8024E144 8DE80004 */  lw         $t0, 0x4($t7)
     /* 4F148 8024E148 27AE0058 */  addiu      $t6, $sp, 0x58
@@ -12475,25 +12475,25 @@ glabel ProcessTextStyleMenu
     /* 4F1B0 8024E1B0 2405009F */  addiu      $a1, $zero, 0x9F
     /* 4F1B4 8024E1B4 0C08BD77 */  jal        DrawText
     /* 4F1B8 8024E1B8 24060053 */   addiu     $a2, $zero, 0x53
-    /* 4F1BC 8024E1BC 3C028029 */  lui        $v0, %hi(gDecalCanvasHeight)
-    /* 4F1C0 8024E1C0 2442DBC0 */  addiu      $v0, $v0, %lo(gDecalCanvasHeight)
+    /* 4F1BC 8024E1BC 3C028029 */  lui        $v0, %hi(g_bPaintToolStarted)
+    /* 4F1C0 8024E1C0 2442DBC0 */  addiu      $v0, $v0, %lo(g_bPaintToolStarted)
     /* 4F1C4 8024E1C4 904D0000 */  lbu        $t5, 0x0($v0)
     /* 4F1C8 8024E1C8 240E00F0 */  addiu      $t6, $zero, 0xF0
     /* 4F1CC 8024E1CC 240F0150 */  addiu      $t7, $zero, 0x150
     /* 4F1D0 8024E1D0 11A0000D */  beqz       $t5, .L8024E208
     /* 4F1D4 8024E1D4 240800B8 */   addiu     $t0, $zero, 0xB8
-    /* 4F1D8 8024E1D8 3C198029 */  lui        $t9, %hi(g_bController0Connected)
-    /* 4F1DC 8024E1DC 9339CF2C */  lbu        $t9, %lo(g_bController0Connected)($t9)
-    /* 4F1E0 8024E1E0 3C038029 */  lui        $v1, %hi(gDecalCanvasWidth)
-    /* 4F1E4 8024E1E4 2463DBB8 */  addiu      $v1, $v1, %lo(gDecalCanvasWidth)
-    /* 4F1E8 8024E1E8 3C188029 */  lui        $t8, %hi(g_bObjectDirty1)
+    /* 4F1D8 8024E1D8 3C198029 */  lui        $t9, %hi(D_8028CF2C)
+    /* 4F1DC 8024E1DC 9339CF2C */  lbu        $t9, %lo(D_8028CF2C)($t9)
+    /* 4F1E0 8024E1E0 3C038029 */  lui        $v1, %hi(g_bStyleMenuCursor)
+    /* 4F1E4 8024E1E4 2463DBB8 */  addiu      $v1, $v1, %lo(g_bStyleMenuCursor)
+    /* 4F1E8 8024E1E8 3C188029 */  lui        $t8, %hi(g_bTextShadowColor)
     /* 4F1EC 8024E1EC A0790000 */  sb         $t9, 0x0($v1)
-    /* 4F1F0 8024E1F0 9318DB5C */  lbu        $t8, %lo(g_bObjectDirty1)($t8)
-    /* 4F1F4 8024E1F4 3C018029 */  lui        $at, %hi(g_bObjectDirty0)
-    /* 4F1F8 8024E1F8 A038DB54 */  sb         $t8, %lo(g_bObjectDirty0)($at)
+    /* 4F1F0 8024E1F0 9318DB5C */  lbu        $t8, %lo(g_bTextShadowColor)($t8)
+    /* 4F1F4 8024E1F4 3C018029 */  lui        $at, %hi(g_bSavedColor)
+    /* 4F1F8 8024E1F8 A038DB54 */  sb         $t8, %lo(g_bSavedColor)($at)
     /* 4F1FC 8024E1FC A0400000 */  sb         $zero, 0x0($v0)
-    /* 4F200 8024E200 3C018029 */  lui        $at, %hi(g_bObjectDirty20)
-    /* 4F204 8024E204 A020DBE4 */  sb         $zero, %lo(g_bObjectDirty20)($at)
+    /* 4F200 8024E200 3C018029 */  lui        $at, %hi(g_bTextShadowPickerOpen)
+    /* 4F204 8024E204 A020DBE4 */  sb         $zero, %lo(g_bTextShadowPickerOpen)($at)
   .L8024E208:
     /* 4F208 8024E208 24020040 */  addiu      $v0, $zero, 0x40
     /* 4F20C 8024E20C 24070040 */  addiu      $a3, $zero, 0x40
@@ -12509,8 +12509,8 @@ glabel ProcessTextStyleMenu
     /* 4F234 8024E234 00008825 */  or         $s1, $zero, $zero
     /* 4F238 8024E238 27B001A0 */  addiu      $s0, $sp, 0x1A0
   .L8024E23C:
-    /* 4F23C 8024E23C 3C038029 */  lui        $v1, %hi(gDecalCanvasWidth)
-    /* 4F240 8024E240 2463DBB8 */  addiu      $v1, $v1, %lo(gDecalCanvasWidth)
+    /* 4F23C 8024E23C 3C038029 */  lui        $v1, %hi(g_bStyleMenuCursor)
+    /* 4F240 8024E240 2463DBB8 */  addiu      $v1, $v1, %lo(g_bStyleMenuCursor)
     /* 4F244 8024E244 906A0000 */  lbu        $t2, 0x0($v1)
     /* 4F248 8024E248 24180001 */  addiu      $t8, $zero, 0x1
     /* 4F24C 8024E24C 240E0020 */  addiu      $t6, $zero, 0x20
@@ -12547,13 +12547,13 @@ glabel ProcessTextStyleMenu
     /* 4F2C0 8024E2C0 2A210002 */  slti       $at, $s1, 0x2
     /* 4F2C4 8024E2C4 1420FFDD */  bnez       $at, .L8024E23C
     /* 4F2C8 8024E2C8 26100010 */   addiu     $s0, $s0, 0x10
-    /* 4F2CC 8024E2CC 3C0E8029 */  lui        $t6, %hi(gDecalEditorState)
-    /* 4F2D0 8024E2D0 91CEDB58 */  lbu        $t6, %lo(gDecalEditorState)($t6)
-    /* 4F2D4 8024E2D4 3C118037 */  lui        $s1, %hi(g_dwEffectAlpha)
+    /* 4F2CC 8024E2CC 3C0E8029 */  lui        $t6, %hi(g_bDecalColor)
+    /* 4F2D0 8024E2D0 91CEDB58 */  lbu        $t6, %lo(g_bDecalColor)($t6)
+    /* 4F2D4 8024E2D4 3C118037 */  lui        $s1, %hi(g_aDecalSwatches)
     /* 4F2D8 8024E2D8 8FAA01A0 */  lw         $t2, 0x1A0($sp)
     /* 4F2DC 8024E2DC 000E7880 */  sll        $t7, $t6, 2
     /* 4F2E0 8024E2E0 01EE7821 */  addu       $t7, $t7, $t6
-    /* 4F2E4 8024E2E4 26319B98 */  addiu      $s1, $s1, %lo(g_dwEffectAlpha)
+    /* 4F2E4 8024E2E4 26319B98 */  addiu      $s1, $s1, %lo(g_aDecalSwatches)
     /* 4F2E8 8024E2E8 000F7880 */  sll        $t7, $t7, 2
     /* 4F2EC 8024E2EC 022F1021 */  addu       $v0, $s1, $t7
     /* 4F2F0 8024E2F0 8FAC01A4 */  lw         $t4, 0x1A4($sp)
@@ -12563,8 +12563,8 @@ glabel ProcessTextStyleMenu
     /* 4F300 8024E300 904A0012 */  lbu        $t2, 0x12($v0)
     /* 4F304 8024E304 90490011 */  lbu        $t1, 0x11($v0)
     /* 4F308 8024E308 90480010 */  lbu        $t0, 0x10($v0)
-    /* 4F30C 8024E30C 3C108029 */  lui        $s0, %hi(g_dwGfxLight2Color)
-    /* 4F310 8024E310 2610D2C0 */  addiu      $s0, $s0, %lo(g_dwGfxLight2Color)
+    /* 4F30C 8024E30C 3C108029 */  lui        $s0, %hi(g_texDecalFont)
+    /* 4F310 8024E310 2610D2C0 */  addiu      $s0, $s0, %lo(g_texDecalFont)
     /* 4F314 8024E314 24190030 */  addiu      $t9, $zero, 0x30
     /* 4F318 8024E318 24180030 */  addiu      $t8, $zero, 0x30
     /* 4F31C 8024E31C 258D000A */  addiu      $t5, $t4, 0xA
@@ -12580,8 +12580,8 @@ glabel ProcessTextStyleMenu
     /* 4F344 8024E344 AFA90028 */  sw         $t1, 0x28($sp)
     /* 4F348 8024E348 0C09197C */  jal        DrawScaledTexturedRect
     /* 4F34C 8024E34C AFA80024 */   sw        $t0, 0x24($sp)
-    /* 4F350 8024E350 3C088029 */  lui        $t0, %hi(g_bObjectDirty1)
-    /* 4F354 8024E354 9108DB5C */  lbu        $t0, %lo(g_bObjectDirty1)($t0)
+    /* 4F350 8024E350 3C088029 */  lui        $t0, %hi(g_bTextShadowColor)
+    /* 4F354 8024E354 9108DB5C */  lbu        $t0, %lo(g_bTextShadowColor)($t0)
     /* 4F358 8024E358 8FAC01B0 */  lw         $t4, 0x1B0($sp)
     /* 4F35C 8024E35C 8FB901B4 */  lw         $t9, 0x1B4($sp)
     /* 4F360 8024E360 00084880 */  sll        $t1, $t0, 2
@@ -12609,8 +12609,8 @@ glabel ProcessTextStyleMenu
     /* 4F3B8 8024E3B8 AFAB0028 */  sw         $t3, 0x28($sp)
     /* 4F3BC 8024E3BC 0C09197C */  jal        DrawScaledTexturedRect
     /* 4F3C0 8024E3C0 AFAA0024 */   sw        $t2, 0x24($sp)
-    /* 4F3C4 8024E3C4 3C0A8029 */  lui        $t2, %hi(gDecalEditorState)
-    /* 4F3C8 8024E3C8 914ADB58 */  lbu        $t2, %lo(gDecalEditorState)($t2)
+    /* 4F3C4 8024E3C4 3C0A8029 */  lui        $t2, %hi(g_bDecalColor)
+    /* 4F3C8 8024E3C8 914ADB58 */  lbu        $t2, %lo(g_bDecalColor)($t2)
     /* 4F3CC 8024E3CC 8FB901B0 */  lw         $t9, 0x1B0($sp)
     /* 4F3D0 8024E3D0 8FAE01B4 */  lw         $t6, 0x1B4($sp)
     /* 4F3D4 8024E3D4 000A5880 */  sll        $t3, $t2, 2
@@ -12638,8 +12638,8 @@ glabel ProcessTextStyleMenu
     /* 4F42C 8024E42C AFAD0028 */  sw         $t5, 0x28($sp)
     /* 4F430 8024E430 0C09197C */  jal        DrawScaledTexturedRect
     /* 4F434 8024E434 AFAC0024 */   sw        $t4, 0x24($sp)
-    /* 4F438 8024E438 3C188029 */  lui        $t8, %hi(g_bObjectDirty20)
-    /* 4F43C 8024E43C 9318DBE4 */  lbu        $t8, %lo(g_bObjectDirty20)($t8)
+    /* 4F438 8024E438 3C188029 */  lui        $t8, %hi(g_bTextShadowPickerOpen)
+    /* 4F43C 8024E43C 9318DBE4 */  lbu        $t8, %lo(g_bTextShadowPickerOpen)($t8)
     /* 4F440 8024E440 240400C6 */  addiu      $a0, $zero, 0xC6
     /* 4F444 8024E444 8FAE01AC */  lw         $t6, 0x1AC($sp)
     /* 4F448 8024E448 17000086 */  bnez       $t8, .L8024E664
@@ -12673,8 +12673,8 @@ glabel ProcessTextStyleMenu
     /* 4F4B8 8024E4B8 AFA00014 */   sw        $zero, 0x14($sp)
     /* 4F4BC 8024E4BC 8FA701BC */  lw         $a3, 0x1BC($sp)
     /* 4F4C0 8024E4C0 8FAF01A4 */  lw         $t7, 0x1A4($sp)
-    /* 4F4C4 8024E4C4 3C188029 */  lui        $t8, %hi(gDecalCanvasWidth)
-    /* 4F4C8 8024E4C8 9318DBB8 */  lbu        $t8, %lo(gDecalCanvasWidth)($t8)
+    /* 4F4C4 8024E4C4 3C188029 */  lui        $t8, %hi(g_bStyleMenuCursor)
+    /* 4F4C8 8024E4C8 9318DBB8 */  lbu        $t8, %lo(g_bStyleMenuCursor)($t8)
     /* 4F4CC 8024E4CC 00EF3021 */  addu       $a2, $a3, $t7
     /* 4F4D0 8024E4D0 24C60026 */  addiu      $a2, $a2, 0x26
     /* 4F4D4 8024E4D4 00187080 */  sll        $t6, $t8, 2
@@ -12727,8 +12727,8 @@ glabel ProcessTextStyleMenu
     /* 4F590 8024E590 8FA501E0 */  lw         $a1, 0x1E0($sp)
     /* 4F594 8024E594 0C091581 */  jal        DrawTexturedSprite
     /* 4F598 8024E598 02203025 */   or        $a2, $s1, $zero
-    /* 4F59C 8024E59C 3C088029 */  lui        $t0, %hi(gDecalBrushState)
-    /* 4F5A0 8024E5A0 9108DBBC */  lbu        $t0, %lo(gDecalBrushState)($t0)
+    /* 4F59C 8024E59C 3C088029 */  lui        $t0, %hi(g_bPaintShopPlayer)
+    /* 4F5A0 8024E5A0 9108DBBC */  lbu        $t0, %lo(g_bPaintShopPlayer)($t0)
     /* 4F5A4 8024E5A4 3C118037 */  lui        $s1, %hi(g_aPlayerInputState)
     /* 4F5A8 8024E5A8 2631A8E0 */  addiu      $s1, $s1, %lo(g_aPlayerInputState)
     /* 4F5AC 8024E5AC 00084880 */  sll        $t1, $t0, 2
@@ -12740,8 +12740,8 @@ glabel ProcessTextStyleMenu
     /* 4F5C4 8024E5C4 00094880 */  sll        $t1, $t1, 2
     /* 4F5C8 8024E5C8 0C0956B7 */  jal        UpdateStickRepeat
     /* 4F5CC 8024E5CC 02292021 */   addu      $a0, $s1, $t1
-    /* 4F5D0 8024E5D0 3C0B8029 */  lui        $t3, %hi(gDecalBrushState)
-    /* 4F5D4 8024E5D4 916BDBBC */  lbu        $t3, %lo(gDecalBrushState)($t3)
+    /* 4F5D0 8024E5D0 3C0B8029 */  lui        $t3, %hi(g_bPaintShopPlayer)
+    /* 4F5D4 8024E5D4 916BDBBC */  lbu        $t3, %lo(g_bPaintShopPlayer)($t3)
     /* 4F5D8 8024E5D8 000B5080 */  sll        $t2, $t3, 2
     /* 4F5DC 8024E5DC 014B5023 */  subu       $t2, $t2, $t3
     /* 4F5E0 8024E5E0 000A5080 */  sll        $t2, $t2, 2
@@ -12757,10 +12757,10 @@ glabel ProcessTextStyleMenu
     /* 4F608 8024E608 00000000 */   nop
     /* 4F60C 8024E60C 0C095644 */  jal        TransferFlags
     /* 4F610 8024E610 24050005 */   addiu     $a1, $zero, 0x5
-    /* 4F614 8024E614 3C188029 */  lui        $t8, %hi(gDecalBrushState)
-    /* 4F618 8024E618 9318DBBC */  lbu        $t8, %lo(gDecalBrushState)($t8)
-    /* 4F61C 8024E61C 3C0D8029 */  lui        $t5, %hi(gDecalCanvasWidth)
-    /* 4F620 8024E620 91ADDBB8 */  lbu        $t5, %lo(gDecalCanvasWidth)($t5)
+    /* 4F614 8024E614 3C188029 */  lui        $t8, %hi(g_bPaintShopPlayer)
+    /* 4F618 8024E618 9318DBBC */  lbu        $t8, %lo(g_bPaintShopPlayer)($t8)
+    /* 4F61C 8024E61C 3C0D8029 */  lui        $t5, %hi(g_bStyleMenuCursor)
+    /* 4F620 8024E620 91ADDBB8 */  lbu        $t5, %lo(g_bStyleMenuCursor)($t5)
     /* 4F624 8024E624 00187080 */  sll        $t6, $t8, 2
     /* 4F628 8024E628 01D87023 */  subu       $t6, $t6, $t8
     /* 4F62C 8024E62C 000E7080 */  sll        $t6, $t6, 2
@@ -12770,9 +12770,9 @@ glabel ProcessTextStyleMenu
     /* 4F63C 8024E63C 01D87023 */  subu       $t6, $t6, $t8
     /* 4F640 8024E640 000E7080 */  sll        $t6, $t6, 2
     /* 4F644 8024E644 25EFA8E0 */  addiu      $t7, $t7, %lo(g_aPlayerInputState)
-    /* 4F648 8024E648 3C018029 */  lui        $at, %hi(gDecalCanvasWidth)
+    /* 4F648 8024E648 3C018029 */  lui        $at, %hi(g_bStyleMenuCursor)
     /* 4F64C 8024E64C 39B90001 */  xori       $t9, $t5, 0x1
-    /* 4F650 8024E650 A039DBB8 */  sb         $t9, %lo(gDecalCanvasWidth)($at)
+    /* 4F650 8024E650 A039DBB8 */  sb         $t9, %lo(g_bStyleMenuCursor)($at)
     /* 4F654 8024E654 01CF8021 */  addu       $s0, $t6, $t7
     /* 4F658 8024E658 8E020000 */  lw         $v0, 0x0($s0)
   .L8024E65C:
@@ -12811,8 +12811,8 @@ glabel ProcessTextStyleMenu
     /* 4F6D8 8024E6D8 240500A7 */  addiu      $a1, $zero, 0xA7
     /* 4F6DC 8024E6DC 0C08BD77 */  jal        DrawText
     /* 4F6E0 8024E6E0 24060092 */   addiu     $a2, $zero, 0x92
-    /* 4F6E4 8024E6E4 3C108037 */  lui        $s0, %hi(g_dwEffectAlpha)
-    /* 4F6E8 8024E6E8 26109B98 */  addiu      $s0, $s0, %lo(g_dwEffectAlpha)
+    /* 4F6E4 8024E6E4 3C108037 */  lui        $s0, %hi(g_aDecalSwatches)
+    /* 4F6E8 8024E6E8 26109B98 */  addiu      $s0, $s0, %lo(g_aDecalSwatches)
     /* 4F6EC 8024E6EC 00008825 */  or         $s1, $zero, $zero
     /* 4F6F0 8024E6F0 27A20060 */  addiu      $v0, $sp, 0x60
   .L8024E6F4:
@@ -12860,8 +12860,8 @@ glabel ProcessTextStyleMenu
     /* 4F794 8024E794 26100014 */  addiu      $s0, $s0, 0x14
     /* 4F798 8024E798 1621FFD6 */  bne        $s1, $at, .L8024E6F4
     /* 4F79C 8024E79C 24420014 */   addiu     $v0, $v0, 0x14
-    /* 4F7A0 8024E7A0 3C0C8029 */  lui        $t4, %hi(g_bObjectDirty1)
-    /* 4F7A4 8024E7A4 918CDB5C */  lbu        $t4, %lo(g_bObjectDirty1)($t4)
+    /* 4F7A0 8024E7A0 3C0C8029 */  lui        $t4, %hi(g_bTextShadowColor)
+    /* 4F7A4 8024E7A4 918CDB5C */  lbu        $t4, %lo(g_bTextShadowColor)($t4)
     /* 4F7A8 8024E7A8 27B90060 */  addiu      $t9, $sp, 0x60
     /* 4F7AC 8024E7AC 24180001 */  addiu      $t8, $zero, 0x1
     /* 4F7B0 8024E7B0 000C6880 */  sll        $t5, $t4, 2
@@ -12931,8 +12931,8 @@ glabel ProcessTextStyleMenu
     /* 4F8B0 8024E8B0 01202825 */  or         $a1, $t1, $zero
     /* 4F8B4 8024E8B4 0C08BD77 */  jal        DrawText
     /* 4F8B8 8024E8B8 02003025 */   or        $a2, $s0, $zero
-    /* 4F8BC 8024E8BC 3C0C8029 */  lui        $t4, %hi(gDecalBrushState)
-    /* 4F8C0 8024E8C0 918CDBBC */  lbu        $t4, %lo(gDecalBrushState)($t4)
+    /* 4F8BC 8024E8BC 3C0C8029 */  lui        $t4, %hi(g_bPaintShopPlayer)
+    /* 4F8C0 8024E8C0 918CDBBC */  lbu        $t4, %lo(g_bPaintShopPlayer)($t4)
     /* 4F8C4 8024E8C4 3C118037 */  lui        $s1, %hi(g_aPlayerInputState)
     /* 4F8C8 8024E8C8 2631A8E0 */  addiu      $s1, $s1, %lo(g_aPlayerInputState)
     /* 4F8CC 8024E8CC 000C5080 */  sll        $t2, $t4, 2
@@ -12944,8 +12944,8 @@ glabel ProcessTextStyleMenu
     /* 4F8E4 8024E8E4 000A5080 */  sll        $t2, $t2, 2
     /* 4F8E8 8024E8E8 0C0956B7 */  jal        UpdateStickRepeat
     /* 4F8EC 8024E8EC 022A2021 */   addu      $a0, $s1, $t2
-    /* 4F8F0 8024E8F0 3C0D8029 */  lui        $t5, %hi(gDecalBrushState)
-    /* 4F8F4 8024E8F4 91ADDBBC */  lbu        $t5, %lo(gDecalBrushState)($t5)
+    /* 4F8F0 8024E8F0 3C0D8029 */  lui        $t5, %hi(g_bPaintShopPlayer)
+    /* 4F8F4 8024E8F4 91ADDBBC */  lbu        $t5, %lo(g_bPaintShopPlayer)($t5)
     /* 4F8F8 8024E8F8 000DC880 */  sll        $t9, $t5, 2
     /* 4F8FC 8024E8FC 032DC823 */  subu       $t9, $t9, $t5
     /* 4F900 8024E900 0019C880 */  sll        $t9, $t9, 2
@@ -12960,28 +12960,28 @@ glabel ProcessTextStyleMenu
     /* 4F924 8024E924 02002025 */   or        $a0, $s0, $zero
     /* 4F928 8024E928 0C095644 */  jal        TransferFlags
     /* 4F92C 8024E92C 24050004 */   addiu     $a1, $zero, 0x4
-    /* 4F930 8024E930 3C028029 */  lui        $v0, %hi(g_bObjectDirty1)
-    /* 4F934 8024E934 9042DB5C */  lbu        $v0, %lo(g_bObjectDirty1)($v0)
+    /* 4F930 8024E930 3C028029 */  lui        $v0, %hi(g_bTextShadowColor)
+    /* 4F934 8024E934 9042DB5C */  lbu        $v0, %lo(g_bTextShadowColor)($v0)
     /* 4F938 8024E938 24010008 */  addiu      $at, $zero, 0x8
-    /* 4F93C 8024E93C 3C0B8029 */  lui        $t3, %hi(gDecalBrushState)
+    /* 4F93C 8024E93C 3C0B8029 */  lui        $t3, %hi(g_bPaintShopPlayer)
     /* 4F940 8024E940 14400005 */  bnez       $v0, .L8024E958
     /* 4F944 8024E944 00401825 */   or        $v1, $v0, $zero
     /* 4F948 8024E948 240E0007 */  addiu      $t6, $zero, 0x7
-    /* 4F94C 8024E94C 3C018029 */  lui        $at, %hi(g_bObjectDirty1)
+    /* 4F94C 8024E94C 3C018029 */  lui        $at, %hi(g_bTextShadowColor)
     /* 4F950 8024E950 10000009 */  b          .L8024E978
-    /* 4F954 8024E954 A02EDB5C */   sb        $t6, %lo(g_bObjectDirty1)($at)
+    /* 4F954 8024E954 A02EDB5C */   sb        $t6, %lo(g_bTextShadowColor)($at)
   .L8024E958:
     /* 4F958 8024E958 14610005 */  bne        $v1, $at, .L8024E970
     /* 4F95C 8024E95C 2448FFFF */   addiu     $t0, $v0, -0x1
     /* 4F960 8024E960 240F000F */  addiu      $t7, $zero, 0xF
-    /* 4F964 8024E964 3C018029 */  lui        $at, %hi(g_bObjectDirty1)
+    /* 4F964 8024E964 3C018029 */  lui        $at, %hi(g_bTextShadowColor)
     /* 4F968 8024E968 10000003 */  b          .L8024E978
-    /* 4F96C 8024E96C A02FDB5C */   sb        $t7, %lo(g_bObjectDirty1)($at)
+    /* 4F96C 8024E96C A02FDB5C */   sb        $t7, %lo(g_bTextShadowColor)($at)
   .L8024E970:
-    /* 4F970 8024E970 3C018029 */  lui        $at, %hi(g_bObjectDirty1)
-    /* 4F974 8024E974 A028DB5C */  sb         $t0, %lo(g_bObjectDirty1)($at)
+    /* 4F970 8024E970 3C018029 */  lui        $at, %hi(g_bTextShadowColor)
+    /* 4F974 8024E974 A028DB5C */  sb         $t0, %lo(g_bTextShadowColor)($at)
   .L8024E978:
-    /* 4F978 8024E978 916BDBBC */  lbu        $t3, %lo(gDecalBrushState)($t3)
+    /* 4F978 8024E978 916BDBBC */  lbu        $t3, %lo(g_bPaintShopPlayer)($t3)
     /* 4F97C 8024E97C 3C0C8037 */  lui        $t4, %hi(g_aPlayerInputState)
     /* 4F980 8024E980 258CA8E0 */  addiu      $t4, $t4, %lo(g_aPlayerInputState)
     /* 4F984 8024E984 000B4880 */  sll        $t1, $t3, 2
@@ -13001,28 +13001,28 @@ glabel ProcessTextStyleMenu
     /* 4F9B8 8024E9B8 02002025 */  or         $a0, $s0, $zero
     /* 4F9BC 8024E9BC 0C095644 */  jal        TransferFlags
     /* 4F9C0 8024E9C0 24050001 */   addiu     $a1, $zero, 0x1
-    /* 4F9C4 8024E9C4 3C028029 */  lui        $v0, %hi(g_bObjectDirty1)
-    /* 4F9C8 8024E9C8 9042DB5C */  lbu        $v0, %lo(g_bObjectDirty1)($v0)
+    /* 4F9C4 8024E9C4 3C028029 */  lui        $v0, %hi(g_bTextShadowColor)
+    /* 4F9C8 8024E9C8 9042DB5C */  lbu        $v0, %lo(g_bTextShadowColor)($v0)
     /* 4F9CC 8024E9CC 24010007 */  addiu      $at, $zero, 0x7
-    /* 4F9D0 8024E9D0 3C188029 */  lui        $t8, %hi(gDecalBrushState)
+    /* 4F9D0 8024E9D0 3C188029 */  lui        $t8, %hi(g_bPaintShopPlayer)
     /* 4F9D4 8024E9D4 14410004 */  bne        $v0, $at, .L8024E9E8
     /* 4F9D8 8024E9D8 00401825 */   or        $v1, $v0, $zero
-    /* 4F9DC 8024E9DC 3C018029 */  lui        $at, %hi(g_bObjectDirty1)
+    /* 4F9DC 8024E9DC 3C018029 */  lui        $at, %hi(g_bTextShadowColor)
     /* 4F9E0 8024E9E0 1000000A */  b          .L8024EA0C
-    /* 4F9E4 8024E9E4 A020DB5C */   sb        $zero, %lo(g_bObjectDirty1)($at)
+    /* 4F9E4 8024E9E4 A020DB5C */   sb        $zero, %lo(g_bTextShadowColor)($at)
   .L8024E9E8:
     /* 4F9E8 8024E9E8 2401000F */  addiu      $at, $zero, 0xF
     /* 4F9EC 8024E9EC 14610005 */  bne        $v1, $at, .L8024EA04
     /* 4F9F0 8024E9F0 24590001 */   addiu     $t9, $v0, 0x1
     /* 4F9F4 8024E9F4 240D0008 */  addiu      $t5, $zero, 0x8
-    /* 4F9F8 8024E9F8 3C018029 */  lui        $at, %hi(g_bObjectDirty1)
+    /* 4F9F8 8024E9F8 3C018029 */  lui        $at, %hi(g_bTextShadowColor)
     /* 4F9FC 8024E9FC 10000003 */  b          .L8024EA0C
-    /* 4FA00 8024EA00 A02DDB5C */   sb        $t5, %lo(g_bObjectDirty1)($at)
+    /* 4FA00 8024EA00 A02DDB5C */   sb        $t5, %lo(g_bTextShadowColor)($at)
   .L8024EA04:
-    /* 4FA04 8024EA04 3C018029 */  lui        $at, %hi(g_bObjectDirty1)
-    /* 4FA08 8024EA08 A039DB5C */  sb         $t9, %lo(g_bObjectDirty1)($at)
+    /* 4FA04 8024EA04 3C018029 */  lui        $at, %hi(g_bTextShadowColor)
+    /* 4FA08 8024EA08 A039DB5C */  sb         $t9, %lo(g_bTextShadowColor)($at)
   .L8024EA0C:
-    /* 4FA0C 8024EA0C 9318DBBC */  lbu        $t8, %lo(gDecalBrushState)($t8)
+    /* 4FA0C 8024EA0C 9318DBBC */  lbu        $t8, %lo(g_bPaintShopPlayer)($t8)
     /* 4FA10 8024EA10 3C0F8037 */  lui        $t7, %hi(g_aPlayerInputState)
     /* 4FA14 8024EA14 25EFA8E0 */  addiu      $t7, $t7, %lo(g_aPlayerInputState)
     /* 4FA18 8024EA18 00187080 */  sll        $t6, $t8, 2
@@ -13040,15 +13040,15 @@ glabel ProcessTextStyleMenu
     /* 4FA44 8024EA44 02002025 */   or        $a0, $s0, $zero
     /* 4FA48 8024EA48 0C095644 */  jal        TransferFlags
     /* 4FA4C 8024EA4C 2405000A */   addiu     $a1, $zero, 0xA
-    /* 4FA50 8024EA50 3C038029 */  lui        $v1, %hi(g_bObjectDirty1)
-    /* 4FA54 8024EA54 9063DB5C */  lbu        $v1, %lo(g_bObjectDirty1)($v1)
-    /* 4FA58 8024EA58 3C198029 */  lui        $t9, %hi(gDecalBrushState)
+    /* 4FA50 8024EA50 3C038029 */  lui        $v1, %hi(g_bTextShadowColor)
+    /* 4FA54 8024EA54 9063DB5C */  lbu        $v1, %lo(g_bTextShadowColor)($v1)
+    /* 4FA58 8024EA58 3C198029 */  lui        $t9, %hi(g_bPaintShopPlayer)
     /* 4FA5C 8024EA5C 3C0E8037 */  lui        $t6, %hi(g_aPlayerInputState)
     /* 4FA60 8024EA60 28610008 */  slti       $at, $v1, 0x8
     /* 4FA64 8024EA64 10200012 */  beqz       $at, .L8024EAB0
     /* 4FA68 8024EA68 246DFFF8 */   addiu     $t5, $v1, -0x8
-    /* 4FA6C 8024EA6C 3C098029 */  lui        $t1, %hi(gDecalBrushState)
-    /* 4FA70 8024EA70 9129DBBC */  lbu        $t1, %lo(gDecalBrushState)($t1)
+    /* 4FA6C 8024EA6C 3C098029 */  lui        $t1, %hi(g_bPaintShopPlayer)
+    /* 4FA70 8024EA70 9129DBBC */  lbu        $t1, %lo(g_bPaintShopPlayer)($t1)
     /* 4FA74 8024EA74 3C0A8037 */  lui        $t2, %hi(g_aPlayerInputState)
     /* 4FA78 8024EA78 254AA8E0 */  addiu      $t2, $t2, %lo(g_aPlayerInputState)
     /* 4FA7C 8024EA7C 00096080 */  sll        $t4, $t1, 2
@@ -13059,14 +13059,14 @@ glabel ProcessTextStyleMenu
     /* 4FA90 8024EA90 01896023 */  subu       $t4, $t4, $t1
     /* 4FA94 8024EA94 000C6080 */  sll        $t4, $t4, 2
     /* 4FA98 8024EA98 246B0008 */  addiu      $t3, $v1, 0x8
-    /* 4FA9C 8024EA9C 3C018029 */  lui        $at, %hi(g_bObjectDirty1)
-    /* 4FAA0 8024EAA0 A02BDB5C */  sb         $t3, %lo(g_bObjectDirty1)($at)
+    /* 4FA9C 8024EA9C 3C018029 */  lui        $at, %hi(g_bTextShadowColor)
+    /* 4FAA0 8024EAA0 A02BDB5C */  sb         $t3, %lo(g_bTextShadowColor)($at)
     /* 4FAA4 8024EAA4 018A8021 */  addu       $s0, $t4, $t2
     /* 4FAA8 8024EAA8 1000000E */  b          .L8024EAE4
     /* 4FAAC 8024EAAC 8E020000 */   lw        $v0, 0x0($s0)
   .L8024EAB0:
-    /* 4FAB0 8024EAB0 9339DBBC */  lbu        $t9, %lo(gDecalBrushState)($t9)
-    /* 4FAB4 8024EAB4 3C018029 */  lui        $at, %hi(g_bObjectDirty1)
+    /* 4FAB0 8024EAB0 9339DBBC */  lbu        $t9, %lo(g_bPaintShopPlayer)($t9)
+    /* 4FAB4 8024EAB4 3C018029 */  lui        $at, %hi(g_bTextShadowColor)
     /* 4FAB8 8024EAB8 25CEA8E0 */  addiu      $t6, $t6, %lo(g_aPlayerInputState)
     /* 4FABC 8024EABC 0019C080 */  sll        $t8, $t9, 2
     /* 4FAC0 8024EAC0 0319C023 */  subu       $t8, $t8, $t9
@@ -13076,7 +13076,7 @@ glabel ProcessTextStyleMenu
     /* 4FAD0 8024EAD0 0319C023 */  subu       $t8, $t8, $t9
     /* 4FAD4 8024EAD4 0018C080 */  sll        $t8, $t8, 2
     /* 4FAD8 8024EAD8 030E8021 */  addu       $s0, $t8, $t6
-    /* 4FADC 8024EADC A02DDB5C */  sb         $t5, %lo(g_bObjectDirty1)($at)
+    /* 4FADC 8024EADC A02DDB5C */  sb         $t5, %lo(g_bTextShadowColor)($at)
     /* 4FAE0 8024EAE0 8E020000 */  lw         $v0, 0x0($s0)
   .L8024EAE4:
     /* 4FAE4 8024EAE4 30430010 */  andi       $v1, $v0, 0x10
@@ -13084,17 +13084,17 @@ glabel ProcessTextStyleMenu
     /* 4FAEC 8024EAEC 02002025 */   or        $a0, $s0, $zero
     /* 4FAF0 8024EAF0 0C095644 */  jal        TransferFlags
     /* 4FAF4 8024EAF4 24050010 */   addiu     $a1, $zero, 0x10
-    /* 4FAF8 8024EAF8 3C0F8029 */  lui        $t7, %hi(gDecalCanvasWidth)
-    /* 4FAFC 8024EAFC 91EFDBB8 */  lbu        $t7, %lo(gDecalCanvasWidth)($t7)
-    /* 4FB00 8024EB00 3C018029 */  lui        $at, %hi(g_bController0Connected)
-    /* 4FB04 8024EB04 3C118029 */  lui        $s1, %hi(g_bObjectDirty19)
-    /* 4FB08 8024EB08 A02FCF2C */  sb         $t7, %lo(g_bController0Connected)($at)
-    /* 4FB0C 8024EB0C 3C018029 */  lui        $at, %hi(g_bObjectDirty20)
-    /* 4FB10 8024EB10 2631DBE0 */  addiu      $s1, $s1, %lo(g_bObjectDirty19)
-    /* 4FB14 8024EB14 A020DBE4 */  sb         $zero, %lo(g_bObjectDirty20)($at)
+    /* 4FAF8 8024EAF8 3C0F8029 */  lui        $t7, %hi(g_bStyleMenuCursor)
+    /* 4FAFC 8024EAFC 91EFDBB8 */  lbu        $t7, %lo(g_bStyleMenuCursor)($t7)
+    /* 4FB00 8024EB00 3C018029 */  lui        $at, %hi(D_8028CF2C)
+    /* 4FB04 8024EB04 3C118029 */  lui        $s1, %hi(g_bStyleMenuOpen)
+    /* 4FB08 8024EB08 A02FCF2C */  sb         $t7, %lo(D_8028CF2C)($at)
+    /* 4FB0C 8024EB0C 3C018029 */  lui        $at, %hi(g_bTextShadowPickerOpen)
+    /* 4FB10 8024EB10 2631DBE0 */  addiu      $s1, $s1, %lo(g_bStyleMenuOpen)
+    /* 4FB14 8024EB14 A020DBE4 */  sb         $zero, %lo(g_bTextShadowPickerOpen)($at)
     /* 4FB18 8024EB18 A2200000 */  sb         $zero, 0x0($s1)
-    /* 4FB1C 8024EB1C 3C088029 */  lui        $t0, %hi(gDecalBrushState)
-    /* 4FB20 8024EB20 9108DBBC */  lbu        $t0, %lo(gDecalBrushState)($t0)
+    /* 4FB1C 8024EB1C 3C088029 */  lui        $t0, %hi(g_bPaintShopPlayer)
+    /* 4FB20 8024EB20 9108DBBC */  lbu        $t0, %lo(g_bPaintShopPlayer)($t0)
     /* 4FB24 8024EB24 3C098037 */  lui        $t1, %hi(g_aPlayerInputState)
     /* 4FB28 8024EB28 2529A8E0 */  addiu      $t1, $t1, %lo(g_aPlayerInputState)
     /* 4FB2C 8024EB2C 00085880 */  sll        $t3, $t0, 2
@@ -13114,41 +13114,41 @@ glabel ProcessTextStyleMenu
     /* 4FB60 8024EB60 02002025 */   or        $a0, $s0, $zero
     /* 4FB64 8024EB64 0C095644 */  jal        TransferFlags
     /* 4FB68 8024EB68 24050020 */   addiu     $a1, $zero, 0x20
-    /* 4FB6C 8024EB6C 3C0D8029 */  lui        $t5, %hi(gDecalBrushState)
-    /* 4FB70 8024EB70 91ADDBBC */  lbu        $t5, %lo(gDecalBrushState)($t5)
-    /* 4FB74 8024EB74 3C0A8029 */  lui        $t2, %hi(g_bObjectDirty0)
-    /* 4FB78 8024EB78 914ADB54 */  lbu        $t2, %lo(g_bObjectDirty0)($t2)
+    /* 4FB6C 8024EB6C 3C0D8029 */  lui        $t5, %hi(g_bPaintShopPlayer)
+    /* 4FB70 8024EB70 91ADDBBC */  lbu        $t5, %lo(g_bPaintShopPlayer)($t5)
+    /* 4FB74 8024EB74 3C0A8029 */  lui        $t2, %hi(g_bSavedColor)
+    /* 4FB78 8024EB78 914ADB54 */  lbu        $t2, %lo(g_bSavedColor)($t2)
     /* 4FB7C 8024EB7C 000DC880 */  sll        $t9, $t5, 2
     /* 4FB80 8024EB80 032DC823 */  subu       $t9, $t9, $t5
     /* 4FB84 8024EB84 0019C880 */  sll        $t9, $t9, 2
     /* 4FB88 8024EB88 032DC823 */  subu       $t9, $t9, $t5
-    /* 4FB8C 8024EB8C 3C018029 */  lui        $at, %hi(g_bObjectDirty1)
+    /* 4FB8C 8024EB8C 3C018029 */  lui        $at, %hi(g_bTextShadowColor)
     /* 4FB90 8024EB90 0019C8C0 */  sll        $t9, $t9, 3
     /* 4FB94 8024EB94 3C188037 */  lui        $t8, %hi(g_aPlayerInputState)
     /* 4FB98 8024EB98 032DC823 */  subu       $t9, $t9, $t5
-    /* 4FB9C 8024EB9C A02ADB5C */  sb         $t2, %lo(g_bObjectDirty1)($at)
-    /* 4FBA0 8024EBA0 3C018029 */  lui        $at, %hi(g_bObjectDirty20)
+    /* 4FB9C 8024EB9C A02ADB5C */  sb         $t2, %lo(g_bTextShadowColor)($at)
+    /* 4FBA0 8024EBA0 3C018029 */  lui        $at, %hi(g_bTextShadowPickerOpen)
     /* 4FBA4 8024EBA4 0019C880 */  sll        $t9, $t9, 2
     /* 4FBA8 8024EBA8 2718A8E0 */  addiu      $t8, $t8, %lo(g_aPlayerInputState)
     /* 4FBAC 8024EBAC 03388021 */  addu       $s0, $t9, $t8
-    /* 4FBB0 8024EBB0 A020DBE4 */  sb         $zero, %lo(g_bObjectDirty20)($at)
+    /* 4FBB0 8024EBB0 A020DBE4 */  sb         $zero, %lo(g_bTextShadowPickerOpen)($at)
     /* 4FBB4 8024EBB4 8E020000 */  lw         $v0, 0x0($s0)
     /* 4FBB8 8024EBB8 30430010 */  andi       $v1, $v0, 0x10
   .L8024EBBC:
-    /* 4FBBC 8024EBBC 3C118029 */  lui        $s1, %hi(g_bObjectDirty19)
+    /* 4FBBC 8024EBBC 3C118029 */  lui        $s1, %hi(g_bStyleMenuOpen)
     /* 4FBC0 8024EBC0 1060000E */  beqz       $v1, .L8024EBFC
-    /* 4FBC4 8024EBC4 2631DBE0 */   addiu     $s1, $s1, %lo(g_bObjectDirty19)
+    /* 4FBC4 8024EBC4 2631DBE0 */   addiu     $s1, $s1, %lo(g_bStyleMenuOpen)
     /* 4FBC8 8024EBC8 02002025 */  or         $a0, $s0, $zero
     /* 4FBCC 8024EBCC 0C095644 */  jal        TransferFlags
     /* 4FBD0 8024EBD0 24050010 */   addiu     $a1, $zero, 0x10
-    /* 4FBD4 8024EBD4 3C0E8029 */  lui        $t6, %hi(gDecalCanvasWidth)
-    /* 4FBD8 8024EBD8 91CEDBB8 */  lbu        $t6, %lo(gDecalCanvasWidth)($t6)
+    /* 4FBD4 8024EBD4 3C0E8029 */  lui        $t6, %hi(g_bStyleMenuCursor)
+    /* 4FBD8 8024EBD8 91CEDBB8 */  lbu        $t6, %lo(g_bStyleMenuCursor)($t6)
     /* 4FBDC 8024EBDC 240F0001 */  addiu      $t7, $zero, 0x1
-    /* 4FBE0 8024EBE0 3C018029 */  lui        $at, %hi(g_bObjectDirty20)
+    /* 4FBE0 8024EBE0 3C018029 */  lui        $at, %hi(g_bTextShadowPickerOpen)
     /* 4FBE4 8024EBE4 11C00003 */  beqz       $t6, .L8024EBF4
     /* 4FBE8 8024EBE8 00000000 */   nop
     /* 4FBEC 8024EBEC 1000000B */  b          .L8024EC1C
-    /* 4FBF0 8024EBF0 A02FDBE4 */   sb        $t7, %lo(g_bObjectDirty20)($at)
+    /* 4FBF0 8024EBF0 A02FDBE4 */   sb        $t7, %lo(g_bTextShadowPickerOpen)($at)
   .L8024EBF4:
     /* 4FBF4 8024EBF4 10000009 */  b          .L8024EC1C
     /* 4FBF8 8024EBF8 A2200000 */   sb        $zero, 0x0($s1)
@@ -13159,8 +13159,8 @@ glabel ProcessTextStyleMenu
     /* 4FC08 8024EC08 0C095644 */  jal        TransferFlags
     /* 4FC0C 8024EC0C 24050020 */   addiu     $a1, $zero, 0x20
     /* 4FC10 8024EC10 A2200000 */  sb         $zero, 0x0($s1)
-    /* 4FC14 8024EC14 3C018029 */  lui        $at, %hi(g_bObjectDirty20)
-    /* 4FC18 8024EC18 A020DBE4 */  sb         $zero, %lo(g_bObjectDirty20)($at)
+    /* 4FC14 8024EC14 3C018029 */  lui        $at, %hi(g_bTextShadowPickerOpen)
+    /* 4FC18 8024EC18 A020DBE4 */  sb         $zero, %lo(g_bTextShadowPickerOpen)($at)
   .L8024EC1C:
     /* 4FC1C 8024EC1C 8FBF003C */  lw         $ra, 0x3C($sp)
     /* 4FC20 8024EC20 8FB00034 */  lw         $s0, 0x34($sp)
@@ -13173,18 +13173,18 @@ nonmatching StampTextOnDecal, 0x3D0
 
 glabel StampTextOnDecal
     /* 4FC30 8024EC30 27BDFF88 */  addiu      $sp, $sp, -0x78
-    /* 4FC34 8024EC34 3C028029 */  lui        $v0, %hi(g_dwDecalEditorFlags)
-    /* 4FC38 8024EC38 2442DB94 */  addiu      $v0, $v0, %lo(g_dwDecalEditorFlags)
+    /* 4FC34 8024EC34 3C028029 */  lui        $v0, %hi(g_rcDecalCanvas)
+    /* 4FC38 8024EC38 2442DB94 */  addiu      $v0, $v0, %lo(g_rcDecalCanvas)
     /* 4FC3C 8024EC3C 8C4E0000 */  lw         $t6, 0x0($v0)
     /* 4FC40 8024EC40 8C580004 */  lw         $t8, 0x4($v0)
     /* 4FC44 8024EC44 8C59000C */  lw         $t9, 0xC($v0)
     /* 4FC48 8024EC48 008E2023 */  subu       $a0, $a0, $t6
-    /* 4FC4C 8024EC4C 3C0E8029 */  lui        $t6, %hi(g_bObjectDirty10)
-    /* 4FC50 8024EC50 91CEDBAC */  lbu        $t6, %lo(g_bObjectDirty10)($t6)
+    /* 4FC4C 8024EC4C 3C0E8029 */  lui        $t6, %hi(g_bDecalTextWidth)
+    /* 4FC50 8024EC50 91CEDBAC */  lbu        $t6, %lo(g_bDecalTextWidth)($t6)
     /* 4FC54 8024EC54 03195021 */  addu       $t2, $t8, $t9
     /* 4FC58 8024EC58 00047883 */  sra        $t7, $a0, 2
-    /* 4FC5C 8024EC5C 3C198029 */  lui        $t9, %hi(g_bObjectDirty9)
-    /* 4FC60 8024EC60 9339DBA8 */  lbu        $t9, %lo(g_bObjectDirty9)($t9)
+    /* 4FC5C 8024EC5C 3C198029 */  lui        $t9, %hi(g_bDecalTextLength)
+    /* 4FC60 8024EC60 9339DBA8 */  lbu        $t9, %lo(g_bDecalTextLength)($t9)
     /* 4FC64 8024EC64 25E40001 */  addiu      $a0, $t7, 0x1
     /* 4FC68 8024EC68 01456023 */  subu       $t4, $t2, $a1
     /* 4FC6C 8024EC6C 000E7843 */  sra        $t7, $t6, 1
@@ -13205,28 +13205,28 @@ glabel StampTextOnDecal
     /* 4FCA8 8024ECA8 AFB8004C */  sw         $t8, 0x4C($sp)
     /* 4FCAC 8024ECAC 1B2000C8 */  blez       $t9, .L8024EFD0
     /* 4FCB0 8024ECB0 AFA0006C */   sw        $zero, 0x6C($sp)
-    /* 4FCB4 8024ECB4 3C0A8037 */  lui        $t2, %hi(g_dwCheatReserved3)
-    /* 4FCB8 8024ECB8 254A9E68 */  addiu      $t2, $t2, %lo(g_dwCheatReserved3)
-    /* 4FCBC 8024ECBC 3C048029 */  lui        $a0, %hi(g_dwGfxLight3Color)
-    /* 4FCC0 8024ECC0 3C1E8029 */  lui        $fp, %hi(g_bObjectDirty1)
-    /* 4FCC4 8024ECC4 3C178029 */  lui        $s7, %hi(g_dwGfxLight2Color)
-    /* 4FCC8 8024ECC8 3C168029 */  lui        $s6, %hi(gFramebufferHeight)
-    /* 4FCCC 8024ECCC 3C158029 */  lui        $s5, %hi(gFramebufferWidth)
-    /* 4FCD0 8024ECD0 26B5DB88 */  addiu      $s5, $s5, %lo(gFramebufferWidth)
-    /* 4FCD4 8024ECD4 26D6DB8C */  addiu      $s6, $s6, %lo(gFramebufferHeight)
-    /* 4FCD8 8024ECD8 26F7D2C0 */  addiu      $s7, $s7, %lo(g_dwGfxLight2Color)
-    /* 4FCDC 8024ECDC 27DEDB5C */  addiu      $fp, $fp, %lo(g_bObjectDirty1)
-    /* 4FCE0 8024ECE0 8C84D2D4 */  lw         $a0, %lo(g_dwGfxLight3Color)($a0)
+    /* 4FCB4 8024ECB4 3C0A8037 */  lui        $t2, %hi(g_apDecalTextGlyphs)
+    /* 4FCB8 8024ECB8 254A9E68 */  addiu      $t2, $t2, %lo(g_apDecalTextGlyphs)
+    /* 4FCBC 8024ECBC 3C048029 */  lui        $a0, %hi(D_8028D2D4)
+    /* 4FCC0 8024ECC0 3C1E8029 */  lui        $fp, %hi(g_bTextShadowColor)
+    /* 4FCC4 8024ECC4 3C178029 */  lui        $s7, %hi(g_texDecalFont)
+    /* 4FCC8 8024ECC8 3C168029 */  lui        $s6, %hi(g_bDecalHeight)
+    /* 4FCCC 8024ECCC 3C158029 */  lui        $s5, %hi(g_bDecalWidth)
+    /* 4FCD0 8024ECD0 26B5DB88 */  addiu      $s5, $s5, %lo(g_bDecalWidth)
+    /* 4FCD4 8024ECD4 26D6DB8C */  addiu      $s6, $s6, %lo(g_bDecalHeight)
+    /* 4FCD8 8024ECD8 26F7D2C0 */  addiu      $s7, $s7, %lo(g_texDecalFont)
+    /* 4FCDC 8024ECDC 27DEDB5C */  addiu      $fp, $fp, %lo(g_bTextShadowColor)
+    /* 4FCE0 8024ECE0 8C84D2D4 */  lw         $a0, %lo(D_8028D2D4)($a0)
     /* 4FCE4 8024ECE4 AFAA0040 */  sw         $t2, 0x40($sp)
     /* 4FCE8 8024ECE8 2413000F */  addiu      $s3, $zero, 0xF
     /* 4FCEC 8024ECEC 24080032 */  addiu      $t0, $zero, 0x32
   .L8024ECF0:
     /* 4FCF0 8024ECF0 8FAB0040 */  lw         $t3, 0x40($sp)
-    /* 4FCF4 8024ECF4 3C038029 */  lui        $v1, %hi(g_dwGfxCoefR)
-    /* 4FCF8 8024ECF8 3C078029 */  lui        $a3, %hi(g_bController0Connected)
+    /* 4FCF4 8024ECF4 3C038029 */  lui        $v1, %hi(g_aDecalGlyphs)
+    /* 4FCF8 8024ECF8 3C078029 */  lui        $a3, %hi(D_8028CF2C)
     /* 4FCFC 8024ECFC 8D660000 */  lw         $a2, 0x0($t3)
-    /* 4FD00 8024ED00 90E7CF2C */  lbu        $a3, %lo(g_bController0Connected)($a3)
-    /* 4FD04 8024ED04 2463D540 */  addiu      $v1, $v1, %lo(g_dwGfxCoefR)
+    /* 4FD00 8024ED00 90E7CF2C */  lbu        $a3, %lo(D_8028CF2C)($a3)
+    /* 4FD04 8024ED04 2463D540 */  addiu      $v1, $v1, %lo(g_aDecalGlyphs)
     /* 4FD08 8024ED08 00001025 */  or         $v0, $zero, $zero
     /* 4FD0C 8024ED0C 00009025 */  or         $s2, $zero, $zero
     /* 4FD10 8024ED10 90C50008 */  lbu        $a1, 0x8($a2)
@@ -13364,9 +13364,9 @@ glabel StampTextOnDecal
     /* 4FEF0 8024EEF0 00E02825 */  or         $a1, $a3, $zero
     /* 4FEF4 8024EEF4 318E000F */  andi       $t6, $t4, 0xF
     /* 4FEF8 8024EEF8 166E000D */  bne        $s3, $t6, .L8024EF30
-    /* 4FEFC 8024EEFC 3C068029 */   lui       $a2, %hi(gDecalEditorState)
+    /* 4FEFC 8024EEFC 3C068029 */   lui       $a2, %hi(g_bDecalColor)
     /* 4FF00 8024EF00 0C093C97 */  jal        SetPixel4Bit
-    /* 4FF04 8024EF04 90C6DB58 */   lbu       $a2, %lo(gDecalEditorState)($a2)
+    /* 4FF04 8024EF04 90C6DB58 */   lbu       $a2, %lo(g_bDecalColor)($a2)
     /* 4FF08 8024EF08 1000000A */  b          .L8024EF34
     /* 4FF0C 8024EF0C 26310001 */   addiu     $s1, $s1, 0x1
   .L8024EF10:
@@ -13375,9 +13375,9 @@ glabel StampTextOnDecal
     /* 4FF18 8024EF18 00E02825 */  or         $a1, $a3, $zero
     /* 4FF1C 8024EF1C 00185903 */  sra        $t3, $t8, 4
     /* 4FF20 8024EF20 166B0003 */  bne        $s3, $t3, .L8024EF30
-    /* 4FF24 8024EF24 3C068029 */   lui       $a2, %hi(gDecalEditorState)
+    /* 4FF24 8024EF24 3C068029 */   lui       $a2, %hi(g_bDecalColor)
     /* 4FF28 8024EF28 0C093C97 */  jal        SetPixel4Bit
-    /* 4FF2C 8024EF2C 90C6DB58 */   lbu       $a2, %lo(gDecalEditorState)($a2)
+    /* 4FF2C 8024EF2C 90C6DB58 */   lbu       $a2, %lo(g_bDecalColor)($a2)
   .L8024EF30:
     /* 4FF30 8024EF30 26310001 */  addiu      $s1, $s1, 0x1
   .L8024EF34:
@@ -13391,8 +13391,8 @@ glabel StampTextOnDecal
     /* 4FF4C 8024EF4C 8FAF0054 */   lw        $t7, 0x54($sp)
     /* 4FF50 8024EF50 24080032 */  addiu      $t0, $zero, 0x32
   .L8024EF54:
-    /* 4FF54 8024EF54 3C078029 */  lui        $a3, %hi(g_bObjectDirty9)
-    /* 4FF58 8024EF58 90E7DBA8 */  lbu        $a3, %lo(g_bObjectDirty9)($a3)
+    /* 4FF54 8024EF54 3C078029 */  lui        $a3, %hi(g_bDecalTextLength)
+    /* 4FF58 8024EF58 90E7DBA8 */  lbu        $a3, %lo(g_bDecalTextLength)($a3)
     /* 4FF5C 8024EF5C 8FB9006C */  lw         $t9, 0x6C($sp)
     /* 4FF60 8024EF60 8FA90040 */  lw         $t1, 0x40($sp)
     /* 4FF64 8024EF64 24EDFFFF */  addiu      $t5, $a3, -0x1
@@ -13443,10 +13443,10 @@ endlabel StampTextOnDecal
 nonmatching DrawLine4Bit, 0x25C
 
 glabel DrawLine4Bit
-    /* 50000 8024F000 3C098029 */  lui        $t1, %hi(g_dwDecalEditorFlags)
-    /* 50004 8024F004 2529DB94 */  addiu      $t1, $t1, %lo(g_dwDecalEditorFlags)
-    /* 50008 8024F008 3C0C8029 */  lui        $t4, %hi(g_bObjectVisible2)
-    /* 5000C 8024F00C 918CDAC0 */  lbu        $t4, %lo(g_bObjectVisible2)($t4)
+    /* 50000 8024F000 3C098029 */  lui        $t1, %hi(g_rcDecalCanvas)
+    /* 50004 8024F004 2529DB94 */  addiu      $t1, $t1, %lo(g_rcDecalCanvas)
+    /* 50008 8024F008 3C0C8029 */  lui        $t4, %hi(g_bBrushSize)
+    /* 5000C 8024F00C 918CDAC0 */  lbu        $t4, %lo(g_bBrushSize)($t4)
     /* 50010 8024F010 27BDFF90 */  addiu      $sp, $sp, -0x70
     /* 50014 8024F014 8D220000 */  lw         $v0, 0x0($t1)
     /* 50018 8024F018 8D2F0004 */  lw         $t7, 0x4($t1)
@@ -13532,14 +13532,14 @@ glabel DrawLine4Bit
     /* 50138 8024F138 1420003C */  bnez       $at, .L8024F22C
     /* 5013C 8024F13C 00008025 */   or        $s0, $zero, $zero
     /* 50140 8024F140 24CF0001 */  addiu      $t7, $a2, 0x1
-    /* 50144 8024F144 3C138029 */  lui        $s3, %hi(gDecalEditorState)
-    /* 50148 8024F148 2673DB58 */  addiu      $s3, $s3, %lo(gDecalEditorState)
+    /* 50144 8024F144 3C138029 */  lui        $s3, %hi(g_bDecalColor)
+    /* 50148 8024F148 2673DB58 */  addiu      $s3, $s3, %lo(g_bDecalColor)
     /* 5014C 8024F14C AFAF0044 */  sw         $t7, 0x44($sp)
   .L8024F150:
-    /* 50150 8024F150 3C028029 */  lui        $v0, %hi(g_bObjectVisible2)
+    /* 50150 8024F150 3C028029 */  lui        $v0, %hi(g_bBrushSize)
     /* 50154 8024F154 0215082A */  slt        $at, $s0, $s5
     /* 50158 8024F158 14200003 */  bnez       $at, .L8024F168
-    /* 5015C 8024F15C 9042DAC0 */   lbu       $v0, %lo(g_bObjectVisible2)($v0)
+    /* 5015C 8024F15C 9042DAC0 */   lbu       $v0, %lo(g_bBrushSize)($v0)
     /* 50160 8024F160 02158023 */  subu       $s0, $s0, $s5
     /* 50164 8024F164 02579021 */  addu       $s2, $s2, $s7
   .L8024F168:
@@ -13554,7 +13554,7 @@ glabel DrawLine4Bit
   .L8024F188:
     /* 50188 8024F188 02402825 */  or         $a1, $s2, $zero
     /* 5018C 8024F18C 03C03025 */  or         $a2, $fp, $zero
-    /* 50190 8024F190 0C094567 */  jal        DrawCircle4Bit
+    /* 50190 8024F190 0C094567 */  jal        FillCircle4Bit
     /* 50194 8024F194 00003825 */   or        $a3, $zero, $zero
     /* 50198 8024F198 8FB80044 */  lw         $t8, 0x44($sp)
   .L8024F19C:
@@ -13569,14 +13569,14 @@ glabel DrawLine4Bit
     /* 501B8 8024F1B8 1420001C */  bnez       $at, .L8024F22C
     /* 501BC 8024F1BC 00008025 */   or        $s0, $zero, $zero
     /* 501C0 8024F1C0 24F90001 */  addiu      $t9, $a3, 0x1
-    /* 501C4 8024F1C4 3C138029 */  lui        $s3, %hi(gDecalEditorState)
-    /* 501C8 8024F1C8 2673DB58 */  addiu      $s3, $s3, %lo(gDecalEditorState)
+    /* 501C4 8024F1C4 3C138029 */  lui        $s3, %hi(g_bDecalColor)
+    /* 501C8 8024F1C8 2673DB58 */  addiu      $s3, $s3, %lo(g_bDecalColor)
     /* 501CC 8024F1CC AFB90044 */  sw         $t9, 0x44($sp)
   .L8024F1D0:
-    /* 501D0 8024F1D0 3C028029 */  lui        $v0, %hi(g_bObjectVisible2)
+    /* 501D0 8024F1D0 3C028029 */  lui        $v0, %hi(g_bBrushSize)
     /* 501D4 8024F1D4 0214082A */  slt        $at, $s0, $s4
     /* 501D8 8024F1D8 14200003 */  bnez       $at, .L8024F1E8
-    /* 501DC 8024F1DC 9042DAC0 */   lbu       $v0, %lo(g_bObjectVisible2)($v0)
+    /* 501DC 8024F1DC 9042DAC0 */   lbu       $v0, %lo(g_bBrushSize)($v0)
     /* 501E0 8024F1E0 02148023 */  subu       $s0, $s0, $s4
     /* 501E4 8024F1E4 02368821 */  addu       $s1, $s1, $s6
   .L8024F1E8:
@@ -13591,7 +13591,7 @@ glabel DrawLine4Bit
   .L8024F208:
     /* 50208 8024F208 02402825 */  or         $a1, $s2, $zero
     /* 5020C 8024F20C 03C03025 */  or         $a2, $fp, $zero
-    /* 50210 8024F210 0C094567 */  jal        DrawCircle4Bit
+    /* 50210 8024F210 0C094567 */  jal        FillCircle4Bit
     /* 50214 8024F214 00003825 */   or        $a3, $zero, $zero
     /* 50218 8024F218 8FAA0044 */  lw         $t2, 0x44($sp)
   .L8024F21C:
@@ -13621,22 +13621,22 @@ glabel SetPixel4Bit
     /* 5025C 8024F25C AFA60008 */  sw         $a2, 0x8($sp)
     /* 50260 8024F260 0480004C */  bltz       $a0, .L8024F394
     /* 50264 8024F264 30C700FF */   andi      $a3, $a2, 0xFF
-    /* 50268 8024F268 3C028029 */  lui        $v0, %hi(gFramebufferWidth)
-    /* 5026C 8024F26C 9042DB88 */  lbu        $v0, %lo(gFramebufferWidth)($v0)
+    /* 50268 8024F268 3C028029 */  lui        $v0, %hi(g_bDecalWidth)
+    /* 5026C 8024F26C 9042DB88 */  lbu        $v0, %lo(g_bDecalWidth)($v0)
     /* 50270 8024F270 0082082A */  slt        $at, $a0, $v0
     /* 50274 8024F274 10200047 */  beqz       $at, .L8024F394
     /* 50278 8024F278 00000000 */   nop
     /* 5027C 8024F27C 04A00045 */  bltz       $a1, .L8024F394
-    /* 50280 8024F280 3C0E8029 */   lui       $t6, %hi(gFramebufferHeight)
-    /* 50284 8024F284 91CEDB8C */  lbu        $t6, %lo(gFramebufferHeight)($t6)
+    /* 50280 8024F280 3C0E8029 */   lui       $t6, %hi(g_bDecalHeight)
+    /* 50284 8024F284 91CEDB8C */  lbu        $t6, %lo(g_bDecalHeight)($t6)
     /* 50288 8024F288 00025043 */  sra        $t2, $v0, 1
     /* 5028C 8024F28C 00AE082A */  slt        $at, $a1, $t6
     /* 50290 8024F290 10200040 */  beqz       $at, .L8024F394
     /* 50294 8024F294 00000000 */   nop
     /* 50298 8024F298 00AA0019 */  multu      $a1, $t2
     /* 5029C 8024F29C 30AF0001 */  andi       $t7, $a1, 0x1
-    /* 502A0 8024F2A0 3C068029 */  lui        $a2, %hi(gClipMaskPtr)
-    /* 502A4 8024F2A4 8CC6DB7C */  lw         $a2, %lo(gClipMaskPtr)($a2)
+    /* 502A0 8024F2A0 3C068029 */  lui        $a2, %hi(g_pDecalMask)
+    /* 502A4 8024F2A4 8CC6DB7C */  lw         $a2, %lo(g_pDecalMask)($a2)
     /* 502A8 8024F2A8 000FC0C0 */  sll        $t8, $t7, 3
     /* 502AC 8024F2AC 0304C826 */  xor        $t9, $t8, $a0
     /* 502B0 8024F2B0 00194843 */  sra        $t1, $t9, 1
@@ -13648,9 +13648,9 @@ glabel SetPixel4Bit
     /* 502C8 8024F2C8 14C00013 */  bnez       $a2, .L8024F318
     /* 502CC 8024F2CC 00000000 */   nop
     /* 502D0 8024F2D0 11800009 */  beqz       $t4, .L8024F2F8
-    /* 502D4 8024F2D4 3C198029 */   lui       $t9, %hi(gFramebufferPtr)
-    /* 502D8 8024F2D8 3C0D8029 */  lui        $t5, %hi(gFramebufferPtr)
-    /* 502DC 8024F2DC 8DADDB78 */  lw         $t5, %lo(gFramebufferPtr)($t5)
+    /* 502D4 8024F2D4 3C198029 */   lui       $t9, %hi(g_pDecalTexels)
+    /* 502D8 8024F2D8 3C0D8029 */  lui        $t5, %hi(g_pDecalTexels)
+    /* 502DC 8024F2DC 8DADDB78 */  lw         $t5, %lo(g_pDecalTexels)($t5)
     /* 502E0 8024F2E0 01A31021 */  addu       $v0, $t5, $v1
     /* 502E4 8024F2E4 904E0000 */  lbu        $t6, 0x0($v0)
     /* 502E8 8024F2E8 31CF00F0 */  andi       $t7, $t6, 0xF0
@@ -13658,7 +13658,7 @@ glabel SetPixel4Bit
     /* 502F0 8024F2F0 03E00008 */  jr         $ra
     /* 502F4 8024F2F4 A0580000 */   sb        $t8, 0x0($v0)
   .L8024F2F8:
-    /* 502F8 8024F2F8 8F39DB78 */  lw         $t9, %lo(gFramebufferPtr)($t9)
+    /* 502F8 8024F2F8 8F39DB78 */  lw         $t9, %lo(g_pDecalTexels)($t9)
     /* 502FC 8024F2FC 00075900 */  sll        $t3, $a3, 4
     /* 50300 8024F300 03231021 */  addu       $v0, $t9, $v1
     /* 50304 8024F304 904A0000 */  lbu        $t2, 0x0($v0)
@@ -13682,9 +13682,9 @@ glabel SetPixel4Bit
     /* 50348 8024F348 15E00012 */  bnez       $t7, .L8024F394
     /* 5034C 8024F34C 00000000 */   nop
     /* 50350 8024F350 11A00009 */  beqz       $t5, .L8024F378
-    /* 50354 8024F354 3C0B8029 */   lui       $t3, %hi(gFramebufferPtr)
-    /* 50358 8024F358 3C188029 */  lui        $t8, %hi(gFramebufferPtr)
-    /* 5035C 8024F35C 8F18DB78 */  lw         $t8, %lo(gFramebufferPtr)($t8)
+    /* 50354 8024F354 3C0B8029 */   lui       $t3, %hi(g_pDecalTexels)
+    /* 50358 8024F358 3C188029 */  lui        $t8, %hi(g_pDecalTexels)
+    /* 5035C 8024F35C 8F18DB78 */  lw         $t8, %lo(g_pDecalTexels)($t8)
     /* 50360 8024F360 03031021 */  addu       $v0, $t8, $v1
     /* 50364 8024F364 90590000 */  lbu        $t9, 0x0($v0)
     /* 50368 8024F368 332900F0 */  andi       $t1, $t9, 0xF0
@@ -13692,7 +13692,7 @@ glabel SetPixel4Bit
     /* 50370 8024F370 03E00008 */  jr         $ra
     /* 50374 8024F374 A04C0000 */   sb        $t4, 0x0($v0)
   .L8024F378:
-    /* 50378 8024F378 8D6BDB78 */  lw         $t3, %lo(gFramebufferPtr)($t3)
+    /* 50378 8024F378 8D6BDB78 */  lw         $t3, %lo(g_pDecalTexels)($t3)
     /* 5037C 8024F37C 00077900 */  sll        $t7, $a3, 4
     /* 50380 8024F380 01631021 */  addu       $v0, $t3, $v1
     /* 50384 8024F384 904A0000 */  lbu        $t2, 0x0($v0)
@@ -13708,13 +13708,13 @@ nonmatching ProcessRectStyleMenu, 0x438
 
 glabel ProcessRectStyleMenu
     /* 5039C 8024F39C 27BDFF78 */  addiu      $sp, $sp, -0x88
-    /* 503A0 8024F3A0 3C0F8029 */  lui        $t7, %hi(g_pszFilledRectangle)
+    /* 503A0 8024F3A0 3C0F8029 */  lui        $t7, %hi(g_apszRectStyleNames)
     /* 503A4 8024F3A4 AFBF003C */  sw         $ra, 0x3C($sp)
     /* 503A8 8024F3A8 AFB30038 */  sw         $s3, 0x38($sp)
     /* 503AC 8024F3AC AFB20034 */  sw         $s2, 0x34($sp)
     /* 503B0 8024F3B0 AFB10030 */  sw         $s1, 0x30($sp)
     /* 503B4 8024F3B4 AFB0002C */  sw         $s0, 0x2C($sp)
-    /* 503B8 8024F3B8 25EFDCF4 */  addiu      $t7, $t7, %lo(g_pszFilledRectangle)
+    /* 503B8 8024F3B8 25EFDCF4 */  addiu      $t7, $t7, %lo(g_apszRectStyleNames)
     /* 503BC 8024F3BC 8DE80004 */  lw         $t0, 0x4($t7)
     /* 503C0 8024F3C0 8DE10000 */  lw         $at, 0x0($t7)
     /* 503C4 8024F3C4 27AE0050 */  addiu      $t6, $sp, 0x50
@@ -13760,22 +13760,22 @@ glabel ProcessRectStyleMenu
     /* 50464 8024F464 2405009F */  addiu      $a1, $zero, 0x9F
     /* 50468 8024F468 0C08BD77 */  jal        DrawText
     /* 5046C 8024F46C 2406005C */   addiu     $a2, $zero, 0x5C
-    /* 50470 8024F470 3C028029 */  lui        $v0, %hi(gDecalCanvasHeight)
-    /* 50474 8024F474 2442DBC0 */  addiu      $v0, $v0, %lo(gDecalCanvasHeight)
+    /* 50470 8024F470 3C028029 */  lui        $v0, %hi(g_bPaintToolStarted)
+    /* 50474 8024F474 2442DBC0 */  addiu      $v0, $v0, %lo(g_bPaintToolStarted)
     /* 50478 8024F478 904A0000 */  lbu        $t2, 0x0($v0)
-    /* 5047C 8024F47C 3C118029 */  lui        $s1, %hi(g_pObjectMatrix22)
-    /* 50480 8024F480 2631DB34 */  addiu      $s1, $s1, %lo(g_pObjectMatrix22)
+    /* 5047C 8024F47C 3C118029 */  lui        $s1, %hi(g_apRectStyleIcons)
+    /* 50480 8024F480 2631DB34 */  addiu      $s1, $s1, %lo(g_apRectStyleIcons)
     /* 50484 8024F484 11400007 */  beqz       $t2, .L8024F4A4
     /* 50488 8024F488 00008025 */   or        $s0, $zero, $zero
-    /* 5048C 8024F48C 3C098029 */  lui        $t1, %hi(g_bController1Connected)
-    /* 50490 8024F490 9129CF5C */  lbu        $t1, %lo(g_bController1Connected)($t1)
-    /* 50494 8024F494 3C138029 */  lui        $s3, %hi(gDecalCanvasWidth)
-    /* 50498 8024F498 2673DBB8 */  addiu      $s3, $s3, %lo(gDecalCanvasWidth)
+    /* 5048C 8024F48C 3C098029 */  lui        $t1, %hi(D_8028CF5C)
+    /* 50490 8024F490 9129CF5C */  lbu        $t1, %lo(D_8028CF5C)($t1)
+    /* 50494 8024F494 3C138029 */  lui        $s3, %hi(g_bStyleMenuCursor)
+    /* 50498 8024F498 2673DBB8 */  addiu      $s3, $s3, %lo(g_bStyleMenuCursor)
     /* 5049C 8024F49C A0400000 */  sb         $zero, 0x0($v0)
     /* 504A0 8024F4A0 A2690000 */  sb         $t1, 0x0($s3)
   .L8024F4A4:
-    /* 504A4 8024F4A4 3C138029 */  lui        $s3, %hi(gDecalCanvasWidth)
-    /* 504A8 8024F4A8 2673DBB8 */  addiu      $s3, $s3, %lo(gDecalCanvasWidth)
+    /* 504A4 8024F4A4 3C138029 */  lui        $s3, %hi(g_bStyleMenuCursor)
+    /* 504A8 8024F4A8 2673DBB8 */  addiu      $s3, $s3, %lo(g_bStyleMenuCursor)
     /* 504AC 8024F4AC 241200AF */  addiu      $s2, $zero, 0xAF
   .L8024F4B0:
     /* 504B0 8024F4B0 926B0000 */  lbu        $t3, 0x0($s3)
@@ -13877,8 +13877,8 @@ glabel ProcessRectStyleMenu
     /* 50628 8024F628 8FA50060 */  lw         $a1, 0x60($sp)
     /* 5062C 8024F62C 0C091581 */  jal        DrawTexturedSprite
     /* 50630 8024F630 8FA60064 */   lw        $a2, 0x64($sp)
-    /* 50634 8024F634 3C118029 */  lui        $s1, %hi(gDecalBrushState)
-    /* 50638 8024F638 2631DBBC */  addiu      $s1, $s1, %lo(gDecalBrushState)
+    /* 50634 8024F634 3C118029 */  lui        $s1, %hi(g_bPaintShopPlayer)
+    /* 50638 8024F638 2631DBBC */  addiu      $s1, $s1, %lo(g_bPaintShopPlayer)
     /* 5063C 8024F63C 92290000 */  lbu        $t1, 0x0($s1)
     /* 50640 8024F640 2412015C */  addiu      $s2, $zero, 0x15C
     /* 50644 8024F644 3C108037 */  lui        $s0, %hi(g_aPlayerInputState)
@@ -13900,7 +13900,7 @@ glabel ProcessRectStyleMenu
     /* 50684 8024F684 24050004 */   addiu     $a1, $zero, 0x4
     /* 50688 8024F688 92620000 */  lbu        $v0, 0x0($s3)
     /* 5068C 8024F68C 24180003 */  addiu      $t8, $zero, 0x3
-    /* 50690 8024F690 3C0F8029 */  lui        $t7, %hi(gDecalBrushState)
+    /* 50690 8024F690 3C0F8029 */  lui        $t7, %hi(g_bPaintShopPlayer)
     /* 50694 8024F694 14400003 */  bnez       $v0, .L8024F6A4
     /* 50698 8024F698 244EFFFF */   addiu     $t6, $v0, -0x1
     /* 5069C 8024F69C 10000002 */  b          .L8024F6A8
@@ -13908,7 +13908,7 @@ glabel ProcessRectStyleMenu
   .L8024F6A4:
     /* 506A4 8024F6A4 A26E0000 */  sb         $t6, 0x0($s3)
   .L8024F6A8:
-    /* 506A8 8024F6A8 91EFDBBC */  lbu        $t7, %lo(gDecalBrushState)($t7)
+    /* 506A8 8024F6A8 91EFDBBC */  lbu        $t7, %lo(g_bPaintShopPlayer)($t7)
     /* 506AC 8024F6AC 3C0A8037 */  lui        $t2, %hi(g_aPlayerInputState)
     /* 506B0 8024F6B0 254AA8E0 */  addiu      $t2, $t2, %lo(g_aPlayerInputState)
     /* 506B4 8024F6B4 000F4080 */  sll        $t0, $t7, 2
@@ -13928,12 +13928,12 @@ glabel ProcessRectStyleMenu
     /* 506E8 8024F6E8 24050001 */   addiu     $a1, $zero, 0x1
     /* 506EC 8024F6EC 92620000 */  lbu        $v0, 0x0($s3)
     /* 506F0 8024F6F0 24010003 */  addiu      $at, $zero, 0x3
-    /* 506F4 8024F6F4 3C188029 */  lui        $t8, %hi(gDecalBrushState)
+    /* 506F4 8024F6F4 3C188029 */  lui        $t8, %hi(g_bPaintShopPlayer)
     /* 506F8 8024F6F8 14410010 */  bne        $v0, $at, .L8024F73C
     /* 506FC 8024F6FC 24590001 */   addiu     $t9, $v0, 0x1
     /* 50700 8024F700 A2600000 */  sb         $zero, 0x0($s3)
-    /* 50704 8024F704 3C0B8029 */  lui        $t3, %hi(gDecalBrushState)
-    /* 50708 8024F708 916BDBBC */  lbu        $t3, %lo(gDecalBrushState)($t3)
+    /* 50704 8024F704 3C0B8029 */  lui        $t3, %hi(g_bPaintShopPlayer)
+    /* 50708 8024F708 916BDBBC */  lbu        $t3, %lo(g_bPaintShopPlayer)($t3)
     /* 5070C 8024F70C 3C0C8037 */  lui        $t4, %hi(g_aPlayerInputState)
     /* 50710 8024F710 258CA8E0 */  addiu      $t4, $t4, %lo(g_aPlayerInputState)
     /* 50714 8024F714 000B6880 */  sll        $t5, $t3, 2
@@ -13948,7 +13948,7 @@ glabel ProcessRectStyleMenu
     /* 50738 8024F738 8C830000 */   lw        $v1, 0x0($a0)
   .L8024F73C:
     /* 5073C 8024F73C A2790000 */  sb         $t9, 0x0($s3)
-    /* 50740 8024F740 9318DBBC */  lbu        $t8, %lo(gDecalBrushState)($t8)
+    /* 50740 8024F740 9318DBBC */  lbu        $t8, %lo(g_bPaintShopPlayer)($t8)
     /* 50744 8024F744 3C0F8037 */  lui        $t7, %hi(g_aPlayerInputState)
     /* 50748 8024F748 25EFA8E0 */  addiu      $t7, $t7, %lo(g_aPlayerInputState)
     /* 5074C 8024F74C 00187080 */  sll        $t6, $t8, 2
@@ -13968,19 +13968,19 @@ glabel ProcessRectStyleMenu
     /* 5077C 8024F77C 0C095644 */  jal        TransferFlags
     /* 50780 8024F780 24050010 */   addiu     $a1, $zero, 0x10
     /* 50784 8024F784 926A0000 */  lbu        $t2, 0x0($s3)
-    /* 50788 8024F788 3C018029 */  lui        $at, %hi(g_bController1Connected)
-    /* 5078C 8024F78C A02ACF5C */  sb         $t2, %lo(g_bController1Connected)($at)
-    /* 50790 8024F790 3C018029 */  lui        $at, %hi(g_bObjectDirty19)
+    /* 50788 8024F788 3C018029 */  lui        $at, %hi(D_8028CF5C)
+    /* 5078C 8024F78C A02ACF5C */  sb         $t2, %lo(D_8028CF5C)($at)
+    /* 50790 8024F790 3C018029 */  lui        $at, %hi(g_bStyleMenuOpen)
     /* 50794 8024F794 10000008 */  b          .L8024F7B8
-    /* 50798 8024F798 A020DBE0 */   sb        $zero, %lo(g_bObjectDirty19)($at)
+    /* 50798 8024F798 A020DBE0 */   sb        $zero, %lo(g_bStyleMenuOpen)($at)
     /* 5079C 8024F79C 30690020 */  andi       $t1, $v1, 0x20
   .L8024F7A0:
     /* 507A0 8024F7A0 51200006 */  beql       $t1, $zero, .L8024F7BC
     /* 507A4 8024F7A4 8FBF003C */   lw        $ra, 0x3C($sp)
     /* 507A8 8024F7A8 0C095644 */  jal        TransferFlags
     /* 507AC 8024F7AC 24050020 */   addiu     $a1, $zero, 0x20
-    /* 507B0 8024F7B0 3C018029 */  lui        $at, %hi(g_bObjectDirty19)
-    /* 507B4 8024F7B4 A020DBE0 */  sb         $zero, %lo(g_bObjectDirty19)($at)
+    /* 507B0 8024F7B0 3C018029 */  lui        $at, %hi(g_bStyleMenuOpen)
+    /* 507B4 8024F7B4 A020DBE0 */  sb         $zero, %lo(g_bStyleMenuOpen)($at)
   .L8024F7B8:
     /* 507B8 8024F7B8 8FBF003C */  lw         $ra, 0x3C($sp)
   .L8024F7BC:
@@ -13995,8 +13995,8 @@ endlabel ProcessRectStyleMenu
 nonmatching FillRect4Bit, 0xF8
 
 glabel FillRect4Bit
-    /* 507D4 8024F7D4 3C088029 */  lui        $t0, %hi(g_dwDecalEditorFlags)
-    /* 507D8 8024F7D8 2508DB94 */  addiu      $t0, $t0, %lo(g_dwDecalEditorFlags)
+    /* 507D4 8024F7D4 3C088029 */  lui        $t0, %hi(g_rcDecalCanvas)
+    /* 507D8 8024F7D8 2508DB94 */  addiu      $t0, $t0, %lo(g_rcDecalCanvas)
     /* 507DC 8024F7DC 8D020000 */  lw         $v0, 0x0($t0)
     /* 507E0 8024F7E0 8D0F0004 */  lw         $t7, 0x4($t0)
     /* 507E4 8024F7E4 8D18000C */  lw         $t8, 0xC($t0)
@@ -14035,8 +14035,8 @@ glabel FillRect4Bit
     /* 50860 8024F860 00B5082A */  slt        $at, $a1, $s5
     /* 50864 8024F864 10200010 */  beqz       $at, .L8024F8A8
     /* 50868 8024F868 00A08825 */   or        $s1, $a1, $zero
-    /* 5086C 8024F86C 3C128029 */  lui        $s2, %hi(gDecalEditorState)
-    /* 50870 8024F870 2652DB58 */  addiu      $s2, $s2, %lo(gDecalEditorState)
+    /* 5086C 8024F86C 3C128029 */  lui        $s2, %hi(g_bDecalColor)
+    /* 50870 8024F870 2652DB58 */  addiu      $s2, $s2, %lo(g_bDecalColor)
     /* 50874 8024F874 0293082A */  slt        $at, $s4, $s3
   .L8024F878:
     /* 50878 8024F878 10200008 */  beqz       $at, .L8024F89C
@@ -14065,12 +14065,12 @@ glabel FillRect4Bit
     /* 508C8 8024F8C8 27BD0030 */   addiu     $sp, $sp, 0x30
 endlabel FillRect4Bit
 
-nonmatching DrawDecalRectangle, 0x2FC
+nonmatching StrokeDecalRectangle, 0x2FC
 
-glabel DrawDecalRectangle
+glabel StrokeDecalRectangle
     /* 508CC 8024F8CC 27BDFFA8 */  addiu      $sp, $sp, -0x58
-    /* 508D0 8024F8D0 3C088029 */  lui        $t0, %hi(g_dwDecalEditorFlags)
-    /* 508D4 8024F8D4 2508DB94 */  addiu      $t0, $t0, %lo(g_dwDecalEditorFlags)
+    /* 508D0 8024F8D0 3C088029 */  lui        $t0, %hi(g_rcDecalCanvas)
+    /* 508D4 8024F8D4 2508DB94 */  addiu      $t0, $t0, %lo(g_rcDecalCanvas)
     /* 508D8 8024F8D8 8D020000 */  lw         $v0, 0x0($t0)
     /* 508DC 8024F8DC 8D0F0004 */  lw         $t7, 0x4($t0)
     /* 508E0 8024F8E0 8D18000C */  lw         $t8, 0xC($t0)
@@ -14104,14 +14104,14 @@ glabel DrawDecalRectangle
     /* 50950 8024F950 01C0A025 */  or         $s4, $t6, $zero
   .L8024F954:
     /* 50954 8024F954 8FAD005C */  lw         $t5, 0x5C($sp)
-    /* 50958 8024F958 3C0E8029 */  lui        $t6, %hi(g_bObjectVisible2)
+    /* 50958 8024F958 3C0E8029 */  lui        $t6, %hi(g_bBrushSize)
     /* 5095C 8024F95C 02CD082A */  slt        $at, $s6, $t5
     /* 50960 8024F960 10200003 */  beqz       $at, .L8024F970
     /* 50964 8024F964 00000000 */   nop
     /* 50968 8024F968 AFB6005C */  sw         $s6, 0x5C($sp)
     /* 5096C 8024F96C 01A0B025 */  or         $s6, $t5, $zero
   .L8024F970:
-    /* 50970 8024F970 91CEDAC0 */  lbu        $t6, %lo(g_bObjectVisible2)($t6)
+    /* 50970 8024F970 91CEDAC0 */  lbu        $t6, %lo(g_bBrushSize)($t6)
     /* 50974 8024F974 3C188029 */  lui        $t8, %hi(D_8028D4A8)
     /* 50978 8024F978 8FB1005C */  lw         $s1, 0x5C($sp)
     /* 5097C 8024F97C 000E7900 */  sll        $t7, $t6, 4
@@ -14122,8 +14122,8 @@ glabel DrawDecalRectangle
     /* 50990 8024F990 1720002F */  bnez       $t9, .L8024FA50
     /* 50994 8024F994 AFB9004C */   sw        $t9, 0x4C($sp)
     /* 50998 8024F998 1020000A */  beqz       $at, .L8024F9C4
-    /* 5099C 8024F99C 3C138029 */   lui       $s3, %hi(gDecalEditorState)
-    /* 509A0 8024F9A0 2673DB58 */  addiu      $s3, $s3, %lo(gDecalEditorState)
+    /* 5099C 8024F99C 3C138029 */   lui       $s3, %hi(g_bDecalColor)
+    /* 509A0 8024F9A0 2673DB58 */  addiu      $s3, $s3, %lo(g_bDecalColor)
     /* 509A4 8024F9A4 03C02025 */  or         $a0, $fp, $zero
   .L8024F9A8:
     /* 509A8 8024F9A8 02202825 */  or         $a1, $s1, $zero
@@ -14134,9 +14134,9 @@ glabel DrawDecalRectangle
     /* 509BC 8024F9BC 03C02025 */   or        $a0, $fp, $zero
     /* 509C0 8024F9C0 8FB1005C */  lw         $s1, 0x5C($sp)
   .L8024F9C4:
-    /* 509C4 8024F9C4 3C138029 */  lui        $s3, %hi(gDecalEditorState)
+    /* 509C4 8024F9C4 3C138029 */  lui        $s3, %hi(g_bDecalColor)
     /* 509C8 8024F9C8 029E082A */  slt        $at, $s4, $fp
-    /* 509CC 8024F9CC 2673DB58 */  addiu      $s3, $s3, %lo(gDecalEditorState)
+    /* 509CC 8024F9CC 2673DB58 */  addiu      $s3, $s3, %lo(g_bDecalColor)
     /* 509D0 8024F9D0 1420000A */  bnez       $at, .L8024F9FC
     /* 509D4 8024F9D4 03C08025 */   or        $s0, $fp, $zero
     /* 509D8 8024F9D8 26920001 */  addiu      $s2, $s4, 0x1
@@ -14177,7 +14177,7 @@ glabel DrawDecalRectangle
   .L8024FA50:
     /* 50A50 8024FA50 8FAC004C */  lw         $t4, 0x4C($sp)
     /* 50A54 8024FA54 8FAB005C */  lw         $t3, 0x5C($sp)
-    /* 50A58 8024FA58 3C138029 */  lui        $s3, %hi(gDecalEditorState)
+    /* 50A58 8024FA58 3C138029 */  lui        $s3, %hi(g_bDecalColor)
     /* 50A5C 8024FA5C 02CCB821 */  addu       $s7, $s6, $t4
     /* 50A60 8024FA60 016C8823 */  subu       $s1, $t3, $t4
     /* 50A64 8024FA64 0237082A */  slt        $at, $s1, $s7
@@ -14185,7 +14185,7 @@ glabel DrawDecalRectangle
     /* 50A6C 8024FA6C AFB10044 */   sw        $s1, 0x44($sp)
     /* 50A70 8024FA70 03CCA823 */  subu       $s5, $fp, $t4
     /* 50A74 8024FA74 03CC9021 */  addu       $s2, $fp, $t4
-    /* 50A78 8024FA78 2673DB58 */  addiu      $s3, $s3, %lo(gDecalEditorState)
+    /* 50A78 8024FA78 2673DB58 */  addiu      $s3, $s3, %lo(g_bDecalColor)
     /* 50A7C 8024FA7C 02B2082A */  slt        $at, $s5, $s2
   .L8024FA80:
     /* 50A80 8024FA80 10200008 */  beqz       $at, .L8024FAA4
@@ -14204,8 +14204,8 @@ glabel DrawDecalRectangle
     /* 50AAC 8024FAAC 02B2082A */   slt       $at, $s5, $s2
   .L8024FAB0:
     /* 50AB0 8024FAB0 8FAE004C */  lw         $t6, 0x4C($sp)
-    /* 50AB4 8024FAB4 3C138029 */  lui        $s3, %hi(gDecalEditorState)
-    /* 50AB8 8024FAB8 2673DB58 */  addiu      $s3, $s3, %lo(gDecalEditorState)
+    /* 50AB4 8024FAB4 3C138029 */  lui        $s3, %hi(g_bDecalColor)
+    /* 50AB8 8024FAB8 2673DB58 */  addiu      $s3, $s3, %lo(g_bDecalColor)
     /* 50ABC 8024FABC 02CE8823 */  subu       $s1, $s6, $t6
     /* 50AC0 8024FAC0 0237082A */  slt        $at, $s1, $s7
     /* 50AC4 8024FAC4 1020000D */  beqz       $at, .L8024FAFC
@@ -14286,14 +14286,14 @@ glabel DrawDecalRectangle
     /* 50BBC 8024FBBC 8FBE0038 */  lw         $fp, 0x38($sp)
     /* 50BC0 8024FBC0 03E00008 */  jr         $ra
     /* 50BC4 8024FBC4 27BD0058 */   addiu     $sp, $sp, 0x58
-endlabel DrawDecalRectangle
+endlabel StrokeDecalRectangle
 
-nonmatching DrawDecalRoundedRect, 0x2F0
+nonmatching FillDecalRoundRect, 0x2F0
 
-glabel DrawDecalRoundedRect
+glabel FillDecalRoundRect
     /* 50BC8 8024FBC8 27BDFF78 */  addiu      $sp, $sp, -0x88
-    /* 50BCC 8024FBCC 3C088029 */  lui        $t0, %hi(g_dwDecalEditorFlags)
-    /* 50BD0 8024FBD0 2508DB94 */  addiu      $t0, $t0, %lo(g_dwDecalEditorFlags)
+    /* 50BCC 8024FBCC 3C088029 */  lui        $t0, %hi(g_rcDecalCanvas)
+    /* 50BD0 8024FBD0 2508DB94 */  addiu      $t0, $t0, %lo(g_rcDecalCanvas)
     /* 50BD4 8024FBD4 8D020000 */  lw         $v0, 0x0($t0)
     /* 50BD8 8024FBD8 8D190004 */  lw         $t9, 0x4($t0)
     /* 50BDC 8024FBDC 8D09000C */  lw         $t1, 0xC($t0)
@@ -14328,11 +14328,11 @@ glabel DrawDecalRoundedRect
     /* 50C50 8024FC50 0300B825 */  or         $s7, $t8, $zero
   .L8024FC54:
     /* 50C54 8024FC54 8FAF0094 */  lw         $t7, 0x94($sp)
-    /* 50C58 8024FC58 3C128029 */  lui        $s2, %hi(gDecalEditorState)
+    /* 50C58 8024FC58 3C128029 */  lui        $s2, %hi(g_bDecalColor)
     /* 50C5C 8024FC5C 00A01025 */  or         $v0, $a1, $zero
     /* 50C60 8024FC60 01E5082A */  slt        $at, $t7, $a1
     /* 50C64 8024FC64 10200003 */  beqz       $at, .L8024FC74
-    /* 50C68 8024FC68 2652DB58 */   addiu     $s2, $s2, %lo(gDecalEditorState)
+    /* 50C68 8024FC68 2652DB58 */   addiu     $s2, $s2, %lo(g_bDecalColor)
     /* 50C6C 8024FC6C 01E02825 */  or         $a1, $t7, $zero
     /* 50C70 8024FC70 AFA20094 */  sw         $v0, 0x94($sp)
   .L8024FC74:
@@ -14375,10 +14375,10 @@ glabel DrawDecalRoundedRect
   .L8024FCF4:
     /* 50CF4 8024FCF4 8FAC0088 */  lw         $t4, 0x88($sp)
     /* 50CF8 8024FCF8 00141040 */  sll        $v0, $s4, 1
-    /* 50CFC 8024FCFC 3C128029 */  lui        $s2, %hi(gDecalEditorState)
+    /* 50CFC 8024FCFC 3C128029 */  lui        $s2, %hi(g_bDecalColor)
     /* 50D00 8024FD00 00027023 */  negu       $t6, $v0
     /* 50D04 8024FD04 01946821 */  addu       $t5, $t4, $s4
-    /* 50D08 8024FD08 2652DB58 */  addiu      $s2, $s2, %lo(gDecalEditorState)
+    /* 50D08 8024FD08 2652DB58 */  addiu      $s2, $s2, %lo(g_bDecalColor)
     /* 50D0C 8024FD0C AFAD0088 */  sw         $t5, 0x88($sp)
     /* 50D10 8024FD10 AFB5008C */  sw         $s5, 0x8C($sp)
     /* 50D14 8024FD14 02F4B823 */  subu       $s7, $s7, $s4
@@ -14497,13 +14497,13 @@ glabel DrawDecalRoundedRect
     /* 50EAC 8024FEAC 8FBE0038 */  lw         $fp, 0x38($sp)
     /* 50EB0 8024FEB0 03E00008 */  jr         $ra
     /* 50EB4 8024FEB4 27BD0088 */   addiu     $sp, $sp, 0x88
-endlabel DrawDecalRoundedRect
+endlabel FillDecalRoundRect
 
 nonmatching DrawDecalRoundedRectOutline, 0x7E0
 
 glabel DrawDecalRoundedRectOutline
-    /* 50EB8 8024FEB8 3C088029 */  lui        $t0, %hi(g_dwDecalEditorFlags)
-    /* 50EBC 8024FEBC 2508DB94 */  addiu      $t0, $t0, %lo(g_dwDecalEditorFlags)
+    /* 50EB8 8024FEB8 3C088029 */  lui        $t0, %hi(g_rcDecalCanvas)
+    /* 50EBC 8024FEBC 2508DB94 */  addiu      $t0, $t0, %lo(g_rcDecalCanvas)
     /* 50EC0 8024FEC0 27BDFF70 */  addiu      $sp, $sp, -0x90
     /* 50EC4 8024FEC4 8D020000 */  lw         $v0, 0x0($t0)
     /* 50EC8 8024FEC8 8D0F0004 */  lw         $t7, 0x4($t0)
@@ -14538,12 +14538,12 @@ glabel DrawDecalRoundedRectOutline
   .L8024FF3C:
     /* 50F3C 8024FF3C 00F0082A */  slt        $at, $a3, $s0
     /* 50F40 8024FF40 10200004 */  beqz       $at, .L8024FF54
-    /* 50F44 8024FF44 3C0B8029 */   lui       $t3, %hi(g_bObjectVisible2)
+    /* 50F44 8024FF44 3C0B8029 */   lui       $t3, %hi(g_bBrushSize)
     /* 50F48 8024FF48 02001025 */  or         $v0, $s0, $zero
     /* 50F4C 8024FF4C 00E08025 */  or         $s0, $a3, $zero
     /* 50F50 8024FF50 00403825 */  or         $a3, $v0, $zero
   .L8024FF54:
-    /* 50F54 8024FF54 916BDAC0 */  lbu        $t3, %lo(g_bObjectVisible2)($t3)
+    /* 50F54 8024FF54 916BDAC0 */  lbu        $t3, %lo(g_bBrushSize)($t3)
     /* 50F58 8024FF58 3C178029 */  lui        $s7, %hi(D_8028D4A8)
     /* 50F5C 8024FF5C 03C41023 */  subu       $v0, $fp, $a0
     /* 50F60 8024FF60 000B6100 */  sll        $t4, $t3, 4
@@ -14575,8 +14575,8 @@ glabel DrawDecalRoundedRectOutline
     /* 50FC0 8024FFC0 AFA7009C */  sw         $a3, 0x9C($sp)
     /* 50FC4 8024FFC4 1020000F */  beqz       $at, .L80250004
     /* 50FC8 8024FFC8 AFB00094 */   sw        $s0, 0x94($sp)
-    /* 50FCC 8024FFCC 3C148029 */  lui        $s4, %hi(gDecalEditorState)
-    /* 50FD0 8024FFD0 2694DB58 */  addiu      $s4, $s4, %lo(gDecalEditorState)
+    /* 50FCC 8024FFCC 3C148029 */  lui        $s4, %hi(g_bDecalColor)
+    /* 50FD0 8024FFD0 2694DB58 */  addiu      $s4, $s4, %lo(g_bDecalColor)
     /* 50FD4 8024FFD4 00F99823 */  subu       $s3, $a3, $t9
     /* 50FD8 8024FFD8 AFA40090 */  sw         $a0, 0x90($sp)
     /* 50FDC 8024FFDC AFA7009C */  sw         $a3, 0x9C($sp)
@@ -14593,8 +14593,8 @@ glabel DrawDecalRoundedRectOutline
   .L80250004:
     /* 51004 80250004 8FAD0048 */  lw         $t5, 0x48($sp)
     /* 51008 80250008 8FAE0044 */  lw         $t6, 0x44($sp)
-    /* 5100C 8025000C 3C148029 */  lui        $s4, %hi(gDecalEditorState)
-    /* 51010 80250010 2694DB58 */  addiu      $s4, $s4, %lo(gDecalEditorState)
+    /* 5100C 8025000C 3C148029 */  lui        $s4, %hi(g_bDecalColor)
+    /* 51010 80250010 2694DB58 */  addiu      $s4, $s4, %lo(g_bDecalColor)
     /* 51014 80250014 01AE082A */  slt        $at, $t5, $t6
     /* 51018 80250018 8FA40090 */  lw         $a0, 0x90($sp)
     /* 5101C 8025001C 8FA7009C */  lw         $a3, 0x9C($sp)
@@ -14659,8 +14659,8 @@ glabel DrawDecalRoundedRectOutline
     /* 510F0 802500F0 14200019 */  bnez       $at, .L80250158
     /* 510F4 802500F4 AFB00094 */   sw        $s0, 0x94($sp)
     /* 510F8 802500F8 8FB80078 */  lw         $t8, 0x78($sp)
-    /* 510FC 802500FC 3C148029 */  lui        $s4, %hi(gDecalEditorState)
-    /* 51100 80250100 2694DB58 */  addiu      $s4, $s4, %lo(gDecalEditorState)
+    /* 510FC 802500FC 3C148029 */  lui        $s4, %hi(g_bDecalColor)
+    /* 51100 80250100 2694DB58 */  addiu      $s4, $s4, %lo(g_bDecalColor)
     /* 51104 80250104 0097A823 */  subu       $s5, $a0, $s7
     /* 51108 80250108 00978821 */  addu       $s1, $a0, $s7
     /* 5110C 8025010C AFA40090 */  sw         $a0, 0x90($sp)
@@ -14688,8 +14688,8 @@ glabel DrawDecalRoundedRectOutline
   .L80250158:
     /* 51158 80250158 8FA90044 */  lw         $t1, 0x44($sp)
     /* 5115C 8025015C 8FAB0048 */  lw         $t3, 0x48($sp)
-    /* 51160 80250160 3C148029 */  lui        $s4, %hi(gDecalEditorState)
-    /* 51164 80250164 2694DB58 */  addiu      $s4, $s4, %lo(gDecalEditorState)
+    /* 51160 80250160 3C148029 */  lui        $s4, %hi(g_bDecalColor)
+    /* 51164 80250164 2694DB58 */  addiu      $s4, $s4, %lo(g_bDecalColor)
     /* 51168 80250168 012B082A */  slt        $at, $t1, $t3
     /* 5116C 8025016C 8FA40090 */  lw         $a0, 0x90($sp)
     /* 51170 80250170 14200015 */  bnez       $at, .L802501C8
@@ -14777,8 +14777,8 @@ glabel DrawDecalRoundedRectOutline
     /* 5128C 8025028C 5655FFF2 */  bnel       $s2, $s5, .L80250258
     /* 51290 80250290 02D3082A */   slt       $at, $s6, $s3
   .L80250294:
-    /* 51294 80250294 3C0C8029 */  lui        $t4, %hi(g_bObjectVisible2)
-    /* 51298 80250298 918CDAC0 */  lbu        $t4, %lo(g_bObjectVisible2)($t4)
+    /* 51294 80250294 3C0C8029 */  lui        $t4, %hi(g_bBrushSize)
+    /* 51298 80250298 918CDAC0 */  lbu        $t4, %lo(g_bBrushSize)($t4)
     /* 5129C 8025029C 8FAA0048 */  lw         $t2, 0x48($sp)
     /* 512A0 802502A0 8FB90044 */  lw         $t9, 0x44($sp)
     /* 512A4 802502A4 29810003 */  slti       $at, $t4, 0x3
@@ -15069,12 +15069,12 @@ nonmatching ProcessOvalStyleMenu, 0x4C0
 
 glabel ProcessOvalStyleMenu
     /* 51698 80250698 27BDFF78 */  addiu      $sp, $sp, -0x88
-    /* 5169C 8025069C 3C0F8029 */  lui        $t7, %hi(g_pszFilledOval)
+    /* 5169C 8025069C 3C0F8029 */  lui        $t7, %hi(g_apszOvalStyleNames)
     /* 516A0 802506A0 AFBF003C */  sw         $ra, 0x3C($sp)
     /* 516A4 802506A4 AFB20038 */  sw         $s2, 0x38($sp)
     /* 516A8 802506A8 AFB10034 */  sw         $s1, 0x34($sp)
     /* 516AC 802506AC AFB00030 */  sw         $s0, 0x30($sp)
-    /* 516B0 802506B0 25EFDD04 */  addiu      $t7, $t7, %lo(g_pszFilledOval)
+    /* 516B0 802506B0 25EFDD04 */  addiu      $t7, $t7, %lo(g_apszOvalStyleNames)
     /* 516B4 802506B4 8DE80004 */  lw         $t0, 0x4($t7)
     /* 516B8 802506B8 8DE10000 */  lw         $at, 0x0($t7)
     /* 516BC 802506BC 27AE0050 */  addiu      $t6, $sp, 0x50
@@ -15120,17 +15120,17 @@ glabel ProcessOvalStyleMenu
     /* 5175C 8025075C 240500A0 */  addiu      $a1, $zero, 0xA0
     /* 51760 80250760 0C08BD77 */  jal        DrawText
     /* 51764 80250764 2406005B */   addiu     $a2, $zero, 0x5B
-    /* 51768 80250768 3C068029 */  lui        $a2, %hi(gDecalCanvasHeight)
-    /* 5176C 8025076C 24C6DBC0 */  addiu      $a2, $a2, %lo(gDecalCanvasHeight)
+    /* 51768 80250768 3C068029 */  lui        $a2, %hi(g_bPaintToolStarted)
+    /* 5176C 8025076C 24C6DBC0 */  addiu      $a2, $a2, %lo(g_bPaintToolStarted)
     /* 51770 80250770 90CA0000 */  lbu        $t2, 0x0($a2)
     /* 51774 80250774 00008825 */  or         $s1, $zero, $zero
     /* 51778 80250778 11400025 */  beqz       $t2, .L80250810
-    /* 5177C 8025077C 3C098029 */   lui       $t1, %hi(g_bController2Connected)
-    /* 51780 80250780 9129CF8C */  lbu        $t1, %lo(g_bController2Connected)($t1)
-    /* 51784 80250784 3C128029 */  lui        $s2, %hi(gDecalCanvasWidth)
-    /* 51788 80250788 2652DBB8 */  addiu      $s2, $s2, %lo(gDecalCanvasWidth)
-    /* 5178C 8025078C 3C108029 */  lui        $s0, %hi(g_pObjectMatrix24)
-    /* 51790 80250790 2610DB44 */  addiu      $s0, $s0, %lo(g_pObjectMatrix24)
+    /* 5177C 8025077C 3C098029 */   lui       $t1, %hi(D_8028CF8C)
+    /* 51780 80250780 9129CF8C */  lbu        $t1, %lo(D_8028CF8C)($t1)
+    /* 51784 80250784 3C128029 */  lui        $s2, %hi(g_bStyleMenuCursor)
+    /* 51788 80250788 2652DBB8 */  addiu      $s2, $s2, %lo(g_bStyleMenuCursor)
+    /* 5178C 8025078C 3C108029 */  lui        $s0, %hi(g_apOvalStyleIcons)
+    /* 51790 80250790 2610DB44 */  addiu      $s0, $s0, %lo(g_apOvalStyleIcons)
     /* 51794 80250794 240200C8 */  addiu      $v0, $zero, 0xC8
     /* 51798 80250798 240300CB */  addiu      $v1, $zero, 0xCB
     /* 5179C 8025079C A2490000 */  sb         $t1, 0x0($s2)
@@ -15143,10 +15143,10 @@ glabel ProcessOvalStyleMenu
     /* 517B4 802507B4 28410158 */  slti       $at, $v0, 0x158
     /* 517B8 802507B8 1420FFF9 */  bnez       $at, .L802507A0
     /* 517BC 802507BC ADA30020 */   sw        $v1, 0x20($t5)
-    /* 517C0 802507C0 3C108029 */  lui        $s0, %hi(g_pObjectMatrix24)
-    /* 517C4 802507C4 3C048029 */  lui        $a0, %hi(g_pObjectMatrix24)
-    /* 517C8 802507C8 2484DB44 */  addiu      $a0, $a0, %lo(g_pObjectMatrix24)
-    /* 517CC 802507CC 2610DB44 */  addiu      $s0, $s0, %lo(g_pObjectMatrix24)
+    /* 517C0 802507C0 3C108029 */  lui        $s0, %hi(g_apOvalStyleIcons)
+    /* 517C4 802507C4 3C048029 */  lui        $a0, %hi(g_apOvalStyleIcons)
+    /* 517C8 802507C8 2484DB44 */  addiu      $a0, $a0, %lo(g_apOvalStyleIcons)
+    /* 517CC 802507CC 2610DB44 */  addiu      $s0, $s0, %lo(g_apOvalStyleIcons)
     /* 517D0 802507D0 00001025 */  or         $v0, $zero, $zero
     /* 517D4 802507D4 24050068 */  addiu      $a1, $zero, 0x68
   .L802507D8:
@@ -15165,10 +15165,10 @@ glabel ProcessOvalStyleMenu
     /* 51808 80250808 AD230020 */   sw        $v1, 0x20($t1)
     /* 5180C 8025080C A0C00000 */  sb         $zero, 0x0($a2)
   .L80250810:
-    /* 51810 80250810 3C128029 */  lui        $s2, %hi(gDecalCanvasWidth)
-    /* 51814 80250814 3C108029 */  lui        $s0, %hi(g_pObjectMatrix24)
-    /* 51818 80250818 2652DBB8 */  addiu      $s2, $s2, %lo(gDecalCanvasWidth)
-    /* 5181C 8025081C 2610DB44 */  addiu      $s0, $s0, %lo(g_pObjectMatrix24)
+    /* 51810 80250810 3C128029 */  lui        $s2, %hi(g_bStyleMenuCursor)
+    /* 51814 80250814 3C108029 */  lui        $s0, %hi(g_apOvalStyleIcons)
+    /* 51818 80250818 2652DBB8 */  addiu      $s2, $s2, %lo(g_bStyleMenuCursor)
+    /* 5181C 8025081C 2610DB44 */  addiu      $s0, $s0, %lo(g_apOvalStyleIcons)
   .L80250820:
     /* 51820 80250820 924B0000 */  lbu        $t3, 0x0($s2)
     /* 51824 80250824 240C0020 */  addiu      $t4, $zero, 0x20
@@ -15189,7 +15189,7 @@ glabel ProcessOvalStyleMenu
     /* 51860 80250860 10000004 */  b          .L80250874
     /* 51864 80250864 26310001 */   addiu     $s1, $s1, 0x1
   .L80250868:
-    /* 51868 80250868 0C09151C */  jal        DrawMultiStripSprite
+    /* 51868 80250868 0C09151C */  jal        DrawSpriteAtOrigin
     /* 5186C 8025086C 8E040000 */   lw        $a0, 0x0($s0)
     /* 51870 80250870 26310001 */  addiu      $s1, $s1, 0x1
   .L80250874:
@@ -15267,8 +15267,8 @@ glabel ProcessOvalStyleMenu
     /* 51990 80250990 8FA50060 */  lw         $a1, 0x60($sp)
     /* 51994 80250994 0C091581 */  jal        DrawTexturedSprite
     /* 51998 80250998 8FA60064 */   lw        $a2, 0x64($sp)
-    /* 5199C 8025099C 3C118029 */  lui        $s1, %hi(gDecalBrushState)
-    /* 519A0 802509A0 2631DBBC */  addiu      $s1, $s1, %lo(gDecalBrushState)
+    /* 5199C 8025099C 3C118029 */  lui        $s1, %hi(g_bPaintShopPlayer)
+    /* 519A0 802509A0 2631DBBC */  addiu      $s1, $s1, %lo(g_bPaintShopPlayer)
     /* 519A4 802509A4 92290000 */  lbu        $t1, 0x0($s1)
     /* 519A8 802509A8 3C108037 */  lui        $s0, %hi(g_aPlayerInputState)
     /* 519AC 802509AC 2610A8E0 */  addiu      $s0, $s0, %lo(g_aPlayerInputState)
@@ -15298,7 +15298,7 @@ glabel ProcessOvalStyleMenu
     /* 51A0C 80250A0C 24050004 */   addiu     $a1, $zero, 0x4
     /* 51A10 80250A10 92420000 */  lbu        $v0, 0x0($s2)
     /* 51A14 80250A14 24190003 */  addiu      $t9, $zero, 0x3
-    /* 51A18 80250A18 3C0F8029 */  lui        $t7, %hi(gDecalBrushState)
+    /* 51A18 80250A18 3C0F8029 */  lui        $t7, %hi(g_bPaintShopPlayer)
     /* 51A1C 80250A1C 14400003 */  bnez       $v0, .L80250A2C
     /* 51A20 80250A20 244EFFFF */   addiu     $t6, $v0, -0x1
     /* 51A24 80250A24 10000002 */  b          .L80250A30
@@ -15306,7 +15306,7 @@ glabel ProcessOvalStyleMenu
   .L80250A2C:
     /* 51A2C 80250A2C A24E0000 */  sb         $t6, 0x0($s2)
   .L80250A30:
-    /* 51A30 80250A30 91EFDBBC */  lbu        $t7, %lo(gDecalBrushState)($t7)
+    /* 51A30 80250A30 91EFDBBC */  lbu        $t7, %lo(g_bPaintShopPlayer)($t7)
     /* 51A34 80250A34 3C0A8037 */  lui        $t2, %hi(g_aPlayerInputState)
     /* 51A38 80250A38 254AA8E0 */  addiu      $t2, $t2, %lo(g_aPlayerInputState)
     /* 51A3C 80250A3C 000F4080 */  sll        $t0, $t7, 2
@@ -15326,12 +15326,12 @@ glabel ProcessOvalStyleMenu
     /* 51A70 80250A70 24050001 */   addiu     $a1, $zero, 0x1
     /* 51A74 80250A74 92420000 */  lbu        $v0, 0x0($s2)
     /* 51A78 80250A78 24010003 */  addiu      $at, $zero, 0x3
-    /* 51A7C 80250A7C 3C198029 */  lui        $t9, %hi(gDecalBrushState)
+    /* 51A7C 80250A7C 3C198029 */  lui        $t9, %hi(g_bPaintShopPlayer)
     /* 51A80 80250A80 14410010 */  bne        $v0, $at, .L80250AC4
     /* 51A84 80250A84 24580001 */   addiu     $t8, $v0, 0x1
     /* 51A88 80250A88 A2400000 */  sb         $zero, 0x0($s2)
-    /* 51A8C 80250A8C 3C0B8029 */  lui        $t3, %hi(gDecalBrushState)
-    /* 51A90 80250A90 916BDBBC */  lbu        $t3, %lo(gDecalBrushState)($t3)
+    /* 51A8C 80250A8C 3C0B8029 */  lui        $t3, %hi(g_bPaintShopPlayer)
+    /* 51A90 80250A90 916BDBBC */  lbu        $t3, %lo(g_bPaintShopPlayer)($t3)
     /* 51A94 80250A94 3C0C8037 */  lui        $t4, %hi(g_aPlayerInputState)
     /* 51A98 80250A98 258CA8E0 */  addiu      $t4, $t4, %lo(g_aPlayerInputState)
     /* 51A9C 80250A9C 000B6880 */  sll        $t5, $t3, 2
@@ -15346,7 +15346,7 @@ glabel ProcessOvalStyleMenu
     /* 51AC0 80250AC0 8C830000 */   lw        $v1, 0x0($a0)
   .L80250AC4:
     /* 51AC4 80250AC4 A2580000 */  sb         $t8, 0x0($s2)
-    /* 51AC8 80250AC8 9339DBBC */  lbu        $t9, %lo(gDecalBrushState)($t9)
+    /* 51AC8 80250AC8 9339DBBC */  lbu        $t9, %lo(g_bPaintShopPlayer)($t9)
     /* 51ACC 80250ACC 3C0F8037 */  lui        $t7, %hi(g_aPlayerInputState)
     /* 51AD0 80250AD0 25EFA8E0 */  addiu      $t7, $t7, %lo(g_aPlayerInputState)
     /* 51AD4 80250AD4 00197080 */  sll        $t6, $t9, 2
@@ -15366,19 +15366,19 @@ glabel ProcessOvalStyleMenu
     /* 51B04 80250B04 0C095644 */  jal        TransferFlags
     /* 51B08 80250B08 24050010 */   addiu     $a1, $zero, 0x10
     /* 51B0C 80250B0C 924A0000 */  lbu        $t2, 0x0($s2)
-    /* 51B10 80250B10 3C018029 */  lui        $at, %hi(g_bController2Connected)
-    /* 51B14 80250B14 A02ACF8C */  sb         $t2, %lo(g_bController2Connected)($at)
-    /* 51B18 80250B18 3C018029 */  lui        $at, %hi(g_bObjectDirty19)
+    /* 51B10 80250B10 3C018029 */  lui        $at, %hi(D_8028CF8C)
+    /* 51B14 80250B14 A02ACF8C */  sb         $t2, %lo(D_8028CF8C)($at)
+    /* 51B18 80250B18 3C018029 */  lui        $at, %hi(g_bStyleMenuOpen)
     /* 51B1C 80250B1C 10000008 */  b          .L80250B40
-    /* 51B20 80250B20 A020DBE0 */   sb        $zero, %lo(g_bObjectDirty19)($at)
+    /* 51B20 80250B20 A020DBE0 */   sb        $zero, %lo(g_bStyleMenuOpen)($at)
     /* 51B24 80250B24 30690020 */  andi       $t1, $v1, 0x20
   .L80250B28:
     /* 51B28 80250B28 51200006 */  beql       $t1, $zero, .L80250B44
     /* 51B2C 80250B2C 8FBF003C */   lw        $ra, 0x3C($sp)
     /* 51B30 80250B30 0C095644 */  jal        TransferFlags
     /* 51B34 80250B34 24050020 */   addiu     $a1, $zero, 0x20
-    /* 51B38 80250B38 3C018029 */  lui        $at, %hi(g_bObjectDirty19)
-    /* 51B3C 80250B3C A020DBE0 */  sb         $zero, %lo(g_bObjectDirty19)($at)
+    /* 51B38 80250B38 3C018029 */  lui        $at, %hi(g_bStyleMenuOpen)
+    /* 51B3C 80250B3C A020DBE0 */  sb         $zero, %lo(g_bStyleMenuOpen)($at)
   .L80250B40:
     /* 51B40 80250B40 8FBF003C */  lw         $ra, 0x3C($sp)
   .L80250B44:
@@ -15393,8 +15393,8 @@ nonmatching DrawDecalFilledEllipse, 0x474
 
 glabel DrawDecalFilledEllipse
     /* 51B58 80250B58 27BDFF70 */  addiu      $sp, $sp, -0x90
-    /* 51B5C 80250B5C 3C088029 */  lui        $t0, %hi(g_dwDecalEditorFlags)
-    /* 51B60 80250B60 2508DB94 */  addiu      $t0, $t0, %lo(g_dwDecalEditorFlags)
+    /* 51B5C 80250B5C 3C088029 */  lui        $t0, %hi(g_rcDecalCanvas)
+    /* 51B60 80250B60 2508DB94 */  addiu      $t0, $t0, %lo(g_rcDecalCanvas)
     /* 51B64 80250B64 8D020000 */  lw         $v0, 0x0($t0)
     /* 51B68 80250B68 8D190004 */  lw         $t9, 0x4($t0)
     /* 51B6C 80250B6C 8D09000C */  lw         $t1, 0xC($t0)
@@ -15485,8 +15485,8 @@ glabel DrawDecalFilledEllipse
     /* 51CB0 80250CB0 05420058 */  bltzl      $t2, .L80250E14
     /* 51CB4 80250CB4 8FA20084 */   lw        $v0, 0x84($sp)
     /* 51CB8 80250CB8 03220019 */  multu      $t9, $v0
-    /* 51CBC 80250CBC 3C138029 */  lui        $s3, %hi(gDecalEditorState)
-    /* 51CC0 80250CC0 2673DB58 */  addiu      $s3, $s3, %lo(gDecalEditorState)
+    /* 51CBC 80250CBC 3C138029 */  lui        $s3, %hi(g_bDecalColor)
+    /* 51CC0 80250CC0 2673DB58 */  addiu      $s3, $s3, %lo(g_bDecalColor)
     /* 51CC4 80250CC4 AFA0004C */  sw         $zero, 0x4C($sp)
     /* 51CC8 80250CC8 00002025 */  or         $a0, $zero, $zero
     /* 51CCC 80250CCC 0000C012 */  mflo       $t8
@@ -15579,11 +15579,11 @@ glabel DrawDecalFilledEllipse
     /* 51E10 80250E10 8FA20084 */  lw         $v0, 0x84($sp)
   .L80250E14:
     /* 51E14 80250E14 8FAD0054 */  lw         $t5, 0x54($sp)
-    /* 51E18 80250E18 3C138029 */  lui        $s3, %hi(gDecalEditorState)
+    /* 51E18 80250E18 3C138029 */  lui        $s3, %hi(g_bDecalColor)
     /* 51E1C 80250E1C 00027840 */  sll        $t7, $v0, 1
     /* 51E20 80250E20 000D7023 */  negu       $t6, $t5
     /* 51E24 80250E24 01CF0019 */  multu      $t6, $t7
-    /* 51E28 80250E28 2673DB58 */  addiu      $s3, $s3, %lo(gDecalEditorState)
+    /* 51E28 80250E28 2673DB58 */  addiu      $s3, $s3, %lo(g_bDecalColor)
     /* 51E2C 80250E2C 0000B825 */  or         $s7, $zero, $zero
     /* 51E30 80250E30 01E0F025 */  or         $fp, $t7, $zero
     /* 51E34 80250E34 8FA9005C */  lw         $t1, 0x5C($sp)
@@ -15701,8 +15701,8 @@ nonmatching DrawDecalEllipseOutline, 0x5D0
 
 glabel DrawDecalEllipseOutline
     /* 51FCC 80250FCC 27BDFF78 */  addiu      $sp, $sp, -0x88
-    /* 51FD0 80250FD0 3C088029 */  lui        $t0, %hi(g_dwDecalEditorFlags)
-    /* 51FD4 80250FD4 2508DB94 */  addiu      $t0, $t0, %lo(g_dwDecalEditorFlags)
+    /* 51FD0 80250FD0 3C088029 */  lui        $t0, %hi(g_rcDecalCanvas)
+    /* 51FD4 80250FD4 2508DB94 */  addiu      $t0, $t0, %lo(g_rcDecalCanvas)
     /* 51FD8 80250FD8 8D020000 */  lw         $v0, 0x0($t0)
     /* 51FDC 80250FDC 8D190004 */  lw         $t9, 0x4($t0)
     /* 51FE0 80250FE0 8D0A000C */  lw         $t2, 0xC($t0)
@@ -15741,7 +15741,7 @@ glabel DrawDecalEllipseOutline
   .L80251064:
     /* 52064 80251064 8FAF0094 */  lw         $t7, 0x94($sp)
     /* 52068 80251068 8FAA008C */  lw         $t2, 0x8C($sp)
-    /* 5206C 8025106C 3C188029 */  lui        $t8, %hi(g_bObjectVisible2)
+    /* 5206C 8025106C 3C188029 */  lui        $t8, %hi(g_bBrushSize)
     /* 52070 80251070 240E0001 */  addiu      $t6, $zero, 0x1
     /* 52074 80251074 01EA1823 */  subu       $v1, $t7, $t2
     /* 52078 80251078 04610004 */  bgez       $v1, .L8025108C
@@ -15750,7 +15750,7 @@ glabel DrawDecalEllipseOutline
     /* 52084 80251084 AFAA0094 */  sw         $t2, 0x94($sp)
     /* 52088 80251088 014F1823 */  subu       $v1, $t2, $t7
   .L8025108C:
-    /* 5208C 8025108C 9318DAC0 */  lbu        $t8, %lo(g_bObjectVisible2)($t8)
+    /* 5208C 8025108C 9318DAC0 */  lbu        $t8, %lo(g_bBrushSize)($t8)
     /* 52090 80251090 3C148029 */  lui        $s4, %hi(D_8028D4A8)
     /* 52094 80251094 240F0001 */  addiu      $t7, $zero, 0x1
     /* 52098 80251098 0018C900 */  sll        $t9, $t8, 4
@@ -15797,8 +15797,8 @@ glabel DrawDecalEllipseOutline
     /* 52130 80251130 05C20081 */  bltzl      $t6, .L80251338
     /* 52134 80251134 8FA2007C */   lw        $v0, 0x7C($sp)
     /* 52138 80251138 03220019 */  multu      $t9, $v0
-    /* 5213C 8025113C 3C138029 */  lui        $s3, %hi(gDecalEditorState)
-    /* 52140 80251140 2673DB58 */  addiu      $s3, $s3, %lo(gDecalEditorState)
+    /* 5213C 8025113C 3C138029 */  lui        $s3, %hi(g_bDecalColor)
+    /* 52140 80251140 2673DB58 */  addiu      $s3, $s3, %lo(g_bDecalColor)
     /* 52144 80251144 AFA00044 */  sw         $zero, 0x44($sp)
     /* 52148 80251148 0000F025 */  or         $fp, $zero, $zero
     /* 5214C 8025114C 00005012 */  mflo       $t2
@@ -15937,11 +15937,11 @@ glabel DrawDecalEllipseOutline
     /* 52334 80251334 8FA2007C */  lw         $v0, 0x7C($sp)
   .L80251338:
     /* 52338 80251338 8FAA004C */  lw         $t2, 0x4C($sp)
-    /* 5233C 8025133C 3C138029 */  lui        $s3, %hi(gDecalEditorState)
+    /* 5233C 8025133C 3C138029 */  lui        $s3, %hi(g_bDecalColor)
     /* 52340 80251340 00027840 */  sll        $t7, $v0, 1
     /* 52344 80251344 000AC023 */  negu       $t8, $t2
     /* 52348 80251348 030F0019 */  multu      $t8, $t7
-    /* 5234C 8025134C 2673DB58 */  addiu      $s3, $s3, %lo(gDecalEditorState)
+    /* 5234C 8025134C 2673DB58 */  addiu      $s3, $s3, %lo(g_bDecalColor)
     /* 52350 80251350 0000B025 */  or         $s6, $zero, $zero
     /* 52354 80251354 01E0B825 */  or         $s7, $t7, $zero
     /* 52358 80251358 8FB90054 */  lw         $t9, 0x54($sp)
@@ -16103,9 +16103,9 @@ glabel DrawDecalEllipseOutline
     /* 52598 80251598 27BD0088 */   addiu     $sp, $sp, 0x88
 endlabel DrawDecalEllipseOutline
 
-nonmatching DrawCircle4Bit, 0x218
+nonmatching FillCircle4Bit, 0x218
 
-glabel DrawCircle4Bit
+glabel FillCircle4Bit
     /* 5259C 8025159C 27BDFF88 */  addiu      $sp, $sp, -0x78
     /* 525A0 802515A0 30EE00FF */  andi       $t6, $a3, 0xFF
     /* 525A4 802515A4 AFBF003C */  sw         $ra, 0x3C($sp)
@@ -16122,8 +16122,8 @@ glabel DrawCircle4Bit
     /* 525D0 802515D0 AFA5007C */  sw         $a1, 0x7C($sp)
     /* 525D4 802515D4 11C0000D */  beqz       $t6, .L8025160C
     /* 525D8 802515D8 AFA70084 */   sw        $a3, 0x84($sp)
-    /* 525DC 802515DC 3C028029 */  lui        $v0, %hi(g_dwDecalEditorFlags)
-    /* 525E0 802515E0 2442DB94 */  addiu      $v0, $v0, %lo(g_dwDecalEditorFlags)
+    /* 525DC 802515DC 3C028029 */  lui        $v0, %hi(g_rcDecalCanvas)
+    /* 525E0 802515E0 2442DB94 */  addiu      $v0, $v0, %lo(g_rcDecalCanvas)
     /* 525E4 802515E4 8C490004 */  lw         $t1, 0x4($v0)
     /* 525E8 802515E8 8C4A000C */  lw         $t2, 0xC($v0)
     /* 525EC 802515EC 8C580000 */  lw         $t8, 0x0($v0)
@@ -16141,8 +16141,8 @@ glabel DrawCircle4Bit
     /* 52618 80251618 AFA00064 */  sw         $zero, 0x64($sp)
     /* 5261C 8025161C 04400059 */  bltz       $v0, .L80251784
     /* 52620 80251620 AFAF005C */   sw        $t7, 0x5C($sp)
-    /* 52624 80251624 3C128029 */  lui        $s2, %hi(gDecalEditorState)
-    /* 52628 80251628 2652DB58 */  addiu      $s2, $s2, %lo(gDecalEditorState)
+    /* 52624 80251624 3C128029 */  lui        $s2, %hi(g_bDecalColor)
+    /* 52628 80251628 2652DB58 */  addiu      $s2, $s2, %lo(g_bDecalColor)
     /* 5262C 8025162C 8FB80064 */  lw         $t8, 0x64($sp)
   .L80251630:
     /* 52630 80251630 8FB60060 */  lw         $s6, 0x60($sp)
@@ -16252,19 +16252,19 @@ glabel DrawCircle4Bit
     /* 527A8 802517A8 8FBE0038 */  lw         $fp, 0x38($sp)
     /* 527AC 802517AC 03E00008 */  jr         $ra
     /* 527B0 802517B0 27BD0078 */   addiu     $sp, $sp, 0x78
-endlabel DrawCircle4Bit
+endlabel FillCircle4Bit
 
 nonmatching DrawDecalCircleOutline, 0x2A0
 
 glabel DrawDecalCircleOutline
-    /* 527B4 802517B4 3C0A8029 */  lui        $t2, %hi(g_bObjectVisible2)
-    /* 527B8 802517B8 914ADAC0 */  lbu        $t2, %lo(g_bObjectVisible2)($t2)
+    /* 527B4 802517B4 3C0A8029 */  lui        $t2, %hi(g_bBrushSize)
+    /* 527B8 802517B8 914ADAC0 */  lbu        $t2, %lo(g_bBrushSize)($t2)
     /* 527BC 802517BC 27BDFFA0 */  addiu      $sp, $sp, -0x60
     /* 527C0 802517C0 AFB30024 */  sw         $s3, 0x24($sp)
-    /* 527C4 802517C4 3C038029 */  lui        $v1, %hi(g_dwDecalEditorFlags)
+    /* 527C4 802517C4 3C038029 */  lui        $v1, %hi(g_rcDecalCanvas)
     /* 527C8 802517C8 3C138029 */  lui        $s3, %hi(D_8028D4A8)
     /* 527CC 802517CC 000A5900 */  sll        $t3, $t2, 4
-    /* 527D0 802517D0 2463DB94 */  addiu      $v1, $v1, %lo(g_dwDecalEditorFlags)
+    /* 527D0 802517D0 2463DB94 */  addiu      $v1, $v1, %lo(g_rcDecalCanvas)
     /* 527D4 802517D4 026B9821 */  addu       $s3, $s3, $t3
     /* 527D8 802517D8 8E73D4A8 */  lw         $s3, %lo(D_8028D4A8)($s3)
     /* 527DC 802517DC 8C780004 */  lw         $t8, 0x4($v1)
@@ -16293,8 +16293,8 @@ glabel DrawDecalCircleOutline
     /* 52838 80251838 0000A825 */  or         $s5, $zero, $zero
     /* 5283C 8025183C 06C00079 */  bltz       $s6, .L80251A24
     /* 52840 80251840 AFAD0044 */   sw        $t5, 0x44($sp)
-    /* 52844 80251844 3C148029 */  lui        $s4, %hi(gDecalEditorState)
-    /* 52848 80251848 2694DB58 */  addiu      $s4, $s4, %lo(gDecalEditorState)
+    /* 52844 80251844 3C148029 */  lui        $s4, %hi(g_bDecalColor)
+    /* 52848 80251848 2694DB58 */  addiu      $s4, $s4, %lo(g_bDecalColor)
     /* 5284C 8025184C 32AE0001 */  andi       $t6, $s5, 0x1
   .L80251850:
     /* 52850 80251850 55C0006A */  bnel       $t6, $zero, .L802519FC
@@ -16484,14 +16484,14 @@ glabel DrawDashedLine
     /* 52AC4 80251AC4 3C028029 */  lui        $v0, %hi(g_wScreenFrameCount)
     /* 52AC8 80251AC8 2442DBB0 */  addiu      $v0, $v0, %lo(g_wScreenFrameCount)
     /* 52ACC 80251ACC 944E0000 */  lhu        $t6, 0x0($v0)
-    /* 52AD0 80251AD0 3C168029 */  lui        $s6, %hi(g_bObjectVisible0)
-    /* 52AD4 80251AD4 26C4DAB8 */  addiu      $a0, $s6, %lo(g_bObjectVisible0)
+    /* 52AD0 80251AD0 3C168029 */  lui        $s6, %hi(g_bDashColorA)
+    /* 52AD4 80251AD4 26C4DAB8 */  addiu      $a0, $s6, %lo(g_bDashColorA)
     /* 52AD8 80251AD8 25D80001 */  addiu      $t8, $t6, 0x1
     /* 52ADC 80251ADC 33190007 */  andi       $t9, $t8, 0x7
     /* 52AE0 80251AE0 1720000E */  bnez       $t9, .L80251B1C
     /* 52AE4 80251AE4 A4580000 */   sh        $t8, 0x0($v0)
-    /* 52AE8 80251AE8 3C178029 */  lui        $s7, %hi(g_bObjectVisible1)
-    /* 52AEC 80251AEC 26E5DABC */  addiu      $a1, $s7, %lo(g_bObjectVisible1)
+    /* 52AE8 80251AE8 3C178029 */  lui        $s7, %hi(g_bDashColorB)
+    /* 52AEC 80251AEC 26E5DABC */  addiu      $a1, $s7, %lo(g_bDashColorB)
     /* 52AF0 80251AF0 AFA70084 */  sw         $a3, 0x84($sp)
     /* 52AF4 80251AF4 AFA8005C */  sw         $t0, 0x5C($sp)
     /* 52AF8 80251AF8 AFA90054 */  sw         $t1, 0x54($sp)
@@ -16504,12 +16504,12 @@ glabel DrawDashedLine
     /* 52B14 80251B14 8FAA0058 */  lw         $t2, 0x58($sp)
     /* 52B18 80251B18 8FAB0050 */  lw         $t3, 0x50($sp)
   .L80251B1C:
-    /* 52B1C 80251B1C 3C168029 */  lui        $s6, %hi(g_bObjectVisible0)
-    /* 52B20 80251B20 3C178029 */  lui        $s7, %hi(g_bObjectVisible1)
+    /* 52B1C 80251B1C 3C168029 */  lui        $s6, %hi(g_bDashColorA)
+    /* 52B20 80251B20 3C178029 */  lui        $s7, %hi(g_bDashColorB)
     /* 52B24 80251B24 02B4082A */  slt        $at, $s5, $s4
-    /* 52B28 80251B28 26F7DABC */  addiu      $s7, $s7, %lo(g_bObjectVisible1)
+    /* 52B28 80251B28 26F7DABC */  addiu      $s7, $s7, %lo(g_bDashColorB)
     /* 52B2C 80251B2C 14200003 */  bnez       $at, .L80251B3C
-    /* 52B30 80251B30 26D6DAB8 */   addiu     $s6, $s6, %lo(g_bObjectVisible0)
+    /* 52B30 80251B30 26D6DAB8 */   addiu     $s6, $s6, %lo(g_bDashColorA)
     /* 52B34 80251B34 0250082A */  slt        $at, $s2, $s0
     /* 52B38 80251B38 14200005 */  bnez       $at, .L80251B50
   .L80251B3C:
@@ -16665,19 +16665,19 @@ glabel DrawDashedRectangle
     /* 52D24 80251D24 00008825 */  or         $s1, $zero, $zero
     /* 52D28 80251D28 17200006 */  bnez       $t9, .L80251D44
     /* 52D2C 80251D2C A4580000 */   sh        $t8, 0x0($v0)
-    /* 52D30 80251D30 3C148029 */  lui        $s4, %hi(g_bObjectVisible0)
-    /* 52D34 80251D34 3C158029 */  lui        $s5, %hi(g_bObjectVisible1)
-    /* 52D38 80251D38 26A5DABC */  addiu      $a1, $s5, %lo(g_bObjectVisible1)
+    /* 52D30 80251D30 3C148029 */  lui        $s4, %hi(g_bDashColorA)
+    /* 52D34 80251D34 3C158029 */  lui        $s5, %hi(g_bDashColorB)
+    /* 52D38 80251D38 26A5DABC */  addiu      $a1, $s5, %lo(g_bDashColorB)
     /* 52D3C 80251D3C 0C094BD4 */  jal        SwapBytes
-    /* 52D40 80251D40 2684DAB8 */   addiu     $a0, $s4, %lo(g_bObjectVisible0)
+    /* 52D40 80251D40 2684DAB8 */   addiu     $a0, $s4, %lo(g_bDashColorA)
   .L80251D44:
     /* 52D44 80251D44 8FA80068 */  lw         $t0, 0x68($sp)
-    /* 52D48 80251D48 3C148029 */  lui        $s4, %hi(g_bObjectVisible0)
-    /* 52D4C 80251D4C 3C158029 */  lui        $s5, %hi(g_bObjectVisible1)
+    /* 52D48 80251D48 3C148029 */  lui        $s4, %hi(g_bDashColorA)
+    /* 52D4C 80251D4C 3C158029 */  lui        $s5, %hi(g_bDashColorB)
     /* 52D50 80251D50 03C8082A */  slt        $at, $fp, $t0
-    /* 52D54 80251D54 26B5DABC */  addiu      $s5, $s5, %lo(g_bObjectVisible1)
+    /* 52D54 80251D54 26B5DABC */  addiu      $s5, $s5, %lo(g_bDashColorB)
     /* 52D58 80251D58 10200003 */  beqz       $at, .L80251D68
-    /* 52D5C 80251D5C 2694DAB8 */   addiu     $s4, $s4, %lo(g_bObjectVisible0)
+    /* 52D5C 80251D5C 2694DAB8 */   addiu     $s4, $s4, %lo(g_bDashColorA)
     /* 52D60 80251D60 AFBE0068 */  sw         $fp, 0x68($sp)
     /* 52D64 80251D64 0100F025 */  or         $fp, $t0, $zero
   .L80251D68:
@@ -16854,11 +16854,11 @@ glabel DrawDashedRoundedRect
     /* 52FB8 80251FB8 00009825 */  or         $s3, $zero, $zero
     /* 52FBC 80251FBC 17200006 */  bnez       $t9, .L80251FD8
     /* 52FC0 80251FC0 A4580000 */   sh        $t8, 0x0($v0)
-    /* 52FC4 80251FC4 3C048029 */  lui        $a0, %hi(g_bObjectVisible0)
-    /* 52FC8 80251FC8 3C058029 */  lui        $a1, %hi(g_bObjectVisible1)
-    /* 52FCC 80251FCC 24A5DABC */  addiu      $a1, $a1, %lo(g_bObjectVisible1)
+    /* 52FC4 80251FC4 3C048029 */  lui        $a0, %hi(g_bDashColorA)
+    /* 52FC8 80251FC8 3C058029 */  lui        $a1, %hi(g_bDashColorB)
+    /* 52FCC 80251FCC 24A5DABC */  addiu      $a1, $a1, %lo(g_bDashColorB)
     /* 52FD0 80251FD0 0C094BD4 */  jal        SwapBytes
-    /* 52FD4 80251FD4 2484DAB8 */   addiu     $a0, $a0, %lo(g_bObjectVisible0)
+    /* 52FD4 80251FD4 2484DAB8 */   addiu     $a0, $a0, %lo(g_bDashColorA)
   .L80251FD8:
     /* 52FD8 80251FD8 8FA80098 */  lw         $t0, 0x98($sp)
     /* 52FDC 80251FDC 8FA90090 */  lw         $t1, 0x90($sp)
@@ -16904,12 +16904,12 @@ glabel DrawDashedRoundedRect
     /* 5306C 8025206C 31530001 */  andi       $s3, $t2, 0x1
     /* 53070 80252070 12600004 */  beqz       $s3, .L80252084
     /* 53074 80252074 8FA40090 */   lw        $a0, 0x90($sp)
-    /* 53078 80252078 3C108029 */  lui        $s0, %hi(g_bObjectVisible0)
+    /* 53078 80252078 3C108029 */  lui        $s0, %hi(g_bDashColorA)
     /* 5307C 8025207C 10000003 */  b          .L8025208C
-    /* 53080 80252080 9210DAB8 */   lbu       $s0, %lo(g_bObjectVisible0)($s0)
+    /* 53080 80252080 9210DAB8 */   lbu       $s0, %lo(g_bDashColorA)($s0)
   .L80252084:
-    /* 53084 80252084 3C108029 */  lui        $s0, %hi(g_bObjectVisible1)
-    /* 53088 80252088 9210DABC */  lbu        $s0, %lo(g_bObjectVisible1)($s0)
+    /* 53084 80252084 3C108029 */  lui        $s0, %hi(g_bDashColorB)
+    /* 53088 80252088 9210DABC */  lbu        $s0, %lo(g_bDashColorB)($s0)
   .L8025208C:
     /* 5308C 8025208C 02202825 */  or         $a1, $s1, $zero
     /* 53090 80252090 24060001 */  addiu      $a2, $zero, 0x1
@@ -16935,12 +16935,12 @@ glabel DrawDashedRoundedRect
     /* 530D8 802520D8 31130001 */  andi       $s3, $t0, 0x1
     /* 530DC 802520DC 12600004 */  beqz       $s3, .L802520F0
     /* 530E0 802520E0 8FA40098 */   lw        $a0, 0x98($sp)
-    /* 530E4 802520E4 3C108029 */  lui        $s0, %hi(g_bObjectVisible0)
+    /* 530E4 802520E4 3C108029 */  lui        $s0, %hi(g_bDashColorA)
     /* 530E8 802520E8 10000003 */  b          .L802520F8
-    /* 530EC 802520EC 9210DAB8 */   lbu       $s0, %lo(g_bObjectVisible0)($s0)
+    /* 530EC 802520EC 9210DAB8 */   lbu       $s0, %lo(g_bDashColorA)($s0)
   .L802520F0:
-    /* 530F0 802520F0 3C108029 */  lui        $s0, %hi(g_bObjectVisible1)
-    /* 530F4 802520F4 9210DABC */  lbu        $s0, %lo(g_bObjectVisible1)($s0)
+    /* 530F0 802520F0 3C108029 */  lui        $s0, %hi(g_bDashColorB)
+    /* 530F4 802520F4 9210DABC */  lbu        $s0, %lo(g_bDashColorB)($s0)
   .L802520F8:
     /* 530F8 802520F8 02202825 */  or         $a1, $s1, $zero
     /* 530FC 802520FC 24060001 */  addiu      $a2, $zero, 0x1
@@ -16967,12 +16967,12 @@ glabel DrawDashedRoundedRect
     /* 53148 80252148 31930001 */  andi       $s3, $t4, 0x1
     /* 5314C 8025214C 12600004 */  beqz       $s3, .L80252160
     /* 53150 80252150 02202025 */   or        $a0, $s1, $zero
-    /* 53154 80252154 3C108029 */  lui        $s0, %hi(g_bObjectVisible0)
+    /* 53154 80252154 3C108029 */  lui        $s0, %hi(g_bDashColorA)
     /* 53158 80252158 10000003 */  b          .L80252168
-    /* 5315C 8025215C 9210DAB8 */   lbu       $s0, %lo(g_bObjectVisible0)($s0)
+    /* 5315C 8025215C 9210DAB8 */   lbu       $s0, %lo(g_bDashColorA)($s0)
   .L80252160:
-    /* 53160 80252160 3C108029 */  lui        $s0, %hi(g_bObjectVisible1)
-    /* 53164 80252164 9210DABC */  lbu        $s0, %lo(g_bObjectVisible1)($s0)
+    /* 53160 80252160 3C108029 */  lui        $s0, %hi(g_bDashColorB)
+    /* 53164 80252164 9210DABC */  lbu        $s0, %lo(g_bDashColorB)($s0)
   .L80252168:
     /* 53168 80252168 8FA50094 */  lw         $a1, 0x94($sp)
     /* 5316C 8025216C 24060004 */  addiu      $a2, $zero, 0x4
@@ -16996,12 +16996,12 @@ glabel DrawDashedRoundedRect
     /* 531AC 802521AC 33130001 */  andi       $s3, $t8, 0x1
     /* 531B0 802521B0 12600004 */  beqz       $s3, .L802521C4
     /* 531B4 802521B4 02202025 */   or        $a0, $s1, $zero
-    /* 531B8 802521B8 3C108029 */  lui        $s0, %hi(g_bObjectVisible0)
+    /* 531B8 802521B8 3C108029 */  lui        $s0, %hi(g_bDashColorA)
     /* 531BC 802521BC 10000003 */  b          .L802521CC
-    /* 531C0 802521C0 9210DAB8 */   lbu       $s0, %lo(g_bObjectVisible0)($s0)
+    /* 531C0 802521C0 9210DAB8 */   lbu       $s0, %lo(g_bDashColorA)($s0)
   .L802521C4:
-    /* 531C4 802521C4 3C108029 */  lui        $s0, %hi(g_bObjectVisible1)
-    /* 531C8 802521C8 9210DABC */  lbu        $s0, %lo(g_bObjectVisible1)($s0)
+    /* 531C4 802521C4 3C108029 */  lui        $s0, %hi(g_bDashColorB)
+    /* 531C8 802521C8 9210DABC */  lbu        $s0, %lo(g_bDashColorB)($s0)
   .L802521CC:
     /* 531CC 802521CC 8FA5009C */  lw         $a1, 0x9C($sp)
     /* 531D0 802521D0 24060004 */  addiu      $a2, $zero, 0x4
@@ -17042,12 +17042,12 @@ glabel DrawDashedRoundedRect
     /* 53250 80252250 2A610004 */  slti       $at, $s3, 0x4
     /* 53254 80252254 10200004 */  beqz       $at, .L80252268
     /* 53258 80252258 0017A043 */   sra       $s4, $s7, 1
-    /* 5325C 8025225C 3C108029 */  lui        $s0, %hi(g_bObjectVisible0)
+    /* 5325C 8025225C 3C108029 */  lui        $s0, %hi(g_bDashColorA)
     /* 53260 80252260 10000003 */  b          .L80252270
-    /* 53264 80252264 9210DAB8 */   lbu       $s0, %lo(g_bObjectVisible0)($s0)
+    /* 53264 80252264 9210DAB8 */   lbu       $s0, %lo(g_bDashColorA)($s0)
   .L80252268:
-    /* 53268 80252268 3C108029 */  lui        $s0, %hi(g_bObjectVisible1)
-    /* 5326C 8025226C 9210DABC */  lbu        $s0, %lo(g_bObjectVisible1)($s0)
+    /* 53268 80252268 3C108029 */  lui        $s0, %hi(g_bDashColorB)
+    /* 5326C 8025226C 9210DABC */  lbu        $s0, %lo(g_bDashColorB)($s0)
   .L80252270:
     /* 53270 80252270 01D42023 */  subu       $a0, $t6, $s4
     /* 53274 80252274 30910001 */  andi       $s1, $a0, 0x1
@@ -17187,7 +17187,7 @@ glabel DrawDashedEllipse
   .L8025244C:
     /* 5344C 8025244C 28410002 */  slti       $at, $v0, 0x2
     /* 53450 80252450 14200003 */  bnez       $at, .L80252460
-    /* 53454 80252454 3C048029 */   lui       $a0, %hi(g_bObjectVisible0)
+    /* 53454 80252454 3C048029 */   lui       $a0, %hi(g_bDashColorA)
     /* 53458 80252458 10000002 */  b          .L80252464
     /* 5345C 8025245C AFA20098 */   sw        $v0, 0x98($sp)
   .L80252460:
@@ -17196,7 +17196,7 @@ glabel DrawDashedEllipse
     /* 53464 80252464 00081043 */  sra        $v0, $t0, 1
     /* 53468 80252468 28410002 */  slti       $at, $v0, 0x2
     /* 5346C 8025246C 14200003 */  bnez       $at, .L8025247C
-    /* 53470 80252470 2484DAB8 */   addiu     $a0, $a0, %lo(g_bObjectVisible0)
+    /* 53470 80252470 2484DAB8 */   addiu     $a0, $a0, %lo(g_bDashColorA)
     /* 53474 80252474 10000002 */  b          .L80252480
     /* 53478 80252478 AFA20094 */   sw        $v0, 0x94($sp)
   .L8025247C:
@@ -17214,7 +17214,7 @@ glabel DrawDashedEllipse
     /* 534A4 802524A4 256D0001 */  addiu      $t5, $t3, 0x1
     /* 534A8 802524A8 31AF0007 */  andi       $t7, $t5, 0x7
     /* 534AC 802524AC A44D0000 */  sh         $t5, 0x0($v0)
-    /* 534B0 802524B0 3C058029 */  lui        $a1, %hi(g_bObjectVisible1)
+    /* 534B0 802524B0 3C058029 */  lui        $a1, %hi(g_bDashColorB)
     /* 534B4 802524B4 0000C012 */  mflo       $t8
     /* 534B8 802524B8 AFB80060 */  sw         $t8, 0x60($sp)
     /* 534BC 802524BC AFB80070 */  sw         $t8, 0x70($sp)
@@ -17228,7 +17228,7 @@ glabel DrawDashedEllipse
     /* 534DC 802524DC 55E00004 */  bnel       $t7, $zero, .L802524F0
     /* 534E0 802524E0 8FB8005C */   lw        $t8, 0x5C($sp)
     /* 534E4 802524E4 0C094BD4 */  jal        SwapBytes
-    /* 534E8 802524E8 24A5DABC */   addiu     $a1, $a1, %lo(g_bObjectVisible1)
+    /* 534E8 802524E8 24A5DABC */   addiu     $a1, $a1, %lo(g_bDashColorB)
     /* 534EC 802524EC 8FB8005C */  lw         $t8, 0x5C($sp)
   .L802524F0:
     /* 534F0 802524F0 8FAE006C */  lw         $t6, 0x6C($sp)
@@ -17268,12 +17268,12 @@ glabel DrawDashedEllipse
     /* 53570 80252570 01E0F025 */  or         $fp, $t7, $zero
     /* 53574 80252574 10200004 */  beqz       $at, .L80252588
     /* 53578 80252578 01C0B025 */   or        $s6, $t6, $zero
-    /* 5357C 8025257C 3C128029 */  lui        $s2, %hi(g_bObjectVisible0)
+    /* 5357C 8025257C 3C128029 */  lui        $s2, %hi(g_bDashColorA)
     /* 53580 80252580 10000003 */  b          .L80252590
-    /* 53584 80252584 9252DAB8 */   lbu       $s2, %lo(g_bObjectVisible0)($s2)
+    /* 53584 80252584 9252DAB8 */   lbu       $s2, %lo(g_bDashColorA)($s2)
   .L80252588:
-    /* 53588 80252588 3C128029 */  lui        $s2, %hi(g_bObjectVisible1)
-    /* 5358C 8025258C 9252DABC */  lbu        $s2, %lo(g_bObjectVisible1)($s2)
+    /* 53588 80252588 3C128029 */  lui        $s2, %hi(g_bDashColorB)
+    /* 5358C 8025258C 9252DABC */  lbu        $s2, %lo(g_bDashColorB)($s2)
   .L80252590:
     /* 53590 80252590 0013A843 */  sra        $s5, $s3, 1
     /* 53594 80252594 02B68021 */  addu       $s0, $s5, $s6
@@ -17401,12 +17401,12 @@ glabel DrawDashedEllipse
     /* 5375C 8025275C 0180F025 */  or         $fp, $t4, $zero
     /* 53760 80252760 10200004 */  beqz       $at, .L80252774
     /* 53764 80252764 01203825 */   or        $a3, $t1, $zero
-    /* 53768 80252768 3C128029 */  lui        $s2, %hi(g_bObjectVisible0)
+    /* 53768 80252768 3C128029 */  lui        $s2, %hi(g_bDashColorA)
     /* 5376C 8025276C 10000003 */  b          .L8025277C
-    /* 53770 80252770 9252DAB8 */   lbu       $s2, %lo(g_bObjectVisible0)($s2)
+    /* 53770 80252770 9252DAB8 */   lbu       $s2, %lo(g_bDashColorA)($s2)
   .L80252774:
-    /* 53774 80252774 3C128029 */  lui        $s2, %hi(g_bObjectVisible1)
-    /* 53778 80252778 9252DABC */  lbu        $s2, %lo(g_bObjectVisible1)($s2)
+    /* 53774 80252774 3C128029 */  lui        $s2, %hi(g_bDashColorB)
+    /* 53778 80252778 9252DABC */  lbu        $s2, %lo(g_bDashColorB)($s2)
   .L8025277C:
     /* 5377C 8025277C 00141043 */  sra        $v0, $s4, 1
     /* 53780 80252780 0047A821 */  addu       $s5, $v0, $a3
@@ -17515,10 +17515,10 @@ nonmatching DrawDashedCircle, 0x3A4
 
 glabel DrawDashedCircle
     /* 538F8 802528F8 27BDFF78 */  addiu      $sp, $sp, -0x88
-    /* 538FC 802528FC 3C078029 */  lui        $a3, %hi(g_dwDecalEditorFlags)
+    /* 538FC 802528FC 3C078029 */  lui        $a3, %hi(g_rcDecalCanvas)
     /* 53900 80252900 3C098029 */  lui        $t1, %hi(g_wScreenFrameCount)
     /* 53904 80252904 2529DBB0 */  addiu      $t1, $t1, %lo(g_wScreenFrameCount)
-    /* 53908 80252908 24E7DB94 */  addiu      $a3, $a3, %lo(g_dwDecalEditorFlags)
+    /* 53908 80252908 24E7DB94 */  addiu      $a3, $a3, %lo(g_rcDecalCanvas)
     /* 5390C 8025290C 95380000 */  lhu        $t8, 0x0($t1)
     /* 53910 80252910 AFB60030 */  sw         $s6, 0x30($sp)
     /* 53914 80252914 AFB5002C */  sw         $s5, 0x2C($sp)
@@ -17544,10 +17544,10 @@ glabel DrawDashedCircle
     /* 53964 80252964 02AEB821 */  addu       $s7, $s5, $t6
     /* 53968 80252968 15600008 */  bnez       $t3, .L8025298C
     /* 5396C 8025296C 02CFF021 */   addu      $fp, $s6, $t7
-    /* 53970 80252970 3C048029 */  lui        $a0, %hi(g_bObjectVisible0)
-    /* 53974 80252974 3C058029 */  lui        $a1, %hi(g_bObjectVisible1)
-    /* 53978 80252978 24A5DABC */  addiu      $a1, $a1, %lo(g_bObjectVisible1)
-    /* 5397C 8025297C 2484DAB8 */  addiu      $a0, $a0, %lo(g_bObjectVisible0)
+    /* 53970 80252970 3C048029 */  lui        $a0, %hi(g_bDashColorA)
+    /* 53974 80252974 3C058029 */  lui        $a1, %hi(g_bDashColorB)
+    /* 53978 80252978 24A5DABC */  addiu      $a1, $a1, %lo(g_bDashColorB)
+    /* 5397C 8025297C 2484DAB8 */  addiu      $a0, $a0, %lo(g_bDashColorA)
     /* 53980 80252980 0C094BD4 */  jal        SwapBytes
     /* 53984 80252984 AFA00084 */   sw        $zero, 0x84($sp)
     /* 53988 80252988 8FA80084 */  lw         $t0, 0x84($sp)
@@ -17573,13 +17573,13 @@ glabel DrawDashedCircle
     /* 539CC 802529CC 29E10004 */  slti       $at, $t7, 0x4
     /* 539D0 802529D0 10200005 */  beqz       $at, .L802529E8
     /* 539D4 802529D4 01E04025 */   or        $t0, $t7, $zero
-    /* 539D8 802529D8 3C138029 */  lui        $s3, %hi(g_bObjectVisible0)
-    /* 539DC 802529DC 9273DAB8 */  lbu        $s3, %lo(g_bObjectVisible0)($s3)
+    /* 539D8 802529D8 3C138029 */  lui        $s3, %hi(g_bDashColorA)
+    /* 539DC 802529DC 9273DAB8 */  lbu        $s3, %lo(g_bDashColorA)($s3)
     /* 539E0 802529E0 10000004 */  b          .L802529F4
     /* 539E4 802529E4 AFAF0084 */   sw        $t7, 0x84($sp)
   .L802529E8:
-    /* 539E8 802529E8 3C138029 */  lui        $s3, %hi(g_bObjectVisible1)
-    /* 539EC 802529EC 9273DABC */  lbu        $s3, %lo(g_bObjectVisible1)($s3)
+    /* 539E8 802529E8 3C138029 */  lui        $s3, %hi(g_bDashColorB)
+    /* 539EC 802529EC 9273DABC */  lbu        $s3, %lo(g_bDashColorB)($s3)
     /* 539F0 802529F0 AFA80084 */  sw         $t0, 0x84($sp)
   .L802529F4:
     /* 539F4 802529F4 8FB40078 */  lw         $s4, 0x78($sp)
@@ -17770,13 +17770,13 @@ nonmatching DrawDecalTextPreview, 0x2B4
 glabel DrawDecalTextPreview
     /* 53C9C 80252C9C 27BDFF90 */  addiu      $sp, $sp, -0x70
     /* 53CA0 80252CA0 AFBE0058 */  sw         $fp, 0x58($sp)
-    /* 53CA4 80252CA4 3C1E8029 */  lui        $fp, %hi(g_dwGfxLight2Color)
-    /* 53CA8 80252CA8 3C0E8029 */  lui        $t6, %hi(g_bObjectDirty10)
-    /* 53CAC 80252CAC 91CEDBAC */  lbu        $t6, %lo(g_bObjectDirty10)($t6)
-    /* 53CB0 80252CB0 27DED2C0 */  addiu      $fp, $fp, %lo(g_dwGfxLight2Color)
+    /* 53CA4 80252CA4 3C1E8029 */  lui        $fp, %hi(g_texDecalFont)
+    /* 53CA8 80252CA8 3C0E8029 */  lui        $t6, %hi(g_bDecalTextWidth)
+    /* 53CAC 80252CAC 91CEDBAC */  lbu        $t6, %lo(g_bDecalTextWidth)($t6)
+    /* 53CB0 80252CB0 27DED2C0 */  addiu      $fp, $fp, %lo(g_texDecalFont)
     /* 53CB4 80252CB4 8FD90014 */  lw         $t9, 0x14($fp)
-    /* 53CB8 80252CB8 3C078029 */  lui        $a3, %hi(g_bObjectDirty9)
-    /* 53CBC 80252CBC 90E7DBA8 */  lbu        $a3, %lo(g_bObjectDirty9)($a3)
+    /* 53CB8 80252CB8 3C078029 */  lui        $a3, %hi(g_bDecalTextLength)
+    /* 53CBC 80252CBC 90E7DBA8 */  lbu        $a3, %lo(g_bDecalTextLength)($a3)
     /* 53CC0 80252CC0 000E7843 */  sra        $t7, $t6, 1
     /* 53CC4 80252CC4 AFB60050 */  sw         $s6, 0x50($sp)
     /* 53CC8 80252CC8 AFB5004C */  sw         $s5, 0x4C($sp)
@@ -17793,15 +17793,15 @@ glabel DrawDecalTextPreview
     /* 53CF4 80252CF4 00A8A823 */  subu       $s5, $a1, $t0
     /* 53CF8 80252CF8 18E00089 */  blez       $a3, .L80252F20
     /* 53CFC 80252CFC 0000B025 */   or        $s6, $zero, $zero
-    /* 53D00 80252D00 3C138037 */  lui        $s3, %hi(g_dwCheatReserved3)
-    /* 53D04 80252D04 3C178029 */  lui        $s7, %hi(g_dwDecalEditorFlags)
-    /* 53D08 80252D08 26F7DB94 */  addiu      $s7, $s7, %lo(g_dwDecalEditorFlags)
-    /* 53D0C 80252D0C 26739E68 */  addiu      $s3, $s3, %lo(g_dwCheatReserved3)
+    /* 53D00 80252D00 3C138037 */  lui        $s3, %hi(g_apDecalTextGlyphs)
+    /* 53D04 80252D04 3C178029 */  lui        $s7, %hi(g_rcDecalCanvas)
+    /* 53D08 80252D08 26F7DB94 */  addiu      $s7, $s7, %lo(g_rcDecalCanvas)
+    /* 53D0C 80252D0C 26739E68 */  addiu      $s3, $s3, %lo(g_apDecalTextGlyphs)
     /* 53D10 80252D10 24110032 */  addiu      $s1, $zero, 0x32
   .L80252D14:
     /* 53D14 80252D14 8E650000 */  lw         $a1, 0x0($s3)
-    /* 53D18 80252D18 3C038029 */  lui        $v1, %hi(g_dwGfxCoefR)
-    /* 53D1C 80252D1C 2463D540 */  addiu      $v1, $v1, %lo(g_dwGfxCoefR)
+    /* 53D18 80252D18 3C038029 */  lui        $v1, %hi(g_aDecalGlyphs)
+    /* 53D1C 80252D1C 2463D540 */  addiu      $v1, $v1, %lo(g_aDecalGlyphs)
     /* 53D20 80252D20 00001025 */  or         $v0, $zero, $zero
     /* 53D24 80252D24 8EE60000 */  lw         $a2, 0x0($s7)
     /* 53D28 80252D28 90A40008 */  lbu        $a0, 0x8($a1)
@@ -17839,24 +17839,24 @@ glabel DrawDecalTextPreview
     /* 53D9C 80252D9C 24F9FFFF */   addiu     $t9, $a3, -0x1
     /* 53DA0 80252DA0 8EE9000C */  lw         $t1, 0xC($s7)
     /* 53DA4 80252DA4 8FB20064 */  lw         $s2, 0x64($sp)
-    /* 53DA8 80252DA8 3C0C8029 */  lui        $t4, %hi(g_bController0Connected)
+    /* 53DA8 80252DA8 3C0C8029 */  lui        $t4, %hi(D_8028CF2C)
     /* 53DAC 80252DAC 00495021 */  addu       $t2, $v0, $t1
     /* 53DB0 80252DB0 02AA082A */  slt        $at, $s5, $t2
     /* 53DB4 80252DB4 50200046 */  beql       $at, $zero, .L80252ED0
     /* 53DB8 80252DB8 24F9FFFF */   addiu     $t9, $a3, -0x1
-    /* 53DBC 80252DBC 918CCF2C */  lbu        $t4, %lo(g_bController0Connected)($t4)
+    /* 53DBC 80252DBC 918CCF2C */  lbu        $t4, %lo(D_8028CF2C)($t4)
     /* 53DC0 80252DC0 00125900 */  sll        $t3, $s2, 4
     /* 53DC4 80252DC4 01609025 */  or         $s2, $t3, $zero
     /* 53DC8 80252DC8 11800022 */  beqz       $t4, .L80252E54
     /* 53DCC 80252DCC 03C02025 */   or        $a0, $fp, $zero
-    /* 53DD0 80252DD0 3C098029 */  lui        $t1, %hi(g_bObjectDirty1)
-    /* 53DD4 80252DD4 9129DB5C */  lbu        $t1, %lo(g_bObjectDirty1)($t1)
+    /* 53DD0 80252DD0 3C098029 */  lui        $t1, %hi(g_bTextShadowColor)
+    /* 53DD4 80252DD4 9129DB5C */  lbu        $t1, %lo(g_bTextShadowColor)($t1)
     /* 53DD8 80252DD8 01602825 */  or         $a1, $t3, $zero
-    /* 53DDC 80252DDC 3C0B8037 */  lui        $t3, %hi(g_dwEffectAlpha)
+    /* 53DDC 80252DDC 3C0B8037 */  lui        $t3, %hi(g_aDecalSwatches)
     /* 53DE0 80252DE0 00095080 */  sll        $t2, $t1, 2
     /* 53DE4 80252DE4 01495021 */  addu       $t2, $t2, $t1
     /* 53DE8 80252DE8 000A5080 */  sll        $t2, $t2, 2
-    /* 53DEC 80252DEC 256B9B98 */  addiu      $t3, $t3, %lo(g_dwEffectAlpha)
+    /* 53DEC 80252DEC 256B9B98 */  addiu      $t3, $t3, %lo(g_aDecalSwatches)
     /* 53DF0 80252DF0 014B1021 */  addu       $v0, $t2, $t3
     /* 53DF4 80252DF4 240D0010 */  addiu      $t5, $zero, 0x10
     /* 53DF8 80252DF8 02907023 */  subu       $t6, $s4, $s0
@@ -17883,10 +17883,10 @@ glabel DrawDecalTextPreview
     /* 53E4C 80252E4C 0010C080 */  sll        $t8, $s0, 2
     /* 53E50 80252E50 03008025 */  or         $s0, $t8, $zero
   .L80252E54:
-    /* 53E54 80252E54 3C0B8029 */  lui        $t3, %hi(gDecalEditorState)
-    /* 53E58 80252E58 916BDB58 */  lbu        $t3, %lo(gDecalEditorState)($t3)
-    /* 53E5C 80252E5C 3C0D8037 */  lui        $t5, %hi(g_dwEffectAlpha)
-    /* 53E60 80252E60 25AD9B98 */  addiu      $t5, $t5, %lo(g_dwEffectAlpha)
+    /* 53E54 80252E54 3C0B8029 */  lui        $t3, %hi(g_bDecalColor)
+    /* 53E58 80252E58 916BDB58 */  lbu        $t3, %lo(g_bDecalColor)($t3)
+    /* 53E5C 80252E5C 3C0D8037 */  lui        $t5, %hi(g_aDecalSwatches)
+    /* 53E60 80252E60 25AD9B98 */  addiu      $t5, $t5, %lo(g_aDecalSwatches)
     /* 53E64 80252E64 000B6080 */  sll        $t4, $t3, 2
     /* 53E68 80252E68 018B6021 */  addu       $t4, $t4, $t3
     /* 53E6C 80252E6C 000C6080 */  sll        $t4, $t4, 2
@@ -17911,8 +17911,8 @@ glabel DrawDecalTextPreview
     /* 53EB8 80252EB8 AFAF0028 */  sw         $t7, 0x28($sp)
     /* 53EBC 80252EBC 0C09197C */  jal        DrawScaledTexturedRect
     /* 53EC0 80252EC0 AFB8002C */   sw        $t8, 0x2C($sp)
-    /* 53EC4 80252EC4 3C078029 */  lui        $a3, %hi(g_bObjectDirty9)
-    /* 53EC8 80252EC8 90E7DBA8 */  lbu        $a3, %lo(g_bObjectDirty9)($a3)
+    /* 53EC4 80252EC4 3C078029 */  lui        $a3, %hi(g_bDecalTextLength)
+    /* 53EC8 80252EC8 90E7DBA8 */  lbu        $a3, %lo(g_bDecalTextLength)($a3)
   .L80252ECC:
     /* 53ECC 80252ECC 24F9FFFF */  addiu      $t9, $a3, -0x1
   .L80252ED0:
@@ -18127,14 +18127,14 @@ endlabel EmitScaledTextureRect
 nonmatching ProcessPaintShopExitConfirm, 0x234
 
 glabel ProcessPaintShopExitConfirm
-    /* 541C0 802531C0 3C028029 */  lui        $v0, %hi(g_bObjectDirty21)
-    /* 541C4 802531C4 2442DBE8 */  addiu      $v0, $v0, %lo(g_bObjectDirty21)
+    /* 541C0 802531C0 3C028029 */  lui        $v0, %hi(g_bPaintShopExiting)
+    /* 541C4 802531C4 2442DBE8 */  addiu      $v0, $v0, %lo(g_bPaintShopExiting)
     /* 541C8 802531C8 904E0000 */  lbu        $t6, 0x0($v0)
     /* 541CC 802531CC 27BDFFA0 */  addiu      $sp, $sp, -0x60
     /* 541D0 802531D0 AFBF002C */  sw         $ra, 0x2C($sp)
     /* 541D4 802531D4 15C00083 */  bnez       $t6, .L802533E4
-    /* 541D8 802531D8 3C0F8029 */   lui       $t7, %hi(g_bObjectDirty11)
-    /* 541DC 802531DC 91EFDBB4 */  lbu        $t7, %lo(g_bObjectDirty11)($t7)
+    /* 541D8 802531D8 3C0F8029 */   lui       $t7, %hi(g_bDecalEditCount)
+    /* 541DC 802531DC 91EFDBB4 */  lbu        $t7, %lo(g_bDecalEditCount)($t7)
     /* 541E0 802531E0 3C198029 */  lui        $t9, %hi(g_texButtonA + 0x10)
     /* 541E4 802531E4 2408011D */  addiu      $t0, $zero, 0x11D
     /* 541E8 802531E8 1DE00009 */  bgtz       $t7, .L80253210
@@ -18142,9 +18142,9 @@ glabel ProcessPaintShopExitConfirm
     /* 541F0 802531F0 24180001 */  addiu      $t8, $zero, 0x1
     /* 541F4 802531F4 A0580000 */  sb         $t8, 0x0($v0)
     /* 541F8 802531F8 44806000 */  mtc1       $zero, $f12
-    /* 541FC 802531FC 3C01802B */  lui        $at, %hi(g_dwRaceReserved106)
+    /* 541FC 802531FC 3C01802B */  lui        $at, %hi(g_fConst0p2_802ab260)
     /* 54200 80253200 0C088DA2 */  jal        SetFadeTarget
-    /* 54204 80253204 C42EB260 */   lwc1      $f14, %lo(g_dwRaceReserved106)($at)
+    /* 54204 80253204 C42EB260 */   lwc1      $f14, %lo(g_fConst0p2_802ab260)($at)
     /* 54208 80253208 10000077 */  b          .L802533E8
     /* 5420C 8025320C 8FBF002C */   lw        $ra, 0x2C($sp)
   .L80253210:
@@ -18196,8 +18196,8 @@ glabel ProcessPaintShopExitConfirm
     /* 542C4 802532C4 2406007B */   addiu     $a2, $zero, 0x7B
     /* 542C8 802532C8 0C08BD74 */  jal        SetTextSize
     /* 542CC 802532CC 2404000A */   addiu     $a0, $zero, 0xA
-    /* 542D0 802532D0 3C058029 */  lui        $a1, %hi(g_nGfxBufferOffset)
-    /* 542D4 802532D4 8CA5D0D4 */  lw         $a1, %lo(g_nGfxBufferOffset)($a1)
+    /* 542D0 802532D0 3C058029 */  lui        $a1, %hi(g_texButtonA + 0x24)
+    /* 542D4 802532D4 8CA5D0D4 */  lw         $a1, %lo(g_texButtonA + 0x24)($a1)
     /* 542D8 802532D8 8FA6003C */  lw         $a2, 0x3C($sp)
     /* 542DC 802532DC 3C04802B */  lui        $a0, %hi(g_szYes2)
     /* 542E0 802532E0 24A500F9 */  addiu      $a1, $a1, 0xF9
@@ -18209,8 +18209,8 @@ glabel ProcessPaintShopExitConfirm
     /* 542F8 802532F8 AFA90034 */  sw         $t1, 0x34($sp)
     /* 542FC 802532FC 0C08BD77 */  jal        DrawText
     /* 54300 80253300 2484B0AC */   addiu     $a0, $a0, %lo(g_szYes2)
-    /* 54304 80253304 3C0A8029 */  lui        $t2, %hi(g_nGfxDisplayListOffset)
-    /* 54308 80253308 8D4AD104 */  lw         $t2, %lo(g_nGfxDisplayListOffset)($t2)
+    /* 54304 80253304 3C0A8029 */  lui        $t2, %hi(g_texButtonB + 0x24)
+    /* 54308 80253308 8D4AD104 */  lw         $t2, %lo(g_texButtonB + 0x24)($t2)
     /* 5430C 8025330C 8FAB0038 */  lw         $t3, 0x38($sp)
     /* 54310 80253310 3C04802B */  lui        $a0, %hi(g_szNo2)
     /* 54314 80253314 8FA60034 */  lw         $a2, 0x34($sp)
@@ -18230,8 +18230,8 @@ glabel ProcessPaintShopExitConfirm
     /* 5434C 8025334C 8FA50038 */  lw         $a1, 0x38($sp)
     /* 54350 80253350 0C091581 */  jal        DrawTexturedSprite
     /* 54354 80253354 8FA6003C */   lw        $a2, 0x3C($sp)
-    /* 54358 80253358 3C0D8029 */  lui        $t5, %hi(gDecalBrushState)
-    /* 5435C 8025335C 91ADDBBC */  lbu        $t5, %lo(gDecalBrushState)($t5)
+    /* 54358 80253358 3C0D8029 */  lui        $t5, %hi(g_bPaintShopPlayer)
+    /* 5435C 8025335C 91ADDBBC */  lbu        $t5, %lo(g_bPaintShopPlayer)($t5)
     /* 54360 80253360 3C0F8037 */  lui        $t7, %hi(g_aPlayerInputState)
     /* 54364 80253364 25EFA8E0 */  addiu      $t7, $t7, %lo(g_aPlayerInputState)
     /* 54368 80253368 000D7080 */  sll        $t6, $t5, 2
@@ -18249,12 +18249,12 @@ glabel ProcessPaintShopExitConfirm
     /* 54398 80253398 0C095644 */  jal        TransferFlags
     /* 5439C 8025339C 24050010 */   addiu     $a1, $zero, 0x10
     /* 543A0 802533A0 24080001 */  addiu      $t0, $zero, 0x1
-    /* 543A4 802533A4 3C018029 */  lui        $at, %hi(g_bObjectDirty21)
-    /* 543A8 802533A8 A028DBE8 */  sb         $t0, %lo(g_bObjectDirty21)($at)
-    /* 543AC 802533AC 3C01802B */  lui        $at, %hi(g_dwRaceReserved107)
+    /* 543A4 802533A4 3C018029 */  lui        $at, %hi(g_bPaintShopExiting)
+    /* 543A8 802533A8 A028DBE8 */  sb         $t0, %lo(g_bPaintShopExiting)($at)
+    /* 543AC 802533AC 3C01802B */  lui        $at, %hi(g_fConst0p2_802ab264)
     /* 543B0 802533B0 44806000 */  mtc1       $zero, $f12
     /* 543B4 802533B4 0C088DA2 */  jal        SetFadeTarget
-    /* 543B8 802533B8 C42EB264 */   lwc1      $f14, %lo(g_dwRaceReserved107)($at)
+    /* 543B8 802533B8 C42EB264 */   lwc1      $f14, %lo(g_fConst0p2_802ab264)($at)
     /* 543BC 802533BC 1000000A */  b          .L802533E8
     /* 543C0 802533C0 8FBF002C */   lw        $ra, 0x2C($sp)
   .L802533C4:
@@ -18262,10 +18262,10 @@ glabel ProcessPaintShopExitConfirm
     /* 543C8 802533C8 8FBF002C */   lw        $ra, 0x2C($sp)
     /* 543CC 802533CC 0C095644 */  jal        TransferFlags
     /* 543D0 802533D0 24050020 */   addiu     $a1, $zero, 0x20
-    /* 543D4 802533D4 3C098029 */  lui        $t1, %hi(g_bObjectDirty3)
-    /* 543D8 802533D8 9129DB64 */  lbu        $t1, %lo(g_bObjectDirty3)($t1)
-    /* 543DC 802533DC 3C018029 */  lui        $at, %hi(g_bObjectDirty2)
-    /* 543E0 802533E0 A029DB60 */  sb         $t1, %lo(g_bObjectDirty2)($at)
+    /* 543D4 802533D4 3C098029 */  lui        $t1, %hi(g_bPreviousPaintTool)
+    /* 543D8 802533D8 9129DB64 */  lbu        $t1, %lo(g_bPreviousPaintTool)($t1)
+    /* 543DC 802533DC 3C018029 */  lui        $at, %hi(g_bPaintTool)
+    /* 543E0 802533E0 A029DB60 */  sb         $t1, %lo(g_bPaintTool)($at)
   .L802533E4:
     /* 543E4 802533E4 8FBF002C */  lw         $ra, 0x2C($sp)
   .L802533E8:
@@ -18274,34 +18274,34 @@ glabel ProcessPaintShopExitConfirm
     /* 543F0 802533F0 00000000 */   nop
 endlabel ProcessPaintShopExitConfirm
 
-nonmatching ApplyVisibleObjectColorPreset, 0x64
+nonmatching ResetBrushAndSlotHistory, 0x64
 
-glabel ApplyVisibleObjectColorPreset
-    /* 543F4 802533F4 3C0F8029 */  lui        $t7, %hi(g_bObjectVisible2)
-    /* 543F8 802533F8 91EFDAC0 */  lbu        $t7, %lo(g_bObjectVisible2)($t7)
-    /* 543FC 802533FC 3C198029 */  lui        $t9, %hi(D_8028D4A0)
-    /* 54400 80253400 2739D4A0 */  addiu      $t9, $t9, %lo(D_8028D4A0)
+glabel ResetBrushAndSlotHistory
+    /* 543F4 802533F4 3C0F8029 */  lui        $t7, %hi(g_bBrushSize)
+    /* 543F8 802533F8 91EFDAC0 */  lbu        $t7, %lo(g_bBrushSize)($t7)
+    /* 543FC 802533FC 3C198029 */  lui        $t9, %hi(g_aBrushSizeRects)
+    /* 54400 80253400 2739D4A0 */  addiu      $t9, $t9, %lo(g_aBrushSizeRects)
     /* 54404 80253404 000FC100 */  sll        $t8, $t7, 4
     /* 54408 80253408 03194021 */  addu       $t0, $t8, $t9
     /* 5440C 8025340C 8D010000 */  lw         $at, 0x0($t0)
-    /* 54410 80253410 3C0E8029 */  lui        $t6, %hi(D_8028DAC4)
-    /* 54414 80253414 25CEDAC4 */  addiu      $t6, $t6, %lo(D_8028DAC4)
+    /* 54410 80253410 3C0E8029 */  lui        $t6, %hi(g_rcBrush)
+    /* 54414 80253414 25CEDAC4 */  addiu      $t6, $t6, %lo(g_rcBrush)
     /* 54418 80253418 ADC10000 */  sw         $at, 0x0($t6)
     /* 5441C 8025341C 8D0B0004 */  lw         $t3, 0x4($t0)
-    /* 54420 80253420 3C028029 */  lui        $v0, %hi(g_bObjectDirty4)
+    /* 54420 80253420 3C028029 */  lui        $v0, %hi(g_bDecalSlot)
     /* 54424 80253424 ADCB0004 */  sw         $t3, 0x4($t6)
     /* 54428 80253428 8D010008 */  lw         $at, 0x8($t0)
     /* 5442C 8025342C ADC10008 */  sw         $at, 0x8($t6)
     /* 54430 80253430 8D0B000C */  lw         $t3, 0xC($t0)
-    /* 54434 80253434 3C018029 */  lui        $at, %hi(g_bObjectDirty5)
+    /* 54434 80253434 3C018029 */  lui        $at, %hi(g_bPreviousDecalSlot)
     /* 54438 80253438 ADCB000C */  sw         $t3, 0xC($t6)
-    /* 5443C 8025343C 9042DB68 */  lbu        $v0, %lo(g_bObjectDirty4)($v0)
-    /* 54440 80253440 A022DB6C */  sb         $v0, %lo(g_bObjectDirty5)($at)
-    /* 54444 80253444 3C018029 */  lui        $at, %hi(g_bObjectDirty6)
-    /* 54448 80253448 A022DB70 */  sb         $v0, %lo(g_bObjectDirty6)($at)
-    /* 5444C 8025344C 3C018029 */  lui        $at, %hi(g_bObjectDirty7)
+    /* 5443C 8025343C 9042DB68 */  lbu        $v0, %lo(g_bDecalSlot)($v0)
+    /* 54440 80253440 A022DB6C */  sb         $v0, %lo(g_bPreviousDecalSlot)($at)
+    /* 54444 80253444 3C018029 */  lui        $at, %hi(g_bSavedDecalSlot)
+    /* 54448 80253448 A022DB70 */  sb         $v0, %lo(g_bSavedDecalSlot)($at)
+    /* 5444C 8025344C 3C018029 */  lui        $at, %hi(g_bUndoDecalSlot)
     /* 54450 80253450 03E00008 */  jr         $ra
-    /* 54454 80253454 A022DB74 */   sb        $v0, %lo(g_bObjectDirty7)($at)
-endlabel ApplyVisibleObjectColorPreset
+    /* 54454 80253454 A022DB74 */   sb        $v0, %lo(g_bUndoDecalSlot)($at)
+endlabel ResetBrushAndSlotHistory
     /* 54458 80253458 00000000 */  nop
     /* 5445C 8025345C 00000000 */  nop

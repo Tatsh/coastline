@@ -34315,9 +34315,9 @@ dlabel g_nTextureUnloadCount
     /* 8DB9C 8028CB9C 00000000 */ .word 0x00000000
 enddlabel g_nTextureUnloadCount
 
-nonmatching g_texPaintShopBg
+nonmatching g_texPaintWholeCar
 
-dlabel g_texPaintShopBg
+dlabel g_texPaintWholeCar
     /* 8DBA0 8028CBA0 */ .byte 0x00
     /* 8DBA1 8028CBA1 */ .byte 0x00
     /* 8DBA2 8028CBA2 */ .byte 0x00
@@ -34334,7 +34334,7 @@ dlabel g_texPaintShopBg
     /* 8DBAD 8028CBAD */ .byte 0x00
     /* 8DBAE 8028CBAE */ .byte 0x00
     /* 8DBAF 8028CBAF */ .byte 0x00
-enddlabel g_texPaintShopBg
+enddlabel g_texPaintWholeCar
 
 nonmatching g_dwTextureCacheFlags
 
@@ -34369,14 +34369,14 @@ dlabel g_bTextureLoadPending
     /* 8DBCC 8028CBCC 00000000 */ .word 0x00000000
 enddlabel g_bTextureLoadPending
 
-nonmatching g_texTextureDescriptor
+nonmatching g_texPanelLeftDoor
 
-dlabel g_texTextureDescriptor
+dlabel g_texPanelLeftDoor
     /* 8DBD0 8028CBD0 00000000 */ .word 0x00000000
     /* 8DBD4 8028CBD4 001C65D0 */ .word 0x001C65D0
     /* 8DBD8 8028CBD8 001C66A0 */ .word 0x001C66A0
     /* 8DBDC 8028CBDC 08000000 */ .word 0x08000000
-enddlabel g_texTextureDescriptor
+enddlabel g_texPanelLeftDoor
 
 nonmatching g_dwTextureTmemAddr
 
@@ -34411,11 +34411,11 @@ dlabel g_bTextureSync
     /* 8DBFC 8028CBFC 00000000 */ .word 0x00000000
 enddlabel g_bTextureSync
 
-nonmatching g_dwRdpCommandCount
+nonmatching g_texPanelRightDoor
 
-dlabel g_dwRdpCommandCount
+dlabel g_texPanelRightDoor
     /* 8DC00 8028CC00 00000000 */ .word 0x00000000
-enddlabel g_dwRdpCommandCount
+enddlabel g_texPanelRightDoor
 
 nonmatching D_8028CC04
 
@@ -34471,14 +34471,14 @@ dlabel g_bRdpSyncPending
     /* 8DC2C 8028CC2C 00000000 */ .word 0x00000000
 enddlabel g_bRdpSyncPending
 
-nonmatching g_texRdpTextureDescriptor
+nonmatching g_texPanelLeftFrontFender
 
-dlabel g_texRdpTextureDescriptor
+dlabel g_texPanelLeftFrontFender
     /* 8DC30 8028CC30 00000000 */ .word 0x00000000
     /* 8DC34 8028CC34 001C6420 */ .word 0x001C6420
     /* 8DC38 8028CC38 001C65D0 */ .word 0x001C65D0
     /* 8DC3C 8028CC3C 08000000 */ .word 0x08000000
-enddlabel g_texRdpTextureDescriptor
+enddlabel g_texPanelLeftFrontFender
 
 nonmatching g_dwRdpTmemUsed
 
@@ -34508,11 +34508,11 @@ dlabel g_nRdpTileHeight
     /* 8DC5C 8028CC5C 00000000 */ .word 0x00000000
 enddlabel g_nRdpTileHeight
 
-nonmatching g_dwRdpBlendMode
+nonmatching g_texPanelRightFrontFender
 
-dlabel g_dwRdpBlendMode
+dlabel g_texPanelRightFrontFender
     /* 8DC60 8028CC60 00000000 */ .word 0x00000000
-enddlabel g_dwRdpBlendMode
+enddlabel g_texPanelRightFrontFender
 
 nonmatching D_8028CC64
 
@@ -34531,9 +34531,9 @@ dlabel D_8028CC64
     /* 8DC8C 8028CC8C 00000000 */ .word 0x00000000
 enddlabel D_8028CC64
 
-nonmatching g_texPaintLayerIcon4
+nonmatching g_texPanel4
 
-dlabel g_texPaintLayerIcon4
+dlabel g_texPanel4
     /* 8DC90 8028CC90 00000000 */ .word 0x00000000
     /* 8DC94 8028CC94 001C5F50 */ .word 0x001C5F50
     /* 8DC98 8028CC98 001C60C0 */ .word 0x001C60C0
@@ -34546,11 +34546,11 @@ dlabel g_texPaintLayerIcon4
     /* 8DCB4 8028CCB4 00000030 */ .word 0x00000030
     /* 8DCB8 8028CCB8 0000002A */ .word 0x0000002A
     /* 8DCBC 8028CCBC 00000000 */ .word 0x00000000
-enddlabel g_texPaintLayerIcon4
+enddlabel g_texPanel4
 
-nonmatching g_texPaintLayerIcon5
+nonmatching g_texPanel5
 
-dlabel g_texPaintLayerIcon5
+dlabel g_texPanel5
     /* 8DCC0 8028CCC0 00000000 */ .word 0x00000000
     /* 8DCC4 8028CCC4 001C60C0 */ .word 0x001C60C0
     /* 8DCC8 8028CCC8 001C6420 */ .word 0x001C6420
@@ -34563,11 +34563,11 @@ dlabel g_texPaintLayerIcon5
     /* 8DCE4 8028CCE4 00000030 */ .word 0x00000030
     /* 8DCE8 8028CCE8 0000005C */ .word 0x0000005C
     /* 8DCEC 8028CCEC 00000000 */ .word 0x00000000
-enddlabel g_texPaintLayerIcon5
+enddlabel g_texPanel5
 
-nonmatching g_texRdpTileDescriptor
+nonmatching g_texPanelLeftRearFender
 
-dlabel g_texRdpTileDescriptor
+dlabel g_texPanelLeftRearFender
     /* 8DCF0 8028CCF0 00000000 */ .word 0x00000000
     /* 8DCF4 8028CCF4 001C66A0 */ .word 0x001C66A0
     /* 8DCF8 8028CCF8 001C6850 */ .word 0x001C6850
@@ -34580,13 +34580,13 @@ dlabel g_texRdpTileDescriptor
     /* 8DD14 8028CD14 00000020 */ .word 0x00000020
     /* 8DD18 8028CD18 00000030 */ .word 0x00000030
     /* 8DD1C 8028CD1C 00000000 */ .word 0x00000000
-enddlabel g_texRdpTileDescriptor
+enddlabel g_texPanelLeftRearFender
 
-nonmatching g_dwRdpEnvColorR
+nonmatching g_texPanelRightRearFender
 
-dlabel g_dwRdpEnvColorR
+dlabel g_texPanelRightRearFender
     /* 8DD20 8028CD20 00000000 */ .word 0x00000000
-enddlabel g_dwRdpEnvColorR
+enddlabel g_texPanelRightRearFender
 
 nonmatching D_8028CD24
 
@@ -34605,9 +34605,9 @@ dlabel D_8028CD24
     /* 8DD4C 8028CD4C 00000000 */ .word 0x00000000
 enddlabel D_8028CD24
 
-nonmatching g_texPaintLayerIcon8
+nonmatching g_texPanel8
 
-dlabel g_texPaintLayerIcon8
+dlabel g_texPanel8
     /* 8DD50 8028CD50 00000000 */ .word 0x00000000
     /* 8DD54 8028CD54 001C6850 */ .word 0x001C6850
     /* 8DD58 8028CD58 001C6980 */ .word 0x001C6980
@@ -34615,7 +34615,7 @@ dlabel g_texPaintLayerIcon8
     /* 8DD60 8028CD60 00000030 */ .word 0x00000030
     /* 8DD64 8028CD64 00000018 */ .word 0x00000018
     /* 8DD68 8028CD68 00000018 */ .word 0x00000018
-enddlabel g_texPaintLayerIcon8
+enddlabel g_texPanel8
 
 nonmatching g_nRdpClipMinX
 
@@ -34632,9 +34632,9 @@ dlabel g_nRdpClipMinY
     /* 8DD7C 8028CD7C 00000000 */ .word 0x00000000
 enddlabel g_nRdpClipMinY
 
-nonmatching g_texPaintLayerIcon9
+nonmatching g_texPanel9
 
-dlabel g_texPaintLayerIcon9
+dlabel g_texPanel9
     /* 8DD80 8028CD80 00000000 */ .word 0x00000000
     /* 8DD84 8028CD84 001C6980 */ .word 0x001C6980
     /* 8DD88 8028CD88 001C6AC0 */ .word 0x001C6AC0
@@ -34642,7 +34642,7 @@ dlabel g_texPaintLayerIcon9
     /* 8DD90 8028CD90 00000030 */ .word 0x00000030
     /* 8DD94 8028CD94 00000018 */ .word 0x00000018
     /* 8DD98 8028CD98 00000018 */ .word 0x00000018
-enddlabel g_texPaintLayerIcon9
+enddlabel g_texPanel9
 
 nonmatching g_nRdpClipMaxX
 
@@ -34659,9 +34659,9 @@ dlabel g_nRdpClipMaxY
     /* 8DDAC 8028CDAC 00000000 */ .word 0x00000000
 enddlabel g_nRdpClipMaxY
 
-nonmatching g_texPaintLayerIcon8Overlay
+nonmatching g_texPanel8Overlay
 
-dlabel g_texPaintLayerIcon8Overlay
+dlabel g_texPanel8Overlay
     /* 8DDB0 8028CDB0 00000000 */ .word 0x00000000
     /* 8DDB4 8028CDB4 001C6AC0 */ .word 0x001C6AC0
     /* 8DDB8 8028CDB8 001C6B20 */ .word 0x001C6B20
@@ -34669,7 +34669,7 @@ dlabel g_texPaintLayerIcon8Overlay
     /* 8DDC0 8028CDC0 00000030 */ .word 0x00000030
     /* 8DDC4 8028CDC4 0000000A */ .word 0x0000000A
     /* 8DDC8 8028CDC8 0000000A */ .word 0x0000000A
-enddlabel g_texPaintLayerIcon8Overlay
+enddlabel g_texPanel8Overlay
 
 nonmatching g_nRdpViewportX
 
@@ -34686,9 +34686,9 @@ dlabel g_nRdpViewportY
     /* 8DDDC 8028CDDC 00000000 */ .word 0x00000000
 enddlabel g_nRdpViewportY
 
-nonmatching g_texPaintLayerIcon9Overlay
+nonmatching g_texPanel9Overlay
 
-dlabel g_texPaintLayerIcon9Overlay
+dlabel g_texPanel9Overlay
     /* 8DDE0 8028CDE0 00000000 */ .word 0x00000000
     /* 8DDE4 8028CDE4 001C6B20 */ .word 0x001C6B20
     /* 8DDE8 8028CDE8 001C6BC0 */ .word 0x001C6BC0
@@ -34696,7 +34696,7 @@ dlabel g_texPaintLayerIcon9Overlay
     /* 8DDF0 8028CDF0 00000030 */ .word 0x00000030
     /* 8DDF4 8028CDF4 0000000E */ .word 0x0000000E
     /* 8DDF8 8028CDF8 0000000E */ .word 0x0000000E
-enddlabel g_texPaintLayerIcon9Overlay
+enddlabel g_texPanel9Overlay
 
 nonmatching g_nRdpScissorX
 
@@ -34713,103 +34713,79 @@ dlabel g_nRdpScissorY
     /* 8DE0C 8028CE0C 00000000 */ .word 0x00000000
 enddlabel g_nRdpScissorY
 
-nonmatching g_texPaintPaletteSelector
+nonmatching g_texBrushSizeRound
 
-dlabel g_texPaintPaletteSelector
+dlabel g_texBrushSizeRound
     /* 8DE10 8028CE10 00000000 */ .word 0x00000000
     /* 8DE14 8028CE14 001C6BC0 */ .word 0x001C6BC0
     /* 8DE18 8028CE18 001C6C30 */ .word 0x001C6C30
     /* 8DE1C 8028CE1C 04000000 */ .word 0x04000000
-enddlabel g_texPaintPaletteSelector
+enddlabel g_texBrushSizeRound
 
-nonmatching g_dwRdpCombineMode
+nonmatching D_8028CE20
 
-dlabel g_dwRdpCombineMode
+dlabel D_8028CE20
     /* 8DE20 8028CE20 00000020 */ .word 0x00000020
-enddlabel g_dwRdpCombineMode
+enddlabel D_8028CE20
 
-nonmatching g_dwRdpOtherModeL
+nonmatching D_8028CE24
 
-dlabel g_dwRdpOtherModeL
+dlabel D_8028CE24
     /* 8DE24 8028CE24 00000056 */ .word 0x00000056
-enddlabel g_dwRdpOtherModeL
-
-nonmatching D_8028CE28
-
-/* Automatically generated and unreferenced pad */
-dlabel D_8028CE28
     /* 8DE28 8028CE28 00000056 */ .word 0x00000056
-enddlabel D_8028CE28
+enddlabel D_8028CE24
 
-nonmatching g_dwPaintPaletteScreenX
+nonmatching D_8028CE2C
 
-dlabel g_dwPaintPaletteScreenX
+dlabel D_8028CE2C
     /* 8DE2C 8028CE2C 00000000 */ .word 0x00000000
-enddlabel g_dwPaintPaletteScreenX
+enddlabel D_8028CE2C
 
-nonmatching g_dwRdpPrimColor
+nonmatching D_8028CE30
 
-dlabel g_dwRdpPrimColor
+dlabel D_8028CE30
     /* 8DE30 8028CE30 00000000 */ .word 0x00000000
-enddlabel g_dwRdpPrimColor
-
-nonmatching D_8028CE34
-
-/* Automatically generated and unreferenced pad */
-dlabel D_8028CE34
     /* 8DE34 8028CE34 00000020 */ .word 0x00000020
     /* 8DE38 8028CE38 00000056 */ .word 0x00000056
     /* 8DE3C 8028CE3C 00000000 */ .word 0x00000000
-enddlabel D_8028CE34
+enddlabel D_8028CE30
 
-nonmatching g_texPaintPaletteSelectorAlt
+nonmatching g_texBrushSizeSquare
 
-dlabel g_texPaintPaletteSelectorAlt
+dlabel g_texBrushSizeSquare
     /* 8DE40 8028CE40 00000000 */ .word 0x00000000
     /* 8DE44 8028CE44 001C6C30 */ .word 0x001C6C30
     /* 8DE48 8028CE48 001C6C70 */ .word 0x001C6C70
     /* 8DE4C 8028CE4C 04000000 */ .word 0x04000000
-enddlabel g_texPaintPaletteSelectorAlt
+enddlabel g_texBrushSizeSquare
 
-nonmatching g_dwRdpBlendColor
+nonmatching D_8028CE50
 
-dlabel g_dwRdpBlendColor
+dlabel D_8028CE50
     /* 8DE50 8028CE50 00000020 */ .word 0x00000020
-enddlabel g_dwRdpBlendColor
+enddlabel D_8028CE50
 
-nonmatching g_dwRdpFogColor
+nonmatching D_8028CE54
 
-dlabel g_dwRdpFogColor
+dlabel D_8028CE54
     /* 8DE54 8028CE54 00000056 */ .word 0x00000056
-enddlabel g_dwRdpFogColor
-
-nonmatching D_8028CE58
-
-/* Automatically generated and unreferenced pad */
-dlabel D_8028CE58
     /* 8DE58 8028CE58 00000056 */ .word 0x00000056
-enddlabel D_8028CE58
+enddlabel D_8028CE54
 
-nonmatching g_dwRdpFillColor
+nonmatching D_8028CE5C
 
-dlabel g_dwRdpFillColor
+dlabel D_8028CE5C
     /* 8DE5C 8028CE5C 00000000 */ .word 0x00000000
-enddlabel g_dwRdpFillColor
+enddlabel D_8028CE5C
 
-nonmatching g_dwRdpEnvColor
+nonmatching D_8028CE60
 
-dlabel g_dwRdpEnvColor
+dlabel D_8028CE60
     /* 8DE60 8028CE60 00000000 */ .word 0x00000000
-enddlabel g_dwRdpEnvColor
-
-nonmatching D_8028CE64
-
-/* Automatically generated and unreferenced pad */
-dlabel D_8028CE64
     /* 8DE64 8028CE64 00000020 */ .word 0x00000020
     /* 8DE68 8028CE68 00000056 */ .word 0x00000056
     /* 8DE6C 8028CE6C 00000000 */ .word 0x00000000
-enddlabel D_8028CE64
+enddlabel D_8028CE60
 
 nonmatching g_texPaintToolBrush
 
@@ -34874,14 +34850,14 @@ dlabel g_dwRdpScaleW
     /* 8DE98 8028CE98 00000000 */ .word 0x00000000
 enddlabel g_dwRdpScaleW
 
-nonmatching g_bRdpDepthUpdate
+nonmatching D_8028CE9C
 
-dlabel g_bRdpDepthUpdate
+dlabel D_8028CE9C
     /* 8DE9C 8028CE9C */ .byte 0x00
     /* 8DE9D 8028CE9D */ .byte 0x00
     /* 8DE9E 8028CE9E */ .byte 0x00
     /* 8DE9F 8028CE9F */ .byte 0x00
-enddlabel g_bRdpDepthUpdate
+enddlabel D_8028CE9C
 
 nonmatching g_texPaintToolLine
 
@@ -34970,14 +34946,14 @@ dlabel g_texPaintToolText
     /* 8DF28 8028CF28 00000000 */ .word 0x00000000
 enddlabel g_texPaintToolText
 
-nonmatching g_bController0Connected
+nonmatching D_8028CF2C
 
-dlabel g_bController0Connected
+dlabel D_8028CF2C
     /* 8DF2C 8028CF2C */ .byte 0x00
     /* 8DF2D 8028CF2D */ .byte 0x00
     /* 8DF2E 8028CF2E */ .byte 0x00
     /* 8DF2F 8028CF2F */ .byte 0x00
-enddlabel g_bController0Connected
+enddlabel D_8028CF2C
 
 nonmatching g_texPaintToolRect
 
@@ -34995,14 +34971,14 @@ dlabel g_texPaintToolRect
     /* 8DF58 8028CF58 00000000 */ .word 0x00000000
 enddlabel g_texPaintToolRect
 
-nonmatching g_bController1Connected
+nonmatching D_8028CF5C
 
-dlabel g_bController1Connected
+dlabel D_8028CF5C
     /* 8DF5C 8028CF5C */ .byte 0x00
     /* 8DF5D 8028CF5D */ .byte 0x00
     /* 8DF5E 8028CF5E */ .byte 0x00
     /* 8DF5F 8028CF5F */ .byte 0x00
-enddlabel g_bController1Connected
+enddlabel D_8028CF5C
 
 nonmatching g_texPaintToolOval
 
@@ -35020,14 +34996,14 @@ dlabel g_texPaintToolOval
     /* 8DF88 8028CF88 00000000 */ .word 0x00000000
 enddlabel g_texPaintToolOval
 
-nonmatching g_bController2Connected
+nonmatching D_8028CF8C
 
-dlabel g_bController2Connected
+dlabel D_8028CF8C
     /* 8DF8C 8028CF8C */ .byte 0x00
     /* 8DF8D 8028CF8D */ .byte 0x00
     /* 8DF8E 8028CF8E */ .byte 0x00
     /* 8DF8F 8028CF8F */ .byte 0x00
-enddlabel g_bController2Connected
+enddlabel D_8028CF8C
 
 nonmatching g_texPaintToolMirror
 
@@ -35045,11 +35021,11 @@ dlabel g_texPaintToolMirror
     /* 8DFB8 8028CFB8 00000000 */ .word 0x00000000
 enddlabel g_texPaintToolMirror
 
-nonmatching g_bController3Connected
+nonmatching D_8028CFBC
 
-dlabel g_bController3Connected
+dlabel D_8028CFBC
     /* 8DFBC 8028CFBC 00000000 */ .word 0x00000000
-enddlabel g_bController3Connected
+enddlabel D_8028CFBC
 
 nonmatching g_texPaintToolClear
 
@@ -35067,18 +35043,18 @@ dlabel g_texPaintToolClear
     /* 8DFE8 8028CFE8 00000000 */ .word 0x00000000
 enddlabel g_texPaintToolClear
 
-nonmatching g_bControllerPakConnected
+nonmatching D_8028CFEC
 
-dlabel g_bControllerPakConnected
+dlabel D_8028CFEC
     /* 8DFEC 8028CFEC */ .byte 0x00
     /* 8DFED 8028CFED */ .byte 0x00
     /* 8DFEE 8028CFEE */ .byte 0x00
     /* 8DFEF 8028CFEF */ .byte 0x00
-enddlabel g_bControllerPakConnected
+enddlabel D_8028CFEC
 
-nonmatching g_texPaintToolSave
+nonmatching g_texPaintToolLoad
 
-dlabel g_texPaintToolSave
+dlabel g_texPaintToolLoad
     /* 8DFF0 8028CFF0 00000000 */ .word 0x00000000
     /* 8DFF4 8028CFF4 001C73D0 */ .word 0x001C73D0
     /* 8DFF8 8028CFF8 001C74C0 */ .word 0x001C74C0
@@ -35091,11 +35067,11 @@ dlabel g_texPaintToolSave
     /* 8E014 8028D014 00000000 */ .word 0x00000000
     /* 8E018 8028D018 00000000 */ .word 0x00000000
     /* 8E01C 8028D01C 00000000 */ .word 0x00000000
-enddlabel g_texPaintToolSave
+enddlabel g_texPaintToolLoad
 
-nonmatching g_texPaintToolLoad
+nonmatching g_texPaintToolSave
 
-dlabel g_texPaintToolLoad
+dlabel g_texPaintToolSave
     /* 8E020 8028D020 00000000 */ .word 0x00000000
     /* 8E024 8028D024 001C74C0 */ .word 0x001C74C0
     /* 8E028 8028D028 001C75B0 */ .word 0x001C75B0
@@ -35108,7 +35084,7 @@ dlabel g_texPaintToolLoad
     /* 8E044 8028D044 00000000 */ .word 0x00000000
     /* 8E048 8028D048 00000000 */ .word 0x00000000
     /* 8E04C 8028D04C 00000000 */ .word 0x00000000
-enddlabel g_texPaintToolLoad
+enddlabel g_texPaintToolSave
 
 nonmatching g_texPaintToolUndo
 
@@ -35156,15 +35132,10 @@ dlabel g_texButtonA
     /* 8E0C8 8028D0C8 00000018 */ .word 0x00000018
     /* 8E0CC 8028D0CC 0000006C */ .word 0x0000006C
     /* 8E0D0 8028D0D0 000000DC */ .word 0x000000DC
-enddlabel g_texButtonA
-
-nonmatching g_nGfxBufferOffset
-
-dlabel g_nGfxBufferOffset
     /* 8E0D4 8028D0D4 00000018 */ .word 0x00000018
     /* 8E0D8 8028D0D8 00000018 */ .word 0x00000018
     /* 8E0DC 8028D0DC 00000000 */ .word 0x00000000
-enddlabel g_nGfxBufferOffset
+enddlabel g_texButtonA
 
 nonmatching g_texButtonB
 
@@ -35178,15 +35149,10 @@ dlabel g_texButtonB
     /* 8E0F8 8028D0F8 00000018 */ .word 0x00000018
     /* 8E0FC 8028D0FC 000000AE */ .word 0x000000AE
     /* 8E100 8028D100 000000DC */ .word 0x000000DC
-enddlabel g_texButtonB
-
-nonmatching g_nGfxDisplayListOffset
-
-dlabel g_nGfxDisplayListOffset
     /* 8E104 8028D104 00000018 */ .word 0x00000018
     /* 8E108 8028D108 00000018 */ .word 0x00000018
     /* 8E10C 8028D10C 00000000 */ .word 0x00000000
-enddlabel g_nGfxDisplayListOffset
+enddlabel g_texButtonB
 
 nonmatching g_texPaintCursor
 
@@ -35198,22 +35164,12 @@ dlabel g_texPaintCursor
     /* 8E120 8028D120 00000018 */ .word 0x00000018
     /* 8E124 8028D124 0000001A */ .word 0x0000001A
     /* 8E128 8028D128 0000001A */ .word 0x0000001A
-enddlabel g_texPaintCursor
-
-nonmatching gCursorX
-
-dlabel gCursorX
     /* 8E12C 8028D12C 000000F4 */ .word 0x000000F4
-enddlabel gCursorX
-
-nonmatching gCursorY
-
-dlabel gCursorY
     /* 8E130 8028D130 00000110 */ .word 0x00000110
     /* 8E134 8028D134 00000018 */ .word 0x00000018
     /* 8E138 8028D138 0000001A */ .word 0x0000001A
     /* 8E13C 8028D13C 00000000 */ .word 0x00000000
-enddlabel gCursorY
+enddlabel g_texPaintCursor
 
 nonmatching g_texPaintFillCursor
 
@@ -35318,20 +35274,9 @@ dlabel g_texKeyboardPanel
     /* 8E238 8028D238 001CAB10 */ .word 0x001CAB10
     /* 8E23C 8028D23C 08000000 */ .word 0x08000000
     /* 8E240 8028D240 00000200 */ .word 0x00000200
-enddlabel g_texKeyboardPanel
-
-nonmatching g_dwGfxProjectionMtx
-
-dlabel g_dwGfxProjectionMtx
     /* 8E244 8028D244 000000D4 */ .word 0x000000D4
-enddlabel g_dwGfxProjectionMtx
-
-nonmatching D_8028D248
-
-/* Automatically generated and unreferenced pad */
-dlabel D_8028D248
     /* 8E248 8028D248 00000004 */ .word 0x00000004
-enddlabel D_8028D248
+enddlabel g_texKeyboardPanel
 
 nonmatching g_dwGfxModelViewMtx
 
@@ -35364,9 +35309,9 @@ dlabel D_8028D25C
     /* 8E25C 8028D25C 00000000 */ .word 0x00000000
 enddlabel D_8028D25C
 
-nonmatching g_texKeyboardKey
+nonmatching g_texKeyboardBackground
 
-dlabel g_texKeyboardKey
+dlabel g_texKeyboardBackground
     /* 8E260 8028D260 00000000 */ .word 0x00000000
     /* 8E264 8028D264 001CAB10 */ .word 0x001CAB10
     /* 8E268 8028D268 001CAB30 */ .word 0x001CAB30
@@ -35374,19 +35319,19 @@ dlabel g_texKeyboardKey
     /* 8E270 8028D270 00000010 */ .word 0x00000010
     /* 8E274 8028D274 00000002 */ .word 0x00000002
     /* 8E278 8028D278 00000002 */ .word 0x00000002
-enddlabel g_texKeyboardKey
+enddlabel g_texKeyboardBackground
 
-nonmatching g_dwGfxLight0Dir
+nonmatching D_8028D27C
 
-dlabel g_dwGfxLight0Dir
+dlabel D_8028D27C
     /* 8E27C 8028D27C 00000000 */ .word 0x00000000
-enddlabel g_dwGfxLight0Dir
+enddlabel D_8028D27C
 
-nonmatching g_dwGfxLight0Color
+nonmatching D_8028D280
 
-dlabel g_dwGfxLight0Color
+dlabel D_8028D280
     /* 8E280 8028D280 00000000 */ .word 0x00000000
-enddlabel g_dwGfxLight0Color
+enddlabel D_8028D280
 
 nonmatching g_dwGfxLight1Dir
 
@@ -35407,9 +35352,9 @@ dlabel D_8028D28C
     /* 8E28C 8028D28C 00000000 */ .word 0x00000000
 enddlabel D_8028D28C
 
-nonmatching g_texKeyboardKeyHighlight
+nonmatching g_texKeyboardHighlight
 
-dlabel g_texKeyboardKeyHighlight
+dlabel g_texKeyboardHighlight
     /* 8E290 8028D290 00000000 */ .word 0x00000000
     /* 8E294 8028D294 001CAB30 */ .word 0x001CAB30
     /* 8E298 8028D298 001CAB50 */ .word 0x001CAB50
@@ -35417,7 +35362,7 @@ dlabel g_texKeyboardKeyHighlight
     /* 8E2A0 8028D2A0 00000010 */ .word 0x00000010
     /* 8E2A4 8028D2A4 00000002 */ .word 0x00000002
     /* 8E2A8 8028D2A8 00000002 */ .word 0x00000002
-enddlabel g_texKeyboardKeyHighlight
+enddlabel g_texKeyboardHighlight
 
 nonmatching g_dwGfxAmbientColor
 
@@ -35431,17 +35376,12 @@ dlabel g_dwGfxBackgroundColor
     /* 8E2B0 8028D2B0 00000072 */ .word 0x00000072
 enddlabel g_dwGfxBackgroundColor
 
-nonmatching g_dwGfxFogColor
+nonmatching D_8028D2B4
 
-dlabel g_dwGfxFogColor
+dlabel D_8028D2B4
     /* 8E2B4 8028D2B4 0000002E */ .word 0x0000002E
-enddlabel g_dwGfxFogColor
-
-nonmatching g_dwGfxLight2Dir
-
-dlabel g_dwGfxLight2Dir
     /* 8E2B8 8028D2B8 00000024 */ .word 0x00000024
-enddlabel g_dwGfxLight2Dir
+enddlabel D_8028D2B4
 
 nonmatching g_bGfxLightingEnabled
 
@@ -35449,11 +35389,11 @@ dlabel g_bGfxLightingEnabled
     /* 8E2BC 8028D2BC 00000000 */ .word 0x00000000
 enddlabel g_bGfxLightingEnabled
 
-nonmatching g_dwGfxLight2Color
+nonmatching g_texDecalFont
 
-dlabel g_dwGfxLight2Color
+dlabel g_texDecalFont
     /* 8E2C0 8028D2C0 00000000 */ .word 0x00000000
-enddlabel g_dwGfxLight2Color
+enddlabel g_texDecalFont
 
 nonmatching D_8028D2C4
 
@@ -35462,31 +35402,20 @@ dlabel D_8028D2C4
     /* 8E2C4 8028D2C4 001CAB50 */ .word 0x001CAB50
     /* 8E2C8 8028D2C8 001CAEA0 */ .word 0x001CAEA0
     /* 8E2CC 8028D2CC 04000000 */ .word 0x04000000
+    /* 8E2D0 8028D2D0 00000320 */ .word 0x00000320
 enddlabel D_8028D2C4
 
-nonmatching g_dwGfxLight3Dir
+nonmatching D_8028D2D4
 
-dlabel g_dwGfxLight3Dir
-    /* 8E2D0 8028D2D0 00000320 */ .word 0x00000320
-enddlabel g_dwGfxLight3Dir
-
-nonmatching g_dwGfxLight3Color
-
-dlabel g_dwGfxLight3Color
+dlabel D_8028D2D4
     /* 8E2D4 8028D2D4 00000010 */ .word 0x00000010
-enddlabel g_dwGfxLight3Color
-
-nonmatching D_8028D2D8
-
-/* Automatically generated and unreferenced pad */
-dlabel D_8028D2D8
     /* 8E2D8 8028D2D8 00000008 */ .word 0x00000008
     /* 8E2DC 8028D2DC 00000000 */ .word 0x00000000
     /* 8E2E0 8028D2E0 00000000 */ .word 0x00000000
     /* 8E2E4 8028D2E4 00000320 */ .word 0x00000320
     /* 8E2E8 8028D2E8 00000010 */ .word 0x00000010
     /* 8E2EC 8028D2EC 00000000 */ .word 0x00000000
-enddlabel D_8028D2D8
+enddlabel D_8028D2D4
 
 nonmatching g_texPaintShapeFilledRect
 
@@ -35596,9 +35525,9 @@ dlabel D_8028D34C
     /* 8E34C 8028D34C 00000000 */ .word 0x00000000
 enddlabel D_8028D34C
 
-nonmatching g_texPaintShapeExtra0
+nonmatching g_texPaintShapeFilledRoundRect
 
-dlabel g_texPaintShapeExtra0
+dlabel g_texPaintShapeFilledRoundRect
     /* 8E350 8028D350 00000000 */ .word 0x00000000
     /* 8E354 8028D354 001CAF00 */ .word 0x001CAF00
     /* 8E358 8028D358 001CAF70 */ .word 0x001CAF70
@@ -35611,11 +35540,11 @@ dlabel g_texPaintShapeExtra0
     /* 8E374 8028D374 00000000 */ .word 0x00000000
     /* 8E378 8028D378 00000000 */ .word 0x00000000
     /* 8E37C 8028D37C 00000000 */ .word 0x00000000
-enddlabel g_texPaintShapeExtra0
+enddlabel g_texPaintShapeFilledRoundRect
 
-nonmatching g_texPaintShapeExtra1
+nonmatching g_texPaintShapeOutlinedRoundRect
 
-dlabel g_texPaintShapeExtra1
+dlabel g_texPaintShapeOutlinedRoundRect
     /* 8E380 8028D380 00000000 */ .word 0x00000000
     /* 8E384 8028D384 001CAF70 */ .word 0x001CAF70
     /* 8E388 8028D388 001CB010 */ .word 0x001CB010
@@ -35628,15 +35557,15 @@ dlabel g_texPaintShapeExtra1
     /* 8E3A4 8028D3A4 00000000 */ .word 0x00000000
     /* 8E3A8 8028D3A8 00000000 */ .word 0x00000000
     /* 8E3AC 8028D3AC 00000000 */ .word 0x00000000
-enddlabel g_texPaintShapeExtra1
+enddlabel g_texPaintShapeOutlinedRoundRect
 
-nonmatching g_texPaintShapeFilledRounded
+nonmatching g_texPaintShapeFilledOval
 
-dlabel g_texPaintShapeFilledRounded
+dlabel g_texPaintShapeFilledOval
     /* 8E3B0 8028D3B0 00000000 */ .word 0x00000000
     /* 8E3B4 8028D3B4 001CB010 */ .word 0x001CB010
     /* 8E3B8 8028D3B8 001CB0F0 */ .word 0x001CB0F0
-enddlabel g_texPaintShapeFilledRounded
+enddlabel g_texPaintShapeFilledOval
 
 nonmatching g_bGfxCullFront
 
@@ -35693,13 +35622,13 @@ dlabel D_8028D3DC
     /* 8E3DC 8028D3DC 00000000 */ .word 0x00000000
 enddlabel D_8028D3DC
 
-nonmatching g_texPaintShapeOutlinedRounded
+nonmatching g_texPaintShapeOutlinedOval
 
-dlabel g_texPaintShapeOutlinedRounded
+dlabel g_texPaintShapeOutlinedOval
     /* 8E3E0 8028D3E0 00000000 */ .word 0x00000000
     /* 8E3E4 8028D3E4 001CB0F0 */ .word 0x001CB0F0
     /* 8E3E8 8028D3E8 001CB230 */ .word 0x001CB230
-enddlabel g_texPaintShapeOutlinedRounded
+enddlabel g_texPaintShapeOutlinedOval
 
 nonmatching g_bGfxDepthWrite
 
@@ -35781,24 +35710,13 @@ dlabel g_dwGfxBlendColorA
     /* 8E430 8028D430 00000000 */ .word 0x00000000
 enddlabel g_dwGfxBlendColorA
 
-nonmatching g_dwGfxPrimColorR
+nonmatching D_8028D434
 
-dlabel g_dwGfxPrimColorR
+dlabel D_8028D434
     /* 8E434 8028D434 00000000 */ .word 0x00000000
-enddlabel g_dwGfxPrimColorR
-
-nonmatching g_dwGfxPrimColorG
-
-dlabel g_dwGfxPrimColorG
     /* 8E438 8028D438 00000000 */ .word 0x00000000
-enddlabel g_dwGfxPrimColorG
-
-nonmatching D_8028D43C
-
-/* Automatically generated and unreferenced pad */
-dlabel D_8028D43C
     /* 8E43C 8028D43C 00000000 */ .word 0x00000000
-enddlabel D_8028D43C
+enddlabel D_8028D434
 
 nonmatching g_texPaintShapeOutlinedCircle
 
@@ -35833,84 +35751,64 @@ dlabel D_8028D464
     /* 8E46C 8028D46C 00000000 */ .word 0x00000000
 enddlabel D_8028D464
 
-nonmatching g_dwGfxEnvColorR
+nonmatching g_rcDecalCanvasFrame
 
-dlabel g_dwGfxEnvColorR
+dlabel g_rcDecalCanvasFrame
     /* 8E470 8028D470 00000118 */ .word 0x00000118
-enddlabel g_dwGfxEnvColorR
+enddlabel g_rcDecalCanvasFrame
 
-nonmatching g_dwGfxEnvColorG
+nonmatching D_8028D474
 
-dlabel g_dwGfxEnvColorG
+dlabel D_8028D474
     /* 8E474 8028D474 0000005E */ .word 0x0000005E
-enddlabel g_dwGfxEnvColorG
+enddlabel D_8028D474
 
-nonmatching g_dwGfxEnvColorB
+nonmatching D_8028D478
 
-dlabel g_dwGfxEnvColorB
+dlabel D_8028D478
     /* 8E478 8028D478 00000148 */ .word 0x00000148
-enddlabel g_dwGfxEnvColorB
+enddlabel D_8028D478
 
-nonmatching g_dwGfxEnvColorA
+nonmatching D_8028D47C
 
-dlabel g_dwGfxEnvColorA
+dlabel D_8028D47C
     /* 8E47C 8028D47C 00000104 */ .word 0x00000104
-enddlabel g_dwGfxEnvColorA
+enddlabel D_8028D47C
 
-nonmatching g_dwGfxFillColorR
+nonmatching g_aPaletteFrameRects
 
-dlabel g_dwGfxFillColorR
+dlabel g_aPaletteFrameRects
     /* 8E480 8028D480 00000000 */ .word 0x00000000
-enddlabel g_dwGfxFillColorR
+enddlabel g_aPaletteFrameRects
 
-nonmatching g_dwGfxFillColorG
+nonmatching D_8028D484
 
-dlabel g_dwGfxFillColorG
+dlabel D_8028D484
     /* 8E484 8028D484 00000000 */ .word 0x00000000
-enddlabel g_dwGfxFillColorG
-
-nonmatching g_dwGfxFillColorB
-
-dlabel g_dwGfxFillColorB
     /* 8E488 8028D488 00000030 */ .word 0x00000030
-enddlabel g_dwGfxFillColorB
-
-nonmatching g_dwGfxFillColorA
-
-dlabel g_dwGfxFillColorA
     /* 8E48C 8028D48C 00000016 */ .word 0x00000016
-enddlabel g_dwGfxFillColorA
+enddlabel D_8028D484
 
-nonmatching g_dwGfxFogColorR
+nonmatching D_8028D490
 
-dlabel g_dwGfxFogColorR
+dlabel D_8028D490
     /* 8E490 8028D490 00000000 */ .word 0x00000000
-enddlabel g_dwGfxFogColorR
+enddlabel D_8028D490
 
-nonmatching g_dwGfxFogColorG
+nonmatching D_8028D494
 
-dlabel g_dwGfxFogColorG
+dlabel D_8028D494
     /* 8E494 8028D494 00000000 */ .word 0x00000000
-enddlabel g_dwGfxFogColorG
-
-nonmatching g_dwGfxFogColorB
-
-dlabel g_dwGfxFogColorB
     /* 8E498 8028D498 000000E8 */ .word 0x000000E8
-enddlabel g_dwGfxFogColorB
-
-nonmatching g_dwGfxFogColorA
-
-dlabel g_dwGfxFogColorA
     /* 8E49C 8028D49C 00000016 */ .word 0x00000016
-enddlabel g_dwGfxFogColorA
+enddlabel D_8028D494
 
-nonmatching D_8028D4A0
+nonmatching g_aBrushSizeRects
 
-dlabel D_8028D4A0
+dlabel g_aBrushSizeRects
     /* 8E4A0 8028D4A0 00000000 */ .word 0x00000000
     /* 8E4A4 8028D4A4 00000000 */ .word 0x00000000
-enddlabel D_8028D4A0
+enddlabel g_aBrushSizeRects
 
 nonmatching D_8028D4A8
 
@@ -35923,18 +35821,7 @@ dlabel D_8028D4A8
     /* 8E4BC 8028D4BC 00000002 */ .word 0x00000002
     /* 8E4C0 8028D4C0 00000000 */ .word 0x00000000
     /* 8E4C4 8028D4C4 00000000 */ .word 0x00000000
-enddlabel D_8028D4A8
-
-nonmatching g_dwGfxConvertK2
-
-dlabel g_dwGfxConvertK2
     /* 8E4C8 8028D4C8 00000004 */ .word 0x00000004
-enddlabel g_dwGfxConvertK2
-
-nonmatching D_8028D4CC
-
-/* Automatically generated and unreferenced pad */
-dlabel D_8028D4CC
     /* 8E4CC 8028D4CC 00000004 */ .word 0x00000004
     /* 8E4D0 8028D4D0 00000000 */ .word 0x00000000
     /* 8E4D4 8028D4D4 00000000 */ .word 0x00000000
@@ -35944,86 +35831,34 @@ dlabel D_8028D4CC
     /* 8E4E4 8028D4E4 00000000 */ .word 0x00000000
     /* 8E4E8 8028D4E8 00000008 */ .word 0x00000008
     /* 8E4EC 8028D4EC 00000008 */ .word 0x00000008
-enddlabel D_8028D4CC
+enddlabel D_8028D4A8
 
-nonmatching g_dwGfxKeyScaleR
+nonmatching g_aBrushSizeButtonRects
 
-dlabel g_dwGfxKeyScaleR
+dlabel g_aBrushSizeButtonRects
     /* 8E4F0 8028D4F0 00000000 */ .word 0x00000000
-enddlabel g_dwGfxKeyScaleR
+enddlabel g_aBrushSizeButtonRects
 
-nonmatching g_dwGfxKeyScaleG
+nonmatching D_8028D4F4
 
-dlabel g_dwGfxKeyScaleG
+/* Automatically generated and unreferenced pad */
+dlabel D_8028D4F4
     /* 8E4F4 8028D4F4 00000000 */ .word 0x00000000
-enddlabel g_dwGfxKeyScaleG
-
-nonmatching D_8028D4F8
-
-/* Automatically generated and unreferenced pad */
-dlabel D_8028D4F8
     /* 8E4F8 8028D4F8 00000020 */ .word 0x00000020
-enddlabel D_8028D4F8
-
-nonmatching g_dwGfxKeyScaleB
-
-dlabel g_dwGfxKeyScaleB
     /* 8E4FC 8028D4FC 0000000C */ .word 0x0000000C
-enddlabel g_dwGfxKeyScaleB
+enddlabel D_8028D4F4
 
-nonmatching g_dwGfxKeyScaleA
+nonmatching D_8028D500
 
-dlabel g_dwGfxKeyScaleA
+dlabel D_8028D500
     /* 8E500 8028D500 00000000 */ .word 0x00000000
-enddlabel g_dwGfxKeyScaleA
-
-nonmatching g_dwGfxKeyCenterR
-
-dlabel g_dwGfxKeyCenterR
     /* 8E504 8028D504 00000000 */ .word 0x00000000
-enddlabel g_dwGfxKeyCenterR
-
-nonmatching D_8028D508
-
-/* Automatically generated and unreferenced pad */
-dlabel D_8028D508
     /* 8E508 8028D508 00000020 */ .word 0x00000020
-enddlabel D_8028D508
-
-nonmatching g_dwGfxKeyCenterG
-
-dlabel g_dwGfxKeyCenterG
     /* 8E50C 8028D50C 0000000C */ .word 0x0000000C
-enddlabel g_dwGfxKeyCenterG
-
-nonmatching g_dwGfxKeyCenterB
-
-dlabel g_dwGfxKeyCenterB
     /* 8E510 8028D510 00000000 */ .word 0x00000000
-enddlabel g_dwGfxKeyCenterB
-
-nonmatching g_dwGfxKeyCenterA
-
-dlabel g_dwGfxKeyCenterA
     /* 8E514 8028D514 00000000 */ .word 0x00000000
-enddlabel g_dwGfxKeyCenterA
-
-nonmatching g_dwGfxPrimLodFrac
-
-dlabel g_dwGfxPrimLodFrac
     /* 8E518 8028D518 00000020 */ .word 0x00000020
-enddlabel g_dwGfxPrimLodFrac
-
-nonmatching g_dwGfxPrimLodMin
-
-dlabel g_dwGfxPrimLodMin
     /* 8E51C 8028D51C 00000012 */ .word 0x00000012
-enddlabel g_dwGfxPrimLodMin
-
-nonmatching D_8028D520
-
-/* Automatically generated and unreferenced pad */
-dlabel D_8028D520
     /* 8E520 8028D520 00000000 */ .word 0x00000000
     /* 8E524 8028D524 00000000 */ .word 0x00000000
     /* 8E528 8028D528 00000020 */ .word 0x00000020
@@ -36032,52 +35867,27 @@ dlabel D_8028D520
     /* 8E534 8028D534 00000000 */ .word 0x00000000
     /* 8E538 8028D538 00000020 */ .word 0x00000020
     /* 8E53C 8028D53C 00000018 */ .word 0x00000018
-enddlabel D_8028D520
+enddlabel D_8028D500
 
-nonmatching g_dwGfxCoefR
+nonmatching g_aDecalGlyphs
 
-dlabel g_dwGfxCoefR
+dlabel g_aDecalGlyphs
     /* 8E540 8028D540 00000000 */ .word 0x00000000
-enddlabel g_dwGfxCoefR
+enddlabel g_aDecalGlyphs
 
-nonmatching g_dwGfxCoefG
+nonmatching D_8028D544
 
-dlabel g_dwGfxCoefG
+/* Automatically generated and unreferenced pad */
+dlabel D_8028D544
     /* 8E544 8028D544 00000000 */ .word 0x00000000
-enddlabel g_dwGfxCoefG
-
-.align 2
-nonmatching g_bGfxColorDither
-
-dlabel g_bGfxColorDither
-    /* 8E548 8028D548 */ .asciz "1"
-    /* 31000000 */
-.align 2
+    /* 8E548 8028D548 31000000 */ .word 0x31000000
     /* 8E54C 8028D54C 00000004 */ .word 0x00000004
     /* 8E550 8028D550 00000008 */ .word 0x00000008
     /* 8E554 8028D554 00000000 */ .word 0x00000000
     /* 8E558 8028D558 00000002 */ .word 0x00000002
-enddlabel g_bGfxColorDither
-
-nonmatching g_dwGfxCoefB
-
-dlabel g_dwGfxCoefB
     /* 8E55C 8028D55C 00000000 */ .word 0x00000000
-enddlabel g_dwGfxCoefB
-
-nonmatching g_dwGfxCoefA
-
-dlabel g_dwGfxCoefA
     /* 8E560 8028D560 00000000 */ .word 0x00000000
-enddlabel g_dwGfxCoefA
-
-.align 2
-nonmatching g_bGfxAlphaDither
-
-dlabel g_bGfxAlphaDither
-    /* 8E564 8028D564 */ .asciz "2"
-    /* 32000000 */
-.align 2
+    /* 8E564 8028D564 32000000 */ .word 0x32000000
     /* 8E568 8028D568 00000003 */ .word 0x00000003
     /* 8E56C 8028D56C 0000000A */ .word 0x0000000A
     /* 8E570 8028D570 00000002 */ .word 0x00000002
@@ -36138,54 +35948,16 @@ dlabel g_bGfxAlphaDither
     /* 8E64C 8028D64C 0000000A */ .word 0x0000000A
     /* 8E650 8028D650 00000002 */ .word 0x00000002
     /* 8E654 8028D654 00000002 */ .word 0x00000002
-enddlabel g_bGfxAlphaDither
-
-nonmatching g_dwGfxMatrixM00
-
-dlabel g_dwGfxMatrixM00
     /* 8E658 8028D658 00000000 */ .word 0x00000000
-enddlabel g_dwGfxMatrixM00
-
-nonmatching g_dwGfxMatrixM01
-
-dlabel g_dwGfxMatrixM01
     /* 8E65C 8028D65C 00000000 */ .word 0x00000000
-enddlabel g_dwGfxMatrixM01
-
-.align 2
-nonmatching D_8028D660
-
-/* Automatically generated and unreferenced pad */
-dlabel D_8028D660
-    /* 8E660 8028D660 */ .asciz "A"
-    /* 41000000 */
-.align 2
+    /* 8E660 8028D660 41000000 */ .word 0x41000000
     /* 8E664 8028D664 00000002 */ .word 0x00000002
     /* 8E668 8028D668 0000000B */ .word 0x0000000B
     /* 8E66C 8028D66C 00000006 */ .word 0x00000006
     /* 8E670 8028D670 00000000 */ .word 0x00000000
-enddlabel D_8028D660
-
-nonmatching g_dwGfxMatrixM02
-
-dlabel g_dwGfxMatrixM02
     /* 8E674 8028D674 00000000 */ .word 0x00000000
-enddlabel g_dwGfxMatrixM02
-
-nonmatching g_dwGfxMatrixM03
-
-dlabel g_dwGfxMatrixM03
     /* 8E678 8028D678 00000000 */ .word 0x00000000
-enddlabel g_dwGfxMatrixM03
-
-.align 2
-nonmatching D_8028D67C
-
-/* Automatically generated and unreferenced pad */
-dlabel D_8028D67C
-    /* 8E67C 8028D67C */ .asciz "B"
-    /* 42000000 */
-.align 2
+    /* 8E67C 8028D67C 42000000 */ .word 0x42000000
     /* 8E680 8028D680 00000003 */ .word 0x00000003
     /* 8E684 8028D684 0000000A */ .word 0x0000000A
     /* 8E688 8028D688 00000002 */ .word 0x00000002
@@ -36274,28 +36046,9 @@ dlabel D_8028D67C
     /* 8E7D4 8028D7D4 0000000B */ .word 0x0000000B
     /* 8E7D8 8028D7D8 00000002 */ .word 0x00000002
     /* 8E7DC 8028D7DC 00000002 */ .word 0x00000002
-enddlabel D_8028D67C
-
-nonmatching g_dwGfxMatrixM10
-
-dlabel g_dwGfxMatrixM10
     /* 8E7E0 8028D7E0 00000000 */ .word 0x00000000
-enddlabel g_dwGfxMatrixM10
-
-nonmatching g_dwGfxMatrixM11
-
-dlabel g_dwGfxMatrixM11
     /* 8E7E4 8028D7E4 00000000 */ .word 0x00000000
-enddlabel g_dwGfxMatrixM11
-
-.align 2
-nonmatching D_8028D7E8
-
-/* Automatically generated and unreferenced pad */
-dlabel D_8028D7E8
-    /* 8E7E8 8028D7E8 */ .asciz "O"
-    /* 4F000000 */
-.align 2
+    /* 8E7E8 8028D7E8 4F000000 */ .word 0x4F000000
     /* 8E7EC 8028D7EC 00000003 */ .word 0x00000003
     /* 8E7F0 8028D7F0 0000000A */ .word 0x0000000A
     /* 8E7F4 8028D7F4 00000002 */ .word 0x00000002
@@ -36475,50 +36228,50 @@ dlabel D_8028D7E8
     /* 8EAAC 8028DAAC 00000008 */ .word 0x00000008
     /* 8EAB0 8028DAB0 00000000 */ .word 0x00000000
     /* 8EAB4 8028DAB4 00000000 */ .word 0x00000000
-enddlabel D_8028D7E8
+enddlabel D_8028D544
 
-nonmatching g_bObjectVisible0
+nonmatching g_bDashColorA
 
-dlabel g_bObjectVisible0
+dlabel g_bDashColorA
     /* 8EAB8 8028DAB8 */ .byte 0x00
     /* 8EAB9 8028DAB9 */ .byte 0x00
     /* 8EABA 8028DABA */ .byte 0x00
     /* 8EABB 8028DABB */ .byte 0x00
-enddlabel g_bObjectVisible0
+enddlabel g_bDashColorA
 
-nonmatching g_bObjectVisible1
+nonmatching g_bDashColorB
 
-dlabel g_bObjectVisible1
+dlabel g_bDashColorB
     /* 8EABC 8028DABC */ .byte 0xFF
     /* 8EABD 8028DABD */ .byte 0x00
     /* 8EABE 8028DABE */ .byte 0x00
     /* 8EABF 8028DABF */ .byte 0x00
-enddlabel g_bObjectVisible1
+enddlabel g_bDashColorB
 
-nonmatching g_bObjectVisible2
+nonmatching g_bBrushSize
 
-dlabel g_bObjectVisible2
+dlabel g_bBrushSize
     /* 8EAC0 8028DAC0 */ .byte 0x02
     /* 8EAC1 8028DAC1 */ .byte 0x00
     /* 8EAC2 8028DAC2 */ .byte 0x00
     /* 8EAC3 8028DAC3 */ .byte 0x00
-enddlabel g_bObjectVisible2
+enddlabel g_bBrushSize
 
-nonmatching D_8028DAC4
+nonmatching g_rcBrush
 
-dlabel D_8028DAC4
+dlabel g_rcBrush
     /* 8EAC4 8028DAC4 00000000 */ .word 0x00000000
     /* 8EAC8 8028DAC8 00000000 */ .word 0x00000000
     /* 8EACC 8028DACC 00000000 */ .word 0x00000000
     /* 8EAD0 8028DAD0 00000000 */ .word 0x00000000
-    /* 8EAD4 8028DAD4 8028CE10 */ .word g_texPaintPaletteSelector
-enddlabel D_8028DAC4
+    /* 8EAD4 8028DAD4 8028CE10 */ .word g_texBrushSizeRound
+enddlabel g_rcBrush
 
-nonmatching g_pObjectMatrix0
+nonmatching D_8028DAD8
 
-dlabel g_pObjectMatrix0
+dlabel D_8028DAD8
     /* 8EAD8 8028DAD8 8028CE70 */ .word g_texPaintToolBrush
-enddlabel g_pObjectMatrix0
+enddlabel D_8028DAD8
 
 nonmatching g_pObjectMatrix1
 
@@ -36565,13 +36318,13 @@ enddlabel g_pObjectMatrix7
 nonmatching g_pObjectMatrix8
 
 dlabel g_pObjectMatrix8
-    /* 8EAF8 8028DAF8 8028CFF0 */ .word g_texPaintToolSave
+    /* 8EAF8 8028DAF8 8028CFF0 */ .word g_texPaintToolLoad
 enddlabel g_pObjectMatrix8
 
 nonmatching g_pObjectMatrix9
 
 dlabel g_pObjectMatrix9
-    /* 8EAFC 8028DAFC 8028D020 */ .word g_texPaintToolLoad
+    /* 8EAFC 8028DAFC 8028D020 */ .word g_texPaintToolSave
 enddlabel g_pObjectMatrix9
 
 nonmatching g_pObjectMatrix10
@@ -36586,292 +36339,230 @@ dlabel g_pObjectMatrix11
     /* 8EB04 8028DB04 8028D080 */ .word g_texPaintToolExit
 enddlabel g_pObjectMatrix11
 
-nonmatching g_dwObjectCount
+nonmatching g_pDecalSlotIcon
 
-dlabel g_dwObjectCount
+dlabel g_pDecalSlotIcon
     /* 8EB08 8028DB08 00000000 */ .word 0x00000000
-enddlabel g_dwObjectCount
+enddlabel g_pDecalSlotIcon
 
-nonmatching g_pObjectMatrix12
+nonmatching g_apDecalSlotIcons
 
-dlabel g_pObjectMatrix12
-    /* 8EB0C 8028DB0C 8028CBD0 */ .word g_texTextureDescriptor
-enddlabel g_pObjectMatrix12
+dlabel g_apDecalSlotIcons
+    /* 8EB0C 8028DB0C 8028CBD0 */ .word g_texPanelLeftDoor
+enddlabel g_apDecalSlotIcons
 
-nonmatching g_pObjectMatrix13
-
-dlabel g_pObjectMatrix13
-    /* 8EB10 8028DB10 8028CC00 */ .word g_dwRdpCommandCount
-enddlabel g_pObjectMatrix13
-
-nonmatching g_pObjectMatrix14
-
-dlabel g_pObjectMatrix14
-    /* 8EB14 8028DB14 8028CC30 */ .word g_texRdpTextureDescriptor
-enddlabel g_pObjectMatrix14
-
-nonmatching g_pObjectMatrix15
-
-dlabel g_pObjectMatrix15
-    /* 8EB18 8028DB18 8028CC60 */ .word g_dwRdpBlendMode
-enddlabel g_pObjectMatrix15
-
-nonmatching g_pObjectMatrix16
-
-dlabel g_pObjectMatrix16
-    /* 8EB1C 8028DB1C 8028CC90 */ .word g_texPaintLayerIcon4
-enddlabel g_pObjectMatrix16
-
-nonmatching g_pObjectMatrix17
-
-dlabel g_pObjectMatrix17
-    /* 8EB20 8028DB20 8028CCC0 */ .word g_texPaintLayerIcon5
-enddlabel g_pObjectMatrix17
-
-nonmatching g_pObjectMatrix18
-
-dlabel g_pObjectMatrix18
-    /* 8EB24 8028DB24 8028CCF0 */ .word g_texRdpTileDescriptor
-enddlabel g_pObjectMatrix18
-
-nonmatching g_pObjectMatrix19
-
-dlabel g_pObjectMatrix19
-    /* 8EB28 8028DB28 8028CD20 */ .word g_dwRdpEnvColorR
-enddlabel g_pObjectMatrix19
-
-nonmatching g_pObjectMatrix20
-
-dlabel g_pObjectMatrix20
-    /* 8EB2C 8028DB2C 8028CD50 */ .word g_texPaintLayerIcon8
-enddlabel g_pObjectMatrix20
-
-nonmatching g_pObjectMatrix21
-
-dlabel g_pObjectMatrix21
-    /* 8EB30 8028DB30 8028CD80 */ .word g_texPaintLayerIcon9
-enddlabel g_pObjectMatrix21
-
-nonmatching g_pObjectMatrix22
-
-dlabel g_pObjectMatrix22
-    /* 8EB34 8028DB34 8028D2F0 */ .word g_texPaintShapeFilledRect
-enddlabel g_pObjectMatrix22
-
-nonmatching g_pObjectMatrix23
-
-dlabel g_pObjectMatrix23
-    /* 8EB38 8028DB38 8028D320 */ .word g_texPaintShapeOutlinedRect
-enddlabel g_pObjectMatrix23
-
-nonmatching D_8028DB3C
+nonmatching D_8028DB10
 
 /* Automatically generated and unreferenced pad */
-dlabel D_8028DB3C
-    /* 8EB3C 8028DB3C 8028D350 */ .word g_texPaintShapeExtra0
-    /* 8EB40 8028DB40 8028D380 */ .word g_texPaintShapeExtra1
-enddlabel D_8028DB3C
+dlabel D_8028DB10
+    /* 8EB10 8028DB10 8028CC00 */ .word g_texPanelRightDoor
+    /* 8EB14 8028DB14 8028CC30 */ .word g_texPanelLeftFrontFender
+    /* 8EB18 8028DB18 8028CC60 */ .word g_texPanelRightFrontFender
+    /* 8EB1C 8028DB1C 8028CC90 */ .word g_texPanel4
+    /* 8EB20 8028DB20 8028CCC0 */ .word g_texPanel5
+    /* 8EB24 8028DB24 8028CCF0 */ .word g_texPanelLeftRearFender
+    /* 8EB28 8028DB28 8028CD20 */ .word g_texPanelRightRearFender
+    /* 8EB2C 8028DB2C 8028CD50 */ .word g_texPanel8
+    /* 8EB30 8028DB30 8028CD80 */ .word g_texPanel9
+enddlabel D_8028DB10
 
-nonmatching g_pObjectMatrix24
+nonmatching g_apRectStyleIcons
 
-dlabel g_pObjectMatrix24
-    /* 8EB44 8028DB44 8028D3B0 */ .word g_texPaintShapeFilledRounded
-enddlabel g_pObjectMatrix24
+dlabel g_apRectStyleIcons
+    /* 8EB34 8028DB34 8028D2F0 */ .word g_texPaintShapeFilledRect
+enddlabel g_apRectStyleIcons
 
-nonmatching g_pObjectMatrix25
+nonmatching D_8028DB38
 
-dlabel g_pObjectMatrix25
-    /* 8EB48 8028DB48 8028D3E0 */ .word g_texPaintShapeOutlinedRounded
-enddlabel g_pObjectMatrix25
+/* Automatically generated and unreferenced pad */
+dlabel D_8028DB38
+    /* 8EB38 8028DB38 8028D320 */ .word g_texPaintShapeOutlinedRect
+    /* 8EB3C 8028DB3C 8028D350 */ .word g_texPaintShapeFilledRoundRect
+    /* 8EB40 8028DB40 8028D380 */ .word g_texPaintShapeOutlinedRoundRect
+enddlabel D_8028DB38
 
-nonmatching g_pObjectMatrix26
+nonmatching g_apOvalStyleIcons
 
-dlabel g_pObjectMatrix26
+dlabel g_apOvalStyleIcons
+    /* 8EB44 8028DB44 8028D3B0 */ .word g_texPaintShapeFilledOval
+enddlabel g_apOvalStyleIcons
+
+nonmatching D_8028DB48
+
+/* Automatically generated and unreferenced pad */
+dlabel D_8028DB48
+    /* 8EB48 8028DB48 8028D3E0 */ .word g_texPaintShapeOutlinedOval
     /* 8EB4C 8028DB4C 8028D410 */ .word g_texPaintShapeFilledCircle
-enddlabel g_pObjectMatrix26
-
-nonmatching g_pObjectMatrix27
-
-dlabel g_pObjectMatrix27
     /* 8EB50 8028DB50 8028D440 */ .word g_texPaintShapeOutlinedCircle
-enddlabel g_pObjectMatrix27
+enddlabel D_8028DB48
 
-nonmatching g_bObjectDirty0
+nonmatching g_bSavedColor
 
-dlabel g_bObjectDirty0
+dlabel g_bSavedColor
     /* 8EB54 8028DB54 */ .byte 0x00
     /* 8EB55 8028DB55 */ .byte 0x00
     /* 8EB56 8028DB56 */ .byte 0x00
     /* 8EB57 8028DB57 */ .byte 0x00
-enddlabel g_bObjectDirty0
+enddlabel g_bSavedColor
 
-nonmatching gDecalEditorState
+nonmatching g_bDecalColor
 
-dlabel gDecalEditorState
+dlabel g_bDecalColor
     /* 8EB58 8028DB58 */ .byte 0x03
     /* 8EB59 8028DB59 */ .byte 0x00
     /* 8EB5A 8028DB5A */ .byte 0x00
     /* 8EB5B 8028DB5B */ .byte 0x00
-enddlabel gDecalEditorState
+enddlabel g_bDecalColor
 
-nonmatching g_bObjectDirty1
+nonmatching g_bTextShadowColor
 
-dlabel g_bObjectDirty1
+dlabel g_bTextShadowColor
     /* 8EB5C 8028DB5C */ .byte 0x0F
     /* 8EB5D 8028DB5D */ .byte 0x00
     /* 8EB5E 8028DB5E */ .byte 0x00
     /* 8EB5F 8028DB5F */ .byte 0x00
-enddlabel g_bObjectDirty1
+enddlabel g_bTextShadowColor
 
-nonmatching g_bObjectDirty2
+nonmatching g_bPaintTool
 
-dlabel g_bObjectDirty2
+dlabel g_bPaintTool
     /* 8EB60 8028DB60 */ .byte 0x01
     /* 8EB61 8028DB61 */ .byte 0x00
     /* 8EB62 8028DB62 */ .byte 0x00
     /* 8EB63 8028DB63 */ .byte 0x00
-enddlabel g_bObjectDirty2
+enddlabel g_bPaintTool
 
-nonmatching g_bObjectDirty3
+nonmatching g_bPreviousPaintTool
 
-dlabel g_bObjectDirty3
+dlabel g_bPreviousPaintTool
     /* 8EB64 8028DB64 */ .byte 0x01
     /* 8EB65 8028DB65 */ .byte 0x00
     /* 8EB66 8028DB66 */ .byte 0x00
     /* 8EB67 8028DB67 */ .byte 0x00
-enddlabel g_bObjectDirty3
+enddlabel g_bPreviousPaintTool
 
-nonmatching g_bObjectDirty4
+nonmatching g_bDecalSlot
 
-dlabel g_bObjectDirty4
+dlabel g_bDecalSlot
     /* 8EB68 8028DB68 */ .byte 0x02
     /* 8EB69 8028DB69 */ .byte 0x00
     /* 8EB6A 8028DB6A */ .byte 0x00
     /* 8EB6B 8028DB6B */ .byte 0x00
-enddlabel g_bObjectDirty4
+enddlabel g_bDecalSlot
 
-nonmatching g_bObjectDirty5
+nonmatching g_bPreviousDecalSlot
 
-dlabel g_bObjectDirty5
+dlabel g_bPreviousDecalSlot
     /* 8EB6C 8028DB6C */ .byte 0x00
     /* 8EB6D 8028DB6D */ .byte 0x00
     /* 8EB6E 8028DB6E */ .byte 0x00
     /* 8EB6F 8028DB6F */ .byte 0x00
-enddlabel g_bObjectDirty5
+enddlabel g_bPreviousDecalSlot
 
-nonmatching g_bObjectDirty6
+nonmatching g_bSavedDecalSlot
 
-dlabel g_bObjectDirty6
+dlabel g_bSavedDecalSlot
     /* 8EB70 8028DB70 */ .byte 0x00
     /* 8EB71 8028DB71 */ .byte 0x00
     /* 8EB72 8028DB72 */ .byte 0x00
     /* 8EB73 8028DB73 */ .byte 0x00
-enddlabel g_bObjectDirty6
+enddlabel g_bSavedDecalSlot
 
-nonmatching g_bObjectDirty7
+nonmatching g_bUndoDecalSlot
 
-dlabel g_bObjectDirty7
+dlabel g_bUndoDecalSlot
     /* 8EB74 8028DB74 */ .byte 0x00
     /* 8EB75 8028DB75 */ .byte 0x00
     /* 8EB76 8028DB76 */ .byte 0x00
     /* 8EB77 8028DB77 */ .byte 0x00
-enddlabel g_bObjectDirty7
+enddlabel g_bUndoDecalSlot
 
-nonmatching gFramebufferPtr
+nonmatching g_pDecalTexels
 
-dlabel gFramebufferPtr
+dlabel g_pDecalTexels
     /* 8EB78 8028DB78 00000000 */ .word 0x00000000
-enddlabel gFramebufferPtr
+enddlabel g_pDecalTexels
 
-nonmatching gClipMaskPtr
+nonmatching g_pDecalMask
 
-dlabel gClipMaskPtr
+dlabel g_pDecalMask
     /* 8EB7C 8028DB7C 00000000 */ .word 0x00000000
-enddlabel gClipMaskPtr
+enddlabel g_pDecalMask
 
-nonmatching g_dwObjectPosX
+nonmatching g_pDecalUndoBuffer
 
-dlabel g_dwObjectPosX
+dlabel g_pDecalUndoBuffer
     /* 8EB80 8028DB80 00000000 */ .word 0x00000000
-enddlabel g_dwObjectPosX
+enddlabel g_pDecalUndoBuffer
 
-nonmatching g_dwObjectPosY
+nonmatching g_pDecalScratchTexels
 
-dlabel g_dwObjectPosY
+dlabel g_pDecalScratchTexels
     /* 8EB84 8028DB84 00000000 */ .word 0x00000000
-enddlabel g_dwObjectPosY
+enddlabel g_pDecalScratchTexels
 
-nonmatching gFramebufferWidth
+nonmatching g_bDecalWidth
 
-dlabel gFramebufferWidth
+dlabel g_bDecalWidth
     /* 8EB88 8028DB88 */ .byte 0x00
     /* 8EB89 8028DB89 */ .byte 0x00
     /* 8EB8A 8028DB8A */ .byte 0x00
     /* 8EB8B 8028DB8B */ .byte 0x00
-enddlabel gFramebufferWidth
+enddlabel g_bDecalWidth
 
-nonmatching gFramebufferHeight
+nonmatching g_bDecalHeight
 
-dlabel gFramebufferHeight
+dlabel g_bDecalHeight
     /* 8EB8C 8028DB8C */ .byte 0x00
     /* 8EB8D 8028DB8D */ .byte 0x00
     /* 8EB8E 8028DB8E */ .byte 0x00
     /* 8EB8F 8028DB8F */ .byte 0x00
-enddlabel gFramebufferHeight
+enddlabel g_bDecalHeight
 
-nonmatching g_dwObjectPosZ
+nonmatching g_pDecalPalette
 
-dlabel g_dwObjectPosZ
+dlabel g_pDecalPalette
     /* 8EB90 8028DB90 00000000 */ .word 0x00000000
-enddlabel g_dwObjectPosZ
+enddlabel g_pDecalPalette
 
-nonmatching g_dwDecalEditorFlags
+nonmatching g_rcDecalCanvas
 
-dlabel g_dwDecalEditorFlags
+dlabel g_rcDecalCanvas
     /* 8EB94 8028DB94 00000000 */ .word 0x00000000
-enddlabel g_dwDecalEditorFlags
+enddlabel g_rcDecalCanvas
 
-nonmatching g_dwObjectRotX
+nonmatching D_8028DB98
 
-dlabel g_dwObjectRotX
+/* Automatically generated and unreferenced pad */
+dlabel D_8028DB98
     /* 8EB98 8028DB98 00000000 */ .word 0x00000000
-enddlabel g_dwObjectRotX
-
-nonmatching g_dwObjectRotY
-
-dlabel g_dwObjectRotY
     /* 8EB9C 8028DB9C 00000000 */ .word 0x00000000
-enddlabel g_dwObjectRotY
-
-nonmatching g_dwObjectRotZ
-
-dlabel g_dwObjectRotZ
     /* 8EBA0 8028DBA0 00000000 */ .word 0x00000000
-enddlabel g_dwObjectRotZ
+enddlabel D_8028DB98
 
-nonmatching g_bObjectDirty8
+nonmatching g_bKeyboardHoverKey
 
-dlabel g_bObjectDirty8
+dlabel g_bKeyboardHoverKey
     /* 8EBA4 8028DBA4 00000000 */ .word 0x00000000
-enddlabel g_bObjectDirty8
+enddlabel g_bKeyboardHoverKey
 
-nonmatching g_bObjectDirty9
+nonmatching g_bDecalTextLength
 
-dlabel g_bObjectDirty9
+dlabel g_bDecalTextLength
     /* 8EBA8 8028DBA8 */ .byte 0x00
     /* 8EBA9 8028DBA9 */ .byte 0x00
     /* 8EBAA 8028DBAA */ .byte 0x00
     /* 8EBAB 8028DBAB */ .byte 0x00
-enddlabel g_bObjectDirty9
+enddlabel g_bDecalTextLength
 
-nonmatching g_bObjectDirty10
+nonmatching g_bDecalTextWidth
 
-dlabel g_bObjectDirty10
+dlabel g_bDecalTextWidth
     /* 8EBAC 8028DBAC */ .byte 0x00
     /* 8EBAD 8028DBAD */ .byte 0x00
     /* 8EBAE 8028DBAE */ .byte 0x00
     /* 8EBAF 8028DBAF */ .byte 0x00
-enddlabel g_bObjectDirty10
+enddlabel g_bDecalTextWidth
 
 nonmatching g_wScreenFrameCount
 
@@ -36886,143 +36577,143 @@ dlabel D_8028DBB2
     /* 8EBB2 8028DBB2 */ .short 0x0000
 enddlabel D_8028DBB2
 
-nonmatching g_bObjectDirty11
+nonmatching g_bDecalEditCount
 
-dlabel g_bObjectDirty11
+dlabel g_bDecalEditCount
     /* 8EBB4 8028DBB4 */ .byte 0x00
     /* 8EBB5 8028DBB5 */ .byte 0x00
     /* 8EBB6 8028DBB6 */ .byte 0x00
     /* 8EBB7 8028DBB7 */ .byte 0x00
-enddlabel g_bObjectDirty11
+enddlabel g_bDecalEditCount
 
-nonmatching gDecalCanvasWidth
+nonmatching g_bStyleMenuCursor
 
-dlabel gDecalCanvasWidth
+dlabel g_bStyleMenuCursor
     /* 8EBB8 8028DBB8 00000000 */ .word 0x00000000
-enddlabel gDecalCanvasWidth
+enddlabel g_bStyleMenuCursor
 
-nonmatching gDecalBrushState
+nonmatching g_bPaintShopPlayer
 
-dlabel gDecalBrushState
+dlabel g_bPaintShopPlayer
     /* 8EBBC 8028DBBC */ .byte 0x00
     /* 8EBBD 8028DBBD */ .byte 0x00
     /* 8EBBE 8028DBBE */ .byte 0x00
     /* 8EBBF 8028DBBF */ .byte 0x00
-enddlabel gDecalBrushState
+enddlabel g_bPaintShopPlayer
 
-nonmatching gDecalCanvasHeight
+nonmatching g_bPaintToolStarted
 
-dlabel gDecalCanvasHeight
+dlabel g_bPaintToolStarted
     /* 8EBC0 8028DBC0 */ .byte 0x00
     /* 8EBC1 8028DBC1 */ .byte 0x00
     /* 8EBC2 8028DBC2 */ .byte 0x00
     /* 8EBC3 8028DBC3 */ .byte 0x00
-enddlabel gDecalCanvasHeight
+enddlabel g_bPaintToolStarted
 
-nonmatching g_bObjectDirty12
+nonmatching g_bDecalDragActive
 
-dlabel g_bObjectDirty12
+dlabel g_bDecalDragActive
     /* 8EBC4 8028DBC4 */ .byte 0x00
     /* 8EBC5 8028DBC5 */ .byte 0x00
     /* 8EBC6 8028DBC6 */ .byte 0x00
     /* 8EBC7 8028DBC7 */ .byte 0x00
-enddlabel g_bObjectDirty12
+enddlabel g_bDecalDragActive
 
-nonmatching g_bObjectDirty13
+nonmatching g_bPaletteEnabled
 
-dlabel g_bObjectDirty13
+dlabel g_bPaletteEnabled
     /* 8EBC8 8028DBC8 */ .byte 0x01
     /* 8EBC9 8028DBC9 */ .byte 0x00
     /* 8EBCA 8028DBCA */ .byte 0x00
     /* 8EBCB 8028DBCB */ .byte 0x00
-enddlabel g_bObjectDirty13
+enddlabel g_bPaletteEnabled
 
-nonmatching g_bObjectDirty14
+nonmatching g_bDecalSlotHasMirror
 
-dlabel g_bObjectDirty14
+dlabel g_bDecalSlotHasMirror
     /* 8EBCC 8028DBCC */ .byte 0x01
     /* 8EBCD 8028DBCD */ .byte 0x00
     /* 8EBCE 8028DBCE */ .byte 0x00
     /* 8EBCF 8028DBCF */ .byte 0x00
-enddlabel g_bObjectDirty14
+enddlabel g_bDecalSlotHasMirror
 
-nonmatching g_bObjectDirty15
+nonmatching g_bDecalSlotChanged
 
-dlabel g_bObjectDirty15
+dlabel g_bDecalSlotChanged
     /* 8EBD0 8028DBD0 */ .byte 0x00
     /* 8EBD1 8028DBD1 */ .byte 0x00
     /* 8EBD2 8028DBD2 */ .byte 0x00
     /* 8EBD3 8028DBD3 */ .byte 0x00
-enddlabel g_bObjectDirty15
+enddlabel g_bDecalSlotChanged
 
-nonmatching g_bObjectDirty16
+nonmatching g_bColorEditorOpen
 
-dlabel g_bObjectDirty16
+dlabel g_bColorEditorOpen
     /* 8EBD4 8028DBD4 */ .byte 0x00
     /* 8EBD5 8028DBD5 */ .byte 0x00
     /* 8EBD6 8028DBD6 */ .byte 0x00
     /* 8EBD7 8028DBD7 */ .byte 0x00
-enddlabel g_bObjectDirty16
+enddlabel g_bColorEditorOpen
 
-nonmatching g_bObjectDirty17
+nonmatching g_bShowPreview3D
 
-dlabel g_bObjectDirty17
+dlabel g_bShowPreview3D
     /* 8EBD8 8028DBD8 */ .byte 0x01
     /* 8EBD9 8028DBD9 */ .byte 0x00
     /* 8EBDA 8028DBDA */ .byte 0x00
     /* 8EBDB 8028DBDB */ .byte 0x00
-enddlabel g_bObjectDirty17
+enddlabel g_bShowPreview3D
 
-nonmatching g_bObjectDirty18
+nonmatching g_bUndoAvailable
 
-dlabel g_bObjectDirty18
+dlabel g_bUndoAvailable
     /* 8EBDC 8028DBDC */ .byte 0x00
     /* 8EBDD 8028DBDD */ .byte 0x00
     /* 8EBDE 8028DBDE */ .byte 0x00
     /* 8EBDF 8028DBDF */ .byte 0x00
-enddlabel g_bObjectDirty18
+enddlabel g_bUndoAvailable
 
-nonmatching g_bObjectDirty19
+nonmatching g_bStyleMenuOpen
 
-dlabel g_bObjectDirty19
+dlabel g_bStyleMenuOpen
     /* 8EBE0 8028DBE0 */ .byte 0x00
     /* 8EBE1 8028DBE1 */ .byte 0x00
     /* 8EBE2 8028DBE2 */ .byte 0x00
     /* 8EBE3 8028DBE3 */ .byte 0x00
-enddlabel g_bObjectDirty19
+enddlabel g_bStyleMenuOpen
 
-nonmatching g_bObjectDirty20
+nonmatching g_bTextShadowPickerOpen
 
-dlabel g_bObjectDirty20
+dlabel g_bTextShadowPickerOpen
     /* 8EBE4 8028DBE4 */ .byte 0x00
     /* 8EBE5 8028DBE5 */ .byte 0x00
     /* 8EBE6 8028DBE6 */ .byte 0x00
     /* 8EBE7 8028DBE7 */ .byte 0x00
-enddlabel g_bObjectDirty20
+enddlabel g_bTextShadowPickerOpen
 
-nonmatching g_bObjectDirty21
+nonmatching g_bPaintShopExiting
 
-dlabel g_bObjectDirty21
+dlabel g_bPaintShopExiting
     /* 8EBE8 8028DBE8 */ .byte 0x00
     /* 8EBE9 8028DBE9 */ .byte 0x00
     /* 8EBEA 8028DBEA */ .byte 0x00
     /* 8EBEB 8028DBEB */ .byte 0x00
-enddlabel g_bObjectDirty21
+enddlabel g_bPaintShopExiting
 
-nonmatching g_bObjectDirty22
+nonmatching g_bEyedropperActive
 
-dlabel g_bObjectDirty22
+dlabel g_bEyedropperActive
     /* 8EBEC 8028DBEC */ .byte 0x00
     /* 8EBED 8028DBED */ .byte 0x00
     /* 8EBEE 8028DBEE */ .byte 0x00
     /* 8EBEF 8028DBEF */ .byte 0x00
-enddlabel g_bObjectDirty22
+enddlabel g_bEyedropperActive
 
-nonmatching g_dwObjectScaleX
+nonmatching D_8028DBF0
 
-dlabel g_dwObjectScaleX
+dlabel D_8028DBF0
     /* 8EBF0 8028DBF0 00000000 */ .word 0x00000000
-enddlabel g_dwObjectScaleX
+enddlabel D_8028DBF0
 
 nonmatching g_dwObjectScaleY
 
@@ -37036,11 +36727,11 @@ dlabel g_dwObjectScaleZ
     /* 8EBF8 8028DBF8 00000000 */ .word 0x00000000
 enddlabel g_dwObjectScaleZ
 
-nonmatching g_dwObjectAnimFrame
+nonmatching D_8028DBFC
 
-dlabel g_dwObjectAnimFrame
+dlabel D_8028DBFC
     /* 8EBFC 8028DBFC 00000000 */ .word 0x00000000
-enddlabel g_dwObjectAnimFrame
+enddlabel D_8028DBFC
 
 nonmatching g_dwObjectAnimSpeed
 
@@ -37054,22 +36745,17 @@ dlabel g_dwObjectTexScrollS
     /* 8EC04 8028DC04 00000000 */ .word 0x00000000
 enddlabel g_dwObjectTexScrollS
 
-nonmatching g_aDecalPreviewLightDirs
+nonmatching s_aPanelViewDirections
 
-dlabel g_aDecalPreviewLightDirs
+dlabel s_aPanelViewDirections
     /* 8EC08 8028DC08 3F800000 */ .float 1
     /* 8EC0C 8028DC0C BF800000 */ .float -1
     /* 8EC10 8028DC10 00000000 */ .float 0
     /* 8EC14 8028DC14 BF800000 */ .float -1
     /* 8EC18 8028DC18 3F800000 */ .float 1
     /* 8EC1C 8028DC1C 00000000 */ .float 0
-enddlabel g_aDecalPreviewLightDirs
-
-nonmatching g_dwObjectTexScrollT
-
-dlabel g_dwObjectTexScrollT
-    /* 8EC20 8028DC20 3F800000 */ .word 0x3F800000
-enddlabel g_dwObjectTexScrollT
+    /* 8EC20 8028DC20 3F800000 */ .float 1
+enddlabel s_aPanelViewDirections
 
 nonmatching g_dwObjectTexScaleS
 
@@ -37110,17 +36796,17 @@ dlabel D_8028DC2C
     /* 8EC7C 8028DC7C 3F800000 */ .word 0x3F800000
 enddlabel D_8028DC2C
 
-nonmatching g_bObjectDirty23
+nonmatching g_bPaintShopInitialized
 
-dlabel g_bObjectDirty23
+dlabel g_bPaintShopInitialized
     /* 8EC80 8028DC80 00000000 */ .word 0x00000000
-enddlabel g_bObjectDirty23
+enddlabel g_bPaintShopInitialized
 
-nonmatching g_pszClearCurrentDecal
+nonmatching D_8028DC84
 
-dlabel g_pszClearCurrentDecal
+dlabel D_8028DC84
     /* 8EC84 8028DC84 802AA904 */ .word g_szClearCurrentDecal
-enddlabel g_pszClearCurrentDecal
+enddlabel D_8028DC84
 
 nonmatching g_pszClearAllDecals
 
@@ -37164,17 +36850,17 @@ dlabel g_pszVertically
     /* 8ECA0 8028DCA0 802AA9B4 */ .word g_szVertically
 enddlabel g_pszVertically
 
-nonmatching g_dwFontCharWidth
+nonmatching s_pMirrorSource
 
-dlabel g_dwFontCharWidth
+dlabel s_pMirrorSource
     /* 8ECA4 8028DCA4 00000000 */ .word 0x00000000
-enddlabel g_dwFontCharWidth
+enddlabel s_pMirrorSource
 
-nonmatching g_dwFontCharHeight
+nonmatching D_8028DCA8
 
-dlabel g_dwFontCharHeight
+dlabel D_8028DCA8
     /* 8ECA8 8028DCA8 2D28290F */ .word 0x2D28290F
-enddlabel g_dwFontCharHeight
+enddlabel D_8028DCA8
 
 nonmatching g_dwFontScaleX
 
@@ -37198,152 +36884,122 @@ dlabel g_dwFontColorRgba
 enddlabel g_dwFontColorRgba
 .align 2
 
-nonmatching g_dwFontLineHeight
+nonmatching D_8028DCB8
 
-dlabel g_dwFontLineHeight
+dlabel D_8028DCB8
     /* 8ECB8 8028DCB8 00000000 */ .word 0x00000000
-enddlabel g_dwFontLineHeight
+enddlabel D_8028DCB8
 
-nonmatching g_bFontMonospace
+nonmatching g_bPakDialogActive
 
-dlabel g_bFontMonospace
+dlabel g_bPakDialogActive
     /* 8ECBC 8028DCBC 00000000 */ .word 0x00000000
-enddlabel g_bFontMonospace
+enddlabel g_bPakDialogActive
 
-nonmatching g_bFontShadow
+nonmatching g_bPakFileNeedsCreate
 
-dlabel g_bFontShadow
+dlabel g_bPakFileNeedsCreate
     /* 8ECC0 8028DCC0 00000000 */ .word 0x00000000
-enddlabel g_bFontShadow
+enddlabel g_bPakFileNeedsCreate
 
-nonmatching g_dwFontShadowOffsetX
+nonmatching g_dwPakFileOffset
 
-dlabel g_dwFontShadowOffsetX
+dlabel g_dwPakFileOffset
     /* 8ECC4 8028DCC4 00000000 */ .word 0x00000000
-enddlabel g_dwFontShadowOffsetX
+enddlabel g_dwPakFileOffset
 
-nonmatching g_dwFontShadowOffsetY
+nonmatching g_aabColorEditorBars
 
-dlabel g_dwFontShadowOffsetY
+dlabel g_aabColorEditorBars
     /* 8ECC8 8028DCC8 FF000000 */ .word 0xFF000000
-enddlabel g_dwFontShadowOffsetY
+enddlabel g_aabColorEditorBars
 
-nonmatching g_dwFontCursorX
-
-dlabel g_dwFontCursorX
-    /* 8ECCC 8028DCCC FF000000 */ .word 0xFF000000
-enddlabel g_dwFontCursorX
-
-nonmatching g_bFontCursorVisible
-
-dlabel g_bFontCursorVisible
-    /* 8ECD0 8028DCD0 FF000000 */ .word 0xFF000000
-enddlabel g_bFontCursorVisible
-
-nonmatching g_pFontTexturePtr
-
-dlabel g_pFontTexturePtr
-    /* 8ECD4 8028DCD4 802AAE98 */ .word g_szColorEditorLabelR
-enddlabel g_pFontTexturePtr
-
-nonmatching g_pFontPalettePtr
-
-dlabel g_pFontPalettePtr
-    /* 8ECD8 8028DCD8 802AAE9C */ .word g_szColorEditorLabelG
-enddlabel g_pFontPalettePtr
-
-nonmatching g_pFontCharMapPtr
-
-dlabel g_pFontCharMapPtr
-    /* 8ECDC 8028DCDC 802AAEA0 */ .word g_szColorEditorLabelB
-enddlabel g_pFontCharMapPtr
-
-nonmatching g_bFontLoaded
-
-dlabel g_bFontLoaded
-    /* 8ECE0 8028DCE0 00000000 */ .word 0x00000000
-enddlabel g_bFontLoaded
-
-nonmatching g_pszRoundBrush
-
-dlabel g_pszRoundBrush
-    /* 8ECE4 8028DCE4 802AAEE4 */ .word g_szRoundBrush
-enddlabel g_pszRoundBrush
-
-nonmatching g_pszSquareBrush
-
-dlabel g_pszSquareBrush
-    /* 8ECE8 8028DCE8 802AAEF0 */ .word g_szSquareBrush
-enddlabel g_pszSquareBrush
-
-nonmatching g_pszNormalText
-
-dlabel g_pszNormalText
-    /* 8ECEC 8028DCEC 802AAF28 */ .word g_szNormalText
-enddlabel g_pszNormalText
-
-nonmatching g_pszDropShadowText
-
-dlabel g_pszDropShadowText
-    /* 8ECF0 8028DCF0 802AAF34 */ .word g_szDropShadowText
-enddlabel g_pszDropShadowText
-
-nonmatching g_pszFilledRectangle
-
-dlabel g_pszFilledRectangle
-    /* 8ECF4 8028DCF4 802AAFA0 */ .word g_szFilledRectangle
-enddlabel g_pszFilledRectangle
-
-nonmatching g_pszOutlinedRectangle
-
-dlabel g_pszOutlinedRectangle
-    /* 8ECF8 8028DCF8 802AAFB4 */ .word g_szOutlinedRectangle
-enddlabel g_pszOutlinedRectangle
-
-nonmatching g_pszFilledRoundRectangle
-
-dlabel g_pszFilledRoundRectangle
-    /* 8ECFC 8028DCFC 802AAFC8 */ .word g_szFilledRoundRectangle
-enddlabel g_pszFilledRoundRectangle
-
-nonmatching g_pszOutlinedRoundRectangle
-
-dlabel g_pszOutlinedRoundRectangle
-    /* 8ED00 8028DD00 802AAFE0 */ .word g_szOutlinedRoundRectangle
-enddlabel g_pszOutlinedRoundRectangle
-
-nonmatching g_pszFilledOval
-
-dlabel g_pszFilledOval
-    /* 8ED04 8028DD04 802AB024 */ .word g_szFilledOval
-enddlabel g_pszFilledOval
-
-nonmatching g_pszOutlinedOval
-
-dlabel g_pszOutlinedOval
-    /* 8ED08 8028DD08 802AB030 */ .word g_szOutlinedOval
-enddlabel g_pszOutlinedOval
-
-nonmatching g_pszFilledCircle
-
-dlabel g_pszFilledCircle
-    /* 8ED0C 8028DD0C 802AB040 */ .word g_szFilledCircle
-enddlabel g_pszFilledCircle
-
-nonmatching g_pszOutlinedCircle
-
-dlabel g_pszOutlinedCircle
-    /* 8ED10 8028DD10 802AB050 */ .word g_szOutlinedCircle
-enddlabel g_pszOutlinedCircle
-
-nonmatching D_8028DD14
+nonmatching D_8028DCCC
 
 /* Automatically generated and unreferenced pad */
-dlabel D_8028DD14
+dlabel D_8028DCCC
+    /* 8ECCC 8028DCCC FF000000 */ .word 0xFF000000
+    /* 8ECD0 8028DCD0 FF000000 */ .word 0xFF000000
+enddlabel D_8028DCCC
+
+nonmatching g_apszColorChannelNames
+
+dlabel g_apszColorChannelNames
+    /* 8ECD4 8028DCD4 802AAE98 */ .word g_szColorEditorLabelR
+enddlabel g_apszColorChannelNames
+
+nonmatching D_8028DCD8
+
+/* Automatically generated and unreferenced pad */
+dlabel D_8028DCD8
+    /* 8ECD8 8028DCD8 802AAE9C */ .word g_szColorEditorLabelG
+    /* 8ECDC 8028DCDC 802AAEA0 */ .word g_szColorEditorLabelB
+enddlabel D_8028DCD8
+
+nonmatching g_bColorEditorChannel
+
+dlabel g_bColorEditorChannel
+    /* 8ECE0 8028DCE0 00000000 */ .word 0x00000000
+enddlabel g_bColorEditorChannel
+
+nonmatching g_apszBrushStyleNames
+
+dlabel g_apszBrushStyleNames
+    /* 8ECE4 8028DCE4 802AAEE4 */ .word g_szRoundBrush
+enddlabel g_apszBrushStyleNames
+
+nonmatching D_8028DCE8
+
+/* Automatically generated and unreferenced pad */
+dlabel D_8028DCE8
+    /* 8ECE8 8028DCE8 802AAEF0 */ .word g_szSquareBrush
+enddlabel D_8028DCE8
+
+nonmatching g_apszTextStyleNames
+
+dlabel g_apszTextStyleNames
+    /* 8ECEC 8028DCEC 802AAF28 */ .word g_szNormalText
+enddlabel g_apszTextStyleNames
+
+nonmatching D_8028DCF0
+
+/* Automatically generated and unreferenced pad */
+dlabel D_8028DCF0
+    /* 8ECF0 8028DCF0 802AAF34 */ .word g_szDropShadowText
+enddlabel D_8028DCF0
+
+nonmatching g_apszRectStyleNames
+
+dlabel g_apszRectStyleNames
+    /* 8ECF4 8028DCF4 802AAFA0 */ .word g_szFilledRectangle
+enddlabel g_apszRectStyleNames
+
+nonmatching D_8028DCF8
+
+/* Automatically generated and unreferenced pad */
+dlabel D_8028DCF8
+    /* 8ECF8 8028DCF8 802AAFB4 */ .word g_szOutlinedRectangle
+    /* 8ECFC 8028DCFC 802AAFC8 */ .word g_szFilledRoundRectangle
+    /* 8ED00 8028DD00 802AAFE0 */ .word g_szOutlinedRoundRectangle
+enddlabel D_8028DCF8
+
+nonmatching g_apszOvalStyleNames
+
+dlabel g_apszOvalStyleNames
+    /* 8ED04 8028DD04 802AB024 */ .word g_szFilledOval
+enddlabel g_apszOvalStyleNames
+
+nonmatching D_8028DD08
+
+/* Automatically generated and unreferenced pad */
+dlabel D_8028DD08
+    /* 8ED08 8028DD08 802AB030 */ .word g_szOutlinedOval
+    /* 8ED0C 8028DD0C 802AB040 */ .word g_szFilledCircle
+    /* 8ED10 8028DD10 802AB050 */ .word g_szOutlinedCircle
     /* 8ED14 8028DD14 00000000 */ .word 0x00000000
-    /* 8ED18 8028DD18 802533F4 */ .word ApplyVisibleObjectColorPreset
+    /* 8ED18 8028DD18 802533F4 */ .word ResetBrushAndSlotHistory
     /* 8ED1C 8028DD1C 00000000 */ .word 0x00000000
-enddlabel D_8028DD14
+enddlabel D_8028DD08
 
 nonmatching g_texButtonBSmall
 

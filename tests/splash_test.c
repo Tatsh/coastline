@@ -236,7 +236,7 @@ void LoadTextureFromRom(Sprite *sprite) {
     (void)sprite;
     loads++;
 }
-void DrawTiledSprite(Sprite *s, s32 a, s32 b, s32 c) {
+void DrawSpriteTinted(Sprite *s, s32 a, s32 b, s32 c) {
     assert(s == &g_texBackground && a == 192 && !b && c == 64);
 }
 static s32 spriteX[4], spriteY[4], spriteCount;

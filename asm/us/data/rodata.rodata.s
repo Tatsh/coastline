@@ -10483,15 +10483,10 @@ enddlabel g_szColorEditorLabelR
 nonmatching g_szColorEditorLabelG
 
 dlabel g_szColorEditorLabelG
-    /* ABE9C 802AAE9C */ .short 0x4700
-enddlabel g_szColorEditorLabelG
-
-nonmatching g_wRaceReserved0
-
-dlabel g_wRaceReserved0
-    /* ABE9E 802AAE9E */ .short 0x0000
+    /* ABE9C 802AAE9C */ .asciz "G"
+    /* 47000000 */
 .align 2
-enddlabel g_wRaceReserved0
+enddlabel g_szColorEditorLabelG
 
 .align 2
 nonmatching g_szColorEditorLabelB
@@ -10512,21 +10507,21 @@ dlabel g_szFmtColorEditorValue
 enddlabel g_szFmtColorEditorValue
 
 .align 2
-nonmatching g_szOk7
+nonmatching g_szColorEditorOk
 
-dlabel g_szOk7
+dlabel g_szColorEditorOk
     /* ABEA8 802AAEA8 */ .asciz "%wwOK"
     /* 2577774F4B000000 */
-enddlabel g_szOk7
+enddlabel g_szColorEditorOk
 .align 2
 
 .align 2
-nonmatching g_szCancel9
+nonmatching g_szColorEditorCancel
 
-dlabel g_szCancel9
+dlabel g_szColorEditorCancel
     /* ABEB0 802AAEB0 */ .asciz "%wwCANCEL"
     /* 25777743414E43454C000000 */
-enddlabel g_szCancel9
+enddlabel g_szColorEditorCancel
 .align 2
 
 .align 2
@@ -10575,21 +10570,21 @@ enddlabel g_szSelectStyle
 .align 2
 
 .align 2
-nonmatching g_szSelect4
+nonmatching g_szSelectButton
 
-dlabel g_szSelect4
+dlabel g_szSelectButton
     /* ABF10 802AAF10 */ .asciz "%wwSELECT"
     /* 25777753454C454354000000 */
-enddlabel g_szSelect4
+enddlabel g_szSelectButton
 .align 2
 
 .align 2
-nonmatching g_szCancel10
+nonmatching g_szCancelButton
 
-dlabel g_szCancel10
+dlabel g_szCancelButton
     /* ABF1C 802AAF1C */ .asciz "%wwCANCEL"
     /* 25777743414E43454C000000 */
-enddlabel g_szCancel10
+enddlabel g_szCancelButton
 .align 2
 
 .align 2
@@ -10830,23 +10825,23 @@ enddlabel g_szNo2
     /* 00000000 */
 .align 2
 
-nonmatching g_qwRaceReserved6
+nonmatching g_dConstNeg0p9_802ab0c0
 
-dlabel g_qwRaceReserved6
+dlabel g_dConstNeg0p9_802ab0c0
     /* AC0C0 802AB0C0 BFECCCCCCCCCCCCD */ .double -0.900000000000000022
-enddlabel g_qwRaceReserved6
+enddlabel g_dConstNeg0p9_802ab0c0
 
-nonmatching g_qwRaceReserved7
+nonmatching g_dConst0p2_802ab0c8
 
-dlabel g_qwRaceReserved7
+dlabel g_dConst0p2_802ab0c8
     /* AC0C8 802AB0C8 3FC999999999999A */ .double 0.200000000000000011
-enddlabel g_qwRaceReserved7
+enddlabel g_dConst0p2_802ab0c8
 
-nonmatching g_dwRaceReserved97
+nonmatching g_fConst7p3_802ab0d0
 
-dlabel g_dwRaceReserved97
+dlabel g_fConst7p3_802ab0d0
     /* AC0D0 802AB0D0 40E9999A */ .float 7.300000191
-enddlabel g_dwRaceReserved97
+enddlabel g_fConst7p3_802ab0d0
 
 nonmatching switchdataD_802ab0d4
 
@@ -10863,11 +10858,11 @@ dlabel switchdataD_802ab0d4
     /* AC0F8 802AB0F8 802437E0 */ .word .L802437E0
 enddlabel switchdataD_802ab0d4
 
-nonmatching g_dwRaceReserved98
+nonmatching g_fConst0p2_802ab0fc
 
-dlabel g_dwRaceReserved98
+dlabel g_fConst0p2_802ab0fc
     /* AC0FC 802AB0FC 3E4CCCCD */ .float 0.200000003
-enddlabel g_dwRaceReserved98
+enddlabel g_fConst0p2_802ab0fc
 
 nonmatching switchdataD_802ab100
 
@@ -10951,17 +10946,17 @@ dlabel jtbl_802AB19C
     /* AC1CC 802AB1CC 8024AB6C */ .word .L8024AB6C
 enddlabel jtbl_802AB19C
 
-nonmatching g_dwRaceReserved99
+nonmatching g_fConst0p2_802ab1d0
 
-dlabel g_dwRaceReserved99
+dlabel g_fConst0p2_802ab1d0
     /* AC1D0 802AB1D0 3E4CCCCD */ .float 0.200000003
-enddlabel g_dwRaceReserved99
+enddlabel g_fConst0p2_802ab1d0
 
-nonmatching g_dwRaceReserved100
+nonmatching g_fConst0p2_802ab1d4
 
-dlabel g_dwRaceReserved100
+dlabel g_fConst0p2_802ab1d4
     /* AC1D4 802AB1D4 3E4CCCCD */ .float 0.200000003
-enddlabel g_dwRaceReserved100
+enddlabel g_fConst0p2_802ab1d4
 
 nonmatching switchdataD_802ab1d8
 
@@ -10978,35 +10973,35 @@ dlabel switchdataD_802ab1d8
     /* AC1FC 802AB1FC 80249C74 */ .word .L80249C74
 enddlabel switchdataD_802ab1d8
 
-nonmatching g_dwRaceReserved101
+nonmatching g_fConst0p2_802ab200
 
-dlabel g_dwRaceReserved101
+dlabel g_fConst0p2_802ab200
     /* AC200 802AB200 3E4CCCCD */ .float 0.200000003
-enddlabel g_dwRaceReserved101
+enddlabel g_fConst0p2_802ab200
 
-nonmatching g_dwRaceReserved102
+nonmatching g_fConst0p2_802ab204
 
-dlabel g_dwRaceReserved102
+dlabel g_fConst0p2_802ab204
     /* AC204 802AB204 3E4CCCCD */ .float 0.200000003
-enddlabel g_dwRaceReserved102
+enddlabel g_fConst0p2_802ab204
 
-nonmatching g_dwRaceReserved103
+nonmatching g_fConst0p1_802ab208
 
-dlabel g_dwRaceReserved103
+dlabel g_fConst0p1_802ab208
     /* AC208 802AB208 3DCCCCCD */ .float 0.1000000015
-enddlabel g_dwRaceReserved103
+enddlabel g_fConst0p1_802ab208
 
-nonmatching g_dwRaceReserved104
+nonmatching g_fConst0p05_802ab20c
 
-dlabel g_dwRaceReserved104
+dlabel g_fConst0p05_802ab20c
     /* AC20C 802AB20C 3D4CCCCD */ .float 0.05000000075
-enddlabel g_dwRaceReserved104
+enddlabel g_fConst0p05_802ab20c
 
-nonmatching g_dwRaceReserved105
+nonmatching g_fConst0p05_802ab210
 
-dlabel g_dwRaceReserved105
+dlabel g_fConst0p05_802ab210
     /* AC210 802AB210 3D4CCCCD */ .float 0.05000000075
-enddlabel g_dwRaceReserved105
+enddlabel g_fConst0p05_802ab210
 
 nonmatching switchdataD_802ab214
 
@@ -11037,17 +11032,17 @@ dlabel jtbl_802AB248
     /* AC25C 802AB25C 8024CFDC */ .word .L8024CFDC
 enddlabel jtbl_802AB248
 
-nonmatching g_dwRaceReserved106
+nonmatching g_fConst0p2_802ab260
 
-dlabel g_dwRaceReserved106
+dlabel g_fConst0p2_802ab260
     /* AC260 802AB260 3E4CCCCD */ .float 0.200000003
-enddlabel g_dwRaceReserved106
+enddlabel g_fConst0p2_802ab260
 
-nonmatching g_dwRaceReserved107
+nonmatching g_fConst0p2_802ab264
 
-dlabel g_dwRaceReserved107
+dlabel g_fConst0p2_802ab264
     /* AC264 802AB264 3E4CCCCD */ .float 0.200000003
-enddlabel g_dwRaceReserved107
+enddlabel g_fConst0p2_802ab264
     /* AC268 802AB268 00000000 */ .float 0
     /* AC26C 802AB26C 00000000 */ .float 0
 

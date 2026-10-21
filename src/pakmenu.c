@@ -138,7 +138,7 @@ void ProcessPakMenuScreen(void) {
     SetViewport(0, 0, g_dwScreenWidth, g_dwScreenHeight, TRUE);
     ClearDepthBuffer();
     ClearScreen(0, 0, 0);
-    DrawTiledSprite(&g_texBackground, 0x50, 8, 0x80);
+    DrawSpriteTinted(&g_texBackground, 0x50, 8, 0x80);
     DrawSpriteRegion(
         &g_texLogo, g_texLogo.originX + 0x18, g_texLogo.originY + 2, 0x208, 0x41, 0x80, 0x80, 0x80);
 

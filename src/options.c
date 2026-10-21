@@ -391,7 +391,7 @@ void ProcessDataSaveLoadMenu(void) {
     SetViewport(0, 0, g_dwScreenWidth, g_dwScreenHeight, TRUE);
     ClearDepthBuffer();
     ClearScreen(0, 0, 0);
-    DrawTiledSprite(&g_texBackground, 0x60, 0, 0x80);
+    DrawSpriteTinted(&g_texBackground, 0x60, 0, 0x80);
     DrawTexturedSprite(&g_texLogo, g_texLogo.originX, g_texLogo.originY + 8);
 
     switch (g_bSaveLoadChoice) {

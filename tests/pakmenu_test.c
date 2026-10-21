@@ -112,7 +112,7 @@ void ClearScreen(s32 r, s32 g, s32 b) {
 void FlushDisplayList(void) {
     gDisplayListPtr = list;
 }
-void DrawTiledSprite(Sprite *s, s32 a, s32 b, s32 c) {
+void DrawSpriteTinted(Sprite *s, s32 a, s32 b, s32 c) {
 }
 void DrawSpriteRegion(Sprite *s, s32 x, s32 y, s32 w, s32 h, s32 r, s32 g, s32 b) {
 }
