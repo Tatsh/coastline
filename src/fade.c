@@ -5,9 +5,9 @@
 #include "system.h"
 #include "util.h"
 
-/* The fog shows from this level and thickens no further than the next. */
-#define FOG_MIN_LEVEL 0.1f
-#define FOG_MAX_LEVEL 0.7f
+/* The glare shows from this level and grows no further than the next. */
+#define GLARE_MIN_LEVEL 0.1f
+#define GLARE_MAX_LEVEL 0.7f
 
 /* The frames the wipe blacks the uncovered screen after the screen has faded out. */
 #define BLACK_FRAMES 3
@@ -15,18 +15,18 @@
 /* The volume of a fade level of 1. */
 #define MAX_VOLUME 255.0
 
-void ResetScreenFog(void) {
-    g_fScreenFogLevel = 0.0f;
+void ResetHeadlightGlare(void) {
+    g_fHeadlightGlare = 0.0f;
 }
 
-void RenderScreenFog(void) {
+void RenderHeadlightGlare(void) {
     ViewportRect *rect;
 
-    if (g_fScreenFogLevel < FOG_MIN_LEVEL) {
+    if (g_fHeadlightGlare < GLARE_MIN_LEVEL) {
         return;
     }
-    if (g_fScreenFogLevel > FOG_MAX_LEVEL) {
-        g_fScreenFogLevel = FOG_MAX_LEVEL;
+    if (g_fHeadlightGlare > GLARE_MAX_LEVEL) {
+        g_fHeadlightGlare = GLARE_MAX_LEVEL;
     }
     gDPPipeSync(gDisplayListPtr++);
     gDPSetCycleType(gDisplayListPtr++, G_CYC_1CYCLE);
@@ -51,7 +51,7 @@ void RenderScreenFog(void) {
                       0,
                       0,
                       PRIMITIVE);
-    gDPSetPrimColor(gDisplayListPtr++, 0, 0, 0xFF, 0xFF, 0xFF, (s32)(255.0f * g_fScreenFogLevel));
+    gDPSetPrimColor(gDisplayListPtr++, 0, 0, 0xFF, 0xFF, 0xFF, (s32)(255.0f * g_fHeadlightGlare));
     gDPSetColorDither(gDisplayListPtr++, G_CD_DISABLE);
     rect = &g_aViewportRects[g_dwCurrentSplitScreenIndex];
     gDPFillRectangle(

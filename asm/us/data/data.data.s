@@ -30735,9 +30735,9 @@ dlabel g_mtxIdentity
     /* 8B8FC 8028A8FC 00000000 */ .word 0x00000000
 enddlabel g_mtxIdentity
 
-nonmatching g_aSegmentSetupDl
+nonmatching g_aClipRatioDisplayLists
 
-dlabel g_aSegmentSetupDl
+dlabel g_aClipRatioDisplayLists
     /* 8B900 8028A900 BC000404 */ .word 0xBC000404
     /* 8B904 8028A904 00000001 */ .word 0x00000001
     /* 8B908 8028A908 BC000C04 */ .word 0xBC000C04
@@ -30788,11 +30788,11 @@ dlabel g_aSegmentSetupDl
     /* 8B9BC 8028A9BC 0000FFFB */ .word 0x0000FFFB
     /* 8B9C0 8028A9C0 B8000000 */ .word 0xB8000000
     /* 8B9C4 8028A9C4 00000000 */ .word 0x00000000
-enddlabel g_aSegmentSetupDl
+enddlabel g_aClipRatioDisplayLists
 
-nonmatching g_VehicleBodySetupDl
+nonmatching D_8028A9C8
 
-dlabel g_VehicleBodySetupDl
+dlabel D_8028A9C8
     /* 8B9C8 8028A9C8 BC000404 */ .word 0xBC000404
     /* 8B9CC 8028A9CC 00000006 */ .word 0x00000006
     /* 8B9D0 8028A9D0 BC000C04 */ .word 0xBC000C04
@@ -30803,7 +30803,7 @@ dlabel g_VehicleBodySetupDl
     /* 8B9E4 8028A9E4 0000FFFA */ .word 0x0000FFFA
     /* 8B9E8 8028A9E8 B8000000 */ .word 0xB8000000
     /* 8B9EC 8028A9EC 00000000 */ .word 0x00000000
-enddlabel g_VehicleBodySetupDl
+enddlabel D_8028A9C8
 
 nonmatching g_DefaultLights
 
@@ -30820,11 +30820,11 @@ dlabel g_dwSpeedometerDigit1
 enddlabel g_dwSpeedometerDigit1
 .align 2
 
-nonmatching g_dwSpeedometerDigit2
+nonmatching D_8028A9F8
 
-dlabel g_dwSpeedometerDigit2
+dlabel D_8028A9F8
     /* 8B9F8 8028A9F8 EEEECC00 */ .word 0xEEEECC00
-enddlabel g_dwSpeedometerDigit2
+enddlabel D_8028A9F8
 
 nonmatching g_dwSpeedometerX
 
@@ -32451,11 +32451,11 @@ dlabel g_dwFadeRectBottom
     /* 8C74C 8028B74C 000000F0 */ .word 0x000000F0
 enddlabel g_dwFadeRectBottom
 
-nonmatching g_fScreenFogLevel
+nonmatching g_fHeadlightGlare
 
-dlabel g_fScreenFogLevel
+dlabel g_fHeadlightGlare
     /* 8C750 8028B750 00000000 */ .float 0
-enddlabel g_fScreenFogLevel
+enddlabel g_fHeadlightGlare
 
 nonmatching g_fFadeTarget
 
@@ -34185,7 +34185,7 @@ dlabel g_aSpeedometerNeedleDisplayList
     /* 8D378 8028C378 01040040 */ .word 0x01040040
     /* 8D37C 8028C37C 803519E0 */ .word g_SpeedometerNeedleMtx
     /* 8D380 8028C380 040081FF */ .word 0x040081FF
-    /* 8D384 8028C384 80351A20 */ .word g_wReplaySpeedX
+    /* 8D384 8028C384 80351A20 */ .word g_aSpeedometerNeedleVertices
     /* 8D388 8028C388 E7000000 */ .word 0xE7000000
     /* 8D38C 8028C38C 00000000 */ .word 0x00000000
     /* 8D390 8028C390 BA001402 */ .word 0xBA001402
@@ -60626,9 +60626,9 @@ dlabel g_adwSmallFontGlyphOffsets
     /* A2964 802A1964 00000000 */ .word 0x00000000
 enddlabel g_adwSmallFontGlyphOffsets
 
-nonmatching g_aVehicleFallbackEnvMapTexture
+nonmatching g_aVehicleHighlightTexture
 
-dlabel g_aVehicleFallbackEnvMapTexture
+dlabel g_aVehicleHighlightTexture
     /* A2968 802A1968 00000000 */ .word 0x00000000
     /* A296C 802A196C 00121000 */ .word 0x00121000
     /* A2970 802A1970 00000000 */ .word 0x00000000
@@ -61143,11 +61143,11 @@ dlabel g_aVehicleFallbackEnvMapTexture
     /* A3164 802A2164 00000001 */ .word 0x00000001
     /* A3168 802A2168 B8000000 */ .word 0xB8000000
     /* A316C 802A216C 00000000 */ .word 0x00000000
-enddlabel g_aVehicleFallbackEnvMapTexture
+enddlabel g_aVehicleHighlightTexture
 
-nonmatching g_aVehicleEnvMapTexture
+nonmatching g_aVehicleNightHighlightTexture
 
-dlabel g_aVehicleEnvMapTexture
+dlabel g_aVehicleNightHighlightTexture
     /* A3170 802A2170 00000000 */ .word 0x00000000
     /* A3174 802A2174 00000000 */ .word 0x00000000
     /* A3178 802A2178 00000000 */ .word 0x00000000
@@ -61662,7 +61662,7 @@ dlabel g_aVehicleEnvMapTexture
     /* A396C 802A296C 00000000 */ .word 0x00000000
     /* A3970 802A2970 B8000000 */ .word 0xB8000000
     /* A3974 802A2974 00000000 */ .word 0x00000000
-enddlabel g_aVehicleEnvMapTexture
+enddlabel g_aVehicleNightHighlightTexture
 
 nonmatching g_aTireSprayTexture
 

@@ -29,6 +29,19 @@ typedef struct {
     f32 fov;
 } CameraFrame;
 
+/**
+ * A texture of a model and its palette. Its fields join this structure as they are reconstructed.
+ */
+typedef struct {
+    u8 unreconstructed0[0x4];
+    /** The 16 colors of the palette, in RGBA 5551. */
+    u16 *palette;
+    u8 unreconstructed8[0x24 - 0x8];
+} ModelTexture;
+
+/** The clipping ratios from 1 to 6, each a display list that sets it. */
+#define CLIP_RATIOS 6
+
 /** The rectangle of the screen a view fills. */
 typedef struct {
     s32 x;
@@ -136,6 +149,67 @@ extern u32 g_adwLightRampColors[4];
 
 /** Whether each vehicle is in the view being drawn. @ghidraAddress USA: 0x80351c70 */
 extern s32 g_adwVehicleVisible[];
+
+/** The display lists that set each clipping ratio, from 1. @ghidraAddress USA: 0x8028a900 */
+extern Gfx g_aClipRatioDisplayLists[CLIP_RATIOS][5];
+
+/** The colour of the light of the sun, in parts. @ghidraAddress USA: 0x8028ab40 */
+extern u8 g_bDirLightR;
+
+/** @ghidraAddress USA: 0x8028ab44 */
+extern u8 g_bDirLightG;
+
+/** @ghidraAddress USA: 0x8028ab48 */
+extern u8 g_bDirLightB;
+
+/** The colour of the ambient light, in parts. @ghidraAddress USA: 0x8028ab4c */
+extern u8 g_bAmbientLightR;
+
+/** @ghidraAddress USA: 0x8028ab50 */
+extern u8 g_bAmbientLightG;
+
+/** @ghidraAddress USA: 0x8028ab54 */
+extern u8 g_bAmbientLightB;
+
+/** The least detailed level the vehicles are drawn at, from 0. @ghidraAddress USA: 0x8028aa9c */
+extern s32 g_dwVehicleLodBias;
+
+/**
+ * Whether the car of the camera is drawn from its cockpit and mirror cameras too.
+ *
+ * @ghidraAddress USA: 0x8028aa70
+ */
+extern s32 g_dwVehicleCullingDisabled;
+
+/** The triangles of the vehicles drawn this frame. @ghidraAddress USA: 0x8028aa3c */
+extern s32 g_dwStatVehicleTriangles;
+
+/**
+ * Scale a whole matrix down by the largest magnitude of its first three rows, plus 0.375, so that
+ * it fits the fixed point of the matrix the lighting is forced to.
+ *
+ * @param m The matrix.
+ * @ghidraAddress USA: 0x802174b4
+ */
+void NormalizeLightMatrix(f32 m[4][4]);
+
+/**
+ * Load a texture of a model into the texture memory and set up the tiles to draw it.
+ *
+ * @param index The index of the texture.
+ * @param textures The textures of the model.
+ * @ghidraAddress USA: 0x80217734
+ */
+void DrawTexturedTile(s32 index, ModelTexture *textures);
+
+/**
+ * How thick the fog is at a point of the world, in the view being drawn.
+ *
+ * @param point The point.
+ * @return The fog, from 0 to 1, or 0 when there is no weather.
+ * @ghidraAddress USA: 0x80218c8c
+ */
+f32 ComputeFogFactorAtPoint(Vec3f *point);
 
 /**
  * The largest absolute value of the first three rows of a matrix.

@@ -91,6 +91,7 @@ typedef union {
 #define G_RDPTILESYNC 0xE8
 #define G_SETTILE 0xF5
 #define G_SETENVCOLOR 0xFB
+#define G_SETFOGCOLOR 0xF8
 #define G_SETBLENDCOLOR 0xF9
 #define G_SETPRIMDEPTH 0xEE
 #define G_SETCOMBINE 0xFC
@@ -146,7 +147,7 @@ typedef union {
 #define G_CYC_1CYCLE (0 << G_MDSFT_CYCLETYPE)
 #define G_CYC_FILL (3 << G_MDSFT_CYCLETYPE)
 #define G_CYC_2CYCLE (1 << G_MDSFT_CYCLETYPE)
-#define G_CD_BAYER (2 << G_MDSFT_RGBDITHER)
+#define G_CD_NOISE (2 << G_MDSFT_RGBDITHER)
 #define G_CD_DISABLE (3 << G_MDSFT_RGBDITHER)
 #define G_AC_THRESHOLD (1 << G_MDSFT_ALPHACOMPARE)
 #define G_AC_DITHER (3 << G_MDSFT_ALPHACOMPARE)
@@ -187,6 +188,7 @@ typedef union {
 #define G_BL_CLR_MEM 1
 #define G_BL_A_IN 0
 #define G_BL_A_MEM 1
+#define G_BL_A_FOG 1
 #define G_BL_CLR_FOG 3
 #define G_BL_A_SHADE 2
 #define G_BL_1MA 0
@@ -461,6 +463,10 @@ typedef struct {
     gDisplayListWords(pkt,                                                                         \
                       _SHIFTL(G_SETENVCOLOR, 24, 8),                                               \
                       _SHIFTL(r, 24, 8) | _SHIFTL(g, 16, 8) | _SHIFTL(b, 8, 8) | _SHIFTL(a, 0, 8))
+#define gDPSetFogColor(pkt, r, g, b, a)                                                            \
+    gDisplayListWords(pkt,                                                                         \
+                      _SHIFTL(G_SETFOGCOLOR, 24, 8),                                               \
+                      _SHIFTL(r, 24, 8) | _SHIFTL(g, 16, 8) | _SHIFTL(b, 8, 8) | _SHIFTL(a, 0, 8))
 #define gDPSetTile(                                                                                \
     pkt, fmt, siz, line, tmem, tile, palette, cmt, maskt, shiftt, cms, masks, shifts)              \
     gDisplayListWords(pkt,                                                                         \
@@ -533,6 +539,26 @@ typedef struct {
         gDPLoadTLUTCmd(pkt, G_TX_LOADTILE, 255);                                                   \
         gDPPipeSync(pkt);                                                                          \
     } while (0)
+
+/** Load a palette of 16 colors into one of the sixteen palettes of the upper texture memory. */
+#define gDPLoadTLUT_pal16(pkt, pal, dram)                                                          \
+    do {                                                                                           \
+        gDPSetTextureImage(pkt, G_IM_FMT_RGBA, G_IM_SIZ_16b, 1, dram);                             \
+        gDPTileSync(pkt);                                                                          \
+        gDPSetTile(pkt, 0, 0, 0, 256 + (((pal) & 0xF) * 16), G_TX_LOADTILE, 0, 0, 0, 0, 0, 0, 0);  \
+        gDPLoadSync(pkt);                                                                          \
+        gDPLoadTLUTCmd(pkt, G_TX_LOADTILE, 15);                                                    \
+        gDPPipeSync(pkt);                                                                          \
+    } while (0)
+
+/** Place a tile of a size at the first specular highlight. */
+#define gDPSetHilite1Tile(pkt, tile, hilite, width, height)                                        \
+    gDPSetTileSize(pkt,                                                                            \
+                   tile,                                                                           \
+                   (hilite)->h.x1 & 0xFFF,                                                         \
+                   (hilite)->h.y1 & 0xFFF,                                                         \
+                   ((((width) - 1) * 4) + (hilite)->h.x1) & 0xFFF,                                 \
+                   ((((height) - 1) * 4) + (hilite)->h.y1) & 0xFFF)
 
 /** Load a rectangle of texels. The coordinates are in 10.2 fixed point. */
 #define gDPLoadTile(pkt, t, uls, ult, lrs, lrt)                                                    \

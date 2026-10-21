@@ -25,6 +25,32 @@
 /** The tracks a profile keeps records for: the five tracks and their mirrored versions. */
 #define PROFILE_RECORD_TRACKS 10
 
+/** The wheels of a vehicle. */
+#define VEHICLE_WHEELS 4
+
+/** The sides around a car that dent apart, by the direction of the blow. */
+#define VEHICLE_DENT_SIDES 8
+
+/** The levels of detail of the model of a car, the nearest first, and its display lists in each. */
+#define VEHICLE_LODS 3
+#define VEHICLE_DISPLAY_LISTS 10
+
+/** The display lists of the model of a car that the renderer draws. */
+enum {
+    /** The details drawn only near the camera, at the nearest level. */
+    VEHICLE_DL_NEAR_DETAIL = 3,
+    /** The paint, under the reflection of the sky. */
+    VEHICLE_DL_BODY,
+    /** The beams of the headlights, at night or in the rain. */
+    VEHICLE_DL_HEADLIGHT_BEAMS,
+    /** The underside, when the camera is below the car. */
+    VEHICLE_DL_UNDERSIDE,
+    /** The lit, textured parts, cut out by the alpha of their textures. */
+    VEHICLE_DL_TEXTURED = 8,
+    /** The parts that take the specular highlight. */
+    VEHICLE_DL_HIGHLIGHTED,
+};
+
 /**
  * The saved settings and progress of a player. Its fields join this structure as the routines that
  * use them are reconstructed.
@@ -65,22 +91,36 @@ extern PlayerProfile *g_pActiveProfile;
  * reconstructed.
  */
 typedef struct {
-    u8 unreconstructed0[0xB0];
+    /** The triangles of the model, which the statistics of the frame count. */
+    u32 triangleCount;
+    u8 unreconstructed4[0x14 - 0x4];
+    /** The textures of the model. */
+    ModelTexture *textures;
+    /** The display lists of each level of detail, by the VEHICLE_DL_ values. */
+    Gfx *displayLists[VEHICLE_LODS][VEHICLE_DISPLAY_LISTS];
+    u8 unreconstructed90[0xB0 - 0x90];
     /** How far forward of the vehicle the cockpit camera sits. */
     f32 cockpitForward;
     /** Half of how far forward of the vehicle the mirror camera sits. */
     f32 mirrorForward;
     /** How far above the vehicle the cockpit and mirror cameras sit. */
     f32 cockpitUp;
-    u8 unreconstructedBC[0xE0 - 0xBC];
-    /** The length and width of the car, which size its shadow. */
-    f32 length;
-    f32 width;
-    u8 unreconstructedE8[0xEC - 0xE8];
-    /** A front and a rear wheel of one side; those of the other side mirror them across. */
-    Vec3f frontWheel;
-    Vec3f rearWheel;
-    u8 unreconstructed104[0xDF88 - 0x104];
+    /** The display list of a wheel, and of a wheel in the snow. */
+    Gfx *wheelDisplayList;
+    u8 unreconstructedC0[0xC4 - 0xC0];
+    Gfx *snowWheelDisplayList;
+    u8 unreconstructedC8[0xE0 - 0xC8];
+    /**
+     * Where the four wheels are drawn. The physics takes the second and the third as a front and a
+     * rear wheel of one side and mirrors them across, and the shadow is sized by the x and y of the
+     * first.
+     */
+    Vec3f wheels[VEHICLE_WHEELS];
+    u8 unreconstructed110[0x11A - 0x110];
+    /** The textures whose palettes hold the colors of the headlights and of the rear lights. */
+    u8 headlightTexture;
+    u8 rearLightTexture;
+    u8 unreconstructed11C[0xDF88 - 0x11C];
 } VehicleModel;
 
 /** How a car shows the revolutions of its engine. */
@@ -128,7 +168,10 @@ typedef struct {
     /** The angles of the needle at 8000 revolutions a minute and at rest, in radians. */
     f32 needleFullAngle;
     f32 needleRestAngle;
-    u8 unreconstructed3C[0x60 - 0x3C];
+    u8 unreconstructed3C[0x58 - 0x3C];
+    /** The length and half the width of the shadow of the car on the stage of a menu. */
+    f32 shadowLength;
+    f32 shadowHalfWidth;
 } CarModel;
 
 /** The cars the players can choose. */
@@ -215,9 +258,6 @@ extern s32 g_dwNumActiveVehicles;
 
 /** The bit of the status of a racer whose vehicle is held out of gear. */
 #define RACER_HELD 0x1
-
-/** The wheels of a vehicle: the front two, then the rear two. */
-#define VEHICLE_WHEELS 4
 
 /** The ghost mode of a vehicle that other vehicles pass through and that fades back in. */
 #define VEHICLE_GHOST 2
@@ -418,7 +458,12 @@ typedef struct Vehicle {
     u8 unreconstructed1D84[0x1D88 - 0x1D84];
     /** The matrix of the spray, the identity until it is set. */
     Mtx sprayMtx;
-    u8 unreconstructed1DC8[0x1DD4 - 0x1DC8];
+    /** Whether the placed model under the vehicle is a tunnel, which darkens it. */
+    s32 inTunnel;
+    /** The heading of the camera of the vehicle, in radians, which turns the reflection of the sky.
+     */
+    f32 cameraHeading;
+    u8 unreconstructed1DD0[0x1DD4 - 0x1DD0];
     /** The controls: the steering, the pitch, the accelerator and the roll. */
     f32 steering;
     f32 pitchInput;
@@ -466,7 +511,11 @@ typedef struct Vehicle {
     u8 ghostMode;
     /** How solid the vehicle is drawn, from 0 to 1. */
     f32 opacity;
-    u8 unreconstructed2068[0x206C - 0x2068];
+    /**
+     * Whether the car is drawn in its other look, without its textured parts or the reflection of
+     * the sky, which a button switches once an unlock allows it.
+     */
+    s32 otherLook;
     /** The frames the vehicle has faced against the track. */
     s32 wrongWayFrames;
     /** The cell of the 32-unit grid of the track the vehicle is in. */
@@ -475,7 +524,11 @@ typedef struct Vehicle {
     u8 unreconstructed2072[0x2074 - 0x2072];
     PlayerInputState *input;
     VehicleModel *model;
-    u8 unreconstructed207C[0x2090 - 0x207C];
+    /** How deeply each of eight sides around the car has been dented; up to 0x100 it dents more. */
+    s16 dents[VEHICLE_DENT_SIDES];
+    /** A small offset, from -4 to 3, that changes with each dent so that dents vary. */
+    s16 dentJitter;
+    u8 unreconstructed208E[0x2090 - 0x208E];
 } Vehicle;
 
 /** @ghidraAddress USA: 0x8031b760 */

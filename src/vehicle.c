@@ -1231,15 +1231,15 @@ void InitVehiclePhysics(Vehicle *vehicle) {
         body->springRate = ((f32)vehicle->suspensionStiffness * 4.0f + 20.0f) * 16000.0f;
         body->damping = -3000.0f;
 
-        /* The wheels of the model, those of the other side mirrored. */
+        /* The rear and the front wheel of the model, and those of the other side mirrored. */
         InitWheelBody(
-            &vehicle->wheelBodies[0], vehicle->model->rearWheel.x, vehicle->model->rearWheel.y);
+            &vehicle->wheelBodies[0], vehicle->model->wheels[2].x, vehicle->model->wheels[2].y);
         InitWheelBody(
-            &vehicle->wheelBodies[2], vehicle->model->rearWheel.x, -vehicle->model->rearWheel.y);
+            &vehicle->wheelBodies[2], vehicle->model->wheels[2].x, -vehicle->model->wheels[2].y);
         InitWheelBody(
-            &vehicle->wheelBodies[1], vehicle->model->frontWheel.x, vehicle->model->frontWheel.y);
+            &vehicle->wheelBodies[1], vehicle->model->wheels[1].x, vehicle->model->wheels[1].y);
         InitWheelBody(
-            &vehicle->wheelBodies[3], vehicle->model->frontWheel.x, -vehicle->model->frontWheel.y);
+            &vehicle->wheelBodies[3], vehicle->model->wheels[1].x, -vehicle->model->wheels[1].y);
         body->wheels[0] = &vehicle->wheelBodies[0];
         body->wheels[1] = &vehicle->wheelBodies[2];
         body->wheels[2] = &vehicle->wheelBodies[1];

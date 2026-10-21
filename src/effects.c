@@ -910,7 +910,7 @@ void RenderExhaustAndTireSpray(void) {
     gDPSetColorDither(gDisplayListPtr++, G_CD_DISABLE);
     if (g_dwSnowMode) {
         /* The colour dither's bits, which leave the alpha dither at its pattern. */
-        gDPSetAlphaDither(gDisplayListPtr++, G_CD_BAYER);
+        gDPSetAlphaDither(gDisplayListPtr++, G_CD_NOISE);
         gDPSetRenderMode(gDisplayListPtr++,
                          Z_CMP | IM_RD | CVG_DST_SAVE | ZMODE_XLU | FORCE_BL |
                              GBL_c1(G_BL_CLR_IN, G_BL_A_IN, G_BL_CLR_MEM, G_BL_1MA),

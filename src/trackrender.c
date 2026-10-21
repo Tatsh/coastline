@@ -336,8 +336,9 @@ void RenderTrackInstance(s32 index, s32 vehicles, s32 deferred) {
         if (widthScale < 0.5f) {
             widthScale = 0.5f;
         }
-        lengthScale = SHADOW_LENGTH_SCALE / vehicle->model->length / lengthScale;
-        widthScale = SHADOW_WIDTH_SCALE / vehicle->model->width / widthScale;
+        /* The first wheel of the model sizes the shadow. */
+        lengthScale = SHADOW_LENGTH_SCALE / vehicle->model->wheels[0].x / lengthScale;
+        widthScale = SHADOW_WIDTH_SCALE / vehicle->model->wheels[0].y / widthScale;
         Vec3fNormalize(&g_vShadowForward);
         alongX = g_vShadowForward.x * lengthScale;
         alongY = -g_vShadowForward.y * lengthScale;

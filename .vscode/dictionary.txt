@@ -182,6 +182,7 @@ litob
 llcvt
 lnext
 loadtlut
+lods
 loguy
 lookat
 lookathil
@@ -331,6 +332,7 @@ setblendcolor
 setcimg
 setcompare
 seteventmesg
+setfogcolor
 setfpccsr
 setgeometrymode
 setglobalintmask
@@ -387,6 +389,7 @@ tlbr
 tlbwi
 tlnext
 tlut
+tluts
 tolower
 toupper
 trackrender
@@ -409,6 +412,7 @@ urllib
 urlopen
 vars
 vecmath
+vehiclerender
 vendored
 venv
 viblack

@@ -2528,9 +2528,9 @@ nonmatching g_SpeedometerNeedleMtx, 0x40
 dlabel g_SpeedometerNeedleMtx
     /* 803519E0 */ .space 0x40
 
-nonmatching g_wReplaySpeedX, 0x2
+nonmatching g_aSpeedometerNeedleVertices, 0x2
 
-dlabel g_wReplaySpeedX
+dlabel g_aSpeedometerNeedleVertices
     /* 80351A20 */ .space 0x02
 
 nonmatching g_wReplaySpeedY, 0x2
@@ -2595,9 +2595,9 @@ nonmatching g_adwVehicleInViewRange, 0x10
 dlabel g_adwVehicleInViewRange
     /* 80351C80 */ .space 0x10
 
-nonmatching g_anVehicleLodBias, 0x10
+nonmatching g_anVehicleLod, 0x10
 
-dlabel g_anVehicleLodBias
+dlabel g_anVehicleLod
     /* 80351C90 */ .space 0x10
 
 nonmatching g_apVehicleModelMatrix, 0x10
@@ -2626,9 +2626,9 @@ nonmatching D_80351D04, 0x4
 dlabel D_80351D04
     /* 80351D04 */ .space 0x04
 
-nonmatching g_fVehicleLightDirX, 0x4
+nonmatching g_vecVehicleLightDir, 0x4
 
-dlabel g_fVehicleLightDirX
+dlabel g_vecVehicleLightDir
     /* 80351D08 */ .space 0x04
 
 nonmatching g_fVehicleLightDirY, 0x4
@@ -2647,9 +2647,9 @@ nonmatching D_80351D14, 0x4
 dlabel D_80351D14
     /* 80351D14 */ .space 0x04
 
-nonmatching g_fVehicleLightDirBlendX, 0x4
+nonmatching g_vecVehicleHiliteDir, 0x4
 
-dlabel g_fVehicleLightDirBlendX
+dlabel g_vecVehicleHiliteDir
     /* 80351D18 */ .space 0x04
 
 nonmatching g_fVehicleLightDirBlendY, 0x4

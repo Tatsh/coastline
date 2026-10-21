@@ -24,8 +24,12 @@ extern s32 g_dwFadeRectTop;
 /** @ghidraAddress USA: 0x8028b74c */
 extern s32 g_dwFadeRectBottom;
 
-/** How thick the fog over the view is, from 0 to 1. @ghidraAddress USA: 0x8028b750 */
-extern f32 g_fScreenFogLevel;
+/**
+ * How much the headlights shining at the camera whiten the view, from 0 to 1.
+ *
+ * @ghidraAddress USA: 0x8028b750
+ */
+extern f32 g_fHeadlightGlare;
 
 /** The level the screen fades to. @ghidraAddress USA: 0x8028b754 */
 extern f32 g_fFadeTarget;
@@ -94,18 +98,19 @@ extern s32 g_adwFadeRectLeftPerBuffer[2];
 extern s32 g_adwFadeRectRightPerBuffer[2];
 
 /**
- * Clear the fog over the view.
+ * Clear the glare of the headlights over the view.
  *
  * @ghidraAddress USA: 0x80223470
  */
-void ResetScreenFog(void);
+void ResetHeadlightGlare(void);
 
 /**
- * Draw the fog over the view as white of the opacity of its level, when it is thick enough.
+ * Draw the glare of the headlights over the view as white of its opacity, when it is strong
+ * enough.
  *
  * @ghidraAddress USA: 0x80223480
  */
-void RenderScreenFog(void);
+void RenderHeadlightGlare(void);
 
 /**
  * Fade the screen towards a level over a time in seconds. A fade out asked for while the screen

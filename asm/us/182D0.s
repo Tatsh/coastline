@@ -2680,8 +2680,8 @@ glabel InitDisplayMode
     /* 1A924 80219924 AC6F0000 */  sw         $t7, 0x0($v1)
     /* 1A928 80219928 AC580000 */  sw         $t8, 0x0($v0)
     /* 1A92C 8021992C 8DCEA8A4 */  lw         $t6, %lo(g_dwDisplayModeIndex)($t6)
-    /* 1A930 80219930 3C0F8029 */  lui        $t7, %hi(g_aSegmentSetupDl)
-    /* 1A934 80219934 25EFA900 */  addiu      $t7, $t7, %lo(g_aSegmentSetupDl)
+    /* 1A930 80219930 3C0F8029 */  lui        $t7, %hi(g_aClipRatioDisplayLists)
+    /* 1A934 80219934 25EFA900 */  addiu      $t7, $t7, %lo(g_aClipRatioDisplayLists)
     /* 1A938 80219938 000EC880 */  sll        $t9, $t6, 2
     /* 1A93C 8021993C 032EC821 */  addu       $t9, $t9, $t6
     /* 1A940 80219940 0019C8C0 */  sll        $t9, $t9, 3

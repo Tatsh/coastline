@@ -4078,7 +4078,7 @@ glabel ProcessRaceHud
     /* 4F18 80203F18 00003825 */   or        $a3, $zero, $zero
     /* 4F1C 80203F1C 0C08BE5A */  jal        RenderSkybox
     /* 4F20 80203F20 00000000 */   nop
-    /* 4F24 80203F24 0C088D1C */  jal        ResetScreenFog
+    /* 4F24 80203F24 0C088D1C */  jal        ResetHeadlightGlare
     /* 4F28 80203F28 00000000 */   nop
     /* 4F2C 80203F2C 0C08B527 */  jal        BuildVisibleGrid
     /* 4F30 80203F30 00000000 */   nop
@@ -4292,7 +4292,7 @@ glabel ProcessRaceHud
     /* 5234 80204234 01114023 */  subu       $t0, $t0, $s1
     /* 5238 80204238 000840C0 */  sll        $t0, $t0, 3
     /* 523C 8020423C 010BC021 */  addu       $t8, $t0, $t3
-    /* 5240 80204240 0C08CBB5 */  jal        RenderVehicleBody
+    /* 5240 80204240 0C08CBB5 */  jal        RenderVehicleHeadlightBeams
     /* 5244 80204244 8F040060 */   lw        $a0, 0x60($t8)
   .L80204248:
     /* 5248 80204248 3C0D8029 */  lui        $t5, %hi(g_dwNumVehicles)
@@ -4371,7 +4371,7 @@ glabel ProcessRaceHud
     /* 535C 8020435C 24060082 */  addiu      $a2, $zero, 0x82
     /* 5360 80204360 0C08B5F8 */  jal        AddTimingMarker
     /* 5364 80204364 00003825 */   or        $a3, $zero, $zero
-    /* 5368 80204368 0C088D20 */  jal        RenderScreenFog
+    /* 5368 80204368 0C088D20 */  jal        RenderHeadlightGlare
     /* 536C 8020436C 00000000 */   nop
     /* 5370 80204370 00105880 */  sll        $t3, $s0, 2
     /* 5374 80204374 3C188032 */  lui        $t8, %hi(g_aViewportRects)
@@ -4587,7 +4587,7 @@ glabel ProcessRaceHud
     /* 56A0 802046A0 00003825 */   or        $a3, $zero, $zero
     /* 56A4 802046A4 0C08BE5A */  jal        RenderSkybox
     /* 56A8 802046A8 00000000 */   nop
-    /* 56AC 802046AC 0C088D1C */  jal        ResetScreenFog
+    /* 56AC 802046AC 0C088D1C */  jal        ResetHeadlightGlare
     /* 56B0 802046B0 00000000 */   nop
     /* 56B4 802046B4 0C08B527 */  jal        BuildVisibleGrid
     /* 56B8 802046B8 00000000 */   nop
@@ -4796,7 +4796,7 @@ glabel ProcessRaceHud
     /* 59B0 802049B0 5420FFE5 */  bnel       $at, $zero, .L80204948
     /* 59B4 802049B4 00117100 */   sll       $t6, $s1, 4
   .L802049B8:
-    /* 59B8 802049B8 0C088D20 */  jal        RenderScreenFog
+    /* 59B8 802049B8 0C088D20 */  jal        RenderHeadlightGlare
     /* 59BC 802049BC 00000000 */   nop
     /* 59C0 802049C0 240D00FF */  addiu      $t5, $zero, 0xFF
     /* 59C4 802049C4 AFAD0010 */  sw         $t5, 0x10($sp)

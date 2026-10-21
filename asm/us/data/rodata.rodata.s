@@ -8423,65 +8423,65 @@ enddlabel g_fSkyboxDepthScale
     /* AAEC8 802A9EC8 00000000 */ .float 0
     /* AAECC 802A9ECC 00000000 */ .float 0
 
-nonmatching g_fVehicleModelScale
+nonmatching g_fConstInv255_802a9ed0
 
-dlabel g_fVehicleModelScale
+dlabel g_fConstInv255_802a9ed0
     /* AAED0 802A9ED0 3B808081 */ .float 0.003921568859
-enddlabel g_fVehicleModelScale
+enddlabel g_fConstInv255_802a9ed0
 
-nonmatching g_fConstInv255
+nonmatching g_fConstInv255_802a9ed4
 
-dlabel g_fConstInv255
+dlabel g_fConstInv255_802a9ed4
     /* AAED4 802A9ED4 3B808081 */ .float 0.003921568859
-enddlabel g_fConstInv255
+enddlabel g_fConstInv255_802a9ed4
 
-nonmatching g_dwRaceReserved36
+nonmatching g_fConst0p1_802a9ed8
 
-dlabel g_dwRaceReserved36
+dlabel g_fConst0p1_802a9ed8
     /* AAED8 802A9ED8 3DCCCCCD */ .float 0.1000000015
-enddlabel g_dwRaceReserved36
+enddlabel g_fConst0p1_802a9ed8
 
-nonmatching g_fConst1em4
+nonmatching g_fConst1em4_802a9edc
 
-dlabel g_fConst1em4
+dlabel g_fConst1em4_802a9edc
     /* AAEDC 802A9EDC 38D1B717 */ .float 9.999999747e-05
-enddlabel g_fConst1em4
+enddlabel g_fConst1em4_802a9edc
 
-nonmatching g_fConstInvPi
+nonmatching g_fConstInvPi_802a9ee0
 
-dlabel g_fConstInvPi
+dlabel g_fConstInvPi_802a9ee0
     /* AAEE0 802A9EE0 3EA2F983 */ .float 0.3183098733
-enddlabel g_fConstInvPi
+enddlabel g_fConstInvPi_802a9ee0
 
-nonmatching g_fScreenFogDotThreshold
+nonmatching g_fConst0p95_802a9ee4
 
-dlabel g_fScreenFogDotThreshold
+dlabel g_fConst0p95_802a9ee4
     /* AAEE4 802A9EE4 3F733333 */ .float 0.9499999881
-enddlabel g_fScreenFogDotThreshold
+enddlabel g_fConst0p95_802a9ee4
 
-nonmatching g_fScreenFogScale
+nonmatching g_fConst750_802a9ee8
 
-dlabel g_fScreenFogScale
+dlabel g_fConst750_802a9ee8
     /* AAEE8 802A9EE8 443B8000 */ .float 750
-enddlabel g_fScreenFogScale
+enddlabel g_fConst750_802a9ee8
 
-nonmatching g_dwRaceReserved41
+nonmatching g_fConstTwoPiThirtieth_802a9eec
 
-dlabel g_dwRaceReserved41
+dlabel g_fConstTwoPiThirtieth_802a9eec
     /* AAEEC 802A9EEC 3E567750 */ .float 0.2094395161
-enddlabel g_dwRaceReserved41
+enddlabel g_fConstTwoPiThirtieth_802a9eec
 
-nonmatching g_dwRaceReserved42
+nonmatching g_fConst0p18_802a9ef0
 
-dlabel g_dwRaceReserved42
+dlabel g_fConst0p18_802a9ef0
     /* AAEF0 802A9EF0 3E3851EC */ .float 0.1800000072
-enddlabel g_dwRaceReserved42
+enddlabel g_fConst0p18_802a9ef0
 
-nonmatching g_fPi
+nonmatching g_fConstPi_802a9ef4
 
-dlabel g_fPi
+dlabel g_fConstPi_802a9ef4
     /* AAEF4 802A9EF4 40490FDB */ .float 3.141592741
-enddlabel g_fPi
+enddlabel g_fConstPi_802a9ef4
     /* AAEF8 802A9EF8 00000000 */ .float 0
     /* AAEFC 802A9EFC 00000000 */ .float 0
 
