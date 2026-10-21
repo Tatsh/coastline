@@ -144,7 +144,6 @@ void UnusedScreenFadeStub(void) {
                      (g_dwScreenHeight << g_dwScreenScaleShift) - 1)
 
 void ApplyScreenFade(void) {
-    s32 coveredLeft;
     s32 left;
     s32 right;
 
@@ -182,13 +181,12 @@ void ApplyScreenFade(void) {
     gDPSetPrimColor(gDisplayListPtr++, 0xFF, 0xFF, 0, 0, 0, 0);
 
     /* Black from where the other framebuffer was covered to the left edge of the picture. */
-    coveredLeft = g_dwFadeRectLeft;
-    if (coveredLeft) {
+    if (g_dwFadeRectLeft) {
         left = g_adwFadeRectLeftPerBuffer[g_dwFrameBufferIndex ^ 1];
-        if (coveredLeft < left) {
+        if (g_dwFadeRectLeft < left) {
             left = 0;
         }
-        right = coveredLeft;
+        right = g_dwFadeRectLeft;
         if (left) {
             left--;
         }
@@ -199,16 +197,19 @@ void ApplyScreenFade(void) {
     }
 
     /* Black right of the picture, or the whole screen once faded out, for a few frames. */
-    left = g_dwFadeRectRight;
-    right = g_dwScreenWidth;
-    if (left < right) {
+    if (g_dwFadeRectRight < g_dwScreenWidth) {
+        left = g_dwFadeRectRight;
+        right = g_dwScreenWidth;
         if (g_dwScreenFadeFramesRemaining) {
             g_dwScreenFadeFramesRemaining--;
             FillScreenColumns(left, right);
         }
-    } else if (g_fFadeLevel == 0.0f && g_dwScreenFadeFramesRemaining) {
-        g_dwScreenFadeFramesRemaining--;
-        FillScreenColumns(0, right);
+    } else if (g_fFadeLevel == 0.0f) {
+        right = g_dwScreenWidth;
+        if (g_dwScreenFadeFramesRemaining) {
+            g_dwScreenFadeFramesRemaining--;
+            FillScreenColumns(0, right);
+        }
     }
     gDPPipeSync(gDisplayListPtr++);
 }
@@ -250,35 +251,33 @@ void DrawScreenFadeOverlay(float level) {
 
 void UpdateFadeTransitions(void) {
     f32 rate;
-    s32 left;
-    s32 right;
     s32 move;
 
-    if (g_dwFadeSkipFrame) {
-        g_dwFadeSkipFrame = 0;
-    } else if (g_fFadeTarget != g_fFadeLevel) {
-        rate = g_fFadeRate;
-        g_fFadeLevel = g_fFadeLevel + rate * g_fFrameDeltaTime;
-        if (rate < 0.0f) {
-            if (g_fFadeLevel < g_fFadeTarget) {
+    if (!g_dwFadeSkipFrame) {
+        if (g_fFadeLevel != g_fFadeTarget) {
+            rate = g_fFadeRate;
+            g_fFadeLevel += rate * g_fFrameDeltaTime;
+            if (rate < 0.0f) {
+                if (g_fFadeLevel < g_fFadeTarget) {
+                    g_fFadeLevel = g_fFadeTarget;
+                }
+            } else if (g_fFadeTarget <= g_fFadeLevel) {
                 g_fFadeLevel = g_fFadeTarget;
-            }
-        } else if (g_fFadeTarget <= g_fFadeLevel) {
-            g_fFadeLevel = g_fFadeTarget;
-            if (g_dwFadeAutoReverse) {
-                g_fFadeTarget = 0.0f;
-                g_fFadeRate = -rate;
-                g_dwFadeAutoReverse = 0;
+                if (g_dwFadeAutoReverse) {
+                    g_fFadeTarget = 0.0f;
+                    g_fFadeRate = -rate;
+                    g_dwFadeAutoReverse = 0;
+                }
             }
         }
+    } else {
+        g_dwFadeSkipFrame = 0;
     }
 
     /* Keep the edges this framebuffer is drawn with, and move them with the level. */
     rate = g_fFadeRate;
-    left = g_dwFadeRectLeft;
-    g_adwFadeRectLeftPerBuffer[g_dwFrameBufferIndex] = left;
-    right = g_dwFadeRectRight;
-    g_adwFadeRectRightPerBuffer[g_dwFrameBufferIndex] = right;
+    g_adwFadeRectLeftPerBuffer[g_dwFrameBufferIndex] = g_dwFadeRectLeft;
+    g_adwFadeRectRightPerBuffer[g_dwFrameBufferIndex] = g_dwFadeRectRight;
     g_dwFadeRectTop = 0;
     g_dwFadeRectBottom = g_dwScreenHeight;
     if (rate > 0.0f) {
@@ -287,10 +286,11 @@ void UpdateFadeTransitions(void) {
         g_dwFadeRectRight = ((s32)(g_dwScreenWidth * g_fFadeLevel) + 3) & ~3;
     } else if (rate < 0.0f) {
         /* Fading out, black comes in from the left and pushes the picture right. */
-        move = (g_dwScreenWidth - (s32)(g_dwScreenWidth * g_fFadeLevel) - left + 3) & ~3;
-        g_dwFadeRectLeft = left + move;
-        g_dwFadeRectRight = right + move;
-        if (g_dwScreenWidth < right + move) {
+        move =
+            (g_dwScreenWidth - (s32)(g_dwScreenWidth * g_fFadeLevel) - g_dwFadeRectLeft + 3) & ~3;
+        g_dwFadeRectLeft = g_dwFadeRectLeft + move;
+        g_dwFadeRectRight = g_dwFadeRectRight + move;
+        if (g_dwScreenWidth < g_dwFadeRectRight) {
             g_dwFadeRectRight = g_dwScreenWidth;
         }
     } else {
@@ -298,31 +298,35 @@ void UpdateFadeTransitions(void) {
         g_dwFadeRectRight = g_dwScreenWidth;
     }
 
-    if (g_dwSfxFadeSkipFrame) {
-        g_dwSfxFadeSkipFrame = 0;
-    } else if (g_fSfxFadeTarget != g_fSfxFadeCurrent) {
-        g_fSfxFadeCurrent = g_fSfxFadeCurrent + g_fSfxFadeSpeed * g_fFrameDeltaTime;
-        if (g_fSfxFadeSpeed < 0.0f) {
-            if (g_fSfxFadeCurrent < g_fSfxFadeTarget) {
+    if (!g_dwSfxFadeSkipFrame) {
+        if (g_fSfxFadeCurrent != g_fSfxFadeTarget) {
+            g_fSfxFadeCurrent += g_fSfxFadeSpeed * g_fFrameDeltaTime;
+            if (g_fSfxFadeSpeed < 0.0f) {
+                if (g_fSfxFadeCurrent < g_fSfxFadeTarget) {
+                    g_fSfxFadeCurrent = g_fSfxFadeTarget;
+                }
+            } else if (g_fSfxFadeTarget < g_fSfxFadeCurrent) {
                 g_fSfxFadeCurrent = g_fSfxFadeTarget;
             }
-        } else if (g_fSfxFadeTarget < g_fSfxFadeCurrent) {
-            g_fSfxFadeCurrent = g_fSfxFadeTarget;
         }
+    } else {
+        g_dwSfxFadeSkipFrame = 0;
     }
     g_bSfxVolume = (s32)((f64)g_fSfxFadeCurrent * MAX_VOLUME);
 
-    if (g_dwMusicFadeSkipFrame) {
-        g_dwMusicFadeSkipFrame = 0;
-    } else if (g_fMusicFadeTarget != g_fMusicFadeCurrent) {
-        g_fMusicFadeCurrent = g_fMusicFadeCurrent + g_fMusicFadeSpeed * g_fFrameDeltaTime;
-        if (g_fMusicFadeSpeed < 0.0f) {
-            if (g_fMusicFadeCurrent < g_fMusicFadeTarget) {
+    if (!g_dwMusicFadeSkipFrame) {
+        if (g_fMusicFadeCurrent != g_fMusicFadeTarget) {
+            g_fMusicFadeCurrent += g_fMusicFadeSpeed * g_fFrameDeltaTime;
+            if (g_fMusicFadeSpeed < 0.0f) {
+                if (g_fMusicFadeCurrent < g_fMusicFadeTarget) {
+                    g_fMusicFadeCurrent = g_fMusicFadeTarget;
+                }
+            } else if (g_fMusicFadeTarget < g_fMusicFadeCurrent) {
                 g_fMusicFadeCurrent = g_fMusicFadeTarget;
             }
-        } else if (g_fMusicFadeTarget < g_fMusicFadeCurrent) {
-            g_fMusicFadeCurrent = g_fMusicFadeTarget;
         }
+    } else {
+        g_dwMusicFadeSkipFrame = 0;
     }
     g_bMusicVolume = (s32)((f64)g_fMusicFadeCurrent * MAX_VOLUME);
 }
