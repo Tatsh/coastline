@@ -1,5 +1,6 @@
 abicalls
 abiflags
+acmux
 activebank
 adbl
 addi
@@ -28,7 +29,9 @@ buildsystems
 bytearray
 bzero
 cartrominit
+ccmux
 chnl
+cleargeometrymode
 colc
 contpfs
 contramread
@@ -40,6 +43,7 @@ coveragerc
 createmesgqueue
 createthread
 ctype
+cycletype
 dacrate
 daddu
 dashcam
@@ -103,6 +107,7 @@ glabel
 globl
 graphviz
 guint
+gwords
 handoff
 hasm
 hdlr
@@ -113,6 +118,7 @@ hinstance
 histk
 iconerror
 icsum
+immp
 infblock
 infcodes
 inffast
@@ -176,11 +182,13 @@ mabi
 mainmenu
 mainpage
 maptlbrdb
+maskt
 math
 mathutil
 maxcontrollers
 mdebug
 mdfile
+mdsft
 memcpy
 memset
 mesg
@@ -189,6 +197,7 @@ mflo
 minode
 mktemp
 moddi
+modelview
 motorstartbuf
 motorstopbuf
 mpal
@@ -245,6 +254,7 @@ pipx
 pirawdma
 pirawread
 playerselect
+popmtx
 preapproved
 prenmi
 probetlb
@@ -261,11 +271,15 @@ ramreadformat
 rdbread
 rdbwrite
 rdparty
+rdppipesync
+rdptilesync
 rdram
 recvmesg
 reflow
 regen
 reginfo
+rendermode
+rendertile
 reques
 resetglobalintmask
 resf
@@ -282,6 +296,7 @@ sendmesg
 setcompare
 seteventmesg
 setfpccsr
+setgeometrymode
 setglobalintmask
 setintmask
 setjmp
@@ -290,9 +305,12 @@ setthreadpri
 settimer
 shellcheck
 shellformat
+shiftl
+shiftt
 siint
 simgr
 sinf
+skybox
 sltu
 snapcraft
 spimdisasm
@@ -314,6 +332,8 @@ syms
 syncprintf
 tagfile
 tatsh
+textfilt
+textlod
 thiscall
 timerintr
 tlbp
@@ -374,6 +394,8 @@ xstdio
 yarnrc
 yieldthread
 yscale
+zbuffer
 zizmor
+zmode
 zutil
 Ångström

@@ -80,7 +80,7 @@ if(TGR_PLATFORM STREQUAL "n64")
   # The game code of the Nintendo 64 releases. A routine joins this list when its body moves from
   # the assembly of the original into C.
   add_library(coastline_game STATIC audiomix.s debugtext.c game.c heap.c mainmenu.c mathutil.c playerselect.c
-                                    rumble.c util.c weatherselect.c)
+                                    rumble.c sky.c util.c weatherselect.c)
   target_link_libraries(coastline_game PRIVATE coastline_common)
   list(APPEND COASTLINE_LIBRARIES coastline_game)
 endif()

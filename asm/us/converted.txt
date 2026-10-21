@@ -17,6 +17,7 @@ FloatToInt
 GetHeapCurrentAddress
 InitBitmapText
 InitGameAndShowMenus
+IsSkyFogFilled
 IsWeatherSelectable
 MainMenuEntry
 MarkModelNodes
@@ -30,6 +31,7 @@ ProcessMainMenu
 ProcessPlayerCountSelect
 ProcessWeatherSelect
 QuickSort
+RenderSkybox
 ResetAllPlayers
 ResetFrameBlocks
 ResetHeap

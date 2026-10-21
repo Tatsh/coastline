@@ -6,6 +6,7 @@
  * The track data a race loads below the program.
  */
 
+#include <PR/gbi.h>
 #include <PR/ultratypes.h>
 
 /** A node of a model tree. */
@@ -27,7 +28,10 @@ typedef struct ModelNode {
 
 /** The header of the loaded track. Its fields join this structure as they are reconstructed. */
 typedef struct {
-    u8 unreconstructed0[0x60];
+    u8 unreconstructed0[0x50];
+    /** The display list of the sky, or NULL for a sky of the fog colour. */
+    Gfx *skyDisplayList;
+    u8 unreconstructed54[0x60 - 0x54];
     /** The placed models, 0x54 bytes each. */
     void *instances;
     s32 instanceCount;
