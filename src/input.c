@@ -84,11 +84,11 @@ void CheatToggleBilinearFilter(void) {
 
 void ProcessInputCommandBuffer(PlayerInputState *state) {
     u16 buttons = (u16)state->buttons;
-    u16 *code;
     u16 *history;
     u16 *sequence;
     s32 i;
     s32 j;
+    s32 k;
 
     if (buttons != state->history[state->historyIndex]) {
         state->historyIndex = (state->historyIndex - 1) & (INPUT_HISTORY_SIZE - 1);
@@ -97,9 +97,9 @@ void ProcessInputCommandBuffer(PlayerInputState *state) {
         for (j = 0; (sequence = g_aCheatCodes[j].sequence) != NULL; j++) {
             i = state->historyIndex;
             history = state->history;
-            for (code = sequence; *code != CHEAT_SEQUENCE_END;
-                 code++, i = (i + 1) & (INPUT_HISTORY_SIZE - 1)) {
-                if (*code != history[i]) {
+            for (k = 0; sequence[k] != CHEAT_SEQUENCE_END;
+                 k++, i = (i + 1) & (INPUT_HISTORY_SIZE - 1)) {
+                if (sequence[k] != history[i]) {
                     goto next;
                 }
             }
