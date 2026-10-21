@@ -11474,44 +11474,44 @@ dlabel g_szStartingMod2
 enddlabel g_szStartingMod2
 .align 2
 
-nonmatching g_qwRaceReserved8
+nonmatching g_dNoteStepScale
 
-dlabel g_qwRaceReserved8
+dlabel g_dNoteStepScale
     /* AC570 802AB570 3FD854B86E0B2019 */ .double 0.380170924629511797
-enddlabel g_qwRaceReserved8
+enddlabel g_dNoteStepScale
 
-nonmatching g_qwRaceReserved9
+nonmatching g_dNoteBaseFrequency
 
-dlabel g_qwRaceReserved9
+dlabel g_dNoteBaseFrequency
     /* AC578 802AB578 40705B3333333333 */ .double 261.699999999999989
-enddlabel g_qwRaceReserved9
+enddlabel g_dNoteBaseFrequency
 
 nonmatching switchdataD_802ab580
 
 dlabel switchdataD_802ab580
-    /* AC580 802AB580 80256FB8 */ .word .L80256FB8
-    /* AC584 802AB584 80256FEC */ .word .L80256FEC
-    /* AC588 802AB588 80257008 */ .word .L80257008
-    /* AC58C 802AB58C 80257028 */ .word .L80257028
-    /* AC590 802AB590 802570F8 */ .word .L802570F8
-    /* AC594 802AB594 802570F8 */ .word .L802570F8
-    /* AC598 802AB598 802570B0 */ .word .L802570B0
-    /* AC59C 802AB59C 802570F8 */ .word .L802570F8
-    /* AC5A0 802AB5A0 802570F8 */ .word .L802570F8
-    /* AC5A4 802AB5A4 802570F8 */ .word .L802570F8
-    /* AC5A8 802AB5A8 802570B0 */ .word .L802570B0
-    /* AC5AC 802AB5AC 802570F8 */ .word .L802570F8
-    /* AC5B0 802AB5B0 802570DC */ .word .L802570DC
-    /* AC5B4 802AB5B4 802570E4 */ .word .L802570E4
-    /* AC5B8 802AB5B8 802570F8 */ .word .L802570F8
-    /* AC5BC 802AB5BC 802570EC */ .word .L802570EC
+    /* AC580 802AB580 80256FB8 */ .word 0
+    /* AC584 802AB584 80256FEC */ .word 0
+    /* AC588 802AB588 80257008 */ .word 0
+    /* AC58C 802AB58C 80257028 */ .word 0
+    /* AC590 802AB590 802570F8 */ .word 0
+    /* AC594 802AB594 802570F8 */ .word 0
+    /* AC598 802AB598 802570B0 */ .word 0
+    /* AC59C 802AB59C 802570F8 */ .word 0
+    /* AC5A0 802AB5A0 802570F8 */ .word 0
+    /* AC5A4 802AB5A4 802570F8 */ .word 0
+    /* AC5A8 802AB5A8 802570B0 */ .word 0
+    /* AC5AC 802AB5AC 802570F8 */ .word 0
+    /* AC5B0 802AB5B0 802570DC */ .word 0
+    /* AC5B4 802AB5B4 802570E4 */ .word 0
+    /* AC5B8 802AB5B8 802570F8 */ .word 0
+    /* AC5BC 802AB5BC 802570EC */ .word 0
 enddlabel switchdataD_802ab580
 
-nonmatching g_qwRaceReserved10
+nonmatching g_dCpuCountRate
 
-dlabel g_qwRaceReserved10
+dlabel g_dCpuCountRate
     /* AC5C0 802AB5C0 41865A1B60000000 */ .double 46875500
-enddlabel g_qwRaceReserved10
+enddlabel g_dCpuCountRate
     /* AC5C8 802AB5C8 0000000000000000 */ .double 0
 
 .align 2

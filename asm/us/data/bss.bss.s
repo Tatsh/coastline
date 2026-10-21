@@ -4037,9 +4037,9 @@ nonmatching g_aAudioMsgBuf, 0x8
 dlabel g_aAudioMsgBuf
     /* 80374708 */ .space 0x08
 
-nonmatching g_AudioDmaConfig, 0xC0
+nonmatching g_AudioTimer, 0xC0
 
-dlabel g_AudioDmaConfig
+dlabel g_AudioTimer
     /* 80374710 */ .space 0xC0
 
 nonmatching g_AudioDmaBuffer, 0x4000
@@ -4047,35 +4047,15 @@ nonmatching g_AudioDmaBuffer, 0x4000
 dlabel g_AudioDmaBuffer
     /* 803747D0 */ .space 0x4000
 
-nonmatching g_apInstrumentData, 0xB4
+nonmatching g_apInstrumentData, 0x200
 
 dlabel g_apInstrumentData
-    /* 803787D0 */ .space 0xB4
+    /* 803787D0 */ .space 0x200
 
-nonmatching g_pSaveDataPtr, 0x14C
-
-dlabel g_pSaveDataPtr
-    /* 80378884 */ .space 0x14C
-
-nonmatching g_apPatternData, 0x4
+nonmatching g_apPatternData, 0x200
 
 dlabel g_apPatternData
-    /* 803789D0 */ .space 0x04
-
-nonmatching g_pSaveHeaderPtr, 0x48
-
-dlabel g_pSaveHeaderPtr
-    /* 803789D4 */ .space 0x48
-
-nonmatching g_pSaveBackupPtr, 0xBC
-
-dlabel g_pSaveBackupPtr
-    /* 80378A1C */ .space 0xBC
-
-nonmatching g_pSaveTempPtr, 0xF8
-
-dlabel g_pSaveTempPtr
-    /* 80378AD8 */ .space 0xF8
+    /* 803789D0 */ .space 0x200
 
 nonmatching D_80378BD0, 0x200
 
@@ -4083,149 +4063,14 @@ nonmatching D_80378BD0, 0x200
 dlabel D_80378BD0
     /* 80378BD0 */ .space 0x200
 
-nonmatching g_MusicChannelStates, 0x4
+nonmatching g_MusicChannelStates, 0x180
 
 dlabel g_MusicChannelStates
-    /* 80378DD0 */ .space 0x04
+    /* 80378DD0 */ .space 0x180
 
-nonmatching g_nSaveResult, 0x4
+nonmatching g_aSoundEffectSamples, 0x48
 
-dlabel g_nSaveResult
-    /* 80378DD4 */ .space 0x04
-
-nonmatching g_wSaveBlockSize, 0x2
-
-dlabel g_wSaveBlockSize
-    /* 80378DD8 */ .space 0x02
-
-nonmatching g_wSaveBlockCount, 0x2
-
-dlabel g_wSaveBlockCount
-    /* 80378DDA */ .space 0x02
-
-nonmatching g_bSaveBusy, 0x1
-
-dlabel g_bSaveBusy
-    /* 80378DDC */ .space 0x01
-
-nonmatching g_bSaveRead, 0x1
-
-dlabel g_bSaveRead
-    /* 80378DDD */ .space 0x01
-
-nonmatching g_bSaveWrite, 0x1
-
-dlabel g_bSaveWrite
-    /* 80378DDE */ .space 0x01
-
-nonmatching g_bSaveErase, 0x1
-
-dlabel g_bSaveErase
-    /* 80378DDF */ .space 0x01
-
-nonmatching g_bSaveComplete, 0x1
-
-dlabel g_bSaveComplete
-    /* 80378DE0 */ .space 0x01
-
-nonmatching g_bSaveReserved0, 0x4
-
-dlabel g_bSaveReserved0
-    /* 80378DE1 */ .space 0x04
-
-nonmatching g_bSaveReserved1, 0x1
-
-dlabel g_bSaveReserved1
-    /* 80378DE5 */ .space 0x01
-
-nonmatching g_bSaveReserved2, 0x2
-
-dlabel g_bSaveReserved2
-    /* 80378DE6 */ .space 0x02
-
-nonmatching g_nSaveErrorCode, 0x4
-
-dlabel g_nSaveErrorCode
-    /* 80378DE8 */ .space 0x04
-
-nonmatching g_nSaveBytesWritten, 0x4
-
-dlabel g_nSaveBytesWritten
-    /* 80378DEC */ .space 0x04
-
-nonmatching g_wSaveReserved0, 0x2
-
-dlabel g_wSaveReserved0
-    /* 80378DF0 */ .space 0x02
-
-nonmatching g_wSaveReserved1, 0x2
-
-dlabel g_wSaveReserved1
-    /* 80378DF2 */ .space 0x02
-
-nonmatching g_bSaveReserved3, 0x1
-
-dlabel g_bSaveReserved3
-    /* 80378DF4 */ .space 0x01
-
-nonmatching g_bSaveReserved4, 0x1
-
-dlabel g_bSaveReserved4
-    /* 80378DF5 */ .space 0x01
-
-nonmatching g_bSaveReserved5, 0x1
-
-dlabel g_bSaveReserved5
-    /* 80378DF6 */ .space 0x01
-
-nonmatching g_bSaveReserved6, 0x1
-
-dlabel g_bSaveReserved6
-    /* 80378DF7 */ .space 0x01
-
-nonmatching g_bSaveReserved7, 0x1
-
-dlabel g_bSaveReserved7
-    /* 80378DF8 */ .space 0x01
-
-nonmatching g_bSaveReserved8, 0x1
-
-dlabel g_bSaveReserved8
-    /* 80378DF9 */ .space 0x01
-
-nonmatching g_bSaveReserved9, 0x1
-
-dlabel g_bSaveReserved9
-    /* 80378DFA */ .space 0x01
-
-nonmatching g_bSaveReserved10, 0x1
-
-dlabel g_bSaveReserved10
-    /* 80378DFB */ .space 0x01
-
-nonmatching g_bSaveReserved11, 0x1
-
-dlabel g_bSaveReserved11
-    /* 80378DFC */ .space 0x01
-
-nonmatching g_bSaveReserved12, 0x1
-
-dlabel g_bSaveReserved12
-    /* 80378DFD */ .space 0x01
-
-nonmatching g_bSaveReserved13, 0x27
-
-dlabel g_bSaveReserved13
-    /* 80378DFE */ .space 0x27
-
-nonmatching g_bEepromPresent, 0x12B
-
-dlabel g_bEepromPresent
-    /* 80378E25 */ .space 0x12B
-
-nonmatching g_aSoundChannelLoopInfo, 0x48
-
-dlabel g_aSoundChannelLoopInfo
+dlabel g_aSoundEffectSamples
     /* 80378F50 */ .space 0x48
 
 nonmatching g_bMusicPlaybackEnabled, 0x8
@@ -4233,44 +4078,20 @@ nonmatching g_bMusicPlaybackEnabled, 0x8
 dlabel g_bMusicPlaybackEnabled
     /* 80378F98 */ .space 0x08
 
-nonmatching g_wMusicSpeed, 0x2
+nonmatching g_MusicPlayer, 0x10
 
-dlabel g_wMusicSpeed
-    /* 80378FA0 */ .space 0x02
+dlabel g_MusicPlayer
+    /* 80378FA0 */ .space 0x10
 
-nonmatching g_wMusicTickCounter, 0x2
+nonmatching D_80378FB0, 0x2
 
-dlabel g_wMusicTickCounter
-    /* 80378FA2 */ .space 0x02
+/* Automatically generated and unreferenced pad */
+dlabel D_80378FB0
+    /* 80378FB0 */ .space 0x02
 
-nonmatching g_wMusicRowCounter, 0x4
+nonmatching D_80378FB2, 0x6
 
-dlabel g_wMusicRowCounter
-    /* 80378FA4 */ .space 0x04
-
-nonmatching g_pModuleWorkBuffer, 0x4
-
-dlabel g_pModuleWorkBuffer
-    /* 80378FA8 */ .space 0x04
-
-nonmatching g_pCurrentPatternData, 0x4
-
-dlabel g_pCurrentPatternData
-    /* 80378FAC */ .space 0x04
-
-nonmatching g_bCurrentOrderPos, 0x1
-
-dlabel g_bCurrentOrderPos
-    /* 80378FB0 */ .space 0x01
-
-nonmatching g_bModuleOrderLength, 0x1
-
-dlabel g_bModuleOrderLength
-    /* 80378FB1 */ .space 0x01
-
-nonmatching g_bModuleRestartPos, 0x6
-
-dlabel g_bModuleRestartPos
+dlabel D_80378FB2
     /* 80378FB2 */ .space 0x06
 
 nonmatching g_AudioThread, 0x1B0
@@ -4278,21 +4099,15 @@ nonmatching g_AudioThread, 0x1B0
 dlabel g_AudioThread
     /* 80378FB8 */ .space 0x1B0
 
-nonmatching D_80379168, 0x400
+nonmatching g_aAudioThreadStack, 0x400
 
-/* Automatically generated and unreferenced pad */
-dlabel D_80379168
+dlabel g_aAudioThreadStack
     /* 80379168 */ .space 0x400
 
-nonmatching g_aFreqScaleTable, 0x4
+nonmatching g_aFreqScaleTable, 0x3C0
 
 dlabel g_aFreqScaleTable
-    /* 80379568 */ .space 0x04
-
-nonmatching g_aFreqScaleTableLo, 0x3BC
-
-dlabel g_aFreqScaleTableLo
-    /* 8037956C */ .space 0x3BC
+    /* 80379568 */ .space 0x3C0
 
 nonmatching D_80379928, 0x8
 
@@ -4300,9 +4115,9 @@ nonmatching D_80379928, 0x8
 dlabel D_80379928
     /* 80379928 */ .space 0x08
 
-nonmatching g_dwAudioMixSamplesCount, 0x4
+nonmatching g_dwAudioMixBytes, 0x4
 
-dlabel g_dwAudioMixSamplesCount
+dlabel g_dwAudioMixBytes
     /* 80379930 */ .space 0x04
 
 nonmatching g_dwAiDmaCurrentLength, 0x4

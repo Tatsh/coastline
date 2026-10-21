@@ -261,15 +261,17 @@ MixAudioStereoSamples:
     .size MixAudioStereoSamples, . - MixAudioStereoSamples
 
 /*
- * Add a1 bytes of five reverb channels to the ring buffer at a0 from offset a2, eight bytes at a
- * time. The reverb state begins with the 64-bit sample mask, which clears the low bit of each
- * 16-bit sample, and its channel records start 8 bytes in. When the word at 0x98 of the state is
- * set, channel 0 adds a second sample at that offset from its own. The masked sum goes into both
- * words of the doubleword, which is added to the masked output.
+ * Add a1 bytes of five sound effect channels to the ring buffer at a0 from offset a2, eight bytes
+ * at a time. The sound effect state begins with the 64-bit sample mask, which clears the low bit of
+ * each 16-bit sample, and its channel records start 8 bytes in. The volume of a record holds the
+ * right level in its upper half and the left in its lower, so one product gives a stereo frame.
+ * When the word at 0x98 of the state is set, channel 0 adds a second sample at that offset from
+ * its own, an echo. The masked frame goes into both words of the doubleword, which is added to the
+ * masked output.
  */
-    .globl MixAudioReverbChannels
-    .type MixAudioReverbChannels, @function
-MixAudioReverbChannels:
+    .globl MixSoundEffectChannels
+    .type MixSoundEffectChannels, @function
+MixSoundEffectChannels:
     addiu      $sp, $sp, -0x28
     sw         $s0, 0x0($sp)
     sw         $s1, 0x4($sp)
@@ -279,14 +281,14 @@ MixAudioReverbChannels:
     sw         $s4, 0x14($sp)
     sw         $s5, 0x18($sp)
     sw         $s6, 0x1C($sp)
-    lui        $t0, %hi(g_qwReverbSampleMask)
-    addiu      $t0, $t0, %lo(g_qwReverbSampleMask)
+    lui        $t0, %hi(g_qwSoundEffectSampleMask)
+    addiu      $t0, $t0, %lo(g_qwSoundEffectSampleMask)
     add        $a3, $a2, $a1
     addi       $v1, $a3, -0x4000
-    bgtz       $v1, .LMixAudioReverbChannels_split
+    bgtz       $v1, .LMixSoundEffectChannels_split
     add        $a0, $a0, $a2
     lui        $v1, 0
-.LMixAudioReverbChannels_split:
+.LMixSoundEffectChannels_split:
     sub        $v0, $a1, $v1
     ld         $a1, 0x8($t0)
     ld         $a2, 0x10($t0)
@@ -303,9 +305,9 @@ MixAudioReverbChannels:
     ld         $s4, 0x68($t0)
     ld         $s5, 0x70($t0)
     lw         $s6, 0x78($t0)
-    beqz       $v0, .LMixAudioReverbChannels_wrap
+    beqz       $v0, .LMixSoundEffectChannels_wrap
     nop
-.LMixAudioReverbChannels_loop:
+.LMixSoundEffectChannels_loop:
     daddu      $a1, $a1, $a2
     daddu      $a3, $a3, $t1
     daddu      $t2, $t2, $t3
@@ -313,11 +315,11 @@ MixAudioReverbChannels:
     daddu      $s4, $s4, $s5
     lw         $t8, 0x98($t0)
     ld         $t7, 0x0($a0)
-    beqz       $t8, .LMixAudioReverbChannels_noDelay
+    beqz       $t8, .LMixSoundEffectChannels_noDelay
     dsra32     $t9, $a1, 0
     addu       $t8, $t8, $t9
     lb         $t8, 0x0($t8)
-.LMixAudioReverbChannels_noDelay:
+.LMixSoundEffectChannels_noDelay:
     lb         $t9, 0x0($t9)
     add        $t9, $t8, $t9
     mult       $s0, $t9
@@ -351,15 +353,15 @@ MixAudioReverbChannels:
     and        $t9, $t9, $t6
     addi       $v0, $v0, -0x8
     sd         $t9, 0x0($a0)
-    bgtz       $v0, .LMixAudioReverbChannels_loop
+    bgtz       $v0, .LMixSoundEffectChannels_loop
     addi       $a0, $a0, 0x8
-.LMixAudioReverbChannels_wrap:
-    beqz       $v1, .LMixAudioReverbChannels_done
+.LMixSoundEffectChannels_wrap:
+    beqz       $v1, .LMixSoundEffectChannels_done
     addi       $v0, $v1, 0x0
     addi       $a0, $a0, -0x4000
-    j          .LMixAudioReverbChannels_loop
+    j          .LMixSoundEffectChannels_loop
     sub        $v1, $v1, $v1
-.LMixAudioReverbChannels_done:
+.LMixSoundEffectChannels_done:
     sd         $a1, 0x8($t0)
     sd         $a3, 0x20($t0)
     sd         $t2, 0x38($t0)
@@ -375,4 +377,4 @@ MixAudioReverbChannels:
     lw         $s6, 0x1C($sp)
     jr         $ra
     addiu      $sp, $sp, 0x28
-    .size MixAudioReverbChannels, . - MixAudioReverbChannels
+    .size MixSoundEffectChannels, . - MixSoundEffectChannels

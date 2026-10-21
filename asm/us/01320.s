@@ -489,16 +489,16 @@ glabel ProcessRaceHud
   .L8020097C:
     /* 197C 8020097C 0331C823 */  subu       $t9, $t9, $s1
     /* 1980 80200980 0019C8C0 */  sll        $t9, $t9, 3
-    /* 1984 80200984 3C01802A */  lui        $at, %hi(g_dwReverb0VolumeScale)
+    /* 1984 80200984 3C01802A */  lui        $at, %hi(g_aSoundEffectChannels + 0x14)
     /* 1988 80200988 00390821 */  addu       $at, $at, $t9
     /* 198C 8020098C 00114080 */  sll        $t0, $s1, 2
-    /* 1990 80200990 AC204934 */  sw         $zero, %lo(g_dwReverb0VolumeScale)($at)
+    /* 1990 80200990 AC204934 */  sw         $zero, %lo(g_aSoundEffectChannels + 0x14)($at)
     /* 1994 80200994 01114023 */  subu       $t0, $t0, $s1
     /* 1998 80200998 000840C0 */  sll        $t0, $t0, 3
-    /* 199C 8020099C 3C01802A */  lui        $at, %hi(g_dwReverb0EffVolume)
+    /* 199C 8020099C 3C01802A */  lui        $at, %hi(g_aSoundEffectChannels + 0x10)
     /* 19A0 802009A0 00280821 */  addu       $at, $at, $t0
     /* 19A4 802009A4 26310001 */  addiu      $s1, $s1, 0x1
-    /* 19A8 802009A8 AC204930 */  sw         $zero, %lo(g_dwReverb0EffVolume)($at)
+    /* 19A8 802009A8 AC204930 */  sw         $zero, %lo(g_aSoundEffectChannels + 0x10)($at)
     /* 19AC 802009AC 2A210006 */  slti       $at, $s1, 0x6
     /* 19B0 802009B0 5420FFF2 */  bnel       $at, $zero, .L8020097C
     /* 19B4 802009B4 0011C880 */   sll       $t9, $s1, 2
@@ -5933,46 +5933,46 @@ glabel ProcessRaceHud
     /* 6A6C 80205A6C 1420FFDC */  bnez       $at, .L802059E0
     /* 6A70 80205A70 00000000 */   nop
   .L80205A74:
-    /* 6A74 80205A74 3C01802A */  lui        $at, %hi(g_dwAudioDmaStatus)
-    /* 6A78 80205A78 AC2049B0 */  sw         $zero, %lo(g_dwAudioDmaStatus)($at)
+    /* 6A74 80205A74 3C01802A */  lui        $at, %hi(g_dwSoundEffectEchoOffset)
+    /* 6A78 80205A78 AC2049B0 */  sw         $zero, %lo(g_dwSoundEffectEchoOffset)($at)
     /* 6A7C 80205A7C AFA00080 */  sw         $zero, 0x80($sp)
   .L80205A80:
     /* 6A80 80205A80 8FB80080 */  lw         $t8, 0x80($sp)
     /* 6A84 80205A84 8FAB0080 */  lw         $t3, 0x80($sp)
-    /* 6A88 80205A88 3C01802A */  lui        $at, %hi(g_dwReverb0VolumeScale)
+    /* 6A88 80205A88 3C01802A */  lui        $at, %hi(g_aSoundEffectChannels + 0x14)
     /* 6A8C 80205A8C 00186080 */  sll        $t4, $t8, 2
     /* 6A90 80205A90 01986023 */  subu       $t4, $t4, $t8
     /* 6A94 80205A94 000C60C0 */  sll        $t4, $t4, 3
     /* 6A98 80205A98 8FAA0080 */  lw         $t2, 0x80($sp)
     /* 6A9C 80205A9C 002C0821 */  addu       $at, $at, $t4
     /* 6AA0 80205AA0 000BC880 */  sll        $t9, $t3, 2
-    /* 6AA4 80205AA4 AC204934 */  sw         $zero, %lo(g_dwReverb0VolumeScale)($at)
+    /* 6AA4 80205AA4 AC204934 */  sw         $zero, %lo(g_aSoundEffectChannels + 0x14)($at)
     /* 6AA8 80205AA8 032BC823 */  subu       $t9, $t9, $t3
     /* 6AAC 80205AAC 0019C8C0 */  sll        $t9, $t9, 3
-    /* 6AB0 80205AB0 3C01802A */  lui        $at, %hi(g_dwReverb0EffVolume)
+    /* 6AB0 80205AB0 3C01802A */  lui        $at, %hi(g_aSoundEffectChannels + 0x10)
     /* 6AB4 80205AB4 00390821 */  addu       $at, $at, $t9
     /* 6AB8 80205AB8 000A6880 */  sll        $t5, $t2, 2
-    /* 6ABC 80205ABC AC204930 */  sw         $zero, %lo(g_dwReverb0EffVolume)($at)
+    /* 6ABC 80205ABC AC204930 */  sw         $zero, %lo(g_aSoundEffectChannels + 0x10)($at)
     /* 6AC0 80205AC0 01AA6823 */  subu       $t5, $t5, $t2
     /* 6AC4 80205AC4 000D68C0 */  sll        $t5, $t5, 3
-    /* 6AC8 80205AC8 3C01802A */  lui        $at, %hi(g_dwReverb0Position)
+    /* 6AC8 80205AC8 3C01802A */  lui        $at, %hi(g_aSoundEffectChannels + 0x8)
     /* 6ACC 80205ACC 8FA80080 */  lw         $t0, 0x80($sp)
     /* 6AD0 80205AD0 002D0821 */  addu       $at, $at, $t5
     /* 6AD4 80205AD4 240E0000 */  addiu      $t6, $zero, 0x0
-    /* 6AD8 80205AD8 AC2E4928 */  sw         $t6, %lo(g_dwReverb0Position)($at)
-    /* 6ADC 80205ADC 3C01802A */  lui        $at, %hi(g_dwReverb0PhaseAccum)
+    /* 6AD8 80205AD8 AC2E4928 */  sw         $t6, %lo(g_aSoundEffectChannels + 0x8)($at)
+    /* 6ADC 80205ADC 3C01802A */  lui        $at, %hi(g_aSoundEffectChannels + 0xC)
     /* 6AE0 80205AE0 002D0821 */  addu       $at, $at, $t5
     /* 6AE4 80205AE4 240F0000 */  addiu      $t7, $zero, 0x0
     /* 6AE8 80205AE8 0008C080 */  sll        $t8, $t0, 2
     /* 6AEC 80205AEC 8FAC0080 */  lw         $t4, 0x80($sp)
-    /* 6AF0 80205AF0 AC2F492C */  sw         $t7, %lo(g_dwReverb0PhaseAccum)($at)
+    /* 6AF0 80205AF0 AC2F492C */  sw         $t7, %lo(g_aSoundEffectChannels + 0xC)($at)
     /* 6AF4 80205AF4 0308C023 */  subu       $t8, $t8, $t0
     /* 6AF8 80205AF8 0018C0C0 */  sll        $t8, $t8, 3
-    /* 6AFC 80205AFC 3C01802A */  lui        $at, %hi(g_aSoundChannelRequested)
+    /* 6AFC 80205AFC 3C01802A */  lui        $at, %hi(g_aSoundEffectChannels)
     /* 6B00 80205B00 3C09802A */  lui        $t1, %hi(g_SilenceSampleData)
     /* 6B04 80205B04 25294A08 */  addiu      $t1, $t1, %lo(g_SilenceSampleData)
     /* 6B08 80205B08 00380821 */  addu       $at, $at, $t8
-    /* 6B0C 80205B0C AC294920 */  sw         $t1, %lo(g_aSoundChannelRequested)($at)
+    /* 6B0C 80205B0C AC294920 */  sw         $t1, %lo(g_aSoundEffectChannels)($at)
     /* 6B10 80205B10 258B0001 */  addiu      $t3, $t4, 0x1
     /* 6B14 80205B14 29610006 */  slti       $at, $t3, 0x6
     /* 6B18 80205B18 1420FFD9 */  bnez       $at, .L80205A80

@@ -3,26 +3,72 @@
 
 /**
  * @file
- * The hand-written routines of audiomix.s: copies of 64-bit words and the sample mixers.
+ * The hand-written routines of audiomix.s: copies of 64-bit words and the sample mixers, and the
+ * channel records they read.
  */
 
 #include <PR/ultratypes.h>
 
+/** The bytes of the stereo ring buffer the mixers write. */
+#define AUDIO_RING_BYTES 0x4000
+
 /**
- * The state of the sample mixers. It begins with the write position in the stereo ring buffer, and
- * the channel records follow 8 bytes in.
+ * A channel of a mixer. The mixer reads the sample address and its fraction as one 32.32 fixed
+ * point position.
+ */
+typedef struct {
+    /** The next sample, signed 8-bit. */
+    s8 *sample;
+    u32 fraction;
+    /** The 32.32 step added to the position before each sample, or 0 for a silent channel. */
+    u64 step;
+    /** The volume the mixer multiplies each sample by. */
+    s32 mixVolume;
+    /** The volume the game sets, which the mixing thread scales into mixVolume. */
+    s32 volume;
+} MixerChannel;
+
+/** The channels of the music mixer. */
+#define MIXER_CHANNELS 16
+
+/** The channels of the sound effect mixer. */
+#define SOUND_EFFECT_CHANNELS 6
+
+/**
+ * The write position in the stereo ring buffer of the music mixers.
  *
  * @ghidraAddress USA: 0x802a4790
  */
 extern u16 g_wAudioBufferWritePos;
 
 /**
- * The state of the reverb mixer. It begins with the mask that clears the low bit of each 16-bit
- * sample, and the channel records follow 8 bytes in.
+ * The channels of the music mixers, 8 bytes after the write position.
+ *
+ * @ghidraAddress USA: 0x802a4798
+ */
+extern MixerChannel g_aMixerChannels[MIXER_CHANNELS];
+
+/**
+ * The mask that clears the low bit of each 16-bit sample of the sound effect mixer.
  *
  * @ghidraAddress USA: 0x802a4918
  */
-extern u64 g_qwReverbSampleMask;
+extern u64 g_qwSoundEffectSampleMask;
+
+/**
+ * The channels of the sound effects, 8 bytes after the mask. The volume of each holds the levels of
+ * the right and the left in its upper and lower halves.
+ *
+ * @ghidraAddress USA: 0x802a4920
+ */
+extern MixerChannel g_aSoundEffectChannels[SOUND_EFFECT_CHANNELS];
+
+/**
+ * The distance back to the echo of sound effect channel 0, or 0 for none.
+ *
+ * @ghidraAddress USA: 0x802a49b0
+ */
+extern s32 g_dwSoundEffectEchoOffset;
 
 /**
  * Copy 16 bytes between 8-byte aligned addresses.
@@ -54,10 +100,10 @@ void MixAudioSamples(s16 *ring, u32 bytes);
 void MixAudioStereoSamples(s16 *ring, u32 bytes, u32 pairOffset);
 
 /**
- * Add the reverb channels to the ring buffer from an offset.
+ * Add the sound effect channels to the ring buffer from an offset.
  *
  * @ghidraAddress USA: 0x8025658c
  */
-void MixAudioReverbChannels(s16 *ring, u32 bytes, u32 offset);
+void MixSoundEffectChannels(s16 *ring, u32 bytes, u32 offset);
 
 #endif

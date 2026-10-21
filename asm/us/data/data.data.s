@@ -33337,9 +33337,9 @@ dlabel D_8028BB10
     /* 8CB80 8028BB80 00000004 */ .word 0x00000004
     /* 8CB84 8028BB84 8028AADC */ .word g_dwFrameDeltaMs
     /* 8CB88 8028BB88 00000004 */ .word 0x00000004
-    /* 8CB8C 8028BB8C 802A4920 */ .word g_aSoundChannelRequested
+    /* 8CB8C 8028BB8C 802A4920 */ .word g_aSoundEffectChannels
     /* 8CB90 8028BB90 00000090 */ .word 0x00000090
-    /* 8CB94 8028BB94 80378F50 */ .word g_aSoundChannelLoopInfo
+    /* 8CB94 8028BB94 80378F50 */ .word g_aSoundEffectSamples
     /* 8CB98 8028BB98 00000048 */ .word 0x00000048
     /* 8CB9C 8028BB9C 8026FF64 */ .word g_dwSplineAnimInstance
     /* 8CBA0 8028BBA0 00000050 */ .word 0x00000050
@@ -63634,148 +63634,43 @@ dlabel D_802A4792
     /* A5796 802A4796 */ .short 0x0000
 enddlabel D_802A4792
 
-nonmatching g_AudioChannels
+nonmatching g_aMixerChannels
 
-dlabel g_AudioChannels
+dlabel g_aMixerChannels
     /* A5798 802A4798 00000000 */ .word 0x00000000
-enddlabel g_AudioChannels
-
-nonmatching g_dwCh0Reserved
-
-dlabel g_dwCh0Reserved
     /* A579C 802A479C 00000000 */ .word 0x00000000
-enddlabel g_dwCh0Reserved
-
-nonmatching g_qwCh0PhaseAccum
-
-dlabel g_qwCh0PhaseAccum
     /* A57A0 802A47A0 00000000 */ .word 0x00000000
-enddlabel g_qwCh0PhaseAccum
-
-nonmatching g_dwCh0PhaseAccumLo
-
-dlabel g_dwCh0PhaseAccumLo
     /* A57A4 802A47A4 00000000 */ .word 0x00000000
-enddlabel g_dwCh0PhaseAccumLo
-
-nonmatching g_dwCh0LeftVolume
-
-dlabel g_dwCh0LeftVolume
     /* A57A8 802A47A8 00000000 */ .word 0x00000000
-enddlabel g_dwCh0LeftVolume
-
-nonmatching g_dwCh0VolumeScale
-
-dlabel g_dwCh0VolumeScale
     /* A57AC 802A47AC 00000000 */ .word 0x00000000
-enddlabel g_dwCh0VolumeScale
-
-nonmatching g_qwCh0VelocityAccum
-
-dlabel g_qwCh0VelocityAccum
     /* A57B0 802A47B0 00000000 */ .word 0x00000000
     /* A57B4 802A47B4 00000000 */ .word 0x00000000
-enddlabel g_qwCh0VelocityAccum
-
-nonmatching g_qwCh1PhaseIncrement
-
-dlabel g_qwCh1PhaseIncrement
     /* A57B8 802A47B8 00000000 */ .word 0x00000000
     /* A57BC 802A47BC 00000000 */ .word 0x00000000
-enddlabel g_qwCh1PhaseIncrement
-
-nonmatching g_dwCh1RightVolume
-
-dlabel g_dwCh1RightVolume
     /* A57C0 802A47C0 00000000 */ .word 0x00000000
-enddlabel g_dwCh1RightVolume
-
-nonmatching g_nAudioSampleRate
-
-dlabel g_nAudioSampleRate
     /* A57C4 802A47C4 00000000 */ .word 0x00000000
-enddlabel g_nAudioSampleRate
-
-nonmatching g_qwCh1PhaseAccum
-
-dlabel g_qwCh1PhaseAccum
     /* A57C8 802A47C8 00000000 */ .word 0x00000000
     /* A57CC 802A47CC 00000000 */ .word 0x00000000
-enddlabel g_qwCh1PhaseAccum
-
-nonmatching g_qwCh2PhaseIncrement
-
-dlabel g_qwCh2PhaseIncrement
     /* A57D0 802A47D0 00000000 */ .word 0x00000000
     /* A57D4 802A47D4 00000000 */ .word 0x00000000
-enddlabel g_qwCh2PhaseIncrement
-
-nonmatching g_dwCh2LeftVolume
-
-dlabel g_dwCh2LeftVolume
     /* A57D8 802A47D8 00000000 */ .word 0x00000000
     /* A57DC 802A47DC 00000000 */ .word 0x00000000
-enddlabel g_dwCh2LeftVolume
-
-nonmatching g_qwCh2PhaseAccum
-
-dlabel g_qwCh2PhaseAccum
     /* A57E0 802A47E0 00000000 */ .word 0x00000000
     /* A57E4 802A47E4 00000000 */ .word 0x00000000
-enddlabel g_qwCh2PhaseAccum
-
-nonmatching g_qwCh3PhaseIncrement
-
-dlabel g_qwCh3PhaseIncrement
     /* A57E8 802A47E8 00000000 */ .word 0x00000000
     /* A57EC 802A47EC 00000000 */ .word 0x00000000
-enddlabel g_qwCh3PhaseIncrement
-
-nonmatching g_dwCh3RightVolume
-
-dlabel g_dwCh3RightVolume
     /* A57F0 802A47F0 00000000 */ .word 0x00000000
     /* A57F4 802A47F4 00000000 */ .word 0x00000000
-enddlabel g_dwCh3RightVolume
-
-nonmatching g_qwCh3PhaseAccum
-
-dlabel g_qwCh3PhaseAccum
     /* A57F8 802A47F8 00000000 */ .word 0x00000000
     /* A57FC 802A47FC 00000000 */ .word 0x00000000
-enddlabel g_qwCh3PhaseAccum
-
-nonmatching g_qwCh4PhaseIncrement
-
-dlabel g_qwCh4PhaseIncrement
     /* A5800 802A4800 00000000 */ .word 0x00000000
     /* A5804 802A4804 00000000 */ .word 0x00000000
-enddlabel g_qwCh4PhaseIncrement
-
-nonmatching g_dwCh4LeftVolume
-
-dlabel g_dwCh4LeftVolume
     /* A5808 802A4808 00000000 */ .word 0x00000000
     /* A580C 802A480C 00000000 */ .word 0x00000000
-enddlabel g_dwCh4LeftVolume
-
-nonmatching g_qwCh4PhaseAccum
-
-dlabel g_qwCh4PhaseAccum
     /* A5810 802A4810 00000000 */ .word 0x00000000
     /* A5814 802A4814 00000000 */ .word 0x00000000
-enddlabel g_qwCh4PhaseAccum
-
-nonmatching g_qwCh5PhaseIncrement
-
-dlabel g_qwCh5PhaseIncrement
     /* A5818 802A4818 00000000 */ .word 0x00000000
     /* A581C 802A481C 00000000 */ .word 0x00000000
-enddlabel g_qwCh5PhaseIncrement
-
-nonmatching g_dwCh5RightVolume
-
-dlabel g_dwCh5RightVolume
     /* A5820 802A4820 00000000 */ .word 0x00000000
     /* A5824 802A4824 00000000 */ .word 0x00000000
     /* A5828 802A4828 00000000 */ .word 0x00000000
@@ -63838,13 +63733,13 @@ dlabel g_dwCh5RightVolume
     /* A590C 802A490C 00000000 */ .word 0x00000000
     /* A5910 802A4910 00000000 */ .word 0x00000000
     /* A5914 802A4914 00000000 */ .word 0x00000000
-enddlabel g_dwCh5RightVolume
+enddlabel g_aMixerChannels
 
-nonmatching g_qwReverbSampleMask
+nonmatching g_qwSoundEffectSampleMask
 
-dlabel g_qwReverbSampleMask
+dlabel g_qwSoundEffectSampleMask
     /* A5918 802A4918 FFFEFFFE */ .word 0xFFFEFFFE
-enddlabel g_qwReverbSampleMask
+enddlabel g_qwSoundEffectSampleMask
 
 nonmatching D_802A491C
 
@@ -63852,197 +63747,52 @@ dlabel D_802A491C
     /* A591C 802A491C FFFEFFFE */ .word 0xFFFEFFFE
 enddlabel D_802A491C
 
-nonmatching g_aSoundChannelRequested
+nonmatching g_aSoundEffectChannels
 
-dlabel g_aSoundChannelRequested
+dlabel g_aSoundEffectChannels
     /* A5920 802A4920 00000000 */ .word 0x00000000
     /* A5924 802A4924 00000000 */ .word 0x00000000
-enddlabel g_aSoundChannelRequested
-
-nonmatching g_dwReverb0Position
-
-dlabel g_dwReverb0Position
     /* A5928 802A4928 00000000 */ .word 0x00000000
-enddlabel g_dwReverb0Position
-
-nonmatching g_dwReverb0PhaseAccum
-
-dlabel g_dwReverb0PhaseAccum
     /* A592C 802A492C 00000000 */ .word 0x00000000
-enddlabel g_dwReverb0PhaseAccum
-
-nonmatching g_dwReverb0EffVolume
-
-dlabel g_dwReverb0EffVolume
     /* A5930 802A4930 00000000 */ .word 0x00000000
-enddlabel g_dwReverb0EffVolume
-
-nonmatching g_dwReverb0VolumeScale
-
-dlabel g_dwReverb0VolumeScale
     /* A5934 802A4934 00000000 */ .word 0x00000000
-enddlabel g_dwReverb0VolumeScale
-
-nonmatching g_dwReverb1SamplePtr
-
-dlabel g_dwReverb1SamplePtr
     /* A5938 802A4938 00000000 */ .word 0x00000000
     /* A593C 802A493C 00000000 */ .word 0x00000000
-enddlabel g_dwReverb1SamplePtr
-
-nonmatching g_dwReverb1Position
-
-dlabel g_dwReverb1Position
     /* A5940 802A4940 00000000 */ .word 0x00000000
-enddlabel g_dwReverb1Position
-
-nonmatching g_dwReverb1PhaseAccum
-
-dlabel g_dwReverb1PhaseAccum
     /* A5944 802A4944 00000000 */ .word 0x00000000
-enddlabel g_dwReverb1PhaseAccum
-
-nonmatching g_dwReverb1EffVolume
-
-dlabel g_dwReverb1EffVolume
     /* A5948 802A4948 00000000 */ .word 0x00000000
-enddlabel g_dwReverb1EffVolume
-
-nonmatching g_aSoundChannelRequested_1_dwStereoLevel
-
-dlabel g_aSoundChannelRequested_1_dwStereoLevel
     /* A594C 802A494C 00000000 */ .word 0x00000000
-enddlabel g_aSoundChannelRequested_1_dwStereoLevel
-
-nonmatching g_dwReverb2SamplePtr
-
-dlabel g_dwReverb2SamplePtr
     /* A5950 802A4950 00000000 */ .word 0x00000000
     /* A5954 802A4954 00000000 */ .word 0x00000000
-enddlabel g_dwReverb2SamplePtr
-
-nonmatching g_dwReverb2Position
-
-dlabel g_dwReverb2Position
     /* A5958 802A4958 00000000 */ .word 0x00000000
-enddlabel g_dwReverb2Position
-
-nonmatching g_dwReverb2PhaseAccum
-
-dlabel g_dwReverb2PhaseAccum
     /* A595C 802A495C 00000000 */ .word 0x00000000
-enddlabel g_dwReverb2PhaseAccum
-
-nonmatching g_dwReverb2EffVolume
-
-dlabel g_dwReverb2EffVolume
     /* A5960 802A4960 00000000 */ .word 0x00000000
-enddlabel g_dwReverb2EffVolume
-
-nonmatching g_aSoundChannelRequested_2_dwStereoLevel
-
-dlabel g_aSoundChannelRequested_2_dwStereoLevel
     /* A5964 802A4964 00000000 */ .word 0x00000000
-enddlabel g_aSoundChannelRequested_2_dwStereoLevel
-
-nonmatching g_dwReverb3SamplePtr
-
-dlabel g_dwReverb3SamplePtr
     /* A5968 802A4968 00000000 */ .word 0x00000000
     /* A596C 802A496C 00000000 */ .word 0x00000000
-enddlabel g_dwReverb3SamplePtr
-
-nonmatching g_dwReverb3Position
-
-dlabel g_dwReverb3Position
     /* A5970 802A4970 00000000 */ .word 0x00000000
-enddlabel g_dwReverb3Position
-
-nonmatching g_dwReverb3PhaseAccum
-
-dlabel g_dwReverb3PhaseAccum
     /* A5974 802A4974 00000000 */ .word 0x00000000
-enddlabel g_dwReverb3PhaseAccum
-
-nonmatching g_aSoundChannelRequested_3_dwFlags
-
-dlabel g_aSoundChannelRequested_3_dwFlags
     /* A5978 802A4978 00000000 */ .word 0x00000000
-enddlabel g_aSoundChannelRequested_3_dwFlags
-
-nonmatching g_aSoundChannelRequested_3_dwStereoLevel
-
-dlabel g_aSoundChannelRequested_3_dwStereoLevel
     /* A597C 802A497C 00000000 */ .word 0x00000000
-enddlabel g_aSoundChannelRequested_3_dwStereoLevel
-
-nonmatching g_dwReverb4SamplePtr
-
-dlabel g_dwReverb4SamplePtr
     /* A5980 802A4980 00000000 */ .word 0x00000000
     /* A5984 802A4984 00000000 */ .word 0x00000000
-enddlabel g_dwReverb4SamplePtr
-
-nonmatching g_dwReverb4Position
-
-dlabel g_dwReverb4Position
     /* A5988 802A4988 00000000 */ .word 0x00000000
-enddlabel g_dwReverb4Position
-
-nonmatching g_dwReverb4PhaseAccum
-
-dlabel g_dwReverb4PhaseAccum
     /* A598C 802A498C 00000000 */ .word 0x00000000
-enddlabel g_dwReverb4PhaseAccum
-
-nonmatching g_dwReverb4EffVolume
-
-dlabel g_dwReverb4EffVolume
     /* A5990 802A4990 00000000 */ .word 0x00000000
-enddlabel g_dwReverb4EffVolume
-
-nonmatching g_aSoundChannelRequested_4_dwStereoLevel
-
-dlabel g_aSoundChannelRequested_4_dwStereoLevel
     /* A5994 802A4994 00000000 */ .word 0x00000000
-enddlabel g_aSoundChannelRequested_4_dwStereoLevel
-
-nonmatching g_dwReverb5SamplePtr
-
-dlabel g_dwReverb5SamplePtr
     /* A5998 802A4998 00000000 */ .word 0x00000000
     /* A599C 802A499C 00000000 */ .word 0x00000000
-enddlabel g_dwReverb5SamplePtr
-
-nonmatching g_dwReverb5Position
-
-dlabel g_dwReverb5Position
     /* A59A0 802A49A0 00000000 */ .word 0x00000000
-enddlabel g_dwReverb5Position
-
-nonmatching g_dwReverb5PhaseAccum
-
-dlabel g_dwReverb5PhaseAccum
     /* A59A4 802A49A4 00000000 */ .word 0x00000000
-enddlabel g_dwReverb5PhaseAccum
-
-nonmatching g_dwReverb5EffVolume
-
-dlabel g_dwReverb5EffVolume
     /* A59A8 802A49A8 00000000 */ .word 0x00000000
-enddlabel g_dwReverb5EffVolume
-
-nonmatching g_dwReverb5VolumeScale
-
-dlabel g_dwReverb5VolumeScale
     /* A59AC 802A49AC 00000000 */ .word 0x00000000
-enddlabel g_dwReverb5VolumeScale
+enddlabel g_aSoundEffectChannels
 
-nonmatching g_dwAudioDmaStatus
+nonmatching g_dwSoundEffectEchoOffset
 
-dlabel g_dwAudioDmaStatus
+dlabel g_dwSoundEffectEchoOffset
     /* A59B0 802A49B0 00000000 */ .word 0x00000000
-enddlabel g_dwAudioDmaStatus
+enddlabel g_dwSoundEffectEchoOffset
 
 nonmatching D_802A49B4
 
@@ -64095,22 +63845,17 @@ dlabel g_bSfxVolume
     /* A59D3 802A49D3 */ .byte 0x00
 enddlabel g_bSfxVolume
 
-nonmatching g_adwNoteFreqTable
+nonmatching g_afNoteFrequencies
 
-dlabel g_adwNoteFreqTable
+dlabel g_afNoteFrequencies
     /* A59D4 802A49D4 4382D99A */ .float 261.7000122
-enddlabel g_adwNoteFreqTable
+enddlabel g_afNoteFrequencies
 
-nonmatching g_dwAudioFrameCount
-
-dlabel g_dwAudioFrameCount
-    /* A59D8 802A49D8 438A999A */ .word 0x438A999A
-enddlabel g_dwAudioFrameCount
-
-nonmatching D_802A49DC
+nonmatching D_802A49D8
 
 /* Automatically generated and unreferenced pad */
-dlabel D_802A49DC
+dlabel D_802A49D8
+    /* A59D8 802A49D8 438A999A */ .word 0x438A999A
     /* A59DC 802A49DC 4392D99A */ .word 0x4392D99A
     /* A59E0 802A49E0 439B8CCD */ .word 0x439B8CCD
     /* A59E4 802A49E4 43A4CCCD */ .word 0x43A4CCCD
@@ -64121,7 +63866,7 @@ dlabel D_802A49DC
     /* A59F8 802A49F8 43DC0000 */ .word 0x43DC0000
     /* A59FC 802A49FC 43E9199A */ .word 0x43E9199A
     /* A5A00 802A4A00 43F6F333 */ .word 0x43F6F333
-enddlabel D_802A49DC
+enddlabel D_802A49D8
 
 nonmatching g_dwMusicPatternRow
 
@@ -64147,11 +63892,11 @@ dlabel g_dwAiDmaPrevLength
     /* A5A10 802A4A10 00000000 */ .word 0x00000000
 enddlabel g_dwAiDmaPrevLength
 
-nonmatching g_dwReverbBufferOffset
+nonmatching g_dwSoundEffectMixOffset
 
-dlabel g_dwReverbBufferOffset
+dlabel g_dwSoundEffectMixOffset
     /* A5A14 802A4A14 00000000 */ .word 0x00000000
-enddlabel g_dwReverbBufferOffset
+enddlabel g_dwSoundEffectMixOffset
 
 nonmatching D_802A4A18
 

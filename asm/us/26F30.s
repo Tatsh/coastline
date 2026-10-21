@@ -6066,9 +6066,9 @@ glabel UpdateEngineSoundEffect
     /* 2C55C 8022B55C 8FBF0024 */   lw        $ra, 0x24($sp)
     /* 2C560 8022B560 8C790000 */  lw         $t9, 0x0($v1)
     /* 2C564 8022B564 2402FFFF */  addiu      $v0, $zero, -0x1
-    /* 2C568 8022B568 3C08802A */  lui        $t0, %hi(g_aSoundChannelRequested)
+    /* 2C568 8022B568 3C08802A */  lui        $t0, %hi(g_aSoundEffectChannels)
     /* 2C56C 8022B56C 1059000C */  beq        $v0, $t9, .L8022B5A0
-    /* 2C570 8022B570 25084920 */   addiu     $t0, $t0, %lo(g_aSoundChannelRequested)
+    /* 2C570 8022B570 25084920 */   addiu     $t0, $t0, %lo(g_aSoundEffectChannels)
     /* 2C574 8022B574 8D0A0050 */  lw         $t2, 0x50($t0)
     /* 2C578 8022B578 8D0B0054 */  lw         $t3, 0x54($t0)
     /* 2C57C 8022B57C 554000F1 */  bnel       $t2, $zero, .L8022B944
@@ -6082,8 +6082,8 @@ glabel UpdateEngineSoundEffect
     /* 2C59C 8022B59C AE000048 */   sw        $zero, 0x48($s0)
   .L8022B5A0:
     /* 2C5A0 8022B5A0 3C108029 */  lui        $s0, %hi(g_vClosestSoundPosX)
-    /* 2C5A4 8022B5A4 3C08802A */  lui        $t0, %hi(g_aSoundChannelRequested)
-    /* 2C5A8 8022B5A8 25084920 */  addiu      $t0, $t0, %lo(g_aSoundChannelRequested)
+    /* 2C5A4 8022B5A4 3C08802A */  lui        $t0, %hi(g_aSoundEffectChannels)
+    /* 2C5A8 8022B5A8 25084920 */  addiu      $t0, $t0, %lo(g_aSoundEffectChannels)
     /* 2C5AC 8022B5AC 2610B7A0 */  addiu      $s0, $s0, %lo(g_vClosestSoundPosX)
   .L8022B5B0:
     /* 2C5B0 8022B5B0 8E040034 */  lw         $a0, 0x34($s0)
@@ -6173,7 +6173,7 @@ glabel UpdateEngineSoundEffect
     /* 2C6F4 8022B6F4 01CF1021 */  addu       $v0, $t6, $t7
     /* 2C6F8 8022B6F8 8C450000 */  lw         $a1, 0x0($v0)
     /* 2C6FC 8022B6FC 8C46000C */  lw         $a2, 0xC($v0)
-    /* 2C700 8022B700 0C095EDE */  jal        InitSoundChannelNoLoop
+    /* 2C700 8022B700 0C095EDE */  jal        StartSoundChannelMuted
     /* 2C704 8022B704 8C470010 */   lw        $a3, 0x10($v0)
   .L8022B708:
     /* 2C708 8022B708 3C028032 */  lui        $v0, %hi(g_aViewportRects)
@@ -6211,8 +6211,8 @@ glabel UpdateEngineSoundEffect
     /* 2C784 8022B784 46328302 */  mul.d      $f12, $f16, $f18
     /* 2C788 8022B788 0C099A82 */  jal        __d_to_ull
     /* 2C78C 8022B78C 00000000 */   nop
-    /* 2C790 8022B790 3C08802A */  lui        $t0, %hi(g_aSoundChannelRequested)
-    /* 2C794 8022B794 25084920 */  addiu      $t0, $t0, %lo(g_aSoundChannelRequested)
+    /* 2C790 8022B790 3C08802A */  lui        $t0, %hi(g_aSoundEffectChannels)
+    /* 2C794 8022B794 25084920 */  addiu      $t0, $t0, %lo(g_aSoundEffectChannels)
     /* 2C798 8022B798 8D19005C */  lw         $t9, 0x5C($t0)
     /* 2C79C 8022B79C AD020050 */  sw         $v0, 0x50($t0)
     /* 2C7A0 8022B7A0 AD030054 */  sw         $v1, 0x54($t0)
@@ -6240,9 +6240,9 @@ glabel UpdateEngineSoundEffect
     /* 2C7F8 8022B7F8 00000000 */  nop
     /* 2C7FC 8022B7FC 000E5043 */  sra        $t2, $t6, 1
     /* 2C800 8022B800 01417824 */  and        $t7, $t2, $at
-    /* 2C804 8022B804 3C01802A */  lui        $at, %hi(g_aSoundChannelRequested_3_dwStereoLevel)
+    /* 2C804 8022B804 3C01802A */  lui        $at, %hi(g_aSoundEffectChannels + 0x5C)
     /* 2C808 8022B808 10000032 */  b          .L8022B8D4
-    /* 2C80C 8022B80C AC2F497C */   sw        $t7, %lo(g_aSoundChannelRequested_3_dwStereoLevel)($at)
+    /* 2C80C 8022B80C AC2F497C */   sw        $t7, %lo(g_aSoundEffectChannels + 0x5C)($at)
   .L8022B810:
     /* 2C810 8022B810 44828000 */  mtc1       $v0, $f16
     /* 2C814 8022B814 C7A40050 */  lwc1       $f4, 0x50($sp)
@@ -6547,7 +6547,7 @@ glabel LoadAllSoundEffects
     /* 2CC08 8022BC08 8CE7BC14 */  lw         $a3, %lo(g_SoundEffectTable_LoopEnd)($a3)
     /* 2CC0C 8022BC0C 8CC6BC10 */  lw         $a2, %lo(g_SoundEffectTable_LoopStart)($a2)
     /* 2CC10 8022BC10 8CA5BC04 */  lw         $a1, %lo(g_dwRaceCameraMode)($a1)
-    /* 2CC14 8022BC14 0C095EDE */  jal        InitSoundChannelNoLoop
+    /* 2CC14 8022BC14 0C095EDE */  jal        StartSoundChannelMuted
     /* 2CC18 8022BC18 00002025 */   or        $a0, $zero, $zero
     /* 2CC1C 8022BC1C 3C028029 */  lui        $v0, %hi(g_dwNumRacers)
     /* 2CC20 8022BC20 8C42B7F4 */  lw         $v0, %lo(g_dwNumRacers)($v0)
@@ -6559,7 +6559,7 @@ glabel LoadAllSoundEffects
     /* 2CC38 8022BC38 3C078029 */  lui        $a3, %hi(g_SoundEffectTable_LoopEnd)
     /* 2CC3C 8022BC3C 8CE7BC14 */  lw         $a3, %lo(g_SoundEffectTable_LoopEnd)($a3)
     /* 2CC40 8022BC40 8CA5BC04 */  lw         $a1, %lo(g_dwRaceCameraMode)($a1)
-    /* 2CC44 8022BC44 0C095EDE */  jal        InitSoundChannelNoLoop
+    /* 2CC44 8022BC44 0C095EDE */  jal        StartSoundChannelMuted
     /* 2CC48 8022BC48 8CC6BC10 */   lw        $a2, %lo(g_SoundEffectTable_LoopStart)($a2)
     /* 2CC4C 8022BC4C 3C028029 */  lui        $v0, %hi(g_dwNumRacers)
     /* 2CC50 8022BC50 8C42B7F4 */  lw         $v0, %lo(g_dwNumRacers)($v0)
@@ -6572,7 +6572,7 @@ glabel LoadAllSoundEffects
     /* 2CC68 8022BC68 3C078029 */  lui        $a3, %hi(g_SoundEffectTable_LoopEnd)
     /* 2CC6C 8022BC6C 8CE7BC14 */  lw         $a3, %lo(g_SoundEffectTable_LoopEnd)($a3)
     /* 2CC70 8022BC70 8CC6BC10 */  lw         $a2, %lo(g_SoundEffectTable_LoopStart)($a2)
-    /* 2CC74 8022BC74 0C095EDE */  jal        InitSoundChannelNoLoop
+    /* 2CC74 8022BC74 0C095EDE */  jal        StartSoundChannelMuted
     /* 2CC78 8022BC78 8CA5BC04 */   lw        $a1, %lo(g_dwRaceCameraMode)($a1)
   .L8022BC7C:
     /* 2CC7C 8022BC7C 8FBF003C */  lw         $ra, 0x3C($sp)
@@ -6624,8 +6624,8 @@ glabel UpdateVehicleCollisionSound
   .L8022BD0C:
     /* 2CD0C 8022BD0C 001F7880 */   sll       $t7, $ra, 2
     /* 2CD10 8022BD10 01FF7823 */  subu       $t7, $t7, $ra
-    /* 2CD14 8022BD14 3C18802A */  lui        $t8, %hi(g_aSoundChannelRequested)
-    /* 2CD18 8022BD18 27184920 */  addiu      $t8, $t8, %lo(g_aSoundChannelRequested)
+    /* 2CD14 8022BD14 3C18802A */  lui        $t8, %hi(g_aSoundEffectChannels)
+    /* 2CD18 8022BD18 27184920 */  addiu      $t8, $t8, %lo(g_aSoundEffectChannels)
     /* 2CD1C 8022BD1C 000F78C0 */  sll        $t7, $t7, 3
     /* 2CD20 8022BD20 01F84021 */  addu       $t0, $t7, $t8
     /* 2CD24 8022BD24 240F0000 */  addiu      $t7, $zero, 0x0
@@ -6756,15 +6756,15 @@ glabel UpdateVehicleCollisionSound
     /* 2CEF0 8022BEF0 030FC821 */  addu       $t9, $t8, $t7
     /* 2CEF4 8022BEF4 972E004C */  lhu        $t6, 0x4C($t9)
     /* 2CEF8 8022BEF8 240F2AF8 */  addiu      $t7, $zero, 0x2AF8
-    /* 2CEFC 8022BEFC 3C01802A */  lui        $at, %hi(g_dwAudioDmaStatus)
+    /* 2CEFC 8022BEFC 3C01802A */  lui        $at, %hi(g_dwSoundEffectEchoOffset)
     /* 2CF00 8022BF00 31D80010 */  andi       $t8, $t6, 0x10
     /* 2CF04 8022BF04 13000004 */  beqz       $t8, .L8022BF18
     /* 2CF08 8022BF08 00000000 */   nop
-    /* 2CF0C 8022BF0C 3C01802A */  lui        $at, %hi(g_dwAudioDmaStatus)
+    /* 2CF0C 8022BF0C 3C01802A */  lui        $at, %hi(g_dwSoundEffectEchoOffset)
     /* 2CF10 8022BF10 10000002 */  b          .L8022BF1C
-    /* 2CF14 8022BF14 AC2F49B0 */   sw        $t7, %lo(g_dwAudioDmaStatus)($at)
+    /* 2CF14 8022BF14 AC2F49B0 */   sw        $t7, %lo(g_dwSoundEffectEchoOffset)($at)
   .L8022BF18:
-    /* 2CF18 8022BF18 AC2049B0 */  sw         $zero, %lo(g_dwAudioDmaStatus)($at)
+    /* 2CF18 8022BF18 AC2049B0 */  sw         $zero, %lo(g_dwSoundEffectEchoOffset)($at)
   .L8022BF1C:
     /* 2CF1C 8022BF1C 8FB90060 */  lw         $t9, 0x60($sp)
   .L8022BF20:
@@ -6784,12 +6784,12 @@ glabel UpdateVehicleCollisionSound
     /* 2CF54 8022BF54 C7A4005C */  lwc1       $f4, 0x5C($sp)
     /* 2CF58 8022BF58 8FBF006C */  lw         $ra, 0x6C($sp)
     /* 2CF5C 8022BF5C 448F9000 */  mtc1       $t7, $f18
-    /* 2CF60 8022BF60 3C18802A */  lui        $t8, %hi(g_aSoundChannelRequested)
+    /* 2CF60 8022BF60 3C18802A */  lui        $t8, %hi(g_aSoundEffectChannels)
     /* 2CF64 8022BF64 001F7080 */  sll        $t6, $ra, 2
     /* 2CF68 8022BF68 46809020 */  cvt.s.w    $f0, $f18
     /* 2CF6C 8022BF6C 01DF7023 */  subu       $t6, $t6, $ra
     /* 2CF70 8022BF70 000E70C0 */  sll        $t6, $t6, 3
-    /* 2CF74 8022BF74 27184920 */  addiu      $t8, $t8, %lo(g_aSoundChannelRequested)
+    /* 2CF74 8022BF74 27184920 */  addiu      $t8, $t8, %lo(g_aSoundEffectChannels)
     /* 2CF78 8022BF78 01D84021 */  addu       $t0, $t6, $t8
     /* 2CF7C 8022BF7C C7B20058 */  lwc1       $f18, 0x58($sp)
     /* 2CF80 8022BF80 46040182 */  mul.s      $f6, $f0, $f4
@@ -6847,8 +6847,8 @@ glabel UpdateVehicleCollisionSound
   .L8022C044:
     /* 2D044 8022C044 001F7080 */  sll        $t6, $ra, 2
     /* 2D048 8022C048 01DF7023 */  subu       $t6, $t6, $ra
-    /* 2D04C 8022C04C 3C18802A */  lui        $t8, %hi(g_aSoundChannelRequested)
-    /* 2D050 8022C050 27184920 */  addiu      $t8, $t8, %lo(g_aSoundChannelRequested)
+    /* 2D04C 8022C04C 3C18802A */  lui        $t8, %hi(g_aSoundEffectChannels)
+    /* 2D050 8022C050 27184920 */  addiu      $t8, $t8, %lo(g_aSoundEffectChannels)
     /* 2D054 8022C054 000E70C0 */  sll        $t6, $t6, 3
     /* 2D058 8022C058 01D84021 */  addu       $t0, $t6, $t8
     /* 2D05C 8022C05C 8D0E0020 */  lw         $t6, 0x20($t0)
@@ -7367,8 +7367,8 @@ glabel UpdateVehicleCollisionSound
     /* 2D798 8022C798 8E030F38 */  lw         $v1, 0xF38($s0)
   .L8022C79C:
     /* 2D79C 8022C79C 14600009 */  bnez       $v1, .L8022C7C4
-    /* 2D7A0 8022C7A0 3C0F802A */   lui       $t7, %hi(g_aSoundChannelRequested)
-    /* 2D7A4 8022C7A4 25EF4920 */  addiu      $t7, $t7, %lo(g_aSoundChannelRequested)
+    /* 2D7A0 8022C7A0 3C0F802A */   lui       $t7, %hi(g_aSoundEffectChannels)
+    /* 2D7A4 8022C7A4 25EF4920 */  addiu      $t7, $t7, %lo(g_aSoundEffectChannels)
     /* 2D7A8 8022C7A8 150F0079 */  bne        $t0, $t7, .L8022C990
     /* 2D7AC 8022C7AC 240E0000 */   addiu     $t6, $zero, 0x0
     /* 2D7B0 8022C7B0 240F0000 */  addiu      $t7, $zero, 0x0
@@ -7413,7 +7413,7 @@ glabel UpdateVehicleCollisionSound
     /* 2D840 8022C840 8C46000C */  lw         $a2, 0xC($v0)
     /* 2D844 8022C844 8C470010 */  lw         $a3, 0x10($v0)
     /* 2D848 8022C848 AFA8002C */  sw         $t0, 0x2C($sp)
-    /* 2D84C 8022C84C 0C095EDE */  jal        InitSoundChannelNoLoop
+    /* 2D84C 8022C84C 0C095EDE */  jal        StartSoundChannelMuted
     /* 2D850 8022C850 E7A00070 */   swc1      $f0, 0x70($sp)
     /* 2D854 8022C854 8FA8002C */  lw         $t0, 0x2C($sp)
     /* 2D858 8022C858 24090001 */  addiu      $t1, $zero, 0x1
@@ -7421,8 +7421,8 @@ glabel UpdateVehicleCollisionSound
   .L8022C860:
     /* 2D860 8022C860 8FB80060 */  lw         $t8, 0x60($sp)
   .L8022C864:
-    /* 2D864 8022C864 3C0E802A */  lui        $t6, %hi(g_aSoundChannelRequested)
-    /* 2D868 8022C868 25CE4920 */  addiu      $t6, $t6, %lo(g_aSoundChannelRequested)
+    /* 2D864 8022C864 3C0E802A */  lui        $t6, %hi(g_aSoundEffectChannels)
+    /* 2D868 8022C868 25CE4920 */  addiu      $t6, $t6, %lo(g_aSoundEffectChannels)
     /* 2D86C 8022C86C 17000048 */  bnez       $t8, .L8022C990
     /* 2D870 8022C870 00000000 */   nop
     /* 2D874 8022C874 150E0046 */  bne        $t0, $t6, .L8022C990
@@ -7566,8 +7566,8 @@ glabel UpdateAiVehicleState
     /* 2DA6C 8022CA6C 3C048027 */  lui        $a0, %hi(g_dwGameMode)
     /* 2DA70 8022CA70 2484FF18 */  addiu      $a0, $a0, %lo(g_dwGameMode)
     /* 2DA74 8022CA74 1160001B */  beqz       $t3, .L8022CAE4
-    /* 2DA78 8022CA78 3C02802A */   lui       $v0, %hi(g_aSoundChannelRequested)
-    /* 2DA7C 8022CA7C 24424920 */  addiu      $v0, $v0, %lo(g_aSoundChannelRequested)
+    /* 2DA78 8022CA78 3C02802A */   lui       $v0, %hi(g_aSoundEffectChannels)
+    /* 2DA7C 8022CA7C 24424920 */  addiu      $v0, $v0, %lo(g_aSoundEffectChannels)
     /* 2DA80 8022CA80 240D0000 */  addiu      $t5, $zero, 0x0
     /* 2DA84 8022CA84 240E0000 */  addiu      $t6, $zero, 0x0
     /* 2DA88 8022CA88 240F0000 */  addiu      $t7, $zero, 0x0
