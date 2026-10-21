@@ -41,18 +41,12 @@
 /* The height of the body above which a collision does not hold it. */
 #define UPRIGHT_LIMIT 0.5f
 
-static inline f32 Abs(f32 x) {
-    return x < 0.0f ? -x : x;
-}
+#define ABS(x) ((x) < 0.0f ? -(x) : (x))
 
-static inline f64 Sign(f32 x) {
-    return x == 0.0f ? 0.0 : (0.0f < x ? 1.0 : -1.0);
-}
+#define SIGN(x) ((x) == 0.0f ? 0.0 : (0.0f < (x) ? 1.0 : -1.0))
 
 /* A coordinate of a vector by its axis, read as an element of an array of three. */
-static inline f32 Component(Vec3f *v, s32 axis) {
-    return (&v->x)[axis];
-}
+#define COMPONENT(v, axis) ((&(v)->x)[axis])
 
 /* The loudness of a hit at a speed, which the sound of a crash plays at. */
 static inline u8 ImpactVolume(f32 speed) {
@@ -280,7 +274,7 @@ void GetBodyPointVelocity(Vec3f *out, RigidBody *body, Vec3f *point) {
 
 /* The slowing a brake gives a wheel against its spin. */
 static inline f32 BrakeSlowing(RigidBody *wheel) {
-    return (f32)(Sign(wheel->spinRate) * (f64)-Abs(wheel->brake) * 2.0) / wheel->radius;
+    return (f32)(SIGN(wheel->spinRate) * (f64)-ABS(wheel->brake) * 2.0) / wheel->radius;
 }
 
 /* How much of a slide a tyre keeps, from the grip of its surface and the load on it. */
@@ -298,7 +292,7 @@ static inline f32 SlideShare(RigidBody *body, f32 grip, s32 weather, s32 surface
     if (body->wheels[2]->steerAngle == 0.0f) {
         keep = (f32)((f64)keep * 1.5);
     }
-    if (Abs(keep) > 1.0f) {
+    if (ABS(keep) > 1.0f) {
         keep = 1.0f;
     }
     return keep;
@@ -337,11 +331,11 @@ void ApplySideGrip(
     rearBrake = rearBrake / quarter;
     frontBrake = frontBrake * dt2;
     rearBrake = rearBrake * dt2;
-    if (Abs(frontBrake) > 1.0f) {
-        frontBrake = (f32)(Sign(frontBrake) * 1.5);
+    if (ABS(frontBrake) > 1.0f) {
+        frontBrake = (f32)(SIGN(frontBrake) * 1.5);
     }
-    if (Abs(rearBrake) > 1.0f) {
-        rearBrake = (f32)(Sign(rearBrake) * 1.5);
+    if (ABS(rearBrake) > 1.0f) {
+        rearBrake = (f32)(SIGN(rearBrake) * 1.5);
     }
 
     /* The velocity of the rear axle in the frame of the body. */
@@ -364,14 +358,14 @@ void ApplySideGrip(
     if ((body->wheels[0]->contactFrames || body->wheels[1]->contactFrames) &&
         (body->wheels[2]->contactFrames || body->wheels[3]->contactFrames)) {
         rearSurface = (rearSurfaceA + rearSurfaceB + 1) >> 1;
-        load = Abs(*rearLoad) + Abs(rear.y) * body->mass / dt;
+        load = ABS(*rearLoad) + ABS(rear.y) * body->mass / dt;
         both = 1;
         limit = SLIDE_LOAD;
         /* A braking wheel loads its tyres the more when the other axle does not brake. */
-        if ((f64)Abs(frontBrake) > 0.0001) {
-            load += 10000.0f * (f32)((f64)Abs(rearBrake) > 0.0001);
+        if ((f64)ABS(frontBrake) > 0.0001) {
+            load += 10000.0f * (f32)((f64)ABS(rearBrake) > 0.0001);
         } else {
-            load += 100000.0f * (f32)((f64)Abs(rearBrake) > 0.0001);
+            load += 100000.0f * (f32)((f64)ABS(rearBrake) > 0.0001);
         }
         if (*rearSliding) {
             limit = SLIDING_REAR_SLIDE_LOAD;
@@ -399,14 +393,14 @@ void ApplySideGrip(
         /* The original copies the unit vector along x and never reads the copy. */
         unitX = g_vecUnitX;
         (void)unitX;
-        if (Abs(rear.x) > 1.0f) {
+        if (ABS(rear.x) > 1.0f) {
             rear.y = lateralSpeed;
-            if (Abs(lateralSpeed / rear.x) > 0.25f) {
+            if (ABS(lateralSpeed / rear.x) > 0.25f) {
                 body->skidding = 0x80;
             }
         } else {
             rear.y = lateralSpeed;
-            if (Abs(lateralSpeed) > 1.0f) {
+            if (ABS(lateralSpeed) > 1.0f) {
                 body->skidding = 0x80;
             } else {
                 body->skidding = 0;
@@ -415,7 +409,7 @@ void ApplySideGrip(
         /* The brakes slow the rear, but do not turn it back. */
         slowed = rear.x;
         rear.x = rear.x - rearBrake;
-        if (Abs(rear.x) > 1e-05f && Sign(rear.x) != Sign(slowed)) {
+        if (ABS(rear.x) > 1e-05f && SIGN(rear.x) != SIGN(slowed)) {
             rear.x = 0.0f;
         }
     } else {
@@ -446,9 +440,9 @@ void ApplySideGrip(
         lateral.z = old.z - front.z;
         lateralSpeed =
             sqrtf(lateral.z * lateral.z + (lateral.x * lateral.x + lateral.y * lateral.y));
-        load = Abs(*frontLoad) + lateralSpeed * body->mass / dt;
+        load = ABS(*frontLoad) + lateralSpeed * body->mass / dt;
         limit = SLIDE_LOAD;
-        load += 10000.0f * (f32)((f64)Abs(frontBrake) > 0.0001);
+        load += 10000.0f * (f32)((f64)ABS(frontBrake) > 0.0001);
         if (*frontSliding) {
             limit = (f32)((f64)SLIDE_LOAD * 0.7);
         }
@@ -490,12 +484,12 @@ void ApplySideGrip(
     }
 
     /* Lean the body towards the skid, a step at a time. */
-    if (Abs(skid) > 0.5f) {
-        skid = (f32)(Sign(skid) * 0.5);
+    if (ABS(skid) > 0.5f) {
+        skid = (f32)(SIGN(skid) * 0.5);
     }
     target = skid / 0.5f * -4.0f;
     lean = body->rollAngle;
-    if (Abs(lean - target) < LEAN_STEP) {
+    if (ABS(lean - target) < LEAN_STEP) {
         body->rollAngle = target;
     } else if (lean < target) {
         body->rollAngle = lean + LEAN_STEP;
@@ -564,9 +558,9 @@ void DriveWheel(RigidBody *body, RigidBody *wheel, f32 *load, u8 *sliding, f32 d
         if (*sliding) {
             force = (f32)((f64)force * 0.9);
         }
-        if (Abs(grip) < Abs(force)) {
+        if (ABS(grip) < ABS(force)) {
             ratio = grip / force;
-            force = (f32)((f64)force * ((f64)Abs(ratio) * 0.1));
+            force = (f32)((f64)force * ((f64)ABS(ratio) * 0.1));
         }
         push.x = roll.x * -force;
         push.y = roll.y * -force;
@@ -579,13 +573,13 @@ void DriveWheel(RigidBody *body, RigidBody *wheel, f32 *load, u8 *sliding, f32 d
         wheel->spinRate = wheel->spinRate + (drive - wheel->radius * force) * dt;
         wheel->spinRate =
             (f32)((f64)wheel->spinRate - (f64)(wheel->spinRate * wheel->radius + rollSpeed) * 0.4);
-        if (Abs(wheel->spinRate) > MAX_SPIN_RATE) {
-            wheel->spinRate = (f32)(Sign(wheel->spinRate) * 300.0);
+        if (ABS(wheel->spinRate) > MAX_SPIN_RATE) {
+            wheel->spinRate = (f32)(SIGN(wheel->spinRate) * 300.0);
         }
     } else {
         wheel->spinRate = wheel->spinRate + wheel->drive * dt;
-        if (Abs(wheel->spinRate) > MAX_SPIN_RATE) {
-            wheel->spinRate = (f32)(Sign(wheel->spinRate) * 300.0);
+        if (ABS(wheel->spinRate) > MAX_SPIN_RATE) {
+            wheel->spinRate = (f32)(SIGN(wheel->spinRate) * 300.0);
         }
     }
 
@@ -605,21 +599,21 @@ s16 IsPointInTrackTriangle(TrackTriangle *triangle, Vec3f *point) {
     s32 inside = 0;
 
     /* Drop the main axis of the normal, and solve for the triangle there. */
-    if (Abs(triangle->normal.y) < Abs(triangle->normal.x)) {
-        axis = Abs(triangle->normal.z) < Abs(triangle->normal.x) ? 0 : 2;
+    if (ABS(triangle->normal.y) < ABS(triangle->normal.x)) {
+        axis = ABS(triangle->normal.z) < ABS(triangle->normal.x) ? 0 : 2;
     } else {
-        axis = Abs(triangle->normal.z) < Abs(triangle->normal.y) ? 1 : 2;
+        axis = ABS(triangle->normal.z) < ABS(triangle->normal.y) ? 1 : 2;
     }
     i1 = (axis + 1) % 3;
     i2 = (axis + 2) % 3;
-    u0 = Component(triangle->vertices[0], i1);
-    v0 = Component(triangle->vertices[0], i2);
-    pu = Component(point, i1) - u0;
-    pv = Component(point, i2) - v0;
-    au = Component(triangle->vertices[1], i1) - u0;
-    av = Component(triangle->vertices[1], i2) - v0;
-    bu = Component(triangle->vertices[2], i1) - u0;
-    bv = Component(triangle->vertices[2], i2) - v0;
+    u0 = COMPONENT(triangle->vertices[0], i1);
+    v0 = COMPONENT(triangle->vertices[0], i2);
+    pu = COMPONENT(point, i1) - u0;
+    pv = COMPONENT(point, i2) - v0;
+    au = COMPONENT(triangle->vertices[1], i1) - u0;
+    av = COMPONENT(triangle->vertices[1], i2) - v0;
+    bu = COMPONENT(triangle->vertices[2], i1) - u0;
+    bv = COMPONENT(triangle->vertices[2], i2) - v0;
     if (au == 0.0f) {
         beta = pu / bu;
         if (0.0f <= beta && beta <= 1.0f) {
@@ -682,7 +676,7 @@ s32 BounceOffPlane(RigidBody *body, Vec3f *normal, s32 damp, s32 spin) {
     if (body->framesSinceImpact < 10) {
         damping = 0.9f;
     } else {
-        speed = Abs(into);
+        speed = ABS(into);
         if (MAX_IMPACT_SPEED < speed) {
             speed = MAX_IMPACT_SPEED;
         }
@@ -775,7 +769,7 @@ s32 ApplyCollisionImpulse(
     across.x = normal->x * into;
     across.y = normal->y * into;
     across.z = normal->z * into;
-    speed = Abs(into);
+    speed = ABS(into);
     if (MAX_IMPACT_SPEED < speed) {
         speed = MAX_IMPACT_SPEED;
     }
@@ -1015,30 +1009,30 @@ s32 CountTriangleWinding(Vec3f triangle[3], Vec3f *normal, Vec3f *point) {
     s32 winding = 0;
 
     for (i = 0; i < 3; i++) {
-        n[i] = Abs(Component(normal, i));
+        n[i] = ABS(COMPONENT(normal, i));
     }
     if (n[2] < n[0]) {
         axis = n[1] < n[0] ? 0 : 1;
     } else {
         axis = (n[2] < n[1] ? 0 : 1) + 1;
     }
-    if (Component(normal, axis) < 0.0f) {
+    if (COMPONENT(normal, axis) < 0.0f) {
         i0 = (axis + 2) % 3;
         i1 = (axis + 1) % 3;
     } else {
         i0 = (axis + 1) % 3;
         i1 = (axis + 2) % 3;
     }
-    p0 = Component(point, i0);
+    p0 = COMPONENT(point, i0);
     for (edge = 0; edge < 3; edge++) {
         next = (edge + 1) % 3;
-        a0 = Component(&triangle[edge], i0);
-        b0 = Component(&triangle[next], i0);
+        a0 = COMPONENT(&triangle[edge], i0);
+        b0 = COMPONENT(&triangle[next], i0);
         cross0 = (p0 < b0) - (p0 < a0);
         if (cross0) {
-            b1 = Component(&triangle[next], i1);
-            p1 = Component(point, i1);
-            a1 = Component(&triangle[edge], i1);
+            b1 = COMPONENT(&triangle[next], i1);
+            p1 = COMPONENT(point, i1);
+            a1 = COMPONENT(&triangle[edge], i1);
             cross1 = (p1 < b1) - (p1 < a1);
             if (cross1) {
                 if ((f32)cross0 * (p0 - a0) * (b1 - a1) <= (b0 - a0) * ((f32)cross0 * (p1 - a1))) {
@@ -1053,10 +1047,10 @@ s32 CountTriangleWinding(Vec3f triangle[3], Vec3f *normal, Vec3f *point) {
 }
 
 s32 DoesSegmentCrossUnitCube(Vec3f *start, Vec3f *end) {
-    f32 d[3];
-    s32 sign[3];
-    f32 across, reach;
     s32 i, j, k;
+    s32 sign[3];
+    f32 d[3];
+    f32 across, reach;
 
     d[0] = end->x - start->x;
     d[1] = end->y - start->y;
@@ -1066,10 +1060,10 @@ s32 DoesSegmentCrossUnitCube(Vec3f *start, Vec3f *end) {
     }
     /* Both ends beyond a face. */
     for (i = 0; i < 3; i++) {
-        if ((f64)((f32)sign[i] * Component(start, i)) > 0.5) {
+        if ((f64)(COMPONENT(start, i) * (f32)sign[i]) > 0.5) {
             return 0;
         }
-        if ((f64)((f32)sign[i] * Component(end, i)) < -0.5) {
+        if ((f64)(COMPONENT(end, i) * (f32)sign[i]) < -0.5) {
             return 0;
         }
     }
@@ -1077,8 +1071,8 @@ s32 DoesSegmentCrossUnitCube(Vec3f *start, Vec3f *end) {
     for (i = 0; i < 3; i++) {
         j = (i + 1) % 3;
         k = (i + 2) % 3;
-        across = d[k] * Component(start, j) - Component(start, k) * d[j];
-        reach = (f32)((f64)((f32)sign[k] * d[j] + d[k] * (f32)sign[j]) * 0.5);
+        across = d[k] * COMPONENT(start, j) - d[j] * COMPONENT(start, k);
+        reach = (f32)((f64)(d[k] * (f32)sign[j] + d[j] * (f32)sign[k]) * 0.5);
         if (reach * reach < across * across) {
             return 0;
         }
@@ -1099,7 +1093,7 @@ s32 DoesTriangleCrossUnitCube(Vec3f triangle[3], Vec3f *normal) {
     }
     /* Where the diagonal of the cube nearest the normal meets the plane of the triangle. */
     for (i = 0; i < 3; i++) {
-        sign[i] = Component(normal, i) < 0.0f ? -1 : 1;
+        sign[i] = COMPONENT(normal, i) < 0.0f ? -1 : 1;
     }
     sx = (f32)sign[0];
     sy = (f32)sign[1];
@@ -1204,8 +1198,8 @@ s32 TipBalancedVehicle(RigidBody *body) {
         }
         touching++;
         wheel = body->wheels[i];
-        corner.x = (f32)(Sign(wheel->state.position.x) * (f64)(body->boxSize.x * 0.5f));
-        corner.y = (f32)(Sign(wheel->state.position.y) * (f64)(body->boxSize.y * 0.5f));
+        corner.x = (f32)(SIGN(wheel->state.position.x) * (f64)(body->boxSize.x * 0.5f));
+        corner.y = (f32)(SIGN(wheel->state.position.y) * (f64)(body->boxSize.y * 0.5f));
         corner.z = -body->boxSize.z * 0.5f + body->boxCenterZ;
         Mtx4x4TransformPoint(&point, body->orientation, &corner);
         distance = GroundDistance(wheel, &point);
@@ -1224,7 +1218,7 @@ s32 TipBalancedVehicle(RigidBody *body) {
     along = wheel->groundNormal.z * velocity.z +
             (velocity.x * wheel->groundNormal.x + velocity.y * wheel->groundNormal.y);
     osSyncPrintf("-- Stand Vel = %f\n", (f64)along);
-    if (Abs(along) > 0.1f) {
+    if (ABS(along) > 0.1f) {
         return 0;
     }
     /* Roll it towards the way its nose leans across the ground. */
@@ -1265,13 +1259,13 @@ void ComputeCollisionPenetration(
     } else {
         /* The face of the box by the middle of the triangle, signed by its x as the original. */
         for (i = 0; i < 3; i++) {
-            middle[i] = Component(&triangle[2], i) +
-                        (Component(&triangle[0], i) + Component(&triangle[1], i));
+            middle[i] = COMPONENT(&triangle[2], i) +
+                        (COMPONENT(&triangle[0], i) + COMPONENT(&triangle[1], i));
             /* The original stores the sum before dividing it. */
             middle[i] = middle[i] / 3.0f;
         }
-        if (Abs(middle[0]) < Abs(middle[1])) {
-            if (Abs(middle[0]) < Abs(middle[2])) {
+        if (ABS(middle[0]) < ABS(middle[1])) {
+            if (ABS(middle[0]) < ABS(middle[2])) {
                 g_vCollisionContact.z = 0.0f;
                 g_vCollisionContact.y = g_vCollisionContact.z;
                 g_vCollisionContact.x = (f32)(middle[0] < 0.0f ? -1 : 1) * 0.5f;
@@ -1280,7 +1274,7 @@ void ComputeCollisionPenetration(
                 g_vCollisionContact.x = g_vCollisionContact.y;
                 g_vCollisionContact.z = (f32)(middle[0] < 0.0f ? -1 : 1) * 0.5f;
             }
-        } else if (Abs(middle[1]) < Abs(middle[2])) {
+        } else if (ABS(middle[1]) < ABS(middle[2])) {
             g_vCollisionContact.z = 0.0f;
             g_vCollisionContact.x = g_vCollisionContact.z;
             g_vCollisionContact.y = (f32)(middle[0] < 0.0f ? -1 : 1) * 0.5f;
@@ -1326,11 +1320,11 @@ s32 CollideBodyWithTriangles(RigidBody *body, f32 box[4][4]) {
         g_dwCollisionContactType = 0;
         hits++;
         if (g_dwGameMode == GAME_MODE_DEMO) {
-            if (Abs(normal.x) > 0.999f || Abs(normal.y) > 0.999f || Abs(normal.z) > 0.999f) {
+            if (ABS(normal.x) > 0.999f || ABS(normal.y) > 0.999f || ABS(normal.z) > 0.999f) {
                 g_dwCollisionContactType = 1;
                 spin = 1;
                 osSyncPrintf("Wank CT1 case\n");
-            } else if (Abs(distance) < 0.5f) {
+            } else if (ABS(distance) < 0.5f) {
                 osSyncPrintf("Triangle Edge to CubeFace\n");
                 spin = 0;
                 g_dwCollisionContactType = 2;
@@ -1394,10 +1388,15 @@ s32 CollideBodyWithTriangles(RigidBody *body, f32 box[4][4]) {
 #pragma GCC diagnostic pop
 
 void StepVehicleCollisions(RigidBody *body) {
-    Vec3f scale;
     f32 box[4][4];
+    Vec3f scale;
+    /* The original reserves stack for twelve bytes of locals it does not use. */
+    f32 unused[3];
     f32 remaining, step;
+    /* The count of the steps is a variable, and the original divides by it at run time. */
+    f32 steps;
 
+    (void)unused;
     g_pCollisionTriangleList = NULL;
     g_pNextCollisionTriangleNode = g_aCollisionTriangleNodes;
     g_vCollisionContact.x = 0.0f;
@@ -1419,9 +1418,10 @@ void StepVehicleCollisions(RigidBody *body) {
     scale.x = 1.0f / body->boxSize.x;
     scale.y = 1.0f / body->boxSize.y;
     scale.z = 1.0f / body->boxSize.z;
+    steps = COLLISION_STEPS;
     remaining = 1.0f / 30.0f;
     if (0.002f < remaining) {
-        step = 1.0f / 30.0f / (f32)COLLISION_STEPS;
+        step = 1.0f / 30.0f / steps;
         do {
             if (TipBalancedVehicle(body)) {
                 osSyncPrintf("Standing on it's F'in Nose damnit\n");
@@ -1499,7 +1499,7 @@ f32 CastWheelRay(RigidBody *body, RigidBody *wheel) {
         }
         facing = direction.z * triangle->normal.z +
                  (triangle->normal.x * direction.x + triangle->normal.y * direction.y);
-        if (!((f64)Abs(facing) > 0.001)) {
+        if (!((f64)ABS(facing) > 0.001)) {
             continue;
         }
         distance = -(triangle->planeOffset +
@@ -1617,7 +1617,7 @@ void ComputeSpringForces(RigidBody *body) {
             compression = 0.0f;
         }
         force->vector.z =
-            (f32)((f64)compression * (Sign(compression) * (f64)compression)) * body->springRate;
+            (f32)((f64)compression * (SIGN(compression) * (f64)compression)) * body->springRate;
         if (wheel->contactFrames && !previous) {
             body->landed = 0x80;
         }
@@ -1761,43 +1761,43 @@ s32 TestObbIntersection(f32 rotation[3][3], Vec3f *offset, Vec3f *halfA, Vec3f *
     f32 bx = halfB->x, by = halfB->y, bz = halfB->z;
     s32 overlap = 1;
 
-    r[0][0] = Abs(m[0][0]);
-    r[0][1] = Abs(m[0][1]);
-    r[0][2] = Abs(m[0][2]);
-    r[1][0] = Abs(m[1][0]);
-    r[1][1] = Abs(m[1][1]);
-    r[1][2] = Abs(m[1][2]);
-    r[2][0] = Abs(m[2][0]);
-    r[2][1] = Abs(m[2][1]);
-    r[2][2] = Abs(m[2][2]);
+    r[0][0] = ABS(m[0][0]);
+    r[0][1] = ABS(m[0][1]);
+    r[0][2] = ABS(m[0][2]);
+    r[1][0] = ABS(m[1][0]);
+    r[1][1] = ABS(m[1][1]);
+    r[1][2] = ABS(m[1][2]);
+    r[2][0] = ABS(m[2][0]);
+    r[2][1] = ABS(m[2][1]);
+    r[2][2] = ABS(m[2][2]);
     /* The axes of the two boxes, in the order of the original. */
-    overlap &= Abs(tx) <= ax + bx * r[0][0] + by * r[0][1] + r[0][2] * bz;
-    overlap &= Abs(tx * m[0][0] + ty * m[1][0] + m[2][0] * tz) <=
+    overlap &= ABS(tx) <= ax + bx * r[0][0] + by * r[0][1] + r[0][2] * bz;
+    overlap &= ABS(tx * m[0][0] + ty * m[1][0] + m[2][0] * tz) <=
                bx + ax * r[0][0] + ay * r[1][0] + r[2][0] * az;
-    overlap &= Abs(ty) <= ay + bx * r[1][0] + by * r[1][1] + r[1][2] * bz;
-    overlap &= Abs(tz) <= az + bx * r[2][0] + by * r[2][1] + r[2][2] * bz;
-    overlap &= Abs(tx * m[0][1] + ty * m[1][1] + m[2][1] * tz) <=
+    overlap &= ABS(ty) <= ay + bx * r[1][0] + by * r[1][1] + r[1][2] * bz;
+    overlap &= ABS(tz) <= az + bx * r[2][0] + by * r[2][1] + r[2][2] * bz;
+    overlap &= ABS(tx * m[0][1] + ty * m[1][1] + m[2][1] * tz) <=
                by + ax * r[0][1] + ay * r[1][1] + r[2][1] * az;
-    overlap &= Abs(tx * m[0][2] + ty * m[1][2] + m[2][2] * tz) <=
+    overlap &= ABS(tx * m[0][2] + ty * m[1][2] + m[2][2] * tz) <=
                bz + ax * r[0][2] + ay * r[1][2] + r[2][2] * az;
     /* The products of their edges. */
-    overlap &= Abs(tz * m[1][0] - m[2][0] * ty) <=
+    overlap &= ABS(tz * m[1][0] - m[2][0] * ty) <=
                ay * r[2][0] + az * r[1][0] + by * r[0][2] + bz * r[0][1];
-    overlap &= Abs(tz * m[1][1] - m[2][1] * ty) <=
+    overlap &= ABS(tz * m[1][1] - m[2][1] * ty) <=
                ay * r[2][1] + az * r[1][1] + bx * r[0][2] + bz * r[0][0];
-    overlap &= Abs(tz * m[1][2] - m[2][2] * ty) <=
+    overlap &= ABS(tz * m[1][2] - m[2][2] * ty) <=
                ay * r[2][2] + az * r[1][2] + bx * r[0][1] + by * r[0][0];
-    overlap &= Abs(tx * m[2][0] - m[0][0] * tz) <=
+    overlap &= ABS(tx * m[2][0] - m[0][0] * tz) <=
                ax * r[2][0] + az * r[0][0] + by * r[1][2] + bz * r[1][1];
-    overlap &= Abs(tx * m[2][1] - m[0][1] * tz) <=
+    overlap &= ABS(tx * m[2][1] - m[0][1] * tz) <=
                ax * r[2][1] + az * r[0][1] + bx * r[1][2] + bz * r[1][0];
-    overlap &= Abs(tx * m[2][2] - m[0][2] * tz) <=
+    overlap &= ABS(tx * m[2][2] - m[0][2] * tz) <=
                ax * r[2][2] + az * r[0][2] + bx * r[1][1] + by * r[1][0];
-    overlap &= Abs(ty * m[0][0] - m[1][0] * tx) <=
+    overlap &= ABS(ty * m[0][0] - m[1][0] * tx) <=
                ax * r[1][0] + ay * r[0][0] + by * r[2][2] + bz * r[2][1];
-    overlap &= Abs(ty * m[0][1] - m[1][1] * tx) <=
+    overlap &= ABS(ty * m[0][1] - m[1][1] * tx) <=
                ax * r[1][1] + ay * r[0][1] + bx * r[2][2] + bz * r[2][0];
-    overlap &= Abs(ty * m[0][2] - m[1][2] * tx) <=
+    overlap &= ABS(ty * m[0][2] - m[1][2] * tx) <=
                ax * r[1][2] + ay * r[0][2] + bx * r[2][1] + by * r[2][0];
     return overlap;
 }

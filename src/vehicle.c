@@ -798,25 +798,17 @@ void BindPlayerInputToVehicle(Vehicle *vehicle) {
 #define MAX_RPM_CHANGE 400.0f
 
 /* The sign of a value: 0, 1 or -1. */
-static inline f32 SignOf(f32 x) {
-    return x == 0.0f ? 0.0f : (0.0f < x ? 1.0f : -1.0f);
-}
+#define SIGN_OF(x) ((x) == 0.0f ? 0.0f : (0.0f < (x) ? 1.0f : -1.0f))
 
-static inline f32 AbsOf(f32 x) {
-    return x < 0.0f ? -x : x;
-}
+#define ABS_OF(x) ((x) < 0.0f ? -(x) : (x))
 
-/* A coordinate of a vector by its axis. */
-static inline f32 *VectorAxis(Vec3f *v, s32 axis) {
-    /* The original indexes the coordinates as an array rather than choosing among them. */
-    return &(&v->x)[axis];
-}
+/* A coordinate of a vector by its axis, indexed as an array as in the original. */
+#define VECTOR_AXIS(v, axis) ((&(v)->x)[axis])
 
 /* Keep a velocity at a damped one while the damping does not turn it back, and stop it if it does.
  */
-static inline void KeepUnreversed(f32 *velocity, f32 damped) {
-    *velocity = SignOf(damped) == SignOf(*velocity) ? damped : 0.0f;
-}
+#define KEEP_UNREVERSED(velocity, damped)                                                          \
+    ((velocity) = SIGN_OF(damped) == SIGN_OF(velocity) ? (damped) : 0.0f)
 
 void SimulateVehiclePhysicsSubstep(Vehicle *vehicle) {
     RigidBody *body = &vehicle->body;
@@ -885,10 +877,10 @@ void SimulateVehiclePhysicsSubstep(Vehicle *vehicle) {
     memcpy(&body->stepStates[1], state, sizeof(RigidBodyState));
     ApplyRigidBodyImpulse(&body->stepStates[1], body, PHYSICS_STEP);
     for (axis = 0; axis < 3; axis++) {
-        KeepUnreversed(VectorAxis(&state->angularVelocity, axis),
-                       *VectorAxis(&body->stepStates[1].angularVelocity, axis));
-        KeepUnreversed(VectorAxis(&state->velocity, axis),
-                       *VectorAxis(&body->stepStates[1].velocity, axis));
+        KEEP_UNREVERSED(VECTOR_AXIS(&state->angularVelocity, axis),
+                        VECTOR_AXIS(&body->stepStates[1].angularVelocity, axis));
+        KEEP_UNREVERSED(VECTOR_AXIS(&state->velocity, axis),
+                        VECTOR_AXIS(&body->stepStates[1].velocity, axis));
     }
 
     /* Move it through the frame against the track and the others, and hang the wheels. */
@@ -1028,7 +1020,7 @@ static inline void SteerByStick(Vehicle *vehicle, f32 stick) {
 
     /* The lock narrows with the speed; a hard push takes all of it, a soft one the gain. */
     lock = g_fSteerLock - forward / 90.0f * g_fSteerLockLoss;
-    if (AbsOf(stick) < 0.001f) {
+    if (ABS_OF(stick) < 0.001f) {
         most = lock * PI_F / 180.0f;
         least = -lock * PI_F / 180.0f;
         target = 0.0f;
@@ -1055,7 +1047,7 @@ static inline void SteerByStick(Vehicle *vehicle, f32 stick) {
 
     /* Back towards the middle, or across it, the wheels turn a radian a frame. */
     current = vehicle->steerAngle;
-    returning = SignOf(current) != SignOf(target);
+    returning = SIGN_OF(current) != SIGN_OF(target);
     if (!returning) {
         returning = (0.0f < current && target < current) || (current < 0.0f && current < target);
     }
@@ -1076,14 +1068,14 @@ static inline void SteerByStick(Vehicle *vehicle, f32 stick) {
         vehicle->steerReturn = down ? -1 : 1;
         rate = 1.0f;
         current = vehicle->steerAngle;
-        if (SignOf(target) != SignOf(current)) {
+        if (SIGN_OF(target) != SIGN_OF(current)) {
             target = 0.0f;
         }
     } else {
         vehicle->steerReturn = 0;
         current = vehicle->steerAngle;
     }
-    if (AbsOf(current - target) < rate) {
+    if (ABS_OF(current - target) < rate) {
         vehicle->steerAngle = target;
     } else if (target < current) {
         vehicle->steerAngle = current - rate;
@@ -1101,10 +1093,10 @@ void UpdateVehicleEngineAndGearbox(Vehicle *vehicle) {
 
     if (input->controllerLayout == STICK_STEERING_LAYOUT) {
         /* Steer straight from the stick, by a curve of it. */
-        amount = AbsOf(stick);
+        amount = ABS_OF(stick);
         root = sqrtf(amount);
         vehicle->steerAngle =
-            -(sqrtf(sqrtf(sqrtf(amount) * amount) * root) * SignOf(stick)) * 10.0f * PI_F / 180.0f;
+            -(sqrtf(sqrtf(sqrtf(amount) * amount) * root) * SIGN_OF(stick)) * 10.0f * PI_F / 180.0f;
     } else {
         SteerByStick(vehicle, stick);
     }
@@ -1135,7 +1127,7 @@ void UpdateVehicleEngineAndGearbox(Vehicle *vehicle) {
     extra = 0.0f;
     rpm = vehicle->engineRpm;
     if (g_dwGameMode == GAME_MODE_ARCADE && vehicle->racePosition == 1) {
-        gap = AbsOf(g_aVehicles[vehicle->index ^ 1].distance - vehicle->distance) * 0.5f;
+        gap = ABS_OF(g_aVehicles[vehicle->index ^ 1].distance - vehicle->distance) * 0.5f;
         if (gap < 18.0f) {
             extra = 0.0f;
         } else {
@@ -1189,8 +1181,8 @@ void UpdateVehicleEngineAndGearbox(Vehicle *vehicle) {
         vehicle->engineRpm = MAX_RPM;
     }
     change = vehicle->engineRpm - previous;
-    if (MAX_RPM_CHANGE < AbsOf(change)) {
-        change = SignOf(change) * MAX_RPM_CHANGE;
+    if (MAX_RPM_CHANGE < ABS_OF(change)) {
+        change = SIGN_OF(change) * MAX_RPM_CHANGE;
     }
     vehicle->brake = 0.0f;
     vehicle->engineRpm = previous + change;
