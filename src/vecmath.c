@@ -27,7 +27,7 @@
 
 f32 Powf(f32 base, f32 exponent) {
     f32 result = 1.0f;
-    f32 x, n, term, sum;
+    f32 n, term, sum;
 
     while (exponent >= 1.0f) {
         exponent -= 1.0f;
@@ -37,16 +37,15 @@ f32 Powf(f32 base, f32 exponent) {
         return result;
     }
 
-    /* The rest of the power, as the binomial series of (1 + x) to the remaining exponent. */
-    x = base - 1.0f;
-    n = 1.0f;
-    term = exponent * x;
+    /* The rest of the power, as the binomial series of base to the remaining exponent, with base
+     * reduced to the x of (1 + x). */
+    base -= 1.0f;
+    term = exponent * base;
     sum = 1.0f + term;
-    while (n < POWF_TERMS) {
-        f32 factor = (exponent - n) * x;
-
+    for (n = 1.0f; n < POWF_TERMS;) {
+        term *= (exponent - n) * base;
         n += 1.0f;
-        term = term * factor / n;
+        term /= n;
         sum += term;
     }
     return result * sum;
@@ -286,11 +285,11 @@ void Vec3fRotateAroundAxis(Vec3f *v, f32 angle, Vec3f *axis) {
 
 void Mtx4x4ProjectPoint(Vec3f *out, Vec3f *in, f32 m[4][4]) {
     f32 x = in->x, y = in->y, z = in->z;
-    f32 inverseW = 1.0f / (m[3][3] + (x * m[0][3] + y * m[1][3] + z * m[2][3]));
+    f32 inverseW = 1.0f / (x * m[0][3] + y * m[1][3] + z * m[2][3] + m[3][3]);
 
-    out->x = (m[3][0] + (x * m[0][0] + y * m[1][0] + z * m[2][0])) * inverseW;
-    out->y = (m[3][1] + (x * m[0][1] + y * m[1][1] + z * m[2][1])) * inverseW;
-    out->z = (m[3][2] + (x * m[0][2] + y * m[1][2] + z * m[2][2])) * inverseW;
+    out->x = (x * m[0][0] + y * m[1][0] + z * m[2][0] + m[3][0]) * inverseW;
+    out->y = (x * m[0][1] + y * m[1][1] + z * m[2][1] + m[3][1]) * inverseW;
+    out->z = (x * m[0][2] + y * m[1][2] + z * m[2][2] + m[3][2]) * inverseW;
 }
 
 void Vec3fTransformByMatrix(f32 out[4], Vec3f *in, f32 m[4][4]) {
@@ -298,7 +297,7 @@ void Vec3fTransformByMatrix(f32 out[4], Vec3f *in, f32 m[4][4]) {
     s32 i;
 
     for (i = 0; i < 4; i++) {
-        out[i] = m[3][i] + (x * m[0][i] + y * m[1][i] + z * m[2][i]);
+        out[i] = x * m[0][i] + y * m[1][i] + z * m[2][i] + m[3][i];
     }
 }
 
@@ -307,46 +306,45 @@ void Vec3sTransformToVec4f(f32 out[4], s16 in[3], f32 m[4][4]) {
     s32 i;
 
     for (i = 0; i < 4; i++) {
-        out[i] = m[3][i] + (x * m[0][i] + y * m[1][i] + z * m[2][i]);
+        out[i] = x * m[0][i] + y * m[1][i] + z * m[2][i] + m[3][i];
     }
 }
 
 void ProjectVec3fToScreen(Vec2f *out, Vec3f *in, f32 m[4][4]) {
     f32 x = in->x, y = in->y, z = in->z;
-    f32 inverseW = 1.0f / (m[3][3] + (x * m[0][3] + y * m[1][3] + z * m[2][3]));
+    f32 inverseW = 1.0f / (x * m[0][3] + y * m[1][3] + z * m[2][3] + m[3][3]);
 
-    out->x = (m[3][0] + (x * m[0][0] + y * m[1][0] + z * m[2][0])) * inverseW;
-    out->y = (m[3][1] + (x * m[0][1] + y * m[1][1] + z * m[2][1])) * inverseW;
+    out->x = (x * m[0][0] + y * m[1][0] + z * m[2][0] + m[3][0]) * inverseW;
+    out->y = (x * m[0][1] + y * m[1][1] + z * m[2][1] + m[3][1]) * inverseW;
 }
 
 void Mtx4x4TransformNoTranslation(Vec3f *out, Vec3f *in, f32 m[4][4]) {
     f32 x = in->x, y = in->y, z = in->z;
-    f32 inverseW = 1.0f / (m[3][3] + (x * m[0][3] + y * m[1][3] + z * m[2][3]));
+    f32 inverseW = 1.0f / (x * m[0][3] + y * m[1][3] + z * m[2][3] + m[3][3]);
 
-    out->x = (m[2][0] * z + (x * m[0][0] + y * m[1][0])) * inverseW;
-    out->y = (m[2][1] * z + (x * m[0][1] + y * m[1][1])) * inverseW;
-    out->z = (m[2][2] * z + (x * m[0][2] + y * m[1][2])) * inverseW;
+    out->x = (x * m[0][0] + y * m[1][0] + z * m[2][0]) * inverseW;
+    out->y = (x * m[0][1] + y * m[1][1] + z * m[2][1]) * inverseW;
+    out->z = (x * m[0][2] + y * m[1][2] + z * m[2][2]) * inverseW;
 }
 
 void Mtx3x3TransformVec(Vec3f *out, Vec3f *in, f32 m[4][4]) {
     f32 x = in->x, y = in->y, z = in->z;
 
-    out->x = m[2][0] * z + (x * m[0][0] + y * m[1][0]);
-    out->y = m[2][1] * z + (x * m[0][1] + y * m[1][1]);
-    out->z = m[2][2] * z + (x * m[0][2] + y * m[1][2]);
+    out->x = x * m[0][0] + y * m[1][0] + z * m[2][0];
+    out->y = x * m[0][1] + y * m[1][1] + z * m[2][1];
+    out->z = x * m[0][2] + y * m[1][2] + z * m[2][2];
 }
 
 void Mtx4x4Multiply(f32 out[4][4], f32 a[4][4], f32 b[4][4]) {
     f32 product[4][4];
-    s32 row, column;
+    s32 row, column, i;
 
     for (row = 0; row < 4; row++) {
         for (column = 0; column < 4; column++) {
             product[row][column] = 0.0f;
-            product[row][column] += a[row][0] * b[0][column];
-            product[row][column] += a[row][1] * b[1][column];
-            product[row][column] += a[row][2] * b[2][column];
-            product[row][column] += a[row][3] * b[3][column];
+            for (i = 0; i < 4; i++) {
+                product[row][column] += a[row][i] * b[i][column];
+            }
         }
     }
     for (row = 0; row < 4; row++) {
@@ -356,18 +354,23 @@ void Mtx4x4Multiply(f32 out[4][4], f32 a[4][4], f32 b[4][4]) {
     }
 }
 
-void Mtx4fTranspose(f32 out[4][4], f32 in[4][4]) {
-    s32 row, column;
-    f32 upper, lower;
-
-    for (row = 0; row < 4; row++) {
-        for (column = row + 1; column < 4; column++) {
-            upper = in[row][column];
-            lower = in[column][row];
-            out[column][row] = upper;
-            out[row][column] = lower;
-        }
+/* Swap an entry above the diagonal with its mirror below it. */
+#define SWAP_ENTRY(row, column)                                                                    \
+    {                                                                                              \
+        temp = in[row][column];                                                                    \
+        out[row][column] = in[column][row];                                                        \
+        out[column][row] = temp;                                                                   \
     }
+
+void Mtx4fTranspose(f32 out[4][4], f32 in[4][4]) {
+    f32 temp;
+
+    SWAP_ENTRY(0, 1);
+    SWAP_ENTRY(0, 2);
+    SWAP_ENTRY(0, 3);
+    SWAP_ENTRY(1, 2);
+    SWAP_ENTRY(1, 3);
+    SWAP_ENTRY(2, 3);
 }
 
 void CopyMatrix4x4(f32 out[4][4], f32 in[4][4]) {
@@ -490,28 +493,30 @@ f32 Atan2f(f32 x, f32 y) {
     }
 
     if (direct) {
-        return base + angle;
+        base += angle;
+    } else {
+        base += QUARTER_PI_F - angle;
     }
-    return base + (QUARTER_PI_F - angle);
+    return base;
 }
 
 s32 PointInTriangle3D(Vec3f *point, Vec3f *v0, Vec3f *v1, Vec3f *v2, Vec3f *normal) {
-    Vec3f edge, toPoint, cross;
+    Vec3f toV0, toV1, edge01, edge12, edge20, cross;
 
-    Vec3fSubtract(&edge, v1, v0);
-    Vec3fSubtract(&toPoint, point, v1);
-    Vec3fCross(&cross, &edge, &toPoint);
+    Vec3fSubtract(&edge01, v1, v0);
+    Vec3fSubtract(&toV1, point, v1);
+    Vec3fCross(&cross, &edge01, &toV1);
     if (Vec3fDot(&cross, normal) < 0.0f) {
         return FALSE;
     }
-    Vec3fSubtract(&edge, v2, v1);
-    Vec3fCross(&cross, &edge, &toPoint);
+    Vec3fSubtract(&edge12, v2, v1);
+    Vec3fCross(&cross, &edge12, &toV1);
     if (Vec3fDot(&cross, normal) < 0.0f) {
         return FALSE;
     }
-    Vec3fSubtract(&edge, v0, v2);
-    Vec3fSubtract(&toPoint, point, v0);
-    Vec3fCross(&cross, &edge, &toPoint);
+    Vec3fSubtract(&edge20, v0, v2);
+    Vec3fSubtract(&toV0, point, v0);
+    Vec3fCross(&cross, &edge20, &toV0);
     if (Vec3fDot(&cross, normal) < 0.0f) {
         return FALSE;
     }
@@ -520,22 +525,22 @@ s32 PointInTriangle3D(Vec3f *point, Vec3f *v0, Vec3f *v1, Vec3f *v2, Vec3f *norm
 
 s32 IsPointInsideTriangle(
     Vec3f *point, Vec3f *v0, Vec3f *v1, Vec3f *v2, Vec3f *normal, f32 tolerance) {
-    Vec3f edge, toPoint, cross;
+    Vec3f toV0, toV1, edge01, edge12, edge20, cross;
 
-    Vec3fSubtract(&edge, v1, v0);
-    Vec3fSubtract(&toPoint, point, v1);
-    Vec3fCross(&cross, &edge, &toPoint);
+    Vec3fSubtract(&edge01, v1, v0);
+    Vec3fSubtract(&toV1, point, v1);
+    Vec3fCross(&cross, &edge01, &toV1);
     if (Vec3fDot(&cross, normal) < tolerance) {
         return FALSE;
     }
-    Vec3fSubtract(&edge, v2, v1);
-    Vec3fCross(&cross, &edge, &toPoint);
+    Vec3fSubtract(&edge12, v2, v1);
+    Vec3fCross(&cross, &edge12, &toV1);
     if (Vec3fDot(&cross, normal) < tolerance) {
         return FALSE;
     }
-    Vec3fSubtract(&edge, v0, v2);
-    Vec3fSubtract(&toPoint, point, v0);
-    Vec3fCross(&cross, &edge, &toPoint);
+    Vec3fSubtract(&edge20, v0, v2);
+    Vec3fSubtract(&toV0, point, v0);
+    Vec3fCross(&cross, &edge20, &toV0);
     if (Vec3fDot(&cross, normal) < tolerance) {
         return FALSE;
     }
@@ -570,7 +575,10 @@ s32 TestLineSegmentIntersection(Vec2f *p1, Vec2f *p2, Vec2f *q1, Vec2f *q2) {
     if (side3 != 0.0f && side4 != 0.0f && side3 * side4 > 0.0f) {
         return 0;
     }
-    return side1 == side2 ? 2 : 1;
+    if (side1 == side2) {
+        return 2;
+    }
+    return 1;
 }
 
 s32 SegmentCrossesLine2D(Vec3f *a, Vec3f *b, Vec3f *p, Vec3f *q) {
@@ -582,7 +590,10 @@ s32 SegmentCrossesLine2D(Vec3f *a, Vec3f *b, Vec3f *p, Vec3f *q) {
     if (side1 != 0.0f && side2 != 0.0f && side1 * side2 > 0.0f) {
         return 0;
     }
-    return side1 == side2 ? 2 : 1;
+    if (side1 == side2) {
+        return 2;
+    }
+    return 1;
 }
 
 void SetRngSeed(u32 seed) {
