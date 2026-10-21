@@ -218,25 +218,33 @@ void ComputeRigidBodyAcceleration(RigidBody *body) {
 #pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
 #pragma GCC diagnostic ignored "-Wuninitialized"
 void ApplySingleForceWithDebug(RigidBody *body, RigidBodyForce *force) {
-    Vec3f vector, arm, torque;
+    Vec3f arm;
+    f32 vector[3];
+    f32 torque[3];
 
-    if (force->frame == RIGID_BODY_FORCE_WORLD) {
-        vector = force->vector;
-    } else if (force->frame == RIGID_BODY_FORCE_BODY) {
-        Mtx3x3MulVec3f(&vector, body->orientation, &force->vector);
+    switch (force->frame) {
+    case RIGID_BODY_FORCE_WORLD:
+        vector[0] = force->vector.x;
+        vector[1] = force->vector.y;
+        vector[2] = force->vector.z;
+        break;
+    case RIGID_BODY_FORCE_BODY:
+        /* The original keeps the force as an array of three and rotates it in place. */
+        Mtx3x3MulVec3f((Vec3f *)vector, body->orientation, &force->vector);
+        break;
     }
-    body->force.x = vector.x + body->force.x;
-    body->force.y = vector.y + body->force.y;
-    body->force.z = vector.z + body->force.z;
+    body->force.x = vector[0] + body->force.x;
+    body->force.y = vector[1] + body->force.y;
+    body->force.z = vector[2] + body->force.z;
 
     if (body->kind != RIGID_BODY_NO_ROTATION) {
         Mtx3x3MulVec3f(&arm, body->orientation, &force->point);
-        torque.x = arm.y * vector.z - vector.y * arm.z;
-        torque.y = arm.z * vector.x - vector.z * arm.x;
-        torque.z = arm.x * vector.y - vector.x * arm.y;
-        body->torque.x = torque.x + body->torque.x;
-        body->torque.y = torque.y + body->torque.y;
-        body->torque.z = torque.z + body->torque.z;
+        torque[0] = arm.y * vector[2] - vector[1] * arm.z;
+        torque[1] = arm.z * vector[0] - vector[2] * arm.x;
+        torque[2] = arm.x * vector[1] - vector[0] * arm.y;
+        body->torque.x = torque[0] + body->torque.x;
+        body->torque.y = torque[1] + body->torque.y;
+        body->torque.z = torque[2] + body->torque.z;
     }
 
     osSyncPrintf("Force = %10.4f, %10.4f, %10.4f, %10.4f, %10.4f, %10.4f\n",

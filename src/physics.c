@@ -211,12 +211,12 @@ void ComputeVehicleForces(RigidBody *body) {
 
 /* The velocity the spin of a body gives a point at an arm from its middle. */
 #define SPIN_VELOCITY(turn, body, arm)                                                             \
-    (turn)->x =                                                                                    \
-        (body)->state.angularVelocity.y * (arm)->z - (arm)->y * (body)->state.angularVelocity.z;   \
-    (turn)->y =                                                                                    \
-        (body)->state.angularVelocity.z * (arm)->x - (arm)->z * (body)->state.angularVelocity.x;   \
-    (turn)->z =                                                                                    \
-        (body)->state.angularVelocity.x * (arm)->y - (arm)->x * (body)->state.angularVelocity.y
+    (turn)[0] =                                                                                    \
+        (body)->state.angularVelocity.y * (arm).z - (arm).y * (body)->state.angularVelocity.z;     \
+    (turn)[1] =                                                                                    \
+        (body)->state.angularVelocity.z * (arm).x - (arm).z * (body)->state.angularVelocity.x;     \
+    (turn)[2] =                                                                                    \
+        (body)->state.angularVelocity.x * (arm).y - (arm).x * (body)->state.angularVelocity.y
 
 /* Copy the velocity of a body to a vector. */
 #define COPY_BODY_VELOCITY(out, body)                                                              \
@@ -225,52 +225,52 @@ void ComputeVehicleForces(RigidBody *body) {
     (out)->z = (body)->state.velocity.z
 
 void ComputeWheelLocalVelocity(Vec3f *out, RigidBody *body, RigidBody *wheel) {
-    Vec3f point, spin, arm;
-    Vec3f *turn;
+    Vec3f point;
+    f32 turn[3];
+    Vec3f arm;
 
     point.x = wheel->state.position.x;
     point.y = wheel->state.position.y;
     point.z = 0.0f;
     Mtx3x3MulVec3f(&arm, body->orientation, &point);
     COPY_BODY_VELOCITY(out, body);
-    turn = &spin;
-    SPIN_VELOCITY(turn, body, &arm);
-    point.x = turn->x + out->x;
-    point.y = turn->y + out->y;
-    point.z = turn->z + out->z;
+    SPIN_VELOCITY(turn, body, arm);
+    point.x = turn[0] + out->x;
+    point.y = turn[1] + out->y;
+    point.z = turn[2] + out->z;
     Mtx4fInverseRotate(out, body->orientation, &point);
 }
 
 void GetWheelWorldVelocity(Vec3f *out, RigidBody *body, RigidBody *wheel) {
-    Vec3f point, spin, arm;
-    Vec3f *turn;
+    Vec3f point;
+    f32 turn[3];
+    Vec3f arm;
 
     point.x = wheel->state.position.x;
     point.y = wheel->state.position.y;
     point.z = wheel->state.position.z;
     Mtx3x3MulVec3f(&arm, body->orientation, &point);
     COPY_BODY_VELOCITY(out, body);
-    turn = &spin;
-    SPIN_VELOCITY(turn, body, &arm);
-    out->x = turn->x + out->x;
-    out->y = turn->y + out->y;
-    out->z = turn->z + out->z;
+    SPIN_VELOCITY(turn, body, arm);
+    out->x = turn[0] + out->x;
+    out->y = turn[1] + out->y;
+    out->z = turn[2] + out->z;
 }
 
 void GetBodyPointVelocity(Vec3f *out, RigidBody *body, Vec3f *point) {
-    Vec3f copy, spin, arm;
-    Vec3f *turn;
+    Vec3f copy;
+    f32 turn[3];
+    Vec3f arm;
 
     copy.x = point->x;
     copy.y = point->y;
     copy.z = point->z;
     Mtx3x3MulVec3f(&arm, body->orientation, &copy);
     COPY_BODY_VELOCITY(out, body);
-    turn = &spin;
-    SPIN_VELOCITY(turn, body, &arm);
-    out->x = turn->x + out->x;
-    out->y = turn->y + out->y;
-    out->z = turn->z + out->z;
+    SPIN_VELOCITY(turn, body, arm);
+    out->x = turn[0] + out->x;
+    out->y = turn[1] + out->y;
+    out->z = turn[2] + out->z;
 }
 
 /* The slowing a brake gives a wheel against its spin. */
@@ -1659,12 +1659,10 @@ void ComputeDampingForces(RigidBody *body) {
 }
 
 /* The cell of the grid under a point, as its row times 64 plus its column. */
-static inline s16 GridSector(f32 x, f32 y) {
-    return (s32)y / 32 * 64 + (s32)x / 32;
-}
+#define GRID_SECTOR(x, y) ((s32)(y) / 32 * 64 + (s32)(x) / 32)
 
 s32 InvalidateTriCacheSectorAt(f32 x, f32 y) {
-    s16 sector = GridSector(x, y);
+    s16 sector = GRID_SECTOR(x, y);
     s32 slot;
 
     for (slot = 0; slot < TRI_CACHE_SLOTS; slot++) {
@@ -1684,7 +1682,7 @@ s32 InvalidateTriCacheSectorAt(f32 x, f32 y) {
 s16 BuildTrackTriangleCache(f32 x, f32 y) {
     TrackTriangle *triangle;
     TrackGridCursor cursor;
-    Vec3f e1, e2;
+    f32 e1[3], e2[3];
     u32 oldest, cell;
     s16 sector;
     s32 slot, count;
@@ -1692,7 +1690,7 @@ s16 BuildTrackTriangleCache(f32 x, f32 y) {
     u16 index;
 
     g_dwTriCacheLruCounter++;
-    sector = GridSector(x, y);
+    sector = GRID_SECTOR(x, y);
     oldest = 0x40000000;
     for (slot = 0; slot < TRI_CACHE_SLOTS; slot++) {
         if (sector == g_awTriCacheSectorId[slot]) {
@@ -1722,15 +1720,15 @@ s16 BuildTrackTriangleCache(f32 x, f32 y) {
                 &g_LoadedTrack.vertices[g_LoadedTrack.surfaces[index].vertices[2]];
             triangle->index = index;
             triangle->surface = g_LoadedTrack.triangleFlags[index] & 7;
-            e1.x = triangle->vertices[1]->x - triangle->vertices[0]->x;
-            e1.y = triangle->vertices[1]->y - triangle->vertices[0]->y;
-            e1.z = triangle->vertices[1]->z - triangle->vertices[0]->z;
-            e2.x = triangle->vertices[2]->x - triangle->vertices[0]->x;
-            e2.y = triangle->vertices[2]->y - triangle->vertices[0]->y;
-            e2.z = triangle->vertices[2]->z - triangle->vertices[0]->z;
-            triangle->normal.x = e1.y * e2.z - e2.y * e1.z;
-            triangle->normal.y = e1.z * e2.x - e2.z * e1.x;
-            triangle->normal.z = e1.x * e2.y - e2.x * e1.y;
+            e1[0] = triangle->vertices[1]->x - triangle->vertices[0]->x;
+            e1[1] = triangle->vertices[1]->y - triangle->vertices[0]->y;
+            e1[2] = triangle->vertices[1]->z - triangle->vertices[0]->z;
+            e2[0] = triangle->vertices[2]->x - triangle->vertices[0]->x;
+            e2[1] = triangle->vertices[2]->y - triangle->vertices[0]->y;
+            e2[2] = triangle->vertices[2]->z - triangle->vertices[0]->z;
+            triangle->normal.x = e1[1] * e2[2] - e2[1] * e1[2];
+            triangle->normal.y = e1[2] * e2[0] - e2[2] * e1[0];
+            triangle->normal.z = e1[0] * e2[1] - e2[0] * e1[1];
             Vec3fNormalizeFast(&triangle->normal);
             triangle->planeOffset = -(triangle->vertices[0]->z * triangle->normal.z +
                                       (triangle->normal.x * triangle->vertices[0]->x +
