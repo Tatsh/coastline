@@ -76,6 +76,9 @@
 /* The buttons that choose. */
 #define CHOOSE_BUTTONS (INPUT_A | INPUT_START | INPUT_Z)
 
+/* The car a player has selected, looked up again at each use as the original does. */
+#define SELECTED_CAR(player) (g_aCarModels[g_aVehicles[player].selectedCar])
+
 void DrawProgressBar(s32 x, s32 y, s32 width, s32 height, f32 fraction) {
     s32 right, bottom;
 
@@ -116,13 +119,8 @@ void DrawProgressBar(s32 x, s32 y, s32 width, s32 height, f32 fraction) {
 }
 
 s32 IsCarUnlocked(s32 car) {
-    if (g_dwIsPaintMode && !(car < PAINT_SHOP_CARS)) {
-        return FALSE;
-    }
-    if (!(g_pActiveProfile->unlocks & (1 << car))) {
-        return FALSE;
-    }
-    return IsVehicleModelValid(car) != 0;
+    return (!g_dwIsPaintMode || car < PAINT_SHOP_CARS) &&
+           (g_pActiveProfile->unlocks & (1 << car)) != 0 && IsVehicleModelValid(car) != 0;
 }
 
 /** Light a model on a stage, from an eye, with the four lights of the stage and its ambient light.
@@ -173,20 +171,21 @@ void RenderCameraView(Model *model,
                       f32 spread,
                       f32 angle) {
     VehicleModelLoad *load, *secondLoad;
-    Vehicle *vehicle;
     CameraFrame *camera;
     f32 offset, otherOffset;
 
-    vehicle = g_pActiveCameraVehicle = &g_aVehicles[vehicleIndex];
-    vehicle->frame.forward.x = cosf(angle);
-    vehicle->frame.forward.y = sinf(angle);
-    vehicle->frame.forward.z = 0.0f;
-    Vec3fCross(&vehicle->frame.side, &vehicle->frame.up, &vehicle->frame.forward);
-    camera = &vehicle->cameras[VEHICLE_CAMERA_TRACKSIDE];
-    vehicle->activeCamera = camera;
+    g_pActiveCameraVehicle = &g_aVehicles[vehicleIndex];
+    g_pActiveCameraVehicle->frame.forward.x = cosf(angle);
+    g_pActiveCameraVehicle->frame.forward.y = sinf(angle);
+    g_pActiveCameraVehicle->frame.forward.z = 0.0f;
+    Vec3fCross(&g_pActiveCameraVehicle->frame.side,
+               &g_pActiveCameraVehicle->frame.up,
+               &g_pActiveCameraVehicle->frame.forward);
+    camera = &g_pActiveCameraVehicle->cameras[VEHICLE_CAMERA_TRACKSIDE];
+    g_pActiveCameraVehicle->activeCamera = camera;
     g_pActiveCamera = camera;
     /* The heading is taken twice. */
-    vehicle->cameraHeading = Atan2f(camera->forward.x, camera->forward.y);
+    g_pActiveCameraVehicle->cameraHeading = Atan2f(camera->forward.x, camera->forward.y);
     g_pActiveCameraVehicle->cameraHeading =
         Atan2f(g_pActiveCamera->forward.x, g_pActiveCamera->forward.y);
     SetupCameraMatrix(g_pActiveCamera,
@@ -233,18 +232,33 @@ void RenderCameraView(Model *model,
     if (secondModel != NULL) {
         angle *= RAD_TO_DEG;
         LightStageModel(0.0f, -1.0f, 15.0f, 1.0f, 0.0f);
-        offset = 0.0f < offset ? offset - spread : offset + spread;
-        DrawStageModel(secondModel, angle, offset, -offset);
+        guScaleF(g_afMvpMatrix, STAGE_MODEL_SCALE, STAGE_MODEL_SCALE, STAGE_MODEL_SCALE);
+        guRotateF(g_afScratchMatrix, angle, 0.0f, 0.0f, 1.0f);
+        guMtxCatF(g_afMvpMatrix, g_afScratchMatrix, g_afMvpMatrix);
+        /* Each side of the stage has its own call. */
+        if (0.0f < offset) {
+            guTranslateF(g_afScratchMatrix, offset - spread, -(offset - spread), 0.0f);
+        } else {
+            guTranslateF(g_afScratchMatrix, offset + spread, -(offset + spread), 0.0f);
+        }
+        guMtxCatF(g_afMvpMatrix, g_afScratchMatrix, g_afMvpMatrix);
+        DrawModelList(secondModel, g_afMvpMatrix);
         return;
     }
     if (!IsVehicleModelLoaded(secondLoad) && PollVehicleModelDma(secondLoad)) {
         return;
     }
     SetVehicleModelSlot(g_pActiveCameraVehicle, secondSlot);
-    offset = 0.0f < offset ? offset - spread : offset + spread;
-    g_pActiveCameraVehicle->frame.position.x = offset;
-    g_pActiveCameraVehicle->frame.position.y = -offset;
-    g_pActiveCameraVehicle->frame.position.z = STAGE_HEIGHT;
+    /* Each side of the stage has its own stores. */
+    if (0.0f < offset) {
+        g_pActiveCameraVehicle->frame.position.x = offset - spread;
+        g_pActiveCameraVehicle->frame.position.y = -(offset - spread);
+        g_pActiveCameraVehicle->frame.position.z = STAGE_HEIGHT;
+    } else {
+        g_pActiveCameraVehicle->frame.position.x = offset + spread;
+        g_pActiveCameraVehicle->frame.position.y = -(offset + spread);
+        g_pActiveCameraVehicle->frame.position.z = STAGE_HEIGHT;
+    }
     TransformWheelPositions(vehicleIndex);
     DrawStageVehicle();
     if (IsVehicleModelLoaded(load)) {
@@ -644,24 +658,28 @@ static inline void DrawRumbleNote(s32 player, s32 y) {
 }
 
 /** Draw the engine, gearbox, acceleration and top speed of the car of a player. */
-static inline void DrawCarStats(char *text, CarModel *car, s32 y, s32 barY) {
+static inline void DrawCarStats(char *text, s32 player, s32 y, s32 barY) {
     SetTextAlignRight();
     DrawText("%wwAcceleration", g_dwScreenWidth / 4 - 5, y + 2);
     DrawText("%wwMax Speed", g_dwScreenWidth / 4 - 5, y - 6);
     SetTextAlignCenter();
-    DrawText(g_apszEngineLayouts[car->engineLayout], g_dwScreenWidth * 3 / 4, y + 2);
-    sprintf(text, "%%ww%d-Speed %s", car->gearCount, g_apszDriveTypes[car->driveType]);
+    DrawText(
+        g_apszEngineLayouts[SELECTED_CAR(player).engineLayout], g_dwScreenWidth * 3 / 4, y + 2);
+    sprintf(text,
+            "%%ww%d-Speed %s",
+            SELECTED_CAR(player).gearCount,
+            g_apszDriveTypes[SELECTED_CAR(player).driveType]);
     DrawText(text, g_dwScreenWidth * 3 / 4, y - 6);
     DrawProgressBar(g_dwScreenWidth / 2,
                     barY - 23,
                     STAT_BAR_WIDTH,
                     STAT_BAR_HEIGHT,
-                    (f32)(car->acceleration / FULL_ACCELERATION));
+                    (f32)(SELECTED_CAR(player).acceleration / FULL_ACCELERATION));
     DrawProgressBar(g_dwScreenWidth / 2,
                     barY - 6,
                     STAT_BAR_WIDTH,
                     STAT_BAR_HEIGHT,
-                    (f32)(car->maxSpeed / FULL_SPEED));
+                    (f32)(SELECTED_CAR(player).maxSpeed / FULL_SPEED));
 }
 
 /** Draw what the two players are choosing, their advice, and the stats of their cars. */
@@ -677,22 +695,16 @@ static inline void DrawTwoPlayerChoices(char *text) {
     DrawRumbleNote(1, g_dwScreenHeight * 3 / 5);
     SetTextAlignRight();
     if (g_adwCarSelectState[0] == CAR_SELECT_CAR) {
-        DrawCarStats(text,
-                     &g_aCarModels[g_aVehicles[0].selectedCar],
-                     g_dwScreenHeight / 4,
-                     g_dwScreenHeight / 2);
+        DrawCarStats(text, 0, g_dwScreenHeight / 4, g_dwScreenHeight / 2);
     }
     if (g_adwCarSelectState[1] == CAR_SELECT_CAR) {
-        DrawCarStats(text,
-                     &g_aCarModels[g_aVehicles[1].selectedCar],
-                     g_dwScreenHeight * 3 / 5,
-                     g_dwScreenHeight * 3 * 2 / 5);
+        DrawCarStats(text, 1, g_dwScreenHeight * 3 / 5, g_dwScreenHeight * 3 * 2 / 5);
     }
 }
 
 /** Draw what the player is choosing, the advice, and the stats of the car. */
 static inline void DrawOnePlayerChoices(char *text) {
-    CarModel *car;
+    s32 player = 0;
 
     SetTextSize(20);
     if (g_dwIsPaintMode) {
@@ -716,58 +728,70 @@ static inline void DrawOnePlayerChoices(char *text) {
     if (g_adwCarSelectState[0] != CAR_SELECT_CAR) {
         return;
     }
-    car = &g_aCarModels[g_aVehicles[0].selectedCar];
     SetTextAlignRight();
     SetTextSize(8);
     DrawText("%wwMax Speed", g_dwScreenWidth * 3 / 8, g_dwScreenHeight * 3 / 8 - 6);
     DrawText("%wwAcceleration", g_dwScreenWidth * 3 / 8, g_dwScreenHeight * 3 / 8 + 2);
     SetTextAlignCenter();
-    DrawText(g_apszEngineLayouts[car->engineLayout],
+    DrawText(g_apszEngineLayouts[SELECTED_CAR(player).engineLayout],
              g_dwScreenWidth * 11 / 16,
              g_dwScreenHeight * 3 / 8 - 6);
-    sprintf(text, "%%ww%d-Speed %s", car->gearCount, g_apszDriveTypes[car->driveType]);
+    sprintf(text,
+            "%%ww%d-Speed %s",
+            SELECTED_CAR(player).gearCount,
+            g_apszDriveTypes[SELECTED_CAR(player).driveType]);
     DrawText(text, g_dwScreenWidth * 11 / 16, g_dwScreenHeight * 3 / 8 + 2);
     DrawProgressBar(g_dwScreenWidth * 3 / 4 + 10,
                     g_dwScreenHeight * 3 / 4 - 23,
                     STAT_BAR_WIDTH,
                     STAT_BAR_HEIGHT,
-                    (f32)(car->acceleration / FULL_ACCELERATION));
+                    (f32)(SELECTED_CAR(player).acceleration / FULL_ACCELERATION));
     DrawProgressBar(g_dwScreenWidth * 3 / 4 + 10,
                     g_dwScreenHeight * 3 / 4 - 6,
                     STAT_BAR_WIDTH,
                     STAT_BAR_HEIGHT,
-                    (f32)(car->maxSpeed / FULL_SPEED));
+                    (f32)(SELECTED_CAR(player).maxSpeed / FULL_SPEED));
 }
 
 /** Run the dialog of the controller pak that loads the decals of a player. */
 static inline void RunPakDialog(void) {
-    s32 player = g_dwPakDialogPlayerIdx;
+    s32 result = g_dwPakDialogResult;
+    s32 player;
     s32 previous;
 
-    if (g_dwPakDialogResult == 0) {
+    /* The original stores the result back on every path but that of a cancel, changed or not. */
+    if (result == 0) {
         if (!g_bPakDialogDone) {
-            g_dwPakDialogResult = ProcessDecalSaveLoad(
-                &g_aVehicleModels[player], (u8)player, 9, 1, &g_bPakDialogDone);
+            result = ProcessDecalSaveLoad(&g_aVehicleModels[g_dwPakDialogPlayerIdx],
+                                          (u8)g_dwPakDialogPlayerIdx,
+                                          9,
+                                          1,
+                                          &g_bPakDialogDone);
         }
-    } else if (g_dwPakDialogResult == PAK_DIALOG_CANCELLED) {
+        g_dwPakDialogResult = result;
+    } else if (result == PAK_DIALOG_CANCELLED) {
         g_bPakDialogDone = TRUE;
     } else {
-        DrawPakErrorMessage(g_dwPakDialogResult, 9, 1);
-        if (g_aVehicles[player].input->buttons & (INPUT_A | INPUT_B)) {
-            TransferFlags(g_aVehicles[player].input, INPUT_A | INPUT_B);
+        g_dwPakDialogResult = result;
+        DrawPakErrorMessage(result, 9, 1);
+        if (g_aVehicles[g_dwPakDialogPlayerIdx].input->buttons & (INPUT_A | INPUT_B)) {
+            TransferFlags(g_aVehicles[g_dwPakDialogPlayerIdx].input, INPUT_A | INPUT_B);
             g_bPakDialogDone = TRUE;
         }
     }
+    player = g_dwPakDialogPlayerIdx;
     if (!g_bPakDialogDone) {
         return;
     }
-    if (g_dwPakDialogResult != 0) {
+    result = g_dwPakDialogResult;
+    if (result != 0) {
         /* The custom decals are out of reach without loaded ones. */
         g_anCarSelectOptionCount[player] = g_dwDecalListCount - 1;
         g_dwPakDialogResult = 0;
     } else {
-        /* Loaded decals add the custom choice, and the cursor moves to it. */
-        g_dwPakDialogResult = 0;
+        /* Loaded decals add the custom choice, and the cursor moves to it. The original clears
+         * the result by storing the zero it read. */
+        g_dwPakDialogResult = result;
         g_anCarSelectOptionCount[player] = g_dwDecalListCount;
         previous = g_anCarSelectCursor[player];
         g_anCarSelectPrevCursor[player] = previous;
@@ -870,8 +894,7 @@ SetCarSelectOptions(s32 player, MenuItem **options, s32 count, const char *name,
 /** Handle the buttons of a player on the screen. */
 static inline void HandleCarSelectInput(s32 player) {
     Vehicle *vehicle = &g_aVehicles[player];
-    PlayerProfile *profile = vehicle->profile;
-    s32 previous, state, page, i, count;
+    s32 previous, state, page, i;
     s32 playSound = TRUE;
     s32 *slot = &g_adwCarSelectModelSlots[player];
 
@@ -894,11 +917,10 @@ static inline void HandleCarSelectInput(s32 player) {
 
     /* Left and right turn to another car, which loads into the other slot. */
     if (state == CAR_SELECT_CAR) {
-        count = g_dwCarCount;
         previous = vehicle->selectedCar;
         if (vehicle->input->buttons & INPUT_LEFT) {
             do {
-                vehicle->selectedCar = (vehicle->selectedCar + count - 1) % count;
+                vehicle->selectedCar = (vehicle->selectedCar + g_dwCarCount - 1) % g_dwCarCount;
             } while (!IsCarUnlocked(vehicle->selectedCar));
         }
         if (previous != vehicle->selectedCar) {
@@ -937,17 +959,17 @@ static inline void HandleCarSelectInput(s32 player) {
 
     /* Left and right move through the options of the other steps. */
     if (g_adwCarSelectState[player] != CAR_SELECT_CAR) {
-        count = g_anCarSelectOptionCount[player];
         if (vehicle->input->buttons & INPUT_LEFT) {
             previous = g_anCarSelectCursor[player];
             g_anCarSelectPrevCursor[player] = previous;
-            g_anCarSelectCursor[player] = (previous + count - 1) % count;
+            g_anCarSelectCursor[player] = (previous + g_anCarSelectOptionCount[player] - 1) %
+                                          g_anCarSelectOptionCount[player];
             g_afCarSelectSlide[player] = 1.0f;
             PlayCarSelectSound(g_pScrollSoundBuf, g_dwScrollSoundSize);
         } else if (vehicle->input->buttons & INPUT_RIGHT) {
             previous = g_anCarSelectCursor[player];
             g_anCarSelectPrevCursor[player] = previous;
-            g_anCarSelectCursor[player] = (previous + 1) % count;
+            g_anCarSelectCursor[player] = (previous + 1) % g_anCarSelectOptionCount[player];
             g_afCarSelectSlide[player] = -1.0f;
             PlayCarSelectSound(g_pScrollSoundBuf, g_dwScrollSoundSize);
         }
@@ -969,25 +991,28 @@ static inline void HandleCarSelectInput(s32 player) {
                                     g_apHandlingOptions,
                                     g_dwHandlingOptionCount,
                                     "Handling",
-                                    profile->handling);
+                                    vehicle->profile->handling);
                 break;
             case CAR_SELECT_TRANSMISSION:
                 SetCarSelectOptions(player,
                                     g_apTransmissionOptions,
                                     g_dwTransmissionOptionCount,
                                     "Transmission",
-                                    profile->transmission);
+                                    vehicle->profile->transmission);
                 break;
             case CAR_SELECT_TIRES:
-                SetCarSelectOptions(
-                    player, g_apTiresOptions, g_dwTiresOptionCount, "Tires", profile->tires);
+                SetCarSelectOptions(player,
+                                    g_apTiresOptions,
+                                    g_dwTiresOptionCount,
+                                    "Tires",
+                                    vehicle->profile->tires);
                 break;
             case CAR_SELECT_SUSPENSION:
                 SetCarSelectOptions(player,
                                     g_apSuspensionOptions,
                                     g_dwSuspensionOptionCount,
                                     "Suspension",
-                                    profile->suspension);
+                                    vehicle->profile->suspension);
                 break;
             case CAR_SELECT_DECALS:
                 /* The options stay those of the suspension. */
@@ -1006,32 +1031,32 @@ static inline void HandleCarSelectInput(s32 player) {
                                 g_apHandlingOptions,
                                 g_dwHandlingOptionCount,
                                 "Handling",
-                                profile->handling);
+                                vehicle->profile->handling);
             break;
         case CAR_SELECT_HANDLING:
-            profile->handling = g_anCarSelectCursor[player];
+            vehicle->profile->handling = g_anCarSelectCursor[player];
             SetCarSelectOptions(player,
                                 g_apTransmissionOptions,
                                 g_dwTransmissionOptionCount,
                                 "Transmission",
-                                profile->transmission);
+                                vehicle->profile->transmission);
             break;
         case CAR_SELECT_TRANSMISSION:
-            profile->transmission = g_anCarSelectCursor[player];
+            vehicle->profile->transmission = g_anCarSelectCursor[player];
             SetCarSelectOptions(
-                player, g_apTiresOptions, g_dwTiresOptionCount, "Tires", profile->tires);
+                player, g_apTiresOptions, g_dwTiresOptionCount, "Tires", vehicle->profile->tires);
             break;
         case CAR_SELECT_TIRES:
-            profile->tires = g_anCarSelectCursor[player];
+            vehicle->profile->tires = g_anCarSelectCursor[player];
             SetCarSelectOptions(player,
                                 g_apSuspensionOptions,
                                 g_dwSuspensionOptionCount,
                                 "Suspension",
-                                profile->suspension);
+                                vehicle->profile->suspension);
             break;
         case CAR_SELECT_SUSPENSION:
             /* The decals show the car, loaded at once into both slots. */
-            profile->suspension = g_anCarSelectCursor[player];
+            vehicle->profile->suspension = g_anCarSelectCursor[player];
             g_anCarSelectCursor[player] = 0;
             g_aapCarSelectOptions[player] = g_apDecalOptions;
             g_anCarSelectOptionCount[player] = vehicle->carModel < PAINT_SHOP_CARS ?

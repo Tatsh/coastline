@@ -125,6 +125,9 @@ static s32 IsVehicleViewed(Vehicle *vehicle) {
 }
 
 /* Stand the trackside camera at the nearest point of the track, or leave it when there is none. */
+/* A point is always chosen when the range test passes, which the compiler cannot prove. */
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
 static void ChooseReplayCamera(Vehicle *vehicle) {
     CameraFrame *trackside = &vehicle->cameras[VEHICLE_CAMERA_TRACKSIDE];
     Vec3f *point = g_LoadedTrack.cameraPoints;
@@ -141,7 +144,9 @@ static void ChooseReplayCamera(Vehicle *vehicle) {
             distance = dx * dx + dy * dy + dz * dz;
             if (distance < best) {
                 best = distance;
-                chosen = *point;
+                chosen.x = point->x;
+                chosen.y = point->y;
+                chosen.z = point->z;
             }
         }
     }
@@ -150,7 +155,9 @@ static void ChooseReplayCamera(Vehicle *vehicle) {
             trackside->position.y != chosen.y || trackside->position.z != chosen.z) {
             vehicle->cameraChanged = 1;
         }
-        trackside->position = chosen;
+        trackside->position.x = chosen.x;
+        trackside->position.y = chosen.y;
+        trackside->position.z = chosen.z;
         vehicle->activeCamera = trackside;
     } else if (vehicle->activeCamera == trackside) {
         vehicle->cameraChanged = 1;
@@ -163,6 +170,7 @@ static void ChooseReplayCamera(Vehicle *vehicle) {
         g_bReplayCockpitNext = !g_bReplayCockpitNext;
     }
 }
+#pragma GCC diagnostic pop
 
 /* Choose the view a replay, a race of the computer, or a finished racer shows, and take the view a
  * player asks for. */
@@ -287,7 +295,9 @@ static void DriveAfterSeason(Vehicle *vehicle) {
 
     Vec3fMulAddInPlace(&vehicle->frame.position, &vehicle->frame.forward, VICTORY_LOOK_AHEAD);
     ComputeTrackPosition(vehicle);
-    ahead = vehicle->trackForward;
+    ahead.x = vehicle->trackForward.x;
+    ahead.y = vehicle->trackForward.y;
+    ahead.z = vehicle->trackForward.z;
     Vec3fMulAddInPlace(&vehicle->frame.position, &vehicle->frame.forward, -VICTORY_LOOK_AHEAD);
     ComputeTrackPosition(vehicle);
 
@@ -324,7 +334,9 @@ static void SwingJoltWeight(Vehicle *vehicle) {
     Vec3fAdd(&corner, &vehicle->frame.position, &vehicle->frame.forward);
     Vec3fAddInPlace(&corner, &vehicle->frame.side);
     Vec3fAdd(&predicted, &vehicle->joltPosition, &vehicle->joltVelocity);
-    previousOffset = vehicle->joltOffset;
+    previousOffset.x = vehicle->joltOffset.x;
+    previousOffset.y = vehicle->joltOffset.y;
+    previousOffset.z = vehicle->joltOffset.z;
     Vec3fSubtract(&vehicle->joltOffset, &vehicle->joltPosition, &corner);
     length = Vec3fLength(&vehicle->joltOffset);
     if (length != 0.0f) {
@@ -336,7 +348,9 @@ static void SwingJoltWeight(Vehicle *vehicle) {
     if (JOLT_THRESHOLD < jolt) {
         AddVehicleJolt(vehicle->index, jolt + jolt);
     }
-    vehicle->joltPosition = corner;
+    vehicle->joltPosition.x = corner.x;
+    vehicle->joltPosition.y = corner.y;
+    vehicle->joltPosition.z = corner.z;
     /* The new position less the predicted one, not the reverse. */
     Vec3fSubtract(&vehicle->joltVelocity, &vehicle->joltPosition, &predicted);
     vehicle->joltVelocity.z -= JOLT_GRAVITY;
@@ -361,64 +375,11 @@ void UpdatePhysicsStep(Vehicle *vehicle) {
     ProcessVehicleInputAndPhysics(vehicle);
 }
 
-/* Whether two segments of points cross seen from above. The game hands the positions to the flat
- * test, which reads their x and y. */
-static s32 CrossesFromAbove(Vec3f *p1, Vec3f *p2, Vec3f *q1, Vec3f *q2) {
-    Vec2f a;
-    Vec2f b;
-    Vec2f c;
-    Vec2f d;
-
-    a.x = p1->x;
-    a.y = p1->y;
-    b.x = p2->x;
-    b.y = p2->y;
-    c.x = q1->x;
-    c.y = q1->y;
-    d.x = q2->x;
-    d.y = q2->y;
-    return TestLineSegmentIntersection(&a, &b, &c, &d);
-}
-
-/* Keep the line of a search as the deepest so far, and nudge the computer away from the side the
- * line passes close to. */
-static void KeepBestTrace(Vehicle *vehicle, s32 depth, s32 pointIndex, TrackSection *section) {
-    g_dwBestTraceDepth = depth;
-    g_pBestTraceSection = section;
-    g_dwBestTracePoint = pointIndex;
-    if (depth >= 3) {
-        if (CrossesFromAbove(&vehicle->frame.position,
-                             &g_avTraceCenterLine[2],
-                             &g_avTraceLeftHalf[1],
-                             &g_avTraceLeftLane[1])) {
-            g_bAiNudgeLeft = FALSE;
-            g_bAiNudgeRight = TRUE;
-        } else if (CrossesFromAbove(&vehicle->frame.position,
-                                    &g_avTraceCenterLine[2],
-                                    &g_avTraceRightHalf[1],
-                                    &g_avTraceRightLane[1])) {
-            g_bAiNudgeLeft = TRUE;
-            g_bAiNudgeRight = FALSE;
-        } else {
-            g_bAiNudgeLeft = FALSE;
-            g_bAiNudgeRight = FALSE;
-        }
-    } else {
-        g_bAiNudgeLeft = FALSE;
-        g_bAiNudgeRight = FALSE;
-    }
-    g_vTraceHalfwayPoint = g_avTraceCenterLine[depth >> 1];
-    g_vTraceFarPoint = g_avTraceCenterLine[depth - 1];
-    memcpy(g_avBestLeftLane, g_avTraceLeftLane, depth * sizeof(Vec3f));
-    memcpy(g_avBestCenterLine, g_avTraceCenterLine, depth * sizeof(Vec3f));
-    memcpy(g_avBestRightLane, g_avTraceRightLane, depth * sizeof(Vec3f));
-    g_dwBestTraceLength = depth;
-}
-
+/* The flat crossing test is handed the positions themselves and reads their x and y. */
 s32 TraceTrackSplineRecursive(Vehicle *vehicle, s32 depth, s32 pointIndex, TrackSection *section) {
     TrackPoint *point;
     TrackSection *child;
-    Vec3f middle;
+    Vec2f middle;
     s32 found = FALSE;
     s32 last;
     s32 i;
@@ -439,30 +400,67 @@ s32 TraceTrackSplineRecursive(Vehicle *vehicle, s32 depth, s32 pointIndex, Track
         last = depth - 1;
         point = &section->points[pointIndex];
         Vec3fLerp(&g_avTraceRightLane[last], &point->left, &point->right, TRACE_LANE_SHARE);
-        g_avTraceCenterLine[last] = point->position;
+        g_avTraceCenterLine[last].x = point->position.x;
+        g_avTraceCenterLine[last].y = point->position.y;
+        g_avTraceCenterLine[last].z = point->position.z;
         Vec3fLerp(&g_avTraceLeftLane[last], &point->right, &point->left, TRACE_LANE_SHARE);
         Vec3fMidpoint(
             &g_avTraceLeftHalf[last], &g_avTraceLeftLane[last], &g_avTraceCenterLine[last]);
         Vec3fMidpoint(
             &g_avTraceRightHalf[last], &g_avTraceRightLane[last], &g_avTraceCenterLine[last]);
-        /* Only x and y of the middle are set: the test is flat. */
         middle.x = (point->right.x + point->left.x) * 0.5f;
         middle.y = (point->right.y + point->left.y) * 0.5f;
         for (i = 1; i < last; i++) {
-            if (!CrossesFromAbove(&vehicle->frame.position,
-                                  &middle,
-                                  &g_avTraceLeftLane[i],
-                                  &g_avTraceRightLane[i])) {
+            if (!TestLineSegmentIntersection((Vec2f *)&vehicle->frame.position,
+                                             &middle,
+                                             (Vec2f *)&g_avTraceLeftLane[i],
+                                             (Vec2f *)&g_avTraceRightLane[i])) {
                 g_bTraceBlocked = TRUE;
-                break;
+                goto next;
             }
         }
-        if (i >= last && g_dwBestTraceDepth < depth) {
-            KeepBestTrace(vehicle, depth, pointIndex, section);
+        if (g_dwBestTraceDepth < depth) {
+            /* Store the line as the deepest so far, and nudge the computer away from the side the
+             * line passes close to. */
+            g_dwBestTraceDepth = depth;
+            g_pBestTraceSection = section;
+            g_dwBestTracePoint = pointIndex;
+            if (depth >= 3) {
+                if (TestLineSegmentIntersection((Vec2f *)&vehicle->frame.position,
+                                                (Vec2f *)&g_avTraceCenterLine[2],
+                                                (Vec2f *)&g_avTraceLeftHalf[1],
+                                                (Vec2f *)&g_avTraceLeftLane[1])) {
+                    g_bAiNudgeLeft = FALSE;
+                    g_bAiNudgeRight = TRUE;
+                } else if (TestLineSegmentIntersection((Vec2f *)&vehicle->frame.position,
+                                                       (Vec2f *)&g_avTraceCenterLine[2],
+                                                       (Vec2f *)&g_avTraceRightHalf[1],
+                                                       (Vec2f *)&g_avTraceRightLane[1])) {
+                    g_bAiNudgeLeft = TRUE;
+                    g_bAiNudgeRight = FALSE;
+                } else {
+                    g_bAiNudgeLeft = FALSE;
+                    g_bAiNudgeRight = FALSE;
+                }
+            } else {
+                g_bAiNudgeLeft = FALSE;
+                g_bAiNudgeRight = FALSE;
+            }
+            g_vTraceHalfwayPoint.x = g_avTraceCenterLine[depth >> 1].x;
+            g_vTraceHalfwayPoint.y = g_avTraceCenterLine[depth >> 1].y;
+            g_vTraceHalfwayPoint.z = g_avTraceCenterLine[depth >> 1].z;
+            g_vTraceFarPoint.x = g_avTraceCenterLine[depth - 1].x;
+            g_vTraceFarPoint.y = g_avTraceCenterLine[depth - 1].y;
+            g_vTraceFarPoint.z = g_avTraceCenterLine[depth - 1].z;
+            memcpy(g_avBestLeftLane, g_avTraceLeftLane, depth * sizeof(Vec3f));
+            memcpy(g_avBestCenterLine, g_avTraceCenterLine, depth * sizeof(Vec3f));
+            memcpy(g_avBestRightLane, g_avTraceRightLane, depth * sizeof(Vec3f));
+            g_dwBestTraceLength = depth;
             found = TRUE;
         }
     }
 
+next:
     pointIndex++;
     if (pointIndex == section->pointCount) {
         child = section->child;
@@ -479,13 +477,10 @@ s32 TraceTrackSplineRecursive(Vehicle *vehicle, s32 depth, s32 pointIndex, Track
 }
 
 void ComputeTrackPosition(Vehicle *vehicle) {
-    TrackPoint *point = &vehicle->section->points[vehicle->pointIndex];
     TrackSection *fromSection;
     TrackSection *toSection;
     s32 from;
     s32 to;
-    Vec3f backward;
-    Vec3f offset;
     Vec3f fromTangent;
     Vec3f toTangent;
     Vec3f fromMiddle;
@@ -501,18 +496,27 @@ void ComputeTrackPosition(Vehicle *vehicle) {
     f32 t2;
     f32 t3;
 
-    span = point[0].distance - point[1].distance;
-    Vec3fSubtract(&backward, &point[0].left, &point[0].position);
-    Vec3fSubtract(&offset, &point[1].left, &point[1].position);
-    Vec3fMidpoint(&offset, &backward, &offset);
+    /* The tangents first hold the direction back along the route and the offset of the vehicle,
+     * and the point is read again after each call. */
+    span = vehicle->section->points[vehicle->pointIndex].distance -
+           vehicle->section->points[vehicle->pointIndex + 1].distance;
+    Vec3fSubtract(&fromTangent,
+                  &vehicle->section->points[vehicle->pointIndex].left,
+                  &vehicle->section->points[vehicle->pointIndex].position);
+    Vec3fSubtract(&toTangent,
+                  &vehicle->section->points[vehicle->pointIndex + 1].left,
+                  &vehicle->section->points[vehicle->pointIndex + 1].position);
+    Vec3fMidpoint(&toTangent, &fromTangent, &toTangent);
     /* The left of the route turned a quarter: back along it. */
-    backward.x = -offset.y;
-    backward.y = offset.x;
-    backward.z = 0.0f;
-    Vec3fMidpoint(&offset, &point[0].position, &point[1].position);
-    Vec3fSubtract(&offset, &vehicle->frame.position, &offset);
+    fromTangent.x = -toTangent.y;
+    fromTangent.y = toTangent.x;
+    fromTangent.z = 0.0f;
+    Vec3fMidpoint(&toTangent,
+                  &vehicle->section->points[vehicle->pointIndex].position,
+                  &vehicle->section->points[vehicle->pointIndex + 1].position);
+    Vec3fSubtract(&toTangent, &vehicle->frame.position, &toTangent);
 
-    if (Vec3fDot(&backward, &offset) < 0.0f) {
+    if (Vec3fDot(&fromTangent, &toTangent) < 0.0f) {
         fromSection = vehicle->section;
         from = vehicle->pointIndex;
         if (from + 1 == fromSection->pointCount) {
@@ -588,13 +592,18 @@ static s32 AiSign(f32 value) {
 static void FindAiLookPoint(Vehicle *vehicle, Vec3f *out) {
     TrackSection *section = vehicle->section;
     s32 index = vehicle->pointIndex;
-    TrackPoint *point = &section->points[index];
+    TrackPoint *point;
     f32 look = Vec3fLength(&vehicle->placedVelocity) * AI_LOOK_PER_SPEED + AI_LOOK_BASE;
     f32 step;
 
+    /* The original stores the point of the vehicle first and overwrites it after the walk. */
+    out->x = vehicle->section->points[vehicle->pointIndex].position.x;
+    out->y = vehicle->section->points[vehicle->pointIndex].position.y;
+    out->z = vehicle->section->points[vehicle->pointIndex].position.z;
     if (AI_LOOK_MAX < look) {
         look = AI_LOOK_MAX;
     }
+    point = &section->points[index];
     for (;;) {
         step = point[0].distance - point[1].distance;
         index++;
@@ -612,38 +621,41 @@ static void FindAiLookPoint(Vehicle *vehicle, Vec3f *out) {
             break;
         }
     }
-    *out = point->position;
+    out->x = point->position.x;
+    out->y = point->position.y;
+    out->z = point->position.z;
 }
 
 /* Set the axes of the route at the point of a computer's vehicle and its offset from the middle a
  * moment ahead. Return the offset to the left. */
 static f32 MeasureAiRoutePosition(Vehicle *vehicle) {
-    TrackPoint *point = &vehicle->section->points[vehicle->pointIndex];
-
-    Vec3fDirection(&vehicle->trackForward, &point[0].position, &point[1].position);
-    Vec3fSubtract(&vehicle->trackSide, &point->left, &point->right);
+    /* The point is read again from the vehicle at each use. */
+    Vec3fDirection(&vehicle->trackForward,
+                   &vehicle->section->points[vehicle->pointIndex].position,
+                   &vehicle->section->points[vehicle->pointIndex + 1].position);
+    Vec3fSubtract(&vehicle->trackSide,
+                  &vehicle->section->points[vehicle->pointIndex].left,
+                  &vehicle->section->points[vehicle->pointIndex].right);
     Vec3fCross(&vehicle->trackUp, &vehicle->trackForward, &vehicle->trackSide);
     Vec3fNormalize(&vehicle->trackUp);
     Vec3fCross(&vehicle->trackSide, &vehicle->trackUp, &vehicle->trackForward);
     Vec3fNormalize(&vehicle->trackSide);
-    Vec3fSubtract(&vehicle->trackOffset, &vehicle->frame.position, &point->position);
+    Vec3fSubtract(&vehicle->trackOffset,
+                  &vehicle->frame.position,
+                  &vehicle->section->points[vehicle->pointIndex].position);
     Vec3fMulAddInPlace(&vehicle->trackOffset, &vehicle->placedVelocity, AI_LOOK_TIME);
     return Vec3fDot(&vehicle->trackSide, &vehicle->trackOffset);
 }
 
 /* Correct a computer that strays from the route or skids across it. Return how hard it corrects. */
-static f32 CorrectAiLine(Vehicle *vehicle, f32 sideOffset, f32 halfWidth, Vec3f *across) {
-    f32 heading = Vec3fDot(&vehicle->frame.forward, &vehicle->trackSide);
-    f32 sideDistance = sideOffset < 0.0f ? -sideOffset : sideOffset;
+static f32 CorrectAiLine(
+    Vehicle *vehicle, f32 sideOffset, f32 sideDistance, f32 heading, f32 halfWidth, Vec3f *across) {
     f32 limit;
-    f32 ratio;
     f32 steer = 0.0f;
     s32 velocitySign;
     s32 wheelSign;
     s32 forwardSign;
 
-    g_bAiNudgeLeft = FALSE;
-    g_bAiNudgeRight = FALSE;
     if (AI_WIDE_HALF_WIDTH < halfWidth) {
         limit = halfWidth - AI_SIDE_MARGIN;
     } else {
@@ -651,27 +663,26 @@ static f32 CorrectAiLine(Vehicle *vehicle, f32 sideOffset, f32 halfWidth, Vec3f 
     }
 
     if (limit < sideDistance) {
-        ratio = (sideDistance - limit) / sideDistance;
-        /* These four compare in double precision. */
+        /* These four compare in double precision, and each computes the share past the limit. */
         if (0.0f < sideOffset) {
             if (heading > -0.05) {
                 g_bAiNudgeLeft = FALSE;
                 g_bAiNudgeRight = TRUE;
-                steer = heading * -0.2f * ratio + 0.03f;
+                steer = heading * -0.2f * ((sideDistance - limit) / sideDistance) + 0.03f;
             } else if (heading < -0.15) {
                 g_bAiNudgeLeft = TRUE;
                 g_bAiNudgeRight = FALSE;
-                steer = heading * -0.3f * ratio + 0.1f;
+                steer = heading * -0.3f * ((sideDistance - limit) / sideDistance) + 0.1f;
             }
         } else {
             if (heading < 0.05) {
                 g_bAiNudgeLeft = TRUE;
                 g_bAiNudgeRight = FALSE;
-                steer = heading * 0.2f * ratio + 0.03f;
+                steer = heading * 0.2f * ((sideDistance - limit) / sideDistance) + 0.03f;
             } else if (heading > 0.15) {
                 g_bAiNudgeLeft = FALSE;
                 g_bAiNudgeRight = TRUE;
-                steer = heading * 0.3f * ratio + 0.1f;
+                steer = heading * 0.3f * ((sideDistance - limit) / sideDistance) + 0.1f;
             }
         }
     } else if (AI_CORRECT_SPEED < Vec3fLength(&vehicle->placedVelocity)) {
@@ -725,7 +736,6 @@ static f32 ReadAiLineAhead(Vehicle *vehicle) {
     Vec3f toLeft;
     Vec3f ahead;
     Vec3f normal;
-    Vec3f *next;
     f32 climb;
     f32 lateral;
     f32 excess;
@@ -734,8 +744,7 @@ static f32 ReadAiLineAhead(Vehicle *vehicle) {
     while (i < g_dwBestTraceDepth) {
         Vec3fSubtract(&toLeft, &g_avBestLeftLane[i], &g_avBestCenterLine[i]);
         /* The point after the last is the first of the right lane, which follows in memory. */
-        next = i + 1 < TRACE_DEPTH ? &g_avBestCenterLine[i + 1] : &g_avBestRightLane[0];
-        Vec3fSubtract(&ahead, next, &g_avBestCenterLine[i]);
+        Vec3fSubtract(&ahead, &g_avBestCenterLine[i + 1], &g_avBestCenterLine[i]);
         Vec3fCross(&normal, &ahead, &toLeft);
         Vec3fNormalize(&normal);
         climb = Vec3fDot(&vehicle->placedVelocity, &normal);
@@ -969,6 +978,8 @@ static void PlanAiDrive(Vehicle *vehicle) {
     f32 forwardSpeed;
     f32 side;
     f32 sideOffset;
+    f32 sideDistance;
+    f32 heading;
     f32 halfWidth;
     f32 steer;
     f32 multiplier;
@@ -983,7 +994,9 @@ static void PlanAiDrive(Vehicle *vehicle) {
         Vec3fMidpoint(&g_vTraceFarPoint, &g_vTraceFarPoint, &g_vTraceHalfwayPoint);
         if (vehicle->aiTarget.x == 0.0f && vehicle->aiTarget.y == 0.0f &&
             vehicle->aiTarget.z == 0.0f) {
-            vehicle->aiTarget = g_vTraceFarPoint;
+            vehicle->aiTarget.x = g_vTraceFarPoint.x;
+            vehicle->aiTarget.y = g_vTraceFarPoint.y;
+            vehicle->aiTarget.z = g_vTraceFarPoint.z;
         } else {
             Vec3fLerp(&vehicle->aiTarget,
                       &vehicle->aiTarget,
@@ -1003,10 +1016,14 @@ static void PlanAiDrive(Vehicle *vehicle) {
     vehicle->input->buttons |= INPUT_ACCELERATE;
 
     sideOffset = MeasureAiRoutePosition(vehicle);
+    heading = Vec3fDot(&vehicle->frame.forward, &vehicle->trackSide);
+    g_bAiNudgeLeft = FALSE;
+    g_bAiNudgeRight = FALSE;
+    sideDistance = sideOffset < 0.0f ? -sideOffset : sideOffset;
     point = &vehicle->section->points[vehicle->pointIndex];
     Vec3fSubtract(&edge, &point->left, &point->position);
     halfWidth = Vec3fDot(&vehicle->trackSide, &edge);
-    steer = CorrectAiLine(vehicle, sideOffset, halfWidth, &across);
+    steer = CorrectAiLine(vehicle, sideOffset, sideDistance, heading, halfWidth, &across);
 
     multiplier = ReadAiLineAhead(vehicle);
     if (AI_CORRECT_SPEED < Vec3fLength(&vehicle->placedVelocity)) {

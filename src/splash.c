@@ -165,7 +165,13 @@ UpdateSplashLogo(Model *logo, f32 start, f32 end, s32 *voice, s32 *soundA, s32 *
     t = g_fSplashTime;
     if (t > start + LOGO_LEAVE_TIME) {
         if (*soundA < 2) {
-            *voice = PlaySplashSound(g_pSplashSoundA, g_dwSplashSoundALength, SFX_VOLUME(20, 20));
+            /* The channel is stored first and read back from the voice at each use. */
+            *voice = FindFreeSoundChannel();
+            if (*voice != -1) {
+                InitSoundChannel(*voice, g_pSplashSoundA, g_dwSplashSoundALength, 0);
+                g_aSoundEffectChannels[*voice].volume = SFX_VOLUME(20, 20);
+                g_aSoundEffectChannels[*voice].step = SFX_STEP_ONE;
+            }
             *soundA = 2;
         } else {
             pan = (s32)((t - (start + LOGO_LEAVE_TIME)) * 32.0f);
@@ -229,7 +235,9 @@ static void DrawSplashTitle(void) {
             SetScissorRect(40, 100, 250, 50);
         }
         /* The original rests this part at negative zero. */
-        z = g_fSplashTime < TITLE_A_END ? TitleDepth(TITLE_START, TITLE_A_END, 300.0f) : -0.0f;
+        z = g_fSplashTime < TITLE_A_END ?
+                (sqrtf(TITLE_A_END - TITLE_START) - sqrtf(g_fSplashTime - TITLE_START)) * 300.0f :
+                -0.0f;
         DrawModelAt(g_pSplashTitleModelA,
                     0.0f,
                     0.0f,

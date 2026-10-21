@@ -169,8 +169,12 @@ void RenderDecalPreview3D(void) {
         &g_pActiveCameraVehicle->cameras[VEHICLE_CAMERA_TRACKSIDE];
     /* The car turns in front of a still camera. */
     if (g_bDecalSlotChanged) {
-        from = s_aPanelViewDirections[g_bPreviousDecalSlot];
-        to = s_aPanelViewDirections[g_bDecalSlot];
+        from.x = s_aPanelViewDirections[g_bPreviousDecalSlot].x;
+        from.y = s_aPanelViewDirections[g_bPreviousDecalSlot].y;
+        from.z = s_aPanelViewDirections[g_bPreviousDecalSlot].z;
+        to.x = s_aPanelViewDirections[g_bDecalSlot].x;
+        to.y = s_aPanelViewDirections[g_bDecalSlot].y;
+        to.z = s_aPanelViewDirections[g_bDecalSlot].z;
         g_wScreenFrameCount++;
         Vec3fNormalize(&from);
         Vec3fNormalize(&to);
@@ -199,7 +203,9 @@ void RenderDecalPreview3D(void) {
             g_bDecalSlotChanged = FALSE;
         }
     } else {
-        g_pActiveCameraVehicle->frame.forward = s_aPanelViewDirections[g_bDecalSlot];
+        g_pActiveCameraVehicle->frame.forward.x = s_aPanelViewDirections[g_bDecalSlot].x;
+        g_pActiveCameraVehicle->frame.forward.y = s_aPanelViewDirections[g_bDecalSlot].y;
+        g_pActiveCameraVehicle->frame.forward.z = s_aPanelViewDirections[g_bDecalSlot].z;
         Vec3fNormalize(&g_pActiveCameraVehicle->frame.forward);
     }
     Vec3fCross(&g_pActiveCameraVehicle->frame.side,
@@ -871,21 +877,8 @@ static inline void SetPakTextColors(u8 inCarSelect) {
     }
 }
 
-/* Draw a box of two lines centred across the screen. */
-static inline void
-DrawCenteredPakMessage(s32 width, s32 y, s32 margin, const char *first, const char *second) {
-    s32 x = (640 - width) >> 1;
-    s32 textX, textY;
-
-    DrawDialogBox(x, y, width, 0x48);
-    textY = (y + 30) >> 1;
-    textX = (x + margin) >> 1;
-    DrawText(first, textX, textY);
-    DrawText(second, textX, textY + 14);
-}
-
 void DrawPakErrorMessage(s32 error, u8 operation, u8 inCarSelect) {
-    s32 y, textY;
+    s32 x, y, width, textY;
 
     SetTextSize(12);
     SetPakTextColors(inCarSelect);
@@ -914,37 +907,55 @@ void DrawPakErrorMessage(s32 error, u8 operation, u8 inCarSelect) {
         DrawText("CUSTOM DECALS.", 0x5A, textY + 66);
         break;
     case PFS_ERR_INCONSISTENT:
-        DrawCenteredPakMessage(operation == PAINT_TOOL_SAVE ? 0x106 : 0x116,
-                               inCarSelect == 1 ? 0xE2 : 0xCC,
-                               16,
-                               operation == PAINT_TOOL_LOAD ? "UNABLE TO READ FROM" :
-                                                              "UNABLE TO WRITE TO",
-                               "THE CONTROLLER PAK");
+        width = operation == PAINT_TOOL_SAVE ? 0x106 : 0x116;
+        y = inCarSelect == 1 ? 0xE2 : 0xCC;
+        x = (640 - width) >> 1;
+        DrawDialogBox(x, y, width, 0x48);
+        textY = (y + 30) >> 1;
+        if (operation == PAINT_TOOL_LOAD) {
+            DrawText("UNABLE TO READ FROM", (x + 16) >> 1, textY);
+        } else {
+            DrawText("UNABLE TO WRITE TO", (x + 16) >> 1, textY);
+        }
+        DrawText("THE CONTROLLER PAK", (x + 16) >> 1, textY + 14);
         break;
     case PFS_ERR_INVALID:
-        DrawCenteredPakMessage(
-            operation == PAINT_TOOL_SAVE ? 0x10C : 0xF2,
-            inCarSelect == 1 ? 0xE2 : 0xCC,
-            16,
-            operation == PAINT_TOOL_LOAD ? "DECALS NOT FOUND" : "ERROR ENCOUNTERED",
-            operation == PAINT_TOOL_LOAD ? "IN CONTROLLER PAK" : "WHILE SAVING DECALS");
+        width = operation == PAINT_TOOL_SAVE ? 0x10C : 0xF2;
+        y = inCarSelect == 1 ? 0xE2 : 0xCC;
+        x = (640 - width) >> 1;
+        DrawDialogBox(x, y, width, 0x48);
+        textY = (y + 30) >> 1;
+        if (operation == PAINT_TOOL_LOAD) {
+            DrawText("DECALS NOT FOUND", (x + 16) >> 1, textY);
+            DrawText("IN CONTROLLER PAK", (x + 16) >> 1, textY + 14);
+        } else {
+            DrawText("ERROR ENCOUNTERED", (x + 16) >> 1, textY);
+            DrawText("WHILE SAVING DECALS", (x + 16) >> 1, textY + 14);
+        }
         break;
     case PAK_ERROR_TRANSFER:
-        DrawCenteredPakMessage(operation == PAINT_TOOL_SAVE ? 0x10B : 0x114,
-                               inCarSelect == 1 ? 0xE2 : 0xCC,
-                               15,
-                               "ERROR ENCOUNTERED",
-                               operation == PAINT_TOOL_LOAD ? "WHILE LOADING DECALS" :
-                                                              "WHILE SAVING DECALS");
+        width = operation == PAINT_TOOL_SAVE ? 0x10B : 0x114;
+        y = inCarSelect == 1 ? 0xE2 : 0xCC;
+        x = (640 - width) >> 1;
+        DrawDialogBox(x, y, width, 0x48);
+        textY = (y + 30) >> 1;
+        DrawText("ERROR ENCOUNTERED", (x + 15) >> 1, textY);
+        if (operation == PAINT_TOOL_LOAD) {
+            DrawText("WHILE LOADING DECALS", (x + 15) >> 1, textY + 14);
+        } else {
+            DrawText("WHILE SAVING DECALS", (x + 15) >> 1, textY + 14);
+        }
         break;
     case PFS_ERR_BAD_DATA:
         y = inCarSelect == 1 ? 0xE4 : 0xCC;
         DrawDialogBox(0xAD, y, 0x126, 0x48);
         textY = (y + 30) >> 1;
         DrawText("BAD DATA ENCOUNTERED", 0x5D, textY);
-        DrawText(operation == PAINT_TOOL_LOAD ? "WHILE LOADING DECALS" : "WHILE SAVING DECALS",
-                 0x5D,
-                 textY + 14);
+        if (operation == PAINT_TOOL_LOAD) {
+            DrawText("WHILE LOADING DECALS", 0x5D, textY + 14);
+        } else {
+            DrawText("WHILE SAVING DECALS", 0x5D, textY + 14);
+        }
         break;
     case PFS_ERR_CONTRFAIL:
         y = inCarSelect == 1 ? 0xDC : 0xB0;
@@ -953,7 +964,11 @@ void DrawPakErrorMessage(s32 error, u8 operation, u8 inCarSelect) {
         DrawText("CONTROLLER ERROR HAS", 0x5E, textY);
         DrawText("BEEN DETECTED.", 0x5E, textY + 12);
         DrawText("CUSTOM DECALS CANNOT", 0x5E, textY + 30);
-        DrawText(operation == PAINT_TOOL_LOAD ? "BE LOADED." : "BE SAVED.", 0x5E, textY + 42);
+        if (operation == PAINT_TOOL_LOAD) {
+            DrawText("BE LOADED.", 0x5E, textY + 42);
+        } else {
+            DrawText("BE SAVED.", 0x5E, textY + 42);
+        }
         break;
     case PFS_ERR_ID_FATAL:
         y = inCarSelect == 1 ? 0xF8 : 0xCC;
@@ -1413,7 +1428,7 @@ static inline void CopyUnmaskedTexels(u8 *texels, u8 *mask, s32 width, s32 heigh
 
     for (y = 0; y < height; y++) {
         for (x = 0; x < width; x++) {
-            if (!(mask[y * ((width + 7) >> 3) + (x >> 3)] & (1 << (7 - (x & 7))))) {
+            if (!(mask[y * ((width + 7) >> 3) + (x >> 3)] & (1 << ((x ^ 7) & 7)))) {
                 /* Odd rows swap the halves of each 64-bit word, as the texture memory reads them.
                  */
                 offset = ((((y & 1) << 3) ^ x) >> 1) + y * (width >> 1);
