@@ -315,6 +315,7 @@ udivdi
 udvare
 ullval
 umoddi
+uncompr
 undraft
 undrafted
 unistd

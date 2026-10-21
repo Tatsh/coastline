@@ -3380,9 +3380,9 @@ nonmatching fixed_td, 0x4
 dlabel fixed_td
     /* 80369B6C */ .space 0x04
 
-nonmatching g_dwHeapCurrentAddr, 0x4
+nonmatching g_pHeapCurrent, 0x4
 
-dlabel g_dwHeapCurrentAddr
+dlabel g_pHeapCurrent
     /* 80369B70 */ .space 0x04
 
 nonmatching D_80369B74, 0xC

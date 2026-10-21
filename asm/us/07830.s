@@ -1861,7 +1861,7 @@ glabel ProcessSplashScreens
     /* 9400 80208400 AC59005C */  sw         $t9, 0x5C($v0)
     /* 9404 80208404 AC4E0068 */  sw         $t6, 0x68($v0)
     /* 9408 80208408 AC4F006C */  sw         $t7, 0x6C($v0)
-    /* 940C 8020840C 0C090A7B */  jal        ClearScreenFrames
+    /* 940C 8020840C 0C090A7B */  jal        ClearFramebuffersForWideMode
     /* 9410 80208410 AC4F0074 */   sw        $t7, 0x74($v0)
     /* 9414 80208414 3C0F8031 */  lui        $t7, %hi(g_dwPhysicsReserved36)
     /* 9418 80208418 8DEF5ED4 */  lw         $t7, %lo(g_dwPhysicsReserved36)($t7)
@@ -2184,7 +2184,7 @@ glabel ProcessControllerCheck
     /* 98B8 802088B8 00000000 */   nop
     /* 98BC 802088BC 1040000A */  beqz       $v0, .L802088E8
     /* 98C0 802088C0 3C018027 */   lui       $at, %hi(g_bSaveLoadInProgress)
-    /* 98C4 802088C4 0C090A7B */  jal        ClearScreenFrames
+    /* 98C4 802088C4 0C090A7B */  jal        ClearFramebuffersForWideMode
     /* 98C8 802088C8 A0200844 */   sb        $zero, %lo(g_bSaveLoadInProgress)($at)
     /* 98CC 802088CC 3C018027 */  lui        $at, %hi(gControllerPakState)
     /* 98D0 802088D0 AC2024F0 */  sw         $zero, %lo(gControllerPakState)($at)

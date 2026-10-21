@@ -64,7 +64,8 @@ if(TGR_PLATFORM STREQUAL "n64")
   add_library(
     coastline_zlib STATIC
     "${_zlib}/adler32.c" "${_zlib}/infblock.c" "${_zlib}/infcodes.c" "${_zlib}/inffast.c"
-    "${_zlib}/inflate.c" "${_zlib}/inftrees.c" "${_zlib}/infutil.c" "${_zlib}/zutil.c")
+    "${_zlib}/inflate.c" "${_zlib}/inftrees.c" "${_zlib}/infutil.c" "${_zlib}/uncompr.c"
+    "${_zlib}/zutil.c")
   target_include_directories(coastline_zlib PUBLIC "${_zlib}")
   # The game's changes to zlib use the game's state and libultra.
   target_include_directories(coastline_zlib PRIVATE "${CMAKE_SOURCE_DIR}/src"
@@ -78,7 +79,7 @@ if(TGR_PLATFORM STREQUAL "n64")
 
   # The game code of the Nintendo 64 releases. A routine joins this list when its body moves from
   # the assembly of the original into C.
-  add_library(coastline_game STATIC game.c)
+  add_library(coastline_game STATIC game.c heap.c)
   target_link_libraries(coastline_game PRIVATE coastline_common)
   list(APPEND COASTLINE_LIBRARIES coastline_game)
 endif()

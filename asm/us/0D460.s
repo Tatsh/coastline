@@ -3979,7 +3979,7 @@ glabel ProcessTrackSelectScreen
     /* 10E68 8020FE68 00000000 */   nop
     /* 10E6C 8020FE6C 1040042A */  beqz       $v0, .L80210F18
     /* 10E70 8020FE70 3C018027 */   lui       $at, %hi(g_dwTrackSelectInitialized)
-    /* 10E74 8020FE74 0C090A7B */  jal        ClearScreenFrames
+    /* 10E74 8020FE74 0C090A7B */  jal        ClearFramebuffersForWideMode
     /* 10E78 8020FE78 AC202238 */   sw        $zero, %lo(g_dwTrackSelectInitialized)($at)
     /* 10E7C 8020FE7C 3C01802A */  lui        $at, %hi(g_dwReverb0VolumeScale)
     /* 10E80 8020FE80 AC204934 */  sw         $zero, %lo(g_dwReverb0VolumeScale)($at)

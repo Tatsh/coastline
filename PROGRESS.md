@@ -36,14 +36,14 @@ The programs are `usa.z64`, `jpn.z64`, `eur.z64`.
 
 | Measure                                                                           | Count |
 | --------------------------------------------------------------------------------- | ----: |
-| Functions in the programs                                                         |   850 |
+| Functions in the programs                                                         |   853 |
 | Excluded as Exception vector (copied from the SDK exception preamble at run time) |     1 |
 | Excluded as PIF ROM (console boot ROM, not part of the cartridge)                 |     5 |
-| To reconstruct                                                                    |   844 |
-| Done                                                                              |   201 |
+| To reconstruct                                                                    |   847 |
+| Done                                                                              |   208 |
 | Stubbed (not counted as done)                                                     |     0 |
-| Declared only (not counted as done)                                               |    21 |
-| Share done                                                                        | 23.8% |
+| Declared only (not counted as done)                                               |    25 |
+| Share done                                                                        | 24.6% |
 | Only in JPN                                                                       |     6 |
 | Only in EUR                                                                       |     2 |
 
@@ -51,7 +51,7 @@ The programs are `usa.z64`, `jpn.z64`, `eur.z64`.
 
 | Component      | Routines | Done | Stubbed |  Share |
 | -------------- | -------: | ---: | ------: | -----: |
-| Game code      |      604 |    8 |       0 |   1.3% |
+| Game code      |      607 |   15 |       0 |   2.5% |
 | IPL3 boot code |        7 |    0 |       0 |   0.0% |
 | SDK (libultra) |      208 |  168 |       0 |  80.8% |
 | zlib           |       25 |   25 |       0 | 100.0% |
@@ -92,7 +92,7 @@ block of the master program.
 | [n64-game-code-80220000.md](progress/n64-game-code-80220000.md)           | Nintendo 64 | Game code      | `0x80220000`-`0x80230000` |      169 |    0 |   0.0% |
 | [n64-game-code-80230000.md](progress/n64-game-code-80230000.md)           | Nintendo 64 | Game code      | `0x80230000`-`0x80240000` |       45 |    0 |   0.0% |
 | [n64-zlib-80230000.md](progress/n64-zlib-80230000.md)                     | Nintendo 64 | zlib           | `0x80230000`-`0x80240000` |        7 |    7 | 100.0% |
-| [n64-game-code-80240000.md](progress/n64-game-code-80240000.md)           | Nintendo 64 | Game code      | `0x80240000`-`0x80250000` |       56 |    2 |   3.6% |
+| [n64-game-code-80240000.md](progress/n64-game-code-80240000.md)           | Nintendo 64 | Game code      | `0x80240000`-`0x80250000` |       59 |    9 |  15.3% |
 | [n64-zlib-80240000.md](progress/n64-zlib-80240000.md)                     | Nintendo 64 | zlib           | `0x80240000`-`0x80250000` |       18 |   18 | 100.0% |
 | [n64-game-code-80250000.md](progress/n64-game-code-80250000.md)           | Nintendo 64 | Game code      | `0x80250000`-`0x80260000` |      141 |    0 |   0.0% |
 | [n64-game-code-80260000.md](progress/n64-game-code-80260000.md)           | Nintendo 64 | Game code      | `0x80260000`-`0x80270000` |        2 |    0 |   0.0% |

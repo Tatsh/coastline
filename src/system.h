@@ -103,6 +103,48 @@ void ProcessAllDisplayLists(void);
  */
 void InitControllersAndPaks(void);
 
+/**
+ * Whether the display stays black whatever a frame would show.
+ *
+ * @ghidraAddress USA: 0x8028a884
+ */
+extern u32 g_dwKeepScreenBlanked;
+
+/**
+ * Show a message on the debug display.
+ *
+ * @ghidraAddress USA: 0x8021e1f4
+ */
+void SetDebugMessage(const char *message);
+
+/**
+ * Add a fill of the whole frame with a colour to the display list.
+ *
+ * @ghidraAddress USA: 0x80217fb8
+ */
+void ClearScreen(s32 red, s32 green, s32 blue);
+
+/**
+ * Select the normal display mode.
+ *
+ * @ghidraAddress USA: 0x80219a1c
+ */
+void SetDisplayModeNormal(void);
+
+/**
+ * Select the wide display mode.
+ *
+ * @ghidraAddress USA: 0x80219a3c
+ */
+void SetDisplayModeWide(void);
+
+/**
+ * End the display list of the frame and run it.
+ *
+ * @ghidraAddress USA: 0x8021aa08
+ */
+void FlushDisplayList(void);
+
 /** @ghidraAddress USA: 0x8021c740 */
 void StubUpdateCallback(void);
 

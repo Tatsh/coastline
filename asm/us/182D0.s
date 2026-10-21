@@ -6579,7 +6579,7 @@ glabel DecompressFromRom
     /* 1DF64 8021CF64 8FA40088 */  lw         $a0, 0x88($sp)
     /* 1DF68 8021CF68 27A50078 */  addiu      $a1, $sp, 0x78
     /* 1DF6C 8021CF6C 02403825 */  or         $a3, $s2, $zero
-    /* 1DF70 8021CF70 0C090A24 */  jal        DecompressBuffer
+    /* 1DF70 8021CF70 0C090A24 */  jal        uncompress
     /* 1DF74 8021CF74 03153021 */   addu      $a2, $t8, $s5
     /* 1DF78 8021CF78 12C00003 */  beqz       $s6, .L8021CF88
     /* 1DF7C 8021CF7C 264B0005 */   addiu     $t3, $s2, 0x5

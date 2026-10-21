@@ -6,18 +6,19 @@ this directory, and upstream code retains its original style.
 
 | Directory     | Upstream archive                                   | SHA-256 of the archive                                             | Files imported            |
 | ------------- | -------------------------------------------------- | ------------------------------------------------------------------ | ------------------------- |
-| `zlib-1.0.4/` | <https://www.zlib.net/fossils/zlib-1.0.4.tar.gz> | `e5c260cd3db1370fb3e0c193e9cbd9f127a9bd055d622b3fb55b82747f6e5b24` | 18 of the release's files |
+| `zlib-1.0.4/` | <https://www.zlib.net/fossils/zlib-1.0.4.tar.gz> | `e5c260cd3db1370fb3e0c193e9cbd9f127a9bd055d622b3fb55b82747f6e5b24` | 19 of the release's files |
 
 ## zlib 1.0.4
 
-The game decompresses every asset with zlib, and its `DecompressBuffer()` calls `inflateInit_()`
-with the version string `1.0.4`. The imported files are `README`, `ChangeLog`, the public headers
+The game decompresses every asset with zlib's `uncompress()`, which calls `inflateInit_()` with
+the version string `1.0.4`. The imported files are `README`, `ChangeLog`, the public headers
 `zlib.h` and `zconf.h`, the inflate side (`inflate.c`, `infblock.c`, `infcodes.c`, `inffast.c`,
-`inftrees.c`, `infutil.c` and their headers), `adler32.c`, and `zutil.c` with `zutil.h` for
-`zcalloc()` and `zcfree()`. The compression side, the gzip layer, and the examples are omitted.
+`inftrees.c`, `infutil.c` and their headers), `adler32.c`, `uncompr.c` for `uncompress()`, and
+`zutil.c` with `zutil.h` for `zcalloc()` and `zcfree()`. The compression side, the gzip layer, and
+the examples are omitted.
 
 The game links `inflate.c`, `infblock.c`, `infcodes.c`, `inffast.c`, `inftrees.c`, `infutil.c`,
-`adler32.c`, and `zutil.c`. The routines the ROM has from zlib are listed under the zlib component
+`adler32.c`, `uncompr.c`, and `zutil.c`. The routines the ROM has from zlib are listed under the zlib component
 of [PROGRESS.md](../PROGRESS.md). Each definition carries the USA address of its routine.
 
 ### Game changes

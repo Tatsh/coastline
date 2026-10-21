@@ -1,7 +1,13 @@
+AllocHeapAligned
 ApplyWeather
+ClearFramebuffersForNormalMode
+ClearFramebuffersForWideMode
+GetHeapCurrentAddress
 InitGameAndShowMenus
 MainMenuEntry
 ResetAllPlayers
+ResetHeap
+SetHeapCurrentAddress
 StartRaceWithPlayerCount
 _Genld
 _Ldtob
@@ -226,6 +232,7 @@ sprintf
 sqrtf
 strchr
 strlen
+uncompress
 viMgrMain
 zcalloc
 zcfree

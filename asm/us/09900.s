@@ -3526,7 +3526,7 @@ glabel ProcessScreenState
     /* CBF8 8020BBF8 8FB8010C */  lw         $t8, 0x10C($sp)
     /* CBFC 8020BBFC 3C018027 */  lui        $at, %hi(g_bScreenStateInitFlag)
     /* CC00 8020BC00 AC201FD4 */  sw         $zero, %lo(g_bScreenStateInitFlag)($at)
-    /* CC04 8020BC04 0C090A7B */  jal        ClearScreenFrames
+    /* CC04 8020BC04 0C090A7B */  jal        ClearFramebuffersForWideMode
     /* CC08 8020BC08 AF070000 */   sw        $a3, 0x0($t8)
     /* CC0C 8020BC0C 3C01802A */  lui        $at, %hi(g_dwReverb0VolumeScale)
     /* CC10 8020BC10 AC204934 */  sw         $zero, %lo(g_dwReverb0VolumeScale)($at)
