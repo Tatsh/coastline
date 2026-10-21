@@ -90,26 +90,27 @@ enum {
 };
 
 /* The text of the messages: white, with a light gray shadow. */
-static void SetMessageText(void) {
-    SetTextStyleNormal();
-    SetTextAlignLeft();
-    SetTextSize(12);
-    SetTextCustomColors(0xFF, 0xFF, 0xFF, 0xFF, 0xF5, 0x00);
-}
+#define SET_MESSAGE_TEXT()                                                                         \
+    {                                                                                              \
+        SetTextStyleNormal();                                                                      \
+        SetTextAlignLeft();                                                                        \
+        SetTextSize(12);                                                                           \
+        SetTextCustomColors(0xFF, 0xFF, 0xFF, 0xFF, 0xF5, 0x00);                                   \
+    }
 
 /* The frame of a message. */
-static void DrawMessageBox(s32 x, s32 y, s32 width, s32 height) {
-    DrawRectBorder(x, y, width, height, 3, 0, 0, 0x80, 0x80, 0x80);
-}
+#define DRAW_MESSAGE_BOX(x, y, width, height)                                                      \
+    DrawRectBorder((x), (y), (width), (height), 3, 0, 0, 0x80, 0x80, 0x80)
 
-/* Copy the equipment of the car of a profile out, or back in. */
-static void GetEquipment(s32 *equipment, PlayerProfile *profile) {
-    equipment[0] = profile->handling;
-    equipment[1] = profile->transmission;
-    equipment[2] = profile->tires;
-    equipment[3] = profile->suspension;
-    equipment[4] = profile->controllerLayout;
-}
+/* Copy the equipment of the car of a profile out. */
+#define GET_EQUIPMENT(equipment, profile)                                                          \
+    {                                                                                              \
+        (equipment)[0] = (profile)->handling;                                                      \
+        (equipment)[1] = (profile)->transmission;                                                  \
+        (equipment)[2] = (profile)->tires;                                                         \
+        (equipment)[3] = (profile)->suspension;                                                    \
+        (equipment)[4] = (profile)->controllerLayout;                                              \
+    }
 
 /* The input of the player choosing in the menus, which the original looks up again at each use. */
 #define CHOOSING_INPUT (&g_aPlayerInputState[g_dwMenuChoosingPlayer])
@@ -221,19 +222,6 @@ void ProcessOptionsMenu(void) {
                                0x80,
                                0x40,
                                0x20)) {
-    case MENU_RESULT_UP:
-        switch (g_dwOptionsMenuSelection) {
-        case OPTIONS_ITEM_BGM:
-            IncreaseBgmVolume();
-            break;
-        case OPTIONS_ITEM_SFX:
-            IncreaseSfxVolume();
-            break;
-        case OPTIONS_ITEM_UNITS:
-            g_OptionSettings.speedInMph = g_OptionSettings.speedInMph == 0;
-            break;
-        }
-        break;
     case MENU_RESULT_DOWN:
         switch (g_dwOptionsMenuSelection) {
         case OPTIONS_ITEM_BGM:
@@ -241,6 +229,19 @@ void ProcessOptionsMenu(void) {
             break;
         case OPTIONS_ITEM_SFX:
             DecreaseSfxVolume();
+            break;
+        case OPTIONS_ITEM_UNITS:
+            g_OptionSettings.speedInMph = g_OptionSettings.speedInMph == 0;
+            break;
+        }
+        break;
+    case MENU_RESULT_UP:
+        switch (g_dwOptionsMenuSelection) {
+        case OPTIONS_ITEM_BGM:
+            IncreaseBgmVolume();
+            break;
+        case OPTIONS_ITEM_SFX:
+            IncreaseSfxVolume();
             break;
         case OPTIONS_ITEM_UNITS:
             g_OptionSettings.speedInMph = g_OptionSettings.speedInMph == 0;
@@ -278,72 +279,70 @@ void ProcessOptionsMenu(void) {
 }
 
 /* The message that the Controller Pak is not the one the player used before. */
-static void DrawNewPakMessage(s32 boxY, s32 textY) {
-    DrawMessageBox(0xAF, boxY, 0x122, 0x89);
-    DrawText("A NEW CONTROLLER PAK", 0x5F, textY);
-    DrawText("WAS INSERTED.", 0x5F, textY + 0xD);
-    DrawText("THIS CONTROLLER PAK", 0x5F, textY + 0x20);
-    DrawText("WILL BE USED.", 0x5F, textY + 0x2D);
-}
+#define DRAW_NEW_PAK_MESSAGE(boxY, textY)                                                          \
+    {                                                                                              \
+        DRAW_MESSAGE_BOX(0xAF, (boxY), 0x122, 0x89);                                               \
+        DrawText("A NEW CONTROLLER PAK", 0x5F, (textY));                                           \
+        DrawText("WAS INSERTED.", 0x5F, (textY) + 0xD);                                            \
+        DrawText("THIS CONTROLLER PAK", 0x5F, (textY) + 0x20);                                     \
+        DrawText("WILL BE USED.", 0x5F, (textY) + 0x2D);                                           \
+    }
 
 /* The message that asks the player to swap the Rumble Pak for the Controller Pak, with its OK and
  * CANCEL buttons. */
-static void DrawSwapForControllerPakMessage(
-    s32 boxY, s32 textY, s32 buttonY, const char *okText, const char *cancelText) {
-    s32 labelY;
-
-    DrawMessageBox(0x79, boxY, 0x18D, 0xA0);
-    DrawText("PLEASE REMOVE THE RUMBLE PAK", 0x44, textY);
-    DrawText("AND INSERT THE CONTROLLER PAK", 0x44, textY + 0xD);
-    DrawText("INTO THE CONTROLLER.  PRESS", 0x44, textY + 0x1A);
-    DrawText("THE A BUTTON WHEN READY.", 0x44, textY + 0x27);
-    SetTextAlignLeft();
-    SetTextSize(10);
-    labelY = (buttonY + 0x12) >> 1;
-    DrawText(okText, (u32)(g_texButtonA.width + 0xE3) >> 1, labelY);
-    DrawText(cancelText, (u32)(g_texButtonB.width + 0x144) >> 1, labelY);
-    DrawTexturedSprite(&g_texButtonA, 0xDD, buttonY);
-    DrawTexturedSprite(&g_texButtonB, 0x13E, buttonY);
-}
+#define DRAW_SWAP_FOR_CONTROLLER_PAK_MESSAGE(boxY, textY, buttonY, okText, cancelText)             \
+    {                                                                                              \
+        DRAW_MESSAGE_BOX(0x79, (boxY), 0x18D, 0xA0);                                               \
+        DrawText("PLEASE REMOVE THE RUMBLE PAK", 0x44, (textY));                                   \
+        DrawText("AND INSERT THE CONTROLLER PAK", 0x44, (textY) + 0xD);                            \
+        DrawText("INTO THE CONTROLLER.  PRESS", 0x44, (textY) + 0x1A);                             \
+        DrawText("THE A BUTTON WHEN READY.", 0x44, (textY) + 0x27);                                \
+        SetTextAlignLeft();                                                                        \
+        SetTextSize(10);                                                                           \
+        DrawText((okText), (u32)(g_texButtonA.width + 0xE3) >> 1, ((buttonY) + 0x12) >> 1);        \
+        DrawText((cancelText), (u32)(g_texButtonB.width + 0x144) >> 1, ((buttonY) + 0x12) >> 1);   \
+        DrawTexturedSprite(&g_texButtonA, 0xDD, (buttonY));                                        \
+        DrawTexturedSprite(&g_texButtonB, 0x13E, (buttonY));                                       \
+    }
 
 /* The message that asks the player to put the Rumble Pak back. */
-static void DrawSwapForRumblePakMessage(s32 boxX, s32 boxY, s32 boxWidth, s32 textY) {
-    DrawMessageBox(boxX, boxY, boxWidth, 0x98);
-    DrawText("IF THE RUMBLE PAK IS TO BE USED,", 0x41, textY);
-    DrawText("REMOVE THE CONTROLLER PAK AND", 0x41, textY + 0xD);
-    DrawText("INSERT THE RUMBLE PAK INTO THE", 0x41, textY + 0x1A);
-    DrawText("CONTROLLER.  PRESS THE A BUTTON", 0x41, textY + 0x27);
-    DrawText("TO CONTINUE.", 0x41, textY + 0x34);
-}
+#define DRAW_SWAP_FOR_RUMBLE_PAK_MESSAGE(boxX, boxY, boxWidth, textY)                              \
+    {                                                                                              \
+        DRAW_MESSAGE_BOX((boxX), (boxY), (boxWidth), 0x98);                                        \
+        DrawText("IF THE RUMBLE PAK IS TO BE USED,", 0x41, (textY));                               \
+        DrawText("REMOVE THE CONTROLLER PAK AND", 0x41, (textY) + 0xD);                            \
+        DrawText("INSERT THE RUMBLE PAK INTO THE", 0x41, (textY) + 0x1A);                          \
+        DrawText("CONTROLLER.  PRESS THE A BUTTON", 0x41, (textY) + 0x27);                         \
+        DrawText("TO CONTINUE.", 0x41, (textY) + 0x34);                                            \
+    }
 
 /* The message that the Controller Pak lacks the room for a note. */
-static void DrawInsufficientPagesMessage(s32 textY, const char *pages, const char *data) {
-    DrawText("INSUFFICIENT FREE PAGES", 0x5A, textY);
-    DrawText("OR FREE NOTES IN THE", 0x5A, textY + 0xD);
-    DrawText("CONTROLLER PAK.", 0x5A, textY + 0x1A);
-    DrawText(pages, 0x5A, textY + 0x2D);
-    DrawText("ARE NEEDED TO SAVE THE", 0x5A, textY + 0x3A);
-    DrawText(data, 0x5A, textY + 0x47);
-}
+#define DRAW_INSUFFICIENT_PAGES_MESSAGE(textY, pages, data)                                        \
+    {                                                                                              \
+        DrawText("INSUFFICIENT FREE PAGES", 0x5A, (textY));                                        \
+        DrawText("OR FREE NOTES IN THE", 0x5A, (textY) + 0xD);                                     \
+        DrawText("CONTROLLER PAK.", 0x5A, (textY) + 0x1A);                                         \
+        DrawText((pages), 0x5A, (textY) + 0x2D);                                                   \
+        DrawText("ARE NEEDED TO SAVE THE", 0x5A, (textY) + 0x3A);                                  \
+        DrawText((data), 0x5A, (textY) + 0x47);                                                    \
+    }
 
 /* A message of two lines in a box of the usual height. */
-static void
-DrawShortMessage(s32 boxX, s32 boxWidth, s32 textX, const char *line1, const char *line2) {
-    DrawMessageBox(boxX, 0xD9, boxWidth, 0x4A);
-    DrawText(line1, textX, 0x7C);
-    DrawText(line2, textX, 0x8A);
-}
+#define DRAW_SHORT_MESSAGE(boxX, boxWidth, textX, line1, line2)                                    \
+    {                                                                                              \
+        DRAW_MESSAGE_BOX((boxX), 0xD9, (boxWidth), 0x4A);                                          \
+        DrawText((line1), (textX), 0x7C);                                                          \
+        DrawText((line2), (textX), 0x8A);                                                          \
+    }
 
 /* The message that the data was loaded or saved, in a box whose top depends on the screen that
  * opened the save and load menu. */
-static void DrawDoneMessage(s32 boxX, s32 boxWidth, s32 top, const char *line1, const char *line2) {
-    s32 textY;
-
-    DrawMessageBox(boxX, top, boxWidth, 0x4A);
-    textY = (top + 0x20) >> 1;
-    DrawText(line1, 0x9F, textY);
-    DrawText(line2, 0x9F, textY + 0xE);
-}
+#define DRAW_DONE_MESSAGE(boxX, boxWidth, top, line1, line2)                                       \
+    {                                                                                              \
+        DRAW_MESSAGE_BOX((boxX), (top), (boxWidth), 0x4A);                                         \
+        DrawText((line1), 0x9F, ((top) + 0x20) >> 1);                                              \
+        DrawText((line2), 0x9F, (((top) + 0x20) >> 1) + 0xE);                                      \
+    }
 
 /* A choice out of range sets no note. */
 #pragma GCC diagnostic push
@@ -637,8 +636,8 @@ void ProcessDataSaveLoadMenu(void) {
 
     case SAVE_LOAD_STEP_NEW_PAK:
         g_bSaveLoadInputEnabled = FALSE;
-        SetMessageText();
-        DrawNewPakMessage(0xB9, 0x6C);
+        SET_MESSAGE_TEXT();
+        DRAW_NEW_PAK_MESSAGE(0xB9, 0x6C);
         if (CHOOSING_INPUT->buttons & DISMISS_BUTTONS) {
             TransferFlags(CHOOSING_INPUT, DISMISS_BUTTONS);
             g_bSaveLoadStep = SAVE_LOAD_STEP_FIND;
@@ -730,7 +729,7 @@ void ProcessDataSaveLoadMenu(void) {
              * when the main menu opened the menu. */
             if (g_bSaveLoadEntryPoint == SAVE_LOAD_FROM_MAIN_MENU) {
                 other = g_aVehicles[g_dwMenuChoosingPlayer ^ 1].profile;
-                GetEquipment(equipment, other);
+                GET_EQUIPMENT(equipment, other);
             }
             memcpy(g_aVehicles[0].profile, g_pPakDataBuffer, sizeof(PlayerProfile));
             memcpy(g_aVehicles[1].profile, g_pPakDataBuffer, sizeof(PlayerProfile));
@@ -828,7 +827,7 @@ void ProcessDataSaveLoadMenu(void) {
         top = g_bSaveLoadEntryPoint != SAVE_LOAD_FROM_MAIN_MENU ? 0xBF : 0xC9;
         /* The buttons are placed by the width of the picture of A, not its height. */
         buttonY = top - g_texButtonA.width + 0x62;
-        DrawMessageBox(0xD5, top, 0xD6, 0x6A);
+        DRAW_MESSAGE_BOX(0xD5, top, 0xD6, 0x6A);
         SetTextAlignLeft();
         SetTextStyleNormal();
         SetTextSize(13);
@@ -913,7 +912,7 @@ void ProcessDataSaveLoadMenu(void) {
                 g_bSaveLoadStep = SAVE_LOAD_STEP_ERROR;
                 break;
             }
-            GetEquipment(equipment, g_aVehicles[g_dwMenuChoosingPlayer].profile);
+            GET_EQUIPMENT(equipment, g_aVehicles[g_dwMenuChoosingPlayer].profile);
             memcpy(g_pPakDataBuffer, equipment, sizeof(equipment));
             gControllerPakState = osPfsReadWriteFile(&g_aPakPfs[g_dwMenuChoosingPlayer],
                                                      g_dwSaveLoadNoteIndex,
@@ -932,14 +931,14 @@ void ProcessDataSaveLoadMenu(void) {
 
     case SAVE_LOAD_STEP_ERROR:
         g_bSaveLoadInputEnabled = FALSE;
-        SetMessageText();
+        SET_MESSAGE_TEXT();
         switch (gControllerPakState) {
         case PFS_ERR_ID_FATAL:
-            DrawShortMessage(0xBD, 0x106, 0x66, "THE CONTROLLER PAK", "IS NONFUNCTIONAL.");
+            DRAW_SHORT_MESSAGE(0xBD, 0x106, 0x66, "THE CONTROLLER PAK", "IS NONFUNCTIONAL.");
             break;
         case PFS_ERR_NOPACK:
         case PFS_ERR_DEVICE:
-            DrawMessageBox(0x94, 0xD8, 0x158, 0x4C);
+            DRAW_MESSAGE_BOX(0x94, 0xD8, 0x158, 0x4C);
             DrawText("CONTROLLER PAK NOT FOUND.", 0x52, 0x7C);
             if (g_bSaveLoadChoice == SAVE_LOAD_LOAD_SEASON ||
                 g_bSaveLoadChoice == SAVE_LOAD_LOAD_GHOST ||
@@ -952,46 +951,46 @@ void ProcessDataSaveLoadMenu(void) {
             }
             break;
         case PAK_STATE_RUMBLE_PAK:
-            DrawSwapForControllerPakMessage(
+            DRAW_SWAP_FOR_CONTROLLER_PAK_MESSAGE(
                 0xAE, 0x67, 0x146 - g_texButtonA.width, "%wwOK", "%wwCANCEL");
             break;
         case PFS_DATA_FULL:
         case PFS_DIR_FULL:
-            DrawMessageBox(0xA5, 0x9F, 0x136, 0xBD);
+            DRAW_MESSAGE_BOX(0xA5, 0x9F, 0x136, 0xBD);
             if (g_bSaveLoadChoice == SAVE_LOAD_SAVE_SEASON) {
-                DrawInsufficientPagesMessage(0x5F, "TWO PAGES AND ONE NOTE", "SEASON DATA.");
+                DRAW_INSUFFICIENT_PAGES_MESSAGE(0x5F, "TWO PAGES AND ONE NOTE", "SEASON DATA.");
             } else if (g_bSaveLoadChoice == SAVE_LOAD_SAVE_GHOST) {
-                DrawInsufficientPagesMessage(0x5F, "58 PAGES AND ONE NOTE", "GHOST CAR DATA.");
+                DRAW_INSUFFICIENT_PAGES_MESSAGE(0x5F, "58 PAGES AND ONE NOTE", "GHOST CAR DATA.");
             } else if (g_bSaveLoadChoice == SAVE_LOAD_SAVE_OPTIONS) {
-                DrawInsufficientPagesMessage(0x5F, "ONE PAGE AND ONE NOTE", "OPTIONS.");
+                DRAW_INSUFFICIENT_PAGES_MESSAGE(0x5F, "ONE PAGE AND ONE NOTE", "OPTIONS.");
             }
             break;
         case PAK_STATE_GHOST_TOO_LARGE:
-            DrawMessageBox(0x75, 0xBD, 0x196, 0x82);
+            DRAW_MESSAGE_BOX(0x75, 0xBD, 0x196, 0x82);
             DrawText("UNABLE TO SAVE GHOST CAR DATA.", 0x42, 0x6E);
             DrawText("GHOST CAR DATA IS LARGER THAN", 0x42, 0x7C);
             DrawText("THE MAXIMUM ALLOCATED SPACE", 0x42, 0x8A);
             DrawText("IN THE CONTROLLER PAK.", 0x42, 0x98);
             break;
         case PFS_ERR_CONTRFAIL:
-            DrawShortMessage(0xBF, 0x102, 0x67, "CONTROLLER ERROR", "HAS BEEN DETECTED!");
+            DRAW_SHORT_MESSAGE(0xBF, 0x102, 0x67, "CONTROLLER ERROR", "HAS BEEN DETECTED!");
             break;
         case PFS_ERR_INVALID:
             if (g_bSaveLoadChoice == SAVE_LOAD_LOAD_SEASON ||
                 g_bSaveLoadChoice == SAVE_LOAD_LOAD_GHOST ||
                 g_bSaveLoadChoice == SAVE_LOAD_LOAD_OPTIONS) {
-                DrawShortMessage(0xAD, 0x125, 0x5E, "SAVED DATA NOT FOUND", "IN CONTROLLER PAK.");
+                DRAW_SHORT_MESSAGE(0xAD, 0x125, 0x5E, "SAVED DATA NOT FOUND", "IN CONTROLLER PAK.");
             } else if (g_bSaveLoadChoice == SAVE_LOAD_SAVE_SEASON ||
                        g_bSaveLoadChoice == SAVE_LOAD_SAVE_GHOST ||
                        g_bSaveLoadChoice == SAVE_LOAD_SAVE_OPTIONS) {
-                DrawShortMessage(0xB6, 0x114, 0x63, "UNABLE TO SAVE DATA", "TO CONTROLLER PAK.");
+                DRAW_SHORT_MESSAGE(0xB6, 0x114, 0x63, "UNABLE TO SAVE DATA", "TO CONTROLLER PAK.");
             }
             break;
         case PFS_ERR_NEW_PACK:
-            DrawNewPakMessage(0xBB, 0x6D);
+            DRAW_NEW_PAK_MESSAGE(0xBB, 0x6D);
             break;
         default:
-            DrawShortMessage(0xB1, 0x11E, 0x60, "CONTROLLER PAK ERROR", "HAS BEEN DETECTED!");
+            DRAW_SHORT_MESSAGE(0xB1, 0x11E, 0x60, "CONTROLLER PAK ERROR", "HAS BEEN DETECTED!");
             break;
         }
         if (gControllerPakState != PAK_STATE_RUMBLE_PAK) {
@@ -1026,23 +1025,23 @@ void ProcessDataSaveLoadMenu(void) {
         top = g_bSaveLoadEntryPoint != SAVE_LOAD_FROM_MAIN_MENU ? 0xCE : 0xD9;
         switch (g_bSaveLoadChoice) {
         case SAVE_LOAD_LOAD_SEASON:
-            DrawDoneMessage(0xE2, 0xBC, top, "%ywSEASON DATA", "%ywLOADED OK!");
+            DRAW_DONE_MESSAGE(0xE2, 0xBC, top, "%ywSEASON DATA", "%ywLOADED OK!");
             break;
         case SAVE_LOAD_SAVE_SEASON:
-            DrawDoneMessage(0xE2, 0xBC, top, "%ywSEASON DATA", "%ywSAVED OK!");
+            DRAW_DONE_MESSAGE(0xE2, 0xBC, top, "%ywSEASON DATA", "%ywSAVED OK!");
             break;
         case SAVE_LOAD_LOAD_GHOST:
-            DrawDoneMessage(0xE2, 0xBC, top, "%ywGHOST DATA", "%ywLOADED OK!");
+            DRAW_DONE_MESSAGE(0xE2, 0xBC, top, "%ywGHOST DATA", "%ywLOADED OK!");
             break;
         case SAVE_LOAD_SAVE_GHOST:
-            DrawDoneMessage(0xD8, 0xD0, top, "%ywGHOST CAR DATA", "%ywSAVED OK!");
+            DRAW_DONE_MESSAGE(0xD8, 0xD0, top, "%ywGHOST CAR DATA", "%ywSAVED OK!");
             break;
         case SAVE_LOAD_LOAD_OPTIONS:
-            DrawMessageBox(0xC3, 0xE7, 0xFA, 0x2E);
+            DRAW_MESSAGE_BOX(0xC3, 0xE7, 0xFA, 0x2E);
             DrawText("%ywOPTIONS LOADED OK!", 0x9F, 0x83);
             break;
         case SAVE_LOAD_SAVE_OPTIONS:
-            DrawMessageBox(0xC3, 0xE7, 0xFA, 0x2E);
+            DRAW_MESSAGE_BOX(0xC3, 0xE7, 0xFA, 0x2E);
             DrawText("%ywOPTIONS SAVED OK!", 0x9F, 0x83);
             break;
         default:
@@ -1069,8 +1068,8 @@ void ProcessDataSaveLoadMenu(void) {
 
     case SAVE_LOAD_STEP_RUMBLE_PAK:
         g_bSaveLoadInputEnabled = FALSE;
-        SetMessageText();
-        DrawSwapForRumblePakMessage(0x72, 0xB2, 0x19C, 0x69);
+        SET_MESSAGE_TEXT();
+        DRAW_SWAP_FOR_RUMBLE_PAK_MESSAGE(0x72, 0xB2, 0x19C, 0x69);
         if (CHOOSING_INPUT->buttons & INPUT_A) {
             TransferFlags(CHOOSING_INPUT, INPUT_A);
             if (g_bSaveLoadEntryPoint == SAVE_LOAD_FROM_MAIN_MENU) {
@@ -1159,7 +1158,7 @@ s32 DrawRumblePakPrompt(s32 anyPlayer) {
     SetTextAlignLeft();
     SetTextSize(12);
     SetTextCustomColors(0xFF, 0xFF, 0xFF, 0xFF, 0xF5, 0x00);
-    DrawSwapForRumblePakMessage(0x73, 0xB4, 0x19A, 0x6A);
+    DRAW_SWAP_FOR_RUMBLE_PAK_MESSAGE(0x73, 0xB4, 0x19A, 0x6A);
     for (player = 0; player != 2; player++) {
         if ((anyPlayer || player == g_dwMenuChoosingPlayer) &&
             (g_aPlayerInputState[player].buttons & DISMISS_BUTTONS)) {
@@ -1184,36 +1183,36 @@ void InitAllRumblePaks(void) {
 }
 
 s32 IsRumblePakMissing(void) {
-    s32 player;
     u8 plugged;
+    s32 player;
 
     g_wSerialInterfaceIdle = FALSE;
     for (player = 0; player < (s32)g_dwNumLocalPlayers; player++) {
         osPfsIsPlug(&g_SiMesgQueue, &plugged);
         if (!(plugged & (1 << player))) {
-            g_wSerialInterfaceIdle = TRUE;
-            return TRUE;
+            goto missing;
         }
         gControllerPakState = osPfsInitPak(&g_SiMesgQueue, &g_aPakPfs[player], player);
         if (gControllerPakState != 0) {
             if (gControllerPakState != PFS_ERR_ID_FATAL) {
-                g_wSerialInterfaceIdle = TRUE;
-                return TRUE;
+                goto missing;
             }
             if (osMotorInit(&g_SiMesgQueue, &g_aContPfs[player], player) != 0) {
-                g_wSerialInterfaceIdle = TRUE;
-                return TRUE;
+                goto missing;
             }
             osMotorStop(&g_aContPfs[player]);
         }
         /* A Controller Pak is not a Rumble Pak. */
         if (gControllerPakState == 0) {
-            g_wSerialInterfaceIdle = TRUE;
-            return TRUE;
+            goto missing;
         }
     }
     g_wSerialInterfaceIdle = TRUE;
     return FALSE;
+
+missing:
+    g_wSerialInterfaceIdle = TRUE;
+    return TRUE;
 }
 
 /* The original reads a byte of its stack that is never set, and other data types set no note. */
@@ -1376,8 +1375,8 @@ s32 ProcessPakDataScreen(s32 dataType, u8 quiet) {
             g_bPakDataStep = PAK_DATA_STEP_FIND;
             break;
         }
-        SetMessageText();
-        DrawNewPakMessage(0xC3, 0x71);
+        SET_MESSAGE_TEXT();
+        DRAW_NEW_PAK_MESSAGE(0xC3, 0x71);
         if (CHOOSING_INPUT->buttons & DISMISS_BUTTONS) {
             TransferFlags(CHOOSING_INPUT, DISMISS_BUTTONS);
             g_bPakDataStep = PAK_DATA_STEP_FIND;
@@ -1447,7 +1446,7 @@ s32 ProcessPakDataScreen(s32 dataType, u8 quiet) {
             /* Both players take the season, but the other player keeps the equipment of the car.
              */
             other = g_aVehicles[g_dwMenuChoosingPlayer ^ 1].profile;
-            GetEquipment(equipment, other);
+            GET_EQUIPMENT(equipment, other);
             memcpy(g_aVehicles[0].profile, g_pPakDataBuffer, sizeof(PlayerProfile));
             memcpy(g_aVehicles[1].profile, g_pPakDataBuffer, sizeof(PlayerProfile));
             SET_EQUIPMENT(g_dwMenuChoosingPlayer ^ 1, equipment);
@@ -1537,7 +1536,7 @@ s32 ProcessPakDataScreen(s32 dataType, u8 quiet) {
             g_bPakDataStep = PAK_DATA_STEP_ERROR;
             break;
         }
-        GetEquipment(equipment, g_aVehicles[g_dwMenuChoosingPlayer].profile);
+        GET_EQUIPMENT(equipment, g_aVehicles[g_dwMenuChoosingPlayer].profile);
         memcpy(g_pPakDataBuffer, equipment, sizeof(equipment));
         gControllerPakState = osPfsReadWriteFile(&g_aPakPfs[g_dwMenuChoosingPlayer],
                                                  g_dwPakDataNoteIndex,
@@ -1558,14 +1557,14 @@ s32 ProcessPakDataScreen(s32 dataType, u8 quiet) {
             g_bPakDataStep = PAK_DATA_STEP_FINISH;
             break;
         }
-        SetMessageText();
+        SET_MESSAGE_TEXT();
         switch (gControllerPakState) {
         case PFS_ERR_ID_FATAL:
-            DrawShortMessage(0xBD, 0x106, 0x66, "THE CONTROLLER PAK", "IS NONFUNCTIONAL!");
+            DRAW_SHORT_MESSAGE(0xBD, 0x106, 0x66, "THE CONTROLLER PAK", "IS NONFUNCTIONAL!");
             break;
         case PFS_ERR_NOPACK:
         case PFS_ERR_DEVICE:
-            DrawMessageBox(0x94, 0xD8, 0x158, 0x4C);
+            DRAW_MESSAGE_BOX(0x94, 0xD8, 0x158, 0x4C);
             DrawText("CONTROLLER PAK NOT FOUND.", 0x52, 0x7C);
             if (dataType == PAK_DATA_SAVE_CONFIGURATION) {
                 DrawText("DATA CANNOT BE SAVED.", 0x52, 0x8A);
@@ -1574,29 +1573,29 @@ s32 ProcessPakDataScreen(s32 dataType, u8 quiet) {
             }
             break;
         case PAK_STATE_RUMBLE_PAK:
-            DrawSwapForControllerPakMessage(
+            DRAW_SWAP_FOR_CONTROLLER_PAK_MESSAGE(
                 0xB0, 0x68, 0x148 - g_texButtonA.width, "%wwOK", "%wwCANCEL");
             break;
         case PFS_DATA_FULL:
         case PFS_DIR_FULL:
-            DrawMessageBox(0xA5, 0xA5, 0x136, 0xBD);
-            DrawInsufficientPagesMessage(0x62, "ONE PAGE AND ONE NOTE", "OPTIONS.");
+            DRAW_MESSAGE_BOX(0xA5, 0xA5, 0x136, 0xBD);
+            DRAW_INSUFFICIENT_PAGES_MESSAGE(0x62, "ONE PAGE AND ONE NOTE", "OPTIONS.");
             break;
         case PFS_ERR_CONTRFAIL:
-            DrawShortMessage(0xBF, 0x102, 0x67, "CONTROLLER ERROR", "HAS BEEN DETECTED!");
+            DRAW_SHORT_MESSAGE(0xBF, 0x102, 0x67, "CONTROLLER ERROR", "HAS BEEN DETECTED!");
             break;
         case PFS_ERR_INVALID:
             if (dataType == PAK_DATA_SAVE_CONFIGURATION) {
-                DrawShortMessage(0xAF, 0x122, 0x5F, "CONTROLLER PAK ERROR", "HAS BEEN DETECTED!");
+                DRAW_SHORT_MESSAGE(0xAF, 0x122, 0x5F, "CONTROLLER PAK ERROR", "HAS BEEN DETECTED!");
             } else {
-                DrawShortMessage(0xAF, 0x122, 0x5F, "SAVED DATA NOT FOUND", "IN CONTROLLER PAK.");
+                DRAW_SHORT_MESSAGE(0xAF, 0x122, 0x5F, "SAVED DATA NOT FOUND", "IN CONTROLLER PAK.");
             }
             break;
         case PFS_ERR_NEW_PACK:
-            DrawNewPakMessage(0xB9, 0x6C);
+            DRAW_NEW_PAK_MESSAGE(0xB9, 0x6C);
             break;
         default:
-            DrawShortMessage(0xAF, 0x122, 0x5F, "CONTROLLER PAK ERROR", "HAS BEEN DETECTED.");
+            DRAW_SHORT_MESSAGE(0xAF, 0x122, 0x5F, "CONTROLLER PAK ERROR", "HAS BEEN DETECTED.");
             break;
         }
         if (gControllerPakState != PAK_STATE_RUMBLE_PAK) {
@@ -1630,13 +1629,13 @@ s32 ProcessPakDataScreen(s32 dataType, u8 quiet) {
         SetTextSize(12);
         if (dataType == PAK_DATA_LOAD_SEASON) {
             top = g_bSaveLoadEntryPoint != SAVE_LOAD_FROM_MAIN_MENU ? 0xCE : unsetOffset + 0xCB;
-            DrawDoneMessage(0xE2, 0xBC, top, "%ywSEASON DATA", "%ywLOADED OK!");
+            DRAW_DONE_MESSAGE(0xE2, 0xBC, top, "%ywSEASON DATA", "%ywLOADED OK!");
         } else if (dataType == PAK_DATA_LOAD_GHOST) {
             top = g_bSaveLoadEntryPoint != SAVE_LOAD_FROM_MAIN_MENU ? 0xCE : unsetOffset + 0xCB;
-            DrawDoneMessage(0xE2, 0xBC, top, "%ywGHOST DATA", "%ywLOADED OK!");
+            DRAW_DONE_MESSAGE(0xE2, 0xBC, top, "%ywGHOST DATA", "%ywLOADED OK!");
         } else if (dataType == PAK_DATA_LOAD_CONFIGURATION ||
                    dataType == PAK_DATA_SAVE_CONFIGURATION) {
-            DrawMessageBox(0xD8, 0xD9, 0xD0, 0x4A);
+            DRAW_MESSAGE_BOX(0xD8, 0xD9, 0xD0, 0x4A);
             DrawText("%ywCONFIGURATION", 0x9F, 0x7C);
             if (dataType == PAK_DATA_LOAD_CONFIGURATION) {
                 DrawText("%ywLOADED OK!", 0x9F, 0x8A);
