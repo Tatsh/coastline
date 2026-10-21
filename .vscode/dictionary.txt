@@ -3,6 +3,7 @@ abiflags
 addrs
 alabel
 argparse
+asciz
 atexit
 autobrief
 badvaddr
@@ -11,12 +12,15 @@ bufbusy
 buildsystems
 bytearray
 coveragerc
+createmesgqueue
+createthread
 ctype
 dacrate
 dashcam
 datarootdir
 dbuild
 dcmake
+destroythread
 disasm
 divremi
 dlabel
@@ -42,6 +46,7 @@ foxundermoon
 fpcsr
 funclets
 funcs
+getthreadpri
 ghidra
 glabel
 graphviz
@@ -56,6 +61,7 @@ inftrees
 infutil
 inttypes
 iwyu
+jammesg
 jinja
 jlabel
 jsonnet
@@ -66,6 +72,7 @@ kuseg
 libdragon
 libdragon's
 libera
+libgcc
 libsonnet
 libultra
 lpcstr
@@ -95,6 +102,7 @@ numpydoc
 objcopy
 oneline
 pacboy
+pathlib
 pimgr
 pipebusy
 pipx
@@ -109,6 +117,7 @@ rdbread
 rdbwrite
 rdparty
 rdram
+recvmesg
 reflow
 regen
 reginfo
@@ -120,12 +129,16 @@ rshift
 rtti
 sbclaude
 schemafile
+sendmesg
+seteventmesg
 setjmp
+setthreadpri
 shellcheck
 shellformat
 simgr
 snapcraft
 spimdisasm
+startthread
 statusline
 stdarg
 stdbool
@@ -148,6 +161,8 @@ udvare
 undraft
 undrafted
 unistd
+urllib
+urlopen
 vars
 vendored
 venv
@@ -160,6 +175,7 @@ winmain
 wiswa
 wiswa's
 yarnrc
+yieldthread
 zizmor
 zutil
 Ångström

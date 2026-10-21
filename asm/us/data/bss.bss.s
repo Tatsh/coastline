@@ -5415,9 +5415,9 @@ nonmatching D_8037F36C, 0x4
 dlabel D_8037F36C
     /* 8037F36C */ .space 0x04
 
-nonmatching D_8037F370, 0x40
+nonmatching __osEventStateTab, 0x40
 
-dlabel D_8037F370
+dlabel __osEventStateTab
     /* 8037F370 */ .space 0x40
 
 nonmatching g_dwSysReserved15, 0x4

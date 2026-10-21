@@ -542,8 +542,8 @@ nonmatching __osLeoResume, 0xEC
 
 glabel __osLeoResume
     /* 6F36C 8026E36C 27BDFFD0 */  addiu      $sp, $sp, -0x30
-    /* 6F370 8026E370 3C0E8038 */  lui        $t6, %hi(D_8037F370)
-    /* 6F374 8026E374 25CEF370 */  addiu      $t6, $t6, %lo(D_8037F370)
+    /* 6F370 8026E370 3C0E8038 */  lui        $t6, %hi(__osEventStateTab)
+    /* 6F374 8026E374 25CEF370 */  addiu      $t6, $t6, %lo(__osEventStateTab)
     /* 6F378 8026E378 25CF0040 */  addiu      $t7, $t6, 0x40
     /* 6F37C 8026E37C AFBF001C */  sw         $ra, 0x1C($sp)
     /* 6F380 8026E380 AFB00018 */  sw         $s0, 0x18($sp)

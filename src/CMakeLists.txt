@@ -69,6 +69,9 @@ if(TGR_PLATFORM STREQUAL "n64")
   target_compile_options(coastline_zlib PRIVATE -w)
   target_link_libraries(coastline_common INTERFACE coastline_zlib)
   list(APPEND COASTLINE_LIBRARIES coastline_zlib)
+
+  add_subdirectory(libultra)
+  list(APPEND COASTLINE_LIBRARIES coastline_libultra)
 endif()
 
 add_custom_target(archives DEPENDS ${COASTLINE_LIBRARIES})
@@ -92,12 +95,15 @@ else()
     # The program is flattened into the bytes the IPL3 loads. build-rom puts the bytes after the
     # original header and IPL3, places the assets at their offsets, and writes the checksum.
     set(_link_script "${CMAKE_CURRENT_SOURCE_DIR}/platform/n64/coastline-${TGR_REGION}.ld")
-    # The archives come after the objects. An archive member is not linked when an object already
-    # defines its routine (the assembly of a vendored zlib routine, for one).
+    # The archives come after the objects, in one group. Their routines call each other. An
+    # archive member is not linked when an object already defines its routine (the assembly of a
+    # vendored zlib routine, for one). libgcc provides the helpers GCC calls for the arithmetic the
+    # processor does not do in 32-bit mode.
     set(_link_libraries ${COASTLINE_LIBRARIES})
-    list(REMOVE_ITEM _link_libraries coastline_main)
+    list(REMOVE_ITEM _link_libraries coastline_main coastline_asm)
     add_executable(${CMAKE_PROJECT_NAME} $<TARGET_OBJECTS:coastline_main>)
-    target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE ${_link_libraries})
+    target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE coastline_asm "-Wl,--start-group"
+                                                        ${_link_libraries} "-Wl,--end-group" gcc)
     set(_link_scripts "${_link_script}" ${COASTLINE_ASM_SYMBOLS})
     list(TRANSFORM _link_scripts PREPEND "-T")
     target_link_options(${CMAKE_PROJECT_NAME} PRIVATE -nostdlib -nostartfiles ${_link_scripts})

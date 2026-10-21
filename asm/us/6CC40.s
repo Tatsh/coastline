@@ -294,16 +294,5 @@ glabel __osInsertTimer
     /* 6D03C 8026C03C 27BD0038 */   addiu     $sp, $sp, 0x38
 endlabel __osInsertTimer
 
-nonmatching osGetThreadPri, 0x18
-
-glabel osGetThreadPri
-    /* 6D040 8026C040 14800003 */  bnez       $a0, .L8026C050
-    /* 6D044 8026C044 00000000 */   nop
-    /* 6D048 8026C048 3C04802A */  lui        $a0, %hi(__osRunningThread)
-    /* 6D04C 8026C04C 8C8462A0 */  lw         $a0, %lo(__osRunningThread)($a0)
-  .L8026C050:
-    /* 6D050 8026C050 03E00008 */  jr         $ra
-    /* 6D054 8026C054 8C820004 */   lw        $v0, 0x4($a0)
-endlabel osGetThreadPri
     /* 6D058 8026C058 00000000 */  nop
     /* 6D05C 8026C05C 00000000 */  nop

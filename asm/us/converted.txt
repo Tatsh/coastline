@@ -1,0 +1,11 @@
+osCreateMesgQueue
+osCreateThread
+osDestroyThread
+osGetThreadPri
+osJamMesg
+osRecvMesg
+osSendMesg
+osSetEventMesg
+osSetThreadPri
+osStartThread
+osYieldThread

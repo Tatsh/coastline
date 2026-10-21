@@ -10,14 +10,19 @@ a number would retain its old value when the code moves. Each such word becomes 
 label at its target, or to the enclosing label plus an offset. A target inside a routine with no
 label gets one.
 
-The assembly sources are then listed in address order for CMake.
+The assembly sources are then listed in address order for CMake, and the routines converted.txt
+records as reconstructed in C are removed again.
 """
 from __future__ import annotations
 
 import argparse
 import bisect
 import re
+import sys
 from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from remove import remove  # noqa: E402
 
 ROOT = Path(__file__).resolve().parent.parent.parent
 LABEL = re.compile(r'^\s*(?:glabel|dlabel|alabel|jlabel)\s+(\S+)', re.M)
@@ -133,6 +138,9 @@ def main() -> int:
   listing += [f'    {source.relative_to(ROOT).as_posix()}' for source in sources]
   listing[-1] += ')'
   (asm / 'sources.cmake').write_text('\n'.join(listing) + '\n', encoding='utf-8')
+  converted = asm / 'converted.txt'
+  if converted.exists():
+    remove(args.region, converted.read_text(encoding='utf-8').split(), record=False)
   return 0
 
 

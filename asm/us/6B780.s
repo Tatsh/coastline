@@ -773,8 +773,8 @@ endlabel g_dwOsCacheConfig
     /* 6C1FC 8026B1FC 0809AD11 */  j          __osDispatchThread
     /* 6C200 8026B200 00000000 */   nop
   alabel send_mesg
-    /* 6C204 8026B204 3C0A8038 */  lui        $t2, %hi(D_8037F370)
-    /* 6C208 8026B208 254AF370 */  addiu      $t2, $t2, %lo(D_8037F370)
+    /* 6C204 8026B204 3C0A8038 */  lui        $t2, %hi(__osEventStateTab)
+    /* 6C208 8026B208 254AF370 */  addiu      $t2, $t2, %lo(__osEventStateTab)
     /* 6C20C 8026B20C 01445021 */  addu       $t2, $t2, $a0
     /* 6C210 8026B210 8D490000 */  lw         $t1, 0x0($t2)
     /* 6C214 8026B214 03E09025 */  or         $s2, $ra, $zero
@@ -1027,7 +1027,7 @@ endlabel g_dwOsCacheConfig
     /* 6C5B4 8026B5B4 00000000 */  nop
     /* 6C5B8 8026B5B8 00000000 */  nop
     /* 6C5BC 8026B5BC 42000018 */  eret /* handwritten instruction */
-  alabel OsCleanupThread
+  alabel __osCleanupThread
     /* 6C5C0 8026B5C0 0C09B940 */  jal        osDestroyThread
     /* 6C5C4 8026B5C4 00002025 */   or        $a0, $zero, $zero
     /* 6C5C8 8026B5C8 00000000 */  nop
