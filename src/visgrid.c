@@ -44,10 +44,15 @@ void MarkVisibleEdge(f32 x0, f32 y0, f32 x1, f32 y1) {
     first = FloatToInt(x0 * CELL_SCALE);
     last = FloatToInt(x1 * CELL_SCALE);
     if (last < first) {
-        /* The original swaps the columns with three exclusive ors. */
+        /* The original swaps the columns with three chained exclusive ors. C leaves the chain
+         * unsequenced, and IDO evaluates it right to left. */
+#ifdef __GNUC__
         last ^= first;
         first ^= last;
         last ^= first;
+#else
+        last ^= first ^= last ^= first;
+#endif
     }
     if (first < g_dwVisibleGridMinCol) {
         g_dwVisibleGridMinCol = first;
@@ -151,13 +156,13 @@ void BuildVisibleGrid(void) {
 
     /* The covered rows of each column, from the first and last rows that take it in. */
     for (col = g_dwVisibleGridMinCol; col <= g_dwVisibleGridMaxCol; col++) {
-        first = g_dwVisibleGridMinRow;
-        while (col < g_adwVisibleGridRowMinCol[first] || g_adwVisibleGridRowMaxCol[first] < col) {
-            first++;
+        for (first = g_dwVisibleGridMinRow;
+             col < g_adwVisibleGridRowMinCol[first] || g_adwVisibleGridRowMaxCol[first] < col;
+             first++) {
         }
-        last = g_dwVisibleGridMaxRow;
-        while (col < g_adwVisibleGridRowMinCol[last] || g_adwVisibleGridRowMaxCol[last] < col) {
-            last--;
+        for (last = g_dwVisibleGridMaxRow;
+             col < g_adwVisibleGridRowMinCol[last] || g_adwVisibleGridRowMaxCol[last] < col;
+             last--) {
         }
         g_adwVisibleGridColMinRow[col] = first;
         g_adwVisibleGridColMaxRow[col] = last;
