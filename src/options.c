@@ -111,6 +111,9 @@ static void GetEquipment(s32 *equipment, PlayerProfile *profile) {
     equipment[4] = profile->controllerLayout;
 }
 
+/* The input of the player choosing in the menus, which the original looks up again at each use. */
+#define CHOOSING_INPUT (&g_aPlayerInputState[g_dwMenuChoosingPlayer])
+
 /* The original looks the profile of the vehicle up again for every field. */
 #define SET_EQUIPMENT(vehicle, equipment)                                                          \
     do {                                                                                           \
@@ -402,7 +405,6 @@ void ProcessDataSaveLoadMenu(void) {
                                               "SAVE GHOST CAR DATA",
                                               "LOAD OPTIONS",
                                               "SAVE OPTIONS"};
-    PlayerInputState *input;
     PlayerProfile *other;
     u8 *noteName;
     s32 noteSize;
@@ -528,7 +530,6 @@ void ProcessDataSaveLoadMenu(void) {
         DrawText("%wwNO", 0xB9, g_dwScreenHeight * 19 / 20 - 3);
     }
 
-    input = &g_aPlayerInputState[g_dwMenuChoosingPlayer];
     switch (g_bSaveLoadStep) {
     case SAVE_LOAD_STEP_FADE_IN:
         if (IsFadedToWhite()) {
@@ -539,16 +540,16 @@ void ProcessDataSaveLoadMenu(void) {
     case SAVE_LOAD_STEP_CHOOSE:
         g_bSaveLoadInputEnabled = TRUE;
         if (g_bSaveLoadEntryPoint == SAVE_LOAD_FROM_MAIN_MENU) {
-            UpdateStickRepeat(input);
-            if (input->buttons & INPUT_DOWN) {
-                TransferFlags(input, INPUT_DOWN);
+            UpdateStickRepeat(CHOOSING_INPUT);
+            if (CHOOSING_INPUT->buttons & INPUT_DOWN) {
+                TransferFlags(CHOOSING_INPUT, INPUT_DOWN);
                 if (g_bSaveLoadChoice == SAVE_LOAD_SAVE_OPTIONS) {
                     g_bSaveLoadChoice = SAVE_LOAD_LOAD_SEASON;
                 } else {
                     g_bSaveLoadChoice++;
                 }
-            } else if (input->buttons & INPUT_UP) {
-                TransferFlags(input, INPUT_UP);
+            } else if (CHOOSING_INPUT->buttons & INPUT_UP) {
+                TransferFlags(CHOOSING_INPUT, INPUT_UP);
                 if (g_bSaveLoadChoice == SAVE_LOAD_LOAD_SEASON) {
                     g_bSaveLoadChoice = SAVE_LOAD_SAVE_OPTIONS;
                 } else {
@@ -556,11 +557,11 @@ void ProcessDataSaveLoadMenu(void) {
                 }
             }
         }
-        if (input->buttons & INPUT_A) {
-            TransferFlags(input, INPUT_A);
+        if (CHOOSING_INPUT->buttons & INPUT_A) {
+            TransferFlags(CHOOSING_INPUT, INPUT_A);
             g_bSaveLoadStep = SAVE_LOAD_STEP_QUIET;
-        } else if (input->buttons & INPUT_B) {
-            TransferFlags(input, INPUT_B);
+        } else if (CHOOSING_INPUT->buttons & INPUT_B) {
+            TransferFlags(CHOOSING_INPUT, INPUT_B);
             g_bSaveLoadStep = SAVE_LOAD_STEP_FADE_OUT;
         }
         break;
@@ -638,8 +639,8 @@ void ProcessDataSaveLoadMenu(void) {
         g_bSaveLoadInputEnabled = FALSE;
         SetMessageText();
         DrawNewPakMessage(0xB9, 0x6C);
-        if (input->buttons & DISMISS_BUTTONS) {
-            TransferFlags(input, DISMISS_BUTTONS);
+        if (CHOOSING_INPUT->buttons & DISMISS_BUTTONS) {
+            TransferFlags(CHOOSING_INPUT, DISMISS_BUTTONS);
             g_bSaveLoadStep = SAVE_LOAD_STEP_FIND;
         }
         break;
@@ -727,8 +728,8 @@ void ProcessDataSaveLoadMenu(void) {
         if (g_bSaveLoadChoice == SAVE_LOAD_LOAD_SEASON) {
             /* Both players take the season, but the other player keeps the equipment of the car
              * when the main menu opened the menu. */
-            other = g_aVehicles[g_dwMenuChoosingPlayer ^ 1].profile;
             if (g_bSaveLoadEntryPoint == SAVE_LOAD_FROM_MAIN_MENU) {
+                other = g_aVehicles[g_dwMenuChoosingPlayer ^ 1].profile;
                 GetEquipment(equipment, other);
             }
             memcpy(g_aVehicles[0].profile, g_pPakDataBuffer, sizeof(PlayerProfile));
@@ -842,11 +843,11 @@ void ProcessDataSaveLoadMenu(void) {
         DrawText("%wwCANCEL", (u32)(g_texButtonB.height + 0x13B) >> 1, textY);
         DrawTexturedSprite(&g_texButtonA, 0xE7, buttonY);
         DrawTexturedSprite(&g_texButtonB, 0x135, buttonY);
-        if (input->buttons & INPUT_A) {
-            TransferFlags(input, INPUT_A);
+        if (CHOOSING_INPUT->buttons & INPUT_A) {
+            TransferFlags(CHOOSING_INPUT, INPUT_A);
             g_bSaveLoadStep = SAVE_LOAD_STEP_SAVE;
-        } else if (input->buttons & INPUT_B) {
-            TransferFlags(input, INPUT_B);
+        } else if (CHOOSING_INPUT->buttons & INPUT_B) {
+            TransferFlags(CHOOSING_INPUT, INPUT_B);
             if (g_bSaveLoadEntryPoint == SAVE_LOAD_FROM_MAIN_MENU) {
                 FadeSfxTo(1.0f, FADE_SECONDS);
                 FadeMusicTo(1.0f, FADE_SECONDS);
@@ -994,8 +995,8 @@ void ProcessDataSaveLoadMenu(void) {
             break;
         }
         if (gControllerPakState != PAK_STATE_RUMBLE_PAK) {
-            if (input->buttons & DISMISS_BUTTONS) {
-                TransferFlags(input, DISMISS_BUTTONS);
+            if (CHOOSING_INPUT->buttons & DISMISS_BUTTONS) {
+                TransferFlags(CHOOSING_INPUT, DISMISS_BUTTONS);
                 gControllerPakState = 0;
                 /* The state was just cleared, so the menu always returns to the choices. */
                 if (gControllerPakState == PFS_ERR_NEW_PACK) {
@@ -1004,12 +1005,12 @@ void ProcessDataSaveLoadMenu(void) {
                     g_bSaveLoadStep = SAVE_LOAD_STEP_CHOOSE;
                 }
             }
-        } else if (input->buttons & INPUT_A) {
-            TransferFlags(input, INPUT_A);
+        } else if (CHOOSING_INPUT->buttons & INPUT_A) {
+            TransferFlags(CHOOSING_INPUT, INPUT_A);
             gControllerPakState = 0;
             g_bSaveLoadStep = SAVE_LOAD_STEP_MOUNT;
-        } else if (input->buttons & INPUT_B) {
-            TransferFlags(input, INPUT_B);
+        } else if (CHOOSING_INPUT->buttons & INPUT_B) {
+            TransferFlags(CHOOSING_INPUT, INPUT_B);
             gControllerPakState = 0;
             FadeSfxTo(1.0f, FADE_SECONDS);
             FadeMusicTo(1.0f, FADE_SECONDS);
@@ -1048,8 +1049,8 @@ void ProcessDataSaveLoadMenu(void) {
             g_bSaveLoadStep = SAVE_LOAD_STEP_CHOOSE;
             break;
         }
-        if (input->buttons & DISMISS_BUTTONS) {
-            TransferFlags(input, DISMISS_BUTTONS);
+        if (CHOOSING_INPUT->buttons & DISMISS_BUTTONS) {
+            TransferFlags(CHOOSING_INPUT, DISMISS_BUTTONS);
             if (g_bSaveLoadEntryPoint == SAVE_LOAD_FROM_MAIN_MENU) {
                 if (g_bSaveLoadRumbleSwapPending) {
                     g_bSaveLoadStep = SAVE_LOAD_STEP_RUMBLE_PAK;
@@ -1070,8 +1071,8 @@ void ProcessDataSaveLoadMenu(void) {
         g_bSaveLoadInputEnabled = FALSE;
         SetMessageText();
         DrawSwapForRumblePakMessage(0x72, 0xB2, 0x19C, 0x69);
-        if (input->buttons & INPUT_A) {
-            TransferFlags(input, INPUT_A);
+        if (CHOOSING_INPUT->buttons & INPUT_A) {
+            TransferFlags(CHOOSING_INPUT, INPUT_A);
             if (g_bSaveLoadEntryPoint == SAVE_LOAD_FROM_MAIN_MENU) {
                 if (g_bSaveLoadChoice == SAVE_LOAD_LOAD_SEASON ||
                     g_bSaveLoadChoice == SAVE_LOAD_LOAD_GHOST) {
@@ -1270,7 +1271,6 @@ s32 ProcessPakDataScreen(s32 dataType, u8 quiet) {
                                 0x27,
                                 0x2C};
     u8 extension[4] = {0};
-    PlayerInputState *input;
     PlayerProfile *other;
     u8 *noteName;
     s32 noteSize;
@@ -1298,7 +1298,6 @@ s32 ProcessPakDataScreen(s32 dataType, u8 quiet) {
         noteSize = OPTIONS_NOTE_SIZE;
     }
 
-    input = &g_aPlayerInputState[g_dwMenuChoosingPlayer];
     switch (g_bPakDataStep) {
     case PAK_DATA_STEP_START:
         if (!quiet) {
@@ -1379,8 +1378,8 @@ s32 ProcessPakDataScreen(s32 dataType, u8 quiet) {
         }
         SetMessageText();
         DrawNewPakMessage(0xC3, 0x71);
-        if (input->buttons & DISMISS_BUTTONS) {
-            TransferFlags(input, DISMISS_BUTTONS);
+        if (CHOOSING_INPUT->buttons & DISMISS_BUTTONS) {
+            TransferFlags(CHOOSING_INPUT, DISMISS_BUTTONS);
             g_bPakDataStep = PAK_DATA_STEP_FIND;
         }
         break;
@@ -1601,8 +1600,8 @@ s32 ProcessPakDataScreen(s32 dataType, u8 quiet) {
             break;
         }
         if (gControllerPakState != PAK_STATE_RUMBLE_PAK) {
-            if (input->buttons & DISMISS_BUTTONS) {
-                TransferFlags(input, DISMISS_BUTTONS);
+            if (CHOOSING_INPUT->buttons & DISMISS_BUTTONS) {
+                TransferFlags(CHOOSING_INPUT, DISMISS_BUTTONS);
                 gControllerPakState = 0;
                 /* The state was just cleared, so the screen always finishes. */
                 if (gControllerPakState == PFS_ERR_NEW_PACK) {
@@ -1611,12 +1610,12 @@ s32 ProcessPakDataScreen(s32 dataType, u8 quiet) {
                     g_bPakDataStep = PAK_DATA_STEP_FINISH;
                 }
             }
-        } else if (input->buttons & INPUT_A) {
-            TransferFlags(input, INPUT_A);
+        } else if (CHOOSING_INPUT->buttons & INPUT_A) {
+            TransferFlags(CHOOSING_INPUT, INPUT_A);
             gControllerPakState = 0;
             g_bPakDataStep = PAK_DATA_STEP_MOUNT;
-        } else if (input->buttons & INPUT_B) {
-            TransferFlags(input, INPUT_B);
+        } else if (CHOOSING_INPUT->buttons & INPUT_B) {
+            TransferFlags(CHOOSING_INPUT, INPUT_B);
             g_bPakDataStep = PAK_DATA_STEP_FINISH;
         }
         break;
@@ -1645,8 +1644,8 @@ s32 ProcessPakDataScreen(s32 dataType, u8 quiet) {
                 DrawText("%ywSAVED OK!", 0x9F, 0x8A);
             }
         }
-        if (input->buttons & DISMISS_BUTTONS) {
-            TransferFlags(input, DISMISS_BUTTONS);
+        if (CHOOSING_INPUT->buttons & DISMISS_BUTTONS) {
+            TransferFlags(CHOOSING_INPUT, DISMISS_BUTTONS);
             if (dataType == PAK_DATA_LOAD_CONFIGURATION) {
                 ApplyVolumeSettings();
             }

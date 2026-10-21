@@ -279,11 +279,11 @@ static inline u32 DimLightPart(u8 part, f32 divisor) {
 }
 
 void RenderVehicleModel(Vehicle *vehicle, s32 lodOffset) {
-    Vec3f toCamera, toVehicle;
+    Vec3f toCamera, toVehicle, eye;
     Gfx **displayLists;
     Hilite *hilite;
     LookAt *reflectLookAt, *hiliteLookAt;
-    f32 distance, divisor, length, eyeX, nudgeX, nudgeZ;
+    f32 distance, divisor, length, nudgeX, nudgeZ;
     u32 dirColor, ambientColor, reflection;
     u8 ambient[3];
     u16 *palette;
@@ -419,21 +419,13 @@ void RenderVehicleModel(Vehicle *vehicle, s32 lodOffset) {
             nudgeX = 0.1f;
         }
     }
-    eyeX = g_pActiveCamera->forward.x;
-    if (eyeX == 0.0f && g_pActiveCamera->forward.y == 0.0f) {
-        eyeX = 1e-4f;
+    /* The original copies the whole direction, and its z is not read. */
+    eye = g_pActiveCamera->forward;
+    if (eye.x == 0.0f && eye.y == 0.0f) {
+        eye.x = 1e-4f;
     }
-    guLookAtReflectF(g_afMvpMatrix,
-                     reflectLookAt,
-                     eyeX,
-                     g_pActiveCamera->forward.y,
-                     0.0f,
-                     0.0f,
-                     0.0f,
-                     0.0f,
-                     0.0f,
-                     0.0f,
-                     1.0f);
+    guLookAtReflectF(
+        g_afMvpMatrix, reflectLookAt, eye.x, eye.y, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f);
     guLookAtHiliteF(g_afMvpMatrix,
                     hiliteLookAt,
                     hilite,
@@ -1042,11 +1034,12 @@ void DeformVehicleMeshByImpact(Vehicle *vehicle, Vec3f *direction, s16 amount) {
             if (command == NULL) {
                 continue;
             }
+            /* The original tests for vertices before the end of the list. */
             for (;; command++) {
-                if ((command->words.w0 >> 24) == G_ENDDL) {
-                    break;
-                }
                 if ((command->words.w0 >> 24) != G_VTX) {
+                    if ((command->words.w0 >> 24) == G_ENDDL) {
+                        break;
+                    }
                     continue;
                 }
                 count = (command->words.w0 >> 10) & 0x3F;
