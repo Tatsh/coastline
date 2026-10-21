@@ -13,10 +13,9 @@
 
 /** A part of a model: its display list, how it is drawn, and where. */
 typedef struct {
-    Gfx *displayList;
-    /** The MODEL_PART_ flags. */
-    u16 flags;
-    Vec3f position;
+    Gfx *displayList; /*!< The display list that draws the part, or NULL. */
+    u16 flags;        /*!< The MODEL_PART_ flags. */
+    Vec3f position;   /*!< Where the part is drawn, relative to the model. */
 } ModelPart;
 
 /** The bits of the flags of a part that pick its light from g_adwModelShadeColors. */
@@ -39,8 +38,8 @@ typedef struct {
  * follow the positions of all the vertices, so they have no field.
  */
 typedef struct {
-    f32 time;
-    s16 positions[][3];
+    f32 time;           /*!< The time of the key in the animation, in seconds. */
+    s16 positions[][3]; /*!< The position of each vertex, followed by the normals. */
 } ModelKeyframe;
 
 /** The flags of an animation: it repeats, it turns back at its end, and it runs backwards. */
@@ -50,25 +49,22 @@ typedef struct {
 
 /** An animation of vertices of a model, blended between its keys. */
 typedef struct {
-    s32 vertexCount;
-    Vtx *vertices;
-    /** Turned into a pointer with the rest; never read. */
-    void *unreconstructed8;
-    s32 keyCount;
-    /** The MODEL_ANIMATION_ flags. */
-    u16 flags;
-    /** The key a search for the time starts from. */
-    u16 startKey;
-    f32 startTime;
-    f32 endTime;
-    f32 time;
-    ModelKeyframe *keys[];
+    s32 vertexCount;        /*!< The number of vertices the animation moves. */
+    Vtx *vertices;          /*!< The vertices the animation moves. */
+    void *unreconstructed8; /*!< Turned into a pointer with the rest, and never read. */
+    s32 keyCount;           /*!< The number of keys. */
+    u16 flags;              /*!< The MODEL_ANIMATION_ flags. */
+    u16 startKey;           /*!< The key a search for the time starts from. */
+    f32 startTime;          /*!< The time the animation starts at, in seconds. */
+    f32 endTime;            /*!< The time the animation ends at, in seconds. */
+    f32 time;               /*!< The current time of the animation, in seconds. */
+    ModelKeyframe *keys[];  /*!< The keys, in order of time. */
 } ModelAnimation;
 
 /** The animations of a model. */
 typedef struct {
-    s32 count;
-    ModelAnimation *entries[];
+    s32 count;                 /*!< The number of animations. */
+    ModelAnimation *entries[]; /*!< The animations. */
 } ModelAnimationList;
 
 /**
@@ -76,9 +72,9 @@ typedef struct {
  * fields join this structure as they are reconstructed.
  */
 typedef struct Model {
-    u32 partCount;
-    ModelAnimationList *animations;
-    ModelPart parts[];
+    u32 partCount;                  /*!< The number of parts. */
+    ModelAnimationList *animations; /*!< The animations of the vertices of the model. */
+    ModelPart parts[];              /*!< The parts. */
 } Model;
 
 /** The ambient light of the menus that draw models. @ghidraAddress USA: 0x80271f88 */

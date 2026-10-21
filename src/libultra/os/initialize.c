@@ -8,10 +8,10 @@
 #define E_VEC 0x80000180
 
 typedef struct {
-    u32 inst1;
-    u32 inst2;
-    u32 inst3;
-    u32 inst4;
+    u32 inst1; /*!< The first instruction of the vector, copied from __osExceptionPreamble(). */
+    u32 inst2; /*!< The second instruction of the vector. */
+    u32 inst3; /*!< The third instruction of the vector. */
+    u32 inst4; /*!< The fourth instruction of the vector. */
 } __osExceptionVector;
 
 void osInitialize(void) {

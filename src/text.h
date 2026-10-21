@@ -14,12 +14,9 @@
 
 /** Where DrawText() places text against its position. */
 enum TextAlignment {
-    /** The text starts at its position. */
-    TEXT_ALIGN_LEFT = 0,
-    /** The text ends at its position. */
-    TEXT_ALIGN_RIGHT = 1,
-    /** The text is centered on its position. */
-    TEXT_ALIGN_CENTER = 2,
+    TEXT_ALIGN_LEFT = 0,   /*!< The text starts at its position. */
+    TEXT_ALIGN_RIGHT = 1,  /*!< The text ends at its position. */
+    TEXT_ALIGN_CENTER = 2, /*!< The text is centred on its position. */
 };
 
 /**

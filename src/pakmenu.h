@@ -21,15 +21,15 @@
 
 /** The states of the Controller Pak menu. */
 enum {
-    PAK_MENU_MOUNT,
-    PAK_MENU_READ_DIRECTORY,
-    PAK_MENU_BROWSE,
-    PAK_MENU_CONFIRM_DELETE,
-    PAK_MENU_ERROR,
-    PAK_MENU_DELETE,
-    PAK_MENU_NEW_PAK,
-    PAK_MENU_EXIT,
-    PAK_MENU_FADING_OUT,
+    PAK_MENU_MOUNT,          /*!< Mount the Controller Pak of the first controller. */
+    PAK_MENU_READ_DIRECTORY, /*!< Read the notes and the free space of the Pak. */
+    PAK_MENU_BROWSE,         /*!< Move through the notes, with A to delete one and Start to exit. */
+    PAK_MENU_CONFIRM_DELETE, /*!< Prompt for confirmation of the deletion of the selected note. */
+    PAK_MENU_ERROR,          /*!< Show an error of the Pak until a button is pressed. */
+    PAK_MENU_DELETE,         /*!< Delete the selected note. */
+    PAK_MENU_NEW_PAK,        /*!< Report that a new Pak was inserted, then mount it. */
+    PAK_MENU_EXIT,           /*!< Start the fade out of the menu. */
+    PAK_MENU_FADING_OUT,     /*!< Wait for the fade out, then return to the main menu. */
 };
 
 /** The pictures of the menu. @ghidraAddress USA: 0x8028cb40 */
@@ -49,8 +49,7 @@ extern Sprite g_texButtonBSmall;
 
 /** The table of the characters of the names of notes, which is copied whole to read one. */
 typedef struct DecalCharMap {
-    /** The ASCII of each of the 66 characters, a space for those it lacks. */
-    char chars[66];
+    char chars[66]; /*!< The ASCII of each of the 66 characters, a space for those it lacks. */
 } DecalCharMap;
 
 /**

@@ -25,8 +25,8 @@
 
 /** A node of the list of the triangles that cross the box of a body. */
 typedef struct CollisionTriangleNode {
-    TrackTriangle *triangle;
-    struct CollisionTriangleNode *next;
+    TrackTriangle *triangle;            /*!< The triangle. */
+    struct CollisionTriangleNode *next; /*!< The node pushed before this one, or NULL. */
 } CollisionTriangleNode;
 
 /** The nodes of the list. */

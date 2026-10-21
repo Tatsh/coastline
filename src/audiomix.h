@@ -17,15 +17,11 @@
  * point position.
  */
 typedef struct {
-    /** The next sample, signed 8-bit. */
-    s8 *sample;
-    u32 fraction;
-    /** The 32.32 step added to the position before each sample, or 0 for a silent channel. */
-    u64 step;
-    /** The volume the mixer multiplies each sample by. */
-    s32 mixVolume;
-    /** The volume the game sets, which the mixing thread scales into mixVolume. */
-    s32 volume;
+    s8 *sample;   /*!< The next sample, signed 8-bit, and the whole part of the position. */
+    u32 fraction; /*!< The fraction of the position past sample, the low half of the 32.32 value. */
+    u64 step;     /*!< The 32.32 step added to the position before each sample, or 0 when silent. */
+    s32 mixVolume; /*!< The volume the mixer multiplies each sample by. */
+    s32 volume;    /*!< The volume the game sets, which the mixing thread scales into mixVolume. */
 } MixerChannel;
 
 /** The channels of the music mixer. */

@@ -19,8 +19,8 @@
 
 /** A block of variables cleared at the start of each frame. */
 typedef struct {
-    u8 *start;
-    u32 size;
+    u8 *start; /*!< The first byte of the block, or NULL to end the list. */
+    u32 size;  /*!< The size of the block, in bytes. */
 } PerFrameVariable;
 
 /**

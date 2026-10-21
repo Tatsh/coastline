@@ -18,13 +18,13 @@
 
 /* The items of the main menu. */
 enum {
-    MAIN_MENU_CHAMPIONSHIP,
-    MAIN_MENU_ARCADE,
-    MAIN_MENU_TIME_ATTACK,
-    MAIN_MENU_PRACTICE,
-    MAIN_MENU_PAINT_SHOP,
-    MAIN_MENU_LOAD_SAVE,
-    MAIN_MENU_OPTIONS,
+    MAIN_MENU_CHAMPIONSHIP, /*!< A race of the championship. */
+    MAIN_MENU_ARCADE,       /*!< An arcade race, after the choice of the number of players. */
+    MAIN_MENU_TIME_ATTACK,  /*!< A time attack. */
+    MAIN_MENU_PRACTICE,     /*!< A practice race, after the choice of the number of players. */
+    MAIN_MENU_PAINT_SHOP,   /*!< The paint shop, for the player who chose it. */
+    MAIN_MENU_LOAD_SAVE,    /*!< The menu that loads and saves the game data. */
+    MAIN_MENU_OPTIONS,      /*!< The options menu. */
 };
 
 /* What g_dwMainMenuEntrySource records. */

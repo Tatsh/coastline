@@ -73,81 +73,82 @@
 
 /** The 64 bytes of the PIF RAM. The last word starts the commands. */
 typedef struct {
-    u32 ramarray[15];
-    u32 pifstatus;
+    u32 ramarray[15]; /*!< The commands and their responses, one channel after another. */
+    u32 pifstatus;    /*!< The control word, set to CONT_CMD_EXE to run the commands. */
 } OSPifRam;
 
 /** The request and answer of a status command. */
 typedef struct {
-    u8 dummy;
-    u8 txsize;
-    u8 rxsize;
-    u8 cmd;
-    u8 typeh;
-    u8 typel;
-    u8 status;
-    u8 dummy1;
+    u8 dummy;  /*!< A CONT_CMD_NOP byte of padding before the command. */
+    u8 txsize; /*!< The bytes sent, CONT_CMD_REQUEST_STATUS_TX. */
+    u8 rxsize; /*!< The bytes received, with the error bits of the channel in the top two bits. */
+    u8 cmd;    /*!< The command, CONT_CMD_REQUEST_STATUS or CONT_CMD_RESET. */
+    u8 typeh;  /*!< The received byte that becomes the low byte of the device type. */
+    u8 typel;  /*!< The received byte that becomes the high byte of the device type. */
+    u8 status; /*!< The received status of the device, such as CONT_CARD_ON. */
+    u8 dummy1; /*!< A CONT_CMD_NOP byte of padding after the response. */
 } __OSContRequesFormat;
 
 /** The request and answer of a button read. */
 typedef struct {
-    u8 dummy;
-    u8 txsize;
-    u8 rxsize;
-    u8 cmd;
-    u16 button;
-    s8 stick_x;
-    s8 stick_y;
+    u8 dummy;   /*!< A CONT_CMD_NOP byte of padding before the command. */
+    u8 txsize;  /*!< The bytes sent, CONT_CMD_READ_BUTTON_TX. */
+    u8 rxsize;  /*!< The bytes received, with the error bits of the channel in the top two bits. */
+    u8 cmd;     /*!< The command, CONT_CMD_READ_BUTTON. */
+    u16 button; /*!< The received buttons that are pressed, a bit for each. */
+    s8 stick_x; /*!< The received horizontal position of the control stick. */
+    s8 stick_y; /*!< The received vertical position of the control stick. */
 } __OSContReadFormat;
 
 /** The request and answer of a read or a write of a Controller Pak block. */
 typedef struct {
-    u8 dummy;
-    u8 txsize;
-    u8 rxsize;
-    u8 cmd;
-    u16 address;
-    u8 data[BLOCKSIZE];
-    u8 datacrc;
+    u8 dummy;    /*!< A CONT_CMD_NOP byte of padding before the command. */
+    u8 txsize;   /*!< The bytes sent. */
+    u8 rxsize;   /*!< The bytes received, with the error bits of the channel in the top two bits. */
+    u8 cmd;      /*!< The command, CONT_CMD_READ_MEMPACK or CONT_CMD_WRITE_MEMPACK. */
+    u16 address; /*!< The block address shifted left by 5, with its 5-bit CRC in the low bits. */
+    u8 data[BLOCKSIZE]; /*!< The block read or written. */
+    u8 datacrc;         /*!< The CRC of the data, received from the Pak. */
 } __OSContRamReadFormat;
 
 /** The identification block of a Controller Pak. */
 typedef struct {
-    u32 repaired;
-    u32 random;
-    u64 serial_mid;
-    u64 serial_low;
-    u16 deviceid;
-    u8 banks;
-    u8 version;
-    u16 checksum;
-    u16 inverted_checksum;
+    u32 repaired;          /*!< Set to 0xFFFFFFFF when a repair rewrites the block. */
+    u32 random;            /*!< The count register at the time of a repair. */
+    u64 serial_mid;        /*!< The middle part of the serial number. */
+    u64 serial_low;        /*!< The low part of the serial number. */
+    u16 deviceid;          /*!< The device flags, with bit 0 set on a Pak with at least one bank. */
+    u8 banks;              /*!< The number of banks of 32 KB. */
+    u8 version;            /*!< The version of the file system. */
+    u16 checksum;          /*!< The 16-bit sum of the halfwords before the checksums. */
+    u16 inverted_checksum; /*!< The 16-bit sum of the inverses of the halfwords before the
+                                checksums. */
 } __OSPackId;
 
 /** An entry of the page table of a Controller Pak. */
 typedef union {
     struct {
-        u8 bank;
-        u8 page;
-    } inode_t;
-    u16 ipage;
+        u8 bank; /*!< The bank of the page. */
+        u8 page; /*!< The page within the bank. */
+    } inode_t;   /*!< The entry as a bank and a page. */
+    u16 ipage;   /*!< The entry as one number, or PFS_EOF or PFS_PAGE_NOT_USED. */
 } __OSInodeUnit;
 
 /** The page table of one bank. */
 typedef struct {
-    __OSInodeUnit inode_page[128];
+    __OSInodeUnit inode_page[128]; /*!< The page that follows each page in its file, by page. */
 } __OSInode;
 
 /** A directory entry of a Controller Pak. */
 typedef struct {
-    u32 game_code;
-    u16 company_code;
-    __OSInodeUnit start_page;
-    u8 status;
-    s8 reserved;
-    u16 data_sum;
-    u8 ext_name[4];
-    u8 game_name[16];
+    u32 game_code;            /*!< The game code of the file, or 0 for a free entry. */
+    u16 company_code;         /*!< The company code of the file, or 0 for a free entry. */
+    __OSInodeUnit start_page; /*!< The first page of the file. */
+    u8 status;                /*!< The status bits, such as DIR_STATUS_OCCUPIED. */
+    s8 reserved;              /*!< Reserved. */
+    u16 data_sum;             /*!< Reserved for a sum of the data, written as 0. */
+    u8 ext_name[4];   /*!< The extension of the file name, in the character set of the Pak. */
+    u8 game_name[16]; /*!< The file name, in the character set of the Pak. */
 } __OSDir;
 
 /**
@@ -155,9 +156,9 @@ typedef struct {
  * every other bank whose table points into the group.
  */
 typedef struct {
-    __OSInode inode;
-    u8 bank;
-    u8 map[256];
+    __OSInode inode; /*!< The page table of the bank last read. */
+    u8 bank;         /*!< The bank whose page table is in inode, or 0xFF for none. */
+    u8 map[256];     /*!< For each four pages, a bit for each bank modulo 8 pointing into them. */
 } __OSInodeCache;
 
 /**

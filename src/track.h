@@ -19,34 +19,25 @@
 
 /** A point of the route, across the track. */
 typedef struct {
-    /** The left edge of the track. */
-    Vec3f left;
-    /** The middle of the track. */
-    Vec3f position;
-    /** The right edge of the track. */
-    Vec3f right;
-    /** The distance left from the point to the finish line. */
-    f32 distance;
+    Vec3f left;     /*!< The left edge of the track. */
+    Vec3f position; /*!< The middle of the track. */
+    Vec3f right;    /*!< The right edge of the track. */
+    f32 distance;   /*!< The distance remaining from the point to the finish line. */
 } TrackPoint;
 
 /** A section of the route. Its fields join this structure as they are reconstructed. */
 typedef struct TrackSection {
-    /** The sections that branch from this one. */
-    struct TrackSection *child;
-    /** The next branch of the same parent. */
-    struct TrackSection *next;
-    u8 unreconstructed8[0x10 - 0x8];
-    /** The cells of the 32-unit grid of the track the section covers, inclusive. */
-    u8 gridMinX;
-    u8 gridMinY;
-    u8 gridMaxX;
-    u8 gridMaxY;
-    u16 pointCount;
-    /** The TRACK_SECTION_ flags. */
-    u16 flags;
-    u8 unreconstructed18[0x40 - 0x18];
-    /** The points, and the point at the end of the last. */
-    TrackPoint points[];
+    struct TrackSection *child;      /*!< The first section that branches from this one, or NULL. */
+    struct TrackSection *next;       /*!< The next branch of the same parent, or NULL. */
+    u8 unreconstructed8[0x10 - 0x8]; /*!< Not yet reconstructed. */
+    u8 gridMinX;    /*!< The first column of the 32-unit grid of the track the section covers. */
+    u8 gridMinY;    /*!< The first row of the grid the section covers. */
+    u8 gridMaxX;    /*!< The last column of the grid the section covers, inclusive. */
+    u8 gridMaxY;    /*!< The last row of the grid the section covers, inclusive. */
+    u16 pointCount; /*!< The number of points, without the point at the end of the last. */
+    u16 flags;      /*!< The TRACK_SECTION_ flags. */
+    u8 unreconstructed18[0x40 - 0x18]; /*!< Not yet reconstructed. */
+    TrackPoint points[];               /*!< The points, and the point at the end of the last. */
 } TrackSection;
 
 /** The flag of a branch the computer drivers do not take, and that the walks do not enter. */
@@ -57,21 +48,15 @@ typedef struct TrackSection {
 
 /** A model placed on the track. Its fields join this structure as they are reconstructed. */
 typedef struct {
-    /** Where and how the model is placed. */
-    f32 matrix[4][4];
-    /** One over the length of the x axis of the matrix: the inverse of the scale of the model. */
-    f32 invScale;
-    Gfx *displayList;
-    /** The groups the model is in, hidden while the camera is near a model that hides them. */
-    u16 groups;
-    /** The groups the model hides while a ray from the camera hits it. */
-    u16 hidesGroups;
-    /** The TRACK_INSTANCE_ flags. */
-    u16 flags;
-    /** The vertices, triangles, and polygons of the model, for the counts of a frame. */
-    u16 vertexCount;
-    u16 triangleCount;
-    u16 polygonCount;
+    f32 matrix[4][4]; /*!< Where and how the model is placed. */
+    f32 invScale; /*!< One over the length of the x axis of the matrix, the inverse of the scale. */
+    Gfx *displayList;  /*!< The display list that draws the model. */
+    u16 groups;        /*!< The groups of the model, hidden near a model that hides them. */
+    u16 hidesGroups;   /*!< The groups the model hides while a ray from the camera hits it. */
+    u16 flags;         /*!< The TRACK_INSTANCE_ flags. */
+    u16 vertexCount;   /*!< The number of vertices of the model, for the counts of a frame. */
+    u16 triangleCount; /*!< The number of triangles of the model, for the counts of a frame. */
+    u16 polygonCount;  /*!< The number of polygons of the model, for the counts of a frame. */
 } TrackInstance;
 
 /** The bits of the flags of a placed model that pick its light from g_adwLightRampColors. */
@@ -129,16 +114,14 @@ typedef struct {
 
 /** A triangle of the track: its corners and what it belongs to. */
 typedef struct {
-    /** The indices of its corners in the vertices of the track. */
-    u16 vertices[3];
-    /** The placed model the triangle belongs to, less one. */
-    u16 instance;
+    u16 vertices[3]; /*!< The indices of its corners in the vertices of the track. */
+    u16 instance;    /*!< The placed model the triangle belongs to, less one. */
 } TrackSurface;
 
 /** The triangles of a cell of the grid of the track: where they start in the list, and how many. */
 typedef struct {
-    u16 start;
-    u16 count;
+    u16 start; /*!< The index of the next entry in the list of the grid. */
+    u16 count; /*!< The number of entries remaining in the cell. */
 } TrackGridCursor;
 
 /** The special objects a track header lists. */
@@ -146,35 +129,27 @@ typedef struct {
 
 /** The kinds of the special objects of a track. */
 enum {
-    /** Placed models that turn each frame about the z, x or y axis. */
-    TRACK_SPECIAL_SPIN_Z,
-    TRACK_SPECIAL_SPIN_X,
-    TRACK_SPECIAL_SPIN_Y,
-    /** The placed model of the airplane, which flies along its path once triggered. */
-    TRACK_SPECIAL_AIRPLANE,
-    /** The left and right edges of the path of the airplane, a point for each node. */
-    TRACK_SPECIAL_AIRPLANE_PATH_LEFT,
-    TRACK_SPECIAL_AIRPLANE_PATH_RIGHT,
-    /** The placed model a vehicle must pass over on the last lap to send the airplane off. */
-    TRACK_SPECIAL_AIRPLANE_TRIGGER,
-    /** A placed model that sounds like a waterfall. */
-    TRACK_SPECIAL_WATERFALL,
+    TRACK_SPECIAL_SPIN_Z,             /*!< A placed model that turns each frame about the z axis. */
+    TRACK_SPECIAL_SPIN_X,             /*!< A placed model that turns each frame about the x axis. */
+    TRACK_SPECIAL_SPIN_Y,             /*!< A placed model that turns each frame about the y axis. */
+    TRACK_SPECIAL_AIRPLANE,           /*!< The airplane, flying along its path once triggered. */
+    TRACK_SPECIAL_AIRPLANE_PATH_LEFT, /*!< The left edge of the path of the airplane. */
+    TRACK_SPECIAL_AIRPLANE_PATH_RIGHT, /*!< The right edge of the path of the airplane. */
+    TRACK_SPECIAL_AIRPLANE_TRIGGER, /*!< The model that sends the airplane off on the last lap. */
+    TRACK_SPECIAL_WATERFALL,        /*!< A placed model that sounds like a waterfall. */
 };
 
 /** A special object of a track. */
 typedef struct {
-    /** The placed model, or for the path of the airplane its points. */
     union {
-        s32 instance;
-        Vec3f *path;
-    } target;
-    /** The angle a spinning model turns each frame, or the number of points of the path. */
+        s32 instance; /*!< The index of the placed model. */
+        Vec3f *path;  /*!< The points of an edge of the path of the airplane, one for each node. */
+    } target;         /*!< The placed model, or for the path of the airplane its points. */
     union {
-        f32 spinAngle;
-        s32 pathLength;
-    } param;
-    /** The kind, by the TRACK_SPECIAL_ values. */
-    u8 type;
+        f32 spinAngle;  /*!< The angle a spinning model turns each frame, in degrees. */
+        s32 pathLength; /*!< The number of nodes of the path of the airplane. */
+    } param;            /*!< The angle of a spinning model, or the length of the path. */
+    u8 type;            /*!< The kind, by the TRACK_SPECIAL_ values. */
 } TrackSpecial;
 
 /** The gates a track can have. */
@@ -182,72 +157,53 @@ typedef struct {
 
 /** A gate of a lap: a line across the route, seen from above. */
 typedef struct {
-    Vec2f ends[2];
-    /** A time the debug output prints when a racer first crosses the gate. */
-    f32 seconds;
+    Vec2f ends[2]; /*!< The ends of the line across the route. */
+    f32 seconds;   /*!< A time the debug output prints when a racer first crosses the gate. */
 } TrackGate;
 
 /** The header of the loaded track. Its fields join this structure as they are reconstructed. */
 typedef struct {
-    /** The bytes of the track once decompressed; the loading first keeps its size here. */
-    u32 size;
-    /** The size of this header, which must be TRACK_HEADER_SIZE. */
-    s32 headerSize;
-    u8 unreconstructed8[0xC - 0x8];
-    /** What each triangle belongs to, by its index. */
-    TrackSurface *surfaces;
-    u8 unreconstructed10[0x14 - 0x10];
-    Vec3f *vertices;
-    /** The textures of the placed models. */
-    s32 textureCount;
-    ModelTexture *textures;
-    /** The triangles of each cell of the 64 by 64 grid, and where the list of each cell starts. */
-    u16 *gridTriangles;
-    u16 *gridCellStarts;
-    /** The extent of the track. Lightning strikes from minZ. */
-    f32 minX;
-    f32 maxX;
-    u8 unreconstructed30[0x38 - 0x30];
-    f32 minZ;
-    f32 maxZ;
-    /** Where the grid starts, and the heading of the vehicles on it, in radians. */
-    Vec3f startPosition;
-    f32 startHeading;
-    /** The display list of the sky, or NULL for a sky of the fog colour. */
-    Gfx *skyDisplayList;
-    u8 unreconstructed54[0x5C - 0x54];
-    /** The names of the placed models, by index, or NULL. */
-    const char **instanceNames;
-    /** The placed models. */
-    TrackInstance *instances;
-    s32 instanceCount;
-    /** The placed models of each cell of the 64 by 64 grid, and where the list of each starts. */
-    u16 *gridInstances;
-    u16 *gridInstanceStarts;
-    /** The section at the start line. The distance of its first point is the length of a lap. */
-    TrackSection *rootSection;
-    u8 unreconstructed74[0x78 - 0x74];
-    /** Every section, for a search. */
-    TrackSection **sections;
-    s32 sectionCount;
-    /** The colour of the fog of the track, in parts. */
-    u8 fogColor[3];
-    u8 unreconstructed83[0x84 - 0x83];
-    /** The points the trackside camera of a replay may stand at. */
-    Vec3f *cameraPoints;
-    s32 cameraPointCount;
-    /** Lists of placed models near the triangles, each ending in 0. */
-    u16 *nearbyInstances;
-    /** Where in nearbyInstances the list of each triangle starts, by its index. */
-    u16 *triangleNearbyInstances;
-    /** The flags of each triangle, by its index; the low 3 bits are its surface. */
-    u8 *triangleFlags;
-    /** The gates of a lap, in order; the first is the line of the lap. */
-    TrackGate gates[TRACK_GATES];
-    s32 gateCount;
-    /** The objects of the track that move or sound, by the TRACK_SPECIAL_ values. */
-    TrackSpecial specials[TRACK_SPECIALS];
-    s32 specialCount;
+    u32 size; /*!< The bytes of the track once decompressed, first written here by the loading. */
+    s32 headerSize; /*!< The size of this header, which must be TRACK_HEADER_SIZE. */
+    u8 unreconstructed8[0xC - 0x8];    /*!< Not yet reconstructed. */
+    TrackSurface *surfaces;            /*!< What each triangle belongs to, by its index. */
+    u8 unreconstructed10[0x14 - 0x10]; /*!< Not yet reconstructed. */
+    Vec3f *vertices;                   /*!< The corners of the triangles. */
+    s32 textureCount;                  /*!< The number of textures. */
+    ModelTexture *textures;            /*!< The textures of the placed models. */
+    u16 *gridTriangles;  /*!< The triangles of each cell of the 64 by 64 grid, cell by cell. */
+    u16 *gridCellStarts; /*!< Where the list of each cell starts in gridTriangles, by cell. */
+    f32 minX;            /*!< The least x of the track. */
+    f32 maxX;            /*!< The greatest x of the track. */
+    u8 unreconstructed30[0x38 - 0x30]; /*!< Not yet reconstructed. */
+    f32 minZ;            /*!< The least z of the track, where lightning strikes from. */
+    f32 maxZ;            /*!< The greatest z of the track. */
+    Vec3f startPosition; /*!< The point the vehicles of the starting grid are placed from. */
+    f32 startHeading;    /*!< The heading of the vehicles on the grid of the start, in radians. */
+    Gfx *skyDisplayList; /*!< The display list of the sky, or NULL for a sky of the fog colour. */
+    u8 unreconstructed54[0x5C - 0x54]; /*!< Not yet reconstructed. */
+    const char **instanceNames;        /*!< The names of the placed models, by index, or NULL. */
+    TrackInstance *instances;          /*!< The placed models. */
+    s32 instanceCount;                 /*!< The number of placed models. */
+    u16 *gridInstances; /*!< The placed models of each cell of the 64 by 64 grid, cell by cell. */
+    u16 *gridInstanceStarts;   /*!< Where the list of each cell starts in gridInstances, by cell. */
+    TrackSection *rootSection; /*!< The section at the start line, whose first point gives the
+                                    distance of a lap. */
+    u8 unreconstructed74[0x78 - 0x74]; /*!< Not yet reconstructed. */
+    TrackSection **sections;           /*!< Every section, for a search. */
+    s32 sectionCount;                  /*!< The number of sections. */
+    u8 fogColor[3]; /*!< The colour of the fog of the track, red, green, and blue from 0 to 255. */
+    u8 unreconstructed83[0x84 - 0x83]; /*!< Not yet reconstructed. */
+    Vec3f *cameraPoints;  /*!< The points the trackside camera of a replay may stand at. */
+    s32 cameraPointCount; /*!< The number of cameraPoints. */
+    u16 *nearbyInstances; /*!< Lists of placed models near the triangles, each ending in 0. */
+    u16 *triangleNearbyInstances; /*!< Where in nearbyInstances the list of each triangle starts,
+                                       by its index. */
+    u8 *triangleFlags;            /*!< The flags of each triangle, its surface in the low 3 bits. */
+    TrackGate gates[TRACK_GATES]; /*!< The gates of a lap in order, the first at the lap line. */
+    s32 gateCount;                /*!< The number of gates. */
+    TrackSpecial specials[TRACK_SPECIALS]; /*!< The objects of the track that move or sound. */
+    s32 specialCount;                      /*!< The number of specials. */
 } TrackHeader;
 
 /**

@@ -14,19 +14,14 @@
 
 /** The phases of a race, which g_aRacePhaseTable times. */
 enum {
-    /** The start lights hold their first pose. */
-    RACE_PHASE_HOLD,
-    RACE_PHASE_WAIT,
-    /** The start lights count down. */
-    RACE_PHASE_COUNTDOWN,
-    /** The start lights drop away and the vehicles go. */
-    RACE_PHASE_GO,
-    RACE_PHASE_RACING,
-    /** Every local player finished; the results are kept. */
-    RACE_PHASE_FINISHED,
-    RACE_PHASE_AFTER,
-    /** The screen fades out. */
-    RACE_PHASE_LEAVE,
+    RACE_PHASE_HOLD,      /*!< The start lights stay in their first pose. */
+    RACE_PHASE_WAIT,      /*!< A timed wait before the countdown that changes nothing. */
+    RACE_PHASE_COUNTDOWN, /*!< The start lights count down. */
+    RACE_PHASE_GO,        /*!< The start lights rise away and the vehicles go. */
+    RACE_PHASE_RACING,    /*!< The race itself, until its routine ends the phase. */
+    RACE_PHASE_FINISHED, /*!< The race is over, and the results are saved for the results screen. */
+    RACE_PHASE_AFTER,    /*!< A timed wait after the finish. */
+    RACE_PHASE_LEAVE,    /*!< The screen, the music, and the sound fade out. */
 };
 
 /** The phases of g_aRacePhaseTable. */
@@ -37,20 +32,18 @@ enum {
 
 /** The items of the pause menu. */
 enum {
-    PAUSE_CONTINUE,
-    PAUSE_RESTART,
-    PAUSE_MUSIC,
-    PAUSE_SOUND,
-    PAUSE_EXIT,
-    PAUSE_ITEMS,
+    PAUSE_CONTINUE, /*!< Return to the race. */
+    PAUSE_RESTART,  /*!< Restart the race. */
+    PAUSE_MUSIC,    /*!< The volume of the music, changed with left and right. */
+    PAUSE_SOUND,    /*!< The volume of the sound effects, changed with left and right. */
+    PAUSE_EXIT,     /*!< Exit to the main menu. */
+    PAUSE_ITEMS,    /*!< The number of items. */
 };
 
 /** A phase of a race and how long it lasts. */
 typedef struct {
-    /** The phase, by the RACE_PHASE_ values. */
-    s32 phase;
-    /** Its length in seconds, or 0 for a phase that lasts until something ends it. */
-    f32 seconds;
+    s32 phase;   /*!< The phase, by the RACE_PHASE_ values. */
+    f32 seconds; /*!< Its length in seconds, or 0 for a phase another condition ends. */
 } RacePhaseStep;
 
 /** The lines of a caption of the credits. */
@@ -58,25 +51,19 @@ typedef struct {
 
 /** A caption the credits show over a race. */
 typedef struct {
-    /** The small title above the lines, or NULL to end the captions. */
-    const char *title;
-    /** The time it shows, in seconds. */
-    f32 duration;
-    /** The lines, ending with NULL when there are fewer than CAPTION_LINES. */
-    const char *lines[CAPTION_LINES];
-    u8 unreconstructed1C[0x20 - 0x1C];
+    const char *title; /*!< The small title above the lines, or NULL to end the captions. */
+    f32 duration;      /*!< The time it shows, in seconds. */
+    const char *lines[CAPTION_LINES];  /*!< The lines, ending with NULL when there are fewer than
+                                            CAPTION_LINES. */
+    u8 unreconstructed1C[0x20 - 0x1C]; /*!< Not yet reconstructed. */
 } RaceCaption;
 
 /** A line of the credits that scroll up at the end of the championship. */
 typedef struct {
-    /** Its position on the screen, which moves up a pixel each frame. */
-    s32 y;
-    /** The size of its text. */
-    s32 size;
-    /** The space below it. */
-    s32 gap;
-    /** Its text, or NULL to end the credits. */
-    const char *text;
+    s32 y;            /*!< The baseline on the screen, which moves up a pixel each frame. */
+    s32 size;         /*!< The size of its text, in pixels. */
+    s32 gap;          /*!< The space below it, in pixels. */
+    const char *text; /*!< Its text, or NULL to end the credits. */
 } CreditLine;
 
 /** The players whose results are kept for the results screen. */

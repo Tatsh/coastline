@@ -16,32 +16,29 @@
 
 /** The steps of choosing a car, by the CAR_SELECT_ values. */
 enum {
-    CAR_SELECT_CAR,
-    CAR_SELECT_HANDLING,
-    CAR_SELECT_TRANSMISSION,
-    CAR_SELECT_TIRES,
-    CAR_SELECT_SUSPENSION,
-    CAR_SELECT_DECALS,
-    /** The player is ready to race. */
-    CAR_SELECT_READY,
+    CAR_SELECT_CAR,          /*!< The choice of the car. */
+    CAR_SELECT_HANDLING,     /*!< The choice of the handling. */
+    CAR_SELECT_TRANSMISSION, /*!< The choice of the transmission. */
+    CAR_SELECT_TIRES,        /*!< The choice of the tyres. */
+    CAR_SELECT_SUSPENSION,   /*!< The choice of the suspension. */
+    CAR_SELECT_DECALS,       /*!< The choice of the decals, by the DECALS_ values. */
+    CAR_SELECT_READY,        /*!< The player is ready to race. */
 };
 
 /** The pages of the results: the race of each player, the season, and its message. */
 enum {
-    RESULTS_PAGE_PLAYER_1,
-    RESULTS_PAGE_PLAYER_2,
-    RESULTS_PAGE_SEASON,
-    RESULTS_PAGE_MESSAGE,
-    /** Past the last page, which leaves the screen. */
-    RESULTS_PAGE_END,
+    RESULTS_PAGE_PLAYER_1, /*!< The race of the first player. */
+    RESULTS_PAGE_PLAYER_2, /*!< The race of the second player. */
+    RESULTS_PAGE_SEASON,   /*!< The standings of the season, skipped outside a championship. */
+    RESULTS_PAGE_MESSAGE,  /*!< The message of the season. */
+    RESULTS_PAGE_END,      /*!< Past the last page, which exits the screen. */
 };
 
 /** The decals a player may choose. */
 enum {
-    DECALS_DEFAULT,
-    /** Decals loaded from the controller pak. */
-    DECALS_LOAD,
-    DECALS_CUSTOM,
+    DECALS_DEFAULT, /*!< The default decals of the car. */
+    DECALS_LOAD,    /*!< Decals loaded from the Controller Pak. */
+    DECALS_CUSTOM,  /*!< The decals painted in the paint shop. */
 };
 
 /**

@@ -17,31 +17,20 @@
  * each strip is loaded and drawn on its own.
  */
 typedef struct {
-    /** The texels, once loaded. */
-    u8 *pixels;
-    /** Where the compressed picture starts on the cartridge. */
-    u32 romOffset;
-    /** The start of the next asset on the cartridge. */
-    u32 romEnd;
-    /** The bits of a texel: 4 for intensity, 8 for intensity and alpha, 16 for colour. */
-    u8 bitsPerTexel;
-    /** The width in texels. */
-    u32 width;
-    /** The height in texels. */
-    u32 height;
-    /** The rows of a strip. */
-    u32 stripHeight;
-    /** Where the picture is drawn from. */
-    s32 originX;
-    s32 originY;
-    /** The size the picture is drawn at on the screen. A negative width flips it. */
-    s32 drawWidth;
-    s32 drawHeight;
-    /**
-     * The style a paint tool is set to, on the pictures of the tools, or SPRITE_STYLE_TINTED for a
-     * sprite drawn in a colour.
-     */
-    u8 style;
+    u8 *pixels;      /*!< The texels, once loaded. */
+    u32 romOffset;   /*!< Where the compressed picture starts on the cartridge. */
+    u32 romEnd;      /*!< The start of the next asset on the cartridge. */
+    u8 bitsPerTexel; /*!< The bits of a texel, 4 for intensity, 8 for intensity and alpha, and 16
+                          for colour. */
+    u32 width;       /*!< The width in texels. */
+    u32 height;      /*!< The height in texels. */
+    u32 stripHeight; /*!< The rows of a strip. */
+    s32 originX;     /*!< The x the picture is drawn from on the screen. */
+    s32 originY;     /*!< The y the picture is drawn from on the screen. */
+    s32 drawWidth;   /*!< The width the picture is drawn at on the screen, negative to flip it. */
+    s32 drawHeight;  /*!< The height the picture is drawn at on the screen. */
+    u8 style; /*!< The style of a paint tool on the pictures of the tools, or SPRITE_STYLE_TINTED
+                   for a sprite drawn in a colour. */
 } Sprite;
 
 /**

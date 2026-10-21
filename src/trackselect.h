@@ -10,16 +10,16 @@
 
 /** The tracks, the mirrored ones TRACK_MIRRORED places after the others. */
 enum {
-    TRACK_DESERT,
-    TRACK_MOUNTAIN,
-    TRACK_COASTLINE,
-    TRACK_STRIP_MINE,
-    TRACK_JUNGLE,
-    TRACK_MIRROR_DESERT,
-    TRACK_MIRROR_MOUNTAIN,
-    TRACK_MIRROR_COASTLINE,
-    TRACK_MIRROR_STRIP_MINE,
-    TRACK_MIRROR_JUNGLE,
+    TRACK_DESERT,            /*!< The desert. */
+    TRACK_MOUNTAIN,          /*!< The mountain. */
+    TRACK_COASTLINE,         /*!< The coastline. */
+    TRACK_STRIP_MINE,        /*!< The strip mine. */
+    TRACK_JUNGLE,            /*!< The jungle. */
+    TRACK_MIRROR_DESERT,     /*!< The desert, mirrored. */
+    TRACK_MIRROR_MOUNTAIN,   /*!< The mountain, mirrored. */
+    TRACK_MIRROR_COASTLINE,  /*!< The coastline, mirrored. */
+    TRACK_MIRROR_STRIP_MINE, /*!< The strip mine, mirrored. */
+    TRACK_MIRROR_JUNGLE,     /*!< The jungle, mirrored. */
 };
 
 /** The places between a track and its mirrored version. */

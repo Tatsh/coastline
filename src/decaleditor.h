@@ -28,66 +28,61 @@
 
 /** The tools of the paint shop, each a button. */
 enum {
-    PAINT_TOOL_BRUSH_SIZE,
-    PAINT_TOOL_BRUSH,
-    PAINT_TOOL_FILL,
-    PAINT_TOOL_LINE,
-    PAINT_TOOL_TEXT,
-    PAINT_TOOL_RECTANGLE,
-    PAINT_TOOL_OVAL,
-    PAINT_TOOL_MIRROR,
-    PAINT_TOOL_CLEAR,
-    PAINT_TOOL_LOAD,
-    PAINT_TOOL_SAVE,
-    PAINT_TOOL_UNDO,
-    PAINT_TOOL_EXIT,
-    PAINT_TOOLS,
+    PAINT_TOOL_BRUSH_SIZE, /*!< The buttons that pick the size of the brush. */
+    PAINT_TOOL_BRUSH,      /*!< The brush, painting round or square dots. */
+    PAINT_TOOL_FILL,       /*!< The flood fill. */
+    PAINT_TOOL_LINE,       /*!< A straight line from an anchor to the cursor. */
+    PAINT_TOOL_TEXT,       /*!< A text typed on the keyboard of the font of the decals. */
+    PAINT_TOOL_RECTANGLE,  /*!< A rectangle in one of the RECT_STYLE_ styles. */
+    PAINT_TOOL_OVAL,       /*!< An ellipse or a circle in one of the OVAL_STYLE_ styles. */
+    PAINT_TOOL_MIRROR,     /*!< The menu that mirrors or flips the decal. */
+    PAINT_TOOL_CLEAR,      /*!< The menu that fills or clears the decal. */
+    PAINT_TOOL_LOAD,       /*!< The dialog that loads decals from a Controller Pak. */
+    PAINT_TOOL_SAVE,       /*!< The dialog that saves decals to a Controller Pak. */
+    PAINT_TOOL_UNDO,       /*!< Undo the last edit and return to the previous tool. */
+    PAINT_TOOL_EXIT,       /*!< The dialog that confirms the exit from the paint shop. */
+    PAINT_TOOLS,           /*!< The number of tools. */
 };
 
 /** The styles of the rectangle tool. */
 enum {
-    RECT_STYLE_FILLED,
-    RECT_STYLE_OUTLINED,
-    RECT_STYLE_FILLED_ROUND,
-    RECT_STYLE_OUTLINED_ROUND,
+    RECT_STYLE_FILLED,         /*!< A filled rectangle. */
+    RECT_STYLE_OUTLINED,       /*!< The outline of a rectangle. */
+    RECT_STYLE_FILLED_ROUND,   /*!< A filled rectangle with rounded corners. */
+    RECT_STYLE_OUTLINED_ROUND, /*!< The outline of a rectangle with rounded corners. */
 };
 
 /** The styles of the oval tool. */
 enum {
-    OVAL_STYLE_FILLED_ELLIPSE,
-    OVAL_STYLE_OUTLINED_ELLIPSE,
-    OVAL_STYLE_FILLED_CIRCLE,
-    OVAL_STYLE_OUTLINED_CIRCLE,
+    OVAL_STYLE_FILLED_ELLIPSE,   /*!< A filled ellipse in the box from the anchor to the cursor. */
+    OVAL_STYLE_OUTLINED_ELLIPSE, /*!< The outline of an ellipse in the same box. */
+    OVAL_STYLE_FILLED_CIRCLE,    /*!< A filled circle about the anchor, out to the cursor. */
+    OVAL_STYLE_OUTLINED_CIRCLE,  /*!< The outline of a circle about the anchor. */
 };
 
 /** A rectangle of the screen of the paint shop, 640 by 480. */
 typedef struct {
-    s32 x;
-    s32 y;
-    s32 width;
-    s32 height;
+    s32 x;      /*!< The left edge, in pixels. */
+    s32 y;      /*!< The top edge, in pixels. */
+    s32 width;  /*!< The width, in pixels. */
+    s32 height; /*!< The height, in pixels. */
 } ScreenRect;
 
 /** A color of the palette of the decal, and where it is shown to be picked. */
 typedef struct {
-    ScreenRect rect;
-    /** The red, green and blue of the color, from 0 to 255. */
-    u8 color[3];
+    ScreenRect rect; /*!< Where the swatch is shown on the screen. */
+    u8 color[3];     /*!< The red, green and blue of the color, from 0 to 255. */
 } PaletteSwatch;
 
 /** A character of the font of the decals, and its key on the keyboard of the text tool. */
 typedef struct {
-    /** Where the key is on the screen. */
-    s32 x;
-    s32 y;
-    /** The ASCII of the character. */
-    u8 character;
-    /** Where the character starts in its cell of 16 texels of the font. */
-    s32 cellX;
-    s32 width;
-    /** How far the character may be moved towards the one before and the one after it. */
-    s32 kernLeft;
-    s32 kernRight;
+    s32 x;         /*!< The x of the key on the screen, where its highlight is drawn. */
+    s32 y;         /*!< The y of the key on the screen, where its highlight is drawn. */
+    u8 character;  /*!< The ASCII of the character. */
+    s32 cellX;     /*!< Where the character starts in its cell of 16 texels of the font. */
+    s32 width;     /*!< The width of the character, in texels. */
+    s32 kernLeft;  /*!< How far the character may be moved towards the one before it. */
+    s32 kernRight; /*!< How far the character may be moved towards the one after it. */
 } DecalGlyph;
 
 /** The picture of the brush tool, whose style is round or square. @ghidraAddress USA: 0x8028ce70 */
