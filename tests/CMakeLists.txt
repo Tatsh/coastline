@@ -75,11 +75,7 @@ coastline_add_test(visgrid "${_src}/visgrid.c" "${_src}/mathutil.c")
 coastline_add_test(weather ${_common})
 
 # The libultra C library, renamed apart from the host's.
-coastline_add_test(bcopy "${_src}/libultra/libc/bcopy.c" "${_src}/libultra/libc/bzero.c"
-                   "${_src}/libultra/libc/bcmp.c")
-set_source_files_properties(
-  "${_src}/libultra/libc/bcopy.c" "${_src}/libultra/libc/bzero.c" "${_src}/libultra/libc/bcmp.c"
-  PROPERTIES COMPILE_DEFINITIONS "bcopy=lu_bcopy;bzero=lu_bzero;bcmp=lu_bcmp")
+coastline_add_test(bcopy stubs/libc.c)
 coastline_add_test(llcvt "${_src}/libultra/libc/llcvt.c")
 coastline_add_test(
   printf "${_src}/libultra/libc/sprintf.c" "${_src}/libultra/libc/xprintf.c"

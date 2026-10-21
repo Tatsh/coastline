@@ -26,6 +26,7 @@ badvaddr
 balign
 bcmp
 bcopy
+beql
 beqz
 bestlaptime
 bgtz
@@ -207,6 +208,9 @@ kseg
 kuseg
 laprecords
 laptimes
+lbcmp
+lbcopy
+lbzero
 lcart
 lcounter
 ldblk
@@ -293,6 +297,7 @@ mtxutil
 mult
 mypy
 nearbycount
+negu
 ngre
 noat
 noload
@@ -432,6 +437,7 @@ simgr
 sinf
 skybox
 slotvehicle
+slti
 sltu
 smokepos
 snapcraft

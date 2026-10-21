@@ -17,6 +17,19 @@
 #define FLAGS_HASH 0x08
 #define FLAGS_ZERO 0x10
 
+/* The indices of the halfwords of a double in memory, most significant first. */
+#if defined(__BYTE_ORDER__) && __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
+#define _D0 3
+#define _D1 2
+#define _D2 1
+#define _D3 0
+#else
+#define _D0 0
+#define _D1 1
+#define _D2 2
+#define _D3 3
+#endif
+
 /** A routine that appends count characters to arg and returns the new position, or NULL. */
 typedef void *(*outfun)(void *arg, const char *s, size_t count);
 

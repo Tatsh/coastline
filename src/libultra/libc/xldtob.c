@@ -2,30 +2,18 @@
 
 #define BUFF_LEN 0x20
 
-/* The halfwords of a double, most significant first, and the fields of the first. */
-#if defined(__BYTE_ORDER__) && __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
-#define _D0 3
-#define _D1 2
-#define _D2 1
-#define _D3 0
-#else
-#define _D0 0
-#define _D1 1
-#define _D2 2
-#define _D3 3
-#endif
+/* The fields of the most significant halfword of a double. */
 #define _DFRAC 0x000F
 #define _DMASK 0x7FF0
 #define _DMAX 0x7FF
 #define _DOFF 4
 
 /** @ghidraAddress USA: 0x8026d0f0 */
-static void _Genld(_Pft *px, char code, const char *p, s16 nsig, s16 xexp) {
+static void _Genld(_Pft *px, char code, char *p, s16 nsig, s16 xexp) {
     const char point = '.';
 
     if (nsig <= 0) {
-        nsig = 1;
-        p = "0";
+        nsig = 1, p = "0";
     }
 
     if (code == 'f' || ((code == 'g' || code == 'G') && xexp >= -4 && xexp < px->prec)) {
@@ -82,8 +70,6 @@ static void _Genld(_Pft *px, char code, const char *p, s16 nsig, s16 xexp) {
         }
     } else {
         /* Exponential notation. */
-        char *e;
-
         if (code == 'g' || code == 'G') {
             if (nsig < px->prec) {
                 px->prec = nsig;
@@ -105,26 +91,24 @@ static void _Genld(_Pft *px, char code, const char *p, s16 nsig, s16 xexp) {
             px->n1 += nsig;
             px->nz1 = px->prec - nsig;
         }
-        e = &px->s[px->n1];
-        *e++ = code;
+        /* The digits are copied, so p now writes the exponent. */
+        p = &px->s[px->n1];
+        *p++ = code;
         if (xexp >= 0) {
-            *e++ = '+';
+            *p++ = '+';
         } else {
-            *e++ = '-';
+            *p++ = '-';
             xexp = -xexp;
         }
         if (xexp >= 100) {
             if (xexp >= 1000) {
-                *e++ = xexp / 1000 + '0';
-                xexp %= 1000;
+                *p++ = xexp / 1000 + '0', xexp %= 1000;
             }
-            *e++ = xexp / 100 + '0';
-            xexp %= 100;
+            *p++ = xexp / 100 + '0', xexp %= 100;
         }
-        *e++ = xexp / 10 + '0';
-        xexp %= 10;
-        *e++ = xexp + '0';
-        px->n2 = e - px->s - px->n1;
+        *p++ = xexp / 10 + '0', xexp %= 10;
+        *p++ = xexp + '0';
+        px->n2 = p - px->s - px->n1;
     }
 
     if ((px->flags & (FLAGS_ZERO | FLAGS_MINUS)) == FLAGS_ZERO) {
@@ -265,9 +249,7 @@ void _Ldtob(_Pft *px, char code) {
                     ++p[n2];
                 }
                 if (n2 < 0) {
-                    --p;
-                    ++nsig;
-                    ++xexp;
+                    --p, ++nsig, ++xexp;
                 }
             }
         }

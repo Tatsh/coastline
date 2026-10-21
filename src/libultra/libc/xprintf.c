@@ -40,7 +40,9 @@ static void _Putfld(_Pft *px, va_list *pap, char code, char *ac) {
 
     case 'd':
     case 'i':
-        if (px->qual == 'L') {
+        if (px->qual == 'l') {
+            px->v.ll = va_arg(*pap, int);
+        } else if (px->qual == 'L') {
             px->v.ll = va_arg(*pap, long long);
         } else {
             px->v.ll = va_arg(*pap, int);
@@ -63,7 +65,9 @@ static void _Putfld(_Pft *px, va_list *pap, char code, char *ac) {
     case 'X':
     case 'u':
     case 'o':
-        if (px->qual == 'L') {
+        if (px->qual == 'l') {
+            px->v.ll = va_arg(*pap, int);
+        } else if (px->qual == 'L') {
             px->v.ll = va_arg(*pap, long long);
         } else {
             px->v.ll = va_arg(*pap, int);
@@ -89,9 +93,8 @@ static void _Putfld(_Pft *px, va_list *pap, char code, char *ac) {
     case 'E':
     case 'G':
         /* A long double is a double on this target. */
-        px->v.ld = va_arg(*pap, double);
-        /* The sign bit of the double is the sign bit of the integer that shares its storage. */
-        if (px->v.ll < 0) {
+        px->v.ld = (px->qual == 'L') ? va_arg(*pap, long double) : va_arg(*pap, double);
+        if (px->v.hw[_D0] & 0x8000) {
             ac[px->n0++] = '-';
         } else if (px->flags & FLAGS_PLUS) {
             ac[px->n0++] = '+';
@@ -105,6 +108,8 @@ static void _Putfld(_Pft *px, va_list *pap, char code, char *ac) {
     case 'n':
         if (px->qual == 'h') {
             *va_arg(*pap, u16 *) = px->nchar;
+        } else if (px->qual == 'l') {
+            *va_arg(*pap, unsigned int *) = px->nchar;
         } else if (px->qual == 'L') {
             *va_arg(*pap, u64 *) = px->nchar;
         } else {
@@ -136,13 +141,20 @@ static void _Putfld(_Pft *px, va_list *pap, char code, char *ac) {
     }
 }
 
+#ifdef __GNUC__
 int _Printf(outfun prout, char *arg, const char *fmt, va_list ap) {
+#else
+int _Printf(outfun prout, char *arg, const char *fmt, va_list args) {
+#endif
     _Pft x;
+#ifdef __GNUC__
     va_list args;
 
     /* _Putfld advances the arguments through a pointer, and a pointer to a local copy is
      * portable where a pointer to a parameter is not. */
     va_copy(args, ap);
+#endif
+
     x.nchar = 0;
     for (;;) {
         const char *s = fmt;

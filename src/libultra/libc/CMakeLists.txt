@@ -1,9 +1,9 @@
 # The C library: memory and string routines, formatted output, and 64-bit arithmetic.
 add_library(
   coastline_libultra_libc STATIC
-          bcmp.c
-          bcopy.c
-          bzero.c
+          bcmp.s
+          bcopy.s
+          bzero.s
           divdi3.c
           ldiv.c
           ll.c
