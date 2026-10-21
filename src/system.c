@@ -83,6 +83,10 @@
 /* The address the RSP and the RDP read memory of KSEG0 at. */
 #define TO_RSP_ADDRESS(p) ((u32)(p) - K0BASE)
 
+/* The first command of the display list of the current frame buffer. */
+#define DISPLAY_LIST_START()                                                                       \
+    (g_pDisplayListBase + g_dwFrameBufferIndex * DISPLAY_LIST_COMMANDS + DISPLAY_LIST_RESERVED)
+
 /* A fill of the frame buffer with a colour of 8-bit components, as two pixels. */
 #define FILL_COLOR(red, green, blue)                                                               \
     ((u32)GPACK_RGBA5551(red, green, blue, 1) << 16 | GPACK_RGBA5551(red, green, blue, 1))
@@ -678,8 +682,7 @@ void BeginDisplayList(s32 highRes) {
             g_apFramebuffers[1] = g_aFramebuffer1;
         }
     }
-    gDisplayListPtr =
-        g_pDisplayListBase + g_dwFrameBufferIndex * DISPLAY_LIST_COMMANDS + DISPLAY_LIST_RESERVED;
+    gDisplayListPtr = DISPLAY_LIST_START();
     g_dwTextureFilterMode = g_bBilinearFiltering ? G_TF_BILERP : G_TF_POINT;
     g_dwColorDitherMode = G_CD_BAYER;
     g_dwAlphaDitherMode = G_AD_PATTERN;
@@ -797,19 +800,24 @@ void SetViewport(s32 x, s32 y, s32 width, s32 height, s32 setScissor) {
         width *= 2;
         height *= 2;
     }
-    viewport = &g_aViewports[g_dwViewportIndex];
     /* A negative width mirrors the view, and a mirrored track mirrors it again. */
-    if (g_dwTrackMirrored) {
-        viewport->vp.vscale[0] = -width * 2;
-    } else {
-        viewport->vp.vscale[0] = width * 2;
-    }
     if (width < 0) {
-        g_dwViewportMirrored = TRUE;
+        if (g_dwTrackMirrored) {
+            g_aViewports[g_dwViewportIndex].vp.vscale[0] = -width * 2;
+        } else {
+            g_aViewports[g_dwViewportIndex].vp.vscale[0] = width * 2;
+        }
         width = -width;
+        g_dwViewportMirrored = TRUE;
     } else {
+        if (g_dwTrackMirrored) {
+            g_aViewports[g_dwViewportIndex].vp.vscale[0] = -width * 2;
+        } else {
+            g_aViewports[g_dwViewportIndex].vp.vscale[0] = width * 2;
+        }
         g_dwViewportMirrored = FALSE;
     }
+    viewport = &g_aViewports[g_dwViewportIndex];
     viewport->vp.vscale[1] = height * 2;
     viewport->vp.vscale[2] = VIEWPORT_HALF_DEPTH;
     viewport->vp.vscale[3] = 0;
@@ -987,8 +995,8 @@ void StreamAnimatedTrackTextures(void) {
 
 void FlushDisplayList(void) {
     OSTask *task;
-    Gfx *start;
     u16 *framebuffer;
+    u32 *pairsOut, *pairsIn;
     s32 commands, count, pairs, i;
 
     gDPFullSync(gDisplayListPtr++);
@@ -1006,11 +1014,10 @@ void FlushDisplayList(void) {
     task->t.dram_stack_size = SP_DRAM_STACK_SIZE8;
     task->t.ucode_boot = g_aRspBootUcode;
     task->t.ucode_boot_size = (g_aGspUcodeText - g_aRspBootUcode) * sizeof(u64);
-    start =
-        g_pDisplayListBase + g_dwFrameBufferIndex * DISPLAY_LIST_COMMANDS + DISPLAY_LIST_RESERVED;
-    task->t.data_ptr = (u64 *)start;
-    task->t.data_size = (gDisplayListPtr - start) * sizeof(Gfx);
-    commands = gDisplayListPtr - start;
+    /* The original works out the start of the display list again for each use. */
+    task->t.data_ptr = (u64 *)DISPLAY_LIST_START();
+    task->t.data_size = (gDisplayListPtr - DISPLAY_LIST_START()) * sizeof(Gfx);
+    commands = gDisplayListPtr - DISPLAY_LIST_START();
     if (g_dwPeakDisplayListCommands < commands) {
         g_dwPeakDisplayListCommands = commands;
     }
@@ -1040,9 +1047,10 @@ void FlushDisplayList(void) {
         if (g_bShowDepthBuffer) {
             /* The depth buffer is copied over the frame about to show, two depths at a time. */
             pairs = ((g_dwScreenScaleShift ? 4 : 1) * g_dwScreenWidth * g_dwScreenHeight) >> 1;
-            framebuffer = g_apFramebuffers[g_dwFrameBufferIndex ^ 1];
-            for (i = 0; i < pairs * 2; i++) {
-                framebuffer[i] = g_aDepthBuffer[i];
+            pairsOut = (u32 *)g_apFramebuffers[g_dwFrameBufferIndex ^ 1];
+            pairsIn = (u32 *)g_aDepthBuffer;
+            for (i = 0; i < pairs; i++) {
+                pairsOut[i] = pairsIn[i];
             }
         }
         /* The test is of the second routine, but the call is of the next. The next is NULL here
@@ -1102,8 +1110,9 @@ s32 ProcessDisplayList(Gfx *displayList, Gfx table[][4]) {
     translucent = FALSE;
     snowTint = FALSE;
     if (displayList != NULL) {
-        for (; (displayList->words.w0 >> 24) != G_ENDDL; displayList++) {
-            switch (displayList->words.w0 >> 24) {
+        /* The original masks the opcode after the shift. */
+        for (; ((displayList->words.w0 >> 24) & 0xFF) != G_ENDDL; displayList++) {
+            switch ((displayList->words.w0 >> 24) & 0xFF) {
             case G_SETOTHERMODE_L:
                 for (row = 0; row < RENDER_MODE_ROWS; row++) {
                     if (IsSameCommand(displayList, &table[row][0])) {
@@ -1536,8 +1545,9 @@ static void ParseBootArguments(char *text) {
             *p++ = '\0';
         }
         if (c != '\0') {
-            /* There is no limit on the count. */
-            g_apszBootArgv[g_dwBootArgc++] = p;
+            /* There is no limit on the count. The original reads the count again to raise it. */
+            g_apszBootArgv[g_dwBootArgc] = p;
+            g_dwBootArgc++;
             c = *p;
         }
         while (c != '\0' && c != ' ') {

@@ -60,7 +60,9 @@ static inline void ColorSpraySegment(Vehicle *vehicle, s32 wheel) {
 
     switch (vehicle->spraySegmentSurfaces[wheel][0]) {
     case 0:
-        SetSprayColors(head, 0x30, 0x20, 0x10, 0x30, 0x20, 0x10);
+        head[0].v.cn[0] = head[1].v.cn[0] = 0x30;
+        head[0].v.cn[1] = head[1].v.cn[1] = 0x20;
+        head[0].v.cn[2] = head[1].v.cn[2] = 0x10;
         return;
     case TRACK_SURFACE_PAVED:
         if (g_dwRainMode) {
@@ -94,13 +96,12 @@ static inline void ColorSpraySegment(Vehicle *vehicle, s32 wheel) {
         return;
     }
     vehicle->spraySegmentSurfaces[wheel][0] = -1;
-    SetSprayColors(head,
-                   last[0].v.cn[0],
-                   last[0].v.cn[1],
-                   last[0].v.cn[2],
-                   last[1].v.cn[0],
-                   last[1].v.cn[1],
-                   last[1].v.cn[2]);
+    head[1].v.cn[0] = last[1].v.cn[0];
+    head[1].v.cn[1] = last[1].v.cn[1];
+    head[1].v.cn[2] = last[1].v.cn[2];
+    head[0].v.cn[0] = last[0].v.cn[0];
+    head[0].v.cn[1] = last[0].v.cn[1];
+    head[0].v.cn[2] = last[0].v.cn[2];
 }
 
 /** Copy a segment of a spray over the next older one. */
@@ -116,11 +117,13 @@ static inline void AgeSpraySegment(Vehicle *vehicle, s32 wheel, s32 age) {
 
 /** The texels of a puff left of or above the screen, from its step a pixel, within its sign. */
 static inline s32 OffscreenTexels(s16 offscreen, s16 step) {
-    s32 texels = (offscreen * step) >> 7;
+    s32 texels;
 
     if (step < 0) {
+        texels = (offscreen * step) >> 7;
         return texels > 0 ? texels : 0;
     }
+    texels = (offscreen * step) >> 7;
     return texels < 0 ? texels : 0;
 }
 
@@ -302,20 +305,26 @@ void EmitTireSpray(Vehicle *vehicle) {
             } else if (surface == TRACK_SURFACE_PAVED && g_dwRainMode && !sheltered) {
                 scale = 1.5f;
                 throwing = TRUE;
-                /* Water begins a segment every frame for the next seven. */
-                vehicle->sprayPhases[wheel] = 7.75f;
+                /* Water begins a segment every frame for the next seven. The original tests
+                 * again that the spray is not holding still. */
+                if (!holding) {
+                    vehicle->sprayPhases[wheel] = 7.75f;
+                }
             }
         }
 
         if (throwing) {
             if (!holding) {
                 Vec3fScale(&velocity, &vehicle->frame.up, scale);
+                /* The original tests the surface again for the rest. */
                 if (surface != TRACK_SURFACE_PAVED) {
                     Vec3fMulAddInPlace(&velocity,
                                        &vehicle->frame.side,
                                        wheel == 0 ? scale :
                                        wheel < 3  ? -scale :
                                                     scale);
+                }
+                if (surface != TRACK_SURFACE_PAVED) {
                     Vec3fScaleInPlace(&velocity, speedShare);
                     Vec3fMulAddInPlace(&velocity, &vehicle->placedVelocity, 0.3f);
                     Vec3fMulAddInPlace(&velocity,
@@ -360,11 +369,12 @@ void EmitTireSpray(Vehicle *vehicle) {
             velocities[1][0] = (s32)(velocity.x * SPRAY_UNITS);
             velocities[1][1] = (s32)(velocity.y * SPRAY_UNITS);
             velocities[1][2] = (s32)(velocity.z * SPRAY_UNITS);
-            velocities[0][2] = 0;
             if (surface == TRACK_SURFACE_PAVED && g_dwRainMode) {
+                velocities[0][2] = 0;
                 velocities[0][0] = velocities[1][0];
                 velocities[0][1] = velocities[1][1];
             } else {
+                velocities[0][2] = 0;
                 velocities[0][0] = velocities[1][0] >> 1;
                 velocities[0][1] = velocities[1][1] >> 1;
             }
@@ -565,12 +575,17 @@ void MoveTireSpray(void) {
                     segment[1].v.ob[2] += shiftZ;
                 } else if (age != SPRAY_SEGMENTS - 1) {
                     velocities = vehicle->sprayVelocities[wheel][age];
-                    segment[0].v.ob[0] += ((velocities[0][0] * step) >> SPRAY_STEP_SHIFT) + shiftX;
-                    segment[0].v.ob[1] += ((velocities[0][1] * step) >> SPRAY_STEP_SHIFT) + shiftY;
+                    segment[0].v.ob[0] = segment[0].v.ob[0] +
+                                         ((velocities[0][0] * step) >> SPRAY_STEP_SHIFT) + shiftX;
+                    segment[0].v.ob[1] = segment[0].v.ob[1] +
+                                         ((velocities[0][1] * step) >> SPRAY_STEP_SHIFT) + shiftY;
                     segment[0].v.ob[2] += shiftZ;
-                    segment[1].v.ob[0] += ((velocities[1][0] * step) >> SPRAY_STEP_SHIFT) + shiftX;
-                    segment[1].v.ob[1] += ((velocities[1][1] * step) >> SPRAY_STEP_SHIFT) + shiftY;
-                    segment[1].v.ob[2] += ((velocities[1][2] * step) >> SPRAY_STEP_SHIFT) + shiftZ;
+                    segment[1].v.ob[0] = segment[1].v.ob[0] +
+                                         ((velocities[1][0] * step) >> SPRAY_STEP_SHIFT) + shiftX;
+                    segment[1].v.ob[1] = segment[1].v.ob[1] +
+                                         ((velocities[1][1] * step) >> SPRAY_STEP_SHIFT) + shiftY;
+                    segment[1].v.ob[2] = segment[1].v.ob[2] +
+                                         ((velocities[1][2] * step) >> SPRAY_STEP_SHIFT) + shiftZ;
                     /* The top edge falls until it lands on the bottom one. */
                     if (segment[1].v.ob[2] < segment[0].v.ob[2]) {
                         segment[1].v.ob[2] = segment[0].v.ob[2];
