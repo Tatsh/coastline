@@ -42,6 +42,18 @@ add_library(
   io/visetspecial.c
   io/viswapbuf.c
   io/viswapcontext.c
+  libc/bcmp.c
+  libc/bcopy.c
+  libc/bzero.c
+  libc/divdi3.c
+  libc/ldiv.c
+  libc/ll.c
+  libc/llcvt.c
+  libc/sprintf.c
+  libc/string.c
+  libc/xldtob.c
+  libc/xlitob.c
+  libc/xprintf.c
   os/createmesgqueue.c
   os/createthread.c
   os/destroythread.c
@@ -54,6 +66,9 @@ add_library(
   os/setthreadpri.c
   os/settimer.c
   os/startthread.c
+  os/syncprintf.c
   os/timerintr.c
   os/yieldthread.c)
 target_link_libraries(coastline_libultra PRIVATE coastline_common)
+# These routines are the C library, so GCC must not turn their loops into calls to memcpy or memset.
+target_compile_options(coastline_libultra PRIVATE -fno-tree-loop-distribute-patterns)

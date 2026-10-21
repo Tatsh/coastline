@@ -66956,21 +66956,21 @@ dlabel D_802A6228
 enddlabel D_802A6228
 
 .align 2
-nonmatching D_802A6230
+nonmatching spaces
 
-dlabel D_802A6230
+dlabel spaces
     /* A7230 802A6230 */ .asciz "                                "
     /* 202020202020202020202020202020202020202020202020202020202020202000000000 */
 .align 2
-enddlabel D_802A6230
+enddlabel spaces
 
 .align 2
-nonmatching g_szHexDigits
+nonmatching zeroes
 
-dlabel g_szHexDigits
+dlabel zeroes
     /* A7254 802A6254 */ .asciz "00000000000000000000000000000000"
     /* 303030303030303030303030303030303030303030303030303030303030303000000000 */
-enddlabel g_szHexDigits
+enddlabel zeroes
 .align 2
 
 nonmatching D_802A6278

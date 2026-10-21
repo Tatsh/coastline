@@ -17,7 +17,7 @@ import re
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent.parent
-LOCAL_LABEL = re.compile(r'^\s*(\.L[0-9A-F]{8}):\s*$')
+LOCAL_LABEL = re.compile(r'^\s*(?:jlabel\s+)?(\.L[0-9A-F]{8}):?\s*$')
 
 
 def remove_routine(lines: list[str], name: str) -> tuple[list[str], set[str]] | None:

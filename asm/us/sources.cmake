@@ -51,14 +51,10 @@ set(COASTLINE_ASM_US
     asm/us/59070.s
     asm/us/5A350.s
     asm/us/61490.s
-    asm/us/617C0.s
-    asm/us/61AB0.s
     asm/us/61BC0.s
-    asm/us/61DB0.s
     asm/us/62940.s
     asm/us/62CB0.s
     asm/us/62F20.s
-    asm/us/63540.s
     asm/us/63660.s
     asm/us/638C0.s
     asm/us/63A80.s
@@ -72,12 +68,9 @@ set(COASTLINE_ASM_US
     asm/us/67020.s
     asm/us/67390.s
     asm/us/67400.s
-    asm/us/678F0.s
-    asm/us/684D0.s
     asm/us/687E0.s
     asm/us/68930.s
     asm/us/69540.s
-    asm/us/69750.s
     asm/us/6A580.s
     asm/us/6A690.s
     asm/us/6B3F0.s
@@ -88,7 +81,6 @@ set(COASTLINE_ASM_US
     asm/us/6CA10.s
     asm/us/6CAC0.s
     asm/us/6CB40.s
-    asm/us/6CBA0.s
     asm/us/6D990.s
     asm/us/6E0F0.s
     asm/us/6EBE0.s
@@ -97,7 +89,6 @@ set(COASTLINE_ASM_US
     asm/us/6F6C0.s
     asm/us/6F6D0.s
     asm/us/6F780.s
-    asm/us/6F870.s
     asm/us/data/data.data.s
     asm/us/data/rodata.rodata.s
     asm/us/data/bss.bss.s)

@@ -12023,11 +12023,11 @@ dlabel g_dDegToRad
 enddlabel g_dDegToRad
     /* AC948 802AB948 0000000000000000 */ .double 0
 
-nonmatching g_pfnTLB_REFILL
+nonmatching g_qwDoubleToUllHighBit
 
-dlabel g_pfnTLB_REFILL
+dlabel g_qwDoubleToUllHighBit
     /* AC950 802AB950 80000000 */ .word D_80000000
-enddlabel g_pfnTLB_REFILL
+enddlabel g_qwDoubleToUllHighBit
     /* AC954 802AB954 00000000 */ .word 0x00000000
 
 nonmatching D_802AB958
@@ -12066,80 +12066,80 @@ dlabel g_szPrintfLengthModifiers
 enddlabel g_szPrintfLengthModifiers
 
 .align 2
-nonmatching g_sz0
+nonmatching fchar
 
-dlabel g_sz0
+dlabel fchar
     /* AC984 802AB984 */ .asciz " +-#0"
     /* 202B2D2330000000 */
-enddlabel g_sz0
+enddlabel fchar
 .align 2
 
-nonmatching D_802AB98C
+nonmatching fbit
 
-dlabel D_802AB98C
+dlabel fbit
     /* AC98C 802AB98C 00000001 */ .word 0x00000001
     /* AC990 802AB990 00000002 */ .word 0x00000002
     /* AC994 802AB994 00000004 */ .word 0x00000004
     /* AC998 802AB998 00000008 */ .word 0x00000008
     /* AC99C 802AB99C 00000010 */ .word 0x00000010
     /* AC9A0 802AB9A0 00000000 */ .word 0x00000000
-enddlabel D_802AB98C
+enddlabel fbit
 
 nonmatching switchdataD_802ab9a4
 
 dlabel switchdataD_802ab9a4
-    /* AC9A4 802AB9A4 80268AB8 */ .word .L80268AB8
-    /* AC9A8 802AB9A8 80268D98 */ .word .L80268D98
-    /* AC9AC 802AB9AC 80268AB8 */ .word .L80268AB8
-    /* AC9B0 802AB9B0 80268D98 */ .word .L80268D98
-    /* AC9B4 802AB9B4 80268D98 */ .word .L80268D98
-    /* AC9B8 802AB9B8 80268D98 */ .word .L80268D98
-    /* AC9BC 802AB9BC 80268D98 */ .word .L80268D98
-    /* AC9C0 802AB9C0 80268D98 */ .word .L80268D98
-    /* AC9C4 802AB9C4 80268D98 */ .word .L80268D98
-    /* AC9C8 802AB9C8 80268D98 */ .word .L80268D98
-    /* AC9CC 802AB9CC 80268D98 */ .word .L80268D98
-    /* AC9D0 802AB9D0 80268D98 */ .word .L80268D98
-    /* AC9D4 802AB9D4 80268D98 */ .word .L80268D98
-    /* AC9D8 802AB9D8 80268D98 */ .word .L80268D98
-    /* AC9DC 802AB9DC 80268D98 */ .word .L80268D98
-    /* AC9E0 802AB9E0 80268D98 */ .word .L80268D98
-    /* AC9E4 802AB9E4 80268D98 */ .word .L80268D98
-    /* AC9E8 802AB9E8 80268D98 */ .word .L80268D98
-    /* AC9EC 802AB9EC 80268D98 */ .word .L80268D98
-    /* AC9F0 802AB9F0 80268968 */ .word .L80268968
-    /* AC9F4 802AB9F4 80268D98 */ .word .L80268D98
-    /* AC9F8 802AB9F8 80268D98 */ .word .L80268D98
-    /* AC9FC 802AB9FC 80268D98 */ .word .L80268D98
-    /* ACA00 802ABA00 80268D98 */ .word .L80268D98
-    /* ACA04 802ABA04 80268D98 */ .word .L80268D98
-    /* ACA08 802ABA08 80268D98 */ .word .L80268D98
-    /* ACA0C 802ABA0C 80268D98 */ .word .L80268D98
-    /* ACA10 802ABA10 80268D98 */ .word .L80268D98
-    /* ACA14 802ABA14 80268D98 */ .word .L80268D98
-    /* ACA18 802ABA18 80268D98 */ .word .L80268D98
-    /* ACA1C 802ABA1C 802687C0 */ .word .L802687C0
-    /* ACA20 802ABA20 802687F8 */ .word .L802687F8
-    /* ACA24 802ABA24 80268AB8 */ .word .L80268AB8
-    /* ACA28 802ABA28 80268AB8 */ .word .L80268AB8
-    /* ACA2C 802ABA2C 80268AB8 */ .word .L80268AB8
-    /* ACA30 802ABA30 80268D98 */ .word .L80268D98
-    /* ACA34 802ABA34 802687F8 */ .word .L802687F8
-    /* ACA38 802ABA38 80268D98 */ .word .L80268D98
-    /* ACA3C 802ABA3C 80268D98 */ .word .L80268D98
-    /* ACA40 802ABA40 80268D98 */ .word .L80268D98
-    /* ACA44 802ABA44 80268D98 */ .word .L80268D98
-    /* ACA48 802ABA48 80268C1C */ .word .L80268C1C
-    /* ACA4C 802ABA4C 80268968 */ .word .L80268968
-    /* ACA50 802ABA50 80268CEC */ .word .L80268CEC
-    /* ACA54 802ABA54 80268D98 */ .word .L80268D98
-    /* ACA58 802ABA58 80268D98 */ .word .L80268D98
-    /* ACA5C 802ABA5C 80268D34 */ .word .L80268D34
-    /* ACA60 802ABA60 80268D98 */ .word .L80268D98
-    /* ACA64 802ABA64 80268968 */ .word .L80268968
-    /* ACA68 802ABA68 80268D98 */ .word .L80268D98
-    /* ACA6C 802ABA6C 80268D98 */ .word .L80268D98
-    /* ACA70 802ABA70 80268968 */ .word .L80268968
+    /* AC9A4 802AB9A4 80268AB8 */ .word 0
+    /* AC9A8 802AB9A8 80268D98 */ .word 0
+    /* AC9AC 802AB9AC 80268AB8 */ .word 0
+    /* AC9B0 802AB9B0 80268D98 */ .word 0
+    /* AC9B4 802AB9B4 80268D98 */ .word 0
+    /* AC9B8 802AB9B8 80268D98 */ .word 0
+    /* AC9BC 802AB9BC 80268D98 */ .word 0
+    /* AC9C0 802AB9C0 80268D98 */ .word 0
+    /* AC9C4 802AB9C4 80268D98 */ .word 0
+    /* AC9C8 802AB9C8 80268D98 */ .word 0
+    /* AC9CC 802AB9CC 80268D98 */ .word 0
+    /* AC9D0 802AB9D0 80268D98 */ .word 0
+    /* AC9D4 802AB9D4 80268D98 */ .word 0
+    /* AC9D8 802AB9D8 80268D98 */ .word 0
+    /* AC9DC 802AB9DC 80268D98 */ .word 0
+    /* AC9E0 802AB9E0 80268D98 */ .word 0
+    /* AC9E4 802AB9E4 80268D98 */ .word 0
+    /* AC9E8 802AB9E8 80268D98 */ .word 0
+    /* AC9EC 802AB9EC 80268D98 */ .word 0
+    /* AC9F0 802AB9F0 80268968 */ .word 0
+    /* AC9F4 802AB9F4 80268D98 */ .word 0
+    /* AC9F8 802AB9F8 80268D98 */ .word 0
+    /* AC9FC 802AB9FC 80268D98 */ .word 0
+    /* ACA00 802ABA00 80268D98 */ .word 0
+    /* ACA04 802ABA04 80268D98 */ .word 0
+    /* ACA08 802ABA08 80268D98 */ .word 0
+    /* ACA0C 802ABA0C 80268D98 */ .word 0
+    /* ACA10 802ABA10 80268D98 */ .word 0
+    /* ACA14 802ABA14 80268D98 */ .word 0
+    /* ACA18 802ABA18 80268D98 */ .word 0
+    /* ACA1C 802ABA1C 802687C0 */ .word 0
+    /* ACA20 802ABA20 802687F8 */ .word 0
+    /* ACA24 802ABA24 80268AB8 */ .word 0
+    /* ACA28 802ABA28 80268AB8 */ .word 0
+    /* ACA2C 802ABA2C 80268AB8 */ .word 0
+    /* ACA30 802ABA30 80268D98 */ .word 0
+    /* ACA34 802ABA34 802687F8 */ .word 0
+    /* ACA38 802ABA38 80268D98 */ .word 0
+    /* ACA3C 802ABA3C 80268D98 */ .word 0
+    /* ACA40 802ABA40 80268D98 */ .word 0
+    /* ACA44 802ABA44 80268D98 */ .word 0
+    /* ACA48 802ABA48 80268C1C */ .word 0
+    /* ACA4C 802ABA4C 80268968 */ .word 0
+    /* ACA50 802ABA50 80268CEC */ .word 0
+    /* ACA54 802ABA54 80268D98 */ .word 0
+    /* ACA58 802ABA58 80268D98 */ .word 0
+    /* ACA5C 802ABA5C 80268D34 */ .word 0
+    /* ACA60 802ABA60 80268D98 */ .word 0
+    /* ACA64 802ABA64 80268968 */ .word 0
+    /* ACA68 802ABA68 80268D98 */ .word 0
+    /* ACA6C 802ABA6C 80268D98 */ .word 0
+    /* ACA70 802ABA70 80268968 */ .word 0
     /* ACA74 802ABA74 00000000 */ .word 0x00000000
     /* ACA78 802ABA78 00000000 */ .word 0x00000000
     /* ACA7C 802ABA7C 00000000 */ .word 0x00000000
@@ -12293,11 +12293,11 @@ dlabel g_szInf
 .align 2
 enddlabel g_szInf
 
-nonmatching g_bRaceReserved0
+nonmatching g_szGenldZeroDigit
 
-dlabel g_bRaceReserved0
+dlabel g_szGenldZeroDigit
     /* ACB50 802ABB50 */ .byte 0x30
-enddlabel g_bRaceReserved0
+enddlabel g_szGenldZeroDigit
 
 nonmatching g_szFormatFloatEmpty
 
@@ -12307,11 +12307,11 @@ dlabel g_szFormatFloatEmpty
     /* ACB54 802ABB54 00000000 */ .word 0x00000000
 enddlabel g_szFormatFloatEmpty
 
-nonmatching g_qwRaceReserved50
+nonmatching g_dLdtobTenToTheEighth
 
-dlabel g_qwRaceReserved50
+dlabel g_dLdtobTenToTheEighth
     /* ACB58 802ABB58 4197D78400000000 */ .double 100000000
-enddlabel g_qwRaceReserved50
+enddlabel g_dLdtobTenToTheEighth
 
 nonmatching D_802ABB60
 

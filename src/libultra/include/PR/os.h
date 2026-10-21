@@ -605,6 +605,20 @@ extern u8 aiHdwrBugFlag;
 /* Start-up. */
 void osInitialize(void);
 
+/**
+ * Print to the debugger. The retail library discards the output.
+ *
+ * @ghidraAddress USA: 0x802607dc
+ */
+void osSyncPrintf(const char *fmt, ...);
+
+/**
+ * Print to the remote monitor. The retail library discards the output.
+ *
+ * @ghidraAddress USA: 0x802607c0
+ */
+void rmonPrintf(const char *fmt, ...);
+
 /* The 64-bit helpers the compiler calls for long long arithmetic and conversions. */
 unsigned long long __ull_rshift(unsigned long long a0, unsigned long long a1);
 unsigned long long __ull_rem(unsigned long long a0, unsigned long long a1);
