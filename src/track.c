@@ -101,41 +101,7 @@ u16 NextGridCellInstance(TrackGridCursor *cursor) {
 }
 
 s32 IsTrackIndexValid(s32 track) {
-    if (track < g_dwNumTracks) {
-        return g_aTrackDescriptors[track].trackRomEnd != 0;
-    }
-    return FALSE;
-}
-
-/* Mark the placed models whose matrix holds only a position and a scale, and keep the inverse of
- * the scale of each. Return how many were marked. */
-static s32 MeasureInstanceScales(void) {
-    TrackInstance *instance;
-    Vec3f axis;
-    f32 length;
-    f32 scale;
-    s32 unrotated = 0;
-    s32 i;
-
-    for (i = 0; i < g_LoadedTrack.instanceCount; i++) {
-        instance = &g_LoadedTrack.instances[i];
-        axis.x = 1.0f;
-        axis.y = 0.0f;
-        axis.z = 0.0f;
-        Mtx3x3TransformVec(&axis, &axis, instance->matrix);
-        length = Vec3fLength(&axis);
-        if (length == 0.0f) {
-            continue;
-        }
-        scale = 1.0f / length;
-        if (instance->matrix[0][0] * scale == 1.0f && instance->matrix[1][1] * scale == 1.0f &&
-            instance->matrix[2][2] * scale == 1.0f) {
-            instance->flags |= TRACK_INSTANCE_UNROTATED;
-            unrotated++;
-        }
-        instance->invScale = scale;
-    }
-    return unrotated;
+    return track < g_dwNumTracks && g_aTrackDescriptors[track].trackRomEnd != 0;
 }
 
 void LoadTrackGeometryFromRom(s32 track) {
@@ -144,7 +110,11 @@ void LoadTrackGeometryFromRom(s32 track) {
     char tooBig[LOAD_MESSAGE_SIZE];
     char tooManyInstances[LOAD_MESSAGE_SIZE];
     char headerMismatch[LOAD_MESSAGE_SIZE];
+    Vec3f axis;
+    f32 length;
+    f32 scale;
     s32 unrotated;
+    s32 i;
 
     g_LoadedTrack.size = DmaReadAssetSize(descriptor->trackRom);
     osInvalDCache(&g_LoadedTrack, sizeof(g_LoadedTrack.size));
@@ -168,7 +138,27 @@ void LoadTrackGeometryFromRom(s32 track) {
     g_dwStreamDmaPrevSegment = -1;
     g_dwStreamedSnowMode = -1;
 
-    unrotated = MeasureInstanceScales();
+    /* Mark the placed models whose matrix holds only a position and a scale, and store the inverse
+     * of the scale of each. */
+    unrotated = 0;
+    for (i = 0; i < g_LoadedTrack.instanceCount; i++) {
+        axis.x = 1.0f;
+        axis.y = 0.0f;
+        axis.z = 0.0f;
+        Mtx3x3TransformVec(&axis, &axis, g_LoadedTrack.instances[i].matrix);
+        length = Vec3fLength(&axis);
+        if (length == 0.0f) {
+            continue;
+        }
+        scale = 1.0f / length;
+        if (g_LoadedTrack.instances[i].matrix[0][0] * scale == 1.0f &&
+            g_LoadedTrack.instances[i].matrix[1][1] * scale == 1.0f &&
+            g_LoadedTrack.instances[i].matrix[2][2] * scale == 1.0f) {
+            g_LoadedTrack.instances[i].flags |= TRACK_INSTANCE_UNROTATED;
+            unrotated++;
+        }
+        g_LoadedTrack.instances[i].invScale = scale;
+    }
     /* The format asks for two numbers and is given one. */
     osSyncPrintf("Scalars: %d/%d\n", unrotated);
     if (g_LoadedTrack.instanceCount > TRACK_MAX_INSTANCES) {

@@ -23,86 +23,94 @@ void DebugFrameStubA(void) {
 }
 
 /*
- * Draw one glyph with its top-left outline corner at dst. Each pixel of the glyph takes the 3 by 3
- * block of outline around it, and the centre of the block is drawn a row later so that the outline
- * of the next row cannot cover it.
+ * Each pixel of a glyph takes the 3 by 3 block of outline around it, and the centre of the block is
+ * drawn a row later so that the outline of the next row cannot cover it.
  */
-static void
-DrawBitmapGlyph(u16 *dst, s32 stride, const u16 *rows, s32 columns, s32 ownColors, u16 color) {
-    s32 row, column;
-    u16 *block;
-
-    for (row = 0; row <= BITMAP_FONT_ROWS; row++) {
-        if (row < BITMAP_FONT_ROWS) {
-            for (column = 0; column < columns; column++) {
-                if (rows[column] != 0) {
-                    block = dst + column;
-                    block[0] = block[1] = block[2] = OUTLINE_COLOR;
-                    block[stride] = block[stride + 2] = OUTLINE_COLOR;
-                    block[stride * 2] = block[stride * 2 + 1] = block[stride * 2 + 2] =
-                        OUTLINE_COLOR;
-                }
-            }
-        }
-        if (row != 0) {
-            for (column = 0; column < columns; column++) {
-                if (rows[column - columns] != 0) {
-                    dst[column + 1] = ownColors ? rows[column - columns] : color;
-                }
-            }
-        }
-        dst += stride;
-        rows += columns;
-    }
-}
-
 void DrawBitmapTextToFramebuffer(const char *text) {
-    s32 shift = g_dwScreenScaleShift;
-    s32 stride = g_dwScreenWidth << shift;
+    s32 stride = g_dwScreenWidth << g_dwScreenScaleShift;
     s32 lineX = g_dwBitmapTextX;
     s32 y = g_dwBitmapTextY;
     u16 color = g_wBitmapTextColor;
-    u16 *dst = g_apFramebuffers[g_dwFrameBufferIndex ^ 1] + y * stride + lineX;
+    s16 *dst = (s16 *)g_apFramebuffers[g_dwFrameBufferIndex ^ 1] + y * stride + lineX;
     const u8 *p;
-    u32 c;
-    s32 glyph;
+    const s16 *rows;
+    u8 c;
+    u8 glyph;
+    s32 row;
+    s32 column;
 
     for (p = (const u8 *)text; (c = *p) != '\0'; p++) {
         if (c >= ' ' && c < 0x7F) {
             if (c >= 'a' && c <= 'z') {
-                glyph = c - 'a' + 'A' - ' ';
-            } else if (c >= '{') {
-                /* The font keeps {|}~ in the places of the lower case letters. */
-                glyph = c - ('{' - 'a') - ' ';
+                glyph = c - ('a' - 'A' + ' ');
             } else {
+                /* The font keeps {|}~ in the places of the lower case letters. The second
+                 * comparison is always true here. */
+                if (c >= '{' && c < 0x7F) {
+                    c -= '{' - 'a';
+                }
                 glyph = c - ' ';
             }
         } else if (c == '\n') {
             /* The column goes back to the margin, but the drawing carries on from where it was. */
-            lineX = TEXT_MARGIN << (shift * 2);
-            y += NEWLINE_ROWS + shift;
-            dst += (NEWLINE_ROWS + shift) * stride;
+            lineX = TEXT_MARGIN << (g_dwScreenScaleShift * 2);
+            y += g_dwScreenScaleShift + NEWLINE_ROWS;
+            dst += (g_dwScreenScaleShift + NEWLINE_ROWS) * stride;
             continue;
         } else {
             glyph = 0;
         }
 
         if (g_bBitmapTextNarrow) {
-            DrawBitmapGlyph(dst,
-                            stride,
-                            &g_aBitmapFontNarrow[glyph][0][0],
-                            BITMAP_FONT_NARROW_COLUMNS,
-                            TRUE,
-                            color);
-            dst += BITMAP_FONT_NARROW_COLUMNS + 1 + shift;
+            rows = g_aBitmapFontNarrow[glyph][0];
+            for (row = 0; row <= BITMAP_FONT_ROWS; row++) {
+                if (row < BITMAP_FONT_ROWS) {
+                    for (column = 0; column < BITMAP_FONT_NARROW_COLUMNS; column++) {
+                        if (rows[column] != 0) {
+                            dst[column] = dst[column + 1] = dst[column + 2] = dst[stride + column] =
+                                dst[stride + column + 2] = dst[stride * 2 + column] =
+                                    dst[stride * 2 + column + 1] = dst[stride * 2 + column + 2] =
+                                        OUTLINE_COLOR;
+                        }
+                    }
+                }
+                if (row != 0) {
+                    for (column = 0; column < BITMAP_FONT_NARROW_COLUMNS; column++) {
+                        if (rows[column - BITMAP_FONT_NARROW_COLUMNS] != 0) {
+                            dst[column + 1] = rows[column - BITMAP_FONT_NARROW_COLUMNS];
+                        }
+                    }
+                }
+                dst += stride;
+                rows += BITMAP_FONT_NARROW_COLUMNS;
+            }
+            dst -= stride * (BITMAP_FONT_ROWS + 1) - g_dwScreenScaleShift -
+                   (BITMAP_FONT_NARROW_COLUMNS + 1);
         } else {
-            DrawBitmapGlyph(dst,
-                            stride,
-                            &g_aBitmapFontWide[glyph][0][0],
-                            BITMAP_FONT_WIDE_COLUMNS,
-                            FALSE,
-                            color);
-            dst += BITMAP_FONT_WIDE_COLUMNS + 1 + shift;
+            rows = g_aBitmapFontWide[glyph][0];
+            for (row = 0; row <= BITMAP_FONT_ROWS; row++) {
+                if (row < BITMAP_FONT_ROWS) {
+                    for (column = 0; column < BITMAP_FONT_WIDE_COLUMNS; column++) {
+                        if (rows[column] != 0) {
+                            dst[column] = dst[column + 1] = dst[column + 2] = dst[stride + column] =
+                                dst[stride + column + 2] = dst[stride * 2 + column] =
+                                    dst[stride * 2 + column + 1] = dst[stride * 2 + column + 2] =
+                                        OUTLINE_COLOR;
+                        }
+                    }
+                }
+                if (row != 0) {
+                    for (column = 0; column < BITMAP_FONT_WIDE_COLUMNS; column++) {
+                        if (rows[column - BITMAP_FONT_WIDE_COLUMNS] != 0) {
+                            dst[column + 1] = color;
+                        }
+                    }
+                }
+                dst += stride;
+                rows += BITMAP_FONT_WIDE_COLUMNS;
+            }
+            dst -= stride * (BITMAP_FONT_ROWS + 1) - g_dwScreenScaleShift -
+                   (BITMAP_FONT_WIDE_COLUMNS + 1);
         }
     }
 
@@ -143,12 +151,13 @@ void StepDebugHiddenInstance(void) {
             break;
         }
         visible = g_nOpaqueVisibleInstanceCount;
-        for (i = 0; i < visible && g_awVisibleInstanceList[i] != index; i++) {
-        }
-        if (i < visible) {
-            break;
+        for (i = 0; i < visible; i++) {
+            if (g_awVisibleInstanceList[i] == index) {
+                goto found;
+            }
         }
     }
+found:
     g_nDebugInstanceCycleStep = 0;
 }
 

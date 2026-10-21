@@ -14,24 +14,22 @@
 
 void SerializeSaveData(SaveField *fields, u8 *buffer, s32 capacity) {
     char message[OVERFLOW_MESSAGE_SIZE];
-    s32 used = 0;
+    u8 *cursor = buffer;
 
     for (; fields->data != NULL; fields++) {
-        memcpy(&buffer[used], fields->data, fields->size);
-        used += fields->size;
+        memcpy(cursor, fields->data, fields->size);
+        cursor += fields->size;
     }
-    if (capacity < used) {
-        sprintf(message, "VAR SAVE OVERFLOW (%d avail, %d used)", capacity, used);
+    if (capacity < cursor - buffer) {
+        sprintf(message, "VAR SAVE OVERFLOW (%d avail, %d used)", capacity, cursor - buffer);
         SetDebugMessage(message);
     }
 }
 
 void DeserializeSaveData(SaveField *fields, u8 *buffer) {
-    s32 used = 0;
-
     for (; fields->data != NULL; fields++) {
-        memcpy(fields->data, &buffer[used], fields->size);
-        used += fields->size;
+        memcpy(fields->data, buffer, fields->size);
+        buffer += fields->size;
     }
 }
 

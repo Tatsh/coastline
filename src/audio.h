@@ -324,14 +324,6 @@ void CheckSoundEffectLoopPoints(void);
  */
 void AudioMixingThreadMain(void *arg);
 
-/**
- * The end of a routine with no start, which restores the registers of the mixing thread. Nothing
- * calls it.
- *
- * @ghidraAddress USA: 0x80258040
- */
-void UnusedAudioMixingStub(void);
-
 /** The sound effects of a race. */
 #define SOUND_EFFECTS 16
 

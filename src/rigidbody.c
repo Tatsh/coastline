@@ -109,7 +109,9 @@ void IntegrateRigidBodyState(RigidBodyState *out, RigidBodyState *in, f32 dt) {
     out->position.x = move.x + in->position.x;
     out->position.y = move.y + in->position.y;
     out->position.z = move.z + in->position.z;
-    out->velocity = in->velocity;
+    out->velocity.x = in->velocity.x;
+    out->velocity.y = in->velocity.y;
+    out->velocity.z = in->velocity.z;
 
     turn.w = in->spin.w * dt;
     turn.x = in->spin.x * dt;
@@ -121,8 +123,13 @@ void IntegrateRigidBodyState(RigidBodyState *out, RigidBodyState *in, f32 dt) {
     out->orientation.z = turn.z + in->orientation.z;
     QuaternionNormalize(&out->orientation);
 
-    out->angularVelocity = in->angularVelocity;
-    out->spin = in->spin;
+    out->angularVelocity.x = in->angularVelocity.x;
+    out->angularVelocity.y = in->angularVelocity.y;
+    out->angularVelocity.z = in->angularVelocity.z;
+    out->spin.w = in->spin.w;
+    out->spin.x = in->spin.x;
+    out->spin.y = in->spin.y;
+    out->spin.z = in->spin.z;
 }
 
 void SetRigidBodyForce(
@@ -199,6 +206,10 @@ void ComputeRigidBodyAcceleration(RigidBody *body) {
     Mtx3x3MulVec3f(&body->torque, body->orientation, &angular);
 }
 
+/* The original adds an uninitialised stack vector for a force of another frame. */
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
+#pragma GCC diagnostic ignored "-Wuninitialized"
 void ApplySingleForceWithDebug(RigidBody *body, RigidBodyForce *force) {
     Vec3f vector, arm, torque;
 
@@ -206,9 +217,6 @@ void ApplySingleForceWithDebug(RigidBody *body, RigidBodyForce *force) {
         vector = force->vector;
     } else if (force->frame == RIGID_BODY_FORCE_BODY) {
         Mtx3x3MulVec3f(&vector, body->orientation, &force->vector);
-    } else {
-        /* The original adds whatever its stack holds for another frame. */
-        vector.x = vector.y = vector.z = 0.0f;
     }
     body->force.x = vector.x + body->force.x;
     body->force.y = vector.y + body->force.y;
@@ -239,6 +247,7 @@ void ApplySingleForceWithDebug(RigidBody *body, RigidBodyForce *force) {
                  body->torque.y,
                  body->torque.z);
 }
+#pragma GCC diagnostic pop
 
 void ApplyAllForcesToBody(RigidBody *body) {
     RigidBodyForce *force;
@@ -381,15 +390,17 @@ static f32 CramerSum(f32 b0, f32 b1, f32 b2, f32 p0, f32 p1, f32 p2, f32 p3, f32
 void SolveLinearSystem3x3(Vec3f *out, f32 a[3][3], Vec3f *b) {
     f32 inverse;
 
-    inverse = 1.0f / CramerSum(a[0][0],
-                               a[1][0],
-                               a[2][0],
-                               a[2][2] * a[1][1],
-                               a[2][1] * a[1][2],
-                               a[2][2] * a[0][1],
-                               a[2][1] * a[0][2],
-                               a[1][2] * a[0][1],
-                               a[1][1] * a[0][2]);
+    /* The original stores the determinant in the slot of its inverse before dividing. */
+    inverse = CramerSum(a[0][0],
+                        a[1][0],
+                        a[2][0],
+                        a[2][2] * a[1][1],
+                        a[2][1] * a[1][2],
+                        a[2][2] * a[0][1],
+                        a[2][1] * a[0][2],
+                        a[1][2] * a[0][1],
+                        a[1][1] * a[0][2]);
+    inverse = 1.0f / inverse;
     out->x = CramerSum(b->x,
                        b->y,
                        b->z,

@@ -102,15 +102,17 @@
 /* Round a pointer up to a multiple of 4 bytes. */
 #define ALIGN4(p) ((u8 *)(((size_t)(p) + 3) & ~(size_t)3))
 
-static u32 ReadLittleEndian32(const u8 *p) {
-    return p[0] + (p[1] << 8) + (p[2] << 16) + ((u32)p[3] << 24);
-}
+/* A little-endian word of the module, read a byte at a time from the high byte. */
+#define READ_LE32(p) (((u32)(p)[3] << 24) + (p)[0] + ((p)[1] << 8) + ((p)[2] << 16))
+
+/* The packed size of a pattern, after its header. */
+#define PATTERN_SIZE(p)                                                                            \
+    (READ_LE32(p) + ((p)[XM_PATTERN_PACKED_SIZE + 1] << 8) + (p)[XM_PATTERN_PACKED_SIZE])
 
 void LoadMusicModule(u8 *module, u8 *work) {
     u8 *out = work;
     u8 *in, *sampleHeader, *loop;
-    u32 i, j, size, length, patterns, instruments;
-    u8 sum;
+    u32 i, j, size, length, patterns, instruments, sum;
 
     g_MusicPlayer.orders = work;
     g_MusicPlayer.songLength = module[XM_SONG_LENGTH];
@@ -129,15 +131,15 @@ void LoadMusicModule(u8 *module, u8 *work) {
     osSyncPrintf("%d Instruments found\n", instruments);
 
     /* Each pattern is copied whole, its header with its packed rows. */
-    in = module + ReadLittleEndian32(&module[XM_HEADER_SIZE]) + XM_HEADER_SIZE;
+    in = module + READ_LE32(&module[XM_HEADER_SIZE]) + XM_HEADER_SIZE;
     for (i = 0; i < patterns; i++) {
         g_apPatternData[i] = out;
-        size = ReadLittleEndian32(in) + (in[XM_PATTERN_PACKED_SIZE + 1] << 8) +
-               in[XM_PATTERN_PACKED_SIZE];
+        size = PATTERN_SIZE(in);
         for (j = 0; j < size; j++) {
             *out++ = in[j];
         }
-        in += size;
+        /* The original reads the size again rather than reuse it. */
+        in += PATTERN_SIZE(in);
     }
     out = ALIGN4(out);
 
@@ -149,20 +151,19 @@ void LoadMusicModule(u8 *module, u8 *work) {
     for (i = 0; i < instruments; i++) {
         osSyncPrintf(".");
         sum = 0;
-        sampleHeader = in + ReadLittleEndian32(in);
-        if (in[XM_INSTRUMENT_SAMPLES] == 0) {
+        sampleHeader = in + READ_LE32(in);
+        if (in[XM_INSTRUMENT_SAMPLES] <= 0) {
             g_apInstrumentData[i] = NULL;
             in = sampleHeader;
             continue;
         }
-        length = ReadLittleEndian32(sampleHeader);
+        length = READ_LE32(sampleHeader);
         g_apInstrumentData[i] = (XmSample *)out;
         for (j = 0; j < sizeof(XmSample); j++) {
             *out++ = sampleHeader[j];
         }
-        g_apInstrumentData[i]->length = ReadLittleEndian32(sampleHeader);
-        g_apInstrumentData[i]->loopLength =
-            ReadLittleEndian32(&sampleHeader[XM_SAMPLE_LOOP_LENGTH]);
+        g_apInstrumentData[i]->length = READ_LE32(sampleHeader);
+        g_apInstrumentData[i]->loopLength = READ_LE32(&sampleHeader[XM_SAMPLE_LOOP_LENGTH]);
         for (j = 0; j < length; j++) {
             sum += sampleHeader[sizeof(XmSample) + j];
             *out++ = sum;
@@ -174,7 +175,7 @@ void LoadMusicModule(u8 *module, u8 *work) {
             }
             break;
         case XM_SAMPLE_FORWARD_LOOP:
-            loop = out - ReadLittleEndian32(&sampleHeader[XM_SAMPLE_LOOP_LENGTH]);
+            loop = out - READ_LE32(&sampleHeader[XM_SAMPLE_LOOP_LENGTH]);
             for (j = 0; j < SAMPLE_TAIL; j++) {
                 *out++ = *loop++;
             }
@@ -397,7 +398,9 @@ void UpdateMusicPlayback(void) {
         if (state->arpeggioOn && instrument != 0 && mixer->step != 0) {
             sample = g_apInstrumentData[instrument - 1];
             mixer->step = NOTE_STEP(sample->relativeNote + state->arpeggio[state->arpeggio[3]]);
-            state->arpeggio[3] = (state->arpeggio[3] + 1) & 3;
+            /* The original stores the step before it wraps the step. */
+            state->arpeggio[3]++;
+            state->arpeggio[3] &= 3;
         }
 
         /* A portamento slides the period, which is inverse to the step, and stops at its target. */
@@ -438,16 +441,18 @@ void UpdateMusicPlayback(void) {
 }
 
 void InitAudioSystem(void *module, void *work) {
-    OSTime period;
-    u32 start;
+    u32 elapsed;
     s32 frequency, i;
 
     g_qwSoundEffectSampleMask = SOUND_EFFECT_SAMPLE_MASK;
     frequency = osAiSetFrequency(AUDIO_FREQUENCY);
     osSyncPrintf("Real Frequency is = %d\n", frequency);
     osCreateMesgQueue(&g_AudioMsgQueue, g_aAudioMsgBuf, 2);
-    period = osClockRate * AUDIO_TIMER_USEC / 1000000;
-    osSetTimer(&g_AudioTimer, period, period, &g_AudioMsgQueue, NULL);
+    osSetTimer(&g_AudioTimer,
+               osClockRate * AUDIO_TIMER_USEC / 1000000,
+               osClockRate * AUDIO_TIMER_USEC / 1000000,
+               &g_AudioMsgQueue,
+               NULL);
     for (i = 0; i < g_nAudioChannelCount; i++) {
         g_aMixerChannels[i].sample = (s8 *)g_AudioDmaBuffer;
         g_aMixerChannels[i].step = 0;
@@ -461,9 +466,10 @@ void InitAudioSystem(void *module, void *work) {
     g_wAudioBufferWritePos = 0;
 
     /* Time a mix of the whole ring buffer. */
-    start = osGetCount();
+    elapsed = -osGetCount();
     MixAudioSamples(g_AudioDmaBuffer, AUDIO_RING_BYTES);
-    osSyncPrintf("%1.7f", (f64)(osGetCount() - start) / CPU_COUNT_RATE);
+    elapsed += osGetCount();
+    osSyncPrintf("%1.7f", (f64)elapsed / CPU_COUNT_RATE);
 
     osSyncPrintf("Creating I entries\n");
     LoadMusicModule(module, work);
@@ -650,7 +656,5 @@ void AudioMixingThreadMain(void *arg) {
 
         UpdateRumblePaks(0);
     }
-}
-
-void UnusedAudioMixingStub(void) {
+    /* The original ends with an epilogue that the endless loop never arrives at. */
 }

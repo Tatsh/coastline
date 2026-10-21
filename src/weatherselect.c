@@ -8,13 +8,8 @@
 #include "weather.h"
 
 s32 IsWeatherSelectable(s32 weather) {
-    if (weather != WEATHER_SUNNY) {
-        return TRUE;
-    }
-    if (g_dwSelectedTrackId == 3 || g_dwSelectedTrackId == 8) {
-        return FALSE;
-    }
-    return g_dwNumLocalPlayers == 1;
+    return weather != WEATHER_SUNNY ||
+           (g_dwSelectedTrackId != 3 && g_dwSelectedTrackId != 8 && g_dwNumLocalPlayers == 1);
 }
 
 void ProcessWeatherSelect(void) {

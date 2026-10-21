@@ -8,8 +8,8 @@
 #include "track.h"
 #include "util.h"
 
-u16 g_aBitmapFontWide[BITMAP_FONT_GLYPHS][BITMAP_FONT_ROWS][BITMAP_FONT_WIDE_COLUMNS];
-u16 g_aBitmapFontNarrow[BITMAP_FONT_GLYPHS][BITMAP_FONT_ROWS][BITMAP_FONT_NARROW_COLUMNS];
+s16 g_aBitmapFontWide[BITMAP_FONT_GLYPHS][BITMAP_FONT_ROWS][BITMAP_FONT_WIDE_COLUMNS];
+s16 g_aBitmapFontNarrow[BITMAP_FONT_GLYPHS][BITMAP_FONT_ROWS][BITMAP_FONT_NARROW_COLUMNS];
 s32 g_dwBitmapTextX, g_dwBitmapTextY, g_bBitmapTextNarrow, g_nDebugInstanceCycleStep;
 u16 g_wBitmapTextColor;
 s32 g_dwScreenScaleShift, g_dwScreenWidth, g_dwFrameDeltaMs, g_dwFrameBufferIndex;

@@ -10,20 +10,23 @@
 /* The size of the length a channel starts with. */
 #define RLE_BLOCK_HEADER 4
 
+/* The first comparison of the first channel is against an uninitialised byte, and of each later
+ * channel against the byte read past the end of the last. */
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
+#pragma GCC diagnostic ignored "-Wuninitialized"
 s32 CompressRleChannels(u8 *dst, s32 dstSize, u8 *src, s32 srcSize, s32 channels) {
     s32 out = 0;
-    s32 channel;
+    s32 channel = 0;
     s32 header;
     s32 blockLength = 0;
     s32 i;
     s32 literal;
     s32 run;
-    /* Uninitialised in the original: the first comparison of the first channel is against an
-     * unknown byte, and of each later channel against the byte read past the end of the last. */
-    s8 current = 0;
+    s8 current;
     s8 previous;
 
-    for (channel = 0;; channel++, src++) {
+    do {
         header = out;
         if ((u32)dstSize < (u32)(out + RLE_BLOCK_HEADER)) {
             return -1;
@@ -76,11 +79,12 @@ s32 CompressRleChannels(u8 *dst, s32 dstSize, u8 *src, s32 srcSize, s32 channels
         }
         blockLength = out - header - RLE_BLOCK_HEADER;
         memcpy(&dst[header], &blockLength, RLE_BLOCK_HEADER);
-        if (channel + 1 >= channels) {
-            return out;
-        }
-    }
+        src++;
+        channel++;
+    } while (channel < channels);
+    return out;
 }
+#pragma GCC diagnostic pop
 
 s32 DecompressInterleavedRle(u8 *dst, s32 dstSize, u8 *src, s32 channels) {
     s32 out = 0;
@@ -90,7 +94,7 @@ s32 DecompressInterleavedRle(u8 *dst, s32 dstSize, u8 *src, s32 channels) {
     s32 end;
     s32 count;
     s8 code;
-    u8 value;
+    s8 value;
 
     for (channel = 0; channel < channels; channel++, dst++) {
         out = 0;

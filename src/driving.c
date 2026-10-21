@@ -918,6 +918,7 @@ static void HoldAiToRoute(Vehicle *vehicle, f32 sideOffset, f32 halfWidth, f32 f
     Vec3f *velocity = &vehicle->body.state.velocity;
     f32 hold;
     f32 along;
+    f32 across;
     f32 upward;
     s16 weather;
 
@@ -930,9 +931,12 @@ static void HoldAiToRoute(Vehicle *vehicle, f32 sideOffset, f32 halfWidth, f32 f
             hold = AI_HOLD_MAX;
         }
         along = Vec3fDot(velocity, &vehicle->trackForward);
+        /* The original computes the speed across the route and overwrites it unread. */
+        across = Vec3fDot(velocity, &vehicle->trackSide);
         upward = Vec3fDot(velocity, &vehicle->trackUp);
+        across = -(sideOffset * hold);
         Vec3fScale(velocity, &vehicle->trackForward, along);
-        Vec3fMulAddInPlace(velocity, &vehicle->trackSide, -(sideOffset * hold));
+        Vec3fMulAddInPlace(velocity, &vehicle->trackSide, across);
         Vec3fMulAddInPlace(velocity, &vehicle->trackUp, upward);
     }
     if (g_dwGameMode == GAME_MODE_CHAMPIONSHIP) {

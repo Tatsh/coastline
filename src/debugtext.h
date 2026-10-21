@@ -24,14 +24,14 @@
  *
  * @ghidraAddress USA: 0x8028dfc0
  */
-extern u16 g_aBitmapFontWide[BITMAP_FONT_GLYPHS][BITMAP_FONT_ROWS][BITMAP_FONT_WIDE_COLUMNS];
+extern s16 g_aBitmapFontWide[BITMAP_FONT_GLYPHS][BITMAP_FONT_ROWS][BITMAP_FONT_WIDE_COLUMNS];
 
 /**
  * The narrow font. Each entry not zero is the colour of its pixel.
  *
  * @ghidraAddress USA: 0x8028f2a0
  */
-extern u16 g_aBitmapFontNarrow[BITMAP_FONT_GLYPHS][BITMAP_FONT_ROWS][BITMAP_FONT_NARROW_COLUMNS];
+extern s16 g_aBitmapFontNarrow[BITMAP_FONT_GLYPHS][BITMAP_FONT_ROWS][BITMAP_FONT_NARROW_COLUMNS];
 
 /**
  * The column where the bitmap text starts its line.

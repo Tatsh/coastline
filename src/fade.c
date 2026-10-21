@@ -20,8 +20,6 @@ void ResetHeadlightGlare(void) {
 }
 
 void RenderHeadlightGlare(void) {
-    ViewportRect *rect;
-
     if (g_fHeadlightGlare < GLARE_MIN_LEVEL) {
         return;
     }
@@ -53,9 +51,13 @@ void RenderHeadlightGlare(void) {
                       PRIMITIVE);
     gDPSetPrimColor(gDisplayListPtr++, 0, 0, 0xFF, 0xFF, 0xFF, (s32)(255.0f * g_fHeadlightGlare));
     gDPSetColorDither(gDisplayListPtr++, G_CD_DISABLE);
-    rect = &g_aViewportRects[g_dwCurrentSplitScreenIndex];
-    gDPFillRectangle(
-        gDisplayListPtr++, rect->x, rect->y, rect->x + rect->width, rect->y + rect->height);
+    gDPFillRectangle(gDisplayListPtr++,
+                     g_aViewportRects[g_dwCurrentSplitScreenIndex].x,
+                     g_aViewportRects[g_dwCurrentSplitScreenIndex].y,
+                     g_aViewportRects[g_dwCurrentSplitScreenIndex].x +
+                         g_aViewportRects[g_dwCurrentSplitScreenIndex].width,
+                     g_aViewportRects[g_dwCurrentSplitScreenIndex].y +
+                         g_aViewportRects[g_dwCurrentSplitScreenIndex].height);
     gDPPipeSync(gDisplayListPtr++);
     gDPSetColorDither(gDisplayListPtr++, g_dwColorDitherMode);
 }
@@ -243,23 +245,6 @@ void DrawScreenFadeOverlay(float level) {
     gDPSetColorDither(gDisplayListPtr++, g_dwColorDitherMode);
 }
 
-/* Step a fade of a volume towards its target, and return its level. */
-static f32 StepVolumeFade(s32 *skipFrame, f32 *level, f32 target, f32 speed) {
-    if (*skipFrame) {
-        *skipFrame = 0;
-    } else if (target != *level) {
-        *level = *level + speed * g_fFrameDeltaTime;
-        if (speed < 0.0f) {
-            if (*level < target) {
-                *level = target;
-            }
-        } else if (target < *level) {
-            *level = target;
-        }
-    }
-    return *level;
-}
-
 void UpdateFadeTransitions(void) {
     f32 rate;
     s32 left;
@@ -310,13 +295,31 @@ void UpdateFadeTransitions(void) {
         g_dwFadeRectRight = g_dwScreenWidth;
     }
 
-    g_bSfxVolume =
-        (s32)((f64)StepVolumeFade(
-                  &g_dwSfxFadeSkipFrame, &g_fSfxFadeCurrent, g_fSfxFadeTarget, g_fSfxFadeSpeed) *
-              MAX_VOLUME);
-    g_bMusicVolume = (s32)((f64)StepVolumeFade(&g_dwMusicFadeSkipFrame,
-                                               &g_fMusicFadeCurrent,
-                                               g_fMusicFadeTarget,
-                                               g_fMusicFadeSpeed) *
-                           MAX_VOLUME);
+    if (g_dwSfxFadeSkipFrame) {
+        g_dwSfxFadeSkipFrame = 0;
+    } else if (g_fSfxFadeTarget != g_fSfxFadeCurrent) {
+        g_fSfxFadeCurrent = g_fSfxFadeCurrent + g_fSfxFadeSpeed * g_fFrameDeltaTime;
+        if (g_fSfxFadeSpeed < 0.0f) {
+            if (g_fSfxFadeCurrent < g_fSfxFadeTarget) {
+                g_fSfxFadeCurrent = g_fSfxFadeTarget;
+            }
+        } else if (g_fSfxFadeTarget < g_fSfxFadeCurrent) {
+            g_fSfxFadeCurrent = g_fSfxFadeTarget;
+        }
+    }
+    g_bSfxVolume = (s32)((f64)g_fSfxFadeCurrent * MAX_VOLUME);
+
+    if (g_dwMusicFadeSkipFrame) {
+        g_dwMusicFadeSkipFrame = 0;
+    } else if (g_fMusicFadeTarget != g_fMusicFadeCurrent) {
+        g_fMusicFadeCurrent = g_fMusicFadeCurrent + g_fMusicFadeSpeed * g_fFrameDeltaTime;
+        if (g_fMusicFadeSpeed < 0.0f) {
+            if (g_fMusicFadeCurrent < g_fMusicFadeTarget) {
+                g_fMusicFadeCurrent = g_fMusicFadeTarget;
+            }
+        } else if (g_fMusicFadeTarget < g_fMusicFadeCurrent) {
+            g_fMusicFadeCurrent = g_fMusicFadeTarget;
+        }
+    }
+    g_bMusicVolume = (s32)((f64)g_fMusicFadeCurrent * MAX_VOLUME);
 }

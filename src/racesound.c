@@ -176,7 +176,9 @@ void UpdateClosestSoundSource(
     f32 distance = Vec3fDistance(position, &listener->position);
 
     if (distance < g_fClosestSoundDistance) {
-        g_vClosestSoundPos = *position;
+        g_vClosestSoundPos.x = position->x;
+        g_vClosestSoundPos.y = position->y;
+        g_vClosestSoundPos.z = position->z;
         g_pClosestSoundListener = listener;
         g_fClosestSoundDistance = distance;
         g_dwClosestSoundSfxId = sound;
@@ -278,8 +280,12 @@ void UpdateAmbientSoundChannel(void) {
                 channel->volume = PackVolume(volume, upper, lower);
             }
         }
-        g_vPrevSoundPos = g_vClosestSoundPos;
-        g_vPrevListenerPos = g_pClosestSoundListener->position;
+        g_vPrevSoundPos.x = g_vClosestSoundPos.x;
+        g_vPrevSoundPos.y = g_vClosestSoundPos.y;
+        g_vPrevSoundPos.z = g_vClosestSoundPos.z;
+        g_vPrevListenerPos.x = g_pClosestSoundListener->position.x;
+        g_vPrevListenerPos.y = g_pClosestSoundListener->position.y;
+        g_vPrevListenerPos.z = g_pClosestSoundListener->position.z;
         source = g_dwClosestSoundSourceId;
         listener = g_pClosestSoundListener;
     }
@@ -332,7 +338,8 @@ void StubSoundUpdate(CameraFrame *camera) {
 
 void LoadAllSoundEffects(void) {
     SoundEffect *effect;
-    u32 used = 0;
+    u8 *dest = g_aInflateHeapBuffer;
+    u32 used;
     s32 i;
     s32 k;
 
@@ -344,20 +351,22 @@ void LoadAllSoundEffects(void) {
         if (effect->guardLength == -1) {
             effect->guardLength = effect->length;
         }
-        if (SOUND_EFFECT_SPACE < used + effect->guardLength + effect->length) {
+        if (&g_aInflateHeapBuffer[SOUND_EFFECT_SPACE] <
+            dest + effect->guardLength + effect->length) {
             /* The sound is left pointing at the start of the room, and the room still advances. */
             effect->sample = (s8 *)g_aInflateHeapBuffer;
             osSyncPrintf("ERROR: Sound buffer allocation overflow on car sound %d\n", i);
         } else {
-            effect->sample = (s8 *)&g_aInflateHeapBuffer[used];
+            effect->sample = (s8 *)dest;
             DecompressFromRom(effect->sample, effect->romStart, NULL);
             /* The start is copied after the end, so a loop can read past it. */
             for (k = 0; (u32)k < (u32)effect->guardLength; k++) {
                 effect->sample[effect->length + k] = effect->sample[k];
             }
         }
-        used += effect->length + effect->guardLength;
+        dest += effect->length + effect->guardLength;
     }
+    used = dest - g_aInflateHeapBuffer;
     osSyncPrintf("Car sound effect space used: %d/%d\n", used, SOUND_EFFECT_SPACE);
     if (used > SOUND_EFFECT_SPACE) {
         SetDebugMessage("Car sound effect overflow");
@@ -518,12 +527,12 @@ static void ChooseRollEffect(Vehicle *vehicle, s32 surface) {
 }
 
 /* Choose the effect of a vehicle from its hits, skids and rolling. */
-static void ChooseVehicleEffect(Vehicle *vehicle, s32 previousSound) {
+static void ChooseVehicleEffect(Vehicle *vehicle, s32 channel, s32 previousSound) {
     s32 sound;
     s32 surface;
     s32 skid;
 
-    if (g_aSoundEffectChannels[vehicle->index * CHANNELS_PER_VEHICLE + 1].step == 0 ||
+    if (g_aSoundEffectChannels[channel + 1].step == 0 ||
         (!vehicle->body.skidding && IsSkidSound(previousSound))) {
         vehicle->effectSound = SOUND_EFFECT_NONE;
         vehicle->effectVolume = 0;
@@ -626,13 +635,13 @@ void UpdateVehicleSounds(Vehicle *vehicle) {
     }
 
     previousSound = vehicle->effectSound;
-    ChooseVehicleEffect(vehicle, previousSound);
+    ChooseVehicleEffect(vehicle, channel, previousSound);
 
     /* Only the first vehicle plays its effects. */
     if (vehicle->effectSound == SOUND_EFFECT_NONE) {
         if (channel == 0) {
-            g_aSoundEffectChannels[1].volume = 0;
-            g_aSoundEffectChannels[1].step = 0;
+            g_aSoundEffectChannels[channel + 1].volume = 0;
+            g_aSoundEffectChannels[channel + 1].step = 0;
         }
     } else {
         frequency = vehicle->dopplerFactor * SAMPLE_RATE;
@@ -648,13 +657,17 @@ void UpdateVehicleSounds(Vehicle *vehicle) {
         }
         if (!changed && channel == 0) {
             effectVolume = (s32)((u32)vehicle->effectVolume * (u32)volume) >> 7;
-            g_aSoundEffectChannels[1].step = FrequencyStep(frequency);
-            g_aSoundEffectChannels[1].volume = PackVolume(effectVolume, upper, lower);
+            g_aSoundEffectChannels[channel + 1].step = FrequencyStep(frequency);
+            g_aSoundEffectChannels[channel + 1].volume = PackVolume(effectVolume, upper, lower);
         }
     }
     if (g_dwNumViewports == 1) {
-        vehicle->previousListenerPosition = viewed->activeCamera->position;
+        vehicle->previousListenerPosition.x = viewed->activeCamera->position.x;
+        vehicle->previousListenerPosition.y = viewed->activeCamera->position.y;
+        vehicle->previousListenerPosition.z = viewed->activeCamera->position.z;
     } else {
-        vehicle->previousListenerPosition = vehicle->activeCamera->position;
+        vehicle->previousListenerPosition.x = vehicle->activeCamera->position.x;
+        vehicle->previousListenerPosition.y = vehicle->activeCamera->position.y;
+        vehicle->previousListenerPosition.z = vehicle->activeCamera->position.z;
     }
 }
