@@ -224,7 +224,7 @@ glabel ProcessTrackSelectUI
     /* 9BE0 80208BE0 00000000 */   nop
     /* 9BE4 80208BE4 0C082274 */  jal        ResetChampionshipProgress
     /* 9BE8 80208BE8 00000000 */   nop
-    /* 9BEC 80208BEC 0C084454 */  jal        StartSeasonAfterLoad
+    /* 9BEC 80208BEC 0C084454 */  jal        StartChampionshipRace
     /* 9BF0 80208BF0 00000000 */   nop
     /* 9BF4 80208BF4 3C108032 */  lui        $s0, %hi(g_aVehicleModelSlots)
     /* 9BF8 80208BF8 2610B370 */  addiu      $s0, $s0, %lo(g_aVehicleModelSlots)
@@ -265,7 +265,7 @@ glabel ProcessTrackSelectUI
   .L80208C78:
     /* 9C78 80208C78 1441000E */  bne        $v0, $at, .L80208CB4
     /* 9C7C 80208C7C 00000000 */   nop
-    /* 9C80 80208C80 0C084465 */  jal        StartGhostRaceAfterLoad
+    /* 9C80 80208C80 0C084465 */  jal        StartTimeAttack
     /* 9C84 80208C84 00000000 */   nop
     /* 9C88 80208C88 3C098032 */  lui        $t1, %hi(gChampionshipData)
     /* 9C8C 80208C8C 8D29C5BC */  lw         $t1, %lo(gChampionshipData)($t1)
@@ -1275,7 +1275,7 @@ glabel ProcessRaceState
     /* AB1C 80209B1C 14410081 */  bne        $v0, $at, .L80209D24
     /* AB20 80209B20 240B0008 */   addiu     $t3, $zero, 0x8
     /* AB24 80209B24 3C018027 */  lui        $at, %hi(g_dwGhostRecordingSize)
-    /* AB28 80209B28 0C084465 */  jal        StartGhostRaceAfterLoad
+    /* AB28 80209B28 0C084465 */  jal        StartTimeAttack
     /* AB2C 80209B2C AC2B0784 */   sw        $t3, %lo(g_dwGhostRecordingSize)($at)
     /* AB30 80209B30 3C048029 */  lui        $a0, %hi(g_dwSelectedTrackId)
     /* AB34 80209B34 8C84B940 */  lw         $a0, %lo(g_dwSelectedTrackId)($a0)
@@ -1308,7 +1308,7 @@ glabel ProcessRaceState
     /* AB94 80209B94 904C0004 */  lbu        $t4, 0x4($v0)
     /* AB98 80209B98 000CC840 */  sll        $t9, $t4, 1
     /* AB9C 80209B9C 00597021 */  addu       $t6, $v0, $t9
-    /* ABA0 80209BA0 0C084454 */  jal        StartSeasonAfterLoad
+    /* ABA0 80209BA0 0C084454 */  jal        StartChampionshipRace
     /* ABA4 80209BA4 A5C0001E */   sh        $zero, 0x1E($t6)
     /* ABA8 80209BA8 3C048029 */  lui        $a0, %hi(g_dwSelectedTrackId)
     /* ABAC 80209BAC 8C84B940 */  lw         $a0, %lo(g_dwSelectedTrackId)($a0)
@@ -2638,8 +2638,8 @@ glabel ProcessScreenState
     /* BEFC 8020AEFC 24630004 */  addiu      $v1, $v1, 0x4
     /* BF00 8020AF00 1662FFF5 */  bne        $s3, $v0, .L8020AED8
     /* BF04 8020AF04 24840004 */   addiu     $a0, $a0, 0x4
-    /* BF08 8020AF08 3C048027 */  lui        $a0, %hi(g_sMenuLayoutConfig)
-    /* BF0C 8020AF0C 8C841FB0 */  lw         $a0, %lo(g_sMenuLayoutConfig)($a0)
+    /* BF08 8020AF08 3C048027 */  lui        $a0, %hi(g_pMenuTitleImage)
+    /* BF0C 8020AF0C 8C841FB0 */  lw         $a0, %lo(g_pMenuTitleImage)($a0)
     /* BF10 8020AF10 10800003 */  beqz       $a0, .L8020AF20
     /* BF14 8020AF14 00000000 */   nop
     /* BF18 8020AF18 0C08F7D3 */  jal        LoadAndDecompressAsset
@@ -2872,16 +2872,16 @@ glabel ProcessScreenState
     /* C278 8020B278 35CE1C04 */  ori        $t6, $t6, (0xBC001C04 & 0xFFFF)
     /* C27C 8020B27C 244D0008 */  addiu      $t5, $v0, 0x8
     /* C280 8020B280 AE6D0000 */  sw         $t5, 0x0($s3)
-    /* C284 8020B284 3C048027 */  lui        $a0, %hi(g_sMenuLayoutConfig)
+    /* C284 8020B284 3C048027 */  lui        $a0, %hi(g_pMenuTitleImage)
     /* C288 8020B288 AC4C0004 */  sw         $t4, 0x4($v0)
     /* C28C 8020B28C AC4E0000 */  sw         $t6, 0x0($v0)
-    /* C290 8020B290 8C841FB0 */  lw         $a0, %lo(g_sMenuLayoutConfig)($a0)
-    /* C294 8020B294 3C058027 */  lui        $a1, %hi(g_dwScreenFadeDuration)
-    /* C298 8020B298 3C068027 */  lui        $a2, %hi(g_dwScreenFadeDurationSecondary)
+    /* C290 8020B290 8C841FB0 */  lw         $a0, %lo(g_pMenuTitleImage)($a0)
+    /* C294 8020B294 3C058027 */  lui        $a1, %hi(g_dwMenuTitleImageX)
+    /* C298 8020B298 3C068027 */  lui        $a2, %hi(g_dwMenuTitleImageY)
     /* C29C 8020B29C 10800017 */  beqz       $a0, .L8020B2FC
-    /* C2A0 8020B2A0 3C078027 */   lui       $a3, %hi(g_dwScreenFadeDurationTertiary)
-    /* C2A4 8020B2A4 3C0F8027 */  lui        $t7, %hi(g_dwScreenFadeSkipFrame)
-    /* C2A8 8020B2A8 8DEF1FC0 */  lw         $t7, %lo(g_dwScreenFadeSkipFrame)($t7)
+    /* C2A0 8020B2A0 3C078027 */   lui       $a3, %hi(g_dwMenuTitleImageWidth)
+    /* C2A4 8020B2A4 3C0F8027 */  lui        $t7, %hi(g_dwMenuTitleImageHeight)
+    /* C2A8 8020B2A8 8DEF1FC0 */  lw         $t7, %lo(g_dwMenuTitleImageHeight)($t7)
     /* C2AC 8020B2AC 241800FF */  addiu      $t8, $zero, 0xFF
     /* C2B0 8020B2B0 AFB80020 */  sw         $t8, 0x20($sp)
     /* C2B4 8020B2B4 AFAF0010 */  sw         $t7, 0x10($sp)
@@ -2895,9 +2895,9 @@ glabel ProcessScreenState
     /* C2D4 8020B2D4 AFB90024 */  sw         $t9, 0x24($sp)
     /* C2D8 8020B2D8 AFB80034 */  sw         $t8, 0x34($sp)
     /* C2DC 8020B2DC AFAF0030 */  sw         $t7, 0x30($sp)
-    /* C2E0 8020B2E0 8CA51FB4 */  lw         $a1, %lo(g_dwScreenFadeDuration)($a1)
-    /* C2E4 8020B2E4 8CC61FB8 */  lw         $a2, %lo(g_dwScreenFadeDurationSecondary)($a2)
-    /* C2E8 8020B2E8 8CE71FBC */  lw         $a3, %lo(g_dwScreenFadeDurationTertiary)($a3)
+    /* C2E0 8020B2E0 8CA51FB4 */  lw         $a1, %lo(g_dwMenuTitleImageX)($a1)
+    /* C2E4 8020B2E4 8CC61FB8 */  lw         $a2, %lo(g_dwMenuTitleImageY)($a2)
+    /* C2E8 8020B2E8 8CE71FBC */  lw         $a3, %lo(g_dwMenuTitleImageWidth)($a3)
     /* C2EC 8020B2EC AFA00014 */  sw         $zero, 0x14($sp)
     /* C2F0 8020B2F0 AFA00018 */  sw         $zero, 0x18($sp)
     /* C2F4 8020B2F4 0C08F7E7 */  jal        DrawTexturedRect
@@ -3603,8 +3603,8 @@ glabel ProcessScreenState
     /* CD20 8020BD20 2401FFFF */  addiu      $at, $zero, -0x1
     /* CD24 8020BD24 13010009 */  beq        $t8, $at, .L8020BD4C
     /* CD28 8020BD28 8CE76244 */   lw        $a3, %lo(gActiveTrackIndex)($a3)
-    /* CD2C 8020BD2C 3C0F8027 */  lui        $t7, %hi(g_dwScreenSoundPlayerMask)
-    /* CD30 8020BD30 8DEF1FA4 */  lw         $t7, %lo(g_dwScreenSoundPlayerMask)($t7)
+    /* CD2C 8020BD2C 3C0F8027 */  lui        $t7, %hi(g_dwMenuInputPlayerMask)
+    /* CD30 8020BD30 8DEF1FA4 */  lw         $t7, %lo(g_dwMenuInputPlayerMask)($t7)
     /* CD34 8020BD34 24190001 */  addiu      $t9, $zero, 0x1
     /* CD38 8020BD38 02797004 */  sllv       $t6, $t9, $s3
     /* CD3C 8020BD3C 3C018031 */  lui        $at, %hi(gActiveTrackIndex)
@@ -3856,9 +3856,9 @@ glabel ProcessScreenState
     /* D0D0 8020C0D0 3C078031 */  lui        $a3, %hi(gActiveTrackIndex)
     /* D0D4 8020C0D4 8CE76244 */  lw         $a3, %lo(gActiveTrackIndex)($a3)
     /* D0D8 8020C0D8 8FAD0108 */  lw         $t5, 0x108($sp)
-    /* D0DC 8020C0DC 3C018027 */  lui        $at, %hi(gMenuContext)
+    /* D0DC 8020C0DC 3C018027 */  lui        $at, %hi(g_dwMenuChoosingPlayer)
     /* D0E0 8020C0E0 0007C080 */  sll        $t8, $a3, 2
-    /* D0E4 8020C0E4 AC331FA8 */  sw         $s3, %lo(gMenuContext)($at)
+    /* D0E4 8020C0E4 AC331FA8 */  sw         $s3, %lo(g_dwMenuChoosingPlayer)($at)
     /* D0E8 8020C0E8 01B8C821 */  addu       $t9, $t5, $t8
     /* D0EC 8020C0EC 8F2E0000 */  lw         $t6, 0x0($t9)
     /* D0F0 8020C0F0 24180001 */  addiu      $t8, $zero, 0x1

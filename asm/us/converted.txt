@@ -13,12 +13,15 @@ MixAudioReverbChannels
 MixAudioSamples
 MixAudioStereoSamples
 PrepareRumblePaks
+ProcessMainMenu
 ProcessPlayerCountSelect
 ProcessWeatherSelect
 ResetAllPlayers
 ResetHeap
 SetHeapCurrentAddress
+StartChampionshipRace
 StartRaceWithPlayerCount
+StartTimeAttack
 TwoControllersPostDrawCallback
 UpdateRumblePaks
 _Genld

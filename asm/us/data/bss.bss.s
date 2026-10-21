@@ -686,9 +686,9 @@ nonmatching D_80316378, 0x8
 dlabel D_80316378
     /* 80316378 */ .space 0x08
 
-nonmatching g_dwPhysicsReserved43, 0x4
+nonmatching g_dwMainMenuItemCount, 0x4
 
-dlabel g_dwPhysicsReserved43
+dlabel g_dwMainMenuItemCount
     /* 80316380 */ .space 0x04
 
 nonmatching g_eMainMenuSelection, 0x4

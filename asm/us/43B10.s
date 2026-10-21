@@ -521,8 +521,8 @@ glabel ProcessPaintShopScreen
     /* 44288 80243288 A3A000F3 */  sb         $zero, 0xF3($sp)
     /* 4428C 8024328C 15C0033A */  bnez       $t6, .L80243F78
     /* 44290 80243290 A4204BE8 */   sh        $zero, %lo(g_wSerialInterfaceIdle)($at)
-    /* 44294 80243294 3C0F8027 */  lui        $t7, %hi(gMenuContext)
-    /* 44298 80243298 8DEF1FA8 */  lw         $t7, %lo(gMenuContext)($t7)
+    /* 44294 80243294 3C0F8027 */  lui        $t7, %hi(g_dwMenuChoosingPlayer)
+    /* 44298 80243298 8DEF1FA8 */  lw         $t7, %lo(g_dwMenuChoosingPlayer)($t7)
     /* 4429C 8024329C 3C018029 */  lui        $at, %hi(g_dwVehicleViewModeIndex)
     /* 442A0 802432A0 3C028029 */  lui        $v0, %hi(gDecalBrushState)
     /* 442A4 802432A4 AC20C328 */  sw         $zero, %lo(g_dwVehicleViewModeIndex)($at)
@@ -7106,8 +7106,8 @@ glabel ProcessDecalSaveLoad
     /* 4A368 80249368 8FA30038 */  lw         $v1, 0x38($sp)
     /* 4A36C 8024936C 14400033 */  bnez       $v0, .L8024943C
     /* 4A370 80249370 8FA6003C */   lw        $a2, 0x3C($sp)
-    /* 4A374 80249374 3C0E8027 */  lui        $t6, %hi(gMenuContext)
-    /* 4A378 80249378 8DCE1FA8 */  lw         $t6, %lo(gMenuContext)($t6)
+    /* 4A374 80249374 3C0E8027 */  lui        $t6, %hi(g_dwMenuChoosingPlayer)
+    /* 4A378 80249378 8DCE1FA8 */  lw         $t6, %lo(g_dwMenuChoosingPlayer)($t6)
     /* 4A37C 8024937C 93B800B7 */  lbu        $t8, 0xB7($sp)
     /* 4A380 80249380 3C018032 */  lui        $at, %hi(g_abRumblePakPresent)
     /* 4A384 80249384 3C198031 */  lui        $t9, %hi(g_bPakDataValid0)
@@ -7161,7 +7161,7 @@ glabel ProcessDecalSaveLoad
   .L8024943C:
     /* 4A43C 8024943C 2401000A */  addiu      $at, $zero, 0xA
     /* 4A440 80249440 14410021 */  bne        $v0, $at, .L802494C8
-    /* 4A444 80249444 3C0E8027 */   lui       $t6, %hi(gMenuContext)
+    /* 4A444 80249444 3C0E8027 */   lui       $t6, %hi(g_dwMenuChoosingPlayer)
     /* 4A448 80249448 3C198032 */  lui        $t9, %hi(g_aContPfs)
     /* 4A44C 8024944C 2739A3F8 */  addiu      $t9, $t9, %lo(g_aContPfs)
     /* 4A450 80249450 00792821 */  addu       $a1, $v1, $t9
@@ -7184,8 +7184,8 @@ glabel ProcessDecalSaveLoad
     /* 4A494 80249494 100005F1 */  b          .L8024AC5C
     /* 4A498 80249498 A0389E60 */   sb        $t8, %lo(gOsSchedulerState)($at)
   .L8024949C:
-    /* 4A49C 8024949C 3C198027 */  lui        $t9, %hi(gMenuContext)
-    /* 4A4A0 802494A0 8F391FA8 */  lw         $t9, %lo(gMenuContext)($t9)
+    /* 4A49C 8024949C 3C198027 */  lui        $t9, %hi(g_dwMenuChoosingPlayer)
+    /* 4A4A0 802494A0 8F391FA8 */  lw         $t9, %lo(g_dwMenuChoosingPlayer)($t9)
     /* 4A4A4 802494A4 3C018032 */  lui        $at, %hi(g_abRumblePakPresent)
     /* 4A4A8 802494A8 240F0004 */  addiu      $t7, $zero, 0x4
     /* 4A4AC 802494AC 00390821 */  addu       $at, $at, $t9
@@ -7196,7 +7196,7 @@ glabel ProcessDecalSaveLoad
     /* 4A4C0 802494C0 100005E6 */  b          .L8024AC5C
     /* 4A4C4 802494C4 A02F9E60 */   sb        $t7, %lo(gOsSchedulerState)($at)
   .L802494C8:
-    /* 4A4C8 802494C8 8DCE1FA8 */  lw         $t6, %lo(gMenuContext)($t6)
+    /* 4A4C8 802494C8 8DCE1FA8 */  lw         $t6, %lo(g_dwMenuChoosingPlayer)($t6)
     /* 4A4CC 802494CC 3C018032 */  lui        $at, %hi(g_abRumblePakPresent)
     /* 4A4D0 802494D0 2418000C */  addiu      $t8, $zero, 0xC
     /* 4A4D4 802494D4 002E0821 */  addu       $at, $at, $t6

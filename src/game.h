@@ -8,11 +8,15 @@
 
 #include <PR/ultratypes.h>
 
-/**
- * The mode of play the main menu chose. The main menu starts a season with mode 0.
- *
- * @ghidraAddress USA: 0x8026ff18
- */
+/** The modes of play, in the order of the main menu. */
+enum {
+    GAME_MODE_CHAMPIONSHIP,
+    GAME_MODE_ARCADE,
+    GAME_MODE_TIME_ATTACK,
+    GAME_MODE_PRACTICE,
+};
+
+/** The mode of play the main menu chose. @ghidraAddress USA: 0x8026ff18 */
 extern u32 g_dwGameMode;
 
 /**

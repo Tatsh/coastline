@@ -26,4 +26,21 @@ extern u8 g_abMusicModuleWorkBuffer[];
  */
 void InitAudioSystem(void *module, void *work);
 
+/** The number of sound channels in use. @ghidraAddress USA: 0x802a49c0 */
+extern s32 g_nAudioChannelCount;
+
+/**
+ * Stop the music and clear the state of every channel.
+ *
+ * @ghidraAddress USA: 0x802578f4
+ */
+void ResetMusicPlaybackState(void);
+
+/**
+ * Start playing an XM module.
+ *
+ * @ghidraAddress USA: 0x80257964
+ */
+void InitMusicPlayback(void *module, void *work);
+
 #endif

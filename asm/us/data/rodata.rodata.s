@@ -4146,13 +4146,13 @@ enddlabel g_szTopGearRally
 nonmatching switchdataD_802a7fd0
 
 dlabel switchdataD_802a7fd0
-    /* A8FD0 802A7FD0 802113C8 */ .word .L802113C8
-    /* A8FD4 802A7FD4 802113D8 */ .word .L802113D8
-    /* A8FD8 802A7FD8 80211400 */ .word .L80211400
-    /* A8FDC 802A7FDC 80211410 */ .word .L80211410
-    /* A8FE0 802A7FE0 8021143C */ .word .L8021143C
-    /* A8FE4 802A7FE4 8021147C */ .word .L8021147C
-    /* A8FE8 802A7FE8 80211498 */ .word .L80211498
+    /* A8FD0 802A7FD0 802113C8 */ .word 0
+    /* A8FD4 802A7FD4 802113D8 */ .word 0
+    /* A8FD8 802A7FD8 80211400 */ .word 0
+    /* A8FDC 802A7FDC 80211410 */ .word 0
+    /* A8FE0 802A7FE0 8021143C */ .word 0
+    /* A8FE4 802A7FE4 8021147C */ .word 0
+    /* A8FE8 802A7FE8 80211498 */ .word 0
     /* A8FEC 802A7FEC 00000000 */ .word 0x00000000
 enddlabel switchdataD_802a7fd0
 

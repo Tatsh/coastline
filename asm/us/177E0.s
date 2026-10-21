@@ -628,22 +628,22 @@ glabel ProcessControllerConfigScreen
     /* 18148 80217148 02002825 */   or        $a1, $s0, $zero
     /* 1814C 8021714C 3C0F8027 */  lui        $t7, %hi(g_TitleBarTextureDesc)
     /* 18150 80217150 25EF205C */  addiu      $t7, $t7, %lo(g_TitleBarTextureDesc)
-    /* 18154 80217154 3C018027 */  lui        $at, %hi(g_sMenuLayoutConfig)
-    /* 18158 80217158 AC2F1FB0 */  sw         $t7, %lo(g_sMenuLayoutConfig)($at)
-    /* 1815C 8021715C 3C018027 */  lui        $at, %hi(g_dwScreenFadeDuration)
+    /* 18154 80217154 3C018027 */  lui        $at, %hi(g_pMenuTitleImage)
+    /* 18158 80217158 AC2F1FB0 */  sw         $t7, %lo(g_pMenuTitleImage)($at)
+    /* 1815C 8021715C 3C018027 */  lui        $at, %hi(g_dwMenuTitleImageX)
     /* 18160 80217160 24180016 */  addiu      $t8, $zero, 0x16
-    /* 18164 80217164 AC381FB4 */  sw         $t8, %lo(g_dwScreenFadeDuration)($at)
-    /* 18168 80217168 3C018027 */  lui        $at, %hi(g_dwScreenFadeDurationSecondary)
+    /* 18164 80217164 AC381FB4 */  sw         $t8, %lo(g_dwMenuTitleImageX)($at)
+    /* 18168 80217168 3C018027 */  lui        $at, %hi(g_dwMenuTitleImageY)
     /* 1816C 8021716C 24190009 */  addiu      $t9, $zero, 0x9
-    /* 18170 80217170 AC391FB8 */  sw         $t9, %lo(g_dwScreenFadeDurationSecondary)($at)
-    /* 18174 80217174 3C018027 */  lui        $at, %hi(g_dwScreenFadeDurationTertiary)
+    /* 18170 80217170 AC391FB8 */  sw         $t9, %lo(g_dwMenuTitleImageY)($at)
+    /* 18174 80217174 3C018027 */  lui        $at, %hi(g_dwMenuTitleImageWidth)
     /* 18178 80217178 24080118 */  addiu      $t0, $zero, 0x118
-    /* 1817C 8021717C AC281FBC */  sw         $t0, %lo(g_dwScreenFadeDurationTertiary)($at)
+    /* 1817C 8021717C AC281FBC */  sw         $t0, %lo(g_dwMenuTitleImageWidth)($at)
     /* 18180 80217180 3C0B8027 */  lui        $t3, %hi(g_dwControllerConfigFlags2)
     /* 18184 80217184 8D6B2670 */  lw         $t3, %lo(g_dwControllerConfigFlags2)($t3)
-    /* 18188 80217188 3C018027 */  lui        $at, %hi(g_dwScreenFadeSkipFrame)
+    /* 18188 80217188 3C018027 */  lui        $at, %hi(g_dwMenuTitleImageHeight)
     /* 1818C 8021718C 2409002A */  addiu      $t1, $zero, 0x2A
-    /* 18190 80217190 AC291FC0 */  sw         $t1, %lo(g_dwScreenFadeSkipFrame)($at)
+    /* 18190 80217190 AC291FC0 */  sw         $t1, %lo(g_dwMenuTitleImageHeight)($at)
     /* 18194 80217194 3C0A8021 */  lui        $t2, %hi(DrawControllerLayoutDiagram)
     /* 18198 80217198 254A67E0 */  addiu      $t2, $t2, %lo(DrawControllerLayoutDiagram)
     /* 1819C 8021719C 3C018027 */  lui        $at, %hi(g_pfnScreenPostDrawCallback)

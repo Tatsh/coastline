@@ -9,6 +9,27 @@
 #include <PR/ultratypes.h>
 
 /**
+ * Which screen opened the save and load menu, and so where it returns. The main menu sets 0.
+ *
+ * @ghidraAddress USA: 0x802724f4
+ */
+extern u8 g_bSaveLoadEntryPoint;
+
+/**
+ * Run one frame of the options menu.
+ *
+ * @ghidraAddress USA: 0x80211a3c
+ */
+void ProcessOptionsMenu(void);
+
+/**
+ * Run one frame of the save and load menu.
+ *
+ * @ghidraAddress USA: 0x80211d70
+ */
+void ProcessDataSaveLoadMenu(void);
+
+/**
  * Apply the music and effect volumes of the options.
  *
  * @ghidraAddress USA: 0x802118b4

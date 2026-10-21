@@ -19,6 +19,13 @@ extern u32 g_dwRacePauseState;
 extern s16 g_wRaceScreenLoopExited;
 
 /**
+ * Choose the track of the next race of the championship.
+ *
+ * @ghidraAddress USA: 0x80206304
+ */
+void SetTrackFromSeason(void);
+
+/**
  * Run one frame of a race.
  *
  * @ghidraAddress USA: 0x8020082c

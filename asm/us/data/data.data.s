@@ -4167,17 +4167,17 @@ dlabel g_dwPaintSourcePlayerIdx
     /* 72FA0 80271FA0 FFFFFFFF */ .word 0xFFFFFFFF
 enddlabel g_dwPaintSourcePlayerIdx
 
-nonmatching g_dwScreenSoundPlayerMask
+nonmatching g_dwMenuInputPlayerMask
 
-dlabel g_dwScreenSoundPlayerMask
+dlabel g_dwMenuInputPlayerMask
     /* 72FA4 80271FA4 FFFFFFFF */ .word 0xFFFFFFFF
-enddlabel g_dwScreenSoundPlayerMask
+enddlabel g_dwMenuInputPlayerMask
 
-nonmatching gMenuContext
+nonmatching g_dwMenuChoosingPlayer
 
-dlabel gMenuContext
+dlabel g_dwMenuChoosingPlayer
     /* 72FA8 80271FA8 00000000 */ .word 0x00000000
-enddlabel gMenuContext
+enddlabel g_dwMenuChoosingPlayer
 
 nonmatching g_nScreenLastActiveIndex
 
@@ -4185,35 +4185,35 @@ dlabel g_nScreenLastActiveIndex
     /* 72FAC 80271FAC 00000000 */ .word 0x00000000
 enddlabel g_nScreenLastActiveIndex
 
-nonmatching g_sMenuLayoutConfig
+nonmatching g_pMenuTitleImage
 
-dlabel g_sMenuLayoutConfig
+dlabel g_pMenuTitleImage
     /* 72FB0 80271FB0 00000000 */ .word 0x00000000
-enddlabel g_sMenuLayoutConfig
+enddlabel g_pMenuTitleImage
 
-nonmatching g_dwScreenFadeDuration
+nonmatching g_dwMenuTitleImageX
 
-dlabel g_dwScreenFadeDuration
+dlabel g_dwMenuTitleImageX
     /* 72FB4 80271FB4 00000000 */ .word 0x00000000
-enddlabel g_dwScreenFadeDuration
+enddlabel g_dwMenuTitleImageX
 
-nonmatching g_dwScreenFadeDurationSecondary
+nonmatching g_dwMenuTitleImageY
 
-dlabel g_dwScreenFadeDurationSecondary
+dlabel g_dwMenuTitleImageY
     /* 72FB8 80271FB8 00000000 */ .word 0x00000000
-enddlabel g_dwScreenFadeDurationSecondary
+enddlabel g_dwMenuTitleImageY
 
-nonmatching g_dwScreenFadeDurationTertiary
+nonmatching g_dwMenuTitleImageWidth
 
-dlabel g_dwScreenFadeDurationTertiary
+dlabel g_dwMenuTitleImageWidth
     /* 72FBC 80271FBC 00000000 */ .word 0x00000000
-enddlabel g_dwScreenFadeDurationTertiary
+enddlabel g_dwMenuTitleImageWidth
 
-nonmatching g_dwScreenFadeSkipFrame
+nonmatching g_dwMenuTitleImageHeight
 
-dlabel g_dwScreenFadeSkipFrame
+dlabel g_dwMenuTitleImageHeight
     /* 72FC0 80271FC0 00000000 */ .word 0x00000000
-enddlabel g_dwScreenFadeSkipFrame
+enddlabel g_dwMenuTitleImageHeight
 
 nonmatching g_flScreenRotationPeriod
 
@@ -4860,11 +4860,11 @@ dlabel g_MainMenuLayoutImage
     /* 732D0 802722D0 03020000 */ .word 0x03020000
 enddlabel g_MainMenuLayoutImage
 
-nonmatching g_pszChampionship
+nonmatching g_ChampionshipMenuItem
 
-dlabel g_pszChampionship
+dlabel g_ChampionshipMenuItem
     /* 732D4 802722D4 802A7F70 */ .word g_szChampionship
-enddlabel g_pszChampionship
+enddlabel g_ChampionshipMenuItem
 
 nonmatching D_802722D8
 
@@ -4876,11 +4876,11 @@ dlabel D_802722D8
     /* 732E4 802722E4 00203BE0 */ .word 0x00203BE0
 enddlabel D_802722D8
 
-nonmatching g_pszArcade
+nonmatching g_ArcadeMenuItem
 
-dlabel g_pszArcade
+dlabel g_ArcadeMenuItem
     /* 732E8 802722E8 802A7F80 */ .word g_szArcade
-enddlabel g_pszArcade
+enddlabel g_ArcadeMenuItem
 
 nonmatching D_802722EC
 
@@ -4892,11 +4892,11 @@ dlabel D_802722EC
     /* 732F8 802722F8 00204F60 */ .word 0x00204F60
 enddlabel D_802722EC
 
-nonmatching g_pszTimeAttack
+nonmatching g_TimeAttackMenuItem
 
-dlabel g_pszTimeAttack
+dlabel g_TimeAttackMenuItem
     /* 732FC 802722FC 802A7F88 */ .word g_szTimeAttack
-enddlabel g_pszTimeAttack
+enddlabel g_TimeAttackMenuItem
 
 nonmatching D_80272300
 
@@ -4908,11 +4908,11 @@ dlabel D_80272300
     /* 7330C 8027230C 00205FD0 */ .word 0x00205FD0
 enddlabel D_80272300
 
-nonmatching g_pszPractice
+nonmatching g_PracticeMenuItem
 
-dlabel g_pszPractice
+dlabel g_PracticeMenuItem
     /* 73310 80272310 802A7F94 */ .word g_szPractice
-enddlabel g_pszPractice
+enddlabel g_PracticeMenuItem
 
 nonmatching D_80272314
 
@@ -4924,11 +4924,11 @@ dlabel D_80272314
     /* 73320 80272320 00206310 */ .word 0x00206310
 enddlabel D_80272314
 
-nonmatching g_pszPaintShop
+nonmatching g_PaintShopMenuItem
 
-dlabel g_pszPaintShop
+dlabel g_PaintShopMenuItem
     /* 73324 80272324 802A7FA0 */ .word g_szPaintShop
-enddlabel g_pszPaintShop
+enddlabel g_PaintShopMenuItem
 
 nonmatching D_80272328
 
@@ -4940,11 +4940,11 @@ dlabel D_80272328
     /* 73334 80272334 00207CA0 */ .word 0x00207CA0
 enddlabel D_80272328
 
-nonmatching g_pszLoadSave
+nonmatching g_LoadSaveMenuItem
 
-dlabel g_pszLoadSave
+dlabel g_LoadSaveMenuItem
     /* 73338 80272338 802A7FAC */ .word g_szLoadSave
-enddlabel g_pszLoadSave
+enddlabel g_LoadSaveMenuItem
 
 nonmatching D_8027233C
 
@@ -4956,11 +4956,11 @@ dlabel D_8027233C
     /* 73348 80272348 001F6B70 */ .word 0x001F6B70
 enddlabel D_8027233C
 
-nonmatching g_pszOptions
+nonmatching g_OptionsMenuItem
 
-dlabel g_pszOptions
+dlabel g_OptionsMenuItem
     /* 7334C 8027234C 802A7FB8 */ .word g_szOptions
-enddlabel g_pszOptions
+enddlabel g_OptionsMenuItem
 
 nonmatching D_80272350
 
@@ -4972,46 +4972,46 @@ dlabel D_80272350
     /* 7335C 8027235C 00208780 */ .word 0x00208780
 enddlabel D_80272350
 
-nonmatching g_pMainMenuScreenConfig
+nonmatching g_apMainMenuItems
 
-dlabel g_pMainMenuScreenConfig
-    /* 73360 80272360 802722D4 */ .word g_pszChampionship
-enddlabel g_pMainMenuScreenConfig
+dlabel g_apMainMenuItems
+    /* 73360 80272360 802722D4 */ .word g_ChampionshipMenuItem
+enddlabel g_apMainMenuItems
 
 nonmatching g_pMainMenuEntryArcade
 
 dlabel g_pMainMenuEntryArcade
-    /* 73364 80272364 802722E8 */ .word g_pszArcade
+    /* 73364 80272364 802722E8 */ .word g_ArcadeMenuItem
 enddlabel g_pMainMenuEntryArcade
 
 nonmatching g_pDifficultySelectState3
 
 dlabel g_pDifficultySelectState3
-    /* 73368 80272368 802722FC */ .word g_pszTimeAttack
+    /* 73368 80272368 802722FC */ .word g_TimeAttackMenuItem
 enddlabel g_pDifficultySelectState3
 
 nonmatching g_pDifficultySelectState4
 
 dlabel g_pDifficultySelectState4
-    /* 7336C 8027236C 80272310 */ .word g_pszPractice
+    /* 7336C 8027236C 80272310 */ .word g_PracticeMenuItem
 enddlabel g_pDifficultySelectState4
 
 nonmatching g_pDifficultySelectState5
 
 dlabel g_pDifficultySelectState5
-    /* 73370 80272370 80272324 */ .word g_pszPaintShop
+    /* 73370 80272370 80272324 */ .word g_PaintShopMenuItem
 enddlabel g_pDifficultySelectState5
 
 nonmatching g_pDifficultySelectState6
 
 dlabel g_pDifficultySelectState6
-    /* 73374 80272374 80272338 */ .word g_pszLoadSave
+    /* 73374 80272374 80272338 */ .word g_LoadSaveMenuItem
 enddlabel g_pDifficultySelectState6
 
 nonmatching g_pDifficultySelectState7
 
 dlabel g_pDifficultySelectState7
-    /* 73378 80272378 8027234C */ .word g_pszOptions
+    /* 73378 80272378 8027234C */ .word g_OptionsMenuItem
 enddlabel g_pDifficultySelectState7
 
 nonmatching D_8027237C

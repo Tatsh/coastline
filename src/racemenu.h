@@ -34,6 +34,41 @@ typedef void (*MenuPostDrawCallback)(s32 item);
 /** @ghidraAddress USA: 0x80271fc8 */
 extern MenuPostDrawCallback g_pfnScreenPostDrawCallback;
 
+/** The player whose press chose the last menu item. @ghidraAddress USA: 0x80271fa8 */
+extern s32 g_dwMenuChoosingPlayer;
+
+/**
+ * The player whose car the paint shop paints, or -1.
+ *
+ * @ghidraAddress USA: 0x80271fa0
+ */
+extern s32 g_dwPaintSourcePlayerIdx;
+
+/**
+ * A bit for each player whose input the menu screens read, or -1 for all.
+ *
+ * @ghidraAddress USA: 0x80271fa4
+ */
+extern s32 g_dwMenuInputPlayerMask;
+
+/** The picture of the title of a menu screen, and its rectangle. @ghidraAddress USA: 0x80271fb0 */
+extern void *g_pMenuTitleImage;
+
+/** @ghidraAddress USA: 0x80271fb4 */
+extern s32 g_dwMenuTitleImageX;
+
+/** @ghidraAddress USA: 0x80271fb8 */
+extern s32 g_dwMenuTitleImageY;
+
+/** @ghidraAddress USA: 0x80271fbc */
+extern s32 g_dwMenuTitleImageWidth;
+
+/** @ghidraAddress USA: 0x80271fc0 */
+extern s32 g_dwMenuTitleImageHeight;
+
+/** @ghidraAddress USA: 0x80271fc4 */
+extern float g_flScreenRotationPeriod;
+
 /**
  * Run one frame of the race.
  *

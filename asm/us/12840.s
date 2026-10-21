@@ -184,8 +184,8 @@ glabel ProcessOptionsMenu
     /* 12A48 80211A48 AFBF0034 */  sw         $ra, 0x34($sp)
     /* 12A4C 80211A4C 1DC00028 */  bgtz       $t6, .L80211AF0
     /* 12A50 80211A50 2402FFFF */   addiu     $v0, $zero, -0x1
-    /* 12A54 80211A54 3C018027 */  lui        $at, %hi(g_dwScreenSoundPlayerMask)
-    /* 12A58 80211A58 AC221FA4 */  sw         $v0, %lo(g_dwScreenSoundPlayerMask)($at)
+    /* 12A54 80211A54 3C018027 */  lui        $at, %hi(g_dwMenuInputPlayerMask)
+    /* 12A58 80211A58 AC221FA4 */  sw         $v0, %lo(g_dwMenuInputPlayerMask)($at)
     /* 12A5C 80211A5C 3C018027 */  lui        $at, %hi(g_dwPaintSourcePlayerIdx)
     /* 12A60 80211A60 3C048027 */  lui        $a0, %hi(g_pMenuScreenState3)
     /* 12A64 80211A64 3C058031 */  lui        $a1, %hi(g_dwPhysicsReserved48)
@@ -201,23 +201,23 @@ glabel ProcessOptionsMenu
     /* 12A8C 80211A8C AC2F1FC8 */  sw         $t7, %lo(g_pfnScreenPostDrawCallback)($at)
     /* 12A90 80211A90 3C188027 */  lui        $t8, %hi(g_TitleBarTextureDesc)
     /* 12A94 80211A94 2718205C */  addiu      $t8, $t8, %lo(g_TitleBarTextureDesc)
-    /* 12A98 80211A98 3C018027 */  lui        $at, %hi(g_sMenuLayoutConfig)
-    /* 12A9C 80211A9C AC381FB0 */  sw         $t8, %lo(g_sMenuLayoutConfig)($at)
-    /* 12AA0 80211AA0 3C018027 */  lui        $at, %hi(g_dwScreenFadeDuration)
+    /* 12A98 80211A98 3C018027 */  lui        $at, %hi(g_pMenuTitleImage)
+    /* 12A9C 80211A9C AC381FB0 */  sw         $t8, %lo(g_pMenuTitleImage)($at)
+    /* 12AA0 80211AA0 3C018027 */  lui        $at, %hi(g_dwMenuTitleImageX)
     /* 12AA4 80211AA4 24190016 */  addiu      $t9, $zero, 0x16
-    /* 12AA8 80211AA8 AC391FB4 */  sw         $t9, %lo(g_dwScreenFadeDuration)($at)
-    /* 12AAC 80211AAC 3C018027 */  lui        $at, %hi(g_dwScreenFadeDurationSecondary)
+    /* 12AA8 80211AA8 AC391FB4 */  sw         $t9, %lo(g_dwMenuTitleImageX)($at)
+    /* 12AAC 80211AAC 3C018027 */  lui        $at, %hi(g_dwMenuTitleImageY)
     /* 12AB0 80211AB0 24090009 */  addiu      $t1, $zero, 0x9
-    /* 12AB4 80211AB4 AC291FB8 */  sw         $t1, %lo(g_dwScreenFadeDurationSecondary)($at)
+    /* 12AB4 80211AB4 AC291FB8 */  sw         $t1, %lo(g_dwMenuTitleImageY)($at)
     /* 12AB8 80211AB8 3C0C8027 */  lui        $t4, %hi(g_dwControllerConfigButtonMask)
     /* 12ABC 80211ABC 8D8C24E0 */  lw         $t4, %lo(g_dwControllerConfigButtonMask)($t4)
-    /* 12AC0 80211AC0 3C018027 */  lui        $at, %hi(g_dwScreenFadeDurationTertiary)
+    /* 12AC0 80211AC0 3C018027 */  lui        $at, %hi(g_dwMenuTitleImageWidth)
     /* 12AC4 80211AC4 240A0118 */  addiu      $t2, $zero, 0x118
-    /* 12AC8 80211AC8 AC2A1FBC */  sw         $t2, %lo(g_dwScreenFadeDurationTertiary)($at)
-    /* 12ACC 80211ACC 3C018027 */  lui        $at, %hi(g_dwScreenFadeSkipFrame)
+    /* 12AC8 80211AC8 AC2A1FBC */  sw         $t2, %lo(g_dwMenuTitleImageWidth)($at)
+    /* 12ACC 80211ACC 3C018027 */  lui        $at, %hi(g_dwMenuTitleImageHeight)
     /* 12AD0 80211AD0 240B002A */  addiu      $t3, $zero, 0x2A
     /* 12AD4 80211AD4 15800003 */  bnez       $t4, .L80211AE4
-    /* 12AD8 80211AD8 AC2B1FC0 */   sw        $t3, %lo(g_dwScreenFadeSkipFrame)($at)
+    /* 12AD8 80211AD8 AC2B1FC0 */   sw        $t3, %lo(g_dwMenuTitleImageHeight)($at)
     /* 12ADC 80211ADC 3C018031 */  lui        $at, %hi(g_dwPhysicsReserved49)
     /* 12AE0 80211AE0 AC2063AC */  sw         $zero, %lo(g_dwPhysicsReserved49)($at)
   .L80211AE4:
@@ -360,18 +360,18 @@ glabel ProcessOptionsMenu
     /* 12CD4 80211CD4 10000022 */  b          .L80211D60
     /* 12CD8 80211CD8 AD0A0008 */   sw        $t2, 0x8($t0)
   jlabel .L80211CDC
-    /* 12CDC 80211CDC 3C0C8027 */  lui        $t4, %hi(gMenuContext)
-    /* 12CE0 80211CE0 8D8C1FA8 */  lw         $t4, %lo(gMenuContext)($t4)
+    /* 12CDC 80211CDC 3C0C8027 */  lui        $t4, %hi(g_dwMenuChoosingPlayer)
+    /* 12CE0 80211CE0 8D8C1FA8 */  lw         $t4, %lo(g_dwMenuChoosingPlayer)($t4)
     /* 12CE4 80211CE4 240BFFFF */  addiu      $t3, $zero, -0x1
     /* 12CE8 80211CE8 3C018027 */  lui        $at, %hi(g_dwControllerConfigButtonMask)
     /* 12CEC 80211CEC AC2B24E0 */  sw         $t3, %lo(g_dwControllerConfigButtonMask)($at)
     /* 12CF0 80211CF0 3C018027 */  lui        $at, %hi(g_dwPaintSourcePlayerIdx)
     /* 12CF4 80211CF4 240D0001 */  addiu      $t5, $zero, 0x1
     /* 12CF8 80211CF8 AC2C1FA0 */  sw         $t4, %lo(g_dwPaintSourcePlayerIdx)($at)
-    /* 12CFC 80211CFC 3C018027 */  lui        $at, %hi(g_dwScreenSoundPlayerMask)
+    /* 12CFC 80211CFC 3C018027 */  lui        $at, %hi(g_dwMenuInputPlayerMask)
     /* 12D00 80211D00 3C048021 */  lui        $a0, %hi(ProcessControllerConfigScreen)
     /* 12D04 80211D04 018D7004 */  sllv       $t6, $t5, $t4
-    /* 12D08 80211D08 AC2E1FA4 */  sw         $t6, %lo(g_dwScreenSoundPlayerMask)($at)
+    /* 12D08 80211D08 AC2E1FA4 */  sw         $t6, %lo(g_dwMenuInputPlayerMask)($at)
     /* 12D0C 80211D0C 0C0871B9 */  jal        SetCurrentScreenCallback
     /* 12D10 80211D10 248470C8 */   addiu     $a0, $a0, %lo(ProcessControllerConfigScreen)
     /* 12D14 80211D14 10000013 */  b          .L80211D64
@@ -874,8 +874,8 @@ glabel ProcessDataSaveLoadMenu
     /* 13450 80212450 3C018031 */  lui        $at, %hi(g_bSaveLoadInputEnabled)
     /* 13454 80212454 1580003B */  bnez       $t4, .L80212544
     /* 13458 80212458 A02D6423 */   sb        $t5, %lo(g_bSaveLoadInputEnabled)($at)
-    /* 1345C 8021245C 3C098027 */  lui        $t1, %hi(gMenuContext)
-    /* 13460 80212460 8D291FA8 */  lw         $t1, %lo(gMenuContext)($t1)
+    /* 1345C 8021245C 3C098027 */  lui        $t1, %hi(g_dwMenuChoosingPlayer)
+    /* 13460 80212460 8D291FA8 */  lw         $t1, %lo(g_dwMenuChoosingPlayer)($t1)
     /* 13464 80212464 3C0A8037 */  lui        $t2, %hi(g_aPlayerInputState)
     /* 13468 80212468 254AA8E0 */  addiu      $t2, $t2, %lo(g_aPlayerInputState)
     /* 1346C 8021246C 0009C880 */  sll        $t9, $t1, 2
@@ -887,8 +887,8 @@ glabel ProcessDataSaveLoadMenu
     /* 13484 80212484 0019C880 */  sll        $t9, $t9, 2
     /* 13488 80212488 0C0956B7 */  jal        UpdateSoundMixer
     /* 1348C 8021248C 032A2021 */   addu      $a0, $t9, $t2
-    /* 13490 80212490 3C0B8027 */  lui        $t3, %hi(gMenuContext)
-    /* 13494 80212494 8D6B1FA8 */  lw         $t3, %lo(gMenuContext)($t3)
+    /* 13490 80212490 3C0B8027 */  lui        $t3, %hi(g_dwMenuChoosingPlayer)
+    /* 13494 80212494 8D6B1FA8 */  lw         $t3, %lo(g_dwMenuChoosingPlayer)($t3)
     /* 13498 80212498 3C188037 */  lui        $t8, %hi(g_aPlayerInputState)
     /* 1349C 8021249C 2718A8E0 */  addiu      $t8, $t8, %lo(g_aPlayerInputState)
     /* 134A0 802124A0 000B7880 */  sll        $t7, $t3, 2
@@ -936,8 +936,8 @@ glabel ProcessDataSaveLoadMenu
     /* 1353C 8021253C 3C018027 */  lui        $at, %hi(gPakFileType)
     /* 13540 80212540 A0292550 */  sb         $t1, %lo(gPakFileType)($at)
   .L80212544:
-    /* 13544 80212544 3C198027 */  lui        $t9, %hi(gMenuContext)
-    /* 13548 80212548 8F391FA8 */  lw         $t9, %lo(gMenuContext)($t9)
+    /* 13544 80212544 3C198027 */  lui        $t9, %hi(g_dwMenuChoosingPlayer)
+    /* 13548 80212548 8F391FA8 */  lw         $t9, %lo(g_dwMenuChoosingPlayer)($t9)
     /* 1354C 8021254C 3C0B8037 */  lui        $t3, %hi(g_aPlayerInputState)
     /* 13550 80212550 256BA8E0 */  addiu      $t3, $t3, %lo(g_aPlayerInputState)
     /* 13554 80212554 00195080 */  sll        $t2, $t9, 2
@@ -1003,8 +1003,8 @@ glabel ProcessDataSaveLoadMenu
     /* 13634 80212634 24842D48 */  addiu      $a0, $a0, %lo(g_SiMesgQueue)
     /* 13638 80212638 0C098650 */  jal        osPfsIsPlug
     /* 1363C 8021263C 27A500AF */   addiu     $a1, $sp, 0xAF
-    /* 13640 80212640 3C0B8027 */  lui        $t3, %hi(gMenuContext)
-    /* 13644 80212644 8D6B1FA8 */  lw         $t3, %lo(gMenuContext)($t3)
+    /* 13640 80212640 3C0B8027 */  lui        $t3, %hi(g_dwMenuChoosingPlayer)
+    /* 13644 80212644 8D6B1FA8 */  lw         $t3, %lo(g_dwMenuChoosingPlayer)($t3)
     /* 13648 80212648 93AA00AF */  lbu        $t2, 0xAF($sp)
     /* 1364C 8021264C 240F0001 */  addiu      $t7, $zero, 0x1
     /* 13650 80212650 016FC004 */  sllv       $t8, $t7, $t3
@@ -1021,8 +1021,8 @@ glabel ProcessDataSaveLoadMenu
     /* 13678 80212678 3C04802B */  lui        $a0, %hi(g_szInitializingControllerPak)
     /* 1367C 8021267C 0C0981F7 */  jal        osSyncPrintf
     /* 13680 80212680 24848218 */   addiu     $a0, $a0, %lo(g_szInitializingControllerPak)
-    /* 13684 80212684 3C078027 */  lui        $a3, %hi(gMenuContext)
-    /* 13688 80212688 8CE71FA8 */  lw         $a3, %lo(gMenuContext)($a3)
+    /* 13684 80212684 3C078027 */  lui        $a3, %hi(g_dwMenuChoosingPlayer)
+    /* 13688 80212688 8CE71FA8 */  lw         $a3, %lo(g_dwMenuChoosingPlayer)($a3)
     /* 1368C 8021268C 3C198037 */  lui        $t9, %hi(g_aPakPfs)
     /* 13690 80212690 27399EC0 */  addiu      $t9, $t9, %lo(g_aPakPfs)
     /* 13694 80212694 00074880 */  sll        $t1, $a3, 2
@@ -1042,8 +1042,8 @@ glabel ProcessDataSaveLoadMenu
     /* 136CC 802126CC 10600035 */  beqz       $v1, .L802127A4
     /* 136D0 802126D0 2401000A */   addiu     $at, $zero, 0xA
     /* 136D4 802126D4 1461002A */  bne        $v1, $at, .L80212780
-    /* 136D8 802126D8 3C078027 */   lui       $a3, %hi(gMenuContext)
-    /* 136DC 802126DC 8CE71FA8 */  lw         $a3, %lo(gMenuContext)($a3)
+    /* 136D8 802126D8 3C078027 */   lui       $a3, %hi(g_dwMenuChoosingPlayer)
+    /* 136DC 802126DC 8CE71FA8 */  lw         $a3, %lo(g_dwMenuChoosingPlayer)($a3)
     /* 136E0 802126E0 3C0B8032 */  lui        $t3, %hi(g_aContPfs)
     /* 136E4 802126E4 256BA3F8 */  addiu      $t3, $t3, %lo(g_aContPfs)
     /* 136E8 802126E8 00077880 */  sll        $t7, $a3, 2
@@ -1057,8 +1057,8 @@ glabel ProcessDataSaveLoadMenu
     /* 13708 80212708 0C0988DC */  jal        osMotorInit
     /* 1370C 8021270C 00E03025 */   or        $a2, $a3, $zero
     /* 13710 80212710 14400015 */  bnez       $v0, .L80212768
-    /* 13714 80212714 3C0A8027 */   lui       $t2, %hi(gMenuContext)
-    /* 13718 80212718 8D4A1FA8 */  lw         $t2, %lo(gMenuContext)($t2)
+    /* 13714 80212714 3C0A8027 */   lui       $t2, %hi(g_dwMenuChoosingPlayer)
+    /* 13718 80212718 8D4A1FA8 */  lw         $t2, %lo(g_dwMenuChoosingPlayer)($t2)
     /* 1371C 8021271C 3C0E8032 */  lui        $t6, %hi(g_aContPfs)
     /* 13720 80212720 25CEA3F8 */  addiu      $t6, $t6, %lo(g_aContPfs)
     /* 13724 80212724 000AC080 */  sll        $t8, $t2, 2
@@ -1086,8 +1086,8 @@ glabel ProcessDataSaveLoadMenu
     /* 13778 80212778 1000084E */  b          .L802148B4
     /* 1377C 8021277C A0392554 */   sb        $t9, %lo(gPakFileOperation)($at)
   .L80212780:
-    /* 13780 80212780 3C0F8027 */  lui        $t7, %hi(gMenuContext)
-    /* 13784 80212784 8DEF1FA8 */  lw         $t7, %lo(gMenuContext)($t7)
+    /* 13780 80212780 3C0F8027 */  lui        $t7, %hi(g_dwMenuChoosingPlayer)
+    /* 13784 80212784 8DEF1FA8 */  lw         $t7, %lo(g_dwMenuChoosingPlayer)($t7)
     /* 13788 80212788 3C018032 */  lui        $at, %hi(g_abRumblePakPresent)
     /* 1378C 8021278C 240B000C */  addiu      $t3, $zero, 0xC
     /* 13790 80212790 002F0821 */  addu       $at, $at, $t7
@@ -1097,8 +1097,8 @@ glabel ProcessDataSaveLoadMenu
     /* 137A0 802127A0 A02B2554 */   sb        $t3, %lo(gPakFileOperation)($at)
   .L802127A4:
     /* 137A4 802127A4 14600843 */  bnez       $v1, .L802148B4
-    /* 137A8 802127A8 3C078027 */   lui       $a3, %hi(gMenuContext)
-    /* 137AC 802127AC 8CE71FA8 */  lw         $a3, %lo(gMenuContext)($a3)
+    /* 137A8 802127A8 3C078027 */   lui       $a3, %hi(g_dwMenuChoosingPlayer)
+    /* 137AC 802127AC 8CE71FA8 */  lw         $a3, %lo(g_dwMenuChoosingPlayer)($a3)
     /* 137B0 802127B0 3C018032 */  lui        $at, %hi(g_abRumblePakPresent)
     /* 137B4 802127B4 3C0A8031 */  lui        $t2, %hi(g_bPakDataValid0)
     /* 137B8 802127B8 254A6420 */  addiu      $t2, $t2, %lo(g_bPakDataValid0)
@@ -1145,8 +1145,8 @@ glabel ProcessDataSaveLoadMenu
     /* 13858 80212858 0C098950 */  jal        bcmp
     /* 1385C 8021285C 24060020 */   addiu     $a2, $zero, 0x20
     /* 13860 80212860 10400015 */  beqz       $v0, .L802128B8
-    /* 13864 80212864 3C078027 */   lui       $a3, %hi(gMenuContext)
-    /* 13868 80212868 8CE71FA8 */  lw         $a3, %lo(gMenuContext)($a3)
+    /* 13864 80212864 3C078027 */   lui       $a3, %hi(g_dwMenuChoosingPlayer)
+    /* 13868 80212868 8CE71FA8 */  lw         $a3, %lo(g_dwMenuChoosingPlayer)($a3)
     /* 1386C 8021286C 3C198031 */  lui        $t9, %hi(g_aSaveIdPort0)
     /* 13870 80212870 3C0A8037 */  lui        $t2, %hi(g_aPakPfs)
     /* 13874 80212874 00077880 */  sll        $t7, $a3, 2
@@ -1172,8 +1172,8 @@ glabel ProcessDataSaveLoadMenu
     /* 138C0 802128C0 100007FC */  b          .L802148B4
     /* 138C4 802128C4 A02E2554 */   sb        $t6, %lo(gPakFileOperation)($at)
   jlabel .L802128C8
-    /* 138C8 802128C8 3C0D8027 */  lui        $t5, %hi(gMenuContext)
-    /* 138CC 802128CC 8DAD1FA8 */  lw         $t5, %lo(gMenuContext)($t5)
+    /* 138C8 802128C8 3C0D8027 */  lui        $t5, %hi(g_dwMenuChoosingPlayer)
+    /* 138CC 802128CC 8DAD1FA8 */  lw         $t5, %lo(g_dwMenuChoosingPlayer)($t5)
     /* 138D0 802128D0 3C098037 */  lui        $t1, %hi(g_aPakPfs)
     /* 138D4 802128D4 25299EC0 */  addiu      $t1, $t1, %lo(g_aPakPfs)
     /* 138D8 802128D8 000D6080 */  sll        $t4, $t5, 2
@@ -1248,8 +1248,8 @@ glabel ProcessDataSaveLoadMenu
     /* 139E4 802129E4 2405005F */  addiu      $a1, $zero, 0x5F
     /* 139E8 802129E8 0C08BD77 */  jal        DrawText
     /* 139EC 802129EC 24060099 */   addiu     $a2, $zero, 0x99
-    /* 139F0 802129F0 3C098027 */  lui        $t1, %hi(gMenuContext)
-    /* 139F4 802129F4 8D291FA8 */  lw         $t1, %lo(gMenuContext)($t1)
+    /* 139F0 802129F0 3C098027 */  lui        $t1, %hi(g_dwMenuChoosingPlayer)
+    /* 139F4 802129F4 8D291FA8 */  lw         $t1, %lo(g_dwMenuChoosingPlayer)($t1)
     /* 139F8 802129F8 3C0F8037 */  lui        $t7, %hi(g_aPlayerInputState)
     /* 139FC 802129FC 25EFA8E0 */  addiu      $t7, $t7, %lo(g_aPlayerInputState)
     /* 13A00 80212A00 0009C880 */  sll        $t9, $t1, 2
@@ -1271,8 +1271,8 @@ glabel ProcessDataSaveLoadMenu
     /* 13A40 80212A40 1000079C */  b          .L802148B4
     /* 13A44 80212A44 A0382554 */   sb        $t8, %lo(gPakFileOperation)($at)
   jlabel .L80212A48
-    /* 13A48 80212A48 3C0E8027 */  lui        $t6, %hi(gMenuContext)
-    /* 13A4C 80212A4C 8DCE1FA8 */  lw         $t6, %lo(gMenuContext)($t6)
+    /* 13A48 80212A48 3C0E8027 */  lui        $t6, %hi(g_dwMenuChoosingPlayer)
+    /* 13A4C 80212A4C 8DCE1FA8 */  lw         $t6, %lo(g_dwMenuChoosingPlayer)($t6)
     /* 13A50 80212A50 3C0C8037 */  lui        $t4, %hi(g_aPakPfs)
     /* 13A54 80212A54 3C198031 */  lui        $t9, %hi(g_dwPakSaveLoadNoteIndex)
     /* 13A58 80212A58 000E6880 */  sll        $t5, $t6, 2
@@ -1300,8 +1300,8 @@ glabel ProcessDataSaveLoadMenu
     /* 13AB0 80212AB0 3C04802B */   lui       $a0, %hi(g_szFileSystemCorruptedAttempt)
     /* 13AB4 80212AB4 0C0981F7 */  jal        osSyncPrintf
     /* 13AB8 80212AB8 24848288 */   addiu     $a0, $a0, %lo(g_szFileSystemCorruptedAttempt)
-    /* 13ABC 80212ABC 3C0F8027 */  lui        $t7, %hi(gMenuContext)
-    /* 13AC0 80212AC0 8DEF1FA8 */  lw         $t7, %lo(gMenuContext)($t7)
+    /* 13ABC 80212ABC 3C0F8027 */  lui        $t7, %hi(g_dwMenuChoosingPlayer)
+    /* 13AC0 80212AC0 8DEF1FA8 */  lw         $t7, %lo(g_dwMenuChoosingPlayer)($t7)
     /* 13AC4 80212AC4 3C0A8037 */  lui        $t2, %hi(g_aPakPfs)
     /* 13AC8 80212AC8 254A9EC0 */  addiu      $t2, $t2, %lo(g_aPakPfs)
     /* 13ACC 80212ACC 000F5880 */  sll        $t3, $t7, 2
@@ -1311,8 +1311,8 @@ glabel ProcessDataSaveLoadMenu
     /* 13ADC 80212ADC 000B58C0 */  sll        $t3, $t3, 3
     /* 13AE0 80212AE0 0C098AA0 */  jal        osPfsChecker
     /* 13AE4 80212AE4 016A2021 */   addu      $a0, $t3, $t2
-    /* 13AE8 80212AE8 3C188027 */  lui        $t8, %hi(gMenuContext)
-    /* 13AEC 80212AEC 8F181FA8 */  lw         $t8, %lo(gMenuContext)($t8)
+    /* 13AE8 80212AE8 3C188027 */  lui        $t8, %hi(g_dwMenuChoosingPlayer)
+    /* 13AEC 80212AEC 8F181FA8 */  lw         $t8, %lo(g_dwMenuChoosingPlayer)($t8)
     /* 13AF0 80212AF0 3C0D8037 */  lui        $t5, %hi(g_aPakPfs)
     /* 13AF4 80212AF4 3C098031 */  lui        $t1, %hi(g_dwPakSaveLoadNoteIndex)
     /* 13AF8 80212AF8 00187080 */  sll        $t6, $t8, 2
@@ -1425,8 +1425,8 @@ glabel ProcessDataSaveLoadMenu
   .L80212C74:
     /* 13C74 80212C74 24010004 */  addiu      $at, $zero, 0x4
     /* 13C78 80212C78 10410017 */  beq        $v0, $at, .L80212CD8
-    /* 13C7C 80212C7C 3C198027 */   lui       $t9, %hi(gMenuContext)
-    /* 13C80 80212C80 8F391FA8 */  lw         $t9, %lo(gMenuContext)($t9)
+    /* 13C7C 80212C7C 3C198027 */   lui       $t9, %hi(g_dwMenuChoosingPlayer)
+    /* 13C80 80212C80 8F391FA8 */  lw         $t9, %lo(g_dwMenuChoosingPlayer)($t9)
     /* 13C84 80212C84 3C188027 */  lui        $t8, %hi(gPakMenuState)
     /* 13C88 80212C88 8F182500 */  lw         $t8, %lo(gPakMenuState)($t8)
     /* 13C8C 80212C8C 00197880 */  sll        $t7, $t9, 2
@@ -1449,8 +1449,8 @@ glabel ProcessDataSaveLoadMenu
     /* 13CD0 80212CD0 10000017 */  b          .L80212D30
     /* 13CD4 80212CD4 AC2224F0 */   sw        $v0, %lo(gControllerPakState)($at)
   .L80212CD8:
-    /* 13CD8 80212CD8 3C0E8027 */  lui        $t6, %hi(gMenuContext)
-    /* 13CDC 80212CDC 8DCE1FA8 */  lw         $t6, %lo(gMenuContext)($t6)
+    /* 13CD8 80212CD8 3C0E8027 */  lui        $t6, %hi(g_dwMenuChoosingPlayer)
+    /* 13CDC 80212CDC 8DCE1FA8 */  lw         $t6, %lo(g_dwMenuChoosingPlayer)($t6)
     /* 13CE0 80212CE0 3C198027 */  lui        $t9, %hi(gPakMenuState)
     /* 13CE4 80212CE4 8F392500 */  lw         $t9, %lo(gPakMenuState)($t9)
     /* 13CE8 80212CE8 000E6880 */  sll        $t5, $t6, 2
@@ -1486,8 +1486,8 @@ glabel ProcessDataSaveLoadMenu
     /* 13D58 80212D58 3C0A8027 */   lui       $t2, %hi(g_bSaveLoadEntryPoint)
     /* 13D5C 80212D5C 914A24F4 */  lbu        $t2, %lo(g_bSaveLoadEntryPoint)($t2)
     /* 13D60 80212D60 15400014 */  bnez       $t2, .L80212DB4
-    /* 13D64 80212D64 3C188027 */   lui       $t8, %hi(gMenuContext)
-    /* 13D68 80212D68 8F181FA8 */  lw         $t8, %lo(gMenuContext)($t8)
+    /* 13D64 80212D64 3C188027 */   lui       $t8, %hi(g_dwMenuChoosingPlayer)
+    /* 13D68 80212D68 8F181FA8 */  lw         $t8, %lo(g_dwMenuChoosingPlayer)($t8)
     /* 13D6C 80212D6C 24032090 */  addiu      $v1, $zero, 0x2090
     /* 13D70 80212D70 3C078032 */  lui        $a3, %hi(g_aVehicles)
     /* 13D74 80212D74 3B0E0001 */  xori       $t6, $t8, 0x1
@@ -1527,8 +1527,8 @@ glabel ProcessDataSaveLoadMenu
     /* 13DF8 80212DF8 24E7B760 */  addiu      $a3, $a3, %lo(g_aVehicles)
     /* 13DFC 80212DFC 1700002B */  bnez       $t8, .L80212EAC
     /* 13E00 80212E00 24032090 */   addiu     $v1, $zero, 0x2090
-    /* 13E04 80212E04 3C028027 */  lui        $v0, %hi(gMenuContext)
-    /* 13E08 80212E08 24421FA8 */  addiu      $v0, $v0, %lo(gMenuContext)
+    /* 13E04 80212E04 3C028027 */  lui        $v0, %hi(g_dwMenuChoosingPlayer)
+    /* 13E08 80212E08 24421FA8 */  addiu      $v0, $v0, %lo(g_dwMenuChoosingPlayer)
     /* 13E0C 80212E0C 8C4D0000 */  lw         $t5, 0x0($v0)
     /* 13E10 80212E10 8FAE0094 */  lw         $t6, 0x94($sp)
     /* 13E14 80212E14 39AC0001 */  xori       $t4, $t5, 0x1
@@ -1652,8 +1652,8 @@ glabel ProcessDataSaveLoadMenu
     /* 13FD0 80212FD0 248423D0 */  addiu      $a0, $a0, %lo(g_dwMusicVolume)
     /* 13FD4 80212FD4 0C0982C8 */  jal        memcpy
     /* 13FD8 80212FD8 2406000C */   addiu     $a2, $zero, 0xC
-    /* 13FDC 80212FDC 3C0C8027 */  lui        $t4, %hi(gMenuContext)
-    /* 13FE0 80212FE0 8D8C1FA8 */  lw         $t4, %lo(gMenuContext)($t4)
+    /* 13FDC 80212FDC 3C0C8027 */  lui        $t4, %hi(g_dwMenuChoosingPlayer)
+    /* 13FE0 80212FE0 8D8C1FA8 */  lw         $t4, %lo(g_dwMenuChoosingPlayer)($t4)
     /* 13FE4 80212FE4 3C198027 */  lui        $t9, %hi(gPakMenuState)
     /* 13FE8 80212FE8 8F392500 */  lw         $t9, %lo(gPakMenuState)($t9)
     /* 13FEC 80212FEC 000C7880 */  sll        $t7, $t4, 2
@@ -1682,8 +1682,8 @@ glabel ProcessDataSaveLoadMenu
     /* 14048 80213048 27A40094 */  addiu      $a0, $sp, 0x94
     /* 1404C 8021304C 0C0982C8 */  jal        memcpy
     /* 14050 80213050 24060014 */   addiu     $a2, $zero, 0x14
-    /* 14054 80213054 3C058027 */  lui        $a1, %hi(gMenuContext)
-    /* 14058 80213058 24A51FA8 */  addiu      $a1, $a1, %lo(gMenuContext)
+    /* 14054 80213054 3C058027 */  lui        $a1, %hi(g_dwMenuChoosingPlayer)
+    /* 14058 80213058 24A51FA8 */  addiu      $a1, $a1, %lo(g_dwMenuChoosingPlayer)
     /* 1405C 8021305C 8CA90000 */  lw         $t1, 0x0($a1)
     /* 14060 80213060 24032090 */  addiu      $v1, $zero, 0x2090
     /* 14064 80213064 3C078032 */  lui        $a3, %hi(g_aVehicles)
@@ -1737,8 +1737,8 @@ glabel ProcessDataSaveLoadMenu
     /* 14120 80213120 100005E4 */  b          .L802148B4
     /* 14124 80213124 A0292554 */   sb        $t1, %lo(gPakFileOperation)($at)
   jlabel .L80213128
-    /* 14128 80213128 3C198027 */  lui        $t9, %hi(gMenuContext)
-    /* 1412C 8021312C 8F391FA8 */  lw         $t9, %lo(gMenuContext)($t9)
+    /* 14128 80213128 3C198027 */  lui        $t9, %hi(g_dwMenuChoosingPlayer)
+    /* 1412C 8021312C 8F391FA8 */  lw         $t9, %lo(g_dwMenuChoosingPlayer)($t9)
     /* 14130 80213130 3C0F8037 */  lui        $t7, %hi(g_aPakPfs)
     /* 14134 80213134 25EF9EC0 */  addiu      $t7, $t7, %lo(g_aPakPfs)
     /* 14138 80213138 00196080 */  sll        $t4, $t9, 2
@@ -1794,8 +1794,8 @@ glabel ProcessDataSaveLoadMenu
     /* 141F4 802131F4 0C0981F7 */  jal        osSyncPrintf
     /* 141F8 802131F8 8FA500A8 */   lw        $a1, 0xA8($sp)
   .L802131FC:
-    /* 141FC 802131FC 3C098027 */  lui        $t1, %hi(gMenuContext)
-    /* 14200 80213200 8D291FA8 */  lw         $t1, %lo(gMenuContext)($t1)
+    /* 141FC 802131FC 3C098027 */  lui        $t1, %hi(g_dwMenuChoosingPlayer)
+    /* 14200 80213200 8D291FA8 */  lw         $t1, %lo(g_dwMenuChoosingPlayer)($t1)
     /* 14204 80213204 8FB800A8 */  lw         $t8, 0xA8($sp)
     /* 14208 80213208 3C0C8037 */  lui        $t4, %hi(g_aPakPfs)
     /* 1420C 8021320C 0009C880 */  sll        $t9, $t1, 2
@@ -1822,8 +1822,8 @@ glabel ProcessDataSaveLoadMenu
     /* 14260 80213260 8C6324F0 */  lw         $v1, %lo(gControllerPakState)($v1)
     /* 14264 80213264 24010003 */  addiu      $at, $zero, 0x3
     /* 14268 80213268 14610025 */  bne        $v1, $at, .L80213300
-    /* 1426C 8021326C 3C0D8027 */   lui       $t5, %hi(gMenuContext)
-    /* 14270 80213270 8DAD1FA8 */  lw         $t5, %lo(gMenuContext)($t5)
+    /* 1426C 8021326C 3C0D8027 */   lui       $t5, %hi(g_dwMenuChoosingPlayer)
+    /* 14270 80213270 8DAD1FA8 */  lw         $t5, %lo(g_dwMenuChoosingPlayer)($t5)
     /* 14274 80213274 3C0E8037 */  lui        $t6, %hi(g_aPakPfs)
     /* 14278 80213278 25CE9EC0 */  addiu      $t6, $t6, %lo(g_aPakPfs)
     /* 1427C 8021327C 000D5880 */  sll        $t3, $t5, 2
@@ -1833,8 +1833,8 @@ glabel ProcessDataSaveLoadMenu
     /* 1428C 8021328C 000B58C0 */  sll        $t3, $t3, 3
     /* 14290 80213290 0C098AA0 */  jal        osPfsChecker
     /* 14294 80213294 016E2021 */   addu      $a0, $t3, $t6
-    /* 14298 80213298 3C098027 */  lui        $t1, %hi(gMenuContext)
-    /* 1429C 8021329C 8D291FA8 */  lw         $t1, %lo(gMenuContext)($t1)
+    /* 14298 80213298 3C098027 */  lui        $t1, %hi(g_dwMenuChoosingPlayer)
+    /* 1429C 8021329C 8D291FA8 */  lw         $t1, %lo(g_dwMenuChoosingPlayer)($t1)
     /* 142A0 802132A0 8FB800A8 */  lw         $t8, 0xA8($sp)
     /* 142A4 802132A4 3C0C8037 */  lui        $t4, %hi(g_aPakPfs)
     /* 142A8 802132A8 0009C880 */  sll        $t9, $t1, 2
@@ -1967,8 +1967,8 @@ glabel ProcessDataSaveLoadMenu
     /* 14490 80213490 24050135 */  addiu      $a1, $zero, 0x135
     /* 14494 80213494 0C091581 */  jal        DrawTexturedSprite
     /* 14498 80213498 8FA600BC */   lw        $a2, 0xBC($sp)
-    /* 1449C 8021349C 3C188027 */  lui        $t8, %hi(gMenuContext)
-    /* 144A0 802134A0 8F181FA8 */  lw         $t8, %lo(gMenuContext)($t8)
+    /* 1449C 8021349C 3C188027 */  lui        $t8, %hi(g_dwMenuChoosingPlayer)
+    /* 144A0 802134A0 8F181FA8 */  lw         $t8, %lo(g_dwMenuChoosingPlayer)($t8)
     /* 144A4 802134A4 3C0D8037 */  lui        $t5, %hi(g_aPlayerInputState)
     /* 144A8 802134A8 25ADA8E0 */  addiu      $t5, $t5, %lo(g_aPlayerInputState)
     /* 144AC 802134AC 00185080 */  sll        $t2, $t8, 2
@@ -2032,8 +2032,8 @@ glabel ProcessDataSaveLoadMenu
     /* 14588 80213588 8CE50E5C */  lw         $a1, 0xE5C($a3)
     /* 1458C 8021358C 0C0982C8 */  jal        memcpy
     /* 14590 80213590 24060128 */   addiu     $a2, $zero, 0x128
-    /* 14594 80213594 3C188027 */  lui        $t8, %hi(gMenuContext)
-    /* 14598 80213598 8F181FA8 */  lw         $t8, %lo(gMenuContext)($t8)
+    /* 14594 80213594 3C188027 */  lui        $t8, %hi(g_dwMenuChoosingPlayer)
+    /* 14598 80213598 8F181FA8 */  lw         $t8, %lo(g_dwMenuChoosingPlayer)($t8)
     /* 1459C 8021359C 3C0E8027 */  lui        $t6, %hi(gPakMenuState)
     /* 145A0 802135A0 8DCE2500 */  lw         $t6, %lo(gPakMenuState)($t6)
     /* 145A4 802135A4 00185080 */  sll        $t2, $t8, 2
@@ -2096,8 +2096,8 @@ glabel ProcessDataSaveLoadMenu
     /* 14680 80213680 3C04802B */   lui       $a0, %hi(g_szSavingGhostDataToControllerPak)
     /* 14684 80213684 0C0981F7 */  jal        osSyncPrintf
     /* 14688 80213688 2484842C */   addiu     $a0, $a0, %lo(g_szSavingGhostDataToControllerPak)
-    /* 1468C 8021368C 3C0A8027 */  lui        $t2, %hi(gMenuContext)
-    /* 14690 80213690 8D4A1FA8 */  lw         $t2, %lo(gMenuContext)($t2)
+    /* 1468C 8021368C 3C0A8027 */  lui        $t2, %hi(g_dwMenuChoosingPlayer)
+    /* 14690 80213690 8D4A1FA8 */  lw         $t2, %lo(g_dwMenuChoosingPlayer)($t2)
     /* 14694 80213694 3C098027 */  lui        $t1, %hi(gPakMenuState)
     /* 14698 80213698 8D292500 */  lw         $t1, %lo(gPakMenuState)($t1)
     /* 1469C 8021369C 000A6880 */  sll        $t5, $t2, 2
@@ -2154,8 +2154,8 @@ glabel ProcessDataSaveLoadMenu
     /* 1475C 8021375C 8C842500 */  lw         $a0, %lo(gPakMenuState)($a0)
     /* 14760 80213760 0C0982C8 */  jal        memcpy
     /* 14764 80213764 2406000C */   addiu     $a2, $zero, 0xC
-    /* 14768 80213768 3C0D8027 */  lui        $t5, %hi(gMenuContext)
-    /* 1476C 8021376C 8DAD1FA8 */  lw         $t5, %lo(gMenuContext)($t5)
+    /* 14768 80213768 3C0D8027 */  lui        $t5, %hi(g_dwMenuChoosingPlayer)
+    /* 1476C 8021376C 8DAD1FA8 */  lw         $t5, %lo(g_dwMenuChoosingPlayer)($t5)
     /* 14770 80213770 3C198027 */  lui        $t9, %hi(gPakMenuState)
     /* 14774 80213774 8F392500 */  lw         $t9, %lo(gPakMenuState)($t9)
     /* 14778 80213778 000D5880 */  sll        $t3, $t5, 2
@@ -2183,8 +2183,8 @@ glabel ProcessDataSaveLoadMenu
     /* 147D0 802137D0 10000438 */  b          .L802148B4
     /* 147D4 802137D4 A02F2554 */   sb        $t7, %lo(gPakFileOperation)($at)
   .L802137D8:
-    /* 147D8 802137D8 3C188027 */  lui        $t8, %hi(gMenuContext)
-    /* 147DC 802137DC 8F181FA8 */  lw         $t8, %lo(gMenuContext)($t8)
+    /* 147D8 802137D8 3C188027 */  lui        $t8, %hi(g_dwMenuChoosingPlayer)
+    /* 147DC 802137DC 8F181FA8 */  lw         $t8, %lo(g_dwMenuChoosingPlayer)($t8)
     /* 147E0 802137E0 24032090 */  addiu      $v1, $zero, 0x2090
     /* 147E4 802137E4 3C078032 */  lui        $a3, %hi(g_aVehicles)
     /* 147E8 802137E8 03030019 */  multu      $t8, $v1
@@ -2207,8 +2207,8 @@ glabel ProcessDataSaveLoadMenu
     /* 1482C 8021382C 8C4C00E4 */  lw         $t4, 0xE4($v0)
     /* 14830 80213830 0C0982C8 */  jal        memcpy
     /* 14834 80213834 AFAC00A4 */   sw        $t4, 0xA4($sp)
-    /* 14838 80213838 3C0F8027 */  lui        $t7, %hi(gMenuContext)
-    /* 1483C 8021383C 8DEF1FA8 */  lw         $t7, %lo(gMenuContext)($t7)
+    /* 14838 80213838 3C0F8027 */  lui        $t7, %hi(g_dwMenuChoosingPlayer)
+    /* 1483C 8021383C 8DEF1FA8 */  lw         $t7, %lo(g_dwMenuChoosingPlayer)($t7)
     /* 14840 80213840 3C0B8027 */  lui        $t3, %hi(gPakMenuState)
     /* 14844 80213844 8D6B2500 */  lw         $t3, %lo(gPakMenuState)($t3)
     /* 14848 80213848 000FC080 */  sll        $t8, $t7, 2
@@ -2790,8 +2790,8 @@ glabel ProcessDataSaveLoadMenu
   .L802140E8:
     /* 150E8 802140E8 2401270F */  addiu      $at, $zero, 0x270F
     /* 150EC 802140EC 1061001F */  beq        $v1, $at, .L8021416C
-    /* 150F0 802140F0 3C0A8027 */   lui       $t2, %hi(gMenuContext)
-    /* 150F4 802140F4 8D4A1FA8 */  lw         $t2, %lo(gMenuContext)($t2)
+    /* 150F0 802140F0 3C0A8027 */   lui       $t2, %hi(g_dwMenuChoosingPlayer)
+    /* 150F4 802140F4 8D4A1FA8 */  lw         $t2, %lo(g_dwMenuChoosingPlayer)($t2)
     /* 150F8 802140F8 3C0B8037 */  lui        $t3, %hi(g_aPlayerInputState)
     /* 150FC 802140FC 256BA8E0 */  addiu      $t3, $t3, %lo(g_aPlayerInputState)
     /* 15100 80214100 000A6880 */  sll        $t5, $t2, 2
@@ -2823,8 +2823,8 @@ glabel ProcessDataSaveLoadMenu
     /* 15164 80214164 100001D3 */  b          .L802148B4
     /* 15168 80214168 A0382554 */   sb        $t8, %lo(gPakFileOperation)($at)
   .L8021416C:
-    /* 1516C 8021416C 3C0F8027 */  lui        $t7, %hi(gMenuContext)
-    /* 15170 80214170 8DEF1FA8 */  lw         $t7, %lo(gMenuContext)($t7)
+    /* 1516C 8021416C 3C0F8027 */  lui        $t7, %hi(g_dwMenuChoosingPlayer)
+    /* 15170 80214170 8DEF1FA8 */  lw         $t7, %lo(g_dwMenuChoosingPlayer)($t7)
     /* 15174 80214174 3C0D8037 */  lui        $t5, %hi(g_aPlayerInputState)
     /* 15178 80214178 25ADA8E0 */  addiu      $t5, $t5, %lo(g_aPlayerInputState)
     /* 1517C 8021417C 000F5080 */  sll        $t2, $t7, 2
@@ -3110,8 +3110,8 @@ glabel ProcessDataSaveLoadMenu
     /* 15598 80214598 3C018027 */  lui        $at, %hi(gPakFileOperation)
     /* 1559C 8021459C A02B2554 */  sb         $t3, %lo(gPakFileOperation)($at)
   .L802145A0:
-    /* 155A0 802145A0 3C0E8027 */  lui        $t6, %hi(gMenuContext)
-    /* 155A4 802145A4 8DCE1FA8 */  lw         $t6, %lo(gMenuContext)($t6)
+    /* 155A0 802145A0 3C0E8027 */  lui        $t6, %hi(g_dwMenuChoosingPlayer)
+    /* 155A4 802145A4 8DCE1FA8 */  lw         $t6, %lo(g_dwMenuChoosingPlayer)($t6)
     /* 155A8 802145A8 3C198037 */  lui        $t9, %hi(g_aPlayerInputState)
     /* 155AC 802145AC 2739A8E0 */  addiu      $t9, $t9, %lo(g_aPlayerInputState)
     /* 155B0 802145B0 000E4880 */  sll        $t1, $t6, 2
@@ -3222,8 +3222,8 @@ glabel ProcessDataSaveLoadMenu
     /* 15744 80214744 24050041 */  addiu      $a1, $zero, 0x41
     /* 15748 80214748 0C08BD77 */  jal        DrawText
     /* 1574C 8021474C 2406009D */   addiu     $a2, $zero, 0x9D
-    /* 15750 80214750 3C0B8027 */  lui        $t3, %hi(gMenuContext)
-    /* 15754 80214754 8D6B1FA8 */  lw         $t3, %lo(gMenuContext)($t3)
+    /* 15750 80214750 3C0B8027 */  lui        $t3, %hi(g_dwMenuChoosingPlayer)
+    /* 15754 80214754 8D6B1FA8 */  lw         $t3, %lo(g_dwMenuChoosingPlayer)($t3)
     /* 15758 80214758 3C098037 */  lui        $t1, %hi(g_aPlayerInputState)
     /* 1575C 8021475C 2529A8E0 */  addiu      $t1, $t1, %lo(g_aPlayerInputState)
     /* 15760 80214760 000B7080 */  sll        $t6, $t3, 2
@@ -3273,8 +3273,8 @@ glabel ProcessDataSaveLoadMenu
     /* 15804 80214804 3C018027 */  lui        $at, %hi(gPakFileOperation)
     /* 15808 80214808 A02D2554 */  sb         $t5, %lo(gPakFileOperation)($at)
   .L8021480C:
-    /* 1580C 8021480C 3C078027 */  lui        $a3, %hi(gMenuContext)
-    /* 15810 80214810 8CE71FA8 */  lw         $a3, %lo(gMenuContext)($a3)
+    /* 1580C 8021480C 3C078027 */  lui        $a3, %hi(g_dwMenuChoosingPlayer)
+    /* 15810 80214810 8CE71FA8 */  lw         $a3, %lo(g_dwMenuChoosingPlayer)($a3)
     /* 15814 80214814 3C0E8032 */  lui        $t6, %hi(g_aContPfs)
     /* 15818 80214818 3C018027 */  lui        $at, %hi(g_bSaveLoadRumbleSwapPending)
     /* 1581C 8021481C 00075880 */  sll        $t3, $a3, 2
@@ -3290,8 +3290,8 @@ glabel ProcessDataSaveLoadMenu
     /* 15844 80214844 0C0988DC */  jal        osMotorInit
     /* 15848 80214848 00E03025 */   or        $a2, $a3, $zero
     /* 1584C 8021484C 14400019 */  bnez       $v0, .L802148B4
-    /* 15850 80214850 3C198027 */   lui       $t9, %hi(gMenuContext)
-    /* 15854 80214854 8F391FA8 */  lw         $t9, %lo(gMenuContext)($t9)
+    /* 15850 80214850 3C198027 */   lui       $t9, %hi(g_dwMenuChoosingPlayer)
+    /* 15854 80214854 8F391FA8 */  lw         $t9, %lo(g_dwMenuChoosingPlayer)($t9)
     /* 15858 80214858 3C018032 */  lui        $at, %hi(g_abRumblePakPresent)
     /* 1585C 8021485C 24090001 */  addiu      $t1, $zero, 0x1
     /* 15860 80214860 00390821 */  addu       $at, $at, $t9
@@ -3361,10 +3361,10 @@ glabel ProcessDataSaveLoadMenu
     /* 15954 80214954 A0206422 */  sb         $zero, %lo(g_bSaveLoadDataWasLoaded)($at)
     /* 15958 80214958 3C01802A */  lui        $at, %hi(g_wSerialInterfaceIdle)
     /* 1595C 8021495C 240D0001 */  addiu      $t5, $zero, 0x1
-    /* 15960 80214960 3C048021 */  lui        $a0, %hi(StartSeasonAfterLoad)
+    /* 15960 80214960 3C048021 */  lui        $a0, %hi(StartChampionshipRace)
     /* 15964 80214964 A42D4BE8 */  sh         $t5, %lo(g_wSerialInterfaceIdle)($at)
     /* 15968 80214968 0C0871B9 */  jal        SetCurrentScreenCallback
-    /* 1596C 8021496C 24841150 */   addiu     $a0, $a0, %lo(StartSeasonAfterLoad)
+    /* 1596C 8021496C 24841150 */   addiu     $a0, $a0, %lo(StartChampionshipRace)
     /* 15970 80214970 1000002E */  b          .L80214A2C
     /* 15974 80214974 8FBF002C */   lw        $ra, 0x2C($sp)
   .L80214978:
@@ -3377,10 +3377,10 @@ glabel ProcessDataSaveLoadMenu
     /* 15990 80214990 A0206422 */  sb         $zero, %lo(g_bSaveLoadDataWasLoaded)($at)
     /* 15994 80214994 3C01802A */  lui        $at, %hi(g_wSerialInterfaceIdle)
     /* 15998 80214998 240E0001 */  addiu      $t6, $zero, 0x1
-    /* 1599C 8021499C 3C048021 */  lui        $a0, %hi(StartGhostRaceAfterLoad)
+    /* 1599C 8021499C 3C048021 */  lui        $a0, %hi(StartTimeAttack)
     /* 159A0 802149A0 A42E4BE8 */  sh         $t6, %lo(g_wSerialInterfaceIdle)($at)
     /* 159A4 802149A4 0C0871B9 */  jal        SetCurrentScreenCallback
-    /* 159A8 802149A8 24841194 */   addiu     $a0, $a0, %lo(StartGhostRaceAfterLoad)
+    /* 159A8 802149A8 24841194 */   addiu     $a0, $a0, %lo(StartTimeAttack)
     /* 159AC 802149AC 1000001F */  b          .L80214A2C
     /* 159B0 802149B0 8FBF002C */   lw        $ra, 0x2C($sp)
   .L802149B4:
@@ -3509,8 +3509,8 @@ glabel DrawRumblePakPrompt
     /* 15B64 80214B64 0C08BD77 */  jal        DrawText
     /* 15B68 80214B68 2406009E */   addiu     $a2, $zero, 0x9E
     /* 15B6C 80214B6C 3C068037 */  lui        $a2, %hi(g_aPlayerInputState)
-    /* 15B70 80214B70 3C038027 */  lui        $v1, %hi(gMenuContext)
-    /* 15B74 80214B74 24631FA8 */  addiu      $v1, $v1, %lo(gMenuContext)
+    /* 15B70 80214B70 3C038027 */  lui        $v1, %hi(g_dwMenuChoosingPlayer)
+    /* 15B74 80214B74 24631FA8 */  addiu      $v1, $v1, %lo(g_dwMenuChoosingPlayer)
     /* 15B78 80214B78 24C6A8E0 */  addiu      $a2, $a2, %lo(g_aPlayerInputState)
     /* 15B7C 80214B7C 00001025 */  or         $v0, $zero, $zero
     /* 15B80 80214B80 2407015C */  addiu      $a3, $zero, 0x15C
@@ -3837,8 +3837,8 @@ glabel ProcessPakDataScreen
     /* 15FF0 80214FF0 24842D48 */  addiu      $a0, $a0, %lo(g_SiMesgQueue)
     /* 15FF4 80214FF4 0C098650 */  jal        osPfsIsPlug
     /* 15FF8 80214FF8 27A5008B */   addiu     $a1, $sp, 0x8B
-    /* 15FFC 80214FFC 3C198027 */  lui        $t9, %hi(gMenuContext)
-    /* 16000 80215000 8F391FA8 */  lw         $t9, %lo(gMenuContext)($t9)
+    /* 15FFC 80214FFC 3C198027 */  lui        $t9, %hi(g_dwMenuChoosingPlayer)
+    /* 16000 80215000 8F391FA8 */  lw         $t9, %lo(g_dwMenuChoosingPlayer)($t9)
     /* 16004 80215004 93B8008B */  lbu        $t8, 0x8B($sp)
     /* 16008 80215008 240E0001 */  addiu      $t6, $zero, 0x1
     /* 1600C 8021500C 032E7804 */  sllv       $t7, $t6, $t9
@@ -3855,8 +3855,8 @@ glabel ProcessPakDataScreen
   .L80215038:
     /* 16038 80215038 0C0981F7 */  jal        osSyncPrintf
     /* 1603C 8021503C 24848A60 */   addiu     $a0, $a0, %lo(g_szInitializingControllerPak2)
-    /* 16040 80215040 3C078027 */  lui        $a3, %hi(gMenuContext)
-    /* 16044 80215044 8CE71FA8 */  lw         $a3, %lo(gMenuContext)($a3)
+    /* 16040 80215040 3C078027 */  lui        $a3, %hi(g_dwMenuChoosingPlayer)
+    /* 16044 80215044 8CE71FA8 */  lw         $a3, %lo(g_dwMenuChoosingPlayer)($a3)
     /* 16048 80215048 3C0D8037 */  lui        $t5, %hi(g_aPakPfs)
     /* 1604C 8021504C 25AD9EC0 */  addiu      $t5, $t5, %lo(g_aPakPfs)
     /* 16050 80215050 00075080 */  sll        $t2, $a3, 2
@@ -3877,9 +3877,9 @@ glabel ProcessPakDataScreen
     /* 1608C 8021508C 10600035 */  beqz       $v1, .L80215164
     /* 16090 80215090 00000000 */   nop
     /* 16094 80215094 1461002B */  bne        $v1, $at, .L80215144
-    /* 16098 80215098 3C0E8027 */   lui       $t6, %hi(gMenuContext)
-    /* 1609C 8021509C 3C078027 */  lui        $a3, %hi(gMenuContext)
-    /* 160A0 802150A0 8CE71FA8 */  lw         $a3, %lo(gMenuContext)($a3)
+    /* 16098 80215098 3C0E8027 */   lui       $t6, %hi(g_dwMenuChoosingPlayer)
+    /* 1609C 8021509C 3C078027 */  lui        $a3, %hi(g_dwMenuChoosingPlayer)
+    /* 160A0 802150A0 8CE71FA8 */  lw         $a3, %lo(g_dwMenuChoosingPlayer)($a3)
     /* 160A4 802150A4 3C198032 */  lui        $t9, %hi(g_aContPfs)
     /* 160A8 802150A8 2739A3F8 */  addiu      $t9, $t9, %lo(g_aContPfs)
     /* 160AC 802150AC 00077080 */  sll        $t6, $a3, 2
@@ -3894,8 +3894,8 @@ glabel ProcessPakDataScreen
     /* 160D0 802150D0 00E03025 */   or        $a2, $a3, $zero
     /* 160D4 802150D4 14400016 */  bnez       $v0, .L80215130
     /* 160D8 802150D8 3C018027 */   lui       $at, %hi(gControllerPakState)
-    /* 160DC 802150DC 3C188027 */  lui        $t8, %hi(gMenuContext)
-    /* 160E0 802150E0 8F181FA8 */  lw         $t8, %lo(gMenuContext)($t8)
+    /* 160DC 802150DC 3C188027 */  lui        $t8, %hi(g_dwMenuChoosingPlayer)
+    /* 160E0 802150E0 8F181FA8 */  lw         $t8, %lo(g_dwMenuChoosingPlayer)($t8)
     /* 160E4 802150E4 3C098032 */  lui        $t1, %hi(g_aContPfs)
     /* 160E8 802150E8 2529A3F8 */  addiu      $t1, $t1, %lo(g_aContPfs)
     /* 160EC 802150EC 00187880 */  sll        $t7, $t8, 2
@@ -3922,7 +3922,7 @@ glabel ProcessPakDataScreen
     /* 1613C 8021513C 1000059D */  b          .L802167B4
     /* 16140 80215140 A02D6430 */   sb        $t5, %lo(g_bPakScreenState)($at)
   .L80215144:
-    /* 16144 80215144 8DCE1FA8 */  lw         $t6, %lo(gMenuContext)($t6)
+    /* 16144 80215144 8DCE1FA8 */  lw         $t6, %lo(g_dwMenuChoosingPlayer)($t6)
     /* 16148 80215148 3C018032 */  lui        $at, %hi(g_abRumblePakPresent)
     /* 1614C 8021514C 24190009 */  addiu      $t9, $zero, 0x9
     /* 16150 80215150 002E0821 */  addu       $at, $at, $t6
@@ -3932,8 +3932,8 @@ glabel ProcessPakDataScreen
     /* 16160 80215160 A0396430 */   sb        $t9, %lo(g_bPakScreenState)($at)
   .L80215164:
     /* 16164 80215164 14600593 */  bnez       $v1, .L802167B4
-    /* 16168 80215168 3C078027 */   lui       $a3, %hi(gMenuContext)
-    /* 1616C 8021516C 8CE71FA8 */  lw         $a3, %lo(gMenuContext)($a3)
+    /* 16168 80215168 3C078027 */   lui       $a3, %hi(g_dwMenuChoosingPlayer)
+    /* 1616C 8021516C 8CE71FA8 */  lw         $a3, %lo(g_dwMenuChoosingPlayer)($a3)
     /* 16170 80215170 3C018032 */  lui        $at, %hi(g_abRumblePakPresent)
     /* 16174 80215174 3C188031 */  lui        $t8, %hi(g_bPakDataValid0)
     /* 16178 80215178 27186420 */  addiu      $t8, $t8, %lo(g_bPakDataValid0)
@@ -3981,8 +3981,8 @@ glabel ProcessPakDataScreen
     /* 1621C 8021521C 24060020 */   addiu     $a2, $zero, 0x20
     /* 16220 80215220 10400016 */  beqz       $v0, .L8021527C
     /* 16224 80215224 24090005 */   addiu     $t1, $zero, 0x5
-    /* 16228 80215228 3C078027 */  lui        $a3, %hi(gMenuContext)
-    /* 1622C 8021522C 8CE71FA8 */  lw         $a3, %lo(gMenuContext)($a3)
+    /* 16228 80215228 3C078027 */  lui        $a3, %hi(g_dwMenuChoosingPlayer)
+    /* 1622C 8021522C 8CE71FA8 */  lw         $a3, %lo(g_dwMenuChoosingPlayer)($a3)
     /* 16230 80215230 3C0D8031 */  lui        $t5, %hi(g_aSaveIdPort0)
     /* 16234 80215234 3C188037 */  lui        $t8, %hi(g_aPakPfs)
     /* 16238 80215238 00077080 */  sll        $t6, $a3, 2
@@ -4007,8 +4007,8 @@ glabel ProcessPakDataScreen
     /* 16280 80215280 1000054C */  b          .L802167B4
     /* 16284 80215284 A0296430 */   sb        $t1, %lo(g_bPakScreenState)($at)
   jlabel .L80215288
-    /* 16288 80215288 3C0C8027 */  lui        $t4, %hi(gMenuContext)
-    /* 1628C 8021528C 8D8C1FA8 */  lw         $t4, %lo(gMenuContext)($t4)
+    /* 16288 80215288 3C0C8027 */  lui        $t4, %hi(g_dwMenuChoosingPlayer)
+    /* 1628C 8021528C 8D8C1FA8 */  lw         $t4, %lo(g_dwMenuChoosingPlayer)($t4)
     /* 16290 80215290 3C0A8037 */  lui        $t2, %hi(g_aPakPfs)
     /* 16294 80215294 254A9EC0 */  addiu      $t2, $t2, %lo(g_aPakPfs)
     /* 16298 80215298 000C5880 */  sll        $t3, $t4, 2
@@ -4088,8 +4088,8 @@ glabel ProcessPakDataScreen
     /* 163B4 802153B4 2405005F */  addiu      $a1, $zero, 0x5F
     /* 163B8 802153B8 0C08BD77 */  jal        DrawText
     /* 163BC 802153BC 2406009E */   addiu     $a2, $zero, 0x9E
-    /* 163C0 802153C0 3C0D8027 */  lui        $t5, %hi(gMenuContext)
-    /* 163C4 802153C4 8DAD1FA8 */  lw         $t5, %lo(gMenuContext)($t5)
+    /* 163C0 802153C0 3C0D8027 */  lui        $t5, %hi(g_dwMenuChoosingPlayer)
+    /* 163C4 802153C4 8DAD1FA8 */  lw         $t5, %lo(g_dwMenuChoosingPlayer)($t5)
     /* 163C8 802153C8 3C198037 */  lui        $t9, %hi(g_aPlayerInputState)
     /* 163CC 802153CC 2739A8E0 */  addiu      $t9, $t9, %lo(g_aPlayerInputState)
     /* 163D0 802153D0 000D7080 */  sll        $t6, $t5, 2
@@ -4115,8 +4115,8 @@ glabel ProcessPakDataScreen
     /* 1641C 8021541C 24848AD0 */  addiu      $a0, $a0, %lo(g_szFindingFile)
     /* 16420 80215420 0C0981F7 */  jal        osSyncPrintf
     /* 16424 80215424 A3A500BF */   sb        $a1, 0xBF($sp)
-    /* 16428 80215428 3C0C8027 */  lui        $t4, %hi(gMenuContext)
-    /* 1642C 8021542C 8D8C1FA8 */  lw         $t4, %lo(gMenuContext)($t4)
+    /* 16428 80215428 3C0C8027 */  lui        $t4, %hi(g_dwMenuChoosingPlayer)
+    /* 1642C 8021542C 8D8C1FA8 */  lw         $t4, %lo(g_dwMenuChoosingPlayer)($t4)
     /* 16430 80215430 3C0A8037 */  lui        $t2, %hi(g_aPakPfs)
     /* 16434 80215434 3C0E8031 */  lui        $t6, %hi(g_dwPhysicsReserved50)
     /* 16438 80215438 000C5880 */  sll        $t3, $t4, 2
@@ -4140,10 +4140,10 @@ glabel ProcessPakDataScreen
     /* 16480 80215480 3C038027 */  lui        $v1, %hi(gControllerPakState)
     /* 16484 80215484 8C6324F0 */  lw         $v1, %lo(gControllerPakState)($v1)
     /* 16488 80215488 24050003 */  addiu      $a1, $zero, 0x3
-    /* 1648C 8021548C 3C198027 */  lui        $t9, %hi(gMenuContext)
+    /* 1648C 8021548C 3C198027 */  lui        $t9, %hi(g_dwMenuChoosingPlayer)
     /* 16490 80215490 14A30024 */  bne        $a1, $v1, .L80215524
     /* 16494 80215494 00000000 */   nop
-    /* 16498 80215498 8F391FA8 */  lw         $t9, %lo(gMenuContext)($t9)
+    /* 16498 80215498 8F391FA8 */  lw         $t9, %lo(g_dwMenuChoosingPlayer)($t9)
     /* 1649C 8021549C 3C0F8037 */  lui        $t7, %hi(g_aPakPfs)
     /* 164A0 802154A0 25EF9EC0 */  addiu      $t7, $t7, %lo(g_aPakPfs)
     /* 164A4 802154A4 0019C080 */  sll        $t8, $t9, 2
@@ -4153,8 +4153,8 @@ glabel ProcessPakDataScreen
     /* 164B4 802154B4 0018C0C0 */  sll        $t8, $t8, 3
     /* 164B8 802154B8 0C098AA0 */  jal        osPfsChecker
     /* 164BC 802154BC 030F2021 */   addu      $a0, $t8, $t7
-    /* 164C0 802154C0 3C098027 */  lui        $t1, %hi(gMenuContext)
-    /* 164C4 802154C4 8D291FA8 */  lw         $t1, %lo(gMenuContext)($t1)
+    /* 164C0 802154C0 3C098027 */  lui        $t1, %hi(g_dwMenuChoosingPlayer)
+    /* 164C4 802154C4 8D291FA8 */  lw         $t1, %lo(g_dwMenuChoosingPlayer)($t1)
     /* 164C8 802154C8 3C0B8037 */  lui        $t3, %hi(g_aPakPfs)
     /* 164CC 802154CC 3C0D8031 */  lui        $t5, %hi(g_dwPhysicsReserved50)
     /* 164D0 802154D0 00096080 */  sll        $t4, $t1, 2
@@ -4238,11 +4238,11 @@ glabel ProcessPakDataScreen
     /* 165E4 802155E4 8FB800B8 */  lw         $t8, 0xB8($sp)
   .L802155E8:
     /* 165E8 802155E8 24010002 */  addiu      $at, $zero, 0x2
-    /* 165EC 802155EC 3C0D8027 */  lui        $t5, %hi(gMenuContext)
+    /* 165EC 802155EC 3C0D8027 */  lui        $t5, %hi(g_dwMenuChoosingPlayer)
     /* 165F0 802155F0 13010018 */  beq        $t8, $at, .L80215654
     /* 165F4 802155F4 3C198037 */   lui       $t9, %hi(g_aPakPfs)
-    /* 165F8 802155F8 3C0F8027 */  lui        $t7, %hi(gMenuContext)
-    /* 165FC 802155FC 8DEF1FA8 */  lw         $t7, %lo(gMenuContext)($t7)
+    /* 165F8 802155F8 3C0F8027 */  lui        $t7, %hi(g_dwMenuChoosingPlayer)
+    /* 165FC 802155FC 8DEF1FA8 */  lw         $t7, %lo(g_dwMenuChoosingPlayer)($t7)
     /* 16600 80215600 3C0A8027 */  lui        $t2, %hi(gPakMenuState)
     /* 16604 80215604 8D4A2500 */  lw         $t2, %lo(gPakMenuState)($t2)
     /* 16608 80215608 000F4880 */  sll        $t1, $t7, 2
@@ -4265,7 +4265,7 @@ glabel ProcessPakDataScreen
     /* 1664C 8021564C 10000015 */  b          .L802156A4
     /* 16650 80215650 AC2224F0 */   sw        $v0, %lo(gControllerPakState)($at)
   .L80215654:
-    /* 16654 80215654 8DAD1FA8 */  lw         $t5, %lo(gMenuContext)($t5)
+    /* 16654 80215654 8DAD1FA8 */  lw         $t5, %lo(g_dwMenuChoosingPlayer)($t5)
     /* 16658 80215658 3C0F8027 */  lui        $t7, %hi(gPakMenuState)
     /* 1665C 8021565C 8DEF2500 */  lw         $t7, %lo(gPakMenuState)($t7)
     /* 16660 80215660 000D7080 */  sll        $t6, $t5, 2
@@ -4294,8 +4294,8 @@ glabel ProcessPakDataScreen
     /* 166B8 802156B8 3C018031 */   lui       $at, %hi(g_bPakScreenState)
     /* 166BC 802156BC 15800053 */  bnez       $t4, .L8021580C
     /* 166C0 802156C0 8FB800B8 */   lw        $t8, 0xB8($sp)
-    /* 166C4 802156C4 3C0B8027 */  lui        $t3, %hi(gMenuContext)
-    /* 166C8 802156C8 8D6B1FA8 */  lw         $t3, %lo(gMenuContext)($t3)
+    /* 166C4 802156C4 3C0B8027 */  lui        $t3, %hi(g_dwMenuChoosingPlayer)
+    /* 166C8 802156C8 8D6B1FA8 */  lw         $t3, %lo(g_dwMenuChoosingPlayer)($t3)
     /* 166CC 802156CC 24032090 */  addiu      $v1, $zero, 0x2090
     /* 166D0 802156D0 3C078032 */  lui        $a3, %hi(g_aVehicles)
     /* 166D4 802156D4 396A0001 */  xori       $t2, $t3, 0x1
@@ -4326,8 +4326,8 @@ glabel ProcessPakDataScreen
     /* 16738 80215738 8CE42EEC */  lw         $a0, 0x2EEC($a3)
     /* 1673C 8021573C 0C0982C8 */  jal        memcpy
     /* 16740 80215740 24060128 */   addiu     $a2, $zero, 0x128
-    /* 16744 80215744 3C058027 */  lui        $a1, %hi(gMenuContext)
-    /* 16748 80215748 24A51FA8 */  addiu      $a1, $a1, %lo(gMenuContext)
+    /* 16744 80215744 3C058027 */  lui        $a1, %hi(g_dwMenuChoosingPlayer)
+    /* 16748 80215748 24A51FA8 */  addiu      $a1, $a1, %lo(g_dwMenuChoosingPlayer)
     /* 1674C 8021574C 8CAA0000 */  lw         $t2, 0x0($a1)
     /* 16750 80215750 24032090 */  addiu      $v1, $zero, 0x2090
     /* 16754 80215754 3C078032 */  lui        $a3, %hi(g_aVehicles)
@@ -4427,8 +4427,8 @@ glabel ProcessPakDataScreen
     /* 168C4 802158C4 3C04802B */  lui        $a0, %hi(g_szLoadingCarEquipmentSettings)
     /* 168C8 802158C8 0C0981F7 */  jal        osSyncPrintf
     /* 168CC 802158CC 24848B5C */   addiu     $a0, $a0, %lo(g_szLoadingCarEquipmentSettings)
-    /* 168D0 802158D0 3C0D8027 */  lui        $t5, %hi(gMenuContext)
-    /* 168D4 802158D4 8DAD1FA8 */  lw         $t5, %lo(gMenuContext)($t5)
+    /* 168D0 802158D0 3C0D8027 */  lui        $t5, %hi(g_dwMenuChoosingPlayer)
+    /* 168D4 802158D4 8DAD1FA8 */  lw         $t5, %lo(g_dwMenuChoosingPlayer)($t5)
     /* 168D8 802158D8 3C0C8027 */  lui        $t4, %hi(gPakMenuState)
     /* 168DC 802158DC 8D8C2500 */  lw         $t4, %lo(gPakMenuState)($t4)
     /* 168E0 802158E0 000D5080 */  sll        $t2, $t5, 2
@@ -4459,8 +4459,8 @@ glabel ProcessPakDataScreen
     /* 16944 80215944 8CA52500 */  lw         $a1, %lo(gPakMenuState)($a1)
     /* 16948 80215948 0C0982C8 */  jal        memcpy
     /* 1694C 8021594C 24060014 */   addiu     $a2, $zero, 0x14
-    /* 16950 80215950 3C058027 */  lui        $a1, %hi(gMenuContext)
-    /* 16954 80215954 24A51FA8 */  addiu      $a1, $a1, %lo(gMenuContext)
+    /* 16950 80215950 3C058027 */  lui        $a1, %hi(g_dwMenuChoosingPlayer)
+    /* 16954 80215954 24A51FA8 */  addiu      $a1, $a1, %lo(g_dwMenuChoosingPlayer)
     /* 16958 80215958 8CB90000 */  lw         $t9, 0x0($a1)
     /* 1695C 8021595C 24032090 */  addiu      $v1, $zero, 0x2090
     /* 16960 80215960 3C078032 */  lui        $a3, %hi(g_aVehicles)
@@ -4535,8 +4535,8 @@ glabel ProcessPakDataScreen
     /* 16A60 80215A60 10000354 */  b          .L802167B4
     /* 16A64 80215A64 A0386430 */   sb        $t8, %lo(g_bPakScreenState)($at)
   jlabel .L80215A68
-    /* 16A68 80215A68 3C0E8027 */  lui        $t6, %hi(gMenuContext)
-    /* 16A6C 80215A6C 8DCE1FA8 */  lw         $t6, %lo(gMenuContext)($t6)
+    /* 16A68 80215A68 3C0E8027 */  lui        $t6, %hi(g_dwMenuChoosingPlayer)
+    /* 16A6C 80215A6C 8DCE1FA8 */  lw         $t6, %lo(g_dwMenuChoosingPlayer)($t6)
     /* 16A70 80215A70 3C198037 */  lui        $t9, %hi(g_aPakPfs)
     /* 16A74 80215A74 27399EC0 */  addiu      $t9, $t9, %lo(g_aPakPfs)
     /* 16A78 80215A78 000E7880 */  sll        $t7, $t6, 2
@@ -4565,8 +4565,8 @@ glabel ProcessPakDataScreen
   .L80215AD4:
     /* 16AD4 80215AD4 0C0981F7 */  jal        osSyncPrintf
     /* 16AD8 80215AD8 24050100 */   addiu     $a1, $zero, 0x100
-    /* 16ADC 80215ADC 3C0B8027 */  lui        $t3, %hi(gMenuContext)
-    /* 16AE0 80215AE0 8D6B1FA8 */  lw         $t3, %lo(gMenuContext)($t3)
+    /* 16ADC 80215ADC 3C0B8027 */  lui        $t3, %hi(g_dwMenuChoosingPlayer)
+    /* 16AE0 80215AE0 8D6B1FA8 */  lw         $t3, %lo(g_dwMenuChoosingPlayer)($t3)
     /* 16AE4 80215AE4 3C0E8037 */  lui        $t6, %hi(g_aPakPfs)
     /* 16AE8 80215AE8 3C0C8031 */  lui        $t4, %hi(g_dwPhysicsReserved50)
     /* 16AEC 80215AEC 000BC080 */  sll        $t8, $t3, 2
@@ -4592,10 +4592,10 @@ glabel ProcessPakDataScreen
     /* 16B3C 80215B3C 3C038027 */  lui        $v1, %hi(gControllerPakState)
     /* 16B40 80215B40 8C6324F0 */  lw         $v1, %lo(gControllerPakState)($v1)
     /* 16B44 80215B44 24010003 */  addiu      $at, $zero, 0x3
-    /* 16B48 80215B48 3C0D8027 */  lui        $t5, %hi(gMenuContext)
+    /* 16B48 80215B48 3C0D8027 */  lui        $t5, %hi(g_dwMenuChoosingPlayer)
     /* 16B4C 80215B4C 14610025 */  bne        $v1, $at, .L80215BE4
     /* 16B50 80215B50 00000000 */   nop
-    /* 16B54 80215B54 8DAD1FA8 */  lw         $t5, %lo(gMenuContext)($t5)
+    /* 16B54 80215B54 8DAD1FA8 */  lw         $t5, %lo(g_dwMenuChoosingPlayer)($t5)
     /* 16B58 80215B58 3C098037 */  lui        $t1, %hi(g_aPakPfs)
     /* 16B5C 80215B5C 25299EC0 */  addiu      $t1, $t1, %lo(g_aPakPfs)
     /* 16B60 80215B60 000D5080 */  sll        $t2, $t5, 2
@@ -4605,8 +4605,8 @@ glabel ProcessPakDataScreen
     /* 16B70 80215B70 000A50C0 */  sll        $t2, $t2, 3
     /* 16B74 80215B74 0C098AA0 */  jal        osPfsChecker
     /* 16B78 80215B78 01492021 */   addu      $a0, $t2, $t1
-    /* 16B7C 80215B7C 3C0B8027 */  lui        $t3, %hi(gMenuContext)
-    /* 16B80 80215B80 8D6B1FA8 */  lw         $t3, %lo(gMenuContext)($t3)
+    /* 16B7C 80215B7C 3C0B8027 */  lui        $t3, %hi(g_dwMenuChoosingPlayer)
+    /* 16B80 80215B80 8D6B1FA8 */  lw         $t3, %lo(g_dwMenuChoosingPlayer)($t3)
     /* 16B84 80215B84 3C0E8037 */  lui        $t6, %hi(g_aPakPfs)
     /* 16B88 80215B88 3C0C8031 */  lui        $t4, %hi(g_dwPhysicsReserved50)
     /* 16B8C 80215B8C 000BC080 */  sll        $t8, $t3, 2
@@ -4657,8 +4657,8 @@ glabel ProcessPakDataScreen
     /* 16C30 80215C30 8C842500 */  lw         $a0, %lo(gPakMenuState)($a0)
     /* 16C34 80215C34 0C0982C8 */  jal        memcpy
     /* 16C38 80215C38 2406000C */   addiu     $a2, $zero, 0xC
-    /* 16C3C 80215C3C 3C0B8027 */  lui        $t3, %hi(gMenuContext)
-    /* 16C40 80215C40 8D6B1FA8 */  lw         $t3, %lo(gMenuContext)($t3)
+    /* 16C3C 80215C3C 3C0B8027 */  lui        $t3, %hi(g_dwMenuChoosingPlayer)
+    /* 16C40 80215C40 8D6B1FA8 */  lw         $t3, %lo(g_dwMenuChoosingPlayer)($t3)
     /* 16C44 80215C44 3C198027 */  lui        $t9, %hi(gPakMenuState)
     /* 16C48 80215C48 8F392500 */  lw         $t9, %lo(gPakMenuState)($t9)
     /* 16C4C 80215C4C 000BC080 */  sll        $t8, $t3, 2
@@ -4686,8 +4686,8 @@ glabel ProcessPakDataScreen
     /* 16CA4 80215CA4 100002C3 */  b          .L802167B4
     /* 16CA8 80215CA8 A02D6430 */   sb        $t5, %lo(g_bPakScreenState)($at)
   .L80215CAC:
-    /* 16CAC 80215CAC 3C0A8027 */  lui        $t2, %hi(gMenuContext)
-    /* 16CB0 80215CB0 8D4A1FA8 */  lw         $t2, %lo(gMenuContext)($t2)
+    /* 16CAC 80215CAC 3C0A8027 */  lui        $t2, %hi(g_dwMenuChoosingPlayer)
+    /* 16CB0 80215CB0 8D4A1FA8 */  lw         $t2, %lo(g_dwMenuChoosingPlayer)($t2)
     /* 16CB4 80215CB4 24032090 */  addiu      $v1, $zero, 0x2090
     /* 16CB8 80215CB8 3C078032 */  lui        $a3, %hi(g_aVehicles)
     /* 16CBC 80215CBC 01430019 */  multu      $t2, $v1
@@ -4710,8 +4710,8 @@ glabel ProcessPakDataScreen
     /* 16D00 80215D00 8C4C00E4 */  lw         $t4, 0xE4($v0)
     /* 16D04 80215D04 0C0982C8 */  jal        memcpy
     /* 16D08 80215D08 AFAC0080 */   sw        $t4, 0x80($sp)
-    /* 16D0C 80215D0C 3C0D8027 */  lui        $t5, %hi(gMenuContext)
-    /* 16D10 80215D10 8DAD1FA8 */  lw         $t5, %lo(gMenuContext)($t5)
+    /* 16D0C 80215D0C 3C0D8027 */  lui        $t5, %hi(g_dwMenuChoosingPlayer)
+    /* 16D10 80215D10 8DAD1FA8 */  lw         $t5, %lo(g_dwMenuChoosingPlayer)($t5)
     /* 16D14 80215D14 3C188027 */  lui        $t8, %hi(gPakMenuState)
     /* 16D18 80215D18 8F182500 */  lw         $t8, %lo(gPakMenuState)($t8)
     /* 16D1C 80215D1C 000D5080 */  sll        $t2, $t5, 2
@@ -5120,10 +5120,10 @@ glabel ProcessPakDataScreen
     /* 17328 80216328 3C0F8027 */  lui        $t7, %hi(gControllerPakState)
     /* 1732C 8021632C 8DEF24F0 */  lw         $t7, %lo(gControllerPakState)($t7)
     /* 17330 80216330 2401270F */  addiu      $at, $zero, 0x270F
-    /* 17334 80216334 3C198027 */  lui        $t9, %hi(gMenuContext)
+    /* 17334 80216334 3C198027 */  lui        $t9, %hi(g_dwMenuChoosingPlayer)
     /* 17338 80216338 11E1001F */  beq        $t7, $at, .L802163B8
     /* 1733C 8021633C 00000000 */   nop
-    /* 17340 80216340 8F391FA8 */  lw         $t9, %lo(gMenuContext)($t9)
+    /* 17340 80216340 8F391FA8 */  lw         $t9, %lo(g_dwMenuChoosingPlayer)($t9)
     /* 17344 80216344 3C0D8037 */  lui        $t5, %hi(g_aPlayerInputState)
     /* 17348 80216348 25ADA8E0 */  addiu      $t5, $t5, %lo(g_aPlayerInputState)
     /* 1734C 8021634C 00196080 */  sll        $t4, $t9, 2
@@ -5155,8 +5155,8 @@ glabel ProcessPakDataScreen
     /* 173B0 802163B0 10000100 */  b          .L802167B4
     /* 173B4 802163B4 A02E6430 */   sb        $t6, %lo(g_bPakScreenState)($at)
   .L802163B8:
-    /* 173B8 802163B8 3C0F8027 */  lui        $t7, %hi(gMenuContext)
-    /* 173BC 802163BC 8DEF1FA8 */  lw         $t7, %lo(gMenuContext)($t7)
+    /* 173B8 802163B8 3C0F8027 */  lui        $t7, %hi(g_dwMenuChoosingPlayer)
+    /* 173BC 802163BC 8DEF1FA8 */  lw         $t7, %lo(g_dwMenuChoosingPlayer)($t7)
     /* 173C0 802163C0 3C0C8037 */  lui        $t4, %hi(g_aPlayerInputState)
     /* 173C4 802163C4 258CA8E0 */  addiu      $t4, $t4, %lo(g_aPlayerInputState)
     /* 173C8 802163C8 000FC880 */  sll        $t9, $t7, 2
@@ -5339,8 +5339,8 @@ glabel ProcessPakDataScreen
     /* 1765C 8021665C 0C08BD77 */  jal        DrawText
     /* 17660 80216660 2406008A */   addiu     $a2, $zero, 0x8A
   .L80216664:
-    /* 17664 80216664 3C0A8027 */  lui        $t2, %hi(gMenuContext)
-    /* 17668 80216668 8D4A1FA8 */  lw         $t2, %lo(gMenuContext)($t2)
+    /* 17664 80216664 3C0A8027 */  lui        $t2, %hi(g_dwMenuChoosingPlayer)
+    /* 17668 80216668 8D4A1FA8 */  lw         $t2, %lo(g_dwMenuChoosingPlayer)($t2)
     /* 1766C 8021666C 3C098037 */  lui        $t1, %hi(g_aPlayerInputState)
     /* 17670 80216670 2529A8E0 */  addiu      $t1, $t1, %lo(g_aPlayerInputState)
     /* 17674 80216674 000A5880 */  sll        $t3, $t2, 2
@@ -5381,8 +5381,8 @@ glabel ProcessPakDataScreen
     /* 176F4 802166F4 00002025 */   or        $a0, $zero, $zero
     /* 176F8 802166F8 1040002E */  beqz       $v0, .L802167B4
     /* 176FC 802166FC 3C018027 */   lui       $at, %hi(g_bSaveLoadRumbleSwapPending)
-    /* 17700 80216700 3C078027 */  lui        $a3, %hi(gMenuContext)
-    /* 17704 80216704 8CE71FA8 */  lw         $a3, %lo(gMenuContext)($a3)
+    /* 17700 80216700 3C078027 */  lui        $a3, %hi(g_dwMenuChoosingPlayer)
+    /* 17704 80216704 8CE71FA8 */  lw         $a3, %lo(g_dwMenuChoosingPlayer)($a3)
     /* 17708 80216708 3C0B8032 */  lui        $t3, %hi(g_aContPfs)
     /* 1770C 8021670C 256BA3F8 */  addiu      $t3, $t3, %lo(g_aContPfs)
     /* 17710 80216710 00075080 */  sll        $t2, $a3, 2
@@ -5398,8 +5398,8 @@ glabel ProcessPakDataScreen
     /* 17738 80216738 00E03025 */   or        $a2, $a3, $zero
     /* 1773C 8021673C 14400007 */  bnez       $v0, .L8021675C
     /* 17740 80216740 240E000C */   addiu     $t6, $zero, 0xC
-    /* 17744 80216744 3C188027 */  lui        $t8, %hi(gMenuContext)
-    /* 17748 80216748 8F181FA8 */  lw         $t8, %lo(gMenuContext)($t8)
+    /* 17744 80216744 3C188027 */  lui        $t8, %hi(g_dwMenuChoosingPlayer)
+    /* 17748 80216748 8F181FA8 */  lw         $t8, %lo(g_dwMenuChoosingPlayer)($t8)
     /* 1774C 8021674C 3C018032 */  lui        $at, %hi(g_abRumblePakPresent)
     /* 17750 80216750 24090001 */  addiu      $t1, $zero, 0x1
     /* 17754 80216754 00380821 */  addu       $at, $at, $t8
