@@ -17,7 +17,7 @@ Regenerate after every merged change, with the Ghidra project open and the HTTP 
 running:
 
 ```shell
-python3 tools/progress.py
+python3 .wiswa-ci/progress/progress.py
 ```
 
 ## Work outline
