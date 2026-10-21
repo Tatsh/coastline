@@ -10,7 +10,7 @@ TrackHeader g_LoadedTrack;
 ViewportRect g_aViewportRects[2];
 s32 g_dwNumViewports, g_dwTrackMirrored, gInstantReplayActive;
 s32 g_dwReplayCameraSwitchTimer, g_dwReplayCameraHoldTimer;
-u32 g_dwGameMode;
+s32 g_dwGameMode;
 RacerSlot g_aRacerSlots[4];
 s32 g_dwNumVehicles;
 PlayerProfile *g_pActiveProfile;

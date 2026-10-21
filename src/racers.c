@@ -200,8 +200,7 @@ void InitRacerSlot(RacerSlot *slot) {
     s32 index;
     s16 weather;
 
-    /* The original compares the mode as a signed value. */
-    switch ((s32)g_dwGameMode) {
+    switch (g_dwGameMode) {
     case GAME_MODE_ARCADE:
         count = ARCADE_VEHICLES;
         break;

@@ -22,7 +22,8 @@ s32 g_dwVehicleViewModeIndex, g_dwNumActiveVehicles, g_dwContinueFromResults, g_
 s32 g_dwIsPaintMode, g_dwScreenPlayerIdx, g_dwSaveAvailable, g_dwSeasonResultMsgLineCount;
 s32 g_dwElapsedTimeMs;
 u32 g_dwRandomSeed;
-u32 g_dwNumLocalPlayers = 1, g_dwGameMode, g_dwCurrentWeather, g_dwSelectedTrackId;
+u32 g_dwNumLocalPlayers = 1, g_dwCurrentWeather, g_dwSelectedTrackId;
+s32 g_dwGameMode;
 u32 g_dwWeatherActive, g_dwNightMode, g_dwRainMode, g_dwSnowMode;
 u8 g_bSaveLoadEntryPoint, g_abRacePositionPoints[8] = {9, 6, 5, 3, 2, 1};
 PlayerProfile *g_pActiveProfile;

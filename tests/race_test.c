@@ -39,7 +39,7 @@ s32 g_adwWaterfallInstances[16], g_dwScreenClearFrames;
 f32 g_fRaceCaptionTimer;
 s32 g_dwRaceCaptionIndex, g_bDemoInterrupted, g_dwPrevViewportCount, g_dwRacePhase;
 const char *g_apszPlaceNames[1];
-u32 g_dwGameMode;
+s32 g_dwGameMode;
 s32 g_dwRaceSessionType, g_dwMultiplayerMode;
 u32 g_dwNumLocalPlayers = 1, g_dwSelectedTrackId, g_dwCurrentWeather;
 u32 g_dwNightMode, g_dwSnowMode, g_dwRainMode, g_dwKeepScreenBlanked;

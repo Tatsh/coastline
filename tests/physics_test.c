@@ -22,7 +22,8 @@ Vec3f g_vecUnitX = {1, 0, 0}, g_vecUnitY = {0, 1, 0}, g_vecUnitZ = {0, 0, 1},
 Vec3f g_vVehicleObbHalfExtents = {2.5f, 1.0f, 1.0f};
 Vec3f g_vCollisionContact, g_vCollisionPenetration;
 f32 g_fCollisionContactW;
-u32 g_dwGameMode, g_dwCurrentWeather;
+u32 g_dwCurrentWeather;
+s32 g_dwGameMode;
 TrackHeader g_LoadedTrack;
 RacerSlot g_aRacerSlots[4];
 s32 g_dwNumVehicles;

@@ -11,7 +11,8 @@ static int Same(const char *a, const char *b) {
 }
 
 Gfx *gDisplayListPtr;
-u32 g_dwNightMode, g_dwRacePauseState, g_dwGameMode;
+u32 g_dwNightMode, g_dwRacePauseState;
+s32 g_dwGameMode;
 s32 g_dwCurrentSplitScreenIndex, g_dwNumViewports = 1, g_dwFrameBufferIndex, g_dwTotalLaps = 3;
 OptionSettings g_OptionSettings;
 u32 g_dwNumLocalPlayers = 1;

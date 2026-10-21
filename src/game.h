@@ -28,7 +28,7 @@ enum {
 };
 
 /** The mode of play the main menu chose. @ghidraAddress USA: 0x8026ff18 */
-extern u32 g_dwGameMode;
+extern s32 g_dwGameMode;
 
 /** The race the computer drives, by the RACE_SESSION_ values. @ghidraAddress USA: 0x8026ff1c */
 extern s32 g_dwRaceSessionType;

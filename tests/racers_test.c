@@ -10,7 +10,8 @@
 TrackHeader g_LoadedTrack;
 RacerSlot g_aRacerSlots[RACER_SLOTS];
 s32 g_dwNumVehicles, g_dwNumActiveVehicles;
-u32 g_dwNumLocalPlayers, g_dwGameMode, g_dwCurrentWeather, g_dwSelectedTrackId;
+u32 g_dwNumLocalPlayers, g_dwCurrentWeather, g_dwSelectedTrackId;
+s32 g_dwGameMode;
 Vehicle g_aVehicles[MAX_VEHICLES];
 PlayerProfile *g_pActiveProfile;
 u8 g_abPlayerColorsRgb[RACER_SLOTS][3];
