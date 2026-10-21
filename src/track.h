@@ -58,7 +58,8 @@ typedef struct TrackSection {
 typedef struct {
     /** Where and how the model is placed. */
     f32 matrix[4][4];
-    u8 unreconstructed40[0x44 - 0x40];
+    /** One over the length of the x axis of the matrix: the inverse of the scale of the model. */
+    f32 invScale;
     Gfx *displayList;
     /** The groups the model is in, hidden while the camera is near a model that hides them. */
     u16 groups;
@@ -187,7 +188,11 @@ typedef struct {
 
 /** The header of the loaded track. Its fields join this structure as they are reconstructed. */
 typedef struct {
-    u8 unreconstructed0[0xC];
+    /** The bytes of the track once decompressed; the loading first keeps its size here. */
+    u32 size;
+    /** The size of this header, which must be TRACK_HEADER_SIZE. */
+    s32 headerSize;
+    u8 unreconstructed8[0xC - 0x8];
     /** What each triangle belongs to, by its index. */
     TrackSurface *surfaces;
     u8 unreconstructed10[0x14 - 0x10];
@@ -333,5 +338,88 @@ u16 NextGridCellInstance(TrackGridCursor *cursor);
  * @ghidraAddress USA: 0x8021de5c
  */
 void LoadTrackGeometryFromRom(s32 track);
+
+/** The size of the header of a track. */
+#define TRACK_HEADER_SIZE 0x230
+
+/** The most bytes a track may take, and the most placed models it may have. */
+#define TRACK_MAX_SIZE 0x171400
+#define TRACK_MAX_INSTANCES 0x800
+
+/** The header and the data of the two sections of the route of the loaded track. */
+#define TRACK_SECTION_HEADER_SIZE 0x20
+#define TRACK_SECTION_DATA_SIZE 0x800
+
+/** @ghidraAddress USA: 0x80373eb0 */
+extern u8 g_abTrackSection1Header[TRACK_SECTION_HEADER_SIZE];
+
+/** @ghidraAddress USA: 0x803736b0 */
+extern u8 g_abTrackSection1Data[TRACK_SECTION_DATA_SIZE];
+
+/** @ghidraAddress USA: 0x803746d0 */
+extern u8 g_abTrackSection2Header[TRACK_SECTION_HEADER_SIZE];
+
+/** @ghidraAddress USA: 0x80373ed0 */
+extern u8 g_abTrackSection2Data[TRACK_SECTION_DATA_SIZE];
+
+/** Where the loaded track is on the cartridge. @ghidraAddress USA: 0x8028a87c */
+extern u32 g_dwCurrentTrackRomOffset;
+
+/**
+ * Where the textures of the loaded track are on the cartridge, after its compressed geometry.
+ *
+ * @ghidraAddress USA: 0x8028a880
+ */
+extern u32 g_dwTrackTextureRomOffset;
+
+/** The segment of textures last streamed, or -1. @ghidraAddress USA: 0x8028aa7c */
+extern s32 g_dwStreamDmaPrevSegment;
+
+/** The snow mode the textures were last streamed for, or -1. @ghidraAddress USA: 0x8028aa88 */
+extern s32 g_dwStreamedSnowMode;
+
+/**
+ * Two words of the loaded track, 0x3960 and 0x3968 bytes into it, that the loading prints. The
+ * link script places them.
+ */
+extern u16 g_awTrackDebugWords[5];
+
+/**
+ * The triangles of a cell of the grid of the track by its column and row.
+ *
+ * @param column The column of the cell, from 0 to 63.
+ * @param row The row of the cell, from 0 to 63.
+ * @return As LookupTrackGridCell().
+ * @ghidraAddress USA: 0x8021e998
+ */
+u32 FindTrackGridCellByIndex(s32 column, s32 row);
+
+/**
+ * The placed models of the cell of the grid of the track under a point.
+ *
+ * @param x The x of the point, in the units of the world.
+ * @param y The y of the point.
+ * @return As LookupInstanceGridCell().
+ * @ghidraAddress USA: 0x8021e7dc
+ */
+u32 LookupInstanceCellAtPoint(f32 x, f32 y);
+
+/**
+ * The triangles left in a cell.
+ *
+ * @param cursor The cursor of the cell.
+ * @return Its count.
+ * @ghidraAddress USA: 0x8021ea80
+ */
+u16 GetTrackGridCellCount(TrackGridCursor *cursor);
+
+/**
+ * The placed models left in a cell.
+ *
+ * @param cursor The cursor of the cell.
+ * @return Its count.
+ * @ghidraAddress USA: 0x8021ea88
+ */
+u16 GetInstanceGridCellCount(TrackGridCursor *cursor);
 
 #endif

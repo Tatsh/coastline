@@ -112,13 +112,13 @@ void UpdateFrameTiming(void) {
 }
 void UpdateFadeTransitions(void) {
 }
-void SetDisplayModeWide(void) {
+void StartHighResFrame(void) {
 }
 void SetupProjectionMatrix(f32 width, f32 height) {
 }
 void SetViewport(s32 x, s32 y, s32 width, s32 height, s32 setScissor) {
 }
-void SetupFillMode(void) {
+void ClearDepthBuffer(void) {
 }
 void ClearScreen(s32 red, s32 green, s32 blue) {
 }

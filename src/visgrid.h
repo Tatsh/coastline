@@ -15,7 +15,7 @@
 #define FRUSTUM_POINTS 6
 
 /** @ghidraAddress USA: 0x8031b1f0 */
-extern f32 g_afFrustumPoints[FRUSTUM_POINTS][3];
+extern f32 g_avFrustumPoints[FRUSTUM_POINTS][3];
 
 /** The bounds of the covered cells. @ghidraAddress USA: 0x8028bd90 */
 extern s32 g_dwVisibleGridMinCol;

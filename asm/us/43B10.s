@@ -1377,7 +1377,7 @@ glabel ProcessPaintShopScreen
     /* 44F90 80243F90 2652DB68 */   addiu     $s2, $s2, %lo(g_bObjectDirty4)
     /* 44F94 80243F94 0C088FD5 */  jal        UpdateFadeTransitions
     /* 44F98 80243F98 00000000 */   nop
-    /* 44F9C 80243F9C 0C08668F */  jal        SetDisplayModeWide
+    /* 44F9C 80243F9C 0C08668F */  jal        StartHighResFrame
     /* 44FA0 80243FA0 00000000 */   nop
     /* 44FA4 80243FA4 3C0C8029 */  lui        $t4, %hi(g_dwScreenWidth)
     /* 44FA8 80243FA8 3C0D8029 */  lui        $t5, %hi(g_dwScreenHeight)
@@ -1397,7 +1397,7 @@ glabel ProcessPaintShopScreen
     /* 44FE0 80243FE0 00002025 */  or         $a0, $zero, $zero
     /* 44FE4 80243FE4 0C0866FC */  jal        SetViewport
     /* 44FE8 80243FE8 00002825 */   or        $a1, $zero, $zero
-    /* 44FEC 80243FEC 0C085F25 */  jal        SetupFillMode
+    /* 44FEC 80243FEC 0C085F25 */  jal        ClearDepthBuffer
     /* 44FF0 80243FF0 00000000 */   nop
     /* 44FF4 80243FF4 00002025 */  or         $a0, $zero, $zero
     /* 44FF8 80243FF8 00002825 */  or         $a1, $zero, $zero
@@ -2154,7 +2154,7 @@ glabel ProcessPaintShopScreen
     /* 45B04 80244B04 00000000 */   nop
     /* 45B08 80244B08 50400020 */  beql       $v0, $zero, .L80244B8C
     /* 45B0C 80244B0C 8FBF004C */   lw        $ra, 0x4C($sp)
-    /* 45B10 80244B10 0C08668F */  jal        SetDisplayModeWide
+    /* 45B10 80244B10 0C08668F */  jal        StartHighResFrame
     /* 45B14 80244B14 A2000000 */   sb        $zero, 0x0($s0)
     /* 45B18 80244B18 00002025 */  or         $a0, $zero, $zero
     /* 45B1C 80244B1C 00002825 */  or         $a1, $zero, $zero
@@ -2162,7 +2162,7 @@ glabel ProcessPaintShopScreen
     /* 45B24 80244B24 00003025 */   or        $a2, $zero, $zero
     /* 45B28 80244B28 0C086A82 */  jal        FlushDisplayList
     /* 45B2C 80244B2C 00000000 */   nop
-    /* 45B30 80244B30 0C08668F */  jal        SetDisplayModeWide
+    /* 45B30 80244B30 0C08668F */  jal        StartHighResFrame
     /* 45B34 80244B34 00000000 */   nop
     /* 45B38 80244B38 00002025 */  or         $a0, $zero, $zero
     /* 45B3C 80244B3C 00002825 */  or         $a1, $zero, $zero

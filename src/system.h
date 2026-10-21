@@ -112,6 +112,15 @@ void GameModeMainLoop(void);
 void DmaRead(void *dst, u32 romOffset, u32 size);
 
 /**
+ * Read a word from the cartridge.
+ *
+ * @param romOffset The cartridge offset of the word.
+ * @return The word.
+ * @ghidraAddress USA: 0x8021c848
+ */
+u32 DmaReadWord(u32 romOffset);
+
+/**
  * Read the decompressed size from the header of the asset at a cartridge offset.
  *
  * @param romOffset The cartridge offset of the asset.
@@ -261,18 +270,18 @@ void SetDebugMessage(const char *message);
 void ClearScreen(s32 red, s32 green, s32 blue);
 
 /**
- * Select the normal display mode.
+ * Start the display list of a frame in the low resolution, 320 by 240.
  *
  * @ghidraAddress USA: 0x80219a1c
  */
-void SetDisplayModeNormal(void);
+void StartLowResFrame(void);
 
 /**
- * Select the wide display mode.
+ * Start the display list of a frame in the high resolution, 640 by 480.
  *
  * @ghidraAddress USA: 0x80219a3c
  */
-void SetDisplayModeWide(void);
+void StartHighResFrame(void);
 
 /**
  * End the display list of the frame and run it.
@@ -326,11 +335,11 @@ extern f32 g_fCameraNearScale;
 extern f32 g_fCameraFarDistance;
 
 /**
- * Emit the render modes a menu frame starts with.
+ * Fill the whole depth buffer with the farthest depth, then draw to the frame buffer again.
  *
  * @ghidraAddress USA: 0x80217c94
  */
-void SetupFillMode(void);
+void ClearDepthBuffer(void);
 
 /**
  * Update the timing of the frames from the CPU timer.

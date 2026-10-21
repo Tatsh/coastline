@@ -133,10 +133,10 @@ void ProcessPakMenuScreen(void) {
 
     UpdateFrameTiming();
     UpdateFadeTransitions();
-    SetDisplayModeWide();
+    StartHighResFrame();
     SetupProjectionMatrix(g_dwScreenWidth, g_dwScreenHeight);
     SetViewport(0, 0, g_dwScreenWidth, g_dwScreenHeight, TRUE);
-    SetupFillMode();
+    ClearDepthBuffer();
     ClearScreen(0, 0, 0);
     DrawTiledSprite(&g_texBackground, 0x50, 8, 0x80);
     DrawSpriteRegion(
@@ -391,11 +391,11 @@ void ProcessPakMenuScreen(void) {
     if (IsFadedToBlack()) {
         g_bPakMenuInitialized = FALSE;
         gControllerPakState = 0;
-        SetDisplayModeWide();
+        StartHighResFrame();
         ClearScreen(0, 0, 0);
         FlushDisplayList();
         osViBlack(TRUE);
-        SetDisplayModeWide();
+        StartHighResFrame();
         ClearScreen(0, 0, 0);
         FlushDisplayList();
         SetCurrentScreenCallback(MainMenuEntry);

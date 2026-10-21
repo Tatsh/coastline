@@ -58,9 +58,9 @@ void SetCurrentScreenCallback(void) {
 }
 void SetDebugMessage(void) {
 }
-void SetDisplayModeNormal(void) {
+void StartLowResFrame(void) {
 }
-void SetDisplayModeWide(void) {
+void StartHighResFrame(void) {
 }
 void SetFadeTarget(void) {
 }
@@ -78,7 +78,7 @@ void SetTextSize(void) {
 }
 void SetTextStyleNormal(void) {
 }
-void SetupFillMode(void) {
+void ClearDepthBuffer(void) {
 }
 void SetupFog(void) {
 }

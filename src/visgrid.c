@@ -134,8 +134,8 @@ void BuildVisibleGrid(void) {
     }
 
     for (i = 0; i < (s32)(sizeof(sFrustumEdges) / sizeof(sFrustumEdges[0])); i++) {
-        from = g_afFrustumPoints[sFrustumEdges[i][0]];
-        to = g_afFrustumPoints[sFrustumEdges[i][1]];
+        from = g_avFrustumPoints[sFrustumEdges[i][0]];
+        to = g_avFrustumPoints[sFrustumEdges[i][1]];
         MarkVisibleEdge(from[0], from[1], to[0], to[1]);
     }
 

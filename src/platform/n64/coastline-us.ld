@@ -59,6 +59,9 @@ g_abMenuMusicModule = 0x80025C00;
 /* The loaded track, which shares the memory of the menu music module. */
 g_LoadedTrack = 0x80025C00;
 
+/* Two words of the loaded track its loading prints. */
+g_awTrackDebugWords = 0x80029560;
+
 /* The models of the cars the vehicles drive, above the program. */
 g_aVehicleModels = 0x803C8000;
 

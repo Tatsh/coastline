@@ -383,8 +383,8 @@ void ProcessSplashScreens(void) {
 
     UpdateFrameTiming();
     UpdateFadeTransitions();
-    SetDisplayModeWide();
-    SetupFillMode();
+    StartHighResFrame();
+    ClearDepthBuffer();
     ClearScreen(0, 0, 0);
     AddTimingMarker(0, 0, 0, 200, 255);
     if (!IsFadingIn() || IsFadeComplete()) {
@@ -449,10 +449,10 @@ void ProcessControllerCheck(void) {
         ResetHeap();
         /* Show two black frames before the pictures load. */
         osViBlack(1);
-        SetDisplayModeWide();
+        StartHighResFrame();
         FlushDisplayList();
         osViBlack(1);
-        SetDisplayModeWide();
+        StartHighResFrame();
         FlushDisplayList();
         LoadTextureFromRom(&g_texBackground);
         LoadTextureFromRom(&g_texLogo);
@@ -463,10 +463,10 @@ void ProcessControllerCheck(void) {
 
     UpdateFrameTiming();
     UpdateFadeTransitions();
-    SetDisplayModeWide();
+    StartHighResFrame();
     SetupProjectionMatrix((f32)g_dwScreenWidth, (f32)g_dwScreenHeight);
     SetViewport(0, 0, g_dwScreenWidth, g_dwScreenHeight, 1);
-    SetupFillMode();
+    ClearDepthBuffer();
     ClearScreen(0, 0, 0);
     DrawTiledSprite(&g_texBackground, 192, 0, 64);
     DrawTexturedSprite(&g_texLogo, g_texLogo.originX, g_texLogo.originY + 8);

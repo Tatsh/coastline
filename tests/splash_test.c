@@ -203,9 +203,9 @@ void UpdateFrameTiming(void) {
 }
 void UpdateFadeTransitions(void) {
 }
-void SetDisplayModeWide(void) {
+void StartHighResFrame(void) {
 }
-void SetupFillMode(void) {
+void ClearDepthBuffer(void) {
 }
 void ClearScreen(s32 r, s32 g, s32 b) {
     assert(!r && !g && !b);

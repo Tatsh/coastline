@@ -4,7 +4,7 @@
 
 #include "visgrid.h"
 
-f32 g_afFrustumPoints[FRUSTUM_POINTS][3] = {
+f32 g_avFrustumPoints[FRUSTUM_POINTS][3] = {
     {100, 100, 0},
     {100, 300, 0},
     {300, 300, 0},

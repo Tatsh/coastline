@@ -820,9 +820,9 @@ s32 ProcessScreenState(const char *title,
 
     UpdateFrameTiming();
     UpdateFadeTransitions();
-    SetDisplayModeWide();
+    StartHighResFrame();
     AddTimingMarker(0, 0, 0, 0xC8, 0xFF);
-    SetupFillMode();
+    ClearDepthBuffer();
     DrawTexturedRect(&g_BgTextureDesc,
                      0,
                      0,
@@ -1077,17 +1077,17 @@ void LoadMenuItemModels(MenuItem **items, s32 *itemCount) {
     g_dwKeepScreenBlanked = TRUE;
     if (g_dwScreenScaleShift) {
         osViBlack(TRUE);
-        SetDisplayModeWide();
+        StartHighResFrame();
         FlushDisplayList();
         osViBlack(TRUE);
-        SetDisplayModeWide();
+        StartHighResFrame();
         FlushDisplayList();
     } else {
         osViBlack(TRUE);
-        SetDisplayModeNormal();
+        StartLowResFrame();
         FlushDisplayList();
         osViBlack(TRUE);
-        SetDisplayModeNormal();
+        StartLowResFrame();
         FlushDisplayList();
     }
     g_dwKeepScreenBlanked = FALSE;

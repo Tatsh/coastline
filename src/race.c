@@ -427,10 +427,10 @@ static void InitRace(void) {
 
     g_dwKeepScreenBlanked = TRUE;
     osViBlack(TRUE);
-    SetDisplayModeNormal();
+    StartLowResFrame();
     FlushDisplayList();
     osViBlack(TRUE);
-    SetDisplayModeNormal();
+    StartLowResFrame();
     FlushDisplayList();
     SetRngSeed(123);
     g_bReplayAfterRace = FALSE;
@@ -1386,7 +1386,7 @@ static void FinishRace(void) {
             }
             gInstantReplayActive = TRUE;
         } else {
-            ClearBothFramebuffers();
+            ClearFramebuffersHighRes();
             g_dwTrackMirrored = FALSE;
             if ((g_dwGameMode == GAME_MODE_AFTER_SEASON && g_aVehicles[0].profile->season) ||
                 (g_dwGameMode == GAME_MODE_DEMO &&
@@ -1504,10 +1504,10 @@ void ProcessRacingScreen(void) {
     UpdateAmbientSoundChannel();
 
     UpdateFadeTransitions();
-    SetDisplayModeNormal();
+    StartLowResFrame();
     AddTimingMarker(0, 0, 0x82, 0, 0xFF);
     ResetShadowBuffers();
-    SetupFillMode();
+    ClearDepthBuffer();
     if (g_dwScreenClearFrames || g_dwSkyboxDisabled) {
         ClearScreen(0, 0, 0);
         if (g_dwScreenClearFrames) {

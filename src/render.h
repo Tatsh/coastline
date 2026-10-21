@@ -193,11 +193,11 @@ extern s32 g_dwVehicleCullingDisabled;
 extern s32 g_dwStatVehicleTriangles;
 
 /**
- * Blank the screen and clear both framebuffers in the normal display mode.
+ * Blank the screen and clear both frame buffers in the low resolution.
  *
  * @ghidraAddress USA: 0x8021a540
  */
-void ClearDisplayBuffers(void);
+void ClearFramebuffersLowRes(void);
 
 /**
  * Scale a whole matrix down by the largest magnitude of its first three rows, plus 0.375, so that
@@ -314,11 +314,11 @@ void DrawRdpOutlineRect(s32 x, s32 y, s32 width, s32 height);
 void DrawRdpBorderRect(s32 x, s32 y, s32 width, s32 height);
 
 /**
- * Black out the screen and clear both frame buffers.
+ * Black out the screen and clear both frame buffers in the high resolution.
  *
  * @ghidraAddress USA: 0x8021a4c8
  */
-void ClearBothFramebuffers(void);
+void ClearFramebuffersHighRes(void);
 
 /**
  * Copy the current frames of the animated textures of the track, and their snow versions, from the

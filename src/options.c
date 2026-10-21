@@ -363,10 +363,10 @@ void ProcessDataSaveLoadMenu(void) {
         g_bSaveLoadFadeDelayFrames = 0;
         ResetHeap();
         osViBlack(TRUE);
-        SetDisplayModeWide();
+        StartHighResFrame();
         FlushDisplayList();
         osViBlack(TRUE);
-        SetDisplayModeWide();
+        StartHighResFrame();
         FlushDisplayList();
         LoadTextureFromRom(&g_texBackground);
         LoadTextureFromRom(&g_texLogo);
@@ -386,10 +386,10 @@ void ProcessDataSaveLoadMenu(void) {
 
     UpdateFrameTiming();
     UpdateFadeTransitions();
-    SetDisplayModeWide();
+    StartHighResFrame();
     SetupProjectionMatrix((f32)g_dwScreenWidth, (f32)g_dwScreenHeight);
     SetViewport(0, 0, g_dwScreenWidth, g_dwScreenHeight, TRUE);
-    SetupFillMode();
+    ClearDepthBuffer();
     ClearScreen(0, 0, 0);
     DrawTiledSprite(&g_texBackground, 0x60, 0, 0x80);
     DrawTexturedSprite(&g_texLogo, g_texLogo.originX, g_texLogo.originY + 8);
@@ -1048,10 +1048,10 @@ void ProcessDataSaveLoadMenu(void) {
     FlushDisplayList();
     if (IsFadedToBlack()) {
         g_bSaveLoadMenuInitialized = FALSE;
-        SetDisplayModeWide();
+        StartHighResFrame();
         ClearScreen(0, 0, 0);
         FlushDisplayList();
-        SetDisplayModeWide();
+        StartHighResFrame();
         ClearScreen(0, 0, 0);
         FlushDisplayList();
         gControllerPakState = 0;

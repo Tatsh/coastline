@@ -6630,53 +6630,53 @@ dlabel g_szFaultProcGotFaultMessage
 enddlabel g_szFaultProcGotFaultMessage
 .align 2
 
-nonmatching g_fMtxNormalizeScale
+nonmatching g_fConst1p9997559_802a94c4
 
-dlabel g_fMtxNormalizeScale
+dlabel g_fConst1p9997559_802a94c4
     /* AA4C4 802A94C4 3FFFF800 */ .float 1.999755859
-enddlabel g_fMtxNormalizeScale
+enddlabel g_fConst1p9997559_802a94c4
 
-nonmatching g_fTrack0FogScaleY
+nonmatching g_fConst0p00087890622_802a94c8
 
-dlabel g_fTrack0FogScaleY
+dlabel g_fConst0p00087890622_802a94c8
     /* AA4C8 802A94C8 3A666666 */ .float 0.0008789062267
-enddlabel g_fTrack0FogScaleY
+enddlabel g_fConst0p00087890622_802a94c8
 
-nonmatching g_fTrack0FogScaleX
+nonmatching g_fConst0p00043945311_802a94cc
 
-dlabel g_fTrack0FogScaleX
+dlabel g_fConst0p00043945311_802a94cc
     /* AA4CC 802A94CC 39E66666 */ .float 0.0004394531134
-enddlabel g_fTrack0FogScaleX
+enddlabel g_fConst0p00043945311_802a94cc
 
-nonmatching g_dInv255
+nonmatching g_dConst0p0039215686_802a94d0
 
-dlabel g_dInv255
+dlabel g_dConst0p0039215686_802a94d0
     /* AA4D0 802A94D0 3F70101010101010 */ .double 0.00392156862745098034
-enddlabel g_dInv255
+enddlabel g_dConst0p0039215686_802a94d0
 
-nonmatching g_fCameraNearPlaneDefault
+nonmatching g_fConst2p4_802a94d8
 
-dlabel g_fCameraNearPlaneDefault
+dlabel g_fConst2p4_802a94d8
     /* AA4D8 802A94D8 4019999A */ .float 2.400000095
-enddlabel g_fCameraNearPlaneDefault
+enddlabel g_fConst2p4_802a94d8
 
-nonmatching g_fFourThirds
+nonmatching g_fConst1p3333334_802a94dc
 
-dlabel g_fFourThirds
+dlabel g_fConst1p3333334_802a94dc
     /* AA4DC 802A94DC 3FAAAAAB */ .float 1.333333373
-enddlabel g_fFourThirds
+enddlabel g_fConst1p3333334_802a94dc
 
-nonmatching g_dwAudioReserved0
+nonmatching g_fConst57p295776_802a94e0
 
-dlabel g_dwAudioReserved0
+dlabel g_fConst57p295776_802a94e0
     /* AA4E0 802A94E0 42652EE0 */ .float 57.29577637
-enddlabel g_dwAudioReserved0
+enddlabel g_fConst57p295776_802a94e0
 
-nonmatching g_dwAudioReserved1
+nonmatching g_fConst46875_802a94e4
 
-dlabel g_dwAudioReserved1
+dlabel g_fConst46875_802a94e4
     /* AA4E4 802A94E4 47371B00 */ .float 46875
-enddlabel g_dwAudioReserved1
+enddlabel g_fConst46875_802a94e4
     /* AA4E8 802A94E8 00000000 */ .float 0
     /* AA4EC 802A94EC 00000000 */ .float 0
 

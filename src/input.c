@@ -32,7 +32,7 @@
 #define UNLOCKED_CARS_0_TO_8 0x01FF
 
 void CheatToggleRamView(void) {
-    g_bShowRamOnScreen = !g_bShowRamOnScreen;
+    g_bShowDepthBuffer = !g_bShowDepthBuffer;
 }
 
 void CheatUnlockTracks0To4(void) {

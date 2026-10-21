@@ -38,15 +38,15 @@ void *AllocHeapAligned(u32 size) {
 void ClearFramebuffersForWideMode(void) {
     g_dwKeepScreenBlanked = TRUE;
     osViBlack(TRUE);
-    SetDisplayModeWide();
+    StartHighResFrame();
     ClearScreen(0, 0, 0);
     FlushDisplayList();
     osViBlack(TRUE);
-    SetDisplayModeWide();
+    StartHighResFrame();
     ClearScreen(0, 0, 0);
     FlushDisplayList();
     osViBlack(TRUE);
-    SetDisplayModeWide();
+    StartHighResFrame();
     FlushDisplayList();
     g_dwKeepScreenBlanked = FALSE;
 }
@@ -54,15 +54,15 @@ void ClearFramebuffersForWideMode(void) {
 void ClearFramebuffersForNormalMode(void) {
     g_dwKeepScreenBlanked = TRUE;
     osViBlack(TRUE);
-    SetDisplayModeNormal();
+    StartLowResFrame();
     ClearScreen(0, 0, 0);
     FlushDisplayList();
     osViBlack(TRUE);
-    SetDisplayModeNormal();
+    StartLowResFrame();
     ClearScreen(0, 0, 0);
     FlushDisplayList();
     osViBlack(TRUE);
-    SetDisplayModeNormal();
+    StartLowResFrame();
     FlushDisplayList();
     g_dwKeepScreenBlanked = FALSE;
 }

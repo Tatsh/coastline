@@ -14,7 +14,7 @@ void CheckVehicleVisibility(void) {
 }
 void ChooseVehicleCar(void) {
 }
-void ClearDisplayBuffers(void) {
+void ClearFramebuffersLowRes(void) {
 }
 void ClearFramebuffersForWideMode(void) {
 }
@@ -80,7 +80,7 @@ void ResetHeap(void) {
 }
 void SetDebugMessage(void) {
 }
-void SetDisplayModeWide(void) {
+void StartHighResFrame(void) {
 }
 void SetFadeTarget(void) {
 }
@@ -104,7 +104,7 @@ void SetTrackFromSeason(void) {
 }
 void SetupCameraMatrix(void) {
 }
-void SetupFillMode(void) {
+void ClearDepthBuffer(void) {
 }
 void SetupFog(void) {
 }

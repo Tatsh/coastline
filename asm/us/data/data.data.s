@@ -1358,17 +1358,17 @@ dlabel g_aGspUcodeText
     /* 70EFC 8026FEFC 00000000 */ .word 0x00000000
 enddlabel g_aGspUcodeText
 
-nonmatching gGameBootState
+nonmatching g_pdwMainArgc
 
-dlabel gGameBootState
+dlabel g_pdwMainArgc
     /* 70F00 8026FF00 00000000 */ .word 0x00000000
-enddlabel gGameBootState
+enddlabel g_pdwMainArgc
 
-nonmatching g_dwRenderThreadArg
+nonmatching g_ppszMainArgv
 
-dlabel g_dwRenderThreadArg
+dlabel g_ppszMainArgv
     /* 70F04 8026FF04 00000000 */ .word 0x00000000
-enddlabel g_dwRenderThreadArg
+enddlabel g_ppszMainArgv
 
 nonmatching g_dwNumLocalPlayers
 
@@ -2235,21 +2235,11 @@ nonmatching g_aTrackDescriptors
 
 dlabel g_aTrackDescriptors
     /* 71854 80270854 802A75D0 */ .word g_szDesert
-enddlabel g_aTrackDescriptors
-
-nonmatching g_bSaveLoadAsyncResult
-
-dlabel g_bSaveLoadAsyncResult
     /* 71858 80270858 00000000 */ .word 0x00000000
     /* 7185C 8027085C 00000000 */ .word 0x00000000
     /* 71860 80270860 0020AE20 */ .word 0x0020AE20
     /* 71864 80270864 0020CD40 */ .word 0x0020CD40
     /* 71868 80270868 00211C10 */ .word 0x00211C10
-enddlabel g_bSaveLoadAsyncResult
-
-nonmatching D_8027086C
-
-dlabel D_8027086C
     /* 7186C 8027086C 002FFF90 */ .word 0x002FFF90
     /* 71870 80270870 002FFF90 */ .word 0x002FFF90
     /* 71874 80270874 00300230 */ .word 0x00300230
@@ -2339,13 +2329,8 @@ dlabel D_8027086C
     /* 719C4 802709C4 41B00000 */ .word 0x41B00000
     /* 719C8 802709C8 41A80000 */ .word 0x41A80000
     /* 719CC 802709CC 42200000 */ .word 0x42200000
-enddlabel D_8027086C
-
-nonmatching D_802709D0
-
-dlabel D_802709D0
     /* 719D0 802709D0 802A75D8 */ .word g_szMountain
-enddlabel D_802709D0
+enddlabel g_aTrackDescriptors
 
 nonmatching g_bSaveLoadIoComplete
 
@@ -3689,7 +3674,7 @@ enddlabel g_apTrackMenuItems
 nonmatching D_80271D20
 
 dlabel D_80271D20
-    /* 72D20 80271D20 802709D0 */ .word D_802709D0
+    /* 72D20 80271D20 802709D0 */ .word g_aTrackDescriptors + 0x17C
 enddlabel D_80271D20
 
 nonmatching D_80271D24
@@ -5583,9 +5568,9 @@ dlabel g_MainGameThreadObj
     /* 739DC 802729DC 00000000 */ .word 0x00000000
 enddlabel g_MainGameThreadObj
 
-nonmatching g_DpInterruptThreadObj
+nonmatching g_RspDoneThreadObj
 
-dlabel g_DpInterruptThreadObj
+dlabel g_RspDoneThreadObj
     /* 739E0 802729E0 00000000 */ .word 0x00000000
     /* 739E4 802729E4 00000000 */ .word 0x00000000
     /* 739E8 802729E8 00000000 */ .word 0x00000000
@@ -5694,11 +5679,11 @@ dlabel g_DpInterruptThreadObj
     /* 73B84 80272B84 00000000 */ .word 0x00000000
     /* 73B88 80272B88 00000000 */ .word 0x00000000
     /* 73B8C 80272B8C 00000000 */ .word 0x00000000
-enddlabel g_DpInterruptThreadObj
+enddlabel g_RspDoneThreadObj
 
-nonmatching g_SpInterruptThreadObj
+nonmatching g_RdpDoneThreadObj
 
-dlabel g_SpInterruptThreadObj
+dlabel g_RdpDoneThreadObj
     /* 73B90 80272B90 00000000 */ .word 0x00000000
     /* 73B94 80272B94 00000000 */ .word 0x00000000
     /* 73B98 80272B98 00000000 */ .word 0x00000000
@@ -5807,7 +5792,7 @@ dlabel g_SpInterruptThreadObj
     /* 73D34 80272D34 00000000 */ .word 0x00000000
     /* 73D38 80272D38 00000000 */ .word 0x00000000
     /* 73D3C 80272D3C 00000000 */ .word 0x00000000
-enddlabel g_SpInterruptThreadObj
+enddlabel g_RdpDoneThreadObj
 
 nonmatching g_dwIoMessagePoolIndex
 
@@ -30237,11 +30222,11 @@ dlabel g_dwColorDitherMode
     /* 8B8A0 8028A8A0 00000000 */ .word 0x00000000
 enddlabel g_dwColorDitherMode
 
-nonmatching g_dwDisplayModeIndex
+nonmatching g_dwClipRatioIndex
 
-dlabel g_dwDisplayModeIndex
+dlabel g_dwClipRatioIndex
     /* 8B8A4 8028A8A4 00000000 */ .word 0x00000000
-enddlabel g_dwDisplayModeIndex
+enddlabel g_dwClipRatioIndex
 
 nonmatching g_dwViewportMirrored
 
@@ -30255,11 +30240,11 @@ dlabel g_dwTrackMirrored
     /* 8B8AC 8028A8AC 00000000 */ .word 0x00000000
 enddlabel g_dwTrackMirrored
 
-nonmatching g_fTimerTicksPerSecond
+nonmatching g_fCountsPerMillisecond
 
-dlabel g_fTimerTicksPerSecond
+dlabel g_fCountsPerMillisecond
     /* 8B8B0 8028A8B0 00000000 */ .float 0
-enddlabel g_fTimerTicksPerSecond
+enddlabel g_fCountsPerMillisecond
 
 nonmatching D_8028A8B4
 
@@ -30409,11 +30394,11 @@ dlabel g_dwStatVerticesDrawn
     /* 8BA08 8028AA08 00000000 */ .word 0x00000000
 enddlabel g_dwStatVerticesDrawn
 
-nonmatching g_dwStatCounter33b8
+nonmatching g_dwStatUnused0
 
-dlabel g_dwStatCounter33b8
+dlabel g_dwStatUnused0
     /* 8BA0C 8028AA0C 00000000 */ .word 0x00000000
-enddlabel g_dwStatCounter33b8
+enddlabel g_dwStatUnused0
 
 nonmatching g_dwStatTrianglesDrawn
 
@@ -30449,23 +30434,23 @@ dlabel D_8028AA28
     /* 8BA28 8028AA28 00000000 */ .word 0x00000000
 enddlabel D_8028AA28
 
-nonmatching g_dwStatCounter1178
+nonmatching g_dwStatUnused1
 
-dlabel g_dwStatCounter1178
+dlabel g_dwStatUnused1
     /* 8BA2C 8028AA2C 00000000 */ .word 0x00000000
-enddlabel g_dwStatCounter1178
+enddlabel g_dwStatUnused1
 
-nonmatching g_dwStatCounter56dc
+nonmatching g_dwStatUnused2
 
-dlabel g_dwStatCounter56dc
+dlabel g_dwStatUnused2
     /* 8BA30 8028AA30 00000000 */ .word 0x00000000
-enddlabel g_dwStatCounter56dc
+enddlabel g_dwStatUnused2
 
-nonmatching g_dwStatCounter32cc
+nonmatching g_dwStatUnused3
 
-dlabel g_dwStatCounter32cc
+dlabel g_dwStatUnused3
     /* 8BA34 8028AA34 00000000 */ .word 0x00000000
-enddlabel g_dwStatCounter32cc
+enddlabel g_dwStatUnused3
 
 nonmatching g_dwStatPolygonsDrawn
 
@@ -30591,11 +30576,11 @@ dlabel g_dwSnowMode
     /* 8BA84 8028AA84 00000000 */ .word 0x00000000
 enddlabel g_dwSnowMode
 
-nonmatching g_dwHudMessageY
+nonmatching g_dwStreamedSnowMode
 
-dlabel g_dwHudMessageY
+dlabel g_dwStreamedSnowMode
     /* 8BA88 8028AA88 FFFFFFFF */ .word 0xFFFFFFFF
-enddlabel g_dwHudMessageY
+enddlabel g_dwStreamedSnowMode
 
 nonmatching g_dwRainMode
 
@@ -30610,11 +30595,11 @@ dlabel D_8028AA90
     /* 8BA90 8028AA90 00000001 */ .word 0x00000001
 enddlabel D_8028AA90
 
-nonmatching g_bShowRamOnScreen
+nonmatching g_bShowDepthBuffer
 
-dlabel g_bShowRamOnScreen
+dlabel g_bShowDepthBuffer
     /* 8BA94 8028AA94 00000000 */ .word 0x00000000
-enddlabel g_bShowRamOnScreen
+enddlabel g_bShowDepthBuffer
 
 nonmatching g_dwHudDebugLevel
 
@@ -30791,17 +30776,17 @@ dlabel D_8028AB14
     /* 8BB14 8028AB14 00000000 */ .word 0x00000000
 enddlabel D_8028AB14
 
-nonmatching g_dwHudBlendColor
+nonmatching g_dwTextureRenderTile
 
-dlabel g_dwHudBlendColor
+dlabel g_dwTextureRenderTile
     /* 8BB18 8028AB18 00000000 */ .word 0x00000000
-enddlabel g_dwHudBlendColor
+enddlabel g_dwTextureRenderTile
 
-nonmatching g_dwHudFogColor
+nonmatching g_dwTextureTmemAddress
 
-dlabel g_dwHudFogColor
+dlabel g_dwTextureTmemAddress
     /* 8BB1C 8028AB1C 00000000 */ .word 0x00000000
-enddlabel g_dwHudFogColor
+enddlabel g_dwTextureTmemAddress
 
 nonmatching g_bFogR
 
@@ -30989,11 +30974,11 @@ dlabel g_dwOutputBuffReserve
     /* 8BB84 8028AB84 00000000 */ .word 0x00000000
 enddlabel g_dwOutputBuffReserve
 
-nonmatching g_aDlPatchTable
+nonmatching g_aDlClearCombinePatch
 
-dlabel g_aDlPatchTable
+dlabel g_aDlClearCombinePatch
     /* 8BB88 8028AB88 FC127E08 */ .word 0xFC127E08
-enddlabel g_aDlPatchTable
+enddlabel g_aDlClearCombinePatch
 
 nonmatching D_8028AB8C
 
@@ -31004,35 +30989,26 @@ dlabel D_8028AB8C
     /* 8BB94 8028AB94 1FFC93F8 */ .word 0x1FFC93F8
 enddlabel D_8028AB8C
 
-nonmatching g_aDlSkipCmds
+nonmatching g_aDlSnowTintCombines
 
-dlabel g_aDlSkipCmds
+dlabel g_aDlSnowTintCombines
     /* 8BB98 8028AB98 FCFFA004 */ .word 0xFCFFA004
-enddlabel g_aDlSkipCmds
+enddlabel g_aDlSnowTintCombines
 
-nonmatching g_dwRenderConvertG
+nonmatching D_8028AB9C
 
-dlabel g_dwRenderConvertG
+/* Automatically generated and unreferenced pad */
+dlabel D_8028AB9C
     /* 8BB9C 8028AB9C FFFD93F8 */ .word 0xFFFD93F8
-enddlabel g_dwRenderConvertG
-
-nonmatching g_dwRenderConvertB
-
-dlabel g_dwRenderConvertB
     /* 8BBA0 8028ABA0 FC50FE04 */ .word 0xFC50FE04
-enddlabel g_dwRenderConvertB
-
-nonmatching g_dwRenderConvertA
-
-dlabel g_dwRenderConvertA
     /* 8BBA4 8028ABA4 3FFDF3F8 */ .word 0x3FFDF3F8
-enddlabel g_dwRenderConvertA
+enddlabel D_8028AB9C
 
-nonmatching g_aDlWeatherRenderModeTable0
+nonmatching g_aaDlTrackRenderModes
 
-dlabel g_aDlWeatherRenderModeTable0
+dlabel g_aaDlTrackRenderModes
     /* 8BBA8 8028ABA8 B900031D */ .word 0xB900031D
-enddlabel g_aDlWeatherRenderModeTable0
+enddlabel g_aaDlTrackRenderModes
 
 nonmatching D_8028ABAC
 
@@ -31070,18 +31046,7 @@ dlabel D_8028ABAC
     /* 8BC20 8028AC20 B900031D */ .word 0xB900031D
     /* 8BC24 8028AC24 E8104B78 */ .word 0xE8104B78
     /* 8BC28 8028AC28 B900031D */ .word 0xB900031D
-enddlabel D_8028ABAC
-
-nonmatching g_dwDecalEditorState
-
-dlabel g_dwDecalEditorState
     /* 8BC2C 8028AC2C 0C1849D8 */ .word 0x0C1849D8
-enddlabel g_dwDecalEditorState
-
-nonmatching D_8028AC30
-
-/* Automatically generated and unreferenced pad */
-dlabel D_8028AC30
     /* 8BC30 8028AC30 B900031D */ .word 0xB900031D
     /* 8BC34 8028AC34 0C1849D8 */ .word 0x0C1849D8
     /* 8BC38 8028AC38 B900031D */ .word 0xB900031D
@@ -31096,50 +31061,24 @@ dlabel D_8028AC30
     /* 8BC5C 8028AC5C C81049D8 */ .word 0xC81049D8
     /* 8BC60 8028AC60 B900031D */ .word 0xB900031D
     /* 8BC64 8028AC64 C81048F8 */ .word 0xC81048F8
-enddlabel D_8028AC30
+enddlabel D_8028ABAC
 
-nonmatching g_aDlWeatherRenderModeTable1
+nonmatching g_aaDlGhostRenderModes
 
-dlabel g_aDlWeatherRenderModeTable1
+dlabel g_aaDlGhostRenderModes
     /* 8BC68 8028AC68 B900031D */ .word 0xB900031D
-enddlabel g_aDlWeatherRenderModeTable1
+enddlabel g_aaDlGhostRenderModes
 
-nonmatching g_dwDecalPositionY
-
-dlabel g_dwDecalPositionY
-    /* 8BC6C 8028AC6C 0C192038 */ .word 0x0C192038
-enddlabel g_dwDecalPositionY
-
-nonmatching g_dwDecalScaleX
-
-dlabel g_dwDecalScaleX
-    /* 8BC70 8028AC70 B900031D */ .word 0xB900031D
-enddlabel g_dwDecalScaleX
-
-nonmatching g_dwDecalScaleY
-
-dlabel g_dwDecalScaleY
-    /* 8BC74 8028AC74 0D1849D8 */ .word 0x0D1849D8
-enddlabel g_dwDecalScaleY
-
-nonmatching D_8028AC78
+nonmatching D_8028AC6C
 
 /* Automatically generated and unreferenced pad */
-dlabel D_8028AC78
+dlabel D_8028AC6C
+    /* 8BC6C 8028AC6C 0C192038 */ .word 0x0C192038
+    /* 8BC70 8028AC70 B900031D */ .word 0xB900031D
+    /* 8BC74 8028AC74 0D1849D8 */ .word 0x0D1849D8
     /* 8BC78 8028AC78 B900031D */ .word 0xB900031D
     /* 8BC7C 8028AC7C C91049D8 */ .word 0xC91049D8
-enddlabel D_8028AC78
-
-nonmatching g_dwDecalRotation
-
-dlabel g_dwDecalRotation
     /* 8BC80 8028AC80 B900031D */ .word 0xB900031D
-enddlabel g_dwDecalRotation
-
-nonmatching D_8028AC84
-
-/* Automatically generated and unreferenced pad */
-dlabel D_8028AC84
     /* 8BC84 8028AC84 C91049D8 */ .word 0xC91049D8
     /* 8BC88 8028AC88 B900031D */ .word 0xB900031D
     /* 8BC8C 8028AC8C 0C192078 */ .word 0x0C192078
@@ -31181,11 +31120,11 @@ dlabel D_8028AC84
     /* 8BD1C 8028AD1C 00000000 */ .word 0x00000000
     /* 8BD20 8028AD20 00000000 */ .word 0x00000000
     /* 8BD24 8028AD24 00000000 */ .word 0x00000000
-enddlabel D_8028AC84
+enddlabel D_8028AC6C
 
-nonmatching g_aDlWeatherRenderModeTable2
+nonmatching g_aaDlGhostWheelRenderModes
 
-dlabel g_aDlWeatherRenderModeTable2
+dlabel g_aaDlGhostWheelRenderModes
     /* 8BD28 8028AD28 B900031D */ .word 0xB900031D
     /* 8BD2C 8028AD2C 0C192038 */ .word 0x0C192038
     /* 8BD30 8028AD30 B900031D */ .word 0xB900031D
@@ -31234,13 +31173,13 @@ dlabel g_aDlWeatherRenderModeTable2
     /* 8BDDC 8028ADDC 00000000 */ .word 0x00000000
     /* 8BDE0 8028ADE0 00000000 */ .word 0x00000000
     /* 8BDE4 8028ADE4 00000000 */ .word 0x00000000
-enddlabel g_aDlWeatherRenderModeTable2
+enddlabel g_aaDlGhostWheelRenderModes
 
-nonmatching g_dwDisplayListNightPass
+nonmatching g_bDisplayListSnowTint
 
-dlabel g_dwDisplayListNightPass
+dlabel g_bDisplayListSnowTint
     /* 8BDE8 8028ADE8 00000000 */ .word 0x00000000
-enddlabel g_dwDisplayListNightPass
+enddlabel g_bDisplayListSnowTint
 
 nonmatching g_dwVblankCounter
 
@@ -31255,17 +31194,17 @@ dlabel g_bPakPort0Initialized
     /* 8BDF4 8028ADF4 00000000 */ .word 0x00000000
 enddlabel g_bPakPort0Initialized
 
-nonmatching g_qwTimestampBaseHi
+nonmatching g_qwTimestampBase
 
-dlabel g_qwTimestampBaseHi
+dlabel g_qwTimestampBase
     /* 8BDF8 8028ADF8 00000000 */ .word 0x00000000
-enddlabel g_qwTimestampBaseHi
+enddlabel g_qwTimestampBase
 
-nonmatching g_qwTimestampBaseLo
+nonmatching D_8028ADFC
 
-dlabel g_qwTimestampBaseLo
+dlabel D_8028ADFC
     /* 8BDFC 8028ADFC 00000000 */ .word 0x00000000
-enddlabel g_qwTimestampBaseLo
+enddlabel D_8028ADFC
 
 nonmatching g_dwFrameTimestamp
 
@@ -31602,17 +31541,17 @@ dlabel g_aCarModels
     /* 8C2E8 8028B2E8 3FC00000 */ .word 0x3FC00000
 enddlabel g_aCarModels
 
-nonmatching g_dwGarageSelectionIndex
+nonmatching g_dwBootArgc
 
-dlabel g_dwGarageSelectionIndex
+dlabel g_dwBootArgc
     /* 8C2EC 8028B2EC 00000001 */ .word 0x00000001
-enddlabel g_dwGarageSelectionIndex
+enddlabel g_dwBootArgc
 
-nonmatching g_pGarageVehicleData
+nonmatching g_ppszBootArgv
 
-dlabel g_pGarageVehicleData
+dlabel g_ppszBootArgv
     /* 8C2F0 8028B2F0 80316450 */ .word g_apszBootArgv
-enddlabel g_pGarageVehicleData
+enddlabel g_ppszBootArgv
 
 nonmatching D_8028B2F4
 
@@ -32700,7 +32639,7 @@ dlabel g_aRaceSnapshotFields
     /* 8CB50 8028BB50 00000001 */ .word 0x00000001
     /* 8CB54 8028BB54 8036ABBD */ .word D_8036ABBD
     /* 8CB58 8028BB58 00000001 */ .word 0x00000001
-    /* 8CB5C 8028BB5C 8028ADF8 */ .word g_qwTimestampBaseHi
+    /* 8CB5C 8028BB5C 8028ADF8 */ .word g_qwTimestampBase
     /* 8CB60 8028BB60 00000008 */ .word 0x00000008
     /* 8CB64 8028BB64 8028AE00 */ .word g_dwFrameTimestamp
     /* 8CB68 8028BB68 00000004 */ .word 0x00000004
@@ -32733,7 +32672,7 @@ nonmatching g_aPausedClockFields
 dlabel g_aPausedClockFields
     /* 8CBC4 8028BBC4 8028B790 */ .word g_dwRandomSeed
     /* 8CBC8 8028BBC8 00000004 */ .word 0x00000004
-    /* 8CBCC 8028BBCC 8028ADF8 */ .word g_qwTimestampBaseHi
+    /* 8CBCC 8028BBCC 8028ADF8 */ .word g_qwTimestampBase
     /* 8CBD0 8028BBD0 00000008 */ .word 0x00000008
     /* 8CBD4 8028BBD4 8028AE00 */ .word g_dwFrameTimestamp
     /* 8CBD8 8028BBD8 00000004 */ .word 0x00000004

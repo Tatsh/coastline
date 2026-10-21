@@ -125,12 +125,15 @@ ExchangeWordBuffers
 FadeMusicTo
 FadeSfxTo
 FindFreeSoundChannel
+FindTrackGridCellByIndex
 FindTrackRoutePoint
 FinishFrameMatrix
 FloatToInt
 FormatLapTime
 GetBodyPointVelocity
 GetHeapCurrentAddress
+GetInstanceGridCellCount
+GetTrackGridCellCount
 GetWheelWorldVelocity
 HasSfxFadeFinished
 IncreaseBgmVolume
@@ -168,6 +171,7 @@ IsPointInsideTriangle
 IsPointVisible
 IsRumblePakMissing
 IsSkyFogFilled
+IsTrackIndexValid
 IsTrackUnlocked
 IsTriangleInUnitCube
 IsVehicleModelLoaded
@@ -177,7 +181,11 @@ LoadAndDecompressAsset
 LoadAndPlayTrackBgm
 LoadMenuItemModels
 LoadMusicModule
+LoadTrackGeometryFromRom
 LoadVehicleModel
+LookupInstanceCellAtPoint
+LookupInstanceGridCell
+LookupTrackGridCell
 MainMenuEntry
 ManageAiRacerSlots
 MarkTrackSections
@@ -203,6 +211,8 @@ Mtx4x4TransformPoint
 MtxBuildScaledInverse
 MtxInvert4x4
 NegateVectorInPlace
+NextGridCellInstance
+NextGridCellTriangle
 OptionsMenuPostDraw
 ParseMusicPatternRow
 PlaceTrackCamera

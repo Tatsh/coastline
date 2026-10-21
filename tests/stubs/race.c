@@ -16,7 +16,7 @@ void CheckVehicleVisibility(void) {
 }
 void ChooseVehicleCar(void) {
 }
-void ClearBothFramebuffers(void) {
+void ClearFramebuffersHighRes(void) {
 }
 void ClearCameraChanged(void) {
 }
@@ -136,7 +136,7 @@ void SaveClockForPause(void) {
 }
 void SaveLastLapSnapshot(void) {
 }
-void SetDisplayModeNormal(void) {
+void StartLowResFrame(void) {
 }
 void SetFadeTarget(void) {
 }
@@ -160,7 +160,7 @@ void SetTextStyleNormal(void) {
 }
 void SetupCameraMatrix(void) {
 }
-void SetupFillMode(void) {
+void ClearDepthBuffer(void) {
 }
 void SetupFog(void) {
 }

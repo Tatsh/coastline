@@ -67,12 +67,24 @@ typedef struct {
     f32 startTime;
 } ArcadeTimes;
 
-/** A track as the track menu lists it. */
+/**
+ * A track: its item of the track menu, where its geometry and its two sections of route are on
+ * the cartridge, and its arcade times. The end of the geometry is 0 for a track that does not
+ * exist.
+ */
 typedef struct {
     MenuItem item;
-    u8 unreconstructed14[0x2C - 0x14];
+    u32 trackRom;
+    u32 trackRomEnd;
+    u32 sectionARom;
+    u32 sectionARomEnd;
+    u32 sectionBRom;
+    u32 sectionBRomEnd;
     ArcadeTimes arcadeTimes[ARCADE_CAR_CLASSES][ARCADE_WEATHERS];
 } TrackMenuItem;
+
+/** The tracks. @ghidraAddress USA: 0x80270854 */
+extern TrackMenuItem g_aTrackDescriptors[];
 
 /** A routine that tells whether a menu item may be chosen. */
 typedef s32 (*MenuItemFilter)(s32 item);

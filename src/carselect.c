@@ -801,7 +801,7 @@ static inline void LeaveCarSelect(void) {
                     g_bSaveLoadEntryPoint = SAVE_LOAD_FROM_SEASON;
                     SetCurrentScreenCallback(ProcessDataSaveLoadMenu);
                 } else {
-                    ClearDisplayBuffers();
+                    ClearFramebuffersLowRes();
                     g_dwGameMode = GAME_MODE_AFTER_SEASON;
                     SetCurrentScreenCallback(ProcessRacingScreen);
                 }
@@ -814,7 +814,7 @@ static inline void LeaveCarSelect(void) {
         } else if (g_dwIsPaintMode) {
             SetCurrentScreenCallback(ProcessPaintShopScreen);
         } else {
-            ClearDisplayBuffers();
+            ClearFramebuffersLowRes();
             SetCurrentScreenCallback(ProcessRacingScreen);
         }
     } else if (g_dwIsReviewMode) {
@@ -1125,7 +1125,7 @@ void ProcessCarSelectScreen(void) {
     }
     UpdateFrameTiming();
     UpdateFadeTransitions();
-    SetDisplayModeWide();
+    StartHighResFrame();
     g_dwWeatherActive = FALSE;
     g_dwNightMode = FALSE;
     g_dwRainMode = FALSE;
@@ -1137,7 +1137,7 @@ void ProcessCarSelectScreen(void) {
     g_aViewportRects[1].vehicleIndex = 1;
     /* Set each frame, so that the title keeps being drawn. */
     g_dwTitleRedrawFrames = 2;
-    SetupFillMode();
+    ClearDepthBuffer();
     if (g_dwIsReviewMode) {
         DrawTexturedRect(&g_BgTextureDesc,
                          0,

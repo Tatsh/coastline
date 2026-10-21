@@ -810,97 +810,43 @@ nonmatching D_803168D0, 0x400
 dlabel D_803168D0
     /* 803168D0 */ .space 0x400
 
-nonmatching g_abBootIdleThreadStackTop, 0x4
+nonmatching g_abMainThreadStack, 0x4
 
-dlabel g_abBootIdleThreadStackTop
+dlabel g_abMainThreadStack
     /* 80316CD0 */ .space 0x04
 
-nonmatching g_dwCollisionReserved1, 0x4
-
-dlabel g_dwCollisionReserved1
-    /* 80316CD4 */ .space 0x04
-
-nonmatching g_dwCollisionReserved2, 0x4
-
-dlabel g_dwCollisionReserved2
-    /* 80316CD8 */ .space 0x04
-
-nonmatching g_dwCollisionReserved3, 0x4
-
-dlabel g_dwCollisionReserved3
-    /* 80316CDC */ .space 0x04
-
-nonmatching D_80316CE0, 0x1FF0
+nonmatching D_80316CD4, 0x1FFC
 
 /* Automatically generated and unreferenced pad */
-dlabel D_80316CE0
-    /* 80316CE0 */ .space 0x1FF0
+dlabel D_80316CD4
+    /* 80316CD4 */ .space 0x1FFC
 
 nonmatching g_aViewports, 0x200
 
 dlabel g_aViewports
     /* 80318CD0 */ .space 0x200
 
-nonmatching g_aDpThreadStack, 0x4
+nonmatching g_abRspDoneThreadStack, 0x4
 
-dlabel g_aDpThreadStack
+dlabel g_abRspDoneThreadStack
     /* 80318ED0 */ .space 0x04
 
-nonmatching g_dwHeapBlockSize, 0x4
-
-dlabel g_dwHeapBlockSize
-    /* 80318ED4 */ .space 0x04
-
-nonmatching g_dwHeapFreeList, 0x4
-
-dlabel g_dwHeapFreeList
-    /* 80318ED8 */ .space 0x04
-
-nonmatching g_dwHeapAllocCount, 0x4
-
-dlabel g_dwHeapAllocCount
-    /* 80318EDC */ .space 0x04
-
-nonmatching D_80318EE0, 0x7F0
+nonmatching D_80318ED4, 0x7FC
 
 /* Automatically generated and unreferenced pad */
-dlabel D_80318EE0
-    /* 80318EE0 */ .space 0x7F0
+dlabel D_80318ED4
+    /* 80318ED4 */ .space 0x7FC
 
-nonmatching g_abDpThreadStackTop, 0x4
+nonmatching g_abRdpDoneThreadStack, 0x4
 
-dlabel g_abDpThreadStackTop
+dlabel g_abRdpDoneThreadStack
     /* 803196D0 */ .space 0x04
 
-nonmatching g_dwArenaHi, 0x4
+nonmatching D_803196D4, 0x18
 
-dlabel g_dwArenaHi
-    /* 803196D4 */ .space 0x04
-
-nonmatching g_dwArenaSize, 0x4
-
-dlabel g_dwArenaSize
-    /* 803196D8 */ .space 0x04
-
-nonmatching g_dwArenaFree, 0x4
-
-dlabel g_dwArenaFree
-    /* 803196DC */ .space 0x04
-
-nonmatching g_dwArenaAlloc, 0x4
-
-dlabel g_dwArenaAlloc
-    /* 803196E0 */ .space 0x04
-
-nonmatching g_dwArenaMaxAlloc, 0x4
-
-dlabel g_dwArenaMaxAlloc
-    /* 803196E4 */ .space 0x04
-
-nonmatching g_dwArenaAlign, 0x4
-
-dlabel g_dwArenaAlign
-    /* 803196E8 */ .space 0x04
+/* Automatically generated and unreferenced pad */
+dlabel D_803196D4
+    /* 803196D4 */ .space 0x18
 
 nonmatching g_dwArenaCount, 0x4
 
@@ -978,44 +924,44 @@ nonmatching g_aIoMessagePool, 0x300
 dlabel g_aIoMessagePool
     /* 8031A020 */ .space 0x300
 
-nonmatching g_DpDoneMsgQueue, 0x18
+nonmatching g_RspDoneMsgQueue, 0x18
 
-dlabel g_DpDoneMsgQueue
+dlabel g_RspDoneMsgQueue
     /* 8031A320 */ .space 0x18
 
-nonmatching g_DpHandlerMsgQueue, 0x18
+nonmatching g_RspEventMsgQueue, 0x18
 
-dlabel g_DpHandlerMsgQueue
+dlabel g_RspEventMsgQueue
     /* 8031A338 */ .space 0x18
 
-nonmatching g_aDpDoneMsgBuf, 0x4
+nonmatching g_aRspDoneMsgBuf, 0x4
 
-dlabel g_aDpDoneMsgBuf
+dlabel g_aRspDoneMsgBuf
     /* 8031A350 */ .space 0x04
 
-nonmatching g_aDpHandlerMsgBuf, 0x4
+nonmatching g_aRspEventMsgBuf, 0x4
 
-dlabel g_aDpHandlerMsgBuf
+dlabel g_aRspEventMsgBuf
     /* 8031A354 */ .space 0x04
 
-nonmatching g_SpDoneMsgQueue, 0x18
+nonmatching g_RdpDoneMsgQueue, 0x18
 
-dlabel g_SpDoneMsgQueue
+dlabel g_RdpDoneMsgQueue
     /* 8031A358 */ .space 0x18
 
-nonmatching g_SpHandlerMsgQueue, 0x18
+nonmatching g_RdpEventMsgQueue, 0x18
 
-dlabel g_SpHandlerMsgQueue
+dlabel g_RdpEventMsgQueue
     /* 8031A370 */ .space 0x18
 
-nonmatching g_aSpDoneMsgBuf, 0x4
+nonmatching g_aRdpDoneMsgBuf, 0x4
 
-dlabel g_aSpDoneMsgBuf
+dlabel g_aRdpDoneMsgBuf
     /* 8031A388 */ .space 0x04
 
-nonmatching g_aSpHandlerMsgBuf, 0x4
+nonmatching g_aRdpEventMsgBuf, 0x4
 
-dlabel g_aSpHandlerMsgBuf
+dlabel g_aRdpEventMsgBuf
     /* 8031A38C */ .space 0x04
 
 nonmatching g_ViRetraceMesgQueue, 0x18
@@ -1151,9 +1097,9 @@ nonmatching D_8031ABFC, 0x4
 dlabel D_8031ABFC
     /* 8031ABFC */ .space 0x04
 
-nonmatching g_PreNmiThread, 0x1B0
+nonmatching g_FaultThreadObj, 0x1B0
 
-dlabel g_PreNmiThread
+dlabel g_FaultThreadObj
     /* 8031AC00 */ .space 0x1B0
 
 nonmatching D_8031ADB0, 0x400
@@ -1162,24 +1108,24 @@ nonmatching D_8031ADB0, 0x400
 dlabel D_8031ADB0
     /* 8031ADB0 */ .space 0x400
 
-nonmatching g_PreNmiMsgQueue, 0x18
+nonmatching g_FaultMsgQueue, 0x18
 
-dlabel g_PreNmiMsgQueue
+dlabel g_FaultMsgQueue
     /* 8031B1B0 */ .space 0x18
 
-nonmatching g_aPreNmiMsgBuf, 0x4
+nonmatching g_aFaultMsgBuf, 0x4
 
-dlabel g_aPreNmiMsgBuf
+dlabel g_aFaultMsgBuf
     /* 8031B1C8 */ .space 0x04
 
-nonmatching g_dwInputStickX, 0x4
+nonmatching g_pFaultedThread, 0x4
 
-dlabel g_dwInputStickX
+dlabel g_pFaultedThread
     /* 8031B1CC */ .space 0x04
 
-nonmatching g_dwInputStickY, 0x4
+nonmatching g_dwFaultState, 0x4
 
-dlabel g_dwInputStickY
+dlabel g_dwFaultState
     /* 8031B1D0 */ .space 0x04
 
 nonmatching D_8031B1D4, 0x4
@@ -1193,15 +1139,10 @@ nonmatching g_afVehicleJolts, 0x10
 dlabel g_afVehicleJolts
     /* 8031B1D8 */ .space 0x10
 
-nonmatching g_abRumblePakPresent, 0x1
+nonmatching g_abRumblePakPresent, 0x2
 
 dlabel g_abRumblePakPresent
-    /* 8031B1E8 */ .space 0x01
-
-nonmatching g_bInputButtonA, 0x1
-
-dlabel g_bInputButtonA
-    /* 8031B1E9 */ .space 0x01
+    /* 8031B1E8 */ .space 0x02
 
 nonmatching D_8031B1EA, 0x6
 
@@ -1209,29 +1150,29 @@ nonmatching D_8031B1EA, 0x6
 dlabel D_8031B1EA
     /* 8031B1EA */ .space 0x06
 
-nonmatching g_afFrustumPoints, 0xC
+nonmatching g_avFrustumPoints, 0xC
 
-dlabel g_afFrustumPoints
+dlabel g_avFrustumPoints
     /* 8031B1F0 */ .space 0x0C
 
-nonmatching g_afShadowFrustumCorner0, 0xC
+nonmatching D_8031B1FC, 0xC
 
-dlabel g_afShadowFrustumCorner0
+dlabel D_8031B1FC
     /* 8031B1FC */ .space 0x0C
 
-nonmatching g_afShadowFrustumCorner1, 0xC
+nonmatching D_8031B208, 0xC
 
-dlabel g_afShadowFrustumCorner1
+dlabel D_8031B208
     /* 8031B208 */ .space 0x0C
 
-nonmatching g_afShadowFrustumCorner2, 0xC
+nonmatching D_8031B214, 0xC
 
-dlabel g_afShadowFrustumCorner2
+dlabel D_8031B214
     /* 8031B214 */ .space 0x0C
 
-nonmatching g_afShadowFrustumCorner3, 0xC
+nonmatching D_8031B220, 0xC
 
-dlabel g_afShadowFrustumCorner3
+dlabel D_8031B220
     /* 8031B220 */ .space 0x0C
 
 nonmatching g_afShadowFrustumFarCenter, 0xC
@@ -1371,19 +1312,19 @@ nonmatching g_abLightRampR, 0x1
 dlabel g_abLightRampR
     /* 8031B350 */ .space 0x01
 
-nonmatching g_abLightRampR_1, 0x1
+nonmatching D_8031B351, 0x1
 
-dlabel g_abLightRampR_1
+dlabel D_8031B351
     /* 8031B351 */ .space 0x01
 
-nonmatching g_abLightRampR_2, 0x1
+nonmatching D_8031B352, 0x1
 
-dlabel g_abLightRampR_2
+dlabel D_8031B352
     /* 8031B352 */ .space 0x01
 
-nonmatching g_abLightRampR_3, 0x1
+nonmatching D_8031B353, 0x1
 
-dlabel g_abLightRampR_3
+dlabel D_8031B353
     /* 8031B353 */ .space 0x01
 
 nonmatching g_abLightRampG, 0x1
@@ -1391,19 +1332,19 @@ nonmatching g_abLightRampG, 0x1
 dlabel g_abLightRampG
     /* 8031B354 */ .space 0x01
 
-nonmatching g_abLightRampG_1, 0x1
+nonmatching D_8031B355, 0x1
 
-dlabel g_abLightRampG_1
+dlabel D_8031B355
     /* 8031B355 */ .space 0x01
 
-nonmatching g_abLightRampG_2, 0x1
+nonmatching D_8031B356, 0x1
 
-dlabel g_abLightRampG_2
+dlabel D_8031B356
     /* 8031B356 */ .space 0x01
 
-nonmatching g_abLightRampG_3, 0x1
+nonmatching D_8031B357, 0x1
 
-dlabel g_abLightRampG_3
+dlabel D_8031B357
     /* 8031B357 */ .space 0x01
 
 nonmatching g_abLightRampB, 0x1
@@ -1411,19 +1352,19 @@ nonmatching g_abLightRampB, 0x1
 dlabel g_abLightRampB
     /* 8031B358 */ .space 0x01
 
-nonmatching g_abLightRampB_1, 0x1
+nonmatching D_8031B359, 0x1
 
-dlabel g_abLightRampB_1
+dlabel D_8031B359
     /* 8031B359 */ .space 0x01
 
-nonmatching g_abLightRampB_2, 0x1
+nonmatching D_8031B35A, 0x1
 
-dlabel g_abLightRampB_2
+dlabel D_8031B35A
     /* 8031B35A */ .space 0x01
 
-nonmatching g_abLightRampB_3, 0x5
+nonmatching D_8031B35B, 0x5
 
-dlabel g_abLightRampB_3
+dlabel D_8031B35B
     /* 8031B35B */ .space 0x05
 
 nonmatching g_adwLightRampColors, 0x4
@@ -1431,19 +1372,19 @@ nonmatching g_adwLightRampColors, 0x4
 dlabel g_adwLightRampColors
     /* 8031B360 */ .space 0x04
 
-nonmatching g_adwLightRampColors_1, 0x4
+nonmatching D_8031B364, 0x4
 
-dlabel g_adwLightRampColors_1
+dlabel D_8031B364
     /* 8031B364 */ .space 0x04
 
-nonmatching g_adwLightRampColors_2, 0x4
+nonmatching D_8031B368, 0x4
 
-dlabel g_adwLightRampColors_2
+dlabel D_8031B368
     /* 8031B368 */ .space 0x04
 
-nonmatching g_adwLightRampColors_3, 0x4
+nonmatching D_8031B36C, 0x4
 
-dlabel g_adwLightRampColors_3
+dlabel D_8031B36C
     /* 8031B36C */ .space 0x04
 
 nonmatching g_aVehicleModelSlots, 0x50

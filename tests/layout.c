@@ -324,3 +324,10 @@ _Static_assert(sizeof(TrackGate) == 0x14 && offsetof(TrackHeader, gates) == 0x98
                "gates");
 _Static_assert(offsetof(ArcadeTimes, gateBonuses) == 0 && offsetof(ArcadeTimes, startTime) == 0x18,
                "bonus");
+_Static_assert(sizeof(TrackMenuItem) == 0x17C && offsetof(TrackMenuItem, trackRom) == 0x14 &&
+                   offsetof(TrackMenuItem, sectionBRomEnd) == 0x28 &&
+                   offsetof(TrackMenuItem, arcadeTimes) == 0x2C,
+               "trackitem");
+_Static_assert(offsetof(TrackHeader, size) == 0 && offsetof(TrackHeader, headerSize) == 4 &&
+                   offsetof(TrackInstance, invScale) == 0x40,
+               "trackhead");

@@ -10,7 +10,7 @@
 PlayerInputState g_aPlayerInputState[MAX_PLAYERS];
 OSContPad g_aContPadData[MAX_PLAYERS];
 Vehicle g_aVehicles[MAX_VEHICLES];
-s32 g_bShowRamOnScreen, g_dwMultiplayerMode, g_bBilinearFiltering, g_dwFrameDeltaMs;
+s32 g_bShowDepthBuffer, g_dwMultiplayerMode, g_bBilinearFiltering, g_dwFrameDeltaMs;
 u32 g_dwRacePauseState;
 static s32 applied, inRace = 1;
 static void Apply(void) {
