@@ -96,34 +96,94 @@ typedef struct {
     s32 vehicleIndex; /*!< The vehicle of the player the view follows. */
 } ViewportRect;
 
-/** The next command of the display list. @ghidraAddress USA: 0x8028a858 */
+/**
+ * The next command of the display list.
+ *
+ * @ghidraAddress USA: 0x8028a858
+ * @ghidraAddress JPN: 0x8028c528
+ * @ghidraAddress EUR: 0x8028ca58
+ */
 extern Gfx *gDisplayListPtr;
 
-/** The projection of the current view. @ghidraAddress USA: 0x8028a878 */
+/**
+ * The projection of the current view.
+ *
+ * @ghidraAddress USA: 0x8028a878
+ * @ghidraAddress JPN: 0x8028c548
+ * @ghidraAddress EUR: 0x8028ca78
+ */
 extern Mtx *g_pProjectionMtx;
 
-/** A matrix the renderer builds before converting it. @ghidraAddress USA: 0x8031ab10 */
+/**
+ * A matrix the renderer builds before converting it.
+ *
+ * @ghidraAddress USA: 0x8031ab10
+ * @ghidraAddress JPN: 0x8031bc40
+ * @ghidraAddress EUR: 0x8031d010
+ */
 extern f32 g_afMvpMatrix[4][4];
 
-/** The perspective of the current view. @ghidraAddress USA: 0x8031aa90 */
+/**
+ * The perspective of the current view.
+ *
+ * @ghidraAddress USA: 0x8031aa90
+ * @ghidraAddress JPN: 0x8031bbc0
+ * @ghidraAddress EUR: 0x8031cf90
+ */
 extern f32 g_afPerspectiveMatrix[4][4];
 
-/** A matrix the renderer fills as an operand. @ghidraAddress USA: 0x8031ab50 */
+/**
+ * A matrix the renderer fills as an operand.
+ *
+ * @ghidraAddress USA: 0x8031ab50
+ * @ghidraAddress JPN: 0x8031bc80
+ * @ghidraAddress EUR: 0x8031d050
+ */
 extern f32 g_afScratchMatrix[4][4];
 
-/** The texture filter of the other modes. @ghidraAddress USA: 0x8028a898 */
+/**
+ * The texture filter of the other modes.
+ *
+ * @ghidraAddress USA: 0x8028a898
+ * @ghidraAddress JPN: 0x8028c56c
+ * @ghidraAddress EUR: 0x8028ca9c
+ */
 extern u32 g_dwTextureFilterMode;
 
-/** Whether the track is drawn mirrored. @ghidraAddress USA: 0x8028a8ac */
+/**
+ * Whether the track is drawn mirrored.
+ *
+ * @ghidraAddress USA: 0x8028a8ac
+ * @ghidraAddress JPN: 0x8028c580
+ * @ghidraAddress EUR: 0x8028cab0
+ */
 extern s32 g_dwTrackMirrored;
 
-/** Whether the current view is mirrored. @ghidraAddress USA: 0x8028a8a8 */
+/**
+ * Whether the current view is mirrored.
+ *
+ * @ghidraAddress USA: 0x8028a8a8
+ * @ghidraAddress JPN: 0x8028c57c
+ * @ghidraAddress EUR: 0x8028caac
+ */
 extern s32 g_dwViewportMirrored;
 
-/** The camera of the view being drawn. @ghidraAddress USA: 0x8028aaf4 */
+/**
+ * The camera of the view being drawn.
+ *
+ * @ghidraAddress USA: 0x8028aaf4
+ * @ghidraAddress JPN: 0x8028c7cc
+ * @ghidraAddress EUR: 0x8028ccfc
+ */
 extern CameraFrame *g_pActiveCamera;
 
-/** The field of view of the cameras, in radians. @ghidraAddress USA: 0x8028aac0 */
+/**
+ * The field of view of the cameras, in radians.
+ *
+ * @ghidraAddress USA: 0x8028aac0
+ * @ghidraAddress JPN: 0x8028c798
+ * @ghidraAddress EUR: 0x8028ccc8
+ */
 extern f32 g_fCameraFovRadians;
 
 /**
@@ -131,147 +191,345 @@ extern f32 g_fCameraFovRadians;
  * it.
  *
  * @ghidraAddress USA: 0x8028aac8
+ * @ghidraAddress JPN: 0x8028c7a0
+ * @ghidraAddress EUR: 0x8028ccd0
  */
 extern f32 g_fCameraProjectionScale;
 
-/** The views on the screen, one for each player. @ghidraAddress USA: 0x8028ab0c */
+/**
+ * The views on the screen, one for each player.
+ *
+ * @ghidraAddress USA: 0x8028ab0c
+ * @ghidraAddress JPN: 0x8028c7e4
+ * @ghidraAddress EUR: 0x8028cd14
+ */
 extern s32 g_dwNumViewports;
 
-/** The rectangles of the views. @ghidraAddress USA: 0x8031b2c8 */
+/**
+ * The rectangles of the views.
+ *
+ * @ghidraAddress USA: 0x8031b2c8
+ * @ghidraAddress JPN: 0x8031c3f8
+ * @ghidraAddress EUR: 0x8031d7c8
+ */
 extern ViewportRect g_aViewportRects[];
 
-/** The view being drawn. @ghidraAddress USA: 0x8028aaec */
+/**
+ * The view being drawn.
+ *
+ * @ghidraAddress USA: 0x8028aaec
+ * @ghidraAddress JPN: 0x8028c7c4
+ * @ghidraAddress EUR: 0x8028ccf4
+ */
 extern s32 g_dwCurrentSplitScreenIndex;
 
-/** The depth scale of the viewport SetViewport() last set. @ghidraAddress USA: 0x8028ab64 */
+/**
+ * The depth scale of the viewport SetViewport() last set.
+ *
+ * @ghidraAddress USA: 0x8028ab64
+ * @ghidraAddress JPN: 0x8028c83c
+ * @ghidraAddress EUR: 0x8028cd6c
+ */
 extern s32 g_dwViewportScaleZ;
 
-/** The depth offset of the viewport SetViewport() last set. @ghidraAddress USA: 0x8028ab68 */
+/**
+ * The depth offset of the viewport SetViewport() last set.
+ *
+ * @ghidraAddress USA: 0x8028ab68
+ * @ghidraAddress JPN: 0x8028c840
+ * @ghidraAddress EUR: 0x8028cd70
+ */
 extern s32 g_dwViewportTransZ;
 
-/** The view and projection of the view being drawn. @ghidraAddress USA: 0x8031aa50 */
+/**
+ * The view and projection of the view being drawn.
+ *
+ * @ghidraAddress USA: 0x8031aa50
+ * @ghidraAddress JPN: 0x8031bb80
+ * @ghidraAddress EUR: 0x8031cf50
+ */
 extern f32 g_afViewProjMatrix[4][4];
 
-/** The normalisation of the perspective of the projection. @ghidraAddress USA: 0x8028a874 */
+/**
+ * The normalisation of the perspective of the projection.
+ *
+ * @ghidraAddress USA: 0x8028a874
+ * @ghidraAddress JPN: 0x8028c544
+ * @ghidraAddress EUR: 0x8028ca74
+ */
 extern u16 g_wPerspNorm;
 
-/** The distance of the far plane of the cameras. @ghidraAddress USA: 0x8028aacc */
+/**
+ * The distance of the far plane of the cameras.
+ *
+ * @ghidraAddress USA: 0x8028aacc
+ * @ghidraAddress JPN: 0x8028c7a4
+ * @ghidraAddress EUR: 0x8028ccd4
+ */
 extern f32 gFrustumFar;
 
-/** The angle SetupFrustumCorners() was last given. @ghidraAddress USA: 0x8028aac4 */
+/**
+ * The angle SetupFrustumCorners() was last given.
+ *
+ * @ghidraAddress USA: 0x8028aac4
+ * @ghidraAddress JPN: 0x8028c79c
+ * @ghidraAddress EUR: 0x8028cccc
+ */
 extern f32 g_fFrustumFovAngle;
 
-/** The view of the current view, before its perspective. @ghidraAddress USA: 0x8031aad0 */
+/**
+ * The view of the current view, before its perspective.
+ *
+ * @ghidraAddress USA: 0x8031aad0
+ * @ghidraAddress JPN: 0x8031bc00
+ * @ghidraAddress EUR: 0x8031cfd0
+ */
 extern f32 g_ViewLookAtMtx[4][4];
 
-/** @ghidraAddress USA: 0x8028a8c0 */
+/**
+ * @ghidraAddress USA: 0x8028a8c0
+ * @ghidraAddress JPN: 0x8028c598
+ * @ghidraAddress EUR: 0x8028cac8
+ */
 extern Mtx g_mtxIdentity;
 
-/** The vertices, triangles, and polygons drawn this frame. @ghidraAddress USA: 0x8028aa08 */
+/**
+ * The vertices, triangles, and polygons drawn this frame.
+ *
+ * @ghidraAddress USA: 0x8028aa08
+ * @ghidraAddress JPN: 0x8028c6e0
+ * @ghidraAddress EUR: 0x8028cc10
+ */
 extern s32 g_dwStatVerticesDrawn;
 
-/** @ghidraAddress USA: 0x8028aa10 */
+/**
+ * @ghidraAddress USA: 0x8028aa10
+ * @ghidraAddress JPN: 0x8028c6e8
+ * @ghidraAddress EUR: 0x8028cc18
+ */
 extern s32 g_dwStatTrianglesDrawn;
 
-/** @ghidraAddress USA: 0x8028aa38 */
+/**
+ * @ghidraAddress USA: 0x8028aa38
+ * @ghidraAddress JPN: 0x8028c710
+ * @ghidraAddress EUR: 0x8028cc40
+ */
 extern s32 g_dwStatPolygonsDrawn;
 
 /**
  * Whether the level of detail of the textures of the track is on.
  *
  * @ghidraAddress USA: 0x8028aa44
+ * @ghidraAddress JPN: 0x8028c71c
+ * @ghidraAddress EUR: 0x8028cc4c
  */
 extern s32 g_bTrackTextureLod;
 
-/** Whether the track is drawn with smooth shading. @ghidraAddress USA: 0x8028aa48 */
+/**
+ * Whether the track is drawn with smooth shading.
+ *
+ * @ghidraAddress USA: 0x8028aa48
+ * @ghidraAddress JPN: 0x8028c720
+ * @ghidraAddress EUR: 0x8028cc50
+ */
 extern s32 g_bSmoothShading;
 
-/** The colour of the light of the sun and of the ambient light. @ghidraAddress USA: 0x8028ab58 */
+/**
+ * The colour of the light of the sun and of the ambient light.
+ *
+ * @ghidraAddress USA: 0x8028ab58
+ * @ghidraAddress JPN: 0x8028c830
+ * @ghidraAddress EUR: 0x8028cd60
+ */
 extern u32 g_dwDirLightColor;
 
-/** @ghidraAddress USA: 0x8028ab5c */
+/**
+ * @ghidraAddress USA: 0x8028ab5c
+ * @ghidraAddress JPN: 0x8028c834
+ * @ghidraAddress EUR: 0x8028cd64
+ */
 extern u32 g_dwAmbientLightColor;
 
-/** The lights the vehicles and the track start from. @ghidraAddress USA: 0x8028a9f0 */
+/**
+ * The lights the vehicles and the track start from.
+ *
+ * @ghidraAddress USA: 0x8028a9f0
+ * @ghidraAddress JPN: 0x8028c6c8
+ * @ghidraAddress EUR: 0x8028cbf8
+ */
 extern Lights1 g_DefaultLights;
 
-/** The direction of the light of the sun. @ghidraAddress USA: 0x8031b338 */
+/**
+ * The direction of the light of the sun.
+ *
+ * @ghidraAddress USA: 0x8031b338
+ * @ghidraAddress JPN: 0x8031c458
+ * @ghidraAddress EUR: 0x8031d828
+ */
 extern f32 g_afLightDirection[3];
 
 /**
  * The colours of the light of the placed models lit by their light ramp, by its index.
  *
  * @ghidraAddress USA: 0x8031b360
+ * @ghidraAddress JPN: 0x8031c488
+ * @ghidraAddress EUR: 0x8031d858
  */
 extern u32 g_adwLightRampColors[4];
 
-/** Whether each vehicle is in the view being drawn. @ghidraAddress USA: 0x80351c70 */
+/**
+ * Whether each vehicle is in the view being drawn.
+ *
+ * @ghidraAddress USA: 0x80351c70
+ * @ghidraAddress JPN: 0x80352de0
+ * @ghidraAddress EUR: 0x80354170
+ */
 extern s32 g_adwVehicleVisible[];
 
-/** The display lists that set each clipping ratio, from 1. @ghidraAddress USA: 0x8028a900 */
+/**
+ * The display lists that set each clipping ratio, from 1.
+ *
+ * @ghidraAddress USA: 0x8028a900
+ * @ghidraAddress JPN: 0x8028c5d8
+ * @ghidraAddress EUR: 0x8028cb08
+ */
 extern Gfx g_aClipRatioDisplayLists[CLIP_RATIOS][5];
 
-/** The colour of the light of the sun, in parts. @ghidraAddress USA: 0x8028ab40 */
+/**
+ * The colour of the light of the sun, in parts.
+ *
+ * @ghidraAddress USA: 0x8028ab40
+ * @ghidraAddress JPN: 0x8028c818
+ * @ghidraAddress EUR: 0x8028cd48
+ */
 extern u8 g_bDirLightR;
 
-/** @ghidraAddress USA: 0x8028ab44 */
+/**
+ * @ghidraAddress USA: 0x8028ab44
+ * @ghidraAddress JPN: 0x8028c81c
+ * @ghidraAddress EUR: 0x8028cd4c
+ */
 extern u8 g_bDirLightG;
 
-/** @ghidraAddress USA: 0x8028ab48 */
+/**
+ * @ghidraAddress USA: 0x8028ab48
+ * @ghidraAddress JPN: 0x8028c820
+ * @ghidraAddress EUR: 0x8028cd50
+ */
 extern u8 g_bDirLightB;
 
-/** The colour of the ambient light, in parts. @ghidraAddress USA: 0x8028ab4c */
+/**
+ * The colour of the ambient light, in parts.
+ *
+ * @ghidraAddress USA: 0x8028ab4c
+ * @ghidraAddress JPN: 0x8028c824
+ * @ghidraAddress EUR: 0x8028cd54
+ */
 extern u8 g_bAmbientLightR;
 
-/** @ghidraAddress USA: 0x8028ab50 */
+/**
+ * @ghidraAddress USA: 0x8028ab50
+ * @ghidraAddress JPN: 0x8028c828
+ * @ghidraAddress EUR: 0x8028cd58
+ */
 extern u8 g_bAmbientLightG;
 
-/** @ghidraAddress USA: 0x8028ab54 */
+/**
+ * @ghidraAddress USA: 0x8028ab54
+ * @ghidraAddress JPN: 0x8028c82c
+ * @ghidraAddress EUR: 0x8028cd5c
+ */
 extern u8 g_bAmbientLightB;
 
-/** The least detailed level the vehicles are drawn at, from 0. @ghidraAddress USA: 0x8028aa9c */
+/**
+ * The least detailed level the vehicles are drawn at, from 0.
+ *
+ * @ghidraAddress USA: 0x8028aa9c
+ * @ghidraAddress JPN: 0x8028c774
+ * @ghidraAddress EUR: 0x8028cca4
+ */
 extern s32 g_dwVehicleLodBias;
 
 /**
  * Whether the car of the camera is drawn from its cockpit and mirror cameras too.
  *
  * @ghidraAddress USA: 0x8028aa70
+ * @ghidraAddress JPN: 0x8028c748
+ * @ghidraAddress EUR: 0x8028cc78
  */
 extern s32 g_dwVehicleCullingDisabled;
 
-/** The triangles of the vehicles drawn this frame. @ghidraAddress USA: 0x8028aa3c */
+/**
+ * The triangles of the vehicles drawn this frame.
+ *
+ * @ghidraAddress USA: 0x8028aa3c
+ * @ghidraAddress JPN: 0x8028c714
+ * @ghidraAddress EUR: 0x8028cc44
+ */
 extern s32 g_dwStatVehicleTriangles;
 
 /**
  * Counts of a frame that ClearRenderStats() clears. No routine reads them.
  *
  * @ghidraAddress USA: 0x8028aa0c
+ * @ghidraAddress JPN: 0x8028c6e4
+ * @ghidraAddress EUR: 0x8028cc14
  */
 extern s32 g_dwStatUnused0;
 
-/** @ghidraAddress USA: 0x8028aa2c */
+/**
+ * @ghidraAddress USA: 0x8028aa2c
+ * @ghidraAddress JPN: 0x8028c704
+ * @ghidraAddress EUR: 0x8028cc34
+ */
 extern s32 g_dwStatUnused1;
 
-/** @ghidraAddress USA: 0x8028aa30 */
+/**
+ * @ghidraAddress USA: 0x8028aa30
+ * @ghidraAddress JPN: 0x8028c708
+ * @ghidraAddress EUR: 0x8028cc38
+ */
 extern s32 g_dwStatUnused2;
 
-/** @ghidraAddress USA: 0x8028aa34 */
+/**
+ * @ghidraAddress USA: 0x8028aa34
+ * @ghidraAddress JPN: 0x8028c70c
+ * @ghidraAddress EUR: 0x8028cc3c
+ */
 extern s32 g_dwStatUnused3;
 
-/** The address in the texture memory DrawTexturedTile() loads to. @ghidraAddress USA: 0x8028ab1c */
+/**
+ * The address in the texture memory DrawTexturedTile() loads to.
+ *
+ * @ghidraAddress USA: 0x8028ab1c
+ * @ghidraAddress JPN: 0x8028c7f4
+ * @ghidraAddress EUR: 0x8028cd24
+ */
 extern u32 g_dwTextureTmemAddress;
 
-/** The tile DrawTexturedTile() sets up to draw with. @ghidraAddress USA: 0x8028ab18 */
+/**
+ * The tile DrawTexturedTile() sets up to draw with.
+ *
+ * @ghidraAddress USA: 0x8028ab18
+ * @ghidraAddress JPN: 0x8028c7f0
+ * @ghidraAddress EUR: 0x8028cd20
+ */
 extern u32 g_dwTextureRenderTile;
 
 /**
  * The depths the fog starts and ends at, from 0 at the near plane to 1000 at the far.
  *
  * @ghidraAddress USA: 0x8028ab30
+ * @ghidraAddress JPN: 0x8028c808
+ * @ghidraAddress EUR: 0x8028cd38
  */
 extern s32 g_dwFogMinDistance;
 
-/** @ghidraAddress USA: 0x8028ab34 */
+/**
+ * @ghidraAddress USA: 0x8028ab34
+ * @ghidraAddress JPN: 0x8028c80c
+ * @ghidraAddress EUR: 0x8028cd3c
+ */
 extern s32 g_dwFogMaxDistance;
 
 /**
@@ -279,48 +537,84 @@ extern s32 g_dwFogMaxDistance;
  * microcode does.
  *
  * @ghidraAddress USA: 0x8028ab38
+ * @ghidraAddress JPN: 0x8028c810
+ * @ghidraAddress EUR: 0x8028cd40
  */
 extern s32 g_dwFogFactorOffset;
 
-/** @ghidraAddress USA: 0x8028ab3c */
+/**
+ * @ghidraAddress USA: 0x8028ab3c
+ * @ghidraAddress JPN: 0x8028c814
+ * @ghidraAddress EUR: 0x8028cd44
+ */
 extern s32 g_dwFogFactorScale;
 
 /**
  * The light ramps of the placed models, in parts, by the index of the ramp.
  *
  * @ghidraAddress USA: 0x8031b350
+ * @ghidraAddress JPN: 0x8031c478
+ * @ghidraAddress EUR: 0x8031d848
  */
 extern u8 g_abLightRampR[4];
 
-/** @ghidraAddress USA: 0x8031b354 */
+/**
+ * @ghidraAddress USA: 0x8031b354
+ * @ghidraAddress JPN: 0x8031c47c
+ * @ghidraAddress EUR: 0x8031d84c
+ */
 extern u8 g_abLightRampG[4];
 
-/** @ghidraAddress USA: 0x8031b358 */
+/**
+ * @ghidraAddress USA: 0x8031b358
+ * @ghidraAddress JPN: 0x8031c480
+ * @ghidraAddress EUR: 0x8031d850
+ */
 extern u8 g_abLightRampB[4];
 
 /** The viewports. The display lists of the last frames may still use them. */
 #define VIEWPORTS 32
 
-/** @ghidraAddress USA: 0x80318cd0 */
+/**
+ * @ghidraAddress USA: 0x80318cd0
+ * @ghidraAddress JPN: 0x803195e0
+ * @ghidraAddress EUR: 0x8031a9b0
+ */
 extern Vp g_aViewports[VIEWPORTS];
 
-/** The viewport set last. @ghidraAddress USA: 0x8028ab60 */
+/**
+ * The viewport set last.
+ *
+ * @ghidraAddress USA: 0x8028ab60
+ * @ghidraAddress JPN: 0x8028c838
+ * @ghidraAddress EUR: 0x8028cd68
+ */
 extern s32 g_dwViewportIndex;
 
 /**
  * The display list of g_aClipRatioDisplayLists a frame starts with.
  *
  * @ghidraAddress USA: 0x8028a8a4
+ * @ghidraAddress JPN: 0x8028c578
+ * @ghidraAddress EUR: 0x8028caa8
  */
 extern s32 g_dwClipRatioIndex;
 
-/** Whether the microcode clips the triangles. @ghidraAddress USA: 0x8028aa50 */
+/**
+ * Whether the microcode clips the triangles.
+ *
+ * @ghidraAddress USA: 0x8028aa50
+ * @ghidraAddress JPN: 0x8028c728
+ * @ghidraAddress EUR: 0x8028cc58
+ */
 extern s32 g_bGbiClipping;
 
 /**
  * Clear the counts of the vertices, triangles, and polygons drawn in a frame.
  *
  * @ghidraAddress USA: 0x802173c8
+ * @ghidraAddress JPN: 0x80217d38
+ * @ghidraAddress EUR: 0x802183e8
  */
 void ClearRenderStats(void);
 
@@ -328,6 +622,8 @@ void ClearRenderStats(void);
  * Blank the screen and clear both frame buffers in the low resolution.
  *
  * @ghidraAddress USA: 0x8021a540
+ * @ghidraAddress JPN: 0x8021af0c
+ * @ghidraAddress EUR: 0x8021b630
  */
 void ClearFramebuffersLowRes(void);
 
@@ -337,6 +633,8 @@ void ClearFramebuffersLowRes(void);
  *
  * @param m The matrix.
  * @ghidraAddress USA: 0x802174b4
+ * @ghidraAddress JPN: 0x80217e24
+ * @ghidraAddress EUR: 0x802184d4
  */
 void NormalizeLightMatrix(f32 m[4][4]);
 
@@ -346,6 +644,8 @@ void NormalizeLightMatrix(f32 m[4][4]);
  * @param index The index of the texture.
  * @param textures The textures of the model.
  * @ghidraAddress USA: 0x80217734
+ * @ghidraAddress JPN: 0x802180a4
+ * @ghidraAddress EUR: 0x80218754
  */
 void DrawTexturedTile(s32 index, ModelTexture *textures);
 
@@ -355,6 +655,8 @@ void DrawTexturedTile(s32 index, ModelTexture *textures);
  * @param point The point.
  * @return The fog, from 0 to 1, or 0 when there is no weather.
  * @ghidraAddress USA: 0x80218c8c
+ * @ghidraAddress JPN: 0x802195fc
+ * @ghidraAddress EUR: 0x80219cac
  */
 f32 ComputeFogFactorAtPoint(Vec3f *point);
 
@@ -364,6 +666,8 @@ f32 ComputeFogFactorAtPoint(Vec3f *point);
  * @param m The matrix.
  * @return The largest absolute value of its first 12 elements.
  * @ghidraAddress USA: 0x80217420
+ * @ghidraAddress JPN: 0x80217d90
+ * @ghidraAddress EUR: 0x80218440
  */
 f32 GetMaxAbsValue12(f32 m[4][4]);
 
@@ -371,6 +675,8 @@ f32 GetMaxAbsValue12(f32 m[4][4]);
  * Set the direction and the colours of the lights, and the light ramps, for the weather.
  *
  * @ghidraAddress USA: 0x80218d5c
+ * @ghidraAddress JPN: 0x802196cc
+ * @ghidraAddress EUR: 0x80219d7c
  */
 void SetupWeatherLights(void);
 
@@ -379,6 +685,8 @@ void SetupWeatherLights(void);
  * display list.
  *
  * @ghidraAddress USA: 0x802182a8
+ * @ghidraAddress JPN: 0x80218c18
+ * @ghidraAddress EUR: 0x802192c8
  */
 void SetupFog(void);
 
@@ -386,6 +694,8 @@ void SetupFog(void);
  * Load the viewport of the view being drawn again.
  *
  * @ghidraAddress USA: 0x80219f04
+ * @ghidraAddress JPN: 0x8021a87c
+ * @ghidraAddress EUR: 0x8021af24
  */
 void RestoreCurrentViewport(void);
 
@@ -400,6 +710,8 @@ void RestoreCurrentViewport(void);
  * @param green The green of the colour.
  * @param blue The blue of the colour.
  * @ghidraAddress USA: 0x80218104
+ * @ghidraAddress JPN: 0x80218a74
+ * @ghidraAddress EUR: 0x80219124
  */
 void DrawFilledRect(s32 x, s32 y, s32 width, s32 height, s32 red, s32 green, s32 blue);
 
@@ -407,6 +719,8 @@ void DrawFilledRect(s32 x, s32 y, s32 width, s32 height, s32 red, s32 green, s32
  * Do nothing.
  *
  * @ghidraAddress USA: 0x80217c8c
+ * @ghidraAddress JPN: 0x802185fc
+ * @ghidraAddress EUR: 0x80218cac
  */
 void StubEmpty(void);
 
@@ -419,6 +733,8 @@ void StubEmpty(void);
  * @param height The height of the scissor.
  * @param setScissor Whether the scissor is set.
  * @ghidraAddress USA: 0x80219df0
+ * @ghidraAddress JPN: 0x8021a768
+ * @ghidraAddress EUR: 0x8021ae10
  */
 void SetupViewportAndScissor(s32 x, s32 y, s32 width, s32 height, s32 setScissor);
 
@@ -430,6 +746,8 @@ void SetupViewportAndScissor(s32 x, s32 y, s32 width, s32 height, s32 setScissor
  * @param width The width.
  * @param height The height.
  * @ghidraAddress USA: 0x80219f6c
+ * @ghidraAddress JPN: 0x8021a8e4
+ * @ghidraAddress EUR: 0x8021af8c
  */
 void DrawRdpOutlineRect(s32 x, s32 y, s32 width, s32 height);
 
@@ -442,6 +760,8 @@ void DrawRdpOutlineRect(s32 x, s32 y, s32 width, s32 height);
  * @param width The width.
  * @param height The height.
  * @ghidraAddress USA: 0x8021a0f8
+ * @ghidraAddress JPN: 0x8021aa70
+ * @ghidraAddress EUR: 0x8021b118
  */
 void DrawRdpBorderRect(s32 x, s32 y, s32 width, s32 height);
 
@@ -449,6 +769,8 @@ void DrawRdpBorderRect(s32 x, s32 y, s32 width, s32 height);
  * Black out the screen and clear both frame buffers in the high resolution.
  *
  * @ghidraAddress USA: 0x8021a4c8
+ * @ghidraAddress JPN: 0x8021ae8c
+ * @ghidraAddress EUR: 0x8021b5b0
  */
 void ClearFramebuffersHighRes(void);
 
@@ -457,6 +779,8 @@ void ClearFramebuffersHighRes(void);
  * cartridge.
  *
  * @ghidraAddress USA: 0x8021a5b8
+ * @ghidraAddress JPN: 0x8021afac
+ * @ghidraAddress EUR: 0x8021b6d0
  */
 void StreamAnimatedTrackTextures(void);
 

@@ -32,19 +32,41 @@ enum {
     PAK_MENU_FADING_OUT,     /*!< Wait for the fade out, then return to the main menu. */
 };
 
-/** The pictures of the menu. @ghidraAddress USA: 0x8028cb40 */
+/**
+ * The pictures of the menu.
+ *
+ * @ghidraAddress USA: 0x8028cb40
+ * @ghidraAddress JPN: 0x8028ecf0
+ * @ghidraAddress EUR: 0x8028f2a0
+ */
 extern Sprite g_texBackground;
 
-/** @ghidraAddress USA: 0x8028cb70 */
+/**
+ * @ghidraAddress USA: 0x8028cb70
+ * @ghidraAddress JPN: 0x8028ed20
+ * @ghidraAddress EUR: 0x8028f2d0
+ */
 extern Sprite g_texLogo;
 
-/** @ghidraAddress USA: 0x8028d0b0 */
+/**
+ * @ghidraAddress USA: 0x8028d0b0
+ * @ghidraAddress JPN: 0x8028f280
+ * @ghidraAddress EUR: 0x8028f810
+ */
 extern Sprite g_texButtonA;
 
-/** @ghidraAddress USA: 0x8028d0e0 */
+/**
+ * @ghidraAddress USA: 0x8028d0e0
+ * @ghidraAddress JPN: 0x8028f2b0
+ * @ghidraAddress EUR: 0x8028f840
+ */
 extern Sprite g_texButtonB;
 
-/** @ghidraAddress USA: 0x8028dd20 */
+/**
+ * @ghidraAddress USA: 0x8028dd20
+ * @ghidraAddress JPN: 0x8028ff10
+ * @ghidraAddress EUR: 0x802904c0
+ */
 extern Sprite g_texButtonBSmall;
 
 /** The table of the characters of the names of notes, which is copied whole to read one. */
@@ -56,49 +78,118 @@ typedef struct DecalCharMap {
  * The ASCII of the 66 characters of the names of notes, a space for those it lacks.
  *
  * @ghidraAddress USA: 0x8028dd50
+ * @ghidraAddress JPN: 0x8028ff40
+ * @ghidraAddress EUR: 0x802904f0
  */
 extern const DecalCharMap g_szDecalCharMap;
 
-/** @ghidraAddress USA: 0x8028dd94 */
+/**
+ * @ghidraAddress USA: 0x8028dd94
+ * @ghidraAddress JPN: 0x8028ffd8
+ * @ghidraAddress EUR: 0x80290534
+ */
 extern u8 g_bPakMenuInitialized;
 
-/** The notes the menu found empty, a bit for each. @ghidraAddress USA: 0x8028dd98 */
+/**
+ * The notes the menu found empty, a bit for each.
+ *
+ * @ghidraAddress USA: 0x8028dd98
+ * @ghidraAddress JPN: 0x8028ffdc
+ * @ghidraAddress EUR: 0x80290538
+ */
 extern u16 g_wPakEmptySlotMask;
 
-/** @ghidraAddress USA: 0x8036a060 */
+/**
+ * @ghidraAddress USA: 0x8036a060
+ * @ghidraAddress JPN: 0x8036b1d0
+ * @ghidraAddress EUR: 0x8036c560
+ */
 extern u8 g_bPakDirLoaded;
 
-/** @ghidraAddress USA: 0x8036a061 */
+/**
+ * @ghidraAddress USA: 0x8036a061
+ * @ghidraAddress JPN: 0x8036b1d1
+ * @ghidraAddress EUR: 0x8036c561
+ */
 extern u8 g_bPakSelectedNote;
 
-/** @ghidraAddress USA: 0x8036a062 */
+/**
+ * @ghidraAddress USA: 0x8036a062
+ * @ghidraAddress JPN: 0x8036b1d2
+ * @ghidraAddress EUR: 0x8036c562
+ */
 extern u8 g_bPakFirstValidNote;
 
-/** @ghidraAddress USA: 0x8036a063 */
+/**
+ * @ghidraAddress USA: 0x8036a063
+ * @ghidraAddress JPN: 0x8036b1d3
+ * @ghidraAddress EUR: 0x8036c563
+ */
 extern u8 g_bPakLastValidNote;
 
-/** @ghidraAddress USA: 0x8036a064 */
+/**
+ * @ghidraAddress USA: 0x8036a064
+ * @ghidraAddress JPN: 0x8036b1d4
+ * @ghidraAddress EUR: 0x8036c564
+ */
 extern s32 g_dwPakNoteCount;
 
-/** The free space of the Pak in bytes. @ghidraAddress USA: 0x8036a068 */
+/**
+ * The free space of the Pak in bytes.
+ *
+ * @ghidraAddress USA: 0x8036a068
+ * @ghidraAddress JPN: 0x8036b1d8
+ * @ghidraAddress EUR: 0x8036c568
+ */
 extern s32 g_dwPakFreeBlocks;
 
-/** The notes of the Pak the menu shows. @ghidraAddress USA: 0x8036a070 */
+/**
+ * The notes of the Pak the menu shows.
+ *
+ * @ghidraAddress USA: 0x8036a070
+ * @ghidraAddress JPN: 0x8036b1e0
+ * @ghidraAddress EUR: 0x8036c570
+ */
 extern OSPfsState g_aPakDirEntries[PAK_NOTES];
 
-/** @ghidraAddress USA: 0x8036a270 */
+/**
+ * @ghidraAddress USA: 0x8036a270
+ * @ghidraAddress JPN: 0x8036b3e0
+ * @ghidraAddress EUR: 0x8036c770
+ */
 extern u8 g_bPakMenuState;
 
-/** @ghidraAddress USA: 0x8036a278 */
+/**
+ * @ghidraAddress USA: 0x8036a278
+ * @ghidraAddress JPN: 0x8036b3e8
+ * @ghidraAddress EUR: 0x8036c778
+ */
 extern s32 g_nPakFilesUsed;
 
-/** The notes InitPakAndEnumerateFiles() reads. @ghidraAddress USA: 0x8036a280 */
+/**
+ * The notes InitPakAndEnumerateFiles() reads.
+ *
+ * @ghidraAddress USA: 0x8036a280
+ * @ghidraAddress EUR: 0x8036c780
+ */
 extern OSPfsState g_aPakFileStates[PAK_NOTES];
 
-/** The file system of the Pak of each controller. @ghidraAddress USA: 0x80369ec0 */
+/**
+ * The file system of the Pak of each controller.
+ *
+ * @ghidraAddress USA: 0x80369ec0
+ * @ghidraAddress JPN: 0x8036b030
+ * @ghidraAddress EUR: 0x8036c3c0
+ */
 extern OSPfs g_aPakPfs[MAXCONTROLLERS];
 
-/** The result of the last Controller Pak call. @ghidraAddress USA: 0x802724f0 */
+/**
+ * The result of the last Controller Pak call.
+ *
+ * @ghidraAddress USA: 0x802724f0
+ * @ghidraAddress JPN: 0x80273f50
+ * @ghidraAddress EUR: 0x802744a0
+ */
 extern s32 gControllerPakState;
 
 /**
@@ -106,6 +197,8 @@ extern s32 gControllerPakState;
  * inserted.
  *
  * @ghidraAddress USA: 0x803163e0
+ * @ghidraAddress JPN: 0x80316cf0
+ * @ghidraAddress EUR: 0x803180c0
  */
 extern u8 g_aabSavePakIds[2][32];
 
@@ -115,6 +208,8 @@ extern u8 g_aabSavePakIds[2][32];
  * @param c The character code of the note name.
  * @return The ASCII character, or a space for a code outside the map.
  * @ghidraAddress USA: 0x80253460
+ * @ghidraAddress JPN: 0x802541b0
+ * @ghidraAddress EUR: 0x802549c0
  */
 u8 DecalCharToAscii(u8 c);
 
@@ -123,6 +218,8 @@ u8 DecalCharToAscii(u8 c);
  * the main menu.
  *
  * @ghidraAddress USA: 0x802534dc
+ * @ghidraAddress JPN: 0x8025422c
+ * @ghidraAddress EUR: 0x80254a3c
  */
 void ProcessPakMenuScreen(void);
 
@@ -132,6 +229,8 @@ void ProcessPakMenuScreen(void);
  *
  * @return 0 if a note of another game was found, and 1 otherwise, failures included.
  * @ghidraAddress USA: 0x80254620
+ * @ghidraAddress JPN: 0x802554c0
+ * @ghidraAddress EUR: 0x80255bc0
  */
 s32 InitPakAndEnumerateFiles(void);
 

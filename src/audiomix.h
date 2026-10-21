@@ -34,6 +34,8 @@ typedef struct {
  * The write position in the stereo ring buffer of the music mixers.
  *
  * @ghidraAddress USA: 0x802a4790
+ * @ghidraAddress JPN: 0x802a69f0
+ * @ghidraAddress EUR: 0x802a6f50
  */
 extern u16 g_wAudioBufferWritePos;
 
@@ -41,6 +43,8 @@ extern u16 g_wAudioBufferWritePos;
  * The channels of the music mixers, 8 bytes after the write position.
  *
  * @ghidraAddress USA: 0x802a4798
+ * @ghidraAddress JPN: 0x802a69f8
+ * @ghidraAddress EUR: 0x802a6f58
  */
 extern MixerChannel g_aMixerChannels[MIXER_CHANNELS];
 
@@ -48,6 +52,8 @@ extern MixerChannel g_aMixerChannels[MIXER_CHANNELS];
  * The mask that clears the low bit of each 16-bit sample of the sound effect mixer.
  *
  * @ghidraAddress USA: 0x802a4918
+ * @ghidraAddress JPN: 0x802a6b78
+ * @ghidraAddress EUR: 0x802a70d8
  */
 extern u64 g_qwSoundEffectSampleMask;
 
@@ -56,6 +62,8 @@ extern u64 g_qwSoundEffectSampleMask;
  * the right and the left in its upper and lower halves.
  *
  * @ghidraAddress USA: 0x802a4920
+ * @ghidraAddress JPN: 0x802a6b80
+ * @ghidraAddress EUR: 0x802a70e0
  */
 extern MixerChannel g_aSoundEffectChannels[SOUND_EFFECT_CHANNELS];
 
@@ -63,6 +71,8 @@ extern MixerChannel g_aSoundEffectChannels[SOUND_EFFECT_CHANNELS];
  * The distance back to the echo of sound effect channel 0, or 0 for none.
  *
  * @ghidraAddress USA: 0x802a49b0
+ * @ghidraAddress JPN: 0x802a6c10
+ * @ghidraAddress EUR: 0x802a7170
  */
 extern s32 g_dwSoundEffectEchoOffset;
 
@@ -72,6 +82,8 @@ extern s32 g_dwSoundEffectEchoOffset;
  * @param dst The destination.
  * @param src The source.
  * @ghidraAddress USA: 0x80256270
+ * @ghidraAddress JPN: 0x802571d0
+ * @ghidraAddress EUR: 0x80257840
  */
 void CopyVec4(void *dst, const void *src);
 
@@ -83,6 +95,8 @@ void CopyVec4(void *dst, const void *src);
  * @param value The value of each word. A value of -1 sets every bit, and a positive value leaves
  * the upper halfword of each word clear.
  * @ghidraAddress USA: 0x80256290
+ * @ghidraAddress JPN: 0x802571f0
+ * @ghidraAddress EUR: 0x80257860
  */
 void MemFill64Aligned(void *dst, u32 size, s32 value);
 
@@ -92,6 +106,8 @@ void MemFill64Aligned(void *dst, u32 size, s32 value);
  * @param ring The start of the ring buffer.
  * @param bytes The count of bytes to mix from the write position.
  * @ghidraAddress USA: 0x802562f0
+ * @ghidraAddress JPN: 0x80257250
+ * @ghidraAddress EUR: 0x802578c0
  */
 void MixAudioSamples(s16 *ring, u32 bytes);
 
@@ -102,6 +118,8 @@ void MixAudioSamples(s16 *ring, u32 bytes);
  * @param bytes The count of bytes to mix from the write position.
  * @param pairOffset Offset of the pair's records from those of the first extra pair.
  * @ghidraAddress USA: 0x8025649c
+ * @ghidraAddress JPN: 0x802573fc
+ * @ghidraAddress EUR: 0x80257a6c
  */
 void MixAudioStereoSamples(s16 *ring, u32 bytes, u32 pairOffset);
 
@@ -112,6 +130,8 @@ void MixAudioStereoSamples(s16 *ring, u32 bytes, u32 pairOffset);
  * @param bytes The count of bytes to mix.
  * @param offset The offset in bytes into the ring buffer to start at.
  * @ghidraAddress USA: 0x8025658c
+ * @ghidraAddress JPN: 0x802574ec
+ * @ghidraAddress EUR: 0x80257b5c
  */
 void MixSoundEffectChannels(s16 *ring, u32 bytes, u32 offset);
 

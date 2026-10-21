@@ -417,7 +417,13 @@ s32 InitPakAndEnumerateFiles(void) {
     s32 unusedBelow[10];
     s32 note;
     OSPfsState *state;
-    /** The notes found empty. @ghidraAddress USA: 0x8028dda0 */
+    /**
+     * The notes found empty.
+     *
+     * @ghidraAddress USA: 0x8028dda0
+     * @ghidraAddress JPN: 0x8028ffe4
+     * @ghidraAddress EUR: 0x80290540
+     */
     static u16 g_wPakScanEmptyMask = 0;
 
     (void)unusedAbove;

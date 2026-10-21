@@ -18,6 +18,8 @@ OSDevMgr __osViDevMgr = {0};
  *
  * @param arg The OSDevMgr of the VI manager, __osViDevMgr.
  * @ghidraAddress USA: 0x80266588
+ * @ghidraAddress JPN: 0x80267818
+ * @ghidraAddress EUR: 0x80267d18
  */
 static void viMgrMain(void *arg);
 

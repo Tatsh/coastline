@@ -53,13 +53,25 @@ typedef struct {
     char qual;          /*!< The size qualifier, 'h', 'l', 'L', or 0. */
 } _Pft;
 
-/** @ghidraAddress USA: 0x80268dc0 */
+/**
+ * @ghidraAddress USA: 0x80268dc0
+ * @ghidraAddress JPN: 0x80269ee0
+ * @ghidraAddress EUR: 0x8026a430
+ */
 int _Printf(outfun prout, char *arg, const char *fmt, va_list args);
 
-/** @ghidraAddress USA: 0x8026ce50 */
+/**
+ * @ghidraAddress USA: 0x8026ce50
+ * @ghidraAddress JPN: 0x8026e8d0
+ * @ghidraAddress EUR: 0x8026ee20
+ */
 void _Litob(_Pft *px, char code);
 
-/** @ghidraAddress USA: 0x8026d660 */
+/**
+ * @ghidraAddress USA: 0x8026d660
+ * @ghidraAddress JPN: 0x8026f0e0
+ * @ghidraAddress EUR: 0x8026f630
+ */
 void _Ldtob(_Pft *px, char code);
 
 /**
@@ -69,29 +81,45 @@ void _Ldtob(_Pft *px, char code);
  */
 extern char spaces[33];
 
-/** @ghidraAddress USA: 0x802a6254 */
+/**
+ * @ghidraAddress USA: 0x802a6254
+ * @ghidraAddress JPN: 0x802a7834
+ * @ghidraAddress EUR: 0x802a7d44
+ */
 extern char zeroes[33];
 
 /**
  * The flag characters, in the order of fbit.
  *
  * @ghidraAddress USA: 0x802ab984
+ * @ghidraAddress JPN: 0x802ac0b4
+ * @ghidraAddress EUR: 0x802ad674
  */
 extern const char fchar[6];
 
 /** @ghidraAddress USA: 0x802ab98c */
 extern const int fbit[6];
 
-/** @ghidraAddress USA: 0x802a63e0 */
+/**
+ * @ghidraAddress USA: 0x802a63e0
+ * @ghidraAddress JPN: 0x802a7940
+ * @ghidraAddress EUR: 0x802a7e50
+ */
 extern char g_szHexDigitsLower[17];
 
-/** @ghidraAddress USA: 0x802a63f4 */
+/**
+ * @ghidraAddress USA: 0x802a63f4
+ * @ghidraAddress JPN: 0x802a7954
+ * @ghidraAddress EUR: 0x802a7e64
+ */
 extern char g_szHexDigitsUpper[17];
 
 /**
  * Ten raised to the powers of two from 1 to 256.
  *
  * @ghidraAddress USA: 0x802abb00
+ * @ghidraAddress JPN: 0x802ac230
+ * @ghidraAddress EUR: 0x802ad7f0
  */
 extern const double g_adblPowersOfTen[9];
 

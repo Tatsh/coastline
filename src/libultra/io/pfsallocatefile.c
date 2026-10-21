@@ -127,7 +127,10 @@ s32 osPfsAllocateFile(OSPfs *pfs,
 #pragma GCC diagnostic pop
 
 /* Claim free pages of one bank for a file, chaining and clearing them.
- * @ghidraAddress USA: 0x80263fb4 */
+ * @ghidraAddress USA: 0x80263fb4
+ * @ghidraAddress JPN: 0x802651d4
+ * @ghidraAddress EUR: 0x80265734
+ */
 static s32 __osPfsDeclearPage(OSPfs *pfs,
                               __OSInode *inode,
                               int file_size_in_pages,
@@ -186,7 +189,10 @@ static s32 __osPfsDeclearPage(OSPfs *pfs,
 
 /* Write a page of zeroes to a page of a bank, then select bank 0 again. The result is that of
  * selecting bank 0, whatever the writes returned.
- * @ghidraAddress USA: 0x80264218 */
+ * @ghidraAddress USA: 0x80264218
+ * @ghidraAddress JPN: 0x80265438
+ * @ghidraAddress EUR: 0x80265998
+ */
 static s32 __osClearPage(OSPfs *pfs, int page_no, u8 *data, u8 bank) {
     int i;
     s32 ret = 0;

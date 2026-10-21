@@ -210,16 +210,36 @@ typedef struct {
  * The loaded track. The menus use the same memory for their music. The link script places it.
  *
  * @ghidraAddress USA: 0x80025c00
+ * @ghidraAddress JPN: 0x80025c00
+ * @ghidraAddress EUR: 0x80025c00
  */
 extern TrackHeader g_LoadedTrack;
 
-/** The placed models drawn this frame, by index. @ghidraAddress USA: 0x80352580 */
+/**
+ * The placed models drawn this frame, by index.
+ *
+ * @ghidraAddress USA: 0x80352580
+ * @ghidraAddress JPN: 0x803536f0
+ * @ghidraAddress EUR: 0x80354a80
+ */
 extern u16 g_awVisibleInstanceList[];
 
-/** The opaque models at the start of the list. @ghidraAddress USA: 0x8028c744 */
+/**
+ * The opaque models at the start of the list.
+ *
+ * @ghidraAddress USA: 0x8028c744
+ * @ghidraAddress JPN: 0x8028e8f4
+ * @ghidraAddress EUR: 0x8028eea4
+ */
 extern s32 g_nOpaqueVisibleInstanceCount;
 
-/** The placed model left undrawn while debugging. @ghidraAddress USA: 0x8028c754 */
+/**
+ * The placed model left undrawn while debugging.
+ *
+ * @ghidraAddress USA: 0x8028c754
+ * @ghidraAddress JPN: 0x8028e904
+ * @ghidraAddress EUR: 0x8028eeb4
+ */
 extern s32 g_nDebugHiddenInstanceIndex;
 
 /** The most placed models CastRayAgainstTrack() lists. */
@@ -241,6 +261,8 @@ extern s32 g_nDebugHiddenInstanceIndex;
  * @param groundSurface Receives the index of the triangle of the ground.
  * @return The number of triangles below the point.
  * @ghidraAddress USA: 0x8021f380
+ * @ghidraAddress JPN: 0x8021fe70
+ * @ghidraAddress EUR: 0x80220680
  */
 s32 CastRayAgainstTrack(Vec3f *outPoint,
                         Vec3f *outNormal,
@@ -260,6 +282,8 @@ s32 CastRayAgainstTrack(Vec3f *outPoint,
  * @return The count of the triangles in the upper half and where they start in the lower, or 0
  * outside the grid.
  * @ghidraAddress USA: 0x8021e620
+ * @ghidraAddress JPN: 0x8021f110
+ * @ghidraAddress EUR: 0x8021f920
  */
 u32 LookupTrackGridCell(f32 x, f32 y);
 
@@ -269,6 +293,8 @@ u32 LookupTrackGridCell(f32 x, f32 y);
  * @param cursor Where the triangles of the cell go on and how many are left, which this advances.
  * @return Its index, or 0 when the cell has no more.
  * @ghidraAddress USA: 0x8021ea90
+ * @ghidraAddress JPN: 0x8021f580
+ * @ghidraAddress EUR: 0x8021fd90
  */
 u16 NextGridCellTriangle(TrackGridCursor *cursor);
 
@@ -280,6 +306,8 @@ u16 NextGridCellTriangle(TrackGridCursor *cursor);
  * @return The count of the models in the upper half and where they start in the lower, or 0
  * outside the grid.
  * @ghidraAddress USA: 0x8021ea0c
+ * @ghidraAddress JPN: 0x8021f4fc
+ * @ghidraAddress EUR: 0x8021fd0c
  */
 u32 LookupInstanceGridCell(s32 column, s32 row);
 
@@ -289,6 +317,8 @@ u32 LookupInstanceGridCell(s32 column, s32 row);
  * @param cursor Where the models of the cell go on and how many are left, which this advances.
  * @return Its index, or 0 when the cell has no more.
  * @ghidraAddress USA: 0x8021eadc
+ * @ghidraAddress JPN: 0x8021f5cc
+ * @ghidraAddress EUR: 0x8021fddc
  */
 u16 NextGridCellInstance(TrackGridCursor *cursor);
 
@@ -297,6 +327,8 @@ u16 NextGridCellInstance(TrackGridCursor *cursor);
  *
  * @param track The index of the track among the descriptors of g_apTrackMenuItems.
  * @ghidraAddress USA: 0x8021de5c
+ * @ghidraAddress JPN: 0x8021e92c
+ * @ghidraAddress EUR: 0x8021f05c
  */
 void LoadTrackGeometryFromRom(s32 track);
 
@@ -312,32 +344,68 @@ void LoadTrackGeometryFromRom(s32 track);
 /** The bytes of the data of each of the two sections of the route of the loaded track. */
 #define TRACK_SECTION_DATA_SIZE 0x800
 
-/** @ghidraAddress USA: 0x80373eb0 */
+/**
+ * @ghidraAddress USA: 0x80373eb0
+ * @ghidraAddress JPN: 0x80375020
+ * @ghidraAddress EUR: 0x803763b0
+ */
 extern u8 g_abTrackSection1Header[TRACK_SECTION_HEADER_SIZE];
 
-/** @ghidraAddress USA: 0x803736b0 */
+/**
+ * @ghidraAddress USA: 0x803736b0
+ * @ghidraAddress JPN: 0x80374820
+ * @ghidraAddress EUR: 0x80375bb0
+ */
 extern u8 g_abTrackSection1Data[TRACK_SECTION_DATA_SIZE];
 
-/** @ghidraAddress USA: 0x803746d0 */
+/**
+ * @ghidraAddress USA: 0x803746d0
+ * @ghidraAddress JPN: 0x80375840
+ * @ghidraAddress EUR: 0x80376bd0
+ */
 extern u8 g_abTrackSection2Header[TRACK_SECTION_HEADER_SIZE];
 
-/** @ghidraAddress USA: 0x80373ed0 */
+/**
+ * @ghidraAddress USA: 0x80373ed0
+ * @ghidraAddress JPN: 0x80375040
+ * @ghidraAddress EUR: 0x803763d0
+ */
 extern u8 g_abTrackSection2Data[TRACK_SECTION_DATA_SIZE];
 
-/** Where the loaded track is on the cartridge. @ghidraAddress USA: 0x8028a87c */
+/**
+ * Where the loaded track is on the cartridge.
+ *
+ * @ghidraAddress USA: 0x8028a87c
+ * @ghidraAddress JPN: 0x8028c54c
+ * @ghidraAddress EUR: 0x8028ca7c
+ */
 extern u32 g_dwCurrentTrackRomOffset;
 
 /**
  * Where the textures of the loaded track are on the cartridge, after its compressed geometry.
  *
  * @ghidraAddress USA: 0x8028a880
+ * @ghidraAddress JPN: 0x8028c550
+ * @ghidraAddress EUR: 0x8028ca80
  */
 extern u32 g_dwTrackTextureRomOffset;
 
-/** The segment of textures last streamed, or -1. @ghidraAddress USA: 0x8028aa7c */
+/**
+ * The segment of textures last streamed, or -1.
+ *
+ * @ghidraAddress USA: 0x8028aa7c
+ * @ghidraAddress JPN: 0x8028c754
+ * @ghidraAddress EUR: 0x8028cc84
+ */
 extern s32 g_dwStreamDmaPrevSegment;
 
-/** The snow mode the textures were last streamed for, or -1. @ghidraAddress USA: 0x8028aa88 */
+/**
+ * The snow mode the textures were last streamed for, or -1.
+ *
+ * @ghidraAddress USA: 0x8028aa88
+ * @ghidraAddress JPN: 0x8028c760
+ * @ghidraAddress EUR: 0x8028cc90
+ */
 extern s32 g_dwStreamedSnowMode;
 
 /**

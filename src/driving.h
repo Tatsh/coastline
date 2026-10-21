@@ -27,10 +27,18 @@ typedef struct {
  * The variables of the searches for straight lines, cleared each frame, ending in a NULL start.
  *
  * @ghidraAddress USA: 0x8028b834
+ * @ghidraAddress JPN: 0x8028d514
+ * @ghidraAddress EUR: 0x8028dae4
  */
 extern PerFrameVariable g_aPerFrameVariables[];
 
-/** The axis that points up. @ghidraAddress USA: 0x8028bab0 */
+/**
+ * The axis that points up.
+ *
+ * @ghidraAddress USA: 0x8028bab0
+ * @ghidraAddress JPN: 0x8028d794
+ * @ghidraAddress EUR: 0x8028dd64
+ */
 extern Vec3f g_vUpAxis;
 
 /**
@@ -49,47 +57,113 @@ extern f32 g_aafAiVelocityRetention[SEASONS][SEASON_RACES][2];
  */
 extern s32 g_bReplayCockpitNext;
 
-/** The jolts each vehicle took, from 0 to 5. @ghidraAddress USA: 0x8031b1d8 */
+/**
+ * The jolts each vehicle took, from 0 to 5.
+ *
+ * @ghidraAddress USA: 0x8031b1d8
+ * @ghidraAddress JPN: 0x8031c308
+ * @ghidraAddress EUR: 0x8031d6d8
+ */
 extern f32 g_afVehicleJolts[];
 
-/** The deepest a search reached along a straight line. @ghidraAddress USA: 0x8028b804 */
+/**
+ * The deepest a search reached along a straight line.
+ *
+ * @ghidraAddress USA: 0x8028b804
+ * @ghidraAddress JPN: 0x8028d4e4
+ * @ghidraAddress EUR: 0x8028dab4
+ */
 extern s32 g_dwBestTraceDepth;
 
-/** The section and point where that search started. @ghidraAddress USA: 0x8028b814 */
+/**
+ * The section and point where that search started.
+ *
+ * @ghidraAddress USA: 0x8028b814
+ * @ghidraAddress JPN: 0x8028d4f4
+ * @ghidraAddress EUR: 0x8028dac4
+ */
 extern TrackSection *g_pBestTraceSection;
 
-/** @ghidraAddress USA: 0x8028b810 */
+/**
+ * @ghidraAddress USA: 0x8028b810
+ * @ghidraAddress JPN: 0x8028d4f0
+ * @ghidraAddress EUR: 0x8028dac0
+ */
 extern s32 g_dwBestTracePoint;
 
-/** The points of that line. @ghidraAddress USA: 0x8028b800 */
+/**
+ * The points of that line.
+ *
+ * @ghidraAddress USA: 0x8028b800
+ * @ghidraAddress JPN: 0x8028d4e0
+ * @ghidraAddress EUR: 0x8028dab0
+ */
 extern s32 g_dwBestTraceLength;
 
-/** Cleared at the start of a search and never read. @ghidraAddress USA: 0x8028b81c */
+/**
+ * Cleared at the start of a search and never read.
+ *
+ * @ghidraAddress USA: 0x8028b81c
+ * @ghidraAddress JPN: 0x8028d4fc
+ * @ghidraAddress EUR: 0x8028dacc
+ */
 extern s32 g_dwTraceUnusedA;
 
-/** Cleared at the start of a search and never read. @ghidraAddress USA: 0x8028b818 */
+/**
+ * Cleared at the start of a search and never read.
+ *
+ * @ghidraAddress USA: 0x8028b818
+ * @ghidraAddress JPN: 0x8028d4f8
+ * @ghidraAddress EUR: 0x8028dac8
+ */
 extern s32 g_dwTraceUnusedB;
 
-/** Set when a line of a search left the route; never read. @ghidraAddress USA: 0x8028b820 */
+/**
+ * Set when a line of a search left the route; never read.
+ *
+ * @ghidraAddress USA: 0x8028b820
+ * @ghidraAddress JPN: 0x8028d500
+ * @ghidraAddress EUR: 0x8028dad0
+ */
 extern s32 g_bTraceBlocked;
 
 /**
  * Whether a computer's vehicle should ease to the left or to the right of where it steers.
  *
  * @ghidraAddress USA: 0x8028b80c
+ * @ghidraAddress JPN: 0x8028d4ec
+ * @ghidraAddress EUR: 0x8028dabc
  */
 extern s32 g_bAiNudgeLeft;
 
-/** @ghidraAddress USA: 0x8028b808 */
+/**
+ * @ghidraAddress USA: 0x8028b808
+ * @ghidraAddress JPN: 0x8028d4e8
+ * @ghidraAddress EUR: 0x8028dab8
+ */
 extern s32 g_bAiNudgeRight;
 
-/** The lanes and the middle of the deepest straight line. @ghidraAddress USA: 0x8031b430 */
+/**
+ * The lanes and the middle of the deepest straight line.
+ *
+ * @ghidraAddress USA: 0x8031b430
+ * @ghidraAddress JPN: 0x8031c560
+ * @ghidraAddress EUR: 0x8031d930
+ */
 extern Vec3f g_avBestLeftLane[TRACE_DEPTH];
 
-/** @ghidraAddress USA: 0x8031b490 */
+/**
+ * @ghidraAddress USA: 0x8031b490
+ * @ghidraAddress JPN: 0x8031c5c0
+ * @ghidraAddress EUR: 0x8031d990
+ */
 extern Vec3f g_avBestCenterLine[TRACE_DEPTH];
 
-/** @ghidraAddress USA: 0x8031b4f0 */
+/**
+ * @ghidraAddress USA: 0x8031b4f0
+ * @ghidraAddress JPN: 0x8031c620
+ * @ghidraAddress EUR: 0x8031d9f0
+ */
 extern Vec3f g_avBestRightLane[TRACE_DEPTH];
 
 /**
@@ -112,16 +186,28 @@ extern Vec3f g_avTraceRightHalf[TRACE_DEPTH];
 /** @ghidraAddress USA: 0x8031b6d0 */
 extern Vec3f g_avTraceRightLane[TRACE_DEPTH];
 
-/** The last point of the deepest line, and its point halfway. @ghidraAddress USA: 0x8031b730 */
+/**
+ * The last point of the deepest line, and its point halfway.
+ *
+ * @ghidraAddress USA: 0x8031b730
+ * @ghidraAddress JPN: 0x8031c860
+ * @ghidraAddress EUR: 0x8031dc30
+ */
 extern Vec3f g_vTraceFarPoint;
 
-/** @ghidraAddress USA: 0x8031b740 */
+/**
+ * @ghidraAddress USA: 0x8031b740
+ * @ghidraAddress JPN: 0x8031c870
+ * @ghidraAddress EUR: 0x8031dc40
+ */
 extern Vec3f g_vTraceHalfwayPoint;
 
 /**
  * Clear the variables g_aPerFrameVariables lists.
  *
  * @ghidraAddress USA: 0x80225f30
+ * @ghidraAddress JPN: 0x80226a60
+ * @ghidraAddress EUR: 0x80227270
  */
 void ClearPerFrameVariables(void);
 
@@ -131,6 +217,8 @@ void ClearPerFrameVariables(void);
  * @param index The index of the vehicle.
  * @param amount The jolt.
  * @ghidraAddress USA: 0x8021be28
+ * @ghidraAddress JPN: 0x8021c8d8
+ * @ghidraAddress EUR: 0x8021d008
  */
 void AddVehicleJolt(s32 index, f32 amount);
 
@@ -139,6 +227,8 @@ void AddVehicleJolt(s32 index, f32 amount);
  *
  * @param vehicle The vehicle.
  * @ghidraAddress USA: 0x80226488
+ * @ghidraAddress JPN: 0x80227170
+ * @ghidraAddress EUR: 0x80227980
  */
 void ProcessVehicleInputAndPhysics(Vehicle *vehicle);
 
@@ -151,6 +241,8 @@ void ProcessVehicleInputAndPhysics(Vehicle *vehicle);
  * @param section The section to search, or NULL for the start of the route.
  * @return Whether this search or one it made found a deeper line.
  * @ghidraAddress USA: 0x80226d9c
+ * @ghidraAddress JPN: 0x802278f0
+ * @ghidraAddress EUR: 0x80228100
  */
 s32 TraceTrackSplineRecursive(Vehicle *vehicle, s32 depth, s32 pointIndex, TrackSection *section);
 
@@ -160,6 +252,8 @@ s32 TraceTrackSplineRecursive(Vehicle *vehicle, s32 depth, s32 pointIndex, Track
  *
  * @param vehicle The vehicle.
  * @ghidraAddress USA: 0x80227214
+ * @ghidraAddress JPN: 0x80227d68
+ * @ghidraAddress EUR: 0x80228578
  */
 void ComputeTrackPosition(Vehicle *vehicle);
 
@@ -169,6 +263,8 @@ void ComputeTrackPosition(Vehicle *vehicle);
  *
  * @param vehicle The vehicle.
  * @ghidraAddress USA: 0x8022762c
+ * @ghidraAddress JPN: 0x80228180
+ * @ghidraAddress EUR: 0x80228990
  */
 void UpdateAiVehicleBehavior(Vehicle *vehicle);
 
