@@ -71,11 +71,13 @@ void __osPfsRequestData(u8 cmd) {
 }
 
 void __osPfsGetInitData(u8 *pattern, OSContStatus *data) {
-    u8 *ptr = (u8 *)__osPfsPifRam.ramarray;
+    u8 *ptr;
     __OSContRequesFormat requestformat;
     int i;
-    u8 bits = 0;
+    u8 bits;
 
+    bits = 0;
+    ptr = (u8 *)__osPfsPifRam.ramarray;
     for (i = 0; i < __osMaxControllers; i++, ptr += sizeof(requestformat), data++) {
         requestformat = *(__OSContRequesFormat *)ptr;
         data->errno = CHNL_ERR(requestformat);

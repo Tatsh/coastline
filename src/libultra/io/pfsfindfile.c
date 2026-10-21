@@ -18,7 +18,7 @@ s32 osPfsFindFile(
             fail = 0;
             if (game_name != NULL) {
                 for (i = 0; i < (int)sizeof(dir.game_name); i++) {
-                    if (game_name[i] != dir.game_name[i]) {
+                    if (dir.game_name[i] != game_name[i]) {
                         fail = 1;
                         break;
                     }
@@ -26,7 +26,7 @@ s32 osPfsFindFile(
             }
             if (ext_name != NULL && fail == 0) {
                 for (i = 0; i < (int)sizeof(dir.ext_name); i++) {
-                    if (ext_name[i] != dir.ext_name[i]) {
+                    if (dir.ext_name[i] != ext_name[i]) {
                         fail = 1;
                         break;
                     }

@@ -2,10 +2,13 @@
 
 u16 __osSumcalc(u8 *ptr, int length) {
     int i;
-    u32 sum = 0;
+    u32 sum;
+    u8 *tmp;
 
+    sum = 0;
+    tmp = ptr;
     for (i = 0; i < length; i++) {
-        sum += *ptr++;
+        sum += *tmp++;
         sum &= 0xFFFF;
     }
     return sum;

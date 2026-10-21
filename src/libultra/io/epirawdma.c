@@ -5,12 +5,12 @@
 s32 osEPiRawStartDma(OSPiHandle *pihandle, s32 direction, u32 devAddr, void *dramAddr, u32 size) {
     u32 stat;
     u32 domain;
-    OSPiHandle *curHandle;
 
     WAIT_ON_IOBUSY(stat);
     domain = pihandle->domain;
-    curHandle = __osCurrentHandle[domain];
-    if (curHandle != pihandle) {
+    if (__osCurrentHandle[domain] != pihandle) {
+        OSPiHandle *curHandle = __osCurrentHandle[domain];
+
         if (domain == PI_DOMAIN1) {
             if (curHandle->latency != pihandle->latency) {
                 IO_WRITE(PI_BSD_DOM1_LAT_REG, pihandle->latency);

@@ -9,7 +9,7 @@ u8 __osContAddressCrc(u16 addr) {
     for (i = 0; i < 16; i++) {
         temp2 = (temp & 0x10) ? 0x15 : 0;
         temp <<= 1;
-        temp |= (addr & 0x400) ? 1 : 0;
+        temp |= (u8)((addr & 0x400) ? 1 : 0);
         addr <<= 1;
         temp ^= temp2;
     }
@@ -28,8 +28,8 @@ u8 __osContDataCrc(u8 *data) {
             temp2 = (temp & 0x80) ? 0x85 : 0;
             temp <<= 1;
             if (i == BLOCKSIZE) {
-                /* The original masks the shifted value to a byte, which it already is. */
-                temp &= 0xFF;
+                /* The pass after the last byte shifts in a zero bit, which the original ORs in. */
+                temp |= 0;
             } else {
                 temp |= (*data & (1 << j)) ? 1 : 0;
             }

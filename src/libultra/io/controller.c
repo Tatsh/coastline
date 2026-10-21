@@ -42,11 +42,13 @@ s32 osContInit(OSMesgQueue *mq, u8 *bitpattern, OSContStatus *data) {
 }
 
 void __osContGetInitData(u8 *pattern, OSContStatus *data) {
-    u8 *ptr = (u8 *)__osContPifRam.ramarray;
+    u8 *ptr;
     __OSContRequesFormat requestformat;
     int i;
-    u8 bits = 0;
+    u8 bits;
 
+    bits = 0;
+    ptr = (u8 *)__osContPifRam.ramarray;
     for (i = 0; i < __osMaxControllers; i++, ptr += sizeof(requestformat), data++) {
         requestformat = *(__OSContRequesFormat *)ptr;
         data->errno = CHNL_ERR(requestformat);

@@ -1,38 +1,8 @@
 #include "../os/osint.h"
 #include "piint.h"
 
-/* Post the PI event, as the exception handler does for a PI interrupt.
- * @ghidraAddress USA: 0x8026e36c */
-static void __osLeoResume(void) {
-    __OSEventState *es = &__osEventStateTab[OS_EVENT_PI];
-    OSMesgQueue *mq = es->messageQueue;
-    s32 last;
-
-    if (mq == NULL || MQ_IS_FULL(mq)) {
-        return;
-    }
-    last = (mq->first + mq->validCount) % mq->msgCount;
-    mq->msg[last] = es->message;
-    mq->validCount++;
-    if (mq->mtqueue->next != NULL) {
-        __osEnqueueThread(&__osRunQueue, __osPopThread(&mq->mtqueue));
-    }
-}
-
-/* Reset the buffer manager after an error and end the transfer.
- * @ghidraAddress USA: 0x8026e284 */
-static void __osLeoAbnormalResume(void) {
-    __OSTranxInfo *info = &__osDiskHandle->transferInfo;
-    u32 pi_stat;
-
-    WAIT_ON_IOBUSY(pi_stat);
-    IO_WRITE(LEO_BM_CTL, info->bmCtlShadow | LEO_BM_CTL_RESET);
-    WAIT_ON_IOBUSY(pi_stat);
-    IO_WRITE(LEO_BM_CTL, info->bmCtlShadow);
-    __osLeoResume();
-    IO_WRITE(PI_STATUS_REG, PI_STATUS_CLR_INTR);
-    __OSGlobalIntMask |= OS_IM_PI;
-}
+static void __osLeoAbnormalResume(void);
+static void __osLeoResume(void);
 
 s32 __osLeoInterrupt(void) {
     u32 stat = 0;
@@ -191,4 +161,37 @@ s32 __osLeoInterrupt(void) {
     blockInfo->errStatus = LEO_ERROR_4;
     __osLeoAbnormalResume();
     return 1;
+}
+
+/* Reset the buffer manager after an error and end the transfer.
+ * @ghidraAddress USA: 0x8026e284 */
+static void __osLeoAbnormalResume(void) {
+    __OSTranxInfo *info = &__osDiskHandle->transferInfo;
+    u32 pi_stat;
+
+    WAIT_ON_IOBUSY(pi_stat);
+    IO_WRITE(LEO_BM_CTL, info->bmCtlShadow | LEO_BM_CTL_RESET);
+    WAIT_ON_IOBUSY(pi_stat);
+    IO_WRITE(LEO_BM_CTL, info->bmCtlShadow);
+    __osLeoResume();
+    IO_WRITE(PI_STATUS_REG, PI_STATUS_CLR_INTR);
+    __OSGlobalIntMask |= OS_IM_PI;
+}
+
+/* Post the PI event, as the exception handler does for a PI interrupt.
+ * @ghidraAddress USA: 0x8026e36c */
+static void __osLeoResume(void) {
+    __OSEventState *es = &__osEventStateTab[OS_EVENT_PI];
+    OSMesgQueue *mq = es->messageQueue;
+    s32 last;
+
+    if (mq == NULL || MQ_IS_FULL(mq)) {
+        return;
+    }
+    last = (mq->first + mq->validCount) % mq->msgCount;
+    mq->msg[last] = es->message;
+    mq->validCount++;
+    if (mq->mtqueue->next != NULL) {
+        __osEnqueueThread(&__osRunQueue, __osPopThread(&mq->mtqueue));
+    }
 }

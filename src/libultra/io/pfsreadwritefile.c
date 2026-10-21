@@ -26,15 +26,15 @@ static s32 __osPfsGetNextPage(OSPfs *pfs, u8 *bank, __OSInode *inode, __OSInodeU
 
 s32 osPfsReadWriteFile(
     OSPfs *pfs, s32 file_no, u8 flag, int offset, int size_in_bytes, u8 *data_buffer) {
-    int cur_block;
-    int siz_block;
-    u8 *buffer;
+    s32 ret;
     __OSDir dir;
     __OSInode inode;
     __OSInodeUnit cur_page;
-    u16 blockno;
+    int cur_block;
+    int siz_block;
+    u8 *buffer;
     u8 bank;
-    s32 ret;
+    u16 blockno;
 
     if (file_no >= pfs->dir_size || file_no < 0) {
         return PFS_ERR_INVALID;

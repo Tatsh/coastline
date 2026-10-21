@@ -58,7 +58,7 @@ s32 osPfsFileState(OSPfs *pfs, s32 file_no, OSPfsState *state) {
         return PFS_ERR_INCONSISTENT;
     }
 
-    state->file_size = pages * PFS_ONE_PAGE * BLOCKSIZE;
+    state->file_size = pages * (PFS_ONE_PAGE * BLOCKSIZE);
     state->company_code = dir.company_code;
     state->game_code = dir.game_code;
     for (j = 0; j < (int)sizeof(dir.game_name); j++) {

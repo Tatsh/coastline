@@ -4,72 +4,8 @@
  * picks one of 8 rows. */
 #define CACHE_INDEX(unit) ((unit).inode_t.page / 4 + ((unit).inode_t.bank % 8) * BLOCKSIZE)
 
-/* Record which banks point into the pages of which other banks.
- * @ghidraAddress USA: 0x80263144 */
-static s32 corrupted_init(OSPfs *pfs, __OSInodeCache *cache) {
-    int i;
-    int n;
-    int offset;
-    u8 bank;
-    __OSInodeUnit tpage;
-    __OSInode tmp_inode;
-    s32 ret;
-
-    for (i = 0; i < 256; i++) {
-        cache->map[i] = 0;
-    }
-    cache->bank = -1;
-
-    for (bank = 0; bank < pfs->banks; bank++) {
-        offset = (bank > 0) ? 1 : pfs->inode_start_page;
-        ret = __osPfsRWInode(pfs, &tmp_inode, PFS_READ, bank);
-        if (ret != 0 && ret != PFS_ERR_INCONSISTENT) {
-            return ret;
-        }
-        for (i = offset; i < PFS_INODE_SIZE_PER_PAGE; i++) {
-            tpage = tmp_inode.inode_page[i];
-            if (tpage.ipage >= pfs->inode_start_page && tpage.inode_t.bank != bank) {
-                n = CACHE_INDEX(tpage);
-                cache->map[n] |= 1 << (bank % 8);
-            }
-        }
-    }
-    return 0;
-}
-
-/* Return how many page table entries point at fpage, or PFS_ERR_NEW_PACK once two do.
- * @ghidraAddress USA: 0x802632f8 */
-static s32 corrupted(OSPfs *pfs, __OSInodeUnit fpage, __OSInodeCache *cache) {
-    int j;
-    int n;
-    int hit = 0;
-    u8 bank;
-    int offset;
-    s32 ret = 0;
-
-    n = CACHE_INDEX(fpage);
-    for (bank = 0; bank < pfs->banks; bank++) {
-        offset = (bank > 0) ? 1 : pfs->inode_start_page;
-        if (bank == fpage.inode_t.bank || (cache->map[n] & (1 << (bank % 8)))) {
-            if (bank != cache->bank) {
-                ret = __osPfsRWInode(pfs, &cache->inode, PFS_READ, bank);
-                if (ret != 0 && ret != PFS_ERR_INCONSISTENT) {
-                    return ret;
-                }
-                cache->bank = bank;
-            }
-            for (j = offset; hit < 2 && j < PFS_INODE_SIZE_PER_PAGE; j++) {
-                if (cache->inode.inode_page[j].ipage == fpage.ipage) {
-                    hit++;
-                }
-            }
-            if (hit >= 2) {
-                return PFS_ERR_NEW_PACK;
-            }
-        }
-    }
-    return hit;
-}
+static s32 corrupted_init(OSPfs *pfs, __OSInodeCache *cache);
+static s32 corrupted(OSPfs *pfs, __OSInodeUnit fpage, __OSInodeCache *cache);
 
 s32 osPfsChecker(OSPfs *pfs) {
     int j;
@@ -82,8 +18,8 @@ s32 osPfsChecker(OSPfs *pfs) {
     __OSInodeCache cache;
     int fixed = 0;
     u8 bank;
-    int offset;
     int cc, cl;
+    int offset;
 
     ret = __osCheckId(pfs);
     if (ret == PFS_ERR_NEW_PACK) {
@@ -98,7 +34,7 @@ s32 osPfsChecker(OSPfs *pfs) {
     for (j = 0; j < pfs->dir_size; j++) {
         ERRCK(__osContRamRead(pfs->queue, pfs->channel, pfs->dir_table + j, (u8 *)&tmp_dir));
         if (tmp_dir.company_code != 0 && tmp_dir.game_code != 0) {
-            next_node.ipage = tmp_dir.start_page.ipage;
+            next_node = tmp_dir.start_page;
             cc = 0;
             cl = 0;
             bank = 0xFF;
@@ -118,7 +54,7 @@ s32 osPfsChecker(OSPfs *pfs) {
                     break;
                 }
                 cl = 1;
-                next_node.ipage = tmp_inode.inode_page[next_node.inode_t.page].ipage;
+                next_node = tmp_inode.inode_page[next_node.inode_t.page];
             }
             if (cc != 0 || next_node.ipage != PFS_EOF) {
                 tmp_dir.company_code = 0;
@@ -188,4 +124,71 @@ s32 osPfsChecker(OSPfs *pfs) {
         pfs->status &= ~PFS_CORRUPTED;
     }
     return 0;
+}
+
+/* Record which banks point into the pages of which other banks.
+ * @ghidraAddress USA: 0x80263144 */
+static s32 corrupted_init(OSPfs *pfs, __OSInodeCache *cache) {
+    int i;
+    int n;
+    int offset;
+    u8 bank;
+    __OSInodeUnit tpage;
+    __OSInode tmp_inode;
+    s32 ret;
+
+    for (i = 0; i < 256; i++) {
+        cache->map[i] = 0;
+    }
+    cache->bank = -1;
+
+    for (bank = 0; bank < pfs->banks; bank++) {
+        offset = (bank > 0) ? 1 : pfs->inode_start_page;
+        ret = __osPfsRWInode(pfs, &tmp_inode, PFS_READ, bank);
+        if (ret != 0 && ret != PFS_ERR_INCONSISTENT) {
+            return ret;
+        }
+        for (i = offset; i < PFS_INODE_SIZE_PER_PAGE; i++) {
+            tpage = tmp_inode.inode_page[i];
+            if (tpage.ipage >= pfs->inode_start_page && tpage.inode_t.bank != bank) {
+                n = CACHE_INDEX(tpage);
+                cache->map[n] |= 1 << (bank % 8);
+            }
+        }
+    }
+    return 0;
+}
+
+/* Return how many page table entries point at fpage, or PFS_ERR_NEW_PACK once two do.
+ * @ghidraAddress USA: 0x802632f8 */
+static s32 corrupted(OSPfs *pfs, __OSInodeUnit fpage, __OSInodeCache *cache) {
+    int j;
+    int n;
+    int hit = 0;
+    u8 bank;
+    int offset;
+    s32 ret = 0;
+
+    n = CACHE_INDEX(fpage);
+    for (bank = 0; bank < pfs->banks; bank++) {
+        offset = (bank > 0) ? 1 : pfs->inode_start_page;
+        if (bank == fpage.inode_t.bank || (cache->map[n] & (1 << (bank % 8)))) {
+            if (bank != cache->bank) {
+                ret = __osPfsRWInode(pfs, &cache->inode, PFS_READ, bank);
+                if (ret != 0 && ret != PFS_ERR_INCONSISTENT) {
+                    return ret;
+                }
+                cache->bank = bank;
+            }
+            for (j = offset; hit < 2 && j < PFS_INODE_SIZE_PER_PAGE; j++) {
+                if (cache->inode.inode_page[j].ipage == fpage.ipage) {
+                    hit++;
+                }
+            }
+            if (hit >= 2) {
+                return PFS_ERR_NEW_PACK;
+            }
+        }
+    }
+    return hit;
 }

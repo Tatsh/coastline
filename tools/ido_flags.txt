@@ -5,6 +5,7 @@ src/libultra/libc/ll.c -O1 -mips3 -32
 src/libultra/libc/llcvt.c -O1 -mips3 -32
 src/libultra/libc/* -O3
 src/libultra/io/* -O1
+src/libultra/os/syncprintf.c -O2
 src/libultra/os/* -O1
 src/libultra/* -O1 | -O2 | -O3 | -O2 -g3 | -O1 -mips1
 3rdparty/zlib-1.0.4/* -O1 | -O2 | -O3
