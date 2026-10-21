@@ -1,3 +1,5 @@
 * text=auto eol=lf
 *.lock binary
 /.yarn/**/*.cjs binary
+/3rdparty/** -text linguist-vendored
+/src/platform/n64/data-*.s linguist-generated

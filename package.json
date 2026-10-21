@@ -1,7 +1,7 @@
 {
   "_wiswa": {
     "commandLine": "wiswa --skip-remote -q",
-    "lastRun": "2026-10-21T03:42:51Z",
+    "lastRun": "2026-10-21T04:12:52Z",
     "version": "7f9c68f"
   },
   "contributors": ["Andrew Udvare <audvare@gmail.com>"],
@@ -30,7 +30,9 @@
       ".wiswa-ci/**",
       "dist/**",
       "man/**",
-      "progress/**"
+      "3rdparty/**",
+      "progress/**",
+      "src/platform/n64/data-*.s"
     ],
     "language": "en-GB",
     "languageSettings": [
@@ -72,6 +74,7 @@
     },
     "gitignore": true,
     "globs": ["**/*.md", "**/*.mdc"],
+    "ignores": ["3rdparty/**"],
     "noBanner": true,
     "showFound": true
   },

@@ -60,9 +60,8 @@
     ReflowComments: true,
   },
   // One configure and build preset per variant, the all preset that builds every variant as a
-  // superbuild, and a workflow for each that configures and builds in one command. No cross
-  // toolchain is chosen yet. The vcpkg preset is kept for inheritance and hidden. The n64 and win
-  // presets gain their toolchain files when the builds are set up.
+  // superbuild, and a workflow for each that configures and builds in one command. The vcpkg
+  // preset is retained for inheritance and hidden.
   local variants = ['n64-' + region for region in ['us', 'jp', 'eu']] +
                    ['win-' + renderer for renderer in ['d3d', 'glide']],
   cmake_presets+: {
@@ -74,8 +73,24 @@
         hidden: true,
         name: 'base',
       },
-      { cacheVariables: { TGR_PLATFORM: 'n64' }, hidden: true, inherits: 'base', name: 'n64' },
-      { cacheVariables: { TGR_PLATFORM: 'win' }, hidden: true, inherits: 'base', name: 'win' },
+      {
+        cacheVariables: {
+          CMAKE_TOOLCHAIN_FILE: '${sourceDir}/cmake/n64-toolchain.cmake',
+          TGR_PLATFORM: 'n64',
+        },
+        hidden: true,
+        inherits: 'base',
+        name: 'n64',
+      },
+      {
+        cacheVariables: {
+          CMAKE_TOOLCHAIN_FILE: '${sourceDir}/cmake/win-toolchain.cmake',
+          TGR_PLATFORM: 'win',
+        },
+        hidden: true,
+        inherits: 'base',
+        name: 'win',
+      },
     ] + [
       { cacheVariables: { TGR_REGION: region }, inherits: 'n64', name: 'n64-' + region }
       for region in ['us', 'jp', 'eu']
@@ -86,9 +101,9 @@
       { cacheVariables: { TGR_VARIANTS: 'all' }, inherits: 'base', name: 'all' },
     ],
     buildPresets: [
-      { configurePreset: variant, name: variant, targets: ['archives'] }
-      for variant in variants
-    ] + [{ configurePreset: 'all', name: 'all' }],
+      { configurePreset: preset, name: preset }
+      for preset in variants + ['all']
+    ],
     workflowPresets: [
       {
         name: preset,
@@ -99,12 +114,24 @@
   },
   // ROM images used for comparison.
   shared_ignore+: ['*.n64', '*.v64', '*.z64', '__pycache__/'],
-  // The generated progress tables list every routine name and prototype.
+  // The generated progress tables list every routine name and prototype, the exported data of the
+  // original image is hexadecimal, and the vendored sources retain their upstream style.
   package_json+: {
     cspell+: {
-      ignorePaths+: ['progress/**'],
+      ignorePaths+: ['3rdparty/**', 'progress/**', 'src/platform/n64/data-*.s'],
+    },
+    'markdownlint-cli2'+: {
+      ignores: ['3rdparty/**'],
     },
   },
+  pre_commit_config+: {
+    exclude: '^(3rdparty/|src/platform/n64/data-.*\\.s$)',
+  },
+  gitattributes+: [
+    '/3rdparty/** -text linguist-vendored',
+    '/src/platform/n64/data-*.s linguist-generated',
+  ],
+  prettierignore+: ['/3rdparty/'],
   // The host tools under tools/ need these packages to build. The N64 build does not use vcpkg.
   vcpkg+: {
     dependencies: [

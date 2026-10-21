@@ -41,6 +41,7 @@
 /.yarn/install-state.gz
 /.zprofile
 /.zshrc
+/3rdparty/
 /CMakeUserPresets.json
 /HANDOFF.md
 /build/
