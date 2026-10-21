@@ -35,10 +35,13 @@
 #define INPUT_EBRAKE 0x00080000
 #define INPUT_GEAR_UP 0x00100000
 #define INPUT_GEAR_DOWN 0x00200000
-/* Three more actions the C buttons give, whose use is not reconstructed yet. */
-#define INPUT_RACE_ACTION_24 0x01000000
-#define INPUT_RACE_ACTION_26 0x04000000
-#define INPUT_RACE_ACTION_27 0x08000000
+/* The views the C buttons choose: the cockpit, the trackside camera, the chase camera and the
+ * bumper. The computer's drivers ask for the trackside camera. */
+#define INPUT_VIEW_COCKPIT 0x01000000
+#define INPUT_VIEW_TRACKSIDE 0x02000000
+#define INPUT_VIEW_CHASE 0x04000000
+#define INPUT_VIEW_BUMPER 0x08000000
+#define INPUT_VIEWS 0x0F000000
 
 /** The actions a recording keeps, with the steering. */
 #define INPUT_RECORDED_ACTIONS 0x003F0000

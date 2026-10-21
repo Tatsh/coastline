@@ -191,13 +191,13 @@ void TranslateControllerInput(PlayerInputState *state) {
                 state->buttons |= BrakeAction(state->buttons);
             }
             if (state->buttons & INPUT_C_UP) {
-                state->buttons |= INPUT_RACE_ACTION_24;
+                state->buttons |= INPUT_VIEW_COCKPIT;
             }
             if (state->buttons & INPUT_C_DOWN) {
-                state->buttons |= INPUT_RACE_ACTION_26;
+                state->buttons |= INPUT_VIEW_CHASE;
             }
             if (state->buttons & INPUT_C_LEFT) {
-                state->buttons |= INPUT_RACE_ACTION_27;
+                state->buttons |= INPUT_VIEW_BUMPER;
             }
             break;
         case 1:
@@ -221,13 +221,13 @@ void TranslateControllerInput(PlayerInputState *state) {
                 state->buttons |= INPUT_EBRAKE;
             }
             if (state->buttons & INPUT_C_UP) {
-                state->buttons |= INPUT_RACE_ACTION_24;
+                state->buttons |= INPUT_VIEW_COCKPIT;
             }
             if (state->buttons & INPUT_C_RIGHT) {
-                state->buttons |= INPUT_RACE_ACTION_26;
+                state->buttons |= INPUT_VIEW_CHASE;
             }
             if (state->buttons & INPUT_C_LEFT) {
-                state->buttons |= INPUT_RACE_ACTION_27;
+                state->buttons |= INPUT_VIEW_BUMPER;
             }
             break;
         case 2:
@@ -253,13 +253,13 @@ void TranslateControllerInput(PlayerInputState *state) {
                 state->buttons |= INPUT_GEAR_UP;
             }
             if (state->buttons & INPUT_C_UP) {
-                state->buttons |= INPUT_RACE_ACTION_24;
+                state->buttons |= INPUT_VIEW_COCKPIT;
             }
             if (state->buttons & INPUT_C_DOWN) {
-                state->buttons |= INPUT_RACE_ACTION_26;
+                state->buttons |= INPUT_VIEW_CHASE;
             }
             if (state->buttons & INPUT_C_LEFT) {
-                state->buttons |= INPUT_RACE_ACTION_27;
+                state->buttons |= INPUT_VIEW_BUMPER;
             }
             break;
         case 3:
@@ -280,13 +280,13 @@ void TranslateControllerInput(PlayerInputState *state) {
                 state->buttons |= INPUT_GEAR_UP;
             }
             if (state->buttons & INPUT_C_UP) {
-                state->buttons |= INPUT_RACE_ACTION_24;
+                state->buttons |= INPUT_VIEW_COCKPIT;
             }
             if (state->buttons & INPUT_C_DOWN) {
-                state->buttons |= INPUT_RACE_ACTION_26;
+                state->buttons |= INPUT_VIEW_CHASE;
             }
             if (state->buttons & INPUT_C_LEFT) {
-                state->buttons |= INPUT_RACE_ACTION_27;
+                state->buttons |= INPUT_VIEW_BUMPER;
             }
             break;
         }

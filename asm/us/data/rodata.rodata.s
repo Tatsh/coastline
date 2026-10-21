@@ -7796,444 +7796,444 @@ dlabel g_szCarSoundEffectOverflow
 enddlabel g_szCarSoundEffectOverflow
 .align 2
 
-nonmatching g_fConst_0p01_9bbc
+nonmatching g_fConst0p01_802a9bbc
 
-dlabel g_fConst_0p01_9bbc
+dlabel g_fConst0p01_802a9bbc
     /* AABBC 802A9BBC 3C23D70A */ .float 0.009999999776
-enddlabel g_fConst_0p01_9bbc
+enddlabel g_fConst0p01_802a9bbc
 
-nonmatching g_fConst_0p1_9bc0
+nonmatching g_fConst0p1_802a9bc0
 
-dlabel g_fConst_0p1_9bc0
+dlabel g_fConst0p1_802a9bc0
     /* AABC0 802A9BC0 3DCCCCCD */ .float 0.1000000015
-enddlabel g_fConst_0p1_9bc0
+enddlabel g_fConst0p1_802a9bc0
 
-nonmatching g_dwDmaQueueSize
+nonmatching g_fConst0p1_802a9bc4
 
-dlabel g_dwDmaQueueSize
+dlabel g_fConst0p1_802a9bc4
     /* AABC4 802A9BC4 3DCCCCCD */ .float 0.1000000015
-enddlabel g_dwDmaQueueSize
+enddlabel g_fConst0p1_802a9bc4
 
-nonmatching g_dwDmaQueueCount
+nonmatching g_fConst0p9_802a9bc8
 
-dlabel g_dwDmaQueueCount
+dlabel g_fConst0p9_802a9bc8
     /* AABC8 802A9BC8 3F666666 */ .float 0.8999999762
-enddlabel g_dwDmaQueueCount
+enddlabel g_fConst0p9_802a9bc8
 
-nonmatching g_dwDmaQueueMax
+nonmatching g_fConstNeg0p1_802a9bcc
 
-dlabel g_dwDmaQueueMax
+dlabel g_fConstNeg0p1_802a9bcc
     /* AABCC 802A9BCC BDCCCCCD */ .float -0.1000000015
-enddlabel g_dwDmaQueueMax
+enddlabel g_fConstNeg0p1_802a9bcc
 
-nonmatching g_dwDmaPendingCount
+nonmatching g_fConst0p9_802a9bd0
 
-dlabel g_dwDmaPendingCount
+dlabel g_fConst0p9_802a9bd0
     /* AABD0 802A9BD0 3F666666 */ .float 0.8999999762
-enddlabel g_dwDmaPendingCount
+enddlabel g_fConst0p9_802a9bd0
 
-nonmatching g_dwDmaBusy
+nonmatching g_fConst22500_802a9bd4
 
-dlabel g_dwDmaBusy
+dlabel g_fConst22500_802a9bd4
     /* AABD4 802A9BD4 46AFC800 */ .float 22500
-enddlabel g_dwDmaBusy
+enddlabel g_fConst22500_802a9bd4
 
-nonmatching g_dwDmaLastAddr
+nonmatching g_fConst168p5_802a9bd8
 
-dlabel g_dwDmaLastAddr
+dlabel g_fConst168p5_802a9bd8
     /* AABD8 802A9BD8 43288000 */ .float 168.5
-enddlabel g_dwDmaLastAddr
+enddlabel g_fConst168p5_802a9bd8
 
-nonmatching g_dwDmaLastSize
+nonmatching g_fConst167p5_802a9bdc
 
-dlabel g_dwDmaLastSize
+dlabel g_fConst167p5_802a9bdc
     /* AABDC 802A9BDC 43278000 */ .float 167.5
-enddlabel g_dwDmaLastSize
+enddlabel g_fConst167p5_802a9bdc
 
-nonmatching g_dwDmaReserved0
+nonmatching g_fConst168p4_802a9be0
 
-dlabel g_dwDmaReserved0
+dlabel g_fConst168p4_802a9be0
     /* AABE0 802A9BE0 43286666 */ .float 168.3999939
-enddlabel g_dwDmaReserved0
+enddlabel g_fConst168p4_802a9be0
 
-nonmatching g_dwDmaReserved1
+nonmatching g_fConst0p2_802a9be4
 
-dlabel g_dwDmaReserved1
+dlabel g_fConst0p2_802a9be4
     /* AABE4 802A9BE4 3E4CCCCD */ .float 0.200000003
-enddlabel g_dwDmaReserved1
+enddlabel g_fConst0p2_802a9be4
 
-nonmatching g_dwDmaReserved2
+nonmatching g_fConst0p025_802a9be8
 
-dlabel g_dwDmaReserved2
+dlabel g_fConst0p025_802a9be8
     /* AABE8 802A9BE8 3CCCCCCD */ .float 0.02500000037
-enddlabel g_dwDmaReserved2
+enddlabel g_fConst0p025_802a9be8
 
-nonmatching g_dwDmaReserved3
+nonmatching g_fConst0p3267_802a9bec
 
-dlabel g_dwDmaReserved3
+dlabel g_fConst0p3267_802a9bec
     /* AABEC 802A9BEC 3EA740DB */ .float 0.326666683
-enddlabel g_dwDmaReserved3
+enddlabel g_fConst0p3267_802a9bec
 
-nonmatching g_dwDmaReserved4
+nonmatching g_fConst0p4_802a9bf0
 
-dlabel g_dwDmaReserved4
+dlabel g_fConst0p4_802a9bf0
     /* AABF0 802A9BF0 3ECCCCCD */ .float 0.400000006
-enddlabel g_dwDmaReserved4
+enddlabel g_fConst0p4_802a9bf0
     /* AABF4 802A9BF4 00000000 */ .float 0
 
-nonmatching g_qwDmaReserved5
+nonmatching g_dConstNeg0p05_802a9bf8
 
-dlabel g_qwDmaReserved5
+dlabel g_dConstNeg0p05_802a9bf8
     /* AABF8 802A9BF8 BFA999999999999A */ .double -0.0500000000000000028
-enddlabel g_qwDmaReserved5
+enddlabel g_dConstNeg0p05_802a9bf8
 
-nonmatching g_dwDmaReserved6
+nonmatching g_fConstNeg0p2_802a9c00
 
-dlabel g_dwDmaReserved6
+dlabel g_fConstNeg0p2_802a9c00
     /* AAC00 802A9C00 BE4CCCCD */ .float -0.200000003
-enddlabel g_dwDmaReserved6
+enddlabel g_fConstNeg0p2_802a9c00
 
-nonmatching g_dwDmaReserved7
+nonmatching g_fConst0p03_802a9c04
 
-dlabel g_dwDmaReserved7
+dlabel g_fConst0p03_802a9c04
     /* AAC04 802A9C04 3CF5C28F */ .float 0.02999999933
-enddlabel g_dwDmaReserved7
+enddlabel g_fConst0p03_802a9c04
 
-nonmatching g_qwDmaReserved8
+nonmatching g_dConstNeg0p15_802a9c08
 
-dlabel g_qwDmaReserved8
+dlabel g_dConstNeg0p15_802a9c08
     /* AAC08 802A9C08 BFC3333333333333 */ .double -0.149999999999999994
-enddlabel g_qwDmaReserved8
+enddlabel g_dConstNeg0p15_802a9c08
 
-nonmatching g_dwDmaReserved9
+nonmatching g_fConstNeg0p3_802a9c10
 
-dlabel g_dwDmaReserved9
+dlabel g_fConstNeg0p3_802a9c10
     /* AAC10 802A9C10 BE99999A */ .float -0.3000000119
-enddlabel g_dwDmaReserved9
+enddlabel g_fConstNeg0p3_802a9c10
 
-nonmatching g_dwDmaReserved10
+nonmatching g_fConst0p1_802a9c14
 
-dlabel g_dwDmaReserved10
+dlabel g_fConst0p1_802a9c14
     /* AAC14 802A9C14 3DCCCCCD */ .float 0.1000000015
-enddlabel g_dwDmaReserved10
+enddlabel g_fConst0p1_802a9c14
 
-nonmatching g_qwDmaReserved11
+nonmatching g_dConst0p05_802a9c18
 
-dlabel g_qwDmaReserved11
+dlabel g_dConst0p05_802a9c18
     /* AAC18 802A9C18 3FA999999999999A */ .double 0.0500000000000000028
-enddlabel g_qwDmaReserved11
+enddlabel g_dConst0p05_802a9c18
 
-nonmatching g_dwDmaReserved12
+nonmatching g_fConst0p2_802a9c20
 
-dlabel g_dwDmaReserved12
+dlabel g_fConst0p2_802a9c20
     /* AAC20 802A9C20 3E4CCCCD */ .float 0.200000003
-enddlabel g_dwDmaReserved12
+enddlabel g_fConst0p2_802a9c20
 
-nonmatching g_dwDmaReserved13
+nonmatching g_fConst0p03_802a9c24
 
-dlabel g_dwDmaReserved13
+dlabel g_fConst0p03_802a9c24
     /* AAC24 802A9C24 3CF5C28F */ .float 0.02999999933
-enddlabel g_dwDmaReserved13
+enddlabel g_fConst0p03_802a9c24
 
-nonmatching g_qwDmaReserved14
+nonmatching g_dConst0p15_802a9c28
 
-dlabel g_qwDmaReserved14
+dlabel g_dConst0p15_802a9c28
     /* AAC28 802A9C28 3FC3333333333333 */ .double 0.149999999999999994
-enddlabel g_qwDmaReserved14
+enddlabel g_dConst0p15_802a9c28
 
-nonmatching g_dwDmaReserved15
+nonmatching g_fConst0p3_802a9c30
 
-dlabel g_dwDmaReserved15
+dlabel g_fConst0p3_802a9c30
     /* AAC30 802A9C30 3E99999A */ .float 0.3000000119
-enddlabel g_dwDmaReserved15
+enddlabel g_fConst0p3_802a9c30
 
-nonmatching g_dwDmaReserved16
+nonmatching g_fConst0p1_802a9c34
 
-dlabel g_dwDmaReserved16
+dlabel g_fConst0p1_802a9c34
     /* AAC34 802A9C34 3DCCCCCD */ .float 0.1000000015
-enddlabel g_dwDmaReserved16
+enddlabel g_fConst0p1_802a9c34
 
-nonmatching g_dwDmaReserved17
+nonmatching g_fConst0p1_802a9c38
 
-dlabel g_dwDmaReserved17
+dlabel g_fConst0p1_802a9c38
     /* AAC38 802A9C38 3DCCCCCD */ .float 0.1000000015
-enddlabel g_dwDmaReserved17
+enddlabel g_fConst0p1_802a9c38
 
-nonmatching g_dwDmaReserved18
+nonmatching g_fConstNeg0p1_802a9c3c
 
-dlabel g_dwDmaReserved18
+dlabel g_fConstNeg0p1_802a9c3c
     /* AAC3C 802A9C3C BDCCCCCD */ .float -0.1000000015
-enddlabel g_dwDmaReserved18
+enddlabel g_fConstNeg0p1_802a9c3c
 
-nonmatching g_dwDmaReserved19
+nonmatching g_fConst0p1_802a9c40
 
-dlabel g_dwDmaReserved19
+dlabel g_fConst0p1_802a9c40
     /* AAC40 802A9C40 3DCCCCCD */ .float 0.1000000015
-enddlabel g_dwDmaReserved19
+enddlabel g_fConst0p1_802a9c40
 
-nonmatching g_dwDmaReserved20
+nonmatching g_fConstNeg0p1_802a9c44
 
-dlabel g_dwDmaReserved20
+dlabel g_fConstNeg0p1_802a9c44
     /* AAC44 802A9C44 BDCCCCCD */ .float -0.1000000015
-enddlabel g_dwDmaReserved20
+enddlabel g_fConstNeg0p1_802a9c44
 
-nonmatching g_dwDmaReserved21
+nonmatching g_fConst0p1_802a9c48
 
-dlabel g_dwDmaReserved21
+dlabel g_fConst0p1_802a9c48
     /* AAC48 802A9C48 3DCCCCCD */ .float 0.1000000015
-enddlabel g_dwDmaReserved21
+enddlabel g_fConst0p1_802a9c48
 
-nonmatching g_dwDmaReserved22
+nonmatching g_fConstNeg0p1_802a9c4c
 
-dlabel g_dwDmaReserved22
+dlabel g_fConstNeg0p1_802a9c4c
     /* AAC4C 802A9C4C BDCCCCCD */ .float -0.1000000015
-enddlabel g_dwDmaReserved22
+enddlabel g_fConstNeg0p1_802a9c4c
 
-nonmatching g_dwDmaReserved23
+nonmatching g_fConst0p1_802a9c50
 
-dlabel g_dwDmaReserved23
+dlabel g_fConst0p1_802a9c50
     /* AAC50 802A9C50 3DCCCCCD */ .float 0.1000000015
-enddlabel g_dwDmaReserved23
+enddlabel g_fConst0p1_802a9c50
 
-nonmatching g_dwDmaReserved24
+nonmatching g_fConst0p4_802a9c54
 
-dlabel g_dwDmaReserved24
+dlabel g_fConst0p4_802a9c54
     /* AAC54 802A9C54 3ECCCCCD */ .float 0.400000006
-enddlabel g_dwDmaReserved24
+enddlabel g_fConst0p4_802a9c54
 
-nonmatching g_dwDmaReserved25
+nonmatching g_fConst0p03_802a9c58
 
-dlabel g_dwDmaReserved25
+dlabel g_fConst0p03_802a9c58
     /* AAC58 802A9C58 3CF5C28F */ .float 0.02999999933
-enddlabel g_dwDmaReserved25
+enddlabel g_fConst0p03_802a9c58
 
-nonmatching g_dwDmaReserved26
+nonmatching g_fConst1p3_802a9c5c
 
-dlabel g_dwDmaReserved26
+dlabel g_fConst1p3_802a9c5c
     /* AAC5C 802A9C5C 3FA66666 */ .float 1.299999952
-enddlabel g_dwDmaReserved26
+enddlabel g_fConst1p3_802a9c5c
 
-nonmatching g_dwDmaReserved27
+nonmatching g_fConst0p01_802a9c60
 
-dlabel g_dwDmaReserved27
+dlabel g_fConst0p01_802a9c60
     /* AAC60 802A9C60 3C23D70A */ .float 0.009999999776
-enddlabel g_dwDmaReserved27
+enddlabel g_fConst0p01_802a9c60
 
-nonmatching g_dwDmaReserved28
+nonmatching g_fConst0p2_802a9c64
 
-dlabel g_dwDmaReserved28
+dlabel g_fConst0p2_802a9c64
     /* AAC64 802A9C64 3E4CCCCD */ .float 0.200000003
-enddlabel g_dwDmaReserved28
+enddlabel g_fConst0p2_802a9c64
 
-nonmatching g_dwDmaReserved29
+nonmatching g_fConst0p2_802a9c68
 
-dlabel g_dwDmaReserved29
+dlabel g_fConst0p2_802a9c68
     /* AAC68 802A9C68 3E4CCCCD */ .float 0.200000003
-enddlabel g_dwDmaReserved29
+enddlabel g_fConst0p2_802a9c68
 
-nonmatching g_dwDmaReserved30
+nonmatching g_fConst0p2_802a9c6c
 
-dlabel g_dwDmaReserved30
+dlabel g_fConst0p2_802a9c6c
     /* AAC6C 802A9C6C 3E4CCCCD */ .float 0.200000003
-enddlabel g_dwDmaReserved30
+enddlabel g_fConst0p2_802a9c6c
 
-nonmatching g_dwDmaReserved31
+nonmatching g_fConst0p2_802a9c70
 
-dlabel g_dwDmaReserved31
+dlabel g_fConst0p2_802a9c70
     /* AAC70 802A9C70 3E4CCCCD */ .float 0.200000003
-enddlabel g_dwDmaReserved31
+enddlabel g_fConst0p2_802a9c70
 
-nonmatching g_dwDmaReserved32
+nonmatching g_fConst0p0111_802a9c74
 
-dlabel g_dwDmaReserved32
+dlabel g_fConst0p0111_802a9c74
     /* AAC74 802A9C74 3C360B61 */ .float 0.01111111138
-enddlabel g_dwDmaReserved32
+enddlabel g_fConst0p0111_802a9c74
 
-nonmatching g_dwDmaReserved33
+nonmatching g_fConst0p4_802a9c78
 
-dlabel g_dwDmaReserved33
+dlabel g_fConst0p4_802a9c78
     /* AAC78 802A9C78 3ECCCCCD */ .float 0.400000006
-enddlabel g_dwDmaReserved33
+enddlabel g_fConst0p4_802a9c78
 
-nonmatching g_fConst_0p034_9c7c
+nonmatching g_fConst0p034_802a9c7c
 
-dlabel g_fConst_0p034_9c7c
+dlabel g_fConst0p034_802a9c7c
     /* AAC7C 802A9C7C 3D0B4396 */ .float 0.03400000185
-enddlabel g_fConst_0p034_9c7c
+enddlabel g_fConst0p034_802a9c7c
 
-nonmatching g_fConst_0p137_9c80
+nonmatching g_fConst0p137_802a9c80
 
-dlabel g_fConst_0p137_9c80
+dlabel g_fConst0p137_802a9c80
     /* AAC80 802A9C80 3E0C49BA */ .float 0.1369999945
-enddlabel g_fConst_0p137_9c80
+enddlabel g_fConst0p137_802a9c80
 
-nonmatching g_fConst_0p15_9c84
+nonmatching g_fConst0p15_802a9c84
 
-dlabel g_fConst_0p15_9c84
+dlabel g_fConst0p15_802a9c84
     /* AAC84 802A9C84 3E19999A */ .float 0.150000006
-enddlabel g_fConst_0p15_9c84
+enddlabel g_fConst0p15_802a9c84
 
-nonmatching g_fConst_HalfPi_9c88
+nonmatching g_fConstHalfPi_802a9c88
 
-dlabel g_fConst_HalfPi_9c88
+dlabel g_fConstHalfPi_802a9c88
     /* AAC88 802A9C88 3FC90FDB */ .float 1.570796371
-enddlabel g_fConst_HalfPi_9c88
+enddlabel g_fConstHalfPi_802a9c88
 
-nonmatching g_fConst_HalfPi_9c8c
+nonmatching g_fConstHalfPi_802a9c8c
 
-dlabel g_fConst_HalfPi_9c8c
+dlabel g_fConstHalfPi_802a9c8c
     /* AAC8C 802A9C8C 3FC90FDB */ .float 1.570796371
-enddlabel g_fConst_HalfPi_9c8c
+enddlabel g_fConstHalfPi_802a9c8c
 
-nonmatching g_fConst_0p1_9c90
+nonmatching g_fConst0p1_802a9c90
 
-dlabel g_fConst_0p1_9c90
+dlabel g_fConst0p1_802a9c90
     /* AAC90 802A9C90 3DCCCCCD */ .float 0.1000000015
-enddlabel g_fConst_0p1_9c90
+enddlabel g_fConst0p1_802a9c90
 
-nonmatching g_fConst_1e10_9c94
+nonmatching g_fConst1e10_802a9c94
 
-dlabel g_fConst_1e10_9c94
+dlabel g_fConst1e10_802a9c94
     /* AAC94 802A9C94 501502F9 */ .float 1e+10
-enddlabel g_fConst_1e10_9c94
+enddlabel g_fConst1e10_802a9c94
 
-nonmatching g_fConst_1e09_9c98
+nonmatching g_fConst1e09_802a9c98
 
-dlabel g_fConst_1e09_9c98
+dlabel g_fConst1e09_802a9c98
     /* AAC98 802A9C98 4E6E6B28 */ .float 1000000000
-enddlabel g_fConst_1e09_9c98
+enddlabel g_fConst1e09_802a9c98
 
-nonmatching g_fConst_0p1_9c9c
+nonmatching g_fConst0p1_802a9c9c
 
-dlabel g_fConst_0p1_9c9c
+dlabel g_fConst0p1_802a9c9c
     /* AAC9C 802A9C9C 3DCCCCCD */ .float 0.1000000015
-enddlabel g_fConst_0p1_9c9c
+enddlabel g_fConst0p1_802a9c9c
 
-nonmatching g_dConst_80000_9ca0
+nonmatching g_dConst80000_802a9ca0
 
-dlabel g_dConst_80000_9ca0
+dlabel g_dConst80000_802a9ca0
     /* AACA0 802A9CA0 40F3880000000000 */ .double 80000
-enddlabel g_dConst_80000_9ca0
+enddlabel g_dConst80000_802a9ca0
 
-nonmatching g_fConst_0p9_9ca8
+nonmatching g_fConst0p9_802a9ca8
 
-dlabel g_fConst_0p9_9ca8
+dlabel g_fConst0p9_802a9ca8
     /* AACA8 802A9CA8 3F666666 */ .float 0.8999999762
-enddlabel g_fConst_0p9_9ca8
+enddlabel g_fConst0p9_802a9ca8
 
-nonmatching g_fConst_2p24_9cac
+nonmatching g_fConst2p24_802a9cac
 
-dlabel g_fConst_2p24_9cac
+dlabel g_fConst2p24_802a9cac
     /* AACAC 802A9CAC 400F5C29 */ .float 2.24000001
-enddlabel g_fConst_2p24_9cac
+enddlabel g_fConst2p24_802a9cac
 
-nonmatching g_fConst_0p4_9cb0
+nonmatching g_fConst0p4_802a9cb0
 
-dlabel g_fConst_0p4_9cb0
+dlabel g_fConst0p4_802a9cb0
     /* AACB0 802A9CB0 3ECCCCCD */ .float 0.400000006
-enddlabel g_fConst_0p4_9cb0
+enddlabel g_fConst0p4_802a9cb0
 
-nonmatching g_fConst_0p9_9cb4
+nonmatching g_fConst0p9_802a9cb4
 
-dlabel g_fConst_0p9_9cb4
+dlabel g_fConst0p9_802a9cb4
     /* AACB4 802A9CB4 3F666666 */ .float 0.8999999762
-enddlabel g_fConst_0p9_9cb4
+enddlabel g_fConst0p9_802a9cb4
 
-nonmatching g_fConst_0p9_9cb8
+nonmatching g_fConst0p9_802a9cb8
 
-dlabel g_fConst_0p9_9cb8
+dlabel g_fConst0p9_802a9cb8
     /* AACB8 802A9CB8 3F666666 */ .float 0.8999999762
-enddlabel g_fConst_0p9_9cb8
+enddlabel g_fConst0p9_802a9cb8
 
-nonmatching g_fConst_343_9cbc
+nonmatching g_fConst343_802a9cbc
 
-dlabel g_fConst_343_9cbc
+dlabel g_fConst343_802a9cbc
     /* AACBC 802A9CBC 43AB8000 */ .float 343
-enddlabel g_fConst_343_9cbc
+enddlabel g_fConst343_802a9cbc
 
-nonmatching g_fConst_0p4_9cc0
+nonmatching g_fConst0p4_802a9cc0
 
-dlabel g_fConst_0p4_9cc0
+dlabel g_fConst0p4_802a9cc0
     /* AACC0 802A9CC0 3ECCCCCD */ .float 0.400000006
-enddlabel g_fConst_0p4_9cc0
+enddlabel g_fConst0p4_802a9cc0
 
-nonmatching g_fConst_1p7_9cc4
+nonmatching g_fConst1p7_802a9cc4
 
-dlabel g_fConst_1p7_9cc4
+dlabel g_fConst1p7_802a9cc4
     /* AACC4 802A9CC4 3FD9999A */ .float 1.700000048
-enddlabel g_fConst_1p7_9cc4
+enddlabel g_fConst1p7_802a9cc4
 
-nonmatching g_fConst_0p6_9cc8
+nonmatching g_fConst0p6_802a9cc8
 
-dlabel g_fConst_0p6_9cc8
+dlabel g_fConst0p6_802a9cc8
     /* AACC8 802A9CC8 3F19999A */ .float 0.6000000238
-enddlabel g_fConst_0p6_9cc8
+enddlabel g_fConst0p6_802a9cc8
 
-nonmatching g_fConst_1p7_9ccc
+nonmatching g_fConst1p7_802a9ccc
 
-dlabel g_fConst_1p7_9ccc
+dlabel g_fConst1p7_802a9ccc
     /* AACCC 802A9CCC 3FD9999A */ .float 1.700000048
-enddlabel g_fConst_1p7_9ccc
+enddlabel g_fConst1p7_802a9ccc
 
-nonmatching g_fConst_0p6_9cd0
+nonmatching g_fConst0p6_802a9cd0
 
-dlabel g_fConst_0p6_9cd0
+dlabel g_fConst0p6_802a9cd0
     /* AACD0 802A9CD0 3F19999A */ .float 0.6000000238
-enddlabel g_fConst_0p6_9cd0
+enddlabel g_fConst0p6_802a9cd0
 
-nonmatching g_fConst_Inv11000_9cd4
+nonmatching g_fConstInv11000_802a9cd4
 
-dlabel g_fConst_Inv11000_9cd4
+dlabel g_fConstInv11000_802a9cd4
     /* AACD4 802A9CD4 38BEA672 */ .float 9.090908861e-05
-enddlabel g_fConst_Inv11000_9cd4
+enddlabel g_fConstInv11000_802a9cd4
 
-nonmatching g_fConst_11000_9cd8
+nonmatching g_fConst11000_802a9cd8
 
-dlabel g_fConst_11000_9cd8
+dlabel g_fConst11000_802a9cd8
     /* AACD8 802A9CD8 462BE000 */ .float 11000
-enddlabel g_fConst_11000_9cd8
+enddlabel g_fConst11000_802a9cd8
 
-nonmatching g_fConst_22000_9cdc
+nonmatching g_fConst22000_802a9cdc
 
-dlabel g_fConst_22000_9cdc
+dlabel g_fConst22000_802a9cdc
     /* AACDC 802A9CDC 46ABE000 */ .float 22000
-enddlabel g_fConst_22000_9cdc
+enddlabel g_fConst22000_802a9cdc
 
-nonmatching g_fConst_Inv1400_9ce0
+nonmatching g_fConstInv1400_802a9ce0
 
-dlabel g_fConst_Inv1400_9ce0
+dlabel g_fConstInv1400_802a9ce0
     /* AACE0 802A9CE0 3A3B3EE7 */ .float 0.0007142857066
-enddlabel g_fConst_Inv1400_9ce0
+enddlabel g_fConstInv1400_802a9ce0
 
-nonmatching g_fConst_11000_9ce4
+nonmatching g_fConst11000_802a9ce4
 
-dlabel g_fConst_11000_9ce4
+dlabel g_fConst11000_802a9ce4
     /* AACE4 802A9CE4 462BE000 */ .float 11000
-enddlabel g_fConst_11000_9ce4
+enddlabel g_fConst11000_802a9ce4
 
-nonmatching g_fConst_Inv1400_9ce8
+nonmatching g_fConstInv1400_802a9ce8
 
-dlabel g_fConst_Inv1400_9ce8
+dlabel g_fConstInv1400_802a9ce8
     /* AACE8 802A9CE8 3A3B3EE7 */ .float 0.0007142857066
-enddlabel g_fConst_Inv1400_9ce8
+enddlabel g_fConstInv1400_802a9ce8
 
-nonmatching g_fConst_11000_9cec
+nonmatching g_fConst11000_802a9cec
 
-dlabel g_fConst_11000_9cec
+dlabel g_fConst11000_802a9cec
     /* AACEC 802A9CEC 462BE000 */ .float 11000
-enddlabel g_fConst_11000_9cec
+enddlabel g_fConst11000_802a9cec
 
-nonmatching g_fConst_100000_9cf0
+nonmatching g_fConst100000_802a9cf0
 
-dlabel g_fConst_100000_9cf0
+dlabel g_fConst100000_802a9cf0
     /* AACF0 802A9CF0 47C35000 */ .float 100000
-enddlabel g_fConst_100000_9cf0
+enddlabel g_fConst100000_802a9cf0
 
-nonmatching g_fConst_Inv11000_9cf4
+nonmatching g_fConstInv11000_802a9cf4
 
-dlabel g_fConst_Inv11000_9cf4
+dlabel g_fConstInv11000_802a9cf4
     /* AACF4 802A9CF4 38BEA672 */ .float 9.090908861e-05
-enddlabel g_fConst_Inv11000_9cf4
+enddlabel g_fConstInv11000_802a9cf4
 
 nonmatching switchdataD_802a9cf8
 
@@ -8275,35 +8275,35 @@ dlabel jtbl_802A9D34
     /* AAD44 802A9D44 8022C72C */ .word .L8022C72C
 enddlabel jtbl_802A9D34
 
-nonmatching g_fConst_11000_9d48
+nonmatching g_fConst11000_802a9d48
 
-dlabel g_fConst_11000_9d48
+dlabel g_fConst11000_802a9d48
     /* AAD48 802A9D48 462BE000 */ .float 11000
-enddlabel g_fConst_11000_9d48
+enddlabel g_fConst11000_802a9d48
 
-nonmatching g_fConst_20000_9d4c
+nonmatching g_fConst20000_802a9d4c
 
-dlabel g_fConst_20000_9d4c
+dlabel g_fConst20000_802a9d4c
     /* AAD4C 802A9D4C 469C4000 */ .float 20000
-enddlabel g_fConst_20000_9d4c
+enddlabel g_fConst20000_802a9d4c
 
-nonmatching g_fConst_Inv11000_9d50
+nonmatching g_fConstInv11000_802a9d50
 
-dlabel g_fConst_Inv11000_9d50
+dlabel g_fConstInv11000_802a9d50
     /* AAD50 802A9D50 38BEA672 */ .float 9.090908861e-05
-enddlabel g_fConst_Inv11000_9d50
+enddlabel g_fConstInv11000_802a9d50
 
-nonmatching g_fConst_1p6_9d54
+nonmatching g_fConst1p6_802a9d54
 
-dlabel g_fConst_1p6_9d54
+dlabel g_fConst1p6_802a9d54
     /* AAD54 802A9D54 3FCCCCCD */ .float 1.600000024
-enddlabel g_fConst_1p6_9d54
+enddlabel g_fConst1p6_802a9d54
 
-nonmatching g_fConst_2p22_9d58
+nonmatching g_fConst2p22_802a9d58
 
-dlabel g_fConst_2p22_9d58
+dlabel g_fConst2p22_802a9d58
     /* AAD58 802A9D58 400E147B */ .float 2.220000029
-enddlabel g_fConst_2p22_9d58
+enddlabel g_fConst2p22_802a9d58
     /* AAD5C 802A9D5C 00000000 */ .float 0
 
 nonmatching switchdataD_802a9d60

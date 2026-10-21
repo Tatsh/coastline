@@ -1,4 +1,5 @@
 AddTimingMarker
+AddVehicleJolt
 AdvanceRng
 AllocAndDmaLoadAsset
 AllocDisplayListBlock
@@ -46,9 +47,12 @@ CheckMusicLoopPoints
 CheckSoundEffectLoopPoints
 CheckVehicleVisibility
 CheckWrongWayWarning
+ChooseVehicleCar
 ClassifyTriangleInUnitCube
 ClearFramebuffersForNormalMode
 ClearFramebuffersForWideMode
+ClearPerFrameVariables
+ClearVehicleDamageState
 CollectTrianglesInBox
 CollideBodyWithTriangles
 CollideVehicles
@@ -61,6 +65,7 @@ ComputeDragForce
 ComputeRigidBodyAcceleration
 ComputeScreenDepthZ
 ComputeSpringForces
+ComputeTrackPosition
 ComputeVehicleAccelerations
 ComputeVehicleForces
 ComputeWheelLocalVelocity
@@ -103,6 +108,7 @@ DrawText
 DrawTexturedRect
 DrawTimingBars
 DrawTireSpray
+DriveAiVehicle
 DriveWheel
 EmitTachometerDisplayList
 EmitTireSpray
@@ -131,9 +137,11 @@ InitMusicPlayback
 InitPakAndEnumerateFiles
 InitParticleSystem
 InitPlayerInputState
+InitPlayerVehicleSlot
 InitRandomRainParticles
 InitRigidBody
 InitSoundChannel
+InitVehicleColor
 InitVehicleColorAndPhysics
 InitVehicleOrientationFromAngle
 InitVehiclePhysics
@@ -212,6 +220,7 @@ ProcessScreenState
 ProcessSeasonResults
 ProcessSplashScreens
 ProcessTrackMenu
+ProcessVehicleInputAndPhysics
 ProcessWeatherSelect
 ProjectVec3fToScreen
 ProjectWorldToScreenRect
@@ -246,8 +255,10 @@ ResetHeap
 ResetMusicChannels
 ResetMusicPlaybackState
 ResetShadowBuffers
+ResetVehicleEffects
 ResetVehicleState
 ResolveVehicleTrackCollision
+RespawnVehicle
 RestoreRaceResultsFromSlots
 RotateVehicleByEuler
 SaveRaceResultsToSlots
@@ -301,6 +312,7 @@ SumWheelForces
 TestLineSegmentIntersection
 TestObbIntersection
 TipBalancedVehicle
+TraceTrackSplineRecursive
 TrackMenuPostDraw
 TransferFlags
 TransformAllWheelMatrices
@@ -314,6 +326,7 @@ UnusedAudioMixingStub
 UnusedCollisionResponseStub
 UnusedScreenFadeStub
 UnusedTrackCollisionStub
+UpdateAiVehicleBehavior
 UpdateAllVehicleEffects
 UpdateCameraChase
 UpdateCameraLookAtTarget
@@ -323,6 +336,7 @@ UpdateFadeTransitions
 UpdateHudMessageTimers
 UpdateLightningFlash
 UpdateMusicPlayback
+UpdatePhysicsStep
 UpdatePrecipitationParticles
 UpdateRaceAnimations
 UpdateRaceTimers

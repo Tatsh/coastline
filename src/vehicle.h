@@ -102,6 +102,12 @@ typedef struct {
 /** The profile of the player being played. @ghidraAddress USA: 0x8031c5bc */
 extern PlayerProfile *g_pActiveProfile;
 
+/** The profiles of the two players a controller pak saves. @ghidraAddress USA: 0x80324300 */
+extern PlayerProfile g_aSeasonSaveBuffers[2];
+
+/** The color of each player's vehicle, as red, green and blue. @ghidraAddress USA: 0x8028b904 */
+extern u8 g_abPlayerColorsRgb[][3];
+
 /**
  * The model of a car as it is loaded from the cartridge. Its fields join this structure as they are
  * reconstructed.
@@ -274,7 +280,9 @@ typedef struct {
     u8 unreconstructed64[0x68 - 0x64];
     /** The clock of the racer runs while the bits of RACER_CLOCK_STOPPED are clear. */
     u32 status;
-    u8 unreconstructed6C[0x78 - 0x6C];
+    u8 unreconstructed6C[0x74 - 0x6C];
+    /** Set for a racer past the thirteenth after the players, whom the championship slows more. */
+    s32 straggler;
 } RacerSlot;
 
 /** The racers of the race. @ghidraAddress USA: 0x803239a0 */
@@ -412,13 +420,37 @@ typedef struct Vehicle {
     s32 steeringMode;
     /** The gearbox of the recording or the settings, which ResetVehicleState() takes. */
     s32 chosenTransmission;
-    u8 unreconstructedE70[0xED0 - 0xE70];
+    /**
+     * How a computer's vehicle gets unstuck: the frames left that it drives forward and that it
+     * reverses whatever else it wants, and the frames it has reversed and driven forward since it
+     * last checked whether it is stuck.
+     */
+    s32 forcedForwardFrames;
+    s32 forcedReverseFrames;
+    s32 reverseFrames;
+    s32 forwardFrames;
+    u8 unreconstructedE80[0xED0 - 0xE80];
     RacerSlot *racer;
     u8 unreconstructedED4[0xED8 - 0xED4];
     /** The routine that drives the vehicle each frame, the player's or the computer's, or NULL. */
     void (*driver)(struct Vehicle *vehicle);
-    u8 unreconstructedEDC[0xF48 - 0xEDC];
-    /** Set to 2 when the active camera changes. */
+    /** The point a computer's vehicle steers towards. */
+    Vec3f aiTarget;
+    /**
+     * The point of the route nearest the vehicle, and the axes of the route there: along it, across
+     * it to the left, and up.
+     */
+    Vec3f trackPoint;
+    Vec3f trackForward;
+    Vec3f trackSide;
+    Vec3f trackUp;
+    /** How far the vehicle is from the middle of the route, without and with the side. */
+    f32 trackSideDistance;
+    /** The vehicle from that point. */
+    Vec3f trackOffset;
+    f32 trackSideOffset;
+    u8 unreconstructedF2C[0xF48 - 0xF2C];
+    /** Set when the active camera changes: to 1 when a view is chosen, to 2 by the cameras. */
     s32 cameraChanged;
     /**
      * Whether the vehicle flies freely with the controls, without physics, and the cameras hold
@@ -466,7 +498,14 @@ typedef struct Vehicle {
     Vec3f placedVelocity;
     /** The speed the display shows, in kilometers an hour. */
     f32 speedKph;
-    u8 unreconstructedFE8[0x1010 - 0xFE8];
+    u8 unreconstructedFE8[0xFEC - 0xFE8];
+    /**
+     * A weight on a spring at a corner of the vehicle, whose jolts damage it: where it is, how far
+     * it moves a frame, and how far it hangs from the corner.
+     */
+    Vec3f joltPosition;
+    Vec3f joltVelocity;
+    Vec3f joltOffset;
     /** The time towards the next puff of exhaust, and where the last left the exhaust. */
     f32 exhaustTimer;
     Vec3f exhaustPosition;
@@ -914,6 +953,31 @@ void InitVehicleColor(Vehicle *vehicle);
  * @ghidraAddress USA: 0x80226d7c
  */
 void UpdatePhysicsStep(Vehicle *vehicle);
+
+/**
+ * Put a vehicle that has been upside down too long, or has fallen below the track, back on the
+ * route at its point, as a ghost that fades back in.
+ *
+ * @param vehicle The vehicle.
+ * @ghidraAddress USA: 0x80226248
+ */
+void RespawnVehicle(Vehicle *vehicle);
+
+/**
+ * Clear the smoke and the spray of the wheels of a vehicle.
+ *
+ * @param vehicle The vehicle.
+ * @ghidraAddress USA: 0x802288d4
+ */
+void ResetVehicleEffects(Vehicle *vehicle);
+
+/**
+ * Clear the dents of a vehicle.
+ *
+ * @param vehicle The vehicle.
+ * @ghidraAddress USA: 0x80228a3c
+ */
+void ClearVehicleDamageState(Vehicle *vehicle);
 
 /**
  * Put a vehicle on the grid for the start of the race, with its model, cameras and effects reset.

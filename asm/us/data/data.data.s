@@ -32263,59 +32263,59 @@ dlabel g_dwReplayCameraHoldTimer
     /* 8C7FC 8028B7FC 00000000 */ .word 0x00000000
 enddlabel g_dwReplayCameraHoldTimer
 
-nonmatching g_dwRacingLineBestPathLen
+nonmatching g_dwBestTraceLength
 
-dlabel g_dwRacingLineBestPathLen
+dlabel g_dwBestTraceLength
     /* 8C800 8028B800 00000000 */ .word 0x00000000
-enddlabel g_dwRacingLineBestPathLen
+enddlabel g_dwBestTraceLength
 
-nonmatching g_dwRacingLineBestDepth
+nonmatching g_dwBestTraceDepth
 
-dlabel g_dwRacingLineBestDepth
+dlabel g_dwBestTraceDepth
     /* 8C804 8028B804 00000000 */ .word 0x00000000
-enddlabel g_dwRacingLineBestDepth
+enddlabel g_dwBestTraceDepth
 
-nonmatching g_bAiSteerFlagB
+nonmatching g_bAiNudgeRight
 
-dlabel g_bAiSteerFlagB
+dlabel g_bAiNudgeRight
     /* 8C808 8028B808 00000000 */ .word 0x00000000
-enddlabel g_bAiSteerFlagB
+enddlabel g_bAiNudgeRight
 
-nonmatching g_bAiSteerFlagA
+nonmatching g_bAiNudgeLeft
 
-dlabel g_bAiSteerFlagA
+dlabel g_bAiNudgeLeft
     /* 8C80C 8028B80C 00000000 */ .word 0x00000000
-enddlabel g_bAiSteerFlagA
+enddlabel g_bAiNudgeLeft
 
-nonmatching g_dwRacingLineBestSegment
+nonmatching g_dwBestTracePoint
 
-dlabel g_dwRacingLineBestSegment
+dlabel g_dwBestTracePoint
     /* 8C810 8028B810 00000000 */ .word 0x00000000
-enddlabel g_dwRacingLineBestSegment
+enddlabel g_dwBestTracePoint
 
-nonmatching g_pRacingLineBestWaypoint
+nonmatching g_pBestTraceSection
 
-dlabel g_pRacingLineBestWaypoint
+dlabel g_pBestTraceSection
     /* 8C814 8028B814 00000000 */ .word 0x00000000
-enddlabel g_pRacingLineBestWaypoint
+enddlabel g_pBestTraceSection
 
-nonmatching g_dwRacingLineUnkReset2
+nonmatching g_dwTraceUnusedB
 
-dlabel g_dwRacingLineUnkReset2
+dlabel g_dwTraceUnusedB
     /* 8C818 8028B818 00000000 */ .word 0x00000000
-enddlabel g_dwRacingLineUnkReset2
+enddlabel g_dwTraceUnusedB
 
-nonmatching g_dwRacingLineUnkReset
+nonmatching g_dwTraceUnusedA
 
-dlabel g_dwRacingLineUnkReset
+dlabel g_dwTraceUnusedA
     /* 8C81C 8028B81C 00000000 */ .word 0x00000000
-enddlabel g_dwRacingLineUnkReset
+enddlabel g_dwTraceUnusedA
 
-nonmatching g_bRacingLineBlocked
+nonmatching g_bTraceBlocked
 
-dlabel g_bRacingLineBlocked
+dlabel g_bTraceBlocked
     /* 8C820 8028B820 00000000 */ .word 0x00000000
-enddlabel g_bRacingLineBlocked
+enddlabel g_bTraceBlocked
 
 nonmatching g_pSplineEvalWaypoint
 
@@ -32344,76 +32344,51 @@ enddlabel g_dwSplineLapCount
 nonmatching g_aPerFrameVariables
 
 dlabel g_aPerFrameVariables
-    /* 8C834 8028B834 8031B420 */ .word g_bSysInitialized
+    /* 8C834 8028B834 8031B420 */ .word g_abUnusedFrameBlock
 enddlabel g_aPerFrameVariables
 
-nonmatching g_dwMenuEntryArraySize
-
-dlabel g_dwMenuEntryArraySize
-    /* 8C838 8028B838 0000000C */ .word 0x0000000C
-enddlabel g_dwMenuEntryArraySize
-
-nonmatching g_pMenuEntryStrings
-
-dlabel g_pMenuEntryStrings
-    /* 8C83C 8028B83C 8031B430 */ .word g_avRacingLineBestLerpB
-enddlabel g_pMenuEntryStrings
-
-nonmatching g_dwMenuEntryStringCount
-
-dlabel g_dwMenuEntryStringCount
-    /* 8C840 8028B840 00000060 */ .word 0x00000060
-enddlabel g_dwMenuEntryStringCount
-
-nonmatching g_pMenuEntryCallbacks
-
-dlabel g_pMenuEntryCallbacks
-    /* 8C844 8028B844 8031B490 */ .word g_avRacingLineBestPoint
-enddlabel g_pMenuEntryCallbacks
-
-nonmatching g_dwMenuEntryCallbackCount
-
-dlabel g_dwMenuEntryCallbackCount
-    /* 8C848 8028B848 00000060 */ .word 0x00000060
-enddlabel g_dwMenuEntryCallbackCount
-
-nonmatching D_8028B84C
+nonmatching D_8028B838
 
 /* Automatically generated and unreferenced pad */
-dlabel D_8028B84C
-    /* 8C84C 8028B84C 8031B4F0 */ .word g_avRacingLineBestLerpA
+dlabel D_8028B838
+    /* 8C838 8028B838 0000000C */ .word 0x0000000C
+    /* 8C83C 8028B83C 8031B430 */ .word g_avBestLeftLane
+    /* 8C840 8028B840 00000060 */ .word 0x00000060
+    /* 8C844 8028B844 8031B490 */ .word g_avBestCenterLine
+    /* 8C848 8028B848 00000060 */ .word 0x00000060
+    /* 8C84C 8028B84C 8031B4F0 */ .word g_avBestRightLane
     /* 8C850 8028B850 00000060 */ .word 0x00000060
-    /* 8C854 8028B854 8028B800 */ .word g_dwRacingLineBestPathLen
+    /* 8C854 8028B854 8028B800 */ .word g_dwBestTraceLength
     /* 8C858 8028B858 00000004 */ .word 0x00000004
-    /* 8C85C 8028B85C 8031B550 */ .word g_aTraceLeftEdgePoints
+    /* 8C85C 8028B85C 8031B550 */ .word g_avTraceLeftLane
     /* 8C860 8028B860 00000060 */ .word 0x00000060
-    /* 8C864 8028B864 8031B5B0 */ .word D_8031B5B0
+    /* 8C864 8028B864 8031B5B0 */ .word g_avTraceLeftHalf
     /* 8C868 8028B868 00000060 */ .word 0x00000060
-    /* 8C86C 8028B86C 8031B610 */ .word g_aTraceCenterPoints
+    /* 8C86C 8028B86C 8031B610 */ .word g_avTraceCenterLine
     /* 8C870 8028B870 00000060 */ .word 0x00000060
-    /* 8C874 8028B874 8031B670 */ .word D_8031B670
+    /* 8C874 8028B874 8031B670 */ .word g_avTraceRightHalf
     /* 8C878 8028B878 00000060 */ .word 0x00000060
-    /* 8C87C 8028B87C 8031B6D0 */ .word g_aTraceRightEdgePoints
+    /* 8C87C 8028B87C 8031B6D0 */ .word g_avTraceRightLane
     /* 8C880 8028B880 00000060 */ .word 0x00000060
-    /* 8C884 8028B884 8028B804 */ .word g_dwRacingLineBestDepth
+    /* 8C884 8028B884 8028B804 */ .word g_dwBestTraceDepth
     /* 8C888 8028B888 00000004 */ .word 0x00000004
-    /* 8C88C 8028B88C 8028B808 */ .word g_bAiSteerFlagB
+    /* 8C88C 8028B88C 8028B808 */ .word g_bAiNudgeRight
     /* 8C890 8028B890 00000004 */ .word 0x00000004
-    /* 8C894 8028B894 8028B80C */ .word g_bAiSteerFlagA
+    /* 8C894 8028B894 8028B80C */ .word g_bAiNudgeLeft
     /* 8C898 8028B898 00000004 */ .word 0x00000004
-    /* 8C89C 8028B89C 8028B810 */ .word g_dwRacingLineBestSegment
+    /* 8C89C 8028B89C 8028B810 */ .word g_dwBestTracePoint
     /* 8C8A0 8028B8A0 00000004 */ .word 0x00000004
-    /* 8C8A4 8028B8A4 8028B814 */ .word g_pRacingLineBestWaypoint
+    /* 8C8A4 8028B8A4 8028B814 */ .word g_pBestTraceSection
     /* 8C8A8 8028B8A8 00000004 */ .word 0x00000004
-    /* 8C8AC 8028B8AC 8028B818 */ .word g_dwRacingLineUnkReset2
+    /* 8C8AC 8028B8AC 8028B818 */ .word g_dwTraceUnusedB
     /* 8C8B0 8028B8B0 00000004 */ .word 0x00000004
-    /* 8C8B4 8028B8B4 8028B81C */ .word g_dwRacingLineUnkReset
+    /* 8C8B4 8028B8B4 8028B81C */ .word g_dwTraceUnusedA
     /* 8C8B8 8028B8B8 00000004 */ .word 0x00000004
-    /* 8C8BC 8028B8BC 8028B820 */ .word g_bRacingLineBlocked
+    /* 8C8BC 8028B8BC 8028B820 */ .word g_bTraceBlocked
     /* 8C8C0 8028B8C0 00000004 */ .word 0x00000004
-    /* 8C8C4 8028B8C4 8031B730 */ .word g_dwCameraPosX
+    /* 8C8C4 8028B8C4 8031B730 */ .word g_vTraceFarPoint
     /* 8C8C8 8028B8C8 0000000C */ .word 0x0000000C
-    /* 8C8CC 8028B8CC 8031B740 */ .word g_dwCameraTargetX
+    /* 8C8CC 8028B8CC 8031B740 */ .word g_vTraceHalfwayPoint
     /* 8C8D0 8028B8D0 0000000C */ .word 0x0000000C
     /* 8C8D4 8028B8D4 8031B750 */ .word g_dwCameraRoll
     /* 8C8D8 8028B8D8 0000000C */ .word 0x0000000C
@@ -32427,7 +32402,7 @@ dlabel D_8028B84C
     /* 8C8F8 8028B8F8 00000004 */ .word 0x00000004
     /* 8C8FC 8028B8FC 00000000 */ .word 0x00000000
     /* 8C900 8028B900 00000000 */ .word 0x00000000
-enddlabel D_8028B84C
+enddlabel D_8028B838
 
 nonmatching g_abPlayerColorsRgb
 
@@ -32646,15 +32621,15 @@ dlabel D_8028B954
     /* 8C9EB 8028B9EB */ .byte 0x02
 enddlabel D_8028B954
 
-nonmatching g_dwControllerConfigButton
+nonmatching g_bReplayCockpitNext
 
-dlabel g_dwControllerConfigButton
+dlabel g_bReplayCockpitNext
     /* 8C9EC 8028B9EC 00000000 */ .word 0x00000000
-enddlabel g_dwControllerConfigButton
+enddlabel g_bReplayCockpitNext
 
-nonmatching D_8028B9F0
+nonmatching g_aafAiVelocityRetention
 
-dlabel D_8028B9F0
+dlabel g_aafAiVelocityRetention
     /* 8C9F0 8028B9F0 3F7ED917 */ .word 0x3F7ED917
     /* 8C9F4 8028B9F4 3F7F7CEE */ .word 0x3F7F7CEE
     /* 8C9F8 8028B9F8 3F7ED917 */ .word 0x3F7ED917
@@ -32703,25 +32678,21 @@ dlabel D_8028B9F0
     /* 8CAA4 8028BAA4 3F7F2E49 */ .word 0x3F7F2E49
     /* 8CAA8 8028BAA8 3F7E5C92 */ .word 0x3F7E5C92
     /* 8CAAC 8028BAAC 3F7F1412 */ .word 0x3F7F1412
-enddlabel D_8028B9F0
+enddlabel g_aafAiVelocityRetention
 
-nonmatching g_dwStringTableId
+nonmatching g_vUpAxis
 
-dlabel g_dwStringTableId
+dlabel g_vUpAxis
     /* 8CAB0 8028BAB0 00000000 */ .word 0x00000000
-enddlabel g_dwStringTableId
+enddlabel g_vUpAxis
 
-nonmatching g_dwStringTableIndex
+nonmatching D_8028BAB4
 
-dlabel g_dwStringTableIndex
+/* Automatically generated and unreferenced pad */
+dlabel D_8028BAB4
     /* 8CAB4 8028BAB4 00000000 */ .word 0x00000000
-enddlabel g_dwStringTableIndex
-
-nonmatching g_dwStringTableCount
-
-dlabel g_dwStringTableCount
     /* 8CAB8 8028BAB8 3F800000 */ .word 0x3F800000
-enddlabel g_dwStringTableCount
+enddlabel D_8028BAB4
 
 nonmatching g_apszRaceProgressStrings
 

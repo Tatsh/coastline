@@ -479,7 +479,7 @@ s32 IsPointInsideTriangle(
     Vec3f *point, Vec3f *v0, Vec3f *v1, Vec3f *v2, Vec3f *normal, f32 tolerance);
 
 /**
- * Whether two segments of the plane meet.
+ * Whether two segments meet on the plane of x and y; z is not read.
  *
  * @param p1 The first end of the first segment.
  * @param p2 The second end of the first segment.
@@ -488,7 +488,7 @@ s32 IsPointInsideTriangle(
  * @return 0 if they do not, 2 if they lie along one line, and 1 if they cross.
  * @ghidraAddress USA: 0x80225b64
  */
-s32 TestLineSegmentIntersection(Vec2f *p1, Vec2f *p2, Vec2f *q1, Vec2f *q2);
+s32 TestLineSegmentIntersection(Vec3f *p1, Vec3f *p2, Vec3f *q1, Vec3f *q2);
 
 /**
  * Whether two points lie across the line through two others, seen from above: only x and y are

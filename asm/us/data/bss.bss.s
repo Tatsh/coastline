@@ -1188,9 +1188,9 @@ nonmatching D_8031B1D4, 0x4
 dlabel D_8031B1D4
     /* 8031B1D4 */ .space 0x04
 
-nonmatching g_afVehiclePartDamage, 0x10
+nonmatching g_afVehicleJolts, 0x10
 
-dlabel g_afVehiclePartDamage
+dlabel g_afVehicleJolts
     /* 8031B1D8 */ .space 0x10
 
 nonmatching g_abRumblePakPresent, 0x1
@@ -1467,152 +1467,102 @@ nonmatching g_adwFadeRectRightPerBuffer, 0x8
 dlabel g_adwFadeRectRightPerBuffer
     /* 8031B418 */ .space 0x08
 
-nonmatching g_bSysInitialized, 0x1
+nonmatching g_abUnusedFrameBlock, 0x10
 
-dlabel g_bSysInitialized
-    /* 8031B420 */ .space 0x01
+dlabel g_abUnusedFrameBlock
+    /* 8031B420 */ .space 0x10
 
-nonmatching g_bPadMotor0, 0xF
+nonmatching g_avBestLeftLane, 0x60
 
-dlabel g_bPadMotor0
-    /* 8031B421 */ .space 0x0F
+dlabel g_avBestLeftLane
+    /* 8031B430 */ .space 0x60
 
-nonmatching g_avRacingLineBestLerpB, 0x1
+nonmatching g_avBestCenterLine, 0xC
 
-dlabel g_avRacingLineBestLerpB
-    /* 8031B430 */ .space 0x01
-
-nonmatching g_bBssClearMarker, 0xB
-
-dlabel g_bBssClearMarker
-    /* 8031B431 */ .space 0x0B
-
-nonmatching g_abAiBehaviorScratch, 0x54
-
-dlabel g_abAiBehaviorScratch
-    /* 8031B43C */ .space 0x54
-
-nonmatching g_avRacingLineBestPoint, 0xC
-
-dlabel g_avRacingLineBestPoint
+dlabel g_avBestCenterLine
     /* 8031B490 */ .space 0x0C
 
-nonmatching g_vAiTracedSplinePoint1, 0xC
+nonmatching D_8031B49C, 0x54
 
-dlabel g_vAiTracedSplinePoint1
-    /* 8031B49C */ .space 0x0C
+dlabel D_8031B49C
+    /* 8031B49C */ .space 0x54
 
-nonmatching g_aflTracedCenterPoint3, 0x48
+nonmatching g_avBestRightLane, 0x60
 
-dlabel g_aflTracedCenterPoint3
-    /* 8031B4A8 */ .space 0x48
-
-nonmatching g_avRacingLineBestLerpA, 0x60
-
-dlabel g_avRacingLineBestLerpA
+dlabel g_avBestRightLane
     /* 8031B4F0 */ .space 0x60
 
-nonmatching g_aTraceLeftEdgePoints, 0xC
+nonmatching g_avTraceLeftLane, 0xC
 
-dlabel g_aTraceLeftEdgePoints
+dlabel g_avTraceLeftLane
     /* 8031B550 */ .space 0x0C
 
-nonmatching g_aflTraceLeftEdgePoint2, 0xC
+nonmatching D_8031B55C, 0x54
 
-dlabel g_aflTraceLeftEdgePoint2
-    /* 8031B55C */ .space 0x0C
+dlabel D_8031B55C
+    /* 8031B55C */ .space 0x54
 
-nonmatching g_aflTraceLeftEdgePoint3, 0x48
+nonmatching g_avTraceLeftHalf, 0xC
 
-dlabel g_aflTraceLeftEdgePoint3
-    /* 8031B568 */ .space 0x48
-
-nonmatching D_8031B5B0, 0xC
-
-dlabel D_8031B5B0
+dlabel g_avTraceLeftHalf
     /* 8031B5B0 */ .space 0x0C
 
-nonmatching g_aflTraceLeftMidPoint2, 0x54
+nonmatching D_8031B5BC, 0x54
 
-dlabel g_aflTraceLeftMidPoint2
+dlabel D_8031B5BC
     /* 8031B5BC */ .space 0x54
 
-nonmatching g_aTraceCenterPoints, 0x18
+nonmatching g_avTraceCenterLine, 0x18
 
-dlabel g_aTraceCenterPoints
+dlabel g_avTraceCenterLine
     /* 8031B610 */ .space 0x18
 
-nonmatching g_aflTraceCenterPoint3, 0x48
+nonmatching D_8031B628, 0x48
 
-dlabel g_aflTraceCenterPoint3
+dlabel D_8031B628
     /* 8031B628 */ .space 0x48
 
-nonmatching D_8031B670, 0xC
+nonmatching g_avTraceRightHalf, 0xC
 
-dlabel D_8031B670
+dlabel g_avTraceRightHalf
     /* 8031B670 */ .space 0x0C
 
-nonmatching g_aflTraceRightMidPoint2, 0x54
+nonmatching D_8031B67C, 0x54
 
-dlabel g_aflTraceRightMidPoint2
+dlabel D_8031B67C
     /* 8031B67C */ .space 0x54
 
-nonmatching g_aTraceRightEdgePoints, 0xC
+nonmatching g_avTraceRightLane, 0xC
 
-dlabel g_aTraceRightEdgePoints
+dlabel g_avTraceRightLane
     /* 8031B6D0 */ .space 0x0C
 
-nonmatching g_aflTraceRightEdgePoint2, 0xC
+nonmatching D_8031B6DC, 0x54
 
-dlabel g_aflTraceRightEdgePoint2
-    /* 8031B6DC */ .space 0x0C
+dlabel D_8031B6DC
+    /* 8031B6DC */ .space 0x54
 
-nonmatching g_aflTraceRightEdgePoint3, 0x48
+nonmatching g_vTraceFarPoint, 0x4
 
-dlabel g_aflTraceRightEdgePoint3
-    /* 8031B6E8 */ .space 0x48
-
-nonmatching g_dwCameraPosX, 0x4
-
-dlabel g_dwCameraPosX
+dlabel g_vTraceFarPoint
     /* 8031B730 */ .space 0x04
 
-nonmatching g_dwCameraPosY, 0x4
-
-dlabel g_dwCameraPosY
-    /* 8031B734 */ .space 0x04
-
-nonmatching g_dwCameraPosZ, 0x4
-
-dlabel g_dwCameraPosZ
-    /* 8031B738 */ .space 0x04
-
-nonmatching D_8031B73C, 0x4
+nonmatching D_8031B734, 0xC
 
 /* Automatically generated and unreferenced pad */
-dlabel D_8031B73C
-    /* 8031B73C */ .space 0x04
+dlabel D_8031B734
+    /* 8031B734 */ .space 0x0C
 
-nonmatching g_dwCameraTargetX, 0x4
+nonmatching g_vTraceHalfwayPoint, 0x4
 
-dlabel g_dwCameraTargetX
+dlabel g_vTraceHalfwayPoint
     /* 8031B740 */ .space 0x04
 
-nonmatching g_dwCameraTargetY, 0x4
-
-dlabel g_dwCameraTargetY
-    /* 8031B744 */ .space 0x04
-
-nonmatching g_dwCameraTargetZ, 0x4
-
-dlabel g_dwCameraTargetZ
-    /* 8031B748 */ .space 0x04
-
-nonmatching D_8031B74C, 0x4
+nonmatching D_8031B744, 0xC
 
 /* Automatically generated and unreferenced pad */
-dlabel D_8031B74C
-    /* 8031B74C */ .space 0x04
+dlabel D_8031B744
+    /* 8031B744 */ .space 0x0C
 
 nonmatching g_dwCameraRoll, 0x4
 

@@ -363,11 +363,4 @@ void ClearZBufferRect(s32 x, s32 y, s32 width, s32 height);
  */
 void ResetFrameClock(void);
 
-/**
- * Clear the variables the frames start from, which a table lists.
- *
- * @ghidraAddress USA: 0x80225f30
- */
-void ClearPerFrameVariables(void);
-
 #endif

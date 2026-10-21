@@ -8,6 +8,7 @@
 #include "audiomix.h"
 #include "camera.h"
 #include "carselect.h"
+#include "driving.h"
 #include "effects.h"
 #include "fade.h"
 #include "game.h"

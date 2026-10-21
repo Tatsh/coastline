@@ -5292,37 +5292,6 @@ glabel UnusedVblankRetraceStub
     /* 1CE24 8021BE24 27BD0028 */   addiu     $sp, $sp, 0x28
 endlabel UnusedVblankRetraceStub
 
-nonmatching AddDamageToVehiclePart, 0x60
-
-glabel AddDamageToVehiclePart
-    /* 1CE28 8021BE28 3C014020 */  lui        $at, (0x40200000 >> 16)
-    /* 1CE2C 8021BE2C 44810000 */  mtc1       $at, $f0
-    /* 1CE30 8021BE30 44856000 */  mtc1       $a1, $f12
-    /* 1CE34 8021BE34 3C0F8032 */  lui        $t7, %hi(g_afVehiclePartDamage)
-    /* 1CE38 8021BE38 25EFB1D8 */  addiu      $t7, $t7, %lo(g_afVehiclePartDamage)
-    /* 1CE3C 8021BE3C 460C003C */  c.lt.s     $f0, $f12
-    /* 1CE40 8021BE40 00047080 */  sll        $t6, $a0, 2
-    /* 1CE44 8021BE44 01CF1021 */  addu       $v0, $t6, $t7
-    /* 1CE48 8021BE48 45020003 */  bc1fl      .L8021BE58
-    /* 1CE4C 8021BE4C C4440000 */   lwc1      $f4, 0x0($v0)
-    /* 1CE50 8021BE50 46000306 */  mov.s      $f12, $f0
-    /* 1CE54 8021BE54 C4440000 */  lwc1       $f4, 0x0($v0)
-  .L8021BE58:
-    /* 1CE58 8021BE58 3C0140A0 */  lui        $at, (0x40A00000 >> 16)
-    /* 1CE5C 8021BE5C 44810000 */  mtc1       $at, $f0
-    /* 1CE60 8021BE60 460C2180 */  add.s      $f6, $f4, $f12
-    /* 1CE64 8021BE64 E4460000 */  swc1       $f6, 0x0($v0)
-    /* 1CE68 8021BE68 C4480000 */  lwc1       $f8, 0x0($v0)
-    /* 1CE6C 8021BE6C 4608003C */  c.lt.s     $f0, $f8
-    /* 1CE70 8021BE70 00000000 */  nop
-    /* 1CE74 8021BE74 45000002 */  bc1f       .L8021BE80
-    /* 1CE78 8021BE78 00000000 */   nop
-    /* 1CE7C 8021BE7C E4400000 */  swc1       $f0, 0x0($v0)
-  .L8021BE80:
-    /* 1CE80 8021BE80 03E00008 */  jr         $ra
-    /* 1CE84 8021BE84 00000000 */   nop
-endlabel AddDamageToVehiclePart
-
 nonmatching InitRenderingSubsystem, 0x300
 
 glabel InitRenderingSubsystem

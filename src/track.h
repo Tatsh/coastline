@@ -116,6 +116,9 @@ typedef struct {
     (TRACK_INSTANCE_TWO_SIDED | TRACK_INSTANCE_CLEAR_SKY | TRACK_INSTANCE_FLAT |                   \
      TRACK_INSTANCE_RAMPED)
 
+/** The surface a wheel and its spray take before the wheel touches the track. */
+#define TRACK_SURFACE_START 2
+
 /** The surface whose tyre smoke is pale and that throws spray only in the rain: the paved road. */
 #define TRACK_SURFACE_PAVED 3
 
@@ -189,7 +192,9 @@ typedef struct {
     u8 unreconstructed30[0x38 - 0x30];
     f32 minZ;
     f32 maxZ;
-    u8 unreconstructed40[0x50 - 0x40];
+    /** Where the grid starts, and the heading of the vehicles on it, in radians. */
+    Vec3f startPosition;
+    f32 startHeading;
     /** The display list of the sky, or NULL for a sky of the fog colour. */
     Gfx *skyDisplayList;
     u8 unreconstructed54[0x5C - 0x54];
@@ -207,7 +212,10 @@ typedef struct {
     /** Every section, for a search. */
     TrackSection **sections;
     s32 sectionCount;
-    u8 unreconstructed80[0x8C - 0x80];
+    u8 unreconstructed80[0x84 - 0x80];
+    /** The points the trackside camera of a replay may stand at. */
+    Vec3f *cameraPoints;
+    s32 cameraPointCount;
     /** Lists of placed models near the triangles, each ending in 0. */
     u16 *nearbyInstances;
     /** Where in nearbyInstances the list of each triangle starts, by its index. */

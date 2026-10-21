@@ -318,6 +318,7 @@ rendertile
 reques
 resetglobalintmask
 resf
+respawn
 restartfrom
 rgbdither
 rigidbody
@@ -416,6 +417,7 @@ urlopen
 vars
 vecmath
 vehiclerender
+vehiclesetup
 vendored
 venv
 viblack
