@@ -37,7 +37,12 @@ s32 osPfsIsPlug(OSMesgQueue *q, u8 *pattern) {
     *pattern = 1;
     return 0;
 }
+/* The calls left that fail: with the identity, and then without a device. */
+static s32 initPakFailures;
 s32 osPfsInitPak(OSMesgQueue *q, OSPfs *pfs, int channel) {
+    if (initPakFailures != 0) {
+        return --initPakFailures != 0 ? PFS_ERR_ID_FATAL : PFS_ERR_DEVICE;
+    }
     return 0;
 }
 s32 osPfsRepairId(OSPfs *pfs) {
@@ -179,6 +184,11 @@ int main(void) {
     pak[5].company_code = 0x3544;
     g_wPakScanEmptyMask = 0;
     assert(InitPakAndEnumerateFiles() == TRUE);
+    /* After a repair, the mount ignores the result of the second initialisation. */
+    initPakFailures = 2;
+    gControllerPakState = -1;
+    assert(InitPakAndEnumerateFiles() == TRUE);
+    assert(initPakFailures == 0 && gControllerPakState == 0);
     puts("pakmenu ok");
     return 0;
 }

@@ -49,7 +49,8 @@ static s32 MountPak(void) {
         }
         gControllerPakState = osPfsRepairId(&g_aPakPfs[0]);
         if (gControllerPakState == 0) {
-            gControllerPakState = osPfsInitPak(&g_SiMesgQueue, &g_aPakPfs[0], 0);
+            /* The result is discarded, and the state remains that of the repair. */
+            osPfsInitPak(&g_SiMesgQueue, &g_aPakPfs[0], 0);
         }
     }
     return TRUE;
