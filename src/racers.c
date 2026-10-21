@@ -202,14 +202,14 @@ void InitRacerSlot(RacerSlot *slot) {
 
     /* The original compares the mode as a signed value. */
     switch ((s32)g_dwGameMode) {
-    default:
-        count = g_dwNumActiveVehicles;
-        break;
     case GAME_MODE_ARCADE:
         count = ARCADE_VEHICLES;
         break;
     case GAME_MODE_CHAMPIONSHIP:
         count = g_dwNumLocalPlayers;
+        break;
+    default:
+        count = g_dwNumActiveVehicles;
         break;
     }
     index = slot - g_aRacerSlots;
