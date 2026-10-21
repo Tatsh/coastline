@@ -39,6 +39,20 @@
 #define VEHICLE_LODS 3
 #define VEHICLE_DISPLAY_LISTS 10
 
+/** The display lists of a wheel of a car: the plain wheel, one not drawn, and one in the snow. */
+enum {
+    VEHICLE_WHEEL_DL_NORMAL,
+    VEHICLE_WHEEL_DL_1,
+    VEHICLE_WHEEL_DL_SNOW,
+    VEHICLE_WHEEL_DISPLAY_LISTS,
+};
+
+/** The textures whose palettes hold the colors of a car: the paint, and the lights at 10 and 11. */
+#define VEHICLE_MATERIALS 12
+#define VEHICLE_MATERIAL_PAINT 2
+#define VEHICLE_MATERIAL_HEADLIGHTS 10
+#define VEHICLE_MATERIAL_REAR_LIGHTS 11
+
 /** The display lists of the model of a car that the renderer draws. */
 enum {
     /** The details drawn only near the camera, at the nearest level. */
@@ -115,37 +129,38 @@ extern u8 g_abPlayerColorsRgb[][3];
 typedef struct {
     /** The triangles of the model, which the statistics of the frame count. */
     u32 triangleCount;
-    u8 unreconstructed4[0x14 - 0x4];
+    u8 unreconstructed4[0x10 - 0x4];
     /** The textures of the model. */
+    s32 textureCount;
     ModelTexture *textures;
     /** The display lists of each level of detail, by the VEHICLE_DL_ values. */
     Gfx *displayLists[VEHICLE_LODS][VEHICLE_DISPLAY_LISTS];
-    u8 unreconstructed90[0xB0 - 0x90];
+    /** Turned into pointers with the rest; not read yet. */
+    void *unreconstructed90;
+    void *unreconstructed94;
+    u8 unreconstructed98[0xB0 - 0x98];
     /** How far forward of the vehicle the cockpit camera sits. */
     f32 cockpitForward;
     /** Half of how far forward of the vehicle the mirror camera sits. */
     f32 mirrorForward;
     /** How far above the vehicle the cockpit and mirror cameras sit. */
     f32 cockpitUp;
-    /** The display list of a wheel, and of a wheel in the snow. */
-    Gfx *wheelDisplayList;
-    u8 unreconstructedC0[0xC4 - 0xC0];
-    Gfx *snowWheelDisplayList;
-    u8 unreconstructedC8[0xE0 - 0xC8];
+    /** The display lists of a wheel at each level of detail, by the VEHICLE_WHEEL_DL_ values. */
+    Gfx *wheelDisplayLists[VEHICLE_LODS][VEHICLE_WHEEL_DISPLAY_LISTS];
     /**
      * Where the four wheels are drawn. The physics takes the second and the third as a front and a
      * rear wheel of one side and mirrors them across, and the shadow is sized by the x and y of the
      * first.
      */
     Vec3f wheels[VEHICLE_WHEELS];
-    u8 unreconstructed110[0x112 - 0x110];
-    /** The texture whose palette holds the colour of the paint. */
-    u8 paintTexture;
-    u8 unreconstructed113[0x11A - 0x113];
-    /** The textures whose palettes hold the colors of the headlights and of the rear lights. */
-    u8 headlightTexture;
-    u8 rearLightTexture;
-    u8 unreconstructed11C[0xDF88 - 0x11C];
+    /**
+     * The textures whose palettes the colors of the car are set in, by the VEHICLE_MATERIAL_
+     * values: the paint, the headlights and the rear lights among them.
+     */
+    u8 materialTextures[VEHICLE_MATERIALS];
+    /** A table of pointers turned into pointers with the rest; not read yet. */
+    void **unreconstructed11C;
+    u8 unreconstructed120[0xDF88 - 0x120];
 } VehicleModel;
 
 /** How a car shows the revolutions of its engine. */
@@ -917,6 +932,15 @@ void FixupVehicleModelPointers(VehicleModel *model);
  * @ghidraAddress USA: 0x8021d5e4
  */
 void LoadOrCopyVehicleModel(s32 slot, s32 car, void *source);
+
+/**
+ * Decompress the model of a car from the cartridge, and keep its size.
+ *
+ * @param model Where to decompress it.
+ * @param car The index of the car in g_aCarModels.
+ * @ghidraAddress USA: 0x8021d534
+ */
+void LoadVehicleModelFromRom(VehicleModel *model, s32 car);
 
 /**
  * How the steering answers the stick, as the steering mode of a vehicle sets it: the lock at rest

@@ -260,6 +260,7 @@ modelpart
 modelpartflags
 modelpartpos
 modelparts
+modelptrs
 modeltex
 modelview
 motorstartbuf
@@ -491,6 +492,7 @@ urlopen
 vars
 vecmath
 vehicleindex
+vehiclemodel
 vehiclerender
 vehiclesetup
 vehprofile

@@ -162,12 +162,20 @@ _Static_assert(offsetof(VehicleModel, displayLists[0][VEHICLE_DL_HEADLIGHT_BEAMS
                "dlbeam");
 _Static_assert(offsetof(VehicleModel, displayLists[0][VEHICLE_DL_HIGHLIGHTED]) == 0x3C, "dlhi");
 _Static_assert(offsetof(VehicleModel, cockpitForward) == 0xB0, "cockpit");
-_Static_assert(offsetof(VehicleModel, wheelDisplayList) == 0xBC, "wheeldl");
-_Static_assert(offsetof(VehicleModel, snowWheelDisplayList) == 0xC4, "snowdl");
+_Static_assert(offsetof(VehicleModel, wheelDisplayLists[0][VEHICLE_WHEEL_DL_NORMAL]) == 0xBC,
+               "wheeldl");
+_Static_assert(offsetof(VehicleModel, wheelDisplayLists[0][VEHICLE_WHEEL_DL_SNOW]) == 0xC4,
+               "snowdl");
+_Static_assert(offsetof(VehicleModel, textureCount) == 0x10 &&
+                   offsetof(VehicleModel, unreconstructed94) == 0x94 &&
+                   offsetof(VehicleModel, unreconstructed11C) == 0x11C,
+               "modelptrs");
 _Static_assert(offsetof(VehicleModel, wheels) == 0xE0, "wheels");
 _Static_assert(offsetof(VehicleModel, wheels[1]) == 0xEC, "frontwheel");
-_Static_assert(offsetof(VehicleModel, headlightTexture) == 0x11A, "headtex");
-_Static_assert(offsetof(VehicleModel, rearLightTexture) == 0x11B, "reartex");
+_Static_assert(offsetof(VehicleModel, materialTextures[VEHICLE_MATERIAL_HEADLIGHTS]) == 0x11A,
+               "headtex");
+_Static_assert(offsetof(VehicleModel, materialTextures[VEHICLE_MATERIAL_REAR_LIGHTS]) == 0x11B,
+               "reartex");
 _Static_assert(sizeof(ModelTexture) == 0x24, "modeltex");
 _Static_assert(offsetof(Vehicle, throttle) == 0xE38, "throttle");
 _Static_assert(offsetof(Vehicle, inTunnel) == 0x1DC8, "tunnel");
@@ -207,7 +215,8 @@ _Static_assert(offsetof(CarModel, engineLayout) == 0x40, "engine");
 _Static_assert(offsetof(CarModel, acceleration) == 0x44, "accel");
 _Static_assert(offsetof(CarModel, maxSpeed) == 0x48, "maxspeed");
 _Static_assert(offsetof(CarModel, gearCount) == 0x54, "gears");
-_Static_assert(offsetof(VehicleModel, paintTexture) == 0x112, "painttex");
+_Static_assert(offsetof(VehicleModel, materialTextures[VEHICLE_MATERIAL_PAINT]) == 0x112,
+               "painttex");
 _Static_assert(sizeof(Ambient) == 8 && sizeof(Light) == 16, "lights2");
 #include <PR/os_cont.h>
 

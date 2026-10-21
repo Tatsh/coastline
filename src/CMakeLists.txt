@@ -79,8 +79,8 @@ if(TGR_PLATFORM STREQUAL "n64")
 
   # The game code of the Nintendo 64 releases. A routine joins this list when its body moves from
   # the assembly of the original into C.
-  add_library(coastline_game STATIC audio.c audiomix.s camera.c carselect.c controllerscreen.c debugtext.c driving.c effects.c fade.c game.c hud.c input.c heap.c mainmenu.c mathutil.c options.c pakmenu.c physics.c playerselect.c race.c
-                                    racemenu.c racers.c racesound.c replay.c rigidbody.c rumble.c sky.c snapshot.c splash.c text.c texrect.c timing.c track.c trackrender.c util.c vecmath.c vehicle.c vehiclerender.c vehiclesetup.c visgrid.c weather.c weatherselect.c)
+  add_library(coastline_game STATIC audio.c audiomix.s camera.c carselect.c controllerscreen.c debugtext.c driving.c effects.c fade.c game.c hud.c input.c heap.c mainmenu.c mathutil.c model.c options.c pakmenu.c physics.c playerselect.c race.c
+                                    racemenu.c racers.c racesound.c replay.c rigidbody.c rumble.c sky.c snapshot.c splash.c text.c texrect.c timing.c track.c trackrender.c util.c vecmath.c vehicle.c vehiclemodel.c vehiclerender.c vehiclesetup.c visgrid.c weather.c weatherselect.c)
   target_link_libraries(coastline_game PRIVATE coastline_common)
   list(APPEND COASTLINE_LIBRARIES coastline_game)
 endif()

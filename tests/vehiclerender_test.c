@@ -407,14 +407,14 @@ static void CheckModel(void) {
                       0xFF33FFFF};
 
     m->textures = textures;
-    m->headlightTexture = 2;
-    m->rearLightTexture = 4;
+    m->materialTextures[VEHICLE_MATERIAL_HEADLIGHTS] = 2;
+    m->materialTextures[VEHICLE_MATERIAL_REAR_LIGHTS] = 4;
     textures[2].palette = headPalette;
     textures[4].palette = rearPalette;
     m->displayLists[0][VEHICLE_DL_BODY] = body;
     m->displayLists[0][VEHICLE_DL_TEXTURED] = textured;
     m->displayLists[0][VEHICLE_DL_HIGHLIGHTED] = highlighted;
-    m->wheelDisplayList = wheel;
+    m->wheelDisplayLists[0][VEHICLE_WHEEL_DL_NORMAL] = wheel;
     m->triangleCount = 123;
     v->model = m;
     v->index = 1;
@@ -484,8 +484,8 @@ static void CheckWheels(void) {
         0xBD000000, 0};
     int i;
 
-    m->wheelDisplayList = wheel;
-    m->snowWheelDisplayList = snow;
+    m->wheelDisplayLists[0][VEHICLE_WHEEL_DL_NORMAL] = wheel;
+    m->wheelDisplayLists[0][VEHICLE_WHEEL_DL_SNOW] = snow;
     v->model = m;
     for (i = 0; i < VEHICLE_WHEELS; i++) {
         m->wheels[i].x = (f32)i;

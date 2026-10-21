@@ -33,11 +33,28 @@ typedef struct {
  * A texture of a model and its palette. Its fields join this structure as they are reconstructed.
  */
 typedef struct {
-    u8 unreconstructed0[0x4];
+    /** The texels. */
+    u8 *image;
     /** The 16 colors of the palette, in RGBA 5551. */
     u16 *palette;
-    u8 unreconstructed8[0x24 - 0x8];
+    u8 unreconstructed8[0x20 - 0x8];
+    /** How the texture wraps and repeats, by bits from the highest. */
+    unsigned mirrorS : 1;
+    unsigned mirrorT : 1;
+    unsigned clampS : 1;
+    unsigned clampT : 1;
+    /** The TEXTURE_FORMAT_ values. */
+    unsigned format : 4;
+    unsigned : 3;
+    unsigned animated : 1;
+    unsigned : 2;
+    /** The bytes of the texels. */
+    unsigned size : 18;
 } ModelTexture;
+
+/** The formats of a texture of a model: 4-bit with a palette of 16, and 8-bit intensity. */
+#define TEXTURE_FORMAT_CI4 1
+#define TEXTURE_FORMAT_I8 4
 
 /** The clipping ratios from 1 to 6, each a display list that sets it. */
 #define CLIP_RATIOS 6

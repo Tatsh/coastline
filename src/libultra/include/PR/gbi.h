@@ -52,8 +52,18 @@ typedef struct {
     u8 cn[4];
 } Vtx_t;
 
+/** A vertex with a texture coordinate and a normal, for lighting. */
+typedef struct {
+    s16 ob[3];
+    u16 flag;
+    s16 tc[2];
+    s8 n[3];
+    u8 a;
+} Vtx_tn;
+
 typedef union {
     Vtx_t v;
+    Vtx_tn n;
     long long force_structure_alignment;
 } Vtx;
 

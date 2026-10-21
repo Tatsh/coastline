@@ -153,7 +153,7 @@ void TransformWheelPositions(s32 index) {
     s32 i;
 
     g_pCurrentVehicleModelData = vehicle->model;
-    if (g_pCurrentVehicleModelData->wheelDisplayList == NULL) {
+    if (g_pCurrentVehicleModelData->wheelDisplayLists[0][VEHICLE_WHEEL_DL_NORMAL] == NULL) {
         return;
     }
     for (i = 0; i < VEHICLE_WHEELS; i++) {
@@ -167,7 +167,7 @@ void RenderWheelModels(Vehicle *vehicle) {
     Mtx *block;
     s32 i;
 
-    if (g_pCurrentVehicleModelData->wheelDisplayList == NULL) {
+    if (g_pCurrentVehicleModelData->wheelDisplayLists[0][VEHICLE_WHEEL_DL_NORMAL] == NULL) {
         return;
     }
     for (i = 0; i < VEHICLE_WHEELS; i++) {
@@ -226,9 +226,11 @@ void RenderWheelModels(Vehicle *vehicle) {
         gSPForceMatrix(gDisplayListPtr++, PHYSICAL(block));
         SetModelTextures();
         if (g_dwSnowMode) {
-            DrawModelDisplayList(g_pCurrentVehicleModelData->snowWheelDisplayList);
+            DrawModelDisplayList(
+                g_pCurrentVehicleModelData->wheelDisplayLists[0][VEHICLE_WHEEL_DL_SNOW]);
         } else {
-            DrawModelDisplayList(g_pCurrentVehicleModelData->wheelDisplayList);
+            DrawModelDisplayList(
+                g_pCurrentVehicleModelData->wheelDisplayLists[0][VEHICLE_WHEEL_DL_NORMAL]);
         }
         gSPPopMatrix(gDisplayListPtr++, G_MTX_MODELVIEW);
     }
@@ -568,7 +570,9 @@ void RenderVehicleModel(Vehicle *vehicle, s32 lodOffset) {
     /* The palettes of the lights: lit at night and in rain, braking, and reversing. */
     lit = g_dwNightMode || g_dwRainMode;
     palette =
-        g_pCurrentVehicleModelData->textures[g_pCurrentVehicleModelData->headlightTexture].palette;
+        g_pCurrentVehicleModelData
+            ->textures[g_pCurrentVehicleModelData->materialTextures[VEHICLE_MATERIAL_HEADLIGHTS]]
+            .palette;
     if (palette != NULL) {
         for (i = HEADLIGHT_FIRST_ENTRY; i < HEADLIGHT_FIRST_ENTRY + HEADLIGHT_ENTRIES; i++) {
             if (lit) {
@@ -579,7 +583,9 @@ void RenderVehicleModel(Vehicle *vehicle, s32 lodOffset) {
         }
     }
     palette =
-        g_pCurrentVehicleModelData->textures[g_pCurrentVehicleModelData->rearLightTexture].palette;
+        g_pCurrentVehicleModelData
+            ->textures[g_pCurrentVehicleModelData->materialTextures[VEHICLE_MATERIAL_REAR_LIGHTS]]
+            .palette;
     if (palette != NULL) {
         if (lit) {
             palette[15] = 0x7000;

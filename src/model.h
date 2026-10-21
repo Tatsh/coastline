@@ -35,12 +35,49 @@ typedef struct {
 #define MODEL_PART_RAMPED 0x0400
 
 /**
+ * A key of an animation: its time, then the position of each vertex, then its normal. The normals
+ * follow the positions of all the vertices, so they have no field.
+ */
+typedef struct {
+    f32 time;
+    s16 positions[][3];
+} ModelKeyframe;
+
+/** The flags of an animation: it repeats, it turns back at its end, and it runs backwards. */
+#define MODEL_ANIMATION_REPEAT 0x1
+#define MODEL_ANIMATION_BOUNCE 0x2
+#define MODEL_ANIMATION_REVERSING 0x4
+
+/** An animation of vertices of a model, blended between its keys. */
+typedef struct {
+    s32 vertexCount;
+    Vtx *vertices;
+    /** Turned into a pointer with the rest; never read. */
+    void *unreconstructed8;
+    s32 keyCount;
+    /** The MODEL_ANIMATION_ flags. */
+    u16 flags;
+    /** The key a search for the time starts from. */
+    u16 startKey;
+    f32 startTime;
+    f32 endTime;
+    f32 time;
+    ModelKeyframe *keys[];
+} ModelAnimation;
+
+/** The animations of a model. */
+typedef struct {
+    s32 count;
+    ModelAnimation *entries[];
+} ModelAnimationList;
+
+/**
  * A model loaded from the cartridge, with its display lists and the animations of its parts. Its
  * fields join this structure as they are reconstructed.
  */
 typedef struct Model {
     u32 partCount;
-    void *animations;
+    ModelAnimationList *animations;
     ModelPart parts[];
 } Model;
 
@@ -98,6 +135,46 @@ void DrawModelAt(Model *model, f32 x, f32 y, f32 z, f32 angle, f32 scale);
  * @ghidraAddress USA: 0x8021de2c
  */
 Model *DecompressModel(void *dst, u32 romOffset);
+
+/**
+ * Move a pointer that falls in a range of offsets to the same place from a base.
+ *
+ * @param pointer The pointer, as the word it is stored in.
+ * @param lo The start of the range.
+ * @param hi The end of the range.
+ * @param base Where the start of the range moves to.
+ * @ghidraAddress USA: 0x8021d070
+ */
+void RemapPointer(u32 *pointer, u32 lo, u32 hi, u32 base);
+
+/**
+ * Remap the addresses of the vertices and textures of a display list, up to its end. The display
+ * lists it calls are not followed.
+ *
+ * @param displayList The display list, or NULL.
+ * @param lo The start of the range of the addresses.
+ * @param hi The end of the range.
+ * @param base Where the start of the range moves to.
+ * @ghidraAddress USA: 0x8021d098
+ */
+void FixupDisplayListPointers(Gfx *displayList, u32 lo, u32 hi, u32 base);
+
+/**
+ * Make every animation of a model repeat by turning back at its end.
+ *
+ * @param model The model.
+ * @ghidraAddress USA: 0x8021d828
+ */
+void BounceModelAnimations(Model *model);
+
+/**
+ * Turn the offsets a model is loaded with into pointers: its animations, their vertices and keys,
+ * and the display lists of its parts.
+ *
+ * @param model The model.
+ * @ghidraAddress USA: 0x8021dc34
+ */
+void RelocateModelPointers(Model *model);
 
 /**
  * Set flags on every animation of a model, then clear others.
