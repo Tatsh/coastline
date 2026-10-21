@@ -819,9 +819,10 @@ void PrintCollisionTriangleCount(void) {
     CollisionTriangleNode *node;
     s16 count;
 
-    if (g_pCollisionTriangleList != NULL) {
+    node = g_pCollisionTriangleList;
+    if (node != NULL) {
         count = 0;
-        for (node = g_pCollisionTriangleList; node != NULL; node = node->next) {
+        for (; node != NULL; node = node->next) {
             count++;
         }
         osSyncPrintf("----%d-------------------------------\n", count);

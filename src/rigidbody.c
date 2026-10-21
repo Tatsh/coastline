@@ -16,8 +16,8 @@ void StubPhysics2(void *data) {
 }
 
 void QuaternionMultiply(Quaternion *out, Quaternion *a, Quaternion *b) {
-    f32 aw = a->w, ax = a->x, ay = a->y, az = a->z;
     f32 bw = b->w, bx = b->x, by = b->y, bz = b->z;
+    f32 aw = a->w, ax = a->x, ay = a->y, az = a->z;
 
     out->z = az * bw - ay * bx + ax * by + aw * bz;
     out->y = ay * bw + az * bx + aw * by - ax * bz;
@@ -43,55 +43,65 @@ void Vec3fNormalizeFast(Vec3f *v) {
 }
 
 void ComputeDeltaQuaternion(RigidBodyState *state) {
-    f32 hx = state->angularVelocity.x * 0.5f;
-    f32 hy = state->angularVelocity.y * 0.5f;
-    f32 hz = state->angularVelocity.z * 0.5f;
-    f32 w = state->orientation.w, x = state->orientation.x;
-    f32 y = state->orientation.y, z = state->orientation.z;
+    f32 half[3];
 
-    state->spin.w = -hx * x - hy * y - z * hz;
-    state->spin.x = w * hx + hy * z - y * hz;
-    state->spin.y = w * hy + hz * x - z * hx;
-    state->spin.z = w * hz + hx * y - x * hy;
+    half[0] = state->angularVelocity.x * 0.5f;
+    half[1] = state->angularVelocity.y * 0.5f;
+    half[2] = state->angularVelocity.z * 0.5f;
+    state->spin.w = -half[0] * state->orientation.x - half[1] * state->orientation.y -
+                    state->orientation.z * half[2];
+    state->spin.x = state->orientation.w * half[0] + half[1] * state->orientation.z -
+                    state->orientation.y * half[2];
+    state->spin.y = state->orientation.w * half[1] + half[2] * state->orientation.x -
+                    state->orientation.z * half[0];
+    state->spin.z = state->orientation.w * half[2] + half[0] * state->orientation.y -
+                    state->orientation.x * half[1];
 }
 
 void ApplyRigidBodyImpulse(RigidBodyState *state, RigidBody *body, f32 dt) {
-    Vec3f linear, angular;
+    f32 linear[3], angular[3];
 
-    linear.x = body->force.x * dt;
-    linear.y = body->force.y * dt;
-    linear.z = body->force.z * dt;
-    angular.x = body->torque.x * dt;
-    angular.y = body->torque.y * dt;
-    angular.z = body->torque.z * dt;
-    state->velocity.x = linear.x + state->velocity.x;
-    state->velocity.y = linear.y + state->velocity.y;
-    state->velocity.z = linear.z + state->velocity.z;
-    state->angularVelocity.x = angular.x + state->angularVelocity.x;
-    state->angularVelocity.y = angular.y + state->angularVelocity.y;
-    state->angularVelocity.z = angular.z + state->angularVelocity.z;
+    linear[0] = body->force.x * dt;
+    linear[1] = body->force.y * dt;
+    linear[2] = body->force.z * dt;
+    angular[0] = body->torque.x * dt;
+    angular[1] = body->torque.y * dt;
+    angular[2] = body->torque.z * dt;
+    state->velocity.x = linear[0] + state->velocity.x;
+    state->velocity.y = linear[1] + state->velocity.y;
+    state->velocity.z = linear[2] + state->velocity.z;
+    state->angularVelocity.x = angular[0] + state->angularVelocity.x;
+    state->angularVelocity.y = angular[1] + state->angularVelocity.y;
+    state->angularVelocity.z = angular[2] + state->angularVelocity.z;
 }
 
 void QuaternionToMatrix(f32 out[4][4], RigidBodyState *state) {
-    f32 w = state->orientation.w, x = state->orientation.x;
-    f32 y = state->orientation.y, z = state->orientation.z;
-    f32 ww = w * w, xx = x * x, yy = y * y, zz = z * z;
-    f32 w2 = w + w, x2 = x + x, y2 = y + y;
-    f32 xy2 = y * x2, wz2 = z * w2, xz2 = z * x2, wy2 = y * w2, yz2 = z * y2, wx2 = x * w2;
-    f32 sum = ww + xx, difference = ww - xx;
+    Quaternion *q = &state->orientation;
+    f32 ww, xx, yy, zz;
+    f32 xy2, wz2, xz2, wy2, yz2, wx2;
 
-    out[0][0] = sum - yy - zz;
+    ww = q->w * q->w;
+    xx = q->x * q->x;
+    yy = q->y * q->y;
+    zz = q->z * q->z;
+    xy2 = q->y * (q->x + q->x);
+    wz2 = q->z * (q->w + q->w);
+    xz2 = q->z * (q->x + q->x);
+    wy2 = q->y * (q->w + q->w);
+    yz2 = q->z * (q->y + q->y);
+    wx2 = q->x * (q->w + q->w);
+    out[0][0] = ww + xx - yy - zz;
     out[0][1] = xy2 + wz2;
     out[0][3] = 0.0f;
     out[0][2] = xz2 - wy2;
     out[1][0] = xy2 - wz2;
-    out[1][1] = difference + yy - zz;
+    out[1][1] = ww - xx + yy - zz;
     out[1][3] = 0.0f;
     out[1][2] = yz2 + wx2;
     out[2][3] = 0.0f;
     out[2][1] = yz2 - wx2;
     out[2][0] = xz2 + wy2;
-    out[2][2] = difference - yy + zz;
+    out[2][2] = ww - xx - yy + zz;
     out[3][0] = state->position.x;
     out[3][1] = state->position.y;
     out[3][3] = 1.0f;
@@ -100,27 +110,27 @@ void QuaternionToMatrix(f32 out[4][4], RigidBodyState *state) {
 }
 
 void IntegrateRigidBodyState(RigidBodyState *out, RigidBodyState *in, f32 dt) {
-    Vec3f move;
-    Quaternion turn;
+    f32 move[3];
+    f32 turn[4];
 
-    move.x = in->velocity.x * dt;
-    move.y = in->velocity.y * dt;
-    move.z = in->velocity.z * dt;
-    out->position.x = move.x + in->position.x;
-    out->position.y = move.y + in->position.y;
-    out->position.z = move.z + in->position.z;
+    move[0] = in->velocity.x * dt;
+    move[1] = in->velocity.y * dt;
+    move[2] = in->velocity.z * dt;
+    out->position.x = move[0] + in->position.x;
+    out->position.y = move[1] + in->position.y;
+    out->position.z = move[2] + in->position.z;
     out->velocity.x = in->velocity.x;
     out->velocity.y = in->velocity.y;
     out->velocity.z = in->velocity.z;
 
-    turn.w = in->spin.w * dt;
-    turn.x = in->spin.x * dt;
-    turn.y = in->spin.y * dt;
-    turn.z = in->spin.z * dt;
-    out->orientation.w = turn.w + in->orientation.w;
-    out->orientation.x = turn.x + in->orientation.x;
-    out->orientation.y = turn.y + in->orientation.y;
-    out->orientation.z = turn.z + in->orientation.z;
+    turn[0] = in->spin.w * dt;
+    turn[1] = in->spin.x * dt;
+    turn[2] = in->spin.y * dt;
+    turn[3] = in->spin.z * dt;
+    out->orientation.w = turn[0] + in->orientation.w;
+    out->orientation.x = turn[1] + in->orientation.x;
+    out->orientation.y = turn[2] + in->orientation.y;
+    out->orientation.z = turn[3] + in->orientation.z;
     QuaternionNormalize(&out->orientation);
 
     out->angularVelocity.x = in->angularVelocity.x;
@@ -134,8 +144,8 @@ void IntegrateRigidBodyState(RigidBodyState *out, RigidBodyState *in, f32 dt) {
 
 void SetRigidBodyForce(
     RigidBodyForce *force, f32 x, f32 y, f32 z, f32 pointX, f32 pointY, f32 pointZ, s32 frame) {
-    force->vector.x = x;
     force->frame = frame;
+    force->vector.x = x;
     force->vector.y = y;
     force->vector.z = z;
     force->point.x = pointX;
@@ -143,60 +153,57 @@ void SetRigidBodyForce(
     force->point.z = pointZ;
 }
 
+/* Multiply a vector by the rows of a matrix, the sums building up in the result. */
+#define MTX_ROWS_MUL_VEC3F(out, m, v, i, k)                                                        \
+    for (i = 0; i < 3; i++) {                                                                      \
+        (&(out)->x)[i] = 0.0f;                                                                     \
+        for (k = 0; k < 3; k++) {                                                                  \
+            (&(out)->x)[i] += (m)[i][k] * (&(v)->x)[k];                                            \
+        }                                                                                          \
+    }
+
 void Mtx4fInverseRotate(Vec3f *out, f32 m[4][4], Vec3f *v) {
-    f32 *result = &out->x;
-    f32 *in = &v->x;
     s32 i, k;
 
-    /* The sums build up in the result, as in the original. */
-    for (i = 0; i < 3; i++) {
-        result[i] = 0.0f;
-        for (k = 0; k < 3; k++) {
-            result[i] += m[i][k] * in[k];
-        }
-    }
+    MTX_ROWS_MUL_VEC3F(out, m, v, i, k);
 }
 
+/* Rotate a vector by the 3 by 3 part of a 4 by 4 matrix, the sums building up in the result. */
+#define MTX3X3_MUL_VEC3F(out, m, v, i, k)                                                          \
+    for (i = 0; i < 3; i++) {                                                                      \
+        (&(out)->x)[i] = 0.0f;                                                                     \
+        for (k = 0; k < 3; k++) {                                                                  \
+            (&(out)->x)[i] += (m)[k][i] * (&(v)->x)[k];                                            \
+        }                                                                                          \
+    }
+
 void Mtx3x3MulVec3f(Vec3f *out, f32 m[4][4], Vec3f *v) {
-    f32 *result = &out->x;
-    f32 *in = &v->x;
     s32 i, k;
 
-    for (i = 0; i < 3; i++) {
-        result[i] = 0.0f;
-        for (k = 0; k < 3; k++) {
-            result[i] += m[k][i] * in[k];
-        }
-    }
+    MTX3X3_MUL_VEC3F(out, m, v, i, k);
 }
 
 void Mtx4x4TransformPoint(Vec3f *out, f32 m[4][4], Vec3f *v) {
-    Mtx3x3MulVec3f(out, m, v);
+    s32 i, k;
+
+    MTX3X3_MUL_VEC3F(out, m, v, i, k);
     out->x += m[3][0];
     out->y += m[3][1];
     out->z += m[3][2];
 }
 
 void Mtx3fMulVec3f(Vec3f *out, f32 m[3][3], Vec3f *v) {
-    f32 *result = &out->x;
-    f32 *in = &v->x;
     s32 i, k;
 
-    for (i = 0; i < 3; i++) {
-        result[i] = 0.0f;
-        for (k = 0; k < 3; k++) {
-            result[i] += m[i][k] * in[k];
-        }
-    }
+    MTX_ROWS_MUL_VEC3F(out, m, v, i, k);
 }
 
 void ComputeRigidBodyAcceleration(RigidBody *body) {
-    f32 inverseMass = 1.0f / body->mass;
     Vec3f local, angular;
 
-    body->force.x *= inverseMass;
-    body->force.y *= inverseMass;
-    body->force.z *= inverseMass;
+    body->force.x *= 1.0f / body->mass;
+    body->force.y *= 1.0f / body->mass;
+    body->force.z *= 1.0f / body->mass;
     if (body->kind == RIGID_BODY_NO_ROTATION) {
         return;
     }
@@ -348,7 +355,7 @@ void Mtx3fMultiply(f32 out[3][3], f32 a[3][3], f32 b[3][3]) {
 
     for (i = 0; i < 3; i++) {
         for (j = 0; j < 3; j++) {
-            out[i][j] = b[2][j] * a[i][2] + (a[i][0] * b[0][j] + a[i][1] * b[1][j]);
+            out[i][j] = a[i][0] * b[0][j] + a[i][1] * b[1][j] + a[i][2] * b[2][j];
         }
     }
 }
@@ -364,14 +371,13 @@ void SubtractMatrix3x3(f32 out[3][3], f32 a[3][3], f32 b[3][3]) {
 }
 
 void MtxBuildScaledInverse(f32 m[4][4], f32 out[4][4], Vec3f *scale) {
-    f32 *factor = &scale->x;
     Vec3f negated;
     s32 i, j;
 
     for (i = 0; i < 3; i++) {
         for (j = 0; j < 3; j++) {
             out[i][j] = m[j][i];
-            out[i][j] *= factor[j];
+            out[i][j] *= (&scale->x)[j];
         }
         out[i][3] = 0.0f;
     }

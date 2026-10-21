@@ -89,31 +89,32 @@ void FixupVehicleModelPointers(VehicleModel *model) {
 }
 
 void LoadVehicleModelFromRom(VehicleModel *model, s32 car) {
-    CarModel *carModel = &g_aCarModels[car];
     char message[LOAD_MESSAGE_SIZE];
 
-    carModel->modelSize = DmaReadAssetSize(carModel->modelRom);
-    if (carModel->modelSize > sizeof(VehicleModel)) {
-        sprintf(
-            message, "Car %d too big (%d vs. %d)", car, carModel->modelSize, sizeof(VehicleModel));
+    g_aCarModels[car].modelSize = DmaReadAssetSize(g_aCarModels[car].modelRom);
+    if (g_aCarModels[car].modelSize > sizeof(VehicleModel)) {
+        sprintf(message,
+                "Car %d too big (%d vs. %d)",
+                car,
+                g_aCarModels[car].modelSize,
+                sizeof(VehicleModel));
         SetDebugMessage(message);
     } else {
-        osSyncPrintf("Loading car %d (%d / %d)\n", car, carModel->modelSize, sizeof(VehicleModel));
+        osSyncPrintf(
+            "Loading car %d (%d / %d)\n", car, g_aCarModels[car].modelSize, sizeof(VehicleModel));
     }
     /* A car too big is decompressed all the same. */
-    DecompressFromRom(model, carModel->modelRom, NULL);
+    DecompressFromRom(model, g_aCarModels[car].modelRom, NULL);
 }
 
 void LoadOrCopyVehicleModel(s32 slot, s32 car, void *source) {
-    VehicleModel *model = &g_aVehicleModels[slot];
-
     if (source == NULL) {
-        LoadVehicleModelFromRom(model, car);
+        LoadVehicleModelFromRom(&g_aVehicleModels[slot], car);
     } else {
         /* The source must be a model not yet remapped, whose addresses are of the first slot. */
-        memcpy(model, source, g_aCarModels[car].modelSize);
+        memcpy(&g_aVehicleModels[slot], source, g_aCarModels[car].modelSize);
     }
-    FixupVehicleModelPointers(model);
+    FixupVehicleModelPointers(&g_aVehicleModels[slot]);
     g_adwVehicleModelSlotCars[slot] = car;
 }
 

@@ -87,16 +87,18 @@ void ChooseVehicleCar(Vehicle *vehicle) {
 }
 
 void InitVehicleColor(Vehicle *vehicle) {
-    u8 *color;
+    u8 red, green, blue;
 
     ResetVehicleState(vehicle);
-    color = g_abPlayerColorsRgb[vehicle->index];
+    red = g_abPlayerColorsRgb[vehicle->index][0];
+    green = g_abPlayerColorsRgb[vehicle->index][1];
+    blue = g_abPlayerColorsRgb[vehicle->index][2];
     vehicle->ghostMode = 0;
     vehicle->otherLook = 0;
     vehicle->driver = NULL;
-    vehicle->color[0] = color[0];
-    vehicle->color[1] = color[1];
-    vehicle->color[2] = color[2];
+    vehicle->color[0] = red;
+    vehicle->color[1] = green;
+    vehicle->color[2] = blue;
 }
 
 void InitPlayerVehicleSlot(Vehicle *vehicle) {

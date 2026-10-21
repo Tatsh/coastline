@@ -99,10 +99,13 @@
 void ClearPerFrameVariables(void) {
     PerFrameVariable *entry;
     u8 *byte;
+    u8 *end;
 
     for (entry = g_aPerFrameVariables; entry->start != NULL; entry++) {
-        for (byte = entry->start; byte < entry->start + entry->size; byte++) {
-            *byte = 0;
+        byte = entry->start;
+        end = byte + entry->size;
+        while (byte < end) {
+            *byte++ = 0;
         }
     }
 }

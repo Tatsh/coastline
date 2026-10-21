@@ -31,7 +31,7 @@
 #define GRID_PATCH_Y 25
 
 /* The size of a cell of the grid, and the cells across the track. */
-#define GRID_CELL 32.0f
+#define GRID_CELL 32
 #define GRID_CELLS 64
 
 /* The warning of a vehicle facing against the track: the frames before it, its flash and its
@@ -217,14 +217,14 @@ void UpdateRaceTimers(Vehicle *vehicle) {
 }
 
 void UpdateHudMessageTimers(Vehicle *vehicle) {
-    if (vehicle->messageTime != 0.0f) {
-        vehicle->messageTime = vehicle->messageTime - g_fFrameDeltaTime;
+    if (vehicle->messageTime != 0) {
+        vehicle->messageTime -= g_fFrameDeltaTime;
         if (vehicle->messageTime <= 0.0f) {
             vehicle->messageTime = 0.0f;
             vehicle->message = NULL;
         }
-    } else if (vehicle->subMessageTime != 0.0f) {
-        vehicle->subMessageTime = vehicle->subMessageTime - g_fFrameDeltaTime;
+    } else if (vehicle->subMessageTime != 0) {
+        vehicle->subMessageTime -= g_fFrameDeltaTime;
         if (vehicle->subMessageTime <= 0.0f) {
             vehicle->subMessageTime = 0.0f;
             vehicle->subMessage = NULL;
@@ -536,35 +536,34 @@ void UpdateVehiclePhysicsFrame(Vehicle *vehicle) {
 }
 
 void SetVehiclePosition(Vehicle *vehicle, f32 x, f32 y, f32 z) {
-    vehicle->frame.position.y = y;
-    vehicle->sprayOrigin.y = y;
-    vehicle->body.state.position.y = y;
-    vehicle->body.stepStates[1].position.y = y;
-    vehicle->body.stepStates[0].position.y = y;
-    vehicle->frame.position.z = z;
-    vehicle->sprayOrigin.z = z;
-    vehicle->body.state.position.z = z;
-    vehicle->body.stepStates[1].position.z = z;
-    vehicle->body.stepStates[0].position.z = z;
     vehicle->frame.position.x = x;
+    vehicle->frame.position.y = y;
+    vehicle->frame.position.z = z;
     vehicle->sprayOrigin.x = x;
+    vehicle->sprayOrigin.y = y;
+    vehicle->sprayOrigin.z = z;
     vehicle->body.state.position.x = x;
+    vehicle->body.state.position.y = y;
+    vehicle->body.state.position.z = z;
     vehicle->body.stepStates[1].position.x = x;
+    vehicle->body.stepStates[1].position.y = y;
+    vehicle->body.stepStates[1].position.z = z;
     vehicle->body.stepStates[0].position.x = x;
+    vehicle->body.stepStates[0].position.y = y;
+    vehicle->body.stepStates[0].position.z = z;
     QuaternionToMatrix(vehicle->body.orientation, &vehicle->body.state);
 }
 
 /* Copy the orientation of the body into both of its step states, a coordinate at a time. */
-static inline void CopyOrientationToSteps(Vehicle *vehicle) {
-    vehicle->body.stepStates[1].orientation.w = vehicle->body.state.orientation.w;
-    vehicle->body.stepStates[0].orientation.w = vehicle->body.state.orientation.w;
-    vehicle->body.stepStates[1].orientation.x = vehicle->body.state.orientation.x;
-    vehicle->body.stepStates[0].orientation.x = vehicle->body.state.orientation.x;
-    vehicle->body.stepStates[1].orientation.y = vehicle->body.state.orientation.y;
-    vehicle->body.stepStates[0].orientation.y = vehicle->body.state.orientation.y;
-    vehicle->body.stepStates[1].orientation.z = vehicle->body.state.orientation.z;
-    vehicle->body.stepStates[0].orientation.z = vehicle->body.state.orientation.z;
-}
+#define COPY_ORIENTATION_TO_STEPS(vehicle)                                                         \
+    (vehicle)->body.stepStates[1].orientation.w = (vehicle)->body.state.orientation.w;             \
+    (vehicle)->body.stepStates[0].orientation.w = (vehicle)->body.state.orientation.w;             \
+    (vehicle)->body.stepStates[1].orientation.x = (vehicle)->body.state.orientation.x;             \
+    (vehicle)->body.stepStates[0].orientation.x = (vehicle)->body.state.orientation.x;             \
+    (vehicle)->body.stepStates[1].orientation.y = (vehicle)->body.state.orientation.y;             \
+    (vehicle)->body.stepStates[0].orientation.y = (vehicle)->body.state.orientation.y;             \
+    (vehicle)->body.stepStates[1].orientation.z = (vehicle)->body.state.orientation.z;             \
+    (vehicle)->body.stepStates[0].orientation.z = (vehicle)->body.state.orientation.z
 
 void InitVehicleOrientationFromAngle(Vehicle *vehicle, f32 angle) {
     f32 forwardX = cosf(angle);
@@ -586,7 +585,7 @@ void InitVehicleOrientationFromAngle(Vehicle *vehicle, f32 angle) {
     vehicle->body.state.orientation.x = 0.0f;
     vehicle->body.state.orientation.y = 0.0f;
     vehicle->body.state.orientation.z = sinf(half);
-    CopyOrientationToSteps(vehicle);
+    COPY_ORIENTATION_TO_STEPS(vehicle);
     QuaternionToMatrix(vehicle->body.orientation, &vehicle->body.state);
 }
 
@@ -620,27 +619,28 @@ void MatrixToQuaternion(f32 m[4][4], Quaternion *q) {
 void SetVehicleFrameMatrix(Vehicle *vehicle, f32 (*m)[4]) {
     memcpy(vehicle->matrix, m, sizeof(vehicle->matrix));
     MatrixToQuaternion(m, &vehicle->body.state.orientation);
-    CopyOrientationToSteps(vehicle);
+    COPY_ORIENTATION_TO_STEPS(vehicle);
     QuaternionToMatrix(vehicle->body.orientation, &vehicle->body.state);
 }
 
 void SetVehicleVelocity(Vehicle *vehicle, f32 x, f32 y, f32 z) {
+    Vec3f *placed = &vehicle->placedVelocity;
+
     vehicle->body.state.velocity.x = x;
     vehicle->body.state.velocity.y = y;
+    vehicle->body.state.velocity.z = z;
     vehicle->body.stepStates[1].velocity.x = x;
     vehicle->body.stepStates[1].velocity.y = y;
-    vehicle->body.state.velocity.z = z;
+    vehicle->body.stepStates[1].velocity.z = z;
     vehicle->body.stepStates[0].velocity.x = x;
     vehicle->body.stepStates[0].velocity.y = y;
-    vehicle->body.stepStates[1].velocity.z = z;
     vehicle->body.stepStates[0].velocity.z = z;
-    vehicle->placedVelocity.x = x;
-    vehicle->placedVelocity.y = y;
-    vehicle->placedVelocity.z = z;
+    placed->x = x;
+    placed->y = y;
+    placed->z = z;
 }
 
 void RotateVehicleByEuler(Vehicle *vehicle, f32 yaw, f32 pitch, f32 roll) {
-    Quaternion *orientation = &vehicle->body.state.orientation;
     Quaternion turn;
     f32 sine;
 
@@ -652,32 +652,32 @@ void RotateVehicleByEuler(Vehicle *vehicle, f32 yaw, f32 pitch, f32 roll) {
     turn.x = 0.0f;
     turn.y = 0.0f;
     turn.z = sine;
-    QuaternionMultiply(orientation, orientation, &turn);
+    QuaternionMultiply(&vehicle->body.state.orientation, &vehicle->body.state.orientation, &turn);
     sine = sinf(pitch);
     turn.w = cosf(pitch);
     turn.x = 0.0f;
     turn.y = sine;
     turn.z = 0.0f;
-    QuaternionMultiply(orientation, orientation, &turn);
+    QuaternionMultiply(&vehicle->body.state.orientation, &vehicle->body.state.orientation, &turn);
     sine = sinf(roll);
     turn.w = cosf(roll);
     turn.x = sine;
     turn.y = 0.0f;
     turn.z = 0.0f;
-    QuaternionMultiply(orientation, orientation, &turn);
-    QuaternionNormalize(orientation);
-    CopyOrientationToSteps(vehicle);
+    QuaternionMultiply(&vehicle->body.state.orientation, &vehicle->body.state.orientation, &turn);
+    QuaternionNormalize(&vehicle->body.state.orientation);
+    COPY_ORIENTATION_TO_STEPS(vehicle);
 }
 
 void SetVehicleTurnRate(Vehicle *vehicle, f32 x, f32 y, f32 z) {
     vehicle->body.state.angularVelocity.x = x;
     vehicle->body.state.angularVelocity.y = y;
+    vehicle->body.state.angularVelocity.z = z;
     vehicle->body.stepStates[1].angularVelocity.x = x;
     vehicle->body.stepStates[1].angularVelocity.y = y;
-    vehicle->body.state.angularVelocity.z = z;
+    vehicle->body.stepStates[1].angularVelocity.z = z;
     vehicle->body.stepStates[0].angularVelocity.x = x;
     vehicle->body.stepStates[0].angularVelocity.y = y;
-    vehicle->body.stepStates[1].angularVelocity.z = z;
     vehicle->body.stepStates[0].angularVelocity.z = z;
 }
 
@@ -698,11 +698,9 @@ void InstallVehicleModel(Vehicle *vehicle, s32 slot, s32 car) {
 }
 
 void LoadVehicleModel(VehicleModelLoad *load, s32 slot, s32 car, s32 buffer) {
-    CarModel *model = &g_aCarModels[car];
-
-    model->modelSize = DmaReadAssetSize(model->modelRom);
+    g_aCarModels[car].modelSize = DmaReadAssetSize(g_aCarModels[car].modelRom);
     InitDmaRequest(&load->job, &g_aDmaWorkBuffers[buffer * DMA_WORK_BUFFER_SIZE]);
-    DecompressFromRom(&g_aVehicleModels[slot], model->modelRom, &load->job);
+    DecompressFromRom(&g_aVehicleModels[slot], g_aCarModels[car].modelRom, &load->job);
     load->slot = slot;
     load->car = car;
 }

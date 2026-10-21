@@ -515,8 +515,8 @@ void RenderTrackInstance(s32 index, s32 vehicles, s32 deferred) {
 }
 
 s32 CompareVisibleCellDistance(const void *a, const void *b) {
-    s16 first = ((const VisibleCell *)a)->distance;
     s16 second = ((const VisibleCell *)b)->distance;
+    s16 first = ((const VisibleCell *)a)->distance;
 
     if (second < first) {
         return 1;
