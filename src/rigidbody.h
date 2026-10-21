@@ -52,10 +52,13 @@ enum {
     RIGID_BODY_NO_ROTATION,
 };
 
-/** A rigid body. Its fields join this structure as they are reconstructed. */
+/**
+ * A rigid body: the body of a vehicle or of one of its wheels. A wheel uses the ground, steering,
+ * spin and suspension fields, the body of a vehicle the springs, box and collision fields.
+ */
 typedef struct RigidBody {
     u32 unreconstructed0;
-    /** The bodies of the wheels of the body of a vehicle. */
+    /** The bodies of the wheels of the body of a vehicle: the rear two, then the front two. */
     struct RigidBody *wheels[4];
     u32 unreconstructed14;
     RigidBodyForce *forces;
@@ -68,24 +71,56 @@ typedef struct RigidBody {
     RigidBodyState state;
     /** The matrix of the orientation and position of the state. */
     f32 orientation[4][4];
-    /** The sums of the forces and torques of a step. */
+    /** The sums of the forces and torques of a step, then the accelerations they give. */
     Vec3f force;
     Vec3f torque;
     /** The states of the steps of the integration. */
     RigidBodyState stepStates[2];
-    s32 resetWord19C;
-    u8 unreconstructed1A0[0x1B4 - 0x1A0];
-    s32 resetWord1B4;
-    u8 unreconstructed1B8[0x1C0 - 0x1B8];
-    f32 friction;
-    f32 resetFloat1C4;
-    f32 resetFloat1C8;
+    /** The triangle of the track under a wheel, or NULL. */
+    struct TrackTriangle *ground;
+    /** The surface of that triangle, and its plane. */
+    u8 surface;
+    Vec3f groundNormal;
+    f32 groundOffset;
+    /** The frames a wheel has touched the ground, up to 100, or 0 off the ground. */
+    s32 contactFrames;
+    /** The springs and dampers of the suspension of the body of a vehicle. */
+    f32 springRate;
+    f32 damping;
+    /** The angle a front wheel is steered to, in radians. */
+    f32 steerAngle;
+    /** How fast a wheel spins, in radians a second. */
+    f32 spinRate;
+    f32 radius;
     /** The drive the throttle gives a wheel. */
     f32 drive;
     /** The braking of a wheel. */
     f32 brake;
-    f32 resetFloat1D4;
-    f32 resetFloat1D8;
+    /** How far a wheel has turned, in degrees; how far the body of a vehicle leans in a skid. */
+    f32 rollAngle;
+    /** How far below the body of a vehicle the ground is under a wheel. */
+    f32 suspension;
+    /** The box of the body of a vehicle the track collides with, and the height of its middle. */
+    Vec3f boxSize;
+    f32 boxCenterZ;
+    /** Where the last hard hit was. */
+    Vec3f impactPoint;
+    /** 35 while the vehicle is upright, then counting down each step it is upside down. */
+    s32 uprightFrames;
+    /** How fast the last hit was, from 10 on. */
+    u8 impactSpeed;
+    /** The tyres of the car, from 1, which lose grip as they rise. */
+    u8 tyreType;
+    /** The loudest hit of another vehicle and of the track since the sounds played. */
+    u8 vehicleImpactVolume;
+    u8 impactVolume;
+    /** The steps since the track was hit, up to 40, and since another vehicle was. */
+    u8 framesSinceImpact;
+    u8 framesSinceVehicleImpact;
+    u8 unreconstructed202;
+    /** Set to 0x80 when a wheel lands, and when the tyres skid. */
+    u8 landed;
+    u8 skidding;
 } RigidBody;
 
 /** An empty hook the inertia setup calls. @ghidraAddress USA: 0x80258070 */

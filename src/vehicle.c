@@ -53,12 +53,12 @@
 #define INPUT_REVERSE_TOGGLE (1 << 17)
 #define INPUT_FLY_LEVEL 0x10
 
-/* The share of the drive the front wheels take with front-wheel drive, and the rear ones. */
-#define FRONT_DRIVE_SHARE 2.0f
-#define REAR_DRIVE_SHARE 0.0f
+/* The share of the drive the rear wheels take with rear-wheel drive, and the front ones. */
+#define REAR_DRIVE_SHARE 2.0f
+#define FRONT_DRIVE_SHARE 0.0f
 
-/* The drive of a rear wheel below which the brakes act on the rear wheels as well. */
-#define REAR_BRAKE_DRIVE_LIMIT 1.0e-4f
+/* The drive of a front wheel below which the brakes act on the front wheels as well. */
+#define FRONT_BRAKE_DRIVE_LIMIT 1.0e-4f
 
 /* The scale from the speed of a vehicle to the speed the display shows. */
 #define SPEED_TO_DISPLAY 2.24f
@@ -458,11 +458,11 @@ void UpdateVehiclePhysicsFrame(Vehicle *vehicle) {
                                                   &vehicle->nearbyInstanceCount,
                                                   &vehicle->groundDistance,
                                                   &vehicle->groundSurface);
-        wheels[1]->friction = 0.0f;
-        wheels[0]->friction = wheels[1]->friction;
+        wheels[1]->steerAngle = 0.0f;
+        wheels[0]->steerAngle = wheels[1]->steerAngle;
         UpdateVehicleEngineAndGearbox(vehicle);
-        wheels[3]->friction = vehicle->rearWheelFriction;
-        wheels[2]->friction = vehicle->rearWheelFriction;
+        wheels[3]->steerAngle = vehicle->steerAngle;
+        wheels[2]->steerAngle = vehicle->steerAngle;
         for (i = 0; i < VEHICLE_WHEELS; i++) {
             wheels[i]->drive = 0.0f;
         }
@@ -473,11 +473,11 @@ void UpdateVehiclePhysicsFrame(Vehicle *vehicle) {
             if ((vehicle->input->buttons & INPUT_REVERSE_TOGGLE) && vehicle->gear == 1) {
                 vehicle->throttle = -vehicle->throttle;
             }
-            if (vehicle->frontWheelDrive) {
-                wheels[0]->drive = -vehicle->throttle * FRONT_DRIVE_SHARE;
-                wheels[1]->drive = -vehicle->throttle * FRONT_DRIVE_SHARE;
-                wheels[2]->drive = -vehicle->throttle * REAR_DRIVE_SHARE;
-                wheels[3]->drive = -vehicle->throttle * REAR_DRIVE_SHARE;
+            if (vehicle->rearWheelDrive) {
+                wheels[0]->drive = -vehicle->throttle * REAR_DRIVE_SHARE;
+                wheels[1]->drive = -vehicle->throttle * REAR_DRIVE_SHARE;
+                wheels[2]->drive = -vehicle->throttle * FRONT_DRIVE_SHARE;
+                wheels[3]->drive = -vehicle->throttle * FRONT_DRIVE_SHARE;
             } else {
                 for (i = 0; i < VEHICLE_WHEELS; i++) {
                     wheels[i]->drive = -vehicle->throttle;
@@ -490,7 +490,7 @@ void UpdateVehiclePhysicsFrame(Vehicle *vehicle) {
             wheels[0]->drive = 0.0f;
             wheels[1]->drive = 0.0f;
             drive = wheels[2]->drive < 0.0f ? -wheels[2]->drive : wheels[2]->drive;
-            if (drive < REAR_BRAKE_DRIVE_LIMIT) {
+            if (drive < FRONT_BRAKE_DRIVE_LIMIT) {
                 wheels[2]->brake = -vehicle->brake;
                 wheels[3]->brake = -vehicle->brake;
             }
@@ -499,7 +499,8 @@ void UpdateVehiclePhysicsFrame(Vehicle *vehicle) {
     }
 
     TransformAllWheelMatrices(vehicle);
-    if (vehicle->physicsActive) {
+    /* The speed changes while the first front wheel is on the ground. */
+    if (vehicle->wheelBodies[1].contactFrames) {
         velocity = &vehicle->body.state.velocity;
         vehicle->speedKph = sqrtf(velocity->x * velocity->x + velocity->y * velocity->y +
                                   velocity->z * velocity->z) *
@@ -727,10 +728,9 @@ void ResetVehicleState(Vehicle *vehicle) {
     vehicle->finalDrive = spec->finalDrive;
     vehicle->transmission = vehicle->chosenTransmission;
     vehicle->gearCount = spec->gearCount;
-    vehicle->frontWheelDrive = spec->frontWheelDrive;
-    for (i = 0; i < 4; i++) {
-        vehicle->tuning[i] = spec->tuning[i];
-    }
+    vehicle->rearWheelDrive = spec->rearWheelDrive;
+    vehicle->body.boxSize = spec->boxSize;
+    vehicle->body.boxCenterZ = spec->boxCenterZ;
     vehicle->tableIndex = spec->tableIndex;
 }
 

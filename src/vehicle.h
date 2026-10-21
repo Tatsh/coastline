@@ -113,10 +113,11 @@ typedef struct {
     f32 torqueCurve[4];
     f32 finalDrive;
     s32 gearCount;
-    /** Whether the throttle drives the front wheels alone. */
-    s32 frontWheelDrive;
-    /** Four values the physics of the vehicle keeps after its body. */
-    f32 tuning[4];
+    /** Whether the throttle drives the rear wheels alone, rather than all four. */
+    s32 rearWheelDrive;
+    /** The box the track collides with, and the height of its middle. */
+    Vec3f boxSize;
+    f32 boxCenterZ;
     /** An index that picks an entry of tables kept for each track. */
     s32 tableIndex;
 } CarPhysicsSpec;
@@ -157,10 +158,20 @@ enum {
 
 /** A racer of a race. Its fields join this structure as they are reconstructed. */
 typedef struct {
-    u8 unreconstructed0[0x68];
+    u8 unreconstructed0[0x60];
+    /** The vehicle of the racer, or NULL. */
+    struct Vehicle *vehicle;
+    u8 unreconstructed64[0x68 - 0x64];
     /** The clock of the racer runs while the bits of RACER_CLOCK_STOPPED are clear. */
     u32 status;
+    u8 unreconstructed6C[0x78 - 0x6C];
 } RacerSlot;
+
+/** The racers of the race. @ghidraAddress USA: 0x803239a0 */
+extern RacerSlot g_aRacerSlots[];
+
+/** The racers in the race. @ghidraAddress USA: 0x8028b7f0 */
+extern s32 g_dwNumVehicles;
 
 /** The bits of the status of a racer that stop its clock. */
 #define RACER_CLOCK_STOPPED 0x3
@@ -168,11 +179,39 @@ typedef struct {
 /** The wheels of a vehicle: the front two, then the rear two. */
 #define VEHICLE_WHEELS 4
 
+/** The ghost mode of a vehicle that other vehicles pass through and that fades back in. */
+#define VEHICLE_GHOST 2
+
+/** The forces on the bodies of a vehicle. */
+enum {
+    /** The springs of the four wheels, then gravity: the list of the body for its first pass. */
+    VEHICLE_FORCE_SPRING_0,
+    VEHICLE_FORCE_SPRING_1,
+    VEHICLE_FORCE_SPRING_2,
+    VEHICLE_FORCE_SPRING_3,
+    /** The dampers of the four wheels, then the drag: the list for its second pass. */
+    VEHICLE_FORCE_DAMPER_0,
+    VEHICLE_FORCE_DAMPER_1,
+    VEHICLE_FORCE_DAMPER_2,
+    VEHICLE_FORCE_DAMPER_3,
+    VEHICLE_FORCE_GRAVITY,
+    /** The gravity of the front and of the rear wheels. */
+    VEHICLE_FORCE_FRONT_WHEEL_GRAVITY,
+    VEHICLE_FORCE_REAR_WHEEL_GRAVITY,
+    VEHICLE_FORCE_DRAG,
+    /** The drive of each wheel, before its gravity in its list. */
+    VEHICLE_FORCE_WHEEL_0,
+    VEHICLE_FORCE_WHEEL_1,
+    VEHICLE_FORCE_WHEEL_2,
+    VEHICLE_FORCE_WHEEL_3,
+    VEHICLE_FORCES,
+};
+
 /**
  * A vehicle. The game prints its size, 0x2090 bytes, at start-up. Its fields join this structure as
  * the routines that use them are reconstructed.
  */
-typedef struct {
+typedef struct Vehicle {
     union {
         /** The axes and position of the vehicle. */
         CameraFrame frame;
@@ -186,14 +225,16 @@ typedef struct {
     s32 index;
     u8 unreconstructed144[0x148 - 0x144];
     RigidBody body;
-    /** The tuning of the physics spec of the car. */
-    f32 tuning[4];
-    u8 unreconstructed334[0x70C - 0x334];
-    /** Set while the physics measure the speed of the vehicle. */
-    s32 physicsActive;
-    u8 unreconstructed710[0xDF0 - 0x710];
-    /** The friction the engine and gearbox give the rear wheels. */
-    f32 rearWheelFriction;
+    /**
+     * The bodies of the wheels: the rear and the front wheel of one side, then of the other. The
+     * body lists them as the rear two, then the front two.
+     */
+    RigidBody wheelBodies[VEHICLE_WHEELS];
+    /** The forces on the bodies, by the VEHICLE_FORCE_ values. */
+    RigidBodyForce forces[VEHICLE_FORCES];
+    u8 unreconstructedD70[0xDF0 - 0xD70];
+    /** The angle the front wheels are steered to, in radians. */
+    f32 steerAngle;
     /** The revolutions of the engine a minute. */
     f32 engineRpm;
     /** The gearbox and engine, from the physics spec of the car. */
@@ -201,7 +242,7 @@ typedef struct {
     f32 torqueCurve[4];
     f32 finalDrive;
     s32 gearCount;
-    s32 frontWheelDrive;
+    s32 rearWheelDrive;
     /** The gearbox the player chose. */
     s32 transmission;
     s32 tableIndex;
@@ -211,10 +252,25 @@ typedef struct {
     f32 brake;
     /** The forward gear, from 0. */
     s32 gear;
-    u8 unreconstructedE44[0xE5C - 0xE44];
+    /**
+     * The loads the front and rear tyres carried in the last step, and whether they slid; while
+     * they slid, they grip less.
+     */
+    f32 frontLoad;
+    u8 frontSliding;
+    f32 rearLoad;
+    u8 rearSliding;
+    /** The way the gearbox last changed gear: 1 up, -1 down, 0 none. */
+    s8 shiftDirection;
+    /** Whether the next step sets the loads afresh. */
+    s32 resetLoads;
+    u8 unreconstructedE58[0xE5C - 0xE58];
     /** The profile of the player who drives the vehicle. */
     PlayerProfile *profile;
-    u8 unreconstructedE60[0xE6C - 0xE60];
+    /** The tyres, the stiffness of the springs, and how the steering answers the stick. */
+    s32 tyreType;
+    s32 suspensionStiffness;
+    s32 steeringMode;
     /** The gearbox of the recording or the settings, which ResetVehicleState() takes. */
     s32 chosenTransmission;
     u8 unreconstructedE70[0xED0 - 0xE70];
@@ -310,7 +366,11 @@ typedef struct {
     s32 carModel;
     /** The color of the paint of the car. */
     u8 color[3];
-    u8 unreconstructed2063[0x206C - 0x2063];
+    /** VEHICLE_GHOST while the vehicle fades back in after it is put back on the track. */
+    u8 ghostMode;
+    /** How solid the vehicle is drawn, from 0 to 1. */
+    f32 opacity;
+    u8 unreconstructed2068[0x206C - 0x2068];
     /** The frames the vehicle has faced against the track. */
     s32 wrongWayFrames;
     /** The cell of the 32-unit grid of the track the vehicle is in. */

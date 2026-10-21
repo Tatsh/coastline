@@ -8582,9 +8582,9 @@ glabel GetCollisionGridCellCount
     /* 1FA8C 8021EA8C 94820002 */   lhu       $v0, 0x2($a0)
 endlabel GetCollisionGridCellCount
 
-nonmatching ReadNextDisplayListWord, 0x4C
+nonmatching NextGridCellTriangle, 0x4C
 
-glabel ReadNextDisplayListWord
+glabel NextGridCellTriangle
     /* 1FA90 8021EA90 94830002 */  lhu        $v1, 0x2($a0)
     /* 1FA94 8021EA94 00001025 */  or         $v0, $zero, $zero
     /* 1FA98 8021EA98 1060000E */  beqz       $v1, .L8021EAD4
@@ -8605,7 +8605,7 @@ glabel ReadNextDisplayListWord
   .L8021EAD4:
     /* 1FAD4 8021EAD4 03E00008 */  jr         $ra
     /* 1FAD8 8021EAD8 00000000 */   nop
-endlabel ReadNextDisplayListWord
+endlabel NextGridCellTriangle
 
 nonmatching ReadNextVertexData, 0x4C
 

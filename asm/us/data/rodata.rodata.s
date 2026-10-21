@@ -11664,11 +11664,11 @@ dlabel g_dTyreTypeGripStep
     /* AC760 802AB760 3F60624DD2F1A9FC */ .double 0.00200000000000000004
 enddlabel g_dTyreTypeGripStep
 
-nonmatching g_dwRaceReserved114
+nonmatching g_fConst0p1_802ab768
 
-dlabel g_dwRaceReserved114
+dlabel g_fConst0p1_802ab768
     /* AC768 802AB768 3DCCCCCD */ .float 0.1000000015
-enddlabel g_dwRaceReserved114
+enddlabel g_fConst0p1_802ab768
 
 nonmatching g_fConst1eNeg05
 
@@ -11733,11 +11733,11 @@ dlabel g_fConst2p943
 enddlabel g_fConst2p943
     /* AC7AC 802AB7AC 00000000 */ .float 0
 
-nonmatching g_dWheelSteeringGripScale
+nonmatching g_dConst0p9_802ab7b0
 
-dlabel g_dWheelSteeringGripScale
+dlabel g_dConst0p9_802ab7b0
     /* AC7B0 802AB7B0 3FECCCCCCCCCCCCD */ .double 0.900000000000000022
-enddlabel g_dWheelSteeringGripScale
+enddlabel g_dConst0p9_802ab7b0
 
 nonmatching g_dConst0p1
 
@@ -11769,11 +11769,11 @@ dlabel g_dConst360
     /* AC7D8 802AB7D8 4076800000000000 */ .double 360
 enddlabel g_dConst360
 
-nonmatching g_dwRaceReserved121
+nonmatching g_fConstRadToDeg_802ab7e0
 
-dlabel g_dwRaceReserved121
+dlabel g_fConstRadToDeg_802ab7e0
     /* AC7E0 802AB7E0 42652EE0 */ .float 57.29577637
-enddlabel g_dwRaceReserved121
+enddlabel g_fConstRadToDeg_802ab7e0
     /* AC7E4 802AB7E4 00000000 */ .float 0
 
 nonmatching g_dConst1p05
@@ -11848,29 +11848,29 @@ dlabel g_fConst0p999
     /* AC820 802AB820 3F7FBE77 */ .float 0.9990000129
 enddlabel g_fConst0p999
 
-nonmatching g_fCollisionUniformScale
+nonmatching g_fConst0p1_802ab824
 
-dlabel g_fCollisionUniformScale
+dlabel g_fConst0p1_802ab824
     /* AC824 802AB824 3DCCCCCD */ .float 0.1000000015
-enddlabel g_fCollisionUniformScale
+enddlabel g_fConst0p1_802ab824
 
-nonmatching g_fCollisionTimestep
+nonmatching g_fConstThirtieth_802ab828
 
-dlabel g_fCollisionTimestep
+dlabel g_fConstThirtieth_802ab828
     /* AC828 802AB828 3D088889 */ .float 0.03333333507
-enddlabel g_fCollisionTimestep
+enddlabel g_fConstThirtieth_802ab828
 
-nonmatching g_fCollisionSubstepMin
+nonmatching g_fConst0p002_802ab82c
 
-dlabel g_fCollisionSubstepMin
+dlabel g_fConst0p002_802ab82c
     /* AC82C 802AB82C 3B03126F */ .float 0.002000000095
-enddlabel g_fCollisionSubstepMin
+enddlabel g_fConst0p002_802ab82c
 
-nonmatching g_fCollisionSubstepRange
+nonmatching g_fConstThirtieth_802ab830
 
-dlabel g_fCollisionSubstepRange
+dlabel g_fConstThirtieth_802ab830
     /* AC830 802AB830 3D088889 */ .float 0.03333333507
-enddlabel g_fCollisionSubstepRange
+enddlabel g_fConstThirtieth_802ab830
     /* AC834 802AB834 00000000 */ .float 0
 
 nonmatching g_dConst0p2

@@ -6,8 +6,8 @@
 /* The inertia of a box about an axis is this share of its mass times the squares of the sides. */
 #define BOX_INERTIA_SHARE 0.0833333358f
 
-/* The friction a body starts with. */
-#define DEFAULT_FRICTION 0.174f
+/* The steering angle a body starts with, about 10 degrees. */
+#define DEFAULT_STEER_ANGLE 0.174f
 
 void StubPhysics1(void *data) {
 }
@@ -257,13 +257,13 @@ void InitRigidBody(RigidBody *body) {
         body->wheels[i] = NULL;
     }
     body->unreconstructed14 = 0;
-    body->resetWord1B4 = 0;
-    body->resetWord19C = 0;
-    body->resetFloat1C4 = 0.0f;
+    body->contactFrames = 0;
+    body->ground = NULL;
+    body->spinRate = 0.0f;
     body->drive = 0.0f;
     body->brake = 0.0f;
-    body->friction = DEFAULT_FRICTION;
-    body->resetFloat1C8 = 0.5f;
+    body->steerAngle = DEFAULT_STEER_ANGLE;
+    body->radius = 0.5f;
     for (i = 0; i < 3; i++) {
         for (j = 0; j < 3; j++) {
             body->inertia[i][j] = i == j ? 1.0f : 0.0f;
@@ -285,8 +285,8 @@ void InitRigidBody(RigidBody *body) {
         body->inverseInertia[1][1] = 1.0f / body->inertia[1][1];
         body->inverseInertia[2][2] = 1.0f / body->inertia[2][2];
     }
-    body->resetFloat1D4 = 0.0f;
-    body->resetFloat1D8 = 0.0f;
+    body->rollAngle = 0.0f;
+    body->suspension = 0.0f;
 }
 
 void BuildSkewSymmetricMatrix(f32 out[3][3], Vec3f *v) {

@@ -4129,9 +4129,9 @@ nonmatching g_dwAudioChannelLoopIdx, 0x8
 dlabel g_dwAudioChannelLoopIdx
     /* 80379938 */ .space 0x08
 
-nonmatching g_aCollisionPairPool, 0x4
+nonmatching g_aCollisionTriangleNodes, 0x4
 
-dlabel g_aCollisionPairPool
+dlabel g_aCollisionTriangleNodes
     /* 80379940 */ .space 0x04
 
 nonmatching g_nErrorReserved0, 0x4
@@ -4586,9 +4586,9 @@ nonmatching g_awTriCacheSectorId, 0x2
 dlabel g_awTriCacheSectorId
     /* 8037EA80 */ .space 0x02
 
-nonmatching g_wSoundChannel1, 0x2
+nonmatching D_8037EA82, 0x2
 
-dlabel g_wSoundChannel1
+dlabel D_8037EA82
     /* 8037EA82 */ .space 0x02
 
 nonmatching D_8037EA84, 0x4
@@ -4601,25 +4601,20 @@ nonmatching g_awTriCacheTriCount, 0x2
 dlabel g_awTriCacheTriCount
     /* 8037EA88 */ .space 0x02
 
-nonmatching g_wSoundChannel3, 0x2
-
-dlabel g_wSoundChannel3
-    /* 8037EA8A */ .space 0x02
-
-nonmatching D_8037EA8C, 0x4
+nonmatching D_8037EA8A, 0x6
 
 /* Automatically generated and unreferenced pad */
-dlabel D_8037EA8C
-    /* 8037EA8C */ .space 0x04
+dlabel D_8037EA8A
+    /* 8037EA8A */ .space 0x06
 
 nonmatching g_adwTriCacheLruStamp, 0x4
 
 dlabel g_adwTriCacheLruStamp
     /* 8037EA90 */ .space 0x04
 
-nonmatching g_dwSoundReserved0, 0x4
+nonmatching D_8037EA94, 0x4
 
-dlabel g_dwSoundReserved0
+dlabel D_8037EA94
     /* 8037EA94 */ .space 0x04
 
 nonmatching D_8037EA98, 0x4
@@ -4643,20 +4638,10 @@ nonmatching D_8037EAA4, 0x4
 dlabel D_8037EAA4
     /* 8037EAA4 */ .space 0x04
 
-nonmatching g_vCollisionContact, 0x4
+nonmatching g_vCollisionContact, 0xC
 
 dlabel g_vCollisionContact
-    /* 8037EAA8 */ .space 0x04
-
-nonmatching g_flSoundReserved0, 0x4
-
-dlabel g_flSoundReserved0
-    /* 8037EAAC */ .space 0x04
-
-nonmatching g_flSoundReserved1, 0x4
-
-dlabel g_flSoundReserved1
-    /* 8037EAB0 */ .space 0x04
+    /* 8037EAA8 */ .space 0x0C
 
 nonmatching g_fCollisionContactW, 0x4
 
@@ -4669,20 +4654,10 @@ nonmatching D_8037EAB8, 0x10
 dlabel D_8037EAB8
     /* 8037EAB8 */ .space 0x10
 
-nonmatching g_vCollisionPenetration, 0x4
+nonmatching g_vCollisionPenetration, 0xC
 
 dlabel g_vCollisionPenetration
-    /* 8037EAC8 */ .space 0x04
-
-nonmatching g_flSoundReserved3, 0x4
-
-dlabel g_flSoundReserved3
-    /* 8037EACC */ .space 0x04
-
-nonmatching g_flSoundReserved4, 0x4
-
-dlabel g_flSoundReserved4
-    /* 8037EAD0 */ .space 0x04
+    /* 8037EAC8 */ .space 0x0C
 
 nonmatching D_8037EAD4, 0x5CC
 

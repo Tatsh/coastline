@@ -75,7 +75,7 @@ glabel SimulateVehiclePhysicsSubstep
     /* 22A34 80221A34 8E180158 */  lw         $t8, 0x158($s0)
     /* 22A38 80221A38 8F190018 */  lw         $t9, 0x18($t8)
     /* 22A3C 80221A3C E7340010 */  swc1       $f20, 0x10($t9)
-    /* 22A40 80221A40 0C097B6F */  jal        ComputeEngineSoundVolumes
+    /* 22A40 80221A40 0C097B6F */  jal        ComputeSpringForces
     /* 22A44 80221A44 AFA40044 */   sw        $a0, 0x44($sp)
     /* 22A48 80221A48 8E080E54 */  lw         $t0, 0xE54($s0)
     /* 22A4C 80221A4C 55000029 */  bnel       $t0, $zero, .L80221AF4
@@ -91,7 +91,7 @@ glabel SimulateVehiclePhysicsSubstep
     /* 22A74 80221A74 AFA7003C */  sw         $a3, 0x3C($sp)
     /* 22A78 80221A78 AFA60040 */  sw         $a2, 0x40($sp)
     /* 22A7C 80221A7C 8FA40044 */  lw         $a0, 0x44($sp)
-    /* 22A80 80221A80 0C096B27 */  jal        UpdateWheelSteering
+    /* 22A80 80221A80 0C096B27 */  jal        DriveWheel
     /* 22A84 80221A84 E7A40010 */   swc1      $f4, 0x10($sp)
     /* 22A88 80221A88 3C01802B */  lui        $at, %hi(g_flPhysicsTimestep1)
     /* 22A8C 80221A8C C4269594 */  lwc1       $f6, %lo(g_flPhysicsTimestep1)($at)
@@ -99,7 +99,7 @@ glabel SimulateVehiclePhysicsSubstep
     /* 22A94 80221A94 8FA40044 */  lw         $a0, 0x44($sp)
     /* 22A98 80221A98 8FA60040 */  lw         $a2, 0x40($sp)
     /* 22A9C 80221A9C 8FA7003C */  lw         $a3, 0x3C($sp)
-    /* 22AA0 80221AA0 0C096B27 */  jal        UpdateWheelSteering
+    /* 22AA0 80221AA0 0C096B27 */  jal        DriveWheel
     /* 22AA4 80221AA4 E7A60010 */   swc1      $f6, 0x10($sp)
     /* 22AA8 80221AA8 3C01802B */  lui        $at, %hi(g_flPhysicsTimestep2)
     /* 22AAC 80221AAC C4289598 */  lwc1       $f8, %lo(g_flPhysicsTimestep2)($at)
@@ -109,7 +109,7 @@ glabel SimulateVehiclePhysicsSubstep
     /* 22ABC 80221ABC AFA70034 */  sw         $a3, 0x34($sp)
     /* 22AC0 80221AC0 AFA60038 */  sw         $a2, 0x38($sp)
     /* 22AC4 80221AC4 8FA40044 */  lw         $a0, 0x44($sp)
-    /* 22AC8 80221AC8 0C096B27 */  jal        UpdateWheelSteering
+    /* 22AC8 80221AC8 0C096B27 */  jal        DriveWheel
     /* 22ACC 80221ACC E7A80010 */   swc1      $f8, 0x10($sp)
     /* 22AD0 80221AD0 3C01802B */  lui        $at, %hi(g_flPhysicsTimestep3)
     /* 22AD4 80221AD4 C42A959C */  lwc1       $f10, %lo(g_flPhysicsTimestep3)($at)
@@ -117,7 +117,7 @@ glabel SimulateVehiclePhysicsSubstep
     /* 22ADC 80221ADC 8FA40044 */  lw         $a0, 0x44($sp)
     /* 22AE0 80221AE0 8FA60038 */  lw         $a2, 0x38($sp)
     /* 22AE4 80221AE4 8FA70034 */  lw         $a3, 0x34($sp)
-    /* 22AE8 80221AE8 0C096B27 */  jal        UpdateWheelSteering
+    /* 22AE8 80221AE8 0C096B27 */  jal        DriveWheel
     /* 22AEC 80221AEC E7AA0010 */   swc1      $f10, 0x10($sp)
     /* 22AF0 80221AF0 AE000E54 */  sw         $zero, 0xE54($s0)
   .L80221AF4:
@@ -135,7 +135,7 @@ glabel SimulateVehiclePhysicsSubstep
     /* 22B20 80221B20 AFAB0038 */  sw         $t3, 0x38($sp)
     /* 22B24 80221B24 AFAA003C */  sw         $t2, 0x3C($sp)
     /* 22B28 80221B28 AFA90040 */  sw         $t1, 0x40($sp)
-    /* 22B2C 80221B2C 0C09664F */  jal        ClearAndAccumulateBodyForces
+    /* 22B2C 80221B2C 0C09664F */  jal        ComputeVehicleForces
     /* 22B30 80221B30 8FA40044 */   lw        $a0, 0x44($sp)
     /* 22B34 80221B34 260401C0 */  addiu      $a0, $s0, 0x1C0
     /* 22B38 80221B38 3C063D08 */  lui        $a2, (0x3D088889 >> 16)
@@ -151,7 +151,7 @@ glabel SimulateVehiclePhysicsSubstep
     /* 22B60 80221B60 8FA60040 */  lw         $a2, 0x40($sp)
     /* 22B64 80221B64 8FA70038 */  lw         $a3, 0x38($sp)
     /* 22B68 80221B68 AFAD0010 */  sw         $t5, 0x10($sp)
-    /* 22B6C 80221B6C 0C096745 */  jal        ComputeSteeringFriction
+    /* 22B6C 80221B6C 0C096745 */  jal        ApplySideGrip
     /* 22B70 80221B70 AFAE0014 */   sw        $t6, 0x14($sp)
     /* 22B74 80221B74 0C096092 */  jal        ComputeDeltaQuaternion
     /* 22B78 80221B78 8FA40030 */   lw        $a0, 0x30($sp)
@@ -166,9 +166,9 @@ glabel SimulateVehiclePhysicsSubstep
     /* 22B9C 80221B9C AD000018 */  sw         $zero, 0x18($t0)
     /* 22BA0 80221BA0 8E090158 */  lw         $t1, 0x158($s0)
     /* 22BA4 80221BA4 AD200018 */  sw         $zero, 0x18($t1)
-    /* 22BA8 80221BA8 0C097A08 */  jal        ComputeWaterDragForce
+    /* 22BA8 80221BA8 0C097A08 */  jal        ComputeDragForce
     /* 22BAC 80221BAC 8FA40044 */   lw        $a0, 0x44($sp)
-    /* 22BB0 80221BB0 0C097BDC */  jal        ComputeTireSoundVolumes
+    /* 22BB0 80221BB0 0C097BDC */  jal        ComputeDampingForces
     /* 22BB4 80221BB4 8FA40044 */   lw        $a0, 0x44($sp)
     /* 22BB8 80221BB8 E6140244 */  swc1       $f20, 0x244($s0)
     /* 22BBC 80221BBC E6140248 */  swc1       $f20, 0x248($s0)
@@ -176,7 +176,7 @@ glabel SimulateVehiclePhysicsSubstep
     /* 22BC4 80221BC4 E6140250 */  swc1       $f20, 0x250($s0)
     /* 22BC8 80221BC8 E6140254 */  swc1       $f20, 0x254($s0)
     /* 22BCC 80221BCC E6140258 */  swc1       $f20, 0x258($s0)
-    /* 22BD0 80221BD0 0C09664F */  jal        ClearAndAccumulateBodyForces
+    /* 22BD0 80221BD0 0C09664F */  jal        ComputeVehicleForces
     /* 22BD4 80221BD4 8FA40044 */   lw        $a0, 0x44($sp)
     /* 22BD8 80221BD8 260402A0 */  addiu      $a0, $s0, 0x2A0
     /* 22BDC 80221BDC AFA40040 */  sw         $a0, 0x40($sp)
@@ -298,13 +298,13 @@ glabel SimulateVehiclePhysicsSubstep
     /* 22D70 80221D70 8FA4003C */   lw        $a0, 0x3C($sp)
     /* 22D74 80221D74 0C096092 */  jal        ComputeDeltaQuaternion
     /* 22D78 80221D78 8FA4003C */   lw        $a0, 0x3C($sp)
-    /* 22D7C 80221D7C 0C097957 */  jal        RunVehicleCollisionStep
+    /* 22D7C 80221D7C 0C097957 */  jal        StepVehicleCollisions
     /* 22D80 80221D80 8FA40044 */   lw        $a0, 0x44($sp)
     /* 22D84 80221D84 8FA40030 */  lw         $a0, 0x30($sp)
     /* 22D88 80221D88 8FA50040 */  lw         $a1, 0x40($sp)
     /* 22D8C 80221D8C 0C0982C8 */  jal        memcpy
     /* 22D90 80221D90 24060044 */   addiu     $a2, $zero, 0x44
-    /* 22D94 80221D94 0C097B1F */  jal        UpdateAllWheelSuspension
+    /* 22D94 80221D94 0C097B1F */  jal        UpdateWheelHeights
     /* 22D98 80221D98 8FA40044 */   lw        $a0, 0x44($sp)
     /* 22D9C 80221D9C 8E02014C */  lw         $v0, 0x14C($s0)
     /* 22DA0 80221DA0 244400BC */  addiu      $a0, $v0, 0xBC

@@ -13,7 +13,6 @@ set(COASTLINE_ASM_US
     asm/us/34E10.s
     asm/us/3C130.s
     asm/us/43B10.s
-    asm/us/5A350.s
     asm/us/data/data.data.s
     asm/us/data/rodata.rodata.s
     asm/us/data/bss.bss.s)

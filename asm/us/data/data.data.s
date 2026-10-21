@@ -63898,17 +63898,17 @@ dlabel D_802A4A18
     /* A5A1C 802A4A1C 00000000 */ .word 0x00000000
 enddlabel D_802A4A18
 
-nonmatching g_pCollisionPairListHead
+nonmatching g_pCollisionTriangleList
 
-dlabel g_pCollisionPairListHead
+dlabel g_pCollisionTriangleList
     /* A5A20 802A4A20 00000000 */ .word 0x00000000
-enddlabel g_pCollisionPairListHead
+enddlabel g_pCollisionTriangleList
 
-nonmatching g_pCollisionPairAllocPtr
+nonmatching g_pNextCollisionTriangleNode
 
-dlabel g_pCollisionPairAllocPtr
+dlabel g_pNextCollisionTriangleNode
     /* A5A24 802A4A24 00000000 */ .word 0x00000000
-enddlabel g_pCollisionPairAllocPtr
+enddlabel g_pNextCollisionTriangleNode
 
 nonmatching g_dwCollisionContactType
 
@@ -63935,9 +63935,9 @@ dlabel D_802A4A34
     /* A5A34 802A4A34 00000000 */ .word 0x00000000
 enddlabel D_802A4A34
 
-nonmatching g_afSteeringFrictionTableA
+nonmatching g_afSurfaceGrip
 
-dlabel g_afSteeringFrictionTableA
+dlabel g_afSurfaceGrip
     /* A5A38 802A4A38 3DA3D70A */ .float 0.07999999821
     /* A5A3C 802A4A3C 3DA3D70A */ .float 0.07999999821
     /* A5A40 802A4A40 3DA3D70A */ .float 0.07999999821
@@ -63962,11 +63962,11 @@ dlabel g_afSteeringFrictionTableA
     /* A5A8C 802A4A8C 3D75C28F */ .float 0.05999999866
     /* A5A90 802A4A90 3D75C28F */ .float 0.05999999866
     /* A5A94 802A4A94 3D75C28F */ .float 0.05999999866
-enddlabel g_afSteeringFrictionTableA
+enddlabel g_afSurfaceGrip
 
-nonmatching g_afSteeringFrictionTableB
+nonmatching g_afSurfaceMaxLoad
 
-dlabel g_afSteeringFrictionTableB
+dlabel g_afSurfaceMaxLoad
     /* A5A98 802A4A98 47AFC800 */ .float 90000
     /* A5A9C 802A4A9C 47AFC800 */ .float 90000
     /* A5AA0 802A4AA0 47AFC800 */ .float 90000
@@ -63991,11 +63991,11 @@ dlabel g_afSteeringFrictionTableB
     /* A5AEC 802A4AEC 47EA6000 */ .float 120000
     /* A5AF0 802A4AF0 47EA6000 */ .float 120000
     /* A5AF4 802A4AF4 47EA6000 */ .float 120000
-enddlabel g_afSteeringFrictionTableB
+enddlabel g_afSurfaceMaxLoad
 
-nonmatching g_afSteeringFrictionTable
+nonmatching g_afSurfaceSlipLoad
 
-dlabel g_afSteeringFrictionTable
+dlabel g_afSurfaceSlipLoad
     /* A5AF8 802A4AF8 453B8000 */ .float 3000
     /* A5AFC 802A4AFC 453B8000 */ .float 3000
     /* A5B00 802A4B00 453B8000 */ .float 3000
@@ -64020,61 +64020,31 @@ dlabel g_afSteeringFrictionTable
     /* A5B4C 802A4B4C 453B8000 */ .float 3000
     /* A5B50 802A4B50 453B8000 */ .float 3000
     /* A5B54 802A4B54 453B8000 */ .float 3000
-enddlabel g_afSteeringFrictionTable
+enddlabel g_afSurfaceSlipLoad
 
 nonmatching g_vecUnitX
 
 dlabel g_vecUnitX
     /* A5B58 802A4B58 3F800000 */ .word 0x3F800000
-enddlabel g_vecUnitX
-
-nonmatching g_fUnitXVecY
-
-dlabel g_fUnitXVecY
     /* A5B5C 802A4B5C 00000000 */ .word 0x00000000
-enddlabel g_fUnitXVecY
-
-nonmatching g_fUnitXVecZ
-
-dlabel g_fUnitXVecZ
     /* A5B60 802A4B60 00000000 */ .word 0x00000000
-enddlabel g_fUnitXVecZ
+enddlabel g_vecUnitX
 
 nonmatching g_vecUnitY
 
 dlabel g_vecUnitY
     /* A5B64 802A4B64 00000000 */ .word 0x00000000
-enddlabel g_vecUnitY
-
-nonmatching g_dwOsAiControl
-
-dlabel g_dwOsAiControl
     /* A5B68 802A4B68 3F800000 */ .word 0x3F800000
-enddlabel g_dwOsAiControl
-
-nonmatching g_dwOsAiDacSize
-
-dlabel g_dwOsAiDacSize
     /* A5B6C 802A4B6C 00000000 */ .word 0x00000000
-enddlabel g_dwOsAiDacSize
+enddlabel g_vecUnitY
 
 nonmatching g_vecUnitZ
 
 dlabel g_vecUnitZ
     /* A5B70 802A4B70 00000000 */ .word 0x00000000
-enddlabel g_vecUnitZ
-
-nonmatching g_fUnitZVecY
-
-dlabel g_fUnitZVecY
     /* A5B74 802A4B74 00000000 */ .word 0x00000000
-enddlabel g_fUnitZVecY
-
-nonmatching g_fUnitZVecZ
-
-dlabel g_fUnitZVecZ
     /* A5B78 802A4B78 3F800000 */ .word 0x3F800000
-enddlabel g_fUnitZVecZ
+enddlabel g_vecUnitZ
 
 nonmatching D_802A4B7C
 
@@ -64092,37 +64062,17 @@ nonmatching g_vecNegUnitZ
 
 dlabel g_vecNegUnitZ
     /* A5B94 802A4B94 00000000 */ .word 0x00000000
-enddlabel g_vecNegUnitZ
-
-nonmatching g_dwOsAiDacDelay
-
-dlabel g_dwOsAiDacDelay
     /* A5B98 802A4B98 00000000 */ .word 0x00000000
-enddlabel g_dwOsAiDacDelay
-
-nonmatching g_dwOsAiDacLoad
-
-dlabel g_dwOsAiDacLoad
     /* A5B9C 802A4B9C BF800000 */ .word 0xBF800000
-enddlabel g_dwOsAiDacLoad
+enddlabel g_vecNegUnitZ
 
 nonmatching g_vVehicleObbHalfExtents
 
 dlabel g_vVehicleObbHalfExtents
     /* A5BA0 802A4BA0 40200000 */ .word 0x40200000
-enddlabel g_vVehicleObbHalfExtents
-
-nonmatching g_dwOsAiDacStatus
-
-dlabel g_dwOsAiDacStatus
     /* A5BA4 802A4BA4 3F800000 */ .word 0x3F800000
-enddlabel g_dwOsAiDacStatus
-
-nonmatching g_dwOsAiDacPeriod
-
-dlabel g_dwOsAiDacPeriod
     /* A5BA8 802A4BA8 3F800000 */ .word 0x3F800000
-enddlabel g_dwOsAiDacPeriod
+enddlabel g_vVehicleObbHalfExtents
 
 nonmatching D_802A4BAC
 

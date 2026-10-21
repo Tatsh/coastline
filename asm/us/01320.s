@@ -1983,7 +1983,7 @@ glabel ProcessRaceHud
     /* 2FD4 80201FD4 8C84FF54 */   lw        $a0, %lo(g_pModelLightsBlob)($a0)
     /* 2FD8 80201FD8 0C08F3CC */  jal        InitParticleSystem
     /* 2FDC 80201FDC 00000000 */   nop
-    /* 2FE0 80201FE0 0C0964D4 */  jal        ClearAllRigidBodyState
+    /* 2FE0 80201FE0 0C0964D4 */  jal        ResetCollisionCaches
     /* 2FE4 80201FE4 00000000 */   nop
     /* 2FE8 80201FE8 3C018027 */  lui        $at, %hi(g_dwRacePauseState)
     /* 2FEC 80201FEC AC20FF10 */  sw         $zero, %lo(g_dwRacePauseState)($at)

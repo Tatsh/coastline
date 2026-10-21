@@ -67,20 +67,31 @@ typedef struct {
 /** The flag of a placed model that keeps rain and snow off a camera under it, and echoes. */
 #define TRACK_INSTANCE_SHELTER 0x0010
 
-/** What a triangle of the track belongs to. Its fields join this structure as they are
- * reconstructed. */
+/** A triangle of the track: its corners and what it belongs to. */
 typedef struct {
-    u8 unreconstructed0[0x6];
+    /** The indices of its corners in the vertices of the track. */
+    u16 vertices[3];
     /** The placed model the triangle belongs to, less one. */
     u16 instance;
 } TrackSurface;
+
+/** The triangles of a cell of the grid of the track: where they start in the list, and how many. */
+typedef struct {
+    u16 start;
+    u16 count;
+} TrackGridCursor;
 
 /** The header of the loaded track. Its fields join this structure as they are reconstructed. */
 typedef struct {
     u8 unreconstructed0[0xC];
     /** What each triangle belongs to, by its index. */
     TrackSurface *surfaces;
-    u8 unreconstructed10[0x28 - 0x10];
+    u8 unreconstructed10[0x14 - 0x10];
+    Vec3f *vertices;
+    u8 unreconstructed18[0x20 - 0x18];
+    /** The triangles of each cell of the 64 by 64 grid, and where the list of each cell starts. */
+    u16 *gridTriangles;
+    u16 *gridCellStarts;
     /** The extent of the track. Lightning strikes from minZ. */
     f32 minX;
     f32 maxX;
@@ -106,6 +117,8 @@ typedef struct {
     u16 *nearbyInstances;
     /** Where in nearbyInstances the list of each triangle starts, by its index. */
     u16 *triangleNearbyInstances;
+    /** The flags of each triangle, by its index; the low 3 bits are its surface. */
+    u8 *triangleFlags;
 } TrackHeader;
 
 /**
@@ -151,5 +164,22 @@ s32 CastRayAgainstTrack(Vec3f *outPoint,
                         s32 *nearbyCount,
                         f32 *groundDistance,
                         s32 *groundSurface);
+
+/**
+ * The triangles of the cell of the grid of the track under a point.
+ *
+ * @return The count of the triangles in the upper half and where they start in the lower, or 0
+ * outside the grid.
+ * @ghidraAddress USA: 0x8021e620
+ */
+u32 LookupTrackGridCell(f32 x, f32 y);
+
+/**
+ * Take the next triangle of a cell of the grid.
+ *
+ * @return Its index, or 0 when the cell has no more.
+ * @ghidraAddress USA: 0x8021ea90
+ */
+u16 NextGridCellTriangle(TrackGridCursor *cursor);
 
 #endif
