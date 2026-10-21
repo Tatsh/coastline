@@ -2430,7 +2430,7 @@ glabel InitDisplayMode
   .L80219558:
     /* 1A558 80219558 0C085CF2 */  jal        ClearTimingCounters
     /* 1A55C 8021955C 00000000 */   nop
-    /* 1A560 80219560 0C095799 */  jal        ResetReplayState
+    /* 1A560 80219560 0C095799 */  jal        ResetFrameBlocks
     /* 1A564 80219564 00000000 */   nop
     /* 1A568 80219568 3C028029 */  lui        $v0, %hi(g_dwDisplayModeChangeCountdown)
     /* 1A56C 8021956C 8C42A84C */  lw         $v0, %lo(g_dwDisplayModeChangeCountdown)($v0)
@@ -7875,7 +7875,7 @@ glabel LoadTrackGeometryFromRom
     /* 1F144 8021E144 0C08787D */  jal        SetDebugMessage
     /* 1F148 8021E148 02002025 */   or        $a0, $s0, $zero
   .L8021E14C:
-    /* 1F14C 8021E14C 0C095728 */  jal        ResetVehicleModelVisibility
+    /* 1F14C 8021E14C 0C095728 */  jal        PrepareTrackModelNodes
     /* 1F150 8021E150 00000000 */   nop
     /* 1F154 8021E154 8FBF004C */  lw         $ra, 0x4C($sp)
     /* 1F158 8021E158 D7B40020 */  ldc1       $f20, 0x20($sp)

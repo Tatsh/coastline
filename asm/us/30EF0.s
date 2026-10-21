@@ -1080,7 +1080,7 @@ glabel RenderVehicleModel
   .L80230E78:
     /* 31E78 80230E78 0C095734 */  jal        AllocDisplayListBlock
     /* 31E7C 80230E7C 00000000 */   nop
-    /* 31E80 80230E80 0C095753 */  jal        AllocateReplayFrame
+    /* 31E80 80230E80 0C095753 */  jal        AllocHiliteBlock
     /* 31E84 80230E84 00000000 */   nop
     /* 31E88 80230E88 0C095776 */  jal        AllocLightBlock
     /* 31E8C 80230E8C AFA20394 */   sw        $v0, 0x394($sp)

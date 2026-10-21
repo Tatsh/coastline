@@ -4088,40 +4088,10 @@ nonmatching D_8036ABBD, 0x293
 dlabel D_8036ABBD
     /* 8036ABBD */ .space 0x293
 
-nonmatching g_aDisplayListBlocks, 0xE20
+nonmatching g_aDisplayListBlocks, 0x8080
 
 dlabel g_aDisplayListBlocks
-    /* 8036AE50 */ .space 0xE20
-
-nonmatching g_dwSaveChecksum, 0x4
-
-dlabel g_dwSaveChecksum
-    /* 8036BC70 */ .space 0x04
-
-nonmatching g_dwSaveVersion, 0x4
-
-dlabel g_dwSaveVersion
-    /* 8036BC74 */ .space 0x04
-
-nonmatching g_wSaveSlot, 0x2
-
-dlabel g_wSaveSlot
-    /* 8036BC78 */ .space 0x02
-
-nonmatching g_bSaveValid, 0x4
-
-dlabel g_bSaveValid
-    /* 8036BC7A */ .space 0x04
-
-nonmatching g_bSaveDirty, 0x4382
-
-dlabel g_bSaveDirty
-    /* 8036BC7E */ .space 0x4382
-
-nonmatching g_abPakMenuHiBase, 0x2ED0
-
-dlabel g_abPakMenuHiBase
-    /* 80370000 */ .space 0x2ED0
+    /* 8036AE50 */ .space 0x8080
 
 nonmatching g_aHiliteBlocks, 0x2A0
 

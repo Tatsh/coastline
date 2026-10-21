@@ -56,6 +56,9 @@ g_abBootStackTop = 0x803168D0;
 /* The menu music module, which the main thread decompresses below the program. */
 g_abMenuMusicModule = 0x80025C00;
 
+/* The loaded track, which shares the memory of the menu music module. */
+g_LoadedTrack = 0x80025C00;
+
 /* The two frame buffers, below the program. */
 g_aFramebuffer0 = 0x801B5000;
 g_aFramebuffer1 = 0x801DA800;

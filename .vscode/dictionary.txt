@@ -106,8 +106,10 @@ handoff
 hasm
 hdlr
 hdwr
+higuy
 hilite
 hinstance
+histk
 iconerror
 icsum
 infblock
@@ -152,9 +154,11 @@ lindex
 litob
 llcvt
 lnext
+loguy
 lookat
 lookathil
 lookatref
+lostk
 lpanic
 lpcstr
 lprenmi
@@ -301,6 +305,7 @@ stdbool
 stddef
 stdint
 stdlib
+stkptr
 strequal
 subu
 superbuild
