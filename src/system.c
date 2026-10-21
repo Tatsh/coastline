@@ -138,20 +138,6 @@
 
 u64 g_qwTimestampBase = 0;
 
-/* Set a light ramp to a quarter, a half, three quarters, and all of a part of the light. */
-#define SET_LIGHT_RAMP(ramp, light)                                                                \
-    {                                                                                              \
-        (ramp)[0] = (light) >> 2;                                                                  \
-        (ramp)[1] = (light) >> 1;                                                                  \
-        (ramp)[2] = ((light) >> 1) + ((light) >> 2);                                               \
-        (ramp)[3] = (light);                                                                       \
-    }
-
-/* Whether two commands of a display list are the same. */
-static inline s32 IsSameCommand(Gfx *a, Gfx *b) {
-    return a->words.w0 == b->words.w0 && a->words.w1 == b->words.w1;
-}
-
 OSIoMesg *AllocIoMessage(void) {
     if (g_dwIoMessagePendingCount == IO_MESSAGES) {
         /* With every message in flight, one finished DMA frees its message. */
@@ -639,9 +625,18 @@ void SetupWeatherLights(void) {
         g_abLightRampB[2] = 0xFF;
         g_abLightRampR[3] = g_abLightRampG[3] = g_abLightRampB[3] = 0xFF;
     } else {
-        SET_LIGHT_RAMP(g_abLightRampR, g_bDirLightR);
-        SET_LIGHT_RAMP(g_abLightRampG, g_bDirLightG);
-        SET_LIGHT_RAMP(g_abLightRampB, g_bDirLightB);
+        g_abLightRampR[0] = g_bDirLightR >> 2;
+        g_abLightRampR[1] = g_bDirLightR >> 1;
+        g_abLightRampR[2] = (g_bDirLightR >> 1) + (g_bDirLightR >> 2);
+        g_abLightRampR[3] = g_bDirLightR;
+        g_abLightRampG[0] = g_bDirLightG >> 2;
+        g_abLightRampG[1] = g_bDirLightG >> 1;
+        g_abLightRampG[2] = (g_bDirLightG >> 1) + (g_bDirLightG >> 2);
+        g_abLightRampG[3] = g_bDirLightG;
+        g_abLightRampB[0] = g_bDirLightB >> 2;
+        g_abLightRampB[1] = g_bDirLightB >> 1;
+        g_abLightRampB[2] = (g_bDirLightB >> 1) + (g_bDirLightB >> 2);
+        g_abLightRampB[3] = g_bDirLightB;
     }
     g_dwAmbientLightColor = LIGHT_COLOR(g_bAmbientLightR, g_bAmbientLightG, g_bAmbientLightB);
     g_dwDirLightColor = LIGHT_COLOR(g_bDirLightR, g_bDirLightG, g_bDirLightB);
@@ -1121,7 +1116,8 @@ s32 ProcessDisplayList(Gfx *displayList, Gfx table[][4]) {
             switch ((displayList->words.w0 >> 24) & 0xFF) {
             case G_SETOTHERMODE_L:
                 for (row = 0; row < RENDER_MODE_ROWS; row++) {
-                    if (IsSameCommand(displayList, &table[row][0])) {
+                    if (displayList->words.w0 == table[row][0].words.w0 &&
+                        displayList->words.w1 == table[row][0].words.w1) {
                         *displayList = table[row][column];
                         if (row >= RENDER_MODE_TRANSLUCENT_ROW) {
                             translucent = TRUE;
@@ -1133,7 +1129,8 @@ s32 ProcessDisplayList(Gfx *displayList, Gfx table[][4]) {
             case G_SETCOMBINE:
                 if (clear) {
                     for (i = 0; i < ARRAY_COUNT(g_aDlClearCombinePatch); i++) {
-                        if (IsSameCommand(displayList, &g_aDlClearCombinePatch[i][0])) {
+                        if (displayList->words.w0 == g_aDlClearCombinePatch[i][0].words.w0 &&
+                            displayList->words.w1 == g_aDlClearCombinePatch[i][0].words.w1) {
                             *displayList = g_aDlClearCombinePatch[i][1];
                             break;
                         }
@@ -1141,7 +1138,8 @@ s32 ProcessDisplayList(Gfx *displayList, Gfx table[][4]) {
                 }
                 if (g_dwSnowMode && g_bDisplayListSnowTint) {
                     for (i = 0; i < ARRAY_COUNT(g_aDlSnowTintCombines); i++) {
-                        if (IsSameCommand(displayList, &g_aDlSnowTintCombines[i])) {
+                        if (displayList->words.w0 == g_aDlSnowTintCombines[i].words.w0 &&
+                            displayList->words.w1 == g_aDlSnowTintCombines[i].words.w1) {
                             break;
                         }
                     }

@@ -377,36 +377,47 @@ void CopyMatrix4x4(f32 out[4][4], f32 in[4][4]) {
     memcpy(out, in, sizeof(f32[4][4]));
 }
 
-/* Add a term to the sum of the positive terms or of the negative ones. */
-#define ADD_BY_SIGN(term, positive, negative)                                                      \
-    do {                                                                                           \
-        if ((term) >= 0.0f) {                                                                      \
-            (positive) += (term);                                                                  \
-        } else {                                                                                   \
-            (negative) += (term);                                                                  \
-        }                                                                                          \
-    } while (0)
-
 s32 MtxInvert4x4(f32 out[4][4], f32 in[4][4]) {
-    f32 m00 = in[0][0], m11 = in[1][1], m22 = in[2][2];
-    f32 m01 = in[0][1], m12 = in[1][2], m20 = in[2][0];
-    f32 m02 = in[0][2], m10 = in[1][0], m21 = in[2][1];
     f32 positive = 0.0f, negative = 0.0f;
     f32 term, determinant, precision, inverse;
 
     /* The determinant of the 3 by 3 part, summed by sign to measure its precision. */
-    term = m22 * (m00 * m11);
-    ADD_BY_SIGN(term, positive, negative);
-    term = m20 * (m01 * m12);
-    ADD_BY_SIGN(term, positive, negative);
-    term = m21 * (m02 * m10);
-    ADD_BY_SIGN(term, positive, negative);
-    term = m20 * (-m02 * m11);
-    ADD_BY_SIGN(term, positive, negative);
-    term = m22 * (-m01 * m10);
-    ADD_BY_SIGN(term, positive, negative);
-    term = m21 * (-m00 * m12);
-    ADD_BY_SIGN(term, positive, negative);
+    term = in[0][0] * in[1][1] * in[2][2];
+    if (term >= 0.0f) {
+        positive += term;
+    } else {
+        negative += term;
+    }
+    term = in[0][1] * in[1][2] * in[2][0];
+    if (term >= 0.0f) {
+        positive += term;
+    } else {
+        negative += term;
+    }
+    term = in[0][2] * in[1][0] * in[2][1];
+    if (term >= 0.0f) {
+        positive += term;
+    } else {
+        negative += term;
+    }
+    term = -in[0][2] * in[1][1] * in[2][0];
+    if (term >= 0.0f) {
+        positive += term;
+    } else {
+        negative += term;
+    }
+    term = -in[0][1] * in[1][0] * in[2][2];
+    if (term >= 0.0f) {
+        positive += term;
+    } else {
+        negative += term;
+    }
+    term = -in[0][0] * in[1][2] * in[2][1];
+    if (term >= 0.0f) {
+        positive += term;
+    } else {
+        negative += term;
+    }
     determinant = positive + negative;
     precision = determinant / (positive - negative);
     if (precision < 0.0f) {
@@ -418,7 +429,7 @@ s32 MtxInvert4x4(f32 out[4][4], f32 in[4][4]) {
     }
 
     inverse = 1.0f / determinant;
-    out[0][0] = (m11 * m22 - m21 * m12) * inverse;
+    out[0][0] = (in[1][1] * in[2][2] - in[2][1] * in[1][2]) * inverse;
     out[1][0] = -(in[1][0] * in[2][2] - in[2][0] * in[1][2]) * inverse;
     out[2][0] = (in[1][0] * in[2][1] - in[2][0] * in[1][1]) * inverse;
     out[0][1] = -(in[0][1] * in[2][2] - in[2][1] * in[0][2]) * inverse;
@@ -429,13 +440,13 @@ s32 MtxInvert4x4(f32 out[4][4], f32 in[4][4]) {
     out[2][2] = (in[0][0] * in[1][1] - in[1][0] * in[0][1]) * inverse;
 
     /* The translation is the old one carried back through the inverted rotation. */
-    out[3][0] = -(out[2][0] * in[3][2] + (in[3][0] * out[0][0] + in[3][1] * out[1][0]));
-    out[3][1] = -(out[2][1] * in[3][2] + (in[3][0] * out[0][1] + in[3][1] * out[1][1]));
+    out[3][0] = -(in[3][0] * out[0][0] + in[3][1] * out[1][0] + in[3][2] * out[2][0]);
+    out[3][1] = -(in[3][0] * out[0][1] + in[3][1] * out[1][1] + in[3][2] * out[2][1]);
     out[0][3] = 0.0f;
     out[1][3] = 0.0f;
     out[2][3] = 0.0f;
     out[3][3] = 1.0f;
-    out[3][2] = -(out[2][2] * in[3][2] + (in[3][0] * out[0][2] + in[3][1] * out[1][2]));
+    out[3][2] = -(in[3][0] * out[0][2] + in[3][1] * out[1][2] + in[3][2] * out[2][2]);
     return 1;
 }
 
