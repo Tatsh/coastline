@@ -46,19 +46,21 @@ typedef struct OSThread_s {
     __OSThreadContext context; /*!< The registers saved while the thread does not run. */
 } OSThread;
 
-#define OS_STATE_STOPPED 1
-#define OS_STATE_RUNNABLE 2
-#define OS_STATE_RUNNING 4
-#define OS_STATE_WAITING 8
+/* The states of a thread. */
+#define OS_STATE_STOPPED 1  /*!< The thread is stopped. */
+#define OS_STATE_RUNNABLE 2 /*!< The thread waits to run. */
+#define OS_STATE_RUNNING 4  /*!< The thread runs. */
+#define OS_STATE_WAITING 8  /*!< The thread waits on a message queue. */
 
-#define OS_PRIORITY_MAX 255
-#define OS_PRIORITY_VIMGR 254
-#define OS_PRIORITY_RMON 250
-#define OS_PRIORITY_RMONSPIN 200
-#define OS_PRIORITY_PIMGR 150
-#define OS_PRIORITY_SIMGR 140
-#define OS_PRIORITY_APPMAX 127
-#define OS_PRIORITY_IDLE 0
+/* The priorities of threads. */
+#define OS_PRIORITY_MAX 255      /*!< The highest priority. */
+#define OS_PRIORITY_VIMGR 254    /*!< The priority of the VI manager. */
+#define OS_PRIORITY_RMON 250     /*!< The priority of the remote monitor. */
+#define OS_PRIORITY_RMONSPIN 200 /*!< The priority of the remote monitor while it spins. */
+#define OS_PRIORITY_PIMGR 150    /*!< The priority of the PI manager. */
+#define OS_PRIORITY_SIMGR 140    /*!< The priority of the SI manager. */
+#define OS_PRIORITY_APPMAX 127   /*!< The highest priority of a thread of the game. */
+#define OS_PRIORITY_IDLE 0       /*!< The priority of the idle thread. */
 
 /* Messages and events. */
 typedef u32 OSEvent;    /*!< A system event, one of the OS_EVENT_* values. */
@@ -66,8 +68,7 @@ typedef u32 OSIntMask;  /*!< A mask of interrupts, a combination of the OS_IM_* 
 typedef u32 OSPageMask; /*!< A mask of the page size of a TLB entry. */
 typedef void *OSMesg;   /*!< A message, a word sent through a message queue. */
 
-/** A message queue: a ring of messages and the threads blocked sending to it or receiving from it.
- */
+/** A message queue: a ring of messages and the threads blocked sending or receiving. */
 typedef struct OSMesgQueue_s {
     OSThread *mtqueue;   /*!< The threads blocked receiving from the empty queue. */
     OSThread *fullqueue; /*!< The threads blocked sending to the full queue. */
@@ -77,47 +78,52 @@ typedef struct OSMesgQueue_s {
     OSMesg *msg;         /*!< The circular buffer of messages. */
 } OSMesgQueue;
 
-#define OS_MESG_NOBLOCK 0
-#define OS_MESG_BLOCK 1
+/* Whether a send or receive waits. */
+#define OS_MESG_NOBLOCK 0 /*!< Return at once when the queue is full or empty. */
+#define OS_MESG_BLOCK 1   /*!< Wait until the queue has room or a message. */
 
-#define OS_EVENT_SW1 0
-#define OS_EVENT_SW2 1
-#define OS_EVENT_CART 2
-#define OS_EVENT_COUNTER 3
-#define OS_EVENT_SP 4
-#define OS_EVENT_SI 5
-#define OS_EVENT_AI 6
-#define OS_EVENT_VI 7
-#define OS_EVENT_PI 8
-#define OS_EVENT_DP 9
-#define OS_EVENT_CPU_BREAK 10
-#define OS_EVENT_SP_BREAK 11
-#define OS_EVENT_FAULT 12
-#define OS_EVENT_THREADSTATUS 13
-#define OS_EVENT_PRENMI 14
+/* The system events. */
+#define OS_EVENT_SW1 0           /*!< Software interrupt 1. */
+#define OS_EVENT_SW2 1           /*!< Software interrupt 2. */
+#define OS_EVENT_CART 2          /*!< The cartridge interrupt. */
+#define OS_EVENT_COUNTER 3       /*!< The CPU counter reached the compare register. */
+#define OS_EVENT_SP 4            /*!< The RSP finished. */
+#define OS_EVENT_SI 5            /*!< The serial interface finished. */
+#define OS_EVENT_AI 6            /*!< The audio interface needs a buffer. */
+#define OS_EVENT_VI 7            /*!< The video interface reached its interrupt line. */
+#define OS_EVENT_PI 8            /*!< The peripheral interface finished. */
+#define OS_EVENT_DP 9            /*!< The RDP finished. */
+#define OS_EVENT_CPU_BREAK 10    /*!< The CPU hit a breakpoint. */
+#define OS_EVENT_SP_BREAK 11     /*!< The RSP hit a breakpoint. */
+#define OS_EVENT_FAULT 12        /*!< A thread faulted. */
+#define OS_EVENT_THREADSTATUS 13 /*!< The status of a thread changed. */
+#define OS_EVENT_PRENMI 14       /*!< The reset button was pressed. */
 
+/** The number of messages in a queue. */
 #define MQ_GET_COUNT(mq) ((mq)->validCount)
+/** Whether a queue has no messages. */
 #define MQ_IS_EMPTY(mq) (MQ_GET_COUNT(mq) == 0)
+/** Whether a queue has no room for another message. */
 #define MQ_IS_FULL(mq) (MQ_GET_COUNT(mq) >= (mq)->msgCount)
 
 /* Interrupt masks. */
-#define OS_IM_NONE 0x00000001
-#define OS_IM_SW1 0x00000501
-#define OS_IM_SW2 0x00000601
-#define OS_IM_RCP 0x00000401
-#define OS_IM_CART 0x00000C01
-#define OS_IM_PRENMI 0x00001401
-#define OS_IM_RDBWRITE 0x00002401
-#define OS_IM_RDBREAD 0x00004401
-#define OS_IM_COUNTER 0x00008401
-#define OS_IM_CPU 0x0000FF01
-#define OS_IM_SP 0x00010401
-#define OS_IM_SI 0x00020401
-#define OS_IM_AI 0x00040401
-#define OS_IM_VI 0x00080401
-#define OS_IM_PI 0x00100401
-#define OS_IM_DP 0x00200401
-#define OS_IM_ALL 0x003FFF01
+#define OS_IM_NONE 0x00000001     /*!< No interrupts. */
+#define OS_IM_SW1 0x00000501      /*!< Software interrupt 1. */
+#define OS_IM_SW2 0x00000601      /*!< Software interrupt 2. */
+#define OS_IM_RCP 0x00000401      /*!< The interrupts of the RCP. */
+#define OS_IM_CART 0x00000C01     /*!< The cartridge interrupt. */
+#define OS_IM_PRENMI 0x00001401   /*!< The reset button. */
+#define OS_IM_RDBWRITE 0x00002401 /*!< A write of the debugger port. */
+#define OS_IM_RDBREAD 0x00004401  /*!< A read of the debugger port. */
+#define OS_IM_COUNTER 0x00008401  /*!< The CPU counter. */
+#define OS_IM_CPU 0x0000FF01      /*!< Every interrupt of the CPU. */
+#define OS_IM_SP 0x00010401       /*!< The RSP. */
+#define OS_IM_SI 0x00020401       /*!< The serial interface. */
+#define OS_IM_AI 0x00040401       /*!< The audio interface. */
+#define OS_IM_VI 0x00080401       /*!< The video interface. */
+#define OS_IM_PI 0x00100401       /*!< The peripheral interface. */
+#define OS_IM_DP 0x00200401       /*!< The RDP. */
+#define OS_IM_ALL 0x003FFF01      /*!< Every interrupt. */
 
 /* Time. */
 typedef u64 OSTime; /*!< A time in cycles of the CPU counter. */
@@ -132,13 +138,19 @@ typedef struct OSTimer_s {
     OSMesg msg;      /*!< The message the timer sends on expiry. */
 } OSTimer;
 
+/** The clock rate of the RCP, in hertz. */
 #define OS_CLOCK_RATE 62500000LL
+/** The rate of the CPU counter, in cycles a second. */
 #define OS_CPU_COUNTER (OS_CLOCK_RATE * 3 / 4)
+/** Convert nanoseconds to cycles of the CPU counter. */
 #define OS_NSEC_TO_CYCLES(n)                                                                       \
     (((u64)(n) * (OS_CPU_COUNTER / 15625000LL)) / (1000000000LL / 15625000LL))
+/** Convert microseconds to cycles of the CPU counter. */
 #define OS_USEC_TO_CYCLES(n) (((u64)(n) * (OS_CPU_COUNTER / 15625LL)) / (1000000LL / 15625LL))
+/** Convert cycles of the CPU counter to nanoseconds. */
 #define OS_CYCLES_TO_NSEC(c)                                                                       \
     (((u64)(c) * (1000000000LL / 15625000LL)) / (OS_CPU_COUNTER / 15625000LL))
+/** Convert cycles of the CPU counter to microseconds. */
 #define OS_CYCLES_TO_USEC(c) (((u64)(c) * (1000000LL / 15625LL)) / (OS_CPU_COUNTER / 15625LL))
 
 /* Peripheral access. */
@@ -210,30 +222,35 @@ typedef struct {
     s32 (*edma)(OSPiHandle *, s32, u32, void *, u32); /*!< The routine that starts a handle DMA. */
 } OSDevMgr;
 
-#define OS_READ 0
-#define OS_WRITE 1
-#define OS_OTHERS 2
+/* Directions of a transfer. */
+#define OS_READ 0   /*!< From the device to memory. */
+#define OS_WRITE 1  /*!< From memory to the device. */
+#define OS_OTHERS 2 /*!< Neither, for a request that moves no data. */
 
-#define OS_MESG_PRI_NORMAL 0
-#define OS_MESG_PRI_HIGH 1
+/* Priorities of an I/O request. */
+#define OS_MESG_PRI_NORMAL 0 /*!< The request joins the end of the queue. */
+#define OS_MESG_PRI_HIGH 1   /*!< The request jumps to the front of the queue. */
 
-#define OS_MESG_TYPE_BASE 10
-#define OS_MESG_TYPE_LOOPBACK (OS_MESG_TYPE_BASE + 0)
-#define OS_MESG_TYPE_DMAREAD (OS_MESG_TYPE_BASE + 1)
-#define OS_MESG_TYPE_DMAWRITE (OS_MESG_TYPE_BASE + 2)
-#define OS_MESG_TYPE_VRETRACE (OS_MESG_TYPE_BASE + 3)
-#define OS_MESG_TYPE_COUNTER (OS_MESG_TYPE_BASE + 4)
-#define OS_MESG_TYPE_EDMAREAD (OS_MESG_TYPE_BASE + 5)
-#define OS_MESG_TYPE_EDMAWRITE (OS_MESG_TYPE_BASE + 6)
+/* Types of an I/O request. */
+#define OS_MESG_TYPE_BASE 10                           /*!< The first type. */
+#define OS_MESG_TYPE_LOOPBACK (OS_MESG_TYPE_BASE + 0)  /*!< A request sent back unchanged. */
+#define OS_MESG_TYPE_DMAREAD (OS_MESG_TYPE_BASE + 1)   /*!< A DMA from the cartridge. */
+#define OS_MESG_TYPE_DMAWRITE (OS_MESG_TYPE_BASE + 2)  /*!< A DMA to the cartridge. */
+#define OS_MESG_TYPE_VRETRACE (OS_MESG_TYPE_BASE + 3)  /*!< A vertical retrace. */
+#define OS_MESG_TYPE_COUNTER (OS_MESG_TYPE_BASE + 4)   /*!< An expiry of the counter. */
+#define OS_MESG_TYPE_EDMAREAD (OS_MESG_TYPE_BASE + 5)  /*!< A DMA from a device handle. */
+#define OS_MESG_TYPE_EDMAWRITE (OS_MESG_TYPE_BASE + 6) /*!< A DMA to a device handle. */
 
-#define DEVICE_TYPE_CART 0
-#define DEVICE_TYPE_BULK 1
-#define DEVICE_TYPE_64DD 2
-#define DEVICE_TYPE_SRAM 3
-#define DEVICE_TYPE_INIT 7
+/* Types of a device on the peripheral interface. */
+#define DEVICE_TYPE_CART 0 /*!< The cartridge ROM. */
+#define DEVICE_TYPE_BULK 1 /*!< Bulk storage. */
+#define DEVICE_TYPE_64DD 2 /*!< The 64DD. */
+#define DEVICE_TYPE_SRAM 3 /*!< Battery-backed SRAM. */
+#define DEVICE_TYPE_INIT 7 /*!< A device not yet probed. */
 
-#define PI_DOMAIN1 0
-#define PI_DOMAIN2 1
+/* The domains of the peripheral interface. */
+#define PI_DOMAIN1 0 /*!< Domain 1, the cartridge ROM. */
+#define PI_DOMAIN2 1 /*!< Domain 2, SRAM and the 64DD. */
 
 /* Boot parameters IPL3 writes at the start of RAM. */
 extern u32 osTvType;
@@ -245,14 +262,15 @@ extern u32 osVersion;
 extern u32 osMemSize;
 extern u8 osAppNMIBuffer[64];
 
-#define OS_TV_PAL 0
-#define OS_TV_NTSC 1
-#define OS_TV_MPAL 2
+/* The television standards of osTvType. */
+#define OS_TV_PAL 0  /*!< PAL. */
+#define OS_TV_NTSC 1 /*!< NTSC. */
+#define OS_TV_MPAL 2 /*!< PAL-M. */
 
-/** The frequency of the video clock in Hz by television standard. osAiSetFrequency() uses it. */
-#define VI_NTSC_CLOCK 48681812
-#define VI_PAL_CLOCK 49656530
-#define VI_MPAL_CLOCK 48628316
+/* The frequency of the video clock by television standard. osAiSetFrequency() uses it. */
+#define VI_NTSC_CLOCK 48681812 /*!< The video clock of NTSC, in hertz. */
+#define VI_PAL_CLOCK 49656530  /*!< The video clock of PAL, in hertz. */
+#define VI_MPAL_CLOCK 48628316 /*!< The video clock of PAL-M, in hertz. */
 
 /* Video modes. */
 /** The video interface registers a video mode sets for both fields. */
@@ -285,14 +303,14 @@ typedef struct {
 } OSViMode;
 
 /* Features osViSetSpecialFeatures() turns on and off. */
-#define OS_VI_GAMMA_ON 0x0001
-#define OS_VI_GAMMA_OFF 0x0002
-#define OS_VI_GAMMA_DITHER_ON 0x0004
-#define OS_VI_GAMMA_DITHER_OFF 0x0008
-#define OS_VI_DIVOT_ON 0x0010
-#define OS_VI_DIVOT_OFF 0x0020
-#define OS_VI_DITHER_FILTER_ON 0x0040
-#define OS_VI_DITHER_FILTER_OFF 0x0080
+#define OS_VI_GAMMA_ON 0x0001          /*!< Turn the gamma correction on. */
+#define OS_VI_GAMMA_OFF 0x0002         /*!< Turn the gamma correction off. */
+#define OS_VI_GAMMA_DITHER_ON 0x0004   /*!< Turn the gamma dither on. */
+#define OS_VI_GAMMA_DITHER_OFF 0x0008  /*!< Turn the gamma dither off. */
+#define OS_VI_DIVOT_ON 0x0010          /*!< Turn the divot removal on. */
+#define OS_VI_DIVOT_OFF 0x0020         /*!< Turn the divot removal off. */
+#define OS_VI_DITHER_FILTER_ON 0x0040  /*!< Turn the dither filter on. */
+#define OS_VI_DITHER_FILTER_OFF 0x0080 /*!< Turn the dither filter off. */
 
 /** @ghidraAddress USA: 0x802a62f0 */
 extern OSViMode osViModePalLan1;
