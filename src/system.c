@@ -138,15 +138,6 @@
 
 u64 g_qwTimestampBase = 0;
 
-/* Draw the four edges of a rectangle, a pixel wide, inside it. */
-#define DRAW_RECT_EDGES(x, y, width, height)                                                       \
-    {                                                                                              \
-        gDPFillRectangle(gDisplayListPtr++, x, y, (x) + (width), (y) + 1);                         \
-        gDPFillRectangle(gDisplayListPtr++, x, (y) + (height) - 1, (x) + (width), (y) + (height)); \
-        gDPFillRectangle(gDisplayListPtr++, x, y, (x) + 1, (y) + (height));                        \
-        gDPFillRectangle(gDisplayListPtr++, (x) + (width) - 1, y, (x) + (width), (y) + (height));  \
-    }
-
 /* Set a light ramp to a quarter, a half, three quarters, and all of a part of the light. */
 #define SET_LIGHT_RAMP(ramp, light)                                                                \
     {                                                                                              \
@@ -874,7 +865,10 @@ void DrawRdpOutlineRect(s32 x, s32 y, s32 width, s32 height) {
     gDPSetRenderMode(gDisplayListPtr++, RENDER_MODE_FOG_BLEND_C1, RENDER_MODE_FOG_BLEND_C2);
     gDPSetCycleType(gDisplayListPtr++, G_CYC_1CYCLE);
     gDPSetFogColor(gDisplayListPtr++, 0, 0, 0, 0xFF);
-    DRAW_RECT_EDGES(x, y, width, height);
+    gDPFillRectangle(gDisplayListPtr++, x, y, x + width, y + 1);
+    gDPFillRectangle(gDisplayListPtr++, x, y + height - 1, x + width, y + height);
+    gDPFillRectangle(gDisplayListPtr++, x, y, x + 1, y + height);
+    gDPFillRectangle(gDisplayListPtr++, x + width - 1, y, x + width, y + height);
 }
 
 void DrawRdpBorderRect(s32 x, s32 y, s32 width, s32 height) {
@@ -891,7 +885,10 @@ void DrawRdpBorderRect(s32 x, s32 y, s32 width, s32 height) {
     gDPSetRenderMode(gDisplayListPtr++, RENDER_MODE_FOG_BLEND_C1, RENDER_MODE_FOG_BLEND_C2);
     gDPSetCycleType(gDisplayListPtr++, G_CYC_1CYCLE);
     gDPSetFogColor(gDisplayListPtr++, 0, 0, 0, 0xFF);
-    DRAW_RECT_EDGES(x, y, width, height);
+    gDPFillRectangle(gDisplayListPtr++, x, y, x + width, y + 1);
+    gDPFillRectangle(gDisplayListPtr++, x, y + height - 1, x + width, y + height);
+    gDPFillRectangle(gDisplayListPtr++, x, y, x + 1, y + height);
+    gDPFillRectangle(gDisplayListPtr++, x + width - 1, y, x + width, y + height);
     gDPFillRectangle(gDisplayListPtr++, x - 3, y - 3, x + width + 3, y - 2);
     gDPFillRectangle(gDisplayListPtr++, x - 3, y + height + 2, x + width + 3, y + height + 3);
     gDPFillRectangle(gDisplayListPtr++, x - 3, y - 3, x - 2, y + height + 3);

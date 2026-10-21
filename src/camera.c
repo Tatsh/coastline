@@ -601,23 +601,17 @@ void SetupCameraMatrix(CameraFrame *camera, f32 fov, f32 farDistance, f32 width,
 #define LOOK_AT_SCREEN(x, y, distance)                                                             \
     guLookAtF(g_ViewLookAtMtx, x, y, distance, x, y, 0.0f, 0.0f, 1.0f, 0.0f)
 
-/* Load the view and projection of the current view into the display list. */
-#define LOAD_VIEW_PROJECTION()                                                                     \
-    {                                                                                              \
-        gSPPerspNormalize(gDisplayListPtr++, g_wPerspNorm);                                        \
-        g_pProjectionMtx = (Mtx *)AllocDisplayListBlock();                                         \
-        guMtxF2L(g_afViewProjMatrix, g_pProjectionMtx);                                            \
-        gSPMatrix(gDisplayListPtr++,                                                               \
-                  TO_RSP_ADDRESS(g_pProjectionMtx),                                                \
-                  G_MTX_PROJECTION | G_MTX_LOAD | G_MTX_NOPUSH);                                   \
-    }
-
 void SetupProjectionMatrix(f32 width, f32 height) {
     LOOK_AT_SCREEN(SCREEN_CENTER_X, SCREEN_CENTER_Y, SCREEN_DISTANCE);
     guPerspectiveF(
         g_afScratchMatrix, &g_wPerspNorm, SCREEN_FOV, ASPECT_4_3, SCREEN_NEAR, SCREEN_FAR, 1.0f);
     guMtxCatF(g_ViewLookAtMtx, g_afScratchMatrix, g_afViewProjMatrix);
-    LOAD_VIEW_PROJECTION();
+    gSPPerspNormalize(gDisplayListPtr++, g_wPerspNorm);
+    g_pProjectionMtx = (Mtx *)AllocDisplayListBlock();
+    guMtxF2L(g_afViewProjMatrix, g_pProjectionMtx);
+    gSPMatrix(gDisplayListPtr++,
+              TO_RSP_ADDRESS(g_pProjectionMtx),
+              G_MTX_PROJECTION | G_MTX_LOAD | G_MTX_NOPUSH);
 }
 
 void SetupMenuProjection(f32 width, f32 height) {
@@ -636,5 +630,10 @@ void SetupMenuProjection(f32 width, f32 height) {
                    g_fCameraFarDistance,
                    1.0f);
     guMtxCatF(g_ViewLookAtMtx, g_afPerspectiveMatrix, g_afViewProjMatrix);
-    LOAD_VIEW_PROJECTION();
+    gSPPerspNormalize(gDisplayListPtr++, g_wPerspNorm);
+    g_pProjectionMtx = (Mtx *)AllocDisplayListBlock();
+    guMtxF2L(g_afViewProjMatrix, g_pProjectionMtx);
+    gSPMatrix(gDisplayListPtr++,
+              TO_RSP_ADDRESS(g_pProjectionMtx),
+              G_MTX_PROJECTION | G_MTX_LOAD | G_MTX_NOPUSH);
 }
