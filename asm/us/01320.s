@@ -82,7 +82,7 @@ glabel DrawRaceHud
     /* 1400 80200400 AFAF0010 */  sw         $t7, 0x10($sp)
     /* 1404 80200404 24050080 */  addiu      $a1, $zero, 0x80
     /* 1408 80200408 24060080 */  addiu      $a2, $zero, 0x80
-    /* 140C 8020040C 0C08B5F8 */  jal        AddColorEntry
+    /* 140C 8020040C 0C08B5F8 */  jal        AddTimingMarker
     /* 1410 80200410 240700F0 */   addiu     $a3, $zero, 0xF0
     /* 1414 80200414 0C0800DF */  jal        LoadTrackConditional
     /* 1418 80200418 00000000 */   nop
@@ -91,7 +91,7 @@ glabel DrawRaceHud
     /* 1424 80200424 00002025 */  or         $a0, $zero, $zero
     /* 1428 80200428 00002825 */  or         $a1, $zero, $zero
     /* 142C 8020042C 00003025 */  or         $a2, $zero, $zero
-    /* 1430 80200430 0C08B5F8 */  jal        AddColorEntry
+    /* 1430 80200430 0C08B5F8 */  jal        AddTimingMarker
     /* 1434 80200434 240700C0 */   addiu     $a3, $zero, 0xC0
     /* 1438 80200438 0C08EFD8 */  jal        UpdateVehicleTireTrails
     /* 143C 8020043C 00000000 */   nop
@@ -100,7 +100,7 @@ glabel DrawRaceHud
     /* 1448 80200448 00002025 */  or         $a0, $zero, $zero
     /* 144C 8020044C 00002825 */  or         $a1, $zero, $zero
     /* 1450 80200450 24060082 */  addiu      $a2, $zero, 0x82
-    /* 1454 80200454 0C08B5F8 */  jal        AddColorEntry
+    /* 1454 80200454 0C08B5F8 */  jal        AddTimingMarker
     /* 1458 80200458 00003825 */   or        $a3, $zero, $zero
   .L8020045C:
     /* 145C 8020045C 8FBF001C */  lw         $ra, 0x1C($sp)
@@ -2933,7 +2933,7 @@ glabel ProcessRaceHud
     /* 3DF8 80202DF8 00002025 */  or         $a0, $zero, $zero
     /* 3DFC 80202DFC 00002825 */  or         $a1, $zero, $zero
     /* 3E00 80202E00 00003025 */  or         $a2, $zero, $zero
-    /* 3E04 80202E04 0C08B5F8 */  jal        AddColorEntry
+    /* 3E04 80202E04 0C08B5F8 */  jal        AddTimingMarker
     /* 3E08 80202E08 240700C8 */   addiu     $a3, $zero, 0xC8
     /* 3E0C 80202E0C 0C0897CC */  jal        ClearBssSegments
     /* 3E10 80202E10 00000000 */   nop
@@ -3034,7 +3034,7 @@ glabel ProcessRaceHud
     /* 3F6C 80202F6C 00002025 */  or         $a0, $zero, $zero
     /* 3F70 80202F70 24050080 */  addiu      $a1, $zero, 0x80
     /* 3F74 80202F74 24060080 */  addiu      $a2, $zero, 0x80
-    /* 3F78 80202F78 0C08B5F8 */  jal        AddColorEntry
+    /* 3F78 80202F78 0C08B5F8 */  jal        AddTimingMarker
     /* 3F7C 80202F7C 00003825 */   or        $a3, $zero, $zero
     /* 3F80 80202F80 0C08F3F1 */  jal        UpdateAllVehicleEffects
     /* 3F84 80202F84 00000000 */   nop
@@ -3043,7 +3043,7 @@ glabel ProcessRaceHud
     /* 3F90 80202F90 00002025 */  or         $a0, $zero, $zero
     /* 3F94 80202F94 00002825 */  or         $a1, $zero, $zero
     /* 3F98 80202F98 240600FF */  addiu      $a2, $zero, 0xFF
-    /* 3F9C 80202F9C 0C08B5F8 */  jal        AddColorEntry
+    /* 3F9C 80202F9C 0C08B5F8 */  jal        AddTimingMarker
     /* 3FA0 80202FA0 240700FF */   addiu     $a3, $zero, 0xFF
     /* 3FA4 80202FA4 0C08E872 */  jal        UpdatePrecipitationParticles
     /* 3FA8 80202FA8 00000000 */   nop
@@ -3812,7 +3812,7 @@ glabel ProcessRaceHud
     /* 4B0C 80203B0C 00002025 */  or         $a0, $zero, $zero
     /* 4B10 80203B10 00002825 */  or         $a1, $zero, $zero
     /* 4B14 80203B14 24060082 */  addiu      $a2, $zero, 0x82
-    /* 4B18 80203B18 0C08B5F8 */  jal        AddColorEntry
+    /* 4B18 80203B18 0C08B5F8 */  jal        AddTimingMarker
     /* 4B1C 80203B1C 00003825 */   or        $a3, $zero, $zero
     /* 4B20 80203B20 0C08CFF7 */  jal        SetupParticleBufferPointers
     /* 4B24 80203B24 00000000 */   nop
@@ -3876,7 +3876,7 @@ glabel ProcessRaceHud
     /* 4BF8 80203BF8 00002025 */  or         $a0, $zero, $zero
     /* 4BFC 80203BFC 00002825 */  or         $a1, $zero, $zero
     /* 4C00 80203C00 00003025 */  or         $a2, $zero, $zero
-    /* 4C04 80203C04 0C08B5F8 */  jal        AddColorEntry
+    /* 4C04 80203C04 0C08B5F8 */  jal        AddTimingMarker
     /* 4C08 80203C08 00003825 */   or        $a3, $zero, $zero
     /* 4C0C 80203C0C 0010C080 */  sll        $t8, $s0, 2
     /* 4C10 80203C10 0310C021 */  addu       $t8, $t8, $s0
@@ -4074,7 +4074,7 @@ glabel ProcessRaceHud
     /* 4F08 80203F08 00002025 */  or         $a0, $zero, $zero
     /* 4F0C 80203F0C 00002825 */  or         $a1, $zero, $zero
     /* 4F10 80203F10 24060082 */  addiu      $a2, $zero, 0x82
-    /* 4F14 80203F14 0C08B5F8 */  jal        AddColorEntry
+    /* 4F14 80203F14 0C08B5F8 */  jal        AddTimingMarker
     /* 4F18 80203F18 00003825 */   or        $a3, $zero, $zero
     /* 4F1C 80203F1C 0C08BE5A */  jal        RenderSkybox
     /* 4F20 80203F20 00000000 */   nop
@@ -4138,7 +4138,7 @@ glabel ProcessRaceHud
     /* 4FF4 80203FF4 00002025 */  or         $a0, $zero, $zero
     /* 4FF8 80203FF8 24050080 */  addiu      $a1, $zero, 0x80
     /* 4FFC 80203FFC 24060080 */  addiu      $a2, $zero, 0x80
-    /* 5000 80204000 0C08B5F8 */  jal        AddColorEntry
+    /* 5000 80204000 0C08B5F8 */  jal        AddTimingMarker
     /* 5004 80204004 24070080 */   addiu     $a3, $zero, 0x80
     /* 5008 80204008 3C0C8029 */  lui        $t4, %hi(g_dwNumVehicles)
     /* 500C 8020400C 8D8CB7F0 */  lw         $t4, %lo(g_dwNumVehicles)($t4)
@@ -4182,7 +4182,7 @@ glabel ProcessRaceHud
     /* 5098 80204098 00002025 */  or         $a0, $zero, $zero
     /* 509C 8020409C 24050080 */  addiu      $a1, $zero, 0x80
     /* 50A0 802040A0 24060080 */  addiu      $a2, $zero, 0x80
-    /* 50A4 802040A4 0C08B5F8 */  jal        AddColorEntry
+    /* 50A4 802040A4 0C08B5F8 */  jal        AddTimingMarker
     /* 50A8 802040A8 00003825 */   or        $a3, $zero, $zero
     /* 50AC 802040AC 0C08F5C5 */  jal        RenderParticleEffects
     /* 50B0 802040B0 00000000 */   nop
@@ -4192,7 +4192,7 @@ glabel ProcessRaceHud
     /* 50BC 802040BC 00002025 */  or         $a0, $zero, $zero
     /* 50C0 802040C0 24050040 */  addiu      $a1, $zero, 0x40
     /* 50C4 802040C4 24060040 */  addiu      $a2, $zero, 0x40
-    /* 50C8 802040C8 0C08B5F8 */  jal        AddColorEntry
+    /* 50C8 802040C8 0C08B5F8 */  jal        AddTimingMarker
     /* 50CC 802040CC 24070040 */   addiu     $a3, $zero, 0x40
     /* 50D0 802040D0 0C08011B */  jal        RenderTrackCheckpointModel
     /* 50D4 802040D4 00000000 */   nop
@@ -4217,7 +4217,7 @@ glabel ProcessRaceHud
     /* 5120 80204120 00002025 */  or         $a0, $zero, $zero
     /* 5124 80204124 24050080 */  addiu      $a1, $zero, 0x80
     /* 5128 80204128 24060080 */  addiu      $a2, $zero, 0x80
-    /* 512C 8020412C 0C08B5F8 */  jal        AddColorEntry
+    /* 512C 8020412C 0C08B5F8 */  jal        AddTimingMarker
     /* 5130 80204130 24070080 */   addiu     $a3, $zero, 0x80
     /* 5134 80204134 3C188029 */  lui        $t8, %hi(g_dwNumVehicles)
     /* 5138 80204138 8F18B7F0 */  lw         $t8, %lo(g_dwNumVehicles)($t8)
@@ -4261,7 +4261,7 @@ glabel ProcessRaceHud
     /* 51C4 802041C4 00002025 */  or         $a0, $zero, $zero
     /* 51C8 802041C8 24050080 */  addiu      $a1, $zero, 0x80
     /* 51CC 802041CC 24060080 */  addiu      $a2, $zero, 0x80
-    /* 51D0 802041D0 0C08B5F8 */  jal        AddColorEntry
+    /* 51D0 802041D0 0C08B5F8 */  jal        AddTimingMarker
     /* 51D4 802041D4 00003825 */   or        $a3, $zero, $zero
     /* 51D8 802041D8 0C08F5C5 */  jal        RenderParticleEffects
     /* 51DC 802041DC 00000000 */   nop
@@ -4272,7 +4272,7 @@ glabel ProcessRaceHud
     /* 51E8 802041E8 00002025 */  or         $a0, $zero, $zero
     /* 51EC 802041EC 24050080 */  addiu      $a1, $zero, 0x80
     /* 51F0 802041F0 24060080 */  addiu      $a2, $zero, 0x80
-    /* 51F4 802041F4 0C08B5F8 */  jal        AddColorEntry
+    /* 51F4 802041F4 0C08B5F8 */  jal        AddTimingMarker
     /* 51F8 802041F8 24070080 */   addiu     $a3, $zero, 0x80
     /* 51FC 802041FC 3C0E8029 */  lui        $t6, %hi(g_dwNumVehicles)
     /* 5200 80204200 8DCEB7F0 */  lw         $t6, %lo(g_dwNumVehicles)($t6)
@@ -4307,7 +4307,7 @@ glabel ProcessRaceHud
     /* 5268 80204268 00002025 */  or         $a0, $zero, $zero
     /* 526C 8020426C 24050080 */  addiu      $a1, $zero, 0x80
     /* 5270 80204270 24060080 */  addiu      $a2, $zero, 0x80
-    /* 5274 80204274 0C08B5F8 */  jal        AddColorEntry
+    /* 5274 80204274 0C08B5F8 */  jal        AddTimingMarker
     /* 5278 80204278 24070080 */   addiu     $a3, $zero, 0x80
     /* 527C 8020427C 3C0A8029 */  lui        $t2, %hi(g_dwNumVehicles)
     /* 5280 80204280 8D4AB7F0 */  lw         $t2, %lo(g_dwNumVehicles)($t2)
@@ -4351,7 +4351,7 @@ glabel ProcessRaceHud
     /* 530C 8020430C 00002025 */  or         $a0, $zero, $zero
     /* 5310 80204310 24050080 */  addiu      $a1, $zero, 0x80
     /* 5314 80204314 24060080 */  addiu      $a2, $zero, 0x80
-    /* 5318 80204318 0C08B5F8 */  jal        AddColorEntry
+    /* 5318 80204318 0C08B5F8 */  jal        AddTimingMarker
     /* 531C 8020431C 00003825 */   or        $a3, $zero, $zero
     /* 5320 80204320 0C08F6F0 */  jal        SetupAndRenderParticles
     /* 5324 80204324 00000000 */   nop
@@ -4360,7 +4360,7 @@ glabel ProcessRaceHud
     /* 5330 80204330 00002025 */  or         $a0, $zero, $zero
     /* 5334 80204334 00002825 */  or         $a1, $zero, $zero
     /* 5338 80204338 240600FF */  addiu      $a2, $zero, 0xFF
-    /* 533C 8020433C 0C08B5F8 */  jal        AddColorEntry
+    /* 533C 8020433C 0C08B5F8 */  jal        AddTimingMarker
     /* 5340 80204340 240700FF */   addiu     $a3, $zero, 0xFF
     /* 5344 80204344 0C08E9E1 */  jal        RenderPrecipitationEffect
     /* 5348 80204348 00000000 */   nop
@@ -4369,7 +4369,7 @@ glabel ProcessRaceHud
     /* 5354 80204354 00002025 */  or         $a0, $zero, $zero
     /* 5358 80204358 00002825 */  or         $a1, $zero, $zero
     /* 535C 8020435C 24060082 */  addiu      $a2, $zero, 0x82
-    /* 5360 80204360 0C08B5F8 */  jal        AddColorEntry
+    /* 5360 80204360 0C08B5F8 */  jal        AddTimingMarker
     /* 5364 80204364 00003825 */   or        $a3, $zero, $zero
     /* 5368 80204368 0C088D20 */  jal        RenderScreenFog
     /* 536C 8020436C 00000000 */   nop
@@ -4583,7 +4583,7 @@ glabel ProcessRaceHud
     /* 5690 80204690 00002025 */  or         $a0, $zero, $zero
     /* 5694 80204694 00002825 */  or         $a1, $zero, $zero
     /* 5698 80204698 24060082 */  addiu      $a2, $zero, 0x82
-    /* 569C 8020469C 0C08B5F8 */  jal        AddColorEntry
+    /* 569C 8020469C 0C08B5F8 */  jal        AddTimingMarker
     /* 56A0 802046A0 00003825 */   or        $a3, $zero, $zero
     /* 56A4 802046A4 0C08BE5A */  jal        RenderSkybox
     /* 56A8 802046A8 00000000 */   nop
@@ -4596,7 +4596,7 @@ glabel ProcessRaceHud
     /* 56C4 802046C4 00002025 */  or         $a0, $zero, $zero
     /* 56C8 802046C8 00002825 */  or         $a1, $zero, $zero
     /* 56CC 802046CC 24060082 */  addiu      $a2, $zero, 0x82
-    /* 56D0 802046D0 0C08B5F8 */  jal        AddColorEntry
+    /* 56D0 802046D0 0C08B5F8 */  jal        AddTimingMarker
     /* 56D4 802046D4 00003825 */   or        $a3, $zero, $zero
     /* 56D8 802046D8 3C0B8029 */  lui        $t3, %hi(g_dwNumRacers)
     /* 56DC 802046DC 8D6BB7F4 */  lw         $t3, %lo(g_dwNumRacers)($t3)
@@ -4642,7 +4642,7 @@ glabel ProcessRaceHud
     /* 5770 80204770 00002025 */  or         $a0, $zero, $zero
     /* 5774 80204774 24050080 */  addiu      $a1, $zero, 0x80
     /* 5778 80204778 24060080 */  addiu      $a2, $zero, 0x80
-    /* 577C 8020477C 0C08B5F8 */  jal        AddColorEntry
+    /* 577C 8020477C 0C08B5F8 */  jal        AddTimingMarker
     /* 5780 80204780 24070080 */   addiu     $a3, $zero, 0x80
     /* 5784 80204784 3C198029 */  lui        $t9, %hi(g_dwNumVehicles)
     /* 5788 80204788 8F39B7F0 */  lw         $t9, %lo(g_dwNumVehicles)($t9)
@@ -4686,7 +4686,7 @@ glabel ProcessRaceHud
     /* 5814 80204814 00002025 */  or         $a0, $zero, $zero
     /* 5818 80204818 24050080 */  addiu      $a1, $zero, 0x80
     /* 581C 8020481C 24060080 */  addiu      $a2, $zero, 0x80
-    /* 5820 80204820 0C08B5F8 */  jal        AddColorEntry
+    /* 5820 80204820 0C08B5F8 */  jal        AddTimingMarker
     /* 5824 80204824 00003825 */   or        $a3, $zero, $zero
     /* 5828 80204828 0C08F5C5 */  jal        RenderParticleEffects
     /* 582C 8020482C 00000000 */   nop
@@ -4712,7 +4712,7 @@ glabel ProcessRaceHud
     /* 5878 80204878 00002025 */  or         $a0, $zero, $zero
     /* 587C 8020487C 24050080 */  addiu      $a1, $zero, 0x80
     /* 5880 80204880 24060080 */  addiu      $a2, $zero, 0x80
-    /* 5884 80204884 0C08B5F8 */  jal        AddColorEntry
+    /* 5884 80204884 0C08B5F8 */  jal        AddTimingMarker
     /* 5888 80204888 24070080 */   addiu     $a3, $zero, 0x80
     /* 588C 8020488C 3C088029 */  lui        $t0, %hi(g_dwNumVehicles)
     /* 5890 80204890 8D08B7F0 */  lw         $t0, %lo(g_dwNumVehicles)($t0)
@@ -4757,7 +4757,7 @@ glabel ProcessRaceHud
     /* 591C 8020491C 00002025 */  or         $a0, $zero, $zero
     /* 5920 80204920 24050080 */  addiu      $a1, $zero, 0x80
     /* 5924 80204924 24060080 */  addiu      $a2, $zero, 0x80
-    /* 5928 80204928 0C08B5F8 */  jal        AddColorEntry
+    /* 5928 80204928 0C08B5F8 */  jal        AddTimingMarker
     /* 592C 8020492C 24070080 */   addiu     $a3, $zero, 0x80
     /* 5930 80204930 3C198029 */  lui        $t9, %hi(g_dwNumVehicles)
     /* 5934 80204934 8F39B7F0 */  lw         $t9, %lo(g_dwNumVehicles)($t9)
@@ -4803,7 +4803,7 @@ glabel ProcessRaceHud
     /* 59C8 802049C8 00002025 */  or         $a0, $zero, $zero
     /* 59CC 802049CC 00002825 */  or         $a1, $zero, $zero
     /* 59D0 802049D0 24060082 */  addiu      $a2, $zero, 0x82
-    /* 59D4 802049D4 0C08B5F8 */  jal        AddColorEntry
+    /* 59D4 802049D4 0C08B5F8 */  jal        AddTimingMarker
     /* 59D8 802049D8 00003825 */   or        $a3, $zero, $zero
     /* 59DC 802049DC 3C188029 */  lui        $t8, %hi(g_pActiveCameraVehicle)
     /* 59E0 802049E0 8F18AAF0 */  lw         $t8, %lo(g_pActiveCameraVehicle)($t8)
@@ -4931,7 +4931,7 @@ glabel ProcessRaceHud
     /* 5BB8 80204BB8 00002025 */  or         $a0, $zero, $zero
     /* 5BBC 80204BBC 240500FF */  addiu      $a1, $zero, 0xFF
     /* 5BC0 80204BC0 00003025 */  or         $a2, $zero, $zero
-    /* 5BC4 80204BC4 0C08B5F8 */  jal        AddColorEntry
+    /* 5BC4 80204BC4 0C08B5F8 */  jal        AddTimingMarker
     /* 5BC8 80204BC8 00003825 */   or        $a3, $zero, $zero
     /* 5BCC 80204BCC 0C08E3CC */  jal        DrawSpeedAndHudOverlay
     /* 5BD0 80204BD0 00000000 */   nop
@@ -4940,7 +4940,7 @@ glabel ProcessRaceHud
     /* 5BDC 80204BDC 00002025 */  or         $a0, $zero, $zero
     /* 5BE0 80204BE0 00002825 */  or         $a1, $zero, $zero
     /* 5BE4 80204BE4 24060082 */  addiu      $a2, $zero, 0x82
-    /* 5BE8 80204BE8 0C08B5F8 */  jal        AddColorEntry
+    /* 5BE8 80204BE8 0C08B5F8 */  jal        AddTimingMarker
     /* 5BEC 80204BEC 00003825 */   or        $a3, $zero, $zero
     /* 5BF0 80204BF0 3C198029 */  lui        $t9, %hi(g_pActiveCameraVehicle)
     /* 5BF4 80204BF4 8F39AAF0 */  lw         $t9, %lo(g_pActiveCameraVehicle)($t9)
@@ -5866,7 +5866,7 @@ glabel ProcessRaceHud
     /* 696C 8020596C 00002025 */  or         $a0, $zero, $zero
     /* 6970 80205970 240500FF */  addiu      $a1, $zero, 0xFF
     /* 6974 80205974 240600E0 */  addiu      $a2, $zero, 0xE0
-    /* 6978 80205978 0C08B5F8 */  jal        AddColorEntry
+    /* 6978 80205978 0C08B5F8 */  jal        AddTimingMarker
     /* 697C 8020597C 00003825 */   or        $a3, $zero, $zero
     /* 6980 80205980 0C08696E */  jal        ProcessStreamDmaRequests
     /* 6984 80205984 00000000 */   nop
@@ -5875,7 +5875,7 @@ glabel ProcessRaceHud
     /* 6990 80205990 00002025 */  or         $a0, $zero, $zero
     /* 6994 80205994 00002825 */  or         $a1, $zero, $zero
     /* 6998 80205998 24060082 */  addiu      $a2, $zero, 0x82
-    /* 699C 8020599C 0C08B5F8 */  jal        AddColorEntry
+    /* 699C 8020599C 0C08B5F8 */  jal        AddTimingMarker
     /* 69A0 802059A0 00003825 */   or        $a3, $zero, $zero
     /* 69A4 802059A4 3C048020 */  lui        $a0, %hi(DrawRaceHud)
     /* 69A8 802059A8 0C0871AE */  jal        SetNextScreenCallback

@@ -2698,7 +2698,7 @@ glabel ProcessScreenState
     /* BFDC 8020AFDC 00002025 */  or         $a0, $zero, $zero
     /* BFE0 8020AFE0 00002825 */  or         $a1, $zero, $zero
     /* BFE4 8020AFE4 00003025 */  or         $a2, $zero, $zero
-    /* BFE8 8020AFE8 0C08B5F8 */  jal        AddColorEntry
+    /* BFE8 8020AFE8 0C08B5F8 */  jal        AddTimingMarker
     /* BFEC 8020AFEC 240700C8 */   addiu     $a3, $zero, 0xC8
     /* BFF0 8020AFF0 0C085F25 */  jal        SetupFillMode
     /* BFF4 8020AFF4 00000000 */   nop

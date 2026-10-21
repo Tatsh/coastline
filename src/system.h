@@ -124,6 +124,19 @@ extern s32 g_dwScreenWidth;
 extern s32 g_dwScreenHeight;
 
 /**
+ * The shift from the size of the frame to the size of the frame buffer, 1 in high resolution.
+ *
+ * @ghidraAddress USA: 0x8028a850
+ */
+extern s32 g_dwScreenScaleShift;
+
+/** The two frame buffers. @ghidraAddress USA: 0x8031aa28 */
+extern u16 *g_apFramebuffers[2];
+
+/** The time the last frame took. @ghidraAddress USA: 0x8028aadc */
+extern s32 g_dwFrameDeltaMs;
+
+/**
  * Limit drawing to a rectangle, clipped to the frame.
  *
  * @ghidraAddress USA: 0x80219a78

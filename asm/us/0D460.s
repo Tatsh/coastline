@@ -1222,7 +1222,7 @@ glabel ProcessTrackSelectScreen
     /* E664 8020D664 00002025 */  or         $a0, $zero, $zero
     /* E668 8020D668 00002825 */  or         $a1, $zero, $zero
     /* E66C 8020D66C 00003025 */  or         $a2, $zero, $zero
-    /* E670 8020D670 0C08B5F8 */  jal        AddColorEntry
+    /* E670 8020D670 0C08B5F8 */  jal        AddTimingMarker
     /* E674 8020D674 240700C8 */   addiu     $a3, $zero, 0xC8
     /* E678 8020D678 3C028032 */  lui        $v0, %hi(g_aViewportRects)
     /* E67C 8020D67C 2442B2C8 */  addiu      $v0, $v0, %lo(g_aViewportRects)

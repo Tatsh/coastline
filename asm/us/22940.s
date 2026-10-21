@@ -21,7 +21,7 @@ glabel SimulateVehiclePhysicsSubstep
     /* 2295C 8022195C 00002025 */  or         $a0, $zero, $zero
     /* 22960 80221960 24050080 */  addiu      $a1, $zero, 0x80
     /* 22964 80221964 24060080 */  addiu      $a2, $zero, 0x80
-    /* 22968 80221968 0C08B5F8 */  jal        AddColorEntry
+    /* 22968 80221968 0C08B5F8 */  jal        AddTimingMarker
     /* 2296C 8022196C 00003825 */   or        $a3, $zero, $zero
     /* 22970 80221970 8E19014C */  lw         $t9, 0x14C($s0)
     /* 22974 80221974 260F0B70 */  addiu      $t7, $s0, 0xB70
@@ -327,7 +327,7 @@ glabel SimulateVehiclePhysicsSubstep
     /* 22DE4 80221DE4 00002025 */  or         $a0, $zero, $zero
     /* 22DE8 80221DE8 00002825 */  or         $a1, $zero, $zero
     /* 22DEC 80221DEC 24060080 */  addiu      $a2, $zero, 0x80
-    /* 22DF0 80221DF0 0C08B5F8 */  jal        AddColorEntry
+    /* 22DF0 80221DF0 0C08B5F8 */  jal        AddTimingMarker
     /* 22DF4 80221DF4 00003825 */   or        $a3, $zero, $zero
     /* 22DF8 80221DF8 8FBF002C */  lw         $ra, 0x2C($sp)
     /* 22DFC 80221DFC D7B40020 */  ldc1       $f20, 0x20($sp)

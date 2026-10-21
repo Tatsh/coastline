@@ -1652,7 +1652,7 @@ glabel UpdateAiVehicleBehavior
     /* 28698 80227698 00002025 */  or         $a0, $zero, $zero
     /* 2869C 8022769C 240500FF */  addiu      $a1, $zero, 0xFF
     /* 286A0 802276A0 240600FF */  addiu      $a2, $zero, 0xFF
-    /* 286A4 802276A4 0C08B5F8 */  jal        AddColorEntry
+    /* 286A4 802276A4 0C08B5F8 */  jal        AddTimingMarker
     /* 286A8 802276A8 240700FF */   addiu     $a3, $zero, 0xFF
     /* 286AC 802276AC 8E220F5C */  lw         $v0, 0xF5C($s1)
     /* 286B0 802276B0 8E300F60 */  lw         $s0, 0xF60($s1)
@@ -2862,7 +2862,7 @@ glabel UpdateAiVehicleBehavior
     /* 29810 80228810 00002025 */  or         $a0, $zero, $zero
     /* 29814 80228814 00002825 */  or         $a1, $zero, $zero
     /* 29818 80228818 24060082 */  addiu      $a2, $zero, 0x82
-    /* 2981C 8022881C 0C08B5F8 */  jal        AddColorEntry
+    /* 2981C 8022881C 0C08B5F8 */  jal        AddTimingMarker
     /* 29820 80228820 00003825 */   or        $a3, $zero, $zero
     /* 29824 80228824 263001E8 */  addiu      $s0, $s1, 0x1E8
     /* 29828 80228828 0C0892C2 */  jal        Vec3fLength

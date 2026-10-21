@@ -219,7 +219,7 @@ glabel RenderTrackInstance
     /* 3510C 8023410C AFB90010 */  sw         $t9, 0x10($sp)
     /* 35110 80234110 24070050 */  addiu      $a3, $zero, 0x50
     /* 35114 80234114 AFA8019C */  sw         $t0, 0x19C($sp)
-    /* 35118 80234118 0C08B5F8 */  jal        AddColorEntry
+    /* 35118 80234118 0C08B5F8 */  jal        AddTimingMarker
     /* 3511C 8023411C AFAC0198 */   sw        $t4, 0x198($sp)
     /* 35120 80234120 3C038029 */  lui        $v1, %hi(gDisplayListPtr)
     /* 35124 80234124 2463A858 */  addiu      $v1, $v1, %lo(gDisplayListPtr)
@@ -1130,7 +1130,7 @@ glabel RenderTrackInstance
     /* 35EA4 80234EA4 00002025 */  or         $a0, $zero, $zero
     /* 35EA8 80234EA8 240500FF */  addiu      $a1, $zero, 0xFF
     /* 35EAC 80234EAC 24060080 */  addiu      $a2, $zero, 0x80
-    /* 35EB0 80234EB0 0C08B5F8 */  jal        AddColorEntry
+    /* 35EB0 80234EB0 0C08B5F8 */  jal        AddTimingMarker
     /* 35EB4 80234EB4 24070080 */   addiu     $a3, $zero, 0x80
     /* 35EB8 80234EB8 1000002B */  b          .L80234F68
     /* 35EBC 80234EBC 00000000 */   nop
@@ -2144,7 +2144,7 @@ glabel RenderTrackGeometry
     /* 36D34 80235D34 00002025 */  or         $a0, $zero, $zero
     /* 36D38 80235D38 240500FF */  addiu      $a1, $zero, 0xFF
     /* 36D3C 80235D3C 24060080 */  addiu      $a2, $zero, 0x80
-    /* 36D40 80235D40 0C08B5F8 */  jal        AddColorEntry
+    /* 36D40 80235D40 0C08B5F8 */  jal        AddTimingMarker
     /* 36D44 80235D44 24070080 */   addiu     $a3, $zero, 0x80
     /* 36D48 80235D48 3C198029 */  lui        $t9, %hi(g_dwWeatherActive)
     /* 36D4C 80235D4C 8F39AA78 */  lw         $t9, %lo(g_dwWeatherActive)($t9)
@@ -2838,7 +2838,7 @@ glabel RenderTrackGeometry
     /* 377CC 802367CC 10000004 */  b          .L802367E0
     /* 377D0 802367D0 AFB503C0 */   sw        $s5, 0x3C0($sp)
   .L802367D4:
-    /* 377D4 802367D4 0C095364 */  jal        AdvanceMenuCursorToValid
+    /* 377D4 802367D4 0C095364 */  jal        StepDebugHiddenInstance
     /* 377D8 802367D8 00000000 */   nop
     /* 377DC 802367DC 0000A825 */  or         $s5, $zero, $zero
   .L802367E0:
@@ -4004,7 +4004,7 @@ glabel RenderTrackGeometry
     /* 38938 80237938 AE2F0000 */  sw         $t7, 0x0($s1)
     /* 3893C 8023793C AC400004 */  sw         $zero, 0x4($v0)
     /* 38940 80237940 AC580000 */  sw         $t8, 0x0($v0)
-    /* 38944 80237944 0C08B5F8 */  jal        AddColorEntry
+    /* 38944 80237944 0C08B5F8 */  jal        AddTimingMarker
     /* 38948 80237948 AFAE0010 */   sw        $t6, 0x10($sp)
     /* 3894C 8023794C 8FBF01B4 */  lw         $ra, 0x1B4($sp)
     /* 38950 80237950 8FB903BC */  lw         $t9, 0x3BC($sp)

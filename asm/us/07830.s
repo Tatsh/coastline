@@ -240,7 +240,7 @@ glabel ProcessSplashScreens
     /* 7B9C 80206B9C 00002025 */  or         $a0, $zero, $zero
     /* 7BA0 80206BA0 00002825 */  or         $a1, $zero, $zero
     /* 7BA4 80206BA4 00003025 */  or         $a2, $zero, $zero
-    /* 7BA8 80206BA8 0C08B5F8 */  jal        AddColorEntry
+    /* 7BA8 80206BA8 0C08B5F8 */  jal        AddTimingMarker
     /* 7BAC 80206BAC 240700C8 */   addiu     $a3, $zero, 0xC8
     /* 7BB0 80206BB0 0C088E2E */  jal        IsFadingIn
     /* 7BB4 80206BB4 00000000 */   nop

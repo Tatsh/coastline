@@ -38264,29 +38264,29 @@ dlabel g_bVehicleEnvMapLinearTexGen
     /* 8EDCC 8028DDCC 00000001 */ .word 0x00000001
 enddlabel g_bVehicleEnvMapLinearTexGen
 
-nonmatching g_dwRaceTotalTime
+nonmatching g_dwBitmapTextX
 
-dlabel g_dwRaceTotalTime
+dlabel g_dwBitmapTextX
     /* 8EDD0 8028DDD0 00000000 */ .word 0x00000000
-enddlabel g_dwRaceTotalTime
+enddlabel g_dwBitmapTextX
 
-nonmatching g_dwRaceCheckpointTime
+nonmatching g_dwBitmapTextY
 
-dlabel g_dwRaceCheckpointTime
+dlabel g_dwBitmapTextY
     /* 8EDD4 8028DDD4 00000000 */ .word 0x00000000
-enddlabel g_dwRaceCheckpointTime
+enddlabel g_dwBitmapTextY
 
-nonmatching g_dwRacePosition
+nonmatching g_bBitmapTextNarrow
 
-dlabel g_dwRacePosition
+dlabel g_bBitmapTextNarrow
     /* 8EDD8 8028DDD8 00000000 */ .word 0x00000000
-enddlabel g_dwRacePosition
+enddlabel g_bBitmapTextNarrow
 
-nonmatching g_wRacePlace
+nonmatching g_wBitmapTextColour
 
-dlabel g_wRacePlace
+dlabel g_wBitmapTextColour
     /* 8EDDC 8028DDDC */ .short 0xFFFF
-enddlabel g_wRacePlace
+enddlabel g_wBitmapTextColour
 
 nonmatching D_8028DDDE
 
@@ -38662,9 +38662,9 @@ dlabel D_8028DFBC
     /* 8EFBC 8028DFBC 00000000 */ .word 0x00000000
 enddlabel D_8028DFBC
 
-nonmatching D_8028DFC0
+nonmatching g_aBitmapFontWide
 
-dlabel D_8028DFC0
+dlabel g_aBitmapFontWide
     /* 8EFC0 8028DFC0 */ .short 0x0000
     /* 8EFC2 8028DFC2 */ .short 0x0000
     /* 8EFC4 8028DFC4 */ .short 0x0000
@@ -41081,11 +41081,11 @@ dlabel D_8028DFC0
     /* 9029A 8028F29A */ .short 0x0000
     /* 9029C 8028F29C */ .short 0x0000
     /* 9029E 8028F29E */ .short 0x0000
-enddlabel D_8028DFC0
+enddlabel g_aBitmapFontWide
 
-nonmatching D_8028F2A0
+nonmatching g_aBitmapFontNarrow
 
-dlabel D_8028F2A0
+dlabel g_aBitmapFontNarrow
     /* 902A0 8028F2A0 */ .short 0x0000
     /* 902A2 8028F2A2 */ .short 0x0000
     /* 902A4 8028F2A4 */ .short 0x0000
@@ -42542,7 +42542,7 @@ dlabel D_8028F2A0
     /* 90DFA 8028FDFA */ .short 0x0000
     /* 90DFC 8028FDFC */ .short 0x0000
     /* 90DFE 8028FDFE */ .short 0x0000
-enddlabel D_8028F2A0
+enddlabel g_aBitmapFontNarrow
 
 nonmatching g_aLargeFontTexture
 

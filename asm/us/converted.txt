@@ -3,14 +3,19 @@ AllocHeapAligned
 AllocHiliteBlock
 AllocLightBlock
 ApplyWeather
+BeginDebugStats
 ClearFramebuffersForNormalMode
 ClearFramebuffersForWideMode
 CopyVec4
+DebugFrameStubA
+DebugFrameStubB
+DrawBitmapTextToFramebuffer
 ExchangeByteBuffers
 ExchangeHalfwordBuffers
 ExchangeWordBuffers
 FloatToInt
 GetHeapCurrentAddress
+InitBitmapText
 InitGameAndShowMenus
 IsWeatherSelectable
 MainMenuEntry
@@ -33,6 +38,7 @@ ShortSort
 StartChampionshipRace
 StartRaceWithPlayerCount
 StartTimeAttack
+StepDebugHiddenInstance
 TwoControllersPostDrawCallback
 UnmarkModelNodes
 UpdateRumblePaks

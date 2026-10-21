@@ -42,4 +42,13 @@ typedef struct {
  */
 extern TrackHeader g_LoadedTrack;
 
+/** The placed models drawn this frame, by index. @ghidraAddress USA: 0x80352580 */
+extern u16 g_awVisibleInstanceList[];
+
+/** The opaque models at the start of the list. @ghidraAddress USA: 0x8028c744 */
+extern s32 g_nOpaqueVisibleInstanceCount;
+
+/** The placed model left undrawn while debugging. @ghidraAddress USA: 0x8028c754 */
+extern s32 g_nDebugHiddenInstanceIndex;
+
 #endif

@@ -1114,7 +1114,7 @@ glabel RenderPrecipitationEffect
     /* 3BCF8 8023ACF8 00002025 */  or         $a0, $zero, $zero
     /* 3BCFC 8023ACFC 24050080 */  addiu      $a1, $zero, 0x80
     /* 3BD00 8023AD00 240600FF */  addiu      $a2, $zero, 0xFF
-    /* 3BD04 8023AD04 0C08B5F8 */  jal        AddColorEntry
+    /* 3BD04 8023AD04 0C08B5F8 */  jal        AddTimingMarker
     /* 3BD08 8023AD08 240700FF */   addiu     $a3, $zero, 0xFF
     /* 3BD0C 8023AD0C 3C188032 */  lui        $t8, %hi(g_afMvpMatrix)
     /* 3BD10 8023AD10 2705AB10 */  addiu      $a1, $t8, %lo(g_afMvpMatrix)

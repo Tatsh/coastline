@@ -5808,7 +5808,7 @@ glabel RunVehicleCollisionStep
     /* 5F5EC 8025E5EC 00002025 */  or         $a0, $zero, $zero
     /* 5F5F0 8025E5F0 24050080 */  addiu      $a1, $zero, 0x80
     /* 5F5F4 8025E5F4 24060080 */  addiu      $a2, $zero, 0x80
-    /* 5F5F8 8025E5F8 0C08B5F8 */  jal        AddColorEntry
+    /* 5F5F8 8025E5F8 0C08B5F8 */  jal        AddTimingMarker
     /* 5F5FC 8025E5FC 24070080 */   addiu     $a3, $zero, 0x80
     /* 5F600 8025E600 3C01802B */  lui        $at, %hi(g_fCollisionUniformScale)
     /* 5F604 8025E604 C420B824 */  lwc1       $f0, %lo(g_fCollisionUniformScale)($at)
@@ -5830,7 +5830,7 @@ glabel RunVehicleCollisionStep
     /* 5F644 8025E644 00002025 */  or         $a0, $zero, $zero
     /* 5F648 8025E648 24050080 */  addiu      $a1, $zero, 0x80
     /* 5F64C 8025E64C 24060080 */  addiu      $a2, $zero, 0x80
-    /* 5F650 8025E650 0C08B5F8 */  jal        AddColorEntry
+    /* 5F650 8025E650 0C08B5F8 */  jal        AddTimingMarker
     /* 5F654 8025E654 00003825 */   or        $a3, $zero, $zero
     /* 5F658 8025E658 3C013F80 */  lui        $at, (0x3F800000 >> 16)
     /* 5F65C 8025E65C 44810000 */  mtc1       $at, $f0
@@ -5914,7 +5914,7 @@ glabel RunVehicleCollisionStep
     /* 5F784 8025E784 00002025 */  or         $a0, $zero, $zero
     /* 5F788 8025E788 24050080 */  addiu      $a1, $zero, 0x80
     /* 5F78C 8025E78C 24060080 */  addiu      $a2, $zero, 0x80
-    /* 5F790 8025E790 0C08B5F8 */  jal        AddColorEntry
+    /* 5F790 8025E790 0C08B5F8 */  jal        AddTimingMarker
     /* 5F794 8025E794 00003825 */   or        $a3, $zero, $zero
     /* 5F798 8025E798 02602025 */  or         $a0, $s3, $zero
     /* 5F79C 8025E79C 02002825 */  or         $a1, $s0, $zero

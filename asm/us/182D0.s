@@ -2382,7 +2382,7 @@ glabel InitDisplayMode
     /* 1A4A0 802194A0 AFB90010 */  sw         $t9, 0x10($sp)
     /* 1A4A4 802194A4 00002025 */  or         $a0, $zero, $zero
     /* 1A4A8 802194A8 24060082 */  addiu      $a2, $zero, 0x82
-    /* 1A4AC 802194AC 0C08B5F8 */  jal        AddColorEntry
+    /* 1A4AC 802194AC 0C08B5F8 */  jal        AddTimingMarker
     /* 1A4B0 802194B0 00003825 */   or        $a3, $zero, $zero
     /* 1A4B4 802194B4 3C048029 */  lui        $a0, %hi(g_dwNumViewports)
     /* 1A4B8 802194B8 8C84AB0C */  lw         $a0, %lo(g_dwNumViewports)($a0)
@@ -4035,7 +4035,7 @@ glabel FlushDisplayList
     /* 1BC48 8021AC48 240F00FF */  addiu      $t7, $zero, 0xFF
     /* 1BC4C 8021AC4C AFAF0010 */  sw         $t7, 0x10($sp)
     /* 1BC50 8021AC50 00003025 */  or         $a2, $zero, $zero
-    /* 1BC54 8021AC54 0C08B5F8 */  jal        AddColorEntry
+    /* 1BC54 8021AC54 0C08B5F8 */  jal        AddTimingMarker
     /* 1BC58 8021AC58 00003825 */   or        $a3, $zero, $zero
     /* 1BC5C 8021AC5C 3C048032 */  lui        $a0, %hi(g_DpDoneMsgQueue)
     /* 1BC60 8021AC60 2484A320 */  addiu      $a0, $a0, %lo(g_DpDoneMsgQueue)
@@ -4047,7 +4047,7 @@ glabel FlushDisplayList
     /* 1BC78 8021AC78 00002025 */  or         $a0, $zero, $zero
     /* 1BC7C 8021AC7C 240500FF */  addiu      $a1, $zero, 0xFF
     /* 1BC80 8021AC80 240600FF */  addiu      $a2, $zero, 0xFF
-    /* 1BC84 8021AC84 0C08B5F8 */  jal        AddColorEntry
+    /* 1BC84 8021AC84 0C08B5F8 */  jal        AddTimingMarker
     /* 1BC88 8021AC88 00003825 */   or        $a3, $zero, $zero
     /* 1BC8C 8021AC8C 3C028032 */  lui        $v0, %hi(g_pfnNextScreen)
     /* 1BC90 8021AC90 8C42B31C */  lw         $v0, %lo(g_pfnNextScreen)($v0)
@@ -4063,7 +4063,7 @@ glabel FlushDisplayList
     /* 1BCB4 8021ACB4 00002025 */  or         $a0, $zero, $zero
     /* 1BCB8 8021ACB8 00002825 */  or         $a1, $zero, $zero
     /* 1BCBC 8021ACBC 00003025 */  or         $a2, $zero, $zero
-    /* 1BCC0 8021ACC0 0C08B5F8 */  jal        AddColorEntry
+    /* 1BCC0 8021ACC0 0C08B5F8 */  jal        AddTimingMarker
     /* 1BCC4 8021ACC4 00003825 */   or        $a3, $zero, $zero
     /* 1BCC8 8021ACC8 3C048032 */  lui        $a0, %hi(g_SpDoneMsgQueue)
     /* 1BCCC 8021ACCC 2484A358 */  addiu      $a0, $a0, %lo(g_SpDoneMsgQueue)
@@ -4217,21 +4217,21 @@ glabel FlushDisplayList
     /* 1BEF0 8021AEF0 24040001 */  addiu      $a0, $zero, 0x1
     /* 1BEF4 8021AEF4 24050020 */  addiu      $a1, $zero, 0x20
     /* 1BEF8 8021AEF8 24060020 */  addiu      $a2, $zero, 0x20
-    /* 1BEFC 8021AEFC 0C08B5F8 */  jal        AddColorEntry
+    /* 1BEFC 8021AEFC 0C08B5F8 */  jal        AddTimingMarker
     /* 1BF00 8021AF00 24070020 */   addiu     $a3, $zero, 0x20
     /* 1BF04 8021AF04 240E00FF */  addiu      $t6, $zero, 0xFF
     /* 1BF08 8021AF08 AFAE0010 */  sw         $t6, 0x10($sp)
     /* 1BF0C 8021AF0C 24040002 */  addiu      $a0, $zero, 0x2
     /* 1BF10 8021AF10 24050020 */  addiu      $a1, $zero, 0x20
     /* 1BF14 8021AF14 24060020 */  addiu      $a2, $zero, 0x20
-    /* 1BF18 8021AF18 0C08B5F8 */  jal        AddColorEntry
+    /* 1BF18 8021AF18 0C08B5F8 */  jal        AddTimingMarker
     /* 1BF1C 8021AF1C 24070020 */   addiu     $a3, $zero, 0x20
     /* 1BF20 8021AF20 241900FF */  addiu      $t9, $zero, 0xFF
     /* 1BF24 8021AF24 AFB90010 */  sw         $t9, 0x10($sp)
     /* 1BF28 8021AF28 00002025 */  or         $a0, $zero, $zero
     /* 1BF2C 8021AF2C 24050020 */  addiu      $a1, $zero, 0x20
     /* 1BF30 8021AF30 24060020 */  addiu      $a2, $zero, 0x20
-    /* 1BF34 8021AF34 0C08B5F8 */  jal        AddColorEntry
+    /* 1BF34 8021AF34 0C08B5F8 */  jal        AddTimingMarker
     /* 1BF38 8021AF38 24070020 */   addiu     $a3, $zero, 0x20
     /* 1BF3C 8021AF3C 3C188029 */  lui        $t8, %hi(g_dwFrameBufferIndex)
     /* 1BF40 8021AF40 8F18A85C */  lw         $t8, %lo(g_dwFrameBufferIndex)($t8)
@@ -4304,7 +4304,7 @@ glabel FlushDisplayList
     /* 1C038 8021B038 00002025 */  or         $a0, $zero, $zero
     /* 1C03C 8021B03C 240500C8 */  addiu      $a1, $zero, 0xC8
     /* 1C040 8021B040 00003025 */  or         $a2, $zero, $zero
-    /* 1C044 8021B044 0C08B5F8 */  jal        AddColorEntry
+    /* 1C044 8021B044 0C08B5F8 */  jal        AddTimingMarker
     /* 1C048 8021B048 240700C8 */   addiu     $a3, $zero, 0xC8
     /* 1C04C 8021B04C 3C198029 */  lui        $t9, %hi(g_dwFlushValueSource)
     /* 1C050 8021B050 8F39AA20 */  lw         $t9, %lo(g_dwFlushValueSource)($t9)
@@ -4315,14 +4315,14 @@ glabel FlushDisplayList
     /* 1C064 8021B064 240500C8 */  addiu      $a1, $zero, 0xC8
     /* 1C068 8021B068 00003025 */  or         $a2, $zero, $zero
     /* 1C06C 8021B06C 00003825 */  or         $a3, $zero, $zero
-    /* 1C070 8021B070 0C08B5F8 */  jal        AddColorEntry
+    /* 1C070 8021B070 0C08B5F8 */  jal        AddTimingMarker
     /* 1C074 8021B074 AC39AA24 */   sw        $t9, %lo(g_dwLastFlushValue)($at)
     /* 1C078 8021B078 240D00FF */  addiu      $t5, $zero, 0xFF
     /* 1C07C 8021B07C AFAD0010 */  sw         $t5, 0x10($sp)
     /* 1C080 8021B080 24040001 */  addiu      $a0, $zero, 0x1
     /* 1C084 8021B084 240500C8 */  addiu      $a1, $zero, 0xC8
     /* 1C088 8021B088 24060064 */  addiu      $a2, $zero, 0x64
-    /* 1C08C 8021B08C 0C08B5F8 */  jal        AddColorEntry
+    /* 1C08C 8021B08C 0C08B5F8 */  jal        AddTimingMarker
     /* 1C090 8021B090 00003825 */   or        $a3, $zero, $zero
     /* 1C094 8021B094 0C09931F */  jal        osSpTaskLoad
     /* 1C098 8021B098 8FA40044 */   lw        $a0, 0x44($sp)
@@ -5146,7 +5146,7 @@ glabel DpInterruptHandlerThread
     /* 1CC48 8021BC48 24040001 */  addiu      $a0, $zero, 0x1
     /* 1CC4C 8021BC4C 00002825 */  or         $a1, $zero, $zero
     /* 1CC50 8021BC50 00003025 */  or         $a2, $zero, $zero
-    /* 1CC54 8021BC54 0C08B5F8 */  jal        AddColorEntry
+    /* 1CC54 8021BC54 0C08B5F8 */  jal        AddTimingMarker
     /* 1CC58 8021BC58 00003825 */   or        $a3, $zero, $zero
     /* 1CC5C 8021BC5C 02002025 */  or         $a0, $s0, $zero
     /* 1CC60 8021BC60 8E450000 */  lw         $a1, 0x0($s2)
@@ -5208,7 +5208,7 @@ glabel SpInterruptHandlerThread
     /* 1CD14 8021BD14 24040002 */  addiu      $a0, $zero, 0x2
     /* 1CD18 8021BD18 00002825 */  or         $a1, $zero, $zero
     /* 1CD1C 8021BD1C 00003025 */  or         $a2, $zero, $zero
-    /* 1CD20 8021BD20 0C08B5F8 */  jal        AddColorEntry
+    /* 1CD20 8021BD20 0C08B5F8 */  jal        AddTimingMarker
     /* 1CD24 8021BD24 00003825 */   or        $a3, $zero, $zero
     /* 1CD28 8021BD28 02002025 */  or         $a0, $s0, $zero
     /* 1CD2C 8021BD2C 8E450000 */  lw         $a1, 0x0($s2)
@@ -5859,9 +5859,9 @@ glabel UpdateFrameTiming
     /* 1D634 8021C634 3C018029 */  lui        $at, %hi(g_dwElapsedTimeMs)
     /* 1D638 8021C638 0C086A6D */  jal        UpdateControllerState
     /* 1D63C 8021C63C AC23AAD4 */   sw        $v1, %lo(g_dwElapsedTimeMs)($at)
-    /* 1D640 8021C640 0C09521C */  jal        StubPakCallback
+    /* 1D640 8021C640 0C09521C */  jal        DebugFrameStubA
     /* 1D644 8021C644 00000000 */   nop
-    /* 1D648 8021C648 0C0953CB */  jal        StubMenuCallback
+    /* 1D648 8021C648 0C0953CB */  jal        DebugFrameStubB
     /* 1D64C 8021C64C 00000000 */   nop
     /* 1D650 8021C650 3C0F8029 */  lui        $t7, %hi(g_dwElapsedTimeMs)
     /* 1D654 8021C654 3C0A8029 */  lui        $t2, %hi(g_dwPrevElapsedTimeMs)
