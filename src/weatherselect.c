@@ -47,7 +47,7 @@ void ProcessWeatherSelect(void) {
         g_dwWeatherSelectState = -1;
         break;
     case MENU_RESULT_CANCELLED:
-        SetCurrentScreenCallback(ProcessRaceState);
+        SetCurrentScreenCallback(ProcessTrackMenu);
         g_dwWeatherSelectState = -1;
         break;
     }

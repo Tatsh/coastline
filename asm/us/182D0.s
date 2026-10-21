@@ -1875,9 +1875,9 @@ glabel ComputeFogFactorAtPoint
     /* 19D58 80218D58 00000000 */   nop
 endlabel ComputeFogFactorAtPoint
 
-nonmatching SetCombinerMode, 0x714
+nonmatching SetupWeatherLights, 0x714
 
-glabel SetCombinerMode
+glabel SetupWeatherLights
     /* 19D5C 80218D5C 3C0B8029 */  lui        $t3, %hi(g_dwNightMode)
     /* 19D60 80218D60 8D6BAA80 */  lw         $t3, %lo(g_dwNightMode)($t3)
     /* 19D64 80218D64 27BDFFB0 */  addiu      $sp, $sp, -0x50
@@ -2361,7 +2361,7 @@ glabel SetCombinerMode
     /* 1A464 80219464 AC2EB36C */  sw         $t6, %lo(g_adwLightRampColors_3)($at)
     /* 1A468 80219468 03E00008 */  jr         $ra
     /* 1A46C 8021946C 27BD0050 */   addiu     $sp, $sp, 0x50
-endlabel SetCombinerMode
+endlabel SetupWeatherLights
 
 nonmatching InitDisplayMode, 0x5AC
 

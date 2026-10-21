@@ -3402,10 +3402,10 @@ glabel ProcessDataSaveLoadMenu
     /* 159EC 802149EC 14C30008 */  bne        $a2, $v1, .L80214A10
     /* 159F0 802149F0 00601025 */   or        $v0, $v1, $zero
     /* 159F4 802149F4 3C01802A */  lui        $at, %hi(g_wSerialInterfaceIdle)
-    /* 159F8 802149F8 3C048021 */  lui        $a0, %hi(ProcessRaceState)
+    /* 159F8 802149F8 3C048021 */  lui        $a0, %hi(ProcessTrackMenu)
     /* 159FC 802149FC A4264BE8 */  sh         $a2, %lo(g_wSerialInterfaceIdle)($at)
     /* 15A00 80214A00 0C0871B9 */  jal        SetCurrentScreenCallback
-    /* 15A04 80214A04 24849434 */   addiu     $a0, $a0, %lo(ProcessRaceState)
+    /* 15A04 80214A04 24849434 */   addiu     $a0, $a0, %lo(ProcessTrackMenu)
     /* 15A08 80214A08 10000008 */  b          .L80214A2C
     /* 15A0C 80214A0C 8FBF002C */   lw        $ra, 0x2C($sp)
   .L80214A10:

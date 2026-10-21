@@ -9,8 +9,40 @@
 #include <PR/gbi.h>
 #include <PR/ultratypes.h>
 
-/** A model loaded from the cartridge, with its display lists and the animations of its parts. */
-typedef struct Model Model;
+#include "vecmath.h"
+
+/** A part of a model: its display list, how it is drawn, and where. */
+typedef struct {
+    Gfx *displayList;
+    /** The MODEL_PART_ flags. */
+    u16 flags;
+    Vec3f position;
+} ModelPart;
+
+/** The bits of the flags of a part that pick its light from g_adwModelShadeColors. */
+#define MODEL_PART_LIGHT_RAMP 0x0003
+
+/** The flag of a part drawn from both sides. */
+#define MODEL_PART_TWO_SIDED 0x0004
+
+/** The flag of a part drawn after the opaque ones. */
+#define MODEL_PART_TRANSLUCENT 0x0008
+
+/** The flag of a part drawn with flat shading. */
+#define MODEL_PART_FLAT 0x0080
+
+/** The flag of a part lit by its light ramp. */
+#define MODEL_PART_RAMPED 0x0400
+
+/**
+ * A model loaded from the cartridge, with its display lists and the animations of its parts. Its
+ * fields join this structure as they are reconstructed.
+ */
+typedef struct Model {
+    u32 partCount;
+    void *animations;
+    ModelPart parts[];
+} Model;
 
 /** The ambient light of the menus that draw models. @ghidraAddress USA: 0x80271f88 */
 extern Ambient g_MenuAmbientLight;
@@ -20,6 +52,28 @@ extern Light g_MenuDirectionalLight;
 
 /** Whether DrawModelList() draws without the depth buffer. @ghidraAddress USA: 0x80271d98 */
 extern s32 g_dwDrawModelListNoZBuffer;
+
+/**
+ * Draw the parts of a model, the opaque ones first, under a matrix.
+ *
+ * @param model The model.
+ * @param m The matrix of the model.
+ * @ghidraAddress USA: 0x80209d70
+ */
+void DrawModelList(Model *model, f32 m[4][4]);
+
+/**
+ * Draw a model turned about its own axis by an angle in radians, at a 32nd of its size, stood up
+ * and placed at a position. A mirrored track mirrors the turn and the scale.
+ *
+ * @param model The model to draw.
+ * @param x The X coordinate of the position.
+ * @param y The Y coordinate of the position.
+ * @param z The Z coordinate of the position.
+ * @param angle The turn in radians.
+ * @ghidraAddress USA: 0x8020a524
+ */
+void DrawRotatedModel(Model *model, f32 x, f32 y, f32 z, f32 angle);
 
 /**
  * Draw a model turned about its own axis by an angle in radians, scaled, stood up and placed at a

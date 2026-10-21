@@ -1166,11 +1166,11 @@ glabel ProcessRaceHud
   .L802013B8:
     /* 23B8 802013B8 3C0B8029 */  lui        $t3, %hi(g_dwSelectedTrackId)
     /* 23BC 802013BC 8D6BB940 */  lw         $t3, %lo(g_dwSelectedTrackId)($t3)
-    /* 23C0 802013C0 3C098027 */  lui        $t1, %hi(g_apTrackDefs)
+    /* 23C0 802013C0 3C098027 */  lui        $t1, %hi(g_apTrackMenuItems)
     /* 23C4 802013C4 3C018029 */  lui        $at, %hi(g_dwTrackMirrored)
     /* 23C8 802013C8 000B7880 */  sll        $t7, $t3, 2
     /* 23CC 802013CC 012F4821 */  addu       $t1, $t1, $t7
-    /* 23D0 802013D0 8D291D1C */  lw         $t1, %lo(g_apTrackDefs)($t1)
+    /* 23D0 802013D0 8D291D1C */  lw         $t1, %lo(g_apTrackMenuItems)($t1)
     /* 23D4 802013D4 8D370004 */  lw         $s7, 0x4($t1)
     /* 23D8 802013D8 32F90010 */  andi       $t9, $s7, 0x10
     /* 23DC 802013DC 0019602B */  sltu       $t4, $zero, $t9
@@ -2255,12 +2255,12 @@ glabel ProcessRaceHud
     /* 33E0 802023E0 8D4AB940 */  lw         $t2, %lo(g_dwSelectedTrackId)($t2)
     /* 33E4 802023E4 8D090E34 */  lw         $t1, 0xE34($t0)
     /* 33E8 802023E8 87AC00F2 */  lh         $t4, 0xF2($sp)
-    /* 33EC 802023EC 3C0B8027 */  lui        $t3, %hi(g_apTrackDefs)
+    /* 33EC 802023EC 3C0B8027 */  lui        $t3, %hi(g_apTrackMenuItems)
     /* 33F0 802023F0 000A7080 */  sll        $t6, $t2, 2
     /* 33F4 802023F4 00097880 */  sll        $t7, $t1, 2
     /* 33F8 802023F8 016E5821 */  addu       $t3, $t3, $t6
     /* 33FC 802023FC 01E97821 */  addu       $t7, $t7, $t1
-    /* 3400 80202400 8D6B1D1C */  lw         $t3, %lo(g_apTrackDefs)($t3)
+    /* 3400 80202400 8D6B1D1C */  lw         $t3, %lo(g_apTrackMenuItems)($t3)
     /* 3404 80202404 000F7880 */  sll        $t7, $t7, 2
     /* 3408 80202408 01E97821 */  addu       $t7, $t7, $t1
     /* 340C 8020240C 000C68C0 */  sll        $t5, $t4, 3
@@ -4067,7 +4067,7 @@ glabel ProcessRaceHud
   .L80203EF0:
     /* 4EF0 80203EF0 0C0860AA */  jal        SetupFog
     /* 4EF4 80203EF4 00000000 */   nop
-    /* 4EF8 80203EF8 0C086357 */  jal        SetCombinerMode
+    /* 4EF8 80203EF8 0C086357 */  jal        SetupWeatherLights
     /* 4EFC 80203EFC 00000000 */   nop
     /* 4F00 80203F00 240D00FF */  addiu      $t5, $zero, 0xFF
     /* 4F04 80203F04 AFAD0010 */  sw         $t5, 0x10($sp)
@@ -4131,7 +4131,7 @@ glabel ProcessRaceHud
   .L80203FDC:
     /* 4FDC 80203FDC 0C0860AA */  jal        SetupFog
     /* 4FE0 80203FE0 00000000 */   nop
-    /* 4FE4 80203FE4 0C086357 */  jal        SetCombinerMode
+    /* 4FE4 80203FE4 0C086357 */  jal        SetupWeatherLights
     /* 4FE8 80203FE8 00000000 */   nop
     /* 4FEC 80203FEC 240D00FF */  addiu      $t5, $zero, 0xFF
     /* 4FF0 80203FF0 AFAD0010 */  sw         $t5, 0x10($sp)
@@ -4210,7 +4210,7 @@ glabel ProcessRaceHud
     /* 5104 80204104 240A00FF */   addiu     $t2, $zero, 0xFF
     /* 5108 80204108 0C0860AA */  jal        SetupFog
     /* 510C 8020410C 00000000 */   nop
-    /* 5110 80204110 0C086357 */  jal        SetCombinerMode
+    /* 5110 80204110 0C086357 */  jal        SetupWeatherLights
     /* 5114 80204114 00000000 */   nop
     /* 5118 80204118 240900FF */  addiu      $t1, $zero, 0xFF
     /* 511C 8020411C AFA90010 */  sw         $t1, 0x10($sp)
@@ -4576,7 +4576,7 @@ glabel ProcessRaceHud
     /* 5674 80204674 E7AA0010 */   swc1      $f10, 0x10($sp)
     /* 5678 80204678 0C0860AA */  jal        SetupFog
     /* 567C 8020467C 00000000 */   nop
-    /* 5680 80204680 0C086357 */  jal        SetCombinerMode
+    /* 5680 80204680 0C086357 */  jal        SetupWeatherLights
     /* 5684 80204684 00000000 */   nop
     /* 5688 80204688 240E00FF */  addiu      $t6, $zero, 0xFF
     /* 568C 8020468C AFAE0010 */  sw         $t6, 0x10($sp)
@@ -4635,7 +4635,7 @@ glabel ProcessRaceHud
   .L80204758:
     /* 5758 80204758 0C0860AA */  jal        SetupFog
     /* 575C 8020475C 00000000 */   nop
-    /* 5760 80204760 0C086357 */  jal        SetCombinerMode
+    /* 5760 80204760 0C086357 */  jal        SetupWeatherLights
     /* 5764 80204764 00000000 */   nop
     /* 5768 80204768 240C00FF */  addiu      $t4, $zero, 0xFF
     /* 576C 8020476C AFAC0010 */  sw         $t4, 0x10($sp)
@@ -4705,7 +4705,7 @@ glabel ProcessRaceHud
     /* 585C 8020485C 240F00FF */   addiu     $t7, $zero, 0xFF
     /* 5860 80204860 0C0860AA */  jal        SetupFog
     /* 5864 80204864 00000000 */   nop
-    /* 5868 80204868 0C086357 */  jal        SetCombinerMode
+    /* 5868 80204868 0C086357 */  jal        SetupWeatherLights
     /* 586C 8020486C 00000000 */   nop
     /* 5870 80204870 241800FF */  addiu      $t8, $zero, 0xFF
     /* 5874 80204874 AFB80010 */  sw         $t8, 0x10($sp)

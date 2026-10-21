@@ -3853,29 +3853,29 @@ dlabel g_dwRaceStateGfxFlags
     /* 72D18 80271D18 42F00000 */ .word 0x42F00000
 enddlabel g_dwRaceStateGfxFlags
 
-nonmatching g_apTrackDefs
+nonmatching g_apTrackMenuItems
 
-dlabel g_apTrackDefs
+dlabel g_apTrackMenuItems
     /* 72D1C 80271D1C 80270854 */ .word g_aTrackDescriptors
-enddlabel g_apTrackDefs
+enddlabel g_apTrackMenuItems
 
-nonmatching g_pRaceStateMinimapGfx
+nonmatching D_80271D20
 
-dlabel g_pRaceStateMinimapGfx
+dlabel D_80271D20
     /* 72D20 80271D20 802709D0 */ .word g_pszMountain
-enddlabel g_pRaceStateMinimapGfx
+enddlabel D_80271D20
 
-nonmatching g_pRacerSlotData
+nonmatching D_80271D24
 
-dlabel g_pRacerSlotData
+dlabel D_80271D24
     /* 72D24 80271D24 80270B4C */ .word g_pszCoastline
-enddlabel g_pRacerSlotData
+enddlabel D_80271D24
 
-nonmatching g_pRaceStateDisplayList
+nonmatching D_80271D28
 
-dlabel g_pRaceStateDisplayList
+dlabel D_80271D28
     /* 72D28 80271D28 80270CC8 */ .word g_pszStripMine
-enddlabel g_pRaceStateDisplayList
+enddlabel D_80271D28
 
 nonmatching g_pRaceStateGfxHead
 
@@ -3944,26 +3944,26 @@ dlabel D_80271D54
     /* 72D54 80271D54 00000000 */ .word 0x00000000
 enddlabel D_80271D54
 
-nonmatching g_dwMinimapRdpSize
+nonmatching g_bTrackMenuPakScreen
 
-dlabel g_dwMinimapRdpSize
+dlabel g_bTrackMenuPakScreen
     /* 72D58 80271D58 00000000 */ .word 0x00000000
-enddlabel g_dwMinimapRdpSize
+enddlabel g_bTrackMenuPakScreen
 
-nonmatching g_dwMinimapRdpOffset
+nonmatching g_fSeasonRecordsBlinkTime
 
-dlabel g_dwMinimapRdpOffset
+dlabel g_fSeasonRecordsBlinkTime
     /* 72D5C 80271D5C 00000000 */ .float 0
-enddlabel g_dwMinimapRdpOffset
+enddlabel g_fSeasonRecordsBlinkTime
 
-nonmatching g_dwMinimapVertexCount
+nonmatching g_dwTrackMenuInitState
 
-dlabel g_dwMinimapVertexCount
+dlabel g_dwTrackMenuInitState
     /* 72D60 80271D60 00000000 */ .word 0x00000000
     /* 72D64 80271D64 00000000 */ .word 0x00000000
     /* 72D68 80271D68 00000000 */ .word 0x00000000
     /* 72D6C 80271D6C 00000000 */ .word 0x00000000
-enddlabel g_dwMinimapVertexCount
+enddlabel g_dwTrackMenuInitState
 
 nonmatching g_ArrowLeftTextureDesc
 
@@ -4000,21 +4000,21 @@ dlabel g_adwModelShadeColors
     /* 72DA8 80271DA8 FFFFFF00 */ .word 0xFFFFFF00
 enddlabel g_adwModelShadeColors
 
-nonmatching g_dwMinimapGeometryBuilt
+nonmatching g_bMenuSpotlightBuilt
 
-dlabel g_dwMinimapGeometryBuilt
+dlabel g_bMenuSpotlightBuilt
     /* 72DAC 80271DAC 00000000 */ .word 0x00000000
-enddlabel g_dwMinimapGeometryBuilt
+enddlabel g_bMenuSpotlightBuilt
 
-nonmatching g_pMinimapRdpDisplayList
+nonmatching g_aMenuSpotlightDisplayList
 
-dlabel g_pMinimapRdpDisplayList
+dlabel g_aMenuSpotlightDisplayList
     /* 72DB0 80271DB0 B6000000 */ .word 0xB6000000
     /* 72DB4 80271DB4 00023000 */ .word 0x00023000
     /* 72DB8 80271DB8 B7000000 */ .word 0xB7000000
     /* 72DBC 80271DBC 00000204 */ .word 0x00000204
     /* 72DC0 80271DC0 040081FF */ .word 0x040081FF
-    /* 72DC4 80271DC4 80315FF0 */ .word g_awMinimapCircleVertices
+    /* 72DC4 80271DC4 80315FF0 */ .word g_aMenuSpotlightVertices
     /* 72DC8 80271DC8 E7000000 */ .word 0xE7000000
     /* 72DCC 80271DCC 00000000 */ .word 0x00000000
     /* 72DD0 80271DD0 BA001402 */ .word 0xBA001402
@@ -4055,7 +4055,7 @@ dlabel g_pMinimapRdpDisplayList
     /* 72E5C 80271E5C 00003C02 */ .word 0x00003C02
     /* 72E60 80271E60 B8000000 */ .word 0xB8000000
     /* 72E64 80271E64 00000000 */ .word 0x00000000
-enddlabel g_pMinimapRdpDisplayList
+enddlabel g_aMenuSpotlightDisplayList
 
 nonmatching D_80271E68
 
@@ -4110,15 +4110,15 @@ dlabel D_80271E68
     /* 72F24 80271F24 F0D200FF */ .word 0xF0D200FF
 enddlabel D_80271E68
 
-nonmatching g_aSpeedometer3DDisplayList
+nonmatching g_aMenuChoiceMarkerDisplayList
 
-dlabel g_aSpeedometer3DDisplayList
+dlabel g_aMenuChoiceMarkerDisplayList
     /* 72F28 80271F28 B6000000 */ .word 0xB6000000
     /* 72F2C 80271F2C 00020000 */ .word 0x00020000
     /* 72F30 80271F30 B7000000 */ .word 0xB7000000
     /* 72F34 80271F34 00000204 */ .word 0x00000204
     /* 72F38 80271F38 01040040 */ .word 0x01040040
-    /* 72F3C 80271F3C 803161E0 */ .word g_SpeedometerFixedMtx
+    /* 72F3C 80271F3C 803161E0 */ .word g_MenuChoiceMarkerMtx
     /* 72F40 80271F40 040030BF */ .word 0x040030BF
     /* 72F44 80271F44 80271E68 */ .word D_80271E68
     /* 72F48 80271F48 E7000000 */ .word 0xE7000000
@@ -4137,7 +4137,7 @@ dlabel g_aSpeedometer3DDisplayList
     /* 72F7C 80271F7C 00000000 */ .word 0x00000000
     /* 72F80 80271F80 B8000000 */ .word 0xB8000000
     /* 72F84 80271F84 00000000 */ .word 0x00000000
-enddlabel g_aSpeedometer3DDisplayList
+enddlabel g_aMenuChoiceMarkerDisplayList
 
 .align 2
 nonmatching g_MenuAmbientLight
@@ -4215,11 +4215,11 @@ dlabel g_dwMenuTitleImageHeight
     /* 72FC0 80271FC0 00000000 */ .word 0x00000000
 enddlabel g_dwMenuTitleImageHeight
 
-nonmatching g_flScreenRotationPeriod
+nonmatching g_fScreenIdleTimeout
 
-dlabel g_flScreenRotationPeriod
+dlabel g_fScreenIdleTimeout
     /* 72FC4 80271FC4 00000000 */ .float 0
-enddlabel g_flScreenRotationPeriod
+enddlabel g_fScreenIdleTimeout
 
 nonmatching g_pfnScreenPostDrawCallback
 
@@ -4850,15 +4850,15 @@ dlabel g_dwWeatherSelectState
     /* 732BC 802722BC 00000000 */ .word 0x00000000
 enddlabel g_dwWeatherSelectState
 
-nonmatching g_MainMenuLayoutImage
+nonmatching g_MainMenuTitleTextureDesc
 
-dlabel g_MainMenuLayoutImage
+dlabel g_MainMenuTitleTextureDesc
     /* 732C0 802722C0 000DADE0 */ .word 0x000DADE0
     /* 732C4 802722C4 000DC0D0 */ .word 0x000DC0D0
     /* 732C8 802722C8 00000000 */ .word 0x00000000
     /* 732CC 802722CC 01180022 */ .word 0x01180022
     /* 732D0 802722D0 03020000 */ .word 0x03020000
-enddlabel g_MainMenuLayoutImage
+enddlabel g_MainMenuTitleTextureDesc
 
 nonmatching g_ChampionshipMenuItem
 
@@ -32947,8 +32947,8 @@ enddlabel g_dwSelectedTrackId
 nonmatching g_SeasonTable
 
 dlabel g_SeasonTable
-    /* 8C944 8028B944 802A9670 */ .word g_szPathRoot
-    /* 8C948 8028B948 802A9680 */ .word g_szPathSave
+    /* 8C944 8028B944 802A9670 */ .word g_szFirstSeason
+    /* 8C948 8028B948 802A9680 */ .word g_szSpring
 enddlabel g_SeasonTable
 
 nonmatching D_8028B94C
@@ -32978,8 +32978,8 @@ dlabel D_8028B954
     /* 8C95D 8028B95D */ .byte 0x00
     /* 8C95E 8028B95E */ .byte 0x00
     /* 8C95F 8028B95F */ .byte 0x00
-    /* 8C960 8028B960 802A9688 */ .word g_szPathConfig
-    /* 8C964 8028B964 802A9698 */ .word g_szPathAsset
+    /* 8C960 8028B960 802A9688 */ .word g_szSecondSeason
+    /* 8C964 8028B964 802A9698 */ .word g_szSummer
     /* 8C968 8028B968 */ .byte 0x00
     /* 8C969 8028B969 */ .byte 0x00
     /* 8C96A 8028B96A */ .byte 0x00
@@ -33000,8 +33000,8 @@ dlabel D_8028B954
     /* 8C979 8028B979 */ .byte 0x02
     /* 8C97A 8028B97A */ .byte 0x00
     /* 8C97B 8028B97B */ .byte 0x00
-    /* 8C97C 8028B97C 802A96A0 */ .word g_szPathTrack
-    /* 8C980 8028B980 802A96B0 */ .word D_802A96B0
+    /* 8C97C 8028B97C 802A96A0 */ .word g_szThirdSeason
+    /* 8C980 8028B980 802A96B0 */ .word g_szFall
     /* 8C984 8028B984 */ .byte 0x00
     /* 8C985 8028B985 */ .byte 0x00
     /* 8C986 8028B986 */ .byte 0x00
@@ -33022,8 +33022,8 @@ dlabel D_8028B954
     /* 8C995 8028B995 */ .byte 0x02
     /* 8C996 8028B996 */ .byte 0x01
     /* 8C997 8028B997 */ .byte 0x00
-    /* 8C998 8028B998 802A96B8 */ .word g_szPathCar
-    /* 8C99C 8028B99C 802A96C8 */ .word g_szPathSound
+    /* 8C998 8028B998 802A96B8 */ .word g_szFourthSeason
+    /* 8C99C 8028B99C 802A96C8 */ .word g_szWinter
     /* 8C9A0 8028B9A0 */ .byte 0x00
     /* 8C9A1 8028B9A1 */ .byte 0x00
     /* 8C9A2 8028B9A2 */ .byte 0x00
@@ -33034,11 +33034,6 @@ dlabel D_8028B954
     /* 8C9A7 8028B9A7 */ .byte 0x14
     /* 8C9A8 8028B9A8 */ .byte 0x03
     /* 8C9A9 8028B9A9 */ .byte 0x02
-enddlabel D_8028B954
-
-nonmatching g_wControllerPort
-
-dlabel g_wControllerPort
     /* 8C9AA 8028B9AA */ .byte 0x00
     /* 8C9AB 8028B9AB */ .byte 0x20
     /* 8C9AC 8028B9AC */ .byte 0x04
@@ -33049,8 +33044,8 @@ dlabel g_wControllerPort
     /* 8C9B1 8028B9B1 */ .byte 0x04
     /* 8C9B2 8028B9B2 */ .byte 0x00
     /* 8C9B3 8028B9B3 */ .byte 0x02
-    /* 8C9B4 8028B9B4 802A96D0 */ .word g_szPathTexture
-    /* 8C9B8 8028B9B8 802A96E0 */ .word g_szPathFont
+    /* 8C9B4 8028B9B4 802A96D0 */ .word g_szFifthSeason
+    /* 8C9B8 8028B9B8 802A96E0 */ .word g_szProfessional
     /* 8C9BC 8028B9BC */ .byte 0x00
     /* 8C9BD 8028B9BD */ .byte 0x00
     /* 8C9BE 8028B9BE */ .byte 0x00
@@ -33071,25 +33066,29 @@ dlabel g_wControllerPort
     /* 8C9CD 8028B9CD */ .byte 0x03
     /* 8C9CE 8028B9CE */ .byte 0x01
     /* 8C9CF 8028B9CF */ .byte 0x02
-    /* 8C9D0 8028B9D0 802A96F0 */ .word g_szPathMovie
-    /* 8C9D4 8028B9D4 802A9700 */ .word g_szPathLang
-enddlabel g_wControllerPort
-
-nonmatching g_SeasonTable_5_NumRaces
-
-dlabel g_SeasonTable_5_NumRaces
-    /* 8C9D8 8028B9D8 00000004 */ .word 0x00000004
-enddlabel g_SeasonTable_5_NumRaces
-
-nonmatching D_8028B9DC
-
-/* Automatically generated and unreferenced pad */
-dlabel D_8028B9DC
-    /* 8C9DC 8028B9DC 00000014 */ .word 0x00000014
-    /* 8C9E0 8028B9E0 05050020 */ .word 0x05050020
-    /* 8C9E4 8028B9E4 05010202 */ .word 0x05010202
-    /* 8C9E8 8028B9E8 01040902 */ .word 0x01040902
-enddlabel D_8028B9DC
+    /* 8C9D0 8028B9D0 802A96F0 */ .word g_szSixthSeason
+    /* 8C9D4 8028B9D4 802A9700 */ .word g_szExpert
+    /* 8C9D8 8028B9D8 */ .byte 0x00
+    /* 8C9D9 8028B9D9 */ .byte 0x00
+    /* 8C9DA 8028B9DA */ .byte 0x00
+    /* 8C9DB 8028B9DB */ .byte 0x04
+    /* 8C9DC 8028B9DC */ .byte 0x00
+    /* 8C9DD 8028B9DD */ .byte 0x00
+    /* 8C9DE 8028B9DE */ .byte 0x00
+    /* 8C9DF 8028B9DF */ .byte 0x14
+    /* 8C9E0 8028B9E0 */ .byte 0x05
+    /* 8C9E1 8028B9E1 */ .byte 0x05
+    /* 8C9E2 8028B9E2 */ .byte 0x00
+    /* 8C9E3 8028B9E3 */ .byte 0x20
+    /* 8C9E4 8028B9E4 */ .byte 0x05
+    /* 8C9E5 8028B9E5 */ .byte 0x01
+    /* 8C9E6 8028B9E6 */ .byte 0x02
+    /* 8C9E7 8028B9E7 */ .byte 0x02
+    /* 8C9E8 8028B9E8 */ .byte 0x01
+    /* 8C9E9 8028B9E9 */ .byte 0x04
+    /* 8C9EA 8028B9EA */ .byte 0x09
+    /* 8C9EB 8028B9EB */ .byte 0x02
+enddlabel D_8028B954
 
 nonmatching g_dwControllerConfigButton
 

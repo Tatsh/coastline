@@ -52,7 +52,7 @@ void MainMenuEntry(void) {
 
 void StartRaceWithPlayerCount(u32 players) {
     g_dwNumLocalPlayers = players;
-    SetCurrentScreenCallback(ProcessRaceState);
+    SetCurrentScreenCallback(ProcessTrackMenu);
 }
 
 void ResetAllPlayers(void) {

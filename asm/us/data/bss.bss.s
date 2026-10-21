@@ -351,9 +351,9 @@ nonmatching g_szTrackSelectRecordTextBuf, 0x50
 dlabel g_szTrackSelectRecordTextBuf
     /* 80315F38 */ .space 0x50
 
-nonmatching g_dwPhysicsReserved37, 0x4
+nonmatching g_dwTrackMenuItemCount, 0x4
 
-dlabel g_dwPhysicsReserved37
+dlabel g_dwTrackMenuItemCount
     /* 80315F88 */ .space 0x04
 
 nonmatching g_dwTrackMenuSelection, 0x4
@@ -361,9 +361,9 @@ nonmatching g_dwTrackMenuSelection, 0x4
 dlabel g_dwTrackMenuSelection
     /* 80315F8C */ .space 0x04
 
-nonmatching g_dwPhysicsReserved38, 0x4
+nonmatching g_bTrackMenuChampionship, 0x4
 
-dlabel g_dwPhysicsReserved38
+dlabel g_bTrackMenuChampionship
     /* 80315F90 */ .space 0x04
 
 nonmatching D_80315F94, 0x4
@@ -372,14 +372,14 @@ nonmatching D_80315F94, 0x4
 dlabel D_80315F94
     /* 80315F94 */ .space 0x04
 
-nonmatching g_szRaceStateTextBuf, 0x58
+nonmatching g_szTrackMenuTextBuf, 0x58
 
-dlabel g_szRaceStateTextBuf
+dlabel g_szTrackMenuTextBuf
     /* 80315F98 */ .space 0x58
 
-nonmatching g_awMinimapCircleVertices, 0x2
+nonmatching g_aMenuSpotlightVertices, 0x2
 
-dlabel g_awMinimapCircleVertices
+dlabel g_aMenuSpotlightVertices
     /* 80315FF0 */ .space 0x02
 
 nonmatching g_wPhysicsReserved0, 0x2
@@ -418,9 +418,9 @@ nonmatching g_bPhysicsReserved3, 0x1E1
 dlabel g_bPhysicsReserved3
     /* 80315FFF */ .space 0x1E1
 
-nonmatching g_SpeedometerFixedMtx, 0x40
+nonmatching g_MenuChoiceMarkerMtx, 0x40
 
-dlabel g_SpeedometerFixedMtx
+dlabel g_MenuChoiceMarkerMtx
     /* 803161E0 */ .space 0x40
 
 nonmatching g_nPrevScreenSelection, 0x4
@@ -438,9 +438,9 @@ nonmatching g_fScreenRotationAngle, 0x4
 dlabel g_fScreenRotationAngle
     /* 80316228 */ .space 0x04
 
-nonmatching g_bScreenReverbActive, 0x4
+nonmatching g_bScreenItemChosen, 0x4
 
-dlabel g_bScreenReverbActive
+dlabel g_bScreenItemChosen
     /* 8031622C */ .space 0x04
 
 nonmatching g_pScreenScrollSoundBuf, 0x4
@@ -463,14 +463,14 @@ nonmatching g_dwScreenSelectSoundSize, 0x4
 dlabel g_dwScreenSelectSoundSize
     /* 8031623C */ .space 0x04
 
-nonmatching g_fScreenAnimAccum, 0x4
+nonmatching g_fScreenIdleTime, 0x4
 
-dlabel g_fScreenAnimAccum
+dlabel g_fScreenIdleTime
     /* 80316240 */ .space 0x04
 
-nonmatching gActiveTrackIndex, 0x4
+nonmatching g_nScreenCursor, 0x4
 
-dlabel gActiveTrackIndex
+dlabel g_nScreenCursor
     /* 80316244 */ .space 0x04
 
 nonmatching D_80316248, 0x8
@@ -1902,31 +1902,19 @@ nonmatching g_pDemoReplayData, 0x88
 dlabel g_pDemoReplayData
     /* 8031D594 */ .space 0x88
 
-nonmatching g_vecLightDir, 0x4
+nonmatching D_8031D61C, 0x10
 
-dlabel g_vecLightDir
-    /* 8031D61C */ .space 0x04
+dlabel D_8031D61C
+    /* 8031D61C */ .space 0x10
 
-nonmatching D_8031D620, 0xC
+nonmatching D_8031D62C, 0x10
 
-/* Automatically generated and unreferenced pad */
-dlabel D_8031D620
-    /* 8031D620 */ .space 0x0C
+dlabel D_8031D62C
+    /* 8031D62C */ .space 0x10
 
-nonmatching g_vecLightRight, 0xC
+nonmatching D_8031D63C, 0x4
 
-dlabel g_vecLightRight
-    /* 8031D62C */ .space 0x0C
-
-nonmatching D_8031D638, 0x4
-
-/* Automatically generated and unreferenced pad */
-dlabel D_8031D638
-    /* 8031D638 */ .space 0x04
-
-nonmatching g_vecLightUp, 0x4
-
-dlabel g_vecLightUp
+dlabel D_8031D63C
     /* 8031D63C */ .space 0x04
 
 nonmatching g_fLightUpY, 0x4
@@ -1945,9 +1933,9 @@ nonmatching D_8031D648, 0x4
 dlabel D_8031D648
     /* 8031D648 */ .space 0x04
 
-nonmatching g_vecLightScale, 0x4
+nonmatching D_8031D64C, 0x4
 
-dlabel g_vecLightScale
+dlabel D_8031D64C
     /* 8031D64C */ .space 0x04
 
 nonmatching g_fLightScaleY, 0x4
@@ -2249,9 +2237,9 @@ nonmatching D_8031F5DC, 0xD0
 dlabel D_8031F5DC
     /* 8031F5DC */ .space 0xD0
 
-nonmatching g_vecLightDirP2, 0x144
+nonmatching D_8031F6AC, 0x144
 
-dlabel g_vecLightDirP2
+dlabel D_8031F6AC
     /* 8031F6AC */ .space 0x144
 
 nonmatching g_dwVehicle1Field2000, 0x4

@@ -37,7 +37,7 @@ void StartChampionshipRace(void) {
     g_dwGameMode = GAME_MODE_CHAMPIONSHIP;
     SetTrackFromSeason();
     g_dwNumLocalPlayers = 1;
-    SetCurrentScreenCallback(ProcessRaceState);
+    SetCurrentScreenCallback(ProcessTrackMenu);
     g_dwMainMenuEntrySource = ENTRY_FROM_CHAMPIONSHIP;
 }
 
@@ -45,7 +45,7 @@ void StartTimeAttack(void) {
     g_dwGameMode = GAME_MODE_TIME_ATTACK;
     g_dwNumLocalPlayers = 1;
     g_dwCurrentWeather = WEATHER_FOG;
-    SetCurrentScreenCallback(ProcessRaceState);
+    SetCurrentScreenCallback(ProcessTrackMenu);
     g_dwMainMenuEntrySource = ENTRY_FROM_TIME_ATTACK;
 }
 
@@ -62,12 +62,12 @@ void ProcessMainMenu(void) {
             InitMusicPlayback(g_abMenuMusicModule, g_abMusicModuleWorkBuffer);
         }
 
-        g_pMenuTitleImage = g_MainMenuLayoutImage;
+        g_pMenuTitleImage = &g_MainMenuTitleTextureDesc;
         g_dwMenuTitleImageX = 25;
         g_dwMenuTitleImageY = 14;
         g_dwMenuTitleImageWidth = 280;
         g_dwMenuTitleImageHeight = 32;
-        g_flScreenRotationPeriod = 20.0f;
+        g_fScreenIdleTimeout = 20.0f;
 
         /* Return to the item of the mode that led back here. */
         if (g_dwMainMenuEntrySource == ENTRY_FROM_CHAMPIONSHIP) {

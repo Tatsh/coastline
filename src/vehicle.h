@@ -19,15 +19,33 @@
 /** The number of vehicles a race can hold. */
 #define MAX_VEHICLES 4
 
+/** The seasons of the championship. */
+#define SEASONS 6
+
+/** The tracks a profile keeps records for: the five tracks and their mirrored versions. */
+#define PROFILE_RECORD_TRACKS 10
+
 /**
  * The saved settings and progress of a player. Its fields join this structure as the routines that
  * use them are reconstructed.
  */
 typedef struct {
-    u8 unreconstructed0[0x4];
+    /**
+     * The state of the championship across its years: negative when it was never set, and bit 0
+     * set while the seasons race the tracks mirrored.
+     */
+    s32 championshipFlags;
     /** The season of the championship being raced, from 0. */
     u8 season;
-    u8 unreconstructed5[0xCC - 0x5];
+    /** The race of the season being raced, from 0. */
+    u8 round;
+    u8 unreconstructed6[0x1E - 0x6];
+    /** The points scored in each season. */
+    u16 seasonPoints[SEASONS];
+    u8 unreconstructed2A[0x8C - 0x2A];
+    /** The best lap on each track, in seconds, or 0 when none was set. */
+    f32 lapRecords[PROFILE_RECORD_TRACKS];
+    u8 unreconstructedB4[0xCC - 0xB4];
     /** The unlocked cars, a bit for each from bit 0, and further unlocks above them. */
     u16 unlocks;
     /** The unlocked tracks, a bit for each. */
@@ -35,6 +53,8 @@ typedef struct {
     u8 unreconstructedD0[0xE4 - 0xD0];
     /** The button layout the player chose on the controller screen. */
     s32 controllerLayout;
+    /** The best race on each track, in seconds, or 0 when none was set. */
+    f32 raceRecords[PROFILE_RECORD_TRACKS];
 } PlayerProfile;
 
 /** The profile of the player being played. @ghidraAddress USA: 0x8031c5bc */
@@ -317,7 +337,10 @@ typedef struct Vehicle {
     s32 chosenTransmission;
     u8 unreconstructedE70[0xED0 - 0xE70];
     RacerSlot *racer;
-    u8 unreconstructedED4[0xF48 - 0xED4];
+    u8 unreconstructedED4[0xED8 - 0xED4];
+    /** The routine that drives the vehicle each frame, the player's or the computer's, or NULL. */
+    void (*driver)(struct Vehicle *vehicle);
+    u8 unreconstructedEDC[0xF48 - 0xEDC];
     /** Set to 2 when the active camera changes. */
     s32 cameraChanged;
     /**
@@ -744,5 +767,21 @@ void InitVehiclePhysics(Vehicle *vehicle);
  * @ghidraAddress USA: 0x80226100
  */
 void InitPlayerVehicleSlot(Vehicle *vehicle);
+
+/**
+ * Reset a vehicle, paint it the colour of its player, and leave it solid and undriven.
+ *
+ * @param vehicle The vehicle.
+ * @ghidraAddress USA: 0x802260a0
+ */
+void InitVehicleColor(Vehicle *vehicle);
+
+/**
+ * Drive a vehicle by the input of its player for a frame.
+ *
+ * @param vehicle The vehicle.
+ * @ghidraAddress USA: 0x80226d7c
+ */
+void UpdatePhysicsStep(Vehicle *vehicle);
 
 #endif

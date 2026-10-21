@@ -147,6 +147,13 @@ extern s32 g_adwVehicleVisible[];
 f32 GetMaxAbsValue12(f32 m[4][4]);
 
 /**
+ * Set the direction and the colours of the lights, and the light ramps, for the weather.
+ *
+ * @ghidraAddress USA: 0x80218d5c
+ */
+void SetupWeatherLights(void);
+
+/**
  * Set the colour and the range of the fog for the weather and the track, and add them to the
  * display list.
  *

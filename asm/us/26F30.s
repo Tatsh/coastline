@@ -3186,7 +3186,7 @@ glabel SetupVehicleForRaceStart
     /* 29CA4 80228CA4 E6140FA0 */  swc1       $f20, 0xFA0($s0)
     /* 29CA8 80228CA8 E6140F98 */  swc1       $f20, 0xF98($s0)
     /* 29CAC 80228CAC 8C63C800 */  lw         $v1, %lo(g_dwCurrentWeather)($v1)
-    /* 29CB0 80228CB0 3C0E8027 */  lui        $t6, %hi(g_apTrackDefs)
+    /* 29CB0 80228CB0 3C0E8027 */  lui        $t6, %hi(g_apTrackMenuItems)
     /* 29CB4 80228CB4 2463FFFF */  addiu      $v1, $v1, -0x1
     /* 29CB8 80228CB8 00035400 */  sll        $t2, $v1, 16
     /* 29CBC 80228CBC 000A5C03 */  sra        $t3, $t2, 16
@@ -3205,7 +3205,7 @@ glabel SetupVehicleForRaceStart
     /* 29CE8 80228CE8 000FC080 */  sll        $t8, $t7, 2
     /* 29CEC 80228CEC 01CD7021 */  addu       $t6, $t6, $t5
     /* 29CF0 80228CF0 030FC021 */  addu       $t8, $t8, $t7
-    /* 29CF4 80228CF4 8DCE1D1C */  lw         $t6, %lo(g_apTrackDefs)($t6)
+    /* 29CF4 80228CF4 8DCE1D1C */  lw         $t6, %lo(g_apTrackMenuItems)($t6)
     /* 29CF8 80228CF8 0018C080 */  sll        $t8, $t8, 2
     /* 29CFC 80228CFC 030FC021 */  addu       $t8, $t8, $t7
     /* 29D00 80228D00 0018C080 */  sll        $t8, $t8, 2
@@ -3741,7 +3741,7 @@ glabel InitRacerSlot
     /* 2A468 80229468 E6060014 */  swc1       $f6, 0x14($s0)
     /* 2A46C 8022946C 8C42C800 */  lw         $v0, %lo(g_dwCurrentWeather)($v0)
     /* 2A470 80229470 3C0B8029 */  lui        $t3, %hi(g_dwSelectedTrackId)
-    /* 2A474 80229474 3C0D8027 */  lui        $t5, %hi(g_apTrackDefs)
+    /* 2A474 80229474 3C0D8027 */  lui        $t5, %hi(g_apTrackMenuItems)
     /* 2A478 80229478 2442FFFF */  addiu      $v0, $v0, -0x1
     /* 2A47C 8022947C 00024C00 */  sll        $t1, $v0, 16
     /* 2A480 80229480 00095403 */  sra        $t2, $t1, 16
@@ -3761,7 +3761,7 @@ glabel InitRacerSlot
     /* 2A4B0 802294B0 000B6080 */  sll        $t4, $t3, 2
     /* 2A4B4 802294B4 01AC6821 */  addu       $t5, $t5, $t4
     /* 2A4B8 802294B8 01EE7821 */  addu       $t7, $t7, $t6
-    /* 2A4BC 802294BC 8DAD1D1C */  lw         $t5, %lo(g_apTrackDefs)($t5)
+    /* 2A4BC 802294BC 8DAD1D1C */  lw         $t5, %lo(g_apTrackMenuItems)($t5)
     /* 2A4C0 802294C0 000F7880 */  sll        $t7, $t7, 2
     /* 2A4C4 802294C4 01EE7821 */  addu       $t7, $t7, $t6
     /* 2A4C8 802294C8 000F7880 */  sll        $t7, $t7, 2
@@ -5182,7 +5182,7 @@ glabel UpdateRaceProgress
     /* 2B95C 8022A95C AE0A0FB0 */  sw         $t2, 0xFB0($s0)
     /* 2B960 8022A960 C4329CB0 */  lwc1       $f18, %lo(g_fConst_0p4_9cb0)($at)
     /* 2B964 8022A964 3C0D8029 */  lui        $t5, %hi(g_dwSelectedTrackId)
-    /* 2B968 8022A968 3C0F8027 */  lui        $t7, %hi(g_apTrackDefs)
+    /* 2B968 8022A968 3C0F8027 */  lui        $t7, %hi(g_apTrackMenuItems)
     /* 2B96C 8022A96C E6120FB4 */  swc1       $f18, 0xFB4($s0)
     /* 2B970 8022A970 8C42C800 */  lw         $v0, %lo(g_dwCurrentWeather)($v0)
     /* 2B974 8022A974 3C198032 */  lui        $t9, %hi(g_aVehicles_TrackRouteIndex)
@@ -5205,7 +5205,7 @@ glabel UpdateRaceProgress
     /* 2B9B0 8022A9B0 00194880 */  sll        $t1, $t9, 2
     /* 2B9B4 8022A9B4 01F87821 */  addu       $t7, $t7, $t8
     /* 2B9B8 8022A9B8 01394821 */  addu       $t1, $t1, $t9
-    /* 2B9BC 8022A9BC 8DEF1D1C */  lw         $t7, %lo(g_apTrackDefs)($t7)
+    /* 2B9BC 8022A9BC 8DEF1D1C */  lw         $t7, %lo(g_apTrackMenuItems)($t7)
     /* 2B9C0 8022A9C0 00094880 */  sll        $t1, $t1, 2
     /* 2B9C4 8022A9C4 01394821 */  addu       $t1, $t1, $t9
     /* 2B9C8 8022A9C8 8FAE0038 */  lw         $t6, 0x38($sp)

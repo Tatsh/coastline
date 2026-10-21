@@ -1677,7 +1677,7 @@ glabel ProcessPaintShopScreen
     /* 45418 80244418 00000000 */   nop
     /* 4541C 8024441C 0C0860AA */  jal        SetupFog
     /* 45420 80244420 AC20AA80 */   sw        $zero, %lo(g_dwNightMode)($at)
-    /* 45424 80244424 0C086357 */  jal        SetCombinerMode
+    /* 45424 80244424 0C086357 */  jal        SetupWeatherLights
     /* 45428 80244428 00000000 */   nop
     /* 4542C 8024442C 0C090AF7 */  jal        RenderDecalPreview3D
     /* 45430 80244430 00000000 */   nop

@@ -1044,10 +1044,10 @@ glabel ProcessTrackSelectScreen
     /* E3A8 8020D3A8 E4E01EF0 */  swc1       $f0, 0x1EF0($a3)
     /* E3AC 8020D3AC E4EA1EF4 */  swc1       $f10, 0x1EF4($a3)
   .L8020D3B0:
-    /* E3B0 8020D3B0 3C108032 */  lui        $s0, %hi(g_vecLightDir)
-    /* E3B4 8020D3B4 2610D61C */  addiu      $s0, $s0, %lo(g_vecLightDir)
-    /* E3B8 8020D3B8 3C058032 */  lui        $a1, %hi(g_vecLightScale)
-    /* E3BC 8020D3BC 24A5D64C */  addiu      $a1, $a1, %lo(g_vecLightScale)
+    /* E3B0 8020D3B0 3C108032 */  lui        $s0, %hi(D_8031D61C)
+    /* E3B4 8020D3B4 2610D61C */  addiu      $s0, $s0, %lo(D_8031D61C)
+    /* E3B8 8020D3B8 3C058032 */  lui        $a1, %hi(D_8031D64C)
+    /* E3BC 8020D3BC 24A5D64C */  addiu      $a1, $a1, %lo(D_8031D64C)
     /* E3C0 8020D3C0 02002025 */  or         $a0, $s0, $zero
     /* E3C4 8020D3C4 0C08913F */  jal        Vec3fScale
     /* E3C8 8020D3C8 3C06BF80 */   lui       $a2, (0xBF800000 >> 16)
@@ -1057,10 +1057,10 @@ glabel ProcessTrackSelectScreen
     /* E3D8 8020D3D8 3C013F80 */  lui        $at, (0x3F800000 >> 16)
     /* E3DC 8020D3DC 44818000 */  mtc1       $at, $f16
     /* E3E0 8020D3E0 2442B760 */  addiu      $v0, $v0, %lo(g_aVehicles)
-    /* E3E4 8020D3E4 3C118032 */  lui        $s1, %hi(g_vecLightRight)
-    /* E3E8 8020D3E8 3C128032 */  lui        $s2, %hi(g_vecLightUp)
-    /* E3EC 8020D3EC 2652D63C */  addiu      $s2, $s2, %lo(g_vecLightUp)
-    /* E3F0 8020D3F0 2631D62C */  addiu      $s1, $s1, %lo(g_vecLightRight)
+    /* E3E4 8020D3E4 3C118032 */  lui        $s1, %hi(D_8031D62C)
+    /* E3E8 8020D3E8 3C128032 */  lui        $s2, %hi(D_8031D63C)
+    /* E3EC 8020D3EC 2652D63C */  addiu      $s2, $s2, %lo(D_8031D63C)
+    /* E3F0 8020D3F0 2631D62C */  addiu      $s1, $s1, %lo(D_8031D62C)
     /* E3F4 8020D3F4 E4541EDC */  swc1       $f20, 0x1EDC($v0)
     /* E3F8 8020D3F8 E4541EE0 */  swc1       $f20, 0x1EE0($v0)
     /* E3FC 8020D3FC 02202025 */  or         $a0, $s1, $zero
@@ -1072,8 +1072,8 @@ glabel ProcessTrackSelectScreen
     /* E414 8020D414 02002825 */  or         $a1, $s0, $zero
     /* E418 8020D418 0C0890E7 */  jal        Vec3fCross
     /* E41C 8020D41C 02203025 */   or        $a2, $s1, $zero
-    /* E420 8020D420 3C048032 */  lui        $a0, %hi(g_vecLightDirP2)
-    /* E424 8020D424 2484F6AC */  addiu      $a0, $a0, %lo(g_vecLightDirP2)
+    /* E420 8020D420 3C048032 */  lui        $a0, %hi(D_8031F6AC)
+    /* E424 8020D424 2484F6AC */  addiu      $a0, $a0, %lo(D_8031F6AC)
     /* E428 8020D428 02002825 */  or         $a1, $s0, $zero
     /* E42C 8020D42C 0C0982C8 */  jal        memcpy
     /* E430 8020D430 24060044 */   addiu     $a2, $zero, 0x44
@@ -1082,27 +1082,27 @@ glabel ProcessTrackSelectScreen
     /* E43C 8020D43C 3C048027 */  lui        $a0, %hi(g_apHandlingOptions)
     /* E440 8020D440 3C058027 */  lui        $a1, %hi(g_dwHandlingOptionCount)
     /* E444 8020D444 24A520C4 */  addiu      $a1, $a1, %lo(g_dwHandlingOptionCount)
-    /* E448 8020D448 0C08309F */  jal        InitGameDisplay
+    /* E448 8020D448 0C08309F */  jal        LoadMenuItemModels
     /* E44C 8020D44C 248420B4 */   addiu     $a0, $a0, %lo(g_apHandlingOptions)
     /* E450 8020D450 3C048027 */  lui        $a0, %hi(g_apTransmissionOptions)
     /* E454 8020D454 3C058027 */  lui        $a1, %hi(g_dwTransmissionOptionCount)
     /* E458 8020D458 24A520FC */  addiu      $a1, $a1, %lo(g_dwTransmissionOptionCount)
-    /* E45C 8020D45C 0C08309F */  jal        InitGameDisplay
+    /* E45C 8020D45C 0C08309F */  jal        LoadMenuItemModels
     /* E460 8020D460 248420F0 */   addiu     $a0, $a0, %lo(g_apTransmissionOptions)
     /* E464 8020D464 3C048027 */  lui        $a0, %hi(g_apTiresOptions)
     /* E468 8020D468 3C058027 */  lui        $a1, %hi(g_dwTiresOptionCount)
     /* E46C 8020D46C 24A5214C */  addiu      $a1, $a1, %lo(g_dwTiresOptionCount)
-    /* E470 8020D470 0C08309F */  jal        InitGameDisplay
+    /* E470 8020D470 0C08309F */  jal        LoadMenuItemModels
     /* E474 8020D474 2484213C */   addiu     $a0, $a0, %lo(g_apTiresOptions)
     /* E478 8020D478 3C048027 */  lui        $a0, %hi(g_apSuspensionOptions)
     /* E47C 8020D47C 3C058027 */  lui        $a1, %hi(g_dwSuspensionOptionCount)
     /* E480 8020D480 24A5219C */  addiu      $a1, $a1, %lo(g_dwSuspensionOptionCount)
-    /* E484 8020D484 0C08309F */  jal        InitGameDisplay
+    /* E484 8020D484 0C08309F */  jal        LoadMenuItemModels
     /* E488 8020D488 2484218C */   addiu     $a0, $a0, %lo(g_apSuspensionOptions)
     /* E48C 8020D48C 3C048027 */  lui        $a0, %hi(g_apDecalOptions)
     /* E490 8020D490 3C058027 */  lui        $a1, %hi(g_dwDecalListCount)
     /* E494 8020D494 24A521EC */  addiu      $a1, $a1, %lo(g_dwDecalListCount)
-    /* E498 8020D498 0C08309F */  jal        InitGameDisplay
+    /* E498 8020D498 0C08309F */  jal        LoadMenuItemModels
     /* E49C 8020D49C 248421DC */   addiu     $a0, $a0, %lo(g_apDecalOptions)
     /* E4A0 8020D4A0 3C108024 */  lui        $s0, %hi(AllocHeapAligned)
     /* E4A4 8020D4A4 3C118027 */  lui        $s1, %hi(g_BgTextureDesc)
@@ -1215,7 +1215,7 @@ glabel ProcessTrackSelectScreen
     /* E648 8020D648 3C018029 */  lui        $at, %hi(g_dwSnowMode)
     /* E64C 8020D64C 0C0860AA */  jal        SetupFog
     /* E650 8020D650 AC20AA84 */   sw        $zero, %lo(g_dwSnowMode)($at)
-    /* E654 8020D654 0C086357 */  jal        SetCombinerMode
+    /* E654 8020D654 0C086357 */  jal        SetupWeatherLights
     /* E658 8020D658 00000000 */   nop
     /* E65C 8020D65C 240F00FF */  addiu      $t7, $zero, 0xFF
     /* E660 8020D660 AFAF0010 */  sw         $t7, 0x10($sp)
@@ -1828,10 +1828,10 @@ glabel ProcessTrackSelectScreen
     /* EF08 8020DF08 00105080 */  sll        $t2, $s0, 2
     /* EF0C 8020DF0C 000E6080 */  sll        $t4, $t6, 2
     /* EF10 8020DF10 016C5821 */  addu       $t3, $t3, $t4
-    /* EF14 8020DF14 3C0F8027 */  lui        $t7, %hi(g_apTrackDefs)
+    /* EF14 8020DF14 3C0F8027 */  lui        $t7, %hi(g_apTrackMenuItems)
     /* EF18 8020DF18 8D6B22A4 */  lw         $t3, %lo(g_apWeatherMenuItems)($t3)
     /* EF1C 8020DF1C 01EA7821 */  addu       $t7, $t7, $t2
-    /* EF20 8020DF20 8DEF1D1C */  lw         $t7, %lo(g_apTrackDefs)($t7)
+    /* EF20 8020DF20 8DEF1D1C */  lw         $t7, %lo(g_apTrackMenuItems)($t7)
     /* EF24 8020DF24 8D790000 */  lw         $t9, 0x0($t3)
     /* EF28 8020DF28 27B100E8 */  addiu      $s1, $sp, 0xE8
     /* EF2C 8020DF2C 3C05802A */  lui        $a1, %hi(g_szFmtCarTrack)
@@ -2485,12 +2485,12 @@ glabel ProcessTrackSelectScreen
     /* F890 8020E890 00000000 */   nop
     /* F894 8020E894 922B0015 */  lbu        $t3, 0x15($s1)
     /* F898 8020E898 00107080 */  sll        $t6, $s0, 2
-    /* F89C 8020E89C 3C0D8027 */  lui        $t5, %hi(g_apTrackDefs)
+    /* F89C 8020E89C 3C0D8027 */  lui        $t5, %hi(g_apTrackMenuItems)
     /* F8A0 8020E8A0 3C098027 */  lui        $t1, %hi(g_apWeatherMenuItems)
     /* F8A4 8020E8A4 000BC080 */  sll        $t8, $t3, 2
     /* F8A8 8020E8A8 01384821 */  addu       $t1, $t1, $t8
     /* F8AC 8020E8AC 01AE6821 */  addu       $t5, $t5, $t6
-    /* F8B0 8020E8B0 8DAD1D1C */  lw         $t5, %lo(g_apTrackDefs)($t5)
+    /* F8B0 8020E8B0 8DAD1D1C */  lw         $t5, %lo(g_apTrackMenuItems)($t5)
     /* F8B4 8020E8B4 8D2922A4 */  lw         $t1, %lo(g_apWeatherMenuItems)($t1)
     /* F8B8 8020E8B8 3C05802A */  lui        $a1, %hi(g_szFmtTrackCar2)
     /* F8BC 8020E8BC 24A57BA0 */  addiu      $a1, $a1, %lo(g_szFmtTrackCar2)
@@ -4157,10 +4157,10 @@ glabel ProcessTrackSelectScreen
   .L8021010C:
     /* 1110C 8021010C 240E0001 */   addiu     $t6, $zero, 0x1
     /* 11110 80210110 3C018027 */  lui        $at, %hi(g_dwContinueFromResults)
-    /* 11114 80210114 3C048021 */  lui        $a0, %hi(ProcessRaceState)
+    /* 11114 80210114 3C048021 */  lui        $a0, %hi(ProcessTrackMenu)
     /* 11118 80210118 AC2E0850 */  sw         $t6, %lo(g_dwContinueFromResults)($at)
     /* 1111C 8021011C 0C0871B9 */  jal        SetCurrentScreenCallback
-    /* 11120 80210120 24849434 */   addiu     $a0, $a0, %lo(ProcessRaceState)
+    /* 11120 80210120 24849434 */   addiu     $a0, $a0, %lo(ProcessTrackMenu)
     /* 11124 80210124 1000037D */  b          .L80210F1C
     /* 11128 80210128 8FBF006C */   lw        $ra, 0x6C($sp)
   .L8021012C:

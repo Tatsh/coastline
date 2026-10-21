@@ -78,8 +78,15 @@ DrawHudLabelAtFraction
 DrawHudMessage
 DrawLabelWithTime
 DrawLapCounterHud
+DrawMenuChoiceMarker
+DrawMenuFooterButtons
+DrawMenuSpotlight
+DrawModelAt
+DrawModelList
+DrawPauseMenuButtons
 DrawRaceTimerHud
 DrawRedIntensityRect
+DrawRotatedModel
 DrawScreenFadeOverlay
 DrawSpeedAndHudOverlay
 DrawText
@@ -128,10 +135,12 @@ IsPointInTrackTriangle
 IsPointInsideTriangle
 IsPointVisible
 IsSkyFogFilled
+IsTrackUnlocked
 IsTriangleInUnitCube
 IsVehicleModelLoaded
 IsWeatherSelectable
 LoadAndDecompressAsset
+LoadMenuItemModels
 LoadMusicModule
 LoadVehicleModel
 MainMenuEntry
@@ -173,7 +182,9 @@ ProcessInputCommandBuffer
 ProcessMainMenu
 ProcessPakMenuScreen
 ProcessPlayerCountSelect
+ProcessScreenState
 ProcessSplashScreens
+ProcessTrackMenu
 ProcessWeatherSelect
 ProjectVec3fToScreen
 ProjectWorldToScreenRect
@@ -193,6 +204,7 @@ RenderTireSmoke
 RenderTrackGeometry
 RenderTrackInstance
 ResetAllPlayers
+ResetAndInitDisplay
 ResetCollisionCaches
 ResetFrameBlocks
 ResetHeap
@@ -203,11 +215,13 @@ ResetShadowBuffers
 ResetVehicleState
 ResolveVehicleTrackCollision
 RotateVehicleByEuler
+SeasonRecordsPreDrawCallback
 SegmentCrossesLine2D
 SetFadeTarget
 SetHeapCurrentAddress
 SetRigidBodyForce
 SetRngSeed
+SetScreenPendingSelection
 SetSfxFadeLevelImmediate
 SetSoundChannelVolume
 SetTextAlignCenter
@@ -246,6 +260,7 @@ SumWheelForces
 TestLineSegmentIntersection
 TestObbIntersection
 TipBalancedVehicle
+TrackMenuPostDraw
 TransferFlags
 TransformAllWheelMatrices
 TranslateControllerInput
@@ -277,6 +292,7 @@ UpdateVehiclePhysicsFrame
 UpdateVehicleTrackPosition
 UpdateWheelHeights
 UpdateWindDirection
+ValidateChampionshipProgress
 Vec2fAdd
 Vec2fDistance
 Vec2fLength

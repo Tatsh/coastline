@@ -2526,12 +2526,12 @@ dlabel g_szPluralSuffixS
 enddlabel g_szPluralSuffixS
 
 .align 2
-nonmatching g_szFmtPlayerName
+nonmatching g_szFmtRedTitleColon
 
-dlabel g_szFmtPlayerName
+dlabel g_szFmtRedTitleColon
     /* A878C 802A778C */ .asciz "%%ry%s:"
     /* 2525727925733A00 */
-enddlabel g_szFmtPlayerName
+enddlabel g_szFmtRedTitleColon
 .align 2
 
 .align 2
@@ -2562,12 +2562,12 @@ enddlabel g_szRace
 .align 2
 
 .align 2
-nonmatching g_szFmtTrackCar
+nonmatching g_szFmtTrackWeather
 
-dlabel g_szFmtTrackCar
+dlabel g_szFmtTrackWeather
     /* A87B4 802A77B4 */ .asciz "%s/%s"
     /* 25732F2573000000 */
-enddlabel g_szFmtTrackCar
+enddlabel g_szFmtTrackWeather
 .align 2
 
 .align 2
@@ -2661,12 +2661,12 @@ enddlabel g_szResetGhostCar
 .align 2
 
 .align 2
-nonmatching g_szFmtRaceTrackCar
+nonmatching g_szFmtRaceTrackWeather
 
-dlabel g_szFmtRaceTrackCar
+dlabel g_szFmtRaceTrackWeather
     /* A8864 802A7864 */ .asciz "Race %d: %s/%s"
     /* 526163652025643A2025732F25730000 */
-enddlabel g_szFmtRaceTrackCar
+enddlabel g_szFmtRaceTrackWeather
 .align 2
 
 .align 2
@@ -2687,23 +2687,23 @@ dlabel g_szTrackSelect
 enddlabel g_szTrackSelect
 .align 2
 
-nonmatching g_dwOsSiAccessQueue
+nonmatching g_fConst0p4_802a7890
 
-dlabel g_dwOsSiAccessQueue
+dlabel g_fConst0p4_802a7890
     /* A8890 802A7890 3ECCCCCD */ .float 0.400000006
-enddlabel g_dwOsSiAccessQueue
+enddlabel g_fConst0p4_802a7890
 
-nonmatching g_dwOsSiEventQueue
+nonmatching g_fConstHalfPi_802a7894
 
-dlabel g_dwOsSiEventQueue
+dlabel g_fConstHalfPi_802a7894
     /* A8894 802A7894 3FC90FDB */ .float 1.570796371
-enddlabel g_dwOsSiEventQueue
+enddlabel g_fConstHalfPi_802a7894
 
-nonmatching g_dwOsSiEventMask
+nonmatching g_fConst0p254_802a7898
 
-dlabel g_dwOsSiEventMask
+dlabel g_fConst0p254_802a7898
     /* A8898 802A7898 3E820C4A */ .float 0.2540000081
-enddlabel g_dwOsSiEventMask
+enddlabel g_fConst0p254_802a7898
     /* A889C 802A789C 00000000 */ .float 0
 
 .align 2
@@ -2743,61 +2743,61 @@ enddlabel g_szExit
 .align 2
 
 .align 2
-nonmatching g_szFmtPlayerRed
+nonmatching g_szFmtRedText
 
-dlabel g_szFmtPlayerRed
+dlabel g_szFmtRedText
     /* A88CC 802A78CC */ .asciz "%%ry%s"
     /* 2525727925730000 */
-enddlabel g_szFmtPlayerRed
+enddlabel g_szFmtRedText
 .align 2
 
 .align 2
-nonmatching g_szFmtPlayerWhite
+nonmatching g_szFmtWhiteText
 
-dlabel g_szFmtPlayerWhite
+dlabel g_szFmtWhiteText
     /* A88D4 802A78D4 */ .asciz "%%ww%s"
     /* 2525777725730000 */
-enddlabel g_szFmtPlayerWhite
+enddlabel g_szFmtWhiteText
 .align 2
 
 .align 2
-nonmatching g_szFmtPlayerWhite2
+nonmatching g_szFmtWhiteText2
 
-dlabel g_szFmtPlayerWhite2
+dlabel g_szFmtWhiteText2
     /* A88DC 802A78DC */ .asciz "%%ww%s"
     /* 2525777725730000 */
-enddlabel g_szFmtPlayerWhite2
+enddlabel g_szFmtWhiteText2
 .align 2
 
 .align 2
-nonmatching g_szFmtPlayerWhite3
+nonmatching g_szFmtWhiteText3
 
-dlabel g_szFmtPlayerWhite3
+dlabel g_szFmtWhiteText3
     /* A88E4 802A78E4 */ .asciz "%%ww%s"
     /* 2525777725730000 */
-enddlabel g_szFmtPlayerWhite3
+enddlabel g_szFmtWhiteText3
 .align 2
 
 .align 2
-nonmatching g_szFmtPlayerRed2
+nonmatching g_szFmtRedText2
 
-dlabel g_szFmtPlayerRed2
+dlabel g_szFmtRedText2
     /* A88EC 802A78EC */ .asciz "%%ry%s"
     /* 2525727925730000 */
-enddlabel g_szFmtPlayerRed2
+enddlabel g_szFmtRedText2
 .align 2
 
-nonmatching g_dwOsSiPifAddr
+nonmatching g_fConstRadToDeg_802a78f4
 
-dlabel g_dwOsSiPifAddr
+dlabel g_fConstRadToDeg_802a78f4
     /* A88F4 802A78F4 42652EE0 */ .float 57.29577637
-enddlabel g_dwOsSiPifAddr
+enddlabel g_fConstRadToDeg_802a78f4
 
-nonmatching g_dwOsSiPifSize
+nonmatching g_fConstRadToDeg_802a78f8
 
-dlabel g_dwOsSiPifSize
+dlabel g_fConstRadToDeg_802a78f8
     /* A88F8 802A78F8 42652EE0 */ .float 57.29577637
-enddlabel g_dwOsSiPifSize
+enddlabel g_fConstRadToDeg_802a78f8
 
 nonmatching g_fConstRadToDeg_802a78fc
 
@@ -2811,95 +2811,95 @@ dlabel g_fConstRadToDeg_802a7900
     /* A8900 802A7900 42652EE0 */ .float 57.29577637
 enddlabel g_fConstRadToDeg_802a7900
 
-nonmatching g_flMinimapAngleStep
+nonmatching g_fConstTwoPiThirtieth_802a7904
 
-dlabel g_flMinimapAngleStep
+dlabel g_fConstTwoPiThirtieth_802a7904
     /* A8904 802A7904 3E567750 */ .float 0.2094395161
-enddlabel g_flMinimapAngleStep
+enddlabel g_fConstTwoPiThirtieth_802a7904
 
-nonmatching g_dwOsSiDmaSize
+nonmatching g_fConst0p26_802a7908
 
-dlabel g_dwOsSiDmaSize
+dlabel g_fConst0p26_802a7908
     /* A8908 802A7908 3E851EB8 */ .float 0.2599999905
-enddlabel g_dwOsSiDmaSize
+enddlabel g_fConst0p26_802a7908
 
-nonmatching g_dwOsSiDmaDir
+nonmatching g_fConst0p2_802a790c
 
-dlabel g_dwOsSiDmaDir
+dlabel g_fConst0p2_802a790c
     /* A890C 802A790C 3E4CCCCD */ .float 0.200000003
-enddlabel g_dwOsSiDmaDir
+enddlabel g_fConst0p2_802a790c
 
-nonmatching g_dwOsSiDmaStatus
+nonmatching g_fConst0p2_802a7910
 
-dlabel g_dwOsSiDmaStatus
+dlabel g_fConst0p2_802a7910
     /* A8910 802A7910 3E4CCCCD */ .float 0.200000003
-enddlabel g_dwOsSiDmaStatus
+enddlabel g_fConst0p2_802a7910
 
-nonmatching g_dwOsSiContStatus
+nonmatching g_fConst0p2_802a7914
 
-dlabel g_dwOsSiContStatus
+dlabel g_fConst0p2_802a7914
     /* A8914 802A7914 3E4CCCCD */ .float 0.200000003
-enddlabel g_dwOsSiContStatus
+enddlabel g_fConst0p2_802a7914
 
-nonmatching g_dwOsSiContData0
+nonmatching g_fConstThreeHalfPi_802a7918
 
-dlabel g_dwOsSiContData0
+dlabel g_fConstThreeHalfPi_802a7918
     /* A8918 802A7918 4096CBE4 */ .float 4.712388992
-enddlabel g_dwOsSiContData0
+enddlabel g_fConstThreeHalfPi_802a7918
 
-nonmatching g_dwOsSiContData1
+nonmatching g_fConstTwoPi_802a791c
 
-dlabel g_dwOsSiContData1
+dlabel g_fConstTwoPi_802a791c
     /* A891C 802A791C 40C90FDB */ .float 6.283185482
-enddlabel g_dwOsSiContData1
+enddlabel g_fConstTwoPi_802a791c
 
-nonmatching g_dwOsSiContData2
+nonmatching g_fConstMinusHalfPi_802a7920
 
-dlabel g_dwOsSiContData2
+dlabel g_fConstMinusHalfPi_802a7920
     /* A8920 802A7920 BFC90FDB */ .float -1.570796371
-enddlabel g_dwOsSiContData2
+enddlabel g_fConstMinusHalfPi_802a7920
 
-nonmatching g_dwOsSiContData3
+nonmatching g_fConstTwoPi_802a7924
 
-dlabel g_dwOsSiContData3
+dlabel g_fConstTwoPi_802a7924
     /* A8924 802A7924 40C90FDB */ .float 6.283185482
-enddlabel g_dwOsSiContData3
+enddlabel g_fConstTwoPi_802a7924
 
-nonmatching g_dwOsSiContType
+nonmatching g_fConst0p2_802a7928
 
-dlabel g_dwOsSiContType
+dlabel g_fConst0p2_802a7928
     /* A8928 802A7928 3E4CCCCD */ .float 0.200000003
-enddlabel g_dwOsSiContType
+enddlabel g_fConst0p2_802a7928
 
-nonmatching g_dwOsSiContPresent
+nonmatching g_fConst0p2_802a792c
 
-dlabel g_dwOsSiContPresent
+dlabel g_fConst0p2_802a792c
     /* A892C 802A792C 3E4CCCCD */ .float 0.200000003
-enddlabel g_dwOsSiContPresent
+enddlabel g_fConst0p2_802a792c
 
-nonmatching g_dwOsSiContLatency
+nonmatching g_fConst0p2_802a7930
 
-dlabel g_dwOsSiContLatency
+dlabel g_fConst0p2_802a7930
     /* A8930 802A7930 3E4CCCCD */ .float 0.200000003
-enddlabel g_dwOsSiContLatency
+enddlabel g_fConst0p2_802a7930
 
-nonmatching g_dwOsSiContPulse
+nonmatching g_fConst0p2_802a7934
 
-dlabel g_dwOsSiContPulse
+dlabel g_fConst0p2_802a7934
     /* A8934 802A7934 3E4CCCCD */ .float 0.200000003
-enddlabel g_dwOsSiContPulse
+enddlabel g_fConst0p2_802a7934
 
-nonmatching g_dwOsSiContRelease
+nonmatching g_fConst0p2_802a7938
 
-dlabel g_dwOsSiContRelease
+dlabel g_fConst0p2_802a7938
     /* A8938 802A7938 3E4CCCCD */ .float 0.200000003
-enddlabel g_dwOsSiContRelease
+enddlabel g_fConst0p2_802a7938
 
-nonmatching g_dwOsSiContCount
+nonmatching g_fConst0p2_802a793c
 
-dlabel g_dwOsSiContCount
+dlabel g_fConst0p2_802a793c
     /* A893C 802A793C 3E4CCCCD */ .float 0.200000003
-enddlabel g_dwOsSiContCount
+enddlabel g_fConst0p2_802a793c
 
 .align 2
 nonmatching g_szPlace1st
@@ -7176,111 +7176,111 @@ enddlabel g_flQuarterPi2
     /* AA66C 802A966C 00000000 */ .float 0
 
 .align 2
-nonmatching g_szPathRoot
+nonmatching g_szFirstSeason
 
-dlabel g_szPathRoot
+dlabel g_szFirstSeason
     /* AA670 802A9670 */ .asciz "First Season"
     /* 466972737420536561736F6E00000000 */
-enddlabel g_szPathRoot
+enddlabel g_szFirstSeason
 .align 2
 
 .align 2
-nonmatching g_szPathSave
+nonmatching g_szSpring
 
-dlabel g_szPathSave
+dlabel g_szSpring
     /* AA680 802A9680 */ .asciz "Spring"
     /* 537072696E670000 */
-enddlabel g_szPathSave
+enddlabel g_szSpring
 .align 2
 
 .align 2
-nonmatching g_szPathConfig
+nonmatching g_szSecondSeason
 
-dlabel g_szPathConfig
+dlabel g_szSecondSeason
     /* AA688 802A9688 */ .asciz "Second Season"
     /* 5365636F6E6420536561736F6E000000 */
-enddlabel g_szPathConfig
+enddlabel g_szSecondSeason
 .align 2
 
 .align 2
-nonmatching g_szPathAsset
+nonmatching g_szSummer
 
-dlabel g_szPathAsset
+dlabel g_szSummer
     /* AA698 802A9698 */ .asciz "Summer"
     /* 53756D6D65720000 */
-enddlabel g_szPathAsset
+enddlabel g_szSummer
 .align 2
 
 .align 2
-nonmatching g_szPathTrack
+nonmatching g_szThirdSeason
 
-dlabel g_szPathTrack
+dlabel g_szThirdSeason
     /* AA6A0 802A96A0 */ .asciz "Third Season"
     /* 546869726420536561736F6E00000000 */
-enddlabel g_szPathTrack
+enddlabel g_szThirdSeason
 .align 2
 
 .align 2
-nonmatching D_802A96B0
+nonmatching g_szFall
 
-dlabel D_802A96B0
+dlabel g_szFall
     /* AA6B0 802A96B0 */ .asciz "Fall"
     /* 46616C6C00000000 */
 .align 2
-enddlabel D_802A96B0
+enddlabel g_szFall
 
 .align 2
-nonmatching g_szPathCar
+nonmatching g_szFourthSeason
 
-dlabel g_szPathCar
+dlabel g_szFourthSeason
     /* AA6B8 802A96B8 */ .asciz "Fourth Season"
     /* 466F7572746820536561736F6E000000 */
-enddlabel g_szPathCar
+enddlabel g_szFourthSeason
 .align 2
 
 .align 2
-nonmatching g_szPathSound
+nonmatching g_szWinter
 
-dlabel g_szPathSound
+dlabel g_szWinter
     /* AA6C8 802A96C8 */ .asciz "Winter"
     /* 57696E7465720000 */
-enddlabel g_szPathSound
+enddlabel g_szWinter
 .align 2
 
 .align 2
-nonmatching g_szPathTexture
+nonmatching g_szFifthSeason
 
-dlabel g_szPathTexture
+dlabel g_szFifthSeason
     /* AA6D0 802A96D0 */ .asciz "Fifth Season"
     /* 466966746820536561736F6E00000000 */
-enddlabel g_szPathTexture
+enddlabel g_szFifthSeason
 .align 2
 
 .align 2
-nonmatching g_szPathFont
+nonmatching g_szProfessional
 
-dlabel g_szPathFont
+dlabel g_szProfessional
     /* AA6E0 802A96E0 */ .asciz "Professional"
     /* 50726F66657373696F6E616C00000000 */
-enddlabel g_szPathFont
+enddlabel g_szProfessional
 .align 2
 
 .align 2
-nonmatching g_szPathMovie
+nonmatching g_szSixthSeason
 
-dlabel g_szPathMovie
+dlabel g_szSixthSeason
     /* AA6F0 802A96F0 */ .asciz "Sixth Season"
     /* 536978746820536561736F6E00000000 */
-enddlabel g_szPathMovie
+enddlabel g_szSixthSeason
 .align 2
 
 .align 2
-nonmatching g_szPathLang
+nonmatching g_szExpert
 
-dlabel g_szPathLang
+dlabel g_szExpert
     /* AA700 802A9700 */ .asciz "Expert"
     /* 4578706572740000 */
-enddlabel g_szPathLang
+enddlabel g_szExpert
 .align 2
 
 .align 2

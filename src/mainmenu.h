@@ -15,7 +15,7 @@
 extern MenuItem *g_apMainMenuItems[];
 
 /** The picture of the title of the main menu. @ghidraAddress USA: 0x802722c0 */
-extern u8 g_MainMenuLayoutImage[];
+extern Texture g_MainMenuTitleTextureDesc;
 
 /**
  * The start that led back to the main menu: 1 for a championship, 2 for a time attack, and 0

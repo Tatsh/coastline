@@ -62,7 +62,7 @@ void ProcessPlayerCountSelect(void) {
                                0x00)) {
     case MENU_RESULT_CHOSEN:
         g_dwNumLocalPlayers = g_dwPlayerCountMenuSelection + 1;
-        SetCurrentScreenCallback(ProcessRaceState);
+        SetCurrentScreenCallback(ProcessTrackMenu);
         g_dwPlayerCountSelectState = -1;
         break;
     case MENU_RESULT_CANCELLED:
