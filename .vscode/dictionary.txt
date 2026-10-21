@@ -1,5 +1,6 @@
 abicalls
 abiflags
+activebank
 adbl
 addi
 addiu
@@ -24,7 +25,13 @@ buildsystems
 bytearray
 bzero
 cartrominit
+chnl
 colc
+contpfs
+contramread
+contramwrite
+contreaddata
+contrfail
 cosf
 coveragerc
 createmesgqueue
@@ -32,6 +39,7 @@ createthread
 ctype
 dacrate
 dashcam
+datacrc
 datarootdir
 dbuild
 dcmake
@@ -62,6 +70,7 @@ epirawdma
 epirawread
 epirawwrite
 eret
+errck
 esbenp
 exceptasm
 excmask
@@ -93,6 +102,7 @@ hdwr
 hilite
 hinstance
 iconerror
+icsum
 infblock
 infcodes
 inffast
@@ -109,6 +119,7 @@ jalr
 jammesg
 jinja
 jlabel
+joybus
 jsonnet
 jsonschema
 jtbl
@@ -153,6 +164,7 @@ mabi
 mainpage
 maptlbrdb
 math
+maxcontrollers
 mdebug
 mdfile
 memcpy
@@ -160,6 +172,7 @@ memset
 mesg
 mfhi
 mflo
+minode
 mktemp
 moddi
 mpal
@@ -190,9 +203,12 @@ outfun
 pacboy
 pathlib
 persp
+pfsgetstatus
+pfsisplug
 piacs
 pidma
 pifdata
+pifstatus
 pigetcmdq
 pimgr
 pipebusy
@@ -208,6 +224,8 @@ pyinstaller
 pylock
 pyproject
 qstringbuilder
+ramarray
+ramreadformat
 rdbread
 rdbwrite
 rdparty
@@ -216,6 +234,7 @@ recvmesg
 reflow
 regen
 reginfo
+reques
 resetglobalintmask
 resf
 ripgreprc
@@ -224,6 +243,7 @@ rodata
 rombuilder
 rshift
 rtti
+rxsize
 sbclaude
 schemafile
 sendmesg
@@ -271,6 +291,8 @@ tlnext
 tolower
 toupper
 tranx
+typeh
+typel
 ucode
 udivdi
 udvare

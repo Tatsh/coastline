@@ -11,6 +11,7 @@
 #include <PR/gbi.h>
 #include <PR/gu.h>
 #include <PR/os.h>
+#include <PR/os_cont.h>
 #include <PR/os_libc.h>
 #include <PR/rcp.h>
 #include <PR/sptask.h>

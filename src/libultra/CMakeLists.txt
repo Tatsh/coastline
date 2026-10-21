@@ -19,12 +19,20 @@ add_library(
   gu/translate.c
   io/ai.c
   io/cartrominit.c
+  io/contpfs.c
+  io/contramread.c
+  io/contramwrite.c
+  io/contreaddata.c
+  io/controller.c
+  io/crc.c
   io/devmgr.c
   io/epirawdma.c
   io/epirawread.c
   io/epirawwrite.c
   io/leodiskinit.c
   io/leointerrupt.c
+  io/pfsgetstatus.c
+  io/pfsisplug.c
   io/piacs.c
   io/pidma.c
   io/pigetcmdq.c
@@ -84,6 +92,7 @@ add_library(
   os/settimer.c
   os/startthread.c
   os/syncprintf.c
+  os/thread.c
   os/timerintr.c
   os/virtualtophysical.c
   os/writebackdcache.s

@@ -12,16 +12,16 @@ nonmatching osMotorStop, 0x168
 
 glabel osMotorStop
     /* 62F20 80261F20 27BDFFB0 */  addiu      $sp, $sp, -0x50
-    /* 62F24 80261F24 3C0E8038 */  lui        $t6, %hi(gOsMemAllocState)
+    /* 62F24 80261F24 3C0E8038 */  lui        $t6, %hi(__osPfsPifRam)
     /* 62F28 80261F28 AFBF0014 */  sw         $ra, 0x14($sp)
-    /* 62F2C 80261F2C 25CEF0B0 */  addiu      $t6, $t6, %lo(gOsMemAllocState)
+    /* 62F2C 80261F2C 25CEF0B0 */  addiu      $t6, $t6, %lo(__osPfsPifRam)
     /* 62F30 80261F30 AFA40050 */  sw         $a0, 0x50($sp)
     /* 62F34 80261F34 0C09A518 */  jal        __osSiGetAccess
     /* 62F38 80261F38 AFAE0044 */   sw        $t6, 0x44($sp)
     /* 62F3C 80261F3C 8FB80050 */  lw         $t8, 0x50($sp)
     /* 62F40 80261F40 240F0003 */  addiu      $t7, $zero, 0x3
-    /* 62F44 80261F44 3C018038 */  lui        $at, %hi(g_bSiBusy)
-    /* 62F48 80261F48 A02FF430 */  sb         $t7, %lo(g_bSiBusy)($at)
+    /* 62F44 80261F44 3C018038 */  lui        $at, %hi(__osContLastCmd)
+    /* 62F48 80261F48 A02FF430 */  sb         $t7, %lo(__osContLastCmd)($at)
     /* 62F4C 80261F4C 8F190008 */  lw         $t9, 0x8($t8)
     /* 62F50 80261F50 3C098038 */  lui        $t1, %hi(D_8037F0F0)
     /* 62F54 80261F54 2529F0F0 */  addiu      $t1, $t1, %lo(D_8037F0F0)
@@ -34,8 +34,8 @@ glabel osMotorStop
     /* 62F70 80261F70 24060001 */  addiu      $a2, $zero, 0x1
     /* 62F74 80261F74 0C0990B8 */  jal        osRecvMesg
     /* 62F78 80261F78 8D440004 */   lw        $a0, 0x4($t2)
-    /* 62F7C 80261F7C 3C058038 */  lui        $a1, %hi(gOsMemAllocState)
-    /* 62F80 80261F80 24A5F0B0 */  addiu      $a1, $a1, %lo(gOsMemAllocState)
+    /* 62F7C 80261F7C 3C058038 */  lui        $a1, %hi(__osPfsPifRam)
+    /* 62F80 80261F80 24A5F0B0 */  addiu      $a1, $a1, %lo(__osPfsPifRam)
     /* 62F84 80261F84 0C09A534 */  jal        __osSiRawStartDma
     /* 62F88 80261F88 00002025 */   or        $a0, $zero, $zero
     /* 62F8C 80261F8C 8FAB0050 */  lw         $t3, 0x50($sp)
@@ -45,8 +45,8 @@ glabel osMotorStop
     /* 62F9C 80261F9C 0C0990B8 */  jal        osRecvMesg
     /* 62FA0 80261FA0 8D640004 */   lw        $a0, 0x4($t3)
     /* 62FA4 80261FA4 8FAD0050 */  lw         $t5, 0x50($sp)
-    /* 62FA8 80261FA8 3C0C8038 */  lui        $t4, %hi(gOsMemAllocState)
-    /* 62FAC 80261FAC 258CF0B0 */  addiu      $t4, $t4, %lo(gOsMemAllocState)
+    /* 62FA8 80261FA8 3C0C8038 */  lui        $t4, %hi(__osPfsPifRam)
+    /* 62FAC 80261FAC 258CF0B0 */  addiu      $t4, $t4, %lo(__osPfsPifRam)
     /* 62FB0 80261FB0 AFAC0044 */  sw         $t4, 0x44($sp)
     /* 62FB4 80261FB4 8DAE0008 */  lw         $t6, 0x8($t5)
     /* 62FB8 80261FB8 11C00010 */  beqz       $t6, .L80261FFC
@@ -111,16 +111,16 @@ nonmatching osMotorStart, 0x16C
 
 glabel osMotorStart
     /* 63088 80262088 27BDFFB0 */  addiu      $sp, $sp, -0x50
-    /* 6308C 8026208C 3C0E8038 */  lui        $t6, %hi(gOsMemAllocState)
+    /* 6308C 8026208C 3C0E8038 */  lui        $t6, %hi(__osPfsPifRam)
     /* 63090 80262090 AFBF0014 */  sw         $ra, 0x14($sp)
-    /* 63094 80262094 25CEF0B0 */  addiu      $t6, $t6, %lo(gOsMemAllocState)
+    /* 63094 80262094 25CEF0B0 */  addiu      $t6, $t6, %lo(__osPfsPifRam)
     /* 63098 80262098 AFA40050 */  sw         $a0, 0x50($sp)
     /* 6309C 8026209C 0C09A518 */  jal        __osSiGetAccess
     /* 630A0 802620A0 AFAE0044 */   sw        $t6, 0x44($sp)
     /* 630A4 802620A4 8FB80050 */  lw         $t8, 0x50($sp)
     /* 630A8 802620A8 240F0003 */  addiu      $t7, $zero, 0x3
-    /* 630AC 802620AC 3C018038 */  lui        $at, %hi(g_bSiBusy)
-    /* 630B0 802620B0 A02FF430 */  sb         $t7, %lo(g_bSiBusy)($at)
+    /* 630AC 802620AC 3C018038 */  lui        $at, %hi(__osContLastCmd)
+    /* 630B0 802620B0 A02FF430 */  sb         $t7, %lo(__osContLastCmd)($at)
     /* 630B4 802620B4 8F190008 */  lw         $t9, 0x8($t8)
     /* 630B8 802620B8 3C098038 */  lui        $t1, %hi(D_8037F1F0)
     /* 630BC 802620BC 2529F1F0 */  addiu      $t1, $t1, %lo(D_8037F1F0)
@@ -133,8 +133,8 @@ glabel osMotorStart
     /* 630D8 802620D8 24060001 */  addiu      $a2, $zero, 0x1
     /* 630DC 802620DC 0C0990B8 */  jal        osRecvMesg
     /* 630E0 802620E0 8D440004 */   lw        $a0, 0x4($t2)
-    /* 630E4 802620E4 3C058038 */  lui        $a1, %hi(gOsMemAllocState)
-    /* 630E8 802620E8 24A5F0B0 */  addiu      $a1, $a1, %lo(gOsMemAllocState)
+    /* 630E4 802620E4 3C058038 */  lui        $a1, %hi(__osPfsPifRam)
+    /* 630E8 802620E8 24A5F0B0 */  addiu      $a1, $a1, %lo(__osPfsPifRam)
     /* 630EC 802620EC 0C09A534 */  jal        __osSiRawStartDma
     /* 630F0 802620F0 00002025 */   or        $a0, $zero, $zero
     /* 630F4 802620F4 8FAB0050 */  lw         $t3, 0x50($sp)
@@ -144,8 +144,8 @@ glabel osMotorStart
     /* 63104 80262104 0C0990B8 */  jal        osRecvMesg
     /* 63108 80262108 8D640004 */   lw        $a0, 0x4($t3)
     /* 6310C 8026210C 8FAD0050 */  lw         $t5, 0x50($sp)
-    /* 63110 80262110 3C0C8038 */  lui        $t4, %hi(gOsMemAllocState)
-    /* 63114 80262114 258CF0B0 */  addiu      $t4, $t4, %lo(gOsMemAllocState)
+    /* 63110 80262110 3C0C8038 */  lui        $t4, %hi(__osPfsPifRam)
+    /* 63114 80262114 258CF0B0 */  addiu      $t4, $t4, %lo(__osPfsPifRam)
     /* 63118 80262118 AFAC0044 */  sw         $t4, 0x44($sp)
     /* 6311C 8026211C 8DAE0008 */  lw         $t6, 0x8($t5)
     /* 63120 80262120 11C00010 */  beqz       $t6, .L80262164

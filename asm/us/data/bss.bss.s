@@ -5024,9 +5024,9 @@ nonmatching D_8037F0A4, 0xC
 dlabel D_8037F0A4
     /* 8037F0A4 */ .space 0x0C
 
-nonmatching gOsMemAllocState, 0x1
+nonmatching __osPfsPifRam, 0x1
 
-dlabel gOsMemAllocState
+dlabel __osPfsPifRam
     /* 8037F0B0 */ .space 0x01
 
 nonmatching g_bPfsPifRamByte1, 0x1
@@ -5085,9 +5085,9 @@ nonmatching g_bPfsPifRamEndMarker, 0x13
 dlabel g_bPfsPifRamEndMarker
     /* 8037F0D9 */ .space 0x13
 
-nonmatching g_dwSysReserved7, 0x4
+nonmatching D_8037F0EC, 0x4
 
-dlabel g_dwSysReserved7
+dlabel D_8037F0EC
     /* 8037F0EC */ .space 0x04
 
 nonmatching D_8037F0F0, 0x100
@@ -5201,9 +5201,9 @@ nonmatching D_8037F3B8, 0x38
 dlabel D_8037F3B8
     /* 8037F3B8 */ .space 0x38
 
-nonmatching g_abSiTransferBuffer, 0x4
+nonmatching __osContPifRam, 0x4
 
-dlabel g_abSiTransferBuffer
+dlabel __osContPifRam
     /* 8037F3F0 */ .space 0x04
 
 nonmatching g_dwSysReserved17, 0x4
@@ -5226,29 +5226,29 @@ nonmatching g_aContPifRam, 0x2C
 dlabel g_aContPifRam
     /* 8037F400 */ .space 0x2C
 
-nonmatching g_dwSysReserved20, 0x4
+nonmatching D_8037F42C, 0x4
 
-dlabel g_dwSysReserved20
+dlabel D_8037F42C
     /* 8037F42C */ .space 0x04
 
-nonmatching g_bSiBusy, 0x1
+nonmatching __osContLastCmd, 0x1
 
-dlabel g_bSiBusy
+dlabel __osContLastCmd
     /* 8037F430 */ .space 0x01
 
-nonmatching g_bSiControllerCount, 0x27
+nonmatching __osMaxControllers, 0x27
 
-dlabel g_bSiControllerCount
+dlabel __osMaxControllers
     /* 8037F431 */ .space 0x27
 
-nonmatching g_siFlashMsgQueue, 0x18
+nonmatching __osEepromTimerQ, 0x18
 
-dlabel g_siFlashMsgQueue
+dlabel __osEepromTimerQ
     /* 8037F458 */ .space 0x18
 
-nonmatching g_abSiFlashMsgBuf, 0x10
+nonmatching __osEepromTimerMsg, 0x10
 
-dlabel g_abSiFlashMsgBuf
+dlabel __osEepromTimerMsg
     /* 8037F470 */ .space 0x10
 
 nonmatching __osFinalrom, 0x4

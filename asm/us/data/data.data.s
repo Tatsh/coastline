@@ -66688,11 +66688,11 @@ dlabel g_ViModeMpalHaf1
     /* A712C 802A612C 00000002 */ .word 0x00000002
 enddlabel g_ViModeMpalHaf1
 
-nonmatching g_dwOsPiDmaAddr
+nonmatching __osContinitialized
 
-dlabel g_dwOsPiDmaAddr
+dlabel __osContinitialized
     /* A7130 802A6130 00000000 */ .word 0x00000000
-enddlabel g_dwOsPiDmaAddr
+enddlabel __osContinitialized
 
 nonmatching D_802A6134
 
