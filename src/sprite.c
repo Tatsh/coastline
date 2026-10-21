@@ -325,20 +325,18 @@ void DrawScaledTexturedRect(Sprite *sprite,
 }
 
 /* Start filling rectangles in a colour, opaque. */
-static inline void BeginFill(u8 red, u8 green, u8 blue) {
-    u32 color = GPACK_RGBA5551(red, green, blue, 1);
-
-    gDPPipeSync(gDisplayListPtr++);
-    gDPSetCycleType(gDisplayListPtr++, G_CYC_FILL);
-    gDPSetRenderMode(gDisplayListPtr++, G_RM_OPA_SURF, G_RM_OPA_SURF2);
-    gDPSetFillColor(gDisplayListPtr++, color << 16 | color);
-}
+#define BeginFill(red, green, blue)                                                                \
+    gDPPipeSync(gDisplayListPtr++);                                                                \
+    gDPSetCycleType(gDisplayListPtr++, G_CYC_FILL);                                                \
+    gDPSetRenderMode(gDisplayListPtr++, G_RM_OPA_SURF, G_RM_OPA_SURF2);                            \
+    gDPSetFillColor(gDisplayListPtr++,                                                             \
+                    GPACK_RGBA5551(red, green, blue, 1) << 16 |                                    \
+                        GPACK_RGBA5551(red, green, blue, 1))
 
 /* Return to drawing one cycle at a time after the rectangles. */
-static inline void EndFill(void) {
-    gDPPipeSync(gDisplayListPtr++);
-    gDPSetCycleType(gDisplayListPtr++, G_CYC_1CYCLE);
-}
+#define EndFill()                                                                                  \
+    gDPPipeSync(gDisplayListPtr++);                                                                \
+    gDPSetCycleType(gDisplayListPtr++, G_CYC_1CYCLE)
 
 void DrawPixel(s32 x, s32 y, u8 shade) {
     if (!g_dwScreenScaleShift) {

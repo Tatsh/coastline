@@ -360,25 +360,28 @@ void DrawLine4Bit(s32 x0, s32 y0, s32 x1, s32 y1) {
     }
 }
 
-void SetPixel4Bit(s32 x, s32 y, u8 color) {
-    u8 *texel;
-    s32 offset;
+/* Write a texel at its byte. The color is not masked to 4 bits for the low nibble. */
+#define PutTexel(offset, x, color)                                                                 \
+    if ((x) & 1) {                                                                                 \
+        g_pDecalTexels[offset] = (g_pDecalTexels[offset] & 0xF0) | (color);                        \
+    } else {                                                                                       \
+        g_pDecalTexels[offset] = (g_pDecalTexels[offset] & 0x0F) | ((color) << 4);                 \
+    }
 
-    if (x < 0 || x >= g_bDecalWidth || y < 0 || y >= g_bDecalHeight) {
-        return;
-    }
-    offset = TexelOffset(x, y);
-    /* The mask is a bit a texel, the first texel of a byte in its highest bit. */
-    if (g_pDecalMask != NULL &&
-        (g_pDecalMask[(x >> 3) + y * ((g_bDecalWidth + 7) >> 3)] & (1 << ((x ^ 7) & 7)))) {
-        return;
-    }
-    texel = &g_pDecalTexels[offset];
-    if (x & 1) {
-        /* The color is not masked to 4 bits for the low nibble. */
-        *texel = (*texel & 0xF0) | color;
-    } else {
-        *texel = (*texel & 0x0F) | (color << 4);
+void SetPixel4Bit(s32 x, s32 y, u8 color) {
+    s32 offset, maskByte;
+
+    if (x >= 0 && x < g_bDecalWidth && y >= 0 && y < g_bDecalHeight) {
+        offset = TexelOffset(x, y);
+        /* The mask is a bit a texel, the first texel of a byte in its highest bit. */
+        if (g_pDecalMask == NULL) {
+            PutTexel(offset, x, color);
+        } else {
+            maskByte = (x >> 3) + y * ((g_bDecalWidth + 7) >> 3);
+            if (!(g_pDecalMask[maskByte] & (1 << ((x ^ 7) & 7)))) {
+                PutTexel(offset, x, color);
+            }
+        }
     }
 }
 

@@ -813,9 +813,9 @@ void ResetPaintShopState(void) {
     g_texPaintCursor.originX = CURSOR_START_X;
     g_texPaintCursor.originY = CURSOR_START_Y;
     g_bDecalSlot = DEFAULT_DECAL_SLOT;
-    g_bPreviousDecalSlot = DEFAULT_DECAL_SLOT;
-    g_bUndoDecalSlot = DEFAULT_DECAL_SLOT;
-    g_pDecalSlotIcon = g_apDecalSlotIcons[DEFAULT_DECAL_SLOT];
+    g_bPreviousDecalSlot = g_bDecalSlot;
+    g_bUndoDecalSlot = g_bDecalSlot;
+    g_pDecalSlotIcon = g_apDecalSlotIcons[g_bDecalSlot];
     g_bBrushSize = DEFAULT_BRUSH_SIZE;
     g_bSavedColor = 0;
     g_bDecalColor = DEFAULT_DECAL_COLOR;
@@ -989,10 +989,9 @@ void DrawRectBorder(s32 x,
                     u8 red,
                     u8 green,
                     u8 blue) {
-    u8 dark = 0x30;
-    u8 light = 0xE0;
-    u32 color;
     s32 i;
+    u8 light = 0xE0;
+    u8 dark = 0x30;
 
     if (!g_dwScreenScaleShift) {
         x >>= 1;
@@ -1008,16 +1007,18 @@ void DrawRectBorder(s32 x,
     gDPSetCycleType(gDisplayListPtr++, G_CYC_FILL);
     gDPSetRenderMode(gDisplayListPtr++, G_RM_OPA_SURF, G_RM_OPA_SURF2);
     if (!transparent) {
-        color = GPACK_RGBA5551(red, green, blue, 1);
-        gDPSetFillColor(gDisplayListPtr++, color << 16 | color);
+        gDPSetFillColor(gDisplayListPtr++,
+                        GPACK_RGBA5551(red, green, blue, 1) << 16 |
+                            GPACK_RGBA5551(red, green, blue, 1));
         gDPFillRectangle(gDisplayListPtr++, x, y, x + width, y + height);
         gDPPipeSync(gDisplayListPtr++);
     }
     if (sunken == 1) {
         SwapBytes(&light, &dark);
     }
-    color = GPACK_RGBA5551(light, light, light, 1);
-    gDPSetFillColor(gDisplayListPtr++, color << 16 | color);
+    gDPSetFillColor(gDisplayListPtr++,
+                    GPACK_RGBA5551(light, light, light, 1) << 16 |
+                        GPACK_RGBA5551(light, light, light, 1));
     for (i = 1; i <= border; i++) {
         gDPFillRectangle(gDisplayListPtr++, x - i, y - i, x - i + 1, y + height + i);
     }
@@ -1025,8 +1026,9 @@ void DrawRectBorder(s32 x,
         gDPFillRectangle(gDisplayListPtr++, x - i, y - i, x + width + i, y - i + 1);
     }
     gDPPipeSync(gDisplayListPtr++);
-    color = GPACK_RGBA5551(dark, dark, dark, 1);
-    gDPSetFillColor(gDisplayListPtr++, color << 16 | color);
+    gDPSetFillColor(gDisplayListPtr++,
+                    GPACK_RGBA5551(dark, dark, dark, 1) << 16 |
+                        GPACK_RGBA5551(dark, dark, dark, 1));
     for (i = 1; i <= border; i++) {
         gDPFillRectangle(
             gDisplayListPtr++, x + width + i - 1, y - i, x + width + i, y + height + i);

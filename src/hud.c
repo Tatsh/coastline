@@ -441,11 +441,13 @@ void DrawHudMessage(void) {
 }
 
 void DrawSpeedAndHudOverlay(void) {
-    ViewportRect *rect = &g_aViewportRects[g_dwCurrentSplitScreenIndex];
     f32 speed = g_pActiveCameraVehicle->speedKph;
     s32 x, y;
 
-    SetScissorRect(HUD_SCISSOR_LEFT, rect->y, HUD_SCISSOR_RIGHT, rect->height);
+    SetScissorRect(HUD_SCISSOR_LEFT,
+                   g_aViewportRects[g_dwCurrentSplitScreenIndex].y,
+                   HUD_SCISSOR_RIGHT,
+                   g_aViewportRects[g_dwCurrentSplitScreenIndex].height);
     if ((f64)speed < 0.0) {
         speed = 0.0f;
     }
@@ -464,17 +466,17 @@ void DrawSpeedAndHudOverlay(void) {
     }
 
     /* The speed sits above the dashboard when it shows, and its unit beside it. */
-    rect = &g_aViewportRects[g_dwCurrentSplitScreenIndex];
-    y = rect->height + rect->y - HUD_BOTTOM_MARGIN;
+    x = HUD_RIGHT;
+    y = g_aViewportRects[g_dwCurrentSplitScreenIndex].y +
+        g_aViewportRects[g_dwCurrentSplitScreenIndex].height - HUD_BOTTOM_MARGIN;
     if (g_dwNumViewports == 2) {
         if (g_pActiveCamera != &g_pActiveCameraVehicle->cameras[VEHICLE_CAMERA_BUMPER]) {
             y = y - g_aDashboardTextures[g_dwCurrentSplitScreenIndex].height * 3 / 4 - 1;
         }
         SetTextSize(SPEED_TEXT_SIZE_SPLIT);
-        DrawText(g_szHudSpeedTextBuf, HUD_RIGHT, y);
+        DrawText(g_szHudSpeedTextBuf, x, y);
         return;
     }
-    x = HUD_RIGHT;
     if (g_pActiveCamera != &g_pActiveCameraVehicle->cameras[VEHICLE_CAMERA_BUMPER]) {
         x = SPEED_DASHBOARD_RIGHT;
         y -= g_aDashboardTextures[g_dwCurrentSplitScreenIndex].height;
