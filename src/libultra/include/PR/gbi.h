@@ -10,73 +10,75 @@
 
 /** A 4 by 4 matrix in s15.16 fixed point, with the integer halves before the fractions. */
 typedef union {
-    s32 m[4][4];
-    long long force_structure_alignment;
+    s32 m[4][4]; /*!< The integer halves of the 16 elements in its first 8 words, then the
+                      fractions, two elements to a word. */
+    long long force_structure_alignment; /*!< Aligns the matrix to 8 bytes for the RSP. */
 } Mtx;
 
 /** A directional light with its colour, a copy of the colour and its direction. */
 typedef struct {
-    u8 col[3];
-    s8 pad1;
-    u8 colc[3];
-    s8 pad2;
-    s8 dir[3];
-    s8 pad3;
+    u8 col[3];  /*!< The red, green, and blue of the light. */
+    s8 pad1;    /*!< Padding after the colour. */
+    u8 colc[3]; /*!< A copy of the colour for the RSP. */
+    s8 pad2;    /*!< Padding after the copy of the colour. */
+    s8 dir[3];  /*!< The unit direction toward the light, each component times 127. */
+    s8 pad3;    /*!< Padding after the direction. */
 } Light_t;
 
 typedef union {
-    Light_t l;
-    long long force_structure_alignment[2];
+    Light_t l;                              /*!< The light. */
+    long long force_structure_alignment[2]; /*!< Aligns the light to 8 bytes for the RSP. */
 } Light;
 
 /** The two directions the RSP uses to generate texture coordinates for reflection mapping. */
 typedef struct {
-    Light l[2];
+    Light l[2]; /*!< The directions of the s and t texture axes, in the form of two lights. */
 } LookAt;
 
 /** The texture coordinates of the two specular highlights. */
 typedef struct {
-    s32 x1, y1, x2, y2;
+    s32 x1, y1, x2, y2; /*!< The s and t of the first highlight, then of the second, in 10.2
+                             fixed point texels. */
 } Hilite_t;
 
 typedef union {
-    Hilite_t h;
-    s32 force_structure_alignment[4];
+    Hilite_t h;                       /*!< The coordinates of the highlights. */
+    s32 force_structure_alignment[4]; /*!< Aligns the highlights to 4 bytes. */
 } Hilite;
 
 /** A vertex with a texture coordinate and a color. */
 typedef struct {
-    s16 ob[3];
-    u16 flag;
-    s16 tc[2];
-    u8 cn[4];
+    s16 ob[3]; /*!< The x, y, and z of the vertex in model coordinates. */
+    u16 flag;  /*!< Unused by the microcode. */
+    s16 tc[2]; /*!< The s and t texture coordinates, in s10.5 fixed point. */
+    u8 cn[4];  /*!< The red, green, blue, and alpha of the vertex. */
 } Vtx_t;
 
 /** A vertex with a texture coordinate and a normal, for lighting. */
 typedef struct {
-    s16 ob[3];
-    u16 flag;
-    s16 tc[2];
-    s8 n[3];
-    u8 a;
+    s16 ob[3]; /*!< The x, y, and z of the vertex in model coordinates. */
+    u16 flag;  /*!< Unused by the microcode. */
+    s16 tc[2]; /*!< The s and t texture coordinates, in s10.5 fixed point. */
+    s8 n[3];   /*!< The unit normal, each component times 127. */
+    u8 a;      /*!< The alpha of the vertex. */
 } Vtx_tn;
 
 typedef union {
-    Vtx_t v;
-    Vtx_tn n;
-    long long force_structure_alignment;
+    Vtx_t v;                             /*!< The vertex with a colour. */
+    Vtx_tn n;                            /*!< The vertex with a normal. */
+    long long force_structure_alignment; /*!< Aligns the vertex to 8 bytes for the RSP. */
 } Vtx;
 
 /** The two words of a display list command. */
 typedef struct {
-    u32 w0;
-    u32 w1;
+    u32 w0; /*!< The first word, with the opcode in its top byte. */
+    u32 w1; /*!< The second word, often a segmented address or an operand. */
 } Gwords;
 
 /** A display list command for the Fast3D microcode. */
 typedef union {
-    Gwords words;
-    long long force_structure_alignment;
+    Gwords words;                        /*!< The two words of the command. */
+    long long force_structure_alignment; /*!< Aligns the command to 8 bytes for the RSP. */
 } Gfx;
 
 /** Place the low siz bits of v at bit s. */
@@ -346,13 +348,13 @@ typedef union {
 
 /** The scale and translation of a viewport, in 10.2 fixed point, each with the depth third. */
 typedef struct {
-    s16 vscale[4];
-    s16 vtrans[4];
+    s16 vscale[4]; /*!< Half the width, height, and depth range, then 0; a negative x mirrors. */
+    s16 vtrans[4]; /*!< The x and y of the centre and the middle of the depth range, then 0. */
 } Vp_t;
 
 typedef union {
-    Vp_t vp;
-    long long force_structure_alignment[2];
+    Vp_t vp;                                /*!< The viewport. */
+    long long force_structure_alignment[2]; /*!< Aligns the viewport to 8 bytes for the RSP. */
 } Vp;
 
 /** The word gSPNumLights() sends for a number of directional lights. */
@@ -360,21 +362,21 @@ typedef union {
 
 /** An ambient light: its color, twice. */
 typedef struct {
-    u8 col[3];
-    char pad1;
-    u8 colc[3];
-    char pad2;
+    u8 col[3];  /*!< The red, green, and blue of the light. */
+    char pad1;  /*!< Padding after the colour. */
+    u8 colc[3]; /*!< A copy of the colour for the RSP. */
+    char pad2;  /*!< Padding after the copy of the colour. */
 } Ambient_t;
 
 typedef union {
-    Ambient_t l;
-    long long force_structure_alignment[1];
+    Ambient_t l;                            /*!< The light. */
+    long long force_structure_alignment[1]; /*!< Aligns the light to 8 bytes for the RSP. */
 } Ambient;
 
 /** An ambient light and one directional light. */
 typedef struct {
-    Ambient a;
-    Light l[1];
+    Ambient a;  /*!< The ambient light. */
+    Light l[1]; /*!< The directional light. */
 } Lights1;
 
 /** Write a command of two words at pkt, which is evaluated once. */

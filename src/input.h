@@ -57,45 +57,37 @@
 
 /** The input of one player. */
 typedef struct {
-    /** The buttons pressed and the race actions, as the INPUT_ bits. */
-    u32 buttons;
-    /** The buttons TransferFlags() moved out of the input until they are released. */
-    u32 heldButtons;
-    /** The time left before the stick presses a direction again, in milliseconds. */
-    s32 repeatUp;
-    s32 repeatDown;
-    s32 repeatLeft;
-    s32 repeatRight;
-    /** The stick and the steering, from -1 to 1. */
-    f32 stickX;
-    f32 stickY;
-    f32 steering;
-    /** The steering as the stick or the recording gives it. */
-    s8 steeringInput;
-    /** The button layout of the race, from 0 to CONTROLLER_LAYOUTS - 1. */
-    u8 controllerLayout;
-    /** Set when the controller of the player does not respond. */
-    s32 controllerMissing;
-    /** The buffers that record two bytes of input each frame, or NULL. */
-    u8 *recordBuffers[INPUT_RECORDERS];
-    s32 recordPositions[INPUT_RECORDERS];
-    s32 recordLimits[INPUT_RECORDERS];
-    /** The recording that replaces the input, or NULL. */
-    u8 *playbackBuffer;
-    s32 playbackPosition;
-    s32 playbackLimit;
-    /** The last button changes, the newest at historyIndex. */
-    u16 history[INPUT_HISTORY_SIZE];
-    s32 historyIndex;
-    s32 playerIndex;
-    /** The pad the controller reads fill. */
-    OSContPad *pad;
+    u32 buttons;           /*!< The buttons pressed and the race actions, as the INPUT_ bits. */
+    u32 heldButtons;       /*!< The buttons TransferFlags() moved out of the input until they are
+                                released. */
+    s32 repeatUp;          /*!< The milliseconds before the stick presses up again. */
+    s32 repeatDown;        /*!< The milliseconds before the stick presses down again. */
+    s32 repeatLeft;        /*!< The milliseconds before the stick presses left again. */
+    s32 repeatRight;       /*!< The milliseconds before the stick presses right again. */
+    f32 stickX;            /*!< The horizontal position of the stick, from -1 to 1. */
+    f32 stickY;            /*!< The vertical position of the stick, from -1 to 1. */
+    f32 steering;          /*!< The steering, from -1 to 1. */
+    s8 steeringInput;      /*!< The steering as the stick, the pad, or the recording gives it. */
+    u8 controllerLayout;   /*!< The button layout of the race, from 0 to CONTROLLER_LAYOUTS - 1. */
+    s32 controllerMissing; /*!< Set when the controller of the player does not respond. */
+    u8 *recordBuffers[INPUT_RECORDERS];   /*!< The buffers that record two bytes of input each
+                                               frame, or NULL. */
+    s32 recordPositions[INPUT_RECORDERS]; /*!< The byte offset of the next frame of each
+                                               recording. */
+    s32 recordLimits[INPUT_RECORDERS];    /*!< The size of each recording buffer, in bytes. */
+    u8 *playbackBuffer;                   /*!< The recording that replaces the input, or NULL. */
+    s32 playbackPosition; /*!< The byte offset of the next frame of the recording played. */
+    s32 playbackLimit;    /*!< The size of the recording played, in bytes. */
+    u16 history[INPUT_HISTORY_SIZE]; /*!< The last button changes, the newest at historyIndex. */
+    s32 historyIndex; /*!< The index of the newest button change, moving down as changes come. */
+    s32 playerIndex;  /*!< The player of the input, from 0 to MAX_PLAYERS - 1. */
+    OSContPad *pad;   /*!< The pad the controller reads fill. */
 } PlayerInputState;
 
 /** A cheat: the sequence of button changes that applies it, newest first, ending in 0xFFFF. */
 typedef struct {
-    void (*apply)(void);
-    u16 *sequence;
+    void (*apply)(void); /*!< The routine called when the sequence is entered. */
+    u16 *sequence;       /*!< The button changes, or NULL to end the list of cheats. */
 } CheatCode;
 
 /** @ghidraAddress USA: 0x8036a8e0 */

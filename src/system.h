@@ -14,8 +14,8 @@
 
 /** The bump allocator zcalloc() draws from. */
 typedef struct {
-    u8 *cur;
-    u8 *end;
+    u8 *cur; /*!< The next free byte. */
+    u8 *end; /*!< The end of the memory to allocate from. */
 } InflateAllocator;
 
 /**
@@ -142,21 +142,14 @@ u32 DmaReadAssetSize(u32 romOffset);
 
 /** A decompression that runs over several calls of DecompressFromRom(), a step a call. */
 typedef struct {
-    /** Where the next chunk is on the cartridge. */
-    u32 romOffset;
-    /** Where the decompression writes next, or NULL before it starts. */
-    void *dst;
-    /** The memory the compressed data is read into, two halves of 16000 bytes. */
-    u8 *buffer;
-    /** The half being read into, 0 or 16000. */
-    u32 bufferHalf;
-    /** The sizes of the asset, compressed and decompressed. */
-    u32 compressedSize;
-    u32 decompressedSize;
-    /** The compressed bytes left to read, 0 once the decompression is done. */
-    u32 remaining;
-    /** The size of the chunk being read. */
-    u32 pendingChunkSize;
+    u32 romOffset;  /*!< Where the next chunk is on the cartridge. */
+    void *dst;      /*!< Where the decompression writes next, or NULL before it starts. */
+    u8 *buffer;     /*!< The memory the compressed data is read into, two halves of 16000 bytes. */
+    u32 bufferHalf; /*!< The half being read into, 0 or 16000. */
+    u32 compressedSize;   /*!< The compressed size of the asset, in bytes. */
+    u32 decompressedSize; /*!< The decompressed size of the asset, in bytes. */
+    u32 remaining; /*!< The compressed bytes remaining to read, 0 once the decompression is done. */
+    u32 pendingChunkSize; /*!< The size of the chunk being read, in bytes. */
 } DecompressJob;
 
 /** The size of each of g_aDmaWorkBuffers. */

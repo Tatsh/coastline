@@ -4,8 +4,8 @@ float sinf(float x) {
     double dx, xsq, poly, dn, result;
     int n, xpt;
     union {
-        float f;
-        s32 i;
+        float f; /*!< The argument. */
+        s32 i;   /*!< The bits of the argument, read for its exponent. */
     } u = {x};
 
     /* The top bits of the exponent sort the argument into ranges. */

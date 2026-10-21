@@ -11,8 +11,8 @@
 
 /** One registration of osSetEventMesg(). */
 typedef struct {
-    OSMesgQueue *messageQueue;
-    OSMesg message;
+    OSMesgQueue *messageQueue; /*!< The queue the event sends to, or NULL when none is set. */
+    OSMesg message;            /*!< The message sent when the event occurs. */
 } __OSEventState;
 
 /**
@@ -22,8 +22,8 @@ typedef struct {
  * @ghidraAddress USA: 0x802a6290
  */
 extern struct __osThreadTail {
-    OSThread *next;
-    OSPri priority;
+    OSThread *next; /*!< NULL; the tail has no next thread. */
+    OSPri priority; /*!< -1, below every thread. */
 } __osThreadTail;
 
 /** @ghidraAddress USA: 0x802a6298 */

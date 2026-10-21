@@ -14,16 +14,14 @@
 
 /** A puff of smoke or exhaust, in a list of the pool linked by index. */
 typedef struct {
-    Vec3f position;
-    /** How far the puff moves a second at its full opacity; it slows as it fades. */
-    Vec3f velocity;
-    /** The size, which grows as the puff fades. */
-    f32 size;
-    /** The index of the next puff of its list in g_aParticlePool, or 0 at its end. */
-    u16 next;
-    /** How far the puff has faded, and its opacity when it began; their product is its opacity. */
-    u8 fade;
-    u8 alpha;
+    Vec3f position; /*!< The position of the puff in the world. */
+    Vec3f velocity; /*!< How far the puff moves a second at its full opacity; it slows as it
+                         fades. */
+    f32 size;       /*!< The size, growing as the puff fades. */
+    u16 next; /*!< The index of the next puff of its list in g_aParticlePool, or 0 at its end. */
+    u8 fade;  /*!< The share of the opacity remaining, from 0 to 255, falling as the puff grows. */
+    u8 alpha; /*!< The opacity when the puff began, from 0 to 255; times fade over 256, it gives
+                   the opacity drawn. */
 } Particle;
 
 /** The puffs of the pool. The first is never used, so that index 0 ends a list. */

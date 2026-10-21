@@ -9,27 +9,27 @@
 #include <PR/ultratypes.h>
 
 typedef struct {
-    u32 type;
-    u32 flags;
-    u64 *ucode_boot;
-    u32 ucode_boot_size;
-    u64 *ucode;
-    u32 ucode_size;
-    u64 *ucode_data;
-    u32 ucode_data_size;
-    u64 *dram_stack;
-    u32 dram_stack_size;
-    u64 *output_buff;
-    u64 *output_buff_size;
-    u64 *data_ptr;
-    u32 data_size;
-    u64 *yield_data_ptr;
-    u32 yield_data_size;
+    u32 type;              /*!< The kind of task, such as M_GFXTASK for graphics. */
+    u32 flags;             /*!< The OS_TASK_ bits. */
+    u64 *ucode_boot;       /*!< The microcode that boots the RSP and loads the task microcode. */
+    u32 ucode_boot_size;   /*!< The size of the boot microcode, in bytes. */
+    u64 *ucode;            /*!< The text of the task microcode. */
+    u32 ucode_size;        /*!< The size of the text of the task microcode, in bytes. */
+    u64 *ucode_data;       /*!< The data of the task microcode. */
+    u32 ucode_data_size;   /*!< The size of the data of the task microcode, in bytes. */
+    u64 *dram_stack;       /*!< The matrix stack of the microcode in memory, aligned to 16 bytes. */
+    u32 dram_stack_size;   /*!< The size of the matrix stack, in bytes. */
+    u64 *output_buff;      /*!< The start of the buffer the RSP writes RDP commands to. */
+    u64 *output_buff_size; /*!< The end of the output buffer, despite the name. */
+    u64 *data_ptr;         /*!< The display list or command list the task runs. */
+    u32 data_size;         /*!< The size of the display list or command list, in bytes. */
+    u64 *yield_data_ptr;   /*!< The buffer the RSP saves its state to when the task yields. */
+    u32 yield_data_size;   /*!< The size of the yield buffer, OS_YIELD_DATA_SIZE bytes. */
 } OSTask_t;
 
 typedef union {
-    OSTask_t t;
-    long long int force_structure_alignment;
+    OSTask_t t;                              /*!< The task. */
+    long long int force_structure_alignment; /*!< Aligns the task to 8 bytes. */
 } OSTask;
 
 #define OS_TASK_YIELDED 0x0001

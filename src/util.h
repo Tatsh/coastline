@@ -19,7 +19,7 @@
 
 /** A block of eight display list commands. */
 typedef struct {
-    u64 commands[8];
+    u64 commands[8]; /*!< The commands, one 64-bit word each. */
 } DisplayListBlock;
 
 /**

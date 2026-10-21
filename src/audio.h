@@ -27,72 +27,53 @@
 
 /** The header of an XM sample as the player keeps it, followed by its decoded data. */
 typedef struct {
-    u32 length;
-    /** Left in the little-endian order of the module. */
-    u32 loopStart;
-    u32 loopLength;
-    u8 volume;
-    s8 finetune;
-    /** 0 for no loop and 1 for a forward loop. */
-    u8 type;
-    u8 panning;
-    /** The notes to add to a note of the pattern. */
-    s8 relativeNote;
-    u8 reserved;
-    char name[22];
+    u32 length;      /*!< The samples of the data, one byte each, in the order of the processor. */
+    u32 loopStart;   /*!< The start of the loop, in the little-endian order of the module. */
+    u32 loopLength;  /*!< The samples of the loop, in the order of the processor. */
+    u8 volume;       /*!< The volume of the sample, from 0 to 64. */
+    s8 finetune;     /*!< The finetune of the sample; the player does not read it. */
+    u8 type;         /*!< 0 for no loop and 1 for a forward loop. */
+    u8 panning;      /*!< The panning of the sample; the player does not read it. */
+    s8 relativeNote; /*!< The notes to add to a note of the pattern. */
+    u8 reserved;     /*!< The reserved byte of the header of the module. */
+    char name[22];   /*!< The name of the sample in the module. */
 } XmSample;
 
 /** The state of a channel of the music. */
 typedef struct {
-    /** The step a tone portamento slides to, or 0. */
-    u64 portamentoTarget;
-    /** The change of the period a tick, or 0. */
-    s16 portamentoSpeed;
-    /** The change of the volume a tick, or 0. */
-    s16 volumeSlide;
-    /** The note, from 0. */
-    u8 note;
-    /** The instrument playing, from 1, or 0 for none. */
-    u8 instrument;
-    /** The volume, from 0 to 64. */
-    u8 volume;
-    u8 effect;
-    u8 effectParameter;
-    /** The instrument of the last row. */
-    u8 rowInstrument;
-    /** The three notes of an arpeggio, then the step through them, which the arpeggio also reads.
-     */
-    u8 arpeggio[4];
-    /** Whether an arpeggio plays. */
-    u8 arpeggioOn;
-    u8 pad17;
+    u64 portamentoTarget; /*!< The mixer step a tone portamento slides to, or 0. */
+    s16 portamentoSpeed;  /*!< The change of the period a tick, or 0. */
+    s16 volumeSlide;      /*!< The change of the volume a tick, or 0. */
+    u8 note;              /*!< The note, from 0. */
+    u8 instrument;        /*!< The instrument playing, from 1, or 0 for none. */
+    u8 volume;            /*!< The volume, from 0 to 64. */
+    u8 effect;            /*!< The effect command of the last row. */
+    u8 effectParameter;   /*!< The parameter of the effect command of the last row. */
+    u8 rowInstrument;     /*!< The instrument of the last row. */
+    u8 arpeggio[4]; /*!< The three notes of an arpeggio, then the index of the note playing. */
+    u8 arpeggioOn;  /*!< Whether an arpeggio plays. */
+    u8 pad17;       /*!< Padding to the 8-byte alignment of the structure. */
 } MusicChannel;
 
 /** The position of the music player in its module. */
 typedef struct {
-    /** The ticks of a row. */
-    u16 speed;
-    /** The ticks left of the row. */
-    u16 tick;
-    /** The rows left of the pattern. */
-    u16 rowsLeft;
-    u16 pad6;
-    /** The order of the patterns. */
-    u8 *orders;
-    /** The packed data of the next row. */
-    u8 *row;
-    u8 order;
-    u8 songLength;
-    u8 restartOrder;
-    u8 pad13[0x18 - 0x13];
+    u16 speed;    /*!< The ticks of a row. */
+    u16 tick;     /*!< The ticks remaining of the row. */
+    u16 rowsLeft; /*!< The rows remaining of the pattern. */
+    u16 pad6;     /*!< Padding to the alignment of the next member. */
+    u8 *orders;   /*!< The order table of the patterns, copied from the module. */
+    u8 *row;      /*!< The packed data of the next row. */
+    u8 order; /*!< The index in the order table of the pattern playing, 0xFF before the first. */
+    u8 songLength;         /*!< The entries of the order table that play. */
+    u8 restartOrder;       /*!< The index in the order table the song restarts from at its end. */
+    u8 pad13[0x18 - 0x13]; /*!< Padding to the size of the structure in the binary. */
 } MusicPlayer;
 
 /** A sample a sound effect channel plays, and the loop at its end. */
 typedef struct {
-    s8 *start;
-    u32 length;
-    /** The bytes the channel goes back at the end, or 0 to stop. */
-    u32 loopLength;
+    s8 *start;      /*!< The signed 8-bit samples. */
+    u32 length;     /*!< The samples before the end, one byte each. */
+    u32 loopLength; /*!< The bytes the channel goes back at the end, or 0 to stop. */
 } SoundEffectSample;
 
 /**
@@ -333,23 +314,24 @@ void AudioMixingThreadMain(void *arg);
  * rolling from 8 to 12; surfaces 0 and 3 share theirs.
  */
 enum {
-    SOUND_EFFECT_NONE,
-    SOUND_EFFECT_ENGINE = SOUND_EFFECT_NONE,
-    SOUND_EFFECT_VEHICLE_IMPACT,
-    SOUND_EFFECT_IMPACT,
-    SOUND_EFFECT_LANDING,
-    SOUND_EFFECT_SKID_SURFACE_2,
-    SOUND_EFFECT_SKID_SURFACE_1,
-    SOUND_EFFECT_6,
-    SOUND_EFFECT_SKID_SURFACE_0,
-    SOUND_EFFECT_ROLL_SURFACE_1,
-    SOUND_EFFECT_ROLL_SURFACE_2,
-    SOUND_EFFECT_ROLL_SURFACE_0,
-    SOUND_EFFECT_ROLL_SNOW,
-    SOUND_EFFECT_SLOW_SURFACE,
-    SOUND_EFFECT_BEEP,
-    SOUND_EFFECT_GO,
-    SOUND_EFFECT_WATERFALL,
+    SOUND_EFFECT_NONE,                       /*!< No effect plays. */
+    SOUND_EFFECT_ENGINE = SOUND_EFFECT_NONE, /*!< The engine, also used for the airplane. */
+    SOUND_EFFECT_VEHICLE_IMPACT,             /*!< A hit of another vehicle. */
+    SOUND_EFFECT_IMPACT,                     /*!< A hit of the track. */
+    SOUND_EFFECT_LANDING,                    /*!< A wheel landing on the ground. */
+    SOUND_EFFECT_SKID_SURFACE_2,             /*!< A skid on surface 2. */
+    SOUND_EFFECT_SKID_SURFACE_1,             /*!< A skid on surface 1. */
+    SOUND_EFFECT_6,              /*!< A skid sound the reconstructed code does not choose. */
+    SOUND_EFFECT_SKID_SURFACE_0, /*!< A skid on surfaces 0 and 3, and on every surface in snow. */
+    SOUND_EFFECT_ROLL_SURFACE_1, /*!< The rolling on surface 1. */
+    SOUND_EFFECT_ROLL_SURFACE_2, /*!< The rolling on surface 2. */
+    SOUND_EFFECT_ROLL_SURFACE_0, /*!< The rolling on surfaces 0 and 3, and on the slow surface
+                                      in snow. */
+    SOUND_EFFECT_ROLL_SNOW,      /*!< The rolling on surfaces 0 to 3 in snow. */
+    SOUND_EFFECT_SLOW_SURFACE,   /*!< The skid and the rolling on the slow surface. */
+    SOUND_EFFECT_BEEP,           /*!< A beep of the countdown. */
+    SOUND_EFFECT_GO,             /*!< The tone of the countdown that starts the race. */
+    SOUND_EFFECT_WATERFALL,      /*!< The waterfall of the jungle track. */
 };
 
 /** The first skid and rolling sound, and the end of the rolling sounds. */
@@ -359,14 +341,13 @@ enum {
 
 /** A sound effect of a race, as LoadAllSoundEffects() loads it. */
 typedef struct {
-    /** The samples, signed 8-bit, followed by guardLength samples of its start. */
-    s8 *sample;
-    u32 romStart;
-    u32 romEnd;
-    u32 length;
-    /** The samples a loop repeats, and those copied after the end; -1 for the whole sound. */
-    s32 loopLength;
-    s32 guardLength;
+    s8 *sample;     /*!< The samples, signed 8-bit, followed by guardLength samples of its start. */
+    u32 romStart;   /*!< The cartridge address of the compressed sound. */
+    u32 romEnd;     /*!< The cartridge address of the end of the compressed sound. */
+    u32 length;     /*!< The samples of the decompressed sound, one byte each. */
+    s32 loopLength; /*!< The samples a loop repeats, or -1 for the whole sound. */
+    s32 guardLength; /*!< The samples of the start copied after the end, or -1 for the whole
+                          sound. */
 } SoundEffect;
 
 /** The sound effects of a race. @ghidraAddress USA: 0x8028bc04 */

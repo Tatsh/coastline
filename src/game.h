@@ -10,24 +10,21 @@
 
 /** The modes of play, in the order of the main menu. */
 enum {
-    GAME_MODE_CHAMPIONSHIP,
-    GAME_MODE_ARCADE,
-    GAME_MODE_TIME_ATTACK,
-    GAME_MODE_PRACTICE,
-    /** The race the computer drives after the splash screens. */
-    GAME_MODE_DEMO,
-    /** The race that follows the results of a finished season. */
-    GAME_MODE_AFTER_SEASON = 5,
+    GAME_MODE_CHAMPIONSHIP,     /*!< The seasons of the championship. */
+    GAME_MODE_ARCADE,           /*!< A race of two vehicles with checkpoints that add time. */
+    GAME_MODE_TIME_ATTACK,      /*!< Laps against the clock and a ghost car. */
+    GAME_MODE_PRACTICE,         /*!< Free driving on a track, counting no laps. */
+    GAME_MODE_DEMO,             /*!< The race the computer drives after the splash screens. */
+    GAME_MODE_AFTER_SEASON = 5, /*!< The race that follows the results of a finished season. */
 };
 
 /** The races the computer drives in GAME_MODE_DEMO. */
 enum {
-    /** The race after the splash screens. */
-    RACE_SESSION_ATTRACT,
-    /** The race under the captions of the credits, from the options menu. */
-    RACE_SESSION_CREDIT_CAPTIONS,
-    /** The race under the scrolling credits, after the championship or from the options menu. */
-    RACE_SESSION_SCROLLING_CREDITS,
+    RACE_SESSION_ATTRACT,           /*!< The race after the splash screens. */
+    RACE_SESSION_CREDIT_CAPTIONS,   /*!< The race under the captions of the credits, from the
+                                         options menu. */
+    RACE_SESSION_SCROLLING_CREDITS, /*!< The race under the scrolling credits, after the
+                                         championship or from the options menu. */
 };
 
 /** The mode of play the main menu chose. @ghidraAddress USA: 0x8026ff18 */

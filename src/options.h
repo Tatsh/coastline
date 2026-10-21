@@ -16,52 +16,49 @@
 
 /** The items of the options menu. */
 enum {
-    OPTIONS_ITEM_BGM,
-    OPTIONS_ITEM_SFX,
-    OPTIONS_ITEM_UNITS,
-    OPTIONS_ITEM_CONTROLLER,
-    OPTIONS_ITEM_SAVE_CONFIGURATION,
-    OPTIONS_ITEM_LOAD_CONFIGURATION,
-    OPTIONS_ITEM_CREDITS,
-    OPTIONS_ITEMS,
+    OPTIONS_ITEM_BGM,                /*!< The volume of the music. */
+    OPTIONS_ITEM_SFX,                /*!< The volume of the sound effects. */
+    OPTIONS_ITEM_UNITS,              /*!< The units of speed, miles or kilometres an hour. */
+    OPTIONS_ITEM_CONTROLLER,         /*!< Opens the controller configuration screen. */
+    OPTIONS_ITEM_SAVE_CONFIGURATION, /*!< Saves the settings to a Controller Pak. */
+    OPTIONS_ITEM_LOAD_CONFIGURATION, /*!< Loads the settings from a Controller Pak. */
+    OPTIONS_ITEM_CREDITS,            /*!< Starts the credits race. */
+    OPTIONS_ITEMS,                   /*!< The number of items. */
 };
 
 /** The screens that open the save and load menu, deciding what it offers and where it returns. */
 enum {
-    /** The main menu, for which the menu offers every choice. */
-    SAVE_LOAD_FROM_MAIN_MENU,
-    /** The results of a championship race, after which the menu asks to save the season. */
-    SAVE_LOAD_FROM_SEASON,
-    /** The results of a time attack, after which the menu asks to save the ghost car. */
-    SAVE_LOAD_FROM_TIME_ATTACK,
+    SAVE_LOAD_FROM_MAIN_MENU,   /*!< The main menu; the menu offers every choice. */
+    SAVE_LOAD_FROM_SEASON,      /*!< The results of a championship race; the menu offers to save
+                                     the season. */
+    SAVE_LOAD_FROM_TIME_ATTACK, /*!< The results of a time attack; the menu offers to save the
+                                     ghost car. */
 };
 
 /** The choices of the save and load menu. */
 enum {
-    SAVE_LOAD_LOAD_SEASON,
-    SAVE_LOAD_SAVE_SEASON,
-    SAVE_LOAD_LOAD_GHOST,
-    SAVE_LOAD_SAVE_GHOST,
-    SAVE_LOAD_LOAD_OPTIONS,
-    SAVE_LOAD_SAVE_OPTIONS,
-    SAVE_LOAD_CHOICES,
+    SAVE_LOAD_LOAD_SEASON,  /*!< Load a championship season. */
+    SAVE_LOAD_SAVE_SEASON,  /*!< Save the championship season. */
+    SAVE_LOAD_LOAD_GHOST,   /*!< Load a ghost car of time attack. */
+    SAVE_LOAD_SAVE_GHOST,   /*!< Save the ghost car of time attack. */
+    SAVE_LOAD_LOAD_OPTIONS, /*!< Load the settings of the options menu. */
+    SAVE_LOAD_SAVE_OPTIONS, /*!< Save the settings of the options menu. */
+    SAVE_LOAD_CHOICES,      /*!< The number of choices. */
 };
 
 /** The data ProcessPakDataScreen() loads or saves. */
 enum {
-    PAK_DATA_LOAD_SEASON,
-    PAK_DATA_LOAD_GHOST,
-    PAK_DATA_LOAD_CONFIGURATION,
-    PAK_DATA_SAVE_CONFIGURATION,
+    PAK_DATA_LOAD_SEASON,        /*!< Load a championship season. */
+    PAK_DATA_LOAD_GHOST,         /*!< Load a ghost car of time attack. */
+    PAK_DATA_LOAD_CONFIGURATION, /*!< Load the settings of the options menu. */
+    PAK_DATA_SAVE_CONFIGURATION, /*!< Save the settings of the options menu. */
 };
 
 /** The settings of the options menu, which the configuration on a Controller Pak keeps. */
 typedef struct {
-    /** The levels of the music and the effects, from 0 to VOLUME_LEVELS - 1. */
-    s32 musicVolume;
-    s32 sfxVolume;
-    /** Whether speeds show in miles an hour rather than kilometers. */
-    s32 speedInMph;
+    s32 musicVolume; /*!< The level of the music, from 0 to VOLUME_LEVELS - 1. */
+    s32 sfxVolume;   /*!< The level of the sound effects, from 0 to VOLUME_LEVELS - 1. */
+    s32 speedInMph;  /*!< Whether speeds show in miles an hour rather than kilometres. */
 } OptionSettings;
 
 /** @ghidraAddress USA: 0x802723d0 */

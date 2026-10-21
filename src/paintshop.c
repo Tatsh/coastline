@@ -78,19 +78,19 @@
 
 /* The states of the dialog of the controller pak. */
 enum {
-    PAK_STATE_FADE_OUT,
-    PAK_STATE_WAIT_FADE,
-    PAK_STATE_CONFIRM,
-    PAK_STATE_INIT_PAK,
-    PAK_STATE_REPAIR_ID,
-    PAK_STATE_CONFIRM_OVERWRITE,
-    PAK_STATE_FIND_FILE,
-    PAK_STATE_TRANSFER_DECALS,
-    PAK_STATE_TRANSFER_PALETTE,
-    PAK_STATE_NEW_PAK,
-    PAK_STATE_REMOVE_RUMBLE_PAK,
-    PAK_STATE_DONE,
-    PAK_STATE_FINISH,
+    PAK_STATE_FADE_OUT,          /*!< Start to fade out the music and the sound effects. */
+    PAK_STATE_WAIT_FADE,         /*!< Wait for the fade, then a few frames more. */
+    PAK_STATE_CONFIRM,           /*!< Request confirmation to load or save the decals. */
+    PAK_STATE_INIT_PAK,          /*!< Check for a pak and open its file system. */
+    PAK_STATE_REPAIR_ID,         /*!< Repair the identity of a pak that could not be read. */
+    PAK_STATE_CONFIRM_OVERWRITE, /*!< Request confirmation to overwrite the saved decals. */
+    PAK_STATE_FIND_FILE,         /*!< Find the file of the decals on the pak. */
+    PAK_STATE_TRANSFER_DECALS,   /*!< Create the file if needed, then move a decal a frame. */
+    PAK_STATE_TRANSFER_PALETTE,  /*!< Read or write the palette of the paint. */
+    PAK_STATE_NEW_PAK,           /*!< Report that a different pak was inserted. */
+    PAK_STATE_REMOVE_RUMBLE_PAK, /*!< Request the swap of a Rumble Pak for a Controller Pak. */
+    PAK_STATE_DONE,              /*!< Offer to put the Rumble Pak back after a swap. */
+    PAK_STATE_FINISH,            /*!< Fade the sounds back in and close the dialog. */
 };
 
 /* The frames the dialog shows its progress before it moves the first decal. */

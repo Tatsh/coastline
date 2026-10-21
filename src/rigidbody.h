@@ -14,42 +14,40 @@
 
 /** A rotation as a unit quaternion. */
 typedef struct {
-    f32 w;
-    f32 x;
-    f32 y;
-    f32 z;
+    f32 w; /*!< The scalar part, the cosine of half the angle of the rotation. */
+    f32 x; /*!< The x component of the vector part. */
+    f32 y; /*!< The y component of the vector part. */
+    f32 z; /*!< The z component of the vector part. */
 } Quaternion;
 
 /** The motion of a rigid body at an instant. */
 typedef struct {
-    Vec3f position;
-    Vec3f velocity;
-    Quaternion orientation;
-    Vec3f angularVelocity;
-    /** The rate of change of the orientation. */
-    Quaternion spin;
+    Vec3f position;         /*!< The position of the body in the world. */
+    Vec3f velocity;         /*!< The velocity of the body, in world units a second. */
+    Quaternion orientation; /*!< The orientation of the body. */
+    Vec3f angularVelocity;  /*!< The angular velocity, in radians a second about the world axes. */
+    Quaternion spin;        /*!< The rate of change of the orientation. */
 } RigidBodyState;
 
 /** The frames a force can be given in. */
 enum {
-    RIGID_BODY_FORCE_WORLD,
-    RIGID_BODY_FORCE_BODY,
+    RIGID_BODY_FORCE_WORLD, /*!< The vector of the force is in world axes. */
+    RIGID_BODY_FORCE_BODY,  /*!< The vector of the force is in the axes of the body. */
 };
 
 /** A force on a rigid body, in a list. */
 typedef struct RigidBodyForce {
-    struct RigidBodyForce *next;
-    s32 frame;
-    Vec3f vector;
-    /** Where the force acts, in the frame of the body. */
-    Vec3f point;
+    struct RigidBodyForce *next; /*!< The next force on the body, or NULL at the end of the list. */
+    s32 frame;                   /*!< The frame of the vector, a RIGID_BODY_FORCE_ value. */
+    Vec3f vector;                /*!< The direction and size of the force. */
+    Vec3f point;                 /*!< Where the force acts, in the frame of the body. */
 } RigidBodyForce;
 
 /** The kinds of rigid body. A box may turn; a body of the last kind does not. */
 enum {
-    RIGID_BODY_BOX,
-    RIGID_BODY_BOX_1,
-    RIGID_BODY_NO_ROTATION,
+    RIGID_BODY_BOX,         /*!< A box that turns, with the inertia of its sides. */
+    RIGID_BODY_BOX_1,       /*!< A box like the first kind, used for the body of a vehicle. */
+    RIGID_BODY_NO_ROTATION, /*!< A body that does not turn, used for a wheel. */
 };
 
 /**
@@ -57,70 +55,54 @@ enum {
  * spin and suspension fields, the body of a vehicle the springs, box and collision fields.
  */
 typedef struct RigidBody {
-    u32 unreconstructed0;
-    /** The bodies of the wheels of the body of a vehicle: the rear two, then the front two. */
-    struct RigidBody *wheels[4];
-    u32 unreconstructed14;
-    RigidBodyForce *forces;
-    s32 kind;
-    /** The sides of the box. */
-    Vec3f size;
-    f32 mass;
-    f32 inertia[3][3];
-    f32 inverseInertia[3][3];
-    RigidBodyState state;
-    /** The matrix of the orientation and position of the state. */
-    f32 orientation[4][4];
-    /** The sums of the forces and torques of a step, then the accelerations they give. */
-    Vec3f force;
-    Vec3f torque;
-    /** The states of the steps of the integration. */
-    RigidBodyState stepStates[2];
-    /** The triangle of the track under a wheel, or NULL. */
-    struct TrackTriangle *ground;
-    /** The surface of that triangle, and its plane. */
-    u8 surface;
-    Vec3f groundNormal;
-    f32 groundOffset;
-    /** The frames a wheel has touched the ground, up to 100, or 0 off the ground. */
-    s32 contactFrames;
-    /** The springs and dampers of the suspension of the body of a vehicle. */
-    f32 springRate;
-    f32 damping;
-    /** The angle a front wheel is steered to, in radians. */
-    f32 steerAngle;
-    /** How fast a wheel spins, in radians a second. */
-    f32 spinRate;
-    f32 radius;
-    /** The drive the throttle gives a wheel. */
-    f32 drive;
-    /** The braking of a wheel. */
-    f32 brake;
-    /** How far a wheel has turned, in degrees; how far the body of a vehicle leans in a skid. */
-    f32 rollAngle;
-    /** How far below the body of a vehicle the ground is under a wheel. */
-    f32 suspension;
-    /** The box of the body of a vehicle the track collides with, and the height of its middle. */
-    Vec3f boxSize;
-    f32 boxCenterZ;
-    /** Where the last hard hit was. */
-    Vec3f impactPoint;
-    /** 35 while the vehicle is upright, then counting down each step it is upside down. */
-    s32 uprightFrames;
-    /** How fast the last hit was, from 10 on. */
-    u8 impactSpeed;
-    /** The tyres of the car, from 1, which lose grip as they rise. */
-    u8 tireType;
-    /** The loudest hit of another vehicle and of the track since the sounds played. */
-    u8 vehicleImpactVolume;
-    u8 impactVolume;
-    /** The steps since the track was hit, up to 40, and since another vehicle was. */
-    u8 framesSinceImpact;
-    u8 framesSinceVehicleImpact;
-    u8 unreconstructed202;
-    /** Set to 0x80 when a wheel lands, and when the tyres skid. */
-    u8 landed;
-    u8 skidding;
+    u32 unreconstructed0;        /*!< Of unknown use; cleared on setup. */
+    struct RigidBody *wheels[4]; /*!< The wheel bodies of the body of a vehicle, the rear two
+                                      first and the front two after. */
+    u32 unreconstructed14;       /*!< Of unknown use; cleared on setup. */
+    RigidBodyForce *forces;      /*!< The list of forces applied at each step. */
+    s32 kind;                    /*!< The kind of body, a RIGID_BODY_ value. */
+    Vec3f size;                  /*!< The sides of the box the inertia is computed from. */
+    f32 mass;                    /*!< The mass, 1000 for the body of a vehicle and 0 for a wheel. */
+    f32 inertia[3][3];           /*!< The inertia tensor in the frame of the body. */
+    f32 inverseInertia[3][3];    /*!< The inverse inertia tensor; setup computes only its
+                                      diagonal. */
+    RigidBodyState state;        /*!< The motion of the body at the current step. */
+    f32 orientation[4][4];       /*!< The matrix of the orientation and position of the state. */
+    Vec3f force;  /*!< The sum of the forces of a step, then the linear acceleration it gives. */
+    Vec3f torque; /*!< The sum of the torques of a step, then the angular acceleration it gives. */
+    RigidBodyState stepStates[2]; /*!< The states of the steps of the integration. */
+    struct TrackTriangle *ground; /*!< The triangle of the track under a wheel, or NULL. */
+    u8 surface;         /*!< The surface of the ground triangle, a TRACK_SURFACE_ value. */
+    Vec3f groundNormal; /*!< The normal of the plane of the ground triangle. */
+    f32 groundOffset;   /*!< The offset of the plane of the ground triangle along its normal. */
+    s32 contactFrames;  /*!< The frames a wheel has touched the ground, up to 100, or 0 off the
+                             ground. */
+    f32 springRate; /*!< The rate of the suspension springs of the body of a vehicle, (4 times the
+                         suspension stiffness plus 20) times 16000. */
+    f32 damping;    /*!< The damping of the suspension of the body of a vehicle, -3000. */
+    f32 steerAngle; /*!< The angle a front wheel is steered to, in radians. */
+    f32 spinRate;   /*!< How fast a wheel spins, in radians a second. */
+    f32 radius;     /*!< The radius of a wheel, 0.5 from setup. */
+    f32 drive;      /*!< The drive the throttle gives a wheel. */
+    f32 brake;      /*!< The braking of a wheel. */
+    f32 rollAngle;  /*!< How far a wheel has turned, in degrees; how far the body of a vehicle
+                         leans in a skid. */
+    f32 suspension; /*!< How far below the body of a vehicle the ground is under a wheel. */
+    Vec3f boxSize;  /*!< The box of the body of a vehicle the track collides with. */
+    f32 boxCenterZ; /*!< The height of the middle of the collision box. */
+    Vec3f impactPoint;      /*!< Where the last hard hit was. */
+    s32 uprightFrames;      /*!< 35 while the vehicle is upright, then counting down each step it is
+                                 upside down. */
+    u8 impactSpeed;         /*!< How fast the last hit was, from 10 on. */
+    u8 tireType;            /*!< The tyres of the car, from 1; a higher type has less grip. */
+    u8 vehicleImpactVolume; /*!< The loudest hit of another vehicle since the sounds played. */
+    u8 impactVolume;        /*!< The loudest hit of the track since the sounds played. */
+    u8 framesSinceImpact;   /*!< The steps since the track was hit, up to 40. */
+    u8 framesSinceVehicleImpact; /*!< The steps since another vehicle was hit. */
+    u8 unreconstructed202;       /*!< Of unknown use; the vehicle sounds clear it while no
+                                      effect other than a skid or a roll plays. */
+    u8 landed;   /*!< Set to 0x80 when a wheel lands, then cleared when the sound plays. */
+    u8 skidding; /*!< Set to 0x80 when the tyres skid. */
 } RigidBody;
 
 /**

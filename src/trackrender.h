@@ -49,9 +49,9 @@ extern s32 g_bShadowCullDisabled;
 
 /** A cell of the grid of the track in view, and its squared distance from the camera in cells. */
 typedef struct {
-    u8 column;
-    u8 row;
-    s16 distance;
+    u8 column;    /*!< The column of the cell in the grid. */
+    u8 row;       /*!< The row of the cell in the grid. */
+    s16 distance; /*!< The squared distance of the cell from the camera, in cells. */
 } VisibleCell;
 
 /** The most cells in view, past which the farthest are left out. */

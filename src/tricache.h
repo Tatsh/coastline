@@ -19,14 +19,12 @@
 
 /** A triangle of the track with its plane. */
 typedef struct TrackTriangle {
-    Vec3f normal;
-    /** The plane is where the normal dotted with a point plus this is 0. */
-    f32 planeOffset;
-    Vec3f *vertices[3];
-    /** The index of the triangle in the track, for its TrackSurface and its nearby models. */
-    s16 index;
-    /** The surface of the triangle, from the low 3 bits of its flags. */
-    u8 surface;
+    Vec3f normal;       /*!< The unit normal of the plane of the triangle. */
+    f32 planeOffset;    /*!< The plane is where the normal dotted with a point plus this is 0. */
+    Vec3f *vertices[3]; /*!< The three corners of the triangle, in the vertices of the track. */
+    s16 index;  /*!< The index of the triangle in the track, for its TrackSurface and its nearby
+                     models. */
+    u8 surface; /*!< The surface of the triangle, from the low 3 bits of its flags. */
 } TrackTriangle;
 
 /** @ghidraAddress USA: 0x80379f80 */
