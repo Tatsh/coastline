@@ -94,7 +94,7 @@ void DrawTexturedRect(Texture *texture,
  * @param maskBits Receives the number of bits of the mask.
  * @ghidraAddress USA: 0x80217614
  */
-void GetTextureScaleAndMask(s32 size, s32 *scale, s32 *maskBits);
+void GetTextureScaleAndMask(u32 size, s32 *scale, s32 *maskBits);
 
 /**
  * Draw a texture stretched over a rectangle and upside down, shaded from black to red by its

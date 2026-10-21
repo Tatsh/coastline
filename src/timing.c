@@ -37,7 +37,7 @@
 #define END_ALPHA 0x7F
 
 /* The RSP takes physical addresses, which are the KSEG0 addresses less its base. */
-#define TO_RSP_ADDRESS(p) ((u32)(p) - K0BASE)
+#define TO_RSP_ADDRESS(p) ((u32)((u8 *)(p) - K0BASE))
 
 /* The left and top edges of the bars, read from the globals at every use. */
 #define BARS_LEFT ((g_dwScreenWidth - 16) << g_dwScreenScaleShift)

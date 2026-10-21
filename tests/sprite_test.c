@@ -12,7 +12,7 @@ s32 g_dwScreenScaleShift = 1;
 Sprite g_texBackground, g_texLogo;
 
 /* A scale of 0x100 a texel, and the bits of the next power of two. */
-void GetTextureScaleAndMask(s32 size, s32 *scale, s32 *maskBits) {
+void GetTextureScaleAndMask(u32 size, s32 *scale, s32 *maskBits) {
     s32 bits = 0;
 
     while ((1 << bits) < size) {

@@ -18,7 +18,7 @@ u32 DecompressFromRom(void *dst, u32 rom, DecompressJob *job) {
     return 0;
 }
 
-void GetTextureScaleAndMask(s32 size, s32 *scale, s32 *maskBits) {
+void GetTextureScaleAndMask(u32 size, s32 *scale, s32 *maskBits) {
     s32 bits = 0;
 
     while ((1 << bits) < size) {

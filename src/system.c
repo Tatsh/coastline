@@ -81,7 +81,12 @@
 #define ARRAY_COUNT(array) (s32)(sizeof(array) / sizeof((array)[0]))
 
 /* The address the RSP and the RDP read memory of KSEG0 at. */
+#ifdef __GNUC__
 #define TO_RSP_ADDRESS(p) ((u32)(p) - K0BASE)
+#else
+/* IDO folds the base into the relocation of a datum only through pointer arithmetic. */
+#define TO_RSP_ADDRESS(p) ((u32)((u8 *)(p) - K0BASE))
+#endif
 
 /* The first command of the display list of the current frame buffer. */
 #define DISPLAY_LIST_START()                                                                       \
@@ -246,43 +251,43 @@ void NormalizeLightMatrix(f32 m[4][4]) {
 /* The original stores the address of a local message for the debug display. */
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wdangling-pointer"
-void GetTextureScaleAndMask(s32 size, s32 *scale, s32 *maskBits) {
+void GetTextureScaleAndMask(u32 size, s32 *scale, s32 *maskBits) {
     char message[40];
-    u32 last;
 
-    last = size - 1;
-    if (last >> 8) {
-        if (last >> 10) {
+    /* The size becomes the largest coordinate. */
+    size--;
+    if (size >> 8) {
+        if (size >> 10) {
             /* The message may overrun the buffer, and the debug display retains a pointer to the
              * stack this returns from. */
-            sprintf(message, "ERROR: unhandled texture size: %d", last);
+            sprintf(message, "ERROR: unhandled texture size: %d", size);
             SetDebugMessage(message);
-        } else if (last >> 9) {
+        } else if (size >> 9) {
             *maskBits = 10;
         } else {
             *maskBits = 9;
         }
-    } else if (last & 0xF0) {
-        if (last & 0xC0) {
-            if (last & 0x80) {
+    } else if (size & 0xF0) {
+        if (size & 0xC0) {
+            if (size & 0x80) {
                 *maskBits = 8;
             } else {
                 *maskBits = 7;
             }
-        } else if (last & 0xE0) {
+        } else if (size & 0xE0) {
             *maskBits = 6;
         } else {
             *maskBits = 5;
         }
-    } else if (last & 0xFC) {
-        if (last & 0xF8) {
+    } else if (size & 0xFC) {
+        if (size & 0xF8) {
             *maskBits = 4;
         } else {
             *maskBits = 3;
         }
-    } else if (last & 0xFE) {
+    } else if (size & 0xFE) {
         *maskBits = 2;
-    } else if (last != 0) {
+    } else if (size != 0) {
         *maskBits = 1;
     } else {
         *maskBits = 0;

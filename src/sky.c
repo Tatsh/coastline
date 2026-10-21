@@ -18,7 +18,7 @@
 #define FLASH_BLUE 0xFF
 
 /* The RSP takes physical addresses, which are the KSEG0 addresses less its base. */
-#define TO_RSP_ADDRESS(p) ((u32)(p) - K0BASE)
+#define TO_RSP_ADDRESS(p) ((u32)((u8 *)(p) - K0BASE))
 
 s32 IsSkyFogFilled(void) {
     return g_dwNightMode != 0 || g_dwSnowMode != 0 || g_dwRainMode != 0 ||
