@@ -60,6 +60,7 @@ CollideBodyWithTriangles
 CollideVehicles
 CompareRacerProgressAsc
 CompareVisibleCellDistance
+CompressRleChannels
 ComputeCameraBasis
 ComputeCollisionPenetration
 ComputeDampingForces
@@ -82,6 +83,7 @@ CountTriangleWinding
 DebugFrameStubA
 DebugFrameStubB
 DecalCharToAscii
+DecompressInterleavedRle
 DecreaseBgmVolume
 DecreaseSfxVolume
 DeformVehicleMeshByImpact
