@@ -4656,12 +4656,6 @@ dlabel D_802722A8
     /* 732B8 802722B8 00000000 */ .word 0x00000000
 enddlabel D_802722A8
 
-nonmatching g_dwWeatherSelectState
-
-dlabel g_dwWeatherSelectState
-    /* 732BC 802722BC 00000000 */ .word 0x00000000
-enddlabel g_dwWeatherSelectState
-
 nonmatching g_MainMenuTitleTextureDesc
 
 dlabel g_MainMenuTitleTextureDesc
@@ -4908,12 +4902,6 @@ nonmatching D_802723C0
 dlabel D_802723C0
     /* 733C0 802723C0 00000000 */ .word 0x00000000
 enddlabel D_802723C0
-
-nonmatching g_dwPlayerCountSelectState
-
-dlabel g_dwPlayerCountSelectState
-    /* 733C4 802723C4 00000000 */ .word 0x00000000
-enddlabel g_dwPlayerCountSelectState
 
 nonmatching D_802723C8
 

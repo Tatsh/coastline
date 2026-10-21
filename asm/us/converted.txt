@@ -687,6 +687,10 @@ corrupted
 corrupted_init
 cosf
 falloc
+g_dwPlayerCountSelectState:0x4
+g_dwWeatherMenuItemCount:0x4
+g_dwWeatherMenuSelection:0x4
+g_dwWeatherSelectState:0x4
 g_qwTimestampBase:8
 guLookAt
 guLookAtF

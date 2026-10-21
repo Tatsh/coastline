@@ -33,12 +33,16 @@ void TwoControllersPostDrawCallback(s32 item) {
 }
 
 void ProcessPlayerCountSelect(void) {
+    /* The state of the screen: 0 before it starts, 1 while it runs, and -1 once it is left. */
+    /** @ghidraAddress USA: 0x802723c4 */
+    static s32 g_dwPlayerCountSelectState = 0;
+
     if (g_dwPlayerCountSelectState <= 0) {
         ResetAndInitDisplay(g_apPlayerCountMenuItems, &g_dwPlayerCountMenuItemCount);
+        g_pfnScreenPostDrawCallback = TwoControllersPostDrawCallback;
         if (g_dwPlayerCountSelectState == 0) {
             g_dwPlayerCountMenuSelection = 0;
         }
-        g_pfnScreenPostDrawCallback = TwoControllersPostDrawCallback;
         g_dwPlayerCountSelectState = 1;
     }
 

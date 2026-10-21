@@ -13,13 +13,6 @@
 /** The items of the screen, ending with NULL. @ghidraAddress USA: 0x802723b8 */
 extern MenuItem *g_apPlayerCountMenuItems[];
 
-/**
- * The state of the screen: 0 before it starts, 1 while it runs, and -1 once it is left.
- *
- * @ghidraAddress USA: 0x802723c4
- */
-extern s32 g_dwPlayerCountSelectState;
-
 /** @ghidraAddress USA: 0x80316390 */
 extern s32 g_dwPlayerCountMenuItemCount;
 

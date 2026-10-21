@@ -645,16 +645,6 @@ nonmatching g_szResultsBuf, 0x58
 dlabel g_szResultsBuf
     /* 80316318 */ .space 0x58
 
-nonmatching g_dwWeatherMenuItemCount, 0x4
-
-dlabel g_dwWeatherMenuItemCount
-    /* 80316370 */ .space 0x04
-
-nonmatching g_dwWeatherMenuSelection, 0x4
-
-dlabel g_dwWeatherMenuSelection
-    /* 80316374 */ .space 0x04
-
 nonmatching D_80316378, 0x8
 
 /* Automatically generated and unreferenced pad */
