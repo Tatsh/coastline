@@ -134,23 +134,25 @@ void InitPlayerVehicleSlot(Vehicle *vehicle) {
 }
 
 void RespawnVehicle(Vehicle *vehicle) {
-    TrackPoint *point;
-
     if (vehicle->body.uprightFrames >= 0 &&
         !(vehicle->frame.position.z < g_LoadedTrack.minZ - RESPAWN_FALL_DEPTH)) {
         return;
     }
     InitVehiclePhysics(vehicle);
-    if (g_dwGameMode == GAME_MODE_TIME_ATTACK) {
-        point = &vehicle->section->points[vehicle->pointIndex];
-        SetVehiclePosition(
-            vehicle, point->position.x, point->position.y, point->position.z + RESPAWN_HEIGHT);
-    } else {
-        point = &vehicle->section->points[vehicle->pointIndex];
+    /* The original compares the mode as a signed value. */
+    if ((s32)g_dwGameMode == GAME_MODE_TIME_ATTACK) {
         SetVehiclePosition(vehicle,
-                           point->position.x + (f32)vehicle->index * RESPAWN_SPREAD,
-                           point->position.y,
-                           point->position.z + RESPAWN_HEIGHT);
+                           vehicle->section->points[vehicle->pointIndex].position.x,
+                           vehicle->section->points[vehicle->pointIndex].position.y,
+                           vehicle->section->points[vehicle->pointIndex].position.z +
+                               RESPAWN_HEIGHT);
+    } else {
+        SetVehiclePosition(vehicle,
+                           vehicle->section->points[vehicle->pointIndex].position.x +
+                               (f32)vehicle->index * RESPAWN_SPREAD,
+                           vehicle->section->points[vehicle->pointIndex].position.y,
+                           vehicle->section->points[vehicle->pointIndex].position.z +
+                               RESPAWN_HEIGHT);
     }
     InitVehicleOrientationFromAngle(vehicle,
                                     Atan2f(vehicle->trackDirection.x, vehicle->trackDirection.y));
@@ -177,7 +179,9 @@ void RespawnVehicle(Vehicle *vehicle) {
     vehicle->opacity = RESPAWN_OPACITY;
     UpdateCameraChase(vehicle, &vehicle->cameras[VEHICLE_CAMERA_CHASE], 1.0f);
     vehicle->cameraChanged = 1;
-    vehicle->chasePosition = vehicle->cameras[VEHICLE_CAMERA_CHASE].position;
+    vehicle->chasePosition.x = vehicle->cameras[VEHICLE_CAMERA_CHASE].position.x;
+    vehicle->chasePosition.y = vehicle->cameras[VEHICLE_CAMERA_CHASE].position.y;
+    vehicle->chasePosition.z = vehicle->cameras[VEHICLE_CAMERA_CHASE].position.z;
 }
 
 void ResetVehicleEffects(Vehicle *vehicle) {
@@ -186,6 +190,10 @@ void ResetVehicleEffects(Vehicle *vehicle) {
     s16 *surface;
     f32 start;
     s32 i;
+    /* Each loop over the wheels has its own counter, and the original unrolls them. */
+    s32 j;
+    s32 k;
+    s32 l;
 
     /* The staggered starts are written and at once cleared. */
     start = (f32)vehicle->index * SPRAY_FRAMES_STEP;
@@ -193,20 +201,20 @@ void ResetVehicleEffects(Vehicle *vehicle) {
     vehicle->sprayFramesLeft[1] = start + SPRAY_FRAMES_SPREAD;
     vehicle->sprayFramesLeft[2] = vehicle->sprayFramesLeft[1] + SPRAY_FRAMES_SPREAD;
     vehicle->sprayFramesLeft[3] = vehicle->sprayFramesLeft[2] + SPRAY_FRAMES_SPREAD;
-    for (i = VEHICLE_WHEELS - 1; i >= 0; i--) {
-        vehicle->sprayAdvanced[i] = 0;
-        vehicle->spraySurfaces[i] = TRACK_SURFACE_START;
+    for (j = 0; j < VEHICLE_WHEELS; j++) {
+        vehicle->sprayAdvanced[j] = 0;
+        vehicle->spraySurfaces[j] = TRACK_SURFACE_START;
     }
-    for (i = 0; i < VEHICLE_WHEELS; i++) {
-        vehicle->smokeTimers[i] = (f32)i * SMOKE_TIMER_STEP;
+    for (k = 0; k < VEHICLE_WHEELS; k++) {
+        vehicle->smokeTimers[k] = (f32)k * SMOKE_TIMER_STEP;
     }
-    for (i = VEHICLE_WHEELS - 1; i >= 0; i--) {
-        vehicle->sprayPhases[i] = 0.0f;
-        vehicle->sprayFramesLeft[i] = 0.0f;
+    for (l = 0; l < VEHICLE_WHEELS; l++) {
+        vehicle->sprayPhases[l] = 0.0f;
+        vehicle->sprayFramesLeft[l] = 0.0f;
     }
 
-    vertex = &vehicle->sprayVertices[0][0][0];
     velocity = &vehicle->sprayVelocities[0][0][0][0];
+    vertex = &vehicle->sprayVertices[0][0][0];
     for (i = 0; i < VEHICLE_WHEELS * SPRAY_SEGMENTS * SPRAY_SEGMENT_VERTICES; i++) {
         velocity[2] = 0;
         velocity[1] = velocity[2];
