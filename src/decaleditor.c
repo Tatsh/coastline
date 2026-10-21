@@ -76,20 +76,20 @@ static inline u16 *MaterialPalette(s32 material) {
 
 /* The colours of the bars and the names of the channels, as the colour editor copies them. */
 typedef struct {
-    u8 color[3][3];
+    u8 color[3][3]; /*!< The red, green, and blue of the bar of each channel. */
 } ColorEditorBars;
 
 typedef struct {
-    const char *name[3];
+    const char *name[3]; /*!< The names of the red, green, and blue channels. */
 } ColorChannelNames;
 
 /* The names of the styles of a tool, as its menu copies them. */
 typedef struct {
-    const char *name[2];
+    const char *name[2]; /*!< The name of each of the two styles. */
 } TwoStyleNames;
 
 typedef struct {
-    const char *name[4];
+    const char *name[4]; /*!< The name of each of the four styles. */
 } FourStyleNames;
 
 /* Copy the first two colors of the palette into the palettes of the lights of the car. */

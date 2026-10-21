@@ -673,27 +673,180 @@ void osSyncPrintf(const char *fmt, ...);
  */
 void rmonPrintf(const char *fmt, ...);
 
-/* The 64-bit helpers the compiler calls for long long arithmetic and conversions. */
+/**
+ * Shift an unsigned 64-bit value right. IDO calls this for long long arithmetic.
+ *
+ * @param a0 The value.
+ * @param a1 The number of bits.
+ * @return The shifted value.
+ * @ghidraAddress USA: 0x80266020
+ */
 unsigned long long __ull_rshift(unsigned long long a0, unsigned long long a1);
+
+/**
+ * Divide two unsigned 64-bit values and take the remainder.
+ *
+ * @param a0 The dividend.
+ * @param a1 The divisor.
+ * @return The remainder.
+ * @ghidraAddress USA: 0x8026604c
+ */
 unsigned long long __ull_rem(unsigned long long a0, unsigned long long a1);
+
+/**
+ * Divide two unsigned 64-bit values.
+ *
+ * @param a0 The dividend.
+ * @param a1 The divisor.
+ * @return The quotient.
+ * @ghidraAddress USA: 0x80266088
+ */
 unsigned long long __ull_div(unsigned long long a0, unsigned long long a1);
+
+/**
+ * Shift a 64-bit value left.
+ *
+ * @param a0 The value.
+ * @param a1 The number of bits.
+ * @return The shifted value.
+ * @ghidraAddress USA: 0x802660c4
+ */
 long long __ll_lshift(long long a0, long long a1);
+
+/**
+ * Divide a 64-bit value and take the remainder. Both operands are divided as unsigned values.
+ *
+ * @param a0 The dividend.
+ * @param a1 The divisor, taken as unsigned.
+ * @return The remainder.
+ * @ghidraAddress USA: 0x802660f0
+ */
 long long __ll_rem(unsigned long long a0, long long a1);
+
+/**
+ * Divide two signed 64-bit values.
+ *
+ * @param a0 The dividend.
+ * @param a1 The divisor.
+ * @return The quotient.
+ * @ghidraAddress USA: 0x8026612c
+ */
 long long __ll_div(long long a0, long long a1);
+
+/**
+ * Multiply two 64-bit values.
+ *
+ * @param a0 The first factor.
+ * @param a1 The second factor.
+ * @return The product, modulo 2 to the 64th power.
+ * @ghidraAddress USA: 0x80266188
+ */
 long long __ll_mul(long long a0, long long a1);
+
+/**
+ * Divide an unsigned 64-bit value by a 16-bit divisor and give the quotient and the remainder.
+ *
+ * @param quotient Receives the quotient.
+ * @param remainder Receives the remainder.
+ * @param dividend The dividend.
+ * @param divisor The divisor, sign-extended from 16 bits.
+ * @ghidraAddress USA: 0x802661b8
+ */
 void __ull_divremi(unsigned long long *quotient,
                    unsigned long long *remainder,
                    unsigned long long dividend,
                    short divisor);
+
+/**
+ * Divide two signed 64-bit values and take the modulus, with the sign of the divisor.
+ *
+ * @param a0 The dividend.
+ * @param a1 The divisor.
+ * @return The modulus.
+ * @ghidraAddress USA: 0x80266218
+ */
 long long __ll_mod(long long a0, long long a1);
+
+/**
+ * Shift a signed 64-bit value right, extending the sign.
+ *
+ * @param a0 The value.
+ * @param a1 The number of bits.
+ * @return The shifted value.
+ * @ghidraAddress USA: 0x802662b4
+ */
 long long __ll_rshift(long long a0, long long a1);
+
+/**
+ * Convert a double to a signed 64-bit integer, truncating towards zero.
+ *
+ * @param d The value.
+ * @return The integer.
+ * @ghidraAddress USA: 0x802669d0
+ */
 long long __d_to_ll(double d);
+
+/**
+ * Convert a float to a signed 64-bit integer, truncating towards zero.
+ *
+ * @param f The value.
+ * @return The integer.
+ * @ghidraAddress USA: 0x802669ec
+ */
 long long __f_to_ll(float f);
+
+/**
+ * Convert a double to an unsigned 64-bit integer, truncating towards zero.
+ *
+ * @param d The value.
+ * @return The integer, or all bits set for a value out of range or a NaN.
+ * @ghidraAddress USA: 0x80266a08
+ */
 unsigned long long __d_to_ull(double d);
+
+/**
+ * Convert a float to an unsigned 64-bit integer, truncating towards zero.
+ *
+ * @param f The value.
+ * @return The integer, or all bits set for a value out of range or a NaN.
+ * @ghidraAddress USA: 0x80266aa8
+ */
 unsigned long long __f_to_ull(float f);
+
+/**
+ * Convert a signed 64-bit integer to a double.
+ *
+ * @param s The integer.
+ * @return The nearest double.
+ * @ghidraAddress USA: 0x80266b44
+ */
 double __ll_to_d(long long s);
+
+/**
+ * Convert a signed 64-bit integer to a float.
+ *
+ * @param s The integer.
+ * @return The nearest float.
+ * @ghidraAddress USA: 0x80266b5c
+ */
 float __ll_to_f(long long s);
+
+/**
+ * Convert an unsigned 64-bit integer to a double.
+ *
+ * @param u The integer.
+ * @return The converted value. A set top bit is corrected by adding 2 to the 32nd power.
+ * @ghidraAddress USA: 0x80266b74
+ */
 double __ull_to_d(unsigned long long u);
+
+/**
+ * Convert an unsigned 64-bit integer to a float.
+ *
+ * @param u The integer.
+ * @return The converted value. A set top bit is corrected by adding 2 to the 32nd power.
+ * @ghidraAddress USA: 0x80266ba8
+ */
 float __ull_to_f(unsigned long long u);
 
 #endif
