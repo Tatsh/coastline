@@ -15,9 +15,6 @@
 #define PICTURE_WIDTH 0x68
 #define PICTURE_HEIGHT 0x30
 
-/* The blend mode of DrawTexturedRect() that draws a colour through the texture. */
-#define BLEND_COLOR_THROUGH_TEXTURE 1
-
 /* The colours of the top and the bottom of the background of the screen. */
 #define BACKGROUND_TOP 0x08, 0x00, 0x00
 #define BACKGROUND_BOTTOM 0xA0, 0x80, 0x20
@@ -40,7 +37,7 @@ static void DrawLayoutPicture(Texture *texture, s32 x, s32 y) {
                      0x00,
                      0x00,
                      0xFF,
-                     BLEND_COLOR_THROUGH_TEXTURE);
+                     TEXRECT_BLEND_COLOR_THROUGH_TEXTURE);
     DrawTexturedRect(texture,
                      x,
                      y,
@@ -54,7 +51,7 @@ static void DrawLayoutPicture(Texture *texture, s32 x, s32 y) {
                      0x00,
                      0x00,
                      0xFF,
-                     BLEND_COLOR_THROUGH_TEXTURE);
+                     TEXRECT_BLEND_COLOR_THROUGH_TEXTURE);
     DrawTexturedRect(texture,
                      x,
                      y,
@@ -68,7 +65,7 @@ static void DrawLayoutPicture(Texture *texture, s32 x, s32 y) {
                      0xFF,
                      0xFF,
                      0xFF,
-                     BLEND_COLOR_THROUGH_TEXTURE);
+                     TEXRECT_BLEND_COLOR_THROUGH_TEXTURE);
 }
 
 void DrawControllerLayoutDiagram(s32 layout) {

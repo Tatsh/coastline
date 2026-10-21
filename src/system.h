@@ -82,6 +82,13 @@ s32 IsCurrentScreen(ScreenCallback callback);
 void GameModeMainLoop(void);
 
 /**
+ * Copy bytes from the cartridge into memory by DMA, in blocks of 4 KB.
+ *
+ * @ghidraAddress USA: 0x8021c748
+ */
+void DmaRead(void *dst, u32 romOffset, u32 size);
+
+/**
  * Read the decompressed size from the header of the asset at a cartridge offset.
  *
  * @ghidraAddress USA: 0x8021c814

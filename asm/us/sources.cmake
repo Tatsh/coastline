@@ -19,7 +19,6 @@ set(COASTLINE_ASM_US
     asm/us/38980.s
     asm/us/3ACF0.s
     asm/us/3C130.s
-    asm/us/3EF00.s
     asm/us/43B10.s
     asm/us/54460.s
     asm/us/57720.s

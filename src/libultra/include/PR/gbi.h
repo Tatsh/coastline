@@ -119,6 +119,7 @@ typedef union {
 #define G_TT_NONE (0 << G_MDSFT_TEXTLUT)
 #define G_TP_NONE (0 << G_MDSFT_TEXTPERSP)
 #define G_TP_PERSP (1 << G_MDSFT_TEXTPERSP)
+#define G_TT_RGBA16 (2 << G_MDSFT_TEXTLUT)
 
 /* The coverage, depth and blending bits of a render mode. */
 #define AA_EN 0x0008
@@ -174,12 +175,15 @@ typedef union {
 
 /* The texture formats, sizes and tiles. */
 #define G_IM_FMT_RGBA 0
+#define G_IM_FMT_CI 2
 #define G_IM_FMT_I 4
 #define G_IM_SIZ_4b 0
+#define G_IM_SIZ_8b 1
 #define G_IM_SIZ_16b 2
 #define G_TX_RENDERTILE 0
 #define G_TX_LOADTILE 7
 #define G_TX_WRAP 0
+#define G_TX_CLAMP 2
 #define G_TX_NOLOD 0
 #define G_ON 1
 
@@ -195,6 +199,13 @@ typedef union {
 
 /** The step of the row counter of a load block for a 4-bit texture of a width. */
 #define CALC_DXT_4b(width) (((1 << G_TX_DXT_FRAC) + TXL2WORDS_4b(width) - 1) / TXL2WORDS_4b(width))
+
+/** The 64-bit words of a row of a texture with texels of b_txl bytes, at least one. */
+#define TXL2WORDS(txls, b_txl) ((txls) * (b_txl) / 8 > 1 ? (txls) * (b_txl) / 8 : 1)
+
+/** The step of the row counter of a load block for a texture with texels of b_txl bytes. */
+#define CALC_DXT(width, b_txl)                                                                     \
+    (((1 << G_TX_DXT_FRAC) + TXL2WORDS(width, b_txl) - 1) / TXL2WORDS(width, b_txl))
 
 /* The words of the clipping ratio. */
 #define G_MW_CLIP 0x04

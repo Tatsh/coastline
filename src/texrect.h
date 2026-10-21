@@ -26,6 +26,27 @@ typedef struct {
 /** An allocator of memory for a loaded asset. */
 typedef void *(*AssetAllocator)(u32 size);
 
+/** How DrawTexturedRect() combines the texels with its colors. */
+enum {
+    /** The texels as they are, blended over the picture. */
+    TEXRECT_BLEND_TEXTURE,
+    /** The primitive color through the texels as a mask. */
+    TEXRECT_BLEND_COLOR_THROUGH_TEXTURE,
+    /** The same as TEXRECT_BLEND_TEXTURE. */
+    TEXRECT_BLEND_TEXTURE_2,
+    /** The texels shading from the primitive color to the environment color, blended. */
+    TEXRECT_BLEND_SHADED,
+    /** The same shading, opaque, with the alpha of the texels times the shade. */
+    TEXRECT_BLEND_SHADED_OPAQUE,
+};
+
+/**
+ * Allocate memory for an uncompressed texture and copy it there from the cartridge.
+ *
+ * @ghidraAddress USA: 0x8023df00
+ */
+void AllocAndDmaLoadAsset(Texture *texture, AssetAllocator alloc);
+
 /**
  * Allocate memory for a texture and decompress it there from the cartridge.
  *
@@ -34,8 +55,9 @@ typedef void *(*AssetAllocator)(u32 size);
 void LoadAndDecompressAsset(Texture *texture, AssetAllocator alloc);
 
 /**
- * Draw a texture over a rectangle of the screen in a primitive and an environment colour. A
- * negative width mirrors it. The blend mode picks how the colours and the texels combine.
+ * Draw a texture over a rectangle of the screen, in strips that fit the texture memory, upside
+ * down. The width counts without its sign. The blend mode picks how the primitive and the
+ * environment colors and the texels combine.
  *
  * @ghidraAddress USA: 0x8023df9c
  */
