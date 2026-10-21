@@ -80,14 +80,15 @@ extern s32 g_dwSoundEffectEchoOffset;
 void CopyVec4(void *dst, const void *src);
 
 /**
- * Fill a byte count rounded up to 64 with a 16-bit value. The address must be 8-byte aligned.
+ * Fill a byte count rounded up to 64 with a 32-bit value. The address must be 8-byte aligned.
  *
  * @param dst The start of the memory to fill.
  * @param size The count of bytes to fill.
- * @param value The value of each halfword.
+ * @param value The value of each word. A value of -1 sets every bit, and a positive value leaves
+ * the upper halfword of each word clear.
  * @ghidraAddress USA: 0x80256290
  */
-void MemFill64Aligned(void *dst, u32 size, u16 value);
+void MemFill64Aligned(void *dst, u32 size, s32 value);
 
 /**
  * Mix six channels into the ring buffer, replacing what it held.

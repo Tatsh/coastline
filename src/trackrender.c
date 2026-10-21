@@ -545,7 +545,7 @@ void BuildVisibleInstanceList(void) {
     }
     QuickSort(g_aVisibleCellTuples, count, sizeof(VisibleCell), CompareVisibleCellDistance);
 
-    MemFill64Aligned(g_abInstanceVisibilityMask, g_LoadedTrack.instanceCount, 0xFFFF);
+    MemFill64Aligned(g_abInstanceVisibilityMask, g_LoadedTrack.instanceCount, -1);
     g_nVisibleInstanceCount = 0;
     g_nVisibleCellIdxNear = -1;
     g_nVisibleCellIdxFar = -1;

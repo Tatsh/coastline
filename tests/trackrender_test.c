@@ -148,11 +148,12 @@ void CopyVec4(void *dst, const void *src) {
         ((u32 *)dst)[i] = ((const u32 *)src)[i];
     }
 }
-void MemFill64Aligned(void *dst, u32 size, u16 value) {
+/* Each word holds the value in the byte order of the console. */
+void MemFill64Aligned(void *dst, u32 size, s32 value) {
     u32 i;
 
     for (i = 0; i < size; i++) {
-        ((u8 *)dst)[i] = value;
+        ((u8 *)dst)[i] = (u32)value >> (24 - 8 * (i & 3));
     }
 }
 void QuickSort(void *base, u32 count, u32 size, CompareFunc compare) {

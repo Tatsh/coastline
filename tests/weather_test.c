@@ -80,7 +80,7 @@ s32 MtxInvert4x4(f32 out[4][4], f32 in[4][4]) {
     memcpy(out, in, sizeof(f32[4][4]));
     return 1;
 }
-void MemFill64Aligned(void *dst, u32 size, u16 value) {
+void MemFill64Aligned(void *dst, u32 size, s32 value) {
     memset(dst, value, size);
 }
 void AddTimingMarker(s32 bar, s32 r, s32 g, s32 b, s32 a) {
