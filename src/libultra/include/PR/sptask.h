@@ -8,6 +8,7 @@
 
 #include <PR/ultratypes.h>
 
+/** A task for the RSP: its microcode, its stack and output buffers, and the data it runs. */
 typedef struct {
     u32 type;              /*!< The kind of task, such as M_GFXTASK for graphics. */
     u32 flags;             /*!< The OS_TASK_ bits. */
@@ -27,6 +28,7 @@ typedef struct {
     u32 yield_data_size;   /*!< The size of the yield buffer, OS_YIELD_DATA_SIZE bytes. */
 } OSTask_t;
 
+/** A task for the RSP, aligned to 8 bytes. */
 typedef union {
     OSTask_t t;                              /*!< The task. */
     long long int force_structure_alignment; /*!< Aligns the task to 8 bytes. */
