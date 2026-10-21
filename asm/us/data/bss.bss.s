@@ -2749,9 +2749,9 @@ nonmatching g_dwRaceBestTime, 0x4
 dlabel g_dwRaceBestTime
     /* 8034E9AC */ .space 0x04
 
-nonmatching g_aRenderFrameBuffers, 0x1650
+nonmatching g_aTimingMarkers, 0x1650
 
-dlabel g_aRenderFrameBuffers
+dlabel g_aTimingMarkers
     /* 8034E9B0 */ .space 0x1650
 
 nonmatching g_abVehicleModelHiBase, 0x19B0
@@ -2759,14 +2759,14 @@ nonmatching g_abVehicleModelHiBase, 0x19B0
 dlabel g_abVehicleModelHiBase
     /* 80350000 */ .space 0x19B0
 
-nonmatching g_aRenderFrameCounters, 0x18
+nonmatching g_aTimingMarkerCounts, 0x18
 
-dlabel g_aRenderFrameCounters
+dlabel g_aTimingMarkerCounts
     /* 803519B0 */ .space 0x18
 
-nonmatching g_dwReplayFrame, 0x4
+nonmatching g_dwTimingBarScale, 0x4
 
-dlabel g_dwReplayFrame
+dlabel g_dwTimingBarScale
     /* 803519C8 */ .space 0x04
 
 nonmatching D_803519CC, 0x4

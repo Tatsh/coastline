@@ -3818,7 +3818,7 @@ glabel ProcessTrackSelectScreen
     /* 10C08 8020FC08 00002025 */  or         $a0, $zero, $zero
     /* 10C0C 8020FC0C 0C0866FC */  jal        SetViewport
     /* 10C10 8020FC10 00002825 */   or        $a1, $zero, $zero
-    /* 10C14 8020FC14 0C08B65F */  jal        RenderSpeedometer
+    /* 10C14 8020FC14 0C08B65F */  jal        DrawTimingBars
     /* 10C18 8020FC18 00000000 */   nop
   .L8020FC1C:
     /* 10C1C 8020FC1C 3C0C8031 */  lui        $t4, %hi(g_dwPakDialogActive)

@@ -1818,7 +1818,7 @@ glabel ProcessSplashScreens
     /* 9358 80208358 8CE7AAB4 */  lw         $a3, %lo(g_dwScreenHeight)($a3)
     /* 935C 8020835C 0C0866FC */  jal        SetViewport
     /* 9360 80208360 8CC6AAB0 */   lw        $a2, %lo(g_dwScreenWidth)($a2)
-    /* 9364 80208364 0C08B65F */  jal        RenderSpeedometer
+    /* 9364 80208364 0C08B65F */  jal        DrawTimingBars
     /* 9368 80208368 00000000 */   nop
   .L8020836C:
     /* 936C 8020836C 3C048020 */  lui        $a0, %hi(LoadAllTrackLodLevels)

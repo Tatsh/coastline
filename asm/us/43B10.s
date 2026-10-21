@@ -2056,7 +2056,7 @@ glabel ProcessPaintShopScreen
     /* 45990 80244990 00002025 */  or         $a0, $zero, $zero
     /* 45994 80244994 0C0866FC */  jal        SetViewport
     /* 45998 80244998 00002825 */   or        $a1, $zero, $zero
-    /* 4599C 8024499C 0C08B65F */  jal        RenderSpeedometer
+    /* 4599C 8024499C 0C08B65F */  jal        DrawTimingBars
     /* 459A0 802449A0 00000000 */   nop
   .L802449A4:
     /* 459A4 802449A4 0C086A82 */  jal        FlushDisplayList

@@ -4282,7 +4282,7 @@ glabel FlushDisplayList
     /* 1BFEC 8021AFEC 244DFFFF */   addiu     $t5, $v0, -0x1
     /* 1BFF0 8021AFF0 AC6D0000 */  sw         $t5, 0x0($v1)
   .L8021AFF4:
-    /* 1BFF4 8021AFF4 0C08B62B */  jal        BeginNewRenderFrame
+    /* 1BFF4 8021AFF4 0C08B62B */  jal        BeginTimingFrame
     /* 1BFF8 8021AFF8 00000000 */   nop
     /* 1BFFC 8021AFFC 0C09927C */  jal        osGetCount
     /* 1C000 8021B000 00000000 */   nop

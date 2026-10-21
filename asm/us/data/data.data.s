@@ -30651,17 +30651,17 @@ dlabel g_pszDebugMessage
     /* 8B88C 8028A88C 00000000 */ .word 0x00000000
 enddlabel g_pszDebugMessage
 
-nonmatching g_dwViewportHeight
+nonmatching g_dwTimingBarsRenderMode0
 
-dlabel g_dwViewportHeight
+dlabel g_dwTimingBarsRenderMode0
     /* 8B890 8028A890 00000000 */ .word 0x00000000
-enddlabel g_dwViewportHeight
+enddlabel g_dwTimingBarsRenderMode0
 
-nonmatching g_dwViewportScaleX
+nonmatching g_dwTimingBarsRenderMode1
 
-dlabel g_dwViewportScaleX
+dlabel g_dwTimingBarsRenderMode1
     /* 8B894 8028A894 00000000 */ .word 0x00000000
-enddlabel g_dwViewportScaleX
+enddlabel g_dwTimingBarsRenderMode1
 
 nonmatching g_dwTextureFilterMode
 
@@ -33592,11 +33592,11 @@ dlabel g_dwVisibleGridMaxRow
     /* 8CD9C 8028BD9C 00000000 */ .word 0x00000000
 enddlabel g_dwVisibleGridMaxRow
 
-nonmatching g_dwRenderFrameBufferIndex
+nonmatching g_dwTimingFrame
 
-dlabel g_dwRenderFrameBufferIndex
+dlabel g_dwTimingFrame
     /* 8CDA0 8028BDA0 00000000 */ .word 0x00000000
-enddlabel g_dwRenderFrameBufferIndex
+enddlabel g_dwTimingFrame
 
 nonmatching D_8028BDA4
 
@@ -33605,23 +33605,23 @@ dlabel D_8028BDA4
     /* 8CDA4 8028BDA4 00000000 */ .word 0x00000000
 enddlabel D_8028BDA4
 
-nonmatching g_dwRenderFrameElapsed
+nonmatching g_dwTimingFrameElapsed
 
-dlabel g_dwRenderFrameElapsed
+dlabel g_dwTimingFrameElapsed
     /* 8CDA8 8028BDA8 00000000 */ .word 0x00000000
-enddlabel g_dwRenderFrameElapsed
+enddlabel g_dwTimingFrameElapsed
 
-nonmatching g_dwRenderFrameStartTime
+nonmatching g_dwTimingFrameStart
 
-dlabel g_dwRenderFrameStartTime
+dlabel g_dwTimingFrameStart
     /* 8CDAC 8028BDAC 00000000 */ .word 0x00000000
-enddlabel g_dwRenderFrameStartTime
+enddlabel g_dwTimingFrameStart
 
-nonmatching g_dwVehicleSpeed
+nonmatching g_dwTimingBarScaleHold
 
-dlabel g_dwVehicleSpeed
+dlabel g_dwTimingBarScaleHold
     /* 8CDB0 8028BDB0 00000000 */ .word 0x00000000
-enddlabel g_dwVehicleSpeed
+enddlabel g_dwTimingBarScaleHold
 
 nonmatching D_8028BDB4
 

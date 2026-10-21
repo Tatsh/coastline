@@ -3509,7 +3509,7 @@ glabel ProcessScreenState
     /* CBB8 8020BBB8 8CE7AAB4 */  lw         $a3, %lo(g_dwScreenHeight)($a3)
     /* CBBC 8020BBBC 0C0866FC */  jal        SetViewport
     /* CBC0 8020BBC0 8CC6AAB0 */   lw        $a2, %lo(g_dwScreenWidth)($a2)
-    /* CBC4 8020BBC4 0C08B65F */  jal        RenderSpeedometer
+    /* CBC4 8020BBC4 0C08B65F */  jal        DrawTimingBars
     /* CBC8 8020BBC8 00000000 */   nop
   .L8020BBCC:
     /* CBCC 8020BBCC 0C086A82 */  jal        FlushDisplayList

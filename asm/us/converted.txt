@@ -1,9 +1,11 @@
+AddTimingMarker
 AllocDisplayListBlock
 AllocHeapAligned
 AllocHiliteBlock
 AllocLightBlock
 ApplyWeather
 BeginDebugStats
+BeginTimingFrame
 BuildVisibleGrid
 CheatSetUnlockBit1000
 CheatSetUnlockBit200
@@ -28,6 +30,7 @@ DrawBitmapTextToFramebuffer
 DrawColoredTexturedRect
 DrawControllerLayoutDiagram
 DrawRedIntensityRect
+DrawTimingBars
 ExchangeByteBuffers
 ExchangeHalfwordBuffers
 ExchangeWordBuffers

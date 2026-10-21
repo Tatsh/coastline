@@ -303,6 +303,7 @@ rxsize
 sbclaude
 schemafile
 sendmesg
+setcimg
 setcompare
 seteventmesg
 setfpccsr

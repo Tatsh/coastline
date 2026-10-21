@@ -82,6 +82,9 @@ typedef union {
 #define G_LOADBLOCK 0xF3
 #define G_SETPRIMCOLOR 0xFA
 #define G_SETTIMG 0xFD
+#define G_FILLRECT 0xF6
+#define G_SETFILLCOLOR 0xF7
+#define G_SETCIMG 0xFF
 
 /* The parameters of gSPMatrix(). */
 #define G_MTX_MODELVIEW 0x00
@@ -111,6 +114,7 @@ typedef union {
 #define G_MDSFT_CYCLETYPE 20
 
 #define G_CYC_1CYCLE (0 << G_MDSFT_CYCLETYPE)
+#define G_CYC_FILL (3 << G_MDSFT_CYCLETYPE)
 #define G_TL_TILE (0 << G_MDSFT_TEXTLOD)
 #define G_TT_NONE (0 << G_MDSFT_TEXTLUT)
 #define G_TP_NONE (0 << G_MDSFT_TEXTPERSP)
@@ -277,6 +281,16 @@ typedef union {
                           _SHIFTL(G_ACMUX_##Ab1, 3, 3) | _SHIFTL(G_ACMUX_##Ad1, 0, 3))
 
 #define gDPLoadSync(pkt) gDPNoParam(pkt, G_RDPLOADSYNC)
+#define gDPSetColorImage(pkt, f, s, w, i)                                                          \
+    gDisplayListWords(pkt,                                                                         \
+                      _SHIFTL(G_SETCIMG, 24, 8) | _SHIFTL(f, 21, 3) | _SHIFTL(s, 19, 2) |          \
+                          _SHIFTL((w) - 1, 0, 12),                                                 \
+                      (u32)(i))
+#define gDPSetFillColor(pkt, d) gDisplayListWords(pkt, _SHIFTL(G_SETFILLCOLOR, 24, 8), (u32)(d))
+#define gDPFillRectangle(pkt, ulx, uly, lrx, lry)                                                  \
+    gDisplayListWords(pkt,                                                                         \
+                      _SHIFTL(G_FILLRECT, 24, 8) | _SHIFTL(lrx, 14, 10) | _SHIFTL(lry, 2, 10),     \
+                      _SHIFTL(ulx, 14, 10) | _SHIFTL(uly, 2, 10))
 #define gDPSetTextureLUT(pkt, type) gSPSetOtherMode(pkt, G_SETOTHERMODE_H, G_MDSFT_TEXTLUT, 2, type)
 #define gDPSetTexturePersp(pkt, type)                                                              \
     gSPSetOtherMode(pkt, G_SETOTHERMODE_H, G_MDSFT_TEXTPERSP, 1, type)

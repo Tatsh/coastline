@@ -5858,7 +5858,7 @@ glabel ProcessRaceHud
     /* 6950 80205950 00002025 */  or         $a0, $zero, $zero
     /* 6954 80205954 0C0866FC */  jal        SetViewport
     /* 6958 80205958 00002825 */   or        $a1, $zero, $zero
-    /* 695C 8020595C 0C08B65F */  jal        RenderSpeedometer
+    /* 695C 8020595C 0C08B65F */  jal        DrawTimingBars
     /* 6960 80205960 00000000 */   nop
   .L80205964:
     /* 6964 80205964 240F00FF */  addiu      $t7, $zero, 0xFF
