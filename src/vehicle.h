@@ -52,6 +52,55 @@ typedef struct {
     f32 cockpitUp;
 } VehicleSpec;
 
+/** How a car shows the revolutions of its engine. */
+enum {
+    /** A needle over the dashboard. */
+    TACHOMETER_NEEDLE,
+    /** A bar of palette colors whose segments past the revolutions dim. */
+    TACHOMETER_BAR_DIMMED,
+    /** A bar of palette colors whose segments past the revolutions disappear. */
+    TACHOMETER_BAR_HIDDEN,
+};
+
+/** A car the players can choose. Its fields join this structure as they are reconstructed. */
+typedef struct {
+    const char *name;
+    u8 unreconstructed4[0x20 - 0x4];
+    /**
+     * Where the dashboard starts on the cartridge: the palettes of day and night, 256 colors
+     * each, the face, and a cell for each gear, reverse first.
+     */
+    u32 dashboardRom;
+    u8 unreconstructed24[0x28 - 0x24];
+    u8 dashboardWidth;
+    u8 dashboardHeight;
+    /** Where the gear cell sits on the face. */
+    s8 gearX;
+    s8 gearY;
+    u8 gearWidth;
+    u8 gearHeight;
+    /** The TACHOMETER_ kind. */
+    u8 tachometer;
+    union {
+        /** Where the needle turns on the face. */
+        u8 needleX;
+        /** The segments of a bar, the last colors of the palette. */
+        u8 barSegments;
+    };
+    u8 needleY;
+    u8 unreconstructed31[0x34 - 0x31];
+    /** The angles of the needle at 8000 revolutions a minute and at rest, in radians. */
+    f32 needleFullAngle;
+    f32 needleRestAngle;
+    u8 unreconstructed3C[0x60 - 0x3C];
+} CarModel;
+
+/** The cars the players can choose. */
+#define CAR_MODELS 13
+
+/** @ghidraAddress USA: 0x8028ae0c */
+extern CarModel g_aCarModels[CAR_MODELS];
+
 /** The cameras of a vehicle. */
 enum {
     VEHICLE_CAMERA_COCKPIT,
@@ -78,7 +127,16 @@ typedef struct {
     Vec3f chaseLagSource;
     u8 unreconstructed1D8[0x1E8 - 0x1D8];
     Vec3f velocity;
-    u8 unreconstructed1F4[0xE5C - 0x1F4];
+    u8 unreconstructed1F4[0xDF4 - 0x1F4];
+    /** The revolutions of the engine a minute. */
+    f32 engineRpm;
+    u8 unreconstructedDF8[0xE38 - 0xDF8];
+    /** The speed along the vehicle, below 0 in reverse. */
+    f32 forwardSpeed;
+    u8 unreconstructedE3C[0xE40 - 0xE3C];
+    /** The forward gear, from 0. */
+    s32 gear;
+    u8 unreconstructedE44[0xE5C - 0xE44];
     /** The profile of the player who drives the vehicle. */
     PlayerProfile *profile;
     u8 unreconstructedE60[0xF48 - 0xE60];
@@ -86,7 +144,32 @@ typedef struct {
     s32 cameraChanged;
     /** Whether the cameras hold rigidly to the frame of the vehicle. */
     s32 cameraLocked;
-    u8 unreconstructedF50[0x1DE8 - 0xF50];
+    u8 unreconstructedF50[0xF78 - 0xF50];
+    /** The laps finished. */
+    s32 lap;
+    u8 unreconstructedF7C[0xF80 - 0xF7C];
+    /** The time of the lap being driven, in seconds. */
+    f32 lapTime;
+    u8 unreconstructedF84[0xF98 - 0xF84];
+    /** The time of the best lap, in seconds. */
+    f32 bestLapTime;
+    u8 unreconstructedF9C[0xFA0 - 0xF9C];
+    /** The time of the race so far, in seconds. */
+    f32 totalTime;
+    /** The time left, in seconds. */
+    f32 timeLeft;
+    u8 unreconstructedFA8[0xFAC - 0xFA8];
+    /** The place in the race, from 0 for the leader. */
+    s32 racePosition;
+    /** The message shown large in the middle of the view, or NULL. */
+    const char *message;
+    u8 unreconstructedFB4[0xFB8 - 0xFB4];
+    /** The message shown smaller when there is no large one, or NULL. */
+    const char *subMessage;
+    u8 unreconstructedFBC[0xFE4 - 0xFBC];
+    /** The speed the display shows, in kilometers an hour. */
+    f32 speedKph;
+    u8 unreconstructedFE8[0x1DE8 - 0xFE8];
     CameraFrame *activeCamera;
     /** The camera of the last frame. */
     CameraFrame *previousCamera;
@@ -106,7 +189,10 @@ typedef struct {
     u8 unreconstructed1FB0[0x1FB4 - 0x1FB0];
     /** Where the chase camera started. */
     Vec3f initialChasePosition;
-    u8 unreconstructed1FC0[0x2074 - 0x1FC0];
+    u8 unreconstructed1FC0[0x205C - 0x1FC0];
+    /** The index of the car in g_aCarModels. */
+    s32 carModel;
+    u8 unreconstructed2060[0x2074 - 0x2060];
     ReplayState *replay;
     VehicleSpec *spec;
     u8 unreconstructed207C[0x2090 - 0x207C];

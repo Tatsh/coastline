@@ -7002,9 +7002,9 @@ glabel LoadVehicleModelFromRom
     /* 1E534 8021D534 27BDFF80 */  addiu      $sp, $sp, -0x80
     /* 1E538 8021D538 00057880 */  sll        $t7, $a1, 2
     /* 1E53C 8021D53C 01E57823 */  subu       $t7, $t7, $a1
-    /* 1E540 8021D540 3C188029 */  lui        $t8, %hi(g_aVehicleSpecs)
+    /* 1E540 8021D540 3C188029 */  lui        $t8, %hi(g_aCarModels)
     /* 1E544 8021D544 AFB00020 */  sw         $s0, 0x20($sp)
-    /* 1E548 8021D548 2718AE0C */  addiu      $t8, $t8, %lo(g_aVehicleSpecs)
+    /* 1E548 8021D548 2718AE0C */  addiu      $t8, $t8, %lo(g_aCarModels)
     /* 1E54C 8021D54C 000F7940 */  sll        $t7, $t7, 5
     /* 1E550 8021D550 AFBF0024 */  sw         $ra, 0x24($sp)
     /* 1E554 8021D554 AFA40080 */  sw         $a0, 0x80($sp)
@@ -7085,11 +7085,11 @@ glabel LoadOrCopyVehicleModel
     /* 1E660 8021D660 000B5940 */  sll        $t3, $t3, 5
     /* 1E664 8021D664 000840C0 */  sll        $t0, $t0, 3
     /* 1E668 8021D668 25298000 */  addiu      $t1, $t1, %lo(D_803C8000)
-    /* 1E66C 8021D66C 3C068029 */  lui        $a2, %hi(g_aVehicleSpecs + 0x1C)
+    /* 1E66C 8021D66C 3C068029 */  lui        $a2, %hi(g_aCarModels + 0x1C)
     /* 1E670 8021D670 00CB3021 */  addu       $a2, $a2, $t3
     /* 1E674 8021D674 01092021 */  addu       $a0, $t0, $t1
     /* 1E678 8021D678 AFA4001C */  sw         $a0, 0x1C($sp)
-    /* 1E67C 8021D67C 8CC6AE28 */  lw         $a2, %lo(g_aVehicleSpecs + 0x1C)($a2)
+    /* 1E67C 8021D67C 8CC6AE28 */  lw         $a2, %lo(g_aCarModels + 0x1C)($a2)
     /* 1E680 8021D680 0C0982C8 */  jal        memcpy
     /* 1E684 8021D684 00E02825 */   or        $a1, $a3, $zero
     /* 1E688 8021D688 8FA4001C */  lw         $a0, 0x1C($sp)
@@ -7113,9 +7113,9 @@ glabel IsVehicleModelValid
     /* 1E6B8 8021D6B8 00047080 */  sll        $t6, $a0, 2
     /* 1E6BC 8021D6BC 01C47023 */  subu       $t6, $t6, $a0
     /* 1E6C0 8021D6C0 000E7140 */  sll        $t6, $t6, 5
-    /* 1E6C4 8021D6C4 3C028029 */  lui        $v0, %hi(g_aVehicleSpecs + 0x18)
+    /* 1E6C4 8021D6C4 3C028029 */  lui        $v0, %hi(g_aCarModels + 0x18)
     /* 1E6C8 8021D6C8 004E1021 */  addu       $v0, $v0, $t6
-    /* 1E6CC 8021D6CC 8C42AE24 */  lw         $v0, %lo(g_aVehicleSpecs + 0x18)($v0)
+    /* 1E6CC 8021D6CC 8C42AE24 */  lw         $v0, %lo(g_aCarModels + 0x18)($v0)
     /* 1E6D0 8021D6D0 0002782B */  sltu       $t7, $zero, $v0
     /* 1E6D4 8021D6D4 03E00008 */  jr         $ra
     /* 1E6D8 8021D6D8 01E01025 */   or        $v0, $t7, $zero

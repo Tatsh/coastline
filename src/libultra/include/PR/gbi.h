@@ -44,6 +44,19 @@ typedef union {
     s32 force_structure_alignment[4];
 } Hilite;
 
+/** A vertex with a texture coordinate and a color. */
+typedef struct {
+    s16 ob[3];
+    u16 flag;
+    s16 tc[2];
+    u8 cn[4];
+} Vtx_t;
+
+typedef union {
+    Vtx_t v;
+    long long force_structure_alignment;
+} Vtx;
+
 /** The two words of a display list command. */
 typedef struct {
     u32 w0;
@@ -61,7 +74,10 @@ typedef union {
 
 /* The command opcodes of the F3DEX microcode, which keeps those of Fast3D. */
 #define G_MTX 0x01
+#define G_VTX 0x04
 #define G_DL 0x06
+#define G_TRI2 0xB1
+#define G_LOADTLUT 0xF0
 #define G_TEXTURE 0xBB
 #define G_POPMTX 0xBD
 #define G_SETGEOMETRYMODE 0xB7
@@ -142,6 +158,7 @@ typedef union {
 #define G_BL_CLR_IN 0
 #define G_BL_CLR_MEM 1
 #define G_BL_A_IN 0
+#define G_BL_A_MEM 1
 #define G_BL_1MA 0
 #define G_BL_1 2
 #define G_BL_0 3
@@ -241,6 +258,25 @@ typedef union {
         pkt, _SHIFTL(G_MTX, 24, 8) | _SHIFTL(p, 16, 8) | _SHIFTL(sizeof(Mtx), 0, 16), (u32)(m))
 #define gSPPopMatrix(pkt, n) gImmp1(pkt, G_POPMTX, n)
 #define gSPDisplayList(pkt, dl) gDisplayListWords(pkt, _SHIFTL(G_DL, 24, 8), (u32)(dl))
+/** Load n vertices into the vertex buffer of the F3DEX microcode from index v0. */
+#define gSPVertex(pkt, v, n, v0)                                                                   \
+    gDisplayListWords(pkt,                                                                         \
+                      _SHIFTL(G_VTX, 24, 8) | _SHIFTL((v0) * 2, 16, 8) | _SHIFTL(n, 10, 6) |       \
+                          _SHIFTL(sizeof(Vtx) * (n) - 1, 0, 10),                                   \
+                      (u32)(v))
+
+/** The vertex indices of a triangle, rotated so the flat-shading vertex comes first. */
+#define __gsSP1Triangle_w1f(v0, v1, v2, flag)                                                      \
+    ((flag) == 0 ? _SHIFTL((v0) * 2, 16, 8) | _SHIFTL((v1) * 2, 8, 8) | _SHIFTL((v2) * 2, 0, 8) :  \
+     (flag) == 1 ? _SHIFTL((v1) * 2, 16, 8) | _SHIFTL((v2) * 2, 8, 8) | _SHIFTL((v0) * 2, 0, 8) :  \
+                   _SHIFTL((v2) * 2, 16, 8) | _SHIFTL((v0) * 2, 8, 8) | _SHIFTL((v1) * 2, 0, 8))
+
+/** Draw two triangles of the vertex buffer. */
+#define gSP2Triangles(pkt, v00, v01, v02, flag0, v10, v11, v12, flag1)                             \
+    gDisplayListWords(pkt,                                                                         \
+                      _SHIFTL(G_TRI2, 24, 8) | __gsSP1Triangle_w1f(v00, v01, v02, flag0),          \
+                      __gsSP1Triangle_w1f(v10, v11, v12, flag1))
+
 #define gSPSetGeometryMode(pkt, word) gImmp1(pkt, G_SETGEOMETRYMODE, word)
 #define gSPClearGeometryMode(pkt, word) gImmp1(pkt, G_CLEARGEOMETRYMODE, word)
 #define gSPTexture(pkt, s, t, level, tile, on)                                                     \
@@ -328,6 +364,22 @@ typedef union {
     gDisplayListWords(pkt,                                                                         \
                       _SHIFTL(G_SETTILESIZE, 24, 8) | _SHIFTL(uls, 12, 12) | _SHIFTL(ult, 0, 12),  \
                       _SHIFTL(t, 24, 3) | _SHIFTL(lrs, 12, 12) | _SHIFTL(lrt, 0, 12))
+/** Load count + 1 colors of a palette through a tile. */
+#define gDPLoadTLUTCmd(pkt, tile, count)                                                           \
+    gDisplayListWords(                                                                             \
+        pkt, _SHIFTL(G_LOADTLUT, 24, 8), _SHIFTL(tile, 24, 3) | _SHIFTL(count, 14, 10))
+
+/** Load a palette of 256 colors into the upper half of the texture memory. */
+#define gDPLoadTLUT_pal256(pkt, dram)                                                              \
+    do {                                                                                           \
+        gDPSetTextureImage(pkt, G_IM_FMT_RGBA, G_IM_SIZ_16b, 1, dram);                             \
+        gDPTileSync(pkt);                                                                          \
+        gDPSetTile(pkt, 0, 0, 0, 256, G_TX_LOADTILE, 0, 0, 0, 0, 0, 0, 0);                         \
+        gDPLoadSync(pkt);                                                                          \
+        gDPLoadTLUTCmd(pkt, G_TX_LOADTILE, 255);                                                   \
+        gDPPipeSync(pkt);                                                                          \
+    } while (0)
+
 /** Load a rectangle of texels. The coordinates are in 10.2 fixed point. */
 #define gDPLoadTile(pkt, t, uls, ult, lrs, lrt)                                                    \
     gDisplayListWords(pkt,                                                                         \

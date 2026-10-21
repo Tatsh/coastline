@@ -44,7 +44,12 @@ DrawBitmapTextToFramebuffer
 DrawColoredTexturedRect
 DrawControllerLayoutDiagram
 DrawHudLabelAtFraction
+DrawHudMessage
+DrawLabelWithTime
+DrawLapCounterHud
+DrawRaceTimerHud
 DrawRedIntensityRect
+DrawSpeedAndHudOverlay
 DrawText
 DrawTexturedRect
 DrawTimingBars
@@ -106,6 +111,7 @@ QuaternionMultiply
 QuaternionNormalize
 QuaternionToMatrix
 QuickSort
+RenderDashboardGauges
 RenderPrecipitationEffect
 RenderSkybox
 RenderTextToDisplayList
@@ -131,6 +137,7 @@ StartChampionshipRace
 StartRaceWithPlayerCount
 StartTimeAttack
 StepDebugHiddenInstance
+StubDashboard
 StubPhysics1
 StubPhysics2
 StubWeatherUpdate

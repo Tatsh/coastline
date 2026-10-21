@@ -148,6 +148,7 @@ jpad
 jsonnet
 jsonschema
 jtbl
+kilometers
 kseg
 kuseg
 lcart
@@ -171,6 +172,7 @@ lindex
 litob
 llcvt
 lnext
+loadtlut
 loguy
 lookat
 lookathil
@@ -363,6 +365,7 @@ tlbpgmask
 tlbr
 tlbwi
 tlnext
+tlut
 tolower
 toupper
 tranx
@@ -407,6 +410,8 @@ wiswa's
 writeback
 writebackdcache
 writebackdcacheall
+wwkph
+wwmph
 xabs
 xchar
 xexp

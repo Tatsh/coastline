@@ -1795,8 +1795,8 @@ glabel LoadVehicleModel
     /* 21474 80220474 27BDFFE0 */  addiu      $sp, $sp, -0x20
     /* 21478 80220478 00067880 */  sll        $t7, $a2, 2
     /* 2147C 8022047C 01E67823 */  subu       $t7, $t7, $a2
-    /* 21480 80220480 3C188029 */  lui        $t8, %hi(g_aVehicleSpecs)
-    /* 21484 80220484 2718AE0C */  addiu      $t8, $t8, %lo(g_aVehicleSpecs)
+    /* 21480 80220480 3C188029 */  lui        $t8, %hi(g_aCarModels)
+    /* 21484 80220484 2718AE0C */  addiu      $t8, $t8, %lo(g_aCarModels)
     /* 21488 80220488 000F7940 */  sll        $t7, $t7, 5
     /* 2148C 8022048C AFBF0014 */  sw         $ra, 0x14($sp)
     /* 21490 80220490 AFA40020 */  sw         $a0, 0x20($sp)
@@ -1863,7 +1863,7 @@ glabel PollVehicleModelDma
     /* 2155C 8022055C 27188000 */   addiu     $t8, $t8, %lo(D_803C8000)
     /* 21560 80220560 8C8E0020 */  lw         $t6, 0x20($a0)
     /* 21564 80220564 8CD90024 */  lw         $t9, 0x24($a2)
-    /* 21568 80220568 3C058029 */  lui        $a1, %hi(g_aVehicleSpecs + 0x14)
+    /* 21568 80220568 3C058029 */  lui        $a1, %hi(g_aCarModels + 0x14)
     /* 2156C 8022056C 000E78C0 */  sll        $t7, $t6, 3
     /* 21570 80220570 01EE7823 */  subu       $t7, $t7, $t6
     /* 21574 80220574 000F7980 */  sll        $t7, $t7, 6
@@ -1875,7 +1875,7 @@ glabel PollVehicleModelDma
     /* 2158C 8022058C 01EE7821 */  addu       $t7, $t7, $t6
     /* 21590 80220590 000F78C0 */  sll        $t7, $t7, 3
     /* 21594 80220594 00A82821 */  addu       $a1, $a1, $t0
-    /* 21598 80220598 8CA5AE20 */  lw         $a1, %lo(g_aVehicleSpecs + 0x14)($a1)
+    /* 21598 80220598 8CA5AE20 */  lw         $a1, %lo(g_aCarModels + 0x14)($a1)
     /* 2159C 8022059C 01F82021 */  addu       $a0, $t7, $t8
     /* 215A0 802205A0 0C08734C */  jal        DecompressFromRom
     /* 215A4 802205A4 AFA60018 */   sw        $a2, 0x18($sp)

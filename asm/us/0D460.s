@@ -2669,9 +2669,9 @@ glabel ProcessTrackSelectScreen
     /* FB40 8020EB40 3C0A8032 */   lui       $t2, %hi(g_dwPlayer1VehicleSpecIdx)
     /* FB44 8020EB44 8D4AD7B8 */  lw         $t2, %lo(g_dwPlayer1VehicleSpecIdx)($t2)
     /* FB48 8020EB48 24120060 */  addiu      $s2, $zero, 0x60
-    /* FB4C 8020EB4C 3C108029 */  lui        $s0, %hi(g_aVehicleSpecs)
+    /* FB4C 8020EB4C 3C108029 */  lui        $s0, %hi(g_aCarModels)
     /* FB50 8020EB50 01520019 */  multu      $t2, $s2
-    /* FB54 8020EB54 2610AE0C */  addiu      $s0, $s0, %lo(g_aVehicleSpecs)
+    /* FB54 8020EB54 2610AE0C */  addiu      $s0, $s0, %lo(g_aCarModels)
     /* FB58 8020EB58 3C05802A */  lui        $a1, %hi(g_szFmtPlayerReady)
     /* FB5C 8020EB5C 24A57BCC */  addiu      $a1, $a1, %lo(g_szFmtPlayerReady)
     /* FB60 8020EB60 02202025 */  or         $a0, $s1, $zero
@@ -2688,8 +2688,8 @@ glabel ProcessTrackSelectScreen
     /* FB88 8020EB88 24A57BD8 */  addiu      $a1, $a1, %lo(g_szReady)
     /* FB8C 8020EB8C 0C098375 */  jal        sprintf
     /* FB90 8020EB90 02202025 */   or        $a0, $s1, $zero
-    /* FB94 8020EB94 3C108029 */  lui        $s0, %hi(g_aVehicleSpecs)
-    /* FB98 8020EB98 2610AE0C */  addiu      $s0, $s0, %lo(g_aVehicleSpecs)
+    /* FB94 8020EB94 3C108029 */  lui        $s0, %hi(g_aCarModels)
+    /* FB98 8020EB98 2610AE0C */  addiu      $s0, $s0, %lo(g_aCarModels)
     /* FB9C 8020EB9C 10000012 */  b          .L8020EBE8
     /* FBA0 8020EBA0 24120060 */   addiu     $s2, $zero, 0x60
   .L8020EBA4:
@@ -2707,8 +2707,8 @@ glabel ProcessTrackSelectScreen
     /* FBD0 8020EBD0 02202025 */  or         $a0, $s1, $zero
     /* FBD4 8020EBD4 0C098375 */  jal        sprintf
     /* FBD8 8020EBD8 8F070000 */   lw        $a3, 0x0($t8)
-    /* FBDC 8020EBDC 3C108029 */  lui        $s0, %hi(g_aVehicleSpecs)
-    /* FBE0 8020EBE0 2610AE0C */  addiu      $s0, $s0, %lo(g_aVehicleSpecs)
+    /* FBDC 8020EBDC 3C108029 */  lui        $s0, %hi(g_aCarModels)
+    /* FBE0 8020EBE0 2610AE0C */  addiu      $s0, $s0, %lo(g_aCarModels)
     /* FBE4 8020EBE4 24120060 */  addiu      $s2, $zero, 0x60
   .L8020EBE8:
     /* FBE8 8020EBE8 3C058029 */  lui        $a1, %hi(g_dwScreenWidth)
@@ -3401,9 +3401,9 @@ glabel ProcessTrackSelectScreen
     /* 105F8 8020F5F8 3C198032 */   lui       $t9, %hi(g_dwPlayer1VehicleSpecIdx)
     /* 105FC 8020F5FC 8F39D7B8 */  lw         $t9, %lo(g_dwPlayer1VehicleSpecIdx)($t9)
     /* 10600 8020F600 24120060 */  addiu      $s2, $zero, 0x60
-    /* 10604 8020F604 3C108029 */  lui        $s0, %hi(g_aVehicleSpecs)
+    /* 10604 8020F604 3C108029 */  lui        $s0, %hi(g_aCarModels)
     /* 10608 8020F608 03320019 */  multu      $t9, $s2
-    /* 1060C 8020F60C 2610AE0C */  addiu      $s0, $s0, %lo(g_aVehicleSpecs)
+    /* 1060C 8020F60C 2610AE0C */  addiu      $s0, $s0, %lo(g_aCarModels)
     /* 10610 8020F610 3C05802A */  lui        $a1, %hi(g_szFmtPlayerReady5)
     /* 10614 8020F614 24A57D64 */  addiu      $a1, $a1, %lo(g_szFmtPlayerReady5)
     /* 10618 8020F618 02202025 */  or         $a0, $s1, $zero
@@ -3444,9 +3444,9 @@ glabel ProcessTrackSelectScreen
     /* 10698 8020F698 3C188032 */   lui       $t8, %hi(g_dwPlayer1VehicleSpecIdx)
     /* 1069C 8020F69C 8F18D7B8 */  lw         $t8, %lo(g_dwPlayer1VehicleSpecIdx)($t8)
     /* 106A0 8020F6A0 24120060 */  addiu      $s2, $zero, 0x60
-    /* 106A4 8020F6A4 3C108029 */  lui        $s0, %hi(g_aVehicleSpecs)
+    /* 106A4 8020F6A4 3C108029 */  lui        $s0, %hi(g_aCarModels)
     /* 106A8 8020F6A8 03120019 */  multu      $t8, $s2
-    /* 106AC 8020F6AC 2610AE0C */  addiu      $s0, $s0, %lo(g_aVehicleSpecs)
+    /* 106AC 8020F6AC 2610AE0C */  addiu      $s0, $s0, %lo(g_aCarModels)
     /* 106B0 8020F6B0 3C05802A */  lui        $a1, %hi(g_szFmtPlayerReady6)
     /* 106B4 8020F6B4 24A57D70 */  addiu      $a1, $a1, %lo(g_szFmtPlayerReady6)
     /* 106B8 8020F6B8 02202025 */  or         $a0, $s1, $zero
@@ -3463,8 +3463,8 @@ glabel ProcessTrackSelectScreen
     /* 106E0 8020F6E0 24A57D7C */  addiu      $a1, $a1, %lo(g_szLetsGo)
     /* 106E4 8020F6E4 0C098375 */  jal        sprintf
     /* 106E8 8020F6E8 02202025 */   or        $a0, $s1, $zero
-    /* 106EC 8020F6EC 3C108029 */  lui        $s0, %hi(g_aVehicleSpecs)
-    /* 106F0 8020F6F0 2610AE0C */  addiu      $s0, $s0, %lo(g_aVehicleSpecs)
+    /* 106EC 8020F6EC 3C108029 */  lui        $s0, %hi(g_aCarModels)
+    /* 106F0 8020F6F0 2610AE0C */  addiu      $s0, $s0, %lo(g_aCarModels)
     /* 106F4 8020F6F4 10000012 */  b          .L8020F740
     /* 106F8 8020F6F8 24120060 */   addiu     $s2, $zero, 0x60
   .L8020F6FC:
@@ -3482,8 +3482,8 @@ glabel ProcessTrackSelectScreen
     /* 10728 8020F728 02202025 */  or         $a0, $s1, $zero
     /* 1072C 8020F72C 0C098375 */  jal        sprintf
     /* 10730 8020F730 8D870000 */   lw        $a3, 0x0($t4)
-    /* 10734 8020F734 3C108029 */  lui        $s0, %hi(g_aVehicleSpecs)
-    /* 10738 8020F738 2610AE0C */  addiu      $s0, $s0, %lo(g_aVehicleSpecs)
+    /* 10734 8020F734 3C108029 */  lui        $s0, %hi(g_aCarModels)
+    /* 10738 8020F738 2610AE0C */  addiu      $s0, $s0, %lo(g_aCarModels)
     /* 1073C 8020F73C 24120060 */  addiu      $s2, $zero, 0x60
   .L8020F740:
     /* 10740 8020F740 3C068029 */  lui        $a2, %hi(g_dwScreenHeight)

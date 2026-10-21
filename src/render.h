@@ -30,11 +30,12 @@ typedef struct {
 
 /** The rectangle of the screen a view fills. */
 typedef struct {
-    s32 x0;
-    s32 y0;
-    s32 x1;
-    s32 y1;
-    s32 unreconstructed10;
+    s32 x;
+    s32 y;
+    s32 width;
+    s32 height;
+    /** The vehicle of the player the view follows. */
+    s32 vehicleIndex;
 } ViewportRect;
 
 /** The next command of the display list. @ghidraAddress USA: 0x8028a858 */
@@ -81,6 +82,6 @@ extern s32 g_dwCurrentSplitScreenIndex;
  *
  * @ghidraAddress USA: 0x80218104
  */
-void DrawFilledRect(s32 x0, s32 y0, s32 x1, s32 y1, s32 red, s32 green, s32 blue);
+void DrawFilledRect(s32 x, s32 y, s32 width, s32 height, s32 red, s32 green, s32 blue);
 
 #endif

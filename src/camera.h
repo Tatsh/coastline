@@ -19,6 +19,9 @@
  */
 extern s32 g_bVehicleTrackCollisionCorrected;
 
+/** The vehicle the view being drawn follows. @ghidraAddress USA: 0x8028aaf0 */
+extern Vehicle *g_pActiveCameraVehicle;
+
 /** Whether an instant replay is playing. @ghidraAddress USA: 0x80270788 */
 extern s32 gInstantReplayActive;
 

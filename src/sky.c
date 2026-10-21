@@ -38,15 +38,15 @@ void RenderSkybox(void) {
     if (IsSkyFogFilled()) {
         rect = &g_aViewportRects[g_dwCurrentSplitScreenIndex];
         if (g_dwLightningFlashCounter > 0 && (g_dwLightningFlashCounter & 1)) {
-            DrawFilledRect(rect->x0,
-                           rect->y0,
-                           rect->x1,
-                           rect->y1,
+            DrawFilledRect(rect->x,
+                           rect->y,
+                           rect->width,
+                           rect->height,
                            (g_bFogR * 3 + FLASH_RED) >> 2,
                            (g_bFogG * 3 + FLASH_GREEN) >> 2,
                            (g_bFogB * 3 + FLASH_BLUE) >> 2);
         } else {
-            DrawFilledRect(rect->x0, rect->y0, rect->x1, rect->y1, g_bFogR, g_bFogG, g_bFogB);
+            DrawFilledRect(rect->x, rect->y, rect->width, rect->height, g_bFogR, g_bFogG, g_bFogB);
         }
         return;
     }

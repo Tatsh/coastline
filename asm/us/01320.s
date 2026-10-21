@@ -3719,9 +3719,9 @@ glabel ProcessRaceHud
   .L802039AC:
     /* 49AC 802039AC 01304821 */  addu       $t1, $t1, $s0
     /* 49B0 802039B0 00094880 */  sll        $t1, $t1, 2
-    /* 49B4 802039B4 3C0A8032 */  lui        $t2, %hi(g_adwPlayerVehicleIndex)
+    /* 49B4 802039B4 3C0A8032 */  lui        $t2, %hi(D_8031B2D8)
     /* 49B8 802039B8 01495021 */  addu       $t2, $t2, $t1
-    /* 49BC 802039BC 8D4AB2D8 */  lw         $t2, %lo(g_adwPlayerVehicleIndex)($t2)
+    /* 49BC 802039BC 8D4AB2D8 */  lw         $t2, %lo(D_8031B2D8)($t2)
     /* 49C0 802039C0 3C0E8032 */  lui        $t6, %hi(g_aVehicles)
     /* 49C4 802039C4 25CEB760 */  addiu      $t6, $t6, %lo(g_aVehicles)
     /* 49C8 802039C8 000AC980 */  sll        $t9, $t2, 6
@@ -3881,9 +3881,9 @@ glabel ProcessRaceHud
     /* 4C0C 80203C0C 0010C080 */  sll        $t8, $s0, 2
     /* 4C10 80203C10 0310C021 */  addu       $t8, $t8, $s0
     /* 4C14 80203C14 0018C080 */  sll        $t8, $t8, 2
-    /* 4C18 80203C18 3C198032 */  lui        $t9, %hi(g_adwPlayerVehicleIndex)
+    /* 4C18 80203C18 3C198032 */  lui        $t9, %hi(D_8031B2D8)
     /* 4C1C 80203C1C 0338C821 */  addu       $t9, $t9, $t8
-    /* 4C20 80203C20 8F39B2D8 */  lw         $t9, %lo(g_adwPlayerVehicleIndex)($t9)
+    /* 4C20 80203C20 8F39B2D8 */  lw         $t9, %lo(D_8031B2D8)($t9)
     /* 4C24 80203C24 3C0C8032 */  lui        $t4, %hi(g_aVehicles)
     /* 4C28 80203C28 258CB760 */  addiu      $t4, $t4, %lo(g_aVehicles)
     /* 4C2C 80203C2C 00197980 */  sll        $t7, $t9, 6
@@ -4433,9 +4433,9 @@ glabel ProcessRaceHud
     /* 5454 80204454 0010C880 */   sll       $t9, $s0, 2
     /* 5458 80204458 0330C821 */  addu       $t9, $t9, $s0
     /* 545C 8020445C 0019C880 */  sll        $t9, $t9, 2
-    /* 5460 80204460 3C188032 */  lui        $t8, %hi(g_dwControllerPort2)
+    /* 5460 80204460 3C188032 */  lui        $t8, %hi(D_8031B2D0)
     /* 5464 80204464 0319C021 */  addu       $t8, $t8, $t9
-    /* 5468 80204468 8F18B2D0 */  lw         $t8, %lo(g_dwControllerPort2)($t8)
+    /* 5468 80204468 8F18B2D0 */  lw         $t8, %lo(D_8031B2D0)($t8)
     /* 546C 8020446C 07010003 */  bgez       $t8, .L8020447C
     /* 5470 80204470 00184883 */   sra       $t1, $t8, 2
     /* 5474 80204474 27010003 */  addiu      $at, $t8, 0x3
@@ -4451,9 +4451,9 @@ glabel ProcessRaceHud
     /* 5494 80204494 00107080 */   sll       $t6, $s0, 2
     /* 5498 80204498 01D07021 */  addu       $t6, $t6, $s0
     /* 549C 8020449C 000E7080 */  sll        $t6, $t6, 2
-    /* 54A0 802044A0 3C0F8032 */  lui        $t7, %hi(g_dwControllerPort2)
+    /* 54A0 802044A0 3C0F8032 */  lui        $t7, %hi(D_8031B2D0)
     /* 54A4 802044A4 01EE7821 */  addu       $t7, $t7, $t6
-    /* 54A8 802044A8 8DEFB2D0 */  lw         $t7, %lo(g_dwControllerPort2)($t7)
+    /* 54A8 802044A8 8DEFB2D0 */  lw         $t7, %lo(D_8031B2D0)($t7)
     /* 54AC 802044AC 000F4080 */  sll        $t0, $t7, 2
     /* 54B0 802044B0 010F4021 */  addu       $t0, $t0, $t7
     /* 54B4 802044B4 05010003 */  bgez       $t0, .L802044C4
@@ -4467,9 +4467,9 @@ glabel ProcessRaceHud
     /* 54CC 802044CC 00106880 */  sll        $t5, $s0, 2
     /* 54D0 802044D0 01B06821 */  addu       $t5, $t5, $s0
     /* 54D4 802044D4 000D6880 */  sll        $t5, $t5, 2
-    /* 54D8 802044D8 3C0C8032 */  lui        $t4, %hi(g_dwControllerPort2)
+    /* 54D8 802044D8 3C0C8032 */  lui        $t4, %hi(D_8031B2D0)
     /* 54DC 802044DC 018D6021 */  addu       $t4, $t4, $t5
-    /* 54E0 802044E0 8D8CB2D0 */  lw         $t4, %lo(g_dwControllerPort2)($t4)
+    /* 54E0 802044E0 8D8CB2D0 */  lw         $t4, %lo(D_8031B2D0)($t4)
     /* 54E4 802044E4 000CC880 */  sll        $t9, $t4, 2
     /* 54E8 802044E8 032CC823 */  subu       $t9, $t9, $t4
     /* 54EC 802044EC 07210003 */  bgez       $t9, .L802044FC

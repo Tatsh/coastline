@@ -31729,10 +31729,10 @@ dlabel g_dwWeatherCount
     /* 8BE08 8028AE08 0000000D */ .word 0x0000000D
 enddlabel g_dwWeatherCount
 
-nonmatching g_aVehicleSpecs
+nonmatching g_aCarModels
 
-dlabel g_aVehicleSpecs
-    /* 8BE0C 8028AE0C 802A933C */ .word g_szTrackName1
+dlabel g_aCarModels
+    /* 8BE0C 8028AE0C 802A933C */ .word g_szCarTypeCe
     /* 8BE10 8028AE10 00000000 */ .word 0x00000000
     /* 8BE14 8028AE14 00000000 */ .word 0x00000000
     /* 8BE18 8028AE18 00000000 */ .word 0x00000000
@@ -31756,7 +31756,7 @@ dlabel g_aVehicleSpecs
     /* 8BE60 8028AE60 00000005 */ .word 0x00000005
     /* 8BE64 8028AE64 40266666 */ .word 0x40266666
     /* 8BE68 8028AE68 3FACCCCD */ .word 0x3FACCCCD
-    /* 8BE6C 8028AE6C 802A9344 */ .word g_szTrackName2
+    /* 8BE6C 8028AE6C 802A9344 */ .word g_szCarTypeEs
     /* 8BE70 8028AE70 00000000 */ .word 0x00000000
     /* 8BE74 8028AE74 00000000 */ .word 0x00000000
     /* 8BE78 8028AE78 00000000 */ .word 0x00000000
@@ -31780,7 +31780,7 @@ dlabel g_aVehicleSpecs
     /* 8BEC0 8028AEC0 00000006 */ .word 0x00000006
     /* 8BEC4 8028AEC4 40200000 */ .word 0x40200000
     /* 8BEC8 8028AEC8 3FACCCCD */ .word 0x3FACCCCD
-    /* 8BECC 8028AECC 802A934C */ .word g_szTrackName3
+    /* 8BECC 8028AECC 802A934C */ .word g_szCarTypeNs
     /* 8BED0 8028AED0 00000000 */ .word 0x00000000
     /* 8BED4 8028AED4 00000000 */ .word 0x00000000
     /* 8BED8 8028AED8 00000000 */ .word 0x00000000
@@ -31804,7 +31804,7 @@ dlabel g_aVehicleSpecs
     /* 8BF20 8028AF20 00000006 */ .word 0x00000006
     /* 8BF24 8028AF24 402CCCCD */ .word 0x402CCCCD
     /* 8BF28 8028AF28 3FACCCCD */ .word 0x3FACCCCD
-    /* 8BF2C 8028AF2C 802A9354 */ .word g_szTrackName4
+    /* 8BF2C 8028AF2C 802A9354 */ .word g_szCarTypeRs
     /* 8BF30 8028AF30 00000000 */ .word 0x00000000
     /* 8BF34 8028AF34 00000000 */ .word 0x00000000
     /* 8BF38 8028AF38 00000000 */ .word 0x00000000
@@ -31828,7 +31828,7 @@ dlabel g_aVehicleSpecs
     /* 8BF80 8028AF80 00000006 */ .word 0x00000006
     /* 8BF84 8028AF84 401CCCCD */ .word 0x401CCCCD
     /* 8BF88 8028AF88 3FACCCCD */ .word 0x3FACCCCD
-    /* 8BF8C 8028AF8C 802A935C */ .word g_szTrackName5
+    /* 8BF8C 8028AF8C 802A935C */ .word g_szCarTypeSp
     /* 8BF90 8028AF90 00000000 */ .word 0x00000000
     /* 8BF94 8028AF94 00000000 */ .word 0x00000000
     /* 8BF98 8028AF98 00000000 */ .word 0x00000000
@@ -31852,7 +31852,7 @@ dlabel g_aVehicleSpecs
     /* 8BFE0 8028AFE0 00000006 */ .word 0x00000006
     /* 8BFE4 8028AFE4 4029999A */ .word 0x4029999A
     /* 8BFE8 8028AFE8 3FACCCCD */ .word 0x3FACCCCD
-    /* 8BFEC 8028AFEC 802A9364 */ .word g_szTrackName6
+    /* 8BFEC 8028AFEC 802A9364 */ .word g_szCarTypePs
     /* 8BFF0 8028AFF0 00000000 */ .word 0x00000000
     /* 8BFF4 8028AFF4 00000000 */ .word 0x00000000
     /* 8BFF8 8028AFF8 00000000 */ .word 0x00000000
@@ -31876,7 +31876,7 @@ dlabel g_aVehicleSpecs
     /* 8C040 8028B040 00000006 */ .word 0x00000006
     /* 8C044 8028B044 40233333 */ .word 0x40233333
     /* 8C048 8028B048 3FACCCCD */ .word 0x3FACCCCD
-    /* 8C04C 8028B04C 802A936C */ .word g_szTypeM3
+    /* 8C04C 8028B04C 802A936C */ .word g_szCarTypeM3
     /* 8C050 8028B050 00000000 */ .word 0x00000000
     /* 8C054 8028B054 00000000 */ .word 0x00000000
     /* 8C058 8028B058 00000000 */ .word 0x00000000
@@ -31900,7 +31900,7 @@ dlabel g_aVehicleSpecs
     /* 8C0A0 8028B0A0 00000006 */ .word 0x00000006
     /* 8C0A4 8028B0A4 40233333 */ .word 0x40233333
     /* 8C0A8 8028B0A8 3FACCCCD */ .word 0x3FACCCCD
-    /* 8C0AC 8028B0AC 802A9374 */ .word g_szTrackName7
+    /* 8C0AC 8028B0AC 802A9374 */ .word g_szCarTypeIp
     /* 8C0B0 8028B0B0 00000000 */ .word 0x00000000
     /* 8C0B4 8028B0B4 00000000 */ .word 0x00000000
     /* 8C0B8 8028B0B8 00000000 */ .word 0x00000000
@@ -31924,7 +31924,7 @@ dlabel g_aVehicleSpecs
     /* 8C100 8028B100 00000005 */ .word 0x00000005
     /* 8C104 8028B104 40233333 */ .word 0x40233333
     /* 8C108 8028B108 3FA66666 */ .word 0x3FA66666
-    /* 8C10C 8028B10C 802A937C */ .word g_szTrackName8
+    /* 8C10C 8028B10C 802A937C */ .word g_szCarTypeLd
     /* 8C110 8028B110 00000000 */ .word 0x00000000
     /* 8C114 8028B114 00000000 */ .word 0x00000000
     /* 8C118 8028B118 00000000 */ .word 0x00000000
@@ -31948,7 +31948,7 @@ dlabel g_aVehicleSpecs
     /* 8C160 8028B160 00000005 */ .word 0x00000005
     /* 8C164 8028B164 40133333 */ .word 0x40133333
     /* 8C168 8028B168 3FACCCCD */ .word 0x3FACCCCD
-    /* 8C16C 8028B16C 802A9384 */ .word g_szTrackName9
+    /* 8C16C 8028B16C 802A9384 */ .word g_szCarHelmet
     /* 8C170 8028B170 00000000 */ .word 0x00000000
     /* 8C174 8028B174 00000000 */ .word 0x00000000
     /* 8C178 8028B178 00000000 */ .word 0x00000000
@@ -31972,7 +31972,7 @@ dlabel g_aVehicleSpecs
     /* 8C1C0 8028B1C0 00000006 */ .word 0x00000006
     /* 8C1C4 8028B1C4 3FD9999A */ .word 0x3FD9999A
     /* 8C1C8 8028B1C8 3FACCCCD */ .word 0x3FACCCCD
-    /* 8C1CC 8028B1CC 802A938C */ .word g_szTrackName10
+    /* 8C1CC 8028B1CC 802A938C */ .word g_szCarMilkTruck
     /* 8C1D0 8028B1D0 00000000 */ .word 0x00000000
     /* 8C1D4 8028B1D4 00000000 */ .word 0x00000000
     /* 8C1D8 8028B1D8 00000000 */ .word 0x00000000
@@ -31996,7 +31996,7 @@ dlabel g_aVehicleSpecs
     /* 8C220 8028B220 00000006 */ .word 0x00000006
     /* 8C224 8028B224 402CCCCD */ .word 0x402CCCCD
     /* 8C228 8028B228 3FE66666 */ .word 0x3FE66666
-    /* 8C22C 8028B22C 802A9398 */ .word g_szTrackName11
+    /* 8C22C 8028B22C 802A9398 */ .word g_szCarCupra
     /* 8C230 8028B230 00000000 */ .word 0x00000000
     /* 8C234 8028B234 00000000 */ .word 0x00000000
     /* 8C238 8028B238 00000000 */ .word 0x00000000
@@ -32020,7 +32020,7 @@ dlabel g_aVehicleSpecs
     /* 8C280 8028B280 00000006 */ .word 0x00000006
     /* 8C284 8028B284 3F333333 */ .word 0x3F333333
     /* 8C288 8028B288 3F666666 */ .word 0x3F666666
-    /* 8C28C 8028B28C 802A93A0 */ .word g_szTrackName12
+    /* 8C28C 8028B28C 802A93A0 */ .word g_szCarBeachBall
     /* 8C290 8028B290 00000000 */ .word 0x00000000
     /* 8C294 8028B294 00000000 */ .word 0x00000000
     /* 8C298 8028B298 00000000 */ .word 0x00000000
@@ -32044,7 +32044,7 @@ dlabel g_aVehicleSpecs
     /* 8C2E0 8028B2E0 00000006 */ .word 0x00000006
     /* 8C2E4 8028B2E4 3FC00000 */ .word 0x3FC00000
     /* 8C2E8 8028B2E8 3FC00000 */ .word 0x3FC00000
-enddlabel g_aVehicleSpecs
+enddlabel g_aCarModels
 
 nonmatching g_dwGarageSelectionIndex
 
@@ -34622,23 +34622,23 @@ dlabel g_adwDashboardLoadedKey
     /* 8D794 8028C794 FFFFFFFF */ .word 0xFFFFFFFF
 enddlabel g_adwDashboardLoadedKey
 
-nonmatching g_adwDashboardGaugeLastValue
+nonmatching g_adwDashboardLoadedGear
 
-dlabel g_adwDashboardGaugeLastValue
+dlabel g_adwDashboardLoadedGear
     /* 8D798 8028C798 FFFFFFFF */ .word 0xFFFFFFFF
     /* 8D79C 8028C79C FFFFFFFF */ .word 0xFFFFFFFF
     /* 8D7A0 8028C7A0 00000000 */ .word 0x00000000
     /* 8D7A4 8028C7A4 00000000 */ .word 0x00000000
-enddlabel g_adwDashboardGaugeLastValue
+enddlabel g_adwDashboardLoadedGear
 
-nonmatching D_8028C7A8
+nonmatching g_aDashboardTextures
 
-dlabel D_8028C7A8
+dlabel g_aDashboardTextures
     /* 8D7A8 8028C7A8 00000000 */ .word 0x00000000
     /* 8D7AC 8028C7AC 00000000 */ .word 0x00000000
-    /* 8D7B0 8028C7B0 8035D530 */ .word D_8035D530
+    /* 8D7B0 8028C7B0 8035D530 */ .word g_aabDashboardPixels
     /* 8D7B4 8028C7B4 */ .short 0x0040
-enddlabel D_8028C7A8
+enddlabel g_aDashboardTextures
 
 nonmatching D_8028C7B6
 
@@ -34652,12 +34652,12 @@ dlabel D_8028C7B6
     /* 8D7CC 8028C7CC 02010000 */ .word 0x02010000
 enddlabel D_8028C7B6
 
-nonmatching D_8028C7D0
+nonmatching g_aDashboardGearTextures
 
-dlabel D_8028C7D0
+dlabel g_aDashboardGearTextures
     /* 8D7D0 8028C7D0 00000000 */ .word 0x00000000
     /* 8D7D4 8028C7D4 00000000 */ .word 0x00000000
-    /* 8D7D8 8028C7D8 8035F530 */ .word D_8035F530
+    /* 8D7D8 8028C7D8 8035F530 */ .word g_aabDashboardGearPixels
     /* 8D7DC 8028C7DC 00400040 */ .word 0x00400040
     /* 8D7E0 8028C7E0 02010000 */ .word 0x02010000
     /* 8D7E4 8028C7E4 00000000 */ .word 0x00000000
@@ -34667,7 +34667,7 @@ dlabel D_8028C7D0
     /* 8D7F4 8028C7F4 02010000 */ .word 0x02010000
     /* 8D7F8 8028C7F8 00000000 */ .word 0x00000000
     /* 8D7FC 8028C7FC 00000000 */ .word 0x00000000
-enddlabel D_8028C7D0
+enddlabel g_aDashboardGearTextures
 
 nonmatching g_dwCurrentWeather
 

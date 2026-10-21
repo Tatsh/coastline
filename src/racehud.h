@@ -11,6 +11,9 @@
 /** Whether the race is paused. @ghidraAddress USA: 0x8026ff10 */
 extern u32 g_dwRacePauseState;
 
+/** The laps of the race. @ghidraAddress USA: 0x8028b304 */
+extern s32 g_dwTotalLaps;
+
 /**
  * Set once the loop of the race screen ends, and cleared when a race starts.
  *

@@ -1536,56 +1536,20 @@ nonmatching g_aViewportRects, 0x4
 dlabel g_aViewportRects
     /* 8031B2C8 */ .space 0x04
 
-nonmatching g_dwControllerPort1, 0x4
+nonmatching D_8031B2CC, 0x4
 
-dlabel g_dwControllerPort1
+dlabel D_8031B2CC
     /* 8031B2CC */ .space 0x04
 
-nonmatching g_dwControllerPort2, 0x4
+nonmatching D_8031B2D0, 0x8
 
-dlabel g_dwControllerPort2
-    /* 8031B2D0 */ .space 0x04
+dlabel D_8031B2D0
+    /* 8031B2D0 */ .space 0x08
 
-nonmatching g_dwControllerPort3, 0x4
+nonmatching D_8031B2D8, 0x40
 
-dlabel g_dwControllerPort3
-    /* 8031B2D4 */ .space 0x04
-
-nonmatching g_adwPlayerVehicleIndex, 0x4
-
-dlabel g_adwPlayerVehicleIndex
-    /* 8031B2D8 */ .space 0x04
-
-nonmatching g_dwControllerType0, 0x4
-
-dlabel g_dwControllerType0
-    /* 8031B2DC */ .space 0x04
-
-nonmatching g_dwControllerType1, 0x4
-
-dlabel g_dwControllerType1
-    /* 8031B2E0 */ .space 0x04
-
-nonmatching g_dwControllerType2, 0x4
-
-dlabel g_dwControllerType2
-    /* 8031B2E4 */ .space 0x04
-
-nonmatching g_dwControllerType3, 0x4
-
-dlabel g_dwControllerType3
-    /* 8031B2E8 */ .space 0x04
-
-nonmatching g_dwSecondPlayerVehicleIndex, 0x4
-
-dlabel g_dwSecondPlayerVehicleIndex
-    /* 8031B2EC */ .space 0x04
-
-nonmatching D_8031B2F0, 0x28
-
-/* Automatically generated and unreferenced pad */
-dlabel D_8031B2F0
-    /* 8031B2F0 */ .space 0x28
+dlabel D_8031B2D8
+    /* 8031B2D8 */ .space 0x40
 
 nonmatching g_pfnCurrentScreen, 0x4
 
@@ -3122,9 +3086,9 @@ nonmatching D_8035D524, 0xC
 dlabel D_8035D524
     /* 8035D524 */ .space 0x0C
 
-nonmatching D_8035D530, 0x1000
+nonmatching g_aabDashboardPixels, 0x1000
 
-dlabel D_8035D530
+dlabel g_aabDashboardPixels
     /* 8035D530 */ .space 0x1000
 
 nonmatching D_8035E530, 0x1000
@@ -3132,9 +3096,9 @@ nonmatching D_8035E530, 0x1000
 dlabel D_8035E530
     /* 8035E530 */ .space 0x1000
 
-nonmatching D_8035F530, 0x1000
+nonmatching g_aabDashboardGearPixels, 0x1000
 
-dlabel D_8035F530
+dlabel g_aabDashboardGearPixels
     /* 8035F530 */ .space 0x1000
 
 nonmatching D_80360530, 0x1000
@@ -3142,14 +3106,14 @@ nonmatching D_80360530, 0x1000
 dlabel D_80360530
     /* 80360530 */ .space 0x1000
 
-nonmatching D_80361530, 0x400
+nonmatching g_aawDashboardPalettes, 0x400
 
-dlabel D_80361530
+dlabel g_aawDashboardPalettes
     /* 80361530 */ .space 0x400
 
-nonmatching D_80361930, 0x200
+nonmatching g_awDashboardBarPalette, 0x200
 
-dlabel D_80361930
+dlabel g_awDashboardBarPalette
     /* 80361930 */ .space 0x200
 
 nonmatching g_aGaugeNeedleVerts, 0x100

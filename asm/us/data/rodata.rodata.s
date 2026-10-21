@@ -6433,120 +6433,120 @@ enddlabel g_szInitializingControllerPak3
 .align 2
 
 .align 2
-nonmatching g_szTrackName1
+nonmatching g_szCarTypeCe
 
-dlabel g_szTrackName1
+dlabel g_szCarTypeCe
     /* AA33C 802A933C */ .asciz "TYPE-CE"
     /* 545950452D434500 */
-enddlabel g_szTrackName1
+enddlabel g_szCarTypeCe
 .align 2
 
 .align 2
-nonmatching g_szTrackName2
+nonmatching g_szCarTypeEs
 
-dlabel g_szTrackName2
+dlabel g_szCarTypeEs
     /* AA344 802A9344 */ .asciz "TYPE-ES"
     /* 545950452D455300 */
-enddlabel g_szTrackName2
+enddlabel g_szCarTypeEs
 .align 2
 
 .align 2
-nonmatching g_szTrackName3
+nonmatching g_szCarTypeNs
 
-dlabel g_szTrackName3
+dlabel g_szCarTypeNs
     /* AA34C 802A934C */ .asciz "TYPE-NS"
     /* 545950452D4E5300 */
-enddlabel g_szTrackName3
+enddlabel g_szCarTypeNs
 .align 2
 
 .align 2
-nonmatching g_szTrackName4
+nonmatching g_szCarTypeRs
 
-dlabel g_szTrackName4
+dlabel g_szCarTypeRs
     /* AA354 802A9354 */ .asciz "TYPE-RS"
     /* 545950452D525300 */
-enddlabel g_szTrackName4
+enddlabel g_szCarTypeRs
 .align 2
 
 .align 2
-nonmatching g_szTrackName5
+nonmatching g_szCarTypeSp
 
-dlabel g_szTrackName5
+dlabel g_szCarTypeSp
     /* AA35C 802A935C */ .asciz "TYPE-SP"
     /* 545950452D535000 */
-enddlabel g_szTrackName5
+enddlabel g_szCarTypeSp
 .align 2
 
 .align 2
-nonmatching g_szTrackName6
+nonmatching g_szCarTypePs
 
-dlabel g_szTrackName6
+dlabel g_szCarTypePs
     /* AA364 802A9364 */ .asciz "TYPE-PS"
     /* 545950452D505300 */
-enddlabel g_szTrackName6
+enddlabel g_szCarTypePs
 .align 2
 
 .align 2
-nonmatching g_szTypeM3
+nonmatching g_szCarTypeM3
 
-dlabel g_szTypeM3
+dlabel g_szCarTypeM3
     /* AA36C 802A936C */ .asciz "TYPE-M3"
     /* 545950452D4D3300 */
-enddlabel g_szTypeM3
+enddlabel g_szCarTypeM3
 .align 2
 
 .align 2
-nonmatching g_szTrackName7
+nonmatching g_szCarTypeIp
 
-dlabel g_szTrackName7
+dlabel g_szCarTypeIp
     /* AA374 802A9374 */ .asciz "TYPE-IP"
     /* 545950452D495000 */
-enddlabel g_szTrackName7
+enddlabel g_szCarTypeIp
 .align 2
 
 .align 2
-nonmatching g_szTrackName8
+nonmatching g_szCarTypeLd
 
-dlabel g_szTrackName8
+dlabel g_szCarTypeLd
     /* AA37C 802A937C */ .asciz "TYPE-LD"
     /* 545950452D4C4400 */
-enddlabel g_szTrackName8
+enddlabel g_szCarTypeLd
 .align 2
 
 .align 2
-nonmatching g_szTrackName9
+nonmatching g_szCarHelmet
 
-dlabel g_szTrackName9
+dlabel g_szCarHelmet
     /* AA384 802A9384 */ .asciz "Helmet"
     /* 48656C6D65740000 */
-enddlabel g_szTrackName9
+enddlabel g_szCarHelmet
 .align 2
 
 .align 2
-nonmatching g_szTrackName10
+nonmatching g_szCarMilkTruck
 
-dlabel g_szTrackName10
+dlabel g_szCarMilkTruck
     /* AA38C 802A938C */ .asciz "Milk Truck"
     /* 4D696C6B20547275636B0000 */
-enddlabel g_szTrackName10
+enddlabel g_szCarMilkTruck
 .align 2
 
 .align 2
-nonmatching g_szTrackName11
+nonmatching g_szCarCupra
 
-dlabel g_szTrackName11
+dlabel g_szCarCupra
     /* AA398 802A9398 */ .asciz "CUPRA"
     /* 4355505241000000 */
-enddlabel g_szTrackName11
+enddlabel g_szCarCupra
 .align 2
 
 .align 2
-nonmatching g_szTrackName12
+nonmatching g_szCarBeachBall
 
-dlabel g_szTrackName12
+dlabel g_szCarBeachBall
     /* AA3A0 802A93A0 */ .asciz "Beach Ball"
     /* 42656163682042616C6C0000 */
-enddlabel g_szTrackName12
+enddlabel g_szCarBeachBall
 .align 2
 
 .align 2
