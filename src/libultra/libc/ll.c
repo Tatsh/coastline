@@ -33,7 +33,8 @@ long long __ll_mul(long long a0, long long a1) {
 void __ull_divremi(unsigned long long *quotient,
                    unsigned long long *remainder,
                    unsigned long long dividend,
-                   unsigned short divisor) {
+                   short divisor) {
+    /* A divisor of 0x8000 or more is sign-extended before the unsigned division. */
     *quotient = dividend / divisor;
     *remainder = dividend % divisor;
 }

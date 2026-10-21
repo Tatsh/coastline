@@ -684,7 +684,7 @@ long long __ll_mul(long long a0, long long a1);
 void __ull_divremi(unsigned long long *quotient,
                    unsigned long long *remainder,
                    unsigned long long dividend,
-                   unsigned short divisor);
+                   short divisor);
 long long __ll_mod(long long a0, long long a1);
 long long __ll_rshift(long long a0, long long a1);
 long long __d_to_ll(double d);
