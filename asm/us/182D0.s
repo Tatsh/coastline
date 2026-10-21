@@ -1128,9 +1128,9 @@ glabel DrawFilledRect
     /* 192A4 802182A4 AC400004 */   sw        $zero, 0x4($v0)
 endlabel DrawFilledRect
 
-nonmatching SetRenderMode, 0x9E4
+nonmatching SetupFog, 0x9E4
 
-glabel SetRenderMode
+glabel SetupFog
     /* 192A8 802182A8 3C0E8029 */  lui        $t6, %hi(g_dwNightMode)
     /* 192AC 802182AC 8DCEAA80 */  lw         $t6, %lo(g_dwNightMode)($t6)
     /* 192B0 802182B0 27BDFFE8 */  addiu      $sp, $sp, -0x18
@@ -1812,7 +1812,7 @@ glabel SetRenderMode
     /* 19C80 80218C80 27BD0018 */  addiu      $sp, $sp, 0x18
     /* 19C84 80218C84 03E00008 */  jr         $ra
     /* 19C88 80218C88 00000000 */   nop
-endlabel SetRenderMode
+endlabel SetupFog
 
 nonmatching ComputeFogFactorAtPoint, 0xD0
 
@@ -3974,7 +3974,7 @@ glabel FlushDisplayList
     /* 1BB64 8021AB64 8D0C0000 */  lw         $t4, 0x0($t0)
     /* 1BB68 8021AB68 8CAF0000 */  lw         $t7, 0x0($a1)
     /* 1BB6C 8021AB6C 01C90019 */  multu      $t6, $t1
-    /* 1BB70 8021AB70 3C0E8029 */  lui        $t6, %hi(g_pDisplayListWritePtr)
+    /* 1BB70 8021AB70 3C0E8029 */  lui        $t6, %hi(g_pShadowDisplayListWritePtr)
     /* 1BB74 8021AB74 01EC6823 */  subu       $t5, $t7, $t4
     /* 1BB78 8021AB78 8C8C0000 */  lw         $t4, 0x0($a0)
     /* 1BB7C 8021AB7C 0000C012 */  mflo       $t8
@@ -3987,25 +3987,25 @@ glabel FlushDisplayList
     /* 1BB98 8021AB98 01E01825 */   or        $v1, $t7, $zero
     /* 1BB9C 8021AB9C AC8F0000 */  sw         $t7, 0x0($a0)
   .L8021ABA0:
-    /* 1BBA0 8021ABA0 3C188029 */  lui        $t8, %hi(g_pDisplayListBufferStart)
-    /* 1BBA4 8021ABA4 8F18C760 */  lw         $t8, %lo(g_pDisplayListBufferStart)($t8)
-    /* 1BBA8 8021ABA8 8DCEC75C */  lw         $t6, %lo(g_pDisplayListWritePtr)($t6)
-    /* 1BBAC 8021ABAC 3C048029 */  lui        $a0, %hi(g_dwPeakParticleVertexCount)
-    /* 1BBB0 8021ABB0 2484AB74 */  addiu      $a0, $a0, %lo(g_dwPeakParticleVertexCount)
+    /* 1BBA0 8021ABA0 3C188029 */  lui        $t8, %hi(g_pShadowDisplayListStart)
+    /* 1BBA4 8021ABA4 8F18C760 */  lw         $t8, %lo(g_pShadowDisplayListStart)($t8)
+    /* 1BBA8 8021ABA8 8DCEC75C */  lw         $t6, %lo(g_pShadowDisplayListWritePtr)($t6)
+    /* 1BBAC 8021ABAC 3C048029 */  lui        $a0, %hi(g_dwPeakShadowCommandCount)
+    /* 1BBB0 8021ABB0 2484AB74 */  addiu      $a0, $a0, %lo(g_dwPeakShadowCommandCount)
     /* 1BBB4 8021ABB4 8C8F0000 */  lw         $t7, 0x0($a0)
     /* 1BBB8 8021ABB8 01D81023 */  subu       $v0, $t6, $t8
     /* 1BBBC 8021ABBC 00026883 */  sra        $t5, $v0, 2
     /* 1BBC0 8021ABC0 000DC843 */  sra        $t9, $t5, 1
     /* 1BBC4 8021ABC4 01F9082A */  slt        $at, $t7, $t9
     /* 1BBC8 8021ABC8 10200002 */  beqz       $at, .L8021ABD4
-    /* 1BBCC 8021ABCC 3C0C8029 */   lui       $t4, %hi(g_dwGameMusicVolume)
+    /* 1BBCC 8021ABCC 3C0C8029 */   lui       $t4, %hi(g_pShadowVertexWritePtr)
     /* 1BBD0 8021ABD0 AC990000 */  sw         $t9, 0x0($a0)
   .L8021ABD4:
-    /* 1BBD4 8021ABD4 3C0E8029 */  lui        $t6, %hi(g_dwGameSfxVolume)
-    /* 1BBD8 8021ABD8 8DCEC768 */  lw         $t6, %lo(g_dwGameSfxVolume)($t6)
-    /* 1BBDC 8021ABDC 8D8CC764 */  lw         $t4, %lo(g_dwGameMusicVolume)($t4)
-    /* 1BBE0 8021ABE0 3C048029 */  lui        $a0, %hi(g_dwPeakParticleCount)
-    /* 1BBE4 8021ABE4 2484AB78 */  addiu      $a0, $a0, %lo(g_dwPeakParticleCount)
+    /* 1BBD4 8021ABD4 3C0E8029 */  lui        $t6, %hi(g_pShadowVertexStart)
+    /* 1BBD8 8021ABD8 8DCEC768 */  lw         $t6, %lo(g_pShadowVertexStart)($t6)
+    /* 1BBDC 8021ABDC 8D8CC764 */  lw         $t4, %lo(g_pShadowVertexWritePtr)($t4)
+    /* 1BBE0 8021ABE0 3C048029 */  lui        $a0, %hi(g_dwPeakShadowVertexCount)
+    /* 1BBE4 8021ABE4 2484AB78 */  addiu      $a0, $a0, %lo(g_dwPeakShadowVertexCount)
     /* 1BBE8 8021ABE8 8C8D0000 */  lw         $t5, 0x0($a0)
     /* 1BBEC 8021ABEC 018E1023 */  subu       $v0, $t4, $t6
     /* 1BBF0 8021ABF0 0002C103 */  sra        $t8, $v0, 4
@@ -8532,9 +8532,9 @@ glabel QueryTrackGridCellByIndex
     /* 1FA08 8021EA08 00000000 */   nop
 endlabel QueryTrackGridCellByIndex
 
-nonmatching LookupCollisionGridCell, 0x74
+nonmatching LookupInstanceGridCell, 0x74
 
-glabel LookupCollisionGridCell
+glabel LookupInstanceGridCell
     /* 1FA0C 8021EA0C 04800007 */  bltz       $a0, .L8021EA2C
     /* 1FA10 8021EA10 28810040 */   slti      $at, $a0, 0x40
     /* 1FA14 8021EA14 10200005 */  beqz       $at, .L8021EA2C
@@ -8566,7 +8566,7 @@ glabel LookupCollisionGridCell
     /* 1FA74 8021EA74 03031025 */  or         $v0, $t8, $v1
     /* 1FA78 8021EA78 03E00008 */  jr         $ra
     /* 1FA7C 8021EA7C 00000000 */   nop
-endlabel LookupCollisionGridCell
+endlabel LookupInstanceGridCell
 
 nonmatching GetTrackGridCellCount, 0x8
 
@@ -8575,12 +8575,12 @@ glabel GetTrackGridCellCount
     /* 1FA84 8021EA84 94820002 */   lhu       $v0, 0x2($a0)
 endlabel GetTrackGridCellCount
 
-nonmatching GetCollisionGridCellCount, 0x8
+nonmatching GetInstanceGridCellCount, 0x8
 
-glabel GetCollisionGridCellCount
+glabel GetInstanceGridCellCount
     /* 1FA88 8021EA88 03E00008 */  jr         $ra
     /* 1FA8C 8021EA8C 94820002 */   lhu       $v0, 0x2($a0)
-endlabel GetCollisionGridCellCount
+endlabel GetInstanceGridCellCount
 
 nonmatching NextGridCellTriangle, 0x4C
 
@@ -8607,9 +8607,9 @@ glabel NextGridCellTriangle
     /* 1FAD8 8021EAD8 00000000 */   nop
 endlabel NextGridCellTriangle
 
-nonmatching ReadNextVertexData, 0x4C
+nonmatching NextGridCellInstance, 0x4C
 
-glabel ReadNextVertexData
+glabel NextGridCellInstance
     /* 1FADC 8021EADC 94830002 */  lhu        $v1, 0x2($a0)
     /* 1FAE0 8021EAE0 00001025 */  or         $v0, $zero, $zero
     /* 1FAE4 8021EAE4 1060000E */  beqz       $v1, .L8021EB20
@@ -8630,6 +8630,6 @@ glabel ReadNextVertexData
   .L8021EB20:
     /* 1FB20 8021EB20 03E00008 */  jr         $ra
     /* 1FB24 8021EB24 00000000 */   nop
-endlabel ReadNextVertexData
+endlabel NextGridCellInstance
     /* 1FB28 8021EB28 00000000 */  nop
     /* 1FB2C 8021EB2C 00000000 */  nop

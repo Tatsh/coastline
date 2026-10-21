@@ -1124,85 +1124,10 @@ nonmatching D_8031AA30, 0x20
 dlabel D_8031AA30
     /* 8031AA30 */ .space 0x20
 
-nonmatching g_afViewProjMatrix, 0x4
+nonmatching g_afViewProjMatrix, 0x40
 
 dlabel g_afViewProjMatrix
-    /* 8031AA50 */ .space 0x04
-
-nonmatching g_dwPlayerHighScore, 0x4
-
-dlabel g_dwPlayerHighScore
-    /* 8031AA54 */ .space 0x04
-
-nonmatching g_dwPlayerCoins, 0x4
-
-dlabel g_dwPlayerCoins
-    /* 8031AA58 */ .space 0x04
-
-nonmatching g_dwPlayerUnlockFlags, 0x4
-
-dlabel g_dwPlayerUnlockFlags
-    /* 8031AA5C */ .space 0x04
-
-nonmatching g_dwPlayerSettings, 0x4
-
-dlabel g_dwPlayerSettings
-    /* 8031AA60 */ .space 0x04
-
-nonmatching g_fViewProjMtx11, 0x4
-
-dlabel g_fViewProjMtx11
-    /* 8031AA64 */ .space 0x04
-
-nonmatching g_fViewProjMtx12, 0x4
-
-dlabel g_fViewProjMtx12
-    /* 8031AA68 */ .space 0x04
-
-nonmatching g_dwGameSoundVol, 0x4
-
-dlabel g_dwGameSoundVol
-    /* 8031AA6C */ .space 0x04
-
-nonmatching g_dwGameMusicVol, 0x4
-
-dlabel g_dwGameMusicVol
-    /* 8031AA70 */ .space 0x04
-
-nonmatching g_dwGameDisplayMode, 0x4
-
-dlabel g_dwGameDisplayMode
-    /* 8031AA74 */ .space 0x04
-
-nonmatching g_dwGameLanguage, 0x4
-
-dlabel g_dwGameLanguage
-    /* 8031AA78 */ .space 0x04
-
-nonmatching g_dwGameCheatFlags, 0x4
-
-dlabel g_dwGameCheatFlags
-    /* 8031AA7C */ .space 0x04
-
-nonmatching g_dwGameSaveSlot, 0x4
-
-dlabel g_dwGameSaveSlot
-    /* 8031AA80 */ .space 0x04
-
-nonmatching g_dwGamePadConfig, 0x4
-
-dlabel g_dwGamePadConfig
-    /* 8031AA84 */ .space 0x04
-
-nonmatching g_dwGameLastTrack, 0x4
-
-dlabel g_dwGameLastTrack
-    /* 8031AA88 */ .space 0x04
-
-nonmatching g_dwGameSelectedCar, 0x4
-
-dlabel g_dwGameSelectedCar
-    /* 8031AA8C */ .space 0x04
+    /* 8031AA50 */ .space 0x40
 
 nonmatching g_afPerspectiveMatrix, 0x40
 
@@ -1214,165 +1139,15 @@ nonmatching g_ViewLookAtMtx, 0x40
 dlabel g_ViewLookAtMtx
     /* 8031AAD0 */ .space 0x40
 
-nonmatching g_afMvpMatrix, 0x4
+nonmatching g_afMvpMatrix, 0x40
 
 dlabel g_afMvpMatrix
-    /* 8031AB10 */ .space 0x04
+    /* 8031AB10 */ .space 0x40
 
-nonmatching D_8031AB14, 0x4
-
-dlabel D_8031AB14
-    /* 8031AB14 */ .space 0x04
-
-nonmatching D_8031AB18, 0x4
-
-dlabel D_8031AB18
-    /* 8031AB18 */ .space 0x04
-
-nonmatching D_8031AB1C, 0x4
-
-dlabel D_8031AB1C
-    /* 8031AB1C */ .space 0x04
-
-nonmatching D_8031AB20, 0x4
-
-dlabel D_8031AB20
-    /* 8031AB20 */ .space 0x04
-
-nonmatching D_8031AB24, 0x4
-
-dlabel D_8031AB24
-    /* 8031AB24 */ .space 0x04
-
-nonmatching D_8031AB28, 0x4
-
-dlabel D_8031AB28
-    /* 8031AB28 */ .space 0x04
-
-nonmatching D_8031AB2C, 0x4
-
-dlabel D_8031AB2C
-    /* 8031AB2C */ .space 0x04
-
-nonmatching D_8031AB30, 0x4
-
-dlabel D_8031AB30
-    /* 8031AB30 */ .space 0x04
-
-nonmatching D_8031AB34, 0x4
-
-dlabel D_8031AB34
-    /* 8031AB34 */ .space 0x04
-
-nonmatching D_8031AB38, 0x4
-
-dlabel D_8031AB38
-    /* 8031AB38 */ .space 0x04
-
-nonmatching D_8031AB3C, 0x4
-
-dlabel D_8031AB3C
-    /* 8031AB3C */ .space 0x04
-
-nonmatching D_8031AB40, 0x4
-
-dlabel D_8031AB40
-    /* 8031AB40 */ .space 0x04
-
-nonmatching D_8031AB44, 0x4
-
-dlabel D_8031AB44
-    /* 8031AB44 */ .space 0x04
-
-nonmatching D_8031AB48, 0x4
-
-dlabel D_8031AB48
-    /* 8031AB48 */ .space 0x04
-
-nonmatching D_8031AB4C, 0x4
-
-dlabel D_8031AB4C
-    /* 8031AB4C */ .space 0x04
-
-nonmatching g_afScratchMatrix, 0x4
+nonmatching g_afScratchMatrix, 0x40
 
 dlabel g_afScratchMatrix
-    /* 8031AB50 */ .space 0x04
-
-nonmatching g_dwTrackReserved4, 0x4
-
-dlabel g_dwTrackReserved4
-    /* 8031AB54 */ .space 0x04
-
-nonmatching g_dwTrackReserved5, 0x4
-
-dlabel g_dwTrackReserved5
-    /* 8031AB58 */ .space 0x04
-
-nonmatching g_dwTrackReserved6, 0x4
-
-dlabel g_dwTrackReserved6
-    /* 8031AB5C */ .space 0x04
-
-nonmatching g_dwTrackReserved7, 0x4
-
-dlabel g_dwTrackReserved7
-    /* 8031AB60 */ .space 0x04
-
-nonmatching g_dwTrackReserved8, 0x4
-
-dlabel g_dwTrackReserved8
-    /* 8031AB64 */ .space 0x04
-
-nonmatching g_dwTrackReserved9, 0x4
-
-dlabel g_dwTrackReserved9
-    /* 8031AB68 */ .space 0x04
-
-nonmatching g_dwTrackReserved10, 0x4
-
-dlabel g_dwTrackReserved10
-    /* 8031AB6C */ .space 0x04
-
-nonmatching g_dwTrackReserved11, 0x4
-
-dlabel g_dwTrackReserved11
-    /* 8031AB70 */ .space 0x04
-
-nonmatching g_dwTrackReserved12, 0x4
-
-dlabel g_dwTrackReserved12
-    /* 8031AB74 */ .space 0x04
-
-nonmatching g_dwTrackReserved13, 0x4
-
-dlabel g_dwTrackReserved13
-    /* 8031AB78 */ .space 0x04
-
-nonmatching g_dwTrackReserved14, 0x4
-
-dlabel g_dwTrackReserved14
-    /* 8031AB7C */ .space 0x04
-
-nonmatching g_dwTrackReserved15, 0x4
-
-dlabel g_dwTrackReserved15
-    /* 8031AB80 */ .space 0x04
-
-nonmatching g_dwTrackReserved16, 0x4
-
-dlabel g_dwTrackReserved16
-    /* 8031AB84 */ .space 0x04
-
-nonmatching g_dwCarId, 0x4
-
-dlabel g_dwCarId
-    /* 8031AB88 */ .space 0x04
-
-nonmatching g_dwCarSpeed, 0x4
-
-dlabel g_dwCarSpeed
-    /* 8031AB8C */ .space 0x04
+    /* 8031AB50 */ .space 0x40
 
 nonmatching D_8031AB90, 0x40
 
@@ -1994,9 +1769,9 @@ nonmatching g_dwCollisionCount, 0x4
 dlabel g_dwCollisionCount
     /* 8031C5B8 */ .space 0x04
 
-nonmatching D_8031C5BC, 0x4
+nonmatching g_pActiveProfile, 0x4
 
-dlabel D_8031C5BC
+dlabel g_pActiveProfile
     /* 8031C5BC */ .space 0x04
 
 nonmatching g_bCollisionLayer0, 0x4
@@ -2926,24 +2701,24 @@ nonmatching D_80352584, 0xFFC
 dlabel D_80352584
     /* 80352584 */ .space 0xFFC
 
-nonmatching g_abDisplayListBuffers, 0x1F40
+nonmatching g_aShadowDisplayLists, 0x1F40
 
-dlabel g_abDisplayListBuffers
+dlabel g_aShadowDisplayLists
     /* 80353580 */ .space 0x1F40
 
-nonmatching g_abVertexBuffers, 0x7D00
+nonmatching g_aShadowVertices, 0x7D00
 
-dlabel g_abVertexBuffers
+dlabel g_aShadowVertices
     /* 803554C0 */ .space 0x7D00
 
-nonmatching g_fTrackInstanceDirX, 0x4
+nonmatching g_vShadowForward, 0x4
 
-dlabel g_fTrackInstanceDirX
+dlabel g_vShadowForward
     /* 8035D1C0 */ .space 0x04
 
-nonmatching g_fTrackInstanceDirY, 0x4
+nonmatching D_8035D1C4, 0x4
 
-dlabel g_fTrackInstanceDirY
+dlabel D_8035D1C4
     /* 8035D1C4 */ .space 0x04
 
 nonmatching g_fTrackInstanceDirZ, 0x4
@@ -3055,9 +2830,9 @@ nonmatching g_vVehicleVisibilityDelta, 0x10
 dlabel g_vVehicleVisibilityDelta
     /* 8035D500 */ .space 0x10
 
-nonmatching g_fTrackLightDirX, 0x4
+nonmatching g_vTrackLightDirection, 0x4
 
-dlabel g_fTrackLightDirX
+dlabel g_vTrackLightDirection
     /* 8035D510 */ .space 0x04
 
 nonmatching g_fTrackLightDirY, 0x4

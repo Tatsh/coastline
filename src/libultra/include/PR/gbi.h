@@ -77,6 +77,8 @@ typedef union {
 #define G_VTX 0x04
 #define G_DL 0x06
 #define G_TRI2 0xB1
+#define G_ENDDL 0xB8
+#define G_TRI1 0xBF
 #define G_LOADTLUT 0xF0
 #define G_TEXTURE 0xBB
 #define G_POPMTX 0xBD
@@ -124,6 +126,7 @@ typedef union {
 #define G_LIGHTING 0x00020000
 #define G_TEXTURE_GEN 0x00040000
 #define G_TEXTURE_GEN_LINEAR 0x00080000
+#define G_CLIPPING 0x00800000
 
 /* The fields of the other modes, by their lowest bit. */
 #define G_MDSFT_ALPHACOMPARE 0
@@ -131,9 +134,12 @@ typedef union {
 #define G_MDSFT_RENDERMODE 3
 #define G_MDSFT_ALPHADITHER 4
 #define G_MDSFT_RGBDITHER 6
+#define G_MDSFT_COMBKEY 8
+#define G_MDSFT_TEXTCONV 9
 #define G_MDSFT_TEXTFILT 12
 #define G_MDSFT_TEXTLUT 14
 #define G_MDSFT_TEXTLOD 16
+#define G_MDSFT_TEXTDETAIL 17
 #define G_MDSFT_TEXTPERSP 19
 #define G_MDSFT_CYCLETYPE 20
 
@@ -150,6 +156,10 @@ typedef union {
 /* The scissor modes. */
 #define G_SC_NON_INTERLACE 0
 #define G_TL_TILE (0 << G_MDSFT_TEXTLOD)
+#define G_TL_LOD (1 << G_MDSFT_TEXTLOD)
+#define G_TD_CLAMP (0 << G_MDSFT_TEXTDETAIL)
+#define G_TC_FILT (6 << G_MDSFT_TEXTCONV)
+#define G_CK_NONE (0 << G_MDSFT_COMBKEY)
 #define G_TT_NONE (0 << G_MDSFT_TEXTLUT)
 #define G_TP_NONE (0 << G_MDSFT_TEXTPERSP)
 #define G_TP_PERSP (1 << G_MDSFT_TEXTPERSP)
@@ -167,6 +177,7 @@ typedef union {
 #define CVG_DST_SAVE 0x0300
 #define ZMODE_OPA 0x0000
 #define ZMODE_XLU 0x0800
+#define ZMODE_DEC 0x0C00
 #define CVG_X_ALPHA 0x1000
 #define ALPHA_CVG_SEL 0x2000
 #define FORCE_BL 0x4000
@@ -176,15 +187,19 @@ typedef union {
 #define G_BL_CLR_MEM 1
 #define G_BL_A_IN 0
 #define G_BL_A_MEM 1
+#define G_BL_CLR_FOG 3
+#define G_BL_A_SHADE 2
 #define G_BL_1MA 0
 #define G_BL_1 2
 #define G_BL_0 3
 
 /** The blender equation of the first cycle of a render mode. */
-#define GBL_c1(m1a, m1b, m2a, m2b) ((m1a) << 30 | (m1b) << 26 | (m2a) << 22 | (m2b) << 18)
+#define GBL_c1(m1a, m1b, m2a, m2b)                                                                 \
+    ((u32)(m1a) << 30 | (u32)(m1b) << 26 | (u32)(m2a) << 22 | (u32)(m2b) << 18)
 
 /** The blender equation of the second cycle of a render mode. */
-#define GBL_c2(m1a, m1b, m2a, m2b) ((m1a) << 28 | (m1b) << 24 | (m2a) << 20 | (m2b) << 16)
+#define GBL_c2(m1a, m1b, m2a, m2b)                                                                 \
+    ((u32)(m1a) << 28 | (u32)(m1b) << 24 | (u32)(m2a) << 20 | (u32)(m2b) << 16)
 
 /* The inputs of the colour combiner, named for G_CCMUX_ and G_ACMUX_ by gDPSetCombineLERP(). */
 #define G_CCMUX_COMBINED 0
@@ -197,10 +212,12 @@ typedef union {
 #define G_CCMUX_PRIMITIVE_ALPHA 10
 #define G_CCMUX_SHADE_ALPHA 11
 #define G_CCMUX_ENV_ALPHA 12
+#define G_CCMUX_LOD_FRACTION 13
 #define G_CCMUX_1 6
 #define G_CCMUX_0 31
 
 #define G_ACMUX_COMBINED 0
+#define G_ACMUX_LOD_FRACTION 0
 #define G_ACMUX_TEXEL0 1
 #define G_ACMUX_TEXEL1 2
 #define G_ACMUX_PRIMITIVE 3
@@ -259,6 +276,19 @@ typedef union {
 #define G_MW_NUMLIGHT 0x02
 #define G_MWO_NUMLIGHT 0x00
 #define NUMLIGHTS_1 1
+#define LIGHT_1 1
+#define LIGHT_2 2
+
+/* The other memory and words the F3DEX microcode loads. */
+#define G_MV_LOOKATY 0x82
+#define G_MV_LOOKATX 0x84
+#define G_MV_MATRIX_1 0x9E
+#define G_MV_MATRIX_2 0x98
+#define G_MV_MATRIX_3 0x9A
+#define G_MV_MATRIX_4 0x9C
+#define G_MW_SEGMENT 0x06
+#define G_MW_LIGHTCOL 0x0A
+#define G_MW_PERSPNORM 0x0E
 
 /** The word gSPNumLights() sends for a number of directional lights. */
 #define NUML(n) (((n) + 1) * 32 + 0x80000000)
@@ -305,6 +335,7 @@ typedef struct {
         pkt, _SHIFTL(G_MTX, 24, 8) | _SHIFTL(p, 16, 8) | _SHIFTL(sizeof(Mtx), 0, 16), (u32)(m))
 #define gSPPopMatrix(pkt, n) gImmp1(pkt, G_POPMTX, n)
 #define gSPDisplayList(pkt, dl) gDisplayListWords(pkt, _SHIFTL(G_DL, 24, 8), (u32)(dl))
+#define gSPEndDisplayList(pkt) gDPNoParam(pkt, G_ENDDL)
 /** Load n vertices into the vertex buffer of the F3DEX microcode from index v0. */
 #define gSPVertex(pkt, v, n, v0)                                                                   \
     gDisplayListWords(pkt,                                                                         \
@@ -344,6 +375,45 @@ typedef struct {
 /** Set the number of directional lights. */
 #define gSPNumLights(pkt, n) gMoveWd(pkt, G_MW_NUMLIGHT, G_MWO_NUMLIGHT, NUML(n))
 
+/** Set the colour of light n, from 1, as its two copies. */
+#define gSPLightColor(pkt, n, col)                                                                 \
+    do {                                                                                           \
+        gMoveWd(pkt, G_MW_LIGHTCOL, ((n) - 1) * 0x20, col);                                        \
+        gMoveWd(pkt, G_MW_LIGHTCOL, ((n) - 1) * 0x20 + 4, col);                                    \
+    } while (0)
+
+/** Set the normalisation of the perspective, which gu's perspective routines return. */
+#define gSPPerspNormalize(pkt, s) gMoveWd(pkt, G_MW_PERSPNORM, 0, s)
+
+/** Set the base of a segment. */
+#define gSPSegment(pkt, segment, base) gMoveWd(pkt, G_MW_SEGMENT, (segment) * 4, base)
+
+/** Load the look-at of the reflections, its x then its y. */
+#define gSPLookAt(pkt, la)                                                                         \
+    do {                                                                                           \
+        gDisplayListWords(pkt,                                                                     \
+                          _SHIFTL(G_MOVEMEM, 24, 8) | _SHIFTL(G_MV_LOOKATX, 16, 8) |               \
+                              _SHIFTL(sizeof(Light), 0, 16),                                       \
+                          (u32)(la));                                                              \
+        gDisplayListWords(pkt,                                                                     \
+                          _SHIFTL(G_MOVEMEM, 24, 8) | _SHIFTL(G_MV_LOOKATY, 16, 8) |               \
+                              _SHIFTL(sizeof(Light), 0, 16),                                       \
+                          (u32)(la) + 16);                                                         \
+    } while (0)
+
+/** Load a matrix as the product of the model view and the projection, a row pair at a time. */
+#define gSPForceMatrix(pkt, m)                                                                     \
+    do {                                                                                           \
+        gDisplayListWords(                                                                         \
+            pkt, _SHIFTL(G_MOVEMEM, 24, 8) | _SHIFTL(G_MV_MATRIX_1, 16, 8) | 16, (u32)(m));        \
+        gDisplayListWords(                                                                         \
+            pkt, _SHIFTL(G_MOVEMEM, 24, 8) | _SHIFTL(G_MV_MATRIX_2, 16, 8) | 16, (u32)(m) + 16);   \
+        gDisplayListWords(                                                                         \
+            pkt, _SHIFTL(G_MOVEMEM, 24, 8) | _SHIFTL(G_MV_MATRIX_3, 16, 8) | 16, (u32)(m) + 32);   \
+        gDisplayListWords(                                                                         \
+            pkt, _SHIFTL(G_MOVEMEM, 24, 8) | _SHIFTL(G_MV_MATRIX_4, 16, 8) | 16, (u32)(m) + 48);   \
+    } while (0)
+
 /** Load a light into light slot n, from 1. The ambient light follows the directional ones. */
 #define gSPLight(pkt, l, n)                                                                        \
     gDisplayListWords(pkt,                                                                         \
@@ -358,6 +428,11 @@ typedef struct {
 #define gDPSetTextureFilter(pkt, type)                                                             \
     gSPSetOtherMode(pkt, G_SETOTHERMODE_H, G_MDSFT_TEXTFILT, 2, type)
 #define gDPSetTextureLOD(pkt, type) gSPSetOtherMode(pkt, G_SETOTHERMODE_H, G_MDSFT_TEXTLOD, 1, type)
+#define gDPSetTextureDetail(pkt, type)                                                             \
+    gSPSetOtherMode(pkt, G_SETOTHERMODE_H, G_MDSFT_TEXTDETAIL, 2, type)
+#define gDPSetTextureConvert(pkt, type)                                                            \
+    gSPSetOtherMode(pkt, G_SETOTHERMODE_H, G_MDSFT_TEXTCONV, 3, type)
+#define gDPSetCombineKey(pkt, type) gSPSetOtherMode(pkt, G_SETOTHERMODE_H, G_MDSFT_COMBKEY, 1, type)
 #define gDPSetColorDither(pkt, mode)                                                               \
     gSPSetOtherMode(pkt, G_SETOTHERMODE_H, G_MDSFT_RGBDITHER, 2, mode)
 #define gDPSetAlphaDither(pkt, mode)                                                               \

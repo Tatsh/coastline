@@ -8512,72 +8512,72 @@ dlabel g_szUnknownInstanceName
 .align 2
 enddlabel g_szUnknownInstanceName
 
-nonmatching g_fProjectDepthEpsilon
+nonmatching g_fConst0p001_802a9ffc
 
-dlabel g_fProjectDepthEpsilon
+dlabel g_fConst0p001_802a9ffc
     /* AAFFC 802A9FFC 3A83126F */ .float 0.001000000047
-enddlabel g_fProjectDepthEpsilon
+enddlabel g_fConst0p001_802a9ffc
 
-nonmatching g_fProjectDepthEpsilonNeg
+nonmatching g_fConstNeg0p001_802aa000
 
-dlabel g_fProjectDepthEpsilonNeg
+dlabel g_fConstNeg0p001_802aa000
     /* AB000 802AA000 BA83126F */ .float -0.001000000047
-enddlabel g_fProjectDepthEpsilonNeg
+enddlabel g_fConstNeg0p001_802aa000
 
-nonmatching g_fConst235_52
+nonmatching g_fConst235p52_802aa004
 
-dlabel g_fConst235_52
+dlabel g_fConst235p52_802aa004
     /* AB004 802AA004 436B851F */ .float 235.5200043
-enddlabel g_fConst235_52
+enddlabel g_fConst235p52_802aa004
 
-nonmatching g_fConst161_28
+nonmatching g_fConst161p28_802aa008
 
-dlabel g_fConst161_28
+dlabel g_fConst161p28_802aa008
     /* AB008 802AA008 432147AE */ .float 161.2799988
-enddlabel g_fConst161_28
+enddlabel g_fConst161p28_802aa008
 
-nonmatching g_fCameraPosEpsilon
+nonmatching g_fConst0p0001_802aa00c
 
-dlabel g_fCameraPosEpsilon
+dlabel g_fConst0p0001_802aa00c
     /* AB00C 802AA00C 38D1B717 */ .float 9.999999747e-05
-enddlabel g_fCameraPosEpsilon
+enddlabel g_fConst0p0001_802aa00c
 
-nonmatching g_qwRaceReserved2
+nonmatching g_dConst1p1_802aa010
 
-dlabel g_qwRaceReserved2
+dlabel g_dConst1p1_802aa010
     /* AB010 802AA010 3FF199999999999A */ .double 1.10000000000000009
-enddlabel g_qwRaceReserved2
+enddlabel g_dConst1p1_802aa010
 
-nonmatching g_dwRaceReserved49
+nonmatching g_fConst1p99976_802aa018
 
-dlabel g_dwRaceReserved49
+dlabel g_fConst1p99976_802aa018
     /* AB018 802AA018 3FFFF800 */ .float 1.999755859
-enddlabel g_dwRaceReserved49
+enddlabel g_fConst1p99976_802aa018
     /* AB01C 802AA01C 00000000 */ .float 0
 
-nonmatching g_dFixedMtxMax
+nonmatching g_dConst32767_802aa020
 
-dlabel g_dFixedMtxMax
+dlabel g_dConst32767_802aa020
     /* AB020 802AA020 40DFFFC000000000 */ .double 32767
-enddlabel g_dFixedMtxMax
+enddlabel g_dConst32767_802aa020
 
-nonmatching g_dFixedMtxMin
+nonmatching g_dConstNeg32767_802aa028
 
-dlabel g_dFixedMtxMin
+dlabel g_dConstNeg32767_802aa028
     /* AB028 802AA028 C0DFFFC000000000 */ .double -32767
-enddlabel g_dFixedMtxMin
+enddlabel g_dConstNeg32767_802aa028
 
-nonmatching g_fFixedMtxMax
+nonmatching g_fConst32767_802aa030
 
-dlabel g_fFixedMtxMax
+dlabel g_fConst32767_802aa030
     /* AB030 802AA030 46FFFE00 */ .float 32767
-enddlabel g_fFixedMtxMax
+enddlabel g_fConst32767_802aa030
 
-nonmatching g_fFixedMtxMin
+nonmatching g_fConstNeg32767_802aa034
 
-dlabel g_fFixedMtxMin
+dlabel g_fConstNeg32767_802aa034
     /* AB034 802AA034 C6FFFE00 */ .float -32767
-enddlabel g_fFixedMtxMin
+enddlabel g_fConstNeg32767_802aa034
     /* AB038 802AA038 00000000 */ .float 0
     /* AB03C 802AA03C 00000000 */ .float 0
 

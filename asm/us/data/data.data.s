@@ -30805,11 +30805,11 @@ dlabel g_VehicleBodySetupDl
     /* 8B9EC 8028A9EC 00000000 */ .word 0x00000000
 enddlabel g_VehicleBodySetupDl
 
-nonmatching g_VehicleLights
+nonmatching g_DefaultLights
 
-dlabel g_VehicleLights
+dlabel g_DefaultLights
     /* 8B9F0 8028A9F0 33334000 */ .word 0x33334000
-enddlabel g_VehicleLights
+enddlabel g_DefaultLights
 
 .align 2
 nonmatching g_dwSpeedometerDigit1
@@ -30973,11 +30973,11 @@ dlabel g_dwSkyboxDisabled
     /* 8BA5C 8028AA5C 00000000 */ .word 0x00000000
 enddlabel g_dwSkyboxDisabled
 
-nonmatching g_dwTrackInstanceCullDisabled
+nonmatching g_bShadowCullDisabled
 
-dlabel g_dwTrackInstanceCullDisabled
+dlabel g_bShadowCullDisabled
     /* 8BA60 8028AA60 00000000 */ .word 0x00000000
-enddlabel g_dwTrackInstanceCullDisabled
+enddlabel g_bShadowCullDisabled
 
 nonmatching D_8028AA64
 
@@ -31403,17 +31403,17 @@ dlabel g_dwDisplayListCommandCount
     /* 8BB70 8028AB70 00000000 */ .word 0x00000000
 enddlabel g_dwDisplayListCommandCount
 
-nonmatching g_dwPeakParticleVertexCount
+nonmatching g_dwPeakShadowCommandCount
 
-dlabel g_dwPeakParticleVertexCount
+dlabel g_dwPeakShadowCommandCount
     /* 8BB74 8028AB74 00000000 */ .word 0x00000000
-enddlabel g_dwPeakParticleVertexCount
+enddlabel g_dwPeakShadowCommandCount
 
-nonmatching g_dwPeakParticleCount
+nonmatching g_dwPeakShadowVertexCount
 
-dlabel g_dwPeakParticleCount
+dlabel g_dwPeakShadowVertexCount
     /* 8BB78 8028AB78 00000000 */ .word 0x00000000
-enddlabel g_dwPeakParticleCount
+enddlabel g_dwPeakShadowVertexCount
 
 nonmatching g_dwPeakDisplayListCommands
 
@@ -34522,29 +34522,29 @@ dlabel g_bDebugHideInstance
     /* 8D758 8028C758 00000000 */ .word 0x00000000
 enddlabel g_bDebugHideInstance
 
-nonmatching g_pDisplayListWritePtr
+nonmatching g_pShadowDisplayListWritePtr
 
-dlabel g_pDisplayListWritePtr
+dlabel g_pShadowDisplayListWritePtr
     /* 8D75C 8028C75C 00000000 */ .word 0x00000000
-enddlabel g_pDisplayListWritePtr
+enddlabel g_pShadowDisplayListWritePtr
 
-nonmatching g_pDisplayListBufferStart
+nonmatching g_pShadowDisplayListStart
 
-dlabel g_pDisplayListBufferStart
+dlabel g_pShadowDisplayListStart
     /* 8D760 8028C760 00000000 */ .word 0x00000000
-enddlabel g_pDisplayListBufferStart
+enddlabel g_pShadowDisplayListStart
 
-nonmatching g_dwGameMusicVolume
+nonmatching g_pShadowVertexWritePtr
 
-dlabel g_dwGameMusicVolume
+dlabel g_pShadowVertexWritePtr
     /* 8D764 8028C764 00000000 */ .word 0x00000000
-enddlabel g_dwGameMusicVolume
+enddlabel g_pShadowVertexWritePtr
 
-nonmatching g_dwGameSfxVolume
+nonmatching g_pShadowVertexStart
 
-dlabel g_dwGameSfxVolume
+dlabel g_pShadowVertexStart
     /* 8D768 8028C768 00000000 */ .word 0x00000000
-enddlabel g_dwGameSfxVolume
+enddlabel g_pShadowVertexStart
 
 nonmatching g_bVisibleCellListOverflow
 
@@ -34577,11 +34577,11 @@ dlabel g_nVisibleCellIdxNear
     /* 8D778 8028C778 00000000 */ .word 0x00000000
 enddlabel g_nVisibleCellIdxNear
 
-nonmatching g_dwGameRumble
+nonmatching g_nTrackTransparentStartIdxNear
 
-dlabel g_dwGameRumble
+dlabel g_nTrackTransparentStartIdxNear
     /* 8D77C 8028C77C 00000000 */ .word 0x00000000
-enddlabel g_dwGameRumble
+enddlabel g_nTrackTransparentStartIdxNear
 
 nonmatching g_nVisibleCellIdxFar
 
@@ -34589,11 +34589,11 @@ dlabel g_nVisibleCellIdxFar
     /* 8D780 8028C780 00000000 */ .word 0x00000000
 enddlabel g_nVisibleCellIdxFar
 
-nonmatching g_dwGameController1
+nonmatching g_nTrackTransparentStartIdxFar
 
-dlabel g_dwGameController1
+dlabel g_nTrackTransparentStartIdxFar
     /* 8D784 8028C784 00000000 */ .word 0x00000000
-enddlabel g_dwGameController1
+enddlabel g_nTrackTransparentStartIdxFar
 
 nonmatching g_nVisibleCellIdxMid
 

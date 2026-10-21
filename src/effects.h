@@ -72,6 +72,7 @@ s32 ComputeScreenDepthZ(f32 z, f32 w);
  * Count down to the next puff of exhaust, faster as the engine revs, and blow it out behind the
  * vehicle when the pool has a free puff.
  *
+ * @param vehicle The vehicle whose exhaust puffs.
  * @ghidraAddress USA: 0x8023b178
  */
 void SpawnExhaustParticle(Vehicle *vehicle);
@@ -80,6 +81,7 @@ void SpawnExhaustParticle(Vehicle *vehicle);
  * Throw the newest segment of the spray of each wheel from the surface under it, while the wheel
  * is on the ground and a few frames after.
  *
+ * @param vehicle The vehicle whose wheels throw the spray.
  * @ghidraAddress USA: 0x8023b418
  */
 void EmitTireSpray(Vehicle *vehicle);
@@ -104,6 +106,7 @@ void MoveTireSpray(void);
  * Count down to the next puff of smoke of each wheel, faster with the speed of the vehicle and the
  * spin of the wheel, and raise one from a wheel on a surface that smokes.
  *
+ * @param vehicle The vehicle whose wheels smoke.
  * @ghidraAddress USA: 0x8023c800
  */
 void SpawnTireSmoke(Vehicle *vehicle);

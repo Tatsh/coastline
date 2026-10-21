@@ -665,7 +665,7 @@ void SetVehicleModelSlot(Vehicle *vehicle, s32 slot) {
 }
 
 void InstallVehicleModel(Vehicle *vehicle, s32 slot, s32 car) {
-    LoadOrCopyVehicleModel(slot, car, 0);
+    LoadOrCopyVehicleModel(slot, car, NULL);
     SetVehicleModelSlot(vehicle, slot);
 }
 

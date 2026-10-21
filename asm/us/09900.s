@@ -40,7 +40,7 @@ glabel IsTrackUnlocked
     /* 9964 80208964 38420001 */   xori      $v0, $v0, 0x1
   .L80208968:
     /* 9968 80208968 14410009 */  bne        $v0, $at, .L80208990
-    /* 996C 8020896C 3C098032 */   lui       $t1, %hi(D_8031C5BC)
+    /* 996C 8020896C 3C098032 */   lui       $t1, %hi(g_pActiveProfile)
     /* 9970 80208970 3C028029 */  lui        $v0, %hi(g_dwNumTracks)
     /* 9974 80208974 8C42AE04 */  lw         $v0, %lo(g_dwNumTracks)($v0)
     /* 9978 80208978 10820003 */  beq        $a0, $v0, .L80208988
@@ -51,7 +51,7 @@ glabel IsTrackUnlocked
     /* 9988 80208988 1000000D */  b          .L802089C0
     /* 998C 8020898C 24020001 */   addiu     $v0, $zero, 0x1
   .L80208990:
-    /* 9990 80208990 8D29C5BC */  lw         $t1, %lo(D_8031C5BC)($t1)
+    /* 9990 80208990 8D29C5BC */  lw         $t1, %lo(g_pActiveProfile)($t1)
     /* 9994 80208994 240B0001 */  addiu      $t3, $zero, 0x1
     /* 9998 80208998 008B6004 */  sllv       $t4, $t3, $a0
     /* 999C 8020899C 952A00CE */  lhu        $t2, 0xCE($t1)
@@ -152,8 +152,8 @@ glabel ProcessTrackSelectUI
     /* 9AD4 80208AD4 00000000 */   nop
     /* 9AD8 80208AD8 0C08BD41 */  jal        SetTextAlignCenter
     /* 9ADC 80208ADC 00000000 */   nop
-    /* 9AE0 80208AE0 3C028032 */  lui        $v0, %hi(D_8031C5BC)
-    /* 9AE4 80208AE4 8C42C5BC */  lw         $v0, %lo(D_8031C5BC)($v0)
+    /* 9AE0 80208AE0 3C028032 */  lui        $v0, %hi(g_pActiveProfile)
+    /* 9AE4 80208AE4 8C42C5BC */  lw         $v0, %lo(g_pActiveProfile)($v0)
     /* 9AE8 80208AE8 3C188029 */  lui        $t8, %hi(D_8028B950)
     /* 9AEC 80208AEC 3C118031 */  lui        $s1, %hi(g_szTrackSelectPointsTextBuf)
     /* 9AF0 80208AF0 90430004 */  lbu        $v1, 0x4($v0)
@@ -230,8 +230,8 @@ glabel ProcessTrackSelectUI
     /* 9BF8 80208BF8 2610B370 */  addiu      $s0, $s0, %lo(g_aVehicleModelSlots)
     /* 9BFC 80208BFC 00008825 */  or         $s1, $zero, $zero
   .L80208C00:
-    /* 9C00 80208C00 3C0C8032 */  lui        $t4, %hi(D_8031C5BC)
-    /* 9C04 80208C04 8D8CC5BC */  lw         $t4, %lo(D_8031C5BC)($t4)
+    /* 9C00 80208C00 3C0C8032 */  lui        $t4, %hi(g_pActiveProfile)
+    /* 9C04 80208C04 8D8CC5BC */  lw         $t4, %lo(g_pActiveProfile)($t4)
     /* 9C08 80208C08 3C068029 */  lui        $a2, %hi(D_8028B954)
     /* 9C0C 80208C0C 02002025 */  or         $a0, $s0, $zero
     /* 9C10 80208C10 918D0004 */  lbu        $t5, 0x4($t4)
@@ -267,8 +267,8 @@ glabel ProcessTrackSelectUI
     /* 9C7C 80208C7C 00000000 */   nop
     /* 9C80 80208C80 0C084465 */  jal        StartTimeAttack
     /* 9C84 80208C84 00000000 */   nop
-    /* 9C88 80208C88 3C098032 */  lui        $t1, %hi(D_8031C5BC)
-    /* 9C8C 80208C8C 8D29C5BC */  lw         $t1, %lo(D_8031C5BC)($t1)
+    /* 9C88 80208C88 3C098032 */  lui        $t1, %hi(g_pActiveProfile)
+    /* 9C8C 80208C8C 8D29C5BC */  lw         $t1, %lo(g_pActiveProfile)($t1)
     /* 9C90 80208C90 3C028030 */  lui        $v0, %hi(g_abGhostRecording)
     /* 9C94 80208C94 90427F00 */  lbu        $v0, %lo(g_abGhostRecording)($v0)
     /* 9C98 80208C98 952A00CE */  lhu        $t2, 0xCE($t1)
@@ -334,8 +334,8 @@ glabel SeasonRecordsPreDrawCallback
     /* 9D64 80208D64 3C018027 */  lui        $at, %hi(g_dwMinimapRdpOffset)
     /* 9D68 80208D68 E4201D5C */  swc1       $f0, %lo(g_dwMinimapRdpOffset)($at)
   .L80208D6C:
-    /* 9D6C 80208D6C 3C028032 */  lui        $v0, %hi(D_8031C5BC)
-    /* 9D70 80208D70 8C42C5BC */  lw         $v0, %lo(D_8031C5BC)($v0)
+    /* 9D6C 80208D6C 3C028032 */  lui        $v0, %hi(g_pActiveProfile)
+    /* 9D70 80208D70 8C42C5BC */  lw         $v0, %lo(g_pActiveProfile)($v0)
     /* 9D74 80208D74 904E0005 */  lbu        $t6, 0x5($v0)
     /* 9D78 80208D78 AFAE0084 */  sw         $t6, 0x84($sp)
     /* 9D7C 80208D7C 90500004 */  lbu        $s0, 0x4($v0)
@@ -572,8 +572,8 @@ glabel SeasonRecordsPreDrawCallback
     /* A0D4 802090D4 24A50004 */   addiu     $a1, $a1, 0x4
     /* A0D8 802090D8 0C08BD48 */  jal        SetTextAlignRight
     /* A0DC 802090DC 00000000 */   nop
-    /* A0E0 802090E0 3C0D8032 */  lui        $t5, %hi(D_8031C5BC)
-    /* A0E4 802090E4 8DADC5BC */  lw         $t5, %lo(D_8031C5BC)($t5)
+    /* A0E0 802090E0 3C0D8032 */  lui        $t5, %hi(g_pActiveProfile)
+    /* A0E4 802090E4 8DADC5BC */  lw         $t5, %lo(g_pActiveProfile)($t5)
     /* A0E8 802090E8 02402025 */  or         $a0, $s2, $zero
     /* A0EC 802090EC 3C05802A */  lui        $a1, %hi(g_szDash)
     /* A0F0 802090F0 01B17021 */  addu       $t6, $t5, $s1
@@ -606,8 +606,8 @@ glabel SeasonRecordsPreDrawCallback
     /* A150 80209150 03362821 */  addu       $a1, $t9, $s6
     /* A154 80209154 0C08BD77 */  jal        DrawText
     /* A158 80209158 24A5FFFF */   addiu     $a1, $a1, -0x1
-    /* A15C 8020915C 3C088032 */  lui        $t0, %hi(D_8031C5BC)
-    /* A160 80209160 8D08C5BC */  lw         $t0, %lo(D_8031C5BC)($t0)
+    /* A15C 8020915C 3C088032 */  lui        $t0, %hi(g_pActiveProfile)
+    /* A160 80209160 8D08C5BC */  lw         $t0, %lo(g_pActiveProfile)($t0)
     /* A164 80209164 02402025 */  or         $a0, $s2, $zero
     /* A168 80209168 3C05802A */  lui        $a1, %hi(g_szDash2)
     /* A16C 8020916C 01114821 */  addu       $t1, $t0, $s1
@@ -679,7 +679,7 @@ glabel SeasonRecordsPreDrawCallback
     /* A264 80209264 3C018029 */  lui        $at, %hi(g_dwRainMode)
     /* A268 80209268 AC20AA8C */  sw         $zero, %lo(g_dwRainMode)($at)
     /* A26C 8020926C 3C018029 */  lui        $at, %hi(g_dwSnowMode)
-    /* A270 80209270 0C0860AA */  jal        SetRenderMode
+    /* A270 80209270 0C0860AA */  jal        SetupFog
     /* A274 80209274 AC20AA84 */   sw        $zero, %lo(g_dwSnowMode)($at)
     /* A278 80209278 0C086357 */  jal        SetCombinerMode
     /* A27C 8020927C 00000000 */   nop

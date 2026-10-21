@@ -23,6 +23,7 @@ BuildFrequencyScaleTable
 BuildSkewSymmetricMatrix
 BuildTrackTriangleCache
 BuildVisibleGrid
+BuildVisibleInstanceList
 CastRayAgainstTrack
 CastWheelRay
 CheatSetUnlockBit1000
@@ -47,6 +48,7 @@ ClearFramebuffersForWideMode
 CollectTrianglesInBox
 CollideBodyWithTriangles
 CollideVehicles
+CompareVisibleCellDistance
 ComputeCameraBasis
 ComputeCollisionPenetration
 ComputeDampingForces
@@ -174,6 +176,7 @@ ProcessPlayerCountSelect
 ProcessSplashScreens
 ProcessWeatherSelect
 ProjectVec3fToScreen
+ProjectWorldToScreenRect
 PushCollisionTriangle
 QuaternionMultiply
 QuaternionNormalize
@@ -187,6 +190,8 @@ RenderScreenFog
 RenderSkybox
 RenderTextToDisplayList
 RenderTireSmoke
+RenderTrackGeometry
+RenderTrackInstance
 ResetAllPlayers
 ResetCollisionCaches
 ResetFrameBlocks
@@ -194,6 +199,7 @@ ResetHeap
 ResetMusicChannels
 ResetMusicPlaybackState
 ResetScreenFog
+ResetShadowBuffers
 ResetVehicleState
 ResolveVehicleTrackCollision
 RotateVehicleByEuler

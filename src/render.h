@@ -84,9 +84,93 @@ extern s32 g_dwViewportScaleZ;
 /** The depth offset of the viewport SetViewport() last set. @ghidraAddress USA: 0x8028ab68 */
 extern s32 g_dwViewportTransZ;
 
+/** The view and projection of the view being drawn. @ghidraAddress USA: 0x8031aa50 */
+extern f32 g_afViewProjMatrix[4][4];
+
+/** The normalisation of the perspective of the projection. @ghidraAddress USA: 0x8028a874 */
+extern u16 g_wPerspNorm;
+
+/** The distance of the far plane of the cameras. @ghidraAddress USA: 0x8028aacc */
+extern f32 gFrustumFar;
+
+/** @ghidraAddress USA: 0x8028a8c0 */
+extern Mtx g_mtxIdentity;
+
+/** The vertices, triangles, and polygons drawn this frame. @ghidraAddress USA: 0x8028aa08 */
+extern s32 g_dwStatVerticesDrawn;
+
+/** @ghidraAddress USA: 0x8028aa10 */
+extern s32 g_dwStatTrianglesDrawn;
+
+/** @ghidraAddress USA: 0x8028aa38 */
+extern s32 g_dwStatPolygonsDrawn;
+
+/**
+ * Whether the level of detail of the textures of the track is on.
+ *
+ * @ghidraAddress USA: 0x8028aa44
+ */
+extern s32 g_bTrackTextureLod;
+
+/** Whether the track is drawn with smooth shading. @ghidraAddress USA: 0x8028aa48 */
+extern s32 g_bSmoothShading;
+
+/** The colour of the light of the sun and of the ambient light. @ghidraAddress USA: 0x8028ab58 */
+extern u32 g_dwDirLightColor;
+
+/** @ghidraAddress USA: 0x8028ab5c */
+extern u32 g_dwAmbientLightColor;
+
+/** The lights the vehicles and the track start from. @ghidraAddress USA: 0x8028a9f0 */
+extern Lights1 g_DefaultLights;
+
+/** The direction of the light of the sun. @ghidraAddress USA: 0x8031b338 */
+extern f32 g_afLightDirection[3];
+
+/**
+ * The colours of the light of the placed models lit by their light ramp, by its index.
+ *
+ * @ghidraAddress USA: 0x8031b360
+ */
+extern u32 g_adwLightRampColors[4];
+
+/** Whether each vehicle is in the view being drawn. @ghidraAddress USA: 0x80351c70 */
+extern s32 g_adwVehicleVisible[];
+
+/**
+ * The largest absolute value of the first three rows of a matrix.
+ *
+ * @param m The matrix.
+ * @return The largest absolute value of its first 12 elements.
+ * @ghidraAddress USA: 0x80217420
+ */
+f32 GetMaxAbsValue12(f32 m[4][4]);
+
+/**
+ * Set the colour and the range of the fog for the weather and the track, and add them to the
+ * display list.
+ *
+ * @ghidraAddress USA: 0x802182a8
+ */
+void SetupFog(void);
+
+/**
+ * Load the viewport of the view being drawn again.
+ *
+ * @ghidraAddress USA: 0x80219f04
+ */
+void RestoreCurrentViewport(void);
+
 /**
  * Fill a rectangle of the screen with a colour.
  *
+ * @param x The left edge, in the pixels of the low resolution, which high resolution doubles.
+ * @param y The upper edge.
+ * @param width The width.
+ * @param height The height.
+ * @param red The red of the colour, from 0 to 255, of which the upper 5 bits count.
+ * @param green The green of the colour.
+ * @param blue The blue of the colour.
  * @ghidraAddress USA: 0x80218104
  */
 void DrawFilledRect(s32 x, s32 y, s32 width, s32 height, s32 red, s32 green, s32 blue);

@@ -24,7 +24,10 @@
  * use them are reconstructed.
  */
 typedef struct {
-    u8 unreconstructed0[0xCC];
+    u8 unreconstructed0[0x4];
+    /** The season of the championship being raced, from 0. */
+    u8 season;
+    u8 unreconstructed5[0xCC - 0x5];
     /** The unlocked cars, a bit for each from bit 0, and further unlocks above them. */
     u16 unlocks;
     /** The unlocked tracks, a bit for each. */
@@ -33,6 +36,9 @@ typedef struct {
     /** The button layout the player chose on the controller screen. */
     s32 controllerLayout;
 } PlayerProfile;
+
+/** The profile of the player being played. @ghidraAddress USA: 0x8031c5bc */
+extern PlayerProfile *g_pActiveProfile;
 
 /**
  * The model of a car as it is loaded from the cartridge. Its fields join this structure as they are
@@ -46,7 +52,11 @@ typedef struct {
     f32 mirrorForward;
     /** How far above the vehicle the cockpit and mirror cameras sit. */
     f32 cockpitUp;
-    u8 unreconstructedBC[0xEC - 0xBC];
+    u8 unreconstructedBC[0xE0 - 0xBC];
+    /** The length and width of the car, which size its shadow. */
+    f32 length;
+    f32 width;
+    u8 unreconstructedE8[0xEC - 0xE8];
     /** A front and a rear wheel of one side; those of the other side mirror them across. */
     Vec3f frontWheel;
     Vec3f rearWheel;
@@ -391,7 +401,8 @@ typedef struct Vehicle {
     f32 pitchInput;
     f32 accelerator;
     f32 rollInput;
-    u8 unreconstructed1DE4[0x1DE8 - 0x1DE4];
+    /** How thick the fog is at the vehicle, from 0 to 1, which fades its shadow. */
+    f32 fogFactor;
     CameraFrame *activeCamera;
     /** The camera of the last frame. */
     CameraFrame *previousCamera;
@@ -418,7 +429,12 @@ typedef struct Vehicle {
     s32 nearbyInstanceCount;
     f32 groundDistance;
     s32 groundSurface;
-    u8 unreconstructed2050[0x205C - 0x2050];
+    /**
+     * The corners of the rectangle of the screen the shadow of the vehicle covers in the view being
+     * drawn: the left and the lower edge, then the right and the upper edge.
+     */
+    s16 shadowCorners[2][2];
+    u8 unreconstructed2058[0x205C - 0x2058];
     /** The index of the car in g_aCarModels. */
     s32 carModel;
     /** The color of the paint of the car. */
@@ -446,6 +462,7 @@ extern Vehicle g_aVehicles[MAX_VEHICLES];
  * Find the nearest point of the route to a vehicle and add how far it went along the route to its
  * distance. A vehicle that has not crossed out of its point and stays near it keeps it.
  *
+ * @param vehicle The vehicle.
  * @return 0 if no point is near enough, 1 otherwise.
  * @ghidraAddress USA: 0x8021eb50
  */
@@ -454,6 +471,7 @@ s32 UpdateVehicleTrackPosition(Vehicle *vehicle);
 /**
  * Run the clocks of a vehicle as the mode of play keeps them.
  *
+ * @param vehicle The vehicle.
  * @ghidraAddress USA: 0x8021f0a8
  */
 void UpdateRaceTimers(Vehicle *vehicle);
@@ -462,6 +480,7 @@ void UpdateRaceTimers(Vehicle *vehicle);
  * Count down the time of the message of a vehicle, or failing one its smaller message, and clear it
  * at the end.
  *
+ * @param vehicle The vehicle.
  * @ghidraAddress USA: 0x8021f158
  */
 void UpdateHudMessageTimers(Vehicle *vehicle);
@@ -469,6 +488,7 @@ void UpdateHudMessageTimers(Vehicle *vehicle);
 /**
  * Show "WRONG WAY", flashing, once a vehicle has faced against the track for a while.
  *
+ * @param vehicle The vehicle.
  * @ghidraAddress USA: 0x8021f1f0
  */
 void CheckWrongWayWarning(Vehicle *vehicle);
@@ -476,6 +496,7 @@ void CheckWrongWayWarning(Vehicle *vehicle);
 /**
  * Find the cell of the grid a vehicle is in, then its place on the route.
  *
+ * @param vehicle The vehicle.
  * @ghidraAddress USA: 0x8021f2d8
  */
 void UpdateVehicleGridPosition(Vehicle *vehicle);
@@ -484,6 +505,7 @@ void UpdateVehicleGridPosition(Vehicle *vehicle);
  * Run a frame of a vehicle: fly it, or put it on the ground, drive its wheels and step its
  * physics. Then place its wheels, set its speed, and update its cameras if a view follows it.
  *
+ * @param vehicle The vehicle.
  * @ghidraAddress USA: 0x8021f998
  */
 void UpdateVehiclePhysicsFrame(Vehicle *vehicle);
@@ -491,6 +513,10 @@ void UpdateVehiclePhysicsFrame(Vehicle *vehicle);
 /**
  * Put a vehicle at a position, with its body and the states of its steps.
  *
+ * @param vehicle The vehicle.
+ * @param x The x of the position.
+ * @param y The y of the position.
+ * @param z The z of the position.
  * @ghidraAddress USA: 0x8021fe04
  */
 void SetVehiclePosition(Vehicle *vehicle, f32 x, f32 y, f32 z);
@@ -498,6 +524,8 @@ void SetVehiclePosition(Vehicle *vehicle, f32 x, f32 y, f32 z);
 /**
  * Turn a vehicle upright to face an angle about the vertical.
  *
+ * @param vehicle The vehicle.
+ * @param angle The angle from the x axis, in radians.
  * @ghidraAddress USA: 0x8021fe80
  */
 void InitVehicleOrientationFromAngle(Vehicle *vehicle, f32 angle);
@@ -505,6 +533,8 @@ void InitVehicleOrientationFromAngle(Vehicle *vehicle, f32 angle);
 /**
  * Set the frame of a vehicle and the orientation of its body from a matrix.
  *
+ * @param vehicle The vehicle.
+ * @param m The matrix, whose rows are the axes and the position.
  * @ghidraAddress USA: 0x80220150
  */
 void SetVehicleFrameMatrix(Vehicle *vehicle, f32 m[4][4]);
@@ -512,6 +542,10 @@ void SetVehicleFrameMatrix(Vehicle *vehicle, f32 m[4][4]);
 /**
  * Set the velocity of a vehicle.
  *
+ * @param vehicle The vehicle.
+ * @param x The x of the velocity.
+ * @param y The y of the velocity.
+ * @param z The z of the velocity.
  * @ghidraAddress USA: 0x802201c8
  */
 void SetVehicleVelocity(Vehicle *vehicle, f32 x, f32 y, f32 z);
@@ -519,6 +553,10 @@ void SetVehicleVelocity(Vehicle *vehicle, f32 x, f32 y, f32 z);
 /**
  * Turn the body of a vehicle by angles about its vertical, sideways and forward axes, in turn.
  *
+ * @param vehicle The vehicle.
+ * @param yaw The angle about the vertical, in radians.
+ * @param pitch The angle about the sideways axis, in radians.
+ * @param roll The angle about the forward axis, in radians.
  * @ghidraAddress USA: 0x8022021c
  */
 void RotateVehicleByEuler(Vehicle *vehicle, f32 yaw, f32 pitch, f32 roll);
@@ -526,13 +564,18 @@ void RotateVehicleByEuler(Vehicle *vehicle, f32 yaw, f32 pitch, f32 roll);
 /**
  * Set the angular velocity of a vehicle.
  *
+ * @param vehicle The vehicle.
+ * @param x The angular velocity about the x axis.
+ * @param y The angular velocity about the y axis.
+ * @param z The angular velocity about the z axis.
  * @ghidraAddress USA: 0x80220358
  */
 void SetVehicleTurnRate(Vehicle *vehicle, f32 x, f32 y, f32 z);
 
 /**
- * Paint the model of a vehicle its color and set up its physics.
+ * Paint the model of a vehicle its colour and set up its physics.
  *
+ * @param vehicle The vehicle.
  * @ghidraAddress USA: 0x80220398
  */
 void InitVehicleColorAndPhysics(Vehicle *vehicle);
@@ -540,6 +583,8 @@ void InitVehicleColorAndPhysics(Vehicle *vehicle);
 /**
  * Give a vehicle the model of a slot.
  *
+ * @param vehicle The vehicle.
+ * @param slot The slot of g_aVehicleModels.
  * @ghidraAddress USA: 0x802203f0
  */
 void SetVehicleModelSlot(Vehicle *vehicle, s32 slot);
@@ -547,6 +592,9 @@ void SetVehicleModelSlot(Vehicle *vehicle, s32 slot);
 /**
  * Load the model of a car into a slot and give it to a vehicle.
  *
+ * @param vehicle The vehicle.
+ * @param slot The slot of g_aVehicleModels.
+ * @param car The index of the car in g_aCarModels.
  * @ghidraAddress USA: 0x80220438
  */
 void InstallVehicleModel(Vehicle *vehicle, s32 slot, s32 car);
@@ -554,6 +602,10 @@ void InstallVehicleModel(Vehicle *vehicle, s32 slot, s32 car);
 /**
  * Start loading the model of a car into a slot through a buffer of g_aDmaWorkBuffers.
  *
+ * @param load The load, which this starts.
+ * @param slot The slot of g_aVehicleModels.
+ * @param car The index of the car in g_aCarModels.
+ * @param buffer The index of the buffer.
  * @ghidraAddress USA: 0x80220474
  */
 void LoadVehicleModel(VehicleModelLoad *load, s32 slot, s32 car, s32 buffer);
@@ -561,6 +613,8 @@ void LoadVehicleModel(VehicleModelLoad *load, s32 slot, s32 car, s32 buffer);
 /**
  * Whether the load of a model is done.
  *
+ * @param load The load.
+ * @return Whether no compressed bytes are left to read.
  * @ghidraAddress USA: 0x80220534
  */
 s32 IsVehicleModelLoaded(VehicleModelLoad *load);
@@ -569,6 +623,7 @@ s32 IsVehicleModelLoaded(VehicleModelLoad *load);
  * Continue the load of a model, and once it is done, record the car of its slot and fix up its
  * pointers.
  *
+ * @param load The load.
  * @return The compressed bytes left to read.
  * @ghidraAddress USA: 0x80220544
  */
@@ -577,6 +632,7 @@ u32 PollVehicleModelDma(VehicleModelLoad *load);
 /**
  * Reset the frames, cameras, velocity, place on the route and gearbox of a vehicle for its car.
  *
+ * @param vehicle The vehicle.
  * @ghidraAddress USA: 0x80220620
  */
 void ResetVehicleState(Vehicle *vehicle);
@@ -584,13 +640,18 @@ void ResetVehicleState(Vehicle *vehicle);
 /**
  * Give a vehicle the input of the player of the same index.
  *
+ * @param vehicle The vehicle.
  * @ghidraAddress USA: 0x802207a4
  */
 void BindPlayerInputToVehicle(Vehicle *vehicle);
 
 /**
- * Paint the materials of a model a color of 5 bits a channel.
+ * Paint the materials of a model a colour of 5 bits a channel.
  *
+ * @param model The model.
+ * @param red The red of the colour, from 0 to 31.
+ * @param green The green of the colour, from 0 to 31.
+ * @param blue The blue of the colour, from 0 to 31.
  * @ghidraAddress USA: 0x8021d140
  */
 void SetMaterialColor(VehicleModel *model, s32 red, s32 green, s32 blue);
@@ -598,16 +659,21 @@ void SetMaterialColor(VehicleModel *model, s32 red, s32 green, s32 blue);
 /**
  * Turn the offsets of a loaded model into pointers.
  *
+ * @param model The model.
  * @ghidraAddress USA: 0x8021d32c
  */
 void FixupVehicleModelPointers(VehicleModel *model);
 
 /**
- * Load the model of a car into a slot, or copy it from a slot that holds it.
+ * Load the model of a car into a slot from the cartridge, or copy it from memory that holds it,
+ * then fix up its pointers and record the car of the slot.
  *
+ * @param slot The slot of g_aVehicleModels.
+ * @param car The index of the car in g_aCarModels.
+ * @param source The decompressed model to copy, or NULL to load it from the cartridge.
  * @ghidraAddress USA: 0x8021d5e4
  */
-void LoadOrCopyVehicleModel(s32 slot, s32 car, s32 unused);
+void LoadOrCopyVehicleModel(s32 slot, s32 car, void *source);
 
 /**
  * How the steering answers the stick, as the steering mode of a vehicle sets it: the lock at rest
@@ -639,6 +705,7 @@ extern s16 g_wSteerGainSpeedShare;
  * springs, grip and dampers, collide it with the track and the other vehicles, and hang its
  * wheels to the ground.
  *
+ * @param vehicle The vehicle.
  * @ghidraAddress USA: 0x80221940
  */
 void SimulateVehiclePhysicsSubstep(Vehicle *vehicle);
@@ -647,6 +714,7 @@ void SimulateVehiclePhysicsSubstep(Vehicle *vehicle);
  * Place the matrix of a vehicle, leant into its skid, and the matrices of its wheels, turned by
  * their roll and the front ones by their steering.
  *
+ * @param vehicle The vehicle.
  * @ghidraAddress USA: 0x80221e0c
  */
 void TransformAllWheelMatrices(Vehicle *vehicle);
@@ -655,6 +723,7 @@ void TransformAllWheelMatrices(Vehicle *vehicle);
  * Steer a vehicle by the stick, change its gears, and run its engine: its revolutions follow the
  * front wheels in gear, and its throttle the torque at them.
  *
+ * @param vehicle The vehicle.
  * @ghidraAddress USA: 0x80222050
  */
 void UpdateVehicleEngineAndGearbox(Vehicle *vehicle);
@@ -663,6 +732,7 @@ void UpdateVehicleEngineAndGearbox(Vehicle *vehicle);
  * Set up the body of a vehicle and the bodies of its wheels, and their forces, for the model of its
  * car.
  *
+ * @param vehicle The vehicle.
  * @ghidraAddress USA: 0x80222d54
  */
 void InitVehiclePhysics(Vehicle *vehicle);
@@ -670,6 +740,7 @@ void InitVehiclePhysics(Vehicle *vehicle);
 /**
  * Bind a vehicle to the input of its player and reset it for a race.
  *
+ * @param vehicle The vehicle.
  * @ghidraAddress USA: 0x80226100
  */
 void InitPlayerVehicleSlot(Vehicle *vehicle);

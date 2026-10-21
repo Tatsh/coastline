@@ -1675,7 +1675,7 @@ glabel ProcessPaintShopScreen
     /* 45410 80244410 3C018029 */  lui        $at, %hi(g_dwNightMode)
     /* 45414 80244414 11A00019 */  beqz       $t5, .L8024447C
     /* 45418 80244418 00000000 */   nop
-    /* 4541C 8024441C 0C0860AA */  jal        SetRenderMode
+    /* 4541C 8024441C 0C0860AA */  jal        SetupFog
     /* 45420 80244420 AC20AA80 */   sw        $zero, %lo(g_dwNightMode)($at)
     /* 45424 80244424 0C086357 */  jal        SetCombinerMode
     /* 45428 80244428 00000000 */   nop

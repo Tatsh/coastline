@@ -7,9 +7,11 @@ addi
 addiu
 addrs
 addu
+airplane
 alabel
 alphadither
 andi
+anim
 argparse
 asciz
 atexit
@@ -36,6 +38,7 @@ chnl
 cleargeometrymode
 colc
 colored
+combkey
 contpfs
 contramread
 contramwrite
@@ -85,6 +88,7 @@ ebrake
 edma
 edmaread
 edmawrite
+enddl
 endforeach
 endfunction
 endlabel
@@ -172,6 +176,7 @@ libera
 libgcc
 libsonnet
 libultra
+lightcol
 lindex
 litob
 llcvt
@@ -181,6 +186,8 @@ loguy
 lookat
 lookathil
 lookatref
+lookatx
+lookaty
 lostk
 lpanic
 lpcstr
@@ -251,6 +258,7 @@ pakmenu
 paks
 pathlib
 persp
+perspnorm
 pfsallocatefile
 pfschecker
 pfsdeletefile
@@ -366,6 +374,7 @@ syncprintf
 tagfile
 tatsh
 texrect
+textdetail
 textfilt
 textlod
 textlut
@@ -380,6 +389,7 @@ tlnext
 tlut
 tolower
 toupper
+trackrender
 tranx
 txls
 typeh
@@ -394,6 +404,7 @@ undraft
 undrafted
 undriven
 unistd
+unrotated
 urllib
 urlopen
 vars

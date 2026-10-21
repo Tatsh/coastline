@@ -58,14 +58,65 @@ typedef struct TrackSection {
 
 /** A model placed on the track. Its fields join this structure as they are reconstructed. */
 typedef struct {
-    u8 unreconstructed0[0x4C];
+    /** Where and how the model is placed. */
+    f32 matrix[4][4];
+    u8 unreconstructed40[0x44 - 0x40];
+    Gfx *displayList;
+    /** The groups the model is in, hidden while the camera is near a model that hides them. */
+    u16 groups;
+    /** The groups the model hides while a ray from the camera hits it. */
+    u16 hidesGroups;
     /** The TRACK_INSTANCE_ flags. */
     u16 flags;
-    u8 unreconstructed4E[0x54 - 0x4E];
+    /** The vertices, triangles, and polygons of the model, for the counts of a frame. */
+    u16 vertexCount;
+    u16 triangleCount;
+    u16 polygonCount;
 } TrackInstance;
+
+/** The bits of the flags of a placed model that pick its light from g_adwLightRampColors. */
+#define TRACK_INSTANCE_LIGHT_RAMP 0x0003
+
+/** The flag of a placed model drawn from both sides. */
+#define TRACK_INSTANCE_TWO_SIDED 0x0004
+
+/** The flag of a placed model drawn after the others, the farthest first. */
+#define TRACK_INSTANCE_TRANSLUCENT 0x0008
 
 /** The flag of a placed model that keeps rain and snow off a camera under it, and echoes. */
 #define TRACK_INSTANCE_SHELTER 0x0010
+
+/**
+ * The flag of a placed model drawn without fog, and hidden in the snow, the rain, and at night
+ * except on the tracks whose spray shows in the snow.
+ */
+#define TRACK_INSTANCE_CLEAR_SKY 0x0020
+
+/** The flag of a placed model drawn with flat shading. */
+#define TRACK_INSTANCE_FLAT 0x0080
+
+/** The flag of a placed model lit at half the light of the sun at night. */
+#define TRACK_INSTANCE_NIGHT_LIT 0x0100
+
+/** The flag of a placed model that the vehicles cast no shadow on. */
+#define TRACK_INSTANCE_NO_SHADOW 0x0200
+
+/** The flag of a placed model lit by its light ramp instead of the sun. */
+#define TRACK_INSTANCE_RAMPED 0x0400
+
+/** The flag of a placed model shown only at night or in the rain. */
+#define TRACK_INSTANCE_DARK_OR_WET 0x0800
+
+/** The flag of a placed model whose matrix holds only its position and a scale. */
+#define TRACK_INSTANCE_UNROTATED 0x2000
+
+/** The flag of a placed model shown only in arcade races and the first season. */
+#define TRACK_INSTANCE_ARCADE 0x4000
+
+/** The flags of a placed model that change the modes it is drawn with. */
+#define TRACK_INSTANCE_MODE_FLAGS                                                                  \
+    (TRACK_INSTANCE_TWO_SIDED | TRACK_INSTANCE_CLEAR_SKY | TRACK_INSTANCE_FLAT |                   \
+     TRACK_INSTANCE_RAMPED)
 
 /** The surface whose tyre smoke is pale and that throws spray only in the rain: the paved road. */
 #define TRACK_SURFACE_PAVED 3
@@ -107,11 +158,15 @@ typedef struct {
     u8 unreconstructed40[0x50 - 0x40];
     /** The display list of the sky, or NULL for a sky of the fog colour. */
     Gfx *skyDisplayList;
-    u8 unreconstructed54[0x60 - 0x54];
+    u8 unreconstructed54[0x5C - 0x54];
+    /** The names of the placed models, by index, or NULL. */
+    const char **instanceNames;
     /** The placed models. */
     TrackInstance *instances;
     s32 instanceCount;
-    u8 unreconstructed68[0x70 - 0x68];
+    /** The placed models of each cell of the 64 by 64 grid, and where the list of each starts. */
+    u16 *gridInstances;
+    u16 *gridInstanceStarts;
     /** The section at the start line. The distance of its first point is the length of a lap. */
     TrackSection *rootSection;
     u8 unreconstructed74[0x78 - 0x74];
@@ -152,6 +207,7 @@ extern s32 g_nDebugHiddenInstanceIndex;
  *
  * @param outPoint Receives the height of the ground in its z, unless it is NULL.
  * @param outNormal Receives the normal of the ground, unless it is NULL.
+ * @param origin The point the line drops through.
  * @param groundInstances Receives the placed models of the ground, the nearest first.
  * @param done Set to 1.
  * @param nearbyInstances Receives the placed models near the ground, the latest first.
@@ -174,6 +230,8 @@ s32 CastRayAgainstTrack(Vec3f *outPoint,
 /**
  * The triangles of the cell of the grid of the track under a point.
  *
+ * @param x The x of the point, in the units of the world.
+ * @param y The y of the point.
  * @return The count of the triangles in the upper half and where they start in the lower, or 0
  * outside the grid.
  * @ghidraAddress USA: 0x8021e620
@@ -183,9 +241,37 @@ u32 LookupTrackGridCell(f32 x, f32 y);
 /**
  * Take the next triangle of a cell of the grid.
  *
+ * @param cursor Where the triangles of the cell go on and how many are left, which this advances.
  * @return Its index, or 0 when the cell has no more.
  * @ghidraAddress USA: 0x8021ea90
  */
 u16 NextGridCellTriangle(TrackGridCursor *cursor);
+
+/**
+ * The placed models of a cell of the grid of the track.
+ *
+ * @param column The column of the cell, from 0 to 63.
+ * @param row The row of the cell, from 0 to 63.
+ * @return The count of the models in the upper half and where they start in the lower, or 0
+ * outside the grid.
+ * @ghidraAddress USA: 0x8021ea0c
+ */
+u32 LookupInstanceGridCell(s32 column, s32 row);
+
+/**
+ * Take the next placed model of a cell of the grid.
+ *
+ * @param cursor Where the models of the cell go on and how many are left, which this advances.
+ * @return Its index, or 0 when the cell has no more.
+ * @ghidraAddress USA: 0x8021eadc
+ */
+u16 NextGridCellInstance(TrackGridCursor *cursor);
+
+/**
+ * The placed model an animation flies along a spline, such as the airplane, or 0.
+ *
+ * @ghidraAddress USA: 0x8026ff64
+ */
+extern s32 g_dwSplineAnimInstance;
 
 #endif

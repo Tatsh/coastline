@@ -3814,7 +3814,7 @@ glabel ProcessRaceHud
     /* 4B14 80203B14 24060082 */  addiu      $a2, $zero, 0x82
     /* 4B18 80203B18 0C08B5F8 */  jal        AddTimingMarker
     /* 4B1C 80203B1C 00003825 */   or        $a3, $zero, $zero
-    /* 4B20 80203B20 0C08CFF7 */  jal        SetupParticleBufferPointers
+    /* 4B20 80203B20 0C08CFF7 */  jal        ResetShadowBuffers
     /* 4B24 80203B24 00000000 */   nop
     /* 4B28 80203B28 0C085F25 */  jal        SetupFillMode
     /* 4B2C 80203B2C 00000000 */   nop
@@ -4065,7 +4065,7 @@ glabel ProcessRaceHud
     /* 4EE8 80203EE8 0C086CBE */  jal        SetupCameraMatrix
     /* 4EEC 80203EEC E7A80010 */   swc1      $f8, 0x10($sp)
   .L80203EF0:
-    /* 4EF0 80203EF0 0C0860AA */  jal        SetRenderMode
+    /* 4EF0 80203EF0 0C0860AA */  jal        SetupFog
     /* 4EF4 80203EF4 00000000 */   nop
     /* 4EF8 80203EF8 0C086357 */  jal        SetCombinerMode
     /* 4EFC 80203EFC 00000000 */   nop
@@ -4129,7 +4129,7 @@ glabel ProcessRaceHud
     /* 4FD4 80203FD4 57010038 */  bnel       $t8, $at, .L802040B8
     /* 4FD8 80203FD8 241900FF */   addiu     $t9, $zero, 0xFF
   .L80203FDC:
-    /* 4FDC 80203FDC 0C0860AA */  jal        SetRenderMode
+    /* 4FDC 80203FDC 0C0860AA */  jal        SetupFog
     /* 4FE0 80203FE0 00000000 */   nop
     /* 4FE4 80203FE4 0C086357 */  jal        SetCombinerMode
     /* 4FE8 80203FE8 00000000 */   nop
@@ -4208,7 +4208,7 @@ glabel ProcessRaceHud
     /* 50FC 802040FC 24010007 */   addiu     $at, $zero, 0x7
     /* 5100 80204100 51E10038 */  beql       $t7, $at, .L802041E4
     /* 5104 80204104 240A00FF */   addiu     $t2, $zero, 0xFF
-    /* 5108 80204108 0C0860AA */  jal        SetRenderMode
+    /* 5108 80204108 0C0860AA */  jal        SetupFog
     /* 510C 8020410C 00000000 */   nop
     /* 5110 80204110 0C086357 */  jal        SetCombinerMode
     /* 5114 80204114 00000000 */   nop
@@ -4574,7 +4574,7 @@ glabel ProcessRaceHud
     /* 566C 8020466C 44074000 */  mfc1       $a3, $f8
     /* 5670 80204670 0C086CBE */  jal        SetupCameraMatrix
     /* 5674 80204674 E7AA0010 */   swc1      $f10, 0x10($sp)
-    /* 5678 80204678 0C0860AA */  jal        SetRenderMode
+    /* 5678 80204678 0C0860AA */  jal        SetupFog
     /* 567C 8020467C 00000000 */   nop
     /* 5680 80204680 0C086357 */  jal        SetCombinerMode
     /* 5684 80204684 00000000 */   nop
@@ -4633,7 +4633,7 @@ glabel ProcessRaceHud
     /* 5750 80204750 15210037 */  bne        $t1, $at, .L80204830
     /* 5754 80204754 00000000 */   nop
   .L80204758:
-    /* 5758 80204758 0C0860AA */  jal        SetRenderMode
+    /* 5758 80204758 0C0860AA */  jal        SetupFog
     /* 575C 8020475C 00000000 */   nop
     /* 5760 80204760 0C086357 */  jal        SetCombinerMode
     /* 5764 80204764 00000000 */   nop
@@ -4703,7 +4703,7 @@ glabel ProcessRaceHud
     /* 5854 80204854 24010007 */   addiu     $at, $zero, 0x7
     /* 5858 80204858 5141002F */  beql       $t2, $at, .L80204918
     /* 585C 8020485C 240F00FF */   addiu     $t7, $zero, 0xFF
-    /* 5860 80204860 0C0860AA */  jal        SetRenderMode
+    /* 5860 80204860 0C0860AA */  jal        SetupFog
     /* 5864 80204864 00000000 */   nop
     /* 5868 80204868 0C086357 */  jal        SetCombinerMode
     /* 586C 8020486C 00000000 */   nop
@@ -6534,8 +6534,8 @@ endlabel RestoreRaceResultsFromSlots
 nonmatching SetTrackFromSeason, 0xA0
 
 glabel SetTrackFromSeason
-    /* 7304 80206304 3C028032 */  lui        $v0, %hi(D_8031C5BC)
-    /* 7308 80206308 8C42C5BC */  lw         $v0, %lo(D_8031C5BC)($v0)
+    /* 7304 80206304 3C028032 */  lui        $v0, %hi(g_pActiveProfile)
+    /* 7308 80206308 8C42C5BC */  lw         $v0, %lo(g_pActiveProfile)($v0)
     /* 730C 8020630C 3C058029 */  lui        $a1, %hi(g_SeasonTable)
     /* 7310 80206310 24A5B944 */  addiu      $a1, $a1, %lo(g_SeasonTable)
     /* 7314 80206314 904E0004 */  lbu        $t6, 0x4($v0)

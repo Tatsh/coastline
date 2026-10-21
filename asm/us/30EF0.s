@@ -1238,9 +1238,9 @@ glabel RenderVehicleModel
     /* 320D0 802310D0 8D4E0140 */  lw         $t6, 0x140($t2)
   .L802310D4:
     /* 320D4 802310D4 24040018 */  addiu      $a0, $zero, 0x18
-    /* 320D8 802310D8 3C0F8029 */  lui        $t7, %hi(g_VehicleLights)
+    /* 320D8 802310D8 3C0F8029 */  lui        $t7, %hi(g_DefaultLights)
     /* 320DC 802310DC 01C40019 */  multu      $t6, $a0
-    /* 320E0 802310E0 25EFA9F0 */  addiu      $t7, $t7, %lo(g_VehicleLights)
+    /* 320E0 802310E0 25EFA9F0 */  addiu      $t7, $t7, %lo(g_DefaultLights)
     /* 320E4 802310E4 8DE10000 */  lw         $at, 0x0($t7)
     /* 320E8 802310E8 3C038035 */  lui        $v1, %hi(g_aVehicleLights)
     /* 320EC 802310EC 24631C10 */  addiu      $v1, $v1, %lo(g_aVehicleLights)
@@ -1349,12 +1349,12 @@ glabel RenderVehicleModel
     /* 32284 80231284 AC580004 */  sw         $t8, 0x4($v0)
     /* 32288 80231288 AC4F0000 */  sw         $t7, 0x0($v0)
     /* 3228C 8023128C 8D020000 */  lw         $v0, 0x0($t0)
-    /* 32290 80231290 3C0F8029 */  lui        $t7, %hi(g_VehicleLights)
+    /* 32290 80231290 3C0F8029 */  lui        $t7, %hi(g_DefaultLights)
     /* 32294 80231294 3C190388 */  lui        $t9, (0x3880010 >> 16)
     /* 32298 80231298 244E0008 */  addiu      $t6, $v0, 0x8
     /* 3229C 8023129C AD0E0000 */  sw         $t6, 0x0($t0)
     /* 322A0 802312A0 37390010 */  ori        $t9, $t9, (0x3880010 & 0xFFFF)
-    /* 322A4 802312A4 25EFA9F0 */  addiu      $t7, $t7, %lo(g_VehicleLights)
+    /* 322A4 802312A4 25EFA9F0 */  addiu      $t7, $t7, %lo(g_DefaultLights)
     /* 322A8 802312A8 AC4F0004 */  sw         $t7, 0x4($v0)
     /* 322AC 802312AC AC590000 */  sw         $t9, 0x0($v0)
   .L802312B0:
@@ -3557,12 +3557,12 @@ glabel RenderVehicleBody
     /* 343F0 802333F0 AC4F0004 */  sw         $t7, 0x4($v0)
     /* 343F4 802333F4 AC4E0000 */  sw         $t6, 0x0($v0)
     /* 343F8 802333F8 8E020000 */  lw         $v0, 0x0($s0)
-    /* 343FC 802333FC 3C0E8029 */  lui        $t6, %hi(g_VehicleLights)
+    /* 343FC 802333FC 3C0E8029 */  lui        $t6, %hi(g_DefaultLights)
     /* 34400 80233400 3C190388 */  lui        $t9, (0x3880010 >> 16)
     /* 34404 80233404 24580008 */  addiu      $t8, $v0, 0x8
     /* 34408 80233408 AE180000 */  sw         $t8, 0x0($s0)
     /* 3440C 8023340C 37390010 */  ori        $t9, $t9, (0x3880010 & 0xFFFF)
-    /* 34410 80233410 25CEA9F0 */  addiu      $t6, $t6, %lo(g_VehicleLights)
+    /* 34410 80233410 25CEA9F0 */  addiu      $t6, $t6, %lo(g_DefaultLights)
     /* 34414 80233414 AC4E0004 */  sw         $t6, 0x4($v0)
     /* 34418 80233418 AC590000 */  sw         $t9, 0x0($v0)
     /* 3441C 8023341C 8E020000 */  lw         $v0, 0x0($s0)
