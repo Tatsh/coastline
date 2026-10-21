@@ -8,55 +8,111 @@
 
 #include <ultra64.h>
 
-/** @ghidraAddress USA: 0x802a62e0 */
+/**
+ * @ghidraAddress USA: 0x802a62e0
+ * @ghidraAddress JPN: 0x802a7930
+ * @ghidraAddress EUR: 0x802a7e40
+ */
 extern u32 __osPiAccessQueueEnabled;
 
-/** @ghidraAddress USA: 0x803819e8 */
+/**
+ * @ghidraAddress USA: 0x803819e8
+ * @ghidraAddress JPN: 0x803825d8
+ * @ghidraAddress EUR: 0x80383968
+ */
 extern OSMesgQueue __osPiAccessQueue;
 
-/** @ghidraAddress USA: 0x803819e0 */
+/**
+ * @ghidraAddress USA: 0x803819e0
+ * @ghidraAddress JPN: 0x803825d0
+ * @ghidraAddress EUR: 0x80383960
+ */
 extern OSMesg piAccessBuf[1];
 
 /** @ghidraAddress USA: 0x802a61a0 */
 extern OSPiHandle *__osCurrentHandle[2];
 
-/** @ghidraAddress USA: 0x802a6180 */
+/**
+ * @ghidraAddress USA: 0x802a6180
+ * @ghidraAddress JPN: 0x802a77d0
+ * @ghidraAddress EUR: 0x802a7ce0
+ */
 extern OSDevMgr __osPiDevMgr;
 
-/** @ghidraAddress USA: 0x802a619c */
+/**
+ * @ghidraAddress USA: 0x802a619c
+ * @ghidraAddress JPN: 0x802a77ec
+ * @ghidraAddress EUR: 0x802a7cfc
+ */
 extern OSPiHandle *__osPiTable;
 
-/** @ghidraAddress USA: 0x803806b0 */
+/**
+ * @ghidraAddress USA: 0x803806b0
+ * @ghidraAddress JPN: 0x80381260
+ * @ghidraAddress EUR: 0x803825f0
+ */
 extern OSThread piThread;
 
 /** @ghidraAddress USA: 0x80380860 */
 extern u64 piThreadStack[0x1000 / sizeof(u64)];
 
-/** @ghidraAddress USA: 0x80381860 */
+/**
+ * @ghidraAddress USA: 0x80381860
+ * @ghidraAddress JPN: 0x80382410
+ * @ghidraAddress EUR: 0x803837a0
+ */
 extern OSMesgQueue piEventQueue;
 
-/** @ghidraAddress USA: 0x80381878 */
+/**
+ * @ghidraAddress USA: 0x80381878
+ * @ghidraAddress JPN: 0x80382428
+ * @ghidraAddress EUR: 0x803837b8
+ */
 extern OSMesg piEventBuf[1];
 
-/** @ghidraAddress USA: 0x803818e0 */
+/**
+ * @ghidraAddress USA: 0x803818e0
+ * @ghidraAddress JPN: 0x803824d0
+ * @ghidraAddress EUR: 0x80383860
+ */
 extern OSPiHandle CartRomHandle;
 
 /** @ghidraAddress USA: 0x80381960 */
 extern OSPiHandle LeoDiskHandle;
 
-/** @ghidraAddress USA: 0x803819d4 */
+/**
+ * @ghidraAddress USA: 0x803819d4
+ * @ghidraAddress JPN: 0x803825c4
+ * @ghidraAddress EUR: 0x80383954
+ */
 extern OSPiHandle *__osDiskHandle;
 
-/** @ghidraAddress USA: 0x8026c5c0 */
+/**
+ * @ghidraAddress USA: 0x8026c5c0
+ * @ghidraAddress JPN: 0x8026e040
+ * @ghidraAddress EUR: 0x8026e590
+ */
 void __osPiCreateAccessQueue(void);
 
-/** @ghidraAddress USA: 0x8026c610 */
+/**
+ * @ghidraAddress USA: 0x8026c610
+ * @ghidraAddress JPN: 0x8026e090
+ * @ghidraAddress EUR: 0x8026e5e0
+ */
 void __osPiGetAccess(void);
 
-/** @ghidraAddress USA: 0x8026c654 */
+/**
+ * @ghidraAddress USA: 0x8026c654
+ * @ghidraAddress JPN: 0x8026e0d4
+ * @ghidraAddress EUR: 0x8026e624
+ */
 void __osPiRelAccess(void);
 
-/** @ghidraAddress USA: 0x8026c990 */
+/**
+ * @ghidraAddress USA: 0x8026c990
+ * @ghidraAddress JPN: 0x8026e410
+ * @ghidraAddress EUR: 0x8026e960
+ */
 void __osDevMgrMain(void *arg);
 
 /**
@@ -107,7 +163,11 @@ void __osDevMgrMain(void *arg);
 #define LEO_ERROR_24 24  /*!< Error 24 of the 64DD. */
 #define LEO_ERROR_29 29  /*!< Error 29 of the 64DD. */
 
-/** @ghidraAddress USA: 0x8026dbe0 */
+/**
+ * @ghidraAddress USA: 0x8026dbe0
+ * @ghidraAddress JPN: 0x8026f660
+ * @ghidraAddress EUR: 0x8026fbb0
+ */
 s32 __osLeoInterrupt(void);
 
 #endif

@@ -37,6 +37,8 @@ extern s16 g_aBitmapFontNarrow[BITMAP_FONT_GLYPHS][BITMAP_FONT_ROWS][BITMAP_FONT
  * The column where the bitmap text starts its line.
  *
  * @ghidraAddress USA: 0x8028ddd0
+ * @ghidraAddress JPN: 0x80290010
+ * @ghidraAddress EUR: 0x80290570
  */
 extern s32 g_dwBitmapTextX;
 
@@ -44,6 +46,8 @@ extern s32 g_dwBitmapTextX;
  * The row where the bitmap text starts.
  *
  * @ghidraAddress USA: 0x8028ddd4
+ * @ghidraAddress JPN: 0x80290014
+ * @ghidraAddress EUR: 0x80290574
  */
 extern s32 g_dwBitmapTextY;
 
@@ -51,6 +55,8 @@ extern s32 g_dwBitmapTextY;
  * Whether the bitmap text uses the narrow font.
  *
  * @ghidraAddress USA: 0x8028ddd8
+ * @ghidraAddress JPN: 0x80290018
+ * @ghidraAddress EUR: 0x80290578
  */
 extern s32 g_bBitmapTextNarrow;
 
@@ -58,6 +64,8 @@ extern s32 g_bBitmapTextNarrow;
  * The colour of the wide font.
  *
  * @ghidraAddress USA: 0x8028dddc
+ * @ghidraAddress JPN: 0x8029001c
+ * @ghidraAddress EUR: 0x8029057c
  */
 extern u16 g_wBitmapTextColor;
 
@@ -65,6 +73,8 @@ extern u16 g_wBitmapTextColor;
  * The step StepDebugHiddenInstance() takes through the placed models, or 0 to stay.
  *
  * @ghidraAddress USA: 0x8028dde0
+ * @ghidraAddress JPN: 0x80290020
+ * @ghidraAddress EUR: 0x80290580
  */
 extern s32 g_nDebugInstanceCycleStep;
 
@@ -72,6 +82,8 @@ extern s32 g_nDebugInstanceCycleStep;
  * A per-frame debug hook with an empty body.
  *
  * @ghidraAddress USA: 0x80254870
+ * @ghidraAddress JPN: 0x802557a0
+ * @ghidraAddress EUR: 0x80255e10
  */
 void DebugFrameStubA(void);
 
@@ -81,6 +93,8 @@ void DebugFrameStubA(void);
  *
  * @param text The text, terminated by a null character.
  * @ghidraAddress USA: 0x80254878
+ * @ghidraAddress JPN: 0x802557a8
+ * @ghidraAddress EUR: 0x80255e18
  */
 void DrawBitmapTextToFramebuffer(const char *text);
 
@@ -88,6 +102,8 @@ void DrawBitmapTextToFramebuffer(const char *text);
  * Start the bitmap text at the top left in white, in the wide font.
  *
  * @ghidraAddress USA: 0x80254d4c
+ * @ghidraAddress JPN: 0x80255c7c
+ * @ghidraAddress EUR: 0x802562ec
  */
 void InitBitmapText(void);
 
@@ -96,6 +112,8 @@ void InitBitmapText(void);
  * first, then stop stepping.
  *
  * @ghidraAddress USA: 0x80254d90
+ * @ghidraAddress JPN: 0x80255cc0
+ * @ghidraAddress EUR: 0x80256330
  */
 void StepDebugHiddenInstance(void);
 
@@ -103,6 +121,8 @@ void StepDebugHiddenInstance(void);
  * Start the debug statistics of a frame.
  *
  * @ghidraAddress USA: 0x80254e3c
+ * @ghidraAddress JPN: 0x80255d6c
+ * @ghidraAddress EUR: 0x802563dc
  */
 void BeginDebugStats(void);
 
@@ -110,6 +130,8 @@ void BeginDebugStats(void);
  * A per-frame debug hook with an empty body.
  *
  * @ghidraAddress USA: 0x80254f2c
+ * @ghidraAddress JPN: 0x80255e5c
+ * @ghidraAddress EUR: 0x802564cc
  */
 void DebugFrameStubB(void);
 

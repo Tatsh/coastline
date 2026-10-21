@@ -80,6 +80,8 @@ typedef struct {
  * The menu music, an XM module the game decompresses below the program, at a fixed address.
  *
  * @ghidraAddress USA: 0x80025c00
+ * @ghidraAddress JPN: 0x80025c00
+ * @ghidraAddress EUR: 0x80025c00
  */
 #define g_abMenuMusicModule ((u8 *)0x80025C00)
 
@@ -87,77 +89,203 @@ extern u8 _menuMusicSegmentRomStart[];
 extern u8 _scrollSoundSegmentRomStart[];
 extern u8 _selectSoundSegmentRomStart[];
 
-/** The work memory of the music player, at the start of the BSS. @ghidraAddress USA: 0x802ac400 */
+/**
+ * The work memory of the music player, at the start of the BSS.
+ *
+ * @ghidraAddress USA: 0x802ac400
+ * @ghidraAddress JPN: 0x802acb30
+ * @ghidraAddress EUR: 0x802ae0f0
+ */
 extern u8 g_abMusicModuleWorkBuffer[];
 
-/** The number of sound channels in use. @ghidraAddress USA: 0x802a49c0 */
+/**
+ * The number of sound channels in use.
+ *
+ * @ghidraAddress USA: 0x802a49c0
+ * @ghidraAddress JPN: 0x802a6c20
+ * @ghidraAddress EUR: 0x802a7180
+ */
 extern s32 g_nAudioChannelCount;
 
-/** The volume of the music the game sets. @ghidraAddress USA: 0x802a49c4 */
+/**
+ * The volume of the music the game sets.
+ *
+ * @ghidraAddress USA: 0x802a49c4
+ * @ghidraAddress JPN: 0x802a6c24
+ * @ghidraAddress EUR: 0x802a7184
+ */
 extern u8 g_bBgmVolume;
 
-/** The volume of the music the player chose. @ghidraAddress USA: 0x802a49c8 */
+/**
+ * The volume of the music the player chose.
+ *
+ * @ghidraAddress USA: 0x802a49c8
+ * @ghidraAddress JPN: 0x802a6c28
+ * @ghidraAddress EUR: 0x802a7188
+ */
 extern u8 g_bMusicVolume;
 
-/** The volume of the sound effects the game sets. @ghidraAddress USA: 0x802a49cc */
+/**
+ * The volume of the sound effects the game sets.
+ *
+ * @ghidraAddress USA: 0x802a49cc
+ * @ghidraAddress JPN: 0x802a6c2c
+ * @ghidraAddress EUR: 0x802a718c
+ */
 extern u8 g_bSfxMasterVolume;
 
-/** The volume of the sound effects the player chose. @ghidraAddress USA: 0x802a49d0 */
+/**
+ * The volume of the sound effects the player chose.
+ *
+ * @ghidraAddress USA: 0x802a49d0
+ * @ghidraAddress JPN: 0x802a6c30
+ * @ghidraAddress EUR: 0x802a7190
+ */
 extern u8 g_bSfxVolume;
 
-/** The frequencies of the twelve notes from middle C. @ghidraAddress USA: 0x802a49d4 */
+/**
+ * The frequencies of the twelve notes from middle C.
+ *
+ * @ghidraAddress USA: 0x802a49d4
+ * @ghidraAddress JPN: 0x802a6c34
+ * @ghidraAddress EUR: 0x802a7194
+ */
 extern f32 g_afNoteFrequencies[MUSIC_NOTES];
 
-/** Cleared when a pattern starts. @ghidraAddress USA: 0x802a4a04 */
+/**
+ * Cleared when a pattern starts.
+ *
+ * @ghidraAddress USA: 0x802a4a04
+ * @ghidraAddress JPN: 0x802a6c64
+ * @ghidraAddress EUR: 0x802a71c4
+ */
 extern s32 g_dwMusicPatternRow;
 
-/** A silent sample that a channel at rest points at. @ghidraAddress USA: 0x802a4a08 */
+/**
+ * A silent sample that a channel at rest points at.
+ *
+ * @ghidraAddress USA: 0x802a4a08
+ * @ghidraAddress JPN: 0x802a6c68
+ * @ghidraAddress EUR: 0x802a71c8
+ */
 extern s8 g_SilenceSampleData[4];
 
 /**
  * Toggled each message of the timer. The music ticks when it is set.
  *
  * @ghidraAddress USA: 0x802a4a0c
+ * @ghidraAddress JPN: 0x802a6c6c
+ * @ghidraAddress EUR: 0x802a71cc
  */
 extern s32 g_dwAudioTickToggle;
 
-/** The place in the ring buffer the audio interface had reached. @ghidraAddress USA: 0x802a4a10 */
+/**
+ * The place in the ring buffer the audio interface had reached.
+ *
+ * @ghidraAddress USA: 0x802a4a10
+ * @ghidraAddress JPN: 0x802a6c70
+ * @ghidraAddress EUR: 0x802a71d0
+ */
 extern s32 g_dwAiDmaPrevLength;
 
-/** Where in the ring buffer the sound effects mix next. @ghidraAddress USA: 0x802a4a14 */
+/**
+ * Where in the ring buffer the sound effects mix next.
+ *
+ * @ghidraAddress USA: 0x802a4a14
+ * @ghidraAddress JPN: 0x802a6c74
+ * @ghidraAddress EUR: 0x802a71d4
+ */
 extern u32 g_dwSoundEffectMixOffset;
 
-/** The queue of the messages of the audio timer. @ghidraAddress USA: 0x803746f0 */
+/**
+ * The queue of the messages of the audio timer.
+ *
+ * @ghidraAddress USA: 0x803746f0
+ * @ghidraAddress JPN: 0x80375860
+ * @ghidraAddress EUR: 0x80376bf0
+ */
 extern OSMesgQueue g_AudioMsgQueue;
 
-/** @ghidraAddress USA: 0x80374708 */
+/**
+ * @ghidraAddress USA: 0x80374708
+ * @ghidraAddress JPN: 0x80375878
+ * @ghidraAddress EUR: 0x80376c08
+ */
 extern OSMesg g_aAudioMsgBuf[2];
 
-/** The timer that wakes the mixing thread. @ghidraAddress USA: 0x80374710 */
+/**
+ * The timer that wakes the mixing thread.
+ *
+ * @ghidraAddress USA: 0x80374710
+ * @ghidraAddress JPN: 0x80375880
+ * @ghidraAddress EUR: 0x80376c10
+ */
 extern OSTimer g_AudioTimer;
 
-/** The stereo ring buffer the audio interface plays. @ghidraAddress USA: 0x803747d0 */
+/**
+ * The stereo ring buffer the audio interface plays.
+ *
+ * @ghidraAddress USA: 0x803747d0
+ * @ghidraAddress JPN: 0x80375940
+ * @ghidraAddress EUR: 0x80376cd0
+ */
 extern s16 g_AudioDmaBuffer[AUDIO_RING_BYTES / sizeof(s16)];
 
-/** The sample of each instrument, or NULL. @ghidraAddress USA: 0x803787d0 */
+/**
+ * The sample of each instrument, or NULL.
+ *
+ * @ghidraAddress USA: 0x803787d0
+ * @ghidraAddress JPN: 0x80379940
+ * @ghidraAddress EUR: 0x8037acd0
+ */
 extern XmSample *g_apInstrumentData[];
 
-/** Each pattern with its header. @ghidraAddress USA: 0x803789d0 */
+/**
+ * Each pattern with its header.
+ *
+ * @ghidraAddress USA: 0x803789d0
+ * @ghidraAddress JPN: 0x80379b40
+ * @ghidraAddress EUR: 0x8037aed0
+ */
 extern u8 *g_apPatternData[];
 
-/** @ghidraAddress USA: 0x80378dd0 */
+/**
+ * @ghidraAddress USA: 0x80378dd0
+ * @ghidraAddress JPN: 0x80379f40
+ * @ghidraAddress EUR: 0x8037b2d0
+ */
 extern MusicChannel g_MusicChannelStates[MIXER_CHANNELS];
 
-/** The samples of the sound effect channels. @ghidraAddress USA: 0x80378f50 */
+/**
+ * The samples of the sound effect channels.
+ *
+ * @ghidraAddress USA: 0x80378f50
+ * @ghidraAddress JPN: 0x8037a0c0
+ * @ghidraAddress EUR: 0x8037b450
+ */
 extern SoundEffectSample g_aSoundEffectSamples[SOUND_EFFECT_CHANNELS];
 
-/** Whether the music plays. @ghidraAddress USA: 0x80378f98 */
+/**
+ * Whether the music plays.
+ *
+ * @ghidraAddress USA: 0x80378f98
+ * @ghidraAddress JPN: 0x8037a108
+ * @ghidraAddress EUR: 0x8037b498
+ */
 extern s32 g_bMusicPlaybackEnabled;
 
-/** @ghidraAddress USA: 0x80378fa0 */
+/**
+ * @ghidraAddress USA: 0x80378fa0
+ * @ghidraAddress JPN: 0x8037a110
+ * @ghidraAddress EUR: 0x8037b4a0
+ */
 extern MusicPlayer g_MusicPlayer;
 
-/** @ghidraAddress USA: 0x80378fb8 */
+/**
+ * @ghidraAddress USA: 0x80378fb8
+ * @ghidraAddress JPN: 0x8037a128
+ * @ghidraAddress EUR: 0x8037b4b8
+ */
 extern OSThread g_AudioThread;
 
 /** The stack of the mixing thread, in doublewords. */
@@ -166,16 +294,38 @@ extern OSThread g_AudioThread;
 /** @ghidraAddress USA: 0x80379168 */
 extern u64 g_aAudioThreadStack[AUDIO_THREAD_STACK_WORDS];
 
-/** The 32.32 step of each note of each octave. @ghidraAddress USA: 0x80379568 */
+/**
+ * The 32.32 step of each note of each octave.
+ *
+ * @ghidraAddress USA: 0x80379568
+ * @ghidraAddress JPN: 0x8037a6d8
+ * @ghidraAddress EUR: 0x8037ba68
+ */
 extern u64 g_aFreqScaleTable[MUSIC_OCTAVES][MUSIC_NOTES];
 
-/** The bytes the mixers mix this time. @ghidraAddress USA: 0x80379930 */
+/**
+ * The bytes the mixers mix this time.
+ *
+ * @ghidraAddress USA: 0x80379930
+ * @ghidraAddress JPN: 0x8037aaa0
+ * @ghidraAddress EUR: 0x8037be30
+ */
 extern s32 g_dwAudioMixBytes;
 
-/** @ghidraAddress USA: 0x80379934 */
+/**
+ * @ghidraAddress USA: 0x80379934
+ * @ghidraAddress JPN: 0x8037aaa4
+ * @ghidraAddress EUR: 0x8037be34
+ */
 extern s32 g_dwAiDmaCurrentLength;
 
-/** The channel the extra music mixers reached. @ghidraAddress USA: 0x80379938 */
+/**
+ * The channel the extra music mixers reached.
+ *
+ * @ghidraAddress USA: 0x80379938
+ * @ghidraAddress JPN: 0x8037aaa8
+ * @ghidraAddress EUR: 0x8037be38
+ */
 extern s32 g_dwAudioChannelLoopIdx;
 
 /**
@@ -185,6 +335,8 @@ extern s32 g_dwAudioChannelLoopIdx;
  * @param module The XM module.
  * @param work The memory the player reads the module from.
  * @ghidraAddress USA: 0x80256720
+ * @ghidraAddress JPN: 0x80257680
+ * @ghidraAddress EUR: 0x80257cf0
  */
 void LoadMusicModule(u8 *module, u8 *work);
 
@@ -192,6 +344,8 @@ void LoadMusicModule(u8 *module, u8 *work);
  * Fill the steps of every note of every octave.
  *
  * @ghidraAddress USA: 0x80256c2c
+ * @ghidraAddress JPN: 0x80257b8c
+ * @ghidraAddress EUR: 0x802581fc
  */
 void BuildFrequencyScaleTable(void);
 
@@ -199,6 +353,8 @@ void BuildFrequencyScaleTable(void);
  * Loop or stop the music channels that passed the end of their samples.
  *
  * @ghidraAddress USA: 0x80256d3c
+ * @ghidraAddress JPN: 0x80257c9c
+ * @ghidraAddress EUR: 0x8025830c
  */
 void CheckMusicLoopPoints(void);
 
@@ -208,6 +364,8 @@ void CheckMusicLoopPoints(void);
  * @param row The packed data of the row.
  * @return The data of the next row.
  * @ghidraAddress USA: 0x80256dec
+ * @ghidraAddress JPN: 0x80257d4c
+ * @ghidraAddress EUR: 0x802583bc
  */
 u8 *ParseMusicPatternRow(u8 *row);
 
@@ -215,6 +373,8 @@ u8 *ParseMusicPatternRow(u8 *row);
  * Start the music from before its first order.
  *
  * @ghidraAddress USA: 0x802571ac
+ * @ghidraAddress JPN: 0x8025810c
+ * @ghidraAddress EUR: 0x8025877c
  */
 void ResetMusicChannels(void);
 
@@ -223,6 +383,8 @@ void ResetMusicChannels(void);
  * volume slides.
  *
  * @ghidraAddress USA: 0x8025721c
+ * @ghidraAddress JPN: 0x8025817c
+ * @ghidraAddress EUR: 0x802587ec
  */
 void UpdateMusicPlayback(void);
 
@@ -232,6 +394,8 @@ void UpdateMusicPlayback(void);
  * @param module The XM module to play.
  * @param work The memory the player reads the module from.
  * @ghidraAddress USA: 0x802575c4
+ * @ghidraAddress JPN: 0x80258524
+ * @ghidraAddress EUR: 0x80258b94
  */
 void InitAudioSystem(void *module, void *work);
 
@@ -239,6 +403,8 @@ void InitAudioSystem(void *module, void *work);
  * Stop the music and clear the state of every channel.
  *
  * @ghidraAddress USA: 0x802578f4
+ * @ghidraAddress JPN: 0x80258854
+ * @ghidraAddress EUR: 0x80258ec4
  */
 void ResetMusicPlaybackState(void);
 
@@ -248,6 +414,8 @@ void ResetMusicPlaybackState(void);
  * @param module The XM module to play.
  * @param work The memory the player reads the module from.
  * @ghidraAddress USA: 0x80257964
+ * @ghidraAddress JPN: 0x802588c4
+ * @ghidraAddress EUR: 0x80258f34
  */
 void InitMusicPlayback(void *module, void *work);
 
@@ -256,6 +424,8 @@ void InitMusicPlayback(void *module, void *work);
  *
  * @return The channel, or -1 if all play.
  * @ghidraAddress USA: 0x802579f4
+ * @ghidraAddress JPN: 0x80258954
+ * @ghidraAddress EUR: 0x80258fc4
  */
 s16 FindFreeSoundChannel(void);
 
@@ -267,6 +437,8 @@ s16 FindFreeSoundChannel(void);
  * @param length The length of the sample, in bytes.
  * @param loopLength The length of the loop at the end of the sample in bytes, or 0 to play once.
  * @ghidraAddress USA: 0x80257b04
+ * @ghidraAddress JPN: 0x80258a64
+ * @ghidraAddress EUR: 0x802590d4
  */
 void InitSoundChannel(s16 channel, s8 *sample, u32 length, u32 loopLength);
 
@@ -279,6 +451,8 @@ void InitSoundChannel(s16 channel, s8 *sample, u32 length, u32 loopLength);
  * @param length The length of the sample, in bytes.
  * @param loopLength The length of the loop at the end of the sample in bytes, or 0 to play once.
  * @ghidraAddress USA: 0x80257b78
+ * @ghidraAddress JPN: 0x80258ad8
+ * @ghidraAddress EUR: 0x80259148
  */
 void StartSoundChannelMuted(s16 channel, s8 *sample, u32 length, u32 loopLength);
 
@@ -296,6 +470,8 @@ void SetSoundChannelVolume(s16 channel, u32 levels);
  * Loop or stop the sound effect channels that passed the end of their samples.
  *
  * @ghidraAddress USA: 0x80257c44
+ * @ghidraAddress JPN: 0x80258ba4
+ * @ghidraAddress EUR: 0x80259214
  */
 void CheckSoundEffectLoopPoints(void);
 
@@ -305,6 +481,8 @@ void CheckSoundEffectLoopPoints(void);
  *
  * @param arg The argument of the thread, which is not read.
  * @ghidraAddress USA: 0x80257d3c
+ * @ghidraAddress JPN: 0x80258c9c
+ * @ghidraAddress EUR: 0x8025930c
  */
 void AudioMixingThreadMain(void *arg);
 
@@ -355,10 +533,22 @@ typedef struct {
                           sound. */
 } SoundEffect;
 
-/** The sound effects of a race. @ghidraAddress USA: 0x8028bc04 */
+/**
+ * The sound effects of a race.
+ *
+ * @ghidraAddress USA: 0x8028bc04
+ * @ghidraAddress JPN: 0x8028dd9c
+ * @ghidraAddress EUR: 0x8028e36c
+ */
 extern SoundEffect g_aSoundEffects[SOUND_EFFECTS];
 
-/** The sound effect channel 3 plays once, or -1. @ghidraAddress USA: 0x8028b7ec */
+/**
+ * The sound effect channel 3 plays once, or -1.
+ *
+ * @ghidraAddress USA: 0x8028b7ec
+ * @ghidraAddress JPN: 0x8028d4cc
+ * @ghidraAddress EUR: 0x8028da9c
+ */
 extern s32 g_dwChannel3PlayingSfxId;
 
 /** The nearest sound of the track this frame and the last. */
@@ -378,7 +568,13 @@ typedef struct {
     s32 playing;   /*!< Whether the sound plays. */
 } SoundSourceTracking;
 
-/** The nearest sound of the track. @ghidraAddress USA: 0x8028b7a0 */
+/**
+ * The nearest sound of the track.
+ *
+ * @ghidraAddress USA: 0x8028b7a0
+ * @ghidraAddress JPN: 0x8028d480
+ * @ghidraAddress EUR: 0x8028da50
+ */
 extern SoundSourceTracking g_ClosestSoundSource;
 
 /**
@@ -391,6 +587,8 @@ extern SoundSourceTracking g_ClosestSoundSource;
  * @param previousListener Where the listener was.
  * @return The factor.
  * @ghidraAddress USA: 0x8022b0f8
+ * @ghidraAddress JPN: 0x8022bdc0
+ * @ghidraAddress EUR: 0x8022c608
  */
 f32 ComputeDopplerFactor(Vec3f *source,
                          Vec3f *previousSource,
@@ -408,6 +606,8 @@ f32 ComputeDopplerFactor(Vec3f *source,
  * @param volume The volume, 1024 over the distance, from at least 32.
  * @param narrow Whether to pan only a little.
  * @ghidraAddress USA: 0x8022b1d4
+ * @ghidraAddress JPN: 0x8022be9c
+ * @ghidraAddress EUR: 0x8022c6e4
  */
 void ComputeStereoPan(
     Vec3f *source, CameraFrame *camera, f32 *upper, f32 *lower, s32 *volume, s32 narrow);
@@ -417,6 +617,8 @@ void ComputeStereoPan(
  *
  * @param sound The sound effect.
  * @ghidraAddress USA: 0x8022b370
+ * @ghidraAddress JPN: 0x8022c038
+ * @ghidraAddress EUR: 0x8022c880
  */
 void PlaySoundEffect(s32 sound);
 
@@ -430,6 +632,8 @@ void PlaySoundEffect(s32 sound);
  * @param position The position of the source.
  * @param listener The camera that hears it.
  * @ghidraAddress USA: 0x8022b494
+ * @ghidraAddress JPN: 0x8022c15c
+ * @ghidraAddress EUR: 0x8022c9a4
  */
 void UpdateClosestSoundSource(
     s32 source, s32 sound, s32 volume, f32 frequency, Vec3f *position, CameraFrame *listener);
@@ -438,6 +642,8 @@ void UpdateClosestSoundSource(
  * Play the beep of the countdown, and of the laps.
  *
  * @ghidraAddress USA: 0x8022b3c4
+ * @ghidraAddress JPN: 0x8022c08c
+ * @ghidraAddress EUR: 0x8022c8d4
  */
 void PlayBeepSound(void);
 
@@ -445,6 +651,8 @@ void PlayBeepSound(void);
  * Play the sound of the start of the race.
  *
  * @ghidraAddress USA: 0x8022b3e4
+ * @ghidraAddress JPN: 0x8022c0ac
+ * @ghidraAddress EUR: 0x8022c8f4
  */
 void PlayGoSound(void);
 
@@ -452,6 +660,8 @@ void PlayGoSound(void);
  * Forget the nearest sound of the track found the last frame.
  *
  * @ghidraAddress USA: 0x8022b404
+ * @ghidraAddress JPN: 0x8022c0cc
+ * @ghidraAddress EUR: 0x8022c914
  */
 void ResetSoundSourceTracking(void);
 
@@ -459,6 +669,8 @@ void ResetSoundSourceTracking(void);
  * Stop the sounds of the track and forget their sources.
  *
  * @ghidraAddress USA: 0x8022b428
+ * @ghidraAddress JPN: 0x8022c0f0
+ * @ghidraAddress EUR: 0x8022c938
  */
 void ResetAllSoundState(void);
 
@@ -466,6 +678,8 @@ void ResetAllSoundState(void);
  * Play the nearest sound of the track on its channel, panned and pitched for the camera.
  *
  * @ghidraAddress USA: 0x8022b534
+ * @ghidraAddress JPN: 0x8022c1fc
+ * @ghidraAddress EUR: 0x8022ca44
  */
 void UpdateAmbientSoundChannel(void);
 
@@ -476,6 +690,8 @@ void UpdateAmbientSoundChannel(void);
  * @param position Its position.
  * @param camera The camera that hears it.
  * @ghidraAddress USA: 0x8022b954
+ * @ghidraAddress JPN: 0x8022c61c
+ * @ghidraAddress EUR: 0x8022ce64
  */
 void UpdateAirplaneSound(s32 instance, Vec3f *position, CameraFrame *camera);
 
@@ -486,6 +702,8 @@ void UpdateAirplaneSound(s32 instance, Vec3f *position, CameraFrame *camera);
  * @param position The position of the waterfall.
  * @param camera The camera that hears it.
  * @ghidraAddress USA: 0x8022ba10
+ * @ghidraAddress JPN: 0x8022c6d8
+ * @ghidraAddress EUR: 0x8022cf20
  */
 void UpdateWaterfallSound(s32 instance, Vec3f *position, CameraFrame *camera);
 
@@ -494,6 +712,8 @@ void UpdateWaterfallSound(s32 instance, Vec3f *position, CameraFrame *camera);
  *
  * @param camera The camera.
  * @ghidraAddress USA: 0x8022ba98
+ * @ghidraAddress JPN: 0x8022c760
+ * @ghidraAddress EUR: 0x8022cfa8
  */
 void StubSoundUpdate(CameraFrame *camera);
 
@@ -501,6 +721,8 @@ void StubSoundUpdate(CameraFrame *camera);
  * Load the sound effects of a race and start their channels muted.
  *
  * @ghidraAddress USA: 0x8022baa0
+ * @ghidraAddress JPN: 0x8022c768
+ * @ghidraAddress EUR: 0x8022cfb0
  */
 void LoadAllSoundEffects(void);
 
@@ -509,6 +731,8 @@ void LoadAllSoundEffects(void);
  *
  * @param vehicle The vehicle.
  * @ghidraAddress USA: 0x8022bcb4
+ * @ghidraAddress JPN: 0x8022c97c
+ * @ghidraAddress EUR: 0x8022d1c4
  */
 void UpdateVehicleSounds(Vehicle *vehicle);
 

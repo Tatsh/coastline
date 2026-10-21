@@ -34,7 +34,11 @@ void TwoControllersPostDrawCallback(s32 item) {
 
 void ProcessPlayerCountSelect(void) {
     /* The state of the screen: 0 before it starts, 1 while it runs, and -1 once it is left. */
-    /** @ghidraAddress USA: 0x802723c4 */
+    /**
+     * @ghidraAddress USA: 0x802723c4
+     * @ghidraAddress JPN: 0x80273e54
+     * @ghidraAddress EUR: 0x802743a4
+     */
     static s32 g_dwPlayerCountSelectState = 0;
 
     if (g_dwPlayerCountSelectState <= 0) {

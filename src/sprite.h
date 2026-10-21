@@ -39,6 +39,8 @@ typedef struct {
  *
  * @param sprite The sprite to load.
  * @ghidraAddress USA: 0x80242b10
+ * @ghidraAddress JPN: 0x80243b20
+ * @ghidraAddress EUR: 0x80244020
  */
 void LoadTextureFromRom(Sprite *sprite);
 
@@ -47,6 +49,8 @@ void LoadTextureFromRom(Sprite *sprite);
  *
  * @param sprite The sprite to draw.
  * @ghidraAddress USA: 0x80245470
+ * @ghidraAddress JPN: 0x802464cc
+ * @ghidraAddress EUR: 0x80246994
  */
 void DrawSpriteAtOrigin(Sprite *sprite);
 
@@ -57,6 +61,8 @@ void DrawSpriteAtOrigin(Sprite *sprite);
  * @param x The X coordinate on the screen.
  * @param y The Y coordinate on the screen.
  * @ghidraAddress USA: 0x80245604
+ * @ghidraAddress JPN: 0x80246674
+ * @ghidraAddress EUR: 0x80246b3c
  */
 void DrawTexturedSprite(Sprite *sprite, s32 x, s32 y);
 
@@ -69,6 +75,8 @@ void DrawTexturedSprite(Sprite *sprite, s32 x, s32 y);
  * @param green The green component of the colour.
  * @param blue The blue component of the colour.
  * @ghidraAddress USA: 0x80245798
+ * @ghidraAddress JPN: 0x80246810
+ * @ghidraAddress EUR: 0x80246cd8
  */
 void DrawSpriteTinted(Sprite *sprite, u8 red, u8 green, u8 blue);
 
@@ -84,6 +92,8 @@ void DrawSpriteTinted(Sprite *sprite, u8 red, u8 green, u8 blue);
  * @param green The green component of the colour.
  * @param blue The blue component of the colour.
  * @ghidraAddress USA: 0x8024594c
+ * @ghidraAddress JPN: 0x802469cc
+ * @ghidraAddress EUR: 0x80246e94
  */
 void DrawSpriteRegion(
     Sprite *sprite, s32 x, s32 y, s32 width, s32 height, u8 red, u8 green, u8 blue);
@@ -105,6 +115,8 @@ void DrawSpriteRegion(
  * @param green The green component of the primitive colour.
  * @param blue The blue component of the primitive colour.
  * @ghidraAddress USA: 0x80245b00
+ * @ghidraAddress JPN: 0x80246b88
+ * @ghidraAddress EUR: 0x80247050
  */
 void DrawSpriteStrip(Sprite *sprite,
                      u8 *pixels,
@@ -135,6 +147,8 @@ void DrawSpriteStrip(Sprite *sprite,
  * @param green The green component of the colour.
  * @param blue The blue component of the colour.
  * @ghidraAddress USA: 0x802465f0
+ * @ghidraAddress JPN: 0x802477d8
+ * @ghidraAddress EUR: 0x80247ca0
  */
 void DrawScaledTexturedRect(Sprite *sprite,
                             s32 srcX,
@@ -156,6 +170,8 @@ void DrawScaledTexturedRect(Sprite *sprite,
  * @param y The Y coordinate on the screen.
  * @param shade The level of the grey.
  * @ghidraAddress USA: 0x80246a80
+ * @ghidraAddress JPN: 0x80247c68
+ * @ghidraAddress EUR: 0x80248130
  */
 void DrawPixel(s32 x, s32 y, u8 shade);
 
@@ -171,6 +187,8 @@ void DrawPixel(s32 x, s32 y, u8 shade);
  * @param green The green component of the colour.
  * @param blue The blue component of the colour.
  * @ghidraAddress USA: 0x80246bcc
+ * @ghidraAddress JPN: 0x80247db4
+ * @ghidraAddress EUR: 0x8024827c
  */
 void DrawRectOutline(s32 x, s32 y, s32 width, s32 height, s32 thickness, u8 red, u8 green, u8 blue);
 
@@ -185,6 +203,7 @@ void DrawRectOutline(s32 x, s32 y, s32 width, s32 height, s32 thickness, u8 red,
  * @param green The green component of the colour.
  * @param blue The blue component of the colour.
  * @ghidraAddress USA: 0x80246e10
+ * @ghidraAddress EUR: 0x802484c0
  */
 void DrawFilledRectHiRes(s32 x, s32 y, s32 width, s32 height, u8 red, u8 green, u8 blue);
 
@@ -203,6 +222,8 @@ void DrawFilledRectHiRes(s32 x, s32 y, s32 width, s32 height, u8 red, u8 green, 
  * @param green The green component of the colour inside the box.
  * @param blue The blue component of the colour inside the box.
  * @ghidraAddress USA: 0x80246f90
+ * @ghidraAddress JPN: 0x80248178
+ * @ghidraAddress EUR: 0x80248640
  */
 void DrawRectBorder(s32 x,
                     s32 y,
