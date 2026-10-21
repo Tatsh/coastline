@@ -31194,18 +31194,6 @@ dlabel g_bPakPort0Initialized
     /* 8BDF4 8028ADF4 00000000 */ .word 0x00000000
 enddlabel g_bPakPort0Initialized
 
-nonmatching g_qwTimestampBase
-
-dlabel g_qwTimestampBase
-    /* 8BDF8 8028ADF8 00000000 */ .word 0x00000000
-enddlabel g_qwTimestampBase
-
-nonmatching D_8028ADFC
-
-dlabel D_8028ADFC
-    /* 8BDFC 8028ADFC 00000000 */ .word 0x00000000
-enddlabel D_8028ADFC
-
 nonmatching g_dwFrameTimestamp
 
 dlabel g_dwFrameTimestamp

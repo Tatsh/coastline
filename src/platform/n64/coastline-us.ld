@@ -13,7 +13,7 @@ SECTIONS
 {
     . = 0x80200000;
     .text : {
-        *main.c.o*(.text .text.*)
+        *main.s.o*(.text .text.*)
         *(.text .text.*)
     }
     . = ALIGN(16);

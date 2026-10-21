@@ -131,6 +131,8 @@
 #define SNOW_PRIM_COLOR 0x60789000
 #define SNOW_ENV_COLOR 0x8C9CA800
 
+u64 g_qwTimestampBase = 0;
+
 /* Draw the four edges of a rectangle, a pixel wide, inside it. */
 static inline void DrawRectEdges(s32 x, s32 y, s32 width, s32 height) {
     gDPFillRectangle(gDisplayListPtr++, x, y, x + width, y + 1);
@@ -552,9 +554,12 @@ void SetupFog(void) {
 }
 
 f32 ComputeFogFactorAtPoint(Vec3f *point) {
+    /* The original reserves stack for a word of locals it does not use. */
+    f32 unused;
     f32 clip[4];
     f32 fog;
 
+    (void)unused;
     if (!g_dwWeatherActive) {
         return 0.0f;
     }
@@ -783,8 +788,6 @@ void SetScissorRect(s32 x, s32 y, s32 width, s32 height) {
 }
 
 void SetViewport(s32 x, s32 y, s32 width, s32 height, s32 setScissor) {
-    Vp *viewport;
-
     g_dwViewportIndex = (g_dwViewportIndex + 1) & (VIEWPORTS - 1);
     if (setScissor) {
         SetScissorRect(x, y, width < 0 ? -width : width, height);
@@ -812,37 +815,33 @@ void SetViewport(s32 x, s32 y, s32 width, s32 height, s32 setScissor) {
         }
         g_dwViewportMirrored = FALSE;
     }
-    viewport = &g_aViewports[g_dwViewportIndex];
-    viewport->vp.vscale[1] = height * 2;
-    viewport->vp.vscale[2] = VIEWPORT_HALF_DEPTH;
-    viewport->vp.vscale[3] = 0;
-    viewport->vp.vtrans[0] = (x * 2 + width) * 2;
-    viewport->vp.vtrans[1] = (y * 2 + height) * 2;
-    viewport->vp.vtrans[2] = VIEWPORT_HALF_DEPTH;
-    viewport->vp.vtrans[3] = 0;
+    g_aViewports[g_dwViewportIndex].vp.vscale[1] = height * 2;
+    g_aViewports[g_dwViewportIndex].vp.vscale[2] = VIEWPORT_HALF_DEPTH;
+    g_aViewports[g_dwViewportIndex].vp.vscale[3] = 0;
+    g_aViewports[g_dwViewportIndex].vp.vtrans[0] = (x * 2 + width) * 2;
+    g_aViewports[g_dwViewportIndex].vp.vtrans[1] = (y * 2 + height) * 2;
+    g_aViewports[g_dwViewportIndex].vp.vtrans[2] = VIEWPORT_HALF_DEPTH;
+    g_aViewports[g_dwViewportIndex].vp.vtrans[3] = 0;
     gSPViewport(gDisplayListPtr++, &g_aViewports[g_dwViewportIndex]);
     g_dwViewportScaleZ = g_aViewports[g_dwViewportIndex].vp.vscale[2];
     g_dwViewportTransZ = g_aViewports[g_dwViewportIndex].vp.vtrans[2];
 }
 
 void SetupViewportAndScissor(s32 x, s32 y, s32 width, s32 height, s32 setScissor) {
-    Vp *viewport;
-
     g_dwViewportIndex = (g_dwViewportIndex + 1) & (VIEWPORTS - 1);
     if (setScissor) {
         gDPPipeSync(gDisplayListPtr++);
         SetScissorRect(x, y, width < 0 ? -width : width, height);
     }
     g_dwViewportMirrored = FALSE;
-    viewport = &g_aViewports[g_dwViewportIndex];
-    viewport->vp.vscale[0] = LOW_RES_WIDTH * 2;
-    viewport->vp.vscale[1] = LOW_RES_HEIGHT * 2;
-    viewport->vp.vscale[2] = VIEWPORT_HALF_DEPTH;
-    viewport->vp.vscale[3] = 0;
-    viewport->vp.vtrans[0] = LOW_RES_WIDTH * 2;
-    viewport->vp.vtrans[1] = LOW_RES_HEIGHT * 2;
-    viewport->vp.vtrans[2] = VIEWPORT_HALF_DEPTH;
-    viewport->vp.vtrans[3] = 0;
+    g_aViewports[g_dwViewportIndex].vp.vscale[0] = LOW_RES_WIDTH * 2;
+    g_aViewports[g_dwViewportIndex].vp.vscale[1] = LOW_RES_HEIGHT * 2;
+    g_aViewports[g_dwViewportIndex].vp.vscale[2] = VIEWPORT_HALF_DEPTH;
+    g_aViewports[g_dwViewportIndex].vp.vscale[3] = 0;
+    g_aViewports[g_dwViewportIndex].vp.vtrans[0] = LOW_RES_WIDTH * 2;
+    g_aViewports[g_dwViewportIndex].vp.vtrans[1] = LOW_RES_HEIGHT * 2;
+    g_aViewports[g_dwViewportIndex].vp.vtrans[2] = VIEWPORT_HALF_DEPTH;
+    g_aViewports[g_dwViewportIndex].vp.vtrans[3] = 0;
     gSPViewport(gDisplayListPtr++, &g_aViewports[g_dwViewportIndex]);
     g_dwViewportScaleZ = g_aViewports[g_dwViewportIndex].vp.vscale[2];
     g_dwViewportTransZ = g_aViewports[g_dwViewportIndex].vp.vtrans[2];
@@ -1306,9 +1305,7 @@ void UpdateFrameTiming(void) {
         g_qwTimestampBase += (u32)(now - g_dwFrameTimestamp);
         g_dwFrameTimestamp = now;
     } else {
-        now = osGetCount();
-        g_qwTimestampBase = now;
-        g_dwFrameTimestamp = now;
+        g_qwTimestampBase = g_dwFrameTimestamp = osGetCount();
     }
     g_dwPrevElapsedTimeMs = g_dwElapsedTimeMs;
     g_dwElapsedTimeMs = g_qwTimestampBase * 1000000 / osClockRate / 1000;
@@ -1356,23 +1353,21 @@ void StubUpdateCallback(void) {
 }
 
 void DmaRead(void *dst, u32 romOffset, s32 size) {
-    u8 *bytes = dst;
-
     osInvalDCache(dst, size);
     while (size > DMA_BLOCK_SIZE) {
         osPiStartDma(AllocIoMessage(),
                      OS_MESG_PRI_NORMAL,
                      OS_READ,
                      romOffset,
-                     bytes,
+                     dst,
                      DMA_BLOCK_SIZE,
                      &g_DmaMessageQueue);
         size -= DMA_BLOCK_SIZE;
         romOffset += DMA_BLOCK_SIZE;
-        bytes += DMA_BLOCK_SIZE;
+        dst = (u8 *)dst + DMA_BLOCK_SIZE;
     }
     osPiStartDma(
-        AllocIoMessage(), OS_MESG_PRI_NORMAL, OS_READ, romOffset, bytes, size, &g_DmaMessageQueue);
+        AllocIoMessage(), OS_MESG_PRI_NORMAL, OS_READ, romOffset, dst, size, &g_DmaMessageQueue);
     WaitForDmaMessages();
 }
 
