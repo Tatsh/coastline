@@ -148,7 +148,10 @@ void FindTrackRoutePoint(TrackSection *section, f32 distance) {
 
 void AdvanceAlongTrackRoute(TrackSection *section, s32 pointIndex, f32 fraction, f32 distance) {
     f32 length;
+    Vec3f debugPoint;
 
+    /* The original reserves a point and tests a constant for a debug check it compiles out. */
+    (void)debugPoint;
     for (;;) {
         SKIP_ALTERNATE_SECTIONS(section);
         if (section == NULL) {
@@ -159,8 +162,10 @@ void AdvanceAlongTrackRoute(TrackSection *section, s32 pointIndex, f32 fraction,
                 (section->points[pointIndex].distance - section->points[pointIndex + 1].distance) *
                 fraction;
             if (length < distance) {
-                fraction = 1.0f;
-                distance -= length;
+                if (TRUE) {
+                    fraction = 1.0f;
+                    distance -= length;
+                }
                 continue;
             }
             Vec3fLerp(&g_vTrackRoutePoint,
