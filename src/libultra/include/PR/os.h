@@ -319,6 +319,11 @@ typedef struct {
  */
 extern OSViMode osViModePalLan1;
 
+#if TGR_REGION == TGR_REGION_EU
+/** @ghidraAddress EUR: 0x802a7ba0 */
+extern OSViMode osViModePalHaf1;
+#endif
+
 /** @ghidraAddress USA: 0x802a6340 */
 extern OSViMode osViModeMpalLan1;
 

@@ -765,6 +765,34 @@ void DrawRdpOutlineRect(s32 x, s32 y, s32 width, s32 height);
  */
 void DrawRdpBorderRect(s32 x, s32 y, s32 width, s32 height);
 
+#if TGR_REGION == TGR_REGION_JP || TGR_REGION == TGR_REGION_EU
+/**
+ * Whether BlankDisplay() blanked the screen and UnblankDisplay() has not yet shown it.
+ *
+ * @ghidraAddress JPN: 0x8028c844
+ * @ghidraAddress EUR: 0x8028ce14
+ */
+extern u32 g_dwDisplayBlanked;
+
+/**
+ * Blank the screen. The European release first sets the video mode of the resolution in use
+ * from the tables of libultra, unless the screen is already blank.
+ *
+ * @ghidraAddress JPN: 0x8021ae40
+ * @ghidraAddress EUR: 0x8021b4e8
+ */
+void BlankDisplay(void);
+
+/**
+ * Show the screen again. The European release sets the video mode of the resolution in use from
+ * the copies of the game when BlankDisplay() blanked the screen.
+ *
+ * @ghidraAddress JPN: 0x8021ae68
+ * @ghidraAddress EUR: 0x8021b54c
+ */
+void UnblankDisplay(void);
+#endif
+
 /**
  * Black out the screen and clear both frame buffers in the high resolution.
  *

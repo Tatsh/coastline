@@ -6,6 +6,7 @@
 #include <PR/os_cont.h>
 #include <PR/os_libc.h>
 
+#include "audio.h"
 #include "camera.h"
 #include "debugtext.h"
 #include "fade.h"
@@ -890,6 +891,36 @@ void DrawRdpBorderRect(s32 x, s32 y, s32 width, s32 height) {
     gDPFillRectangle(gDisplayListPtr++, x + width + 2, y - 3, x + width + 3, y + height + 3);
 }
 
+#if TGR_REGION == TGR_REGION_JP || TGR_REGION == TGR_REGION_EU
+void BlankDisplay(void) {
+#if TGR_REGION == TGR_REGION_EU
+    if (!g_dwDisplayBlanked) {
+        if (g_dwAppliedScreenScaleShift) {
+            osViSetMode(&osViModePalHaf1);
+        } else {
+            osViSetMode(&osViModePalLan1);
+        }
+    }
+#endif
+    osViBlack(TRUE);
+    g_dwDisplayBlanked = TRUE;
+}
+
+void UnblankDisplay(void) {
+    osViBlack(FALSE);
+#if TGR_REGION == TGR_REGION_EU
+    if (g_dwDisplayBlanked) {
+        if (g_dwAppliedScreenScaleShift) {
+            osViSetMode(&g_ViModePalHaf1);
+        } else {
+            osViSetMode(&g_ViModePalLan1);
+        }
+    }
+#endif
+    g_dwDisplayBlanked = FALSE;
+}
+#endif
+
 void ClearFramebuffersHighRes(void) {
     g_dwKeepScreenBlanked = TRUE;
     osViBlack(TRUE);
@@ -1222,6 +1253,20 @@ void RdpDoneThread(void *arg) {
         osSendMesg(&g_RdpDoneMsgQueue, (OSMesg)g_dwDummyOsMesg, OS_MESG_BLOCK);
     }
 }
+
+#if TGR_REGION == TGR_REGION_JP || TGR_REGION == TGR_REGION_EU
+void PreNmiResetHandlerThread(void *arg) {
+    osCreateMesgQueue(&g_PreNmiMesgQueue, g_aPreNmiMesgBuf, 1);
+    osSetEventMesg(OS_EVENT_PRENMI, &g_PreNmiMesgQueue, (OSMesg)g_dwDummyOsMesg);
+    for (;;) {
+        osRecvMesg(&g_PreNmiMesgQueue, NULL, OS_MESG_BLOCK);
+        g_bSfxMasterVolume = 0;
+        g_bBgmVolume = 0;
+        g_dwPreNmiResetPending = TRUE;
+        BlankDisplay();
+    }
+}
+#endif
 
 void ViRetraceThread(void *arg) {
     osCreateMesgQueue(&g_ViRetracePollMesgQueue, g_ViRetracePollMesgBuf, 1);

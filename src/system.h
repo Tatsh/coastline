@@ -987,6 +987,40 @@ void RspDoneThread(void *arg);
  */
 void RdpDoneThread(void *arg);
 
+#if TGR_REGION == TGR_REGION_JP || TGR_REGION == TGR_REGION_EU
+/**
+ * The queue of the reset button, and its buffer.
+ *
+ * @ghidraAddress JPN: 0x8031b4a0
+ * @ghidraAddress EUR: 0x8031c870
+ */
+extern OSMesgQueue g_PreNmiMesgQueue;
+
+/**
+ * @ghidraAddress JPN: 0x8031b4b8
+ * @ghidraAddress EUR: 0x8031c888
+ */
+extern OSMesg g_aPreNmiMesgBuf[1];
+
+/**
+ * Set once the reset button has been pressed.
+ *
+ * @ghidraAddress JPN: 0x8028c55c
+ * @ghidraAddress EUR: 0x8028ca8c
+ */
+extern s32 g_dwPreNmiResetPending;
+
+/**
+ * Wait for the reset button, then silence the sound, record the reset, and blank the screen, for
+ * each press.
+ *
+ * @param arg Not read.
+ * @ghidraAddress JPN: 0x8021c758
+ * @ghidraAddress EUR: 0x8021ce88
+ */
+void PreNmiResetHandlerThread(void *arg);
+#endif
+
 /**
  * Forward each retrace to g_ViRetraceMesgQueue and count it. Nothing starts it.
  *
@@ -1335,6 +1369,14 @@ extern OSViMode g_ViModeNtscHaf1;
  * @ghidraAddress JPN: 0x802a7640
  */
 extern OSViMode g_ViModeMpalHaf1;
+
+#if TGR_REGION == TGR_REGION_EU
+/** The copies of the PAL video modes the game sets. @ghidraAddress EUR: 0x8028cd74 */
+extern OSViMode g_ViModePalHaf1;
+
+/** @ghidraAddress EUR: 0x8028cdc4 */
+extern OSViMode g_ViModePalLan1;
+#endif
 
 /**
  * Whether the video interface corrects the gamma.
