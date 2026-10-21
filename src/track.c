@@ -17,55 +17,67 @@
 /* The room for the messages of the loading. */
 #define LOAD_MESSAGE_SIZE 0x50
 
-/* Pack the triangles or models of the cell at a column and row of a grid: the count in the upper
- * half and the start in the lower. */
-static u32 PackGridCell(u16 *starts, u8 column, u8 row) {
-    u16 cell = column + (row << GRID_ROW_SHIFT);
-    u16 start = starts[cell];
+/* The cell at a column and row of the grid. */
+#define GRID_CELL(column, row) ((u8)(column) + ((u8)(row) << GRID_ROW_SHIFT))
 
-    return ((u32)(starts[(u16)(cell + 1)] - start) << 16) | start;
-}
+/* Whether a point is off the grid. */
+#define IS_OFF_GRID(x, y) ((x) < 0.0f || GRID_SIZE <= (x) || (y) < 0.0f || GRID_SIZE <= (y))
 
-/* Whether a point is on the grid. */
-static s32 IsOnGrid(f32 x, f32 y) {
-    return !(x < 0.0f || GRID_SIZE <= x || y < 0.0f || GRID_SIZE <= y);
-}
+/* Whether a column and row are off the grid. */
+#define IS_OFF_GRID_CELL(column, row)                                                              \
+    ((column) < 0 || (column) >= GRID_CELLS || (row) < 0 || (row) >= GRID_CELLS)
 
-/* Whether a column and row are on the grid. */
-static s32 IsGridCell(s32 column, s32 row) {
-    return column >= 0 && column < GRID_CELLS && row >= 0 && row < GRID_CELLS;
-}
+/* The triangles or models of a cell of a grid, packed with the count in the upper half and the
+ * start in the lower. */
+#define PACK_GRID_CELL(starts, cell, start)                                                        \
+    (((u32)((starts)[(u16)((cell) + 1)] - (start)) << 16) | (start))
 
 u32 LookupTrackGridCell(f32 x, f32 y) {
-    if (!IsOnGrid(x, y)) {
+    u16 cell;
+    u16 start;
+
+    if (IS_OFF_GRID(x, y)) {
         return 0;
     }
-    return PackGridCell(g_LoadedTrack.gridCellStarts,
-                        (u8)(u32)(x * GRID_CELL_SCALE),
-                        (u8)(u32)(y * GRID_CELL_SCALE));
+    cell = GRID_CELL((u32)(x * GRID_CELL_SCALE), (u32)(y * GRID_CELL_SCALE));
+    start = g_LoadedTrack.gridCellStarts[cell];
+    return PACK_GRID_CELL(g_LoadedTrack.gridCellStarts, cell, start);
 }
 
 u32 LookupInstanceCellAtPoint(f32 x, f32 y) {
-    if (!IsOnGrid(x, y)) {
+    u16 cell;
+    u16 start;
+
+    if (IS_OFF_GRID(x, y)) {
         return 0;
     }
-    return PackGridCell(g_LoadedTrack.gridInstanceStarts,
-                        (u8)(u32)(x * GRID_CELL_SCALE),
-                        (u8)(u32)(y * GRID_CELL_SCALE));
+    cell = GRID_CELL((u32)(x * GRID_CELL_SCALE), (u32)(y * GRID_CELL_SCALE));
+    start = g_LoadedTrack.gridInstanceStarts[cell];
+    return PACK_GRID_CELL(g_LoadedTrack.gridInstanceStarts, cell, start);
 }
 
 u32 FindTrackGridCellByIndex(s32 column, s32 row) {
-    if (!IsGridCell(column, row)) {
+    u16 cell;
+    u16 start;
+
+    if (IS_OFF_GRID_CELL(column, row)) {
         return 0;
     }
-    return PackGridCell(g_LoadedTrack.gridCellStarts, column, row);
+    cell = GRID_CELL(column, row);
+    start = g_LoadedTrack.gridCellStarts[cell];
+    return PACK_GRID_CELL(g_LoadedTrack.gridCellStarts, cell, start);
 }
 
 u32 LookupInstanceGridCell(s32 column, s32 row) {
-    if (!IsGridCell(column, row)) {
+    u16 cell;
+    u16 start;
+
+    if (IS_OFF_GRID_CELL(column, row)) {
         return 0;
     }
-    return PackGridCell(g_LoadedTrack.gridInstanceStarts, column, row);
+    cell = GRID_CELL(column, row);
+    start = g_LoadedTrack.gridInstanceStarts[cell];
+    return PACK_GRID_CELL(g_LoadedTrack.gridInstanceStarts, cell, start);
 }
 
 u16 GetTrackGridCellCount(TrackGridCursor *cursor) {
@@ -76,28 +88,34 @@ u16 GetInstanceGridCellCount(TrackGridCursor *cursor) {
     return cursor->count;
 }
 
-/* Advance a cursor of a cell, and return where it was. */
-static u16 AdvanceGridCursor(TrackGridCursor *cursor) {
-    u16 start = cursor->start;
-    u32 packed = (start + 1) | ((u32)(cursor->count - 1) << 16);
-
-    cursor->count = packed >> 16;
-    cursor->start = packed;
-    return start;
-}
+/* Advance a cursor of a cell past the entry at start. */
+#define ADVANCE_GRID_CURSOR(cursor, start, packed)                                                 \
+    packed = ((start) + 1) | ((u32)((cursor)->count - 1) << 16);                                   \
+    (cursor)->count = (packed) >> 16;                                                              \
+    (cursor)->start = (packed)
 
 u16 NextGridCellTriangle(TrackGridCursor *cursor) {
+    u16 start;
+    u32 packed;
+
     if (cursor->count == 0) {
         return 0;
     }
-    return g_LoadedTrack.gridTriangles[AdvanceGridCursor(cursor)];
+    start = cursor->start;
+    ADVANCE_GRID_CURSOR(cursor, start, packed);
+    return g_LoadedTrack.gridTriangles[start];
 }
 
 u16 NextGridCellInstance(TrackGridCursor *cursor) {
+    u16 start;
+    u32 packed;
+
     if (cursor->count == 0) {
         return 0;
     }
-    return g_LoadedTrack.gridInstances[AdvanceGridCursor(cursor)];
+    start = cursor->start;
+    ADVANCE_GRID_CURSOR(cursor, start, packed);
+    return g_LoadedTrack.gridInstances[start];
 }
 
 s32 IsTrackIndexValid(s32 track) {

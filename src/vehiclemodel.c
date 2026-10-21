@@ -30,14 +30,20 @@ void SetMaterialColor(VehicleModel *model, s32 red, s32 green, s32 blue) {
 void ExtractVehicleBaseColor(Vehicle *vehicle, VehicleModel *model) {
     ModelTexture *texture = &model->textures[model->materialTextures[VEHICLE_MATERIAL_PAINT]];
     u16 *palette = texture->palette;
-    u16 color;
+    s32 color;
+    s32 red;
+    s32 green;
+    s32 blue;
 
     if (palette != NULL && texture->format == TEXTURE_FORMAT_CI4) {
         /* Each 5-bit component widened to 8 bits, its top bits repeated below. */
         color = palette[0];
-        vehicle->color[2] = ((color << 2) & 0xF8) | ((color >> 3) & 7);
-        vehicle->color[1] = ((color >> 3) & 0xF8) | ((color >> 8) & 7);
-        vehicle->color[0] = ((color >> 8) & 0xF8) | ((color >> 13) & 7);
+        red = ((color >> 13) & 7) | ((color >> 8) & 0xF8);
+        green = ((color >> 8) & 7) | ((color >> 3) & 0xF8);
+        blue = ((color >> 3) & 7) | ((color << 2) & 0xF8);
+        vehicle->color[2] = blue;
+        vehicle->color[1] = green;
+        vehicle->color[0] = red;
     }
 }
 
@@ -85,12 +91,11 @@ void FixupVehicleModelPointers(VehicleModel *model) {
 void LoadVehicleModelFromRom(VehicleModel *model, s32 car) {
     CarModel *carModel = &g_aCarModels[car];
     char message[LOAD_MESSAGE_SIZE];
-    u32 size;
 
-    size = DmaReadAssetSize(carModel->modelRom);
-    carModel->modelSize = size;
-    if (size > sizeof(VehicleModel)) {
-        sprintf(message, "Car %d too big (%d vs. %d)", car, size, sizeof(VehicleModel));
+    carModel->modelSize = DmaReadAssetSize(carModel->modelRom);
+    if (carModel->modelSize > sizeof(VehicleModel)) {
+        sprintf(
+            message, "Car %d too big (%d vs. %d)", car, carModel->modelSize, sizeof(VehicleModel));
         SetDebugMessage(message);
     } else {
         osSyncPrintf("Loading car %d (%d / %d)\n", car, carModel->modelSize, sizeof(VehicleModel));
