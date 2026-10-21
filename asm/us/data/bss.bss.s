@@ -1469,9 +1469,9 @@ nonmatching D_8031B1EA, 0x6
 dlabel D_8031B1EA
     /* 8031B1EA */ .space 0x06
 
-nonmatching g_afShadowFrustumApex, 0xC
+nonmatching g_afFrustumPoints, 0xC
 
-dlabel g_afShadowFrustumApex
+dlabel g_afFrustumPoints
     /* 8031B1F0 */ .space 0x0C
 
 nonmatching g_afShadowFrustumCorner0, 0xC
@@ -2725,14 +2725,14 @@ nonmatching g_abCarDecalSaveData, 0x40
 dlabel g_abCarDecalSaveData
     /* 8034E570 */ .space 0x40
 
-nonmatching g_adwShadowMapRowMinCol, 0x100
+nonmatching g_adwVisibleGridRowMinCol, 0x100
 
-dlabel g_adwShadowMapRowMinCol
+dlabel g_adwVisibleGridRowMinCol
     /* 8034E5B0 */ .space 0x100
 
-nonmatching g_adwShadowMapRowMaxCol, 0x10
+nonmatching g_adwVisibleGridRowMaxCol, 0x10
 
-dlabel g_adwShadowMapRowMaxCol
+dlabel g_adwVisibleGridRowMaxCol
     /* 8034E6B0 */ .space 0x10
 
 nonmatching g_aShadowSpanBuffer, 0xF0
@@ -2740,14 +2740,14 @@ nonmatching g_aShadowSpanBuffer, 0xF0
 dlabel g_aShadowSpanBuffer
     /* 8034E6C0 */ .space 0xF0
 
-nonmatching g_adwShadowMapColMinRow, 0x100
+nonmatching g_adwVisibleGridColMinRow, 0x100
 
-dlabel g_adwShadowMapColMinRow
+dlabel g_adwVisibleGridColMinRow
     /* 8034E7B0 */ .space 0x100
 
-nonmatching g_adwShadowMapColMaxRow, 0xFC
+nonmatching g_adwVisibleGridColMaxRow, 0xFC
 
-dlabel g_adwShadowMapColMaxRow
+dlabel g_adwVisibleGridColMaxRow
     /* 8034E8B0 */ .space 0xFC
 
 nonmatching g_dwRaceBestTime, 0x4

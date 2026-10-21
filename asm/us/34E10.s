@@ -1230,10 +1230,10 @@ glabel BuildVisibleInstanceList
     /* 35FFC 80234FFC 3C0A8029 */  lui        $t2, %hi(g_bVisibleCellListOverflow)
     /* 36000 80235000 254AC76C */  addiu      $t2, $t2, %lo(g_bVisibleCellListOverflow)
     /* 36004 80235004 AD400000 */  sw         $zero, 0x0($t2)
-    /* 36008 80235008 3C058029 */  lui        $a1, %hi(g_dwShadowMapMinRow)
-    /* 3600C 8023500C 3C098029 */  lui        $t1, %hi(g_dwShadowMapMaxRow)
-    /* 36010 80235010 8D29BD9C */  lw         $t1, %lo(g_dwShadowMapMaxRow)($t1)
-    /* 36014 80235014 8CA5BD94 */  lw         $a1, %lo(g_dwShadowMapMinRow)($a1)
+    /* 36008 80235008 3C058029 */  lui        $a1, %hi(g_dwVisibleGridMinRow)
+    /* 3600C 8023500C 3C098029 */  lui        $t1, %hi(g_dwVisibleGridMaxRow)
+    /* 36010 80235010 8D29BD9C */  lw         $t1, %lo(g_dwVisibleGridMaxRow)($t1)
+    /* 36014 80235014 8CA5BD94 */  lw         $a1, %lo(g_dwVisibleGridMinRow)($a1)
     /* 36018 80235018 AFBF0054 */  sw         $ra, 0x54($sp)
     /* 3601C 8023501C AFB70050 */  sw         $s7, 0x50($sp)
     /* 36020 80235020 0125082A */  slt        $at, $t1, $a1
@@ -1247,10 +1247,10 @@ glabel BuildVisibleInstanceList
     /* 36040 80235040 14200021 */  bnez       $at, .L802350C8
     /* 36044 80235044 00004025 */   or        $t0, $zero, $zero
     /* 36048 80235048 00051080 */  sll        $v0, $a1, 2
-    /* 3604C 8023504C 3C0E8035 */  lui        $t6, %hi(g_adwShadowMapRowMinCol)
-    /* 36050 80235050 3C0F8035 */  lui        $t7, %hi(g_adwShadowMapRowMaxCol)
-    /* 36054 80235054 25EFE6B0 */  addiu      $t7, $t7, %lo(g_adwShadowMapRowMaxCol)
-    /* 36058 80235058 25CEE5B0 */  addiu      $t6, $t6, %lo(g_adwShadowMapRowMinCol)
+    /* 3604C 8023504C 3C0E8035 */  lui        $t6, %hi(g_adwVisibleGridRowMinCol)
+    /* 36050 80235050 3C0F8035 */  lui        $t7, %hi(g_adwVisibleGridRowMaxCol)
+    /* 36054 80235054 25EFE6B0 */  addiu      $t7, $t7, %lo(g_adwVisibleGridRowMaxCol)
+    /* 36058 80235058 25CEE5B0 */  addiu      $t6, $t6, %lo(g_adwVisibleGridRowMinCol)
     /* 3605C 8023505C 004E2021 */  addu       $a0, $v0, $t6
     /* 36060 80235060 004F3821 */  addu       $a3, $v0, $t7
     /* 36064 80235064 240300C0 */  addiu      $v1, $zero, 0xC0
@@ -1526,7 +1526,7 @@ glabel BuildVisibleInstanceList
     /* 36448 80235448 C44C0030 */  lwc1       $f12, 0x30($v0)
     /* 3644C 8023544C 24420030 */  addiu      $v0, $v0, 0x30
     /* 36450 80235450 AFA600CC */  sw         $a2, 0xCC($sp)
-    /* 36454 80235454 0C08B50F */  jal        TestHeightMap
+    /* 36454 80235454 0C08B50F */  jal        IsPointVisible
     /* 36458 80235458 AFA500C8 */   sw        $a1, 0xC8($sp)
     /* 3645C 8023545C 8FA500C8 */  lw         $a1, 0xC8($sp)
     /* 36460 80235460 1040000A */  beqz       $v0, .L8023548C

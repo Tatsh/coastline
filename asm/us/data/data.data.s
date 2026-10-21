@@ -33568,29 +33568,29 @@ dlabel D_8028BC60
     /* 8CD8C 8028BD8C 00000000 */ .word 0x00000000
 enddlabel D_8028BC60
 
-nonmatching g_dwShadowMapMinCol
+nonmatching g_dwVisibleGridMinCol
 
-dlabel g_dwShadowMapMinCol
+dlabel g_dwVisibleGridMinCol
     /* 8CD90 8028BD90 00000000 */ .word 0x00000000
-enddlabel g_dwShadowMapMinCol
+enddlabel g_dwVisibleGridMinCol
 
-nonmatching g_dwShadowMapMinRow
+nonmatching g_dwVisibleGridMinRow
 
-dlabel g_dwShadowMapMinRow
+dlabel g_dwVisibleGridMinRow
     /* 8CD94 8028BD94 00000000 */ .word 0x00000000
-enddlabel g_dwShadowMapMinRow
+enddlabel g_dwVisibleGridMinRow
 
-nonmatching g_dwShadowMapMaxCol
+nonmatching g_dwVisibleGridMaxCol
 
-dlabel g_dwShadowMapMaxCol
+dlabel g_dwVisibleGridMaxCol
     /* 8CD98 8028BD98 00000000 */ .word 0x00000000
-enddlabel g_dwShadowMapMaxCol
+enddlabel g_dwVisibleGridMaxCol
 
-nonmatching g_dwShadowMapMaxRow
+nonmatching g_dwVisibleGridMaxRow
 
-dlabel g_dwShadowMapMaxRow
+dlabel g_dwVisibleGridMaxRow
     /* 8CD9C 8028BD9C 00000000 */ .word 0x00000000
-enddlabel g_dwShadowMapMaxRow
+enddlabel g_dwVisibleGridMaxRow
 
 nonmatching g_dwRenderFrameBufferIndex
 

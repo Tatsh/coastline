@@ -383,12 +383,12 @@ glabel CheckVehicleVisibility
     /* 31464 80230464 0C089253 */  jal        Vec3fMulAdd
     /* 31468 80230468 3C0740C0 */   lui       $a3, (0x40C00000 >> 16)
     /* 3146C 8023046C C7AC0028 */  lwc1       $f12, 0x28($sp)
-    /* 31470 80230470 0C08B50F */  jal        TestHeightMap
+    /* 31470 80230470 0C08B50F */  jal        IsPointVisible
     /* 31474 80230474 C7AE002C */   lwc1      $f14, 0x2C($sp)
     /* 31478 80230478 1440000C */  bnez       $v0, .L802304AC
     /* 3147C 8023047C 00000000 */   nop
     /* 31480 80230480 C60C0030 */  lwc1       $f12, 0x30($s0)
-    /* 31484 80230484 0C08B50F */  jal        TestHeightMap
+    /* 31484 80230484 0C08B50F */  jal        IsPointVisible
     /* 31488 80230488 C60E0034 */   lwc1      $f14, 0x34($s0)
     /* 3148C 8023048C 14400007 */  bnez       $v0, .L802304AC
     /* 31490 80230490 00000000 */   nop
@@ -396,7 +396,7 @@ glabel CheckVehicleVisibility
     /* 31498 80230498 8FBF001C */   lw        $ra, 0x1C($sp)
   .L8023049C:
     /* 3149C 8023049C C60C0030 */  lwc1       $f12, 0x30($s0)
-    /* 314A0 802304A0 0C08B50F */  jal        TestHeightMap
+    /* 314A0 802304A0 0C08B50F */  jal        IsPointVisible
     /* 314A4 802304A4 C60E0034 */   lwc1      $f14, 0x34($s0)
     /* 314A8 802304A8 10400025 */  beqz       $v0, .L80230540
   .L802304AC:

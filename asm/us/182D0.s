@@ -4359,11 +4359,11 @@ glabel SetupFrustumCorners
     /* 1C100 8021B100 3C0E8029 */  lui        $t6, %hi(g_dwNumViewports)
     /* 1C104 8021B104 8DCEAB0C */  lw         $t6, %lo(g_dwNumViewports)($t6)
     /* 1C108 8021B108 24010002 */  addiu      $at, $zero, 0x2
-    /* 1C10C 8021B10C 3C118032 */  lui        $s1, %hi(g_afShadowFrustumApex)
+    /* 1C10C 8021B10C 3C118032 */  lui        $s1, %hi(g_afFrustumPoints)
     /* 1C110 8021B110 3C128032 */  lui        $s2, %hi(g_afFrustumCenter)
     /* 1C114 8021B114 2652ABF0 */  addiu      $s2, $s2, %lo(g_afFrustumCenter)
     /* 1C118 8021B118 46048182 */  mul.s      $f6, $f16, $f4
-    /* 1C11C 8021B11C 2631B1F0 */  addiu      $s1, $s1, %lo(g_afShadowFrustumApex)
+    /* 1C11C 8021B11C 2631B1F0 */  addiu      $s1, $s1, %lo(g_afFrustumPoints)
     /* 1C120 8021B120 46083383 */  div.s      $f14, $f6, $f8
     /* 1C124 8021B124 15C10006 */  bne        $t6, $at, .L8021B140
     /* 1C128 8021B128 46007306 */   mov.s     $f12, $f14

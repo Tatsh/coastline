@@ -485,7 +485,7 @@ glabel RenderDecalPreview3D
     /* 44210 80243210 2547FFFD */   addiu     $a3, $t2, -0x3
     /* 44214 80243214 00002025 */  or         $a0, $zero, $zero
   .L80243218:
-    /* 44218 80243218 0C08B424 */  jal        UpdateHeightMapBounds
+    /* 44218 80243218 0C08B424 */  jal        MarkVisibleCell
     /* 4421C 8024321C 00002825 */   or        $a1, $zero, $zero
     /* 44220 80243220 3C048029 */  lui        $a0, %hi(gDecalBrushState)
     /* 44224 80243224 0C08BFBC */  jal        TransformWheelPositions

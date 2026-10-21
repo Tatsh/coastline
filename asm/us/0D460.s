@@ -257,7 +257,7 @@ glabel RenderCameraView
     /* D7FC 8020C7FC 0C0866FC */  jal        SetViewport
     /* D800 8020C800 8FA700F8 */   lw        $a3, 0xF8($sp)
     /* D804 8020C804 00002025 */  or         $a0, $zero, $zero
-    /* D808 8020C808 0C08B424 */  jal        UpdateHeightMapBounds
+    /* D808 8020C808 0C08B424 */  jal        MarkVisibleCell
     /* D80C 8020C80C 00002825 */   or        $a1, $zero, $zero
     /* D810 8020C810 C7A000FC */  lwc1       $f0, 0xFC($sp)
     /* D814 8020C814 44804800 */  mtc1       $zero, $f9

@@ -369,6 +369,7 @@ virtualtophysical
 visetevent
 visetmode
 visetspecial
+visgrid
 viswapbuf
 viswapcontext
 vretrace

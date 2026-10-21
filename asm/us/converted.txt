@@ -4,6 +4,7 @@ AllocHiliteBlock
 AllocLightBlock
 ApplyWeather
 BeginDebugStats
+BuildVisibleGrid
 ClearFramebuffersForNormalMode
 ClearFramebuffersForWideMode
 CopyVec4
@@ -17,10 +18,14 @@ FloatToInt
 GetHeapCurrentAddress
 InitBitmapText
 InitGameAndShowMenus
+IsCellVisible
+IsPointVisible
 IsSkyFogFilled
 IsWeatherSelectable
 MainMenuEntry
 MarkModelNodes
+MarkVisibleCell
+MarkVisibleEdge
 MemFill64Aligned
 MixAudioReverbChannels
 MixAudioSamples

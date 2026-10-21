@@ -4080,7 +4080,7 @@ glabel ProcessRaceHud
     /* 4F20 80203F20 00000000 */   nop
     /* 4F24 80203F24 0C088D1C */  jal        ResetFadeState
     /* 4F28 80203F28 00000000 */   nop
-    /* 4F2C 80203F2C 0C08B527 */  jal        BuildShadowProjectionMap
+    /* 4F2C 80203F2C 0C08B527 */  jal        BuildVisibleGrid
     /* 4F30 80203F30 00000000 */   nop
     /* 4F34 80203F34 3C0C8029 */  lui        $t4, %hi(g_dwNightMode)
     /* 4F38 80203F38 8D8CAA80 */  lw         $t4, %lo(g_dwNightMode)($t4)
@@ -4589,7 +4589,7 @@ glabel ProcessRaceHud
     /* 56A8 802046A8 00000000 */   nop
     /* 56AC 802046AC 0C088D1C */  jal        ResetFadeState
     /* 56B0 802046B0 00000000 */   nop
-    /* 56B4 802046B4 0C08B527 */  jal        BuildShadowProjectionMap
+    /* 56B4 802046B4 0C08B527 */  jal        BuildVisibleGrid
     /* 56B8 802046B8 00000000 */   nop
     /* 56BC 802046BC 240F00FF */  addiu      $t7, $zero, 0xFF
     /* 56C0 802046C0 AFAF0010 */  sw         $t7, 0x10($sp)
