@@ -74,8 +74,26 @@ static inline u16 *MaterialPalette(s32 material) {
         .palette;
 }
 
+/* The colours of the bars and the names of the channels, as the colour editor copies them. */
+typedef struct {
+    u8 color[3][3];
+} ColorEditorBars;
+
+typedef struct {
+    const char *name[3];
+} ColorChannelNames;
+
+/* The names of the styles of a tool, as its menu copies them. */
+typedef struct {
+    const char *name[2];
+} TwoStyleNames;
+
+typedef struct {
+    const char *name[4];
+} FourStyleNames;
+
 /* Copy the first two colors of the palette into the palettes of the lights of the car. */
-static void CopyLightPalettes(void) {
+static inline void CopyLightPalettes(void) {
     MaterialPalette(VEHICLE_MATERIAL_HEADLIGHTS)[0] = g_pDecalPalette[0];
     MaterialPalette(VEHICLE_MATERIAL_HEADLIGHTS)[1] = g_pDecalPalette[1];
     MaterialPalette(VEHICLE_MATERIAL_REAR_LIGHTS)[0] = g_pDecalPalette[0];
@@ -90,13 +108,14 @@ static inline s32 HasStyleMenu(s32 tool) {
 }
 
 /* Make a decal the one edited, and center it in its frame. */
-static void SelectDecalSlot(s32 slot) {
+static inline void SelectDecalSlot(s32 slot) {
     VehicleModel *model = g_pCurrentVehicleModelData;
 
     g_bDecalSlotChanged = TRUE;
     g_wScreenFrameCount = 0;
     g_pDecalTexels = model->textures[model->materialTextures[slot]].image;
-    g_pDecalMask = model->decalMasks[slot];
+    /* The mask is indexed by the slot as stored, a byte. */
+    g_pDecalMask = model->decalMasks[g_bDecalSlot];
     g_bDecalWidth = model->textures[model->materialTextures[slot]].width;
     g_bDecalHeight = model->textures[model->materialTextures[slot]].height;
     osSyncPrintf("decal_width = %d\n", g_bDecalWidth);
@@ -120,11 +139,15 @@ static inline s32 AnchorDistance(void) {
 void ProcessColorEditorDialog(void) {
     PlayerInputState *input;
     PaletteSwatch *swatch;
-    u8 *value;
+    ColorEditorBars bars;
+    ColorChannelNames names;
     char text[40];
     s32 cancelX, buttonY, step, channel, i, y, level;
     u32 buttons;
 
+    /* The bars and the names are read from copies on the stack. */
+    bars = *(ColorEditorBars *)g_aabColorEditorBars;
+    names = *(ColorChannelNames *)g_apszColorChannelNames;
     cancelX = 0x151 - g_texButtonB.width;
     buttonY = 0x122 - g_texButtonA.height;
     step = 0;
@@ -146,13 +169,8 @@ void ProcessColorEditorDialog(void) {
             continue;
         }
         if (g_bDecalColor == DARK_SWATCH) {
-            DrawFilledRectHiRes(0x11D,
-                                y,
-                                level,
-                                0x10,
-                                g_aabColorEditorBars[i][0],
-                                g_aabColorEditorBars[i][1],
-                                g_aabColorEditorBars[i][2]);
+            DrawFilledRectHiRes(
+                0x11D, y, level, 0x10, bars.color[i][0], bars.color[i][1], bars.color[i][2]);
             if (i == channel) {
                 DrawRectBorder(0x11D,
                                y,
@@ -161,18 +179,13 @@ void ProcessColorEditorDialog(void) {
                                1,
                                0,
                                0,
-                               g_aabColorEditorBars[i][0],
-                               g_aabColorEditorBars[i][1],
-                               g_aabColorEditorBars[i][2]);
+                               bars.color[i][0],
+                               bars.color[i][1],
+                               bars.color[i][2]);
             }
         } else {
-            DrawFilledRectHiRes(0x11D,
-                                y,
-                                level >> 1,
-                                0x10,
-                                g_aabColorEditorBars[i][0],
-                                g_aabColorEditorBars[i][1],
-                                g_aabColorEditorBars[i][2]);
+            DrawFilledRectHiRes(
+                0x11D, y, level >> 1, 0x10, bars.color[i][0], bars.color[i][1], bars.color[i][2]);
             if (i == channel) {
                 DrawRectBorder(0x11D,
                                y,
@@ -181,9 +194,9 @@ void ProcessColorEditorDialog(void) {
                                1,
                                0,
                                0,
-                               g_aabColorEditorBars[i][0],
-                               g_aabColorEditorBars[i][1],
-                               g_aabColorEditorBars[i][2]);
+                               bars.color[i][0],
+                               bars.color[i][1],
+                               bars.color[i][2]);
             }
         }
     }
@@ -196,7 +209,7 @@ void ProcessColorEditorDialog(void) {
         }
         SetTextSize(11);
         SetTextAlignLeft();
-        DrawText(g_apszColorChannelNames[i], 0x83, y);
+        DrawText(names.name[i], 0x83, y);
         SetTextSize(10);
         SetTextAlignRight();
         sprintf(text, "%d", g_aDecalSwatches[g_bDecalColor].color[i]);
@@ -243,22 +256,25 @@ void ProcessColorEditorDialog(void) {
         }
     }
 
-    value = &g_aDecalSwatches[g_bDecalColor].color[g_bColorEditorChannel];
-    level = *value + step;
+    /* Each branch indexes the bar afresh. */
     if (g_bDecalColor == DARK_SWATCH) {
+        level = g_aDecalSwatches[g_bDecalColor].color[g_bColorEditorChannel] + step;
         if (level < 0) {
-            *value = 0;
+            g_aDecalSwatches[g_bDecalColor].color[g_bColorEditorChannel] = 0;
         } else if (level > DARK_SWATCH_MAX) {
-            *value = DARK_SWATCH_MAX;
+            g_aDecalSwatches[g_bDecalColor].color[g_bColorEditorChannel] = DARK_SWATCH_MAX;
         } else {
-            *value = level;
+            g_aDecalSwatches[g_bDecalColor].color[g_bColorEditorChannel] = level;
         }
-    } else if (level < 0) {
-        *value = 0;
-    } else if (level > 0xFF) {
-        *value = 0xFF;
     } else {
-        *value = level;
+        level = g_aDecalSwatches[g_bDecalColor].color[g_bColorEditorChannel] + step;
+        if (level < 0) {
+            g_aDecalSwatches[g_bDecalColor].color[g_bColorEditorChannel] = 0;
+        } else if (level > 0xFF) {
+            g_aDecalSwatches[g_bDecalColor].color[g_bColorEditorChannel] = 0xFF;
+        } else {
+            g_aDecalSwatches[g_bDecalColor].color[g_bColorEditorChannel] = level;
+        }
     }
 
     if (step != 0) {
@@ -385,7 +401,7 @@ void UpdateCursorFromInput(void) {
 }
 
 /* A click on a decal makes it the one edited. Return whether a decal was clicked. */
-static s32 PickDecalSlot(void) {
+static inline s32 PickDecalSlot(void) {
     s32 i;
 
     if (g_bDecalDragActive || g_bDecalSlotChanged || !(PaintShopInput()->buttons & INPUT_PICK)) {
@@ -399,7 +415,7 @@ static s32 PickDecalSlot(void) {
         g_bPreviousDecalSlot = g_bDecalSlot;
         g_pDecalSlotIcon = g_apDecalSlotIcons[i];
         g_bDecalSlot = i;
-        if (g_bPreviousDecalSlot != i) {
+        if (g_bPreviousDecalSlot != g_bDecalSlot) {
             SelectDecalSlot(i);
         }
         g_bDecalSlotHasMirror = HAS_MIRROR(g_bDecalSlot);
@@ -410,7 +426,7 @@ static s32 PickDecalSlot(void) {
 
 /* A click on the palette picks a color, and a second on the same color opens the color editor.
  * Return whether a color was clicked. */
-static s32 PickPaletteColor(void) {
+static inline s32 PickPaletteColor(void) {
     u32 now;
     s32 i, channel;
 
@@ -447,7 +463,7 @@ static s32 PickPaletteColor(void) {
 
 /* A click on a tool picks it, and a second on a tool with styles opens their menu. Return
  * whether a tool was clicked. */
-static s32 PickPaintTool(void) {
+static inline s32 PickPaintTool(void) {
     PlayerInputState *input;
     u32 now;
     s32 i, size;
@@ -514,9 +530,9 @@ static s32 PickPaintTool(void) {
 
 /* The text tool: a click on the decal opens the keyboard, the text typed then follows the cursor
  * and a second click paints it. */
-static void ProcessTextTool(void) {
+static inline void ProcessTextTool(void) {
     PlayerInputState *input;
-    s32 clicked;
+    u8 clicked;
 
     clicked = FALSE;
     if (IsCursorInRect(&g_rcDecalCanvas) && !g_bDecalDragActive) {
@@ -549,10 +565,11 @@ static void ProcessTextTool(void) {
                 g_texPaintCursor.originY = g_nPaintAnchorY;
             }
             DrawDecalTextPreview(g_texPaintCursor.originX, g_texPaintCursor.originY + 1);
-            return;
+        } else if (g_bDecalTextLength == 0) {
+            /* The length is unsigned and this second test cannot fail. */
+            g_bPaintToolStarted = FALSE;
+            g_bDecalDragActive = FALSE;
         }
-        g_bPaintToolStarted = FALSE;
-        g_bDecalDragActive = FALSE;
         return;
     }
     if (!g_bPaintToolStarted) {
@@ -572,7 +589,7 @@ static void ProcessTextTool(void) {
 }
 
 /* The brush paints while the button is pressed, on a copy for undo taken as the stroke starts. */
-static void PaintBrush(void) {
+static inline void PaintBrush(void) {
     s32 half;
 
     if (!g_bPaintToolStarted) {
@@ -599,7 +616,7 @@ static void PaintBrush(void) {
 
 /* A shape tool takes its first corner at the first click and draws at the second. Return
  * whether it draws now. */
-static s32 StartShape(void) {
+static inline s32 StartShape(void) {
     if (!g_bPaintToolStarted) {
         g_nPaintAnchorX = g_texPaintCursor.originX;
         g_nPaintAnchorY = g_texPaintCursor.originY;
@@ -610,7 +627,7 @@ static s32 StartShape(void) {
     return TRUE;
 }
 
-static void PaintRectangle(void) {
+static inline void PaintRectangle(void) {
     switch (g_texPaintToolRect.style) {
     case RECT_STYLE_FILLED:
         FillRect4Bit(
@@ -631,9 +648,17 @@ static void PaintRectangle(void) {
     }
 }
 
-static void PaintOval(void) {
+/* The style is read again after the radius is taken, as the original reads it. */
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
+static inline void PaintOval(void) {
     s32 radius;
 
+    /* The radius of a circle is taken before the style is tested again. */
+    if (g_texPaintToolOval.style == OVAL_STYLE_FILLED_CIRCLE ||
+        g_texPaintToolOval.style == OVAL_STYLE_OUTLINED_CIRCLE) {
+        radius = AnchorDistance() >> 2;
+    }
     switch (g_texPaintToolOval.style) {
     case OVAL_STYLE_FILLED_ELLIPSE:
         DrawDecalFilledEllipse(
@@ -644,19 +669,20 @@ static void PaintOval(void) {
             g_nPaintAnchorX, g_nPaintAnchorY, g_texPaintCursor.originX, g_texPaintCursor.originY);
         break;
     case OVAL_STYLE_FILLED_CIRCLE:
-        radius = AnchorDistance() >> 2;
         FillCircle4Bit(g_nPaintAnchorX, g_nPaintAnchorY, radius, TRUE);
         break;
     case OVAL_STYLE_OUTLINED_CIRCLE:
-        radius = AnchorDistance() >> 2;
         DrawDecalCircleOutline(g_nPaintAnchorX, g_nPaintAnchorY, radius);
         break;
     }
 }
+#pragma GCC diagnostic pop
 
 /* A press on the decal paints with the tool in use. Return whether the decal was pressed. */
-static s32 PaintWithTool(void) {
-    if (!IsCursorInRect(&g_rcDecalCanvas) || !(PaintShopInput()->buttons & INPUT_PICK)) {
+static inline s32 PaintWithTool(void) {
+    /* The text tool never arrives here, but the original tests for it again. */
+    if (g_bPaintTool == PAINT_TOOL_TEXT || !IsCursorInRect(&g_rcDecalCanvas) ||
+        !(PaintShopInput()->buttons & INPUT_PICK)) {
         return FALSE;
     }
     switch (g_bPaintTool) {
@@ -696,7 +722,7 @@ static s32 PaintWithTool(void) {
 }
 
 /* The dashed outline of a shape from its first corner to the cursor. */
-static void DrawShapeOutline(void) {
+static inline void DrawShapeOutline(void) {
     if (g_bPaintTool == PAINT_TOOL_TEXT || !g_bPaintToolStarted ||
         !IsCursorInRect(&g_rcDecalCanvas) || (PaintShopInput()->buttons & INPUT_PICK)) {
         return;
@@ -883,20 +909,28 @@ void DrawDecalColorPalette(void) {
 }
 
 /* Move the cursor of a menu of four styles with left and right, around the ends. */
-static void MoveStyleMenuCursor(void) {
+static inline void MoveStyleMenuCursor(void) {
     PlayerInputState *input = PaintShopInput();
 
     if (input->buttons & INPUT_LEFT) {
         TransferFlags(input, INPUT_LEFT);
-        g_bStyleMenuCursor = g_bStyleMenuCursor == 0 ? 3 : g_bStyleMenuCursor - 1;
+        if (g_bStyleMenuCursor == 0) {
+            g_bStyleMenuCursor = 3;
+        } else {
+            g_bStyleMenuCursor--;
+        }
     } else if (input->buttons & INPUT_RIGHT) {
         TransferFlags(input, INPUT_RIGHT);
-        g_bStyleMenuCursor = g_bStyleMenuCursor == 3 ? 0 : g_bStyleMenuCursor + 1;
+        if (g_bStyleMenuCursor == 3) {
+            g_bStyleMenuCursor = 0;
+        } else {
+            g_bStyleMenuCursor++;
+        }
     }
 }
 
 /* A sets the style of a tool to the cursor of its menu, and A or B closes the menu. */
-static void CloseStyleMenu(Sprite *tool) {
+static inline void CloseStyleMenu(Sprite *tool) {
     PlayerInputState *input = PaintShopInput();
 
     if (input->buttons & INPUT_A) {
@@ -910,9 +944,12 @@ static void CloseStyleMenu(Sprite *tool) {
 }
 
 void ProcessBrushStyleMenu(void) {
+    TwoStyleNames names;
     PlayerInputState *input;
     s32 buttonY, cancelX, textY;
 
+    /* The names are read from a copy on the stack. */
+    names = *(TwoStyleNames *)g_apszBrushStyleNames;
     /* The button A is placed by its width. */
     buttonY = 0x142 - g_texButtonA.width;
     cancelX = 0x15D - g_texButtonB.width;
@@ -959,7 +996,7 @@ void ProcessBrushStyleMenu(void) {
     DrawRectBorder(0xE0, 0xFF, 0xC0, 0x1E, 1, 1, 1, 0x80, 0x80, 0x80);
     SetTextSize(11);
     SetTextCustomColors(0xFF, 0xFF, 0xFF, 0xFF, 0xF5, 0);
-    DrawText(g_apszBrushStyleNames[g_bStyleMenuCursor], 0x9F, 0x8A);
+    DrawText(names.name[g_bStyleMenuCursor], 0x9F, 0x8A);
     DrawTexturedSprite(&g_texButtonA, 0xD8, buttonY);
     DrawTexturedSprite(&g_texButtonB, cancelX, buttonY);
     SetTextSize(10);
@@ -980,10 +1017,13 @@ void ProcessBrushStyleMenu(void) {
 void ProcessTextStyleMenu(void) {
     PaletteSwatch swatches[DECAL_SWATCHES];
     ScreenRect choices[2];
+    TwoStyleNames names;
     PlayerInputState *input;
     PaletteSwatch *swatch;
-    s32 i, buttonY, cancelX, textY;
+    s32 i, buttonY, cancelX, textY, selectX;
 
+    /* The names are read from a copy on the stack. */
+    names = *(TwoStyleNames *)g_apszTextStyleNames;
     DrawRectBorder(0xB4, 0x82, 0x118, 0xD0, 3, 0, 0, 0x80, 0x80, 0x80);
     SetTextSize(16);
     SetTextAlignCenter();
@@ -1070,9 +1110,8 @@ void ProcessTextStyleMenu(void) {
             0xC6, choices[0].height + choices[0].y + 0x11, 0xF4, 0x1E, 1, 1, 1, 0x80, 0x80, 0x80);
         SetTextSize(11);
         SetTextCustomColors(0xFF, 0xFF, 0xFF, 0xFF, 0xF5, 0);
-        DrawText(g_apszTextStyleNames[g_bStyleMenuCursor],
-                 0x9E,
-                 (choices[1].height + choices[0].y + 0x26) >> 1);
+        DrawText(
+            names.name[g_bStyleMenuCursor], 0x9E, (choices[1].height + choices[0].y + 0x26) >> 1);
         SetTextSize(10);
         SetTextAlignLeft();
         /* The button A is placed by its width and the button B by its height. */
@@ -1123,12 +1162,14 @@ void ProcessTextStyleMenu(void) {
                         HIGHLIGHT_BLUE);
         buttonY = 0x182 - g_texButtonA.height;
         cancelX = 0x16E - g_texButtonB.height;
-        DrawTexturedSprite(&g_texButtonA, 0xE6, buttonY);
+        /* The position of the button A is stored on the stack for its label. */
+        selectX = 0xE6;
+        DrawTexturedSprite(&g_texButtonA, selectX, buttonY);
         DrawTexturedSprite(&g_texButtonB, cancelX, buttonY);
         SetTextSize(10);
         SetTextAlignLeft();
         textY = (buttonY + 0x12) >> 1;
-        DrawText("%wwSELECT", (0xE6 + g_texButtonA.width + 6) >> 1, textY);
+        DrawText("%wwSELECT", (selectX + g_texButtonA.width + 6) >> 1, textY);
         DrawText("%wwCANCEL", (cancelX + g_texButtonB.width + 6) >> 1, textY);
 
         UpdateStickRepeat(PaintShopInput());
@@ -1190,8 +1231,11 @@ void ProcessTextStyleMenu(void) {
 }
 
 void ProcessRectStyleMenu(void) {
+    FourStyleNames names;
     s32 buttonY, cancelX, textY, i, x;
 
+    /* The names are read from a copy on the stack. */
+    names = *(FourStyleNames *)g_apszRectStyleNames;
     /* Both buttons are placed by their widths. */
     buttonY = 0x143 - g_texButtonA.width;
     cancelX = 0x161 - g_texButtonB.width;
@@ -1221,7 +1265,7 @@ void ProcessRectStyleMenu(void) {
     DrawRectBorder(0xB1, 0x103, 0x11E, 0x1E, 1, 1, 1, 0x80, 0x80, 0x80);
     SetTextSize(11);
     SetTextCustomColors(0xFF, 0xFF, 0xFF, 0xFF, 0xF5, 0);
-    DrawText(g_apszRectStyleNames[g_bStyleMenuCursor], 0x9F, 0x8C);
+    DrawText(names.name[g_bStyleMenuCursor], 0x9F, 0x8C);
     SetTextSize(10);
     SetTextAlignLeft();
     textY = (buttonY + 0x12) >> 1;
@@ -1236,9 +1280,12 @@ void ProcessRectStyleMenu(void) {
 }
 
 void ProcessOvalStyleMenu(void) {
+    FourStyleNames names;
     Sprite *icon;
     s32 buttonY, cancelX, textY, i, x;
 
+    /* The names are read from a copy on the stack. */
+    names = *(FourStyleNames *)g_apszOvalStyleNames;
     buttonY = 0x143 - g_texButtonA.width;
     cancelX = 0x160 - g_texButtonB.width;
     DrawRectBorder(0xB8, 0x95, 0x110, 0xB6, 3, 0, 0, 0x80, 0x80, 0x80);
@@ -1279,7 +1326,7 @@ void ProcessOvalStyleMenu(void) {
     DrawRectBorder(0xCE, 0x101, 0xE4, 0x1E, 1, 1, 1, 0x80, 0x80, 0x80);
     SetTextSize(11);
     SetTextCustomColors(0xFF, 0xFF, 0xFF, 0xFF, 0xF5, 0);
-    DrawText(g_apszOvalStyleNames[g_bStyleMenuCursor], 0x9F, 0x8B);
+    DrawText(names.name[g_bStyleMenuCursor], 0x9F, 0x8B);
     SetTextSize(10);
     SetTextAlignLeft();
     textY = (buttonY + 0x12) >> 1;
@@ -1300,7 +1347,8 @@ void ProcessPaintShopExitConfirm(void) {
     if (g_bPaintShopExiting) {
         return;
     }
-    if (g_bDecalEditCount == 0) {
+    /* The unsigned count is tested as signed. */
+    if (g_bDecalEditCount <= 0) {
         g_bPaintShopExiting = TRUE;
         SetFadeTarget(0.0f, 0.2f);
         return;

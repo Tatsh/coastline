@@ -66,9 +66,16 @@
 #define TRANSPARENT_START_UNKNOWN 0x1000
 
 /** The bits of the texture a vertex of a triangle is off, which all of its vertices share. */
-static inline s32 TriangleOffTexture(u8 *offTexture, u32 word) {
-    return offTexture[(word >> 1) & 0x1F] & offTexture[(word >> 9) & 0x1F] &
-           offTexture[(word >> 17) & 0x1F];
+static inline u8 TriangleOffTexture(u8 *offTexture, u32 word) {
+    u8 bits;
+
+    word >>= 1;
+    bits = offTexture[word & 0x1F];
+    word >>= 8;
+    bits &= offTexture[word & 0x1F];
+    word >>= 8;
+    bits &= offTexture[word & 0x1F];
+    return bits;
 }
 
 /** The geometry modes of the track, with its culling, shading and fog. */
@@ -145,7 +152,8 @@ static inline void DrawPlainInstance(TrackInstance *instance) {
 void ProjectWorldToScreenRect(Vec3f *point, s32 size, s16 low[2], s16 high[2]) {
     ViewportRect *view = &g_aViewportRects[g_dwCurrentSplitScreenIndex];
     f32 clip[4];
-    f32 inverse, radius, left, right, bottom, top, halfWidth, halfHeight;
+    f32 upper[2];
+    f32 inverse, radius, halfWidth, halfHeight;
     s32 halfWidthPixels = view->width >> 1;
     s32 halfHeightPixels = view->height >> 1;
     s32 centerX = view->x + halfWidthPixels;
@@ -163,16 +171,17 @@ void ProjectWorldToScreenRect(Vec3f *point, s32 size, s16 low[2], s16 high[2]) {
     }
     clip[1] *= inverse;
     radius = (f32)size * inverse;
-    right = clip[0] + radius;
-    left = clip[0] - radius;
-    top = clip[1] + radius;
-    bottom = clip[1] - radius;
+    /* The lower corner overwrites the point on the stack, and the upper one has its own pair. */
+    upper[0] = clip[0] + radius;
+    clip[0] -= radius;
+    upper[1] = clip[1] + radius;
+    clip[1] -= radius;
     halfWidth = (f32)halfWidthPixels;
     halfHeight = (f32)halfHeightPixels;
-    low[0] = (s32)(left * halfWidth) + centerX;
-    low[1] = centerY - (s32)(bottom * halfHeight);
-    high[0] = (s32)(right * halfWidth) + centerX;
-    high[1] = centerY - (s32)(top * halfHeight);
+    low[0] = (s32)(clip[0] * halfWidth) + centerX;
+    low[1] = centerY - (s32)(clip[1] * halfHeight);
+    high[0] = (s32)(upper[0] * halfWidth) + centerX;
+    high[1] = centerY - (s32)(upper[1] * halfHeight);
 }
 
 void ResetShadowBuffers(void) {
@@ -184,9 +193,11 @@ void ResetShadowBuffers(void) {
 void RenderTrackInstance(s32 index, s32 vehicles, s32 deferred) {
     TrackInstance *instance = &g_LoadedTrack.instances[index];
     Gfx *displayList = instance->displayList;
-    Gfx *out = g_pShadowDisplayListWritePtr;
+    /* The list of the shadows is walked a word at a time. */
+    u32 *out = (u32 *)g_pShadowDisplayListWritePtr;
     Vtx *vertex = g_pShadowVertexWritePtr;
-    Gfx *source, *lastLoadEnd, *saved;
+    u32 *source, *lastLoadEnd;
+    Gfx *saved;
     Vtx *from, *savedVertex;
     Vehicle *vehicle;
     f32 *matrix;
@@ -195,293 +206,312 @@ void RenderTrackInstance(s32 index, s32 vehicles, s32 deferred) {
     u8 *flag;
     f32 lengthScale, widthScale, alongX, alongY, acrossX, acrossY, sum, scale, x, y, z;
     f32 m00, m10, m20, m30, m01, m11, m21, m31;
-    s32 i, count, s, t, bits;
+    s32 i, count, s, t;
     u32 w0;
+    u8 bits;
 
     if (vehicles == 0 ||
         g_pActiveCamera == &g_pActiveCameraVehicle->cameras[VEHICLE_CAMERA_MIRROR] ||
         (instance->flags & TRACK_INSTANCE_NO_SHADOW)) {
-        DrawPlainInstance(instance);
-        return;
-    }
-
-    AddTimingMarker(0, 0x50, 0xFA, 0x50, 0xFF);
-    gSPTexture(gDisplayListPtr++, 0xFFFF, 0xFFFF, 2, G_TX_RENDERTILE, G_ON);
-    gDPTileSync(gDisplayListPtr++);
-    gDPSetPrimColor(gDisplayListPtr++, PRIM_MIN_LEVEL, 0, 0xFF, 0, 0, 0xFF);
-    gSPDisplayList(gDisplayListPtr++, displayList);
-
-    /* The shadows: the particle texture, clamped and doubled, in the colour of the fog. */
-    gDPPipeSync(gDisplayListPtr++);
-    gDPSetCycleType(gDisplayListPtr++, G_CYC_1CYCLE);
-    gDPSetTextureImage(gDisplayListPtr++, G_IM_FMT_I, G_IM_SIZ_16b, 1, g_aParticleTexture);
-    gDPSetTile(gDisplayListPtr++,
-               G_IM_FMT_I,
-               G_IM_SIZ_16b,
-               0,
-               0,
-               G_TX_LOADTILE,
-               0,
-               G_TX_WRAP,
-               6,
-               G_TX_NOLOD,
-               G_TX_WRAP,
-               6,
-               G_TX_NOLOD);
-    gDPLoadSync(gDisplayListPtr++);
-    gDPLoadBlock(gDisplayListPtr++, G_TX_LOADTILE, 0, 0, PARTICLE_LOAD_TEXELS, PARTICLE_LOAD_DXT);
-    gDPSetTile(gDisplayListPtr++,
-               G_IM_FMT_I,
-               G_IM_SIZ_8b,
-               8,
-               0,
-               G_TX_RENDERTILE,
-               0,
-               G_TX_CLAMP,
-               6,
-               15,
-               G_TX_CLAMP,
-               6,
-               15);
-    gDPSetTileSize(gDisplayListPtr++, G_TX_RENDERTILE, 0, 0, 63 << 2, 63 << 2);
-    gSPTexture(gDisplayListPtr++, 0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON);
-    gDPSetTextureLOD(gDisplayListPtr++, G_TL_TILE);
-    gDPSetPrimColor(gDisplayListPtr++, PRIM_MIN_LEVEL, 0, 0xFF, 0, 0, 0xFF);
-    if (deferred && !g_dwNightMode && !g_dwRainMode) {
-        gDPSetRenderMode(gDisplayListPtr++,
-                         Z_CMP | IM_RD | CVG_DST_SAVE | ZMODE_XLU | FORCE_BL |
-                             GBL_c1(G_BL_CLR_IN, G_BL_A_IN, G_BL_CLR_MEM, G_BL_1MA),
-                         GBL_c2(G_BL_CLR_IN, G_BL_A_IN, G_BL_CLR_MEM, G_BL_1MA));
+        gSPTexture(gDisplayListPtr++, 0xFFFF, 0xFFFF, 2, G_TX_RENDERTILE, G_ON);
+        gDPTileSync(gDisplayListPtr++);
+        gSPDisplayList(gDisplayListPtr++, displayList);
+        g_dwStatTrianglesDrawn += instance->triangleCount;
+        g_dwStatVerticesDrawn += instance->vertexCount;
+        g_dwStatPolygonsDrawn += instance->polygonCount;
     } else {
-        gDPSetRenderMode(gDisplayListPtr++,
-                         Z_CMP | IM_RD | CVG_DST_SAVE | ZMODE_DEC | FORCE_BL |
-                             GBL_c1(G_BL_CLR_IN, G_BL_A_IN, G_BL_CLR_MEM, G_BL_1MA),
-                         GBL_c2(G_BL_CLR_IN, G_BL_A_IN, G_BL_CLR_MEM, G_BL_1MA));
-    }
-    gDPSetAlphaCompare(gDisplayListPtr++, G_AC_THRESHOLD);
-    gDPSetBlendColor(gDisplayListPtr++, 0, 0, 0, 8);
-    gDPSetCombineLERP(gDisplayListPtr++,
-                      ENVIRONMENT,
-                      0,
-                      ENV_ALPHA,
-                      0,
-                      0,
-                      0,
-                      0,
-                      TEXEL0,
-                      ENVIRONMENT,
-                      0,
-                      ENV_ALPHA,
-                      0,
-                      0,
-                      0,
-                      0,
-                      TEXEL0);
-    gSPClearGeometryMode(gDisplayListPtr++, G_SHADE | G_FOG | G_LIGHTING | G_TEXTURE_GEN);
-    gDPSetColorDither(gDisplayListPtr++, G_CD_DISABLE);
-    gSPDisplayList(gDisplayListPtr++, out);
+        AddTimingMarker(0, 0x50, 0xFA, 0x50, 0xFF);
+        gSPTexture(gDisplayListPtr++, 0xFFFF, 0xFFFF, 2, G_TX_RENDERTILE, G_ON);
+        gDPTileSync(gDisplayListPtr++);
+        gDPSetPrimColor(gDisplayListPtr++, PRIM_MIN_LEVEL, 0, 0xFF, 0, 0, 0xFF);
+        gSPDisplayList(gDisplayListPtr++, displayList);
 
-    /* Then the modes of the track again. */
-    gDPPipeSync(gDisplayListPtr++);
-    if (!g_bShadowCullDisabled) {
-        SetScissorRect(g_aViewportRects[g_dwCurrentSplitScreenIndex].x,
-                       g_aViewportRects[g_dwCurrentSplitScreenIndex].y,
-                       g_aViewportRects[g_dwCurrentSplitScreenIndex].width,
-                       g_aViewportRects[g_dwCurrentSplitScreenIndex].height);
-    }
-    gDPSetColorDither(gDisplayListPtr++, g_dwColorDitherMode);
-    gDPSetBlendColor(gDisplayListPtr++, 0, 0, 0, 0);
-    if (g_dwWeatherActive) {
-        gSPSetGeometryMode(gDisplayListPtr++, G_SHADE | G_FOG | G_LIGHTING);
-    } else {
-        gSPSetGeometryMode(gDisplayListPtr++, G_SHADE | G_LIGHTING);
-    }
-    gDPSetTextureLOD(gDisplayListPtr++, g_bTrackTextureLod ? G_TL_LOD : G_TL_TILE);
-    gDPSetPrimColor(gDisplayListPtr++, PRIM_MIN_LEVEL, 0, 0xFF, 0, 0, 0xFF);
-    gDPSetCycleType(gDisplayListPtr++, G_CYC_2CYCLE);
-    gDPSetRenderMode(gDisplayListPtr++, g_dwTrackOtherModeLBlend, g_dwTrackOtherModeLFlags);
-    SetTrackCombiner(gDisplayListPtr++);
-    /* A model with shadows is counted three times over. */
-    g_dwStatTrianglesDrawn += instance->triangleCount * 3;
-    g_dwStatVerticesDrawn += instance->vertexCount * 3;
-    g_dwStatPolygonsDrawn += instance->polygonCount * 3;
+        /* The shadows: the particle texture, clamped and doubled, in the colour of the fog. */
+        gDPPipeSync(gDisplayListPtr++);
+        gDPSetCycleType(gDisplayListPtr++, G_CYC_1CYCLE);
+        gDPSetTextureImage(gDisplayListPtr++, G_IM_FMT_I, G_IM_SIZ_16b, 1, g_aParticleTexture);
+        gDPSetTile(gDisplayListPtr++,
+                   G_IM_FMT_I,
+                   G_IM_SIZ_16b,
+                   0,
+                   0,
+                   G_TX_LOADTILE,
+                   0,
+                   G_TX_WRAP,
+                   6,
+                   G_TX_NOLOD,
+                   G_TX_WRAP,
+                   6,
+                   G_TX_NOLOD);
+        gDPLoadSync(gDisplayListPtr++);
+        gDPLoadBlock(
+            gDisplayListPtr++, G_TX_LOADTILE, 0, 0, PARTICLE_LOAD_TEXELS, PARTICLE_LOAD_DXT);
+        gDPSetTile(gDisplayListPtr++,
+                   G_IM_FMT_I,
+                   G_IM_SIZ_8b,
+                   8,
+                   0,
+                   G_TX_RENDERTILE,
+                   0,
+                   G_TX_CLAMP,
+                   6,
+                   15,
+                   G_TX_CLAMP,
+                   6,
+                   15);
+        gDPSetTileSize(gDisplayListPtr++, G_TX_RENDERTILE, 0, 0, 63 << 2, 63 << 2);
+        gSPTexture(gDisplayListPtr++, 0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON);
+        gDPSetTextureLOD(gDisplayListPtr++, G_TL_TILE);
+        gDPSetPrimColor(gDisplayListPtr++, PRIM_MIN_LEVEL, 0, 0xFF, 0, 0, 0xFF);
+        if (deferred && !g_dwNightMode && !g_dwRainMode) {
+            gDPSetRenderMode(gDisplayListPtr++,
+                             Z_CMP | IM_RD | CVG_DST_SAVE | ZMODE_XLU | FORCE_BL |
+                                 GBL_c1(G_BL_CLR_IN, G_BL_A_IN, G_BL_CLR_MEM, G_BL_1MA),
+                             GBL_c2(G_BL_CLR_IN, G_BL_A_IN, G_BL_CLR_MEM, G_BL_1MA));
+        } else {
+            gDPSetRenderMode(gDisplayListPtr++,
+                             Z_CMP | IM_RD | CVG_DST_SAVE | ZMODE_DEC | FORCE_BL |
+                                 GBL_c1(G_BL_CLR_IN, G_BL_A_IN, G_BL_CLR_MEM, G_BL_1MA),
+                             GBL_c2(G_BL_CLR_IN, G_BL_A_IN, G_BL_CLR_MEM, G_BL_1MA));
+        }
+        gDPSetAlphaCompare(gDisplayListPtr++, G_AC_THRESHOLD);
+        gDPSetBlendColor(gDisplayListPtr++, 0, 0, 0, 8);
+        gDPSetCombineLERP(gDisplayListPtr++,
+                          ENVIRONMENT,
+                          0,
+                          ENV_ALPHA,
+                          0,
+                          0,
+                          0,
+                          0,
+                          TEXEL0,
+                          ENVIRONMENT,
+                          0,
+                          ENV_ALPHA,
+                          0,
+                          0,
+                          0,
+                          0,
+                          TEXEL0);
+        gSPClearGeometryMode(gDisplayListPtr++, G_SHADE | G_FOG | G_LIGHTING | G_TEXTURE_GEN);
+        gDPSetColorDither(gDisplayListPtr++, G_CD_DISABLE);
+        gSPDisplayList(gDisplayListPtr++, out);
 
-    lastLoadEnd = NULL;
-    savedVertex = NULL;
-    matrix = g_afMvpMatrix[0];
-    for (i = 0; vehicles != 0; i++, vehicles >>= 1) {
-        if (!(vehicles & 1)) {
-            continue;
-        }
-        /* A vehicle casts no shadow seen from its own cockpit or bumper. */
-        if ((g_pActiveCamera == &g_pActiveCameraVehicle->cameras[VEHICLE_CAMERA_COCKPIT] ||
-             g_pActiveCamera == &g_pActiveCameraVehicle->cameras[VEHICLE_CAMERA_BUMPER]) &&
-            i == g_pActiveCameraVehicle->index) {
-            continue;
-        }
-        vehicle = &g_aVehicles[i];
-        gDPPipeSync(out++);
-        gDPSetEnvColor(out++, g_bFogR, g_bFogG, g_bFogB, FloatToInt(vehicle->fogFactor * 255.0f));
-
-        /* The texture lies along the vehicle on the ground, centred under it. */
-        g_vShadowForward = vehicle->frame.forward;
-        if (g_vShadowForward.x == 0.0f && g_vShadowForward.y == 0.0f) {
-            g_vShadowForward = vehicle->frame.up;
-        }
-        g_vShadowForward.z = 0.0f;
-        lengthScale = Vec2fLength((Vec2f *)&g_vShadowForward);
-        if (lengthScale < 0.5f) {
-            lengthScale = 0.5f;
-        }
-        widthScale = Vec2fLength((Vec2f *)&vehicle->frame.side);
-        if (widthScale < 0.5f) {
-            widthScale = 0.5f;
-        }
-        /* The first wheel of the model sizes the shadow. */
-        lengthScale = SHADOW_LENGTH_SCALE / vehicle->model->wheels[0].x / lengthScale;
-        widthScale = SHADOW_WIDTH_SCALE / vehicle->model->wheels[0].y / widthScale;
-        Vec3fNormalize(&g_vShadowForward);
-        alongX = g_vShadowForward.x * lengthScale;
-        alongY = -g_vShadowForward.y * lengthScale;
-        acrossX = g_vShadowForward.x * widthScale;
-        acrossY = -g_vShadowForward.y * widthScale;
-        memcpy(g_afMvpMatrix, instance->matrix, sizeof(g_afMvpMatrix));
-        g_afMvpMatrix[3][0] -= vehicle->frame.position.x;
-        g_afMvpMatrix[3][1] -= vehicle->frame.position.y;
-        g_afScratchMatrix[0][0] = alongX;
-        g_afScratchMatrix[0][1] = acrossY;
-        g_afScratchMatrix[0][2] = 0.0f;
-        g_afScratchMatrix[0][3] = 0.0f;
-        g_afScratchMatrix[1][0] = -alongY;
-        g_afScratchMatrix[1][1] = acrossX;
-        g_afScratchMatrix[1][2] = 0.0f;
-        g_afScratchMatrix[1][3] = 0.0f;
-        g_afScratchMatrix[2][0] = 0.0f;
-        g_afScratchMatrix[2][1] = 0.0f;
-        g_afScratchMatrix[2][2] = 1.0f;
-        g_afScratchMatrix[2][3] = 0.0f;
-        g_afScratchMatrix[3][0] = SHADOW_CENTER;
-        g_afScratchMatrix[3][1] = SHADOW_CENTER;
-        g_afScratchMatrix[3][2] = 0.0f;
-        g_afScratchMatrix[3][3] = 1.0f;
-        Mtx4x4Multiply(g_afMvpMatrix, g_afMvpMatrix, g_afScratchMatrix);
-        sum = g_afMvpMatrix[3][3] +
-              ((g_afMvpMatrix[0][3] + g_afMvpMatrix[1][3]) + g_afMvpMatrix[2][3]);
-        scale = sum == 0.0f ? 1.0f : 1.0f / sum;
-        g_afMvpMatrix[0][0] *= scale;
-        g_afMvpMatrix[1][0] *= scale;
-        g_afMvpMatrix[2][0] *= scale;
-        g_afMvpMatrix[3][0] *= scale;
-        g_afMvpMatrix[0][1] *= scale;
-        g_afMvpMatrix[1][1] *= scale;
-        g_afMvpMatrix[2][1] *= scale;
-        g_afMvpMatrix[3][1] *= scale;
-
+        /* Then the modes of the track again. */
+        gDPPipeSync(gDisplayListPtr++);
         if (!g_bShadowCullDisabled) {
-            saved = gDisplayListPtr;
-            gDisplayListPtr = out;
-            SetScissorRect(vehicle->shadowCorners[0][0],
-                           vehicle->shadowCorners[1][1],
-                           vehicle->shadowCorners[1][0] - vehicle->shadowCorners[0][0],
-                           vehicle->shadowCorners[0][1] - vehicle->shadowCorners[1][1]);
-            out = gDisplayListPtr;
-            gDisplayListPtr = saved;
+            SetScissorRect(g_aViewportRects[g_dwCurrentSplitScreenIndex].x,
+                           g_aViewportRects[g_dwCurrentSplitScreenIndex].y,
+                           g_aViewportRects[g_dwCurrentSplitScreenIndex].width,
+                           g_aViewportRects[g_dwCurrentSplitScreenIndex].height);
         }
+        gDPSetColorDither(gDisplayListPtr++, g_dwColorDitherMode);
+        gDPSetBlendColor(gDisplayListPtr++, 0, 0, 0, 0);
+        if (g_dwWeatherActive) {
+            gSPSetGeometryMode(gDisplayListPtr++, G_SHADE | G_FOG | G_LIGHTING);
+        } else {
+            gSPSetGeometryMode(gDisplayListPtr++, G_SHADE | G_LIGHTING);
+        }
+        gDPSetTextureLOD(gDisplayListPtr++, g_bTrackTextureLod ? G_TL_LOD : G_TL_TILE);
+        gDPSetPrimColor(gDisplayListPtr++, PRIM_MIN_LEVEL, 0, 0xFF, 0, 0, 0xFF);
+        gDPSetCycleType(gDisplayListPtr++, G_CYC_2CYCLE);
+        gDPSetRenderMode(gDisplayListPtr++, g_dwTrackOtherModeLBlend, g_dwTrackOtherModeLFlags);
+        SetTrackCombiner(gDisplayListPtr++);
+        /* A model with shadows is counted three times over. */
+        g_dwStatTrianglesDrawn += instance->triangleCount * 3;
+        g_dwStatVerticesDrawn += instance->vertexCount * 3;
+        g_dwStatPolygonsDrawn += instance->polygonCount * 3;
 
-        /* Copy the loads and the triangles of the model, with the vertices on the texture. */
-        source = displayList;
-        while (2 * (out - g_pShadowDisplayListStart) < SHADOW_LIST_WORDS) {
-            w0 = source->words.w0;
-            if ((w0 >> 24) == G_VTX) {
-                m00 = matrix[0];
-                m10 = matrix[4];
-                m20 = matrix[8];
-                m30 = matrix[12];
-                m01 = matrix[1];
-                m11 = matrix[5];
-                m21 = matrix[9];
-                m31 = matrix[13];
-                /* A load that no triangle used is overwritten. */
-                if (out == lastLoadEnd) {
-                    vertex = savedVertex;
-                    out--;
-                }
-                out->words.w0 = w0;
-                count = (w0 >> 10) & 0x3F;
-                if ((vertex + count) - g_pShadowVertexStart > SHADOW_VERTICES) {
-                    goto nextVehicle;
-                }
-                savedVertex = vertex;
-                if (count > MAX_LOADED_VERTICES) {
-                    SetDebugMessage("BAD VTX DL");
-                }
-                from = (Vtx *)source->words.w1;
-                out->words.w1 = (u32)vertex;
-                out++;
-                source++;
-                lastLoadEnd = out;
-                for (flag = offTexture; count != 0; count--, vertex++, from++) {
-                    CopyVec4(vertex, from);
-                    x = (f32)vertex->v.ob[0];
-                    y = (f32)vertex->v.ob[1];
-                    z = (f32)vertex->v.ob[2];
-                    vertex->v.tc[0] = (s32)(((x * m00 + y * m10) + z * m20) + m30);
-                    vertex->v.tc[1] = (s32)(((x * m01 + y * m11) + z * m21) + m31);
-                    s = vertex->v.tc[0];
-                    if (s < 0) {
-                        bits = SHADOW_OFF_LOW_S;
-                    } else if (s >= SHADOW_TEXTURE_S) {
-                        bits = SHADOW_OFF_HIGH_S;
-                    } else {
-                        bits = 0;
-                    }
-                    t = vertex->v.tc[1];
-                    if (t < 0) {
-                        bits |= SHADOW_OFF_LOW_T;
-                    } else if (t >= SHADOW_TEXTURE_T) {
-                        bits |= SHADOW_OFF_HIGH_T;
-                    }
-                    *flag++ = bits;
-                }
-            } else if ((w0 >> 24) == G_TRI2) {
-                if (g_bShadowCullDisabled) {
-                    *out++ = *source++;
-                } else if (TriangleOffTexture(offTexture, w0)) {
-                    if (!TriangleOffTexture(offTexture, source->words.w1)) {
-                        out->words.w0 = _SHIFTL(G_TRI1, 24, 8);
-                        out->words.w1 = source->words.w1 & 0xFFFFFF;
-                        out++;
-                    }
-                    source++;
-                } else if (TriangleOffTexture(offTexture, source->words.w1)) {
-                    out->words.w0 = _SHIFTL(G_TRI1, 24, 8);
-                    out->words.w1 = w0 & 0xFFFFFF;
-                    out++;
-                    source++;
-                } else {
-                    *out++ = *source++;
-                }
-            } else if ((w0 >> 24) == G_ENDDL) {
-                break;
-            } else if ((w0 >> 24) == G_TRI1) {
-                if (g_bShadowCullDisabled || !TriangleOffTexture(offTexture, source->words.w1)) {
-                    *out++ = *source;
-                }
-                source++;
-            } else {
-                source++;
+        lastLoadEnd = NULL;
+        savedVertex = NULL;
+        matrix = g_afMvpMatrix[0];
+        for (i = 0; vehicles != 0; i++, vehicles >>= 1) {
+            if (!(vehicles & 1)) {
+                continue;
             }
+            /* A vehicle casts no shadow seen from its own cockpit or bumper. */
+            if ((g_pActiveCamera == &g_pActiveCameraVehicle->cameras[VEHICLE_CAMERA_COCKPIT] ||
+                 g_pActiveCamera == &g_pActiveCameraVehicle->cameras[VEHICLE_CAMERA_BUMPER]) &&
+                i == g_pActiveCameraVehicle->index) {
+                continue;
+            }
+            vehicle = &g_aVehicles[i];
+            gDPPipeSync((Gfx *)out);
+            out += 2;
+            gDPSetEnvColor(
+                (Gfx *)out, g_bFogR, g_bFogG, g_bFogB, FloatToInt(vehicle->fogFactor * 255.0f));
+            out += 2;
+
+            /* The texture lies along the vehicle on the ground, centred under it. */
+            g_vShadowForward = vehicle->frame.forward;
+            if (g_vShadowForward.x == 0.0f && g_vShadowForward.y == 0.0f) {
+                g_vShadowForward = vehicle->frame.up;
+            }
+            g_vShadowForward.z = 0.0f;
+            lengthScale = Vec2fLength((Vec2f *)&g_vShadowForward);
+            if (lengthScale < 0.5f) {
+                lengthScale = 0.5f;
+            }
+            widthScale = Vec2fLength((Vec2f *)&vehicle->frame.side);
+            if (widthScale < 0.5f) {
+                widthScale = 0.5f;
+            }
+            /* The first wheel of the model sizes the shadow. */
+            lengthScale = SHADOW_LENGTH_SCALE / vehicle->model->wheels[0].x / lengthScale;
+            widthScale = SHADOW_WIDTH_SCALE / vehicle->model->wheels[0].y / widthScale;
+            Vec3fNormalize(&g_vShadowForward);
+            alongX = g_vShadowForward.x * lengthScale;
+            alongY = -g_vShadowForward.y * lengthScale;
+            acrossX = g_vShadowForward.x * widthScale;
+            acrossY = -g_vShadowForward.y * widthScale;
+            memcpy(g_afMvpMatrix, instance->matrix, sizeof(g_afMvpMatrix));
+            g_afMvpMatrix[3][0] -= vehicle->frame.position.x;
+            g_afMvpMatrix[3][1] -= vehicle->frame.position.y;
+            g_afScratchMatrix[0][0] = alongX;
+            g_afScratchMatrix[0][1] = acrossY;
+            g_afScratchMatrix[0][2] = 0.0f;
+            g_afScratchMatrix[0][3] = 0.0f;
+            g_afScratchMatrix[1][0] = -alongY;
+            g_afScratchMatrix[1][1] = acrossX;
+            g_afScratchMatrix[1][2] = 0.0f;
+            g_afScratchMatrix[1][3] = 0.0f;
+            g_afScratchMatrix[2][0] = 0.0f;
+            g_afScratchMatrix[2][1] = 0.0f;
+            g_afScratchMatrix[2][2] = 1.0f;
+            g_afScratchMatrix[2][3] = 0.0f;
+            g_afScratchMatrix[3][0] = SHADOW_CENTER;
+            g_afScratchMatrix[3][1] = SHADOW_CENTER;
+            g_afScratchMatrix[3][2] = 0.0f;
+            g_afScratchMatrix[3][3] = 1.0f;
+            Mtx4x4Multiply(g_afMvpMatrix, g_afMvpMatrix, g_afScratchMatrix);
+            sum = g_afMvpMatrix[3][3] +
+                  ((g_afMvpMatrix[0][3] + g_afMvpMatrix[1][3]) + g_afMvpMatrix[2][3]);
+            scale = sum == 0.0f ? 1.0f : 1.0f / sum;
+            g_afMvpMatrix[0][0] *= scale;
+            g_afMvpMatrix[1][0] *= scale;
+            g_afMvpMatrix[2][0] *= scale;
+            g_afMvpMatrix[3][0] *= scale;
+            g_afMvpMatrix[0][1] *= scale;
+            g_afMvpMatrix[1][1] *= scale;
+            g_afMvpMatrix[2][1] *= scale;
+            g_afMvpMatrix[3][1] *= scale;
+
+            if (!g_bShadowCullDisabled) {
+                saved = gDisplayListPtr;
+                gDisplayListPtr = (Gfx *)out;
+                SetScissorRect(vehicle->shadowCorners[0][0],
+                               vehicle->shadowCorners[1][1],
+                               vehicle->shadowCorners[1][0] - vehicle->shadowCorners[0][0],
+                               vehicle->shadowCorners[0][1] - vehicle->shadowCorners[1][1]);
+                out = (u32 *)gDisplayListPtr;
+                gDisplayListPtr = saved;
+            }
+
+            /* Copy the loads and the triangles of the model, with the vertices on the texture. */
+            source = (u32 *)displayList;
+            while (out - (u32 *)g_pShadowDisplayListStart < SHADOW_LIST_WORDS) {
+                w0 = source[0];
+                if ((w0 >> 24) == G_VTX) {
+                    m00 = matrix[0];
+                    m10 = matrix[4];
+                    m20 = matrix[8];
+                    m30 = matrix[12];
+                    m01 = matrix[1];
+                    m11 = matrix[5];
+                    m21 = matrix[9];
+                    m31 = matrix[13];
+                    /* A load that no triangle used is overwritten. */
+                    if (out == lastLoadEnd) {
+                        vertex = savedVertex;
+                        out -= 2;
+                    }
+                    *out++ = w0;
+                    source++;
+                    count = (w0 >> 10) & 0x3F;
+                    if ((vertex + count) - g_pShadowVertexStart > SHADOW_VERTICES) {
+                        /* The first word of the load is stepped over and back. */
+                        out--;
+                        goto nextVehicle;
+                    }
+                    savedVertex = vertex;
+                    if (count > MAX_LOADED_VERTICES) {
+                        SetDebugMessage("BAD VTX DL");
+                    }
+                    from = (Vtx *)*source++;
+                    *out++ = (u32)vertex;
+                    lastLoadEnd = out;
+                    for (flag = offTexture; count-- != 0; vertex++, from++) {
+                        CopyVec4(vertex, from);
+                        x = (f32)vertex->v.ob[0];
+                        y = (f32)vertex->v.ob[1];
+                        z = (f32)vertex->v.ob[2];
+                        vertex->v.tc[0] = (s32)(((x * m00 + y * m10) + z * m20) + m30);
+                        vertex->v.tc[1] = (s32)(((x * m01 + y * m11) + z * m21) + m31);
+                        s = vertex->v.tc[0];
+                        if (s < 0) {
+                            bits = SHADOW_OFF_LOW_S;
+                        } else if (s >= SHADOW_TEXTURE_S) {
+                            bits = SHADOW_OFF_HIGH_S;
+                        } else {
+                            bits = 0;
+                        }
+                        t = vertex->v.tc[1];
+                        if (t < 0) {
+                            bits |= SHADOW_OFF_LOW_T;
+                        } else if (t >= SHADOW_TEXTURE_T) {
+                            bits |= SHADOW_OFF_HIGH_T;
+                        }
+                        *flag++ = bits;
+                    }
+                } else if ((w0 >> 24) == G_TRI2) {
+                    if (g_bShadowCullDisabled) {
+                        out[0] = w0;
+                        out[1] = source[1];
+                        out += 2;
+                        source += 2;
+                    } else if (TriangleOffTexture(offTexture, w0)) {
+                        if (!TriangleOffTexture(offTexture, source[1])) {
+                            out[0] = _SHIFTL(G_TRI1, 24, 8);
+                            out[1] = source[1] & 0xFFFFFF;
+                            out += 2;
+                        }
+                        source += 2;
+                    } else if (TriangleOffTexture(offTexture, source[1])) {
+                        out[0] = _SHIFTL(G_TRI1, 24, 8);
+                        out[1] = source[0] & 0xFFFFFF;
+                        out += 2;
+                        source += 2;
+                    } else {
+                        out[0] = w0;
+                        out[1] = source[1];
+                        out += 2;
+                        source += 2;
+                    }
+                } else if ((w0 >> 24) == G_ENDDL) {
+                    break;
+                } else if ((w0 >> 24) == G_TRI1) {
+                    if (g_bShadowCullDisabled || !TriangleOffTexture(offTexture, source[1])) {
+                        out[0] = w0;
+                        out[1] = source[1];
+                        out += 2;
+                    }
+                    source += 2;
+                } else {
+                    source += 2;
+                }
+            }
+            if (out == lastLoadEnd) {
+                vertex = savedVertex;
+                out -= 2;
+            }
+        nextVehicle:;
         }
-        if (out == lastLoadEnd) {
-            vertex = savedVertex;
-            out--;
-        }
-    nextVehicle:;
+        gSPEndDisplayList((Gfx *)out);
+        out += 2;
+        AddTimingMarker(0, 0xFF, 0x80, 0x80, 0xFF);
     }
-    gSPEndDisplayList(out++);
-    AddTimingMarker(0, 0xFF, 0x80, 0x80, 0xFF);
     g_pShadowVertexWritePtr = vertex;
-    g_pShadowDisplayListWritePtr = out;
+    g_pShadowDisplayListWritePtr = (Gfx *)out;
 }
 
 s32 CompareVisibleCellDistance(const void *a, const void *b) {
@@ -500,31 +530,30 @@ s32 CompareVisibleCellDistance(const void *a, const void *b) {
 void BuildVisibleInstanceList(void) {
     VisibleCell *cell;
     TrackGridCursor cursor;
-    ViewportRect *view;
     Vehicle *vehicle;
     Vec3f point;
+    f32 *position;
     f32 dot, forwardX, forwardY;
-    s32 count, row, column, cameraColumn, cameraRow, farDistance, midDistance, i, j, bit, overflow;
+    s32 count, row, column, cameraColumn, cameraRow, farDistance, midDistance, i, j, bit;
     s32 columnDistance, rowDistance;
     u32 found;
     u16 index;
 
     g_bVisibleCellListOverflow = FALSE;
     count = 0;
-    overflow = FALSE;
-    for (row = g_dwVisibleGridMinRow; !overflow && row <= g_dwVisibleGridMaxRow; row++) {
+    for (row = g_dwVisibleGridMinRow; row <= g_dwVisibleGridMaxRow; row++) {
         for (column = g_adwVisibleGridRowMinCol[row]; column <= g_adwVisibleGridRowMaxCol[row];
              column++) {
             if (count == VISIBLE_CELLS) {
                 g_bVisibleCellListOverflow = TRUE;
-                overflow = TRUE;
-                break;
+                goto terminate;
             }
             g_aVisibleCellTuples[count].column = column;
             g_aVisibleCellTuples[count].row = row;
             count++;
         }
     }
+terminate:
     g_aVisibleCellTuples[count].column = 0xFF;
     g_aVisibleCellTuples[count].row = 0xFF;
 
@@ -550,7 +579,8 @@ void BuildVisibleInstanceList(void) {
     g_nVisibleCellIdxNear = -1;
     g_nVisibleCellIdxFar = -1;
     g_nVisibleCellIdxMid = -1;
-    farDistance = (s32)(gFrustumFar / GRID_CELL_SIZE) - 3;
+    farDistance = (s32)(gFrustumFar / GRID_CELL_SIZE);
+    farDistance -= 3;
     farDistance *= farDistance;
     if (g_pActiveCameraVehicle->input->playbackBuffer != NULL &&
         g_pActiveCamera == &g_pActiveCameraVehicle->cameras[VEHICLE_CAMERA_TRACKSIDE]) {
@@ -571,9 +601,10 @@ void BuildVisibleInstanceList(void) {
             g_nVisibleCellIdxFar = g_nVisibleInstanceCount;
         }
         /* The model an animation flies is listed with every cell while it is in view. */
+        /* The original takes the address of the position, and only the call reads it. */
         if (g_dwAirplaneInstance != 0 && g_abInstanceVisibilityMask[g_dwAirplaneInstance] != 0 &&
-            IsPointVisible(g_LoadedTrack.instances[g_dwAirplaneInstance].matrix[3][0],
-                           g_LoadedTrack.instances[g_dwAirplaneInstance].matrix[3][1])) {
+            (position = g_LoadedTrack.instances[g_dwAirplaneInstance].matrix[3],
+             IsPointVisible(position[0], position[1]))) {
             g_awVisibleInstanceList[g_nVisibleInstanceCount++] = g_dwAirplaneInstance;
             g_abInstanceVisibilityMask[g_dwAirplaneInstance] = 0;
         }
@@ -677,30 +708,42 @@ void BuildVisibleInstanceList(void) {
         point.y = vehicle->frame.position.y;
         point.z = vehicle->frame.position.z - vehicle->groundDistance;
         ProjectWorldToScreenRect(&point, 8, vehicle->shadowCorners[0], vehicle->shadowCorners[1]);
-        view = &g_aViewportRects[g_dwCurrentSplitScreenIndex];
-        if (vehicle->shadowCorners[0][0] < view->x) {
-            vehicle->shadowCorners[0][0] = view->x;
+        /* The view is indexed afresh for each bound, and read again after each store. */
+        if (vehicle->shadowCorners[0][0] < g_aViewportRects[g_dwCurrentSplitScreenIndex].x) {
+            vehicle->shadowCorners[0][0] = g_aViewportRects[g_dwCurrentSplitScreenIndex].x;
         }
-        if (vehicle->shadowCorners[1][0] < view->x) {
-            vehicle->shadowCorners[1][0] = view->x;
+        if (vehicle->shadowCorners[1][0] < g_aViewportRects[g_dwCurrentSplitScreenIndex].x) {
+            vehicle->shadowCorners[1][0] = g_aViewportRects[g_dwCurrentSplitScreenIndex].x;
         }
-        if (vehicle->shadowCorners[0][1] < view->y) {
-            vehicle->shadowCorners[0][1] = view->y;
+        if (vehicle->shadowCorners[0][1] < g_aViewportRects[g_dwCurrentSplitScreenIndex].y) {
+            vehicle->shadowCorners[0][1] = g_aViewportRects[g_dwCurrentSplitScreenIndex].y;
         }
-        if (vehicle->shadowCorners[1][1] < view->y) {
-            vehicle->shadowCorners[1][1] = view->y;
+        if (vehicle->shadowCorners[1][1] < g_aViewportRects[g_dwCurrentSplitScreenIndex].y) {
+            vehicle->shadowCorners[1][1] = g_aViewportRects[g_dwCurrentSplitScreenIndex].y;
         }
-        if (view->x + view->width < vehicle->shadowCorners[0][0]) {
-            vehicle->shadowCorners[0][0] = view->x + view->width;
+        if (g_aViewportRects[g_dwCurrentSplitScreenIndex].x +
+                g_aViewportRects[g_dwCurrentSplitScreenIndex].width <
+            vehicle->shadowCorners[0][0]) {
+            vehicle->shadowCorners[0][0] = g_aViewportRects[g_dwCurrentSplitScreenIndex].x +
+                                           g_aViewportRects[g_dwCurrentSplitScreenIndex].width;
         }
-        if (view->x + view->width < vehicle->shadowCorners[1][0]) {
-            vehicle->shadowCorners[1][0] = view->x + view->width;
+        if (g_aViewportRects[g_dwCurrentSplitScreenIndex].x +
+                g_aViewportRects[g_dwCurrentSplitScreenIndex].width <
+            vehicle->shadowCorners[1][0]) {
+            vehicle->shadowCorners[1][0] = g_aViewportRects[g_dwCurrentSplitScreenIndex].x +
+                                           g_aViewportRects[g_dwCurrentSplitScreenIndex].width;
         }
-        if (view->y + view->height < vehicle->shadowCorners[0][1]) {
-            vehicle->shadowCorners[0][1] = view->y + view->height;
+        if (g_aViewportRects[g_dwCurrentSplitScreenIndex].y +
+                g_aViewportRects[g_dwCurrentSplitScreenIndex].height <
+            vehicle->shadowCorners[0][1]) {
+            vehicle->shadowCorners[0][1] = g_aViewportRects[g_dwCurrentSplitScreenIndex].y +
+                                           g_aViewportRects[g_dwCurrentSplitScreenIndex].height;
         }
-        if (view->y + view->height < vehicle->shadowCorners[1][1]) {
-            vehicle->shadowCorners[1][1] = view->y + view->height;
+        if (g_aViewportRects[g_dwCurrentSplitScreenIndex].y +
+                g_aViewportRects[g_dwCurrentSplitScreenIndex].height <
+            vehicle->shadowCorners[1][1]) {
+            vehicle->shadowCorners[1][1] = g_aViewportRects[g_dwCurrentSplitScreenIndex].y +
+                                           g_aViewportRects[g_dwCurrentSplitScreenIndex].height;
         }
     }
 }
@@ -821,7 +864,7 @@ static inline void ForceUnrotatedMatrix(TrackInstance *instance, s32 index, s32 
 void RenderTrackGeometry(s32 deferred) {
     TrackInstance *instance;
     Mtx *block;
-    u32 identity, flags;
+    u32 identity;
     s32 clear, deferredLast, opaqueCount, matrixLoaded, i, index;
 
     clear = !g_dwNightMode && !g_dwRainMode;
@@ -969,10 +1012,10 @@ void RenderTrackGeometry(s32 deferred) {
                 gDisplayListPtr++, PHYSICAL(block), G_MTX_MODELVIEW | G_MTX_LOAD | G_MTX_NOPUSH);
         }
 
-        flags = instance->flags;
-        if (flags & TRACK_INSTANCE_MODE_FLAGS) {
-            if (flags & TRACK_INSTANCE_RAMPED) {
-                if (g_dwNightMode && (flags & TRACK_INSTANCE_NIGHT_LIT)) {
+        /* The flags are read again after each command written. */
+        if (instance->flags & TRACK_INSTANCE_MODE_FLAGS) {
+            if (instance->flags & TRACK_INSTANCE_RAMPED) {
+                if (g_dwNightMode && (instance->flags & TRACK_INSTANCE_NIGHT_LIT)) {
                     gSPLightColor(
                         gDisplayListPtr++, LIGHT_1, (g_dwDirLightColor >> 1) & 0x7F7F7F00);
                 } else {
@@ -982,14 +1025,14 @@ void RenderTrackGeometry(s32 deferred) {
                               LIGHT_2,
                               g_adwLightRampColors[instance->flags & TRACK_INSTANCE_LIGHT_RAMP]);
             }
-            if (flags & TRACK_INSTANCE_TWO_SIDED) {
+            if (instance->flags & TRACK_INSTANCE_TWO_SIDED) {
                 gSPClearGeometryMode(gDisplayListPtr++, G_CULL_BACK | G_CULL_FRONT);
             }
-            if ((flags & TRACK_INSTANCE_CLEAR_SKY) && g_dwWeatherActive && !g_dwNightMode &&
-                !g_dwSnowMode && !g_dwRainMode) {
+            if ((instance->flags & TRACK_INSTANCE_CLEAR_SKY) && g_dwWeatherActive &&
+                !g_dwNightMode && !g_dwSnowMode && !g_dwRainMode) {
                 gSPClearGeometryMode(gDisplayListPtr++, G_FOG);
             }
-            if ((flags & TRACK_INSTANCE_FLAT) && g_bSmoothShading) {
+            if ((instance->flags & TRACK_INSTANCE_FLAT) && g_bSmoothShading) {
                 gSPClearGeometryMode(gDisplayListPtr++, G_SHADING_SMOOTH);
             }
         }
@@ -1000,21 +1043,18 @@ void RenderTrackGeometry(s32 deferred) {
             RenderTrackInstance(index, g_abInstanceVisibilityMask[index], deferred);
         }
 
-        flags = instance->flags;
-        if (flags & TRACK_INSTANCE_MODE_FLAGS) {
-            if ((flags & TRACK_INSTANCE_FLAT) && g_bSmoothShading) {
+        if (instance->flags & TRACK_INSTANCE_MODE_FLAGS) {
+            if ((instance->flags & TRACK_INSTANCE_FLAT) && g_bSmoothShading) {
                 gSPSetGeometryMode(gDisplayListPtr++, G_SHADING_SMOOTH);
             }
-            if (flags & TRACK_INSTANCE_RAMPED) {
+            if (instance->flags & TRACK_INSTANCE_RAMPED) {
                 gSPLightColor(gDisplayListPtr++, LIGHT_1, g_dwDirLightColor);
                 gSPLightColor(gDisplayListPtr++, LIGHT_2, g_dwAmbientLightColor);
             }
-            if (flags & TRACK_INSTANCE_TWO_SIDED) {
-                if (g_dwTrackMirrored != g_dwViewportMirrored) {
-                    gSPSetGeometryMode(gDisplayListPtr++, G_CULL_FRONT);
-                } else {
-                    gSPSetGeometryMode(gDisplayListPtr++, G_CULL_BACK);
-                }
+            if (instance->flags & TRACK_INSTANCE_TWO_SIDED) {
+                gSPSetGeometryMode(gDisplayListPtr++,
+                                   g_dwTrackMirrored != g_dwViewportMirrored ? G_CULL_FRONT :
+                                                                               G_CULL_BACK);
             }
             if (g_dwWeatherActive && !g_dwNightMode && !g_dwSnowMode && !g_dwRainMode &&
                 (instance->flags & TRACK_INSTANCE_CLEAR_SKY)) {
