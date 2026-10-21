@@ -6,6 +6,11 @@
 #include "zutil.h"
 #include "infblock.h"
 
+/* Game change: the default allocator draws from a heap the game lends, or from the frame
+   buffers while the display is blanked. */
+#include <PR/os.h>
+#include "system.h"
+
 struct inflate_blocks_state {int dummy;}; /* for buggy compilers */
 
 /* inflate private state */
@@ -48,6 +53,7 @@ struct internal_state {
 };
 
 
+/* @ghidraAddress USA: 0x8023ff80 */
 int inflateReset(z)
 z_streamp z;
 {
@@ -64,6 +70,7 @@ z_streamp z;
 }
 
 
+/* @ghidraAddress USA: 0x8023fff0 */
 int inflateEnd(z)
 z_streamp z;
 {
@@ -80,6 +87,7 @@ z_streamp z;
 }
 
 
+/* @ghidraAddress USA: 0x80240070 */
 int inflateInit2_(z, w, version, stream_size)
 z_streamp z;
 int w;
@@ -96,8 +104,22 @@ int stream_size;
   z->msg = Z_NULL;
   if (z->zalloc == Z_NULL)
   {
+    if (g_pInflateHeapBase != Z_NULL)
+    {
+      g_inflateAllocator.cur = g_pInflateHeapBase;
+      g_inflateAllocator.end = g_pInflateHeapEnd;
+    }
+    else
+    {
+      /* Both frame buffers, which hold nothing visible while the display is black. */
+      osViBlack(1);
+      g_dwScreenUnblankDelay = 2;
+      g_inflateAllocator.cur = (u8 *)g_aFramebuffer0;
+      g_inflateAllocator.end = (u8 *)g_aFramebuffer0 +
+          ((u8 *)g_aFramebuffer1 - (u8 *)g_aFramebuffer0) * 2;
+    }
+    z->opaque = (voidpf)&g_inflateAllocator;
     z->zalloc = zcalloc;
-    z->opaque = (voidpf)0;
   }
   if (z->zfree == Z_NULL) z->zfree = zcfree;
   if ((z->state = (struct internal_state FAR *)
@@ -137,6 +159,7 @@ int stream_size;
 }
 
 
+/* @ghidraAddress USA: 0x80240240 */
 int inflateInit_(z, version, stream_size)
 z_streamp z;
 const char *version;
@@ -149,6 +172,7 @@ int stream_size;
 #define NEEDBYTE {if(z->avail_in==0)return r;r=Z_OK;}
 #define NEXTBYTE (z->avail_in--,z->total_in++,*z->next_in++)
 
+/* @ghidraAddress USA: 0x8024026c */
 int inflate(z, f)
 z_streamp z;
 int f;
@@ -271,6 +295,7 @@ int f;
 }
 
 
+/* @ghidraAddress USA: 0x80240810 */
 int inflateSetDictionary(z, dictionary, dictLength)
 z_streamp z;
 const Bytef *dictionary;
@@ -295,6 +320,7 @@ uInt  dictLength;
 }
 
 
+/* @ghidraAddress USA: 0x802408e8 */
 int inflateSync(z)
 z_streamp z;
 {

@@ -66,6 +66,9 @@ if(TGR_PLATFORM STREQUAL "n64")
     "${_zlib}/adler32.c" "${_zlib}/infblock.c" "${_zlib}/infcodes.c" "${_zlib}/inffast.c"
     "${_zlib}/inflate.c" "${_zlib}/inftrees.c" "${_zlib}/infutil.c" "${_zlib}/zutil.c")
   target_include_directories(coastline_zlib PUBLIC "${_zlib}")
+  # The game's changes to zlib use the game's state and libultra.
+  target_include_directories(coastline_zlib PRIVATE "${CMAKE_SOURCE_DIR}/src"
+                                                    "${CMAKE_SOURCE_DIR}/src/libultra/include")
   target_compile_options(coastline_zlib PRIVATE -w)
   target_link_libraries(coastline_common INTERFACE coastline_zlib)
   list(APPEND COASTLINE_LIBRARIES coastline_zlib)

@@ -11,9 +11,8 @@
 
 struct inflate_codes_state {int dummy;}; /* for buggy compilers */
 
-/* Table for deflate from PKZIP's appnote.txt. */
-local uInt border[] = { /* Order of the bit length code lengths */
-        16, 17, 18, 0, 8, 7, 9, 6, 10, 5, 11, 4, 12, 3, 13, 2, 14, 1, 15};
+/* Table for deflate from PKZIP's appnote.txt: border, the order of the bit length code lengths.
+   Game change: the table is the game's data, which infblock.h declares. */
 
 /*
    Notes beyond the 1.93a appnote.txt:
@@ -61,6 +60,7 @@ local uInt border[] = { /* Order of the bit length code lengths */
  */
 
 
+/* @ghidraAddress USA: 0x8023edb0 */
 void inflate_blocks_reset(s, z, c)
 inflate_blocks_statef *s;
 z_streamp z;
@@ -86,6 +86,7 @@ uLongf *c;
 }
 
 
+/* @ghidraAddress USA: 0x8023ee84 */
 inflate_blocks_statef *inflate_blocks_new(z, c, w)
 z_streamp z;
 check_func c;
@@ -113,6 +114,7 @@ uInt w;
 #ifdef DEBUG
   extern uInt inflate_hufts;
 #endif
+/* @ghidraAddress USA: 0x8023ef4c */
 int inflate_blocks(s, z, r)
 inflate_blocks_statef *s;
 z_streamp z;
@@ -379,6 +381,7 @@ int r;
 }
 
 
+/* @ghidraAddress USA: 0x8023fed8 */
 int inflate_blocks_free(s, z, c)
 inflate_blocks_statef *s;
 z_streamp z;
@@ -392,6 +395,7 @@ uLongf *c;
 }
 
 
+/* @ghidraAddress USA: 0x8023ff34 */
 void inflate_set_dictionary(s, d, n)
 inflate_blocks_statef *s;
 const Bytef *d;

@@ -15,19 +15,10 @@ struct internal_state      {int dummy;}; /* for buggy compilers */
 extern void exit OF((int));
 #endif
 
-const char *z_errmsg[10] = {
-"need dictionary",     /* Z_NEED_DICT       2  */
-"stream end",          /* Z_STREAM_END      1  */
-"",                    /* Z_OK              0  */
-"file error",          /* Z_ERRNO         (-1) */
-"stream error",        /* Z_STREAM_ERROR  (-2) */
-"data error",          /* Z_DATA_ERROR    (-3) */
-"insufficient memory", /* Z_MEM_ERROR     (-4) */
-"buffer error",        /* Z_BUF_ERROR     (-5) */
-"incompatible version",/* Z_VERSION_ERROR (-6) */
-""};
+/* Game change: z_errmsg is the game's data, at USA 0x8028cb10, which zutil.h declares. */
 
 
+/* @ghidraAddress USA: 0x80242810 */
 const char *zlibVersion()
 {
     return ZLIB_VERSION;
@@ -186,26 +177,35 @@ void  zcfree (voidpf opaque, voidpf ptr)
 
 #ifndef MY_ZCALLOC /* Any system without a special alloc function */
 
-#ifndef STDC
-extern voidp  calloc OF((uInt items, uInt size));
-extern void   free   OF((voidpf ptr));
-#endif
+/* Game change: opaque is the bump allocator inflateInit2_() sets up. Allocations are aligned to
+   8 bytes and not cleared, nothing is freed, and running out of heap stops the game. */
+#include <PR/os.h>
+#include "system.h"
 
+/* @ghidraAddress USA: 0x8024281c */
 voidpf zcalloc (opaque, items, size)
     voidpf opaque;
     unsigned items;
     unsigned size;
 {
-    if (opaque) items += size - size; /* make compiler happy */
-    return (voidpf)calloc(items, size);
+    InflateAllocator *heap = (InflateAllocator *)opaque;
+    u8 *p = (u8 *)(((unsigned long)heap->cur + 7) & ~7UL);
+
+    /* The original advances from the unaligned position by the aligned size. */
+    heap->cur += (items * size + 7) & ~7;
+    if (heap->end < heap->cur) {
+        osSyncPrintf("Insufficient memory for zcalloc\n");
+        for (;;) {
+        }
+    }
+    return (voidpf)p;
 }
 
+/* @ghidraAddress USA: 0x80242880 */
 void  zcfree (opaque, ptr)
     voidpf opaque;
     voidpf ptr;
 {
-    free(ptr);
-    if (opaque) return; /* make compiler happy */
 }
 
 #endif /* MY_ZCALLOC */

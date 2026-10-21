@@ -36,6 +36,8 @@ SECTIONS
         . = ALIGN(8);
     }
     _bss_size = . - _bss_start;
+    /* The game uses the memory after the BSS by address, so C may not add to the BSS. */
+    ASSERT(. <= 0x80382bb0, "The BSS grew past its original end.")
 
     /DISCARD/ : {
         *(.MIPS.abiflags)
@@ -50,6 +52,10 @@ SECTIONS
 
 /* The original boot stack, inside the BSS. */
 g_abBootStackTop = 0x803168D0;
+
+/* The two frame buffers, below the program. */
+g_aFramebuffer0 = 0x801B5000;
+g_aFramebuffer1 = 0x801DA800;
 
 /* The boot parameters the IPL3 writes at the start of RAM. */
 osTvType = 0x80000300;

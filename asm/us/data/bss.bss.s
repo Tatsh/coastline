@@ -3340,14 +3340,14 @@ nonmatching g_pInflateHeapBase, 0x4
 dlabel g_pInflateHeapBase
     /* 80368AC0 */ .space 0x04
 
-nonmatching g_pInflateWindowBase, 0x4
+nonmatching g_pInflateHeapEnd, 0x4
 
-dlabel g_pInflateWindowBase
+dlabel g_pInflateHeapEnd
     /* 80368AC4 */ .space 0x04
 
-nonmatching g_pZlibAllocatorHeap, 0x4
+nonmatching g_inflateAllocator, 0x4
 
-dlabel g_pZlibAllocatorHeap
+dlabel g_inflateAllocator
     /* 80368AC8 */ .space 0x04
 
 nonmatching g_pZlibAllocatorWindow, 0x4
@@ -3355,29 +3355,29 @@ nonmatching g_pZlibAllocatorWindow, 0x4
 dlabel g_pZlibAllocatorWindow
     /* 80368ACC */ .space 0x04
 
-nonmatching D_80368AD0, 0x1090
+nonmatching fixed_mem, 0x1090
 
-dlabel D_80368AD0
+dlabel fixed_mem
     /* 80368AD0 */ .space 0x1090
 
-nonmatching g_dwEffectPosX, 0x4
+nonmatching fixed_bl, 0x4
 
-dlabel g_dwEffectPosX
+dlabel fixed_bl
     /* 80369B60 */ .space 0x04
 
-nonmatching g_dwEffectPosY, 0x4
+nonmatching fixed_bd, 0x4
 
-dlabel g_dwEffectPosY
+dlabel fixed_bd
     /* 80369B64 */ .space 0x04
 
-nonmatching g_dwEffectPosZ, 0x4
+nonmatching fixed_tl, 0x4
 
-dlabel g_dwEffectPosZ
+dlabel fixed_tl
     /* 80369B68 */ .space 0x04
 
-nonmatching g_dwEffectType, 0x4
+nonmatching fixed_td, 0x4
 
-dlabel g_dwEffectType
+dlabel fixed_td
     /* 80369B6C */ .space 0x04
 
 nonmatching g_dwHeapCurrentAddr, 0x4

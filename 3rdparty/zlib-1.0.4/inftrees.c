@@ -6,7 +6,8 @@
 #include "zutil.h"
 #include "inftrees.h"
 
-char inflate_copyright[] = " inflate 1.0.4 Copyright 1995-1996 Mark Adler ";
+/* Game change: inflate_copyright, the tables below, and the fixed tables are the game's data,
+   which inftrees.h declares. */
 /*
   If you use the zlib library in a product, an acknowledgment is welcome
   in the documentation of your product. If for some reason you cannot
@@ -37,22 +38,7 @@ local voidpf falloc OF((
     uInt,               /* number of items */
     uInt));             /* size of item */
 
-/* Tables for deflate from PKZIP's appnote.txt. */
-local uInt cplens[31] = { /* Copy lengths for literal codes 257..285 */
-        3, 4, 5, 6, 7, 8, 9, 10, 11, 13, 15, 17, 19, 23, 27, 31,
-        35, 43, 51, 59, 67, 83, 99, 115, 131, 163, 195, 227, 258, 0, 0};
-        /* actually lengths - 2; also see note #13 above about 258 */
-local uInt cplext[31] = { /* Extra bits for literal codes 257..285 */
-        0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2,
-        3, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5, 0, 192, 192}; /* 192==invalid */
-local uInt cpdist[30] = { /* Copy offsets for distance codes 0..29 */
-        1, 2, 3, 4, 5, 7, 9, 13, 17, 25, 33, 49, 65, 97, 129, 193,
-        257, 385, 513, 769, 1025, 1537, 2049, 3073, 4097, 6145,
-        8193, 12289, 16385, 24577};
-local uInt cpdext[30] = { /* Extra bits for distance codes */
-        0, 0, 0, 0, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6,
-        7, 7, 8, 8, 9, 9, 10, 10, 11, 11,
-        12, 12, 13, 13};
+/* Tables for deflate from PKZIP's appnote.txt: cplens, cplext, cpdist and cpdext. */
 
 /*
    Huffman code decoding is performed using a multi-level table lookup.
@@ -95,6 +81,7 @@ local uInt cpdext[30] = { /* Extra bits for distance codes */
   uInt inflate_hufts;
 #endif
 
+/* @ghidraAddress USA: 0x80240a30 */
 local int huft_build(b, n, s, d, e, t, m, zs)
 uIntf *b;               /* code lengths in bits (all assumed <= BMAX) */
 uInt n;                 /* number of codes (assumed <= N_MAX) */
@@ -298,6 +285,7 @@ z_streamp zs;           /* for zalloc function */
 }
 
 
+/* @ghidraAddress USA: 0x802410e0 */
 int inflate_trees_bits(c, bb, tb, z)
 uIntf *c;               /* 19 code lengths */
 uIntf *bb;              /* bits tree desired/actual depth */
@@ -319,6 +307,7 @@ z_streamp z;            /* for zfree function */
 }
 
 
+/* @ghidraAddress USA: 0x80241180 */
 int inflate_trees_dynamic(nl, nd, c, bl, bd, tl, td, z)
 uInt nl;                /* number of literal/length codes */
 uInt nd;                /* number of distance codes */
@@ -369,16 +358,11 @@ z_streamp z;            /* for zfree function */
 }
 
 
-/* build fixed tables only once--keep them here */
-local int fixed_built = 0;
-#define FIXEDH 530      /* number of hufts used by fixed tables */
-local inflate_huft fixed_mem[FIXEDH];
-local uInt fixed_bl;
-local uInt fixed_bd;
-local inflate_huft *fixed_tl;
-local inflate_huft *fixed_td;
+/* build fixed tables only once--keep them here: fixed_built, fixed_mem, fixed_bl, fixed_bd,
+   fixed_tl and fixed_td */
 
 
+/* @ghidraAddress USA: 0x802412ec */
 local voidpf falloc(q, n, s)
 voidpf q;       /* opaque pointer */
 uInt n;         /* number of items */
@@ -391,6 +375,7 @@ uInt s;         /* size of item */
 }
 
 
+/* @ghidraAddress USA: 0x80241314 */
 int inflate_trees_fixed(bl, bd, tl, td)
 uIntf *bl;               /* literal desired/actual bit depth */
 uIntf *bd;               /* distance desired/actual bit depth */
@@ -440,6 +425,7 @@ inflate_huft * FAR *td;  /* distance tree result */
 }
 
 
+/* @ghidraAddress USA: 0x8024150c */
 int inflate_trees_free(t, z)
 inflate_huft *t;        /* table to free */
 z_streamp z;            /* for zfree function */

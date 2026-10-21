@@ -6498,11 +6498,11 @@ glabel DecompressFromRom
     /* 1DE38 8021CE38 0C09927C */  jal        osGetCount
     /* 1DE3C 8021CE3C 00000000 */   nop
     /* 1DE40 8021CE40 8FAB0068 */  lw         $t3, 0x68($sp)
-    /* 1DE44 8021CE44 3C148037 */  lui        $s4, %hi(g_pInflateWindowBase)
+    /* 1DE44 8021CE44 3C148037 */  lui        $s4, %hi(g_pInflateHeapEnd)
     /* 1DE48 8021CE48 3C138037 */  lui        $s3, %hi(g_pInflateHeapBase)
     /* 1DE4C 8021CE4C AFA20064 */  sw         $v0, 0x64($sp)
     /* 1DE50 8021CE50 26738AC0 */  addiu      $s3, $s3, %lo(g_pInflateHeapBase)
-    /* 1DE54 8021CE54 26948AC4 */  addiu      $s4, $s4, %lo(g_pInflateWindowBase)
+    /* 1DE54 8021CE54 26948AC4 */  addiu      $s4, $s4, %lo(g_pInflateHeapEnd)
     /* 1DE58 8021CE58 01758021 */  addu       $s0, $t3, $s5
   .L8021CE5C:
     /* 1DE5C 8021CE5C 3C1E8032 */  lui        $fp, %hi(g_dwDmaChunkSize)

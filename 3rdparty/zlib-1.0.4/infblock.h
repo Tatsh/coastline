@@ -11,6 +11,9 @@
 struct inflate_blocks_state;
 typedef struct inflate_blocks_state FAR inflate_blocks_statef;
 
+/* Game change: the order of the bit length code lengths is the game's data, at USA 0x8028c850. */
+extern uInt border[19];
+
 extern inflate_blocks_statef * inflate_blocks_new OF((
     z_streamp z,
     check_func c,               /* check function */

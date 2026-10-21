@@ -17,8 +17,22 @@ with the version string `1.0.4`. The imported files are `README`, `ChangeLog`, t
 `zcalloc()` and `zcfree()`. The compression side, the gzip layer, and the examples are omitted.
 
 The game links `inflate.c`, `infblock.c`, `infcodes.c`, `inffast.c`, `inftrees.c`, `infutil.c`,
-`adler32.c`, and `zutil.c`. The port does not change these files yet. The 27 routines the ROM has
-from zlib are listed under the zlib component of [PROGRESS.md](../PROGRESS.md).
+`adler32.c`, and `zutil.c`. The routines the ROM has from zlib are listed under the zlib component
+of [PROGRESS.md](../PROGRESS.md). Each definition carries the USA address of its routine.
+
+### Game changes
+
+- **The default allocator.** `inflateInit2_()` in `inflate.c` gives zlib a bump allocator over the
+  heap the game sets in `g_pInflateHeapBase` and `g_pInflateHeapEnd`. Without that heap, it blanks
+  the display and uses both frame buffers, then sets `g_dwScreenUnblankDelay` to 2.
+- **The allocator itself.** `zcalloc()` in `zutil.c` returns 8-byte aligned memory that it does not
+  clear, and stops the game with a message when the heap runs out. `zcfree()` does nothing.
+- **The data.** The tables and state of `inftrees.c`, `infblock.c`, `infutil.c`, and `zutil.c` are
+  the game's data in the assembly, which the headers declare. The game's tables hold the upstream
+  values. The fixed tables of `inftrees.c` live in the game's BSS, which C may not extend.
+
+The rest of the code is upstream. Its calls match the original routine by routine, and it inflates
+every asset of the USA release to the same bytes as the host zlib.
 
 ## Verification
 

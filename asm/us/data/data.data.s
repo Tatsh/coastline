@@ -34848,9 +34848,9 @@ dlabel D_8028C844
     /* 8D84C 8028C84C 00000000 */ .word 0x00000000
 enddlabel D_8028C844
 
-nonmatching D_8028C850
+nonmatching border
 
-dlabel D_8028C850
+dlabel border
     /* 8D850 8028C850 00000010 */ .word 0x00000010
     /* 8D854 8028C854 00000011 */ .word 0x00000011
     /* 8D858 8028C858 00000012 */ .word 0x00000012
@@ -34871,20 +34871,20 @@ dlabel D_8028C850
     /* 8D894 8028C894 00000001 */ .word 0x00000001
     /* 8D898 8028C898 0000000F */ .word 0x0000000F
     /* 8D89C 8028C89C 00000000 */ .word 0x00000000
-enddlabel D_8028C850
+enddlabel border
 
 .align 2
-nonmatching g_szDecalEditorOptions
+nonmatching inflate_copyright
 
-dlabel g_szDecalEditorOptions
+dlabel inflate_copyright
     /* 8D8A0 8028C8A0 */ .asciz " inflate 1.0.4 Copyright 1995-1996 Mark Adler "
     /* 20696E666C61746520312E302E3420436F7079726967687420313939352D31393936204D61726B2041646C6572200000 */
-enddlabel g_szDecalEditorOptions
+enddlabel inflate_copyright
 .align 2
 
-nonmatching g_adwInflateLengthBase
+nonmatching cplens
 
-dlabel g_adwInflateLengthBase
+dlabel cplens
     /* 8D8D0 8028C8D0 00000003 */ .word 0x00000003
     /* 8D8D4 8028C8D4 00000004 */ .word 0x00000004
     /* 8D8D8 8028C8D8 00000005 */ .word 0x00000005
@@ -34916,11 +34916,11 @@ dlabel g_adwInflateLengthBase
     /* 8D940 8028C940 00000102 */ .word 0x00000102
     /* 8D944 8028C944 00000000 */ .word 0x00000000
     /* 8D948 8028C948 00000000 */ .word 0x00000000
-enddlabel g_adwInflateLengthBase
+enddlabel cplens
 
-nonmatching g_adwInflateLengthExtraBits
+nonmatching cplext
 
-dlabel g_adwInflateLengthExtraBits
+dlabel cplext
     /* 8D94C 8028C94C 00000000 */ .word 0x00000000
     /* 8D950 8028C950 00000000 */ .word 0x00000000
     /* 8D954 8028C954 00000000 */ .word 0x00000000
@@ -34952,11 +34952,11 @@ dlabel g_adwInflateLengthExtraBits
     /* 8D9BC 8028C9BC 00000000 */ .word 0x00000000
     /* 8D9C0 8028C9C0 000000C0 */ .word 0x000000C0
     /* 8D9C4 8028C9C4 000000C0 */ .word 0x000000C0
-enddlabel g_adwInflateLengthExtraBits
+enddlabel cplext
 
-nonmatching g_adwInflateDistBase
+nonmatching cpdist
 
-dlabel g_adwInflateDistBase
+dlabel cpdist
     /* 8D9C8 8028C9C8 00000001 */ .word 0x00000001
     /* 8D9CC 8028C9CC 00000002 */ .word 0x00000002
     /* 8D9D0 8028C9D0 00000003 */ .word 0x00000003
@@ -34987,11 +34987,11 @@ dlabel g_adwInflateDistBase
     /* 8DA34 8028CA34 00003001 */ .word 0x00003001
     /* 8DA38 8028CA38 00004001 */ .word 0x00004001
     /* 8DA3C 8028CA3C 00006001 */ .word 0x00006001
-enddlabel g_adwInflateDistBase
+enddlabel cpdist
 
-nonmatching g_adwInflateDistExtraBits
+nonmatching cpdext
 
-dlabel g_adwInflateDistExtraBits
+dlabel cpdext
     /* 8DA40 8028CA40 00000000 */ .word 0x00000000
     /* 8DA44 8028CA44 00000000 */ .word 0x00000000
     /* 8DA48 8028CA48 00000000 */ .word 0x00000000
@@ -35022,13 +35022,13 @@ dlabel g_adwInflateDistExtraBits
     /* 8DAAC 8028CAAC 0000000C */ .word 0x0000000C
     /* 8DAB0 8028CAB0 0000000D */ .word 0x0000000D
     /* 8DAB4 8028CAB4 0000000D */ .word 0x0000000D
-enddlabel g_adwInflateDistExtraBits
+enddlabel cpdext
 
-nonmatching g_dwAudioDriverId
+nonmatching fixed_built
 
-dlabel g_dwAudioDriverId
+dlabel fixed_built
     /* 8DAB8 8028CAB8 00000000 */ .word 0x00000000
-enddlabel g_dwAudioDriverId
+enddlabel fixed_built
 
 nonmatching D_8028CABC
 
@@ -35037,9 +35037,9 @@ dlabel D_8028CABC
     /* 8DABC 8028CABC 00000000 */ .word 0x00000000
 enddlabel D_8028CABC
 
-nonmatching D_8028CAC0
+nonmatching inflate_mask
 
-dlabel D_8028CAC0
+dlabel inflate_mask
     /* 8DAC0 8028CAC0 00000000 */ .word 0x00000000
     /* 8DAC4 8028CAC4 00000001 */ .word 0x00000001
     /* 8DAC8 8028CAC8 00000003 */ .word 0x00000003
@@ -35047,18 +35047,7 @@ dlabel D_8028CAC0
     /* 8DAD0 8028CAD0 0000000F */ .word 0x0000000F
     /* 8DAD4 8028CAD4 0000001F */ .word 0x0000001F
     /* 8DAD8 8028CAD8 0000003F */ .word 0x0000003F
-enddlabel D_8028CAC0
-
-nonmatching g_dwAudioSampleCount
-
-dlabel g_dwAudioSampleCount
     /* 8DADC 8028CADC 0000007F */ .word 0x0000007F
-enddlabel g_dwAudioSampleCount
-
-nonmatching D_8028CAE0
-
-/* Automatically generated and unreferenced pad */
-dlabel D_8028CAE0
     /* 8DAE0 8028CAE0 000000FF */ .word 0x000000FF
     /* 8DAE4 8028CAE4 000001FF */ .word 0x000001FF
     /* 8DAE8 8028CAE8 000003FF */ .word 0x000003FF
@@ -35071,75 +35060,30 @@ dlabel D_8028CAE0
     /* 8DB04 8028CB04 00000000 */ .word 0x00000000
     /* 8DB08 8028CB08 00000000 */ .word 0x00000000
     /* 8DB0C 8028CB0C 00000000 */ .word 0x00000000
-enddlabel D_8028CAE0
+enddlabel inflate_mask
 
-nonmatching g_pAudioDmaBuffer
+nonmatching z_errmsg
 
-dlabel g_pAudioDmaBuffer
+dlabel z_errmsg
     /* 8DB10 8028CB10 802AA520 */ .word g_szNeedDictionary2
-enddlabel g_pAudioDmaBuffer
+enddlabel z_errmsg
 
-nonmatching g_pAudioDmaCurrent
-
-dlabel g_pAudioDmaCurrent
-    /* 8DB14 8028CB14 802AA530 */ .word g_szStreamEnd
-enddlabel g_pAudioDmaCurrent
-
-nonmatching g_pAudioDmaNext
-
-dlabel g_pAudioDmaNext
-    /* 8DB18 8028CB18 802AA53C */ .word g_szZlibErrMsgOk
-enddlabel g_pAudioDmaNext
-
-nonmatching g_pAudioDmaEnd
-
-dlabel g_pAudioDmaEnd
-    /* 8DB1C 8028CB1C 802AA540 */ .word g_szFileError
-enddlabel g_pAudioDmaEnd
-
-nonmatching g_pAudioStreamBuffer
-
-dlabel g_pAudioStreamBuffer
-    /* 8DB20 8028CB20 802AA54C */ .word g_szStreamError
-enddlabel g_pAudioStreamBuffer
-
-nonmatching g_pAudioStreamCurrent
-
-dlabel g_pAudioStreamCurrent
-    /* 8DB24 8028CB24 802AA55C */ .word g_szDataError
-enddlabel g_pAudioStreamCurrent
-
-nonmatching g_pAudioStreamEnd
-
-dlabel g_pAudioStreamEnd
-    /* 8DB28 8028CB28 802AA568 */ .word g_szInsufficientMemory
-enddlabel g_pAudioStreamEnd
-
-nonmatching g_pAudioStreamCallback
-
-dlabel g_pAudioStreamCallback
-    /* 8DB2C 8028CB2C 802AA57C */ .word g_szBufferError
-enddlabel g_pAudioStreamCallback
-
-nonmatching g_pAudioStreamParam
-
-dlabel g_pAudioStreamParam
-    /* 8DB30 8028CB30 802AA58C */ .word g_szIncompatibleVersion
-enddlabel g_pAudioStreamParam
-
-nonmatching g_pAudioStreamUserData
-
-dlabel g_pAudioStreamUserData
-    /* 8DB34 8028CB34 802AA5A4 */ .word g_szZlibErrMsgTableEnd
-enddlabel g_pAudioStreamUserData
-
-nonmatching D_8028CB38
+nonmatching D_8028CB14
 
 /* Automatically generated and unreferenced pad */
-dlabel D_8028CB38
+dlabel D_8028CB14
+    /* 8DB14 8028CB14 802AA530 */ .word g_szStreamEnd
+    /* 8DB18 8028CB18 802AA53C */ .word g_szZlibErrMsgOk
+    /* 8DB1C 8028CB1C 802AA540 */ .word g_szFileError
+    /* 8DB20 8028CB20 802AA54C */ .word g_szStreamError
+    /* 8DB24 8028CB24 802AA55C */ .word g_szDataError
+    /* 8DB28 8028CB28 802AA568 */ .word g_szInsufficientMemory
+    /* 8DB2C 8028CB2C 802AA57C */ .word g_szBufferError
+    /* 8DB30 8028CB30 802AA58C */ .word g_szIncompatibleVersion
+    /* 8DB34 8028CB34 802AA5A4 */ .word g_szZlibErrMsgTableEnd
     /* 8DB38 8028CB38 00000000 */ .word 0x00000000
     /* 8DB3C 8028CB3C 00000000 */ .word 0x00000000
-enddlabel D_8028CB38
+enddlabel D_8028CB14
 
 nonmatching g_texBackground
 
