@@ -48,43 +48,42 @@ void ExtractVehicleBaseColor(Vehicle *vehicle, VehicleModel *model) {
 }
 
 /* Remap a pointer of a model loaded for the first slot to the slot of the model. */
-static void RemapModelPointer(void *pointer, VehicleModel *model) {
-    u32 lo = (u32)g_aVehicleModels;
+#define REMAP_MODEL_POINTER(pointer, model)                                                        \
+    RemapPointer((u32 *)(pointer), MODEL_SLOT_LO, MODEL_SLOT_HI, (u32)(model))
 
-    /* The pointer is the word it is stored in, which holds an address in the first slot. */
-    RemapPointer(pointer, lo, lo + sizeof(VehicleModel), (u32)model);
-}
+/* The addresses of the first slot of g_aVehicleModels, which the files of the cars hold. */
+#define MODEL_SLOT_LO ((u32)g_aVehicleModels)
+#define MODEL_SLOT_HI ((u32) & g_aVehicleModels[1])
 
 void FixupVehicleModelPointers(VehicleModel *model) {
-    u32 lo = (u32)g_aVehicleModels;
-    u32 hi = lo + sizeof(VehicleModel);
     s32 lod;
     s32 k;
-    s32 i;
 
-    /* The files of the cars hold the addresses of the first slot of g_aVehicleModels. */
     for (lod = 0; lod < VEHICLE_LODS; lod++) {
         for (k = 0; k < VEHICLE_DISPLAY_LISTS; k++) {
-            RemapModelPointer(&model->displayLists[lod][k], model);
-            FixupDisplayListPointers(model->displayLists[lod][k], lo, hi, (u32)model);
+            REMAP_MODEL_POINTER(&model->displayLists[lod][k], model);
+            FixupDisplayListPointers(
+                model->displayLists[lod][k], MODEL_SLOT_LO, MODEL_SLOT_HI, (u32)model);
         }
         for (k = 0; k < VEHICLE_WHEEL_DISPLAY_LISTS; k++) {
             if (model->wheelDisplayLists[lod][k] != NULL) {
-                RemapModelPointer(&model->wheelDisplayLists[lod][k], model);
-                FixupDisplayListPointers(model->wheelDisplayLists[lod][k], lo, hi, (u32)model);
+                REMAP_MODEL_POINTER(&model->wheelDisplayLists[lod][k], model);
+                FixupDisplayListPointers(
+                    model->wheelDisplayLists[lod][k], MODEL_SLOT_LO, MODEL_SLOT_HI, (u32)model);
             }
         }
     }
-    RemapModelPointer(&model->textures, model);
-    RemapModelPointer(&model->unreconstructed90, model);
-    RemapModelPointer(&model->unreconstructed94, model);
-    for (i = 0; i < model->textureCount; i++) {
-        RemapModelPointer(&model->textures[i].image, model);
-        RemapModelPointer(&model->textures[i].palette, model);
+    REMAP_MODEL_POINTER(&model->textures, model);
+    REMAP_MODEL_POINTER(&model->unreconstructed90, model);
+    REMAP_MODEL_POINTER(&model->unreconstructed94, model);
+    /* The original counts the textures and the materials with the variable of the levels. */
+    for (lod = 0; lod < model->textureCount; lod++) {
+        REMAP_MODEL_POINTER(&model->textures[lod].image, model);
+        REMAP_MODEL_POINTER(&model->textures[lod].palette, model);
     }
-    RemapModelPointer(&model->decalMasks, model);
-    for (i = 0; i < VEHICLE_MATERIALS; i++) {
-        RemapModelPointer(&model->decalMasks[i], model);
+    REMAP_MODEL_POINTER(&model->decalMasks, model);
+    for (lod = 0; lod < VEHICLE_MATERIALS; lod++) {
+        REMAP_MODEL_POINTER(&model->decalMasks[lod], model);
     }
 }
 

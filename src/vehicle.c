@@ -901,49 +901,50 @@ void SimulateVehiclePhysicsSubstep(Vehicle *vehicle) {
     AddTimingMarker(0, 0, 0x80, 0, 0xFF);
 }
 
-/* Place the matrix of a wheel at the wheel, in the frame of the vehicle. */
-static inline void PlaceWheel(f32 out[4][4], RigidBody *body, RigidBody *wheel) {
-    /* The original transforms the translation rows in place, as points. */
-    Mtx4x4TransformPoint((Vec3f *)out[3], body->orientation, (Vec3f *)wheel->orientation[3]);
-}
+/* Place the matrix of a wheel at the wheel, in the frame of the vehicle, transforming the
+ * translation rows in place as points. */
+#define PLACE_WHEEL(out, body, wheel)                                                              \
+    Mtx4x4TransformPoint((Vec3f *)(out)[3], (body)->orientation, (Vec3f *)(wheel)->orientation[3])
 
 /* The turn of a front wheel: its roll, then its steering. */
-static inline void SteerWheel(f32 out[4][4], RigidBody *wheel) {
-    f32 roll[4][4], steer[4][4];
+#define STEER_WHEEL(out, wheel, roll, steer)                                                       \
+    guRotateF(roll, (wheel)->rollAngle, 0.0f, 1.0f, 0.0f);                                         \
+    guRotateF(steer, (wheel)->steerAngle *TWO_RAD_TO_DEG, 0.0f, 0.0f, 1.0f);                       \
+    guMtxCatF(roll, steer, out)
 
-    guRotateF(roll, wheel->rollAngle, 0.0f, 1.0f, 0.0f);
-    guRotateF(steer, wheel->steerAngle * TWO_RAD_TO_DEG, 0.0f, 0.0f, 1.0f);
-    guMtxCatF(roll, steer, out);
-}
+/* Move the wheel bodies of a vehicle down, or back up, by the drop of the drawing. */
+#define DROP_WHEELS(vehicle, op)                                                                   \
+    (vehicle)->wheelBodies[0].orientation[3][2] =                                                  \
+        (vehicle)->wheelBodies[0].orientation[3][2] op WHEEL_DRAW_DROP;                            \
+    (vehicle)->wheelBodies[1].orientation[3][2] =                                                  \
+        (vehicle)->wheelBodies[1].orientation[3][2] op WHEEL_DRAW_DROP;                            \
+    (vehicle)->wheelBodies[2].orientation[3][2] =                                                  \
+        (vehicle)->wheelBodies[2].orientation[3][2] op WHEEL_DRAW_DROP;                            \
+    (vehicle)->wheelBodies[3].orientation[3][2] =                                                  \
+        (vehicle)->wheelBodies[3].orientation[3][2] op WHEEL_DRAW_DROP
 
 void TransformAllWheelMatrices(Vehicle *vehicle) {
-    RigidBody *body = &vehicle->body;
+    f32 roll[4][4];
     f32 turn[4][4];
-    s32 i;
+    f32 steer[4][4];
 
-    guRotateF(turn, body->rollAngle, 1.0f, 0.0f, 0.0f);
-    guMtxCatF(turn, body->orientation, vehicle->matrix);
-    for (i = 0; i < VEHICLE_WHEELS; i++) {
-        vehicle->wheelBodies[i].orientation[3][2] =
-            vehicle->wheelBodies[i].orientation[3][2] + WHEEL_DRAW_DROP;
-    }
+    guRotateF(turn, vehicle->body.rollAngle, 1.0f, 0.0f, 0.0f);
+    guMtxCatF(turn, vehicle->body.orientation, vehicle->matrix);
+    DROP_WHEELS(vehicle, +);
     /* The rear wheels by their roll, then the front ones by their roll and steering. */
     guRotateF(turn, vehicle->wheelBodies[0].rollAngle, 0.0f, 1.0f, 0.0f);
-    guMtxCatF(turn, body->orientation, vehicle->wheelMatrices[2]);
-    PlaceWheel(vehicle->wheelMatrices[2], body, &vehicle->wheelBodies[0]);
+    guMtxCatF(turn, vehicle->body.orientation, vehicle->wheelMatrices[2]);
+    PLACE_WHEEL(vehicle->wheelMatrices[2], &vehicle->body, &vehicle->wheelBodies[0]);
     guRotateF(turn, vehicle->wheelBodies[2].rollAngle, 0.0f, 1.0f, 0.0f);
-    guMtxCatF(turn, body->orientation, vehicle->wheelMatrices[3]);
-    PlaceWheel(vehicle->wheelMatrices[3], body, &vehicle->wheelBodies[2]);
-    SteerWheel(turn, &vehicle->wheelBodies[1]);
-    guMtxCatF(turn, body->orientation, vehicle->wheelMatrices[1]);
-    PlaceWheel(vehicle->wheelMatrices[1], body, &vehicle->wheelBodies[1]);
-    SteerWheel(turn, &vehicle->wheelBodies[3]);
-    guMtxCatF(turn, body->orientation, vehicle->wheelMatrices[0]);
-    PlaceWheel(vehicle->wheelMatrices[0], body, &vehicle->wheelBodies[3]);
-    for (i = 0; i < VEHICLE_WHEELS; i++) {
-        vehicle->wheelBodies[i].orientation[3][2] =
-            vehicle->wheelBodies[i].orientation[3][2] - WHEEL_DRAW_DROP;
-    }
+    guMtxCatF(turn, vehicle->body.orientation, vehicle->wheelMatrices[3]);
+    PLACE_WHEEL(vehicle->wheelMatrices[3], &vehicle->body, &vehicle->wheelBodies[2]);
+    STEER_WHEEL(turn, &vehicle->wheelBodies[1], roll, steer);
+    guMtxCatF(turn, vehicle->body.orientation, vehicle->wheelMatrices[1]);
+    PLACE_WHEEL(vehicle->wheelMatrices[1], &vehicle->body, &vehicle->wheelBodies[1]);
+    STEER_WHEEL(turn, &vehicle->wheelBodies[3], roll, steer);
+    guMtxCatF(turn, vehicle->body.orientation, vehicle->wheelMatrices[0]);
+    PLACE_WHEEL(vehicle->wheelMatrices[0], &vehicle->body, &vehicle->wheelBodies[3]);
+    DROP_WHEELS(vehicle, -);
 }
 
 /* The gain of SteerByStick() is read unset for an unknown steering mode, as in the original. */
