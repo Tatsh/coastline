@@ -49,9 +49,9 @@ static inline f64 Sign(f32 x) {
     return x == 0.0f ? 0.0 : (0.0f < x ? 1.0 : -1.0);
 }
 
-/* A coordinate of a vector by its axis. */
+/* A coordinate of a vector by its axis, read as an element of an array of three. */
 static inline f32 Component(Vec3f *v, s32 axis) {
-    return axis == 0 ? v->x : (axis == 1 ? v->y : v->z);
+    return (&v->x)[axis];
 }
 
 /* The loudness of a hit at a speed, which the sound of a crash plays at. */
@@ -97,7 +97,9 @@ void SumBodyForces(RigidBody *body) {
 
     for (force = body->forces; force != NULL; force = force->next) {
         if (force->frame == RIGID_BODY_FORCE_WORLD) {
-            vector = force->vector;
+            vector.x = force->vector.x;
+            vector.y = force->vector.y;
+            vector.z = force->vector.z;
         } else if (force->frame == RIGID_BODY_FORCE_BODY) {
             Mtx3x3MulVec3f(&vector, body->orientation, &force->vector);
         }
@@ -125,7 +127,9 @@ void SumWheelForces(RigidBody *body, RigidBody *wheel) {
             Mtx4fInverseRotate(&local, body->orientation, &force->vector);
         }
         if (force->frame == RIGID_BODY_FORCE_BODY) {
-            local = force->vector;
+            local.x = force->vector.x;
+            local.y = force->vector.y;
+            local.z = force->vector.z;
         }
         /* The part of the force along the ground turns the body. */
         flat.x = local.x;
@@ -192,48 +196,63 @@ void ComputeVehicleForces(RigidBody *body) {
     ComputeVehicleAccelerations(body);
 }
 
-/* Add the velocity the spin of a body gives a point at an arm from its middle. */
-static inline void AddSpinVelocity(Vec3f *velocity, RigidBody *body, Vec3f *arm) {
+/* The velocity the spin of a body gives a point at an arm from its middle. */
+static inline void SpinVelocity(Vec3f *turn, RigidBody *body, Vec3f *arm) {
     Vec3f *spin = &body->state.angularVelocity;
-    Vec3f turn;
 
-    turn.x = spin->y * arm->z - arm->y * spin->z;
-    turn.y = spin->z * arm->x - arm->z * spin->x;
-    turn.z = spin->x * arm->y - arm->x * spin->y;
-    velocity->x = turn.x + velocity->x;
-    velocity->y = turn.y + velocity->y;
-    velocity->z = turn.z + velocity->z;
+    turn->x = spin->y * arm->z - arm->y * spin->z;
+    turn->y = spin->z * arm->x - arm->z * spin->x;
+    turn->z = spin->x * arm->y - arm->x * spin->y;
+}
+
+/* Copy the velocity of a body to a vector. */
+static inline void CopyBodyVelocity(Vec3f *out, RigidBody *body) {
+    out->x = body->state.velocity.x;
+    out->y = body->state.velocity.y;
+    out->z = body->state.velocity.z;
 }
 
 void ComputeWheelLocalVelocity(Vec3f *out, RigidBody *body, RigidBody *wheel) {
-    Vec3f point, arm, velocity;
+    Vec3f point, arm, turn;
 
     point.x = wheel->state.position.x;
     point.y = wheel->state.position.y;
     point.z = 0.0f;
     Mtx3x3MulVec3f(&arm, body->orientation, &point);
-    *out = body->state.velocity;
-    velocity = *out;
-    AddSpinVelocity(&velocity, body, &arm);
-    Mtx4fInverseRotate(out, body->orientation, &velocity);
+    CopyBodyVelocity(out, body);
+    SpinVelocity(&turn, body, &arm);
+    point.x = turn.x + out->x;
+    point.y = turn.y + out->y;
+    point.z = turn.z + out->z;
+    Mtx4fInverseRotate(out, body->orientation, &point);
 }
 
 void GetWheelWorldVelocity(Vec3f *out, RigidBody *body, RigidBody *wheel) {
-    Vec3f point, arm;
+    Vec3f point, arm, turn;
 
-    point = wheel->state.position;
+    point.x = wheel->state.position.x;
+    point.y = wheel->state.position.y;
+    point.z = wheel->state.position.z;
     Mtx3x3MulVec3f(&arm, body->orientation, &point);
-    *out = body->state.velocity;
-    AddSpinVelocity(out, body, &arm);
+    CopyBodyVelocity(out, body);
+    SpinVelocity(&turn, body, &arm);
+    out->x = turn.x + out->x;
+    out->y = turn.y + out->y;
+    out->z = turn.z + out->z;
 }
 
 void GetBodyPointVelocity(Vec3f *out, RigidBody *body, Vec3f *point) {
-    Vec3f copy, arm;
+    Vec3f copy, arm, turn;
 
-    copy = *point;
+    copy.x = point->x;
+    copy.y = point->y;
+    copy.z = point->z;
     Mtx3x3MulVec3f(&arm, body->orientation, &copy);
-    *out = body->state.velocity;
-    AddSpinVelocity(out, body, &arm);
+    CopyBodyVelocity(out, body);
+    SpinVelocity(&turn, body, &arm);
+    out->x = turn.x + out->x;
+    out->y = turn.y + out->y;
+    out->z = turn.z + out->z;
 }
 
 /* The slowing a brake gives a wheel against its spin. */
@@ -271,14 +290,14 @@ static inline f32 BodySpeed(RigidBody *body) {
 
 void ApplySideGrip(
     RigidBody *body, f32 dt, f32 *rearLoad, f32 *frontLoad, u8 *rearSliding, u8 *frontSliding) {
-    Vec3f point, velocity, rear, front, old, lateral, local;
+    Vec3f point, velocity, rear, front, old, lateral, local, unitX;
     f32 skid = 0.0f;
     s32 both = 0;
     f32 frontBrake, rearBrake, quarter, dt2, load, limit, grip, keep, lateralSpeed, speed;
-    f32 slowGrip, forward, side, yaw, target, lean, slowed, steer, c, s, d;
+    f32 slowGrip, forward, side, yaw, target, lean, slowed, d;
     s32 i, rearSurface, frontSurface;
     s16 weather;
-    u8 frontSurfaceA, frontSurfaceB;
+    u8 rearSurfaceA, rearSurfaceB, frontSurfaceA, frontSurfaceB;
 
     for (i = 0; i < VEHICLE_WHEELS; i++) {
         if (!body->wheels[i]->ground) {
@@ -291,8 +310,11 @@ void ApplySideGrip(
     rearBrake = BrakeSlowing(body->wheels[0]);
     quarter = body->mass / 4.0f;
     dt2 = dt * dt;
-    frontBrake = frontBrake / quarter * dt2;
-    rearBrake = rearBrake / quarter * dt2;
+    /* The original stores the front quotient before scaling it. */
+    frontBrake = frontBrake / quarter;
+    rearBrake = rearBrake / quarter;
+    frontBrake = frontBrake * dt2;
+    rearBrake = rearBrake * dt2;
     if (Abs(frontBrake) > 1.0f) {
         frontBrake = (f32)(Sign(frontBrake) * 1.5);
     }
@@ -308,16 +330,18 @@ void ApplySideGrip(
     Mtx4fInverseRotate(&rear, body->orientation, &velocity);
 
     weather = g_dwCurrentWeather - 1;
+    rearSurfaceA = body->wheels[0]->surface;
+    rearSurfaceB = body->wheels[1]->surface;
+    frontSurfaceA = body->wheels[2]->surface;
+    frontSurfaceB = body->wheels[3]->surface;
     if (weather >= GRIP_WEATHERS || weather < 0) {
         weather = GRIP_WEATHER_DRY;
     }
     body->skidding = 0;
-    frontSurfaceA = body->wheels[2]->surface;
-    frontSurfaceB = body->wheels[3]->surface;
 
     if ((body->wheels[0]->contactFrames || body->wheels[1]->contactFrames) &&
         (body->wheels[2]->contactFrames || body->wheels[3]->contactFrames)) {
-        rearSurface = (body->wheels[0]->surface + body->wheels[1]->surface + 1) >> 1;
+        rearSurface = (rearSurfaceA + rearSurfaceB + 1) >> 1;
         load = Abs(*rearLoad) + Abs(rear.y) * body->mass / dt;
         both = 1;
         limit = SLIDE_LOAD;
@@ -350,6 +374,9 @@ void ApplySideGrip(
             *rearSliding = 1;
             lateralSpeed = rear.y;
         }
+        /* The original copies the unit vector along x and never reads the copy. */
+        unitX = g_vecUnitX;
+        (void)unitX;
         if (Abs(rear.x) > 1.0f) {
             rear.y = lateralSpeed;
             if (Abs(lateralSpeed / rear.x) > 0.25f) {
@@ -381,15 +408,17 @@ void ApplySideGrip(
     if ((body->wheels[2]->contactFrames || body->wheels[3]->contactFrames) &&
         (body->wheels[0]->contactFrames || body->wheels[1]->contactFrames)) {
         both = 1;
-        steer = body->wheels[2]->steerAngle;
-        c = cosf(steer);
-        s = sinf(steer);
-        old = front;
+        point.x = cosf(body->wheels[2]->steerAngle);
+        point.y = sinf(body->wheels[2]->steerAngle);
+        point.z = 0.0f;
+        old.x = front.x;
+        old.y = front.y;
+        old.z = front.z;
         /* Keep the velocity along the way the front wheels point; the rest slides. */
-        d = old.z * 0.0f + (c * old.x + s * old.y);
-        front.x = c * d;
-        front.y = s * d;
-        front.z = 0.0f * d;
+        d = old.z * point.z + (point.x * old.x + point.y * old.y);
+        front.x = point.x * d;
+        front.y = point.y * d;
+        front.z = point.z * d;
         lateral.x = old.x - front.x;
         lateral.y = old.y - front.y;
         lateral.z = old.z - front.z;
@@ -454,10 +483,11 @@ void ApplySideGrip(
 }
 
 void DriveWheel(RigidBody *body, RigidBody *wheel, f32 *load, u8 *sliding, f32 dt) {
-    Vec3f axle, forward, side, roll, velocity, weight, push, local;
+    Vec3f unitY, axle, forward, side, roll, slide, velocity, weight, push, local;
     Vec3f *normal = &wheel->groundNormal;
     f32 c, s, rollSpeed, pressure, drive, force, grip, ratio;
 
+    unitY = g_vecUnitY;
     if (!wheel->ground) {
         return;
     }
@@ -465,18 +495,35 @@ void DriveWheel(RigidBody *body, RigidBody *wheel, f32 *load, u8 *sliding, f32 d
         return;
     }
     /* The ways the wheel rolls and slides on the ground. */
-    Mtx3x3MulVec3f(&axle, body->orientation, &g_vecUnitY);
+    Mtx3x3MulVec3f(&axle, body->orientation, &unitY);
     forward.x = axle.y * normal->z - normal->y * axle.z;
     forward.y = axle.z * normal->x - normal->z * axle.x;
     forward.z = axle.x * normal->y - normal->x * axle.y;
-    side.x = normal->y * forward.z - normal->z * forward.y;
+    side.x = normal->y * forward.z - forward.y * normal->z;
     side.y = normal->z * forward.x - forward.z * normal->x;
     side.z = normal->x * forward.y - forward.x * normal->y;
     c = cosf(wheel->steerAngle);
     s = sinf(wheel->steerAngle);
-    roll.x = side.x * s + forward.x * c;
-    roll.y = side.y * s + forward.y * c;
-    roll.z = side.z * s + forward.z * c;
+    roll.x = forward.x * c;
+    roll.y = forward.y * c;
+    roll.z = forward.z * c;
+    /* The original also turns the slide direction with the wheel and never reads it. */
+    slide.x = forward.x * -s;
+    slide.y = forward.y * -s;
+    slide.z = forward.z * -s;
+    forward.x = side.x * s;
+    forward.y = side.y * s;
+    forward.z = side.z * s;
+    roll.x = forward.x + roll.x;
+    roll.y = forward.y + roll.y;
+    roll.z = forward.z + roll.z;
+    forward.x = side.x * c;
+    forward.y = side.y * c;
+    forward.z = side.z * c;
+    slide.x = forward.x + slide.x;
+    slide.y = forward.y + slide.y;
+    slide.z = forward.z + slide.z;
+    (void)slide;
 
     if (body->wheels[0]->contactFrames && body->wheels[2]->contactFrames &&
         body->wheels[1]->contactFrames && body->wheels[3]->contactFrames) {
@@ -577,7 +624,9 @@ static inline void RecordImpact(RigidBody *body, f32 speed) {
     if (body->impactSpeed < 10) {
         body->impactSpeed = 0;
     } else {
-        body->impactPoint = g_vCollisionContact;
+        body->impactPoint.x = g_vCollisionContact.x;
+        body->impactPoint.y = g_vCollisionContact.y;
+        body->impactPoint.z = g_vCollisionContact.z;
     }
 }
 
@@ -585,9 +634,8 @@ static inline void RecordImpact(RigidBody *body, f32 speed) {
 static inline void RecordImpactVolume(RigidBody *body, f32 speed) {
     u8 volume = ImpactVolume(speed);
 
-    if (body->impactVolume < volume) {
-        body->impactVolume = volume;
-    }
+    /* The original writes the volume back even when it does not change. */
+    body->impactVolume = body->impactVolume < volume ? volume : body->impactVolume;
 }
 
 s32 BounceOffPlane(RigidBody *body, Vec3f *normal, s32 damp, s32 spin) {
@@ -663,11 +711,16 @@ s32 ApplyCollisionImpulse(
     Vec3f *velocity = &body->stepStates[1].velocity;
     Vec3f *angular = &body->stepStates[1].angularVelocity;
     f32 transpose[3][3], rotation[3][3], skew[3][3], a[3][3], b[3][3], k[3][3], unit[3][3];
-    Vec3f arm, copy, motion, across, slide, target, impulse, linear, turn, spin;
+    Vec3f unitZ, arm, copy, motion, across, slide, target, impulse, linear, turn, spin;
     f32 into, speed, bounce;
     s32 i, j;
 
-    copy = *point;
+    /* The original copies the unit vector along z and never reads the copy. */
+    unitZ = g_vecUnitZ;
+    (void)unitZ;
+    copy.x = point->x;
+    copy.y = point->y;
+    copy.z = point->z;
     TransposeCopyMatrix3x3(transpose, rotation, body->orientation);
     Mtx3fMulVec3f(&arm, transpose, &copy);
     /* How the point moves. */
@@ -933,15 +986,18 @@ s32 ClassifyTriangleInUnitCube(Vec3f triangle[3]) {
 }
 
 s32 CountTriangleWinding(Vec3f triangle[3], Vec3f *normal, Vec3f *point) {
-    f32 nx = Abs(normal->x), ny = Abs(normal->y), nz = Abs(normal->z);
+    f32 n[3];
     f32 p0, p1, a0, a1, b0, b1;
-    s32 axis, i0, i1, edge, next, cross0, cross1;
+    s32 i, axis, i0, i1, edge, next, cross0, cross1;
     s32 winding = 0;
 
-    if (nz < nx) {
-        axis = ny < nx ? 0 : 1;
+    for (i = 0; i < 3; i++) {
+        n[i] = Abs(Component(normal, i));
+    }
+    if (n[2] < n[0]) {
+        axis = n[1] < n[0] ? 0 : 1;
     } else {
-        axis = nz < ny ? 1 : 2;
+        axis = (n[2] < n[1] ? 0 : 1) + 1;
     }
     if (Component(normal, axis) < 0.0f) {
         i0 = (axis + 2) % 3;
@@ -1011,7 +1067,7 @@ s32 DoesTriangleCrossUnitCube(Vec3f triangle[3], Vec3f *normal) {
     s32 sign[3];
     f32 sx, sy, sz, t;
     Vec3f point;
-    s32 edge;
+    s32 edge, i;
 
     for (edge = 0; edge < 3; edge++) {
         if (DoesSegmentCrossUnitCube(&triangle[edge], &triangle[(edge + 1) % 3])) {
@@ -1019,9 +1075,9 @@ s32 DoesTriangleCrossUnitCube(Vec3f triangle[3], Vec3f *normal) {
         }
     }
     /* Where the diagonal of the cube nearest the normal meets the plane of the triangle. */
-    sign[0] = normal->x < 0.0f ? -1 : 1;
-    sign[1] = normal->y < 0.0f ? -1 : 1;
-    sign[2] = normal->z < 0.0f ? -1 : 1;
+    for (i = 0; i < 3; i++) {
+        sign[i] = Component(normal, i) < 0.0f ? -1 : 1;
+    }
     sx = (f32)sign[0];
     sy = (f32)sign[1];
     sz = (f32)sign[2];
@@ -1104,8 +1160,12 @@ static inline f32 GroundDistance(RigidBody *wheel, Vec3f *point) {
     return PlaneDistance(&wheel->groundNormal, wheel->groundOffset, point);
 }
 
+/* The original sets the wheel only in the loop, which a touching wheel always reaches. */
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
+#pragma GCC diagnostic ignored "-Wuninitialized"
 s32 TipBalancedVehicle(RigidBody *body) {
-    RigidBody *wheel = NULL;
+    RigidBody *wheel;
     Vec3f corner, point, velocity, nudge;
     f32 nearest, distance, along, tilt;
     s32 touching, i;
@@ -1148,9 +1208,15 @@ s32 TipBalancedVehicle(RigidBody *body) {
     tilt = body->groundNormal.z * body->orientation[0][2] +
            (body->orientation[0][0] * body->groundNormal.x +
             body->orientation[0][1] * body->groundNormal.y);
-    nudge.x = 0.0f;
-    nudge.z = 0.0f;
-    nudge.y = 0.0f < tilt ? 0.1f : -0.1f;
+    if (0.0f < tilt) {
+        nudge.x = 0.0f;
+        nudge.y = 0.1f;
+        nudge.z = 0.0f;
+    } else {
+        nudge.x = 0.0f;
+        nudge.y = -0.1f;
+        nudge.z = 0.0f;
+    }
     osSyncPrintf("-- Stand Point = %f\n", (f64)tilt);
     Mtx3x3MulVec3f(&point, body->orientation, &nudge);
     spin = &body->stepStates[0].angularVelocity;
@@ -1162,38 +1228,43 @@ s32 TipBalancedVehicle(RigidBody *body) {
     ComputeDeltaQuaternion(&body->stepStates[0]);
     return 1;
 }
+#pragma GCC diagnostic pop
 
 void ComputeCollisionPenetration(
     RigidBody *body, Vec3f *normal, f32 offset, Vec3f *contact, Vec3f triangle[3]) {
-    Vec3f middle;
+    f32 middle[3];
     f32 distance;
+    s32 i;
 
     if (g_dwCollisionContactType != 2) {
         distance =
             contact->z * normal->z + (normal->x * contact->x + normal->y * contact->y) - offset;
     } else {
         /* The face of the box by the middle of the triangle, signed by its x as the original. */
-        middle.x = (triangle[2].x + (triangle[0].x + triangle[1].x)) / 3.0f;
-        middle.y = (triangle[2].y + (triangle[0].y + triangle[1].y)) / 3.0f;
-        middle.z = (triangle[2].z + (triangle[0].z + triangle[1].z)) / 3.0f;
-        if (Abs(middle.x) < Abs(middle.y)) {
-            if (Abs(middle.x) < Abs(middle.z)) {
+        for (i = 0; i < 3; i++) {
+            middle[i] = Component(&triangle[2], i) +
+                        (Component(&triangle[0], i) + Component(&triangle[1], i));
+            /* The original stores the sum before dividing it. */
+            middle[i] = middle[i] / 3.0f;
+        }
+        if (Abs(middle[0]) < Abs(middle[1])) {
+            if (Abs(middle[0]) < Abs(middle[2])) {
                 g_vCollisionContact.z = 0.0f;
                 g_vCollisionContact.y = g_vCollisionContact.z;
-                g_vCollisionContact.x = (f32)(middle.x < 0.0f ? -1 : 1) * 0.5f;
+                g_vCollisionContact.x = (f32)(middle[0] < 0.0f ? -1 : 1) * 0.5f;
             } else {
                 g_vCollisionContact.y = 0.0f;
                 g_vCollisionContact.x = g_vCollisionContact.y;
-                g_vCollisionContact.z = (f32)(middle.x < 0.0f ? -1 : 1) * 0.5f;
+                g_vCollisionContact.z = (f32)(middle[0] < 0.0f ? -1 : 1) * 0.5f;
             }
-        } else if (Abs(middle.y) < Abs(middle.z)) {
+        } else if (Abs(middle[1]) < Abs(middle[2])) {
             g_vCollisionContact.z = 0.0f;
             g_vCollisionContact.x = g_vCollisionContact.z;
-            g_vCollisionContact.y = (f32)(middle.x < 0.0f ? -1 : 1) * 0.5f;
+            g_vCollisionContact.y = (f32)(middle[0] < 0.0f ? -1 : 1) * 0.5f;
         } else {
             g_vCollisionContact.y = 0.0f;
             g_vCollisionContact.x = g_vCollisionContact.y;
-            g_vCollisionContact.z = (f32)(middle.x < 0.0f ? -1 : 1) * 0.5f;
+            g_vCollisionContact.z = (f32)(middle[0] < 0.0f ? -1 : 1) * 0.5f;
         }
         distance = g_vCollisionContact.z * normal->z +
                    (normal->x * g_vCollisionContact.x + normal->y * g_vCollisionContact.y) - offset;
@@ -1207,12 +1278,16 @@ void ComputeCollisionPenetration(
     g_vCollisionPenetration.z = normal->z * -distance;
 }
 
+/* The original passes the spin flag to the bounce without setting it outside the demonstration. */
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
+#pragma GCC diagnostic ignored "-Wuninitialized"
 s32 CollideBodyWithTriangles(RigidBody *body, f32 box[4][4]) {
     CollisionTriangleNode *node;
     TrackTriangle *triangle;
     Vec3f corners[3], normal, along, half, back;
     f32 distance, push;
-    s32 resist, spin = 0, moved;
+    s32 resist, spin, moved;
     s32 hit = 0;
     s16 hits = 0;
 
@@ -1293,6 +1368,7 @@ s32 CollideBodyWithTriangles(RigidBody *body, f32 box[4][4]) {
     }
     return hit;
 }
+#pragma GCC diagnostic pop
 
 void StepVehicleCollisions(RigidBody *body) {
     Vec3f scale;
@@ -1408,9 +1484,13 @@ f32 CastWheelRay(RigidBody *body, RigidBody *wheel) {
                      (origin.z * triangle->normal.z +
                       (triangle->normal.x * origin.x + triangle->normal.y * origin.y))) /
                    facing;
-        hit.x = origin.x + direction.x * distance;
-        hit.y = origin.y + direction.y * distance;
-        hit.z = origin.z + direction.z * distance;
+        /* The original stores the scaled direction before adding the origin to it. */
+        hit.x = direction.x * distance;
+        hit.y = direction.y * distance;
+        hit.z = direction.z * distance;
+        hit.x = origin.x + hit.x;
+        hit.y = origin.y + hit.y;
+        hit.z = origin.z + hit.z;
         if (!((f64)distance > -2.0) || !((f64)distance < 2.0) || !(distance < nearest)) {
             continue;
         }
@@ -1423,19 +1503,38 @@ f32 CastWheelRay(RigidBody *body, RigidBody *wheel) {
         wheel->ground = triangle;
         nearest = distance;
         wheel->surface = triangle->surface;
-        wheel->groundNormal = triangle->normal;
+        wheel->groundNormal.x = triangle->normal.x;
+        wheel->groundNormal.y = triangle->normal.y;
+        wheel->groundNormal.z = triangle->normal.z;
         wheel->groundOffset = triangle->planeOffset;
     }
     return nearest;
 }
 
+/* The original picks the wheel by a switch without a default, and keeps the last one otherwise. */
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
+#pragma GCC diagnostic ignored "-Wuninitialized"
 void UpdateWheelHeights(RigidBody *body) {
     RigidBody *wheel;
     f32 height;
     s32 i;
 
     for (i = 0; i < VEHICLE_WHEELS; i++) {
-        wheel = body->wheels[i];
+        switch (i) {
+        case 0:
+            wheel = body->wheels[0];
+            break;
+        case 1:
+            wheel = body->wheels[1];
+            break;
+        case 2:
+            wheel = body->wheels[2];
+            break;
+        case 3:
+            wheel = body->wheels[3];
+            break;
+        }
         height = -CastWheelRay(body, wheel);
         wheel->suspension = height;
         if ((f64)height > 0.0) {
@@ -1448,6 +1547,7 @@ void UpdateWheelHeights(RigidBody *body) {
         }
     }
 }
+#pragma GCC diagnostic pop
 
 void ComputeSpringForces(RigidBody *body) {
     RigidBodyForce *force = body->forces;
@@ -1460,7 +1560,20 @@ void ComputeSpringForces(RigidBody *body) {
     for (i = 0; i < VEHICLE_WHEELS; i++) {
         force->vector.y = 0.0f;
         force->vector.x = 0.0f;
-        wheel = body->wheels[i];
+        switch (i) {
+        case 0:
+            wheel = body->wheels[0];
+            break;
+        case 1:
+            wheel = body->wheels[1];
+            break;
+        case 2:
+            wheel = body->wheels[2];
+            break;
+        default:
+            wheel = body->wheels[3];
+            break;
+        }
         previous = wheel->contactFrames;
         if (wheel->contactFrames < 100) {
             wheel->contactFrames++;
@@ -1489,14 +1602,32 @@ void ComputeSpringForces(RigidBody *body) {
 
 void ComputeDampingForces(RigidBody *body) {
     RigidBodyForce *force = body->forces;
+    RigidBody *wheel;
     Vec3f velocity;
     s32 i;
 
     for (i = 0; i < VEHICLE_WHEELS; i++) {
         force->vector.y = 0.0f;
         force->vector.x = 0.0f;
-        ComputeWheelLocalVelocity(&velocity, body, body->wheels[i]);
-        if (!body->wheels[i]->contactFrames || velocity.z < 0.0f) {
+        switch (i) {
+        case 0:
+            ComputeWheelLocalVelocity(&velocity, body, body->wheels[0]);
+            wheel = body->wheels[0];
+            break;
+        case 1:
+            ComputeWheelLocalVelocity(&velocity, body, body->wheels[1]);
+            wheel = body->wheels[1];
+            break;
+        case 2:
+            ComputeWheelLocalVelocity(&velocity, body, body->wheels[2]);
+            wheel = body->wheels[2];
+            break;
+        default:
+            ComputeWheelLocalVelocity(&velocity, body, body->wheels[3]);
+            wheel = body->wheels[3];
+            break;
+        }
+        if (!wheel->contactFrames || velocity.z < 0.0f) {
             force->vector.z = 0.0f;
         } else {
             force->vector.z = velocity.z * body->damping;
@@ -1524,16 +1655,18 @@ s32 InvalidateTriCacheSectorAt(f32 x, f32 y) {
     return 0;
 }
 
+/* The original leaves the slot unset when no slot is older than 2^30 uses, which cannot happen. */
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
+#pragma GCC diagnostic ignored "-Wuninitialized"
 s16 BuildTrackTriangleCache(f32 x, f32 y) {
     TrackTriangle *triangle;
-    TrackSurface *face;
     TrackGridCursor cursor;
-    Vec3f e1, e2, *v0, *v1, *v2;
+    Vec3f e1, e2;
     u32 oldest, cell;
     s16 sector;
     s32 slot, count;
-    /* The original leaves this unset when no slot is older than 2^30 uses, which cannot happen. */
-    s32 best = 0;
+    s32 best;
     u16 index;
 
     g_dwTriCacheLruCounter++;
@@ -1558,27 +1691,28 @@ s16 BuildTrackTriangleCache(f32 x, f32 y) {
     cursor.count = cell >> 16;
     if (cell != 0) {
         while ((index = NextGridCellTriangle(&cursor)) != 0) {
-            face = &g_LoadedTrack.surfaces[index];
-            triangle->vertices[0] = &g_LoadedTrack.vertices[face->vertices[0]];
-            triangle->vertices[1] = &g_LoadedTrack.vertices[face->vertices[1]];
-            triangle->vertices[2] = &g_LoadedTrack.vertices[face->vertices[2]];
+            /* The original reads the track arrays and the corners afresh for each one. */
+            triangle->vertices[0] =
+                &g_LoadedTrack.vertices[g_LoadedTrack.surfaces[index].vertices[0]];
+            triangle->vertices[1] =
+                &g_LoadedTrack.vertices[g_LoadedTrack.surfaces[index].vertices[1]];
+            triangle->vertices[2] =
+                &g_LoadedTrack.vertices[g_LoadedTrack.surfaces[index].vertices[2]];
             triangle->index = index;
             triangle->surface = g_LoadedTrack.triangleFlags[index] & 7;
-            v0 = triangle->vertices[0];
-            v1 = triangle->vertices[1];
-            v2 = triangle->vertices[2];
-            e1.x = v1->x - v0->x;
-            e1.y = v1->y - v0->y;
-            e1.z = v1->z - v0->z;
-            e2.x = v2->x - v0->x;
-            e2.y = v2->y - v0->y;
-            e2.z = v2->z - v0->z;
+            e1.x = triangle->vertices[1]->x - triangle->vertices[0]->x;
+            e1.y = triangle->vertices[1]->y - triangle->vertices[0]->y;
+            e1.z = triangle->vertices[1]->z - triangle->vertices[0]->z;
+            e2.x = triangle->vertices[2]->x - triangle->vertices[0]->x;
+            e2.y = triangle->vertices[2]->y - triangle->vertices[0]->y;
+            e2.z = triangle->vertices[2]->z - triangle->vertices[0]->z;
             triangle->normal.x = e1.y * e2.z - e2.y * e1.z;
             triangle->normal.y = e1.z * e2.x - e2.z * e1.x;
             triangle->normal.z = e1.x * e2.y - e2.x * e1.y;
             Vec3fNormalizeFast(&triangle->normal);
-            triangle->planeOffset = -(v0->z * triangle->normal.z +
-                                      (triangle->normal.x * v0->x + triangle->normal.y * v0->y));
+            triangle->planeOffset = -(triangle->vertices[0]->z * triangle->normal.z +
+                                      (triangle->normal.x * triangle->vertices[0]->x +
+                                       triangle->normal.y * triangle->vertices[0]->y));
             count++;
             triangle++;
         }
@@ -1586,6 +1720,7 @@ s16 BuildTrackTriangleCache(f32 x, f32 y) {
     g_awTriCacheTriCount[best] = count;
     return best;
 }
+#pragma GCC diagnostic pop
 
 s32 TestObbIntersection(f32 rotation[3][3], Vec3f *offset, Vec3f *halfA, Vec3f *halfB) {
     f32 r[3][3];
@@ -1593,20 +1728,23 @@ s32 TestObbIntersection(f32 rotation[3][3], Vec3f *offset, Vec3f *halfA, Vec3f *
     f32 tx = offset->x, ty = offset->y, tz = offset->z;
     f32 ax = halfA->x, ay = halfA->y, az = halfA->z;
     f32 bx = halfB->x, by = halfB->y, bz = halfB->z;
-    s32 i, j, overlap;
+    s32 overlap = 1;
 
-    for (i = 0; i < 3; i++) {
-        for (j = 0; j < 3; j++) {
-            r[i][j] = Abs(m[i][j]);
-        }
-    }
-    /* The axes of the first box. */
-    overlap = Abs(tx) <= ax + bx * r[0][0] + by * r[0][1] + r[0][2] * bz;
-    overlap &= Abs(ty) <= ay + bx * r[1][0] + by * r[1][1] + r[1][2] * bz;
-    overlap &= Abs(tz) <= az + bx * r[2][0] + by * r[2][1] + r[2][2] * bz;
-    /* The axes of the second. */
+    r[0][0] = Abs(m[0][0]);
+    r[0][1] = Abs(m[0][1]);
+    r[0][2] = Abs(m[0][2]);
+    r[1][0] = Abs(m[1][0]);
+    r[1][1] = Abs(m[1][1]);
+    r[1][2] = Abs(m[1][2]);
+    r[2][0] = Abs(m[2][0]);
+    r[2][1] = Abs(m[2][1]);
+    r[2][2] = Abs(m[2][2]);
+    /* The axes of the two boxes, in the order of the original. */
+    overlap &= Abs(tx) <= ax + bx * r[0][0] + by * r[0][1] + r[0][2] * bz;
     overlap &= Abs(tx * m[0][0] + ty * m[1][0] + m[2][0] * tz) <=
                bx + ax * r[0][0] + ay * r[1][0] + r[2][0] * az;
+    overlap &= Abs(ty) <= ay + bx * r[1][0] + by * r[1][1] + r[1][2] * bz;
+    overlap &= Abs(tz) <= az + bx * r[2][0] + by * r[2][1] + r[2][2] * bz;
     overlap &= Abs(tx * m[0][1] + ty * m[1][1] + m[2][1] * tz) <=
                by + ax * r[0][1] + ay * r[1][1] + r[2][1] * az;
     overlap &= Abs(tx * m[0][2] + ty * m[1][2] + m[2][2] * tz) <=
@@ -1634,33 +1772,36 @@ s32 TestObbIntersection(f32 rotation[3][3], Vec3f *offset, Vec3f *halfA, Vec3f *
 }
 
 /* Collide one vehicle with another: share their speed, then push it by its impulse. */
-static inline void PushVehicle(Vehicle *vehicle, Vec3f *shared, Vec3f *towards, Vec3f *normal) {
-    RigidBody *body = &vehicle->body;
+static inline void
+PushVehicle(RacerSlot *slot, RigidBodyState *state, Vec3f *shared, Vec3f *towards, Vec3f *normal) {
     Vec3f arm, local;
 
+    /* The original reads the vehicle from its slot afresh at each use. */
     arm.x = towards->x * 2.5f;
     arm.y = towards->y * 2.5f;
     arm.z = towards->z * 2.5f;
-    Mtx4fInverseRotate(&local, body->orientation, &arm);
-    body->state.velocity.x = body->state.velocity.x - shared->x;
-    body->state.velocity.y = body->state.velocity.y - shared->y;
-    body->state.velocity.z = body->state.velocity.z - shared->z;
-    memcpy(&body->stepStates[1], &body->state, sizeof(RigidBodyState));
-    ApplyCollisionImpulse(body, &local, normal, 0, 0.45f);
-    memcpy(&body->state, &body->stepStates[1], sizeof(RigidBodyState));
-    body->stepStates[1].velocity.x = shared->x + body->stepStates[1].velocity.x;
-    body->stepStates[1].velocity.y = shared->y + body->stepStates[1].velocity.y;
-    body->stepStates[1].velocity.z = shared->z + body->stepStates[1].velocity.z;
-    body->stepStates[0].velocity.x = body->stepStates[1].velocity.x;
-    body->stepStates[0].velocity.y = body->stepStates[1].velocity.y;
-    body->stepStates[0].velocity.z = body->stepStates[1].velocity.z;
-    body->state.velocity.x = shared->x + body->state.velocity.x;
-    body->state.velocity.y = shared->y + body->state.velocity.y;
-    body->state.velocity.z = shared->z + body->state.velocity.z;
+    Mtx4fInverseRotate(&local, slot->vehicle->body.orientation, &arm);
+    state->velocity.x = state->velocity.x - shared->x;
+    state->velocity.y = state->velocity.y - shared->y;
+    state->velocity.z = state->velocity.z - shared->z;
+    memcpy(&slot->vehicle->body.stepStates[1], &slot->vehicle->body.state, sizeof(RigidBodyState));
+    ApplyCollisionImpulse(&slot->vehicle->body, &local, normal, 0, 0.45f);
+    memcpy(&slot->vehicle->body.state, &slot->vehicle->body.stepStates[1], sizeof(RigidBodyState));
+    slot->vehicle->body.stepStates[1].velocity.x =
+        shared->x + slot->vehicle->body.stepStates[1].velocity.x;
+    slot->vehicle->body.stepStates[1].velocity.y =
+        shared->y + slot->vehicle->body.stepStates[1].velocity.y;
+    slot->vehicle->body.stepStates[1].velocity.z =
+        shared->z + slot->vehicle->body.stepStates[1].velocity.z;
+    slot->vehicle->body.stepStates[0].velocity.x = slot->vehicle->body.stepStates[1].velocity.x;
+    slot->vehicle->body.stepStates[0].velocity.y = slot->vehicle->body.stepStates[1].velocity.y;
+    slot->vehicle->body.stepStates[0].velocity.z = slot->vehicle->body.stepStates[1].velocity.z;
+    state->velocity.x = shared->x + state->velocity.x;
+    state->velocity.y = shared->y + state->velocity.y;
+    state->velocity.z = shared->z + state->velocity.z;
 }
 
 void CollideVehicles(void) {
-    Vehicle *a, *b;
     RigidBodyState *sa, *sb;
     Vec3f apart, offset, local, extents, shared, back;
     f32 transposeB[3][3], rotationA[3][3], relative[3][3];
@@ -1668,19 +1809,20 @@ void CollideVehicles(void) {
     u8 volume;
     s32 i, j;
 
+    /* The original reads each vehicle from its slot afresh at each use. */
     for (i = 0; i < g_dwNumVehicles; i++) {
-        a = g_aRacerSlots[i].vehicle;
-        if (a == NULL || a->ghostMode == VEHICLE_GHOST) {
+        if (g_aRacerSlots[i].vehicle == NULL ||
+            g_aRacerSlots[i].vehicle->ghostMode == VEHICLE_GHOST) {
             continue;
         }
-        a->body.framesSinceVehicleImpact++;
+        g_aRacerSlots[i].vehicle->body.framesSinceVehicleImpact++;
+        sa = &g_aRacerSlots[i].vehicle->body.state;
         for (j = i + 1; j < g_dwNumVehicles; j++) {
-            b = g_aRacerSlots[j].vehicle;
-            if (b == NULL || b->ghostMode == VEHICLE_GHOST) {
+            if (g_aRacerSlots[j].vehicle == NULL ||
+                g_aRacerSlots[j].vehicle->ghostMode == VEHICLE_GHOST) {
                 continue;
             }
-            sa = &a->body.state;
-            sb = &b->body.state;
+            sb = &g_aRacerSlots[j].vehicle->body.state;
             apart.x = sa->position.x - sb->position.x;
             apart.y = sa->position.y - sb->position.y;
             apart.z = sa->position.z - sb->position.z;
@@ -1688,8 +1830,8 @@ void CollideVehicles(void) {
                 continue;
             }
             extents = g_vVehicleObbHalfExtents;
-            Transpose4x4Into3x3(transposeB, b->body.orientation);
-            CopyMatrix4x4To3x3(rotationA, a->body.orientation);
+            Transpose4x4Into3x3(transposeB, g_aRacerSlots[j].vehicle->body.orientation);
+            CopyMatrix4x4To3x3(rotationA, g_aRacerSlots[i].vehicle->body.orientation);
             Mtx3fMultiply(relative, transposeB, rotationA);
             offset.x = sa->position.x - sb->position.x;
             offset.y = sa->position.y - sb->position.y;
@@ -1707,21 +1849,21 @@ void CollideVehicles(void) {
             shared.x = apart.x * mean;
             shared.y = apart.y * mean;
             shared.z = apart.z * mean;
-            closing = Abs(mean - speedA);
+            closing = mean < speedA ? -(mean - speedA) : mean - speedA;
             if (MAX_IMPACT_SPEED < closing) {
                 closing = MAX_IMPACT_SPEED;
             }
-            if (a->body.framesSinceVehicleImpact >= 41) {
-                volume = ImpactVolume(closing);
-                a->body.vehicleImpactVolume = volume;
-                b->body.vehicleImpactVolume = volume;
+            if (g_aRacerSlots[i].vehicle->body.framesSinceVehicleImpact >= 41) {
+                volume = (u32)(127.0f * closing / MAX_IMPACT_SPEED + 128.0f);
+                g_aRacerSlots[i].vehicle->body.vehicleImpactVolume = volume;
+                g_aRacerSlots[j].vehicle->body.vehicleImpactVolume = volume;
             }
-            a->body.framesSinceVehicleImpact = 0;
+            g_aRacerSlots[i].vehicle->body.framesSinceVehicleImpact = 0;
             back.x = apart.x * -1.0f;
             back.y = apart.y * -1.0f;
             back.z = apart.z * -1.0f;
-            PushVehicle(a, &shared, &back, &apart);
-            PushVehicle(b, &shared, &apart, &back);
+            PushVehicle(&g_aRacerSlots[i], sa, &shared, &back, &apart);
+            PushVehicle(&g_aRacerSlots[j], sb, &shared, &apart, &back);
         }
     }
 }
