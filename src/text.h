@@ -213,6 +213,119 @@ extern s32 g_nTextDrawY;
  */
 extern s32 g_nFontSize;
 
+#if TGR_REGION == TGR_REGION_JP
+/** The characters the glyph cache maps, one for each byte value. */
+#define GLYPH_CACHE_CHARACTERS 256
+
+/** The bytes of the texture of a cached glyph. */
+#define GLYPH_CACHE_SLOT_SIZE 0x5A0
+
+/** The entries of the table of glyph offsets, one more than the glyphs it covers. */
+#define GLYPH_ROM_OFFSETS 209
+
+/**
+ * The offset of each glyph from the start of the glyphs on the cartridge, from the character
+ * 0x20, then one past the last. A negative offset marks a glyph stored without compression, and
+ * the size of a glyph is the distance to the absolute offset of the next.
+ *
+ * @ghidraAddress JPN: 0x80352258
+ */
+extern s32 g_aGlyphRomOffsets[GLYPH_ROM_OFFSETS];
+
+/**
+ * Whether g_aGlyphRomOffsets has been read from the cartridge.
+ *
+ * @ghidraAddress JPN: 0x8028df60
+ */
+extern s32 g_bGlyphOffsetTableLoaded;
+
+/**
+ * The slot of the glyph cache of each character used since ResetGlyphCache(), or 0 for none.
+ *
+ * @ghidraAddress JPN: 0x80352058
+ */
+extern u8 g_abGlyphCharToSlot[GLYPH_CACHE_CHARACTERS];
+
+/**
+ * The character whose glyph is in each slot of the glyph cache, or 0 for none.
+ *
+ * @ghidraAddress JPN: 0x80351f50
+ */
+extern u8 g_abGlyphSlotChar[];
+
+/**
+ * The compressed glyph LoadCachedGlyphTextures() reads before it expands the glyph into its slot.
+ *
+ * @ghidraAddress JPN: 0x803525a0
+ */
+extern u8 g_abGlyphRleBuffer[GLYPH_CACHE_SLOT_SIZE];
+
+/**
+ * The next free slot of the glyph cache, from 1.
+ *
+ * @ghidraAddress JPN: 0x8028df50
+ */
+extern s32 g_nGlyphCacheNextSlot;
+
+/**
+ * The texture of slot 0 of the glyph cache, a slot before its memory.
+ *
+ * @ghidraAddress JPN: 0x8028df54
+ */
+extern u8 *g_pGlyphCacheBuffer;
+
+/**
+ * The end of the slots of the glyph cache.
+ *
+ * @ghidraAddress JPN: 0x8028df58
+ */
+extern u8 *g_pGlyphCacheBufferEnd;
+
+/**
+ * The number of slots that fit in the memory of the glyph cache.
+ *
+ * @ghidraAddress JPN: 0x8028df5c
+ */
+extern s32 g_nGlyphCacheSlotLimit;
+
+/**
+ * The memory after the BSS where the glyph cache starts, once aligned to 8 bytes. The link script
+ * places it.
+ *
+ * @ghidraAddress JPN: 0x803837a0
+ */
+extern u8 g_abGlyphCacheMemory[];
+
+/** The table of glyph offsets and the glyphs on the cartridge. The link script places them. */
+extern u8 _cachedGlyphsSegmentRomStart[];
+
+/**
+ * Forget the glyph of every character and size the glyph cache to the memory after the BSS. The
+ * start of each display list calls it.
+ *
+ * @ghidraAddress JPN: 0x8022f1a0
+ */
+void ResetGlyphCache(void);
+
+/**
+ * Give a character a slot of the glyph cache if it has none.
+ *
+ * @param character The character.
+ * @return The texture of the slot of the character, filled by the next LoadCachedGlyphTextures().
+ * @ghidraAddress JPN: 0x8022f258
+ */
+u8 *GetCachedGlyphTexture(u32 character);
+
+/**
+ * Read the glyph of each character given a slot into the slot, unless the glyph is already there,
+ * and forget the characters of the slots not given out. The table of offsets is read the first
+ * time.
+ *
+ * @ghidraAddress JPN: 0x8022f2b0
+ */
+void LoadCachedGlyphTextures(void);
+#endif
+
 /**
  * Draw text at g_nTextDrawX and g_nTextDrawY.
  *

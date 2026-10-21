@@ -3,6 +3,7 @@
 #include <PR/gbi.h>
 
 #include "render.h"
+#include "replay.h"
 #include "system.h"
 
 /* Text smaller than this draws with the small font. */
@@ -38,6 +39,80 @@
 
 /* Half a texel in the 10.5 fixed point of a texture coordinate. */
 #define HALF_TEXEL 16
+
+#if TGR_REGION == TGR_REGION_JP
+/* The memory of the glyph cache ends where the frame buffers start. */
+#define GLYPH_CACHE_END ((u8 *)0x803B1000)
+
+/* The first character of the table of glyph offsets. */
+#define FIRST_CACHED_GLYPH 0x20
+
+/* The offset table and the glyphs on the cartridge. */
+#define ROM_GLYPHS ((u32)_cachedGlyphsSegmentRomStart)
+
+void ResetGlyphCache(void) {
+    s32 i;
+    u8 *start;
+
+    for (i = 0; i < GLYPH_CACHE_CHARACTERS; i++) {
+        g_abGlyphCharToSlot[i] = 0;
+    }
+    start = (u8 *)(((u32)g_abGlyphCacheMemory + 7) & ~7);
+    g_pGlyphCacheBufferEnd = GLYPH_CACHE_END;
+    g_pGlyphCacheBuffer = start;
+    g_nGlyphCacheSlotLimit = (u32)(GLYPH_CACHE_END - start) / GLYPH_CACHE_SLOT_SIZE;
+    g_pGlyphCacheBufferEnd = start + g_nGlyphCacheSlotLimit * GLYPH_CACHE_SLOT_SIZE;
+    g_nGlyphCacheNextSlot = 1;
+    /* Slot 0 marks a character without a slot. The buffer starts a slot early. */
+    g_pGlyphCacheBuffer = start - GLYPH_CACHE_SLOT_SIZE;
+}
+
+u8 *GetCachedGlyphTexture(u32 character) {
+    s32 slot = g_abGlyphCharToSlot[character];
+
+    if (slot == 0) {
+        slot = g_nGlyphCacheNextSlot++;
+        g_abGlyphCharToSlot[character] = slot;
+    }
+    return g_pGlyphCacheBuffer + slot * GLYPH_CACHE_SLOT_SIZE;
+}
+
+void LoadCachedGlyphTextures(void) {
+    s32 character;
+    s32 slot;
+    s32 start, end;
+    u8 *texture;
+    s32 i;
+
+    if (!g_bGlyphOffsetTableLoaded) {
+        g_bGlyphOffsetTableLoaded = TRUE;
+        DmaRead(g_aGlyphRomOffsets, ROM_GLYPHS, sizeof(g_aGlyphRomOffsets));
+    }
+    for (character = 0; character < GLYPH_CACHE_CHARACTERS; character++) {
+        slot = g_abGlyphCharToSlot[character];
+        if (slot == 0 || g_abGlyphSlotChar[slot] == character) {
+            continue;
+        }
+        g_abGlyphSlotChar[slot] = character;
+        texture = g_pGlyphCacheBuffer + slot * GLYPH_CACHE_SLOT_SIZE;
+        end = g_aGlyphRomOffsets[character - FIRST_CACHED_GLYPH + 1];
+        if (end < 0) {
+            end = -end;
+        }
+        start = g_aGlyphRomOffsets[character - FIRST_CACHED_GLYPH];
+        /* A negative offset marks a glyph stored without compression. */
+        if (start < 0) {
+            DmaRead(texture, ROM_GLYPHS - start, start + end);
+        } else {
+            DmaRead(g_abGlyphRleBuffer, start + ROM_GLYPHS, end - start);
+            DecompressInterleavedRle(texture, GLYPH_CACHE_SLOT_SIZE, g_abGlyphRleBuffer, 1);
+        }
+    }
+    for (i = g_nGlyphCacheNextSlot; i < g_nGlyphCacheSlotLimit; i++) {
+        g_abGlyphSlotChar[i] = 0;
+    }
+}
+#endif
 
 void RenderTextToDisplayList(const char *text) {
     const u8 *s = (const u8 *)text;
