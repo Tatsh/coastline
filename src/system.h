@@ -1090,7 +1090,6 @@ void FaultThread(void *arg);
  * @ghidraAddress USA: 0x8021e2c8
  * @ghidraAddress JPN: 0x8021ed98
  * @ghidraAddress EUR: 0x8021f4c8
- * @stub{EUR JPN}
  */
 void BootIdleThread(void *arg);
 

@@ -83,6 +83,31 @@
 #define BOOT_SCREEN_WIDTH 320
 #define BOOT_SCREEN_HEIGHT 240
 
+/* The video modes the boot sets: the game's copies in the USA release, the SDK's in the others. */
+#if TGR_REGION == TGR_REGION_US
+#define BOOT_VI_MODE_MPAL g_ViModeMpalLan1
+#define BOOT_VI_MODE g_ViModeNtscLan1
+#elif TGR_REGION == TGR_REGION_EU
+#define BOOT_VI_MODE_MPAL osViModeMpalLan1
+#define BOOT_VI_MODE osViModePalLan1
+#else
+#define BOOT_VI_MODE_MPAL osViModeMpalLan1
+#define BOOT_VI_MODE osViModeNtscLan1
+#endif
+
+/* The European release adjusts its copies of the PAL modes: the vertical start of each field
+ * (the bits outside the mask kept) and the vertical scale of the half-height and full-height
+ * modes. */
+#define PAL_VSTART_KEEP 0xFC00FC00
+#define PAL_VSTART_FIELD0 0x0039025B
+#define PAL_VSTART_FIELD1 0x003B025D
+#define PAL_HAF1_YSCALE 0x6F0
+#define PAL_LAN1_YSCALE 0x378
+
+/* The memory the European and Japanese releases clear at boot, below the code of the game. */
+#define BOOT_CLEAR_START 0x800D4000
+#define BOOT_CLEAR_END 0x80200000
+
 #define ARRAY_COUNT(array) (s32)(sizeof(array) / sizeof((array)[0]))
 
 /* The address the RSP and the RDP read memory of KSEG0 at. */
@@ -1624,13 +1649,14 @@ void FaultThread(void *arg) {
     }
 }
 
-/* The Japanese and European bodies still come from the assembly. */
-#if TGR_REGION == TGR_REGION_US
 void BootIdleThread(void *arg) {
     u32 arguments[BOOT_ARGUMENT_WORDS];
     s32 i;
     char *p;
     char c;
+#if TGR_REGION == TGR_REGION_EU || TGR_REGION == TGR_REGION_JP
+    u32 *clear;
+#endif
 
     for (i = 0; i < BOOT_ARGUMENT_WORDS; i++) {
         osPiRawReadIo(BOOT_ARGUMENTS_ADDRESS + i * sizeof(u32), &arguments[i]);
@@ -1664,12 +1690,34 @@ void BootIdleThread(void *arg) {
     osCreateViManager(OS_PRIORITY_VIMGR);
     g_dwScreenWidth = BOOT_SCREEN_WIDTH;
     g_dwScreenHeight = BOOT_SCREEN_HEIGHT;
+#if TGR_REGION == TGR_REGION_EU
+    memcpy(&g_ViModePalHaf1, &osViModePalHaf1, sizeof(OSViMode));
+    memcpy(&g_ViModePalLan1, &osViModePalLan1, sizeof(OSViMode));
+    g_ViModePalHaf1.fldRegs[0].vStart =
+        (osViModePalHaf1.fldRegs[0].vStart & PAL_VSTART_KEEP) | PAL_VSTART_FIELD0;
+    g_ViModePalHaf1.fldRegs[1].vStart =
+        (osViModePalHaf1.fldRegs[1].vStart & PAL_VSTART_KEEP) | PAL_VSTART_FIELD1;
+    g_ViModePalHaf1.fldRegs[0].yScale = PAL_HAF1_YSCALE;
+    g_ViModePalHaf1.fldRegs[1].yScale = PAL_HAF1_YSCALE;
+    g_ViModePalLan1.fldRegs[0].vStart =
+        (osViModePalLan1.fldRegs[0].vStart & PAL_VSTART_KEEP) | PAL_VSTART_FIELD0;
+    g_ViModePalLan1.fldRegs[1].vStart =
+        (osViModePalLan1.fldRegs[1].vStart & PAL_VSTART_KEEP) | PAL_VSTART_FIELD1;
+    g_ViModePalLan1.fldRegs[0].yScale = PAL_LAN1_YSCALE;
+    g_ViModePalLan1.fldRegs[1].yScale = PAL_LAN1_YSCALE;
+#endif
     if (osTvType == OS_TV_MPAL) {
-        osViSetMode(&g_ViModeMpalLan1);
+        osViSetMode(&BOOT_VI_MODE_MPAL);
     } else {
-        osViSetMode(&g_ViModeNtscLan1);
+        osViSetMode(&BOOT_VI_MODE);
     }
     osViBlack(TRUE);
+#if TGR_REGION == TGR_REGION_EU || TGR_REGION == TGR_REGION_JP
+    g_dwDisplayBlanked = TRUE;
+    for (clear = (u32 *)BOOT_CLEAR_START; clear < (u32 *)BOOT_CLEAR_END; clear++) {
+        *clear = 0;
+    }
+#endif
     osCreatePiManager(OS_PRIORITY_PIMGR, &g_PiMgrCmdQueue, g_aPiMgrCmdMsgBuf, IO_MESSAGES);
     osCreateMesgQueue(&g_FaultMsgQueue, g_aFaultMsgBuf, 1);
     osCreateThread(&g_FaultThreadObj,
@@ -1704,7 +1752,6 @@ void BootIdleThread(void *arg) {
     for (;;) {
     }
 }
-#endif
 
 void OsBootEntry(void) {
 #if TGR_REGION == TGR_REGION_EU

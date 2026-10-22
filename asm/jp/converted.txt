@@ -25,6 +25,7 @@ BeginDebugStats
 BeginTimingFrame
 BindPlayerInputToVehicle
 BlankDisplay
+BootIdleThread
 BounceModelAnimations
 BounceOffPlane
 BuildFrequencyScaleTable
