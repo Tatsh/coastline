@@ -1386,11 +1386,8 @@ void ProcessPaintShopExitConfirm(void) {
     SetTextCustomColors(0xFF, 0xFF, 0xFF, 0xFF, 0xCA, 0);
     SetTextAlignCenter();
     SetTextSize(14);
-    DrawText("%j\xB2(\xAC"
-             "bZD",
-             g_dwScreenWidth / 2,
-             0x6D);
-    DrawText("EXIT%jB6R1%%", g_dwScreenWidth / 2, 0x7B);
+    DrawText("%jセーブせずに", g_dwScreenWidth / 2, 0x6D);
+    DrawText("EXIT%jしますか？", g_dwScreenWidth / 2, 0x7B);
     SetTextAlignLeft();
 #endif
     SetTextSize(10);

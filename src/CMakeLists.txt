@@ -76,8 +76,24 @@ if(TGR_PLATFORM STREQUAL "n64")
 
   # The game code of the Nintendo 64 releases. A routine joins this list when its body moves from
   # the assembly of the original into C.
-  add_library(coastline_game STATIC audio.c audiomix.s camera.c carselect.c controllerscreen.c debugtext.c decaldraw.c decaleditor.c driving.c effects.c fade.c game.c hud.c input.c heap.c mainmenu.c mathutil.s model.c options.c paintshop.c pakmenu.c physics.c playerselect.c race.c
-                                    racemenu.c racers.c racesound.c replay.c rigidbody.c rumble.c sky.c snapshot.c splash.c sprite.c system.c text.c texrect.c timing.c track.c trackrender.c util.c vecmath.c vehicle.c vehiclemodel.c vehiclerender.c vehiclesetup.c visgrid.c weather.c weatherselect.c)
+  set(_game_sources audio.c audiomix.s camera.c carselect.c controllerscreen.c debugtext.c decaldraw.c decaleditor.c driving.c effects.c fade.c game.c hud.c input.c heap.c mainmenu.c mathutil.s model.c options.c paintshop.c pakmenu.c physics.c playerselect.c race.c
+                    racemenu.c racers.c racesound.c replay.c rigidbody.c rumble.c sky.c snapshot.c splash.c sprite.c system.c text.c texrect.c timing.c track.c trackrender.c util.c vecmath.c vehicle.c vehiclemodel.c vehiclerender.c vehiclesetup.c visgrid.c weather.c weatherselect.c)
+  # These sources write the Japanese text in UTF-8. The Japanese release compiles copies with the
+  # text in the glyph codes of its font.
+  if(TGR_REGION STREQUAL "jp")
+    foreach(_source decaleditor.c options.c paintshop.c playerselect.c splash.c text.c)
+      set(_encoded "${CMAKE_CURRENT_BINARY_DIR}/encoded/${_source}")
+      add_custom_command(
+        OUTPUT "${_encoded}"
+        COMMAND "${COASTLINE_TOOL_ENCODE_TEXT}" "${CMAKE_CURRENT_SOURCE_DIR}/${_source}"
+                "${_encoded}"
+        DEPENDS "${_source}" "${COASTLINE_TOOL_ENCODE_TEXT}" coastline_tools
+        COMMENT "Encoding the Japanese text of ${_source}"
+        VERBATIM)
+      list(TRANSFORM _game_sources REPLACE "^${_source}$" "${_encoded}")
+    endforeach()
+  endif()
+  add_library(coastline_game STATIC ${_game_sources})
   target_link_libraries(coastline_game PRIVATE coastline_common)
   list(APPEND COASTLINE_LIBRARIES coastline_game)
 endif()

@@ -28,12 +28,9 @@ void TwoControllersPostDrawCallback(s32 item) {
     SetTextAlignCenter();
 #if TGR_REGION == TGR_REGION_JP
     SetTextSize(18);
-    DrawText("%ww%j\xC1\xCF\xC3\xC8(\x88w", g_dwScreenWidth / 2, g_dwScreenHeight * 10 / 16 - 30);
-    DrawText("%ww%j\xC1\xCF\xC3\xC8(\x88%e2", g_dwScreenWidth / 2, g_dwScreenHeight * 10 / 16 - 15);
-    DrawText(" %ww%jD2Bc\xDB"
-             "2@&",
-             g_dwScreenWidth / 2,
-             g_dwScreenHeight * 10 / 16);
+    DrawText("%ww%jコントローラを", g_dwScreenWidth / 2, g_dwScreenHeight * 10 / 16 - 30);
+    DrawText("%ww%jコントローラ%e2", g_dwScreenWidth / 2, g_dwScreenHeight * 10 / 16 - 15);
+    DrawText(" %ww%jにさして下さい。", g_dwScreenWidth / 2, g_dwScreenHeight * 10 / 16);
 #else
     SetTextSize(15);
     DrawText("%wwYou Need To Have", g_dwScreenWidth / 2, g_dwScreenHeight * 10 / 16 - 30);

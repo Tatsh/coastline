@@ -62,4 +62,5 @@ coastline_tools_report_source(zlib "${_zlib_location}")
 
 add_subdirectory(common)
 add_subdirectory(build-rom)
+add_subdirectory(encode-text)
 add_subdirectory(extract-rom)

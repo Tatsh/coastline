@@ -569,40 +569,20 @@ void ProcessControllerCheck(void) {
     SetTextSize(20);
     switch (g_bControllerWarningType) {
     case 0:
-        DrawText(" %yw%j\xC1\xCF\xC3\xC8(\x88"
-                 "90H6b\x7F&",
-                 160,
-                 124);
+        DrawText(" %yw%jコントローラがありません。", 160, 124);
         break;
     case 1:
-        DrawText("%yw%j \xC1\xCF\xC3\xC8(\x88\x8D\x8F\xA1"
-                 "94@tk'",
-                 160,
-                 95);
-        DrawText("%yw%j\xC9(\xA2\xC3\x81(\xBB(\x83s\xBD\x90\xCF\xC3\x92\xBF\x8F\xAD", 160, 115);
-        DrawText("%yw %jt\xBB\x81(\xA8\xBB(\x83"
-                 "9\xB2(\xACkA6b\x7F&",
-                 160,
-                 135);
-        DrawText("%yw%j\xB9(\xA6w5Jf6R1%%", 160, 155);
+        DrawText("%yw%j コントローラパックがないので、", 160, 95);
+        DrawText("%yw%jゴーストカーデータとペイントショップ", 160, 115);
+        DrawText("%yw %jのデカールデータがセーブできません。", 160, 135);
+        DrawText("%yw%jゲームをはじめますか？", 160, 155);
         break;
     case 2:
-        DrawText("%yw%j\xE9t\xB9(\xA6\xBB(\x83"
-                 "9",
-                 160,
-                 85);
-        DrawText(" %yw%j\xB2(\xAC"
-                 "2hc@6R&",
-                 160,
-                 105);
-        DrawText("%yw%j\xE1"
-                 "A\xBD(\x9A"
-                 "9\xE2"
-                 "84@tk",
-                 160,
-                 125);
-        DrawText("%yw%jqt\xB9(\xA6\xBB(\x83w", 160, 145);
-        DrawText(" %yw%j\xB2(\xACkA6b\x7F&", 160, 165);
+        DrawText("%yw%j他のゲームデータが", 160, 85);
+        DrawText(" %yw%jセーブされています。", 160, 105);
+        DrawText("%yw%j空きページが足らないので", 160, 125);
+        DrawText("%yw%jこのゲームデータを", 160, 145);
+        DrawText(" %yw%jセーブできません。", 160, 165);
         break;
     }
     SetTextAlignLeft();

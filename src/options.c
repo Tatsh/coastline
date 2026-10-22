@@ -1340,13 +1340,9 @@ s32 DrawRumblePakPrompt(s32 anyPlayer) {
     SetTextCustomColors(0xFF, 0xFF, 0xFF, 0xFF, 0xF5, 0x00);
     DRAW_MESSAGE_BOX(0xAA, 0xCE, 0x12C, 0x64);
     SetTextSize(14);
-    DrawText("%j\xD2\xD3\x8D\x8F\xA1w\xDEPsA5'", 0x5D, 0x77);
-    DrawText("%j\xC1\xCF\xC3\xC8(\x88\x8D\x8F\xA1s", 0x5D, 0x84);
-    DrawText("%j\xD2\xD3\x8D\x8F\xA1w\xD4\xD5"
-             "Bc\xDB"
-             "2@&",
-             0x5D,
-             0x91);
+    DrawText("%j振動パックを使うときは、", 0x5D, 0x77);
+    DrawText("%jコントローラパックと", 0x5D, 0x84);
+    DrawText("%j振動パックを交換して下さい。", 0x5D, 0x91);
 #endif
     for (player = 0; player != 2; player++) {
         if (!anyPlayer && player != g_dwMenuChoosingPlayer) {

@@ -1085,20 +1085,10 @@ void ProcessFillClearMenu(void) {
 #if TGR_REGION == TGR_REGION_JP
     /* The two lines of the Japanese text of each option. */
     const char *optionTexts[CLEAR_OPTIONS][2] = {
-        {"%j\xE7\x7F;\x81\x88(k",
-         "  %jqt\xBB\x81(\xA8w\xE0"
-         "B6R&"},
-        {"%j\xCC\xBB\x9E\x81\x88(k",
-         "  %jqt\xBB\x81(\xA8w\xE0"
-         "B6R&"},
-        {"%j\xE7\x7F;\x81\x88(k",
-         "  %j\xEA"
-         "ct\xBB\x81(\xA8w\xE0"
-         "B6R&"},
-        {"%j\xCC\xBB\x9E\x81\x88(k",
-         "  %j\xEA"
-         "ct\xBB\x81(\xA8w\xE0"
-         "B6R&"},
+        {"%j選んだカラーで", "  %jこのデカールを消します。"},
+        {"%jボディカラーで", "  %jこのデカールを消します。"},
+        {"%j選んだカラーで", "  %j全てのデカールを消します。"},
+        {"%jボディカラーで", "  %j全てのデカールを消します。"},
     };
 #else
     const char *scopeTexts[2] = {"CLEAR CURRENT DECAL", "CLEAR ALL DECALS"};
@@ -1246,36 +1236,18 @@ void ProcessMirrorFlipMenu(void) {
 #if TGR_REGION == TGR_REGION_JP
     /* The two lines of the Japanese text of each flip, and of each slot a decal mirrors from. */
     const char *flipTexts[2][2] = {
-        {"%jqt\xBB\x81(\xA8w",
-         " %j\xD8\xD9\xDC\xDD"
-         "B6R&"},
-        {"%jqt\xBB\x81(\xA8w",
-         " %j\xDA\xDB\xDC\xDD"
-         "B6R&"},
+        {"%jこのデカールを", " %j左右反転します。"},
+        {"%jこのデカールを", " %j上下反転します。"},
     };
     const char *mirrorTexts[MIRROR_TEXT_SLOTS][2] = {
-        {"%jqt\xBB\x81(\xA8w",
-         " %j\xD9\xCB\x80"
-         "D\xDE\xDF"
-         "B6R&"},
-        {"%jqt\xBB\x81(\xA8w",
-         " %j\xD8\xCB\x80"
-         "D\xDE\xDF"
-         "B6R&"},
-        {"%jqt\xBB\x81(\xA8w\xD9\xA5\xC8\xCF\xC3",
-         " %j\xA5\xBE\xCF\x8B(D\xDE\xDF"
-         "B6R&"},
-        {"%jqt\xBB\x81(\xA8w\xD8\xA5\xC8\xCF\xC3",
-         " %j\xA5\xBE\xCF\x8B(D\xDE\xDF"
-         "B6R&"},
+        {"%jこのデカールを", " %j右ドアに使用します。"},
+        {"%jこのデカールを", " %j左ドアに使用します。"},
+        {"%jこのデカールを右フロント", " %jフェンダーに使用します。"},
+        {"%jこのデカールを左フロント", " %jフェンダーに使用します。"},
         {NULL, NULL},
         {NULL, NULL},
-        {"%jqt\xBB\x81(\xA8w\xD9\x98\x80",
-         " %j\xA5\xBE\xCF\x8B(D\xDE\xDF"
-         "B6R&"},
-        {"%jqt\xBB\x81(\xA8w\xD8\x98\x80",
-         " %j\xA5\xBE\xCF\x8B(D\xDE\xDF"
-         "B6R&"},
+        {"%jこのデカールを右リア", " %jフェンダーに使用します。"},
+        {"%jこのデカールを左リア", " %jフェンダーに使用します。"},
     };
 #else
     const char *flipTexts[2] = {"FLIP CURRENT DECAL", "FLIP CURRENT DECAL"};
@@ -1360,14 +1332,8 @@ void ProcessMirrorFlipMenu(void) {
 #endif
     } else if (!g_bDecalSlotHasMirror) {
 #if TGR_REGION == TGR_REGION_JP
-        DrawText("%jqt\xBB\x81(\xA8"
-                 "5",
-                 0x9F,
-                 0x87);
-        DrawText(" %j\xE9"
-                 "D\xDE\xDFkA6b\x7F&",
-                 0x9F,
-                 0x94);
+        DrawText("%jこのデカールは", 0x9F, 0x87);
+        DrawText(" %j他に使用できません。", 0x9F, 0x94);
 #else
         DrawText("MIRROR IS NOT APPLICABLE", 0x9F, 0x87);
         DrawText("TO THE CURRENT DECAL", 0x9F, 0x94);
