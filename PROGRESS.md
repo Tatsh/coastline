@@ -72,8 +72,8 @@ and `jp`) before this report to regenerate the table.
 | Release   | Routines | Matching | Not matching | Unknown | Share |
 | --------- | -------: | -------: | -----------: | ------: | ----: |
 | `usa.z64` |      801 |      627 |          174 |       0 | 78.3% |
-| `eur.z64` |      819 |      629 |          190 |       0 | 76.8% |
-| `jpn.z64` |      821 |      627 |          194 |       0 | 76.4% |
+| `eur.z64` |      819 |      631 |          188 |       0 | 77.0% |
+| `jpn.z64` |      821 |      629 |          192 |       0 | 76.6% |
 
 ### By component
 
