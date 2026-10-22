@@ -44,6 +44,7 @@ foreach(_variant ${TGR_VARIANTS})
     SOURCE_DIR "${CMAKE_SOURCE_DIR}"
     BINARY_DIR "${CMAKE_BINARY_DIR}/${_variant}"
     CMAKE_ARGS -DTGR_PLATFORM=${_platform} ${_choice_arg}
+               -DTGR_ENABLE_PATCHES=${TGR_ENABLE_PATCHES}
                -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
                -DCMAKE_TOOLCHAIN_FILE=${CMAKE_SOURCE_DIR}/cmake/${_platform}-toolchain.cmake
     BUILD_ALWAYS ON

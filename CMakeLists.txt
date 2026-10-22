@@ -5,6 +5,10 @@ option(BUILD_DOCS "Build documentation alongside the sources." OFF)
 option(BUILD_DOCS_ONLY "Build documentation and nothing else." OFF)
 option(INSTALL_DOCS "Install documentation." OFF)
 option(TGR_LINK "Link the Windows library. Off until every routine has a body." OFF)
+option(TGR_ENABLE_PATCHES
+       "Build the changes of this project to the game, such as the build date that names the \
+commit and the time of the build. Off builds the game as released."
+       OFF)
 set(TGR_VARIANTS
     ""
     CACHE STRING "Variants to build in one step, as a list of n64-us, n64-jp, n64-eu, win-d3d, \
@@ -61,6 +65,17 @@ add_compile_definitions(
   TGR_RENDERER_D3D=1
   TGR_RENDERER_GLIDE=2
   TGR_RENDERER=TGR_RENDERER_${_tgr_renderer})
+
+# The changes of this project to the game. The commit is read when the build is configured.
+if(TGR_ENABLE_PATCHES)
+  find_package(Git REQUIRED)
+  execute_process(
+    COMMAND "${GIT_EXECUTABLE}" rev-parse --short HEAD
+    WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}"
+    OUTPUT_VARIABLE _tgr_git_sha
+    OUTPUT_STRIP_TRAILING_WHITESPACE COMMAND_ERROR_IS_FATAL ANY)
+  add_compile_definitions(ENABLE_PATCHES=1 COASTLINE_GIT_SHA="${_tgr_git_sha}")
+endif()
 
 # The tests build the reconstructed C of the Nintendo 64 release for the host, with the host
 # compiler, in place of a variant.

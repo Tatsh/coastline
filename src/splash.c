@@ -124,6 +124,17 @@
 /* The buttons held together that show the date of the build. */
 #define BUILD_DATE_BUTTONS (INPUT_C_UP | INPUT_C_RIGHT | INPUT_C_DOWN | INPUT_C_LEFT)
 
+/* The date of the build. The patched game shows the project, its commit, and when it was built. */
+#ifdef ENABLE_PATCHES
+#define BUILD_DATE_TEXT "github.com/Tatsh/coastline " COASTLINE_GIT_SHA " " __DATE__ " " __TIME__
+#elif TGR_REGION == TGR_REGION_EU
+#define BUILD_DATE_TEXT "25Sep97 13:46:05"
+#elif TGR_REGION == TGR_REGION_JP
+#define BUILD_DATE_TEXT "16Oct97 11:22:44"
+#else
+#define BUILD_DATE_TEXT "25Aug97 11:46:52"
+#endif
+
 /* The frames before the controller check proceeds by itself. */
 #define CONTROLLER_CHECK_FRAMES 910
 
@@ -327,7 +338,7 @@ static void DrawSplashCopyright(void) {
     SetTextAlignCenter();
 #if TGR_REGION == TGR_REGION_EU
     if ((g_aPlayerInputState[0].buttons & BUILD_DATE_BUTTONS) == BUILD_DATE_BUTTONS) {
-        DrawText("25Sep97 13:46:05", 160, 40);
+        DrawText(BUILD_DATE_TEXT, 160, 40);
     }
     SetTextSize(7);
     DrawText("O 1997 Boss Game Studios, Inc.  All Rights Reserved.", 160, 195);
@@ -337,7 +348,7 @@ static void DrawSplashCopyright(void) {
     DrawText("c", 78, 195);
 #else
     if ((g_aPlayerInputState[0].buttons & BUILD_DATE_BUTTONS) == BUILD_DATE_BUTTONS) {
-        DrawText("25Aug97 11:46:52", 160, 40);
+        DrawText(BUILD_DATE_TEXT, 160, 40);
     }
     SetTextSize(7);
     DrawText("O 1997 Boss Game Studios, Inc.  All Rights Reserved.", 160, 190);
