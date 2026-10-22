@@ -601,7 +601,6 @@ void DrawScrollingText(void);
  * @ghidraAddress USA: 0x8020082c
  * @ghidraAddress EUR: 0x8020085c
  * @ghidraAddress JPN: 0x8020081c
- * @stub{JPN}
  */
 void ProcessRacingScreen(void);
 

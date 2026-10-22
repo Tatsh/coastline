@@ -76,8 +76,6 @@
 /* The bytes of the end of the recording of the first demonstration race it fades out over. */
 #define DEMO_FADE_BYTES 30
 
-/* The Japanese body of the racing screen still comes from the assembly. */
-#if TGR_REGION != TGR_REGION_JP
 /* Fade the screen and the sounds out to leave the race, once. */
 static void LeaveRace(void) {
     if (!g_dwRaceExitState) {
@@ -94,7 +92,6 @@ static void AdvanceRacePhase(void) {
     g_dwRacePhase = g_aRacePhaseTable[g_dwRacePhaseIndex].phase;
     g_fRacePhaseTimer = g_aRacePhaseTable[g_dwRacePhaseIndex].seconds;
 }
-#endif
 
 void LoadAndPlayTrackBgm(void) {
     ResetMusicPlaybackState();
@@ -231,8 +228,6 @@ void DrawScrollingText(void) {
     }
 }
 
-/* The Japanese body still comes from the assembly. */
-#if TGR_REGION != TGR_REGION_JP
 /* Read the car and its setup from the header of the recording a vehicle replays. */
 static void SetupFromRecording(Vehicle *vehicle) {
     vehicle->steeringMode = vehicle->input->playbackBuffer[2];
@@ -539,9 +534,24 @@ static void InitRace(void) {
                 g_aVehicles[i].driver = DriveAiVehicle;
                 g_aVehicles[i].ghostMode = 0;
             }
+#if TGR_REGION == TGR_REGION_JP
+            /* The players' cars, and the ghost or rival of arcade and time attack, are painted. */
+            if (!g_aVehicles[i].customDecals) {
+                if (i < (s32)g_dwNumLocalPlayers ||
+                    (i == 1 &&
+                     (g_dwGameMode == GAME_MODE_ARCADE || g_dwGameMode == GAME_MODE_TIME_ATTACK))) {
+                    LoadAndActivateTrackWithPaintColor(&g_aVehicles[i], i, g_aVehicles[i].carModel);
+                } else {
+                    InstallVehicleModel(&g_aVehicles[i], i, g_aVehicles[i].carModel);
+                }
+            } else {
+                osSyncPrintf("not loading %d\n", i);
+            }
+#else
             if (!g_aVehicles[i].customDecals) {
                 InstallVehicleModel(&g_aVehicles[i], i, g_aVehicles[i].carModel);
             }
+#endif
             SetupVehicleForRaceStart(&g_aVehicles[i]);
             g_aVehicles[i].flyMode = FALSE;
             g_aVehicles[i].message = NULL;
@@ -1110,7 +1120,9 @@ static void DrawViewOverlay(void) {
         SetTextStyleNormal();
         SetTextAlignLeft();
         SetTextSize(15);
+#if TGR_REGION != TGR_REGION_JP
         DrawText("%wwINSTANT REPLAY!", 28, 32);
+#endif
         DrawText("%wwA to restart", 28, g_dwScreenHeight - 24);
         SetTextAlignRight();
         DrawText("%wwSTART to exit", g_dwScreenWidth - 28, g_dwScreenHeight - 24);
@@ -1657,9 +1669,14 @@ void ProcessRacingScreen(void) {
     if (g_dwGameMode == GAME_MODE_DEMO && !g_dwRaceSessionType &&
         g_aVehicles[0].input->playbackPosition >=
             g_aVehicles[0].input->playbackLimit - DEMO_FADE_BYTES) {
+#if TGR_REGION == TGR_REGION_JP
+        /* The Japanese release clears to black at once. */
+        ClearScreen(0, 0, 0);
+#else
         DrawScreenFadeOverlay(
             (f32)(g_aVehicles[0].input->playbackLimit - g_aVehicles[0].input->playbackPosition) /
             DEMO_FADE_BYTES);
+#endif
     }
 #endif
     FlushDisplayList();
@@ -1676,7 +1693,6 @@ void ProcessRacingScreen(void) {
         g_dwRacePauseState = paused;
     }
 }
-#endif
 
 void SaveRaceResultsToSlots(void) {
     s32 i, j;

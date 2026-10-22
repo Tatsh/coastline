@@ -1634,22 +1634,22 @@ enddlabel g_szSeasonTryAgain
 nonmatching switchdataD_802a86d4
 
 dlabel switchdataD_802a86d4
-    /* A96D4 802A86D4 802008F0 */ .word .L802008F0
-    /* A96D8 802A86D8 80200B14 */ .word .L80200B14
-    /* A96DC 802A86DC 80200DF4 */ .word .L80200DF4
-    /* A96E0 802A86E0 80201368 */ .word .L80201368
-    /* A96E4 802A86E4 80200B90 */ .word .L80200B90
-    /* A96E8 802A86E8 80200B30 */ .word .L80200B30
+    /* A96D4 802A86D4 802008F0 */ .word 0
+    /* A96D8 802A86D8 80200B14 */ .word 0
+    /* A96DC 802A86DC 80200DF4 */ .word 0
+    /* A96E0 802A86E0 80201368 */ .word 0
+    /* A96E4 802A86E4 80200B90 */ .word 0
+    /* A96E8 802A86E8 80200B30 */ .word 0
 enddlabel switchdataD_802a86d4
 
 nonmatching jtbl_802A86EC
 
 dlabel jtbl_802A86EC
-    /* A96EC 802A86EC 80201570 */ .word .L80201570
-    /* A96F0 802A86F0 802014E8 */ .word .L802014E8
-    /* A96F4 802A86F4 8020153C */ .word .L8020153C
-    /* A96F8 802A86F8 802015A4 */ .word .L802015A4
-    /* A96FC 802A86FC 802015D8 */ .word .L802015D8
+    /* A96EC 802A86EC 80201570 */ .word 0
+    /* A96F0 802A86F0 802014E8 */ .word 0
+    /* A96F4 802A86F4 8020153C */ .word 0
+    /* A96F8 802A86F8 802015A4 */ .word 0
+    /* A96FC 802A86FC 802015D8 */ .word 0
 enddlabel jtbl_802A86EC
 
 nonmatching g_fConst0p2_802a7200
