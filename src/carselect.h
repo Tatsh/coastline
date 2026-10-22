@@ -108,8 +108,8 @@ extern MenuItem **g_aapCarSelectOptions[2];
  * The option under the cursor of each player.
  *
  * @ghidraAddress USA: 0x80316278
- * @ghidraAddress JPN: 0x80316b60
  * @ghidraAddress EUR: 0x80317f58
+ * @ghidraAddress JPN: 0x80316b90
  */
 extern s32 g_anCarSelectCursor[2];
 

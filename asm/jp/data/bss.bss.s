@@ -445,14 +445,15 @@ nonmatching D_80316B58, 0x8
 dlabel D_80316B58
     /* 80316B58 */ .space 0x08
 
-nonmatching g_anCarSelectCursor, 0x4
+nonmatching g_adwCarSelectPaintPending, 0x4
 
-dlabel g_anCarSelectCursor
+dlabel g_adwCarSelectPaintPending
     /* 80316B60 */ .space 0x04
 
-nonmatching g_dwP2VehicleColorRefreshPending, 0x4
+nonmatching D_80316B64, 0x4
 
-dlabel g_dwP2VehicleColorRefreshPending
+/* Automatically generated and unreferenced pad */
+dlabel D_80316B64
     /* 80316B64 */ .space 0x04
 
 nonmatching g_dwCarSelectStartTime, 0x8
@@ -500,9 +501,9 @@ nonmatching D_80316B8C, 0x4
 dlabel D_80316B8C
     /* 80316B8C */ .space 0x04
 
-nonmatching gTrackRomOffsetJp, 0x4
+nonmatching g_anCarSelectCursor, 0x4
 
-dlabel gTrackRomOffsetJp
+dlabel g_anCarSelectCursor
     /* 80316B90 */ .space 0x04
 
 nonmatching D_80316B94, 0x4
@@ -545,14 +546,14 @@ nonmatching g_pScrollSoundBuf, 0x4
 dlabel g_pScrollSoundBuf
     /* 80316BB4 */ .space 0x04
 
-nonmatching g_dwTrackSelectCursorSfxSize, 0x4
+nonmatching g_dwScrollSoundSize, 0x4
 
-dlabel g_dwTrackSelectCursorSfxSize
+dlabel g_dwScrollSoundSize
     /* 80316BB8 */ .space 0x04
 
-nonmatching g_pTrackSelectConfirmSfxData, 0x4
+nonmatching g_pSelectSoundBuf, 0x4
 
-dlabel g_pTrackSelectConfirmSfxData
+dlabel g_pSelectSoundBuf
     /* 80316BBC */ .space 0x04
 
 nonmatching g_dwSelectSoundSize, 0x4

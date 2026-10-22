@@ -363,8 +363,8 @@ glabel ProcessCarSelectScreen
     /* DF18 8020CF18 26105E00 */  addiu      $s0, $s0, %lo(D_1D5E00)
     /* DF1C 8020CF1C 0C0874B9 */  jal        DmaReadAssetSize
     /* DF20 8020CF20 02002025 */   or        $a0, $s0, $zero
-    /* DF24 8020CF24 3C018031 */  lui        $at, %hi(g_dwTrackSelectCursorSfxSize)
-    /* DF28 8020CF28 AC226BB8 */  sw         $v0, %lo(g_dwTrackSelectCursorSfxSize)($at)
+    /* DF24 8020CF24 3C018031 */  lui        $at, %hi(g_dwScrollSoundSize)
+    /* DF28 8020CF28 AC226BB8 */  sw         $v0, %lo(g_dwScrollSoundSize)($at)
     /* DF2C 8020CF2C 0C090E5F */  jal        AllocHeapAligned
     /* DF30 8020CF30 24440100 */   addiu     $a0, $v0, 0x100
     /* DF34 8020CF34 3C018031 */  lui        $at, %hi(g_pScrollSoundBuf)
@@ -381,19 +381,19 @@ glabel ProcessCarSelectScreen
     /* DF60 8020CF60 AC226BC0 */  sw         $v0, %lo(g_dwSelectSoundSize)($at)
     /* DF64 8020CF64 0C090E5F */  jal        AllocHeapAligned
     /* DF68 8020CF68 24440100 */   addiu     $a0, $v0, 0x100
-    /* DF6C 8020CF6C 3C018031 */  lui        $at, %hi(g_pTrackSelectConfirmSfxData)
-    /* DF70 8020CF70 AC226BBC */  sw         $v0, %lo(g_pTrackSelectConfirmSfxData)($at)
+    /* DF6C 8020CF6C 3C018031 */  lui        $at, %hi(g_pSelectSoundBuf)
+    /* DF70 8020CF70 AC226BBC */  sw         $v0, %lo(g_pSelectSoundBuf)($at)
     /* DF74 8020CF74 00402025 */  or         $a0, $v0, $zero
     /* DF78 8020CF78 02002825 */  or         $a1, $s0, $zero
     /* DF7C 8020CF7C 0C087600 */  jal        DecompressFromRom
     /* DF80 8020CF80 00003025 */   or        $a2, $zero, $zero
     /* DF84 8020CF84 3C198031 */  lui        $t9, %hi(g_pScrollSoundBuf)
-    /* DF88 8020CF88 3C098031 */  lui        $t1, %hi(g_dwTrackSelectCursorSfxSize)
-    /* DF8C 8020CF8C 3C0A8031 */  lui        $t2, %hi(g_pTrackSelectConfirmSfxData)
+    /* DF88 8020CF88 3C098031 */  lui        $t1, %hi(g_dwScrollSoundSize)
+    /* DF8C 8020CF8C 3C0A8031 */  lui        $t2, %hi(g_pSelectSoundBuf)
     /* DF90 8020CF90 3C0B8031 */  lui        $t3, %hi(g_dwSelectSoundSize)
     /* DF94 8020CF94 8D6B6BC0 */  lw         $t3, %lo(g_dwSelectSoundSize)($t3)
-    /* DF98 8020CF98 8D4A6BBC */  lw         $t2, %lo(g_pTrackSelectConfirmSfxData)($t2)
-    /* DF9C 8020CF9C 8D296BB8 */  lw         $t1, %lo(g_dwTrackSelectCursorSfxSize)($t1)
+    /* DF98 8020CF98 8D4A6BBC */  lw         $t2, %lo(g_pSelectSoundBuf)($t2)
+    /* DF9C 8020CF9C 8D296BB8 */  lw         $t1, %lo(g_dwScrollSoundSize)($t1)
     /* DFA0 8020CFA0 8F396BB4 */  lw         $t9, %lo(g_pScrollSoundBuf)($t9)
     /* DFA4 8020CFA4 24020100 */  addiu      $v0, $zero, 0x100
     /* DFA8 8020CFA8 014B2021 */  addu       $a0, $t2, $t3
@@ -422,16 +422,16 @@ glabel ProcessCarSelectScreen
     /* E000 8020D000 3C0E8027 */  lui        $t6, %hi(g_apHandlingOptions)
     /* E004 8020D004 25CE3B40 */  addiu      $t6, $t6, %lo(g_apHandlingOptions)
     /* E008 8020D008 3C018031 */  lui        $at, %hi(D_80316B8C)
-    /* E00C 8020D00C 3C048031 */  lui        $a0, %hi(gTrackRomOffsetJp)
+    /* E00C 8020D00C 3C048031 */  lui        $a0, %hi(g_anCarSelectCursor)
     /* E010 8020D010 AC2E6B8C */  sw         $t6, %lo(D_80316B8C)($at)
     /* E014 8020D014 AC2E6B88 */  sw         $t6, %lo(g_aapCarSelectOptions)($at)
-    /* E018 8020D018 24846B90 */  addiu      $a0, $a0, %lo(gTrackRomOffsetJp)
+    /* E018 8020D018 24846B90 */  addiu      $a0, $a0, %lo(g_anCarSelectCursor)
     /* E01C 8020D01C AC800004 */  sw         $zero, 0x4($a0)
     /* E020 8020D020 AC800000 */  sw         $zero, 0x0($a0)
     /* E024 8020D024 3C018029 */  lui        $at, %hi(g_dwKeepScreenBlanked)
-    /* E028 8020D028 3C038031 */  lui        $v1, %hi(g_anCarSelectCursor)
+    /* E028 8020D028 3C038031 */  lui        $v1, %hi(g_adwCarSelectPaintPending)
     /* E02C 8020D02C AC20C554 */  sw         $zero, %lo(g_dwKeepScreenBlanked)($at)
-    /* E030 8020D030 24636B60 */  addiu      $v1, $v1, %lo(g_anCarSelectCursor)
+    /* E030 8020D030 24636B60 */  addiu      $v1, $v1, %lo(g_adwCarSelectPaintPending)
     /* E034 8020D034 24180001 */  addiu      $t8, $zero, 0x1
     /* E038 8020D038 AC780004 */  sw         $t8, 0x4($v1)
     /* E03C 8020D03C AC780000 */  sw         $t8, 0x0($v1)
@@ -454,10 +454,10 @@ glabel ProcessCarSelectScreen
     /* E07C 8020D07C 8C631988 */  lw         $v1, %lo(g_dwNumLocalPlayers)($v1)
     /* E080 8020D080 0000A825 */  or         $s5, $zero, $zero
     /* E084 8020D084 18600075 */  blez       $v1, .L8020D25C
-    /* E088 8020D088 3C128031 */   lui       $s2, %hi(g_anCarSelectCursor)
+    /* E088 8020D088 3C128031 */   lui       $s2, %hi(g_adwCarSelectPaintPending)
     /* E08C 8020D08C 3C148029 */  lui        $s4, %hi(g_abPlayerColorsRgb)
     /* E090 8020D090 2694D5E4 */  addiu      $s4, $s4, %lo(g_abPlayerColorsRgb)
-    /* E094 8020D094 26526B60 */  addiu      $s2, $s2, %lo(g_anCarSelectCursor)
+    /* E094 8020D094 26526B60 */  addiu      $s2, $s2, %lo(g_adwCarSelectPaintPending)
     /* E098 8020D098 00009825 */  or         $s3, $zero, $zero
   .L8020D09C:
     /* E09C 8020D09C 8E490000 */  lw         $t1, 0x0($s2)
@@ -710,10 +710,10 @@ glabel ProcessCarSelectScreen
     /* E448 8020D448 18600057 */  blez       $v1, .L8020D5A8
     /* E44C 8020D44C 00000000 */   nop
     /* E450 8020D450 3C148031 */  lui        $s4, %hi(g_afCarSelectSlide)
-    /* E454 8020D454 3C128031 */  lui        $s2, %hi(g_anCarSelectCursor)
+    /* E454 8020D454 3C128031 */  lui        $s2, %hi(g_adwCarSelectPaintPending)
     /* E458 8020D458 3C118031 */  lui        $s1, %hi(g_adwCarSelectModelSlots)
     /* E45C 8020D45C 26316B70 */  addiu      $s1, $s1, %lo(g_adwCarSelectModelSlots)
-    /* E460 8020D460 26526B60 */  addiu      $s2, $s2, %lo(g_anCarSelectCursor)
+    /* E460 8020D460 26526B60 */  addiu      $s2, $s2, %lo(g_adwCarSelectPaintPending)
     /* E464 8020D464 26946B78 */  addiu      $s4, $s4, %lo(g_afCarSelectSlide)
     /* E468 8020D468 00009825 */  or         $s3, $zero, $zero
   .L8020D46C:
@@ -739,9 +739,9 @@ glabel ProcessCarSelectScreen
   .L8020D4B8:
     /* E4B8 8020D4B8 24010005 */  addiu      $at, $zero, 0x5
     /* E4BC 8020D4BC 15410023 */  bne        $t2, $at, .L8020D54C
-    /* E4C0 8020D4C0 3C0B8031 */   lui       $t3, %hi(gTrackRomOffsetJp)
+    /* E4C0 8020D4C0 3C0B8031 */   lui       $t3, %hi(g_anCarSelectCursor)
     /* E4C4 8020D4C4 01735821 */  addu       $t3, $t3, $s3
-    /* E4C8 8020D4C8 8D6B6B90 */  lw         $t3, %lo(gTrackRomOffsetJp)($t3)
+    /* E4C8 8020D4C8 8D6B6B90 */  lw         $t3, %lo(g_anCarSelectCursor)($t3)
     /* E4CC 8020D4CC 24010001 */  addiu      $at, $zero, 0x1
     /* E4D0 8020D4D0 1161001E */  beq        $t3, $at, .L8020D54C
     /* E4D4 8020D4D4 240C0001 */   addiu     $t4, $zero, 0x1
@@ -769,9 +769,9 @@ glabel ProcessCarSelectScreen
   .L8020D528:
     /* E528 8020D528 24010005 */  addiu      $at, $zero, 0x5
     /* E52C 8020D52C 15C10007 */  bne        $t6, $at, .L8020D54C
-    /* E530 8020D530 3C0F8031 */   lui       $t7, %hi(gTrackRomOffsetJp)
+    /* E530 8020D530 3C0F8031 */   lui       $t7, %hi(g_anCarSelectCursor)
     /* E534 8020D534 01F37821 */  addu       $t7, $t7, $s3
-    /* E538 8020D538 8DEF6B90 */  lw         $t7, %lo(gTrackRomOffsetJp)($t7)
+    /* E538 8020D538 8DEF6B90 */  lw         $t7, %lo(g_anCarSelectCursor)($t7)
     /* E53C 8020D53C 24010001 */  addiu      $at, $zero, 0x1
     /* E540 8020D540 11E10002 */  beq        $t7, $at, .L8020D54C
     /* E544 8020D544 24190001 */   addiu     $t9, $zero, 0x1
@@ -836,9 +836,9 @@ glabel ProcessCarSelectScreen
   .L8020D61C:
     /* E61C 8020D61C 24010005 */  addiu      $at, $zero, 0x5
     /* E620 8020D620 14410019 */  bne        $v0, $at, .L8020D688
-    /* E624 8020D624 3C028031 */   lui       $v0, %hi(gTrackRomOffsetJp)
+    /* E624 8020D624 3C028031 */   lui       $v0, %hi(g_anCarSelectCursor)
     /* E628 8020D628 00531021 */  addu       $v0, $v0, $s3
-    /* E62C 8020D62C 8C426B90 */  lw         $v0, %lo(gTrackRomOffsetJp)($v0)
+    /* E62C 8020D62C 8C426B90 */  lw         $v0, %lo(g_anCarSelectCursor)($v0)
     /* E630 8020D630 14400004 */  bnez       $v0, .L8020D644
     /* E634 8020D634 3AAD0002 */   xori      $t5, $s5, 0x2
     /* E638 8020D638 02337021 */  addu       $t6, $s1, $s3
@@ -896,8 +896,8 @@ glabel ProcessCarSelectScreen
     /* E6F0 8020D6F0 10000009 */  b          .L8020D718
     /* E6F4 8020D6F4 00009025 */   or        $s2, $zero, $zero
   .L8020D6F8:
-    /* E6F8 8020D6F8 3C0E8031 */  lui        $t6, %hi(gTrackRomOffsetJp)
-    /* E6FC 8020D6FC 8DCE6B90 */  lw         $t6, %lo(gTrackRomOffsetJp)($t6)
+    /* E6F8 8020D6F8 3C0E8031 */  lui        $t6, %hi(g_anCarSelectCursor)
+    /* E6FC 8020D6FC 8DCE6B90 */  lw         $t6, %lo(g_anCarSelectCursor)($t6)
     /* E700 8020D700 3C0D8031 */  lui        $t5, %hi(g_aapCarSelectOptions)
     /* E704 8020D704 8DAD6B88 */  lw         $t5, %lo(g_aapCarSelectOptions)($t5)
     /* E708 8020D708 000E7880 */  sll        $t7, $t6, 2
@@ -970,8 +970,8 @@ glabel ProcessCarSelectScreen
     /* E7FC 8020D7FC 10000009 */  b          .L8020D824
     /* E800 8020D800 00009025 */   or        $s2, $zero, $zero
   .L8020D804:
-    /* E804 8020D804 3C0E8031 */  lui        $t6, %hi(gTrackRomOffsetJp)
-    /* E808 8020D808 8DCE6B90 */  lw         $t6, %lo(gTrackRomOffsetJp)($t6)
+    /* E804 8020D804 3C0E8031 */  lui        $t6, %hi(g_anCarSelectCursor)
+    /* E808 8020D808 8DCE6B90 */  lw         $t6, %lo(g_anCarSelectCursor)($t6)
     /* E80C 8020D80C 3C0C8031 */  lui        $t4, %hi(g_aapCarSelectOptions)
     /* E810 8020D810 8D8C6B88 */  lw         $t4, %lo(g_aapCarSelectOptions)($t4)
     /* E814 8020D814 000E6880 */  sll        $t5, $t6, 2
@@ -1037,8 +1037,8 @@ glabel ProcessCarSelectScreen
     /* E8EC 8020D8EC 10000009 */  b          .L8020D914
     /* E8F0 8020D8F0 00009025 */   or        $s2, $zero, $zero
   .L8020D8F4:
-    /* E8F4 8020D8F4 3C098031 */  lui        $t1, %hi(gTrackRomOffsetJp)
-    /* E8F8 8020D8F8 8D296B90 */  lw         $t1, %lo(gTrackRomOffsetJp)($t1)
+    /* E8F4 8020D8F4 3C098031 */  lui        $t1, %hi(g_anCarSelectCursor)
+    /* E8F8 8020D8F8 8D296B90 */  lw         $t1, %lo(g_anCarSelectCursor)($t1)
     /* E8FC 8020D8FC 3C188031 */  lui        $t8, %hi(g_aapCarSelectOptions)
     /* E900 8020D900 8F186B88 */  lw         $t8, %lo(g_aapCarSelectOptions)($t8)
     /* E904 8020D904 00095880 */  sll        $t3, $t1, 2
@@ -1159,8 +1159,8 @@ glabel ProcessCarSelectScreen
     /* EAA4 8020DAA4 3C038027 */  lui        $v1, %hi(g_dwNumLocalPlayers)
     /* EAA8 8020DAA8 8C631988 */  lw         $v1, %lo(g_dwNumLocalPlayers)($v1)
     /* EAAC 8020DAAC 1860001D */  blez       $v1, .L8020DB24
-    /* EAB0 8020DAB0 3C128031 */   lui       $s2, %hi(g_anCarSelectCursor)
-    /* EAB4 8020DAB4 26526B60 */  addiu      $s2, $s2, %lo(g_anCarSelectCursor)
+    /* EAB0 8020DAB0 3C128031 */   lui       $s2, %hi(g_adwCarSelectPaintPending)
+    /* EAB4 8020DAB4 26526B60 */  addiu      $s2, $s2, %lo(g_adwCarSelectPaintPending)
     /* EAB8 8020DAB8 00009825 */  or         $s3, $zero, $zero
   .L8020DABC:
     /* EABC 8020DABC 8E4B0000 */  lw         $t3, 0x0($s2)
@@ -2165,8 +2165,8 @@ glabel ProcessCarSelectScreen
     /* F940 8020E940 10000012 */  b          .L8020E98C
     /* F944 8020E944 24120060 */   addiu     $s2, $zero, 0x60
   .L8020E948:
-    /* F948 8020E948 3C0F8031 */  lui        $t7, %hi(gTrackRomOffsetJp)
-    /* F94C 8020E94C 8DEF6B90 */  lw         $t7, %lo(gTrackRomOffsetJp)($t7)
+    /* F948 8020E948 3C0F8031 */  lui        $t7, %hi(g_anCarSelectCursor)
+    /* F94C 8020E94C 8DEF6B90 */  lw         $t7, %lo(g_anCarSelectCursor)($t7)
     /* F950 8020E950 3C0D8031 */  lui        $t5, %hi(g_aapCarSelectOptions)
     /* F954 8020E954 8DAD6B88 */  lw         $t5, %lo(g_aapCarSelectOptions)($t5)
     /* F958 8020E958 000F5080 */  sll        $t2, $t7, 2
@@ -2267,8 +2267,8 @@ glabel ProcessCarSelectScreen
     /* FAB8 8020EAB8 8DEF6BC8 */  lw         $t7, %lo(g_adwCarSelectState)($t7)
     /* FABC 8020EABC 24010005 */  addiu      $at, $zero, 0x5
     /* FAC0 8020EAC0 15E1003E */  bne        $t7, $at, .L8020EBBC
-    /* FAC4 8020EAC4 3C0A8031 */   lui       $t2, %hi(gTrackRomOffsetJp)
-    /* FAC8 8020EAC8 8D4A6B90 */  lw         $t2, %lo(gTrackRomOffsetJp)($t2)
+    /* FAC4 8020EAC4 3C0A8031 */   lui       $t2, %hi(g_anCarSelectCursor)
+    /* FAC8 8020EAC8 8D4A6B90 */  lw         $t2, %lo(g_anCarSelectCursor)($t2)
     /* FACC 8020EACC 24010001 */  addiu      $at, $zero, 0x1
     /* FAD0 8020EAD0 1141003A */  beq        $t2, $at, .L8020EBBC
     /* FAD4 8020EAD4 3C018031 */   lui       $at, %hi(g_afCarSelectSlide)
@@ -2844,8 +2844,8 @@ glabel ProcessCarSelectScreen
     /* 10330 8020F330 10000012 */  b          .L8020F37C
     /* 10334 8020F334 24120060 */   addiu     $s2, $zero, 0x60
   .L8020F338:
-    /* 10338 8020F338 3C0E8031 */  lui        $t6, %hi(gTrackRomOffsetJp)
-    /* 1033C 8020F33C 8DCE6B90 */  lw         $t6, %lo(gTrackRomOffsetJp)($t6)
+    /* 10338 8020F338 3C0E8031 */  lui        $t6, %hi(g_anCarSelectCursor)
+    /* 1033C 8020F33C 8DCE6B90 */  lw         $t6, %lo(g_anCarSelectCursor)($t6)
     /* 10340 8020F340 3C198031 */  lui        $t9, %hi(g_aapCarSelectOptions)
     /* 10344 8020F344 8F396B88 */  lw         $t9, %lo(g_aapCarSelectOptions)($t9)
     /* 10348 8020F348 000E6080 */  sll        $t4, $t6, 2
@@ -2892,8 +2892,8 @@ glabel ProcessCarSelectScreen
     /* 103E0 8020F3E0 8D086BC8 */  lw         $t0, %lo(g_adwCarSelectState)($t0)
     /* 103E4 8020F3E4 24010005 */  addiu      $at, $zero, 0x5
     /* 103E8 8020F3E8 15010026 */  bne        $t0, $at, .L8020F484
-    /* 103EC 8020F3EC 3C098031 */   lui       $t1, %hi(gTrackRomOffsetJp)
-    /* 103F0 8020F3F0 8D296B90 */  lw         $t1, %lo(gTrackRomOffsetJp)($t1)
+    /* 103EC 8020F3EC 3C098031 */   lui       $t1, %hi(g_anCarSelectCursor)
+    /* 103F0 8020F3F0 8D296B90 */  lw         $t1, %lo(g_anCarSelectCursor)($t1)
     /* 103F4 8020F3F4 24010001 */  addiu      $at, $zero, 0x1
     /* 103F8 8020F3F8 11210022 */  beq        $t1, $at, .L8020F484
     /* 103FC 8020F3FC 3C018031 */   lui       $at, %hi(g_afCarSelectSlide)
@@ -3278,10 +3278,10 @@ glabel ProcessCarSelectScreen
     /* 10984 8020F984 26F76BA0 */  addiu      $s7, $s7, %lo(g_anCarSelectOptionCount)
     /* 10988 8020F988 3C018031 */  lui        $at, %hi(g_dwPakDialogResult)
     /* 1098C 8020F98C 00081080 */  sll        $v0, $t0, 2
-    /* 10990 8020F990 3C098031 */  lui        $t1, %hi(gTrackRomOffsetJp)
+    /* 10990 8020F990 3C098031 */  lui        $t1, %hi(g_anCarSelectCursor)
     /* 10994 8020F994 AC246BD8 */  sw         $a0, %lo(g_dwPakDialogResult)($at)
     /* 10998 8020F998 02E2C021 */  addu       $t8, $s7, $v0
-    /* 1099C 8020F99C 25296B90 */  addiu      $t1, $t1, %lo(gTrackRomOffsetJp)
+    /* 1099C 8020F99C 25296B90 */  addiu      $t1, $t1, %lo(g_anCarSelectCursor)
     /* 109A0 8020F9A0 00493021 */  addu       $a2, $v0, $t1
     /* 109A4 8020F9A4 AF030000 */  sw         $v1, 0x0($t8)
     /* 109A8 8020F9A8 8CC70000 */  lw         $a3, 0x0($a2)
@@ -3728,8 +3728,8 @@ glabel ProcessCarSelectScreen
     /* 11018 80210018 10410007 */  beq        $v0, $at, .L80210038
     /* 1101C 8021001C 03202025 */   or        $a0, $t9, $zero
     /* 11020 80210020 3C058031 */  lui        $a1, %hi(g_pScrollSoundBuf)
-    /* 11024 80210024 3C068031 */  lui        $a2, %hi(g_dwTrackSelectCursorSfxSize)
-    /* 11028 80210028 8CC66BB8 */  lw         $a2, %lo(g_dwTrackSelectCursorSfxSize)($a2)
+    /* 11024 80210024 3C068031 */  lui        $a2, %hi(g_dwScrollSoundSize)
+    /* 11028 80210028 8CC66BB8 */  lw         $a2, %lo(g_dwScrollSoundSize)($a2)
     /* 1102C 8021002C 8CA56BB4 */  lw         $a1, %lo(g_pScrollSoundBuf)($a1)
     /* 11030 80210030 0C096299 */  jal        InitSoundChannel
     /* 11034 80210034 00003825 */   or        $a3, $zero, $zero
@@ -3757,8 +3757,8 @@ glabel ProcessCarSelectScreen
     /* 11080 80210080 8D420000 */  lw         $v0, 0x0($t2)
     /* 11084 80210084 304B0004 */  andi       $t3, $v0, 0x4
     /* 11088 80210088 1160001B */  beqz       $t3, .L802100F8
-    /* 1108C 8021008C 3C188031 */   lui       $t8, %hi(gTrackRomOffsetJp)
-    /* 11090 80210090 27186B90 */  addiu      $t8, $t8, %lo(gTrackRomOffsetJp)
+    /* 1108C 8021008C 3C188031 */   lui       $t8, %hi(g_anCarSelectCursor)
+    /* 11090 80210090 27186B90 */  addiu      $t8, $t8, %lo(g_anCarSelectCursor)
     /* 11094 80210094 02789021 */  addu       $s2, $s3, $t8
     /* 11098 80210098 8E420000 */  lw         $v0, 0x0($s2)
     /* 1109C 8021009C 3C018031 */  lui        $at, %hi(g_anCarSelectPrevCursor)
@@ -3790,8 +3790,8 @@ glabel ProcessCarSelectScreen
     /* 110F8 802100F8 304C0001 */  andi       $t4, $v0, 0x1
     /* 110FC 802100FC 51800028 */  beql       $t4, $zero, .L802101A0
     /* 11100 80210100 44804000 */   mtc1      $zero, $f8
-    /* 11104 80210104 3C0D8031 */  lui        $t5, %hi(gTrackRomOffsetJp)
-    /* 11108 80210108 25AD6B90 */  addiu      $t5, $t5, %lo(gTrackRomOffsetJp)
+    /* 11104 80210104 3C0D8031 */  lui        $t5, %hi(g_anCarSelectCursor)
+    /* 11108 80210108 25AD6B90 */  addiu      $t5, $t5, %lo(g_anCarSelectCursor)
     /* 1110C 8021010C 026D9021 */  addu       $s2, $s3, $t5
     /* 11110 80210110 8E420000 */  lw         $v0, 0x0($s2)
     /* 11114 80210114 3C018031 */  lui        $at, %hi(g_anCarSelectPrevCursor)
@@ -3826,8 +3826,8 @@ glabel ProcessCarSelectScreen
     /* 1117C 8021017C 10410007 */  beq        $v0, $at, .L8021019C
     /* 11180 80210180 01C02025 */   or        $a0, $t6, $zero
     /* 11184 80210184 3C058031 */  lui        $a1, %hi(g_pScrollSoundBuf)
-    /* 11188 80210188 3C068031 */  lui        $a2, %hi(g_dwTrackSelectCursorSfxSize)
-    /* 1118C 8021018C 8CC66BB8 */  lw         $a2, %lo(g_dwTrackSelectCursorSfxSize)($a2)
+    /* 11188 80210188 3C068031 */  lui        $a2, %hi(g_dwScrollSoundSize)
+    /* 1118C 8021018C 8CC66BB8 */  lw         $a2, %lo(g_dwScrollSoundSize)($a2)
     /* 11190 80210190 8CA56BB4 */  lw         $a1, %lo(g_pScrollSoundBuf)($a1)
     /* 11194 80210194 0C096299 */  jal        InitSoundChannel
     /* 11198 80210198 00003825 */   or        $a3, $zero, $zero
@@ -4011,8 +4011,8 @@ glabel ProcessCarSelectScreen
     /* 11400 80210400 8F020000 */  lw         $v0, 0x0($t8)
     /* 11404 80210404 30590004 */  andi       $t9, $v0, 0x4
     /* 11408 80210408 1320001B */  beqz       $t9, .L80210478
-    /* 1140C 8021040C 3C0E8031 */   lui       $t6, %hi(gTrackRomOffsetJp)
-    /* 11410 80210410 25CE6B90 */  addiu      $t6, $t6, %lo(gTrackRomOffsetJp)
+    /* 1140C 8021040C 3C0E8031 */   lui       $t6, %hi(g_anCarSelectCursor)
+    /* 11410 80210410 25CE6B90 */  addiu      $t6, $t6, %lo(g_anCarSelectCursor)
     /* 11414 80210414 026E9021 */  addu       $s2, $s3, $t6
     /* 11418 80210418 8E420000 */  lw         $v0, 0x0($s2)
     /* 1141C 8021041C 3C018031 */  lui        $at, %hi(g_anCarSelectPrevCursor)
@@ -4044,8 +4044,8 @@ glabel ProcessCarSelectScreen
     /* 11478 80210478 304B0001 */  andi       $t3, $v0, 0x1
     /* 1147C 8021047C 51600028 */  beql       $t3, $zero, .L80210520
     /* 11480 80210480 8E242074 */   lw        $a0, 0x2074($s1)
-    /* 11484 80210484 3C0A8031 */  lui        $t2, %hi(gTrackRomOffsetJp)
-    /* 11488 80210488 254A6B90 */  addiu      $t2, $t2, %lo(gTrackRomOffsetJp)
+    /* 11484 80210484 3C0A8031 */  lui        $t2, %hi(g_anCarSelectCursor)
+    /* 11488 80210488 254A6B90 */  addiu      $t2, $t2, %lo(g_anCarSelectCursor)
     /* 1148C 8021048C 026A9021 */  addu       $s2, $s3, $t2
     /* 11490 80210490 8E420000 */  lw         $v0, 0x0($s2)
     /* 11494 80210494 3C018031 */  lui        $at, %hi(g_anCarSelectPrevCursor)
@@ -4080,8 +4080,8 @@ glabel ProcessCarSelectScreen
     /* 114FC 802104FC 10410007 */  beq        $v0, $at, .L8021051C
     /* 11500 80210500 01202025 */   or        $a0, $t1, $zero
     /* 11504 80210504 3C058031 */  lui        $a1, %hi(g_pScrollSoundBuf)
-    /* 11508 80210508 3C068031 */  lui        $a2, %hi(g_dwTrackSelectCursorSfxSize)
-    /* 1150C 8021050C 8CC66BB8 */  lw         $a2, %lo(g_dwTrackSelectCursorSfxSize)($a2)
+    /* 11508 80210508 3C068031 */  lui        $a2, %hi(g_dwScrollSoundSize)
+    /* 1150C 8021050C 8CC66BB8 */  lw         $a2, %lo(g_dwScrollSoundSize)($a2)
     /* 11510 80210510 8CA56BB4 */  lw         $a1, %lo(g_pScrollSoundBuf)($a1)
     /* 11514 80210514 0C096299 */  jal        InitSoundChannel
     /* 11518 80210518 00003825 */   or        $a3, $zero, $zero
@@ -4111,10 +4111,10 @@ glabel ProcessCarSelectScreen
   .L80210570:
     /* 11570 80210570 2459FFFF */  addiu      $t9, $v0, -0x1
     /* 11574 80210574 2738FFFF */  addiu      $t8, $t9, -0x1
-    /* 11578 80210578 3C0B8031 */  lui        $t3, %hi(gTrackRomOffsetJp)
+    /* 11578 80210578 3C0B8031 */  lui        $t3, %hi(g_anCarSelectCursor)
     /* 1157C 8021057C 3C0A8031 */  lui        $t2, %hi(g_anCarSelectPrevCursor)
     /* 11580 80210580 254A6B98 */  addiu      $t2, $t2, %lo(g_anCarSelectPrevCursor)
-    /* 11584 80210584 256B6B90 */  addiu      $t3, $t3, %lo(gTrackRomOffsetJp)
+    /* 11584 80210584 256B6B90 */  addiu      $t3, $t3, %lo(g_anCarSelectCursor)
     /* 11588 80210588 2F010005 */  sltiu      $at, $t8, 0x5
     /* 1158C 8021058C AED90000 */  sw         $t9, 0x0($s6)
     /* 11590 80210590 026B9021 */  addu       $s2, $s3, $t3
@@ -4216,8 +4216,8 @@ glabel ProcessCarSelectScreen
     /* 116F8 802106F8 3058C010 */  andi       $t8, $v0, 0xC010
   .L802106FC:
     /* 116FC 802106FC 13000153 */  beqz       $t8, .L80210C4C
-    /* 11700 80210700 3C0E8031 */   lui       $t6, %hi(gTrackRomOffsetJp)
-    /* 11704 80210704 25CE6B90 */  addiu      $t6, $t6, %lo(gTrackRomOffsetJp)
+    /* 11700 80210700 3C0E8031 */   lui       $t6, %hi(g_anCarSelectCursor)
+    /* 11704 80210704 25CE6B90 */  addiu      $t6, $t6, %lo(g_anCarSelectCursor)
     /* 11708 80210708 026E9021 */  addu       $s2, $s3, $t6
     /* 1170C 8021070C 0C095A1C */  jal        TransferFlags
     /* 11710 80210710 3405C010 */   ori       $a1, $zero, 0xC010
@@ -4362,10 +4362,10 @@ glabel ProcessCarSelectScreen
     /* 1191C 8021091C 2401FFFF */  addiu      $at, $zero, -0x1
     /* 11920 80210920 10410007 */  beq        $v0, $at, .L80210940
     /* 11924 80210924 03002025 */   or        $a0, $t8, $zero
-    /* 11928 80210928 3C058031 */  lui        $a1, %hi(g_pTrackSelectConfirmSfxData)
+    /* 11928 80210928 3C058031 */  lui        $a1, %hi(g_pSelectSoundBuf)
     /* 1192C 8021092C 3C068031 */  lui        $a2, %hi(g_dwSelectSoundSize)
     /* 11930 80210930 8CC66BC0 */  lw         $a2, %lo(g_dwSelectSoundSize)($a2)
-    /* 11934 80210934 8CA56BBC */  lw         $a1, %lo(g_pTrackSelectConfirmSfxData)($a1)
+    /* 11934 80210934 8CA56BBC */  lw         $a1, %lo(g_pSelectSoundBuf)($a1)
     /* 11938 80210938 0C096299 */  jal        InitSoundChannel
     /* 1193C 8021093C 00003825 */   or        $a3, $zero, $zero
   .L80210940:
@@ -4577,10 +4577,10 @@ glabel ProcessCarSelectScreen
     /* 11C28 80210C28 2401FFFF */  addiu      $at, $zero, -0x1
     /* 11C2C 80210C2C 10410007 */  beq        $v0, $at, .L80210C4C
     /* 11C30 80210C30 01E02025 */   or        $a0, $t7, $zero
-    /* 11C34 80210C34 3C058031 */  lui        $a1, %hi(g_pTrackSelectConfirmSfxData)
+    /* 11C34 80210C34 3C058031 */  lui        $a1, %hi(g_pSelectSoundBuf)
     /* 11C38 80210C38 3C068031 */  lui        $a2, %hi(g_dwSelectSoundSize)
     /* 11C3C 80210C3C 8CC66BC0 */  lw         $a2, %lo(g_dwSelectSoundSize)($a2)
-    /* 11C40 80210C40 8CA56BBC */  lw         $a1, %lo(g_pTrackSelectConfirmSfxData)($a1)
+    /* 11C40 80210C40 8CA56BBC */  lw         $a1, %lo(g_pSelectSoundBuf)($a1)
     /* 11C44 80210C44 0C096299 */  jal        InitSoundChannel
     /* 11C48 80210C48 00003825 */   or        $a3, $zero, $zero
   .L80210C4C:
