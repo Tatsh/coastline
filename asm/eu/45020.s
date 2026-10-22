@@ -1206,7 +1206,7 @@ glabel ProcessPaintShopScreen
     /* 46990 80245990 0C086B04 */  jal        SetViewport
     /* 46994 80245994 00002825 */   or        $a1, $zero, $zero
   .L80245998:
-    /* 46998 80245998 0C093A55 */  jal        IsCursorInSwatch
+    /* 46998 80245998 0C093A55 */  jal        IsCursorInRect
     /* 4699C 8024599C 02802025 */   or        $a0, $s4, $zero
     /* 469A0 802459A0 5040008B */  beql       $v0, $zero, .L80245BD0
     /* 469A4 802459A4 92620000 */   lbu       $v0, 0x0($s3)
@@ -1584,7 +1584,7 @@ glabel ProcessPaintShopScreen
     /* 46F00 80245F00 31CC0020 */  andi       $t4, $t6, 0x20
     /* 46F04 80245F04 11800040 */  beqz       $t4, .L80246008
     /* 46F08 80245F08 00000000 */   nop
-    /* 46F0C 80245F0C 0C093A55 */  jal        IsCursorInSwatch
+    /* 46F0C 80245F0C 0C093A55 */  jal        IsCursorInRect
     /* 46F10 80245F10 02802025 */   or        $a0, $s4, $zero
     /* 46F14 80245F14 1040001B */  beqz       $v0, .L80245F84
     /* 46F18 80245F18 3C108029 */   lui       $s0, %hi(g_bPaintToolStarted)
