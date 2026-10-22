@@ -56,18 +56,20 @@
 void ResetGlyphCache(void) {
     s32 i;
     u8 *start;
+    u32 slotSize;
 
     for (i = 0; i < GLYPH_CACHE_CHARACTERS; i++) {
         g_abGlyphCharToSlot[i] = 0;
     }
     start = (u8 *)(((u32)g_abGlyphCacheMemory + 7) & ~7);
-    g_pGlyphCacheBufferEnd = GLYPH_CACHE_END;
+    slotSize = GLYPH_CACHE_SLOT_SIZE;
     g_pGlyphCacheBuffer = start;
-    g_nGlyphCacheSlotLimit = (u32)(GLYPH_CACHE_END - start) / GLYPH_CACHE_SLOT_SIZE;
-    g_pGlyphCacheBufferEnd = start + g_nGlyphCacheSlotLimit * GLYPH_CACHE_SLOT_SIZE;
+    g_pGlyphCacheBufferEnd = GLYPH_CACHE_END;
+    g_nGlyphCacheSlotLimit = (u32)(g_pGlyphCacheBufferEnd - g_pGlyphCacheBuffer) / slotSize;
+    g_pGlyphCacheBufferEnd = g_pGlyphCacheBuffer + g_nGlyphCacheSlotLimit * slotSize;
     g_nGlyphCacheNextSlot = 1;
     /* Slot 0 marks a character without a slot. The buffer starts a slot early. */
-    g_pGlyphCacheBuffer = start - GLYPH_CACHE_SLOT_SIZE;
+    g_pGlyphCacheBuffer -= slotSize;
 }
 
 u8 *GetCachedGlyphTexture(u32 character) {
@@ -98,11 +100,13 @@ void LoadCachedGlyphTextures(void) {
         }
         g_abGlyphSlotChar[slot] = character;
         texture = g_pGlyphCacheBuffer + slot * GLYPH_CACHE_SLOT_SIZE;
-        end = g_aGlyphRomOffsets[character - FIRST_CACHED_GLYPH + 1];
+        /* The offset table starts at the first cached glyph. */
+        character -= FIRST_CACHED_GLYPH;
+        end = g_aGlyphRomOffsets[character + 1];
         if (end < 0) {
             end = -end;
         }
-        start = g_aGlyphRomOffsets[character - FIRST_CACHED_GLYPH];
+        start = g_aGlyphRomOffsets[character];
         /* A negative offset marks a glyph stored without compression. */
         if (start < 0) {
             DmaRead(texture, ROM_GLYPHS - start, start + end);
@@ -110,6 +114,7 @@ void LoadCachedGlyphTextures(void) {
             DmaRead(g_abGlyphRleBuffer, start + ROM_GLYPHS, end - start);
             DecompressInterleavedRle(texture, GLYPH_CACHE_SLOT_SIZE, g_abGlyphRleBuffer, 1);
         }
+        character += FIRST_CACHED_GLYPH;
     }
     for (i = g_nGlyphCacheNextSlot; i < g_nGlyphCacheSlotLimit; i++) {
         g_abGlyphSlotChar[i] = 0;

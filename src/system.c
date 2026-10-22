@@ -974,13 +974,16 @@ void ClearFramebuffersHighRes(void) {
     g_dwKeepScreenBlanked = FALSE;
 #else
     u32 *word;
+    u32 *end;
 
     g_dwKeepScreenBlanked = TRUE;
     StartLowResFrame();
     ClearScreen(0, 0, 0);
     FlushDisplayList();
     /* The high resolution frame buffers lie from the end of the interface heap to the program. */
-    for (word = (u32 *)0x800D4000; word < (u32 *)0x80200000; word++) {
+    word = (u32 *)0x800D4000;
+    end = (u32 *)0x80200000;
+    for (; word < end; word++) {
         *word = 0;
     }
     StartHighResFrame();
@@ -1004,6 +1007,7 @@ void ClearFramebuffersLowRes(void) {
     g_dwKeepScreenBlanked = FALSE;
 #else
     u32 *word;
+    u32 *end;
 
     g_dwKeepScreenBlanked = TRUE;
     StartHighResFrame();
@@ -1013,7 +1017,9 @@ void ClearFramebuffersLowRes(void) {
     ClearScreen(0, 0, 0);
     FlushDisplayList();
     /* The two low resolution frame buffers end where the program starts. */
-    for (word = (u32 *)0x801B5000; word < (u32 *)0x80200000; word++) {
+    word = (u32 *)0x801B5000;
+    end = (u32 *)0x80200000;
+    for (; word < end; word++) {
         *word = 0;
     }
     StartLowResFrame();
