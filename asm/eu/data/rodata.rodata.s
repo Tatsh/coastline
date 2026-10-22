@@ -3933,22 +3933,22 @@ enddlabel g_fConst0p2_802a7ef4
 nonmatching switchdataD_802a7ef8
 
 dlabel switchdataD_802a7ef8
-    /* AA958 802A9958 802106B0 */ .word .L802106B0
-    /* AA95C 802A995C 802106FC */ .word .L802106FC
-    /* AA960 802A9960 80210748 */ .word .L80210748
-    /* AA964 802A9964 80210794 */ .word .L80210794
-    /* AA968 802A9968 802107E0 */ .word .L802107E0
+    /* AA958 802A9958 802106B0 */ .word 0
+    /* AA95C 802A995C 802106FC */ .word 0
+    /* AA960 802A9960 80210748 */ .word 0
+    /* AA964 802A9964 80210794 */ .word 0
+    /* AA968 802A9968 802107E0 */ .word 0
 enddlabel switchdataD_802a7ef8
 
 nonmatching jtbl_802A996C
 
 dlabel jtbl_802A996C
-    /* AA96C 802A996C 80210848 */ .word .L80210848
-    /* AA970 802A9970 8021089C */ .word .L8021089C
-    /* AA974 802A9974 802108F4 */ .word .L802108F4
-    /* AA978 802A9978 8021094C */ .word .L8021094C
-    /* AA97C 802A997C 802109A4 */ .word .L802109A4
-    /* AA980 802A9980 80210AF4 */ .word .L80210AF4
+    /* AA96C 802A996C 80210848 */ .word 0
+    /* AA970 802A9970 8021089C */ .word 0
+    /* AA974 802A9974 802108F4 */ .word 0
+    /* AA978 802A9978 8021094C */ .word 0
+    /* AA97C 802A997C 802109A4 */ .word 0
+    /* AA980 802A9980 80210AF4 */ .word 0
 enddlabel jtbl_802A996C
 
 nonmatching g_fConst0p2_802a7f24

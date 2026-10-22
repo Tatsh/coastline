@@ -494,9 +494,9 @@ void FormatLapTime(char *out, f32 seconds);
  * Run one frame of the car selection screen, or of the results when g_dwIsReviewMode is set.
  *
  * @ghidraAddress USA: 0x8020d004
- * @ghidraAddress JPN: 0x8020c9dc
  * @ghidraAddress EUR: 0x8020cde4
- * @stub{EUR JPN}
+ * @ghidraAddress JPN: 0x8020c9dc
+ * @stub{JPN}
  */
 void ProcessCarSelectScreen(void);
 

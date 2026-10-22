@@ -330,6 +330,18 @@ static inline void StartCarSelect(void) {
     Vehicle *vehicle;
     s32 i, car;
 
+#if TGR_REGION == TGR_REGION_EU
+    /* After the results of a race the screen stays blank while the cars load. */
+    if (IsCurrentScreen(ProcessRaceResultsScreen)) {
+        g_dwKeepScreenBlanked = TRUE;
+        BlankDisplay();
+        StartHighResFrame();
+        FlushDisplayList();
+        BlankDisplay();
+        StartHighResFrame();
+        FlushDisplayList();
+    }
+#endif
     g_dwCarSelectStartTime = g_dwElapsedTimeMs;
     SetFadeTarget(1.0f, SCREEN_FADE_RATE);
     FadeSfxTo(1.0f, SCREEN_FADE_RATE);
@@ -423,6 +435,9 @@ static inline void StartCarSelect(void) {
     g_aapCarSelectOptions[0] = g_apHandlingOptions;
     g_anCarSelectCursor[1] = 0;
     g_anCarSelectCursor[0] = 0;
+#if TGR_REGION == TGR_REGION_EU
+    g_dwKeepScreenBlanked = FALSE;
+#endif
     g_dwResultsPage = RESULTS_PAGE_PLAYER_1;
 }
 
@@ -893,8 +908,10 @@ static inline void AdjustPaint(Vehicle *vehicle, u32 direction) {
     if (vehicle->input->buttons & INPUT_C_RIGHT) {
         StepPaintPart(&vehicle->color[2], up);
     }
+#if TGR_REGION != TGR_REGION_EU
     SetMaterialColor(
         vehicle->model, vehicle->color[0] >> 3, vehicle->color[1] >> 3, vehicle->color[2] >> 3);
+#endif
 }
 
 /** Make the options of a step those a player chooses from, with its name. */
@@ -970,6 +987,13 @@ static inline void HandleCarSelectInput(s32 player) {
         if (vehicle->input->buttons & INPUT_DOWN) {
             AdjustPaint(vehicle, INPUT_DOWN);
         }
+#if TGR_REGION == TGR_REGION_EU
+        /* The European release paints the model of the slot of the player every frame. */
+        SetMaterialColor(&g_aVehicleModels[*slot],
+                         vehicle->color[0] >> 3,
+                         vehicle->color[1] >> 3,
+                         vehicle->color[2] >> 3);
+#endif
     }
 
     /* Left and right move through the options of the other steps. */
@@ -1156,8 +1180,8 @@ sound:
     }
 }
 
-/* The Japanese and European bodies still come from the assembly. */
-#if TGR_REGION == TGR_REGION_US
+/* The Japanese body still comes from the assembly. */
+#if TGR_REGION != TGR_REGION_JP
 void ProcessCarSelectScreen(void) {
     char text[96], time[32];
     s32 player, i;

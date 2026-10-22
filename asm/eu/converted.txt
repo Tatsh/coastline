@@ -319,6 +319,7 @@ PrepareTrackSections
 PrintCollisionTriangleCount
 ProcessAllDisplayLists
 ProcessBrushStyleMenu
+ProcessCarSelectScreen
 ProcessColorEditorDialog
 ProcessControllerCheck
 ProcessControllerConfigScreen
