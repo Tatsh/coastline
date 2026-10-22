@@ -409,8 +409,8 @@ glabel ProcessDecalSaveLoad
     /* 4BB50 8024AB50 A0200460 */  sb         $zero, %lo(g_bPakFileNeedsCreate)($at)
     /* 4BB54 8024AB54 000F78C0 */  sll        $t7, $t7, 3
     /* 4BB58 8024AB58 25CEC3C0 */  addiu      $t6, $t6, %lo(g_aPakPfs)
-    /* 4BB5C 8024AB5C 3C0C8037 */  lui        $t4, %hi(g_nDecalPakFileNo)
-    /* 4BB60 8024AB60 258CC358 */  addiu      $t4, $t4, %lo(g_nDecalPakFileNo)
+    /* 4BB5C 8024AB5C 3C0C8037 */  lui        $t4, %hi(g_dwPakFileNo)
+    /* 4BB60 8024AB60 258CC358 */  addiu      $t4, $t4, %lo(g_dwPakFileNo)
     /* 4BB64 8024AB64 01EE2021 */  addu       $a0, $t7, $t6
     /* 4BB68 8024AB68 3C018037 */  lui        $at, %hi(g_bPakWaitFrames)
     /* 4BB6C 8024AB6C 3C064E54 */  lui        $a2, (0x4E545250 >> 16)
@@ -737,8 +737,8 @@ glabel ProcessDecalSaveLoad
     /* 4C034 8024B034 11C0004A */  beqz       $t6, .L8024B160
     /* 4C038 8024B038 25ADC3C0 */   addiu     $t5, $t5, %lo(g_aPakPfs)
     /* 4C03C 8024B03C 93B800CF */  lbu        $t8, 0xCF($sp)
-    /* 4C040 8024B040 3C0E8037 */  lui        $t6, %hi(g_nDecalPakFileNo)
-    /* 4C044 8024B044 25CEC358 */  addiu      $t6, $t6, %lo(g_nDecalPakFileNo)
+    /* 4C040 8024B040 3C0E8037 */  lui        $t6, %hi(g_dwPakFileNo)
+    /* 4C044 8024B044 25CEC358 */  addiu      $t6, $t6, %lo(g_dwPakFileNo)
     /* 4C048 8024B048 00186080 */  sll        $t4, $t8, 2
     /* 4C04C 8024B04C 01986023 */  subu       $t4, $t4, $t8
     /* 4C050 8024B050 000C6080 */  sll        $t4, $t4, 2
@@ -854,7 +854,7 @@ glabel ProcessDecalSaveLoad
     /* 4C1E4 8024B1E4 8FAD0044 */  lw         $t5, 0x44($sp)
     /* 4C1E8 8024B1E8 24010009 */  addiu      $at, $zero, 0x9
     /* 4C1EC 8024B1EC 252902E0 */  addiu      $t1, $t1, %lo(g_pDecalUndoBuffer)
-    /* 4C1F0 8024B1F0 3C058037 */  lui        $a1, %hi(g_nDecalPakFileNo)
+    /* 4C1F0 8024B1F0 3C058037 */  lui        $a1, %hi(g_dwPakFileNo)
     /* 4C1F4 8024B1F4 00003025 */  or         $a2, $zero, $zero
     /* 4C1F8 8024B1F8 3C078029 */  lui        $a3, %hi(g_dwPakFileOffset)
     /* 4C1FC 8024B1FC 00001012 */  mflo       $v0
@@ -864,7 +864,7 @@ glabel ProcessDecalSaveLoad
     /* 4C20C 8024B20C 8D2C0000 */  lw         $t4, 0x0($t1)
     /* 4C210 8024B210 3C018037 */  lui        $at, %hi(g_dwPakChunkSize)
     /* 4C214 8024B214 AC2FC35C */  sw         $t7, %lo(g_dwPakChunkSize)($at)
-    /* 4C218 8024B218 8CA5C358 */  lw         $a1, %lo(g_nDecalPakFileNo)($a1)
+    /* 4C218 8024B218 8CA5C358 */  lw         $a1, %lo(g_dwPakFileNo)($a1)
     /* 4C21C 8024B21C 8CE70464 */  lw         $a3, %lo(g_dwPakFileOffset)($a3)
     /* 4C220 8024B220 AFAF0010 */  sw         $t7, 0x10($sp)
     /* 4C224 8024B224 AFA40040 */  sw         $a0, 0x40($sp)
@@ -882,12 +882,12 @@ glabel ProcessDecalSaveLoad
   .L8024B254:
     /* 4C254 8024B254 AFA20010 */  sw         $v0, 0x10($sp)
     /* 4C258 8024B258 8C790000 */  lw         $t9, 0x0($v1)
-    /* 4C25C 8024B25C 3C058037 */  lui        $a1, %hi(g_nDecalPakFileNo)
+    /* 4C25C 8024B25C 3C058037 */  lui        $a1, %hi(g_dwPakFileNo)
     /* 4C260 8024B260 3C078029 */  lui        $a3, %hi(g_dwPakFileOffset)
     /* 4C264 8024B264 3C018037 */  lui        $at, %hi(g_dwPakChunkSize)
     /* 4C268 8024B268 AC22C35C */  sw         $v0, %lo(g_dwPakChunkSize)($at)
     /* 4C26C 8024B26C 8CE70464 */  lw         $a3, %lo(g_dwPakFileOffset)($a3)
-    /* 4C270 8024B270 8CA5C358 */  lw         $a1, %lo(g_nDecalPakFileNo)($a1)
+    /* 4C270 8024B270 8CA5C358 */  lw         $a1, %lo(g_dwPakFileNo)($a1)
     /* 4C274 8024B274 AFAA0090 */  sw         $t2, 0x90($sp)
     /* 4C278 8024B278 AFA80094 */  sw         $t0, 0x94($sp)
     /* 4C27C 8024B27C AFA40040 */  sw         $a0, 0x40($sp)
@@ -1233,10 +1233,10 @@ glabel ProcessDecalSaveLoad
     /* 4C768 8024B768 0018C080 */  sll        $t8, $t8, 2
     /* 4C76C 8024B76C 01F86021 */  addu       $t4, $t7, $t8
     /* 4C770 8024B770 8D990004 */  lw         $t9, 0x4($t4)
-    /* 4C774 8024B774 3C058037 */  lui        $a1, %hi(g_nDecalPakFileNo)
+    /* 4C774 8024B774 3C058037 */  lui        $a1, %hi(g_dwPakFileNo)
     /* 4C778 8024B778 3C078029 */  lui        $a3, %hi(g_dwPakFileOffset)
     /* 4C77C 8024B77C 8CE70464 */  lw         $a3, %lo(g_dwPakFileOffset)($a3)
-    /* 4C780 8024B780 8CA5C358 */  lw         $a1, %lo(g_nDecalPakFileNo)($a1)
+    /* 4C780 8024B780 8CA5C358 */  lw         $a1, %lo(g_dwPakFileNo)($a1)
     /* 4C784 8024B784 AFA40040 */  sw         $a0, 0x40($sp)
     /* 4C788 8024B788 00003025 */  or         $a2, $zero, $zero
     /* 4C78C 8024B78C 0C099357 */  jal        osPfsReadWriteFile
@@ -1341,10 +1341,10 @@ glabel ProcessDecalSaveLoad
     /* 4C910 8024B910 0018C080 */  sll        $t8, $t8, 2
     /* 4C914 8024B914 01F86021 */  addu       $t4, $t7, $t8
     /* 4C918 8024B918 8D8E0004 */  lw         $t6, 0x4($t4)
-    /* 4C91C 8024B91C 3C058037 */  lui        $a1, %hi(g_nDecalPakFileNo)
+    /* 4C91C 8024B91C 3C058037 */  lui        $a1, %hi(g_dwPakFileNo)
     /* 4C920 8024B920 3C078029 */  lui        $a3, %hi(g_dwPakFileOffset)
     /* 4C924 8024B924 8CE70464 */  lw         $a3, %lo(g_dwPakFileOffset)($a3)
-    /* 4C928 8024B928 8CA5C358 */  lw         $a1, %lo(g_nDecalPakFileNo)($a1)
+    /* 4C928 8024B928 8CA5C358 */  lw         $a1, %lo(g_dwPakFileNo)($a1)
     /* 4C92C 8024B92C AFA40040 */  sw         $a0, 0x40($sp)
     /* 4C930 8024B930 24060001 */  addiu      $a2, $zero, 0x1
     /* 4C934 8024B934 0C099357 */  jal        osPfsReadWriteFile

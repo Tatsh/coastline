@@ -4011,9 +4011,9 @@ nonmatching g_dwPakError, 0x4
 dlabel g_dwPakError
     /* 8036C354 */ .space 0x04
 
-nonmatching g_nDecalPakFileNo, 0x4
+nonmatching g_dwPakFileNo, 0x4
 
-dlabel g_nDecalPakFileNo
+dlabel g_dwPakFileNo
     /* 8036C358 */ .space 0x04
 
 nonmatching g_dwPakChunkSize, 0x4
