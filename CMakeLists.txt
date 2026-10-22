@@ -93,10 +93,12 @@ if(BUILD_DOCS OR BUILD_DOCS_ONLY)
                       [[stub="\par Stub:^^The body is a placeholder, not reconstructed yet."]]
                       [[stub{1}="\par Stub:^^Not reconstructed yet for \1."]])
   set(DOXYGEN_EXCLUDE_PATTERNS "*/node_modules/*" "*/build/*")
-  # Headers sit beside their implementations under src, and only headers are documented.
-  set(DOXYGEN_FILE_PATTERNS "*.h")
+  # Headers sit beside their implementations under src, and only headers are documented. The
+  # progress report and its parts become pages of the site, named after their paths in the tree.
+  set(DOXYGEN_FILE_PATTERNS "*.h" "*.md")
+  set(DOXYGEN_STRIP_FROM_PATH "${CMAKE_SOURCE_DIR}")
   find_package(Doxygen REQUIRED COMPONENTS dot)
-  doxygen_add_docs(docs README.md src ALL)
+  doxygen_add_docs(docs README.md PROGRESS.md progress src ALL)
   if(INSTALL_DOCS)
     install(
       DIRECTORY "${CMAKE_BINARY_DIR}/html"

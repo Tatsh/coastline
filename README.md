@@ -25,6 +25,11 @@ Reconstructed source of the Nintendo 64 game Top Gear Rally.
 No copyrighted material is in this repository. You must provide a cartridge image of the game for
 its assets. Building this source alone will not result in a playable game.
 
+## Progress
+
+[PROGRESS.md](PROGRESS.md) records which routines of each release the source reconstructs and
+which of them compile to the original code, with a page for each part of the program.
+
 ## Building
 
 Each release is a variant: `n64-us`, `n64-jp`, and `n64-eu` for the Nintendo 64 releases, and
