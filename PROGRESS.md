@@ -43,10 +43,10 @@ The programs are `usa.z64`, `eur.z64`, `jpn.z64`.
 | Excluded as IPL3 boot code (copied from the cartridge by the ROM builder)         |     7 |
 | Excluded as PIF ROM (console boot ROM, not part of the cartridge)                 |     5 |
 | To reconstruct                                                                    |   823 |
-| Done                                                                              |   821 |
-| Stubbed (not counted as done)                                                     |     2 |
+| Done                                                                              |   818 |
+| Stubbed (not counted as done)                                                     |     5 |
 | Declared only (not counted as done)                                               |     0 |
-| Share done                                                                        | 99.8% |
+| Share done                                                                        | 99.4% |
 | Only in EUR                                                                       |     1 |
 | Only in JPN                                                                       |     4 |
 
@@ -57,8 +57,8 @@ A routine counts for a release when its address in that release is tagged.
 | Release   | Routines | Done |  Share |
 | --------- | -------: | ---: | -----: |
 | `usa.z64` |      801 |  801 | 100.0% |
-| `eur.z64` |      819 |  695 |  84.9% |
-| `jpn.z64` |      821 |  682 |  83.1% |
+| `eur.z64` |      819 |  701 |  85.6% |
+| `jpn.z64` |      821 |  689 |  83.9% |
 
 ### Matching
 
@@ -72,14 +72,14 @@ and `jp`) before this report to regenerate the table.
 | Release   | Routines | Matching | Not matching | Unknown | Share |
 | --------- | -------: | -------: | -----------: | ------: | ----: |
 | `usa.z64` |      801 |      627 |          174 |       0 | 78.3% |
-| `eur.z64` |      819 |      631 |          188 |       0 | 77.0% |
-| `jpn.z64` |      821 |      629 |          192 |       0 | 76.6% |
+| `eur.z64` |      819 |      641 |          178 |       0 | 78.3% |
+| `jpn.z64` |      821 |      640 |          181 |       0 | 78.0% |
 
 ### By component
 
 | Component      | Routines | Done | Stubbed |  Share |
 | -------------- | -------: | ---: | ------: | -----: |
-| Game code      |      590 |  588 |       2 |  99.7% |
+| Game code      |      590 |  585 |       5 |  99.2% |
 | SDK (libultra) |      208 |  208 |       0 | 100.0% |
 | zlib           |       25 |   25 |       0 | 100.0% |
 
@@ -125,7 +125,7 @@ block of the master program.
 | --------------------------------------------------------------------- | ----------- | -------------- | ------------------------- | -------: | ---: | -----: |
 | [n64-game-code-80200000.md](progress/n64-game-code-80200000.md)       | Nintendo 64 | Game code      | `0x80200000`-`0x80210000` |       45 |   45 | 100.0% |
 | [n64-game-code-80210000.md](progress/n64-game-code-80210000.md)       | Nintendo 64 | Game code      | `0x80210000`-`0x80220000` |      134 |  132 |  98.5% |
-| [n64-game-code-80220000.md](progress/n64-game-code-80220000.md)       | Nintendo 64 | Game code      | `0x80220000`-`0x80230000` |      169 |  169 | 100.0% |
+| [n64-game-code-80220000.md](progress/n64-game-code-80220000.md)       | Nintendo 64 | Game code      | `0x80220000`-`0x80230000` |      169 |  166 |  98.2% |
 | [n64-game-code-80230000.md](progress/n64-game-code-80230000.md)       | Nintendo 64 | Game code      | `0x80230000`-`0x80240000` |       45 |   45 | 100.0% |
 | [n64-zlib-80230000.md](progress/n64-zlib-80230000.md)                 | Nintendo 64 | zlib           | `0x80230000`-`0x80240000` |        7 |    7 | 100.0% |
 | [n64-game-code-80240000.md](progress/n64-game-code-80240000.md)       | Nintendo 64 | Game code      | `0x80240000`-`0x80250000` |       55 |   55 | 100.0% |
