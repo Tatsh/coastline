@@ -2,12 +2,10 @@
 # A routine is removed from its file when it is reconstructed in C, and a file is removed
 # from this list when it is empty. The order is the address order of the original image.
 set(COASTLINE_ASM_JP
-    asm/jp/01050.s
     asm/jp/01310.s
     asm/jp/07A90.s
     asm/jp/09300.s
     asm/jp/0CE40.s
-    asm/jp/11EA0.s
     asm/jp/12620.s
     asm/jp/18C40.s
     asm/jp/22340.s

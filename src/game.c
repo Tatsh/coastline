@@ -61,8 +61,6 @@ void ResetAllPlayers(void) {
     }
 }
 
-/* The Japanese and European bodies still come from the assembly. */
-#if TGR_REGION == TGR_REGION_US
 void InitGameAndShowMenus(void) {
     InitRenderingSubsystem();
     StubUpdateCallback();
@@ -78,25 +76,40 @@ void InitGameAndShowMenus(void) {
     DecompressFromRom(g_abGhostRecording, ROM_GHOST_RECORDING, NULL);
     g_dwGhostRecordingSize = 8;
 
-    /* Load the season data and the configuration from a Controller Pak, if one holds them. */
+    /* Load the season data and the configuration from a Controller Pak, if one holds them. The
+     * European and Japanese releases read the EEPROM of the cartridge first and use a Controller
+     * Pak only when the EEPROM holds no data. */
     ResetHeap();
     PreparePakDataScreen();
-    while (!ProcessPakDataScreen(PAK_DATA_LOAD_SEASON, TRUE)) {
+#if TGR_REGION == TGR_REGION_EU || TGR_REGION == TGR_REGION_JP
+    if (!LoadSaveDataFromEeprom()) {
+        ResetHeap();
+        PreparePakDataScreen();
+#endif
+        while (!ProcessPakDataScreen(PAK_DATA_LOAD_SEASON, TRUE)) {
+        }
+        ResetHeap();
+        PreparePakDataScreen();
+        while (!ProcessPakDataScreen(PAK_DATA_LOAD_CONFIGURATION, TRUE)) {
+        }
+#if TGR_REGION == TGR_REGION_EU || TGR_REGION == TGR_REGION_JP
     }
-    ResetHeap();
-    PreparePakDataScreen();
-    while (!ProcessPakDataScreen(PAK_DATA_LOAD_CONFIGURATION, TRUE)) {
-    }
+#endif
 
     ApplyVolumeSettings();
     DecompressFromRom(g_abMenuMusicModule, ROM_MENU_MUSIC, NULL);
     InitAudioSystem(g_abMenuMusicModule, g_abMusicModuleWorkBuffer);
 
-    /* The structure sizes of the original, which the debug output reports. */
+    /* The structure sizes of the original, which the debug output reports. The Japanese release
+     * reports none. */
+#if TGR_REGION == TGR_REGION_EU
+    osSyncPrintf("sizeof(OBJECT)=%d\n", 0x208);
+#endif
+#if TGR_REGION != TGR_REGION_JP
     osSyncPrintf("sizeof(UltraCarHeader)=%d\n", 0xDF88);
     osSyncPrintf("sizeof(Vehicle)=%d\n", (int)sizeof(Vehicle));
     osSyncPrintf("sizeof(Enemy)=%d\n", 0x78);
+#endif
 
     GameModeMainLoop();
 }
-#endif

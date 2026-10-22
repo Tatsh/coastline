@@ -90,7 +90,6 @@ void ResetAllPlayers(void);
  * @ghidraAddress USA: 0x802001b4
  * @ghidraAddress JPN: 0x802001b4
  * @ghidraAddress EUR: 0x802001b4
- * @stub{EUR JPN}
  */
 void InitGameAndShowMenus(void);
 

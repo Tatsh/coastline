@@ -70,6 +70,17 @@ extern s32 g_eMainMenuSelection;
  */
 extern s32 g_dwIsPaintMode;
 
+#if TGR_REGION == TGR_REGION_EU || TGR_REGION == TGR_REGION_JP
+/**
+ * The presses of the right C button so far with L and R held on the main menu. The third unlocks
+ * every car, track, and weather.
+ *
+ * @ghidraAddress EUR: 0x80274368
+ * @ghidraAddress JPN: 0x80273e18
+ */
+extern s32 g_dwUnlockAllCheatPressCount;
+#endif
+
 /**
  * Start the next race of the championship for one player.
  *
@@ -94,7 +105,6 @@ void StartTimeAttack(void);
  * @ghidraAddress USA: 0x802111e0
  * @ghidraAddress JPN: 0x80210f30
  * @ghidraAddress EUR: 0x80211040
- * @stub{EUR JPN}
  */
 void ProcessMainMenu(void);
 

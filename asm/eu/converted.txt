@@ -209,6 +209,7 @@ InitBitmapText
 InitCameraForVehicle
 InitControllersAndPaks
 InitDmaRequest
+InitGameAndShowMenus
 InitMusicPlayback
 InitPakAndEnumerateFiles
 InitParticleSystem
@@ -319,6 +320,7 @@ ProcessControllerConfigScreen
 ProcessDecalEditorInput
 ProcessDisplayList
 ProcessInputCommandBuffer
+ProcessMainMenu
 ProcessOptionsMenu
 ProcessPaintShopExitConfirm
 ProcessPlayerCountSelect

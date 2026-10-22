@@ -26,6 +26,9 @@
 #define SPACE_ADVANCE 12
 #define ASCENT 30
 
+/* The advance of a Japanese glyph, in the same units. */
+#define JAPANESE_ADVANCE 36
+
 /* The low-resolution screen a glyph is drawn whole within. */
 #define SCREEN_WIDTH 320
 #define SCREEN_HEIGHT 240
@@ -536,14 +539,15 @@ void DrawHudLabelAtFraction(const char *text, f32 x, f32 y, s32 unused) {
              g_dwScreenHeight - (s32)((f32)g_dwScreenHeight * y * 0.001214843825f) - 9);
 }
 
-/* The Japanese body still comes from the assembly. */
-#if TGR_REGION != TGR_REGION_JP
 s32 MeasureTextWidth(const char *text, s32 size) {
     s32 width = 0;
     s32 cell, padding;
     s32 *offsets;
     s32 c, next;
     u8 glyph;
+#if TGR_REGION == TGR_REGION_JP
+    s32 japanese = FALSE;
+#endif
 
     if (g_dwScreenScaleShift) {
         size *= 2;
@@ -559,7 +563,11 @@ s32 MeasureTextWidth(const char *text, s32 size) {
     }
     for (; *text != '\0'; text++) {
         c = (u8)*text;
+#if TGR_REGION == TGR_REGION_JP
+        if ((c < '!' || c >= 0x80) && !japanese) {
+#else
         if (c < '!' || c >= 0x80) {
+#endif
             width += (size * SPACE_ADVANCE) / SIZE_UNITS;
             continue;
         }
@@ -567,6 +575,17 @@ s32 MeasureTextWidth(const char *text, s32 size) {
             next = text[1];
             if (next == '%') {
                 text++;
+#if TGR_REGION == TGR_REGION_JP
+            } else if (next == 'j') {
+                /* %j starts Japanese text and %e ends it. */
+                text++;
+                japanese = TRUE;
+                continue;
+            } else if (next == 'e') {
+                text++;
+                japanese = FALSE;
+                continue;
+#endif
             } else if (next == 'i' || next == 'n') {
                 text++;
                 continue;
@@ -575,6 +594,13 @@ s32 MeasureTextWidth(const char *text, s32 size) {
                 continue;
             }
         }
+#if TGR_REGION == TGR_REGION_JP
+        /* Every Japanese glyph has the same advance. */
+        if (japanese) {
+            width += ((cell * JAPANESE_ADVANCE / SIZE_UNITS - padding) * size) / cell;
+            continue;
+        }
+#endif
         glyph = g_abHudFontCharToGlyph[c - '!'];
         width += ((offsets[glyph + 1] - offsets[glyph] - padding + 1) * size) / cell;
     }
@@ -583,4 +609,3 @@ s32 MeasureTextWidth(const char *text, s32 size) {
     }
     return width;
 }
-#endif

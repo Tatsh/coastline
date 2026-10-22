@@ -1,7 +1,10 @@
 #include "mainmenu.h"
 
+#include <PR/os.h>
+
 #include "audio.h"
 #include "carselect.h"
+#include "controllerscreen.h"
 #include "game.h"
 #include "input.h"
 #include "options.h"
@@ -11,6 +14,7 @@
 #include "splash.h"
 #include "system.h"
 #include "trackselect.h"
+#include "vehicle.h"
 #include "weather.h"
 
 /* Assets at fixed cartridge offsets. */
@@ -50,8 +54,18 @@ void StartTimeAttack(void) {
     g_dwMainMenuEntrySource = ENTRY_FROM_TIME_ATTACK;
 }
 
-/* The Japanese and European bodies still come from the assembly. */
-#if TGR_REGION == TGR_REGION_US
+/* The title picture of the main menu. The Japanese release shows the plain title bar. */
+#if TGR_REGION == TGR_REGION_JP
+#define MAIN_MENU_TITLE g_TitleBarTextureDesc
+#else
+#define MAIN_MENU_TITLE g_MainMenuTitleTextureDesc
+#endif
+
+/* The cheat that unlocks everything: three presses of the right C button with L and R held. */
+#define UNLOCK_ALL_HOLD (INPUT_L | INPUT_R)
+#define UNLOCK_ALL_PRESS INPUT_C_RIGHT
+#define UNLOCK_ALL_PRESSES 3
+
 void ProcessMainMenu(void) {
     if (g_dwMainMenuInitState <= 0) {
         g_dwMenuInputPlayerMask = -1;
@@ -65,7 +79,7 @@ void ProcessMainMenu(void) {
             InitMusicPlayback(g_abMenuMusicModule, g_abMusicModuleWorkBuffer);
         }
 
-        g_pMenuTitleImage = &g_MainMenuTitleTextureDesc;
+        g_pMenuTitleImage = &MAIN_MENU_TITLE;
         g_dwMenuTitleImageX = 25;
         g_dwMenuTitleImageY = 14;
         g_dwMenuTitleImageWidth = 280;
@@ -139,5 +153,21 @@ void ProcessMainMenu(void) {
         g_dwMainMenuInitState = 0;
         break;
     }
-}
+
+#if TGR_REGION == TGR_REGION_EU || TGR_REGION == TGR_REGION_JP
+    if ((g_aPlayerInputState[0].buttons & UNLOCK_ALL_HOLD) == UNLOCK_ALL_HOLD) {
+        if (g_dwUnlockAllCheatPressCount < UNLOCK_ALL_PRESSES &&
+            (g_aPlayerInputState[0].buttons & UNLOCK_ALL_PRESS)) {
+            osSyncPrintf("BANG!\n");
+            TransferFlags(&g_aPlayerInputState[0], UNLOCK_ALL_PRESS);
+            if (++g_dwUnlockAllCheatPressCount == UNLOCK_ALL_PRESSES) {
+                g_aVehicles[0].profile->unlockedTracks = 0xFFFF;
+                g_aVehicles[0].profile->unlocks = 0xFFFF;
+                g_aVehicles[0].profile->unlockedWeathers = 0xFFFF;
+            }
+        }
+    } else {
+        g_dwUnlockAllCheatPressCount = 0;
+    }
 #endif
+}

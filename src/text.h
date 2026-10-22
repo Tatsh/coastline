@@ -465,7 +465,6 @@ void DrawHudLabelAtFraction(const char *text, f32 x, f32 y, s32 unused);
  * @ghidraAddress USA: 0x8022f720
  * @ghidraAddress JPN: 0x80230950
  * @ghidraAddress EUR: 0x80230c30
- * @stub{JPN}
  */
 s32 MeasureTextWidth(const char *text, s32 size);
 

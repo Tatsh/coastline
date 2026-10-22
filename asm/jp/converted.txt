@@ -207,6 +207,7 @@ InitBitmapText
 InitCameraForVehicle
 InitControllersAndPaks
 InitDmaRequest
+InitGameAndShowMenus
 InitMusicPlayback
 InitPakAndEnumerateFiles
 InitParticleSystem
@@ -270,6 +271,7 @@ MarkTrackSections
 MarkVisibleCell
 MarkVisibleEdge
 MatrixToQuaternion
+MeasureTextWidth
 MemFill64Aligned
 MirrorDecalToOppositePanel
 MixAudioSamples
@@ -315,6 +317,7 @@ ProcessControllerCheck
 ProcessControllerConfigScreen
 ProcessDisplayList
 ProcessInputCommandBuffer
+ProcessMainMenu
 ProcessOptionsMenu
 ProcessPaintShopExitConfirm
 ProcessPlayerCountSelect
