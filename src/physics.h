@@ -281,8 +281,8 @@ void ApplySideGrip(
  * @param sliding Whether its tyres slid, in which case the push is cut by a tenth.
  * @param dt The time of the step.
  * @ghidraAddress USA: 0x8025ac9c
- * @ghidraAddress JPN: 0x8025bc10
  * @ghidraAddress EUR: 0x8025c280
+ * @ghidraAddress JPN: 0x8025bc10
  */
 void DriveWheel(RigidBody *body, RigidBody *wheel, f32 *load, u8 *sliding, f32 dt);
 

@@ -168,6 +168,7 @@ DrawTexturedTile
 DrawTimingBars
 DrawTireSpray
 DriveAiVehicle
+DriveWheel
 EmitScaledTextureRect
 EmitTachometerDisplayList
 EmitTireSpray

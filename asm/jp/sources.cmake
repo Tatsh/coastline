@@ -11,7 +11,6 @@ set(COASTLINE_ASM_JP
     asm/jp/36120.s
     asm/jp/44B20.s
     asm/jp/551B0.s
-    asm/jp/5B2B0.s
     asm/jp/68690.s
     asm/jp/data/data.data.s
     asm/jp/data/rodata.rodata.s

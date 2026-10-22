@@ -506,9 +506,6 @@ void ApplySideGrip(
     }
 }
 
-/* The Japanese body still comes from the assembly. This body drives the wheels of the Japanese
- * demonstration race differently from the original. */
-#if TGR_REGION != TGR_REGION_JP
 void DriveWheel(RigidBody *body, RigidBody *wheel, f32 *load, u8 *sliding, f32 dt) {
     Vec3f unitY, axle, forward, side, roll, slide, velocity, weight, push, local;
     Vec3f *normal = &wheel->groundNormal;
@@ -603,7 +600,6 @@ void DriveWheel(RigidBody *body, RigidBody *wheel, f32 *load, u8 *sliding, f32 d
         wheel->rollAngle = wheel->rollAngle + 360.0f;
     }
 }
-#endif
 
 s16 IsPointInTrackTriangle(TrackTriangle *triangle, Vec3f *point) {
     f32 u0, v0, pu, pv, au, av, bu, bv, alpha, beta;
