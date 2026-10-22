@@ -81,8 +81,8 @@ typedef struct Model {
  * The ambient light of the menus that draw models.
  *
  * @ghidraAddress USA: 0x80271f88
- * @ghidraAddress JPN: 0x80273a28
  * @ghidraAddress EUR: 0x80273f68
+ * @ghidraAddress JPN: 0x80273a28
  */
 extern Ambient g_MenuAmbientLight;
 
@@ -90,8 +90,8 @@ extern Ambient g_MenuAmbientLight;
  * The directional light of the menus that draw models.
  *
  * @ghidraAddress USA: 0x80271f90
- * @ghidraAddress JPN: 0x80273a30
  * @ghidraAddress EUR: 0x80273f70
+ * @ghidraAddress JPN: 0x80273a30
  */
 extern Light g_MenuDirectionalLight;
 
@@ -99,8 +99,8 @@ extern Light g_MenuDirectionalLight;
  * Whether DrawModelList() draws without the depth buffer.
  *
  * @ghidraAddress USA: 0x80271d98
- * @ghidraAddress JPN: 0x80273838
  * @ghidraAddress EUR: 0x80273d78
+ * @ghidraAddress JPN: 0x80273838
  */
 extern s32 g_dwDrawModelListNoZBuffer;
 
@@ -110,8 +110,8 @@ extern s32 g_dwDrawModelListNoZBuffer;
  * @param model The model.
  * @param m The matrix of the model.
  * @ghidraAddress USA: 0x80209d70
- * @ghidraAddress JPN: 0x80209750
  * @ghidraAddress EUR: 0x80209b50
+ * @ghidraAddress JPN: 0x80209750
  */
 void DrawModelList(Model *model, f32 m[4][4]);
 
@@ -125,8 +125,8 @@ void DrawModelList(Model *model, f32 m[4][4]);
  * @param z The Z coordinate of the position.
  * @param angle The turn in radians.
  * @ghidraAddress USA: 0x8020a524
- * @ghidraAddress JPN: 0x80209f04
  * @ghidraAddress EUR: 0x8020a304
+ * @ghidraAddress JPN: 0x80209f04
  */
 void DrawRotatedModel(Model *model, f32 x, f32 y, f32 z, f32 angle);
 
@@ -141,8 +141,8 @@ void DrawRotatedModel(Model *model, f32 x, f32 y, f32 z, f32 angle);
  * @param angle The turn in radians.
  * @param scale The scale.
  * @ghidraAddress USA: 0x8020a6a4
- * @ghidraAddress JPN: 0x8020a084
  * @ghidraAddress EUR: 0x8020a484
+ * @ghidraAddress JPN: 0x8020a084
  */
 void DrawModelAt(Model *model, f32 x, f32 y, f32 z, f32 angle, f32 scale);
 
@@ -153,8 +153,8 @@ void DrawModelAt(Model *model, f32 x, f32 y, f32 z, f32 angle, f32 scale);
  * @param romOffset The offset of the compressed model on the cartridge.
  * @return The buffer.
  * @ghidraAddress USA: 0x8021de2c
- * @ghidraAddress JPN: 0x8021e8fc
  * @ghidraAddress EUR: 0x8021f02c
+ * @ghidraAddress JPN: 0x8021e8fc
  */
 Model *DecompressModel(void *dst, u32 romOffset);
 
@@ -166,8 +166,8 @@ Model *DecompressModel(void *dst, u32 romOffset);
  * @param hi The end of the range.
  * @param base Where the start of the range moves to.
  * @ghidraAddress USA: 0x8021d070
- * @ghidraAddress JPN: 0x8021db40
  * @ghidraAddress EUR: 0x8021e270
+ * @ghidraAddress JPN: 0x8021db40
  */
 void RemapPointer(u32 *pointer, u32 lo, u32 hi, u32 base);
 
@@ -180,8 +180,8 @@ void RemapPointer(u32 *pointer, u32 lo, u32 hi, u32 base);
  * @param hi The end of the range.
  * @param base Where the start of the range moves to.
  * @ghidraAddress USA: 0x8021d098
- * @ghidraAddress JPN: 0x8021db68
  * @ghidraAddress EUR: 0x8021e298
+ * @ghidraAddress JPN: 0x8021db68
  */
 void FixupDisplayListPointers(Gfx *displayList, u32 lo, u32 hi, u32 base);
 
@@ -190,8 +190,8 @@ void FixupDisplayListPointers(Gfx *displayList, u32 lo, u32 hi, u32 base);
  *
  * @param model The model.
  * @ghidraAddress USA: 0x8021d828
- * @ghidraAddress JPN: 0x8021e2f8
  * @ghidraAddress EUR: 0x8021ea28
+ * @ghidraAddress JPN: 0x8021e2f8
  */
 void BounceModelAnimations(Model *model);
 
@@ -201,8 +201,8 @@ void BounceModelAnimations(Model *model);
  *
  * @param model The model.
  * @ghidraAddress USA: 0x8021dc34
- * @ghidraAddress JPN: 0x8021e704
  * @ghidraAddress EUR: 0x8021ee34
+ * @ghidraAddress JPN: 0x8021e704
  */
 void RelocateModelPointers(Model *model);
 
@@ -213,8 +213,8 @@ void RelocateModelPointers(Model *model);
  * @param set The flags to set.
  * @param clear The flags to clear.
  * @ghidraAddress USA: 0x8021d6dc
- * @ghidraAddress JPN: 0x8021e1ac
  * @ghidraAddress EUR: 0x8021e8dc
+ * @ghidraAddress JPN: 0x8021e1ac
  */
 void SetModelAnimationFlags(Model *model, s32 set, s32 clear);
 
@@ -223,8 +223,8 @@ void SetModelAnimationFlags(Model *model, s32 set, s32 clear);
  *
  * @param model The model.
  * @ghidraAddress USA: 0x8021d804
- * @ghidraAddress JPN: 0x8021e2d4
  * @ghidraAddress EUR: 0x8021ea04
+ * @ghidraAddress JPN: 0x8021e2d4
  */
 void LoopModelAnimations(Model *model);
 
@@ -234,8 +234,8 @@ void LoopModelAnimations(Model *model);
  *
  * @param model The model.
  * @ghidraAddress USA: 0x8021d84c
- * @ghidraAddress JPN: 0x8021e31c
  * @ghidraAddress EUR: 0x8021ea4c
+ * @ghidraAddress JPN: 0x8021e31c
  */
 void AdvanceModelAnimations(Model *model);
 
@@ -244,8 +244,8 @@ void AdvanceModelAnimations(Model *model);
  *
  * @param model The model.
  * @ghidraAddress USA: 0x8021d7e0
- * @ghidraAddress JPN: 0x8021e2b0
  * @ghidraAddress EUR: 0x8021e9e0
+ * @ghidraAddress JPN: 0x8021e2b0
  */
 void PlayModelAnimationsOnce(Model *model);
 
@@ -257,8 +257,8 @@ void PlayModelAnimationsOnce(Model *model);
  * @param romEnd The cartridge offset of its end.
  * @return The model, at dst.
  * @ghidraAddress USA: 0x8021ddfc
- * @ghidraAddress JPN: 0x8021e8cc
  * @ghidraAddress EUR: 0x8021effc
+ * @ghidraAddress JPN: 0x8021e8cc
  */
 Model *DmaReadAndFixupTrackModel(void *dst, u32 romStart, u32 romEnd);
 

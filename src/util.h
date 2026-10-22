@@ -27,8 +27,8 @@ typedef struct {
  * allocation beyond it.
  *
  * @ghidraAddress USA: 0x8036ae50
- * @ghidraAddress JPN: 0x8036bfc0
  * @ghidraAddress EUR: 0x8036d350
+ * @ghidraAddress JPN: 0x8036bfc0
  */
 extern DisplayListBlock g_aDisplayListBlocks[2][FRAME_DISPLAY_LIST_BLOCKS + 1];
 
@@ -50,22 +50,22 @@ extern LookAt g_aLightBlocks[2][FRAME_LIGHT_BLOCKS + 1];
  * The blocks the current frame has allocated.
  *
  * @ghidraAddress USA: 0x8028dfb0
- * @ghidraAddress JPN: 0x80290210
  * @ghidraAddress EUR: 0x80290770
+ * @ghidraAddress JPN: 0x80290210
  */
 extern s32 g_dwDisplayListBlockCount;
 
 /**
  * @ghidraAddress USA: 0x8028dfb4
- * @ghidraAddress JPN: 0x80290214
  * @ghidraAddress EUR: 0x80290774
+ * @ghidraAddress JPN: 0x80290214
  */
 extern s32 g_dwHiliteBlockCount;
 
 /**
  * @ghidraAddress USA: 0x8028dfb8
- * @ghidraAddress JPN: 0x80290218
  * @ghidraAddress EUR: 0x80290778
+ * @ghidraAddress JPN: 0x80290218
  */
 extern s32 g_dwLightBlockCount;
 
@@ -73,8 +73,8 @@ extern s32 g_dwLightBlockCount;
  * The frame buffer the current frame draws into.
  *
  * @ghidraAddress USA: 0x8028a85c
- * @ghidraAddress JPN: 0x8028c52c
  * @ghidraAddress EUR: 0x8028ca5c
+ * @ghidraAddress JPN: 0x8028c52c
  */
 extern s32 g_dwFrameBufferIndex;
 
@@ -90,8 +90,8 @@ typedef void (*SwapFunc)(void *a, void *b, u32 size);
  *
  * @param section The first section of the tree.
  * @ghidraAddress USA: 0x80255ba0
- * @ghidraAddress JPN: 0x80256b00
  * @ghidraAddress EUR: 0x80257170
+ * @ghidraAddress JPN: 0x80256b00
  */
 void MarkTrackSections(TrackSection *section);
 
@@ -100,8 +100,8 @@ void MarkTrackSections(TrackSection *section);
  *
  * @param section The first section of the tree.
  * @ghidraAddress USA: 0x80255c50
- * @ghidraAddress JPN: 0x80256bb0
  * @ghidraAddress EUR: 0x80257220
+ * @ghidraAddress JPN: 0x80256bb0
  */
 void UnmarkTrackSections(TrackSection *section);
 
@@ -109,8 +109,8 @@ void UnmarkTrackSections(TrackSection *section);
  * Adjust the route of the loaded track for the current track.
  *
  * @ghidraAddress USA: 0x80255ca0
- * @ghidraAddress JPN: 0x80256c00
  * @ghidraAddress EUR: 0x80257270
+ * @ghidraAddress JPN: 0x80256c00
  */
 void PrepareTrackSections(void);
 
@@ -119,8 +119,8 @@ void PrepareTrackSections(void);
  *
  * @return The block, or the spare block after the last once every block is taken.
  * @ghidraAddress USA: 0x80255cd0
- * @ghidraAddress JPN: 0x80256c30
  * @ghidraAddress EUR: 0x802572a0
+ * @ghidraAddress JPN: 0x80256c30
  */
 DisplayListBlock *AllocDisplayListBlock(void);
 
@@ -129,8 +129,8 @@ DisplayListBlock *AllocDisplayListBlock(void);
  *
  * @return The block, or the spare block after the last once every block is taken.
  * @ghidraAddress USA: 0x80255d4c
- * @ghidraAddress JPN: 0x80256cac
  * @ghidraAddress EUR: 0x8025731c
+ * @ghidraAddress JPN: 0x80256cac
  */
 Hilite *AllocHiliteBlock(void);
 
@@ -139,8 +139,8 @@ Hilite *AllocHiliteBlock(void);
  *
  * @return The block, or the spare block after the last once every block is taken.
  * @ghidraAddress USA: 0x80255dd8
- * @ghidraAddress JPN: 0x80256d38
  * @ghidraAddress EUR: 0x802573a8
+ * @ghidraAddress JPN: 0x80256d38
  */
 LookAt *AllocLightBlock(void);
 
@@ -148,8 +148,8 @@ LookAt *AllocLightBlock(void);
  * Start the allocations of a new frame.
  *
  * @ghidraAddress USA: 0x80255e64
- * @ghidraAddress JPN: 0x80256dc4
  * @ghidraAddress EUR: 0x80257434
+ * @ghidraAddress JPN: 0x80256dc4
  */
 void ResetFrameBlocks(void);
 
@@ -161,8 +161,8 @@ void ResetFrameBlocks(void);
  * @param size The size of each element, in bytes.
  * @param compare The comparison that orders two elements.
  * @ghidraAddress USA: 0x80255e80
- * @ghidraAddress JPN: 0x80256de0
  * @ghidraAddress EUR: 0x80257450
+ * @ghidraAddress JPN: 0x80256de0
  */
 void QuickSort(void *base, u32 count, u32 size, CompareFunc compare);
 
@@ -175,8 +175,8 @@ void QuickSort(void *base, u32 count, u32 size, CompareFunc compare);
  * @param compare The comparison that orders two elements.
  * @param swap The routine that exchanges two elements.
  * @ghidraAddress USA: 0x802560dc
- * @ghidraAddress JPN: 0x8025703c
  * @ghidraAddress EUR: 0x802576ac
+ * @ghidraAddress JPN: 0x8025703c
  */
 void ShortSort(u8 *lo, u8 *hi, u32 size, CompareFunc compare, SwapFunc swap);
 
@@ -187,6 +187,8 @@ void ShortSort(u8 *lo, u8 *hi, u32 size, CompareFunc compare, SwapFunc swap);
  * @param b The second buffer.
  * @param size The size of each buffer, in bytes.
  * @ghidraAddress USA: 0x802561a8
+ * @ghidraAddress EUR: 0x80257778
+ * @ghidraAddress JPN: 0x80257108
  */
 void ExchangeByteBuffers(u8 *a, u8 *b, u32 size);
 
@@ -197,6 +199,8 @@ void ExchangeByteBuffers(u8 *a, u8 *b, u32 size);
  * @param b The second buffer.
  * @param size The size of each buffer, in bytes.
  * @ghidraAddress USA: 0x802561e4
+ * @ghidraAddress EUR: 0x802577b4
+ * @ghidraAddress JPN: 0x80257144
  */
 void ExchangeHalfwordBuffers(s16 *a, s16 *b, u32 size);
 
@@ -207,8 +211,8 @@ void ExchangeHalfwordBuffers(s16 *a, s16 *b, u32 size);
  * @param b The second buffer.
  * @param size The size of each buffer, in bytes.
  * @ghidraAddress USA: 0x80256228
- * @ghidraAddress JPN: 0x80257188
  * @ghidraAddress EUR: 0x802577f8
+ * @ghidraAddress JPN: 0x80257188
  */
 void ExchangeWordBuffers(u32 *a, u32 *b, u32 size);
 

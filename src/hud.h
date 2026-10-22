@@ -22,8 +22,8 @@
  * The car and the night flag of the dashboard each view has loaded, the car in the low byte.
  *
  * @ghidraAddress USA: 0x8028c790
- * @ghidraAddress JPN: 0x8028e940
  * @ghidraAddress EUR: 0x8028eef0
+ * @ghidraAddress JPN: 0x8028e940
  */
 extern s32 g_adwDashboardLoadedKey[DASHBOARD_VIEWS];
 
@@ -31,8 +31,8 @@ extern s32 g_adwDashboardLoadedKey[DASHBOARD_VIEWS];
  * The gear cell each view has loaded.
  *
  * @ghidraAddress USA: 0x8028c798
- * @ghidraAddress JPN: 0x8028e948
  * @ghidraAddress EUR: 0x8028eef8
+ * @ghidraAddress JPN: 0x8028e948
  */
 extern s32 g_adwDashboardLoadedGear[DASHBOARD_VIEWS];
 
@@ -40,6 +40,8 @@ extern s32 g_adwDashboardLoadedGear[DASHBOARD_VIEWS];
  * The face of the dashboard of each view.
  *
  * @ghidraAddress USA: 0x8028c7a8
+ * @ghidraAddress EUR: 0x8028ef08
+ * @ghidraAddress JPN: 0x8028e958
  */
 extern Texture g_aDashboardTextures[DASHBOARD_VIEWS];
 
@@ -47,6 +49,8 @@ extern Texture g_aDashboardTextures[DASHBOARD_VIEWS];
  * The cell of the dashboard of each view that shows the gear.
  *
  * @ghidraAddress USA: 0x8028c7d0
+ * @ghidraAddress EUR: 0x8028ef30
+ * @ghidraAddress JPN: 0x8028e980
  */
 extern Texture g_aDashboardGearTextures[DASHBOARD_VIEWS];
 
@@ -54,6 +58,8 @@ extern Texture g_aDashboardGearTextures[DASHBOARD_VIEWS];
  * The palette the dashboard of each view draws with.
  *
  * @ghidraAddress USA: 0x80361530
+ * @ghidraAddress EUR: 0x80363a30
+ * @ghidraAddress JPN: 0x803626a0
  */
 extern u16 g_aawDashboardPalettes[DASHBOARD_VIEWS][DASHBOARD_PALETTE_COLORS];
 
@@ -61,6 +67,8 @@ extern u16 g_aawDashboardPalettes[DASHBOARD_VIEWS][DASHBOARD_PALETTE_COLORS];
  * The palette of the dashboard as loaded, which the segments of a bar take their colors from.
  *
  * @ghidraAddress USA: 0x80361930
+ * @ghidraAddress EUR: 0x80363e30
+ * @ghidraAddress JPN: 0x80362aa0
  */
 extern u16 g_awDashboardBarPalette[DASHBOARD_PALETTE_COLORS];
 
@@ -68,6 +76,8 @@ extern u16 g_awDashboardBarPalette[DASHBOARD_PALETTE_COLORS];
  * The needle of each view, for each frame buffer so a frame does not change one being drawn.
  *
  * @ghidraAddress USA: 0x80361b30
+ * @ghidraAddress EUR: 0x80364030
+ * @ghidraAddress JPN: 0x80362ca0
  */
 extern Vtx g_aGaugeNeedleVerts[2][DASHBOARD_VIEWS][4];
 
@@ -75,8 +85,8 @@ extern Vtx g_aGaugeNeedleVerts[2][DASHBOARD_VIEWS][4];
  * The text of the speed.
  *
  * @ghidraAddress USA: 0x80361c30
- * @ghidraAddress JPN: 0x80362da0
  * @ghidraAddress EUR: 0x80364130
+ * @ghidraAddress JPN: 0x80362da0
  */
 extern char g_szHudSpeedTextBuf[16];
 
@@ -84,8 +94,8 @@ extern char g_szHudSpeedTextBuf[16];
  * Draw the dashboard of the active vehicle: its face, its gear and its tachometer.
  *
  * @ghidraAddress USA: 0x80237980
- * @ghidraAddress JPN: 0x80238990
  * @ghidraAddress EUR: 0x80238e90
+ * @ghidraAddress JPN: 0x80238990
  */
 void RenderDashboardGauges(void);
 
@@ -93,8 +103,8 @@ void RenderDashboardGauges(void);
  * Does nothing.
  *
  * @ghidraAddress USA: 0x8023870c
- * @ghidraAddress JPN: 0x8023971c
  * @ghidraAddress EUR: 0x80239c1c
+ * @ghidraAddress JPN: 0x8023971c
  */
 void StubDashboard(void);
 
@@ -107,8 +117,8 @@ void StubDashboard(void);
  * @param x The X coordinate of the label and the time.
  * @param y The Y coordinate of the label.
  * @ghidraAddress USA: 0x80238714
- * @ghidraAddress JPN: 0x80239724
  * @ghidraAddress EUR: 0x80239c24
+ * @ghidraAddress JPN: 0x80239724
  */
 void DrawLabelWithTime(const char *label, const char *color, f32 seconds, s32 x, s32 y);
 
@@ -116,8 +126,8 @@ void DrawLabelWithTime(const char *label, const char *color, f32 seconds, s32 x,
  * Draw the times the mode of play shows at the top right of a view.
  *
  * @ghidraAddress USA: 0x8023880c
- * @ghidraAddress JPN: 0x8023981c
  * @ghidraAddress EUR: 0x80239d1c
+ * @ghidraAddress JPN: 0x8023981c
  */
 void DrawRaceTimerHud(void);
 
@@ -125,8 +135,8 @@ void DrawRaceTimerHud(void);
  * Draw the lap at the top left of a view and the place at its bottom left.
  *
  * @ghidraAddress USA: 0x80238ab8
- * @ghidraAddress JPN: 0x80239ac8
  * @ghidraAddress EUR: 0x80239fc8
+ * @ghidraAddress JPN: 0x80239ac8
  */
 void DrawLapCounterHud(void);
 
@@ -134,8 +144,8 @@ void DrawLapCounterHud(void);
  * Draw the message of the active vehicle in the middle of a view.
  *
  * @ghidraAddress USA: 0x80238dd4
- * @ghidraAddress JPN: 0x80239de4
  * @ghidraAddress EUR: 0x8023a2e4
+ * @ghidraAddress JPN: 0x80239de4
  */
 void DrawHudMessage(void);
 
@@ -144,8 +154,8 @@ void DrawHudMessage(void);
  * the lap, place and message, and the speed.
  *
  * @ghidraAddress USA: 0x80238f30
- * @ghidraAddress JPN: 0x80239f40
  * @ghidraAddress EUR: 0x8023a440
+ * @ghidraAddress JPN: 0x80239f40
  */
 void DrawSpeedAndHudOverlay(void);
 
@@ -153,8 +163,8 @@ void DrawSpeedAndHudOverlay(void);
  * Whether the views draw the HUD and the help of the instant replay.
  *
  * @ghidraAddress USA: 0x8028aa6c
- * @ghidraAddress JPN: 0x8028c744
  * @ghidraAddress EUR: 0x8028cc74
+ * @ghidraAddress JPN: 0x8028c744
  */
 extern s32 g_bShowHudHelpText;
 
