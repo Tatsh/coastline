@@ -65,15 +65,17 @@ A routine counts for a release when its address in that release is tagged.
 A routine of a release matches when IDO 5.3 compiles its source for that release
 (the game at `-O2`, libultra at `-O1`, `-O2`, or `-O3`) to the words of the
 original, with the fields that relocations fill masked. Assembly sources are
-assembled and compared the same way. A routine the scan does not reach is unknown.
+assembled and compared the same way. A routine whose words differ only in the
+numbers of registers is listed apart (🟡), an accepted difference of register
+allocation. A routine the scan does not reach is unknown.
 Run the matching scan under `.wiswa-ci/tools` for each release (`--region us`, `eu`,
 and `jp`) before this report to regenerate the table.
 
-| Release   | Routines | Matching | Not matching | Unknown | Share |
-| --------- | -------: | -------: | -----------: | ------: | ----: |
-| `usa.z64` |      801 |      627 |          174 |       0 | 78.3% |
-| `eur.z64` |      819 |      640 |          179 |       0 | 78.1% |
-| `jpn.z64` |      822 |      640 |          182 |       0 | 77.9% |
+| Release   | Routines | Matching | Registers only | Not matching | Unknown | Share |
+| --------- | -------: | -------: | -------------: | -----------: | ------: | ----: |
+| `usa.z64` |      801 |      627 |              9 |          165 |       0 | 78.3% |
+| `eur.z64` |      819 |      642 |              8 |          169 |       0 | 78.4% |
+| `jpn.z64` |      822 |      643 |              7 |          172 |       0 | 78.2% |
 
 ### By component
 
