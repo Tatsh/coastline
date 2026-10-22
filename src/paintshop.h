@@ -400,8 +400,9 @@ void RenderDecalPreview3D(void);
  * Run one frame of the paint shop.
  *
  * @ghidraAddress USA: 0x80243260
- * @ghidraAddress JPN: 0x80244250 (stub)
- * @ghidraAddress EUR: 0x80244770 (stub)
+ * @ghidraAddress JPN: 0x80244250
+ * @ghidraAddress EUR: 0x80244770
+ * @stub{EUR JPN}
  */
 void ProcessPaintShopScreen(void);
 
@@ -421,8 +422,9 @@ void ResetPaintShopState(void);
  * @param operation PAINT_TOOL_LOAD or PAINT_TOOL_SAVE.
  * @param inCarSelect 1 when the dialog runs on the car select screen.
  * @ghidraAddress USA: 0x80244d84
- * @ghidraAddress JPN: 0x80245d9c (stub)
+ * @ghidraAddress JPN: 0x80245d9c
  * @ghidraAddress EUR: 0x802462a8
+ * @stub{JPN}
  */
 void DrawPakErrorMessage(s32 error, u8 operation, u8 inCarSelect);
 
@@ -430,8 +432,9 @@ void DrawPakErrorMessage(s32 error, u8 operation, u8 inCarSelect);
  * Run one frame of the menu of the clear tool.
  *
  * @ghidraAddress USA: 0x80247b0c
- * @ghidraAddress JPN: 0x80248cf4 (stub)
- * @ghidraAddress EUR: 0x802491bc (stub)
+ * @ghidraAddress JPN: 0x80248cf4
+ * @ghidraAddress EUR: 0x802491bc
+ * @stub{EUR JPN}
  */
 void ProcessFillClearMenu(void);
 
@@ -439,8 +442,9 @@ void ProcessFillClearMenu(void);
  * Run one frame of the menu of the mirror tool.
  *
  * @ghidraAddress USA: 0x8024843c
- * @ghidraAddress JPN: 0x80249630 (stub)
- * @ghidraAddress EUR: 0x80249aec (stub)
+ * @ghidraAddress JPN: 0x80249630
+ * @ghidraAddress EUR: 0x80249aec
+ * @stub{EUR JPN}
  */
 void ProcessMirrorFlipMenu(void);
 
@@ -467,8 +471,9 @@ void FlipDecalPixels(void);
  * Allocate the buffer of the decals and load the textures of the A and B buttons.
  *
  * @ghidraAddress USA: 0x80248f38
- * @ghidraAddress JPN: 0x8024a054 (stub)
+ * @ghidraAddress JPN: 0x8024a054
  * @ghidraAddress EUR: 0x8024a51c
+ * @stub{JPN}
  */
 void AllocateEditorBuffers(void);
 
@@ -484,8 +489,9 @@ void AllocateEditorBuffers(void);
  * @return 0 while it runs and once the decals are moved, PAK_DIALOG_CANCELLED when the player
  *         cancels the swap of the rumble pak on the car select screen, or an error.
  * @ghidraAddress USA: 0x80248f88
- * @ghidraAddress JPN: 0x8024a094 (stub)
- * @ghidraAddress EUR: 0x8024a56c (stub)
+ * @ghidraAddress JPN: 0x8024a094
+ * @ghidraAddress EUR: 0x8024a56c
+ * @stub{EUR JPN}
  */
 s32 ProcessDecalSaveLoad(VehicleModel *model, u8 player, u8 operation, u8 inCarSelect, u8 *done);
 

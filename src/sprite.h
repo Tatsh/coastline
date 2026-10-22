@@ -39,8 +39,9 @@ typedef struct {
  *
  * @param sprite The sprite to load.
  * @ghidraAddress USA: 0x80242b10
- * @ghidraAddress JPN: 0x80243b20 (stub)
+ * @ghidraAddress JPN: 0x80243b20
  * @ghidraAddress EUR: 0x80244020
+ * @stub{JPN}
  */
 void LoadTextureFromRom(Sprite *sprite);
 
@@ -49,8 +50,9 @@ void LoadTextureFromRom(Sprite *sprite);
  *
  * @param sprite The sprite to draw.
  * @ghidraAddress USA: 0x80245470
- * @ghidraAddress JPN: 0x802464cc (stub)
- * @ghidraAddress EUR: 0x80246994 (stub)
+ * @ghidraAddress JPN: 0x802464cc
+ * @ghidraAddress EUR: 0x80246994
+ * @stub{EUR JPN}
  */
 void DrawSpriteAtOrigin(Sprite *sprite);
 
@@ -61,8 +63,9 @@ void DrawSpriteAtOrigin(Sprite *sprite);
  * @param x The X coordinate on the screen.
  * @param y The Y coordinate on the screen.
  * @ghidraAddress USA: 0x80245604
- * @ghidraAddress JPN: 0x80246674 (stub)
- * @ghidraAddress EUR: 0x80246b3c (stub)
+ * @ghidraAddress JPN: 0x80246674
+ * @ghidraAddress EUR: 0x80246b3c
+ * @stub{EUR JPN}
  */
 void DrawTexturedSprite(Sprite *sprite, s32 x, s32 y);
 
@@ -75,8 +78,9 @@ void DrawTexturedSprite(Sprite *sprite, s32 x, s32 y);
  * @param green The green component of the colour.
  * @param blue The blue component of the colour.
  * @ghidraAddress USA: 0x80245798
- * @ghidraAddress JPN: 0x80246810 (stub)
- * @ghidraAddress EUR: 0x80246cd8 (stub)
+ * @ghidraAddress JPN: 0x80246810
+ * @ghidraAddress EUR: 0x80246cd8
+ * @stub{EUR JPN}
  */
 void DrawSpriteTinted(Sprite *sprite, u8 red, u8 green, u8 blue);
 
@@ -92,8 +96,9 @@ void DrawSpriteTinted(Sprite *sprite, u8 red, u8 green, u8 blue);
  * @param green The green component of the colour.
  * @param blue The blue component of the colour.
  * @ghidraAddress USA: 0x8024594c
- * @ghidraAddress JPN: 0x802469cc (stub)
- * @ghidraAddress EUR: 0x80246e94 (stub)
+ * @ghidraAddress JPN: 0x802469cc
+ * @ghidraAddress EUR: 0x80246e94
+ * @stub{EUR JPN}
  */
 void DrawSpriteRegion(
     Sprite *sprite, s32 x, s32 y, s32 width, s32 height, u8 red, u8 green, u8 blue);
@@ -115,8 +120,9 @@ void DrawSpriteRegion(
  * @param green The green component of the primitive colour.
  * @param blue The blue component of the primitive colour.
  * @ghidraAddress USA: 0x80245b00
- * @ghidraAddress JPN: 0x80246b88 (stub)
- * @ghidraAddress EUR: 0x80247050 (stub)
+ * @ghidraAddress JPN: 0x80246b88
+ * @ghidraAddress EUR: 0x80247050
+ * @stub{EUR JPN}
  */
 void DrawSpriteStrip(Sprite *sprite,
                      u8 *pixels,

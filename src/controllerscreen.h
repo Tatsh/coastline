@@ -80,8 +80,9 @@ void DrawControllerLayoutDiagram(s32 layout);
  * Run one frame of the controller screen of the player who opened the options.
  *
  * @ghidraAddress USA: 0x802170c8
- * @ghidraAddress JPN: 0x80217a38 (stub)
- * @ghidraAddress EUR: 0x802180e8 (stub)
+ * @ghidraAddress JPN: 0x80217a38
+ * @ghidraAddress EUR: 0x802180e8
+ * @stub{EUR JPN}
  */
 void ProcessControllerConfigScreen(void);
 

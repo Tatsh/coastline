@@ -439,8 +439,9 @@ void DrawProgressBar(s32 x, s32 y, s32 width, s32 height, f32 fraction);
  * @param car The index of the car in g_aCarModels.
  * @return Whether it may be chosen.
  * @ghidraAddress USA: 0x8020c66c
- * @ghidraAddress JPN: 0x8020c04c (stub)
+ * @ghidraAddress JPN: 0x8020c04c
  * @ghidraAddress EUR: 0x8020c44c
+ * @stub{JPN}
  */
 s32 IsCarUnlocked(s32 car);
 
@@ -462,8 +463,9 @@ s32 IsCarUnlocked(s32 car);
  * @param spread The distance of the slide at its full extent.
  * @param angle The direction the camera faces, in radians.
  * @ghidraAddress USA: 0x8020c6d0
- * @ghidraAddress JPN: 0x8020c0bc (stub)
+ * @ghidraAddress JPN: 0x8020c0bc
  * @ghidraAddress EUR: 0x8020c4b0
+ * @stub{JPN}
  */
 void RenderCameraView(Model *model,
                       Model *secondModel,
@@ -494,8 +496,9 @@ void FormatLapTime(char *out, f32 seconds);
  * Run one frame of the car selection screen, or of the results when g_dwIsReviewMode is set.
  *
  * @ghidraAddress USA: 0x8020d004
- * @ghidraAddress JPN: 0x8020c9dc (stub)
- * @ghidraAddress EUR: 0x8020cde4 (stub)
+ * @ghidraAddress JPN: 0x8020c9dc
+ * @ghidraAddress EUR: 0x8020cde4
+ * @stub{EUR JPN}
  */
 void ProcessCarSelectScreen(void);
 

@@ -374,8 +374,9 @@ void BuildVisibleInstanceList(void);
  *
  * @param deferred Whether this is the second pass.
  * @ghidraAddress USA: 0x80235bac
- * @ghidraAddress JPN: 0x80236ebc (stub)
+ * @ghidraAddress JPN: 0x80236ebc
  * @ghidraAddress EUR: 0x802370bc
+ * @stub{JPN}
  */
 void RenderTrackGeometry(s32 deferred);
 

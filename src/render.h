@@ -622,8 +622,9 @@ void ClearRenderStats(void);
  * Blank the screen and clear both frame buffers in the low resolution.
  *
  * @ghidraAddress USA: 0x8021a540
- * @ghidraAddress JPN: 0x8021af0c (stub)
- * @ghidraAddress EUR: 0x8021b630 (stub)
+ * @ghidraAddress JPN: 0x8021af0c
+ * @ghidraAddress EUR: 0x8021b630
+ * @stub{EUR JPN}
  */
 void ClearFramebuffersLowRes(void);
 
@@ -797,8 +798,9 @@ void UnblankDisplay(void);
  * Black out the screen and clear both frame buffers in the high resolution.
  *
  * @ghidraAddress USA: 0x8021a4c8
- * @ghidraAddress JPN: 0x8021ae8c (stub)
- * @ghidraAddress EUR: 0x8021b5b0 (stub)
+ * @ghidraAddress JPN: 0x8021ae8c
+ * @ghidraAddress EUR: 0x8021b5b0
+ * @stub{EUR JPN}
  */
 void ClearFramebuffersHighRes(void);
 

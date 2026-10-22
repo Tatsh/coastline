@@ -198,8 +198,9 @@ extern s32 g_bSplashSkipped;
  * Animate the models of the splash screens when the frame before is drawn.
  *
  * @ghidraAddress USA: 0x80206830
- * @ghidraAddress JPN: 0x80206a90 (stub)
+ * @ghidraAddress JPN: 0x80206a90
  * @ghidraAddress EUR: 0x802069f0
+ * @stub{JPN}
  */
 void AnimateSplashModels(void);
 
@@ -207,8 +208,9 @@ void AnimateSplashModels(void);
  * Run one frame of the splash screens.
  *
  * @ghidraAddress USA: 0x8020686c
- * @ghidraAddress JPN: 0x80206ab4 (stub)
- * @ghidraAddress EUR: 0x80206a2c (stub)
+ * @ghidraAddress JPN: 0x80206ab4
+ * @ghidraAddress EUR: 0x80206a2c
+ * @stub{EUR JPN}
  */
 void ProcessSplashScreens(void);
 
@@ -216,8 +218,9 @@ void ProcessSplashScreens(void);
  * Run one frame of the warning about the controller or the Controller Pak.
  *
  * @ghidraAddress USA: 0x80208570
- * @ghidraAddress JPN: 0x80207f30 (stub)
- * @ghidraAddress EUR: 0x80208310 (stub)
+ * @ghidraAddress JPN: 0x80207f30
+ * @ghidraAddress EUR: 0x80208310
+ * @stub{EUR JPN}
  */
 void ProcessControllerCheck(void);
 

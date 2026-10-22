@@ -110,8 +110,9 @@ void __osPiRelAccess(void);
 
 /**
  * @ghidraAddress USA: 0x8026c990
- * @ghidraAddress JPN: 0x8026e410 (stub)
- * @ghidraAddress EUR: 0x8026e960 (stub)
+ * @ghidraAddress JPN: 0x8026e410
+ * @ghidraAddress EUR: 0x8026e960
+ * @stub{EUR JPN}
  */
 void __osDevMgrMain(void *arg);
 

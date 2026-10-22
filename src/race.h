@@ -599,8 +599,9 @@ void DrawScrollingText(void);
  * vehicles in each view, and handle the pause menu, the instant replay and leaving the race.
  *
  * @ghidraAddress USA: 0x8020082c
- * @ghidraAddress JPN: 0x8020081c (stub)
- * @ghidraAddress EUR: 0x8020085c (stub)
+ * @ghidraAddress JPN: 0x8020081c
+ * @ghidraAddress EUR: 0x8020085c
+ * @stub{EUR JPN}
  */
 void ProcessRacingScreen(void);
 
@@ -636,8 +637,9 @@ void SetTrackFromSeason(void);
  * its bonuses, and write the lines of the message of its result.
  *
  * @ghidraAddress USA: 0x802063a4
- * @ghidraAddress JPN: 0x80206638 (stub)
+ * @ghidraAddress JPN: 0x80206638
  * @ghidraAddress EUR: 0x80206564
+ * @stub{JPN}
  */
 void ProcessSeasonResults(void);
 

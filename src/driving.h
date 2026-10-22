@@ -242,8 +242,9 @@ void ChooseReplayCamera(Vehicle *vehicle);
  *
  * @param vehicle The vehicle.
  * @ghidraAddress USA: 0x80226488
- * @ghidraAddress JPN: 0x80227170 (stub)
- * @ghidraAddress EUR: 0x80227980 (stub)
+ * @ghidraAddress JPN: 0x80227170
+ * @ghidraAddress EUR: 0x80227980
+ * @stub{EUR JPN}
  */
 void ProcessVehicleInputAndPhysics(Vehicle *vehicle);
 
@@ -279,7 +280,8 @@ void ComputeTrackPosition(Vehicle *vehicle);
  * @param vehicle The vehicle.
  * @ghidraAddress USA: 0x8022762c
  * @ghidraAddress JPN: 0x80228180
- * @ghidraAddress EUR: 0x80228990 (stub)
+ * @ghidraAddress EUR: 0x80228990
+ * @stub{EUR}
  */
 void UpdateAiVehicleBehavior(Vehicle *vehicle);
 
