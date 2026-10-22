@@ -142,6 +142,7 @@ DrawMenuFooterButtons
 DrawMenuSpotlight
 DrawModelAt
 DrawModelList
+DrawPakErrorMessage
 DrawPauseMenuButtons
 DrawPixel
 DrawProgressBar

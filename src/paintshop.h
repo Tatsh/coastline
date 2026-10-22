@@ -436,9 +436,8 @@ void ResetPaintShopState(void);
  * @param operation PAINT_TOOL_LOAD or PAINT_TOOL_SAVE.
  * @param inCarSelect 1 when the dialog runs on the car select screen.
  * @ghidraAddress USA: 0x80244d84
- * @ghidraAddress JPN: 0x80245d9c
  * @ghidraAddress EUR: 0x802462a8
- * @stub{JPN}
+ * @ghidraAddress JPN: 0x80245d9c
  */
 void DrawPakErrorMessage(s32 error, u8 operation, u8 inCarSelect);
 

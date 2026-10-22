@@ -899,8 +899,112 @@ static inline void SetPakTextColors(u8 inCarSelect) {
     }
 }
 
-/* The Japanese body still comes from the assembly. */
-#if TGR_REGION != TGR_REGION_JP
+#if TGR_REGION == TGR_REGION_JP
+void DrawPakErrorMessage(s32 error, u8 operation, u8 inCarSelect) {
+    s32 x, y, width, textY;
+
+    SetTextSize(14);
+    SetPakTextColors(inCarSelect);
+    SetTextAlignLeft();
+    SetTextStyleNormal();
+    /* The widths test for a save and the texts for a load. */
+    switch (error) {
+    case PFS_ERR_NOPACK:
+    case PFS_ERR_DEVICE:
+        y = inCarSelect == 1 ? 0xEA : 0xCC;
+        DrawDialogBox(0xCC, y, 0xE8, 0x48);
+        textY = (y + 30) >> 1;
+        DrawText("%jコントローラパックが", 0x6E, textY);
+        DrawText("%jありません。", 0x6E, textY + 14);
+        break;
+    case PFS_DATA_FULL:
+    case PFS_DIR_FULL:
+        y = inCarSelect == 1 ? 0xDB : 0xAF;
+        DrawDialogBox(0xB9, y, 0x10E, 0x82);
+        textY = (y + 30) >> 1;
+        DrawText("%jコントローラパックに", 0x64, textY);
+        DrawText("%j空きページが足りません。", 0x64, textY + 12);
+        DrawText("%jデカールのセーブには", 0x64, textY + 30);
+        DrawText("62%jページ必要です。", 0x64, textY + 42);
+        break;
+    case PFS_ERR_INCONSISTENT:
+        width = operation == PAINT_TOOL_SAVE ? 0x106 : 0x116;
+        y = inCarSelect == 1 ? 0xE2 : 0xCC;
+        x = (640 - width) >> 1;
+        DrawDialogBox(x, y, width, 0x48);
+        textY = (y + 30) >> 1;
+        if (operation == PAINT_TOOL_LOAD) {
+            DrawText("%jコントローラパック", (x + 16) >> 1, textY);
+            DrawText("%jから読み込みができません。", (x + 16) >> 1, textY + 14);
+        } else {
+            DrawText("%jコントローラパック", (x + 16) >> 1, textY);
+            DrawText("%jへ書き込みができません。", (x + 16) >> 1, textY + 14);
+        }
+        break;
+    case PFS_ERR_INVALID:
+        width = operation == PAINT_TOOL_SAVE ? 0x10C : 0xF2;
+        y = inCarSelect == 1 ? 0xE2 : 0xCC;
+        x = (640 - width) >> 1;
+        DrawDialogBox(x, y, width, 0x48);
+        textY = (y + 30) >> 1;
+        if (operation == PAINT_TOOL_LOAD) {
+            DrawText("%jコントローラパックに", (x + 16) >> 1, textY);
+            DrawText("%jデカールがありません。", (x + 16) >> 1, textY + 14);
+        } else {
+            DrawText("%jデカールセーブ中", (x + 16) >> 1, textY);
+            DrawText("%jにエラーが発生しました。", (x + 16) >> 1, textY + 14);
+        }
+        break;
+    case PAK_ERROR_TRANSFER:
+        width = operation == PAINT_TOOL_SAVE ? 0x10B : 0x114;
+        y = inCarSelect == 1 ? 0xE2 : 0xCC;
+        x = (640 - width) >> 1;
+        DrawDialogBox(x, y, width, 0x48);
+        textY = (y + 30) >> 1;
+        if (operation == PAINT_TOOL_LOAD) {
+            DrawText("%jデカールロード中", (x + 15) >> 1, textY);
+            DrawText("%jにエラーが発生しました。", (x + 15) >> 1, textY + 14);
+        } else {
+            DrawText("%jデカールセーブ中", (x + 15) >> 1, textY);
+            DrawText("%jにエラーが発生しました。", (x + 15) >> 1, textY + 14);
+        }
+        break;
+    case PFS_ERR_BAD_DATA:
+        y = inCarSelect == 1 ? 0xE4 : 0xCC;
+        DrawDialogBox(0xB6, y, 0x114, 0x48);
+        textY = (y + 30) >> 1;
+        if (operation == PAINT_TOOL_LOAD) {
+            DrawText("%jデカールロード中に異常", 0x62, textY);
+            DrawText("%jデータが発生しました。", 0x62, textY + 14);
+        } else {
+            DrawText("%jデカールセーブ中に異常", 0x62, textY);
+            DrawText("%jデータが発生しました。", 0x62, textY + 14);
+        }
+        break;
+    case PFS_ERR_CONTRFAIL:
+        y = inCarSelect == 1 ? 0xDC : 0xB0;
+        DrawDialogBox(0xCD, y, 0xE6, 0x80);
+        textY = (y + 30) >> 1;
+        DrawText("%jコントローラパックが", 0x6D, textY);
+        DrawText("%j異常です。", 0x6D, textY + 12);
+        if (operation == PAINT_TOOL_LOAD) {
+            DrawText("%jデカールを", 0x6D, textY + 30);
+            DrawText("%jロードできません。", 0x6D, textY + 42);
+        } else {
+            DrawText("%jデカールを", 0x6D, textY + 30);
+            DrawText("%jセーブできません。", 0x6D, textY + 42);
+        }
+        break;
+    case PFS_ERR_ID_FATAL:
+        y = inCarSelect == 1 ? 0xF8 : 0xCC;
+        DrawDialogBox(0x50, y, 0x1E0, 0x48);
+        textY = (y + 30) >> 1;
+        DrawText("%jコントローラパックが、こわれています。", 0x30, textY);
+        DrawText("%jあたらしいコントローラパックを、さして下さい。", 0x30, textY + 14);
+        break;
+    }
+}
+#else
 void DrawPakErrorMessage(s32 error, u8 operation, u8 inCarSelect) {
     s32 x, y, width, textY;
 
