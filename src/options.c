@@ -95,9 +95,16 @@ enum {
     {                                                                                              \
         SetTextStyleNormal();                                                                      \
         SetTextAlignLeft();                                                                        \
-        SetTextSize(12);                                                                           \
+        SetTextSize(MESSAGE_TEXT_SIZE);                                                            \
         SetTextCustomColors(0xFF, 0xFF, 0xFF, 0xFF, 0xF5, 0x00);                                   \
     }
+
+/* The size of the text of the messages. */
+#if TGR_REGION == TGR_REGION_JP
+#define MESSAGE_TEXT_SIZE 14
+#else
+#define MESSAGE_TEXT_SIZE 12
+#endif
 
 /* The frame of a message. */
 #define DRAW_MESSAGE_BOX(x, y, width, height)                                                      \
@@ -115,6 +122,14 @@ enum {
 
 /* The input of the player choosing in the menus, which the original looks up again at each use. */
 #define CHOOSING_INPUT (&g_aPlayerInputState[g_dwMenuChoosingPlayer])
+
+/* The progress of a Controller Pak transfer, which the Japanese release does not print. The
+ * arguments go in their own parentheses. */
+#if TGR_REGION == TGR_REGION_JP
+#define PAK_LOG(args)
+#else
+#define PAK_LOG(args) osSyncPrintf args
+#endif
 
 /* The original looks the profile of the vehicle up again for every field. */
 #define SET_EQUIPMENT(vehicle, equipment)                                                          \
@@ -753,7 +768,7 @@ void ProcessDataSaveLoadMenu(void) {
             g_bSaveLoadStep = SAVE_LOAD_STEP_ERROR;
             break;
         }
-        osSyncPrintf("\nInitializing controller pak...\n");
+        PAK_LOG(("\nInitializing controller pak...\n"));
         gControllerPakState = osPfsInitPak(
             &g_SiMesgQueue, &g_aPakPfs[g_dwMenuChoosingPlayer], g_dwMenuChoosingPlayer);
         if (gControllerPakState == 0) {
@@ -904,7 +919,7 @@ void ProcessDataSaveLoadMenu(void) {
             if (g_bSaveLoadEntryPoint == SAVE_LOAD_FROM_MAIN_MENU) {
                 SET_EQUIPMENT(g_dwMenuChoosingPlayer ^ 1, equipment);
             }
-            osSyncPrintf("Done!\n");
+            PAK_LOG(("Done!\n"));
             /* A loaded season or ghost car starts its race at once, without a message, unless the
              * player must put the Rumble Pak back. */
             if (!g_bSaveLoadRumbleSwapPending) {
@@ -914,14 +929,14 @@ void ProcessDataSaveLoadMenu(void) {
             }
             g_bSaveLoadDataWasLoaded = TRUE;
         } else if (g_bSaveLoadChoice == SAVE_LOAD_LOAD_GHOST) {
-            osSyncPrintf("Extracting ghost data...\n");
+            PAK_LOG(("Extracting ghost data...\n"));
             g_dwGhostRecordingSize = DecompressInterleavedRle(
                 g_abGhostRecording, GHOST_RECORDING_CAPACITY, g_pPakDataBuffer, GHOST_CHANNELS);
             /* The recording starts with its track and its car, which the loading unlocks. */
             g_dwSelectedTrackId = g_abGhostRecording[0];
             g_aVehicles[0].profile->unlockedTracks |= 1 << g_abGhostRecording[0];
             g_aVehicles[0].profile->unlocks |= 1 << g_abGhostRecording[1];
-            osSyncPrintf("Done!\n");
+            PAK_LOG(("Done!\n"));
             if (!g_bSaveLoadRumbleSwapPending) {
                 g_bSaveLoadStep = SAVE_LOAD_STEP_FADE_OUT;
             } else {
@@ -942,7 +957,7 @@ void ProcessDataSaveLoadMenu(void) {
             }
             memcpy(equipment, g_pPakDataBuffer, sizeof(equipment));
             SET_EQUIPMENT(g_dwMenuChoosingPlayer, equipment);
-            osSyncPrintf("Done!\n");
+            PAK_LOG(("Done!\n"));
             ApplyVolumeSettings();
             g_bSaveLoadStep = SAVE_LOAD_STEP_DONE;
         }
@@ -1036,7 +1051,7 @@ void ProcessDataSaveLoadMenu(void) {
                                                      SEASON_NOTE_SIZE,
                                                      g_pPakDataBuffer);
             if (gControllerPakState == 0) {
-                osSyncPrintf("Done!\n");
+                PAK_LOG(("Done!\n"));
                 g_bSaveLoadStep = SAVE_LOAD_STEP_DONE;
             } else {
                 g_bSaveLoadStep = SAVE_LOAD_STEP_ERROR;
@@ -1062,7 +1077,7 @@ void ProcessDataSaveLoadMenu(void) {
                                                      PAK_DATA_BUFFER_SIZE,
                                                      g_pPakDataBuffer);
             if (gControllerPakState == 0) {
-                osSyncPrintf("Done!\n");
+                PAK_LOG(("Done!\n"));
                 g_bSaveLoadStep = SAVE_LOAD_STEP_DONE;
             } else {
                 g_bSaveLoadStep = SAVE_LOAD_STEP_ERROR;
@@ -1089,7 +1104,7 @@ void ProcessDataSaveLoadMenu(void) {
                                                      OPTIONS_HALF_SIZE,
                                                      g_pPakDataBuffer);
             if (gControllerPakState == 0) {
-                osSyncPrintf("Done!\n");
+                PAK_LOG(("Done!\n"));
                 g_bSaveLoadStep = SAVE_LOAD_STEP_DONE;
             } else {
                 g_bSaveLoadStep = SAVE_LOAD_STEP_ERROR;
@@ -1406,8 +1421,6 @@ missing:
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wuninitialized"
 #pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
-/* The Japanese body still comes from the assembly. */
-#if TGR_REGION != TGR_REGION_JP
 s32 ProcessPakDataScreen(s32 dataType, u8 quiet) {
     /* TOP GEAR SEASON, TOP GEAR GHOST and TOP GEAR OPTIONS in the font of the Controller Pak. */
     u8 seasonName[16] = {0x2D,
@@ -1511,7 +1524,7 @@ s32 ProcessPakDataScreen(s32 dataType, u8 quiet) {
             g_bPakDataStep = PAK_DATA_STEP_ERROR;
             break;
         }
-        osSyncPrintf("\nInitializing controller pak...\n");
+        PAK_LOG(("\nInitializing controller pak...\n"));
         gControllerPakState = osPfsInitPak(
             &g_SiMesgQueue, &g_aPakPfs[g_dwMenuChoosingPlayer], g_dwMenuChoosingPlayer);
         if (gControllerPakState == 0) {
@@ -1564,15 +1577,23 @@ s32 ProcessPakDataScreen(s32 dataType, u8 quiet) {
             g_bPakDataStep = PAK_DATA_STEP_FIND;
             break;
         }
-#if TGR_REGION == TGR_REGION_EU
+#if TGR_REGION == TGR_REGION_US
+        SET_MESSAGE_TEXT();
+#else
         SetTextStyleNormal();
         SetTextAlignLeft();
         SetTextCustomColors(0xFF, 0xFF, 0xFF, 0xFF, 0xF5, 0x00);
-        SetTextSize(12);
-#else
-        SET_MESSAGE_TEXT();
+        SetTextSize(MESSAGE_TEXT_SIZE);
 #endif
+#if TGR_REGION == TGR_REGION_JP
+        DRAW_MESSAGE_BOX(0x99, 0xC3, 0x14E, 0x89);
+        DrawText("%jあたらしいコントローラパックが", 0x54, 0x71);
+        DrawText("%jさしこまれています。", 0x54, 0x7E);
+        DrawText("%jこのコントローラパックを、", 0x54, 0x91);
+        DrawText("%j使います。", 0x54, 0x9E);
+#else
         DRAW_NEW_PAK_MESSAGE(0xC3, 0x71);
+#endif
         if (CHOOSING_INPUT->buttons & DISMISS_BUTTONS) {
             TransferFlags(CHOOSING_INPUT, DISMISS_BUTTONS);
             g_bPakDataStep = PAK_DATA_STEP_FIND;
@@ -1580,7 +1601,7 @@ s32 ProcessPakDataScreen(s32 dataType, u8 quiet) {
         break;
 
     case PAK_DATA_STEP_FIND:
-        osSyncPrintf("Finding file...\n");
+        PAK_LOG(("Finding file...\n"));
         gControllerPakState = osPfsFindFile(&g_aPakPfs[g_dwMenuChoosingPlayer],
                                             COMPANY_CODE,
                                             GAME_CODE,
@@ -1613,11 +1634,11 @@ s32 ProcessPakDataScreen(s32 dataType, u8 quiet) {
 
     case PAK_DATA_STEP_LOAD:
         if (dataType == PAK_DATA_LOAD_SEASON) {
-            osSyncPrintf("Loading season data...\n");
+            PAK_LOG(("Loading season data...\n"));
         } else if (dataType == PAK_DATA_LOAD_GHOST) {
-            osSyncPrintf("Loading ghost data...\n");
+            PAK_LOG(("Loading ghost data...\n"));
         } else if (dataType == PAK_DATA_LOAD_CONFIGURATION) {
-            osSyncPrintf("Loading configuration...\n");
+            PAK_LOG(("Loading configuration...\n"));
         }
         if (dataType != PAK_DATA_LOAD_CONFIGURATION) {
             gControllerPakState = osPfsReadWriteFile(&g_aPakPfs[g_dwMenuChoosingPlayer],
@@ -1646,17 +1667,17 @@ s32 ProcessPakDataScreen(s32 dataType, u8 quiet) {
             memcpy(g_aVehicles[0].profile, g_pPakDataBuffer, sizeof(PlayerProfile));
             memcpy(g_aVehicles[1].profile, g_pPakDataBuffer, sizeof(PlayerProfile));
             SET_EQUIPMENT(g_dwMenuChoosingPlayer ^ 1, equipment);
-            osSyncPrintf("Done!\n");
+            PAK_LOG(("Done!\n"));
         } else if (dataType == PAK_DATA_LOAD_GHOST) {
-            osSyncPrintf("Extracting ghost data...\n");
+            PAK_LOG(("Extracting ghost data...\n"));
             g_dwGhostRecordingSize = DecompressInterleavedRle(
                 g_abGhostRecording, GHOST_RECORDING_CAPACITY, g_pPakDataBuffer, GHOST_CHANNELS);
             g_aVehicles[0].profile->unlockedTracks |= 1 << g_abGhostRecording[0];
             g_aVehicles[0].profile->unlocks |= 1 << g_abGhostRecording[1];
-            osSyncPrintf("Done!\n");
+            PAK_LOG(("Done!\n"));
         } else if (dataType == PAK_DATA_LOAD_CONFIGURATION) {
             memcpy(&g_OptionSettings, g_pPakDataBuffer, sizeof(OptionSettings));
-            osSyncPrintf("Loading car equipment settings...\n");
+            PAK_LOG(("Loading car equipment settings...\n"));
             gControllerPakState = osPfsReadWriteFile(&g_aPakPfs[g_dwMenuChoosingPlayer],
                                                      g_dwPakDataNoteIndex,
                                                      PFS_READ,
@@ -1668,7 +1689,7 @@ s32 ProcessPakDataScreen(s32 dataType, u8 quiet) {
             } else {
                 memcpy(equipment, g_pPakDataBuffer, sizeof(equipment));
                 SET_EQUIPMENT(g_dwMenuChoosingPlayer, equipment);
-                osSyncPrintf("Done!\n");
+                PAK_LOG(("Done!\n"));
             }
         }
         if (g_bPakDataStep == PAK_DATA_STEP_ERROR) {
@@ -1694,7 +1715,7 @@ s32 ProcessPakDataScreen(s32 dataType, u8 quiet) {
             g_bPakDataStep = PAK_DATA_STEP_ERROR;
             break;
         }
-        osSyncPrintf("Allocating %d bytes for configuration...\n", OPTIONS_NOTE_SIZE);
+        PAK_LOG(("Allocating %d bytes for configuration...\n", OPTIONS_NOTE_SIZE));
         gControllerPakState = osPfsAllocateFile(&g_aPakPfs[g_dwMenuChoosingPlayer],
                                                 COMPANY_CODE,
                                                 GAME_CODE,
@@ -1720,7 +1741,7 @@ s32 ProcessPakDataScreen(s32 dataType, u8 quiet) {
         break;
 
     case PAK_DATA_STEP_SAVE:
-        osSyncPrintf("Saving configuration...\n");
+        PAK_LOG(("Saving configuration...\n"));
         memcpy(g_pPakDataBuffer, &g_OptionSettings, sizeof(OptionSettings));
         gControllerPakState = osPfsReadWriteFile(&g_aPakPfs[g_dwMenuChoosingPlayer],
                                                  g_dwPakDataNoteIndex,
@@ -1741,7 +1762,7 @@ s32 ProcessPakDataScreen(s32 dataType, u8 quiet) {
                                                  OPTIONS_HALF_SIZE,
                                                  g_pPakDataBuffer);
         if (gControllerPakState == 0) {
-            osSyncPrintf("Done!\n");
+            PAK_LOG(("Done!\n"));
             g_bPakDataStep = PAK_DATA_STEP_DONE;
         } else {
             g_bPakDataStep = PAK_DATA_STEP_ERROR;
@@ -1755,6 +1776,69 @@ s32 ProcessPakDataScreen(s32 dataType, u8 quiet) {
         }
         SET_MESSAGE_TEXT();
         switch (gControllerPakState) {
+#if TGR_REGION == TGR_REGION_JP
+        case PFS_ERR_ID_FATAL:
+            DRAW_SHORT_MESSAGE(0x50,
+                               0x1E0,
+                               0x30,
+                               "%jコントローラパックが、こわれています。",
+                               "%jあたらしいコントローラパックを、さして下さい。");
+            break;
+        case PFS_ERR_NOPACK:
+        case PFS_ERR_DEVICE:
+            DRAW_MESSAGE_BOX(0x94, 0xD8, 0x158, 0x4C);
+            DrawText("%jコントローラパックがありません。", 0x52, 0x7C);
+            if (dataType == PAK_DATA_SAVE_CONFIGURATION) {
+                DrawText("%jデータをセーブできません。", 0x52, 0x8A);
+            } else {
+                DrawText("%jデータをロードできません。", 0x52, 0x8A);
+            }
+            break;
+        case PAK_STATE_RUMBLE_PAK: {
+            s32 buttonY = 0x13B - g_texButtonA.width;
+
+            DRAW_MESSAGE_BOX(0xC8, 0xBD, 0xF0, 0x86);
+            DrawText("%j振動パックと", 0x6C, 0x6E);
+            DrawText("%jコントローラパックを", 0x6C, 0x7B);
+            DrawText("%j交換して下さい。", 0x6C, 0x88);
+            SetTextAlignLeft();
+            SetTextSize(10);
+            DrawText("%wwOK", (u32)(g_texButtonA.width + 0xDE) >> 1, (buttonY + 0x12) >> 1);
+            DrawText("%wwCANCEL", (u32)(g_texButtonB.width + 0x14A) >> 1, (buttonY + 0x12) >> 1);
+            DrawTexturedSprite(&g_texButtonA, 0xD8, buttonY);
+            DrawTexturedSprite(&g_texButtonB, 0x144, buttonY);
+            break;
+        }
+        case PFS_DATA_FULL:
+        case PFS_DIR_FULL:
+            DRAW_MESSAGE_BOX(0xA5, 0xBD, 0x136, 0x8D);
+            DrawText("%jコントローラパックに", 0x5A, 0x6E);
+            DrawText("%j空きページがありません。", 0x5A, 0x7B);
+            DrawText("%jオプションデータをセーブするには", 0x5A, 0x8E);
+            DrawText("1%jページ必要です。", 0x5A, 0x9B);
+            break;
+        case PFS_ERR_CONTRFAIL:
+            DRAW_SHORT_MESSAGE(0xBF, 0x102, 0x67, "%jコントローラにエラー", "%jが発生しました。");
+            break;
+        case PFS_ERR_INVALID:
+            if (dataType == PAK_DATA_SAVE_CONFIGURATION) {
+                DRAW_SHORT_MESSAGE(0xAF, 0x122, 0x5F, "%jコントローラパック", "%jが異常です。");
+            } else {
+                DRAW_SHORT_MESSAGE(
+                    0xAF, 0x122, 0x5F, "%jコントローラパックに", "%jデータがありません。");
+            }
+            break;
+        case PFS_ERR_NEW_PACK:
+            DRAW_MESSAGE_BOX(0x99, 0xB9, 0x14E, 0x89);
+            DrawText("%jあたらしいコントローラパックが", 0x54, 0x6C);
+            DrawText("%jさしこまれています。", 0x54, 0x79);
+            DrawText("%jこのコントローラパックを、", 0x54, 0x8C);
+            DrawText("%j使います。", 0x54, 0x99);
+            break;
+        default:
+            DRAW_SHORT_MESSAGE(0xAF, 0x122, 0x5F, "%jコントローラパック", "%jが異常です。");
+            break;
+#else
         case PFS_ERR_ID_FATAL:
             DRAW_SHORT_MESSAGE(0xBD, 0x106, 0x66, "THE CONTROLLER PAK", "IS NONFUNCTIONAL!");
             break;
@@ -1793,6 +1877,7 @@ s32 ProcessPakDataScreen(s32 dataType, u8 quiet) {
         default:
             DRAW_SHORT_MESSAGE(0xAF, 0x122, 0x5F, "CONTROLLER PAK ERROR", "HAS BEEN DETECTED.");
             break;
+#endif
         }
         if (gControllerPakState != PAK_STATE_RUMBLE_PAK) {
             if (CHOOSING_INPUT->buttons & DISMISS_BUTTONS) {
@@ -1822,7 +1907,19 @@ s32 ProcessPakDataScreen(s32 dataType, u8 quiet) {
         }
         SetTextAlignCenter();
         SetTextStyleNormal();
-        SetTextSize(12);
+        SetTextSize(MESSAGE_TEXT_SIZE);
+#if TGR_REGION == TGR_REGION_JP
+        /* The Japanese release reports a load in one line. */
+        if (dataType == PAK_DATA_LOAD_SEASON) {
+            top = g_bSaveLoadEntryPoint != SAVE_LOAD_FROM_MAIN_MENU ? 0xCE : unsetOffset + 0xCB;
+            DRAW_MESSAGE_BOX(0xE2, top, 0xBC, 0x4A);
+            DrawText("%yw%jロード%e OK!", 0x9F, ((top + 0x20) >> 1) + 7);
+        } else if (dataType == PAK_DATA_LOAD_GHOST) {
+            top = g_bSaveLoadEntryPoint != SAVE_LOAD_FROM_MAIN_MENU ? 0xCE : unsetOffset + 0xCB;
+            DRAW_MESSAGE_BOX(0xE2, top, 0xBC, 0x4A);
+            DrawText("%yw%jロード%e OK!", 0x9F, ((top + 0x20) >> 1) + 7);
+        }
+#else
         if (dataType == PAK_DATA_LOAD_SEASON) {
             top = g_bSaveLoadEntryPoint != SAVE_LOAD_FROM_MAIN_MENU ? 0xCE : unsetOffset + 0xCB;
             DRAW_DONE_MESSAGE(0xE2, 0xBC, top, "%ywSEASON DATA", "%ywLOADED OK!");
@@ -1830,8 +1927,9 @@ s32 ProcessPakDataScreen(s32 dataType, u8 quiet) {
             top = g_bSaveLoadEntryPoint != SAVE_LOAD_FROM_MAIN_MENU ? 0xCE : unsetOffset + 0xCB;
             DRAW_DONE_MESSAGE(0xE2, 0xBC, top, "%ywGHOST DATA", "%ywLOADED OK!");
         }
-#if TGR_REGION != TGR_REGION_EU
-        /* The European release does not report a loaded or saved configuration. */
+#endif
+#if TGR_REGION == TGR_REGION_US
+        /* The later releases do not report a loaded or saved configuration. */
         else if (dataType == PAK_DATA_LOAD_CONFIGURATION ||
                  dataType == PAK_DATA_SAVE_CONFIGURATION) {
             DRAW_MESSAGE_BOX(0xD8, 0xD9, 0xD0, 0x4A);
@@ -1882,5 +1980,4 @@ s32 ProcessPakDataScreen(s32 dataType, u8 quiet) {
     g_wSerialInterfaceIdle = TRUE;
     return FALSE;
 }
-#endif
 #pragma GCC diagnostic pop
