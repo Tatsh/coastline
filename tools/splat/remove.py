@@ -55,12 +55,14 @@ def block_address(lines: list[str], start: int) -> int | None:
   return None
 
 
-def remove_datum(lines: list[str], name: str, size: int) -> list[str] | None:
+def remove_datum(lines: list[str], name: str,
+                 size: int) -> tuple[list[str], dict[str, int]] | None:
   """
   Delete the blocks of a datum that size bytes from its label span, inner labels included.
 
   splat may split one datum into several labelled blocks, such as the fields of a structure, so
-  every block whose first address lies within the datum goes.
+  every block whose first address lies within the datum goes. The offset of each inner label is
+  returned with the remaining lines.
   """
   start = next((index for index, line in enumerate(lines)
                 if re.match(rf'^nonmatching {re.escape(name)}\b', line)), None)
@@ -69,14 +71,16 @@ def remove_datum(lines: list[str], name: str, size: int) -> list[str] | None:
   first = block_address(lines, start)
   if first is None:
     raise SystemExit(f'{name}: no address in its block.')
+  inner = {}
   end = start + 1
   while end < len(lines):
     if lines[end].startswith('nonmatching '):
       address = block_address(lines, end)
       if address is None or address >= first + size:
         break
+      inner[lines[end].split()[1].rstrip(',')] = address - first
     end += 1
-  return lines[:start] + lines[end:]
+  return lines[:start] + lines[end:], inner
 
 
 def remove(region: str, routines: list[str], *, record: bool = True) -> None:
@@ -100,12 +104,17 @@ def remove(region: str, routines: list[str], *, record: bool = True) -> None:
                                re.M)]
   if missing:
     raise SystemExit(f'{", ".join(missing)} not in the assembly of {region}.')
+  inner_labels: dict[str, str] = {}
   for entry in data:
     name, size = entry.split(':')
     for source in data_sources:
       result = remove_datum(source.read_text(encoding='utf-8').splitlines(), name, int(size, 0))
       if result is not None:
-        source.write_text('\n'.join(result) + '\n', encoding='utf-8')
+        lines, inner = result
+        source.write_text('\n'.join(lines) + '\n', encoding='utf-8')
+        # A named inner label is a datum of its own, which the C defines separately.
+        inner_labels.update({label: f'{name} + 0x{offset:X}' for label, offset in inner.items()
+                             if re.fullmatch(r'D_[0-9A-F]{8}', label)})
         print(f'{name}: removed {size} bytes from {source.name}.')
         break
   removed_labels: set[str] = set()
@@ -129,6 +138,15 @@ def remove(region: str, routines: list[str], *, record: bool = True) -> None:
   for label in removed_labels:
     text = re.sub(rf'\.word {re.escape(label)}\b', '.word 0', text)
   rodata.write_text(text, encoding='utf-8')
+  # The remaining assembly reaches a field of a converted datum through the field's unnamed label,
+  # which was removed with the datum. The reference becomes the datum's name plus the field's offset.
+  if inner_labels:
+    pattern = re.compile(r'\bD_[0-9A-F]{8}\b')
+    for source in sorted(asm.glob('[0-9A-F]*.s')) + data_sources:
+      text = source.read_text(encoding='utf-8')
+      replaced = pattern.sub(lambda match: inner_labels.get(match.group(0), match.group(0)), text)
+      if replaced != text:
+        source.write_text(replaced, encoding='utf-8')
   sources = asm / 'sources.cmake'
   kept = [line for line in sources.read_text(encoding='utf-8').splitlines()
           if not line.strip().startswith('asm/') or (ROOT / line.strip().rstrip(')')).exists()]
