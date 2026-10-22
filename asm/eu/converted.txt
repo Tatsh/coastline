@@ -501,6 +501,7 @@ UnusedRaceStartStub
 UnusedScreenFadeStub
 UnusedTrackCollisionStub
 UnusedVblankQueryStub
+UpdateAiVehicleBehavior
 UpdateAirplaneSound
 UpdateAllVehicleEffects
 UpdateAmbientSoundChannel

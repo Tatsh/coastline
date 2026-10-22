@@ -46,6 +46,8 @@ extern Vec3f g_vUpAxis;
  * race and the class of the racer.
  *
  * @ghidraAddress USA: 0x8028b9f0
+ * @ghidraAddress EUR: 0x8028dca4
+ * @ghidraAddress JPN: 0x8028d6d4
  */
 extern f32 g_aafAiVelocityRetention[SEASONS][SEASON_RACES][2];
 
@@ -279,9 +281,8 @@ void ComputeTrackPosition(Vehicle *vehicle);
  *
  * @param vehicle The vehicle.
  * @ghidraAddress USA: 0x8022762c
- * @ghidraAddress JPN: 0x80228180
  * @ghidraAddress EUR: 0x80228990
- * @stub{EUR}
+ * @ghidraAddress JPN: 0x80228180
  */
 void UpdateAiVehicleBehavior(Vehicle *vehicle);
 

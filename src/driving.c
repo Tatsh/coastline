@@ -61,6 +61,11 @@
 #define AI_CORRECT_SPEED 10.0f
 #define AI_SIGN_DEAD_ZONE 0.1f
 
+#if TGR_REGION == TGR_REGION_EU
+/* The European release scales the velocity a computer keeps in the championship by this. */
+#define AI_RETENTION_SCALE 0.9988f
+#endif
+
 /* A computer keeps at least 3 from the side of a track wider than 10, and to the middle 60% of a
  * narrower one. */
 #define AI_WIDE_HALF_WIDTH 5.0f
@@ -591,8 +596,6 @@ void ComputeTrackPosition(Vehicle *vehicle) {
     }
 }
 
-/* The European body still comes from the assembly. */
-#if TGR_REGION != TGR_REGION_EU
 /* 1 above the dead zone of the computer's tests, -1 below it, and 0 within. */
 static s32 AiSign(f32 value) {
     if (AI_SIGN_DEAD_ZONE < value) {
@@ -965,10 +968,18 @@ static void HoldAiToRoute(Vehicle *vehicle, f32 sideOffset, f32 halfWidth, f32 f
         Vec3fMulAddInPlace(velocity, &vehicle->trackUp, upward);
     }
     if (g_dwGameMode == GAME_MODE_CHAMPIONSHIP) {
+#if TGR_REGION == TGR_REGION_EU
+        Vec3fScaleInPlace(
+            velocity,
+            g_aafAiVelocityRetention[g_pActiveProfile->season][g_pActiveProfile->round]
+                                    [vehicle->racer->straggler] *
+                AI_RETENTION_SCALE);
+#else
         Vec3fScaleInPlace(
             velocity,
             g_aafAiVelocityRetention[g_pActiveProfile->season][g_pActiveProfile->round]
                                     [vehicle->racer->straggler]);
+#endif
     } else if (g_dwGameMode == GAME_MODE_ARCADE) {
         weather = g_dwCurrentWeather - 1;
         if (weather >= ARCADE_WEATHERS || weather < 0) {
@@ -1077,7 +1088,6 @@ void UpdateAiVehicleBehavior(Vehicle *vehicle) {
     UpdateVehiclePhysicsFrame(vehicle);
     RespawnVehicle(vehicle);
 }
-#endif
 
 void DriveAiVehicle(Vehicle *vehicle) {
     UpdateAiVehicleBehavior(vehicle);
