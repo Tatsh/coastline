@@ -11492,15 +11492,15 @@ enddlabel g_flPakMenuFadeInStep
 nonmatching switchdataD_802ab3c4
 
 dlabel switchdataD_802ab3c4
-    /* AE0D4 802AD0D4 80254F14 */ .word .L80254F14
-    /* AE0D8 802AD0D8 80255004 */ .word .L80255004
-    /* AE0DC 802AD0DC 802551C0 */ .word .L802551C0
-    /* AE0E0 802AD0E0 802553A4 */ .word .L802553A4
-    /* AE0E4 802AD0E4 80255564 */ .word .L80255564
-    /* AE0E8 802AD0E8 8025562C */ .word .L8025562C
-    /* AE0EC 802AD0EC 802558E4 */ .word .L802558E4
-    /* AE0F0 802AD0F0 802559C8 */ .word .L802559C8
-    /* AE0F4 802AD0F4 802559E4 */ .word .L802559E4
+    /* AE0D4 802AD0D4 80254F14 */ .word 0
+    /* AE0D8 802AD0D8 80255004 */ .word 0
+    /* AE0DC 802AD0DC 802551C0 */ .word 0
+    /* AE0E0 802AD0E0 802553A4 */ .word 0
+    /* AE0E4 802AD0E4 80255564 */ .word 0
+    /* AE0E8 802AD0E8 8025562C */ .word 0
+    /* AE0EC 802AD0EC 802558E4 */ .word 0
+    /* AE0F0 802AD0F0 802559C8 */ .word 0
+    /* AE0F4 802AD0F4 802559E4 */ .word 0
 enddlabel switchdataD_802ab3c4
 
 nonmatching g_flPakMenuFadeOutStep

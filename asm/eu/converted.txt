@@ -332,6 +332,7 @@ ProcessOptionsMenu
 ProcessOvalStyleMenu
 ProcessPaintShopExitConfirm
 ProcessPaintShopScreen
+ProcessPakMenuScreen
 ProcessPlayerCountSelect
 ProcessRaceResultsScreen
 ProcessRectStyleMenu

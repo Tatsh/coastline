@@ -36,8 +36,8 @@ u8 DecalCharToAscii(u8 c) {
     return ' ';
 }
 
-/* The Japanese and European bodies still come from the assembly. */
-#if TGR_REGION == TGR_REGION_US
+/* The Japanese body still comes from the assembly. */
+#if TGR_REGION != TGR_REGION_JP
 /* The note under the cursor is green on a white table, which is otherwise gray. */
 static void SetNoteColors(s32 note) {
     if (g_dwPakNoteCount != 0 && note == g_bPakSelectedNote) {
@@ -122,6 +122,13 @@ void ProcessPakMenuScreen(void) {
     if (!g_bPakMenuInitialized) {
         g_bPakMenuInitialized = TRUE;
         g_bPakDirLoaded = FALSE;
+#if TGR_REGION == TGR_REGION_EU
+        g_dwKeepScreenBlanked = TRUE;
+        BlankDisplay();
+        StartHighResFrame();
+        FlushDisplayList();
+        g_dwKeepScreenBlanked = FALSE;
+#endif
         osPfsIsPlug(&g_SiMesgQueue, &plugged);
         if (!(plugged & 1)) {
             SetCurrentScreenCallback(MainMenuEntry);
@@ -138,6 +145,10 @@ void ProcessPakMenuScreen(void) {
         gControllerPakState = 0;
         g_bPakMenuState = PAK_MENU_READ_DIRECTORY;
         SetFadeTarget(1.0f, PAK_MENU_FADE_STEP);
+#if TGR_REGION == TGR_REGION_EU
+        /* The flag is already clear. */
+        g_dwKeepScreenBlanked = FALSE;
+#endif
     }
 
     UpdateFrameTiming();
@@ -357,8 +368,13 @@ void ProcessPakMenuScreen(void) {
     case PAK_MENU_NEW_PAK:
         SetTextStyleNormal();
         SetTextAlignLeft();
+#if TGR_REGION == TGR_REGION_EU
+        DrawRectBorder(0xAF, 0xB5, 0x122, 0x89, 3, 0, 0, 0x80, 0x80, 0x80);
+        SetTextSize(0xC);
+#else
         SetTextSize(0xC);
         DrawRectBorder(0xAF, 0xB5, 0x122, 0x89, 3, 0, 0, 0x80, 0x80, 0x80);
+#endif
         DrawText("%ywA NEW CONTROLLER PAK", 0x5F, 0x6A);
         DrawText("%ywWAS INSERTED.", 0x5F, 0x77);
         DrawText("%ywTHIS CONTROLLER PAK", 0x5F, 0x8A);
@@ -403,10 +419,18 @@ void ProcessPakMenuScreen(void) {
         StartHighResFrame();
         ClearScreen(0, 0, 0);
         FlushDisplayList();
+#if TGR_REGION == TGR_REGION_EU
+        g_dwKeepScreenBlanked = TRUE;
+        BlankDisplay();
+#else
         osViBlack(TRUE);
+#endif
         StartHighResFrame();
         ClearScreen(0, 0, 0);
         FlushDisplayList();
+#if TGR_REGION == TGR_REGION_EU
+        g_dwKeepScreenBlanked = FALSE;
+#endif
         SetCurrentScreenCallback(MainMenuEntry);
     }
     g_wSerialInterfaceIdle = 1;
