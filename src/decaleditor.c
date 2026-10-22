@@ -109,8 +109,10 @@ static inline void SelectDecalSlot(s32 slot) {
     g_pDecalMask = model->decalMasks[g_bDecalSlot];
     g_bDecalWidth = model->textures[model->materialTextures[slot]].width;
     g_bDecalHeight = model->textures[model->materialTextures[slot]].height;
+#if TGR_REGION != TGR_REGION_JP
     osSyncPrintf("decal_width = %d\n", g_bDecalWidth);
     osSyncPrintf("decal_height = %d\n", g_bDecalHeight);
+#endif
     g_rcDecalCanvas.x =
         g_rcDecalCanvasFrame.x + ((g_rcDecalCanvasFrame.width - g_bDecalWidth * 4) >> 1);
     g_rcDecalCanvas.y =
@@ -756,8 +758,6 @@ static inline void DrawShapeOutline(void) {
     }
 }
 
-/* The Japanese body still comes from the assembly. */
-#if TGR_REGION != TGR_REGION_JP
 void ProcessDecalEditorInput(void) {
     if (!g_dwAnchorXInitialized) {
         g_dwAnchorXInitialized = TRUE;
@@ -782,7 +782,6 @@ void ProcessDecalEditorInput(void) {
     }
     DrawShapeOutline();
 }
-#endif
 
 s32 IsCursorInButton(Sprite *sprite) {
     if (g_texPaintCursor.originX >= sprite->originX &&
@@ -910,15 +909,24 @@ void DrawDecalColorPalette(void) {
         }                                                                                          \
     }
 
-/* The Japanese bodies still come from the assembly. */
-#if TGR_REGION != TGR_REGION_JP
+/* The Japanese style menus show no name of the chosen style. */
+#if TGR_REGION == TGR_REGION_JP
+#define SHOWS_STYLE_NAMES 0
+#else
+#define SHOWS_STYLE_NAMES 1
+#endif
+
 void ProcessBrushStyleMenu(void) {
+#if SHOWS_STYLE_NAMES
     TwoStyleNames names;
+#endif
     PlayerInputState *input;
     s32 buttonY, cancelX, textY;
 
+#if SHOWS_STYLE_NAMES
     /* The names are read from a copy on the stack. */
     names = *(TwoStyleNames *)g_apszBrushStyleNames;
+#endif
     /* The button A is placed by its width. */
     buttonY = 0x142 - g_texButtonA.width;
     cancelX = 0x15D - g_texButtonB.width;
@@ -962,10 +970,14 @@ void ProcessBrushStyleMenu(void) {
         DrawFilledRectHiRes(
             g_texPaintShapeFilledCircle.drawWidth + 0x114, 0xCA, 0x26, 0x26, 0, 0, 0);
     }
+#if SHOWS_STYLE_NAMES
     DrawRectBorder(0xE0, 0xFF, 0xC0, 0x1E, 1, 1, 1, 0x80, 0x80, 0x80);
+#endif
     SetTextSize(11);
     SetTextCustomColors(0xFF, 0xFF, 0xFF, 0xFF, 0xF5, 0);
+#if SHOWS_STYLE_NAMES
     DrawText(names.name[g_bStyleMenuCursor], 0x9F, 0x8A);
+#endif
     DrawTexturedSprite(&g_texButtonA, 0xD8, buttonY);
     DrawTexturedSprite(&g_texButtonB, cancelX, buttonY);
     SetTextSize(10);
@@ -986,13 +998,17 @@ void ProcessBrushStyleMenu(void) {
 void ProcessTextStyleMenu(void) {
     PaletteSwatch swatches[DECAL_SWATCHES];
     ScreenRect choices[2];
+#if SHOWS_STYLE_NAMES
     TwoStyleNames names;
+#endif
     PlayerInputState *input;
     PaletteSwatch *swatch;
     s32 i, buttonY, cancelX, textY, selectX;
 
+#if SHOWS_STYLE_NAMES
     /* The names are read from a copy on the stack. */
     names = *(TwoStyleNames *)g_apszTextStyleNames;
+#endif
     DrawRectBorder(0xB4, 0x82, 0x118, 0xD0, 3, 0, 0, 0x80, 0x80, 0x80);
     SetTextSize(16);
     SetTextAlignCenter();
@@ -1075,12 +1091,16 @@ void ProcessTextStyleMenu(void) {
                            swatch->color[2]);
 
     if (!g_bTextShadowPickerOpen) {
+#if SHOWS_STYLE_NAMES
         DrawRectBorder(
             0xC6, choices[0].height + choices[0].y + 0x11, 0xF4, 0x1E, 1, 1, 1, 0x80, 0x80, 0x80);
+#endif
         SetTextSize(11);
         SetTextCustomColors(0xFF, 0xFF, 0xFF, 0xFF, 0xF5, 0);
+#if SHOWS_STYLE_NAMES
         DrawText(
             names.name[g_bStyleMenuCursor], 0x9E, (choices[1].height + choices[0].y + 0x26) >> 1);
+#endif
         SetTextSize(10);
         SetTextAlignLeft();
         /* The button A is placed by its width and the button B by its height. */
@@ -1200,12 +1220,16 @@ void ProcessTextStyleMenu(void) {
 }
 
 void ProcessRectStyleMenu(void) {
+#if SHOWS_STYLE_NAMES
     FourStyleNames names;
+#endif
     PlayerInputState *input;
     s32 buttonY, cancelX, textY, i, x;
 
+#if SHOWS_STYLE_NAMES
     /* The names are read from a copy on the stack. */
     names = *(FourStyleNames *)g_apszRectStyleNames;
+#endif
     /* Both buttons are placed by their widths. */
     buttonY = 0x143 - g_texButtonA.width;
     cancelX = 0x161 - g_texButtonB.width;
@@ -1232,10 +1256,14 @@ void ProcessRectStyleMenu(void) {
             DrawTexturedSprite(g_apRectStyleIcons[i], x, 0xCB);
         }
     }
+#if SHOWS_STYLE_NAMES
     DrawRectBorder(0xB1, 0x103, 0x11E, 0x1E, 1, 1, 1, 0x80, 0x80, 0x80);
+#endif
     SetTextSize(11);
     SetTextCustomColors(0xFF, 0xFF, 0xFF, 0xFF, 0xF5, 0);
+#if SHOWS_STYLE_NAMES
     DrawText(names.name[g_bStyleMenuCursor], 0x9F, 0x8C);
+#endif
     SetTextSize(10);
     SetTextAlignLeft();
     textY = (buttonY + 0x12) >> 1;
@@ -1248,18 +1276,19 @@ void ProcessRectStyleMenu(void) {
     MoveStyleMenuCursor(input);
     CloseStyleMenu(&g_texPaintToolRect);
 }
-#endif
 
-/* The Japanese and European bodies still come from the assembly. */
-#if TGR_REGION == TGR_REGION_US
 void ProcessOvalStyleMenu(void) {
+#if SHOWS_STYLE_NAMES
     FourStyleNames names;
+#endif
     PlayerInputState *input;
     Sprite *icon;
     s32 buttonY, cancelX, textY, i, x;
 
+#if SHOWS_STYLE_NAMES
     /* The names are read from a copy on the stack. */
     names = *(FourStyleNames *)g_apszOvalStyleNames;
+#endif
     buttonY = 0x143 - g_texButtonA.width;
     cancelX = 0x160 - g_texButtonB.width;
     DrawRectBorder(0xB8, 0x95, 0x110, 0xB6, 3, 0, 0, 0x80, 0x80, 0x80);
@@ -1294,13 +1323,17 @@ void ProcessOvalStyleMenu(void) {
                              HIGHLIGHT_GREEN,
                              HIGHLIGHT_BLUE);
         } else {
-            DrawSpriteAtOrigin(icon);
+            DrawSpriteAtOrigin(WITH_PALETTE(icon, NULL));
         }
     }
+#if SHOWS_STYLE_NAMES
     DrawRectBorder(0xCE, 0x101, 0xE4, 0x1E, 1, 1, 1, 0x80, 0x80, 0x80);
+#endif
     SetTextSize(11);
     SetTextCustomColors(0xFF, 0xFF, 0xFF, 0xFF, 0xF5, 0);
+#if SHOWS_STYLE_NAMES
     DrawText(names.name[g_bStyleMenuCursor], 0x9F, 0x8B);
+#endif
     SetTextSize(10);
     SetTextAlignLeft();
     textY = (buttonY + 0x12) >> 1;
@@ -1313,7 +1346,6 @@ void ProcessOvalStyleMenu(void) {
     MoveStyleMenuCursor(input);
     CloseStyleMenu(&g_texPaintToolOval);
 }
-#endif
 
 void ProcessPaintShopExitConfirm(void) {
     /* The original reserves stack for 24 bytes of locals it does not use. */

@@ -327,6 +327,7 @@ ProcessDisplayList
 ProcessInputCommandBuffer
 ProcessMainMenu
 ProcessOptionsMenu
+ProcessOvalStyleMenu
 ProcessPaintShopExitConfirm
 ProcessPlayerCountSelect
 ProcessRaceResultsScreen
