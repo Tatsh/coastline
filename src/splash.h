@@ -10,6 +10,7 @@
 #include <PR/ultratypes.h>
 
 #include "model.h"
+#include "texrect.h"
 
 /**
  * Whether the splash screens have loaded their models and sounds.
@@ -42,6 +43,22 @@ extern Ambient g_SplashAmbientLight;
  * @ghidraAddress JPN: 0x802722c8
  */
 extern Light g_SplashDirectionalLight;
+
+#if TGR_REGION == TGR_REGION_JP
+/**
+ * The picture of the title the Japanese release shows in place of the models of the title.
+ *
+ * @ghidraAddress JPN: 0x802722a0
+ */
+extern Texture g_SplashTitleLogoTexture;
+
+/**
+ * The palette of the picture of the title, read from the cartridge.
+ *
+ * @ghidraAddress JPN: 0x803165b8
+ */
+extern u16 g_awSplashTitlePalette[256];
+#endif
 
 /* The warnings of the controller check. */
 #define CONTROLLER_WARNING_NO_CONTROLLER 0 /*!< No controller is plugged in. */
@@ -237,7 +254,6 @@ void AnimateSplashModels(void);
  * @ghidraAddress USA: 0x8020686c
  * @ghidraAddress EUR: 0x80206a2c
  * @ghidraAddress JPN: 0x80206ab4
- * @stub{JPN}
  */
 void ProcessSplashScreens(void);
 

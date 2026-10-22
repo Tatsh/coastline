@@ -28,6 +28,12 @@
 #define ROM_SPLASH_TITLE_C 0x1E0870
 #define ROM_SPLASH_TITLE_A 0x1DE720
 #define ROM_SPLASH_TITLE_B 0x1E1AE0
+#elif TGR_REGION == TGR_REGION_JP
+#define ROM_SPLASH_SOUND_A 0x1CBDC0
+#define ROM_SPLASH_SOUND_B 0x1CFD40
+#define ROM_SPLASH_FIRST_LOGO 0x1EEAF0
+#define ROM_SPLASH_DEVELOPER_LOGO 0x1EFB20
+#define ROM_SPLASH_TITLE_PALETTE 0x1F5EA0
 #else
 #define ROM_SPLASH_SOUND_A 0x1B5440
 #define ROM_SPLASH_SOUND_B 0x1B93C0
@@ -61,7 +67,7 @@
 /* When each logo starts, in seconds. */
 #define FIRST_LOGO_START 0.0f
 #define PRODUCER_LOGO_START 4.0f
-#if TGR_REGION == TGR_REGION_EU
+#if TGR_REGION != TGR_REGION_US
 #define DEVELOPER_LOGO_START 4.0f
 #else
 #define DEVELOPER_LOGO_START 8.0f
@@ -74,8 +80,12 @@
 #define LOGO_LEAVE_TIME 3.5f
 #define LOGO_END_TIME 6.0f
 
-/* The developer logo is gone a second sooner than the other two. */
+/* The developer logo is gone sooner than the other two. */
+#if TGR_REGION == TGR_REGION_JP
+#define DEVELOPER_LOGO_END_TIME 4.5f
+#else
 #define DEVELOPER_LOGO_END_TIME 5.0f
+#endif
 
 /* The depth of a logo at rest, and its scale. */
 #define LOGO_DEPTH (-50.0f)
@@ -101,6 +111,15 @@
 #define SKIP_TIME 12.95f
 #define SKIP_END_TIME 14.95f
 #define SPLASH_END_TIME 18.2f
+#elif TGR_REGION == TGR_REGION_JP
+/* The Japanese release shows a picture of the title, fading it in for its first second. */
+#define TITLE_START 8.5f
+#define TITLE_FADE_TIME 1.0f
+#define COPYRIGHT_START 10.5f
+
+#define SKIP_TIME 10.5f
+#define SKIP_END_TIME 12.5f
+#define SPLASH_END_TIME 16.8f
 #else
 #define TITLE_START 12.0f
 #define TITLE_A_END 15.0f
@@ -139,15 +158,13 @@
 #define CONTROLLER_CHECK_FRAMES 910
 
 void AnimateSplashModels(void) {
-#if TGR_REGION != TGR_REGION_JP
     AdvanceModelAnimations(g_pSplashDeveloperLogo);
+#if TGR_REGION != TGR_REGION_JP
     AdvanceModelAnimations(g_pSplashTitleModelA);
-#endif
     AdvanceModelAnimations(g_pSplashTitleModelB);
+#endif
 }
 
-/* The Japanese body still comes from the assembly. */
-#if TGR_REGION != TGR_REGION_JP
 /* Allocate a model on the heap and decompress it there. */
 static inline Model *LoadSplashModel(u32 romOffset) {
     return DecompressModel(AllocHeapAligned(DmaReadAssetSize(romOffset)), romOffset);
@@ -260,6 +277,32 @@ static inline f32 TitleDepth(f32 start, f32 end, f32 speed) {
     return 0.0f;
 }
 
+#if TGR_REGION == TGR_REGION_JP
+/* Draw the picture of the title with its palette, from black over its first second. */
+static void DrawSplashTitle(void) {
+    if (g_fSplashTime > TITLE_START) {
+        gDPPipeSync(gDisplayListPtr++);
+        gDPLoadTLUT_pal256(gDisplayListPtr++, g_awSplashTitlePalette);
+        DrawTexturedRect(&g_SplashTitleLogoTexture,
+                         60,
+                         36,
+                         200,
+                         150,
+                         0,
+                         0,
+                         0,
+                         0xFF,
+                         0xFF,
+                         0xFF,
+                         0xFF,
+                         0xFF,
+                         TEXRECT_BLEND_TEXTURE);
+        if (g_fSplashTime - TITLE_START < TITLE_FADE_TIME) {
+            DrawScreenFadeOverlay(g_fSplashTime - TITLE_START);
+        }
+    }
+}
+#else
 /* Draw the title, tilted, its parts coming forward one after another. */
 static void DrawSplashTitle(void) {
     Mtx *mtx;
@@ -320,6 +363,7 @@ static void DrawSplashTitle(void) {
                     1.0f / 12.0f);
     }
 }
+#endif
 
 /* Fade in the copyright, and the date of the build while every C button is held. */
 static void DrawSplashCopyright(void) {
@@ -336,7 +380,7 @@ static void DrawSplashCopyright(void) {
     SetTextStyleNormal();
     SetTextSize(10);
     SetTextAlignCenter();
-#if TGR_REGION == TGR_REGION_EU
+#if TGR_REGION != TGR_REGION_US
     if ((g_aPlayerInputState[0].buttons & BUILD_DATE_BUTTONS) == BUILD_DATE_BUTTONS) {
         DrawText(BUILD_DATE_TEXT, 160, 40);
     }
@@ -374,7 +418,7 @@ static void UpdateSplashExit(void) {
                 g_aSoundEffectChannels[i].step = 0;
                 g_aSoundEffectChannels[i].volume = 0;
             }
-#if TGR_REGION == TGR_REGION_EU
+#if TGR_REGION != TGR_REGION_US
             if (g_bSplashSkipped) {
                 ClearFramebuffersForWideMode();
                 SetCurrentScreenCallback(ProcessMainMenu);
@@ -417,7 +461,7 @@ static void UpdateSplashExit(void) {
         }
     }
     g_bSplashFadingOut = 1;
-#if TGR_REGION == TGR_REGION_EU
+#if TGR_REGION != TGR_REGION_US
     osSyncPrintf("start fade out\n");
 #endif
     SetFadeTarget(0.0f, FADE_TIME);
@@ -429,7 +473,7 @@ void ProcessSplashScreens(void) {
     s32 i;
 
     if (!g_bSplashStarted) {
-#if TGR_REGION == TGR_REGION_EU
+#if TGR_REGION != TGR_REGION_US
         g_dwKeepScreenBlanked = TRUE;
         BlankDisplay();
         StartHighResFrame();
@@ -440,10 +484,14 @@ void ProcessSplashScreens(void) {
         FadeSfxTo(1.0f, FADE_TIME);
         ResetHeap();
         g_pSplashDeveloperLogo = LoadSplashModel(ROM_SPLASH_DEVELOPER_LOGO);
-#if TGR_REGION != TGR_REGION_EU
+#if TGR_REGION == TGR_REGION_US
         g_pSplashProducerLogo = LoadSplashModel(ROM_SPLASH_PRODUCER_LOGO);
 #endif
         g_pSplashFirstLogo = LoadSplashModel(ROM_SPLASH_FIRST_LOGO);
+#if TGR_REGION == TGR_REGION_JP
+        LoadAndDecompressAsset(&g_SplashTitleLogoTexture, AllocHeapAligned);
+        DecompressFromRom(g_awSplashTitlePalette, ROM_SPLASH_TITLE_PALETTE, NULL);
+#else
         g_pSplashTitleModelA = LoadSplashModel(ROM_SPLASH_TITLE_A);
         LoopModelAnimations(g_pSplashTitleModelA);
         g_pSplashTitleModelB = LoadSplashModel(ROM_SPLASH_TITLE_B);
@@ -452,6 +500,7 @@ void ProcessSplashScreens(void) {
         LoopModelAnimations(g_pSplashTitleModelD);
         g_pSplashTitleModelC = LoadSplashModel(ROM_SPLASH_TITLE_C);
         LoopModelAnimations(g_pSplashTitleModelC);
+#endif
 
         g_dwSplashSoundALength = DmaReadAssetSize(ROM_SPLASH_SOUND_A);
         g_pSplashSoundA = AllocHeapAligned(g_dwSplashSoundALength + SOUND_PADDING);
@@ -467,7 +516,7 @@ void ProcessSplashScreens(void) {
         /* g_bSplashFadingOut keeps what an earlier showing left in it. */
         g_bSplashFirstLogoSoundB = 0;
         g_dwSplashFirstLogoSoundA = 0;
-#if TGR_REGION != TGR_REGION_EU
+#if TGR_REGION == TGR_REGION_US
         g_bSplashProducerSoundB = 0;
         g_dwSplashProducerSoundA = 0;
 #endif
@@ -475,7 +524,7 @@ void ProcessSplashScreens(void) {
         g_dwSplashDeveloperSoundA = 0;
         g_bSplashSkipped = 0;
         g_bSplashStarted = 1;
-#if TGR_REGION == TGR_REGION_EU
+#if TGR_REGION != TGR_REGION_US
         g_dwKeepScreenBlanked = FALSE;
 #endif
         g_fSplashTime = 0.0f;
@@ -484,7 +533,7 @@ void ProcessSplashScreens(void) {
     UpdateFrameTiming();
     UpdateFadeTransitions();
     StartHighResFrame();
-#if TGR_REGION == TGR_REGION_EU
+#if TGR_REGION != TGR_REGION_US
     ClearScreen(0, 0, 0);
     ClearDepthBuffer();
 #else
@@ -512,8 +561,8 @@ void ProcessSplashScreens(void) {
     gSPMatrix(gDisplayListPtr++, mtx, G_MTX_MODELVIEW | G_MTX_MUL | G_MTX_PUSH);
 
     if (g_fSplashTime >= FIRST_LOGO_START) {
-#if TGR_REGION == TGR_REGION_EU
-        /* The first logo of the European release is the producer's. */
+#if TGR_REGION != TGR_REGION_US
+        /* The first logo of the later releases is the producer's. */
         DrawSplashCaption("Produced by", FIRST_LOGO_START, 70);
 #endif
         UpdateSplashLogo(g_pSplashFirstLogo,
@@ -523,7 +572,7 @@ void ProcessSplashScreens(void) {
                          &g_dwSplashFirstLogoSoundA,
                          &g_bSplashFirstLogoSoundB);
     }
-#if TGR_REGION != TGR_REGION_EU
+#if TGR_REGION == TGR_REGION_US
     if (g_fSplashTime >= PRODUCER_LOGO_START) {
         DrawSplashCaption("Produced by", PRODUCER_LOGO_START, 70);
         UpdateSplashLogo(g_pSplashProducerLogo,
@@ -556,7 +605,6 @@ void ProcessSplashScreens(void) {
     FlushDisplayList();
     UpdateSplashExit();
 }
-#endif
 
 void ProcessControllerCheck(void) {
 #if TGR_REGION != TGR_REGION_US

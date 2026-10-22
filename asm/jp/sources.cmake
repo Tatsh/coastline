@@ -3,7 +3,6 @@
 # from this list when it is empty. The order is the address order of the original image.
 set(COASTLINE_ASM_JP
     asm/jp/01310.s
-    asm/jp/07A90.s
     asm/jp/0CE40.s
     asm/jp/12620.s
     asm/jp/44B20.s

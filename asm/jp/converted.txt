@@ -341,6 +341,7 @@ ProcessRaceResultsScreen
 ProcessRectStyleMenu
 ProcessScreenState
 ProcessSeasonResults
+ProcessSplashScreens
 ProcessTextInputKeyboard
 ProcessTextStyleMenu
 ProcessTrackMenu
