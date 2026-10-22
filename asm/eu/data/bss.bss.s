@@ -157,16 +157,11 @@ nonmatching g_dwUnref80314fc0, 0x4
 dlabel g_dwUnref80314fc0
     /* 80314FC0 */ .space 0x04
 
-nonmatching g_pSplashProducerLogo, 0x4
-
-dlabel g_pSplashProducerLogo
-    /* 80314FC4 */ .space 0x04
-
-nonmatching D_80314FC8, 0x3C8
+nonmatching D_80314FC4, 0x3CC
 
 /* Automatically generated and unreferenced pad */
-dlabel D_80314FC8
-    /* 80314FC8 */ .space 0x3C8
+dlabel D_80314FC4
+    /* 80314FC4 */ .space 0x3CC
 
 nonmatching g_dwCarSelectStartTime, 0x4
 
@@ -513,9 +508,9 @@ nonmatching g_pSplashTitleModelD, 0x4
 dlabel g_pSplashTitleModelD
     /* 80317B80 */ .space 0x04
 
-nonmatching g_pSplashFinalLogoModel, 0x4
+nonmatching g_pSplashTitleModelC, 0x4
 
-dlabel g_pSplashFinalLogoModel
+dlabel g_pSplashTitleModelC
     /* 80317B84 */ .space 0x04
 
 nonmatching g_fSplashTime, 0x4
@@ -523,34 +518,34 @@ nonmatching g_fSplashTime, 0x4
 dlabel g_fSplashTime
     /* 80317B88 */ .space 0x04
 
-nonmatching g_dwSplashSfx1Size, 0x4
+nonmatching g_dwSplashSoundALength, 0x4
 
-dlabel g_dwSplashSfx1Size
+dlabel g_dwSplashSoundALength
     /* 80317B8C */ .space 0x04
 
-nonmatching g_pSplashSfx1Data, 0x4
+nonmatching g_pSplashSoundA, 0x4
 
-dlabel g_pSplashSfx1Data
+dlabel g_pSplashSoundA
     /* 80317B90 */ .space 0x04
 
-nonmatching g_dwSplashSfx2Size, 0x4
+nonmatching g_dwSplashSoundBLength, 0x4
 
-dlabel g_dwSplashSfx2Size
+dlabel g_dwSplashSoundBLength
     /* 80317B94 */ .space 0x04
 
-nonmatching g_pSplashSfx2Data, 0x4
+nonmatching g_pSplashSoundB, 0x4
 
-dlabel g_pSplashSfx2Data
+dlabel g_pSplashSoundB
     /* 80317B98 */ .space 0x04
 
-nonmatching g_nSplashSfxChannel, 0x2
+nonmatching g_dwSplashFirstLogoVoice, 0x2
 
-dlabel g_nSplashSfxChannel
+dlabel g_dwSplashFirstLogoVoice
     /* 80317B9C */ .space 0x02
 
-nonmatching g_wSplashSfxChannelLo, 0x2
+nonmatching D_80317B9E, 0x2
 
-dlabel g_wSplashSfxChannelLo
+dlabel D_80317B9E
     /* 80317B9E */ .space 0x02
 
 nonmatching g_dwSplashFirstLogoSoundA, 0x4
@@ -563,9 +558,9 @@ nonmatching g_bSplashFirstLogoSoundB, 0x4
 dlabel g_bSplashFirstLogoSoundB
     /* 80317BA4 */ .space 0x04
 
-nonmatching g_dwSplashFirstLogoVoice, 0x2
+nonmatching g_dwSplashDeveloperVoice, 0x2
 
-dlabel g_dwSplashFirstLogoVoice
+dlabel g_dwSplashDeveloperVoice
     /* 80317BA8 */ .space 0x02
 
 nonmatching D_80317BAA, 0x2
@@ -573,19 +568,19 @@ nonmatching D_80317BAA, 0x2
 dlabel D_80317BAA
     /* 80317BAA */ .space 0x02
 
-nonmatching g_nSplashSfx1PlayState, 0x4
+nonmatching g_dwSplashDeveloperSoundA, 0x4
 
-dlabel g_nSplashSfx1PlayState
+dlabel g_dwSplashDeveloperSoundA
     /* 80317BAC */ .space 0x04
 
-nonmatching g_dwSplashSfx2Played, 0x4
+nonmatching g_bSplashDeveloperSoundB, 0x4
 
-dlabel g_dwSplashSfx2Played
+dlabel g_bSplashDeveloperSoundB
     /* 80317BB0 */ .space 0x04
 
-nonmatching g_dwSplashSkipped, 0xC
+nonmatching g_bSplashSkipped, 0xC
 
-dlabel g_dwSplashSkipped
+dlabel g_bSplashSkipped
     /* 80317BB4 */ .space 0x0C
 
 nonmatching g_bSeasonFirstRace, 0x4
