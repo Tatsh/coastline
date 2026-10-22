@@ -267,7 +267,6 @@ void GetBodyPointVelocity(Vec3f *out, RigidBody *body, Vec3f *point);
  * @ghidraAddress USA: 0x80259d14
  * @ghidraAddress JPN: 0x8025ac74
  * @ghidraAddress EUR: 0x8025b2e4
- * @stub{EUR JPN}
  */
 void ApplySideGrip(
     RigidBody *body, f32 dt, f32 *rearLoad, f32 *frontLoad, u8 *rearSliding, u8 *frontSliding);
@@ -494,7 +493,6 @@ void ComputeCollisionPenetration(
  * @ghidraAddress USA: 0x8025dfcc
  * @ghidraAddress JPN: 0x8025ef40
  * @ghidraAddress EUR: 0x8025f5b0
- * @stub{EUR JPN}
  */
 s32 CollideBodyWithTriangles(RigidBody *body, f32 box[4][4]);
 

@@ -16,6 +16,7 @@ ApplyAllForcesToBody
 ApplyCollisionImpulse
 ApplyRigidBodyImpulse
 ApplyScreenFade
+ApplySideGrip
 ApplySingleForceWithDebug
 ApplyVolumeSettings
 ApplyWeather
@@ -72,6 +73,7 @@ ClearScreen
 ClearVehicleDamageState
 ClearZBufferRect
 CollectTrianglesInBox
+CollideBodyWithTriangles
 CollideVehicles
 CompareRacerProgressAsc
 CompareVisibleCellDistance

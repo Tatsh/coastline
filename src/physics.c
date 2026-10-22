@@ -304,8 +304,14 @@ static inline f32 SlideShare(RigidBody *body, f32 grip, s32 weather, s32 surface
           ((body)->state.velocity.x * (body)->state.velocity.x +                                   \
            (body)->state.velocity.y * (body)->state.velocity.y))
 
-/* The Japanese and European bodies still come from the assembly. */
+/* The step the side grip works with: the step given in the USA release, and a fixed thirtieth of a
+ * second in the European and Japanese releases. */
 #if TGR_REGION == TGR_REGION_US
+#define GRIP_STEP(dt) (dt)
+#else
+#define GRIP_STEP(dt) 0.033333335f
+#endif
+
 void ApplySideGrip(
     RigidBody *body, f32 dt, f32 *rearLoad, f32 *frontLoad, u8 *rearSliding, u8 *frontSliding) {
     Vec3f point, velocity, rear, front, old, lateral, local, unitX;
@@ -327,7 +333,7 @@ void ApplySideGrip(
     frontBrake = BrakeSlowing(body->wheels[2]);
     rearBrake = BrakeSlowing(body->wheels[0]);
     quarter = body->mass / 4.0f;
-    dt2 = dt * dt;
+    dt2 = GRIP_STEP(dt) * GRIP_STEP(dt);
     /* The original stores the front quotient before scaling it. */
     frontBrake = frontBrake / quarter;
     rearBrake = rearBrake / quarter;
@@ -360,7 +366,7 @@ void ApplySideGrip(
     if ((body->wheels[0]->contactFrames || body->wheels[1]->contactFrames) &&
         (body->wheels[2]->contactFrames || body->wheels[3]->contactFrames)) {
         rearSurface = (rearSurfaceA + rearSurfaceB + 1) >> 1;
-        load = ABS(*rearLoad) + ABS(rear.y) * body->mass / dt;
+        load = ABS(*rearLoad) + ABS(rear.y) * body->mass / GRIP_STEP(dt);
         both = 1;
         limit = SLIDE_LOAD;
         /* A braking wheel loads its tyres the more when the other axle does not brake. */
@@ -442,7 +448,7 @@ void ApplySideGrip(
         lateral.z = old.z - front.z;
         lateralSpeed =
             sqrtf(lateral.z * lateral.z + (lateral.x * lateral.x + lateral.y * lateral.y));
-        load = ABS(*frontLoad) + lateralSpeed * body->mass / dt;
+        load = ABS(*frontLoad) + lateralSpeed * body->mass / GRIP_STEP(dt);
         limit = SLIDE_LOAD;
         load += 10000.0f * (f32)((f64)ABS(frontBrake) > 0.0001);
         if (*frontSliding) {
@@ -499,7 +505,6 @@ void ApplySideGrip(
         body->rollAngle = lean - LEAN_STEP;
     }
 }
-#endif
 
 /* The Japanese body still comes from the assembly. This body drives the wheels of the Japanese
  * demonstration race differently from the original. */
@@ -1306,8 +1311,14 @@ void ComputeCollisionPenetration(
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
 #pragma GCC diagnostic ignored "-Wuninitialized"
-/* The Japanese and European bodies still come from the assembly. */
-#if TGR_REGION == TGR_REGION_US
+/* The races of the demonstration that sort their contacts with the track: every one in the USA
+ * release, the ones under the credits in the Japanese release, and none in the European release. */
+#if TGR_REGION == TGR_REGION_JP
+#define SORTS_CONTACTS() (g_dwGameMode == GAME_MODE_DEMO && g_dwRaceSessionType)
+#else
+#define SORTS_CONTACTS() (g_dwGameMode == GAME_MODE_DEMO)
+#endif
+
 s32 CollideBodyWithTriangles(RigidBody *body, f32 box[4][4]) {
     CollisionTriangleNode *node;
     TrackTriangle *triangle;
@@ -1328,7 +1339,8 @@ s32 CollideBodyWithTriangles(RigidBody *body, f32 box[4][4]) {
         distance = corners[0].z * normal.z + (normal.x * corners[0].x + normal.y * corners[0].y);
         g_dwCollisionContactType = 0;
         hits++;
-        if (g_dwGameMode == GAME_MODE_DEMO) {
+#if TGR_REGION != TGR_REGION_EU
+        if (SORTS_CONTACTS()) {
             if (ABS(normal.x) > 0.999f || ABS(normal.y) > 0.999f || ABS(normal.z) > 0.999f) {
                 g_dwCollisionContactType = 1;
                 spin = 1;
@@ -1339,6 +1351,7 @@ s32 CollideBodyWithTriangles(RigidBody *body, f32 box[4][4]) {
                 g_dwCollisionContactType = 2;
             }
         }
+#endif
         osSyncPrintf("Cube Edge to Triangle Face\n");
         /* The corner of the box towards the triangle. */
         along.x = normal.x * distance;
@@ -1394,7 +1407,6 @@ s32 CollideBodyWithTriangles(RigidBody *body, f32 box[4][4]) {
     }
     return hit;
 }
-#endif
 #pragma GCC diagnostic pop
 
 void StepVehicleCollisions(RigidBody *body) {
