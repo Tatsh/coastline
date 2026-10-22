@@ -18,7 +18,11 @@ extern void exit OF((int));
 /* Game change: z_errmsg is the game's data, at USA 0x8028cb10, which zutil.h declares. */
 
 
-/* @ghidraAddress USA: 0x80242810 */
+/*
+ * @ghidraAddress USA: 0x80242810
+ * @ghidraAddress EUR: 0x80243d20
+ * @ghidraAddress JPN: 0x80243820
+ */
 const char *zlibVersion()
 {
     return ZLIB_VERSION;
@@ -182,7 +186,11 @@ void  zcfree (voidpf opaque, voidpf ptr)
 #include <PR/os.h>
 #include "system.h"
 
-/* @ghidraAddress USA: 0x8024281c */
+/*
+ * @ghidraAddress USA: 0x8024281c
+ * @ghidraAddress EUR: 0x80243d2c
+ * @ghidraAddress JPN: 0x8024382c
+ */
 voidpf zcalloc (opaque, items, size)
     voidpf opaque;
     unsigned items;
@@ -203,7 +211,11 @@ voidpf zcalloc (opaque, items, size)
     return (voidpf)p;
 }
 
-/* @ghidraAddress USA: 0x80242880 */
+/*
+ * @ghidraAddress USA: 0x80242880
+ * @ghidraAddress EUR: 0x80243d90
+ * @ghidraAddress JPN: 0x80243890
+ */
 void  zcfree (opaque, ptr)
     voidpf opaque;
     voidpf ptr;

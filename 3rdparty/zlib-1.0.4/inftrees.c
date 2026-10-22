@@ -81,7 +81,11 @@ local voidpf falloc OF((
   uInt inflate_hufts;
 #endif
 
-/* @ghidraAddress USA: 0x80240a30 */
+/*
+ * @ghidraAddress USA: 0x80240a30
+ * @ghidraAddress EUR: 0x80241f40
+ * @ghidraAddress JPN: 0x80241a40
+ */
 local int huft_build(b, n, s, d, e, t, m, zs)
 uIntf *b;               /* code lengths in bits (all assumed <= BMAX) */
 uInt n;                 /* number of codes (assumed <= N_MAX) */
@@ -285,7 +289,11 @@ z_streamp zs;           /* for zalloc function */
 }
 
 
-/* @ghidraAddress USA: 0x802410e0 */
+/*
+ * @ghidraAddress USA: 0x802410e0
+ * @ghidraAddress EUR: 0x802425f0
+ * @ghidraAddress JPN: 0x802420f0
+ */
 int inflate_trees_bits(c, bb, tb, z)
 uIntf *c;               /* 19 code lengths */
 uIntf *bb;              /* bits tree desired/actual depth */
@@ -307,7 +315,11 @@ z_streamp z;            /* for zfree function */
 }
 
 
-/* @ghidraAddress USA: 0x80241180 */
+/*
+ * @ghidraAddress USA: 0x80241180
+ * @ghidraAddress EUR: 0x80242690
+ * @ghidraAddress JPN: 0x80242190
+ */
 int inflate_trees_dynamic(nl, nd, c, bl, bd, tl, td, z)
 uInt nl;                /* number of literal/length codes */
 uInt nd;                /* number of distance codes */
@@ -362,7 +374,11 @@ z_streamp z;            /* for zfree function */
    fixed_tl and fixed_td */
 
 
-/* @ghidraAddress USA: 0x802412ec */
+/*
+ * @ghidraAddress USA: 0x802412ec
+ * @ghidraAddress EUR: 0x802427fc
+ * @ghidraAddress JPN: 0x802422fc
+ */
 local voidpf falloc(q, n, s)
 voidpf q;       /* opaque pointer */
 uInt n;         /* number of items */
@@ -375,7 +391,11 @@ uInt s;         /* size of item */
 }
 
 
-/* @ghidraAddress USA: 0x80241314 */
+/*
+ * @ghidraAddress USA: 0x80241314
+ * @ghidraAddress EUR: 0x80242824
+ * @ghidraAddress JPN: 0x80242324
+ */
 int inflate_trees_fixed(bl, bd, tl, td)
 uIntf *bl;               /* literal desired/actual bit depth */
 uIntf *bd;               /* distance desired/actual bit depth */
@@ -425,7 +445,11 @@ inflate_huft * FAR *td;  /* distance tree result */
 }
 
 
-/* @ghidraAddress USA: 0x8024150c */
+/*
+ * @ghidraAddress USA: 0x8024150c
+ * @ghidraAddress EUR: 0x80242a1c
+ * @ghidraAddress JPN: 0x8024251c
+ */
 int inflate_trees_free(t, z)
 inflate_huft *t;        /* table to free */
 z_streamp z;            /* for zfree function */

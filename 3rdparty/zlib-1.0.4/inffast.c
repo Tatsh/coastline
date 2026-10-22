@@ -27,7 +27,11 @@ struct inflate_codes_state {int dummy;}; /* for buggy compilers */
    at least ten.  The ten bytes are six bytes for the longest length/
    distance pair plus four bytes for overloading the bit buffer. */
 
-/* @ghidraAddress USA: 0x80241fc0 */
+/*
+ * @ghidraAddress USA: 0x80241fc0
+ * @ghidraAddress EUR: 0x802434d0
+ * @ghidraAddress JPN: 0x80242fd0
+ */
 int inflate_fast(bl, bd, tl, td, s, z)
 uInt bl, bd;
 inflate_huft *tl;

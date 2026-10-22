@@ -22,7 +22,11 @@
    enough memory, Z_BUF_ERROR if there was not enough room in the output
    buffer, or Z_DATA_ERROR if the input data was corrupted.
 */
-/* @ghidraAddress USA: 0x80242890 */
+/*
+ * @ghidraAddress USA: 0x80242890
+ * @ghidraAddress EUR: 0x80243da0
+ * @ghidraAddress JPN: 0x802438a0
+ */
 int uncompress (dest, destLen, source, sourceLen)
     Bytef *dest;
     uLongf *destLen;

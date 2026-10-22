@@ -16,7 +16,11 @@ struct inflate_codes_state {int dummy;}; /* for buggy compilers */
 
 
 /* copy as much as possible from the sliding window to the output area */
-/* @ghidraAddress USA: 0x80242490 */
+/*
+ * @ghidraAddress USA: 0x80242490
+ * @ghidraAddress EUR: 0x802439a0
+ * @ghidraAddress JPN: 0x802434a0
+ */
 int inflate_flush(s, z, r)
 inflate_blocks_statef *s;
 z_streamp z;

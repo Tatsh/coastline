@@ -60,7 +60,11 @@ struct inflate_codes_state {int dummy;}; /* for buggy compilers */
  */
 
 
-/* @ghidraAddress USA: 0x8023edb0 */
+/*
+ * @ghidraAddress USA: 0x8023edb0
+ * @ghidraAddress EUR: 0x802402c0
+ * @ghidraAddress JPN: 0x8023fdc0
+ */
 void inflate_blocks_reset(s, z, c)
 inflate_blocks_statef *s;
 z_streamp z;
@@ -86,7 +90,11 @@ uLongf *c;
 }
 
 
-/* @ghidraAddress USA: 0x8023ee84 */
+/*
+ * @ghidraAddress USA: 0x8023ee84
+ * @ghidraAddress EUR: 0x80240394
+ * @ghidraAddress JPN: 0x8023fe94
+ */
 inflate_blocks_statef *inflate_blocks_new(z, c, w)
 z_streamp z;
 check_func c;
@@ -114,7 +122,11 @@ uInt w;
 #ifdef DEBUG
   extern uInt inflate_hufts;
 #endif
-/* @ghidraAddress USA: 0x8023ef4c */
+/*
+ * @ghidraAddress USA: 0x8023ef4c
+ * @ghidraAddress EUR: 0x8024045c
+ * @ghidraAddress JPN: 0x8023ff5c
+ */
 int inflate_blocks(s, z, r)
 inflate_blocks_statef *s;
 z_streamp z;
@@ -381,7 +393,11 @@ int r;
 }
 
 
-/* @ghidraAddress USA: 0x8023fed8 */
+/*
+ * @ghidraAddress USA: 0x8023fed8
+ * @ghidraAddress EUR: 0x802413e8
+ * @ghidraAddress JPN: 0x80240ee8
+ */
 int inflate_blocks_free(s, z, c)
 inflate_blocks_statef *s;
 z_streamp z;
@@ -395,7 +411,11 @@ uLongf *c;
 }
 
 
-/* @ghidraAddress USA: 0x8023ff34 */
+/*
+ * @ghidraAddress USA: 0x8023ff34
+ * @ghidraAddress EUR: 0x80241444
+ * @ghidraAddress JPN: 0x80240f44
+ */
 void inflate_set_dictionary(s, d, n)
 inflate_blocks_statef *s;
 const Bytef *d;

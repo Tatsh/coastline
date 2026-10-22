@@ -18,7 +18,11 @@
 #define DO16(buf)   DO8(buf,0); DO8(buf,8);
 
 /* ========================================================================= */
-/* @ghidraAddress USA: 0x80242640 */
+/*
+ * @ghidraAddress USA: 0x80242640
+ * @ghidraAddress EUR: 0x80243b50
+ * @ghidraAddress JPN: 0x80243650
+ */
 uLong adler32(adler, buf, len)
     uLong adler;
     const Bytef *buf;

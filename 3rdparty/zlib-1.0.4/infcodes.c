@@ -56,7 +56,11 @@ struct inflate_codes_state {
 };
 
 
-/* @ghidraAddress USA: 0x80241590 */
+/*
+ * @ghidraAddress USA: 0x80241590
+ * @ghidraAddress EUR: 0x80242aa0
+ * @ghidraAddress JPN: 0x802425a0
+ */
 inflate_codes_statef *inflate_codes_new(bl, bd, tl, td, z)
 uInt bl, bd;
 inflate_huft *tl;
@@ -79,7 +83,11 @@ z_streamp z;
 }
 
 
-/* @ghidraAddress USA: 0x80241600 */
+/*
+ * @ghidraAddress USA: 0x80241600
+ * @ghidraAddress EUR: 0x80242b10
+ * @ghidraAddress JPN: 0x80242610
+ */
 int inflate_codes(s, z, r)
 inflate_blocks_statef *s;
 z_streamp z;
@@ -240,7 +248,11 @@ int r;
 }
 
 
-/* @ghidraAddress USA: 0x80241f88 */
+/*
+ * @ghidraAddress USA: 0x80241f88
+ * @ghidraAddress EUR: 0x80243498
+ * @ghidraAddress JPN: 0x80242f98
+ */
 void inflate_codes_free(c, z)
 inflate_codes_statef *c;
 z_streamp z;

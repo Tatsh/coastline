@@ -53,7 +53,11 @@ struct internal_state {
 };
 
 
-/* @ghidraAddress USA: 0x8023ff80 */
+/*
+ * @ghidraAddress USA: 0x8023ff80
+ * @ghidraAddress EUR: 0x80241490
+ * @ghidraAddress JPN: 0x80240f90
+ */
 int inflateReset(z)
 z_streamp z;
 {
@@ -70,7 +74,11 @@ z_streamp z;
 }
 
 
-/* @ghidraAddress USA: 0x8023fff0 */
+/*
+ * @ghidraAddress USA: 0x8023fff0
+ * @ghidraAddress EUR: 0x80241500
+ * @ghidraAddress JPN: 0x80241000
+ */
 int inflateEnd(z)
 z_streamp z;
 {
@@ -87,7 +95,11 @@ z_streamp z;
 }
 
 
-/* @ghidraAddress USA: 0x80240070 */
+/*
+ * @ghidraAddress USA: 0x80240070
+ * @ghidraAddress EUR: 0x80241580
+ * @ghidraAddress JPN: 0x80241080
+ */
 int inflateInit2_(z, w, version, stream_size)
 z_streamp z;
 int w;
@@ -159,7 +171,11 @@ int stream_size;
 }
 
 
-/* @ghidraAddress USA: 0x80240240 */
+/*
+ * @ghidraAddress USA: 0x80240240
+ * @ghidraAddress EUR: 0x80241750
+ * @ghidraAddress JPN: 0x80241250
+ */
 int inflateInit_(z, version, stream_size)
 z_streamp z;
 const char *version;
@@ -172,7 +188,11 @@ int stream_size;
 #define NEEDBYTE {if(z->avail_in==0)return r;r=Z_OK;}
 #define NEXTBYTE (z->avail_in--,z->total_in++,*z->next_in++)
 
-/* @ghidraAddress USA: 0x8024026c */
+/*
+ * @ghidraAddress USA: 0x8024026c
+ * @ghidraAddress EUR: 0x8024177c
+ * @ghidraAddress JPN: 0x8024127c
+ */
 int inflate(z, f)
 z_streamp z;
 int f;
@@ -295,7 +315,11 @@ int f;
 }
 
 
-/* @ghidraAddress USA: 0x80240810 */
+/*
+ * @ghidraAddress USA: 0x80240810
+ * @ghidraAddress EUR: 0x80241d20
+ * @ghidraAddress JPN: 0x80241820
+ */
 int inflateSetDictionary(z, dictionary, dictLength)
 z_streamp z;
 const Bytef *dictionary;
@@ -320,7 +344,11 @@ uInt  dictLength;
 }
 
 
-/* @ghidraAddress USA: 0x802408e8 */
+/*
+ * @ghidraAddress USA: 0x802408e8
+ * @ghidraAddress EUR: 0x80241df8
+ * @ghidraAddress JPN: 0x802418f8
+ */
 int inflateSync(z)
 z_streamp z;
 {
