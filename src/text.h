@@ -23,8 +23,8 @@ enum TextAlignment {
  * Whether text draws in the bold colors.
  *
  * @ghidraAddress USA: 0x8028bdc0
- * @ghidraAddress JPN: 0x8028df70
  * @ghidraAddress EUR: 0x8028e520
+ * @ghidraAddress JPN: 0x8028df70
  */
 extern u8 g_bTextStyleBold;
 
@@ -32,8 +32,8 @@ extern u8 g_bTextStyleBold;
  * The alignment of DrawText(), one of the TextAlignment values.
  *
  * @ghidraAddress USA: 0x8028bdc4
- * @ghidraAddress JPN: 0x8028df74
  * @ghidraAddress EUR: 0x8028e524
+ * @ghidraAddress JPN: 0x8028df74
  */
 extern u8 g_nTextAlignment;
 
@@ -41,8 +41,8 @@ extern u8 g_nTextAlignment;
  * Whether glyphs draw with the shadow gradient.
  *
  * @ghidraAddress USA: 0x8028bdc8
- * @ghidraAddress JPN: 0x8028df78
  * @ghidraAddress EUR: 0x8028e528
+ * @ghidraAddress JPN: 0x8028df78
  */
 extern u8 g_bTextShadowEnabled;
 
@@ -50,8 +50,8 @@ extern u8 g_bTextShadowEnabled;
  * Whether text draws in the colors of SetTextCustomColors() rather than the style.
  *
  * @ghidraAddress USA: 0x8028bdcc
- * @ghidraAddress JPN: 0x8028df7c
  * @ghidraAddress EUR: 0x8028e52c
+ * @ghidraAddress JPN: 0x8028df7c
  */
 extern s32 g_bTextCustomColorsEnabled;
 
@@ -59,8 +59,8 @@ extern s32 g_bTextCustomColorsEnabled;
  * The red of the top of custom text.
  *
  * @ghidraAddress USA: 0x8028bdd0
- * @ghidraAddress JPN: 0x8028df80
  * @ghidraAddress EUR: 0x8028e530
+ * @ghidraAddress JPN: 0x8028df80
  */
 extern s32 g_dwTextCustomColorR;
 
@@ -68,8 +68,8 @@ extern s32 g_dwTextCustomColorR;
  * The green of the top of custom text.
  *
  * @ghidraAddress USA: 0x8028bdd4
- * @ghidraAddress JPN: 0x8028df84
  * @ghidraAddress EUR: 0x8028e534
+ * @ghidraAddress JPN: 0x8028df84
  */
 extern s32 g_dwTextCustomColorG;
 
@@ -77,8 +77,8 @@ extern s32 g_dwTextCustomColorG;
  * The blue of the top of custom text.
  *
  * @ghidraAddress USA: 0x8028bdd8
- * @ghidraAddress JPN: 0x8028df88
  * @ghidraAddress EUR: 0x8028e538
+ * @ghidraAddress JPN: 0x8028df88
  */
 extern s32 g_dwTextCustomColorB;
 
@@ -86,8 +86,8 @@ extern s32 g_dwTextCustomColorB;
  * The red of the bottom of custom text.
  *
  * @ghidraAddress USA: 0x8028bddc
- * @ghidraAddress JPN: 0x8028df8c
  * @ghidraAddress EUR: 0x8028e53c
+ * @ghidraAddress JPN: 0x8028df8c
  */
 extern s32 g_dwTextCustomColor2R;
 
@@ -95,8 +95,8 @@ extern s32 g_dwTextCustomColor2R;
  * The green of the bottom of custom text.
  *
  * @ghidraAddress USA: 0x8028bde0
- * @ghidraAddress JPN: 0x8028df90
  * @ghidraAddress EUR: 0x8028e540
+ * @ghidraAddress JPN: 0x8028df90
  */
 extern s32 g_dwTextCustomColor2G;
 
@@ -104,8 +104,8 @@ extern s32 g_dwTextCustomColor2G;
  * The blue of the bottom of custom text.
  *
  * @ghidraAddress USA: 0x8028bde4
- * @ghidraAddress JPN: 0x8028df94
  * @ghidraAddress EUR: 0x8028e544
+ * @ghidraAddress JPN: 0x8028df94
  */
 extern s32 g_dwTextCustomColor2B;
 
@@ -131,8 +131,8 @@ extern u8 g_abLargeFontShadowGradient[];
  * The gradient of small glyphs.
  *
  * @ghidraAddress USA: 0x8028c070
- * @ghidraAddress JPN: 0x8028e220
  * @ghidraAddress EUR: 0x8028e7d0
+ * @ghidraAddress JPN: 0x8028e220
  */
 extern u8 g_abSmallFontGradient[];
 
@@ -140,8 +140,8 @@ extern u8 g_abSmallFontGradient[];
  * The gradient of small glyphs with a shadow.
  *
  * @ghidraAddress USA: 0x8028c1b0
- * @ghidraAddress JPN: 0x8028e360
  * @ghidraAddress EUR: 0x8028e910
+ * @ghidraAddress JPN: 0x8028e360
  */
 extern u8 g_abSmallFontShadowGradient[];
 
@@ -194,8 +194,8 @@ extern s32 g_adwSmallFontGlyphOffsets[];
  * The left of the next text RenderTextToDisplayList() draws.
  *
  * @ghidraAddress USA: 0x803519d0
- * @ghidraAddress JPN: 0x80352b40
  * @ghidraAddress EUR: 0x80353ed0
+ * @ghidraAddress JPN: 0x80352b40
  */
 extern s32 g_nTextDrawX;
 
@@ -203,8 +203,8 @@ extern s32 g_nTextDrawX;
  * The baseline of the next text RenderTextToDisplayList() draws.
  *
  * @ghidraAddress USA: 0x803519d4
- * @ghidraAddress JPN: 0x80352b44
  * @ghidraAddress EUR: 0x80353ed4
+ * @ghidraAddress JPN: 0x80352b44
  */
 extern s32 g_nTextDrawY;
 
@@ -212,8 +212,8 @@ extern s32 g_nTextDrawY;
  * The height of text in pixels of the low-resolution screen.
  *
  * @ghidraAddress USA: 0x803519d8
- * @ghidraAddress JPN: 0x80352b48
  * @ghidraAddress EUR: 0x80353ed8
+ * @ghidraAddress JPN: 0x80352b48
  */
 extern s32 g_nFontSize;
 
@@ -338,8 +338,8 @@ void LoadCachedGlyphTextures(void);
  *
  * @param text The text to draw.
  * @ghidraAddress USA: 0x8022e4e0
- * @ghidraAddress JPN: 0x8022f460
  * @ghidraAddress EUR: 0x8022f9f0
+ * @ghidraAddress JPN: 0x8022f460
  */
 void RenderTextToDisplayList(const char *text);
 
@@ -347,6 +347,8 @@ void RenderTextToDisplayList(const char *text);
  * Draw text in the bold colors.
  *
  * @ghidraAddress USA: 0x8022f4cc
+ * @ghidraAddress EUR: 0x802309dc
+ * @ghidraAddress JPN: 0x802306fc
  */
 void SetTextStyleBold(void);
 
@@ -354,8 +356,8 @@ void SetTextStyleBold(void);
  * Draw glyphs with the shadow gradient.
  *
  * @ghidraAddress USA: 0x8022f4dc
- * @ghidraAddress JPN: 0x8023070c
  * @ghidraAddress EUR: 0x802309ec
+ * @ghidraAddress JPN: 0x8023070c
  */
 void EnableTextShadow(void);
 
@@ -363,8 +365,8 @@ void EnableTextShadow(void);
  * Draw glyphs with the plain gradient.
  *
  * @ghidraAddress USA: 0x8022f4ec
- * @ghidraAddress JPN: 0x8023071c
  * @ghidraAddress EUR: 0x802309fc
+ * @ghidraAddress JPN: 0x8023071c
  */
 void DisableTextShadow(void);
 
@@ -372,8 +374,8 @@ void DisableTextShadow(void);
  * Draw text in the normal style.
  *
  * @ghidraAddress USA: 0x8022f4f8
- * @ghidraAddress JPN: 0x80230728
  * @ghidraAddress EUR: 0x80230a08
+ * @ghidraAddress JPN: 0x80230728
  */
 void SetTextStyleNormal(void);
 
@@ -381,8 +383,8 @@ void SetTextStyleNormal(void);
  * Center text on its position.
  *
  * @ghidraAddress USA: 0x8022f504
- * @ghidraAddress JPN: 0x80230734
  * @ghidraAddress EUR: 0x80230a14
+ * @ghidraAddress JPN: 0x80230734
  */
 void SetTextAlignCenter(void);
 
@@ -390,8 +392,8 @@ void SetTextAlignCenter(void);
  * Start text at its position.
  *
  * @ghidraAddress USA: 0x8022f514
- * @ghidraAddress JPN: 0x80230744
  * @ghidraAddress EUR: 0x80230a24
+ * @ghidraAddress JPN: 0x80230744
  */
 void SetTextAlignLeft(void);
 
@@ -399,8 +401,8 @@ void SetTextAlignLeft(void);
  * End text at its position.
  *
  * @ghidraAddress USA: 0x8022f520
- * @ghidraAddress JPN: 0x80230750
  * @ghidraAddress EUR: 0x80230a30
+ * @ghidraAddress JPN: 0x80230750
  */
 void SetTextAlignRight(void);
 
@@ -414,8 +416,8 @@ void SetTextAlignRight(void);
  * @param green2 The green component of the bottom, from 0 to 255.
  * @param blue2 The blue component of the bottom, from 0 to 255.
  * @ghidraAddress USA: 0x8022f530
- * @ghidraAddress JPN: 0x80230760
  * @ghidraAddress EUR: 0x80230a40
+ * @ghidraAddress JPN: 0x80230760
  */
 void SetTextCustomColors(s32 red, s32 green, s32 blue, s32 red2, s32 green2, s32 blue2);
 
@@ -425,6 +427,8 @@ void SetTextCustomColors(s32 red, s32 green, s32 blue, s32 red2, s32 green2, s32
  * @param color The red, green, and blue of the top.
  * @param color2 The red, green, and blue of the bottom.
  * @ghidraAddress USA: 0x8022f578
+ * @ghidraAddress EUR: 0x80230a88
+ * @ghidraAddress JPN: 0x802307a8
  */
 void SetTextGradientColorsFromBytes(const u8 *color, const u8 *color2);
 
@@ -433,8 +437,8 @@ void SetTextGradientColorsFromBytes(const u8 *color, const u8 *color2);
  *
  * @param size The height of text in pixels of the low-resolution screen.
  * @ghidraAddress USA: 0x8022f5d0
- * @ghidraAddress JPN: 0x80230800
  * @ghidraAddress EUR: 0x80230ae0
+ * @ghidraAddress JPN: 0x80230800
  */
 void SetTextSize(s32 size);
 
@@ -445,8 +449,8 @@ void SetTextSize(s32 size);
  * @param x The horizontal position the alignment applies to, in pixels.
  * @param y The baseline, in pixels.
  * @ghidraAddress USA: 0x8022f5dc
- * @ghidraAddress JPN: 0x8023080c
  * @ghidraAddress EUR: 0x80230aec
+ * @ghidraAddress JPN: 0x8023080c
  */
 void DrawText(const char *text, s32 x, s32 y);
 
@@ -459,6 +463,8 @@ void DrawText(const char *text, s32 x, s32 y);
  * @param y The distance from the bottom edge, in units of the height.
  * @param unused An argument that is not read.
  * @ghidraAddress USA: 0x8022f694
+ * @ghidraAddress EUR: 0x80230ba4
+ * @ghidraAddress JPN: 0x802308c4
  */
 void DrawHudLabelAtFraction(const char *text, f32 x, f32 y, s32 unused);
 
@@ -469,8 +475,8 @@ void DrawHudLabelAtFraction(const char *text, f32 x, f32 y, s32 unused);
  * @param size The height of text in pixels of the low-resolution screen.
  * @return The width of the text, in pixels.
  * @ghidraAddress USA: 0x8022f720
- * @ghidraAddress JPN: 0x80230950
  * @ghidraAddress EUR: 0x80230c30
+ * @ghidraAddress JPN: 0x80230950
  */
 s32 MeasureTextWidth(const char *text, s32 size);
 

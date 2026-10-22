@@ -15,8 +15,8 @@
  * @param mf The source matrix, as f32[4][4] in row-major order.
  * @param m Receives the matrix in s15.16 fixed point, integer halves first and fractions after.
  * @ghidraAddress USA: 0x80260ed0
- * @ghidraAddress JPN: 0x80261e10
  * @ghidraAddress EUR: 0x80262360
+ * @ghidraAddress JPN: 0x80261e10
  */
 void guMtxF2L(float mf[4][4], Mtx *m);
 
@@ -26,8 +26,8 @@ void guMtxF2L(float mf[4][4], Mtx *m);
  * @param mf Receives the matrix as f32[4][4].
  * @param m The source matrix in s15.16 fixed point.
  * @ghidraAddress USA: 0x80261088
- * @ghidraAddress JPN: 0x80261fc8
  * @ghidraAddress EUR: 0x80262518
+ * @ghidraAddress JPN: 0x80261fc8
  */
 void guMtxL2F(float mf[4][4], Mtx *m);
 
@@ -36,8 +36,8 @@ void guMtxL2F(float mf[4][4], Mtx *m);
  *
  * @param mf The f32[4][4] matrix set.
  * @ghidraAddress USA: 0x80260fd0
- * @ghidraAddress JPN: 0x80261f10
  * @ghidraAddress EUR: 0x80262460
+ * @ghidraAddress JPN: 0x80261f10
  */
 void guMtxIdentF(float mf[4][4]);
 
@@ -46,8 +46,8 @@ void guMtxIdentF(float mf[4][4]);
  *
  * @param m The fixed-point matrix set.
  * @ghidraAddress USA: 0x80261058
- * @ghidraAddress JPN: 0x80261f98
  * @ghidraAddress EUR: 0x802624e8
+ * @ghidraAddress JPN: 0x80261f98
  */
 void guMtxIdent(Mtx *m);
 
@@ -58,8 +58,8 @@ void guMtxIdent(Mtx *m);
  * @param nf The right operand, as f32[4][4].
  * @param res Receives the product mf times nf.
  * @ghidraAddress USA: 0x80260940
- * @ghidraAddress JPN: 0x802618b0
  * @ghidraAddress EUR: 0x80261e40
+ * @ghidraAddress JPN: 0x802618b0
  */
 void guMtxCatF(float mf[4][4], float nf[4][4], float res[4][4]);
 
@@ -70,8 +70,8 @@ void guMtxCatF(float mf[4][4], float nf[4][4], float res[4][4]);
  * @param n The right operand, in s15.16 fixed point.
  * @param res Receives the product m times n.
  * @ghidraAddress USA: 0x80267470
- * @ghidraAddress JPN: 0x80268710
  * @ghidraAddress EUR: 0x80268c60
+ * @ghidraAddress JPN: 0x80268710
  */
 void guMtxCatL(Mtx *m, Mtx *n, Mtx *res);
 
@@ -86,8 +86,8 @@ void guMtxCatL(Mtx *m, Mtx *n, Mtx *res);
  * @param oy Receives the transformed Y coordinate.
  * @param oz Receives the transformed Z coordinate.
  * @ghidraAddress USA: 0x802608a0
- * @ghidraAddress JPN: 0x80261810
  * @ghidraAddress EUR: 0x80261da0
+ * @ghidraAddress JPN: 0x80261810
  */
 void guMtxXFMF(float mf[4][4], float x, float y, float z, float *ox, float *oy, float *oz);
 
@@ -102,8 +102,8 @@ void guMtxXFMF(float mf[4][4], float x, float y, float z, float *ox, float *oy, 
  * @param oy Receives the transformed Y coordinate.
  * @param oz Receives the transformed Z coordinate.
  * @ghidraAddress USA: 0x80267410
- * @ghidraAddress JPN: 0x802686b0
  * @ghidraAddress EUR: 0x80268c00
+ * @ghidraAddress JPN: 0x802686b0
  */
 void guMtxXFML(Mtx *m, float x, float y, float z, float *ox, float *oy, float *oz);
 
@@ -115,8 +115,8 @@ void guMtxXFML(Mtx *m, float x, float y, float z, float *ox, float *oy, float *o
  * @param y The scale along Y.
  * @param z The scale along Z.
  * @ghidraAddress USA: 0x80260800
- * @ghidraAddress JPN: 0x80261770
  * @ghidraAddress EUR: 0x80261d00
+ * @ghidraAddress JPN: 0x80261770
  */
 void guScaleF(float mf[4][4], float x, float y, float z);
 
@@ -128,8 +128,8 @@ void guScaleF(float mf[4][4], float x, float y, float z);
  * @param y The scale along Y.
  * @param z The scale along Z.
  * @ghidraAddress USA: 0x80260854
- * @ghidraAddress JPN: 0x802617c4
  * @ghidraAddress EUR: 0x80261d54
+ * @ghidraAddress JPN: 0x802617c4
  */
 void guScale(Mtx *m, float x, float y, float z);
 
@@ -141,8 +141,8 @@ void guScale(Mtx *m, float x, float y, float z);
  * @param y The translation along Y.
  * @param z The translation along Z.
  * @ghidraAddress USA: 0x80260e30
- * @ghidraAddress JPN: 0x80261d70
  * @ghidraAddress EUR: 0x802622c0
+ * @ghidraAddress JPN: 0x80261d70
  */
 void guTranslateF(float mf[4][4], float x, float y, float z);
 
@@ -154,8 +154,8 @@ void guTranslateF(float mf[4][4], float x, float y, float z);
  * @param y The translation along Y.
  * @param z The translation along Z.
  * @ghidraAddress USA: 0x80260e78
- * @ghidraAddress JPN: 0x80261db8
  * @ghidraAddress EUR: 0x80262308
+ * @ghidraAddress JPN: 0x80261db8
  */
 void guTranslate(Mtx *m, float x, float y, float z);
 
@@ -168,8 +168,8 @@ void guTranslate(Mtx *m, float x, float y, float z);
  * @param y The Y component of the axis.
  * @param z The Z component of the axis.
  * @ghidraAddress USA: 0x80260bc0
- * @ghidraAddress JPN: 0x80261b00
  * @ghidraAddress EUR: 0x80262050
+ * @ghidraAddress JPN: 0x80261b00
  */
 void guRotateF(float mf[4][4], float a, float x, float y, float z);
 
@@ -182,6 +182,8 @@ void guRotateF(float mf[4][4], float a, float x, float y, float z);
  * @param y The Y component of the axis.
  * @param z The Z component of the axis.
  * @ghidraAddress USA: 0x80260d54
+ * @ghidraAddress EUR: 0x802621e4
+ * @ghidraAddress JPN: 0x80261c94
  */
 void guRotate(Mtx *m, float a, float x, float y, float z);
 
@@ -192,8 +194,8 @@ void guRotate(Mtx *m, float a, float x, float y, float z);
  * @param y The Y component, replaced by the normalised value.
  * @param z The Z component, replaced by the normalised value.
  * @ghidraAddress USA: 0x802686c0
- * @ghidraAddress JPN: 0x802697e0
  * @ghidraAddress EUR: 0x80269d30
+ * @ghidraAddress JPN: 0x802697e0
  */
 void guNormalize(float *x, float *y, float *z);
 
@@ -208,8 +210,8 @@ void guNormalize(float *x, float *y, float *z);
  * @param far The distance to the far clipping plane.
  * @param scale The factor applied to every element of the matrix.
  * @ghidraAddress USA: 0x80265180
- * @ghidraAddress JPN: 0x80266410
  * @ghidraAddress EUR: 0x80266910
+ * @ghidraAddress JPN: 0x80266410
  */
 void guPerspectiveF(
     float mf[4][4], u16 *perspNorm, float fovy, float aspect, float near, float far, float scale);
@@ -225,8 +227,8 @@ void guPerspectiveF(
  * @param far The distance to the far clipping plane.
  * @param scale The factor applied to every element of the matrix.
  * @ghidraAddress USA: 0x802653b0
- * @ghidraAddress JPN: 0x80266640
  * @ghidraAddress EUR: 0x80266b40
+ * @ghidraAddress JPN: 0x80266640
  */
 void guPerspective(
     Mtx *m, u16 *perspNorm, float fovy, float aspect, float near, float far, float scale);
@@ -245,8 +247,8 @@ void guPerspective(
  * @param yUp The Y component of the up vector.
  * @param zUp The Z component of the up vector.
  * @ghidraAddress USA: 0x80264e50
- * @ghidraAddress JPN: 0x802660e0
  * @ghidraAddress EUR: 0x802665e0
+ * @ghidraAddress JPN: 0x802660e0
  */
 void guLookAtF(float mf[4][4],
                float xEye,
@@ -273,8 +275,8 @@ void guLookAtF(float mf[4][4],
  * @param yUp The Y component of the up vector.
  * @param zUp The Z component of the up vector.
  * @ghidraAddress USA: 0x80265108
- * @ghidraAddress JPN: 0x80266398
  * @ghidraAddress EUR: 0x80266898
+ * @ghidraAddress JPN: 0x80266398
  */
 void guLookAt(Mtx *m,
               float xEye,
@@ -302,8 +304,8 @@ void guLookAt(Mtx *m,
  * @param yUp The Y component of the up vector.
  * @param zUp The Z component of the up vector.
  * @ghidraAddress USA: 0x80261150
- * @ghidraAddress JPN: 0x80262080
  * @ghidraAddress EUR: 0x802625e0
+ * @ghidraAddress JPN: 0x80262080
  */
 void guLookAtReflectF(float mf[4][4],
                       LookAt *l,
@@ -332,8 +334,8 @@ void guLookAtReflectF(float mf[4][4],
  * @param yUp The Y component of the up vector.
  * @param zUp The Z component of the up vector.
  * @ghidraAddress USA: 0x80261590
- * @ghidraAddress JPN: 0x802624c0
  * @ghidraAddress EUR: 0x80262a20
+ * @ghidraAddress JPN: 0x802624c0
  */
 void guLookAtReflect(Mtx *m,
                      LookAt *l,
@@ -372,8 +374,8 @@ void guLookAtReflect(Mtx *m,
  * @param twidth The width of the highlight texture in texels.
  * @param theight The height of the highlight texture in texels.
  * @ghidraAddress USA: 0x80266be0
- * @ghidraAddress JPN: 0x80267e80
  * @ghidraAddress EUR: 0x802683d0
+ * @ghidraAddress JPN: 0x80267e80
  */
 void guLookAtHiliteF(float mf[4][4],
                      LookAt *l,
@@ -420,8 +422,8 @@ void guLookAtHiliteF(float mf[4][4],
  * @param twidth The width of the highlight texture in texels.
  * @param theight The height of the highlight texture in texels.
  * @ghidraAddress USA: 0x8026734c
- * @ghidraAddress JPN: 0x802685ec
  * @ghidraAddress EUR: 0x80268b3c
+ * @ghidraAddress JPN: 0x802685ec
  */
 void guLookAtHilite(Mtx *m,
                     LookAt *l,
@@ -450,8 +452,8 @@ void guLookAtHilite(Mtx *m,
  * @param x The angle in radians.
  * @return The sine of the angle, from -1 to 1.
  * @ghidraAddress USA: 0x80261610
- * @ghidraAddress JPN: 0x80262540
  * @ghidraAddress EUR: 0x80262aa0
+ * @ghidraAddress JPN: 0x80262540
  */
 float sinf(float x);
 
@@ -461,8 +463,8 @@ float sinf(float x);
  * @param x The angle in radians.
  * @return The cosine of the angle, from -1 to 1.
  * @ghidraAddress USA: 0x802617d0
- * @ghidraAddress JPN: 0x80262700
  * @ghidraAddress EUR: 0x80262c60
+ * @ghidraAddress JPN: 0x80262700
  */
 float cosf(float x);
 
@@ -472,8 +474,8 @@ float cosf(float x);
  * @param x The value, at least 0.
  * @return The square root of the value.
  * @ghidraAddress USA: 0x80261140
- * @ghidraAddress JPN: 0x80267c60
  * @ghidraAddress EUR: 0x802625d0
+ * @ghidraAddress JPN: 0x80267c60
  */
 float sqrtf(float x);
 
@@ -483,8 +485,8 @@ float sqrtf(float x);
  * @param x The angle, where 0x10000 is a full turn and the low 4 bits are ignored.
  * @return The sine of the angle from -0x7fff to 0x7fff, where 0x7fff is 1.
  * @ghidraAddress USA: 0x80264420
- * @ghidraAddress JPN: 0x80265640
  * @ghidraAddress EUR: 0x80265ba0
+ * @ghidraAddress JPN: 0x80265640
  */
 s16 sins(u16 x);
 
