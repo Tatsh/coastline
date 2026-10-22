@@ -50,67 +50,71 @@ typedef struct {
 
 /**
  * @ghidraAddress USA: 0x802a61c0
- * @ghidraAddress JPN: 0x802a78b0
  * @ghidraAddress EUR: 0x802a7dc0
+ * @ghidraAddress JPN: 0x802a78b0
  */
 extern __OSViContext __osViContexts[2];
 
 /**
  * @ghidraAddress USA: 0x802a6220
- * @ghidraAddress JPN: 0x802a7910
  * @ghidraAddress EUR: 0x802a7e20
+ * @ghidraAddress JPN: 0x802a7910
  */
 extern __OSViContext *__osViCurr;
 
 /**
  * @ghidraAddress USA: 0x802a6224
- * @ghidraAddress JPN: 0x802a7914
  * @ghidraAddress EUR: 0x802a7e24
+ * @ghidraAddress JPN: 0x802a7914
  */
 extern __OSViContext *__osViNext;
 
 /**
  * @ghidraAddress USA: 0x802a6160
- * @ghidraAddress JPN: 0x802a77b0
  * @ghidraAddress EUR: 0x802a7c70
+ * @ghidraAddress JPN: 0x802a77b0
  */
 extern OSDevMgr __osViDevMgr;
 
 /**
  * @ghidraAddress USA: 0x8037f490
- * @ghidraAddress JPN: 0x80380040
  * @ghidraAddress EUR: 0x803813d0
+ * @ghidraAddress JPN: 0x80380040
  */
 extern OSThread viThread;
 
-/** @ghidraAddress USA: 0x8037f640 */
+/**
+ * @ghidraAddress USA: 0x8037f640
+ * @ghidraAddress EUR: 0x80381580
+ * @ghidraAddress JPN: 0x803801f0
+ */
 extern u64 viThreadStack[0x1000 / sizeof(u64)];
 
 /**
  * @ghidraAddress USA: 0x80380640
- * @ghidraAddress JPN: 0x803811f0
  * @ghidraAddress EUR: 0x80382580
+ * @ghidraAddress JPN: 0x803811f0
  */
 extern OSMesgQueue viEventQueue;
 
 /**
  * @ghidraAddress USA: 0x80380658
- * @ghidraAddress JPN: 0x80381208
  * @ghidraAddress EUR: 0x80382598
+ * @ghidraAddress JPN: 0x80381208
  */
 extern OSMesg viEventBuf[5];
 
 /**
  * @ghidraAddress USA: 0x80380670
- * @ghidraAddress JPN: 0x80381220
  * @ghidraAddress EUR: 0x803825b0
+ * @ghidraAddress JPN: 0x80381220
  */
 extern OSIoMesg viRetraceMsg;
 
 /**
  * @ghidraAddress USA: 0x80380688
- * @ghidraAddress JPN: 0x80381238
  * @ghidraAddress EUR: 0x803825c8
+ * @ghidraAddress JPN: 0x80381238
  */
 extern OSIoMesg viCounterMsg;
 
@@ -118,29 +122,29 @@ extern OSIoMesg viCounterMsg;
  * Retraces remaining before viMgrMain() next sends the message of osViSetEvent().
  *
  * @ghidraAddress USA: 0x803806a0
- * @ghidraAddress JPN: 0x80381250
  * @ghidraAddress EUR: 0x803825e0
+ * @ghidraAddress JPN: 0x80381250
  */
 extern u16 viMgrRetrace;
 
 /**
  * @ghidraAddress USA: 0x80268580
- * @ghidraAddress JPN: 0x8026cf10
  * @ghidraAddress EUR: 0x8026d460
+ * @ghidraAddress JPN: 0x8026cf10
  */
 void __osViInit(void);
 
 /**
  * @ghidraAddress USA: 0x8026c070
- * @ghidraAddress JPN: 0x8026daf0
  * @ghidraAddress EUR: 0x8026e040
+ * @ghidraAddress JPN: 0x8026daf0
  */
 void __osViSwapContext(void);
 
 /**
  * @ghidraAddress USA: 0x8026c060
- * @ghidraAddress JPN: 0x8026dae0
  * @ghidraAddress EUR: 0x8026e030
+ * @ghidraAddress JPN: 0x8026dae0
  */
 __OSViContext *__osViGetCurrentContext(void);
 

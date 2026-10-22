@@ -55,22 +55,22 @@ typedef struct {
 
 /**
  * @ghidraAddress USA: 0x80268dc0
- * @ghidraAddress JPN: 0x80269ee0
  * @ghidraAddress EUR: 0x8026a430
+ * @ghidraAddress JPN: 0x80269ee0
  */
 int _Printf(outfun prout, char *arg, const char *fmt, va_list args);
 
 /**
  * @ghidraAddress USA: 0x8026ce50
- * @ghidraAddress JPN: 0x8026e8d0
  * @ghidraAddress EUR: 0x8026ee20
+ * @ghidraAddress JPN: 0x8026e8d0
  */
 void _Litob(_Pft *px, char code);
 
 /**
  * @ghidraAddress USA: 0x8026d660
- * @ghidraAddress JPN: 0x8026f0e0
  * @ghidraAddress EUR: 0x8026f630
+ * @ghidraAddress JPN: 0x8026f0e0
  */
 void _Ldtob(_Pft *px, char code);
 
@@ -78,13 +78,15 @@ void _Ldtob(_Pft *px, char code);
  * Padding for field widths.
  *
  * @ghidraAddress USA: 0x802a6230
+ * @ghidraAddress EUR: 0x802a7d20
+ * @ghidraAddress JPN: 0x802a7810
  */
 extern char spaces[33];
 
 /**
  * @ghidraAddress USA: 0x802a6254
- * @ghidraAddress JPN: 0x802a7834
  * @ghidraAddress EUR: 0x802a7d44
+ * @ghidraAddress JPN: 0x802a7834
  */
 extern char zeroes[33];
 
@@ -92,25 +94,29 @@ extern char zeroes[33];
  * The flag characters, in the order of fbit.
  *
  * @ghidraAddress USA: 0x802ab984
- * @ghidraAddress JPN: 0x802ac0b4
  * @ghidraAddress EUR: 0x802ad674
+ * @ghidraAddress JPN: 0x802ac0b4
  */
 extern const char fchar[6];
 
-/** @ghidraAddress USA: 0x802ab98c */
+/**
+ * @ghidraAddress USA: 0x802ab98c
+ * @ghidraAddress EUR: 0x802ad67c
+ * @ghidraAddress JPN: 0x802ac0bc
+ */
 extern const int fbit[6];
 
 /**
  * @ghidraAddress USA: 0x802a63e0
- * @ghidraAddress JPN: 0x802a7940
  * @ghidraAddress EUR: 0x802a7e50
+ * @ghidraAddress JPN: 0x802a7940
  */
 extern char g_szHexDigitsLower[17];
 
 /**
  * @ghidraAddress USA: 0x802a63f4
- * @ghidraAddress JPN: 0x802a7954
  * @ghidraAddress EUR: 0x802a7e64
+ * @ghidraAddress JPN: 0x802a7954
  */
 extern char g_szHexDigitsUpper[17];
 
@@ -118,8 +124,8 @@ extern char g_szHexDigitsUpper[17];
  * Ten raised to the powers of two from 1 to 256.
  *
  * @ghidraAddress USA: 0x802abb00
- * @ghidraAddress JPN: 0x802ac230
  * @ghidraAddress EUR: 0x802ad7f0
+ * @ghidraAddress JPN: 0x802ac230
  */
 extern const double g_adblPowersOfTen[9];
 
