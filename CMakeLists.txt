@@ -87,9 +87,11 @@ if(BUILD_DOCS OR BUILD_DOCS_ONLY)
   set(DOXYGEN_EXPAND_ONLY_PREDEF YES)
   # Every reconstructed routine records the address it was recovered from with this tag.
   set(DOXYGEN_VERBATIM_VARS DOXYGEN_ALIASES)
-  # A routine whose body is only a placeholder is tagged @stub until it is reconstructed.
+  # A routine whose body is only a placeholder is tagged @stub until it is reconstructed, and
+  # @stub{EUR JPN} names the releases whose code the body does not reproduce yet.
   set(DOXYGEN_ALIASES [[ghidraAddress="\par Ghidra address:^^"]]
-                      [[stub="\par Stub:^^The body is a placeholder, not reconstructed yet."]])
+                      [[stub="\par Stub:^^The body is a placeholder, not reconstructed yet."]]
+                      [[stub{1}="\par Stub:^^Not reconstructed yet for \1."]])
   set(DOXYGEN_EXCLUDE_PATTERNS "*/node_modules/*" "*/build/*")
   # Headers sit beside their implementations under src, and only headers are documented.
   set(DOXYGEN_FILE_PATTERNS "*.h")

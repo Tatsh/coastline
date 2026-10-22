@@ -50,8 +50,8 @@ extern s32 g_dwRaceSessionType;
  *
  * @param weather The weather, a `WEATHER_*` value.
  * @ghidraAddress USA: 0x80200050
- * @ghidraAddress JPN: 0x80200050 (stub)
- * @ghidraAddress EUR: 0x80200050 (stub)
+ * @ghidraAddress JPN: 0x80200050
+ * @ghidraAddress EUR: 0x80200050
  */
 void ApplyWeather(u32 weather);
 
