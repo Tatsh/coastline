@@ -57,8 +57,8 @@ A routine counts for a release when its address in that release is tagged.
 | Release   | Routines | Done |  Share |
 | --------- | -------: | ---: | -----: |
 | `usa.z64` |      801 |  801 | 100.0% |
-| `eur.z64` |      819 |  732 |  89.4% |
-| `jpn.z64` |      822 |  734 |  89.3% |
+| `eur.z64` |      819 |  735 |  89.7% |
+| `jpn.z64` |      822 |  738 |  89.8% |
 
 ### Matching
 
