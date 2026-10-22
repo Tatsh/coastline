@@ -451,9 +451,10 @@ void ProcessOptionsMenu(void) {
         DrawText((line2), 0x9F, (((top) + 0x20) >> 1) + 0xE);                                      \
     }
 
-/* A choice out of range sets no note. */
+/* A choice out of range sets no note, and the EEPROM load declares a local it never uses. */
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
+#pragma GCC diagnostic ignored "-Wunused-variable"
 #if TGR_REGION == TGR_REGION_JP || TGR_REGION == TGR_REGION_EU
 /* The sum the checksum of the EEPROM starts from. */
 #define EEPROM_CHECKSUM_SEED 0x0BFED812
@@ -466,24 +467,38 @@ typedef struct {
 } EepromSaveData;
 
 s32 LoadSaveDataFromEeprom(void) {
+    s32(*equipment)[EQUIPMENT_FIELDS];
+    s32 i;
     EepromSaveData *save = (EepromSaveData *)(g_pPakDataBuffer + 4);
+    u32 sum;
+    /* An unused local of the original, which the layout of its stack requires. */
+    s32 unused;
     s32 size = ((u8 *)save - g_pPakDataBuffer + sizeof(EepromSaveData) + 7) & ~7;
     u32 checksum;
-    u32 sum;
-    s32 i;
 
     g_wSerialInterfaceIdle = FALSE;
+    equipment = &save->equipment;
     if (osEepromProbe(&g_SiMesgQueue) &&
         osEepromLongRead(&g_SiMesgQueue, 0, g_pPakDataBuffer, size) == 0) {
         memcpy(&checksum, g_pPakDataBuffer, sizeof(checksum));
         sum = EEPROM_CHECKSUM_SEED;
         for (i = 4; i < size; i++) {
             sum += g_pPakDataBuffer[i];
+            /* A test the release compiles out, without a string, which the allocation of the
+             * registers of the original requires. */
+            if (0) {
+            }
         }
         if (sum == checksum) {
             memcpy(g_aVehicles[0].profile, &save->profile, sizeof(PlayerProfile));
             memcpy(g_aVehicles[1].profile, &save->profile, sizeof(PlayerProfile));
-            SET_EQUIPMENT(1, save->equipment);
+            {
+                g_aVehicles[1].profile->handling = (*equipment)[0];
+                g_aVehicles[1].profile->transmission = (*equipment)[1];
+                g_aVehicles[1].profile->tires = (*equipment)[2];
+                g_aVehicles[1].profile->suspension = (*equipment)[3];
+                g_aVehicles[1].profile->controllerLayout = (*equipment)[4];
+            }
             memcpy(&g_OptionSettings, &save->options, sizeof(OptionSettings));
             g_wSerialInterfaceIdle = TRUE;
             return TRUE;

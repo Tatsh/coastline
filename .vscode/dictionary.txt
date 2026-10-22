@@ -569,6 +569,7 @@ writebackdcacheall
 wrongway
 wtype
 wuninitialized
+wunused
 wwensure
 wwis
 wwkph
