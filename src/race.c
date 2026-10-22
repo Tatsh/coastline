@@ -54,8 +54,14 @@
 #define CHAMPIONSHIP_ACTIVE_VEHICLES 3
 
 /* The time the races the computer drives last, in seconds. */
+#if TGR_REGION == TGR_REGION_US
 #define ATTRACT_RACE_SECONDS 39.6f
 #define ENDING_RACE_SECONDS 140.0f
+#else
+/* The attract race of the later releases lasts as long as its recording. */
+#define CREDITS_RACE_SECONDS 42.0f
+#define ENDING_RACE_SECONDS 170.0f
+#endif
 #define AFTER_SEASON_RACE_SECONDS 16.0f
 
 /* The sound effect channels a race uses. */
@@ -67,8 +73,11 @@
 /* The x of the middle of the screen. */
 #define SCREEN_CENTER_X 160
 
-/* The Japanese and European bodies of the racing screen still come from the assembly. */
-#if TGR_REGION == TGR_REGION_US
+/* The bytes of the end of the recording of the first demonstration race it fades out over. */
+#define DEMO_FADE_BYTES 30
+
+/* The Japanese body of the racing screen still comes from the assembly. */
+#if TGR_REGION != TGR_REGION_JP
 /* Fade the screen and the sounds out to leave the race, once. */
 static void LeaveRace(void) {
     if (!g_dwRaceExitState) {
@@ -222,8 +231,8 @@ void DrawScrollingText(void) {
     }
 }
 
-/* The Japanese and European bodies still come from the assembly. */
-#if TGR_REGION == TGR_REGION_US
+/* The Japanese body still comes from the assembly. */
+#if TGR_REGION != TGR_REGION_JP
 /* Read the car and its setup from the header of the recording a vehicle replays. */
 static void SetupFromRecording(Vehicle *vehicle) {
     vehicle->steeringMode = vehicle->input->playbackBuffer[2];
@@ -433,10 +442,17 @@ static void InitRace(void) {
     s32 i;
 
     g_dwKeepScreenBlanked = TRUE;
+#if TGR_REGION == TGR_REGION_US
     osViBlack(TRUE);
     StartLowResFrame();
     FlushDisplayList();
     osViBlack(TRUE);
+#else
+    BlankDisplay();
+    StartLowResFrame();
+    FlushDisplayList();
+    BlankDisplay();
+#endif
     StartLowResFrame();
     FlushDisplayList();
     SetRngSeed(123);
@@ -474,7 +490,16 @@ static void InitRace(void) {
 
     if (g_dwGameMode == GAME_MODE_DEMO) {
         g_aVehicles[0].activeCamera = &g_aVehicles[0].cameras[VEHICLE_CAMERA_CHASE];
+#if TGR_REGION == TGR_REGION_US
         g_dwReplayCameraSwitchTimer = 180;
+#else
+        /* The first demonstration race switches its camera at once. */
+        if (!g_dwRaceSessionType) {
+            g_dwReplayCameraSwitchTimer = 0;
+        } else {
+            g_dwReplayCameraSwitchTimer = 180;
+        }
+#endif
     } else {
         for (i = 0; i < (s32)g_dwNumLocalPlayers; i++) {
             g_aVehicles[i].chosenTransmission = g_aVehicles[i].profile->transmission;
@@ -536,6 +561,11 @@ static void InitRace(void) {
         g_dwRacePhaseIndex = 4;
     } else if (g_dwGameMode == GAME_MODE_AFTER_SEASON) {
         g_dwRacePhaseIndex = 4;
+#if TGR_REGION != TGR_REGION_US
+    } else if (g_dwGameMode == GAME_MODE_DEMO && !g_dwRaceSessionType) {
+        /* The first demonstration race starts racing at once as well. */
+        g_dwRacePhaseIndex = 4;
+#endif
     } else {
         g_dwRacePhaseIndex = 0;
     }
@@ -575,7 +605,13 @@ static void InitRace(void) {
         ResetFrameClock();
         ResetAllSoundState();
     }
+#if TGR_REGION != TGR_REGION_US
+    g_bDemoInterrupted = FALSE;
+#endif
     g_dwKeepScreenBlanked = FALSE;
+#if TGR_REGION != TGR_REGION_US
+    g_dwReplayKeyframeFrameCount = -1;
+#endif
 }
 
 /* End the instant replay once the recordings it plays run out. */
@@ -710,11 +746,22 @@ static s32 RunRacingPhase(void) {
     s32 allFinished, i, j;
 
     allFinished = TRUE;
+#if TGR_REGION == TGR_REGION_US
     if ((g_dwGameMode == GAME_MODE_DEMO &&
          ((g_dwRaceSessionType == RACE_SESSION_SCROLLING_CREDITS &&
            ENDING_RACE_SECONDS < g_aVehicles[0].totalTime) ||
           (g_dwRaceSessionType != RACE_SESSION_SCROLLING_CREDITS &&
            ATTRACT_RACE_SECONDS < g_aVehicles[0].totalTime))) ||
+#else
+    /* The demonstration race ends with its recording. */
+    if ((g_dwGameMode == GAME_MODE_DEMO &&
+         ((g_dwRaceSessionType == RACE_SESSION_SCROLLING_CREDITS &&
+           ENDING_RACE_SECONDS < g_aVehicles[0].totalTime) ||
+          (g_dwRaceSessionType == RACE_SESSION_CREDIT_CAPTIONS &&
+           CREDITS_RACE_SECONDS < g_aVehicles[0].totalTime) ||
+          (g_dwRaceSessionType == RACE_SESSION_ATTRACT &&
+           g_aVehicles[0].input->playbackPosition == g_aVehicles[0].input->playbackLimit))) ||
+#endif
         (g_dwGameMode == GAME_MODE_AFTER_SEASON &&
          AFTER_SEASON_RACE_SECONDS < g_aVehicles[0].totalTime)) {
         if (!IsFadingOut()) {
@@ -1459,6 +1506,9 @@ void ProcessRacingScreen(void) {
         InitRace();
     }
     g_wRaceScreenLoopExited = FALSE;
+#if TGR_REGION != TGR_REGION_US
+    RestoreReplayKeyframeState();
+#endif
     if (g_dwRacePhase == RACE_PHASE_RACING) {
         for (i = 0; i < (s32)g_dwNumLocalPlayers; i++) {
             SaveLastLapSnapshot(&g_aVehicles[i]);
@@ -1561,6 +1611,24 @@ void ProcessRacingScreen(void) {
     }
     StubEmpty();
     SetScissorRect(0, 0, g_dwScreenWidth, g_dwScreenHeight);
+#if TGR_REGION != TGR_REGION_US
+    /* The cheat finishes the race, the first player first and the second second. */
+    if (g_dwCheatFinishRacePending) {
+        g_aVehicles[0].racePosition = 0;
+        g_aVehicles[0].lap = g_dwTotalLaps;
+        g_aRacerSlots[0].status &= RACER_HELD;
+        g_aRacerSlots[0].status |= RACER_FINISHED;
+        g_aVehicles[1].racePosition = 1;
+        g_aVehicles[1].lap = g_dwTotalLaps;
+        g_aRacerSlots[1].status &= RACER_HELD;
+        g_aRacerSlots[1].status |= RACER_FINISHED;
+        g_bReplayAfterRace = FALSE;
+        if (g_dwRacePhase < RACE_PHASE_RACING) {
+            g_dwRacePhase = RACE_PHASE_RACING;
+        }
+        g_dwCheatFinishRacePending = FALSE;
+    }
+#endif
 
     if (g_dwRacePauseState) {
         paused = ProcessPauseMenu(paused);
@@ -1584,6 +1652,16 @@ void ProcessRacingScreen(void) {
     StreamAnimatedTrackTextures();
     AddTimingMarker(0, 0, 0x82, 0, 0xFF);
     SetNextScreenCallback(UpdateRaceAnimations);
+#if TGR_REGION != TGR_REGION_US
+    /* The first demonstration race fades to black over the end of its recording. */
+    if (g_dwGameMode == GAME_MODE_DEMO && !g_dwRaceSessionType &&
+        g_aVehicles[0].input->playbackPosition >=
+            g_aVehicles[0].input->playbackLimit - DEMO_FADE_BYTES) {
+        DrawScreenFadeOverlay(
+            (f32)(g_aVehicles[0].input->playbackLimit - g_aVehicles[0].input->playbackPosition) /
+            DEMO_FADE_BYTES);
+    }
+#endif
     FlushDisplayList();
     if (IsFadingOut() && IsFadeComplete()) {
         FinishRace();

@@ -1656,22 +1656,22 @@ enddlabel g_szPassThisSeason
 nonmatching switchdataD_802a71d4
 
 dlabel switchdataD_802a71d4
-    /* A9CA4 802A8CA4 80200930 */ .word .L80200930
-    /* A9CA8 802A8CA8 80200B54 */ .word .L80200B54
-    /* A9CAC 802A8CAC 80200E34 */ .word .L80200E34
-    /* A9CB0 802A8CB0 802013A8 */ .word .L802013A8
-    /* A9CB4 802A8CB4 80200BD0 */ .word .L80200BD0
-    /* A9CB8 802A8CB8 80200B70 */ .word .L80200B70
+    /* A9CA4 802A8CA4 80200930 */ .word 0
+    /* A9CA8 802A8CA8 80200B54 */ .word 0
+    /* A9CAC 802A8CAC 80200E34 */ .word 0
+    /* A9CB0 802A8CB0 802013A8 */ .word 0
+    /* A9CB4 802A8CB4 80200BD0 */ .word 0
+    /* A9CB8 802A8CB8 80200B70 */ .word 0
 enddlabel switchdataD_802a71d4
 
 nonmatching jtbl_802A8CBC
 
 dlabel jtbl_802A8CBC
-    /* A9CBC 802A8CBC 802015B0 */ .word .L802015B0
-    /* A9CC0 802A8CC0 80201528 */ .word .L80201528
-    /* A9CC4 802A8CC4 8020157C */ .word .L8020157C
-    /* A9CC8 802A8CC8 802015E4 */ .word .L802015E4
-    /* A9CCC 802A8CCC 80201618 */ .word .L80201618
+    /* A9CBC 802A8CBC 802015B0 */ .word 0
+    /* A9CC0 802A8CC0 80201528 */ .word 0
+    /* A9CC4 802A8CC4 8020157C */ .word 0
+    /* A9CC8 802A8CC8 802015E4 */ .word 0
+    /* A9CCC 802A8CCC 80201618 */ .word 0
 enddlabel jtbl_802A8CBC
 
 nonmatching g_fConst0p2_802a7200

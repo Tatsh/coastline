@@ -599,9 +599,9 @@ void DrawScrollingText(void);
  * vehicles in each view, and handle the pause menu, the instant replay and leaving the race.
  *
  * @ghidraAddress USA: 0x8020082c
- * @ghidraAddress JPN: 0x8020081c
  * @ghidraAddress EUR: 0x8020085c
- * @stub{EUR JPN}
+ * @ghidraAddress JPN: 0x8020081c
+ * @stub{JPN}
  */
 void ProcessRacingScreen(void);
 

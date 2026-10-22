@@ -337,6 +337,7 @@ ProcessPakDataScreen
 ProcessPakMenuScreen
 ProcessPlayerCountSelect
 ProcessRaceResultsScreen
+ProcessRacingScreen
 ProcessRectStyleMenu
 ProcessScreenState
 ProcessSeasonResults
