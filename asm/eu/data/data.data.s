@@ -5192,42 +5192,13 @@ dlabel g_aLoadMenuItems
     /* 0D000000 */
 .align 2
     /* 754EC 802744EC 802A9BD0 */ .word g_szSaveSeasonData
-enddlabel g_aLoadMenuItems
-
-nonmatching g_LoadMenuItemLoadSeasonGamePak
-
-dlabel g_LoadMenuItemLoadSeasonGamePak
     /* 754F0 802744F0 06000000 */ .word 0x06000000
     /* 754F4 802744F4 802A9BE0 */ .word g_szSaveGhostCarData
-enddlabel g_LoadMenuItemLoadSeasonGamePak
-
-nonmatching g_LoadMenuItemSaveSeasonGamePak
-
-dlabel g_LoadMenuItemSaveSeasonGamePak
     /* 754F8 802744F8 07000000 */ .word 0x07000000
     /* 754FC 802744FC 802A9BF4 */ .word g_szSaveOptions
-enddlabel g_LoadMenuItemSaveSeasonGamePak
-
-nonmatching g_LoadMenuItemLoadOptionsGamePak
-
-dlabel g_LoadMenuItemLoadOptionsGamePak
     /* 75500 80274500 08000000 */ .word 0x08000000
-enddlabel g_LoadMenuItemLoadOptionsGamePak
-
-nonmatching g_pszLoadMenuItemLoadOptionsText
-
-dlabel g_pszLoadMenuItemLoadOptionsText
     /* 75504 80274504 802A9C08 */ .word g_szLoadOptions2
-enddlabel g_pszLoadMenuItemLoadOptionsText
-
-.align 2
-nonmatching D_80274508
-
-/* Automatically generated and unreferenced pad */
-dlabel D_80274508
-    /* 75508 80274508 */ .asciz "\t"
-    /* 09000000 */
-.align 2
+    /* 75508 80274508 09000000 */ .word 0x09000000
     /* 7550C 8027450C 802A9C18 */ .word D_802A9C18
     /* 75510 80274510 0E000000 */ .word 0x0E000000
     /* 75514 80274514 802A9C28 */ .word D_802A9C28
@@ -5251,7 +5222,7 @@ dlabel D_80274508
     /* 7555C 8027455C 802A9CB4 */ .word D_802A9CB4
     /* 75560 80274560 00000000 */ .word 0x00000000
     /* 75564 80274564 00000000 */ .word 0x00000000
-enddlabel D_80274508
+enddlabel g_aLoadMenuItems
 
 nonmatching g_aSaveSeasonMenuItems
 

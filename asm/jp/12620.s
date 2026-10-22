@@ -59,8 +59,8 @@ glabel ProcessDataSaveLoadMenu
     /* 13104 80212104 24180001 */  addiu      $t8, $zero, 0x1
     /* 13108 80212108 3C018027 */  lui        $at, %hi(g_bSaveLoadMenuInitialized)
     /* 1310C 8021210C A0383F58 */  sb         $t8, %lo(g_bSaveLoadMenuInitialized)($at)
-    /* 13110 80212110 3C018031 */  lui        $at, %hi(g_bSaveLoadDataRestored)
-    /* 13114 80212114 A0206D32 */  sb         $zero, %lo(g_bSaveLoadDataRestored)($at)
+    /* 13110 80212110 3C018031 */  lui        $at, %hi(g_bSaveLoadDataWasLoaded)
+    /* 13114 80212114 A0206D32 */  sb         $zero, %lo(g_bSaveLoadDataWasLoaded)($at)
     /* 13118 80212118 3C018031 */  lui        $at, %hi(g_bSaveLoadInputEnabled)
     /* 1311C 8021211C 24190001 */  addiu      $t9, $zero, 0x1
     /* 13120 80212120 A0396D33 */  sb         $t9, %lo(g_bSaveLoadInputEnabled)($at)
@@ -826,9 +826,9 @@ glabel ProcessDataSaveLoadMenu
     /* 13C30 80212C30 8E0C0010 */  lw         $t4, 0x10($s0)
     /* 13C34 80212C34 AF0C00E4 */  sw         $t4, 0xE4($t8)
     /* 13C38 80212C38 A039406C */  sb         $t9, %lo(g_bSaveLoadStep)($at)
-    /* 13C3C 80212C3C 3C018031 */  lui        $at, %hi(g_bSaveLoadDataRestored)
+    /* 13C3C 80212C3C 3C018031 */  lui        $at, %hi(g_bSaveLoadDataWasLoaded)
     /* 13C40 80212C40 10000A04 */  b          .L80215454
-    /* 13C44 80212C44 A02E6D32 */   sb        $t6, %lo(g_bSaveLoadDataRestored)($at)
+    /* 13C44 80212C44 A02E6D32 */   sb        $t6, %lo(g_bSaveLoadDataWasLoaded)($at)
   .L80212C48:
     /* 13C48 80212C48 8FAF0088 */  lw         $t7, 0x88($sp)
     /* 13C4C 80212C4C 8D0D0E5C */  lw         $t5, 0xE5C($t0)
@@ -876,8 +876,8 @@ glabel ProcessDataSaveLoadMenu
     /* 13CF4 80212CF4 0C0845A5 */  jal        ApplyVolumeSettings
     /* 13CF8 80212CF8 00000000 */   nop
     /* 13CFC 80212CFC 240A0001 */  addiu      $t2, $zero, 0x1
-    /* 13D00 80212D00 3C018031 */  lui        $at, %hi(g_bSaveLoadDataRestored)
-    /* 13D04 80212D04 A02A6D32 */  sb         $t2, %lo(g_bSaveLoadDataRestored)($at)
+    /* 13D00 80212D00 3C018031 */  lui        $at, %hi(g_bSaveLoadDataWasLoaded)
+    /* 13D04 80212D04 A02A6D32 */  sb         $t2, %lo(g_bSaveLoadDataWasLoaded)($at)
     /* 13D08 80212D08 3C018027 */  lui        $at, %hi(g_bSaveLoadStep)
     /* 13D0C 80212D0C 240D0010 */  addiu      $t5, $zero, 0x10
     /* 13D10 80212D10 100009D0 */  b          .L80215454
@@ -1034,9 +1034,9 @@ glabel ProcessDataSaveLoadMenu
     /* 13F44 80212F44 AFA20070 */  sw         $v0, 0x70($sp)
     /* 13F48 80212F48 0C089B0C */  jal        InitPlayerVehicleSlot
     /* 13F4C 80212F4C 2484C890 */   addiu     $a0, $a0, %lo(g_aVehicles)
-    /* 13F50 80212F50 3C048032 */  lui        $a0, %hi(g_flSteeringAngle)
+    /* 13F50 80212F50 3C048032 */  lui        $a0, %hi(D_8031E920)
     /* 13F54 80212F54 0C089B0C */  jal        InitPlayerVehicleSlot
-    /* 13F58 80212F58 2484E920 */   addiu     $a0, $a0, %lo(g_flSteeringAngle)
+    /* 13F58 80212F58 2484E920 */   addiu     $a0, $a0, %lo(D_8031E920)
     /* 13F5C 80212F5C 3C088032 */  lui        $t0, %hi(g_aVehicles)
     /* 13F60 80212F60 2508C890 */  addiu      $t0, $t0, %lo(g_aVehicles)
     /* 13F64 80212F64 8D050E5C */  lw         $a1, 0xE5C($t0)
@@ -1702,9 +1702,9 @@ glabel ProcessDataSaveLoadMenu
     /* 14934 80213934 A02A406C */  sb         $t2, %lo(g_bSaveLoadStep)($at)
   .L80213938:
     /* 14938 80213938 240D0001 */  addiu      $t5, $zero, 0x1
-    /* 1493C 8021393C 3C018031 */  lui        $at, %hi(g_bSaveLoadDataRestored)
+    /* 1493C 8021393C 3C018031 */  lui        $at, %hi(g_bSaveLoadDataWasLoaded)
     /* 14940 80213940 100006C4 */  b          .L80215454
-    /* 14944 80213944 A02D6D32 */   sb        $t5, %lo(g_bSaveLoadDataRestored)($at)
+    /* 14944 80213944 A02D6D32 */   sb        $t5, %lo(g_bSaveLoadDataWasLoaded)($at)
   .L80213948:
     /* 14948 80213948 3C108031 */  lui        $s0, %hi(g_abGhostRecording)
     /* 1494C 8021394C 26108630 */  addiu      $s0, $s0, %lo(g_abGhostRecording)
@@ -1747,9 +1747,9 @@ glabel ProcessDataSaveLoadMenu
     /* 149DC 802139DC A02E406C */  sb         $t6, %lo(g_bSaveLoadStep)($at)
   .L802139E0:
     /* 149E0 802139E0 240A0001 */  addiu      $t2, $zero, 0x1
-    /* 149E4 802139E4 3C018031 */  lui        $at, %hi(g_bSaveLoadDataRestored)
+    /* 149E4 802139E4 3C018031 */  lui        $at, %hi(g_bSaveLoadDataWasLoaded)
     /* 149E8 802139E8 1000069A */  b          .L80215454
-    /* 149EC 802139EC A02A6D32 */   sb        $t2, %lo(g_bSaveLoadDataRestored)($at)
+    /* 149EC 802139EC A02A6D32 */   sb        $t2, %lo(g_bSaveLoadDataWasLoaded)($at)
   .L802139F0:
     /* 149F0 802139F0 3C048027 */  lui        $a0, %hi(g_OptionSettings)
     /* 149F4 802139F4 3C058027 */  lui        $a1, %hi(g_pPakDataBuffer)
@@ -3558,12 +3558,12 @@ glabel ProcessDataSaveLoadMenu
     /* 164F0 802154F0 24010006 */   addiu     $at, $zero, 0x6
     /* 164F4 802154F4 1481000A */  bne        $a0, $at, .L80215520
   .L802154F8:
-    /* 164F8 802154F8 3C0F8031 */   lui       $t7, %hi(g_bSaveLoadDataRestored)
-    /* 164FC 802154FC 91EF6D32 */  lbu        $t7, %lo(g_bSaveLoadDataRestored)($t7)
+    /* 164F8 802154F8 3C0F8031 */   lui       $t7, %hi(g_bSaveLoadDataWasLoaded)
+    /* 164FC 802154FC 91EF6D32 */  lbu        $t7, %lo(g_bSaveLoadDataWasLoaded)($t7)
     /* 16500 80215500 11E00007 */  beqz       $t7, .L80215520
-    /* 16504 80215504 3C018031 */   lui       $at, %hi(g_bSaveLoadDataRestored)
+    /* 16504 80215504 3C018031 */   lui       $at, %hi(g_bSaveLoadDataWasLoaded)
     /* 16508 80215508 3C048021 */  lui        $a0, %hi(StartChampionshipRace)
-    /* 1650C 8021550C A0206D32 */  sb         $zero, %lo(g_bSaveLoadDataRestored)($at)
+    /* 1650C 8021550C A0206D32 */  sb         $zero, %lo(g_bSaveLoadDataWasLoaded)($at)
     /* 16510 80215510 0C08746A */  jal        SetCurrentScreenCallback
     /* 16514 80215514 24840EA0 */   addiu     $a0, $a0, %lo(StartChampionshipRace)
     /* 16518 80215518 10000025 */  b          .L802155B0
@@ -3571,12 +3571,12 @@ glabel ProcessDataSaveLoadMenu
   .L80215520:
     /* 16520 80215520 24050002 */  addiu      $a1, $zero, 0x2
     /* 16524 80215524 14A4000A */  bne        $a1, $a0, .L80215550
-    /* 16528 80215528 3C0E8031 */   lui       $t6, %hi(g_bSaveLoadDataRestored)
-    /* 1652C 8021552C 91CE6D32 */  lbu        $t6, %lo(g_bSaveLoadDataRestored)($t6)
+    /* 16528 80215528 3C0E8031 */   lui       $t6, %hi(g_bSaveLoadDataWasLoaded)
+    /* 1652C 8021552C 91CE6D32 */  lbu        $t6, %lo(g_bSaveLoadDataWasLoaded)($t6)
     /* 16530 80215530 11C00007 */  beqz       $t6, .L80215550
-    /* 16534 80215534 3C018031 */   lui       $at, %hi(g_bSaveLoadDataRestored)
+    /* 16534 80215534 3C018031 */   lui       $at, %hi(g_bSaveLoadDataWasLoaded)
     /* 16538 80215538 3C048021 */  lui        $a0, %hi(StartTimeAttack)
-    /* 1653C 8021553C A0206D32 */  sb         $zero, %lo(g_bSaveLoadDataRestored)($at)
+    /* 1653C 8021553C A0206D32 */  sb         $zero, %lo(g_bSaveLoadDataWasLoaded)($at)
     /* 16540 80215540 0C08746A */  jal        SetCurrentScreenCallback
     /* 16544 80215544 24840EE4 */   addiu     $a0, $a0, %lo(StartTimeAttack)
     /* 16548 80215548 10000019 */  b          .L802155B0

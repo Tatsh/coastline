@@ -714,9 +714,9 @@ nonmatching D_80316D31, 0x1
 dlabel D_80316D31
     /* 80316D31 */ .space 0x01
 
-nonmatching g_bSaveLoadDataRestored, 0x1
+nonmatching g_bSaveLoadDataWasLoaded, 0x1
 
-dlabel g_bSaveLoadDataRestored
+dlabel g_bSaveLoadDataWasLoaded
     /* 80316D32 */ .space 0x01
 
 nonmatching g_bSaveLoadInputEnabled, 0x1
@@ -2508,9 +2508,9 @@ nonmatching D_8031E90C, 0x14
 dlabel D_8031E90C
     /* 8031E90C */ .space 0x14
 
-nonmatching g_flSteeringAngle, 0x4
+nonmatching D_8031E920, 0x4
 
-dlabel g_flSteeringAngle
+dlabel D_8031E920
     /* 8031E920 */ .space 0x04
 
 nonmatching g_dwSteeringLock, 0x4
