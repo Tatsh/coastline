@@ -7,141 +7,18 @@ set(COASTLINE_ASM_JP
     asm/jp/07A90.s
     asm/jp/09300.s
     asm/jp/0CE40.s
-    asm/jp/11CD0.s
     asm/jp/11EA0.s
-    asm/jp/122C0.s
     asm/jp/12620.s
-    asm/jp/18150.s
     asm/jp/18C40.s
-    asm/jp/20620.s
     asm/jp/22340.s
-    asm/jp/23470.s
-    asm/jp/25E10.s
     asm/jp/27A60.s
-    asm/jp/2ED50.s
-    asm/jp/2F4A0.s
     asm/jp/30460.s
-    asm/jp/31C10.s
-    asm/jp/32200.s
     asm/jp/36120.s
-    asm/jp/39990.s
-    asm/jp/3B230.s
-    asm/jp/3BD00.s
-    asm/jp/3D140.s
-    asm/jp/3FF10.s
-    asm/jp/40DC0.s
-    asm/jp/41F90.s
-    asm/jp/42A40.s
-    asm/jp/435A0.s
-    asm/jp/43FD0.s
-    asm/jp/44650.s
-    asm/jp/44820.s
-    asm/jp/448A0.s
-    asm/jp/44950.s
     asm/jp/44B20.s
     asm/jp/551B0.s
-    asm/jp/567A0.s
-    asm/jp/56E70.s
-    asm/jp/57B00.s
-    asm/jp/581D0.s
-    asm/jp/581F0.s
-    asm/jp/58240.s
-    asm/jp/58250.s
-    asm/jp/58680.s
-    asm/jp/59FD0.s
     asm/jp/5B2B0.s
     asm/jp/62420.s
-    asm/jp/62770.s
-    asm/jp/62810.s
-    asm/jp/62A20.s
-    asm/jp/62B00.s
-    asm/jp/62CF0.s
-    asm/jp/62D70.s
-    asm/jp/62E10.s
-    asm/jp/63080.s
-    asm/jp/63540.s
-    asm/jp/63B60.s
-    asm/jp/63ED0.s
-    asm/jp/64140.s
-    asm/jp/64760.s
-    asm/jp/64880.s
-    asm/jp/64AE0.s
-    asm/jp/64CA0.s
-    asm/jp/65C00.s
-    asm/jp/65D50.s
-    asm/jp/66500.s
-    asm/jp/66640.s
-    asm/jp/66870.s
-    asm/jp/668E0.s
-    asm/jp/669F0.s
-    asm/jp/66C50.s
-    asm/jp/66C80.s
-    asm/jp/66CF0.s
-    asm/jp/66D60.s
-    asm/jp/670E0.s
-    asm/jp/676A0.s
-    asm/jp/676D0.s
-    asm/jp/67740.s
-    asm/jp/67890.s
-    asm/jp/67900.s
-    asm/jp/67A50.s
-    asm/jp/67F60.s
-    asm/jp/682B0.s
-    asm/jp/68620.s
-    asm/jp/68630.s
     asm/jp/68690.s
-    asm/jp/689F0.s
-    asm/jp/68B80.s
-    asm/jp/68C60.s
-    asm/jp/68E80.s
-    asm/jp/696B0.s
-    asm/jp/69770.s
-    asm/jp/69A80.s
-    asm/jp/69BD0.s
-    asm/jp/6A4D0.s
-    asm/jp/6A710.s
-    asm/jp/6A7C0.s
-    asm/jp/6A7D0.s
-    asm/jp/6A7E0.s
-    asm/jp/6A870.s
-    asm/jp/6B530.s
-    asm/jp/6BE80.s
-    asm/jp/6BF90.s
-    asm/jp/6CCF0.s
-    asm/jp/6D080.s
-    asm/jp/6D580.s
-    asm/jp/6DF10.s
-    asm/jp/6E050.s
-    asm/jp/6E1D0.s
-    asm/jp/6E250.s
-    asm/jp/6E2D0.s
-    asm/jp/6E2E0.s
-    asm/jp/6E320.s
-    asm/jp/6E3B0.s
-    asm/jp/6E3E0.s
-    asm/jp/6E470.s
-    asm/jp/6E490.s
-    asm/jp/6E540.s
-    asm/jp/6E5C0.s
-    asm/jp/6E620.s
-    asm/jp/6E6C0.s
-    asm/jp/6EAE0.s
-    asm/jp/6EAF0.s
-    asm/jp/6EE50.s
-    asm/jp/6EF40.s
-    asm/jp/6F040.s
-    asm/jp/6F410.s
-    asm/jp/6FB70.s
-    asm/jp/70630.s
-    asm/jp/70660.s
-    asm/jp/70EE0.s
-    asm/jp/71080.s
-    asm/jp/71140.s
-    asm/jp/71150.s
-    asm/jp/711B0.s
-    asm/jp/71200.s
-    asm/jp/712A0.s
-    asm/jp/712F0.s
     asm/jp/data/data.data.s
     asm/jp/data/rodata.rodata.s
     asm/jp/data/bss.bss.s)

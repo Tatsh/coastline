@@ -236,12 +236,6 @@ glabel UpdateRumblePaks
     /* 62758 80261758 27BD0040 */   addiu     $sp, $sp, 0x40
 endlabel UpdateRumblePaks
 
-nonmatching PrepareRumblePaks, 0x8
-
-glabel PrepareRumblePaks
-    /* 6275C 8026175C 03E00008 */  jr         $ra
-    /* 62760 80261760 00000000 */   nop
-endlabel PrepareRumblePaks
     /* 62764 80261764 00000000 */  nop
     /* 62768 80261768 00000000 */  nop
     /* 6276C 8026176C 00000000 */  nop

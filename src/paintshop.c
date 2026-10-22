@@ -485,6 +485,8 @@ static inline void LayOutPaintShopControls(void) {
     }
 }
 
+/* The Japanese and European bodies still come from the assembly. */
+#if TGR_REGION == TGR_REGION_US
 /* Load and place everything of the paint shop on entering it. */
 static void InitPaintShop(void) {
     VehicleModel *model;
@@ -810,6 +812,7 @@ void ProcessPaintShopScreen(void) {
         SetCurrentScreenCallback(MainMenuEntry);
     }
 }
+#endif
 
 void ResetPaintShopState(void) {
     g_texPaintCursor.originX = CURSOR_START_X;
@@ -878,6 +881,8 @@ static inline void SetPakTextColors(u8 inCarSelect) {
     }
 }
 
+/* The Japanese body still comes from the assembly. */
+#if TGR_REGION != TGR_REGION_JP
 void DrawPakErrorMessage(s32 error, u8 operation, u8 inCarSelect) {
     s32 x, y, width, textY;
 
@@ -980,6 +985,7 @@ void DrawPakErrorMessage(s32 error, u8 operation, u8 inCarSelect) {
         break;
     }
 }
+#endif
 
 void DrawRectBorder(s32 x,
                     s32 y,
@@ -1072,6 +1078,8 @@ static inline void ClearDecal(u8 coloredOption) {
     }
 }
 
+/* The Japanese and European bodies still come from the assembly. */
+#if TGR_REGION == TGR_REGION_US
 void ProcessFillClearMenu(void) {
     const char *scopeTexts[2] = {"CLEAR CURRENT DECAL", "CLEAR ALL DECALS"};
     const char *colorTexts[2] = {"TO SELECTED COLOR", "TO BODY COLOR"};
@@ -1335,6 +1343,7 @@ void ProcessMirrorFlipMenu(void) {
         g_bPaintTool = g_bPreviousPaintTool;
     }
 }
+#endif
 
 void MirrorDecalToOppositePanel(void) {
     VehicleModel *model;
@@ -1521,6 +1530,8 @@ static inline void DrawPakButtons(s32 buttonY, u32 okTextX, u32 cancelTextX, s32
     DrawTexturedSprite(&g_texButtonB, cancelX, buttonY);
 }
 
+/* The Japanese and European bodies still come from the assembly. */
+#if TGR_REGION == TGR_REGION_US
 s32 ProcessDecalSaveLoad(VehicleModel *model, u8 player, u8 operation, u8 inCarSelect, u8 *done) {
     /* TOP GEAR DECALS in the font of the controller pak. */
     u8 noteName[16] = {0x2D,
@@ -1983,12 +1994,15 @@ s32 ProcessDecalSaveLoad(VehicleModel *model, u8 player, u8 operation, u8 inCarS
     }
     return 0;
 }
+#endif
 
 /* The columns two glyphs side by side overlap, the lesser of how far each may move to the other. */
 static inline s32 GlyphOverlap(DecalGlyph *previous, DecalGlyph *next) {
     return previous->kernRight < next->kernLeft ? previous->kernRight : next->kernLeft;
 }
 
+/* The Japanese and European bodies still come from the assembly. */
+#if TGR_REGION == TGR_REGION_US
 void ProcessTextInputKeyboard(void) {
     Sprite *highlight = &g_texKeyboardHighlight;
     PlayerInputState *input;
@@ -2101,3 +2115,4 @@ void ProcessTextInputKeyboard(void) {
         DrawText(g_szDecalText, (x + 0x64) >> 1, (y + 0x24) >> 1);
     }
 }
+#endif

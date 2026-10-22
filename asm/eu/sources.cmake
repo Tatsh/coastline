@@ -5,143 +5,17 @@ set(COASTLINE_ASM_EU
     asm/eu/01050.s
     asm/eu/01350.s
     asm/eu/079F0.s
-    asm/eu/096E0.s
     asm/eu/0D240.s
-    asm/eu/11DE0.s
     asm/eu/11FB0.s
-    asm/eu/123D0.s
     asm/eu/12730.s
-    asm/eu/18800.s
     asm/eu/192F0.s
-    asm/eu/20E30.s
     asm/eu/22B50.s
-    asm/eu/23C80.s
-    asm/eu/26620.s
     asm/eu/28270.s
-    asm/eu/2F5A0.s
-    asm/eu/2FCF0.s
-    asm/eu/309F0.s
-    asm/eu/31E10.s
-    asm/eu/32400.s
-    asm/eu/36320.s
-    asm/eu/39E90.s
-    asm/eu/3B730.s
-    asm/eu/3C200.s
-    asm/eu/3D640.s
-    asm/eu/40410.s
-    asm/eu/412C0.s
-    asm/eu/42490.s
-    asm/eu/42F40.s
-    asm/eu/43AA0.s
-    asm/eu/444D0.s
-    asm/eu/44B50.s
-    asm/eu/44D20.s
-    asm/eu/44DA0.s
-    asm/eu/44E50.s
     asm/eu/45020.s
     asm/eu/559C0.s
-    asm/eu/56E10.s
-    asm/eu/574E0.s
-    asm/eu/58170.s
-    asm/eu/58840.s
-    asm/eu/58860.s
-    asm/eu/588B0.s
-    asm/eu/588C0.s
-    asm/eu/58CF0.s
-    asm/eu/5A640.s
     asm/eu/5B920.s
     asm/eu/62970.s
-    asm/eu/62CC0.s
-    asm/eu/62D00.s
-    asm/eu/62DA0.s
-    asm/eu/63050.s
-    asm/eu/63240.s
-    asm/eu/632C0.s
-    asm/eu/63360.s
-    asm/eu/635D0.s
-    asm/eu/635E0.s
-    asm/eu/63AA0.s
-    asm/eu/640C0.s
-    asm/eu/64430.s
-    asm/eu/646A0.s
-    asm/eu/64CC0.s
-    asm/eu/64DE0.s
-    asm/eu/65040.s
-    asm/eu/65200.s
-    asm/eu/66160.s
-    asm/eu/662B0.s
-    asm/eu/66A60.s
-    asm/eu/66BA0.s
-    asm/eu/66DD0.s
-    asm/eu/66E40.s
-    asm/eu/66EB0.s
-    asm/eu/66FC0.s
-    asm/eu/67220.s
-    asm/eu/67250.s
-    asm/eu/67260.s
-    asm/eu/675E0.s
-    asm/eu/67BA0.s
-    asm/eu/67BD0.s
-    asm/eu/67C40.s
-    asm/eu/67D90.s
-    asm/eu/67E00.s
-    asm/eu/67F50.s
-    asm/eu/68460.s
-    asm/eu/687B0.s
-    asm/eu/68B20.s
-    asm/eu/68B30.s
     asm/eu/68B90.s
-    asm/eu/68F50.s
-    asm/eu/690E0.s
-    asm/eu/693D0.s
-    asm/eu/69C00.s
-    asm/eu/69CC0.s
-    asm/eu/69FD0.s
-    asm/eu/6A120.s
-    asm/eu/6AA20.s
-    asm/eu/6AC60.s
-    asm/eu/6AD10.s
-    asm/eu/6AD20.s
-    asm/eu/6AD30.s
-    asm/eu/6ADC0.s
-    asm/eu/6BA80.s
-    asm/eu/6C3D0.s
-    asm/eu/6C4E0.s
-    asm/eu/6D240.s
-    asm/eu/6D5D0.s
-    asm/eu/6DAD0.s
-    asm/eu/6E460.s
-    asm/eu/6E5A0.s
-    asm/eu/6E720.s
-    asm/eu/6E7A0.s
-    asm/eu/6E820.s
-    asm/eu/6E830.s
-    asm/eu/6E870.s
-    asm/eu/6E900.s
-    asm/eu/6E930.s
-    asm/eu/6E9C0.s
-    asm/eu/6E9E0.s
-    asm/eu/6EA90.s
-    asm/eu/6EB10.s
-    asm/eu/6EB70.s
-    asm/eu/6EC10.s
-    asm/eu/6F030.s
-    asm/eu/6F040.s
-    asm/eu/6F3A0.s
-    asm/eu/6F490.s
-    asm/eu/6F590.s
-    asm/eu/6F960.s
-    asm/eu/700C0.s
-    asm/eu/70B80.s
-    asm/eu/70BB0.s
-    asm/eu/71430.s
-    asm/eu/715D0.s
-    asm/eu/71690.s
-    asm/eu/716A0.s
-    asm/eu/71700.s
-    asm/eu/71750.s
-    asm/eu/717F0.s
-    asm/eu/71840.s
     asm/eu/data/data.data.s
     asm/eu/data/rodata.rodata.s
     asm/eu/data/bss.bss.s)

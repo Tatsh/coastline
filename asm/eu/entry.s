@@ -23,10 +23,10 @@ glabel ramMain
     /* 101C 8020001C 1520FFFC */  bnez       $t1, .L80200010
     /* 1020 80200020 21080008 */   addi      $t0, $t0, 0x8 /* handwritten instruction */
     /* 1024 80200024 3C0A8022 */  lui        $t2, %hi(OsBootEntry)
-    /* 1028 80200028 3C1D8032 */  lui        $sp, %hi(D_803185B0)
+    /* 1028 80200028 3C1D8032 */  lui        $sp, %hi(g_adwIdleThreadStack)
     /* 102C 8020002C 254AF8A4 */  addiu      $t2, $t2, %lo(OsBootEntry)
     /* 1030 80200030 01400008 */  jr         $t2
-    /* 1034 80200034 27BD85B0 */   addiu     $sp, $sp, %lo(D_803185B0)
+    /* 1034 80200034 27BD85B0 */   addiu     $sp, $sp, %lo(g_adwIdleThreadStack)
 endlabel ramMain
     /* 1038 80200038 00000000 */  nop
     /* 103C 8020003C 00000000 */  nop

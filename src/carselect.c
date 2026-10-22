@@ -166,6 +166,8 @@ s32 IsCarUnlocked(s32 car) {
         RenderVehicleModel(g_pActiveCameraVehicle, 0);                                             \
     }
 
+/* The Japanese body still comes from the assembly. */
+#if TGR_REGION != TGR_REGION_JP
 void RenderCameraView(Model *model,
                       Model *secondModel,
                       s32 vehicleIndex,
@@ -274,6 +276,7 @@ void RenderCameraView(Model *model,
         SetVehicleModelSlot(g_pActiveCameraVehicle, slot);
     }
 }
+#endif
 
 void FormatLapTime(char *out, f32 seconds) {
     s32 hundredths = (s32)(seconds * 100.0f);
@@ -1150,6 +1153,8 @@ sound:
     }
 }
 
+/* The Japanese and European bodies still come from the assembly. */
+#if TGR_REGION == TGR_REGION_US
 void ProcessCarSelectScreen(void) {
     char text[96], time[32];
     s32 player, i;
@@ -1328,6 +1333,7 @@ void ProcessCarSelectScreen(void) {
         HandleCarSelectInput(player);
     }
 }
+#endif
 
 void ProcessRaceResultsScreen(void) {
     g_dwIsReviewMode = TRUE;

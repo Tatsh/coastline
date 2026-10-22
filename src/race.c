@@ -67,6 +67,8 @@
 /* The x of the middle of the screen. */
 #define SCREEN_CENTER_X 160
 
+/* The Japanese and European bodies of the racing screen still come from the assembly. */
+#if TGR_REGION == TGR_REGION_US
 /* Fade the screen and the sounds out to leave the race, once. */
 static void LeaveRace(void) {
     if (!g_dwRaceExitState) {
@@ -83,6 +85,7 @@ static void AdvanceRacePhase(void) {
     g_dwRacePhase = g_aRacePhaseTable[g_dwRacePhaseIndex].phase;
     g_fRacePhaseTimer = g_aRacePhaseTable[g_dwRacePhaseIndex].seconds;
 }
+#endif
 
 void LoadAndPlayTrackBgm(void) {
     ResetMusicPlaybackState();
@@ -219,6 +222,8 @@ void DrawScrollingText(void) {
     }
 }
 
+/* The Japanese and European bodies still come from the assembly. */
+#if TGR_REGION == TGR_REGION_US
 /* Read the car and its setup from the header of the recording a vehicle replays. */
 static void SetupFromRecording(Vehicle *vehicle) {
     vehicle->steeringMode = vehicle->input->playbackBuffer[2];
@@ -1593,6 +1598,7 @@ void ProcessRacingScreen(void) {
         g_dwRacePauseState = paused;
     }
 }
+#endif
 
 void SaveRaceResultsToSlots(void) {
     s32 i, j;

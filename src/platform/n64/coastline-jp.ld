@@ -60,6 +60,10 @@ _scrollSoundSegmentRomStart = 0x1D5E00;
 _selectSoundSegmentRomStart = 0x1D6840;
 _startLightsSegmentRomStart = 0x1E0210;
 _startLightsSegmentRomEnd = 0x1EEAF0;
+_cachedGlyphsSegmentRomStart = 0xDCF40;
+
+/* The glyph cache, in the memory after the BSS. */
+g_abGlyphCacheMemory = 0x803837A0;
 
 /* The original boot stack, inside the BSS. */
 g_abBootStackTop = 0x803171E0;

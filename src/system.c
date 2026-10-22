@@ -651,6 +651,8 @@ void SetupWeatherLights(void) {
     }
 }
 
+/* The Japanese body still comes from the assembly. */
+#if TGR_REGION != TGR_REGION_JP
 void BeginDisplayList(s32 highRes) {
     if (highRes != g_dwScreenScaleShift) {
         g_dwDisplayModeChangeCountdown = 1;
@@ -750,6 +752,7 @@ void BeginDisplayList(s32 highRes) {
     osViSetSpecialFeatures(OS_VI_DIVOT_ON);
     osViSetSpecialFeatures(g_dwViGammaEnabled ? OS_VI_GAMMA_ON : OS_VI_GAMMA_OFF);
 }
+#endif
 
 void StartLowResFrame(void) {
     BeginDisplayList(0);
@@ -1066,6 +1069,8 @@ void StreamAnimatedTrackTextures(void) {
     g_dwStreamedSnowMode = g_dwSnowMode;
 }
 
+/* The Japanese and European bodies still come from the assembly. */
+#if TGR_REGION == TGR_REGION_US
 void FlushDisplayList(void) {
     OSTask *task;
     u16 *framebuffer;
@@ -1174,6 +1179,7 @@ void FlushDisplayList(void) {
     osSpTaskStartGo(task);
     g_dwFrameBufferIndex ^= 1;
 }
+#endif
 
 s32 ProcessDisplayList(Gfx *displayList, Gfx table[][4]) {
     s32 clear, column, translucent, snowTint, row, i;
@@ -1319,6 +1325,8 @@ void ViRetraceThread(void *arg) {
     }
 }
 
+/* The Japanese and European bodies still come from the assembly. */
+#if TGR_REGION == TGR_REGION_US
 /* Whether a controller holds a pak that may be a Rumble Pak. */
 static s32 IsPakController(OSContStatus *status, u8 pattern, s32 i) {
     return ((pattern >> i) & 1) && !(status->errno & CONT_NO_RESPONSE_ERROR) &&
@@ -1379,6 +1387,7 @@ void InitRenderingSubsystem(void) {
         }
     }
 }
+#endif
 
 void ResetFrameClock(void) {
     g_qwTimestampBase = 0;
@@ -1615,6 +1624,8 @@ void FaultThread(void *arg) {
     }
 }
 
+/* The Japanese and European bodies still come from the assembly. */
+#if TGR_REGION == TGR_REGION_US
 void BootIdleThread(void *arg) {
     u32 arguments[BOOT_ARGUMENT_WORDS];
     s32 i;
@@ -1693,6 +1704,7 @@ void BootIdleThread(void *arg) {
     for (;;) {
     }
 }
+#endif
 
 void OsBootEntry(void) {
 #if TGR_REGION == TGR_REGION_EU

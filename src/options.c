@@ -513,6 +513,8 @@ void SaveGameDataToEeprom(void) {
 }
 #endif
 
+/* The Japanese and European bodies still come from the assembly. */
+#if TGR_REGION == TGR_REGION_US
 void ProcessDataSaveLoadMenu(void) {
     /* TOP GEAR SEASON, TOP GEAR GHOST and TOP GEAR OPTIONS in the font of the Controller Pak. */
     u8 seasonName[16] = {0x2D,
@@ -1308,6 +1310,7 @@ void ProcessDataSaveLoadMenu(void) {
      * another screen frees the serial interface. */
     g_wSerialInterfaceIdle = FALSE;
 }
+#endif
 #pragma GCC diagnostic pop
 
 void PreparePakDataScreen(void) {
@@ -1407,6 +1410,8 @@ missing:
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wuninitialized"
 #pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
+/* The Japanese and European bodies still come from the assembly. */
+#if TGR_REGION == TGR_REGION_US
 s32 ProcessPakDataScreen(s32 dataType, u8 quiet) {
     /* TOP GEAR SEASON, TOP GEAR GHOST and TOP GEAR OPTIONS in the font of the Controller Pak. */
     u8 seasonName[16] = {0x2D,
@@ -1870,4 +1875,5 @@ s32 ProcessPakDataScreen(s32 dataType, u8 quiet) {
     g_wSerialInterfaceIdle = TRUE;
     return FALSE;
 }
+#endif
 #pragma GCC diagnostic pop

@@ -61,6 +61,8 @@ void ResetAllPlayers(void) {
     }
 }
 
+/* The Japanese and European bodies still come from the assembly. */
+#if TGR_REGION == TGR_REGION_US
 void InitGameAndShowMenus(void) {
     InitRenderingSubsystem();
     StubUpdateCallback();
@@ -97,3 +99,4 @@ void InitGameAndShowMenus(void) {
 
     GameModeMainLoop();
 }
+#endif

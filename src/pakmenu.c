@@ -36,6 +36,8 @@ u8 DecalCharToAscii(u8 c) {
     return ' ';
 }
 
+/* The Japanese and European bodies still come from the assembly. */
+#if TGR_REGION == TGR_REGION_US
 /* The note under the cursor is green on a white table, which is otherwise gray. */
 static void SetNoteColors(s32 note) {
     if (g_dwPakNoteCount != 0 && note == g_bPakSelectedNote) {
@@ -409,6 +411,7 @@ void ProcessPakMenuScreen(void) {
     }
     g_wSerialInterfaceIdle = 1;
 }
+#endif
 
 #if TGR_REGION == TGR_REGION_US
 #define UNUSED_ABOVE 6

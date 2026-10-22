@@ -59,6 +59,8 @@
         }                                                                                          \
     }
 
+/* The Japanese and European bodies still come from the assembly. */
+#if TGR_REGION == TGR_REGION_US
 void DrawSpriteAtOrigin(Sprite *sprite) {
     u32 total, stripBytes, offset;
     s32 strips, top, stripDrawHeight, i;
@@ -82,6 +84,7 @@ void DrawSpriteAtOrigin(Sprite *sprite) {
                         0);
     }
 }
+#endif
 
 void DrawTexturedSprite(Sprite *sprite, s32 x, s32 y) {
     u32 total, stripBytes, offset;
@@ -117,6 +120,8 @@ void DrawSpriteTinted(Sprite *sprite, u8 red, u8 green, u8 blue) {
                        blue);
 }
 
+/* The Japanese and European bodies still come from the assembly. */
+#if TGR_REGION == TGR_REGION_US
 void DrawSpriteRegion(
     Sprite *sprite, s32 x, s32 y, s32 width, s32 height, u8 red, u8 green, u8 blue) {
     /* The original reserves stack for four bytes of locals it does not use. */
@@ -323,6 +328,7 @@ void DrawSpriteStrip(Sprite *sprite,
     gDPPipeSync(gDisplayListPtr++);
     gDPSetTexturePersp(gDisplayListPtr++, G_TP_PERSP);
 }
+#endif
 
 void DrawScaledTexturedRect(Sprite *sprite,
                             s32 srcX,

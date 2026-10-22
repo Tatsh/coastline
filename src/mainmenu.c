@@ -50,6 +50,8 @@ void StartTimeAttack(void) {
     g_dwMainMenuEntrySource = ENTRY_FROM_TIME_ATTACK;
 }
 
+/* The Japanese and European bodies still come from the assembly. */
+#if TGR_REGION == TGR_REGION_US
 void ProcessMainMenu(void) {
     if (g_dwMainMenuInitState <= 0) {
         g_dwMenuInputPlayerMask = -1;
@@ -138,3 +140,4 @@ void ProcessMainMenu(void) {
         break;
     }
 }
+#endif

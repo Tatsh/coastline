@@ -861,6 +861,8 @@ static inline void ForceUnrotatedMatrix(TrackInstance *instance, s32 index, s32 
     gSPForceMatrix(gDisplayListPtr++, block);
 }
 
+/* The Japanese body still comes from the assembly. */
+#if TGR_REGION != TGR_REGION_JP
 void RenderTrackGeometry(s32 deferred) {
     TrackInstance *instance;
     Mtx *block;
@@ -1076,3 +1078,4 @@ void RenderTrackGeometry(s32 deferred) {
     AddTimingMarker(0, 0, 0xB4, 0, 0xFF);
     g_nDeferredInstanceLastIdx = deferredLast;
 }
+#endif

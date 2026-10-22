@@ -304,6 +304,8 @@ static inline f32 SlideShare(RigidBody *body, f32 grip, s32 weather, s32 surface
           ((body)->state.velocity.x * (body)->state.velocity.x +                                   \
            (body)->state.velocity.y * (body)->state.velocity.y))
 
+/* The Japanese and European bodies still come from the assembly. */
+#if TGR_REGION == TGR_REGION_US
 void ApplySideGrip(
     RigidBody *body, f32 dt, f32 *rearLoad, f32 *frontLoad, u8 *rearSliding, u8 *frontSliding) {
     Vec3f point, velocity, rear, front, old, lateral, local, unitX;
@@ -497,7 +499,11 @@ void ApplySideGrip(
         body->rollAngle = lean - LEAN_STEP;
     }
 }
+#endif
 
+/* The Japanese body still comes from the assembly. This body drives the wheels of the Japanese
+ * demonstration race differently from the original. */
+#if TGR_REGION != TGR_REGION_JP
 void DriveWheel(RigidBody *body, RigidBody *wheel, f32 *load, u8 *sliding, f32 dt) {
     Vec3f unitY, axle, forward, side, roll, slide, velocity, weight, push, local;
     Vec3f *normal = &wheel->groundNormal;
@@ -592,6 +598,7 @@ void DriveWheel(RigidBody *body, RigidBody *wheel, f32 *load, u8 *sliding, f32 d
         wheel->rollAngle = wheel->rollAngle + 360.0f;
     }
 }
+#endif
 
 s16 IsPointInTrackTriangle(TrackTriangle *triangle, Vec3f *point) {
     f32 u0, v0, pu, pv, au, av, bu, bv, alpha, beta;
@@ -1299,6 +1306,8 @@ void ComputeCollisionPenetration(
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
 #pragma GCC diagnostic ignored "-Wuninitialized"
+/* The Japanese and European bodies still come from the assembly. */
+#if TGR_REGION == TGR_REGION_US
 s32 CollideBodyWithTriangles(RigidBody *body, f32 box[4][4]) {
     CollisionTriangleNode *node;
     TrackTriangle *triangle;
@@ -1385,6 +1394,7 @@ s32 CollideBodyWithTriangles(RigidBody *body, f32 box[4][4]) {
     }
     return hit;
 }
+#endif
 #pragma GCC diagnostic pop
 
 void StepVehicleCollisions(RigidBody *body) {

@@ -8,6 +8,8 @@
 /* The motors are probed again every 64 calls. */
 #define RUMBLE_PROBE_INTERVAL 64
 
+/* The Japanese and European bodies still come from the assembly. */
+#if TGR_REGION == TGR_REGION_US
 void UpdateRumblePaks(s32 unused) {
     int i;
 
@@ -69,6 +71,7 @@ void UpdateRumblePaks(s32 unused) {
         }
     }
 }
+#endif
 
 void PrepareRumblePaks(void) {
 }

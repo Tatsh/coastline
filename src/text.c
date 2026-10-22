@@ -114,6 +114,8 @@ void LoadCachedGlyphTextures(void) {
 }
 #endif
 
+/* The Japanese body still comes from the assembly. */
+#if TGR_REGION != TGR_REGION_JP
 void RenderTextToDisplayList(const char *text) {
     const u8 *s = (const u8 *)text;
     s32 size = g_nFontSize;
@@ -458,6 +460,7 @@ void RenderTextToDisplayList(const char *text) {
     gDPSetTexturePersp(gDisplayListPtr++, G_TP_PERSP);
     gDPSetCycleType(gDisplayListPtr++, G_CYC_1CYCLE);
 }
+#endif
 
 void SetTextStyleBold(void) {
     g_bTextStyleBold = TRUE;
@@ -533,6 +536,8 @@ void DrawHudLabelAtFraction(const char *text, f32 x, f32 y, s32 unused) {
              g_dwScreenHeight - (s32)((f32)g_dwScreenHeight * y * 0.001214843825f) - 9);
 }
 
+/* The Japanese body still comes from the assembly. */
+#if TGR_REGION != TGR_REGION_JP
 s32 MeasureTextWidth(const char *text, s32 size) {
     s32 width = 0;
     s32 cell, padding;
@@ -578,3 +583,4 @@ s32 MeasureTextWidth(const char *text, s32 size) {
     }
     return width;
 }
+#endif

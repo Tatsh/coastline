@@ -338,6 +338,8 @@ void UpdateCameraViewBasisAndFov(Vehicle *vehicle, CameraFrame *camera) {
 }
 #endif
 
+/* The Japanese and European bodies still come from the assembly. */
+#if TGR_REGION == TGR_REGION_US
 void UpdateCameraSystem(Vehicle *vehicle) {
     f32 previousCockpit[3];
     Vec3f target;
@@ -512,6 +514,7 @@ void UpdateCameraSystem(Vehicle *vehicle) {
     vehicle->cameras[VEHICLE_CAMERA_MIRROR].up = vehicle->frame.up;
     vehicle->previousCamera = vehicle->activeCamera;
 }
+#endif
 
 void InitCameraForVehicle(Vehicle *vehicle) {
     Vec3f position;

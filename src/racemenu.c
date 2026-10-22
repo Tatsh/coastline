@@ -308,6 +308,8 @@ void SeasonRecordsPreDrawCallback(void) {
 /* The original sets the named item only in the modes that restore its name at the end. */
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
+/* The Japanese body still comes from the assembly. */
+#if TGR_REGION != TGR_REGION_JP
 void ProcessTrackMenu(void) {
     CameraFrame *camera;
     Vehicle *vehicle;
@@ -518,6 +520,7 @@ void ProcessTrackMenu(void) {
         g_apTrackMenuItems[named]->name = name;
     }
 }
+#endif
 #pragma GCC diagnostic pop
 
 void DrawModelList(Model *model, f32 m[4][4]) {

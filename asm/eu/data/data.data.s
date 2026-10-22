@@ -4719,12 +4719,6 @@ dlabel D_80274288
     /* 75298 80274298 00000000 */ .word 0x00000000
 enddlabel D_80274288
 
-nonmatching g_dwWeatherSelectState
-
-dlabel g_dwWeatherSelectState
-    /* 7529C 8027429C 00000000 */ .word 0x00000000
-enddlabel g_dwWeatherSelectState
-
 nonmatching g_MainMenuTitleTextureDesc
 
 dlabel g_MainMenuTitleTextureDesc
@@ -4971,12 +4965,6 @@ dlabel D_802743A0
     /* 753A0 802743A0 00000000 */ .word 0x00000000
 enddlabel D_802743A0
 
-nonmatching g_dwPlayerCountSelectState
-
-dlabel g_dwPlayerCountSelectState
-    /* 753A4 802743A4 00000000 */ .word 0x00000000
-enddlabel g_dwPlayerCountSelectState
-
 nonmatching D_802743A8
 
 /* Automatically generated and unreferenced pad */
@@ -5103,12 +5091,6 @@ nonmatching g_dwOptionsChangedNeedsSave
 dlabel g_dwOptionsChangedNeedsSave
     /* 75490 80274490 00000000 */ .word 0x00000000
 enddlabel g_dwOptionsChangedNeedsSave
-
-nonmatching g_dwOptionsMenuState
-
-dlabel g_dwOptionsMenuState
-    /* 75494 80274494 00000000 */ .word 0x00000000
-enddlabel g_dwOptionsMenuState
 
 nonmatching D_80274498
 
@@ -5513,12 +5495,6 @@ nonmatching D_802746C4
 dlabel D_802746C4
     /* 756C4 802746C4 00000000 */ .word 0x00000000
 enddlabel D_802746C4
-
-nonmatching g_dwControllerScreenInitState
-
-dlabel g_dwControllerScreenInitState
-    /* 756C8 802746C8 00000000 */ .word 0x00000000
-enddlabel g_dwControllerScreenInitState
 
 nonmatching D_802746CC
 
@@ -31237,9 +31213,9 @@ dlabel g_dwViewportTransZ
     /* 8DD70 8028CD70 00000000 */ .word 0x00000000
 enddlabel g_dwViewportTransZ
 
-nonmatching g_ViModePalHaf1Ram
+nonmatching g_ViModePalHaf1
 
-dlabel g_ViModePalHaf1Ram
+dlabel g_ViModePalHaf1
     /* 8DD74 8028CD74 00000000 */ .word 0x00000000
     /* 8DD78 8028CD78 00000000 */ .word 0x00000000
     /* 8DD7C 8028CD7C 00000000 */ .word 0x00000000
@@ -31251,7 +31227,7 @@ dlabel g_ViModePalHaf1Ram
     /* 8DD94 8028CD94 00000000 */ .word 0x00000000
     /* 8DD98 8028CD98 00000000 */ .word 0x00000000
     /* 8DD9C 8028CD9C 00000000 */ .word 0x00000000
-enddlabel g_ViModePalHaf1Ram
+enddlabel g_ViModePalHaf1
 
 nonmatching g_dwViModePalHaf1RamYScale0
 
@@ -31282,11 +31258,11 @@ dlabel g_dwViModePalHaf1RamVStart1
     /* 8DDC0 8028CDC0 00000000 */ .word 0x00000000
 enddlabel g_dwViModePalHaf1RamVStart1
 
-nonmatching g_pRacePtr183
+nonmatching g_ViModePalLan1
 
-dlabel g_pRacePtr183
+dlabel g_ViModePalLan1
     /* 8DDC4 8028CDC4 00000000 */ .word 0x00000000
-enddlabel g_pRacePtr183
+enddlabel g_ViModePalLan1
 
 nonmatching D_8028CDC8
 
@@ -31607,18 +31583,6 @@ dlabel g_bPakPort0Initialized
     /* 8E0A0 8028D0A0 00000000 */ .word 0x00000000
     /* 8E0A4 8028D0A4 00000000 */ .word 0x00000000
 enddlabel g_bPakPort0Initialized
-
-nonmatching g_qwTimestampBase
-
-dlabel g_qwTimestampBase
-    /* 8E0A8 8028D0A8 00000000 */ .word 0x00000000
-enddlabel g_qwTimestampBase
-
-nonmatching D_8028D0AC
-
-dlabel D_8028D0AC
-    /* 8E0AC 8028D0AC 00000000 */ .word 0x00000000
-enddlabel D_8028D0AC
 
 nonmatching g_dwFrameTimestamp
 
@@ -32444,12 +32408,6 @@ dlabel g_dwFadeAutoReverse
     /* 8EA34 8028DA34 00000000 */ .word 0x00000000
 enddlabel g_dwFadeAutoReverse
 
-nonmatching g_dwScreenFadeFramesRemaining
-
-dlabel g_dwScreenFadeFramesRemaining
-    /* 8EA38 8028DA38 00000002 */ .word 0x00000002
-enddlabel g_dwScreenFadeFramesRemaining
-
 nonmatching D_8028DA3C
 
 /* Automatically generated and unreferenced pad */
@@ -33049,9 +33007,9 @@ dlabel D_8028DDC4
     /* 8EE74 8028DE74 00000000 */ .word 0x00000000
 enddlabel D_8028DDC4
 
-nonmatching D_8028DE78
+nonmatching g_aPausedClockFields
 
-dlabel D_8028DE78
+dlabel g_aPausedClockFields
     /* 8EE78 8028DE78 8028DA40 */ .word g_dwRandomSeed
     /* 8EE7C 8028DE7C 00000004 */ .word 0x00000004
     /* 8EE80 8028DE80 8028D0A8 */ .word g_qwTimestampBase
@@ -33070,7 +33028,7 @@ dlabel D_8028DE78
     /* 8EEB4 8028DEB4 00000004 */ .word 0x00000004
     /* 8EEB8 8028DEB8 00000000 */ .word 0x00000000
     /* 8EEBC 8028DEBC 00000000 */ .word 0x00000000
-enddlabel D_8028DE78
+enddlabel g_aPausedClockFields
 
 nonmatching g_dwReplayKeyframeFrameCount
 
@@ -33307,11 +33265,11 @@ dlabel D_8028DEC8
     /* 8F228 8028E228 00000000 */ .word 0x00000000
 enddlabel D_8028DEC8
 
-nonmatching g_pVehicleArrayEnd
+nonmatching g_aReplayKeyframeDescTable2
 
-dlabel g_pVehicleArrayEnd
+dlabel g_aReplayKeyframeDescTable2
     /* 8F22C 8028E22C 80325EA0 */ .word g_aRacerSlots
-enddlabel g_pVehicleArrayEnd
+enddlabel g_aReplayKeyframeDescTable2
 
 nonmatching D_8028E230
 
@@ -33358,9 +33316,9 @@ dlabel D_8028E230
     /* 8F2C8 8028E2C8 00000000 */ .word 0x00000000
 enddlabel D_8028E230
 
-nonmatching D_8028E2CC
+nonmatching g_aReplayKeyframeDescTable1
 
-dlabel D_8028E2CC
+dlabel g_aReplayKeyframeDescTable1
     /* 8F2CC 8028E2CC 8028D5B0 */ .word g_dwRaceFinishOrderCounter
     /* 8F2D0 8028E2D0 00000004 */ .word 0x00000004
     /* 8F2D4 8028E2D4 8028DA40 */ .word g_dwRandomSeed
@@ -33401,7 +33359,7 @@ dlabel D_8028E2CC
     /* 8F360 8028E360 00000004 */ .word 0x00000004
     /* 8F364 8028E364 00000000 */ .word 0x00000000
     /* 8F368 8028E368 00000000 */ .word 0x00000000
-enddlabel D_8028E2CC
+enddlabel g_aReplayKeyframeDescTable1
 
 nonmatching g_aSoundEffects
 
@@ -34761,12 +34719,6 @@ nonmatching D_8028EF9E
 dlabel D_8028EF9E
     /* 8FF9E 8028EF9E */ .short 0x0000
 enddlabel D_8028EF9E
-
-nonmatching g_dwVehicleEffectsInitialized
-
-dlabel g_dwVehicleEffectsInitialized
-    /* 8FFA0 8028EFA0 00000000 */ .word 0x00000000
-enddlabel g_dwVehicleEffectsInitialized
 
 nonmatching D_8028EFA4
 
@@ -37804,12 +37756,6 @@ dlabel D_8029053A
     /* 9153A 8029053A */ .short 0x0000
     /* 9153C 8029053C 00000000 */ .word 0x00000000
 enddlabel D_8029053A
-
-nonmatching g_wPakScanEmptyMask
-
-dlabel g_wPakScanEmptyMask
-    /* 91540 80290540 */ .short 0x0000
-enddlabel g_wPakScanEmptyMask
 
 nonmatching D_80290542
 
@@ -64864,9 +64810,9 @@ dlabel D_802A7B9E
     /* A8B9E 802A7B9E */ .short 0x7FFF
 enddlabel D_802A7B9E
 
-nonmatching g_ViModePalHaf1
+nonmatching osViModePalHaf1
 
-dlabel g_ViModePalHaf1
+dlabel osViModePalHaf1
     /* A8BA0 802A7BA0 19000000 */ .word 0x19000000
     /* A8BA4 802A7BA4 0000305E */ .word 0x0000305E
     /* A8BA8 802A7BA8 00000280 */ .word 0x00000280
@@ -64879,7 +64825,7 @@ dlabel g_ViModePalHaf1
     /* A8BC4 802A7BC4 00000000 */ .word 0x00000000
     /* A8BC8 802A7BC8 00000500 */ .word 0x00000500
     /* A8BCC 802A7BCC 02000800 */ .word 0x02000800
-enddlabel g_ViModePalHaf1
+enddlabel osViModePalHaf1
 
 nonmatching g_dwViModePalHaf1VStart0
 
@@ -64954,88 +64900,6 @@ dlabel D_802A7C44
     /* A8C4C 802A7C4C 00000000 */ .word 0x00000000
 enddlabel D_802A7C44
 
-nonmatching osClockRate
-
-dlabel osClockRate
-    /* A8C50 802A7C50 00000000 */ .word 0x00000000
-enddlabel osClockRate
-
-nonmatching D_802A7C54
-
-dlabel D_802A7C54
-    /* A8C54 802A7C54 03B9ACA0 */ .word 0x03B9ACA0
-enddlabel D_802A7C54
-
-nonmatching osViClock
-
-dlabel osViClock
-    /* A8C58 802A7C58 02E6D354 */ .word 0x02E6D354
-enddlabel osViClock
-
-nonmatching __osShutdown
-
-dlabel __osShutdown
-    /* A8C5C 802A7C5C 00000000 */ .word 0x00000000
-enddlabel __osShutdown
-
-nonmatching __OSGlobalIntMask
-
-dlabel __OSGlobalIntMask
-    /* A8C60 802A7C60 003FFF01 */ .word 0x003FFF01
-enddlabel __OSGlobalIntMask
-
-nonmatching D_802A7C64
-
-/* Automatically generated and unreferenced pad */
-dlabel D_802A7C64
-    /* A8C64 802A7C64 00000000 */ .word 0x00000000
-    /* A8C68 802A7C68 00000000 */ .word 0x00000000
-    /* A8C6C 802A7C6C 00000000 */ .word 0x00000000
-enddlabel D_802A7C64
-
-nonmatching __osViDevMgr
-
-dlabel __osViDevMgr
-    /* A8C70 802A7C70 00000000 */ .word 0x00000000
-enddlabel __osViDevMgr
-
-nonmatching D_802A7C74
-
-dlabel D_802A7C74
-    /* A8C74 802A7C74 00000000 */ .word 0x00000000
-enddlabel D_802A7C74
-
-nonmatching D_802A7C78
-
-dlabel D_802A7C78
-    /* A8C78 802A7C78 00000000 */ .word 0x00000000
-enddlabel D_802A7C78
-
-nonmatching D_802A7C7C
-
-dlabel D_802A7C7C
-    /* A8C7C 802A7C7C 00000000 */ .word 0x00000000
-enddlabel D_802A7C7C
-
-nonmatching D_802A7C80
-
-dlabel D_802A7C80
-    /* A8C80 802A7C80 00000000 */ .word 0x00000000
-enddlabel D_802A7C80
-
-nonmatching D_802A7C84
-
-dlabel D_802A7C84
-    /* A8C84 802A7C84 00000000 */ .word 0x00000000
-enddlabel D_802A7C84
-
-nonmatching D_802A7C88
-
-dlabel D_802A7C88
-    /* A8C88 802A7C88 00000000 */ .word 0x00000000
-    /* A8C8C 802A7C8C 00000000 */ .word 0x00000000
-enddlabel D_802A7C88
-
 nonmatching osViModeMpalLan1
 
 dlabel osViModeMpalLan1
@@ -65065,63 +64929,6 @@ dlabel g_dwViModeMpalLan1Ctrl
     /* A8CD8 802A7CD8 000E0204 */ .word 0x000E0204
     /* A8CDC 802A7CDC 00000002 */ .word 0x00000002
 enddlabel g_dwViModeMpalLan1Ctrl
-
-nonmatching __osPiDevMgr
-
-dlabel __osPiDevMgr
-    /* A8CE0 802A7CE0 00000000 */ .word 0x00000000
-enddlabel __osPiDevMgr
-
-nonmatching D_802A7CE4
-
-dlabel D_802A7CE4
-    /* A8CE4 802A7CE4 00000000 */ .word 0x00000000
-enddlabel D_802A7CE4
-
-nonmatching D_802A7CE8
-
-dlabel D_802A7CE8
-    /* A8CE8 802A7CE8 00000000 */ .word 0x00000000
-enddlabel D_802A7CE8
-
-nonmatching D_802A7CEC
-
-dlabel D_802A7CEC
-    /* A8CEC 802A7CEC 00000000 */ .word 0x00000000
-enddlabel D_802A7CEC
-
-nonmatching D_802A7CF0
-
-dlabel D_802A7CF0
-    /* A8CF0 802A7CF0 00000000 */ .word 0x00000000
-enddlabel D_802A7CF0
-
-nonmatching D_802A7CF4
-
-dlabel D_802A7CF4
-    /* A8CF4 802A7CF4 00000000 */ .word 0x00000000
-enddlabel D_802A7CF4
-
-nonmatching D_802A7CF8
-
-dlabel D_802A7CF8
-    /* A8CF8 802A7CF8 00000000 */ .word 0x00000000
-enddlabel D_802A7CF8
-
-nonmatching __osPiTable
-
-dlabel __osPiTable
-    /* A8CFC 802A7CFC 00000000 */ .word 0x00000000
-enddlabel __osPiTable
-
-nonmatching __osCurrentHandle
-
-dlabel __osCurrentHandle
-    /* A8D00 802A7D00 80383860 */ .word CartRomHandle
-    /* A8D04 802A7D04 803838E0 */ .word LeoDiskHandle
-    /* A8D08 802A7D08 00000000 */ .word 0x00000000
-    /* A8D0C 802A7D0C 00000000 */ .word 0x00000000
-enddlabel __osCurrentHandle
 
 nonmatching aiHdwrBugFlag
 
@@ -65333,21 +65140,6 @@ dlabel D_802A7E28
     /* A8E28 802A7E28 00000000 */ .word 0x00000000
     /* A8E2C 802A7E2C 00000000 */ .word 0x00000000
 enddlabel D_802A7E28
-
-nonmatching __osTimerList
-
-dlabel __osTimerList
-    /* A8E30 802A7E30 80383820 */ .word __osBaseTimer
-enddlabel __osTimerList
-
-nonmatching D_802A7E34
-
-/* Automatically generated and unreferenced pad */
-dlabel D_802A7E34
-    /* A8E34 802A7E34 00000000 */ .word 0x00000000
-    /* A8E38 802A7E38 00000000 */ .word 0x00000000
-    /* A8E3C 802A7E3C 00000000 */ .word 0x00000000
-enddlabel D_802A7E34
 
 nonmatching __osPiAccessQueueEnabled
 

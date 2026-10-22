@@ -103,6 +103,8 @@ void AnimateSplashModels(void) {
     AdvanceModelAnimations(g_pSplashTitleModelB);
 }
 
+/* The Japanese and European bodies still come from the assembly. */
+#if TGR_REGION == TGR_REGION_US
 /* Allocate a model on the heap and decompress it there. */
 static inline Model *LoadSplashModel(u32 romOffset) {
     return DecompressModel(AllocHeapAligned(DmaReadAssetSize(romOffset)), romOffset);
@@ -459,6 +461,7 @@ void ProcessSplashScreens(void) {
     FlushDisplayList();
     UpdateSplashExit();
 }
+#endif
 
 void ProcessControllerCheck(void) {
 #if TGR_REGION != TGR_REGION_US

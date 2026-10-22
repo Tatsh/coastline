@@ -915,16 +915,6 @@ nonmatching g_szResultsBuf, 0x58
 dlabel g_szResultsBuf
     /* 80317FF8 */ .space 0x58
 
-nonmatching g_dwWeatherMenuItemCount, 0x4
-
-dlabel g_dwWeatherMenuItemCount
-    /* 80318050 */ .space 0x04
-
-nonmatching g_dwWeatherMenuSelection, 0x4
-
-dlabel g_dwWeatherMenuSelection
-    /* 80318054 */ .space 0x04
-
 nonmatching D_80318058, 0x8
 
 /* Automatically generated and unreferenced pad */
@@ -972,16 +962,6 @@ nonmatching g_bSaveConfigurationPending, 0x4
 
 dlabel g_bSaveConfigurationPending
     /* 80318084 */ .space 0x04
-
-nonmatching g_dwOptionsMenuItemCount, 0x4
-
-dlabel g_dwOptionsMenuItemCount
-    /* 80318088 */ .space 0x04
-
-nonmatching g_dwOptionsMenuSelection, 0x4
-
-dlabel g_dwOptionsMenuSelection
-    /* 8031808C */ .space 0x04
 
 nonmatching g_szBgmVolumeTextBuf, 0x18
 
@@ -1053,16 +1033,6 @@ nonmatching g_bSaveLoadFadeDelayFrames, 0xF
 dlabel g_bSaveLoadFadeDelayFrames
     /* 80318111 */ .space 0x0F
 
-nonmatching g_dwControllerScreenItemCount, 0x4
-
-dlabel g_dwControllerScreenItemCount
-    /* 80318120 */ .space 0x04
-
-nonmatching g_eControllerScreenSelection, 0xC
-
-dlabel g_eControllerScreenSelection
-    /* 80318124 */ .space 0x0C
-
 nonmatching g_apszBootArgv, 0x4
 
 dlabel g_apszBootArgv
@@ -1078,9 +1048,9 @@ nonmatching g_pszBootArgv2, 0x478
 dlabel g_pszBootArgv2
     /* 80318138 */ .space 0x478
 
-nonmatching D_803185B0, 0x400
+nonmatching g_adwIdleThreadStack, 0x400
 
-dlabel D_803185B0
+dlabel g_adwIdleThreadStack
     /* 803185B0 */ .space 0x400
 
 nonmatching g_adwMainThreadStack, 0x4
@@ -1262,14 +1232,14 @@ nonmatching g_aRdpEventMsgBuf, 0x4
 dlabel g_aRdpEventMsgBuf
     /* 8031C86C */ .space 0x04
 
-nonmatching g_PreNmiResetMsgQueue, 0x18
+nonmatching g_PreNmiMesgQueue, 0x18
 
-dlabel g_PreNmiResetMsgQueue
+dlabel g_PreNmiMesgQueue
     /* 8031C870 */ .space 0x18
 
-nonmatching g_aPreNmiResetMsgBuf, 0x8
+nonmatching g_aPreNmiMesgBuf, 0x8
 
-dlabel g_aPreNmiResetMsgBuf
+dlabel g_aPreNmiMesgBuf
     /* 8031C888 */ .space 0x08
 
 nonmatching g_ViRetraceMesgQueue, 0x18
@@ -4499,10 +4469,9 @@ nonmatching g_AudioThread, 0x1B0
 dlabel g_AudioThread
     /* 8037B4B8 */ .space 0x1B0
 
-nonmatching D_8037B668, 0x400
+nonmatching g_aAudioThreadStack, 0x400
 
-/* Automatically generated and unreferenced pad */
-dlabel D_8037B668
+dlabel g_aAudioThreadStack
     /* 8037B668 */ .space 0x400
 
 nonmatching g_aFreqScaleTable, 0x3C0
@@ -5168,9 +5137,9 @@ nonmatching __osMaxControllers, 0x7
 dlabel __osMaxControllers
     /* 80381371 */ .space 0x07
 
-nonmatching g_EepromLongTimer, 0x20
+nonmatching __osEepromTimer, 0x20
 
-dlabel g_EepromLongTimer
+dlabel __osEepromTimer
     /* 80381378 */ .space 0x20
 
 nonmatching __osEepromTimerQ, 0x18
@@ -5194,87 +5163,6 @@ nonmatching D_803813C4, 0xC
 dlabel D_803813C4
     /* 803813C4 */ .space 0x0C
 
-nonmatching viThread, 0x1B0
-
-dlabel viThread
-    /* 803813D0 */ .space 0x1B0
-
-nonmatching viThreadStack, 0x1000
-
-dlabel viThreadStack
-    /* 80381580 */ .space 0x1000
-
-nonmatching viEventQueue, 0x18
-
-dlabel viEventQueue
-    /* 80382580 */ .space 0x18
-
-nonmatching viEventBuf, 0x18
-
-dlabel viEventBuf
-    /* 80382598 */ .space 0x18
-
-nonmatching viRetraceMsg, 0x2
-
-dlabel viRetraceMsg
-    /* 803825B0 */ .space 0x02
-
-nonmatching D_803825B2, 0x2
-
-dlabel D_803825B2
-    /* 803825B2 */ .space 0x02
-
-nonmatching D_803825B4, 0x14
-
-dlabel D_803825B4
-    /* 803825B4 */ .space 0x14
-
-nonmatching viCounterMsg, 0x2
-
-dlabel viCounterMsg
-    /* 803825C8 */ .space 0x02
-
-nonmatching D_803825CA, 0x2
-
-dlabel D_803825CA
-    /* 803825CA */ .space 0x02
-
-nonmatching D_803825CC, 0x14
-
-dlabel D_803825CC
-    /* 803825CC */ .space 0x14
-
-nonmatching viMgrRetrace, 0x2
-
-dlabel viMgrRetrace
-    /* 803825E0 */ .space 0x02
-
-nonmatching D_803825E2, 0xE
-
-/* Automatically generated and unreferenced pad */
-dlabel D_803825E2
-    /* 803825E2 */ .space 0x0E
-
-nonmatching piThread, 0x1B0
-
-dlabel piThread
-    /* 803825F0 */ .space 0x1B0
-
-nonmatching piThreadStack, 0x1000
-
-dlabel piThreadStack
-    /* 803827A0 */ .space 0x1000
-
-nonmatching piEventQueue, 0x18
-
-dlabel piEventQueue
-    /* 803837A0 */ .space 0x18
-
-nonmatching piEventBuf, 0x8
-
-dlabel piEventBuf
-    /* 803837B8 */ .space 0x08
-
 nonmatching siAccessBuf, 0x8
 
 dlabel siAccessBuf
@@ -5285,9 +5173,9 @@ nonmatching __osSiAccessQueue, 0x18
 dlabel __osSiAccessQueue
     /* 803837C8 */ .space 0x18
 
-nonmatching g_abEepPifRam, 0x1
+nonmatching __osEepPifRam, 0x1
 
-dlabel g_abEepPifRam
+dlabel __osEepPifRam
     /* 803837E0 */ .space 0x01
 
 nonmatching g_bEepPifRamPortDummy1, 0x1
@@ -5329,139 +5217,6 @@ nonmatching g_dwEepPifRamStatus, 0x4
 
 dlabel g_dwEepPifRamStatus
     /* 8038381C */ .space 0x04
-
-nonmatching __osBaseTimer, 0x4
-
-dlabel __osBaseTimer
-    /* 80383820 */ .space 0x04
-
-nonmatching D_80383824, 0x1C
-
-/* Automatically generated and unreferenced pad */
-dlabel D_80383824
-    /* 80383824 */ .space 0x1C
-
-nonmatching __osCurrentTime, 0x4
-
-dlabel __osCurrentTime
-    /* 80383840 */ .space 0x04
-
-nonmatching D_80383844, 0x4
-
-dlabel D_80383844
-    /* 80383844 */ .space 0x04
-
-nonmatching __osBaseCounter, 0x4
-
-dlabel __osBaseCounter
-    /* 80383848 */ .space 0x04
-
-nonmatching __osViIntrCount, 0x4
-
-dlabel __osViIntrCount
-    /* 8038384C */ .space 0x04
-
-nonmatching __osTimerCounter, 0x4
-
-dlabel __osTimerCounter
-    /* 80383850 */ .space 0x04
-
-nonmatching D_80383854, 0xC
-
-/* Automatically generated and unreferenced pad */
-dlabel D_80383854
-    /* 80383854 */ .space 0x0C
-
-nonmatching CartRomHandle, 0x4
-
-dlabel CartRomHandle
-    /* 80383860 */ .space 0x04
-
-nonmatching D_80383864, 0x1
-
-dlabel D_80383864
-    /* 80383864 */ .space 0x01
-
-nonmatching D_80383865, 0x1
-
-dlabel D_80383865
-    /* 80383865 */ .space 0x01
-
-nonmatching D_80383866, 0x1
-
-dlabel D_80383866
-    /* 80383866 */ .space 0x01
-
-nonmatching D_80383867, 0x1
-
-dlabel D_80383867
-    /* 80383867 */ .space 0x01
-
-nonmatching D_80383868, 0x1
-
-dlabel D_80383868
-    /* 80383868 */ .space 0x01
-
-nonmatching D_80383869, 0x3
-
-dlabel D_80383869
-    /* 80383869 */ .space 0x03
-
-nonmatching D_8038386C, 0x8
-
-dlabel D_8038386C
-    /* 8038386C */ .space 0x08
-
-nonmatching g_CartRomTransferInfo, 0x6C
-
-dlabel g_CartRomTransferInfo
-    /* 80383874 */ .space 0x6C
-
-nonmatching LeoDiskHandle, 0x4
-
-dlabel LeoDiskHandle
-    /* 803838E0 */ .space 0x04
-
-nonmatching D_803838E4, 0x1
-
-dlabel D_803838E4
-    /* 803838E4 */ .space 0x01
-
-nonmatching D_803838E5, 0x1
-
-dlabel D_803838E5
-    /* 803838E5 */ .space 0x01
-
-nonmatching D_803838E6, 0x2
-
-dlabel D_803838E6
-    /* 803838E6 */ .space 0x02
-
-nonmatching D_803838E8, 0x1
-
-dlabel D_803838E8
-    /* 803838E8 */ .space 0x01
-
-nonmatching D_803838E9, 0x3
-
-dlabel D_803838E9
-    /* 803838E9 */ .space 0x03
-
-nonmatching D_803838EC, 0x68
-
-dlabel D_803838EC
-    /* 803838EC */ .space 0x68
-
-nonmatching __osDiskHandle, 0x4
-
-dlabel __osDiskHandle
-    /* 80383954 */ .space 0x04
-
-nonmatching D_80383958, 0x8
-
-/* Automatically generated and unreferenced pad */
-dlabel D_80383958
-    /* 80383958 */ .space 0x08
 
 nonmatching piAccessBuf, 0x8
 

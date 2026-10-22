@@ -121,11 +121,14 @@ void AddVehicleJolt(s32 index, f32 amount) {
     }
 }
 
+/* The Japanese and European bodies of its callers still come from the assembly. */
+#if TGR_REGION == TGR_REGION_US
 /* Whether a viewport follows the vehicle. */
 static s32 IsVehicleViewed(Vehicle *vehicle) {
     return vehicle->index == g_aViewportRects[0].vehicleIndex ||
            (g_dwNumViewports >= 2 && vehicle->index == g_aViewportRects[1].vehicleIndex);
 }
+#endif
 
 #if TGR_REGION == TGR_REGION_US
 /* Stand the trackside camera at the nearest point of the track, or switch away from it when there
@@ -180,6 +183,8 @@ void ChooseReplayCamera(Vehicle *vehicle) {
 }
 #pragma GCC diagnostic pop
 
+/* The Japanese and European bodies still come from the assembly. */
+#if TGR_REGION == TGR_REGION_US
 /* Choose the view a replay, a race of the computer, or a finished racer shows, and take the view a
  * player asks for. */
 static void ChooseVehicleView(Vehicle *vehicle) {
@@ -378,6 +383,7 @@ void ProcessVehicleInputAndPhysics(Vehicle *vehicle) {
     }
     RespawnVehicle(vehicle);
 }
+#endif
 
 void UpdatePhysicsStep(Vehicle *vehicle) {
     ProcessVehicleInputAndPhysics(vehicle);
@@ -585,6 +591,8 @@ void ComputeTrackPosition(Vehicle *vehicle) {
     }
 }
 
+/* The European body still comes from the assembly. */
+#if TGR_REGION != TGR_REGION_EU
 /* 1 above the dead zone of the computer's tests, -1 below it, and 0 within. */
 static s32 AiSign(f32 value) {
     if (AI_SIGN_DEAD_ZONE < value) {
@@ -1069,6 +1077,7 @@ void UpdateAiVehicleBehavior(Vehicle *vehicle) {
     UpdateVehiclePhysicsFrame(vehicle);
     RespawnVehicle(vehicle);
 }
+#endif
 
 void DriveAiVehicle(Vehicle *vehicle) {
     UpdateAiVehicleBehavior(vehicle);

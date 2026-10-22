@@ -756,6 +756,8 @@ static inline void DrawShapeOutline(void) {
     }
 }
 
+/* The Japanese body still comes from the assembly. */
+#if TGR_REGION != TGR_REGION_JP
 void ProcessDecalEditorInput(void) {
     if (!g_dwAnchorXInitialized) {
         g_dwAnchorXInitialized = TRUE;
@@ -780,6 +782,7 @@ void ProcessDecalEditorInput(void) {
     }
     DrawShapeOutline();
 }
+#endif
 
 s32 IsCursorInButton(Sprite *sprite) {
     if (g_texPaintCursor.originX >= sprite->originX &&
@@ -907,6 +910,8 @@ void DrawDecalColorPalette(void) {
         }                                                                                          \
     }
 
+/* The Japanese bodies still come from the assembly. */
+#if TGR_REGION != TGR_REGION_JP
 void ProcessBrushStyleMenu(void) {
     TwoStyleNames names;
     PlayerInputState *input;
@@ -1243,7 +1248,10 @@ void ProcessRectStyleMenu(void) {
     MoveStyleMenuCursor(input);
     CloseStyleMenu(&g_texPaintToolRect);
 }
+#endif
 
+/* The Japanese and European bodies still come from the assembly. */
+#if TGR_REGION == TGR_REGION_US
 void ProcessOvalStyleMenu(void) {
     FourStyleNames names;
     PlayerInputState *input;
@@ -1305,6 +1313,7 @@ void ProcessOvalStyleMenu(void) {
     MoveStyleMenuCursor(input);
     CloseStyleMenu(&g_texPaintToolOval);
 }
+#endif
 
 void ProcessPaintShopExitConfirm(void) {
     /* The original reserves stack for 24 bytes of locals it does not use. */
