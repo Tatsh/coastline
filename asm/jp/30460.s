@@ -56,15 +56,15 @@ glabel RenderTextToDisplayList
     /* 30504 8022F504 AFAE0074 */  sw         $t6, 0x74($sp)
     /* 30508 8022F508 11C00010 */  beqz       $t6, .L8022F54C
     /* 3050C 8022F50C 01C07825 */   or        $t7, $t6, $zero
-    /* 30510 8022F510 3C19802A */  lui        $t9, %hi(g_adwSmallFontGlyphOffsets)
-    /* 30514 8022F514 3C17802A */  lui        $s7, %hi(D_802A3ADC)
+    /* 30510 8022F510 3C19802A */  lui        $t9, %hi(D_8029FC60)
+    /* 30514 8022F514 3C17802A */  lui        $s7, %hi(g_adwSmallFontGlyphOffsets)
     /* 30518 8022F518 24180188 */  addiu      $t8, $zero, 0x188
-    /* 3051C 8022F51C 2739FC60 */  addiu      $t9, $t9, %lo(g_adwSmallFontGlyphOffsets)
+    /* 3051C 8022F51C 2739FC60 */  addiu      $t9, $t9, %lo(D_8029FC60)
     /* 30520 8022F520 3C1F8029 */  lui        $ra, %hi(g_abSmallFontGradient)
     /* 30524 8022F524 3C118029 */  lui        $s1, %hi(g_abSmallFontShadowGradient)
     /* 30528 8022F528 24100014 */  addiu      $s0, $zero, 0x14
     /* 3052C 8022F52C 24160004 */  addiu      $s6, $zero, 0x4
-    /* 30530 8022F530 26F73ADC */  addiu      $s7, $s7, %lo(D_802A3ADC)
+    /* 30530 8022F530 26F73ADC */  addiu      $s7, $s7, %lo(g_adwSmallFontGlyphOffsets)
     /* 30534 8022F534 AFB801BC */  sw         $t8, 0x1BC($sp)
     /* 30538 8022F538 AFB901B8 */  sw         $t9, 0x1B8($sp)
     /* 3053C 8022F53C 27FFE220 */  addiu      $ra, $ra, %lo(g_abSmallFontGradient)
@@ -73,14 +73,14 @@ glabel RenderTextToDisplayList
     /* 30548 8022F548 AFA201F0 */   sw        $v0, 0x1F0($sp)
   .L8022F54C:
     /* 3054C 8022F54C 3C0F8029 */  lui        $t7, %hi(g_aSmallFontTexture)
-    /* 30550 8022F550 3C17802A */  lui        $s7, %hi(D_802A3A00)
+    /* 30550 8022F550 3C17802A */  lui        $s7, %hi(g_adwLargeFontGlyphOffsets)
     /* 30554 8022F554 240E02C0 */  addiu      $t6, $zero, 0x2C0
     /* 30558 8022F558 25EF2060 */  addiu      $t7, $t7, %lo(g_aSmallFontTexture)
     /* 3055C 8022F55C 3C1F8029 */  lui        $ra, %hi(D_8028DFA0)
     /* 30560 8022F560 3C118029 */  lui        $s1, %hi(D_8028E0E0)
     /* 30564 8022F564 24100028 */  addiu      $s0, $zero, 0x28
     /* 30568 8022F568 24160007 */  addiu      $s6, $zero, 0x7
-    /* 3056C 8022F56C 26F73A00 */  addiu      $s7, $s7, %lo(D_802A3A00)
+    /* 3056C 8022F56C 26F73A00 */  addiu      $s7, $s7, %lo(g_adwLargeFontGlyphOffsets)
     /* 30570 8022F570 AFAE01BC */  sw         $t6, 0x1BC($sp)
     /* 30574 8022F574 AFAF01B8 */  sw         $t7, 0x1B8($sp)
     /* 30578 8022F578 27FFDFA0 */  addiu      $ra, $ra, %lo(D_8028DFA0)
@@ -385,11 +385,11 @@ glabel RenderTextToDisplayList
     /* 309F8 8022F9F8 01D5001A */  div        $zero, $t6, $s5
     /* 309FC 8022F9FC 3C198029 */  lui        $t9, %hi(g_aSmallFontTexture)
     /* 30A00 8022FA00 00007812 */  mflo       $t7
-    /* 30A04 8022FA04 3C17802A */  lui        $s7, %hi(D_802A3A00)
+    /* 30A04 8022FA04 3C17802A */  lui        $s7, %hi(g_adwLargeFontGlyphOffsets)
     /* 30A08 8022FA08 27392060 */  addiu      $t9, $t9, %lo(g_aSmallFontTexture)
     /* 30A0C 8022FA0C 24100028 */  addiu      $s0, $zero, 0x28
     /* 30A10 8022FA10 24160007 */  addiu      $s6, $zero, 0x7
-    /* 30A14 8022FA14 26F73A00 */  addiu      $s7, $s7, %lo(D_802A3A00)
+    /* 30A14 8022FA14 26F73A00 */  addiu      $s7, $s7, %lo(g_adwLargeFontGlyphOffsets)
     /* 30A18 8022FA18 AFB801BC */  sw         $t8, 0x1BC($sp)
     /* 30A1C 8022FA1C AFB901B8 */  sw         $t9, 0x1B8($sp)
     /* 30A20 8022FA20 16A00002 */  bnez       $s5, .L8022FA2C
@@ -415,15 +415,15 @@ glabel RenderTextToDisplayList
     /* 30A60 8022FA60 AFA001CC */  sw         $zero, 0x1CC($sp)
     /* 30A64 8022FA64 24190188 */  addiu      $t9, $zero, 0x188
     /* 30A68 8022FA68 13000015 */  beqz       $t8, .L8022FAC0
-    /* 30A6C 8022FA6C 3C0E802A */   lui       $t6, %hi(g_adwSmallFontGlyphOffsets)
+    /* 30A6C 8022FA6C 3C0E802A */   lui       $t6, %hi(D_8029FC60)
     /* 30A70 8022FA70 240F4C00 */  addiu      $t7, $zero, 0x4C00
     /* 30A74 8022FA74 01F5001A */  div        $zero, $t7, $s5
     /* 30A78 8022FA78 0000C012 */  mflo       $t8
-    /* 30A7C 8022FA7C 3C17802A */  lui        $s7, %hi(D_802A3ADC)
-    /* 30A80 8022FA80 25CEFC60 */  addiu      $t6, $t6, %lo(g_adwSmallFontGlyphOffsets)
+    /* 30A7C 8022FA7C 3C17802A */  lui        $s7, %hi(g_adwSmallFontGlyphOffsets)
+    /* 30A80 8022FA80 25CEFC60 */  addiu      $t6, $t6, %lo(D_8029FC60)
     /* 30A84 8022FA84 24100014 */  addiu      $s0, $zero, 0x14
     /* 30A88 8022FA88 24160004 */  addiu      $s6, $zero, 0x4
-    /* 30A8C 8022FA8C 26F73ADC */  addiu      $s7, $s7, %lo(D_802A3ADC)
+    /* 30A8C 8022FA8C 26F73ADC */  addiu      $s7, $s7, %lo(g_adwSmallFontGlyphOffsets)
     /* 30A90 8022FA90 AFB901BC */  sw         $t9, 0x1BC($sp)
     /* 30A94 8022FA94 AFAE01B8 */  sw         $t6, 0x1B8($sp)
     /* 30A98 8022FA98 16A00002 */  bnez       $s5, .L8022FAA4
@@ -1328,23 +1328,23 @@ glabel MeasureTextWidth
     /* 31990 80230990 28A10019 */  slti       $at, $a1, 0x19
     /* 31994 80230994 10200006 */  beqz       $at, .L802309B0
     /* 31998 80230998 24060028 */   addiu     $a2, $zero, 0x28
-    /* 3199C 8023099C 3C08802A */  lui        $t0, %hi(D_802A3ADC)
+    /* 3199C 8023099C 3C08802A */  lui        $t0, %hi(g_adwSmallFontGlyphOffsets)
     /* 319A0 802309A0 24060014 */  addiu      $a2, $zero, 0x14
     /* 319A4 802309A4 24070004 */  addiu      $a3, $zero, 0x4
     /* 319A8 802309A8 10000004 */  b          .L802309BC
-    /* 319AC 802309AC 25083ADC */   addiu     $t0, $t0, %lo(D_802A3ADC)
+    /* 319AC 802309AC 25083ADC */   addiu     $t0, $t0, %lo(g_adwSmallFontGlyphOffsets)
   .L802309B0:
-    /* 319B0 802309B0 3C08802A */  lui        $t0, %hi(D_802A3A00)
+    /* 319B0 802309B0 3C08802A */  lui        $t0, %hi(g_adwLargeFontGlyphOffsets)
     /* 319B4 802309B4 24070007 */  addiu      $a3, $zero, 0x7
-    /* 319B8 802309B8 25083A00 */  addiu      $t0, $t0, %lo(D_802A3A00)
+    /* 319B8 802309B8 25083A00 */  addiu      $t0, $t0, %lo(g_adwLargeFontGlyphOffsets)
   .L802309BC:
     /* 319BC 802309BC 908A0000 */  lbu        $t2, 0x0($a0)
     /* 319C0 802309C0 2417006E */  addiu      $s7, $zero, 0x6E
     /* 319C4 802309C4 24160069 */  addiu      $s6, $zero, 0x69
     /* 319C8 802309C8 11400083 */  beqz       $t2, .L80230BD8
     /* 319CC 802309CC 24150065 */   addiu     $s5, $zero, 0x65
-    /* 319D0 802309D0 3C13802A */  lui        $s3, %hi(D_802A39A0)
-    /* 319D4 802309D4 267339A0 */  addiu      $s3, $s3, %lo(D_802A39A0)
+    /* 319D0 802309D0 3C13802A */  lui        $s3, %hi(g_abHudFontCharToGlyph)
+    /* 319D4 802309D4 267339A0 */  addiu      $s3, $s3, %lo(g_abHudFontCharToGlyph)
     /* 319D8 802309D8 2414006A */  addiu      $s4, $zero, 0x6A
     /* 319DC 802309DC 24120024 */  addiu      $s2, $zero, 0x24
     /* 319E0 802309E0 24110025 */  addiu      $s1, $zero, 0x25
