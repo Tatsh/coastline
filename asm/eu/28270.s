@@ -1718,7 +1718,7 @@ glabel UpdateAiVehicleBehavior
     /* 2AAC0 80229AC0 3C028032 */  lui        $v0, %hi(g_pActiveProfile)
     /* 2AAC4 80229AC4 8C42EABC */  lw         $v0, %lo(g_pActiveProfile)($v0)
     /* 2AAC8 80229AC8 8E2D0ED0 */  lw         $t5, 0xED0($s1)
-    /* 2AACC 80229ACC 3C018029 */  lui        $at, %hi(D_8028DCA4)
+    /* 2AACC 80229ACC 3C018029 */  lui        $at, %hi(g_aafAiVelocityRetention)
     /* 2AAD0 80229AD0 904C0004 */  lbu        $t4, 0x4($v0)
     /* 2AAD4 80229AD4 904A0005 */  lbu        $t2, 0x5($v0)
     /* 2AAD8 80229AD8 8DB80074 */  lw         $t8, 0x74($t5)
@@ -1728,7 +1728,7 @@ glabel UpdateAiVehicleBehavior
     /* 2AAE8 80229AE8 00187080 */  sll        $t6, $t8, 2
     /* 2AAEC 80229AEC 012E7821 */  addu       $t7, $t1, $t6
     /* 2AAF0 80229AF0 002F0821 */  addu       $at, $at, $t7
-    /* 2AAF4 80229AF4 C424DCA4 */  lwc1       $f4, %lo(D_8028DCA4)($at)
+    /* 2AAF4 80229AF4 C424DCA4 */  lwc1       $f4, %lo(g_aafAiVelocityRetention)($at)
     /* 2AAF8 80229AF8 3C01802B */  lui        $at, %hi(g_flAiBehaviorCosThreshold)
     /* 2AAFC 80229AFC C428B9BC */  lwc1       $f8, %lo(g_flAiBehaviorCosThreshold)($at)
     /* 2AB00 80229B00 262401CC */  addiu      $a0, $s1, 0x1CC

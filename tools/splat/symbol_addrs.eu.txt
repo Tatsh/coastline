@@ -1240,6 +1240,7 @@ g_abPlayerColorsRgb = 0x8028DBB4; //
 g_dwSelectedTrackId = 0x8028DBF0; // size:0x4
 g_SeasonTable = 0x8028DBF4; //
 g_bReplayCockpitNext = 0x8028DCA0; //
+g_aafAiVelocityRetention = 0x8028DCA4; //
 g_vUpAxis = 0x8028DD64; // size:0x4
 g_apszRaceProgressStrings = 0x8028DD70; // size:0x4
 g_aRaceSnapshotFields = 0x8028DDC0; // size:0x4

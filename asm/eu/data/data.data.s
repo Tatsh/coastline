@@ -32852,9 +32852,9 @@ dlabel g_bReplayCockpitNext
     /* 8ECA0 8028DCA0 00000000 */ .word 0x00000000
 enddlabel g_bReplayCockpitNext
 
-nonmatching D_8028DCA4
+nonmatching g_aafAiVelocityRetention
 
-dlabel D_8028DCA4
+dlabel g_aafAiVelocityRetention
     /* 8ECA4 8028DCA4 3F7ED917 */ .float 0.9955000281
     /* 8ECA8 8028DCA8 3F7F7CEE */ .float 0.9980000257
     /* 8ECAC 8028DCAC 3F7ED917 */ .float 0.9955000281
@@ -32903,7 +32903,7 @@ dlabel D_8028DCA4
     /* 8ED58 8028DD58 3F7F2E49 */ .float 0.9968000054
     /* 8ED5C 8028DD5C 3F7E5C92 */ .float 0.9936000109
     /* 8ED60 8028DD60 3F7F1412 */ .float 0.9963999987
-enddlabel D_8028DCA4
+enddlabel g_aafAiVelocityRetention
 
 nonmatching g_vUpAxis
 
