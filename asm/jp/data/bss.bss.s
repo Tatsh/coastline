@@ -40,9 +40,9 @@ nonmatching g_dwControllerCheckLuiBase, 0x48620
 dlabel g_dwControllerCheckLuiBase
     /* 802B0000 */ .space 0x48620
 
-nonmatching gRacePhaseJp, 0x4
+nonmatching g_dwRacePhase, 0x4
 
-dlabel gRacePhaseJp
+dlabel g_dwRacePhase
     /* 802F8620 */ .space 0x04
 
 nonmatching g_fRacePhaseTimer, 0x4
@@ -55,9 +55,9 @@ nonmatching g_dwStartLightsStep, 0x4
 dlabel g_dwStartLightsStep
     /* 802F8628 */ .space 0x04
 
-nonmatching gRacePhaseTableIdxJp, 0x4
+nonmatching g_dwRacePhaseIndex, 0x4
 
-dlabel gRacePhaseTableIdxJp
+dlabel g_dwRacePhaseIndex
     /* 802F862C */ .space 0x04
 
 nonmatching g_aDmaWorkBuffers, 0x10000
@@ -161,14 +161,14 @@ nonmatching g_szFormatBuffer, 0x20
 dlabel g_szFormatBuffer
     /* 80316508 */ .space 0x20
 
-nonmatching D_80316528, 0x40
+nonmatching g_adwWaterfallInstances, 0x40
 
-dlabel D_80316528
+dlabel g_adwWaterfallInstances
     /* 80316528 */ .space 0x40
 
-nonmatching gScreenClearCounterJp, 0x4
+nonmatching g_dwScreenClearFrames, 0x4
 
-dlabel gScreenClearCounterJp
+dlabel g_dwScreenClearFrames
     /* 80316568 */ .space 0x04
 
 nonmatching g_dwBestReplayLength, 0x4
@@ -181,14 +181,14 @@ nonmatching g_dwBestReplayPlayer, 0x8
 dlabel g_dwBestReplayPlayer
     /* 80316570 */ .space 0x08
 
-nonmatching D_80316578, 0x10
+nonmatching g_apReplayGhostPtrs, 0x10
 
-dlabel D_80316578
+dlabel g_apReplayGhostPtrs
     /* 80316578 */ .space 0x10
 
-nonmatching D_80316588, 0x10
+nonmatching g_adwReplayGhostSizes, 0x10
 
-dlabel D_80316588
+dlabel g_adwReplayGhostSizes
     /* 80316588 */ .space 0x10
 
 nonmatching g_fRaceCaptionTimer, 0x4
@@ -201,14 +201,14 @@ nonmatching g_dwRaceCaptionIndex, 0x4
 dlabel g_dwRaceCaptionIndex
     /* 8031659C */ .space 0x04
 
-nonmatching g_dwDemoSkippedByInput, 0x4
+nonmatching g_bDemoInterrupted, 0x4
 
-dlabel g_dwDemoSkippedByInput
+dlabel g_bDemoInterrupted
     /* 803165A0 */ .space 0x04
 
-nonmatching gPrevViewportCountJp, 0xC
+nonmatching g_dwPrevViewportCount, 0xC
 
-dlabel gPrevViewportCountJp
+dlabel g_dwPrevViewportCount
     /* 803165A4 */ .space 0x0C
 
 nonmatching g_pSplashFirstLogo, 0x4
@@ -1298,9 +1298,9 @@ nonmatching D_8031C37C, 0x3C
 dlabel D_8031C37C
     /* 8031C37C */ .space 0x3C
 
-nonmatching g_vRaycastTargetJp, 0x40
+nonmatching g_awCameraRayNearbyInstances, 0x40
 
-dlabel g_vRaycastTargetJp
+dlabel g_awCameraRayNearbyInstances
     /* 8031C3B8 */ .space 0x40
 
 nonmatching g_aViewportRects, 0x4

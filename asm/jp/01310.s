@@ -126,26 +126,26 @@ glabel ProcessRacingScreen
     /* 19C4 802009C4 01916021 */  addu       $t4, $t4, $s1
     /* 19C8 802009C8 000C6100 */  sll        $t4, $t4, 4
     /* 19CC 802009CC 00115080 */  sll        $t2, $s1, 2
-    /* 19D0 802009D0 3C0B8031 */  lui        $t3, %hi(D_80316578)
+    /* 19D0 802009D0 3C0B8031 */  lui        $t3, %hi(g_apReplayGhostPtrs)
     /* 19D4 802009D4 3C0D8032 */  lui        $t5, %hi(D_8031E904)
     /* 19D8 802009D8 01AC6821 */  addu       $t5, $t5, $t4
     /* 19DC 802009DC 016A5821 */  addu       $t3, $t3, $t2
     /* 19E0 802009E0 0011C180 */  sll        $t8, $s1, 6
-    /* 19E4 802009E4 8D6B6578 */  lw         $t3, %lo(D_80316578)($t3)
+    /* 19E4 802009E4 8D6B6578 */  lw         $t3, %lo(g_apReplayGhostPtrs)($t3)
     /* 19E8 802009E8 8DADE904 */  lw         $t5, %lo(D_8031E904)($t5)
     /* 19EC 802009EC 0311C021 */  addu       $t8, $t8, $s1
     /* 19F0 802009F0 0018C0C0 */  sll        $t8, $t8, 3
     /* 19F4 802009F4 0311C021 */  addu       $t8, $t8, $s1
     /* 19F8 802009F8 0018C100 */  sll        $t8, $t8, 4
     /* 19FC 802009FC 00117080 */  sll        $t6, $s1, 2
-    /* 1A00 80200A00 3C0F8031 */  lui        $t7, %hi(D_80316588)
+    /* 1A00 80200A00 3C0F8031 */  lui        $t7, %hi(g_adwReplayGhostSizes)
     /* 1A04 80200A04 3C198032 */  lui        $t9, %hi(D_8031E904)
     /* 1A08 80200A08 00114180 */  sll        $t0, $s1, 6
     /* 1A0C 80200A0C ADAB0044 */  sw         $t3, 0x44($t5)
     /* 1A10 80200A10 0338C821 */  addu       $t9, $t9, $t8
     /* 1A14 80200A14 01EE7821 */  addu       $t7, $t7, $t6
     /* 1A18 80200A18 01114021 */  addu       $t0, $t0, $s1
-    /* 1A1C 80200A1C 8DEF6588 */  lw         $t7, %lo(D_80316588)($t7)
+    /* 1A1C 80200A1C 8DEF6588 */  lw         $t7, %lo(g_adwReplayGhostSizes)($t7)
     /* 1A20 80200A20 8F39E904 */  lw         $t9, %lo(D_8031E904)($t9)
     /* 1A24 80200A24 000840C0 */  sll        $t0, $t0, 3
     /* 1A28 80200A28 01114021 */  addu       $t0, $t0, $s1
@@ -936,14 +936,14 @@ glabel ProcessRacingScreen
     /* 25F4 802015F4 8D8C5D64 */  lw         $t4, %lo(D_80025D64)($t4)
     /* 25F8 802015F8 3C0B8027 */  lui        $t3, %hi(g_dwWaterfallCount)
     /* 25FC 802015FC 8D6B2244 */  lw         $t3, %lo(g_dwWaterfallCount)($t3)
-    /* 2600 80201600 3C018031 */  lui        $at, %hi(D_80316528)
+    /* 2600 80201600 3C018031 */  lui        $at, %hi(g_adwWaterfallInstances)
     /* 2604 80201604 00114880 */  sll        $t1, $s1, 2
     /* 2608 80201608 000A7080 */  sll        $t6, $t2, 2
     /* 260C 8020160C 002E0821 */  addu       $at, $at, $t6
     /* 2610 80201610 01314823 */  subu       $t1, $t1, $s1
     /* 2614 80201614 00094880 */  sll        $t1, $t1, 2
     /* 2618 80201618 3C058002 */  lui        $a1, %hi(D_80025D64)
-    /* 261C 8020161C AC2C6528 */  sw         $t4, %lo(D_80316528)($at)
+    /* 261C 8020161C AC2C6528 */  sw         $t4, %lo(g_adwWaterfallInstances)($at)
     /* 2620 80201620 3C018027 */  lui        $at, %hi(g_dwWaterfallCount)
     /* 2624 80201624 00A92821 */  addu       $a1, $a1, $t1
     /* 2628 80201628 3C04802B */  lui        $a0, %hi(g_szWaterfall)
@@ -1558,18 +1558,18 @@ glabel ProcessRacingScreen
     /* 2F38 80201F38 8D6B2208 */  lw         $t3, %lo(gInstantReplayActive)($t3)
     /* 2F3C 80201F3C 11600004 */  beqz       $t3, .L80201F50
     /* 2F40 80201F40 240F0004 */   addiu     $t7, $zero, 0x4
-    /* 2F44 80201F44 3C018030 */  lui        $at, %hi(gRacePhaseTableIdxJp)
+    /* 2F44 80201F44 3C018030 */  lui        $at, %hi(g_dwRacePhaseIndex)
     /* 2F48 80201F48 10000016 */  b          .L80201FA4
-    /* 2F4C 80201F4C AC2F862C */   sw        $t7, %lo(gRacePhaseTableIdxJp)($at)
+    /* 2F4C 80201F4C AC2F862C */   sw        $t7, %lo(g_dwRacePhaseIndex)($at)
   .L80201F50:
     /* 2F50 80201F50 3C0E8027 */  lui        $t6, %hi(g_dwGameMode)
     /* 2F54 80201F54 8DCE1998 */  lw         $t6, %lo(g_dwGameMode)($t6)
     /* 2F58 80201F58 24010005 */  addiu      $at, $zero, 0x5
     /* 2F5C 80201F5C 15C10004 */  bne        $t6, $at, .L80201F70
     /* 2F60 80201F60 240A0004 */   addiu     $t2, $zero, 0x4
-    /* 2F64 80201F64 3C018030 */  lui        $at, %hi(gRacePhaseTableIdxJp)
+    /* 2F64 80201F64 3C018030 */  lui        $at, %hi(g_dwRacePhaseIndex)
     /* 2F68 80201F68 1000000E */  b          .L80201FA4
-    /* 2F6C 80201F6C AC2A862C */   sw        $t2, %lo(gRacePhaseTableIdxJp)($at)
+    /* 2F6C 80201F6C AC2A862C */   sw        $t2, %lo(g_dwRacePhaseIndex)($at)
   .L80201F70:
     /* 2F70 80201F70 3C0C8027 */  lui        $t4, %hi(g_dwGameMode)
     /* 2F74 80201F74 8D8C1998 */  lw         $t4, %lo(g_dwGameMode)($t4)
@@ -1579,24 +1579,24 @@ glabel ProcessRacingScreen
     /* 2F84 80201F84 8DAD199C */  lw         $t5, %lo(g_dwRaceSessionType)($t5)
     /* 2F88 80201F88 15A00004 */  bnez       $t5, .L80201F9C
     /* 2F8C 80201F8C 24180004 */   addiu     $t8, $zero, 0x4
-    /* 2F90 80201F90 3C018030 */  lui        $at, %hi(gRacePhaseTableIdxJp)
+    /* 2F90 80201F90 3C018030 */  lui        $at, %hi(g_dwRacePhaseIndex)
     /* 2F94 80201F94 10000003 */  b          .L80201FA4
-    /* 2F98 80201F98 AC38862C */   sw        $t8, %lo(gRacePhaseTableIdxJp)($at)
+    /* 2F98 80201F98 AC38862C */   sw        $t8, %lo(g_dwRacePhaseIndex)($at)
   .L80201F9C:
-    /* 2F9C 80201F9C 3C018030 */  lui        $at, %hi(gRacePhaseTableIdxJp)
-    /* 2FA0 80201FA0 AC20862C */  sw         $zero, %lo(gRacePhaseTableIdxJp)($at)
+    /* 2F9C 80201F9C 3C018030 */  lui        $at, %hi(g_dwRacePhaseIndex)
+    /* 2FA0 80201FA0 AC20862C */  sw         $zero, %lo(g_dwRacePhaseIndex)($at)
   .L80201FA4:
-    /* 2FA4 80201FA4 3C098030 */  lui        $t1, %hi(gRacePhaseTableIdxJp)
-    /* 2FA8 80201FA8 8D29862C */  lw         $t1, %lo(gRacePhaseTableIdxJp)($t1)
-    /* 2FAC 80201FAC 3C198027 */  lui        $t9, %hi(D_80272254)
-    /* 2FB0 80201FB0 27392254 */  addiu      $t9, $t9, %lo(D_80272254)
+    /* 2FA4 80201FA4 3C098030 */  lui        $t1, %hi(g_dwRacePhaseIndex)
+    /* 2FA8 80201FA8 8D29862C */  lw         $t1, %lo(g_dwRacePhaseIndex)($t1)
+    /* 2FAC 80201FAC 3C198027 */  lui        $t9, %hi(g_aRacePhaseTable)
+    /* 2FB0 80201FB0 27392254 */  addiu      $t9, $t9, %lo(g_aRacePhaseTable)
     /* 2FB4 80201FB4 000940C0 */  sll        $t0, $t1, 3
     /* 2FB8 80201FB8 01195821 */  addu       $t3, $t0, $t9
     /* 2FBC 80201FBC 8D6F0000 */  lw         $t7, 0x0($t3)
-    /* 2FC0 80201FC0 3C018030 */  lui        $at, %hi(gRacePhaseJp)
+    /* 2FC0 80201FC0 3C018030 */  lui        $at, %hi(g_dwRacePhase)
     /* 2FC4 80201FC4 3C0E8027 */  lui        $t6, %hi(gInstantReplayActive)
     /* 2FC8 80201FC8 8DCE2208 */  lw         $t6, %lo(gInstantReplayActive)($t6)
-    /* 2FCC 80201FCC AC2F8620 */  sw         $t7, %lo(gRacePhaseJp)($at)
+    /* 2FCC 80201FCC AC2F8620 */  sw         $t7, %lo(g_dwRacePhase)($at)
     /* 2FD0 80201FD0 C5700004 */  lwc1       $f16, 0x4($t3)
     /* 2FD4 80201FD4 3C018030 */  lui        $at, %hi(g_fRacePhaseTimer)
     /* 2FD8 80201FD8 15C00015 */  bnez       $t6, .L80202030
@@ -1654,8 +1654,8 @@ glabel ProcessRacingScreen
     /* 3098 80202098 0C0890C0 */  jal        FadeMusicTo
     /* 309C 8020209C C42E8708 */   lwc1      $f14, %lo(g_fConst0p2_802a7208)($at)
     /* 30A0 802020A0 24190002 */  addiu      $t9, $zero, 0x2
-    /* 30A4 802020A4 3C018031 */  lui        $at, %hi(gScreenClearCounterJp)
-    /* 30A8 802020A8 AC396568 */  sw         $t9, %lo(gScreenClearCounterJp)($at)
+    /* 30A4 802020A4 3C018031 */  lui        $at, %hi(g_dwScreenClearFrames)
+    /* 30A8 802020A8 AC396568 */  sw         $t9, %lo(g_dwScreenClearFrames)($at)
     /* 30AC 802020AC 3C018027 */  lui        $at, %hi(g_dwRaceInitialized)
     /* 30B0 802020B0 240F0001 */  addiu      $t7, $zero, 0x1
     /* 30B4 802020B4 AC2F224C */  sw         $t7, %lo(g_dwRaceInitialized)($at)
@@ -1680,9 +1680,9 @@ glabel ProcessRacingScreen
     /* 3100 80202100 3C018027 */  lui        $at, %hi(g_dwRaceExitState)
     /* 3104 80202104 AC202250 */  sw         $zero, %lo(g_dwRaceExitState)($at)
     /* 3108 80202108 44809000 */  mtc1       $zero, $f18
-    /* 310C 8020210C 3C018031 */  lui        $at, %hi(gPrevViewportCountJp)
+    /* 310C 8020210C 3C018031 */  lui        $at, %hi(g_dwPrevViewportCount)
     /* 3110 80202110 240EFFFF */  addiu      $t6, $zero, -0x1
-    /* 3114 80202114 AC2E65A4 */  sw         $t6, %lo(gPrevViewportCountJp)($at)
+    /* 3114 80202114 AC2E65A4 */  sw         $t6, %lo(g_dwPrevViewportCount)($at)
     /* 3118 80202118 3C018031 */  lui        $at, %hi(g_fRaceCaptionTimer)
     /* 311C 8020211C 3C0C8027 */  lui        $t4, %hi(gInstantReplayActive)
     /* 3120 80202120 E4326598 */  swc1       $f18, %lo(g_fRaceCaptionTimer)($at)
@@ -1698,8 +1698,8 @@ glabel ProcessRacingScreen
     /* 3148 80202148 0C08B03C */  jal        ResetAllSoundState
     /* 314C 8020214C 00000000 */   nop
   .L80202150:
-    /* 3150 80202150 3C018031 */  lui        $at, %hi(g_dwDemoSkippedByInput)
-    /* 3154 80202154 AC2065A0 */  sw         $zero, %lo(g_dwDemoSkippedByInput)($at)
+    /* 3150 80202150 3C018031 */  lui        $at, %hi(g_bDemoInterrupted)
+    /* 3154 80202154 AC2065A0 */  sw         $zero, %lo(g_bDemoInterrupted)($at)
     /* 3158 80202158 3C018029 */  lui        $at, %hi(g_dwKeepScreenBlanked)
     /* 315C 8020215C AC20C554 */  sw         $zero, %lo(g_dwKeepScreenBlanked)($at)
     /* 3160 80202160 3C018029 */  lui        $at, %hi(g_dwReplayKeyframeFrameCount)
@@ -1709,8 +1709,8 @@ glabel ProcessRacingScreen
     /* 316C 8020216C 3C01802A */  lui        $at, %hi(g_wRaceScreenLoopExited)
     /* 3170 80202170 0C08AEBE */  jal        RestoreReplayKeyframeState
     /* 3174 80202174 A4206E2C */   sh        $zero, %lo(g_wRaceScreenLoopExited)($at)
-    /* 3178 80202178 3C188030 */  lui        $t8, %hi(gRacePhaseJp)
-    /* 317C 8020217C 8F188620 */  lw         $t8, %lo(gRacePhaseJp)($t8)
+    /* 3178 80202178 3C188030 */  lui        $t8, %hi(g_dwRacePhase)
+    /* 317C 8020217C 8F188620 */  lw         $t8, %lo(g_dwRacePhase)($t8)
     /* 3180 80202180 24010004 */  addiu      $at, $zero, 0x4
     /* 3184 80202184 17010014 */  bne        $t8, $at, .L802021D8
     /* 3188 80202188 3C098027 */   lui       $t1, %hi(g_dwNumLocalPlayers)
@@ -1752,8 +1752,8 @@ glabel ProcessRacingScreen
     /* 3208 80202208 3C0D8027 */  lui        $t5, %hi(gInstantReplayActive)
     /* 320C 8020220C 8DAD2208 */  lw         $t5, %lo(gInstantReplayActive)($t5)
     /* 3210 80202210 11A0007E */  beqz       $t5, .L8020240C
-    /* 3214 80202214 3C188030 */   lui       $t8, %hi(gRacePhaseJp)
-    /* 3218 80202218 8F188620 */  lw         $t8, %lo(gRacePhaseJp)($t8)
+    /* 3214 80202214 3C188030 */   lui       $t8, %hi(g_dwRacePhase)
+    /* 3218 80202218 8F188620 */  lw         $t8, %lo(g_dwRacePhase)($t8)
     /* 321C 8020221C 24010004 */  addiu      $at, $zero, 0x4
     /* 3220 80202220 1701007A */  bne        $t8, $at, .L8020240C
     /* 3224 80202224 3C098027 */   lui       $t1, %hi(g_dwGameMode)
@@ -1886,8 +1886,8 @@ glabel ProcessRacingScreen
     /* 340C 8020240C 0C0873DE */  jal        UpdateFrameTiming
     /* 3410 80202410 00000000 */   nop
     /* 3414 80202414 3C018027 */  lui        $at, %hi(g_dwStartLightsAnimation)
-    /* 3418 80202418 3C0E8030 */  lui        $t6, %hi(gRacePhaseJp)
-    /* 341C 8020241C 8DCE8620 */  lw         $t6, %lo(gRacePhaseJp)($t6)
+    /* 3418 80202418 3C0E8030 */  lui        $t6, %hi(g_dwRacePhase)
+    /* 341C 8020241C 8DCE8620 */  lw         $t6, %lo(g_dwRacePhase)($t6)
     /* 3420 80202420 AC2019D8 */  sw         $zero, %lo(g_dwStartLightsAnimation)($at)
     /* 3424 80202424 3C0A8027 */  lui        $t2, %hi(g_dwRacePauseState)
     /* 3428 80202428 3C018027 */  lui        $at, %hi(g_bStartLightsVisible)
@@ -1975,9 +1975,9 @@ glabel ProcessRacingScreen
     /* 3560 80202560 3C013F80 */  lui        $at, (0x3F800000 >> 16)
     /* 3564 80202564 44813000 */  mtc1       $at, $f6
     /* 3568 80202568 8FA800F4 */  lw         $t0, 0xF4($sp)
-    /* 356C 8020256C 3C178030 */  lui        $s7, %hi(gRacePhaseJp)
+    /* 356C 8020256C 3C178030 */  lui        $s7, %hi(g_dwRacePhase)
     /* 3570 80202570 E5060FB4 */  swc1       $f6, 0xFB4($t0)
-    /* 3574 80202574 8EF78620 */  lw         $s7, %lo(gRacePhaseJp)($s7)
+    /* 3574 80202574 8EF78620 */  lw         $s7, %lo(g_dwRacePhase)($s7)
     /* 3578 80202578 12E00007 */  beqz       $s7, .L80202598
     /* 357C 8020257C 24010001 */   addiu     $at, $zero, 0x1
     /* 3580 80202580 12E10025 */  beq        $s7, $at, .L80202618
@@ -2047,25 +2047,25 @@ glabel ProcessRacingScreen
     /* 3668 80202668 E4268624 */  swc1       $f6, %lo(g_fRacePhaseTimer)($at)
     /* 366C 8020266C 45000236 */  bc1f       .L80202F48
   .L80202670:
-    /* 3670 80202670 3C0E8030 */   lui       $t6, %hi(gRacePhaseTableIdxJp)
-    /* 3674 80202674 8DCE862C */  lw         $t6, %lo(gRacePhaseTableIdxJp)($t6)
-    /* 3678 80202678 3C0D8027 */  lui        $t5, %hi(D_80272254)
-    /* 367C 8020267C 3C018030 */  lui        $at, %hi(gRacePhaseTableIdxJp)
+    /* 3670 80202670 3C0E8030 */   lui       $t6, %hi(g_dwRacePhaseIndex)
+    /* 3674 80202674 8DCE862C */  lw         $t6, %lo(g_dwRacePhaseIndex)($t6)
+    /* 3678 80202678 3C0D8027 */  lui        $t5, %hi(g_aRacePhaseTable)
+    /* 367C 8020267C 3C018030 */  lui        $at, %hi(g_dwRacePhaseIndex)
     /* 3680 80202680 25D90001 */  addiu      $t9, $t6, 0x1
     /* 3684 80202684 001940C0 */  sll        $t0, $t9, 3
-    /* 3688 80202688 25AD2254 */  addiu      $t5, $t5, %lo(D_80272254)
-    /* 368C 8020268C AC39862C */  sw         $t9, %lo(gRacePhaseTableIdxJp)($at)
+    /* 3688 80202688 25AD2254 */  addiu      $t5, $t5, %lo(g_aRacePhaseTable)
+    /* 368C 8020268C AC39862C */  sw         $t9, %lo(g_dwRacePhaseIndex)($at)
     /* 3690 80202690 010D7821 */  addu       $t7, $t0, $t5
     /* 3694 80202694 8DEC0000 */  lw         $t4, 0x0($t7)
-    /* 3698 80202698 3C018030 */  lui        $at, %hi(gRacePhaseJp)
-    /* 369C 8020269C AC2C8620 */  sw         $t4, %lo(gRacePhaseJp)($at)
+    /* 3698 80202698 3C018030 */  lui        $at, %hi(g_dwRacePhase)
+    /* 369C 8020269C AC2C8620 */  sw         $t4, %lo(g_dwRacePhase)($at)
     /* 36A0 802026A0 C5EA0004 */  lwc1       $f10, 0x4($t7)
     /* 36A4 802026A4 3C018030 */  lui        $at, %hi(g_fRacePhaseTimer)
     /* 36A8 802026A8 10000227 */  b          .L80202F48
     /* 36AC 802026AC E42A8624 */   swc1      $f10, %lo(g_fRacePhaseTimer)($at)
   .L802026B0:
-    /* 36B0 802026B0 3C188030 */  lui        $t8, %hi(gRacePhaseJp)
-    /* 36B4 802026B4 8F188620 */  lw         $t8, %lo(gRacePhaseJp)($t8)
+    /* 36B0 802026B0 3C188030 */  lui        $t8, %hi(g_dwRacePhase)
+    /* 36B4 802026B4 8F188620 */  lw         $t8, %lo(g_dwRacePhase)($t8)
     /* 36B8 802026B8 24010003 */  addiu      $at, $zero, 0x3
     /* 36BC 802026BC 17010033 */  bne        $t8, $at, .L8020278C
     /* 36C0 802026C0 24090001 */   addiu     $t1, $zero, 0x1
@@ -2101,8 +2101,8 @@ glabel ProcessRacingScreen
     /* 3734 80202734 5420FFEE */  bnel       $at, $zero, .L802026F0
     /* 3738 80202738 00117100 */   sll       $t6, $s1, 4
   .L8020273C:
-    /* 373C 8020273C 3C0B8030 */  lui        $t3, %hi(gRacePhaseTableIdxJp)
-    /* 3740 80202740 8D6B862C */  lw         $t3, %lo(gRacePhaseTableIdxJp)($t3)
+    /* 373C 8020273C 3C0B8030 */  lui        $t3, %hi(g_dwRacePhaseIndex)
+    /* 3740 80202740 8D6B862C */  lw         $t3, %lo(g_dwRacePhaseIndex)($t3)
     /* 3744 80202744 3C018027 */  lui        $at, %hi(D_80272258)
     /* 3748 80202748 000B50C0 */  sll        $t2, $t3, 3
     /* 374C 8020274C 002A0821 */  addu       $at, $at, $t2
@@ -2122,8 +2122,8 @@ glabel ProcessRacingScreen
     /* 3784 80202784 1000FFAD */  b          .L8020263C
     /* 3788 80202788 E43219E0 */   swc1      $f18, %lo(g_fStartLightsDrop)($at)
   .L8020278C:
-    /* 378C 8020278C 3C0E8030 */  lui        $t6, %hi(gRacePhaseJp)
-    /* 3790 80202790 8DCE8620 */  lw         $t6, %lo(gRacePhaseJp)($t6)
+    /* 378C 8020278C 3C0E8030 */  lui        $t6, %hi(g_dwRacePhase)
+    /* 3790 80202790 8DCE8620 */  lw         $t6, %lo(g_dwRacePhase)($t6)
     /* 3794 80202794 24010004 */  addiu      $at, $zero, 0x4
     /* 3798 80202798 15C101B6 */  bne        $t6, $at, .L80202E74
     /* 379C 8020279C 3C0D8027 */   lui       $t5, %hi(g_dwGameMode)
@@ -2580,8 +2580,8 @@ glabel ProcessRacingScreen
     /* 3E6C 80202E6C 1000FE00 */  b          .L80202670
     /* 3E70 80202E70 E5C40FB4 */   swc1      $f4, 0xFB4($t6)
   .L80202E74:
-    /* 3E74 80202E74 3C0C8030 */  lui        $t4, %hi(gRacePhaseJp)
-    /* 3E78 80202E78 8D8C8620 */  lw         $t4, %lo(gRacePhaseJp)($t4)
+    /* 3E74 80202E74 3C0C8030 */  lui        $t4, %hi(g_dwRacePhase)
+    /* 3E78 80202E78 8D8C8620 */  lw         $t4, %lo(g_dwRacePhase)($t4)
     /* 3E7C 80202E7C 24010005 */  addiu      $at, $zero, 0x5
     /* 3E80 80202E80 15810011 */  bne        $t4, $at, .L80202EC8
     /* 3E84 80202E84 3C0D8027 */   lui       $t5, %hi(g_dwGameMode)
@@ -2603,13 +2603,13 @@ glabel ProcessRacingScreen
     /* 3EC0 80202EC0 1000FDEB */  b          .L80202670
     /* 3EC4 80202EC4 00000000 */   nop
   .L80202EC8:
-    /* 3EC8 80202EC8 3C188030 */  lui        $t8, %hi(gRacePhaseJp)
-    /* 3ECC 80202ECC 8F188620 */  lw         $t8, %lo(gRacePhaseJp)($t8)
+    /* 3EC8 80202EC8 3C188030 */  lui        $t8, %hi(g_dwRacePhase)
+    /* 3ECC 80202ECC 8F188620 */  lw         $t8, %lo(g_dwRacePhase)($t8)
     /* 3ED0 80202ED0 24010006 */  addiu      $at, $zero, 0x6
     /* 3ED4 80202ED4 1301FDD9 */  beq        $t8, $at, .L8020263C
     /* 3ED8 80202ED8 00000000 */   nop
-    /* 3EDC 80202EDC 3C088030 */  lui        $t0, %hi(gRacePhaseJp)
-    /* 3EE0 80202EE0 8D088620 */  lw         $t0, %lo(gRacePhaseJp)($t0)
+    /* 3EDC 80202EDC 3C088030 */  lui        $t0, %hi(g_dwRacePhase)
+    /* 3EE0 80202EE0 8D088620 */  lw         $t0, %lo(g_dwRacePhase)($t0)
     /* 3EE4 80202EE4 24010007 */  addiu      $at, $zero, 0x7
     /* 3EE8 80202EE8 15010017 */  bne        $t0, $at, .L80202F48
     /* 3EEC 80202EEC 3C0B8027 */   lui       $t3, %hi(g_dwRaceExitState)
@@ -3474,9 +3474,9 @@ glabel ProcessRacingScreen
     /* 4BB0 80203BB0 1020001B */  beqz       $at, .L80203C20
     /* 4BB4 80203BB4 00114880 */   sll       $t1, $s1, 2
   .L80203BB8:
-    /* 4BB8 80203BB8 3C0F8031 */  lui        $t7, %hi(D_80316528)
+    /* 4BB8 80203BB8 3C0F8031 */  lui        $t7, %hi(g_adwWaterfallInstances)
     /* 4BBC 80203BBC 01E97821 */  addu       $t7, $t7, $t1
-    /* 4BC0 80203BC0 8DEF6528 */  lw         $t7, %lo(D_80316528)($t7)
+    /* 4BC0 80203BC0 8DEF6528 */  lw         $t7, %lo(g_adwWaterfallInstances)($t7)
     /* 4BC4 80203BC4 3C0C8002 */  lui        $t4, %hi(D_80025C60)
     /* 4BC8 80203BC8 8D8C5C60 */  lw         $t4, %lo(D_80025C60)($t4)
     /* 4BCC 80203BCC 000F4080 */  sll        $t0, $t7, 2
@@ -3544,8 +3544,8 @@ glabel ProcessRacingScreen
     /* 4CB4 80203CB4 00000000 */   nop
     /* 4CB8 80203CB8 0C086181 */  jal        ClearDepthBuffer
     /* 4CBC 80203CBC 00000000 */   nop
-    /* 4CC0 80203CC0 3C088031 */  lui        $t0, %hi(gScreenClearCounterJp)
-    /* 4CC4 80203CC4 8D086568 */  lw         $t0, %lo(gScreenClearCounterJp)($t0)
+    /* 4CC0 80203CC0 3C088031 */  lui        $t0, %hi(g_dwScreenClearFrames)
+    /* 4CC4 80203CC4 8D086568 */  lw         $t0, %lo(g_dwScreenClearFrames)($t0)
     /* 4CC8 80203CC8 15000003 */  bnez       $t0, .L80203CD8
     /* 4CCC 80203CCC 3C0E8029 */   lui       $t6, %hi(g_dwSkyboxDisabled)
     /* 4CD0 80203CD0 8DCEC734 */  lw         $t6, %lo(g_dwSkyboxDisabled)($t6)
@@ -3555,13 +3555,13 @@ glabel ProcessRacingScreen
     /* 4CDC 80203CDC 00002825 */  or         $a1, $zero, $zero
     /* 4CE0 80203CE0 0C08624A */  jal        ClearScreen
     /* 4CE4 80203CE4 00003025 */   or        $a2, $zero, $zero
-    /* 4CE8 80203CE8 3C0D8031 */  lui        $t5, %hi(gScreenClearCounterJp)
-    /* 4CEC 80203CEC 8DAD6568 */  lw         $t5, %lo(gScreenClearCounterJp)($t5)
+    /* 4CE8 80203CE8 3C0D8031 */  lui        $t5, %hi(g_dwScreenClearFrames)
+    /* 4CEC 80203CEC 8DAD6568 */  lw         $t5, %lo(g_dwScreenClearFrames)($t5)
     /* 4CF0 80203CF0 11A00014 */  beqz       $t5, .L80203D44
     /* 4CF4 80203CF4 25B9FFFF */   addiu     $t9, $t5, -0x1
-    /* 4CF8 80203CF8 3C018031 */  lui        $at, %hi(gScreenClearCounterJp)
+    /* 4CF8 80203CF8 3C018031 */  lui        $at, %hi(g_dwScreenClearFrames)
     /* 4CFC 80203CFC 10000011 */  b          .L80203D44
-    /* 4D00 80203D00 AC396568 */   sw        $t9, %lo(gScreenClearCounterJp)($at)
+    /* 4D00 80203D00 AC396568 */   sw        $t9, %lo(g_dwScreenClearFrames)($at)
   .L80203D04:
     /* 4D04 80203D04 3C0A8032 */  lui        $t2, %hi(g_aViewportRects)
     /* 4D08 80203D08 254AC3F8 */  addiu      $t2, $t2, %lo(g_aViewportRects)
@@ -3581,15 +3581,15 @@ glabel ProcessRacingScreen
     /* 4D40 80203D40 01782021 */   addu      $a0, $t3, $t8
   .L80203D44:
     /* 4D44 80203D44 3C0F8029 */  lui        $t7, %hi(g_dwNumViewports)
-    /* 4D48 80203D48 3C0C8031 */  lui        $t4, %hi(gPrevViewportCountJp)
-    /* 4D4C 80203D4C 8D8C65A4 */  lw         $t4, %lo(gPrevViewportCountJp)($t4)
+    /* 4D48 80203D48 3C0C8031 */  lui        $t4, %hi(g_dwPrevViewportCount)
+    /* 4D4C 80203D4C 8D8C65A4 */  lw         $t4, %lo(g_dwPrevViewportCount)($t4)
     /* 4D50 80203D50 8DEFC7E4 */  lw         $t7, %lo(g_dwNumViewports)($t7)
     /* 4D54 80203D54 11EC0005 */  beq        $t7, $t4, .L80203D6C
     /* 4D58 80203D58 24080002 */   addiu     $t0, $zero, 0x2
-    /* 4D5C 80203D5C 3C018031 */  lui        $at, %hi(gScreenClearCounterJp)
-    /* 4D60 80203D60 AC286568 */  sw         $t0, %lo(gScreenClearCounterJp)($at)
-    /* 4D64 80203D64 3C018031 */  lui        $at, %hi(gPrevViewportCountJp)
-    /* 4D68 80203D68 AC2F65A4 */  sw         $t7, %lo(gPrevViewportCountJp)($at)
+    /* 4D5C 80203D5C 3C018031 */  lui        $at, %hi(g_dwScreenClearFrames)
+    /* 4D60 80203D60 AC286568 */  sw         $t0, %lo(g_dwScreenClearFrames)($at)
+    /* 4D64 80203D64 3C018031 */  lui        $at, %hi(g_dwPrevViewportCount)
+    /* 4D68 80203D68 AC2F65A4 */  sw         $t7, %lo(g_dwPrevViewportCount)($at)
   .L80203D6C:
     /* 4D6C 80203D6C 3C0E8029 */  lui        $t6, %hi(g_dwNumViewports)
     /* 4D70 80203D70 8DCEC7E4 */  lw         $t6, %lo(g_dwNumViewports)($t6)
@@ -3624,14 +3624,14 @@ glabel ProcessRacingScreen
     /* 4DE0 80203DE0 3C018029 */  lui        $at, %hi(g_pActiveCamera)
     /* 4DE4 80203DE4 3C198029 */  lui        $t9, %hi(g_dwCameraRayGroundSurface)
     /* 4DE8 80203DE8 3C088029 */  lui        $t0, %hi(g_dwCameraRayHitCount)
-    /* 4DEC 80203DEC 3C0F8032 */  lui        $t7, %hi(g_vRaycastTargetJp)
+    /* 4DEC 80203DEC 3C0F8032 */  lui        $t7, %hi(g_awCameraRayNearbyInstances)
     /* 4DF0 80203DF0 3C0E8029 */  lui        $t6, %hi(g_dwCameraRayNearbyCount)
     /* 4DF4 80203DF4 3C0D8029 */  lui        $t5, %hi(g_fCameraRayGroundDistance)
     /* 4DF8 80203DF8 AC2CC7CC */  sw         $t4, %lo(g_pActiveCamera)($at)
     /* 4DFC 80203DFC 3C018029 */  lui        $at, %hi(g_dwCurrentSplitScreenIndex)
     /* 4E00 80203E00 25ADC7D0 */  addiu      $t5, $t5, %lo(g_fCameraRayGroundDistance)
     /* 4E04 80203E04 25CEC7DC */  addiu      $t6, $t6, %lo(g_dwCameraRayNearbyCount)
-    /* 4E08 80203E08 25EFC3B8 */  addiu      $t7, $t7, %lo(g_vRaycastTargetJp)
+    /* 4E08 80203E08 25EFC3B8 */  addiu      $t7, $t7, %lo(g_awCameraRayNearbyInstances)
     /* 4E0C 80203E0C 2508C7D8 */  addiu      $t0, $t0, %lo(g_dwCameraRayHitCount)
     /* 4E10 80203E10 2739C7D4 */  addiu      $t9, $t9, %lo(g_dwCameraRayGroundSurface)
     /* 4E14 80203E14 3C078032 */  lui        $a3, %hi(g_awCameraRayHitInstances)
@@ -4762,17 +4762,17 @@ glabel ProcessRacingScreen
     /* 5EE0 80204EE0 332F0001 */  andi       $t7, $t9, 0x1
     /* 5EE4 80204EE4 ADCF00E0 */  sw         $t7, 0xE0($t6)
     /* 5EE8 80204EE8 8F0900E0 */  lw         $t1, 0xE0($t8)
-    /* 5EEC 80204EEC 3C0C8030 */  lui        $t4, %hi(gRacePhaseJp)
+    /* 5EEC 80204EEC 3C0C8030 */  lui        $t4, %hi(g_dwRacePhase)
     /* 5EF0 80204EF0 3C018027 */  lui        $at, %hi(g_bReplayAfterRace)
     /* 5EF4 80204EF4 35280002 */  ori        $t0, $t1, 0x2
     /* 5EF8 80204EF8 AF0800E0 */  sw         $t0, 0xE0($t8)
-    /* 5EFC 80204EFC 8D8C8620 */  lw         $t4, %lo(gRacePhaseJp)($t4)
+    /* 5EFC 80204EFC 8D8C8620 */  lw         $t4, %lo(g_dwRacePhase)($t4)
     /* 5F00 80204F00 AC20220C */  sw         $zero, %lo(g_bReplayAfterRace)($at)
     /* 5F04 80204F04 29810004 */  slti       $at, $t4, 0x4
     /* 5F08 80204F08 10200003 */  beqz       $at, .L80204F18
     /* 5F0C 80204F0C 240B0004 */   addiu     $t3, $zero, 0x4
-    /* 5F10 80204F10 3C018030 */  lui        $at, %hi(gRacePhaseJp)
-    /* 5F14 80204F14 AC2B8620 */  sw         $t3, %lo(gRacePhaseJp)($at)
+    /* 5F10 80204F10 3C018030 */  lui        $at, %hi(g_dwRacePhase)
+    /* 5F14 80204F14 AC2B8620 */  sw         $t3, %lo(g_dwRacePhase)($at)
   .L80204F18:
     /* 5F18 80204F18 3C018027 */  lui        $at, %hi(g_dwCheatFinishRacePending)
     /* 5F1C 80204F1C AC202248 */  sw         $zero, %lo(g_dwCheatFinishRacePending)($at)
@@ -4827,8 +4827,8 @@ glabel ProcessRacingScreen
     /* 5FD8 80204FD8 0C0890C0 */  jal        FadeMusicTo
     /* 5FDC 80204FDC C42E8750 */   lwc1      $f14, %lo(g_fConst0p2_802a7250)($at)
     /* 5FE0 80204FE0 240D0002 */  addiu      $t5, $zero, 0x2
-    /* 5FE4 80204FE4 3C018031 */  lui        $at, %hi(gScreenClearCounterJp)
-    /* 5FE8 80204FE8 AC2D6568 */  sw         $t5, %lo(gScreenClearCounterJp)($at)
+    /* 5FE4 80204FE4 3C018031 */  lui        $at, %hi(g_dwScreenClearFrames)
+    /* 5FE8 80204FE8 AC2D6568 */  sw         $t5, %lo(g_dwScreenClearFrames)($at)
     /* 5FEC 80204FEC AFA000F8 */  sw         $zero, 0xF8($sp)
   .L80204FF0:
     /* 5FF0 80204FF0 0011C980 */  sll        $t9, $s1, 6
@@ -4890,8 +4890,8 @@ glabel ProcessRacingScreen
     /* 60C4 802050C4 0C0890C0 */  jal        FadeMusicTo
     /* 60C8 802050C8 C42E8758 */   lwc1      $f14, %lo(g_fConst0p2_802a7258)($at)
     /* 60CC 802050CC 24180002 */  addiu      $t8, $zero, 0x2
-    /* 60D0 802050D0 3C018031 */  lui        $at, %hi(gScreenClearCounterJp)
-    /* 60D4 802050D4 AC386568 */  sw         $t8, %lo(gScreenClearCounterJp)($at)
+    /* 60D0 802050D0 3C018031 */  lui        $at, %hi(g_dwScreenClearFrames)
+    /* 60D4 802050D4 AC386568 */  sw         $t8, %lo(g_dwScreenClearFrames)($at)
     /* 60D8 802050D8 1000001D */  b          .L80205150
     /* 60DC 802050DC AFA000F8 */   sw        $zero, 0xF8($sp)
   .L802050E0:
@@ -5329,8 +5329,8 @@ glabel ProcessRacingScreen
     /* 6728 80205728 0C095A1C */  jal        TransferFlags
     /* 672C 8020572C 3405C010 */   ori       $a1, $zero, 0xC010
     /* 6730 80205730 240C0001 */  addiu      $t4, $zero, 0x1
-    /* 6734 80205734 3C018031 */  lui        $at, %hi(g_dwDemoSkippedByInput)
-    /* 6738 80205738 AC2C65A0 */  sw         $t4, %lo(g_dwDemoSkippedByInput)($at)
+    /* 6734 80205734 3C018031 */  lui        $at, %hi(g_bDemoInterrupted)
+    /* 6738 80205738 AC2C65A0 */  sw         $t4, %lo(g_bDemoInterrupted)($at)
     /* 673C 8020573C 3C018027 */  lui        $at, %hi(g_dwRaceExitState)
     /* 6740 80205740 24080001 */  addiu      $t0, $zero, 0x1
     /* 6744 80205744 AC282250 */  sw         $t0, %lo(g_dwRaceExitState)($at)
@@ -5864,19 +5864,19 @@ glabel ProcessRacingScreen
     /* 6F0C 80205F0C 8D0C002C */  lw         $t4, 0x2C($t0)
     /* 6F10 80205F10 8F39E904 */  lw         $t9, %lo(D_8031E904)($t9)
     /* 6F14 80205F14 00114880 */  sll        $t1, $s1, 2
-    /* 6F18 80205F18 3C018031 */  lui        $at, %hi(D_80316578)
+    /* 6F18 80205F18 3C018031 */  lui        $at, %hi(g_apReplayGhostPtrs)
     /* 6F1C 80205F1C 00290821 */  addu       $at, $at, $t1
     /* 6F20 80205F20 000F6880 */  sll        $t5, $t7, 2
-    /* 6F24 80205F24 AC2C6578 */  sw         $t4, %lo(D_80316578)($at)
+    /* 6F24 80205F24 AC2C6578 */  sw         $t4, %lo(g_apReplayGhostPtrs)($at)
     /* 6F28 80205F28 032D5021 */  addu       $t2, $t9, $t5
     /* 6F2C 80205F2C 8D4E0034 */  lw         $t6, 0x34($t2)
     /* 6F30 80205F30 3C088027 */  lui        $t0, %hi(g_dwNumLocalPlayers)
     /* 6F34 80205F34 8D081988 */  lw         $t0, %lo(g_dwNumLocalPlayers)($t0)
-    /* 6F38 80205F38 3C018031 */  lui        $at, %hi(D_80316588)
+    /* 6F38 80205F38 3C018031 */  lui        $at, %hi(g_adwReplayGhostSizes)
     /* 6F3C 80205F3C 00115880 */  sll        $t3, $s1, 2
     /* 6F40 80205F40 002B0821 */  addu       $at, $at, $t3
     /* 6F44 80205F44 26310001 */  addiu      $s1, $s1, 0x1
-    /* 6F48 80205F48 AC2E6588 */  sw         $t6, %lo(D_80316588)($at)
+    /* 6F48 80205F48 AC2E6588 */  sw         $t6, %lo(g_adwReplayGhostSizes)($at)
     /* 6F4C 80205F4C 0228082A */  slt        $at, $s1, $t0
     /* 6F50 80205F50 5420FFDA */  bnel       $at, $zero, .L80205EBC
     /* 6F54 80205F54 00116980 */   sll       $t5, $s1, 6
@@ -6029,8 +6029,8 @@ glabel ProcessRacingScreen
     /* 7168 80206168 3C198027 */   lui       $t9, %hi(g_dwRaceSessionType)
     /* 716C 8020616C 8F39199C */  lw         $t9, %lo(g_dwRaceSessionType)($t9)
     /* 7170 80206170 17200008 */  bnez       $t9, .L80206194
-    /* 7174 80206174 3C0A8031 */   lui       $t2, %hi(g_dwDemoSkippedByInput)
-    /* 7178 80206178 8D4A65A0 */  lw         $t2, %lo(g_dwDemoSkippedByInput)($t2)
+    /* 7174 80206174 3C0A8031 */   lui       $t2, %hi(g_bDemoInterrupted)
+    /* 7178 80206178 8D4A65A0 */  lw         $t2, %lo(g_bDemoInterrupted)($t2)
     /* 717C 8020617C 15400005 */  bnez       $t2, .L80206194
     /* 7180 80206180 3C048020 */   lui       $a0, %hi(ProcessSplashScreens)
     /* 7184 80206184 0C08746A */  jal        SetCurrentScreenCallback
