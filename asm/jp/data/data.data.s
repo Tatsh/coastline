@@ -4562,11 +4562,11 @@ dlabel D_80273C54
     /* 74C64 80273C64 00000000 */ .word 0x00000000
 enddlabel D_80273C54
 
-nonmatching g_pPszDefault
+nonmatching g_apDecalOptions
 
-dlabel g_pPszDefault
+dlabel g_apDecalOptions
     /* 74C68 80273C68 80273C2C */ .word g_DefaultDecalItem
-enddlabel g_pPszDefault
+enddlabel g_apDecalOptions
 
 nonmatching D_80273C6C
 

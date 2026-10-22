@@ -336,11 +336,11 @@ glabel ProcessCarSelectScreen
     /* DEAC 8020CEAC 24A53C28 */  addiu      $a1, $a1, %lo(g_dwSuspensionOptionCount)
     /* DEB0 8020CEB0 0C082F17 */  jal        LoadMenuItemModels
     /* DEB4 8020CEB4 24843C18 */   addiu     $a0, $a0, %lo(g_apSuspensionOptions)
-    /* DEB8 8020CEB8 3C048027 */  lui        $a0, %hi(g_pPszDefault)
+    /* DEB8 8020CEB8 3C048027 */  lui        $a0, %hi(g_apDecalOptions)
     /* DEBC 8020CEBC 3C058027 */  lui        $a1, %hi(g_dwDecalListCount)
     /* DEC0 8020CEC0 24A53C78 */  addiu      $a1, $a1, %lo(g_dwDecalListCount)
     /* DEC4 8020CEC4 0C082F17 */  jal        LoadMenuItemModels
-    /* DEC8 8020CEC8 24843C68 */   addiu     $a0, $a0, %lo(g_pPszDefault)
+    /* DEC8 8020CEC8 24843C68 */   addiu     $a0, $a0, %lo(g_apDecalOptions)
     /* DECC 8020CECC 3C108024 */  lui        $s0, %hi(AllocHeapAligned)
     /* DED0 8020CED0 3C168027 */  lui        $s6, %hi(g_BgTextureDesc)
     /* DED4 8020CED4 2610397C */  addiu      $s0, $s0, %lo(AllocHeapAligned)
@@ -4320,12 +4320,12 @@ glabel ProcessCarSelectScreen
   jlabel .L80210884
     /* 11884 80210884 8E4A0000 */  lw         $t2, 0x0($s2)
     /* 11888 80210888 8E390E5C */  lw         $t9, 0xE5C($s1)
-    /* 1188C 8021088C 3C188027 */  lui        $t8, %hi(g_pPszDefault)
+    /* 1188C 8021088C 3C188027 */  lui        $t8, %hi(g_apDecalOptions)
     /* 11890 80210890 3C018031 */  lui        $at, %hi(g_aapCarSelectOptions)
     /* 11894 80210894 AF2A00E0 */  sw         $t2, 0xE0($t9)
     /* 11898 80210898 AE400000 */  sw         $zero, 0x0($s2)
     /* 1189C 8021089C 00330821 */  addu       $at, $at, $s3
-    /* 118A0 802108A0 27183C68 */  addiu      $t8, $t8, %lo(g_pPszDefault)
+    /* 118A0 802108A0 27183C68 */  addiu      $t8, $t8, %lo(g_apDecalOptions)
     /* 118A4 802108A4 AC386B88 */  sw         $t8, %lo(g_aapCarSelectOptions)($at)
     /* 118A8 802108A8 8E24205C */  lw         $a0, 0x205C($s1)
     /* 118AC 802108AC 3C0E8031 */  lui        $t6, %hi(g_adwCarSelectModelSlots)
