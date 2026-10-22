@@ -2204,11 +2204,11 @@ dlabel g_dwRaceExitState
     /* 737A0 802727A0 00000000 */ .word 0x00000000
 enddlabel g_dwRaceExitState
 
-nonmatching D_802727A4
+nonmatching g_aRacePhaseTable
 
-dlabel D_802727A4
+dlabel g_aRacePhaseTable
     /* 737A4 802727A4 00000000 */ .word 0x00000000
-enddlabel D_802727A4
+enddlabel g_aRacePhaseTable
 
 nonmatching D_802727A8
 

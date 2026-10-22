@@ -29,9 +29,9 @@ nonmatching g_dwControllerCheckLuiBase, 0x49BE0
 dlabel g_dwControllerCheckLuiBase
     /* 802B0000 */ .space 0x49BE0
 
-nonmatching gRacePhasePal, 0x4
+nonmatching g_dwRacePhase, 0x4
 
-dlabel gRacePhasePal
+dlabel g_dwRacePhase
     /* 802F9BE0 */ .space 0x04
 
 nonmatching g_fRacePhaseTimer, 0x4
@@ -80,20 +80,10 @@ nonmatching D_80314EF8, 0x20
 dlabel D_80314EF8
     /* 80314EF8 */ .space 0x20
 
-nonmatching g_abUnref80314f18, 0x20
+nonmatching g_abUnref80314f18, 0x64
 
 dlabel g_abUnref80314f18
-    /* 80314F18 */ .space 0x20
-
-nonmatching g_adwWaterfallInstances, 0x40
-
-dlabel g_adwWaterfallInstances
-    /* 80314F38 */ .space 0x40
-
-nonmatching g_dwScreenClearFrames, 0x4
-
-dlabel g_dwScreenClearFrames
-    /* 80314F78 */ .space 0x04
+    /* 80314F18 */ .space 0x64
 
 nonmatching g_dwUnref80314f7c, 0x4
 
@@ -105,21 +95,11 @@ nonmatching g_dwUnref80314f80, 0x4
 dlabel g_dwUnref80314f80
     /* 80314F80 */ .space 0x04
 
-nonmatching D_80314F84, 0x4
+nonmatching D_80314F84, 0x24
 
 /* Automatically generated and unreferenced pad */
 dlabel D_80314F84
-    /* 80314F84 */ .space 0x04
-
-nonmatching g_apReplayGhostPtrs, 0x10
-
-dlabel g_apReplayGhostPtrs
-    /* 80314F88 */ .space 0x10
-
-nonmatching g_adwReplayGhostSizes, 0x10
-
-dlabel g_adwReplayGhostSizes
-    /* 80314F98 */ .space 0x10
+    /* 80314F84 */ .space 0x24
 
 nonmatching g_fUnref80314fa8, 0x4
 
@@ -131,26 +111,11 @@ nonmatching g_dwUnref80314fac, 0x4
 dlabel g_dwUnref80314fac
     /* 80314FAC */ .space 0x04
 
-nonmatching g_bDemoInterrupted, 0x4
-
-dlabel g_bDemoInterrupted
-    /* 80314FB0 */ .space 0x04
-
-nonmatching g_dwPrevViewportCount, 0x4
-
-dlabel g_dwPrevViewportCount
-    /* 80314FB4 */ .space 0x04
-
-nonmatching g_dwRacePhase, 0x4
-
-dlabel g_dwRacePhase
-    /* 80314FB8 */ .space 0x04
-
-nonmatching D_80314FBC, 0x4
+nonmatching D_80314FB0, 0x10
 
 /* Automatically generated and unreferenced pad */
-dlabel D_80314FBC
-    /* 80314FBC */ .space 0x04
+dlabel D_80314FB0
+    /* 80314FB0 */ .space 0x10
 
 nonmatching g_dwUnref80314fc0, 0x4
 
@@ -433,14 +398,14 @@ nonmatching g_szFormatBuffer, 0x20
 dlabel g_szFormatBuffer
     /* 80317AC8 */ .space 0x20
 
-nonmatching D_80317AE8, 0x40
+nonmatching g_adwWaterfallInstances, 0x40
 
-dlabel D_80317AE8
+dlabel g_adwWaterfallInstances
     /* 80317AE8 */ .space 0x40
 
-nonmatching gScreenClearCounterPal, 0x4
+nonmatching g_dwScreenClearFrames, 0x4
 
-dlabel gScreenClearCounterPal
+dlabel g_dwScreenClearFrames
     /* 80317B28 */ .space 0x04
 
 nonmatching g_dwBestReplayLength, 0x4
@@ -453,14 +418,14 @@ nonmatching g_dwBestReplayPlayer, 0x8
 dlabel g_dwBestReplayPlayer
     /* 80317B30 */ .space 0x08
 
-nonmatching D_80317B38, 0x10
+nonmatching g_apReplayGhostPtrs, 0x10
 
-dlabel D_80317B38
+dlabel g_apReplayGhostPtrs
     /* 80317B38 */ .space 0x10
 
-nonmatching D_80317B48, 0x10
+nonmatching g_adwReplayGhostSizes, 0x10
 
-dlabel D_80317B48
+dlabel g_adwReplayGhostSizes
     /* 80317B48 */ .space 0x10
 
 nonmatching g_fRaceCaptionTimer, 0x4
@@ -473,14 +438,14 @@ nonmatching g_dwRaceCaptionIndex, 0x4
 dlabel g_dwRaceCaptionIndex
     /* 80317B5C */ .space 0x04
 
-nonmatching gPostRaceActionPal, 0x4
+nonmatching g_bDemoInterrupted, 0x4
 
-dlabel gPostRaceActionPal
+dlabel g_bDemoInterrupted
     /* 80317B60 */ .space 0x04
 
-nonmatching gPrevViewportCountPal, 0xC
+nonmatching g_dwPrevViewportCount, 0xC
 
-dlabel gPrevViewportCountPal
+dlabel g_dwPrevViewportCount
     /* 80317B64 */ .space 0x0C
 
 nonmatching g_pSplashFirstLogo, 0x4
@@ -1061,15 +1026,10 @@ nonmatching D_803189B4, 0x8
 dlabel D_803189B4
     /* 803189B4 */ .space 0x08
 
-nonmatching g_dwMainThreadStackFill, 0x1A0C
+nonmatching g_dwMainThreadStackFill, 0x1FF4
 
 dlabel g_dwMainThreadStackFill
-    /* 803189BC */ .space 0x1A0C
-
-nonmatching g_awCameraRayNearbyInstances, 0x5E8
-
-dlabel g_awCameraRayNearbyInstances
-    /* 8031A3C8 */ .space 0x5E8
+    /* 803189BC */ .space 0x1FF4
 
 nonmatching g_adwRspDoneThreadStack, 0x4
 
@@ -1530,9 +1490,9 @@ nonmatching D_8031D74C, 0x3C
 dlabel D_8031D74C
     /* 8031D74C */ .space 0x3C
 
-nonmatching g_vRaycastTargetPal, 0x8
+nonmatching g_awCameraRayNearbyInstances, 0x8
 
-dlabel g_vRaycastTargetPal
+dlabel g_awCameraRayNearbyInstances
     /* 8031D788 */ .space 0x08
 
 nonmatching g_bHeadlight0, 0x4
