@@ -1406,8 +1406,8 @@ missing:
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wuninitialized"
 #pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
-/* The Japanese and European bodies still come from the assembly. */
-#if TGR_REGION == TGR_REGION_US
+/* The Japanese body still comes from the assembly. */
+#if TGR_REGION != TGR_REGION_JP
 s32 ProcessPakDataScreen(s32 dataType, u8 quiet) {
     /* TOP GEAR SEASON, TOP GEAR GHOST and TOP GEAR OPTIONS in the font of the Controller Pak. */
     u8 seasonName[16] = {0x2D,
@@ -1564,7 +1564,14 @@ s32 ProcessPakDataScreen(s32 dataType, u8 quiet) {
             g_bPakDataStep = PAK_DATA_STEP_FIND;
             break;
         }
+#if TGR_REGION == TGR_REGION_EU
+        SetTextStyleNormal();
+        SetTextAlignLeft();
+        SetTextCustomColors(0xFF, 0xFF, 0xFF, 0xFF, 0xF5, 0x00);
+        SetTextSize(12);
+#else
         SET_MESSAGE_TEXT();
+#endif
         DRAW_NEW_PAK_MESSAGE(0xC3, 0x71);
         if (CHOOSING_INPUT->buttons & DISMISS_BUTTONS) {
             TransferFlags(CHOOSING_INPUT, DISMISS_BUTTONS);
@@ -1822,8 +1829,11 @@ s32 ProcessPakDataScreen(s32 dataType, u8 quiet) {
         } else if (dataType == PAK_DATA_LOAD_GHOST) {
             top = g_bSaveLoadEntryPoint != SAVE_LOAD_FROM_MAIN_MENU ? 0xCE : unsetOffset + 0xCB;
             DRAW_DONE_MESSAGE(0xE2, 0xBC, top, "%ywGHOST DATA", "%ywLOADED OK!");
-        } else if (dataType == PAK_DATA_LOAD_CONFIGURATION ||
-                   dataType == PAK_DATA_SAVE_CONFIGURATION) {
+        }
+#if TGR_REGION != TGR_REGION_EU
+        /* The European release does not report a loaded or saved configuration. */
+        else if (dataType == PAK_DATA_LOAD_CONFIGURATION ||
+                 dataType == PAK_DATA_SAVE_CONFIGURATION) {
             DRAW_MESSAGE_BOX(0xD8, 0xD9, 0xD0, 0x4A);
             DrawText("%ywCONFIGURATION", 0x9F, 0x7C);
             if (dataType == PAK_DATA_LOAD_CONFIGURATION) {
@@ -1832,6 +1842,7 @@ s32 ProcessPakDataScreen(s32 dataType, u8 quiet) {
                 DrawText("%ywSAVED OK!", 0x9F, 0x8A);
             }
         }
+#endif
         if (CHOOSING_INPUT->buttons & DISMISS_BUTTONS) {
             TransferFlags(CHOOSING_INPUT, DISMISS_BUTTONS);
             if (dataType == PAK_DATA_LOAD_CONFIGURATION) {

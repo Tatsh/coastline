@@ -475,9 +475,9 @@ s32 IsRumblePakMissing(void);
  * missing.
  * @return Nonzero once the screen is finished.
  * @ghidraAddress USA: 0x80214e0c
- * @ghidraAddress JPN: 0x80215964
  * @ghidraAddress EUR: 0x80215ed8
- * @stub{EUR JPN}
+ * @ghidraAddress JPN: 0x80215964
+ * @stub{JPN}
  */
 s32 ProcessPakDataScreen(s32 dataType, u8 quiet);
 
