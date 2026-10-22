@@ -753,9 +753,9 @@ glabel BootIdleThread
     /* 205B8 8021F5B8 3C018027 */  lui        $at, %hi(g_ppszMainArgv)
     /* 205BC 8021F5BC 3C0E8029 */  lui        $t6, %hi(g_dwBootArgc)
     /* 205C0 8021F5C0 AC2D1ED4 */  sw         $t5, %lo(g_ppszMainArgv)($at)
-    /* 205C4 8021F5C4 3C018027 */  lui        $at, %hi(g_pnBootArgc)
+    /* 205C4 8021F5C4 3C018027 */  lui        $at, %hi(g_pdwMainArgc)
     /* 205C8 8021F5C8 25CED59C */  addiu      $t6, $t6, %lo(g_dwBootArgc)
-    /* 205CC 8021F5CC AC2E1ED0 */  sw         $t6, %lo(g_pnBootArgc)($at)
+    /* 205CC 8021F5CC AC2E1ED0 */  sw         $t6, %lo(g_pdwMainArgc)($at)
     /* 205D0 8021F5D0 0C099EE4 */  jal        osCreateViManager
     /* 205D4 8021F5D4 240400FE */   addiu     $a0, $zero, 0xFE
     /* 205D8 8021F5D8 24180140 */  addiu      $t8, $zero, 0x140

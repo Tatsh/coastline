@@ -1358,11 +1358,11 @@ dlabel g_aGspUcodeText
     /* 72ECC 80271ECC 00000000 */ .word 0x00000000
 enddlabel g_aGspUcodeText
 
-nonmatching g_pnBootArgc
+nonmatching g_pdwMainArgc
 
-dlabel g_pnBootArgc
+dlabel g_pdwMainArgc
     /* 72ED0 80271ED0 00000000 */ .word 0x00000000
-enddlabel g_pnBootArgc
+enddlabel g_pdwMainArgc
 
 nonmatching g_ppszMainArgv
 
