@@ -408,7 +408,13 @@ extern MenuItem *g_apTrackMenuItems[];
  */
 extern s32 g_dwTrackMenuItemCount;
 
-/** The item of the track menu under the cursor. @ghidraAddress USA: 0x80315f8c */
+/**
+ * The item of the track menu under the cursor.
+ *
+ * @ghidraAddress USA: 0x80315f8c
+ * @ghidraAddress EUR: 0x80317c6c
+ * @ghidraAddress JPN: 0x8031689c
+ */
 extern s32 g_dwTrackMenuSelection;
 
 /**
@@ -550,9 +556,8 @@ void SeasonRecordsPreDrawCallback(void);
  * Run one frame of the track menu: set it up on its first frame, then act on its items.
  *
  * @ghidraAddress USA: 0x80209434
- * @ghidraAddress JPN: 0x80208e20
  * @ghidraAddress EUR: 0x80209214
- * @stub{JPN}
+ * @ghidraAddress JPN: 0x80208e20
  */
 void ProcessTrackMenu(void);
 

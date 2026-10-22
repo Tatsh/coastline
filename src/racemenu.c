@@ -29,6 +29,15 @@
 #define ROM_SCROLL_SOUND 0x1BF480
 #define ROM_SELECT_SOUND 0x1BFEC0
 
+#if TGR_REGION == TGR_REGION_JP
+#define TRACK_MENU_TITLE "COURSE SELECT"
+
+/* The glyph of the first weather, the sun. The others follow it in the order of the weathers. */
+#define FIRST_WEATHER_GLYPH 0x29
+#else
+#define TRACK_MENU_TITLE "TRACK SELECT"
+#endif
+
 /* The silence after each sound, in bytes. */
 #define SOUND_TAIL_BYTES 0x100
 
@@ -308,8 +317,6 @@ void SeasonRecordsPreDrawCallback(void) {
 /* The original sets the named item only in the modes that restore its name at the end. */
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
-/* The Japanese body still comes from the assembly. */
-#if TGR_REGION != TGR_REGION_JP
 void ProcessTrackMenu(void) {
     CameraFrame *camera;
     Vehicle *vehicle;
@@ -394,11 +401,19 @@ void ProcessTrackMenu(void) {
             g_apTrackMenuItems[named]->flags |= MENU_ITEM_IMMEDIATE;
         } else {
             g_pfnScreenPreDrawCallback = NULL;
+#if TGR_REGION == TGR_REGION_JP
+            sprintf(g_szTrackMenuTextBuf,
+                    "Race %d: %s %%j%c%%e",
+                    g_aVehicles[0].profile->round + 1,
+                    name,
+                    g_dwCurrentWeather + FIRST_WEATHER_GLYPH);
+#else
             sprintf(g_szTrackMenuTextBuf,
                     "Race %d: %s/%s",
                     g_aVehicles[0].profile->round + 1,
                     name,
                     g_apWeatherMenuItems[g_dwCurrentWeather]->name);
+#endif
             g_apTrackMenuItems[named]->name = g_szTrackMenuTextBuf;
         }
         result = ProcessScreenState(g_SeasonTable[g_aVehicles[0].profile->season].name,
@@ -422,7 +437,7 @@ void ProcessTrackMenu(void) {
             sprintf(g_szTrackMenuTextBuf, "%s: %d laps", name, g_dwTotalLaps);
             g_apTrackMenuItems[named]->name = g_szTrackMenuTextBuf;
         }
-        result = ProcessScreenState("TRACK SELECT",
+        result = ProcessScreenState(TRACK_MENU_TITLE,
                                     g_dwTrackMenuItemCount,
                                     g_apTrackMenuItems,
                                     &g_dwTrackMenuSelection,
@@ -520,7 +535,6 @@ void ProcessTrackMenu(void) {
         g_apTrackMenuItems[named]->name = name;
     }
 }
-#endif
 #pragma GCC diagnostic pop
 
 void DrawModelList(Model *model, f32 m[4][4]) {

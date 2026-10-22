@@ -339,6 +339,7 @@ ProcessScreenState
 ProcessSeasonResults
 ProcessTextInputKeyboard
 ProcessTextStyleMenu
+ProcessTrackMenu
 ProcessWeatherSelect
 ProjectVec3fToScreen
 ProjectWorldToScreenRect

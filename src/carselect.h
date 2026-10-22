@@ -238,8 +238,8 @@ extern s32 g_dwResultsSeason;
 
 /**
  * @ghidraAddress USA: 0x80316300
+ * @ghidraAddress EUR: 0x80317fe0
  * @ghidraAddress JPN: 0x80316c18
- * @ghidraAddress EUR: 0x80315440
  */
 extern s32 g_dwResultsRound;
 
@@ -252,15 +252,15 @@ extern s32 g_dwResultsChampionshipFlags;
 
 /**
  * @ghidraAddress USA: 0x80316308
- * @ghidraAddress JPN: 0x8031689c
- * @ghidraAddress EUR: 0x80317c6c
+ * @ghidraAddress EUR: 0x80317fe8
+ * @ghidraAddress JPN: 0x80316c20
  */
 extern s32 g_dwResultsTrack;
 
 /**
  * @ghidraAddress USA: 0x8031630c
+ * @ghidraAddress EUR: 0x80317fec
  * @ghidraAddress JPN: 0x80316c24
- * @ghidraAddress EUR: 0x8031544c
  */
 extern s32 g_dwCarSelectWeather;
 
