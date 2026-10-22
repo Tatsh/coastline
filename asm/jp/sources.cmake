@@ -6,7 +6,6 @@ set(COASTLINE_ASM_JP
     asm/jp/07A90.s
     asm/jp/0CE40.s
     asm/jp/12620.s
-    asm/jp/27A60.s
     asm/jp/44B20.s
     asm/jp/551B0.s
     asm/jp/68690.s

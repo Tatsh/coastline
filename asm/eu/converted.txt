@@ -342,6 +342,7 @@ ProcessSeasonResults
 ProcessTextInputKeyboard
 ProcessTextStyleMenu
 ProcessTrackMenu
+ProcessVehicleInputAndPhysics
 ProcessWeatherSelect
 ProjectVec3fToScreen
 ProjectWorldToScreenRect

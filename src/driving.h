@@ -244,9 +244,8 @@ void ChooseReplayCamera(Vehicle *vehicle);
  *
  * @param vehicle The vehicle.
  * @ghidraAddress USA: 0x80226488
- * @ghidraAddress JPN: 0x80227170
  * @ghidraAddress EUR: 0x80227980
- * @stub{EUR JPN}
+ * @ghidraAddress JPN: 0x80227170
  */
 void ProcessVehicleInputAndPhysics(Vehicle *vehicle);
 
