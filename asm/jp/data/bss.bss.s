@@ -211,19 +211,19 @@ nonmatching gPrevViewportCountJp, 0xC
 dlabel gPrevViewportCountJp
     /* 803165A4 */ .space 0x0C
 
-nonmatching g_pJpSplashLogoData, 0x4
+nonmatching g_pSplashFirstLogo, 0x4
 
-dlabel g_pJpSplashLogoData
+dlabel g_pSplashFirstLogo
     /* 803165B0 */ .space 0x04
 
-nonmatching g_pSplashTitleModelB, 0x4
+nonmatching g_pSplashDeveloperLogo, 0x4
 
-dlabel g_pSplashTitleModelB
+dlabel g_pSplashDeveloperLogo
     /* 803165B4 */ .space 0x04
 
-nonmatching g_abJpSplashTexture, 0x200
+nonmatching g_awSplashTitlePalette, 0x200
 
-dlabel g_abJpSplashTexture
+dlabel g_awSplashTitlePalette
     /* 803165B8 */ .space 0x200
 
 nonmatching g_fSplashTime, 0x4
@@ -246,9 +246,9 @@ nonmatching g_dwSplashSoundBLength, 0x4
 dlabel g_dwSplashSoundBLength
     /* 803167C4 */ .space 0x04
 
-nonmatching g_pSplashSfx2Data, 0x4
+nonmatching g_pSplashSoundB, 0x4
 
-dlabel g_pSplashSfx2Data
+dlabel g_pSplashSoundB
     /* 803167C8 */ .space 0x04
 
 nonmatching g_dwSplashFirstLogoVoice, 0x2
@@ -271,9 +271,9 @@ nonmatching g_bSplashFirstLogoSoundB, 0x4
 dlabel g_bSplashFirstLogoSoundB
     /* 803167D4 */ .space 0x04
 
-nonmatching g_dwSplashProducerVoice, 0x2
+nonmatching g_dwSplashDeveloperVoice, 0x2
 
-dlabel g_dwSplashProducerVoice
+dlabel g_dwSplashDeveloperVoice
     /* 803167D8 */ .space 0x02
 
 nonmatching D_803167DA, 0x2
@@ -281,19 +281,19 @@ nonmatching D_803167DA, 0x2
 dlabel D_803167DA
     /* 803167DA */ .space 0x02
 
-nonmatching g_dwSplashProducerSoundA, 0x4
+nonmatching g_dwSplashDeveloperSoundA, 0x4
 
-dlabel g_dwSplashProducerSoundA
+dlabel g_dwSplashDeveloperSoundA
     /* 803167DC */ .space 0x04
 
-nonmatching g_bSplashProducerSoundB, 0x4
+nonmatching g_bSplashDeveloperSoundB, 0x4
 
-dlabel g_bSplashProducerSoundB
+dlabel g_bSplashDeveloperSoundB
     /* 803167E0 */ .space 0x04
 
-nonmatching g_dwSplashSkipped, 0xC
+nonmatching g_bSplashSkipped, 0xC
 
-dlabel g_dwSplashSkipped
+dlabel g_bSplashSkipped
     /* 803167E4 */ .space 0x0C
 
 nonmatching g_bSeasonFirstRace, 0x4

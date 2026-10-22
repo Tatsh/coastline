@@ -46,8 +46,8 @@ glabel ProcessSplashScreens
     /* 7B34 80206B34 2484FB20 */   addiu     $a0, $a0, %lo(D_1EFB20)
     /* 7B38 80206B38 0C090E5F */  jal        AllocHeapAligned
     /* 7B3C 80206B3C 00402025 */   or        $a0, $v0, $zero
-    /* 7B40 80206B40 3C038031 */  lui        $v1, %hi(g_pSplashTitleModelB)
-    /* 7B44 80206B44 246365B4 */  addiu      $v1, $v1, %lo(g_pSplashTitleModelB)
+    /* 7B40 80206B40 3C038031 */  lui        $v1, %hi(g_pSplashDeveloperLogo)
+    /* 7B44 80206B44 246365B4 */  addiu      $v1, $v1, %lo(g_pSplashDeveloperLogo)
     /* 7B48 80206B48 3C05001F */  lui        $a1, %hi(D_1EFB20)
     /* 7B4C 80206B4C AC620000 */  sw         $v0, 0x0($v1)
     /* 7B50 80206B50 24A5FB20 */  addiu      $a1, $a1, %lo(D_1EFB20)
@@ -58,8 +58,8 @@ glabel ProcessSplashScreens
     /* 7B64 80206B64 2484EAF0 */   addiu     $a0, $a0, %lo(D_1EEAF0)
     /* 7B68 80206B68 0C090E5F */  jal        AllocHeapAligned
     /* 7B6C 80206B6C 00402025 */   or        $a0, $v0, $zero
-    /* 7B70 80206B70 3C038031 */  lui        $v1, %hi(g_pJpSplashLogoData)
-    /* 7B74 80206B74 246365B0 */  addiu      $v1, $v1, %lo(g_pJpSplashLogoData)
+    /* 7B70 80206B70 3C038031 */  lui        $v1, %hi(g_pSplashFirstLogo)
+    /* 7B74 80206B74 246365B0 */  addiu      $v1, $v1, %lo(g_pSplashFirstLogo)
     /* 7B78 80206B78 3C05001F */  lui        $a1, %hi(D_1EEAF0)
     /* 7B7C 80206B7C AC620000 */  sw         $v0, 0x0($v1)
     /* 7B80 80206B80 24A5EAF0 */  addiu      $a1, $a1, %lo(D_1EEAF0)
@@ -70,10 +70,10 @@ glabel ProcessSplashScreens
     /* 7B94 80206B94 24A5397C */  addiu      $a1, $a1, %lo(AllocHeapAligned)
     /* 7B98 80206B98 0C08FBD7 */  jal        LoadAndDecompressAsset
     /* 7B9C 80206B9C 248422A0 */   addiu     $a0, $a0, %lo(g_SplashTitleLogoTexture)
-    /* 7BA0 80206BA0 3C048031 */  lui        $a0, %hi(g_abJpSplashTexture)
+    /* 7BA0 80206BA0 3C048031 */  lui        $a0, %hi(g_awSplashTitlePalette)
     /* 7BA4 80206BA4 3C05001F */  lui        $a1, %hi(D_1F5EA0)
     /* 7BA8 80206BA8 24A55EA0 */  addiu      $a1, $a1, %lo(D_1F5EA0)
-    /* 7BAC 80206BAC 248465B8 */  addiu      $a0, $a0, %lo(g_abJpSplashTexture)
+    /* 7BAC 80206BAC 248465B8 */  addiu      $a0, $a0, %lo(g_awSplashTitlePalette)
     /* 7BB0 80206BB0 0C087600 */  jal        DecompressFromRom
     /* 7BB4 80206BB4 00003025 */   or        $a2, $zero, $zero
     /* 7BB8 80206BB8 3C04001D */  lui        $a0, %hi(D_1CBDC0)
@@ -97,19 +97,19 @@ glabel ProcessSplashScreens
     /* 7C00 80206C00 AC2267C4 */  sw         $v0, %lo(g_dwSplashSoundBLength)($at)
     /* 7C04 80206C04 0C090E5F */  jal        AllocHeapAligned
     /* 7C08 80206C08 24440100 */   addiu     $a0, $v0, 0x100
-    /* 7C0C 80206C0C 3C018031 */  lui        $at, %hi(g_pSplashSfx2Data)
+    /* 7C0C 80206C0C 3C018031 */  lui        $at, %hi(g_pSplashSoundB)
     /* 7C10 80206C10 3C05001D */  lui        $a1, %hi(D_1CFD40)
-    /* 7C14 80206C14 AC2267C8 */  sw         $v0, %lo(g_pSplashSfx2Data)($at)
+    /* 7C14 80206C14 AC2267C8 */  sw         $v0, %lo(g_pSplashSoundB)($at)
     /* 7C18 80206C18 24A5FD40 */  addiu      $a1, $a1, %lo(D_1CFD40)
     /* 7C1C 80206C1C 00402025 */  or         $a0, $v0, $zero
     /* 7C20 80206C20 0C087600 */  jal        DecompressFromRom
     /* 7C24 80206C24 00003025 */   or        $a2, $zero, $zero
     /* 7C28 80206C28 3C188031 */  lui        $t8, %hi(g_pSplashSoundA)
     /* 7C2C 80206C2C 3C198031 */  lui        $t9, %hi(g_dwSplashSoundALength)
-    /* 7C30 80206C30 3C0E8031 */  lui        $t6, %hi(g_pSplashSfx2Data)
+    /* 7C30 80206C30 3C0E8031 */  lui        $t6, %hi(g_pSplashSoundB)
     /* 7C34 80206C34 3C0F8031 */  lui        $t7, %hi(g_dwSplashSoundBLength)
     /* 7C38 80206C38 8DEF67C4 */  lw         $t7, %lo(g_dwSplashSoundBLength)($t7)
-    /* 7C3C 80206C3C 8DCE67C8 */  lw         $t6, %lo(g_pSplashSfx2Data)($t6)
+    /* 7C3C 80206C3C 8DCE67C8 */  lw         $t6, %lo(g_pSplashSoundB)($t6)
     /* 7C40 80206C40 8F3967BC */  lw         $t9, %lo(g_dwSplashSoundALength)($t9)
     /* 7C44 80206C44 8F1867C0 */  lw         $t8, %lo(g_pSplashSoundA)($t8)
     /* 7C48 80206C48 00002825 */  or         $a1, $zero, $zero
@@ -133,12 +133,12 @@ glabel ProcessSplashScreens
     /* 7C8C 80206C8C AC2067D4 */  sw         $zero, %lo(g_bSplashFirstLogoSoundB)($at)
     /* 7C90 80206C90 3C018031 */  lui        $at, %hi(g_dwSplashFirstLogoSoundA)
     /* 7C94 80206C94 AC2067D0 */  sw         $zero, %lo(g_dwSplashFirstLogoSoundA)($at)
-    /* 7C98 80206C98 3C018031 */  lui        $at, %hi(g_bSplashProducerSoundB)
-    /* 7C9C 80206C9C AC2067E0 */  sw         $zero, %lo(g_bSplashProducerSoundB)($at)
-    /* 7CA0 80206CA0 3C018031 */  lui        $at, %hi(g_dwSplashProducerSoundA)
-    /* 7CA4 80206CA4 AC2067DC */  sw         $zero, %lo(g_dwSplashProducerSoundA)($at)
-    /* 7CA8 80206CA8 3C018031 */  lui        $at, %hi(g_dwSplashSkipped)
-    /* 7CAC 80206CAC AC2067E4 */  sw         $zero, %lo(g_dwSplashSkipped)($at)
+    /* 7C98 80206C98 3C018031 */  lui        $at, %hi(g_bSplashDeveloperSoundB)
+    /* 7C9C 80206C9C AC2067E0 */  sw         $zero, %lo(g_bSplashDeveloperSoundB)($at)
+    /* 7CA0 80206CA0 3C018031 */  lui        $at, %hi(g_dwSplashDeveloperSoundA)
+    /* 7CA4 80206CA4 AC2067DC */  sw         $zero, %lo(g_dwSplashDeveloperSoundA)($at)
+    /* 7CA8 80206CA8 3C018031 */  lui        $at, %hi(g_bSplashSkipped)
+    /* 7CAC 80206CAC AC2067E4 */  sw         $zero, %lo(g_bSplashSkipped)($at)
     /* 7CB0 80206CB0 3C018027 */  lui        $at, %hi(g_bSplashStarted)
     /* 7CB4 80206CB4 24180001 */  addiu      $t8, $zero, 0x1
     /* 7CB8 80206CB8 AC3822B4 */  sw         $t8, %lo(g_bSplashStarted)($at)
@@ -224,21 +224,21 @@ glabel ProcessSplashScreens
     /* 7DEC 80206DEC AC4F0000 */  sw         $t7, 0x0($v0)
     /* 7DF0 80206DF0 AC580004 */  sw         $t8, 0x4($v0)
     /* 7DF4 80206DF4 8DA20000 */  lw         $v0, 0x0($t5)
-    /* 7DF8 80206DF8 3C0F8027 */  lui        $t7, %hi(g_SplashDirectionalLightJp)
+    /* 7DF8 80206DF8 3C0F8027 */  lui        $t7, %hi(g_SplashDirectionalLight)
     /* 7DFC 80206DFC 3C0E0386 */  lui        $t6, (0x3860010 >> 16)
     /* 7E00 80206E00 24590008 */  addiu      $t9, $v0, 0x8
     /* 7E04 80206E04 ADB90000 */  sw         $t9, 0x0($t5)
     /* 7E08 80206E08 35CE0010 */  ori        $t6, $t6, (0x3860010 & 0xFFFF)
-    /* 7E0C 80206E0C 25EF22D0 */  addiu      $t7, $t7, %lo(g_SplashDirectionalLightJp)
+    /* 7E0C 80206E0C 25EF22D0 */  addiu      $t7, $t7, %lo(g_SplashDirectionalLight)
     /* 7E10 80206E10 AC4F0004 */  sw         $t7, 0x4($v0)
     /* 7E14 80206E14 AC4E0000 */  sw         $t6, 0x0($v0)
     /* 7E18 80206E18 8DA20000 */  lw         $v0, 0x0($t5)
-    /* 7E1C 80206E1C 3C0E8027 */  lui        $t6, %hi(g_SplashDirectionalLight)
+    /* 7E1C 80206E1C 3C0E8027 */  lui        $t6, %hi(g_SplashAmbientLight)
     /* 7E20 80206E20 3C190388 */  lui        $t9, (0x3880010 >> 16)
     /* 7E24 80206E24 24580008 */  addiu      $t8, $v0, 0x8
     /* 7E28 80206E28 ADB80000 */  sw         $t8, 0x0($t5)
     /* 7E2C 80206E2C 37390010 */  ori        $t9, $t9, (0x3880010 & 0xFFFF)
-    /* 7E30 80206E30 25CE22C8 */  addiu      $t6, $t6, %lo(g_SplashDirectionalLight)
+    /* 7E30 80206E30 25CE22C8 */  addiu      $t6, $t6, %lo(g_SplashAmbientLight)
     /* 7E34 80206E34 AC4E0004 */  sw         $t6, 0x4($v0)
     /* 7E38 80206E38 AC590000 */  sw         $t9, 0x0($v0)
     /* 7E3C 80206E3C 8DA20000 */  lw         $v0, 0x0($t5)
@@ -499,10 +499,10 @@ glabel ProcessSplashScreens
     /* 821C 8020721C 2401FFFF */  addiu      $at, $zero, -0x1
     /* 8220 80207220 10410016 */  beq        $v0, $at, .L8020727C
     /* 8224 80207224 01C02025 */   or        $a0, $t6, $zero
-    /* 8228 80207228 3C058031 */  lui        $a1, %hi(g_pSplashSfx2Data)
+    /* 8228 80207228 3C058031 */  lui        $a1, %hi(g_pSplashSoundB)
     /* 822C 8020722C 3C068031 */  lui        $a2, %hi(g_dwSplashSoundBLength)
     /* 8230 80207230 8CC667C4 */  lw         $a2, %lo(g_dwSplashSoundBLength)($a2)
-    /* 8234 80207234 8CA567C8 */  lw         $a1, %lo(g_pSplashSfx2Data)($a1)
+    /* 8234 80207234 8CA567C8 */  lw         $a1, %lo(g_pSplashSoundB)($a1)
     /* 8238 80207238 00003825 */  or         $a3, $zero, $zero
     /* 823C 8020723C 0C096299 */  jal        InitSoundChannel
     /* 8240 80207240 A7AE0088 */   sh        $t6, 0x88($sp)
@@ -542,8 +542,8 @@ glabel ProcessSplashScreens
     /* 82C0 802072C0 C4268860 */  lwc1       $f6, %lo(g_flSplashHalfPi)($at)
     /* 82C4 802072C4 46100482 */  mul.s      $f18, $f0, $f16
     /* 82C8 802072C8 3C013D80 */  lui        $at, (0x3D800000 >> 16)
-    /* 82CC 802072CC 3C048031 */  lui        $a0, %hi(g_pJpSplashLogoData)
-    /* 82D0 802072D0 8C8465B0 */  lw         $a0, %lo(g_pJpSplashLogoData)($a0)
+    /* 82CC 802072CC 3C048031 */  lui        $a0, %hi(g_pSplashFirstLogo)
+    /* 82D0 802072D0 8C8465B0 */  lw         $a0, %lo(g_pSplashFirstLogo)($a0)
     /* 82D4 802072D4 44054000 */  mfc1       $a1, $f8
     /* 82D8 802072D8 46067202 */  mul.s      $f8, $f14, $f6
     /* 82DC 802072DC 24060000 */  addiu      $a2, $zero, 0x0
@@ -570,7 +570,7 @@ glabel ProcessSplashScreens
     /* 832C 8020732C 3C0140C0 */  lui        $at, (0x40C00000 >> 16)
     /* 8330 80207330 44819000 */  mtc1       $at, $f18
     /* 8334 80207334 3C014060 */  lui        $at, (0x40600000 >> 16)
-    /* 8338 80207338 3C048031 */  lui        $a0, %hi(g_pJpSplashLogoData)
+    /* 8338 80207338 3C048031 */  lui        $a0, %hi(g_pSplashFirstLogo)
     /* 833C 8020733C 4612703C */  c.lt.s     $f14, $f18
     /* 8340 80207340 24060000 */  addiu      $a2, $zero, 0x0
     /* 8344 80207344 3C07C248 */  lui        $a3, (0xC2480000 >> 16)
@@ -600,7 +600,7 @@ glabel ProcessSplashScreens
     /* 839C 8020739C 3C01802B */  lui        $at, %hi(g_flSplashLogo1Scale)
     /* 83A0 802073A0 C4308870 */  lwc1       $f16, %lo(g_flSplashLogo1Scale)($at)
     /* 83A4 802073A4 44051000 */  mfc1       $a1, $f2
-    /* 83A8 802073A8 8C8465B0 */  lw         $a0, %lo(g_pJpSplashLogoData)($a0)
+    /* 83A8 802073A8 8C8465B0 */  lw         $a0, %lo(g_pSplashFirstLogo)($a0)
     /* 83AC 802073AC E7A80010 */  swc1       $f8, 0x10($sp)
     /* 83B0 802073B0 0C082821 */  jal        DrawModelAt
     /* 83B4 802073B4 E7B00014 */   swc1      $f16, 0x14($sp)
@@ -772,12 +772,12 @@ glabel ProcessSplashScreens
     /* 8630 80207630 E42E67B8 */  swc1       $f14, %lo(g_fSplashTime)($at)
     /* 8634 80207634 3C01802B */  lui        $at, %hi(g_fConst4p35_802a73d8)
     /* 8638 80207638 C42A8888 */  lwc1       $f10, %lo(g_fConst4p35_802a73d8)($at)
-    /* 863C 8020763C 3C0F8031 */  lui        $t7, %hi(g_dwSplashProducerSoundA)
+    /* 863C 8020763C 3C0F8031 */  lui        $t7, %hi(g_dwSplashDeveloperSoundA)
     /* 8640 80207640 460E503C */  c.lt.s     $f10, $f14
     /* 8644 80207644 00000000 */  nop
     /* 8648 80207648 45000025 */  bc1f       .L802076E0
     /* 864C 8020764C 00000000 */   nop
-    /* 8650 80207650 8DEF67DC */  lw         $t7, %lo(g_dwSplashProducerSoundA)($t7)
+    /* 8650 80207650 8DEF67DC */  lw         $t7, %lo(g_dwSplashDeveloperSoundA)($t7)
     /* 8654 80207654 3C018031 */  lui        $at, %hi(g_fSplashTime)
     /* 8658 80207658 E42E67B8 */  swc1       $f14, %lo(g_fSplashTime)($at)
     /* 865C 8020765C 15E00020 */  bnez       $t7, .L802076E0
@@ -812,19 +812,19 @@ glabel ProcessSplashScreens
     /* 86D0 802076D0 AC59000C */  sw         $t9, 0xC($v0)
   .L802076D4:
     /* 86D4 802076D4 240E0001 */  addiu      $t6, $zero, 0x1
-    /* 86D8 802076D8 3C018031 */  lui        $at, %hi(g_dwSplashProducerSoundA)
-    /* 86DC 802076DC AC2E67DC */  sw         $t6, %lo(g_dwSplashProducerSoundA)($at)
+    /* 86D8 802076D8 3C018031 */  lui        $at, %hi(g_dwSplashDeveloperSoundA)
+    /* 86DC 802076DC AC2E67DC */  sw         $t6, %lo(g_dwSplashDeveloperSoundA)($at)
   .L802076E0:
     /* 86E0 802076E0 3C018031 */  lui        $at, %hi(g_fSplashTime)
     /* 86E4 802076E4 C42E67B8 */  lwc1       $f14, %lo(g_fSplashTime)($at)
     /* 86E8 802076E8 3C014090 */  lui        $at, (0x40900000 >> 16)
     /* 86EC 802076EC 44819000 */  mtc1       $at, $f18
-    /* 86F0 802076F0 3C0F8031 */  lui        $t7, %hi(g_bSplashProducerSoundB)
+    /* 86F0 802076F0 3C0F8031 */  lui        $t7, %hi(g_bSplashDeveloperSoundB)
     /* 86F4 802076F4 460E903C */  c.lt.s     $f18, $f14
     /* 86F8 802076F8 00000000 */  nop
     /* 86FC 802076FC 45000025 */  bc1f       .L80207794
     /* 8700 80207700 00000000 */   nop
-    /* 8704 80207704 8DEF67E0 */  lw         $t7, %lo(g_bSplashProducerSoundB)($t7)
+    /* 8704 80207704 8DEF67E0 */  lw         $t7, %lo(g_bSplashDeveloperSoundB)($t7)
     /* 8708 80207708 3C018031 */  lui        $at, %hi(g_fSplashTime)
     /* 870C 8020770C E42E67B8 */  swc1       $f14, %lo(g_fSplashTime)($at)
     /* 8710 80207710 15E00020 */  bnez       $t7, .L80207794
@@ -836,10 +836,10 @@ glabel ProcessSplashScreens
     /* 8728 80207728 2401FFFF */  addiu      $at, $zero, -0x1
     /* 872C 8020772C 10410016 */  beq        $v0, $at, .L80207788
     /* 8730 80207730 03002025 */   or        $a0, $t8, $zero
-    /* 8734 80207734 3C058031 */  lui        $a1, %hi(g_pSplashSfx2Data)
+    /* 8734 80207734 3C058031 */  lui        $a1, %hi(g_pSplashSoundB)
     /* 8738 80207738 3C068031 */  lui        $a2, %hi(g_dwSplashSoundBLength)
     /* 873C 8020773C 8CC667C4 */  lw         $a2, %lo(g_dwSplashSoundBLength)($a2)
-    /* 8740 80207740 8CA567C8 */  lw         $a1, %lo(g_pSplashSfx2Data)($a1)
+    /* 8740 80207740 8CA567C8 */  lw         $a1, %lo(g_pSplashSoundB)($a1)
     /* 8744 80207744 00003825 */  or         $a3, $zero, $zero
     /* 8748 80207748 0C096299 */  jal        InitSoundChannel
     /* 874C 8020774C A7B8007C */   sh        $t8, 0x7C($sp)
@@ -859,8 +859,8 @@ glabel ProcessSplashScreens
     /* 8784 80207784 AC59000C */  sw         $t9, 0xC($v0)
   .L80207788:
     /* 8788 80207788 240E0001 */  addiu      $t6, $zero, 0x1
-    /* 878C 8020778C 3C018031 */  lui        $at, %hi(g_bSplashProducerSoundB)
-    /* 8790 80207790 AC2E67E0 */  sw         $t6, %lo(g_bSplashProducerSoundB)($at)
+    /* 878C 8020778C 3C018031 */  lui        $at, %hi(g_bSplashDeveloperSoundB)
+    /* 8790 80207790 AC2E67E0 */  sw         $t6, %lo(g_bSplashDeveloperSoundB)($at)
   .L80207794:
     /* 8794 80207794 3C018031 */  lui        $at, %hi(g_fSplashTime)
     /* 8798 80207798 C42E67B8 */  lwc1       $f14, %lo(g_fSplashTime)($at)
@@ -880,7 +880,7 @@ glabel ProcessSplashScreens
     /* 87D0 802077D0 3C01802B */  lui        $at, %hi(g_fConstHalfPi_802a7408)
     /* 87D4 802077D4 46121102 */  mul.s      $f4, $f2, $f18
     /* 87D8 802077D8 46087001 */  sub.s      $f0, $f14, $f8
-    /* 87DC 802077DC 3C048031 */  lui        $a0, %hi(g_pSplashTitleModelB)
+    /* 87DC 802077DC 3C048031 */  lui        $a0, %hi(g_pSplashDeveloperLogo)
     /* 87E0 802077E0 44058000 */  mfc1       $a1, $f16
     /* 87E4 802077E4 C4308890 */  lwc1       $f16, %lo(g_fConstHalfPi_802a7408)($at)
     /* 87E8 802077E8 3C013D80 */  lui        $at, (0x3D800000 >> 16)
@@ -888,7 +888,7 @@ glabel ProcessSplashScreens
     /* 87F0 802077F0 46100482 */  mul.s      $f18, $f0, $f16
     /* 87F4 802077F4 46045181 */  sub.s      $f6, $f10, $f4
     /* 87F8 802077F8 3C01802B */  lui        $at, %hi(g_fConstMinusPi_802a740c)
-    /* 87FC 802077FC 8C8465B4 */  lw         $a0, %lo(g_pSplashTitleModelB)($a0)
+    /* 87FC 802077FC 8C8465B4 */  lw         $a0, %lo(g_pSplashDeveloperLogo)($a0)
     /* 8800 80207800 24060000 */  addiu      $a2, $zero, 0x0
     /* 8804 80207804 44073000 */  mfc1       $a3, $f6
     /* 8808 80207808 46009282 */  mul.s      $f10, $f18, $f0
@@ -910,7 +910,7 @@ glabel ProcessSplashScreens
     /* 8844 80207844 3C014108 */  lui        $at, (0x41080000 >> 16)
     /* 8848 80207848 44813000 */  mtc1       $at, $f6
     /* 884C 8020784C 3C0140F0 */  lui        $at, (0x40F00000 >> 16)
-    /* 8850 80207850 3C048031 */  lui        $a0, %hi(g_pSplashTitleModelB)
+    /* 8850 80207850 3C048031 */  lui        $a0, %hi(g_pSplashDeveloperLogo)
     /* 8854 80207854 4606703C */  c.lt.s     $f14, $f6
     /* 8858 80207858 24060000 */  addiu      $a2, $zero, 0x0
     /* 885C 8020785C 3C07C248 */  lui        $a3, (0xC2480000 >> 16)
@@ -940,7 +940,7 @@ glabel ProcessSplashScreens
     /* 88B4 802078B4 3C01802B */  lui        $at, %hi(g_flSplashLogo2Scale)
     /* 88B8 802078B8 C42A88A0 */  lwc1       $f10, %lo(g_flSplashLogo2Scale)($at)
     /* 88BC 802078BC 44051000 */  mfc1       $a1, $f2
-    /* 88C0 802078C0 8C8465B4 */  lw         $a0, %lo(g_pSplashTitleModelB)($a0)
+    /* 88C0 802078C0 8C8465B4 */  lw         $a0, %lo(g_pSplashDeveloperLogo)($a0)
     /* 88C4 802078C4 E7B20010 */  swc1       $f18, 0x10($sp)
     /* 88C8 802078C8 0C082821 */  jal        DrawModelAt
     /* 88CC 802078CC E7AA0014 */   swc1      $f10, 0x14($sp)
@@ -948,20 +948,20 @@ glabel ProcessSplashScreens
     /* 88D4 802078D4 44810000 */  mtc1       $at, $f0
     /* 88D8 802078D8 3C018031 */  lui        $at, %hi(g_fSplashTime)
     /* 88DC 802078DC C42E67B8 */  lwc1       $f14, %lo(g_fSplashTime)($at)
-    /* 88E0 802078E0 3C0F8031 */  lui        $t7, %hi(g_dwSplashProducerSoundA)
+    /* 88E0 802078E0 3C0F8031 */  lui        $t7, %hi(g_dwSplashDeveloperSoundA)
     /* 88E4 802078E4 460E003C */  c.lt.s     $f0, $f14
     /* 88E8 802078E8 00000000 */  nop
     /* 88EC 802078EC 45000041 */  bc1f       .L802079F4
     /* 88F0 802078F0 00000000 */   nop
-    /* 88F4 802078F4 8DEF67DC */  lw         $t7, %lo(g_dwSplashProducerSoundA)($t7)
+    /* 88F4 802078F4 8DEF67DC */  lw         $t7, %lo(g_dwSplashDeveloperSoundA)($t7)
     /* 88F8 802078F8 24180014 */  addiu      $t8, $zero, 0x14
     /* 88FC 802078FC 29E10002 */  slti       $at, $t7, 0x2
     /* 8900 80207900 10200022 */  beqz       $at, .L8020798C
     /* 8904 80207904 3C018031 */   lui       $at, %hi(g_fSplashTime)
     /* 8908 80207908 0C096255 */  jal        FindFreeSoundChannel
     /* 890C 8020790C E42E67B8 */   swc1      $f14, %lo(g_fSplashTime)($at)
-    /* 8910 80207910 3C018031 */  lui        $at, %hi(g_dwSplashProducerVoice)
-    /* 8914 80207914 AC2267D8 */  sw         $v0, %lo(g_dwSplashProducerVoice)($at)
+    /* 8910 80207910 3C018031 */  lui        $at, %hi(g_dwSplashDeveloperVoice)
+    /* 8914 80207914 AC2267D8 */  sw         $v0, %lo(g_dwSplashDeveloperVoice)($at)
     /* 8918 80207918 2401FFFF */  addiu      $at, $zero, -0x1
     /* 891C 8020791C 10410017 */  beq        $v0, $at, .L8020797C
     /* 8920 80207920 3C048031 */   lui       $a0, %hi(D_803167DA)
@@ -972,8 +972,8 @@ glabel ProcessSplashScreens
     /* 8934 80207934 848467DA */  lh         $a0, %lo(D_803167DA)($a0)
     /* 8938 80207938 0C096299 */  jal        InitSoundChannel
     /* 893C 8020793C 00003825 */   or        $a3, $zero, $zero
-    /* 8940 80207940 3C188031 */  lui        $t8, %hi(g_dwSplashProducerVoice)
-    /* 8944 80207944 8F1867D8 */  lw         $t8, %lo(g_dwSplashProducerVoice)($t8)
+    /* 8940 80207940 3C188031 */  lui        $t8, %hi(g_dwSplashDeveloperVoice)
+    /* 8944 80207944 8F1867D8 */  lw         $t8, %lo(g_dwSplashDeveloperVoice)($t8)
     /* 8948 80207948 3C0E802A */  lui        $t6, %hi(g_aSoundEffectChannels)
     /* 894C 8020794C 25CE6B80 */  addiu      $t6, $t6, %lo(g_aSoundEffectChannels)
     /* 8950 80207950 0018C880 */  sll        $t9, $t8, 2
@@ -989,9 +989,9 @@ glabel ProcessSplashScreens
     /* 8978 80207978 AC59000C */  sw         $t9, 0xC($v0)
   .L8020797C:
     /* 897C 8020797C 240E0002 */  addiu      $t6, $zero, 0x2
-    /* 8980 80207980 3C018031 */  lui        $at, %hi(g_dwSplashProducerSoundA)
+    /* 8980 80207980 3C018031 */  lui        $at, %hi(g_dwSplashDeveloperSoundA)
     /* 8984 80207984 1000001B */  b          .L802079F4
-    /* 8988 80207988 AC2E67DC */   sw        $t6, %lo(g_dwSplashProducerSoundA)($at)
+    /* 8988 80207988 AC2E67DC */   sw        $t6, %lo(g_dwSplashDeveloperSoundA)($at)
   .L8020798C:
     /* 898C 8020798C 46007101 */  sub.s      $f4, $f14, $f0
     /* 8990 80207990 3C014200 */  lui        $at, (0x42000000 >> 16)
@@ -1008,8 +1008,8 @@ glabel ProcessSplashScreens
     /* 89BC 802079BC 0303C823 */  subu       $t9, $t8, $v1
   .L802079C0:
     /* 89C0 802079C0 00197400 */  sll        $t6, $t9, 16
-    /* 89C4 802079C4 3C198031 */  lui        $t9, %hi(g_dwSplashProducerVoice)
-    /* 89C8 802079C8 8F3967D8 */  lw         $t9, %lo(g_dwSplashProducerVoice)($t9)
+    /* 89C4 802079C4 3C198031 */  lui        $t9, %hi(g_dwSplashDeveloperVoice)
+    /* 89C8 802079C8 8F3967D8 */  lw         $t9, %lo(g_dwSplashDeveloperVoice)($t9)
     /* 89CC 802079CC 01C37821 */  addu       $t7, $t6, $v1
     /* 89D0 802079D0 3C01802A */  lui        $at, %hi(g_aSoundEffectChannels + 0x14)
     /* 89D4 802079D4 00197080 */  sll        $t6, $t9, 2
@@ -1025,12 +1025,12 @@ glabel ProcessSplashScreens
     /* 89F8 802079F8 C42E67B8 */  lwc1       $f14, %lo(g_fSplashTime)($at)
     /* 89FC 802079FC 3C014108 */  lui        $at, (0x41080000 >> 16)
     /* 8A00 80207A00 44819000 */  mtc1       $at, $f18
-    /* 8A04 80207A04 3C0E8031 */  lui        $t6, %hi(g_abJpSplashTexture)
+    /* 8A04 80207A04 3C0E8031 */  lui        $t6, %hi(g_awSplashTitlePalette)
     /* 8A08 80207A08 3C1FE700 */  lui        $ra, (0xE7000000 >> 16)
     /* 8A0C 80207A0C 460E903C */  c.lt.s     $f18, $f14
     /* 8A10 80207A10 3C018029 */  lui        $at, %hi(gDisplayListPtr)
     /* 8A14 80207A14 3C028029 */  lui        $v0, %hi(gDisplayListPtr)
-    /* 8A18 80207A18 25CE65B8 */  addiu      $t6, $t6, %lo(g_abJpSplashTexture)
+    /* 8A18 80207A18 25CE65B8 */  addiu      $t6, $t6, %lo(g_awSplashTitlePalette)
     /* 8A1C 80207A1C 45000054 */  bc1f       .L80207B70
     /* 8A20 80207A20 3C18FD10 */   lui       $t8, (0xFD100000 >> 16)
     /* 8A24 80207A24 8C42C528 */  lw         $v0, %lo(gDisplayListPtr)($v0)
@@ -1227,7 +1227,7 @@ glabel ProcessSplashScreens
     /* 8D0C 80207D0C 0C08910B */  jal        IsFadingOut
     /* 8D10 80207D10 00000000 */   nop
     /* 8D14 80207D14 10400037 */  beqz       $v0, .L80207DF4
-    /* 8D18 80207D18 3C0F8031 */   lui       $t7, %hi(g_dwSplashSkipped)
+    /* 8D18 80207D18 3C0F8031 */   lui       $t7, %hi(g_bSplashSkipped)
     /* 8D1C 80207D1C 0C08911C */  jal        IsFadeComplete
     /* 8D20 80207D20 00000000 */   nop
     /* 8D24 80207D24 1040007E */  beqz       $v0, .L80207F20
@@ -1260,8 +1260,8 @@ glabel ProcessSplashScreens
     /* 8D90 80207D90 AC4F0054 */  sw         $t7, 0x54($v0)
     /* 8D94 80207D94 AC4F005C */  sw         $t7, 0x5C($v0)
     /* 8D98 80207D98 AC580068 */  sw         $t8, 0x68($v0)
-    /* 8D9C 80207D9C 3C198031 */  lui        $t9, %hi(g_dwSplashSkipped)
-    /* 8DA0 80207DA0 8F3967E4 */  lw         $t9, %lo(g_dwSplashSkipped)($t9)
+    /* 8D9C 80207D9C 3C198031 */  lui        $t9, %hi(g_bSplashSkipped)
+    /* 8DA0 80207DA0 8F3967E4 */  lw         $t9, %lo(g_bSplashSkipped)($t9)
     /* 8DA4 80207DA4 13200008 */  beqz       $t9, .L80207DC8
     /* 8DA8 80207DA8 00000000 */   nop
     /* 8DAC 80207DAC 0C090E7F */  jal        ClearFramebuffersForWideMode
@@ -1284,7 +1284,7 @@ glabel ProcessSplashScreens
     /* 8DEC 80207DEC 1000004D */  b          .L80207F24
     /* 8DF0 80207DF0 8FBF003C */   lw        $ra, 0x3C($sp)
   .L80207DF4:
-    /* 8DF4 80207DF4 8DEF67E4 */  lw         $t7, %lo(g_dwSplashSkipped)($t7)
+    /* 8DF4 80207DF4 8DEF67E4 */  lw         $t7, %lo(g_bSplashSkipped)($t7)
     /* 8DF8 80207DF8 3C048037 */  lui        $a0, %hi(g_aPlayerInputState)
     /* 8DFC 80207DFC 3C018031 */  lui        $at, %hi(g_fSplashTime)
     /* 8E00 80207E00 11E00008 */  beqz       $t7, .L80207E24
@@ -1309,13 +1309,13 @@ glabel ProcessSplashScreens
     /* 8E44 80207E44 E42E67B8 */  swc1       $f14, %lo(g_fSplashTime)($at)
     /* 8E48 80207E48 0C095A1C */  jal        TransferFlags
     /* 8E4C 80207E4C AFA40044 */   sw        $a0, 0x44($sp)
-    /* 8E50 80207E50 3C0F8027 */  lui        $t7, %hi(g_bSplashSeenOnce)
-    /* 8E54 80207E54 8DEF22C0 */  lw         $t7, %lo(g_bSplashSeenOnce)($t7)
+    /* 8E50 80207E50 3C0F8027 */  lui        $t7, %hi(g_bSplashFadingOut)
+    /* 8E54 80207E54 8DEF22C0 */  lw         $t7, %lo(g_bSplashFadingOut)($t7)
     /* 8E58 80207E58 240E0001 */  addiu      $t6, $zero, 0x1
-    /* 8E5C 80207E5C 3C018031 */  lui        $at, %hi(g_dwSplashSkipped)
+    /* 8E5C 80207E5C 3C018031 */  lui        $at, %hi(g_bSplashSkipped)
     /* 8E60 80207E60 8FA40044 */  lw         $a0, 0x44($sp)
     /* 8E64 80207E64 15E00020 */  bnez       $t7, .L80207EE8
-    /* 8E68 80207E68 AC2E67E4 */   sw        $t6, %lo(g_dwSplashSkipped)($at)
+    /* 8E68 80207E68 AC2E67E4 */   sw        $t6, %lo(g_bSplashSkipped)($at)
     /* 8E6C 80207E6C 3C014128 */  lui        $at, (0x41280000 >> 16)
     /* 8E70 80207E70 44810000 */  mtc1       $at, $f0
     /* 8E74 80207E74 3C018031 */  lui        $at, %hi(g_fSplashTime)
@@ -1351,9 +1351,9 @@ glabel ProcessSplashScreens
     /* 8EE4 80207EE4 4500000E */  bc1f       .L80207F20
   .L80207EE8:
     /* 8EE8 80207EE8 24190001 */   addiu     $t9, $zero, 0x1
-    /* 8EEC 80207EEC 3C018027 */  lui        $at, %hi(g_bSplashSeenOnce)
+    /* 8EEC 80207EEC 3C018027 */  lui        $at, %hi(g_bSplashFadingOut)
     /* 8EF0 80207EF0 3C04802B */  lui        $a0, %hi(g_szStartFadeOut)
-    /* 8EF4 80207EF4 AC3922C0 */  sw         $t9, %lo(g_bSplashSeenOnce)($at)
+    /* 8EF4 80207EF4 AC3922C0 */  sw         $t9, %lo(g_bSplashFadingOut)($at)
     /* 8EF8 80207EF8 0C09868F */  jal        osSyncPrintf
     /* 8EFC 80207EFC 24848828 */   addiu     $a0, $a0, %lo(g_szStartFadeOut)
     /* 8F00 80207F00 44806000 */  mtc1       $zero, $f12

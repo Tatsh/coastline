@@ -2251,17 +2251,17 @@ dlabel g_bSplashStarted
     /* 732BC 802722BC 00000000 */ .word 0x00000000
 enddlabel g_bSplashStarted
 
-nonmatching g_bSplashSeenOnce
+nonmatching g_bSplashFadingOut
 
-dlabel g_bSplashSeenOnce
+dlabel g_bSplashFadingOut
     /* 732C0 802722C0 00000000 */ .word 0x00000000
     /* 732C4 802722C4 00000000 */ .word 0x00000000
-enddlabel g_bSplashSeenOnce
+enddlabel g_bSplashFadingOut
 
 .align 2
-nonmatching g_SplashDirectionalLight
+nonmatching g_SplashAmbientLight
 
-dlabel g_SplashDirectionalLight
+dlabel g_SplashAmbientLight
     /* 732C8 802722C8 */ .asciz "@@@"
     /* 40404000 */
 .align 2
@@ -2269,16 +2269,16 @@ dlabel g_SplashDirectionalLight
     /* 732CC 802722CC */ .asciz "@@@"
     /* 40404000 */
 .align 2
-enddlabel g_SplashDirectionalLight
+enddlabel g_SplashAmbientLight
 
-nonmatching g_SplashDirectionalLightJp
+nonmatching g_SplashDirectionalLight
 
-dlabel g_SplashDirectionalLightJp
+dlabel g_SplashDirectionalLight
     /* 732D0 802722D0 FFFFFF00 */ .word 0xFFFFFF00
     /* 732D4 802722D4 FFFFFF00 */ .word 0xFFFFFF00
     /* 732D8 802722D8 40407000 */ .word 0x40407000
     /* 732DC 802722DC 00000000 */ .word 0x00000000
-enddlabel g_SplashDirectionalLightJp
+enddlabel g_SplashDirectionalLight
 
 nonmatching g_bControllerWarningType
 
