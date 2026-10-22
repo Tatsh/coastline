@@ -15,6 +15,14 @@
 #define SPRITE_DEPTH_8 8
 #define SPRITE_DEPTH_16 16
 
+/* The texels of a strip for DrawSpriteStrip(), followed by no palette in the releases that take
+ * one. */
+#if TGR_REGION == TGR_REGION_JP || TGR_REGION == TGR_REGION_EU
+#define STRIP_PIXELS(pixels) (pixels), NULL
+#else
+#define STRIP_PIXELS(pixels) (pixels)
+#endif
+
 /* The bytes of a sprite, and of each strip, into total and stripBytes. */
 #define SPRITE_STRIP_BYTES(sprite, total, stripBytes)                                              \
     if ((sprite)->bitsPerTexel == SPRITE_DEPTH_4) {                                                \
@@ -38,7 +46,7 @@
         for (i = 1, offset = stripBytes, top = 0; i <= strips;                                     \
              i++, offset += stripBytes, top += stripDrawHeight) {                                  \
             DrawSpriteStrip((sprite),                                                              \
-                            (sprite)->pixels + total - offset,                                     \
+                            STRIP_PIXELS((sprite)->pixels + total - offset),                       \
                             (sprite)->width,                                                       \
                             (sprite)->stripHeight,                                                 \
                             (x),                                                                   \
@@ -62,7 +70,7 @@ void DrawSpriteAtOrigin(Sprite *sprite) {
     for (i = 1, offset = stripBytes; i <= strips;
          i++, offset += stripBytes, top += stripDrawHeight) {
         DrawSpriteStrip(sprite,
-                        sprite->pixels + total - offset,
+                        STRIP_PIXELS(sprite->pixels + total - offset),
                         sprite->width,
                         sprite->stripHeight,
                         sprite->originX,
@@ -85,7 +93,7 @@ void DrawTexturedSprite(Sprite *sprite, s32 x, s32 y) {
     for (i = 1, offset = stripBytes, row = y; i <= strips;
          i++, offset += stripBytes, row += stripDrawHeight) {
         DrawSpriteStrip(sprite,
-                        sprite->pixels + total - offset,
+                        STRIP_PIXELS(sprite->pixels + total - offset),
                         sprite->width,
                         sprite->stripHeight,
                         x,
@@ -123,7 +131,7 @@ void DrawSpriteRegion(
     for (i = 1, offset = stripBytes, row = y; i <= strips;
          i++, offset += stripBytes, row += stripDrawHeight) {
         DrawSpriteStrip(sprite,
-                        sprite->pixels + total - offset,
+                        STRIP_PIXELS(sprite->pixels + total - offset),
                         sprite->width,
                         sprite->stripHeight,
                         x,
@@ -138,6 +146,9 @@ void DrawSpriteRegion(
 
 void DrawSpriteStrip(Sprite *sprite,
                      u8 *pixels,
+#if TGR_REGION == TGR_REGION_JP || TGR_REGION == TGR_REGION_EU
+                     u16 *palette,
+#endif
                      s32 width,
                      s32 height,
                      s32 x,

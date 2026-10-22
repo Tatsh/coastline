@@ -308,16 +308,22 @@ void PlaceTrackCamera(Vehicle *vehicle) {
 #if TGR_REGION == TGR_REGION_JP || TGR_REGION == TGR_REGION_EU
 void UpdateCameraViewBasisAndFov(Vehicle *vehicle, CameraFrame *camera) {
     f32 distance;
+    Vec3f *up, *side;
+    /* The original reserves stack for eight bytes of locals it does not use. */
+    char unused[8];
 
-    camera->up.x = 0.0f;
+    (void)unused;
     camera->up.y = 0.0f;
+    camera->up.x = 0.0f;
     camera->up.z = 1.0f;
     Vec3fAdd(&camera->forward, &vehicle->frame.position, &vehicle->frame.up);
     Vec3fSubtractInPlace(&camera->forward, &camera->position);
     distance = Vec3fLength(&camera->forward);
     Vec3fDivideInPlace(&camera->forward, distance);
-    Vec3fCross(&camera->side, &camera->up, &camera->forward);
-    Vec3fCross(&camera->up, &camera->forward, &camera->side);
+    up = &camera->up;
+    side = &camera->side;
+    Vec3fCross(side, up, &camera->forward);
+    Vec3fCross(up, &camera->forward, side);
     if (distance <= TRACKSIDE_NEAR) {
         distance = 0.0f;
     } else if (TRACKSIDE_FAR <= distance) {

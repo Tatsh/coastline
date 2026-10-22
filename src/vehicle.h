@@ -763,13 +763,13 @@ void RotateVehicleByEuler(Vehicle *vehicle, f32 yaw, f32 pitch, f32 roll);
 void SetVehicleTurnRate(Vehicle *vehicle, f32 x, f32 y, f32 z);
 
 /**
- * Paint the model of a vehicle its colour and set up its physics.
+ * Paint the model of a vehicle its colour and set up its physics. The Japanese release only sets
+ * up the physics.
  *
  * @param vehicle The vehicle.
  * @ghidraAddress USA: 0x80220398
  * @ghidraAddress JPN: 0x80220e88
  * @ghidraAddress EUR: 0x80221698
- * @stub{JPN}
  */
 void InitVehicleColorAndPhysics(Vehicle *vehicle);
 
@@ -785,7 +785,8 @@ void InitVehicleColorAndPhysics(Vehicle *vehicle);
 void SetVehicleModelSlot(Vehicle *vehicle, s32 slot);
 
 /**
- * Load the model of a car into a slot and give it to a vehicle.
+ * Load the model of a car into a slot and give it to a vehicle. The Japanese release then takes
+ * the colour of the vehicle from the model.
  *
  * @param vehicle The vehicle.
  * @param slot The slot of g_aVehicleModels.
@@ -793,7 +794,6 @@ void SetVehicleModelSlot(Vehicle *vehicle, s32 slot);
  * @ghidraAddress USA: 0x80220438
  * @ghidraAddress JPN: 0x80220ef0
  * @ghidraAddress EUR: 0x80221738
- * @stub{JPN}
  */
 void InstallVehicleModel(Vehicle *vehicle, s32 slot, s32 car);
 
@@ -1095,7 +1095,6 @@ void UpdatePhysicsStep(Vehicle *vehicle);
  * @ghidraAddress USA: 0x80226248
  * @ghidraAddress JPN: 0x80226d78
  * @ghidraAddress EUR: 0x80227588
- * @stub{EUR JPN}
  */
 void RespawnVehicle(Vehicle *vehicle);
 

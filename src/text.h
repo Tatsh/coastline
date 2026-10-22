@@ -304,6 +304,7 @@ extern u8 _cachedGlyphsSegmentRomStart[];
  * start of each display list calls it.
  *
  * @ghidraAddress JPN: 0x8022f1a0
+ * @stub{JPN}
  */
 void ResetGlyphCache(void);
 
@@ -322,6 +323,7 @@ u8 *GetCachedGlyphTexture(u32 character);
  * time.
  *
  * @ghidraAddress JPN: 0x8022f2b0
+ * @stub{JPN}
  */
 void LoadCachedGlyphTextures(void);
 #endif

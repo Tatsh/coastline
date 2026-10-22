@@ -41,7 +41,6 @@ typedef struct {
  * @ghidraAddress USA: 0x80242b10
  * @ghidraAddress JPN: 0x80243b20
  * @ghidraAddress EUR: 0x80244020
- * @stub{JPN}
  */
 void LoadTextureFromRom(Sprite *sprite);
 
@@ -65,7 +64,6 @@ void DrawSpriteAtOrigin(Sprite *sprite);
  * @ghidraAddress USA: 0x80245604
  * @ghidraAddress JPN: 0x80246674
  * @ghidraAddress EUR: 0x80246b3c
- * @stub{EUR JPN}
  */
 void DrawTexturedSprite(Sprite *sprite, s32 x, s32 y);
 
@@ -80,7 +78,6 @@ void DrawTexturedSprite(Sprite *sprite, s32 x, s32 y);
  * @ghidraAddress USA: 0x80245798
  * @ghidraAddress JPN: 0x80246810
  * @ghidraAddress EUR: 0x80246cd8
- * @stub{EUR JPN}
  */
 void DrawSpriteTinted(Sprite *sprite, u8 red, u8 green, u8 blue);
 
@@ -110,6 +107,8 @@ void DrawSpriteRegion(
  *
  * @param sprite The sprite the strip belongs to.
  * @param pixels The texels of the strip.
+ * @param palette The palette of a 4-bit strip of colour indices, or NULL for an intensity strip.
+ *                The European and Japanese releases have this parameter.
  * @param width The width of the strip in texels.
  * @param height The height of the strip in texels.
  * @param x The left edge on the screen.
@@ -126,6 +125,9 @@ void DrawSpriteRegion(
  */
 void DrawSpriteStrip(Sprite *sprite,
                      u8 *pixels,
+#if TGR_REGION == TGR_REGION_JP || TGR_REGION == TGR_REGION_EU
+                     u16 *palette,
+#endif
                      s32 width,
                      s32 height,
                      s32 x,

@@ -482,19 +482,36 @@ void DrawSpeedAndHudOverlay(void) {
         y -= g_aDashboardTextures[g_dwCurrentSplitScreenIndex].height;
     }
     SetTextSize(SPEED_TEXT_SIZE);
+#if TGR_REGION == TGR_REGION_JP
+    /* The longer units of the Japanese release move the speed and the unit left. */
+    if (g_OptionSettings.speedInMph) {
+        DrawText(g_szHudSpeedTextBuf, x - 20, y - 3);
+    } else {
+        DrawText(g_szHudSpeedTextBuf, x - 11, y - 3);
+    }
+#else
     if (g_OptionSettings.speedInMph) {
         DrawText(g_szHudSpeedTextBuf, x, y - 3);
     } else {
         DrawText(g_szHudSpeedTextBuf, x - 3, y - 3);
     }
+#endif
     if (g_pActiveCamera == &g_pActiveCameraVehicle->cameras[VEHICLE_CAMERA_BUMPER]) {
         return;
     }
     SetTextSize(SPEED_UNIT_TEXT_SIZE);
     SetTextAlignLeft();
+#if TGR_REGION == TGR_REGION_JP
+    if (g_OptionSettings.speedInMph) {
+        DrawText("%wwMile/h", x - 20, y - 3);
+    } else {
+        DrawText("%wwKm/h", x - 11, y - 3);
+    }
+#else
     if (g_OptionSettings.speedInMph) {
         DrawText("%wwmph", x, y - 3);
     } else {
         DrawText("%wwkph", x - 3, y - 3);
     }
+#endif
 }

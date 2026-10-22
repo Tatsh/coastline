@@ -682,8 +682,11 @@ void SetVehicleTurnRate(Vehicle *vehicle, f32 x, f32 y, f32 z) {
 }
 
 void InitVehicleColorAndPhysics(Vehicle *vehicle) {
+    /* The Japanese release does not paint the model here. */
+#if TGR_REGION != TGR_REGION_JP
     SetMaterialColor(
         vehicle->model, vehicle->color[0] >> 3, vehicle->color[1] >> 3, vehicle->color[2] >> 3);
+#endif
     InitVehiclePhysics(vehicle);
 }
 
@@ -695,6 +698,9 @@ void SetVehicleModelSlot(Vehicle *vehicle, s32 slot) {
 void InstallVehicleModel(Vehicle *vehicle, s32 slot, s32 car) {
     LoadOrCopyVehicleModel(slot, car, NULL);
     SetVehicleModelSlot(vehicle, slot);
+#if TGR_REGION == TGR_REGION_JP
+    ExtractVehicleBaseColor(vehicle, vehicle->model);
+#endif
 }
 
 #if TGR_REGION == TGR_REGION_EU

@@ -50,8 +50,12 @@
 /* The CPU counter counts 46875 times a millisecond. */
 #define COUNTS_PER_MILLISECOND 46875.0f
 
-/* The fixed step of a race, 1/30 of a second, in nanoseconds. */
+/* The fixed step of a race in nanoseconds, a frame of 1/30 of a second, or 1/25 at PAL rates. */
+#if TGR_REGION == TGR_REGION_EU
+#define RACE_STEP_NANOSECONDS 40000000
+#else
 #define RACE_STEP_NANOSECONDS 33333333
+#endif
 
 /* The priorities of the threads. */
 #define RSP_DONE_THREAD_ID 10
@@ -922,6 +926,7 @@ void UnblankDisplay(void) {
 #endif
 
 void ClearFramebuffersHighRes(void) {
+#if TGR_REGION == TGR_REGION_US
     g_dwKeepScreenBlanked = TRUE;
     osViBlack(TRUE);
     StartHighResFrame();
@@ -932,9 +937,26 @@ void ClearFramebuffersHighRes(void) {
     ClearScreen(0, 0, 0);
     FlushDisplayList();
     g_dwKeepScreenBlanked = FALSE;
+#else
+    u32 *word;
+
+    g_dwKeepScreenBlanked = TRUE;
+    StartLowResFrame();
+    ClearScreen(0, 0, 0);
+    FlushDisplayList();
+    /* The high resolution frame buffers lie from the end of the interface heap to the program. */
+    for (word = (u32 *)0x800D4000; word < (u32 *)0x80200000; word++) {
+        *word = 0;
+    }
+    StartHighResFrame();
+    ClearScreen(0, 0, 0);
+    FlushDisplayList();
+    g_dwKeepScreenBlanked = FALSE;
+#endif
 }
 
 void ClearFramebuffersLowRes(void) {
+#if TGR_REGION == TGR_REGION_US
     g_dwKeepScreenBlanked = TRUE;
     osViBlack(TRUE);
     StartLowResFrame();
@@ -945,6 +967,25 @@ void ClearFramebuffersLowRes(void) {
     ClearScreen(0, 0, 0);
     FlushDisplayList();
     g_dwKeepScreenBlanked = FALSE;
+#else
+    u32 *word;
+
+    g_dwKeepScreenBlanked = TRUE;
+    StartHighResFrame();
+    ClearScreen(0, 0, 0);
+    FlushDisplayList();
+    StartHighResFrame();
+    ClearScreen(0, 0, 0);
+    FlushDisplayList();
+    /* The two low resolution frame buffers end where the program starts. */
+    for (word = (u32 *)0x801B5000; word < (u32 *)0x80200000; word++) {
+        *word = 0;
+    }
+    StartLowResFrame();
+    ClearScreen(0, 0, 0);
+    FlushDisplayList();
+    g_dwKeepScreenBlanked = FALSE;
+#endif
 }
 
 void StreamAnimatedTrackTextures(void) {
@@ -1352,7 +1393,7 @@ void UpdateFrameTiming(void) {
     u32 delta;
 
     if (g_bRaceScreenActive) {
-        /* A race steps a fixed 1/30 of a second a frame. */
+        /* A race steps a fixed time a frame. */
         g_qwTimestampBase += (u64)RACE_STEP_NANOSECONDS * osClockRate / 1000000000;
         g_dwFrameTimestamp = osGetCount();
     } else if (g_qwTimestampBase != 0) {
@@ -1654,6 +1695,11 @@ void BootIdleThread(void *arg) {
 }
 
 void OsBootEntry(void) {
+#if TGR_REGION == TGR_REGION_EU
+    /* The PAL release forces the television standard before osInitialize() reads it. */
+    osTvType = OS_TV_PAL;
+    osViClock = VI_PAL_CLOCK;
+#endif
     osInitialize();
     osCreateThread(&g_BootIdleThreadObj,
                    IDLE_THREAD_ID,

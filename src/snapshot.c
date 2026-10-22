@@ -24,19 +24,17 @@
 s32 SerializeSaveData(SaveField *fields, u8 *buffer, s32 capacity, s32 offset) {
     s32 i;
     u8 *start = buffer;
-    s32 used;
     char message[OVERFLOW_MESSAGE_SIZE];
 
     for (i = 0; fields[i].data != NULL; i++) {
         memcpy(buffer, (u8 *)fields[i].data + offset, fields[i].size);
         buffer += fields[i].size;
     }
-    used = buffer - start;
-    if (capacity < used) {
-        sprintf(message, "VAR SAVE OVERFLOW (%d avail, %d used)", capacity, used);
+    if (capacity < buffer - start) {
+        sprintf(message, "VAR SAVE OVERFLOW (%d avail, %d used)", capacity, buffer - start);
         SetDebugMessage(message);
     }
-    return used;
+    return buffer - start;
 }
 
 s32 DeserializeSaveData(SaveField *fields, u8 *buffer, s32 offset) {
@@ -97,18 +95,21 @@ void RestoreClockAfterPause(void) {
 
 #if TGR_REGION == TGR_REGION_JP || TGR_REGION == TGR_REGION_EU
 void RestoreReplayKeyframeState(void) {
-    PlayerInputState *input;
+    /* The original reserves stack for four bytes of locals it does not use. */
+    char unused[4];
     s32 size;
 
+    (void)unused;
     g_dwReplayKeyframeFrameCount++;
     if (g_dwGameMode != GAME_MODE_DEMO || g_dwRaceSessionType != 0) {
         return;
     }
-    input = g_aVehicles[0].input;
-    if (input->playbackPosition < input->playbackLimit &&
-        input->playbackBuffer[input->playbackPosition] == KEYFRAME_MARKER &&
-        input->playbackBuffer[input->playbackPosition + 1] == KEYFRAME_MARKER) {
-        input->playbackPosition += 2;
+    if (g_aVehicles[0].input->playbackPosition < g_aVehicles[0].input->playbackLimit &&
+        g_aVehicles[0].input->playbackBuffer[g_aVehicles[0].input->playbackPosition] ==
+            KEYFRAME_MARKER &&
+        g_aVehicles[0].input->playbackBuffer[g_aVehicles[0].input->playbackPosition + 1] ==
+            KEYFRAME_MARKER) {
+        g_aVehicles[0].input->playbackPosition += 2;
         size = DESERIALIZE(g_aReplayKeyframeDescTable1,
                            g_aVehicles[0].input->playbackBuffer +
                                g_aVehicles[0].input->playbackPosition);

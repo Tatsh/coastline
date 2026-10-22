@@ -3,6 +3,7 @@
 #include <PR/os.h>
 #include <PR/os_libc.h>
 
+#include "render.h"
 #include "system.h"
 
 /* The interface heap lies below the program. */
@@ -37,15 +38,15 @@ void *AllocHeapAligned(u32 size) {
  * third only flushes. */
 void ClearFramebuffersForWideMode(void) {
     g_dwKeepScreenBlanked = TRUE;
-    osViBlack(TRUE);
+    BLANK_SCREEN();
     StartHighResFrame();
     ClearScreen(0, 0, 0);
     FlushDisplayList();
-    osViBlack(TRUE);
+    BLANK_SCREEN();
     StartHighResFrame();
     ClearScreen(0, 0, 0);
     FlushDisplayList();
-    osViBlack(TRUE);
+    BLANK_SCREEN();
     StartHighResFrame();
     FlushDisplayList();
     g_dwKeepScreenBlanked = FALSE;
@@ -53,15 +54,15 @@ void ClearFramebuffersForWideMode(void) {
 
 void ClearFramebuffersForNormalMode(void) {
     g_dwKeepScreenBlanked = TRUE;
-    osViBlack(TRUE);
+    BLANK_SCREEN();
     StartLowResFrame();
     ClearScreen(0, 0, 0);
     FlushDisplayList();
-    osViBlack(TRUE);
+    BLANK_SCREEN();
     StartLowResFrame();
     ClearScreen(0, 0, 0);
     FlushDisplayList();
-    osViBlack(TRUE);
+    BLANK_SCREEN();
     StartLowResFrame();
     FlushDisplayList();
     g_dwKeepScreenBlanked = FALSE;

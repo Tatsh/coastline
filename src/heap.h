@@ -61,7 +61,6 @@ void *AllocHeapAligned(u32 size);
  * @ghidraAddress USA: 0x802429ec
  * @ghidraAddress JPN: 0x802439fc
  * @ghidraAddress EUR: 0x80243efc
- * @stub{EUR JPN}
  */
 void ClearFramebuffersForWideMode(void);
 
@@ -71,7 +70,6 @@ void ClearFramebuffersForWideMode(void);
  * @ghidraAddress USA: 0x80242a7c
  * @ghidraAddress JPN: 0x80243a88
  * @ghidraAddress EUR: 0x80243f88
- * @stub{EUR JPN}
  */
 void ClearFramebuffersForNormalMode(void);
 

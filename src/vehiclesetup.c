@@ -139,7 +139,11 @@ void RespawnVehicle(Vehicle *vehicle) {
         return;
     }
     InitVehiclePhysics(vehicle);
+#if TGR_REGION == TGR_REGION_US
     if (g_dwGameMode == GAME_MODE_TIME_ATTACK) {
+#else
+    if (g_dwGameMode == GAME_MODE_TIME_ATTACK || g_dwGameMode == GAME_MODE_DEMO) {
+#endif
         SetVehiclePosition(vehicle,
                            vehicle->section->points[vehicle->pointIndex].position.x,
                            vehicle->section->points[vehicle->pointIndex].position.y,

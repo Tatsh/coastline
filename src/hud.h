@@ -146,7 +146,6 @@ void DrawHudMessage(void);
  * @ghidraAddress USA: 0x80238f30
  * @ghidraAddress JPN: 0x80239f40
  * @ghidraAddress EUR: 0x8023a440
- * @stub{JPN}
  */
 void DrawSpeedAndHudOverlay(void);
 

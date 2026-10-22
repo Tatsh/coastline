@@ -233,6 +233,7 @@ void AddVehicleJolt(s32 index, f32 amount);
  * @param vehicle The vehicle the camera watches.
  * @ghidraAddress JPN: 0x80226fc0
  * @ghidraAddress EUR: 0x802277d0
+ * @stub{EUR JPN}
  */
 void ChooseReplayCamera(Vehicle *vehicle);
 #endif

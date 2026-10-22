@@ -242,12 +242,14 @@ void InitRacerSlot(RacerSlot *slot) {
     slot->pointIndex = g_dwTrackRoutePointIndex;
     slot->maxGate = slot->gate = g_dwTrackRouteGates;
     slot->lap = slot->distanceLaps = g_dwTrackRouteLaps;
+#if TGR_REGION != TGR_REGION_JP
     osSyncPrintf("Initial lap.gate for %d(%d): %d.%d (dist=%f)\n",
                  slot->index,
                  slot->straggler,
                  slot->lap,
                  slot->gate,
                  (double)slot->distance);
+#endif
     slot->previousPosition.x = slot->position.x;
     slot->previousPosition.y = slot->position.y;
     slot->previousPosition.z = slot->position.z;

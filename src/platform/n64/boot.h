@@ -27,12 +27,12 @@ extern u8 g_abBootStackTop[];
 void ramMain(void);
 
 /**
- * Initialise the operating system, then create and start the boot thread.
+ * Initialise the operating system, then create and start the boot thread. The European release
+ * first sets the television standard to PAL.
  *
  * @ghidraAddress USA: 0x8021e5c4
  * @ghidraAddress JPN: 0x8021f0b4
  * @ghidraAddress EUR: 0x8021f8a4
- * @stub{EUR}
  */
 void OsBootEntry(void);
 
