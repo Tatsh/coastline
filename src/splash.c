@@ -19,6 +19,16 @@
 #include "util.h"
 
 /* Assets at fixed cartridge offsets. */
+#if TGR_REGION == TGR_REGION_EU
+#define ROM_SPLASH_SOUND_A 0x1B4580
+#define ROM_SPLASH_SOUND_B 0x1B8500
+#define ROM_SPLASH_FIRST_LOGO 0x1DA840
+#define ROM_SPLASH_DEVELOPER_LOGO 0x1DB870
+#define ROM_SPLASH_TITLE_D 0x1DF9D0
+#define ROM_SPLASH_TITLE_C 0x1E0870
+#define ROM_SPLASH_TITLE_A 0x1DE720
+#define ROM_SPLASH_TITLE_B 0x1E1AE0
+#else
 #define ROM_SPLASH_SOUND_A 0x1B5440
 #define ROM_SPLASH_SOUND_B 0x1B93C0
 #define ROM_SPLASH_FIRST_LOGO 0x1DA030
@@ -28,6 +38,7 @@
 #define ROM_SPLASH_TITLE_C 0x1E2B40
 #define ROM_SPLASH_TITLE_A 0x1E09F0
 #define ROM_SPLASH_TITLE_B 0x1E3DB0
+#endif
 
 /* The silence after each sound, so that the mixer reads zeros past its end. */
 #define SOUND_PADDING 0x100
@@ -50,7 +61,11 @@
 /* When each logo starts, in seconds. */
 #define FIRST_LOGO_START 0.0f
 #define PRODUCER_LOGO_START 4.0f
+#if TGR_REGION == TGR_REGION_EU
+#define DEVELOPER_LOGO_START 4.0f
+#else
 #define DEVELOPER_LOGO_START 8.0f
+#endif
 
 /* The times of a logo after its start: flying in, holding, leaving and gone. */
 #define LOGO_SOUND_A_TIME 0.35f
@@ -70,7 +85,23 @@
 #define TEXT_ALPHA 200
 #define TEXT_FADE_RATE 4.0
 
-/* When the parts of the title show, and when the copyright does. */
+/* When the parts of the title show, and when the copyright does. The European release, without
+ * the first logo, shows them 4 earlier. */
+#if TGR_REGION == TGR_REGION_EU
+#define TITLE_START 8.0f
+#define TITLE_A_END 11.0f
+#define TITLE_B_START 9.0f
+#define TITLE_B_END 11.0f
+#define TITLE_C_START 11.2f
+#define TITLE_C_END 12.2f
+#define TITLE_D_START 11.0f
+#define TITLE_D_END 12.0f
+#define COPYRIGHT_START 12.95f
+
+#define SKIP_TIME 12.95f
+#define SKIP_END_TIME 14.95f
+#define SPLASH_END_TIME 18.2f
+#else
 #define TITLE_START 12.0f
 #define TITLE_A_END 15.0f
 #define TITLE_B_START 13.0f
@@ -85,6 +116,7 @@
 #define SKIP_TIME 17.2f
 #define SKIP_END_TIME 19.2f
 #define SPLASH_END_TIME 24.2f
+#endif
 
 /* The buttons that skip the splash screens. */
 #define SKIP_BUTTONS (INPUT_Z | INPUT_START | INPUT_A)
@@ -103,8 +135,8 @@ void AnimateSplashModels(void) {
     AdvanceModelAnimations(g_pSplashTitleModelB);
 }
 
-/* The Japanese and European bodies still come from the assembly. */
-#if TGR_REGION == TGR_REGION_US
+/* The Japanese body still comes from the assembly. */
+#if TGR_REGION != TGR_REGION_JP
 /* Allocate a model on the heap and decompress it there. */
 static inline Model *LoadSplashModel(u32 romOffset) {
     return DecompressModel(AllocHeapAligned(DmaReadAssetSize(romOffset)), romOffset);
@@ -293,6 +325,17 @@ static void DrawSplashCopyright(void) {
     SetTextStyleNormal();
     SetTextSize(10);
     SetTextAlignCenter();
+#if TGR_REGION == TGR_REGION_EU
+    if ((g_aPlayerInputState[0].buttons & BUILD_DATE_BUTTONS) == BUILD_DATE_BUTTONS) {
+        DrawText("25Sep97 13:46:05", 160, 40);
+    }
+    SetTextSize(7);
+    DrawText("O 1997 Boss Game Studios, Inc.  All Rights Reserved.", 160, 195);
+    DrawText("Top Gear Rally is a trademark of Kemco.", 160, 202);
+    DrawText("LICENSED BY NINTENDO", 160, 214);
+    SetTextSize(3);
+    DrawText("c", 78, 195);
+#else
     if ((g_aPlayerInputState[0].buttons & BUILD_DATE_BUTTONS) == BUILD_DATE_BUTTONS) {
         DrawText("25Aug97 11:46:52", 160, 40);
     }
@@ -305,6 +348,7 @@ static void DrawSplashCopyright(void) {
     /* A small c inside the O of the first line makes the copyright sign. */
     SetTextSize(3);
     DrawText("c", 78, 190);
+#endif
 }
 
 /* Fade out on a skip or at the end, and leave for the main menu or the demo once faded. */
@@ -319,12 +363,25 @@ static void UpdateSplashExit(void) {
                 g_aSoundEffectChannels[i].step = 0;
                 g_aSoundEffectChannels[i].volume = 0;
             }
+#if TGR_REGION == TGR_REGION_EU
+            if (g_bSplashSkipped) {
+                ClearFramebuffersForWideMode();
+                SetCurrentScreenCallback(ProcessMainMenu);
+            } else {
+                BlankDisplay();
+                g_dwKeepScreenBlanked = TRUE;
+                ClearFramebuffersLowRes();
+                g_dwKeepScreenBlanked = FALSE;
+                StartAttractDemo();
+            }
+#else
             ClearFramebuffersForWideMode();
             if (g_bSplashSkipped) {
                 SetCurrentScreenCallback(ProcessMainMenu);
             } else {
                 StartAttractDemo();
             }
+#endif
         }
         return;
     }
@@ -349,6 +406,9 @@ static void UpdateSplashExit(void) {
         }
     }
     g_bSplashFadingOut = 1;
+#if TGR_REGION == TGR_REGION_EU
+    osSyncPrintf("start fade out\n");
+#endif
     SetFadeTarget(0.0f, FADE_TIME);
     FadeSfxTo(0.0f, FADE_TIME);
 }
@@ -358,12 +418,20 @@ void ProcessSplashScreens(void) {
     s32 i;
 
     if (!g_bSplashStarted) {
+#if TGR_REGION == TGR_REGION_EU
+        g_dwKeepScreenBlanked = TRUE;
+        BlankDisplay();
+        StartHighResFrame();
+        FlushDisplayList();
+#endif
         SetFadeTarget(1.0f, FADE_TIME);
         FadeMusicTo(1.0f, FADE_TIME);
         FadeSfxTo(1.0f, FADE_TIME);
         ResetHeap();
         g_pSplashDeveloperLogo = LoadSplashModel(ROM_SPLASH_DEVELOPER_LOGO);
+#if TGR_REGION != TGR_REGION_EU
         g_pSplashProducerLogo = LoadSplashModel(ROM_SPLASH_PRODUCER_LOGO);
+#endif
         g_pSplashFirstLogo = LoadSplashModel(ROM_SPLASH_FIRST_LOGO);
         g_pSplashTitleModelA = LoadSplashModel(ROM_SPLASH_TITLE_A);
         LoopModelAnimations(g_pSplashTitleModelA);
@@ -388,20 +456,30 @@ void ProcessSplashScreens(void) {
         /* g_bSplashFadingOut keeps what an earlier showing left in it. */
         g_bSplashFirstLogoSoundB = 0;
         g_dwSplashFirstLogoSoundA = 0;
+#if TGR_REGION != TGR_REGION_EU
         g_bSplashProducerSoundB = 0;
         g_dwSplashProducerSoundA = 0;
+#endif
         g_bSplashDeveloperSoundB = 0;
         g_dwSplashDeveloperSoundA = 0;
         g_bSplashSkipped = 0;
         g_bSplashStarted = 1;
+#if TGR_REGION == TGR_REGION_EU
+        g_dwKeepScreenBlanked = FALSE;
+#endif
         g_fSplashTime = 0.0f;
     }
 
     UpdateFrameTiming();
     UpdateFadeTransitions();
     StartHighResFrame();
+#if TGR_REGION == TGR_REGION_EU
+    ClearScreen(0, 0, 0);
+    ClearDepthBuffer();
+#else
     ClearDepthBuffer();
     ClearScreen(0, 0, 0);
+#endif
     AddTimingMarker(0, 0, 0, 200, 255);
     if (!IsFadingIn() || IsFadeComplete()) {
         g_fSplashTime += g_fFrameDeltaTime;
@@ -423,6 +501,10 @@ void ProcessSplashScreens(void) {
     gSPMatrix(gDisplayListPtr++, mtx, G_MTX_MODELVIEW | G_MTX_MUL | G_MTX_PUSH);
 
     if (g_fSplashTime >= FIRST_LOGO_START) {
+#if TGR_REGION == TGR_REGION_EU
+        /* The first logo of the European release is the producer's. */
+        DrawSplashCaption("Produced by", FIRST_LOGO_START, 70);
+#endif
         UpdateSplashLogo(g_pSplashFirstLogo,
                          FIRST_LOGO_START,
                          LOGO_END_TIME,
@@ -430,6 +512,7 @@ void ProcessSplashScreens(void) {
                          &g_dwSplashFirstLogoSoundA,
                          &g_bSplashFirstLogoSoundB);
     }
+#if TGR_REGION != TGR_REGION_EU
     if (g_fSplashTime >= PRODUCER_LOGO_START) {
         DrawSplashCaption("Produced by", PRODUCER_LOGO_START, 70);
         UpdateSplashLogo(g_pSplashProducerLogo,
@@ -439,6 +522,7 @@ void ProcessSplashScreens(void) {
                          &g_dwSplashProducerSoundA,
                          &g_bSplashProducerSoundB);
     }
+#endif
     if (g_fSplashTime >= DEVELOPER_LOGO_START) {
         DrawSplashCaption("Developed by", DEVELOPER_LOGO_START, 60);
         UpdateSplashLogo(g_pSplashDeveloperLogo,

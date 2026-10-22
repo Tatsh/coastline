@@ -20,16 +20,26 @@
  */
 extern s32 g_bSplashStarted;
 
-/** Whether the splash screens fade out. @ghidraAddress USA: 0x8027081c */
+/**
+ * Whether the splash screens fade out.
+ *
+ * @ghidraAddress USA: 0x8027081c
+ * @ghidraAddress EUR: 0x802727fc
+ */
 extern s32 g_bSplashFadingOut;
 
-/** The lights of the logos. @ghidraAddress USA: 0x80270820 */
+/**
+ * The lights of the logos.
+ *
+ * @ghidraAddress USA: 0x80270820
+ * @ghidraAddress EUR: 0x80272800
+ */
 extern Ambient g_SplashAmbientLight;
 
 /**
  * @ghidraAddress USA: 0x80270828
+ * @ghidraAddress EUR: 0x80272808
  * @ghidraAddress JPN: 0x802722c8
- * @ghidraAddress EUR: 0x80272800
  */
 extern Light g_SplashDirectionalLight;
 
@@ -67,7 +77,6 @@ extern Model *g_pSplashFirstLogo;
 
 /**
  * @ghidraAddress USA: 0x80315e84
- * @ghidraAddress EUR: 0x80314fc4
  */
 extern Model *g_pSplashProducerLogo;
 
@@ -98,7 +107,10 @@ extern Model *g_pSplashTitleModelB;
  */
 extern Model *g_pSplashTitleModelD;
 
-/** @ghidraAddress USA: 0x80315e98 */
+/**
+ * @ghidraAddress USA: 0x80315e98
+ * @ghidraAddress EUR: 0x80317b84
+ */
 extern Model *g_pSplashTitleModelC;
 
 /**
@@ -114,12 +126,14 @@ extern f32 g_fSplashTime;
  * The sound a logo makes as it flies in and leaves, and its length.
  *
  * @ghidraAddress USA: 0x80315ea0
+ * @ghidraAddress EUR: 0x80317b8c
  * @ghidraAddress JPN: 0x803167bc
  */
 extern u32 g_dwSplashSoundALength;
 
 /**
  * @ghidraAddress USA: 0x80315ea4
+ * @ghidraAddress EUR: 0x80317b90
  * @ghidraAddress JPN: 0x803167c0
  */
 extern s8 *g_pSplashSoundA;
@@ -128,11 +142,15 @@ extern s8 *g_pSplashSoundA;
  * The second sound a logo makes as it flies in, and its length.
  *
  * @ghidraAddress USA: 0x80315ea8
+ * @ghidraAddress EUR: 0x80317b94
  * @ghidraAddress JPN: 0x803167c4
  */
 extern u32 g_dwSplashSoundBLength;
 
-/** @ghidraAddress USA: 0x80315eac */
+/**
+ * @ghidraAddress USA: 0x80315eac
+ * @ghidraAddress EUR: 0x80317b98
+ */
 extern s8 *g_pSplashSoundB;
 
 /**
@@ -141,8 +159,8 @@ extern s8 *g_pSplashSoundB;
  * second sound played.
  *
  * @ghidraAddress USA: 0x80315eb0
+ * @ghidraAddress EUR: 0x80317b9c
  * @ghidraAddress JPN: 0x803167cc
- * @ghidraAddress EUR: 0x80317ba8
  */
 extern s32 g_dwSplashFirstLogoVoice;
 
@@ -178,19 +196,29 @@ extern s32 g_dwSplashProducerSoundA;
  */
 extern s32 g_bSplashProducerSoundB;
 
-/** @ghidraAddress USA: 0x80315ec8 */
+/**
+ * @ghidraAddress USA: 0x80315ec8
+ * @ghidraAddress EUR: 0x80317ba8
+ */
 extern s32 g_dwSplashDeveloperVoice;
 
-/** @ghidraAddress USA: 0x80315ecc */
+/**
+ * @ghidraAddress USA: 0x80315ecc
+ * @ghidraAddress EUR: 0x80317bac
+ */
 extern s32 g_dwSplashDeveloperSoundA;
 
-/** @ghidraAddress USA: 0x80315ed0 */
+/**
+ * @ghidraAddress USA: 0x80315ed0
+ * @ghidraAddress EUR: 0x80317bb0
+ */
 extern s32 g_bSplashDeveloperSoundB;
 
 /**
  * Whether a player skipped the splash screens, which then lead to the main menu.
  *
  * @ghidraAddress USA: 0x80315ed4
+ * @ghidraAddress EUR: 0x80317bb4
  */
 extern s32 g_bSplashSkipped;
 
@@ -207,9 +235,9 @@ void AnimateSplashModels(void);
  * Run one frame of the splash screens.
  *
  * @ghidraAddress USA: 0x8020686c
- * @ghidraAddress JPN: 0x80206ab4
  * @ghidraAddress EUR: 0x80206a2c
- * @stub{EUR JPN}
+ * @ghidraAddress JPN: 0x80206ab4
+ * @stub{JPN}
  */
 void ProcessSplashScreens(void);
 
