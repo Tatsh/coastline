@@ -705,7 +705,6 @@ void UndoDecalEdit(void);
  * @ghidraAddress USA: 0x8024ac70
  * @ghidraAddress JPN: 0x8024bbd0
  * @ghidraAddress EUR: 0x8024c1d0
- * @stub{EUR JPN}
  */
 void ProcessTextInputKeyboard(void);
 

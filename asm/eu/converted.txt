@@ -324,8 +324,10 @@ ProcessControllerCheck
 ProcessControllerConfigScreen
 ProcessDecalEditorInput
 ProcessDisplayList
+ProcessFillClearMenu
 ProcessInputCommandBuffer
 ProcessMainMenu
+ProcessMirrorFlipMenu
 ProcessOptionsMenu
 ProcessOvalStyleMenu
 ProcessPaintShopExitConfirm
@@ -334,6 +336,7 @@ ProcessRaceResultsScreen
 ProcessRectStyleMenu
 ProcessScreenState
 ProcessSeasonResults
+ProcessTextInputKeyboard
 ProcessTextStyleMenu
 ProcessTrackMenu
 ProcessWeatherSelect

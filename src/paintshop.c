@@ -41,6 +41,9 @@
 #define SLOT_LEFT_REAR_FENDER 6
 #define SLOT_RIGHT_REAR_FENDER 7
 
+/* The slots the texts of the mirror menu cover, the doors and the fenders among them. */
+#define MIRROR_TEXT_SLOTS 8
+
 /* The cars that sit higher and lower than the rest in the preview. */
 #define CAR_RAISED_IN_PREVIEW 1
 #define CAR_LOWERED_IN_PREVIEW 10
@@ -1078,11 +1081,29 @@ static inline void ClearDecal(u8 coloredOption) {
     }
 }
 
-/* The Japanese and European bodies still come from the assembly. */
-#if TGR_REGION == TGR_REGION_US
 void ProcessFillClearMenu(void) {
+#if TGR_REGION == TGR_REGION_JP
+    /* The two lines of the Japanese text of each option. */
+    const char *optionTexts[CLEAR_OPTIONS][2] = {
+        {"%j\xE7\x7F;\x81\x88(k",
+         "  %jqt\xBB\x81(\xA8w\xE0"
+         "B6R&"},
+        {"%j\xCC\xBB\x9E\x81\x88(k",
+         "  %jqt\xBB\x81(\xA8w\xE0"
+         "B6R&"},
+        {"%j\xE7\x7F;\x81\x88(k",
+         "  %j\xEA"
+         "ct\xBB\x81(\xA8w\xE0"
+         "B6R&"},
+        {"%j\xCC\xBB\x9E\x81\x88(k",
+         "  %j\xEA"
+         "ct\xBB\x81(\xA8w\xE0"
+         "B6R&"},
+    };
+#else
     const char *scopeTexts[2] = {"CLEAR CURRENT DECAL", "CLEAR ALL DECALS"};
     const char *colorTexts[2] = {"TO SELECTED COLOR", "TO BODY COLOR"};
+#endif
     ScreenRect options[CLEAR_OPTIONS];
     s32 buttonY = 0x160 - g_texButtonA.height;
     s32 cancelX = 0x161 - g_texButtonB.width;
@@ -1155,10 +1176,17 @@ void ProcessFillClearMenu(void) {
     SetTextSize(16);
     DrawText("%rySELECT OPTION", 0x9E, 0x4E);
     DrawSunkenFrame(0xBA, options[0].y + options[0].height + 12, 0x10C, 0x3A);
+#if TGR_REGION == TGR_REGION_JP
+    SetTextCustomColors(0xFF, 0xFF, 0xFF, 0xFF, 0xF5, 0);
+    SetTextSize(14);
+    DrawText(optionTexts[g_texPaintToolClear.style][0], 0x9E, 0x8E);
+    DrawText(optionTexts[g_texPaintToolClear.style][1], 0x9E, 0x9B);
+#else
     SetTextSize(11);
     SetTextCustomColors(0xFF, 0xFF, 0xFF, 0xFF, 0xF5, 0);
     DrawText(scopeTexts[g_texPaintToolClear.style >> 1], 0x9E, 0x8E);
     DrawText(colorTexts[g_texPaintToolClear.style & CLEAR_TO_BODY_COLOR], 0x9E, 0x9B);
+#endif
     DrawMenuButtons(buttonY, cancelX);
     UpdateStickRepeat(&g_aPlayerInputState[g_bPaintShopPlayer]);
     input = &g_aPlayerInputState[g_bPaintShopPlayer];
@@ -1215,8 +1243,57 @@ void ProcessFillClearMenu(void) {
 }
 
 void ProcessMirrorFlipMenu(void) {
+#if TGR_REGION == TGR_REGION_JP
+    /* The two lines of the Japanese text of each flip, and of each slot a decal mirrors from. */
+    const char *flipTexts[2][2] = {
+        {"%jqt\xBB\x81(\xA8w",
+         " %j\xD8\xD9\xDC\xDD"
+         "B6R&"},
+        {"%jqt\xBB\x81(\xA8w",
+         " %j\xDA\xDB\xDC\xDD"
+         "B6R&"},
+    };
+    const char *mirrorTexts[MIRROR_TEXT_SLOTS][2] = {
+        {"%jqt\xBB\x81(\xA8w",
+         " %j\xD9\xCB\x80"
+         "D\xDE\xDF"
+         "B6R&"},
+        {"%jqt\xBB\x81(\xA8w",
+         " %j\xD8\xCB\x80"
+         "D\xDE\xDF"
+         "B6R&"},
+        {"%jqt\xBB\x81(\xA8w\xD9\xA5\xC8\xCF\xC3",
+         " %j\xA5\xBE\xCF\x8B(D\xDE\xDF"
+         "B6R&"},
+        {"%jqt\xBB\x81(\xA8w\xD8\xA5\xC8\xCF\xC3",
+         " %j\xA5\xBE\xCF\x8B(D\xDE\xDF"
+         "B6R&"},
+        {NULL, NULL},
+        {NULL, NULL},
+        {"%jqt\xBB\x81(\xA8w\xD9\x98\x80",
+         " %j\xA5\xBE\xCF\x8B(D\xDE\xDF"
+         "B6R&"},
+        {"%jqt\xBB\x81(\xA8w\xD8\x98\x80",
+         " %j\xA5\xBE\xCF\x8B(D\xDE\xDF"
+         "B6R&"},
+    };
+#else
     const char *flipTexts[2] = {"FLIP CURRENT DECAL", "FLIP CURRENT DECAL"};
     const char *axisTexts[2] = {"HORIZONTALLY", "VERTICALLY"};
+#endif
+#if TGR_REGION == TGR_REGION_EU
+    /* The two lines of the text of each slot a decal mirrors from. */
+    const char *mirrorTexts[MIRROR_TEXT_SLOTS][2] = {
+        {"MIRROR CURRENT DECAL", "TO THE RIGHT DOOR"},
+        {"MIRROR CURRENT DECAL", "TO THE LEFT DOOR"},
+        {"MIRROR CURRENT DECAL TO", "THE RIGHT FRONT FENDER"},
+        {"MIRROR CURRENT DECAL TO", "THE LEFT FRONT FENDER"},
+        {NULL, NULL},
+        {NULL, NULL},
+        {"MIRROR CURRENT DECAL TO", "THE RIGHT REAR FENDER"},
+        {"MIRROR CURRENT DECAL TO", "THE LEFT REAR FENDER"},
+    };
+#endif
     ScreenRect options[MIRROR_OPTIONS];
     /* The row of the buttons is placed by the width of the A button. */
     s32 buttonY = 0x155 - g_texButtonA.width;
@@ -1274,12 +1351,32 @@ void ProcessMirrorFlipMenu(void) {
     SetTextSize(11);
     SetTextCustomColors(0xFF, 0xFF, 0xFF, 0xFF, 0xF5, 0);
     if (g_bStyleMenuCursor != MIRROR_OPTION_MIRROR) {
+#if TGR_REGION == TGR_REGION_JP
+        DrawText(flipTexts[g_bStyleMenuCursor - 1][0], 0x9F, 0x87);
+        DrawText(flipTexts[g_bStyleMenuCursor - 1][1], 0x9F, 0x94);
+#else
         DrawText(flipTexts[g_bStyleMenuCursor - 1], 0x9F, 0x87);
         DrawText(axisTexts[g_bStyleMenuCursor - 1], 0x9F, 0x94);
+#endif
     } else if (!g_bDecalSlotHasMirror) {
+#if TGR_REGION == TGR_REGION_JP
+        DrawText("%jqt\xBB\x81(\xA8"
+                 "5",
+                 0x9F,
+                 0x87);
+        DrawText(" %j\xE9"
+                 "D\xDE\xDFkA6b\x7F&",
+                 0x9F,
+                 0x94);
+#else
         DrawText("MIRROR IS NOT APPLICABLE", 0x9F, 0x87);
         DrawText("TO THE CURRENT DECAL", 0x9F, 0x94);
+#endif
     } else {
+#if TGR_REGION == TGR_REGION_EU || TGR_REGION == TGR_REGION_JP
+        DrawText(mirrorTexts[g_bDecalSlot][0], 0x9F, 0x87);
+        DrawText(mirrorTexts[g_bDecalSlot][1], 0x9F, 0x94);
+#else
         switch (g_bDecalSlot) {
         case SLOT_LEFT_DOOR:
             DrawText("MIRROR CURRENT DECAL", 0x9F, 0x87);
@@ -1306,6 +1403,7 @@ void ProcessMirrorFlipMenu(void) {
             DrawText("THE LEFT REAR FENDER", 0x9F, 0x94);
             break;
         }
+#endif
     }
     DrawMenuButtons(buttonY, cancelX);
     UpdateStickRepeat(&g_aPlayerInputState[g_bPaintShopPlayer]);
@@ -1343,7 +1441,6 @@ void ProcessMirrorFlipMenu(void) {
         g_bPaintTool = g_bPreviousPaintTool;
     }
 }
-#endif
 
 void MirrorDecalToOppositePanel(void) {
     VehicleModel *model;
@@ -2001,8 +2098,6 @@ static inline s32 GlyphOverlap(DecalGlyph *previous, DecalGlyph *next) {
     return previous->kernRight < next->kernLeft ? previous->kernRight : next->kernLeft;
 }
 
-/* The Japanese and European bodies still come from the assembly. */
-#if TGR_REGION == TGR_REGION_US
 void ProcessTextInputKeyboard(void) {
     Sprite *highlight = &g_texKeyboardHighlight;
     PlayerInputState *input;
@@ -2024,7 +2119,7 @@ void ProcessTextInputKeyboard(void) {
             DrawSpriteTinted(highlight, 0xFF, 0xEB, 0);
         }
     }
-    DrawSpriteAtOrigin(&g_texKeyboardPanel);
+    DrawSpriteAtOrigin(WITH_PALETTE(&g_texKeyboardPanel, NULL));
     x = g_texKeyboardPanel.originX;
     y = g_texKeyboardPanel.originY + g_texKeyboardPanel.height + 0x20;
     DrawSpriteRegion(&g_texKeyboardBackground, x, y, 0xC8, 0x30, 0xE0, 0xE0, 0xE0);
@@ -2115,4 +2210,3 @@ void ProcessTextInputKeyboard(void) {
         DrawText(g_szDecalText, (x + 0x64) >> 1, (y + 0x24) >> 1);
     }
 }
-#endif

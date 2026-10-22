@@ -434,7 +434,6 @@ void DrawPakErrorMessage(s32 error, u8 operation, u8 inCarSelect);
  * @ghidraAddress USA: 0x80247b0c
  * @ghidraAddress JPN: 0x80248cf4
  * @ghidraAddress EUR: 0x802491bc
- * @stub{EUR JPN}
  */
 void ProcessFillClearMenu(void);
 
@@ -444,7 +443,6 @@ void ProcessFillClearMenu(void);
  * @ghidraAddress USA: 0x8024843c
  * @ghidraAddress JPN: 0x80249630
  * @ghidraAddress EUR: 0x80249aec
- * @stub{EUR JPN}
  */
 void ProcessMirrorFlipMenu(void);
 
