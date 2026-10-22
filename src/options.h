@@ -477,7 +477,6 @@ void ProcessOptionsMenu(void);
  * @ghidraAddress USA: 0x80211d70
  * @ghidraAddress JPN: 0x80212058
  * @ghidraAddress EUR: 0x80212208
- * @stub{EUR JPN}
  */
 void ProcessDataSaveLoadMenu(void);
 
