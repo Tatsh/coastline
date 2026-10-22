@@ -64,7 +64,7 @@ extern s32 g_bCarSelectInitialized;
  *
  * @ghidraAddress USA: 0x80316250
  * @ghidraAddress JPN: 0x80316b68
- * @ghidraAddress EUR: 0x80315390
+ * @ghidraAddress EUR: 0x80317f30
  */
 extern s32 g_dwCarSelectStartTime;
 
@@ -100,7 +100,7 @@ extern f32 g_afCarSelectAngle[2];
  *
  * @ghidraAddress USA: 0x80316270
  * @ghidraAddress JPN: 0x80316b88
- * @ghidraAddress EUR: 0x803153b0
+ * @ghidraAddress EUR: 0x80317f50
  */
 extern MenuItem **g_aapCarSelectOptions[2];
 
@@ -109,7 +109,7 @@ extern MenuItem **g_aapCarSelectOptions[2];
  *
  * @ghidraAddress USA: 0x80316278
  * @ghidraAddress JPN: 0x80316b60
- * @ghidraAddress EUR: 0x803153b8
+ * @ghidraAddress EUR: 0x80317f58
  */
 extern s32 g_anCarSelectCursor[2];
 
@@ -118,7 +118,7 @@ extern s32 g_anCarSelectCursor[2];
  *
  * @ghidraAddress USA: 0x80316280
  * @ghidraAddress JPN: 0x80316b98
- * @ghidraAddress EUR: 0x803153c0
+ * @ghidraAddress EUR: 0x80317f60
  */
 extern s32 g_anCarSelectPrevCursor[2];
 
@@ -127,7 +127,7 @@ extern s32 g_anCarSelectPrevCursor[2];
  *
  * @ghidraAddress USA: 0x80316288
  * @ghidraAddress JPN: 0x80316ba0
- * @ghidraAddress EUR: 0x803153c8
+ * @ghidraAddress EUR: 0x80317f68
  */
 extern s32 g_anCarSelectOptionCount[2];
 
@@ -154,19 +154,19 @@ extern s32 g_bCarSelectDone;
  *
  * @ghidraAddress USA: 0x8031629c
  * @ghidraAddress JPN: 0x80316bb4
- * @ghidraAddress EUR: 0x803153dc
+ * @ghidraAddress EUR: 0x80317f7c
  */
 extern s8 *g_pScrollSoundBuf;
 
 /**
  * @ghidraAddress USA: 0x803162a0
- * @ghidraAddress EUR: 0x803153e0
+ * @ghidraAddress EUR: 0x80317f80
  */
 extern u32 g_dwScrollSoundSize;
 
 /**
  * @ghidraAddress USA: 0x803162a4
- * @ghidraAddress EUR: 0x803153e4
+ * @ghidraAddress EUR: 0x80317f84
  */
 extern s8 *g_pSelectSoundBuf;
 
@@ -182,7 +182,7 @@ extern u32 g_dwSelectSoundSize;
  *
  * @ghidraAddress USA: 0x803162ac
  * @ghidraAddress JPN: 0x80316bc4
- * @ghidraAddress EUR: 0x803153ec
+ * @ghidraAddress EUR: 0x80317f8c
  */
 extern s32 g_dwTitleRedrawFrames;
 

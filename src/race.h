@@ -468,7 +468,7 @@ extern char g_szFormatBuffer[0x20];
 
 /**
  * @ghidraAddress USA: 0x80315df8
- * @ghidraAddress EUR: 0x80314f38
+ * @ghidraAddress EUR: 0x80317ae8
  */
 extern s32 g_adwWaterfallInstances[16];
 
@@ -476,7 +476,7 @@ extern s32 g_adwWaterfallInstances[16];
  * The frames the screen is still cleared, after the views changed or the pause ended.
  *
  * @ghidraAddress USA: 0x80315e38
- * @ghidraAddress EUR: 0x80314f78
+ * @ghidraAddress EUR: 0x80317b28
  */
 extern s32 g_dwScreenClearFrames;
 
@@ -501,7 +501,7 @@ extern s32 g_dwRaceCaptionIndex;
  * than the splash screens.
  *
  * @ghidraAddress USA: 0x80315e70
- * @ghidraAddress EUR: 0x80314fb0
+ * @ghidraAddress EUR: 0x80317b60
  */
 extern s32 g_bDemoInterrupted;
 
@@ -509,7 +509,7 @@ extern s32 g_bDemoInterrupted;
  * The views of the last frame.
  *
  * @ghidraAddress USA: 0x80315e74
- * @ghidraAddress EUR: 0x80314fb4
+ * @ghidraAddress EUR: 0x80317b64
  */
 extern s32 g_dwPrevViewportCount;
 
@@ -517,7 +517,7 @@ extern s32 g_dwPrevViewportCount;
  * The phase of the race, by the RACE_PHASE_ values.
  *
  * @ghidraAddress USA: 0x80315e78
- * @ghidraAddress EUR: 0x80314fb8
+ * @ghidraAddress EUR: 0x802f9be0
  */
 extern s32 g_dwRacePhase;
 

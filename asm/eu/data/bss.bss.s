@@ -122,22 +122,11 @@ nonmatching g_dwUnref80314fc0, 0x4
 dlabel g_dwUnref80314fc0
     /* 80314FC0 */ .space 0x04
 
-nonmatching D_80314FC4, 0x3CC
+nonmatching D_80314FC4, 0x3D4
 
 /* Automatically generated and unreferenced pad */
 dlabel D_80314FC4
-    /* 80314FC4 */ .space 0x3CC
-
-nonmatching g_dwCarSelectStartTime, 0x4
-
-dlabel g_dwCarSelectStartTime
-    /* 80315390 */ .space 0x04
-
-nonmatching D_80315394, 0x4
-
-/* Automatically generated and unreferenced pad */
-dlabel D_80315394
-    /* 80315394 */ .space 0x04
+    /* 80314FC4 */ .space 0x3D4
 
 nonmatching g_dwUnref80315398, 0x4
 
@@ -169,42 +158,22 @@ nonmatching g_fUnref803153ac, 0x4
 dlabel g_fUnref803153ac
     /* 803153AC */ .space 0x04
 
-nonmatching g_aapCarSelectOptions, 0x4
-
-dlabel g_aapCarSelectOptions
-    /* 803153B0 */ .space 0x04
-
-nonmatching D_803153B4, 0x4
+nonmatching D_803153B0, 0xC
 
 /* Automatically generated and unreferenced pad */
-dlabel D_803153B4
-    /* 803153B4 */ .space 0x04
-
-nonmatching g_anCarSelectCursor, 0x4
-
-dlabel g_anCarSelectCursor
-    /* 803153B8 */ .space 0x04
+dlabel D_803153B0
+    /* 803153B0 */ .space 0x0C
 
 nonmatching g_dwUnref803153bc, 0x4
 
 dlabel g_dwUnref803153bc
     /* 803153BC */ .space 0x04
 
-nonmatching g_anCarSelectPrevCursor, 0x4
-
-dlabel g_anCarSelectPrevCursor
-    /* 803153C0 */ .space 0x04
-
-nonmatching D_803153C4, 0x4
+nonmatching D_803153C0, 0xC
 
 /* Automatically generated and unreferenced pad */
-dlabel D_803153C4
-    /* 803153C4 */ .space 0x04
-
-nonmatching g_anCarSelectOptionCount, 0x4
-
-dlabel g_anCarSelectOptionCount
-    /* 803153C8 */ .space 0x04
+dlabel D_803153C0
+    /* 803153C0 */ .space 0x0C
 
 nonmatching g_dwItemListCount2, 0x4
 
@@ -226,29 +195,21 @@ nonmatching g_dwUnref803153d8, 0x4
 dlabel g_dwUnref803153d8
     /* 803153D8 */ .space 0x04
 
-nonmatching g_pScrollSoundBuf, 0x4
+nonmatching D_803153DC, 0xC
 
-dlabel g_pScrollSoundBuf
-    /* 803153DC */ .space 0x04
-
-nonmatching g_dwScrollSoundSize, 0x4
-
-dlabel g_dwScrollSoundSize
-    /* 803153E0 */ .space 0x04
-
-nonmatching g_pSelectSoundBuf, 0x4
-
-dlabel g_pSelectSoundBuf
-    /* 803153E4 */ .space 0x04
+/* Automatically generated and unreferenced pad */
+dlabel D_803153DC
+    /* 803153DC */ .space 0x0C
 
 nonmatching g_dwUnref803153e8, 0x4
 
 dlabel g_dwUnref803153e8
     /* 803153E8 */ .space 0x04
 
-nonmatching g_dwTitleRedrawFrames, 0x4
+nonmatching D_803153EC, 0x4
 
-dlabel g_dwTitleRedrawFrames
+/* Automatically generated and unreferenced pad */
+dlabel D_803153EC
     /* 803153EC */ .space 0x04
 
 nonmatching g_dwUnref803153f0, 0x4
@@ -697,9 +658,9 @@ nonmatching D_80317F28, 0x8
 dlabel D_80317F28
     /* 80317F28 */ .space 0x08
 
-nonmatching g_flTrackSelectSavedDeltaTime, 0x8
+nonmatching g_dwCarSelectStartTime, 0x8
 
-dlabel g_flTrackSelectSavedDeltaTime
+dlabel g_dwCarSelectStartTime
     /* 80317F30 */ .space 0x08
 
 nonmatching g_adwCarSelectModelSlots, 0x4
@@ -732,9 +693,9 @@ nonmatching g_flPhysicsReserved1, 0x4
 dlabel g_flPhysicsReserved1
     /* 80317F4C */ .space 0x04
 
-nonmatching g_apTrackSelectP1OptionList, 0x4
+nonmatching g_aapCarSelectOptions, 0x4
 
-dlabel g_apTrackSelectP1OptionList
+dlabel g_aapCarSelectOptions
     /* 80317F50 */ .space 0x04
 
 nonmatching D_80317F54, 0x4
@@ -742,29 +703,29 @@ nonmatching D_80317F54, 0x4
 dlabel D_80317F54
     /* 80317F54 */ .space 0x04
 
-nonmatching g_nTrackSelectP1ItemIdx, 0x4
+nonmatching g_anCarSelectCursor, 0x4
 
-dlabel g_nTrackSelectP1ItemIdx
+dlabel g_anCarSelectCursor
     /* 80317F58 */ .space 0x04
 
-nonmatching g_nTrackSelectP2ItemIdx, 0x4
+nonmatching D_80317F5C, 0x4
 
-dlabel g_nTrackSelectP2ItemIdx
+dlabel D_80317F5C
     /* 80317F5C */ .space 0x04
 
-nonmatching g_nTrackSelectP1PrevItemIdx, 0x4
+nonmatching g_anCarSelectPrevCursor, 0x4
 
-dlabel g_nTrackSelectP1PrevItemIdx
+dlabel g_anCarSelectPrevCursor
     /* 80317F60 */ .space 0x04
 
-nonmatching g_nTrackSelectP2PrevItemIdx, 0x4
+nonmatching D_80317F64, 0x4
 
-dlabel g_nTrackSelectP2PrevItemIdx
+dlabel D_80317F64
     /* 80317F64 */ .space 0x04
 
-nonmatching g_nTrackSelectP1OptionCount, 0x8
+nonmatching g_anCarSelectOptionCount, 0x8
 
-dlabel g_nTrackSelectP1OptionCount
+dlabel g_anCarSelectOptionCount
     /* 80317F68 */ .space 0x08
 
 nonmatching g_apszCarSelectCategory, 0x4
@@ -782,19 +743,19 @@ nonmatching g_bCarSelectDone, 0x4
 dlabel g_bCarSelectDone
     /* 80317F78 */ .space 0x04
 
-nonmatching g_pTrackSelectCursorSfxData, 0x4
+nonmatching g_pScrollSoundBuf, 0x4
 
-dlabel g_pTrackSelectCursorSfxData
+dlabel g_pScrollSoundBuf
     /* 80317F7C */ .space 0x04
 
-nonmatching g_dwTrackSelectCursorSfxSize, 0x4
+nonmatching g_dwScrollSoundSize, 0x4
 
-dlabel g_dwTrackSelectCursorSfxSize
+dlabel g_dwScrollSoundSize
     /* 80317F80 */ .space 0x04
 
-nonmatching g_pTrackSelectConfirmSfxData, 0x4
+nonmatching g_pSelectSoundBuf, 0x4
 
-dlabel g_pTrackSelectConfirmSfxData
+dlabel g_pSelectSoundBuf
     /* 80317F84 */ .space 0x04
 
 nonmatching g_dwSelectSoundSize, 0x4
@@ -802,9 +763,9 @@ nonmatching g_dwSelectSoundSize, 0x4
 dlabel g_dwSelectSoundSize
     /* 80317F88 */ .space 0x04
 
-nonmatching g_nTrackSelectFadeDelayFrames, 0x4
+nonmatching g_dwTitleRedrawFrames, 0x4
 
-dlabel g_nTrackSelectFadeDelayFrames
+dlabel g_dwTitleRedrawFrames
     /* 80317F8C */ .space 0x04
 
 nonmatching g_adwCarSelectState, 0x4

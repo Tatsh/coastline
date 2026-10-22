@@ -26,6 +26,7 @@ extern s32 g_bSplashStarted;
  *
  * @ghidraAddress USA: 0x8027081c
  * @ghidraAddress EUR: 0x802727fc
+ * @ghidraAddress JPN: 0x802722c0
  */
 extern s32 g_bSplashFadingOut;
 
@@ -34,13 +35,14 @@ extern s32 g_bSplashFadingOut;
  *
  * @ghidraAddress USA: 0x80270820
  * @ghidraAddress EUR: 0x80272800
+ * @ghidraAddress JPN: 0x802722c8
  */
 extern Ambient g_SplashAmbientLight;
 
 /**
  * @ghidraAddress USA: 0x80270828
  * @ghidraAddress EUR: 0x80272808
- * @ghidraAddress JPN: 0x802722c8
+ * @ghidraAddress JPN: 0x802722d0
  */
 extern Light g_SplashDirectionalLight;
 
@@ -89,6 +91,7 @@ extern u8 g_bControllerCheckStarted;
  *
  * @ghidraAddress USA: 0x80315e80
  * @ghidraAddress EUR: 0x80317b70
+ * @ghidraAddress JPN: 0x803165b0
  */
 extern Model *g_pSplashFirstLogo;
 
@@ -100,6 +103,7 @@ extern Model *g_pSplashProducerLogo;
 /**
  * @ghidraAddress USA: 0x80315e88
  * @ghidraAddress EUR: 0x80317b74
+ * @ghidraAddress JPN: 0x803165b4
  */
 extern Model *g_pSplashDeveloperLogo;
 
@@ -113,7 +117,6 @@ extern Model *g_pSplashTitleModelA;
 
 /**
  * @ghidraAddress USA: 0x80315e90
- * @ghidraAddress JPN: 0x803165b4
  * @ghidraAddress EUR: 0x80317b7c
  */
 extern Model *g_pSplashTitleModelB;
@@ -167,6 +170,7 @@ extern u32 g_dwSplashSoundBLength;
 /**
  * @ghidraAddress USA: 0x80315eac
  * @ghidraAddress EUR: 0x80317b98
+ * @ghidraAddress JPN: 0x803167c8
  */
 extern s8 *g_pSplashSoundB;
 
@@ -197,37 +201,37 @@ extern s32 g_bSplashFirstLogoSoundB;
 
 /**
  * @ghidraAddress USA: 0x80315ebc
- * @ghidraAddress JPN: 0x803167d8
  */
 extern s32 g_dwSplashProducerVoice;
 
 /**
  * @ghidraAddress USA: 0x80315ec0
- * @ghidraAddress JPN: 0x803167dc
  */
 extern s32 g_dwSplashProducerSoundA;
 
 /**
  * @ghidraAddress USA: 0x80315ec4
- * @ghidraAddress JPN: 0x803167e0
  */
 extern s32 g_bSplashProducerSoundB;
 
 /**
  * @ghidraAddress USA: 0x80315ec8
  * @ghidraAddress EUR: 0x80317ba8
+ * @ghidraAddress JPN: 0x803167d8
  */
 extern s32 g_dwSplashDeveloperVoice;
 
 /**
  * @ghidraAddress USA: 0x80315ecc
  * @ghidraAddress EUR: 0x80317bac
+ * @ghidraAddress JPN: 0x803167dc
  */
 extern s32 g_dwSplashDeveloperSoundA;
 
 /**
  * @ghidraAddress USA: 0x80315ed0
  * @ghidraAddress EUR: 0x80317bb0
+ * @ghidraAddress JPN: 0x803167e0
  */
 extern s32 g_bSplashDeveloperSoundB;
 
@@ -236,6 +240,7 @@ extern s32 g_bSplashDeveloperSoundB;
  *
  * @ghidraAddress USA: 0x80315ed4
  * @ghidraAddress EUR: 0x80317bb4
+ * @ghidraAddress JPN: 0x803167e4
  */
 extern s32 g_bSplashSkipped;
 

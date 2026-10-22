@@ -74,13 +74,13 @@ extern s32 g_dwBestReplayPlayer;
  * The recordings the instant replay gives each local player, and their lengths.
  *
  * @ghidraAddress USA: 0x80315e48
- * @ghidraAddress EUR: 0x80314f88
+ * @ghidraAddress EUR: 0x80317b38
  */
 extern u8 *g_apReplayGhostPtrs[4];
 
 /**
  * @ghidraAddress USA: 0x80315e58
- * @ghidraAddress EUR: 0x80314f98
+ * @ghidraAddress EUR: 0x80317b48
  */
 extern s32 g_adwReplayGhostSizes[4];
 

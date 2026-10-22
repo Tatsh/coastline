@@ -215,7 +215,7 @@ extern s32 g_dwCameraRayNearbyCount;
 
 /**
  * @ghidraAddress USA: 0x8031b288
- * @ghidraAddress EUR: 0x8031a3c8
+ * @ghidraAddress EUR: 0x8031d788
  */
 extern u16 g_awCameraRayNearbyInstances[];
 
