@@ -3804,22 +3804,22 @@ enddlabel g_fConst0p2_802a7ef4
 nonmatching switchdataD_802a7ef8
 
 dlabel switchdataD_802a7ef8
-    /* AA1C0 802A91C0 802105B4 */ .word .L802105B4
-    /* AA1C4 802A91C4 802105FC */ .word .L802105FC
-    /* AA1C8 802A91C8 80210644 */ .word .L80210644
-    /* AA1CC 802A91CC 8021068C */ .word .L8021068C
-    /* AA1D0 802A91D0 802106D4 */ .word .L802106D4
+    /* AA1C0 802A91C0 802105B4 */ .word 0
+    /* AA1C4 802A91C4 802105FC */ .word 0
+    /* AA1C8 802A91C8 80210644 */ .word 0
+    /* AA1CC 802A91CC 8021068C */ .word 0
+    /* AA1D0 802A91D0 802106D4 */ .word 0
 enddlabel switchdataD_802a7ef8
 
 nonmatching jtbl_802A91D4
 
 dlabel jtbl_802A91D4
-    /* AA1D4 802A91D4 80210738 */ .word .L80210738
-    /* AA1D8 802A91D8 80210788 */ .word .L80210788
-    /* AA1DC 802A91DC 802107DC */ .word .L802107DC
-    /* AA1E0 802A91E0 80210830 */ .word .L80210830
-    /* AA1E4 802A91E4 80210884 */ .word .L80210884
-    /* AA1E8 802A91E8 802109F4 */ .word .L802109F4
+    /* AA1D4 802A91D4 80210738 */ .word 0
+    /* AA1D8 802A91D8 80210788 */ .word 0
+    /* AA1DC 802A91DC 802107DC */ .word 0
+    /* AA1E0 802A91E0 80210830 */ .word 0
+    /* AA1E4 802A91E4 80210884 */ .word 0
+    /* AA1E8 802A91E8 802109F4 */ .word 0
 enddlabel jtbl_802A91D4
 
 nonmatching g_fConst0p2_802a7f24

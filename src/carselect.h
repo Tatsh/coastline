@@ -72,10 +72,19 @@ extern s32 g_dwCarSelectStartTime;
  * The slot of g_aVehicleModelSlots of the car each player sees.
  *
  * @ghidraAddress USA: 0x80316258
- * @ghidraAddress JPN: 0x80316b70
  * @ghidraAddress EUR: 0x80317f38
+ * @ghidraAddress JPN: 0x80316b70
  */
 extern s32 g_adwCarSelectModelSlots[2];
+
+#if TGR_REGION == TGR_REGION_JP
+/**
+ * Whether the model in the slot of each player waits to be painted.
+ *
+ * @ghidraAddress JPN: 0x80316b60
+ */
+extern s32 g_adwCarSelectPaintPending[2];
+#endif
 
 /**
  * How far the cars of each player slide on their stage, from 1 or -1 to 0 at rest.
@@ -496,7 +505,6 @@ void FormatLapTime(char *out, f32 seconds);
  * @ghidraAddress USA: 0x8020d004
  * @ghidraAddress EUR: 0x8020cde4
  * @ghidraAddress JPN: 0x8020c9dc
- * @stub{JPN}
  */
 void ProcessCarSelectScreen(void);
 

@@ -39,6 +39,22 @@
 /* The time a fade of the screen in or out takes, as its rate. */
 #define SCREEN_FADE_RATE 0.2f
 
+/* The labels of the tyres stepping back and forward, of the decals, and the results of a racer who
+ * did not finish. */
+#if TGR_REGION == TGR_REGION_JP
+#define BACK_TIRES_LABEL "TIRE"
+#define TIRES_LABEL "Tire"
+#define DECALS_LABEL "Decal"
+#define PLAYER_NOT_FINISHED_FORMAT "%%ryP%d:GAME OVER"
+#define NOT_FINISHED_FORMAT "%%ryGAME OVER"
+#else
+#define BACK_TIRES_LABEL "Tires"
+#define TIRES_LABEL "Tires"
+#define DECALS_LABEL "Decals"
+#define PLAYER_NOT_FINISHED_FORMAT "%%ryP%d: Did not finish"
+#define NOT_FINISHED_FORMAT "%%ryDid not finish"
+#endif
+
 /* The height of the cars over their stage. */
 #define STAGE_HEIGHT 0.254f
 
@@ -330,7 +346,7 @@ static inline void StartCarSelect(void) {
     Vehicle *vehicle;
     s32 i, car;
 
-#if TGR_REGION == TGR_REGION_EU
+#if TGR_REGION != TGR_REGION_US
     /* After the results of a race the screen stays blank while the cars load. */
     if (IsCurrentScreen(ProcessRaceResultsScreen)) {
         g_dwKeepScreenBlanked = TRUE;
@@ -435,11 +451,53 @@ static inline void StartCarSelect(void) {
     g_aapCarSelectOptions[0] = g_apHandlingOptions;
     g_anCarSelectCursor[1] = 0;
     g_anCarSelectCursor[0] = 0;
-#if TGR_REGION == TGR_REGION_EU
+#if TGR_REGION != TGR_REGION_US
     g_dwKeepScreenBlanked = FALSE;
+#endif
+#if TGR_REGION == TGR_REGION_JP
+    g_adwCarSelectPaintPending[1] = TRUE;
+    g_adwCarSelectPaintPending[0] = TRUE;
 #endif
     g_dwResultsPage = RESULTS_PAGE_PLAYER_1;
 }
+
+#if TGR_REGION == TGR_REGION_JP
+/* Paint the model in the slot of each player whose paint is pending, with the colour of its car on
+ * the car step, in the colour of the player when two play. The car step paints it twice. */
+static inline void PaintPendingModels(void) {
+    Vehicle *vehicle;
+    s32 *slot;
+    s32 player, state;
+
+    for (player = 0; player < (s32)g_dwNumLocalPlayers; player++) {
+        if (!g_adwCarSelectPaintPending[player]) {
+            continue;
+        }
+        g_adwCarSelectPaintPending[player] = FALSE;
+        state = g_adwCarSelectState[player];
+        vehicle = &g_aVehicles[player];
+        slot = &g_adwCarSelectModelSlots[player];
+        if (state == CAR_SELECT_CAR) {
+            ExtractVehicleBaseColor(vehicle, &g_aVehicleModels[*slot]);
+            if (g_dwNumLocalPlayers == 2) {
+                vehicle->color[0] = g_abPlayerColorsRgb[player][0];
+                vehicle->color[1] = g_abPlayerColorsRgb[player][1];
+                vehicle->color[2] = g_abPlayerColorsRgb[player][2];
+            }
+            SetMaterialColor(&g_aVehicleModels[*slot],
+                             vehicle->color[0] >> 3,
+                             vehicle->color[1] >> 3,
+                             vehicle->color[2] >> 3);
+        } else if (state == CAR_SELECT_DECALS) {
+            ExtractVehicleBaseColor(vehicle, &g_aVehicleModels[*slot]);
+        }
+        SetMaterialColor(&g_aVehicleModels[*slot],
+                         vehicle->color[0] >> 3,
+                         vehicle->color[1] >> 3,
+                         vehicle->color[2] >> 3);
+    }
+}
+#endif
 
 /** The models of the option a player chose and of the one the cursor left, or NULL for cars. */
 static inline Model *OptionModel(s32 player, s32 option) {
@@ -500,11 +558,19 @@ static inline void DrawCarSelectTitle(char *text) {
             prefix = g_dwResultsTrack < MIRRORED_TRACKS ? "" : "M-";
             track = g_dwResultsTrack < MIRRORED_TRACKS ? g_dwResultsTrack :
                                                          g_dwResultsTrack - MIRRORED_TRACKS;
+#if TGR_REGION == TGR_REGION_JP
+            sprintf(text,
+                    "%%ry%s%s %%j%c",
+                    prefix,
+                    g_apTrackMenuItems[track]->name,
+                    g_dwCarSelectWeather + FIRST_WEATHER_GLYPH);
+#else
             sprintf(text,
                     "%%ry%s%s/%s",
                     prefix,
                     g_apTrackMenuItems[track]->name,
                     g_apWeatherMenuItems[g_dwCarSelectWeather]->name);
+#endif
         } else {
             sprintf(text, "%%ry%s", g_SeasonTable[g_dwResultsSeason].name);
         }
@@ -524,7 +590,7 @@ static inline void DrawRaceResults(s32 player, char *time) {
 
     if ((s32)g_dwNumLocalPlayers >= 2) {
         if (vehicle->lap < g_dwTotalLaps) {
-            sprintf(g_szResultsBuf, "%%ryP%d: Did not finish", player + 1);
+            sprintf(g_szResultsBuf, PLAYER_NOT_FINISHED_FORMAT, player + 1);
         } else {
             sprintf(g_szResultsBuf,
                     "%%ryP%d: %s Place",
@@ -541,7 +607,7 @@ static inline void DrawRaceResults(s32 player, char *time) {
                 points,
                 points == 1 ? "" : "s");
     } else if (vehicle->lap < g_dwTotalLaps) {
-        sprintf(g_szResultsBuf, "%%ryDid not finish");
+        sprintf(g_szResultsBuf, NOT_FINISHED_FORMAT);
     } else {
         sprintf(g_szResultsBuf, "%%ry%s Place", g_apszPlaceNames[vehicle->racePosition]);
     }
@@ -608,11 +674,20 @@ static inline void DrawSeasonResults(void) {
             track = track < MIRRORED_TRACKS ? track + MIRRORED_TRACKS : track - MIRRORED_TRACKS;
         }
         SetTextAlignLeft();
+#if TGR_REGION == TGR_REGION_JP
+        /* The glyph of the weather leads the name of the track. */
+        sprintf(g_szResultsBuf, "%%j%c", season->races[race][1] + FIRST_WEATHER_GLYPH);
+        SetTextSize(13);
+        DrawText(g_szResultsBuf, g_dwScreenWidth * 3 / 16 - shift, y + 1);
+        SetTextSize(10);
+        DrawText(g_apTrackMenuItems[track]->name, g_dwScreenWidth * 3 / 16 - shift + 12, y);
+#else
         sprintf(g_szResultsBuf,
                 "%s/%s",
                 g_apTrackMenuItems[track]->name,
                 g_apWeatherMenuItems[season->races[race][1]]->name);
         DrawText(g_szResultsBuf, g_dwScreenWidth * 3 / 16 - shift, y);
+#endif
         SetTextAlignCenter();
         if (race <= g_dwResultsRound) {
             FormatLapTime(g_szResultsBuf, g_pActiveProfile->seasonTimes[g_dwResultsSeason][race]);
@@ -679,12 +754,19 @@ static inline void DrawRumbleNote(s32 player, s32 y) {
         g_anCarSelectCursor[player] == DECALS_LOAD || g_afCarSelectSlide[player] != 0.0f) {
         return;
     }
+#if TGR_REGION == TGR_REGION_JP
+    x = g_dwScreenWidth / 16;
+    DrawText("%ww%j振動させたいときは、", x, y + 22);
+    DrawText("%ww%j振動パックを", x, y + 34);
+    DrawText("%ww%jさして下さい。", x, y + 47);
+#else
     x = g_dwScreenWidth * 11 / 16;
     DrawText("%wwIf you wish to use", x, y + 19);
     DrawText("%wwthe Rumble Pak, you", x, y + 28);
     DrawText("%wwshould ensure that it", x, y + 37);
     DrawText("%wwis plugged in before", x, y + 45);
     DrawText("%wwpressing A.", x, y + 54);
+#endif
 }
 
 /** Draw the engine, gearbox, acceleration and top speed of the car of a player. */
@@ -719,10 +801,17 @@ static inline void DrawTwoPlayerChoices(char *text) {
     DrawText(text, g_dwScreenWidth / 2, g_dwScreenHeight / 4);
     FormatPlayerChoice(text, 1, "%%ryREADY!", "%%ry%%i%s", "%%ry%s: %%i%s");
     DrawText(text, g_dwScreenWidth / 2, g_dwScreenHeight * 3 / 5);
+#if TGR_REGION == TGR_REGION_JP
+    SetTextSize(14);
+#else
     SetTextSize(8);
+#endif
     SetTextAlignLeft();
     DrawRumbleNote(0, g_dwScreenHeight / 4);
     DrawRumbleNote(1, g_dwScreenHeight * 3 / 5);
+#if TGR_REGION == TGR_REGION_JP
+    SetTextSize(8);
+#endif
     SetTextAlignRight();
     if (g_adwCarSelectState[0] == CAR_SELECT_CAR) {
         DrawCarStats(text, 0, g_dwScreenHeight / 4, g_dwScreenHeight / 2);
@@ -748,12 +837,20 @@ static inline void DrawOnePlayerChoices(char *text) {
     SetTextAlignCenter();
     if (g_adwCarSelectState[0] == CAR_SELECT_DECALS && g_anCarSelectCursor[0] != DECALS_LOAD &&
         g_afCarSelectSlide[0] == 0.0f) {
+#if TGR_REGION == TGR_REGION_JP
+        SetTextSize(14);
+        DrawText("%ww %j振動させたいときは、振動パックをさして下さい。",
+                 g_dwScreenWidth / 2,
+                 g_dwScreenHeight * 3 / 8 - 1);
+        SetTextSize(8);
+#else
         DrawText("%wwIf you wish to use the Rumble Pak, you should",
                  g_dwScreenWidth / 2,
                  g_dwScreenHeight * 3 / 8 - 6);
         DrawText("%wwensure that it is plugged in before pressing A.",
                  g_dwScreenWidth / 2,
                  g_dwScreenHeight * 3 / 8 + 2);
+#endif
     }
     if (g_adwCarSelectState[0] != CAR_SELECT_CAR) {
         return;
@@ -908,7 +1005,7 @@ static inline void AdjustPaint(Vehicle *vehicle, u32 direction) {
     if (vehicle->input->buttons & INPUT_C_RIGHT) {
         StepPaintPart(&vehicle->color[2], up);
     }
-#if TGR_REGION != TGR_REGION_EU
+#if TGR_REGION == TGR_REGION_US
     SetMaterialColor(
         vehicle->model, vehicle->color[0] >> 3, vehicle->color[1] >> 3, vehicle->color[2] >> 3);
 #endif
@@ -921,6 +1018,26 @@ SetCarSelectOptions(s32 player, MenuItem **options, s32 count, const char *name,
     g_aapCarSelectOptions[player] = options;
     g_anCarSelectOptionCount[player] = count;
     g_apszCarSelectCategory[player] = name;
+}
+
+/** Move the cursor of a player through the options with left and right. */
+static inline void StepCarSelectOption(s32 player, u32 buttons) {
+    s32 previous;
+
+    if (buttons & INPUT_LEFT) {
+        previous = g_anCarSelectCursor[player];
+        g_anCarSelectPrevCursor[player] = previous;
+        g_anCarSelectCursor[player] =
+            (previous + g_anCarSelectOptionCount[player] - 1) % g_anCarSelectOptionCount[player];
+        g_afCarSelectSlide[player] = 1.0f;
+        PlayCarSelectSound(g_pScrollSoundBuf, g_dwScrollSoundSize);
+    } else if (buttons & INPUT_RIGHT) {
+        previous = g_anCarSelectCursor[player];
+        g_anCarSelectPrevCursor[player] = previous;
+        g_anCarSelectCursor[player] = (previous + 1) % g_anCarSelectOptionCount[player];
+        g_afCarSelectSlide[player] = -1.0f;
+        PlayCarSelectSound(g_pScrollSoundBuf, g_dwScrollSoundSize);
+    }
 }
 
 /** Handle the buttons of a player on the screen. */
@@ -972,6 +1089,16 @@ static inline void HandleCarSelectInput(s32 player) {
         }
     }
 
+#if TGR_REGION == TGR_REGION_JP
+    /* Left and right move through the decals before the paint, and a slide waits a frame. */
+    if (g_adwCarSelectState[player] == CAR_SELECT_DECALS) {
+        StepCarSelectOption(player, vehicle->input->buttons);
+    }
+    if (g_afCarSelectSlide[player] != 0.0f) {
+        return;
+    }
+#endif
+
     /* While choosing the car or its decals, C-down switches the look, and up and down paint it. */
     state = g_adwCarSelectState[player];
     if (state == CAR_SELECT_CAR || state == CAR_SELECT_DECALS) {
@@ -987,8 +1114,8 @@ static inline void HandleCarSelectInput(s32 player) {
         if (vehicle->input->buttons & INPUT_DOWN) {
             AdjustPaint(vehicle, INPUT_DOWN);
         }
-#if TGR_REGION == TGR_REGION_EU
-        /* The European release paints the model of the slot of the player every frame. */
+#if TGR_REGION != TGR_REGION_US
+        /* The later releases paint the model of the slot of the player every frame. */
         SetMaterialColor(&g_aVehicleModels[*slot],
                          vehicle->color[0] >> 3,
                          vehicle->color[1] >> 3,
@@ -997,21 +1124,13 @@ static inline void HandleCarSelectInput(s32 player) {
     }
 
     /* Left and right move through the options of the other steps. */
+#if TGR_REGION == TGR_REGION_JP
+    if (g_adwCarSelectState[player] != CAR_SELECT_CAR &&
+        g_adwCarSelectState[player] != CAR_SELECT_DECALS) {
+#else
     if (g_adwCarSelectState[player] != CAR_SELECT_CAR) {
-        if (vehicle->input->buttons & INPUT_LEFT) {
-            previous = g_anCarSelectCursor[player];
-            g_anCarSelectPrevCursor[player] = previous;
-            g_anCarSelectCursor[player] = (previous + g_anCarSelectOptionCount[player] - 1) %
-                                          g_anCarSelectOptionCount[player];
-            g_afCarSelectSlide[player] = 1.0f;
-            PlayCarSelectSound(g_pScrollSoundBuf, g_dwScrollSoundSize);
-        } else if (vehicle->input->buttons & INPUT_RIGHT) {
-            previous = g_anCarSelectCursor[player];
-            g_anCarSelectPrevCursor[player] = previous;
-            g_anCarSelectCursor[player] = (previous + 1) % g_anCarSelectOptionCount[player];
-            g_afCarSelectSlide[player] = -1.0f;
-            PlayCarSelectSound(g_pScrollSoundBuf, g_dwScrollSoundSize);
-        }
+#endif
+        StepCarSelectOption(player, vehicle->input->buttons);
     }
 
     if (vehicle->input->buttons & INPUT_B) {
@@ -1043,7 +1162,7 @@ static inline void HandleCarSelectInput(s32 player) {
                 SetCarSelectOptions(player,
                                     g_apTiresOptions,
                                     g_dwTiresOptionCount,
-                                    "Tires",
+                                    BACK_TIRES_LABEL,
                                     vehicle->profile->tires);
                 break;
             case CAR_SELECT_SUSPENSION:
@@ -1056,7 +1175,7 @@ static inline void HandleCarSelectInput(s32 player) {
             case CAR_SELECT_DECALS:
                 /* The options stay those of the suspension. */
                 g_anCarSelectCursor[player] = 0;
-                g_apszCarSelectCategory[player] = "Decals";
+                g_apszCarSelectCategory[player] = DECALS_LABEL;
                 break;
             }
             g_anCarSelectPrevCursor[player] = g_anCarSelectCursor[player];
@@ -1082,8 +1201,11 @@ static inline void HandleCarSelectInput(s32 player) {
             break;
         case CAR_SELECT_TRANSMISSION:
             vehicle->profile->transmission = g_anCarSelectCursor[player];
-            SetCarSelectOptions(
-                player, g_apTiresOptions, g_dwTiresOptionCount, "Tires", vehicle->profile->tires);
+            SetCarSelectOptions(player,
+                                g_apTiresOptions,
+                                g_dwTiresOptionCount,
+                                TIRES_LABEL,
+                                vehicle->profile->tires);
             break;
         case CAR_SELECT_TIRES:
             vehicle->profile->tires = g_anCarSelectCursor[player];
@@ -1101,7 +1223,7 @@ static inline void HandleCarSelectInput(s32 player) {
             g_anCarSelectOptionCount[player] = vehicle->carModel < PAINT_SHOP_CARS ?
                                                    g_dwDecalListCount - 1 :
                                                    g_dwDecalListCount - 2;
-            g_apszCarSelectCategory[player] = "Decals";
+            g_apszCarSelectCategory[player] = DECALS_LABEL;
             *slot = player ^ 2;
             PlayCarSelectSound(g_pSelectSoundBuf, g_dwSelectSoundSize);
             playSound = FALSE;
@@ -1180,8 +1302,6 @@ sound:
     }
 }
 
-/* The Japanese body still comes from the assembly. */
-#if TGR_REGION != TGR_REGION_JP
 void ProcessCarSelectScreen(void) {
     char text[96], time[32];
     s32 player, i;
@@ -1192,6 +1312,9 @@ void ProcessCarSelectScreen(void) {
     UpdateFrameTiming();
     UpdateFadeTransitions();
     StartHighResFrame();
+#if TGR_REGION == TGR_REGION_JP
+    PaintPendingModels();
+#endif
     g_dwWeatherActive = FALSE;
     g_dwNightMode = FALSE;
     g_dwRainMode = FALSE;
@@ -1253,12 +1376,32 @@ void ProcessCarSelectScreen(void) {
             if (0.0f < g_afCarSelectSlide[player]) {
                 g_afCarSelectSlide[player] = 0.0f;
             }
+#if TGR_REGION == TGR_REGION_JP
+            /* A sliding decal choice other than a load repaints the model. */
+            if (g_adwCarSelectState[player] == CAR_SELECT_DECALS &&
+                g_anCarSelectCursor[player] != DECALS_LOAD) {
+                g_adwCarSelectPaintPending[player] = TRUE;
+            }
+#endif
         } else if (0.0f < g_afCarSelectSlide[player]) {
             g_afCarSelectSlide[player] -= g_fFrameDeltaTime + g_fFrameDeltaTime;
             if (g_afCarSelectSlide[player] < 0.0f) {
                 g_afCarSelectSlide[player] = 0.0f;
             }
+#if TGR_REGION == TGR_REGION_JP
+            if (g_adwCarSelectState[player] == CAR_SELECT_DECALS &&
+                g_anCarSelectCursor[player] != DECALS_LOAD) {
+                g_adwCarSelectPaintPending[player] = TRUE;
+            }
+#endif
         }
+#if TGR_REGION == TGR_REGION_JP
+        /* A model still loading is painted once it has loaded. */
+        if (!g_adwCarSelectPaintPending[player] &&
+            !IsVehicleModelLoaded(&g_aVehicleModelSlots[g_adwCarSelectModelSlots[player]])) {
+            g_adwCarSelectPaintPending[player] = -1;
+        }
+#endif
     }
 
     /* The slots of the cars shown when ready, and with the decals. */
@@ -1294,6 +1437,18 @@ void ProcessCarSelectScreen(void) {
             0, 0, g_adwCarSelectModelSlots[0], 0, g_dwScreenHeight - 24, SPREAD_TWO_VIEWS);
         DrawPlayerStage(1, 1, g_adwCarSelectModelSlots[1], 71, g_dwScreenHeight, SPREAD_TWO_VIEWS);
     }
+#if TGR_REGION == TGR_REGION_JP
+    /* A model that was loading is painted next frame once it has loaded. */
+    for (player = 0; player < (s32)g_dwNumLocalPlayers; player++) {
+        if (g_adwCarSelectPaintPending[player] == -1) {
+            if (IsVehicleModelLoaded(&g_aVehicleModelSlots[g_adwCarSelectModelSlots[player]])) {
+                g_adwCarSelectPaintPending[player] = TRUE;
+            } else {
+                g_adwCarSelectPaintPending[player] = FALSE;
+            }
+        }
+    }
+#endif
     SetupMenuProjection((f32)g_dwScreenWidth, (f32)g_dwScreenHeight);
     SetViewport(0, 0, g_dwScreenWidth, g_dwScreenHeight, TRUE);
     if (g_dwTitleRedrawFrames != 0 || !IsFadeComplete()) {
@@ -1360,7 +1515,6 @@ void ProcessCarSelectScreen(void) {
         HandleCarSelectInput(player);
     }
 }
-#endif
 
 void ProcessRaceResultsScreen(void) {
     g_dwIsReviewMode = TRUE;

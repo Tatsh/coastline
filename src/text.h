@@ -218,6 +218,9 @@ extern s32 g_nTextDrawY;
 extern s32 g_nFontSize;
 
 #if TGR_REGION == TGR_REGION_JP
+/** The glyph of the first weather, the sun. The others follow it in the order of the weathers. */
+#define FIRST_WEATHER_GLYPH 0x29
+
 /** The characters the glyph cache maps, one for each byte value. */
 #define GLYPH_CACHE_CHARACTERS 256
 

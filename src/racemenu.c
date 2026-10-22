@@ -31,9 +31,6 @@
 
 #if TGR_REGION == TGR_REGION_JP
 #define TRACK_MENU_TITLE "COURSE SELECT"
-
-/* The glyph of the first weather, the sun. The others follow it in the order of the weathers. */
-#define FIRST_WEATHER_GLYPH 0x29
 #else
 #define TRACK_MENU_TITLE "TRACK SELECT"
 #endif
