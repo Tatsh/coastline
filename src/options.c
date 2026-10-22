@@ -369,6 +369,16 @@ void ProcessOptionsMenu(void) {
 }
 
 /* The message that the Controller Pak is not the one the player used before. */
+#if TGR_REGION == TGR_REGION_JP
+#define DRAW_NEW_PAK_MESSAGE(boxY, textY)                                                          \
+    {                                                                                              \
+        DRAW_MESSAGE_BOX(0x99, (boxY), 0x14E, 0x89);                                               \
+        DrawText("%jあたらしいコントローラパックが", 0x54, (textY));                               \
+        DrawText("%jさしこまれています。", 0x54, (textY) + 0xD);                                   \
+        DrawText("%jこのコントローラパックを、", 0x54, (textY) + 0x20);                            \
+        DrawText("%j使います。", 0x54, (textY) + 0x2D);                                            \
+    }
+#else
 #define DRAW_NEW_PAK_MESSAGE(boxY, textY)                                                          \
     {                                                                                              \
         DRAW_MESSAGE_BOX(0xAF, (boxY), 0x122, 0x89);                                               \
@@ -377,6 +387,7 @@ void ProcessOptionsMenu(void) {
         DrawText("THIS CONTROLLER PAK", 0x5F, (textY) + 0x20);                                     \
         DrawText("WILL BE USED.", 0x5F, (textY) + 0x2D);                                           \
     }
+#endif
 
 /* The message that asks the player to swap the Rumble Pak for the Controller Pak, with its OK and
  * CANCEL buttons. */
@@ -1045,10 +1056,25 @@ void ProcessDataSaveLoadMenu(void) {
     case SAVE_LOAD_STEP_CONFIRM_ERASE:
         g_bSaveLoadInputEnabled = FALSE;
         buttonY = 0x139 - g_texButtonA.width;
+#if TGR_REGION == TGR_REGION_JP
+        DRAW_MESSAGE_BOX(0x5F, 0xBB, 0x1C2, 0x86);
+#else
         DRAW_MESSAGE_BOX(0x73, 0xBB, 0x19A, 0x86);
+#endif
         SetTextAlignLeft();
         SetTextStyleNormal();
         SetTextCustomColors(0xFF, 0xFF, 0xFF, 0xFF, 0xF5, 0x00);
+#if TGR_REGION == TGR_REGION_JP
+        SetTextSize(14);
+        DrawText("SEASON DATA %jと%e OPTION DATA %jが", 0x37, 0x73);
+        DrawText("%jすべて消えますが、ほんとうに消しますか？", 0x37, 0x81);
+        SetTextSize(10);
+        textY = (buttonY + 0x12) >> 1;
+        DrawText("%wwOK", (u32)(g_texButtonA.width + 0x77) >> 1, textY);
+        DrawText("%wwCANCEL", (u32)(g_texButtonB.height + 0x1B1) >> 1, textY);
+        DrawTexturedSprite(&g_texButtonA, 0x71, buttonY);
+        DrawTexturedSprite(&g_texButtonB, 0x1AB, buttonY);
+#else
         SetTextSize(13);
         DrawText("ABOUT TO ERASE SEASON DATA AND", 0x41, 0x6C);
         DrawText("OPTION DATA STORED ON GAME PAK.", 0x41, 0x7A);
@@ -1059,6 +1085,7 @@ void ProcessDataSaveLoadMenu(void) {
         DrawText("%wwCANCEL", (u32)(g_texButtonB.height + 0x19D) >> 1, textY);
         DrawTexturedSprite(&g_texButtonA, 0x85, buttonY);
         DrawTexturedSprite(&g_texButtonB, 0x197, buttonY);
+#endif
         if (CHOOSING_INPUT->buttons & INPUT_A) {
             TransferFlags(CHOOSING_INPUT, INPUT_A);
             g_bSaveLoadStep = SAVE_LOAD_STEP_ERASE;
@@ -1145,7 +1172,7 @@ void ProcessDataSaveLoadMenu(void) {
                                             extension,
                                             &g_dwSaveLoadNoteIndex);
         if (gControllerPakState == PFS_ERR_INCONSISTENT) {
-            osSyncPrintf("File system is corrupted, attempting repair...\n");
+            PAK_LOG(("File system is corrupted, attempting repair...\n"));
             osPfsChecker(&g_aPakPfs[g_dwMenuChoosingPlayer]);
             gControllerPakState = osPfsFindFile(&g_aPakPfs[g_dwMenuChoosingPlayer],
                                                 COMPANY_CODE,
@@ -1192,11 +1219,11 @@ void ProcessDataSaveLoadMenu(void) {
             break;
         }
         if (SAVE_LOAD_ACTION == SAVE_LOAD_LOAD_SEASON) {
-            osSyncPrintf("Loading season data...\n");
+            PAK_LOG(("Loading season data...\n"));
         } else if (SAVE_LOAD_ACTION == SAVE_LOAD_LOAD_GHOST) {
-            osSyncPrintf("Loading compressed ghost data...\n");
+            PAK_LOG(("Loading compressed ghost data...\n"));
         } else if (SAVE_LOAD_ACTION == SAVE_LOAD_LOAD_OPTIONS) {
-            osSyncPrintf("Loading Options...\n");
+            PAK_LOG(("Loading Options...\n"));
         }
         if (SAVE_LOAD_ACTION != SAVE_LOAD_LOAD_OPTIONS) {
             gControllerPakState = osPfsReadWriteFile(&g_aPakPfs[g_dwMenuChoosingPlayer],
@@ -1285,11 +1312,11 @@ void ProcessDataSaveLoadMenu(void) {
             break;
         }
         if (SAVE_LOAD_ACTION == SAVE_LOAD_SAVE_SEASON) {
-            osSyncPrintf("Allocating %d bytes for season data...\n", noteSize);
+            PAK_LOG(("Allocating %d bytes for season data...\n", noteSize));
         } else if (SAVE_LOAD_ACTION == SAVE_LOAD_SAVE_GHOST) {
-            osSyncPrintf("Allocating %d bytes for ghost data...\n", noteSize);
+            PAK_LOG(("Allocating %d bytes for ghost data...\n", noteSize));
         } else if (SAVE_LOAD_ACTION == SAVE_LOAD_SAVE_OPTIONS) {
-            osSyncPrintf("Allocating %d bytes for options...\n", noteSize);
+            PAK_LOG(("Allocating %d bytes for options...\n", noteSize));
         }
         gControllerPakState = osPfsAllocateFile(&g_aPakPfs[g_dwMenuChoosingPlayer],
                                                 COMPANY_CODE,
@@ -1323,11 +1350,17 @@ void ProcessDataSaveLoadMenu(void) {
         DRAW_MESSAGE_BOX(0xD5, top, 0xD6, 0x6A);
         SetTextAlignLeft();
         SetTextStyleNormal();
+#if TGR_REGION == TGR_REGION_JP
+        SetTextCustomColors(0xFF, 0xFF, 0xFF, 0xFF, 0xF5, 0x00);
+        SetTextSize(14);
+        DrawText("%j上書きしますか？", 0x72, ((top + 0x1E) >> 1) + 7);
+#else
         SetTextSize(13);
         SetTextCustomColors(0xFF, 0xFF, 0xFF, 0xFF, 0xF5, 0x00);
         textY = (top + 0x1E) >> 1;
         DrawText("OK TO OVERWRITE", 0x72, textY);
         DrawText("SAVED DATA?", 0x72, textY + 0xE);
+#endif
         SetTextSize(10);
         textY = (buttonY + 0x12) >> 1;
         DrawText("%wwOK", (u32)(g_texButtonA.width + 0xED) >> 1, textY);
@@ -1366,7 +1399,7 @@ void ProcessDataSaveLoadMenu(void) {
 
     case SAVE_LOAD_STEP_SAVE:
         if (SAVE_LOAD_ACTION == SAVE_LOAD_SAVE_SEASON) {
-            osSyncPrintf("Saving season data...\n");
+            PAK_LOG(("Saving season data...\n"));
             memcpy(g_pPakDataBuffer, g_aVehicles[0].profile, sizeof(PlayerProfile));
             gControllerPakState = osPfsReadWriteFile(&g_aPakPfs[g_dwMenuChoosingPlayer],
                                                      g_dwSaveLoadNoteIndex,
@@ -1381,19 +1414,19 @@ void ProcessDataSaveLoadMenu(void) {
                 g_bSaveLoadStep = SAVE_LOAD_STEP_ERROR;
             }
         } else if (SAVE_LOAD_ACTION == SAVE_LOAD_SAVE_GHOST) {
-            osSyncPrintf("Compressing ghost data...\n");
+            PAK_LOG(("Compressing ghost data...\n"));
             compressedSize = CompressRleChannels(g_pPakDataBuffer,
                                                  PAK_DATA_BUFFER_SIZE,
                                                  g_abGhostRecording,
                                                  g_dwGhostRecordingSize,
                                                  GHOST_CHANNELS);
-            osSyncPrintf("new size = %d\n", compressedSize);
+            PAK_LOG(("new size = %d\n", compressedSize));
             if (compressedSize == -1) {
                 gControllerPakState = PAK_STATE_GHOST_TOO_LARGE;
                 g_bSaveLoadStep = SAVE_LOAD_STEP_ERROR;
                 break;
             }
-            osSyncPrintf("Saving ghost data to controller pak...\n");
+            PAK_LOG(("Saving ghost data to controller pak...\n"));
             gControllerPakState = osPfsReadWriteFile(&g_aPakPfs[g_dwMenuChoosingPlayer],
                                                      g_dwSaveLoadNoteIndex,
                                                      PFS_WRITE,
@@ -1407,7 +1440,7 @@ void ProcessDataSaveLoadMenu(void) {
                 g_bSaveLoadStep = SAVE_LOAD_STEP_ERROR;
             }
         } else if (SAVE_LOAD_ACTION == SAVE_LOAD_SAVE_OPTIONS) {
-            osSyncPrintf("Saving options...\n");
+            PAK_LOG(("Saving options...\n"));
             memcpy(g_pPakDataBuffer, &g_OptionSettings, sizeof(OptionSettings));
             gControllerPakState = osPfsReadWriteFile(&g_aPakPfs[g_dwMenuChoosingPlayer],
                                                      g_dwSaveLoadNoteIndex,
@@ -1439,6 +1472,132 @@ void ProcessDataSaveLoadMenu(void) {
     case SAVE_LOAD_STEP_ERROR:
         g_bSaveLoadInputEnabled = FALSE;
         SET_MESSAGE_TEXT();
+#if TGR_REGION == TGR_REGION_JP
+        switch (gControllerPakState) {
+        case PFS_ERR_ID_FATAL:
+            DRAW_SHORT_MESSAGE(0x50,
+                               0x1E0,
+                               0x30,
+                               "%jコントローラパックが、こわれています。",
+                               "%jあたらしいコントローラパックを、さして下さい。");
+            break;
+        case PFS_ERR_NOPACK:
+        case PFS_ERR_DEVICE: {
+            s32 boxWidth;
+            s32 boxX;
+            s32 textX;
+
+            /* The box of the Game Pak message is narrower, and both are centred. */
+            if (SAVE_LOAD_ACTION == SAVE_LOAD_LOAD_SEASON_GAME_PAK ||
+                SAVE_LOAD_ACTION == SAVE_LOAD_SAVE_SEASON_GAME_PAK ||
+                SAVE_LOAD_ACTION == SAVE_LOAD_LOAD_OPTIONS_GAME_PAK ||
+                SAVE_LOAD_ACTION == SAVE_LOAD_SAVE_OPTIONS_GAME_PAK) {
+                boxWidth = 0x172;
+            } else {
+                boxWidth = 0x1E0;
+            }
+            boxX = (0x280 - boxWidth) >> 1;
+            DRAW_MESSAGE_BOX(boxX, 0xD8, boxWidth, 0x4C);
+            textX = (boxX + 0x10) >> 1;
+            if (SAVE_LOAD_ACTION == SAVE_LOAD_LOAD_SEASON_GAME_PAK ||
+                SAVE_LOAD_ACTION == SAVE_LOAD_SAVE_SEASON_GAME_PAK ||
+                SAVE_LOAD_ACTION == SAVE_LOAD_LOAD_OPTIONS_GAME_PAK ||
+                SAVE_LOAD_ACTION == SAVE_LOAD_SAVE_OPTIONS_GAME_PAK) {
+                DrawText("%jゲームパックへアクセスできません。", textX, 0x7C);
+            } else {
+                DrawText("%jコントローラパックがありません。", textX, 0x7C);
+            }
+            switch (SAVE_LOAD_ACTION) {
+            case SAVE_LOAD_LOAD_SEASON:
+            case SAVE_LOAD_LOAD_GHOST:
+            case SAVE_LOAD_LOAD_OPTIONS:
+            case SAVE_LOAD_LOAD_SEASON_GAME_PAK:
+            case SAVE_LOAD_LOAD_OPTIONS_GAME_PAK:
+                DrawText("%jデータをロードできません。", textX, 0x8A);
+                break;
+            default:
+                DrawText("%jデータをセーブできません。", textX, 0x8A);
+                break;
+            }
+            break;
+        }
+        case PAK_STATE_RUMBLE_PAK:
+            buttonY = 0x139 - g_texButtonA.width;
+            DRAW_MESSAGE_BOX(0xC8, 0xBB, 0xF0, 0x86);
+            DrawText("%j振動パックと", 0x6C, 0x6D);
+            DrawText("%jコントローラパックを", 0x6C, 0x7A);
+            DrawText("%j交換して下さい。", 0x6C, 0x87);
+            SetTextAlignLeft();
+            SetTextSize(10);
+            textY = (buttonY + 0x12) >> 1;
+            DrawText("%wwOK", (u32)(g_texButtonA.width + 0xDE) >> 1, textY);
+            DrawText("%wwCANCEL", (u32)(g_texButtonB.width + 0x14A) >> 1, textY);
+            DrawTexturedSprite(&g_texButtonA, 0xD8, buttonY);
+            DrawTexturedSprite(&g_texButtonB, 0x144, buttonY);
+            break;
+        case PFS_DATA_FULL:
+        case PFS_DIR_FULL:
+            DRAW_MESSAGE_BOX(0x82, 0xB7, 0x17C, 0x8D);
+            if (SAVE_LOAD_ACTION == SAVE_LOAD_SAVE_SEASON) {
+                DrawText("%jコントローラパックに", 0x49, 0x6B);
+                DrawText("%j空きページがありません。", 0x49, 0x78);
+                DrawText("%jシーズンデータをセーブするには", 0x49, 0x8B);
+                DrawText("2%jページ必要です。", 0x49, 0x98);
+            } else if (SAVE_LOAD_ACTION == SAVE_LOAD_SAVE_GHOST) {
+                DrawText("%jコントローラパックに", 0x49, 0x6B);
+                DrawText("%j空きページがありません。", 0x49, 0x78);
+                DrawText("%jゴーストカーデータをセーブするには", 0x49, 0x8B);
+                DrawText("58%jページ必要です。", 0x49, 0x98);
+            } else if (SAVE_LOAD_ACTION == SAVE_LOAD_SAVE_OPTIONS) {
+                DrawText("%jコントローラパックに", 0x49, 0x6B);
+                DrawText("%j空きページがありません。", 0x49, 0x78);
+                DrawText("%jオプションデータをセーブするには", 0x49, 0x8B);
+                DrawText("1%jページ必要です。", 0x49, 0x98);
+            }
+            break;
+        case PAK_STATE_GHOST_TOO_LARGE:
+            DRAW_MESSAGE_BOX(0xB9, 0xBD, 0x10E, 0x82);
+            DrawText("%jゴーストカーデータを", 0x64, 0x6E);
+            DrawText("%jセーブできません。", 0x64, 0x7C);
+            DrawText("%jコントローラパックの", 0x64, 0x8A);
+            DrawText("%j空きページが足りません。", 0x64, 0x98);
+            break;
+        case PFS_ERR_CONTRFAIL:
+            DRAW_SHORT_MESSAGE(0xBF, 0x102, 0x67, "%jコントローラにエラーが", "%j発生しました。");
+            break;
+        case PFS_ERR_INVALID:
+            switch (SAVE_LOAD_ACTION) {
+            case SAVE_LOAD_LOAD_SEASON:
+            case SAVE_LOAD_LOAD_GHOST:
+            case SAVE_LOAD_LOAD_OPTIONS:
+                DRAW_SHORT_MESSAGE(
+                    0xB6, 0x113, 0x63, "%jコントローラパックに", "%jセーブデータがありません。");
+                break;
+            case SAVE_LOAD_SAVE_SEASON:
+            case SAVE_LOAD_SAVE_GHOST:
+            case SAVE_LOAD_SAVE_OPTIONS:
+                DRAW_SHORT_MESSAGE(
+                    0xB6, 0x114, 0x63, "%jコントローラパックに", "%jセーブできません。");
+                break;
+            case SAVE_LOAD_LOAD_SEASON_GAME_PAK:
+            case SAVE_LOAD_LOAD_OPTIONS_GAME_PAK:
+                DRAW_SHORT_MESSAGE(
+                    0xAA, 0x12C, 0x5D, "%jゲームパックに", "%jセーブデータがありません。");
+                break;
+            case SAVE_LOAD_SAVE_SEASON_GAME_PAK:
+            case SAVE_LOAD_SAVE_OPTIONS_GAME_PAK:
+                DRAW_SHORT_MESSAGE(0xCD, 0xE6, 0x6E, "%jゲームパックに", "%j書き込みできません。");
+                break;
+            }
+            break;
+        case PFS_ERR_NEW_PACK:
+            DRAW_NEW_PAK_MESSAGE(0xBB, 0x6D);
+            break;
+        default:
+            DRAW_SHORT_MESSAGE(0xB1, 0x11E, 0x60, "%jコントローラパック", "%jが異常です。");
+            break;
+        }
+#else
         switch (gControllerPakState) {
         case PFS_ERR_ID_FATAL:
             DRAW_SHORT_MESSAGE(0xBD, 0x106, 0x66, "THE CONTROLLER PAK", "IS NONFUNCTIONAL.");
@@ -1548,6 +1707,7 @@ void ProcessDataSaveLoadMenu(void) {
             DRAW_SHORT_MESSAGE(0xB1, 0x11E, 0x60, "CONTROLLER PAK ERROR", "HAS BEEN DETECTED!");
             break;
         }
+#endif
         if (gControllerPakState != PAK_STATE_RUMBLE_PAK) {
             if (CHOOSING_INPUT->buttons & DISMISS_BUTTONS) {
                 TransferFlags(CHOOSING_INPUT, DISMISS_BUTTONS);
@@ -1576,8 +1736,44 @@ void ProcessDataSaveLoadMenu(void) {
         g_bSaveLoadInputEnabled = FALSE;
         SetTextAlignCenter();
         SetTextStyleNormal();
-        SetTextSize(12);
+        SetTextSize(MESSAGE_TEXT_SIZE);
         top = g_bSaveLoadEntryPoint != SAVE_LOAD_FROM_MAIN_MENU ? 0xCE : 0xD9;
+#if TGR_REGION == TGR_REGION_JP
+        switch (SAVE_LOAD_ACTION) {
+        case SAVE_LOAD_LOAD_SEASON:
+        case SAVE_LOAD_LOAD_SEASON_GAME_PAK:
+        case SAVE_LOAD_LOAD_GHOST:
+            DRAW_MESSAGE_BOX(0xE2, top, 0xBC, 0x4A);
+            DrawText("%yw%jロード%e OK!", 0x9F, ((top + 0x20) >> 1) + 7);
+            break;
+        case SAVE_LOAD_SAVE_SEASON:
+        case SAVE_LOAD_SAVE_SEASON_GAME_PAK:
+            DRAW_MESSAGE_BOX(0xE2, top, 0xBC, 0x4A);
+            DrawText("%yw%jセーブ%e OK!", 0x9F, ((top + 0x20) >> 1) + 7);
+            break;
+        case SAVE_LOAD_SAVE_GHOST:
+            DRAW_MESSAGE_BOX(0xD8, top, 0xD0, 0x4A);
+            DrawText("%yw%jセーブ%e OK!", 0x9F, ((top + 0x20) >> 1) + 7);
+            break;
+        case SAVE_LOAD_LOAD_OPTIONS:
+        case SAVE_LOAD_LOAD_OPTIONS_GAME_PAK:
+            DRAW_MESSAGE_BOX(0xC3, 0xE7, 0xFA, 0x2E);
+            DrawText("%yw%jロード%e OK!", 0x9F, 0x83);
+            break;
+        case SAVE_LOAD_SAVE_OPTIONS:
+        case SAVE_LOAD_SAVE_OPTIONS_GAME_PAK:
+            DRAW_MESSAGE_BOX(0xC3, 0xE7, 0xFA, 0x2E);
+            DrawText("%yw%jセーブ%e OK!", 0x9F, 0x83);
+            break;
+        case SAVE_LOAD_ERASE_GAME_PAK:
+            DRAW_MESSAGE_BOX(0xC3, 0xE7, 0xFA, 0x2E);
+            DrawText("%ywDONE!", 0x9F, 0x83);
+            break;
+        default:
+            g_bSaveLoadStep = SAVE_LOAD_STEP_CHOOSE;
+            break;
+        }
+#else
         switch (SAVE_LOAD_ACTION) {
         case SAVE_LOAD_LOAD_SEASON:
 #if TGR_REGION != TGR_REGION_US
@@ -1621,6 +1817,7 @@ void ProcessDataSaveLoadMenu(void) {
             g_bSaveLoadStep = SAVE_LOAD_STEP_CHOOSE;
             break;
         }
+#endif
         if (CHOOSING_INPUT->buttons & DISMISS_BUTTONS) {
             TransferFlags(CHOOSING_INPUT, DISMISS_BUTTONS);
 #if TGR_REGION != TGR_REGION_US
@@ -1651,7 +1848,16 @@ void ProcessDataSaveLoadMenu(void) {
 
     case SAVE_LOAD_STEP_RUMBLE_PAK:
         g_bSaveLoadInputEnabled = FALSE;
-#if TGR_REGION != TGR_REGION_US
+#if TGR_REGION == TGR_REGION_JP
+        SetTextStyleNormal();
+        SetTextAlignLeft();
+        SetTextCustomColors(0xFF, 0xFF, 0xFF, 0xFF, 0xF5, 0x00);
+        DRAW_MESSAGE_BOX(0xAA, 0xCC, 0x12C, 0x64);
+        SetTextSize(MESSAGE_TEXT_SIZE);
+        DrawText("%j振動パックを使うときは、", 0x5D, 0x76);
+        DrawText("%jコントローラパックと", 0x5D, 0x83);
+        DrawText("%j振動パックを交換して下さい。", 0x5D, 0x90);
+#elif TGR_REGION == TGR_REGION_EU
         SetTextStyleNormal();
         SetTextAlignLeft();
         SetTextCustomColors(0xFF, 0xFF, 0xFF, 0xFF, 0xF5, 0x00);
