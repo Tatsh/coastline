@@ -322,9 +322,9 @@ nonmatching g_dwTrackMenuItemCount, 0x4
 dlabel g_dwTrackMenuItemCount
     /* 80316898 */ .space 0x04
 
-nonmatching g_dwResultsTrack, 0x4
+nonmatching g_dwTrackMenuSelection, 0x4
 
-dlabel g_dwResultsTrack
+dlabel g_dwTrackMenuSelection
     /* 8031689C */ .space 0x04
 
 nonmatching g_bTrackMenuChampionship, 0x4
@@ -610,9 +610,9 @@ nonmatching g_dwResultsChampionshipFlags, 0x4
 dlabel g_dwResultsChampionshipFlags
     /* 80316C1C */ .space 0x04
 
-nonmatching g_dwTrackSelectTrackIndex, 0x4
+nonmatching g_dwResultsTrack, 0x4
 
-dlabel g_dwTrackSelectTrackIndex
+dlabel g_dwResultsTrack
     /* 80316C20 */ .space 0x04
 
 nonmatching g_dwCarSelectWeather, 0x4

@@ -649,10 +649,10 @@ glabel ProcessCarSelectScreen
     /* DB1C 8020CB1C 8C631988 */  lw         $v1, %lo(g_dwNumLocalPlayers)($v1)
     /* DB20 8020CB20 3C018031 */  lui        $at, %hi(g_dwResultsChampionshipFlags)
     /* DB24 8020CB24 AC246C1C */  sw         $a0, %lo(g_dwResultsChampionshipFlags)($at)
-    /* DB28 8020CB28 3C018031 */  lui        $at, %hi(g_dwTrackSelectTrackIndex)
+    /* DB28 8020CB28 3C018031 */  lui        $at, %hi(g_dwResultsTrack)
     /* DB2C 8020CB2C 0000A825 */  or         $s5, $zero, $zero
     /* DB30 8020CB30 18600025 */  blez       $v1, .L8020CBC8
-    /* DB34 8020CB34 AC256C20 */   sw        $a1, %lo(g_dwTrackSelectTrackIndex)($at)
+    /* DB34 8020CB34 AC256C20 */   sw        $a1, %lo(g_dwResultsTrack)($at)
     /* DB38 8020CB38 3C118032 */  lui        $s1, %hi(g_aVehicles)
     /* DB3C 8020CB3C 3C108031 */  lui        $s0, %hi(g_adwCarSelectModelSlots)
     /* DB40 8020CB40 3C148031 */  lui        $s4, %hi(g_afCarSelectSlide)
@@ -1812,8 +1812,8 @@ glabel ProcessCarSelectScreen
     /* EC1C 8020DC1C 24010001 */  addiu      $at, $zero, 0x1
     /* EC20 8020DC20 14410032 */  bne        $v0, $at, .L8020DCEC
   .L8020DC24:
-    /* EC24 8020DC24 3C058031 */   lui       $a1, %hi(g_dwTrackSelectTrackIndex)
-    /* EC28 8020DC28 8CA56C20 */  lw         $a1, %lo(g_dwTrackSelectTrackIndex)($a1)
+    /* EC24 8020DC24 3C058031 */   lui       $a1, %hi(g_dwResultsTrack)
+    /* EC28 8020DC28 8CA56C20 */  lw         $a1, %lo(g_dwResultsTrack)($a1)
     /* EC2C 8020DC2C 28A10005 */  slti       $at, $a1, 0x5
     /* EC30 8020DC30 14200003 */  bnez       $at, .L8020DC40
     /* EC34 8020DC34 3C12802B */   lui       $s2, %hi(g_szMirroredPrefix)
@@ -1825,13 +1825,13 @@ glabel ProcessCarSelectScreen
   .L8020DC48:
     /* EC48 8020DC48 28A10005 */  slti       $at, $a1, 0x5
     /* EC4C 8020DC4C 14200004 */  bnez       $at, .L8020DC60
-    /* EC50 8020DC50 3C018031 */   lui       $at, %hi(g_dwTrackSelectTrackIndex)
-    /* EC54 8020DC54 AC256C20 */  sw         $a1, %lo(g_dwTrackSelectTrackIndex)($at)
+    /* EC50 8020DC50 3C018031 */   lui       $at, %hi(g_dwResultsTrack)
+    /* EC54 8020DC54 AC256C20 */  sw         $a1, %lo(g_dwResultsTrack)($at)
     /* EC58 8020DC58 10000004 */  b          .L8020DC6C
     /* EC5C 8020DC5C 24B0FFFB */   addiu     $s0, $a1, -0x5
   .L8020DC60:
-    /* EC60 8020DC60 3C018031 */  lui        $at, %hi(g_dwTrackSelectTrackIndex)
-    /* EC64 8020DC64 AC256C20 */  sw         $a1, %lo(g_dwTrackSelectTrackIndex)($at)
+    /* EC60 8020DC60 3C018031 */  lui        $at, %hi(g_dwResultsTrack)
+    /* EC64 8020DC64 AC256C20 */  sw         $a1, %lo(g_dwResultsTrack)($at)
     /* EC68 8020DC68 00A08025 */  or         $s0, $a1, $zero
   .L8020DC6C:
     /* EC6C 8020DC6C 00105880 */  sll        $t3, $s0, 2
@@ -2154,8 +2154,8 @@ glabel ProcessCarSelectScreen
     /* F108 8020E108 00000000 */   nop
     /* F10C 8020E10C 8EF90000 */  lw         $t9, 0x0($s7)
     /* F110 8020E110 16B90026 */  bne        $s5, $t9, .L8020E1AC
-    /* F114 8020E114 3C058031 */   lui       $a1, %hi(g_dwTrackSelectTrackIndex)
-    /* F118 8020E118 8CA56C20 */  lw         $a1, %lo(g_dwTrackSelectTrackIndex)($a1)
+    /* F114 8020E114 3C058031 */   lui       $a1, %hi(g_dwResultsTrack)
+    /* F118 8020E118 8CA56C20 */  lw         $a1, %lo(g_dwResultsTrack)($a1)
     /* F11C 8020E11C 3C0E8032 */  lui        $t6, %hi(g_pActiveProfile)
     /* F120 8020E120 8DCED6EC */  lw         $t6, %lo(g_pActiveProfile)($t6)
     /* F124 8020E124 00055880 */  sll        $t3, $a1, 2
@@ -2246,8 +2246,8 @@ glabel ProcessCarSelectScreen
     /* F260 8020E260 00000000 */   nop
     /* F264 8020E264 8E8D0F9C */  lw         $t5, 0xF9C($s4)
     /* F268 8020E268 16AD0027 */  bne        $s5, $t5, .L8020E308
-    /* F26C 8020E26C 3C058031 */   lui       $a1, %hi(g_dwTrackSelectTrackIndex)
-    /* F270 8020E270 8CA56C20 */  lw         $a1, %lo(g_dwTrackSelectTrackIndex)($a1)
+    /* F26C 8020E26C 3C058031 */   lui       $a1, %hi(g_dwResultsTrack)
+    /* F270 8020E270 8CA56C20 */  lw         $a1, %lo(g_dwResultsTrack)($a1)
     /* F274 8020E274 3C0A8032 */  lui        $t2, %hi(g_pActiveProfile)
     /* F278 8020E278 8D4AD6EC */  lw         $t2, %lo(g_pActiveProfile)($t2)
     /* F27C 8020E27C 00054880 */  sll        $t1, $a1, 2

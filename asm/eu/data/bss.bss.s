@@ -326,9 +326,10 @@ nonmatching g_dwUnref8031543c, 0x4
 dlabel g_dwUnref8031543c
     /* 8031543C */ .space 0x04
 
-nonmatching g_dwResultsRound, 0x4
+nonmatching D_80315440, 0x4
 
-dlabel g_dwResultsRound
+/* Automatically generated and unreferenced pad */
+dlabel D_80315440
     /* 80315440 */ .space 0x04
 
 nonmatching g_dwUnref80315444, 0x4
@@ -341,9 +342,10 @@ nonmatching g_dwUnref80315448, 0x4
 dlabel g_dwUnref80315448
     /* 80315448 */ .space 0x04
 
-nonmatching g_dwCarSelectWeather, 0x4
+nonmatching D_8031544C, 0x4
 
-dlabel g_dwCarSelectWeather
+/* Automatically generated and unreferenced pad */
+dlabel D_8031544C
     /* 8031544C */ .space 0x04
 
 nonmatching g_dwUnref80315450, 0x4
@@ -880,9 +882,9 @@ nonmatching g_dwResultsSeason, 0x4
 dlabel g_dwResultsSeason
     /* 80317FDC */ .space 0x04
 
-nonmatching g_dwTrackSelectReviewFlag, 0x4
+nonmatching g_dwResultsRound, 0x4
 
-dlabel g_dwTrackSelectReviewFlag
+dlabel g_dwResultsRound
     /* 80317FE0 */ .space 0x04
 
 nonmatching g_dwResultsChampionshipFlags, 0x4
@@ -890,14 +892,14 @@ nonmatching g_dwResultsChampionshipFlags, 0x4
 dlabel g_dwResultsChampionshipFlags
     /* 80317FE4 */ .space 0x04
 
-nonmatching g_dwTrackSelectTrackIndex, 0x4
+nonmatching g_dwResultsTrack, 0x4
 
-dlabel g_dwTrackSelectTrackIndex
+dlabel g_dwResultsTrack
     /* 80317FE8 */ .space 0x04
 
-nonmatching g_dwTrackSelectCarNameSpecIdx, 0x4
+nonmatching g_dwCarSelectWeather, 0x4
 
-dlabel g_dwTrackSelectCarNameSpecIdx
+dlabel g_dwCarSelectWeather
     /* 80317FEC */ .space 0x04
 
 nonmatching g_bSeasonResultsShown, 0x4

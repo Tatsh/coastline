@@ -74,12 +74,12 @@ glabel ProcessCarSelectScreen
     /* DED0 8020CED0 4480A000 */  mtc1       $zero, $f20
     /* DED4 8020CED4 AC397FDC */  sw         $t9, %lo(g_dwResultsSeason)($at)
     /* DED8 8020CED8 90490005 */  lbu        $t1, 0x5($v0)
-    /* DEDC 8020CEDC 3C018031 */  lui        $at, %hi(g_dwTrackSelectReviewFlag)
+    /* DEDC 8020CEDC 3C018031 */  lui        $at, %hi(g_dwResultsRound)
     /* DEE0 8020CEE0 3C178031 */  lui        $s7, %hi(g_afCarSelectAngle)
-    /* DEE4 8020CEE4 AC297FE0 */  sw         $t1, %lo(g_dwTrackSelectReviewFlag)($at)
+    /* DEE4 8020CEE4 AC297FE0 */  sw         $t1, %lo(g_dwResultsRound)($at)
     /* DEE8 8020CEE8 8C440000 */  lw         $a0, 0x0($v0)
-    /* DEEC 8020CEEC 3C018031 */  lui        $at, %hi(g_dwTrackSelectCarNameSpecIdx)
-    /* DEF0 8020CEF0 AC2A7FEC */  sw         $t2, %lo(g_dwTrackSelectCarNameSpecIdx)($at)
+    /* DEEC 8020CEEC 3C018031 */  lui        $at, %hi(g_dwCarSelectWeather)
+    /* DEF0 8020CEF0 AC2A7FEC */  sw         $t2, %lo(g_dwCarSelectWeather)($at)
     /* DEF4 8020CEF4 3C018031 */  lui        $at, %hi(g_bSeasonResultsShown)
     /* DEF8 8020CEF8 AC207FF0 */  sw         $zero, %lo(g_bSeasonResultsShown)($at)
     /* DEFC 8020CEFC 3C018029 */  lui        $at, %hi(g_dwVehicleViewModeIndex)
@@ -95,10 +95,10 @@ glabel ProcessCarSelectScreen
     /* DF24 8020CF24 8C631ED8 */  lw         $v1, %lo(g_dwNumLocalPlayers)($v1)
     /* DF28 8020CF28 3C018031 */  lui        $at, %hi(g_dwResultsChampionshipFlags)
     /* DF2C 8020CF2C AC247FE4 */  sw         $a0, %lo(g_dwResultsChampionshipFlags)($at)
-    /* DF30 8020CF30 3C018031 */  lui        $at, %hi(g_dwTrackSelectTrackIndex)
+    /* DF30 8020CF30 3C018031 */  lui        $at, %hi(g_dwResultsTrack)
     /* DF34 8020CF34 0000A825 */  or         $s5, $zero, $zero
     /* DF38 8020CF38 18600025 */  blez       $v1, .L8020CFD0
-    /* DF3C 8020CF3C AC257FE8 */   sw        $a1, %lo(g_dwTrackSelectTrackIndex)($at)
+    /* DF3C 8020CF3C AC257FE8 */   sw        $a1, %lo(g_dwResultsTrack)($at)
     /* DF40 8020CF40 3C118032 */  lui        $s1, %hi(g_aVehicles)
     /* DF44 8020CF44 3C108031 */  lui        $s0, %hi(g_adwCarSelectModelSlots)
     /* DF48 8020CF48 3C148031 */  lui        $s4, %hi(g_afCarSelectSlide)
@@ -1036,8 +1036,8 @@ glabel ProcessCarSelectScreen
     /* ECDC 8020DCDC 24010001 */  addiu      $at, $zero, 0x1
     /* ECE0 8020DCE0 14410036 */  bne        $v0, $at, .L8020DDBC
   .L8020DCE4:
-    /* ECE4 8020DCE4 3C058031 */   lui       $a1, %hi(g_dwTrackSelectTrackIndex)
-    /* ECE8 8020DCE8 8CA57FE8 */  lw         $a1, %lo(g_dwTrackSelectTrackIndex)($a1)
+    /* ECE4 8020DCE4 3C058031 */   lui       $a1, %hi(g_dwResultsTrack)
+    /* ECE8 8020DCE8 8CA57FE8 */  lw         $a1, %lo(g_dwResultsTrack)($a1)
     /* ECEC 8020DCEC 28A10005 */  slti       $at, $a1, 0x5
     /* ECF0 8020DCF0 14200003 */  bnez       $at, .L8020DD00
     /* ECF4 8020DCF4 3C12802B */   lui       $s2, %hi(g_szMirroredPrefix)
@@ -1049,17 +1049,17 @@ glabel ProcessCarSelectScreen
   .L8020DD08:
     /* ED08 8020DD08 28A10005 */  slti       $at, $a1, 0x5
     /* ED0C 8020DD0C 14200004 */  bnez       $at, .L8020DD20
-    /* ED10 8020DD10 3C018031 */   lui       $at, %hi(g_dwTrackSelectTrackIndex)
-    /* ED14 8020DD14 AC257FE8 */  sw         $a1, %lo(g_dwTrackSelectTrackIndex)($at)
+    /* ED10 8020DD10 3C018031 */   lui       $at, %hi(g_dwResultsTrack)
+    /* ED14 8020DD14 AC257FE8 */  sw         $a1, %lo(g_dwResultsTrack)($at)
     /* ED18 8020DD18 10000004 */  b          .L8020DD2C
     /* ED1C 8020DD1C 24B0FFFB */   addiu     $s0, $a1, -0x5
   .L8020DD20:
-    /* ED20 8020DD20 3C018031 */  lui        $at, %hi(g_dwTrackSelectTrackIndex)
-    /* ED24 8020DD24 AC257FE8 */  sw         $a1, %lo(g_dwTrackSelectTrackIndex)($at)
+    /* ED20 8020DD20 3C018031 */  lui        $at, %hi(g_dwResultsTrack)
+    /* ED24 8020DD24 AC257FE8 */  sw         $a1, %lo(g_dwResultsTrack)($at)
     /* ED28 8020DD28 00A08025 */  or         $s0, $a1, $zero
   .L8020DD2C:
-    /* ED2C 8020DD2C 3C0F8031 */  lui        $t7, %hi(g_dwTrackSelectCarNameSpecIdx)
-    /* ED30 8020DD30 8DEF7FEC */  lw         $t7, %lo(g_dwTrackSelectCarNameSpecIdx)($t7)
+    /* ED2C 8020DD2C 3C0F8031 */  lui        $t7, %hi(g_dwCarSelectWeather)
+    /* ED30 8020DD30 8DEF7FEC */  lw         $t7, %lo(g_dwCarSelectWeather)($t7)
     /* ED34 8020DD34 3C0C8027 */  lui        $t4, %hi(g_apWeatherMenuItems)
     /* ED38 8020DD38 00105880 */  sll        $t3, $s0, 2
     /* ED3C 8020DD3C 000F6880 */  sll        $t5, $t7, 2
@@ -1182,8 +1182,8 @@ glabel ProcessCarSelectScreen
     /* EEEC 8020DEEC 8F184054 */  lw         $t8, %lo(g_dwIsReviewMode)($t8)
     /* EEF0 8020DEF0 27B100E8 */  addiu      $s1, $sp, 0xE8
     /* EEF4 8020DEF4 13000294 */  beqz       $t8, .L8020E948
-    /* EEF8 8020DEF8 3C0F8031 */   lui       $t7, %hi(g_dwTrackSelectReviewFlag)
-    /* EEFC 8020DEFC 8DEF7FE0 */  lw         $t7, %lo(g_dwTrackSelectReviewFlag)($t7)
+    /* EEF8 8020DEF8 3C0F8031 */   lui       $t7, %hi(g_dwResultsRound)
+    /* EEFC 8020DEFC 8DEF7FE0 */  lw         $t7, %lo(g_dwResultsRound)($t7)
     /* EF00 8020DF00 3C168031 */  lui        $s6, %hi(g_dwResultsSeason)
     /* EF04 8020DF04 2412004F */  addiu      $s2, $zero, 0x4F
     /* EF08 8020DF08 8ED67FDC */  lw         $s6, %lo(g_dwResultsSeason)($s6)
@@ -1384,8 +1384,8 @@ glabel ProcessCarSelectScreen
     /* F1E0 8020E1E0 00000000 */   nop
     /* F1E4 8020E1E4 8EE90000 */  lw         $t1, 0x0($s7)
     /* F1E8 8020E1E8 16A90021 */  bne        $s5, $t1, .L8020E270
-    /* F1EC 8020E1EC 3C058031 */   lui       $a1, %hi(g_dwTrackSelectTrackIndex)
-    /* F1F0 8020E1F0 8CA57FE8 */  lw         $a1, %lo(g_dwTrackSelectTrackIndex)($a1)
+    /* F1EC 8020E1EC 3C058031 */   lui       $a1, %hi(g_dwResultsTrack)
+    /* F1F0 8020E1F0 8CA57FE8 */  lw         $a1, %lo(g_dwResultsTrack)($a1)
     /* F1F4 8020E1F4 3C188032 */  lui        $t8, %hi(g_pActiveProfile)
     /* F1F8 8020E1F8 8F18EABC */  lw         $t8, %lo(g_pActiveProfile)($t8)
     /* F1FC 8020E1FC 00057880 */  sll        $t7, $a1, 2
@@ -1471,8 +1471,8 @@ glabel ProcessCarSelectScreen
     /* F324 8020E324 00000000 */   nop
     /* F328 8020E328 8E8E0F9C */  lw         $t6, 0xF9C($s4)
     /* F32C 8020E32C 16AE0027 */  bne        $s5, $t6, .L8020E3CC
-    /* F330 8020E330 3C058031 */   lui       $a1, %hi(g_dwTrackSelectTrackIndex)
-    /* F334 8020E334 8CA57FE8 */  lw         $a1, %lo(g_dwTrackSelectTrackIndex)($a1)
+    /* F330 8020E330 3C058031 */   lui       $a1, %hi(g_dwResultsTrack)
+    /* F334 8020E334 8CA57FE8 */  lw         $a1, %lo(g_dwResultsTrack)($a1)
     /* F338 8020E338 3C198032 */  lui        $t9, %hi(g_pActiveProfile)
     /* F33C 8020E33C 8F39EABC */  lw         $t9, %lo(g_pActiveProfile)($t9)
     /* F340 8020E340 00055080 */  sll        $t2, $a1, 2
