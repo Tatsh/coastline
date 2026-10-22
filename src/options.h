@@ -48,6 +48,27 @@ enum {
     SAVE_LOAD_CHOICES,      /*!< The number of choices. */
 };
 
+#if TGR_REGION == TGR_REGION_EU || TGR_REGION == TGR_REGION_JP
+/** The actions of the other rows of the save and load menu, after the SAVE_LOAD_ choices. */
+enum {
+    SAVE_LOAD_LOAD_SEASON_GAME_PAK = SAVE_LOAD_CHOICES, /*!< Load the season from the EEPROM. */
+    SAVE_LOAD_SAVE_SEASON_GAME_PAK,                     /*!< Save the season to the EEPROM. */
+    SAVE_LOAD_LOAD_OPTIONS_GAME_PAK, /*!< Load the settings and the equipment from the EEPROM. */
+    SAVE_LOAD_SAVE_OPTIONS_GAME_PAK, /*!< Save the settings and the equipment to the EEPROM. */
+    SAVE_LOAD_ERASE_GAME_PAK,    /*!< Reset both players and write the defaults to the EEPROM. */
+    SAVE_LOAD_EXIT,              /*!< Leave the menu. */
+    SAVE_LOAD_ROW_HEADING = 0xD, /*!< A heading of 12 pixels, which the cursor skips. */
+    SAVE_LOAD_ROW_SMALL_GAP,     /*!< An empty row of 3 pixels, which the cursor skips. */
+    SAVE_LOAD_ROW_GAP,           /*!< An empty row of 6 pixels, which the cursor skips. */
+};
+
+/** A row of the save and load menu. */
+typedef struct {
+    u8 action;        /*!< The SAVE_LOAD_ action of the row. */
+    const char *text; /*!< The text of the row, or NULL after the last row. */
+} SaveLoadMenuItem;
+#endif
+
 /** The data ProcessPakDataScreen() loads or saves. */
 enum {
     PAK_DATA_LOAD_SEASON,        /*!< Load a championship season. */
@@ -195,6 +216,41 @@ extern const char *g_apszSaveLoadChoices[SAVE_LOAD_CHOICES];
  */
 extern u8 g_bSaveLoadChoice;
 
+#if TGR_REGION == TGR_REGION_EU || TGR_REGION == TGR_REGION_JP
+/**
+ * The rows of the save and load menu opened from the main menu, for the Game Pak and the
+ * Controller Pak.
+ *
+ * @ghidraAddress EUR: 0x802744e8
+ * @ghidraAddress JPN: 0x80273f98
+ */
+extern SaveLoadMenuItem g_aLoadMenuItems[];
+
+/**
+ * The rows of the save and load menu after a championship race.
+ *
+ * @ghidraAddress EUR: 0x80274568
+ * @ghidraAddress JPN: 0x80274018
+ */
+extern SaveLoadMenuItem g_aSaveSeasonMenuItems[];
+
+/**
+ * The rows of the save and load menu after a time attack.
+ *
+ * @ghidraAddress EUR: 0x80274598
+ * @ghidraAddress JPN: 0x80274048
+ */
+extern SaveLoadMenuItem g_aSaveGhostMenuItems[];
+
+/**
+ * The row of the save and load menu under the cursor.
+ *
+ * @ghidraAddress EUR: 0x802745b8
+ * @ghidraAddress JPN: 0x80274068
+ */
+extern u8 g_bSaveLoadMenuCursor;
+#endif
+
 /**
  * The step of the save and load menu.
  *
@@ -276,8 +332,25 @@ extern char g_szSfxVolumeTextBuf[0x18];
  */
 extern u8 g_abSavePakIdKnown[2];
 
-/** Whether the save and load menu loaded a season or a ghost car. @ghidraAddress USA: 0x80316422 */
+/**
+ * Whether the save and load menu loaded a season or a ghost car.
+ *
+ * @ghidraAddress USA: 0x80316422
+ * @ghidraAddress EUR: 0x8031810a
+ * @ghidraAddress JPN: 0x80316d32
+ */
 extern u8 g_bSaveLoadDataWasLoaded;
+
+#if TGR_REGION == TGR_REGION_EU || TGR_REGION == TGR_REGION_JP
+/**
+ * Whether the next EEPROM step of the save and load menu writes without probing and reading the
+ * EEPROM again, once the player confirmed the overwrite.
+ *
+ * @ghidraAddress EUR: 0x80318110
+ * @ghidraAddress JPN: 0x80316d38
+ */
+extern u8 g_bSaveLoadSkipEepromProbe;
+#endif
 
 /**
  * Whether the save and load menu takes the input of its choices.

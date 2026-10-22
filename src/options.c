@@ -54,10 +54,15 @@
 
 /* The steps of the save and load menu. */
 enum {
-    SAVE_LOAD_STEP_FADE_IN,           /*!< Wait for the screen to fade in. */
-    SAVE_LOAD_STEP_CHOOSE,            /*!< Choose what to load or save. */
-    SAVE_LOAD_STEP_QUIET,             /*!< Start fading out the sound and the music. */
-    SAVE_LOAD_STEP_WAIT_QUIET,        /*!< Wait for the sound to fade out, then 4 more frames. */
+    SAVE_LOAD_STEP_FADE_IN,    /*!< Wait for the screen to fade in. */
+    SAVE_LOAD_STEP_CHOOSE,     /*!< Choose what to load or save. */
+    SAVE_LOAD_STEP_QUIET,      /*!< Start fading out the sound and the music. */
+    SAVE_LOAD_STEP_WAIT_QUIET, /*!< Wait for the sound to fade out, then 4 more frames. */
+#if TGR_REGION != TGR_REGION_US
+    SAVE_LOAD_STEP_GAME_PAK,      /*!< Load or save the chosen data on the EEPROM. */
+    SAVE_LOAD_STEP_ERASE,         /*!< Reset both players and write the defaults to the EEPROM. */
+    SAVE_LOAD_STEP_CONFIRM_ERASE, /*!< Request confirmation to erase the EEPROM. */
+#endif
     SAVE_LOAD_STEP_MOUNT,             /*!< Open the Controller Pak of the choosing player. */
     SAVE_LOAD_STEP_REPAIR,            /*!< Repair the identification of the Controller Pak. */
     SAVE_LOAD_STEP_NEW_PAK,           /*!< Report that a different Controller Pak is inserted. */
@@ -129,6 +134,14 @@ enum {
 #define PAK_LOG(args)
 #else
 #define PAK_LOG(args) osSyncPrintf args
+#endif
+
+/* The choice of the save and load menu, which the other releases take from the row under the
+ * cursor. */
+#if TGR_REGION == TGR_REGION_US
+#define SAVE_LOAD_ACTION g_bSaveLoadChoice
+#else
+#define SAVE_LOAD_ACTION (items[g_bSaveLoadMenuCursor].action)
 #endif
 
 /* The original looks the profile of the vehicle up again for every field. */
@@ -528,8 +541,45 @@ void SaveGameDataToEeprom(void) {
 }
 #endif
 
-/* The Japanese and European bodies still come from the assembly. */
-#if TGR_REGION == TGR_REGION_US
+#if TGR_REGION != TGR_REGION_US
+/* The height of a row of the save and load menu. */
+#define SAVE_LOAD_ROW_HEIGHT(action)                                                               \
+    ((action) == SAVE_LOAD_ROW_GAP ? 6 : (action) == SAVE_LOAD_ROW_SMALL_GAP ? 3 : 12)
+
+/* Whether an action of the save and load menu loads, and needs the data it reads to be valid. */
+#define IS_GAME_PAK_LOAD(action)                                                                   \
+    ((action) == SAVE_LOAD_LOAD_SEASON_GAME_PAK || (action) == SAVE_LOAD_LOAD_OPTIONS_GAME_PAK)
+
+/* Add the bytes of the EEPROM data after the checksum to a sum. */
+#define SUM_EEPROM_DATA(sum, size)                                                                 \
+    {                                                                                              \
+        for (i = 4; i < (size); i++) {                                                             \
+            (sum) += g_pPakDataBuffer[i];                                                          \
+        }                                                                                          \
+    }
+
+/* Store the checksum of the EEPROM data at its start, and write it to the EEPROM. */
+#define WRITE_EEPROM_DATA(format, size)                                                            \
+    {                                                                                              \
+        checksum = EEPROM_CHECKSUM_SEED;                                                           \
+        SUM_EEPROM_DATA(checksum, (size));                                                         \
+        memcpy(g_pPakDataBuffer, &checksum, sizeof(checksum));                                     \
+        PAK_LOG(((format),                                                                         \
+                 checksum,                                                                         \
+                 g_pPakDataBuffer[0],                                                              \
+                 g_pPakDataBuffer[1],                                                              \
+                 g_pPakDataBuffer[2],                                                              \
+                 g_pPakDataBuffer[3],                                                              \
+                 (size)));                                                                         \
+        if (osEepromLongWrite(&g_SiMesgQueue, 0, g_pPakDataBuffer, (size)) != 0) {                 \
+            gControllerPakState = PFS_ERR_INVALID;                                                 \
+            g_bSaveLoadStep = SAVE_LOAD_STEP_ERROR;                                                \
+        } else {                                                                                   \
+            g_bSaveLoadStep = SAVE_LOAD_STEP_DONE;                                                 \
+        }                                                                                          \
+    }
+#endif
+
 void ProcessDataSaveLoadMenu(void) {
     /* TOP GEAR SEASON, TOP GEAR GHOST and TOP GEAR OPTIONS in the font of the Controller Pak. */
     u8 seasonName[16] = {0x2D,
@@ -581,25 +631,47 @@ void ProcessDataSaveLoadMenu(void) {
                           0x27,
                           0x2C};
     u8 extension[4] = {0};
+#if TGR_REGION == TGR_REGION_US
     const char *choices[SAVE_LOAD_CHOICES] = {"LOAD SEASON DATA",
                                               "SAVE SEASON DATA",
                                               "LOAD GHOST CAR DATA",
                                               "SAVE GHOST CAR DATA",
                                               "LOAD OPTIONS",
                                               "SAVE OPTIONS"};
+#else
+    /* The rows are set only when the menu opens; later frames read the pointer the stack slot
+     * still has from the frame before. GCC places it in a register, so it is static there. */
+#ifdef __GNUC__
+    static SaveLoadMenuItem *items;
+#else
+    SaveLoadMenuItem *items;
+#endif
+    SaveLoadMenuItem *item;
+    EepromSaveData *save;
+    s32 size;
+    u32 checksum;
+    s32 i;
+    s32 row;
+    s32 height;
+    u8 cursor;
+#endif
     PlayerProfile *other;
     u8 *noteName;
     s32 noteSize;
     s32 equipment[EQUIPMENT_FIELDS];
     s32 freeBlocks;
     s32 compressedSize;
+#if TGR_REGION == TGR_REGION_US
     s32 choice;
+#endif
     s32 textY;
     s32 top;
     s32 buttonY;
     u8 plugged;
 
+#if TGR_REGION == TGR_REGION_US
     g_wSerialInterfaceIdle = FALSE;
+#endif
     if (!g_bSaveLoadMenuInitialized) {
         g_bSaveLoadMenuInitialized = TRUE;
         g_bSaveLoadDataWasLoaded = FALSE;
@@ -607,10 +679,13 @@ void ProcessDataSaveLoadMenu(void) {
         gControllerPakState = 0;
         g_bSaveLoadFadeDelayFrames = 0;
         ResetHeap();
-        osViBlack(TRUE);
+#if TGR_REGION != TGR_REGION_US
+        g_dwKeepScreenBlanked = TRUE;
+#endif
+        BLANK_SCREEN();
         StartHighResFrame();
         FlushDisplayList();
-        osViBlack(TRUE);
+        BLANK_SCREEN();
         StartHighResFrame();
         FlushDisplayList();
         LoadTextureFromRom(&g_texBackground);
@@ -618,6 +693,7 @@ void ProcessDataSaveLoadMenu(void) {
         LoadTextureFromRom(&g_texButtonA);
         LoadTextureFromRom(&g_texButtonB);
         g_pPakDataBuffer = AllocHeapAligned(PAK_DATA_BUFFER_SIZE);
+#if TGR_REGION == TGR_REGION_US
         if (g_bSaveLoadEntryPoint == SAVE_LOAD_FROM_MAIN_MENU) {
             g_bSaveLoadChoice = SAVE_LOAD_LOAD_SEASON;
         } else if (g_bSaveLoadEntryPoint == SAVE_LOAD_FROM_SEASON) {
@@ -625,11 +701,32 @@ void ProcessDataSaveLoadMenu(void) {
         } else if (g_bSaveLoadEntryPoint == SAVE_LOAD_FROM_TIME_ATTACK) {
             g_bSaveLoadChoice = SAVE_LOAD_SAVE_GHOST;
         }
+#else
+        g_bSaveLoadSkipEepromProbe = FALSE;
+        g_bSaveLoadMenuCursor = 0;
+        if (g_bSaveLoadEntryPoint == SAVE_LOAD_FROM_MAIN_MENU) {
+            items = g_aLoadMenuItems;
+        } else if (g_bSaveLoadEntryPoint == SAVE_LOAD_FROM_SEASON) {
+            items = g_aSaveSeasonMenuItems;
+        } else if (g_bSaveLoadEntryPoint == SAVE_LOAD_FROM_TIME_ATTACK) {
+            items = g_aSaveGhostMenuItems;
+        }
+        /* The cursor starts below a heading. */
+        if (items[0].action == SAVE_LOAD_ROW_HEADING) {
+            g_bSaveLoadMenuCursor = 1;
+        }
+#endif
         g_bSaveLoadStep = SAVE_LOAD_STEP_FADE_IN;
         SetFadeTarget(1.0f, FADE_SECONDS);
+#if TGR_REGION != TGR_REGION_US
+        g_dwKeepScreenBlanked = FALSE;
+#endif
     }
 
     UpdateFrameTiming();
+#if TGR_REGION != TGR_REGION_US
+    g_wSerialInterfaceIdle = FALSE;
+#endif
     UpdateFadeTransitions();
     StartHighResFrame();
     SetupProjectionMatrix((f32)g_dwScreenWidth, (f32)g_dwScreenHeight);
@@ -639,7 +736,7 @@ void ProcessDataSaveLoadMenu(void) {
     DrawSpriteTinted(&g_texBackground, 0x60, 0, 0x80);
     DrawTexturedSprite(&g_texLogo, g_texLogo.originX, g_texLogo.originY + 8);
 
-    switch (g_bSaveLoadChoice) {
+    switch (SAVE_LOAD_ACTION) {
     case SAVE_LOAD_LOAD_SEASON:
     case SAVE_LOAD_SAVE_SEASON:
         noteName = seasonName;
@@ -666,6 +763,37 @@ void ProcessDataSaveLoadMenu(void) {
         DrawText("%ryDATA SAVE", 160, 41);
     }
 
+#if TGR_REGION != TGR_REGION_US
+    /* The rows are centred on the screen, the current one brighter, all dimmed while a message is
+     * shown. */
+    SetTextSize(13);
+    height = 0;
+    for (row = 0, item = items; item->text != NULL; item++) {
+        height += SAVE_LOAD_ROW_HEIGHT(item->action);
+    }
+    textY = 0x8B - (height >> 1);
+    for (row = 0, item = items; item->text != NULL; item++, row++) {
+        if (g_bSaveLoadInputEnabled) {
+            if (row == g_bSaveLoadMenuCursor) {
+                SetTextCustomColors(0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x00);
+            } else {
+                SetTextCustomColors(0xFF, 0xF5, 0x00, 0xC8, 0x00, 0x00);
+            }
+        } else if (row == g_bSaveLoadMenuCursor) {
+            SetTextCustomColors(0x80, 0x80, 0x80, 0x84, 0x7C, 0x00);
+        } else {
+            SetTextCustomColors(0x80, 0x78, 0x00, 0x64, 0x00, 0x00);
+        }
+        DrawText(item->text, 0x9E, textY);
+        textY += SAVE_LOAD_ROW_HEIGHT(item->action);
+    }
+    DrawTexturedSprite(&g_texButtonA, 0xDE, 0x1B0);
+    DrawTexturedSprite(&g_texButtonB, 0x156, 0x1B0);
+    SetTextAlignLeft();
+    SetTextSize(11);
+    DrawText("%wwSelect", 0x7E, g_dwScreenHeight * 19 / 20 - 3);
+    DrawText("%wwExit", 0xBA, g_dwScreenHeight * 19 / 20 - 3);
+#else
     if (g_bSaveLoadEntryPoint == SAVE_LOAD_FROM_MAIN_MENU) {
         /* The list of choices, the current one brighter, all dimmed while a message is shown. */
         SetTextSize(16);
@@ -711,6 +839,7 @@ void ProcessDataSaveLoadMenu(void) {
         DrawText("%wwYES", 0x84, g_dwScreenHeight * 19 / 20 - 3);
         DrawText("%wwNO", 0xB9, g_dwScreenHeight * 19 / 20 - 3);
     }
+#endif
 
     switch (g_bSaveLoadStep) {
     case SAVE_LOAD_STEP_FADE_IN:
@@ -721,24 +850,56 @@ void ProcessDataSaveLoadMenu(void) {
 
     case SAVE_LOAD_STEP_CHOOSE:
         g_bSaveLoadInputEnabled = TRUE;
+#if TGR_REGION != TGR_REGION_US
+        /* The cursor wraps at both ends and passes over the headings and the gaps. */
+        UpdateStickRepeat(CHOOSING_INPUT);
+        if (CHOOSING_INPUT->buttons & INPUT_DOWN) {
+            TransferFlags(CHOOSING_INPUT, INPUT_DOWN);
+            cursor = g_bSaveLoadMenuCursor;
+            do {
+                cursor++;
+                if (items[cursor].text == NULL) {
+                    cursor = 0;
+                }
+            } while (items[cursor].action == SAVE_LOAD_ROW_GAP ||
+                     items[cursor].action == SAVE_LOAD_ROW_SMALL_GAP ||
+                     items[cursor].action == SAVE_LOAD_ROW_HEADING);
+            g_bSaveLoadMenuCursor = cursor;
+        } else if (CHOOSING_INPUT->buttons & INPUT_UP) {
+            TransferFlags(CHOOSING_INPUT, INPUT_UP);
+            cursor = g_bSaveLoadMenuCursor;
+            do {
+                if (cursor == 0) {
+                    while (items[cursor].text != NULL) {
+                        cursor++;
+                    }
+                }
+                cursor--;
+            } while (items[cursor].action == SAVE_LOAD_ROW_GAP ||
+                     items[cursor].action == SAVE_LOAD_ROW_SMALL_GAP ||
+                     items[cursor].action == SAVE_LOAD_ROW_HEADING);
+            g_bSaveLoadMenuCursor = cursor;
+        }
+#else
         if (g_bSaveLoadEntryPoint == SAVE_LOAD_FROM_MAIN_MENU) {
             UpdateStickRepeat(CHOOSING_INPUT);
             if (CHOOSING_INPUT->buttons & INPUT_DOWN) {
                 TransferFlags(CHOOSING_INPUT, INPUT_DOWN);
-                if (g_bSaveLoadChoice == SAVE_LOAD_SAVE_OPTIONS) {
+                if (SAVE_LOAD_ACTION == SAVE_LOAD_SAVE_OPTIONS) {
                     g_bSaveLoadChoice = SAVE_LOAD_LOAD_SEASON;
                 } else {
                     g_bSaveLoadChoice++;
                 }
             } else if (CHOOSING_INPUT->buttons & INPUT_UP) {
                 TransferFlags(CHOOSING_INPUT, INPUT_UP);
-                if (g_bSaveLoadChoice == SAVE_LOAD_LOAD_SEASON) {
+                if (SAVE_LOAD_ACTION == SAVE_LOAD_LOAD_SEASON) {
                     g_bSaveLoadChoice = SAVE_LOAD_SAVE_OPTIONS;
                 } else {
                     g_bSaveLoadChoice--;
                 }
             }
         }
+#endif
         if (CHOOSING_INPUT->buttons & INPUT_A) {
             TransferFlags(CHOOSING_INPUT, INPUT_A);
             g_bSaveLoadStep = SAVE_LOAD_STEP_QUIET;
@@ -756,10 +917,159 @@ void ProcessDataSaveLoadMenu(void) {
 
     case SAVE_LOAD_STEP_WAIT_QUIET:
         if (HasSfxFadeFinished() && g_bSaveLoadFadeDelayFrames++ == 4) {
+#if TGR_REGION == TGR_REGION_US
             g_bSaveLoadStep = SAVE_LOAD_STEP_MOUNT;
             g_bSaveLoadFadeDelayFrames = 0;
+#else
+            g_bSaveLoadFadeDelayFrames = 0;
+            if (SAVE_LOAD_ACTION < SAVE_LOAD_CHOICES) {
+                g_bSaveLoadStep = SAVE_LOAD_STEP_MOUNT;
+            } else if (SAVE_LOAD_ACTION < SAVE_LOAD_ERASE_GAME_PAK) {
+                g_bSaveLoadStep = SAVE_LOAD_STEP_GAME_PAK;
+            } else if (SAVE_LOAD_ACTION == SAVE_LOAD_ERASE_GAME_PAK) {
+                g_bSaveLoadStep = SAVE_LOAD_STEP_CONFIRM_ERASE;
+            } else {
+                g_bSaveLoadStep = SAVE_LOAD_STEP_FADE_OUT;
+            }
+#endif
         }
         break;
+
+#if TGR_REGION != TGR_REGION_US
+    case SAVE_LOAD_STEP_GAME_PAK:
+        g_bSaveLoadRumbleSwapPending = FALSE;
+        if (!g_bSaveLoadSkipEepromProbe && !osEepromProbe(&g_SiMesgQueue)) {
+            gControllerPakState = PFS_ERR_NOPACK;
+            g_bSaveLoadStep = SAVE_LOAD_STEP_ERROR;
+            break;
+        }
+        save = (EepromSaveData *)(g_pPakDataBuffer + 4);
+        size = ((u8 *)save - g_pPakDataBuffer + sizeof(EepromSaveData) + 7) & ~7;
+        /* After the player confirmed the overwrite the data read before is written back. */
+        if (!g_bSaveLoadSkipEepromProbe) {
+            if (osEepromLongRead(&g_SiMesgQueue, 0, g_pPakDataBuffer, size) != 0 &&
+                IS_GAME_PAK_LOAD(SAVE_LOAD_ACTION)) {
+                gControllerPakState = PFS_ERR_INVALID;
+                g_bSaveLoadStep = SAVE_LOAD_STEP_ERROR;
+                break;
+            }
+            memcpy(&checksum, g_pPakDataBuffer, sizeof(checksum));
+            {
+                u32 sum = EEPROM_CHECKSUM_SEED;
+
+                SUM_EEPROM_DATA(sum, size);
+                if (sum != checksum) {
+                    PAK_LOG(("checksum fail (%08x vs %08x/%02x%02x%02x%02x) (%d)\n",
+                             sum,
+                             checksum,
+                             g_pPakDataBuffer[0],
+                             g_pPakDataBuffer[1],
+                             g_pPakDataBuffer[2],
+                             g_pPakDataBuffer[3],
+                             size));
+                    if (IS_GAME_PAK_LOAD(SAVE_LOAD_ACTION)) {
+                        gControllerPakState = PFS_ERR_INVALID;
+                        g_bSaveLoadStep = SAVE_LOAD_STEP_ERROR;
+                        break;
+                    }
+                    /* A save over invalid data starts from the current data. */
+                    memcpy(&save->profile, g_aVehicles[0].profile, sizeof(PlayerProfile));
+                    GET_EQUIPMENT(save->equipment, g_aVehicles[1].profile);
+                    memcpy(&save->options, &g_OptionSettings, sizeof(OptionSettings));
+                } else {
+                    PAK_LOG(("checksum pass\n"));
+                    /* A season already saved is overwritten only once the player confirms. */
+                    if (SAVE_LOAD_ACTION == SAVE_LOAD_SAVE_SEASON_GAME_PAK) {
+                        g_bSaveLoadStep = SAVE_LOAD_STEP_CONFIRM_OVERWRITE;
+                        break;
+                    }
+                }
+            }
+        }
+        g_bSaveLoadSkipEepromProbe = FALSE;
+        switch (SAVE_LOAD_ACTION) {
+        case SAVE_LOAD_LOAD_SEASON_GAME_PAK:
+            memcpy(g_aVehicles[0].profile, &save->profile, sizeof(PlayerProfile));
+            memcpy(g_aVehicles[1].profile, &save->profile, sizeof(PlayerProfile));
+            SET_EQUIPMENT(1, save->equipment);
+            g_bSaveLoadStep = SAVE_LOAD_STEP_FADE_OUT;
+            g_bSaveLoadDataWasLoaded = TRUE;
+            break;
+        case SAVE_LOAD_LOAD_OPTIONS_GAME_PAK:
+            g_aVehicles[0].profile->handling = save->profile.handling;
+            g_aVehicles[0].profile->transmission = save->profile.transmission;
+            g_aVehicles[0].profile->tires = save->profile.tires;
+            g_aVehicles[0].profile->suspension = save->profile.suspension;
+            g_aVehicles[0].profile->controllerLayout = save->profile.controllerLayout;
+            SET_EQUIPMENT(1, save->equipment);
+            memcpy(&g_OptionSettings, &save->options, sizeof(OptionSettings));
+            ApplyVolumeSettings();
+            g_bSaveLoadDataWasLoaded = TRUE;
+            g_bSaveLoadStep = SAVE_LOAD_STEP_DONE;
+            break;
+        case SAVE_LOAD_SAVE_OPTIONS_GAME_PAK:
+            save->profile.handling = g_aVehicles[0].profile->handling;
+            save->profile.transmission = g_aVehicles[0].profile->transmission;
+            save->profile.tires = g_aVehicles[0].profile->tires;
+            save->profile.suspension = g_aVehicles[0].profile->suspension;
+            save->profile.controllerLayout = g_aVehicles[0].profile->controllerLayout;
+            memcpy(&save->options, &g_OptionSettings, sizeof(OptionSettings));
+            GET_EQUIPMENT(save->equipment, g_aVehicles[1].profile);
+            WRITE_EEPROM_DATA("checksum is (%08x/%02x%02x%02x%02x) (%d)\n", size);
+            break;
+        case SAVE_LOAD_SAVE_SEASON_GAME_PAK:
+            memcpy(&save->profile, g_aVehicles[0].profile, sizeof(PlayerProfile));
+            GET_EQUIPMENT(save->equipment, g_aVehicles[1].profile);
+            WRITE_EEPROM_DATA("checksum is (%08x/%02x%02x%02x%02x) (%d)\n", size);
+            break;
+        }
+        break;
+
+    case SAVE_LOAD_STEP_ERASE:
+        g_bSaveLoadRumbleSwapPending = FALSE;
+        if (!osEepromProbe(&g_SiMesgQueue)) {
+            gControllerPakState = PFS_ERR_NOPACK;
+            g_bSaveLoadStep = SAVE_LOAD_STEP_ERROR;
+            break;
+        }
+        save = (EepromSaveData *)(g_pPakDataBuffer + 4);
+        size = ((u8 *)save - g_pPakDataBuffer + sizeof(EepromSaveData) + 7) & ~7;
+        InitPlayerVehicleSlot(&g_aVehicles[0]);
+        InitPlayerVehicleSlot(&g_aVehicles[1]);
+        memcpy(&save->profile, g_aVehicles[0].profile, sizeof(PlayerProfile));
+        GET_EQUIPMENT(save->equipment, g_aVehicles[1].profile);
+        memcpy(&save->options, &g_OptionSettings, sizeof(OptionSettings));
+        WRITE_EEPROM_DATA("checksum is (%08x/%02x%02x%02x%02x) (%d)\n", size);
+        break;
+
+    case SAVE_LOAD_STEP_CONFIRM_ERASE:
+        g_bSaveLoadInputEnabled = FALSE;
+        buttonY = 0x139 - g_texButtonA.width;
+        DRAW_MESSAGE_BOX(0x73, 0xBB, 0x19A, 0x86);
+        SetTextAlignLeft();
+        SetTextStyleNormal();
+        SetTextCustomColors(0xFF, 0xFF, 0xFF, 0xFF, 0xF5, 0x00);
+        SetTextSize(13);
+        DrawText("ABOUT TO ERASE SEASON DATA AND", 0x41, 0x6C);
+        DrawText("OPTION DATA STORED ON GAME PAK.", 0x41, 0x7A);
+        DrawText("DO YOU REALLY WANT TO DO THIS?", 0x41, 0x88);
+        SetTextSize(10);
+        textY = (buttonY + 0x12) >> 1;
+        DrawText("%wwOK", (u32)(g_texButtonA.width + 0x8B) >> 1, textY);
+        DrawText("%wwCANCEL", (u32)(g_texButtonB.height + 0x19D) >> 1, textY);
+        DrawTexturedSprite(&g_texButtonA, 0x85, buttonY);
+        DrawTexturedSprite(&g_texButtonB, 0x197, buttonY);
+        if (CHOOSING_INPUT->buttons & INPUT_A) {
+            TransferFlags(CHOOSING_INPUT, INPUT_A);
+            g_bSaveLoadStep = SAVE_LOAD_STEP_ERASE;
+        } else if (CHOOSING_INPUT->buttons & INPUT_B) {
+            TransferFlags(CHOOSING_INPUT, INPUT_B);
+            FadeSfxTo(1.0f, FADE_SECONDS);
+            FadeMusicTo(1.0f, FADE_SECONDS);
+            g_bSaveLoadStep = SAVE_LOAD_STEP_CHOOSE;
+        }
+        break;
+#endif
 
     case SAVE_LOAD_STEP_MOUNT:
         osPfsIsPlug(&g_SiMesgQueue, &plugged);
@@ -845,7 +1155,7 @@ void ProcessDataSaveLoadMenu(void) {
                                                 &g_dwSaveLoadNoteIndex);
         }
         if (gControllerPakState == 0) {
-            switch (g_bSaveLoadChoice) {
+            switch (SAVE_LOAD_ACTION) {
             case SAVE_LOAD_LOAD_SEASON:
             case SAVE_LOAD_LOAD_GHOST:
             case SAVE_LOAD_LOAD_OPTIONS:
@@ -865,9 +1175,9 @@ void ProcessDataSaveLoadMenu(void) {
             }
         } else if (gControllerPakState == PFS_ERR_INVALID) {
             /* The note is missing: an error to load it, and made to save it. */
-            if (g_bSaveLoadChoice == SAVE_LOAD_LOAD_SEASON ||
-                g_bSaveLoadChoice == SAVE_LOAD_LOAD_GHOST ||
-                g_bSaveLoadChoice == SAVE_LOAD_LOAD_OPTIONS) {
+            if (SAVE_LOAD_ACTION == SAVE_LOAD_LOAD_SEASON ||
+                SAVE_LOAD_ACTION == SAVE_LOAD_LOAD_GHOST ||
+                SAVE_LOAD_ACTION == SAVE_LOAD_LOAD_OPTIONS) {
                 g_bSaveLoadStep = SAVE_LOAD_STEP_ERROR;
             } else {
                 g_bSaveLoadStep = SAVE_LOAD_STEP_ALLOCATE;
@@ -881,14 +1191,14 @@ void ProcessDataSaveLoadMenu(void) {
         if (gControllerPakState != 0) {
             break;
         }
-        if (g_bSaveLoadChoice == SAVE_LOAD_LOAD_SEASON) {
+        if (SAVE_LOAD_ACTION == SAVE_LOAD_LOAD_SEASON) {
             osSyncPrintf("Loading season data...\n");
-        } else if (g_bSaveLoadChoice == SAVE_LOAD_LOAD_GHOST) {
+        } else if (SAVE_LOAD_ACTION == SAVE_LOAD_LOAD_GHOST) {
             osSyncPrintf("Loading compressed ghost data...\n");
-        } else if (g_bSaveLoadChoice == SAVE_LOAD_LOAD_OPTIONS) {
+        } else if (SAVE_LOAD_ACTION == SAVE_LOAD_LOAD_OPTIONS) {
             osSyncPrintf("Loading Options...\n");
         }
-        if (g_bSaveLoadChoice != SAVE_LOAD_LOAD_OPTIONS) {
+        if (SAVE_LOAD_ACTION != SAVE_LOAD_LOAD_OPTIONS) {
             gControllerPakState = osPfsReadWriteFile(&g_aPakPfs[g_dwMenuChoosingPlayer],
                                                      g_dwSaveLoadNoteIndex,
                                                      PFS_READ,
@@ -907,7 +1217,7 @@ void ProcessDataSaveLoadMenu(void) {
             g_bSaveLoadStep = SAVE_LOAD_STEP_ERROR;
             break;
         }
-        if (g_bSaveLoadChoice == SAVE_LOAD_LOAD_SEASON) {
+        if (SAVE_LOAD_ACTION == SAVE_LOAD_LOAD_SEASON) {
             /* Both players take the season, but the other player keeps the equipment of the car
              * when the main menu opened the menu. */
             if (g_bSaveLoadEntryPoint == SAVE_LOAD_FROM_MAIN_MENU) {
@@ -928,7 +1238,7 @@ void ProcessDataSaveLoadMenu(void) {
                 g_bSaveLoadStep = SAVE_LOAD_STEP_DONE;
             }
             g_bSaveLoadDataWasLoaded = TRUE;
-        } else if (g_bSaveLoadChoice == SAVE_LOAD_LOAD_GHOST) {
+        } else if (SAVE_LOAD_ACTION == SAVE_LOAD_LOAD_GHOST) {
             PAK_LOG(("Extracting ghost data...\n"));
             g_dwGhostRecordingSize = DecompressInterleavedRle(
                 g_abGhostRecording, GHOST_RECORDING_CAPACITY, g_pPakDataBuffer, GHOST_CHANNELS);
@@ -943,7 +1253,7 @@ void ProcessDataSaveLoadMenu(void) {
                 g_bSaveLoadStep = SAVE_LOAD_STEP_DONE;
             }
             g_bSaveLoadDataWasLoaded = TRUE;
-        } else if (g_bSaveLoadChoice == SAVE_LOAD_LOAD_OPTIONS) {
+        } else if (SAVE_LOAD_ACTION == SAVE_LOAD_LOAD_OPTIONS) {
             memcpy(&g_OptionSettings, g_pPakDataBuffer, sizeof(OptionSettings));
             gControllerPakState = osPfsReadWriteFile(&g_aPakPfs[g_dwMenuChoosingPlayer],
                                                      g_dwSaveLoadNoteIndex,
@@ -974,11 +1284,11 @@ void ProcessDataSaveLoadMenu(void) {
             g_bSaveLoadStep = SAVE_LOAD_STEP_ERROR;
             break;
         }
-        if (g_bSaveLoadChoice == SAVE_LOAD_SAVE_SEASON) {
+        if (SAVE_LOAD_ACTION == SAVE_LOAD_SAVE_SEASON) {
             osSyncPrintf("Allocating %d bytes for season data...\n", noteSize);
-        } else if (g_bSaveLoadChoice == SAVE_LOAD_SAVE_GHOST) {
+        } else if (SAVE_LOAD_ACTION == SAVE_LOAD_SAVE_GHOST) {
             osSyncPrintf("Allocating %d bytes for ghost data...\n", noteSize);
-        } else if (g_bSaveLoadChoice == SAVE_LOAD_SAVE_OPTIONS) {
+        } else if (SAVE_LOAD_ACTION == SAVE_LOAD_SAVE_OPTIONS) {
             osSyncPrintf("Allocating %d bytes for options...\n", noteSize);
         }
         gControllerPakState = osPfsAllocateFile(&g_aPakPfs[g_dwMenuChoosingPlayer],
@@ -1027,9 +1337,18 @@ void ProcessDataSaveLoadMenu(void) {
         DrawTexturedSprite(&g_texButtonB, 0x135, buttonY);
         if (CHOOSING_INPUT->buttons & INPUT_A) {
             TransferFlags(CHOOSING_INPUT, INPUT_A);
+#if TGR_REGION != TGR_REGION_US
+            /* The EEPROM step writes the data it already read. */
+            if (SAVE_LOAD_ACTION == SAVE_LOAD_SAVE_SEASON_GAME_PAK) {
+                g_bSaveLoadStep = SAVE_LOAD_STEP_GAME_PAK;
+                g_bSaveLoadSkipEepromProbe = TRUE;
+                break;
+            }
+#endif
             g_bSaveLoadStep = SAVE_LOAD_STEP_SAVE;
         } else if (CHOOSING_INPUT->buttons & INPUT_B) {
             TransferFlags(CHOOSING_INPUT, INPUT_B);
+#if TGR_REGION == TGR_REGION_US
             if (g_bSaveLoadEntryPoint == SAVE_LOAD_FROM_MAIN_MENU) {
                 FadeSfxTo(1.0f, FADE_SECONDS);
                 FadeMusicTo(1.0f, FADE_SECONDS);
@@ -1037,11 +1356,16 @@ void ProcessDataSaveLoadMenu(void) {
             } else {
                 g_bSaveLoadStep = SAVE_LOAD_STEP_FADE_OUT;
             }
+#else
+            FadeSfxTo(1.0f, FADE_SECONDS);
+            FadeMusicTo(1.0f, FADE_SECONDS);
+            g_bSaveLoadStep = SAVE_LOAD_STEP_CHOOSE;
+#endif
         }
         break;
 
     case SAVE_LOAD_STEP_SAVE:
-        if (g_bSaveLoadChoice == SAVE_LOAD_SAVE_SEASON) {
+        if (SAVE_LOAD_ACTION == SAVE_LOAD_SAVE_SEASON) {
             osSyncPrintf("Saving season data...\n");
             memcpy(g_pPakDataBuffer, g_aVehicles[0].profile, sizeof(PlayerProfile));
             gControllerPakState = osPfsReadWriteFile(&g_aPakPfs[g_dwMenuChoosingPlayer],
@@ -1056,7 +1380,7 @@ void ProcessDataSaveLoadMenu(void) {
             } else {
                 g_bSaveLoadStep = SAVE_LOAD_STEP_ERROR;
             }
-        } else if (g_bSaveLoadChoice == SAVE_LOAD_SAVE_GHOST) {
+        } else if (SAVE_LOAD_ACTION == SAVE_LOAD_SAVE_GHOST) {
             osSyncPrintf("Compressing ghost data...\n");
             compressedSize = CompressRleChannels(g_pPakDataBuffer,
                                                  PAK_DATA_BUFFER_SIZE,
@@ -1082,7 +1406,7 @@ void ProcessDataSaveLoadMenu(void) {
             } else {
                 g_bSaveLoadStep = SAVE_LOAD_STEP_ERROR;
             }
-        } else if (g_bSaveLoadChoice == SAVE_LOAD_SAVE_OPTIONS) {
+        } else if (SAVE_LOAD_ACTION == SAVE_LOAD_SAVE_OPTIONS) {
             osSyncPrintf("Saving options...\n");
             memcpy(g_pPakDataBuffer, &g_OptionSettings, sizeof(OptionSettings));
             gControllerPakState = osPfsReadWriteFile(&g_aPakPfs[g_dwMenuChoosingPlayer],
@@ -1121,17 +1445,41 @@ void ProcessDataSaveLoadMenu(void) {
             break;
         case PFS_ERR_NOPACK:
         case PFS_ERR_DEVICE:
+#if TGR_REGION != TGR_REGION_US
+            DRAW_MESSAGE_BOX(0x50, 0xD8, 0x1E0, 0x4C);
+            if (SAVE_LOAD_ACTION == SAVE_LOAD_LOAD_SEASON_GAME_PAK ||
+                SAVE_LOAD_ACTION == SAVE_LOAD_SAVE_SEASON_GAME_PAK ||
+                SAVE_LOAD_ACTION == SAVE_LOAD_LOAD_OPTIONS_GAME_PAK ||
+                SAVE_LOAD_ACTION == SAVE_LOAD_SAVE_OPTIONS_GAME_PAK) {
+                DrawText("CANNOT ACCESS GAME PAK SAVE AREA.", 0x30, 0x7C);
+            } else {
+                DrawText("CONTROLLER PAK NOT FOUND.", 0x30, 0x7C);
+            }
+            switch (SAVE_LOAD_ACTION) {
+            case SAVE_LOAD_LOAD_SEASON:
+            case SAVE_LOAD_LOAD_GHOST:
+            case SAVE_LOAD_LOAD_OPTIONS:
+            case SAVE_LOAD_LOAD_SEASON_GAME_PAK:
+            case SAVE_LOAD_LOAD_OPTIONS_GAME_PAK:
+                DrawText("DATA CANNOT BE LOADED.", 0x30, 0x8A);
+                break;
+            default:
+                DrawText("DATA CANNOT BE SAVED.", 0x30, 0x8A);
+                break;
+            }
+#else
             DRAW_MESSAGE_BOX(0x94, 0xD8, 0x158, 0x4C);
             DrawText("CONTROLLER PAK NOT FOUND.", 0x52, 0x7C);
-            if (g_bSaveLoadChoice == SAVE_LOAD_LOAD_SEASON ||
-                g_bSaveLoadChoice == SAVE_LOAD_LOAD_GHOST ||
-                g_bSaveLoadChoice == SAVE_LOAD_LOAD_OPTIONS) {
+            if (SAVE_LOAD_ACTION == SAVE_LOAD_LOAD_SEASON ||
+                SAVE_LOAD_ACTION == SAVE_LOAD_LOAD_GHOST ||
+                SAVE_LOAD_ACTION == SAVE_LOAD_LOAD_OPTIONS) {
                 DrawText("DATA CANNOT BE LOADED.", 0x52, 0x8A);
-            } else if (g_bSaveLoadChoice == SAVE_LOAD_SAVE_SEASON ||
-                       g_bSaveLoadChoice == SAVE_LOAD_SAVE_GHOST ||
-                       g_bSaveLoadChoice == SAVE_LOAD_SAVE_OPTIONS) {
+            } else if (SAVE_LOAD_ACTION == SAVE_LOAD_SAVE_SEASON ||
+                       SAVE_LOAD_ACTION == SAVE_LOAD_SAVE_GHOST ||
+                       SAVE_LOAD_ACTION == SAVE_LOAD_SAVE_OPTIONS) {
                 DrawText("DATA CANNOT BE SAVED.", 0x52, 0x8A);
             }
+#endif
             break;
         case PAK_STATE_RUMBLE_PAK:
             DRAW_SWAP_FOR_CONTROLLER_PAK_MESSAGE(
@@ -1140,11 +1488,11 @@ void ProcessDataSaveLoadMenu(void) {
         case PFS_DATA_FULL:
         case PFS_DIR_FULL:
             DRAW_MESSAGE_BOX(0xA5, 0x9F, 0x136, 0xBD);
-            if (g_bSaveLoadChoice == SAVE_LOAD_SAVE_SEASON) {
+            if (SAVE_LOAD_ACTION == SAVE_LOAD_SAVE_SEASON) {
                 DRAW_INSUFFICIENT_PAGES_MESSAGE(0x5F, "TWO PAGES AND ONE NOTE", "SEASON DATA.");
-            } else if (g_bSaveLoadChoice == SAVE_LOAD_SAVE_GHOST) {
+            } else if (SAVE_LOAD_ACTION == SAVE_LOAD_SAVE_GHOST) {
                 DRAW_INSUFFICIENT_PAGES_MESSAGE(0x5F, "58 PAGES AND ONE NOTE", "GHOST CAR DATA.");
-            } else if (g_bSaveLoadChoice == SAVE_LOAD_SAVE_OPTIONS) {
+            } else if (SAVE_LOAD_ACTION == SAVE_LOAD_SAVE_OPTIONS) {
                 DRAW_INSUFFICIENT_PAGES_MESSAGE(0x5F, "ONE PAGE AND ONE NOTE", "OPTIONS.");
             }
             break;
@@ -1159,15 +1507,39 @@ void ProcessDataSaveLoadMenu(void) {
             DRAW_SHORT_MESSAGE(0xBF, 0x102, 0x67, "CONTROLLER ERROR", "HAS BEEN DETECTED!");
             break;
         case PFS_ERR_INVALID:
-            if (g_bSaveLoadChoice == SAVE_LOAD_LOAD_SEASON ||
-                g_bSaveLoadChoice == SAVE_LOAD_LOAD_GHOST ||
-                g_bSaveLoadChoice == SAVE_LOAD_LOAD_OPTIONS) {
+#if TGR_REGION != TGR_REGION_US
+            switch (SAVE_LOAD_ACTION) {
+            case SAVE_LOAD_LOAD_SEASON:
+            case SAVE_LOAD_LOAD_GHOST:
+            case SAVE_LOAD_LOAD_OPTIONS:
                 DRAW_SHORT_MESSAGE(0xAD, 0x125, 0x5E, "SAVED DATA NOT FOUND", "IN CONTROLLER PAK.");
-            } else if (g_bSaveLoadChoice == SAVE_LOAD_SAVE_SEASON ||
-                       g_bSaveLoadChoice == SAVE_LOAD_SAVE_GHOST ||
-                       g_bSaveLoadChoice == SAVE_LOAD_SAVE_OPTIONS) {
+                break;
+            case SAVE_LOAD_SAVE_SEASON:
+            case SAVE_LOAD_SAVE_GHOST:
+            case SAVE_LOAD_SAVE_OPTIONS:
+                DRAW_SHORT_MESSAGE(0xB6, 0x114, 0x63, "UNABLE TO SAVE DATA", "TO CONTROLLER PAK.");
+                break;
+            case SAVE_LOAD_LOAD_SEASON_GAME_PAK:
+            case SAVE_LOAD_LOAD_OPTIONS_GAME_PAK:
+                DRAW_SHORT_MESSAGE(0xAD, 0x125, 0x5E, "SAVED DATA NOT FOUND", "IN GAME PAK.");
+                break;
+            case SAVE_LOAD_SAVE_SEASON_GAME_PAK:
+            case SAVE_LOAD_SAVE_OPTIONS_GAME_PAK:
+                DRAW_SHORT_MESSAGE(
+                    0xAD, 0x125, 0x5E, "ERROR WRITING TO THE", "GAME PAK SAVE AREA.");
+                break;
+            }
+#else
+            if (SAVE_LOAD_ACTION == SAVE_LOAD_LOAD_SEASON ||
+                SAVE_LOAD_ACTION == SAVE_LOAD_LOAD_GHOST ||
+                SAVE_LOAD_ACTION == SAVE_LOAD_LOAD_OPTIONS) {
+                DRAW_SHORT_MESSAGE(0xAD, 0x125, 0x5E, "SAVED DATA NOT FOUND", "IN CONTROLLER PAK.");
+            } else if (SAVE_LOAD_ACTION == SAVE_LOAD_SAVE_SEASON ||
+                       SAVE_LOAD_ACTION == SAVE_LOAD_SAVE_GHOST ||
+                       SAVE_LOAD_ACTION == SAVE_LOAD_SAVE_OPTIONS) {
                 DRAW_SHORT_MESSAGE(0xB6, 0x114, 0x63, "UNABLE TO SAVE DATA", "TO CONTROLLER PAK.");
             }
+#endif
             break;
         case PFS_ERR_NEW_PACK:
             DRAW_NEW_PAK_MESSAGE(0xBB, 0x6D);
@@ -1206,11 +1578,17 @@ void ProcessDataSaveLoadMenu(void) {
         SetTextStyleNormal();
         SetTextSize(12);
         top = g_bSaveLoadEntryPoint != SAVE_LOAD_FROM_MAIN_MENU ? 0xCE : 0xD9;
-        switch (g_bSaveLoadChoice) {
+        switch (SAVE_LOAD_ACTION) {
         case SAVE_LOAD_LOAD_SEASON:
+#if TGR_REGION != TGR_REGION_US
+        case SAVE_LOAD_LOAD_SEASON_GAME_PAK:
+#endif
             DRAW_DONE_MESSAGE(0xE2, 0xBC, top, "%ywSEASON DATA", "%ywLOADED OK!");
             break;
         case SAVE_LOAD_SAVE_SEASON:
+#if TGR_REGION != TGR_REGION_US
+        case SAVE_LOAD_SAVE_SEASON_GAME_PAK:
+#endif
             DRAW_DONE_MESSAGE(0xE2, 0xBC, top, "%ywSEASON DATA", "%ywSAVED OK!");
             break;
         case SAVE_LOAD_LOAD_GHOST:
@@ -1220,19 +1598,40 @@ void ProcessDataSaveLoadMenu(void) {
             DRAW_DONE_MESSAGE(0xD8, 0xD0, top, "%ywGHOST CAR DATA", "%ywSAVED OK!");
             break;
         case SAVE_LOAD_LOAD_OPTIONS:
+#if TGR_REGION != TGR_REGION_US
+        case SAVE_LOAD_LOAD_OPTIONS_GAME_PAK:
+#endif
             DRAW_MESSAGE_BOX(0xC3, 0xE7, 0xFA, 0x2E);
             DrawText("%ywOPTIONS LOADED OK!", 0x9F, 0x83);
             break;
         case SAVE_LOAD_SAVE_OPTIONS:
+#if TGR_REGION != TGR_REGION_US
+        case SAVE_LOAD_SAVE_OPTIONS_GAME_PAK:
+#endif
             DRAW_MESSAGE_BOX(0xC3, 0xE7, 0xFA, 0x2E);
             DrawText("%ywOPTIONS SAVED OK!", 0x9F, 0x83);
             break;
+#if TGR_REGION != TGR_REGION_US
+        case SAVE_LOAD_ERASE_GAME_PAK:
+            DRAW_MESSAGE_BOX(0xC3, 0xE7, 0xFA, 0x2E);
+            DrawText("%ywDONE!", 0x9F, 0x83);
+            break;
+#endif
         default:
             g_bSaveLoadStep = SAVE_LOAD_STEP_CHOOSE;
             break;
         }
         if (CHOOSING_INPUT->buttons & DISMISS_BUTTONS) {
             TransferFlags(CHOOSING_INPUT, DISMISS_BUTTONS);
+#if TGR_REGION != TGR_REGION_US
+            if (g_bSaveLoadRumbleSwapPending) {
+                g_bSaveLoadStep = SAVE_LOAD_STEP_RUMBLE_PAK;
+            } else {
+                FadeSfxTo(1.0f, FADE_SECONDS);
+                FadeMusicTo(1.0f, FADE_SECONDS);
+                g_bSaveLoadStep = SAVE_LOAD_STEP_CHOOSE;
+            }
+#else
             if (g_bSaveLoadEntryPoint == SAVE_LOAD_FROM_MAIN_MENU) {
                 if (g_bSaveLoadRumbleSwapPending) {
                     g_bSaveLoadStep = SAVE_LOAD_STEP_RUMBLE_PAK;
@@ -1246,18 +1645,38 @@ void ProcessDataSaveLoadMenu(void) {
             } else {
                 g_bSaveLoadStep = SAVE_LOAD_STEP_FADE_OUT;
             }
+#endif
         }
         break;
 
     case SAVE_LOAD_STEP_RUMBLE_PAK:
         g_bSaveLoadInputEnabled = FALSE;
+#if TGR_REGION != TGR_REGION_US
+        SetTextStyleNormal();
+        SetTextAlignLeft();
+        SetTextCustomColors(0xFF, 0xFF, 0xFF, 0xFF, 0xF5, 0x00);
+        DRAW_MESSAGE_BOX(0x73, 0xB2, 0x19A, 0x98);
+        SetTextSize(MESSAGE_TEXT_SIZE);
+        DRAW_SWAP_FOR_RUMBLE_PAK_TEXT(0x69);
+#else
         SET_MESSAGE_TEXT();
         DRAW_SWAP_FOR_RUMBLE_PAK_MESSAGE(0x72, 0xB2, 0x19C, 0x69);
+#endif
         if (CHOOSING_INPUT->buttons & INPUT_A) {
             TransferFlags(CHOOSING_INPUT, INPUT_A);
+#if TGR_REGION != TGR_REGION_US
+            if (SAVE_LOAD_ACTION == SAVE_LOAD_LOAD_SEASON ||
+                SAVE_LOAD_ACTION == SAVE_LOAD_LOAD_GHOST) {
+                g_bSaveLoadStep = SAVE_LOAD_STEP_FADE_OUT;
+            } else {
+                FadeSfxTo(1.0f, FADE_SECONDS);
+                FadeMusicTo(1.0f, FADE_SECONDS);
+                g_bSaveLoadStep = SAVE_LOAD_STEP_CHOOSE;
+            }
+#else
             if (g_bSaveLoadEntryPoint == SAVE_LOAD_FROM_MAIN_MENU) {
-                if (g_bSaveLoadChoice == SAVE_LOAD_LOAD_SEASON ||
-                    g_bSaveLoadChoice == SAVE_LOAD_LOAD_GHOST) {
+                if (SAVE_LOAD_ACTION == SAVE_LOAD_LOAD_SEASON ||
+                    SAVE_LOAD_ACTION == SAVE_LOAD_LOAD_GHOST) {
                     g_bSaveLoadStep = SAVE_LOAD_STEP_FADE_OUT;
                 } else {
                     FadeSfxTo(1.0f, FADE_SECONDS);
@@ -1267,6 +1686,7 @@ void ProcessDataSaveLoadMenu(void) {
             } else {
                 g_bSaveLoadStep = SAVE_LOAD_STEP_FADE_OUT;
             }
+#endif
             g_bSaveLoadRumbleSwapPending = FALSE;
             if (osMotorInit(&g_SiMesgQueue,
                             &g_aContPfs[g_dwMenuChoosingPlayer],
@@ -1299,11 +1719,33 @@ void ProcessDataSaveLoadMenu(void) {
         ClearScreen(0, 0, 0);
         FlushDisplayList();
         gControllerPakState = 0;
-        if (g_bSaveLoadChoice == SAVE_LOAD_LOAD_SEASON && g_bSaveLoadDataWasLoaded) {
+#if TGR_REGION != TGR_REGION_US
+        if ((SAVE_LOAD_ACTION == SAVE_LOAD_LOAD_SEASON ||
+             SAVE_LOAD_ACTION == SAVE_LOAD_LOAD_SEASON_GAME_PAK) &&
+            g_bSaveLoadDataWasLoaded) {
+            g_bSaveLoadDataWasLoaded = FALSE;
+            SetCurrentScreenCallback(StartChampionshipRace);
+        } else if (SAVE_LOAD_ACTION == SAVE_LOAD_LOAD_GHOST && g_bSaveLoadDataWasLoaded) {
+            g_bSaveLoadDataWasLoaded = FALSE;
+            SetCurrentScreenCallback(StartTimeAttack);
+        } else {
+            g_bSaveLoadMenuCursor = 0;
+            if (g_bSaveLoadEntryPoint == SAVE_LOAD_FROM_MAIN_MENU) {
+                SetCurrentScreenCallback(ProcessMainMenu);
+            } else if (g_bSaveLoadEntryPoint == SAVE_LOAD_FROM_SEASON) {
+                SetCurrentScreenCallback(ProcessTrackMenu);
+            } else if (g_bSaveLoadEntryPoint == SAVE_LOAD_FROM_TIME_ATTACK) {
+                SetCurrentScreenCallback(ProcessMainMenu);
+            }
+        }
+    }
+    g_wSerialInterfaceIdle = TRUE;
+#else
+        if (SAVE_LOAD_ACTION == SAVE_LOAD_LOAD_SEASON && g_bSaveLoadDataWasLoaded) {
             g_bSaveLoadDataWasLoaded = FALSE;
             g_wSerialInterfaceIdle = TRUE;
             SetCurrentScreenCallback(StartChampionshipRace);
-        } else if (g_bSaveLoadChoice == SAVE_LOAD_LOAD_GHOST && g_bSaveLoadDataWasLoaded) {
+        } else if (SAVE_LOAD_ACTION == SAVE_LOAD_LOAD_GHOST && g_bSaveLoadDataWasLoaded) {
             g_bSaveLoadDataWasLoaded = FALSE;
             g_wSerialInterfaceIdle = TRUE;
             SetCurrentScreenCallback(StartTimeAttack);
@@ -1324,8 +1766,8 @@ void ProcessDataSaveLoadMenu(void) {
     /* This also clears the flag just set for the next screen, so the motors stay stopped until
      * another screen frees the serial interface. */
     g_wSerialInterfaceIdle = FALSE;
-}
 #endif
+}
 #pragma GCC diagnostic pop
 
 void PreparePakDataScreen(void) {
@@ -1352,12 +1794,12 @@ s32 DrawRumblePakPrompt(s32 anyPlayer) {
     SetTextSize(12);
     DRAW_SWAP_FOR_RUMBLE_PAK_TEXT(0x6A);
 #else
-    SetTextCustomColors(0xFF, 0xFF, 0xFF, 0xFF, 0xF5, 0x00);
-    DRAW_MESSAGE_BOX(0xAA, 0xCE, 0x12C, 0x64);
-    SetTextSize(14);
-    DrawText("%j振動パックを使うときは、", 0x5D, 0x77);
-    DrawText("%jコントローラパックと", 0x5D, 0x84);
-    DrawText("%j振動パックを交換して下さい。", 0x5D, 0x91);
+        SetTextCustomColors(0xFF, 0xFF, 0xFF, 0xFF, 0xF5, 0x00);
+        DRAW_MESSAGE_BOX(0xAA, 0xCE, 0x12C, 0x64);
+        SetTextSize(14);
+        DrawText("%j振動パックを使うときは、", 0x5D, 0x77);
+        DrawText("%jコントローラパックと", 0x5D, 0x84);
+        DrawText("%j振動パックを交換して下さい。", 0x5D, 0x91);
 #endif
     for (player = 0; player != 2; player++) {
         if (!anyPlayer && player != g_dwMenuChoosingPlayer) {
