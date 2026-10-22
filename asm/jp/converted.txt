@@ -360,6 +360,7 @@ RenderPrecipitationEffect
 RenderSkybox
 RenderSpeedometerNeedle
 RenderStartLights
+RenderTextToDisplayList
 RenderTireSmoke
 RenderTrackInstance
 RenderTrackShadow

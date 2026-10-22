@@ -114,6 +114,7 @@ extern s32 g_dwTextCustomColor2B;
  *
  * @ghidraAddress USA: 0x8028bdf0
  * @ghidraAddress EUR: 0x8028e550
+ * @ghidraAddress JPN: 0x8028dfa0
  */
 extern u8 g_abLargeFontGradient[];
 
@@ -122,6 +123,7 @@ extern u8 g_abLargeFontGradient[];
  *
  * @ghidraAddress USA: 0x8028bf30
  * @ghidraAddress EUR: 0x8028e690
+ * @ghidraAddress JPN: 0x8028e0e0
  */
 extern u8 g_abLargeFontShadowGradient[];
 
@@ -148,6 +150,7 @@ extern u8 g_abSmallFontShadowGradient[];
  *
  * @ghidraAddress USA: 0x8028fe00
  * @ghidraAddress EUR: 0x802925c0
+ * @ghidraAddress JPN: 0x80292060
  */
 extern u8 g_aLargeFontTexture[];
 
@@ -155,8 +158,8 @@ extern u8 g_aLargeFontTexture[];
  * The small font, two rows of glyphs in 8-bit intensity and alpha.
  *
  * @ghidraAddress USA: 0x8029da00
- * @ghidraAddress JPN: 0x80292060
  * @ghidraAddress EUR: 0x802a01c0
+ * @ghidraAddress JPN: 0x8029fc60
  */
 extern u8 g_aSmallFontTexture[];
 
@@ -164,8 +167,8 @@ extern u8 g_aSmallFontTexture[];
  * The glyph of each character from `!` on.
  *
  * @ghidraAddress USA: 0x802a1740
- * @ghidraAddress JPN: 0x80295da0
  * @ghidraAddress EUR: 0x802a3f00
+ * @ghidraAddress JPN: 0x802a39a0
  */
 extern u8 g_abHudFontCharToGlyph[];
 
@@ -174,6 +177,7 @@ extern u8 g_abHudFontCharToGlyph[];
  *
  * @ghidraAddress USA: 0x802a17a0
  * @ghidraAddress EUR: 0x802a3f60
+ * @ghidraAddress JPN: 0x802a3a00
  */
 extern s32 g_adwLargeFontGlyphOffsets[];
 
@@ -181,8 +185,8 @@ extern s32 g_adwLargeFontGlyphOffsets[];
  * The first column of each glyph of the small font, and one past the last glyph.
  *
  * @ghidraAddress USA: 0x802a187c
- * @ghidraAddress JPN: 0x8029fc60
  * @ghidraAddress EUR: 0x802a403c
+ * @ghidraAddress JPN: 0x802a3adc
  */
 extern s32 g_adwSmallFontGlyphOffsets[];
 
@@ -333,7 +337,6 @@ void LoadCachedGlyphTextures(void);
  * @ghidraAddress USA: 0x8022e4e0
  * @ghidraAddress JPN: 0x8022f460
  * @ghidraAddress EUR: 0x8022f9f0
- * @stub{JPN}
  */
 void RenderTextToDisplayList(const char *text);
 
