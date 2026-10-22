@@ -417,7 +417,6 @@ void ProcessDataSaveLoadMenu(void);
  *     its checksum.
  * @ghidraAddress JPN: 0x80211b60
  * @ghidraAddress EUR: 0x80211ca0
- * @stub{EUR JPN}
  */
 s32 LoadSaveDataFromEeprom(void);
 
@@ -427,7 +426,6 @@ s32 LoadSaveDataFromEeprom(void);
  *
  * @ghidraAddress JPN: 0x80211d38
  * @ghidraAddress EUR: 0x80211e78
- * @stub{EUR JPN}
  */
 void SaveGameDataToEeprom(void);
 #endif

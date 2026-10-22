@@ -1144,7 +1144,6 @@ void UnusedRaceStartStub(s32 unused);
  * @ghidraAddress USA: 0x802291f8
  * @ghidraAddress JPN: 0x80229d4c
  * @ghidraAddress EUR: 0x8022a570
- * @stub{JPN}
  */
 void InitRacerSlot(RacerSlot *slot);
 
