@@ -1074,9 +1074,9 @@ nonmatching g_awCameraRayNearbyInstances, 0x5E8
 dlabel g_awCameraRayNearbyInstances
     /* 8031A3C8 */ .space 0x5E8
 
-nonmatching g_abMainThreadStackTop, 0x4
+nonmatching g_adwRspDoneThreadStack, 0x4
 
-dlabel g_abMainThreadStackTop
+dlabel g_adwRspDoneThreadStack
     /* 8031A9B0 */ .space 0x04
 
 nonmatching D_8031A9B4, 0x8
@@ -1146,9 +1146,9 @@ nonmatching g_aViewports, 0x200
 dlabel g_aViewports
     /* 8031C1B0 */ .space 0x200
 
-nonmatching g_PiMgrCmdQueuePal, 0x18
+nonmatching g_PiMgrCmdQueue, 0x18
 
-dlabel g_PiMgrCmdQueuePal
+dlabel g_PiMgrCmdQueue
     /* 8031C3B0 */ .space 0x18
 
 nonmatching g_aPiMgrCmdMsgBuf, 0xA0
@@ -1435,10 +1435,9 @@ nonmatching g_FaultThreadObj, 0x1B0
 dlabel g_FaultThreadObj
     /* 8031D100 */ .space 0x1B0
 
-nonmatching D_8031D2B0, 0x400
+nonmatching g_adwFaultThreadStack, 0x400
 
-/* Automatically generated and unreferenced pad */
-dlabel D_8031D2B0
+dlabel g_adwFaultThreadStack
     /* 8031D2B0 */ .space 0x400
 
 nonmatching g_FaultMsgQueue, 0x18

@@ -795,9 +795,9 @@ nonmatching g_dwMainThreadStackWord3, 0x1FF4
 dlabel g_dwMainThreadStackWord3
     /* 803175EC */ .space 0x1FF4
 
-nonmatching g_abMainThreadStackTop, 0x4
+nonmatching g_adwRspDoneThreadStack, 0x4
 
-dlabel g_abMainThreadStackTop
+dlabel g_adwRspDoneThreadStack
     /* 803195E0 */ .space 0x04
 
 nonmatching D_803195E4, 0x8
@@ -862,9 +862,9 @@ nonmatching g_abSpThreadStackTop, 0x800
 dlabel g_abSpThreadStackTop
     /* 8031A5E0 */ .space 0x800
 
-nonmatching g_PiMgrCmdQueueJp, 0x18
+nonmatching g_PiMgrCmdQueue, 0x18
 
-dlabel g_PiMgrCmdQueueJp
+dlabel g_PiMgrCmdQueue
     /* 8031ADE0 */ .space 0x18
 
 nonmatching g_aViewports, 0x200
@@ -1200,10 +1200,9 @@ nonmatching g_FaultThreadObj, 0x1B0
 dlabel g_FaultThreadObj
     /* 8031BD30 */ .space 0x1B0
 
-nonmatching D_8031BEE0, 0x400
+nonmatching g_adwFaultThreadStack, 0x400
 
-/* Automatically generated and unreferenced pad */
-dlabel D_8031BEE0
+dlabel g_adwFaultThreadStack
     /* 8031BEE0 */ .space 0x400
 
 nonmatching g_FaultMsgQueue, 0x18

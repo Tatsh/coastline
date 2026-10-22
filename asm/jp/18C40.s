@@ -948,9 +948,9 @@ glabel InitRenderingSubsystem
     /* 1DA9C 8021CA9C 0C099A94 */  jal        osStartThread
     /* 1DAA0 8021CAA0 02202025 */   or        $a0, $s1, $zero
     /* 1DAA4 8021CAA4 3C118027 */  lui        $s1, %hi(g_PreNmiResetHandlerThreadObj)
-    /* 1DAA8 8021CAA8 3C0B8032 */  lui        $t3, %hi(g_PiMgrCmdQueueJp)
+    /* 1DAA8 8021CAA8 3C0B8032 */  lui        $t3, %hi(g_PiMgrCmdQueue)
     /* 1DAAC 8021CAAC 26314860 */  addiu      $s1, $s1, %lo(g_PreNmiResetHandlerThreadObj)
-    /* 1DAB0 8021CAB0 256BADE0 */  addiu      $t3, $t3, %lo(g_PiMgrCmdQueueJp)
+    /* 1DAB0 8021CAB0 256BADE0 */  addiu      $t3, $t3, %lo(g_PiMgrCmdQueue)
     /* 1DAB4 8021CAB4 3C068022 */  lui        $a2, %hi(PreNmiResetHandlerThread)
     /* 1DAB8 8021CAB8 240C003C */  addiu      $t4, $zero, 0x3C
     /* 1DABC 8021CABC AFAC0014 */  sw         $t4, 0x14($sp)
@@ -1171,10 +1171,10 @@ glabel BootIdleThread
     /* 1FF14 8021EF14 0043082B */  sltu       $at, $v0, $v1
     /* 1FF18 8021EF18 1420FFFD */  bnez       $at, .L8021EF10
     /* 1FF1C 8021EF1C AC40FFFC */   sw        $zero, -0x4($v0)
-    /* 1FF20 8021EF20 3C058032 */  lui        $a1, %hi(g_PiMgrCmdQueueJp)
+    /* 1FF20 8021EF20 3C058032 */  lui        $a1, %hi(g_PiMgrCmdQueue)
     /* 1FF24 8021EF24 3C068032 */  lui        $a2, %hi(g_aPiMgrCmdMsgBuf)
     /* 1FF28 8021EF28 24C6AFF8 */  addiu      $a2, $a2, %lo(g_aPiMgrCmdMsgBuf)
-    /* 1FF2C 8021EF2C 24A5ADE0 */  addiu      $a1, $a1, %lo(g_PiMgrCmdQueueJp)
+    /* 1FF2C 8021EF2C 24A5ADE0 */  addiu      $a1, $a1, %lo(g_PiMgrCmdQueue)
     /* 1FF30 8021EF30 24040096 */  addiu      $a0, $zero, 0x96
     /* 1FF34 8021EF34 0C099E7C */  jal        osCreatePiManager
     /* 1FF38 8021EF38 24070020 */   addiu     $a3, $zero, 0x20
@@ -1214,8 +1214,8 @@ glabel BootIdleThread
     /* 1FFBC 8021EFBC AC4AFFF8 */  sw         $t2, -0x8($v0)
     /* 1FFC0 8021EFC0 1420FFF7 */  bnez       $at, .L8021EFA0
     /* 1FFC4 8021EFC4 AC4BFFFC */   sw        $t3, -0x4($v0)
-    /* 1FFC8 8021EFC8 3C028032 */  lui        $v0, %hi(g_abMainThreadStackTop)
-    /* 1FFCC 8021EFCC 244295E0 */  addiu      $v0, $v0, %lo(g_abMainThreadStackTop)
+    /* 1FFC8 8021EFC8 3C028032 */  lui        $v0, %hi(g_adwRspDoneThreadStack)
+    /* 1FFCC 8021EFCC 244295E0 */  addiu      $v0, $v0, %lo(g_adwRspDoneThreadStack)
     /* 1FFD0 8021EFD0 00001825 */  or         $v1, $zero, $zero
   .L8021EFD4:
     /* 1FFD4 8021EFD4 24630001 */  addiu      $v1, $v1, 0x1
@@ -1248,9 +1248,9 @@ glabel BootIdleThread
     /* 2003C 8021F03C 1443FFF3 */  bne        $v0, $v1, .L8021F00C
     /* 20040 8021F040 AC4FFFE4 */   sw        $t7, -0x1C($v0)
     /* 20044 8021F044 3C108027 */  lui        $s0, %hi(g_MainGameThreadObj)
-    /* 20048 8021F048 3C0C8032 */  lui        $t4, %hi(g_abMainThreadStackTop)
+    /* 20048 8021F048 3C0C8032 */  lui        $t4, %hi(g_adwRspDoneThreadStack)
     /* 2004C 8021F04C 26104350 */  addiu      $s0, $s0, %lo(g_MainGameThreadObj)
-    /* 20050 8021F050 258C95E0 */  addiu      $t4, $t4, %lo(g_abMainThreadStackTop)
+    /* 20050 8021F050 258C95E0 */  addiu      $t4, $t4, %lo(g_adwRspDoneThreadStack)
     /* 20054 8021F054 3C068020 */  lui        $a2, %hi(InitGameAndShowMenus)
     /* 20058 8021F058 240D000A */  addiu      $t5, $zero, 0xA
     /* 2005C 8021F05C AFAD0014 */  sw         $t5, 0x14($sp)

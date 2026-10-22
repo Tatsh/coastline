@@ -838,10 +838,10 @@ glabel BootIdleThread
     /* 20700 8021F700 0043082B */  sltu       $at, $v0, $v1
     /* 20704 8021F704 1420FFFD */  bnez       $at, .L8021F6FC
     /* 20708 8021F708 AC40FFFC */   sw        $zero, -0x4($v0)
-    /* 2070C 8021F70C 3C058032 */  lui        $a1, %hi(g_PiMgrCmdQueuePal)
+    /* 2070C 8021F70C 3C058032 */  lui        $a1, %hi(g_PiMgrCmdQueue)
     /* 20710 8021F710 3C068032 */  lui        $a2, %hi(g_aPiMgrCmdMsgBuf)
     /* 20714 8021F714 24C6C3C8 */  addiu      $a2, $a2, %lo(g_aPiMgrCmdMsgBuf)
-    /* 20718 8021F718 24A5C3B0 */  addiu      $a1, $a1, %lo(g_PiMgrCmdQueuePal)
+    /* 20718 8021F718 24A5C3B0 */  addiu      $a1, $a1, %lo(g_PiMgrCmdQueue)
     /* 2071C 8021F71C 24040096 */  addiu      $a0, $zero, 0x96
     /* 20720 8021F720 0C099FD4 */  jal        osCreatePiManager
     /* 20724 8021F724 24070020 */   addiu     $a3, $zero, 0x20
@@ -881,8 +881,8 @@ glabel BootIdleThread
     /* 207A8 8021F7A8 AC4AFFF8 */  sw         $t2, -0x8($v0)
     /* 207AC 8021F7AC 1420FFF7 */  bnez       $at, .L8021F78C
     /* 207B0 8021F7B0 AC4BFFFC */   sw        $t3, -0x4($v0)
-    /* 207B4 8021F7B4 3C028032 */  lui        $v0, %hi(g_abMainThreadStackTop)
-    /* 207B8 8021F7B8 2442A9B0 */  addiu      $v0, $v0, %lo(g_abMainThreadStackTop)
+    /* 207B4 8021F7B4 3C028032 */  lui        $v0, %hi(g_adwRspDoneThreadStack)
+    /* 207B8 8021F7B8 2442A9B0 */  addiu      $v0, $v0, %lo(g_adwRspDoneThreadStack)
     /* 207BC 8021F7BC 00001825 */  or         $v1, $zero, $zero
   .L8021F7C0:
     /* 207C0 8021F7C0 24630001 */  addiu      $v1, $v1, 0x1
@@ -915,9 +915,9 @@ glabel BootIdleThread
     /* 20828 8021F828 1443FFF3 */  bne        $v0, $v1, .L8021F7F8
     /* 2082C 8021F82C AC4FFFE4 */   sw        $t7, -0x1C($v0)
     /* 20830 8021F830 3C108027 */  lui        $s0, %hi(g_MainGameThreadObj)
-    /* 20834 8021F834 3C098032 */  lui        $t1, %hi(g_abMainThreadStackTop)
+    /* 20834 8021F834 3C098032 */  lui        $t1, %hi(g_adwRspDoneThreadStack)
     /* 20838 8021F838 26104880 */  addiu      $s0, $s0, %lo(g_MainGameThreadObj)
-    /* 2083C 8021F83C 2529A9B0 */  addiu      $t1, $t1, %lo(g_abMainThreadStackTop)
+    /* 2083C 8021F83C 2529A9B0 */  addiu      $t1, $t1, %lo(g_adwRspDoneThreadStack)
     /* 20840 8021F840 3C068020 */  lui        $a2, %hi(InitGameAndShowMenus)
     /* 20844 8021F844 240E000A */  addiu      $t6, $zero, 0xA
     /* 20848 8021F848 AFAE0014 */  sw         $t6, 0x14($sp)
