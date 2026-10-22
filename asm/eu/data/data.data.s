@@ -6,6 +6,7 @@
 
 nonmatching g_aRspBootUcode
 
+.balign 8
 dlabel g_aRspBootUcode
     /* 719D0 802709D0 09000419 */ .word 0x09000419
     /* 719D4 802709D4 20010FC0 */ .word 0x20010FC0
@@ -63,6 +64,7 @@ enddlabel g_aRspBootUcode
 
 nonmatching g_aGspUcodeText
 
+.balign 8
 dlabel g_aGspUcodeText
     /* 71AA0 80270AA0 090005D6 */ .word 0x090005D6
     /* 71AA4 80270AA4 201D0110 */ .word 0x201D0110
@@ -1360,6 +1362,7 @@ enddlabel g_aGspUcodeText
 
 nonmatching g_pdwMainArgc
 
+.balign 8
 dlabel g_pdwMainArgc
     /* 72ED0 80271ED0 00000000 */ .word 0x00000000
 enddlabel g_pdwMainArgc
@@ -1372,6 +1375,7 @@ enddlabel g_ppszMainArgv
 
 nonmatching g_dwNumLocalPlayers
 
+.balign 8
 dlabel g_dwNumLocalPlayers
     /* 72ED8 80271ED8 00000001 */ .word 0x00000001
 enddlabel g_dwNumLocalPlayers
@@ -1385,6 +1389,7 @@ enddlabel D_80271EDC
 
 nonmatching g_dwRacePauseState
 
+.balign 8
 dlabel g_dwRacePauseState
     /* 72EE0 80271EE0 00000000 */ .word 0x00000000
 enddlabel g_dwRacePauseState
@@ -1397,6 +1402,7 @@ enddlabel g_dwPauseMenuSelection
 
 nonmatching g_dwGameMode
 
+.balign 8
 dlabel g_dwGameMode
     /* 72EE8 80271EE8 00000000 */ .word 0x00000000
 enddlabel g_dwGameMode
@@ -1409,6 +1415,7 @@ enddlabel g_dwRaceSessionType
 
 nonmatching g_dwMultiplayerMode
 
+.balign 8
 dlabel g_dwMultiplayerMode
     /* 72EF0 80271EF0 00000000 */ .word 0x00000000
 enddlabel g_dwMultiplayerMode
@@ -1443,6 +1450,7 @@ enddlabel g_pStartLightsModel
 
 nonmatching g_dwStartLightsAnimation
 
+.balign 8
 dlabel g_dwStartLightsAnimation
     /* 72F28 80271F28 00000000 */ .word 0x00000000
 enddlabel g_dwStartLightsAnimation
@@ -1455,6 +1463,7 @@ enddlabel g_bStartLightsVisible
 
 nonmatching g_fStartLightsDrop
 
+.balign 8
 dlabel g_fStartLightsDrop
     /* 72F30 80271F30 00000000 */ .float 0
 enddlabel g_fStartLightsDrop
@@ -1467,6 +1476,7 @@ enddlabel g_dwAirplaneInstance
 
 nonmatching g_dwAirplaneTrigger
 
+.balign 8
 dlabel g_dwAirplaneTrigger
     /* 72F38 80271F38 00000000 */ .word 0x00000000
 enddlabel g_dwAirplaneTrigger
@@ -1479,6 +1489,7 @@ enddlabel g_dwAirplaneTriggerLap
 
 nonmatching g_bAirplaneFlying
 
+.balign 8
 dlabel g_bAirplaneFlying
     /* 72F40 80271F40 00000000 */ .word 0x00000000
 enddlabel g_bAirplaneFlying
@@ -1491,6 +1502,7 @@ enddlabel g_dwAirplaneNode
 
 nonmatching g_dwAirplaneNodeCount
 
+.balign 8
 dlabel g_dwAirplaneNodeCount
     /* 72F48 80271F48 00000000 */ .word 0x00000000
 enddlabel g_dwAirplaneNodeCount
@@ -1503,6 +1515,7 @@ enddlabel g_fAirplaneScale
 
 nonmatching g_pAirplanePathLeft
 
+.balign 8
 dlabel g_pAirplanePathLeft
     /* 72F50 80271F50 00000000 */ .word 0x00000000
 enddlabel g_pAirplanePathLeft
@@ -1515,6 +1528,7 @@ enddlabel g_pAirplanePathRight
 
 nonmatching g_fAirplaneDistance
 
+.balign 8
 dlabel g_fAirplaneDistance
     /* 72F58 80271F58 00000000 */ .float 0
 enddlabel g_fAirplaneDistance
@@ -1527,6 +1541,7 @@ enddlabel g_fAirplaneSegmentLength
 
 nonmatching g_vAirplaneDirPrev
 
+.balign 8
 dlabel g_vAirplaneDirPrev
     /* 72F60 80271F60 00000000 */ .word 0x00000000
 enddlabel g_vAirplaneDirPrev
@@ -1548,6 +1563,7 @@ enddlabel g_vAirplaneDir
 nonmatching D_80271F70
 
 /* Automatically generated and unreferenced pad */
+.balign 8
 dlabel D_80271F70
     /* 72F70 80271F70 00000000 */ .word 0x00000000
     /* 72F74 80271F74 00000000 */ .word 0x00000000
@@ -1555,6 +1571,7 @@ enddlabel D_80271F70
 
 nonmatching g_vAirplaneDirNext
 
+.balign 8
 dlabel g_vAirplaneDirNext
     /* 72F78 80271F78 00000000 */ .word 0x00000000
 enddlabel g_vAirplaneDirNext
@@ -1575,6 +1592,7 @@ enddlabel g_aCreditCaptions
 
 nonmatching D_80271F88
 
+.balign 8
 dlabel D_80271F88
     /* 72F88 80271F88 40400000 */ .float 3
 enddlabel D_80271F88
@@ -1611,6 +1629,7 @@ enddlabel D_80271F8C
 
 nonmatching g_pUnref80271ff0
 
+.balign 8
 dlabel g_pUnref80271ff0
     /* 72FF0 80271FF0 802A7FA4 */ .word g_szGabrielGarcia
 enddlabel g_pUnref80271ff0
@@ -1722,6 +1741,7 @@ enddlabel g_aCreditScrollLines
 nonmatching D_80272168
 
 /* Automatically generated and unreferenced pad */
+.balign 8
 dlabel D_80272168
     /* 73168 80272168 00000028 */ .word 0x00000028
     /* 7316C 8027216C 00000010 */ .word 0x00000010
@@ -1729,6 +1749,7 @@ enddlabel D_80272168
 
 nonmatching D_80272170
 
+.balign 8
 dlabel D_80272170
     /* 73170 80272170 802A813C */ .word g_szScrollTextEmptyEur
     /* 73174 80272174 00000000 */ .word 0x00000000
@@ -2117,6 +2138,7 @@ enddlabel g_dwGhostRecordingSize
 
 nonmatching gInstantReplayActive
 
+.balign 8
 dlabel gInstantReplayActive
     /* 73758 80272758 00000000 */ .word 0x00000000
 enddlabel gInstantReplayActive
@@ -2129,6 +2151,7 @@ enddlabel g_bReplayAfterRace
 
 nonmatching g_dwSavedResultsValid
 
+.balign 8
 dlabel g_dwSavedResultsValid
     /* 73760 80272760 00000000 */ .word 0x00000000
 enddlabel g_dwSavedResultsValid
@@ -2145,6 +2168,7 @@ enddlabel g_afStartLightThresholds
 
 nonmatching g_dwSaveAvailable
 
+.balign 8
 dlabel g_dwSaveAvailable
     /* 73778 80272778 00000000 */ .word 0x00000000
 enddlabel g_dwSaveAvailable
@@ -2176,6 +2200,7 @@ enddlabel g_abRacePositionPoints
 
 nonmatching g_dwSeasonResultMsgLineCount
 
+.balign 8
 dlabel g_dwSeasonResultMsgLineCount
     /* 73790 80272790 00000000 */ .word 0x00000000
 enddlabel g_dwSeasonResultMsgLineCount
@@ -2188,6 +2213,7 @@ enddlabel g_dwWaterfallCount
 
 nonmatching g_dwCheatFinishRacePending
 
+.balign 8
 dlabel g_dwCheatFinishRacePending
     /* 73798 80272798 00000000 */ .word 0x00000000
 enddlabel g_dwCheatFinishRacePending
@@ -2200,6 +2226,7 @@ enddlabel g_dwRaceInitialized
 
 nonmatching g_dwRaceExitState
 
+.balign 8
 dlabel g_dwRaceExitState
     /* 737A0 802727A0 00000000 */ .word 0x00000000
 enddlabel g_dwRaceExitState
@@ -2212,6 +2239,7 @@ enddlabel g_aRacePhaseTable
 
 nonmatching D_802727A8
 
+.balign 8
 dlabel D_802727A8
     /* 737A8 802727A8 00000000 */ .float 0
     /* 737AC 802727AC 00000001 */ .float 1.401298464e-45
@@ -2235,6 +2263,7 @@ enddlabel D_802727A8
 
 nonmatching g_bSplashStarted
 
+.balign 8
 dlabel g_bSplashStarted
     /* 737F0 802727F0 00000000 */ .word 0x00000000
     /* 737F4 802727F4 00000000 */ .word 0x00000000
@@ -2250,6 +2279,7 @@ enddlabel g_bSplashFadingOut
 .align 2
 nonmatching g_SplashAmbientLight
 
+.balign 8
 dlabel g_SplashAmbientLight
     /* 73800 80272800 */ .asciz "@@@"
     /* 40404000 */
@@ -2262,6 +2292,7 @@ enddlabel g_SplashAmbientLight
 
 nonmatching g_SplashDirectionalLight
 
+.balign 8
 dlabel g_SplashDirectionalLight
     /* 73808 80272808 FFFFFF00 */ .word 0xFFFFFF00
     /* 7380C 8027280C FFFFFF00 */ .word 0xFFFFFF00
@@ -2273,6 +2304,7 @@ enddlabel g_SplashDirectionalLight
 
 nonmatching g_bControllerWarningType
 
+.balign 8
 dlabel g_bControllerWarningType
     /* 73820 80272820 */ .byte 0x00
     /* 73821 80272821 */ .byte 0x00
@@ -2290,6 +2322,7 @@ enddlabel g_bControllerCheckStarted
 
 nonmatching g_dwContinueFromResults
 
+.balign 8
 dlabel g_dwContinueFromResults
     /* 73830 80272830 00000000 */ .word 0x00000000
 enddlabel g_dwContinueFromResults
@@ -2502,6 +2535,7 @@ enddlabel D_80272B2C
 
 nonmatching g_bSaveLoadDmaComplete
 
+.balign 8
 dlabel g_bSaveLoadDmaComplete
     /* 73B30 80272B30 00000000 */ .word 0x00000000
     /* 73B34 80272B34 00000000 */ .word 0x00000000
@@ -2601,6 +2635,7 @@ enddlabel g_bSaveLoadDmaComplete
 
 nonmatching D_80272CA8
 
+.balign 8
 dlabel D_80272CA8
     /* 73CA8 80272CA8 802A9050 */ .word g_szStripMine
     /* 73CAC 80272CAC 00000000 */ .word 0x00000000
@@ -2801,6 +2836,7 @@ enddlabel D_80272E24
 
 nonmatching D_80272FA0
 
+.balign 8
 dlabel D_80272FA0
     /* 73FA0 80272FA0 802A9064 */ .word g_szMirrorDesert
     /* 73FA4 80272FA4 00000010 */ .word 0x00000010
@@ -3001,6 +3037,7 @@ enddlabel D_8027311C
 
 nonmatching D_80273298
 
+.balign 8
 dlabel D_80273298
     /* 74298 80273298 802A9084 */ .word g_szMirrorCoastline
     /* 7429C 8027329C 00000010 */ .word 0x00000010
@@ -3201,6 +3238,7 @@ enddlabel D_80273414
 
 nonmatching D_80273590
 
+.balign 8
 dlabel D_80273590
     /* 74590 80273590 802A90AC */ .word g_szMirrorJungle
     /* 74594 80273594 00000010 */ .word 0x00000010
@@ -3308,6 +3346,7 @@ enddlabel g_pszLoadAndGamewin
 nonmatching D_80273710
 
 /* Automatically generated and unreferenced pad */
+.balign 8
 dlabel D_80273710
     /* 74710 80273710 00000002 */ .word 0x00000002
     /* 74714 80273714 00000000 */ .word 0x00000000
@@ -3407,6 +3446,7 @@ enddlabel D_80273710
 
 nonmatching g_pszResetToFirstRound
 
+.balign 8
 dlabel g_pszResetToFirstRound
     /* 74888 80273888 802A90D0 */ .word g_szResetToFirstRound
 enddlabel g_pszResetToFirstRound
@@ -3520,6 +3560,7 @@ enddlabel g_pszResetToFirstSeason
 nonmatching D_80273A08
 
 /* Automatically generated and unreferenced pad */
+.balign 8
 dlabel D_80273A08
     /* 74A08 80273A08 00000002 */ .word 0x00000002
     /* 74A0C 80273A0C 00000000 */ .word 0x00000000
@@ -3619,6 +3660,7 @@ enddlabel D_80273A08
 
 nonmatching g_pszResetToFirstYear
 
+.balign 8
 dlabel g_pszResetToFirstYear
     /* 74B80 80273B80 802A9100 */ .word g_szResetToFirstYear
 enddlabel g_pszResetToFirstYear
@@ -3722,6 +3764,7 @@ enddlabel D_80273B84
 
 nonmatching g_dwRaceStateGfxFlags
 
+.balign 8
 dlabel g_dwRaceStateGfxFlags
     /* 74CF0 80273CF0 41F00000 */ .word 0x41F00000
     /* 74CF4 80273CF4 41F00000 */ .word 0x41F00000
@@ -3736,6 +3779,7 @@ enddlabel g_apTrackMenuItems
 
 nonmatching D_80273D00
 
+.balign 8
 dlabel D_80273D00
     /* 74D00 80273D00 802729B0 */ .word g_aTrackDescriptors + 0x17C
 enddlabel D_80273D00
@@ -3748,6 +3792,7 @@ enddlabel D_80273D04
 
 nonmatching D_80273D08
 
+.balign 8
 dlabel D_80273D08
     /* 74D08 80273D08 80272CA8 */ .word D_80272CA8
 enddlabel D_80273D08
@@ -3760,6 +3805,7 @@ enddlabel g_pRaceStateGfxHead
 
 nonmatching g_pRaceStateGfxTail
 
+.balign 8
 dlabel g_pRaceStateGfxTail
     /* 74D10 80273D10 80272FA0 */ .word D_80272FA0
 enddlabel g_pRaceStateGfxTail
@@ -3772,6 +3818,7 @@ enddlabel g_pRaceStateRdpHead
 
 nonmatching g_pRaceStateRdpTail
 
+.balign 8
 dlabel g_pRaceStateRdpTail
     /* 74D18 80273D18 80273298 */ .word D_80273298
 enddlabel g_pRaceStateRdpTail
@@ -3784,6 +3831,7 @@ enddlabel g_pRaceStateOpaqueHead
 
 nonmatching g_pRaceStateTransparentHead
 
+.balign 8
 dlabel g_pRaceStateTransparentHead
     /* 74D20 80273D20 80273590 */ .word D_80273590
 enddlabel g_pRaceStateTransparentHead
@@ -3796,6 +3844,7 @@ enddlabel g_pRaceStateGfxPtr
 
 nonmatching g_pRaceStateRdpCmd
 
+.balign 8
 dlabel g_pRaceStateRdpCmd
     /* 74D28 80273D28 80273888 */ .word g_pszResetToFirstRound
 enddlabel g_pRaceStateRdpCmd
@@ -3808,6 +3857,7 @@ enddlabel g_pRaceStateOpaqueEnd
 
 nonmatching g_pRaceStateTransparentEnd
 
+.balign 8
 dlabel g_pRaceStateTransparentEnd
     /* 74D30 80273D30 80273B80 */ .word g_pszResetToFirstYear
 enddlabel g_pRaceStateTransparentEnd
@@ -3821,6 +3871,7 @@ enddlabel D_80273D34
 
 nonmatching g_bTrackMenuPakScreen
 
+.balign 8
 dlabel g_bTrackMenuPakScreen
     /* 74D38 80273D38 00000000 */ .word 0x00000000
 enddlabel g_bTrackMenuPakScreen
@@ -3833,6 +3884,7 @@ enddlabel g_fSeasonRecordsBlinkTime
 
 nonmatching g_dwTrackMenuInitState
 
+.balign 8
 dlabel g_dwTrackMenuInitState
     /* 74D40 80273D40 00000000 */ .word 0x00000000
     /* 74D44 80273D44 00000000 */ .word 0x00000000
@@ -3842,6 +3894,7 @@ enddlabel g_dwTrackMenuInitState
 
 nonmatching g_ArrowLeftTextureDesc
 
+.balign 8
 dlabel g_ArrowLeftTextureDesc
     /* 74D50 80273D50 001C68E0 */ .word 0x001C68E0
     /* 74D54 80273D54 001C6AF0 */ .word 0x001C6AF0
@@ -3862,6 +3915,7 @@ enddlabel g_ArrowRightTextureDesc
 
 nonmatching g_dwDrawModelListNoZBuffer
 
+.balign 8
 dlabel g_dwDrawModelListNoZBuffer
     /* 74D78 80273D78 00000000 */ .word 0x00000000
 enddlabel g_dwDrawModelListNoZBuffer
@@ -3883,6 +3937,7 @@ enddlabel g_bMenuSpotlightBuilt
 
 nonmatching g_aMenuSpotlightDisplayList
 
+.balign 8
 dlabel g_aMenuSpotlightDisplayList
     /* 74D90 80273D90 B6000000 */ .word 0xB6000000
     /* 74D94 80273D94 00023000 */ .word 0x00023000
@@ -3934,6 +3989,7 @@ enddlabel g_aMenuSpotlightDisplayList
 
 nonmatching D_80273E48
 
+.balign 8
 dlabel D_80273E48
     /* 74E48 80273E48 0122000A */ .word 0x0122000A
     /* 74E4C 80273E4C 00000000 */ .word 0x00000000
@@ -3987,6 +4043,7 @@ enddlabel D_80273E48
 
 nonmatching g_aMenuChoiceMarkerDisplayList
 
+.balign 8
 dlabel g_aMenuChoiceMarkerDisplayList
     /* 74F08 80273F08 B6000000 */ .word 0xB6000000
     /* 74F0C 80273F0C 00020000 */ .word 0x00020000
@@ -4017,6 +4074,7 @@ enddlabel g_aMenuChoiceMarkerDisplayList
 .align 2
 nonmatching g_MenuAmbientLight
 
+.balign 8
 dlabel g_MenuAmbientLight
     /* 74F68 80273F68 */ .asciz "@@@"
     /* 40404000 */
@@ -4029,6 +4087,7 @@ enddlabel g_MenuAmbientLight
 
 nonmatching g_MenuDirectionalLight
 
+.balign 8
 dlabel g_MenuDirectionalLight
     /* 74F70 80273F70 FFFFFF00 */ .word 0xFFFFFF00
     /* 74F74 80273F74 FFFFFF00 */ .word 0xFFFFFF00
@@ -4038,6 +4097,7 @@ enddlabel g_MenuDirectionalLight
 
 nonmatching g_dwScreenPlayerIdx
 
+.balign 8
 dlabel g_dwScreenPlayerIdx
     /* 74F80 80273F80 FFFFFFFF */ .word 0xFFFFFFFF
 enddlabel g_dwScreenPlayerIdx
@@ -4050,6 +4110,7 @@ enddlabel g_dwMenuInputPlayerMask
 
 nonmatching g_dwMenuChoosingPlayer
 
+.balign 8
 dlabel g_dwMenuChoosingPlayer
     /* 74F88 80273F88 00000000 */ .word 0x00000000
 enddlabel g_dwMenuChoosingPlayer
@@ -4062,6 +4123,7 @@ enddlabel g_nScreenLastActiveIndex
 
 nonmatching g_pMenuTitleImage
 
+.balign 8
 dlabel g_pMenuTitleImage
     /* 74F90 80273F90 00000000 */ .word 0x00000000
 enddlabel g_pMenuTitleImage
@@ -4074,6 +4136,7 @@ enddlabel g_dwMenuTitleImageX
 
 nonmatching g_dwMenuTitleImageY
 
+.balign 8
 dlabel g_dwMenuTitleImageY
     /* 74F98 80273F98 00000000 */ .word 0x00000000
 enddlabel g_dwMenuTitleImageY
@@ -4086,6 +4149,7 @@ enddlabel g_dwMenuTitleImageWidth
 
 nonmatching g_dwMenuTitleImageHeight
 
+.balign 8
 dlabel g_dwMenuTitleImageHeight
     /* 74FA0 80273FA0 00000000 */ .word 0x00000000
 enddlabel g_dwMenuTitleImageHeight
@@ -4098,6 +4162,7 @@ enddlabel g_fScreenIdleTimeout
 
 nonmatching g_pfnScreenPostDrawCallback
 
+.balign 8
 dlabel g_pfnScreenPostDrawCallback
     /* 74FA8 80273FA8 00000000 */ .word 0x00000000
 enddlabel g_pfnScreenPostDrawCallback
@@ -4110,6 +4175,7 @@ enddlabel g_pfnScreenPreDrawCallback
 
 nonmatching g_nScreenPendingSelection
 
+.balign 8
 dlabel g_nScreenPendingSelection
     /* 74FB0 80273FB0 FFFFFFFF */ .word 0xFFFFFFFF
 enddlabel g_nScreenPendingSelection
@@ -4124,6 +4190,7 @@ enddlabel g_bScreenStateInitFlag
 
 nonmatching g_apszPlaceNames
 
+.balign 8
 dlabel g_apszPlaceNames
     /* 74FC0 80273FC0 802A93A0 */ .word g_szPlace1st
 enddlabel g_apszPlaceNames
@@ -4136,6 +4203,7 @@ enddlabel g_pScreenMenuEntries
 
 nonmatching g_pScreenMenuFilter
 
+.balign 8
 dlabel g_pScreenMenuFilter
     /* 74FC8 80273FC8 802A93A8 */ .word g_szPlace3rd
 enddlabel g_pScreenMenuFilter
@@ -4148,6 +4216,7 @@ enddlabel g_pScreenMenuPreDraw
 
 nonmatching g_pScreenMenuScrollClear
 
+.balign 8
 dlabel g_pScreenMenuScrollClear
     /* 74FD0 80273FD0 802A93B0 */ .word g_szPlace5th
 enddlabel g_pScreenMenuScrollClear
@@ -4160,6 +4229,7 @@ enddlabel g_pScreenMenuSelectClear
 
 nonmatching g_pScreenMenuTitle
 
+.balign 8
 dlabel g_pScreenMenuTitle
     /* 74FD8 80273FD8 802A93B8 */ .word g_szPlace7th
 enddlabel g_pScreenMenuTitle
@@ -4172,6 +4242,7 @@ enddlabel g_pScreenMenuFooter
 
 nonmatching g_pScreenMenuSelectSound
 
+.balign 8
 dlabel g_pScreenMenuSelectSound
     /* 74FE0 80273FE0 802A93C0 */ .word g_szPlace9th
 enddlabel g_pScreenMenuSelectSound
@@ -4184,6 +4255,7 @@ enddlabel g_pScreenMenuScrollSound
 
 nonmatching g_pScreenMenuBackSound
 
+.balign 8
 dlabel g_pScreenMenuBackSound
     /* 74FE8 80273FE8 802A93CC */ .word g_szPlace11th
 enddlabel g_pScreenMenuBackSound
@@ -4196,6 +4268,7 @@ enddlabel g_pScreenMenuConfirmSound
 
 nonmatching g_pScreenMenuCancelSound
 
+.balign 8
 dlabel g_pScreenMenuCancelSound
     /* 74FF0 80273FF0 802A93DC */ .word g_szPlace13th
 enddlabel g_pScreenMenuCancelSound
@@ -4208,6 +4281,7 @@ enddlabel g_pScreenMenuEntry0
 
 nonmatching g_pScreenMenuEntry1
 
+.balign 8
 dlabel g_pScreenMenuEntry1
     /* 74FF8 80273FF8 802A93EC */ .word g_szPlace15th
 enddlabel g_pScreenMenuEntry1
@@ -4220,6 +4294,7 @@ enddlabel g_pScreenMenuEntry2
 
 nonmatching g_pScreenMenuEntry3
 
+.balign 8
 dlabel g_pScreenMenuEntry3
     /* 75000 80274000 802A93FC */ .word g_szPlace17th
 enddlabel g_pScreenMenuEntry3
@@ -4232,6 +4307,7 @@ enddlabel g_pScreenMenuEntry4
 
 nonmatching g_pScreenMenuEntry5
 
+.balign 8
 dlabel g_pScreenMenuEntry5
     /* 75008 80274008 802A940C */ .word g_szPlace19th
 enddlabel g_pScreenMenuEntry5
@@ -4244,6 +4320,7 @@ enddlabel g_pScreenMenuEntry6
 
 nonmatching g_apszEngineLayouts
 
+.balign 8
 dlabel g_apszEngineLayouts
     /* 75010 80274010 802A941C */ .word g_szFrontEngine
 enddlabel g_apszEngineLayouts
@@ -4256,6 +4333,7 @@ enddlabel g_pScreenMenuEntry7
 
 nonmatching g_pScreenMenuEntry8
 
+.balign 8
 dlabel g_pScreenMenuEntry8
     /* 75018 80274018 802A943C */ .word g_szRearEngine
 enddlabel g_pScreenMenuEntry8
@@ -4268,6 +4346,7 @@ enddlabel g_apszDriveTypes
 
 nonmatching g_pScreenMenuEntry9
 
+.balign 8
 dlabel g_pScreenMenuEntry9
     /* 75020 80274020 802A9450 */ .word g_szDriveTypeRWD
 enddlabel g_pScreenMenuEntry9
@@ -4280,6 +4359,7 @@ enddlabel g_pScreenMenuEntry10
 
 nonmatching g_BgTextureDesc
 
+.balign 8
 dlabel g_BgTextureDesc
     /* 75028 80274028 001BF900 */ .word 0x001BF900
     /* 7502C 8027402C 001C36A0 */ .word 0x001C36A0
@@ -4300,6 +4380,7 @@ enddlabel g_TitleBarTextureDesc
 
 nonmatching g_dwIsPaintMode
 
+.balign 8
 dlabel g_dwIsPaintMode
     /* 75050 80274050 00000000 */ .word 0x00000000
 enddlabel g_dwIsPaintMode
@@ -4312,6 +4393,7 @@ enddlabel g_dwIsReviewMode
 
 nonmatching g_pszType1
 
+.balign 8
 dlabel g_pszType1
     /* 75058 80274058 802A9458 */ .word g_szType1
 enddlabel g_pszType1
@@ -4338,6 +4420,7 @@ enddlabel D_8027406C
 
 nonmatching D_80274080
 
+.balign 8
 dlabel D_80274080
     /* 75080 80274080 802A9468 */ .word D_802A9468
     /* 75084 80274084 00000000 */ .word 0x00000000
@@ -4355,6 +4438,7 @@ enddlabel g_apHandlingOptions
 nonmatching D_80274098
 
 /* Automatically generated and unreferenced pad */
+.balign 8
 dlabel D_80274098
     /* 75098 80274098 8027406C */ .word D_8027406C
     /* 7509C 8027409C 80274080 */ .word D_80274080
@@ -4369,6 +4453,7 @@ enddlabel g_dwHandlingOptionCount
 
 nonmatching g_pszManual
 
+.balign 8
 dlabel g_pszManual
     /* 750A8 802740A8 802A9470 */ .word g_szManual
 enddlabel g_pszManual
@@ -4395,6 +4480,7 @@ enddlabel D_802740BC
 
 nonmatching g_apTransmissionOptions
 
+.balign 8
 dlabel g_apTransmissionOptions
     /* 750D0 802740D0 802740A8 */ .word g_pszManual
 enddlabel g_apTransmissionOptions
@@ -4415,6 +4501,7 @@ enddlabel g_dwTransmissionOptionCount
 
 nonmatching g_pszSlippy
 
+.balign 8
 dlabel g_pszSlippy
     /* 750E0 802740E0 802A9484 */ .word g_szSlippy
 enddlabel g_pszSlippy
@@ -4441,6 +4528,7 @@ enddlabel D_802740F4
 
 nonmatching D_80274108
 
+.balign 8
 dlabel D_80274108
     /* 75108 80274108 802A9494 */ .word g_szDebugMsg4
     /* 7510C 8027410C 00000000 */ .word 0x00000000
@@ -4458,6 +4546,7 @@ enddlabel g_apTiresOptions
 nonmatching D_80274120
 
 /* Automatically generated and unreferenced pad */
+.balign 8
 dlabel D_80274120
     /* 75120 80274120 802740F4 */ .word D_802740F4
     /* 75124 80274124 80274108 */ .word D_80274108
@@ -4472,6 +4561,7 @@ enddlabel g_dwTiresOptionCount
 
 nonmatching g_pszSofter
 
+.balign 8
 dlabel g_pszSofter
     /* 75130 80274130 802A949C */ .word g_szSofter
 enddlabel g_pszSofter
@@ -4498,6 +4588,7 @@ enddlabel D_80274144
 
 nonmatching D_80274158
 
+.balign 8
 dlabel D_80274158
     /* 75158 80274158 802A94AC */ .word g_szDebugMsg6
     /* 7515C 8027415C 00000000 */ .word 0x00000000
@@ -4515,6 +4606,7 @@ enddlabel g_apSuspensionOptions
 nonmatching D_80274170
 
 /* Automatically generated and unreferenced pad */
+.balign 8
 dlabel D_80274170
     /* 75170 80274170 80274144 */ .word D_80274144
     /* 75174 80274174 80274158 */ .word D_80274158
@@ -4529,6 +4621,7 @@ enddlabel g_dwSuspensionOptionCount
 
 nonmatching g_DefaultDecalItem
 
+.balign 8
 dlabel g_DefaultDecalItem
     /* 75180 80274180 802A94B4 */ .word g_szDefault
 enddlabel g_DefaultDecalItem
@@ -4555,6 +4648,7 @@ enddlabel D_80274194
 
 nonmatching D_802741A8
 
+.balign 8
 dlabel D_802741A8
     /* 751A8 802741A8 802A94C4 */ .word g_szCustom
     /* 751AC 802741AC 00000000 */ .word 0x00000000
@@ -4572,6 +4666,7 @@ enddlabel g_apDecalOptions
 nonmatching D_802741C0
 
 /* Automatically generated and unreferenced pad */
+.balign 8
 dlabel D_802741C0
     /* 751C0 802741C0 80274194 */ .word D_80274194
     /* 751C4 802741C4 802741A8 */ .word D_802741A8
@@ -4587,6 +4682,7 @@ enddlabel g_dwDecalListCount
 .align 2
 nonmatching g_CameraViewAmbientLight
 
+.balign 8
 dlabel g_CameraViewAmbientLight
     /* 751D0 802741D0 */ .asciz "@@@"
     /* 40404000 */
@@ -4599,6 +4695,7 @@ enddlabel g_CameraViewAmbientLight
 
 nonmatching g_CameraViewLight1
 
+.balign 8
 dlabel g_CameraViewLight1
     /* 751D8 802741D8 FFFFFF00 */ .word 0xFFFFFF00
     /* 751DC 802741DC FFFFFF00 */ .word 0xFFFFFF00
@@ -4608,6 +4705,7 @@ enddlabel g_CameraViewLight1
 
 nonmatching g_CameraViewLight2
 
+.balign 8
 dlabel g_CameraViewLight2
     /* 751E8 802741E8 FFFFFF00 */ .word 0xFFFFFF00
     /* 751EC 802741EC FFFFFF00 */ .word 0xFFFFFF00
@@ -4617,6 +4715,7 @@ enddlabel g_CameraViewLight2
 
 nonmatching g_CameraViewLight3
 
+.balign 8
 dlabel g_CameraViewLight3
     /* 751F8 802741F8 FFFFFF00 */ .word 0xFFFFFF00
     /* 751FC 802741FC FFFFFF00 */ .word 0xFFFFFF00
@@ -4626,6 +4725,7 @@ enddlabel g_CameraViewLight3
 
 nonmatching g_CameraViewLight4
 
+.balign 8
 dlabel g_CameraViewLight4
     /* 75208 80274208 FFFFFF00 */ .word 0xFFFFFF00
     /* 7520C 8027420C FFFFFF00 */ .word 0xFFFFFF00
@@ -4635,6 +4735,7 @@ enddlabel g_CameraViewLight4
 
 nonmatching g_bCarSelectInitialized
 
+.balign 8
 dlabel g_bCarSelectInitialized
     /* 75218 80274218 00000000 */ .word 0x00000000
 enddlabel g_bCarSelectInitialized
@@ -4648,6 +4749,7 @@ enddlabel D_8027421C
 
 nonmatching g_aWeatherMenuItems
 
+.balign 8
 dlabel g_aWeatherMenuItems
     /* 75220 80274220 802A9990 */ .word g_szSunny
 enddlabel g_aWeatherMenuItems
@@ -4674,6 +4776,7 @@ enddlabel D_80274234
 
 nonmatching D_80274248
 
+.balign 8
 dlabel D_80274248
     /* 75248 80274248 802A999C */ .word g_szWeatherRainEur
     /* 7524C 8027424C 00000000 */ .word 0x00000000
@@ -4694,6 +4797,7 @@ enddlabel D_8027425C
 
 nonmatching D_80274270
 
+.balign 8
 dlabel D_80274270
     /* 75270 80274270 802A99AC */ .word g_szNight
     /* 75274 80274274 00000000 */ .word 0x00000000
@@ -4711,6 +4815,7 @@ enddlabel g_apWeatherMenuItems
 nonmatching D_80274288
 
 /* Automatically generated and unreferenced pad */
+.balign 8
 dlabel D_80274288
     /* 75288 80274288 80274234 */ .word D_80274234
     /* 7528C 8027428C 80274248 */ .word D_80274248
@@ -4721,6 +4826,7 @@ enddlabel D_80274288
 
 nonmatching g_MainMenuTitleTextureDesc
 
+.balign 8
 dlabel g_MainMenuTitleTextureDesc
     /* 752A0 802742A0 000DDDC0 */ .word 0x000DDDC0
     /* 752A4 802742A4 000DF0B0 */ .word 0x000DF0B0
@@ -4738,6 +4844,7 @@ enddlabel g_ChampionshipMenuItem
 nonmatching D_802742B8
 
 /* Automatically generated and unreferenced pad */
+.balign 8
 dlabel D_802742B8
     /* 752B8 802742B8 00000020 */ .word 0x00000020
     /* 752BC 802742BC 00000000 */ .word 0x00000000
@@ -4747,6 +4854,7 @@ enddlabel D_802742B8
 
 nonmatching g_ArcadeMenuItem
 
+.balign 8
 dlabel g_ArcadeMenuItem
     /* 752C8 802742C8 802A99E0 */ .word g_szArcade
 enddlabel g_ArcadeMenuItem
@@ -4770,6 +4878,7 @@ enddlabel g_TimeAttackMenuItem
 nonmatching D_802742E0
 
 /* Automatically generated and unreferenced pad */
+.balign 8
 dlabel D_802742E0
     /* 752E0 802742E0 00000020 */ .word 0x00000020
     /* 752E4 802742E4 00000000 */ .word 0x00000000
@@ -4779,6 +4888,7 @@ enddlabel D_802742E0
 
 nonmatching g_PracticeMenuItem
 
+.balign 8
 dlabel g_PracticeMenuItem
     /* 752F0 802742F0 802A99F4 */ .word g_szPractice
 enddlabel g_PracticeMenuItem
@@ -4802,6 +4912,7 @@ enddlabel g_PaintShopMenuItem
 nonmatching D_80274308
 
 /* Automatically generated and unreferenced pad */
+.balign 8
 dlabel D_80274308
     /* 75308 80274308 00000000 */ .word 0x00000000
     /* 7530C 8027430C 00000000 */ .word 0x00000000
@@ -4811,6 +4922,7 @@ enddlabel D_80274308
 
 nonmatching g_LoadSaveMenuItem
 
+.balign 8
 dlabel g_LoadSaveMenuItem
     /* 75318 80274318 802A9A0C */ .word g_szLoadSave
 enddlabel g_LoadSaveMenuItem
@@ -4834,6 +4946,7 @@ enddlabel g_OptionsMenuItem
 nonmatching D_80274330
 
 /* Automatically generated and unreferenced pad */
+.balign 8
 dlabel D_80274330
     /* 75330 80274330 00000000 */ .word 0x00000000
     /* 75334 80274334 00000000 */ .word 0x00000000
@@ -4843,6 +4956,7 @@ enddlabel D_80274330
 
 nonmatching g_apMainMenuItems
 
+.balign 8
 dlabel g_apMainMenuItems
     /* 75340 80274340 802742B4 */ .word g_ChampionshipMenuItem
 enddlabel g_apMainMenuItems
@@ -4855,6 +4969,7 @@ enddlabel g_pUnref80274344
 
 nonmatching g_pDifficultySelectState3
 
+.balign 8
 dlabel g_pDifficultySelectState3
     /* 75348 80274348 802742DC */ .word g_TimeAttackMenuItem
 enddlabel g_pDifficultySelectState3
@@ -4867,6 +4982,7 @@ enddlabel g_pDifficultySelectState4
 
 nonmatching g_pDifficultySelectState5
 
+.balign 8
 dlabel g_pDifficultySelectState5
     /* 75350 80274350 80274304 */ .word g_PaintShopMenuItem
 enddlabel g_pDifficultySelectState5
@@ -4879,6 +4995,7 @@ enddlabel g_pDifficultySelectState6
 
 nonmatching g_pDifficultySelectState7
 
+.balign 8
 dlabel g_pDifficultySelectState7
     /* 75358 80274358 8027432C */ .word g_OptionsMenuItem
 enddlabel g_pDifficultySelectState7
@@ -4892,6 +5009,7 @@ enddlabel D_8027435C
 
 nonmatching g_dwMainMenuEntrySource
 
+.balign 8
 dlabel g_dwMainMenuEntrySource
     /* 75360 80274360 00000000 */ .word 0x00000000
 enddlabel g_dwMainMenuEntrySource
@@ -4904,6 +5022,7 @@ enddlabel g_dwMainMenuInitState
 
 nonmatching g_dwUnlockAllCheatPressCount
 
+.balign 8
 dlabel g_dwUnlockAllCheatPressCount
     /* 75368 80274368 00000000 */ .word 0x00000000
     /* 7536C 8027436C 00000000 */ .word 0x00000000
@@ -4911,6 +5030,7 @@ enddlabel g_dwUnlockAllCheatPressCount
 
 nonmatching g_OnePlayerMenuItem
 
+.balign 8
 dlabel g_OnePlayerMenuItem
     /* 75370 80274370 802A9A60 */ .word g_szOnePlayer
 enddlabel g_OnePlayerMenuItem
@@ -4933,6 +5053,7 @@ enddlabel g_TwoPlayersMenuItem
 
 nonmatching g_dwDifficultySelectFlags
 
+.balign 8
 dlabel g_dwDifficultySelectFlags
     /* 75388 80274388 00000008 */ .word 0x00000008
 enddlabel g_dwDifficultySelectFlags
@@ -4948,6 +5069,7 @@ enddlabel D_8027438C
 
 nonmatching g_apPlayerCountMenuItems
 
+.balign 8
 dlabel g_apPlayerCountMenuItems
     /* 75398 80274398 80274370 */ .word g_OnePlayerMenuItem
 enddlabel g_apPlayerCountMenuItems
@@ -4961,6 +5083,7 @@ enddlabel g_pDifficultySelectState2
 nonmatching D_802743A0
 
 /* Automatically generated and unreferenced pad */
+.balign 8
 dlabel D_802743A0
     /* 753A0 802743A0 00000000 */ .word 0x00000000
 enddlabel D_802743A0
@@ -4968,6 +5091,7 @@ enddlabel D_802743A0
 nonmatching D_802743A8
 
 /* Automatically generated and unreferenced pad */
+.balign 8
 dlabel D_802743A8
     /* 753A8 802743A8 00000000 */ .word 0x00000000
     /* 753AC 802743AC 00000000 */ .word 0x00000000
@@ -4975,6 +5099,7 @@ enddlabel D_802743A8
 
 nonmatching g_OptionSettings
 
+.balign 8
 dlabel g_OptionSettings
     /* 753B0 802743B0 0000000A */ .word 0x0000000A
     /* 753B4 802743B4 0000000A */ .word 0x0000000A
@@ -4990,6 +5115,7 @@ enddlabel g_aOptionsMenuItems
 nonmatching D_802743C0
 
 /* Automatically generated and unreferenced pad */
+.balign 8
 dlabel D_802743C0
     /* 753C0 802743C0 00000043 */ .word 0x00000043
     /* 753C4 802743C4 00000000 */ .word 0x00000000
@@ -4999,6 +5125,7 @@ enddlabel D_802743C0
 
 nonmatching D_802743D0
 
+.balign 8
 dlabel D_802743D0
     /* 753D0 802743D0 802A9AD4 */ .word g_szOptionSfxEur
     /* 753D4 802743D4 00000043 */ .word 0x00000043
@@ -5019,6 +5146,7 @@ enddlabel D_802743E4
 
 nonmatching D_802743F8
 
+.balign 8
 dlabel D_802743F8
     /* 753F8 802743F8 802A9AE0 */ .word g_szControllerConfiguration
     /* 753FC 802743FC 00000000 */ .word 0x00000000
@@ -5039,6 +5167,7 @@ enddlabel D_8027440C
 
 nonmatching g_apOptionsMenuItems
 
+.balign 8
 dlabel g_apOptionsMenuItems
     /* 75420 80274420 802743BC */ .word g_aOptionsMenuItems
 enddlabel g_apOptionsMenuItems
@@ -5056,6 +5185,7 @@ enddlabel D_80274424
 
 nonmatching g_adwBgmVolumeLevels
 
+.balign 8
 dlabel g_adwBgmVolumeLevels
     /* 75438 80274438 00000000 */ .word 0x00000000
     /* 7543C 8027443C 00000004 */ .word 0x00000004
@@ -5088,6 +5218,7 @@ enddlabel g_adwSfxVolumeLevels
 
 nonmatching g_dwOptionsChangedNeedsSave
 
+.balign 8
 dlabel g_dwOptionsChangedNeedsSave
     /* 75490 80274490 00000000 */ .word 0x00000000
 enddlabel g_dwOptionsChangedNeedsSave
@@ -5095,6 +5226,7 @@ enddlabel g_dwOptionsChangedNeedsSave
 nonmatching D_80274498
 
 /* Automatically generated and unreferenced pad */
+.balign 8
 dlabel D_80274498
     /* 75498 80274498 00000000 */ .word 0x00000000
     /* 7549C 8027449C 00000000 */ .word 0x00000000
@@ -5102,6 +5234,7 @@ enddlabel D_80274498
 
 nonmatching gControllerPakState
 
+.balign 8
 dlabel gControllerPakState
     /* 754A0 802744A0 00000000 */ .word 0x00000000
 enddlabel gControllerPakState
@@ -5117,6 +5250,7 @@ enddlabel g_bSaveLoadEntryPoint
 
 nonmatching g_bSaveLoadMenuInitialized
 
+.balign 8
 dlabel g_bSaveLoadMenuInitialized
     /* 754A8 802744A8 00000000 */ .word 0x00000000
 enddlabel g_bSaveLoadMenuInitialized
@@ -5129,6 +5263,7 @@ enddlabel g_bSaveLoadRumbleSwapPending
 
 nonmatching g_pPakDataBuffer
 
+.balign 8
 dlabel g_pPakDataBuffer
     /* 754B0 802744B0 00000000 */ .word 0x00000000
 enddlabel g_pPakDataBuffer
@@ -5142,6 +5277,7 @@ enddlabel g_abSaveLoadSeasonNoteName
 nonmatching D_802744B8
 
 /* Automatically generated and unreferenced pad */
+.balign 8
 dlabel D_802744B8
     /* 754B8 802744B8 201E1A2B */ .word 0x201E1A2B
     /* 754BC 802744BC 0F2C1E1A */ .word 0x0F2C1E1A
@@ -5157,6 +5293,7 @@ enddlabel g_abSaveLoadGhostNoteName
 nonmatching D_802744C8
 
 /* Automatically generated and unreferenced pad */
+.balign 8
 dlabel D_802744C8
     /* 754C8 802744C8 201E1A2B */ .word 0x201E1A2B
     /* 754CC 802744CC 0F202128 */ .word 0x0F202128
@@ -5172,6 +5309,7 @@ enddlabel g_abSaveLoadOptionsNoteName
 nonmatching D_802744D8
 
 /* Automatically generated and unreferenced pad */
+.balign 8
 dlabel D_802744D8
     /* 754D8 802744D8 201E1A2B */ .word 0x201E1A2B
     /* 754DC 802744DC 0F28292D */ .word 0x0F28292D
@@ -5187,6 +5325,7 @@ enddlabel g_abSaveLoadNoteExtension
 .align 2
 nonmatching g_aLoadMenuItems
 
+.balign 8
 dlabel g_aLoadMenuItems
     /* 754E8 802744E8 */ .asciz "\r"
     /* 0D000000 */
@@ -5226,6 +5365,7 @@ enddlabel g_aLoadMenuItems
 
 nonmatching g_aSaveSeasonMenuItems
 
+.balign 8
 dlabel g_aSaveSeasonMenuItems
     /* 75568 80274568 07000000 */ .word 0x07000000
     /* 7556C 8027456C 802A9CC4 */ .word D_802A9CC4
@@ -5243,6 +5383,7 @@ enddlabel g_aSaveSeasonMenuItems
 
 nonmatching g_aSaveGhostMenuItems
 
+.balign 8
 dlabel g_aSaveGhostMenuItems
     /* 75598 80274598 03000000 */ .word 0x03000000
     /* 7559C 8027459C 802A9D1C */ .word D_802A9D1C
@@ -5256,6 +5397,7 @@ enddlabel g_aSaveGhostMenuItems
 
 nonmatching g_bSaveLoadMenuCursor
 
+.balign 8
 dlabel g_bSaveLoadMenuCursor
     /* 755B8 802745B8 00000000 */ .word 0x00000000
 enddlabel g_bSaveLoadMenuCursor
@@ -5268,6 +5410,7 @@ enddlabel g_bSaveLoadStep
 
 nonmatching g_abPakDataSeasonNoteName
 
+.balign 8
 dlabel g_abPakDataSeasonNoteName
     /* 755C0 802745C0 2D28290F */ .word 0x2D28290F
 enddlabel g_abPakDataSeasonNoteName
@@ -5283,6 +5426,7 @@ enddlabel D_802745C4
 
 nonmatching g_abPakDataGhostNoteName
 
+.balign 8
 dlabel g_abPakDataGhostNoteName
     /* 755D0 802745D0 2D28290F */ .word 0x2D28290F
 enddlabel g_abPakDataGhostNoteName
@@ -5298,6 +5442,7 @@ enddlabel D_802745D4
 
 nonmatching g_abPakDataConfigurationNoteName
 
+.balign 8
 dlabel g_abPakDataConfigurationNoteName
     /* 755E0 802745E0 2D28290F */ .word 0x2D28290F
 enddlabel g_abPakDataConfigurationNoteName
@@ -5313,6 +5458,7 @@ enddlabel D_802745E4
 
 nonmatching g_abPakDataNoteExtension
 
+.balign 8
 dlabel g_abPakDataNoteExtension
     /* 755F0 802745F0 00000000 */ .word 0x00000000
 enddlabel g_abPakDataNoteExtension
@@ -5328,6 +5474,7 @@ enddlabel D_802745F4
 
 nonmatching g_texControllerLayout0
 
+.balign 8
 dlabel g_texControllerLayout0
     /* 75600 80274600 001FF730 */ .word 0x001FF730
     /* 75604 80274604 001FFA50 */ .word 0x001FFA50
@@ -5348,6 +5495,7 @@ enddlabel g_texControllerLayout1
 
 nonmatching g_texControllerLayout2
 
+.balign 8
 dlabel g_texControllerLayout2
     /* 75628 80274628 001FFDC0 */ .word 0x001FFDC0
     /* 7562C 8027462C 002000A0 */ .word 0x002000A0
@@ -5368,6 +5516,7 @@ enddlabel g_texControllerLayout3
 
 nonmatching g_texControllerLayout4
 
+.balign 8
 dlabel g_texControllerLayout4
     /* 75650 80274650 002003B0 */ .word 0x002003B0
     /* 75654 80274654 00200680 */ .word 0x00200680
@@ -5385,6 +5534,7 @@ enddlabel g_pszControllerConfigTypeA
 nonmatching D_80274668
 
 /* Automatically generated and unreferenced pad */
+.balign 8
 dlabel D_80274668
     /* 75668 80274668 00000004 */ .word 0x00000004
     /* 7566C 8027466C 00000000 */ .word 0x00000000
@@ -5394,6 +5544,7 @@ enddlabel D_80274668
 
 nonmatching g_pszTypeC
 
+.balign 8
 dlabel g_pszTypeC
     /* 75678 80274678 802AAD78 */ .word g_szTypeC
 enddlabel g_pszTypeC
@@ -5417,6 +5568,7 @@ enddlabel g_pszTypeD
 nonmatching D_80274690
 
 /* Automatically generated and unreferenced pad */
+.balign 8
 dlabel D_80274690
     /* 75690 80274690 00000004 */ .word 0x00000004
     /* 75694 80274694 00000000 */ .word 0x00000000
@@ -5426,6 +5578,7 @@ enddlabel D_80274690
 
 nonmatching g_pszSteeringWheel
 
+.balign 8
 dlabel g_pszSteeringWheel
     /* 756A0 802746A0 802AAD88 */ .word g_szSteeringWheel
 enddlabel g_pszSteeringWheel
@@ -5449,6 +5602,7 @@ enddlabel g_apControllerScreenItems
 nonmatching D_802746B8
 
 /* Automatically generated and unreferenced pad */
+.balign 8
 dlabel D_802746B8
     /* 756B8 802746B8 80274678 */ .word g_pszTypeC
     /* 756BC 802746BC 8027468C */ .word g_pszTypeD
@@ -5456,6 +5610,7 @@ enddlabel D_802746B8
 
 nonmatching g_pControllerConfigStrings
 
+.balign 8
 dlabel g_pControllerConfigStrings
     /* 756C0 802746C0 802746A0 */ .word g_pszSteeringWheel
 enddlabel g_pControllerConfigStrings
@@ -5476,6 +5631,7 @@ enddlabel D_802746CC
 
 nonmatching g_BootIdleThreadObj
 
+.balign 8
 dlabel g_BootIdleThreadObj
     /* 756D0 802746D0 00000000 */ .word 0x00000000
     /* 756D4 802746D4 00000000 */ .word 0x00000000
@@ -5589,6 +5745,7 @@ enddlabel g_BootIdleThreadObj
 
 nonmatching g_MainGameThreadObj
 
+.balign 8
 dlabel g_MainGameThreadObj
     /* 75880 80274880 00000000 */ .word 0x00000000
     /* 75884 80274884 00000000 */ .word 0x00000000
@@ -5702,6 +5859,7 @@ enddlabel g_MainGameThreadObj
 
 nonmatching g_RspDoneThreadObj
 
+.balign 8
 dlabel g_RspDoneThreadObj
     /* 75A30 80274A30 00000000 */ .word 0x00000000
     /* 75A34 80274A34 00000000 */ .word 0x00000000
@@ -5815,6 +5973,7 @@ enddlabel g_RspDoneThreadObj
 
 nonmatching g_RdpDoneThreadObj
 
+.balign 8
 dlabel g_RdpDoneThreadObj
     /* 75BE0 80274BE0 00000000 */ .word 0x00000000
     /* 75BE4 80274BE4 00000000 */ .word 0x00000000
@@ -5928,6 +6087,7 @@ enddlabel g_RdpDoneThreadObj
 
 nonmatching g_PreNmiResetHandlerThreadObj
 
+.balign 8
 dlabel g_PreNmiResetHandlerThreadObj
     /* 75D90 80274D90 00000000 */ .word 0x00000000
     /* 75D94 80274D94 00000000 */ .word 0x00000000
@@ -6041,6 +6201,7 @@ enddlabel g_PreNmiResetHandlerThreadObj
 
 nonmatching g_dwIoMessagePoolIndex
 
+.balign 8
 dlabel g_dwIoMessagePoolIndex
     /* 75F40 80274F40 00000000 */ .word 0x00000000
 enddlabel g_dwIoMessagePoolIndex
@@ -6053,6 +6214,7 @@ enddlabel g_dwIoMessagePendingCount
 
 nonmatching g_SiMesgQueue
 
+.balign 8
 dlabel g_SiMesgQueue
     /* 75F48 80274F48 00000000 */ .word 0x00000000
     /* 75F4C 80274F4C 00000000 */ .word 0x00000000
@@ -6064,6 +6226,7 @@ enddlabel g_SiMesgQueue
 
 nonmatching g_aSiEventMesgBuf
 
+.balign 8
 dlabel g_aSiEventMesgBuf
     /* 75F60 80274F60 00000000 */ .word 0x00000000
     /* 75F64 80274F64 00000000 */ .word 0x00000000
@@ -6071,6 +6234,7 @@ enddlabel g_aSiEventMesgBuf
 
 nonmatching g_aGfxDisplayListPool
 
+.balign 8
 dlabel g_aGfxDisplayListPool
     /* 75F68 80274F68 00000000 */ .word 0x00000000
     /* 75F6C 80274F6C 00000000 */ .word 0x00000000
@@ -30324,6 +30488,7 @@ enddlabel g_aGfxDisplayListPool
 
 nonmatching g_pDisplayListBase
 
+.balign 8
 dlabel g_pDisplayListBase
     /* 8DA48 8028CA48 00000000 */ .word 0x00000000
 enddlabel g_pDisplayListBase
@@ -30336,6 +30501,7 @@ enddlabel g_dwDisplayModeChangeCountdown
 
 nonmatching g_dwScreenScaleShift
 
+.balign 8
 dlabel g_dwScreenScaleShift
     /* 8DA50 8028CA50 00000000 */ .word 0x00000000
 enddlabel g_dwScreenScaleShift
@@ -30348,6 +30514,7 @@ enddlabel g_dwAppliedScreenScaleShift
 
 nonmatching gDisplayListPtr
 
+.balign 8
 dlabel gDisplayListPtr
     /* 8DA58 8028CA58 00000000 */ .word 0x00000000
 enddlabel gDisplayListPtr
@@ -30360,6 +30527,7 @@ enddlabel g_dwFrameBufferIndex
 
 nonmatching g_pRdpOutputBuffer
 
+.balign 8
 dlabel g_pRdpOutputBuffer
     /* 8DA60 8028CA60 803B1000 */ .word 0x803B1000
 enddlabel g_pRdpOutputBuffer
@@ -30372,6 +30540,7 @@ enddlabel g_pRdpOutputBufferEnd
 
 nonmatching g_dwKeepCustomClipPlanes
 
+.balign 8
 dlabel g_dwKeepCustomClipPlanes
     /* 8DA68 8028CA68 00000000 */ .word 0x00000000
 enddlabel g_dwKeepCustomClipPlanes
@@ -30384,6 +30553,7 @@ enddlabel g_fCameraNearScale
 
 nonmatching g_fCameraFarDistance
 
+.balign 8
 dlabel g_fCameraFarDistance
     /* 8DA70 8028CA70 00000000 */ .float 0
 enddlabel g_fCameraFarDistance
@@ -30403,6 +30573,7 @@ enddlabel D_8028CA76
 
 nonmatching g_pProjectionMtx
 
+.balign 8
 dlabel g_pProjectionMtx
     /* 8DA78 8028CA78 00000000 */ .word 0x00000000
 enddlabel g_pProjectionMtx
@@ -30415,6 +30586,7 @@ enddlabel g_dwCurrentTrackRomOffset
 
 nonmatching g_dwTrackTextureRomOffset
 
+.balign 8
 dlabel g_dwTrackTextureRomOffset
     /* 8DA80 8028CA80 00000000 */ .word 0x00000000
 enddlabel g_dwTrackTextureRomOffset
@@ -30427,6 +30599,7 @@ enddlabel g_dwKeepScreenBlanked
 
 nonmatching g_dwScreenUnblankDelay
 
+.balign 8
 dlabel g_dwScreenUnblankDelay
     /* 8DA88 8028CA88 00000000 */ .word 0x00000000
 enddlabel g_dwScreenUnblankDelay
@@ -30439,6 +30612,7 @@ enddlabel g_dwPreNmiResetPending
 
 nonmatching g_pszDebugMessage
 
+.balign 8
 dlabel g_pszDebugMessage
     /* 8DA90 8028CA90 00000000 */ .word 0x00000000
 enddlabel g_pszDebugMessage
@@ -30451,6 +30625,7 @@ enddlabel g_dwTimingBarsRenderMode0
 
 nonmatching g_dwTimingBarsRenderMode1
 
+.balign 8
 dlabel g_dwTimingBarsRenderMode1
     /* 8DA98 8028CA98 00000000 */ .word 0x00000000
 enddlabel g_dwTimingBarsRenderMode1
@@ -30463,6 +30638,7 @@ enddlabel g_dwTextureFilterMode
 
 nonmatching g_dwAlphaDitherMode
 
+.balign 8
 dlabel g_dwAlphaDitherMode
     /* 8DAA0 8028CAA0 00000000 */ .word 0x00000000
 enddlabel g_dwAlphaDitherMode
@@ -30475,6 +30651,7 @@ enddlabel g_dwColorDitherMode
 
 nonmatching g_dwClipRatioIndex
 
+.balign 8
 dlabel g_dwClipRatioIndex
     /* 8DAA8 8028CAA8 00000000 */ .word 0x00000000
 enddlabel g_dwClipRatioIndex
@@ -30487,6 +30664,7 @@ enddlabel g_dwViewportMirrored
 
 nonmatching g_dwTrackMirrored
 
+.balign 8
 dlabel g_dwTrackMirrored
     /* 8DAB0 8028CAB0 00000000 */ .word 0x00000000
 enddlabel g_dwTrackMirrored
@@ -30500,6 +30678,7 @@ enddlabel g_fCountsPerMillisecond
 nonmatching D_8028CAB8
 
 /* Automatically generated and unreferenced pad */
+.balign 8
 dlabel D_8028CAB8
     /* 8DAB8 8028CAB8 00000000 */ .word 0x00000000
     /* 8DABC 8028CABC 00000000 */ .word 0x00000000
@@ -30509,6 +30688,7 @@ enddlabel D_8028CAB8
 
 nonmatching g_mtxIdentity
 
+.balign 8
 dlabel g_mtxIdentity
     /* 8DAC8 8028CAC8 00010000 */ .word 0x00010000
     /* 8DACC 8028CACC 00000000 */ .word 0x00000000
@@ -30530,6 +30710,7 @@ enddlabel g_mtxIdentity
 
 nonmatching g_aClipRatioDisplayLists
 
+.balign 8
 dlabel g_aClipRatioDisplayLists
     /* 8DB08 8028CB08 BC000404 */ .word 0xBC000404
     /* 8DB0C 8028CB0C 00000001 */ .word 0x00000001
@@ -30585,6 +30766,7 @@ enddlabel g_aClipRatioDisplayLists
 
 nonmatching D_8028CBD0
 
+.balign 8
 dlabel D_8028CBD0
     /* 8DBD0 8028CBD0 BC000404 */ .word 0xBC000404
     /* 8DBD4 8028CBD4 00000006 */ .word 0x00000006
@@ -30600,6 +30782,7 @@ enddlabel D_8028CBD0
 
 nonmatching g_DefaultLights
 
+.balign 8
 dlabel g_DefaultLights
     /* 8DBF8 8028CBF8 33334000 */ .word 0x33334000
 enddlabel g_DefaultLights
@@ -30615,6 +30798,7 @@ enddlabel g_dwSpeedometerDigit1
 
 nonmatching D_8028CC00
 
+.balign 8
 dlabel D_8028CC00
     /* 8DC00 8028CC00 EEEECC00 */ .word 0xEEEECC00
 enddlabel D_8028CC00
@@ -30628,6 +30812,7 @@ enddlabel g_dwSpeedometerX
 .align 2
 nonmatching g_dwSpeedometerY
 
+.balign 8
 dlabel g_dwSpeedometerY
     /* 8DC08 8028CC08 */ .asciz "TTT"
     /* 54545400 */
@@ -30642,6 +30827,7 @@ enddlabel g_dwSpeedometerColor
 
 nonmatching g_dwStatVerticesDrawn
 
+.balign 8
 dlabel g_dwStatVerticesDrawn
     /* 8DC10 8028CC10 00000000 */ .word 0x00000000
 enddlabel g_dwStatVerticesDrawn
@@ -30654,6 +30840,7 @@ enddlabel g_dwStatUnused0
 
 nonmatching g_dwStatTrianglesDrawn
 
+.balign 8
 dlabel g_dwStatTrianglesDrawn
     /* 8DC18 8028CC18 00000000 */ .word 0x00000000
 enddlabel g_dwStatTrianglesDrawn
@@ -30669,6 +30856,7 @@ enddlabel D_8028CC1C
 
 nonmatching g_dwFlushValueSource
 
+.balign 8
 dlabel g_dwFlushValueSource
     /* 8DC28 8028CC28 00000000 */ .word 0x00000000
 enddlabel g_dwFlushValueSource
@@ -30682,6 +30870,7 @@ enddlabel g_dwLastFlushValue
 nonmatching D_8028CC30
 
 /* Automatically generated and unreferenced pad */
+.balign 8
 dlabel D_8028CC30
     /* 8DC30 8028CC30 00000000 */ .word 0x00000000
 enddlabel D_8028CC30
@@ -30694,6 +30883,7 @@ enddlabel g_dwStatUnused1
 
 nonmatching g_dwStatUnused2
 
+.balign 8
 dlabel g_dwStatUnused2
     /* 8DC38 8028CC38 00000000 */ .word 0x00000000
 enddlabel g_dwStatUnused2
@@ -30706,6 +30896,7 @@ enddlabel g_dwStatUnused3
 
 nonmatching g_dwStatPolygonsDrawn
 
+.balign 8
 dlabel g_dwStatPolygonsDrawn
     /* 8DC40 8028CC40 00000000 */ .word 0x00000000
 enddlabel g_dwStatPolygonsDrawn
@@ -30719,6 +30910,7 @@ enddlabel g_dwStatVehicleTriangles
 nonmatching D_8028CC48
 
 /* Automatically generated and unreferenced pad */
+.balign 8
 dlabel D_8028CC48
     /* 8DC48 8028CC48 00000001 */ .word 0x00000001
 enddlabel D_8028CC48
@@ -30731,6 +30923,7 @@ enddlabel g_bTrackTextureLod
 
 nonmatching g_bSmoothShading
 
+.balign 8
 dlabel g_bSmoothShading
     /* 8DC50 8028CC50 00000001 */ .word 0x00000001
 enddlabel g_bSmoothShading
@@ -30743,6 +30936,7 @@ enddlabel g_dwViGammaEnabled
 
 nonmatching g_bGbiClipping
 
+.balign 8
 dlabel g_bGbiClipping
     /* 8DC58 8028CC58 00000001 */ .word 0x00000001
 enddlabel g_bGbiClipping
@@ -30756,6 +30950,7 @@ enddlabel g_dwRearViewMirrorMode
 nonmatching D_8028CC60
 
 /* Automatically generated and unreferenced pad */
+.balign 8
 dlabel D_8028CC60
     /* 8DC60 8028CC60 00000001 */ .word 0x00000001
 enddlabel D_8028CC60
@@ -30768,6 +30963,7 @@ enddlabel g_dwSkyboxDisabled
 
 nonmatching g_bShadowCullDisabled
 
+.balign 8
 dlabel g_bShadowCullDisabled
     /* 8DC68 8028CC68 00000000 */ .word 0x00000000
 enddlabel g_bShadowCullDisabled
@@ -30781,6 +30977,7 @@ enddlabel D_8028CC6C
 
 nonmatching g_bBilinearFiltering
 
+.balign 8
 dlabel g_bBilinearFiltering
     /* 8DC70 8028CC70 00000001 */ .word 0x00000001
 enddlabel g_bBilinearFiltering
@@ -30793,6 +30990,7 @@ enddlabel g_bShowHudHelpText
 
 nonmatching g_dwVehicleCullingDisabled
 
+.balign 8
 dlabel g_dwVehicleCullingDisabled
     /* 8DC78 8028CC78 00000000 */ .word 0x00000000
 enddlabel g_dwVehicleCullingDisabled
@@ -30806,6 +31004,7 @@ enddlabel D_8028CC7C
 
 nonmatching g_dwWeatherActive
 
+.balign 8
 dlabel g_dwWeatherActive
     /* 8DC80 8028CC80 00000000 */ .word 0x00000000
 enddlabel g_dwWeatherActive
@@ -30818,6 +31017,7 @@ enddlabel g_dwStreamDmaPrevSegment
 
 nonmatching g_dwNightMode
 
+.balign 8
 dlabel g_dwNightMode
     /* 8DC88 8028CC88 00000000 */ .word 0x00000000
 enddlabel g_dwNightMode
@@ -30830,6 +31030,7 @@ enddlabel g_dwSnowMode
 
 nonmatching g_dwStreamedSnowMode
 
+.balign 8
 dlabel g_dwStreamedSnowMode
     /* 8DC90 8028CC90 FFFFFFFF */ .word 0xFFFFFFFF
 enddlabel g_dwStreamedSnowMode
@@ -30843,6 +31044,7 @@ enddlabel g_dwRainMode
 nonmatching D_8028CC98
 
 /* Automatically generated and unreferenced pad */
+.balign 8
 dlabel D_8028CC98
     /* 8DC98 8028CC98 00000001 */ .word 0x00000001
 enddlabel D_8028CC98
@@ -30855,6 +31057,7 @@ enddlabel g_bShowDepthBuffer
 
 nonmatching g_dwHudDebugLevel
 
+.balign 8
 dlabel g_dwHudDebugLevel
     /* 8DCA0 8028CCA0 00000000 */ .word 0x00000000
 enddlabel g_dwHudDebugLevel
@@ -30868,6 +31071,7 @@ enddlabel g_dwVehicleLodBias
 nonmatching D_8028CCA8
 
 /* Automatically generated and unreferenced pad */
+.balign 8
 dlabel D_8028CCA8
     /* 8DCA8 8028CCA8 00000000 */ .word 0x00000000
     /* 8DCAC 8028CCAC 00000000 */ .word 0x00000000
@@ -30877,6 +31081,7 @@ enddlabel D_8028CCA8
 
 nonmatching g_dwScreenWidth
 
+.balign 8
 dlabel g_dwScreenWidth
     /* 8DCB8 8028CCB8 00000140 */ .word 0x00000140
 enddlabel g_dwScreenWidth
@@ -30890,6 +31095,7 @@ enddlabel g_dwScreenHeight
 nonmatching D_8028CCC0
 
 /* Automatically generated and unreferenced pad */
+.balign 8
 dlabel D_8028CCC0
     /* 8DCC0 8028CCC0 00000140 */ .word 0x00000140
     /* 8DCC4 8028CCC4 000000F0 */ .word 0x000000F0
@@ -30897,6 +31103,7 @@ enddlabel D_8028CCC0
 
 nonmatching g_fCameraFovRadians
 
+.balign 8
 dlabel g_fCameraFovRadians
     /* 8DCC8 8028CCC8 3F060A92 */ .word 0x3F060A92
 enddlabel g_fCameraFovRadians
@@ -30909,6 +31116,7 @@ enddlabel g_fFrustumFovAngle
 
 nonmatching g_fCameraProjectionScale
 
+.balign 8
 dlabel g_fCameraProjectionScale
     /* 8DCD0 8028CCD0 43C80000 */ .float 400
 enddlabel g_fCameraProjectionScale
@@ -30921,6 +31129,7 @@ enddlabel gFrustumFar
 
 nonmatching g_dwPrevElapsedTimeMs
 
+.balign 8
 dlabel g_dwPrevElapsedTimeMs
     /* 8DCD8 8028CCD8 00000000 */ .word 0x00000000
 enddlabel g_dwPrevElapsedTimeMs
@@ -30933,6 +31142,7 @@ enddlabel g_dwElapsedTimeMs
 
 nonmatching g_fFrameDeltaTime
 
+.balign 8
 dlabel g_fFrameDeltaTime
     /* 8DCE0 8028CCE0 00000000 */ .float 0
 enddlabel g_fFrameDeltaTime
@@ -30945,6 +31155,7 @@ enddlabel g_dwFrameDeltaMs
 
 nonmatching g_dwFlushInterval
 
+.balign 8
 dlabel g_dwFlushInterval
     /* 8DCE8 8028CCE8 00000000 */ .word 0x00000000
 enddlabel g_dwFlushInterval
@@ -30957,6 +31168,7 @@ enddlabel g_dwFlushStartTime
 
 nonmatching g_dwFlushDuration
 
+.balign 8
 dlabel g_dwFlushDuration
     /* 8DCF0 8028CCF0 00000000 */ .word 0x00000000
 enddlabel g_dwFlushDuration
@@ -30969,6 +31181,7 @@ enddlabel g_dwCurrentSplitScreenIndex
 
 nonmatching g_pActiveCameraVehicle
 
+.balign 8
 dlabel g_pActiveCameraVehicle
     /* 8DCF8 8028CCF8 00000000 */ .word 0x00000000
 enddlabel g_pActiveCameraVehicle
@@ -30981,6 +31194,7 @@ enddlabel g_pActiveCamera
 
 nonmatching g_fCameraRayGroundDistance
 
+.balign 8
 dlabel g_fCameraRayGroundDistance
     /* 8DD00 8028CD00 00000000 */ .word 0x00000000
 enddlabel g_fCameraRayGroundDistance
@@ -30993,6 +31207,7 @@ enddlabel g_dwCameraRayGroundSurface
 
 nonmatching g_dwCameraRayHitCount
 
+.balign 8
 dlabel g_dwCameraRayHitCount
     /* 8DD08 8028CD08 00000000 */ .word 0x00000000
 enddlabel g_dwCameraRayHitCount
@@ -31005,6 +31220,7 @@ enddlabel g_dwCameraRayNearbyCount
 
 nonmatching g_pCurrentVehicleModelData
 
+.balign 8
 dlabel g_pCurrentVehicleModelData
     /* 8DD10 8028CD10 00000000 */ .word 0x00000000
 enddlabel g_pCurrentVehicleModelData
@@ -31017,6 +31233,7 @@ enddlabel g_dwNumViewports
 
 nonmatching g_bRaceScreenActive
 
+.balign 8
 dlabel g_bRaceScreenActive
     /* 8DD18 8028CD18 00000000 */ .word 0x00000000
 enddlabel g_bRaceScreenActive
@@ -31030,6 +31247,7 @@ enddlabel D_8028CD1C
 
 nonmatching g_dwTextureRenderTile
 
+.balign 8
 dlabel g_dwTextureRenderTile
     /* 8DD20 8028CD20 00000000 */ .word 0x00000000
 enddlabel g_dwTextureRenderTile
@@ -31042,6 +31260,7 @@ enddlabel g_dwTextureTmemAddress
 
 nonmatching g_bFogR
 
+.balign 8
 dlabel g_bFogR
     /* 8DD28 8028CD28 */ .byte 0x00
     /* 8DD29 8028CD29 */ .byte 0x00
@@ -31060,6 +31279,7 @@ enddlabel g_bFogG
 
 nonmatching g_bFogB
 
+.balign 8
 dlabel g_bFogB
     /* 8DD30 8028CD30 */ .byte 0x00
     /* 8DD31 8028CD31 */ .byte 0x00
@@ -31078,6 +31298,7 @@ enddlabel g_bFogIntensity
 
 nonmatching g_dwFogMinDistance
 
+.balign 8
 dlabel g_dwFogMinDistance
     /* 8DD38 8028CD38 00000000 */ .word 0x00000000
 enddlabel g_dwFogMinDistance
@@ -31090,6 +31311,7 @@ enddlabel g_dwFogMaxDistance
 
 nonmatching g_dwFogFactorOffset
 
+.balign 8
 dlabel g_dwFogFactorOffset
     /* 8DD40 8028CD40 00000000 */ .word 0x00000000
 enddlabel g_dwFogFactorOffset
@@ -31102,6 +31324,7 @@ enddlabel g_dwFogFactorScale
 
 nonmatching g_bDirLightR
 
+.balign 8
 dlabel g_bDirLightR
     /* 8DD48 8028CD48 */ .byte 0x00
     /* 8DD49 8028CD49 */ .byte 0x00
@@ -31120,6 +31343,7 @@ enddlabel g_bDirLightG
 
 nonmatching g_bDirLightB
 
+.balign 8
 dlabel g_bDirLightB
     /* 8DD50 8028CD50 */ .byte 0x00
     /* 8DD51 8028CD51 */ .byte 0x00
@@ -31138,6 +31362,7 @@ enddlabel g_bAmbientLightR
 
 nonmatching g_bAmbientLightG
 
+.balign 8
 dlabel g_bAmbientLightG
     /* 8DD58 8028CD58 */ .byte 0x00
     /* 8DD59 8028CD59 */ .byte 0x00
@@ -31156,6 +31381,7 @@ enddlabel g_bAmbientLightB
 
 nonmatching g_dwDirLightColor
 
+.balign 8
 dlabel g_dwDirLightColor
     /* 8DD60 8028CD60 00000000 */ .word 0x00000000
 enddlabel g_dwDirLightColor
@@ -31168,6 +31394,7 @@ enddlabel g_dwAmbientLightColor
 
 nonmatching g_dwViewportIndex
 
+.balign 8
 dlabel g_dwViewportIndex
     /* 8DD68 8028CD68 00000000 */ .word 0x00000000
 enddlabel g_dwViewportIndex
@@ -31180,6 +31407,7 @@ enddlabel g_dwViewportScaleZ
 
 nonmatching g_dwViewportTransZ
 
+.balign 8
 dlabel g_dwViewportTransZ
     /* 8DD70 8028CD70 00000000 */ .word 0x00000000
 enddlabel g_dwViewportTransZ
@@ -31202,6 +31430,7 @@ enddlabel g_ViModePalHaf1
 
 nonmatching g_dwViModePalHaf1RamYScale0
 
+.balign 8
 dlabel g_dwViModePalHaf1RamYScale0
     /* 8DDA0 8028CDA0 00000000 */ .word 0x00000000
 enddlabel g_dwViModePalHaf1RamYScale0
@@ -31223,6 +31452,7 @@ enddlabel g_dwViModePalHaf1RamYScale1
 
 nonmatching g_dwViModePalHaf1RamVStart1
 
+.balign 8
 dlabel g_dwViModePalHaf1RamVStart1
     /* 8DDB8 8028CDB8 00000000 */ .word 0x00000000
     /* 8DDBC 8028CDBC 00000000 */ .word 0x00000000
@@ -31238,6 +31468,7 @@ enddlabel g_ViModePalLan1
 nonmatching D_8028CDC8
 
 /* Automatically generated and unreferenced pad */
+.balign 8
 dlabel D_8028CDC8
     /* 8DDC8 8028CDC8 00000000 */ .word 0x00000000
     /* 8DDCC 8028CDCC 00000000 */ .word 0x00000000
@@ -31253,6 +31484,7 @@ enddlabel D_8028CDC8
 
 nonmatching g_dwViModePalLan1RamYScale0
 
+.balign 8
 dlabel g_dwViModePalLan1RamYScale0
     /* 8DDF0 8028CDF0 00000000 */ .word 0x00000000
 enddlabel g_dwViModePalLan1RamYScale0
@@ -31274,6 +31506,7 @@ enddlabel g_dwViModePalLan1RamYScale1
 
 nonmatching g_dwViModePalLan1RamVStart1
 
+.balign 8
 dlabel g_dwViModePalLan1RamVStart1
     /* 8DE08 8028CE08 00000000 */ .word 0x00000000
     /* 8DE0C 8028CE0C 00000000 */ .word 0x00000000
@@ -31288,6 +31521,7 @@ enddlabel g_dwDisplayBlanked
 
 nonmatching g_dwContReadPending
 
+.balign 8
 dlabel g_dwContReadPending
     /* 8DE18 8028CE18 00000000 */ .word 0x00000000
 enddlabel g_dwContReadPending
@@ -31300,6 +31534,7 @@ enddlabel g_dwDisplayListCommandCount
 
 nonmatching g_dwPeakShadowCommandCount
 
+.balign 8
 dlabel g_dwPeakShadowCommandCount
     /* 8DE20 8028CE20 00000000 */ .word 0x00000000
 enddlabel g_dwPeakShadowCommandCount
@@ -31312,6 +31547,7 @@ enddlabel g_dwPeakShadowVertexCount
 
 nonmatching g_dwPeakDisplayListCommands
 
+.balign 8
 dlabel g_dwPeakDisplayListCommands
     /* 8DE28 8028CE28 00000000 */ .word 0x00000000
 enddlabel g_dwPeakDisplayListCommands
@@ -31324,6 +31560,7 @@ enddlabel g_dwFirstFlushDone
 
 nonmatching g_dwOutputBuffReserve
 
+.balign 8
 dlabel g_dwOutputBuffReserve
     /* 8DE30 8028CE30 00000000 */ .word 0x00000000
 enddlabel g_dwOutputBuffReserve
@@ -31337,6 +31574,7 @@ enddlabel D_8028CE34
 
 nonmatching g_aDlClearCombinePatch
 
+.balign 8
 dlabel g_aDlClearCombinePatch
     /* 8DE38 8028CE38 FC127E08 */ .word 0xFC127E08
 enddlabel g_aDlClearCombinePatch
@@ -31352,6 +31590,7 @@ enddlabel D_8028CE3C
 
 nonmatching g_aDlSnowTintCombines
 
+.balign 8
 dlabel g_aDlSnowTintCombines
     /* 8DE48 8028CE48 FCFFA004 */ .word 0xFCFFA004
 enddlabel g_aDlSnowTintCombines
@@ -31367,6 +31606,7 @@ enddlabel D_8028CE4C
 
 nonmatching g_aaDlTrackRenderModes
 
+.balign 8
 dlabel g_aaDlTrackRenderModes
     /* 8DE58 8028CE58 B900031D */ .word 0xB900031D
 enddlabel g_aaDlTrackRenderModes
@@ -31426,6 +31666,7 @@ enddlabel D_8028CE5C
 
 nonmatching g_aaDlGhostRenderModes
 
+.balign 8
 dlabel g_aaDlGhostRenderModes
     /* 8DF18 8028CF18 B900031D */ .word 0xB900031D
 enddlabel g_aaDlGhostRenderModes
@@ -31485,6 +31726,7 @@ enddlabel D_8028CF1C
 
 nonmatching g_aaDlGhostWheelRenderModes
 
+.balign 8
 dlabel g_aaDlGhostWheelRenderModes
     /* 8DFD8 8028CFD8 B900031D */ .word 0xB900031D
     /* 8DFDC 8028CFDC 0C192038 */ .word 0x0C192038
@@ -31538,6 +31780,7 @@ enddlabel g_aaDlGhostWheelRenderModes
 
 nonmatching g_bDisplayListSnowTint
 
+.balign 8
 dlabel g_bDisplayListSnowTint
     /* 8E098 8028D098 00000000 */ .word 0x00000000
 enddlabel g_bDisplayListSnowTint
@@ -31550,6 +31793,7 @@ enddlabel g_dwVblankCounter
 
 nonmatching g_bPakPort0Initialized
 
+.balign 8
 dlabel g_bPakPort0Initialized
     /* 8E0A0 8028D0A0 00000000 */ .word 0x00000000
     /* 8E0A4 8028D0A4 00000000 */ .word 0x00000000
@@ -31557,6 +31801,7 @@ enddlabel g_bPakPort0Initialized
 
 nonmatching g_dwFrameTimestamp
 
+.balign 8
 dlabel g_dwFrameTimestamp
     /* 8E0B0 8028D0B0 00000000 */ .word 0x00000000
 enddlabel g_dwFrameTimestamp
@@ -31569,6 +31814,7 @@ enddlabel g_dwNumTracks
 
 nonmatching g_dwCarCount
 
+.balign 8
 dlabel g_dwCarCount
     /* 8E0B8 8028D0B8 0000000D */ .word 0x0000000D
 enddlabel g_dwCarCount
@@ -31898,6 +32144,7 @@ enddlabel g_dwBootArgc
 
 nonmatching g_ppszBootArgv
 
+.balign 8
 dlabel g_ppszBootArgv
     /* 8E5A0 8028D5A0 80318130 */ .word g_apszBootArgv
 enddlabel g_ppszBootArgv
@@ -31913,6 +32160,7 @@ enddlabel D_8028D5A4
 
 nonmatching g_dwRaceFinishOrderCounter
 
+.balign 8
 dlabel g_dwRaceFinishOrderCounter
     /* 8E5B0 8028D5B0 00000000 */ .word 0x00000000
 enddlabel g_dwRaceFinishOrderCounter
@@ -31926,6 +32174,7 @@ enddlabel g_dwTotalLaps
 .align 2
 nonmatching g_szWrongWay
 
+.balign 8
 dlabel g_szWrongWay
     /* 8E5B8 8028D5B8 */ .asciz "%yyWRONG WAY"
     /* 25797957524F4E472057415900000000 */
@@ -31934,6 +32183,7 @@ enddlabel g_szWrongWay
 
 nonmatching g_vRayCeilingNormalInit
 
+.balign 8
 dlabel g_vRayCeilingNormalInit
     /* 8E5C8 8028D5C8 00000000 */ .word 0x00000000
 enddlabel g_vRayCeilingNormalInit
@@ -31955,6 +32205,7 @@ enddlabel g_vRayGroundNormalInit
 nonmatching D_8028D5D8
 
 /* Automatically generated and unreferenced pad */
+.balign 8
 dlabel D_8028D5D8
     /* 8E5D8 8028D5D8 00000000 */ .word 0x00000000
     /* 8E5DC 8028D5DC 3F800000 */ .word 0x3F800000
@@ -31962,6 +32213,7 @@ enddlabel D_8028D5D8
 
 nonmatching g_aCarPhysicsSpecs
 
+.balign 8
 dlabel g_aCarPhysicsSpecs
     /* 8E5E0 8028D5E0 00000000 */ .word 0x00000000
     /* 8E5E4 8028D5E4 404EB852 */ .word 0x404EB852
@@ -32215,6 +32467,7 @@ enddlabel g_aCarPhysicsSpecs
 
 nonmatching g_bVehicleTrackCollisionCorrected
 
+.balign 8
 dlabel g_bVehicleTrackCollisionCorrected
     /* 8E9C0 8028D9C0 00000000 */ .word 0x00000000
 enddlabel g_bVehicleTrackCollisionCorrected
@@ -32230,6 +32483,7 @@ enddlabel D_8028D9C4
 
 nonmatching g_fSteerLock
 
+.balign 8
 dlabel g_fSteerLock
     /* 8E9D0 8028D9D0 41600000 */ .float 14
 enddlabel g_fSteerLock
@@ -32242,6 +32496,7 @@ enddlabel g_fSteerRate
 
 nonmatching g_fSteerGain
 
+.balign 8
 dlabel g_fSteerGain
     /* 8E9D8 8028D9D8 40C00000 */ .float 6
 enddlabel g_fSteerGain
@@ -32254,6 +32509,7 @@ enddlabel g_fSteerLockLoss
 
 nonmatching g_wSteerGainSpeedShare
 
+.balign 8
 dlabel g_wSteerGainSpeedShare
     /* 8E9E0 8028D9E0 */ .short 0x0000
 enddlabel g_wSteerGainSpeedShare
@@ -32273,6 +32529,7 @@ enddlabel D_8028D9E2
 
 nonmatching g_dwFadeRectLeft
 
+.balign 8
 dlabel g_dwFadeRectLeft
     /* 8E9F0 8028D9F0 00000000 */ .word 0x00000000
 enddlabel g_dwFadeRectLeft
@@ -32285,6 +32542,7 @@ enddlabel g_dwFadeRectRight
 
 nonmatching g_dwFadeRectTop
 
+.balign 8
 dlabel g_dwFadeRectTop
     /* 8E9F8 8028D9F8 00000000 */ .word 0x00000000
 enddlabel g_dwFadeRectTop
@@ -32297,6 +32555,7 @@ enddlabel g_dwFadeRectBottom
 
 nonmatching g_fHeadlightGlare
 
+.balign 8
 dlabel g_fHeadlightGlare
     /* 8EA00 8028DA00 00000000 */ .float 0
 enddlabel g_fHeadlightGlare
@@ -32309,6 +32568,7 @@ enddlabel g_fFadeTarget
 
 nonmatching g_fFadeRate
 
+.balign 8
 dlabel g_fFadeRate
     /* 8EA08 8028DA08 00000000 */ .float 0
 enddlabel g_fFadeRate
@@ -32321,6 +32581,7 @@ enddlabel g_fFadeLevel
 
 nonmatching g_fMusicFadeTarget
 
+.balign 8
 dlabel g_fMusicFadeTarget
     /* 8EA10 8028DA10 3F800000 */ .float 1
 enddlabel g_fMusicFadeTarget
@@ -32333,6 +32594,7 @@ enddlabel g_fMusicFadeSpeed
 
 nonmatching g_fMusicFadeCurrent
 
+.balign 8
 dlabel g_fMusicFadeCurrent
     /* 8EA18 8028DA18 3F800000 */ .float 1
 enddlabel g_fMusicFadeCurrent
@@ -32345,6 +32607,7 @@ enddlabel g_fSfxFadeTarget
 
 nonmatching g_fSfxFadeSpeed
 
+.balign 8
 dlabel g_fSfxFadeSpeed
     /* 8EA20 8028DA20 00000000 */ .float 0
 enddlabel g_fSfxFadeSpeed
@@ -32357,6 +32620,7 @@ enddlabel g_fSfxFadeCurrent
 
 nonmatching g_dwFadeSkipFrame
 
+.balign 8
 dlabel g_dwFadeSkipFrame
     /* 8EA28 8028DA28 00000000 */ .word 0x00000000
 enddlabel g_dwFadeSkipFrame
@@ -32369,6 +32633,7 @@ enddlabel g_dwMusicFadeSkipFrame
 
 nonmatching g_dwSfxFadeSkipFrame
 
+.balign 8
 dlabel g_dwSfxFadeSkipFrame
     /* 8EA30 8028DA30 00000000 */ .word 0x00000000
 enddlabel g_dwSfxFadeSkipFrame
@@ -32388,6 +32653,7 @@ enddlabel D_8028DA3C
 
 nonmatching g_dwRandomSeed
 
+.balign 8
 dlabel g_dwRandomSeed
     /* 8EA40 8028DA40 00000000 */ .word 0x00000000
 enddlabel g_dwRandomSeed
@@ -32403,6 +32669,7 @@ enddlabel D_8028DA44
 
 nonmatching g_ClosestSoundSource
 
+.balign 8
 dlabel g_ClosestSoundSource
     /* 8EA50 8028DA50 00000000 */ .float 0
     /* 8EA54 8028DA54 00000000 */ .float 0
@@ -32433,6 +32700,7 @@ enddlabel g_dwChannel3PlayingSfxId
 
 nonmatching g_dwNumVehicles
 
+.balign 8
 dlabel g_dwNumVehicles
     /* 8EAA0 8028DAA0 00000001 */ .word 0x00000001
 enddlabel g_dwNumVehicles
@@ -32445,6 +32713,7 @@ enddlabel g_dwNumActiveVehicles
 
 nonmatching g_dwReplayCameraSwitchTimer
 
+.balign 8
 dlabel g_dwReplayCameraSwitchTimer
     /* 8EAA8 8028DAA8 00000000 */ .word 0x00000000
 enddlabel g_dwReplayCameraSwitchTimer
@@ -32457,6 +32726,7 @@ enddlabel g_dwReplayCameraHoldTimer
 
 nonmatching g_dwBestTraceLength
 
+.balign 8
 dlabel g_dwBestTraceLength
     /* 8EAB0 8028DAB0 00000000 */ .word 0x00000000
 enddlabel g_dwBestTraceLength
@@ -32469,6 +32739,7 @@ enddlabel g_dwBestTraceDepth
 
 nonmatching g_bAiNudgeRight
 
+.balign 8
 dlabel g_bAiNudgeRight
     /* 8EAB8 8028DAB8 00000000 */ .word 0x00000000
 enddlabel g_bAiNudgeRight
@@ -32481,6 +32752,7 @@ enddlabel g_bAiNudgeLeft
 
 nonmatching g_dwBestTracePoint
 
+.balign 8
 dlabel g_dwBestTracePoint
     /* 8EAC0 8028DAC0 00000000 */ .word 0x00000000
 enddlabel g_dwBestTracePoint
@@ -32493,6 +32765,7 @@ enddlabel g_pBestTraceSection
 
 nonmatching g_dwTraceUnusedB
 
+.balign 8
 dlabel g_dwTraceUnusedB
     /* 8EAC8 8028DAC8 00000000 */ .word 0x00000000
 enddlabel g_dwTraceUnusedB
@@ -32505,6 +32778,7 @@ enddlabel g_dwTraceUnusedA
 
 nonmatching g_bTraceBlocked
 
+.balign 8
 dlabel g_bTraceBlocked
     /* 8EAD0 8028DAD0 00000000 */ .word 0x00000000
 enddlabel g_bTraceBlocked
@@ -32517,6 +32791,7 @@ enddlabel g_pTrackRouteSection
 
 nonmatching g_dwTrackRoutePointIndex
 
+.balign 8
 dlabel g_dwTrackRoutePointIndex
     /* 8EAD8 8028DAD8 00000000 */ .word 0x00000000
 enddlabel g_dwTrackRoutePointIndex
@@ -32529,6 +32804,7 @@ enddlabel g_dwTrackRouteGates
 
 nonmatching g_dwTrackRouteLaps
 
+.balign 8
 dlabel g_dwTrackRouteLaps
     /* 8EAE0 8028DAE0 00000000 */ .word 0x00000000
 enddlabel g_dwTrackRouteLaps
@@ -32542,6 +32818,7 @@ enddlabel g_aPerFrameVariables
 nonmatching D_8028DAE8
 
 /* Automatically generated and unreferenced pad */
+.balign 8
 dlabel D_8028DAE8
     /* 8EAE8 8028DAE8 0000000C */ .word 0x0000000C
     /* 8EAEC 8028DAEC 8031D930 */ .word g_avBestLeftLane
@@ -32663,6 +32940,7 @@ enddlabel g_abPlayerColorsRgb
 
 nonmatching g_dwSelectedTrackId
 
+.balign 8
 dlabel g_dwSelectedTrackId
     /* 8EBF0 8028DBF0 00000002 */ .word 0x00000002
 enddlabel g_dwSelectedTrackId
@@ -32682,6 +32960,7 @@ enddlabel D_8028DBFC
 
 nonmatching D_8028DC00
 
+.balign 8
 dlabel D_8028DC00
     /* 8EC00 8028DC00 0000000A */ .word 0x0000000A
 enddlabel D_8028DC00
@@ -32819,6 +33098,7 @@ enddlabel D_8028DC04
 
 nonmatching g_bReplayCockpitNext
 
+.balign 8
 dlabel g_bReplayCockpitNext
     /* 8ECA0 8028DCA0 00000000 */ .word 0x00000000
 enddlabel g_bReplayCockpitNext
@@ -32885,6 +33165,7 @@ enddlabel g_vUpAxis
 nonmatching D_8028DD68
 
 /* Automatically generated and unreferenced pad */
+.balign 8
 dlabel D_8028DD68
     /* 8ED68 8028DD68 00000000 */ .word 0x00000000
     /* 8ED6C 8028DD6C 3F800000 */ .word 0x3F800000
@@ -32892,6 +33173,7 @@ enddlabel D_8028DD68
 
 nonmatching g_apszRaceProgressStrings
 
+.balign 8
 dlabel g_apszRaceProgressStrings
     /* 8ED70 8028DD70 802AB66C */ .word g_szFirst
 enddlabel g_apszRaceProgressStrings
@@ -32923,6 +33205,7 @@ enddlabel D_8028DD74
 
 nonmatching g_aRaceSnapshotFields
 
+.balign 8
 dlabel g_aRaceSnapshotFields
     /* 8EDC0 8028DDC0 8031DC60 */ .word g_aVehicles
 enddlabel g_aRaceSnapshotFields
@@ -32980,6 +33263,7 @@ enddlabel D_8028DDC4
 
 nonmatching g_aPausedClockFields
 
+.balign 8
 dlabel g_aPausedClockFields
     /* 8EE78 8028DE78 8028DA40 */ .word g_dwRandomSeed
     /* 8EE7C 8028DE7C 00000004 */ .word 0x00000004
@@ -33003,6 +33287,7 @@ enddlabel g_aPausedClockFields
 
 nonmatching g_dwReplayKeyframeFrameCount
 
+.balign 8
 dlabel g_dwReplayKeyframeFrameCount
     /* 8EEC0 8028DEC0 FFFFFFFF */ .word 0xFFFFFFFF
 enddlabel g_dwReplayKeyframeFrameCount
@@ -33016,6 +33301,7 @@ enddlabel g_aReplayKeyframeDescTable3
 nonmatching D_8028DEC8
 
 /* Automatically generated and unreferenced pad */
+.balign 8
 dlabel D_8028DEC8
     /* 8EEC8 8028DEC8 00000044 */ .word 0x00000044
     /* 8EECC 8028DECC 8031DF44 */ .word D_8031DF44
@@ -33245,6 +33531,7 @@ enddlabel g_aReplayKeyframeDescTable2
 nonmatching D_8028E230
 
 /* Automatically generated and unreferenced pad */
+.balign 8
 dlabel D_8028E230
     /* 8F230 8028E230 0000000C */ .word 0x0000000C
     /* 8F234 8028E234 80325EAC */ .word D_80325EAC
@@ -33341,6 +33628,7 @@ enddlabel g_aSoundEffects
 nonmatching D_8028E370
 
 /* Automatically generated and unreferenced pad */
+.balign 8
 dlabel D_8028E370
     /* 8F370 8028E370 0019E910 */ .word 0x0019E910
     /* 8F374 8028E374 001A5230 */ .word 0x001A5230
@@ -33348,6 +33636,7 @@ enddlabel D_8028E370
 
 nonmatching D_8028E378
 
+.balign 8
 dlabel D_8028E378
     /* 8F378 8028E378 00000000 */ .word 0x00000000
 enddlabel D_8028E378
@@ -33362,6 +33651,7 @@ enddlabel D_8028E37C
 
 nonmatching g_dwSfxSample1RomOffset
 
+.balign 8
 dlabel g_dwSfxSample1RomOffset
     /* 8F388 8028E388 001A5230 */ .word 0x001A5230
     /* 8F38C 8028E38C 001A5D40 */ .word 0x001A5D40
@@ -33386,6 +33676,7 @@ enddlabel g_pSfxCollisionSampleData
 
 nonmatching g_dwSfxCollisionSampleSize
 
+.balign 8
 dlabel g_dwSfxCollisionSampleSize
     /* 8F3C0 8028E3C0 00000000 */ .word 0x00000000
 enddlabel g_dwSfxCollisionSampleSize
@@ -33472,6 +33763,7 @@ enddlabel g_dwSfxCollisionSampleLoopLen
 
 nonmatching g_dwVisibleGridMinCol
 
+.balign 8
 dlabel g_dwVisibleGridMinCol
     /* 8F4F0 8028E4F0 00000000 */ .word 0x00000000
 enddlabel g_dwVisibleGridMinCol
@@ -33484,6 +33776,7 @@ enddlabel g_dwVisibleGridMinRow
 
 nonmatching g_dwVisibleGridMaxCol
 
+.balign 8
 dlabel g_dwVisibleGridMaxCol
     /* 8F4F8 8028E4F8 00000000 */ .word 0x00000000
 enddlabel g_dwVisibleGridMaxCol
@@ -33496,6 +33789,7 @@ enddlabel g_dwVisibleGridMaxRow
 
 nonmatching g_dwTimingFrame
 
+.balign 8
 dlabel g_dwTimingFrame
     /* 8F500 8028E500 00000000 */ .word 0x00000000
 enddlabel g_dwTimingFrame
@@ -33509,6 +33803,7 @@ enddlabel D_8028E504
 
 nonmatching g_dwTimingFrameElapsed
 
+.balign 8
 dlabel g_dwTimingFrameElapsed
     /* 8F508 8028E508 00000000 */ .word 0x00000000
 enddlabel g_dwTimingFrameElapsed
@@ -33521,6 +33816,7 @@ enddlabel g_dwTimingFrameStart
 
 nonmatching g_dwTimingBarScaleHold
 
+.balign 8
 dlabel g_dwTimingBarScaleHold
     /* 8F510 8028E510 00000000 */ .word 0x00000000
 enddlabel g_dwTimingBarScaleHold
@@ -33536,6 +33832,7 @@ enddlabel D_8028E514
 
 nonmatching g_bTextStyleBold
 
+.balign 8
 dlabel g_bTextStyleBold
     /* 8F520 8028E520 */ .byte 0x00
     /* 8F521 8028E521 */ .byte 0x00
@@ -33554,6 +33851,7 @@ enddlabel g_nTextAlignment
 
 nonmatching g_bTextShadowEnabled
 
+.balign 8
 dlabel g_bTextShadowEnabled
     /* 8F528 8028E528 */ .byte 0x00
     /* 8F529 8028E529 */ .byte 0x00
@@ -33569,6 +33867,7 @@ enddlabel g_bTextCustomColorsEnabled
 
 nonmatching g_dwTextCustomColorR
 
+.balign 8
 dlabel g_dwTextCustomColorR
     /* 8F530 8028E530 000000FF */ .word 0x000000FF
 enddlabel g_dwTextCustomColorR
@@ -33581,6 +33880,7 @@ enddlabel g_dwTextCustomColorG
 
 nonmatching g_dwTextCustomColorB
 
+.balign 8
 dlabel g_dwTextCustomColorB
     /* 8F538 8028E538 000000FF */ .word 0x000000FF
 enddlabel g_dwTextCustomColorB
@@ -33593,6 +33893,7 @@ enddlabel g_dwTextCustomColor2R
 
 nonmatching g_dwTextCustomColor2G
 
+.balign 8
 dlabel g_dwTextCustomColor2G
     /* 8F540 8028E540 00000000 */ .word 0x00000000
 enddlabel g_dwTextCustomColor2G
@@ -33606,6 +33907,7 @@ enddlabel g_dwTextCustomColor2B
 nonmatching D_8028E548
 
 /* Automatically generated and unreferenced pad */
+.balign 8
 dlabel D_8028E548
     /* 8F548 8028E548 00000000 */ .word 0x00000000
     /* 8F54C 8028E54C 00000000 */ .word 0x00000000
@@ -33613,6 +33915,7 @@ enddlabel D_8028E548
 
 nonmatching g_abLargeFontGradient
 
+.balign 8
 dlabel g_abLargeFontGradient
     /* 8F550 8028E550 FFFFFFFF */ .word 0xFFFFFFFF
     /* 8F554 8028E554 FFFFFFFF */ .word 0xFFFFFFFF
@@ -33698,6 +34001,7 @@ enddlabel g_abLargeFontGradient
 
 nonmatching g_abLargeFontShadowGradient
 
+.balign 8
 dlabel g_abLargeFontShadowGradient
     /* 8F690 8028E690 88888888 */ .word 0x88888888
     /* 8F694 8028E694 88888888 */ .word 0x88888888
@@ -33783,6 +34087,7 @@ enddlabel g_abLargeFontShadowGradient
 
 nonmatching g_abSmallFontGradient
 
+.balign 8
 dlabel g_abSmallFontGradient
     /* 8F7D0 8028E7D0 FFFFFFFF */ .word 0xFFFFFFFF
     /* 8F7D4 8028E7D4 FFFFFFFF */ .word 0xFFFFFFFF
@@ -33868,6 +34173,7 @@ enddlabel g_abSmallFontGradient
 
 nonmatching g_abSmallFontShadowGradient
 
+.balign 8
 dlabel g_abSmallFontShadowGradient
     /* 8F910 8028E910 88888888 */ .word 0x88888888
     /* 8F914 8028E914 88888888 */ .word 0x88888888
@@ -33912,6 +34218,7 @@ enddlabel g_szDecalMenuText
 .align 2
 nonmatching g_szDecalToolNames
 
+.balign 8
 dlabel g_szDecalToolNames
     /* 8F988 8028E988 */ .asciz "\"\"\"\"\"\"\"\"DDDDDDDDUUUUUUUUffffffffwwwwwwww"
     /* 2222222222222222444444444444444455555555555555556666666666666666777777777777777700000000 */
@@ -33969,6 +34276,7 @@ enddlabel D_8028E9B4
 
 nonmatching g_dwVehicleOtherModeLBlend
 
+.balign 8
 dlabel g_dwVehicleOtherModeLBlend
     /* 8FA60 8028EA60 00000000 */ .word 0x00000000
 enddlabel g_dwVehicleOtherModeLBlend
@@ -33981,6 +34289,7 @@ enddlabel g_dwVehicleOtherModeLFlags
 
 nonmatching g_apVehicleReflectionTextures
 
+.balign 8
 dlabel g_apVehicleReflectionTextures
     /* 8FA68 8028EA68 80375BB0 */ .word g_abTrackSection1Data
 enddlabel g_apVehicleReflectionTextures
@@ -33993,6 +34302,7 @@ enddlabel g_pGameStateCallback
 
 nonmatching g_pGameStateParam
 
+.balign 8
 dlabel g_pGameStateParam
     /* 8FA70 8028EA70 803763D0 */ .word g_abTrackSection2Data
 enddlabel g_pGameStateParam
@@ -34005,6 +34315,7 @@ enddlabel g_pGameStateTimer
 
 nonmatching g_apVehicleReflectionTluts
 
+.balign 8
 dlabel g_apVehicleReflectionTluts
     /* 8FA78 8028EA78 803763B0 */ .word g_abTrackSection1Header
 enddlabel g_apVehicleReflectionTluts
@@ -34017,6 +34328,7 @@ enddlabel g_pGameStateNext
 
 nonmatching g_pGameStatePrev
 
+.balign 8
 dlabel g_pGameStatePrev
     /* 8FA80 8028EA80 80376BD0 */ .word g_abTrackSection2Header
 enddlabel g_pGameStatePrev
@@ -34029,6 +34341,7 @@ enddlabel g_pGameStateStack
 
 nonmatching g_dwVehicleViewModeIndex
 
+.balign 8
 dlabel g_dwVehicleViewModeIndex
     /* 8FA88 8028EA88 00000000 */ .word 0x00000000
 enddlabel g_dwVehicleViewModeIndex
@@ -34055,6 +34368,7 @@ enddlabel g_bPaintShopPreviewActive
 nonmatching D_8028EA98
 
 /* Automatically generated and unreferenced pad */
+.balign 8
 dlabel D_8028EA98
     /* 8FA98 8028EA98 00000000 */ .word 0x00000000
     /* 8FA9C 8028EA9C 0000000C */ .word 0x0000000C
@@ -34062,6 +34376,7 @@ enddlabel D_8028EA98
 
 nonmatching g_awVehicleShadePalette
 
+.balign 8
 dlabel g_awVehicleShadePalette
     /* 8FAA0 8028EAA0 00011085 */ .word 0x00011085
     /* 8FAA4 8028EAA4 2109318D */ .word 0x2109318D
@@ -34075,6 +34390,7 @@ enddlabel g_awVehicleShadePalette
 
 nonmatching g_dwGameFrameCount
 
+.balign 8
 dlabel g_dwGameFrameCount
     /* 8FAC0 8028EAC0 00000000 */ .word 0x00000000
 enddlabel g_dwGameFrameCount
@@ -34088,6 +34404,7 @@ enddlabel D_8028EAC4
 
 nonmatching g_aSpeedometerNeedleDisplayList
 
+.balign 8
 dlabel g_aSpeedometerNeedleDisplayList
     /* 8FAC8 8028EAC8 B6000000 */ .word 0xB6000000
     /* 8FACC 8028EACC 00020000 */ .word 0x00020000
@@ -34127,6 +34444,7 @@ enddlabel g_dwGameRngSeed
 nonmatching D_8028EB38
 
 /* Automatically generated and unreferenced pad */
+.balign 8
 dlabel D_8028EB38
     /* 8FB38 8028EB38 B1001A1C */ .word 0xB1001A1C
     /* 8FB3C 8028EB3C 00001C1E */ .word 0x00001C1E
@@ -34154,6 +34472,7 @@ enddlabel D_8028EB38
 
 nonmatching D_8028EB90
 
+.balign 8
 dlabel D_8028EB90
     /* 8FB90 8028EB90 0122000A */ .word 0x0122000A
     /* 8FB94 8028EB94 00000000 */ .word 0x00000000
@@ -34207,6 +34526,7 @@ enddlabel D_8028EB90
 
 nonmatching g_aTachometerDisplayList
 
+.balign 8
 dlabel g_aTachometerDisplayList
     /* 8FC50 8028EC50 B6000000 */ .word 0xB6000000
     /* 8FC54 8028EC54 00020000 */ .word 0x00020000
@@ -34236,6 +34556,7 @@ enddlabel g_aTachometerDisplayList
 
 nonmatching D_8028ECB0
 
+.balign 8
 dlabel D_8028ECB0
     /* 8FCB0 8028ECB0 00B4FFA6 */ .word 0x00B4FFA6
     /* 8FCB4 8028ECB4 00000000 */ .word 0x00000000
@@ -34275,6 +34596,7 @@ enddlabel D_8028ECB0
 
 nonmatching g_aTrackShadowDisplayList
 
+.balign 8
 dlabel g_aTrackShadowDisplayList
     /* 8FD38 8028ED38 B6000000 */ .word 0xB6000000
     /* 8FD3C 8028ED3C 00030000 */ .word 0x00030000
@@ -34307,6 +34629,7 @@ enddlabel g_aTrackShadowDisplayList
 .align 2
 nonmatching g_aTrackLights
 
+.balign 8
 dlabel g_aTrackLights
     /* 8FDA0 8028EDA0 */ .asciz "33D"
     /* 33334400 */
@@ -34341,6 +34664,7 @@ enddlabel g_aTrackLights
 
 nonmatching g_nTrackLightBufferIndex
 
+.balign 8
 dlabel g_nTrackLightBufferIndex
     /* 8FE00 8028EE00 00000000 */ .word 0x00000000
 enddlabel g_nTrackLightBufferIndex
@@ -34392,6 +34716,7 @@ enddlabel D_8028EE04
 
 nonmatching g_nVisibleInstanceCount
 
+.balign 8
 dlabel g_nVisibleInstanceCount
     /* 8FEA0 8028EEA0 00000000 */ .word 0x00000000
 enddlabel g_nVisibleInstanceCount
@@ -34404,6 +34729,7 @@ enddlabel g_nOpaqueVisibleInstanceCount
 
 nonmatching g_nDeferredInstanceLastIdx
 
+.balign 8
 dlabel g_nDeferredInstanceLastIdx
     /* 8FEA8 8028EEA8 00000000 */ .word 0x00000000
 enddlabel g_nDeferredInstanceLastIdx
@@ -34416,6 +34742,7 @@ enddlabel g_dwTrackOtherModeLBlend
 
 nonmatching g_dwTrackOtherModeLFlags
 
+.balign 8
 dlabel g_dwTrackOtherModeLFlags
     /* 8FEB0 8028EEB0 00000000 */ .word 0x00000000
 enddlabel g_dwTrackOtherModeLFlags
@@ -34428,6 +34755,7 @@ enddlabel g_nDebugHiddenInstanceIndex
 
 nonmatching g_bDebugHideInstance
 
+.balign 8
 dlabel g_bDebugHideInstance
     /* 8FEB8 8028EEB8 00000000 */ .word 0x00000000
 enddlabel g_bDebugHideInstance
@@ -34440,6 +34768,7 @@ enddlabel g_pShadowDisplayListWritePtr
 
 nonmatching g_pShadowDisplayListStart
 
+.balign 8
 dlabel g_pShadowDisplayListStart
     /* 8FEC0 8028EEC0 00000000 */ .word 0x00000000
 enddlabel g_pShadowDisplayListStart
@@ -34452,6 +34781,7 @@ enddlabel g_pShadowVertexWritePtr
 
 nonmatching g_pShadowVertexStart
 
+.balign 8
 dlabel g_pShadowVertexStart
     /* 8FEC8 8028EEC8 00000000 */ .word 0x00000000
 enddlabel g_pShadowVertexStart
@@ -34464,6 +34794,7 @@ enddlabel g_bVisibleCellListOverflow
 
 nonmatching g_wActiveInstanceHideMask
 
+.balign 8
 dlabel g_wActiveInstanceHideMask
     /* 8FED0 8028EED0 */ .short 0x0000
 enddlabel g_wActiveInstanceHideMask
@@ -34483,6 +34814,7 @@ enddlabel g_pTrackLookAt
 
 nonmatching g_nVisibleCellIdxNear
 
+.balign 8
 dlabel g_nVisibleCellIdxNear
     /* 8FED8 8028EED8 00000000 */ .word 0x00000000
 enddlabel g_nVisibleCellIdxNear
@@ -34495,6 +34827,7 @@ enddlabel g_nTrackTransparentStartIdxNear
 
 nonmatching g_nVisibleCellIdxFar
 
+.balign 8
 dlabel g_nVisibleCellIdxFar
     /* 8FEE0 8028EEE0 00000000 */ .word 0x00000000
 enddlabel g_nVisibleCellIdxFar
@@ -34507,6 +34840,7 @@ enddlabel g_nTrackTransparentStartIdxFar
 
 nonmatching g_nVisibleCellIdxMid
 
+.balign 8
 dlabel g_nVisibleCellIdxMid
     /* 8FEE8 8028EEE8 00000000 */ .word 0x00000000
 enddlabel g_nVisibleCellIdxMid
@@ -34519,6 +34853,7 @@ enddlabel g_nTrackTransparentStartIdx
 
 nonmatching g_adwDashboardLoadedKey
 
+.balign 8
 dlabel g_adwDashboardLoadedKey
     /* 8FEF0 8028EEF0 FFFFFFFF */ .word 0xFFFFFFFF
     /* 8FEF4 8028EEF4 FFFFFFFF */ .word 0xFFFFFFFF
@@ -34526,6 +34861,7 @@ enddlabel g_adwDashboardLoadedKey
 
 nonmatching g_adwDashboardLoadedGear
 
+.balign 8
 dlabel g_adwDashboardLoadedGear
     /* 8FEF8 8028EEF8 FFFFFFFF */ .word 0xFFFFFFFF
     /* 8FEFC 8028EEFC FFFFFFFF */ .word 0xFFFFFFFF
@@ -34535,6 +34871,7 @@ enddlabel g_adwDashboardLoadedGear
 
 nonmatching g_aDashboardTextures
 
+.balign 8
 dlabel g_aDashboardTextures
     /* 8FF08 8028EF08 00000000 */ .word 0x00000000
     /* 8FF0C 8028EF0C 00000000 */ .word 0x00000000
@@ -34556,6 +34893,7 @@ enddlabel D_8028EF16
 
 nonmatching g_aDashboardGearTextures
 
+.balign 8
 dlabel g_aDashboardGearTextures
     /* 8FF30 8028EF30 00000000 */ .word 0x00000000
     /* 8FF34 8028EF34 00000000 */ .word 0x00000000
@@ -34573,6 +34911,7 @@ enddlabel g_aDashboardGearTextures
 
 nonmatching g_dwCurrentWeather
 
+.balign 8
 dlabel g_dwCurrentWeather
     /* 8FF60 8028EF60 00000001 */ .word 0x00000001
 enddlabel g_dwCurrentWeather
@@ -34585,6 +34924,7 @@ enddlabel g_dwRainParticleCount
 
 nonmatching g_fWindAngle
 
+.balign 8
 dlabel g_fWindAngle
     /* 8FF68 8028EF68 00000000 */ .float 0
 enddlabel g_fWindAngle
@@ -34597,6 +34937,7 @@ enddlabel g_fWindStrength
 
 nonmatching g_fRainCameraSpeed
 
+.balign 8
 dlabel g_fRainCameraSpeed
     /* 8FF70 8028EF70 00000000 */ .float 0
 enddlabel g_fRainCameraSpeed
@@ -34609,6 +34950,7 @@ enddlabel g_fRainCameraSpeedScale
 
 nonmatching g_dwLightningFlashCounter
 
+.balign 8
 dlabel g_dwLightningFlashCounter
     /* 8FF78 8028EF78 FFFFFFFF */ .word 0xFFFFFFFF
 enddlabel g_dwLightningFlashCounter
@@ -34621,6 +34963,7 @@ enddlabel g_nLightningBoltDepth
 
 nonmatching g_fLightningFlashTimer
 
+.balign 8
 dlabel g_fLightningFlashTimer
     /* 8FF80 8028EF80 00000000 */ .float 0
 enddlabel g_fLightningFlashTimer
@@ -34634,6 +34977,7 @@ enddlabel g_bRainParticlesInitialized
 nonmatching D_8028EF88
 
 /* Automatically generated and unreferenced pad */
+.balign 8
 dlabel D_8028EF88
     /* 8FF88 8028EF88 00000000 */ .word 0x00000000
     /* 8FF8C 8028EF8C 00000000 */ .word 0x00000000
@@ -34641,6 +34985,7 @@ enddlabel D_8028EF88
 
 nonmatching g_wParticleFreeListHead
 
+.balign 8
 dlabel g_wParticleFreeListHead
     /* 8FF90 8028EF90 */ .short 0x0000
 enddlabel g_wParticleFreeListHead
@@ -34667,6 +35012,7 @@ enddlabel D_8028EF96
 
 nonmatching g_wTireSmokeListHead
 
+.balign 8
 dlabel g_wTireSmokeListHead
     /* 8FF98 8028EF98 */ .short 0x0000
 enddlabel g_wTireSmokeListHead
@@ -34702,6 +35048,7 @@ enddlabel D_8028EFA4
 
 nonmatching border
 
+.balign 8
 dlabel border
     /* 8FFB0 8028EFB0 00000010 */ .word 0x00000010
     /* 8FFB4 8028EFB4 00000011 */ .word 0x00000011
@@ -34728,6 +35075,7 @@ enddlabel border
 .align 2
 nonmatching inflate_copyright
 
+.balign 8
 dlabel inflate_copyright
     /* 90000 8028F000 */ .asciz " inflate 1.0.4 Copyright 1995-1996 Mark Adler "
     /* 20696E666C61746520312E302E3420436F7079726967687420313939352D31393936204D61726B2041646C6572200000 */
@@ -34736,6 +35084,7 @@ enddlabel inflate_copyright
 
 nonmatching cplens
 
+.balign 8
 dlabel cplens
     /* 90030 8028F030 00000003 */ .word 0x00000003
     /* 90034 8028F034 00000004 */ .word 0x00000004
@@ -34808,6 +35157,7 @@ enddlabel cplext
 
 nonmatching cpdist
 
+.balign 8
 dlabel cpdist
     /* 90128 8028F128 00000001 */ .word 0x00000001
     /* 9012C 8028F12C 00000002 */ .word 0x00000002
@@ -34843,6 +35193,7 @@ enddlabel cpdist
 
 nonmatching cpdext
 
+.balign 8
 dlabel cpdext
     /* 901A0 8028F1A0 00000000 */ .word 0x00000000
     /* 901A4 8028F1A4 00000000 */ .word 0x00000000
@@ -34878,6 +35229,7 @@ enddlabel cpdext
 
 nonmatching fixed_built
 
+.balign 8
 dlabel fixed_built
     /* 90218 8028F218 00000000 */ .word 0x00000000
 enddlabel fixed_built
@@ -34891,6 +35243,7 @@ enddlabel D_8028F21C
 
 nonmatching inflate_mask
 
+.balign 8
 dlabel inflate_mask
     /* 90220 8028F220 00000000 */ .word 0x00000000
     /* 90224 8028F224 00000001 */ .word 0x00000001
@@ -34916,6 +35269,7 @@ enddlabel inflate_mask
 
 nonmatching z_errmsg
 
+.balign 8
 dlabel z_errmsg
     /* 90270 8028F270 802AC270 */ .word g_szNeedDictionary2
 enddlabel z_errmsg
@@ -34939,6 +35293,7 @@ enddlabel D_8028F274
 
 nonmatching g_texBackground
 
+.balign 8
 dlabel g_texBackground
     /* 902A0 8028F2A0 00000000 */ .word 0x00000000
     /* 902A4 8028F2A4 001BF900 */ .word 0x001BF900
@@ -34956,6 +35311,7 @@ enddlabel g_texBackground
 
 nonmatching g_texLogo
 
+.balign 8
 dlabel g_texLogo
     /* 902D0 8028F2D0 00000000 */ .word 0x00000000
     /* 902D4 8028F2D4 001C36A0 */ .word 0x001C36A0
@@ -34974,6 +35330,7 @@ enddlabel g_nTextureLoadCount
 
 nonmatching g_nTextureUnloadCount
 
+.balign 8
 dlabel g_nTextureUnloadCount
     /* 902F0 8028F2F0 0000000E */ .word 0x0000000E
     /* 902F4 8028F2F4 00000238 */ .word 0x00000238
@@ -34983,6 +35340,7 @@ enddlabel g_nTextureUnloadCount
 
 nonmatching g_texPaintWholeCar
 
+.balign 8
 dlabel g_texPaintWholeCar
     /* 90300 8028F300 */ .byte 0x00
     /* 90301 8028F301 */ .byte 0x00
@@ -35004,6 +35362,7 @@ enddlabel g_texPaintWholeCar
 
 nonmatching g_dwTextureCacheFlags
 
+.balign 8
 dlabel g_dwTextureCacheFlags
     /* 90310 8028F310 00000030 */ .word 0x00000030
 enddlabel g_dwTextureCacheFlags
@@ -35025,6 +35384,7 @@ enddlabel g_nTextureSlotIndex
 
 nonmatching g_nTextureSlotCount
 
+.balign 8
 dlabel g_nTextureSlotCount
     /* 90328 8028F328 00000046 */ .word 0x00000046
 enddlabel g_nTextureSlotCount
@@ -35037,6 +35397,7 @@ enddlabel g_bTextureLoadPending
 
 nonmatching g_texPanelLeftDoor
 
+.balign 8
 dlabel g_texPanelLeftDoor
     /* 90330 8028F330 00000000 */ .word 0x00000000
     /* 90334 8028F334 001C5710 */ .word 0x001C5710
@@ -35046,6 +35407,7 @@ enddlabel g_texPanelLeftDoor
 
 nonmatching g_dwTextureTmemAddr
 
+.balign 8
 dlabel g_dwTextureTmemAddr
     /* 90340 8028F340 00000020 */ .word 0x00000020
 enddlabel g_dwTextureTmemAddr
@@ -35065,6 +35427,7 @@ enddlabel g_nTextureWidth
 
 nonmatching g_nTextureHeight
 
+.balign 8
 dlabel g_nTextureHeight
     /* 90350 8028F350 000000A2 */ .word 0x000000A2
     /* 90354 8028F354 00000020 */ .word 0x00000020
@@ -35079,6 +35442,7 @@ enddlabel g_bTextureSync
 
 nonmatching g_texPanelRightDoor
 
+.balign 8
 dlabel g_texPanelRightDoor
     /* 90360 8028F360 00000000 */ .word 0x00000000
 enddlabel g_texPanelRightDoor
@@ -35094,6 +35458,7 @@ enddlabel D_8028F364
 
 nonmatching g_dwRdpTriCount
 
+.balign 8
 dlabel g_dwRdpTriCount
     /* 90370 8028F370 00000020 */ .word 0x00000020
 enddlabel g_dwRdpTriCount
@@ -35107,6 +35472,7 @@ enddlabel g_dwRdpTriCountOpaque
 nonmatching D_8028F378
 
 /* Automatically generated and unreferenced pad */
+.balign 8
 dlabel D_8028F378
     /* 90378 8028F378 0000002E */ .word 0x0000002E
 enddlabel D_8028F378
@@ -35119,6 +35485,7 @@ enddlabel g_dwRdpTriCountTransparent
 
 nonmatching g_dwRdpLineCount
 
+.balign 8
 dlabel g_dwRdpLineCount
     /* 90380 8028F380 000000A2 */ .word 0x000000A2
 enddlabel g_dwRdpLineCount
@@ -35139,6 +35506,7 @@ enddlabel g_bRdpSyncPending
 
 nonmatching g_texPanelLeftFrontFender
 
+.balign 8
 dlabel g_texPanelLeftFrontFender
     /* 90390 8028F390 00000000 */ .word 0x00000000
     /* 90394 8028F394 001C5560 */ .word 0x001C5560
@@ -35148,6 +35516,7 @@ enddlabel g_texPanelLeftFrontFender
 
 nonmatching g_dwRdpTmemUsed
 
+.balign 8
 dlabel g_dwRdpTmemUsed
     /* 903A0 8028F3A0 00000020 */ .word 0x00000020
 enddlabel g_dwRdpTmemUsed
@@ -35169,6 +35538,7 @@ enddlabel g_nRdpTileWidth
 
 nonmatching g_nRdpTileHeight
 
+.balign 8
 dlabel g_nRdpTileHeight
     /* 903B8 8028F3B8 0000002A */ .word 0x0000002A
     /* 903BC 8028F3BC 00000000 */ .word 0x00000000
@@ -35176,6 +35546,7 @@ enddlabel g_nRdpTileHeight
 
 nonmatching g_texPanelRightFrontFender
 
+.balign 8
 dlabel g_texPanelRightFrontFender
     /* 903C0 8028F3C0 00000000 */ .word 0x00000000
 enddlabel g_texPanelRightFrontFender
@@ -35199,6 +35570,7 @@ enddlabel D_8028F3C4
 
 nonmatching g_texPanel4
 
+.balign 8
 dlabel g_texPanel4
     /* 903F0 8028F3F0 00000000 */ .word 0x00000000
     /* 903F4 8028F3F4 001C5090 */ .word 0x001C5090
@@ -35216,6 +35588,7 @@ enddlabel g_texPanel4
 
 nonmatching g_texPanel5
 
+.balign 8
 dlabel g_texPanel5
     /* 90420 8028F420 00000000 */ .word 0x00000000
     /* 90424 8028F424 001C5200 */ .word 0x001C5200
@@ -35233,6 +35606,7 @@ enddlabel g_texPanel5
 
 nonmatching g_texPanelLeftRearFender
 
+.balign 8
 dlabel g_texPanelLeftRearFender
     /* 90450 8028F450 00000000 */ .word 0x00000000
     /* 90454 8028F454 001C57E0 */ .word 0x001C57E0
@@ -35250,6 +35624,7 @@ enddlabel g_texPanelLeftRearFender
 
 nonmatching g_texPanelRightRearFender
 
+.balign 8
 dlabel g_texPanelRightRearFender
     /* 90480 8028F480 00000000 */ .word 0x00000000
 enddlabel g_texPanelRightRearFender
@@ -35273,6 +35648,7 @@ enddlabel D_8028F484
 
 nonmatching g_texPanel8
 
+.balign 8
 dlabel g_texPanel8
     /* 904B0 8028F4B0 00000000 */ .word 0x00000000
     /* 904B4 8028F4B4 001C5990 */ .word 0x001C5990
@@ -35291,6 +35667,7 @@ enddlabel g_nRdpClipMinX
 
 nonmatching g_nRdpClipMinY
 
+.balign 8
 dlabel g_nRdpClipMinY
     /* 904D0 8028F4D0 000000F8 */ .word 0x000000F8
     /* 904D4 8028F4D4 00000030 */ .word 0x00000030
@@ -35300,6 +35677,7 @@ enddlabel g_nRdpClipMinY
 
 nonmatching g_texPanel9
 
+.balign 8
 dlabel g_texPanel9
     /* 904E0 8028F4E0 00000000 */ .word 0x00000000
     /* 904E4 8028F4E4 001C5AC0 */ .word 0x001C5AC0
@@ -35318,6 +35696,7 @@ enddlabel g_nRdpClipMaxX
 
 nonmatching g_nRdpClipMaxY
 
+.balign 8
 dlabel g_nRdpClipMaxY
     /* 90500 8028F500 00000060 */ .word 0x00000060
     /* 90504 8028F504 00000030 */ .word 0x00000030
@@ -35327,6 +35706,7 @@ enddlabel g_nRdpClipMaxY
 
 nonmatching g_texPanel8Overlay
 
+.balign 8
 dlabel g_texPanel8Overlay
     /* 90510 8028F510 00000000 */ .word 0x00000000
     /* 90514 8028F514 001C5C00 */ .word 0x001C5C00
@@ -35345,6 +35725,7 @@ enddlabel g_nRdpViewportX
 
 nonmatching g_nRdpViewportY
 
+.balign 8
 dlabel g_nRdpViewportY
     /* 90530 8028F530 00000000 */ .word 0x00000000
     /* 90534 8028F534 00000030 */ .word 0x00000030
@@ -35354,6 +35735,7 @@ enddlabel g_nRdpViewportY
 
 nonmatching g_texPanel9Overlay
 
+.balign 8
 dlabel g_texPanel9Overlay
     /* 90540 8028F540 00000000 */ .word 0x00000000
     /* 90544 8028F544 001C5C60 */ .word 0x001C5C60
@@ -35372,6 +35754,7 @@ enddlabel g_nRdpScissorX
 
 nonmatching g_nRdpScissorY
 
+.balign 8
 dlabel g_nRdpScissorY
     /* 90560 8028F560 00000000 */ .word 0x00000000
     /* 90564 8028F564 00000030 */ .word 0x00000030
@@ -35381,6 +35764,7 @@ enddlabel g_nRdpScissorY
 
 nonmatching g_texBrushSizeRound
 
+.balign 8
 dlabel g_texBrushSizeRound
     /* 90570 8028F570 00000000 */ .word 0x00000000
     /* 90574 8028F574 001C5D00 */ .word 0x001C5D00
@@ -35390,6 +35774,7 @@ enddlabel g_texBrushSizeRound
 
 nonmatching D_8028F580
 
+.balign 8
 dlabel D_8028F580
     /* 90580 8028F580 00000020 */ .word 0x00000020
 enddlabel D_8028F580
@@ -35409,6 +35794,7 @@ enddlabel g_dwPaintShopPanelX
 
 nonmatching D_8028F590
 
+.balign 8
 dlabel D_8028F590
     /* 90590 8028F590 00000000 */ .word 0x00000000
     /* 90594 8028F594 00000020 */ .word 0x00000020
@@ -35418,6 +35804,7 @@ enddlabel D_8028F590
 
 nonmatching g_texBrushSizeSquare
 
+.balign 8
 dlabel g_texBrushSizeSquare
     /* 905A0 8028F5A0 00000000 */ .word 0x00000000
     /* 905A4 8028F5A4 001C5D70 */ .word 0x001C5D70
@@ -35427,6 +35814,7 @@ enddlabel g_texBrushSizeSquare
 
 nonmatching D_8028F5B0
 
+.balign 8
 dlabel D_8028F5B0
     /* 905B0 8028F5B0 00000020 */ .word 0x00000020
 enddlabel D_8028F5B0
@@ -35446,6 +35834,7 @@ enddlabel D_8028F5BC
 
 nonmatching D_8028F5C0
 
+.balign 8
 dlabel D_8028F5C0
     /* 905C0 8028F5C0 00000000 */ .word 0x00000000
     /* 905C4 8028F5C4 00000020 */ .word 0x00000020
@@ -35455,6 +35844,7 @@ enddlabel D_8028F5C0
 
 nonmatching g_texPaintToolBrush
 
+.balign 8
 dlabel g_texPaintToolBrush
     /* 905D0 8028F5D0 */ .byte 0x00
     /* 905D1 8028F5D1 */ .byte 0x00
@@ -35476,6 +35866,7 @@ enddlabel g_texPaintToolBrush
 
 nonmatching g_dwRdpFogMul
 
+.balign 8
 dlabel g_dwRdpFogMul
     /* 905E0 8028F5E0 00000000 */ .word 0x00000000
 enddlabel g_dwRdpFogMul
@@ -35488,6 +35879,7 @@ enddlabel g_dwRdpFogOffset
 
 nonmatching g_dwRdpPrimDepth
 
+.balign 8
 dlabel g_dwRdpPrimDepth
     /* 905E8 8028F5E8 00000000 */ .word 0x00000000
 enddlabel g_dwRdpPrimDepth
@@ -35500,6 +35892,7 @@ enddlabel g_dwRdpPrimDz
 
 nonmatching g_dwRdpScaleS
 
+.balign 8
 dlabel g_dwRdpScaleS
     /* 905F0 8028F5F0 00000000 */ .word 0x00000000
 enddlabel g_dwRdpScaleS
@@ -35512,6 +35905,7 @@ enddlabel g_dwRdpScaleT
 
 nonmatching g_dwRdpScaleW
 
+.balign 8
 dlabel g_dwRdpScaleW
     /* 905F8 8028F5F8 00000000 */ .word 0x00000000
 enddlabel g_dwRdpScaleW
@@ -35527,6 +35921,7 @@ enddlabel D_8028F5FC
 
 nonmatching g_texPaintToolLine
 
+.balign 8
 dlabel g_texPaintToolLine
     /* 90600 8028F600 00000000 */ .word 0x00000000
     /* 90604 8028F604 001C5EB0 */ .word 0x001C5EB0
@@ -35544,6 +35939,7 @@ enddlabel g_texPaintToolLine
 
 nonmatching g_texPaintToolFill
 
+.balign 8
 dlabel g_texPaintToolFill
     /* 90630 8028F630 00000000 */ .word 0x00000000
     /* 90634 8028F634 001C5F80 */ .word 0x001C5F80
@@ -35553,6 +35949,7 @@ enddlabel g_texPaintToolFill
 
 nonmatching g_dwRdpKeyWidth
 
+.balign 8
 dlabel g_dwRdpKeyWidth
     /* 90640 8028F640 00000000 */ .word 0x00000000
 enddlabel g_dwRdpKeyWidth
@@ -35565,6 +35962,7 @@ enddlabel g_dwRdpKeyCenter
 
 nonmatching g_dwRdpKeyScale
 
+.balign 8
 dlabel g_dwRdpKeyScale
     /* 90648 8028F648 00000000 */ .word 0x00000000
 enddlabel g_dwRdpKeyScale
@@ -35585,6 +35983,7 @@ enddlabel g_dwRdpConvertK0
 
 nonmatching g_dwRdpConvertK1
 
+.balign 8
 dlabel g_dwRdpConvertK1
     /* 90658 8028F658 00000000 */ .word 0x00000000
 enddlabel g_dwRdpConvertK1
@@ -35598,6 +35997,7 @@ enddlabel D_8028F65C
 
 nonmatching g_texPaintToolText
 
+.balign 8
 dlabel g_texPaintToolText
     /* 90660 8028F660 00000000 */ .word 0x00000000
     /* 90664 8028F664 001C6030 */ .word 0x001C6030
@@ -35623,6 +36023,7 @@ enddlabel D_8028F68C
 
 nonmatching g_texPaintToolRect
 
+.balign 8
 dlabel g_texPaintToolRect
     /* 90690 8028F690 00000000 */ .word 0x00000000
     /* 90694 8028F694 001C6110 */ .word 0x001C6110
@@ -35648,6 +36049,7 @@ enddlabel D_8028F6BC
 
 nonmatching g_texPaintToolOval
 
+.balign 8
 dlabel g_texPaintToolOval
     /* 906C0 8028F6C0 00000000 */ .word 0x00000000
     /* 906C4 8028F6C4 001C6200 */ .word 0x001C6200
@@ -35673,6 +36075,7 @@ enddlabel D_8028F6EC
 
 nonmatching g_texPaintToolMirror
 
+.balign 8
 dlabel g_texPaintToolMirror
     /* 906F0 8028F6F0 00000000 */ .word 0x00000000
     /* 906F4 8028F6F4 001C62F0 */ .word 0x001C62F0
@@ -35695,6 +36098,7 @@ enddlabel D_8028F71C
 
 nonmatching g_texPaintToolClear
 
+.balign 8
 dlabel g_texPaintToolClear
     /* 90720 8028F720 00000000 */ .word 0x00000000
     /* 90724 8028F724 001C6410 */ .word 0x001C6410
@@ -35720,6 +36124,7 @@ enddlabel D_8028F74C
 
 nonmatching g_texPaintToolLoad
 
+.balign 8
 dlabel g_texPaintToolLoad
     /* 90750 8028F750 00000000 */ .word 0x00000000
     /* 90754 8028F754 001C6510 */ .word 0x001C6510
@@ -35737,6 +36142,7 @@ enddlabel g_texPaintToolLoad
 
 nonmatching g_texPaintToolSave
 
+.balign 8
 dlabel g_texPaintToolSave
     /* 90780 8028F780 00000000 */ .word 0x00000000
     /* 90784 8028F784 001C6600 */ .word 0x001C6600
@@ -35754,6 +36160,7 @@ enddlabel g_texPaintToolSave
 
 nonmatching g_texPaintToolUndo
 
+.balign 8
 dlabel g_texPaintToolUndo
     /* 907B0 8028F7B0 00000000 */ .word 0x00000000
     /* 907B4 8028F7B4 001C66F0 */ .word 0x001C66F0
@@ -35771,6 +36178,7 @@ enddlabel g_texPaintToolUndo
 
 nonmatching g_texPaintToolExit
 
+.balign 8
 dlabel g_texPaintToolExit
     /* 907E0 8028F7E0 00000000 */ .word 0x00000000
     /* 907E4 8028F7E4 001C67F0 */ .word 0x001C67F0
@@ -35788,6 +36196,7 @@ enddlabel g_texPaintToolExit
 
 nonmatching g_texButtonA
 
+.balign 8
 dlabel g_texButtonA
     /* 90810 8028F810 00000000 */ .word 0x00000000
     /* 90814 8028F814 001C68E0 */ .word 0x001C68E0
@@ -35805,6 +36214,7 @@ enddlabel g_texButtonA
 
 nonmatching g_texButtonB
 
+.balign 8
 dlabel g_texButtonB
     /* 90840 8028F840 00000000 */ .word 0x00000000
     /* 90844 8028F844 001C6AF0 */ .word 0x001C6AF0
@@ -35822,6 +36232,7 @@ enddlabel g_texButtonB
 
 nonmatching g_texPaintCursor
 
+.balign 8
 dlabel g_texPaintCursor
     /* 90870 8028F870 00000000 */ .word 0x00000000
     /* 90874 8028F874 001C6F00 */ .word 0x001C6F00
@@ -35839,6 +36250,7 @@ enddlabel g_texPaintCursor
 
 nonmatching g_texPaintFillCursor
 
+.balign 8
 dlabel g_texPaintFillCursor
     /* 908A0 8028F8A0 00000000 */ .word 0x00000000
     /* 908A4 8028F8A4 001C6FD0 */ .word 0x001C6FD0
@@ -35856,6 +36268,7 @@ enddlabel g_texPaintFillCursor
 
 nonmatching g_texPaintBrushCursor
 
+.balign 8
 dlabel g_texPaintBrushCursor
     /* 908D0 8028F8D0 00000000 */ .word 0x00000000
     /* 908D4 8028F8D4 001C7060 */ .word 0x001C7060
@@ -35873,6 +36286,7 @@ enddlabel g_texPaintBrushCursor
 
 nonmatching g_texPaintCrosshairCursor
 
+.balign 8
 dlabel g_texPaintCrosshairCursor
     /* 90900 8028F900 00000000 */ .word 0x00000000
     /* 90904 8028F904 001C70C0 */ .word 0x001C70C0
@@ -35890,6 +36304,7 @@ enddlabel g_texPaintCrosshairCursor
 
 nonmatching g_texPaintTextCursor
 
+.balign 8
 dlabel g_texPaintTextCursor
     /* 90930 8028F930 00000000 */ .word 0x00000000
     /* 90934 8028F934 001C7100 */ .word 0x001C7100
@@ -35910,6 +36325,7 @@ enddlabel g_nGfxMatrixStackDepth
 
 nonmatching g_nGfxMatrixStackMax
 
+.balign 8
 dlabel g_nGfxMatrixStackMax
     /* 90958 8028F958 00000018 */ .word 0x00000018
     /* 9095C 8028F95C 00000000 */ .word 0x00000000
@@ -35917,6 +36333,7 @@ enddlabel g_nGfxMatrixStackMax
 
 nonmatching g_texPaintEyedropperCursor
 
+.balign 8
 dlabel g_texPaintEyedropperCursor
     /* 90960 8028F960 00000000 */ .word 0x00000000
     /* 90964 8028F964 001C7140 */ .word 0x001C7140
@@ -35934,6 +36351,7 @@ enddlabel g_texPaintEyedropperCursor
 
 nonmatching g_texKeyboardPanel
 
+.balign 8
 dlabel g_texKeyboardPanel
     /* 90990 8028F990 00000000 */ .word 0x00000000
     /* 90994 8028F994 001C71B0 */ .word 0x001C71B0
@@ -35952,6 +36370,7 @@ enddlabel g_dwGfxModelViewMtx
 
 nonmatching g_dwGfxTextureMtx
 
+.balign 8
 dlabel g_dwGfxTextureMtx
     /* 909B0 8028F9B0 00000076 */ .word 0x00000076
 enddlabel g_dwGfxTextureMtx
@@ -35964,6 +36383,7 @@ enddlabel g_dwGfxCurrentMtx
 
 nonmatching g_dwGfxLightCount
 
+.balign 8
 dlabel g_dwGfxLightCount
     /* 909B8 8028F9B8 000000D4 */ .word 0x000000D4
 enddlabel g_dwGfxLightCount
@@ -35977,6 +36397,7 @@ enddlabel D_8028F9BC
 
 nonmatching g_texKeyboardBackground
 
+.balign 8
 dlabel g_texKeyboardBackground
     /* 909C0 8028F9C0 00000000 */ .word 0x00000000
     /* 909C4 8028F9C4 001C9C50 */ .word 0x001C9C50
@@ -35995,6 +36416,7 @@ enddlabel D_8028F9DC
 
 nonmatching D_8028F9E0
 
+.balign 8
 dlabel D_8028F9E0
     /* 909E0 8028F9E0 00000000 */ .word 0x00000000
 enddlabel D_8028F9E0
@@ -36007,6 +36429,7 @@ enddlabel g_dwGfxLight1Dir
 
 nonmatching g_dwGfxLight1Color
 
+.balign 8
 dlabel g_dwGfxLight1Color
     /* 909E8 8028F9E8 00000000 */ .word 0x00000000
 enddlabel g_dwGfxLight1Color
@@ -36020,6 +36443,7 @@ enddlabel D_8028F9EC
 
 nonmatching g_texKeyboardHighlight
 
+.balign 8
 dlabel g_texKeyboardHighlight
     /* 909F0 8028F9F0 00000000 */ .word 0x00000000
     /* 909F4 8028F9F4 001C9C70 */ .word 0x001C9C70
@@ -36038,6 +36462,7 @@ enddlabel g_dwGfxAmbientColor
 
 nonmatching g_dwGfxBackgroundColor
 
+.balign 8
 dlabel g_dwGfxBackgroundColor
     /* 90A10 8028FA10 00000072 */ .word 0x00000072
 enddlabel g_dwGfxBackgroundColor
@@ -36057,6 +36482,7 @@ enddlabel g_bGfxLightingEnabled
 
 nonmatching g_texDecalFont
 
+.balign 8
 dlabel g_texDecalFont
     /* 90A20 8028FA20 00000000 */ .word 0x00000000
 enddlabel g_texDecalFont
@@ -36085,6 +36511,7 @@ enddlabel D_8028FA34
 
 nonmatching g_texPaintShapeFilledRect
 
+.balign 8
 dlabel g_texPaintShapeFilledRect
     /* 90A50 8028FA50 00000000 */ .word 0x00000000
     /* 90A54 8028FA54 001C9FE0 */ .word 0x001C9FE0
@@ -36099,6 +36526,7 @@ enddlabel g_bGfxTextureEnabled
 
 nonmatching g_dwGfxTextureScaleS
 
+.balign 8
 dlabel g_dwGfxTextureScaleS
     /* 90A60 8028FA60 00000000 */ .word 0x00000000
 enddlabel g_dwGfxTextureScaleS
@@ -36111,6 +36539,7 @@ enddlabel g_dwGfxTextureScaleT
 
 nonmatching g_dwGfxTextureScrollS
 
+.balign 8
 dlabel g_dwGfxTextureScrollS
     /* 90A68 8028FA68 00000000 */ .word 0x00000000
 enddlabel g_dwGfxTextureScrollS
@@ -36131,6 +36560,7 @@ enddlabel g_dwGfxTextureScrollT
 
 nonmatching g_dwGfxTexturePalette
 
+.balign 8
 dlabel g_dwGfxTexturePalette
     /* 90A78 8028FA78 00000000 */ .word 0x00000000
 enddlabel g_dwGfxTexturePalette
@@ -36144,6 +36574,7 @@ enddlabel D_8028FA7C
 
 nonmatching g_texPaintShapeOutlinedRect
 
+.balign 8
 dlabel g_texPaintShapeOutlinedRect
     /* 90A80 8028FA80 00000000 */ .word 0x00000000
     /* 90A84 8028FA84 001CA010 */ .word 0x001CA010
@@ -36158,6 +36589,7 @@ enddlabel g_bGfxNormalizeEnabled
 
 nonmatching g_dwGfxTextureLod
 
+.balign 8
 dlabel g_dwGfxTextureLod
     /* 90A90 8028FA90 00000000 */ .word 0x00000000
 enddlabel g_dwGfxTextureLod
@@ -36180,6 +36612,7 @@ enddlabel g_dwGfxViewportScaleX
 
 nonmatching g_dwGfxViewportScaleY
 
+.balign 8
 dlabel g_dwGfxViewportScaleY
     /* 90AA8 8028FAA8 00000000 */ .word 0x00000000
 enddlabel g_dwGfxViewportScaleY
@@ -36193,6 +36626,7 @@ enddlabel D_8028FAAC
 
 nonmatching g_texPaintShapeFilledRoundRect
 
+.balign 8
 dlabel g_texPaintShapeFilledRoundRect
     /* 90AB0 8028FAB0 00000000 */ .word 0x00000000
     /* 90AB4 8028FAB4 001CA040 */ .word 0x001CA040
@@ -36210,6 +36644,7 @@ enddlabel g_texPaintShapeFilledRoundRect
 
 nonmatching g_texPaintShapeOutlinedRoundRect
 
+.balign 8
 dlabel g_texPaintShapeOutlinedRoundRect
     /* 90AE0 8028FAE0 00000000 */ .word 0x00000000
     /* 90AE4 8028FAE4 001CA0B0 */ .word 0x001CA0B0
@@ -36227,6 +36662,7 @@ enddlabel g_texPaintShapeOutlinedRoundRect
 
 nonmatching g_texPaintShapeFilledOval
 
+.balign 8
 dlabel g_texPaintShapeFilledOval
     /* 90B10 8028FB10 00000000 */ .word 0x00000000
     /* 90B14 8028FB14 001CA150 */ .word 0x001CA150
@@ -36241,6 +36677,7 @@ enddlabel g_bGfxCullFront
 
 nonmatching g_dwGfxCullMode
 
+.balign 8
 dlabel g_dwGfxCullMode
     /* 90B20 8028FB20 00000000 */ .word 0x00000000
 enddlabel g_dwGfxCullMode
@@ -36253,6 +36690,7 @@ enddlabel g_dwGfxPolygonMode
 
 nonmatching g_dwGfxLineWidth
 
+.balign 8
 dlabel g_dwGfxLineWidth
     /* 90B28 8028FB28 00000000 */ .word 0x00000000
 enddlabel g_dwGfxLineWidth
@@ -36265,6 +36703,7 @@ enddlabel g_dwGfxPointSize
 
 nonmatching g_dwGfxFogMode
 
+.balign 8
 dlabel g_dwGfxFogMode
     /* 90B30 8028FB30 00000000 */ .word 0x00000000
 enddlabel g_dwGfxFogMode
@@ -36277,6 +36716,7 @@ enddlabel g_dwGfxDepthSource
 
 nonmatching g_dwGfxDepthCompare
 
+.balign 8
 dlabel g_dwGfxDepthCompare
     /* 90B38 8028FB38 00000000 */ .word 0x00000000
 enddlabel g_dwGfxDepthCompare
@@ -36290,6 +36730,7 @@ enddlabel D_8028FB3C
 
 nonmatching g_texPaintShapeOutlinedOval
 
+.balign 8
 dlabel g_texPaintShapeOutlinedOval
     /* 90B40 8028FB40 00000000 */ .word 0x00000000
     /* 90B44 8028FB44 001CA230 */ .word 0x001CA230
@@ -36304,6 +36745,7 @@ enddlabel g_bGfxDepthWrite
 
 nonmatching g_dwGfxScissorX0
 
+.balign 8
 dlabel g_dwGfxScissorX0
     /* 90B50 8028FB50 00000000 */ .word 0x00000000
 enddlabel g_dwGfxScissorX0
@@ -36317,6 +36759,7 @@ enddlabel g_dwGfxScissorY0
 nonmatching D_8028FB58
 
 /* Automatically generated and unreferenced pad */
+.balign 8
 dlabel D_8028FB58
     /* 90B58 8028FB58 00000000 */ .word 0x00000000
 enddlabel D_8028FB58
@@ -36329,6 +36772,7 @@ enddlabel g_dwGfxScissorX1
 
 nonmatching g_dwGfxScissorY1
 
+.balign 8
 dlabel g_dwGfxScissorY1
     /* 90B60 8028FB60 00000000 */ .word 0x00000000
 enddlabel g_dwGfxScissorY1
@@ -36341,6 +36785,7 @@ enddlabel g_dwGfxBlendColorR
 
 nonmatching g_dwGfxBlendColorG
 
+.balign 8
 dlabel g_dwGfxBlendColorG
     /* 90B68 8028FB68 00000000 */ .word 0x00000000
 enddlabel g_dwGfxBlendColorG
@@ -36354,6 +36799,7 @@ enddlabel D_8028FB6C
 
 nonmatching g_texPaintShapeFilledCircle
 
+.balign 8
 dlabel g_texPaintShapeFilledCircle
     /* 90B70 8028FB70 00000000 */ .word 0x00000000
     /* 90B74 8028FB74 001CA370 */ .word 0x001CA370
@@ -36372,6 +36818,7 @@ enddlabel g_dwGfxBlendColorB
 
 nonmatching g_dwGfxBlendColorA
 
+.balign 8
 dlabel g_dwGfxBlendColorA
     /* 90B90 8028FB90 00000000 */ .word 0x00000000
 enddlabel g_dwGfxBlendColorA
@@ -36386,6 +36833,7 @@ enddlabel D_8028FB94
 
 nonmatching g_texPaintShapeOutlinedCircle
 
+.balign 8
 dlabel g_texPaintShapeOutlinedCircle
     /* 90BA0 8028FBA0 00000000 */ .word 0x00000000
     /* 90BA4 8028FBA4 001CA440 */ .word 0x001CA440
@@ -36404,6 +36852,7 @@ enddlabel g_dwGfxPrimColorB
 
 nonmatching g_dwGfxPrimColorA
 
+.balign 8
 dlabel g_dwGfxPrimColorA
     /* 90BC0 8028FBC0 00000000 */ .word 0x00000000
 enddlabel g_dwGfxPrimColorA
@@ -36419,6 +36868,7 @@ enddlabel D_8028FBC4
 
 nonmatching g_rcDecalCanvasFrame
 
+.balign 8
 dlabel g_rcDecalCanvasFrame
     /* 90BD0 8028FBD0 00000118 */ .word 0x00000118
 enddlabel g_rcDecalCanvasFrame
@@ -36431,6 +36881,7 @@ enddlabel D_8028FBD4
 
 nonmatching D_8028FBD8
 
+.balign 8
 dlabel D_8028FBD8
     /* 90BD8 8028FBD8 00000148 */ .word 0x00000148
 enddlabel D_8028FBD8
@@ -36443,6 +36894,7 @@ enddlabel D_8028FBDC
 
 nonmatching g_aPaletteFrameRects
 
+.balign 8
 dlabel g_aPaletteFrameRects
     /* 90BE0 8028FBE0 00000000 */ .word 0x00000000
 enddlabel g_aPaletteFrameRects
@@ -36457,6 +36909,7 @@ enddlabel D_8028FBE4
 
 nonmatching D_8028FBF0
 
+.balign 8
 dlabel D_8028FBF0
     /* 90BF0 8028FBF0 00000000 */ .word 0x00000000
 enddlabel D_8028FBF0
@@ -36471,6 +36924,7 @@ enddlabel D_8028FBF4
 
 nonmatching g_aBrushSizeRects
 
+.balign 8
 dlabel g_aBrushSizeRects
     /* 90C00 8028FC00 00000000 */ .word 0x00000000
     /* 90C04 8028FC04 00000000 */ .word 0x00000000
@@ -36478,6 +36932,7 @@ enddlabel g_aBrushSizeRects
 
 nonmatching D_8028FC08
 
+.balign 8
 dlabel D_8028FC08
     /* 90C08 8028FC08 00000001 */ .word 0x00000001
     /* 90C0C 8028FC0C 00000001 */ .word 0x00000001
@@ -36501,6 +36956,7 @@ enddlabel D_8028FC08
 
 nonmatching g_aBrushSizeButtonRects
 
+.balign 8
 dlabel g_aBrushSizeButtonRects
     /* 90C50 8028FC50 00000000 */ .word 0x00000000
 enddlabel g_aBrushSizeButtonRects
@@ -36516,6 +36972,7 @@ enddlabel D_8028FC54
 
 nonmatching D_8028FC60
 
+.balign 8
 dlabel D_8028FC60
     /* 90C60 8028FC60 00000000 */ .word 0x00000000
     /* 90C64 8028FC64 00000000 */ .word 0x00000000
@@ -36537,6 +36994,7 @@ enddlabel D_8028FC60
 
 nonmatching g_aDecalGlyphs
 
+.balign 8
 dlabel g_aDecalGlyphs
     /* 90CA0 8028FCA0 00000000 */ .word 0x00000000
 enddlabel g_aDecalGlyphs
@@ -36898,6 +37356,7 @@ enddlabel D_8028FCA4
 
 nonmatching g_bDashColorA
 
+.balign 8
 dlabel g_bDashColorA
     /* 91218 80290218 */ .byte 0x00
     /* 91219 80290219 */ .byte 0x00
@@ -36916,6 +37375,7 @@ enddlabel g_bDashColorB
 
 nonmatching g_bBrushSize
 
+.balign 8
 dlabel g_bBrushSize
     /* 91220 80290220 */ .byte 0x02
     /* 91221 80290221 */ .byte 0x00
@@ -36952,6 +37412,7 @@ enddlabel g_apPaintToolIcons
 
 nonmatching g_pDecalSlotIcon
 
+.balign 8
 dlabel g_pDecalSlotIcon
     /* 91268 80290268 00000000 */ .word 0x00000000
 enddlabel g_pDecalSlotIcon
@@ -36965,6 +37426,7 @@ enddlabel g_apDecalSlotIcons
 nonmatching D_80290270
 
 /* Automatically generated and unreferenced pad */
+.balign 8
 dlabel D_80290270
     /* 91270 80290270 8028F360 */ .word g_texPanelRightDoor
     /* 91274 80290274 8028F390 */ .word g_texPanelLeftFrontFender
@@ -36986,6 +37448,7 @@ enddlabel g_apRectStyleIcons
 nonmatching D_80290298
 
 /* Automatically generated and unreferenced pad */
+.balign 8
 dlabel D_80290298
     /* 91298 80290298 8028FA80 */ .word g_texPaintShapeOutlinedRect
     /* 9129C 8029029C 8028FAB0 */ .word g_texPaintShapeFilledRoundRect
@@ -37001,6 +37464,7 @@ enddlabel g_apOvalStyleIcons
 nonmatching D_802902A8
 
 /* Automatically generated and unreferenced pad */
+.balign 8
 dlabel D_802902A8
     /* 912A8 802902A8 8028FB40 */ .word g_texPaintShapeOutlinedOval
     /* 912AC 802902AC 8028FB70 */ .word g_texPaintShapeFilledCircle
@@ -37018,6 +37482,7 @@ enddlabel g_bSavedColor
 
 nonmatching g_bDecalColor
 
+.balign 8
 dlabel g_bDecalColor
     /* 912B8 802902B8 */ .byte 0x03
     /* 912B9 802902B9 */ .byte 0x00
@@ -37036,6 +37501,7 @@ enddlabel g_bTextShadowColor
 
 nonmatching g_bPaintTool
 
+.balign 8
 dlabel g_bPaintTool
     /* 912C0 802902C0 */ .byte 0x01
     /* 912C1 802902C1 */ .byte 0x00
@@ -37054,6 +37520,7 @@ enddlabel g_bPreviousPaintTool
 
 nonmatching g_bDecalSlot
 
+.balign 8
 dlabel g_bDecalSlot
     /* 912C8 802902C8 */ .byte 0x02
     /* 912C9 802902C9 */ .byte 0x00
@@ -37072,6 +37539,7 @@ enddlabel g_bPreviousDecalSlot
 
 nonmatching g_bSavedDecalSlot
 
+.balign 8
 dlabel g_bSavedDecalSlot
     /* 912D0 802902D0 */ .byte 0x00
     /* 912D1 802902D1 */ .byte 0x00
@@ -37090,6 +37558,7 @@ enddlabel g_bUndoDecalSlot
 
 nonmatching g_pDecalTexels
 
+.balign 8
 dlabel g_pDecalTexels
     /* 912D8 802902D8 00000000 */ .word 0x00000000
 enddlabel g_pDecalTexels
@@ -37102,6 +37571,7 @@ enddlabel g_pDecalMask
 
 nonmatching g_pDecalUndoBuffer
 
+.balign 8
 dlabel g_pDecalUndoBuffer
     /* 912E0 802902E0 00000000 */ .word 0x00000000
 enddlabel g_pDecalUndoBuffer
@@ -37114,6 +37584,7 @@ enddlabel g_pDecalScratchTexels
 
 nonmatching g_bDecalWidth
 
+.balign 8
 dlabel g_bDecalWidth
     /* 912E8 802902E8 */ .byte 0x00
     /* 912E9 802902E9 */ .byte 0x00
@@ -37132,6 +37603,7 @@ enddlabel g_bDecalHeight
 
 nonmatching g_pDecalPalette
 
+.balign 8
 dlabel g_pDecalPalette
     /* 912F0 802902F0 00000000 */ .word 0x00000000
 enddlabel g_pDecalPalette
@@ -37145,6 +37617,7 @@ enddlabel g_rcDecalCanvas
 nonmatching D_802902F8
 
 /* Automatically generated and unreferenced pad */
+.balign 8
 dlabel D_802902F8
     /* 912F8 802902F8 00000000 */ .word 0x00000000
     /* 912FC 802902FC 00000000 */ .word 0x00000000
@@ -37159,6 +37632,7 @@ enddlabel g_bKeyboardHoverKey
 
 nonmatching g_bDecalTextLength
 
+.balign 8
 dlabel g_bDecalTextLength
     /* 91308 80290308 */ .byte 0x00
     /* 91309 80290309 */ .byte 0x00
@@ -37177,6 +37651,7 @@ enddlabel g_bDecalTextWidth
 
 nonmatching g_wScreenFrameCount
 
+.balign 8
 dlabel g_wScreenFrameCount
     /* 91310 80290310 */ .short 0x0000
 enddlabel g_wScreenFrameCount
@@ -37199,6 +37674,7 @@ enddlabel g_bDecalEditCount
 
 nonmatching g_bStyleMenuCursor
 
+.balign 8
 dlabel g_bStyleMenuCursor
     /* 91318 80290318 00000000 */ .word 0x00000000
 enddlabel g_bStyleMenuCursor
@@ -37214,6 +37690,7 @@ enddlabel g_bPaintShopPlayer
 
 nonmatching g_bPaintToolStarted
 
+.balign 8
 dlabel g_bPaintToolStarted
     /* 91320 80290320 */ .byte 0x00
     /* 91321 80290321 */ .byte 0x00
@@ -37232,6 +37709,7 @@ enddlabel g_bDecalDragActive
 
 nonmatching g_bPaletteEnabled
 
+.balign 8
 dlabel g_bPaletteEnabled
     /* 91328 80290328 */ .byte 0x01
     /* 91329 80290329 */ .byte 0x00
@@ -37250,6 +37728,7 @@ enddlabel g_bDecalSlotHasMirror
 
 nonmatching g_bDecalSlotChanged
 
+.balign 8
 dlabel g_bDecalSlotChanged
     /* 91330 80290330 */ .byte 0x00
     /* 91331 80290331 */ .byte 0x00
@@ -37268,6 +37747,7 @@ enddlabel g_bColorEditorOpen
 
 nonmatching g_bShowPreview3D
 
+.balign 8
 dlabel g_bShowPreview3D
     /* 91338 80290338 */ .byte 0x01
     /* 91339 80290339 */ .byte 0x00
@@ -37286,6 +37766,7 @@ enddlabel g_bUndoAvailable
 
 nonmatching g_bStyleMenuOpen
 
+.balign 8
 dlabel g_bStyleMenuOpen
     /* 91340 80290340 */ .byte 0x00
     /* 91341 80290341 */ .byte 0x00
@@ -37304,6 +37785,7 @@ enddlabel g_bTextShadowPickerOpen
 
 nonmatching g_bPaintShopExiting
 
+.balign 8
 dlabel g_bPaintShopExiting
     /* 91348 80290348 */ .byte 0x00
     /* 91349 80290349 */ .byte 0x00
@@ -37322,6 +37804,7 @@ enddlabel g_bEyedropperActive
 
 nonmatching D_80290350
 
+.balign 8
 dlabel D_80290350
     /* 91350 80290350 00000000 */ .word 0x00000000
 enddlabel D_80290350
@@ -37334,6 +37817,7 @@ enddlabel g_dwObjectScaleY
 
 nonmatching g_dwObjectScaleZ
 
+.balign 8
 dlabel g_dwObjectScaleZ
     /* 91358 80290358 00000000 */ .word 0x00000000
 enddlabel g_dwObjectScaleZ
@@ -37346,6 +37830,7 @@ enddlabel D_8029035C
 
 nonmatching g_dwObjectAnimSpeed
 
+.balign 8
 dlabel g_dwObjectAnimSpeed
     /* 91360 80290360 00000000 */ .word 0x00000000
 enddlabel g_dwObjectAnimSpeed
@@ -37358,6 +37843,7 @@ enddlabel g_dwObjectTexScrollS
 
 nonmatching s_aPanelViewDirections
 
+.balign 8
 dlabel s_aPanelViewDirections
     /* 91368 80290368 3F800000 */ .float 1
     /* 9136C 8029036C BF800000 */ .float -1
@@ -37376,6 +37862,7 @@ enddlabel g_dwObjectTexScaleS
 
 nonmatching g_dwObjectTexScaleT
 
+.balign 8
 dlabel g_dwObjectTexScaleT
     /* 91388 80290388 00000000 */ .word 0x00000000
 enddlabel g_dwObjectTexScaleT
@@ -37409,6 +37896,7 @@ enddlabel D_8029038C
 
 nonmatching g_bPaintShopInitialized
 
+.balign 8
 dlabel g_bPaintShopInitialized
     /* 913E0 802903E0 00000000 */ .word 0x00000000
 enddlabel g_bPaintShopInitialized
@@ -37421,6 +37909,7 @@ enddlabel D_802903E4
 
 nonmatching g_pszClearAllDecals
 
+.balign 8
 dlabel g_pszClearAllDecals
     /* 913E8 802903E8 802AC668 */ .word g_szClearAllDecals
 enddlabel g_pszClearAllDecals
@@ -37433,6 +37922,7 @@ enddlabel g_pszToSelectedColor
 
 nonmatching g_pszToBodyColor
 
+.balign 8
 dlabel g_pszToBodyColor
     /* 913F0 802903F0 802AC690 */ .word g_szToBodyColor
 enddlabel g_pszToBodyColor
@@ -37445,6 +37935,7 @@ enddlabel g_pszFlipCurrentDecal
 
 nonmatching g_pszFlipCurrentDecal2
 
+.balign 8
 dlabel g_pszFlipCurrentDecal2
     /* 913F8 802903F8 802AC6E0 */ .word g_szFlipCurrentDecal2
 enddlabel g_pszFlipCurrentDecal2
@@ -37457,6 +37948,7 @@ enddlabel g_pszHorizontally
 
 nonmatching g_pszVertically
 
+.balign 8
 dlabel g_pszVertically
     /* 91400 80290400 802AC704 */ .word g_szVertically
 enddlabel g_pszVertically
@@ -37469,6 +37961,7 @@ enddlabel g_apszMirrorDecalOptionLines
 
 nonmatching g_pszToRightDoor
 
+.balign 8
 dlabel g_pszToRightDoor
     /* 91408 80290408 802AC728 */ .word g_szToRightDoor
 enddlabel g_pszToRightDoor
@@ -37481,6 +37974,7 @@ enddlabel g_pszMirrorCurrentDecal2
 
 nonmatching g_pszToLeftDoor
 
+.balign 8
 dlabel g_pszToLeftDoor
     /* 91410 80290410 802AC754 */ .word g_szToLeftDoor
 enddlabel g_pszToLeftDoor
@@ -37493,6 +37987,7 @@ enddlabel g_pszMirrorCurrentDecalTo
 
 nonmatching g_pszRightFrontFender
 
+.balign 8
 dlabel g_pszRightFrontFender
     /* 91418 80290418 802AC780 */ .word g_szRightFrontFender
 enddlabel g_pszRightFrontFender
@@ -37506,6 +38001,7 @@ enddlabel g_pszMirrorCurrentDecalTo2
 nonmatching D_80290420
 
 /* Automatically generated and unreferenced pad */
+.balign 8
 dlabel D_80290420
     /* 91420 80290420 802AC7B0 */ .word g_szLeftFrontFender
     /* 91424 80290424 00000000 */ .word 0x00000000
@@ -37526,6 +38022,7 @@ enddlabel s_pMirrorSource
 
 nonmatching D_80290448
 
+.balign 8
 dlabel D_80290448
     /* 91448 80290448 2D28290F */ .word 0x2D28290F
 enddlabel D_80290448
@@ -37538,6 +38035,7 @@ enddlabel g_dwFontScaleX
 
 nonmatching g_dwFontScaleY
 
+.balign 8
 dlabel g_dwFontScaleY
     /* 91450 80290450 0F1D1E1C */ .word 0x0F1D1E1C
 enddlabel g_dwFontScaleY
@@ -37554,6 +38052,7 @@ enddlabel g_dwFontColorRgba
 
 nonmatching D_80290458
 
+.balign 8
 dlabel D_80290458
     /* 91458 80290458 00000000 */ .word 0x00000000
 enddlabel D_80290458
@@ -37566,6 +38065,7 @@ enddlabel g_bPakDialogActive
 
 nonmatching g_bPakFileNeedsCreate
 
+.balign 8
 dlabel g_bPakFileNeedsCreate
     /* 91460 80290460 00000000 */ .word 0x00000000
 enddlabel g_bPakFileNeedsCreate
@@ -37578,6 +38078,7 @@ enddlabel g_dwPakFileOffset
 
 nonmatching g_aabColorEditorBars
 
+.balign 8
 dlabel g_aabColorEditorBars
     /* 91468 80290468 FF000000 */ .word 0xFF000000
 enddlabel g_aabColorEditorBars
@@ -37599,6 +38100,7 @@ enddlabel g_apszColorChannelNames
 nonmatching D_80290478
 
 /* Automatically generated and unreferenced pad */
+.balign 8
 dlabel D_80290478
     /* 91478 80290478 802ACBCC */ .word g_szColorEditorLabelG
     /* 9147C 8029047C 802ACBD0 */ .word g_szColorEditorLabelB
@@ -37606,6 +38108,7 @@ enddlabel D_80290478
 
 nonmatching g_bColorEditorChannel
 
+.balign 8
 dlabel g_bColorEditorChannel
     /* 91480 80290480 00000000 */ .word 0x00000000
 enddlabel g_bColorEditorChannel
@@ -37619,6 +38122,7 @@ enddlabel g_apszBrushStyleNames
 nonmatching D_80290488
 
 /* Automatically generated and unreferenced pad */
+.balign 8
 dlabel D_80290488
     /* 91488 80290488 802ACC20 */ .word g_szSquareBrush
 enddlabel D_80290488
@@ -37632,6 +38136,7 @@ enddlabel g_apszTextStyleNames
 nonmatching D_80290490
 
 /* Automatically generated and unreferenced pad */
+.balign 8
 dlabel D_80290490
     /* 91490 80290490 802ACC64 */ .word g_szDropShadowText
 enddlabel D_80290490
@@ -37645,6 +38150,7 @@ enddlabel g_apszRectStyleNames
 nonmatching D_80290498
 
 /* Automatically generated and unreferenced pad */
+.balign 8
 dlabel D_80290498
     /* 91498 80290498 802ACCE4 */ .word g_szOutlinedRectangle
     /* 9149C 8029049C 802ACCF8 */ .word g_szFilledRoundRectangle
@@ -37660,6 +38166,7 @@ enddlabel g_apszOvalStyleNames
 nonmatching D_802904A8
 
 /* Automatically generated and unreferenced pad */
+.balign 8
 dlabel D_802904A8
     /* 914A8 802904A8 802ACD60 */ .word g_szOutlinedOval
     /* 914AC 802904AC 802ACD70 */ .word g_szFilledCircle
@@ -37671,6 +38178,7 @@ enddlabel D_802904A8
 
 nonmatching g_texButtonBSmall
 
+.balign 8
 dlabel g_texButtonBSmall
     /* 914C0 802904C0 00000000 */ .word 0x00000000
     /* 914C4 802904C4 001C6CE0 */ .word 0x001C6CE0
@@ -37688,6 +38196,7 @@ enddlabel g_texButtonBSmall
 
 nonmatching g_szDecalCharMap
 
+.balign 8
 dlabel g_szDecalCharMap
     /* 914F0 802904F0 00202020 */ .word 0x00202020
     /* 914F4 802904F4 20202020 */ .word 0x20202020
@@ -37716,6 +38225,7 @@ enddlabel g_bPakMenuInitialized
 
 nonmatching g_wPakEmptySlotMask
 
+.balign 8
 dlabel g_wPakEmptySlotMask
     /* 91538 80290538 */ .short 0x0000
 enddlabel g_wPakEmptySlotMask
@@ -37746,6 +38256,7 @@ enddlabel D_80290542
 
 nonmatching g_bForceVehicleAltVariant
 
+.balign 8
 dlabel g_bForceVehicleAltVariant
     /* 91568 80290568 00000000 */ .word 0x00000000
 enddlabel g_bForceVehicleAltVariant
@@ -37758,6 +38269,7 @@ enddlabel g_bVehicleEnvMapLinearTexGen
 
 nonmatching g_dwBitmapTextX
 
+.balign 8
 dlabel g_dwBitmapTextX
     /* 91570 80290570 00000000 */ .word 0x00000000
 enddlabel g_dwBitmapTextX
@@ -37770,6 +38282,7 @@ enddlabel g_dwBitmapTextY
 
 nonmatching g_bBitmapTextNarrow
 
+.balign 8
 dlabel g_bBitmapTextNarrow
     /* 91578 80290578 00000000 */ .word 0x00000000
 enddlabel g_bBitmapTextNarrow
@@ -37789,6 +38302,7 @@ enddlabel D_8029057E
 
 nonmatching g_nDebugInstanceCycleStep
 
+.balign 8
 dlabel g_nDebugInstanceCycleStep
     /* 91580 80290580 00000000 */ .word 0x00000000
 enddlabel g_nDebugInstanceCycleStep
@@ -37804,6 +38318,7 @@ enddlabel D_80290584
 
 nonmatching g_awCheatSeqToggleDisplayListStats
 
+.balign 8
 dlabel g_awCheatSeqToggleDisplayListStats
     /* 91590 80290590 00010000 */ .word 0x00010000
     /* 91594 80290594 00080000 */ .word 0x00080000
@@ -37828,6 +38343,7 @@ enddlabel g_awCheatSeqFinishRace
 
 nonmatching g_awCheatSeqTracks0To4
 
+.balign 8
 dlabel g_awCheatSeqTracks0To4
     /* 915C8 802905C8 80000000 */ .word D_80000000
 enddlabel g_awCheatSeqTracks0To4
@@ -37853,6 +38369,7 @@ enddlabel g_awCheatSeqCars0To8
 nonmatching D_802905E8
 
 /* Automatically generated and unreferenced pad */
+.balign 8
 dlabel D_802905E8
     /* 915E8 802905E8 00010000 */ .word 0x00010000
     /* 915EC 802905EC 00100000 */ .word 0x00100000
@@ -37899,6 +38416,7 @@ enddlabel D_80290626
 
 nonmatching g_awCheatSeqUnlockBit800
 
+.balign 8
 dlabel g_awCheatSeqUnlockBit800
     /* 91648 80290648 */ .short 0x0001
 enddlabel g_awCheatSeqUnlockBit800
@@ -37940,6 +38458,7 @@ enddlabel g_awCheatSeqTracks5To9
 nonmatching D_80290690
 
 /* Automatically generated and unreferenced pad */
+.balign 8
 dlabel D_80290690
     /* 91690 80290690 00020000 */ .word 0x00020000
     /* 91694 80290694 00010000 */ .word 0x00010000
@@ -37959,6 +38478,7 @@ enddlabel g_awCheatSeqUnlockBit8000
 nonmatching D_802906B0
 
 /* Automatically generated and unreferenced pad */
+.balign 8
 dlabel D_802906B0
     /* 916B0 802906B0 00010000 */ .word 0x00010000
     /* 916B4 802906B4 00100000 */ .word 0x00100000
@@ -37972,6 +38492,7 @@ enddlabel D_802906B0
 
 nonmatching g_awCheatSeqMultiplayer
 
+.balign 8
 dlabel g_awCheatSeqMultiplayer
     /* 916D0 802906D0 80000000 */ .word D_80000000
 enddlabel g_awCheatSeqMultiplayer
@@ -38007,6 +38528,7 @@ enddlabel g_aCheatCodes
 
 nonmatching D_80290708
 
+.balign 8
 dlabel D_80290708
     /* 91708 80290708 802906AC */ .word g_awCheatSeqUnlockBit8000
     /* 9170C 8029070C 80256588 */ .word CheatSetUnlockBit800
@@ -38016,6 +38538,7 @@ enddlabel D_80290708
 
 nonmatching g_pWHudElement0
 
+.balign 8
 dlabel g_pWHudElement0
     /* 91718 80290718 80290624 */ .word g_awCheatSeqUnlockBit1000
 enddlabel g_pWHudElement0
@@ -38049,6 +38572,7 @@ enddlabel D_8029071C
 
 nonmatching g_dwDisplayListBlockCount
 
+.balign 8
 dlabel g_dwDisplayListBlockCount
     /* 91770 80290770 00000000 */ .word 0x00000000
 enddlabel g_dwDisplayListBlockCount
@@ -38061,6 +38585,7 @@ enddlabel g_dwHiliteBlockCount
 
 nonmatching g_dwLightBlockCount
 
+.balign 8
 dlabel g_dwLightBlockCount
     /* 91778 80290778 00000000 */ .word 0x00000000
 enddlabel g_dwLightBlockCount
@@ -38074,6 +38599,7 @@ enddlabel D_8029077C
 
 nonmatching g_aBitmapFontWide
 
+.balign 8
 dlabel g_aBitmapFontWide
     /* 91780 80290780 */ .short 0x0000
     /* 91782 80290782 */ .short 0x0000
@@ -40495,6 +41021,7 @@ enddlabel g_aBitmapFontWide
 
 nonmatching g_aBitmapFontNarrow
 
+.balign 8
 dlabel g_aBitmapFontNarrow
     /* 92A60 80291A60 */ .short 0x0000
     /* 92A62 80291A62 */ .short 0x0000
@@ -41956,6 +42483,7 @@ enddlabel g_aBitmapFontNarrow
 
 nonmatching g_aLargeFontTexture
 
+.balign 8
 dlabel g_aLargeFontTexture
     /* 935C0 802925C0 00000000 */ .word 0x00000000
     /* 935C4 802925C4 00000000 */ .word 0x00000000
@@ -55929,6 +56457,7 @@ enddlabel g_aLargeFontTexture
 
 nonmatching g_abDataSegmentBoundary
 
+.balign 8
 dlabel g_abDataSegmentBoundary
     /* A1000 802A0000 00000000 */ .word 0x00000000
     /* A1004 802A0004 00000000 */ .word 0x00000000
@@ -56046,6 +56575,7 @@ enddlabel g_abDataSegmentBoundary
 
 nonmatching g_aSmallFontTexture
 
+.balign 8
 dlabel g_aSmallFontTexture
     /* A11C0 802A01C0 00000000 */ .word 0x00000000
     /* A11C4 802A01C4 00000000 */ .word 0x00000000
@@ -59979,6 +60509,7 @@ enddlabel D_802A3EDF
 
 nonmatching g_abHudFontCharToGlyph
 
+.balign 8
 dlabel g_abHudFontCharToGlyph
     /* A4F00 802A3F00 */ .byte 0x0D
     /* A4F01 802A3F01 */ .byte 0x16
@@ -60080,6 +60611,7 @@ enddlabel g_abHudFontCharToGlyph
 
 nonmatching g_adwLargeFontGlyphOffsets
 
+.balign 8
 dlabel g_adwLargeFontGlyphOffsets
     /* A4F60 802A3F60 00000000 */ .word 0x00000000
     /* A4F64 802A3F64 0000001A */ .word 0x0000001A
@@ -60204,6 +60736,7 @@ enddlabel g_adwSmallFontGlyphOffsets
 
 nonmatching g_aVehicleHighlightTexture
 
+.balign 8
 dlabel g_aVehicleHighlightTexture
     /* A5128 802A4128 00000000 */ .word 0x00000000
     /* A512C 802A412C 00121000 */ .word 0x00121000
@@ -60723,6 +61256,7 @@ enddlabel g_aVehicleHighlightTexture
 
 nonmatching g_aVehicleNightHighlightTexture
 
+.balign 8
 dlabel g_aVehicleNightHighlightTexture
     /* A5930 802A4930 00000000 */ .word 0x00000000
     /* A5934 802A4934 00000000 */ .word 0x00000000
@@ -61242,6 +61776,7 @@ enddlabel g_aVehicleNightHighlightTexture
 
 nonmatching g_aTireSprayTexture
 
+.balign 8
 dlabel g_aTireSprayTexture
     /* A6138 802A5138 00001232 */ .word 0x00001232
     /* A613C 802A513C 31235889 */ .word 0x31235889
@@ -61505,6 +62040,7 @@ enddlabel g_aTireSprayTexture
 
 nonmatching g_aGameStateGfxBuffer
 
+.balign 8
 dlabel g_aGameStateGfxBuffer
     /* A6540 802A5540 00000000 */ .word 0x00000000
     /* A6544 802A5544 00000000 */ .word 0x00000000
@@ -62024,6 +62560,7 @@ enddlabel g_aGameStateGfxBuffer
 
 nonmatching g_aGameStateGfxImage
 
+.balign 8
 dlabel g_aGameStateGfxImage
     /* A6D48 802A5D48 115F19A1 */ .word 0x115F19A1
     /* A6D4C 802A5D4C 2A253269 */ .word 0x2A253269
@@ -62159,6 +62696,7 @@ enddlabel g_aGameStateGfxImage
 
 nonmatching g_aParticleTexture
 
+.balign 8
 dlabel g_aParticleTexture
     /* A6F50 802A5F50 00000000 */ .word 0x00000000
     /* A6F54 802A5F54 00000000 */ .word 0x00000000
@@ -63188,6 +63726,7 @@ enddlabel g_aParticleTexture
 
 nonmatching g_wAudioBufferWritePos
 
+.balign 8
 dlabel g_wAudioBufferWritePos
     /* A7F50 802A6F50 */ .short 0x0000
 enddlabel g_wAudioBufferWritePos
@@ -63203,6 +63742,7 @@ enddlabel D_802A6F52
 
 nonmatching g_aMixerChannels
 
+.balign 8
 dlabel g_aMixerChannels
     /* A7F58 802A6F58 00000000 */ .word 0x00000000
     /* A7F5C 802A6F5C 00000000 */ .word 0x00000000
@@ -63304,6 +63844,7 @@ enddlabel g_aMixerChannels
 
 nonmatching g_qwSoundEffectSampleMask
 
+.balign 8
 dlabel g_qwSoundEffectSampleMask
     /* A80D8 802A70D8 FFFEFFFE */ .word 0xFFFEFFFE
 enddlabel g_qwSoundEffectSampleMask
@@ -63316,6 +63857,7 @@ enddlabel D_802A70DC
 
 nonmatching g_aSoundEffectChannels
 
+.balign 8
 dlabel g_aSoundEffectChannels
     /* A80E0 802A70E0 00000000 */ .word 0x00000000
     /* A80E4 802A70E4 00000000 */ .word 0x00000000
@@ -63357,6 +63899,7 @@ enddlabel g_aSoundEffectChannels
 
 nonmatching g_dwSoundEffectEchoOffset
 
+.balign 8
 dlabel g_dwSoundEffectEchoOffset
     /* A8170 802A7170 00000000 */ .word 0x00000000
 enddlabel g_dwSoundEffectEchoOffset
@@ -63372,6 +63915,7 @@ enddlabel D_802A7174
 
 nonmatching g_nAudioChannelCount
 
+.balign 8
 dlabel g_nAudioChannelCount
     /* A8180 802A7180 00000010 */ .word 0x00000010
 enddlabel g_nAudioChannelCount
@@ -63387,6 +63931,7 @@ enddlabel g_bBgmVolume
 
 nonmatching g_bMusicVolume
 
+.balign 8
 dlabel g_bMusicVolume
     /* A8188 802A7188 */ .byte 0xFF
     /* A8189 802A7189 */ .byte 0x00
@@ -63405,6 +63950,7 @@ enddlabel g_bSfxMasterVolume
 
 nonmatching g_bSfxVolume
 
+.balign 8
 dlabel g_bSfxVolume
     /* A8190 802A7190 */ .byte 0xFF
     /* A8191 802A7191 */ .byte 0x00
@@ -63421,6 +63967,7 @@ enddlabel g_afNoteFrequencies
 nonmatching D_802A7198
 
 /* Automatically generated and unreferenced pad */
+.balign 8
 dlabel D_802A7198
     /* A8198 802A7198 438A999A */ .word 0x438A999A
     /* A819C 802A719C 4392D99A */ .word 0x4392D99A
@@ -63443,6 +63990,7 @@ enddlabel g_dwMusicPatternRow
 
 nonmatching g_SilenceSampleData
 
+.balign 8
 dlabel g_SilenceSampleData
     /* A81C8 802A71C8 00000000 */ .word 0x00000000
 enddlabel g_SilenceSampleData
@@ -63455,6 +64003,7 @@ enddlabel g_dwAudioTickToggle
 
 nonmatching g_dwAiDmaPrevLength
 
+.balign 8
 dlabel g_dwAiDmaPrevLength
     /* A81D0 802A71D0 00000000 */ .word 0x00000000
 enddlabel g_dwAiDmaPrevLength
@@ -63468,6 +64017,7 @@ enddlabel g_dwSoundEffectMixOffset
 nonmatching D_802A71D8
 
 /* Automatically generated and unreferenced pad */
+.balign 8
 dlabel D_802A71D8
     /* A81D8 802A71D8 00000000 */ .word 0x00000000
     /* A81DC 802A71DC 00000000 */ .word 0x00000000
@@ -63475,6 +64025,7 @@ enddlabel D_802A71D8
 
 nonmatching g_pCollisionTriangleList
 
+.balign 8
 dlabel g_pCollisionTriangleList
     /* A81E0 802A71E0 00000000 */ .word 0x00000000
 enddlabel g_pCollisionTriangleList
@@ -63487,6 +64038,7 @@ enddlabel g_pNextCollisionTriangleNode
 
 nonmatching g_dwCollisionContactType
 
+.balign 8
 dlabel g_dwCollisionContactType
     /* A81E8 802A71E8 00000000 */ .word 0x00000000
 enddlabel g_dwCollisionContactType
@@ -63499,6 +64051,7 @@ enddlabel g_pCollisionTriangle
 
 nonmatching g_bTrackCollisionFrameToggle
 
+.balign 8
 dlabel g_bTrackCollisionFrameToggle
     /* A81F0 802A71F0 00000000 */ .word 0x00000000
 enddlabel g_bTrackCollisionFrameToggle
@@ -63512,6 +64065,7 @@ enddlabel D_802A71F4
 
 nonmatching g_afSurfaceGrip
 
+.balign 8
 dlabel g_afSurfaceGrip
     /* A81F8 802A71F8 3DA3D70A */ .float 0.07999999821
     /* A81FC 802A71FC 3DA3D70A */ .float 0.07999999821
@@ -63541,6 +64095,7 @@ enddlabel g_afSurfaceGrip
 
 nonmatching g_afSurfaceMaxLoad
 
+.balign 8
 dlabel g_afSurfaceMaxLoad
     /* A8258 802A7258 47AFC800 */ .float 90000
     /* A825C 802A725C 47AFC800 */ .float 90000
@@ -63570,6 +64125,7 @@ enddlabel g_afSurfaceMaxLoad
 
 nonmatching g_afSurfaceSlipLoad
 
+.balign 8
 dlabel g_afSurfaceSlipLoad
     /* A82B8 802A72B8 453B8000 */ .float 3000
     /* A82BC 802A72BC 453B8000 */ .float 3000
@@ -63599,6 +64155,7 @@ enddlabel g_afSurfaceSlipLoad
 
 nonmatching g_dwOsAiDacRate
 
+.balign 8
 dlabel g_dwOsAiDacRate
     /* A8318 802A7318 3F800000 */ .word 0x3F800000
 enddlabel g_dwOsAiDacRate
@@ -63611,6 +64168,7 @@ enddlabel g_dwOsAiBitRate
 
 nonmatching g_dwOsAiBufferSize
 
+.balign 8
 dlabel g_dwOsAiBufferSize
     /* A8320 802A7320 00000000 */ .word 0x00000000
 enddlabel g_dwOsAiBufferSize
@@ -63625,6 +64183,7 @@ enddlabel g_vecUnitY
 
 nonmatching g_vecUnitZ
 
+.balign 8
 dlabel g_vecUnitZ
     /* A8330 802A7330 00000000 */ .word 0x00000000
 enddlabel g_vecUnitZ
@@ -63637,6 +64196,7 @@ enddlabel g_fImpulseDirInitY
 
 nonmatching g_fImpulseDirInitZ
 
+.balign 8
 dlabel g_fImpulseDirInitZ
     /* A8338 802A7338 3F800000 */ .word 0x3F800000
 enddlabel g_fImpulseDirInitZ
@@ -63663,6 +64223,7 @@ enddlabel g_vecNegUnitZ
 
 nonmatching g_vVehicleObbHalfExtents
 
+.balign 8
 dlabel g_vVehicleObbHalfExtents
     /* A8360 802A7360 40200000 */ .word 0x40200000
     /* A8364 802A7364 3F800000 */ .word 0x3F800000
@@ -63678,6 +64239,7 @@ enddlabel D_802A736C
 
 nonmatching g_wSerialInterfaceIdle
 
+.balign 8
 dlabel g_wSerialInterfaceIdle
     /* A8370 802A7370 */ .short 0x0001
 enddlabel g_wSerialInterfaceIdle
@@ -63698,6 +64260,7 @@ enddlabel g_awRumbleActive
 
 nonmatching g_awRumbleMotorOn
 
+.balign 8
 dlabel g_awRumbleMotorOn
     /* A8378 802A7378 */ .short 0x0000
     /* A837A 802A737A */ .short 0x0000
@@ -63712,6 +64275,7 @@ enddlabel g_awRumbleOnFrames
 
 nonmatching g_awRumbleOffFrames
 
+.balign 8
 dlabel g_awRumbleOffFrames
     /* A8380 802A7380 */ .short 0x0000
     /* A8382 802A7382 */ .short 0x0000
@@ -63726,6 +64290,7 @@ enddlabel g_awRumbleCounter
 
 nonmatching g_awRumbleFramesLeft
 
+.balign 8
 dlabel g_awRumbleFramesLeft
     /* A8388 802A7388 */ .short 0x0000
     /* A838A 802A738A */ .short 0x0000
@@ -63740,6 +64305,7 @@ enddlabel g_wRaceScreenLoopExited
 
 nonmatching g_dwRumbleProbeTimer
 
+.balign 8
 dlabel g_dwRumbleProbeTimer
     /* A8390 802A7390 00000000 */ .word 0x00000000
     /* A8394 802A7394 00000000 */ .word 0x00000000
@@ -63749,6 +64315,7 @@ enddlabel g_dwRumbleProbeTimer
 
 nonmatching sintable
 
+.balign 8
 dlabel sintable
     /* A83A0 802A73A0 */ .short 0x0000
     /* A83A2 802A73A2 */ .short 0x0032
@@ -64783,6 +65350,7 @@ enddlabel D_802A7B9E
 
 nonmatching osViModePalHaf1
 
+.balign 8
 dlabel osViModePalHaf1
     /* A8BA0 802A7BA0 19000000 */ .word 0x19000000
     /* A8BA4 802A7BA4 0000305E */ .word 0x0000305E
@@ -64800,6 +65368,7 @@ enddlabel osViModePalHaf1
 
 nonmatching g_dwViModePalHaf1VStart0
 
+.balign 8
 dlabel g_dwViModePalHaf1VStart0
     /* A8BD0 802A7BD0 005D0237 */ .word 0x005D0237
     /* A8BD4 802A7BD4 0009026B */ .word 0x0009026B
@@ -64818,6 +65387,7 @@ enddlabel g_dwViModePalHaf1VStart1
 
 nonmatching osViModePalLan1
 
+.balign 8
 dlabel osViModePalLan1
     /* A8BF0 802A7BF0 10000000 */ .word 0x10000000
 enddlabel osViModePalLan1
@@ -64840,6 +65410,7 @@ enddlabel g_dwViModePalLan1Ctrl
 
 nonmatching g_dwViModePalLan1VStart0
 
+.balign 8
 dlabel g_dwViModePalLan1VStart0
     /* A8C20 802A7C20 005F0239 */ .word 0x005F0239
     /* A8C24 802A7C24 0009026B */ .word 0x0009026B
@@ -64858,6 +65429,7 @@ enddlabel g_dwViModePalLan1VStart1
 
 nonmatching __osContinitialized
 
+.balign 8
 dlabel __osContinitialized
     /* A8C40 802A7C40 00000000 */ .word 0x00000000
 enddlabel __osContinitialized
@@ -64873,6 +65445,7 @@ enddlabel D_802A7C44
 
 nonmatching osViModeMpalLan1
 
+.balign 8
 dlabel osViModeMpalLan1
     /* A8C90 802A7C90 1E000000 */ .word 0x1E000000
 enddlabel osViModeMpalLan1
@@ -64903,6 +65476,7 @@ enddlabel g_dwViModeMpalLan1Ctrl
 
 nonmatching aiHdwrBugFlag
 
+.balign 8
 dlabel aiHdwrBugFlag
     /* A8D10 802A7D10 00000000 */ .word 0x00000000
     /* A8D14 802A7D14 00000000 */ .word 0x00000000
@@ -64913,6 +65487,7 @@ enddlabel aiHdwrBugFlag
 .align 2
 nonmatching spaces
 
+.balign 8
 dlabel spaces
     /* A8D20 802A7D20 */ .asciz "                                "
     /* 202020202020202020202020202020202020202020202020202020202020202000000000 */
@@ -64931,6 +65506,7 @@ enddlabel zeroes
 nonmatching D_802A7D68
 
 /* Automatically generated and unreferenced pad */
+.balign 8
 dlabel D_802A7D68
     /* A8D68 802A7D68 00000000 */ .word 0x00000000
     /* A8D6C 802A7D6C 00000000 */ .word 0x00000000
@@ -64938,6 +65514,7 @@ enddlabel D_802A7D68
 
 nonmatching __osSiAccessQueueEnabled
 
+.balign 8
 dlabel __osSiAccessQueueEnabled
     /* A8D70 802A7D70 00000000 */ .word 0x00000000
 enddlabel __osSiAccessQueueEnabled
@@ -64953,6 +65530,7 @@ enddlabel D_802A7D74
 
 nonmatching __osThreadTail
 
+.balign 8
 dlabel __osThreadTail
     /* A8D80 802A7D80 00000000 */ .word 0x00000000
     /* A8D84 802A7D84 FFFFFFFF */ .word 0xFFFFFFFF
@@ -64960,6 +65538,7 @@ enddlabel __osThreadTail
 
 nonmatching __osRunQueue
 
+.balign 8
 dlabel __osRunQueue
     /* A8D88 802A7D88 802A7D80 */ .word __osThreadTail
 enddlabel __osRunQueue
@@ -64972,6 +65551,7 @@ enddlabel __osActiveQueue
 
 nonmatching __osRunningThread
 
+.balign 8
 dlabel __osRunningThread
     /* A8D90 802A7D90 00000000 */ .word 0x00000000
 enddlabel __osRunningThread
@@ -64985,6 +65565,7 @@ enddlabel __osFaultedThread
 nonmatching D_802A7D98
 
 /* Automatically generated and unreferenced pad */
+.balign 8
 dlabel D_802A7D98
     /* A8D98 802A7D98 00000000 */ .word 0x00000000
     /* A8D9C 802A7D9C 00000000 */ .word 0x00000000
@@ -64992,6 +65573,7 @@ enddlabel D_802A7D98
 
 nonmatching __osHwIntTable
 
+.balign 8
 dlabel __osHwIntTable
     /* A8DA0 802A7DA0 00000000 */ .word 0x00000000
 enddlabel __osHwIntTable
@@ -65010,6 +65592,7 @@ enddlabel g_pfnOsHwIntCartHandler
 
 nonmatching __osViContexts
 
+.balign 8
 dlabel __osViContexts
     /* A8DC0 802A7DC0 */ .short 0x0000
     /* A8DC2 802A7DC2 */ .short 0x0000
@@ -65034,6 +65617,7 @@ enddlabel D_802A7DC4
 
 nonmatching D_802A7DF0
 
+.balign 8
 dlabel D_802A7DF0
     /* A8DF0 802A7DF0 00000000 */ .word 0x00000000
     /* A8DF4 802A7DF4 00000000 */ .word 0x00000000
@@ -65043,6 +65627,7 @@ enddlabel D_802A7DF0
 
 nonmatching g_dwOsPiDmaDir
 
+.balign 8
 dlabel g_dwOsPiDmaDir
     /* A8E00 802A7E00 00000000 */ .word 0x00000000
 enddlabel g_dwOsPiDmaDir
@@ -65056,6 +65641,7 @@ enddlabel g_pOsViContext1Msg
 nonmatching D_802A7E08
 
 /* Automatically generated and unreferenced pad */
+.balign 8
 dlabel D_802A7E08
     /* A8E08 802A7E08 00000000 */ .word 0x00000000
     /* A8E0C 802A7E0C 00000000 */ .word 0x00000000
@@ -65063,6 +65649,7 @@ enddlabel D_802A7E08
 
 nonmatching g_dwOsPiMsgQueue
 
+.balign 8
 dlabel g_dwOsPiMsgQueue
     /* A8E10 802A7E10 00000000 */ .word 0x00000000
 enddlabel g_dwOsPiMsgQueue
@@ -65075,6 +65662,7 @@ enddlabel g_dwOsPiEventQueue
 
 nonmatching g_wOsPiEventMask
 
+.balign 8
 dlabel g_wOsPiEventMask
     /* A8E18 802A7E18 */ .short 0x0000
 enddlabel g_wOsPiEventMask
@@ -65094,6 +65682,7 @@ enddlabel g_dwOsPiIntrMask
 
 nonmatching __osViCurr
 
+.balign 8
 dlabel __osViCurr
     /* A8E20 802A7E20 802A7DC0 */ .word __osViContexts
 enddlabel __osViCurr
@@ -65107,6 +65696,7 @@ enddlabel __osViNext
 nonmatching D_802A7E28
 
 /* Automatically generated and unreferenced pad */
+.balign 8
 dlabel D_802A7E28
     /* A8E28 802A7E28 00000000 */ .word 0x00000000
     /* A8E2C 802A7E2C 00000000 */ .word 0x00000000
@@ -65114,6 +65704,7 @@ enddlabel D_802A7E28
 
 nonmatching __osPiAccessQueueEnabled
 
+.balign 8
 dlabel __osPiAccessQueueEnabled
     /* A8E40 802A7E40 00000000 */ .word 0x00000000
 enddlabel __osPiAccessQueueEnabled
@@ -65130,6 +65721,7 @@ enddlabel D_802A7E44
 .align 2
 nonmatching g_szHexDigitsLower
 
+.balign 8
 dlabel g_szHexDigitsLower
     /* A8E50 802A7E50 */ .asciz "0123456789abcdef"
     /* 3031323334353637383961626364656600000000 */
@@ -65148,6 +65740,7 @@ enddlabel g_szHexDigitsUpper
 nonmatching D_802A7E78
 
 /* Automatically generated and unreferenced pad */
+.balign 8
 dlabel D_802A7E78
     /* A8E78 802A7E78 00000000 */ .word 0x00000000
     /* A8E7C 802A7E7C 00000000 */ .word 0x00000000
@@ -65155,6 +65748,7 @@ enddlabel D_802A7E78
 
 nonmatching osViModeNtscLan1
 
+.balign 8
 dlabel osViModeNtscLan1
     /* A8E80 802A7E80 02000000 */ .word 0x02000000
 enddlabel osViModeNtscLan1
@@ -65168,6 +65762,7 @@ enddlabel g_dwOsViMode
 nonmatching D_802A7E88
 
 /* Automatically generated and unreferenced pad */
+.balign 8
 dlabel D_802A7E88
     /* A8E88 802A7E88 00000140 */ .word 0x00000140
     /* A8E8C 802A7E8C 03E52239 */ .word 0x03E52239
@@ -65177,6 +65772,7 @@ enddlabel D_802A7E88
 
 nonmatching g_dwOsViClock
 
+.balign 8
 dlabel g_dwOsViClock
     /* A8E98 802A7E98 0C150C15 */ .word 0x0C150C15
 enddlabel g_dwOsViClock
@@ -65208,6 +65804,7 @@ enddlabel g_dwViModeNtscLan1Origin1
 .align 2
 nonmatching g_szSizeofObject
 
+.balign 8
 dlabel g_szSizeofObject
     /* A8ED0 802A7ED0 */ .asciz "sizeof(OBJECT)=%d\n"
     /* 73697A656F66284F424A454354293D25640A0000 */
@@ -65226,6 +65823,7 @@ enddlabel g_szSizeofUltraCarHeader
 .align 2
 nonmatching g_szSizeofVehicle
 
+.balign 8
 dlabel g_szSizeofVehicle
     /* A8F00 802A7F00 */ .asciz "sizeof(Vehicle)=%d\n"
     /* 73697A656F662856656869636C65293D25640A00 */

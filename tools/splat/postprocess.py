@@ -145,7 +145,32 @@ def main() -> int:
     remove(args.region, converted.read_text(encoding='utf-8').split(), record=False)
   print(f'{relocate_physical(asm, labels, image)} physical addresses of the image now follow '
         'their labels.')
+  print(f'{align_data(data_sources)} data labels are aligned to 8 bytes as in the original.')
   return 0
+
+
+def align_data(data_sources: list[Path]) -> int:
+  """
+  Align each datum the original places on an 8-byte boundary to 8 bytes again.
+
+  Data converted to C leave the assembly, and the data after them move by any multiple of 4. The
+  game reads and writes 64-bit fields and doubles with instructions that fault off an 8-byte
+  boundary, so each label at an 8-byte boundary of the original is preceded by .balign 8.
+  """
+  aligned = 0
+  for source in data_sources:
+    lines = source.read_text(encoding='utf-8').splitlines()
+    out = []
+    for index, line in enumerate(lines):
+      if LABEL_LINE.match(line) and line.lstrip().startswith('dlabel'):
+        address = next((ADDRESS.search(after) for after in lines[index + 1:index + 4]
+                        if ADDRESS.search(after)), None)
+        if address and int(address.group(1), 16) % 8 == 0 and out[-1:] != ['.balign 8']:
+          out.append('.balign 8')
+          aligned += 1
+      out.append(line)
+    source.write_text('\n'.join(out) + '\n', encoding='utf-8')
+  return aligned
 
 
 def relocate_physical(asm: Path, labels: list[tuple[int, str]], image: tuple[int, int]) -> int:
