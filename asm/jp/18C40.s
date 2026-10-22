@@ -687,7 +687,7 @@ glabel FlushDisplayList
     /* 1C860 8021B860 00000000 */   nop
     /* 1C864 8021B864 8F180300 */  lw         $t8, %lo(D_80000300)($t8)
     /* 1C868 8021B868 24010002 */  addiu      $at, $zero, 0x2
-    /* 1C86C 8021B86C 3C04802A */  lui        $a0, %hi(g_ViModeNtscHaf1Jp)
+    /* 1C86C 8021B86C 3C04802A */  lui        $a0, %hi(g_ViModeNtscHaf1)
     /* 1C870 8021B870 17010006 */  bne        $t8, $at, .L8021B88C
     /* 1C874 8021B874 00000000 */   nop
     /* 1C878 8021B878 3C04802A */  lui        $a0, %hi(g_ViModeMpalHaf1)
@@ -697,7 +697,7 @@ glabel FlushDisplayList
     /* 1C888 8021B888 00000000 */   nop
   .L8021B88C:
     /* 1C88C 8021B88C 0C09973C */  jal        osViSetMode
-    /* 1C890 8021B890 24847690 */   addiu     $a0, $a0, %lo(g_ViModeNtscHaf1Jp)
+    /* 1C890 8021B890 24847690 */   addiu     $a0, $a0, %lo(g_ViModeNtscHaf1)
     /* 1C894 8021B894 1000000D */  b          .L8021B8CC
     /* 1C898 8021B898 00000000 */   nop
   .L8021B89C:
@@ -932,10 +932,10 @@ glabel InitRenderingSubsystem
     /* 1DA5C 8021CA5C 2405000A */   addiu     $a1, $zero, 0xA
     /* 1DA60 8021CA60 0C099A94 */  jal        osStartThread
     /* 1DA64 8021CA64 02202025 */   or        $a0, $s1, $zero
-    /* 1DA68 8021CA68 3C118027 */  lui        $s1, %hi(g_SpInterruptHandlerThreadObj)
-    /* 1DA6C 8021CA6C 3C098032 */  lui        $t1, %hi(g_abSpThreadStackTop)
-    /* 1DA70 8021CA70 263146B0 */  addiu      $s1, $s1, %lo(g_SpInterruptHandlerThreadObj)
-    /* 1DA74 8021CA74 2529A5E0 */  addiu      $t1, $t1, %lo(g_abSpThreadStackTop)
+    /* 1DA68 8021CA68 3C118027 */  lui        $s1, %hi(g_RdpDoneThreadObj)
+    /* 1DA6C 8021CA6C 3C098032 */  lui        $t1, %hi(g_adwPreNmiResetThreadStack)
+    /* 1DA70 8021CA70 263146B0 */  addiu      $s1, $s1, %lo(g_RdpDoneThreadObj)
+    /* 1DA74 8021CA74 2529A5E0 */  addiu      $t1, $t1, %lo(g_adwPreNmiResetThreadStack)
     /* 1DA78 8021CA78 3C068022 */  lui        $a2, %hi(RdpDoneThread)
     /* 1DA7C 8021CA7C 240A003C */  addiu      $t2, $zero, 0x3C
     /* 1DA80 8021CA80 AFAA0014 */  sw         $t2, 0x14($sp)

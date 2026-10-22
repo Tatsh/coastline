@@ -552,10 +552,10 @@ glabel InitRenderingSubsystem
     /* 1E18C 8021D18C 2405000A */   addiu     $a1, $zero, 0xA
     /* 1E190 8021D190 0C099BD4 */  jal        osStartThread
     /* 1E194 8021D194 02202025 */   or        $a0, $s1, $zero
-    /* 1E198 8021D198 3C118027 */  lui        $s1, %hi(g_SpInterruptHandlerThreadObj)
-    /* 1E19C 8021D19C 3C098032 */  lui        $t1, %hi(g_abSpThreadStackTop)
-    /* 1E1A0 8021D1A0 26314BE0 */  addiu      $s1, $s1, %lo(g_SpInterruptHandlerThreadObj)
-    /* 1E1A4 8021D1A4 2529B9B0 */  addiu      $t1, $t1, %lo(g_abSpThreadStackTop)
+    /* 1E198 8021D198 3C118027 */  lui        $s1, %hi(g_RdpDoneThreadObj)
+    /* 1E19C 8021D19C 3C098032 */  lui        $t1, %hi(g_adwPreNmiResetThreadStack)
+    /* 1E1A0 8021D1A0 26314BE0 */  addiu      $s1, $s1, %lo(g_RdpDoneThreadObj)
+    /* 1E1A4 8021D1A4 2529B9B0 */  addiu      $t1, $t1, %lo(g_adwPreNmiResetThreadStack)
     /* 1E1A8 8021D1A8 3C068022 */  lui        $a2, %hi(RdpDoneThread)
     /* 1E1AC 8021D1AC 240A003C */  addiu      $t2, $zero, 0x3C
     /* 1E1B0 8021D1B0 AFAA0014 */  sw         $t2, 0x14($sp)

@@ -1136,9 +1136,9 @@ nonmatching g_dwBootStackFill7, 0x7C4
 dlabel g_dwBootStackFill7
     /* 8031B1EC */ .space 0x7C4
 
-nonmatching g_abSpThreadStackTop, 0x800
+nonmatching g_adwPreNmiResetThreadStack, 0x800
 
-dlabel g_abSpThreadStackTop
+dlabel g_adwPreNmiResetThreadStack
     /* 8031B9B0 */ .space 0x800
 
 nonmatching g_aViewports, 0x200

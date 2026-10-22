@@ -5842,9 +5842,9 @@ dlabel g_RspDoneThreadObj
     /* 75BDC 80274BDC 00000000 */ .word 0x00000000
 enddlabel g_RspDoneThreadObj
 
-nonmatching g_SpInterruptHandlerThreadObj
+nonmatching g_RdpDoneThreadObj
 
-dlabel g_SpInterruptHandlerThreadObj
+dlabel g_RdpDoneThreadObj
     /* 75BE0 80274BE0 00000000 */ .word 0x00000000
     /* 75BE4 80274BE4 00000000 */ .word 0x00000000
     /* 75BE8 80274BE8 00000000 */ .word 0x00000000
@@ -5953,7 +5953,7 @@ dlabel g_SpInterruptHandlerThreadObj
     /* 75D84 80274D84 00000000 */ .word 0x00000000
     /* 75D88 80274D88 00000000 */ .word 0x00000000
     /* 75D8C 80274D8C 00000000 */ .word 0x00000000
-enddlabel g_SpInterruptHandlerThreadObj
+enddlabel g_RdpDoneThreadObj
 
 nonmatching g_PreNmiResetHandlerThreadObj
 

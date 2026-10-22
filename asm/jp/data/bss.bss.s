@@ -857,9 +857,9 @@ nonmatching g_dwSpThreadStackWord15, 0x7C4
 dlabel g_dwSpThreadStackWord15
     /* 80319E1C */ .space 0x7C4
 
-nonmatching g_abSpThreadStackTop, 0x800
+nonmatching g_adwPreNmiResetThreadStack, 0x800
 
-dlabel g_abSpThreadStackTop
+dlabel g_adwPreNmiResetThreadStack
     /* 8031A5E0 */ .space 0x800
 
 nonmatching g_PiMgrCmdQueue, 0x18

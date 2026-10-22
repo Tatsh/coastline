@@ -5844,9 +5844,9 @@ dlabel g_RspDoneThreadObj
     /* 756AC 802746AC 00000000 */ .word 0x00000000
 enddlabel g_RspDoneThreadObj
 
-nonmatching g_SpInterruptHandlerThreadObj
+nonmatching g_RdpDoneThreadObj
 
-dlabel g_SpInterruptHandlerThreadObj
+dlabel g_RdpDoneThreadObj
     /* 756B0 802746B0 00000000 */ .word 0x00000000
     /* 756B4 802746B4 00000000 */ .word 0x00000000
     /* 756B8 802746B8 00000000 */ .word 0x00000000
@@ -5955,7 +5955,7 @@ dlabel g_SpInterruptHandlerThreadObj
     /* 75854 80274854 00000000 */ .word 0x00000000
     /* 75858 80274858 00000000 */ .word 0x00000000
     /* 7585C 8027485C 00000000 */ .word 0x00000000
-enddlabel g_SpInterruptHandlerThreadObj
+enddlabel g_RdpDoneThreadObj
 
 nonmatching g_PreNmiResetHandlerThreadObj
 
@@ -64755,9 +64755,9 @@ dlabel g_ViModeMpalHaf1
     /* A868C 802A768C 00000002 */ .word 0x00000002
 enddlabel g_ViModeMpalHaf1
 
-nonmatching g_ViModeNtscHaf1Jp
+nonmatching g_ViModeNtscHaf1
 
-dlabel g_ViModeNtscHaf1Jp
+dlabel g_ViModeNtscHaf1
     /* A8690 802A7690 0B000000 */ .word 0x0B000000
     /* A8694 802A7694 0000305E */ .word 0x0000305E
     /* A8698 802A7698 00000280 */ .word 0x00000280
@@ -64778,7 +64778,7 @@ dlabel g_ViModeNtscHaf1Jp
     /* A86D4 802A76D4 002501FF */ .word 0x002501FF
     /* A86D8 802A76D8 000E0204 */ .word 0x000E0204
     /* A86DC 802A76DC 00000002 */ .word 0x00000002
-enddlabel g_ViModeNtscHaf1Jp
+enddlabel g_ViModeNtscHaf1
 
 nonmatching osViModeMpalLan1
 
