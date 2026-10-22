@@ -18,8 +18,8 @@
  * The point the route walks last found.
  *
  * @ghidraAddress USA: 0x8031b750
- * @ghidraAddress JPN: 0x8031c880
  * @ghidraAddress EUR: 0x8031dc50
+ * @ghidraAddress JPN: 0x8031c880
  */
 extern Vec3f g_vTrackRoutePoint;
 
@@ -27,15 +27,15 @@ extern Vec3f g_vTrackRoutePoint;
  * The section and point of that point.
  *
  * @ghidraAddress USA: 0x8028b824
- * @ghidraAddress JPN: 0x8028d504
  * @ghidraAddress EUR: 0x8028dad4
+ * @ghidraAddress JPN: 0x8028d504
  */
 extern TrackSection *g_pTrackRouteSection;
 
 /**
  * @ghidraAddress USA: 0x8028b828
- * @ghidraAddress JPN: 0x8028d508
  * @ghidraAddress EUR: 0x8028dad8
+ * @ghidraAddress JPN: 0x8028d508
  */
 extern s32 g_dwTrackRoutePointIndex;
 
@@ -43,15 +43,15 @@ extern s32 g_dwTrackRoutePointIndex;
  * The gates and laps FindTrackRoutePoint() passed.
  *
  * @ghidraAddress USA: 0x8028b82c
- * @ghidraAddress JPN: 0x8028d50c
  * @ghidraAddress EUR: 0x8028dadc
+ * @ghidraAddress JPN: 0x8028d50c
  */
 extern s32 g_dwTrackRouteGates;
 
 /**
  * @ghidraAddress USA: 0x8028b830
- * @ghidraAddress JPN: 0x8028d510
  * @ghidraAddress EUR: 0x8028dae0
+ * @ghidraAddress JPN: 0x8028d510
  */
 extern s32 g_dwTrackRouteLaps;
 
@@ -59,8 +59,8 @@ extern s32 g_dwTrackRouteLaps;
  * The places of the race as text, "1st" to "20th".
  *
  * @ghidraAddress USA: 0x8028babc
- * @ghidraAddress JPN: 0x8028d7a0
  * @ghidraAddress EUR: 0x8028dd70
+ * @ghidraAddress JPN: 0x8028d7a0
  */
 extern const char *g_apszRaceProgressStrings[RACER_SLOTS];
 
@@ -71,8 +71,8 @@ extern const char *g_apszRaceProgressStrings[RACER_SLOTS];
  * @param section The section to start from.
  * @param distance The distance along the route.
  * @ghidraAddress USA: 0x80228e4c
- * @ghidraAddress JPN: 0x802299a0
  * @ghidraAddress EUR: 0x8022a1c4
+ * @ghidraAddress JPN: 0x802299a0
  */
 void FindTrackRoutePoint(TrackSection *section, f32 distance);
 
@@ -85,8 +85,8 @@ void FindTrackRoutePoint(TrackSection *section, f32 distance);
  * @param fraction The share of the segment after the point still ahead.
  * @param distance The distance to move.
  * @ghidraAddress USA: 0x802290c4
- * @ghidraAddress JPN: 0x80229c18
  * @ghidraAddress EUR: 0x8022a43c
+ * @ghidraAddress JPN: 0x80229c18
  */
 void AdvanceAlongTrackRoute(TrackSection *section, s32 pointIndex, f32 fraction, f32 distance);
 
@@ -96,8 +96,8 @@ void AdvanceAlongTrackRoute(TrackSection *section, s32 pointIndex, f32 fraction,
  *
  * @param slot The racer.
  * @ghidraAddress USA: 0x8022a0e0
- * @ghidraAddress JPN: 0x8022ac10
  * @ghidraAddress EUR: 0x8022b458
+ * @ghidraAddress JPN: 0x8022ac10
  */
 void UpdateRaceProgress(RacerSlot *slot);
 

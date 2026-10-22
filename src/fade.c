@@ -147,8 +147,8 @@ void ApplyScreenFade(void) {
     /* The frames left that the wipe blacks the uncovered screen, two at boot, not BLACK_FRAMES. */
     /**
      * @ghidraAddress USA: 0x8028b788
-     * @ghidraAddress JPN: 0x8028d468
      * @ghidraAddress EUR: 0x8028da38
+     * @ghidraAddress JPN: 0x8028d468
      */
     static s32 g_dwScreenFadeFramesRemaining = 2;
     s32 left;

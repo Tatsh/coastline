@@ -264,8 +264,8 @@ void InitRacerSlot(RacerSlot *slot) {
 
 /* Order racers by their progress, the least first.
  * @ghidraAddress USA: 0x80229510
- * @ghidraAddress JPN: 0x8022a040
  * @ghidraAddress EUR: 0x8022a888
+ * @ghidraAddress JPN: 0x8022a040
  */
 static s32 CompareRacerProgressAsc(const void *a, const void *b) {
     const RacerProgress *first = a;

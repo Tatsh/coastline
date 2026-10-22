@@ -31,8 +31,8 @@ typedef struct {
  * @return dst.
  *
  * @ghidraAddress USA: 0x802674d0
- * @ghidraAddress JPN: 0x80268770
  * @ghidraAddress EUR: 0x80268cc0
+ * @ghidraAddress JPN: 0x80268770
  */
 void *bcopy(const void *src, void *dst, int n);
 
@@ -44,8 +44,8 @@ void *bcopy(const void *src, void *dst, int n);
  * @param n The count of bytes to compare.
  * @return 0 when they are equal, and nonzero otherwise.
  * @ghidraAddress USA: 0x80262540
- * @ghidraAddress JPN: 0x80263760
  * @ghidraAddress EUR: 0x80263cc0
+ * @ghidraAddress JPN: 0x80263760
  */
 int bcmp(const void *a, const void *b, int n);
 
@@ -55,8 +55,8 @@ int bcmp(const void *a, const void *b, int n);
  * @param p The buffer to clear.
  * @param n The count of bytes to clear.
  * @ghidraAddress USA: 0x8026bba0
- * @ghidraAddress JPN: 0x8026d620
  * @ghidraAddress EUR: 0x8026db70
+ * @ghidraAddress JPN: 0x8026d620
  */
 void bzero(void *p, int n);
 
@@ -68,8 +68,8 @@ void bzero(void *p, int n);
  * @param n The count of bytes.
  * @return dst.
  * @ghidraAddress USA: 0x80260b20
- * @ghidraAddress JPN: 0x80261a60
  * @ghidraAddress EUR: 0x80261fb0
+ * @ghidraAddress JPN: 0x80261a60
  */
 void *memcpy(void *dst, const void *src, size_t n);
 
@@ -79,8 +79,8 @@ void *memcpy(void *dst, const void *src, size_t n);
  * @param s The NUL-terminated string.
  * @return The count of characters before the terminating NUL.
  * @ghidraAddress USA: 0x80260b4c
- * @ghidraAddress JPN: 0x80261a8c
  * @ghidraAddress EUR: 0x80261fdc
+ * @ghidraAddress JPN: 0x80261a8c
  */
 size_t strlen(const char *s);
 
@@ -91,8 +91,8 @@ size_t strlen(const char *s);
  * @param c The character to find, converted to char.
  * @return The occurrence, or NULL when the character is absent from the string.
  * @ghidraAddress USA: 0x80260b74
- * @ghidraAddress JPN: 0x80261ab4
  * @ghidraAddress EUR: 0x80262004
+ * @ghidraAddress JPN: 0x80261ab4
  */
 const char *strchr(const char *s, int c);
 
@@ -103,8 +103,8 @@ const char *strchr(const char *s, int c);
  * @param fmt The printf format, followed by its arguments.
  * @return The number of characters written, not counting the terminating NUL.
  * @ghidraAddress USA: 0x80260dd4
- * @ghidraAddress JPN: 0x80261d14
  * @ghidraAddress EUR: 0x80262264
+ * @ghidraAddress JPN: 0x80261d14
  */
 int sprintf(char *dst, const char *fmt, ...);
 
@@ -115,8 +115,8 @@ int sprintf(char *dst, const char *fmt, ...);
  * @param denom The divisor, not 0.
  * @return The quotient and the remainder, the remainder with the sign of the dividend.
  * @ghidraAddress USA: 0x8026e970
- * @ghidraAddress JPN: 0x802703f0
  * @ghidraAddress EUR: 0x80270940
+ * @ghidraAddress JPN: 0x802703f0
  */
 ldiv_t ldiv(long num, long denom);
 
@@ -127,8 +127,8 @@ ldiv_t ldiv(long num, long denom);
  * @param denom The divisor, not 0.
  * @return The quotient and the remainder, the remainder with the sign of the dividend.
  * @ghidraAddress USA: 0x8026e870
- * @ghidraAddress JPN: 0x802702f0
  * @ghidraAddress EUR: 0x80270840
+ * @ghidraAddress JPN: 0x802702f0
  */
 lldiv_t lldiv(long long num, long long denom);
 

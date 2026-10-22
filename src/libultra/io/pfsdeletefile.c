@@ -69,8 +69,8 @@ s32 osPfsDeleteFile(OSPfs *pfs, u16 company_code, u32 game_code, u8 *game_name, 
 
 /* Free the pages of a chain within one bank, and report where the chain continues.
  * @ghidraAddress USA: 0x80267f00
- * @ghidraAddress JPN: 0x802691a0
  * @ghidraAddress EUR: 0x802696f0
+ * @ghidraAddress JPN: 0x802691a0
  */
 static s32 __osPfsReleasePages(OSPfs *pfs,
                                __OSInode *inode,
@@ -123,8 +123,8 @@ static s32 __osPfsReleasePages(OSPfs *pfs,
 
 /* Add the byte sums of the 8 blocks of a page to *sum, then select bank 0 again.
  * @ghidraAddress USA: 0x80268138
- * @ghidraAddress JPN: 0x802693d8
  * @ghidraAddress EUR: 0x80269928
+ * @ghidraAddress JPN: 0x802693d8
  */
 static s32 __osBlockSum(OSPfs *pfs, u8 page_no, u16 *sum, u8 bank) {
     int i;

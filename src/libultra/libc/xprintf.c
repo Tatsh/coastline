@@ -31,8 +31,8 @@
 
 /**
  * @ghidraAddress USA: 0x80268750
- * @ghidraAddress JPN: 0x80269870
  * @ghidraAddress EUR: 0x80269dc0
+ * @ghidraAddress JPN: 0x80269870
  */
 static void _Putfld(_Pft *px, va_list *pap, char code, char *ac) {
     px->n0 = px->nz0 = px->n1 = px->nz1 = px->n2 = px->nz2 = 0;

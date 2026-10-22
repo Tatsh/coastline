@@ -2,8 +2,8 @@
 
 /**
  * @ghidraAddress USA: 0x80260db0
- * @ghidraAddress JPN: 0x80261cf0
  * @ghidraAddress EUR: 0x80262240
+ * @ghidraAddress JPN: 0x80261cf0
  */
 static void *proutSprintf(void *dst, const char *src, size_t count) {
     return (char *)memcpy(dst, src, count) + count;

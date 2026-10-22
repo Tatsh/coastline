@@ -16,20 +16,20 @@ void ProcessWeatherSelect(void) {
     /* The state of the screen: 0 before it starts, 1 while it runs, and -1 once it is left. */
     /**
      * @ghidraAddress USA: 0x802722bc
-     * @ghidraAddress JPN: 0x80273d4c
      * @ghidraAddress EUR: 0x8027429c
+     * @ghidraAddress JPN: 0x80273d4c
      */
     static s32 g_dwWeatherSelectState = 0;
     /**
      * @ghidraAddress USA: 0x80316370
-     * @ghidraAddress JPN: 0x80316c80
      * @ghidraAddress EUR: 0x80318050
+     * @ghidraAddress JPN: 0x80316c80
      */
     static s32 g_dwWeatherMenuItemCount;
     /**
      * @ghidraAddress USA: 0x80316374
-     * @ghidraAddress JPN: 0x80316c84
      * @ghidraAddress EUR: 0x80318054
+     * @ghidraAddress JPN: 0x80316c84
      */
     static s32 g_dwWeatherMenuSelection;
 

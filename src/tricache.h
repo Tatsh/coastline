@@ -29,8 +29,8 @@ typedef struct TrackTriangle {
 
 /**
  * @ghidraAddress USA: 0x80379f80
- * @ghidraAddress JPN: 0x8037b0f0
  * @ghidraAddress EUR: 0x8037c480
+ * @ghidraAddress JPN: 0x8037b0f0
  */
 extern TrackTriangle g_aTriCacheTriangles[TRI_CACHE_SLOTS][TRI_CACHE_TRIANGLES];
 
@@ -38,8 +38,8 @@ extern TrackTriangle g_aTriCacheTriangles[TRI_CACHE_SLOTS][TRI_CACHE_TRIANGLES];
  * The cell each slot holds, as its row times 64 plus its column.
  *
  * @ghidraAddress USA: 0x8037ea80
- * @ghidraAddress JPN: 0x8037fbf0
  * @ghidraAddress EUR: 0x80380f80
+ * @ghidraAddress JPN: 0x8037fbf0
  */
 extern u16 g_awTriCacheSectorId[TRI_CACHE_SLOTS];
 
@@ -47,8 +47,8 @@ extern u16 g_awTriCacheSectorId[TRI_CACHE_SLOTS];
  * The triangles in each slot.
  *
  * @ghidraAddress USA: 0x8037ea88
- * @ghidraAddress JPN: 0x8037fbf8
  * @ghidraAddress EUR: 0x80380f88
+ * @ghidraAddress JPN: 0x8037fbf8
  */
 extern u16 g_awTriCacheTriCount[TRI_CACHE_SLOTS];
 
@@ -56,8 +56,8 @@ extern u16 g_awTriCacheTriCount[TRI_CACHE_SLOTS];
  * When each slot was last used.
  *
  * @ghidraAddress USA: 0x8037ea90
- * @ghidraAddress JPN: 0x8037fc00
  * @ghidraAddress EUR: 0x80380f90
+ * @ghidraAddress JPN: 0x8037fc00
  */
 extern u32 g_adwTriCacheLruStamp[TRI_CACHE_SLOTS];
 
@@ -65,8 +65,8 @@ extern u32 g_adwTriCacheLruStamp[TRI_CACHE_SLOTS];
  * The count of the uses of the cache.
  *
  * @ghidraAddress USA: 0x8037eaa0
- * @ghidraAddress JPN: 0x8037fc10
  * @ghidraAddress EUR: 0x80380fa0
+ * @ghidraAddress JPN: 0x8037fc10
  */
 extern u32 g_dwTriCacheLruCounter;
 
@@ -77,6 +77,8 @@ extern u32 g_dwTriCacheLruCounter;
  * @param y The Y coordinate of the point.
  * @return Whether a slot held it.
  * @ghidraAddress USA: 0x8025f0a4
+ * @ghidraAddress EUR: 0x80260580
+ * @ghidraAddress JPN: 0x80260030
  */
 s32 InvalidateTriCacheSectorAt(f32 x, f32 y);
 
@@ -88,8 +90,8 @@ s32 InvalidateTriCacheSectorAt(f32 x, f32 y);
  * @param y The Y coordinate of the point.
  * @return The slot that holds them.
  * @ghidraAddress USA: 0x8025f18c
- * @ghidraAddress JPN: 0x80260118
  * @ghidraAddress EUR: 0x80260668
+ * @ghidraAddress JPN: 0x80260118
  */
 s16 BuildTrackTriangleCache(f32 x, f32 y);
 

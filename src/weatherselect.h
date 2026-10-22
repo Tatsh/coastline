@@ -14,8 +14,8 @@
  * The items of the screen, in the order of the weathers, ending with NULL.
  *
  * @ghidraAddress USA: 0x802722a4
- * @ghidraAddress JPN: 0x80273d34
  * @ghidraAddress EUR: 0x80274284
+ * @ghidraAddress JPN: 0x80273d34
  */
 extern MenuItem *g_apWeatherMenuItems[];
 
@@ -26,8 +26,8 @@ extern MenuItem *g_apWeatherMenuItems[];
  * @param weather The weather, a `WEATHER_*` value.
  * @return Non-zero when the weather may be chosen.
  * @ghidraAddress USA: 0x80210f80
- * @ghidraAddress JPN: 0x80210cd0
  * @ghidraAddress EUR: 0x80210de0
+ * @ghidraAddress JPN: 0x80210cd0
  */
 s32 IsWeatherSelectable(s32 weather);
 
@@ -35,8 +35,8 @@ s32 IsWeatherSelectable(s32 weather);
  * Run one frame of the weather selection screen.
  *
  * @ghidraAddress USA: 0x80210fc8
- * @ghidraAddress JPN: 0x80210d18
  * @ghidraAddress EUR: 0x80210e28
+ * @ghidraAddress JPN: 0x80210d18
  */
 void ProcessWeatherSelect(void);
 

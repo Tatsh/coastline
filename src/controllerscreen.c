@@ -147,21 +147,21 @@ void ProcessControllerConfigScreen(void) {
     /* The state of the screen: 0 before it starts, 1 while it runs. */
     /**
      * @ghidraAddress USA: 0x80272670
-     * @ghidraAddress JPN: 0x80274190
      * @ghidraAddress EUR: 0x802746c8
+     * @ghidraAddress JPN: 0x80274190
      */
     static s32 g_dwControllerScreenInitState = 0;
     /**
      * @ghidraAddress USA: 0x80316440
-     * @ghidraAddress JPN: 0x80316d50
      * @ghidraAddress EUR: 0x80318120
+     * @ghidraAddress JPN: 0x80316d50
      */
     static s32 g_dwControllerScreenItemCount;
     /* The layout under the cursor. */
     /**
      * @ghidraAddress USA: 0x80316444
-     * @ghidraAddress JPN: 0x80316d54
      * @ghidraAddress EUR: 0x80318124
+     * @ghidraAddress JPN: 0x80316d54
      */
     static s32 g_eControllerScreenSelection;
 

@@ -225,20 +225,20 @@ void ProcessOptionsMenu(void) {
      * keeping the selection, and 1 once it is set up. */
     /**
      * @ghidraAddress USA: 0x802724e0
-     * @ghidraAddress JPN: 0x80273f44
      * @ghidraAddress EUR: 0x80274494
+     * @ghidraAddress JPN: 0x80273f44
      */
     static s32 g_dwOptionsMenuState = 0;
     /**
      * @ghidraAddress USA: 0x803163a8
-     * @ghidraAddress JPN: 0x80316cb8
      * @ghidraAddress EUR: 0x80318088
+     * @ghidraAddress JPN: 0x80316cb8
      */
     static s32 g_dwOptionsMenuItemCount;
     /**
      * @ghidraAddress USA: 0x803163ac
-     * @ghidraAddress JPN: 0x80316cbc
      * @ghidraAddress EUR: 0x8031808c
+     * @ghidraAddress JPN: 0x80316cbc
      */
     static s32 g_dwOptionsMenuSelection;
 

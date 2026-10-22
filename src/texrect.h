@@ -37,8 +37,8 @@ enum {
  * @param texture The texture to load.
  * @param alloc The allocator of the memory.
  * @ghidraAddress USA: 0x8023df00
- * @ghidraAddress JPN: 0x8023ef10
  * @ghidraAddress EUR: 0x8023f410
+ * @ghidraAddress JPN: 0x8023ef10
  */
 void AllocAndDmaLoadAsset(Texture *texture, AssetAllocator alloc);
 
@@ -48,8 +48,8 @@ void AllocAndDmaLoadAsset(Texture *texture, AssetAllocator alloc);
  * @param texture The texture to load.
  * @param alloc The allocator of the memory.
  * @ghidraAddress USA: 0x8023df4c
- * @ghidraAddress JPN: 0x8023ef5c
  * @ghidraAddress EUR: 0x8023f45c
+ * @ghidraAddress JPN: 0x8023ef5c
  */
 void LoadAndDecompressAsset(Texture *texture, AssetAllocator alloc);
 
@@ -73,8 +73,8 @@ void LoadAndDecompressAsset(Texture *texture, AssetAllocator alloc);
  * @param envAlpha The alpha component of the environment color, from 0 to 255.
  * @param blendMode One of the TEXRECT_BLEND_ values.
  * @ghidraAddress USA: 0x8023df9c
- * @ghidraAddress JPN: 0x8023efac
  * @ghidraAddress EUR: 0x8023f4ac
+ * @ghidraAddress JPN: 0x8023efac
  */
 void DrawTexturedRect(Texture *texture,
                       s32 x,
@@ -99,8 +99,8 @@ void DrawTexturedRect(Texture *texture,
  * @param scale Receives the texture coordinate scale.
  * @param maskBits Receives the number of bits of the mask.
  * @ghidraAddress USA: 0x80217614
- * @ghidraAddress JPN: 0x80217f84
  * @ghidraAddress EUR: 0x80218634
+ * @ghidraAddress JPN: 0x80217f84
  */
 void GetTextureScaleAndMask(u32 size, s32 *scale, s32 *maskBits);
 
@@ -116,8 +116,8 @@ void GetTextureScaleAndMask(u32 size, s32 *scale, s32 *maskBits);
  * @param drawWidth The width drawn, in pixels of the low-resolution screen, without its sign.
  * @param drawHeight The height drawn, in pixels of the low-resolution screen.
  * @ghidraAddress USA: 0x80239220
- * @ghidraAddress JPN: 0x8023a230
  * @ghidraAddress EUR: 0x8023a730
+ * @ghidraAddress JPN: 0x8023a230
  */
 void DrawRedIntensityRect(
     u8 *texture, s32 width, s32 height, s32 x, s32 y, s32 drawWidth, s32 drawHeight);
@@ -137,8 +137,8 @@ void DrawRedIntensityRect(
  * @param green The green component of the colour, from 0 to 255.
  * @param blue The blue component of the colour, from 0 to 255.
  * @ghidraAddress USA: 0x80239750
- * @ghidraAddress JPN: 0x8023a760
  * @ghidraAddress EUR: 0x8023ac60
+ * @ghidraAddress JPN: 0x8023a760
  */
 void DrawColoredTexturedRect(u8 *texture,
                              s32 width,

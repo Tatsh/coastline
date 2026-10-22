@@ -13,6 +13,8 @@ extern u8 _bss_size[];
  * Top of the stack ramMain() hands to OsBootEntry(), from the link script.
  *
  * @ghidraAddress USA: 0x803168d0
+ * @ghidraAddress EUR: 0x803185b0
+ * @ghidraAddress JPN: 0x803171e0
  */
 extern u8 g_abBootStackTop[];
 
@@ -21,8 +23,8 @@ extern u8 g_abBootStackTop[];
  * OsBootEntry(). The routine is hand-written assembly in main.s.
  *
  * @ghidraAddress USA: 0x80200000
- * @ghidraAddress JPN: 0x80200000
  * @ghidraAddress EUR: 0x80200000
+ * @ghidraAddress JPN: 0x80200000
  */
 void ramMain(void);
 
@@ -31,8 +33,8 @@ void ramMain(void);
  * first sets the television standard to PAL.
  *
  * @ghidraAddress USA: 0x8021e5c4
- * @ghidraAddress JPN: 0x8021f0b4
  * @ghidraAddress EUR: 0x8021f8a4
+ * @ghidraAddress JPN: 0x8021f0b4
  */
 void OsBootEntry(void);
 

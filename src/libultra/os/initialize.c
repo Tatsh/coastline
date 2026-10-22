@@ -3,7 +3,11 @@
 
 u64 osClockRate = OS_CLOCK_RATE;
 s32 osViClock = VI_NTSC_CLOCK;
-/** @ghidraAddress USA: 0x802a614c */
+/**
+ * @ghidraAddress USA: 0x802a614c
+ * @ghidraAddress EUR: 0x802a7c5c
+ * @ghidraAddress JPN: 0x802a779c
+ */
 u32 __osShutdown = 0;
 u32 __OSGlobalIntMask = OS_IM_ALL;
 

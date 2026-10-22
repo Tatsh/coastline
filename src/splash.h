@@ -16,8 +16,8 @@
  * Whether the splash screens have loaded their models and sounds.
  *
  * @ghidraAddress USA: 0x80270810
- * @ghidraAddress JPN: 0x802722b4
  * @ghidraAddress EUR: 0x802727f0
+ * @ghidraAddress JPN: 0x802722b4
  */
 extern s32 g_bSplashStarted;
 
@@ -72,8 +72,8 @@ extern u16 g_awSplashTitlePalette[256];
  * Controller Pak, or a Controller Pak with the data of another game.
  *
  * @ghidraAddress USA: 0x80270840
- * @ghidraAddress JPN: 0x802722e0
  * @ghidraAddress EUR: 0x80272820
+ * @ghidraAddress JPN: 0x802722e0
  */
 extern u8 g_bControllerWarningType;
 
@@ -81,8 +81,8 @@ extern u8 g_bControllerWarningType;
  * Whether the controller check has loaded its pictures.
  *
  * @ghidraAddress USA: 0x80270844
- * @ghidraAddress JPN: 0x802722e4
  * @ghidraAddress EUR: 0x80272824
+ * @ghidraAddress JPN: 0x802722e4
  */
 extern u8 g_bControllerCheckStarted;
 
@@ -137,8 +137,8 @@ extern Model *g_pSplashTitleModelC;
  * The time since the splash screens started, in seconds.
  *
  * @ghidraAddress USA: 0x80315e9c
- * @ghidraAddress JPN: 0x803167b8
  * @ghidraAddress EUR: 0x80317b88
+ * @ghidraAddress JPN: 0x803167b8
  */
 extern f32 g_fSplashTime;
 
@@ -187,15 +187,15 @@ extern s32 g_dwSplashFirstLogoVoice;
 
 /**
  * @ghidraAddress USA: 0x80315eb4
- * @ghidraAddress JPN: 0x803167d0
  * @ghidraAddress EUR: 0x80317ba0
+ * @ghidraAddress JPN: 0x803167d0
  */
 extern s32 g_dwSplashFirstLogoSoundA;
 
 /**
  * @ghidraAddress USA: 0x80315eb8
- * @ghidraAddress JPN: 0x803167d4
  * @ghidraAddress EUR: 0x80317ba4
+ * @ghidraAddress JPN: 0x803167d4
  */
 extern s32 g_bSplashFirstLogoSoundB;
 
@@ -248,8 +248,8 @@ extern s32 g_bSplashSkipped;
  * Animate the models of the splash screens when the frame before is drawn.
  *
  * @ghidraAddress USA: 0x80206830
- * @ghidraAddress JPN: 0x80206a90
  * @ghidraAddress EUR: 0x802069f0
+ * @ghidraAddress JPN: 0x80206a90
  */
 void AnimateSplashModels(void);
 
@@ -266,8 +266,8 @@ void ProcessSplashScreens(void);
  * Run one frame of the warning about the controller or the Controller Pak.
  *
  * @ghidraAddress USA: 0x80208570
- * @ghidraAddress JPN: 0x80207f30
  * @ghidraAddress EUR: 0x80208310
+ * @ghidraAddress JPN: 0x80207f30
  */
 void ProcessControllerCheck(void);
 
