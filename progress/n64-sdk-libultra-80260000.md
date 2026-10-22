@@ -1,4 +1,4 @@
-# SDK (libultra), Nintendo 64, `0x80260000` to `0x80270000`
+# Nintendo 64 SDK (libultra) from 0x80260000 to 0x80270000
 
 208 of 208 routines done. 200 match the original under IDO 5.3.
 

@@ -1,4 +1,4 @@
-# Game code, PC port, `0x10030000` to `0x10040000`
+# PC port game code from 0x10030000 to 0x10040000
 
 0 of 307 routines done.
 
