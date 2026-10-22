@@ -3393,9 +3393,9 @@ nonmatching g_fViewMatrixMaxAbs, 0x4
 dlabel g_fViewMatrixMaxAbs
     /* 8035E68C */ .space 0x04
 
-nonmatching g_dwVehicleReserved0Jp, 0x10
+nonmatching g_dwInstanceHideFlags, 0x10
 
-dlabel g_dwVehicleReserved0Jp
+dlabel g_dwInstanceHideFlags
     /* 8035E690 */ .space 0x10
 
 nonmatching D_8035E6A0, 0x1000

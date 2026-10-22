@@ -49,12 +49,12 @@ glabel RenderTrackGeometry
     /* 37F44 80236F44 AFB80238 */   sw        $t8, 0x238($sp)
     /* 37F48 80236F48 3C018036 */  lui        $at, %hi(g_fViewMatrixMaxAbs)
     /* 37F4C 80236F4C E420E68C */  swc1       $f0, %lo(g_fViewMatrixMaxAbs)($at)
-    /* 37F50 80236F50 3C018036 */  lui        $at, %hi(g_dwVehicleReserved0Jp)
+    /* 37F50 80236F50 3C018036 */  lui        $at, %hi(g_dwInstanceHideFlags)
     /* 37F54 80236F54 12200004 */  beqz       $s1, .L80236F68
-    /* 37F58 80236F58 AC20E690 */   sw        $zero, %lo(g_dwVehicleReserved0Jp)($at)
+    /* 37F58 80236F58 AC20E690 */   sw        $zero, %lo(g_dwInstanceHideFlags)($at)
     /* 37F5C 80236F5C 240F0800 */  addiu      $t7, $zero, 0x800
-    /* 37F60 80236F60 3C018036 */  lui        $at, %hi(g_dwVehicleReserved0Jp)
-    /* 37F64 80236F64 AC2FE690 */  sw         $t7, %lo(g_dwVehicleReserved0Jp)($at)
+    /* 37F60 80236F60 3C018036 */  lui        $at, %hi(g_dwInstanceHideFlags)
+    /* 37F64 80236F64 AC2FE690 */  sw         $t7, %lo(g_dwInstanceHideFlags)($at)
   .L80236F68:
     /* 37F68 80236F68 3C028027 */  lui        $v0, %hi(g_dwGameMode)
     /* 37F6C 80236F6C 8C421998 */  lw         $v0, %lo(g_dwGameMode)($v0)
@@ -67,11 +67,11 @@ glabel RenderTrackGeometry
     /* 37F88 80236F88 930E0004 */  lbu        $t6, 0x4($t8)
     /* 37F8C 80236F8C 11C00005 */  beqz       $t6, .L80236FA4
   .L80236F90:
-    /* 37F90 80236F90 3C198036 */   lui       $t9, %hi(g_dwVehicleReserved0Jp)
-    /* 37F94 80236F94 8F39E690 */  lw         $t9, %lo(g_dwVehicleReserved0Jp)($t9)
-    /* 37F98 80236F98 3C018036 */  lui        $at, %hi(g_dwVehicleReserved0Jp)
+    /* 37F90 80236F90 3C198036 */   lui       $t9, %hi(g_dwInstanceHideFlags)
+    /* 37F94 80236F94 8F39E690 */  lw         $t9, %lo(g_dwInstanceHideFlags)($t9)
+    /* 37F98 80236F98 3C018036 */  lui        $at, %hi(g_dwInstanceHideFlags)
     /* 37F9C 80236F9C 372F4000 */  ori        $t7, $t9, 0x4000
-    /* 37FA0 80236FA0 AC2FE690 */  sw         $t7, %lo(g_dwVehicleReserved0Jp)($at)
+    /* 37FA0 80236FA0 AC2FE690 */  sw         $t7, %lo(g_dwInstanceHideFlags)($at)
   .L80236FA4:
     /* 37FA4 80236FA4 3C188029 */  lui        $t8, %hi(g_dwWeatherActive)
     /* 37FA8 80236FA8 8F18C750 */  lw         $t8, %lo(g_dwWeatherActive)($t8)
@@ -96,11 +96,11 @@ glabel RenderTrackGeometry
     /* 37FF0 80236FF0 10410007 */  beq        $v0, $at, .L80237010
     /* 37FF4 80236FF4 24010007 */   addiu     $at, $zero, 0x7
     /* 37FF8 80236FF8 10410005 */  beq        $v0, $at, .L80237010
-    /* 37FFC 80236FFC 3C188036 */   lui       $t8, %hi(g_dwVehicleReserved0Jp)
-    /* 38000 80237000 8F18E690 */  lw         $t8, %lo(g_dwVehicleReserved0Jp)($t8)
-    /* 38004 80237004 3C018036 */  lui        $at, %hi(g_dwVehicleReserved0Jp)
+    /* 37FFC 80236FFC 3C188036 */   lui       $t8, %hi(g_dwInstanceHideFlags)
+    /* 38000 80237000 8F18E690 */  lw         $t8, %lo(g_dwInstanceHideFlags)($t8)
+    /* 38004 80237004 3C018036 */  lui        $at, %hi(g_dwInstanceHideFlags)
     /* 38008 80237008 370E0020 */  ori        $t6, $t8, 0x20
-    /* 3800C 8023700C AC2EE690 */  sw         $t6, %lo(g_dwVehicleReserved0Jp)($at)
+    /* 3800C 8023700C AC2EE690 */  sw         $t6, %lo(g_dwInstanceHideFlags)($at)
   .L80237010:
     /* 38010 80237010 24021000 */  addiu      $v0, $zero, 0x1000
   .L80237014:
@@ -938,7 +938,7 @@ glabel RenderTrackGeometry
     /* 38CB0 80237CB0 00000000 */   nop
     /* 38CB4 80237CB4 8DCEE908 */  lw         $t6, %lo(g_bDebugHideInstance)($t6)
     /* 38CB8 80237CB8 3C198029 */  lui        $t9, %hi(g_nDebugHiddenInstanceIndex)
-    /* 38CBC 80237CBC 3C0F8036 */  lui        $t7, %hi(g_dwVehicleReserved0Jp)
+    /* 38CBC 80237CBC 3C0F8036 */  lui        $t7, %hi(g_dwInstanceHideFlags)
     /* 38CC0 80237CC0 51C00007 */  beql       $t6, $zero, .L80237CE0
     /* 38CC4 80237CC4 9627004C */   lhu       $a3, 0x4C($s1)
     /* 38CC8 80237CC8 8F39E904 */  lw         $t9, %lo(g_nDebugHiddenInstanceIndex)($t9)
@@ -949,7 +949,7 @@ glabel RenderTrackGeometry
     /* 38CD8 80237CD8 8C63E8F0 */   lw        $v1, %lo(g_nVisibleInstanceCount)($v1)
     /* 38CDC 80237CDC 9627004C */  lhu        $a3, 0x4C($s1)
   .L80237CE0:
-    /* 38CE0 80237CE0 8DEFE690 */  lw         $t7, %lo(g_dwVehicleReserved0Jp)($t7)
+    /* 38CE0 80237CE0 8DEFE690 */  lw         $t7, %lo(g_dwInstanceHideFlags)($t7)
     /* 38CE4 80237CE4 3C038029 */  lui        $v1, %hi(g_nVisibleInstanceCount)
     /* 38CE8 80237CE8 30EE0008 */  andi       $t6, $a3, 0x8
     /* 38CEC 80237CEC 00EFC024 */  and        $t8, $a3, $t7
