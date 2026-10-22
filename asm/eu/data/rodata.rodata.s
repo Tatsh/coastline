@@ -11098,16 +11098,16 @@ enddlabel g_fConst7p3_802ab0d0
 nonmatching switchdataD_802ab0d4
 
 dlabel switchdataD_802ab0d4
-    /* ADE04 802ACE04 80244B70 */ .word .L80244B70
-    /* ADE08 802ACE08 80244B70 */ .word .L80244B70
-    /* ADE0C 802ACE0C 80244BB0 */ .word .L80244BB0
-    /* ADE10 802ACE10 80244BB0 */ .word .L80244BB0
-    /* ADE14 802ACE14 80244BF0 */ .word .L80244BF0
-    /* ADE18 802ACE18 80244C30 */ .word .L80244C30
-    /* ADE1C 802ACE1C 80244C70 */ .word .L80244C70
-    /* ADE20 802ACE20 80244C70 */ .word .L80244C70
-    /* ADE24 802ACE24 80244CB0 */ .word .L80244CB0
-    /* ADE28 802ACE28 80244CF0 */ .word .L80244CF0
+    /* ADE04 802ACE04 80244B70 */ .word 0
+    /* ADE08 802ACE08 80244B70 */ .word 0
+    /* ADE0C 802ACE0C 80244BB0 */ .word 0
+    /* ADE10 802ACE10 80244BB0 */ .word 0
+    /* ADE14 802ACE14 80244BF0 */ .word 0
+    /* ADE18 802ACE18 80244C30 */ .word 0
+    /* ADE1C 802ACE1C 80244C70 */ .word 0
+    /* ADE20 802ACE20 80244C70 */ .word 0
+    /* ADE24 802ACE24 80244CB0 */ .word 0
+    /* ADE28 802ACE28 80244CF0 */ .word 0
 enddlabel switchdataD_802ab0d4
 
 nonmatching g_fConst0p2_802ab0fc
@@ -11119,23 +11119,23 @@ enddlabel g_fConst0p2_802ab0fc
 nonmatching switchdataD_802ab100
 
 dlabel switchdataD_802ab100
-    /* ADE30 802ACE30 802459E4 */ .word .L802459E4
-    /* ADE34 802ACE34 80245B4C */ .word .L80245B4C
-    /* ADE38 802ACE38 80245A50 */ .word .L80245A50
-    /* ADE3C 802ACE3C 80245AB8 */ .word .L80245AB8
-    /* ADE40 802ACE40 80245A50 */ .word .L80245A50
-    /* ADE44 802ACE44 80245A50 */ .word .L80245A50
+    /* ADE30 802ACE30 802459E4 */ .word 0
+    /* ADE34 802ACE34 80245B4C */ .word 0
+    /* ADE38 802ACE38 80245A50 */ .word 0
+    /* ADE3C 802ACE3C 80245AB8 */ .word 0
+    /* ADE40 802ACE40 80245A50 */ .word 0
+    /* ADE44 802ACE44 80245A50 */ .word 0
 enddlabel switchdataD_802ab100
 
 nonmatching jtbl_802ACE48
 
 dlabel jtbl_802ACE48
-    /* ADE48 802ACE48 80245BF4 */ .word .L80245BF4
-    /* ADE4C 802ACE4C 80245C08 */ .word .L80245C08
-    /* ADE50 802ACE50 80245C1C */ .word .L80245C1C
-    /* ADE54 802ACE54 80245CD4 */ .word .L80245CD4
-    /* ADE58 802ACE58 80245DA0 */ .word .L80245DA0
-    /* ADE5C 802ACE5C 80245D8C */ .word .L80245D8C
+    /* ADE48 802ACE48 80245BF4 */ .word 0
+    /* ADE4C 802ACE4C 80245C08 */ .word 0
+    /* ADE50 802ACE50 80245C1C */ .word 0
+    /* ADE54 802ACE54 80245CD4 */ .word 0
+    /* ADE58 802ACE58 80245DA0 */ .word 0
+    /* ADE5C 802ACE5C 80245D8C */ .word 0
 enddlabel jtbl_802ACE48
 
 nonmatching jtbl_802ACE60

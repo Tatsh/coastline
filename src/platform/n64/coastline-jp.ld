@@ -61,6 +61,8 @@ _selectSoundSegmentRomStart = 0x1D6840;
 _startLightsSegmentRomStart = 0x1E0210;
 _startLightsSegmentRomEnd = 0x1EEAF0;
 _cachedGlyphsSegmentRomStart = 0xDCF40;
+_paintShopPaletteSegmentRomStart = 0x1DC050;
+_paintShopPaletteSegmentRomEnd = 0x1DC070;
 
 /* The glyph cache, in the memory after the BSS. */
 g_abGlyphCacheMemory = 0x803837A0;

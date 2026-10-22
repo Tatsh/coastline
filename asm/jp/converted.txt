@@ -332,6 +332,7 @@ ProcessMirrorFlipMenu
 ProcessOptionsMenu
 ProcessOvalStyleMenu
 ProcessPaintShopExitConfirm
+ProcessPaintShopScreen
 ProcessPlayerCountSelect
 ProcessRaceResultsScreen
 ProcessRectStyleMenu

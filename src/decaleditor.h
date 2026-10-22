@@ -753,8 +753,8 @@ s32 IsCursorInButton(Sprite *sprite);
  * @param rect The rectangle.
  * @return Whether it is, the edges included.
  * @ghidraAddress USA: 0x8024d3f0
- * @ghidraAddress JPN: 0x8024e3a0
- * @ghidraAddress EUR: 0x8024e9c0
+ * @ghidraAddress EUR: 0x8024e954
+ * @ghidraAddress JPN: 0x8024e334
  */
 s32 IsCursorInRect(ScreenRect *rect);
 
@@ -764,8 +764,8 @@ s32 IsCursorInRect(ScreenRect *rect);
  * @param swatch The swatch.
  * @return Whether it is, the edges included.
  * @ghidraAddress USA: 0x8024d45c
- * @ghidraAddress JPN: 0x8024e334
- * @ghidraAddress EUR: 0x8024e954
+ * @ghidraAddress EUR: 0x8024e9c0
+ * @ghidraAddress JPN: 0x8024e3a0
  */
 s32 IsCursorInSwatch(PaletteSwatch *swatch);
 

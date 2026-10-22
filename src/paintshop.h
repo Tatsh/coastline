@@ -208,10 +208,25 @@ extern Sprite g_texKeyboardBackground;
  * The pictures of the buttons of the paint shop, by their PAINT_TOOL_ values.
  *
  * @ghidraAddress USA: 0x8028dad4
- * @ghidraAddress JPN: 0x8028fca4
  * @ghidraAddress EUR: 0x80290234
+ * @ghidraAddress JPN: 0x8028fca4
  */
 extern Sprite *g_apPaintToolIcons[PAINT_TOOLS];
+
+#if TGR_REGION == TGR_REGION_JP
+/**
+ * The palette of the pictures of the buttons of the paint shop, read from the cartridge.
+ *
+ * @ghidraAddress JPN: 0x8028f020
+ */
+extern u16 g_awPaintShopButtonPalette[16];
+
+/** The palette of the buttons on the cartridge. The link script places it. */
+extern u8 _paintShopPaletteSegmentRomStart[];
+
+/** The end of the palette of the buttons on the cartridge. The link script places it. */
+extern u8 _paintShopPaletteSegmentRomEnd[];
+#endif
 
 /**
  * The texels of the decal before the last edit.
@@ -400,9 +415,8 @@ void RenderDecalPreview3D(void);
  * Run one frame of the paint shop.
  *
  * @ghidraAddress USA: 0x80243260
- * @ghidraAddress JPN: 0x80244250
  * @ghidraAddress EUR: 0x80244770
- * @stub{EUR JPN}
+ * @ghidraAddress JPN: 0x80244250
  */
 void ProcessPaintShopScreen(void);
 

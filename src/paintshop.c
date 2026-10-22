@@ -79,6 +79,17 @@
 /* The bytes of the palette of the paint saved after the decals. */
 #define DECAL_PALETTE_BYTES 0x20
 
+/* The size and the baseline of the title, and the palette of the pictures of the tool buttons. */
+#if TGR_REGION == TGR_REGION_JP
+#define TITLE_SIZE 30
+#define TITLE_Y 37
+#define BUTTON_PALETTE g_awPaintShopButtonPalette
+#else
+#define TITLE_SIZE 34
+#define TITLE_Y 38
+#define BUTTON_PALETTE NULL
+#endif
+
 /* The states of the dialog of the controller pak. */
 enum {
     PAK_STATE_FADE_OUT,          /*!< Start to fade out the music and the sound effects. */
@@ -488,15 +499,15 @@ static inline void LayOutPaintShopControls(void) {
     }
 }
 
-/* The Japanese and European bodies still come from the assembly. */
-#if TGR_REGION == TGR_REGION_US
 /* Load and place everything of the paint shop on entering it. */
 static void InitPaintShop(void) {
     VehicleModel *model;
 
     SetUpPaintShopCar();
     ResetHeap();
+#if TGR_REGION != TGR_REGION_JP
     osSyncPrintf("\nAllocating %d bytes (x2) for decal buffers...\n\n", DECAL_BUFFER_SIZE);
+#endif
     g_pDecalUndoBuffer = AllocHeapAligned(DECAL_BUFFER_SIZE);
     /* The second buffer is not read again. */
     g_pDecalScratchTexels = AllocHeapAligned(DECAL_BUFFER_SIZE);
@@ -507,6 +518,11 @@ static void InitPaintShop(void) {
     LoadDecalSlotIcons();
     LayOutPaintShopButtons();
     LoadPaintToolIcons();
+#if TGR_REGION == TGR_REGION_JP
+    DmaRead(g_awPaintShopButtonPalette,
+            (u32)_paintShopPaletteSegmentRomStart,
+            _paintShopPaletteSegmentRomEnd - _paintShopPaletteSegmentRomStart);
+#endif
     LoadTextureFromRom(&g_texPaintCursor);
     LoadTextureFromRom(&g_texPaintFillCursor);
     LoadTextureFromRom(&g_texPaintBrushCursor);
@@ -575,11 +591,11 @@ static void DrawPaintShop(void) {
     s32 i;
 
     DrawSpriteTinted(&g_texBackground, 0x71, 0x0B, 0x40);
-    DrawSpriteAtOrigin(&g_texLogo);
-    SetTextSize(34);
+    DrawSpriteAtOrigin(WITH_PALETTE(&g_texLogo, NULL));
+    SetTextSize(TITLE_SIZE);
     SetTextAlignCenter();
     SetTextStyleNormal();
-    DrawText("%ryPAINT SHOP", 160, 38);
+    DrawText("%ryPAINT SHOP", 160, TITLE_Y);
     for (i = 0; i < DECAL_SLOTS; i++) {
         if (i == g_bDecalSlot) {
             DrawSpriteTinted(g_apDecalSlotIcons[i], 0x20, 0xC8, 0xFF);
@@ -601,9 +617,9 @@ static void DrawPaintShop(void) {
     DrawDecalColorPalette();
     DrawPaintShopButton(&g_aPaintToolButtonRects[0], 0, 0, 0);
     if (g_texPaintToolBrush.style == 0) {
-        DrawSpriteAtOrigin(&g_texBrushSizeRound);
+        DrawSpriteAtOrigin(WITH_PALETTE(&g_texBrushSizeRound, NULL));
     } else {
-        DrawSpriteAtOrigin(&g_texBrushSizeSquare);
+        DrawSpriteAtOrigin(WITH_PALETTE(&g_texBrushSizeSquare, NULL));
     }
     FillScreenRect(&g_aBrushSizeButtonRects[g_bBrushSize], 0, 0, 0);
     chosen = &g_aBrushSizeButtonRects[g_bBrushSize];
@@ -618,7 +634,7 @@ static void DrawPaintShop(void) {
         } else {
             DrawPaintShopButton(&g_aPaintToolButtonRects[i], 0, 0, 0);
         }
-        DrawSpriteAtOrigin(g_apPaintToolIcons[i]);
+        DrawSpriteAtOrigin(WITH_PALETTE(g_apPaintToolIcons[i], BUTTON_PALETTE));
     }
 }
 
@@ -661,7 +677,7 @@ static inline void DrawToolCursor(void) {
         break;
     case PAINT_TOOL_TEXT:
         if (g_bDecalDragActive) {
-            DrawSpriteAtOrigin(&g_texPaintCursor);
+            DrawSpriteAtOrigin(WITH_PALETTE(&g_texPaintCursor, NULL));
         } else if (g_bEyedropperActive) {
             DrawTexturedSprite(&g_texPaintEyedropperCursor,
                                g_texPaintCursor.originX,
@@ -673,7 +689,7 @@ static inline void DrawToolCursor(void) {
         }
         break;
     default:
-        DrawSpriteAtOrigin(&g_texPaintCursor);
+        DrawSpriteAtOrigin(WITH_PALETTE(&g_texPaintCursor, NULL));
         break;
     }
 }
@@ -730,7 +746,7 @@ static inline void RunPaintShopMenus(u8 *done) {
         } else {
             ProcessDecalEditorInput();
             UpdateCursorFromInput();
-            DrawSpriteAtOrigin(&g_texPaintCursor);
+            DrawSpriteAtOrigin(WITH_PALETTE(&g_texPaintCursor, NULL));
         }
         break;
     }
@@ -815,7 +831,6 @@ void ProcessPaintShopScreen(void) {
         SetCurrentScreenCallback(MainMenuEntry);
     }
 }
-#endif
 
 void ResetPaintShopState(void) {
     g_texPaintCursor.originX = CURSOR_START_X;
