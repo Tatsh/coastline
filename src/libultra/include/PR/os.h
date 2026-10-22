@@ -314,8 +314,8 @@ typedef struct {
 
 /**
  * @ghidraAddress USA: 0x802a62f0
- * @ghidraAddress JPN: 0x802a7970
  * @ghidraAddress EUR: 0x802a7bf0
+ * @ghidraAddress JPN: 0x802a7970
  */
 extern OSViMode osViModePalLan1;
 
@@ -324,13 +324,17 @@ extern OSViMode osViModePalLan1;
 extern OSViMode osViModePalHaf1;
 #endif
 
-/** @ghidraAddress USA: 0x802a6340 */
+/**
+ * @ghidraAddress USA: 0x802a6340
+ * @ghidraAddress EUR: 0x802a7c90
+ * @ghidraAddress JPN: 0x802a76e0
+ */
 extern OSViMode osViModeMpalLan1;
 
 /**
  * @ghidraAddress USA: 0x802a6390
- * @ghidraAddress JPN: 0x802a7730
  * @ghidraAddress EUR: 0x802a7e80
+ * @ghidraAddress JPN: 0x802a7730
  */
 extern OSViMode osViModeNtscLan1;
 
@@ -338,8 +342,8 @@ extern OSViMode osViModeNtscLan1;
  * The rate of the CPU counter, OS_CPU_COUNTER until osInitialize() sets it.
  *
  * @ghidraAddress USA: 0x802a6140
- * @ghidraAddress JPN: 0x802a7790
  * @ghidraAddress EUR: 0x802a7c50
+ * @ghidraAddress JPN: 0x802a7790
  */
 extern u64 osClockRate;
 
@@ -354,8 +358,8 @@ extern u64 osClockRate;
  * @param sp The end of the stack of the thread, aligned to 8 bytes.
  * @param pri The priority, from OS_PRIORITY_IDLE to OS_PRIORITY_MAX.
  * @ghidraAddress USA: 0x80265670
- * @ghidraAddress JPN: 0x80266900
  * @ghidraAddress EUR: 0x80266e00
+ * @ghidraAddress JPN: 0x80266900
  */
 void osCreateThread(OSThread *t, OSId id, void (*entry)(void *), void *arg, void *sp, OSPri pri);
 
@@ -365,8 +369,8 @@ void osCreateThread(OSThread *t, OSId id, void (*entry)(void *), void *arg, void
  *
  * @param t The thread to destroy, or NULL for the running thread.
  * @ghidraAddress USA: 0x8026e500
- * @ghidraAddress JPN: 0x8026ff80
  * @ghidraAddress EUR: 0x802704d0
+ * @ghidraAddress JPN: 0x8026ff80
  */
 void osDestroyThread(OSThread *t);
 
@@ -374,8 +378,8 @@ void osDestroyThread(OSThread *t);
  * Put the running thread at the end of the threads of its priority and dispatch.
  *
  * @ghidraAddress USA: 0x8026e820
- * @ghidraAddress JPN: 0x802702a0
  * @ghidraAddress EUR: 0x802707f0
+ * @ghidraAddress JPN: 0x802702a0
  */
 void osYieldThread(void);
 
@@ -384,8 +388,8 @@ void osYieldThread(void);
  *
  * @param t The thread to start.
  * @ghidraAddress USA: 0x802657c0
- * @ghidraAddress JPN: 0x80266a50
  * @ghidraAddress EUR: 0x80266f50
+ * @ghidraAddress JPN: 0x80266a50
  */
 void osStartThread(OSThread *t);
 
@@ -396,8 +400,8 @@ void osStartThread(OSThread *t);
  * @param t The thread, or NULL for the running thread.
  * @param pri The new priority, from OS_PRIORITY_IDLE to OS_PRIORITY_MAX.
  * @ghidraAddress USA: 0x802668f0
- * @ghidraAddress JPN: 0x80267b80
  * @ghidraAddress EUR: 0x802680e0
+ * @ghidraAddress JPN: 0x80267b80
  */
 void osSetThreadPri(OSThread *t, OSPri pri);
 
@@ -407,8 +411,8 @@ void osSetThreadPri(OSThread *t, OSPri pri);
  * @param t The thread, or NULL for the running thread.
  * @return The priority of the thread.
  * @ghidraAddress USA: 0x8026c040
- * @ghidraAddress JPN: 0x8026dac0
  * @ghidraAddress EUR: 0x8026e010
+ * @ghidraAddress JPN: 0x8026dac0
  */
 OSPri osGetThreadPri(OSThread *t);
 
@@ -419,8 +423,8 @@ OSPri osGetThreadPri(OSThread *t);
  * @param msg The buffer of the messages.
  * @param count The number of messages the buffer has room for.
  * @ghidraAddress USA: 0x80265410
- * @ghidraAddress JPN: 0x802666a0
  * @ghidraAddress EUR: 0x80266ba0
+ * @ghidraAddress JPN: 0x802666a0
  */
 void osCreateMesgQueue(OSMesgQueue *mq, OSMesg *msg, s32 count);
 
@@ -432,8 +436,8 @@ void osCreateMesgQueue(OSMesgQueue *mq, OSMesg *msg, s32 count);
  * @param flag OS_MESG_BLOCK to wait while the queue is full, or OS_MESG_NOBLOCK to return.
  * @return 0, or -1 when the queue is full and flag is OS_MESG_NOBLOCK.
  * @ghidraAddress USA: 0x802654b0
- * @ghidraAddress JPN: 0x80266740
  * @ghidraAddress EUR: 0x80266c40
+ * @ghidraAddress JPN: 0x80266740
  */
 s32 osSendMesg(OSMesgQueue *mq, OSMesg msg, s32 flag);
 
@@ -445,8 +449,8 @@ s32 osSendMesg(OSMesgQueue *mq, OSMesg msg, s32 flag);
  * @param flag OS_MESG_BLOCK to wait while the queue is full, or OS_MESG_NOBLOCK to return.
  * @return 0, or -1 when the queue is full and flag is OS_MESG_NOBLOCK.
  * @ghidraAddress USA: 0x8026b5d0
- * @ghidraAddress JPN: 0x8026d050
  * @ghidraAddress EUR: 0x8026d5a0
+ * @ghidraAddress JPN: 0x8026d050
  */
 s32 osJamMesg(OSMesgQueue *mq, OSMesg msg, s32 flag);
 
@@ -459,8 +463,8 @@ s32 osJamMesg(OSMesgQueue *mq, OSMesg msg, s32 flag);
  * @param flag OS_MESG_BLOCK to wait while the queue is empty, or OS_MESG_NOBLOCK to return.
  * @return 0, or -1 when the queue is empty and flag is OS_MESG_NOBLOCK.
  * @ghidraAddress USA: 0x802642e0
- * @ghidraAddress JPN: 0x80265500
  * @ghidraAddress EUR: 0x80265a60
+ * @ghidraAddress JPN: 0x80265500
  */
 s32 osRecvMesg(OSMesgQueue *mq, OSMesg *msg, s32 flag);
 
@@ -471,8 +475,8 @@ s32 osRecvMesg(OSMesgQueue *mq, OSMesg *msg, s32 flag);
  * @param mq The queue the event sends to.
  * @param m The message the event sends.
  * @ghidraAddress USA: 0x80265440
- * @ghidraAddress JPN: 0x802666d0
  * @ghidraAddress EUR: 0x80266bd0
+ * @ghidraAddress JPN: 0x802666d0
  */
 void osSetEventMesg(OSEvent e, OSMesgQueue *mq, OSMesg m);
 
@@ -491,6 +495,8 @@ OSIntMask osGetIntMask(void);
  * @param im The new interrupt mask, from the OS_IM_* bits.
  * @return The previous mask.
  * @ghidraAddress USA: 0x8026e460
+ * @ghidraAddress EUR: 0x80270430
+ * @ghidraAddress JPN: 0x8026fee0
  */
 OSIntMask osSetIntMask(OSIntMask im);
 
@@ -499,8 +505,8 @@ OSIntMask osSetIntMask(OSIntMask im);
  *
  * @return The value of the Count register.
  * @ghidraAddress USA: 0x802649f0
- * @ghidraAddress JPN: 0x80265c80
  * @ghidraAddress EUR: 0x80266250
+ * @ghidraAddress JPN: 0x80265c80
  */
 u32 osGetCount(void);
 
@@ -510,8 +516,8 @@ u32 osGetCount(void);
  * @param vaddr The start of the range, a virtual address.
  * @param nbytes The length of the range in bytes. A length of 0 or less does nothing.
  * @ghidraAddress USA: 0x802662e0
- * @ghidraAddress JPN: 0x80267570
  * @ghidraAddress EUR: 0x80267a70
+ * @ghidraAddress JPN: 0x80267570
  */
 void osInvalDCache(void *vaddr, s32 nbytes);
 
@@ -521,8 +527,8 @@ void osInvalDCache(void *vaddr, s32 nbytes);
  * @param vaddr The start of the range, a virtual address.
  * @param nbytes The length of the range in bytes. A length of 0 or less does nothing.
  * @ghidraAddress USA: 0x8026bac0
- * @ghidraAddress JPN: 0x8026d540
  * @ghidraAddress EUR: 0x8026da90
+ * @ghidraAddress JPN: 0x8026d540
  */
 void osInvalICache(void *vaddr, s32 nbytes);
 
@@ -532,8 +538,8 @@ void osInvalICache(void *vaddr, s32 nbytes);
  * @param vaddr The start of the range, a virtual address.
  * @param nbytes The length of the range in bytes. A length of 0 or less does nothing.
  * @ghidraAddress USA: 0x8026b7d0
- * @ghidraAddress JPN: 0x8026d250
  * @ghidraAddress EUR: 0x8026d7a0
+ * @ghidraAddress JPN: 0x8026d250
  */
 void osWritebackDCache(void *vaddr, s32 nbytes);
 
@@ -541,8 +547,8 @@ void osWritebackDCache(void *vaddr, s32 nbytes);
  * Write back the whole data cache.
  *
  * @ghidraAddress USA: 0x802649c0
- * @ghidraAddress JPN: 0x80265c50
  * @ghidraAddress EUR: 0x80266220
+ * @ghidraAddress JPN: 0x80265c50
  */
 void osWritebackDCacheAll(void);
 
@@ -552,8 +558,8 @@ void osWritebackDCacheAll(void);
  * @param vaddr The virtual address, in KSEG0, KSEG1, or a segment the TLB maps.
  * @return The physical address, or -1 when the TLB does not map the address.
  * @ghidraAddress USA: 0x8026b750
- * @ghidraAddress JPN: 0x8026d1d0
  * @ghidraAddress EUR: 0x8026d720
+ * @ghidraAddress JPN: 0x8026d1d0
  */
 u32 osVirtualToPhysical(void *vaddr);
 
@@ -561,8 +567,8 @@ u32 osVirtualToPhysical(void *vaddr);
  * Map the RDB port of the development hardware.
  *
  * @ghidraAddress USA: 0x8026bb40
- * @ghidraAddress JPN: 0x8026d5c0
  * @ghidraAddress EUR: 0x8026db10
+ * @ghidraAddress JPN: 0x8026d5c0
  */
 void osMapTLBRdb(void);
 
@@ -571,8 +577,8 @@ void osMapTLBRdb(void);
  *
  * @return The time in CPU counter cycles, OS_CPU_COUNTER of them per second.
  * @ghidraAddress USA: 0x8026b960
- * @ghidraAddress JPN: 0x8026d3e0
  * @ghidraAddress EUR: 0x8026d930
+ * @ghidraAddress JPN: 0x8026d3e0
  */
 OSTime osGetTime(void);
 
@@ -587,8 +593,8 @@ OSTime osGetTime(void);
  * @param msg The message the timer sends.
  * @return 0.
  * @ghidraAddress USA: 0x80268390
- * @ghidraAddress JPN: 0x80269630
  * @ghidraAddress EUR: 0x80269b80
+ * @ghidraAddress JPN: 0x80269630
  */
 int osSetTimer(OSTimer *t, OSTime countdown, OSTime interval, OSMesgQueue *mq, OSMesg msg);
 
@@ -600,8 +606,8 @@ int osSetTimer(OSTimer *t, OSTime countdown, OSTime interval, OSMesgQueue *mq, O
  *
  * @param pri The priority of the manager thread.
  * @ghidraAddress USA: 0x80266400
- * @ghidraAddress JPN: 0x80267690
  * @ghidraAddress EUR: 0x80267b90
+ * @ghidraAddress JPN: 0x80267690
  */
 void osCreateViManager(OSPri pri);
 
@@ -610,8 +616,8 @@ void osCreateViManager(OSPri pri);
  *
  * @param active TRUE to blank the screen, FALSE to show it.
  * @ghidraAddress USA: 0x80260ab0
- * @ghidraAddress JPN: 0x80265870
  * @ghidraAddress EUR: 0x80265e40
+ * @ghidraAddress JPN: 0x80265870
  */
 void osViBlack(u8 active);
 
@@ -620,8 +626,8 @@ void osViBlack(u8 active);
  *
  * @param modep The mode, such as osViModeNtscLan1.
  * @ghidraAddress USA: 0x80264a60
- * @ghidraAddress JPN: 0x80265cf0
  * @ghidraAddress EUR: 0x80265dd0
+ * @ghidraAddress JPN: 0x80265cf0
  */
 void osViSetMode(OSViMode *modep);
 
@@ -630,8 +636,8 @@ void osViSetMode(OSViMode *modep);
  *
  * @param frameBufPtr The virtual address of the frame buffer.
  * @ghidraAddress USA: 0x80264ad0
- * @ghidraAddress JPN: 0x80265d60
  * @ghidraAddress EUR: 0x80266260
+ * @ghidraAddress JPN: 0x80265d60
  */
 void osViSwapBuffer(void *frameBufPtr);
 
@@ -640,8 +646,8 @@ void osViSwapBuffer(void *frameBufPtr);
  *
  * @return The frame buffer of the current context.
  * @ghidraAddress USA: 0x80264b20
- * @ghidraAddress JPN: 0x80265db0
  * @ghidraAddress EUR: 0x802662b0
+ * @ghidraAddress JPN: 0x80265db0
  */
 void *osViGetCurrentFramebuffer(void);
 
@@ -652,8 +658,8 @@ void *osViGetCurrentFramebuffer(void);
  * @param m The message the VI manager sends.
  * @param retraceCount The number of retraces between messages, 1 for every retrace.
  * @ghidraAddress USA: 0x80265600
- * @ghidraAddress JPN: 0x80266890
  * @ghidraAddress EUR: 0x80266d90
+ * @ghidraAddress JPN: 0x80266890
  */
 void osViSetEvent(OSMesgQueue *mq, OSMesg m, u32 retraceCount);
 
@@ -663,8 +669,8 @@ void osViSetEvent(OSMesgQueue *mq, OSMesg m, u32 retraceCount);
  *
  * @param func The OS_VI_*_ON and OS_VI_*_OFF flags to apply.
  * @ghidraAddress USA: 0x80264490
- * @ghidraAddress JPN: 0x802656b0
  * @ghidraAddress EUR: 0x80265c10
+ * @ghidraAddress JPN: 0x802656b0
  */
 void osViSetSpecialFeatures(u32 func);
 
@@ -675,8 +681,8 @@ void osViSetSpecialFeatures(u32 func);
  *
  * @return The handle of the cartridge ROM.
  * @ghidraAddress USA: 0x8026c3d0
- * @ghidraAddress JPN: 0x8026de50
  * @ghidraAddress EUR: 0x8026e3a0
+ * @ghidraAddress JPN: 0x8026de50
  */
 OSPiHandle *osCartRomInit(void);
 
@@ -685,6 +691,8 @@ OSPiHandle *osCartRomInit(void);
  *
  * @return The handle of the 64DD.
  * @ghidraAddress USA: 0x8026c4c0
+ * @ghidraAddress EUR: 0x8026e490
+ * @ghidraAddress JPN: 0x8026df40
  */
 OSPiHandle *osLeoDiskInit(void);
 
@@ -697,8 +705,8 @@ OSPiHandle *osLeoDiskInit(void);
  * @param cmdBuf The buffer of the messages of cmdQ.
  * @param cmdMsgCnt The number of messages cmdBuf has room for.
  * @ghidraAddress USA: 0x80266760
- * @ghidraAddress JPN: 0x802679f0
  * @ghidraAddress EUR: 0x80267f50
+ * @ghidraAddress JPN: 0x802679f0
  */
 void osCreatePiManager(OSPri pri, OSMesgQueue *cmdQ, OSMesg *cmdBuf, s32 cmdMsgCnt);
 
@@ -707,8 +715,8 @@ void osCreatePiManager(OSPri pri, OSMesgQueue *cmdQ, OSMesg *cmdBuf, s32 cmdMsgC
  *
  * @return The command queue, or NULL.
  * @ghidraAddress USA: 0x8026b720
- * @ghidraAddress JPN: 0x8026d1a0
  * @ghidraAddress EUR: 0x8026d6f0
+ * @ghidraAddress JPN: 0x8026d1a0
  */
 OSMesgQueue *osPiGetCmdQueue(void);
 
@@ -719,8 +727,8 @@ OSMesgQueue *osPiGetCmdQueue(void);
  * @param data Receives the word.
  * @return 0.
  * @ghidraAddress USA: 0x802663a0
- * @ghidraAddress JPN: 0x80267630
  * @ghidraAddress EUR: 0x80267b30
+ * @ghidraAddress JPN: 0x80267630
  */
 s32 osPiRawReadIo(u32 devAddr, u32 *data);
 
@@ -733,8 +741,8 @@ s32 osPiRawReadIo(u32 devAddr, u32 *data);
  * @param size The count of bytes to move.
  * @return 0, or -1 for a direction other than OS_READ and OS_WRITE.
  * @ghidraAddress USA: 0x8026c680
- * @ghidraAddress JPN: 0x8026e100
  * @ghidraAddress EUR: 0x8026e650
+ * @ghidraAddress JPN: 0x8026e100
  */
 s32 osPiRawStartDma(s32 direction, u32 devAddr, void *dramAddr, u32 size);
 
@@ -751,8 +759,8 @@ s32 osPiRawStartDma(s32 direction, u32 devAddr, void *dramAddr, u32 size);
  * @param mq The queue the manager sends mb to when the transfer ends.
  * @return The result of the send, or -1 when the PI manager does not run.
  * @ghidraAddress USA: 0x80264650
- * @ghidraAddress JPN: 0x802658e0
  * @ghidraAddress EUR: 0x80265eb0
+ * @ghidraAddress JPN: 0x802658e0
  */
 s32 osPiStartDma(OSIoMesg *mb,
                  s32 priority,
@@ -770,8 +778,8 @@ s32 osPiStartDma(OSIoMesg *mb,
  * @param data Receives the word.
  * @return 0.
  * @ghidraAddress USA: 0x8026e780
- * @ghidraAddress JPN: 0x80270200
  * @ghidraAddress EUR: 0x80270750
+ * @ghidraAddress JPN: 0x80270200
  */
 s32 osEPiRawReadIo(OSPiHandle *pihandle, u32 devAddr, u32 *data);
 
@@ -783,8 +791,8 @@ s32 osEPiRawReadIo(OSPiHandle *pihandle, u32 devAddr, u32 *data);
  * @param data The word to write.
  * @return 0.
  * @ghidraAddress USA: 0x8026e730
- * @ghidraAddress JPN: 0x802701b0
  * @ghidraAddress EUR: 0x80270700
+ * @ghidraAddress JPN: 0x802701b0
  */
 s32 osEPiRawWriteIo(OSPiHandle *pihandle, u32 devAddr, u32 data);
 
@@ -799,8 +807,8 @@ s32 osEPiRawWriteIo(OSPiHandle *pihandle, u32 devAddr, u32 data);
  * @param size The count of bytes to move.
  * @return 0, or -1 for a direction other than OS_READ and OS_WRITE.
  * @ghidraAddress USA: 0x8026c760
- * @ghidraAddress JPN: 0x8026e1e0
  * @ghidraAddress EUR: 0x8026e730
+ * @ghidraAddress JPN: 0x8026e1e0
  */
 s32 osEPiRawStartDma(OSPiHandle *pihandle, s32 direction, u32 devAddr, void *dramAddr, u32 size);
 
@@ -812,8 +820,8 @@ s32 osEPiRawStartDma(OSPiHandle *pihandle, s32 direction, u32 devAddr, void *dra
  * @param frequency The requested sample rate in hertz.
  * @return The rate set in hertz, or -1 when the frequency is too high.
  * @ghidraAddress USA: 0x80268230
- * @ghidraAddress JPN: 0x802694d0
  * @ghidraAddress EUR: 0x80269a20
+ * @ghidraAddress JPN: 0x802694d0
  */
 s32 osAiSetFrequency(u32 frequency);
 
@@ -824,8 +832,8 @@ s32 osAiSetFrequency(u32 frequency);
  * @param size The length of the buffer in bytes, a multiple of 8.
  * @return 0, or -1 when the queue of the audio interface is full.
  * @ghidraAddress USA: 0x80268470
- * @ghidraAddress JPN: 0x80269710
  * @ghidraAddress EUR: 0x80269c60
+ * @ghidraAddress JPN: 0x80269710
  */
 s32 osAiSetNextBuffer(void *bufPtr, u32 size);
 
@@ -834,8 +842,8 @@ s32 osAiSetNextBuffer(void *bufPtr, u32 size);
  *
  * @return The value of the AI status register.
  * @ghidraAddress USA: 0x80268520
- * @ghidraAddress JPN: 0x802697c0
  * @ghidraAddress EUR: 0x80269d10
+ * @ghidraAddress JPN: 0x802697c0
  */
 u32 osAiGetStatus(void);
 
@@ -844,15 +852,15 @@ u32 osAiGetStatus(void);
  *
  * @return The bytes the audio DMA has yet to play.
  * @ghidraAddress USA: 0x80268530
- * @ghidraAddress JPN: 0x802697d0
  * @ghidraAddress EUR: 0x80269d20
+ * @ghidraAddress JPN: 0x802697d0
  */
 u32 osAiGetLength(void);
 
 /**
  * @ghidraAddress USA: 0x8026ce20
- * @ghidraAddress JPN: 0x8026e8a0
  * @ghidraAddress EUR: 0x8026edf0
+ * @ghidraAddress JPN: 0x8026e8a0
  */
 s32 __osAiDeviceBusy(void);
 
@@ -860,8 +868,8 @@ s32 __osAiDeviceBusy(void);
  * The frequency of the video clock. osInitialize() selects it by television standard.
  *
  * @ghidraAddress USA: 0x802a6148
- * @ghidraAddress JPN: 0x802a7798
  * @ghidraAddress EUR: 0x802a7c58
+ * @ghidraAddress JPN: 0x802a7798
  */
 extern s32 osViClock;
 
@@ -870,8 +878,8 @@ extern s32 osViClock;
  * case the audio DMA mishandles.
  *
  * @ghidraAddress USA: 0x802a61b0
- * @ghidraAddress JPN: 0x802a7800
  * @ghidraAddress EUR: 0x802a7d10
+ * @ghidraAddress JPN: 0x802a7800
  */
 extern u8 aiHdwrBugFlag;
 
@@ -879,8 +887,8 @@ extern u8 aiHdwrBugFlag;
  * Initialise the system: the FPU, the PIF, the exception vectors and the clock rates.
  *
  * @ghidraAddress USA: 0x80265d90
- * @ghidraAddress JPN: 0x80267020
  * @ghidraAddress EUR: 0x80267520
+ * @ghidraAddress JPN: 0x80267020
  */
 void osInitialize(void);
 
@@ -889,8 +897,8 @@ void osInitialize(void);
  *
  * @param fmt The printf format, followed by its arguments.
  * @ghidraAddress USA: 0x802607dc
- * @ghidraAddress JPN: 0x80261a3c
  * @ghidraAddress EUR: 0x80261cdc
+ * @ghidraAddress JPN: 0x80261a3c
  */
 void osSyncPrintf(const char *fmt, ...);
 
@@ -899,49 +907,65 @@ void osSyncPrintf(const char *fmt, ...);
  *
  * @param fmt The printf format, followed by its arguments.
  * @ghidraAddress USA: 0x802607c0
- * @ghidraAddress JPN: 0x80261a20
  * @ghidraAddress EUR: 0x80261cc0
+ * @ghidraAddress JPN: 0x80261a20
  */
 void rmonPrintf(const char *fmt, ...);
 
-/** @ghidraAddress USA: 0x80266020 */
+/**
+ * @ghidraAddress USA: 0x80266020
+ * @ghidraAddress EUR: 0x802677b0
+ * @ghidraAddress JPN: 0x802672b0
+ */
 unsigned long long __ull_rshift(unsigned long long a0, unsigned long long a1);
 
 /**
  * @ghidraAddress USA: 0x8026604c
- * @ghidraAddress JPN: 0x802672dc
  * @ghidraAddress EUR: 0x802677dc
+ * @ghidraAddress JPN: 0x802672dc
  */
 unsigned long long __ull_rem(unsigned long long a0, unsigned long long a1);
 
 /**
  * @ghidraAddress USA: 0x80266088
- * @ghidraAddress JPN: 0x80267318
  * @ghidraAddress EUR: 0x80267818
+ * @ghidraAddress JPN: 0x80267318
  */
 unsigned long long __ull_div(unsigned long long a0, unsigned long long a1);
 
-/** @ghidraAddress USA: 0x802660c4 */
+/**
+ * @ghidraAddress USA: 0x802660c4
+ * @ghidraAddress EUR: 0x80267854
+ * @ghidraAddress JPN: 0x80267354
+ */
 long long __ll_lshift(long long a0, long long a1);
 
-/** @ghidraAddress USA: 0x802660f0 */
+/**
+ * @ghidraAddress USA: 0x802660f0
+ * @ghidraAddress EUR: 0x80267880
+ * @ghidraAddress JPN: 0x80267380
+ */
 long long __ll_rem(unsigned long long a0, long long a1);
 
 /**
  * @ghidraAddress USA: 0x8026612c
- * @ghidraAddress JPN: 0x802673bc
  * @ghidraAddress EUR: 0x802678bc
+ * @ghidraAddress JPN: 0x802673bc
  */
 long long __ll_div(long long a0, long long a1);
 
 /**
  * @ghidraAddress USA: 0x80266188
- * @ghidraAddress JPN: 0x80267418
  * @ghidraAddress EUR: 0x80267918
+ * @ghidraAddress JPN: 0x80267418
  */
 long long __ll_mul(long long a0, long long a1);
 
-/** @ghidraAddress USA: 0x802661b8 */
+/**
+ * @ghidraAddress USA: 0x802661b8
+ * @ghidraAddress EUR: 0x80267948
+ * @ghidraAddress JPN: 0x80267448
+ */
 void __ull_divremi(unsigned long long *quotient,
                    unsigned long long *remainder,
                    unsigned long long dividend,
@@ -949,43 +973,71 @@ void __ull_divremi(unsigned long long *quotient,
 
 /**
  * @ghidraAddress USA: 0x80266218
- * @ghidraAddress JPN: 0x802674a8
  * @ghidraAddress EUR: 0x802679a8
+ * @ghidraAddress JPN: 0x802674a8
  */
 long long __ll_mod(long long a0, long long a1);
 
-/** @ghidraAddress USA: 0x802662b4 */
+/**
+ * @ghidraAddress USA: 0x802662b4
+ * @ghidraAddress EUR: 0x80267a44
+ * @ghidraAddress JPN: 0x80267544
+ */
 long long __ll_rshift(long long a0, long long a1);
 
-/** @ghidraAddress USA: 0x802669d0 */
+/**
+ * @ghidraAddress USA: 0x802669d0
+ * @ghidraAddress EUR: 0x802681c0
+ * @ghidraAddress JPN: 0x80267c70
+ */
 long long __d_to_ll(double d);
 
-/** @ghidraAddress USA: 0x802669ec */
+/**
+ * @ghidraAddress USA: 0x802669ec
+ * @ghidraAddress EUR: 0x802681dc
+ * @ghidraAddress JPN: 0x80267c8c
+ */
 long long __f_to_ll(float f);
 
 /**
  * @ghidraAddress USA: 0x80266a08
- * @ghidraAddress JPN: 0x80267ca8
  * @ghidraAddress EUR: 0x802681f8
+ * @ghidraAddress JPN: 0x80267ca8
  */
 unsigned long long __d_to_ull(double d);
 
-/** @ghidraAddress USA: 0x80266aa8 */
+/**
+ * @ghidraAddress USA: 0x80266aa8
+ * @ghidraAddress EUR: 0x80268298
+ * @ghidraAddress JPN: 0x80267d48
+ */
 unsigned long long __f_to_ull(float f);
 
-/** @ghidraAddress USA: 0x80266b44 */
+/**
+ * @ghidraAddress USA: 0x80266b44
+ * @ghidraAddress EUR: 0x80268334
+ * @ghidraAddress JPN: 0x80267de4
+ */
 double __ll_to_d(long long s);
 
-/** @ghidraAddress USA: 0x80266b5c */
+/**
+ * @ghidraAddress USA: 0x80266b5c
+ * @ghidraAddress EUR: 0x8026834c
+ * @ghidraAddress JPN: 0x80267dfc
+ */
 float __ll_to_f(long long s);
 
-/** @ghidraAddress USA: 0x80266b74 */
+/**
+ * @ghidraAddress USA: 0x80266b74
+ * @ghidraAddress EUR: 0x80268364
+ * @ghidraAddress JPN: 0x80267e14
+ */
 double __ull_to_d(unsigned long long u);
 
 /**
  * @ghidraAddress USA: 0x80266ba8
- * @ghidraAddress JPN: 0x80267e48
  * @ghidraAddress EUR: 0x80268398
+ * @ghidraAddress JPN: 0x80267e48
  */
 float __ull_to_f(unsigned long long u);
 

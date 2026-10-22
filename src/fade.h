@@ -16,29 +16,29 @@
  * The edges of the picture the wipe leaves, in pixels.
  *
  * @ghidraAddress USA: 0x8028b740
- * @ghidraAddress JPN: 0x8028d420
  * @ghidraAddress EUR: 0x8028d9f0
+ * @ghidraAddress JPN: 0x8028d420
  */
 extern s32 g_dwFadeRectLeft;
 
 /**
  * @ghidraAddress USA: 0x8028b744
- * @ghidraAddress JPN: 0x8028d424
  * @ghidraAddress EUR: 0x8028d9f4
+ * @ghidraAddress JPN: 0x8028d424
  */
 extern s32 g_dwFadeRectRight;
 
 /**
  * @ghidraAddress USA: 0x8028b748
- * @ghidraAddress JPN: 0x8028d428
  * @ghidraAddress EUR: 0x8028d9f8
+ * @ghidraAddress JPN: 0x8028d428
  */
 extern s32 g_dwFadeRectTop;
 
 /**
  * @ghidraAddress USA: 0x8028b74c
- * @ghidraAddress JPN: 0x8028d42c
  * @ghidraAddress EUR: 0x8028d9fc
+ * @ghidraAddress JPN: 0x8028d42c
  */
 extern s32 g_dwFadeRectBottom;
 
@@ -46,8 +46,8 @@ extern s32 g_dwFadeRectBottom;
  * How much the headlights shining at the camera whiten the view, from 0 to 1.
  *
  * @ghidraAddress USA: 0x8028b750
- * @ghidraAddress JPN: 0x8028d430
  * @ghidraAddress EUR: 0x8028da00
+ * @ghidraAddress JPN: 0x8028d430
  */
 extern f32 g_fHeadlightGlare;
 
@@ -55,8 +55,8 @@ extern f32 g_fHeadlightGlare;
  * The level the screen fades to.
  *
  * @ghidraAddress USA: 0x8028b754
- * @ghidraAddress JPN: 0x8028d434
  * @ghidraAddress EUR: 0x8028da04
+ * @ghidraAddress JPN: 0x8028d434
  */
 extern f32 g_fFadeTarget;
 
@@ -64,15 +64,15 @@ extern f32 g_fFadeTarget;
  * The change of the level each second, below 0 when fading out.
  *
  * @ghidraAddress USA: 0x8028b758
- * @ghidraAddress JPN: 0x8028d438
  * @ghidraAddress EUR: 0x8028da08
+ * @ghidraAddress JPN: 0x8028d438
  */
 extern f32 g_fFadeRate;
 
 /**
  * @ghidraAddress USA: 0x8028b75c
- * @ghidraAddress JPN: 0x8028d43c
  * @ghidraAddress EUR: 0x8028da0c
+ * @ghidraAddress JPN: 0x8028d43c
  */
 extern f32 g_fFadeLevel;
 
@@ -80,22 +80,22 @@ extern f32 g_fFadeLevel;
  * The fade of the music: its target, its change each second and its level.
  *
  * @ghidraAddress USA: 0x8028b760
- * @ghidraAddress JPN: 0x8028d440
  * @ghidraAddress EUR: 0x8028da10
+ * @ghidraAddress JPN: 0x8028d440
  */
 extern f32 g_fMusicFadeTarget;
 
 /**
  * @ghidraAddress USA: 0x8028b764
- * @ghidraAddress JPN: 0x8028d444
  * @ghidraAddress EUR: 0x8028da14
+ * @ghidraAddress JPN: 0x8028d444
  */
 extern f32 g_fMusicFadeSpeed;
 
 /**
  * @ghidraAddress USA: 0x8028b768
- * @ghidraAddress JPN: 0x8028d448
  * @ghidraAddress EUR: 0x8028da18
+ * @ghidraAddress JPN: 0x8028d448
  */
 extern f32 g_fMusicFadeCurrent;
 
@@ -103,22 +103,22 @@ extern f32 g_fMusicFadeCurrent;
  * The fade of the sound effects: its target, its change each second and its level.
  *
  * @ghidraAddress USA: 0x8028b76c
- * @ghidraAddress JPN: 0x8028d44c
  * @ghidraAddress EUR: 0x8028da1c
+ * @ghidraAddress JPN: 0x8028d44c
  */
 extern f32 g_fSfxFadeTarget;
 
 /**
  * @ghidraAddress USA: 0x8028b770
- * @ghidraAddress JPN: 0x8028d450
  * @ghidraAddress EUR: 0x8028da20
+ * @ghidraAddress JPN: 0x8028d450
  */
 extern f32 g_fSfxFadeSpeed;
 
 /**
  * @ghidraAddress USA: 0x8028b774
- * @ghidraAddress JPN: 0x8028d454
  * @ghidraAddress EUR: 0x8028da24
+ * @ghidraAddress JPN: 0x8028d454
  */
 extern f32 g_fSfxFadeCurrent;
 
@@ -127,22 +127,22 @@ extern f32 g_fSfxFadeCurrent;
  * starts.
  *
  * @ghidraAddress USA: 0x8028b778
- * @ghidraAddress JPN: 0x8028d458
  * @ghidraAddress EUR: 0x8028da28
+ * @ghidraAddress JPN: 0x8028d458
  */
 extern s32 g_dwFadeSkipFrame;
 
 /**
  * @ghidraAddress USA: 0x8028b77c
- * @ghidraAddress JPN: 0x8028d45c
  * @ghidraAddress EUR: 0x8028da2c
+ * @ghidraAddress JPN: 0x8028d45c
  */
 extern s32 g_dwMusicFadeSkipFrame;
 
 /**
  * @ghidraAddress USA: 0x8028b780
- * @ghidraAddress JPN: 0x8028d460
  * @ghidraAddress EUR: 0x8028da30
+ * @ghidraAddress JPN: 0x8028d460
  */
 extern s32 g_dwSfxFadeSkipFrame;
 
@@ -151,8 +151,8 @@ extern s32 g_dwSfxFadeSkipFrame;
  * it faded in.
  *
  * @ghidraAddress USA: 0x8028b784
- * @ghidraAddress JPN: 0x8028d464
  * @ghidraAddress EUR: 0x8028da34
+ * @ghidraAddress JPN: 0x8028d464
  */
 extern s32 g_dwFadeAutoReverse;
 
@@ -161,12 +161,14 @@ extern s32 g_dwFadeAutoReverse;
  *
  * @ghidraAddress USA: 0x8031b410
  * @ghidraAddress EUR: 0x8031d910
+ * @ghidraAddress JPN: 0x8031c540
  */
 extern s32 g_adwFadeRectLeftPerBuffer[2];
 
 /**
  * @ghidraAddress USA: 0x8031b418
  * @ghidraAddress EUR: 0x8031d918
+ * @ghidraAddress JPN: 0x8031c548
  */
 extern s32 g_adwFadeRectRightPerBuffer[2];
 
@@ -174,8 +176,8 @@ extern s32 g_adwFadeRectRightPerBuffer[2];
  * Clear the glare of the headlights over the view.
  *
  * @ghidraAddress USA: 0x80223470
- * @ghidraAddress JPN: 0x80223fa0
  * @ghidraAddress EUR: 0x802247b0
+ * @ghidraAddress JPN: 0x80223fa0
  */
 void ResetHeadlightGlare(void);
 
@@ -184,8 +186,8 @@ void ResetHeadlightGlare(void);
  * enough.
  *
  * @ghidraAddress USA: 0x80223480
- * @ghidraAddress JPN: 0x80223fb0
  * @ghidraAddress EUR: 0x802247c0
+ * @ghidraAddress JPN: 0x80223fb0
  */
 void RenderHeadlightGlare(void);
 
@@ -196,8 +198,8 @@ void RenderHeadlightGlare(void);
  * @param target The level to fade to, from 0 for black to 1 for the whole picture.
  * @param seconds The time a fade across the whole range takes, in seconds.
  * @ghidraAddress USA: 0x80223688
- * @ghidraAddress JPN: 0x802241b8
  * @ghidraAddress EUR: 0x802249c8
+ * @ghidraAddress JPN: 0x802241b8
  */
 void SetFadeTarget(float target, float seconds);
 
@@ -207,8 +209,8 @@ void SetFadeTarget(float target, float seconds);
  * @param target The volume to fade to, from 0 for silence to 1 for full volume.
  * @param seconds The time a fade across the whole range takes, in seconds.
  * @ghidraAddress USA: 0x80223750
- * @ghidraAddress JPN: 0x80224280
  * @ghidraAddress EUR: 0x80224a90
+ * @ghidraAddress JPN: 0x80224280
  */
 void FadeSfxTo(float target, float seconds);
 
@@ -218,8 +220,8 @@ void FadeSfxTo(float target, float seconds);
  * @param target The volume to fade to, from 0 for silence to 1 for full volume.
  * @param seconds The time a fade across the whole range takes, in seconds.
  * @ghidraAddress USA: 0x802237d0
- * @ghidraAddress JPN: 0x80224300
  * @ghidraAddress EUR: 0x80224b10
+ * @ghidraAddress JPN: 0x80224300
  */
 void FadeMusicTo(float target, float seconds);
 
@@ -228,8 +230,8 @@ void FadeMusicTo(float target, float seconds);
  *
  * @return 1 if the volume equals its target, 0 otherwise.
  * @ghidraAddress USA: 0x80223850
- * @ghidraAddress JPN: 0x80224380
  * @ghidraAddress EUR: 0x80224b90
+ * @ghidraAddress JPN: 0x80224380
  */
 s32 HasSfxFadeFinished(void);
 
@@ -238,6 +240,8 @@ s32 HasSfxFadeFinished(void);
  *
  * @param level The volume, from 0 for silence to 1 for full volume.
  * @ghidraAddress USA: 0x80223880
+ * @ghidraAddress EUR: 0x80224bc0
+ * @ghidraAddress JPN: 0x802243b0
  */
 void SetSfxFadeLevelImmediate(float level);
 
@@ -246,8 +250,8 @@ void SetSfxFadeLevelImmediate(float level);
  *
  * @param level The level, from 0 for black to 1 for the whole picture.
  * @ghidraAddress USA: 0x8022389c
- * @ghidraAddress JPN: 0x802243cc
  * @ghidraAddress EUR: 0x80224bdc
+ * @ghidraAddress JPN: 0x802243cc
  */
 void SnapScreenFade(float level);
 
@@ -256,8 +260,8 @@ void SnapScreenFade(float level);
  *
  * @return 1 if the screen fades in, 0 otherwise.
  * @ghidraAddress USA: 0x802238b8
- * @ghidraAddress JPN: 0x802243e8
  * @ghidraAddress EUR: 0x80224bf8
+ * @ghidraAddress JPN: 0x802243e8
  */
 s32 IsFadingIn(void);
 
@@ -266,8 +270,8 @@ s32 IsFadingIn(void);
  *
  * @return 1 if the screen fades out or will, 0 otherwise.
  * @ghidraAddress USA: 0x802238fc
- * @ghidraAddress JPN: 0x8022442c
  * @ghidraAddress EUR: 0x80224c3c
+ * @ghidraAddress JPN: 0x8022442c
  */
 s32 IsFadingOut(void);
 
@@ -276,8 +280,8 @@ s32 IsFadingOut(void);
  *
  * @return 1 if the fade is complete, 0 otherwise.
  * @ghidraAddress USA: 0x80223940
- * @ghidraAddress JPN: 0x80224470
  * @ghidraAddress EUR: 0x80224c80
+ * @ghidraAddress JPN: 0x80224470
  */
 s32 IsFadeComplete(void);
 
@@ -286,8 +290,8 @@ s32 IsFadeComplete(void);
  *
  * @return 1 if the screen is black, 0 otherwise.
  * @ghidraAddress USA: 0x80223988
- * @ghidraAddress JPN: 0x802244b8
  * @ghidraAddress EUR: 0x80224cc8
+ * @ghidraAddress JPN: 0x802244b8
  */
 s32 IsFadedToBlack(void);
 
@@ -296,20 +300,24 @@ s32 IsFadedToBlack(void);
  *
  * @return 1 if the whole picture shows, 0 otherwise.
  * @ghidraAddress USA: 0x802239f4
- * @ghidraAddress JPN: 0x80224524
  * @ghidraAddress EUR: 0x80224d34
+ * @ghidraAddress JPN: 0x80224524
  */
 s32 IsFadedToWhite(void);
 
-/** @ghidraAddress USA: 0x80223a68 */
+/**
+ * @ghidraAddress USA: 0x80223a68
+ * @ghidraAddress EUR: 0x80224da8
+ * @ghidraAddress JPN: 0x80224598
+ */
 void UnusedScreenFadeStub(void);
 
 /**
  * Draw the wipe of the frame: black over the edges the fade has covered.
  *
  * @ghidraAddress USA: 0x80223a70
- * @ghidraAddress JPN: 0x802245a0
  * @ghidraAddress EUR: 0x80224db0
+ * @ghidraAddress JPN: 0x802245a0
  */
 void ApplyScreenFade(void);
 
@@ -318,8 +326,8 @@ void ApplyScreenFade(void);
  *
  * @param level The level, from 0 for opaque black to 1 for no overlay.
  * @ghidraAddress USA: 0x80223de0
- * @ghidraAddress JPN: 0x80224910
  * @ghidraAddress EUR: 0x80225120
+ * @ghidraAddress JPN: 0x80224910
  */
 void DrawScreenFadeOverlay(float level);
 
@@ -328,8 +336,8 @@ void DrawScreenFadeOverlay(float level);
  * the edges of the wipe, and set the volumes.
  *
  * @ghidraAddress USA: 0x80223f54
- * @ghidraAddress JPN: 0x80224a84
  * @ghidraAddress EUR: 0x80225294
+ * @ghidraAddress JPN: 0x80224a84
  */
 void UpdateFadeTransitions(void);
 
