@@ -462,9 +462,8 @@ s32 IsCarUnlocked(s32 car);
  * @param spread The distance of the slide at its full extent.
  * @param angle The direction the camera faces, in radians.
  * @ghidraAddress USA: 0x8020c6d0
- * @ghidraAddress JPN: 0x8020c0bc
  * @ghidraAddress EUR: 0x8020c4b0
- * @stub{JPN}
+ * @ghidraAddress JPN: 0x8020c0bc
  */
 void RenderCameraView(Model *model,
                       Model *secondModel,

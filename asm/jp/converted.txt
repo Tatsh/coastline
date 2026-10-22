@@ -354,6 +354,7 @@ ReadPixel4Bit
 RelocateModelPointers
 RemapPointer
 RenderBillboardParticles
+RenderCameraView
 RenderDashboardGauges
 RenderDecalPreview3D
 RenderExhaustAndTireSpray

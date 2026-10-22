@@ -166,8 +166,6 @@ s32 IsCarUnlocked(s32 car) {
         RenderVehicleModel(g_pActiveCameraVehicle, 0);                                             \
     }
 
-/* The Japanese body still comes from the assembly. */
-#if TGR_REGION != TGR_REGION_JP
 void RenderCameraView(Model *model,
                       Model *secondModel,
                       s32 vehicleIndex,
@@ -256,9 +254,15 @@ void RenderCameraView(Model *model,
         DrawModelList(secondModel, g_afMvpMatrix);
         return;
     }
+#if TGR_REGION == TGR_REGION_JP
+    if (!IsVehicleModelLoaded(secondLoad)) {
+        return;
+    }
+#else
     if (!IsVehicleModelLoaded(secondLoad) && PollVehicleModelDma(secondLoad)) {
         return;
     }
+#endif
     SetVehicleModelSlot(g_pActiveCameraVehicle, secondSlot);
     /* Each side of the stage has its own stores. */
     if (0.0f < offset) {
@@ -276,7 +280,6 @@ void RenderCameraView(Model *model,
         SetVehicleModelSlot(g_pActiveCameraVehicle, slot);
     }
 }
-#endif
 
 void FormatLapTime(char *out, f32 seconds) {
     s32 hundredths = (s32)(seconds * 100.0f);
