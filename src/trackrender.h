@@ -186,6 +186,7 @@ extern s32 g_nDeferredInstanceLastIdx;
  *
  * @ghidraAddress USA: 0x8035d520
  * @ghidraAddress EUR: 0x8035fa20
+ * @ghidraAddress JPN: 0x8035e690
  */
 extern u32 g_dwInstanceHideFlags;
 
@@ -374,9 +375,8 @@ void BuildVisibleInstanceList(void);
  *
  * @param deferred Whether this is the second pass.
  * @ghidraAddress USA: 0x80235bac
- * @ghidraAddress JPN: 0x80236ebc
  * @ghidraAddress EUR: 0x802370bc
- * @stub{JPN}
+ * @ghidraAddress JPN: 0x80236ebc
  */
 void RenderTrackGeometry(s32 deferred);
 

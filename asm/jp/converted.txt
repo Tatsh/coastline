@@ -363,6 +363,7 @@ RenderSpeedometerNeedle
 RenderStartLights
 RenderTextToDisplayList
 RenderTireSmoke
+RenderTrackGeometry
 RenderTrackInstance
 RenderTrackShadow
 RenderVehicleHeadlightBeams

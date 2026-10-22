@@ -791,6 +791,7 @@ static inline void ForceUnrotatedMatrix(TrackInstance *instance, s32 index, s32 
         }
     }
     if (FIXED_MATRIX_MAX < (f64)high || (f64)low < -FIXED_MATRIX_MAX) {
+#if TGR_REGION != TGR_REGION_JP
         /* Only the second model in view reports its overflow. */
         if (listIndex == 1) {
             osSyncPrintf("Bad Final Matrix: in=%d (%s), s=%f\n-------------\n"
@@ -850,6 +851,7 @@ static inline void ForceUnrotatedMatrix(TrackInstance *instance, s32 index, s32 
                          mvp[3][2],
                          mvp[3][3]);
         }
+#endif
         scale = -low < high ? FIXED_MATRIX_MAX / high : -FIXED_MATRIX_MAX / low;
         for (row = 0; row < 4; row++) {
             for (column = 0; column < 4; column++) {
@@ -861,8 +863,6 @@ static inline void ForceUnrotatedMatrix(TrackInstance *instance, s32 index, s32 
     gSPForceMatrix(gDisplayListPtr++, block);
 }
 
-/* The Japanese body still comes from the assembly. */
-#if TGR_REGION != TGR_REGION_JP
 void RenderTrackGeometry(s32 deferred) {
     TrackInstance *instance;
     Mtx *block;
@@ -1078,4 +1078,3 @@ void RenderTrackGeometry(s32 deferred) {
     AddTimingMarker(0, 0, 0xB4, 0, 0xFF);
     g_nDeferredInstanceLastIdx = deferredLast;
 }
-#endif
