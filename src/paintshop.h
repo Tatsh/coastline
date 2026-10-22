@@ -357,6 +357,7 @@ extern s32 g_dwPakError;
 
 /**
  * @ghidraAddress USA: 0x80369e58
+ * @ghidraAddress EUR: 0x8036c358
  * @ghidraAddress JPN: 0x8036afb8
  */
 extern s32 g_dwPakFileNo;
@@ -499,9 +500,9 @@ void AllocateEditorBuffers(void);
  * @return 0 while it runs and once the decals are moved, PAK_DIALOG_CANCELLED when the player
  *         cancels the swap of the rumble pak on the car select screen, or an error.
  * @ghidraAddress USA: 0x80248f88
- * @ghidraAddress JPN: 0x8024a094
  * @ghidraAddress EUR: 0x8024a56c
- * @stub{EUR JPN}
+ * @ghidraAddress JPN: 0x8024a094
+ * @stub{JPN}
  */
 s32 ProcessDecalSaveLoad(VehicleModel *model, u8 player, u8 operation, u8 inCarSelect, u8 *done);
 

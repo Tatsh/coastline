@@ -5,7 +5,6 @@ set(COASTLINE_ASM_EU
     asm/eu/01350.s
     asm/eu/0D240.s
     asm/eu/12730.s
-    asm/eu/45020.s
     asm/eu/68B90.s
     asm/eu/data/data.data.s
     asm/eu/data/rodata.rodata.s

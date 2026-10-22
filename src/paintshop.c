@@ -1609,8 +1609,13 @@ void AllocateEditorBuffers(void) {
 /* Draw the box of the progress of a transfer of the decals, with its empty bar. */
 static inline void DrawPakProgressBox(s32 y, const char *text, s32 textX, s32 textY) {
     DrawDialogBox(0xD4, y, 0xD8, 0x56);
+#if TGR_REGION == TGR_REGION_EU
+    SetTextStyleNormal();
+    SetTextAlignLeft();
+#else
     SetTextAlignLeft();
     SetTextStyleNormal();
+#endif
     SetTextSize(13);
     SetPakTextColors(FALSE);
     DrawText(text, textX, textY);
@@ -1666,7 +1671,9 @@ static inline void TransferDecal(VehicleModel *model, OSPfs *pfs, u8 operation) 
     switch (g_dwPakError) {
     case 0:
         if (operation == PAINT_TOOL_LOAD) {
+#if TGR_REGION != TGR_REGION_EU
             osSyncPrintf("Loading decal %d...\n", g_bPakDecalIndex);
+#endif
             texture = &model->textures[model->materialTextures[g_bPakDecalIndex]];
             mask = model->decalMasks[g_bPakDecalIndex];
             if (mask == NULL) {
@@ -1674,6 +1681,20 @@ static inline void TransferDecal(VehicleModel *model, OSPfs *pfs, u8 operation) 
             } else {
                 CopyUnmaskedTexels(texture->image, mask, width, height);
             }
+#if TGR_REGION == TGR_REGION_EU
+            /* The European release prints each loaded decal, a texel pair a line. */
+            {
+                s32 size = (texture->width * texture->height) >> 1;
+                s32 i;
+
+                if (g_bPakDecalIndex == 0) {
+                    osSyncPrintf("# Format SB BitSize 8 Rows 1 Columns 1\n");
+                }
+                for (i = 0; i < size; i++) {
+                    osSyncPrintf("%02x\n", texture->image[i]);
+                }
+            }
+#endif
         } else {
             osSyncPrintf("Saving decal %d...\n", g_bPakDecalIndex);
         }
@@ -1712,8 +1733,8 @@ static inline void DrawPakButtons(s32 buttonY, u32 okTextX, u32 cancelTextX, s32
     DrawTexturedSprite(&g_texButtonB, cancelX, buttonY);
 }
 
-/* The Japanese and European bodies still come from the assembly. */
-#if TGR_REGION == TGR_REGION_US
+/* The Japanese body still comes from the assembly. */
+#if TGR_REGION != TGR_REGION_JP
 s32 ProcessDecalSaveLoad(VehicleModel *model, u8 player, u8 operation, u8 inCarSelect, u8 *done) {
     /* TOP GEAR DECALS in the font of the controller pak. */
     u8 noteName[16] = {0x2D,
@@ -1839,8 +1860,13 @@ s32 ProcessDecalSaveLoad(VehicleModel *model, u8 player, u8 operation, u8 inCarS
         DrawDialogBox(0xD6, 0xBB, 0xD4, 0x6A);
         SetTextAlignLeft();
         SetTextStyleNormal();
+#if TGR_REGION == TGR_REGION_EU
+        SetPakTextColors(FALSE);
+        SetTextSize(13);
+#else
         SetTextSize(13);
         SetPakTextColors(FALSE);
+#endif
         DrawText("OK TO OVERWRITE", 0x72, 0x6C);
         DrawText("SAVED DECALS?", 0x72, 0x7A);
         /* The label of the B button is placed by its height. */
@@ -1867,8 +1893,16 @@ s32 ProcessDecalSaveLoad(VehicleModel *model, u8 player, u8 operation, u8 inCarS
             pfs, DECAL_FILE_COMPANY, DECAL_FILE_GAME, noteName, extName, &g_dwPakFileNo);
         if (g_dwPakError == 0) {
             if (operation == PAINT_TOOL_LOAD) {
+#if TGR_REGION == TGR_REGION_EU
+                /* The European release sets up the text of the box and draws none. */
+                SetTextAlignLeft();
+                SetTextStyleNormal();
+                SetTextSize(13);
+                SetPakTextColors(FALSE);
+#else
                 y = inCarSelect == 1 ? 0xDB : 0xC5;
                 DrawPakProgressBox(y, "LOADING DECALS...", 0x72, (y + 30) >> 1);
+#endif
                 g_bPakDialogState = PAK_STATE_TRANSFER_DECALS;
             } else {
                 g_bPakDialogState = PAK_STATE_CONFIRM_OVERWRITE;
@@ -1884,7 +1918,14 @@ s32 ProcessDecalSaveLoad(VehicleModel *model, u8 player, u8 operation, u8 inCarS
                 g_dwPakError = PFS_DATA_FULL;
                 g_bPakDialogState = PAK_STATE_FINISH;
             } else {
+#if TGR_REGION == TGR_REGION_EU
+                SetTextAlignLeft();
+                SetTextStyleNormal();
+                SetTextSize(13);
+                SetPakTextColors(FALSE);
+#else
                 DrawPakProgressBox(0xC5, "SAVING DECALS...", 0x73, 0x71);
+#endif
                 g_bPakFileNeedsCreate = TRUE;
                 g_bPakDialogState = PAK_STATE_TRANSFER_DECALS;
                 g_bPakWaitFrames = 0;
@@ -1988,7 +2029,9 @@ s32 ProcessDecalSaveLoad(VehicleModel *model, u8 player, u8 operation, u8 inCarS
     case PAK_STATE_TRANSFER_PALETTE:
         pfs = &g_aPakPfs[player];
         if (operation == PAINT_TOOL_LOAD) {
+#if TGR_REGION != TGR_REGION_EU
             osSyncPrintf("Loading color palette...\n");
+#endif
             g_dwPakError = osPfsReadWriteFile(
                 pfs,
                 g_dwPakFileNo,
@@ -1999,6 +2042,16 @@ s32 ProcessDecalSaveLoad(VehicleModel *model, u8 player, u8 operation, u8 inCarS
             if (!g_dwPakError) {
                 /* The lights take the first two colors of the paint. */
                 palette = model->textures[model->materialTextures[VEHICLE_MATERIAL_PAINT]].palette;
+#if TGR_REGION == TGR_REGION_EU
+                /* The European release prints the loaded palette, a byte a line. */
+                {
+                    s32 i;
+
+                    for (i = 0; i < DECAL_PALETTE_BYTES; i += 2) {
+                        osSyncPrintf("%02x\n%02x\n", palette[i >> 1] >> 8, palette[i >> 1] & 0xFF);
+                    }
+                }
+#endif
                 model->textures[model->materialTextures[VEHICLE_MATERIAL_HEADLIGHTS]].palette[0] =
                     palette[0];
                 model->textures[model->materialTextures[VEHICLE_MATERIAL_HEADLIGHTS]].palette[1] =
@@ -2134,8 +2187,13 @@ s32 ProcessDecalSaveLoad(VehicleModel *model, u8 player, u8 operation, u8 inCarS
         DrawDialogBox(0x73, 0xCC, 0x19A, 0x98);
         SetTextStyleNormal();
         SetTextAlignLeft();
+#if TGR_REGION == TGR_REGION_EU
+        SetPakTextColors(TRUE);
+        SetTextSize(12);
+#else
         SetTextSize(12);
         SetPakTextColors(TRUE);
+#endif
         DrawText("IF THE RUMBLE PAK IS TO BE USED,", 0x41, 0x76);
         DrawText("REMOVE THE CONTROLLER PAK AND", 0x41, 0x83);
         DrawText("INSERT THE RUMBLE PAK INTO THE", 0x41, 0x90);
