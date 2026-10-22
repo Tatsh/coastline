@@ -16,8 +16,16 @@
 #define PAK_NOTES 16
 
 /* The codes of the notes of this game. */
+#if TGR_REGION == TGR_REGION_US
 #define GAME_CODE 0x4E475245 /*!< The game code of the notes, "NGRE" in ASCII. */
 #define COMPANY_CODE 0x3544  /*!< The company code of the notes, "5D" in ASCII. */
+#elif TGR_REGION == TGR_REGION_EU
+#define GAME_CODE 0x4E545250 /*!< The game code of the notes, "NTRP" in ASCII. */
+#define COMPANY_CODE 0x3746  /*!< The company code of the notes, "7F" in ASCII. */
+#else
+#define GAME_CODE 0x4E54524A /*!< The game code of the notes, "NTRJ" in ASCII. */
+#define COMPANY_CODE 0x3238  /*!< The company code of the notes, "28" in ASCII. */
+#endif
 
 /** The states of the Controller Pak menu. */
 enum {
@@ -69,13 +77,20 @@ extern Sprite g_texButtonB;
  */
 extern Sprite g_texButtonBSmall;
 
+#if TGR_REGION == TGR_REGION_JP
+/* The Japanese table has 83 more characters. */
+#define DECAL_CHAR_COUNT 149
+#else
+#define DECAL_CHAR_COUNT 66
+#endif
+
 /** The table of the characters of the names of notes, which is copied whole to read one. */
 typedef struct DecalCharMap {
-    char chars[66]; /*!< The ASCII of each of the 66 characters, a space for those it lacks. */
+    char chars[DECAL_CHAR_COUNT]; /*!< The ASCII of each character, a space for those it lacks. */
 } DecalCharMap;
 
 /**
- * The ASCII of the 66 characters of the names of notes, a space for those it lacks.
+ * The ASCII of the characters of the names of notes, a space for those it lacks.
  *
  * @ghidraAddress USA: 0x8028dd50
  * @ghidraAddress JPN: 0x8028ff40
@@ -170,6 +185,7 @@ extern s32 g_nPakFilesUsed;
  * The notes InitPakAndEnumerateFiles() reads.
  *
  * @ghidraAddress USA: 0x8036a280
+ * @ghidraAddress JPN: 0x8036b3f0
  * @ghidraAddress EUR: 0x8036c780
  */
 extern OSPfsState g_aPakFileStates[PAK_NOTES];
@@ -210,7 +226,6 @@ extern u8 g_aabSavePakIds[2][32];
  * @ghidraAddress USA: 0x80253460
  * @ghidraAddress JPN: 0x802541b0
  * @ghidraAddress EUR: 0x802549c0
- * @stub{JPN}
  */
 u8 DecalCharToAscii(u8 c);
 
@@ -233,7 +248,6 @@ void ProcessPakMenuScreen(void);
  * @ghidraAddress USA: 0x80254620
  * @ghidraAddress JPN: 0x802554c0
  * @ghidraAddress EUR: 0x80255bc0
- * @stub{JPN}
  */
 s32 InitPakAndEnumerateFiles(void);
 

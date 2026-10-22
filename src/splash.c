@@ -96,8 +96,10 @@
 #define CONTROLLER_CHECK_FRAMES 910
 
 void AnimateSplashModels(void) {
+#if TGR_REGION != TGR_REGION_JP
     AdvanceModelAnimations(g_pSplashDeveloperLogo);
     AdvanceModelAnimations(g_pSplashTitleModelA);
+#endif
     AdvanceModelAnimations(g_pSplashTitleModelB);
 }
 
@@ -459,8 +461,14 @@ void ProcessSplashScreens(void) {
 }
 
 void ProcessControllerCheck(void) {
+#if TGR_REGION != TGR_REGION_US
+    /* The value of the flag comes from a variable, loaded in a register of its own. */
+    u32 blanked = TRUE;
+
+#endif
     if (!g_bControllerCheckStarted) {
         g_bControllerCheckStarted = 1;
+#if TGR_REGION == TGR_REGION_US
         ResetHeap();
         /* Show two black frames before the pictures load. */
         osViBlack(1);
@@ -469,11 +477,28 @@ void ProcessControllerCheck(void) {
         osViBlack(1);
         StartHighResFrame();
         FlushDisplayList();
+#else
+        /* Show three black frames, the heap reset after the first, before the pictures load. */
+        g_dwKeepScreenBlanked = blanked;
+        BlankDisplay();
+        StartHighResFrame();
+        FlushDisplayList();
+        ResetHeap();
+        BlankDisplay();
+        StartHighResFrame();
+        FlushDisplayList();
+        BlankDisplay();
+        StartHighResFrame();
+        FlushDisplayList();
+#endif
         LoadTextureFromRom(&g_texBackground);
         LoadTextureFromRom(&g_texLogo);
         LoadTextureFromRom(&g_texButtonA);
         SetFadeTarget(1.0f, FADE_TIME);
         g_wScreenFrameCount = 0;
+#if TGR_REGION != TGR_REGION_US
+        g_dwKeepScreenBlanked = FALSE;
+#endif
     }
 
     UpdateFrameTiming();
@@ -490,6 +515,7 @@ void ProcessControllerCheck(void) {
     SetTextAlignCenter();
     SetTextSize(30);
     DrawText("%ryWARNING", 160, 41);
+#if TGR_REGION == TGR_REGION_US
     SetTextSize(18);
     switch (g_bControllerWarningType) {
     case 0:
@@ -512,6 +538,75 @@ void ProcessControllerCheck(void) {
     SetTextAlignLeft();
     SetTextSize(11);
     DrawText("%wwPROCEED", 142, g_dwScreenHeight * 19 / 20 - 3);
+#elif TGR_REGION == TGR_REGION_EU
+    SetTextSize(18);
+    switch (g_bControllerWarningType) {
+    case 0:
+        DrawText("%ywCONTROLLER NOT FOUND", 160, 124);
+        break;
+    case 1:
+        DrawText("%ywCONTROLLER PAK NOT FOUND", 160, 95);
+        DrawText("%ywGHOST CAR AND PAINT SHOP DATA", 160, 115);
+        DrawText("%ywCANNOT BE SAVED", 160, 135);
+        DrawText("%ywIF YOU CHOOSE TO PROCEED", 160, 155);
+        break;
+    case 2:
+        DrawText("%ywCONTROLLER PAK CONTAINS GAME", 160, 85);
+        DrawText("%ywDATA SAVED FROM ANOTHER GAME.", 160, 105);
+        DrawText("%ywTHERE MAY NOT BE ENOUGH PAGES", 160, 125);
+        DrawText("%ywAND/OR FILES FREE WHEN YOU NEED", 160, 145);
+        DrawText("%ywTO SAVE GAME DATA FROM THIS GAME.", 160, 165);
+        break;
+    }
+    SetTextAlignLeft();
+    SetTextSize(11);
+    DrawTexturedSprite(&g_texButtonA, 254, 432);
+    DrawText("%wwPROCEED", 142, g_dwScreenHeight * 19 / 20 - 3);
+#else
+    SetTextSize(20);
+    switch (g_bControllerWarningType) {
+    case 0:
+        DrawText(" %yw%j\xC1\xCF\xC3\xC8(\x88"
+                 "90H6b\x7F&",
+                 160,
+                 124);
+        break;
+    case 1:
+        DrawText("%yw%j \xC1\xCF\xC3\xC8(\x88\x8D\x8F\xA1"
+                 "94@tk'",
+                 160,
+                 95);
+        DrawText("%yw%j\xC9(\xA2\xC3\x81(\xBB(\x83s\xBD\x90\xCF\xC3\x92\xBF\x8F\xAD", 160, 115);
+        DrawText("%yw %jt\xBB\x81(\xA8\xBB(\x83"
+                 "9\xB2(\xACkA6b\x7F&",
+                 160,
+                 135);
+        DrawText("%yw%j\xB9(\xA6w5Jf6R1%%", 160, 155);
+        break;
+    case 2:
+        DrawText("%yw%j\xE9t\xB9(\xA6\xBB(\x83"
+                 "9",
+                 160,
+                 85);
+        DrawText(" %yw%j\xB2(\xAC"
+                 "2hc@6R&",
+                 160,
+                 105);
+        DrawText("%yw%j\xE1"
+                 "A\xBD(\x9A"
+                 "9\xE2"
+                 "84@tk",
+                 160,
+                 125);
+        DrawText("%yw%jqt\xB9(\xA6\xBB(\x83w", 160, 145);
+        DrawText(" %yw%j\xB2(\xACkA6b\x7F&", 160, 165);
+        break;
+    }
+    SetTextAlignLeft();
+    SetTextSize(11);
+    DrawTexturedSprite(&g_texButtonA, 278, 432);
+    DrawText("%wwOK", 154, g_dwScreenHeight * 19 / 20 - 3);
+#endif
     gDPPipeSync(gDisplayListPtr++);
     ApplyScreenFade();
     FlushDisplayList();

@@ -794,6 +794,12 @@ void BlankDisplay(void);
 void UnblankDisplay(void);
 #endif
 
+#if TGR_REGION == TGR_REGION_US
+#define BLANK_SCREEN() osViBlack(TRUE)
+#else
+#define BLANK_SCREEN() BlankDisplay()
+#endif
+
 /**
  * Black out the screen and clear both frame buffers in the high resolution.
  *

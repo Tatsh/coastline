@@ -441,7 +441,6 @@ void DrawProgressBar(s32 x, s32 y, s32 width, s32 height, f32 fraction);
  * @ghidraAddress USA: 0x8020c66c
  * @ghidraAddress JPN: 0x8020c04c
  * @ghidraAddress EUR: 0x8020c44c
- * @stub{JPN}
  */
 s32 IsCarUnlocked(s32 car);
 

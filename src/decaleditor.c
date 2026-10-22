@@ -1326,12 +1326,32 @@ void ProcessPaintShopExitConfirm(void) {
     buttonY = 0x11D - g_texButtonA.width;
     cancelX = 0x169 - g_texButtonB.width;
     DrawRectBorder(0xBF, 0xBB, 0x102, 0x6A, 3, 0, 0, 0x80, 0x80, 0x80);
+#if TGR_REGION == TGR_REGION_US
     SetTextSize(12);
     SetTextAlignLeft();
     SetTextStyleNormal();
     SetTextCustomColors(0xFF, 0xFF, 0xFF, 0xFF, 0xCA, 0);
     DrawText("CHANGES NOT SAVED.", 0x67, 0x6D);
     DrawText("EXIT ANYWAY?", 0x67, 0x7B);
+#elif TGR_REGION == TGR_REGION_EU
+    SetTextStyleNormal();
+    SetTextCustomColors(0xFF, 0xFF, 0xFF, 0xFF, 0xCA, 0);
+    SetTextAlignLeft();
+    SetTextSize(12);
+    DrawText("CHANGES NOT SAVED.", 0x67, 0x6D);
+    DrawText("EXIT ANYWAY?", 0x67, 0x7B);
+#else
+    SetTextStyleNormal();
+    SetTextCustomColors(0xFF, 0xFF, 0xFF, 0xFF, 0xCA, 0);
+    SetTextAlignCenter();
+    SetTextSize(14);
+    DrawText("%j\xB2(\xAC"
+             "bZD",
+             g_dwScreenWidth / 2,
+             0x6D);
+    DrawText("EXIT%jB6R1%%", g_dwScreenWidth / 2, 0x7B);
+    SetTextAlignLeft();
+#endif
     SetTextSize(10);
     textY = (buttonY + 0x12) >> 1;
     DrawText("%wwYES", (g_texButtonA.drawWidth + 0xF9) >> 1, textY);

@@ -120,6 +120,7 @@ void LoadTextureFromRom(Sprite *sprite) {
     sprite->pixels = AllocHeapAligned((sprite->width * sprite->height * sprite->bitsPerTexel) >> 3);
     if (DmaReadAssetSize(sprite->romOffset) !=
         (sprite->width * sprite->height * sprite->bitsPerTexel) >> 3) {
+#if TGR_REGION != TGR_REGION_JP
         /* The format has five values and is given four, without the computed size. */
         osSyncPrintf(
             "ERROR: AllocPaintShopGfxMem given image %dx%dx%d = %d bytes but uncompressed rom "
@@ -128,6 +129,7 @@ void LoadTextureFromRom(Sprite *sprite) {
             sprite->height,
             sprite->bitsPerTexel,
             DmaReadAssetSize(sprite->romOffset));
+#endif
         for (;;) {
         }
     }
@@ -1405,7 +1407,9 @@ void FlipDecalPixels(void) {
 }
 
 void AllocateEditorBuffers(void) {
+#if TGR_REGION != TGR_REGION_JP
     osSyncPrintf("\nAllocating %d bytes for decal buffer...\n\n", DECAL_BUFFER_SIZE);
+#endif
     g_pDecalUndoBuffer = AllocHeapAligned(DECAL_BUFFER_SIZE);
     LoadTextureFromRom(&g_texButtonA);
     LoadTextureFromRom(&g_texButtonB);

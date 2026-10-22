@@ -160,12 +160,14 @@ void DecreaseSfxVolume(void) {
 }
 
 void OptionsMenuPostDraw(s32 item) {
+#if TGR_REGION != TGR_REGION_JP
     if (item < OPTIONS_ITEM_UNITS) {
         SetTextSize(10);
         SetTextStyleNormal();
         SetTextAlignCenter();
         DrawText("%wwPush up or down to adjust", 160, 90);
     }
+#endif
     if (g_bLoadConfigurationPending) {
         if (ProcessPakDataScreen(PAK_DATA_LOAD_CONFIGURATION, FALSE)) {
             g_bLoadConfigurationPending = FALSE;
@@ -183,6 +185,12 @@ void OptionsMenuPostDraw(s32 item) {
         }
     }
 }
+
+#if TGR_REGION == TGR_REGION_US
+#define MARK_OPTIONS_CHANGED()
+#else
+#define MARK_OPTIONS_CHANGED() (g_dwOptionsChangedNeedsSave = TRUE)
+#endif
 
 void ProcessOptionsMenu(void) {
     /* The state of the options menu: 0 to set it up with the first item selected, -1 to set it up
@@ -213,11 +221,21 @@ void ProcessOptionsMenu(void) {
         PreparePakDataScreen();
         g_pfnScreenPostDrawCallback = OptionsMenuPostDraw;
         g_pMenuTitleImage = &g_TitleBarTextureDesc;
+#if TGR_REGION == TGR_REGION_JP
+        g_dwMenuTitleImageX = 25;
+        g_dwMenuTitleImageY = 14;
+        g_dwMenuTitleImageWidth = 280;
+        g_dwMenuTitleImageHeight = 32;
+#else
         g_dwMenuTitleImageX = 22;
         g_dwMenuTitleImageY = 9;
         g_dwMenuTitleImageWidth = 280;
         g_dwMenuTitleImageHeight = 42;
+#endif
         if (g_dwOptionsMenuState == 0) {
+#if TGR_REGION != TGR_REGION_US
+            g_dwOptionsChangedNeedsSave = FALSE;
+#endif
             g_dwOptionsMenuSelection = OPTIONS_ITEM_BGM;
         }
         g_dwOptionsMenuState = 1;
@@ -227,11 +245,19 @@ void ProcessOptionsMenu(void) {
     sprintf(g_szSfxVolumeTextBuf, "SFX Volume: %d", g_OptionSettings.sfxVolume);
     g_aOptionsMenuItems[OPTIONS_ITEM_BGM].name = g_szBgmVolumeTextBuf;
     g_aOptionsMenuItems[OPTIONS_ITEM_SFX].name = g_szSfxVolumeTextBuf;
+#if TGR_REGION == TGR_REGION_JP
+    if (g_OptionSettings.speedInMph) {
+        g_aOptionsMenuItems[OPTIONS_ITEM_UNITS].name = "Units: MILE/H";
+    } else {
+        g_aOptionsMenuItems[OPTIONS_ITEM_UNITS].name = "Units: KM/H";
+    }
+#else
     if (g_OptionSettings.speedInMph) {
         g_aOptionsMenuItems[OPTIONS_ITEM_UNITS].name = "Units: mph";
     } else {
         g_aOptionsMenuItems[OPTIONS_ITEM_UNITS].name = "Units: kph";
     }
+#endif
 
     switch (ProcessScreenState("OPTIONS",
                                g_dwOptionsMenuItemCount,
@@ -248,12 +274,15 @@ void ProcessOptionsMenu(void) {
         switch (g_dwOptionsMenuSelection) {
         case OPTIONS_ITEM_BGM:
             DecreaseBgmVolume();
+            MARK_OPTIONS_CHANGED();
             break;
         case OPTIONS_ITEM_SFX:
             DecreaseSfxVolume();
+            MARK_OPTIONS_CHANGED();
             break;
         case OPTIONS_ITEM_UNITS:
             g_OptionSettings.speedInMph = !g_OptionSettings.speedInMph;
+            MARK_OPTIONS_CHANGED();
             break;
         }
         break;
@@ -261,12 +290,15 @@ void ProcessOptionsMenu(void) {
         switch (g_dwOptionsMenuSelection) {
         case OPTIONS_ITEM_BGM:
             IncreaseBgmVolume();
+            MARK_OPTIONS_CHANGED();
             break;
         case OPTIONS_ITEM_SFX:
             IncreaseSfxVolume();
+            MARK_OPTIONS_CHANGED();
             break;
         case OPTIONS_ITEM_UNITS:
             g_OptionSettings.speedInMph = !g_OptionSettings.speedInMph;
+            MARK_OPTIONS_CHANGED();
             break;
         }
         break;
@@ -274,6 +306,7 @@ void ProcessOptionsMenu(void) {
         switch (g_dwOptionsMenuSelection) {
         case OPTIONS_ITEM_UNITS:
             g_OptionSettings.speedInMph = !g_OptionSettings.speedInMph;
+            MARK_OPTIONS_CHANGED();
             break;
         case OPTIONS_ITEM_CONTROLLER:
             g_dwOptionsMenuState = -1;
@@ -281,12 +314,14 @@ void ProcessOptionsMenu(void) {
             g_dwMenuInputPlayerMask = 1 << g_dwScreenPlayerIdx;
             SetCurrentScreenCallback(ProcessControllerConfigScreen);
             break;
+#if TGR_REGION == TGR_REGION_US
         case OPTIONS_ITEM_SAVE_CONFIGURATION:
             g_bSaveConfigurationPending = TRUE;
             break;
         case OPTIONS_ITEM_LOAD_CONFIGURATION:
             g_bLoadConfigurationPending = TRUE;
             break;
+#endif
         case OPTIONS_ITEM_CREDITS:
             g_dwOptionsMenuState = -1;
             StartCreditsRace();
@@ -296,6 +331,11 @@ void ProcessOptionsMenu(void) {
     case MENU_RESULT_CANCELLED:
         SetCurrentScreenCallback(ProcessMainMenu);
         g_dwOptionsMenuState = 0;
+#if TGR_REGION != TGR_REGION_US
+        if (g_dwOptionsChangedNeedsSave) {
+            SaveGameDataToEeprom();
+        }
+#endif
         break;
     }
 }
@@ -331,6 +371,12 @@ void ProcessOptionsMenu(void) {
 #define DRAW_SWAP_FOR_RUMBLE_PAK_MESSAGE(boxX, boxY, boxWidth, textY)                              \
     {                                                                                              \
         DRAW_MESSAGE_BOX((boxX), (boxY), (boxWidth), 0x98);                                        \
+        DRAW_SWAP_FOR_RUMBLE_PAK_TEXT(textY);                                                      \
+    }
+
+/* The text of the message to swap the Controller Pak for the Rumble Pak. */
+#define DRAW_SWAP_FOR_RUMBLE_PAK_TEXT(textY)                                                       \
+    {                                                                                              \
         DrawText("IF THE RUMBLE PAK IS TO BE USED,", 0x41, (textY));                               \
         DrawText("REMOVE THE CONTROLLER PAK AND", 0x41, (textY) + 0xD);                            \
         DrawText("INSERT THE RUMBLE PAK INTO THE", 0x41, (textY) + 0x1A);                          \
@@ -1267,7 +1313,9 @@ void ProcessDataSaveLoadMenu(void) {
 void PreparePakDataScreen(void) {
     LoadTextureFromRom(&g_texButtonA);
     LoadTextureFromRom(&g_texButtonB);
+#if TGR_REGION != TGR_REGION_JP
     osSyncPrintf("Allocating %d bytes for data_buf...\n", PAK_DATA_BUFFER_SIZE);
+#endif
     g_pPakDataBuffer = AllocHeapAligned(PAK_DATA_BUFFER_SIZE);
 }
 
@@ -1276,9 +1324,27 @@ s32 DrawRumblePakPrompt(s32 anyPlayer) {
 
     SetTextStyleNormal();
     SetTextAlignLeft();
+#if TGR_REGION == TGR_REGION_US
     SetTextSize(12);
     SetTextCustomColors(0xFF, 0xFF, 0xFF, 0xFF, 0xF5, 0x00);
     DRAW_SWAP_FOR_RUMBLE_PAK_MESSAGE(0x73, 0xB4, 0x19A, 0x6A);
+#elif TGR_REGION == TGR_REGION_EU
+    SetTextCustomColors(0xFF, 0xFF, 0xFF, 0xFF, 0xF5, 0x00);
+    DRAW_MESSAGE_BOX(0x73, 0xB4, 0x19A, 0x98);
+    SetTextSize(12);
+    DRAW_SWAP_FOR_RUMBLE_PAK_TEXT(0x6A);
+#else
+    SetTextCustomColors(0xFF, 0xFF, 0xFF, 0xFF, 0xF5, 0x00);
+    DRAW_MESSAGE_BOX(0xAA, 0xCE, 0x12C, 0x64);
+    SetTextSize(14);
+    DrawText("%j\xD2\xD3\x8D\x8F\xA1w\xDEPsA5'", 0x5D, 0x77);
+    DrawText("%j\xC1\xCF\xC3\xC8(\x88\x8D\x8F\xA1s", 0x5D, 0x84);
+    DrawText("%j\xD2\xD3\x8D\x8F\xA1w\xD4\xD5"
+             "Bc\xDB"
+             "2@&",
+             0x5D,
+             0x91);
+#endif
     for (player = 0; player != 2; player++) {
         if (!anyPlayer && player != g_dwMenuChoosingPlayer) {
             continue;

@@ -174,10 +174,17 @@ void ProcessControllerConfigScreen(void) {
         LoadAndDecompressAsset(&g_texControllerLayout4, AllocHeapAligned);
 
         g_pMenuTitleImage = &g_TitleBarTextureDesc;
+#if TGR_REGION == TGR_REGION_JP
+        g_dwMenuTitleImageX = 25;
+        g_dwMenuTitleImageY = 14;
+        g_dwMenuTitleImageWidth = 280;
+        g_dwMenuTitleImageHeight = 32;
+#else
         g_dwMenuTitleImageX = 22;
         g_dwMenuTitleImageY = 9;
         g_dwMenuTitleImageWidth = 280;
         g_dwMenuTitleImageHeight = 42;
+#endif
         g_pfnScreenPostDrawCallback = DrawControllerLayoutDiagram;
 
         /* Open on the layout the player already uses. */
@@ -197,6 +204,9 @@ void ProcessControllerConfigScreen(void) {
                                BACKGROUND_BOTTOM)) {
     case MENU_RESULT_CHOSEN:
         g_aVehicles[g_dwScreenPlayerIdx].profile->controllerLayout = g_eControllerScreenSelection;
+#if TGR_REGION != TGR_REGION_US
+        g_dwOptionsChangedNeedsSave = TRUE;
+#endif
         /* Either way, go back to the options. */
         /* fall through */
     case MENU_RESULT_CANCELLED:

@@ -119,7 +119,12 @@ void DrawProgressBar(s32 x, s32 y, s32 width, s32 height, f32 fraction) {
 }
 
 s32 IsCarUnlocked(s32 car) {
+#if TGR_REGION == TGR_REGION_JP
+    /* The Japanese paint shop also allows the tenth car, tested apart from the first nine. */
+    return (!g_dwIsPaintMode || car < PAINT_SHOP_CARS || car == PAINT_SHOP_CARS) &&
+#else
     return (!g_dwIsPaintMode || car < PAINT_SHOP_CARS) &&
+#endif
            (g_pActiveProfile->unlocks & (1 << car)) != 0 && IsVehicleModelValid(car) != 0;
 }
 

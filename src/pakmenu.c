@@ -410,11 +410,22 @@ void ProcessPakMenuScreen(void) {
     g_wSerialInterfaceIdle = 1;
 }
 
+#if TGR_REGION == TGR_REGION_US
+#define UNUSED_ABOVE 6
+#define UNUSED_BELOW 10
+#elif TGR_REGION == TGR_REGION_EU
+#define UNUSED_ABOVE 1
+#define UNUSED_BELOW 9
+#else
+#define UNUSED_ABOVE 1
+#define UNUSED_BELOW 7
+#endif
+
 s32 InitPakAndEnumerateFiles(void) {
-    /* The original reserves stack for 64 bytes of locals it does not use, around maxFiles. */
-    s32 unusedAbove[6];
+    /* The original reserves stack for locals it does not use, around maxFiles. */
+    s32 unusedAbove[UNUSED_ABOVE];
     s32 maxFiles;
-    s32 unusedBelow[10];
+    s32 unusedBelow[UNUSED_BELOW];
     s32 note;
     OSPfsState *state;
     /**
@@ -459,6 +470,9 @@ s32 InitPakAndEnumerateFiles(void) {
         }
     }
 
+#if TGR_REGION == TGR_REGION_JP
+    g_wPakScanEmptyMask = 0;
+#endif
     for (note = 0; note < PAK_NOTES; note++) {
         if (osPfsFileState(&g_aPakPfs[0], note, &g_aPakFileStates[note]) != 0) {
             g_wPakScanEmptyMask |= 1 << note;
@@ -467,7 +481,9 @@ s32 InitPakAndEnumerateFiles(void) {
     for (note = 0; note < PAK_NOTES; note++) {
         if (!(g_wPakScanEmptyMask & (1 << note))) {
             state = &g_aPakFileStates[note];
+#if TGR_REGION != TGR_REGION_JP
             osSyncPrintf("%d: %08x %04x\n", note, state->game_code, state->company_code);
+#endif
             if (state->game_code != GAME_CODE || state->company_code != COMPANY_CODE) {
                 g_wSerialInterfaceIdle = 1;
                 return FALSE;

@@ -473,7 +473,6 @@ void FlipDecalPixels(void);
  * @ghidraAddress USA: 0x80248f38
  * @ghidraAddress JPN: 0x8024a054
  * @ghidraAddress EUR: 0x8024a51c
- * @stub{JPN}
  */
 void AllocateEditorBuffers(void);
 

@@ -639,7 +639,6 @@ void SetTrackFromSeason(void);
  * @ghidraAddress USA: 0x802063a4
  * @ghidraAddress JPN: 0x80206638
  * @ghidraAddress EUR: 0x80206564
- * @stub{JPN}
  */
 void ProcessSeasonResults(void);
 

@@ -533,7 +533,6 @@ void ValidateChampionshipProgress(void);
  * @ghidraAddress USA: 0x80208a58
  * @ghidraAddress JPN: 0x80208458
  * @ghidraAddress EUR: 0x80208838
- * @stub{JPN}
  */
 void TrackMenuPostDraw(s32 item);
 
@@ -645,7 +644,6 @@ s32 ProcessScreenState(const char *title,
  * @ghidraAddress USA: 0x8020c27c
  * @ghidraAddress JPN: 0x8020bc5c
  * @ghidraAddress EUR: 0x8020c05c
- * @stub{EUR JPN}
  */
 void LoadMenuItemModels(MenuItem **items, s32 *itemCount);
 

@@ -82,7 +82,6 @@ void DrawControllerLayoutDiagram(s32 layout);
  * @ghidraAddress USA: 0x802170c8
  * @ghidraAddress JPN: 0x80217a38
  * @ghidraAddress EUR: 0x802180e8
- * @stub{EUR JPN}
  */
 void ProcessControllerConfigScreen(void);
 

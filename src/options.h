@@ -16,14 +16,16 @@
 
 /** The items of the options menu. */
 enum {
-    OPTIONS_ITEM_BGM,                /*!< The volume of the music. */
-    OPTIONS_ITEM_SFX,                /*!< The volume of the sound effects. */
-    OPTIONS_ITEM_UNITS,              /*!< The units of speed, miles or kilometres an hour. */
-    OPTIONS_ITEM_CONTROLLER,         /*!< Opens the controller configuration screen. */
+    OPTIONS_ITEM_BGM,        /*!< The volume of the music. */
+    OPTIONS_ITEM_SFX,        /*!< The volume of the sound effects. */
+    OPTIONS_ITEM_UNITS,      /*!< The units of speed, miles or kilometres an hour. */
+    OPTIONS_ITEM_CONTROLLER, /*!< Opens the controller configuration screen. */
+#if TGR_REGION == TGR_REGION_US
     OPTIONS_ITEM_SAVE_CONFIGURATION, /*!< Saves the settings to a Controller Pak. */
     OPTIONS_ITEM_LOAD_CONFIGURATION, /*!< Loads the settings from a Controller Pak. */
-    OPTIONS_ITEM_CREDITS,            /*!< Starts the credits race. */
-    OPTIONS_ITEMS,                   /*!< The number of items. */
+#endif
+    OPTIONS_ITEM_CREDITS, /*!< Starts the credits race. */
+    OPTIONS_ITEMS,        /*!< The number of items. */
 };
 
 /** The screens that open the save and load menu, deciding what it offers and where it returns. */
@@ -101,6 +103,17 @@ extern s32 g_adwBgmVolumeLevels[VOLUME_LEVELS];
  * @ghidraAddress EUR: 0x80274464
  */
 extern s32 g_adwSfxVolumeLevels[VOLUME_LEVELS];
+
+#if TGR_REGION == TGR_REGION_EU || TGR_REGION == TGR_REGION_JP
+/**
+ * Whether a setting of the options menu changed since the menu opened, and the game data needs
+ * saving to the EEPROM.
+ *
+ * @ghidraAddress JPN: 0x80273f40
+ * @ghidraAddress EUR: 0x80274490
+ */
+extern s32 g_dwOptionsChangedNeedsSave;
+#endif
 
 /**
  * Which screen opened the save and load menu, by the SAVE_LOAD_FROM_ values.
@@ -373,7 +386,6 @@ void DecreaseSfxVolume(void);
  * @ghidraAddress USA: 0x8021196c
  * @ghidraAddress JPN: 0x8021174c
  * @ghidraAddress EUR: 0x8021185c
- * @stub{JPN}
  */
 void OptionsMenuPostDraw(s32 item);
 
@@ -383,7 +395,6 @@ void OptionsMenuPostDraw(s32 item);
  * @ghidraAddress USA: 0x80211a3c
  * @ghidraAddress JPN: 0x802117e8
  * @ghidraAddress EUR: 0x8021192c
- * @stub{EUR JPN}
  */
 void ProcessOptionsMenu(void);
 
@@ -406,6 +417,7 @@ void ProcessDataSaveLoadMenu(void);
  *     its checksum.
  * @ghidraAddress JPN: 0x80211b60
  * @ghidraAddress EUR: 0x80211ca0
+ * @stub{EUR JPN}
  */
 s32 LoadSaveDataFromEeprom(void);
 
@@ -415,6 +427,7 @@ s32 LoadSaveDataFromEeprom(void);
  *
  * @ghidraAddress JPN: 0x80211d38
  * @ghidraAddress EUR: 0x80211e78
+ * @stub{EUR JPN}
  */
 void SaveGameDataToEeprom(void);
 #endif
@@ -425,7 +438,6 @@ void SaveGameDataToEeprom(void);
  * @ghidraAddress USA: 0x80214a3c
  * @ghidraAddress JPN: 0x802155cc
  * @ghidraAddress EUR: 0x80215b08
- * @stub{JPN}
  */
 void PreparePakDataScreen(void);
 
@@ -437,7 +449,6 @@ void PreparePakDataScreen(void);
  * @ghidraAddress USA: 0x80214a88
  * @ghidraAddress JPN: 0x80215608
  * @ghidraAddress EUR: 0x80215b54
- * @stub{EUR JPN}
  */
 s32 DrawRumblePakPrompt(s32 anyPlayer);
 

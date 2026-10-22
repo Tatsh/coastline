@@ -847,7 +847,6 @@ void ProcessOvalStyleMenu(void);
  * @ghidraAddress USA: 0x802531c0
  * @ghidraAddress JPN: 0x80253ed4
  * @ghidraAddress EUR: 0x80254728
- * @stub{EUR JPN}
  */
 void ProcessPaintShopExitConfirm(void);
 

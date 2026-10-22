@@ -200,7 +200,6 @@ extern s32 g_bSplashSkipped;
  * @ghidraAddress USA: 0x80206830
  * @ghidraAddress JPN: 0x80206a90
  * @ghidraAddress EUR: 0x802069f0
- * @stub{JPN}
  */
 void AnimateSplashModels(void);
 
@@ -220,7 +219,6 @@ void ProcessSplashScreens(void);
  * @ghidraAddress USA: 0x80208570
  * @ghidraAddress JPN: 0x80207f30
  * @ghidraAddress EUR: 0x80208310
- * @stub{EUR JPN}
  */
 void ProcessControllerCheck(void);
 

@@ -1706,7 +1706,11 @@ void ProcessSeasonResults(void) {
                             ADD_BONUS_LINE("Bonus: Milk Truck Added!");
                             g_aVehicles[i].profile->unlocks |= 0x400;
                         } else if (g_aVehicles[i].profile->championshipFlags == 1) {
+#if TGR_REGION == TGR_REGION_JP
+                            ADD_BONUS_LINE("Bonus: Type-MN Car Added!");
+#else
                             ADD_BONUS_LINE("Bonus: Helmet Car Added!");
+#endif
                             g_aVehicles[i].profile->unlocks |= 0x200;
                         } else if (g_aVehicles[i].profile->championshipFlags == 2) {
                             ADD_BONUS_LINE("Bonus: Cupra Car Added!");
@@ -1721,14 +1725,22 @@ void ProcessSeasonResults(void) {
                         g_aVehicles[i].profile->season = 0;
                         g_aVehicles[i].profile->championshipFlags++;
                     } else {
+#if TGR_REGION == TGR_REGION_JP
+                        g_apszSeasonResultMsgLines[count++] = "SEASON COMPLETE";
+#else
                         g_apszSeasonResultMsgLines[count++] = "SEASON COMPLETED!";
                         g_apszSeasonResultMsgLines[count++] = "";
                         g_apszSeasonResultMsgLines[count++] = "PROGRESS TO THE NEXT SEASON";
+#endif
                     }
                 } else {
+#if TGR_REGION == TGR_REGION_JP
+                    g_apszSeasonResultMsgLines[count++] = "SEASON TRY AGAIN";
+#else
                     g_apszSeasonResultMsgLines[count++] = "Sorry, you don't have enough points to";
                     g_apszSeasonResultMsgLines[count++] =
                         "pass this season.  You'll have to try again.";
+#endif
                 }
                 g_aVehicles[i].profile->seasonPoints[g_aVehicles[i].profile->season] = 0;
             }

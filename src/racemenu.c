@@ -132,12 +132,14 @@ void ValidateChampionshipProgress(void) {
 void TrackMenuPostDraw(s32 item) {
     s32 needed, slot;
 
+#if TGR_REGION != TGR_REGION_JP
     if (g_dwGameMode == GAME_MODE_ARCADE) {
         SetTextSize(10);
         SetTextStyleNormal();
         SetTextAlignCenter();
         DrawText("%wwPush up or down to adjust number of laps", 160, 90);
     }
+#endif
     if (g_dwGameMode == GAME_MODE_CHAMPIONSHIP && item < g_dwNumTracks) {
         SetTextSize(10);
         SetTextStyleNormal();
@@ -145,10 +147,18 @@ void TrackMenuPostDraw(s32 item) {
         needed = g_SeasonTable[g_pActiveProfile->season].pointsNeeded -
                  g_pActiveProfile->seasonPoints[g_pActiveProfile->season];
         if (needed <= 0) {
+#if TGR_REGION == TGR_REGION_JP
+            sprintf(g_szTrackSelectPointsTextBuf, "%%wwYOU ARE READY TO NEXT SEASON");
+#else
             sprintf(g_szTrackSelectPointsTextBuf,
                     "%%wwYou have enough points to advance to next season");
+#endif
         } else {
+#if TGR_REGION == TGR_REGION_JP
+            DrawText("%ww1st=9, 2nd=6, 3rd=5, 4th=3, 5th=2, 6th=1", 160, 100);
+#else
             DrawText("%wwFirst=9, Second=6, Third=5, Fourth=3, Fifth=2, Sixth=1", 160, 100);
+#endif
             sprintf(g_szTrackSelectPointsTextBuf,
                     "%%ww%d point%s needed to advance to next season",
                     needed,
@@ -1076,17 +1086,17 @@ void LoadMenuItemModels(MenuItem **items, s32 *itemCount) {
     /* Two frames of black in the mode of the screen. */
     g_dwKeepScreenBlanked = TRUE;
     if (g_dwScreenScaleShift) {
-        osViBlack(TRUE);
+        BLANK_SCREEN();
         StartHighResFrame();
         FlushDisplayList();
-        osViBlack(TRUE);
+        BLANK_SCREEN();
         StartHighResFrame();
         FlushDisplayList();
     } else {
-        osViBlack(TRUE);
+        BLANK_SCREEN();
         StartLowResFrame();
         FlushDisplayList();
-        osViBlack(TRUE);
+        BLANK_SCREEN();
         StartLowResFrame();
         FlushDisplayList();
     }
