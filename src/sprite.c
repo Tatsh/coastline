@@ -17,10 +17,14 @@
 
 /* The texels of a strip for DrawSpriteStrip(), followed by no palette in the releases that take
  * one. */
+#define STRIP_PIXELS(pixels) WITH_PALETTE(pixels, NULL)
+
+/* The format DrawSpriteStrip() loads a strip in: the one chosen by the depth and the palette in
+ * the releases with palettes, and the value given otherwise. */
 #if TGR_REGION == TGR_REGION_JP || TGR_REGION == TGR_REGION_EU
-#define STRIP_PIXELS(pixels) (pixels), NULL
+#define STRIP_FORMAT(value) format
 #else
-#define STRIP_PIXELS(pixels) (pixels)
+#define STRIP_FORMAT(value) (value)
 #endif
 
 /* The bytes of a sprite, and of each strip, into total and stripBytes. */
@@ -59,9 +63,11 @@
         }                                                                                          \
     }
 
-/* The Japanese and European bodies still come from the assembly. */
-#if TGR_REGION == TGR_REGION_US
+#if TGR_REGION == TGR_REGION_JP || TGR_REGION == TGR_REGION_EU
+void DrawSpriteAtOrigin(Sprite *sprite, u16 *palette) {
+#else
 void DrawSpriteAtOrigin(Sprite *sprite) {
+#endif
     u32 total, stripBytes, offset;
     s32 strips, top, stripDrawHeight, i;
 
@@ -72,7 +78,7 @@ void DrawSpriteAtOrigin(Sprite *sprite) {
     for (i = 1, offset = stripBytes; i <= strips;
          i++, offset += stripBytes, top += stripDrawHeight) {
         DrawSpriteStrip(sprite,
-                        STRIP_PIXELS(sprite->pixels + total - offset),
+                        WITH_PALETTE(sprite->pixels + total - offset, palette),
                         sprite->width,
                         sprite->stripHeight,
                         sprite->originX,
@@ -84,7 +90,6 @@ void DrawSpriteAtOrigin(Sprite *sprite) {
                         0);
     }
 }
-#endif
 
 void DrawTexturedSprite(Sprite *sprite, s32 x, s32 y) {
     u32 total, stripBytes, offset;
@@ -120,8 +125,6 @@ void DrawSpriteTinted(Sprite *sprite, u8 red, u8 green, u8 blue) {
                        blue);
 }
 
-/* The Japanese and European bodies still come from the assembly. */
-#if TGR_REGION == TGR_REGION_US
 void DrawSpriteRegion(
     Sprite *sprite, s32 x, s32 y, s32 width, s32 height, u8 red, u8 green, u8 blue) {
     /* The original reserves stack for four bytes of locals it does not use. */
@@ -149,6 +152,10 @@ void DrawSpriteRegion(
     }
 }
 
+/* A depth the switch does not list leaves the format unset where the palette test reads it, as in
+ * the original. */
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
 void DrawSpriteStrip(Sprite *sprite,
                      u8 *pixels,
 #if TGR_REGION == TGR_REGION_JP || TGR_REGION == TGR_REGION_EU
@@ -165,6 +172,9 @@ void DrawSpriteStrip(Sprite *sprite,
                      u8 blue) {
     s32 mirrored = FALSE;
     s32 scaleS, maskS, scaleT, maskT;
+#if TGR_REGION == TGR_REGION_JP || TGR_REGION == TGR_REGION_EU
+    s32 format;
+#endif
 
     if (drawWidth < 0) {
         drawWidth = -drawWidth;
@@ -179,31 +189,15 @@ void DrawSpriteStrip(Sprite *sprite,
     gDPSetTextureFilter(gDisplayListPtr++, g_dwTextureFilterMode);
     switch (sprite->bitsPerTexel) {
     case SPRITE_DEPTH_4:
-        if (sprite == &g_texBackground) {
-            gDPSetCombineLERP(gDisplayListPtr++,
-                              PRIMITIVE,
-                              ENVIRONMENT,
-                              TEXEL0,
-                              ENVIRONMENT,
-                              TEXEL0,
-                              0,
-                              SHADE,
-                              0,
-                              PRIMITIVE,
-                              ENVIRONMENT,
-                              TEXEL0,
-                              ENVIRONMENT,
-                              TEXEL0,
-                              0,
-                              SHADE,
-                              0);
-            gDPSetRenderMode(gDisplayListPtr++, G_RM_OPA_SURF, G_RM_OPA_SURF2);
-        } else {
+#if TGR_REGION == TGR_REGION_JP || TGR_REGION == TGR_REGION_EU
+        /* A strip with a palette is drawn opaque from palette indices. */
+        if (palette != NULL) {
+            format = G_IM_FMT_CI;
             gDPSetCombineLERP(gDisplayListPtr++,
                               0,
                               0,
                               0,
-                              PRIMITIVE,
+                              TEXEL0,
                               0,
                               0,
                               0,
@@ -211,16 +205,60 @@ void DrawSpriteStrip(Sprite *sprite,
                               0,
                               0,
                               0,
-                              PRIMITIVE,
+                              TEXEL0,
                               0,
                               0,
                               0,
                               TEXEL0);
-            gDPSetRenderMode(gDisplayListPtr++, G_RM_XLU_SURF, G_RM_XLU_SURF2);
+            gDPSetRenderMode(gDisplayListPtr++, G_RM_OPA_SURF, G_RM_OPA_SURF2);
+        } else {
+            format = G_IM_FMT_I;
+#endif
+            if (sprite == &g_texBackground) {
+                gDPSetCombineLERP(gDisplayListPtr++,
+                                  PRIMITIVE,
+                                  ENVIRONMENT,
+                                  TEXEL0,
+                                  ENVIRONMENT,
+                                  TEXEL0,
+                                  0,
+                                  SHADE,
+                                  0,
+                                  PRIMITIVE,
+                                  ENVIRONMENT,
+                                  TEXEL0,
+                                  ENVIRONMENT,
+                                  TEXEL0,
+                                  0,
+                                  SHADE,
+                                  0);
+                gDPSetRenderMode(gDisplayListPtr++, G_RM_OPA_SURF, G_RM_OPA_SURF2);
+            } else {
+                gDPSetCombineLERP(gDisplayListPtr++,
+                                  0,
+                                  0,
+                                  0,
+                                  PRIMITIVE,
+                                  0,
+                                  0,
+                                  0,
+                                  TEXEL0,
+                                  0,
+                                  0,
+                                  0,
+                                  PRIMITIVE,
+                                  0,
+                                  0,
+                                  0,
+                                  TEXEL0);
+                gDPSetRenderMode(gDisplayListPtr++, G_RM_XLU_SURF, G_RM_XLU_SURF2);
+            }
+#if TGR_REGION == TGR_REGION_JP || TGR_REGION == TGR_REGION_EU
         }
+#endif
         gDPLoadTextureBlock_4b(gDisplayListPtr++,
                                pixels,
-                               G_IM_FMT_I,
+                               STRIP_FORMAT(G_IM_FMT_I),
                                width,
                                height,
                                0,
@@ -232,6 +270,9 @@ void DrawSpriteStrip(Sprite *sprite,
                                G_TX_NOLOD);
         break;
     case SPRITE_DEPTH_8:
+#if TGR_REGION == TGR_REGION_JP || TGR_REGION == TGR_REGION_EU
+        format = G_IM_FMT_IA;
+#endif
         if (sprite->style == SPRITE_STYLE_TINTED) {
             gDPSetCombineLERP(gDisplayListPtr++,
                               TEXEL0,
@@ -285,12 +326,15 @@ void DrawSpriteStrip(Sprite *sprite,
                             G_TX_NOLOD);
         break;
     case SPRITE_DEPTH_16:
+#if TGR_REGION == TGR_REGION_JP || TGR_REGION == TGR_REGION_EU
+        format = sprite == &g_texLogo ? G_IM_FMT_IA : G_IM_FMT_RGBA;
+#endif
         gDPSetCombineLERP(
             gDisplayListPtr++, 0, 0, 0, TEXEL0, 0, 0, 0, TEXEL0, 0, 0, 0, TEXEL0, 0, 0, 0, TEXEL0);
         gDPSetRenderMode(gDisplayListPtr++, G_RM_XLU_SURF, G_RM_XLU_SURF2);
         gDPLoadTextureBlock(gDisplayListPtr++,
                             pixels,
-                            sprite == &g_texLogo ? G_IM_FMT_IA : G_IM_FMT_RGBA,
+                            STRIP_FORMAT(sprite == &g_texLogo ? G_IM_FMT_IA : G_IM_FMT_RGBA),
                             G_IM_SIZ_16b,
                             width,
                             height,
@@ -303,7 +347,16 @@ void DrawSpriteStrip(Sprite *sprite,
                             G_TX_NOLOD);
         break;
     }
+#if TGR_REGION == TGR_REGION_JP || TGR_REGION == TGR_REGION_EU
+    if (format == G_IM_FMT_CI) {
+        gDPLoadTLUT_pal16(gDisplayListPtr++, 0, palette);
+        gDPSetTextureLUT(gDisplayListPtr++, G_TT_RGBA16);
+    } else {
+        gDPSetTextureLUT(gDisplayListPtr++, G_TT_NONE);
+    }
+#else
     gDPSetTextureLUT(gDisplayListPtr++, G_TT_NONE);
+#endif
     gDPSetTexturePersp(gDisplayListPtr++, G_TP_NONE);
     if (!g_dwScreenScaleShift) {
         x >>= 1;
@@ -328,7 +381,7 @@ void DrawSpriteStrip(Sprite *sprite,
     gDPPipeSync(gDisplayListPtr++);
     gDPSetTexturePersp(gDisplayListPtr++, G_TP_PERSP);
 }
-#endif
+#pragma GCC diagnostic pop
 
 void DrawScaledTexturedRect(Sprite *sprite,
                             s32 srcX,

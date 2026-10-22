@@ -97,7 +97,6 @@ extern u32 g_dwRumbleProbeTimer;
  * @ghidraAddress USA: 0x80260490
  * @ghidraAddress JPN: 0x80261420
  * @ghidraAddress EUR: 0x80261970
- * @stub{EUR JPN}
  */
 void UpdateRumblePaks(s32 unused);
 

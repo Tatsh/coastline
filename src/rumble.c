@@ -8,14 +8,19 @@
 /* The motors are probed again every 64 calls. */
 #define RUMBLE_PROBE_INTERVAL 64
 
-/* The Japanese and European bodies still come from the assembly. */
+/* The European and Japanese releases also stop the motors while a reset is pending. */
 #if TGR_REGION == TGR_REGION_US
+#define RESET_PENDING() 0
+#else
+#define RESET_PENDING() g_dwPreNmiResetPending
+#endif
+
 void UpdateRumblePaks(s32 unused) {
     int i;
 
     /* Stop every motor outside a running race, and probe for each Pak again. */
     if (!IsCurrentScreen(ProcessRacingScreen) || g_dwGameMode == GAME_MODE_AFTER_SEASON ||
-        g_wRaceScreenLoopExited || g_dwRacePauseState) {
+        g_wRaceScreenLoopExited || RESET_PENDING() || g_dwRacePauseState) {
         for (i = 0; i < RUMBLE_CHANNELS; i++) {
             if (g_wSerialInterfaceIdle) {
                 g_awRumbleActive[i] = 0;
@@ -29,7 +34,8 @@ void UpdateRumblePaks(s32 unused) {
     }
 
     /* Pulse each motor that is rumbling, unless its vehicle plays back a recording. */
-    if (g_wSerialInterfaceIdle && !g_wRaceScreenLoopExited && !g_dwRacePauseState) {
+    if (g_wSerialInterfaceIdle && !g_wRaceScreenLoopExited && !RESET_PENDING() &&
+        !g_dwRacePauseState) {
         for (i = 0; i < RUMBLE_CHANNELS; i++) {
             if (!g_abRumblePakPresent[i] || !g_awRumbleActive[i]) {
                 continue;
@@ -71,7 +77,6 @@ void UpdateRumblePaks(s32 unused) {
         }
     }
 }
-#endif
 
 void PrepareRumblePaks(void) {
 }

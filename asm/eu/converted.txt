@@ -155,6 +155,9 @@ DrawScaledTexturedRect
 DrawScreenFadeOverlay
 DrawScrollingText
 DrawSpeedAndHudOverlay
+DrawSpriteAtOrigin
+DrawSpriteRegion
+DrawSpriteStrip
 DrawSpriteTinted
 DrawText
 DrawTexturedRect
@@ -509,6 +512,7 @@ UpdateRaceProgress
 UpdateRaceTimers
 UpdateRacerSlotMotion
 UpdateRacerSlotRaceState
+UpdateRumblePaks
 UpdateStickRepeat
 UpdateTireSmoke
 UpdateVehicleEngineAndGearbox

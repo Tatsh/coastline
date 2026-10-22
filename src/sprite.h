@@ -44,16 +44,27 @@ typedef struct {
  */
 void LoadTextureFromRom(Sprite *sprite);
 
+/** An argument followed by a palette, in the releases whose sprite routines take one. */
+#if TGR_REGION == TGR_REGION_JP || TGR_REGION == TGR_REGION_EU
+#define WITH_PALETTE(value, palette) (value), (palette)
+#else
+#define WITH_PALETTE(value, palette) (value)
+#endif
+
 /**
  * Draw a sprite at its origin, at its size on the screen.
  *
  * @param sprite The sprite to draw.
+ * @param palette The palette of the texels, or NULL (European and Japanese releases only).
  * @ghidraAddress USA: 0x80245470
  * @ghidraAddress JPN: 0x802464cc
  * @ghidraAddress EUR: 0x80246994
- * @stub{EUR JPN}
  */
+#if TGR_REGION == TGR_REGION_JP || TGR_REGION == TGR_REGION_EU
+void DrawSpriteAtOrigin(Sprite *sprite, u16 *palette);
+#else
 void DrawSpriteAtOrigin(Sprite *sprite);
+#endif
 
 /**
  * Draw a sprite at a position.
@@ -95,7 +106,6 @@ void DrawSpriteTinted(Sprite *sprite, u8 red, u8 green, u8 blue);
  * @ghidraAddress USA: 0x8024594c
  * @ghidraAddress JPN: 0x802469cc
  * @ghidraAddress EUR: 0x80246e94
- * @stub{EUR JPN}
  */
 void DrawSpriteRegion(
     Sprite *sprite, s32 x, s32 y, s32 width, s32 height, u8 red, u8 green, u8 blue);
@@ -121,7 +131,6 @@ void DrawSpriteRegion(
  * @ghidraAddress USA: 0x80245b00
  * @ghidraAddress JPN: 0x80246b88
  * @ghidraAddress EUR: 0x80247050
- * @stub{EUR JPN}
  */
 void DrawSpriteStrip(Sprite *sprite,
                      u8 *pixels,
