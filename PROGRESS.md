@@ -58,7 +58,7 @@ A routine counts for a release when its address in that release is tagged.
 | --------- | -------: | ---: | -----: |
 | `usa.z64` |      801 |  801 | 100.0% |
 | `eur.z64` |      819 |  706 |  86.2% |
-| `jpn.z64` |      821 |  697 |  84.9% |
+| `jpn.z64` |      822 |  698 |  84.9% |
 
 ### Matching
 
@@ -72,8 +72,8 @@ and `jp`) before this report to regenerate the table.
 | Release   | Routines | Matching | Not matching | Unknown | Share |
 | --------- | -------: | -------: | -----------: | ------: | ----: |
 | `usa.z64` |      801 |      627 |          174 |       0 | 78.3% |
-| `eur.z64` |      819 |      641 |          178 |       0 | 78.3% |
-| `jpn.z64` |      821 |      640 |          181 |       0 | 78.0% |
+| `eur.z64` |      819 |      640 |          161 |      18 | 78.1% |
+| `jpn.z64` |      822 |      640 |          160 |      22 | 77.9% |
 
 ### By component
 
