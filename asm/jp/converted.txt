@@ -325,6 +325,7 @@ ProcessColorEditorDialog
 ProcessControllerCheck
 ProcessControllerConfigScreen
 ProcessDecalEditorInput
+ProcessDecalSaveLoad
 ProcessDisplayList
 ProcessFillClearMenu
 ProcessInputCommandBuffer

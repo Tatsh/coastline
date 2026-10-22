@@ -1671,7 +1671,7 @@ static inline void TransferDecal(VehicleModel *model, OSPfs *pfs, u8 operation) 
     switch (g_dwPakError) {
     case 0:
         if (operation == PAINT_TOOL_LOAD) {
-#if TGR_REGION != TGR_REGION_EU
+#if TGR_REGION == TGR_REGION_US
             osSyncPrintf("Loading decal %d...\n", g_bPakDecalIndex);
 #endif
             texture = &model->textures[model->materialTextures[g_bPakDecalIndex]];
@@ -1733,8 +1733,6 @@ static inline void DrawPakButtons(s32 buttonY, u32 okTextX, u32 cancelTextX, s32
     DrawTexturedSprite(&g_texButtonB, cancelX, buttonY);
 }
 
-/* The Japanese body still comes from the assembly. */
-#if TGR_REGION != TGR_REGION_JP
 s32 ProcessDecalSaveLoad(VehicleModel *model, u8 player, u8 operation, u8 inCarSelect, u8 *done) {
     /* TOP GEAR DECALS in the font of the controller pak. */
     u8 noteName[16] = {0x2D,
@@ -1788,6 +1786,18 @@ s32 ProcessDecalSaveLoad(VehicleModel *model, u8 player, u8 operation, u8 inCarS
     case PAK_STATE_CONFIRM:
         /* The row of the buttons is placed by the width of the A button. */
         buttonY = 0x110 - g_texButtonA.width;
+#if TGR_REGION == TGR_REGION_JP
+        DrawDialogBox(0xAA, 0xC8, 0x12C, 0x50);
+        SetTextAlignLeft();
+        SetTextStyleNormal();
+        SetTextSize(14);
+        SetPakTextColors(FALSE);
+        DrawText(operation == PAINT_TOOL_LOAD ? "%jデカールをロードしますか？" :
+                                                "%jデカールをセーブしますか？",
+                 0x5E,
+                 0x74);
+        DrawPakButtons(buttonY, g_texButtonA.width + 0xC0, g_texButtonB.width + 0x168, 0xBA, 0x162);
+#else
         DrawDialogBox(0xDC, 0xC8, 0xC8, 0x50);
         SetTextAlignLeft();
         SetTextStyleNormal();
@@ -1795,6 +1805,7 @@ s32 ProcessDecalSaveLoad(VehicleModel *model, u8 player, u8 operation, u8 inCarS
         SetPakTextColors(FALSE);
         DrawText(operation == PAINT_TOOL_LOAD ? "LOAD DECALS?" : "SAVE DECALS?", 0x77, 0x74);
         DrawPakButtons(buttonY, g_texButtonA.width + 0xF2, g_texButtonB.width + 0x136, 0xEC, 0x130);
+#endif
         input = &g_aPlayerInputState[player];
         if (input->buttons & INPUT_A) {
             TransferFlags(input, INPUT_A);
@@ -1814,7 +1825,9 @@ s32 ProcessDecalSaveLoad(VehicleModel *model, u8 player, u8 operation, u8 inCarS
             g_bPakDialogState = PAK_STATE_FINISH;
             break;
         }
+#if TGR_REGION != TGR_REGION_JP
         osSyncPrintf("\nInitializing controller pak...\n");
+#endif
         pfs = &g_aPakPfs[player];
         g_dwPakError = osPfsInitPak(&g_SiMesgQueue, pfs, player);
         if (g_dwPakError == 0) {
@@ -1860,6 +1873,11 @@ s32 ProcessDecalSaveLoad(VehicleModel *model, u8 player, u8 operation, u8 inCarS
         DrawDialogBox(0xD6, 0xBB, 0xD4, 0x6A);
         SetTextAlignLeft();
         SetTextStyleNormal();
+#if TGR_REGION == TGR_REGION_JP
+        SetPakTextColors(FALSE);
+        SetTextSize(14);
+        DrawText("%j上書きしますか？", 0x79, 0x71);
+#else
 #if TGR_REGION == TGR_REGION_EU
         SetPakTextColors(FALSE);
         SetTextSize(13);
@@ -1869,6 +1887,7 @@ s32 ProcessDecalSaveLoad(VehicleModel *model, u8 player, u8 operation, u8 inCarS
 #endif
         DrawText("OK TO OVERWRITE", 0x72, 0x6C);
         DrawText("SAVED DECALS?", 0x72, 0x7A);
+#endif
         /* The label of the B button is placed by its height. */
         DrawPakButtons(
             buttonY, g_texButtonA.width + 0xEE, g_texButtonB.height + 0x13A, 0xE8, 0x134);
@@ -1893,8 +1912,8 @@ s32 ProcessDecalSaveLoad(VehicleModel *model, u8 player, u8 operation, u8 inCarS
             pfs, DECAL_FILE_COMPANY, DECAL_FILE_GAME, noteName, extName, &g_dwPakFileNo);
         if (g_dwPakError == 0) {
             if (operation == PAINT_TOOL_LOAD) {
-#if TGR_REGION == TGR_REGION_EU
-                /* The European release sets up the text of the box and draws none. */
+#if TGR_REGION != TGR_REGION_US
+                /* The later releases set up the text of the box and draw none. */
                 SetTextAlignLeft();
                 SetTextStyleNormal();
                 SetTextSize(13);
@@ -1918,7 +1937,7 @@ s32 ProcessDecalSaveLoad(VehicleModel *model, u8 player, u8 operation, u8 inCarS
                 g_dwPakError = PFS_DATA_FULL;
                 g_bPakDialogState = PAK_STATE_FINISH;
             } else {
-#if TGR_REGION == TGR_REGION_EU
+#if TGR_REGION != TGR_REGION_US
                 SetTextAlignLeft();
                 SetTextStyleNormal();
                 SetTextSize(13);
@@ -1952,11 +1971,30 @@ s32 ProcessDecalSaveLoad(VehicleModel *model, u8 player, u8 operation, u8 inCarS
             y = 0xC5;
             textY = 0x71;
         }
+#if TGR_REGION == TGR_REGION_JP
+        /* The Japanese release centers the text in a box as wide as the load needs. */
+        if (operation == PAINT_TOOL_LOAD) {
+            DrawDialogBox(0xC4, y, 0xF8, 0x56);
+        } else {
+            DrawDialogBox(0xD4, y, 0xD8, 0x56);
+        }
+        SetTextStyleNormal();
+        SetTextAlignCenter();
+        SetTextSize(14);
+        SetPakTextColors(FALSE);
+        if (operation == PAINT_TOOL_LOAD) {
+            DrawText("%jデカールロード中", g_dwScreenWidth / 2, textY);
+        } else {
+            DrawText("%jデカールセーブ中", g_dwScreenWidth / 2, textY);
+        }
+        DrawSunkenFrame(0xE6, y + 0x34, 0xB4, 0x14);
+#else
         if (operation == PAINT_TOOL_LOAD) {
             DrawPakProgressBox(y, "LOADING DECALS...", 0x72, textY);
         } else {
             DrawPakProgressBox(y, "SAVING DECALS...", 0x73, textY);
         }
+#endif
         if (g_bPakWaitFrames++ < PAK_TRANSFER_DELAY_FRAMES) {
             break;
         }
@@ -2029,7 +2067,7 @@ s32 ProcessDecalSaveLoad(VehicleModel *model, u8 player, u8 operation, u8 inCarS
     case PAK_STATE_TRANSFER_PALETTE:
         pfs = &g_aPakPfs[player];
         if (operation == PAINT_TOOL_LOAD) {
-#if TGR_REGION != TGR_REGION_EU
+#if TGR_REGION == TGR_REGION_US
             osSyncPrintf("Loading color palette...\n");
 #endif
             g_dwPakError = osPfsReadWriteFile(
@@ -2066,7 +2104,9 @@ s32 ProcessDecalSaveLoad(VehicleModel *model, u8 player, u8 operation, u8 inCarS
                 }
             }
         } else {
+#if TGR_REGION != TGR_REGION_JP
             osSyncPrintf("Saving color palette...\n");
+#endif
             g_dwPakError = osPfsReadWriteFile(
                 pfs,
                 g_dwPakFileNo,
@@ -2076,11 +2116,13 @@ s32 ProcessDecalSaveLoad(VehicleModel *model, u8 player, u8 operation, u8 inCarS
                 (u8 *)model->textures[model->materialTextures[VEHICLE_MATERIAL_PAINT]].palette);
         }
         if (g_dwPakError == 0) {
+#if TGR_REGION != TGR_REGION_JP
             if (operation == PAINT_TOOL_LOAD) {
                 osSyncPrintf("Color palette loaded successfully!\n\n");
             } else {
                 osSyncPrintf("Color palette saved successfully!\n\n");
             }
+#endif
             g_bPakDialogState = PAK_STATE_DONE;
             if (!inCarSelect) {
                 g_bDecalEditCount = 0;
@@ -2100,7 +2142,9 @@ s32 ProcessDecalSaveLoad(VehicleModel *model, u8 player, u8 operation, u8 inCarS
         if (!g_dwPakError) {
             return 0;
         }
+#if TGR_REGION != TGR_REGION_JP
         osSyncPrintf("err_code = %d\n\n", g_dwPakError);
+#endif
         if (g_dwPakError == PFS_ERR_NEW_PACK) {
             g_bPakDialogState = PAK_STATE_NEW_PAK;
             g_bPakRetryNewPak = TRUE;
@@ -2115,6 +2159,16 @@ s32 ProcessDecalSaveLoad(VehicleModel *model, u8 player, u8 operation, u8 inCarS
         y = inCarSelect == 1 ? 0xD3 : 0xAB;
         SetTextStyleNormal();
         SetTextAlignLeft();
+#if TGR_REGION == TGR_REGION_JP
+        SetTextSize(14);
+        DrawDialogBox(0x99, y, 0x14E, 0x89);
+        SetPakTextColors(inCarSelect);
+        textY = (y + 0x20) >> 1;
+        DrawText("%jあたらしいコントローラパックが", 0x54, textY);
+        DrawText("%jさしこまれています。", 0x54, textY + 13);
+        DrawText("%jこのコントローラパックを、", 0x54, textY + 32);
+        DrawText("%j使います。", 0x54, textY + 45);
+#else
         SetTextSize(12);
         DrawDialogBox(0xAF, y, 0x122, 0x89);
         SetPakTextColors(inCarSelect);
@@ -2123,6 +2177,7 @@ s32 ProcessDecalSaveLoad(VehicleModel *model, u8 player, u8 operation, u8 inCarS
         DrawText("WAS INSERTED.", 0x5F, textY + 13);
         DrawText("THIS CONTROLLER PAK", 0x5F, textY + 32);
         DrawText("WILL BE USED.", 0x5F, textY + 45);
+#endif
         input = &g_aPlayerInputState[player];
         if (input->buttons & PAK_DISMISS_BUTTONS) {
             TransferFlags(input, PAK_DISMISS_BUTTONS);
@@ -2137,6 +2192,21 @@ s32 ProcessDecalSaveLoad(VehicleModel *model, u8 player, u8 operation, u8 inCarS
     case PAK_STATE_REMOVE_RUMBLE_PAK:
         SetTextStyleNormal();
         SetTextAlignLeft();
+#if TGR_REGION == TGR_REGION_JP
+        SetTextSize(14);
+        SetPakTextColors(inCarSelect);
+        if (g_dwPakError == PAK_ERROR_RUMBLE_PAK) {
+            y = inCarSelect == 1 ? 0xD5 : 0xAD;
+            buttonY = y - g_texButtonA.width + 0x7E;
+            DrawDialogBox(0xC8, y, 0xF0, 0x86);
+            textY = (y + 0x20) >> 1;
+            DrawText("%j振動パックと", 0x6C, textY);
+            DrawText("%jコントローラパックを", 0x6C, textY + 13);
+            DrawText("%j交換して下さい。", 0x6C, textY + 26);
+            DrawPakButtons(
+                buttonY, g_texButtonA.width + 0xDE, g_texButtonB.width + 0x14A, 0xD8, 0x144);
+        }
+#else
         SetTextSize(12);
         SetPakTextColors(inCarSelect);
         if (g_dwPakError == PAK_ERROR_RUMBLE_PAK) {
@@ -2151,6 +2221,7 @@ s32 ProcessDecalSaveLoad(VehicleModel *model, u8 player, u8 operation, u8 inCarS
             DrawPakButtons(
                 buttonY, g_texButtonA.width + 0xDE, g_texButtonB.width + 0x14A, 0xD8, 0x144);
         }
+#endif
         input = &g_aPlayerInputState[player];
         if (g_dwPakError != PAK_ERROR_RUMBLE_PAK) {
             /* A pak that cannot be repaired shows nothing and waits for a button. */
@@ -2184,6 +2255,16 @@ s32 ProcessDecalSaveLoad(VehicleModel *model, u8 player, u8 operation, u8 inCarS
             g_bPakDialogState = PAK_STATE_FINISH;
             break;
         }
+#if TGR_REGION == TGR_REGION_JP
+        DrawDialogBox(0xAA, 0xE6, 0x12C, 0x64);
+        SetTextStyleNormal();
+        SetTextAlignLeft();
+        SetPakTextColors(TRUE);
+        SetTextSize(14);
+        DrawText("%j振動パックを使うときは、", 0x5D, 0x83);
+        DrawText("%jコントローラパックと", 0x5D, 0x90);
+        DrawText("%j振動パックを交換して下さい。", 0x5D, 0x9D);
+#else
         DrawDialogBox(0x73, 0xCC, 0x19A, 0x98);
         SetTextStyleNormal();
         SetTextAlignLeft();
@@ -2199,6 +2280,7 @@ s32 ProcessDecalSaveLoad(VehicleModel *model, u8 player, u8 operation, u8 inCarS
         DrawText("INSERT THE RUMBLE PAK INTO THE", 0x41, 0x90);
         DrawText("CONTROLLER.  PRESS THE A BUTTON", 0x41, 0x9D);
         DrawText("TO CONTINUE.", 0x41, 0xAA);
+#endif
         input = &g_aPlayerInputState[player];
         if (input->buttons & (INPUT_Z | INPUT_A)) {
             TransferFlags(input, INPUT_Z | INPUT_A);
@@ -2234,7 +2316,6 @@ s32 ProcessDecalSaveLoad(VehicleModel *model, u8 player, u8 operation, u8 inCarS
     }
     return 0;
 }
-#endif
 
 /* The columns two glyphs side by side overlap, the lesser of how far each may move to the other. */
 static inline s32 GlyphOverlap(DecalGlyph *previous, DecalGlyph *next) {

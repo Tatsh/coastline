@@ -502,7 +502,6 @@ void AllocateEditorBuffers(void);
  * @ghidraAddress USA: 0x80248f88
  * @ghidraAddress EUR: 0x8024a56c
  * @ghidraAddress JPN: 0x8024a094
- * @stub{JPN}
  */
 s32 ProcessDecalSaveLoad(VehicleModel *model, u8 player, u8 operation, u8 inCarSelect, u8 *done);
 
