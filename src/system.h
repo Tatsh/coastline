@@ -96,7 +96,6 @@ typedef void (*ScreenCallback)(void);
  * @ghidraAddress USA: 0x8021be88
  * @ghidraAddress JPN: 0x8021c938
  * @ghidraAddress EUR: 0x8021d068
- * @stub{EUR JPN}
  */
 void InitRenderingSubsystem(void);
 
@@ -388,7 +387,6 @@ void StartHighResFrame(void);
  * @ghidraAddress USA: 0x8021aa08
  * @ghidraAddress JPN: 0x8021b3fc
  * @ghidraAddress EUR: 0x8021bb20
- * @stub{EUR JPN}
  */
 void FlushDisplayList(void);
 
@@ -677,8 +675,22 @@ extern s32 g_dwVblankCounter;
  */
 extern OSThread g_RspDoneThreadObj;
 
-/** @ghidraAddress USA: 0x80272b90 */
+/**
+ * @ghidraAddress USA: 0x80272b90
+ * @ghidraAddress JPN: 0x802746b0
+ * @ghidraAddress EUR: 0x80274be0
+ */
 extern OSThread g_RdpDoneThreadObj;
+
+#if TGR_REGION == TGR_REGION_EU || TGR_REGION == TGR_REGION_JP
+/**
+ * The thread that waits for the reset button.
+ *
+ * @ghidraAddress JPN: 0x80274860
+ * @ghidraAddress EUR: 0x80274d90
+ */
+extern OSThread g_PreNmiResetHandlerThreadObj;
+#endif
 
 /**
  * @ghidraAddress USA: 0x80272830
@@ -707,7 +719,13 @@ extern OSThread g_FaultThreadObj;
 #define IDLE_STACK_WORDS 0x100   /*!< The words of the stack of the idle thread. */
 #define FAULT_STACK_WORDS 0x100  /*!< The words of the stack of the fault thread. */
 
-/** The stacks of the threads. @ghidraAddress USA: 0x80318ed0 */
+/**
+ * The stacks of the threads.
+ *
+ * @ghidraAddress USA: 0x80318ed0
+ * @ghidraAddress JPN: 0x803195e0
+ * @ghidraAddress EUR: 0x8031a9b0
+ */
 extern u32 g_adwRspDoneThreadStack[THREAD_STACK_WORDS];
 
 /**
@@ -716,6 +734,14 @@ extern u32 g_adwRspDoneThreadStack[THREAD_STACK_WORDS];
  * @ghidraAddress EUR: 0x8031b1b0
  */
 extern u32 g_adwRdpDoneThreadStack[THREAD_STACK_WORDS];
+
+#if TGR_REGION == TGR_REGION_EU || TGR_REGION == TGR_REGION_JP
+/**
+ * @ghidraAddress JPN: 0x8031a5e0
+ * @ghidraAddress EUR: 0x8031b9b0
+ */
+extern u32 g_adwPreNmiResetThreadStack[THREAD_STACK_WORDS];
+#endif
 
 /**
  * @ghidraAddress USA: 0x80316cd0
@@ -1107,7 +1133,6 @@ void BootIdleThread(void *arg);
  * @ghidraAddress USA: 0x80219470
  * @ghidraAddress JPN: 0x80219de0
  * @ghidraAddress EUR: 0x8021a490
- * @stub{JPN}
  */
 void BeginDisplayList(s32 highRes);
 

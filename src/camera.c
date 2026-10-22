@@ -338,13 +338,14 @@ void UpdateCameraViewBasisAndFov(Vehicle *vehicle, CameraFrame *camera) {
 }
 #endif
 
-/* The Japanese and European bodies still come from the assembly. */
-#if TGR_REGION == TGR_REGION_US
 void UpdateCameraSystem(Vehicle *vehicle) {
     f32 previousCockpit[3];
     Vec3f target;
     VehicleModel *model;
-    f32 speed, lagSource, lag, lagNumerator, chaseTerm, lagTerm, pull, distance, zoom;
+    f32 speed, lagSource, lag, lagNumerator, chaseTerm, lagTerm, pull;
+#if TGR_REGION == TGR_REGION_US
+    f32 distance, zoom;
+#endif
 
     /* The smoothed speed and lag of the chase camera. */
     target.x = vehicle->cameras[VEHICLE_CAMERA_CHASE].position.x;
@@ -459,7 +460,11 @@ void UpdateCameraSystem(Vehicle *vehicle) {
     Vec3fMulAddInPlace(
         &vehicle->cameras[VEHICLE_CAMERA_BUMPER].position, &vehicle->frame.forward, BUMPER_FORWARD);
 
-    /* The trackside camera looks at the vehicle from where it stands, and zooms with distance. */
+    /* The trackside camera looks at the vehicle from where it stands, and zooms with distance. The
+     * European and Japanese releases call the routine that does the same. */
+#if TGR_REGION == TGR_REGION_EU || TGR_REGION == TGR_REGION_JP
+    UpdateCameraViewBasisAndFov(vehicle, &vehicle->cameras[VEHICLE_CAMERA_TRACKSIDE]);
+#else
     vehicle->cameras[VEHICLE_CAMERA_TRACKSIDE].up.x = 0.0f;
     vehicle->cameras[VEHICLE_CAMERA_TRACKSIDE].up.y = 0.0f;
     vehicle->cameras[VEHICLE_CAMERA_TRACKSIDE].up.z = 1.0f;
@@ -486,6 +491,7 @@ void UpdateCameraSystem(Vehicle *vehicle) {
     zoom = (cosf((distance - 1.0f) * TRACKSIDE_COS_SCALE) * TRACKSIDE_COS_WEIGHT + TRACKSIDE_BIAS) +
            (TRACKSIDE_MID - distance) * TRACKSIDE_DISTANCE_SCALE;
     vehicle->cameras[VEHICLE_CAMERA_TRACKSIDE].fov = zoom * g_fCameraFovRadians;
+#endif
     vehicle->cameras[VEHICLE_CAMERA_BUMPER].fov = g_fCameraFovRadians;
     vehicle->cameras[VEHICLE_CAMERA_CHASE].fov = g_fCameraFovRadians;
     vehicle->cameras[VEHICLE_CAMERA_COCKPIT].fov = g_fCameraFovRadians;
@@ -514,7 +520,6 @@ void UpdateCameraSystem(Vehicle *vehicle) {
     vehicle->cameras[VEHICLE_CAMERA_MIRROR].up = vehicle->frame.up;
     vehicle->previousCamera = vehicle->activeCamera;
 }
-#endif
 
 void InitCameraForVehicle(Vehicle *vehicle) {
     Vec3f position;

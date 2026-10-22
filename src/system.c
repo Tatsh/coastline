@@ -18,6 +18,7 @@
 #include "render.h"
 #include "rumble.h"
 #include "texrect.h"
+#include "text.h"
 #include "timing.h"
 #include "track.h"
 #include "trackrender.h"
@@ -60,6 +61,7 @@
 /* The priorities of the threads. */
 #define RSP_DONE_THREAD_ID 10
 #define RDP_DONE_THREAD_ID 11
+#define PRE_NMI_THREAD_ID 12
 #define EVENT_THREAD_PRIORITY 60
 #define FAULT_THREAD_ID 5
 #define FAULT_THREAD_PRIORITY 50
@@ -83,17 +85,22 @@
 #define BOOT_SCREEN_WIDTH 320
 #define BOOT_SCREEN_HEIGHT 240
 
-/* The video modes the boot sets: the game's copies in the USA release, the SDK's in the others. */
+/* The full-height video modes: the game's copies in the USA release, the SDK's in the others. */
 #if TGR_REGION == TGR_REGION_US
-#define BOOT_VI_MODE_MPAL g_ViModeMpalLan1
-#define BOOT_VI_MODE g_ViModeNtscLan1
+#define VI_MODE_LAN1_MPAL g_ViModeMpalLan1
+#define VI_MODE_LAN1 g_ViModeNtscLan1
 #elif TGR_REGION == TGR_REGION_EU
-#define BOOT_VI_MODE_MPAL osViModeMpalLan1
-#define BOOT_VI_MODE osViModePalLan1
+#define VI_MODE_LAN1_MPAL osViModeMpalLan1
+#define VI_MODE_LAN1 osViModePalLan1
 #else
-#define BOOT_VI_MODE_MPAL osViModeMpalLan1
-#define BOOT_VI_MODE osViModeNtscLan1
+#define VI_MODE_LAN1_MPAL osViModeMpalLan1
+#define VI_MODE_LAN1 osViModeNtscLan1
 #endif
+
+/* Whether the European and Japanese releases may show the screen: it is not held blank, no delay
+ * before showing it runs, and no reset is pending. */
+#define SCREEN_MAY_SHOW()                                                                          \
+    (!g_dwKeepScreenBlanked && !g_dwScreenUnblankDelay && !g_dwPreNmiResetPending)
 
 /* The European release adjusts its copies of the PAL modes: the vertical start of each field
  * (the bits outside the mask kept) and the vertical scale of the half-height and full-height
@@ -676,14 +683,15 @@ void SetupWeatherLights(void) {
     }
 }
 
-/* The Japanese body still comes from the assembly. */
-#if TGR_REGION != TGR_REGION_JP
 void BeginDisplayList(s32 highRes) {
     if (highRes != g_dwScreenScaleShift) {
         g_dwDisplayModeChangeCountdown = 1;
         g_dwScreenScaleShift = highRes;
     }
     AddTimingMarker(0, 0, 0x82, 0, 0xFF);
+#if TGR_REGION == TGR_REGION_JP
+    ResetGlyphCache();
+#endif
     switch (g_dwNumViewports) {
     case 1:
         g_aViewportRects[0].x = VIEWPORT_MARGIN;
@@ -777,7 +785,6 @@ void BeginDisplayList(s32 highRes) {
     osViSetSpecialFeatures(OS_VI_DIVOT_ON);
     osViSetSpecialFeatures(g_dwViGammaEnabled ? OS_VI_GAMMA_ON : OS_VI_GAMMA_OFF);
 }
-#endif
 
 void StartLowResFrame(void) {
     BeginDisplayList(0);
@@ -1094,8 +1101,6 @@ void StreamAnimatedTrackTextures(void) {
     g_dwStreamedSnowMode = g_dwSnowMode;
 }
 
-/* The Japanese and European bodies still come from the assembly. */
-#if TGR_REGION == TGR_REGION_US
 void FlushDisplayList(void) {
     OSTask *task;
     u16 *framebuffer;
@@ -1162,16 +1167,32 @@ void FlushDisplayList(void) {
             g_pfnNextScreen();
             g_pfnNextScreen = NULL;
         }
+#if TGR_REGION == TGR_REGION_JP
+        LoadCachedGlyphTextures();
+#endif
         osWritebackDCacheAll();
         g_dwFlushDuration = osGetCount();
         g_dwFlushInterval = g_dwFlushDuration - g_dwFlushStartTime;
         if (g_dwDisplayModeChangeCountdown != 0 && --g_dwDisplayModeChangeCountdown == 0) {
+#if TGR_REGION == TGR_REGION_EU
+            /* The European release changes the mode only while the screen may show. */
+            if (g_dwScreenScaleShift) {
+                if (SCREEN_MAY_SHOW()) {
+                    osViSetMode(&g_ViModePalHaf1);
+                }
+            } else if (SCREEN_MAY_SHOW()) {
+                osViSetMode(&g_ViModePalLan1);
+            }
+#else
             if (g_dwScreenScaleShift) {
                 osViSetMode(osTvType == OS_TV_MPAL ? &g_ViModeMpalHaf1 : &g_ViModeNtscHaf1);
             } else {
-                osViSetMode(osTvType == OS_TV_MPAL ? &g_ViModeMpalLan1 : &g_ViModeNtscLan1);
+                osViSetMode(osTvType == OS_TV_MPAL ? &VI_MODE_LAN1_MPAL : &VI_MODE_LAN1);
             }
+#endif
+#if TGR_REGION == TGR_REGION_US
             osViBlack(TRUE);
+#endif
             g_dwAppliedScreenScaleShift = g_dwScreenScaleShift;
         }
         AddTimingMarker(1, 0x20, 0x20, 0x20, 0xFF);
@@ -1184,9 +1205,15 @@ void FlushDisplayList(void) {
         if (osViGetCurrentFramebuffer() != framebuffer) {
             osRecvMesg(&g_ViRetraceMesgQueue, NULL, OS_MESG_BLOCK);
         }
+#if TGR_REGION == TGR_REGION_US
         if (!g_dwKeepScreenBlanked && !g_dwScreenUnblankDelay) {
             osViBlack(FALSE);
         }
+#else
+        if (SCREEN_MAY_SHOW()) {
+            UnblankDisplay();
+        }
+#endif
         if (g_dwScreenUnblankDelay) {
             g_dwScreenUnblankDelay--;
         }
@@ -1204,7 +1231,6 @@ void FlushDisplayList(void) {
     osSpTaskStartGo(task);
     g_dwFrameBufferIndex ^= 1;
 }
-#endif
 
 s32 ProcessDisplayList(Gfx *displayList, Gfx table[][4]) {
     s32 clear, column, translucent, snowTint, row, i;
@@ -1350,8 +1376,6 @@ void ViRetraceThread(void *arg) {
     }
 }
 
-/* The Japanese and European bodies still come from the assembly. */
-#if TGR_REGION == TGR_REGION_US
 /* Whether a controller holds a pak that may be a Rumble Pak. */
 static s32 IsPakController(OSContStatus *status, u8 pattern, s32 i) {
     return ((pattern >> i) & 1) && !(status->errno & CONT_NO_RESPONSE_ERROR) &&
@@ -1389,6 +1413,15 @@ void InitRenderingSubsystem(void) {
                    &g_adwRdpDoneThreadStack[THREAD_STACK_WORDS],
                    EVENT_THREAD_PRIORITY);
     osStartThread(&g_RdpDoneThreadObj);
+#if TGR_REGION == TGR_REGION_EU || TGR_REGION == TGR_REGION_JP
+    osCreateThread(&g_PreNmiResetHandlerThreadObj,
+                   PRE_NMI_THREAD_ID,
+                   PreNmiResetHandlerThread,
+                   g_ppszMainArgv,
+                   &g_adwPreNmiResetThreadStack[THREAD_STACK_WORDS],
+                   EVENT_THREAD_PRIORITY);
+    osStartThread(&g_PreNmiResetHandlerThreadObj);
+#endif
     g_fCountsPerMillisecond = COUNTS_PER_MILLISECOND;
 
     /* The serial event reaches the queue on the stack until it is pointed elsewhere below. */
@@ -1412,7 +1445,6 @@ void InitRenderingSubsystem(void) {
         }
     }
 }
-#endif
 
 void ResetFrameClock(void) {
     g_qwTimestampBase = 0;
@@ -1707,9 +1739,9 @@ void BootIdleThread(void *arg) {
     g_ViModePalLan1.fldRegs[1].yScale = PAL_LAN1_YSCALE;
 #endif
     if (osTvType == OS_TV_MPAL) {
-        osViSetMode(&BOOT_VI_MODE_MPAL);
+        osViSetMode(&VI_MODE_LAN1_MPAL);
     } else {
-        osViSetMode(&BOOT_VI_MODE);
+        osViSetMode(&VI_MODE_LAN1);
     }
     osViBlack(TRUE);
 #if TGR_REGION == TGR_REGION_EU || TGR_REGION == TGR_REGION_JP

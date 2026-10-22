@@ -6,8 +6,6 @@ set(COASTLINE_ASM_EU
     asm/eu/079F0.s
     asm/eu/0D240.s
     asm/eu/12730.s
-    asm/eu/192F0.s
-    asm/eu/22B50.s
     asm/eu/28270.s
     asm/eu/45020.s
     asm/eu/559C0.s

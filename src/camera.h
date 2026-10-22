@@ -152,7 +152,6 @@ void UpdateCameraViewBasisAndFov(Vehicle *vehicle, CameraFrame *camera);
  * @ghidraAddress USA: 0x80221170
  * @ghidraAddress JPN: 0x80221df0
  * @ghidraAddress EUR: 0x80222600
- * @stub{EUR JPN}
  */
 void UpdateCameraSystem(Vehicle *vehicle);
 

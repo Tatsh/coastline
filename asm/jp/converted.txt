@@ -23,6 +23,7 @@ ApplyWeather
 Atan2f
 AudioMixingThreadMain
 BeginDebugStats
+BeginDisplayList
 BeginTimingFrame
 BindPlayerInputToVehicle
 BlankDisplay
@@ -190,6 +191,7 @@ FixupVehicleModelPointers
 FlipDecalPixels
 FloatToInt
 FloodFill4Bit
+FlushDisplayList
 FormatLapTime
 GameModeMainLoop
 GetBodyPointVelocity
@@ -218,6 +220,7 @@ InitPlayerInputState
 InitPlayerVehicleSlot
 InitRacerSlot
 InitRandomRainParticles
+InitRenderingSubsystem
 InitRigidBody
 InitSoundChannel
 InitVehicleColor
@@ -493,6 +496,7 @@ UpdateAllVehicleEffects
 UpdateAmbientSoundChannel
 UpdateCameraChase
 UpdateCameraLookAtTarget
+UpdateCameraSystem
 UpdateCameraViewBasisAndFov
 UpdateClosestSoundSource
 UpdateControllerState
