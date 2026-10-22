@@ -81,7 +81,7 @@ if(TGR_PLATFORM STREQUAL "n64")
   # These sources write the Japanese text in UTF-8. The Japanese release compiles copies with the
   # text in the glyph codes of its font.
   if(TGR_REGION STREQUAL "jp")
-    foreach(_source decaleditor.c options.c paintshop.c playerselect.c splash.c text.c)
+    foreach(_source decaleditor.c options.c pakmenu.c paintshop.c playerselect.c splash.c text.c)
       set(_encoded "${CMAKE_CURRENT_BINARY_DIR}/encoded/${_source}")
       add_custom_command(
         OUTPUT "${_encoded}"

@@ -10533,15 +10533,15 @@ enddlabel g_flPakMenuFadeInStep
 nonmatching switchdataD_802ab3c4
 
 dlabel switchdataD_802ab3c4
-    /* ACAE8 802ABAE8 8025480C */ .word .L8025480C
-    /* ACAEC 802ABAEC 802548FC */ .word .L802548FC
-    /* ACAF0 802ABAF0 80254AC0 */ .word .L80254AC0
-    /* ACAF4 802ABAF4 80254CA4 */ .word .L80254CA4
-    /* ACAF8 802ABAF8 80254E50 */ .word .L80254E50
-    /* ACAFC 802ABAFC 80254F18 */ .word .L80254F18
-    /* ACB00 802ABB00 802551D0 */ .word .L802551D0
-    /* ACB04 802ABB04 802552B4 */ .word .L802552B4
-    /* ACB08 802ABB08 802552D0 */ .word .L802552D0
+    /* ACAE8 802ABAE8 8025480C */ .word 0
+    /* ACAEC 802ABAEC 802548FC */ .word 0
+    /* ACAF0 802ABAF0 80254AC0 */ .word 0
+    /* ACAF4 802ABAF4 80254CA4 */ .word 0
+    /* ACAF8 802ABAF8 80254E50 */ .word 0
+    /* ACAFC 802ABAFC 80254F18 */ .word 0
+    /* ACB00 802ABB00 802551D0 */ .word 0
+    /* ACB04 802ABB04 802552B4 */ .word 0
+    /* ACB08 802ABB08 802552D0 */ .word 0
 enddlabel switchdataD_802ab3c4
 
 nonmatching g_flPakMenuFadeOutStep

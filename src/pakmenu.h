@@ -236,7 +236,6 @@ u8 DecalCharToAscii(u8 c);
  * @ghidraAddress USA: 0x802534dc
  * @ghidraAddress EUR: 0x80254a3c
  * @ghidraAddress JPN: 0x8025422c
- * @stub{JPN}
  */
 void ProcessPakMenuScreen(void);
 

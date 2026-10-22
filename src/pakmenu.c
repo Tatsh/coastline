@@ -23,6 +23,27 @@
 #define TABLE_TOP 0x3F
 #define TABLE_ROW 9
 
+/* The size of the text of the table, the columns of the names and the pages, the size of the text
+ * of the dialogs, and the widths of the prompt to delete a note below 10 and from 10. */
+#if TGR_REGION == TGR_REGION_JP
+#define NOTE_TEXT_SIZE 11
+#define NOTE_NAME_X 0x5A
+#define NOTE_PAGES_X 0xF8
+#define DIALOG_TEXT_SIZE 14
+#define DELETE_WIDTH 0x15A
+#define DELETE_WIDE_WIDTH 0x166
+
+/* The first character of the notes the Japanese font draws. */
+#define FIRST_KANA 0x42
+#else
+#define NOTE_TEXT_SIZE 9
+#define NOTE_NAME_X 0x62
+#define NOTE_PAGES_X 0xF4
+#define DIALOG_TEXT_SIZE 12
+#define DELETE_WIDTH 0x128
+#define DELETE_WIDE_WIDTH 0x134
+#endif
+
 /* The width of the screen the dialogs are centered in. */
 #define DIALOG_SCREEN_WIDTH 0x280
 
@@ -36,8 +57,6 @@ u8 DecalCharToAscii(u8 c) {
     return ' ';
 }
 
-/* The Japanese body still comes from the assembly. */
-#if TGR_REGION != TGR_REGION_JP
 /* The note under the cursor is green on a white table, which is otherwise gray. */
 static void SetNoteColors(s32 note) {
     if (g_dwPakNoteCount != 0 && note == g_bPakSelectedNote) {
@@ -85,6 +104,60 @@ static void DrawNote(s32 note) {
     s32 y = note * TABLE_ROW + TABLE_TOP;
     s32 i;
 
+#if TGR_REGION == TGR_REGION_JP
+    s32 japanese = FALSE;
+    s32 wasJapanese;
+
+    /* Each run of kana is put between %j and %e, a dot in one is followed by a space, and a
+     * percent sign is doubled. */
+    p = name;
+    for (i = 0; i != 16;) {
+        wasJapanese = japanese;
+        if (entry->game_name[i] < FIRST_KANA) {
+            if (japanese) {
+                *p++ = '%';
+                *p++ = 'e';
+                japanese = FALSE;
+            }
+        } else if (!japanese) {
+            *p++ = '%';
+            *p++ = 'j';
+            japanese = TRUE;
+        }
+        c = DecalCharToAscii(entry->game_name[i]);
+        *p = c;
+        if (c == '\0') {
+            break;
+        }
+        i++;
+        p++;
+        if (c == '.' && wasJapanese) {
+            *p = ' ';
+            c = *p++;
+        }
+        if (c == '%') {
+            *p++ = '%';
+        }
+    }
+    c = DecalCharToAscii(entry->ext_name[0]);
+    if (c != '\0') {
+        if (japanese) {
+            *p++ = '%';
+            *p++ = 'e';
+        }
+        p[0] = ' ';
+        p[1] = '.';
+        p += 2;
+        if (entry->ext_name[0] >= FIRST_KANA) {
+            *p++ = '%';
+            *p++ = 'j';
+        }
+        *p++ = c;
+        *p = '\0';
+    } else {
+        *p = '\0';
+    }
+#else
     for (p = name, i = 0; p != name + 16; i++) {
         c = DecalCharToAscii(entry->game_name[i]);
         *p = c;
@@ -102,13 +175,14 @@ static void DrawNote(s32 note) {
     } else {
         p[0] = '\0';
     }
+#endif
 
     SetTextAlignLeft();
     SetNoteColors(note);
-    DrawText(name, 0x62, y);
+    DrawText(name, NOTE_NAME_X, y);
     sprintf(text, "%d", entry->file_size >> PAK_PAGE_SHIFT);
     SetTextAlignRight();
-    DrawText(text, 0xF4, y);
+    DrawText(text, NOTE_PAGES_X, y);
 }
 
 void ProcessPakMenuScreen(void) {
@@ -122,7 +196,7 @@ void ProcessPakMenuScreen(void) {
     if (!g_bPakMenuInitialized) {
         g_bPakMenuInitialized = TRUE;
         g_bPakDirLoaded = FALSE;
-#if TGR_REGION == TGR_REGION_EU
+#if TGR_REGION != TGR_REGION_US
         g_dwKeepScreenBlanked = TRUE;
         BlankDisplay();
         StartHighResFrame();
@@ -145,7 +219,7 @@ void ProcessPakMenuScreen(void) {
         gControllerPakState = 0;
         g_bPakMenuState = PAK_MENU_READ_DIRECTORY;
         SetFadeTarget(1.0f, PAK_MENU_FADE_STEP);
-#if TGR_REGION == TGR_REGION_EU
+#if TGR_REGION != TGR_REGION_US
         /* The flag is already clear. */
         g_dwKeepScreenBlanked = FALSE;
 #endif
@@ -169,12 +243,19 @@ void ProcessPakMenuScreen(void) {
     SetTextAlignLeft();
     SetTextSize(0xC);
     DrawText("%yw#", 0x48, 0x34);
+#if TGR_REGION == TGR_REGION_JP
+    SetTextSize(13);
+    DrawText("%yw%jゲームノート", 0x74, 0x34);
+    SetTextAlignRight();
+    DrawText("%yw%jページ", 0xFA, 0x34);
+#else
     DrawText("%ywGAME NOTE", 0x74, 0x34);
     SetTextAlignRight();
     DrawText("%ywPAGES", 0xFA, 0x34);
+#endif
 
     /* The numbers of the notes, then the notes the directory holds. */
-    SetTextSize(9);
+    SetTextSize(NOTE_TEXT_SIZE);
     y = TABLE_TOP;
     for (note = 0; note < PAK_NOTES; note++) {
         sprintf(text, "%d", note + 1);
@@ -273,14 +354,19 @@ void ProcessPakMenuScreen(void) {
         break;
 
     case PAK_MENU_CONFIRM_DELETE:
-        width = g_bPakSelectedNote + 1 < 10 ? 0x128 : 0x134;
+        width = g_bPakSelectedNote + 1 < 10 ? DELETE_WIDTH : DELETE_WIDE_WIDTH;
         buttonY = 0x110 - g_texButtonA.height;
         left = (DIALOG_SCREEN_WIDTH - width) >> 1;
         DrawRectBorder(left, 0xC8, width, 0x50, 3, 0, 0, 0x80, 0x80, 0x80);
         SetTextAlignCenter();
         SetTextStyleNormal();
-        SetTextSize(0xC);
+        SetTextSize(DIALOG_TEXT_SIZE);
+#if TGR_REGION == TGR_REGION_JP
+        /* The question mark is the glyph of the code of %, so the format writes it as four. */
+        sprintf(prompt, "%%yw%%jゲームノートを消しますか%%%%%%e NO%d", g_bPakSelectedNote + 1);
+#else
         sprintf(prompt, "%%ywDELETE GAME NOTE #%d?", g_bPakSelectedNote + 1);
+#endif
         DrawText(prompt, 0x9F, 0x73);
         SetTextAlignLeft();
         SetTextSize(0xA);
@@ -304,9 +390,14 @@ void ProcessPakMenuScreen(void) {
         DrawRectBorder(0xB1, 0xCB, 0x11E, 0x4A, 3, 0, 0, 0x80, 0x80, 0x80);
         SetTextAlignCenter();
         SetTextStyleNormal();
-        SetTextSize(0xC);
+        SetTextSize(DIALOG_TEXT_SIZE);
+#if TGR_REGION == TGR_REGION_JP
+        DrawText("%jコントローラパックに", 0x9F, 0x75);
+        DrawText(" %jエラーが発生しました。", 0x9F, 0x83);
+#else
         DrawText("%ywCONTROLLER PAK ERROR", 0x9F, 0x75);
         DrawText("%ywHAS BEEN DETECTED", 0x9F, 0x83);
+#endif
         if (input->buttons & (INPUT_START | INPUT_A | INPUT_B)) {
             TransferFlags(input, INPUT_START | INPUT_A | INPUT_B);
             g_bPakMenuState = PAK_MENU_EXIT;
@@ -368,6 +459,14 @@ void ProcessPakMenuScreen(void) {
     case PAK_MENU_NEW_PAK:
         SetTextStyleNormal();
         SetTextAlignLeft();
+#if TGR_REGION == TGR_REGION_JP
+        DrawRectBorder(0x99, 0xB5, 0x14E, 0x89, 3, 0, 0, 0x80, 0x80, 0x80);
+        SetTextSize(14);
+        DrawText("%jあたらしいコントローラパックが", 0x54, 0x6A);
+        DrawText("%jさしこまれています。", 0x54, 0x77);
+        DrawText("%jこのコントローラパックを、", 0x54, 0x8A);
+        DrawText("%j使います。", 0x54, 0x97);
+#else
 #if TGR_REGION == TGR_REGION_EU
         DrawRectBorder(0xAF, 0xB5, 0x122, 0x89, 3, 0, 0, 0x80, 0x80, 0x80);
         SetTextSize(0xC);
@@ -379,6 +478,7 @@ void ProcessPakMenuScreen(void) {
         DrawText("%ywWAS INSERTED.", 0x5F, 0x77);
         DrawText("%ywTHIS CONTROLLER PAK", 0x5F, 0x8A);
         DrawText("%ywWILL BE USED.", 0x5F, 0x97);
+#endif
         if (input->buttons & (INPUT_Z | INPUT_A | INPUT_B)) {
             TransferFlags(input, INPUT_Z | INPUT_A | INPUT_B);
             g_bPakDirLoaded = FALSE;
@@ -419,7 +519,7 @@ void ProcessPakMenuScreen(void) {
         StartHighResFrame();
         ClearScreen(0, 0, 0);
         FlushDisplayList();
-#if TGR_REGION == TGR_REGION_EU
+#if TGR_REGION != TGR_REGION_US
         g_dwKeepScreenBlanked = TRUE;
         BlankDisplay();
 #else
@@ -428,14 +528,13 @@ void ProcessPakMenuScreen(void) {
         StartHighResFrame();
         ClearScreen(0, 0, 0);
         FlushDisplayList();
-#if TGR_REGION == TGR_REGION_EU
+#if TGR_REGION != TGR_REGION_US
         g_dwKeepScreenBlanked = FALSE;
 #endif
         SetCurrentScreenCallback(MainMenuEntry);
     }
     g_wSerialInterfaceIdle = 1;
 }
-#endif
 
 #if TGR_REGION == TGR_REGION_US
 #define UNUSED_ABOVE 6
