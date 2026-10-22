@@ -33579,9 +33579,9 @@ dlabel D_8028DF98
     /* 8EF9C 8028DF9C 00000000 */ .word 0x00000000
 enddlabel D_8028DF98
 
-nonmatching D_8028DFA0
+nonmatching g_abLargeFontGradient
 
-dlabel D_8028DFA0
+dlabel g_abLargeFontGradient
     /* 8EFA0 8028DFA0 FFFFFFFF */ .word 0xFFFFFFFF
     /* 8EFA4 8028DFA4 FFFFFFFF */ .word 0xFFFFFFFF
     /* 8EFA8 8028DFA8 FFFFFFFF */ .word 0xFFFFFFFF
@@ -33662,11 +33662,11 @@ dlabel D_8028DFA0
     /* 8F0D4 8028E0D4 00000000 */ .word 0x00000000
     /* 8F0D8 8028E0D8 00000000 */ .word 0x00000000
     /* 8F0DC 8028E0DC 00000000 */ .word 0x00000000
-enddlabel D_8028DFA0
+enddlabel g_abLargeFontGradient
 
-nonmatching D_8028E0E0
+nonmatching g_abLargeFontShadowGradient
 
-dlabel D_8028E0E0
+dlabel g_abLargeFontShadowGradient
     /* 8F0E0 8028E0E0 88888888 */ .word 0x88888888
     /* 8F0E4 8028E0E4 88888888 */ .word 0x88888888
     /* 8F0E8 8028E0E8 88888888 */ .word 0x88888888
@@ -33747,7 +33747,7 @@ dlabel D_8028E0E0
     /* 8F214 8028E214 77777777 */ .word 0x77777777
     /* 8F218 8028E218 77777777 */ .word 0x77777777
     /* 8F21C 8028E21C 77777777 */ .word 0x77777777
-enddlabel D_8028E0E0
+enddlabel g_abLargeFontShadowGradient
 
 nonmatching g_abSmallFontGradient
 
@@ -41886,9 +41886,9 @@ dlabel g_aBitmapFontNarrow
     /* 9305E 8029205E */ .short 0x0000
 enddlabel g_aBitmapFontNarrow
 
-nonmatching g_aSmallFontTexture
+nonmatching g_aLargeFontTexture
 
-dlabel g_aSmallFontTexture
+dlabel g_aLargeFontTexture
     /* 93060 80292060 00000000 */ .word 0x00000000
     /* 93064 80292064 00000000 */ .word 0x00000000
     /* 93068 80292068 00000000 */ .word 0x00000000
@@ -45833,7 +45833,7 @@ dlabel g_aSmallFontTexture
     /* 96DF4 80295DF4 00000A0F */ .word 0x00000A0F
     /* 96DF8 80295DF8 8FFFFFFF */ .word 0x8FFFFFFF
     /* 96DFC 80295DFC FF8F0F0F */ .word 0xFF8F0F0F
-enddlabel g_aSmallFontTexture
+enddlabel g_aLargeFontTexture
 
 .align 2
 nonmatching g_adwHudFont0GlyphOffsets
@@ -55985,9 +55985,9 @@ dlabel g_adwHudFont0GlyphOffsets
     /* A0C5C 8029FC5C 00000000 */ .word 0x00000000
 enddlabel g_adwHudFont0GlyphOffsets
 
-nonmatching D_8029FC60
+nonmatching g_aSmallFontTexture
 
-dlabel D_8029FC60
+dlabel g_aSmallFontTexture
     /* A0C60 8029FC60 00000000 */ .word 0x00000000
     /* A0C64 8029FC64 00000000 */ .word 0x00000000
     /* A0C68 8029FC68 00000000 */ .word 0x00000000
@@ -56220,7 +56220,7 @@ dlabel D_8029FC60
     /* A0FF4 8029FFF4 00010000 */ .word 0x00010000
     /* A0FF8 8029FFF8 00000000 */ .word 0x00000000
     /* A0FFC 8029FFFC 00000001 */ .word 0x00000001
-enddlabel D_8029FC60
+enddlabel g_aSmallFontTexture
 
 nonmatching g_abAudioByteTableBase
 

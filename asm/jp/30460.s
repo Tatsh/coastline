@@ -56,10 +56,10 @@ glabel RenderTextToDisplayList
     /* 30504 8022F504 AFAE0074 */  sw         $t6, 0x74($sp)
     /* 30508 8022F508 11C00010 */  beqz       $t6, .L8022F54C
     /* 3050C 8022F50C 01C07825 */   or        $t7, $t6, $zero
-    /* 30510 8022F510 3C19802A */  lui        $t9, %hi(D_8029FC60)
+    /* 30510 8022F510 3C19802A */  lui        $t9, %hi(g_aSmallFontTexture)
     /* 30514 8022F514 3C17802A */  lui        $s7, %hi(g_adwSmallFontGlyphOffsets)
     /* 30518 8022F518 24180188 */  addiu      $t8, $zero, 0x188
-    /* 3051C 8022F51C 2739FC60 */  addiu      $t9, $t9, %lo(D_8029FC60)
+    /* 3051C 8022F51C 2739FC60 */  addiu      $t9, $t9, %lo(g_aSmallFontTexture)
     /* 30520 8022F520 3C1F8029 */  lui        $ra, %hi(g_abSmallFontGradient)
     /* 30524 8022F524 3C118029 */  lui        $s1, %hi(g_abSmallFontShadowGradient)
     /* 30528 8022F528 24100014 */  addiu      $s0, $zero, 0x14
@@ -72,19 +72,19 @@ glabel RenderTextToDisplayList
     /* 30544 8022F544 1000000F */  b          .L8022F584
     /* 30548 8022F548 AFA201F0 */   sw        $v0, 0x1F0($sp)
   .L8022F54C:
-    /* 3054C 8022F54C 3C0F8029 */  lui        $t7, %hi(g_aSmallFontTexture)
+    /* 3054C 8022F54C 3C0F8029 */  lui        $t7, %hi(g_aLargeFontTexture)
     /* 30550 8022F550 3C17802A */  lui        $s7, %hi(g_adwLargeFontGlyphOffsets)
     /* 30554 8022F554 240E02C0 */  addiu      $t6, $zero, 0x2C0
-    /* 30558 8022F558 25EF2060 */  addiu      $t7, $t7, %lo(g_aSmallFontTexture)
-    /* 3055C 8022F55C 3C1F8029 */  lui        $ra, %hi(D_8028DFA0)
-    /* 30560 8022F560 3C118029 */  lui        $s1, %hi(D_8028E0E0)
+    /* 30558 8022F558 25EF2060 */  addiu      $t7, $t7, %lo(g_aLargeFontTexture)
+    /* 3055C 8022F55C 3C1F8029 */  lui        $ra, %hi(g_abLargeFontGradient)
+    /* 30560 8022F560 3C118029 */  lui        $s1, %hi(g_abLargeFontShadowGradient)
     /* 30564 8022F564 24100028 */  addiu      $s0, $zero, 0x28
     /* 30568 8022F568 24160007 */  addiu      $s6, $zero, 0x7
     /* 3056C 8022F56C 26F73A00 */  addiu      $s7, $s7, %lo(g_adwLargeFontGlyphOffsets)
     /* 30570 8022F570 AFAE01BC */  sw         $t6, 0x1BC($sp)
     /* 30574 8022F574 AFAF01B8 */  sw         $t7, 0x1B8($sp)
-    /* 30578 8022F578 27FFDFA0 */  addiu      $ra, $ra, %lo(D_8028DFA0)
-    /* 3057C 8022F57C 2631E0E0 */  addiu      $s1, $s1, %lo(D_8028E0E0)
+    /* 30578 8022F578 27FFDFA0 */  addiu      $ra, $ra, %lo(g_abLargeFontGradient)
+    /* 3057C 8022F57C 2631E0E0 */  addiu      $s1, $s1, %lo(g_abLargeFontShadowGradient)
     /* 30580 8022F580 AFA201F0 */  sw         $v0, 0x1F0($sp)
   .L8022F584:
     /* 30584 8022F584 0010C280 */  sll        $t8, $s0, 10
@@ -383,10 +383,10 @@ glabel RenderTextToDisplayList
     /* 309F0 8022F9F0 241802C0 */   addiu     $t8, $zero, 0x2C0
     /* 309F4 8022F9F4 340E9C00 */  ori        $t6, $zero, 0x9C00
     /* 309F8 8022F9F8 01D5001A */  div        $zero, $t6, $s5
-    /* 309FC 8022F9FC 3C198029 */  lui        $t9, %hi(g_aSmallFontTexture)
+    /* 309FC 8022F9FC 3C198029 */  lui        $t9, %hi(g_aLargeFontTexture)
     /* 30A00 8022FA00 00007812 */  mflo       $t7
     /* 30A04 8022FA04 3C17802A */  lui        $s7, %hi(g_adwLargeFontGlyphOffsets)
-    /* 30A08 8022FA08 27392060 */  addiu      $t9, $t9, %lo(g_aSmallFontTexture)
+    /* 30A08 8022FA08 27392060 */  addiu      $t9, $t9, %lo(g_aLargeFontTexture)
     /* 30A0C 8022FA0C 24100028 */  addiu      $s0, $zero, 0x28
     /* 30A10 8022FA10 24160007 */  addiu      $s6, $zero, 0x7
     /* 30A14 8022FA14 26F73A00 */  addiu      $s7, $s7, %lo(g_adwLargeFontGlyphOffsets)
@@ -415,12 +415,12 @@ glabel RenderTextToDisplayList
     /* 30A60 8022FA60 AFA001CC */  sw         $zero, 0x1CC($sp)
     /* 30A64 8022FA64 24190188 */  addiu      $t9, $zero, 0x188
     /* 30A68 8022FA68 13000015 */  beqz       $t8, .L8022FAC0
-    /* 30A6C 8022FA6C 3C0E802A */   lui       $t6, %hi(D_8029FC60)
+    /* 30A6C 8022FA6C 3C0E802A */   lui       $t6, %hi(g_aSmallFontTexture)
     /* 30A70 8022FA70 240F4C00 */  addiu      $t7, $zero, 0x4C00
     /* 30A74 8022FA74 01F5001A */  div        $zero, $t7, $s5
     /* 30A78 8022FA78 0000C012 */  mflo       $t8
     /* 30A7C 8022FA7C 3C17802A */  lui        $s7, %hi(g_adwSmallFontGlyphOffsets)
-    /* 30A80 8022FA80 25CEFC60 */  addiu      $t6, $t6, %lo(D_8029FC60)
+    /* 30A80 8022FA80 25CEFC60 */  addiu      $t6, $t6, %lo(g_aSmallFontTexture)
     /* 30A84 8022FA84 24100014 */  addiu      $s0, $zero, 0x14
     /* 30A88 8022FA88 24160004 */  addiu      $s6, $zero, 0x4
     /* 30A8C 8022FA8C 26F73ADC */  addiu      $s7, $s7, %lo(g_adwSmallFontGlyphOffsets)
