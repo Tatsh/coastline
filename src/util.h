@@ -34,15 +34,15 @@ extern DisplayListBlock g_aDisplayListBlocks[2][FRAME_DISPLAY_LIST_BLOCKS + 1];
 
 /**
  * @ghidraAddress USA: 0x80372ed0
- * @ghidraAddress JPN: 0x80372ed0
- * @ghidraAddress EUR: 0x80372ed0
+ * @ghidraAddress EUR: 0x803753d0
+ * @ghidraAddress JPN: 0x80374040
  */
 extern Hilite g_aHiliteBlocks[2][FRAME_HILITE_BLOCKS + 1];
 
 /**
  * @ghidraAddress USA: 0x80373170
- * @ghidraAddress JPN: 0x80373170
- * @ghidraAddress EUR: 0x80373170
+ * @ghidraAddress EUR: 0x80375670
+ * @ghidraAddress JPN: 0x803742e0
  */
 extern LookAt g_aLightBlocks[2][FRAME_LIGHT_BLOCKS + 1];
 

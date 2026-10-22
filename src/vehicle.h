@@ -114,8 +114,8 @@ extern PlayerProfile *g_pActiveProfile;
  * The profiles of the two players a controller pak saves.
  *
  * @ghidraAddress USA: 0x80324300
- * @ghidraAddress JPN: 0x80325430
- * @ghidraAddress EUR: 0x80326800
+ * @ghidraAddress EUR: 0x80326840
+ * @ghidraAddress JPN: 0x80325470
  */
 extern PlayerProfile g_aSeasonSaveBuffers[2];
 
@@ -267,7 +267,7 @@ extern VehicleModel g_aVehicleModels[];
  * The car whose model each slot holds.
  *
  * @ghidraAddress USA: 0x8031b238
- * @ghidraAddress EUR: 0x8031a378
+ * @ghidraAddress EUR: 0x8031d738
  */
 extern s32 g_adwVehicleModelSlotCars[];
 

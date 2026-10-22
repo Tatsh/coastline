@@ -577,8 +577,8 @@ extern u8 g_abLightRampB[4];
 
 /**
  * @ghidraAddress USA: 0x80318cd0
- * @ghidraAddress JPN: 0x803195e0
- * @ghidraAddress EUR: 0x8031a9b0
+ * @ghidraAddress EUR: 0x8031c1b0
+ * @ghidraAddress JPN: 0x8031adf8
  */
 extern Vp g_aViewports[VIEWPORTS];
 

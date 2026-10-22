@@ -92,8 +92,8 @@ extern MenuItem *g_apOptionsMenuItems[];
  * The volume of the music and of the effects at each level.
  *
  * @ghidraAddress USA: 0x80272488
+ * @ghidraAddress EUR: 0x80274438
  * @ghidraAddress JPN: 0x80273ee8
- * @ghidraAddress EUR: 0x8027443c
  */
 extern s32 g_adwBgmVolumeLevels[VOLUME_LEVELS];
 
@@ -462,8 +462,8 @@ void InitAllRumblePaks(void);
  *
  * @return Whether a controller lacks a Rumble Pak.
  * @ghidraAddress USA: 0x80214cb0
- * @ghidraAddress JPN: 0x80215744
- * @ghidraAddress EUR: 0x80215cb8
+ * @ghidraAddress EUR: 0x80215d7c
+ * @ghidraAddress JPN: 0x80215808
  */
 s32 IsRumblePakMissing(void);
 
