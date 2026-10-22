@@ -4,11 +4,11 @@ Reconstruction status of Top Gear Rally. The three Nintendo 64 releases form one
 keyed on the USA release, and the two PC port libraries form another, keyed on the Direct3D
 library. A routine is done when a source file under `src` or `3rdparty` tags its address, for example
 `@ghidraAddress USA: 0x80234abc` in a Doxygen block or `// USA: 0x80234abc` on a definition.
-A routine marked as a stub (an `@stub` tag in its Doxygen block, or `(stub)` after its
-address) is shown with :construction: and is not counted as done. A routine tagged in a
-header with no body in the tree yet is shown with :memo: and is not counted as done.
-A `(stub)` after a JPN or EUR address marks a routine whose code in that release differs
-from the USA body the tree has, until the source carries the code of that release.
+A routine marked as a stub (an `@stub` tag in its Doxygen block) is shown with
+🚧 and is not counted as done. `@stub{EUR JPN}` marks only the
+releases it lists, for a routine whose code in those releases differs from the body the
+tree has. A routine tagged in a header with no body in the tree yet is shown with
+📝 and is not counted as done.
 
 Routines the compiler or the linker supplies are counted and excluded. The N64 SDK
 (libultra) and the IPL3 boot code are reconstructed and counted. zlib is imported under
@@ -27,14 +27,14 @@ python3 .wiswa-ci/progress/progress.py
 1. Choose the N64 toolchain and add the CMake toolchain file.
 2. Reconstruct the USA ROM, one subsystem directory under `src` at a time, in the order of
    the parts below (largest routines first).
-3. Port each routine to the JPN and EUR releases, and reconstruct the routines only those
+3. Port each routine to the EUR and JPN releases, and reconstruct the routines only those
    releases have.
 4. Reconstruct the PC port from the two libraries, reusing the N64 sources where the port
    retained them.
 
 ## Nintendo 64
 
-The programs are `usa.z64`, `jpn.z64`, `eur.z64`.
+The programs are `usa.z64`, `eur.z64`, `jpn.z64`.
 
 | Measure                                                                           |  Count |
 | --------------------------------------------------------------------------------- | -----: |
@@ -47,8 +47,8 @@ The programs are `usa.z64`, `jpn.z64`, `eur.z64`.
 | Stubbed (not counted as done)                                                     |      0 |
 | Declared only (not counted as done)                                               |      0 |
 | Share done                                                                        | 100.0% |
-| Only in JPN                                                                       |      4 |
 | Only in EUR                                                                       |      1 |
+| Only in JPN                                                                       |      4 |
 
 ### By release
 
@@ -57,25 +57,23 @@ A routine counts for a release when its address in that release is tagged.
 | Release   | Routines | Done |  Share |
 | --------- | -------: | ---: | -----: |
 | `usa.z64` |      801 |  801 | 100.0% |
-| `jpn.z64` |      821 |  666 |  81.1% |
-| `eur.z64` |      819 |  688 |  84.0% |
+| `eur.z64` |      819 |  691 |  84.4% |
+| `jpn.z64` |      821 |  669 |  81.5% |
 
 ### Matching
 
-A routine of the USA release matches when IDO 5.3 compiles its source (the game at
-`-O2`, libultra at `-O1`, `-O2`, or `-O3`) to the words of the original, with the
-fields that relocations fill masked. Assembly sources are assembled and compared the
-same way. A routine whose source IDO cannot compile is unknown. Run the matching
-scan under `.wiswa-ci/tools` before this report to regenerate the table.
+A routine of a release matches when IDO 5.3 compiles its source for that release
+(the game at `-O2`, libultra at `-O1`, `-O2`, or `-O3`) to the words of the
+original, with the fields that relocations fill masked. Assembly sources are
+assembled and compared the same way. A routine the scan does not reach is unknown.
+Run the matching scan under `.wiswa-ci/tools` for each release (`--region us`, `eu`,
+and `jp`) before this report to regenerate the table.
 
-| Measure                                         | Count |
-| ----------------------------------------------- | ----: |
-| Routines of the USA release                     |   801 |
-| Compiled by IDO or assembled                    |   801 |
-| Matching                                        |   627 |
-| Not matching                                    |   174 |
-| Unknown (the source does not compile under IDO) |     0 |
-| Share matching                                  | 78.3% |
+| Release   | Routines | Matching | Not matching | Unknown | Share |
+| --------- | -------: | -------: | -----------: | ------: | ----: |
+| `usa.z64` |      801 |      627 |          174 |       0 | 78.3% |
+| `eur.z64` |      819 |      622 |          197 |       0 | 75.9% |
+| `jpn.z64` |      821 |      610 |          211 |       0 | 74.3% |
 
 ### By component
 
