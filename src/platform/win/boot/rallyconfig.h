@@ -27,10 +27,12 @@ public:
 extern RallyConfig g_GlobalRallyConfig;
 
 /**
- * Read BossRally.ini and apply the command line on top of it.
+ * Read BossRally.ini and apply the command line on top of it. Each line sets the key it begins
+ * with, and each key found anywhere on the command line is set again.
  *
  * @param pszCmdLine Command line the launcher received.
  * @ghidraAddress BRD3D: 0x10007bd0
  * @ghidraAddress BRGlide: 0x10007f40
+ * @stub{BRGlide}
  */
 void LoadBossRallyIniSettings(LPSTR pszCmdLine);

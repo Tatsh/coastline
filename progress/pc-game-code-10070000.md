@@ -1,6 +1,6 @@
 # PC port game code from 0x10070000 to 0x10080000
 
-1 of 233 routines done.
+7 of 233 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -56,9 +56,9 @@ the same name, for a routine the port retained from the N64 game.
 | `SetSoundBufferStereoLevels`               |        |                 |      3 |    235 | `0x10072820` | `0x1006b790` | `undefined SetSoundBufferStereoLevels()`                                                                           |
 | `WritePlayerStatusPacket`                  |        |                 |      1 |    234 | `0x10071f40` | `0x1006aeb0` | `undefined WritePlayerStatusPacket()`                                                                              |
 | `WaveLoadFile`                             |        |                 |      1 |    229 | `0x10076fa0` | `0x10070280` | `undefined WaveLoadFile()`                                                                                         |
-| `RunMessageLoop`                           |   📝   |                 |      1 |    215 | `0x10079740` | `0x10019730` | `undefined RunMessageLoop()`                                                                                       |
+| `RunMessageLoop`                           |   ✅   |                 |      1 |    215 | `0x10079740` | `0x10019730` | `void RunMessageLoop(void)`                                                                                        |
 | `InitializeDirectInput`                    |        |                 |      1 |    213 | `0x10078cd0` | `0x10071fc0` | `undefined InitializeDirectInput()`                                                                                |
-| `LoadStringTableFromDll`                   |   📝   |                 |      1 |    208 | `0x10073f60` | `0x1006d1a0` | `undefined LoadStringTableFromDll()`                                                                               |
+| `LoadStringTableFromDll`                   |   ✅   |                 |      1 |    208 | `0x10073f60` | `0x1006d1a0` | `void LoadStringTableFromDll(void)`                                                                                |
 | `ComputeDeltaQuaternion`                   |        | ✅ `0x80258248` |      7 |    206 | `0x100742d0` | `0x1006d530` | `void ComputeDeltaQuaternion(int pTransform)`                                                                      |
 | `WaveReadFile`                             |        |                 |      1 |    205 | `0x10076ed0` | `0x100701b0` | `undefined WaveReadFile()`                                                                                         |
 | `RallyMain`                                |   ✅   |                 |      2 |    203 | `0x10079820` | `0x1001cc00` | `undefined RallyMain()`                                                                                            |
@@ -98,7 +98,7 @@ the same name, for a routine the port retained from the N64 game.
 | `ResetAllNetworkPlayerStreams`             |        |                 |      1 |    110 | `0x10071b80` | `0x1006aaf0` | `undefined ResetAllNetworkPlayerStreams()`                                                                         |
 | `ResetAudioSubsystem`                      |        |                 |      4 |    109 | `0x100734f0` | `0x1006c460` | `undefined ResetAudioSubsystem()`                                                                                  |
 | `FindDisplayDeviceByGuid`                  |        |                 |      3 |    108 | `0x1007a7d0` |              | `undefined FindDisplayDeviceByGuid()`                                                                              |
-| `InitializeApplication`                    |   📝   |                 |      1 |    107 | `0x100796b0` |              | `undefined InitializeApplication()`                                                                                |
+| `InitializeApplication`                    |   ✅   |                 |      1 |    107 | `0x100796b0` |              | `BOOL InitializeApplication(void)`                                                                                 |
 | `SelectVehiclePhysicsTables`               |        |                 |      1 |    106 | `0x10070580` | `0x10069530` | `undefined SelectVehiclePhysicsTables()`                                                                           |
 | `Vehicle::InstallVehicleModel`             |        |                 |      1 |    104 | `0x10076a70` | `0x1006fce0` | `undefined InstallVehicleModel(Vehicle * this, undefined4 param_1, undefined4 param_2)`                            |
 | `Vehicle::UpdateVehicleGridPosition`       |        |                 |      1 |    104 | `0x10075960` | `0x1006ebc0` | `undefined UpdateVehicleGridPosition(Vehicle * this)`                                                              |
@@ -115,8 +115,8 @@ the same name, for a routine the port retained from the N64 game.
 | `NetStream::StreamWriteInt32`              |        |                 |      2 |     88 | `0x10073e10` | `0x1006d050` | `undefined StreamWriteInt32(NetStream * this, undefined4 param_1)`                                                 |
 | `ShutdownDirectInput`                      |        |                 |      1 |     87 | `0x10078db0` | `0x100720a0` | `undefined ShutdownDirectInput()`                                                                                  |
 | `NetworkWorkerThreadProc`                  |        |                 |      1 |     84 | `0x10071680` | `0x1006a5f0` | `undefined NetworkWorkerThreadProc()`                                                                              |
-| `DestroyMainWindow`                        |        |                 |      1 |     83 | `0x10079c40` |              | `undefined DestroyMainWindow()`                                                                                    |
 | `WritePlayerRankingPacket`                 |        |                 |      1 |     83 | `0x10072110` | `0x1006b080` | `undefined WritePlayerRankingPacket()`                                                                             |
+| `DestroyMainWindow`                        |   ✅   |                 |      1 |     83 | `0x10079c40` |              | `int DestroyMainWindow(void)`                                                                                      |
 | `Mtx3fMultiply`                            |        | ✅ `0x80258ef8` |      5 |     81 | `0x10074ac0` | `0x1006dd20` | `undefined Mtx3fMultiply()`                                                                                        |
 | `ApplySoundBufferVolume`                   |        |                 |      2 |     79 | `0x100724d0` | `0x1006b440` | `undefined ApplySoundBufferVolume()`                                                                               |
 | `ClearNetworkPlayerSlotsByOwner`           |        |                 |      1 |     79 | `0x10071480` | `0x1006a3f0` | `undefined ClearNetworkPlayerSlotsByOwner()`                                                                       |
@@ -202,14 +202,14 @@ the same name, for a routine the port retained from the N64 game.
 | `PlayLoopedSoundVoiceWithStereo`           |        |                 |      1 |     29 | `0x10072b10` | `0x1006ba80` | `undefined PlayLoopedSoundVoiceWithStereo()`                                                                       |
 | `TryAcquireJoystickDevice`                 |        |                 |      4 |     28 | `0x100773d0` | `0x100706b0` | `undefined TryAcquireJoystickDevice()`                                                                             |
 | `ConstructNetworkPlayerStreams`            |        |                 |      1 |     28 | `0x100715e0` | `0x1006a550` | `undefined ConstructNetworkPlayerStreams()`                                                                        |
-| `GetStringResource`                        |   📝   |                 |    296 |     27 | `0x10074030` | `0x1006d280` | `LPCSTR GetStringResource(uint nResourceId)`                                                                       |
+| `GetStringResource`                        |   ✅   |                 |    296 |     27 | `0x10074030` | `0x1006d280` | `LPCSTR GetStringResource(uint nResourceId)`                                                                       |
 | `SetSoundVoiceStereo`                      |        |                 |      2 |     27 | `0x10072b80` | `0x1006baf0` | `undefined SetSoundVoiceStereo()`                                                                                  |
 | `HandleWindowCommand`                      |        |                 |      1 |     27 | `0x1007a1a0` |              | `undefined HandleWindowCommand()`                                                                                  |
 | `InitializeTextureUploadQueue`             |        |                 |      1 |     27 | `0x10074f20` | `0x1006e180` | `undefined InitializeTextureUploadQueue()`                                                                         |
 | `ResetNetworkStreamWithTimestamp`          |        |                 |      1 |     27 | `0x10071bf0` | `0x1006ab60` | `undefined ResetNetworkStreamWithTimestamp()`                                                                      |
 | `PlaySoundChannelOneWithStereo`            |        |                 |      1 |     26 | `0x10072a70` | `0x1006b9e0` | `undefined PlaySoundChannelOneWithStereo()`                                                                        |
 | `NetStream::StreamIsAtEnd`                 |        |                 |      4 |     25 | `0x10073d40` | `0x1006cf80` | `undefined StreamIsAtEnd(NetStream * this)`                                                                        |
-| `ShutdownMainWindow`                       |   📝   |                 |      1 |     25 | `0x10079720` |              | `undefined ShutdownMainWindow()`                                                                                   |
+| `ShutdownMainWindow`                       |   ✅   |                 |      1 |     25 | `0x10079720` |              | `void ShutdownMainWindow(void)`                                                                                    |
 | `HandleWindowActivate`                     |        |                 |      1 |     24 | `0x1007a070` |              | `undefined HandleWindowActivate()`                                                                                 |
 | `HandleWindowMove`                         |        |                 |      1 |     24 | `0x1007a380` |              | `undefined HandleWindowMove()`                                                                                     |
 | `NetStream::StreamSkip`                    |        |                 |      1 |     24 | `0x10073ba0` | `0x1006cde0` | `undefined StreamSkip(NetStream * this, undefined4 param_1)`                                                       |

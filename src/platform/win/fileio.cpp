@@ -1,0 +1,127 @@
+#include "platform/win/fileio.h"
+
+#include <stdlib.h>
+#include <string.h>
+
+/* The size of the buffer of a message to the debugger. */
+#define MESSAGE_SIZE 1024
+
+BOOL g_bVerboseFileTrace;
+
+long GetFileLength(GameFile *pFile) {
+    long nPosition = ftell(pFile->pFile);
+    long nLength;
+
+    fseek(pFile->pFile, 0, SEEK_END);
+    nLength = ftell(pFile->pFile);
+    fseek(pFile->pFile, nPosition, SEEK_SET);
+    return nLength;
+}
+
+GameFile *FileOpenForReading(const char *pszPath) {
+    char szMessage[MESSAGE_SIZE];
+    GameFile *pFile;
+    FILE *pErrorFile;
+
+    pFile =
+        static_cast<GameFile *>(AllocateMemoryChecked(sizeof(GameFile), "CHK_FReadOpen():pfil"));
+    pFile->pszPath =
+        static_cast<char *>(AllocateMemoryChecked(strlen(pszPath) + 1, "CHK_FReadOpen():szName"));
+    strcpy(pFile->pszPath, pszPath);
+    if (g_bVerboseFileTrace) {
+        sprintf(szMessage, "CHK_FReadOpen(%s)\n", pFile->pszPath);
+        OutputDebugStringA(szMessage);
+    }
+    pFile->pFile = fopen(pFile->pszPath, "rb");
+    if (pFile->pFile == NULL) {
+        pErrorFile = fopen("c:\\RallyError.txt", "w");
+        sprintf(szMessage, "CHK_FReadOpen(): error opening file %s.\n", pFile->pszPath);
+        /* The original passes the message to fprintf() as the format. */
+        fputs(szMessage, pErrorFile);
+        OutputDebugStringA(szMessage);
+        fclose(pErrorFile);
+        exit(1);
+    }
+    return pFile;
+}
+
+char *FileReadLine(char *pszLine, int nSize, GameFile *pFile) {
+    int nCount;
+    int c;
+
+    for (nCount = 0; nCount < nSize; nCount++) {
+        c = fgetc(pFile->pFile);
+        if (c == EOF) {
+            if (nCount == 0) {
+                return NULL;
+            }
+            *pszLine = '\0';
+            return pszLine + 1;
+        }
+        if (c == '\r') {
+            *pszLine++ = '\n';
+            *pszLine++ = '\0';
+            /* A line feed after the carriage return belongs to the same line. */
+            c = fgetc(pFile->pFile);
+            if (c != EOF && c != '\n') {
+                ungetc(c, pFile->pFile);
+            }
+            return pszLine;
+        }
+        if (c == '\n') {
+            *pszLine++ = '\n';
+            *pszLine = '\0';
+            return pszLine + 1;
+        }
+        *pszLine++ = static_cast<char>(c);
+    }
+    return pszLine;
+}
+
+void FileClose(GameFile *pFile) {
+    char szMessage[MESSAGE_SIZE];
+
+    if (g_bVerboseFileTrace) {
+        sprintf(szMessage, "CHK_FClose(%s)\n", pFile->pszPath);
+        OutputDebugStringA(szMessage);
+    }
+    if (fclose(pFile->pFile) == EOF) {
+        sprintf(szMessage, "CHK_FClose(): error closing file %s.\n", pFile->pszPath);
+        OutputDebugStringA(szMessage);
+        exit(1);
+    }
+    free(pFile->pszPath);
+    free(pFile);
+}
+
+BOOL FileExists(const char *pszPath) {
+    char szMessage[MESSAGE_SIZE];
+    FILE *pFile;
+
+    if (g_bVerboseFileTrace) {
+        sprintf(szMessage, "CHK_FileExists(%s)\n", pszPath);
+        OutputDebugStringA(szMessage);
+    }
+    pFile = fopen(pszPath, "rb");
+    if (pFile == NULL) {
+        return FALSE;
+    }
+    fclose(pFile);
+    return TRUE;
+}
+
+void *AllocateMemoryChecked(int nSize, const char *szCaller) {
+    char szMessage[MESSAGE_SIZE];
+    void *pMemory;
+
+    if (nSize == 0) {
+        return NULL;
+    }
+    pMemory = malloc(nSize);
+    if (pMemory == NULL) {
+        sprintf(szMessage, "CHK_AllocateMemory(): Out of memory: couldn't allocate %s\n", szCaller);
+        OutputDebugStringA(szMessage);
+        exit(1);
+    }
+    return pMemory;
+}

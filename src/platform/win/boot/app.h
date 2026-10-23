@@ -44,6 +44,111 @@ extern LPSTR g_pszRallyMainCmdLine;
 extern int g_nRallyMainCmdShow;
 
 /**
+ * The amount of physical memory of the machine, in bytes.
+ *
+ * @ghidraAddress BRD3D: 0x1022b348
+ * @ghidraAddress BRGlide: 0x10226e78
+ */
+extern DWORD g_dwTotalPhysicalMemory;
+
+/**
+ * The module of the game, set by InitializeApplication().
+ *
+ * @ghidraAddress BRD3D: 0x118abe20
+ */
+extern HINSTANCE g_hAppInstance;
+
+/**
+ * The main window.
+ *
+ * @ghidraAddress BRD3D: 0x10680584
+ */
+extern HWND g_hMainWindow;
+
+/**
+ * The keyboard accelerators of the main window.
+ *
+ * @ghidraAddress BRD3D: 0x118abe24
+ */
+extern HACCEL g_hAccelTable;
+
+/**
+ * Name of the window class of the main window.
+ *
+ * @ghidraAddress BRD3D: 0x100bd594
+ */
+extern LPCSTR g_pszMainWindowClassName;
+
+/**
+ * Whether the application is active. A frame runs only while it, g_dwActivateState, and not
+ * g_dwActivateMinimized are set.
+ *
+ * @ghidraAddress BRD3D: 0x10680598
+ */
+extern DWORD g_dwAppActive;
+
+/**
+ * Whether the main window is activated.
+ *
+ * @ghidraAddress BRD3D: 0x1068059c
+ */
+extern DWORD g_dwActivateState;
+
+/**
+ * Whether the main window is minimised.
+ *
+ * @ghidraAddress BRD3D: 0x106805a0
+ */
+extern DWORD g_dwActivateMinimized;
+
+/** The DirectDraw renderer of a window. The layout is not recovered yet. */
+class DirectDrawRenderer {
+public:
+    /**
+     * Release the surfaces and the device of the renderer.
+     *
+     * @ghidraAddress BRD3D: 0x1000a1c0
+     */
+    void Cleanup();
+};
+
+/**
+ * The renderer of the main window.
+ *
+ * @ghidraAddress BRD3D: 0x1027736c
+ */
+extern DirectDrawRenderer *g_pMainRenderWindow;
+
+/**
+ * Destroy the main window and its renderer.
+ *
+ * @return 0.
+ * @ghidraAddress BRD3D: 0x10079c40
+ */
+int DestroyMainWindow(void);
+
+/**
+ * Run a frame of the current state of the game.
+ *
+ * @ghidraAddress BRD3D: 0x1002f8f0
+ */
+void DispatchGameStateFrame(void);
+
+/**
+ * Do nothing.
+ *
+ * @ghidraAddress BRD3D: 0x10008b80
+ */
+void NullStub(void);
+
+/**
+ * Initialise DirectPlay.
+ *
+ * @ghidraAddress BRD3D: 0x1003bd80
+ */
+void InitializeDirectPlay(void);
+
+/**
  * Query the installed DirectX version.
  *
  * @param pdwVersion Receives the version, 0x600 for DirectX 6.
@@ -79,7 +184,8 @@ void RefreshTotalPhysicalMemory(void);
 void ReadInstallDirectoryFromRegistry(void);
 
 /**
- * Create the main window and the Direct3D device. Only the Direct3D library has it.
+ * Start the application: refuse DirectX before version 6 and a second instance, then create the
+ * main window. Only the Direct3D library has it.
  *
  * @return Whether the application started.
  * @ghidraAddress BRD3D: 0x100796b0
@@ -100,6 +206,7 @@ BOOL CreateMainWindow(void);
  *
  * @ghidraAddress BRD3D: 0x10079740
  * @ghidraAddress BRGlide: 0x10019730
+ * @stub{BRGlide}
  */
 void RunMessageLoop(void);
 

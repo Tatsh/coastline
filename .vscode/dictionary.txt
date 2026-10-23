@@ -24,6 +24,7 @@ audiomix
 autobrief
 badvaddr
 balign
+bcar
 bcmp
 bcopy
 beql
@@ -36,6 +37,8 @@ bnel
 bnez
 boxz
 bsky
+bsuspension
+btire
 bufbusy
 buildsystems
 bzero
@@ -92,6 +95,7 @@ devmgr
 dfrac
 dialogs
 dinline
+directplay
 disasm
 divdi
 divremi
@@ -171,6 +175,7 @@ gridstarts
 grounddist
 guint
 gwords
+haccel
 handoff
 hasm
 hdlr
@@ -195,6 +200,7 @@ inttypes
 inval
 invaldcache
 invalicache
+invsrcalpha
 iobusy
 isrc
 iwyu
@@ -265,6 +271,7 @@ lyield
 mabi
 mainmenu
 mainpage
+makeintresourcea
 maptlbrdb
 maskt
 math
@@ -335,6 +342,7 @@ pathlib
 permuter
 persp
 perspnorm
+pfil
 pfsallocatefile
 pfschecker
 pfsdeletefile
@@ -374,6 +382,7 @@ racedata
 racemenu
 racerecords
 racesound
+rallyconfig
 ramarray
 ramreadformat
 raydone

@@ -1,6 +1,6 @@
 # PC port game code from 0x10060000 to 0x10070000
 
-0 of 169 routines done.
+1 of 169 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -81,7 +81,7 @@ the same name, for a routine the port retained from the N64 game.
 | `ResetVehicleEffects`                    |        | ✅ `0x802288d4` |      3 |    216 | `0x10065630` | `0x1005e6a0` | `undefined ResetVehicleEffects()`                                                                                                        |
 | `UpdateReplayScrubControls`              |        |                 |      1 |    215 | `0x1006ad10` | `0x10063cc0` | `undefined UpdateReplayScrubControls()`                                                                                                  |
 | `GetBodyPointVelocity`                   |        | ✅ `0x80259c18` |      3 |    214 | `0x1006b510` | `0x100644c0` | `undefined GetBodyPointVelocity()`                                                                                                       |
-| `ReadInstallDirectoryFromRegistry`       |   📝   |                 |      1 |    212 | `0x1006a8a0` | `0x10063860` | `undefined ReadInstallDirectoryFromRegistry()`                                                                                           |
+| `ReadInstallDirectoryFromRegistry`       |   ✅   |                 |      1 |    212 | `0x1006a8a0` | `0x10063860` | `void ReadInstallDirectoryFromRegistry(void)`                                                                                            |
 | `AdvanceAlongTrackRoute`                 |        | ✅ `0x802290c4` |      2 |    204 | `0x10065c80` | `0x1005ecf0` | `undefined AdvanceAlongTrackRoute()`                                                                                                     |
 | `ChooseVehicleCar`                       |        | ✅ `0x80225f88` |      3 |    201 | `0x10063420` | `0x1005c490` | `undefined ChooseVehicleCar()`                                                                                                           |
 | `ComputeDampingForces`                   |        | ✅ `0x8025ef70` |      1 |    200 | `0x1006f650` | `0x10068600` | `undefined ComputeDampingForces()`                                                                                                       |
