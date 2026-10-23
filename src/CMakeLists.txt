@@ -12,9 +12,9 @@ add_library(coastline_common INTERFACE)
 # A reconstructed routine retains the parameters of the original, used or not.
 target_compile_options(coastline_common INTERFACE -Wall -Wextra -Wno-unused-parameter)
 target_include_directories(coastline_common INTERFACE "${CMAKE_SOURCE_DIR}/src")
-if(TGR_PLATFORM STREQUAL "n64")
-  target_include_directories(coastline_common INTERFACE "${CMAKE_SOURCE_DIR}/src/libultra/include")
-endif()
+# The game code the PC port shares with the N64 releases is written with the integer types of
+# libultra, and the PC port includes them too.
+target_include_directories(coastline_common INTERFACE "${CMAKE_SOURCE_DIR}/src/libultra/include")
 
 # Subsystems join this list as their directories are reconstructed.
 set(COASTLINE_SUBSYSTEMS)
@@ -95,6 +95,12 @@ if(TGR_PLATFORM STREQUAL "n64")
     endforeach()
   endif()
   add_library(coastline_game STATIC ${_game_sources})
+  target_link_libraries(coastline_game PRIVATE coastline_common)
+  list(APPEND COASTLINE_LIBRARIES coastline_game)
+else()
+  # The game code the PC port retained from the N64 releases. A source joins this list when every
+  # routine of it that the PC libraries have compiles for them.
+  add_library(coastline_game STATIC vecmath.c)
   target_link_libraries(coastline_game PRIVATE coastline_common)
   list(APPEND COASTLINE_LIBRARIES coastline_game)
 endif()

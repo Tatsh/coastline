@@ -26,6 +26,8 @@ typedef struct {
  * @ghidraAddress USA: 0x8028b790
  * @ghidraAddress EUR: 0x8028da40
  * @ghidraAddress JPN: 0x8028d470
+ * @ghidraAddress BRD3D: 0x10a9bfd0
+ * @ghidraAddress BRGlide: 0x10ac3060
  */
 extern u32 g_dwRandomSeed;
 
@@ -51,6 +53,8 @@ f32 Powf(f32 base, f32 exponent);
  * @ghidraAddress USA: 0x8022439c
  * @ghidraAddress EUR: 0x802256dc
  * @ghidraAddress JPN: 0x80224ecc
+ * @ghidraAddress BRD3D: 0x1003ac30
+ * @ghidraAddress BRGlide: 0x100342b0
  */
 void Vec3fCross(Vec3f *out, Vec3f *a, Vec3f *b);
 
@@ -63,6 +67,8 @@ void Vec3fCross(Vec3f *out, Vec3f *a, Vec3f *b);
  * @ghidraAddress USA: 0x80224404
  * @ghidraAddress EUR: 0x80225744
  * @ghidraAddress JPN: 0x80224f34
+ * @ghidraAddress BRD3D: 0x1003ac90
+ * @ghidraAddress BRGlide: 0x10034310
  */
 f32 Vec3fDot(Vec3f *a, Vec3f *b);
 
@@ -74,6 +80,8 @@ f32 Vec3fDot(Vec3f *a, Vec3f *b);
  * @ghidraAddress USA: 0x80224434
  * @ghidraAddress EUR: 0x80225774
  * @ghidraAddress JPN: 0x80224f64
+ * @ghidraAddress BRD3D: 0x1003acc0
+ * @ghidraAddress BRGlide: 0x10034340
  */
 void Vec3fNegate(Vec3f *out, Vec3f *v);
 
@@ -132,6 +140,8 @@ void Vec3fComponentProduct(Vec3f *out, Vec3f *a, Vec3f *b);
  * @ghidraAddress USA: 0x802244fc
  * @ghidraAddress EUR: 0x8022583c
  * @ghidraAddress JPN: 0x8022502c
+ * @ghidraAddress BRD3D: 0x1003ace0
+ * @ghidraAddress BRGlide: 0x10034360
  */
 void Vec3fScale(Vec3f *out, Vec3f *v, f32 scale);
 
@@ -143,6 +153,8 @@ void Vec3fScale(Vec3f *out, Vec3f *v, f32 scale);
  * @ghidraAddress USA: 0x80224528
  * @ghidraAddress EUR: 0x80225868
  * @ghidraAddress JPN: 0x80225058
+ * @ghidraAddress BRD3D: 0x1003ad10
+ * @ghidraAddress BRGlide: 0x10034390
  */
 void Vec3fScaleInPlace(Vec3f *v, f32 scale);
 
@@ -155,6 +167,8 @@ void Vec3fScaleInPlace(Vec3f *v, f32 scale);
  * @ghidraAddress USA: 0x8022455c
  * @ghidraAddress EUR: 0x8022589c
  * @ghidraAddress JPN: 0x8022508c
+ * @ghidraAddress BRD3D: 0x1003ad40
+ * @ghidraAddress BRGlide: 0x100343c0
  */
 void Vec3fScaleByInverse(Vec3f *out, Vec3f *v, f32 divisor);
 
@@ -166,6 +180,8 @@ void Vec3fScaleByInverse(Vec3f *out, Vec3f *v, f32 divisor);
  * @ghidraAddress USA: 0x80224594
  * @ghidraAddress EUR: 0x802258d4
  * @ghidraAddress JPN: 0x802250c4
+ * @ghidraAddress BRD3D: 0x1003ad70
+ * @ghidraAddress BRGlide: 0x100343f0
  */
 void Vec3fDivideInPlace(Vec3f *v, f32 divisor);
 
@@ -189,6 +205,8 @@ void Vec3fCopy(Vec3f *out, Vec3f *v);
  * @ghidraAddress USA: 0x802245f0
  * @ghidraAddress EUR: 0x80225930
  * @ghidraAddress JPN: 0x80225120
+ * @ghidraAddress BRD3D: 0x1003ada0
+ * @ghidraAddress BRGlide: 0x10034420
  */
 void Vec3fDirection(Vec3f *out, Vec3f *from, Vec3f *to);
 
@@ -210,6 +228,8 @@ void Vec3fNormalizeSafe(Vec3f *out, Vec3f *v);
  * @ghidraAddress USA: 0x80224760
  * @ghidraAddress EUR: 0x80225aa0
  * @ghidraAddress JPN: 0x80225290
+ * @ghidraAddress BRD3D: 0x1003ae50
+ * @ghidraAddress BRGlide: 0x100344d0
  */
 void Vec3fNormalize(Vec3f *v);
 
@@ -222,6 +242,8 @@ void Vec3fNormalize(Vec3f *v);
  * @ghidraAddress USA: 0x80224808
  * @ghidraAddress EUR: 0x80225b48
  * @ghidraAddress JPN: 0x80225338
+ * @ghidraAddress BRD3D: 0x1003aee0
+ * @ghidraAddress BRGlide: 0x10034560
  */
 void Vec3fSubtract(Vec3f *out, Vec3f *a, Vec3f *b);
 
@@ -233,6 +255,8 @@ void Vec3fSubtract(Vec3f *out, Vec3f *a, Vec3f *b);
  * @ghidraAddress USA: 0x8022483c
  * @ghidraAddress EUR: 0x80225b7c
  * @ghidraAddress JPN: 0x8022536c
+ * @ghidraAddress BRD3D: 0x1003af10
+ * @ghidraAddress BRGlide: 0x10034590
  */
 void Vec3fSubtractInPlace(Vec3f *v, Vec3f *b);
 
@@ -257,6 +281,8 @@ void Vec2fAdd(Vec2f *out, Vec2f *a, Vec2f *b);
  * @ghidraAddress USA: 0x80224894
  * @ghidraAddress EUR: 0x80225bd4
  * @ghidraAddress JPN: 0x802253c4
+ * @ghidraAddress BRD3D: 0x1003af40
+ * @ghidraAddress BRGlide: 0x100345c0
  */
 void Vec3fAdd(Vec3f *out, Vec3f *a, Vec3f *b);
 
@@ -268,6 +294,8 @@ void Vec3fAdd(Vec3f *out, Vec3f *a, Vec3f *b);
  * @ghidraAddress USA: 0x802248c8
  * @ghidraAddress EUR: 0x80225c08
  * @ghidraAddress JPN: 0x802253f8
+ * @ghidraAddress BRD3D: 0x1003af70
+ * @ghidraAddress BRGlide: 0x100345f0
  */
 void Vec3fAddInPlace(Vec3f *v, Vec3f *b);
 
@@ -281,6 +309,8 @@ void Vec3fAddInPlace(Vec3f *v, Vec3f *b);
  * @ghidraAddress USA: 0x802248fc
  * @ghidraAddress EUR: 0x80225c3c
  * @ghidraAddress JPN: 0x8022542c
+ * @ghidraAddress BRD3D: 0x1003afa0
+ * @ghidraAddress BRGlide: 0x10034620
  */
 void Vec3fLerp(Vec3f *out, Vec3f *a, Vec3f *b, f32 t);
 
@@ -294,6 +324,8 @@ void Vec3fLerp(Vec3f *out, Vec3f *a, Vec3f *b, f32 t);
  * @ghidraAddress USA: 0x8022494c
  * @ghidraAddress EUR: 0x80225c8c
  * @ghidraAddress JPN: 0x8022547c
+ * @ghidraAddress BRD3D: 0x1003afe0
+ * @ghidraAddress BRGlide: 0x10034660
  */
 void Vec3fMulAdd(Vec3f *out, Vec3f *a, Vec3f *b, f32 scale);
 
@@ -306,6 +338,8 @@ void Vec3fMulAdd(Vec3f *out, Vec3f *a, Vec3f *b, f32 scale);
  * @ghidraAddress USA: 0x80224990
  * @ghidraAddress EUR: 0x80225cd0
  * @ghidraAddress JPN: 0x802254c0
+ * @ghidraAddress BRD3D: 0x1003b020
+ * @ghidraAddress BRGlide: 0x100346a0
  */
 void Vec3fMulAddInPlace(Vec3f *v, Vec3f *b, f32 scale);
 
@@ -318,6 +352,8 @@ void Vec3fMulAddInPlace(Vec3f *v, Vec3f *b, f32 scale);
  * @ghidraAddress USA: 0x802249d4
  * @ghidraAddress EUR: 0x80225d14
  * @ghidraAddress JPN: 0x80225504
+ * @ghidraAddress BRD3D: 0x1003b050
+ * @ghidraAddress BRGlide: 0x100346d0
  */
 void Vec3fMidpoint(Vec3f *out, Vec3f *a, Vec3f *b);
 
@@ -328,6 +364,8 @@ void Vec3fMidpoint(Vec3f *out, Vec3f *a, Vec3f *b);
  * @ghidraAddress USA: 0x80224a1c
  * @ghidraAddress EUR: 0x80225d5c
  * @ghidraAddress JPN: 0x8022554c
+ * @ghidraAddress BRD3D: 0x1003b090
+ * @ghidraAddress BRGlide: 0x10034710
  */
 void Vec3fClear(Vec3f *v);
 
@@ -340,6 +378,8 @@ void Vec3fClear(Vec3f *v);
  * @ghidraAddress USA: 0x80224a34
  * @ghidraAddress EUR: 0x80225d74
  * @ghidraAddress JPN: 0x80225564
+ * @ghidraAddress BRD3D: 0x1003b0a0
+ * @ghidraAddress BRGlide: 0x10034720
  */
 f32 Vec2fDistance(Vec2f *a, Vec2f *b);
 
@@ -352,6 +392,8 @@ f32 Vec2fDistance(Vec2f *a, Vec2f *b);
  * @ghidraAddress USA: 0x80224a78
  * @ghidraAddress EUR: 0x80225db8
  * @ghidraAddress JPN: 0x802255a8
+ * @ghidraAddress BRD3D: 0x1003b0e0
+ * @ghidraAddress BRGlide: 0x10034760
  */
 f32 Vec3fDistance(Vec3f *a, Vec3f *b);
 
@@ -364,6 +406,8 @@ f32 Vec3fDistance(Vec3f *a, Vec3f *b);
  * @ghidraAddress USA: 0x80224acc
  * @ghidraAddress EUR: 0x80225e0c
  * @ghidraAddress JPN: 0x802255fc
+ * @ghidraAddress BRD3D: 0x1003b130
+ * @ghidraAddress BRGlide: 0x100347b0
  */
 f32 Vec3fDistanceSquared(Vec3f *a, Vec3f *b);
 
@@ -375,6 +419,8 @@ f32 Vec3fDistanceSquared(Vec3f *a, Vec3f *b);
  * @ghidraAddress USA: 0x80224b08
  * @ghidraAddress EUR: 0x80225e48
  * @ghidraAddress JPN: 0x80225638
+ * @ghidraAddress BRD3D: 0x1003b170
+ * @ghidraAddress BRGlide: 0x100347f0
  */
 f32 Vec3fLength(Vec3f *v);
 
@@ -386,6 +432,8 @@ f32 Vec3fLength(Vec3f *v);
  * @ghidraAddress USA: 0x80224b48
  * @ghidraAddress EUR: 0x80225e88
  * @ghidraAddress JPN: 0x80225678
+ * @ghidraAddress BRD3D: 0x1003b1c0
+ * @ghidraAddress BRGlide: 0x10034840
  */
 f32 Vec2fLength(Vec2f *v);
 
@@ -410,6 +458,8 @@ void Vec3fRotateAroundAxis(Vec3f *v, f32 angle, Vec3f *axis);
  * @ghidraAddress USA: 0x80224d00
  * @ghidraAddress EUR: 0x80226040
  * @ghidraAddress JPN: 0x80225830
+ * @ghidraAddress BRD3D: 0x1003b1f0
+ * @ghidraAddress BRGlide: 0x10034870
  */
 void Mtx4x4ProjectPoint(Vec3f *out, Vec3f *in, f32 m[4][4]);
 
@@ -422,6 +472,8 @@ void Mtx4x4ProjectPoint(Vec3f *out, Vec3f *in, f32 m[4][4]);
  * @ghidraAddress USA: 0x80224ddc
  * @ghidraAddress EUR: 0x8022611c
  * @ghidraAddress JPN: 0x8022590c
+ * @ghidraAddress BRD3D: 0x1003b2a0
+ * @ghidraAddress BRGlide: 0x10034920
  */
 void Vec3fTransformByMatrix(f32 out[4], Vec3f *in, f32 m[4][4]);
 
@@ -458,6 +510,8 @@ void ProjectVec3fToScreen(Vec2f *out, Vec3f *in, f32 m[4][4]);
  * @ghidraAddress USA: 0x80225038
  * @ghidraAddress EUR: 0x80226378
  * @ghidraAddress JPN: 0x80225b68
+ * @ghidraAddress BRD3D: 0x1003b340
+ * @ghidraAddress BRGlide: 0x100349c0
  */
 void Mtx4x4TransformNoTranslation(Vec3f *out, Vec3f *in, f32 m[4][4]);
 
@@ -470,6 +524,8 @@ void Mtx4x4TransformNoTranslation(Vec3f *out, Vec3f *in, f32 m[4][4]);
  * @ghidraAddress USA: 0x802250fc
  * @ghidraAddress EUR: 0x8022643c
  * @ghidraAddress JPN: 0x80225c2c
+ * @ghidraAddress BRD3D: 0x1003b3f0
+ * @ghidraAddress BRGlide: 0x10034a70
  */
 void Mtx3x3TransformVec(Vec3f *out, Vec3f *in, f32 m[4][4]);
 
@@ -482,6 +538,8 @@ void Mtx3x3TransformVec(Vec3f *out, Vec3f *in, f32 m[4][4]);
  * @ghidraAddress USA: 0x80225180
  * @ghidraAddress EUR: 0x802264c0
  * @ghidraAddress JPN: 0x80225cb0
+ * @ghidraAddress BRD3D: 0x1003b470
+ * @ghidraAddress BRGlide: 0x10034af0
  */
 void Mtx4x4Multiply(f32 out[4][4], f32 a[4][4], f32 b[4][4]);
 
@@ -504,18 +562,23 @@ void Mtx4fTranspose(f32 out[4][4], f32 in[4][4]);
  * @ghidraAddress USA: 0x80225350
  * @ghidraAddress EUR: 0x80226690
  * @ghidraAddress JPN: 0x80225e80
+ * @ghidraAddress BRD3D: 0x100307a0
+ * @ghidraAddress BRGlide: 0x10029e50
  */
 void CopyMatrix4x4(f32 out[4][4], f32 in[4][4]);
 
 /**
- * Invert an affine matrix. A singular matrix is reported on the debug display and left alone.
+ * Invert an affine matrix. On the N64 a singular matrix is reported on the debug display and
+ * `out` is not written. On the PC a singular matrix inverts to the identity.
  *
  * @param out The matrix that receives the inverse.
  * @param in The matrix inverted.
- * @return 1 once inverted, 0 for a singular matrix.
+ * @return 1 once inverted. On the N64, 0 for a singular matrix.
  * @ghidraAddress USA: 0x80225370
  * @ghidraAddress EUR: 0x802266b0
  * @ghidraAddress JPN: 0x80225ea0
+ * @ghidraAddress BRD3D: 0x1003b4f0
+ * @ghidraAddress BRGlide: 0x10034b70
  */
 s32 MtxInvert4x4(f32 out[4][4], f32 in[4][4]);
 
@@ -539,6 +602,8 @@ void FinishFrameMatrix(f32 m[4][4]);
  * @ghidraAddress USA: 0x8022576c
  * @ghidraAddress EUR: 0x80226aac
  * @ghidraAddress JPN: 0x8022629c
+ * @ghidraAddress BRD3D: 0x1003b7b0
+ * @ghidraAddress BRGlide: 0x10034e30
  */
 f32 Atan2f(f32 x, f32 y);
 
@@ -554,6 +619,8 @@ f32 Atan2f(f32 x, f32 y);
  * @ghidraAddress USA: 0x8022591c
  * @ghidraAddress EUR: 0x80226c5c
  * @ghidraAddress JPN: 0x8022644c
+ * @ghidraAddress BRD3D: 0x1003b940
+ * @ghidraAddress BRGlide: 0x10034fc0
  */
 s32 PointInTriangle3D(Vec3f *point, Vec3f *v0, Vec3f *v1, Vec3f *v2, Vec3f *normal);
 
@@ -585,6 +652,8 @@ s32 IsPointInsideTriangle(
  * @ghidraAddress USA: 0x80225b64
  * @ghidraAddress EUR: 0x80226ea4
  * @ghidraAddress JPN: 0x80226694
+ * @ghidraAddress BRD3D: 0x1003ba70
+ * @ghidraAddress BRGlide: 0x100350f0
  */
 s32 TestLineSegmentIntersection(Vec2f *p1, Vec2f *p2, Vec2f *q1, Vec2f *q2);
 
@@ -600,6 +669,8 @@ s32 TestLineSegmentIntersection(Vec2f *p1, Vec2f *p2, Vec2f *q1, Vec2f *q2);
  * @ghidraAddress USA: 0x80225e1c
  * @ghidraAddress EUR: 0x8022715c
  * @ghidraAddress JPN: 0x8022694c
+ * @ghidraAddress BRD3D: 0x1003bc90
+ * @ghidraAddress BRGlide: 0x10035310
  */
 s32 SegmentCrossesLine2D(Vec3f *a, Vec3f *b, Vec3f *p, Vec3f *q);
 
@@ -610,6 +681,8 @@ s32 SegmentCrossesLine2D(Vec3f *a, Vec3f *b, Vec3f *p, Vec3f *q);
  * @ghidraAddress USA: 0x80225ed8
  * @ghidraAddress EUR: 0x80227218
  * @ghidraAddress JPN: 0x80226a08
+ * @ghidraAddress BRD3D: 0x1003bd40
+ * @ghidraAddress BRGlide: 0x100353c0
  */
 void SetRngSeed(u32 seed);
 
@@ -620,6 +693,8 @@ void SetRngSeed(u32 seed);
  * @ghidraAddress USA: 0x80225ee4
  * @ghidraAddress EUR: 0x80227224
  * @ghidraAddress JPN: 0x80226a14
+ * @ghidraAddress BRD3D: 0x1003bd50
+ * @ghidraAddress BRGlide: 0x100353d0
  */
 u32 AdvanceRng(void);
 

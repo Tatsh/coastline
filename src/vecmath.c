@@ -1,9 +1,14 @@
 #include "vecmath.h"
 
+#if TGR_PLATFORM == TGR_PLATFORM_N64
 #include <PR/gu.h>
 #include <PR/os_libc.h>
 
 #include "system.h"
+#else
+#include <math.h>
+#include <string.h>
+#endif
 
 /* The terms of the binomial series of Powf(). */
 #define POWF_TERMS 30
@@ -25,6 +30,8 @@
 #define RNG_MULTIPLIER 16807
 #define RNG_MASK 0x07FFFFFF
 
+/* The routines under TGR_PLATFORM_N64 alone are absent from the PC libraries. */
+#if TGR_PLATFORM == TGR_PLATFORM_N64
 f32 Powf(f32 base, f32 exponent) {
     f32 result = 1.0f;
     f32 n, term, sum;
@@ -50,6 +57,7 @@ f32 Powf(f32 base, f32 exponent) {
     }
     return result * sum;
 }
+#endif
 
 void Vec3fCross(Vec3f *out, Vec3f *a, Vec3f *b) {
     f32 ax = a->x, ay = a->y, az = a->z;
@@ -70,6 +78,7 @@ void Vec3fNegate(Vec3f *out, Vec3f *v) {
     out->z = -v->z;
 }
 
+#if TGR_PLATFORM == TGR_PLATFORM_N64
 void NegateVectorInPlace(Vec3f *v) {
     v->x = -v->x;
     v->y = -v->y;
@@ -91,6 +100,7 @@ void Vec3fComponentProduct(Vec3f *out, Vec3f *a, Vec3f *b) {
     out->y = b->y * a->y;
     out->z = b->z * a->z;
 }
+#endif
 
 void Vec3fScale(Vec3f *out, Vec3f *v, f32 scale) {
     out->x = v->x * scale;
@@ -118,11 +128,13 @@ void Vec3fDivideInPlace(Vec3f *v, f32 divisor) {
     v->z *= divisor;
 }
 
+#if TGR_PLATFORM == TGR_PLATFORM_N64
 void Vec3fCopy(Vec3f *out, Vec3f *v) {
     out->x = v->x;
     out->y = v->y;
     out->z = v->z;
 }
+#endif
 
 void Vec3fDirection(Vec3f *out, Vec3f *from, Vec3f *to) {
     f32 dx = to->x - from->x;
@@ -142,6 +154,7 @@ void Vec3fDirection(Vec3f *out, Vec3f *from, Vec3f *to) {
     }
 }
 
+#if TGR_PLATFORM == TGR_PLATFORM_N64
 void Vec3fNormalizeSafe(Vec3f *out, Vec3f *v) {
     f32 length = sqrtf(v->z * v->z + (v->x * v->x + v->y * v->y));
 
@@ -156,6 +169,7 @@ void Vec3fNormalizeSafe(Vec3f *out, Vec3f *v) {
         out->z = 1.0f;
     }
 }
+#endif
 
 void Vec3fNormalize(Vec3f *v) {
     f32 length = sqrtf(v->z * v->z + (v->x * v->x + v->y * v->y));
@@ -184,10 +198,12 @@ void Vec3fSubtractInPlace(Vec3f *v, Vec3f *b) {
     v->z -= b->z;
 }
 
+#if TGR_PLATFORM == TGR_PLATFORM_N64
 void Vec2fAdd(Vec2f *out, Vec2f *a, Vec2f *b) {
     out->x = b->x + a->x;
     out->y = b->y + a->y;
 }
+#endif
 
 void Vec3fAdd(Vec3f *out, Vec3f *a, Vec3f *b) {
     out->x = b->x + a->x;
@@ -262,6 +278,7 @@ f32 Vec2fLength(Vec2f *v) {
     return sqrtf(v->y * v->y + v->x * v->x);
 }
 
+#if TGR_PLATFORM == TGR_PLATFORM_N64
 void Vec3fRotateAroundAxis(Vec3f *v, f32 angle, Vec3f *axis) {
     f32 s = sinf(angle);
     f32 c = cosf(angle);
@@ -282,6 +299,7 @@ void Vec3fRotateAroundAxis(Vec3f *v, f32 angle, Vec3f *axis) {
     v->y = (txy - sz) * vx + (t * y * y + c) * vy + (tyz + sx) * vz;
     v->z = (sy + txz) * vx + (tyz - sx) * vy + (t * z * z + c) * vz;
 }
+#endif
 
 void Mtx4x4ProjectPoint(Vec3f *out, Vec3f *in, f32 m[4][4]) {
     f32 x = in->x, y = in->y, z = in->z;
@@ -301,6 +319,7 @@ void Vec3fTransformByMatrix(f32 out[4], Vec3f *in, f32 m[4][4]) {
     }
 }
 
+#if TGR_PLATFORM == TGR_PLATFORM_N64
 void Vec3sTransformToVec4f(f32 out[4], s16 in[3], f32 m[4][4]) {
     f32 x = in[0], y = in[1], z = in[2];
     s32 i;
@@ -317,6 +336,7 @@ void ProjectVec3fToScreen(Vec2f *out, Vec3f *in, f32 m[4][4]) {
     out->x = (x * m[0][0] + y * m[1][0] + z * m[2][0] + m[3][0]) * inverseW;
     out->y = (x * m[0][1] + y * m[1][1] + z * m[2][1] + m[3][1]) * inverseW;
 }
+#endif
 
 void Mtx4x4TransformNoTranslation(Vec3f *out, Vec3f *in, f32 m[4][4]) {
     f32 x = in->x, y = in->y, z = in->z;
@@ -354,6 +374,7 @@ void Mtx4x4Multiply(f32 out[4][4], f32 a[4][4], f32 b[4][4]) {
     }
 }
 
+#if TGR_PLATFORM == TGR_PLATFORM_N64
 /* Swap an entry above the diagonal with its mirror below it. */
 #define SWAP_ENTRY(row, column)                                                                    \
     {                                                                                              \
@@ -372,6 +393,7 @@ void Mtx4fTranspose(f32 out[4][4], f32 in[4][4]) {
     SWAP_ENTRY(1, 3);
     SWAP_ENTRY(2, 3);
 }
+#endif
 
 void CopyMatrix4x4(f32 out[4][4], f32 in[4][4]) {
     memcpy(out, in, sizeof(f32[4][4]));
@@ -428,8 +450,17 @@ s32 MtxInvert4x4(f32 out[4][4], f32 in[4][4]) {
         precision = -precision;
     }
     if (determinant == 0.0f || precision < MTX_INVERT_EPSILON) {
+#if TGR_PLATFORM == TGR_PLATFORM_N64
         SetDebugMessage("Matrix4Inverse: singular matrix");
         return 0;
+#else
+        for (s32 row = 0; row < 4; row++) {
+            for (s32 column = 0; column < 4; column++) {
+                out[row][column] = row == column ? 1.0f : 0.0f;
+            }
+        }
+        return 1;
+#endif
     }
 
     /* The determinant becomes its reciprocal. */
@@ -539,6 +570,7 @@ s32 PointInTriangle3D(Vec3f *point, Vec3f *v0, Vec3f *v1, Vec3f *v2, Vec3f *norm
     return TRUE;
 }
 
+#if TGR_PLATFORM == TGR_PLATFORM_N64
 s32 IsPointInsideTriangle(
     Vec3f *point, Vec3f *v0, Vec3f *v1, Vec3f *v2, Vec3f *normal, f32 tolerance) {
     Vec3f toV0, toV1, edge01, edge12, edge20, cross;
@@ -562,6 +594,7 @@ s32 IsPointInsideTriangle(
     }
     return TRUE;
 }
+#endif
 
 s32 TestLineSegmentIntersection(Vec2f *p1, Vec2f *p2, Vec2f *q1, Vec2f *q2) {
     f32 side1, side2, side3, side4;
