@@ -583,17 +583,18 @@ void SetupFog(void) {
 }
 
 f32 ComputeFogFactorAtPoint(Vec3f *point) {
-    /* The original reserves stack for a word of locals it does not use. */
-    f32 unused;
+    f32 depth;
     f32 clip[4];
     f32 fog;
 
-    (void)unused;
     if (!g_dwWeatherActive) {
         return 0.0f;
     }
     Vec3fTransformByMatrix(clip, point, g_afViewProjMatrix);
-    fog = (clip[2] / clip[3] * g_dwFogFactorScale + g_dwFogFactorOffset) * (1.0 / 255.0);
+    depth = clip[2];
+    depth /= clip[3];
+    /* The cast is redundant, and the original compiles with the depth as the first factor. */
+    fog = ((f32)depth * g_dwFogFactorScale + g_dwFogFactorOffset) * (1.0 / 255.0);
     if (fog < 0.0f) {
         return 0.0f;
     }
