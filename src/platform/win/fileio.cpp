@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-/* The size of the buffer of a message to the debugger. */
+// The size of the buffer of a message to the debugger.
 #define MESSAGE_SIZE 1024
 
 BOOL g_bVerboseFileTrace;
@@ -36,7 +36,7 @@ GameFile *FileOpenForReading(const char *pszPath) {
     if (pFile->pFile == NULL) {
         pErrorFile = fopen("c:\\RallyError.txt", "w");
         sprintf(szMessage, "CHK_FReadOpen(): error opening file %s.\n", pFile->pszPath);
-        /* The original passes the message to fprintf() as the format. */
+        // The original passes the message to fprintf() as the format.
         fputs(szMessage, pErrorFile);
         OutputDebugStringA(szMessage);
         fclose(pErrorFile);
@@ -61,7 +61,7 @@ char *FileReadLine(char *pszLine, int nSize, GameFile *pFile) {
         if (c == '\r') {
             *pszLine++ = '\n';
             *pszLine++ = '\0';
-            /* A line feed after the carriage return belongs to the same line. */
+            // A line feed after the carriage return belongs to the same line.
             c = fgetc(pFile->pFile);
             if (c != EOF && c != '\n') {
                 ungetc(c, pFile->pFile);

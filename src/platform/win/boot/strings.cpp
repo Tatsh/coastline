@@ -5,7 +5,7 @@
 
 #include "platform/win/fileio.h"
 
-/* The language resource library, beside the game. */
+// The language resource library, beside the game.
 #define STRING_LIBRARY "BRString.dll"
 
 LPCSTR g_apszStringResourceTable[STRING_RESOURCE_COUNT + 1];
@@ -23,7 +23,7 @@ void LoadStringTableFromDll(void) {
     if (g_pStringTableBuffer != NULL) {
         return;
     }
-    /* The strings take less room than the library that includes them. */
+    // The strings take less room than the library that includes them.
     pFile = FileOpenForReading(STRING_LIBRARY);
     g_dwStringTableBufferSize = GetFileLength(pFile);
     FileClose(pFile);

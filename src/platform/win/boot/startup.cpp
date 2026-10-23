@@ -7,10 +7,9 @@
 #include "platform/win/boot/app.h"
 #include "platform/win/boot/rallyconfig.h"
 #include "platform/win/fileio.h"
-#include "platform/win/input.h"
 #include "platform/win/settings.h"
 
-/* The size of the buffer of a line of BossRally.ini. */
+// The size of the buffer of a line of BossRally.ini.
 #define INI_LINE_SIZE 256
 
 DWORD g_dwTotalPhysicalMemory;
@@ -26,7 +25,7 @@ BOOL FocusExistingBossRallyInstance(void) {
     }
     hForeground = GetForegroundWindow();
     dwForegroundThread = GetWindowThreadProcessId(hForeground, NULL);
-    /* The other instance is left as it is when it already has the focus. */
+    // The other instance is left as it is when it already has the focus.
     if (GetWindowThreadProcessId(hWindow, NULL) != dwForegroundThread || IsIconic(hWindow)) {
         hWindow = GetLastActivePopup(hWindow);
         if (IsIconic(hWindow)) {
@@ -47,43 +46,26 @@ void RefreshTotalPhysicalMemory(void) {
     g_dwTotalPhysicalMemory = status.dwTotalPhys;
 }
 
-/* The Glide library reads a different set of keys. */
+// The Glide library reads a different set of keys.
 #if TGR_RENDERER == TGR_RENDERER_D3D
-/* The value of a line of BossRally.ini that sets a key, the key given with its equals sign. */
+// The value of a line of BossRally.ini that sets a key, the key given with its equals sign.
 static inline const char *GetIniValue(const char *pszLine, const char *pszKey) {
     size_t nLength = strlen(pszKey);
 
     return strncmp(pszLine, pszKey, nLength) == 0 ? pszLine + nLength : NULL;
 }
 
-/* The value that follows a key anywhere on the command line. */
+// The value that follows a key anywhere on the command line.
 static inline const char *GetCommandLineValue(const char *pszCmdLine, const char *pszKey) {
     const char *pszFound = strstr(pszCmdLine, pszKey);
 
     return pszFound != NULL ? pszFound + strlen(pszKey) : NULL;
 }
 
-/* Copy a directory of BossRally.ini, without the line feed that ends the line. */
+// Copy a directory of BossRally.ini, without the line feed that ends the line.
 static inline void CopyIniDirectory(char *pszDirectory, const char *pszValue) {
     strcpy(pszDirectory, pszValue);
     pszDirectory[strlen(pszDirectory) - 1] = '\0';
-}
-
-static inline void SelectInputBindings(void) {
-    switch (g_dwInputDeviceType) {
-    case 1:
-        g_pActiveInputBindings = g_aInputBindingsDevice1;
-        break;
-    case 2:
-        g_pActiveInputBindings = g_aInputBindingsDevice2;
-        break;
-    case 3:
-        g_pActiveInputBindings = g_aInputBindingsDevice3;
-        break;
-    default:
-        g_pActiveInputBindings = g_aInputBindingsKeyboard;
-        break;
-    }
 }
 
 static inline void ApplyIniLine(const char *pszLine) {
@@ -100,8 +82,8 @@ static inline void ApplyIniLine(const char *pszLine) {
     } else if ((pszValue = GetIniValue(pszLine, "gameMode=")) != NULL) {
         g_dwGameMode = atoi(pszValue);
     } else if ((pszValue = GetIniValue(pszLine, "ReadJoystick=")) != NULL) {
-        g_dwInputDeviceType = atoi(pszValue);
-        SelectInputBindings();
+        g_GlobalRallyConfig.dwInputDeviceType = atoi(pszValue);
+        g_GlobalRallyConfig.SelectActiveInputBindings();
     } else if ((pszValue = GetIniValue(pszLine, "HandlingType=")) != NULL) {
         g_dwHandlingType = atoi(pszValue);
     } else if ((pszValue = GetIniValue(pszLine, "SuspensionType=")) != NULL) {
@@ -151,12 +133,12 @@ static inline void ApplyCommandLine(const char *pszCmdLine) {
         g_dwNetworkPlayMode = atoi(pszValue);
     }
     if ((pszValue = GetCommandLineValue(pszCmdLine, "szPlayerName=")) != NULL) {
-        /* The name ends at the first space or line feed. */
-        strcpy(g_szPlayerName, pszValue);
-        if ((pszEnd = strchr(g_szPlayerName, ' ')) != NULL) {
+        // The name ends at the first space or line feed.
+        strcpy(g_GlobalRallyConfig.szPlayerName, pszValue);
+        if ((pszEnd = strchr(g_GlobalRallyConfig.szPlayerName, ' ')) != NULL) {
             *pszEnd = '\0';
         }
-        if ((pszEnd = strchr(g_szPlayerName, '\n')) != NULL) {
+        if ((pszEnd = strchr(g_GlobalRallyConfig.szPlayerName, '\n')) != NULL) {
             *pszEnd = '\0';
         }
     }
@@ -173,8 +155,8 @@ static inline void ApplyCommandLine(const char *pszCmdLine) {
         g_dwGameMode = atoi(pszValue);
     }
     if ((pszValue = GetCommandLineValue(pszCmdLine, "ReadJoystick=")) != NULL) {
-        g_dwInputDeviceType = atoi(pszValue);
-        SelectInputBindings();
+        g_GlobalRallyConfig.dwInputDeviceType = atoi(pszValue);
+        g_GlobalRallyConfig.SelectActiveInputBindings();
     }
     if ((pszValue = GetCommandLineValue(pszCmdLine, "HandlingType=")) != NULL) {
         g_dwHandlingType = atoi(pszValue);

@@ -15,7 +15,7 @@
 #include "platform/win/directplay.h"
 #include "platform/win/frontend.h"
 
-/* The accelerator table of the main window, a resource of the library. */
+// The accelerator table of the main window, a resource of the library.
 #define IDR_MAIN_ACCELERATORS 0x71
 
 BOOL InitializeApplication(void) {

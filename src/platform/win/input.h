@@ -17,43 +17,33 @@ struct InputBinding {
 };
 
 /**
- * The bindings of the keyboard, the first member of g_GlobalRallyConfig.
+ * The default bindings of the keyboard.
  *
- * @ghidraAddress BRD3D: 0x10b4df30
+ * @ghidraAddress BRD3D: 0x100b4098
+ * @ghidraAddress BRGlide: 0x100b38a0
  */
-extern InputBinding g_aInputBindingsKeyboard[INPUT_BINDING_COUNT];
+extern InputBinding g_awDefaultKeyBindingsDevice0[INPUT_BINDING_COUNT];
 
 /**
- * The bindings of the first game controller.
+ * The default bindings of the first game controller.
  *
- * @ghidraAddress BRD3D: 0x10b4dfd8
+ * @ghidraAddress BRD3D: 0x100b4140
+ * @ghidraAddress BRGlide: 0x100b3948
  */
-extern InputBinding g_aInputBindingsDevice1[INPUT_BINDING_COUNT];
+extern InputBinding g_awDefaultKeyBindingsDevice1[INPUT_BINDING_COUNT];
 
 /**
- * The bindings of the second game controller.
+ * The default bindings of the second game controller.
  *
- * @ghidraAddress BRD3D: 0x10b4e080
+ * @ghidraAddress BRD3D: 0x100b41e8
+ * @ghidraAddress BRGlide: 0x100b39f0
  */
-extern InputBinding g_aInputBindingsDevice2[INPUT_BINDING_COUNT];
+extern InputBinding g_awDefaultKeyBindingsDevice2[INPUT_BINDING_COUNT];
 
 /**
- * The bindings of the third game controller.
+ * The default bindings of the third game controller.
  *
- * @ghidraAddress BRD3D: 0x10b4e128
+ * @ghidraAddress BRD3D: 0x100b4290
+ * @ghidraAddress BRGlide: 0x100b3a98
  */
-extern InputBinding g_aInputBindingsDevice3[INPUT_BINDING_COUNT];
-
-/**
- * The device the game reads, 1 to 3 for a game controller and any other value for the keyboard.
- *
- * @ghidraAddress BRD3D: 0x10b4e1d0
- */
-extern DWORD g_dwInputDeviceType;
-
-/**
- * The bindings of the device the game reads.
- *
- * @ghidraAddress BRD3D: 0x10b4e1d4
- */
-extern InputBinding *g_pActiveInputBindings;
+extern InputBinding g_awDefaultKeyBindingsDevice3[INPUT_BINDING_COUNT];

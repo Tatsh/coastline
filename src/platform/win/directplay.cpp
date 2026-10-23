@@ -5,7 +5,7 @@
 #include "platform/win/boot/app.h"
 
 void InitializeDirectPlayForDesktopWindow(void) {
-    /* The window is looked up and discarded. */
+    // The window is looked up and discarded.
     GetDesktopWindow();
     InitializeDirectPlay();
 }

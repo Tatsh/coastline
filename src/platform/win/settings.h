@@ -184,13 +184,6 @@ extern BOOL g_bD3DWaitFlipDone;
 extern DWORD g_dwD3DDestBlendMode;
 
 /**
- * The name of the player, from `szPlayerName=` on the command line.
- *
- * @ghidraAddress BRD3D: 0x10b4e2e8
- */
-extern char g_szPlayerName[];
-
-/**
  * The most players of a network game, from `cPlayers=` on the command line.
  *
  * @ghidraAddress BRD3D: 0x102212c8
