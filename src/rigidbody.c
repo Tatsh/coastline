@@ -44,17 +44,17 @@ void Vec3fNormalizeFast(Vec3f *v) {
 
 void ComputeDeltaQuaternion(RigidBodyState *state) {
     f32 half[3];
-    Quaternion *q;
+    /* The original reads the orientation as an array of w, x, y, and z. */
+    f32 *o;
 
     half[0] = state->angularVelocity.x * 0.5f;
     half[1] = state->angularVelocity.y * 0.5f;
     half[2] = state->angularVelocity.z * 0.5f;
-    state->spin.w = -half[0] * state->orientation.x - half[1] * state->orientation.y -
-                    state->orientation.z * half[2];
-    q = &state->orientation;
-    state->spin.x = q->w * half[0] + half[1] * q->z - q->y * half[2];
-    state->spin.y = q->w * half[1] + half[2] * q->x - q->z * half[0];
-    state->spin.z = q->w * half[2] + half[0] * q->y - q->x * half[1];
+    o = &state->orientation.w;
+    state->spin.w = -half[0] * o[1] - half[1] * o[2] - half[2] * o[3];
+    state->spin.x = o[0] * half[0] + half[1] * o[3] - half[2] * o[2];
+    state->spin.y = o[0] * half[1] + half[2] * o[1] - half[0] * o[3];
+    state->spin.z = o[0] * half[2] + half[0] * o[2] - half[1] * o[1];
 }
 
 void ApplyRigidBodyImpulse(RigidBodyState *state, RigidBody *body, f32 dt) {
