@@ -95,27 +95,27 @@ u16 GetInstanceGridCellCount(TrackGridCursor *cursor) {
     (cursor)->start = (packed)
 
 u16 NextGridCellTriangle(TrackGridCursor *cursor) {
-    u16 start;
     u32 packed;
+    u16 start;
 
-    if (cursor->count == 0) {
-        return 0;
+    if (cursor->count != 0) {
+        start = cursor->start;
+        ADVANCE_GRID_CURSOR(cursor, start, packed);
+        return g_LoadedTrack.gridTriangles[start];
     }
-    start = cursor->start;
-    ADVANCE_GRID_CURSOR(cursor, start, packed);
-    return g_LoadedTrack.gridTriangles[start];
+    return 0;
 }
 
 u16 NextGridCellInstance(TrackGridCursor *cursor) {
-    u16 start;
     u32 packed;
+    u16 start;
 
-    if (cursor->count == 0) {
-        return 0;
+    if (cursor->count != 0) {
+        start = cursor->start;
+        ADVANCE_GRID_CURSOR(cursor, start, packed);
+        return g_LoadedTrack.gridInstances[start];
     }
-    start = cursor->start;
-    ADVANCE_GRID_CURSOR(cursor, start, packed);
-    return g_LoadedTrack.gridInstances[start];
+    return 0;
 }
 
 s32 IsTrackIndexValid(s32 track) {

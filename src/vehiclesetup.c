@@ -53,9 +53,13 @@
 
 void ChooseVehicleCar(Vehicle *vehicle) {
     s32 season = g_aVehicles[0].profile->season;
-    s32 unlockSeason = season >= CAR_CHOICE_SEASONS ? CAR_CHOICE_SEASONS - 1 : season;
+    s32 unlockSeason = season;
     s16 unlocks;
     s32 car;
+
+    if (season >= CAR_CHOICE_SEASONS) {
+        unlockSeason = CAR_CHOICE_SEASONS - 1;
+    }
 
     if (vehicle->index >= (s32)g_dwNumLocalPlayers) {
         if (g_dwGameMode == GAME_MODE_ARCADE) {

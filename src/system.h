@@ -1169,17 +1169,14 @@ void BootIdleThread(void *arg);
 void BeginDisplayList(s32 highRes);
 
 /**
- * Do nothing.
+ * Do nothing. The arguments are variable, as of a print compiled out.
  *
  * @param unused0 Not read.
- * @param unused1 Not read.
- * @param unused2 Not read.
- * @param unused3 Not read.
  * @ghidraAddress USA: 0x80219a5c
  * @ghidraAddress EUR: 0x8021aa7c
  * @ghidraAddress JPN: 0x8021a3d4
  */
-void StubEmptyVoid(s32 unused0, s32 unused1, s32 unused2, s32 unused3);
+void StubEmptyVoid(s32 unused0, ...);
 
 /**
  * Patch the render modes and the colour combines of a display list in place for the weather. A

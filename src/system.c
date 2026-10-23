@@ -794,7 +794,7 @@ void StartHighResFrame(void) {
     BeginDisplayList(1);
 }
 
-void StubEmptyVoid(s32 unused0, s32 unused1, s32 unused2, s32 unused3) {
+void StubEmptyVoid(s32 unused0, ...) {
 }
 
 void SetScissorRect(s32 x, s32 y, s32 width, s32 height) {
