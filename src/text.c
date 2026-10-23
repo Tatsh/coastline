@@ -94,7 +94,9 @@ void LoadCachedGlyphTextures(void) {
         DmaRead(g_aGlyphRomOffsets, ROM_GLYPHS, sizeof(g_aGlyphRomOffsets));
     }
     for (character = 0; character < GLYPH_CACHE_CHARACTERS; character++) {
-        slot = g_abGlyphCharToSlot[character];
+        /* The original reads the slot through the counter of the last loop. */
+        i = g_abGlyphCharToSlot[character];
+        slot = i;
         if (slot == 0 || g_abGlyphSlotChar[slot] == character) {
             continue;
         }
@@ -109,9 +111,10 @@ void LoadCachedGlyphTextures(void) {
         start = g_aGlyphRomOffsets[character];
         /* A negative offset marks a glyph stored without compression. */
         if (start < 0) {
-            DmaRead(texture, ROM_GLYPHS - start, start + end);
+            DmaRead(texture, (u32)(_cachedGlyphsSegmentRomStart - start), start + end);
         } else {
-            DmaRead(g_abGlyphRleBuffer, start + ROM_GLYPHS, end - start);
+            DmaRead(
+                g_abGlyphRleBuffer, (u32)((u32)start + _cachedGlyphsSegmentRomStart), end - start);
             DecompressInterleavedRle(texture, GLYPH_CACHE_SLOT_SIZE, g_abGlyphRleBuffer, 1);
         }
         character += FIRST_CACHED_GLYPH;
