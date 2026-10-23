@@ -88,14 +88,18 @@ u16 GetInstanceGridCellCount(TrackGridCursor *cursor) {
     return cursor->count;
 }
 
-/* Advance a cursor of a cell past the entry at start. */
+/* The cursor of a cell advanced past the entry at start, packed as LookupTrackGridCell packs it. */
+#define NEXT_GRID_CURSOR(cursor, start) (((start) + 1) | ((u32)((cursor)->count - 1) << 16))
+
+/* Advance a cursor of a cell past the entry at start. The original keeps only the lower half of the
+ * packed cursor, in a signed local, and packs it again for the count. */
 #define ADVANCE_GRID_CURSOR(cursor, start, packed)                                                 \
-    packed = ((start) + 1) | ((u32)((cursor)->count - 1) << 16);                                   \
-    (cursor)->count = (packed) >> 16;                                                              \
+    packed = NEXT_GRID_CURSOR(cursor, start);                                                      \
+    (cursor)->count = NEXT_GRID_CURSOR(cursor, start) >> 16;                                       \
     (cursor)->start = (packed)
 
 u16 NextGridCellTriangle(TrackGridCursor *cursor) {
-    u32 packed;
+    s16 packed;
     u16 start;
 
     if (cursor->count != 0) {
@@ -107,7 +111,7 @@ u16 NextGridCellTriangle(TrackGridCursor *cursor) {
 }
 
 u16 NextGridCellInstance(TrackGridCursor *cursor) {
-    u32 packed;
+    s16 packed;
     u16 start;
 
     if (cursor->count != 0) {
