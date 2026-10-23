@@ -277,17 +277,18 @@ void InitRigidBody(RigidBody *body) {
     s32 i, j;
 
     body->unreconstructed0 = 0;
-    for (i = 0; i < 4; i++) {
-        body->wheels[i] = NULL;
-    }
+    body->wheels[0] = NULL;
+    body->wheels[1] = NULL;
+    body->wheels[2] = NULL;
+    body->wheels[3] = NULL;
     body->unreconstructed14 = 0;
     body->contactFrames = 0;
     body->ground = NULL;
     body->spinRate = 0.0f;
-    body->drive = 0.0f;
-    body->brake = 0.0f;
     body->steerAngle = DEFAULT_STEER_ANGLE;
     body->radius = 0.5f;
+    body->drive = 0.0f;
+    body->brake = 0.0f;
     for (i = 0; i < 3; i++) {
         for (j = 0; j < 3; j++) {
             body->inertia[i][j] = i == j ? 1.0f : 0.0f;
