@@ -400,13 +400,13 @@ static inline void LayOutPaintShopButtons(void) {
     rects[0].y = g_rcDecalCanvasFrame.y + g_rcDecalCanvasFrame.height + 6;
     rects[0].width = 32;
     rects[0].height = 94;
-    g_aPaletteFrameRects[0].x = rects[0].x + rects[0].width + 2;
-    g_aPaletteFrameRects[0].y = rects[0].y;
-    g_aPaletteFrameRects[1].x = g_aPaletteFrameRects[0].x + g_aPaletteFrameRects[0].width + 14;
-    g_aPaletteFrameRects[1].y = rects[0].y;
-    y = rects[0].y + g_aPaletteFrameRects[0].height + 2;
+    g_rcPaletteFrameLeft.x = rects[0].x + rects[0].width + 2;
+    g_rcPaletteFrameLeft.y = rects[0].y;
+    g_rcPaletteFrameRight.x = g_rcPaletteFrameLeft.x + g_rcPaletteFrameLeft.width + 14;
+    g_rcPaletteFrameRight.y = rects[0].y;
+    y = rects[0].y + g_rcPaletteFrameLeft.height + 2;
     for (row = 0; row < 3; row++, y += 24) {
-        for (column = 0, x = g_aPaletteFrameRects[0].x; column < 4; column++, x += 74) {
+        for (column = 0, x = g_rcPaletteFrameLeft.x; column < 4; column++, x += 74) {
             SetScreenRect(&rects[1 + row * 4 + column], x, y, 72, 22);
         }
     }
@@ -474,15 +474,15 @@ static inline void LayOutPaintShopControls(void) {
     }
     for (i = 0; i < 2; i++) {
         SetScreenRect(&g_aDecalSwatches[i].rect,
-                      g_aPaletteFrameRects[0].x + 4 + 20 * i,
-                      g_aPaletteFrameRects[0].y + 4,
+                      g_rcPaletteFrameLeft.x + 4 + 20 * i,
+                      g_rcPaletteFrameLeft.y + 4,
                       20,
                       14);
     }
     for (i = 2; i < DECAL_SWATCHES; i++) {
         SetScreenRect(&g_aDecalSwatches[i].rect,
-                      g_aPaletteFrameRects[1].x + 4 + 16 * (i - 2),
-                      g_aPaletteFrameRects[1].y + 4,
+                      g_rcPaletteFrameRight.x + 4 + 16 * (i - 2),
+                      g_rcPaletteFrameRight.y + 4,
                       16,
                       14);
     }

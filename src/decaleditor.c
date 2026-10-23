@@ -423,7 +423,7 @@ static inline s32 PickPaletteColor(void) {
     u32 now;
     s32 i, channel;
 
-    if (!IsCursorInRect(&g_aPaletteFrameRects[0]) && !IsCursorInRect(&g_aPaletteFrameRects[1])) {
+    if (!IsCursorInRect(&g_rcPaletteFrameLeft) && !IsCursorInRect(&g_rcPaletteFrameRight)) {
         return FALSE;
     }
     if (!g_bPaletteEnabled || !(PaintShopInput()->buttons & INPUT_PICK)) {
@@ -549,8 +549,8 @@ static inline void ProcessTextTool(void) {
         ProcessTextInputKeyboard();
         return;
     }
-    if (g_bPaintToolStarted && !IsCursorInRect(&g_aPaletteFrameRects[0]) &&
-        !IsCursorInRect(&g_aPaletteFrameRects[1]) && !(PaintShopInput()->buttons & INPUT_PICK)) {
+    if (g_bPaintToolStarted && !IsCursorInRect(&g_rcPaletteFrameLeft) &&
+        !IsCursorInRect(&g_rcPaletteFrameRight) && !(PaintShopInput()->buttons & INPUT_PICK)) {
         if (g_bDecalTextLength > 0) {
             if (g_bTextShadowPickerOpen) {
                 g_texPaintCursor.originX = g_nPaintAnchorX;
@@ -840,17 +840,17 @@ void DrawDecalColorPalette(void) {
     PaletteSwatch *swatch;
     s32 i;
 
-    DrawFilledRectHiRes(g_aPaletteFrameRects[0].x,
-                        g_aPaletteFrameRects[0].y,
-                        g_aPaletteFrameRects[0].width,
-                        g_aPaletteFrameRects[0].height,
+    DrawFilledRectHiRes(g_rcPaletteFrameLeft.x,
+                        g_rcPaletteFrameLeft.y,
+                        g_rcPaletteFrameLeft.width,
+                        g_rcPaletteFrameLeft.height,
                         0,
                         0,
                         0);
-    DrawFilledRectHiRes(g_aPaletteFrameRects[1].x,
-                        g_aPaletteFrameRects[1].y,
-                        g_aPaletteFrameRects[1].width,
-                        g_aPaletteFrameRects[1].height,
+    DrawFilledRectHiRes(g_rcPaletteFrameRight.x,
+                        g_rcPaletteFrameRight.y,
+                        g_rcPaletteFrameRight.width,
+                        g_rcPaletteFrameRight.height,
                         0,
                         0,
                         0);

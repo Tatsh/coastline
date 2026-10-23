@@ -18,7 +18,8 @@ Sprite g_texPaintToolBrush, g_texPaintToolText, g_texPaintToolRect, g_texPaintTo
 Sprite g_texPaintToolClear, g_texPaintCursor, g_texKeyboardHighlight, g_texDecalFont;
 Sprite g_texPaintShapeFilledCircle, g_texButtonA, g_texButtonB;
 ScreenRect g_rcDecalCanvasFrame = {280, 94, 328, 260};
-ScreenRect g_aPaletteFrameRects[2] = {{20, 400, 48, 22}, {80, 400, 232, 22}};
+ScreenRect g_rcPaletteFrameLeft = {20, 400, 48, 22};
+ScreenRect g_rcPaletteFrameRight = {80, 400, 232, 22};
 ScreenRect g_aBrushSizeRects[BRUSH_SIZES] = {
     {0, 0, 1, 1}, {0, 0, 2, 2}, {0, 0, 4, 4}, {0, 0, 6, 6}, {0, 0, 8, 8}};
 ScreenRect g_aBrushSizeButtonRects[BRUSH_SIZES];

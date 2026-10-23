@@ -176,13 +176,22 @@ extern Sprite g_texPaintShapeFilledCircle;
 extern ScreenRect g_rcDecalCanvasFrame;
 
 /**
- * The black areas behind the swatches of the palette.
+ * The black area behind the two wide swatches of the palette.
  *
  * @ghidraAddress USA: 0x8028d480
  * @ghidraAddress EUR: 0x8028fbe0
  * @ghidraAddress JPN: 0x8028f650
  */
-extern ScreenRect g_aPaletteFrameRects[2];
+extern ScreenRect g_rcPaletteFrameLeft;
+
+/**
+ * The black area behind the narrow swatches of the palette, right of the wide ones.
+ *
+ * @ghidraAddress USA: 0x8028d490
+ * @ghidraAddress EUR: 0x8028fbf0
+ * @ghidraAddress JPN: 0x8028f660
+ */
+extern ScreenRect g_rcPaletteFrameRight;
 
 /**
  * The sizes of the brush, in texels, as rectangles.

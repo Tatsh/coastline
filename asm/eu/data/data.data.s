@@ -36892,12 +36892,12 @@ dlabel D_8028FBDC
     /* 90BDC 8028FBDC 00000104 */ .word 0x00000104
 enddlabel D_8028FBDC
 
-nonmatching g_aPaletteFrameRects
+nonmatching g_rcPaletteFrameLeft
 
 .balign 8
-dlabel g_aPaletteFrameRects
+dlabel g_rcPaletteFrameLeft
     /* 90BE0 8028FBE0 00000000 */ .word 0x00000000
-enddlabel g_aPaletteFrameRects
+enddlabel g_rcPaletteFrameLeft
 
 nonmatching D_8028FBE4
 
@@ -36907,12 +36907,12 @@ dlabel D_8028FBE4
     /* 90BEC 8028FBEC 00000016 */ .word 0x00000016
 enddlabel D_8028FBE4
 
-nonmatching D_8028FBF0
+nonmatching g_rcPaletteFrameRight
 
 .balign 8
-dlabel D_8028FBF0
+dlabel g_rcPaletteFrameRight
     /* 90BF0 8028FBF0 00000000 */ .word 0x00000000
-enddlabel D_8028FBF0
+enddlabel g_rcPaletteFrameRight
 
 nonmatching D_8028FBF4
 

@@ -66,16 +66,16 @@ A routine of a release matches when IDO 5.3 compiles its source for that release
 (the game at `-O2`, libultra at `-O1`, `-O2`, or `-O3`) to the words of the
 original, with the fields that relocations fill masked. Assembly sources are
 assembled and compared the same way. A routine whose words differ only in the
-numbers of registers is listed apart (🟡), an accepted difference of register
-allocation. A routine the scan does not reach is unknown.
+numbers of registers is listed apart (🟡). It does not match, and its source still
+differs from the original. A routine the scan does not reach is unknown.
 Run the matching scan under `.wiswa-ci/tools` for each release (`--region us`, `eu`,
 and `jp`) before this report to regenerate the table.
 
 | Release   | Routines | Matching | Registers only | Not matching | Unknown | Share |
 | --------- | -------: | -------: | -------------: | -----------: | ------: | ----: |
-| `usa.z64` |      801 |      627 |              9 |          165 |       0 | 78.3% |
-| `eur.z64` |      819 |      642 |              8 |          169 |       0 | 78.4% |
-| `jpn.z64` |      822 |      643 |              7 |          172 |       0 | 78.2% |
+| `usa.z64` |      801 |      629 |             11 |          161 |       0 | 78.5% |
+| `eur.z64` |      819 |      646 |             10 |          163 |       0 | 78.9% |
+| `jpn.z64` |      822 |      646 |              9 |          167 |       0 | 78.6% |
 
 ### By component
 
