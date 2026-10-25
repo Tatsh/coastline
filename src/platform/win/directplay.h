@@ -106,6 +106,92 @@ class NetStream;
 void ResetNetworkStreamWithTimestamp(NetStream *pStream);
 
 /**
+ * The time network play started counting frames from, in milliseconds.
+ *
+ * @ghidraAddress BRD3D: 0x10220dd8
+ * @ghidraAddress BRGlide: 0x1021c908
+ */
+extern unsigned g_dwNetClockBaseMs;
+
+/**
+ * Get the frames of network play since g_dwNetClockBaseMs, at three for each tenth of a second.
+ *
+ * @return The frames.
+ * @ghidraAddress BRD3D: 0x10003460
+ * @ghidraAddress BRGlide: 0x100037d0
+ */
+unsigned GetElapsedFrameCount(void);
+
+/**
+ * The frame of the last key frame written to a stream.
+ *
+ * @ghidraAddress BRD3D: 0x10221310
+ * @ghidraAddress BRGlide: 0x1021ce40
+ */
+extern unsigned g_dwNetLastKeyframeFrame;
+
+/**
+ * Empty a stream and write the current frame of network play at its start.
+ *
+ * @param pStream The stream.
+ * @ghidraAddress BRD3D: 0x100048d0
+ * @ghidraAddress BRGlide: 0x10004c40
+ */
+void WriteTimestampToStream(NetStream *pStream);
+
+/**
+ * The frame a network race starts on.
+ *
+ * @ghidraAddress BRD3D: 0x1022af00
+ * @ghidraAddress BRGlide: 0x10226a30
+ */
+extern unsigned g_dwNetRaceStartFrame;
+
+/**
+ * Mark the network race started when its start frame has arrived.
+ *
+ * @ghidraAddress BRD3D: 0x10006160
+ * @ghidraAddress BRGlide: 0x100064d0
+ */
+void CheckNetworkRaceStartTime(void);
+
+/**
+ * Destroy the local player of DirectPlay, when there is one.
+ *
+ * @return The result of DestroyPlayer, or DP_OK without a player.
+ * @ghidraAddress BRD3D: 0x1000c4a0
+ * @ghidraAddress BRGlide: 0x100099d0
+ */
+HRESULT DestroyLocalDirectPlayPlayer(void);
+
+/**
+ * Limit a value to the range from -1 to 1.
+ *
+ * @param pValue The value.
+ * @ghidraAddress BRD3D: 0x100058d0
+ * @ghidraAddress BRGlide: 0x10005c40
+ */
+void ClampFloat(float *pValue);
+
+/**
+ * Limit a coordinate to the range from 0 to 2048.
+ *
+ * @param pValue The coordinate.
+ * @ghidraAddress BRD3D: 0x10005900
+ * @ghidraAddress BRGlide: 0x10005c70
+ */
+void ClampWorldCoordinate(float *pValue);
+
+/**
+ * Limit a height to the range from -256 to 256.
+ *
+ * @param pHeight The height.
+ * @ghidraAddress BRD3D: 0x10005930
+ * @ghidraAddress BRGlide: 0x10005ca0
+ */
+void ClampTerrainHeightCoordinate(float *pHeight);
+
+/**
  * The telephone number of a modem connection.
  *
  * @ghidraAddress BRD3D: 0x10a9cdf0
@@ -414,6 +500,7 @@ extern int g_dwDirectPlaySessionActive;
  * Whether the race of a network game has started.
  *
  * @ghidraAddress BRD3D: 0x1022af14
+ * @ghidraAddress BRGlide: 0x10226a44
  */
 extern int g_bNetRaceStartReached;
 

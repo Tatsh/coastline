@@ -11,6 +11,7 @@
 #include "platform/win/boot/app.h"
 #include "platform/win/boot/rallyconfig.h"
 #include "platform/win/boot/strings.h"
+#include "platform/win/frametimer.h"
 #include "platform/win/frontend.h"
 #include "platform/win/netstream.h"
 #include "platform/win/settings.h"
@@ -43,6 +44,72 @@ void SendNetworkMessage6ToSession(void) {
 void ResetNetworkStreamWithTimestamp(NetStream *pStream) {
     pStream->StreamResetReadWrite();
     pStream->StreamWriteInt24(g_dwNetWorkerCurrentTime);
+}
+
+unsigned g_dwNetClockBaseMs;
+
+unsigned GetElapsedFrameCount(void) {
+    unsigned dwElapsed = GetFrameTickCounter() - g_dwNetClockBaseMs;
+    return dwElapsed / TICK_PERIOD_MS * TICKS_PER_PERIOD +
+           dwElapsed % TICK_PERIOD_MS / TICK_INTERVAL_MS;
+}
+
+unsigned g_dwNetLastKeyframeFrame;
+
+void WriteTimestampToStream(NetStream *pStream) {
+    pStream->StreamResetReadWrite();
+    WaitForSingleObject(g_hNetKeyframeMutex, INFINITE);
+    g_dwNetLastKeyframeFrame = GetElapsedFrameCount();
+    pStream->StreamWriteInt24(g_dwNetLastKeyframeFrame);
+    ReleaseMutex(g_hNetKeyframeMutex);
+}
+
+unsigned g_dwNetRaceStartFrame;
+int g_bNetRaceStartReached;
+
+void CheckNetworkRaceStartTime(void) {
+    WaitForSingleObject(g_hNetRaceStartMutex, INFINITE);
+    if (GetElapsedFrameCount() >= g_dwNetRaceStartFrame) {
+        g_bNetRaceStartReached = true;
+    }
+    ReleaseMutex(g_hNetRaceStartMutex);
+}
+
+HRESULT DestroyLocalDirectPlayPlayer(void) {
+    HRESULT hResult = DP_OK;
+    if (g_pDirectPlayInfo != nullptr && g_pDirectPlayInfo->pDirectPlay != nullptr &&
+        g_pDirectPlayInfo->dpidPlayer != 0) {
+        hResult = g_pDirectPlayInfo->pDirectPlay->DestroyPlayer(g_pDirectPlayInfo->dpidPlayer);
+        g_pDirectPlayInfo->dpidPlayer = 0;
+    }
+    return hResult;
+}
+
+void ClampFloat(float *pValue) {
+    if (*pValue < -1.0f) {
+        *pValue = -1.0f;
+    }
+    if (*pValue > 1.0f) {
+        *pValue = 1.0f;
+    }
+}
+
+void ClampWorldCoordinate(float *pValue) {
+    if (*pValue < 0.0f) {
+        *pValue = 0.0f;
+    }
+    if (*pValue > 2048.0f) {
+        *pValue = 2048.0f;
+    }
+}
+
+void ClampTerrainHeightCoordinate(float *pHeight) {
+    if (*pHeight < -256.0f) {
+        *pHeight = -256.0f;
+    }
+    if (*pHeight > 256.0f) {
+        *pHeight = 256.0f;
+    }
 }
 
 int g_dwLaunchedFromLobby;
