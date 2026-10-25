@@ -1,6 +1,6 @@
 # PC port game code from 0x10000000 to 0x10010000
 
-137 of 246 routines done.
+139 of 246 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -230,9 +230,9 @@ the same name, for a routine the port retained from the N64 game.
 | `DirectDrawRenderer::Cleanup`                              |   ✅   |                 |      3 |     30 | `0x1000a1c0` |              | `undefined Cleanup(DirectDrawRenderer * this)`                                                                                                                                     |
 | `PodArchive::ScalarDeletingDestructor`                     |        |                 |      1 |     30 | `0x100085c0` | `0x100087a0` | `undefined4 ScalarDeletingDestructor(PodArchive * this, void * pThis)`                                                                                                             |
 | `PopCount32`                                               |   ✅   |                 |     20 |     29 | `0x10009640` |              | `int PopCount32(uint nMask)`                                                                                                                                                       |
-| `ClearSplitScreenRenderState`                              |        |                 |      1 |     29 | `0x1000f620` | `0x1000cb80` | `void ClearSplitScreenRenderState(void)`                                                                                                                                           |
-| `ResetRenderCommandBufferStack`                            |        |                 |      1 |     28 | `0x1000f460` | `0x1000c9c0` | `void ResetRenderCommandBufferStack(void)`                                                                                                                                         |
+| `ClearSplitScreenRenderState`                              |   ✅   |                 |      1 |     29 | `0x1000f620` | `0x1000cb80` | `void ClearSplitScreenRenderState(void)`                                                                                                                                           |
 | `DirectDrawRenderer::SetPrimarySurfacePalette`             |   ✅   |                 |      1 |     28 | `0x1000b150` |              | `long SetPrimarySurfacePalette(DirectDrawRenderer * this)`                                                                                                                         |
+| `ResetRenderCommandBufferStack`                            |   ✅   |                 |      1 |     28 | `0x1000f460` | `0x1000c9c0` | `void ResetRenderCommandBufferStack(void)`                                                                                                                                         |
 | `RenderHost::ValidateRenderDeviceState`                    |   ✅   |                 |      2 |     27 | `0x10001160` |              | `long ValidateRenderDeviceState(RenderHost * this)`                                                                                                                                |
 | `D3DMaterial::Release`                                     |   ✅   |                 |      2 |     25 | `0x1000a170` |              | `void Release(D3DMaterial * this)`                                                                                                                                                 |
 | `DirectDrawRenderer::RestoreDisplayMode`                   |   ✅   |                 |      1 |     25 | `0x1000a800` |              | `int RestoreDisplayMode(DirectDrawRenderer * this)`                                                                                                                                |

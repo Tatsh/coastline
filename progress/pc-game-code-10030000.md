@@ -1,6 +1,6 @@
 # PC port game code from 0x10030000 to 0x10040000
 
-59 of 307 routines done.
+60 of 307 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -262,7 +262,7 @@ the same name, for a routine the port retained from the N64 game.
 | `PlayerInputState::TransferFlags`                 |        | ✅ `0x80255910` |     11 |     31 | `0x10035fa0` | `0x1002f640` | `void TransferFlags(PlayerInputState * this, DWORD * pThis)`                                                                                                            |
 | `Vec3fNegate`                                     |   ✅   | ✅ `0x80224434` |      6 |     31 | `0x1003acc0` | `0x10034340` | `void Vec3fNegate(float * pResult, float * pVec)`                                                                                                                       |
 | `NetworkCarSetupUI_PollChatListSelection`         |        |                 |      1 |     31 | `0x1003ebc0` | `0x100381b0` | `undefined NetworkCarSetupUI_PollChatListSelection()`                                                                                                                   |
-| `GetSelectedServiceProvider`                      |        |                 |      1 |     30 | `0x1003cfc0` | `0x10036650` | `undefined GetSelectedServiceProvider()`                                                                                                                                |
+| `GetSelectedServiceProvider`                      |   ✅   |                 |      1 |     30 | `0x1003cfc0` | `0x10036650` | `int GetSelectedServiceProvider(GUID * * ppGuid)`                                                                                                                       |
 | `MultiplayerConnectionUI_OnSelectProvider0`       |        |                 |      1 |     29 |              | `0x1003d560` | `undefined MultiplayerConnectionUI_OnSelectProvider0()`                                                                                                                 |
 | `MultiplayerConnectionUI_OnSelectProvider1`       |        |                 |      1 |     29 |              | `0x1003d5a0` | `undefined MultiplayerConnectionUI_OnSelectProvider1()`                                                                                                                 |
 | `MultiplayerConnectionUI_OnSelectProvider2`       |        |                 |      1 |     29 |              | `0x1003d5e0` | `undefined MultiplayerConnectionUI_OnSelectProvider2()`                                                                                                                 |

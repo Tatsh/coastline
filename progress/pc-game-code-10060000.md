@@ -1,6 +1,6 @@
 # PC port game code from 0x10060000 to 0x10070000
 
-30 of 169 routines done.
+31 of 169 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -145,7 +145,7 @@ the same name, for a routine the port retained from the N64 game.
 | `Vehicle::ClearVehicleDamageState`       |        | ✅ `0x80228a3c` |      1 |     34 | `0x10065710` | `0x1005e780` | `undefined ClearVehicleDamageState(Vehicle * this)`                                                                                      |
 | `MouseDevice::ReleaseMouseDevice`        |   ✅   |                 |      1 |     34 | `0x100602b0` | `0x10059320` | `void ReleaseMouseDevice(MouseDevice * this)`                                                                                            |
 | `ShowInfoMessageBox`                     |   ✅   |                 |      4 |     33 | `0x10060030` | `0x100590a0` | `int ShowInfoMessageBox(void * hWnd, long hResult, char * pszText)`                                                                      |
-| `SetColorTintMultipliers`                |        |                 |      3 |     30 | `0x10061460` | `0x1005a4e0` | `undefined SetColorTintMultipliers()`                                                                                                    |
+| `SetColorTintMultipliers`                |   ✅   |                 |      3 |     30 | `0x10061460` | `0x1005a4e0` | `void SetColorTintMultipliers(int nRed, int nGreen, int nBlue)`                                                                          |
 | `PrepareTrackSections`                   |        | ✅ `0x80255ca0` |      1 |     30 | `0x10061700` | `0x1005a780` | `undefined PrepareTrackSections()`                                                                                                       |
 | `IncreaseBgmVolume`                      |        | ✅ `0x80211840` |      1 |     29 | `0x10060d50` | `0x10059dc0` | `undefined IncreaseBgmVolume()`                                                                                                          |
 | `IncreaseSfxVolume`                      |        | ✅ `0x802118f8` |      1 |     29 | `0x10060dc0` | `0x10059e30` | `undefined IncreaseSfxVolume()`                                                                                                          |

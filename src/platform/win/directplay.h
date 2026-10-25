@@ -50,6 +50,24 @@ extern DirectPlayInfo *g_pDirectPlayInfo;
 extern ServiceProvider g_aServiceProviders[SERVICE_PROVIDER_COUNT];
 
 /**
+ * The index in g_aServiceProviders of the service provider chosen.
+ *
+ * @ghidraAddress BRD3D: 0x10aa287c
+ * @ghidraAddress BRGlide: 0x10ac5bd4
+ */
+extern int g_dwServiceProviderIndex;
+
+/**
+ * Report the GUID of the service provider chosen.
+ *
+ * @param ppGuid Receives the GUID.
+ * @return Always 0.
+ * @ghidraAddress BRD3D: 0x1003cfc0
+ * @ghidraAddress BRGlide: 0x10036650
+ */
+int GetSelectedServiceProvider(GUID **ppGuid);
+
+/**
  * The telephone number of a modem connection.
  *
  * @ghidraAddress BRD3D: 0x10a9cdf0

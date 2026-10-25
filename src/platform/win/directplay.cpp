@@ -27,6 +27,11 @@
 DirectPlayInfo g_DirectPlayInfo;
 DirectPlayInfo *g_pDirectPlayInfo;
 ServiceProvider g_aServiceProviders[SERVICE_PROVIDER_COUNT];
+
+int GetSelectedServiceProvider(GUID **ppGuid) {
+    *ppGuid = &g_aServiceProviders[g_dwServiceProviderIndex].guid;
+    return 0;
+}
 int g_dwLaunchedFromLobby;
 int g_dwLobbyIsHost;
 int g_dwSessionEnumPending;
