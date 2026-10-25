@@ -590,6 +590,17 @@ bool SetSoundVoiceFrequencyFloat(int nSample, int nVoice, float fFrequency) {
     return SetSoundChannelFrequency(nSample, nVoice * 2, static_cast<DWORD>(fFrequency));
 }
 
+bool StopSoundVoice(int nSample, int nVoice) {
+    if (!IsDirectSoundActive()) {
+        return true;
+    }
+    SoundBufferNode *pNode = g_aSoundChannelBuffers[nSample].apChannelBuffers[nVoice * 2];
+    if (pNode == nullptr) {
+        return true;
+    }
+    return StopSoundBuffer(pNode) == DS_OK;
+}
+
 bool SetSoundChannelFrequency(int nSample, int nChannel, DWORD dwFrequency) {
     if (!IsDirectSoundActive()) {
         return true;

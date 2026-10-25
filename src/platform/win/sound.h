@@ -712,6 +712,17 @@ bool SetSoundChannelFrequency(int nSample, int nChannel, DWORD dwFrequency);
 bool SetSoundVoiceFrequencyFloat(int nSample, int nVoice, float fFrequency);
 
 /**
+ * Stop the buffer of the first channel of a voice of a sample, when sound is on.
+ *
+ * @param nSample The sample.
+ * @param nVoice The voice. Its first channel is twice the voice.
+ * @return Whether the buffer stopped, and true without a buffer or without sound.
+ * @ghidraAddress BRD3D: 0x10072ba0
+ * @ghidraAddress BRGlide: 0x1006bb10
+ */
+bool StopSoundVoice(int nSample, int nVoice);
+
+/**
  * Set the volume and the pan of the buffer of a node from the levels of its two sides.
  *
  * @param pNode The node.
