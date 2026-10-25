@@ -6,6 +6,8 @@
 #include <cstdlib>
 #include <cstring>
 
+#include "platform/win/boot/app.h"
+
 PodArchive g_BossRallyPodArchive;
 PodEntry g_aPodArchiveEntries[POD_WRITER_ENTRY_COUNT];
 int g_nPodArchiveEntryCount;
@@ -229,4 +231,7 @@ void PodArchive::SetFilePath(const char *pszPath) {
     if (pszPath != nullptr) {
         strcpy(szPath, pszPath);
     }
+}
+
+void NullStub(void) {
 }

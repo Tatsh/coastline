@@ -1,6 +1,6 @@
 # PC port game code from 0x10000000 to 0x10010000
 
-165 of 246 routines done.
+166 of 246 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -254,4 +254,4 @@ the same name, for a routine the port retained from the N64 game.
 | `GetLocalPlayerIndex`                                      |   ✅   |                 |      2 |      6 | `0x10005d30` | `0x100060a0` | `int GetLocalPlayerIndex(void)`                                                                                                                                                    |
 | `GetEarMusicEventHandle`                                   |   📝   |                 |      1 |      6 | `0x10002480` | `0x100027a0` | `WPARAM GetEarMusicEventHandle(void)`                                                                                                                                              |
 | `IdentityReturn`                                           |        |                 |      2 |      3 | `0x10008b70` | `0x10008d50` | `undefined IdentityReturn()`                                                                                                                                                       |
-| `NullStub`                                                 |   📝   |                 |    183 |      1 | `0x10008b80` | `0x10008d60` | `void NullStub(void)`                                                                                                                                                              |
+| `NullStub`                                                 |   ✅   |                 |    183 |      1 | `0x10008b80` | `0x10008d60` | `void NullStub(void)`                                                                                                                                                              |

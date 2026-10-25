@@ -554,6 +554,7 @@ int DispatchGameStateFrame(void);
  * Do nothing.
  *
  * @ghidraAddress BRD3D: 0x10008b80
+ * @ghidraAddress BRGlide: 0x10008d60
  */
 void NullStub(void);
 
