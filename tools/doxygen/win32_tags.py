@@ -15,12 +15,20 @@ from HANDLE_PAGES.
 
 Doxygen adds `.html` to a link without an extension, which learn.microsoft.com does not serve. Each
 link therefore ends in `?.`, a query the site ignores.
+
+The older DirectX APIs are no longer on learn.microsoft.com. With `--archive-output`, a second tag
+file links the names the first does not to the reference of DirectX 7 that the MSDN Library had in
+2000, as the Wayback Machine of archive.org captured it. The names of its pages are codes, so the
+title of each page is fetched once and kept in the cache file.
 """
 from __future__ import annotations
 
 import argparse
+import json
 import re
 import subprocess
+import time
+import urllib.error
 import urllib.request
 import xml.etree.ElementTree as ET
 from collections import defaultdict
@@ -56,6 +64,19 @@ DATA_TYPE_ANCHOR = re.compile(r'<span id="([A-Z][A-Z0-9_]*)">')
 # The kinds of page written: functions and methods, structures, enumerations, callbacks, and
 # interfaces.
 KINDS = ('nf', 'ns', 'ne', 'nc', 'nn')
+# The reference of DirectX 7 of the MSDN Library and the prefixes of its pages of DirectDraw,
+# Direct3D Immediate Mode, DirectSound, DirectPlay, and DirectInput. The links are relative to
+# https://web.archive.org/web/.
+ARCHIVE_PREFIX = 'msdn.microsoft.com/library/psdk/directx/'
+ARCHIVE_REFERENCES = ('ddref_', 'imref_', 'dsref_', 'dpref_', 'diref_')
+ARCHIVE_INDEX = ('https://web.archive.org/cdx/search/cdx?url=' + ARCHIVE_PREFIX +
+                 '&matchType=prefix&collapse=urlkey&fl=timestamp,original'
+                 '&filter=statuscode:200&filter=mimetype:text/html')
+# The title of an archived page that documents a name, or a method of an interface.
+ARCHIVE_TITLE = re.compile(r'<title>\s*([A-Za-z_]\w*(?:::[A-Za-z_]\w*)?)\s*</title>', re.IGNORECASE)
+# The pause between two requests to archive.org, in seconds, and the tries of a request.
+ARCHIVE_PAUSE = 1.0
+ARCHIVE_TRIES = 5
 
 
 def git(sdk_api: Path, *arguments: str) -> str:
@@ -129,6 +150,77 @@ def api_names(text: str) -> list[str]:
   return names
 
 
+def fetch(url: str) -> str:
+  """Fetch a page of archive.org, waiting longer after each refusal."""
+  for attempt in range(ARCHIVE_TRIES):
+    time.sleep(ARCHIVE_PAUSE * 2**attempt)
+    try:
+      with urllib.request.urlopen(url, timeout=120) as response:
+        return response.read().decode('utf-8', errors='replace')
+    except (urllib.error.URLError, TimeoutError):
+      continue
+  raise RuntimeError(f'archive.org did not serve {url}')
+
+
+def archive_pages(cache: Path) -> dict[str, str]:
+  """Map the name each archived page of the reference documents to its capture."""
+  titles: dict[str, str] = json.loads(cache.read_text(encoding='utf-8')) if cache.exists() else {}
+  for line in fetch(ARCHIVE_INDEX).splitlines():
+    timestamp, _, original = line.partition(' ')
+    capture = f'{timestamp}/{original}'
+    if original.rpartition('/')[2].startswith(ARCHIVE_REFERENCES) and capture not in titles:
+      match = ARCHIVE_TITLE.search(fetch(f'https://web.archive.org/web/{timestamp}id_/{original}'))
+      titles[capture] = match.group(1) if match else ''
+      cache.write_text(json.dumps(titles, indent=2, sort_keys=True) + '\n', encoding='utf-8')
+  pages: dict[str, str] = {}
+  for capture, title in sorted(titles.items()):
+    if title:
+      pages.setdefault(title, capture)
+  return pages
+
+
+def write_tagfile(tagfile: ET.Element, output: Path) -> None:
+  ET.indent(tagfile, space='  ')
+  output.write_text('<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n' +
+                    ET.tostring(tagfile, encoding='unicode') + '\n',
+                    encoding='utf-8')
+
+
+def archive_tagfile(pages: dict[str, str], free: set[str], identifiers: set[str],
+                    linked: set[str]) -> ET.Element:
+  """The tag file of the archived pages of the names the sources use and the first does not link."""
+  tagfile = ET.Element('tagfile')
+  methods: defaultdict[str, list[tuple[str, str]]] = defaultdict(list)
+  routines: list[tuple[str, str]] = []
+  for title, capture in pages.items():
+    interface, _, method = title.rpartition('::')
+    if interface:
+      if interface in free and interface not in linked and method in identifiers:
+        methods[interface].append((method, capture))
+    elif title in free and title not in linked:
+      if re.fullmatch(r'I[A-Z]\w*', title):
+        methods.setdefault(title, [])
+      elif title.upper() == title:
+        compound = ET.SubElement(tagfile, 'compound', kind='struct')
+        ET.SubElement(compound, 'name').text = title
+        ET.SubElement(compound, 'filename').text = capture
+      else:
+        routines.append((title, capture))
+  for interface, entries in sorted(methods.items()):
+    compound = ET.SubElement(tagfile, 'compound', kind='class')
+    ET.SubElement(compound, 'name').text = interface
+    if interface in pages:
+      ET.SubElement(compound, 'filename').text = pages[interface]
+    for method, capture in sorted(entries):
+      add_member(compound, 'function', method, capture, suffix='')
+  if routines:
+    compound = ET.SubElement(tagfile, 'compound', kind='file')
+    ET.SubElement(compound, 'name').text = 'directx'
+    for name, capture in sorted(routines):
+      add_member(compound, 'function', name, capture, suffix='')
+  return tagfile
+
+
 def data_types() -> set[str]:
   """The types the page of the Windows data types has a row for."""
   with urllib.request.urlopen(DATA_TYPES_URL, timeout=60) as response:
@@ -152,7 +244,15 @@ def main() -> int:
                       nargs='+',
                       default=[Path('src')],
                       help='the directories whose own declarations are never linked')
+  parser.add_argument('--archive-output',
+                      type=Path,
+                      help='the tag file of the archived reference of DirectX 7 to write')
+  parser.add_argument('--archive-cache',
+                      type=Path,
+                      help='the file that keeps the titles of the archived pages between runs')
   args = parser.parse_args()
+  if args.archive_output and not args.archive_cache:
+    parser.error('--archive-output needs --archive-cache')
   declared = declared_names(args.declarations)
   free, identifiers = source_identifiers(args.sources)
   # A method links only in the scope of its interface, so a method of the game of the same name
@@ -224,18 +324,24 @@ def main() -> int:
       add_member(compound, 'typedef', name, DATA_TYPES_PAGE, name)
     for name in handles:
       add_member(compound, 'typedef', name, HANDLE_PAGES[name])
-  ET.indent(tagfile, space='  ')
-  args.output.write_text('<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n' +
-                         ET.tostring(tagfile, encoding='unicode') + '\n',
-                         encoding='utf-8')
+  write_tagfile(tagfile, args.output)
+  if args.archive_output:
+    linked = set(links) | set(types) | set(handles)
+    write_tagfile(archive_tagfile(archive_pages(args.archive_cache), free, identifiers, linked),
+                  args.archive_output)
   return 0
 
 
-def add_member(compound: ET.Element, kind: str, name: str, page: str, anchor: str = '') -> None:
+def add_member(compound: ET.Element,
+               kind: str,
+               name: str,
+               page: str,
+               anchor: str = '',
+               suffix: str = LINK_SUFFIX) -> None:
   member = ET.SubElement(compound, 'member', kind=kind)
   ET.SubElement(member, 'type')
   ET.SubElement(member, 'name').text = name
-  ET.SubElement(member, 'anchorfile').text = page + LINK_SUFFIX
+  ET.SubElement(member, 'anchorfile').text = page + suffix
   ET.SubElement(member, 'anchor').text = anchor
   ET.SubElement(member, 'arglist').text = '()' if kind == 'function' else ''
 

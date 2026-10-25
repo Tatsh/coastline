@@ -149,6 +149,7 @@ ddlock
 ddpcaps
 ddpf
 ddpixelformat
+ddref
 ddscaps
 ddscl
 ddsd
@@ -193,6 +194,8 @@ dipropautocenter
 dipropdword
 diproprange
 directplay
+directx
+diref
 disasm
 discl
 displaylist
@@ -221,6 +224,7 @@ dpmsg
 dpname
 dpplayer
 dpreceive
+dpref
 dpsend
 dpsession
 dpsessiondesc
@@ -241,6 +245,7 @@ dshade
 dsinf
 dsll
 dsra
+dsref
 dsrl
 dsscl
 dtaddress
@@ -347,6 +352,7 @@ iasm
 iconerror
 icsum
 immp
+imref
 infblock
 infcodes
 inffast
@@ -588,6 +594,7 @@ prenmi
 primarybuffer
 primarysurface
 probetlb
+psdk
 putfld
 pycache
 pyinstaller
@@ -712,6 +719,7 @@ sqrtf
 srcblt
 standardvgamode
 startthread
+statuscode
 statusline
 stdarg
 stdbool
@@ -790,6 +798,7 @@ undriven
 unistd
 unknownapplication
 unrotated
+urlkey
 urllib
 urlopen
 vars

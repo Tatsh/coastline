@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<tagfile>
+  <compound kind="struct">
+    <name>D3DRENDERSTATETYPE</name>
+    <filename>20001020070205/http://msdn.microsoft.com:80/library/psdk/directx/imref_5fdw.htm</filename>
+  </compound>
+  <compound kind="struct">
+    <name>DSBUFFERDESC</name>
+    <filename>20001026210417/http://msdn.microsoft.com:80/library/psdk/directx/dsref_0sis.htm</filename>
+  </compound>
+  <compound kind="struct">
+    <name>DIMOUSESTATE</name>
+    <filename>20001118075000/http://msdn.microsoft.com:80/library/psdk/directx/diref_03sk.htm</filename>
+  </compound>
+  <compound kind="struct">
+    <name>D3DCOLOR</name>
+    <filename>20001118225700/http://msdn.microsoft.com:80/library/psdk/directx/imref_04kk.htm</filename>
+  </compound>
+  <compound kind="class">
+    <name>IDirectSound</name>
+    <filename>20001204095700/http://msdn.microsoft.com:80/library/psdk/directx/dsref_2jqc.htm</filename>
+    <member kind="function">
+      <type />
+      <name>CreateSoundBuffer</name>
+      <anchorfile>20001026235011/http://msdn.microsoft.com:80/library/psdk/directx/dsref_5ihw.htm</anchorfile>
+      <anchor />
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>SetCooperativeLevel</name>
+      <anchorfile>20001118050900/http://msdn.microsoft.com:80/library/psdk/directx/dsref_5wx0.htm</anchorfile>
+      <anchor />
+      <arglist>()</arglist>
+    </member>
+  </compound>
+  <compound kind="class">
+    <name>IDirectSoundBuffer</name>
+    <filename>20001117235900/http://msdn.microsoft.com:80/library/psdk/directx/dsref_4odg.htm</filename>
+    <member kind="function">
+      <type />
+      <name>Play</name>
+      <anchorfile>20001027002850/http://msdn.microsoft.com:80/library/psdk/directx/dsref_7ip0.htm</anchorfile>
+      <anchor />
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>SetVolume</name>
+      <anchorfile>20001102124220/http://msdn.microsoft.com:80/library/psdk/directx/dsref_7dd0.htm</anchorfile>
+      <anchor />
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>Stop</name>
+      <anchorfile>20001028033152/http://msdn.microsoft.com:80/library/psdk/directx/dsref_0fhg.htm</anchorfile>
+      <anchor />
+      <arglist>()</arglist>
+    </member>
+  </compound>
+</tagfile>

@@ -98,11 +98,13 @@ if(BUILD_DOCS OR BUILD_DOCS_ONLY)
   set(DOXYGEN_USE_MDFILE_AS_MAINPAGE "${CMAKE_SOURCE_DIR}/README.md")
   set(DOXYGEN_INTERACTIVE_SVG YES)
   set(DOXYGEN_GENERATE_TAGFILE "${CMAKE_BINARY_DIR}/html/${CMAKE_PROJECT_NAME}.tags")
-  # The C and C++ libraries link to cppreference.com and the Win32 API to learn.microsoft.com.
-  # tools/doxygen/win32_tags.py writes the tag file of the Win32 API.
+  # The C and C++ libraries link to cppreference.com, the Win32 API to learn.microsoft.com, and the
+  # older DirectX APIs to the reference of DirectX 7 that archive.org keeps.
+  # tools/doxygen/win32_tags.py writes the tag files of the Win32 API and of DirectX.
   set(DOXYGEN_TAGFILES
       "${CMAKE_SOURCE_DIR}/docs/cppreference.tags=https://en.cppreference.com/w/"
-      "${CMAKE_SOURCE_DIR}/docs/win32.tags=https://learn.microsoft.com/en-us/windows/win32/api/")
+      "${CMAKE_SOURCE_DIR}/docs/win32.tags=https://learn.microsoft.com/en-us/windows/win32/api/"
+      "${CMAKE_SOURCE_DIR}/docs/directx-archive.tags=https://web.archive.org/web/")
   set(DOXYGEN_EXTRACT_ALL YES)
   set(DOXYGEN_EXTRACT_STATIC YES)
   set(DOXYGEN_SORT_MEMBER_DOCS NO)
