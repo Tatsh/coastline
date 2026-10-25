@@ -912,6 +912,25 @@ HRESULT DirectDrawRenderer::GetDeviceViewportRect(RECT *pRect) {
     return S_OK;
 }
 
+DirectDrawDriver *FindDisplayDeviceByGuid(GUID *pGuid) {
+    int nIndex = 0;
+
+    for (DirectDrawDriver *pDriver = g_pDirectDrawDriverListHead; pDriver != nullptr;
+         pDriver = pDriver->pNext, nIndex++) {
+        if (memcmp(&pDriver->guid, pGuid, sizeof(GUID)) != 0) {
+            continue;
+        }
+        g_pSelectedDisplayDriver = FindDirectDrawDriverOrDefault(pGuid);
+        if (g_pSelectedDisplayDriver == nullptr) {
+            break;
+        }
+        g_dwActiveDisplayDeviceIndex = nIndex;
+        g_dwSelectedDisplayDeviceIndex = nIndex;
+        return pDriver;
+    }
+    return g_pDirectDrawDriverListHead;
+}
+
 bool ApplySelectedDisplayMode(int nWidth, int nHeight, int nBitDepth, int nExtra) {
     DirectDrawRenderer *pRenderer = GetWindowRenderer(g_hMainWindow);
     DirectDrawDriver *pDriver;

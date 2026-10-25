@@ -1260,6 +1260,20 @@ static inline DirectDrawRenderer *GetWindowRenderer(HWND hWnd) {
 }
 
 /**
+ * The index in the list of DirectDraw drivers of the driver in use.
+ *
+ * @ghidraAddress BRD3D: 0x10aa2860
+ */
+extern int g_dwActiveDisplayDeviceIndex;
+
+/**
+ * The index in the list of DirectDraw drivers of the driver the menu of devices selects.
+ *
+ * @ghidraAddress BRD3D: 0x10aa2a2c
+ */
+extern int g_dwSelectedDisplayDeviceIndex;
+
+/**
  * Find the DirectDraw driver of a GUID and make it the selected one.
  *
  * @param pGuid The GUID.
