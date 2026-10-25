@@ -11,6 +11,9 @@
 #include <dbt.h>
 #include <objbase.h>
 
+#include "instantreplay.h"
+#include "laps.h"
+#include "pause.h"
 #include "platform/win/boot/app.h"
 #include "platform/win/boot/rallyconfig.h"
 #include "platform/win/boot/strings.h"
@@ -21,6 +24,7 @@
 #include "platform/win/frontend.h"
 #include "platform/win/settings.h"
 #include "platform/win/sound.h"
+#include "timing.h"
 
 // The resources of the main window in the library.
 #define IDI_MAIN_ICON 0x65
@@ -383,18 +387,18 @@ LRESULT HandleWindowActivateApp(HWND hWnd, WPARAM wParam, LPARAM lParam) {
     g_dwAppActive = wParam;
     if (!wParam) {
         // The game pauses as it goes behind, unless it is paused or a replay plays.
-        if (!g_dwRacePauseState && !g_dwReplayPlaybackMode) {
+        if (!g_dwRacePauseState && !gInstantReplayActive) {
             SaveClockForPause();
             PauseMusicPlayback();
             MuteAllActiveSoundChannels();
-            g_dwPauseMenuSelection = 0;
+            g_dwPauseMenuSelection = PAUSE_CONTINUE;
             // A network race that has started and not finished requests a pause from the others.
-            if (g_dwNetworkPlayMode && g_bNetRaceStartReached && !g_dwReplayPlaybackMode &&
+            if (g_dwNetworkPlayMode && g_bNetRaceStartReached && !gInstantReplayActive &&
                 g_aVehicles_LapCount < g_dwTotalLaps) {
                 RequestNetworkPause();
                 TickNetworkPauseRequest();
             } else {
-                g_dwRacePauseState = true;
+                g_dwRacePauseState = TRUE;
             }
         }
         NullStub();

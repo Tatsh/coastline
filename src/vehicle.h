@@ -10,6 +10,7 @@
 #include <PR/ultratypes.h>
 
 #include "input.h"
+#include "profile.h"
 #include "render.h"
 #include "rigidbody.h"
 #include "system.h"
@@ -19,15 +20,8 @@
 /** The number of vehicles a race can hold. */
 #define MAX_VEHICLES 4
 
-/* The size of the championship. */
-#define SEASONS 6      /*!< The seasons of the championship. */
-#define SEASON_RACES 4 /*!< The most races of a season. */
-
 /** The laps of a race whose times a vehicle keeps. */
 #define VEHICLE_LAP_TIMES 5
-
-/** The tracks a profile keeps records for: the five tracks and their mirrored versions. */
-#define PROFILE_RECORD_TRACKS 10
 
 /** The wheels of a vehicle. */
 #define VEHICLE_WHEELS 4
@@ -62,62 +56,6 @@ enum {
     VEHICLE_DL_TEXTURED = 8,    /*!< Lit, textured parts, cut out by the alpha of their textures. */
     VEHICLE_DL_HIGHLIGHTED,     /*!< The parts that take the specular highlight. */
 };
-
-/**
- * The saved settings and progress of a player. Its fields join this structure as the routines that
- * use them are reconstructed.
- */
-typedef struct {
-    s32 championshipFlags; /*!< The progress of the championship across its years, negative when
-                                never set, with bit 0 set while the seasons race the tracks
-                                mirrored. */
-    u8 season;             /*!< The season of the championship being raced, from 0. */
-    u8 round;              /*!< The race of the season being raced, from 0. */
-    u8 seasonPlaces[SEASONS][SEASON_RACES]; /*!< The place of each race of each season, from 0 for
-                                                 the winner. */
-    u16 seasonPoints[SEASONS];              /*!< The points scored in each season. */
-    u8 unreconstructed2A[0x2C - 0x2A];      /*!< Padding before seasonTimes. */
-    f32 seasonTimes[SEASONS][SEASON_RACES]; /*!< The time of each race of each season, in
-                                                 seconds. */
-    f32 lapRecords[PROFILE_RECORD_TRACKS];  /*!< The best lap on each track, in seconds, or 0 when
-                                                 none was set. */
-    u8 unreconstructedB4[0xCC - 0xB4];      /*!< Not read by the routines reconstructed so far. */
-    u16 unlocks;          /*!< The unlocked cars, a bit for each from bit 0, and further unlocks
-                               above them. */
-    u16 unlockedTracks;   /*!< The unlocked tracks, a bit for each. */
-    u16 unlockedWeathers; /*!< The weathers the championship has raced in, a bit for each. */
-    u8 unreconstructedD2[0xD4 - 0xD2]; /*!< Padding before handling. */
-    s32 handling;         /*!< The handling option the player chose last, the steering mode of
-                               the vehicle from 0. */
-    s32 transmission;     /*!< The gearbox option the player chose last, nonzero for the
-                               automatic. */
-    s32 tires;            /*!< The tyre option the player chose last; the grip falls by 0.002 for
-                               each option up. */
-    s32 suspension;       /*!< The suspension option the player chose last, from 0 for the
-                               softest springs. */
-    s32 controllerLayout; /*!< The button layout the player chose on the controller screen. */
-    f32 raceRecords[PROFILE_RECORD_TRACKS]; /*!< The best race on each track, in seconds, or 0 when
-                                                 none was set. */
-    u8 unreconstructed110[0x128 - 0x110];   /*!< Not read by the routines reconstructed so far. */
-} PlayerProfile;
-
-/**
- * The profile of the player being played.
- *
- * @ghidraAddress USA: 0x8031c5bc
- * @ghidraAddress EUR: 0x8031eabc
- * @ghidraAddress JPN: 0x8031d6ec
- */
-extern PlayerProfile *g_pActiveProfile;
-
-/**
- * The profiles of the two players a controller pak saves.
- *
- * @ghidraAddress USA: 0x80324300
- * @ghidraAddress EUR: 0x80326840
- * @ghidraAddress JPN: 0x80325470
- */
-extern PlayerProfile g_aSeasonSaveBuffers[2];
 
 /**
  * The color of each player's vehicle, as red, green and blue.

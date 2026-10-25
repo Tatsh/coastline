@@ -328,6 +328,7 @@ inffast
 inftrees
 infutil
 inputlost
+instantreplay
 intr
 inttypes
 inval

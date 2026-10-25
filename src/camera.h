@@ -8,6 +8,7 @@
 
 #include <PR/ultratypes.h>
 
+#include "instantreplay.h"
 #include "render.h"
 #include "vecmath.h"
 #include "vehicle.h"
@@ -29,15 +30,6 @@ extern s32 g_bVehicleTrackCollisionCorrected;
  * @ghidraAddress JPN: 0x8028c7c8
  */
 extern Vehicle *g_pActiveCameraVehicle;
-
-/**
- * Whether an instant replay is playing.
- *
- * @ghidraAddress USA: 0x80270788
- * @ghidraAddress EUR: 0x80272758
- * @ghidraAddress JPN: 0x80272208
- */
-extern s32 gInstantReplayActive;
 
 /**
  * Counts down the frames after the chase camera hits the track in a replay.

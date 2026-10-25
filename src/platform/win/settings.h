@@ -5,6 +5,9 @@
  * The settings of the PC port that BossRally.ini and the command line set.
  */
 
+#include "game.h"
+#include "trackselect.h"
+
 /**
  * Path of BossRally.ini, built from g_szInstallDirectory.
  *
@@ -20,13 +23,6 @@ extern char g_szBossRallyIniPath[];
 extern int g_dwNetworkPlayMode;
 
 /**
- * The track chosen, from `chosenTrack=`.
- *
- * @ghidraAddress BRD3D: 0x100b380c
- */
-extern int g_dwSelectedTrackId;
-
-/**
  * The car chosen, from `chosenCar=`.
  *
  * @ghidraAddress BRD3D: 0x1022b34c
@@ -39,13 +35,6 @@ extern int g_dwChosenCar;
  * @ghidraAddress BRD3D: 0x1022b350
  */
 extern int g_dwChosenWeather;
-
-/**
- * The mode of the game, from `gameMode=`.
- *
- * @ghidraAddress BRD3D: 0x100aa010
- */
-extern int g_dwGameMode;
 
 /**
  * The handling of the car, from `HandlingType=`.

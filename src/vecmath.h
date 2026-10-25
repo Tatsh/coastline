@@ -7,7 +7,7 @@
  * tests, and its random numbers.
  */
 
-#include <PR/ultratypes.h>
+#include "types.h"
 
 /** A point or direction in space. */
 typedef struct {

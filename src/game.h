@@ -6,7 +6,11 @@
  * The main thread of the game, the weather of a race, and the player slots.
  */
 
-#include <PR/ultratypes.h>
+#include "types.h"
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /** The modes of play, in the order of the main menu. */
 enum {
@@ -16,6 +20,9 @@ enum {
     GAME_MODE_PRACTICE,         /*!< Free driving on a track, counting no laps. */
     GAME_MODE_DEMO,             /*!< The race the computer drives after the splash screens. */
     GAME_MODE_AFTER_SEASON = 5, /*!< The race that follows the results of a finished season. */
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+    GAME_MODE_NETWORK = 6, /*!< A race of network play. */
+#endif
 };
 
 /** The races the computer drives in GAME_MODE_DEMO. */
@@ -33,6 +40,8 @@ enum {
  * @ghidraAddress USA: 0x8026ff18
  * @ghidraAddress EUR: 0x80271ee8
  * @ghidraAddress JPN: 0x80271998
+ * @ghidraAddress BRD3D: 0x100aa010
+ * @ghidraAddress BRGlide: 0x100a9360
  */
 extern s32 g_dwGameMode;
 
@@ -42,6 +51,8 @@ extern s32 g_dwGameMode;
  * @ghidraAddress USA: 0x8026ff1c
  * @ghidraAddress EUR: 0x80271eec
  * @ghidraAddress JPN: 0x8027199c
+ * @ghidraAddress BRD3D: 0x106805b8
+ * @ghidraAddress BRGlide: 0x105bc760
  */
 extern s32 g_dwRaceSessionType;
 
@@ -120,5 +131,9 @@ void StartCreditsRace(void);
  * @ghidraAddress JPN: 0x8020067c
  */
 void StartEndingCredits(void);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

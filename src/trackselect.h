@@ -6,7 +6,11 @@
  * The tracks: how many there are, and the one chosen for the next race.
  */
 
-#include <PR/ultratypes.h>
+#include "types.h"
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /** The tracks, the mirrored ones TRACK_MIRRORED places after the others. */
 enum {
@@ -31,6 +35,8 @@ enum {
  * @ghidraAddress USA: 0x8028b940
  * @ghidraAddress EUR: 0x8028dbf0
  * @ghidraAddress JPN: 0x8028d620
+ * @ghidraAddress BRD3D: 0x100b380c
+ * @ghidraAddress BRGlide: 0x100b3014
  */
 extern u32 g_dwSelectedTrackId;
 
@@ -53,5 +59,9 @@ extern s32 g_dwNumTracks;
  * @ghidraAddress JPN: 0x8021ec50
  */
 s32 IsTrackIndexValid(s32 track);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

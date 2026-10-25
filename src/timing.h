@@ -6,7 +6,11 @@
  * The meter that times the parts of each frame on three bars at the right of the screen.
  */
 
-#include <PR/ultratypes.h>
+#include "types.h"
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /** The bars of the meter. */
 #define TIMING_BARS 3
@@ -145,6 +149,8 @@ extern s32 g_dwHudDebugLevel;
  * @ghidraAddress USA: 0x8022af34
  * @ghidraAddress EUR: 0x8022c2dc
  * @ghidraAddress JPN: 0x8022ba94
+ * @ghidraAddress BRD3D: 0x10067980
+ * @ghidraAddress BRGlide: 0x100609f0
  */
 void SaveClockForPause(void);
 
@@ -156,5 +162,9 @@ void SaveClockForPause(void);
  * @ghidraAddress JPN: 0x8022bac8
  */
 void RestoreClockAfterPause(void);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

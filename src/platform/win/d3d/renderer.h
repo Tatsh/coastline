@@ -1185,17 +1185,3 @@ DisplayMode *FindDisplayModeWithFallback(DirectDrawDriver *pDriver,
  * @ghidraAddress BRD3D: 0x100aa8a8
  */
 extern int g_dwScreenBitDepth;
-
-/**
- * The width of the screen.
- *
- * @ghidraAddress BRD3D: 0x106c0684
- */
-extern int g_dwScreenWidth;
-
-/**
- * The height of the screen.
- *
- * @ghidraAddress BRD3D: 0x106c299c
- */
-extern int g_dwScreenHeight;

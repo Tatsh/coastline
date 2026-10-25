@@ -196,46 +196,11 @@ extern HCURSOR g_hArrowCursor;
 LRESULT CALLBACK MainWindowProc(HWND hWnd, UINT nMessage, WPARAM wParam, LPARAM lParam);
 
 /**
- * Whether the race is paused.
- *
- * @ghidraAddress BRD3D: 0x106909b4
- */
-extern bool g_dwRacePauseState;
-
-/**
- * The choice of the pause menu.
- *
- * @ghidraAddress BRD3D: 0x10680734
- */
-extern int g_dwPauseMenuSelection;
-
-/**
- * Whether a replay plays.
- *
- * @ghidraAddress BRD3D: 0x106909e0
- */
-extern bool g_dwReplayPlaybackMode;
-
-/**
  * The laps the first vehicle has driven.
  *
  * @ghidraAddress BRD3D: 0x10acee50
  */
 extern int g_aVehicles_LapCount;
-
-/**
- * The laps of the race.
- *
- * @ghidraAddress BRD3D: 0x100bd3e0
- */
-extern int g_dwTotalLaps;
-
-/**
- * Store the clock as the game pauses.
- *
- * @ghidraAddress BRD3D: 0x10067980
- */
-void SaveClockForPause(void);
 
 /**
  * The renderer the game was set to use.

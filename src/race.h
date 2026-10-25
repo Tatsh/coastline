@@ -9,7 +9,9 @@
 
 #include <PR/ultratypes.h>
 
+#include "laps.h"
 #include "model.h"
+#include "pause.h"
 #include "vecmath.h"
 
 /** The phases of a race, which g_aRacePhaseTable times. */
@@ -29,16 +31,6 @@ enum {
 
 /** The steps of the countdown of the start lights. */
 #define START_LIGHT_STEPS 5
-
-/** The items of the pause menu. */
-enum {
-    PAUSE_CONTINUE, /*!< Return to the race. */
-    PAUSE_RESTART,  /*!< Restart the race. */
-    PAUSE_MUSIC,    /*!< The volume of the music, changed with left and right. */
-    PAUSE_SOUND,    /*!< The volume of the sound effects, changed with left and right. */
-    PAUSE_EXIT,     /*!< Exit to the main menu. */
-    PAUSE_ITEMS,    /*!< The number of items. */
-};
 
 /** A phase of a race and how long it lasts. */
 typedef struct {
@@ -68,24 +60,6 @@ typedef struct {
 
 /** The players whose results are kept for the results screen. */
 #define SAVED_RESULTS 2
-
-/**
- * Whether the race is paused.
- *
- * @ghidraAddress USA: 0x8026ff10
- * @ghidraAddress EUR: 0x80271ee0
- * @ghidraAddress JPN: 0x80271990
- */
-extern u32 g_dwRacePauseState;
-
-/**
- * The item of the pause menu, by the PAUSE_ values.
- *
- * @ghidraAddress USA: 0x8026ff14
- * @ghidraAddress EUR: 0x80271ee4
- * @ghidraAddress JPN: 0x80271994
- */
-extern s32 g_dwPauseMenuSelection;
 
 /**
  * The cartridge offsets of the music of each track, the mirrored ones after the others, then that
@@ -364,15 +338,6 @@ extern RacePhaseStep g_aRacePhaseTable[RACE_PHASES];
  * @ghidraAddress JPN: 0x8028cfe0
  */
 extern s32 g_dwRaceFinishOrderCounter;
-
-/**
- * The laps of the race.
- *
- * @ghidraAddress USA: 0x8028b304
- * @ghidraAddress EUR: 0x8028d5b4
- * @ghidraAddress JPN: 0x8028cfe4
- */
-extern s32 g_dwTotalLaps;
 
 /**
  * The time left in the phase of the race, in seconds.
