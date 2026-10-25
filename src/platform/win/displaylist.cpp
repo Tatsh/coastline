@@ -31,6 +31,40 @@ GbiCommand *HandleGbiSetTexRectDepth(GbiCommand *pCommand) {
     return pCommand + 1;
 }
 
+unsigned char g_bGbiFillColorR;
+unsigned char g_bGbiFillColorG;
+unsigned char g_bGbiFillColorB;
+unsigned char g_bGbiFillColorA;
+
+static inline int GbiPixelField10(unsigned dwWord, int nShift) {
+    return dwWord >> (nShift + 2) & 0x3ff;
+}
+
+GbiCommand *HandleGbiFillRectangle(GbiCommand *pCommand) {
+    int nLowerRightY = GbiPixelField10(pCommand->w0, 0);
+    int nLowerRightX = GbiPixelField10(pCommand->w0, 12);
+    int nUpperLeftY = GbiPixelField10(pCommand->w1, 0);
+    int nUpperLeftX = GbiPixelField10(pCommand->w1, 12);
+    DrawFillRectangle(nUpperLeftX,
+                      g_dwConfigFramebufferHeight - nLowerRightY - 1,
+                      nLowerRightX + 1,
+                      g_dwConfigFramebufferHeight - nUpperLeftY);
+    return pCommand + 1;
+}
+
+static inline unsigned char WidenFillColorChannel5(unsigned dwChannel) {
+    return static_cast<unsigned char>(dwChannel << 3 | dwChannel >> 2);
+}
+
+GbiCommand *HandleGbiSetFillColor(GbiCommand *pCommand) {
+    unsigned dwColor = pCommand->w1;
+    g_bGbiFillColorR = WidenFillColorChannel5(dwColor >> 11 & 0x1f);
+    g_bGbiFillColorG = WidenFillColorChannel5(dwColor >> 6 & 0x1f);
+    g_bGbiFillColorB = WidenFillColorChannel5(dwColor >> 1 & 0x1f);
+    g_bGbiFillColorA = (dwColor & 1) ? 0xff : 0;
+    return pCommand + 1;
+}
+
 static inline int GbiSignedField12(unsigned dwWord, int nShift) {
     return static_cast<int>(dwWord << (20 - nShift)) >> 20;
 }

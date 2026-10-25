@@ -238,6 +238,60 @@ void DrawFillRectangle(int nLeft, int nTop, int nRight, int nBottom);
  */
 GbiCommand *HandleGbiFillRectangleIntCoords(GbiCommand *pCommand);
 
+/**
+ * Fill a rectangle given in pixels of the console with two bits of fraction, whose rows run up from
+ * the bottom of the screen of the PC. The fractions are dropped.
+ *
+ * @param pCommand The command, the lower right corner in its first word and the upper left in its
+ * second.
+ * @return The next command.
+ * @ghidraAddress BRD3D: 0x1001be30
+ * @ghidraAddress BRGlide: 0x1001e320
+ */
+GbiCommand *HandleGbiFillRectangle(GbiCommand *pCommand);
+
+/**
+ * The red of the fill colour.
+ *
+ * @ghidraAddress BRD3D: 0x104bbf00
+ * @ghidraAddress BRGlide: 0x105ccd40
+ */
+extern unsigned char g_bGbiFillColorR;
+
+/**
+ * The green of the fill colour.
+ *
+ * @ghidraAddress BRD3D: 0x104bc194
+ * @ghidraAddress BRGlide: 0x105ccfd8
+ */
+extern unsigned char g_bGbiFillColorG;
+
+/**
+ * The blue of the fill colour.
+ *
+ * @ghidraAddress BRD3D: 0x104c5150
+ * @ghidraAddress BRGlide: 0x105d17a0
+ */
+extern unsigned char g_bGbiFillColorB;
+
+/**
+ * The alpha of the fill colour, 0 or 255.
+ *
+ * @ghidraAddress BRD3D: 0x104c15cc
+ * @ghidraAddress BRGlide: 0x105ce208
+ */
+extern unsigned char g_bGbiFillColorA;
+
+/**
+ * Set the fill colour from the RGBA 5551 colour in the low 16 bits of the command.
+ *
+ * @param pCommand The command.
+ * @return The next command.
+ * @ghidraAddress BRD3D: 0x1001cc00
+ * @ghidraAddress BRGlide: 0x1001e9f0
+ */
+GbiCommand *HandleGbiSetFillColor(GbiCommand *pCommand);
+
 #if TGR_RENDERER == TGR_RENDERER_D3D
 /**
  * Set the colour of the fog of the device from the RGBA colour of the command.
