@@ -233,11 +233,14 @@ bool PauseCdAudio(void);
 bool PauseMusicPlayback(void);
 
 /**
- * Silence every channel of sound that plays.
+ * Silence every channel of sound that has a buffer, and centre its pan, when DirectSound plays
+ * sound effects.
  *
+ * @return Always true.
  * @ghidraAddress BRD3D: 0x10072e00
+ * @ghidraAddress BRGlide: 0x1006bd70
  */
-void MuteAllActiveSoundChannels(void);
+bool MuteAllActiveSoundChannels(void);
 
 /**
  * Play the tracks of the CD audio from the current track on.
@@ -306,8 +309,8 @@ extern SoundBufferNode g_SoundBufferListHead;
 
 /**
  * Create the buffer of DirectSound of a sample, static with control of the frequency, the pan,
- * the volume, and the position, and copy the sample into it. The frequency and the pan are reset,
- * and bHardware records where the buffer is. A step that fails releases the buffer.
+ * the volume, and the position, and copy the sample into it. The volume is set full and the pan
+ * centred, and bHardware records where the buffer is. A step that fails releases the buffer.
  *
  * @param pNode The node of the sample.
  * @return DS_OK, or the error of the step that failed.
@@ -345,7 +348,7 @@ HRESULT StopSoundBuffer(SoundBufferNode *pNode);
  * @ghidraAddress BRD3D: 0x11828f08
  * @ghidraAddress BRGlide: 0x1184c268
  */
-extern IDirectSoundBuffer *g_apSoundChannelBuffer[SOUND_CHANNEL_COUNT];
+extern SoundBufferNode *g_apSoundChannelBuffer[SOUND_CHANNEL_COUNT];
 
 /** The entries of each table of the banks of sounds that ResetSoundBankTables() clears. */
 #define SOUND_BANK_TABLE_COUNT 15

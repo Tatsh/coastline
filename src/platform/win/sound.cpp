@@ -231,7 +231,7 @@ HRESULT CreateDirectSoundBufferFromSample(SoundBufferNode *pNode) {
         hResult = pNode->pBuffer->Unlock(pAudio, pNode->dwSampleSize, nullptr, 0);
         if (hResult == DS_OK) {
             pAudio = nullptr;
-            hResult = pNode->pBuffer->SetFrequency(DSBFREQUENCY_ORIGINAL);
+            hResult = pNode->pBuffer->SetVolume(DSBVOLUME_MAX);
         }
         if (hResult == DS_OK) {
             hResult = pNode->pBuffer->SetPan(DSBPAN_CENTER);
@@ -299,7 +299,20 @@ HRESULT FreeSoundBufferList(SoundBufferNode *pHead) {
     return DS_OK;
 }
 
-IDirectSoundBuffer *g_apSoundChannelBuffer[SOUND_CHANNEL_COUNT];
+SoundBufferNode *g_apSoundChannelBuffer[SOUND_CHANNEL_COUNT];
+
+bool MuteAllActiveSoundChannels(void) {
+    if (!g_bSoundEnabledIni || g_pDirectSound == nullptr || g_dwDirectSoundRefCount == 0) {
+        return true;
+    }
+    for (SoundBufferNode *pNode : g_apSoundChannelBuffer) {
+        if (pNode != nullptr) {
+            pNode->pBuffer->SetVolume(DSBVOLUME_MIN);
+            pNode->pBuffer->SetPan(DSBPAN_CENTER);
+        }
+    }
+    return true;
+}
 int g_dwLoadedSoundSampleCount;
 
 void ResetSoundBankTables(void) {

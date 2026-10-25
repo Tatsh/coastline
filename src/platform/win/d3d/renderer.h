@@ -908,8 +908,35 @@ FindDirectDrawDriverByGuid(GUID *pGuid, DirectDrawDriver **ppPrimary, DirectDraw
  */
 int ReturnZero(void);
 
+/** A texture the game loaded. The layout is not recovered past its identifier. */
+struct TextureEntry {
+    int nTextureId;         /*!< The entry of g_ppTextureIdTable of the texture. */
+    char abUnknown4[0x2b4]; /* +0x04 */
+};
+
 /**
- * Create the surfaces of every texture.
+ * The number of entries of g_pTextureEntries.
+ *
+ * @ghidraAddress BRD3D: 0x105553f0
+ */
+extern unsigned g_dwTextureEntryCount;
+
+/**
+ * The textures the game loaded.
+ *
+ * @ghidraAddress BRD3D: 0x1057543c
+ */
+extern TextureEntry *g_pTextureEntries;
+
+/**
+ * The textures of Direct3D by identifier.
+ *
+ * @ghidraAddress BRD3D: 0x1057542c
+ */
+extern D3DTexture **g_ppTextureIdTable;
+
+/**
+ * Load every texture the game loaded into its texture surface again, after the surfaces were lost.
  *
  * @ghidraAddress BRD3D: 0x10024bb0
  */

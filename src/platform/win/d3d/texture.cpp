@@ -231,6 +231,16 @@ unsigned GetAvailableTextureMemory(void) {
 }
 
 D3DTexture g_LoadingScreenImageState;
+unsigned g_dwTextureEntryCount;
+TextureEntry *g_pTextureEntries;
+D3DTexture **g_ppTextureIdTable;
+
+void InitializeAllTextureSurfaces(void) {
+    for (unsigned i = 0; i < g_dwTextureEntryCount; i++) {
+        // The result of each load is discarded.
+        g_ppTextureIdTable[g_pTextureEntries[i].nTextureId]->LoadSysMemTextureToDevice();
+    }
+}
 
 IDirectDraw *GetDirectDrawFromD3DDevice(IDirect3DDevice2 *pDevice) {
     IDirectDrawSurface *pTarget;

@@ -190,10 +190,10 @@ dpsys
 drawtexturedrect
 drenderstate
 dsbcaps
-dsbfrequency
 dsbpan
 dsbplay
 dsbufferdesc
+dsbvolume
 dsdx
 dshade
 dsinf
