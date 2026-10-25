@@ -16,6 +16,7 @@
 #include "system.h"
 #include "track.h"
 #include "vecmath.h"
+#include "vehiclecount.h"
 
 /** The number of vehicles a race can hold. */
 #define MAX_VEHICLES 4
@@ -276,24 +277,6 @@ typedef struct {
  * @ghidraAddress JPN: 0x80324ad0
  */
 extern RacerSlot g_aRacerSlots[];
-
-/**
- * The racers in the race.
- *
- * @ghidraAddress USA: 0x8028b7f0
- * @ghidraAddress EUR: 0x8028daa0
- * @ghidraAddress JPN: 0x8028d4d0
- */
-extern s32 g_dwNumVehicles;
-
-/**
- * The vehicles of g_aVehicles the race uses.
- *
- * @ghidraAddress USA: 0x8028b7f4
- * @ghidraAddress EUR: 0x8028daa4
- * @ghidraAddress JPN: 0x8028d4d4
- */
-extern s32 g_dwNumActiveVehicles;
 
 /** The bits of the status of a racer that stop its clock. */
 #define RACER_CLOCK_STOPPED 0x3

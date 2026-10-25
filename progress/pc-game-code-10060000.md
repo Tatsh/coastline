@@ -1,6 +1,6 @@
 # PC port game code from 0x10060000 to 0x10070000
 
-34 of 169 routines done.
+35 of 169 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -138,7 +138,7 @@ the same name, for a routine the port retained from the N64 game.
 | `PlaneDistance`                          |        | ✅ `0x8025b704` |     14 |     41 | `0x1006c9a0` | `0x10065950` | `float PlaneDistance(float * pVecA, float fBias, float * pVecB)`                                                                         |
 | `MatrixToPositionQuaternion`             |        |                 |      1 |     41 | `0x100695a0` | `0x10062610` | `undefined MatrixToPositionQuaternion()`                                                                                                 |
 | `PushCollisionTriangle`                  |        | ✅ `0x8025c24c` |      2 |     38 | `0x1006d280` | `0x10066230` | `undefined PushCollisionTriangle()`                                                                                                      |
-| `PlaySoundOnAllPlayerChannels`           |        |                 |      1 |     37 | `0x100683d0` | `0x10061440` | `undefined PlaySoundOnAllPlayerChannels()`                                                                                               |
+| `MuteVehicleSoundVoices`                 |   ✅   |                 |      1 |     37 | `0x100683d0` | `0x10061440` | `void MuteVehicleSoundVoices(void)`                                                                                                      |
 | `InitializeRenderSubsystems`             |   ✅   |                 |      1 |     36 | `0x1006aa20` | `0x100639d0` | `void InitializeRenderSubsystems(int nMode)`                                                                                             |
 | `IsTriangleInUnitCube`                   |        | ✅ `0x8025d018` |      3 |     35 | `0x1006daf0` | `0x10066aa0` | `undefined IsTriangleInUnitCube()`                                                                                                       |
 | `MouseDevice::Init`                      |   ✅   |                 |      1 |     35 | `0x10060280` | `0x100592f0` | `MouseDevice * Init(MouseDevice * this)`                                                                                                 |

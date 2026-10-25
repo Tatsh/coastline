@@ -790,6 +790,7 @@ urllib
 urlopen
 vars
 vecmath
+vehiclecount
 vehicleindex
 vehiclemodel
 vehiclerender
