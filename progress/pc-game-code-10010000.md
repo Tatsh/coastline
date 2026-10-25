@@ -1,6 +1,6 @@
 # PC port game code from 0x10010000 to 0x10020000
 
-6 of 158 routines done.
+7 of 158 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -130,7 +130,7 @@ the same name, for a routine the port retained from the N64 game.
 | `DirectDrawDriver::CompareDirectDrawDriverGuid`        |   ✅   |                 |      1 |     65 | `0x1001b2d0` |              | `bool CompareDirectDrawDriverGuid(DirectDrawDriver * this, GUID * pGuid)`                                                                                                                                                                    |
 | `D3DDeviceNode::ReleaseD3DDeviceNode`                  |        |                 |      1 |     64 | `0x1001aee0` |              | `void ReleaseD3DDeviceNode(D3DDeviceNode * this)`                                                                                                                                                                                            |
 | `ResolveRenderDeviceOrFind`                            |        |                 |      1 |     63 | `0x1001a5d0` |              | `int ResolveRenderDeviceOrFind(void * pDeviceList, uint dwFlags)`                                                                                                                                                                            |
-| `IsPixelFormatPalettized`                              |        |                 |      1 |     56 | `0x1001a950` |              | `int IsPixelFormatPalettized(uint dwCaps, uint dwRequired)`                                                                                                                                                                                  |
+| `IsPixelFormatPalettized`                              |   ✅   |                 |      1 |     56 | `0x1001a950` |              | `int IsPixelFormatPalettized(uint dwCaps, uint dwRequired)`                                                                                                                                                                                  |
 | `IsSkyFogFilled`                                       |        | ✅ `0x8022f900` |      1 |     54 | `0x10018070` | `0x100155f0` | `int IsSkyFogFilled(void * pRenderNode)`                                                                                                                                                                                                     |
 | `DisplayMode::IsDisplayModeMatch`                      |        |                 |      4 |     51 | `0x1001ad50` |              | `int IsDisplayModeMatch(DisplayMode * this, int width, int height, int bpp)`                                                                                                                                                                 |
 | `D3DDeviceNode::CompareD3DDeviceGuid`                  |        |                 |      2 |     51 | `0x1001ada0` |              | `int CompareD3DDeviceGuid(D3DDeviceNode * this, void * pGuidA)`                                                                                                                                                                              |

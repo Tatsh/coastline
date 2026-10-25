@@ -85,7 +85,9 @@ dbuild
 dcmake
 dcosf
 ddivu
+ddpcaps
 ddpf
+ddpixelformat
 ddscaps
 ddscl
 ddsd
@@ -118,6 +120,7 @@ dmawrite
 dndebug
 docstrings
 doubleword
+dpal
 drawtexturedrect
 dsdx
 dsinf
@@ -360,6 +363,8 @@ painttex
 pakmenu
 paks
 paletteentry
+paletteindexed
+palettized
 pathlib
 permuter
 persp

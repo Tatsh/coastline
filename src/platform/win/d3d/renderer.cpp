@@ -1,6 +1,7 @@
 #include "platform/win/d3d/renderer.h"
 
 #include <cstring>
+#include <new>
 
 #include "platform/win/boot/app.h"
 
@@ -298,6 +299,94 @@ int DirectDrawRenderer::ReleasePrimarySurface() {
         pPrimarySurface = nullptr;
     }
     return 0;
+}
+
+// The most entries a palette of the front buffer has.
+#define MAX_PALETTE_ENTRIES 256
+
+// Mark the entries of a palette, from the first to the one before the last.
+static inline void MarkPaletteEntries(PALETTEENTRY *pEntries, int nFirst, int nEnd, BYTE nFlags) {
+    for (int i = nFirst; i < nEnd; i++) {
+        pEntries[i].peFlags = nFlags;
+    }
+}
+
+HRESULT DirectDrawRenderer::InitializePrimaryPalette() {
+    DDSURFACEDESC desc;
+    HRESULT hr;
+    HDC hdc;
+    DWORD dwCaps;
+
+    ReleasePrimaryPalette();
+    if (pDirectDraw2 == nullptr || pPrimarySurface == nullptr) {
+        return RENDERER_E_NOT_READY;
+    }
+    memset(&desc, 0, sizeof(desc));
+    desc.dwSize = sizeof(desc);
+    hr = pPrimarySurface->GetSurfaceDesc(&desc);
+    if (FAILED(hr)) {
+        return hr;
+    }
+    if (!IsPixelFormatPalettized(&desc.ddpfPixelFormat)) {
+        return S_OK;
+    }
+    // The palette starts as the palette of the system, and a copy of it is saved for GDI.
+    hdc = GetDC(nullptr);
+    nPaletteEntryCount = GetDeviceCaps(hdc, SIZEPALETTE);
+    if (nPaletteEntryCount != 0) {
+        if (nPaletteEntryCount > MAX_PALETTE_ENTRIES) {
+            nPaletteEntryCount = MAX_PALETTE_ENTRIES;
+        }
+        pGdiPaletteEntries = static_cast<PALETTEENTRY *>(operator new(
+            nPaletteEntryCount * sizeof(PALETTEENTRY), std::nothrow));
+        if (pGdiPaletteEntries == nullptr) {
+            ReleaseDC(nullptr, hdc);
+            ReleasePrimaryPalette();
+            return RENDERER_E_OUT_OF_MEMORY;
+        }
+        pGamePaletteEntries = static_cast<PALETTEENTRY *>(operator new(
+            nPaletteEntryCount * sizeof(PALETTEENTRY), std::nothrow));
+        if (pGamePaletteEntries == nullptr) {
+            ReleaseDC(nullptr, hdc);
+            ReleasePrimaryPalette();
+            return RENDERER_E_OUT_OF_MEMORY;
+        }
+        GetSystemPaletteEntries(hdc, 0, nPaletteEntryCount, pGdiPaletteEntries);
+        memcpy(pGamePaletteEntries, pGdiPaletteEntries, nPaletteEntryCount * sizeof(PALETTEENTRY));
+    }
+    ReleaseDC(nullptr, hdc);
+    // The entries the game may change are reserved, and the colours Windows reserves at the ends of
+    // a palette of 4 or 8 bits are read-only. A display without a palette leaves the buffers
+    // unallocated, and the original writes the marks regardless.
+    if (desc.ddpfPixelFormat.dwFlags & DDPF_PALETTEINDEXED1) {
+        MarkPaletteEntries(pGamePaletteEntries, 0, 2, PC_RESERVED);
+        dwCaps = DDPCAPS_1BIT;
+    } else if (desc.ddpfPixelFormat.dwFlags & DDPF_PALETTEINDEXED2) {
+        MarkPaletteEntries(pGamePaletteEntries, 0, 4, PC_RESERVED);
+        dwCaps = DDPCAPS_2BIT;
+    } else if (desc.ddpfPixelFormat.dwFlags & DDPF_PALETTEINDEXED4) {
+        pGamePaletteEntries[0].peFlags = D3DPAL_READONLY;
+        pGamePaletteEntries[15].peFlags = D3DPAL_READONLY;
+        MarkPaletteEntries(pGamePaletteEntries, 1, 15, PC_RESERVED);
+        dwCaps = DDPCAPS_4BIT;
+    } else if (desc.ddpfPixelFormat.dwFlags & DDPF_PALETTEINDEXED8) {
+        MarkPaletteEntries(pGamePaletteEntries, 0, 10, D3DPAL_READONLY);
+        MarkPaletteEntries(pGamePaletteEntries, 246, 256, D3DPAL_READONLY);
+        MarkPaletteEntries(pGamePaletteEntries, 10, 246, PC_RESERVED);
+        dwCaps = DDPCAPS_8BIT;
+    } else {
+        ReleasePrimaryPalette();
+        return RENDERER_E_NOT_IN_GDI_MODE;
+    }
+    hr = pDirectDraw2->CreatePalette(dwCaps, pGamePaletteEntries, &pPrimaryPalette, nullptr);
+    if (SUCCEEDED(hr)) {
+        hr = pPrimarySurface->SetPalette(pPrimaryPalette);
+    }
+    if (FAILED(hr)) {
+        ReleasePrimaryPalette();
+        return hr;
+    }
+    return S_OK;
 }
 
 int DirectDrawRenderer::ReleasePrimaryPalette() {

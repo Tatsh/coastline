@@ -12,6 +12,9 @@
 /** A renderer told to take the screen back from GDI that had not given it. */
 #define RENDERER_E_NOT_IN_GDI_MODE static_cast<HRESULT>(0x88762711)
 
+/** A renderer that ran out of memory. */
+#define RENDERER_E_OUT_OF_MEMORY static_cast<HRESULT>(0x88762714)
+
 /** A renderer that is missing its window or its host. */
 #define RENDERER_E_NOT_CREATED static_cast<HRESULT>(0x88762712)
 
@@ -558,6 +561,15 @@ bool FindDesktopDisplayModeAndDevice(DirectDrawDriver *pDriver,
                                      GUID *pDeviceGuid,
                                      DisplayMode **ppMode,
                                      void **ppDevice);
+
+/**
+ * Whether a pixel format indexes a palette of 1, 2, 4, or 8 bits.
+ *
+ * @param pFormat The pixel format, or `nullptr`.
+ * @return Whether the format indexes a palette.
+ * @ghidraAddress BRD3D: 0x1001a950
+ */
+bool IsPixelFormatPalettized(const DDPIXELFORMAT *pFormat);
 
 /**
  * Find a mode of a driver for a size and a depth, for a device.

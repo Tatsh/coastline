@@ -55,6 +55,12 @@ HRESULT SelectDriverDeviceAndModeFromConfig(GUID *pDriverGuid,
     return S_OK;
 }
 
+bool IsPixelFormatPalettized(const DDPIXELFORMAT *pFormat) {
+    return pFormat != nullptr &&
+           (pFormat->dwFlags & (DDPF_PALETTEINDEXED1 | DDPF_PALETTEINDEXED2 | DDPF_PALETTEINDEXED4 |
+                                DDPF_PALETTEINDEXED8)) != 0;
+}
+
 HRESULT DisplayMode::GetSurfaceDescDimensions(int *pnWidth,
                                               int *pnHeight,
                                               int *pnBitDepth,
