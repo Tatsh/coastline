@@ -134,13 +134,15 @@ public:
      */
     virtual bool RunFrame();
     /**
-     * Make the screen the one that shows.
+     * Make the screen the one that shows. The choices of the menus are restored, the screen is
+     * built the first time with the menu images loaded, and the screen the game returns to after a
+     * race, a time attack, or network play is entered.
      *
-     * @return The result of the activation. Its meaning is not recovered yet.
+     * @return False when the progress of the season is not restored, and true otherwise.
      * @ghidraAddress BRD3D: 0x1005ae70
      * @ghidraAddress BRGlide: 0x10053d20
      */
-    virtual int ActivateMenuScreen();
+    virtual bool ActivateMenuScreen();
     /**
      * Flip the frame to the display and wait for the flip to finish. The Glide library flips its
      * own way.
@@ -177,7 +179,7 @@ public:
 
     void (*pfnBuildMenu)(MenuScreen *pScreen); /*!< Builds the items of the screen. */
     int dwFlags;                  /*!< Options of the screen. Bit 0x10 stops EndFrame(). */
-    int nUnknownC;                /*!< Set as the screen shows. Its meaning is not recovered yet. */
+    int bBuilt;                   /*!< Whether pfnBuildMenu built the items of the screen. */
     unsigned short wPanelCount;   /*!< The number of entries of apPanels in use. */
     unsigned short wCurrentPanel; /*!< The index of the panel that runs. */
     MenuPanel *apPanels[MENU_SCREEN_PANEL_COUNT]; /*!< The panels of the screen. */
@@ -830,6 +832,72 @@ extern IDirectDraw2 *g_pMenuDirectDraw;
  */
 bool InitMenuDirectDrawSurfaces(void);
 #endif
+
+#if TGR_RENDERER == TGR_RENDERER_GLIDE
+/**
+ * Load every menu image.
+ *
+ * @ghidraAddress BRGlide: 0x100583c0
+ */
+void InitMenuSurfaces(void);
+#endif
+
+/**
+ * Copy adwMenuSelectionBackup of g_GlobalRallyConfig and its other settings back into the choices
+ * of the menus.
+ *
+ * @ghidraAddress BRD3D: 0x1003e3a0
+ * @ghidraAddress BRGlide: 0x100379b0
+ */
+void RestoreMenuSelections(void);
+
+/**
+ * Show the screen of the results of a race.
+ *
+ * @ghidraAddress BRD3D: 0x10045ea0
+ * @ghidraAddress BRGlide: 0x1003f340
+ */
+void ShowRaceResultsScreen(void);
+
+/**
+ * Show the lobby of network play again after a race.
+ *
+ * @ghidraAddress BRD3D: 0x100447d0
+ * @ghidraAddress BRGlide: 0x1003dd20
+ */
+void ReturnToNetworkLobbyScreen(void);
+
+/**
+ * Show the screen of the time attack.
+ *
+ * @ghidraAddress BRD3D: 0x10041930
+ * @ghidraAddress BRGlide: 0x1003ae90
+ */
+void EnterTimeAttackMode(void);
+
+/**
+ * Show the lobby of network play.
+ *
+ * @ghidraAddress BRD3D: 0x100441a0
+ * @ghidraAddress BRGlide: 0x1003d6f0
+ */
+void EnterNetworkLobbyScreen(void);
+
+/**
+ * Whether ActivateMenuScreen() is entering the screen the game returns to.
+ *
+ * @ghidraAddress BRD3D: 0x10aa2878
+ * @ghidraAddress BRGlide: 0x10ac5bd0
+ */
+extern int g_dwMenuScreenActivated;
+
+/**
+ * Whether the lobby was entered for a game launched from a lobby.
+ *
+ * @ghidraAddress BRD3D: 0x10aa2a50
+ * @ghidraAddress BRGlide: 0x10ac5da8
+ */
+extern int g_dwLobbyLaunchHandled;
 
 /**
  * Restore the surfaces of the loaded menu images and load their bitmaps into them again.

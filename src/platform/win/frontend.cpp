@@ -12,9 +12,11 @@
 #include "platform/win/boot/strings.h"
 #include "platform/win/directplay.h"
 #include "platform/win/input.h"
+#include "platform/win/season.h"
 #include "platform/win/settings.h"
 #include "platform/win/sound.h"
 #include "platform/win/timer.h"
+#include "profile.h"
 #if TGR_RENDERER == TGR_RENDERER_D3D
 #include "platform/win/d3d/ddutil.h"
 #include "platform/win/d3d/renderer.h"
@@ -178,7 +180,7 @@ SaveFileList::~SaveFileList() {
 
 MenuScreen::MenuScreen() {
     dwFlags = 0;
-    nUnknownC = 0;
+    bBuilt = false;
     wPanelCount = 0;
     wCurrentPanel = 0;
     pCurrentPanel = nullptr;
@@ -203,6 +205,64 @@ MenuScreen::~MenuScreen() {
     apFiles[0] = nullptr;
     delete apFiles[1];
     apFiles[1] = nullptr;
+}
+
+// The string of the error shown when the cursor of the mouse is not reset.
+#define MOUSE_RESET_ERROR_STRING 0xab
+
+int g_dwMenuScreenActivated;
+int g_dwLobbyLaunchHandled;
+
+bool MenuScreen::ActivateMenuScreen() {
+    RestoreMenuSelections();
+    if (!bBuilt) {
+#if TGR_RENDERER == TGR_RENDERER_D3D
+        InitMenuDirectDrawSurfaces();
+#else
+        InitMenuSurfaces();
+#endif
+        // The original passes g_pFrontEndScratchBuffer as this, and the routine does not read it.
+        if (!ResetMouseCursorToCenter(g_hMainWindow)) {
+            ShowInfoMessageBox(g_hMainWindow, 0, GetStringResource(MOUSE_RESET_ERROR_STRING));
+            exit(1);
+        }
+        pfnBuildMenu(this);
+        bBuilt = true;
+        bRunning = true;
+    }
+    if (g_SeasonResumeState == SEASON_RESUME_STATE_RESTART) {
+        g_dwSeasonRound = 0;
+        memset(g_szSeasonRoundLabel, 0, sizeof(g_szSeasonRoundLabel));
+        g_SeasonProgress.round = 0;
+    }
+    if (g_dwGameMode == GAME_MODE_DEMO && g_dwRaceSessionType == RACE_SESSION_SCROLLING_CREDITS &&
+        g_dwSeasonLoaded) {
+        ShowRaceResultsScreen();
+        g_dwGameMode = GAME_MODE_CHAMPIONSHIP;
+    }
+    if (g_dwGameMode == GAME_MODE_CHAMPIONSHIP) {
+        if (g_SeasonResumeState == 0 || g_SeasonResumeState == SEASON_RESUME_STATE_RESTART) {
+            if (!RestoreSeasonProgressState()) {
+                return false;
+            }
+            ShowRaceResultsScreen();
+            SaveAutoSaveSeason();
+            g_dwSeasonLoaded = true;
+        }
+    } else if (g_dwGameMode == GAME_MODE_NETWORK) {
+        g_dwMenuScreenActivated = true;
+        ReturnToNetworkLobbyScreen();
+        g_dwMenuScreenActivated = false;
+    } else if (g_dwGameMode == GAME_MODE_TIME_ATTACK) {
+        g_dwMenuScreenActivated = true;
+        EnterTimeAttackMode();
+        g_dwMenuScreenActivated = false;
+    }
+    if (g_dwLaunchedFromLobby && !g_dwLobbyLaunchHandled) {
+        g_dwLobbyLaunchHandled = true;
+        EnterNetworkLobbyScreen();
+    }
+    return true;
 }
 
 bool MenuScreen::BeginFrame() {

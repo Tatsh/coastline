@@ -60,7 +60,7 @@ void UpdateMouseButtonEdges(void) {
     }
 }
 
-bool WINAPI ResetMouseCursorToCenter(int) {
+bool WINAPI ResetMouseCursorToCenter(HWND) {
     g_dwEntityHalfWidth = g_dwConfigFramebufferWidth;
     g_pMouseDevice->nCursorX = g_dwConfigFramebufferWidth / 2;
     g_dwEntityHalfHeight = g_dwConfigFramebufferHeight;

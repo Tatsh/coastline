@@ -501,12 +501,12 @@ void UpdateMouseButtonEdges(void);
 /**
  * Put the cursor of the mouse in the centre of the screen and clear g_MouseMenuState.
  *
- * @param nUnused Not read.
+ * @param hWnd The main window. It is not read.
  * @return Always true.
  * @ghidraAddress BRD3D: 0x10060210
  * @ghidraAddress BRGlide: 0x10059280
  */
-bool WINAPI ResetMouseCursorToCenter(int nUnused);
+bool WINAPI ResetMouseCursorToCenter(HWND hWnd);
 
 /** The control of a button of a game controller GetPressedJoystickControl() reports. */
 #define JOYSTICK_CONTROL_BUTTON 0x100
