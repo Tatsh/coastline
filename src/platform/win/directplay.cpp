@@ -16,6 +16,7 @@
 #include "platform/win/frontend.h"
 #include "platform/win/netstream.h"
 #include "platform/win/settings.h"
+#include "platform/win/timer.h"
 #include "trackselect.h"
 
 // The index of each service provider in g_aServiceProviders.
@@ -523,6 +524,18 @@ int GetNetworkRaceOrderEntry(int nIndex) {
     int nEntry = g_adwNetRaceOrder[nIndex];
     ReleaseMutex(g_hNetRaceOrderMutex);
     return nEntry;
+}
+
+DWORD g_dwNetSessionStartTime;
+
+DWORD GetElapsedTimeSinceStart(void) {
+    return GetHighResolutionTime() - g_dwNetSessionStartTime;
+}
+
+bool InitializeNetworkThreading(void) {
+    CreateNetworkPlayerSlotMutexes();
+    StartNetworkWorkerThread();
+    return true;
 }
 
 int g_bNetWorkerThreadRunning;

@@ -841,6 +841,48 @@ extern HANDLE g_hNetWorkerThread;
 void StopNetworkWorkerThread(void);
 
 /**
+ * Create the mutexes of the slots of the players of a network game.
+ *
+ * @ghidraAddress BRD3D: 0x10071560
+ * @ghidraAddress BRGlide: 0x1006a4d0
+ */
+void CreateNetworkPlayerSlotMutexes(void);
+
+/**
+ * Start the thread that works for the host of a network game.
+ *
+ * @ghidraAddress BRD3D: 0x10071630
+ * @ghidraAddress BRGlide: 0x1006a5a0
+ */
+void StartNetworkWorkerThread(void);
+
+/**
+ * Create the mutexes of the slots of the players and start the worker thread of a network game.
+ *
+ * @return Always true.
+ * @ghidraAddress BRD3D: 0x10071550
+ * @ghidraAddress BRGlide: 0x1006a4c0
+ */
+bool InitializeNetworkThreading(void);
+
+/**
+ * The time the network session started, in milliseconds.
+ *
+ * @ghidraAddress BRD3D: 0x1178fee8
+ * @ghidraAddress BRGlide: 0x117b3248
+ */
+extern DWORD g_dwNetSessionStartTime;
+
+/**
+ * Get the time since the network session started.
+ *
+ * @return The time in milliseconds.
+ * @ghidraAddress BRD3D: 0x100713a0
+ * @ghidraAddress BRGlide: 0x1006a310
+ */
+DWORD GetElapsedTimeSinceStart(void);
+
+/**
  * Handle a message of the system of DirectPlay as the host or a client. While the front end is
  * up, a player that joins or departs is posted to the main window as a notice, a player that
  * departs frees its slot of the session, and a new description of the session reloads the
