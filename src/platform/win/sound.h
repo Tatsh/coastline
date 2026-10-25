@@ -112,12 +112,89 @@ int GetCdAudioCurrentTrack(void);
 int GetEarMusicCurrentTrack(void);
 
 /**
- * Whether PostCdAudioPlayNotify() posts its notice. Its meaning is not recovered yet.
+ * The volume of the music the CD audio last had. Only whether it is 0 matters, and the music of the
+ * CD is paused at 0.
  *
  * @ghidraAddress BRD3D: 0x10220cdc
  * @ghidraAddress BRGlide: 0x1021c80c
  */
-extern bool g_bMusicPaused;
+extern unsigned char g_bCdMusicVolume;
+
+/** The number of levels of the volumes of the configuration. */
+#define VOLUME_LEVEL_COUNT 10
+
+/**
+ * The volume of the music of each level of the configuration, from 0 to 255.
+ *
+ * @ghidraAddress BRD3D: 0x100adf68
+ * @ghidraAddress BRGlide: 0x100ad770
+ */
+extern const int g_adwBgmVolumeLevels[VOLUME_LEVEL_COUNT];
+
+/**
+ * The volume of the sound effects of each level of the configuration, from 0 to 255.
+ *
+ * @ghidraAddress BRD3D: 0x100adf90
+ * @ghidraAddress BRGlide: 0x100ad798
+ */
+extern const int g_adwSfxVolumeLevels[VOLUME_LEVEL_COUNT];
+
+/**
+ * The volume of the music, from 0 to 255.
+ *
+ * @ghidraAddress BRD3D: 0x100bbad8
+ * @ghidraAddress BRGlide: 0x100bb2e0
+ */
+extern unsigned char g_bBgmVolume;
+
+/**
+ * The volume of the sound effects, from 0 to 255.
+ *
+ * @ghidraAddress BRD3D: 0x100bbae0
+ * @ghidraAddress BRGlide: 0x100bb2e8
+ */
+extern unsigned char g_bSfxVolume;
+
+/**
+ * Play the current track of the music again when the music is active.
+ *
+ * @return The result of SetCurrentMusicTrack(), or true when the music is not active.
+ * @ghidraAddress BRD3D: 0x10002b40
+ * @ghidraAddress BRGlide: 0x10002e80
+ */
+bool ReplayCurrentMusicTrack(void);
+
+/**
+ * Pause the music of the CD when its volume turns 0, and play its track again when the volume turns
+ * from 0, while a track plays. The volume is recorded in g_bCdMusicVolume.
+ *
+ * @param bVolume The volume.
+ * @return Always true.
+ * @ghidraAddress BRD3D: 0x10002a80
+ * @ghidraAddress BRGlide: 0x10002dc0
+ */
+bool HandleMusicPauseResume(unsigned char bVolume);
+
+/**
+ * Set the attenuation of the channel of the music of the EAR library from a volume, scaled from 0
+ * to 255 into 0 to 10000, when the music is active.
+ *
+ * @param bVolume The volume.
+ * @return Always true.
+ * @ghidraAddress BRD3D: 0x10002a20
+ * @ghidraAddress BRGlide: 0x10002d60
+ */
+bool SetScaledAudioVolume(unsigned char bVolume);
+
+/**
+ * Give a volume of the music to the CD audio in music mode 1 and to the EAR library otherwise.
+ *
+ * @param bVolume The volume.
+ * @return The result of HandleMusicPauseResume() or SetScaledAudioVolume().
+ * @ghidraAddress BRD3D: 0x100029f0
+ * @ghidraAddress BRGlide: 0x10002d30
+ */
+bool DispatchMusicVolumeChange(unsigned char bVolume);
 
 /**
  * Play the tracks of the CD audio from a track on.

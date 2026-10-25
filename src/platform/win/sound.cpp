@@ -10,6 +10,7 @@
 #include <objbase.h>
 
 #include "platform/win/boot/app.h"
+#include "platform/win/boot/rallyconfig.h"
 #include "platform/win/earsound.h"
 #include "platform/win/settings.h"
 #include "platform/win/timer.h"
@@ -27,8 +28,14 @@ int g_nMusicTrackMin;
 int g_nMusicTrackMax;
 HWND g_hMusicNotifyWnd;
 int g_bCdAudioPlaying;
-bool g_bMusicPaused;
+unsigned char g_bCdMusicVolume;
 int g_bEarOutputInitialized;
+const int g_adwBgmVolumeLevels[VOLUME_LEVEL_COUNT] = {
+    0x00, 0x1c, 0x38, 0x55, 0x71, 0x8d, 0xaa, 0xc6, 0xe2, 0xff};
+const int g_adwSfxVolumeLevels[VOLUME_LEVEL_COUNT] = {
+    0x00, 0x55, 0x78, 0x93, 0xaa, 0xbe, 0xd0, 0xe1, 0xf0, 0xff};
+unsigned char g_bBgmVolume;
+unsigned char g_bSfxVolume;
 
 // The track the music starts at, the first after the track of the data of the CD.
 #define FIRST_MUSIC_CD_TRACK 2
@@ -138,7 +145,7 @@ bool PostCdAudioPlayNotify(int nTrack) {
     }
     g_bCdAudioPlaying = true;
     g_nCurrentMusicTrack = nTrack;
-    if (g_bMusicActive && g_bMusicPaused) {
+    if (g_bMusicActive && g_bCdMusicVolume) {
         PostMessageA(
             g_hMusicNotifyWnd, MM_MCINOTIFY, MCI_NOTIFY_SUCCESSFUL, g_dwMciCdAudioDeviceId);
     }
@@ -264,6 +271,57 @@ bool PauseMusicPlayback(void) {
     }
     // The channel receives control 4, and any result but 0 succeeds.
     return g_pfnEarChangeChannelControl(g_dwEarMusicChannel, 4) != 0;
+}
+
+bool ReplayCurrentMusicTrack(void) {
+    if (!IsMusicPlaying()) {
+        return true;
+    }
+    return SetCurrentMusicTrack(g_nCurrentMusicTrack);
+}
+
+bool HandleMusicPauseResume(unsigned char bVolume) {
+    if (bVolume && !g_bCdMusicVolume) {
+        if (g_bCdAudioPlaying) {
+            // The volume is recorded before and after the track plays again, as in the original.
+            g_bCdMusicVolume = bVolume;
+            ReplayCurrentMusicTrack();
+            g_bCdMusicVolume = bVolume;
+            return true;
+        }
+    } else if (!bVolume && g_bCdMusicVolume && g_bCdAudioPlaying) {
+        PauseCdAudio();
+    }
+    g_bCdMusicVolume = bVolume;
+    return true;
+}
+
+// The attenuation of the EAR library at the largest volume.
+#define EAR_MAX_ATTENUATION 10000
+// The largest volume.
+#define MAX_VOLUME 255
+
+bool SetScaledAudioVolume(unsigned char bVolume) {
+    if (IsMusicPlaying()) {
+        g_pfnEarSetAttenuationLevel(g_dwEarMusicChannel,
+                                    bVolume * EAR_MAX_ATTENUATION / MAX_VOLUME);
+    }
+    return true;
+}
+
+bool DispatchMusicVolumeChange(unsigned char bVolume) {
+    if (g_dwPlayMusicMode == PLAY_MUSIC_MODE_CD) {
+        return HandleMusicPauseResume(bVolume);
+    }
+    return SetScaledAudioVolume(bVolume);
+}
+
+void ApplyAudioVolumeSettings(void) {
+    g_bBgmVolume =
+        static_cast<unsigned char>(g_adwBgmVolumeLevels[g_GlobalRallyConfig.dwMusicVolume]);
+    DispatchMusicVolumeChange(g_bBgmVolume);
+    g_bSfxVolume =
+        static_cast<unsigned char>(g_adwSfxVolumeLevels[g_GlobalRallyConfig.dwSfxVolume]);
 }
 
 bool StopMusicTrack(void) {

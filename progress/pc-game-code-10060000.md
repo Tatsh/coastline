@@ -1,6 +1,6 @@
 # PC port game code from 0x10060000 to 0x10070000
 
-25 of 169 routines done.
+26 of 169 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -130,7 +130,7 @@ the same name, for a routine the port retained from the N64 game.
 | `FreeAllPaintBitmaps`                    |   ✅   |                 |      1 |     50 | `0x10061620` | `0x1005a6a0` | `void FreeAllPaintBitmaps(void)`                                                                                                         |
 | `ResetAllPlayers`                        |        | ✅ `0x80200154` |      1 |     49 | `0x10069800` | `0x10062870` | `undefined ResetAllPlayers()`                                                                                                            |
 | `MouseDevice::SyncMouseAcquireState`     |        |                 |      3 |     48 | `0x10060750` | `0x100597c0` | `undefined SyncMouseAcquireState(MouseDevice * this, undefined4 param_1)`                                                                |
-| `ApplyAudioVolumeSettings`               |   📝   |                 |      6 |     46 | `0x10060d90` | `0x10059e00` | `void ApplyAudioVolumeSettings(void)`                                                                                                    |
+| `ApplyAudioVolumeSettings`               |   ✅   |                 |      6 |     46 | `0x10060d90` | `0x10059e00` | `void ApplyAudioVolumeSettings(void)`                                                                                                    |
 | `RecordVehicleKeyframe`                  |        |                 |      1 |     44 | `0x100609e0` | `0x10059a50` | `void RecordVehicleKeyframe(void * pVideoSettings)`                                                                                      |
 | `CompareRacerSortKeyAscending`           |        |                 |      2 |     43 | `0x10066620` | `0x1005f690` | `undefined CompareRacerSortKeyAscending()`                                                                                               |
 | `FillMemoryPatternBytes`                 |        |                 |      2 |     43 | `0x10060780` | `0x100597f0` | `void FillMemoryPatternBytes(void * pDest, uint cb, byte value)`                                                                         |
