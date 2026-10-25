@@ -985,6 +985,26 @@
     </member>
   </compound>
   <compound kind="file">
+    <name>dbt.h</name>
+    <filename>dbt/?.</filename>
+  </compound>
+  <compound kind="file">
+    <name>dinput.h</name>
+    <filename>dinput/?.</filename>
+  </compound>
+  <compound kind="file">
+    <name>mmreg.h</name>
+    <filename>mmreg/?.</filename>
+  </compound>
+  <compound kind="file">
+    <name>mmsystem.h</name>
+    <filename>mmsystem/?.</filename>
+  </compound>
+  <compound kind="file">
+    <name>windows.h</name>
+    <filename>../winprog/using-the-windows-headers?.</filename>
+  </compound>
+  <compound kind="file">
     <name>windows-data-types</name>
     <filename>../winprog/windows-data-types?.</filename>
     <member kind="typedef">

@@ -62,6 +62,12 @@ PAGES_OF_NAMES = {
     # A reference to a GUID.
     'REFGUID': 'guiddef/ns-guiddef-guid',
 }
+# The headers without a page of their own in the reference, and the page that documents each.
+HEADER_PAGES = {
+    'windows.h': '../winprog/using-the-windows-headers',
+}
+# A header the sources include.
+INCLUDE = re.compile(r'^\s*#\s*include\s*<([\w./]+)>', re.MULTILINE)
 # The kind of an entry of the multimedia pages by the last word of the title of its page.
 WIN32_DOCS_KINDS = {'structure': 'ns', 'function': 'nf', 'macro': 'nf'}
 SOURCE_SUFFIXES = ('.c', '.cpp', '.h')
@@ -198,6 +204,11 @@ def source_identifiers(roots: list[Path]) -> tuple[set[str], set[str]]:
     for access, identifier in IDENTIFIER.findall(read_code(path)):
       (members if access else free).add(identifier)
   return free, members | free
+
+
+def source_includes(roots: list[Path]) -> set[str]:
+  """The headers the sources include with angle brackets."""
+  return {name for path in source_files(roots) for name in INCLUDE.findall(read_code(path))}
 
 
 def api_names(text: str) -> list[str]:
@@ -395,8 +406,12 @@ def wine_definitions(wine: Path) -> tuple[dict[str, tuple[str, str, int]], dict[
   return names, methods
 
 
-def wine_tagfile(wine: Path, free: set[str], identifiers: set[str], linked: set[str]) -> ET.Element:
-  """The tag file of the definitions in the headers of Wine of the names no other tag file links."""
+def wine_tagfile(wine: Path, free: set[str], identifiers: set[str], linked: set[str],
+                 includes: set[str]) -> ET.Element:
+  """
+  The tag file of the definitions in the headers of Wine of the names no other tag file links, and
+  of the headers the sources include that no other tag file links.
+  """
   names, methods = wine_definitions(wine)
   tagfile = ET.Element('tagfile')
   members: defaultdict[str, list[tuple[str, str, int]]] = defaultdict(list)
@@ -415,9 +430,14 @@ def wine_tagfile(wine: Path, free: set[str], identifiers: set[str], linked: set[
           add_member(compound, 'function', method, header, f'L{method_line}', suffix='')
     else:
       members[header].append((kind, name, number))
+  # A header another tag file already links keeps that link, so the members of its Wine copy are
+  # grouped under another name.
+  for header in includes - linked:
+    if (wine / WINE_HEADERS / header).is_file():
+      members.setdefault(header, [])
   for header, entries in sorted(members.items()):
     compound = ET.SubElement(tagfile, 'compound', kind='file')
-    ET.SubElement(compound, 'name').text = f'wine/{header}'
+    ET.SubElement(compound, 'name').text = header if header in includes - linked else f'wine/{header}'
     ET.SubElement(compound, 'filename').text = header
     for kind, name, number in entries:
       add_member(compound, kind, name, header, f'L{number}', suffix='')
@@ -489,8 +509,10 @@ def main() -> int:
   free -= declared
   lowered = {identifier.lower() for identifier in identifiers}
 
+  includes = source_includes(args.sources)
+  all_pages = list_pages(args.sdk_api)
   candidates: list[str] = []
-  for page in sorted(list_pages(args.sdk_api)):
+  for page in sorted(all_pages):
     _, _, stem = page.partition('/')
     kind, _, rest = stem.partition('-')
     _, _, symbol = rest.partition('-')
@@ -551,6 +573,14 @@ def main() -> int:
     ET.SubElement(compound, 'filename').text = f'{group}/{LINK_SUFFIX}'
     for member_kind, name, page in entries:
       add_member(compound, member_kind, name, page)
+  # A header the sources include links to its index in the reference even without a linked name.
+  indexes = {page.partition('/')[0] for page in all_pages if page.endswith('/index')}
+  for header in sorted(includes - {f'{group}.h' for group in file_members}):
+    stem = header.removesuffix('.h').lower()
+    if header in HEADER_PAGES or (header.endswith('.h') and stem in indexes):
+      compound = ET.SubElement(tagfile, 'compound', kind='file')
+      ET.SubElement(compound, 'name').text = header
+      ET.SubElement(compound, 'filename').text = HEADER_PAGES.get(header, f'{stem}/') + LINK_SUFFIX
 
   types = sorted((free & data_types()) - links.keys())
   handles = sorted(name for name in PAGES_OF_NAMES if name in free and name not in links)
@@ -573,7 +603,7 @@ def main() -> int:
   if args.wine_output:
     for path in args.exclude_tags:
       linked |= tag_names(path)
-    write_tagfile(wine_tagfile(args.wine, free, identifiers, linked), args.wine_output)
+    write_tagfile(wine_tagfile(args.wine, free, identifiers, linked, includes), args.wine_output)
   return 0
 
 

@@ -1582,7 +1582,7 @@
     </member>
   </compound>
   <compound kind="file">
-    <name>wine/d3d.h</name>
+    <name>d3d.h</name>
     <filename>d3d.h</filename>
     <member kind="define">
       <type />
@@ -1723,7 +1723,7 @@
     </member>
   </compound>
   <compound kind="file">
-    <name>wine/d3dtypes.h</name>
+    <name>d3dtypes.h</name>
     <filename>d3dtypes.h</filename>
     <member kind="define">
       <type />
@@ -2597,7 +2597,7 @@
     </member>
   </compound>
   <compound kind="file">
-    <name>wine/dplay.h</name>
+    <name>dplay.h</name>
     <filename>dplay.h</filename>
     <member kind="define">
       <type />
@@ -3105,7 +3105,11 @@
     </member>
   </compound>
   <compound kind="file">
-    <name>wine/dsound.h</name>
+    <name>dplobby.h</name>
+    <filename>dplobby.h</filename>
+  </compound>
+  <compound kind="file">
+    <name>dsound.h</name>
     <filename>dsound.h</filename>
     <member kind="define">
       <type />
