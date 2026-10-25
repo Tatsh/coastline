@@ -1172,6 +1172,20 @@ void DirectDrawRenderer::FlipPrimarySurfaceAndWait() {
     g_bRenderTargetCleared = false;
 }
 
+void ClearRenderTargetOnce(void) {
+    if (g_bRenderTargetCleared) {
+        return;
+    }
+    if (g_dwD3DClearZBuffer) {
+        D3DRECT rcClear = {{0}, {0}, {g_dwConfigFramebufferWidth}, {g_dwConfigFramebufferHeight}};
+        if (g_pMainRenderWindow->pViewport->Clear(
+                1, &rcClear, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER) != D3D_OK) {
+            return;
+        }
+    }
+    g_bRenderTargetCleared = true;
+}
+
 void PresentFrameCallback_FlipSurfaces(void) {
     g_pMainRenderWindow->FlipPrimarySurfaceAndWait();
 }

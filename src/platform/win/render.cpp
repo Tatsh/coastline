@@ -90,6 +90,20 @@ void ByteSwapArray16(unsigned short *pData, int nCount) {
     }
 }
 
+#if TGR_RENDERER == TGR_RENDERER_D3D
+static inline DWORD WidenColorChannel5(DWORD dwChannel) {
+    // The low bits are repeated, not the high bits.
+    return dwChannel << 3 | (dwChannel & 7);
+}
+
+DWORD ConvertColor16To32(DWORD dwColor16) {
+    DWORD dwSwapped = (dwColor16 & 0xff) << 8 | (dwColor16 & 0xffff) >> 8;
+    DWORD dwAlpha = (dwSwapped & 1) ? 0xff : 0;
+    return dwAlpha << 24 | WidenColorChannel5(dwSwapped >> 1 & 0x1f) << 16 |
+           WidenColorChannel5(dwSwapped >> 6 & 0x1f) << 8 | WidenColorChannel5(dwSwapped >> 11);
+}
+#endif
+
 int GetMipLevelFromDimension(int nDimension) {
     if (nDimension <= 1) {
         return 0;
