@@ -262,13 +262,61 @@ extern IDirectSoundBuffer *g_pDirectSoundPrimaryBuffer;
  */
 extern WAVEFORMATEX *g_pDirectSoundWaveFormat;
 
+/** A sound buffer of a sample, in a list. The layout is not recovered past the members below. */
+struct SoundBufferNode {
+    void *pSampleData;           /*!< The data of the sample, in locked global memory. */
+    DWORD dwSampleSize;          /*!< The size of the sample in bytes. */
+    WAVEFORMATEX *pWaveFormat;   /*!< The format of the sample, in locked global memory. */
+    char abUnknownC[0x10];       /* +0x0c */
+    int bPlaying;                /*!< Whether the buffer plays. */
+    char abUnknown20[4];         /* +0x20 */
+    int bHardware;               /*!< Whether the buffer is in the memory of the sound card. */
+    int bStickyFocus;            /*!< Whether the buffer plays while the window is not active. */
+    char abUnknown2c[0x70];      /* +0x2c */
+    IDirectSoundBuffer *pBuffer; /*!< The buffer of DirectSound. */
+    char abUnknownA0[0x108];     /* +0xa0 */
+    SoundBufferNode *pNext;      /*!< The next node of the list. */
+};
+
 /**
- * The list of the sound buffers, in locked global memory. The layout is not recovered yet.
+ * The head of the list of the sound buffers. Only its first member and its link are read here.
  *
  * @ghidraAddress BRD3D: 0x11828f48
  * @ghidraAddress BRGlide: 0x1184c2a8
  */
-extern void *g_pSoundBufferList;
+extern SoundBufferNode g_SoundBufferListHead;
+
+/**
+ * Create the buffer of DirectSound of a sample, static with control of the frequency, the pan,
+ * the volume, and the position, and copy the sample into it. The frequency and the pan are reset,
+ * and bHardware records where the buffer is. A step that fails releases the buffer.
+ *
+ * @param pNode The node of the sample.
+ * @return DS_OK, or the error of the step that failed.
+ * @ghidraAddress BRD3D: 0x100722d0
+ * @ghidraAddress BRGlide: 0x1006b240
+ */
+HRESULT CreateDirectSoundBufferFromSample(SoundBufferNode *pNode);
+
+/**
+ * Release the buffer of DirectSound of a node.
+ *
+ * @param pNode The node.
+ * @return Always DS_OK.
+ * @ghidraAddress BRD3D: 0x10072520
+ * @ghidraAddress BRGlide: 0x1006b490
+ */
+HRESULT ReleaseSoundBuffer(SoundBufferNode *pNode);
+
+/**
+ * Stop the buffer of DirectSound of a node that plays.
+ *
+ * @param pNode The node.
+ * @return The result of the stop, or DS_OK for a buffer that does not play.
+ * @ghidraAddress BRD3D: 0x10072550
+ * @ghidraAddress BRGlide: 0x1006b4c0
+ */
+HRESULT StopSoundBuffer(SoundBufferNode *pNode);
 
 /** The number of entries of g_apSoundChannelBuffer. */
 #define SOUND_CHANNEL_COUNT 15
@@ -341,20 +389,23 @@ extern int g_dwLoadedSoundSampleCount;
 /**
  * Stop every sound buffer of a list.
  *
- * @param ppList The list.
+ * @param pHead The head of the list.
+ * @return Always DS_OK.
  * @ghidraAddress BRD3D: 0x10072bf0
  * @ghidraAddress BRGlide: 0x1006bb60
  */
-void StopAllSoundBuffersInList(void **ppList);
+HRESULT StopAllSoundBuffersInList(SoundBufferNode *pHead);
 
 /**
- * Free a list of sound buffers.
+ * Release and free every node of a list of sound buffers, with the sample and the format of
+ * each, and empty the list. The head is not freed.
  *
- * @param ppList The list.
+ * @param pHead The head of the list.
+ * @return Always DS_OK.
  * @ghidraAddress BRD3D: 0x10072c20
  * @ghidraAddress BRGlide: 0x1006bb90
  */
-void FreeSoundBufferList(void **ppList);
+HRESULT FreeSoundBufferList(SoundBufferNode *pHead);
 
 /**
  * Add a user of DirectSound when sound effects play. The first user clears the channels and the

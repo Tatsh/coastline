@@ -16,7 +16,7 @@ IDirectSound *g_pDirectSound;
 int g_dwDirectSoundRefCount;
 IDirectSoundBuffer *g_pDirectSoundPrimaryBuffer;
 WAVEFORMATEX *g_pDirectSoundWaveFormat;
-void *g_pSoundBufferList;
+SoundBufferNode g_SoundBufferListHead;
 int g_dwEarMusicChannel = 100;
 int g_nMusicDeviceRefCount;
 bool g_bEarMusicActive;
@@ -173,6 +173,108 @@ static inline void FreeLockedGlobalMemory(void *pMemory) {
     GlobalFree(GlobalHandle(pMemory));
 }
 
+// The buffers of the samples are static with control of the frequency, the pan, the volume, and
+// the position.
+#define SAMPLE_BUFFER_FLAGS                                                                        \
+    (DSBCAPS_STATIC | DSBCAPS_CTRLFREQUENCY | DSBCAPS_CTRLPAN | DSBCAPS_CTRLVOLUME |               \
+     DSBCAPS_GETCURRENTPOSITION2)
+
+HRESULT CreateDirectSoundBufferFromSample(SoundBufferNode *pNode) {
+    DSBUFFERDESC desc;
+    DSBCAPS caps;
+    void *pAudio = nullptr;
+    DWORD dwAudioSize;
+    void *pAudio2;
+    DWORD dwAudioSize2;
+    HRESULT hResult;
+
+    memset(&desc, 0, sizeof(desc));
+    desc.dwSize = sizeof(desc);
+    desc.dwFlags = SAMPLE_BUFFER_FLAGS;
+    if (pNode->bStickyFocus) {
+        desc.dwFlags |= DSBCAPS_STICKYFOCUS;
+    }
+    desc.dwBufferBytes = pNode->dwSampleSize;
+    desc.lpwfxFormat = pNode->pWaveFormat;
+    hResult = g_pDirectSound->CreateSoundBuffer(&desc, &pNode->pBuffer, nullptr);
+    if (hResult == DS_OK) {
+        hResult = pNode->pBuffer->Lock(
+            0, pNode->dwSampleSize, &pAudio, &dwAudioSize, &pAudio2, &dwAudioSize2, 0);
+    }
+    if (hResult == DS_OK) {
+        // The whole sample is copied into the first part, whatever its size.
+        memcpy(pAudio, pNode->pSampleData, pNode->dwSampleSize);
+        hResult = pNode->pBuffer->Unlock(pAudio, pNode->dwSampleSize, nullptr, 0);
+        if (hResult == DS_OK) {
+            pAudio = nullptr;
+            hResult = pNode->pBuffer->SetFrequency(DSBFREQUENCY_ORIGINAL);
+        }
+        if (hResult == DS_OK) {
+            hResult = pNode->pBuffer->SetPan(DSBPAN_CENTER);
+        }
+        if (hResult == DS_OK) {
+            caps.dwSize = sizeof(caps);
+            hResult = pNode->pBuffer->GetCaps(&caps);
+        }
+        if (hResult == DS_OK) {
+            pNode->bHardware = (caps.dwFlags & DSBCAPS_LOCHARDWARE) != 0;
+            return hResult;
+        }
+    }
+    if (pAudio != nullptr) {
+        hResult = pNode->pBuffer->Unlock(pAudio, pNode->dwSampleSize, nullptr, 0);
+    }
+    if (pNode->pBuffer != nullptr) {
+        pNode->pBuffer->Release();
+        pNode->pBuffer = nullptr;
+    }
+    return hResult;
+}
+
+HRESULT ReleaseSoundBuffer(SoundBufferNode *pNode) {
+    if (pNode->pBuffer != nullptr) {
+        pNode->pBuffer->Release();
+        pNode->pBuffer = nullptr;
+    }
+    return DS_OK;
+}
+
+HRESULT StopSoundBuffer(SoundBufferNode *pNode) {
+    HRESULT hResult;
+
+    if (!pNode->bPlaying) {
+        return DS_OK;
+    }
+    hResult = pNode->pBuffer->Stop();
+    if (hResult == DS_OK) {
+        pNode->bPlaying = false;
+    }
+    return hResult;
+}
+
+HRESULT StopAllSoundBuffersInList(SoundBufferNode *pHead) {
+    for (SoundBufferNode *pNode = pHead->pNext; pNode != nullptr; pNode = pNode->pNext) {
+        StopSoundBuffer(pNode);
+    }
+    return DS_OK;
+}
+
+HRESULT FreeSoundBufferList(SoundBufferNode *pHead) {
+    SoundBufferNode *pNode = pHead->pNext;
+    SoundBufferNode *pNext;
+
+    pHead->pNext = nullptr;
+    while (pNode != nullptr) {
+        ReleaseSoundBuffer(pNode);
+        FreeLockedGlobalMemory(pNode->pWaveFormat);
+        FreeLockedGlobalMemory(pNode->pSampleData);
+        pNext = pNode->pNext;
+        FreeLockedGlobalMemory(pNode);
+        pNode = pNext;
+    }
+    return DS_OK;
+}
+
 IDirectSoundBuffer *g_apSoundChannelBuffer[SOUND_CHANNEL_COUNT];
 int g_dwLoadedSoundSampleCount;
 
@@ -188,8 +290,8 @@ bool ResetAudioSubsystem(void) {
     if (!g_bSoundEnabledIni || g_pDirectSound == nullptr || g_dwDirectSoundRefCount == 0) {
         return true;
     }
-    StopAllSoundBuffersInList(&g_pSoundBufferList);
-    FreeSoundBufferList(&g_pSoundBufferList);
+    StopAllSoundBuffersInList(&g_SoundBufferListHead);
+    FreeSoundBufferList(&g_SoundBufferListHead);
     for (int i = 0; i < g_dwLoadedSoundSampleCount; i++) {
         memset(g_aSoundChannelBuffers[i].apChannelBuffers,
                0,
@@ -281,9 +383,9 @@ bool ShutdownDirectSound(void) {
         FreeLockedGlobalMemory(g_pDirectSoundWaveFormat);
         g_pDirectSoundWaveFormat = nullptr;
     }
-    if (g_pSoundBufferList != nullptr) {
-        FreeLockedGlobalMemory(g_pSoundBufferList);
-        g_pSoundBufferList = nullptr;
+    if (g_SoundBufferListHead.pSampleData != nullptr) {
+        FreeLockedGlobalMemory(g_SoundBufferListHead.pSampleData);
+        g_SoundBufferListHead.pSampleData = nullptr;
     }
     return true;
 }

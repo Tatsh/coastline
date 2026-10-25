@@ -89,6 +89,9 @@ createmesgqueue
 createplayerorgroup
 createthread
 ctest
+ctrlfrequency
+ctrlpan
+ctrlvolume
 ctype
 cupra
 cycletype
@@ -181,6 +184,8 @@ dpsys
 drawtexturedrect
 drenderstate
 dsbcaps
+dsbfrequency
+dsbpan
 dsbplay
 dsbufferdesc
 dsdx
@@ -359,6 +364,7 @@ lpcstr
 lpfn
 lprenmi
 lpsz
+lpwfx
 lrcp
 lredispatch
 lrestore
@@ -615,6 +621,7 @@ stdlib
 steerangle
 steerreturn
 stickx
+stickyfocus
 stkptr
 strequal
 subu
