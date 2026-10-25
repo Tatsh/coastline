@@ -13,6 +13,7 @@
 #include "platform/win/input.h"
 #include "platform/win/settings.h"
 #include "platform/win/sound.h"
+#include "platform/win/timer.h"
 #if TGR_RENDERER == TGR_RENDERER_D3D
 #include "platform/win/d3d/renderer.h"
 #endif
@@ -48,6 +49,60 @@ int g_dwAccumUnlockedCarMask;
 int g_dwAccumUnlockedTrackMask;
 int g_dwHandlingTypeMenuIndex = 4;
 int g_dwSelectedCarClass;
+int g_dwNetworkMenuState;
+int g_dwSelectedSessionIndex;
+MenuWidget *g_pJoinCreateGameMenu;
+MenuScreen *g_pCachedMenu_MainMenu;
+MenuScreen *g_pCachedMenu_MainMenuAlternate;
+MenuScreen *g_pCachedMenu_CarSetup;
+MenuScreen *g_pCachedMenu_Options;
+MenuScreen *g_pCachedMenu_TimeTrial;
+MenuScreen *g_pCachedMenu_Unused2920;
+MenuScreen *g_pCachedMenu_LoadSeason;
+MenuScreen *g_pCachedMenu_SaveSeason;
+MenuScreen *g_pCachedMenu_PreRaceInfo;
+MenuScreen *g_pCachedMenu_SeasonProgressInfo;
+MenuScreen *g_pCachedMenu_RaceResults;
+MenuScreen *g_pCachedMenu_RaceResultsSummary;
+MenuScreen *g_pCachedMenu_RaceResultsTotals;
+MenuScreen *g_pCachedMenu_MultiplayerConnection;
+MenuScreen *g_pCachedMenu_Unused2944;
+MenuScreen *g_pCachedMenu_JoinCreateGame;
+MenuScreen *g_pCachedMenu_CreateGame;
+MenuScreen *g_pCachedMenu_RaceSetupNetwork;
+MenuScreen *g_pCachedMenu_NetworkCarSetup;
+MenuScreen *g_pCachedMenu_MultiplayerName;
+MenuScreen *g_pCachedMenu_TimeAttack;
+MenuScreen *g_pCachedMenu_Unused2960;
+MenuScreen *g_pCachedMenu_LoadGhost;
+MenuScreen *g_pCachedMenu_SaveGhost;
+MenuScreen *g_pCachedMenu_SeasonCongrats;
+MenuScreen *g_pCachedMenu_NotEnoughPoints;
+MenuScreen *g_pPreRaceInfoMenuScreen;
+MenuScreen *g_pCachedMenu_Credits;
+MenuScreen *g_pCachedMenu_InputConfig;
+MenuScreen *g_pCachedMenu_GameplaySettings;
+MenuScreen *g_pCachedMenu_Championship;
+MenuScreen *g_pCachedMenu_ModemDialUp;
+MenuScreen *g_pCachedMenu_VideoSettings;
+MenuScreen *g_pCachedMenu_AudioSettings;
+MenuScreen *g_pCachedMenu_KeyConfig;
+MenuWidget *g_pPlayerNameContinueItem;
+MenuWidget *g_pRaceSetupMenu;
+MenuWidget *g_pExitSeasonConfirmMenu;
+MenuWidget *g_pCarSetupMenu;
+MenuWidget *g_pMultiplayerGameSetupMenu;
+MenuWidget *g_pSaveSeasonMenu;
+MenuWidget *g_pSaveTimeAttackMenu;
+MenuWidget *g_pSaveSeasonEditMenu;
+MenuWidget *g_pSaveTimeAttackEditMenu;
+MenuWidget *g_pNetworkSessionJoinMenu;
+MenuWidget *g_pNetworkCarSetupMenu;
+MenuWidget *g_pNetworkPlayerListMenu;
+MenuWidget *g_pModemContinueItem;
+MenuWidget *g_pDisplayModeSelectMenu;
+MenuWidget *g_pD3DDeviceSelectMenu;
+MenuWidget *g_pSaveSeasonBackHandlerMenu;
 
 // The size of the scratch buffer of the front end.
 #define FRONT_END_SCRATCH_SIZE 0x400
@@ -275,6 +330,20 @@ HRESULT MenuScreen::ClearBackBuffer() {
 #endif
 
 #if TGR_RENDERER == TGR_RENDERER_D3D
+IDirectDraw2 *g_pMenuDirectDraw;
+
+void ReleaseMenuSurfaces(void) {
+    if (g_pMenuDirectDraw == nullptr) {
+        return;
+    }
+    for (int i = 0; i < g_wMenuImageLoadedCount; i++) {
+        if (g_aMenuImages[i].pSurface != nullptr) {
+            g_aMenuImages[i].pSurface->Release();
+            g_aMenuImages[i].pSurface = nullptr;
+        }
+    }
+}
+
 void MenuScreen::FlipAndWait() {
     DirectDrawRenderer *pRenderer = g_pRenderHost->pRenderer;
 
@@ -284,6 +353,126 @@ void MenuScreen::FlipAndWait() {
     }
 }
 #endif
+
+// The delays of the shutdown in milliseconds, in states 2 and 3 of g_dwNetworkMenuState.
+#define SHUTDOWN_DELAY_STATE_2_MS 4570
+#define SHUTDOWN_DELAY_STATE_3_MS 1540
+
+// Free a cached screen and report whether there was one.
+static inline bool DestroyCachedMenu(MenuScreen *&pScreen) {
+    if (pScreen == nullptr) {
+        return false;
+    }
+    pScreen->DestroyPanels();
+    delete pScreen;
+    pScreen = nullptr;
+    return true;
+}
+
+void MenuScreen::ShutdownFrontEnd(int bPartial) {
+    DWORD dwDelay = 0;
+    DWORD dwEnd;
+
+    if (g_dwNetworkMenuState == 2) {
+        dwDelay = SHUTDOWN_DELAY_STATE_2_MS;
+    } else if (g_dwNetworkMenuState == 3) {
+        dwDelay = SHUTDOWN_DELAY_STATE_3_MS;
+    }
+    dwEnd = GetHighResolutionTime() + dwDelay;
+    while (GetHighResolutionTime() < dwEnd) {
+        Sleep(0);
+    }
+    if (!bPartial) {
+        g_dwNullStubEnable = false;
+        g_pActiveMenuScreen = nullptr;
+        ReleaseMenuSurfaces();
+        for (MenuImage &image : g_aMenuImages) {
+            delete[] image.pszPath;
+            image.pszPath = nullptr;
+        }
+    }
+    // The connection screen is freed first, and its pointer is checked again further down.
+    if (DestroyCachedMenu(g_pCachedMenu_MultiplayerConnection)) {
+        g_dwDirectPlaySessionActive = false;
+    }
+    if (DestroyCachedMenu(g_pCachedMenu_MainMenu)) {
+        g_pRaceSetupMenu = nullptr;
+    }
+    DestroyCachedMenu(g_pCachedMenu_MainMenuAlternate);
+    if (DestroyCachedMenu(g_pCachedMenu_CarSetup)) {
+        g_pCarSetupMenu = nullptr;
+    }
+    DestroyCachedMenu(g_pCachedMenu_Options);
+    DestroyCachedMenu(g_pCachedMenu_TimeTrial);
+    if (DestroyCachedMenu(g_pCachedMenu_Unused2920)) {
+        g_pPlayerNameContinueItem = nullptr;
+    }
+    DestroyCachedMenu(g_pCachedMenu_LoadSeason);
+    if (DestroyCachedMenu(g_pCachedMenu_SaveSeason)) {
+        g_pSaveSeasonMenu = nullptr;
+        g_pSaveSeasonEditMenu = nullptr;
+        g_pSaveSeasonBackHandlerMenu = nullptr;
+    }
+    if (DestroyCachedMenu(g_pCachedMenu_PreRaceInfo)) {
+        g_pExitSeasonConfirmMenu = nullptr;
+    }
+    DestroyCachedMenu(g_pCachedMenu_SeasonProgressInfo);
+    DestroyCachedMenu(g_pCachedMenu_RaceResults);
+    DestroyCachedMenu(g_pCachedMenu_RaceResultsSummary);
+    DestroyCachedMenu(g_pCachedMenu_RaceResultsTotals);
+    DestroyCachedMenu(g_pCachedMenu_MultiplayerConnection);
+    DestroyCachedMenu(g_pCachedMenu_Unused2944);
+    if (DestroyCachedMenu(g_pCachedMenu_JoinCreateGame)) {
+        g_pMultiplayerGameSetupMenu = nullptr;
+        g_pNetworkSessionJoinMenu = nullptr;
+        g_pJoinCreateGameMenu = nullptr;
+        g_dwSelectedSessionIndex = 0;
+    }
+    if (DestroyCachedMenu(g_pCachedMenu_CreateGame)) {
+        g_pMultiplayerGameSetupMenu = nullptr;
+    }
+    DestroyCachedMenu(g_pCachedMenu_RaceSetupNetwork);
+    if (DestroyCachedMenu(g_pCachedMenu_NetworkCarSetup)) {
+        g_pNetworkPlayerListMenu = nullptr;
+        g_pNetworkCarSetupMenu = nullptr;
+    }
+    if (DestroyCachedMenu(g_pCachedMenu_MultiplayerName)) {
+        g_pPlayerNameContinueItem = nullptr;
+    }
+    if (DestroyCachedMenu(g_pCachedMenu_ModemDialUp)) {
+        g_pModemContinueItem = nullptr;
+    }
+    DestroyCachedMenu(g_pCachedMenu_TimeAttack);
+    DestroyCachedMenu(g_pCachedMenu_Unused2960);
+    DestroyCachedMenu(g_pCachedMenu_LoadGhost);
+    if (DestroyCachedMenu(g_pCachedMenu_SaveGhost)) {
+        g_pSaveTimeAttackMenu = nullptr;
+        g_pSaveTimeAttackEditMenu = nullptr;
+    }
+    DestroyCachedMenu(g_pCachedMenu_SeasonCongrats);
+    DestroyCachedMenu(g_pCachedMenu_NotEnoughPoints);
+    DestroyCachedMenu(g_pPreRaceInfoMenuScreen);
+    DestroyCachedMenu(g_pCachedMenu_Credits);
+    DestroyCachedMenu(g_pCachedMenu_InputConfig);
+    DestroyCachedMenu(g_pCachedMenu_GameplaySettings);
+    DestroyCachedMenu(g_pCachedMenu_Championship);
+    if (DestroyCachedMenu(g_pCachedMenu_VideoSettings)) {
+        g_pD3DDeviceSelectMenu = nullptr;
+    }
+    if (DestroyCachedMenu(g_pCachedMenu_AudioSettings)) {
+        g_pDisplayModeSelectMenu = nullptr;
+    }
+    DestroyCachedMenu(g_pCachedMenu_KeyConfig);
+    if (!bPartial) {
+        DestroyCachedMenu(g_pRootMenuScreen);
+        if (g_pFrontEndScratchBuffer != nullptr) {
+            // The original runs a destructor on the buffer that does nothing.
+            ::operator delete(g_pFrontEndScratchBuffer);
+            g_pFrontEndScratchBuffer = nullptr;
+        }
+        SyncSeasonProgress();
+    }
+}
 
 void MenuScreen::DestroyPanels() {
     for (int nPanel = 0; nPanel < wPanelCount; nPanel++) {

@@ -1,6 +1,6 @@
 # PC port game code from 0x10050000 to 0x10060000
 
-11 of 84 routines done.
+12 of 84 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -53,7 +53,7 @@ the same name, for a routine the port retained from the N64 game.
 | `BuildGlideDisplayModeList`               |        |                 |      1 |    215 |              | `0x10058d40` | `undefined BuildGlideDisplayModeList()`                                                                                                         |
 | `MenuFont::DrawText`                      |        | ✅ `0x8022f5dc` |      1 |    212 | `0x1005b2b0` | `0x100540d0` | `undefined DrawText(MenuFont * this)`                                                                                                           |
 | `MenuFont::DrawMenuItemText`              |        |                 |      1 |    196 | `0x1005b390` | `0x100541b0` | `undefined DrawMenuItemText(MenuFont * this, undefined4 param_1, undefined4 param_2)`                                                           |
-| `SyncDisplaySettings`                     |        |                 |      4 |    183 | `0x1005fcf0` | `0x10058a30` | `undefined SyncDisplaySettings()`                                                                                                               |
+| `SyncSeasonProgress`                      |   📝   |                 |      4 |    183 | `0x1005fcf0` | `0x10058a30` | `void SyncSeasonProgress(void)`                                                                                                                 |
 | `MenuScreen::ClearBackBuffer`             |   ✅   |                 |      1 |    167 | `0x1005afa0` |              | `long ClearBackBuffer(MenuScreen * this)`                                                                                                       |
 | `SaveFileList::WriteSeasonDescFile`       |        |                 |      1 |    162 | `0x1005cc20` | `0x10055a40` | `undefined WriteSeasonDescFile(SaveFileList * this, undefined4 param_1)`                                                                        |
 | `MenuFont::MeasureTextAltFont`            |        |                 |      1 |    153 | `0x1005b160` | `0x10053f80` | `undefined MeasureTextAltFont(MenuFont * this)`                                                                                                 |
@@ -70,7 +70,7 @@ the same name, for a routine the port retained from the N64 game.
 | `MenuItemList::BlitSurfaceById`           |        |                 |      1 |     73 | `0x1005c270` | `0x10055090` | `undefined BlitSurfaceById(MenuItemList * this, undefined4 param_1, undefined4 param_2, undefined4 param_3)`                                    |
 | `RestoreMenuSurfaces`                     |        |                 |      1 |     73 | `0x1005f4e0` | `0x10001320` | `undefined RestoreMenuSurfaces()`                                                                                                               |
 | `ToggleSelectedSessionSlotFlag`           |        |                 |      1 |     72 | `0x10058700` | `0x100515b0` | `undefined ToggleSelectedSessionSlotFlag()`                                                                                                     |
-| `ReleaseMenuSurfaces`                     |        |                 |      2 |     68 | `0x1005f530` | `0x10058300` | `undefined ReleaseMenuSurfaces()`                                                                                                               |
+| `ReleaseMenuSurfaces`                     |   ✅   |                 |      2 |     68 | `0x1005f530` | `0x10058300` | `void ReleaseMenuSurfaces(void)`                                                                                                                |
 | `MenuItemList::UpdateAndRenderMenuWidget` |        |                 |      1 |     68 | `0x1005cb40` | `0x10055960` | `undefined UpdateAndRenderMenuWidget(MenuItemList * this, undefined4 param_1)`                                                                  |
 | `UpdateKeyboardEdgeState`                 |   ✅   |                 |      3 |     67 | `0x1005ff60` | `0x10058fd0` | `void UpdateKeyboardEdgeState(void)`                                                                                                            |
 | `GlideDisplayModeNode::IsLessOrEqual`     |        |                 |      2 |     59 |              | `0x10058cc0` | `undefined IsLessOrEqual(GlideDisplayModeNode * this, undefined4 param_1)`                                                                      |
