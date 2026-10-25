@@ -40,9 +40,10 @@ bool InitializeEarSound(HWND hWnd);
 /**
  * Start the music library and its channel.
  *
+ * @return Always true.
  * @ghidraAddress BRD3D: 0x10002260
  */
-void InitializeMusicPlayback(void);
+bool InitializeMusicPlayback(void);
 
 /**
  * The event the music library signals at the end of a track.
@@ -433,10 +434,11 @@ HRESULT FreeSoundBufferList(SoundBufferNode *pHead);
  * software music otherwise.
  *
  * @param hWnd The main window.
+ * @return The result of OpenCdaudioMci() or InitSoftwareMusicStack().
  * @ghidraAddress BRD3D: 0x100025c0
  * @ghidraAddress BRGlide: 0x100028e0
  */
-void RouteMusicInitByFlag(HWND hWnd);
+bool RouteMusicInitByFlag(HWND hWnd);
 
 /**
  * Set the volumes of the music and the sound effects from the levels of g_GlobalRallyConfig.
@@ -495,12 +497,42 @@ extern int g_dwEarMusicChannel;
 extern int g_nMusicDeviceRefCount;
 
 /**
- * Whether the EAR library plays music.
+ * Whether music is active, with the tracks of the CD read or the channel of the EAR library
+ * started.
  *
  * @ghidraAddress BRD3D: 0x10220c3c
  * @ghidraAddress BRGlide: 0x1021c76c
  */
-extern int g_bEarMusicActive;
+extern int g_bMusicActive;
+
+/**
+ * Whether the output of the EAR library is set up.
+ *
+ * @ghidraAddress BRD3D: 0x10220c48
+ * @ghidraAddress BRGlide: 0x1021c778
+ */
+extern int g_bEarOutputInitialized;
+
+/**
+ * Open the CD audio through MCI for the first user of the device of the music, with the time in
+ * tracks, and read the number of tracks. The music then plays tracks 2 to the last.
+ *
+ * @param hWnd The window told of the end of a track.
+ * @return False when the device does not open or answer, true otherwise.
+ * @ghidraAddress BRD3D: 0x10002660
+ * @ghidraAddress BRGlide: 0x10002980
+ */
+bool OpenCdaudioMci(HWND hWnd);
+
+/**
+ * Set up the EAR library for the first user of the device of the music and start its music.
+ *
+ * @param hWnd The main window.
+ * @return Always true.
+ * @ghidraAddress BRD3D: 0x100025f0
+ * @ghidraAddress BRGlide: 0x10002910
+ */
+bool InitSoftwareMusicStack(HWND hWnd);
 
 /**
  * Drop a user of the device of the music. In music mode 1 the CD audio stops, and the last user

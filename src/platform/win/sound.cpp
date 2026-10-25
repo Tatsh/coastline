@@ -1,5 +1,6 @@
 #include "platform/win/sound.h"
 
+#include <cstdlib>
 #include <cstring>
 
 #include <windows.h>
@@ -11,6 +12,7 @@
 #include "platform/win/boot/app.h"
 #include "platform/win/earsound.h"
 #include "platform/win/settings.h"
+#include "platform/win/timer.h"
 
 IDirectSound *g_pDirectSound;
 int g_dwDirectSoundRefCount;
@@ -19,25 +21,108 @@ WAVEFORMATEX *g_pDirectSoundWaveFormat;
 SoundBufferNode g_SoundBufferListHead;
 int g_dwEarMusicChannel = 100;
 int g_nMusicDeviceRefCount;
-int g_bEarMusicActive;
+int g_bMusicActive;
 int g_nCurrentMusicTrack;
 int g_nMusicTrackMin;
 int g_nMusicTrackMax;
 HWND g_hMusicNotifyWnd;
 int g_bCdAudioPlaying;
 bool g_bMusicPaused;
+int g_bEarOutputInitialized;
+
+// The track the music starts at, the first after the track of the data of the CD.
+#define FIRST_MUSIC_CD_TRACK 2
+
+// Prepare the state of the music for the first user of its device.
+static inline void ResetMusicTracks(HWND hWnd) {
+    g_hMusicNotifyWnd = hWnd;
+    srand(GetHighResolutionTime());
+    g_nCurrentMusicTrack = FIRST_MUSIC_CD_TRACK;
+    g_nMusicTrackMin = 0;
+    g_nMusicTrackMax = 0;
+}
+
+bool OpenCdaudioMci(HWND hWnd) {
+    MCI_OPEN_PARMSA open;
+    MCI_SET_PARMS set;
+    MCI_STATUS_PARMS status;
+    MCIERROR nError;
+    char szMessage[0x400];
+
+    if (!g_dwPlayMusicMode) {
+        return true;
+    }
+    if (++g_nMusicDeviceRefCount != 1) {
+        return true;
+    }
+    ResetMusicTracks(hWnd);
+    g_bCdAudioPlaying = false;
+    g_bMusicActive = false;
+    open.lpstrDeviceType = "cdaudio";
+    if (mciSendCommandA(0, MCI_OPEN, MCI_OPEN_TYPE, reinterpret_cast<DWORD_PTR>(&open)) != 0) {
+        return false;
+    }
+    g_dwMciCdAudioDeviceId = open.wDeviceID;
+    set.dwTimeFormat = MCI_FORMAT_TMSF;
+    if (mciSendCommandA(g_dwMciCdAudioDeviceId,
+                        MCI_SET,
+                        MCI_SET_TIME_FORMAT,
+                        reinterpret_cast<DWORD_PTR>(&set)) != 0) {
+        mciSendCommandA(g_dwMciCdAudioDeviceId, MCI_CLOSE, 0, 0);
+        return false;
+    }
+    status.dwItem = MCI_STATUS_NUMBER_OF_TRACKS;
+    nError = mciSendCommandA(g_dwMciCdAudioDeviceId,
+                             MCI_STATUS,
+                             MCI_STATUS_ITEM | MCI_WAIT,
+                             reinterpret_cast<DWORD_PTR>(&status));
+    if (nError != 0) {
+        wsprintfA(szMessage, "MCI_STATUS returned %d\n", nError);
+        OutputDebugStringA(szMessage);
+        mciSendCommandA(g_dwMciCdAudioDeviceId, MCI_CLOSE, 0, 0);
+        return false;
+    }
+    g_nMusicTrackMin = FIRST_MUSIC_CD_TRACK;
+    g_nMusicTrackMax = static_cast<int>(status.dwReturn);
+    g_bMusicActive = true;
+    return true;
+}
+
+bool InitSoftwareMusicStack(HWND hWnd) {
+    if (!g_dwPlayMusicMode) {
+        return true;
+    }
+    if (++g_nMusicDeviceRefCount != 1) {
+        return true;
+    }
+    ResetMusicTracks(hWnd);
+    InitializeEarSound(hWnd);
+    g_bMusicActive = false;
+    g_bEarOutputInitialized = false;
+    return InitializeMusicPlayback();
+}
+
+// The value of g_dwPlayMusicMode that plays the CD.
+#define PLAY_MUSIC_MODE_CD 1
+
+bool RouteMusicInitByFlag(HWND hWnd) {
+    if (g_dwPlayMusicMode == PLAY_MUSIC_MODE_CD) {
+        return OpenCdaudioMci(hWnd);
+    }
+    return InitSoftwareMusicStack(hWnd);
+}
 
 int GetEarMusicCurrentTrack(void) {
     if (g_dwPlayMusicMode == 0 || g_nMusicDeviceRefCount == 0) {
         return 0;
     }
-    return g_bEarMusicActive ? g_nCurrentMusicTrack : 0;
+    return g_bMusicActive ? g_nCurrentMusicTrack : 0;
 }
 
 int GetCdAudioCurrentTrack(void) {
     MCI_STATUS_PARMS status;
 
-    if (g_dwPlayMusicMode == 0 || g_nMusicDeviceRefCount == 0 || !g_bEarMusicActive) {
+    if (g_dwPlayMusicMode == 0 || g_nMusicDeviceRefCount == 0 || !g_bMusicActive) {
         return 0;
     }
     // The callback is not set and the result of the command is not checked.
@@ -53,7 +138,7 @@ bool PostCdAudioPlayNotify(int nTrack) {
     }
     g_bCdAudioPlaying = true;
     g_nCurrentMusicTrack = nTrack;
-    if (g_bEarMusicActive && g_bMusicPaused) {
+    if (g_bMusicActive && g_bMusicPaused) {
         PostMessageA(
             g_hMusicNotifyWnd, MM_MCINOTIFY, MCI_NOTIFY_SUCCESSFUL, g_dwMciCdAudioDeviceId);
     }
@@ -81,14 +166,14 @@ MCIERROR MciPlayCdTracks(HWND hWnd, unsigned char nTrack) {
 // The commands of the music do nothing without music, a user of its device, and a started
 // channel.
 static inline bool IsMusicPlaying(void) {
-    return g_dwPlayMusicMode != 0 && g_nMusicDeviceRefCount != 0 && g_bEarMusicActive;
+    return g_dwPlayMusicMode != 0 && g_nMusicDeviceRefCount != 0 && g_bMusicActive;
 }
 
 int ShutDownEarMusicChannel(void) {
     if (!IsMusicPlaying()) {
         return 1;
     }
-    g_bEarMusicActive = false;
+    g_bMusicActive = false;
     return g_pfnEarShutDownChannel(g_dwEarMusicChannel);
 }
 
@@ -164,7 +249,7 @@ bool PauseCdAudio(void) {
         return true;
     }
     g_bCdAudioPlaying = true;
-    if (!g_bEarMusicActive) {
+    if (!g_bMusicActive) {
         return true;
     }
     return SendCdAudioCommand(MCI_PAUSE);
@@ -449,7 +534,7 @@ static inline bool ReleaseEarMusicChannel(void) {
         return true;
     }
     g_nMusicDeviceRefCount--;
-    bCleared = !g_bEarMusicActive || g_pfnEarClearChannel(g_dwEarMusicChannel, 0) == 0;
+    bCleared = !g_bMusicActive || g_pfnEarClearChannel(g_dwEarMusicChannel, 0) == 0;
     if (g_nMusicDeviceRefCount == 0) {
         ShutdownEarSound();
     }

@@ -75,6 +75,7 @@ cartrominit
 carwnoshad
 carwshad
 ccmux
+cdaudio
 centered
 channelmix
 chatbar
@@ -513,6 +514,7 @@ paks
 paletteentry
 paletteindexed
 palettized
+parmsa
 pathlib
 permuter
 persp
@@ -718,6 +720,7 @@ tlnext
 tlut
 tluts
 tlvertex
+tmsf
 tolower
 toupper
 trackrender
