@@ -1,7 +1,46 @@
 #pragma once
 
+#include <windows.h>
+// The headers below need the types of windows.h.
+#include <ddraw.h>
+
 /** The pixels of an image file RGBA 5551 can hold, 256 by 256. */
 #define RGBA5551_IMAGE_PIXEL_COUNT 0x10000
+
+/** The number of entries of g_aTexturePixelFormats. */
+#define TEXTURE_PIXEL_FORMAT_COUNT 5
+
+/** A pixel format of textures the game asks for by its identifier. */
+struct TexturePixelFormat {
+    int nId;            /*!< The identifier the game asks for the format by. */
+    char abUnknown4[4]; /* +0x04 */
+    DDPIXELFORMAT ddpf; /*!< The format of the device, filled when the formats are enumerated. */
+};
+
+/**
+ * The pixel formats of textures, with the identifiers 2, 3, 4, 0xb, and 0xc.
+ *
+ * @ghidraAddress BRD3D: 0x100a6230
+ */
+extern TexturePixelFormat g_aTexturePixelFormats[TEXTURE_PIXEL_FORMAT_COUNT];
+
+/**
+ * Find a pixel format of textures by its identifier.
+ *
+ * @param nId The identifier.
+ * @return The format of the device, or null for an identifier that is not known.
+ * @ghidraAddress BRD3D: 0x10009830
+ */
+DDPIXELFORMAT *LookupPixelFormatById(int nId);
+
+/**
+ * Count the bits up to and including the highest set bit of a mask.
+ *
+ * @param nMask The mask.
+ * @return The index of the highest set bit plus one, or 0 for an empty mask.
+ * @ghidraAddress BRD3D: 0x10009880
+ */
+int CountBitWidth(unsigned nMask);
 
 /**
  * Query DirectDraw for the video memory left for textures.
@@ -45,7 +84,7 @@ void UnpackRgba5551ToRgba8(unsigned char *pDest, const unsigned short *pSrc, int
  * @param pSrc The pixels to convert.
  * @param nSize The size of the source in bytes.
  * @param nPixelFormatId The pixel format.
- * @return A count of the conversion. Its meaning is not recovered yet.
+ * @return The number of bytes written. A format of three bytes for each pixel writes none.
  * @ghidraAddress BRD3D: 0x100098a0
  */
 int ConvertRGBAToPixelFormat(void *pDest, const void *pSrc, int nSize, int nPixelFormatId);

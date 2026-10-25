@@ -11,7 +11,66 @@
 // The pixel format LoadRgba5551ImageFile() converts an image to.
 #define RGBA5551_IMAGE_PIXEL_FORMAT 0xb
 
+TexturePixelFormat g_aTexturePixelFormats[TEXTURE_PIXEL_FORMAT_COUNT] = {
+    {2, {}, {}}, {3, {}, {}}, {4, {}, {}}, {0xb, {}, {}}, {0xc, {}, {}}};
 unsigned short g_awRgba5551FileBuffer[RGBA5551_IMAGE_PIXEL_COUNT];
+
+DDPIXELFORMAT *LookupPixelFormatById(int nId) {
+    for (TexturePixelFormat &format : g_aTexturePixelFormats) {
+        if (format.nId == nId) {
+            return &format.ddpf;
+        }
+    }
+    return nullptr;
+}
+
+int CountBitWidth(unsigned nMask) {
+    int nWidth = 0;
+
+    for (; nMask != 0; nMask >>= 1) {
+        nWidth++;
+    }
+    return nWidth;
+}
+
+// A channel of 8 bits is moved by a shift that is negative for a right shift.
+static inline unsigned ShiftChannel(unsigned char nChannel, int nShift) {
+    return nShift >= 0 ? static_cast<unsigned>(nChannel) << nShift :
+                         static_cast<unsigned>(nChannel) >> -nShift;
+}
+
+int ConvertRGBAToPixelFormat(void *pDest, const void *pSrc, int nSize, int nPixelFormatId) {
+    const DDPIXELFORMAT *pFormat = LookupPixelFormatById(nPixelFormatId);
+    unsigned char *pOut = static_cast<unsigned char *>(pDest);
+    const unsigned char *pIn = static_cast<const unsigned char *>(pSrc);
+    unsigned nBytesPerPixel = pFormat->dwRGBBitCount >> 3;
+    int nRedShift = CountBitWidth(pFormat->dwRBitMask) - 8;
+    int nGreenShift = CountBitWidth(pFormat->dwGBitMask) - 8;
+    int nBlueShift = CountBitWidth(pFormat->dwBBitMask) - 8;
+    int nAlphaShift = CountBitWidth(pFormat->dwRGBAlphaBitMask) - 8;
+    unsigned nPixel;
+
+    if (nSize > 0) {
+        for (unsigned nCount = (static_cast<unsigned>(nSize) + 3) >> 2; nCount != 0; nCount--) {
+            nPixel = (ShiftChannel(pIn[0], nRedShift) & pFormat->dwRBitMask) |
+                     (ShiftChannel(pIn[1], nGreenShift) & pFormat->dwGBitMask) |
+                     (ShiftChannel(pIn[2], nBlueShift) & pFormat->dwBBitMask) |
+                     (ShiftChannel(pIn[3], nAlphaShift) & pFormat->dwRGBAlphaBitMask);
+            pIn += 4;
+            if (nBytesPerPixel == 1) {
+                *pOut = static_cast<unsigned char>(nPixel);
+                pOut += 1;
+            } else if (nBytesPerPixel == 2) {
+                memcpy(pOut, &nPixel, 2);
+                pOut += 2;
+            } else if (nBytesPerPixel == 4) {
+                memcpy(pOut, &nPixel, 4);
+                pOut += 4;
+            }
+        }
+    }
+    return static_cast<int>(pOut - static_cast<unsigned char *>(pDest));
+}
 unsigned char g_abTextureDecodeBuffer[RGBA5551_IMAGE_PIXEL_COUNT * 4];
 
 void UnpackRgba5551ToRgba8(unsigned char *pDest, const unsigned short *pSrc, int nCount) {
