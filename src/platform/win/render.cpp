@@ -202,6 +202,25 @@ void CalculateTextureDimensions(int *pWidth, int *pHeight, int nLod, int nAspect
     }
 }
 
+#if TGR_RENDERER == TGR_RENDERER_D3D
+// The bytes of a texel of the textures of Direct3D.
+#define RGBA32_BYTES_PER_TEXEL 4
+
+int ComputeMipChainByteSize(int nSmallLod, int nLargeLod, int nAspectRatio) {
+    int nWidth;
+    int nHeight;
+    int nBytes = 0;
+
+    CalculateTextureDimensions(&nWidth, &nHeight, nLargeLod, nAspectRatio);
+    for (int nLevel = nLargeLod; nLevel <= nSmallLod; nLevel++) {
+        nBytes += nHeight * nWidth * RGBA32_BYTES_PER_TEXEL;
+        nWidth >>= 1;
+        nHeight >>= 1;
+    }
+    return nBytes;
+}
+#endif
+
 void ResetRenderCommandBufferStack(void) {
     ShadowClipVertex *pNext = nullptr;
 

@@ -213,6 +213,21 @@ int GetMipLevelFromDimension(int nDimension);
  */
 void CalculateTextureDimensions(int *pWidth, int *pHeight, int nLod, int nAspectRatio);
 
+#if TGR_RENDERER == TGR_RENDERER_D3D
+/**
+ * Get the bytes of the levels of a texture of four bytes a texel from one level of detail to
+ * another, each level half the width and the height of the one before.
+ *
+ * @param nSmallLod The level of detail of the smallest level, as CalculateTextureDimensions()
+ * reads it.
+ * @param nLargeLod The level of detail of the largest level.
+ * @param nAspectRatio The aspect ratio, as CalculateTextureDimensions() reads it.
+ * @return The bytes, or 0 when the smallest level is larger than the largest.
+ * @ghidraAddress BRD3D: 0x10029e10
+ */
+int ComputeMipChainByteSize(int nSmallLod, int nLargeLod, int nAspectRatio);
+#endif
+
 /**
  * The number of vertices converted into g_afModelVertexPool.
  *
