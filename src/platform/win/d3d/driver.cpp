@@ -7,6 +7,44 @@
 DirectDrawDriver *g_pDirectDrawDriverListHead;
 DirectDrawDriver *g_pDirectDrawDriverListTail;
 
+// The name and the description a driver or a device gets when none is reported.
+#define UNKNOWN_DRIVER_TEXT "UNKNOWN"
+
+// Copy a text of a driver or a device into memory of its own.
+static inline char *CopyDriverText(const char *pszText) {
+    size_t nLength;
+    char *pszCopy;
+
+    if (pszText == nullptr) {
+        pszText = UNKNOWN_DRIVER_TEXT;
+    }
+    nLength = strlen(pszText);
+    pszCopy = static_cast<char *>(malloc(nLength + 1));
+    if (pszCopy != nullptr) {
+        strncpy(pszCopy, pszText, nLength);
+        pszCopy[nLength] = '\0';
+    }
+    return pszCopy;
+}
+
+// Take an element off a list linked through pPrev and pNext, with the head and the tail of the
+// list.
+template <typename T>
+static inline void UnlinkListNode(T *pNode, T **ppHead, T **ppTail) {
+    if (pNode->pPrev != nullptr) {
+        pNode->pPrev->pNext = pNode->pNext;
+    } else {
+        *ppHead = pNode->pNext;
+    }
+    if (pNode->pNext != nullptr) {
+        pNode->pNext->pPrev = pNode->pPrev;
+    } else {
+        *ppTail = pNode->pPrev;
+    }
+    pNode->pPrev = nullptr;
+    pNode->pNext = nullptr;
+}
+
 // Add an element to the end of a list linked through pPrev and pNext, and count it.
 template <typename T>
 static inline HRESULT AppendListNode(T *pNode, T **ppHead, T **ppTail, int *pnCount) {
@@ -147,10 +185,34 @@ HRESULT WINAPI EnumDisplayModesCallback_AddMode(DDSURFACEDESC *pDesc, LPVOID pCo
     }
     pMode->desc = *pDesc;
     // A mode that is not added is not freed.
-    if (SUCCEEDED(pEnum->pOwner->EnqueueDirectDrawModeNode(pMode))) {
+    if (SUCCEEDED(
+            static_cast<DirectDrawDriver *>(pEnum->pOwner)->EnqueueDirectDrawModeNode(pMode))) {
         pEnum->nFound++;
     }
     return DDENUMRET_OK;
+}
+
+HRESULT WINAPI EnumDeviceTextureFormatsCallback_AddFormat(DDSURFACEDESC *pDesc, LPVOID pContext) {
+    DriverEnumContext *pEnum = static_cast<DriverEnumContext *>(pContext);
+    DisplayMode *pFormat;
+
+    if (pEnum == nullptr || pEnum->pOwner == nullptr) {
+        return D3DENUMRET_OK;
+    }
+    // A description of another size stops the search.
+    if (pDesc == nullptr || pDesc->dwSize != sizeof(DDSURFACEDESC)) {
+        return D3DENUMRET_CANCEL;
+    }
+    pFormat = new (std::nothrow) DisplayMode;
+    if (pFormat == nullptr) {
+        return D3DENUMRET_OK;
+    }
+    pFormat->desc = *pDesc;
+    // A format that is not added is not freed.
+    if (SUCCEEDED(static_cast<D3DDeviceNode *>(pEnum->pOwner)->EnqueueTextureFormatNode(pFormat))) {
+        pEnum->nFound++;
+    }
+    return D3DENUMRET_OK;
 }
 
 HRESULT WINAPI EnumD3DDevicesCallback(GUID *pGuid,
@@ -172,7 +234,8 @@ HRESULT WINAPI EnumD3DDevicesCallback(GUID *pGuid,
     // A device that is not read or not added is not freed.
     if (SUCCEEDED(pDevice->InitD3DDeviceNode(
             pGuid, pszDescription, pszName, pHardwareDesc, pSoftwareDesc)) &&
-        SUCCEEDED(pEnum->pOwner->AppendDirect3DDeviceNode(pDevice))) {
+        SUCCEEDED(
+            static_cast<DirectDrawDriver *>(pEnum->pOwner)->AppendDirect3DDeviceNode(pDevice))) {
         pEnum->nFound++;
     }
     return D3DENUMRET_OK;
@@ -198,6 +261,29 @@ bool D3DDeviceNode::IsHardwareDevice() {
     return hardwareDesc.dcmColorModel != 0;
 }
 
+HRESULT D3DDeviceNode::InitD3DDeviceNode(GUID *pGuid,
+                                         LPSTR pszNewDescription,
+                                         LPSTR pszNewName,
+                                         D3DDEVICEDESC *pHardwareDesc,
+                                         D3DDEVICEDESC *pSoftwareDesc) {
+    if (pGuid == nullptr) {
+        return E_INVALIDARG;
+    }
+    guid = *pGuid;
+    pszDescription = CopyDriverText(pszNewDescription);
+    pszName = CopyDriverText(pszNewName);
+    if (pHardwareDesc != nullptr) {
+        hardwareDesc = *pHardwareDesc;
+    }
+    if (pSoftwareDesc != nullptr) {
+        softwareDesc = *pSoftwareDesc;
+    }
+    // Bit 0 marks a device that was read, and bit 1 one whose formats were found.
+    dwFlags = (dwFlags & ~2u) | 1;
+    nTextureFormatCount = 0;
+    return S_OK;
+}
+
 void D3DDeviceNode::ReleaseD3DDeviceNode() {
     FlushTextureFormatList();
     if (pszDescription != nullptr) {
@@ -212,24 +298,51 @@ void D3DDeviceNode::ReleaseD3DDeviceNode() {
     pNext = nullptr;
 }
 
-// The name and the description a driver gets when DirectDraw reports none.
-#define UNKNOWN_DRIVER_TEXT "UNKNOWN"
+HRESULT D3DDeviceNode::EnumerateDeviceTextureFormats(IDirect3DDevice2 *pD3DDevice) {
+    DriverEnumContext context = {true, 0, this};
+    HRESULT hr;
 
-// Copy a text of a driver into memory of its own.
-static inline char *CopyDriverText(const char *pszText) {
-    size_t nLength;
-    char *pszCopy;
+    if (dwFlags & 2) {
+        return S_OK;
+    }
+    if (pD3DDevice == nullptr) {
+        return RENDERER_E_NOT_CREATED;
+    }
+    hr = pD3DDevice->EnumTextureFormats(EnumDeviceTextureFormatsCallback_AddFormat, &context);
+    if (FAILED(hr)) {
+        return hr;
+    }
+    // Each format Direct3D reported must be in the list.
+    if (!context.bSucceeded || context.nFound == 0 || nTextureFormatCount != context.nFound) {
+        return RENDERER_E_NOT_IN_GDI_MODE;
+    }
+    dwFlags |= 2;
+    return S_OK;
+}
 
-    if (pszText == nullptr) {
-        pszText = UNKNOWN_DRIVER_TEXT;
+void D3DDeviceNode::FlushTextureFormatList() {
+    DisplayMode *pFormat;
+
+    if ((dwFlags & 2) == 0) {
+        return;
     }
-    nLength = strlen(pszText);
-    pszCopy = static_cast<char *>(malloc(nLength + 1));
-    if (pszCopy != nullptr) {
-        strncpy(pszCopy, pszText, nLength);
-        pszCopy[nLength] = '\0';
+    pFormat = pTextureFormatsHead;
+    while (pFormat != nullptr) {
+        DisplayMode *pNextFormat = pFormat->pNext;
+
+        UnlinkListNode(pFormat, &pTextureFormatsHead, &pTextureFormatsTail);
+        delete pFormat;
+        pFormat = pNextFormat;
     }
-    return pszCopy;
+    nTextureFormatCount = 0;
+    pTextureFormatsHead = nullptr;
+    pTextureFormatsTail = nullptr;
+    dwFlags &= ~2u;
+}
+
+HRESULT D3DDeviceNode::EnqueueTextureFormatNode(DisplayMode *pFormat) {
+    return AppendListNode(
+        pFormat, &pTextureFormatsHead, &pTextureFormatsTail, &nTextureFormatCount);
 }
 
 HRESULT DirectDrawDriver::InitializeDirectDrawDriver(GUID *pGuid,
@@ -314,24 +427,6 @@ bool DirectDrawDriver::CompareDirectDrawDriverGuid(const GUID *pGuid) {
         return (dwFlags & DIRECTDRAW_DRIVER_PRIMARY) != 0;
     }
     return memcmp(&guid, pGuid, sizeof(guid)) == 0;
-}
-
-// Take an element off a list linked through pPrev and pNext, with the head and the tail of the
-// list.
-template <typename T>
-static inline void UnlinkListNode(T *pNode, T **ppHead, T **ppTail) {
-    if (pNode->pPrev != nullptr) {
-        pNode->pPrev->pNext = pNode->pNext;
-    } else {
-        *ppHead = pNode->pNext;
-    }
-    if (pNode->pNext != nullptr) {
-        pNode->pNext->pPrev = pNode->pPrev;
-    } else {
-        *ppTail = pNode->pPrev;
-    }
-    pNode->pPrev = nullptr;
-    pNode->pNext = nullptr;
 }
 
 HRESULT DirectDrawDriver::EnumerateDisplayModes(IDirectDraw2 *pDirectDraw2) {

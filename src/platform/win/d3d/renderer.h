@@ -177,13 +177,15 @@ class D3DDeviceNode {
 public:
     unsigned dwFlags;           /*!< Flags of the device, of which bits 0 and 1 start clear. */
     GUID guid;                  /*!< The GUID of the device. */
-    char *pszName;              /*!< The name of the device, allocated. */
     char *pszDescription;       /*!< The description of the device, allocated. */
+    char *pszName;              /*!< The name of the device, allocated. */
     D3DDEVICEDESC hardwareDesc; /*!< What the hardware of the device does. */
     D3DDEVICEDESC softwareDesc; /*!< What the emulation of the device does. */
-    int anUnknown214[3];        /* +0x214 */
-    D3DDeviceNode *pPrev;       /*!< The device of the driver before. */
-    D3DDeviceNode *pNext;       /*!< The next device of the driver. */
+    int nTextureFormatCount;    /*!< The texture formats of the device. */
+    DisplayMode *pTextureFormatsHead; /*!< The first texture format, a surface description. */
+    DisplayMode *pTextureFormatsTail; /*!< The last texture format. */
+    D3DDeviceNode *pPrev;             /*!< The device of the driver before. */
+    D3DDeviceNode *pNext;             /*!< The next device of the driver. */
 
     /**
      * Release what the device holds before it is freed.
@@ -193,13 +195,15 @@ public:
     void ReleaseD3DDeviceNode();
 
     /** Start a device without texts, with empty descriptions. */
-    D3DDeviceNode() : pszName(nullptr), pszDescription(nullptr), pPrev(nullptr), pNext(nullptr) {
+    D3DDeviceNode()
+        : pszDescription(nullptr), pszName(nullptr), nTextureFormatCount(0),
+          pTextureFormatsHead(nullptr), pTextureFormatsTail(nullptr), pPrev(nullptr),
+          pNext(nullptr) {
         dwFlags &= ~3u;
         memset(&hardwareDesc, 0, sizeof(hardwareDesc));
         hardwareDesc.dwSize = sizeof(hardwareDesc);
         memset(&softwareDesc, 0, sizeof(softwareDesc));
         softwareDesc.dwSize = sizeof(softwareDesc);
-        memset(anUnknown214, 0, sizeof(anUnknown214));
     }
 
     /**
@@ -225,6 +229,15 @@ public:
      * @ghidraAddress BRD3D: 0x1001afb0
      */
     void FlushTextureFormatList();
+
+    /**
+     * Add a texture format to the end of the formats of the device.
+     *
+     * @param pFormat The format.
+     * @return `S_OK`, or `E_INVALIDARG` without a format.
+     * @ghidraAddress BRD3D: 0x1001b030
+     */
+    HRESULT EnqueueTextureFormatNode(DisplayMode *pFormat);
 
     /**
      * Whether the device is a device of the hardware, one with a colour model of its own.
@@ -824,9 +837,10 @@ extern int g_dwDirectDrawDriverCount;
 
 /** What the search of the DirectDraw drivers found. */
 struct DriverEnumContext {
-    int bSucceeded;           /*!< Whether each driver was recorded. */
-    int nFound;               /*!< The drivers DirectDraw reported. */
-    DirectDrawDriver *pOwner; /*!< The driver whose modes or devices are found, if any. */
+    int bSucceeded; /*!< Whether each driver was recorded. */
+    int nFound;     /*!< The drivers DirectDraw reported. */
+    /** The driver whose modes or devices, or the device whose formats, are found, if any. */
+    void *pOwner;
 };
 
 /**
@@ -838,6 +852,16 @@ struct DriverEnumContext {
  * @ghidraAddress BRD3D: 0x1001aa70
  */
 HRESULT WINAPI EnumDisplayModesCallback_AddMode(DDSURFACEDESC *pDesc, LPVOID pContext);
+
+/**
+ * Record a texture format of a device that Direct3D reports.
+ *
+ * @param pDesc The description of the format.
+ * @param pContext The DriverEnumContext of the search.
+ * @return Whether the search goes on.
+ * @ghidraAddress BRD3D: 0x1001ab00
+ */
+HRESULT WINAPI EnumDeviceTextureFormatsCallback_AddFormat(DDSURFACEDESC *pDesc, LPVOID pContext);
 
 /**
  * Record a Direct3D device of a driver that Direct3D reports.
