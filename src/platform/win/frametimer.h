@@ -85,12 +85,28 @@ extern LARGE_INTEGER g_liFrameTimerFrequency;
 extern DWORD g_dwFrameTickTime;
 
 /**
- * The phase of the ticks. Its meaning is not recovered yet.
+ * The entry of g_adwFrameTickIncrements of the current tick.
  *
  * @ghidraAddress BRD3D: 0x118ab12c
  * @ghidraAddress BRGlide: 0x118ee244
  */
 extern DWORD g_dwFrameTickPhase;
+
+/**
+ * The milliseconds of each tick of a period, 33, 33, and 34 to make a tenth of a second.
+ *
+ * @ghidraAddress BRD3D: 0x100bbac8
+ * @ghidraAddress BRGlide: 0x100bb2d0
+ */
+extern const DWORD g_adwFrameTickIncrements[TICKS_PER_PERIOD];
+
+/**
+ * Advance the ticks by one, the time of the current tick by the milliseconds of its phase.
+ *
+ * @ghidraAddress BRD3D: 0x10075150
+ * @ghidraAddress BRGlide: 0x1006e3b0
+ */
+void AdvanceFrameTickCounter(void);
 
 /**
  * The ticks of the frames, three for each tenth of a second.

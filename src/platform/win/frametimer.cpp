@@ -59,6 +59,16 @@ void ResetFrameTimer(void) {
         dwNow / TICK_PERIOD_MS * TICKS_PER_PERIOD + dwNow % TICK_PERIOD_MS / TICK_INTERVAL_MS;
 }
 
+const DWORD g_adwFrameTickIncrements[TICKS_PER_PERIOD] = {33, 33, 34};
+
+void AdvanceFrameTickCounter(void) {
+    if (++g_dwFrameTickPhase > TICKS_PER_PERIOD - 1) {
+        g_dwFrameTickPhase = 0;
+    }
+    g_dwFrameTickTime += g_adwFrameTickIncrements[g_dwFrameTickPhase];
+    g_dwFrameTickCounter++;
+}
+
 void ResetFrameTimerState(void) {
     g_FrameTimer.SnapshotTimerState();
     g_dwRaceFrameCounter = -1;
