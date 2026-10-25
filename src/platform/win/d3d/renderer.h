@@ -1167,6 +1167,15 @@ struct TextureEntry {
  */
 void GetTextureEntryDimensions(int *pWidth, int *pHeight, int nEntry);
 
+/**
+ * Make a texture the game loaded draw with the texture of another.
+ *
+ * @param nEntry The entry of g_pTextureEntries that takes the texture.
+ * @param nSourceEntry The entry whose texture it takes.
+ * @ghidraAddress BRD3D: 0x10024ab0
+ */
+void AliasTextureEntrySurface(int nEntry, int nSourceEntry);
+
 /** The number of entries of g_adwPrecipitationTextureIds. */
 #define PRECIPITATION_TEXTURE_COUNT 2
 

@@ -250,6 +250,10 @@ int g_adwPrecipitationTextureIds[PRECIPITATION_TEXTURE_COUNT];
 int g_dwPrecipTextureWidth;
 int g_dwPrecipTextureHeight;
 
+void AliasTextureEntrySurface(int nEntry, int nSourceEntry) {
+    g_pTextureEntries[nEntry].nTextureId = g_pTextureEntries[nSourceEntry].nTextureId;
+}
+
 void GetTextureEntryDimensions(int *pWidth, int *pHeight, int nEntry) {
     const TextureEntry &entry = g_pTextureEntries[nEntry];
     CalculateTextureDimensions(pWidth, pHeight, entry.nLod, entry.nAspectRatio);
