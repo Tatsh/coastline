@@ -24,6 +24,10 @@ file links the names the first does not to the references of DirectX 7 and 8 tha
 had in 2000 and 2001, as the Wayback Machine of archive.org captured them. The names of the pages
 of DirectX 7 are codes, so the title of each page is fetched once and kept in the cache file. The
 pages of DirectX 8 are named after the names they document.
+
+With `--wine-output`, a third tag file links the rest of the names to the lines of the headers of
+Wine that define them, at the release WINE_TAG. The names of the other tag files, and those of
+`--exclude-tags` such as the tag file of cppreference, are not linked again.
 """
 from __future__ import annotations
 
@@ -94,6 +98,19 @@ ARCHIVE_DX8_PAGE = re.compile(r'/hh/directx8_c/_dx_([a-z0-9_]+)_(?!glos\.)[a-z0-
                               re.IGNORECASE)
 # The title of an archived page that documents a name, or a method of an interface.
 ARCHIVE_TITLE = re.compile(r'<title>\s*([A-Za-z_]\w*(?:::[A-Za-z_]\w*)?)\s*</title>', re.IGNORECASE)
+# The release of Wine whose headers are linked, so that the numbers of their lines hold.
+WINE_REPOSITORY = 'https://gitlab.winehq.org/wine/wine.git'
+WINE_TAG = 'wine-11.0'
+WINE_HEADERS = 'include'
+# The definitions in a header of Wine.
+WINE_INTERFACE = re.compile(r'\bDECLARE_INTERFACE_?\(\s*(\w+)')
+WINE_METHOD = re.compile(r'\bSTDMETHOD_?\(\s*(?:[^,()]+,\s*)?(\w+)\s*\)')
+WINE_BLOCK = re.compile(r'\btypedef\s+(struct|union|enum)\b[^;{]*\{')
+WINE_ENUMERATOR = re.compile(r'^\s*([A-Za-z_]\w*)\s*(?:=[^,\n]*)?,?\s*$', re.MULTILINE)
+WINE_FUNCTION_TYPE = re.compile(r'\btypedef\b[^;{]*?\(\s*(?:\w+\s+)*\*\s*(\w+)\s*\)\s*\(')
+WINE_TYPEDEF = re.compile(r'\btypedef\b([^;{()]*);')
+WINE_DEFINE = re.compile(r'^\s*#\s*define\s+(\w+)', re.MULTILINE)
+WINE_TYPE_WORDS = {'const', 'enum', 'signed', 'struct', 'union', 'unsigned', 'volatile', 'FAR', 'NEAR'}
 # The pause between two requests to archive.org, in seconds, and the tries of a request.
 ARCHIVE_PAUSE = 1.0
 ARCHIVE_TRIES = 5
@@ -297,6 +314,125 @@ def archive_tagfile(pages: dict[str, str], dx8: dict[str, str], free: set[str],
   return tagfile
 
 
+def blank_comments(text: str) -> str:
+  """Replace the comments of a header with spaces, keeping the numbers of its lines."""
+  return re.sub(r'/\*.*?\*/|//[^\n]*', lambda match: re.sub(r'[^\n]', ' ', match.group(0)), text,
+                flags=re.DOTALL)
+
+
+def wine_definitions(wine: Path) -> tuple[dict[str, tuple[str, str, int]], dict[str, dict[str, int]]]:
+  """
+  Map each name the headers of Wine define to its kind, its header, and its line, and each
+  interface to the lines of its methods.
+  """
+  if not (wine / '.git').exists():
+    subprocess.run([
+        'git', 'clone', '--quiet', '--filter=blob:none', '--no-checkout', '--depth', '1',
+        '--branch', WINE_TAG, WINE_REPOSITORY,
+        str(wine)
+    ],
+                   check=True)
+    subprocess.run(
+        ['git', '-C', str(wine), 'sparse-checkout', 'set', '--no-cone', f'/{WINE_HEADERS}/'],
+        check=True,
+        capture_output=True)
+    git(wine, 'checkout', '--quiet')
+  names: dict[str, tuple[str, str, int]] = {}
+  methods: dict[str, dict[str, int]] = {}
+  aliases: dict[str, str] = {}
+  for path in sorted((wine / WINE_HEADERS).glob('*.h')):
+    header = path.name
+    code = blank_comments(path.read_text(encoding='utf-8', errors='replace'))
+
+    def line(offset: int) -> int:
+      return code.count('\n', 0, offset) + 1
+
+    def define(name: str, kind: str, offset: int) -> None:
+      names.setdefault(name, (kind, header, line(offset)))
+
+    for match in WINE_INTERFACE.finditer(code):
+      # The definition of the macro itself names its parameter.
+      if code[code.rfind('\n', 0, match.start()) + 1:match.start()].lstrip().startswith('#'):
+        continue
+      interface = match.group(1)
+      define(interface, 'class', match.start())
+      end = code.find('};', match.end())
+      for method in WINE_METHOD.finditer(code, match.end(), end if end >= 0 else len(code)):
+        methods.setdefault(interface, {}).setdefault(method.group(1), line(method.start()))
+    for match in WINE_BLOCK.finditer(code):
+      depth, position = 0, match.end() - 1
+      while position < len(code):
+        depth += {'{': 1, '}': -1}.get(code[position], 0)
+        if depth == 0:
+          break
+        position += 1
+      end = code.find(';', position)
+      kind = 'struct' if match.group(1) in ('struct', 'union') else 'enumeration'
+      declarators = re.sub(r'^\s*#.*$', '', code[position + 1:end], flags=re.MULTILINE)
+      for declarator in declarators.split(','):
+        if words := re.findall(r'[A-Za-z_]\w*', declarator):
+          define(words[-1], kind if '*' not in declarator else 'typedef', match.start())
+      if kind == 'enumeration':
+        body = code[match.end():position]
+        for enumerator in WINE_ENUMERATOR.finditer(body):
+          define(enumerator.group(1), 'enumvalue', match.end() + enumerator.start(1))
+    for match in WINE_FUNCTION_TYPE.finditer(code):
+      define(match.group(1), 'typedef', match.start())
+    for match in WINE_TYPEDEF.finditer(code):
+      for declarator in match.group(1).split(','):
+        words = [word for word in re.findall(r'[A-Za-z_]\w*', declarator) if word not in WINE_TYPE_WORDS]
+        if len(words) > 1 or (words and declarator.strip().startswith('*')):
+          define(words[-1], 'typedef', match.start())
+          # The ANSI or wide name of an interface is a typedef of the interface itself.
+          if len(words) == 2 and '*' not in declarator:
+            aliases.setdefault(words[1], words[0])
+    for match in WINE_DEFINE.finditer(code):
+      define(match.group(1), 'define', match.start(1))
+  for alias, interface in aliases.items():
+    if names.get(alias, ('',))[0] == 'typedef' and names.get(interface, ('',))[0] == 'class':
+      names[alias] = names[interface]
+      methods[alias] = methods.get(interface, {})
+  return names, methods
+
+
+def wine_tagfile(wine: Path, free: set[str], identifiers: set[str], linked: set[str]) -> ET.Element:
+  """The tag file of the definitions in the headers of Wine of the names no other tag file links."""
+  names, methods = wine_definitions(wine)
+  tagfile = ET.Element('tagfile')
+  members: defaultdict[str, list[tuple[str, str, int]]] = defaultdict(list)
+  for name in sorted(free - linked):
+    # Wine defines keywords and the parameters of its macros as macros too, and the API has no
+    # name of lowercase letters alone.
+    if name not in names or name.islower() or name.startswith('__'):
+      continue
+    kind, header, number = names[name]
+    if kind in ('class', 'struct'):
+      compound = ET.SubElement(tagfile, 'compound', kind=kind)
+      ET.SubElement(compound, 'name').text = name
+      ET.SubElement(compound, 'filename').text = f'{header}#L{number}'
+      for method, method_line in sorted(methods.get(name, {}).items()):
+        if method in identifiers:
+          add_member(compound, 'function', method, header, f'L{method_line}', suffix='')
+    else:
+      members[header].append((kind, name, number))
+  for header, entries in sorted(members.items()):
+    compound = ET.SubElement(tagfile, 'compound', kind='file')
+    ET.SubElement(compound, 'name').text = f'wine/{header}'
+    ET.SubElement(compound, 'filename').text = header
+    for kind, name, number in entries:
+      add_member(compound, kind, name, header, f'L{number}', suffix='')
+  return tagfile
+
+
+def tag_names(path: Path) -> set[str]:
+  """The names of a tag file, without the scopes of its members."""
+  return {
+      element.text.rpartition('::')[2]
+      for element in ET.parse(path).iter('name')
+      if element.text
+  }
+
+
 def data_types() -> set[str]:
   """The types the page of the Windows data types has a row for."""
   with urllib.request.urlopen(DATA_TYPES_URL, timeout=60) as response:
@@ -330,9 +466,22 @@ def main() -> int:
   parser.add_argument('--archive-cache',
                       type=Path,
                       help='the file that keeps the titles of the archived pages between runs')
+  parser.add_argument('--wine-output',
+                      type=Path,
+                      help='the tag file of the definitions in the headers of Wine to write')
+  parser.add_argument('--wine',
+                      type=Path,
+                      help='a clone of the headers of Wine, made there when absent')
+  parser.add_argument('--exclude-tags',
+                      type=Path,
+                      nargs='*',
+                      default=[],
+                      help='tag files whose names the tag file of Wine does not link')
   args = parser.parse_args()
   if args.archive_output and not args.archive_cache:
     parser.error('--archive-output needs --archive-cache')
+  if args.wine_output and not args.wine:
+    parser.error('--wine-output needs --wine')
   declared = declared_names(args.declarations)
   free, identifiers = source_identifiers(args.sources)
   # A method links only in the scope of its interface, so a method of the game of the same name
@@ -416,10 +565,15 @@ def main() -> int:
       add_member(compound, 'function' if name[0].islower() else 'typedef', name,
                  PAGES_OF_NAMES[name])
   write_tagfile(tagfile, args.output)
+  linked = tag_names(args.output)
   if args.archive_output:
-    linked = set(links) | set(types) | set(handles)
     pages, dx8 = archive_pages(args.archive_cache)
     write_tagfile(archive_tagfile(pages, dx8, free, identifiers, linked), args.archive_output)
+    linked |= tag_names(args.archive_output)
+  if args.wine_output:
+    for path in args.exclude_tags:
+      linked |= tag_names(path)
+    write_tagfile(wine_tagfile(args.wine, free, identifiers, linked), args.wine_output)
   return 0
 
 

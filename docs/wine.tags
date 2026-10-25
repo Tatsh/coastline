@@ -1,0 +1,3743 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<tagfile>
+  <compound kind="struct">
+    <name>D3DCLIPSTATUS</name>
+    <filename>d3dtypes.h#L1185</filename>
+  </compound>
+  <compound kind="struct">
+    <name>D3DDEVICEDESC</name>
+    <filename>d3dcaps.h#L197</filename>
+  </compound>
+  <compound kind="struct">
+    <name>D3DMATERIAL</name>
+    <filename>d3dtypes.h#L491</filename>
+  </compound>
+  <compound kind="struct">
+    <name>D3DTLVERTEX</name>
+    <filename>d3dtypes.h#L210</filename>
+  </compound>
+  <compound kind="struct">
+    <name>D3DVIEWPORT2</name>
+    <filename>d3dtypes.h#L364</filename>
+  </compound>
+  <compound kind="struct">
+    <name>DPLCONNECTION</name>
+    <filename>dplay.h#L282</filename>
+  </compound>
+  <compound kind="struct">
+    <name>DPMSG_CREATEPLAYERORGROUP</name>
+    <filename>dplay.h#L1159</filename>
+  </compound>
+  <compound kind="struct">
+    <name>DPMSG_DESTROYPLAYERORGROUP</name>
+    <filename>dplay.h#L1175</filename>
+  </compound>
+  <compound kind="struct">
+    <name>DPMSG_GENERIC</name>
+    <filename>dplay.h#L1152</filename>
+  </compound>
+  <compound kind="struct">
+    <name>DPMSG_SECUREMESSAGE</name>
+    <filename>dplay.h#L1233</filename>
+  </compound>
+  <compound kind="struct">
+    <name>DPNAME</name>
+    <filename>dplay.h#L186</filename>
+  </compound>
+  <compound kind="struct">
+    <name>DPSESSIONDESC2</name>
+    <filename>dplay.h#L230</filename>
+  </compound>
+  <compound kind="class">
+    <name>IDirect3D2</name>
+    <filename>d3d.h#L254</filename>
+    <member kind="function">
+      <type />
+      <name>AddRef</name>
+      <anchorfile>d3d.h</anchorfile>
+      <anchor>L258</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>CreateDevice</name>
+      <anchorfile>d3d.h</anchorfile>
+      <anchor>L266</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>CreateMaterial</name>
+      <anchorfile>d3d.h</anchorfile>
+      <anchor>L263</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>CreateViewport</name>
+      <anchorfile>d3d.h</anchorfile>
+      <anchor>L264</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>EnumDevices</name>
+      <anchorfile>d3d.h</anchorfile>
+      <anchor>L261</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>QueryInterface</name>
+      <anchorfile>d3d.h</anchorfile>
+      <anchor>L257</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>Release</name>
+      <anchorfile>d3d.h</anchorfile>
+      <anchor>L259</anchor>
+      <arglist>()</arglist>
+    </member>
+  </compound>
+  <compound kind="class">
+    <name>IDirect3DDevice2</name>
+    <filename>d3d.h#L1022</filename>
+    <member kind="function">
+      <type />
+      <name>AddRef</name>
+      <anchorfile>d3d.h</anchorfile>
+      <anchor>L1026</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>AddViewport</name>
+      <anchorfile>d3d.h</anchorfile>
+      <anchor>L1032</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>BeginScene</name>
+      <anchorfile>d3d.h</anchorfile>
+      <anchor>L1037</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>DeleteViewport</name>
+      <anchorfile>d3d.h</anchorfile>
+      <anchor>L1033</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>DrawIndexedPrimitive</name>
+      <anchorfile>d3d.h</anchorfile>
+      <anchor>L1060</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>DrawPrimitive</name>
+      <anchorfile>d3d.h</anchorfile>
+      <anchor>L1058</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>EndScene</name>
+      <anchorfile>d3d.h</anchorfile>
+      <anchor>L1038</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>EnumTextureFormats</name>
+      <anchorfile>d3d.h</anchorfile>
+      <anchor>L1036</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>GetCaps</name>
+      <anchorfile>d3d.h</anchorfile>
+      <anchor>L1029</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>GetRenderTarget</name>
+      <anchorfile>d3d.h</anchorfile>
+      <anchor>L1044</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>QueryInterface</name>
+      <anchorfile>d3d.h</anchorfile>
+      <anchor>L1025</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>Release</name>
+      <anchorfile>d3d.h</anchorfile>
+      <anchor>L1027</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>SetClipStatus</name>
+      <anchorfile>d3d.h</anchorfile>
+      <anchor>L1062</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>SetCurrentViewport</name>
+      <anchorfile>d3d.h</anchorfile>
+      <anchor>L1041</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>SetRenderState</name>
+      <anchorfile>d3d.h</anchorfile>
+      <anchor>L1052</anchor>
+      <arglist>()</arglist>
+    </member>
+  </compound>
+  <compound kind="class">
+    <name>IDirect3DMaterial2</name>
+    <filename>d3d.h#L490</filename>
+    <member kind="function">
+      <type />
+      <name>AddRef</name>
+      <anchorfile>d3d.h</anchorfile>
+      <anchor>L494</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>GetHandle</name>
+      <anchorfile>d3d.h</anchorfile>
+      <anchor>L499</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>QueryInterface</name>
+      <anchorfile>d3d.h</anchorfile>
+      <anchor>L493</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>Release</name>
+      <anchorfile>d3d.h</anchorfile>
+      <anchor>L495</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>SetMaterial</name>
+      <anchorfile>d3d.h</anchorfile>
+      <anchor>L497</anchor>
+      <arglist>()</arglist>
+    </member>
+  </compound>
+  <compound kind="class">
+    <name>IDirect3DTexture2</name>
+    <filename>d3d.h#L610</filename>
+    <member kind="function">
+      <type />
+      <name>AddRef</name>
+      <anchorfile>d3d.h</anchorfile>
+      <anchor>L614</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>GetHandle</name>
+      <anchorfile>d3d.h</anchorfile>
+      <anchor>L617</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>Load</name>
+      <anchorfile>d3d.h</anchorfile>
+      <anchor>L619</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>QueryInterface</name>
+      <anchorfile>d3d.h</anchorfile>
+      <anchor>L613</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>Release</name>
+      <anchorfile>d3d.h</anchorfile>
+      <anchor>L615</anchor>
+      <arglist>()</arglist>
+    </member>
+  </compound>
+  <compound kind="class">
+    <name>IDirect3DViewport2</name>
+    <filename>d3d.h#L716</filename>
+    <member kind="function">
+      <type />
+      <name>AddRef</name>
+      <anchorfile>d3d.h</anchorfile>
+      <anchor>L720</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>Clear</name>
+      <anchorfile>d3d.h</anchorfile>
+      <anchor>L732</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>Initialize</name>
+      <anchorfile>d3d.h</anchorfile>
+      <anchor>L723</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>QueryInterface</name>
+      <anchorfile>d3d.h</anchorfile>
+      <anchor>L719</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>Release</name>
+      <anchorfile>d3d.h</anchorfile>
+      <anchor>L721</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>SetBackground</name>
+      <anchorfile>d3d.h</anchorfile>
+      <anchor>L728</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>SetViewport2</name>
+      <anchorfile>d3d.h</anchorfile>
+      <anchor>L738</anchor>
+      <arglist>()</arglist>
+    </member>
+  </compound>
+  <compound kind="class">
+    <name>IDirectDraw</name>
+    <filename>ddraw.h#L1364</filename>
+    <member kind="function">
+      <type />
+      <name>AddRef</name>
+      <anchorfile>ddraw.h</anchorfile>
+      <anchor>L1368</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>CreatePalette</name>
+      <anchorfile>ddraw.h</anchorfile>
+      <anchor>L1373</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>CreateSurface</name>
+      <anchorfile>ddraw.h</anchorfile>
+      <anchor>L1375</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>EnumDisplayModes</name>
+      <anchorfile>ddraw.h</anchorfile>
+      <anchor>L1379</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>FlipToGDISurface</name>
+      <anchorfile>ddraw.h</anchorfile>
+      <anchor>L1383</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>GetCaps</name>
+      <anchorfile>ddraw.h</anchorfile>
+      <anchor>L1384</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>Initialize</name>
+      <anchorfile>ddraw.h</anchorfile>
+      <anchor>L1391</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>QueryInterface</name>
+      <anchorfile>ddraw.h</anchorfile>
+      <anchor>L1367</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>Release</name>
+      <anchorfile>ddraw.h</anchorfile>
+      <anchor>L1369</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>RestoreDisplayMode</name>
+      <anchorfile>ddraw.h</anchorfile>
+      <anchor>L1392</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>SetCooperativeLevel</name>
+      <anchorfile>ddraw.h</anchorfile>
+      <anchor>L1393</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>SetDisplayMode</name>
+      <anchorfile>ddraw.h</anchorfile>
+      <anchor>L1394</anchor>
+      <arglist>()</arglist>
+    </member>
+  </compound>
+  <compound kind="class">
+    <name>IDirectDraw2</name>
+    <filename>ddraw.h#L1476</filename>
+    <member kind="function">
+      <type />
+      <name>AddRef</name>
+      <anchorfile>ddraw.h</anchorfile>
+      <anchor>L1480</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>CreatePalette</name>
+      <anchorfile>ddraw.h</anchorfile>
+      <anchor>L1485</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>CreateSurface</name>
+      <anchorfile>ddraw.h</anchorfile>
+      <anchor>L1487</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>EnumDisplayModes</name>
+      <anchorfile>ddraw.h</anchorfile>
+      <anchor>L1491</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>FlipToGDISurface</name>
+      <anchorfile>ddraw.h</anchorfile>
+      <anchor>L1495</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>GetAvailableVidMem</name>
+      <anchorfile>ddraw.h</anchorfile>
+      <anchor>L1509</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>GetCaps</name>
+      <anchorfile>ddraw.h</anchorfile>
+      <anchor>L1496</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>Initialize</name>
+      <anchorfile>ddraw.h</anchorfile>
+      <anchor>L1503</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>QueryInterface</name>
+      <anchorfile>ddraw.h</anchorfile>
+      <anchor>L1479</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>Release</name>
+      <anchorfile>ddraw.h</anchorfile>
+      <anchor>L1481</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>RestoreDisplayMode</name>
+      <anchorfile>ddraw.h</anchorfile>
+      <anchor>L1504</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>SetCooperativeLevel</name>
+      <anchorfile>ddraw.h</anchorfile>
+      <anchor>L1505</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>SetDisplayMode</name>
+      <anchorfile>ddraw.h</anchorfile>
+      <anchor>L1506</anchor>
+      <arglist>()</arglist>
+    </member>
+  </compound>
+  <compound kind="class">
+    <name>IDirectDrawSurface</name>
+    <filename>ddraw.h#L1924</filename>
+    <member kind="function">
+      <type />
+      <name>AddAttachedSurface</name>
+      <anchorfile>ddraw.h</anchorfile>
+      <anchor>L1931</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>AddRef</name>
+      <anchorfile>ddraw.h</anchorfile>
+      <anchor>L1928</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>BltFast</name>
+      <anchorfile>ddraw.h</anchorfile>
+      <anchor>L1936</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>DeleteAttachedSurface</name>
+      <anchorfile>ddraw.h</anchorfile>
+      <anchor>L1938</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>Flip</name>
+      <anchorfile>ddraw.h</anchorfile>
+      <anchor>L1941</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>GetAttachedSurface</name>
+      <anchorfile>ddraw.h</anchorfile>
+      <anchor>L1942</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>GetCaps</name>
+      <anchorfile>ddraw.h</anchorfile>
+      <anchor>L1944</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>GetDC</name>
+      <anchorfile>ddraw.h</anchorfile>
+      <anchor>L1947</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>GetFlipStatus</name>
+      <anchorfile>ddraw.h</anchorfile>
+      <anchor>L1948</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>GetSurfaceDesc</name>
+      <anchorfile>ddraw.h</anchorfile>
+      <anchor>L1952</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>Initialize</name>
+      <anchorfile>ddraw.h</anchorfile>
+      <anchor>L1953</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>IsLost</name>
+      <anchorfile>ddraw.h</anchorfile>
+      <anchor>L1954</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>Lock</name>
+      <anchorfile>ddraw.h</anchorfile>
+      <anchor>L1955</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>QueryInterface</name>
+      <anchorfile>ddraw.h</anchorfile>
+      <anchor>L1927</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>Release</name>
+      <anchorfile>ddraw.h</anchorfile>
+      <anchor>L1929</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>ReleaseDC</name>
+      <anchorfile>ddraw.h</anchorfile>
+      <anchor>L1956</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>Restore</name>
+      <anchorfile>ddraw.h</anchorfile>
+      <anchor>L1957</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>SetColorKey</name>
+      <anchorfile>ddraw.h</anchorfile>
+      <anchor>L1959</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>SetPalette</name>
+      <anchorfile>ddraw.h</anchorfile>
+      <anchor>L1961</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>Unlock</name>
+      <anchorfile>ddraw.h</anchorfile>
+      <anchor>L1962</anchor>
+      <arglist>()</arglist>
+    </member>
+  </compound>
+  <compound kind="class">
+    <name>IDirectDrawSurface2</name>
+    <filename>ddraw.h#L2058</filename>
+    <member kind="function">
+      <type />
+      <name>AddAttachedSurface</name>
+      <anchorfile>ddraw.h</anchorfile>
+      <anchor>L2065</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>AddRef</name>
+      <anchorfile>ddraw.h</anchorfile>
+      <anchor>L2062</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>BltFast</name>
+      <anchorfile>ddraw.h</anchorfile>
+      <anchor>L2070</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>DeleteAttachedSurface</name>
+      <anchorfile>ddraw.h</anchorfile>
+      <anchor>L2072</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>Flip</name>
+      <anchorfile>ddraw.h</anchorfile>
+      <anchor>L2075</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>GetAttachedSurface</name>
+      <anchorfile>ddraw.h</anchorfile>
+      <anchor>L2076</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>GetCaps</name>
+      <anchorfile>ddraw.h</anchorfile>
+      <anchor>L2078</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>GetDC</name>
+      <anchorfile>ddraw.h</anchorfile>
+      <anchor>L2081</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>GetDDInterface</name>
+      <anchorfile>ddraw.h</anchorfile>
+      <anchor>L2102</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>GetFlipStatus</name>
+      <anchorfile>ddraw.h</anchorfile>
+      <anchor>L2082</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>GetSurfaceDesc</name>
+      <anchorfile>ddraw.h</anchorfile>
+      <anchor>L2086</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>Initialize</name>
+      <anchorfile>ddraw.h</anchorfile>
+      <anchor>L2087</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>IsLost</name>
+      <anchorfile>ddraw.h</anchorfile>
+      <anchor>L2088</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>Lock</name>
+      <anchorfile>ddraw.h</anchorfile>
+      <anchor>L2089</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>QueryInterface</name>
+      <anchorfile>ddraw.h</anchorfile>
+      <anchor>L2061</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>Release</name>
+      <anchorfile>ddraw.h</anchorfile>
+      <anchor>L2063</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>ReleaseDC</name>
+      <anchorfile>ddraw.h</anchorfile>
+      <anchor>L2090</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>Restore</name>
+      <anchorfile>ddraw.h</anchorfile>
+      <anchor>L2091</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>SetColorKey</name>
+      <anchorfile>ddraw.h</anchorfile>
+      <anchor>L2093</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>SetPalette</name>
+      <anchorfile>ddraw.h</anchorfile>
+      <anchor>L2095</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>Unlock</name>
+      <anchorfile>ddraw.h</anchorfile>
+      <anchor>L2096</anchor>
+      <arglist>()</arglist>
+    </member>
+  </compound>
+  <compound kind="class">
+    <name>IDirectDrawSurface3</name>
+    <filename>ddraw.h#L2204</filename>
+    <member kind="function">
+      <type />
+      <name>AddAttachedSurface</name>
+      <anchorfile>ddraw.h</anchorfile>
+      <anchor>L2211</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>AddRef</name>
+      <anchorfile>ddraw.h</anchorfile>
+      <anchor>L2208</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>BltFast</name>
+      <anchorfile>ddraw.h</anchorfile>
+      <anchor>L2216</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>DeleteAttachedSurface</name>
+      <anchorfile>ddraw.h</anchorfile>
+      <anchor>L2218</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>Flip</name>
+      <anchorfile>ddraw.h</anchorfile>
+      <anchor>L2221</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>GetAttachedSurface</name>
+      <anchorfile>ddraw.h</anchorfile>
+      <anchor>L2222</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>GetCaps</name>
+      <anchorfile>ddraw.h</anchorfile>
+      <anchor>L2224</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>GetDC</name>
+      <anchorfile>ddraw.h</anchorfile>
+      <anchor>L2227</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>GetDDInterface</name>
+      <anchorfile>ddraw.h</anchorfile>
+      <anchor>L2248</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>GetFlipStatus</name>
+      <anchorfile>ddraw.h</anchorfile>
+      <anchor>L2228</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>GetSurfaceDesc</name>
+      <anchorfile>ddraw.h</anchorfile>
+      <anchor>L2232</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>Initialize</name>
+      <anchorfile>ddraw.h</anchorfile>
+      <anchor>L2233</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>IsLost</name>
+      <anchorfile>ddraw.h</anchorfile>
+      <anchor>L2234</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>Lock</name>
+      <anchorfile>ddraw.h</anchorfile>
+      <anchor>L2235</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>QueryInterface</name>
+      <anchorfile>ddraw.h</anchorfile>
+      <anchor>L2207</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>Release</name>
+      <anchorfile>ddraw.h</anchorfile>
+      <anchor>L2209</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>ReleaseDC</name>
+      <anchorfile>ddraw.h</anchorfile>
+      <anchor>L2236</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>Restore</name>
+      <anchorfile>ddraw.h</anchorfile>
+      <anchor>L2237</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>SetColorKey</name>
+      <anchorfile>ddraw.h</anchorfile>
+      <anchor>L2239</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>SetPalette</name>
+      <anchorfile>ddraw.h</anchorfile>
+      <anchor>L2241</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>Unlock</name>
+      <anchorfile>ddraw.h</anchorfile>
+      <anchor>L2242</anchor>
+      <arglist>()</arglist>
+    </member>
+  </compound>
+  <compound kind="class">
+    <name>IDirectDrawSurface4</name>
+    <filename>ddraw.h#L2355</filename>
+    <member kind="function">
+      <type />
+      <name>AddAttachedSurface</name>
+      <anchorfile>ddraw.h</anchorfile>
+      <anchor>L2362</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>AddRef</name>
+      <anchorfile>ddraw.h</anchorfile>
+      <anchor>L2359</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>BltFast</name>
+      <anchorfile>ddraw.h</anchorfile>
+      <anchor>L2367</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>DeleteAttachedSurface</name>
+      <anchorfile>ddraw.h</anchorfile>
+      <anchor>L2369</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>Flip</name>
+      <anchorfile>ddraw.h</anchorfile>
+      <anchor>L2372</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>GetAttachedSurface</name>
+      <anchorfile>ddraw.h</anchorfile>
+      <anchor>L2373</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>GetCaps</name>
+      <anchorfile>ddraw.h</anchorfile>
+      <anchor>L2375</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>GetDC</name>
+      <anchorfile>ddraw.h</anchorfile>
+      <anchor>L2378</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>GetDDInterface</name>
+      <anchorfile>ddraw.h</anchorfile>
+      <anchor>L2399</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>GetFlipStatus</name>
+      <anchorfile>ddraw.h</anchorfile>
+      <anchor>L2379</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>GetSurfaceDesc</name>
+      <anchorfile>ddraw.h</anchorfile>
+      <anchor>L2383</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>Initialize</name>
+      <anchorfile>ddraw.h</anchorfile>
+      <anchor>L2384</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>IsLost</name>
+      <anchorfile>ddraw.h</anchorfile>
+      <anchor>L2385</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>Lock</name>
+      <anchorfile>ddraw.h</anchorfile>
+      <anchor>L2386</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>QueryInterface</name>
+      <anchorfile>ddraw.h</anchorfile>
+      <anchor>L2358</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>Release</name>
+      <anchorfile>ddraw.h</anchorfile>
+      <anchor>L2360</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>ReleaseDC</name>
+      <anchorfile>ddraw.h</anchorfile>
+      <anchor>L2387</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>Restore</name>
+      <anchorfile>ddraw.h</anchorfile>
+      <anchor>L2388</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>SetColorKey</name>
+      <anchorfile>ddraw.h</anchorfile>
+      <anchor>L2390</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>SetPalette</name>
+      <anchorfile>ddraw.h</anchorfile>
+      <anchor>L2392</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>Unlock</name>
+      <anchorfile>ddraw.h</anchorfile>
+      <anchor>L2393</anchor>
+      <arglist>()</arglist>
+    </member>
+  </compound>
+  <compound kind="class">
+    <name>IDirectInputA</name>
+    <filename>dinput.h#L2271</filename>
+    <member kind="function">
+      <type />
+      <name>AddRef</name>
+      <anchorfile>dinput.h</anchorfile>
+      <anchor>L2275</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>CreateDevice</name>
+      <anchorfile>dinput.h</anchorfile>
+      <anchor>L2278</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>EnumDevices</name>
+      <anchorfile>dinput.h</anchorfile>
+      <anchor>L2279</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>Initialize</name>
+      <anchorfile>dinput.h</anchorfile>
+      <anchor>L2282</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>QueryInterface</name>
+      <anchorfile>dinput.h</anchorfile>
+      <anchor>L2274</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>Release</name>
+      <anchorfile>dinput.h</anchorfile>
+      <anchor>L2276</anchor>
+      <arglist>()</arglist>
+    </member>
+  </compound>
+  <compound kind="class">
+    <name>IDirectInputDevice2A</name>
+    <filename>dinput.h#L1656</filename>
+    <member kind="function">
+      <type />
+      <name>Acquire</name>
+      <anchorfile>dinput.h</anchorfile>
+      <anchor>L1667</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>AddRef</name>
+      <anchorfile>dinput.h</anchorfile>
+      <anchor>L1660</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>CreateEffect</name>
+      <anchorfile>dinput.h</anchorfile>
+      <anchor>L1679</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>GetDeviceState</name>
+      <anchorfile>dinput.h</anchorfile>
+      <anchor>L1669</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>Initialize</name>
+      <anchorfile>dinput.h</anchorfile>
+      <anchor>L1677</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>Poll</name>
+      <anchorfile>dinput.h</anchorfile>
+      <anchor>L1686</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>QueryInterface</name>
+      <anchorfile>dinput.h</anchorfile>
+      <anchor>L1659</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>Release</name>
+      <anchorfile>dinput.h</anchorfile>
+      <anchor>L1661</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>SetCooperativeLevel</name>
+      <anchorfile>dinput.h</anchorfile>
+      <anchor>L1673</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>SetDataFormat</name>
+      <anchorfile>dinput.h</anchorfile>
+      <anchor>L1671</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>SetProperty</name>
+      <anchorfile>dinput.h</anchorfile>
+      <anchor>L1666</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>Unacquire</name>
+      <anchorfile>dinput.h</anchorfile>
+      <anchor>L1668</anchor>
+      <arglist>()</arglist>
+    </member>
+  </compound>
+  <compound kind="class">
+    <name>IDirectInputDeviceA</name>
+    <filename>dinput.h#L1553</filename>
+    <member kind="function">
+      <type />
+      <name>Acquire</name>
+      <anchorfile>dinput.h</anchorfile>
+      <anchor>L1564</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>AddRef</name>
+      <anchorfile>dinput.h</anchorfile>
+      <anchor>L1557</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>GetDeviceState</name>
+      <anchorfile>dinput.h</anchorfile>
+      <anchor>L1566</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>Initialize</name>
+      <anchorfile>dinput.h</anchorfile>
+      <anchor>L1574</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>QueryInterface</name>
+      <anchorfile>dinput.h</anchorfile>
+      <anchor>L1556</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>Release</name>
+      <anchorfile>dinput.h</anchorfile>
+      <anchor>L1558</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>SetCooperativeLevel</name>
+      <anchorfile>dinput.h</anchorfile>
+      <anchor>L1570</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>SetDataFormat</name>
+      <anchorfile>dinput.h</anchorfile>
+      <anchor>L1568</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>SetProperty</name>
+      <anchorfile>dinput.h</anchorfile>
+      <anchor>L1563</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>Unacquire</name>
+      <anchorfile>dinput.h</anchorfile>
+      <anchor>L1565</anchor>
+      <arglist>()</arglist>
+    </member>
+  </compound>
+  <compound kind="class">
+    <name>IDirectInputEffect</name>
+    <filename>dinput.h#L1494</filename>
+    <member kind="function">
+      <type />
+      <name>AddRef</name>
+      <anchorfile>dinput.h</anchorfile>
+      <anchor>L1498</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>Initialize</name>
+      <anchorfile>dinput.h</anchorfile>
+      <anchor>L1501</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>QueryInterface</name>
+      <anchorfile>dinput.h</anchorfile>
+      <anchor>L1497</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>Release</name>
+      <anchorfile>dinput.h</anchorfile>
+      <anchor>L1499</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>SetParameters</name>
+      <anchorfile>dinput.h</anchorfile>
+      <anchor>L1504</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>Stop</name>
+      <anchorfile>dinput.h</anchorfile>
+      <anchor>L1506</anchor>
+      <arglist>()</arglist>
+    </member>
+  </compound>
+  <compound kind="class">
+    <name>IDirectPlay3A</name>
+    <filename>dplay.h#L650</filename>
+    <member kind="function">
+      <type />
+      <name>AddRef</name>
+      <anchorfile>dplay.h</anchorfile>
+      <anchor>L654</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>Close</name>
+      <anchorfile>dplay.h</anchorfile>
+      <anchor>L658</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>CreatePlayer</name>
+      <anchorfile>dplay.h</anchorfile>
+      <anchor>L660</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>DestroyPlayer</name>
+      <anchorfile>dplay.h</anchorfile>
+      <anchor>L663</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>EnumConnections</name>
+      <anchorfile>dplay.h</anchorfile>
+      <anchor>L690</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>GetCaps</name>
+      <anchorfile>dplay.h</anchorfile>
+      <anchor>L668</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>GetPlayerAddress</name>
+      <anchorfile>dplay.h</anchorfile>
+      <anchor>L672</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>GetSessionDesc</name>
+      <anchorfile>dplay.h</anchorfile>
+      <anchor>L676</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>Initialize</name>
+      <anchorfile>dplay.h</anchorfile>
+      <anchor>L677</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>QueryInterface</name>
+      <anchorfile>dplay.h</anchorfile>
+      <anchor>L653</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>Receive</name>
+      <anchorfile>dplay.h</anchorfile>
+      <anchor>L679</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>Release</name>
+      <anchorfile>dplay.h</anchorfile>
+      <anchor>L655</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>Send</name>
+      <anchorfile>dplay.h</anchorfile>
+      <anchor>L680</anchor>
+      <arglist>()</arglist>
+    </member>
+  </compound>
+  <compound kind="class">
+    <name>IDirectPlayLobby2A</name>
+    <filename>dplobby.h#L397</filename>
+    <member kind="function">
+      <type />
+      <name>AddRef</name>
+      <anchorfile>dplobby.h</anchorfile>
+      <anchor>L401</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>EnumAddress</name>
+      <anchorfile>dplobby.h</anchorfile>
+      <anchor>L406</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>GetConnectionSettings</name>
+      <anchorfile>dplobby.h</anchorfile>
+      <anchor>L409</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>QueryInterface</name>
+      <anchorfile>dplobby.h</anchorfile>
+      <anchor>L400</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>Release</name>
+      <anchorfile>dplobby.h</anchorfile>
+      <anchor>L402</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>SetConnectionSettings</name>
+      <anchorfile>dplobby.h</anchorfile>
+      <anchor>L413</anchor>
+      <arglist>()</arglist>
+    </member>
+  </compound>
+  <compound kind="class">
+    <name>IDirectPlayLobbyA</name>
+    <filename>dplobby.h#L372</filename>
+    <member kind="function">
+      <type />
+      <name>AddRef</name>
+      <anchorfile>dplobby.h</anchorfile>
+      <anchor>L376</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>EnumAddress</name>
+      <anchorfile>dplobby.h</anchorfile>
+      <anchor>L381</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>GetConnectionSettings</name>
+      <anchorfile>dplobby.h</anchorfile>
+      <anchor>L384</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>QueryInterface</name>
+      <anchorfile>dplobby.h</anchorfile>
+      <anchor>L375</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>Release</name>
+      <anchorfile>dplobby.h</anchorfile>
+      <anchor>L377</anchor>
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>SetConnectionSettings</name>
+      <anchorfile>dplobby.h</anchorfile>
+      <anchor>L388</anchor>
+      <arglist>()</arglist>
+    </member>
+  </compound>
+  <compound kind="struct">
+    <name>MCI_OPEN_PARMSA</name>
+    <filename>mmsystem.h#L1965</filename>
+  </compound>
+  <compound kind="struct">
+    <name>MMIOINFO</name>
+    <filename>mmsystem.h#L1553</filename>
+  </compound>
+  <compound kind="file">
+    <name>wine/basetyps.h</name>
+    <filename>basetyps.h</filename>
+    <member kind="define">
+      <type />
+      <name>STDMETHODCALLTYPE</name>
+      <anchorfile>basetyps.h</anchorfile>
+      <anchor>L29</anchor>
+      <arglist />
+    </member>
+  </compound>
+  <compound kind="file">
+    <name>wine/d3d.h</name>
+    <filename>d3d.h</filename>
+    <member kind="define">
+      <type />
+      <name>D3DDP_DONOTCLIP</name>
+      <anchorfile>d3d.h</anchorfile>
+      <anchor>L192</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>D3DDP_DONOTUPDATEEXTENTS</name>
+      <anchorfile>d3d.h</anchorfile>
+      <anchor>L193</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>D3DDP_WAIT</name>
+      <anchorfile>d3d.h</anchorfile>
+      <anchor>L190</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>D3D_OK</name>
+      <anchorfile>d3d.h</anchorfile>
+      <anchor>L100</anchor>
+      <arglist />
+    </member>
+  </compound>
+  <compound kind="file">
+    <name>wine/d3d8types.h</name>
+    <filename>d3d8types.h</filename>
+    <member kind="enumvalue">
+      <type />
+      <name>D3DBLEND_INVSRCALPHA</name>
+      <anchorfile>d3d8types.h</anchorfile>
+      <anchor>L517</anchor>
+      <arglist />
+    </member>
+    <member kind="enumvalue">
+      <type />
+      <name>D3DBLEND_ONE</name>
+      <anchorfile>d3d8types.h</anchorfile>
+      <anchor>L513</anchor>
+      <arglist />
+    </member>
+    <member kind="enumvalue">
+      <type />
+      <name>D3DBLEND_ZERO</name>
+      <anchorfile>d3d8types.h</anchorfile>
+      <anchor>L512</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>D3DCLEAR_TARGET</name>
+      <anchorfile>d3d8types.h</anchorfile>
+      <anchor>L30</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>D3DCLEAR_ZBUFFER</name>
+      <anchorfile>d3d8types.h</anchorfile>
+      <anchor>L31</anchor>
+      <arglist />
+    </member>
+    <member kind="enumvalue">
+      <type />
+      <name>D3DCMP_ALWAYS</name>
+      <anchorfile>d3d8types.h</anchorfile>
+      <anchor>L547</anchor>
+      <arglist />
+    </member>
+    <member kind="enumvalue">
+      <type />
+      <name>D3DCMP_GREATEREQUAL</name>
+      <anchorfile>d3d8types.h</anchorfile>
+      <anchor>L546</anchor>
+      <arglist />
+    </member>
+    <member kind="enumvalue">
+      <type />
+      <name>D3DCMP_LESS</name>
+      <anchorfile>d3d8types.h</anchorfile>
+      <anchor>L541</anchor>
+      <arglist />
+    </member>
+    <member kind="enumvalue">
+      <type />
+      <name>D3DCULL_CCW</name>
+      <anchorfile>d3d8types.h</anchorfile>
+      <anchor>L566</anchor>
+      <arglist />
+    </member>
+    <member kind="enumvalue">
+      <type />
+      <name>D3DCULL_CW</name>
+      <anchorfile>d3d8types.h</anchorfile>
+      <anchor>L565</anchor>
+      <arglist />
+    </member>
+    <member kind="enumvalue">
+      <type />
+      <name>D3DCULL_NONE</name>
+      <anchorfile>d3d8types.h</anchorfile>
+      <anchor>L564</anchor>
+      <arglist />
+    </member>
+    <member kind="enumvalue">
+      <type />
+      <name>D3DPT_TRIANGLELIST</name>
+      <anchorfile>d3d8types.h</anchorfile>
+      <anchor>L724</anchor>
+      <arglist />
+    </member>
+    <member kind="enumvalue">
+      <type />
+      <name>D3DSHADE_FLAT</name>
+      <anchorfile>d3d8types.h</anchorfile>
+      <anchor>L825</anchor>
+      <arglist />
+    </member>
+    <member kind="enumvalue">
+      <type />
+      <name>D3DSHADE_GOURAUD</name>
+      <anchorfile>d3d8types.h</anchorfile>
+      <anchor>L826</anchor>
+      <arglist />
+    </member>
+    <member kind="enumvalue">
+      <type />
+      <name>D3DTADDRESS_WRAP</name>
+      <anchorfile>d3d8types.h</anchorfile>
+      <anchor>L863</anchor>
+      <arglist />
+    </member>
+  </compound>
+  <compound kind="file">
+    <name>wine/d3dtypes.h</name>
+    <filename>d3dtypes.h</filename>
+    <member kind="define">
+      <type />
+      <name>D3DCLIPSTATUS_EXTENTS2</name>
+      <anchorfile>d3dtypes.h</anchorfile>
+      <anchor>L1194</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>D3DENUMRET_CANCEL</name>
+      <anchorfile>d3dtypes.h</anchorfile>
+      <anchor>L75</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>D3DENUMRET_OK</name>
+      <anchorfile>d3dtypes.h</anchorfile>
+      <anchor>L76</anchor>
+      <arglist />
+    </member>
+    <member kind="enumvalue">
+      <type />
+      <name>D3DFILTER_LINEAR</name>
+      <anchorfile>d3dtypes.h</anchorfile>
+      <anchor>L678</anchor>
+      <arglist />
+    </member>
+    <member kind="typedef">
+      <type />
+      <name>D3DMATERIALHANDLE</name>
+      <anchorfile>d3dtypes.h</anchorfile>
+      <anchor>L149</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>D3DPAL_READONLY</name>
+      <anchorfile>d3dtypes.h</anchorfile>
+      <anchor>L1220</anchor>
+      <arglist />
+    </member>
+    <member kind="enumvalue">
+      <type />
+      <name>D3DRENDERSTATE_ALPHABLENDENABLE</name>
+      <anchorfile>d3dtypes.h</anchorfile>
+      <anchor>L854</anchor>
+      <arglist />
+    </member>
+    <member kind="enumvalue">
+      <type />
+      <name>D3DRENDERSTATE_ALPHAFUNC</name>
+      <anchorfile>d3dtypes.h</anchorfile>
+      <anchor>L852</anchor>
+      <arglist />
+    </member>
+    <member kind="enumvalue">
+      <type />
+      <name>D3DRENDERSTATE_ALPHAREF</name>
+      <anchorfile>d3dtypes.h</anchorfile>
+      <anchor>L851</anchor>
+      <arglist />
+    </member>
+    <member kind="enumvalue">
+      <type />
+      <name>D3DRENDERSTATE_ALPHATESTENABLE</name>
+      <anchorfile>d3dtypes.h</anchorfile>
+      <anchor>L842</anchor>
+      <arglist />
+    </member>
+    <member kind="enumvalue">
+      <type />
+      <name>D3DRENDERSTATE_COLORKEYENABLE</name>
+      <anchorfile>d3dtypes.h</anchorfile>
+      <anchor>L872</anchor>
+      <arglist />
+    </member>
+    <member kind="enumvalue">
+      <type />
+      <name>D3DRENDERSTATE_CULLMODE</name>
+      <anchorfile>d3dtypes.h</anchorfile>
+      <anchor>L849</anchor>
+      <arglist />
+    </member>
+    <member kind="enumvalue">
+      <type />
+      <name>D3DRENDERSTATE_DESTBLEND</name>
+      <anchorfile>d3dtypes.h</anchorfile>
+      <anchor>L847</anchor>
+      <arglist />
+    </member>
+    <member kind="enumvalue">
+      <type />
+      <name>D3DRENDERSTATE_DITHERENABLE</name>
+      <anchorfile>d3dtypes.h</anchorfile>
+      <anchor>L853</anchor>
+      <arglist />
+    </member>
+    <member kind="enumvalue">
+      <type />
+      <name>D3DRENDERSTATE_FOGCOLOR</name>
+      <anchorfile>d3dtypes.h</anchorfile>
+      <anchor>L861</anchor>
+      <arglist />
+    </member>
+    <member kind="enumvalue">
+      <type />
+      <name>D3DRENDERSTATE_SHADEMODE</name>
+      <anchorfile>d3dtypes.h</anchorfile>
+      <anchor>L836</anchor>
+      <arglist />
+    </member>
+    <member kind="enumvalue">
+      <type />
+      <name>D3DRENDERSTATE_SPECULARENABLE</name>
+      <anchorfile>d3dtypes.h</anchorfile>
+      <anchor>L856</anchor>
+      <arglist />
+    </member>
+    <member kind="enumvalue">
+      <type />
+      <name>D3DRENDERSTATE_SRCBLEND</name>
+      <anchorfile>d3dtypes.h</anchorfile>
+      <anchor>L846</anchor>
+      <arglist />
+    </member>
+    <member kind="enumvalue">
+      <type />
+      <name>D3DRENDERSTATE_TEXTUREADDRESSU</name>
+      <anchorfile>d3dtypes.h</anchorfile>
+      <anchor>L874</anchor>
+      <arglist />
+    </member>
+    <member kind="enumvalue">
+      <type />
+      <name>D3DRENDERSTATE_TEXTUREADDRESSV</name>
+      <anchorfile>d3dtypes.h</anchorfile>
+      <anchor>L875</anchor>
+      <arglist />
+    </member>
+    <member kind="enumvalue">
+      <type />
+      <name>D3DRENDERSTATE_TEXTUREHANDLE</name>
+      <anchorfile>d3dtypes.h</anchorfile>
+      <anchor>L828</anchor>
+      <arglist />
+    </member>
+    <member kind="enumvalue">
+      <type />
+      <name>D3DRENDERSTATE_TEXTUREMAG</name>
+      <anchorfile>d3dtypes.h</anchorfile>
+      <anchor>L844</anchor>
+      <arglist />
+    </member>
+    <member kind="enumvalue">
+      <type />
+      <name>D3DRENDERSTATE_TEXTUREMIN</name>
+      <anchorfile>d3dtypes.h</anchorfile>
+      <anchor>L845</anchor>
+      <arglist />
+    </member>
+    <member kind="enumvalue">
+      <type />
+      <name>D3DRENDERSTATE_TEXTUREPERSPECTIVE</name>
+      <anchorfile>d3dtypes.h</anchorfile>
+      <anchor>L831</anchor>
+      <arglist />
+    </member>
+    <member kind="enumvalue">
+      <type />
+      <name>D3DRENDERSTATE_WRAPU</name>
+      <anchorfile>d3dtypes.h</anchorfile>
+      <anchor>L832</anchor>
+      <arglist />
+    </member>
+    <member kind="enumvalue">
+      <type />
+      <name>D3DRENDERSTATE_WRAPV</name>
+      <anchorfile>d3dtypes.h</anchorfile>
+      <anchor>L833</anchor>
+      <arglist />
+    </member>
+    <member kind="enumvalue">
+      <type />
+      <name>D3DRENDERSTATE_ZENABLE</name>
+      <anchorfile>d3dtypes.h</anchorfile>
+      <anchor>L834</anchor>
+      <arglist />
+    </member>
+    <member kind="enumvalue">
+      <type />
+      <name>D3DRENDERSTATE_ZFUNC</name>
+      <anchorfile>d3dtypes.h</anchorfile>
+      <anchor>L850</anchor>
+      <arglist />
+    </member>
+    <member kind="enumvalue">
+      <type />
+      <name>D3DRENDERSTATE_ZWRITEENABLE</name>
+      <anchorfile>d3dtypes.h</anchorfile>
+      <anchor>L841</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>D3DSTATUS_CLIPINTERSECTIONALL</name>
+      <anchorfile>d3dtypes.h</anchorfile>
+      <anchor>L451</anchor>
+      <arglist />
+    </member>
+    <member kind="typedef">
+      <type />
+      <name>D3DTEXTUREHANDLE</name>
+      <anchorfile>d3dtypes.h</anchorfile>
+      <anchor>L150</anchor>
+      <arglist />
+    </member>
+    <member kind="enumvalue">
+      <type />
+      <name>D3DVT_TLVERTEX</name>
+      <anchorfile>d3dtypes.h</anchorfile>
+      <anchor>L779</anchor>
+      <arglist />
+    </member>
+  </compound>
+  <compound kind="file">
+    <name>wine/dbt.h</name>
+    <filename>dbt.h</filename>
+    <member kind="define">
+      <type />
+      <name>DBT_DEVICEARRIVAL</name>
+      <anchorfile>dbt.h</anchorfile>
+      <anchor>L40</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>DBT_DEVICEQUERYREMOVE</name>
+      <anchorfile>dbt.h</anchorfile>
+      <anchor>L41</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>DBT_DEVICEREMOVECOMPLETE</name>
+      <anchorfile>dbt.h</anchorfile>
+      <anchor>L44</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>DBT_DEVICEREMOVEPENDING</name>
+      <anchorfile>dbt.h</anchorfile>
+      <anchor>L43</anchor>
+      <arglist />
+    </member>
+  </compound>
+  <compound kind="file">
+    <name>wine/ddraw.h</name>
+    <filename>ddraw.h</filename>
+    <member kind="define">
+      <type />
+      <name>DDBD_1</name>
+      <anchorfile>ddraw.h</anchorfile>
+      <anchor>L889</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>DDBD_16</name>
+      <anchorfile>ddraw.h</anchorfile>
+      <anchor>L893</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>DDBD_2</name>
+      <anchorfile>ddraw.h</anchorfile>
+      <anchor>L890</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>DDBD_24</name>
+      <anchorfile>ddraw.h</anchorfile>
+      <anchor>L894</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>DDBD_32</name>
+      <anchorfile>ddraw.h</anchorfile>
+      <anchor>L895</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>DDBD_4</name>
+      <anchorfile>ddraw.h</anchorfile>
+      <anchor>L891</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>DDBD_8</name>
+      <anchorfile>ddraw.h</anchorfile>
+      <anchor>L892</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>DDBLTFAST_WAIT</name>
+      <anchorfile>ddraw.h</anchorfile>
+      <anchor>L239</anchor>
+      <arglist />
+    </member>
+    <member kind="typedef">
+      <type />
+      <name>DDCAPS</name>
+      <anchorfile>ddraw.h</anchorfile>
+      <anchor>L652</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>DDCKEY_SRCBLT</name>
+      <anchorfile>ddraw.h</anchorfile>
+      <anchor>L729</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>DDENUMRET_CANCEL</name>
+      <anchorfile>ddraw.h</anchorfile>
+      <anchor>L72</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>DDENUMRET_OK</name>
+      <anchorfile>ddraw.h</anchorfile>
+      <anchor>L73</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>DDERR_NO3D</name>
+      <anchorfile>ddraw.h</anchorfile>
+      <anchor>L98</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>DDERR_SURFACELOST</name>
+      <anchorfile>ddraw.h</anchorfile>
+      <anchor>L137</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>DDERR_WASSTILLDRAWING</name>
+      <anchorfile>ddraw.h</anchorfile>
+      <anchor>L147</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>DDFLIP_WAIT</name>
+      <anchorfile>ddraw.h</anchorfile>
+      <anchor>L243</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>DDGFS_CANFLIP</name>
+      <anchorfile>ddraw.h</anchorfile>
+      <anchor>L259</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>DDGFS_ISFLIPDONE</name>
+      <anchorfile>ddraw.h</anchorfile>
+      <anchor>L260</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>DDLOCK_WAIT</name>
+      <anchorfile>ddraw.h</anchorfile>
+      <anchor>L1456</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>DDLOCK_WRITEONLY</name>
+      <anchorfile>ddraw.h</anchorfile>
+      <anchor>L1459</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>DDPCAPS_1BIT</name>
+      <anchorfile>ddraw.h</anchorfile>
+      <anchor>L869</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>DDPCAPS_2BIT</name>
+      <anchorfile>ddraw.h</anchorfile>
+      <anchor>L870</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>DDPCAPS_4BIT</name>
+      <anchorfile>ddraw.h</anchorfile>
+      <anchor>L861</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>DDPCAPS_8BIT</name>
+      <anchorfile>ddraw.h</anchorfile>
+      <anchor>L863</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>DDPF_ALPHA</name>
+      <anchorfile>ddraw.h</anchorfile>
+      <anchor>L932</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>DDPF_ALPHAPIXELS</name>
+      <anchorfile>ddraw.h</anchorfile>
+      <anchor>L931</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>DDPF_PALETTEINDEXED1</name>
+      <anchorfile>ddraw.h</anchorfile>
+      <anchor>L942</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>DDPF_PALETTEINDEXED2</name>
+      <anchorfile>ddraw.h</anchorfile>
+      <anchor>L943</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>DDPF_PALETTEINDEXED4</name>
+      <anchorfile>ddraw.h</anchorfile>
+      <anchor>L934</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>DDPF_PALETTEINDEXED8</name>
+      <anchorfile>ddraw.h</anchorfile>
+      <anchor>L936</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>DDPF_RGB</name>
+      <anchorfile>ddraw.h</anchorfile>
+      <anchor>L937</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>DDSCAPS_3DDEVICE</name>
+      <anchorfile>ddraw.h</anchorfile>
+      <anchor>L294</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>DDSCAPS_ALLOCONLOAD</name>
+      <anchorfile>ddraw.h</anchorfile>
+      <anchor>L315</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>DDSCAPS_BACKBUFFER</name>
+      <anchorfile>ddraw.h</anchorfile>
+      <anchor>L272</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>DDSCAPS_COMPLEX</name>
+      <anchorfile>ddraw.h</anchorfile>
+      <anchor>L274</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>DDSCAPS_FLIP</name>
+      <anchorfile>ddraw.h</anchorfile>
+      <anchor>L276</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>DDSCAPS_OFFSCREENPLAIN</name>
+      <anchorfile>ddraw.h</anchorfile>
+      <anchor>L280</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>DDSCAPS_PRIMARYSURFACE</name>
+      <anchorfile>ddraw.h</anchorfile>
+      <anchor>L286</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>DDSCAPS_SYSTEMMEMORY</name>
+      <anchorfile>ddraw.h</anchorfile>
+      <anchor>L290</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>DDSCAPS_TEXTURE</name>
+      <anchorfile>ddraw.h</anchorfile>
+      <anchor>L292</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>DDSCAPS_VIDEOMEMORY</name>
+      <anchorfile>ddraw.h</anchorfile>
+      <anchor>L296</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>DDSCAPS_ZBUFFER</name>
+      <anchorfile>ddraw.h</anchorfile>
+      <anchor>L302</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>DDSCL_EXCLUSIVE</name>
+      <anchorfile>ddraw.h</anchorfile>
+      <anchor>L956</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>DDSCL_FULLSCREEN</name>
+      <anchorfile>ddraw.h</anchorfile>
+      <anchor>L952</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>DDSCL_NORMAL</name>
+      <anchorfile>ddraw.h</anchorfile>
+      <anchor>L955</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>DDSDM_STANDARDVGAMODE</name>
+      <anchorfile>ddraw.h</anchorfile>
+      <anchor>L997</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>DDSD_BACKBUFFERCOUNT</name>
+      <anchorfile>ddraw.h</anchorfile>
+      <anchor>L971</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>DDSD_CAPS</name>
+      <anchorfile>ddraw.h</anchorfile>
+      <anchor>L967</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>DDSD_HEIGHT</name>
+      <anchorfile>ddraw.h</anchorfile>
+      <anchor>L968</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>DDSD_PIXELFORMAT</name>
+      <anchorfile>ddraw.h</anchorfile>
+      <anchor>L975</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>DDSD_WIDTH</name>
+      <anchorfile>ddraw.h</anchorfile>
+      <anchor>L969</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>DDSD_ZBUFFERBITDEPTH</name>
+      <anchorfile>ddraw.h</anchorfile>
+      <anchor>L972</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>DD_OK</name>
+      <anchorfile>ddraw.h</anchorfile>
+      <anchor>L75</anchor>
+      <arglist />
+    </member>
+  </compound>
+  <compound kind="file">
+    <name>wine/dinput.h</name>
+    <filename>dinput.h</filename>
+    <member kind="define">
+      <type />
+      <name>DIDEVTYPE_JOYSTICK</name>
+      <anchorfile>dinput.h</anchorfile>
+      <anchor>L200</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>DIEB_NOTRIGGER</name>
+      <anchorfile>dinput.h</anchorfile>
+      <anchor>L1038</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>DIEDFL_ATTACHEDONLY</name>
+      <anchorfile>dinput.h</anchorfile>
+      <anchor>L191</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>DIEDFL_FORCEFEEDBACK</name>
+      <anchorfile>dinput.h</anchorfile>
+      <anchor>L192</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>DIEFF_CARTESIAN</name>
+      <anchorfile>dinput.h</anchorfile>
+      <anchor>L1019</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>DIEFF_OBJECTOFFSETS</name>
+      <anchorfile>dinput.h</anchorfile>
+      <anchor>L1018</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>DIENUM_STOP</name>
+      <anchorfile>dinput.h</anchorfile>
+      <anchor>L187</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>DIEP_DIRECTION</name>
+      <anchorfile>dinput.h</anchorfile>
+      <anchor>L1029</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>DIEP_DURATION</name>
+      <anchorfile>dinput.h</anchorfile>
+      <anchor>L1023</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>DIEP_START</name>
+      <anchorfile>dinput.h</anchorfile>
+      <anchor>L1035</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>DIEP_TYPESPECIFICPARAMS</name>
+      <anchorfile>dinput.h</anchorfile>
+      <anchor>L1031</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>DIERR_INPUTLOST</name>
+      <anchorfile>dinput.h</anchorfile>
+      <anchor>L163</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>DIJOFS_X</name>
+      <anchorfile>dinput.h</anchorfile>
+      <anchor>L1214</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>DIJOFS_Y</name>
+      <anchorfile>dinput.h</anchorfile>
+      <anchor>L1215</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>DIK_DOWN</name>
+      <anchorfile>dinput.h</anchorfile>
+      <anchor>L584</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>DIK_F11</name>
+      <anchorfile>dinput.h</anchorfile>
+      <anchor>L553</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>DIK_F12</name>
+      <anchorfile>dinput.h</anchorfile>
+      <anchor>L554</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>DIK_LEFT</name>
+      <anchorfile>dinput.h</anchorfile>
+      <anchor>L581</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>DIK_NUMPADENTER</name>
+      <anchorfile>dinput.h</anchorfile>
+      <anchor>L571</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>DIK_RETURN</name>
+      <anchorfile>dinput.h</anchorfile>
+      <anchor>L497</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>DIK_RIGHT</name>
+      <anchorfile>dinput.h</anchorfile>
+      <anchor>L582</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>DIK_UP</name>
+      <anchorfile>dinput.h</anchorfile>
+      <anchor>L579</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>DIPH_BYOFFSET</name>
+      <anchorfile>dinput.h</anchorfile>
+      <anchor>L836</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>DIPH_DEVICE</name>
+      <anchorfile>dinput.h</anchorfile>
+      <anchor>L835</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>DIPROPAUTOCENTER_OFF</name>
+      <anchorfile>dinput.h</anchorfile>
+      <anchor>L905</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>DIPROP_AUTOCENTER</name>
+      <anchorfile>dinput.h</anchorfile>
+      <anchor>L903</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>DIPROP_DEADZONE</name>
+      <anchorfile>dinput.h</anchorfile>
+      <anchor>L899</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>DIPROP_RANGE</name>
+      <anchorfile>dinput.h</anchorfile>
+      <anchor>L898</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>DISCL_EXCLUSIVE</name>
+      <anchorfile>dinput.h</anchorfile>
+      <anchor>L972</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>DISCL_FOREGROUND</name>
+      <anchorfile>dinput.h</anchorfile>
+      <anchor>L974</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>DISCL_NONEXCLUSIVE</name>
+      <anchorfile>dinput.h</anchorfile>
+      <anchor>L973</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>DI_OK</name>
+      <anchorfile>dinput.h</anchorfile>
+      <anchor>L128</anchor>
+      <arglist />
+    </member>
+  </compound>
+  <compound kind="file">
+    <name>wine/dmdls.h</name>
+    <filename>dmdls.h</filename>
+    <member kind="typedef">
+      <type />
+      <name>FOURCC</name>
+      <anchorfile>dmdls.h</anchorfile>
+      <anchor>L42</anchor>
+      <arglist />
+    </member>
+  </compound>
+  <compound kind="file">
+    <name>wine/dplay.h</name>
+    <filename>dplay.h</filename>
+    <member kind="define">
+      <type />
+      <name>DPERR_ACCESSDENIED</name>
+      <anchorfile>dplay.h</anchorfile>
+      <anchor>L90</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>DPERR_ACTIVEPLAYERS</name>
+      <anchorfile>dplay.h</anchorfile>
+      <anchor>L91</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>DPERR_ALREADYINITIALIZED</name>
+      <anchorfile>dplay.h</anchorfile>
+      <anchor>L89</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>DPERR_ALREADYREGISTERED</name>
+      <anchorfile>dplay.h</anchorfile>
+      <anchor>L144</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>DPERR_APPNOTSTARTED</name>
+      <anchorfile>dplay.h</anchorfile>
+      <anchor>L138</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>DPERR_AUTHENTICATIONFAILED</name>
+      <anchorfile>dplay.h</anchorfile>
+      <anchor>L146</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>DPERR_BUFFERTOOLARGE</name>
+      <anchorfile>dplay.h</anchorfile>
+      <anchor>L136</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>DPERR_BUFFERTOOSMALL</name>
+      <anchorfile>dplay.h</anchorfile>
+      <anchor>L92</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>DPERR_BUSY</name>
+      <anchorfile>dplay.h</anchorfile>
+      <anchor>L119</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>DPERR_CANNOTCREATESERVER</name>
+      <anchorfile>dplay.h</anchorfile>
+      <anchor>L122</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>DPERR_CANTADDPLAYER</name>
+      <anchorfile>dplay.h</anchorfile>
+      <anchor>L93</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>DPERR_CANTCREATEGROUP</name>
+      <anchorfile>dplay.h</anchorfile>
+      <anchor>L94</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>DPERR_CANTCREATEPLAYER</name>
+      <anchorfile>dplay.h</anchorfile>
+      <anchor>L95</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>DPERR_CANTCREATEPROCESS</name>
+      <anchorfile>dplay.h</anchorfile>
+      <anchor>L137</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>DPERR_CANTCREATESESSION</name>
+      <anchorfile>dplay.h</anchorfile>
+      <anchor>L96</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>DPERR_CANTLOADCAPI</name>
+      <anchorfile>dplay.h</anchorfile>
+      <anchor>L152</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>DPERR_CANTLOADSECURITYPACKAGE</name>
+      <anchorfile>dplay.h</anchorfile>
+      <anchor>L150</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>DPERR_CANTLOADSSPI</name>
+      <anchorfile>dplay.h</anchorfile>
+      <anchor>L147</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>DPERR_CAPSNOTAVAILABLEYET</name>
+      <anchorfile>dplay.h</anchorfile>
+      <anchor>L97</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>DPERR_CONNECTING</name>
+      <anchorfile>dplay.h</anchorfile>
+      <anchor>L128</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>DPERR_ENCRYPTIONFAILED</name>
+      <anchorfile>dplay.h</anchorfile>
+      <anchor>L148</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>DPERR_ENCRYPTIONNOTSUPPORTED</name>
+      <anchorfile>dplay.h</anchorfile>
+      <anchor>L151</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>DPERR_EXCEPTION</name>
+      <anchorfile>dplay.h</anchorfile>
+      <anchor>L98</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>DPERR_GENERIC</name>
+      <anchorfile>dplay.h</anchorfile>
+      <anchor>L99</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>DPERR_INVALIDFLAGS</name>
+      <anchorfile>dplay.h</anchorfile>
+      <anchor>L100</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>DPERR_INVALIDGROUP</name>
+      <anchorfile>dplay.h</anchorfile>
+      <anchor>L105</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>DPERR_INVALIDINTERFACE</name>
+      <anchorfile>dplay.h</anchorfile>
+      <anchor>L139</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>DPERR_INVALIDOBJECT</name>
+      <anchorfile>dplay.h</anchorfile>
+      <anchor>L101</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>DPERR_INVALIDPARAMS</name>
+      <anchorfile>dplay.h</anchorfile>
+      <anchor>L103</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>DPERR_INVALIDPASSWORD</name>
+      <anchorfile>dplay.h</anchorfile>
+      <anchor>L127</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>DPERR_INVALIDPLAYER</name>
+      <anchorfile>dplay.h</anchorfile>
+      <anchor>L104</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>DPERR_LOGONDENIED</name>
+      <anchorfile>dplay.h</anchorfile>
+      <anchor>L154</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>DPERR_NOCAPS</name>
+      <anchorfile>dplay.h</anchorfile>
+      <anchor>L106</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>DPERR_NOCONNECTION</name>
+      <anchorfile>dplay.h</anchorfile>
+      <anchor>L107</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>DPERR_NOINTERFACE</name>
+      <anchorfile>dplay.h</anchorfile>
+      <anchor>L121</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>DPERR_NOMESSAGES</name>
+      <anchorfile>dplay.h</anchorfile>
+      <anchor>L110</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>DPERR_NONAMESERVERFOUND</name>
+      <anchorfile>dplay.h</anchorfile>
+      <anchor>L111</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>DPERR_NONEWPLAYERS</name>
+      <anchorfile>dplay.h</anchorfile>
+      <anchor>L126</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>DPERR_NOPLAYERS</name>
+      <anchorfile>dplay.h</anchorfile>
+      <anchor>L112</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>DPERR_NOSERVICEPROVIDER</name>
+      <anchorfile>dplay.h</anchorfile>
+      <anchor>L140</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>DPERR_NOSESSIONS</name>
+      <anchorfile>dplay.h</anchorfile>
+      <anchor>L113</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>DPERR_NOTLOBBIED</name>
+      <anchorfile>dplay.h</anchorfile>
+      <anchor>L142</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>DPERR_NOTLOGGEDIN</name>
+      <anchorfile>dplay.h</anchorfile>
+      <anchor>L153</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>DPERR_NOTREGISTERED</name>
+      <anchorfile>dplay.h</anchorfile>
+      <anchor>L145</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>DPERR_OUTOFMEMORY</name>
+      <anchorfile>dplay.h</anchorfile>
+      <anchor>L109</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>DPERR_PENDING</name>
+      <anchorfile>dplay.h</anchorfile>
+      <anchor>L114</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>DPERR_PLAYERLOST</name>
+      <anchorfile>dplay.h</anchorfile>
+      <anchor>L123</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>DPERR_SENDTOOBIG</name>
+      <anchorfile>dplay.h</anchorfile>
+      <anchor>L115</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>DPERR_SERVICEPROVIDERLOADED</name>
+      <anchorfile>dplay.h</anchorfile>
+      <anchor>L143</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>DPERR_SESSIONLOST</name>
+      <anchorfile>dplay.h</anchorfile>
+      <anchor>L124</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>DPERR_SIGNFAILED</name>
+      <anchorfile>dplay.h</anchorfile>
+      <anchor>L149</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>DPERR_TIMEOUT</name>
+      <anchorfile>dplay.h</anchorfile>
+      <anchor>L116</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>DPERR_UNAVAILABLE</name>
+      <anchorfile>dplay.h</anchorfile>
+      <anchor>L117</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>DPERR_UNINITIALIZED</name>
+      <anchorfile>dplay.h</anchorfile>
+      <anchor>L125</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>DPERR_UNKNOWNAPPLICATION</name>
+      <anchorfile>dplay.h</anchorfile>
+      <anchor>L141</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>DPERR_UNSUPPORTED</name>
+      <anchorfile>dplay.h</anchorfile>
+      <anchor>L118</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>DPERR_USERCANCEL</name>
+      <anchorfile>dplay.h</anchorfile>
+      <anchor>L120</anchor>
+      <arglist />
+    </member>
+    <member kind="typedef">
+      <type />
+      <name>DPID</name>
+      <anchorfile>dplay.h</anchorfile>
+      <anchor>L158</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>DPID_ALLPLAYERS</name>
+      <anchorfile>dplay.h</anchorfile>
+      <anchor>L162</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>DPID_SERVERPLAYER</name>
+      <anchorfile>dplay.h</anchorfile>
+      <anchor>L163</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>DPID_SYSMSG</name>
+      <anchorfile>dplay.h</anchorfile>
+      <anchor>L161</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>DPLCONNECTION_CREATESESSION</name>
+      <anchorfile>dplay.h</anchorfile>
+      <anchor>L294</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>DPPLAYER_SERVERPLAYER</name>
+      <anchorfile>dplay.h</anchorfile>
+      <anchor>L1018</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>DPRECEIVE_ALL</name>
+      <anchorfile>dplay.h</anchorfile>
+      <anchor>L1044</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>DPSEND_GUARANTEED</name>
+      <anchorfile>dplay.h</anchorfile>
+      <anchor>L1051</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>DPSESSION_KEEPALIVE</name>
+      <anchorfile>dplay.h</anchorfile>
+      <anchor>L271</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>DPSESSION_MIGRATEHOST</name>
+      <anchorfile>dplay.h</anchorfile>
+      <anchor>L268</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>DPSYS_CREATEPLAYERORGROUP</name>
+      <anchorfile>dplay.h</anchorfile>
+      <anchor>L1098</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>DPSYS_DESTROYPLAYERORGROUP</name>
+      <anchorfile>dplay.h</anchorfile>
+      <anchor>L1101</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>DPSYS_SECUREMESSAGE</name>
+      <anchorfile>dplay.h</anchorfile>
+      <anchor>L1131</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>DPSYS_SETSESSIONDESC</name>
+      <anchorfile>dplay.h</anchorfile>
+      <anchor>L1122</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>DP_OK</name>
+      <anchorfile>dplay.h</anchorfile>
+      <anchor>L88</anchor>
+      <arglist />
+    </member>
+  </compound>
+  <compound kind="file">
+    <name>wine/dsound.h</name>
+    <filename>dsound.h</filename>
+    <member kind="define">
+      <type />
+      <name>DSBCAPS_CTRLFREQUENCY</name>
+      <anchorfile>dsound.h</anchorfile>
+      <anchor>L284</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>DSBCAPS_CTRLPAN</name>
+      <anchorfile>dsound.h</anchorfile>
+      <anchor>L285</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>DSBCAPS_CTRLVOLUME</name>
+      <anchorfile>dsound.h</anchorfile>
+      <anchor>L286</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>DSBCAPS_GETCURRENTPOSITION2</name>
+      <anchorfile>dsound.h</anchorfile>
+      <anchor>L293</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>DSBCAPS_LOCHARDWARE</name>
+      <anchorfile>dsound.h</anchorfile>
+      <anchor>L281</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>DSBCAPS_PRIMARYBUFFER</name>
+      <anchorfile>dsound.h</anchorfile>
+      <anchor>L279</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>DSBCAPS_STATIC</name>
+      <anchorfile>dsound.h</anchorfile>
+      <anchor>L280</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>DSBCAPS_STICKYFOCUS</name>
+      <anchorfile>dsound.h</anchorfile>
+      <anchor>L291</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>DSBPAN_CENTER</name>
+      <anchorfile>dsound.h</anchorfile>
+      <anchor>L300</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>DSBPLAY_LOOPING</name>
+      <anchorfile>dsound.h</anchorfile>
+      <anchor>L262</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>DSBSTATUS_PLAYING</name>
+      <anchorfile>dsound.h</anchorfile>
+      <anchor>L269</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>DSBVOLUME_MAX</name>
+      <anchorfile>dsound.h</anchorfile>
+      <anchor>L302</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>DSBVOLUME_MIN</name>
+      <anchorfile>dsound.h</anchorfile>
+      <anchor>L303</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>DSSCL_PRIORITY</name>
+      <anchorfile>dsound.h</anchorfile>
+      <anchor>L229</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>DS_OK</name>
+      <anchorfile>dsound.h</anchorfile>
+      <anchor>L189</anchor>
+      <arglist />
+    </member>
+  </compound>
+  <compound kind="file">
+    <name>wine/minwinbase.h</name>
+    <filename>minwinbase.h</filename>
+    <member kind="typedef">
+      <type />
+      <name>CRITICAL_SECTION</name>
+      <anchorfile>minwinbase.h</anchorfile>
+      <anchor>L28</anchor>
+      <arglist />
+    </member>
+  </compound>
+  <compound kind="file">
+    <name>wine/minwindef.h</name>
+    <filename>minwindef.h</filename>
+    <member kind="typedef">
+      <type />
+      <name>FARPROC</name>
+      <anchorfile>minwindef.h</anchorfile>
+      <anchor>L292</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>HIWORD</name>
+      <anchorfile>minwindef.h</anchorfile>
+      <anchor>L307</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>LOWORD</name>
+      <anchorfile>minwindef.h</anchorfile>
+      <anchor>L306</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>MAX_PATH</name>
+      <anchorfile>minwindef.h</anchorfile>
+      <anchor>L326</anchor>
+      <arglist />
+    </member>
+  </compound>
+  <compound kind="file">
+    <name>wine/mmreg.h</name>
+    <filename>mmreg.h</filename>
+    <member kind="define">
+      <type />
+      <name>WAVE_FORMAT_PCM</name>
+      <anchorfile>mmreg.h</anchorfile>
+      <anchor>L96</anchor>
+      <arglist />
+    </member>
+  </compound>
+  <compound kind="file">
+    <name>wine/mmsystem.h</name>
+    <filename>mmsystem.h</filename>
+    <member kind="define">
+      <type />
+      <name>FOURCC_RIFF</name>
+      <anchorfile>mmsystem.h</anchorfile>
+      <anchor>L1637</anchor>
+      <arglist />
+    </member>
+    <member kind="typedef">
+      <type />
+      <name>HPSTR</name>
+      <anchorfile>mmsystem.h</anchorfile>
+      <anchor>L34</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>MCI_CLOSE</name>
+      <anchorfile>mmsystem.h</anchorfile>
+      <anchor>L1782</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>MCI_FORMAT_TMSF</name>
+      <anchorfile>mmsystem.h</anchorfile>
+      <anchor>L1851</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>MCI_FROM</name>
+      <anchorfile>mmsystem.h</anchorfile>
+      <anchor>L1886</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>MCI_NOTIFY</name>
+      <anchorfile>mmsystem.h</anchorfile>
+      <anchor>L1884</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>MCI_NOTIFY_SUCCESSFUL</name>
+      <anchorfile>mmsystem.h</anchorfile>
+      <anchor>L1879</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>MCI_OPEN</name>
+      <anchorfile>mmsystem.h</anchorfile>
+      <anchor>L1781</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>MCI_OPEN_TYPE</name>
+      <anchorfile>mmsystem.h</anchorfile>
+      <anchor>L1895</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>MCI_PAUSE</name>
+      <anchorfile>mmsystem.h</anchorfile>
+      <anchor>L1787</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>MCI_PLAY</name>
+      <anchorfile>mmsystem.h</anchorfile>
+      <anchor>L1784</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>MCI_SET</name>
+      <anchorfile>mmsystem.h</anchorfile>
+      <anchor>L1791</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>MCI_SET_TIME_FORMAT</name>
+      <anchorfile>mmsystem.h</anchorfile>
+      <anchor>L1938</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>MCI_STATUS</name>
+      <anchorfile>mmsystem.h</anchorfile>
+      <anchor>L1798</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>MCI_STATUS_CURRENT_TRACK</name>
+      <anchorfile>mmsystem.h</anchorfile>
+      <anchor>L1910</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>MCI_STATUS_ITEM</name>
+      <anchorfile>mmsystem.h</anchorfile>
+      <anchor>L1900</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>MCI_STATUS_NUMBER_OF_TRACKS</name>
+      <anchorfile>mmsystem.h</anchorfile>
+      <anchor>L1905</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>MCI_STOP</name>
+      <anchorfile>mmsystem.h</anchorfile>
+      <anchor>L1786</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>MCI_TO</name>
+      <anchorfile>mmsystem.h</anchorfile>
+      <anchor>L1887</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>MCI_WAIT</name>
+      <anchorfile>mmsystem.h</anchorfile>
+      <anchor>L1885</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>MMIO_ALLOCBUF</name>
+      <anchorfile>mmsystem.h</anchorfile>
+      <anchor>L1592</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>MMIO_FINDCHUNK</name>
+      <anchorfile>mmsystem.h</anchorfile>
+      <anchor>L1614</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>MMIO_READ</name>
+      <anchorfile>mmsystem.h</anchorfile>
+      <anchor>L1597</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>MM_MCINOTIFY</name>
+      <anchorfile>mmsystem.h</anchorfile>
+      <anchor>L116</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>SEEK_END</name>
+      <anchorfile>mmsystem.h</anchorfile>
+      <anchor>L1623</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>SEEK_SET</name>
+      <anchorfile>mmsystem.h</anchorfile>
+      <anchor>L1621</anchor>
+      <arglist />
+    </member>
+  </compound>
+  <compound kind="file">
+    <name>wine/msacm.h</name>
+    <filename>msacm.h</filename>
+    <member kind="define">
+      <type />
+      <name>ACM_METRIC_MAX_SIZE_FORMAT</name>
+      <anchorfile>msacm.h</anchorfile>
+      <anchor>L191</anchor>
+      <arglist />
+    </member>
+  </compound>
+  <compound kind="file">
+    <name>wine/winbase.h</name>
+    <filename>winbase.h</filename>
+    <member kind="define">
+      <type />
+      <name>GHND</name>
+      <anchorfile>winbase.h</anchorfile>
+      <anchor>L280</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>GMEM_FIXED</name>
+      <anchorfile>winbase.h</anchorfile>
+      <anchor>L264</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>GMEM_ZEROINIT</name>
+      <anchorfile>winbase.h</anchorfile>
+      <anchor>L268</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>INFINITE</name>
+      <anchorfile>winbase.h</anchorfile>
+      <anchor>L190</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>WAIT_OBJECT_0</name>
+      <anchorfile>winbase.h</anchorfile>
+      <anchor>L887</anchor>
+      <arglist />
+    </member>
+  </compound>
+  <compound kind="file">
+    <name>wine/winerror.h</name>
+    <filename>winerror.h</filename>
+    <member kind="define">
+      <type />
+      <name>ERROR_SUCCESS</name>
+      <anchorfile>winerror.h</anchorfile>
+      <anchor>L222</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>E_FAIL</name>
+      <anchorfile>winerror.h</anchorfile>
+      <anchor>L3469</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>E_INVALIDARG</name>
+      <anchorfile>winerror.h</anchorfile>
+      <anchor>L4106</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>E_OUTOFMEMORY</name>
+      <anchorfile>winerror.h</anchorfile>
+      <anchor>L4105</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>S_OK</name>
+      <anchorfile>winerror.h</anchorfile>
+      <anchor>L3436</anchor>
+      <arglist />
+    </member>
+  </compound>
+  <compound kind="file">
+    <name>wine/wingdi.h</name>
+    <filename>wingdi.h</filename>
+    <member kind="define">
+      <type />
+      <name>BITSPIXEL</name>
+      <anchorfile>wingdi.h</anchorfile>
+      <anchor>L1677</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>CLR_INVALID</name>
+      <anchorfile>wingdi.h</anchorfile>
+      <anchor>L1990</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>HORZRES</name>
+      <anchorfile>wingdi.h</anchorfile>
+      <anchor>L1675</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>PC_RESERVED</name>
+      <anchorfile>wingdi.h</anchorfile>
+      <anchor>L1536</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>PLANES</name>
+      <anchorfile>wingdi.h</anchorfile>
+      <anchor>L1678</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>SIZEPALETTE</name>
+      <anchorfile>wingdi.h</anchorfile>
+      <anchor>L1697</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>SRCCOPY</name>
+      <anchorfile>wingdi.h</anchorfile>
+      <anchor>L414</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>VERTRES</name>
+      <anchorfile>wingdi.h</anchorfile>
+      <anchor>L1676</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>WHITE_BRUSH</name>
+      <anchorfile>wingdi.h</anchorfile>
+      <anchor>L1967</anchor>
+      <arglist />
+    </member>
+  </compound>
+  <compound kind="file">
+    <name>wine/winnt.h</name>
+    <filename>winnt.h</filename>
+    <member kind="define">
+      <type />
+      <name>DLL_PROCESS_ATTACH</name>
+      <anchorfile>winnt.h</anchorfile>
+      <anchor>L686</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>KEY_READ</name>
+      <anchorfile>winnt.h</anchorfile>
+      <anchor>L6018</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>VER_PLATFORM_WIN32_NT</name>
+      <anchorfile>winnt.h</anchorfile>
+      <anchor>L6364</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>VER_PLATFORM_WIN32_WINDOWS</name>
+      <anchorfile>winnt.h</anchorfile>
+      <anchor>L6363</anchor>
+      <arglist />
+    </member>
+  </compound>
+  <compound kind="file">
+    <name>wine/winreg.h</name>
+    <filename>winreg.h</filename>
+    <member kind="define">
+      <type />
+      <name>HKEY_LOCAL_MACHINE</name>
+      <anchorfile>winreg.h</anchorfile>
+      <anchor>L30</anchor>
+      <arglist />
+    </member>
+  </compound>
+  <compound kind="file">
+    <name>wine/winuser.h</name>
+    <filename>winuser.h</filename>
+    <member kind="define">
+      <type />
+      <name>GWL_USERDATA</name>
+      <anchorfile>winuser.h</anchorfile>
+      <anchor>L1228</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>IDC_ARROW</name>
+      <anchorfile>winuser.h</anchorfile>
+      <anchor>L2304</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>IMAGE_BITMAP</name>
+      <anchorfile>winuser.h</anchorfile>
+      <anchor>L3136</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>LR_CREATEDIBSECTION</name>
+      <anchorfile>winuser.h</anchorfile>
+      <anchor>L3152</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>LR_LOADFROMFILE</name>
+      <anchorfile>winuser.h</anchorfile>
+      <anchor>L3147</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>MAKEINTRESOURCEA</name>
+      <anchorfile>winuser.h</anchorfile>
+      <anchor>L801</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>MB_ICONERROR</name>
+      <anchorfile>winuser.h</anchorfile>
+      <anchor>L2018</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>MB_OK</name>
+      <anchorfile>winuser.h</anchorfile>
+      <anchor>L1999</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>PM_REMOVE</name>
+      <anchorfile>winuser.h</anchorfile>
+      <anchor>L2685</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>RDW_FRAME</name>
+      <anchorfile>winuser.h</anchorfile>
+      <anchor>L1283</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>SWP_NOMOVE</name>
+      <anchorfile>winuser.h</anchorfile>
+      <anchor>L2741</anchor>
+      <arglist />
+    </member>
+    <member kind="define">
+      <type />
+      <name>SWP_NOSIZE</name>
+      <anchorfile>winuser.h</anchorfile>
+      <anchor>L2740</anchor>
+      <arglist />
+    </member>
+  </compound>
+</tagfile>

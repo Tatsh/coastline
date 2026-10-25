@@ -276,6 +276,7 @@ endfunction
 endlabel
 engsound
 entermenuloop
+enumvalue
 epirawdma
 epirawread
 epirawwrite
@@ -730,6 +731,7 @@ stdbool
 stddef
 stdint
 stdlib
+stdmethod
 steeradj
 steerangle
 steerarr

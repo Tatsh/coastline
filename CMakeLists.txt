@@ -98,13 +98,15 @@ if(BUILD_DOCS OR BUILD_DOCS_ONLY)
   set(DOXYGEN_USE_MDFILE_AS_MAINPAGE "${CMAKE_SOURCE_DIR}/README.md")
   set(DOXYGEN_INTERACTIVE_SVG YES)
   set(DOXYGEN_GENERATE_TAGFILE "${CMAKE_BINARY_DIR}/html/${CMAKE_PROJECT_NAME}.tags")
-  # The C and C++ libraries link to cppreference.com, the Win32 API to learn.microsoft.com, and the
-  # older DirectX APIs to the references of DirectX 7 and 8 that archive.org keeps.
-  # tools/doxygen/win32_tags.py writes the tag files of the Win32 API and of DirectX.
+  # The C and C++ libraries link to cppreference.com, the Win32 API to learn.microsoft.com, the
+  # older DirectX APIs to the references of DirectX 7 and 8 that archive.org keeps, and the rest to
+  # the headers of Wine. tools/doxygen/win32_tags.py writes every tag file but that of cppreference.
   set(DOXYGEN_TAGFILES
       "${CMAKE_SOURCE_DIR}/docs/cppreference.tags=https://en.cppreference.com/w/"
       "${CMAKE_SOURCE_DIR}/docs/win32.tags=https://learn.microsoft.com/en-us/windows/win32/api/"
-      "${CMAKE_SOURCE_DIR}/docs/directx-archive.tags=https://web.archive.org/web/")
+      "${CMAKE_SOURCE_DIR}/docs/directx-archive.tags=https://web.archive.org/web/"
+      "${CMAKE_SOURCE_DIR}/docs/wine.tags=https://gitlab.winehq.org/wine/wine/-/blob/wine-11.0/include/"
+  )
   set(DOXYGEN_EXTRACT_ALL YES)
   set(DOXYGEN_EXTRACT_STATIC YES)
   set(DOXYGEN_SORT_MEMBER_DOCS NO)
