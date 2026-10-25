@@ -30,6 +30,23 @@ extern int g_bFrameSnapshotsInitialized;
  */
 void InvalidateFrameSnapshotSlots(void);
 
+/**
+ * The number of frames rendered from interpolated snapshots since the slots were set up.
+ *
+ * @ghidraAddress BRD3D: 0x104afd08
+ * @ghidraAddress BRGlide: 0x104ab4f0
+ */
+extern int g_dwInterpolatedFrameCount;
+
+/**
+ * Get the number of frames rendered from interpolated snapshots since the slots were set up.
+ *
+ * @return The number of frames.
+ * @ghidraAddress BRD3D: 0x10016a50
+ * @ghidraAddress BRGlide: 0x10013fc0
+ */
+int GetInterpolatedFrameCount(void);
+
 #ifdef __cplusplus
 }
 #endif

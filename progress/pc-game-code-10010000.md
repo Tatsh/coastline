@@ -1,6 +1,6 @@
 # PC port game code from 0x10010000 to 0x10020000
 
-46 of 157 routines done.
+47 of 157 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -165,4 +165,4 @@ the same name, for a routine the port retained from the N64 game.
 | `EnableTextShadow`                                     |        | ✅ `0x8022f4dc` |      1 |      8 | `0x10019240` | `0x10016800` | `void EnableTextShadow(void)`                                                                                                                                                                                                                |
 | `ShadowClipPlaneDistance_MinU`                         |        |                 |      1 |      8 | `0x10010960` | `0x1000dec0` | `undefined ShadowClipPlaneDistance_MinU()`                                                                                                                                                                                                   |
 | `ShadowClipPlaneDistance_MinV`                         |        |                 |      1 |      8 | `0x10010980` | `0x1000dee0` | `undefined ShadowClipPlaneDistance_MinV()`                                                                                                                                                                                                   |
-| `GetInterpolatedFrameCount`                            |        |                 |      2 |      6 | `0x10016a50` | `0x10013fc0` | `int GetInterpolatedFrameCount(void)`                                                                                                                                                                                                        |
+| `GetInterpolatedFrameCount`                            |   ✅   |                 |      2 |      6 | `0x10016a50` | `0x10013fc0` | `int GetInterpolatedFrameCount(void)`                                                                                                                                                                                                        |

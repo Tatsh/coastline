@@ -9,3 +9,9 @@ void InvalidateFrameSnapshotSlots(void) {
         g_bFrameSnapshotsInitialized = false;
     }
 }
+
+int g_dwInterpolatedFrameCount;
+
+int GetInterpolatedFrameCount(void) {
+    return g_dwInterpolatedFrameCount;
+}
