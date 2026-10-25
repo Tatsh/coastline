@@ -752,9 +752,9 @@ void SubmitTriangleToRenderBuffer(GbiVertex *pVertex0, GbiVertex *pVertex1, GbiV
     }
 }
 
-static inline void ScaleCachedVertexTexCoords(GbiVertex *pVertex) {
-    pVertex->fU = pVertex->fS * g_fTexCoordScaleS;
-    pVertex->fV = pVertex->fT * g_fTexCoordScaleT;
+void ScaleVertexTexCoords(GbiVertex *pVertex, const GbiVertexSource *pSource) {
+    pVertex->fU = pSource->fS * g_fTexCoordScaleS;
+    pVertex->fV = pSource->fT * g_fTexCoordScaleT;
 }
 
 void SubmitIndexedTriangle(int nVertex0, int nVertex1, int nVertex2) {
@@ -769,10 +769,29 @@ void SubmitIndexedTriangle(int nVertex0, int nVertex1, int nVertex2) {
         ClipAndSubmitTriangle(pVertex0, pVertex1, pVertex2);
         return;
     }
-    ScaleCachedVertexTexCoords(pVertex0);
-    ScaleCachedVertexTexCoords(pVertex1);
-    ScaleCachedVertexTexCoords(pVertex2);
+    ScaleVertexTexCoords(pVertex0, &pVertex0->source);
+    ScaleVertexTexCoords(pVertex1, &pVertex1->source);
+    ScaleVertexTexCoords(pVertex2, &pVertex2->source);
     SubmitTriangleToRenderBuffer(pVertex0, pVertex1, pVertex2);
+}
+
+// Submit the triangle of the entries of g_aGbiVertexCache in the low three bytes of a word, from
+// the third.
+static inline void SubmitGbiTriangleWord(unsigned dwWord) {
+    SubmitIndexedTriangle(dwWord >> 16 & 0xff, dwWord >> 8 & 0xff, dwWord & 0xff);
+}
+
+GbiCommand *HandleGbiTri1Smooth(GbiCommand *pCommand) {
+    FlushDirtyRenderStates();
+    SubmitGbiTriangleWord(pCommand->w1);
+    return pCommand + 1;
+}
+
+GbiCommand *HandleGbiTri2Smooth(GbiCommand *pCommand) {
+    FlushDirtyRenderStates();
+    SubmitGbiTriangleWord(pCommand->w0);
+    SubmitGbiTriangleWord(pCommand->w1);
+    return pCommand + 1;
 }
 
 // The colours of the combine modes that draw in one colour.

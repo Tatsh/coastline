@@ -637,6 +637,14 @@ extern void (*g_pfnUploadTextureEntryToSurface)(int nEntry, unsigned dwUnused);
 GbiCommand *HandleGbiLoadPreparedTexture(GbiCommand *pCommand);
 
 #if TGR_RENDERER == TGR_RENDERER_D3D
+/** The vertex a command of the display lists loaded. The layout is not recovered in full. */
+struct GbiVertexSource {
+    char abUnknown0[0x10];  /* +0x00 */
+    float fS;               /*!< The s of the texture before g_fTexCoordScaleS. */
+    float fT;               /*!< The t of the texture before g_fTexCoordScaleT. */
+    char abUnknown18[0x10]; /* +0x18 */
+};
+
 /** A vertex of the display lists after its transform. The layout is not recovered in full. */
 struct GbiVertex {
     float fX;               /*!< The x on the screen. */
@@ -651,10 +659,7 @@ struct GbiVertex {
     float fV;               /*!< The v of the texture. */
     char abUnknown2C[0x10]; /* +0x2C */
     int nClipFlags;         /*!< The planes of the view the vertex lies outside, a bit for each. */
-    char abUnknown40[0x10]; /* +0x40 */
-    float fS;               /*!< The s of the texture before g_fTexCoordScaleS. */
-    float fT;               /*!< The t of the texture before g_fTexCoordScaleT. */
-    char abUnknown58[0x10]; /* +0x58 */
+    GbiVertexSource source; /*!< The vertex as the command loaded it. */
     int nRenderBufferIndex; /*!< The entry of g_renderBuffer of the vertex, -1 for none. */
 };
 
@@ -795,6 +800,15 @@ extern float g_fTexCoordScaleS;
  * @ghidraAddress BRD3D: 0x118aa090
  */
 extern float g_fTexCoordScaleT;
+
+/**
+ * Scale the texture coordinates of a vertex as it was loaded into those of the vertex.
+ *
+ * @param pVertex The vertex.
+ * @param pSource The vertex as it was loaded.
+ * @ghidraAddress BRD3D: 0x1001e4b0
+ */
+void ScaleVertexTexCoords(GbiVertex *pVertex, const GbiVertexSource *pSource);
 
 /**
  * Clip a triangle to the planes of the view and submit what remains.
@@ -975,22 +989,26 @@ GbiCommand *HandleGbiMatrix(GbiCommand *pCommand);
 GbiCommand *HandleGbiVertexUnlit(GbiCommand *pCommand);
 
 /**
- * Draw one triangle with smooth shading.
+ * Draw one triangle with smooth shading, after giving the device the dirty render states.
  *
- * @param pCommand The command.
+ * @param pCommand The command, the entries of g_aGbiVertexCache of the triangle in the low three
+ * bytes of its second word.
  * @return The next command.
  * @ghidraAddress BRD3D: 0x1001cff0
  * @ghidraAddress BRGlide: 0x1001ecf0
+ * @stub{BRGlide}
  */
 GbiCommand *HandleGbiTri1Smooth(GbiCommand *pCommand);
 
 /**
- * Draw two triangles with smooth shading.
+ * Draw two triangles with smooth shading, after giving the device the dirty render states.
  *
- * @param pCommand The command.
+ * @param pCommand The command, the entries of g_aGbiVertexCache of each triangle in the low three
+ * bytes of each word.
  * @return The next command.
  * @ghidraAddress BRD3D: 0x1001e170
  * @ghidraAddress BRGlide: 0x1001fa30
+ * @stub{BRGlide}
  */
 GbiCommand *HandleGbiTri2Smooth(GbiCommand *pCommand);
 
