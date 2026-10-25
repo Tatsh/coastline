@@ -235,6 +235,52 @@ GbiCommand *HandleGbiNoOp(GbiCommand *pCommand) {
     return pCommand + 1;
 }
 
+int g_dwGbiNumLights;
+GbiLight g_aGbiLights[GBI_LIGHT_COUNT];
+int g_bGbiLightsTransformed;
+
+// The words a move word command sets, by the index in the low byte of its first word.
+#define GBI_MOVE_WORD_NUM_LIGHT 2
+#define GBI_MOVE_WORD_FOG 8
+#define GBI_MOVE_WORD_LIGHT_COLOR 10
+#define GBI_MOVE_WORD_PERSPECTIVE_NORMALIZE 14
+
+// The bytes of the offset of a move word command for each light.
+#define GBI_MOVE_WORD_LIGHT_STRIDE 32
+
+static inline void SetGbiLightColor(unsigned char *pColor, unsigned dwRgba) {
+    pColor[0] = static_cast<unsigned char>(dwRgba >> 24);
+    pColor[1] = static_cast<unsigned char>(dwRgba >> 16);
+    pColor[2] = static_cast<unsigned char>(dwRgba >> 8);
+}
+
+GbiCommand *HandleGbiMoveWord(GbiCommand *pCommand) {
+    unsigned dwOffset;
+
+    switch (static_cast<signed char>(pCommand->w0)) {
+    case GBI_MOVE_WORD_NUM_LIGHT:
+        g_dwGbiNumLights = pCommand->w1 >> 5 & 0xf;
+        break;
+    case GBI_MOVE_WORD_LIGHT_COLOR:
+        dwOffset = pCommand->w0 >> 8 & 0xffff;
+        if (dwOffset & 0xf) {
+            SetGbiLightColor(g_aGbiLights[dwOffset / GBI_MOVE_WORD_LIGHT_STRIDE].abColorCopy,
+                             pCommand->w1);
+        } else {
+            SetGbiLightColor(g_aGbiLights[dwOffset / GBI_MOVE_WORD_LIGHT_STRIDE].abColor,
+                             pCommand->w1);
+        }
+        g_bGbiLightsTransformed = false;
+        break;
+    // The fog and the normalisation of the perspective have cases of their own that do nothing.
+    case GBI_MOVE_WORD_FOG:
+    case GBI_MOVE_WORD_PERSPECTIVE_NORMALIZE:
+    default:
+        break;
+    }
+    return pCommand + 1;
+}
+
 int g_dwScissorLeft;
 int g_dwScissorTop;
 int g_dwScissorRight;

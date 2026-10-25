@@ -454,6 +454,52 @@ extern float g_fViewportTranslateY;
  */
 GbiCommand *HandleGbiSetViewport(GbiCommand *pCommand);
 
+/** A light of the display lists. The layout is not recovered past its colours. */
+struct GbiLight {
+    unsigned char abColor[3];     /*!< The red, green, and blue of the light. */
+    unsigned char bPad3;          /* +0x03 */
+    unsigned char abColorCopy[3]; /*!< The second copy of the colour, as the console has. */
+    unsigned char bPad7;          /* +0x07 */
+    char abUnknown8[8];           /* +0x08 */
+};
+
+/** The number of entries of g_aGbiLights. */
+#define GBI_LIGHT_COUNT 8
+
+/**
+ * The number of lights the display lists set, as their command gives it.
+ *
+ * @ghidraAddress BRD3D: 0x104bc190
+ * @ghidraAddress BRGlide: 0x105ccfd0
+ */
+extern int g_dwGbiNumLights;
+
+/**
+ * The lights of the display lists.
+ *
+ * @ghidraAddress BRD3D: 0x104bbe38
+ * @ghidraAddress BRGlide: 0x105ccc78
+ */
+extern GbiLight g_aGbiLights[GBI_LIGHT_COUNT];
+
+/**
+ * Whether the lights were transformed since they last changed.
+ *
+ * @ghidraAddress BRD3D: 0x104c5180
+ * @ghidraAddress BRGlide: 0x105d17d0
+ */
+extern int g_bGbiLightsTransformed;
+
+/**
+ * Set the number of lights or the colour of a light. Every other word is skipped.
+ *
+ * @param pCommand The command, the index of the word in the low byte of its first word.
+ * @return The next command.
+ * @ghidraAddress BRD3D: 0x100242f0
+ * @ghidraAddress BRGlide: 0x100239c0
+ */
+GbiCommand *HandleGbiMoveWord(GbiCommand *pCommand);
+
 #if TGR_RENDERER == TGR_RENDERER_D3D
 /**
  * Set the primitive colour from the RGBA colour of the command.
