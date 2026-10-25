@@ -82,26 +82,48 @@ extern HACCEL g_hAccelTable;
 extern const char *g_pszMainWindowClassName;
 
 /**
- * Whether the application is active. A frame runs only while it, g_dwActivateState, and not
- * g_dwActivateMinimized are set.
+ * The first parameter of the last `WM_ACTIVATE`. A frame runs only while it and
+ * g_dwActivateState are set and g_dwActivateMinimized is not.
  *
  * @ghidraAddress BRD3D: 0x10680598
  */
-extern bool g_dwAppActive;
+extern WPARAM g_dwAppActive;
 
 /**
- * Whether the main window is activated.
+ * How the main window is activated, `WA_INACTIVE`, `WA_ACTIVE`, or `WA_CLICKACTIVE`.
  *
  * @ghidraAddress BRD3D: 0x1068059c
  */
-extern bool g_dwActivateState;
+extern int g_dwActivateState;
 
 /**
  * Whether the main window is minimised.
  *
  * @ghidraAddress BRD3D: 0x106805a0
  */
-extern bool g_dwActivateMinimized;
+extern int g_dwActivateMinimized;
+
+/**
+ * Whether the main window is minimised.
+ *
+ * @ghidraAddress BRD3D: 0x118ac230
+ */
+extern bool g_bWindowMinimized;
+
+/**
+ * Whether the main window is maximised.
+ *
+ * @ghidraAddress BRD3D: 0x118ac234
+ */
+extern bool g_bWindowMaximized;
+
+/**
+ * Release the subsystems of the game as the main window goes.
+ *
+ * @param nReason 0 from the window. Its meaning is not recovered yet.
+ * @ghidraAddress BRD3D: 0x10038f30
+ */
+void ShutdownApplication(int nReason);
 
 class DirectDrawRenderer;
 

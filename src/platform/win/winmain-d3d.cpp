@@ -3,6 +3,7 @@
  * Entry point of the Direct3D library. The launcher loads BRD3D.dll and calls its RallyMain
  * export with the arguments of WinMain().
  */
+#include <cstdlib>
 #include <cstring>
 
 #include <windows.h>
@@ -353,4 +354,166 @@ LRESULT CALLBACK MainWindowProc(HWND hWnd, UINT nMessage, WPARAM wParam, LPARAM 
         return DetachRenderDeviceFromWindow(hWnd, lParam);
     }
     return DefWindowProcA(hWnd, nMessage, wParam, lParam);
+}
+
+// The renderer the window stores, set by AttachRenderDeviceToWindow().
+static inline DirectDrawRenderer *GetWindowRenderer(HWND hWnd) {
+    return reinterpret_cast<DirectDrawRenderer *>(GetWindowLongA(hWnd, GWL_USERDATA));
+}
+
+static inline bool IsRendererReady(const DirectDrawRenderer *pRenderer) {
+    return pRenderer != nullptr &&
+           (pRenderer->dwRenderStateFlags & RENDERER_STATE_READY) == RENDERER_STATE_READY;
+}
+
+// Whether a renderer draws the whole screen: ready, in front, and with the screen not given to GDI.
+static inline bool IsRendererFullScreen(const DirectDrawRenderer *pRenderer) {
+    return IsRendererReady(pRenderer) && (pRenderer->dwFlags & 8) != 0 &&
+           pRenderer->nGdiModeRefCount == 0;
+}
+
+LRESULT HandleWindowActivate(HWND hWnd, WPARAM wParam, LPARAM lParam) {
+    return DefWindowProcA(hWnd, WM_ACTIVATE, wParam, lParam);
+}
+
+LRESULT HandleWindowClose(HWND hWnd) {
+    DestroyWindow(hWnd);
+    return 0;
+}
+
+LRESULT HandleWindowCommand(HWND hWnd, WPARAM wParam, LPARAM lParam) {
+    return DefWindowProcA(hWnd, WM_COMMAND, wParam, lParam);
+}
+
+int ReturnZero(void) {
+    return 0;
+}
+
+LRESULT HandleWindowDestroy(HWND hWnd) {
+    ShutdownApplication(0);
+    PostQuitMessage(0);
+    return 0;
+}
+
+LRESULT HandleDisplayChange(HWND hWnd) {
+    // The original calls an empty method of the renderer, whose code is shared with ReturnZero().
+    if (GetWindowRenderer(hWnd) != nullptr) {
+        ReturnZero();
+    }
+    return 0;
+}
+
+LRESULT HandleWindowEraseBackground(HWND hWnd, WPARAM wParam, LPARAM lParam) {
+    if (IsRendererFullScreen(GetWindowRenderer(hWnd))) {
+        return 1;
+    }
+    return DefWindowProcA(hWnd, WM_ERASEBKGND, wParam, lParam);
+}
+
+LRESULT HandleWindowEnterMenuLoop(HWND hWnd, WPARAM wParam, LPARAM lParam) {
+    DirectDrawRenderer *pRenderer = GetWindowRenderer(hWnd);
+
+    if (IsRendererReady(pRenderer)) {
+        pRenderer->AdjustGdiModeRefCount(true);
+        SetCursor(g_hArrowCursor);
+    }
+    return DefWindowProcA(hWnd, WM_ENTERMENULOOP, wParam, lParam);
+}
+
+LRESULT HandleWindowExitMenuLoop(HWND hWnd, WPARAM wParam, LPARAM lParam) {
+    DirectDrawRenderer *pRenderer = GetWindowRenderer(hWnd);
+
+    if (IsRendererReady(pRenderer)) {
+        SetCursor(nullptr);
+        pRenderer->AdjustGdiModeRefCount(false);
+    }
+    return DefWindowProcA(hWnd, WM_EXITMENULOOP, wParam, lParam);
+}
+
+LRESULT HandleWindowGetMinMaxInfo(HWND hWnd, WPARAM wParam, LPARAM lParam) {
+    DirectDrawRenderer *pRenderer = GetWindowRenderer(hWnd);
+    MINMAXINFO *pInfo = reinterpret_cast<MINMAXINFO *>(lParam);
+    RECT rc;
+
+    // The window takes the size of the viewport alone while the display mode is set.
+    if (pRenderer == nullptr || (pRenderer->dwRenderStateFlags & 2) == 0 || g_bWindowMinimized) {
+        return DefWindowProcA(hWnd, WM_GETMINMAXINFO, wParam, lParam);
+    }
+    pRenderer->GetDeviceViewportRect(&rc);
+    pInfo->ptMinTrackSize.x = pInfo->ptMaxTrackSize.x = abs(rc.right - rc.left);
+    pInfo->ptMinTrackSize.y = pInfo->ptMaxTrackSize.y = abs(rc.bottom - rc.top);
+    return 0;
+}
+
+LRESULT HandleWindowMove(HWND hWnd, WPARAM wParam, LPARAM lParam) {
+    return DefWindowProcA(hWnd, WM_MOVE, wParam, lParam);
+}
+
+LRESULT HandleWindowNcPaint(HWND hWnd, WPARAM wParam, LPARAM lParam) {
+    if (IsRendererFullScreen(GetWindowRenderer(hWnd)) && !g_bWindowMinimized) {
+        return 0;
+    }
+    return DefWindowProcA(hWnd, WM_NCPAINT, wParam, lParam);
+}
+
+LRESULT HandleWindowSetCursor(HWND hWnd, WPARAM wParam, LPARAM lParam) {
+    DirectDrawRenderer *pRenderer = GetWindowRenderer(hWnd);
+
+    if (pRenderer == nullptr || (pRenderer->dwRenderStateFlags & 2) == 0) {
+        return DefWindowProcA(hWnd, WM_SETCURSOR, wParam, lParam);
+    }
+    // The cursor shows only while the screen is given to GDI or the renderer is behind.
+    if (pRenderer->nGdiModeRefCount == 0 && (pRenderer->dwFlags & 8) != 0) {
+        SetCursor(nullptr);
+    } else {
+        SetCursor(g_hArrowCursor);
+    }
+    return 1;
+}
+
+LRESULT HandleWindowSize(HWND hWnd, WPARAM wParam, LPARAM lParam) {
+    DirectDrawRenderer *pRenderer = GetWindowRenderer(hWnd);
+
+    switch (wParam) {
+    case SIZE_RESTORED:
+        // A window restored after it was minimised gets its lost surfaces back.
+        if (g_bWindowMinimized) {
+            if (pRenderer != nullptr) {
+                pRenderer->RestoreLostSurfaces();
+            }
+            g_bWindowMaximized = false;
+            g_bWindowMinimized = false;
+        }
+        return 0;
+    case SIZE_MINIMIZED:
+        g_bWindowMinimized = true;
+        g_bWindowMaximized = false;
+        break;
+    case SIZE_MAXIMIZED:
+        g_bWindowMaximized = true;
+        g_bWindowMinimized = false;
+        break;
+    }
+    return DefWindowProcA(hWnd, WM_SIZE, wParam, lParam);
+}
+
+LRESULT AttachRenderDeviceToWindow(HWND hWnd, LPARAM lParam) {
+    DirectDrawRenderer *pRenderer = reinterpret_cast<DirectDrawRenderer *>(lParam);
+
+    if (!IsRendererReady(pRenderer)) {
+        return 0;
+    }
+    SetWindowLongA(hWnd, GWL_USERDATA, lParam);
+    // Bit 3 of the options marks the renderer of the active window.
+    if (GetActiveWindow() == hWnd) {
+        pRenderer->dwFlags |= 8;
+    } else {
+        pRenderer->dwFlags &= ~8;
+    }
+    return 0;
+}
+
+LRESULT DetachRenderDeviceFromWindow(HWND hWnd, LPARAM lParam) {
+    SetWindowLongA(hWnd, GWL_USERDATA, 0);
+    return 0;
 }

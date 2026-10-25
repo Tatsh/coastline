@@ -9,6 +9,9 @@
 #include <ddraw.h>
 #include <windows.h>
 
+/** A renderer told to take the screen back from GDI that had not given it. */
+#define RENDERER_E_NOT_IN_GDI_MODE static_cast<HRESULT>(0x88762711)
+
 /** A renderer that is missing its window or its host. */
 #define RENDERER_E_NOT_CREATED static_cast<HRESULT>(0x88762712)
 
@@ -77,7 +80,8 @@ public:
     int nUnknown18;                      /* +0x18 */
     int dwRenderStateFlags;              /*!< The objects created, RENDERER_STATE_READY for all. */
     HWND hWnd;                           /*!< The window drawn into. */
-    int anUnknown24[2];                  /* +0x24 */
+    int nGdiModeRefCount;                /*!< How many times the screen was given to GDI. */
+    int nUnknown28;                      /* +0x28 */
     DirectDrawDriver *pDriver;           /*!< The driver selected. */
     void *pDevice;                       /*!< The Direct3D device selected. */
     void *pMode;                         /*!< The display mode selected. */
@@ -93,7 +97,8 @@ public:
     IDirectDrawSurface *pZBuffer;        /*!< The depth buffer attached to pBackBuffer. */
     IDirect3DDevice2 *pD3DDevice;        /*!< The Direct3D device. */
     IDirect3DViewport2 *pViewport;       /*!< The viewport of pD3DDevice. */
-    int anUnknown68[8];                  /* +0x68 */
+    int anUnknown68[4];                  /* +0x68 */
+    RECT rcViewport;                     /*!< The rectangle of the viewport. */
     RenderHost *pHost;                   /*!< The host told when the device changes. */
 
     /**
@@ -247,6 +252,50 @@ public:
      * @ghidraAddress BRD3D: 0x1000b280
      */
     HRESULT SetDeviceNotificationCallback(RenderHost *pRenderHost);
+
+    /**
+     * Give the screen to GDI, with its palette, so a menu or a dialog can show.
+     *
+     * @return `S_OK`, or the error of DirectDraw.
+     * @ghidraAddress BRD3D: 0x1000b170
+     */
+    HRESULT RestoreGdiPaletteAndFlipToGdi();
+
+    /**
+     * Take the screen back from GDI with the palette of the game.
+     *
+     * @return `S_OK`, or the error of DirectDraw.
+     * @ghidraAddress BRD3D: 0x1000b1f0
+     */
+    HRESULT RestoreGamePaletteEntries();
+
+    /**
+     * Give the screen to GDI or take it back. The screen goes to GDI on the first request and
+     * comes back on the last.
+     *
+     * @param bEnter Whether the screen goes to GDI.
+     * @return `S_OK`, the error of the change, or RENDERER_E_NOT_IN_GDI_MODE for a return that
+     * was not requested.
+     * @ghidraAddress BRD3D: 0x1000b220
+     */
+    HRESULT AdjustGdiModeRefCount(bool bEnter);
+
+    /**
+     * Restore the front, back, and depth buffers that were lost, and the textures of the host.
+     *
+     * @return `S_OK`, the error of a restore, or RENDERER_E_NOT_READY.
+     * @ghidraAddress BRD3D: 0x1000b2c0
+     */
+    HRESULT RestoreLostSurfaces();
+
+    /**
+     * The rectangle of the viewport.
+     *
+     * @param pRect Receives the rectangle.
+     * @return `S_OK`, or RENDERER_E_NOT_READY.
+     * @ghidraAddress BRD3D: 0x1000b350
+     */
+    HRESULT GetDeviceViewportRect(RECT *pRect);
 };
 
 /** What the game draws through: the renderer of the main window. */
@@ -268,6 +317,14 @@ public:
      * @ghidraAddress BRD3D: 0x10001180
      */
     int OnDestroyDevice();
+
+    /**
+     * Load the textures again after the surfaces of the renderer were restored.
+     *
+     * @return 0.
+     * @ghidraAddress BRD3D: 0x10001190
+     */
+    int ReloadTextureSurfacesAfterRestore();
 
     /**
      * Draw through a renderer.
@@ -363,6 +420,20 @@ FindDirectDrawDriverByGuid(GUID *pGuid, DirectDrawDriver **ppPrimary, DirectDraw
  * @ghidraAddress BRD3D: 0x1007a1c0
  */
 int ReturnZero(void);
+
+/**
+ * Create the surfaces of every texture.
+ *
+ * @ghidraAddress BRD3D: 0x10024bb0
+ */
+void InitializeAllTextureSurfaces(void);
+
+/**
+ * Whether NullStub() is called after the textures are loaded again.
+ *
+ * @ghidraAddress BRD3D: 0x100ac300
+ */
+extern bool g_dwNullStubEnable;
 
 /**
  * Select the driver, device, and mode of a renderer from the configuration.

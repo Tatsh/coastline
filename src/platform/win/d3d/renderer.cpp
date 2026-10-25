@@ -2,6 +2,8 @@
 
 #include <cstring>
 
+#include "platform/win/boot/app.h"
+
 RenderHost *g_pRenderHost;
 IDirect3D2 *g_pDirect3D2;
 IDirect3DDevice2 *g_pD3DDevice2;
@@ -27,6 +29,14 @@ HRESULT RenderHost::ValidateRenderDeviceState() {
 
 int RenderHost::OnDestroyDevice() {
     ReturnZero();
+    return 0;
+}
+
+int RenderHost::ReloadTextureSurfacesAfterRestore() {
+    InitializeAllTextureSurfaces();
+    if (g_dwNullStubEnable) {
+        NullStub();
+    }
     return 0;
 }
 
@@ -253,6 +263,31 @@ int DirectDrawRenderer::DestroyD3DDevice() {
     return 0;
 }
 
+HRESULT DirectDrawRenderer::AdjustGdiModeRefCount(bool bEnter) {
+    HRESULT hr;
+
+    if (bEnter) {
+        if (++nGdiModeRefCount == 1) {
+            hr = RestoreGdiPaletteAndFlipToGdi();
+            if (FAILED(hr)) {
+                return hr;
+            }
+        }
+        return S_OK;
+    }
+    if (nGdiModeRefCount == 0) {
+        return RENDERER_E_NOT_IN_GDI_MODE;
+    }
+    if (nGdiModeRefCount == 1) {
+        hr = RestoreGamePaletteEntries();
+        if (FAILED(hr)) {
+            return hr;
+        }
+    }
+    nGdiModeRefCount--;
+    return S_OK;
+}
+
 HRESULT DirectDrawRenderer::SetDeviceNotificationCallback(RenderHost *pRenderHost) {
     if (pRenderHost == nullptr) {
         return E_INVALIDARG;
@@ -262,5 +297,41 @@ HRESULT DirectDrawRenderer::SetDeviceNotificationCallback(RenderHost *pRenderHos
     if ((dwRenderStateFlags & RENDERER_STATE_READY) == RENDERER_STATE_READY) {
         pHost->ValidateRenderDeviceState();
     }
+    return S_OK;
+}
+
+// Restore a surface that was lost.
+static inline HRESULT RestoreSurfaceIfLost(IDirectDrawSurface *pSurface) {
+    if (pSurface != nullptr && pSurface->IsLost() != DD_OK) {
+        return pSurface->Restore();
+    }
+    return S_OK;
+}
+
+HRESULT DirectDrawRenderer::RestoreLostSurfaces() {
+    HRESULT hr;
+
+    if ((dwRenderStateFlags & RENDERER_STATE_READY) != RENDERER_STATE_READY) {
+        return RENDERER_E_NOT_READY;
+    }
+    if (FAILED(hr = RestoreSurfaceIfLost(pPrimarySurface)) ||
+        FAILED(hr = RestoreSurfaceIfLost(pZBuffer)) ||
+        FAILED(hr = RestoreSurfaceIfLost(pBackBuffer))) {
+        return hr;
+    }
+    if (pHost != nullptr) {
+        hr = pHost->ReloadTextureSurfacesAfterRestore();
+        if (FAILED(hr)) {
+            return hr;
+        }
+    }
+    return S_OK;
+}
+
+HRESULT DirectDrawRenderer::GetDeviceViewportRect(RECT *pRect) {
+    if ((dwRenderStateFlags & RENDERER_STATE_READY) != RENDERER_STATE_READY) {
+        return RENDERER_E_NOT_READY;
+    }
+    *pRect = rcViewport;
     return S_OK;
 }
