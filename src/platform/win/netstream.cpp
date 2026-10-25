@@ -231,6 +231,20 @@ int ConvertFloatToSignedByte(float fValue) {
     return RoundAndClamp(0.5f - fValue * -8.0f, -128, 127);
 }
 
+unsigned char QuantizeFloatToLightIndex(float fScale) {
+    if (fScale < 128.0f) {
+        return 0;
+    }
+    if (fScale < 171.0f) {
+        return 1;
+    }
+    return fScale < 213.0f ? 2 : 3;
+}
+
+int ConvertDoubleToSignedByte(double dValue) {
+    return RoundAndClamp(0.5 - dValue * -128.0, -128, 127);
+}
+
 float SignedByteToFloat(unsigned char bValue) {
     int nValue = (bValue & 0x20) ? static_cast<signed char>(bValue | 0xc0) : bValue & 0x3f;
     return nValue * -(1.0f / 128.0f);

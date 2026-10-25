@@ -289,6 +289,26 @@ int FloatToSignedShortIndex(float fValue);
 int ConvertFloatToSignedByte(float fValue);
 
 /**
+ * Get the light level of a brightness, the inverse of GetLightLevelScale().
+ *
+ * @param fScale The brightness.
+ * @return 0 below 128, 1 below 171, 2 below 213, and 3 otherwise.
+ * @ghidraAddress BRD3D: 0x100066a0
+ * @ghidraAddress BRGlide: 0x10006a10
+ */
+unsigned char QuantizeFloatToLightIndex(float fScale);
+
+/**
+ * Round -128 times a value to the nearest integer, limited to the range of a signed byte.
+ *
+ * @param dValue The value.
+ * @return The field.
+ * @ghidraAddress BRD3D: 0x10030de0
+ * @ghidraAddress BRGlide: 0x1002a490
+ */
+int ConvertDoubleToSignedByte(double dValue);
+
+/**
  * Scale a signed field of six bits by -1/128.
  *
  * @param bValue The field in the low six bits.
