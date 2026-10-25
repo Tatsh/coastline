@@ -432,3 +432,45 @@ extern NetPlayerProgress g_aNetPlayerProgressSort[NET_PLAYER_STREAM_COUNT];
  * @ghidraAddress BRGlide: 0x1006aad0
  */
 int CompareNetworkPlayerProgressDescending(const void *pA, const void *pB);
+
+/** The largest size of a packet of a NetStream, in bytes. */
+#define NET_PACKET_MAX_SIZE 256
+
+/**
+ * Write a packet of the time of a player: the player with the tag 0xc0, the time in 24 bits, and
+ * a 16-bit value, when the packet fits.
+ *
+ * @param pStream The stream.
+ * @param bPlayer The player, in the low 6 bits.
+ * @param nTime The time, in its low 24 bits.
+ * @param nValue The 16-bit value after the time.
+ * @return Whether the packet fit and was written.
+ * @ghidraAddress BRD3D: 0x10072030
+ * @ghidraAddress BRGlide: 0x1006afa0
+ */
+bool WriteTimeSyncPacket(NetStream *pStream,
+                         unsigned char bPlayer,
+                         unsigned nTime,
+                         unsigned nValue);
+
+/**
+ * The position of each network player in the race, from 0 to 15.
+ *
+ * @ghidraAddress BRD3D: 0x11826b08
+ * @ghidraAddress BRGlide: 0x11849e68
+ */
+extern int g_adwNetPlayerRankPosition[NET_PLAYER_STREAM_COUNT];
+
+/**
+ * Write a packet of the positions of the players: the player with the tag 0x20 and the positions
+ * of g_adwNetPlayerRankPosition, two to a byte with the first in the low 4 bits, when the packet
+ * fits.
+ *
+ * @param pStream The stream.
+ * @param bPlayer The player, in the low 5 bits.
+ * @return Whether the packet fit and was written.
+ * @ghidraAddress BRD3D: 0x10072110
+ * @ghidraAddress BRGlide: 0x1006b080
+ * @stub{BRGlide}
+ */
+bool WritePlayerRankingPacket(NetStream *pStream, unsigned char bPlayer);

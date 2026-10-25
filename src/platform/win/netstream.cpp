@@ -305,3 +305,37 @@ int CompareNetworkPlayerProgressDescending(const void *pA, const void *pB) {
     // A greater progress gives 0 as an equal one does, never -1.
     return pFirst->fProgress < pSecond->fProgress ? 1 : 0;
 }
+
+// The tags of the packets in the high bits of their first byte.
+#define NET_PACKET_TAG_TIME_SYNC 0xc0
+#define NET_PACKET_TAG_RANKING 0x20
+// The bytes of the packets: the tag and the player, then the fields.
+#define TIME_SYNC_PACKET_SIZE 6
+#define RANKING_PACKET_SIZE (1 + NET_PLAYER_STREAM_COUNT / 2)
+
+bool WriteTimeSyncPacket(NetStream *pStream,
+                         unsigned char bPlayer,
+                         unsigned nTime,
+                         unsigned nValue) {
+    if (pStream->StreamGetWriteSize() + TIME_SYNC_PACKET_SIZE > NET_PACKET_MAX_SIZE) {
+        return false;
+    }
+    pStream->StreamWriteByte(bPlayer | NET_PACKET_TAG_TIME_SYNC);
+    pStream->StreamWriteInt24(nTime);
+    pStream->StreamWriteInt16(nValue);
+    return true;
+}
+
+int g_adwNetPlayerRankPosition[NET_PLAYER_STREAM_COUNT];
+
+bool WritePlayerRankingPacket(NetStream *pStream, unsigned char bPlayer) {
+    if (pStream->StreamGetWriteSize() + RANKING_PACKET_SIZE > NET_PACKET_MAX_SIZE) {
+        return false;
+    }
+    pStream->StreamWriteByte(bPlayer | NET_PACKET_TAG_RANKING);
+    for (int i = 0; i < NET_PLAYER_STREAM_COUNT; i += 2) {
+        pStream->StreamWriteByte(static_cast<unsigned char>(
+            g_adwNetPlayerRankPosition[i] | g_adwNetPlayerRankPosition[i + 1] << 4));
+    }
+    return true;
+}
