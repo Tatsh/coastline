@@ -429,6 +429,24 @@ HRESULT StopAllSoundBuffersInList(SoundBufferNode *pHead);
 HRESULT FreeSoundBufferList(SoundBufferNode *pHead);
 
 /**
+ * Set the music up, opening CD audio through MCI when g_dwPlayMusicMode is 1 and starting the
+ * software music otherwise.
+ *
+ * @param hWnd The main window.
+ * @ghidraAddress BRD3D: 0x100025c0
+ * @ghidraAddress BRGlide: 0x100028e0
+ */
+void RouteMusicInitByFlag(HWND hWnd);
+
+/**
+ * Set the volumes of the music and the sound effects from the levels of g_GlobalRallyConfig.
+ *
+ * @ghidraAddress BRD3D: 0x10060d90
+ * @ghidraAddress BRGlide: 0x10059e00
+ */
+void ApplyAudioVolumeSettings(void);
+
+/**
  * Add a user of DirectSound when sound effects play. The first user clears the channels and the
  * banks, allocates the wave format of 22050 Hz, 16 bits, and two channels, and creates
  * DirectSound with priority and its primary buffer, playing in a loop. A step that fails releases

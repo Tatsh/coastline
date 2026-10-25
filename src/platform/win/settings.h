@@ -131,6 +131,7 @@ extern int g_dwPlayMusicMode;
  * Whether sound effects play, from `PlaySFX=`.
  *
  * @ghidraAddress BRD3D: 0x100b5de8
+ * @ghidraAddress BRGlide: 0x100b55f0
  */
 extern bool g_bSoundEnabledIni;
 

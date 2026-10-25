@@ -7,7 +7,11 @@
 #include "platform/win/boot/app.h"
 #include "platform/win/boot/rallyconfig.h"
 #include "platform/win/fileio.h"
+#include "platform/win/input.h"
+#include "platform/win/paintshop.h"
+#include "platform/win/podarchive.h"
 #include "platform/win/settings.h"
+#include "platform/win/sound.h"
 
 // The size of the buffer of a line of BossRally.ini.
 #define INI_LINE_SIZE 256
@@ -202,3 +206,35 @@ void LoadBossRallyIniSettings(const char *pszCmdLine) {
     }
 }
 #endif
+
+// The mode of InitializeRenderSubsystems() of each renderer.
+#if TGR_RENDERER == TGR_RENDERER_D3D
+#define RENDER_BACKEND_MODE 1
+#else
+#define RENDER_BACKEND_MODE 3
+// The value of the second argument of ShowGlideSplashImage() for the splash image.
+#define SPLASH_IMAGE_ARGUMENT 0x2ac7e58b
+#endif
+// The music track OpenBossRallyPodAndInit() selects.
+#define FIRST_MUSIC_TRACK 2
+
+bool OpenBossRallyPodAndInit(void) {
+    g_BossRallyPodArchive.SetFilePath("BossRally.pod");
+    g_BossRallyPodArchive.OpenPodFile();
+    InitializeRenderSubsystems(RENDER_BACKEND_MODE);
+#if TGR_RENDERER == TGR_RENDERER_GLIDE
+    ShowGlideSplashImage("splash.img", SPLASH_IMAGE_ARGUMENT);
+#endif
+    LoadPaintDamageBitmaps();
+    InitializeDirectInput();
+    InitializeKeyboardDevice();
+    if (g_dwPlayMusicMode) {
+        RouteMusicInitByFlag(g_hMainWindow);
+        ApplyAudioVolumeSettings();
+        SetCurrentMusicTrack(FIRST_MUSIC_TRACK);
+    }
+    if (!g_bSoundEnabledIni) {
+        return false;
+    }
+    return InitializeDirectSound();
+}

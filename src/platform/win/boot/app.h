@@ -215,12 +215,23 @@ int GameState_RunFrontEnd(void);
 
 /**
  * Open BossRally.pod, and set up the renderer, the damage bitmaps of the paint, DirectInput, the
- * keyboard, and the music.
+ * keyboard, the music when it plays, and DirectSound when sound is on. The Glide library shows its
+ * splash image once the renderer is set up.
  *
+ * @return The result of InitializeDirectSound(), or false when sound is off.
  * @ghidraAddress BRD3D: 0x10038ec0
  * @ghidraAddress BRGlide: 0x10032530
  */
-void OpenBossRallyPodAndInit(void);
+bool OpenBossRallyPodAndInit(void);
+
+/**
+ * Start the renderer of a mode.
+ *
+ * @param nMode The mode of the renderer, 1 for Direct3D and 3 for Glide.
+ * @ghidraAddress BRD3D: 0x1006aa20
+ * @ghidraAddress BRGlide: 0x100639d0
+ */
+void InitializeRenderSubsystems(int nMode);
 
 /**
  * Load a set of sounds.
@@ -249,7 +260,8 @@ void ResetRenderSubsystems(int nMode, int nWidth, int nHeight, int nBitDepth, in
  * Show an image of the Glide library over the whole screen.
  *
  * @param pszPath The path of the image.
- * @param nUnknown Always 0. Its meaning is not recovered yet.
+ * @param nUnknown 0 for the loading image and 0x2ac7e58b for the splash image. Its meaning is not
+ * recovered yet.
  * @ghidraAddress BRGlide: 0x1006c990
  */
 void ShowGlideSplashImage(const char *pszPath, int nUnknown);

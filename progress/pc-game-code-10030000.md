@@ -1,6 +1,6 @@
 # PC port game code from 0x10030000 to 0x10040000
 
-55 of 307 routines done.
+56 of 307 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -137,7 +137,7 @@ the same name, for a routine the port retained from the N64 game.
 | `RdpDoneThread`                                   |        | ✅ `0x8021bca8` |      1 |    106 | `0x100346e9` | `0x1002dd9a` | `undefined RdpDoneThread()`                                                                                                                                             |
 | `RspDoneThread`                                   |        | ✅ `0x8021bbdc` |      1 |    106 | `0x1003467f` | `0x1002dd30` | `undefined RspDoneThread()`                                                                                                                                             |
 | `EnumPlayersCallback_AddPlayerToList`             |        |                 |      2 |    103 | `0x1003caa0` | `0x10036130` | `undefined EnumPlayersCallback_AddPlayerToList()`                                                                                                                       |
-| `OpenBossRallyPodAndInit`                         |   📝   |                 |      1 |    103 | `0x10038ec0` | `0x10032530` | `undefined OpenBossRallyPodAndInit()`                                                                                                                                   |
+| `OpenBossRallyPodAndInit`                         |   ✅   |                 |      1 |    103 | `0x10038ec0` | `0x10032530` | `bool OpenBossRallyPodAndInit(void)`                                                                                                                                    |
 | `ViRetraceThread`                                 |        | ✅ `0x8021bd68` |      0 |    103 | `0x10034753` | `0x1002de04` | `undefined ViRetraceThread()`                                                                                                                                           |
 | `RestoreCurrentViewport`                          |        | ✅ `0x80219f04` |      1 |    102 | `0x10032df2` | `0x1002c4a3` | `undefined RestoreCurrentViewport()`                                                                                                                                    |
 | `FixupDisplayListPointers`                        |        | ✅ `0x8021d098` |      0 |    101 | `0x10035089` | `0x1002e73a` | `undefined FixupDisplayListPointers()`                                                                                                                                  |

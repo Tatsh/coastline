@@ -42,6 +42,14 @@ extern CarPaintTextureSet g_CarPaintTextureSets[CAR_PAINT_GROUP_COUNT][CAR_PAINT
 extern void *g_apPaintDamageBitmaps[PAINT_DAMAGE_BITMAP_COUNT];
 
 /**
+ * Load the bitmaps of the damage of the paint from `Paint\damage%d.bmp`.
+ *
+ * @ghidraAddress BRD3D: 0x10061410
+ * @ghidraAddress BRGlide: 0x1005a490
+ */
+void LoadPaintDamageBitmaps(void);
+
+/**
  * Free the bitmaps of every set of paint of the cars.
  *
  * @ghidraAddress BRD3D: 0x100613b0
