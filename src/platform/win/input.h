@@ -743,6 +743,15 @@ void SetForceFeedbackLongDuration(void);
 void SetForceFeedbackShortDuration(void);
 
 /**
+ * Start the jolt of force feedback with the duration of g_dwForceFeedbackDuration and its
+ * direction, under the conditions of SetForceFeedbackDirection().
+ *
+ * @ghidraAddress BRD3D: 0x10078ed0
+ * @ghidraAddress BRGlide: 0x100721c0
+ */
+void StartForceFeedbackJolt(void);
+
+/**
  * Create the condition effect, a spring on X and Y that lasts until it stops, and the jolt
  * effect, a square wave, of force feedback of the game controller.
  *

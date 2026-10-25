@@ -563,6 +563,17 @@ void SetForceFeedbackShortDuration(void) {
     }
 }
 
+void StartForceFeedbackJolt(void) {
+    if (!IsForceFeedbackInUse()) {
+        return;
+    }
+    g_DiJoltEffect.dwDuration = g_dwForceFeedbackDuration;
+    if (g_pJoltEffect != nullptr) {
+        // The result of the start is discarded.
+        g_pJoltEffect->SetParameters(&g_DiJoltEffect, DIEP_DURATION | DIEP_DIRECTION | DIEP_START);
+    }
+}
+
 // The saturation and the gain of the effects of force feedback.
 #define FORCE_FEEDBACK_FULL 10000
 // The period of the square wave of the jolt in microseconds.
