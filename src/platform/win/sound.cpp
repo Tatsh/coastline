@@ -775,6 +775,22 @@ bool ResumeLoopingSoundChannels(void) {
     return true;
 }
 
+bool InitSoundChannelWithVolume(
+    short nChannel, int nSample, int nLength, int nLoopLength, DWORD dwLevels) {
+    // The length of the sample is not read.
+    (void)nLength;
+    g_aSoundChannelRequested[nChannel].nSample = nSample;
+    g_aSoundChannelRequested[nChannel].dwReserved = 0;
+    g_aSoundChannelRequested[nChannel].dwStereoLevels = dwLevels;
+    if (!AssignAudioChannel(nSample, nChannel)) {
+        return false;
+    }
+    // The results of the calls are discarded.
+    SetAudioChannelLooping(nChannel, nLoopLength);
+    SetAudioChannelStereoLevels(nChannel, dwLevels);
+    return StartSoundChannelPlayback(nSample, nChannel, nLoopLength);
+}
+
 bool SetStereoAndPlaySoundChannel(int nSample, int nChannel, DWORD dwLevels, int bLooping) {
     SoundBufferNode *pNode;
 
