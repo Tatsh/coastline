@@ -726,6 +726,55 @@ bool StartSoundChannelPlayback(int nSample, int nChannel, int bLooping) {
     return true;
 }
 
+int g_bAltLoopingSoundSet;
+
+// The sample of the alternative set of the looping sounds.
+#define ALT_LOOPING_SAMPLE 25
+
+static inline void MoveLoopingSoundChannel(int nChannel, int nFromSample, int nToSample) {
+    SoundBufferNode *pNode = g_aSoundChannelBuffers[nFromSample].apChannelBuffers[nChannel];
+
+    if (pNode == nullptr || pNode != g_apSoundChannelBuffer[nChannel]) {
+        return;
+    }
+    // The results of the calls are discarded.
+    AssignAudioChannel(nToSample, nChannel);
+    SetAudioChannelLooping(nChannel, true);
+    SetAudioChannelFrequency(nChannel, g_aSoundChannelRequested[nChannel].llFrequency);
+    SetAudioChannelStereoLevels(nChannel, g_aSoundChannelRequested[nChannel].dwStereoLevels);
+    StartSoundChannelPlayback(nToSample, nChannel, true);
+}
+
+bool ResumeLoopingSoundChannels(void) {
+    int nChannel;
+
+    for (nChannel = 0; nChannel < SOUND_CHANNEL_COUNT; nChannel++) {
+        if (g_bAltLoopingSoundSet) {
+            MoveLoopingSoundChannel(nChannel, 0, ALT_LOOPING_SAMPLE);
+        } else {
+            MoveLoopingSoundChannel(nChannel, ALT_LOOPING_SAMPLE, 0);
+        }
+        if (g_aSoundChannelState[nChannel].nSample != g_aSoundChannelRequested[nChannel].nSample) {
+            g_aSoundChannelState[nChannel].nSample = g_aSoundChannelRequested[nChannel].nSample;
+        }
+        if (g_aSoundChannelState[nChannel].llFrequency !=
+            g_aSoundChannelRequested[nChannel].llFrequency) {
+            SetAudioChannelFrequency(nChannel, g_aSoundChannelRequested[nChannel].llFrequency);
+        }
+        if (g_aSoundChannelState[nChannel].dwStereoLevels !=
+            g_aSoundChannelRequested[nChannel].dwStereoLevels) {
+            SetAudioChannelStereoLevels(nChannel,
+                                        g_aSoundChannelRequested[nChannel].dwStereoLevels);
+        }
+        if (g_aSoundChannelRequested[nChannel].llFrequency != 0 &&
+            !IsSoundChannelPlaying(nChannel)) {
+            g_aSoundChannelRequested[nChannel].llFrequency = 0;
+            g_aSoundChannelState[nChannel].llFrequency = 0;
+        }
+    }
+    return true;
+}
+
 bool SetStereoAndPlaySoundChannel(int nSample, int nChannel, DWORD dwLevels, int bLooping) {
     SoundBufferNode *pNode;
 

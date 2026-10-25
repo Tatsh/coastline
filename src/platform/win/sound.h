@@ -746,7 +746,8 @@ bool SetSoundBufferStereoLevels(SoundBufferNode *pNode, DWORD dwLevels);
 
 /** The settings last applied to the buffer of a channel. */
 struct SoundChannelState {
-    char abUnknown00[8];   /* +0x00 */
+    int nSample;           /*!< The sample of the channel. */
+    char abUnknown04[4];   /* +0x04 */
     long long llFrequency; /*!< The frequency, before the scale of the sample. */
     char abUnknown10[4];   /* +0x10 */
     DWORD dwStereoLevels;  /*!< The levels of the two sides, as SetSoundBufferStereoLevels(). */
@@ -823,6 +824,26 @@ extern SoundChannelState g_aSoundChannelRequested[SOUND_CHANNEL_COUNT];
  * @ghidraAddress BRGlide: 0x1006b880
  */
 bool StartSoundChannelPlayback(int nSample, int nChannel, int bLooping);
+
+/**
+ * Whether the channels that play sample 0 move to sample 25, rather than back.
+ *
+ * @ghidraAddress BRD3D: 0x118290f4
+ * @ghidraAddress BRGlide: 0x1184c454
+ */
+extern int g_bAltLoopingSoundSet;
+
+/**
+ * Move each channel that plays the sample of the other set to the sample of the current set and
+ * play it in a loop again, then record the sample requested for each channel and apply the
+ * frequency and the levels requested for it. A channel whose requested frequency is not 0 and that
+ * no longer plays has the frequency reset to 0.
+ *
+ * @return Always true.
+ * @ghidraAddress BRD3D: 0x10072e60
+ * @ghidraAddress BRGlide: 0x1006bdd0
+ */
+bool ResumeLoopingSoundChannels(void);
 
 /**
  * Set the levels of the two sides of a channel of a sample and play it, when sound is on.
