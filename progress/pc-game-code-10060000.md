@@ -1,6 +1,6 @@
 # PC port game code from 0x10060000 to 0x10070000
 
-26 of 169 routines done.
+30 of 169 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -106,7 +106,7 @@ the same name, for a routine the port retained from the N64 game.
 | `CopyBgr24ToRgba32Flipped`               |   ✅   |                 |      1 |    102 | `0x10060f00` | `0x10059f70` | `undefined CopyBgr24ToRgba32Flipped()`                                                                                                   |
 | `LoadBitmapFromFile`                     |   ✅   |                 |      3 |    101 | `0x100611a0` | `0x1005a210` | `undefined LoadBitmapFromFile()`                                                                                                         |
 | `RallyConfig::GetInputBindingFlags`      |   ✅   |                 |      6 |     98 | `0x10069bc0` | `0x10062c30` | `WORD GetInputBindingFlags(RallyConfig * this, int nDevice, int nControl)`                                                               |
-| `ResetRenderSubsystems`                  |   📝   |                 |      3 |     90 | `0x1006a9c0` | `0x10063970` | `undefined ResetRenderSubsystems()`                                                                                                      |
+| `ResetRenderSubsystems`                  |   ✅   |                 |      3 |     90 | `0x1006a9c0` | `0x10063970` | `void ResetRenderSubsystems(int nMode, int nWidth, int nHeight, int nBitDepth, int nExtra)`                                              |
 | `ConvertBitmap24ToRgba32`                |   ✅   |                 |      1 |     89 | `0x10060ea0` | `0x10059f10` | `void * ConvertBitmap24ToRgba32(BITMAP * pBitmap)`                                                                                       |
 | `RallyConfig::GetInputBindingKeyCode`    |   ✅   |                 |      6 |     87 | `0x10069c30` | `0x10062ca0` | `BYTE GetInputBindingKeyCode(RallyConfig * this, int nDevice, int nControl)`                                                             |
 | `MarkTrackSections`                      |        | ✅ `0x80255ba0` |      2 |     82 | `0x10061660` | `0x1005a6e0` | `undefined MarkTrackSections()`                                                                                                          |
@@ -134,12 +134,12 @@ the same name, for a routine the port retained from the N64 game.
 | `RecordVehicleKeyframe`                  |        |                 |      1 |     44 | `0x100609e0` | `0x10059a50` | `void RecordVehicleKeyframe(void * pVideoSettings)`                                                                                      |
 | `CompareRacerSortKeyAscending`           |        |                 |      2 |     43 | `0x10066620` | `0x1005f690` | `undefined CompareRacerSortKeyAscending()`                                                                                               |
 | `FillMemoryPatternBytes`                 |        |                 |      2 |     43 | `0x10060780` | `0x100597f0` | `void FillMemoryPatternBytes(void * pDest, uint cb, byte value)`                                                                         |
-| `SetRenderBackendMode`                   |        |                 |      2 |     43 | `0x1006a990` | `0x10063940` | `undefined SetRenderBackendMode()`                                                                                                       |
+| `SetRenderBackendMode`                   |   ✅   |                 |      2 |     43 | `0x1006a990` | `0x10063940` | `void SetRenderBackendMode(int nMode)`                                                                                                   |
 | `PlaneDistance`                          |        | ✅ `0x8025b704` |     14 |     41 | `0x1006c9a0` | `0x10065950` | `float PlaneDistance(float * pVecA, float fBias, float * pVecB)`                                                                         |
 | `MatrixToPositionQuaternion`             |        |                 |      1 |     41 | `0x100695a0` | `0x10062610` | `undefined MatrixToPositionQuaternion()`                                                                                                 |
 | `PushCollisionTriangle`                  |        | ✅ `0x8025c24c` |      2 |     38 | `0x1006d280` | `0x10066230` | `undefined PushCollisionTriangle()`                                                                                                      |
 | `PlaySoundOnAllPlayerChannels`           |        |                 |      1 |     37 | `0x100683d0` | `0x10061440` | `undefined PlaySoundOnAllPlayerChannels()`                                                                                               |
-| `InitializeRenderSubsystems`             |   📝   |                 |      1 |     36 | `0x1006aa20` | `0x100639d0` | `undefined InitializeRenderSubsystems()`                                                                                                 |
+| `InitializeRenderSubsystems`             |   ✅   |                 |      1 |     36 | `0x1006aa20` | `0x100639d0` | `void InitializeRenderSubsystems(int nMode)`                                                                                             |
 | `IsTriangleInUnitCube`                   |        | ✅ `0x8025d018` |      3 |     35 | `0x1006daf0` | `0x10066aa0` | `undefined IsTriangleInUnitCube()`                                                                                                       |
 | `MouseDevice::Init`                      |   ✅   |                 |      1 |     35 | `0x10060280` | `0x100592f0` | `MouseDevice * Init(MouseDevice * this)`                                                                                                 |
 | `Vehicle::ClearVehicleDamageState`       |        | ✅ `0x80228a3c` |      1 |     34 | `0x10065710` | `0x1005e780` | `undefined ClearVehicleDamageState(Vehicle * this)`                                                                                      |
@@ -177,4 +177,4 @@ the same name, for a routine the port retained from the N64 game.
 | `GetGhostKeyframeBuffer`                 |        |                 |      2 |      6 | `0x1006ab90` | `0x10063b40` | `undefined GetGhostKeyframeBuffer()`                                                                                                     |
 | `GetGhostPlaybackKeyframeBuffer`         |        |                 |      2 |      6 | `0x1006adf0` | `0x10063da0` | `undefined GetGhostPlaybackKeyframeBuffer()`                                                                                             |
 | `IsGhostRecordingActive`                 |        |                 |      1 |      6 | `0x1006aaa0` | `0x10063a50` | `undefined IsGhostRecordingActive()`                                                                                                     |
-| `GetRenderBackendMode`                   |   📝   |                 |      1 |      6 | `0x1006a980` |              | `int GetRenderBackendMode(void)`                                                                                                         |
+| `GetRenderBackendMode`                   |   ✅   |                 |      1 |      6 | `0x1006a980` |              | `int GetRenderBackendMode(void)`                                                                                                         |

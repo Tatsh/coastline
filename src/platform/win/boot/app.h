@@ -225,15 +225,6 @@ int GameState_RunFrontEnd(void);
 bool OpenBossRallyPodAndInit(void);
 
 /**
- * Start the renderer of a mode.
- *
- * @param nMode The mode of the renderer, 1 for Direct3D and 3 for Glide.
- * @ghidraAddress BRD3D: 0x1006aa20
- * @ghidraAddress BRGlide: 0x100639d0
- */
-void InitializeRenderSubsystems(int nMode);
-
-/**
  * Load a set of sounds.
  *
  * @param nSet The set.
@@ -241,19 +232,6 @@ void InitializeRenderSubsystems(int nMode);
  * @ghidraAddress BRGlide: 0x1006c290
  */
 void LoadSoundSet(int nSet);
-
-/**
- * Shut the renderer down when one runs, and start the renderer of a mode in a display mode.
- *
- * @param nMode The mode of the renderer, 1 for Direct3D and 3 for Glide.
- * @param nWidth The width of the display mode.
- * @param nHeight The height of the display mode.
- * @param nBitDepth The bits of a pixel of the display mode.
- * @param nExtra The fourth value of the display mode.
- * @ghidraAddress BRD3D: 0x1006a9c0
- * @ghidraAddress BRGlide: 0x10063970
- */
-void ResetRenderSubsystems(int nMode, int nWidth, int nHeight, int nBitDepth, int nExtra);
 
 #if TGR_RENDERER == TGR_RENDERER_GLIDE
 /**
@@ -266,27 +244,6 @@ void ResetRenderSubsystems(int nMode, int nWidth, int nHeight, int nBitDepth, in
  */
 void ShowGlideSplashImage(const char *pszPath, int nUnknown);
 #endif
-
-/**
- * Release the renderer of the backend, if one is set.
- *
- * @ghidraAddress BRD3D: 0x10b501cc
- */
-extern void (*g_pfnRenderBackendShutdown)(void);
-
-/**
- * Release the texture subsystem, if one is set.
- *
- * @ghidraAddress BRD3D: 0x118aa0d0
- */
-extern void (*g_pfnShutdownTextureSubsystem)(void);
-
-/**
- * Release the render device, if one is set.
- *
- * @ghidraAddress BRD3D: 0x10690a28
- */
-extern void (*g_pfnRenderDeviceShutdown)(void);
 
 /**
  * Free the buffers of the sectors of the track.
@@ -329,14 +286,6 @@ LRESULT CALLBACK MainWindowProc(HWND hWnd, UINT nMessage, WPARAM wParam, LPARAM 
  * @ghidraAddress BRD3D: 0x10acee50
  */
 extern int g_aVehicles_LapCount;
-
-/**
- * The renderer the game was set to use.
- *
- * @return 1 for the renderer of the window.
- * @ghidraAddress BRD3D: 0x1006a980
- */
-int GetRenderBackendMode(void);
 
 /**
  * Set whether the application is active from the state of `WM_ACTIVATE`.

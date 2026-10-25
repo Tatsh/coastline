@@ -10,6 +10,7 @@
 #include "platform/win/input.h"
 #include "platform/win/paintshop.h"
 #include "platform/win/podarchive.h"
+#include "platform/win/render.h"
 #include "platform/win/settings.h"
 #include "platform/win/sound.h"
 
@@ -207,11 +208,7 @@ void LoadBossRallyIniSettings(const char *pszCmdLine) {
 }
 #endif
 
-// The mode of InitializeRenderSubsystems() of each renderer.
-#if TGR_RENDERER == TGR_RENDERER_D3D
-#define RENDER_BACKEND_MODE 1
-#else
-#define RENDER_BACKEND_MODE 3
+#if TGR_RENDERER == TGR_RENDERER_GLIDE
 // The value of the second argument of ShowGlideSplashImage() for the splash image.
 #define SPLASH_IMAGE_ARGUMENT 0x2ac7e58b
 #endif

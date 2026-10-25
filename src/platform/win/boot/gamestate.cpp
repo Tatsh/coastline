@@ -3,6 +3,7 @@
 #include "platform/win/boot/rallyconfig.h"
 #include "platform/win/frontend.h"
 #include "platform/win/input.h"
+#include "platform/win/render.h"
 #include "platform/win/settings.h"
 #include "platform/win/sound.h"
 #include "platform/win/timer.h"
@@ -25,13 +26,6 @@ int (*g_apfnGameStateHandlers[])(void) = {
 
 // The first set of sounds.
 #define FIRST_SOUND_SET 0
-// The mode of ResetRenderSubsystems() of each renderer.
-#if TGR_RENDERER == TGR_RENDERER_D3D
-#define RENDER_BACKEND_MODE 1
-#else
-#define RENDER_BACKEND_MODE 3
-#endif
-
 // Set the display mode of the configuration with the renderer of the library.
 static inline void ResetConfiguredRenderSubsystems(void) {
     ResetRenderSubsystems(RENDER_BACKEND_MODE,

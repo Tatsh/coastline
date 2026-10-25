@@ -22,6 +22,7 @@
 #include "platform/win/directplay.h"
 #include "platform/win/frametimer.h"
 #include "platform/win/frontend.h"
+#include "platform/win/render.h"
 #include "platform/win/settings.h"
 #include "platform/win/sound.h"
 #include "timing.h"
@@ -403,7 +404,7 @@ LRESULT HandleWindowActivateApp(HWND hWnd, WPARAM wParam, LPARAM lParam) {
         }
         NullStub();
     }
-    if (GetRenderBackendMode() == 1) {
+    if (GetRenderBackendMode() == RENDER_BACKEND_MODE_D3D) {
         pRenderer = GetWindowRenderer(hWnd);
         if (g_dwAppActive) {
             if (pRenderer != nullptr) {
