@@ -63,7 +63,8 @@ WPARAM GetEarMusicEventHandle(void);
 bool SetCurrentMusicTrack(int nModeIndex);
 
 /**
- * Post a request to play a track of the CD audio to the window of the music.
+ * Make a track of the CD audio current, and post a notice of MCI to the window of the music that
+ * the play finished, for the window to play the track.
  *
  * @param nTrack The track.
  * @return Always true.
@@ -92,20 +93,30 @@ bool PlayEarMusicTrack(int nTrack);
 int GetCurrentMusicTrack(void);
 
 /**
- * The track of the CD audio that plays.
+ * The track of the CD audio that plays, as MCI reports it.
  *
- * @return The track.
+ * @return The track, or 0 when no music plays.
  * @ghidraAddress BRD3D: 0x100024c0
+ * @ghidraAddress BRGlide: 0x100027e0
  */
 int GetCdAudioCurrentTrack(void);
 
 /**
  * The track of music the EAR library plays.
  *
- * @return The track.
+ * @return The track, or 0 when no music plays.
  * @ghidraAddress BRD3D: 0x10002490
+ * @ghidraAddress BRGlide: 0x100027b0
  */
 int GetEarMusicCurrentTrack(void);
+
+/**
+ * Whether PostCdAudioPlayNotify() posts its notice. Its meaning is not recovered yet.
+ *
+ * @ghidraAddress BRD3D: 0x10220cdc
+ * @ghidraAddress BRGlide: 0x1021c80c
+ */
+extern bool g_bMusicPaused;
 
 /**
  * Play the tracks of the CD audio from a track on.

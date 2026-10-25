@@ -18,6 +18,58 @@ int g_nMusicTrackMin;
 int g_nMusicTrackMax;
 HWND g_hMusicNotifyWnd;
 bool g_bCdAudioPlaying;
+bool g_bMusicPaused;
+
+int GetEarMusicCurrentTrack(void) {
+    if (g_dwPlayMusicMode == 0 || g_nMusicDeviceRefCount == 0) {
+        return 0;
+    }
+    return g_bEarMusicActive ? g_nCurrentMusicTrack : 0;
+}
+
+int GetCdAudioCurrentTrack(void) {
+    MCI_STATUS_PARMS status;
+
+    if (g_dwPlayMusicMode == 0 || g_nMusicDeviceRefCount == 0 || !g_bEarMusicActive) {
+        return 0;
+    }
+    // The callback is not set and the result of the command is not checked.
+    status.dwItem = MCI_STATUS_CURRENT_TRACK;
+    mciSendCommandA(
+        g_dwMciCdAudioDeviceId, MCI_STATUS, MCI_STATUS_ITEM, reinterpret_cast<DWORD_PTR>(&status));
+    return static_cast<int>(status.dwReturn);
+}
+
+bool PostCdAudioPlayNotify(int nTrack) {
+    if (g_dwPlayMusicMode == 0 || g_nMusicDeviceRefCount == 0) {
+        return true;
+    }
+    g_bCdAudioPlaying = true;
+    g_nCurrentMusicTrack = nTrack;
+    if (g_bEarMusicActive && g_bMusicPaused) {
+        PostMessageA(
+            g_hMusicNotifyWnd, MM_MCINOTIFY, MCI_NOTIFY_SUCCESSFUL, g_dwMciCdAudioDeviceId);
+    }
+    return true;
+}
+
+MCIERROR MciPlayCdTracks(HWND hWnd, unsigned char nTrack) {
+    MCI_PLAY_PARMS play;
+    MCIERROR nError;
+
+    play.dwCallback = reinterpret_cast<DWORD_PTR>(hWnd);
+    play.dwFrom = nTrack;
+    play.dwTo = g_nMusicTrackMax & 0xff;
+    nError = mciSendCommandA(g_dwMciCdAudioDeviceId,
+                             MCI_PLAY,
+                             MCI_NOTIFY | MCI_FROM | MCI_TO,
+                             reinterpret_cast<DWORD_PTR>(&play));
+    if (nError != 0) {
+        mciSendCommandA(g_dwMciCdAudioDeviceId, MCI_CLOSE, 0, 0);
+        return nError;
+    }
+    return 0;
+}
 
 // The commands of the music do nothing without music, a user of its device, and a started
 // channel.
