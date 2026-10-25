@@ -710,13 +710,6 @@
     </member>
     <member kind="function">
       <type />
-      <name>DrawText</name>
-      <anchorfile>winuser/nf-winuser-drawtext?.</anchorfile>
-      <anchor />
-      <arglist>()</arglist>
-    </member>
-    <member kind="function">
-      <type />
       <name>FindWindowA</name>
       <anchorfile>winuser/nf-winuser-findwindowa?.</anchorfile>
       <anchor />
@@ -966,6 +959,220 @@
       <anchorfile>winuser/nf-winuser-wsprintfa?.</anchorfile>
       <anchor />
       <arglist>()</arglist>
+    </member>
+  </compound>
+  <compound kind="file">
+    <name>windows-data-types</name>
+    <filename>../winprog/windows-data-types?.</filename>
+    <member kind="typedef">
+      <type />
+      <name>BOOL</name>
+      <anchorfile>../winprog/windows-data-types?.</anchorfile>
+      <anchor>BOOL</anchor>
+      <arglist />
+    </member>
+    <member kind="typedef">
+      <type />
+      <name>BYTE</name>
+      <anchorfile>../winprog/windows-data-types?.</anchorfile>
+      <anchor>BYTE</anchor>
+      <arglist />
+    </member>
+    <member kind="typedef">
+      <type />
+      <name>CALLBACK</name>
+      <anchorfile>../winprog/windows-data-types?.</anchorfile>
+      <anchor>CALLBACK</anchor>
+      <arglist />
+    </member>
+    <member kind="typedef">
+      <type />
+      <name>COLORREF</name>
+      <anchorfile>../winprog/windows-data-types?.</anchorfile>
+      <anchor>COLORREF</anchor>
+      <arglist />
+    </member>
+    <member kind="typedef">
+      <type />
+      <name>DWORD</name>
+      <anchorfile>../winprog/windows-data-types?.</anchorfile>
+      <anchor>DWORD</anchor>
+      <arglist />
+    </member>
+    <member kind="typedef">
+      <type />
+      <name>DWORD_PTR</name>
+      <anchorfile>../winprog/windows-data-types?.</anchorfile>
+      <anchor>DWORD_PTR</anchor>
+      <arglist />
+    </member>
+    <member kind="typedef">
+      <type />
+      <name>HACCEL</name>
+      <anchorfile>../winprog/windows-data-types?.</anchorfile>
+      <anchor>HACCEL</anchor>
+      <arglist />
+    </member>
+    <member kind="typedef">
+      <type />
+      <name>HANDLE</name>
+      <anchorfile>../winprog/windows-data-types?.</anchorfile>
+      <anchor>HANDLE</anchor>
+      <arglist />
+    </member>
+    <member kind="typedef">
+      <type />
+      <name>HBITMAP</name>
+      <anchorfile>../winprog/windows-data-types?.</anchorfile>
+      <anchor>HBITMAP</anchor>
+      <arglist />
+    </member>
+    <member kind="typedef">
+      <type />
+      <name>HBRUSH</name>
+      <anchorfile>../winprog/windows-data-types?.</anchorfile>
+      <anchor>HBRUSH</anchor>
+      <arglist />
+    </member>
+    <member kind="typedef">
+      <type />
+      <name>HCURSOR</name>
+      <anchorfile>../winprog/windows-data-types?.</anchorfile>
+      <anchor>HCURSOR</anchor>
+      <arglist />
+    </member>
+    <member kind="typedef">
+      <type />
+      <name>HDC</name>
+      <anchorfile>../winprog/windows-data-types?.</anchorfile>
+      <anchor>HDC</anchor>
+      <arglist />
+    </member>
+    <member kind="typedef">
+      <type />
+      <name>HINSTANCE</name>
+      <anchorfile>../winprog/windows-data-types?.</anchorfile>
+      <anchor>HINSTANCE</anchor>
+      <arglist />
+    </member>
+    <member kind="typedef">
+      <type />
+      <name>HKEY</name>
+      <anchorfile>../winprog/windows-data-types?.</anchorfile>
+      <anchor>HKEY</anchor>
+      <arglist />
+    </member>
+    <member kind="typedef">
+      <type />
+      <name>HMENU</name>
+      <anchorfile>../winprog/windows-data-types?.</anchorfile>
+      <anchor>HMENU</anchor>
+      <arglist />
+    </member>
+    <member kind="typedef">
+      <type />
+      <name>HMODULE</name>
+      <anchorfile>../winprog/windows-data-types?.</anchorfile>
+      <anchor>HMODULE</anchor>
+      <arglist />
+    </member>
+    <member kind="typedef">
+      <type />
+      <name>HRESULT</name>
+      <anchorfile>../winprog/windows-data-types?.</anchorfile>
+      <anchor>HRESULT</anchor>
+      <arglist />
+    </member>
+    <member kind="typedef">
+      <type />
+      <name>HWND</name>
+      <anchorfile>../winprog/windows-data-types?.</anchorfile>
+      <anchor>HWND</anchor>
+      <arglist />
+    </member>
+    <member kind="typedef">
+      <type />
+      <name>LONG</name>
+      <anchorfile>../winprog/windows-data-types?.</anchorfile>
+      <anchor>LONG</anchor>
+      <arglist />
+    </member>
+    <member kind="typedef">
+      <type />
+      <name>LPARAM</name>
+      <anchorfile>../winprog/windows-data-types?.</anchorfile>
+      <anchor>LPARAM</anchor>
+      <arglist />
+    </member>
+    <member kind="typedef">
+      <type />
+      <name>LPCSTR</name>
+      <anchorfile>../winprog/windows-data-types?.</anchorfile>
+      <anchor>LPCSTR</anchor>
+      <arglist />
+    </member>
+    <member kind="typedef">
+      <type />
+      <name>LPSTR</name>
+      <anchorfile>../winprog/windows-data-types?.</anchorfile>
+      <anchor>LPSTR</anchor>
+      <arglist />
+    </member>
+    <member kind="typedef">
+      <type />
+      <name>LPVOID</name>
+      <anchorfile>../winprog/windows-data-types?.</anchorfile>
+      <anchor>LPVOID</anchor>
+      <arglist />
+    </member>
+    <member kind="typedef">
+      <type />
+      <name>LRESULT</name>
+      <anchorfile>../winprog/windows-data-types?.</anchorfile>
+      <anchor>LRESULT</anchor>
+      <arglist />
+    </member>
+    <member kind="typedef">
+      <type />
+      <name>UINT</name>
+      <anchorfile>../winprog/windows-data-types?.</anchorfile>
+      <anchor>UINT</anchor>
+      <arglist />
+    </member>
+    <member kind="typedef">
+      <type />
+      <name>UINT_PTR</name>
+      <anchorfile>../winprog/windows-data-types?.</anchorfile>
+      <anchor>UINT_PTR</anchor>
+      <arglist />
+    </member>
+    <member kind="typedef">
+      <type />
+      <name>WINAPI</name>
+      <anchorfile>../winprog/windows-data-types?.</anchorfile>
+      <anchor>WINAPI</anchor>
+      <arglist />
+    </member>
+    <member kind="typedef">
+      <type />
+      <name>WORD</name>
+      <anchorfile>../winprog/windows-data-types?.</anchorfile>
+      <anchor>WORD</anchor>
+      <arglist />
+    </member>
+    <member kind="typedef">
+      <type />
+      <name>WPARAM</name>
+      <anchorfile>../winprog/windows-data-types?.</anchorfile>
+      <anchor>WPARAM</anchor>
+      <arglist />
+    </member>
+    <member kind="typedef">
+      <type />
+      <name>HMMIO</name>
+      <anchorfile>../../../previous-versions/dd757322(v=vs.85)?.</anchorfile>
+      <anchor />
+      <arglist />
     </member>
   </compound>
 </tagfile>

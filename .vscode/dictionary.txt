@@ -832,6 +832,7 @@ wheelpos
 windowposchanging
 winget
 winmain
+winprog
 wiswa
 wiswa's
 wmaybe
