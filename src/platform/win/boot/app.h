@@ -1,5 +1,11 @@
 #pragma once
 
+/**
+ * @file
+ * The application of the PC port: its main window and the messages of the window, the states of
+ * the game it runs each frame, and its start and shutdown.
+ */
+
 #include <cstddef>
 
 #include <windows.h>

@@ -1,5 +1,11 @@
 #pragma once
 
+/**
+ * @file
+ * The pixel formats of the textures of Direct3D, the conversion of images into them, and the image
+ * files of RGBA 5551.
+ */
+
 #include <windows.h>
 // The headers below need the types of windows.h.
 #include <ddraw.h>

@@ -1,5 +1,11 @@
 #pragma once
 
+/**
+ * @file
+ * The progress of a season of the championship on the PC port: its round, its year, and its class,
+ * and their saving and restoring.
+ */
+
 /** The size of g_szSeasonRoundLabel. */
 #define SEASON_ROUND_LABEL_SIZE 32
 

@@ -1,5 +1,11 @@
 #pragma once
 
+/**
+ * @file
+ * Network play over DirectPlay: the session and its players, the messages between them, and the
+ * threads that receive the messages and exchange the streams of a race.
+ */
+
 #include <windows.h>
 // The headers below need the types of windows.h.
 #include <dplay.h>

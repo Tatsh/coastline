@@ -1,5 +1,11 @@
 #pragma once
 
+/**
+ * @file
+ * The helpers of DirectDraw that load bitmaps into surfaces, match colours to the pixels of a
+ * surface, and set colour keys.
+ */
+
 #include <windows.h>
 // The headers below need the types of windows.h.
 #include <ddraw.h>

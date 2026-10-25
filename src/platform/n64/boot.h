@@ -1,6 +1,12 @@
 #ifndef PLATFORM_N64_BOOT_H
 #define PLATFORM_N64_BOOT_H
 
+/**
+ * @file
+ * The entry of the cartridge: the routine the console jumps to, the BSS segment it clears, the
+ * stack it starts on, and the start of the operating system.
+ */
+
 #include <ultra64.h>
 
 /** Start of the BSS segment, from the link script. */

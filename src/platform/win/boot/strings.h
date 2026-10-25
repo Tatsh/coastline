@@ -1,5 +1,10 @@
 #pragma once
 
+/**
+ * @file
+ * The strings of the language resource library, loaded into a table by identifier.
+ */
+
 #include <cstddef>
 
 /** The number of strings of the language resource library, numbered from 1. */

@@ -1,5 +1,11 @@
 #pragma once
 
+/**
+ * @file
+ * The settings of the game saved in BossRally.cfg, and their reading from BossRally.ini and the
+ * command line.
+ */
+
 #include <windows.h>
 
 #include "platform/win/input.h"

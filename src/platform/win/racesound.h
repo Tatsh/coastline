@@ -1,6 +1,11 @@
 #pragma once
 
 /**
+ * @file
+ * The sound effects of the vehicles of a race of the PC port.
+ */
+
+/**
  * Silence sample 24 on the voice of each vehicle of the race, while the race pauses.
  *
  * @ghidraAddress BRD3D: 0x100683d0

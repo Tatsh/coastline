@@ -1,5 +1,11 @@
 #pragma once
 
+/**
+ * @file
+ * The front end of the PC port: its menus and their surfaces, the cheats, the selections it
+ * restores, and the window procedure of the menus.
+ */
+
 #include <windows.h>
 // The headers below need the types of windows.h.
 #include <ddraw.h>
