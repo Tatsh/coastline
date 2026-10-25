@@ -2,7 +2,7 @@
 
 /**
  * @file
- * The archives of the game, the pod files that hold its data.
+ * The archives of the game, the pod files that store its data.
  */
 
 /** A pod file the game reads. The layout is not recovered yet. */

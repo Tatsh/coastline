@@ -169,7 +169,7 @@ HRESULT RenderHost::RenderLoadingScreen(DirectDrawRenderer *pWindowRenderer,
             pDevice->DrawPrimitive(
                 D3DPT_TRIANGLELIST, D3DVT_TLVERTEX, aVertices, 3, D3DDP_WAIT | D3DDP_DONOTCLIP);
             // A device that refuses Gouraud shading ends the screen with its scene open and its
-            // texture held.
+            // texture not released.
             if (pDevice->SetRenderState(D3DRENDERSTATE_SHADEMODE, D3DSHADE_GOURAUD) != D3D_OK) {
                 return D3D_OK;
             }
@@ -507,8 +507,8 @@ HRESULT DirectDrawRenderer::InitializePrimaryPalette() {
     }
     ReleaseDC(nullptr, hdc);
     // The entries the game may change are reserved, and the colours Windows reserves at the ends of
-    // a palette of 4 or 8 bits are read-only. A display without a palette leaves the buffers
-    // unallocated, and the original writes the marks regardless.
+    // a palette of 4 or 8 bits are read-only. A display without a palette does not allocate the
+    // buffers, and the original writes the marks regardless.
     if (desc.ddpfPixelFormat.dwFlags & DDPF_PALETTEINDEXED1) {
         MarkPaletteEntries(pGamePaletteEntries, 0, 2, PC_RESERVED);
         dwCaps = DDPCAPS_1BIT;
@@ -580,7 +580,7 @@ static inline HRESULT CreateDepthBuffer(DirectDrawRenderer *pRenderer,
     depthDesc.dwWidth = backDesc.dwWidth;
     depthDesc.dwZBufferBitDepth = DDBDToBitDepth(pDesc->dwDeviceZBufferBitDepth);
     depthDesc.ddsCaps.dwCaps = dwMemoryCaps | DDSCAPS_ZBUFFER;
-    // A depth buffer that is not created or not attached leaves the device without one.
+    // A depth buffer that is not created or not attached results in a device without one.
     if (SUCCEEDED(
             pRenderer->pDirectDraw2->CreateSurface(&depthDesc, &pRenderer->pZBuffer, nullptr))) {
         if (FAILED(pRenderer->pBackBuffer->AddAttachedSurface(pRenderer->pZBuffer))) {

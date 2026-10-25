@@ -80,7 +80,7 @@ public:
     int GetInputBindingFlags(int nDevice, int nControl);
 
     /**
-     * The key or button of a binding. A control of a game controller with its top bit set keeps
+     * The key or button of a binding. A control of a game controller with its top bit set has
      * the code in its high byte.
      *
      * @param nDevice The device, 1 to 3 for a game controller and any other for the keyboard.
@@ -111,7 +111,7 @@ public:
 
     /**
      * Read the settings from a configuration file of version 2. A file that does not read whole
-     * leaves the defaults.
+     * results in the defaults.
      *
      * @param pszPath Path of the file.
      * @return Whether the file was read.

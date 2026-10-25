@@ -2,7 +2,7 @@
 
 /**
  * @file
- * The DirectDraw and Direct3D renderer of a window, and the host that the game reaches it through.
+ * The DirectDraw and Direct3D renderer of a window, and the host the game uses it through.
  */
 
 #include <cstring>
@@ -259,7 +259,8 @@ public:
     D3DDeviceNode *pNext;             /*!< The next device of the driver. */
 
     /**
-     * Release what the device holds before it is freed.
+     * Free the texture formats, the description, and the name of the device, and unlink it,
+     * before it is freed.
      *
      * @ghidraAddress BRD3D: 0x1001aee0
      */
@@ -923,7 +924,7 @@ extern bool g_dwNullStubEnable;
 
 /**
  * Select the driver, device, and mode of a renderer, finding the drivers first if the game has
- * not. A mode is matched to the size asked for, or the mode of the desktop is taken.
+ * not. A mode is matched to the size requested, or the mode of the desktop is taken.
  *
  * @param pDriverGuid The DirectDraw driver, or `nullptr` for the default.
  * @param nWidth The width of the mode, or 0.

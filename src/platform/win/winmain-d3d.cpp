@@ -387,7 +387,7 @@ LRESULT HandleWindowActivateApp(HWND hWnd, WPARAM wParam, LPARAM lParam) {
             PauseMusicPlayback();
             MuteAllActiveSoundChannels();
             g_dwPauseMenuSelection = 0;
-            // A network race that has started and not finished asks the others to pause instead.
+            // A network race that has started and not finished requests a pause from the others.
             if (g_dwNetworkPlayMode && g_bNetRaceStartReached && !g_dwReplayPlaybackMode &&
                 g_aVehicles_LapCount < g_dwTotalLaps) {
                 RequestNetworkPause();

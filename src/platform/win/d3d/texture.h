@@ -4,15 +4,15 @@
 // The headers below need the types of windows.h.
 #include <ddraw.h>
 
-/** The pixels of an image file RGBA 5551 can hold, 256 by 256. */
+/** The most pixels an image file of RGBA 5551 has, 256 by 256. */
 #define RGBA5551_IMAGE_PIXEL_COUNT 0x10000
 
 /** The number of entries of g_aTexturePixelFormats. */
 #define TEXTURE_PIXEL_FORMAT_COUNT 5
 
-/** A pixel format of textures the game asks for by its identifier. */
+/** A pixel format of textures the game requests by its identifier. */
 struct TexturePixelFormat {
-    int nId;                     /*!< The identifier the game asks for the format by. */
+    int nId;                     /*!< The identifier the game requests the format by. */
     unsigned short wMaxBitCount; /*!< The most bits a pixel may have during the enumeration. */
     char abUnknown6[2];          /* +0x06 */
     DDPIXELFORMAT ddpf; /*!< The format of the device, filled when the formats are enumerated. */
@@ -115,7 +115,7 @@ void UnpackRgba5551ToRgba8(unsigned char *pDest, const unsigned short *pSrc, int
 int ConvertRGBAToPixelFormat(void *pDest, const void *pSrc, int nSize, int nPixelFormatId);
 
 /**
- * Load an image file of RGBA 5551 pixels and convert it to pixel format 0xb. The file holds the
+ * Load an image file of RGBA 5551 pixels and convert it to pixel format 0xb. The file has the
  * width, the height, a word that is not read, and the pixels. A checksum that does not match ends
  * the process.
  *

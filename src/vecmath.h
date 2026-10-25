@@ -490,7 +490,7 @@ void Vec3fTransformByMatrix(f32 out[4], Vec3f *in, f32 m[4][4]);
 void Vec3sTransformToVec4f(f32 out[4], s16 in[3], f32 m[4][4]);
 
 /**
- * Transform a point by a matrix, divide by w, and keep x and y.
+ * Transform a point by a matrix, divide by w, and retain x and y.
  *
  * @param out The vector that receives the x and y of the transformed point.
  * @param in The point transformed.
@@ -544,7 +544,7 @@ void Mtx3x3TransformVec(Vec3f *out, Vec3f *in, f32 m[4][4]);
 void Mtx4x4Multiply(f32 out[4][4], f32 a[4][4], f32 b[4][4]);
 
 /**
- * Transpose a matrix but its diagonal, which it leaves as it is in the result.
+ * Transpose a matrix but its diagonal, which is copied unchanged into the result.
  *
  * @param out The matrix that receives the transpose.
  * @param in The matrix transposed.
@@ -687,7 +687,7 @@ s32 SegmentCrossesLine2D(Vec3f *a, Vec3f *b, Vec3f *p, Vec3f *q);
 void SetRngSeed(u32 seed);
 
 /**
- * Advance the random numbers by the multiplier 16807 and keep 27 bits.
+ * Advance the random numbers by the multiplier 16807 and retain 27 bits.
  *
  * @return The new seed, from 0 to 0x7ffffff.
  * @ghidraAddress USA: 0x80225ee4

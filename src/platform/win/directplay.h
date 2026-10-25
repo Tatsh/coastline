@@ -360,7 +360,7 @@ extern bool g_dwDirectPlaySessionActive;
 extern bool g_bNetRaceStartReached;
 
 /**
- * Ask the other players of a network game to pause.
+ * Request a pause from the other players of a network game.
  *
  * @ghidraAddress BRD3D: 0x10004be0
  */
@@ -419,7 +419,7 @@ void FreeServiceProviderConnectionData(void);
 extern int g_dwDirectPlayInstanceCount;
 
 /**
- * Leave the session of DirectPlay.
+ * Exit the session of DirectPlay.
  *
  * @ghidraAddress BRD3D: 0x1003bf60
  */
