@@ -506,6 +506,44 @@ static inline bool IsDirectSoundActive(void) {
     return g_bSoundEnabledIni && g_pDirectSound != nullptr && g_dwDirectSoundRefCount != 0;
 }
 
+// The largest level of a side of SetSoundBufferStereoLevels().
+#define MAX_STEREO_LEVEL 32
+
+bool SetSoundBufferStereoLevels(SoundBufferNode *pNode, DWORD dwLevels) {
+    int nLeft;
+    int nRight;
+
+    if (!IsDirectSoundActive()) {
+        return true;
+    }
+    if (pNode == nullptr) {
+        return false;
+    }
+    nLeft = static_cast<int>(dwLevels >> 16);
+    nRight = static_cast<int>(dwLevels & 0xffff);
+    if (nLeft > MAX_STEREO_LEVEL) {
+        nLeft = MAX_STEREO_LEVEL;
+    }
+    if (nRight > MAX_STEREO_LEVEL) {
+        nRight = MAX_STEREO_LEVEL;
+    }
+    // The louder side gives the volume, and the pan moves from the centre toward it.
+    if (nLeft > nRight) {
+        pNode->nPan = SOUND_LEVEL_CENTER;
+        pNode->nVolume = nLeft * SOUND_LEVEL_CENTER / MAX_STEREO_LEVEL;
+        if (nLeft != 0) {
+            pNode->nPan = (nRight - nLeft) * SOUND_LEVEL_CENTER / nLeft + SOUND_LEVEL_CENTER;
+        }
+    } else {
+        pNode->nPan = SOUND_LEVEL_CENTER;
+        pNode->nVolume = nRight * SOUND_LEVEL_CENTER / MAX_STEREO_LEVEL;
+        if (nRight != 0) {
+            pNode->nPan = (nRight - nLeft) * SOUND_LEVEL_CENTER / nRight + SOUND_LEVEL_CENTER;
+        }
+    }
+    return ApplySoundBufferVolume(pNode) == DS_OK && ApplySoundBufferPan(pNode) == DS_OK;
+}
+
 bool SetStereoAndPlaySoundChannel(int nSample, int nChannel, DWORD dwLevels, int bLooping) {
     SoundBufferNode *pNode;
 
