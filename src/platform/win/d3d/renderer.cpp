@@ -520,6 +520,32 @@ int DirectDrawRenderer::DestroyD3DDevice() {
     return 0;
 }
 
+HRESULT DirectDrawRenderer::CreateAndAttachViewport() {
+    HRESULT hr;
+
+    if (pDirect3D2 == nullptr || pD3DDevice == nullptr) {
+        return RENDERER_E_NOT_READY;
+    }
+    hr = pDirect3D2->CreateViewport(&pViewport, nullptr);
+    if (FAILED(hr)) {
+        return hr;
+    }
+    hr = pD3DDevice->AddViewport(pViewport);
+    // A step after the add that fails takes the viewport off the device before it is released.
+    if (SUCCEEDED(hr)) {
+        if (FAILED(hr = InitializeViewportAndRenderContext()) || FAILED(hr = BeginRenderScene())) {
+            pD3DDevice->DeleteViewport(pViewport);
+        }
+    }
+    if (FAILED(hr)) {
+        pViewport->Release();
+        pViewport = nullptr;
+        return hr;
+    }
+    dwRenderStateFlags |= 0x10;
+    return S_OK;
+}
+
 int DirectDrawRenderer::ReleaseViewportAndMaterial() {
     // The original sets bit 4 of the state rather than clearing a bit.
     dwRenderStateFlags |= 0x10;

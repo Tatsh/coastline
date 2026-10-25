@@ -102,6 +102,7 @@ decleared
 decomp
 destroythread
 devicearrival
+devicecaps
 deviceremovecomplete
 devmgr
 dfrac

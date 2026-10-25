@@ -55,6 +55,28 @@ HRESULT SelectDriverDeviceAndModeFromConfig(GUID *pDriverGuid,
     return S_OK;
 }
 
+int DDBDToBitDepth(DWORD dwMask) {
+    if (dwMask & DDBD_1) {
+        return 1;
+    }
+    if (dwMask & DDBD_2) {
+        return 2;
+    }
+    if (dwMask & DDBD_4) {
+        return 4;
+    }
+    if (dwMask & DDBD_8) {
+        return 8;
+    }
+    if (dwMask & DDBD_16) {
+        return 16;
+    }
+    if (dwMask & DDBD_24) {
+        return 24;
+    }
+    return (dwMask & DDBD_32) ? 32 : 0;
+}
+
 bool IsPixelFormatPalettized(const DDPIXELFORMAT *pFormat) {
     return pFormat != nullptr &&
            (pFormat->dwFlags & (DDPF_PALETTEINDEXED1 | DDPF_PALETTEINDEXED2 | DDPF_PALETTEINDEXED4 |
@@ -93,6 +115,20 @@ bool DirectDrawDriver::CompareDirectDrawDriverGuid(const GUID *pGuid) {
 
 GUID *DirectDrawDriver::GetDirectDrawDriverGuid() {
     return (dwFlags & DIRECTDRAW_DRIVER_PRIMARY) != 0 ? nullptr : &guid;
+}
+
+HRESULT EnsureDirectDrawDriversEnumerated(void) {
+    HRESULT hr;
+
+    if ((g_bDirectDrawDriversEnumerated & 1) == 0) {
+        g_dwDirectDrawDriverCount = 0;
+        hr = EnumerateDirectDrawDrivers();
+        if (FAILED(hr)) {
+            return hr;
+        }
+        g_bDirectDrawDriversEnumerated |= 1;
+    }
+    return S_OK;
 }
 
 DirectDrawDriver *

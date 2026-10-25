@@ -300,6 +300,22 @@ public:
     HRESULT CreateAndAttachViewport();
 
     /**
+     * Set the viewport of the device and the state it draws with.
+     *
+     * @return `S_OK`, or the error of Direct3D.
+     * @ghidraAddress BRD3D: 0x1000afb0
+     */
+    HRESULT InitializeViewportAndRenderContext();
+
+    /**
+     * Create the material of the background of the viewport.
+     *
+     * @return `S_OK`, or the error of Direct3D.
+     * @ghidraAddress BRD3D: 0x1000af00
+     */
+    HRESULT BeginRenderScene();
+
+    /**
      * Release the Direct3D device, its viewport, and the back and depth buffers, telling the host
      * first.
      *
@@ -598,13 +614,42 @@ bool FindDesktopDisplayModeAndDevice(DirectDrawDriver *pDriver,
                                      D3DDeviceNode **ppDevice);
 
 /**
- * The bits of a depth from the `DDBD_` flag of the depth.
+ * The bits of a depth from the `DDBD_` flags of the depths.
  *
- * @param dwMask The flags of the depths, of which the deepest counts.
- * @return The bits.
+ * @param dwMask The flags of the depths, of which the shallowest counts.
+ * @return The bits, or 0 without a depth.
  * @ghidraAddress BRD3D: 0x1001a870
  */
 int DDBDToBitDepth(DWORD dwMask);
+
+/**
+ * What the hardware of the device created last does.
+ *
+ * @ghidraAddress BRD3D: 0x10277480
+ */
+extern D3DDEVICEDESC g_D3DHalDeviceDesc;
+
+/**
+ * What the emulation of the device created last does.
+ *
+ * @ghidraAddress BRD3D: 0x10277580
+ */
+extern D3DDEVICEDESC g_D3DHelDeviceDesc;
+
+/**
+ * The number of DirectDraw drivers found.
+ *
+ * @ghidraAddress BRD3D: 0x104bbe1c
+ */
+extern int g_dwDirectDrawDriverCount;
+
+/**
+ * Find the DirectDraw drivers and their devices and modes.
+ *
+ * @return `S_OK`, or the error of DirectDraw.
+ * @ghidraAddress BRD3D: 0x1001b9a0
+ */
+HRESULT EnumerateDirectDrawDrivers(void);
 
 /**
  * Read what a Direct3D device can do.
