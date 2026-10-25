@@ -1,6 +1,6 @@
 # PC port game code from 0x10000000 to 0x10010000
 
-42 of 246 routines done.
+43 of 246 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -75,7 +75,7 @@ the same name, for a routine the port retained from the N64 game.
 | `LookupTrackGridCell`                                      |        | ✅ `0x8021e620` |      1 |    170 | `0x10002de0` | `0x10003120` | `uint LookupTrackGridCell(float x, float z)`                                                                                                                                       |
 | `HandlePlayerDisconnect`                                   |        |                 |      2 |    168 | `0x10005fe0` | `0x10006350` | `undefined HandlePlayerDisconnect()`                                                                                                                                               |
 | `SendTimeSyncReply`                                        |        |                 |      1 |    167 | `0x10004910` | `0x10004c80` | `uint SendTimeSyncReply(void * param_1, int param_2)`                                                                                                                              |
-| `DirectDrawRenderer::BeginRenderScene`                     |   📝   |                 |      3 |    166 | `0x1000af00` |              | `long BeginRenderScene(DirectDrawRenderer * this)`                                                                                                                                 |
+| `DirectDrawRenderer::BeginRenderScene`                     |   ✅   |                 |      3 |    166 | `0x1000af00` |              | `long BeginRenderScene(DirectDrawRenderer * this)`                                                                                                                                 |
 | `FileReadLine`                                             |   ✅   |                 |      5 |    163 | `0x100031e0` | `0x10003530` | `char * FileReadLine(char * pszLine, int nSize, GameFile * pFile)`                                                                                                                 |
 | `ShowFatalErrorScreen`                                     |        |                 |      7 |    159 | `0x10008cf0` | `0x10008ef0` | `undefined ShowFatalErrorScreen()`                                                                                                                                                 |
 | `PodArchive::FinalizePodFile`                              |        |                 |      1 |    157 | `0x10008aa0` | `0x10008c80` | `undefined FinalizePodFile(PodArchive * this)`                                                                                                                                     |

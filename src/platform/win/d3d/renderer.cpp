@@ -562,6 +562,31 @@ int DirectDrawRenderer::ReleaseViewportAndMaterial() {
     return 0;
 }
 
+HRESULT DirectDrawRenderer::BeginRenderScene() {
+    D3DRECT rect;
+    HRESULT hr;
+
+    rect.x1 = 0;
+    rect.y1 = 0;
+    rect.x2 = g_dwConfigFramebufferWidth;
+    rect.y2 = g_dwConfigFramebufferHeight;
+
+    // The background of the viewport is a black material, cleared to and shown once.
+    pMaterial->desc.dcvDiffuse.r = 0.0f;
+    pMaterial->desc.dcvDiffuse.g = 0.0f;
+    pMaterial->desc.dcvDiffuse.b = 0.0f;
+    pMaterial->nUnknown58 = 1;
+    pMaterial->nUnknown58 = 0;
+    pMaterial->desc.dwRampSize = 1;
+    pMaterial->pMaterial->SetMaterial(&pMaterial->desc);
+    pViewport->SetBackground(pMaterial->hMaterial);
+    pViewport->Clear(1, &rect, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER);
+    hr = pPrimarySurface->Flip(pBackBuffer, DDFLIP_WAIT);
+    while (pPrimarySurface->GetFlipStatus(DDGFS_ISFLIPDONE) != DD_OK) {
+    }
+    return hr;
+}
+
 HRESULT DirectDrawRenderer::SetPrimarySurfacePalette() {
     HRESULT hr;
 

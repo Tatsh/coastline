@@ -85,6 +85,8 @@ dbuild
 dcmake
 dcosf
 ddbd
+ddflip
+ddgfs
 ddivu
 ddpcaps
 ddpf
@@ -118,6 +120,8 @@ dlhi
 dllmain
 dlnear
 dmaread
+dmaterial
+dmaterialhandle
 dmawrite
 dndebug
 docstrings

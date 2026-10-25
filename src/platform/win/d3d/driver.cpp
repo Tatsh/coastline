@@ -131,6 +131,21 @@ HRESULT EnsureDirectDrawDriversEnumerated(void) {
     return S_OK;
 }
 
+HRESULT EnumerateDirectDrawDrivers(void) {
+    DriverEnumContext context = {true, 0, 0};
+    HRESULT hr;
+
+    hr = DirectDrawEnumerateA(EnumDirectDrawDriversCallback, &context);
+    if (FAILED(hr)) {
+        return hr;
+    }
+    // Each driver DirectDraw reported must be in the list.
+    if (context.bSucceeded && context.nFound != 0 && g_dwDirectDrawDriverCount == context.nFound) {
+        return S_OK;
+    }
+    return RENDERER_E_NOT_IN_GDI_MODE;
+}
+
 DirectDrawDriver *
 FindDirectDrawDriverByGuid(GUID *pGuid, DirectDrawDriver **ppPrimary, DirectDrawDriver *pFirst) {
     DirectDrawDriver *pDriver = pFirst != nullptr ? pFirst : g_pDirectDrawDriverListHead;

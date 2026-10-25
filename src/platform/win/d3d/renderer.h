@@ -119,11 +119,13 @@ public:
     GetSurfaceDescDimensions(int *pnWidth, int *pnHeight, int *pnBitDepth, int *pnRefreshRate);
 };
 
-/** A Direct3D material. The layout before pMaterial is not recovered yet. */
+/** A Direct3D material and the description it was set from. */
 class D3DMaterial {
 public:
-    char abUnknown0[0x54];         /* +0x00 */
+    D3DMATERIAL desc;              /*!< The description of the material. */
+    D3DMATERIALHANDLE hMaterial;   /*!< The handle of the material on the device. */
     IDirect3DMaterial2 *pMaterial; /*!< The material of Direct3D. */
+    int nUnknown58;                /*!< Cleared when the background is set. */
 
     /**
      * Release the material of Direct3D.
@@ -643,10 +645,33 @@ extern D3DDEVICEDESC g_D3DHelDeviceDesc;
  */
 extern int g_dwDirectDrawDriverCount;
 
+/** What the search of the DirectDraw drivers found. */
+struct DriverEnumContext {
+    int bSucceeded; /*!< Whether each driver was recorded. */
+    int nFound;     /*!< The drivers DirectDraw reported. */
+    int nUnknown8;  /*!< Set to 0 and not read by the search. */
+};
+
+/**
+ * Record a DirectDraw driver that DirectDraw reports.
+ *
+ * @param pGuid The GUID of the driver, or `nullptr` for the primary.
+ * @param pszDescription The description of the driver.
+ * @param pszName The name of the driver.
+ * @param pContext The DriverEnumContext of the search.
+ * @return Whether the search goes on.
+ * @ghidraAddress BRD3D: 0x1001a990
+ */
+BOOL WINAPI EnumDirectDrawDriversCallback(GUID *pGuid,
+                                          LPSTR pszDescription,
+                                          LPSTR pszName,
+                                          LPVOID pContext);
+
 /**
  * Find the DirectDraw drivers and their devices and modes.
  *
- * @return `S_OK`, or the error of DirectDraw.
+ * @return `S_OK`, the error of DirectDraw, or RENDERER_E_NOT_IN_GDI_MODE when a driver was not
+ * recorded.
  * @ghidraAddress BRD3D: 0x1001b9a0
  */
 HRESULT EnumerateDirectDrawDrivers(void);
