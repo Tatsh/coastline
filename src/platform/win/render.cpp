@@ -78,6 +78,39 @@ void Copy8Dwords(void *pDest, const void *pSrc) {
     memcpy(pDest, pSrc, COPY_WORD_COUNT * sizeof(unsigned));
 }
 
+void AddPointerToRelocatedList(void *pPointer) {
+    if (g_dwRelocatedPointerCount < RELOCATED_POINTER_COUNT) {
+        g_apRelocatedPointers[g_dwRelocatedPointerCount++] = pPointer;
+    }
+}
+
+void ByteSwapArray16(unsigned short *pData, int nCount) {
+    for (int i = 0; i < nCount; i++) {
+        pData[i] = static_cast<unsigned short>(pData[i] << 8 | pData[i] >> 8);
+    }
+}
+
+void ResetRenderCommandBufferStack(void) {
+    ShadowClipVertex *pNext = nullptr;
+
+    for (int i = SHADOW_CLIP_VERTEX_COUNT - 1; i >= 0; i--) {
+        g_aShadowClipVertexPool[i].pNext = pNext;
+        pNext = &g_aShadowClipVertexPool[i];
+    }
+    g_pShadowClipVertexFreeList = pNext;
+}
+
+void ClearSplitScreenRenderState(void) {
+    memset(g_anSkidMarkHead, 0, sizeof(g_anSkidMarkHead));
+    memset(g_anSkidMarkTail, 0, sizeof(g_anSkidMarkTail));
+}
+
+void InitializeTextureUploadQueue(void) {
+    g_dwTextureUploadQueueHead = 0;
+    g_dwTextureUploadQueueTail = 0;
+    g_hTextureUploadQueueMutex = CreateMutexA(nullptr, false, nullptr);
+}
+
 void ResetModelDataPool(void) {
     g_dwConvertedVertexCount = 0;
     g_pModelDataPoolCursor = g_afModelVertexPool;

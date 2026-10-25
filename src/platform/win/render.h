@@ -6,6 +6,8 @@
  * data of the models it draws.
  */
 
+#include <windows.h>
+
 /** The mode of the renderer of the Direct3D library. */
 #define RENDER_BACKEND_MODE_D3D 1
 /** The mode of the renderer of the Glide library. */
@@ -233,6 +235,129 @@ extern unsigned g_dwOldBaseAddress;
  * @ghidraAddress BRGlide: 0x104b16e0
  */
 extern unsigned g_dwNewBaseAddress;
+
+/** The most entries of g_apRelocatedPointers. */
+#define RELOCATED_POINTER_COUNT 0x800
+
+/**
+ * The pointers relocated, g_dwRelocatedPointerCount of them.
+ *
+ * @ghidraAddress BRD3D: 0x1067b550
+ * @ghidraAddress BRGlide: 0x105b76f8
+ */
+extern void *g_apRelocatedPointers[RELOCATED_POINTER_COUNT];
+
+/**
+ * Add a pointer to g_apRelocatedPointers while it has room.
+ *
+ * @param pPointer The pointer.
+ * @ghidraAddress BRD3D: 0x1002c1f0
+ * @ghidraAddress BRGlide: 0x100192b0
+ */
+void AddPointerToRelocatedList(void *pPointer);
+
+/**
+ * Swap the two bytes of each of a run of halfwords.
+ *
+ * @param pData The halfwords.
+ * @param nCount The number of halfwords.
+ * @ghidraAddress BRD3D: 0x1002b9e0
+ * @ghidraAddress BRGlide: 0x10018a50
+ */
+void ByteSwapArray16(unsigned short *pData, int nCount);
+
+/** A vertex of the pool of the clipping of shadows. The layout past the link is not recovered yet.
+ */
+struct ShadowClipVertex {
+    ShadowClipVertex *pNext; /*!< The next free vertex. */
+    char abUnknown4[0x24];   /* +0x04 */
+};
+
+/** The number of entries of g_aShadowClipVertexPool. */
+#define SHADOW_CLIP_VERTEX_COUNT 64
+
+/**
+ * The pool of the vertices of the clipping of shadows.
+ *
+ * @ghidraAddress BRD3D: 0x102e54c0
+ * @ghidraAddress BRGlide: 0x102e0ca8
+ */
+extern ShadowClipVertex g_aShadowClipVertexPool[SHADOW_CLIP_VERTEX_COUNT];
+
+/**
+ * The first free vertex of g_aShadowClipVertexPool.
+ *
+ * @ghidraAddress BRD3D: 0x102e5ecc
+ * @ghidraAddress BRGlide: 0x102e16b4
+ */
+extern ShadowClipVertex *g_pShadowClipVertexFreeList;
+
+/**
+ * Link every vertex of g_aShadowClipVertexPool into its free list, in order.
+ *
+ * @ghidraAddress BRD3D: 0x1000f460
+ * @ghidraAddress BRGlide: 0x1000c9c0
+ */
+void ResetRenderCommandBufferStack(void);
+
+/** The number of entries of g_anSkidMarkHead and g_anSkidMarkTail. */
+#define SKID_MARK_TRACK_COUNT 32
+
+/**
+ * The first skid mark of each track of skid marks.
+ *
+ * @ghidraAddress BRD3D: 0x10364308
+ * @ghidraAddress BRGlide: 0x1035faf0
+ */
+extern int g_anSkidMarkHead[SKID_MARK_TRACK_COUNT];
+
+/**
+ * The last skid mark of each track of skid marks.
+ *
+ * @ghidraAddress BRD3D: 0x10363f68
+ * @ghidraAddress BRGlide: 0x1035f750
+ */
+extern int g_anSkidMarkTail[SKID_MARK_TRACK_COUNT];
+
+/**
+ * Clear the tracks of skid marks.
+ *
+ * @ghidraAddress BRD3D: 0x1000f620
+ * @ghidraAddress BRGlide: 0x1000cb80
+ */
+void ClearSplitScreenRenderState(void);
+
+/**
+ * The first texture of the queue of textures to upload.
+ *
+ * @ghidraAddress BRD3D: 0x118a9878
+ * @ghidraAddress BRGlide: 0x118ec990
+ */
+extern int g_dwTextureUploadQueueHead;
+
+/**
+ * The last texture of the queue of textures to upload.
+ *
+ * @ghidraAddress BRD3D: 0x118aa098
+ * @ghidraAddress BRGlide: 0x118ed1b0
+ */
+extern int g_dwTextureUploadQueueTail;
+
+/**
+ * The mutex of the queue of textures to upload.
+ *
+ * @ghidraAddress BRD3D: 0x118aa0a0
+ * @ghidraAddress BRGlide: 0x118ed1b8
+ */
+extern HANDLE g_hTextureUploadQueueMutex;
+
+/**
+ * Empty the queue of textures to upload and create its mutex.
+ *
+ * @ghidraAddress BRD3D: 0x10074f20
+ * @ghidraAddress BRGlide: 0x1006e180
+ */
+void InitializeTextureUploadQueue(void);
 
 /**
  * Empty the cache of converted vertices and the count of relocated pointers.
