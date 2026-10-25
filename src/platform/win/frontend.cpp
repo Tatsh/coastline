@@ -1,6 +1,7 @@
 #include "platform/win/frontend.h"
 
 #include <cstdio>
+#include <cstdlib>
 #include <cstring>
 #include <new>
 
@@ -15,6 +16,7 @@
 #include "platform/win/sound.h"
 #include "platform/win/timer.h"
 #if TGR_RENDERER == TGR_RENDERER_D3D
+#include "platform/win/d3d/ddutil.h"
 #include "platform/win/d3d/renderer.h"
 #endif
 
@@ -329,8 +331,104 @@ HRESULT MenuScreen::ClearBackBuffer() {
 }
 #endif
 
+int g_dwMenuSurfaceInitCount;
+
+bool ReleaseMenuSurfacesAndFail(HWND hWnd) {
+    ReleaseMenuSurfaces();
+    exit(0);
+    return false;
+}
+
 #if TGR_RENDERER == TGR_RENDERER_D3D
 IDirectDraw2 *g_pMenuDirectDraw;
+
+// The image of the mouse cursor, which BlitSurfaceRegion() clips to the screen of the menus.
+#define MENU_IMAGE_CURSOR 1
+// The size of the screen of the menus.
+#define MENU_SCREEN_WIDTH 640
+#define MENU_SCREEN_HEIGHT 480
+// The colour key of the menu images.
+#define MENU_IMAGE_COLOR_KEY RGB(0, 0xff, 0)
+
+bool RestoreMenuSurfaces(void) {
+    for (int i = 0; i < g_wMenuImageLoadedCount; i++) {
+        if (g_aMenuImages[i].pSurface->Restore() == DD_OK) {
+            DDReLoadBitmap(g_aMenuImages[i].pSurface, g_aMenuImages[i].pszPath);
+        }
+    }
+    return true;
+}
+
+void BlitSurfaceRegion(int nDestX, int nDestY, WORD wImage, const RECT *pRect, DWORD dwFlags) {
+    RECT rc;
+    HRESULT hr;
+
+    dwFlags |= DDBLTFAST_WAIT;
+    do {
+        rc = *pRect;
+        if (wImage == MENU_IMAGE_CURSOR) {
+            if (rc.right + nDestX > MENU_SCREEN_WIDTH) {
+                rc.right += MENU_SCREEN_WIDTH - (rc.right + nDestX);
+                if (rc.right < rc.left) {
+                    rc.right = rc.left;
+                }
+            }
+            if (rc.bottom + nDestY > MENU_SCREEN_HEIGHT) {
+                rc.bottom += MENU_SCREEN_HEIGHT - (rc.bottom + nDestY);
+                if (rc.bottom < rc.top) {
+                    rc.bottom = rc.top;
+                }
+            }
+        }
+        hr = g_pRenderHost->pRenderer->pBackBuffer->BltFast(
+            nDestX, nDestY, g_aMenuImages[wImage].pSurface, &rc, dwFlags);
+        if (hr == DDERR_SURFACELOST) {
+            RestoreMenuSurfaces();
+            return;
+        }
+    } while (hr == DDERR_WASSTILLDRAWING);
+}
+
+bool InitMenuDirectDrawSurfaces(void) {
+    DDSURFACEDESC desc;
+    char szMessage[0x100];
+
+    g_pMenuDirectDraw = g_pRenderHost->pRenderer->pDirectDraw2;
+    if (g_dwMenuSurfaceInitCount != 0) {
+        g_aMenuImages[0].pSurface =
+            DDLoadBitmap(g_pMenuDirectDraw, "images\\loading.bmp", 0, 0, &desc);
+        if (g_aMenuImages[0].pszPath != nullptr && g_aMenuImages[0].pSurface == nullptr) {
+            // The message is formatted and not shown.
+            sprintf(szMessage, "DDraw_DoInit: loading.bmp failed to load!");
+            return ReleaseMenuSurfacesAndFail(g_hMainWindow);
+        }
+        g_pActiveMenuScreen->ClearBackBuffer();
+        BlitSurfaceRegion(0, 0, 0, &g_aMenuSprites[0].rc, g_aMenuSprites[0].dwFlags);
+        g_pActiveMenuScreen->FlipAndWait();
+        if (g_aMenuImages[0].pSurface != nullptr) {
+            g_aMenuImages[0].pSurface->Release();
+            g_aMenuImages[0].pSurface = nullptr;
+        }
+    }
+    g_dwMenuSurfaceInitCount++;
+    for (int i = 0; i < MENU_IMAGE_COUNT; i++) {
+        MenuImage &image = g_aMenuImages[i];
+
+        if (image.pszPath == nullptr) {
+            continue;
+        }
+        image.pSurface = DDLoadBitmap(g_pMenuDirectDraw, image.pszPath, 0, 0, &desc);
+        // The path is checked a second time, as in the original.
+        if (image.pszPath != nullptr && image.pSurface == nullptr) {
+            sprintf(szMessage, "DDraw_DoInit: Bitmap %d failed to load!", i);
+            return ReleaseMenuSurfacesAndFail(g_hMainWindow);
+        }
+        g_wMenuImageLoadedCount++;
+        image.desc = desc;
+        DDSetColorKey(image.pSurface, MENU_IMAGE_COLOR_KEY);
+    }
+    return true;
+}
 
 void ReleaseMenuSurfaces(void) {
     if (g_pMenuDirectDraw == nullptr) {

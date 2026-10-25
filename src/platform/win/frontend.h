@@ -789,6 +789,30 @@ extern RECT g_aMenuLargeIconRects3Col[MENU_LARGE_ICON_3_COLUMN_RECT_COUNT];
  */
 void InitMenuSpriteRects(void);
 
+/** A sprite of the menus, a part of a menu image. */
+struct MenuSprite {
+    int nImage;    /*!< The index in g_aMenuImages of the image. */
+    RECT rc;       /*!< The part of the image. */
+    DWORD dwFlags; /*!< The flags of BltFast(), DDBLTFAST_SRCCOLORKEY or 0. */
+};
+
+/**
+ * The sprites of the menus. The first is the whole of the loading image.
+ *
+ * @ghidraAddress BRD3D: 0x100ab568
+ * @ghidraAddress BRGlide: 0x100aad08
+ */
+extern MenuSprite g_aMenuSprites[];
+
+/**
+ * The number of times the menu images were loaded. Every load but the first shows the loading
+ * image first.
+ *
+ * @ghidraAddress BRD3D: 0x10aa2a6c
+ * @ghidraAddress BRGlide: 0x10ac5dc4
+ */
+extern int g_dwMenuSurfaceInitCount;
+
 #if TGR_RENDERER == TGR_RENDERER_D3D
 /**
  * The DirectDraw interface the menu images are loaded with, while the menus are set up.
@@ -796,7 +820,51 @@ void InitMenuSpriteRects(void);
  * @ghidraAddress BRD3D: 0x10a9d070
  */
 extern IDirectDraw2 *g_pMenuDirectDraw;
+
+/**
+ * Load every menu image into a surface with a green colour key, showing the loading image while
+ * the images load again.
+ *
+ * @return Whether every image loaded. The game exits when one does not.
+ * @ghidraAddress BRD3D: 0x1005f690
+ */
+bool InitMenuDirectDrawSurfaces(void);
 #endif
+
+/**
+ * Restore the surfaces of the loaded menu images and load their bitmaps into them again.
+ *
+ * @return Always true.
+ * @ghidraAddress BRD3D: 0x1005f4e0
+ * @ghidraAddress BRGlide: 0x10001320
+ * @stub{BRGlide}
+ */
+bool RestoreMenuSurfaces(void);
+
+/**
+ * Release the surfaces of the menu images and exit the game.
+ *
+ * @param hWnd Not read.
+ * @return False, though the routine does not return.
+ * @ghidraAddress BRD3D: 0x1005f580
+ * @ghidraAddress BRGlide: 0x10058360
+ */
+bool ReleaseMenuSurfacesAndFail(HWND hWnd);
+
+/**
+ * Draw a part of a menu image into the back buffer. The cursor is clipped to the screen of the
+ * menus. A lost surface restores the menu images and the part is not drawn.
+ *
+ * @param nDestX The left to draw at.
+ * @param nDestY The top to draw at.
+ * @param wImage The index in g_aMenuImages of the image.
+ * @param pRect The part of the image.
+ * @param dwFlags The flags of BltFast(). DDBLTFAST_WAIT is added.
+ * @ghidraAddress BRD3D: 0x1005f5a0
+ * @ghidraAddress BRGlide: 0x10058380
+ * @stub{BRGlide}
+ */
+void BlitSurfaceRegion(int nDestX, int nDestY, WORD wImage, const RECT *pRect, DWORD dwFlags);
 
 /**
  * Release the surfaces of the loaded menu images. The Glide library frees its images and the
