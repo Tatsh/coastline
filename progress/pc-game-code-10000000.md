@@ -1,6 +1,6 @@
 # PC port game code from 0x10000000 to 0x10010000
 
-171 of 246 routines done.
+173 of 246 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -144,8 +144,8 @@ the same name, for a routine the port retained from the N64 game.
 | `CreateRgb565ImageFromBitmap`                              |        |                 |      1 |     75 |              | `0x10001240` | `undefined CreateRgb565ImageFromBitmap()`                                                                                                                                          |
 | `DirectDrawRenderer::ReleaseDirectDrawObjects`             |   ✅   |                 |      3 |     74 | `0x1000a540` |              | `int ReleaseDirectDrawObjects(DirectDrawRenderer * this)`                                                                                                                          |
 | `PodFileHelper::ExtractFileName`                           |   ✅   |                 |      2 |     74 | `0x10008b90` | `0x10008d70` | `undefined ExtractFileName(PodFileHelper * this)`                                                                                                                                  |
-| `PopDepartedPlayerSlot`                                    |        |                 |      1 |     74 | `0x10005d90` | `0x10006100` | `uint PopDepartedPlayerSlot(void)`                                                                                                                                                 |
-| `PopJoinedPlayerSlot`                                      |        |                 |      1 |     74 | `0x10005d40` | `0x100060b0` | `uint PopJoinedPlayerSlot(void)`                                                                                                                                                   |
+| `PopDepartedPlayerSlot`                                    |   ✅   |                 |      1 |     74 | `0x10005d90` | `0x10006100` | `int PopDepartedPlayerSlot(void)`                                                                                                                                                  |
+| `PopJoinedPlayerSlot`                                      |   ✅   |                 |      1 |     74 | `0x10005d40` | `0x100060b0` | `int PopJoinedPlayerSlot(void)`                                                                                                                                                    |
 | `PauseMusicPlayback`                                       |   ✅   |                 |      2 |     73 | `0x10002b70` | `0x10002eb0` | `bool PauseMusicPlayback(void)`                                                                                                                                                    |
 | `UnpauseMusicPlayback`                                     |   ✅   |                 |      2 |     73 | `0x10002bd0` | `0x10002f10` | `bool UnpauseMusicPlayback(void)`                                                                                                                                                  |
 | `CopyRgb565Rect`                                           |        |                 |      1 |     73 |              | `0x100013f0` | `undefined CopyRgb565Rect()`                                                                                                                                                       |

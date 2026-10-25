@@ -812,8 +812,8 @@ extern int g_bNetStatusStringDirty;
  */
 void SetGlobalStatusString(const char *pszStatus);
 
-/** The number of entries of g_anDepartedPlayerSlotStack. */
-#define DEPARTED_PLAYER_STACK_SIZE 16
+/** The number of entries of g_anDepartedPlayerSlotStack and g_anJoinedPlayerSlotStack. */
+#define PLAYER_SLOT_STACK_SIZE 16
 
 /**
  * The slots of the players that departed, for the race to remove.
@@ -821,7 +821,7 @@ void SetGlobalStatusString(const char *pszStatus);
  * @ghidraAddress BRD3D: 0x10221288
  * @ghidraAddress BRGlide: 0x1021cdb8
  */
-extern int g_anDepartedPlayerSlotStack[DEPARTED_PLAYER_STACK_SIZE];
+extern int g_anDepartedPlayerSlotStack[PLAYER_SLOT_STACK_SIZE];
 
 /**
  * The index of the top of g_anDepartedPlayerSlotStack.
@@ -830,6 +830,40 @@ extern int g_anDepartedPlayerSlotStack[DEPARTED_PLAYER_STACK_SIZE];
  * @ghidraAddress BRGlide: 0x1021ce48
  */
 extern int g_nDepartedPlayerStackTop;
+
+/**
+ * The slots of the players that joined, for the race to add.
+ *
+ * @ghidraAddress BRD3D: 0x10220d90
+ * @ghidraAddress BRGlide: 0x1021c8c0
+ */
+extern int g_anJoinedPlayerSlotStack[PLAYER_SLOT_STACK_SIZE];
+
+/**
+ * The index of the top of g_anJoinedPlayerSlotStack.
+ *
+ * @ghidraAddress BRD3D: 0x10220dd4
+ * @ghidraAddress BRGlide: 0x1021c904
+ */
+extern int g_nJoinedPlayerStackTop;
+
+/**
+ * Pop the slot of a player that joined, under the mutex of the stack.
+ *
+ * @return The slot, or -1 when the stack is empty.
+ * @ghidraAddress BRD3D: 0x10005d40
+ * @ghidraAddress BRGlide: 0x100060b0
+ */
+int PopJoinedPlayerSlot(void);
+
+/**
+ * Pop the slot of a player that departed, under the mutex of the stack.
+ *
+ * @return The slot, or -1 when the stack is empty.
+ * @ghidraAddress BRD3D: 0x10005d90
+ * @ghidraAddress BRGlide: 0x10006100
+ */
+int PopDepartedPlayerSlot(void);
 
 /**
  * The mutex of the start of a network race.

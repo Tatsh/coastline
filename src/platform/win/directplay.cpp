@@ -851,8 +851,33 @@ HRESULT CloseAndReleaseDirectPlay(void) {
 
 char g_szNetStatusString[0x400];
 int g_bNetStatusStringDirty;
-int g_anDepartedPlayerSlotStack[DEPARTED_PLAYER_STACK_SIZE];
+int g_anDepartedPlayerSlotStack[PLAYER_SLOT_STACK_SIZE];
 int g_nDepartedPlayerStackTop;
+int g_anJoinedPlayerSlotStack[PLAYER_SLOT_STACK_SIZE];
+int g_nJoinedPlayerStackTop;
+
+static inline int PopPlayerSlot(HANDLE hMutex, const int *pnStack, int *pnTop) {
+    int nSlot;
+
+    WaitForSingleObject(hMutex, INFINITE);
+    if (*pnTop < 0) {
+        nSlot = -1;
+    } else {
+        nSlot = pnStack[(*pnTop)--];
+    }
+    ReleaseMutex(hMutex);
+    return nSlot;
+}
+
+int PopJoinedPlayerSlot(void) {
+    return PopPlayerSlot(
+        g_hJoinedPlayerStackMutex, g_anJoinedPlayerSlotStack, &g_nJoinedPlayerStackTop);
+}
+
+int PopDepartedPlayerSlot(void) {
+    return PopPlayerSlot(
+        g_hDepartedPlayerStackMutex, g_anDepartedPlayerSlotStack, &g_nDepartedPlayerStackTop);
+}
 
 // The status of a slot of a peer in its low 6 bits.
 #define NET_PEER_STATUS_MASK 0x3f
