@@ -791,6 +791,16 @@ void CreateGlobalEffectTextures(void);
 void ProcessTextureUploadQueueEntry(void);
 
 /**
+ * Queue a texture to upload, under the mutex of the queue.
+ *
+ * @param nEntry The entry of the texture the game loaded.
+ * @param dwData The second argument of g_pfnUploadTextureEntryToSurface.
+ * @ghidraAddress BRD3D: 0x10074f70
+ * @ghidraAddress BRGlide: 0x1006e1d0
+ */
+void EnqueueTextureUploadEntry(int nEntry, unsigned dwData);
+
+/**
  * Empty the cache of converted vertices and the count of relocated pointers.
  *
  * @ghidraAddress BRD3D: 0x1002b9c0

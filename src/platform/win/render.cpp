@@ -479,6 +479,17 @@ void ProcessTextureUploadQueueEntry(void) {
     ReleaseMutex(g_hTextureUploadQueueMutex);
 }
 
+void EnqueueTextureUploadEntry(int nEntry, unsigned dwData) {
+    WaitForSingleObject(g_hTextureUploadQueueMutex, INFINITE);
+    g_aTextureUploadQueue[g_dwTextureUploadQueueHead].nEntry = nEntry;
+    g_aTextureUploadQueue[g_dwTextureUploadQueueHead].dwData = dwData;
+    // A full ring overwrites the textures still waiting.
+    if (++g_dwTextureUploadQueueHead >= TEXTURE_UPLOAD_QUEUE_SIZE) {
+        g_dwTextureUploadQueueHead = 0;
+    }
+    ReleaseMutex(g_hTextureUploadQueueMutex);
+}
+
 void ResetModelDataPool(void) {
     g_dwConvertedVertexCount = 0;
     g_pModelDataPoolCursor = g_afModelVertexPool;
