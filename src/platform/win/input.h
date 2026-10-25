@@ -715,6 +715,34 @@ extern DWORD g_dwForceFeedbackDuration;
 extern LONG g_adwForceFeedbackDirection[2];
 
 /**
+ * Set the first direction of the effects of force feedback, when a joystick with force feedback is
+ * in use and no instant replay plays.
+ *
+ * @param lDirection The direction.
+ * @ghidraAddress BRD3D: 0x10078e10
+ * @ghidraAddress BRGlide: 0x10072100
+ */
+void SetForceFeedbackDirection(LONG lDirection);
+
+/**
+ * Set the effects of force feedback to last 250 milliseconds, under the conditions of
+ * SetForceFeedbackDirection().
+ *
+ * @ghidraAddress BRD3D: 0x10078e50
+ * @ghidraAddress BRGlide: 0x10072140
+ */
+void SetForceFeedbackLongDuration(void);
+
+/**
+ * Set the effects of force feedback to last 125 milliseconds, under the conditions of
+ * SetForceFeedbackDirection().
+ *
+ * @ghidraAddress BRD3D: 0x10078e90
+ * @ghidraAddress BRGlide: 0x10072180
+ */
+void SetForceFeedbackShortDuration(void);
+
+/**
  * Create the condition effect, a spring on X and Y that lasts until it stops, and the jolt
  * effect, a square wave, of force feedback of the game controller.
  *

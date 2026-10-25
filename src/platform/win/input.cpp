@@ -6,6 +6,7 @@
 
 #include <windows.h>
 
+#include "instantreplay.h"
 #include "platform/win/boot/app.h"
 #include "platform/win/boot/rallyconfig.h"
 #include "platform/win/boot/strings.h"
@@ -532,6 +533,35 @@ DIEFFECT g_DiJoltEffect;
 DIPERIODIC g_DiJoltPeriodic;
 DWORD g_dwForceFeedbackDuration = 125000;
 LONG g_adwForceFeedbackDirection[2] = {-1, 0};
+
+// The durations of the effects of force feedback, in microseconds.
+#define FORCE_FEEDBACK_LONG_DURATION 250000
+#define FORCE_FEEDBACK_SHORT_DURATION 125000
+
+static inline bool IsForceFeedbackInUse(void) {
+    return (g_GlobalRallyConfig.dwInputDeviceType == 1 ||
+            g_GlobalRallyConfig.dwInputDeviceType == 2) &&
+           g_GlobalRallyConfig.bForceFeedbackEnabled && g_bForceFeedbackAvailable &&
+           !gInstantReplayActive;
+}
+
+void SetForceFeedbackDirection(LONG lDirection) {
+    if (IsForceFeedbackInUse()) {
+        g_adwForceFeedbackDirection[0] = lDirection;
+    }
+}
+
+void SetForceFeedbackLongDuration(void) {
+    if (IsForceFeedbackInUse()) {
+        g_dwForceFeedbackDuration = FORCE_FEEDBACK_LONG_DURATION;
+    }
+}
+
+void SetForceFeedbackShortDuration(void) {
+    if (IsForceFeedbackInUse()) {
+        g_dwForceFeedbackDuration = FORCE_FEEDBACK_SHORT_DURATION;
+    }
+}
 
 // The saturation and the gain of the effects of force feedback.
 #define FORCE_FEEDBACK_FULL 10000
