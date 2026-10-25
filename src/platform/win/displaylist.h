@@ -506,6 +506,15 @@ struct GbiLight {
 void HalveAmbientLightColor(GbiLight *pLight);
 
 /**
+ * Halve each channel of both copies of the colour of a light.
+ *
+ * @param pLight The light.
+ * @ghidraAddress BRD3D: 0x1002c1b0
+ * @ghidraAddress BRGlide: 0x10019270
+ */
+void HalveLightColors(GbiLight *pLight);
+
+/**
  * The number of lights the display lists set, as their command gives it.
  *
  * @ghidraAddress BRD3D: 0x104bc190

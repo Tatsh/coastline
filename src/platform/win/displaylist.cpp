@@ -289,6 +289,13 @@ void HalveAmbientLightColor(GbiLight *pLight) {
     pLight->abColorCopy[0] >>= 1;
 }
 
+void HalveLightColors(GbiLight *pLight) {
+    pLight->abColor[2] >>= 1;
+    pLight->abColor[1] >>= 1;
+    pLight->abColor[0] >>= 1;
+    HalveAmbientLightColor(pLight);
+}
+
 GbiCommand *HandleGbiMoveWord(GbiCommand *pCommand) {
     unsigned dwOffset;
 
