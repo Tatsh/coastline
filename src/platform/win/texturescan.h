@@ -14,18 +14,30 @@ enum TexScanLoadState {
     TEX_SCAN_LOAD_SYNCED = 2,  /*!< ScanGbiLoadSync(). */
     TEX_SCAN_BLOCK_LOADED = 3, /*!< ScanGbiLoadBlock(). */
     TEX_SCAN_TILE_SYNCED = 4,  /*!< ScanGbiTileSync(). */
+    TEX_SCAN_TILE_SET = 5,     /*!< ScanGbiSetTile(). */
     TEX_SCAN_TILE_SIZED = 6,   /*!< ScanGbiSetTileSize(). */
     TEX_SCAN_TLUT_LOADED = 7,  /*!< ScanGbiLoadTlut(). */
     TEX_SCAN_PIPE_SYNCED = 8,  /*!< ScanGbiPipeSync(). */
 };
 
-/** A tile the scan records. The layout is not recovered past its edges. */
+/** A tile the scan records. */
 struct TexScanTile {
-    char abUnknown0[0x30]; /* +0x00 */
-    int nUls;              /*!< The left edge, in texels with two bits of fraction. */
-    int nUlt;              /*!< The top edge, in texels with two bits of fraction. */
-    int nLrs;              /*!< The right edge, in texels with two bits of fraction. */
-    int nLrt;              /*!< The bottom edge, in texels with two bits of fraction. */
+    int nFormat;    /*!< The format of the texels. */
+    int nSize;      /*!< The size of the texels. */
+    int nLineBytes; /*!< The bytes of a line of texels in the texture memory. */
+    int nTmem;      /*!< The address of the tile in the texture memory, in words of 8 bytes. */
+    int bMirrorS;   /*!< Whether s mirrors. */
+    int bClampS;    /*!< Whether s clamps. */
+    int bMirrorT;   /*!< Whether t mirrors. */
+    int bClampT;    /*!< Whether t clamps. */
+    int nMaskS;     /*!< The bits of s that wrap. */
+    int nMaskT;     /*!< The bits of t that wrap. */
+    int nShiftS;    /*!< The shift of s. */
+    int nShiftT;    /*!< The shift of t. */
+    int nUls;       /*!< The left edge, in texels with two bits of fraction. */
+    int nUlt;       /*!< The top edge, in texels with two bits of fraction. */
+    int nLrs;       /*!< The right edge, in texels with two bits of fraction. */
+    int nLrt;       /*!< The bottom edge, in texels with two bits of fraction. */
 };
 
 /** The number of entries of g_aTexScanTiles. */
@@ -241,10 +253,63 @@ void ScanGbiTileSync(GbiCommand *pCommand);
 void ScanGbiSetTileSize(GbiCommand *pCommand);
 
 /**
- * Record the blending of the render mode of a command of the low word of the other modes.
+ * Record bit 16 of the render mode of a command of the low word of the other modes, as
+ * g_bTexScanRenderModeBlendBit16 takes it.
  *
  * @param pCommand The command.
  * @ghidraAddress BRD3D: 0x1002a1a0
  * @ghidraAddress BRGlide: 0x10029710
  */
 void ScanGbiSetOtherModeL(GbiCommand *pCommand);
+
+/**
+ * The format of the palettes the textures use, 0 for RGBA and 3 for IA.
+ *
+ * @ghidraAddress BRD3D: 0x105553dc
+ * @ghidraAddress BRGlide: 0x10697a44
+ */
+extern int g_dwTexScanTlutMode;
+
+/**
+ * Whether the detail of the textures is the mode of detail textures.
+ *
+ * @ghidraAddress BRD3D: 0x1057544c
+ * @ghidraAddress BRGlide: 0x106b7ab0
+ */
+extern int g_dwTexScanRenderTileIndex;
+
+/**
+ * The highest tile a tile command set since a block, a tile sync, or a palette.
+ *
+ * @ghidraAddress BRD3D: 0x10575430
+ * @ghidraAddress BRGlide: 0x106b7a94
+ */
+extern int g_dwTexScanMaxTileIndex;
+
+/**
+ * Record the format of the palettes of a command, keeping it for a command without one.
+ *
+ * @param pCommand The command.
+ * @ghidraAddress BRD3D: 0x1002a250
+ * @ghidraAddress BRGlide: 0x100297c0
+ */
+void ScanGbiTextureLutMode(GbiCommand *pCommand);
+
+/**
+ * Record the palettes or the detail of the textures of a command of the high word of the other
+ * modes.
+ *
+ * @param pCommand The command.
+ * @ghidraAddress BRD3D: 0x1002a210
+ * @ghidraAddress BRGlide: 0x10029780
+ */
+void ScanGbiSetOtherModeH(GbiCommand *pCommand);
+
+/**
+ * Record the settings of the tile of a command and mark the tile set.
+ *
+ * @param pCommand The command.
+ * @ghidraAddress BRD3D: 0x1002a040
+ * @ghidraAddress BRGlide: 0x100295b0
+ */
+void ScanGbiSetTile(GbiCommand *pCommand);

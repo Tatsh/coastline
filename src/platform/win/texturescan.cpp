@@ -112,6 +112,66 @@ void ScanGbiSetTileSize(GbiCommand *pCommand) {
     tile.nLrt = TexScanField12(pCommand->w1, 0);
 }
 
+int g_dwTexScanTlutMode;
+int g_dwTexScanRenderTileIndex;
+int g_dwTexScanMaxTileIndex;
+
+// The palettes of the textures of the console, and the formats of the palettes.
+#define TEX_SCAN_TLUT_RGBA16 0x8000
+#define TEX_SCAN_TLUT_IA16 0xc000
+#define TEX_SCAN_TLUT_FORMAT_RGBA 0
+#define TEX_SCAN_TLUT_FORMAT_IA 3
+// The shifts of the modes of the high word of the other modes the scan reads.
+#define TEX_SCAN_MODE_SHIFT_TEXTURE_LUT 0xe00
+#define TEX_SCAN_MODE_SHIFT_TEXTURE_DETAIL 0x1100
+// The detail of the textures that uses detail textures.
+#define TEX_SCAN_TEXTURE_DETAIL_DETAIL 0x40000
+
+void ScanGbiSetTile(GbiCommand *pCommand) {
+    int nTile = pCommand->w1 >> 24 & 7;
+    TexScanTile &tile = g_aTexScanTiles[nTile];
+
+    tile.nFormat = pCommand->w0 >> 21 & 7;
+    tile.nSize = pCommand->w0 >> 19 & 3;
+    tile.nLineBytes = (pCommand->w0 >> 9 & 0x1ff) << 3;
+    tile.nTmem = pCommand->w0 & 0x1ff;
+    tile.bMirrorS = pCommand->w1 >> 8 & 1;
+    tile.bClampS = pCommand->w1 >> 9 & 1;
+    tile.bMirrorT = pCommand->w1 >> 18 & 1;
+    tile.bClampT = pCommand->w1 >> 19 & 1;
+    tile.nMaskS = pCommand->w1 >> 4 & 0xf;
+    tile.nMaskT = pCommand->w1 >> 14 & 0xf;
+    tile.nShiftS = pCommand->w1 & 0xf;
+    tile.nShiftT = pCommand->w1 >> 10 & 0xf;
+    if (g_dwTexScanLoadState == TEX_SCAN_BLOCK_LOADED ||
+        g_dwTexScanLoadState == TEX_SCAN_TILE_SYNCED ||
+        g_dwTexScanLoadState == TEX_SCAN_TLUT_LOADED || nTile > g_dwTexScanMaxTileIndex) {
+        g_dwTexScanMaxTileIndex = nTile;
+    }
+    g_dwTexScanLoadState = TEX_SCAN_TILE_SET;
+}
+
+void ScanGbiTextureLutMode(GbiCommand *pCommand) {
+    unsigned dwMode = pCommand->w1;
+    if (dwMode == 0) {
+        return;
+    }
+    if (dwMode == TEX_SCAN_TLUT_RGBA16) {
+        g_dwTexScanTlutMode = TEX_SCAN_TLUT_FORMAT_RGBA;
+    } else if (dwMode == TEX_SCAN_TLUT_IA16) {
+        g_dwTexScanTlutMode = TEX_SCAN_TLUT_FORMAT_IA;
+    }
+}
+
+void ScanGbiSetOtherModeH(GbiCommand *pCommand) {
+    unsigned dwShift = pCommand->w0 & 0xff00;
+    if (dwShift == TEX_SCAN_MODE_SHIFT_TEXTURE_LUT) {
+        ScanGbiTextureLutMode(pCommand);
+    } else if (dwShift == TEX_SCAN_MODE_SHIFT_TEXTURE_DETAIL) {
+        g_dwTexScanRenderTileIndex = pCommand->w1 == TEX_SCAN_TEXTURE_DETAIL_DETAIL;
+    }
+}
+
 void ScanGbiSetOtherModeL(GbiCommand *pCommand) {
     if ((pCommand->w0 & 0xff00) != TEX_SCAN_MODE_SHIFT_RENDER_MODE) {
         return;
