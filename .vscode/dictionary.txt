@@ -177,6 +177,7 @@ diedfl
 dieff
 dieffect
 dienum
+diep
 dierr
 dijofs
 dijoystate

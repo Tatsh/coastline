@@ -258,6 +258,29 @@ void CopyDamageTextureLevels(DWORD *pdwLevels) {
     memcpy(pdwLevels, g_adwDamageTextureLevels, sizeof(g_adwDamageTextureLevels));
 }
 
+int GetTexelsPerLoadWord(int nSize) {
+    switch (nSize) {
+    case 0:
+        return 16;
+    case 1:
+        return 8;
+    case 2:
+        return 4;
+    default:
+        return 2;
+    }
+}
+
+void CreateGlobalEffectTextures(void) {
+    LoadHudOverlayTexture();
+    LoadHudGlyphTextureSets();
+    LoadHudTexture64A();
+    LoadHudTexture32x64();
+    LoadHudTexture64B();
+    CreateFallbackEnvironmentTexture();
+    CreateAlphaRampTextures();
+}
+
 TextureUploadRequest g_aTextureUploadQueue[TEXTURE_UPLOAD_QUEUE_SIZE];
 int g_dwTextureUploadQueueHead;
 int g_dwTextureUploadQueueTail;

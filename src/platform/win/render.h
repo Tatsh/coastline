@@ -533,6 +533,81 @@ void ClearDamageTextureLevels(void);
 void CopyDamageTextureLevels(DWORD *pdwLevels);
 
 /**
+ * Get the texels of a word of 8 bytes of the texture memory of the console for a size of texel.
+ *
+ * @param nSize The size of the texels, from 0 for 4 bits to 3 for 32 bits.
+ * @return 16, 8, 4, or 2.
+ * @ghidraAddress BRD3D: 0x10028c70
+ * @ghidraAddress BRGlide: 0x10027f80
+ */
+int GetTexelsPerLoadWord(int nSize);
+
+/**
+ * Load the texture of the overlay of the display of the race.
+ *
+ * @ghidraAddress BRD3D: 0x100737e0
+ * @ghidraAddress BRGlide: 0x1006c750
+ */
+void LoadHudOverlayTexture(void);
+
+/**
+ * Load the textures of the sets of glyphs of the display of the race.
+ *
+ * @ghidraAddress BRD3D: 0x10073820
+ * @ghidraAddress BRGlide: 0x1006c790
+ */
+void LoadHudGlyphTextureSets(void);
+
+/**
+ * Load the first texture of 64 texels of the display of the race.
+ *
+ * @ghidraAddress BRD3D: 0x10073950
+ * @ghidraAddress BRGlide: 0x1006c800
+ */
+void LoadHudTexture64A(void);
+
+/**
+ * Load the texture of 32 by 64 texels of the display of the race.
+ *
+ * @ghidraAddress BRD3D: 0x10073980
+ * @ghidraAddress BRGlide: 0x1006c820
+ */
+void LoadHudTexture32x64(void);
+
+/**
+ * Load the second texture of 64 texels of the display of the race.
+ *
+ * @ghidraAddress BRD3D: 0x100739b0
+ * @ghidraAddress BRGlide: 0x1006c850
+ */
+void LoadHudTexture64B(void);
+
+/**
+ * Create the texture of the environment used when none is loaded.
+ *
+ * @ghidraAddress BRD3D: 0x100739e0
+ * @ghidraAddress BRGlide: 0x1006c880
+ */
+void CreateFallbackEnvironmentTexture(void);
+
+/**
+ * Create the textures of the ramps of alpha.
+ *
+ * @ghidraAddress BRD3D: 0x10073a10
+ * @ghidraAddress BRGlide: 0x1006c8b0
+ */
+void CreateAlphaRampTextures(void);
+
+/**
+ * Load and create the textures every race uses: those of the display of the race, the texture of
+ * the environment used when none is loaded, and the ramps of alpha.
+ *
+ * @ghidraAddress BRD3D: 0x10074dd0
+ * @ghidraAddress BRGlide: 0x1006e030
+ */
+void CreateGlobalEffectTextures(void);
+
+/**
  * Upload the next texture of the queue of textures to upload.
  *
  * @ghidraAddress BRD3D: 0x10074fc0
