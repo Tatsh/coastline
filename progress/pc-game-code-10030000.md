@@ -1,6 +1,6 @@
 # PC port game code from 0x10030000 to 0x10040000
 
-66 of 307 routines done.
+67 of 307 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -194,7 +194,7 @@ the same name, for a routine the port retained from the N64 game.
 | `FreeServiceProviderConnectionData`               |   ✅   |                 |      1 |     68 | `0x1003cfe0` | `0x10036670` | `void FreeServiceProviderConnectionData(void)`                                                                                                                          |
 | `SendNetworkMessage7`                             |        |                 |      1 |     67 | `0x1003db00` | `0x100371a0` | `undefined SendNetworkMessage7()`                                                                                                                                       |
 | `SnapshotParticleState`                           |        |                 |      1 |     67 | `0x1003a610` | `0x10033c90` | `undefined SnapshotParticleState()`                                                                                                                                     |
-| `SendNetworkMessage6`                             |   📝   |                 |      1 |     67 | `0x1003da90` | `0x10037130` | `int SendNetworkMessage6(DirectPlayInfo * pInfo, uint dpidTo)`                                                                                                          |
+| `SendNetworkMessage6`                             |   ✅   |                 |      1 |     67 | `0x1003da90` | `0x10037130` | `HRESULT SendNetworkMessage6(DirectPlayInfo * pInfo, uint dpidPlayer)`                                                                                                  |
 | `ResetGameModeConfig`                             |        |                 |      2 |     66 | `0x1003dfc0` | `0x10037660` | `undefined ResetGameModeConfig()`                                                                                                                                       |
 | `Vec3fLength`                                     |   ✅   | ✅ `0x80224b08` |     28 |     65 | `0x1003b170` | `0x100347f0` | `float Vec3fLength(float * pVec)`                                                                                                                                       |
 | `Vec3dCross`                                      |        |                 |      1 |     65 | `0x10030670` | `0x1001dd00` | `undefined Vec3dCross()`                                                                                                                                                |

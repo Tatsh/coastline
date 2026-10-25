@@ -76,18 +76,38 @@ int GetSelectedServiceProvider(GUID **ppGuid);
 extern unsigned g_dwNetWorkerCurrentTime;
 
 /**
- * Send message 6 of the game to a player.
+ * Send a message of DirectPlay under g_DirectPlaySendCritSec.
+ *
+ * @param pDirectPlay The DirectPlay object.
+ * @param dpidFrom The player that sends.
+ * @param dpidTo The player that receives, or `DPID_ALLPLAYERS`.
+ * @param dwFlags The flags of the send.
+ * @param pData The message.
+ * @param dwSize The bytes of the message.
+ * @return The result of Send.
+ * @ghidraAddress BRD3D: 0x1000c4d0
+ * @ghidraAddress BRGlide: 0x10009a00
+ */
+HRESULT DirectPlaySendLocked(IDirectPlay3A *pDirectPlay,
+                             DPID dpidFrom,
+                             DPID dpidTo,
+                             DWORD dwFlags,
+                             void *pData,
+                             DWORD dwSize);
+
+/**
+ * Send message 6 of the game, which names a player, from the local player to every player.
  *
  * @param pInfo The session.
- * @param dpidTo The player.
- * @return The result of the send. Its meaning is not recovered yet.
+ * @param dpidPlayer The player the message names.
+ * @return The result of the send, or 0 without DirectPlay.
  * @ghidraAddress BRD3D: 0x1003da90
  * @ghidraAddress BRGlide: 0x10037130
  */
-int SendNetworkMessage6(DirectPlayInfo *pInfo, DPID dpidTo);
+HRESULT SendNetworkMessage6(DirectPlayInfo *pInfo, DPID dpidPlayer);
 
 /**
- * Send message 6 of the game to the player of the session, when there is one.
+ * Send message 6 of the game naming the local player, when there is one.
  *
  * @ghidraAddress BRD3D: 0x1003dae0
  * @ghidraAddress BRGlide: 0x10037180
@@ -839,6 +859,74 @@ extern HANDLE g_hNetWorkerThread;
  * @ghidraAddress BRGlide: 0x1006b1e0
  */
 void StopNetworkWorkerThread(void);
+
+/**
+ * The identifier of the worker thread of network play.
+ *
+ * @ghidraAddress BRD3D: 0x11826b04
+ * @ghidraAddress BRGlide: 0x11849e64
+ */
+extern DWORD g_dwNetWorkerThreadId;
+
+/**
+ * The time of the next tick of the worker thread of network play, in milliseconds.
+ *
+ * @ghidraAddress BRD3D: 0x11826b48
+ * @ghidraAddress BRGlide: 0x11849ea8
+ */
+extern DWORD g_dwNetWorkerNextTickTime;
+
+/**
+ * Move the players of a network game that are ready to the start.
+ *
+ * @ghidraAddress BRD3D: 0x100716e0
+ * @ghidraAddress BRGlide: 0x1006a650
+ */
+void PromoteReadyNetworkPlayersToStart(void);
+
+/**
+ * Rank the players of a network game by their progress.
+ *
+ * @ghidraAddress BRD3D: 0x10071870
+ * @ghidraAddress BRGlide: 0x1006a7e0
+ */
+void RankNetworkPlayersByProgress(void);
+
+/**
+ * Empty the streams of every player of a network game.
+ *
+ * @ghidraAddress BRD3D: 0x10071b80
+ * @ghidraAddress BRGlide: 0x1006aaf0
+ */
+void ResetAllNetworkPlayerStreams(void);
+
+/**
+ * Write the packets of the status of the players of a network game into their streams.
+ *
+ * @ghidraAddress BRD3D: 0x10071c10
+ * @ghidraAddress BRGlide: 0x1006ab80
+ */
+void BuildNetworkPlayerStatusPackets(void);
+
+/**
+ * Send the streams of the players of a network game.
+ *
+ * @param pInfo The session.
+ * @ghidraAddress BRD3D: 0x10072170
+ * @ghidraAddress BRGlide: 0x1006b0e0
+ */
+void FlushNetworkPlayerStreams(DirectPlayInfo *pInfo);
+
+/**
+ * Do the work of the host of a network game once a second, sleeping until each second. The loop
+ * never ends: it reads no stop event, so the thread never returns.
+ *
+ * @param pParameter Not read.
+ * @return Never.
+ * @ghidraAddress BRD3D: 0x10071680
+ * @ghidraAddress BRGlide: 0x1006a5f0
+ */
+DWORD WINAPI NetworkWorkerThreadProc(LPVOID pParameter);
 
 /**
  * Create the mutexes of the slots of the players of a network game.

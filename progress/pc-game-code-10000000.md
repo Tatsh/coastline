@@ -1,6 +1,6 @@
 # PC port game code from 0x10000000 to 0x10010000
 
-166 of 246 routines done.
+167 of 246 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -156,7 +156,7 @@ the same name, for a routine the port retained from the N64 game.
 | `NextGridCellInstance`                                     |        | ✅ `0x8021eadc` |      2 |     66 | `0x10002f40` | `0x10003280` | `undefined NextGridCellInstance()`                                                                                                                                                 |
 | `NextGridCellTriangle`                                     |        | ✅ `0x8021ea90` |      2 |     66 | `0x10002ef0` | `0x10003230` | `undefined NextGridCellTriangle()`                                                                                                                                                 |
 | `LoadNetworkPlayerColors`                                  |        |                 |      2 |     65 | `0x100049c0` | `0x10004d30` | `undefined LoadNetworkPlayerColors()`                                                                                                                                              |
-| `DirectPlaySendLocked`                                     |        |                 |     11 |     64 | `0x1000c4d0` | `0x10009a00` | `undefined DirectPlaySendLocked()`                                                                                                                                                 |
+| `DirectPlaySendLocked`                                     |   ✅   |                 |     11 |     64 | `0x1000c4d0` | `0x10009a00` | `HRESULT DirectPlaySendLocked(void * pDirectPlay, uint dpidFrom, uint dpidTo, uint dwFlags, void * pData, uint dwSize)`                                                            |
 | `AdvanceMusicTrackWrapping`                                |   ✅   |                 |      1 |     64 | `0x100029b0` | `0x10002cf0` | `bool AdvanceMusicTrackWrapping(void)`                                                                                                                                             |
 | `PodArchive::AllocAndLoadPodByIndex`                       |   ✅   |                 |      1 |     64 | `0x10008810` | `0x100089f0` | `undefined AllocAndLoadPodByIndex(PodArchive * this, undefined4 param_1)`                                                                                                          |
 | `PodFileHelper::FileOpenBinaryReadOrFatal`                 |   ✅   |                 |      1 |     64 | `0x10008c20` | `0x10008e10` | `int FileOpenBinaryReadOrFatal(PodFileHelper * this, char * pszPath)`                                                                                                              |

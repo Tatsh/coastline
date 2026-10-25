@@ -14,6 +14,7 @@ airplane
 airplanetrigger
 alabel
 alloconload
+allplayers
 alphablendenable
 alphadither
 andi
@@ -218,6 +219,7 @@ dpmsg
 dpname
 dpplayer
 dpreceive
+dpsend
 dpsession
 dpsessiondesc
 dpspguid

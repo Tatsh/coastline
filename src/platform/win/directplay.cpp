@@ -38,6 +38,43 @@ int GetSelectedServiceProvider(GUID **ppGuid) {
     return 0;
 }
 
+HRESULT DirectPlaySendLocked(IDirectPlay3A *pDirectPlay,
+                             DPID dpidFrom,
+                             DPID dpidTo,
+                             DWORD dwFlags,
+                             void *pData,
+                             DWORD dwSize) {
+    EnterCriticalSection(&g_DirectPlaySendCritSec);
+    HRESULT hResult = pDirectPlay->Send(dpidFrom, dpidTo, dwFlags, pData, dwSize);
+    LeaveCriticalSection(&g_DirectPlaySendCritSec);
+    return hResult;
+}
+
+// The type of message 6 of the game.
+#define NETWORK_MESSAGE_6 0x60000006
+
+// Message 6 of the game.
+struct NetworkMessage6 {
+    DWORD dwType;
+    DPID dpidPlayer;
+};
+
+HRESULT SendNetworkMessage6(DirectPlayInfo *pInfo, DPID dpidPlayer) {
+    NetworkMessage6 message;
+
+    if (pInfo == nullptr || pInfo->pDirectPlay == nullptr) {
+        return 0;
+    }
+    message.dpidPlayer = dpidPlayer;
+    message.dwType = NETWORK_MESSAGE_6;
+    return DirectPlaySendLocked(pInfo->pDirectPlay,
+                                pInfo->dpidPlayer,
+                                DPID_ALLPLAYERS,
+                                DPSEND_GUARANTEED,
+                                &message,
+                                sizeof(message));
+}
+
 void SendNetworkMessage6ToSession(void) {
     if (g_pDirectPlayInfo != nullptr && g_pDirectPlayInfo->dpidPlayer != 0) {
         SendNetworkMessage6(g_pDirectPlayInfo, g_pDirectPlayInfo->dpidPlayer);
@@ -541,6 +578,37 @@ bool InitializeNetworkThreading(void) {
 int g_bNetWorkerThreadRunning;
 HANDLE g_hNetWorkerStopEvent;
 HANDLE g_hNetWorkerThread;
+DWORD g_dwNetWorkerThreadId;
+DWORD g_dwNetWorkerNextTickTime;
+unsigned g_dwNetWorkerCurrentTime;
+
+// The milliseconds between the ticks of the worker thread of network play.
+#define NET_WORKER_TICK_MS 1000
+
+DWORD WINAPI NetworkWorkerThreadProc(LPVOID) {
+    // The stop event is never read, and the loop never ends.
+    for (;;) {
+        g_dwNetWorkerCurrentTime = GetElapsedTimeSinceStart();
+        if (g_dwNetWorkerCurrentTime < g_dwNetWorkerNextTickTime) {
+            Sleep(g_dwNetWorkerNextTickTime - g_dwNetWorkerCurrentTime);
+            continue;
+        }
+        PromoteReadyNetworkPlayersToStart();
+        RankNetworkPlayersByProgress();
+        ResetAllNetworkPlayerStreams();
+        BuildNetworkPlayerStatusPackets();
+        FlushNetworkPlayerStreams(&g_DirectPlayInfo);
+        g_dwNetWorkerNextTickTime += NET_WORKER_TICK_MS;
+    }
+}
+
+void StartNetworkWorkerThread(void) {
+    g_hNetWorkerStopEvent = CreateEventA(nullptr, false, false, nullptr);
+    g_hNetWorkerThread =
+        CreateThread(nullptr, 0, NetworkWorkerThreadProc, nullptr, 0, &g_dwNetWorkerThreadId);
+    g_dwNetWorkerNextTickTime = NET_WORKER_TICK_MS;
+    g_bNetWorkerThreadRunning = true;
+}
 
 void StopNetworkWorkerThread(void) {
     if (!g_bNetWorkerThreadRunning) {
