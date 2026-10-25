@@ -127,6 +127,32 @@ GbiCommand *HandleGbiTextureRectangle(GbiCommand *pCommand) {
     return pCommand + 1;
 }
 
+float g_fViewportScaleX;
+float g_fViewportScaleY;
+float g_fViewportTranslateX;
+float g_fViewportTranslateY;
+
+// The pixels of a unit of a viewport of the console.
+#define GBI_VIEWPORT_UNIT 0.25f
+
+GbiCommand *HandleGbiSetViewport(GbiCommand *pCommand) {
+    const GbiViewport *pViewport = pCommand->pViewport;
+#if TGR_RENDERER == TGR_RENDERER_D3D
+    g_fViewportScaleX = static_cast<float>(pViewport->anScale[0]) * GBI_VIEWPORT_UNIT;
+    g_fViewportScaleY = static_cast<float>(pViewport->anScale[1]) * -GBI_VIEWPORT_UNIT;
+    g_fViewportTranslateX = static_cast<float>(pViewport->anTranslate[0]) * GBI_VIEWPORT_UNIT;
+    g_fViewportTranslateY = static_cast<float>(pViewport->anTranslate[1]) * GBI_VIEWPORT_UNIT;
+#else
+    float fHeight = static_cast<float>(g_dwConfigFramebufferHeight);
+    g_fViewportScaleX = static_cast<float>(pViewport->anScale[0]) * GBI_VIEWPORT_UNIT;
+    g_fViewportScaleY = static_cast<float>(pViewport->anScale[1]) * GBI_VIEWPORT_UNIT;
+    g_fViewportTranslateX = static_cast<float>(pViewport->anTranslate[0]) * GBI_VIEWPORT_UNIT;
+    g_fViewportTranslateY =
+        fHeight - static_cast<float>(pViewport->anTranslate[1]) * GBI_VIEWPORT_UNIT;
+#endif
+    return pCommand + 1;
+}
+
 static inline int GbiSignedField12(unsigned dwWord, int nShift) {
     return static_cast<int>(dwWord << (20 - nShift)) >> 20;
 }

@@ -6,12 +6,19 @@
  * and returns the command to run next.
  */
 
+/** A viewport of the console, in pixels with two bits of fraction. */
+struct GbiViewport {
+    short anScale[4];     /*!< The scale of x, y, z, and an unused fourth value. */
+    short anTranslate[4]; /*!< The translation of x, y, z, and an unused fourth value. */
+};
+
 /** A command of a display list of the game. */
 struct GbiCommand {
     unsigned w0; /*!< The first word, the opcode in its high byte. */
     union {
-        unsigned w1;         /*!< The second word. */
-        float f1;            /*!< The second word as a float. */
+        const GbiViewport *pViewport; /*!< The second word as the viewport a command sets. */
+        unsigned w1;                  /*!< The second word. */
+        float f1;                     /*!< The second word as a float. */
         GbiCommand *pTarget; /*!< The second word as the display list a branch or a call runs. */
     };
 };
@@ -403,6 +410,49 @@ GbiCommand *HandleGbiTextureRectangle(GbiCommand *pCommand);
  * @ghidraAddress BRGlide: 0x10021570
  */
 GbiCommand *HandleGbiTextureRectangleNative(GbiCommand *pCommand);
+
+/**
+ * The scale of x of the viewport, in pixels.
+ *
+ * @ghidraAddress BRD3D: 0x104bbf08
+ * @ghidraAddress BRGlide: 0x105ccd48
+ */
+extern float g_fViewportScaleX;
+
+/**
+ * The scale of y of the viewport, in pixels, negative for Direct3D.
+ *
+ * @ghidraAddress BRD3D: 0x104bc198
+ * @ghidraAddress BRGlide: 0x105ccfdc
+ */
+extern float g_fViewportScaleY;
+
+/**
+ * The translation of x of the viewport, in pixels.
+ *
+ * @ghidraAddress BRD3D: 0x104c0bb0
+ * @ghidraAddress BRGlide: 0x105cd9f8
+ */
+extern float g_fViewportTranslateX;
+
+/**
+ * The translation of y of the viewport, in pixels, from the bottom of the screen for Glide.
+ *
+ * @ghidraAddress BRD3D: 0x104c0bb8
+ * @ghidraAddress BRGlide: 0x105cd9fc
+ */
+extern float g_fViewportTranslateY;
+
+/**
+ * Set the viewport. Direct3D turns its y over through the scale, and Glide through the
+ * translation from the height of the screen.
+ *
+ * @param pCommand The command, the viewport in its second word.
+ * @return The next command.
+ * @ghidraAddress BRD3D: 0x10024260
+ * @ghidraAddress BRGlide: 0x10023920
+ */
+GbiCommand *HandleGbiSetViewport(GbiCommand *pCommand);
 
 #if TGR_RENDERER == TGR_RENDERER_D3D
 /**
