@@ -260,13 +260,42 @@ extern float *g_pModelDataPoolCursor;
  */
 void CopyConfigFramebufferSize(void);
 
+/** A run of vertices of the console converted to floats. */
+struct VertexConvCacheEntry {
+    const void *pSource; /*!< The vertices of the console. */
+    int nVertexCount;    /*!< The number of vertices. */
+    float *pFloatVerts;  /*!< The vertices converted. */
+};
+
+/** The number of entries of g_aVertexConvCache. */
+#define VERTEX_CONV_CACHE_SIZE 0x800
+
 /**
- * The number of vertices of the cache of converted vertices.
+ * The runs of vertices converted.
+ *
+ * @ghidraAddress BRD3D: 0x10675548
+ * @ghidraAddress BRGlide: 0x105b16f0
+ */
+extern VertexConvCacheEntry g_aVertexConvCache[VERTEX_CONV_CACHE_SIZE];
+
+/**
+ * The number of entries of g_aVertexConvCache in use.
  *
  * @ghidraAddress BRD3D: 0x1067b54c
  * @ghidraAddress BRGlide: 0x105b76f4
  */
 extern int g_dwVertexConvCacheCount;
+
+/**
+ * Add a run of vertices converted to g_aVertexConvCache while it has room.
+ *
+ * @param pSource The vertices of the console.
+ * @param nVertexCount The number of vertices.
+ * @param pFloatVerts The vertices converted.
+ * @ghidraAddress BRD3D: 0x1002bf00
+ * @ghidraAddress BRGlide: 0x10018fc0
+ */
+void AddVertexConversionCacheEntry(const void *pSource, int nVertexCount, float *pFloatVerts);
 
 /**
  * The number of pointers relocated.
@@ -311,6 +340,16 @@ extern void *g_apRelocatedPointers[RELOCATED_POINTER_COUNT];
  * @ghidraAddress BRGlide: 0x100192b0
  */
 void AddPointerToRelocatedList(void *pPointer);
+
+/**
+ * Report whether a pointer was relocated already.
+ *
+ * @param pPointer The pointer.
+ * @return Whether g_apRelocatedPointers includes it, and true for a null pointer.
+ * @ghidraAddress BRD3D: 0x1002bf40
+ * @ghidraAddress BRGlide: 0x10019000
+ */
+bool IsPointerInRelocatedList(void *pPointer);
 
 /**
  * Move a pointer from g_dwOldBaseAddress to g_dwNewBaseAddress. A pointer below the old base

@@ -64,9 +64,36 @@ void CopyConfigFramebufferSize(void) {
 // The number of words Copy8Dwords() copies.
 #define COPY_WORD_COUNT 8
 
+VertexConvCacheEntry g_aVertexConvCache[VERTEX_CONV_CACHE_SIZE];
+int g_dwVertexConvCacheCount;
+void *g_apRelocatedPointers[RELOCATED_POINTER_COUNT];
+int g_dwRelocatedPointerCount;
+
 void ResetVertexConversionCache(void) {
     g_dwVertexConvCacheCount = 0;
     g_dwRelocatedPointerCount = 0;
+}
+
+void AddVertexConversionCacheEntry(const void *pSource, int nVertexCount, float *pFloatVerts) {
+    if (g_dwVertexConvCacheCount >= VERTEX_CONV_CACHE_SIZE) {
+        return;
+    }
+    VertexConvCacheEntry &entry = g_aVertexConvCache[g_dwVertexConvCacheCount++];
+    entry.pSource = pSource;
+    entry.nVertexCount = nVertexCount;
+    entry.pFloatVerts = pFloatVerts;
+}
+
+bool IsPointerInRelocatedList(void *pPointer) {
+    if (pPointer == nullptr) {
+        return true;
+    }
+    for (int i = 0; i < g_dwRelocatedPointerCount; i++) {
+        if (g_apRelocatedPointers[i] == pPointer) {
+            return true;
+        }
+    }
+    return false;
 }
 
 void SetPointerRelocationBase(unsigned dwOldBase, unsigned dwNewBase) {
