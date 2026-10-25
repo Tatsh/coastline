@@ -125,3 +125,184 @@ unsigned GetAvailableTextureMemory(void) {
     g_pRenderHost->pRenderer->pDirectDraw2->GetAvailableVidMem(&caps, &dwTotal, &dwFree);
     return dwFree;
 }
+
+D3DTexture g_LoadingScreenImageState;
+
+IDirectDraw *GetDirectDrawFromD3DDevice(IDirect3DDevice2 *pDevice) {
+    IDirectDrawSurface *pTarget;
+    IDirectDrawSurface2 *pTarget2;
+    IDirectDraw *pDirectDraw;
+
+    if (pDevice == nullptr || pDevice->GetRenderTarget(&pTarget) != DD_OK) {
+        return nullptr;
+    }
+    // The render target is not released when the query fails.
+    if (pTarget->QueryInterface(IID_IDirectDrawSurface2, reinterpret_cast<void **>(&pTarget2)) !=
+        DD_OK) {
+        return nullptr;
+    }
+    pTarget->Release();
+    pTarget2->GetDDInterface(reinterpret_cast<void **>(&pDirectDraw));
+    pTarget2->Release();
+    pDirectDraw->Release();
+    return pDirectDraw;
+}
+
+void D3DTexture::ReleaseD3DTextureInterfaces() {
+    if (pSysMemSurface != nullptr) {
+        pSysMemSurface->Release();
+    }
+    pSysMemSurface = nullptr;
+    if (pDeviceSurface != nullptr) {
+        pDeviceSurface->Release();
+    }
+    pDeviceSurface = nullptr;
+    if (pUnknown8 != nullptr) {
+        pUnknown8->Release();
+    }
+    pUnknown8 = nullptr;
+    hTexture = 0;
+}
+
+bool D3DTexture::CreateD3DTexture(IDirect3DDevice2 *pDevice,
+                                  void *pImage,
+                                  int nWidth,
+                                  int nHeight,
+                                  int nPixelFormatId,
+                                  DWORD dwColorKey) {
+    IDirectDraw *pDirectDraw;
+    DDSURFACEDESC desc;
+    D3DDEVICEDESC hardwareDesc;
+    D3DDEVICEDESC softwareDesc;
+    DDCOLORKEY colorKey;
+    IDirect3DTexture2 *pTexture;
+    bool bHardware;
+
+    pDirectDraw = GetDirectDrawFromD3DDevice(pDevice);
+    if (pDirectDraw == nullptr) {
+        return false;
+    }
+    ReleaseD3DTextureInterfaces();
+    memset(&desc, 0, sizeof(desc));
+    desc.dwSize = sizeof(desc);
+    desc.ddpfPixelFormat = *LookupPixelFormatById(nPixelFormatId);
+    desc.dwFlags |= DDSD_CAPS | DDSD_HEIGHT | DDSD_WIDTH | DDSD_PIXELFORMAT;
+    desc.dwHeight = nHeight;
+    desc.dwWidth = nWidth;
+    memset(&hardwareDesc, 0, sizeof(hardwareDesc));
+    memset(&softwareDesc, 0, sizeof(softwareDesc));
+    hardwareDesc.dwSize = sizeof(hardwareDesc);
+    softwareDesc.dwSize = sizeof(softwareDesc);
+    pDevice->GetCaps(&hardwareDesc, &softwareDesc);
+    bHardware = hardwareDesc.dcmColorModel != 0;
+
+    desc.ddsCaps.dwCaps = bHardware ? DDSCAPS_TEXTURE | DDSCAPS_VIDEOMEMORY | DDSCAPS_ALLOCONLOAD :
+                                      DDSCAPS_TEXTURE | DDSCAPS_SYSTEMMEMORY;
+    if (pDirectDraw->CreateSurface(&desc, &pDeviceSurface, nullptr) != DD_OK) {
+        ReleaseD3DTextureInterfaces();
+        return false;
+    }
+    if (bHardware) {
+        desc.ddsCaps.dwCaps = DDSCAPS_TEXTURE | DDSCAPS_SYSTEMMEMORY;
+        if (pDirectDraw->CreateSurface(&desc, &pSysMemSurface, nullptr) != DD_OK) {
+            ReleaseD3DTextureInterfaces();
+            return false;
+        }
+    } else {
+        pSysMemSurface = pDeviceSurface;
+        pSysMemSurface->AddRef();
+    }
+    if (dwColorKey != 0) {
+        colorKey.dwColorSpaceLowValue = dwColorKey;
+        colorKey.dwColorSpaceHighValue = dwColorKey;
+        pSysMemSurface->SetColorKey(DDCKEY_SRCBLT, &colorKey);
+        pDeviceSurface->SetColorKey(DDCKEY_SRCBLT, &colorKey);
+    }
+    if (!UploadSurfaceToTexture(pImage, nWidth, nHeight)) {
+        ReleaseD3DTextureInterfaces();
+        return false;
+    }
+    // The result of the query is not checked.
+    pDeviceSurface->QueryInterface(IID_IDirect3DTexture2, reinterpret_cast<void **>(&pTexture));
+    pTexture->GetHandle(pDevice, &hTexture);
+    pTexture->Release();
+    return true;
+}
+
+bool D3DTexture::CreateD3DTextureDefault(
+    IDirect3DDevice2 *pDevice, void *pImage, int nWidth, int nHeight, int nPixelFormatId) {
+    return CreateD3DTexture(pDevice, pImage, nWidth, nHeight, nPixelFormatId, 0);
+}
+
+// The pixels of an image are copied row after row into the rows of a locked surface.
+template <typename Pixel>
+static inline void
+CopyImageRows(unsigned char *pRow, const Pixel *pSrc, int nWidth, int nHeight, LONG lPitch) {
+    for (int y = 0; y < nHeight; y++) {
+        Pixel *pDest = reinterpret_cast<Pixel *>(pRow);
+
+        for (int x = 0; x < nWidth; x++) {
+            *pDest++ = *pSrc++;
+        }
+        pRow += lPitch;
+    }
+}
+
+bool D3DTexture::UploadSurfaceToTexture(const void *pImage, int nWidth, int nHeight) {
+    DDSURFACEDESC desc;
+    RECT rect;
+    unsigned nBytesPerPixel;
+    unsigned char *pRow;
+
+    if (pSysMemSurface == nullptr) {
+        return false;
+    }
+    desc.dwSize = sizeof(desc);
+    pSysMemSurface->GetSurfaceDesc(&desc);
+    nBytesPerPixel = desc.ddpfPixelFormat.dwRGBBitCount >> 3;
+    rect.left = 0;
+    rect.top = 0;
+    rect.right = nWidth;
+    rect.bottom = nHeight;
+    if (pSysMemSurface->Lock(&rect, &desc, DDLOCK_WAIT | DDLOCK_WRITEONLY, nullptr) != DD_OK) {
+        return false;
+    }
+    pRow = static_cast<unsigned char *>(desc.lpSurface);
+    if (nBytesPerPixel == 1) {
+        CopyImageRows(
+            pRow, static_cast<const unsigned char *>(pImage), nWidth, nHeight, desc.lPitch);
+    } else if (nBytesPerPixel == 2) {
+        CopyImageRows(
+            pRow, static_cast<const unsigned short *>(pImage), nWidth, nHeight, desc.lPitch);
+    } else if (nBytesPerPixel == 4) {
+        CopyImageRows(pRow, static_cast<const unsigned *>(pImage), nWidth, nHeight, desc.lPitch);
+    }
+    if (pSysMemSurface->Unlock(desc.lpSurface) != DD_OK) {
+        return false;
+    }
+    return LoadSysMemTextureToDevice();
+}
+
+bool D3DTexture::LoadSysMemTextureToDevice() {
+    IDirect3DTexture2 *pDeviceTexture;
+    IDirect3DTexture2 *pSysMemTexture;
+    HRESULT hResult;
+
+    if (pDeviceSurface == nullptr || pSysMemSurface == nullptr) {
+        return false;
+    }
+    if (pDeviceSurface == pSysMemSurface) {
+        return true;
+    }
+    if (pDeviceSurface->Restore() != DD_OK) {
+        return false;
+    }
+    pDeviceSurface->QueryInterface(IID_IDirect3DTexture2,
+                                   reinterpret_cast<void **>(&pDeviceTexture));
+    pSysMemSurface->QueryInterface(IID_IDirect3DTexture2,
+                                   reinterpret_cast<void **>(&pSysMemTexture));
+    hResult = pDeviceTexture->Load(pSysMemTexture);
+    pDeviceTexture->Release();
+    pSysMemTexture->Release();
+    return hResult == D3D_OK;
+}

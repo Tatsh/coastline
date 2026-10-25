@@ -420,22 +420,64 @@ public:
 /** A texture of Direct3D created from an image in memory. */
 class D3DTexture {
 public:
-    IUnknown *apInterfaces[3]; /*!< The surfaces and texture of Direct3D, released in order. */
-    D3DTEXTUREHANDLE hTexture; /*!< The handle of the texture on the device. */
+    IDirectDrawSurface *pSysMemSurface; /*!< The surface the image is written to. */
+    IDirectDrawSurface *pDeviceSurface; /*!< The texture surface, pSysMemSurface in software. */
+    IUnknown *pUnknown8;                /*!< Released with the surfaces. */
+    D3DTEXTUREHANDLE hTexture;          /*!< The handle of the texture on the device. */
 
     /**
-     * Create the texture from an image with the default options.
+     * Create the texture from an image. A device of hardware gets a texture surface in video
+     * memory loaded from a surface in system memory, and a device of software uses one surface in
+     * system memory for both.
+     *
+     * @param pDevice The device the texture belongs to.
+     * @param pImage The pixels of the image, in the pixel format of the texture.
+     * @param nWidth The width of the texture.
+     * @param nHeight The height of the texture.
+     * @param nPixelFormatId The pixel format of the texture.
+     * @param dwColorKey The colour that is transparent, or 0 for none.
+     * @return Whether the texture was created.
+     * @ghidraAddress BRD3D: 0x10009c40
+     */
+    bool CreateD3DTexture(IDirect3DDevice2 *pDevice,
+                          void *pImage,
+                          int nWidth,
+                          int nHeight,
+                          int nPixelFormatId,
+                          DWORD dwColorKey);
+
+    /**
+     * Create the texture from an image with no transparent colour.
      *
      * @param pDevice The device the texture belongs to.
      * @param pImage The pixels of the image.
      * @param nWidth The width of the texture.
      * @param nHeight The height of the texture.
      * @param nPixelFormatId The pixel format of the texture.
-     * @return 1 when the texture was created.
+     * @return Whether the texture was created.
      * @ghidraAddress BRD3D: 0x10009ea0
      */
-    int CreateD3DTextureDefault(
+    bool CreateD3DTextureDefault(
         IDirect3DDevice2 *pDevice, void *pImage, int nWidth, int nHeight, int nPixelFormatId);
+
+    /**
+     * Copy an image into the surface in system memory and load the texture surface from it.
+     *
+     * @param pImage The pixels, packed row after row.
+     * @param nWidth The width of the image.
+     * @param nHeight The height of the image.
+     * @return Whether the image was copied and loaded.
+     * @ghidraAddress BRD3D: 0x10009ed0
+     */
+    bool UploadSurfaceToTexture(const void *pImage, int nWidth, int nHeight);
+
+    /**
+     * Restore the texture surface and load it from the surface in system memory.
+     *
+     * @return Whether the texture was loaded, true at once when one surface serves both.
+     * @ghidraAddress BRD3D: 0x1000a020
+     */
+    bool LoadSysMemTextureToDevice();
 
     /**
      * Release the interfaces of the texture and clear its handle.
@@ -451,6 +493,16 @@ public:
  * @ghidraAddress BRD3D: 0x10277680
  */
 extern D3DTexture g_LoadingScreenImageState;
+
+/**
+ * Find the DirectDraw object of a device through its render target. The reference the lookup
+ * takes is released before the object is returned.
+ *
+ * @param pDevice The device.
+ * @return The DirectDraw object, or null when a step fails.
+ * @ghidraAddress BRD3D: 0x10009e30
+ */
+IDirectDraw *GetDirectDrawFromD3DDevice(IDirect3DDevice2 *pDevice);
 
 /** The DirectDraw and Direct3D objects of a window. */
 class DirectDrawRenderer {
