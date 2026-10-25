@@ -85,9 +85,11 @@ dbuild
 dcmake
 dcosf
 ddivu
+ddpf
 ddscaps
 ddscl
 ddsd
+ddsdm
 ddsurfacedesc
 debugtext
 decaldraw
@@ -497,6 +499,7 @@ spriteorigin
 spritewh
 sptask
 sqrtf
+standardvgamode
 startthread
 statusline
 stdarg

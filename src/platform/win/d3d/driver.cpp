@@ -19,15 +19,15 @@ HRESULT SelectDriverDeviceAndModeFromConfig(GUID *pDriverGuid,
                                             GUID *pDeviceGuid,
                                             bool bMatchMode,
                                             DirectDrawDriver **ppDriver,
-                                            void **ppDevice,
-                                            void **ppMode) {
+                                            DisplayMode **ppMode,
+                                            void **ppDevice) {
     DirectDrawDriver *pDriver;
+    DisplayMode *pMode;
     void *pDevice;
-    void *pMode;
     HRESULT hr;
     bool bFound;
 
-    if (ppDriver == nullptr || ppDevice == nullptr || ppMode == nullptr) {
+    if (ppDriver == nullptr || ppMode == nullptr || ppDevice == nullptr) {
         return RENDERER_E_NOT_CREATED;
     }
     if ((g_bDirectDrawDriversEnumerated & 1) == 0) {
@@ -42,16 +42,32 @@ HRESULT SelectDriverDeviceAndModeFromConfig(GUID *pDriverGuid,
     }
     if (bMatchMode) {
         bFound = SelectDeviceAndDisplayMode(
-            pDriver, pDeviceGuid, nWidth, nHeight, nBitDepth, pSurfaceFormat, &pDevice, &pMode);
+            pDriver, pDeviceGuid, nWidth, nHeight, nBitDepth, pSurfaceFormat, &pMode, &pDevice);
     } else {
-        bFound = FindDesktopDisplayModeAndDevice(pDriver, pDeviceGuid, &pDevice, &pMode);
+        bFound = FindDesktopDisplayModeAndDevice(pDriver, pDeviceGuid, &pMode, &pDevice);
     }
     if (!bFound) {
         return RENDERER_E_NOT_IN_GDI_MODE;
     }
     *ppDriver = pDriver;
-    *ppDevice = pDevice;
     *ppMode = pMode;
+    *ppDevice = pDevice;
+    return S_OK;
+}
+
+HRESULT DisplayMode::GetSurfaceDescDimensions(int *pnWidth,
+                                              int *pnHeight,
+                                              int *pnBitDepth,
+                                              int *pnRefreshRate) {
+    if (desc.dwSize != sizeof(desc) || (desc.dwFlags & DDSD_WIDTH) == 0 ||
+        (desc.dwFlags & DDSD_HEIGHT) == 0 || (desc.dwFlags & DDSD_PIXELFORMAT) == 0 ||
+        desc.ddpfPixelFormat.dwSize != sizeof(desc.ddpfPixelFormat)) {
+        return E_FAIL;
+    }
+    *pnWidth = desc.dwWidth;
+    *pnHeight = desc.dwHeight;
+    *pnBitDepth = desc.ddpfPixelFormat.dwRGBBitCount;
+    *pnRefreshRate = 0;
     return S_OK;
 }
 

@@ -1,6 +1,6 @@
 # PC port game code from 0x10000000 to 0x10010000
 
-37 of 246 routines done.
+38 of 246 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -30,7 +30,7 @@ the same name, for a routine the port retained from the N64 game.
 | `EnumTextureFormatsCallback_MatchPreset`                   |        |                 |      3 |    689 | `0x10009360` |              | `undefined EnumTextureFormatsCallback_MatchPreset()`                                                                                                                               |
 | `DeserializeKeyframeState`                                 |        |                 |      2 |    680 | `0x10007730` | `0x10007aa0` | `undefined DeserializeKeyframeState()`                                                                                                                                             |
 | `DirectDrawRenderer::InitializePrimaryPalette`             |   📝   |                 |      1 |    577 | `0x1000a8d0` |              | `int InitializePrimaryPalette(DirectDrawRenderer * this)`                                                                                                                          |
-| `DirectDrawRenderer::SetDisplayMode`                       |   📝   |                 |      4 |    558 | `0x1000a5d0` |              | `undefined SetDisplayMode(DirectDrawRenderer * this)`                                                                                                                              |
+| `DirectDrawRenderer::SetDisplayMode`                       |   ✅   |                 |      4 |    558 | `0x1000a5d0` |              | `long SetDisplayMode(DirectDrawRenderer * this)`                                                                                                                                   |
 | `DirectDrawRenderer::InitializeRenderDevice`               |   📝   |                 |      4 |    511 | `0x1000ab70` |              | `int InitializeRenderDevice(DirectDrawRenderer * this)`                                                                                                                            |
 | `D3DTexture::CreateD3DTexture`                             |        |                 |      2 |    492 | `0x10009c40` |              | `undefined CreateD3DTexture(D3DTexture * this, undefined4 param_1, undefined4 param_2, undefined4 param_3, undefined4 param_4, undefined4 param_5, undefined4 param_6)`            |
 | `InitializeMusicPlayback`                                  |   📝   |                 |      2 |    471 | `0x10002260` | `0x10002580` | `void InitializeMusicPlayback(void)`                                                                                                                                               |

@@ -66,8 +66,8 @@ DirectDrawRenderer::DirectDrawRenderer() {
 void DirectDrawRenderer::Cleanup() {
     DestroyDirectDrawRendererObjects();
     pDriver = nullptr;
-    pDevice = nullptr;
     pMode = nullptr;
+    pDevice = nullptr;
     hWnd = nullptr;
     pHost = nullptr;
 }
@@ -99,8 +99,8 @@ HRESULT DirectDrawRenderer::InitializeWindow(HWND hNewWnd,
                                              pDeviceGuid,
                                              true,
                                              &pDriver,
-                                             &pDevice,
-                                             &pMode);
+                                             &pMode,
+                                             &pDevice);
     if (FAILED(hr)) {
         return hr;
     }
@@ -185,6 +185,78 @@ HRESULT DirectDrawRenderer::SetCooperativeLevel() {
     return FAILED(hr) ? hr : S_OK;
 }
 
+// The mode a display falls back to, and the depth after that.
+#define FALLBACK_MODE_WIDTH 640
+#define FALLBACK_MODE_HEIGHT 480
+#define FALLBACK_MODE_BIT_DEPTH 16
+
+// Record the display mode that was set and the viewport that covers it.
+static inline void
+RecordDisplayMode(DirectDrawRenderer *pRenderer, int nWidth, int nHeight, int nBitDepth) {
+    pRenderer->rcViewport.left = 0;
+    pRenderer->rcViewport.top = 0;
+    pRenderer->rcViewport.right = nWidth;
+    pRenderer->rcViewport.bottom = nHeight;
+    g_dwConfigFramebufferWidth = nWidth;
+    g_dwScreenWidth = nWidth;
+    g_dwConfigFramebufferHeight = nHeight;
+    g_dwScreenHeight = nHeight;
+    g_dwScreenBitDepth = nBitDepth;
+    pRenderer->dwRenderStateFlags |= 2;
+}
+
+HRESULT DirectDrawRenderer::SetDisplayMode() {
+    int nWidth;
+    int nHeight;
+    int nBitDepth;
+    int nRefreshRate;
+    HRESULT hr;
+
+    if (pMode == nullptr || pDirectDraw2 == nullptr) {
+        return RENDERER_E_NOT_READY;
+    }
+    pMode->GetSurfaceDescDimensions(&nWidth, &nHeight, &nBitDepth, &nRefreshRate);
+    hr = pDirectDraw2->SetDisplayMode(
+        nWidth,
+        nHeight,
+        nBitDepth,
+        nRefreshRate,
+        nWidth == 320 && nHeight == 200 && nBitDepth == 8 ? DDSDM_STANDARDVGAMODE : 0);
+    if (SUCCEEDED(hr)) {
+        RecordDisplayMode(this, nWidth, nHeight, nBitDepth);
+        return hr;
+    }
+    // A mode that is not set falls back to 640 by 480 at its depth, then to its size at 16 bits.
+    // The mode of the renderer is replaced by each mode tried.
+    if (nWidth != FALLBACK_MODE_WIDTH || nHeight != FALLBACK_MODE_HEIGHT) {
+        nWidth = FALLBACK_MODE_WIDTH;
+        nHeight = FALLBACK_MODE_HEIGHT;
+        pMode = FindDisplayModeWithFallback(pDriver, nWidth, nHeight, nBitDepth, 0, pDevice);
+        if (pMode != nullptr) {
+            HRESULT hrFallback = pDirectDraw2->SetDisplayMode(nWidth, nHeight, nBitDepth, 0, 0);
+
+            if (SUCCEEDED(hrFallback)) {
+                RecordDisplayMode(this, nWidth, nHeight, nBitDepth);
+                return hrFallback;
+            }
+            hr = hrFallback;
+        }
+    }
+    if (nBitDepth == FALLBACK_MODE_BIT_DEPTH) {
+        return hr;
+    }
+    nBitDepth = FALLBACK_MODE_BIT_DEPTH;
+    pMode = FindDisplayModeWithFallback(pDriver, nWidth, nHeight, nBitDepth, 0, pDevice);
+    if (pMode == nullptr) {
+        return hr;
+    }
+    hr = pDirectDraw2->SetDisplayMode(nWidth, nHeight, nBitDepth, 0, 0);
+    if (SUCCEEDED(hr)) {
+        RecordDisplayMode(this, nWidth, nHeight, nBitDepth);
+    }
+    return hr;
+}
+
 int DirectDrawRenderer::RestoreDisplayMode() {
     dwRenderStateFlags &= ~2;
     if (pDirectDraw2 != nullptr) {
@@ -197,7 +269,7 @@ HRESULT DirectDrawRenderer::CreatePrimaryFlipChain() {
     DDSURFACEDESC desc;
     HRESULT hr;
 
-    if (pDevice == nullptr || pDirectDraw2 == nullptr) {
+    if (pMode == nullptr || pDirectDraw2 == nullptr) {
         return RENDERER_E_NOT_READY;
     }
     memset(&desc, 0, sizeof(desc));
