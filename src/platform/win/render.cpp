@@ -85,6 +85,19 @@ void AddPointerToRelocatedList(void *pPointer) {
     }
 }
 
+void RelocatePointerValue(unsigned *pdwPointer) {
+    unsigned dwPointer = *pdwPointer;
+    if (dwPointer == 0) {
+        return;
+    }
+    // The comparison is signed, as in the game.
+    if (static_cast<int>(dwPointer) < static_cast<int>(g_dwOldBaseAddress)) {
+        *pdwPointer = 0;
+        return;
+    }
+    *pdwPointer = g_dwNewBaseAddress - g_dwOldBaseAddress + dwPointer;
+}
+
 void ByteSwapArray16(unsigned short *pData, int nCount) {
     for (int i = 0; i < nCount; i++) {
         pData[i] = static_cast<unsigned short>(pData[i] << 8 | pData[i] >> 8);
@@ -290,6 +303,13 @@ void InitializeTextureUploadQueue(void) {
     g_dwTextureUploadQueueHead = 0;
     g_dwTextureUploadQueueTail = 0;
     g_hTextureUploadQueueMutex = CreateMutexA(nullptr, false, nullptr);
+}
+
+void DestroyTextureUploadQueue(void) {
+    g_dwTextureUploadQueueHead = 0;
+    g_dwTextureUploadQueueTail = 0;
+    CloseHandle(g_hTextureUploadQueueMutex);
+    g_hTextureUploadQueueMutex = nullptr;
 }
 
 void ProcessTextureUploadQueueEntry(void) {

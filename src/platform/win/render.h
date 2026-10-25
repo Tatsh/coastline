@@ -313,6 +313,16 @@ extern void *g_apRelocatedPointers[RELOCATED_POINTER_COUNT];
 void AddPointerToRelocatedList(void *pPointer);
 
 /**
+ * Move a pointer from g_dwOldBaseAddress to g_dwNewBaseAddress. A pointer below the old base
+ * becomes null, and a null pointer is left null.
+ *
+ * @param pdwPointer The pointer, as a word.
+ * @ghidraAddress BRD3D: 0x1002b970
+ * @ghidraAddress BRGlide: 0x100189e0
+ */
+void RelocatePointerValue(unsigned *pdwPointer);
+
+/**
  * Swap the two bytes of each of a run of halfwords.
  *
  * @param pData The halfwords.
@@ -469,6 +479,14 @@ extern HANDLE g_hTextureUploadQueueMutex;
  * @ghidraAddress BRGlide: 0x1006e180
  */
 void InitializeTextureUploadQueue(void);
+
+/**
+ * Empty the queue of textures to upload and close its mutex.
+ *
+ * @ghidraAddress BRD3D: 0x10074f40
+ * @ghidraAddress BRGlide: 0x1006e1a0
+ */
+void DestroyTextureUploadQueue(void);
 
 /**
  * Whether the data of a texture is copied when its pointers are relocated.
