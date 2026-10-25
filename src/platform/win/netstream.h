@@ -208,6 +208,137 @@ public:
 extern NetStream g_aNetPlayerStreams[NET_PLAYER_STREAM_COUNT];
 
 /**
+ * Round -128 times a value to the nearest integer, limited to the range of a field of six bits.
+ *
+ * @param fValue The value.
+ * @return The field, from -32 to 31.
+ * @ghidraAddress BRD3D: 0x100065a0
+ * @ghidraAddress BRGlide: 0x10006910
+ */
+int FloatToSignedByteIndex(float fValue);
+
+/**
+ * Round -32768 times a value to the nearest integer, limited to the range of a short.
+ *
+ * @param fValue The value.
+ * @return The field.
+ * @ghidraAddress BRD3D: 0x100065e0
+ * @ghidraAddress BRGlide: 0x10006950
+ */
+int ConvertFloatToFixedAngle(float fValue);
+
+/**
+ * Round a value divided by 1.41015625 to the nearest integer, limited to the range of an unsigned
+ * byte.
+ *
+ * @param fValue The value.
+ * @return The field.
+ * @ghidraAddress BRD3D: 0x10006620
+ * @ghidraAddress BRGlide: 0x10006990
+ */
+int FloatToByteIndex(float fValue);
+
+/**
+ * Map a coordinate from 400 to 8000 to the nearest of 64 steps.
+ *
+ * @param fValue The coordinate.
+ * @return The step, from 0 to 63.
+ * @ghidraAddress BRD3D: 0x10006660
+ * @ghidraAddress BRGlide: 0x100069d0
+ */
+int FloatToSectorIndex(float fValue);
+
+/**
+ * Round twice a value to the nearest integer, limited to the range of a field of 24 bits.
+ *
+ * @param fValue The value.
+ * @return The field.
+ * @ghidraAddress BRD3D: 0x10006730
+ * @ghidraAddress BRGlide: 0x10006aa0
+ */
+int ConvertFloatToFixed24(float fValue);
+
+/**
+ * Round 128 times a value to the nearest integer, limited to the range of a short.
+ *
+ * @param fValue The value.
+ * @return The field.
+ * @ghidraAddress BRD3D: 0x10006770
+ * @ghidraAddress BRGlide: 0x10006ae0
+ */
+int ConvertFloatToFixedAngle16B(float fValue);
+
+/**
+ * Round 256 times a value to the nearest integer, limited to the range of a short.
+ *
+ * @param fValue The value.
+ * @return The field.
+ * @ghidraAddress BRD3D: 0x100067b0
+ * @ghidraAddress BRGlide: 0x10006b20
+ */
+int FloatToSignedShortIndex(float fValue);
+
+/**
+ * Round 8 times a value to the nearest integer, limited to the range of a signed byte.
+ *
+ * @param fValue The value.
+ * @return The field.
+ * @ghidraAddress BRD3D: 0x100067f0
+ * @ghidraAddress BRGlide: 0x10006b60
+ */
+int ConvertFloatToSignedByte(float fValue);
+
+/**
+ * Scale a signed field of six bits by -1/128.
+ *
+ * @param bValue The field in the low six bits.
+ * @return The value.
+ * @ghidraAddress BRD3D: 0x10007250
+ * @ghidraAddress BRGlide: 0x100075c0
+ */
+float SignedByteToFloat(unsigned char bValue);
+
+/**
+ * Map one of 64 steps to a coordinate from 400 to 8000.
+ *
+ * @param bIndex The step.
+ * @return The coordinate.
+ * @ghidraAddress BRD3D: 0x100072c0
+ * @ghidraAddress BRGlide: 0x10007630
+ */
+float IndexToWorldCoord(unsigned char bIndex);
+
+/**
+ * Get the brightness of a light level.
+ *
+ * @param nLightLevel The level, from 0 to 3.
+ * @return 0, 170, 212, or 255.
+ * @ghidraAddress BRD3D: 0x100072e0
+ * @ghidraAddress BRGlide: 0x10007650
+ */
+float GetLightLevelScale(char nLightLevel);
+
+/**
+ * Scale a field by 1/8192.
+ *
+ * @param dwValue The field.
+ * @return The value.
+ * @ghidraAddress BRD3D: 0x10007310
+ * @ghidraAddress BRGlide: 0x10007680
+ */
+float ConvertUintToScaledFloat(unsigned dwValue);
+
+/**
+ * Scale a signed field of 24 bits by 1/2.
+ *
+ * @param nValue The field in the low 24 bits.
+ * @return The value.
+ * @ghidraAddress BRD3D: 0x10007340
+ * @ghidraAddress BRGlide: 0x100076b0
+ */
+float Signed24BitToFloat(int nValue);
+
+/**
  * Scale a field of a packet of two bytes by -1/32768.
  *
  * @param nValue The field.

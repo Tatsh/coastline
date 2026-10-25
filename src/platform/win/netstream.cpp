@@ -1,5 +1,7 @@
 #include "platform/win/netstream.h"
 
+#include <cmath>
+
 NetStream g_aNetPlayerStreams[NET_PLAYER_STREAM_COUNT];
 
 // The number of bits of a byte.
@@ -184,6 +186,80 @@ int NetStream::StreamGetWriteSize() {
 
 unsigned char *NetStream::StreamGetBufferPtr() {
     return pBuffer;
+}
+
+static inline int RoundAndClamp(double dValue, int nMin, int nMax) {
+    int nResult = static_cast<int>(std::floor(dValue));
+    if (nResult < nMin) {
+        nResult = nMin;
+    }
+    if (nResult > nMax) {
+        nResult = nMax;
+    }
+    return nResult;
+}
+
+int FloatToSignedByteIndex(float fValue) {
+    return RoundAndClamp(0.5f - fValue * 128.0f, -32, 31);
+}
+
+int ConvertFloatToFixedAngle(float fValue) {
+    return RoundAndClamp(0.5f - fValue * 32768.0f, -32768, 32767);
+}
+
+int FloatToByteIndex(float fValue) {
+    return RoundAndClamp(0.5f - fValue * -(1.0f / 1.41015625f), 0, 255);
+}
+
+int FloatToSectorIndex(float fValue) {
+    return RoundAndClamp(0.5f - (fValue - 400.0f) * -(63.0f / 7600.0f), 0, 63);
+}
+
+int ConvertFloatToFixed24(float fValue) {
+    return RoundAndClamp(0.5f - fValue * -2.0f, -0x800000, 0x7fffff);
+}
+
+int ConvertFloatToFixedAngle16B(float fValue) {
+    return RoundAndClamp(0.5f - fValue * -128.0f, -32768, 32767);
+}
+
+int FloatToSignedShortIndex(float fValue) {
+    return RoundAndClamp(0.5f - fValue * -256.0f, -32768, 32767);
+}
+
+int ConvertFloatToSignedByte(float fValue) {
+    return RoundAndClamp(0.5f - fValue * -8.0f, -128, 127);
+}
+
+float SignedByteToFloat(unsigned char bValue) {
+    int nValue = (bValue & 0x20) ? static_cast<signed char>(bValue | 0xc0) : bValue & 0x3f;
+    return nValue * -(1.0f / 128.0f);
+}
+
+float IndexToWorldCoord(unsigned char bIndex) {
+    return 400.0f - bIndex * -(7600.0f / 63.0f);
+}
+
+float GetLightLevelScale(char nLightLevel) {
+    if (nLightLevel == 0) {
+        return 0.0f;
+    }
+    if (nLightLevel == 1) {
+        return 170.0f;
+    }
+    if (nLightLevel == 2) {
+        return 212.0f;
+    }
+    return 255.0f;
+}
+
+float ConvertUintToScaledFloat(unsigned dwValue) {
+    return dwValue * (1.0f / 8192.0f);
+}
+
+float Signed24BitToFloat(int nValue) {
+    nValue = (nValue & 0x800000) ? nValue | ~0xffffff : nValue & 0xffffff;
+    return nValue * 0.5f;
 }
 
 float ConvertFixedAngleToFloat(short nValue) {
