@@ -6,6 +6,7 @@
 
 #include "platform/win/boot/app.h"
 #include "platform/win/d3d/texture.h"
+#include "platform/win/settings.h"
 
 RenderHost *g_pRenderHost;
 IDirect3D2 *g_pDirect3D2;

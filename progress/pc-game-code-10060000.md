@@ -1,6 +1,6 @@
 # PC port game code from 0x10060000 to 0x10070000
 
-16 of 169 routines done.
+17 of 169 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -116,7 +116,7 @@ the same name, for a routine the port retained from the N64 game.
 | `RacerSlot::FreeEnemyCarColorPanels`     |        |                 |      1 |     75 | `0x100664c0` | `0x1005f530` | `undefined FreeEnemyCarColorPanels(RacerSlot * this)`                                                                                    |
 | `GetPaintJobEntryParams`                 |        |                 |      2 |     72 | `0x10060fb0` | `0x1005a020` | `undefined GetPaintJobEntryParams()`                                                                                                     |
 | `FreeCarPaintTextures`                   |   ✅   |                 |      2 |     71 | `0x100613b0` | `0x1005a420` | `void FreeCarPaintTextures(void)`                                                                                                        |
-| `ResetMouseCursorToCenter`               |        |                 |      1 |     71 | `0x10060210` | `0x10059280` | `uint ResetMouseCursorToCenter(void * pUnused)`                                                                                          |
+| `ResetMouseCursorToCenter`               |   ✅   |                 |      1 |     71 | `0x10060210` | `0x10059280` | `bool ResetMouseCursorToCenter(int nUnused)`                                                                                             |
 | `LoadPaintDamageBitmaps`                 |        |                 |      1 |     70 | `0x10061410` | `0x1005a490` | `undefined LoadPaintDamageBitmaps()`                                                                                                     |
 | `UpdateWaterfallSound`                   |        | ✅ `0x8022ba10` |      1 |     70 | `0x10068210` | `0x10061280` | `undefined UpdateWaterfallSound()`                                                                                                       |
 | `GetCarPaintBitmap`                      |        |                 |      4 |     63 | `0x10060f70` | `0x10059fe0` | `undefined GetCarPaintBitmap()`                                                                                                          |

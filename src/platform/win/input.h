@@ -15,7 +15,9 @@
 /** The mouse of the game. The layout is not recovered past the members below. */
 class MouseDevice {
 public:
-    char abUnknown0[0x2c];        /* +0x00 */
+    int nCursorX;                 /*!< The horizontal position of the cursor. */
+    int nCursorY;                 /*!< The vertical position of the cursor. */
+    char abUnknown8[0x24];        /* +0x08 */
     int anState[9];               /*!< Cleared by the constructor. Not recovered yet. */
     IDirectInputDeviceA *pDevice; /*!< The DirectInput device of the mouse. */
 
@@ -358,6 +360,78 @@ extern int g_adwKeyPressedEdge[KEYBOARD_KEY_COUNT];
  * @ghidraAddress BRGlide: 0x10ac61e8
  */
 extern int g_adwKeyPrevDown[KEYBOARD_KEY_COUNT];
+
+/** The number of buttons of the mouse the game reads. */
+#define MOUSE_BUTTON_COUNT 4
+/** The number of entries of g_adwEntityMetricScratch. */
+#define MOUSE_METRIC_COUNT 7
+
+/**
+ * Whether each button of the mouse was down when the mouse was read before.
+ *
+ * @ghidraAddress BRD3D: 0x10aa3388
+ * @ghidraAddress BRGlide: 0x10ac66e8
+ */
+extern int g_adwMouseButtonPrev[MOUSE_BUTTON_COUNT];
+
+/**
+ * Whether each button of the mouse is down.
+ *
+ * @ghidraAddress BRD3D: 0x10aa33c0
+ * @ghidraAddress BRGlide: 0x10ac6720
+ */
+extern int g_adwMouseButtonRaw[MOUSE_BUTTON_COUNT];
+
+/**
+ * Whether each button of the mouse went down since the mouse was read before.
+ *
+ * @ghidraAddress BRD3D: 0x10aa33d0
+ * @ghidraAddress BRGlide: 0x10ac6730
+ */
+extern int g_adwMouseButtonPressed[MOUSE_BUTTON_COUNT];
+
+/**
+ * The width of the screen the cursor of the mouse moves in. Its name is not recovered yet.
+ *
+ * @ghidraAddress BRD3D: 0x10aa33b8
+ * @ghidraAddress BRGlide: 0x10ac6718
+ */
+extern int g_dwEntityHalfWidth;
+
+/**
+ * The height of the screen the cursor of the mouse moves in. Its name is not recovered yet.
+ *
+ * @ghidraAddress BRD3D: 0x10aa33b4
+ * @ghidraAddress BRGlide: 0x10ac6714
+ */
+extern int g_dwEntityHalfHeight;
+
+/**
+ * Values of the motion of the mouse that the centring of the cursor clears. Their meaning is not
+ * recovered yet.
+ *
+ * @ghidraAddress BRD3D: 0x10aa3398
+ * @ghidraAddress BRGlide: 0x10ac66f8
+ */
+extern int g_adwEntityMetricScratch[MOUSE_METRIC_COUNT];
+
+/**
+ * Find the buttons of the mouse that went down since the mouse was read before.
+ *
+ * @ghidraAddress BRD3D: 0x1005fff0
+ * @ghidraAddress BRGlide: 0x10059060
+ */
+void UpdateMouseButtonEdges(void);
+
+/**
+ * Put the cursor of the mouse in the centre of the screen and clear its motion.
+ *
+ * @param nUnused Not read.
+ * @return Always true.
+ * @ghidraAddress BRD3D: 0x10060210
+ * @ghidraAddress BRGlide: 0x10059280
+ */
+bool WINAPI ResetMouseCursorToCenter(int nUnused);
 
 /**
  * Clear both states of the mouse.

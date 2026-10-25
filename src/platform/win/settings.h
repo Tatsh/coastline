@@ -208,3 +208,19 @@ extern int g_bNetTireSetting;
  * @ghidraAddress BRD3D: 0x1022af0c
  */
 extern int g_bNetSuspensionSetting;
+
+/**
+ * The width of the display mode set.
+ *
+ * @ghidraAddress BRD3D: 0x100a81c0
+ * @ghidraAddress BRGlide: 0x100a7514
+ */
+extern int g_dwConfigFramebufferWidth;
+
+/**
+ * The height of the display mode set.
+ *
+ * @ghidraAddress BRD3D: 0x100a81c4
+ * @ghidraAddress BRGlide: 0x100a7518
+ */
+extern int g_dwConfigFramebufferHeight;

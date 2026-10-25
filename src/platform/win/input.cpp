@@ -8,6 +8,7 @@
 #include "platform/win/boot/app.h"
 #include "platform/win/boot/rallyconfig.h"
 #include "platform/win/boot/strings.h"
+#include "platform/win/settings.h"
 
 IDirectInputA *g_pDirectInput;
 int g_dwDirectInputRefCount;
@@ -36,6 +37,29 @@ int g_adwKeyPrevDown[KEYBOARD_KEY_COUNT];
 #define KEY_DOWN_BIT 7
 // The entries of the edges of the keys ClearKeyboardStateBuffers() clears.
 #define KEY_EDGE_CLEAR_COUNT 64
+
+int g_adwMouseButtonPrev[MOUSE_BUTTON_COUNT];
+int g_adwMouseButtonRaw[MOUSE_BUTTON_COUNT];
+int g_adwMouseButtonPressed[MOUSE_BUTTON_COUNT];
+int g_dwEntityHalfWidth;
+int g_dwEntityHalfHeight;
+int g_adwEntityMetricScratch[MOUSE_METRIC_COUNT];
+
+void UpdateMouseButtonEdges(void) {
+    for (int i = 0; i < MOUSE_BUTTON_COUNT; i++) {
+        g_adwMouseButtonPressed[i] = (g_adwMouseButtonPrev[i] == 0) & g_adwMouseButtonRaw[i];
+        g_adwMouseButtonPrev[i] = g_adwMouseButtonRaw[i];
+    }
+}
+
+bool WINAPI ResetMouseCursorToCenter(int) {
+    g_dwEntityHalfWidth = g_dwConfigFramebufferWidth;
+    g_pMouseDevice->nCursorX = g_dwConfigFramebufferWidth / 2;
+    g_dwEntityHalfHeight = g_dwConfigFramebufferHeight;
+    g_pMouseDevice->nCursorY = g_dwConfigFramebufferHeight / 2;
+    memset(g_adwEntityMetricScratch, 0, sizeof(g_adwEntityMetricScratch));
+    return true;
+}
 
 void ResetMouseState(void) {
     memset(g_aMouseStateBuffers, 0, sizeof(g_aMouseStateBuffers));

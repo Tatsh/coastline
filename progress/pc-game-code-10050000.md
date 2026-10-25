@@ -1,6 +1,6 @@
 # PC port game code from 0x10050000 to 0x10060000
 
-4 of 84 routines done.
+5 of 84 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -75,7 +75,7 @@ the same name, for a routine the port retained from the N64 game.
 | `UpdateKeyboardEdgeState`                 |   ✅   |                 |      3 |     67 | `0x1005ff60` | `0x10058fd0` | `void UpdateKeyboardEdgeState(void)`                                                                                                            |
 | `GlideDisplayModeNode::IsLessOrEqual`     |        |                 |      2 |     59 |              | `0x10058cc0` | `undefined IsLessOrEqual(GlideDisplayModeNode * this, undefined4 param_1)`                                                                      |
 | `MenuFont::DrawGlyphAltFont`              |        |                 |      1 |     59 | `0x1005b7a0` | `0x100545c0` | `undefined DrawGlyphAltFont(MenuFont * this, undefined4 param_1, undefined4 param_2, undefined4 param_3, undefined4 param_4)`                   |
-| `UpdateMouseButtonEdges`                  |        |                 |      6 |     56 | `0x1005fff0` | `0x10059060` | `void UpdateMouseButtonEdges(void)`                                                                                                             |
+| `UpdateMouseButtonEdges`                  |   ✅   |                 |      6 |     56 | `0x1005fff0` | `0x10059060` | `void UpdateMouseButtonEdges(void)`                                                                                                             |
 | `GlideDisplayModeNode::InsertSorted`      |        |                 |      1 |     53 |              | `0x10058d00` | `undefined InsertSorted(GlideDisplayModeNode * this, undefined4 param_1)`                                                                       |
 | `ClearKeyboardStateBuffers`               |   ✅   |                 |      2 |     41 | `0x1005ff30` | `0x10058fa0` | `void ClearKeyboardStateBuffers(void)`                                                                                                          |
 | `GetSessionSlotFlag`                      |        |                 |      2 |     40 | `0x100586d0` | `0x10051580` | `undefined GetSessionSlotFlag()`                                                                                                                |

@@ -1153,20 +1153,6 @@ DisplayMode *FindDisplayModeWithFallback(DirectDrawDriver *pDriver,
                                          D3DDeviceNode *pDevice);
 
 /**
- * The width of the display mode set.
- *
- * @ghidraAddress BRD3D: 0x100a81c0
- */
-extern int g_dwConfigFramebufferWidth;
-
-/**
- * The height of the display mode set.
- *
- * @ghidraAddress BRD3D: 0x100a81c4
- */
-extern int g_dwConfigFramebufferHeight;
-
-/**
  * The bits of a pixel of the display mode set.
  *
  * @ghidraAddress BRD3D: 0x100aa8a8
