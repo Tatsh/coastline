@@ -12,7 +12,7 @@
 #define RGBA5551_IMAGE_PIXEL_FORMAT 0xb
 
 TexturePixelFormat g_aTexturePixelFormats[TEXTURE_PIXEL_FORMAT_COUNT] = {
-    {2, {}, {}}, {3, {}, {}}, {4, {}, {}}, {0xb, {}, {}}, {0xc, {}, {}}};
+    {2, 0, {}, {}}, {3, 0, {}, {}}, {4, 0, {}, {}}, {0xb, 0, {}, {}}, {0xc, 0, {}, {}}};
 unsigned short g_awRgba5551FileBuffer[RGBA5551_IMAGE_PIXEL_COUNT];
 
 DDPIXELFORMAT *LookupPixelFormatById(int nId) {
@@ -31,6 +31,110 @@ int CountBitWidth(unsigned nMask) {
         nWidth++;
     }
     return nWidth;
+}
+
+int PopCount32(unsigned nMask) {
+    int nCount = 0;
+
+    for (unsigned nBit = 1; nBit != 0; nBit <<= 1) {
+        if (nMask & nBit) {
+            nCount++;
+        }
+    }
+    return nCount;
+}
+
+static inline int AlphaBitCount(const DDPIXELFORMAT &format) {
+    return (format.dwFlags & (DDPF_ALPHAPIXELS | DDPF_ALPHA)) ?
+               PopCount32(format.dwRGBAlphaBitMask) :
+               0;
+}
+
+// A candidate with more alpha bits than the current format, within a limit, is better.
+static inline bool HasMoreAlphaBits(const DDPIXELFORMAT &current, int nAlphaBits, int nLimit) {
+    if (current.dwRGBBitCount == 0) {
+        return true;
+    }
+    if (nAlphaBits == 0) {
+        return false;
+    }
+    if (PopCount32(current.dwRGBAlphaBitMask) == 0) {
+        return true;
+    }
+    return nAlphaBits > PopCount32(current.dwRGBAlphaBitMask) && nAlphaBits <= nLimit;
+}
+
+static bool IsBetterTextureFormat(const TexturePixelFormat &entry, const DDPIXELFORMAT &candidate) {
+    const DDPIXELFORMAT &current = entry.ddpf;
+    int nAlphaBits = AlphaBitCount(candidate);
+    int nRed;
+
+    switch (entry.nId) {
+    case 2:
+        return HasMoreAlphaBits(current, nAlphaBits, 8);
+    case 3:
+        if (!(candidate.dwFlags & DDPF_RGB)) {
+            return false;
+        }
+        nRed = PopCount32(candidate.dwRBitMask);
+        if (current.dwRGBBitCount == 0) {
+            return true;
+        }
+        if (nRed != PopCount32(candidate.dwGBitMask) || nRed != PopCount32(candidate.dwBBitMask) ||
+            nRed <= 0) {
+            return false;
+        }
+        // A current format whose channels differ in width loses to one with equal channels.
+        if (PopCount32(current.dwGBitMask) != PopCount32(current.dwRBitMask) ||
+            PopCount32(current.dwBBitMask) != PopCount32(current.dwRBitMask)) {
+            return true;
+        }
+        return nRed <= 8 && nRed > PopCount32(current.dwRBitMask);
+    case 4:
+    case 0xc:
+        return (candidate.dwFlags & DDPF_RGB) && HasMoreAlphaBits(current, nAlphaBits, 32);
+    case 0xb:
+        if (!(candidate.dwFlags & DDPF_RGB)) {
+            return false;
+        }
+        if (current.dwRGBBitCount == 0) {
+            return true;
+        }
+        if (nAlphaBits == 0) {
+            return false;
+        }
+        if (PopCount32(current.dwRGBAlphaBitMask) == 0) {
+            return true;
+        }
+        return nAlphaBits < PopCount32(current.dwRGBAlphaBitMask);
+    default:
+        return false;
+    }
+}
+
+HRESULT CALLBACK EnumTextureFormatsCallback_MatchPreset(DDSURFACEDESC *pDesc, void *pContext) {
+    TexturePixelFormat *pEntry = static_cast<TexturePixelFormat *>(pContext);
+    DDPIXELFORMAT candidate = pDesc->ddpfPixelFormat;
+
+    if (candidate.dwRGBBitCount <= pEntry->wMaxBitCount &&
+        IsBetterTextureFormat(*pEntry, candidate)) {
+        pEntry->ddpf = candidate;
+    }
+    return D3DENUMRET_OK;
+}
+
+void EnumerateTextureFormats(IDirect3DDevice2 *pD3DDevice) {
+    for (TexturePixelFormat &entry : g_aTexturePixelFormats) {
+        memset(&entry.ddpf, 0, sizeof(entry.ddpf));
+        entry.wMaxBitCount = 8;
+        pD3DDevice->EnumTextureFormats(EnumTextureFormatsCallback_MatchPreset, &entry);
+        entry.wMaxBitCount = 16;
+        pD3DDevice->EnumTextureFormats(EnumTextureFormatsCallback_MatchPreset, &entry);
+        if (entry.ddpf.dwRGBBitCount == 0) {
+            entry.wMaxBitCount = 32;
+            pD3DDevice->EnumTextureFormats(EnumTextureFormatsCallback_MatchPreset, &entry);
+        }
+    }
 }
 
 // A channel of 8 bits is moved by a shift that is negative for a right shift.

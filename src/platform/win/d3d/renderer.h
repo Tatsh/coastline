@@ -1122,7 +1122,8 @@ HRESULT EnumerateDirectDrawDrivers(void);
 void QueryD3DDeviceCaps(IDirect3DDevice2 *pD3DDevice);
 
 /**
- * Find the texture formats of a Direct3D device for the game.
+ * Find the texture formats of a Direct3D device for each entry of g_aTexturePixelFormats, at
+ * most 8 bits a pixel first, then 16, then 32 when no format of 16 bits was found.
  *
  * @param pD3DDevice The device.
  * @ghidraAddress BRD3D: 0x10009bd0

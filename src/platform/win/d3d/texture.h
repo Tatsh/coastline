@@ -12,8 +12,9 @@
 
 /** A pixel format of textures the game asks for by its identifier. */
 struct TexturePixelFormat {
-    int nId;            /*!< The identifier the game asks for the format by. */
-    char abUnknown4[4]; /* +0x04 */
+    int nId;                     /*!< The identifier the game asks for the format by. */
+    unsigned short wMaxBitCount; /*!< The most bits a pixel may have during the enumeration. */
+    char abUnknown6[2];          /* +0x06 */
     DDPIXELFORMAT ddpf; /*!< The format of the device, filled when the formats are enumerated. */
 };
 
@@ -41,6 +42,30 @@ DDPIXELFORMAT *LookupPixelFormatById(int nId);
  * @ghidraAddress BRD3D: 0x10009880
  */
 int CountBitWidth(unsigned nMask);
+
+/**
+ * Count the set bits of a mask.
+ *
+ * @param nMask The mask.
+ * @return The number of set bits.
+ * @ghidraAddress BRD3D: 0x10009640
+ */
+int PopCount32(unsigned nMask);
+
+/**
+ * Store a texture format of the device in an entry of g_aTexturePixelFormats when it suits the
+ * entry better than the format the entry has. A format with more bits a pixel than wMaxBitCount of
+ * the entry is skipped, and an empty entry takes the first format of its rule. The rule depends on
+ * the identifier of the entry. 2 wants the
+ * most alpha bits up to 8, 3 wants RGB with three channels of one width up to 8, 4 and 0xc want RGB
+ * with the most alpha bits, and 0xb wants RGB with the fewest alpha bits above none.
+ *
+ * @param pDesc The surface description of the format.
+ * @param pContext The entry of g_aTexturePixelFormats.
+ * @return Always D3DENUMRET_OK, to continue the enumeration.
+ * @ghidraAddress BRD3D: 0x10009360
+ */
+HRESULT CALLBACK EnumTextureFormatsCallback_MatchPreset(DDSURFACEDESC *pDesc, void *pContext);
 
 /**
  * Query DirectDraw for the video memory left for textures.
