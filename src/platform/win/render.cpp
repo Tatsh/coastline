@@ -1,5 +1,6 @@
 #include "platform/win/render.h"
 
+#include <cstdlib>
 #include <cstring>
 
 #include "platform/win/boot/app.h"
@@ -310,6 +311,42 @@ void IncrementDamageTextureLevel(int nTexture, const int *pnEntries, int *pnLeve
     pnLevels[nTexture]++;
     SetTextureEntryDamageLevel(pnEntries[nTexture], pnLevels[nTexture]);
     g_pfnReloadTextureEntryData(pnEntries[nTexture]);
+}
+
+// The textures ApplyRandomAdjacentDamageTexture() chooses from: the texture and its neighbours.
+#define DAMAGE_TEXTURE_CHOICES 3
+// The range of rand().
+#define RAND_RANGE 32768
+
+void ApplyRandomAdjacentDamageTexture(int nTexture, const int *pnEntries, int *pnLevels) {
+    int anChoices[DAMAGE_TEXTURE_CHOICES];
+    int nChoices = 0;
+    int nNeighbour;
+
+    if (nTexture < 0 || nTexture >= DAMAGE_TEXTURE_COUNT) {
+        return;
+    }
+    if (pnLevels[nTexture] < DAMAGE_TEXTURE_MAX_LEVEL) {
+        anChoices[nChoices++] = nTexture;
+    }
+    nNeighbour = nTexture - 1;
+    if (nNeighbour < 0) {
+        nNeighbour += DAMAGE_TEXTURE_COUNT;
+    }
+    if (pnLevels[nNeighbour] < DAMAGE_TEXTURE_MAX_LEVEL) {
+        anChoices[nChoices++] = nNeighbour;
+    }
+    nNeighbour = nTexture + 1;
+    if (nNeighbour >= DAMAGE_TEXTURE_COUNT) {
+        nNeighbour -= DAMAGE_TEXTURE_COUNT;
+    }
+    if (pnLevels[nNeighbour] < DAMAGE_TEXTURE_MAX_LEVEL) {
+        anChoices[nChoices++] = nNeighbour;
+    }
+    if (nChoices == 0) {
+        return;
+    }
+    IncrementDamageTextureLevel(anChoices[rand() * nChoices / RAND_RANGE], pnEntries, pnLevels);
 }
 
 int GetTexelsPerLoadWord(int nSize) {

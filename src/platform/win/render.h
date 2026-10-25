@@ -168,6 +168,18 @@ extern void (*g_pfnReloadTextureEntryData)(int nEntry);
  */
 void IncrementDamageTextureLevel(int nTexture, const int *pnEntries, int *pnLevels);
 
+/**
+ * Raise the level of damage of a damage texture or of one of its two neighbours, wrapping at the
+ * ends, chosen at random from those below DAMAGE_TEXTURE_MAX_LEVEL.
+ *
+ * @param nTexture The damage texture, below DAMAGE_TEXTURE_COUNT.
+ * @param pnEntries The entry of each damage texture.
+ * @param pnLevels The level of damage of each damage texture.
+ * @ghidraAddress BRD3D: 0x10074e40
+ * @ghidraAddress BRGlide: 0x1006e0a0
+ */
+void ApplyRandomAdjacentDamageTexture(int nTexture, const int *pnEntries, int *pnLevels);
+
 #if TGR_RENDERER == TGR_RENDERER_D3D
 /**
  * Set the routines of the Direct3D device: the flip of the main window shows a frame, and the
