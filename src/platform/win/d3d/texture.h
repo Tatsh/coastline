@@ -1,8 +1,9 @@
 #pragma once
 
 /**
- * Query the Direct3D device for the remaining texture memory.
+ * Query DirectDraw for the video memory left for textures.
  *
+ * @return The free bytes of texture memory.
  * @ghidraAddress BRD3D: 0x1003e220
  */
-void GetAvailableTextureMemory(void);
+unsigned GetAvailableTextureMemory(void);

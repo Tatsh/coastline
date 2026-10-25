@@ -80,10 +80,13 @@ damnit
 dashcam
 datacrc
 datarootdir
+dblclks
 dbuild
 dcmake
 dcosf
 ddivu
+ddscaps
+ddscl
 debugtext
 decaldraw
 decaleditor
@@ -185,6 +188,8 @@ higuy
 hilite
 hinstance
 histk
+hmenu
+hresult
 huft
 iasm
 iconerror
@@ -258,7 +263,9 @@ lookaty
 lostk
 lpanic
 lpcstr
+lpfn
 lprenmi
+lpsz
 lrcp
 lredispatch
 lrestore
@@ -286,6 +293,7 @@ menuitemrom
 mesg
 mfhi
 mflo
+minimizebox
 minode
 mktemp
 moddi
@@ -571,6 +579,7 @@ winmain
 wiswa
 wiswa's
 wmaybe
+wndclassa
 worktrees
 writeback
 writebackdcache

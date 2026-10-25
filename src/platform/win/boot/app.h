@@ -103,16 +103,74 @@ extern bool g_dwActivateState;
  */
 extern bool g_dwActivateMinimized;
 
-/** The DirectDraw renderer of a window. The layout is not recovered yet. */
-class DirectDrawRenderer {
-public:
-    /**
-     * Release the surfaces and the device of the renderer.
-     *
-     * @ghidraAddress BRD3D: 0x1000a1c0
-     */
-    void Cleanup();
-};
+class DirectDrawRenderer;
+
+/**
+ * Title of the main window.
+ *
+ * @ghidraAddress BRD3D: 0x100bd598
+ */
+extern const char *g_pszMainWindowTitle;
+
+/**
+ * The arrow cursor of the main window.
+ *
+ * @ghidraAddress BRD3D: 0x118abe28
+ */
+extern HCURSOR g_hArrowCursor;
+
+/**
+ * Handle the messages of the main window.
+ *
+ * @param hWnd The main window.
+ * @param nMessage The message.
+ * @param wParam The first parameter of the message.
+ * @param lParam The second parameter of the message.
+ * @return The result of the message.
+ * @ghidraAddress BRD3D: 0x10079ca0
+ */
+LRESULT CALLBACK MainWindowProc(HWND hWnd, UINT nMessage, WPARAM wParam, LPARAM lParam);
+
+/**
+ * Create a window and the renderer that draws into it, and show the window. A renderer that
+ * does not start is reported in a message box and destroys the window.
+ *
+ * @param dwExStyle The extended style of the window.
+ * @param pszClassName The class of the window.
+ * @param pszWindowName The title of the window.
+ * @param dwStyle The style of the window.
+ * @param x The left of the window.
+ * @param y The top of the window.
+ * @param nWidth The width of the window.
+ * @param nHeight The height of the window.
+ * @param hParent The parent, or `nullptr` for the desktop.
+ * @param hMenu The menu of the window.
+ * @param hInstance The module of the class, or `nullptr` for the game.
+ * @param pParam The parameter of the creation of the window.
+ * @param pDriverGuid The DirectDraw driver, or `nullptr` for the default.
+ * @param nUnused Not read.
+ * @param phWnd Receives the window, unless `nullptr`.
+ * @param ppRenderer Receives the renderer, unless `nullptr`.
+ * @return `S_OK`, `E_INVALIDARG` without a class, `E_OUTOFMEMORY`, `E_FAIL` for a window that
+ * was not created, or the error of the renderer.
+ * @ghidraAddress BRD3D: 0x10079a90
+ */
+HRESULT CreateRenderWindow(DWORD dwExStyle,
+                           LPCSTR pszClassName,
+                           LPCSTR pszWindowName,
+                           DWORD dwStyle,
+                           int x,
+                           int y,
+                           int nWidth,
+                           int nHeight,
+                           HWND hParent,
+                           HMENU hMenu,
+                           HINSTANCE hInstance,
+                           LPVOID pParam,
+                           GUID *pDriverGuid,
+                           int nUnused,
+                           HWND *phWnd,
+                           DirectDrawRenderer **ppRenderer);
 
 /**
  * The renderer of the main window.
@@ -200,6 +258,7 @@ bool InitializeApplication(void);
  * @return Whether the window was created.
  * @ghidraAddress BRD3D: 0x100798f0
  * @ghidraAddress BRGlide: 0x10019670
+ * @stub{BRGlide}
  */
 bool CreateMainWindow(void);
 

@@ -1,0 +1,297 @@
+#pragma once
+
+/**
+ * @file
+ * The DirectDraw and Direct3D renderer of a window, and the host that the game reaches it through.
+ */
+
+#include <d3d.h>
+#include <ddraw.h>
+#include <windows.h>
+
+/** A renderer that is missing its window or its host. */
+#define RENDERER_E_NOT_CREATED static_cast<HRESULT>(0x88762712)
+
+/** A renderer that is not ready to draw. */
+#define RENDERER_E_NOT_READY static_cast<HRESULT>(0x88762713)
+
+/** The bits of DirectDrawRenderer::dwRenderStateFlags of a renderer that can draw. */
+#define RENDERER_STATE_READY 0x1f
+
+/** A DirectDraw driver the game found. */
+class DirectDrawDriver {
+public:
+    /**
+     * The GUID that selects the driver.
+     *
+     * @return The GUID, or `nullptr` for the primary driver.
+     * @ghidraAddress BRD3D: 0x1001b960
+     */
+    GUID *GetDirectDrawDriverGuid();
+};
+
+class RenderHost;
+
+/** The DirectDraw and Direct3D objects of a window. */
+class DirectDrawRenderer {
+public:
+    int anUnknown0[3];                   /* +0x00 */
+    int dwDeviceInit;                    /*!< Whether the device is initialised. */
+    int dwSize;                          /*!< The size of the renderer. */
+    int dwFlags;                         /*!< Options of the renderer. Bit 2 is set by default. */
+    int nUnknown18;                      /* +0x18 */
+    int dwRenderStateFlags;              /*!< The objects created, RENDERER_STATE_READY for all. */
+    HWND hWnd;                           /*!< The window drawn into. */
+    int anUnknown24[2];                  /* +0x24 */
+    DirectDrawDriver *pDriver;           /*!< The driver selected. */
+    void *pDevice;                       /*!< The Direct3D device selected. */
+    void *pMode;                         /*!< The display mode selected. */
+    IDirectDraw *pDirectDraw;            /*!< The DirectDraw object of the driver. */
+    IDirectDraw2 *pDirectDraw2;          /*!< The second interface of pDirectDraw. */
+    IDirect3D2 *pDirect3D2;              /*!< The Direct3D interface of pDirectDraw. */
+    IDirectDrawSurface *pPrimarySurface; /*!< The front buffer. */
+    IDirectDrawPalette *pPrimaryPalette; /*!< The palette of the front buffer. */
+    int nPaletteEntryCount;              /*!< The entries of the two palette buffers. */
+    void *pPaletteEntries;               /*!< A buffer of palette entries. */
+    void *pSavedPaletteEntries;          /*!< A second buffer of palette entries. */
+    void *pSurfaceForDevice;             /*!< The surface the device draws into. */
+    void *pStencilOrAuxSurface;          /*!< A surface beside pSurfaceForDevice. */
+    IDirect3DDevice2 *pD3DDevice;        /*!< The Direct3D device. */
+    IDirect3DViewport2 *pViewport;       /*!< The viewport of pD3DDevice. */
+    int anUnknown68[8];                  /* +0x68 */
+    RenderHost *pHost;                   /*!< The host told when the device changes. */
+
+    /**
+     * Clear the renderer.
+     *
+     * @ghidraAddress BRD3D: 0x1000a190
+     */
+    DirectDrawRenderer();
+
+    /**
+     * Release every object of the renderer and forget its window.
+     *
+     * @ghidraAddress BRD3D: 0x1000a1c0
+     */
+    void Cleanup();
+
+    /**
+     * Select a driver, a device, and a mode, and create the objects that draw into a window. A
+     * failure releases what was created.
+     *
+     * @param hWnd The window.
+     * @param pDriverGuid The DirectDraw driver, or `nullptr` for the default.
+     * @param pDeviceGuid The Direct3D device, or `nullptr` for the default.
+     * @param nWidth The width of the mode, or 0.
+     * @param nHeight The height of the mode, or 0.
+     * @param nBitDepth The bits of a pixel of the mode, or 0.
+     * @param nModeFlags Options of the selection, or 0.
+     * @param bOption Whether bit 2 of dwFlags is set. Its meaning is not recovered yet.
+     * @return `S_OK`, or the error of the step that failed.
+     * @ghidraAddress BRD3D: 0x1000a1e0
+     */
+    HRESULT InitializeWindow(HWND hWnd,
+                             GUID *pDriverGuid,
+                             GUID *pDeviceGuid,
+                             int nWidth,
+                             int nHeight,
+                             int nBitDepth,
+                             int nModeFlags,
+                             bool bOption);
+
+    /**
+     * Tell the window that the objects are going and release them.
+     *
+     * @return 0.
+     * @ghidraAddress BRD3D: 0x1000a350
+     */
+    int DestroyDirectDrawRendererObjects();
+
+    /**
+     * Create the DirectDraw object of the driver and its second and Direct3D interfaces.
+     *
+     * @return `S_OK`, or the error of the step that failed.
+     * @ghidraAddress BRD3D: 0x1000a480
+     */
+    HRESULT CreateDirectDrawObjects();
+
+    /**
+     * Release the DirectDraw object and its interfaces.
+     *
+     * @return 0.
+     * @ghidraAddress BRD3D: 0x1000a540
+     */
+    int ReleaseDirectDrawObjects();
+
+    /**
+     * Take the screen for the window alone.
+     *
+     * @return `S_OK`, the error of DirectDraw, or RENDERER_E_NOT_READY without a window.
+     * @ghidraAddress BRD3D: 0x1000a590
+     */
+    HRESULT SetCooperativeLevel();
+
+    /**
+     * Set the display mode selected.
+     *
+     * @return `S_OK`, or the error of DirectDraw.
+     * @ghidraAddress BRD3D: 0x1000a5d0
+     */
+    HRESULT SetDisplayMode();
+
+    /**
+     * Give the display back its mode.
+     *
+     * @return 0.
+     * @ghidraAddress BRD3D: 0x1000a800
+     */
+    int RestoreDisplayMode();
+
+    /**
+     * Create the front buffer and its back buffers.
+     *
+     * @return `S_OK`, or the error of DirectDraw.
+     * @ghidraAddress BRD3D: 0x1000a820
+     */
+    HRESULT CreatePrimaryFlipChain();
+
+    /**
+     * Release the front buffer and its palette.
+     *
+     * @return 0.
+     * @ghidraAddress BRD3D: 0x1000a8a0
+     */
+    int ReleasePrimarySurface();
+
+    /**
+     * Release the palette of the front buffer and free its entries.
+     *
+     * @return 0.
+     * @ghidraAddress BRD3D: 0x1000ab20
+     */
+    int ReleasePrimaryPalette();
+
+    /**
+     * Create the Direct3D device and its viewport.
+     *
+     * @return `S_OK`, or the error of Direct3D.
+     * @ghidraAddress BRD3D: 0x1000ab70
+     */
+    HRESULT InitializeRenderDevice();
+
+    /**
+     * Release the Direct3D device and its viewport.
+     *
+     * @ghidraAddress BRD3D: 0x1000ad70
+     */
+    void DestroyD3DDevice();
+
+    /**
+     * Give the renderer the host that draws through it, and give the host the renderer.
+     *
+     * @param pRenderHost The host.
+     * @return `S_OK`, or `E_INVALIDARG` without a host.
+     * @ghidraAddress BRD3D: 0x1000b280
+     */
+    HRESULT SetDeviceNotificationCallback(RenderHost *pRenderHost);
+};
+
+/** What the game draws through: the renderer of the main window. */
+class RenderHost {
+public:
+    DirectDrawRenderer *pRenderer; /*!< The renderer, set by SetRenderer(). */
+
+    /**
+     * Start without a renderer.
+     *
+     * @ghidraAddress BRD3D: 0x10001130
+     */
+    RenderHost();
+
+    /**
+     * Draw through a renderer.
+     *
+     * @param pNewRenderer The renderer.
+     * @return `S_OK`, or RENDERER_E_NOT_CREATED without a renderer.
+     * @ghidraAddress BRD3D: 0x10001140
+     */
+    HRESULT SetRenderer(DirectDrawRenderer *pNewRenderer);
+
+    /**
+     * Show an image of the game while the game loads.
+     *
+     * @param pWindowRenderer The renderer of the window.
+     * @param pszImage The name of the image.
+     * @param nImageKey A constant the game passes with the image, 0x2ac7e58b.
+     * @ghidraAddress BRD3D: 0x10008e30
+     */
+    void RenderLoadingScreen(DirectDrawRenderer *pWindowRenderer,
+                             const char *pszImage,
+                             unsigned nImageKey);
+
+    /**
+     * Whether the renderer is ready and has its Direct3D objects.
+     *
+     * @return `S_OK`, RENDERER_E_NOT_READY for a renderer not ready, or `E_FAIL`.
+     * @ghidraAddress BRD3D: 0x10001160
+     */
+    HRESULT ValidateRenderDeviceState();
+
+    /**
+     * Whether the renderer is ready and has Direct3D, a device, and a viewport.
+     *
+     * @return `S_OK`, or `E_FAIL`.
+     * @ghidraAddress BRD3D: 0x100011b0
+     */
+    HRESULT ValidateObjectRenderResources();
+};
+
+/**
+ * The host the game draws through.
+ *
+ * @ghidraAddress BRD3D: 0x118abe08
+ */
+extern RenderHost *g_pRenderHost;
+
+/**
+ * The Direct3D interface of the renderer that created it last.
+ *
+ * @ghidraAddress BRD3D: 0x10277478
+ */
+extern IDirect3D2 *g_pDirect3D2;
+
+/**
+ * The first DirectDraw driver the game found with a GUID, or the default.
+ *
+ * @param pGuid The GUID of the driver, or `nullptr` for the default.
+ * @return The driver, or `nullptr` when none was found.
+ * @ghidraAddress BRD3D: 0x1001a550
+ */
+DirectDrawDriver *FindDirectDrawDriverOrDefault(GUID *pGuid);
+
+/**
+ * Select the driver, device, and mode of a renderer from the configuration.
+ *
+ * @param pDriverGuid The DirectDraw driver, or `nullptr` for the default.
+ * @param pDeviceGuid The Direct3D device, or `nullptr` for the default.
+ * @param nWidth The width of the mode, or 0.
+ * @param nHeight The height of the mode, or 0.
+ * @param nBitDepth The bits of a pixel of the mode, or 0.
+ * @param nModeFlags Options of the selection, or 0.
+ * @param nBehavior Always 1.
+ * @param ppDriver Receives the driver.
+ * @param ppDevice Receives the device.
+ * @param ppMode Receives the mode.
+ * @return `S_OK`, or the error of the selection.
+ * @ghidraAddress BRD3D: 0x1001a790
+ */
+HRESULT SelectDriverDeviceAndModeFromConfig(GUID *pDriverGuid,
+                                            GUID *pDeviceGuid,
+                                            int nWidth,
+                                            int nHeight,
+                                            int nBitDepth,
+                                            int nModeFlags,
+                                            int nBehavior,
+                                            DirectDrawDriver **ppDriver,
+                                            void **ppDevice,
+                                            void **ppMode);

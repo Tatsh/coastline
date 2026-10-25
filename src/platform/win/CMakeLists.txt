@@ -12,4 +12,8 @@ add_library(
   dllmain.c
   fileio.cpp
   winmain-${TGR_RENDERER}.cpp)
+# The DirectDraw and Direct3D renderer belongs to the Direct3D library alone.
+if(TGR_RENDERER STREQUAL "d3d")
+  target_sources(coastline_main PRIVATE d3d/renderer.cpp d3d/texture.cpp)
+endif()
 target_link_libraries(coastline_main PRIVATE coastline_common)
