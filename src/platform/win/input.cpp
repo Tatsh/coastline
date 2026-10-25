@@ -10,6 +10,7 @@
 #include "platform/win/boot/strings.h"
 #include "platform/win/settings.h"
 #include "platform/win/sound.h"
+#include "platform/win/timer.h"
 
 IDirectInputA *g_pDirectInput;
 int g_dwDirectInputRefCount;
