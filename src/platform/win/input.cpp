@@ -47,7 +47,7 @@ int g_adwMouseButtonPressed[MOUSE_BUTTON_COUNT];
 int g_dwEntityHalfWidth;
 int g_dwEntityHalfHeight;
 MouseMenuState g_MouseMenuState;
-bool g_fCharInputSuppressed;
+int g_fCharInputSuppressed;
 short g_dwMouseScrollDirection = 1;
 unsigned short g_wMenuHoverIndex;
 DWORD g_dwLastInputActivityTime;
@@ -486,12 +486,12 @@ HRESULT SetJoystickAxisRange(IDirectInputDevice2A *pDevice,
     return pDevice->SetProperty(guidProperty, &property.diph);
 }
 
-bool g_bForceFeedbackAvailable;
+int g_bForceFeedbackAvailable;
 DIEFFECT g_DiConditionEffect;
 DICONDITION g_aDiConditionParams[2];
 LONG g_alConditionEffectDirection[2];
 int g_dwForceFeedbackMagnitude;
-bool g_bForceFeedbackForceStopped;
+int g_bForceFeedbackForceStopped;
 DIEFFECT g_DiJoltEffect;
 DIPERIODIC g_DiJoltPeriodic;
 DWORD g_dwForceFeedbackDuration = 125000;

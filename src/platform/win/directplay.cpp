@@ -27,13 +27,13 @@
 DirectPlayInfo g_DirectPlayInfo;
 DirectPlayInfo *g_pDirectPlayInfo;
 ServiceProvider g_aServiceProviders[SERVICE_PROVIDER_COUNT];
-bool g_dwLaunchedFromLobby;
-bool g_dwLobbyIsHost;
-bool g_dwSessionEnumPending;
+int g_dwLaunchedFromLobby;
+int g_dwLobbyIsHost;
+int g_dwSessionEnumPending;
 UINT_PTR g_dwNetworkTimerId;
 IDirectPlayLobby2A *g_pDirectPlayLobby;
 int g_dwDirectPlayInstanceCount;
-bool g_bDirectPlayReceiveThreadStarted;
+int g_bDirectPlayReceiveThreadStarted;
 CRITICAL_SECTION g_DirectPlaySendCritSec;
 HANDLE g_hDirectPlayReceiveStopEvent;
 DWORD g_dwDirectPlayReceiveThreadId;
@@ -429,7 +429,7 @@ HANDLE g_hDepartedPlayerStackMutex;
 HANDLE g_hNetRaceOrderMutex;
 HANDLE g_hNetNotifyMutex;
 
-bool g_bNetWorkerThreadRunning;
+int g_bNetWorkerThreadRunning;
 HANDLE g_hNetWorkerStopEvent;
 HANDLE g_hNetWorkerThread;
 
@@ -496,7 +496,7 @@ void HandleDirectPlaySystemMessageClient(
     }
 }
 
-bool g_dwNetworkSendBlocked;
+int g_dwNetworkSendBlocked;
 NetPlayerSlot g_aNetPlayerSlots[NET_PLAYER_SLOT_COUNT];
 int g_nNetPauseRequestTicks;
 
@@ -550,7 +550,7 @@ HRESULT CloseAndReleaseDirectPlay(void) {
 }
 
 char g_szNetStatusString[0x400];
-bool g_bNetStatusStringDirty;
+int g_bNetStatusStringDirty;
 int g_anDepartedPlayerSlotStack[DEPARTED_PLAYER_STACK_SIZE];
 int g_nDepartedPlayerStackTop;
 

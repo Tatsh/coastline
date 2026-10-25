@@ -21,7 +21,7 @@ extern "C" {
  * @ghidraAddress BRD3D: 0x100bbad4
  * @ghidraAddress BRGlide: 0x100bb2dc
  */
-extern bool g_bHighResTimerFirstCall;
+extern int g_bHighResTimerFirstCall;
 
 /**
  * The frequency of the performance counter, in counts a second.
@@ -37,7 +37,7 @@ extern LARGE_INTEGER g_liPerfCounterFrequency;
  * @ghidraAddress BRD3D: 0x118ab128
  * @ghidraAddress BRGlide: 0x118ee240
  */
-extern bool g_bHasPerfCounter;
+extern int g_bHasPerfCounter;
 
 /**
  * The time of the performance counter at the first call of GetHighResolutionTime(), in

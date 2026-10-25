@@ -51,7 +51,7 @@ extern FrameTimer g_FrameTimer;
  * @ghidraAddress BRD3D: 0x118ab140
  * @ghidraAddress BRGlide: 0x118ee258
  */
-extern bool g_bFrameTimerInitialized;
+extern int g_bFrameTimerInitialized;
 
 /**
  * Whether the system has a performance counter for the frames.
@@ -59,7 +59,7 @@ extern bool g_bFrameTimerInitialized;
  * @ghidraAddress BRD3D: 0x118ab144
  * @ghidraAddress BRGlide: 0x118ee25c
  */
-extern bool g_bFrameTimerHasPerfCounter;
+extern int g_bFrameTimerHasPerfCounter;
 
 /**
  * The frequency of the performance counter for the frames.
@@ -107,7 +107,7 @@ extern int g_dwRaceFrameCounter;
  * @ghidraAddress BRD3D: 0x100a66e8
  * @ghidraAddress BRGlide: 0x100a5ea8
  */
-extern bool g_bFrameTimerReset;
+extern int g_bFrameTimerReset;
 
 /**
  * Start the ticks of the frames from the current time, at three for each tenth of a second.

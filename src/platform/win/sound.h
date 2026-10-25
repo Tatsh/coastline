@@ -167,7 +167,7 @@ extern HWND g_hMusicNotifyWnd;
  * @ghidraAddress BRD3D: 0x10220cd8
  * @ghidraAddress BRGlide: 0x1021c808
  */
-extern bool g_bCdAudioPlaying;
+extern int g_bCdAudioPlaying;
 
 /**
  * Play the next track of music, from the first again after the last.
@@ -500,7 +500,7 @@ extern int g_nMusicDeviceRefCount;
  * @ghidraAddress BRD3D: 0x10220c3c
  * @ghidraAddress BRGlide: 0x1021c76c
  */
-extern bool g_bEarMusicActive;
+extern int g_bEarMusicActive;
 
 /**
  * Drop a user of the device of the music. In music mode 1 the CD audio stops, and the last user

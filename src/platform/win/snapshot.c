@@ -2,7 +2,7 @@
 
 #include <stdbool.h>
 
-bool g_bFrameSnapshotsInitialized;
+int g_bFrameSnapshotsInitialized;
 
 void InvalidateFrameSnapshotSlots(void) {
     if (g_bFrameSnapshotsInitialized) {

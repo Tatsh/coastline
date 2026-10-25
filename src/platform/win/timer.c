@@ -6,9 +6,9 @@
 // The headers below need the types of windows.h.
 #include <mmsystem.h>
 
-bool g_bHighResTimerFirstCall = true;
+int g_bHighResTimerFirstCall = true;
 LARGE_INTEGER g_liPerfCounterFrequency;
-bool g_bHasPerfCounter;
+int g_bHasPerfCounter;
 DWORD g_dwPerfCounterBaseMs;
 
 // A count of the performance counter in milliseconds, rounded to the nearest.

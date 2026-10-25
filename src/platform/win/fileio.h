@@ -28,7 +28,7 @@ typedef struct GameFile {
  *
  * @ghidraAddress BRD3D: 0x10220ce0
  */
-extern bool g_bVerboseFileTrace;
+extern int g_bVerboseFileTrace;
 
 /**
  * Allocate memory, ending the process when none is left.

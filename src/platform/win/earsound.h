@@ -33,7 +33,7 @@ extern HMODULE g_hEarSoundDll;
  * @ghidraAddress BRD3D: 0x105754d4
  * @ghidraAddress BRGlide: 0x104b167c
  */
-extern bool g_bEarSoundDllLoadedByUs;
+extern int g_bEarSoundDllLoadedByUs;
 
 /**
  * Whether earpds.dll was loaded in place of earias.dll.
@@ -41,7 +41,7 @@ extern bool g_bEarSoundDllLoadedByUs;
  * @ghidraAddress BRD3D: 0x105754d8
  * @ghidraAddress BRGlide: 0x104b1680
  */
-extern bool g_bEarSoundDllUsingPds;
+extern int g_bEarSoundDllUsingPds;
 
 /**
  * Whether earpds.dll was requested.
@@ -49,7 +49,7 @@ extern bool g_bEarSoundDllUsingPds;
  * @ghidraAddress BRD3D: 0x105754dc
  * @ghidraAddress BRGlide: 0x104b1684
  */
-extern bool g_bEarSoundPdsRequested;
+extern int g_bEarSoundPdsRequested;
 
 /**
  * The library InitializeEarSound() loads. 1 requests earpds.dll, and 0 requests earias.dll with

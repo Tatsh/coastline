@@ -79,7 +79,7 @@ extern const char g_szEmptyUiString[];
  * @ghidraAddress BRD3D: 0x10a9d000
  * @ghidraAddress BRGlide: 0x10ac4090
  */
-extern bool g_dwLaunchedFromLobby;
+extern int g_dwLaunchedFromLobby;
 
 /**
  * Whether the lobby made the game the host.
@@ -87,7 +87,7 @@ extern bool g_dwLaunchedFromLobby;
  * @ghidraAddress BRD3D: 0x10aa2884
  * @ghidraAddress BRGlide: 0x10ac5bdc
  */
-extern bool g_dwLobbyIsHost;
+extern int g_dwLobbyIsHost;
 
 /**
  * Whether an enumeration of sessions is waiting for a reply.
@@ -95,7 +95,7 @@ extern bool g_dwLobbyIsHost;
  * @ghidraAddress BRD3D: 0x10aa2898
  * @ghidraAddress BRGlide: 0x10ac5bf0
  */
-extern bool g_dwSessionEnumPending;
+extern int g_dwSessionEnumPending;
 
 /**
  * The timer of the main window that drives network play.
@@ -127,7 +127,7 @@ extern const GUID g_BossRallyAppGuid;
  * @ghidraAddress BRD3D: 0x10277b60
  * @ghidraAddress BRGlide: 0x10273348
  */
-extern bool g_bDirectPlayReceiveThreadStarted;
+extern int g_bDirectPlayReceiveThreadStarted;
 
 /**
  * The critical section of DirectPlay sends.
@@ -352,14 +352,14 @@ void InitializeDirectPlayForDesktopWindow(void);
  *
  * @ghidraAddress BRD3D: 0x10a9cffc
  */
-extern bool g_dwDirectPlaySessionActive;
+extern int g_dwDirectPlaySessionActive;
 
 /**
  * Whether the race of a network game has started.
  *
  * @ghidraAddress BRD3D: 0x1022af14
  */
-extern bool g_bNetRaceStartReached;
+extern int g_bNetRaceStartReached;
 
 /**
  * The ticks a request of a pause of a network game has waited, 0 for no request.
@@ -461,7 +461,7 @@ extern char g_szNetStatusString[];
  * @ghidraAddress BRD3D: 0x1022af08
  * @ghidraAddress BRGlide: 0x10226a38
  */
-extern bool g_bNetStatusStringDirty;
+extern int g_bNetStatusStringDirty;
 
 /**
  * Set the line of status of network play under the mutex of the notices.
@@ -577,7 +577,7 @@ extern HANDLE g_hNetNotifyMutex;
  * @ghidraAddress BRD3D: 0x11828d18
  * @ghidraAddress BRGlide: 0x1184c078
  */
-extern bool g_bNetWorkerThreadRunning;
+extern int g_bNetWorkerThreadRunning;
 
 /**
  * The event that stops the worker thread of the host.
@@ -722,7 +722,7 @@ struct SessionSlot {
  * @ghidraAddress BRD3D: 0x10aa288c
  * @ghidraAddress BRGlide: 0x10ac5be4
  */
-extern bool g_dwNetworkSendBlocked;
+extern int g_dwNetworkSendBlocked;
 
 /**
  * Free every slot of the session and unblock the sends.

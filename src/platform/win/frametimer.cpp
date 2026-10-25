@@ -7,14 +7,14 @@
 #include "platform/win/timer.h"
 
 FrameTimer g_FrameTimer;
-bool g_bFrameTimerInitialized;
-bool g_bFrameTimerHasPerfCounter;
+int g_bFrameTimerInitialized;
+int g_bFrameTimerHasPerfCounter;
 LARGE_INTEGER g_liFrameTimerFrequency;
 DWORD g_dwFrameTickTime;
 DWORD g_dwFrameTickPhase;
 DWORD g_dwFrameTickCounter;
 int g_dwRaceFrameCounter;
-bool g_bFrameTimerReset = true;
+int g_bFrameTimerReset = true;
 
 // The frames of a second.
 #define FRAMES_PER_SECOND 30

@@ -96,21 +96,21 @@ extern char g_szSfxDirPath[];
  *
  * @ghidraAddress BRD3D: 0x100a66ec
  */
-extern bool g_bInterpolateFrames;
+extern int g_bInterpolateFrames;
 
 /**
  * Whether the gearbox is automatic, from `SpeedSensitive=`.
  *
  * @ghidraAddress BRD3D: 0x100b3664
  */
-extern bool g_bAutomaticGearboxIni;
+extern int g_bAutomaticGearboxIni;
 
 /**
  * Whether the shadow of a car is not drawn, the inverse of `D3DDrawCarShadow=`.
  *
  * @ghidraAddress BRD3D: 0x1039b6c8
  */
-extern bool g_bDisableCarShadow;
+extern int g_bDisableCarShadow;
 
 /**
  * Whether the benchmark runs, from `RunBenchmark=`.
@@ -133,14 +133,14 @@ extern int g_dwPlayMusicMode;
  * @ghidraAddress BRD3D: 0x100b5de8
  * @ghidraAddress BRGlide: 0x100b55f0
  */
-extern bool g_bSoundEnabledIni;
+extern int g_bSoundEnabledIni;
 
 /**
  * Whether Direct3D tests the alpha of a pixel, from `D3DAlphaCompare=`.
  *
  * @ghidraAddress BRD3D: 0x100aa720
  */
-extern bool g_bD3DAlphaCompare;
+extern int g_bD3DAlphaCompare;
 
 /**
  * Whether textures are made square, from `D3DAlwaysSquareTextures=`.
@@ -161,14 +161,14 @@ extern int g_dwD3DClearZBuffer;
  *
  * @ghidraAddress BRD3D: 0x100a62f8
  */
-extern bool g_bD3DWaitCanFlip;
+extern int g_bD3DWaitCanFlip;
 
 /**
  * Whether a flip waits until it is done, from `D3DWaitFlipDone=`.
  *
  * @ghidraAddress BRD3D: 0x100a62fc
  */
-extern bool g_bD3DWaitFlipDone;
+extern int g_bD3DWaitFlipDone;
 
 /**
  * The blend of the destination of a translucent pixel, `D3DBLEND_INVSRCALPHA` when

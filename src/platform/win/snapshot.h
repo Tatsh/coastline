@@ -20,7 +20,7 @@ extern "C" {
  * @ghidraAddress BRD3D: 0x104afd1c
  * @ghidraAddress BRGlide: 0x104ab504
  */
-extern bool g_bFrameSnapshotsInitialized;
+extern int g_bFrameSnapshotsInitialized;
 
 /**
  * Mark the snapshots of frames as not set up.

@@ -14,9 +14,9 @@
 #define EAR_ERROR_REPORTED_BY_GAME 3
 
 HMODULE g_hEarSoundDll;
-bool g_bEarSoundDllLoadedByUs;
-bool g_bEarSoundDllUsingPds;
-bool g_bEarSoundPdsRequested;
+int g_bEarSoundDllLoadedByUs;
+int g_bEarSoundDllUsingPds;
+int g_bEarSoundPdsRequested;
 int g_dwEarSoundDllMode = 1;
 int g_dwEarSoundInitRefCount;
 UINT g_uEarSoundWindowMessage;

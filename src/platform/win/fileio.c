@@ -10,7 +10,7 @@
 // The size of the buffer of a message to the debugger.
 #define MESSAGE_SIZE 1024
 
-bool g_bVerboseFileTrace;
+int g_bVerboseFileTrace;
 
 long GetFileLength(GameFile *pFile) {
     long nPosition = ftell(pFile->pFile);

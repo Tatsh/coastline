@@ -93,7 +93,7 @@ extern MouseMenuState g_MouseMenuState;
  * @ghidraAddress BRD3D: 0x10aa2844
  * @ghidraAddress BRGlide: 0x10ac5b9c
  */
-extern bool g_fCharInputSuppressed;
+extern int g_fCharInputSuppressed;
 
 /**
  * The direction the hover of a menu moved last, -1 up and 1 down.
@@ -630,7 +630,7 @@ void UpdateKeyboardEdgeState(void);
  * @ghidraAddress BRD3D: 0x118abdbc
  * @ghidraAddress BRGlide: 0x118eeed4
  */
-extern bool g_bForceFeedbackAvailable;
+extern int g_bForceFeedbackAvailable;
 
 /**
  * The condition effect of force feedback, a spring on X and Y.
@@ -670,7 +670,7 @@ extern int g_dwForceFeedbackMagnitude;
  * @ghidraAddress BRD3D: 0x118abdf8
  * @ghidraAddress BRGlide: 0x118eef10
  */
-extern bool g_bForceFeedbackForceStopped;
+extern int g_bForceFeedbackForceStopped;
 
 /**
  * The jolt effect of force feedback, a square wave.

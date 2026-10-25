@@ -108,14 +108,14 @@ extern int g_dwActivateMinimized;
  *
  * @ghidraAddress BRD3D: 0x118ac230
  */
-extern bool g_bWindowMinimized;
+extern int g_bWindowMinimized;
 
 /**
  * Whether the main window is maximised.
  *
  * @ghidraAddress BRD3D: 0x118ac234
  */
-extern bool g_bWindowMaximized;
+extern int g_bWindowMaximized;
 
 /**
  * Release every subsystem of the game and end the process.
@@ -615,7 +615,7 @@ void NullStub(void);
  * @ghidraAddress BRD3D: 0x100ac300
  * @ghidraAddress BRGlide: 0x100abaa0
  */
-extern bool g_dwNullStubEnable;
+extern int g_dwNullStubEnable;
 
 /**
  * Query the installed DirectX version by creating its objects in turn.

@@ -19,12 +19,12 @@ WAVEFORMATEX *g_pDirectSoundWaveFormat;
 SoundBufferNode g_SoundBufferListHead;
 int g_dwEarMusicChannel = 100;
 int g_nMusicDeviceRefCount;
-bool g_bEarMusicActive;
+int g_bEarMusicActive;
 int g_nCurrentMusicTrack;
 int g_nMusicTrackMin;
 int g_nMusicTrackMax;
 HWND g_hMusicNotifyWnd;
-bool g_bCdAudioPlaying;
+int g_bCdAudioPlaying;
 bool g_bMusicPaused;
 
 int GetEarMusicCurrentTrack(void) {
