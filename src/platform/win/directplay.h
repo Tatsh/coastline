@@ -1271,6 +1271,34 @@ struct NetPlayerSlot {
 extern NetPlayerSlot g_aNetPlayerSlots[NET_PLAYER_SLOT_COUNT];
 
 /**
+ * The network players of a race as each peer reports them, by peer and then by player.
+ *
+ * @ghidraAddress BRD3D: 0x1178fef8
+ * @ghidraAddress BRGlide: 0x117b3258
+ */
+extern NetPlayerSlot g_aNetPeerSlotMatrix[NET_PLAYER_SLOT_COUNT][NET_PLAYER_SLOT_COUNT];
+
+/**
+ * The state of a network player of a race, under the mutex of its slot.
+ *
+ * @param nSlot The slot.
+ * @return The state.
+ * @ghidraAddress BRD3D: 0x100714d0
+ * @ghidraAddress BRGlide: 0x1006a440
+ */
+int GetNetworkPlayerSlotStatus(int nSlot);
+
+/**
+ * The state of a network player as its own peer reports it, under the mutex of the entry.
+ *
+ * @param nSlot The slot of the player and of its peer.
+ * @return The state.
+ * @ghidraAddress BRD3D: 0x10071510
+ * @ghidraAddress BRGlide: 0x1006a480
+ */
+int GetNetworkPeerChannelStatus(int nSlot);
+
+/**
  * Destroy the groups of players of the session.
  *
  * @ghidraAddress BRD3D: 0x1003d070

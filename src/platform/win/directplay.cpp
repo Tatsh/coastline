@@ -751,7 +751,23 @@ void HandleDirectPlaySystemMessageClient(
 
 int g_dwNetworkSendBlocked;
 NetPlayerSlot g_aNetPlayerSlots[NET_PLAYER_SLOT_COUNT];
+NetPlayerSlot g_aNetPeerSlotMatrix[NET_PLAYER_SLOT_COUNT][NET_PLAYER_SLOT_COUNT];
 int g_nNetPauseRequestTicks;
+
+static inline int GetNetPlayerSlotStateLocked(NetPlayerSlot &slot) {
+    WaitForSingleObject(slot.hMutex, INFINITE);
+    int nState = slot.dwState;
+    ReleaseMutex(slot.hMutex);
+    return nState;
+}
+
+int GetNetworkPlayerSlotStatus(int nSlot) {
+    return GetNetPlayerSlotStateLocked(g_aNetPlayerSlots[nSlot]);
+}
+
+int GetNetworkPeerChannelStatus(int nSlot) {
+    return GetNetPlayerSlotStateLocked(g_aNetPeerSlotMatrix[nSlot][nSlot]);
+}
 
 // The state of a slot below 5 is one the departure of its owner frees.
 #define NET_PLAYER_STATE_MASK 0x3f
