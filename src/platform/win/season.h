@@ -40,6 +40,32 @@ extern char g_szSeasonRoundLabel[SEASON_ROUND_LABEL_SIZE];
 extern int g_dwSeasonLoaded;
 
 /**
+ * The progress of the championship across its years that the menus show.
+ *
+ * @ghidraAddress BRD3D: 0x10aa28a0
+ * @ghidraAddress BRGlide: 0x10ac5bf8
+ */
+extern int g_dwSeasonYear;
+
+/**
+ * The season of the championship the menus show, from 0.
+ *
+ * @ghidraAddress BRD3D: 0x10aa28b8
+ * @ghidraAddress BRGlide: 0x10ac5c10
+ */
+extern int g_bSeasonClass;
+
+/**
+ * Copy the season, the round, and the settings of the car and the input device into the progress of
+ * the season, choose the track and the weather of the round in the championship, and add the cars
+ * and tracks the progress unlocked.
+ *
+ * @ghidraAddress BRD3D: 0x1005fcf0
+ * @ghidraAddress BRGlide: 0x10058a30
+ */
+void SyncSeasonProgress(void);
+
+/**
  * Restore the progress of the season from the race just run.
  *
  * @return Whether the progress was restored.

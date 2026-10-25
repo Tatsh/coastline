@@ -1077,15 +1077,6 @@ void BlitSurfaceRegion(int nDestX, int nDestY, WORD wImage, const RECT *pRect, D
 void ReleaseMenuSurfaces(void);
 
 /**
- * Copy the settings of the car and the input device into the progress of the season, choose the
- * track and the weather of the round of a season, and add the cars and tracks the season unlocked.
- *
- * @ghidraAddress BRD3D: 0x1005fcf0
- * @ghidraAddress BRGlide: 0x10058a30
- */
-void SyncSeasonProgress(void);
-
-/**
  * The state of the network menus. A state of 2 or 3 delays ShutdownFrontEnd().
  *
  * @ghidraAddress BRD3D: 0x10aa2854

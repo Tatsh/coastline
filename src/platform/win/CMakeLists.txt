@@ -22,6 +22,7 @@ add_library(
   paintshop.c
   podarchive.cpp
   render.cpp
+  season.cpp
   snapshot.c
   sound.cpp
   timer.c
