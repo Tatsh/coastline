@@ -274,9 +274,9 @@ int GetTexelsPerLoadWord(int nSize) {
 void CreateGlobalEffectTextures(void) {
     LoadHudOverlayTexture();
     LoadHudGlyphTextureSets();
-    LoadHudTexture64A();
-    LoadHudTexture32x64();
-    LoadHudTexture64B();
+    LoadParticleTexture();
+    LoadTireTrailTexture();
+    LoadVehicleEnvMapTexture();
     CreateFallbackEnvironmentTexture();
     CreateAlphaRampTextures();
 }

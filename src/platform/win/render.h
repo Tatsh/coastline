@@ -559,28 +559,28 @@ void LoadHudOverlayTexture(void);
 void LoadHudGlyphTextureSets(void);
 
 /**
- * Load the first texture of 64 texels of the display of the race.
+ * Create the texture of the particles, 64 by 64 texels.
  *
  * @ghidraAddress BRD3D: 0x10073950
  * @ghidraAddress BRGlide: 0x1006c800
  */
-void LoadHudTexture64A(void);
+void LoadParticleTexture(void);
 
 /**
- * Load the texture of 32 by 64 texels of the display of the race.
+ * Create the texture of the trails of the tyres, 32 by 64 texels.
  *
  * @ghidraAddress BRD3D: 0x10073980
  * @ghidraAddress BRGlide: 0x1006c820
  */
-void LoadHudTexture32x64(void);
+void LoadTireTrailTexture(void);
 
 /**
- * Load the second texture of 64 texels of the display of the race.
+ * Create the map of the environment of the vehicles, 64 by 64 texels.
  *
  * @ghidraAddress BRD3D: 0x100739b0
  * @ghidraAddress BRGlide: 0x1006c850
  */
-void LoadHudTexture64B(void);
+void LoadVehicleEnvMapTexture(void);
 
 /**
  * Create the texture of the environment used when none is loaded.
@@ -591,7 +591,7 @@ void LoadHudTexture64B(void);
 void CreateFallbackEnvironmentTexture(void);
 
 /**
- * Create the textures of the ramps of alpha.
+ * Create the textures of the ramps of alpha and of precipitation.
  *
  * @ghidraAddress BRD3D: 0x10073a10
  * @ghidraAddress BRGlide: 0x1006c8b0
@@ -599,8 +599,9 @@ void CreateFallbackEnvironmentTexture(void);
 void CreateAlphaRampTextures(void);
 
 /**
- * Load and create the textures every race uses: those of the display of the race, the texture of
- * the environment used when none is loaded, and the ramps of alpha.
+ * Load and create the textures every race uses: the overlay and the glyphs of the display of the
+ * race, the particles, the trails of the tyres, the maps of the environment, and the ramps of alpha
+ * and precipitation.
  *
  * @ghidraAddress BRD3D: 0x10074dd0
  * @ghidraAddress BRGlide: 0x1006e030
