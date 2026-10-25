@@ -44,6 +44,41 @@ extern CarPaintTextureSet g_CarPaintTextureSets[CAR_PAINT_GROUP_COUNT][CAR_PAINT
 extern void *g_apPaintDamageBitmaps[PAINT_DAMAGE_BITMAP_COUNT];
 
 /**
+ * The multiplier of the red of the tint of the paint.
+ *
+ * @ghidraAddress BRD3D: 0x10aa3440
+ * @ghidraAddress BRGlide: 0x10ac67a0
+ */
+extern int g_dwColorTintRed;
+
+/**
+ * The multiplier of the green of the tint of the paint.
+ *
+ * @ghidraAddress BRD3D: 0x10aa3448
+ * @ghidraAddress BRGlide: 0x10ac67a8
+ */
+extern int g_dwColorTintGreen;
+
+/**
+ * The multiplier of the blue of the tint of the paint.
+ *
+ * @ghidraAddress BRD3D: 0x10aa345c
+ * @ghidraAddress BRGlide: 0x10ac67bc
+ */
+extern int g_dwColorTintBlue;
+
+/**
+ * Set the multipliers of the tint of the paint.
+ *
+ * @param nRed The multiplier of the red.
+ * @param nGreen The multiplier of the green.
+ * @param nBlue The multiplier of the blue.
+ * @ghidraAddress BRD3D: 0x10061460
+ * @ghidraAddress BRGlide: 0x1005a4e0
+ */
+void SetColorTintMultipliers(int nRed, int nGreen, int nBlue);
+
+/**
  * The width of the bitmap ConvertBitmap24ToRgba32() converted last.
  *
  * @ghidraAddress BRD3D: 0x10aa3464

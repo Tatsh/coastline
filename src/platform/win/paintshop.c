@@ -5,6 +5,9 @@
 
 CarPaintTextureSet g_CarPaintTextureSets[CAR_PAINT_GROUP_COUNT][CAR_PAINT_SET_COUNT];
 void *g_apPaintDamageBitmaps[PAINT_DAMAGE_BITMAP_COUNT];
+int g_dwColorTintRed;
+int g_dwColorTintGreen;
+int g_dwColorTintBlue;
 int g_dwConvertedBitmapWidth;
 int g_dwConvertedBitmapHeight;
 
@@ -68,6 +71,12 @@ void *LoadBitmapFromFile(const char *pszPath) {
     pPixels = ConvertBitmap24ToRgba32(&bm);
     DeleteObject(hBitmap);
     return pPixels;
+}
+
+void SetColorTintMultipliers(int nRed, int nGreen, int nBlue) {
+    g_dwColorTintRed = nRed;
+    g_dwColorTintGreen = nGreen;
+    g_dwColorTintBlue = nBlue;
 }
 
 // The size of the path of a bitmap of the damage of the paint.
