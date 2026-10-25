@@ -542,14 +542,15 @@ void NullStub(void);
 void InitializeDirectPlay(void);
 
 /**
- * Query the installed DirectX version.
+ * Query the installed DirectX version by creating its objects in turn.
  *
- * @param pdwVersion Receives the version, 0x600 for DirectX 6.
- * @param pdwRevision Receives the revision.
+ * @param pdwVersion Receives the version, 0x600 for DirectX 6, or 0 when DirectDraw is missing.
+ * @param pdwPlatform Receives the platform of Windows (VER_PLATFORM_WIN32_WINDOWS or
+ * VER_PLATFORM_WIN32_NT), or 0 when the version cannot be read.
  * @ghidraAddress BRD3D: 0x10030210
  * @ghidraAddress BRGlide: 0x1001d8a0
  */
-void GetDXVersion(unsigned *pdwVersion, unsigned *pdwRevision);
+void GetDXVersion(unsigned *pdwVersion, unsigned *pdwPlatform);
 
 /**
  * Bring an instance of the game that is already running to the front.

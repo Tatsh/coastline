@@ -25,13 +25,13 @@ RallyMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR pszCmdLine, int nC
     g_dwAppExitCode = 0;
     if (SUCCEEDED(CoInitialize(nullptr))) {
         unsigned dwVersion;
-        unsigned dwRevision;
+        unsigned dwPlatform;
 
         g_hRallyMainInstance = hInstance;
         g_hRallyMainPrevInstance = hPrevInstance;
         g_pszRallyMainCmdLine = pszCmdLine;
         g_nRallyMainCmdShow = nCmdShow;
-        GetDXVersion(&dwVersion, &dwRevision);
+        GetDXVersion(&dwVersion, &dwPlatform);
         if (dwVersion < 0x600) {
             MessageBoxA(nullptr, GetStringResource(0x128), GetStringResource(0x126), MB_ICONERROR);
             return 0;

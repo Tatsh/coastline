@@ -1,6 +1,6 @@
 # PC port game code from 0x10030000 to 0x10040000
 
-38 of 307 routines done.
+39 of 307 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -22,7 +22,7 @@ the same name, for a routine the port retained from the N64 game.
 | `FlushDisplayList`                                |        | ✅ `0x8021aa08` |      1 |   1145 | `0x10033838` | `0x1002cee9` | `undefined FlushDisplayList()`                                                                                  |
 | `RelocateModelPointers`                           |        | ✅ `0x8021dc34` |      1 |   1062 | `0x10036c00` | `0x100302a0` | `undefined RelocateModelPointers()`                                                                             |
 | `GetDirectPlayErrorString`                        |        |                 |      1 |    933 | `0x1003dc10` | `0x100372b0` | `undefined GetDirectPlayErrorString()`                                                                          |
-| `GetDXVersion`                                    |   📝   |                 |      1 |    924 | `0x10030210` | `0x1001d8a0` | `undefined GetDXVersion()`                                                                                      |
+| `GetDXVersion`                                    |   ✅   |                 |      1 |    924 | `0x10030210` | `0x1001d8a0` | `void GetDXVersion(uint * pdwVersion, uint * pdwPlatform)`                                                      |
 | `SetMaterialColor`                                |        | ✅ `0x8021d140` |      1 |    868 | `0x100350ee` | `0x1002e79f` | `undefined SetMaterialColor()`                                                                                  |
 | `CreateServiceProviderAddress`                    |        |                 |      1 |    805 | `0x1003d480` | `0x10036b20` | `undefined CreateServiceProviderAddress()`                                                                      |
 | `LoadTrackGeometryFromRom`                        |        | ✅ `0x8021de5c` |      1 |    764 | `0x10037b10` | `0x100311c0` | `undefined LoadTrackGeometryFromRom()`                                                                          |

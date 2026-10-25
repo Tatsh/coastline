@@ -35,13 +35,13 @@
 
 bool InitializeApplication(void) {
     unsigned dwVersion;
-    unsigned dwRevision;
+    unsigned dwPlatform;
 
     g_hAppInstance = GetModuleHandleA(nullptr);
     if (g_hAppInstance == nullptr) {
         return false;
     }
-    GetDXVersion(&dwVersion, &dwRevision);
+    GetDXVersion(&dwVersion, &dwPlatform);
     if (dwVersion < 0x600) {
         MessageBoxA(nullptr, "This game requires DirectX 6.", "Boss Rally Error", MB_ICONERROR);
         return false;

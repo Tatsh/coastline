@@ -144,6 +144,7 @@ dsrl
 dtdy
 dtgr
 dvcpkg
+dxversion
 dzlib
 earias
 earpds
@@ -175,6 +176,7 @@ excmask
 exhaustpos
 exitmenuloop
 extraout
+farproc
 fcntl
 fdata
 ffreestanding
@@ -374,6 +376,7 @@ numpydoc
 objcopy
 objdump
 oneline
+osversioninfoa
 otherlook
 outfun
 pacboy
