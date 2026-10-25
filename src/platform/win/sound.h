@@ -270,6 +270,37 @@ extern WAVEFORMATEX *g_pDirectSoundWaveFormat;
  */
 extern void *g_pSoundBufferList;
 
+/** The number of entries of g_apSoundChannelBuffer. */
+#define SOUND_CHANNEL_COUNT 15
+
+/**
+ * The sound buffers of the channels of the sound effects.
+ *
+ * @ghidraAddress BRD3D: 0x11828f08
+ * @ghidraAddress BRGlide: 0x1184c268
+ */
+extern IDirectSoundBuffer *g_apSoundChannelBuffer[SOUND_CHANNEL_COUNT];
+
+/**
+ * Clear the tables of the banks of sounds.
+ *
+ * @ghidraAddress BRD3D: 0x10073060
+ * @ghidraAddress BRGlide: 0x1006bfd0
+ */
+void ResetSoundBankTables(void);
+
+/**
+ * Add a user of DirectSound when sound effects play. The first user clears the channels and the
+ * banks, allocates the wave format of 22050 Hz, 16 bits, and two channels, and creates
+ * DirectSound with priority and its primary buffer, playing in a loop. A step that fails releases
+ * what it created.
+ *
+ * @return Whether the last step succeeded, and true without sound effects or for a later user.
+ * @ghidraAddress BRD3D: 0x10073560
+ * @ghidraAddress BRGlide: 0x1006c4d0
+ */
+bool InitializeDirectSound(void);
+
 /**
  * Stop the sounds and reset the state of the audio.
  *

@@ -180,12 +180,16 @@ dpspguid
 dpsys
 drawtexturedrect
 drenderstate
+dsbcaps
+dsbplay
+dsbufferdesc
 dsdx
 dshade
 dsinf
 dsll
 dsra
 dsrl
+dsscl
 dtdy
 dtgr
 dtlvertex
@@ -254,6 +258,7 @@ ghnd
 glabel
 glist
 globl
+gmem
 gouraud
 gpack
 graphviz
@@ -486,6 +491,7 @@ popmtx
 ppsz
 preapproved
 prenmi
+primarybuffer
 primarysurface
 probetlb
 putfld
