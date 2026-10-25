@@ -916,13 +916,6 @@ int ReturnZero(void);
 void InitializeAllTextureSurfaces(void);
 
 /**
- * Whether NullStub() is called after the textures are loaded again.
- *
- * @ghidraAddress BRD3D: 0x100ac300
- */
-extern bool g_dwNullStubEnable;
-
-/**
  * Select the driver, device, and mode of a renderer, finding the drivers first if the game has
  * not. A mode is matched to the size requested, or the mode of the desktop is taken.
  *

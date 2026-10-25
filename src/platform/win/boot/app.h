@@ -535,6 +535,15 @@ void DispatchGameStateFrame(void);
 void NullStub(void);
 
 /**
+ * Whether the front end is up. MenuScreen::ShutdownFrontEnd() clears it, notices of network play
+ * are posted only while it is set, and NullStub() is called after the textures are loaded again.
+ *
+ * @ghidraAddress BRD3D: 0x100ac300
+ * @ghidraAddress BRGlide: 0x100abaa0
+ */
+extern bool g_dwNullStubEnable;
+
+/**
  * Query the installed DirectX version by creating its objects in turn.
  *
  * @param pdwVersion Receives the version, 0x600 for DirectX 6, or 0 when DirectDraw is missing.

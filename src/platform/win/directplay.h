@@ -517,7 +517,10 @@ extern HANDLE g_hNetWorkerThread;
 void StopNetworkWorkerThread(void);
 
 /**
- * Handle a message of the system of DirectPlay. The return, if any, is not recovered yet.
+ * Handle a message of the system of DirectPlay as the host or a client. While the front end is
+ * up, a player that joins or departs is posted to the main window as a notice, a player that
+ * departs frees its slot of the session, and a new description of the session reloads the
+ * settings of the network.
  *
  * @param pInfo The info of the local player.
  * @param pMessage The message.
@@ -529,6 +532,66 @@ void StopNetworkWorkerThread(void);
  */
 void HandleDirectPlaySystemMessage(
     DirectPlayInfo *pInfo, DPMSG_GENERIC *pMessage, DWORD dwSize, DPID dpidFrom, DPID dpidTo);
+
+/**
+ * Handle a message of the system of DirectPlay for the host of the session.
+ *
+ * @param pInfo The info of the local player.
+ * @param pMessage The message.
+ * @param dwSize The size of the message.
+ * @param dpidFrom The sender, DPID_SYSMSG.
+ * @param dpidTo The receiver.
+ * @ghidraAddress BRD3D: 0x1000c000
+ * @ghidraAddress BRGlide: 0x10009530
+ */
+void HandleDirectPlaySystemMessageHost(
+    DirectPlayInfo *pInfo, DPMSG_GENERIC *pMessage, DWORD dwSize, DPID dpidFrom, DPID dpidTo);
+
+/**
+ * Handle a message of the system of DirectPlay for a client of the session.
+ *
+ * @param pInfo The info of the local player.
+ * @param pMessage The message.
+ * @param dwSize The size of the message.
+ * @param dpidFrom The sender, DPID_SYSMSG.
+ * @param dpidTo The receiver.
+ * @ghidraAddress BRD3D: 0x1000bea0
+ * @ghidraAddress BRGlide: 0x100093d0
+ */
+void HandleDirectPlaySystemMessageClient(
+    DirectPlayInfo *pInfo, DPMSG_GENERIC *pMessage, DWORD dwSize, DPID dpidFrom, DPID dpidTo);
+
+/**
+ * Read the settings of the network session again after its description changed.
+ *
+ * @ghidraAddress BRD3D: 0x1003ce80
+ * @ghidraAddress BRGlide: 0x10036510
+ */
+void LoadNetworkSettings(void);
+
+/** A player in a slot of the session. */
+struct SessionSlot {
+    DPID dpidPlayer;    /*!< The player, or 0xffffffff for a free slot. */
+    int nFlag;          /*!< Cleared when the player departs. Its meaning is not recovered yet. */
+    char abUnknown8[4]; /* +0x08 */
+};
+
+/** The number of entries of g_aSessionSlots. */
+#define SESSION_SLOT_COUNT 8
+
+/**
+ * The players in the slots of the session.
+ *
+ * @ghidraAddress BRD3D: 0x10aa2538
+ * @ghidraAddress BRGlide: 0x10ac5890
+ */
+extern SessionSlot g_aSessionSlots[SESSION_SLOT_COUNT];
+
+/**
+ * The message the main window receives with a notice of network play in locked global memory as
+ * the second parameter. The window frees the notice.
+ */
+#define WM_NETWORK_NOTICE 0x501
 
 /**
  * Handle a message another player of the session sent. The return, if any, is not recovered yet.

@@ -451,6 +451,81 @@ static inline void FreeGlobalBuffer(void *pBuffer) {
     GlobalFree(GlobalHandle(pBuffer));
 }
 
+SessionSlot g_aSessionSlots[SESSION_SLOT_COUNT];
+
+// A notice of a player is formatted into locked global memory.
+static char *FormatPlayerNotice(const char *pszFormat, const char *pszName) {
+    char *pszNotice;
+
+    if (pszName == nullptr) {
+        pszName = "unknown";
+    }
+    pszNotice = static_cast<char *>(
+        GlobalLock(GlobalAlloc(GHND, lstrlenA(pszFormat) + lstrlenA(pszName) + 1)));
+    if (pszNotice != nullptr) {
+        wsprintfA(pszNotice, pszFormat, pszName);
+    }
+    return pszNotice;
+}
+
+void HandleDirectPlaySystemMessage(
+    DirectPlayInfo *pInfo, DPMSG_GENERIC *pMessage, DWORD dwSize, DPID dpidFrom, DPID dpidTo) {
+    char szMessage[0x104];
+    char *pszNotice = nullptr;
+    DPMSG_DESTROYPLAYERORGROUP *pDestroy;
+
+    if (pInfo->bIsHost) {
+        HandleDirectPlaySystemMessageHost(pInfo, pMessage, dwSize, dpidFrom, dpidTo);
+    } else {
+        HandleDirectPlaySystemMessageClient(pInfo, pMessage, dwSize, dpidFrom, dpidTo);
+    }
+    if (!g_dwNullStubEnable) {
+        return;
+    }
+    switch (pMessage->dwType) {
+    case DPSYS_CREATEPLAYERORGROUP:
+        pszNotice = FormatPlayerNotice(
+            "%s joined the game.\r\n",
+            reinterpret_cast<DPMSG_CREATEPLAYERORGROUP *>(pMessage)->dpnName.lpszShortNameA);
+        if (pszNotice == nullptr) {
+            return;
+        }
+        break;
+    case DPSYS_DESTROYPLAYERORGROUP:
+        pDestroy = reinterpret_cast<DPMSG_DESTROYPLAYERORGROUP *>(pMessage);
+        pszNotice = FormatPlayerNotice("%s left the game.\r\n", pDestroy->dpnName.lpszShortNameA);
+        if (pszNotice == nullptr) {
+            return;
+        }
+        for (SessionSlot &slot : g_aSessionSlots) {
+            if (slot.dpidPlayer == pDestroy->dpId) {
+                slot.dpidPlayer = 0xffffffff;
+                slot.nFlag = 0;
+                sprintf(szMessage,
+                        "Destroy Player message received, ID: %d\n",
+                        static_cast<int>(pDestroy->dpId));
+                OutputDebugStringA(szMessage);
+                break;
+            }
+        }
+        break;
+    case DPSYS_SETSESSIONDESC:
+        LoadNetworkSettings();
+        break;
+    default:
+        break;
+    }
+    if (pszNotice == nullptr) {
+        return;
+    }
+    if (g_hMainWindow != nullptr) {
+        PostMessageA(g_hMainWindow, WM_NETWORK_NOTICE, 0, reinterpret_cast<LPARAM>(pszNotice));
+    } else {
+        GlobalUnlock(GlobalHandle(pszNotice));
+        GlobalFree(GlobalHandle(pszNotice));
+    }
+}
+
 HRESULT ReceiveAndDispatchDirectPlayMessages(DirectPlayInfo *pInfo) {
     DPMSG_GENERIC *pMessage = nullptr;
     DWORD dwSize = 0;

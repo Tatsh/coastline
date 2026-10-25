@@ -85,6 +85,7 @@ cpdist
 cplens
 cplext
 createmesgqueue
+createplayerorgroup
 createthread
 ctest
 ctype
@@ -125,6 +126,7 @@ declear
 decleared
 decomp
 denumret
+destroyplayerorgroup
 destroythread
 devicearrival
 devicecaps
@@ -161,6 +163,7 @@ dpplayer
 dpreceive
 dpsession
 dpspguid
+dpsys
 drawtexturedrect
 drenderstate
 dsdx
