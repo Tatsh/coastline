@@ -96,6 +96,37 @@ GbiCommand *HandleGbiSetPrimColor(GbiCommand *pCommand) {
 }
 #endif
 
+// The commands of a texture rectangle of the console: the rectangle and its two halves of texture
+// coordinates.
+#define GBI_TEXTURE_RECTANGLE_COMMANDS 3
+
+static inline int GbiField12(unsigned dwWord, int nShift) {
+    return dwWord >> nShift & 0xfff;
+}
+
+static inline int GbiTile(unsigned dwWord) {
+    return dwWord >> 24 & 7;
+}
+
+GbiCommand *HandleGbiTextureRectangleNative(GbiCommand *pCommand) {
+    DrawTextureRectangle(GbiField12(pCommand->w1, 12),
+                         GbiField12(pCommand->w1, 0),
+                         GbiField12(pCommand->w0, 12),
+                         GbiField12(pCommand->w0, 0),
+                         GbiTile(pCommand->w1));
+    return pCommand + GBI_TEXTURE_RECTANGLE_COMMANDS;
+}
+
+GbiCommand *HandleGbiTextureRectangle(GbiCommand *pCommand) {
+    // The corners take two more bits of fraction than the console gives, and the command is one.
+    DrawTextureRectangle(GbiField12(pCommand->w1, 12) << 2,
+                         GbiField12(pCommand->w1, 0) << 2,
+                         GbiField12(pCommand->w0, 12) << 2,
+                         GbiField12(pCommand->w0, 0) << 2,
+                         GbiTile(pCommand->w1));
+    return pCommand + 1;
+}
+
 static inline int GbiSignedField12(unsigned dwWord, int nShift) {
     return static_cast<int>(dwWord << (20 - nShift)) >> 20;
 }

@@ -366,6 +366,44 @@ extern float g_fGbiPrimColorA;
  */
 GbiCommand *HandleGbiSetEnvColor(GbiCommand *pCommand);
 
+/**
+ * Draw a rectangle of a tile of texture.
+ *
+ * @param nUpperLeftX The left edge.
+ * @param nUpperLeftY The top edge.
+ * @param nLowerRightX The right edge.
+ * @param nLowerRightY The bottom edge.
+ * @param nTile The tile.
+ * @ghidraAddress BRD3D: 0x10021560
+ * @ghidraAddress BRGlide: 0x100215c0
+ */
+void DrawTextureRectangle(
+    int nUpperLeftX, int nUpperLeftY, int nLowerRightX, int nLowerRightY, int nTile);
+
+/**
+ * Draw a texture rectangle of a command of one word pair, its corners in pixels with two bits of
+ * fraction, as DrawTextureRectangle() reads them with four.
+ *
+ * @param pCommand The command, the lower right corner in its first word, and the tile and the upper
+ * left corner in its second.
+ * @return The next command.
+ * @ghidraAddress BRD3D: 0x10021b80
+ * @ghidraAddress BRGlide: 0x100219d0
+ */
+GbiCommand *HandleGbiTextureRectangle(GbiCommand *pCommand);
+
+/**
+ * Draw a texture rectangle of the console, which takes three commands, its corners as the console
+ * gives them.
+ *
+ * @param pCommand The first command, the lower right corner in its first word, and the tile and the
+ * upper left corner in its second.
+ * @return The command after the three.
+ * @ghidraAddress BRD3D: 0x10021510
+ * @ghidraAddress BRGlide: 0x10021570
+ */
+GbiCommand *HandleGbiTextureRectangleNative(GbiCommand *pCommand);
+
 #if TGR_RENDERER == TGR_RENDERER_D3D
 /**
  * Set the primitive colour from the RGBA colour of the command.
