@@ -1392,3 +1392,30 @@ void ShowErrorMessage(int nErrorCode);
  */
 LRESULT WINAPI
 FrontEndWindowProc(void *pUnused, HWND hWnd, UINT nMessage, WPARAM wParam, LPARAM lParam);
+
+/** A key of text input and the character it types. */
+struct KeyCharacter {
+    DWORD dwKey; /*!< The key. */
+    char chText; /*!< The character. */
+};
+
+/** The number of entries of g_KeyNameLookupTable. */
+#define KEY_CHARACTER_COUNT 98
+
+/**
+ * The keys of text input, each typing the printable character of its own code.
+ *
+ * @ghidraAddress BRD3D: 0x100ace58
+ * @ghidraAddress BRGlide: 0x100ac5f8
+ */
+extern KeyCharacter g_KeyNameLookupTable[KEY_CHARACTER_COUNT];
+
+/**
+ * The character a key of text input types.
+ *
+ * @param dwKey The key.
+ * @return The character, or 0 when the key types none.
+ * @ghidraAddress BRD3D: 0x1005b540
+ * @ghidraAddress BRGlide: 0x10054360
+ */
+char LookupKeyCharacter(DWORD dwKey);

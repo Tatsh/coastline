@@ -907,3 +907,13 @@ bool InitializeFrontEndResources(void) {
     InitMenuSpriteRects();
     return true;
 }
+
+char LookupKeyCharacter(DWORD dwKey) {
+    // The search runs to the size of the table in bytes, past its last entry, until a key matches.
+    for (size_t i = 0; i < sizeof(g_KeyNameLookupTable); i++) {
+        if (g_KeyNameLookupTable[i].dwKey == dwKey) {
+            return g_KeyNameLookupTable[i].chText;
+        }
+    }
+    return 0;
+}
