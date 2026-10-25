@@ -1072,22 +1072,38 @@ GbiCommand *HandleGbiVertexLitNoZBuffer(GbiCommand *pCommand);
 GbiCommand *HandleGbiVertexUnlitNoZBuffer(GbiCommand *pCommand);
 
 /**
- * Draw one triangle with flat shading.
+ * Draw a triangle of g_aGbiVertexCache in the colour of its first vertex.
  *
- * @param pCommand The command.
+ * @param nVertex0 The entry of the first vertex, whose colour the triangle takes.
+ * @param nVertex1 The entry of the second vertex.
+ * @param nVertex2 The entry of the third vertex.
+ * @ghidraAddress BRD3D: 0x1001ec20
+ * @ghidraAddress BRGlide: 0x1001ff60
+ */
+void DrawFlatShadedTriangle(int nVertex0, int nVertex1, int nVertex2);
+
+/**
+ * Draw one triangle with flat shading, after giving the device the dirty render states. The top
+ * byte of the second word chooses the vertex whose colour the triangle takes.
+ *
+ * @param pCommand The command, the entries of g_aGbiVertexCache of the triangle in the low three
+ * bytes of its second word.
  * @return The next command.
  * @ghidraAddress BRD3D: 0x1001e980
  * @ghidraAddress BRGlide: 0x1001fef0
+ * @stub{BRGlide}
  */
 GbiCommand *HandleGbiTri1Flat(GbiCommand *pCommand);
 
 /**
- * Draw two triangles with flat shading.
+ * Draw two triangles with flat shading, after giving the device the dirty render states.
  *
- * @param pCommand The command.
+ * @param pCommand The command, the entries of g_aGbiVertexCache of each triangle in the low three
+ * bytes of each word.
  * @return The next command.
  * @ghidraAddress BRD3D: 0x10020380
  * @ghidraAddress BRGlide: 0x10020cf0
+ * @stub{BRGlide}
  */
 GbiCommand *HandleGbiTri2Flat(GbiCommand *pCommand);
 

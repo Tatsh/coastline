@@ -794,6 +794,46 @@ GbiCommand *HandleGbiTri2Smooth(GbiCommand *pCommand) {
     return pCommand + 1;
 }
 
+static inline unsigned GbiTriangleVertex(unsigned dwWord, int nByte) {
+    return dwWord >> (nByte * 8) & 0xff;
+}
+
+GbiCommand *HandleGbiTri1Flat(GbiCommand *pCommand) {
+    unsigned dwWord = pCommand->w1;
+
+    FlushDirtyRenderStates();
+    // The vertex the top byte chooses comes first, in the order of the console.
+    switch (GbiTriangleVertex(dwWord, 3)) {
+    case 0:
+        DrawFlatShadedTriangle(GbiTriangleVertex(dwWord, 2),
+                               GbiTriangleVertex(dwWord, 1),
+                               GbiTriangleVertex(dwWord, 0));
+        break;
+    case 1:
+        DrawFlatShadedTriangle(GbiTriangleVertex(dwWord, 1),
+                               GbiTriangleVertex(dwWord, 0),
+                               GbiTriangleVertex(dwWord, 2));
+        break;
+    default:
+        DrawFlatShadedTriangle(GbiTriangleVertex(dwWord, 0),
+                               GbiTriangleVertex(dwWord, 2),
+                               GbiTriangleVertex(dwWord, 1));
+        break;
+    }
+    return pCommand + 1;
+}
+
+GbiCommand *HandleGbiTri2Flat(GbiCommand *pCommand) {
+    FlushDirtyRenderStates();
+    DrawFlatShadedTriangle(GbiTriangleVertex(pCommand->w0, 2),
+                           GbiTriangleVertex(pCommand->w0, 1),
+                           GbiTriangleVertex(pCommand->w0, 0));
+    DrawFlatShadedTriangle(GbiTriangleVertex(pCommand->w1, 2),
+                           GbiTriangleVertex(pCommand->w1, 1),
+                           GbiTriangleVertex(pCommand->w1, 0));
+    return pCommand + 1;
+}
+
 // The colours of the combine modes that draw in one colour.
 #define VERTEX_CONSTANT_COLOR_WHITE 0xffffffff
 #define VERTEX_CONSTANT_COLOR_BLACK 0xff000000
