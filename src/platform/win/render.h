@@ -561,6 +561,29 @@ void CopyDamageTextureLevels(DWORD *pdwLevels);
 int GetTexelsPerLoadWord(int nSize);
 
 /**
+ * Encode an input of the colour combiner for a field of 5 bits: 0 for zero becomes selector 31, 1
+ * for one becomes selector 6, and 1000 more than a selector becomes the selector.
+ *
+ * @param nInput The input.
+ * @return The selector.
+ * @ghidraAddress BRD3D: 0x1002faf0
+ * @ghidraAddress BRGlide: 0x1001d180
+ */
+int EncodeCombinerSelectorWide(int nInput);
+
+/**
+ * Encode an input of the colour combiner for a field of 3 bits: 0 for zero becomes selector 7, 1
+ * for one becomes selector 6, 1013 becomes selector 0, and 1000 more than a selector becomes the
+ * selector.
+ *
+ * @param nInput The input.
+ * @return The selector.
+ * @ghidraAddress BRD3D: 0x1002fac0
+ * @ghidraAddress BRGlide: 0x1001d150
+ */
+int EncodeCombinerSelectorNarrow(int nInput);
+
+/**
  * Load the texture of the overlay of the display of the race.
  *
  * @ghidraAddress BRD3D: 0x100737e0

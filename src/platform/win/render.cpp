@@ -284,6 +284,37 @@ int GetTexelsPerLoadWord(int nSize) {
     }
 }
 
+// The inputs of the colour combiner that are not selectors, and the base of those that are.
+#define COMBINER_INPUT_ZERO 0
+#define COMBINER_INPUT_ONE 1
+#define COMBINER_INPUT_SELECTOR_BASE 1000
+// The input the narrow fields take as selector 0.
+#define COMBINER_INPUT_NARROW_SELECTOR_0 1013
+
+int EncodeCombinerSelectorNarrow(int nInput) {
+    switch (nInput) {
+    case COMBINER_INPUT_ZERO:
+        return 7;
+    case COMBINER_INPUT_ONE:
+        return 6;
+    case COMBINER_INPUT_NARROW_SELECTOR_0:
+        return 0;
+    default:
+        return nInput - COMBINER_INPUT_SELECTOR_BASE;
+    }
+}
+
+int EncodeCombinerSelectorWide(int nInput) {
+    switch (nInput) {
+    case COMBINER_INPUT_ZERO:
+        return 31;
+    case COMBINER_INPUT_ONE:
+        return 6;
+    default:
+        return nInput - COMBINER_INPUT_SELECTOR_BASE;
+    }
+}
+
 void CreateGlobalEffectTextures(void) {
     LoadHudOverlayTexture();
     LoadHudGlyphTextureSets();
