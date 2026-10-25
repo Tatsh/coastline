@@ -663,7 +663,8 @@ struct NetPeerSlot {
     char abUnknown8[0x24];   /* +0x08 */
     int dwStatus;            /*!< The status of the slot, 0 in its low 6 bits for no player. */
     char abUnknown30[0x540]; /* +0x30 */
-    char szName[0x408];      /*!< The name of the player. Its size is not recovered yet. */
+    char szName[0x404];      /*!< The name of the player. Its size is not recovered yet. */
+    int dwPingMs;            /*!< The time of the last round trip to the player, in milliseconds. */
 };
 
 /** The number of entries of g_aNetPeerSlots. */
@@ -676,6 +677,16 @@ struct NetPeerSlot {
  * @ghidraAddress BRGlide: 0x1021ce58
  */
 extern NetPeerSlot g_aNetPeerSlots[NET_PEER_SLOT_COUNT];
+
+/**
+ * Get the time of the last round trip to the player of a slot, under the mutex of the slot.
+ *
+ * @param nSlot The slot.
+ * @return The time in milliseconds, and 0 for a negative time.
+ * @ghidraAddress BRD3D: 0x10005f90
+ * @ghidraAddress BRGlide: 0x10006300
+ */
+int GetPlayerPingMs(int nSlot);
 
 /**
  * The order of the players of a network race.

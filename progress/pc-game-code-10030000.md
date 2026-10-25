@@ -1,6 +1,6 @@
 # PC port game code from 0x10030000 to 0x10040000
 
-70 of 307 routines done.
+71 of 307 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -207,7 +207,7 @@ the same name, for a routine the port retained from the N64 game.
 | `guMtxIdentF`                                     |        | ✅ `0x80260fd0` |      1 |     59 | `0x100307d0` | `0x10029e80` | `undefined guMtxIdentF()`                                                                                                                                               |
 | `ComputeTrackMaxCellIndex`                        |        |                 |      1 |     58 | `0x10037fa0` | `0x10031660` | `undefined ComputeTrackMaxCellIndex()`                                                                                                                                  |
 | `Vec3fLerp`                                       |   ✅   | ✅ `0x802248fc` |     18 |     57 | `0x1003afa0` | `0x10034620` | `void Vec3fLerp(float * pResult, float * pTo, float * pFrom, float fFactor)`                                                                                            |
-| `ConvertDoubleToSignedByte`                       |        |                 |     12 |     56 | `0x10030de0` | `0x1002a490` | `int ConvertDoubleToSignedByte(double fValue)`                                                                                                                          |
+| `ConvertDoubleToSignedByte`                       |   ✅   |                 |     12 |     56 | `0x10030de0` | `0x1002a490` | `int ConvertDoubleToSignedByte(double dValue)`                                                                                                                          |
 | `Vec3fMidpoint`                                   |   ✅   | ✅ `0x802249d4` |     14 |     55 | `0x1003b050` | `0x100346d0` | `void Vec3fMidpoint(float * pResult, float * pVecA, float * pVecB)`                                                                                                     |
 | `IsPointVisible`                                  |        | ✅ `0x8022d43c` |      4 |     55 | `0x1003a950` | `0x10033fd0` | `undefined IsPointVisible()`                                                                                                                                            |
 | `Vec3dNormalize`                                  |        |                 |      4 |     55 | `0x10030600` | `0x1001dc90` | `undefined Vec3dNormalize()`                                                                                                                                            |

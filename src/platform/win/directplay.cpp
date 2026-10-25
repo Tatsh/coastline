@@ -572,6 +572,15 @@ const char *GetDirectPlayErrorString(HRESULT hResult) {
 }
 
 NetPeerSlot g_aNetPeerSlots[NET_PEER_SLOT_COUNT];
+
+int GetPlayerPingMs(int nSlot) {
+    NetPeerSlot &slot = g_aNetPeerSlots[nSlot];
+    WaitForSingleObject(slot.hMutex, INFINITE);
+    int nPingMs = slot.dwPingMs;
+    ReleaseMutex(slot.hMutex);
+    return nPingMs < 0 ? 0 : nPingMs;
+}
+
 HANDLE g_hNetRaceStartMutex;
 HANDLE g_hNetReceiveMutex;
 HANDLE g_hNetPauseMutex;
