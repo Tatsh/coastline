@@ -952,11 +952,146 @@ HRESULT AppendDirectDrawDriverNode(DirectDrawDriver *pDriver);
  */
 extern IDirect3DDevice2 *g_pD3DDevice2;
 
-/** The bit of g_dwDirtyRenderStateMask of the cull mode. */
-#define RENDER_STATE_DIRTY_CULL_MODE 0x10
+/** The bits of g_dwDirtyRenderStateMask, one for each render state the game caches. */
+enum RenderStateDirtyBit {
+    RENDER_STATE_DIRTY_Z_WRITE_ENABLE = 0x1,       /*!< g_dwPendingRS_ZWriteEnable. */
+    RENDER_STATE_DIRTY_ALPHA_TEST_ENABLE = 0x2,    /*!< g_dwPendingRS_AlphaTestEnable. */
+    RENDER_STATE_DIRTY_SRC_BLEND = 0x4,            /*!< g_dwPendingRS_SrcBlend. */
+    RENDER_STATE_DIRTY_DEST_BLEND = 0x8,           /*!< g_dwPendingRS_DestBlend. */
+    RENDER_STATE_DIRTY_CULL_MODE = 0x10,           /*!< g_dwPendingRS_CullMode. */
+    RENDER_STATE_DIRTY_Z_FUNC = 0x20,              /*!< g_dwPendingRS_ZFunc. */
+    RENDER_STATE_DIRTY_ALPHA_REF = 0x40,           /*!< g_dwPendingRS_AlphaRef. */
+    RENDER_STATE_DIRTY_ALPHA_FUNC = 0x80,          /*!< g_dwPendingRS_AlphaFunc. */
+    RENDER_STATE_DIRTY_ADDRESS_U = 0x100,          /*!< g_dwPendingRS_AddressU. */
+    RENDER_STATE_DIRTY_ADDRESS_V = 0x200,          /*!< g_dwPendingRS_AddressV. */
+    RENDER_STATE_DIRTY_ALPHA_BLEND_ENABLE = 0x400, /*!< g_dwPendingRS_AlphaBlendEnable. */
+};
 
-/** The bit of g_dwDirtyRenderStateMask of the comparison of depth. */
-#define RENDER_STATE_DIRTY_Z_FUNC 0x20
+/**
+ * Whether the device is to write depth.
+ *
+ * @ghidraAddress BRD3D: 0x10277378
+ */
+extern DWORD g_dwPendingRS_ZWriteEnable;
+
+/**
+ * Whether the device is to test alpha.
+ *
+ * @ghidraAddress BRD3D: 0x1027737c
+ */
+extern DWORD g_dwPendingRS_AlphaTestEnable;
+
+/**
+ * The blend of the source the device is to take.
+ *
+ * @ghidraAddress BRD3D: 0x10277380
+ */
+extern DWORD g_dwPendingRS_SrcBlend;
+
+/**
+ * The blend of the destination the device is to take.
+ *
+ * @ghidraAddress BRD3D: 0x10277384
+ */
+extern DWORD g_dwPendingRS_DestBlend;
+
+/**
+ * The reference of the test of alpha the device is to take.
+ *
+ * @ghidraAddress BRD3D: 0x10277390
+ */
+extern DWORD g_dwPendingRS_AlphaRef;
+
+/**
+ * The comparison of the test of alpha the device is to take.
+ *
+ * @ghidraAddress BRD3D: 0x10277394
+ */
+extern DWORD g_dwPendingRS_AlphaFunc;
+
+/**
+ * The addressing of u of textures the device is to take.
+ *
+ * @ghidraAddress BRD3D: 0x10277398
+ */
+extern DWORD g_dwPendingRS_AddressU;
+
+/**
+ * The addressing of v of textures the device is to take.
+ *
+ * @ghidraAddress BRD3D: 0x1027739c
+ */
+extern DWORD g_dwPendingRS_AddressV;
+
+/**
+ * Whether the device is to blend alpha.
+ *
+ * @ghidraAddress BRD3D: 0x102773a0
+ */
+extern DWORD g_dwPendingRS_AlphaBlendEnable;
+
+/**
+ * Whether the device writes depth.
+ *
+ * @ghidraAddress BRD3D: 0x102773f8
+ */
+extern DWORD g_dwAppliedRS_ZWriteEnable;
+
+/**
+ * Whether the device tests alpha.
+ *
+ * @ghidraAddress BRD3D: 0x102773fc
+ */
+extern DWORD g_dwAppliedRS_AlphaTestEnable;
+
+/**
+ * The blend of the source the device has.
+ *
+ * @ghidraAddress BRD3D: 0x10277400
+ */
+extern DWORD g_dwAppliedRS_SrcBlend;
+
+/**
+ * The blend of the destination the device has.
+ *
+ * @ghidraAddress BRD3D: 0x10277404
+ */
+extern DWORD g_dwAppliedRS_DestBlend;
+
+/**
+ * The reference of the test of alpha the device has.
+ *
+ * @ghidraAddress BRD3D: 0x10277410
+ */
+extern DWORD g_dwAppliedRS_AlphaRef;
+
+/**
+ * The comparison of the test of alpha the device has.
+ *
+ * @ghidraAddress BRD3D: 0x10277414
+ */
+extern DWORD g_dwAppliedRS_AlphaFunc;
+
+/**
+ * The addressing of u of textures the device has.
+ *
+ * @ghidraAddress BRD3D: 0x10277418
+ */
+extern DWORD g_dwAppliedRS_AddressU;
+
+/**
+ * The addressing of v of textures the device has.
+ *
+ * @ghidraAddress BRD3D: 0x1027741c
+ */
+extern DWORD g_dwAppliedRS_AddressV;
+
+/**
+ * Whether the device blends alpha.
+ *
+ * @ghidraAddress BRD3D: 0x10277420
+ */
+extern DWORD g_dwAppliedRS_AlphaBlendEnable;
 
 /**
  * The render states whose pending value differs from the value the device has, a bit for each.

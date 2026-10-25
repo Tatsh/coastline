@@ -837,6 +837,14 @@ void SubmitIndexedTriangle(int nVertex0, int nVertex1, int nVertex2);
 void FlushIndexedRenderBuffer(void);
 
 /**
+ * Give the device each render state marked in g_dwDirtyRenderStateMask, after drawing the triangles
+ * waiting, and clear the mask.
+ *
+ * @ghidraAddress BRD3D: 0x10024850
+ */
+void FlushDirtyRenderStates(void);
+
+/**
  * Bind a texture the game loaded, set by InitializeTextureSubsystem().
  *
  * @ghidraAddress BRD3D: 0x118aa0b4

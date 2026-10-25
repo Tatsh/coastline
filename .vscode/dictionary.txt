@@ -113,6 +113,7 @@ ctrlfrequency
 ctrlpan
 ctrlvolume
 ctype
+cullmode
 cupra
 curwd
 cycletype
@@ -220,6 +221,7 @@ dpspguid
 dpsys
 drawtexturedrect
 drenderstate
+drenderstatetype
 drytire
 dsbcaps
 dsbpan
@@ -732,6 +734,8 @@ textfilt
 textlod
 textlut
 textpersp
+textureaddressu
+textureaddressv
 textureanim
 textureperspective
 thiscall

@@ -394,6 +394,66 @@ void FlushIndexedRenderBuffer(void) {
     ResetRenderBufferAndVertexPool();
 }
 
+static inline void ApplyDirtyRenderState(DWORD dwDirtyBit,
+                                         D3DRENDERSTATETYPE nState,
+                                         DWORD dwPending,
+                                         DWORD *pdwApplied) {
+    if (g_dwDirtyRenderStateMask & dwDirtyBit) {
+        g_pD3DDevice2->SetRenderState(nState, dwPending);
+        *pdwApplied = dwPending;
+    }
+}
+
+void FlushDirtyRenderStates(void) {
+    if (g_dwDirtyRenderStateMask == 0) {
+        return;
+    }
+    FlushIndexedRenderBuffer();
+    ApplyDirtyRenderState(RENDER_STATE_DIRTY_Z_WRITE_ENABLE,
+                          D3DRENDERSTATE_ZWRITEENABLE,
+                          g_dwPendingRS_ZWriteEnable,
+                          &g_dwAppliedRS_ZWriteEnable);
+    ApplyDirtyRenderState(RENDER_STATE_DIRTY_ALPHA_TEST_ENABLE,
+                          D3DRENDERSTATE_ALPHATESTENABLE,
+                          g_dwPendingRS_AlphaTestEnable,
+                          &g_dwAppliedRS_AlphaTestEnable);
+    ApplyDirtyRenderState(RENDER_STATE_DIRTY_SRC_BLEND,
+                          D3DRENDERSTATE_SRCBLEND,
+                          g_dwPendingRS_SrcBlend,
+                          &g_dwAppliedRS_SrcBlend);
+    ApplyDirtyRenderState(RENDER_STATE_DIRTY_DEST_BLEND,
+                          D3DRENDERSTATE_DESTBLEND,
+                          g_dwPendingRS_DestBlend,
+                          &g_dwAppliedRS_DestBlend);
+    ApplyDirtyRenderState(RENDER_STATE_DIRTY_CULL_MODE,
+                          D3DRENDERSTATE_CULLMODE,
+                          g_dwPendingRS_CullMode,
+                          &g_dwAppliedRS_CullMode);
+    ApplyDirtyRenderState(
+        RENDER_STATE_DIRTY_Z_FUNC, D3DRENDERSTATE_ZFUNC, g_dwPendingRS_ZFunc, &g_dwAppliedRS_ZFunc);
+    ApplyDirtyRenderState(RENDER_STATE_DIRTY_ALPHA_REF,
+                          D3DRENDERSTATE_ALPHAREF,
+                          g_dwPendingRS_AlphaRef,
+                          &g_dwAppliedRS_AlphaRef);
+    ApplyDirtyRenderState(RENDER_STATE_DIRTY_ALPHA_FUNC,
+                          D3DRENDERSTATE_ALPHAFUNC,
+                          g_dwPendingRS_AlphaFunc,
+                          &g_dwAppliedRS_AlphaFunc);
+    ApplyDirtyRenderState(RENDER_STATE_DIRTY_ADDRESS_U,
+                          D3DRENDERSTATE_TEXTUREADDRESSU,
+                          g_dwPendingRS_AddressU,
+                          &g_dwAppliedRS_AddressU);
+    ApplyDirtyRenderState(RENDER_STATE_DIRTY_ADDRESS_V,
+                          D3DRENDERSTATE_TEXTUREADDRESSV,
+                          g_dwPendingRS_AddressV,
+                          &g_dwAppliedRS_AddressV);
+    ApplyDirtyRenderState(RENDER_STATE_DIRTY_ALPHA_BLEND_ENABLE,
+                          D3DRENDERSTATE_ALPHABLENDENABLE,
+                          g_dwPendingRS_AlphaBlendEnable,
+                          &g_dwAppliedRS_AlphaBlendEnable);
+    g_dwDirtyRenderStateMask = 0;
+}
+
 void (*g_pfnBindTextureEntry)(int nEntry);
 
 GbiCommand *HandleGbiBindTextureEntry(GbiCommand *pCommand) {
