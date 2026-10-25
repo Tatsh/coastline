@@ -307,6 +307,43 @@ HRESULT CreateDirectPlayLobby(IDirectPlayLobby2A **ppLobby) {
     return DP_OK;
 }
 
+HRESULT EnumeratePlayerAddress(HWND hWnd, IDirectPlayLobby2A *pLobby) {
+    IDirectPlay3A *pDirectPlay = g_DirectPlayInfo.pDirectPlay;
+    void *pAddress = nullptr;
+    DWORD dwSize = 0;
+    HRESULT hResult;
+
+    hResult = pDirectPlay->GetPlayerAddress(0, nullptr, &dwSize);
+    if (hResult == DPERR_BUFFERTOOSMALL) {
+        pAddress = GlobalLock(GlobalAlloc(GHND, dwSize));
+        if (pAddress == nullptr) {
+            hResult = E_OUTOFMEMORY;
+        } else {
+            hResult = g_DirectPlayInfo.pDirectPlay->GetPlayerAddress(0, pAddress, &dwSize);
+            if (SUCCEEDED(hResult)) {
+                hResult = pLobby->EnumAddress(EnumAddressCallback, pAddress, dwSize, hWnd);
+            }
+        }
+    }
+    if (pAddress != nullptr) {
+        GlobalUnlock(GlobalHandle(pAddress));
+        GlobalFree(GlobalHandle(pAddress));
+    }
+    return hResult;
+}
+
+BOOL WINAPI EnumAddressCallback(REFGUID guidDataType, DWORD, const void *pData, void *) {
+    const char *pszPort = static_cast<const char *>(pData);
+
+    // The strings are walked and none is used.
+    if (IsEqualGUID(guidDataType, DPAID_ComPort) && lstrlenA(pszPort) != 0) {
+        do {
+            pszPort += lstrlenA(pszPort) + 1;
+        } while (lstrlenA(pszPort) != 0);
+    }
+    return TRUE;
+}
+
 void ShowNetworkErrorMessage(const char *pszFormat, HRESULT hResult) {
     char szMessage[200];
 

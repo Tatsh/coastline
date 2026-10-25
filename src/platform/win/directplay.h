@@ -243,6 +243,22 @@ extern char g_szSessionName[];
 HRESULT EnumeratePlayerAddress(HWND hWnd, IDirectPlayLobby2A *pLobby);
 
 /**
+ * Walk the strings of the COM port part of an address, and skip any other part.
+ *
+ * @param guidDataType The type of the part.
+ * @param dwDataSize Not read.
+ * @param pData The data of the part.
+ * @param pContext Not read.
+ * @return Always TRUE, to continue the enumeration.
+ * @ghidraAddress BRD3D: 0x1003d850
+ * @ghidraAddress BRGlide: 0x10036ef0
+ */
+BOOL WINAPI EnumAddressCallback(REFGUID guidDataType,
+                                DWORD dwDataSize,
+                                const void *pData,
+                                void *pContext);
+
+/**
  * Create the DirectPlay object.
  *
  * @param ppDirectPlay Receives the object, or null.

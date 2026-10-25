@@ -134,6 +134,7 @@ dmmx
 dndebug
 docstrings
 doubleword
+dpaid
 dpal
 dperr
 dplconnection
@@ -316,6 +317,7 @@ lsaverest
 lsend
 lshift
 lstrcpy
+lstrlen
 lyield
 mabi
 mainmenu
