@@ -136,10 +136,10 @@ address in the PC libraries.
 
 | Measure                                         | Count |
 | ----------------------------------------------- | ----: |
-| Routines of the PC port shared with the N64     |   351 |
-| Shared and done in every N64 release            |   351 |
+| Routines of the PC port shared with the N64     |   352 |
+| Shared and done in every N64 release            |   352 |
 | Shared and done in every release of both groups |    43 |
-| Shared, done on the N64, and not yet on the PC  |   308 |
+| Shared, done on the N64, and not yet on the PC  |   309 |
 
 ## Parts
 
