@@ -65,6 +65,37 @@ GbiCommand *HandleGbiSetFillColor(GbiCommand *pCommand) {
     return pCommand + 1;
 }
 
+float g_fGbiEnvColorR;
+float g_fGbiEnvColorG;
+float g_fGbiEnvColorB;
+float g_fGbiEnvColorA;
+float g_fGbiPrimColorR;
+float g_fGbiPrimColorG;
+float g_fGbiPrimColorB;
+float g_fGbiPrimColorA;
+
+static inline void
+SetGbiColorChannels(unsigned dwRgba, float &fRed, float &fGreen, float &fBlue, float &fAlpha) {
+    fRed = static_cast<float>(dwRgba >> 24) * (1.0f / 255.0f);
+    fGreen = static_cast<float>(dwRgba >> 16 & 0xff) * (1.0f / 255.0f);
+    fBlue = static_cast<float>(dwRgba >> 8 & 0xff) * (1.0f / 255.0f);
+    fAlpha = static_cast<float>(dwRgba & 0xff) * (1.0f / 255.0f);
+}
+
+GbiCommand *HandleGbiSetEnvColor(GbiCommand *pCommand) {
+    SetGbiColorChannels(
+        pCommand->w1, g_fGbiEnvColorR, g_fGbiEnvColorG, g_fGbiEnvColorB, g_fGbiEnvColorA);
+    return pCommand + 1;
+}
+
+#if TGR_RENDERER == TGR_RENDERER_D3D
+GbiCommand *HandleGbiSetPrimColor(GbiCommand *pCommand) {
+    SetGbiColorChannels(
+        pCommand->w1, g_fGbiPrimColorR, g_fGbiPrimColorG, g_fGbiPrimColorB, g_fGbiPrimColorA);
+    return pCommand + 1;
+}
+#endif
+
 static inline int GbiSignedField12(unsigned dwWord, int nShift) {
     return static_cast<int>(dwWord << (20 - nShift)) >> 20;
 }

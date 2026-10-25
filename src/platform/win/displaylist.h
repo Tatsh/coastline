@@ -292,7 +292,90 @@ extern unsigned char g_bGbiFillColorA;
  */
 GbiCommand *HandleGbiSetFillColor(GbiCommand *pCommand);
 
+/**
+ * The red of the environment colour, from 0 to 1.
+ *
+ * @ghidraAddress BRD3D: 0x104bbf04
+ * @ghidraAddress BRGlide: 0x105ccd44
+ */
+extern float g_fGbiEnvColorR;
+
+/**
+ * The green of the environment colour, from 0 to 1.
+ *
+ * @ghidraAddress BRD3D: 0x104c0bac
+ * @ghidraAddress BRGlide: 0x105cd9f4
+ */
+extern float g_fGbiEnvColorG;
+
+/**
+ * The blue of the environment colour, from 0 to 1.
+ *
+ * @ghidraAddress BRD3D: 0x104bbeb8
+ * @ghidraAddress BRGlide: 0x105cccf8
+ */
+extern float g_fGbiEnvColorB;
+
+/**
+ * The alpha of the environment colour, from 0 to 1.
+ *
+ * @ghidraAddress BRD3D: 0x104bbe2c
+ * @ghidraAddress BRGlide: 0x105ccc74
+ */
+extern float g_fGbiEnvColorA;
+
+/**
+ * The red of the primitive colour, from 0 to 1.
+ *
+ * @ghidraAddress BRD3D: 0x104c5154
+ * @ghidraAddress BRGlide: 0x105d17a4
+ */
+extern float g_fGbiPrimColorR;
+
+/**
+ * The green of the primitive colour, from 0 to 1.
+ *
+ * @ghidraAddress BRD3D: 0x104c5160
+ * @ghidraAddress BRGlide: 0x105d17b4
+ */
+extern float g_fGbiPrimColorG;
+
+/**
+ * The blue of the primitive colour, from 0 to 1.
+ *
+ * @ghidraAddress BRD3D: 0x104c1690
+ * @ghidraAddress BRGlide: 0x105ce2d0
+ */
+extern float g_fGbiPrimColorB;
+
+/**
+ * The alpha of the primitive colour, from 0 to 1.
+ *
+ * @ghidraAddress BRD3D: 0x104c0ba8
+ * @ghidraAddress BRGlide: 0x105cd9f0
+ */
+extern float g_fGbiPrimColorA;
+
+/**
+ * Set the environment colour from the RGBA colour of the command.
+ *
+ * @param pCommand The command, the colour in its second word.
+ * @return The next command.
+ * @ghidraAddress BRD3D: 0x1001cb40
+ * @ghidraAddress BRGlide: 0x1001e930
+ */
+GbiCommand *HandleGbiSetEnvColor(GbiCommand *pCommand);
+
 #if TGR_RENDERER == TGR_RENDERER_D3D
+/**
+ * Set the primitive colour from the RGBA colour of the command.
+ *
+ * @param pCommand The command, the colour in its second word.
+ * @return The next command.
+ * @ghidraAddress BRD3D: 0x1001cca0
+ */
+GbiCommand *HandleGbiSetPrimColor(GbiCommand *pCommand);
+
 /**
  * Set the colour of the fog of the device from the RGBA colour of the command.
  *
