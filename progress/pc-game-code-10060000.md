@@ -1,6 +1,6 @@
 # PC port game code from 0x10060000 to 0x10070000
 
-35 of 169 routines done.
+36 of 169 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -136,7 +136,7 @@ the same name, for a routine the port retained from the N64 game.
 | `FillMemoryPatternBytes`                 |   ✅   |                 |      2 |     43 | `0x10060780` | `0x100597f0` | `void FillMemoryPatternBytes(void * pDest, uint nCount, int nByte)`                                                                      |
 | `SetRenderBackendMode`                   |   ✅   |                 |      2 |     43 | `0x1006a990` | `0x10063940` | `void SetRenderBackendMode(int nMode)`                                                                                                   |
 | `PlaneDistance`                          |        | ✅ `0x8025b704` |     14 |     41 | `0x1006c9a0` | `0x10065950` | `float PlaneDistance(float * pVecA, float fBias, float * pVecB)`                                                                         |
-| `MatrixToPositionQuaternion`             |        |                 |      1 |     41 | `0x100695a0` | `0x10062610` | `undefined MatrixToPositionQuaternion()`                                                                                                 |
+| `MatrixToPositionQuaternion`             |   ✅   |                 |      1 |     41 | `0x100695a0` | `0x10062610` | `void MatrixToPositionQuaternion(void * pPose, float * m)`                                                                               |
 | `PushCollisionTriangle`                  |        | ✅ `0x8025c24c` |      2 |     38 | `0x1006d280` | `0x10066230` | `undefined PushCollisionTriangle()`                                                                                                      |
 | `MuteVehicleSoundVoices`                 |   ✅   |                 |      1 |     37 | `0x100683d0` | `0x10061440` | `void MuteVehicleSoundVoices(void)`                                                                                                      |
 | `InitializeRenderSubsystems`             |   ✅   |                 |      1 |     36 | `0x1006aa20` | `0x100639d0` | `void InitializeRenderSubsystems(int nMode)`                                                                                             |

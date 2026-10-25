@@ -8,9 +8,12 @@
  * by 4 matrix is its first three rows.
  */
 
-#include <PR/ultratypes.h>
-
+#include "types.h"
 #include "vecmath.h"
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /** A rotation as a unit quaternion. */
 typedef struct {
@@ -415,5 +418,9 @@ void MtxBuildScaledInverse(f32 m[4][4], f32 out[4][4], Vec3f *scale);
  * @ghidraAddress JPN: 0x8025a048
  */
 void SolveLinearSystem3x3(Vec3f *out, f32 a[3][3], Vec3f *b);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

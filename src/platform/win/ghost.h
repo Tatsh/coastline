@@ -7,6 +7,9 @@
 
 #include <cstddef>
 
+#include "rigidbody.h"
+#include "vecmath.h"
+
 /** The size of a frame of the recording of a ghost car. */
 #define GHOST_FRAME_SIZE 24
 
@@ -57,3 +60,19 @@ void ResetGhostRecording(void);
  * @ghidraAddress BRGlide: 0x100597f0
  */
 void FillMemoryPatternBytes(void *pDest, size_t nCount, int nByte);
+
+/** The orientation and the position of a vehicle at the start of a key frame. */
+struct QuaternionPose {
+    Quaternion orientation; /*!< The orientation. */
+    Vec3f position;         /*!< The position. */
+};
+
+/**
+ * Get the orientation of a matrix as a quaternion and its translation as a position.
+ *
+ * @param pPose Receives the orientation and the position.
+ * @param m The matrix.
+ * @ghidraAddress BRD3D: 0x100695a0
+ * @ghidraAddress BRGlide: 0x10062610
+ */
+void MatrixToPositionQuaternion(QuaternionPose *pPose, f32 m[4][4]);
