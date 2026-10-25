@@ -2,6 +2,8 @@
 
 #include <cstdlib>
 
+#include "platform/win/settings.h"
+
 #if TGR_RENDERER == TGR_RENDERER_D3D
 #include "platform/win/d3d/renderer.h"
 #endif
@@ -26,6 +28,22 @@ GbiCommand *HandleGbiSetTexRectW(GbiCommand *pCommand) {
 
 GbiCommand *HandleGbiSetTexRectDepth(GbiCommand *pCommand) {
     g_fTexRectDepth = pCommand->f1;
+    return pCommand + 1;
+}
+
+static inline int GbiSignedField12(unsigned dwWord, int nShift) {
+    return static_cast<int>(dwWord << (20 - nShift)) >> 20;
+}
+
+GbiCommand *HandleGbiFillRectangleIntCoords(GbiCommand *pCommand) {
+    int nLowerRightY = GbiSignedField12(pCommand->w0, 0);
+    int nLowerRightX = GbiSignedField12(pCommand->w0, 12);
+    int nUpperLeftY = GbiSignedField12(pCommand->w1, 0);
+    int nUpperLeftX = GbiSignedField12(pCommand->w1, 12);
+    DrawFillRectangle(nUpperLeftX,
+                      g_dwConfigFramebufferHeight - nLowerRightY - 1,
+                      nLowerRightX + 1,
+                      g_dwConfigFramebufferHeight - nUpperLeftY);
     return pCommand + 1;
 }
 

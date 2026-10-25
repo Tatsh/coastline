@@ -214,6 +214,30 @@ GbiCommand *HandleGbiSetRenderMode(GbiCommand *pCommand);
  */
 GbiCommand *HandleGbiSetOtherModeL(GbiCommand *pCommand);
 
+/**
+ * Fill a rectangle of the screen with the fill colour.
+ *
+ * @param nLeft The left edge.
+ * @param nTop The top edge.
+ * @param nRight The right edge.
+ * @param nBottom The bottom edge.
+ * @ghidraAddress BRD3D: 0x1001be90
+ * @ghidraAddress BRGlide: 0x1001e380
+ */
+void DrawFillRectangle(int nLeft, int nTop, int nRight, int nBottom);
+
+/**
+ * Fill a rectangle given in whole pixels of the console, whose rows run up from the bottom of the
+ * screen of the PC.
+ *
+ * @param pCommand The command, the lower right corner in its first word and the upper left in its
+ * second, as signed fields of 12 bits.
+ * @return The next command.
+ * @ghidraAddress BRD3D: 0x1001c7a0
+ * @ghidraAddress BRGlide: 0x1001e720
+ */
+GbiCommand *HandleGbiFillRectangleIntCoords(GbiCommand *pCommand);
+
 #if TGR_RENDERER == TGR_RENDERER_D3D
 /**
  * Set the colour of the fog of the device from the RGBA colour of the command.
