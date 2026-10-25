@@ -99,7 +99,7 @@ if(BUILD_DOCS OR BUILD_DOCS_ONLY)
   set(DOXYGEN_INTERACTIVE_SVG YES)
   set(DOXYGEN_GENERATE_TAGFILE "${CMAKE_BINARY_DIR}/html/${CMAKE_PROJECT_NAME}.tags")
   # The C and C++ libraries link to cppreference.com, the Win32 API to learn.microsoft.com, and the
-  # older DirectX APIs to the reference of DirectX 7 that archive.org keeps.
+  # older DirectX APIs to the references of DirectX 7 and 8 that archive.org keeps.
   # tools/doxygen/win32_tags.py writes the tag files of the Win32 API and of DirectX.
   set(DOXYGEN_TAGFILES
       "${CMAKE_SOURCE_DIR}/docs/cppreference.tags=https://en.cppreference.com/w/"

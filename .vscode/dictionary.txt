@@ -322,12 +322,14 @@ ghnd
 glabel
 glist
 globl
+glos
 gmem
 gouraud
 gpack
 graphviz
 gridstarts
 grounddist
+guiddef
 guint
 gwords
 haccel
@@ -551,6 +553,7 @@ paks
 paletteentry
 paletteindexed
 palettized
+parms
 parmsa
 pathlib
 pcmwaveformat
@@ -622,6 +625,7 @@ rearsliding
 reartex
 rearwheel
 recvmesg
+refguid
 reflow
 regen
 reginfo

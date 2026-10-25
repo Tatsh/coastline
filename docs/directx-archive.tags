@@ -1,6 +1,42 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <tagfile>
   <compound kind="struct">
+    <name>D3DRECT</name>
+    <filename>20010509043258/http://msdn.microsoft.com:80/library/psdk/directx/DX8_C/hh/directx8_c/_dx_d3drect_graphics.htm</filename>
+  </compound>
+  <compound kind="struct">
+    <name>DICONDITION</name>
+    <filename>20010317222600/http://msdn.microsoft.com:80/library/psdk/directx/DX8_C/hh/directx8_c/_dx_dicondition_dinput.htm</filename>
+  </compound>
+  <compound kind="struct">
+    <name>DIDEVICEINSTANCEA</name>
+    <filename>20010314214506/http://msdn.microsoft.com:80/library/psdk/directx/DX8_C/hh/directx8_c/_dx_dideviceinstance_dinput.htm</filename>
+  </compound>
+  <compound kind="struct">
+    <name>DIEFFECT</name>
+    <filename>20010315074138/http://msdn.microsoft.com:80/library/psdk/directx/DX8_C/hh/directx8_c/_dx_dieffect_dinput.htm</filename>
+  </compound>
+  <compound kind="struct">
+    <name>DIJOYSTATE2</name>
+    <filename>20010215131949/http://msdn.microsoft.com:80/library/psdk/directx/dx8_c/hh/directx8_c/_dx_dijoystate2_dinput.htm</filename>
+  </compound>
+  <compound kind="struct">
+    <name>DIPERIODIC</name>
+    <filename>20010316221011/http://msdn.microsoft.com:80/library/psdk/directx/DX8_C/hh/directx8_c/_dx_diperiodic_dinput.htm</filename>
+  </compound>
+  <compound kind="struct">
+    <name>DIPROPDWORD</name>
+    <filename>20010330021812/http://msdn.microsoft.com:80/library/psdk/directx/dx8_c/hh/directx8_c/_dx_dipropdword_dinput.htm</filename>
+  </compound>
+  <compound kind="struct">
+    <name>DIPROPRANGE</name>
+    <filename>20010315073859/http://msdn.microsoft.com:80/library/psdk/directx/DX8_C/hh/directx8_c/_dx_diproprange_dinput.htm</filename>
+  </compound>
+  <compound kind="struct">
+    <name>DSBCAPS</name>
+    <filename>20010312174135/http://msdn.microsoft.com:80/library/psdk/directx/dx8_c/hh/directx8_c/_dx_dsbcaps_dxaudio.htm</filename>
+  </compound>
+  <compound kind="struct">
     <name>D3DRENDERSTATETYPE</name>
     <filename>20001020070205/http://msdn.microsoft.com:80/library/psdk/directx/imref_5fdw.htm</filename>
   </compound>
@@ -15,6 +51,16 @@
   <compound kind="struct">
     <name>D3DCOLOR</name>
     <filename>20001118225700/http://msdn.microsoft.com:80/library/psdk/directx/imref_04kk.htm</filename>
+  </compound>
+  <compound kind="class">
+    <name>IDirectPlayLobby3A</name>
+    <member kind="function">
+      <type />
+      <name>ConnectEx</name>
+      <anchorfile>20000301100442/http://msdn.microsoft.com:80/library/psdk/directx/dpref_2x89.htm</anchorfile>
+      <anchor />
+      <arglist>()</arglist>
+    </member>
   </compound>
   <compound kind="class">
     <name>IDirectSound</name>

@@ -29,6 +29,13 @@
     <filename>ddraw/nn-ddraw-idirectdrawpalette?.</filename>
     <member kind="function">
       <type />
+      <name>GetCaps</name>
+      <anchorfile>ddraw/nf-ddraw-idirectdrawpalette-getcaps?.</anchorfile>
+      <anchor />
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
       <name>GetEntries</name>
       <anchorfile>ddraw/nf-ddraw-idirectdrawpalette-getentries?.</anchorfile>
       <anchor />
@@ -66,6 +73,22 @@
       <anchor />
       <arglist>()</arglist>
     </member>
+  </compound>
+  <compound kind="struct">
+    <name>LARGE_INTEGER</name>
+    <filename>winnt/ns-winnt-large_integer-r1?.</filename>
+  </compound>
+  <compound kind="struct">
+    <name>MCI_PLAY_PARMS</name>
+    <filename>../multimedia/mci-play-parms?.</filename>
+  </compound>
+  <compound kind="struct">
+    <name>MCI_SET_PARMS</name>
+    <filename>../multimedia/mci-set-parms?.</filename>
+  </compound>
+  <compound kind="struct">
+    <name>MCI_STATUS_PARMS</name>
+    <filename>../multimedia/mci-status-parms?.</filename>
   </compound>
   <compound kind="struct">
     <name>MEMORYSTATUS</name>
@@ -1173,6 +1196,34 @@
       <anchorfile>../../../previous-versions/dd757322(v=vs.85)?.</anchorfile>
       <anchor />
       <arglist />
+    </member>
+    <member kind="typedef">
+      <type />
+      <name>MCIDEVICEID</name>
+      <anchorfile>../multimedia/mci-open-parms?.</anchorfile>
+      <anchor />
+      <arglist />
+    </member>
+    <member kind="typedef">
+      <type />
+      <name>MCIERROR</name>
+      <anchorfile>../multimedia/handling-mci-errors?.</anchorfile>
+      <anchor />
+      <arglist />
+    </member>
+    <member kind="typedef">
+      <type />
+      <name>REFGUID</name>
+      <anchorfile>guiddef/ns-guiddef-guid?.</anchorfile>
+      <anchor />
+      <arglist />
+    </member>
+    <member kind="function">
+      <type />
+      <name>mciSendCommandA</name>
+      <anchorfile>../../../previous-versions/dd757160(v=vs.85)?.</anchorfile>
+      <anchor />
+      <arglist>()</arglist>
     </member>
   </compound>
 </tagfile>
