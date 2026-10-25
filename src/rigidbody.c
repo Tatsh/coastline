@@ -1,7 +1,12 @@
 #include "rigidbody.h"
 
+#if TGR_PLATFORM == TGR_PLATFORM_N64
 #include <PR/gu.h>
 #include <PR/os.h>
+#else
+#include <math.h>
+#include <stddef.h>
+#endif
 
 /* The inertia of a box about an axis is this share of its mass times the squares of the sides. */
 #define BOX_INERTIA_SHARE 0.0833333358f
@@ -197,6 +202,8 @@ void Mtx3fMulVec3f(Vec3f *out, f32 m[3][3], Vec3f *v) {
     MTX_ROWS_MUL_VEC3F(out, m, v, i, k);
 }
 
+/* The routines under TGR_PLATFORM_N64 alone are absent from the PC libraries. */
+#if TGR_PLATFORM == TGR_PLATFORM_N64
 void ComputeRigidBodyAcceleration(RigidBody *body) {
     Vec3f local, angular;
 
@@ -270,6 +277,7 @@ void ApplyAllForcesToBody(RigidBody *body) {
         ApplySingleForceWithDebug(body, force);
     }
 }
+#endif
 
 void InitRigidBody(RigidBody *body) {
     f32 boxShare, xx, yy, zz;

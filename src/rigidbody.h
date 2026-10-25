@@ -148,6 +148,9 @@ void StubPhysics2(void *data);
  * @ghidraAddress USA: 0x80258080
  * @ghidraAddress EUR: 0x80259650
  * @ghidraAddress JPN: 0x80258fe0
+ * @ghidraAddress BRD3D: 0x10074090
+ * @ghidraAddress BRGlide: 0x1006d2e0
+ * @stub{BRGlide}
  */
 void QuaternionMultiply(Quaternion *out, Quaternion *a, Quaternion *b);
 
@@ -158,6 +161,8 @@ void QuaternionMultiply(Quaternion *out, Quaternion *a, Quaternion *b);
  * @ghidraAddress USA: 0x8025813c
  * @ghidraAddress EUR: 0x8025970c
  * @ghidraAddress JPN: 0x8025909c
+ * @ghidraAddress BRD3D: 0x100741b0
+ * @ghidraAddress BRGlide: 0x1006d410
  */
 void QuaternionNormalize(Quaternion *q);
 
@@ -168,6 +173,8 @@ void QuaternionNormalize(Quaternion *q);
  * @ghidraAddress USA: 0x802581cc
  * @ghidraAddress EUR: 0x8025979c
  * @ghidraAddress JPN: 0x8025912c
+ * @ghidraAddress BRD3D: 0x10074250
+ * @ghidraAddress BRGlide: 0x1006d4b0
  */
 void Vec3fNormalizeFast(Vec3f *v);
 
@@ -179,6 +186,8 @@ void Vec3fNormalizeFast(Vec3f *v);
  * @ghidraAddress USA: 0x80258248
  * @ghidraAddress EUR: 0x80259818
  * @ghidraAddress JPN: 0x802591a8
+ * @ghidraAddress BRD3D: 0x100742d0
+ * @ghidraAddress BRGlide: 0x1006d530
  */
 void ComputeDeltaQuaternion(RigidBodyState *state);
 
@@ -191,6 +200,8 @@ void ComputeDeltaQuaternion(RigidBodyState *state);
  * @ghidraAddress USA: 0x80258324
  * @ghidraAddress EUR: 0x802598f4
  * @ghidraAddress JPN: 0x80259284
+ * @ghidraAddress BRD3D: 0x100743a0
+ * @ghidraAddress BRGlide: 0x1006d600
  */
 void ApplyRigidBodyImpulse(RigidBodyState *state, RigidBody *body, f32 dt);
 
@@ -202,6 +213,8 @@ void ApplyRigidBodyImpulse(RigidBodyState *state, RigidBody *body, f32 dt);
  * @ghidraAddress USA: 0x802583dc
  * @ghidraAddress EUR: 0x802599ac
  * @ghidraAddress JPN: 0x8025933c
+ * @ghidraAddress BRD3D: 0x10074450
+ * @ghidraAddress BRGlide: 0x1006d6b0
  */
 void QuaternionToMatrix(f32 out[4][4], RigidBodyState *state);
 
@@ -214,6 +227,8 @@ void QuaternionToMatrix(f32 out[4][4], RigidBodyState *state);
  * @ghidraAddress USA: 0x80258530
  * @ghidraAddress EUR: 0x80259b00
  * @ghidraAddress JPN: 0x80259490
+ * @ghidraAddress BRD3D: 0x100745f0
+ * @ghidraAddress BRGlide: 0x1006d850
  */
 void IntegrateRigidBodyState(RigidBodyState *out, RigidBodyState *in, f32 dt);
 
@@ -231,6 +246,8 @@ void IntegrateRigidBodyState(RigidBodyState *out, RigidBodyState *in, f32 dt);
  * @ghidraAddress USA: 0x80258680
  * @ghidraAddress EUR: 0x80259c50
  * @ghidraAddress JPN: 0x802595e0
+ * @ghidraAddress BRD3D: 0x100746e0
+ * @ghidraAddress BRGlide: 0x1006d940
  */
 void SetRigidBodyForce(
     RigidBodyForce *force, f32 x, f32 y, f32 z, f32 pointX, f32 pointY, f32 pointZ, s32 frame);
@@ -245,6 +262,8 @@ void SetRigidBodyForce(
  * @ghidraAddress USA: 0x802586c0
  * @ghidraAddress EUR: 0x80259c90
  * @ghidraAddress JPN: 0x80259620
+ * @ghidraAddress BRD3D: 0x10074720
+ * @ghidraAddress BRGlide: 0x1006d980
  */
 void Mtx4fInverseRotate(Vec3f *out, f32 m[4][4], Vec3f *v);
 
@@ -257,6 +276,8 @@ void Mtx4fInverseRotate(Vec3f *out, f32 m[4][4], Vec3f *v);
  * @ghidraAddress USA: 0x80258758
  * @ghidraAddress EUR: 0x80259d28
  * @ghidraAddress JPN: 0x802596b8
+ * @ghidraAddress BRD3D: 0x10074770
+ * @ghidraAddress BRGlide: 0x1006d9d0
  */
 void Mtx3x3MulVec3f(Vec3f *out, f32 m[4][4], Vec3f *v);
 
@@ -269,6 +290,8 @@ void Mtx3x3MulVec3f(Vec3f *out, f32 m[4][4], Vec3f *v);
  * @ghidraAddress USA: 0x802587e8
  * @ghidraAddress EUR: 0x80259db8
  * @ghidraAddress JPN: 0x80259748
+ * @ghidraAddress BRD3D: 0x100747c0
+ * @ghidraAddress BRGlide: 0x1006da20
  */
 void Mtx4x4TransformPoint(Vec3f *out, f32 m[4][4], Vec3f *v);
 
@@ -281,6 +304,8 @@ void Mtx4x4TransformPoint(Vec3f *out, f32 m[4][4], Vec3f *v);
  * @ghidraAddress USA: 0x802588b8
  * @ghidraAddress EUR: 0x80259e88
  * @ghidraAddress JPN: 0x80259818
+ * @ghidraAddress BRD3D: 0x10074830
+ * @ghidraAddress BRGlide: 0x1006da90
  */
 void Mtx3fMulVec3f(Vec3f *out, f32 m[3][3], Vec3f *v);
 
@@ -323,6 +348,8 @@ void ApplyAllForcesToBody(RigidBody *body);
  * @ghidraAddress USA: 0x80258c24
  * @ghidraAddress EUR: 0x8025a1f4
  * @ghidraAddress JPN: 0x80259b84
+ * @ghidraAddress BRD3D: 0x10074870
+ * @ghidraAddress BRGlide: 0x1006dad0
  */
 void InitRigidBody(RigidBody *body);
 
@@ -334,6 +361,8 @@ void InitRigidBody(RigidBody *body);
  * @ghidraAddress USA: 0x80258db0
  * @ghidraAddress EUR: 0x8025a380
  * @ghidraAddress JPN: 0x80259d10
+ * @ghidraAddress BRD3D: 0x100749d0
+ * @ghidraAddress BRGlide: 0x1006dc30
  */
 void BuildSkewSymmetricMatrix(f32 out[3][3], Vec3f *v);
 
@@ -346,6 +375,8 @@ void BuildSkewSymmetricMatrix(f32 out[3][3], Vec3f *v);
  * @ghidraAddress USA: 0x80258e04
  * @ghidraAddress EUR: 0x8025a3d4
  * @ghidraAddress JPN: 0x80259d64
+ * @ghidraAddress BRD3D: 0x10074a10
+ * @ghidraAddress BRGlide: 0x1006dc70
  */
 void TransposeCopyMatrix3x3(f32 transpose[3][3], f32 copy[3][3], f32 m[4][4]);
 
@@ -357,6 +388,8 @@ void TransposeCopyMatrix3x3(f32 transpose[3][3], f32 copy[3][3], f32 m[4][4]);
  * @ghidraAddress USA: 0x80258e64
  * @ghidraAddress EUR: 0x8025a434
  * @ghidraAddress JPN: 0x80259dc4
+ * @ghidraAddress BRD3D: 0x10074a50
+ * @ghidraAddress BRGlide: 0x1006dcb0
  */
 void Transpose4x4Into3x3(f32 out[3][3], f32 m[4][4]);
 
@@ -368,6 +401,8 @@ void Transpose4x4Into3x3(f32 out[3][3], f32 m[4][4]);
  * @ghidraAddress USA: 0x80258eac
  * @ghidraAddress EUR: 0x8025a47c
  * @ghidraAddress JPN: 0x80259e0c
+ * @ghidraAddress BRD3D: 0x10074a90
+ * @ghidraAddress BRGlide: 0x1006dcf0
  */
 void CopyMatrix4x4To3x3(f32 out[3][3], f32 m[4][4]);
 
@@ -380,6 +415,9 @@ void CopyMatrix4x4To3x3(f32 out[3][3], f32 m[4][4]);
  * @ghidraAddress USA: 0x80258ef8
  * @ghidraAddress EUR: 0x8025a4c8
  * @ghidraAddress JPN: 0x80259e58
+ * @ghidraAddress BRD3D: 0x10074ac0
+ * @ghidraAddress BRGlide: 0x1006dd20
+ * @stub{BRGlide}
  */
 void Mtx3fMultiply(f32 out[3][3], f32 a[3][3], f32 b[3][3]);
 
@@ -392,6 +430,8 @@ void Mtx3fMultiply(f32 out[3][3], f32 a[3][3], f32 b[3][3]);
  * @ghidraAddress USA: 0x80258f70
  * @ghidraAddress EUR: 0x8025a540
  * @ghidraAddress JPN: 0x80259ed0
+ * @ghidraAddress BRD3D: 0x10074b20
+ * @ghidraAddress BRGlide: 0x1006dd80
  */
 void SubtractMatrix3x3(f32 out[3][3], f32 a[3][3], f32 b[3][3]);
 
@@ -404,6 +444,8 @@ void SubtractMatrix3x3(f32 out[3][3], f32 a[3][3], f32 b[3][3]);
  * @ghidraAddress USA: 0x80258fd4
  * @ghidraAddress EUR: 0x8025a5a4
  * @ghidraAddress JPN: 0x80259f34
+ * @ghidraAddress BRD3D: 0x10074b70
+ * @ghidraAddress BRGlide: 0x1006ddd0
  */
 void MtxBuildScaledInverse(f32 m[4][4], f32 out[4][4], Vec3f *scale);
 
@@ -416,6 +458,8 @@ void MtxBuildScaledInverse(f32 m[4][4], f32 out[4][4], Vec3f *scale);
  * @ghidraAddress USA: 0x802590e8
  * @ghidraAddress EUR: 0x8025a6b8
  * @ghidraAddress JPN: 0x8025a048
+ * @ghidraAddress BRD3D: 0x10074c10
+ * @ghidraAddress BRGlide: 0x1006de70
  */
 void SolveLinearSystem3x3(Vec3f *out, f32 a[3][3], Vec3f *b);
 
