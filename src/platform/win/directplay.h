@@ -1229,8 +1229,9 @@ HRESULT LoadNetworkSettings(void);
 /** A player in a slot of the session. */
 struct SessionSlot {
     DPID dpidPlayer; /*!< The player, or 0xffffffff for a free slot. */
-    int nFlag;       /*!< Cleared when the player departs. Its meaning is not recovered yet. */
-    int nSeen;       /*!< Cleared when the table is reset. Its meaning is not recovered yet. */
+    int nFlag;       /*!< Set for the host when the slot is taken, cleared when the player departs,
+                          and sent by SendNetworkReadyMessage(). */
+    int nSeen;       /*!< Whether an enumeration of the players found the player. */
 };
 
 /**
@@ -1315,6 +1316,25 @@ HRESULT CloseAndReleaseDirectPlay(void);
  * @ghidraAddress BRGlide: 0x10ac5890
  */
 extern SessionSlot g_aSessionSlots[SESSION_SLOT_COUNT];
+
+/**
+ * Mark the slot of a player of the session as found, or give the player the first free slot.
+ * The flag of a new slot is set for the host and cleared for another player. A player is dropped
+ * when no slot is free.
+ *
+ * @param dpidPlayer The player.
+ * @ghidraAddress BRD3D: 0x1003c9f0
+ * @ghidraAddress BRGlide: 0x10036080
+ */
+void MarkSessionListEntrySeen(DPID dpidPlayer);
+
+/**
+ * Free each slot of the session whose player was not found since the last purge.
+ *
+ * @ghidraAddress BRD3D: 0x1003ca70
+ * @ghidraAddress BRGlide: 0x10036100
+ */
+void PurgeStaleSessionListEntries(void);
 
 /**
  * Get the flag of the slot of a player of the session.

@@ -777,6 +777,37 @@ void ResetSessionSlotTable(void) {
     }
 }
 
+void MarkSessionListEntrySeen(DPID dpidPlayer) {
+    // The index is a signed byte in the original.
+    signed char nFree = -1;
+
+    for (int i = 0; i < SESSION_SLOT_COUNT; i++) {
+        if (g_aSessionSlots[i].dpidPlayer == dpidPlayer) {
+            g_aSessionSlots[i].nSeen = true;
+            return;
+        }
+        if (g_aSessionSlots[i].dpidPlayer == 0xffffffff && nFree < 0) {
+            nFree = static_cast<signed char>(i);
+        }
+    }
+    if (nFree < 0) {
+        return;
+    }
+    g_aSessionSlots[nFree].dpidPlayer = dpidPlayer;
+    g_aSessionSlots[nFree].nFlag = dpidPlayer == DPID_SERVERPLAYER;
+    g_aSessionSlots[nFree].nSeen = true;
+}
+
+void PurgeStaleSessionListEntries(void) {
+    for (SessionSlot &slot : g_aSessionSlots) {
+        if (!slot.nSeen) {
+            slot.dpidPlayer = 0xffffffff;
+            slot.nFlag = 0;
+            slot.nSeen = 0;
+        }
+    }
+}
+
 bool RequestNetworkPause(void) {
     WaitForSingleObject(g_hNetPauseMutex, INFINITE);
     if (g_nNetPauseRequestTicks == 0) {
