@@ -537,10 +537,11 @@ void SetSoundBankEntryIndex(int nVoice, int nIndex);
  */
 void ResetSoundBankTables(void);
 
-/** A sound sample loaded into DirectSound. The layout past the buffers is not recovered yet. */
+/** A sound sample loaded into DirectSound. */
 struct SoundSample {
     SoundBufferNode *apChannelBuffers[SOUND_CHANNEL_COUNT]; /*!< A buffer for each channel. */
-    char abUnknown3c[0xc];                                  /* +0x3c */
+    char abUnknown3c[4];                                    /* +0x3c */
+    double dFrequencyScale; /*!< The scale of a frequency of a channel that plays the sample. */
 };
 
 /**
@@ -769,6 +770,38 @@ extern SoundChannelState g_aSoundChannelState[SOUND_CHANNEL_COUNT];
  * @ghidraAddress BRGlide: 0x1006b730
  */
 bool SetAudioChannelStereoLevels(int nChannel, DWORD dwLevels);
+
+/**
+ * The scale of a frequency of each channel, from the sample assigned to it.
+ *
+ * @ghidraAddress BRD3D: 0x11828e88
+ * @ghidraAddress BRGlide: 0x1184c1e8
+ */
+extern double g_adChannelFrequencyScale[SOUND_CHANNEL_COUNT];
+
+/**
+ * Stop the buffer of a channel and give the channel the buffer of a sample for it, when sound is
+ * on.
+ *
+ * @param nSample The sample.
+ * @param nChannel The channel.
+ * @return Whether the sample has a buffer for the channel, and true without sound.
+ * @ghidraAddress BRD3D: 0x100725c0
+ * @ghidraAddress BRGlide: 0x1006b530
+ */
+bool AssignAudioChannel(int nSample, int nChannel);
+
+/**
+ * Set the frequency of the buffer of a channel, scaled by its sample, and record it, when sound is
+ * on.
+ *
+ * @param nChannel The channel.
+ * @param llFrequency The frequency in units of 2 to the power of -32.
+ * @return Whether the frequency was set, and true without sound.
+ * @ghidraAddress BRD3D: 0x10072680
+ * @ghidraAddress BRGlide: 0x1006b5f0
+ */
+bool SetAudioChannelFrequency(int nChannel, long long llFrequency);
 
 /**
  * Set the levels of the two sides of a channel of a sample and play it, when sound is on.

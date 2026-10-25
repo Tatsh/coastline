@@ -671,6 +671,38 @@ bool SetAudioChannelStereoLevels(int nChannel, DWORD dwLevels) {
     return true;
 }
 
+double g_adChannelFrequencyScale[SOUND_CHANNEL_COUNT];
+
+bool AssignAudioChannel(int nSample, int nChannel) {
+    if (!IsDirectSoundActive()) {
+        return true;
+    }
+    g_adChannelFrequencyScale[nChannel] = g_aSoundChannelBuffers[nSample].dFrequencyScale;
+    if (g_apSoundChannelBuffer[nChannel] != nullptr) {
+        // The result of the stop is discarded.
+        StopAudioChannel(nChannel);
+    }
+    g_apSoundChannelBuffer[nChannel] = g_aSoundChannelBuffers[nSample].apChannelBuffers[nChannel];
+    return g_apSoundChannelBuffer[nChannel] != nullptr;
+}
+
+// 2 to the power of -32, the unit of the frequency of SetAudioChannelFrequency().
+#define FREQUENCY_FRACTION_SCALE (1.0 / 4294967296.0)
+
+bool SetAudioChannelFrequency(int nChannel, long long llFrequency) {
+    if (!IsDirectSoundActive()) {
+        return true;
+    }
+    if (!SetSoundBufferFrequency(g_apSoundChannelBuffer[nChannel],
+                                 static_cast<DWORD>(static_cast<double>(llFrequency) *
+                                                    g_adChannelFrequencyScale[nChannel] *
+                                                    FREQUENCY_FRACTION_SCALE))) {
+        return false;
+    }
+    g_aSoundChannelState[nChannel].llFrequency = llFrequency;
+    return true;
+}
+
 bool SetStereoAndPlaySoundChannel(int nSample, int nChannel, DWORD dwLevels, int bLooping) {
     SoundBufferNode *pNode;
 
