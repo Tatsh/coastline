@@ -69,9 +69,28 @@ GbiCommand *HandleGbiPopMatrix(GbiCommand *pCommand) {
     return pCommand + 1;
 }
 
+// The shifts of the modes of the low word of the other modes.
+#define GBI_MODE_SHIFT_ALPHA_COMPARE 0
+#define GBI_MODE_SHIFT_RENDER_MODE 3
+
+GbiCommand *HandleGbiSetOtherModeL(GbiCommand *pCommand) {
+    int nShift = static_cast<signed char>(pCommand->w0 >> 8);
+    if (nShift == GBI_MODE_SHIFT_ALPHA_COMPARE) {
+        return HandleGbiNoOp(pCommand);
+    }
+    if (nShift == GBI_MODE_SHIFT_RENDER_MODE) {
+        return HandleGbiSetRenderMode(pCommand);
+    }
+    return pCommand + 1;
+}
+
 GbiCommand *HandleGbiSetGeometryMode(GbiCommand *pCommand) {
     g_dwGbiPrevGeometryMode = g_dwGbiGeometryMode;
     g_dwGbiGeometryMode |= pCommand->w1;
     ApplyGeometryModeChanges();
+    return pCommand + 1;
+}
+
+GbiCommand *HandleGbiNoOp(GbiCommand *pCommand) {
     return pCommand + 1;
 }

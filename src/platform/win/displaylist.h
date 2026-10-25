@@ -183,6 +183,37 @@ GbiCommand *HandleGbiPopMatrix(GbiCommand *pCommand);
  */
 GbiCommand *HandleGbiDisplayList(GbiCommand *pCommand);
 
+/**
+ * Skip a command.
+ *
+ * @param pCommand The command.
+ * @return The next command.
+ * @ghidraAddress BRD3D: 0x100243d0
+ * @ghidraAddress BRGlide: 0x10021240
+ */
+GbiCommand *HandleGbiNoOp(GbiCommand *pCommand);
+
+/**
+ * Set the render mode.
+ *
+ * @param pCommand The command.
+ * @return The next command.
+ * @ghidraAddress BRD3D: 0x10020f80
+ * @ghidraAddress BRGlide: 0x10021250
+ */
+GbiCommand *HandleGbiSetRenderMode(GbiCommand *pCommand);
+
+/**
+ * Set the low word of the other modes. Only the render mode is applied, and the comparison of
+ * alpha and every other mode are skipped.
+ *
+ * @param pCommand The command, the shift of the mode in bits 8 to 15 of its first word.
+ * @return The next command.
+ * @ghidraAddress BRD3D: 0x10020f50
+ * @ghidraAddress BRGlide: 0x10021210
+ */
+GbiCommand *HandleGbiSetOtherModeL(GbiCommand *pCommand);
+
 #if TGR_RENDERER == TGR_RENDERER_D3D
 /**
  * Set the colour of the fog of the device from the RGBA colour of the command.
