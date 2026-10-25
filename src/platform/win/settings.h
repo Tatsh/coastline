@@ -26,6 +26,7 @@ extern int g_dwNetworkPlayMode;
  * The car chosen, from `chosenCar=`.
  *
  * @ghidraAddress BRD3D: 0x1022b34c
+ * @ghidraAddress BRGlide: 0x10226e7c
  */
 extern int g_dwChosenCar;
 
@@ -33,6 +34,7 @@ extern int g_dwChosenCar;
  * The weather chosen, from `chosenWeather=`.
  *
  * @ghidraAddress BRD3D: 0x1022b350
+ * @ghidraAddress BRGlide: 0x10226e80
  */
 extern int g_dwChosenWeather;
 
@@ -40,6 +42,7 @@ extern int g_dwChosenWeather;
  * The handling of the car, from `HandlingType=`.
  *
  * @ghidraAddress BRD3D: 0x10094350
+ * @ghidraAddress BRGlide: 0x1007b320
  */
 extern int g_dwHandlingType;
 
@@ -47,6 +50,7 @@ extern int g_dwHandlingType;
  * The transmission of the car, from `TransmissionType=`.
  *
  * @ghidraAddress BRD3D: 0x10094354
+ * @ghidraAddress BRGlide: 0x1007b324
  */
 extern int g_dwTransmissionType;
 
@@ -54,6 +58,7 @@ extern int g_dwTransmissionType;
  * The suspension of the car, from `SuspensionType=`.
  *
  * @ghidraAddress BRD3D: 0x10094358
+ * @ghidraAddress BRGlide: 0x1007b328
  */
 extern int g_dwSuspensionType;
 
@@ -61,6 +66,7 @@ extern int g_dwSuspensionType;
  * The tires of the car, from `TireType=`.
  *
  * @ghidraAddress BRD3D: 0x1009435c
+ * @ghidraAddress BRGlide: 0x1007b32c
  */
 extern int g_dwTireType;
 
@@ -110,6 +116,7 @@ extern bool g_bDisableCarShadow;
  * Whether the benchmark runs, from `RunBenchmark=`.
  *
  * @ghidraAddress BRD3D: 0x118abdc4
+ * @ghidraAddress BRGlide: 0x118eeedc
  */
 extern int g_dwRunBenchmark;
 

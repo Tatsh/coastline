@@ -954,6 +954,38 @@ void EnterTimeAttackMode(void);
 void EnterNetworkLobbyScreen(void);
 
 /**
+ * The width of the surface of the front end. The Glide library sets 640 as the game is set up.
+ *
+ * @ghidraAddress BRD3D: 0x10690a0c
+ * @ghidraAddress BRGlide: 0x105ccbb4
+ */
+extern int g_dwFrontEndSurfaceWidth;
+
+/**
+ * The height of the surface of the front end. The Glide library sets 480 as the game is set up.
+ *
+ * @ghidraAddress BRD3D: 0x10690a08
+ * @ghidraAddress BRGlide: 0x105ccbb0
+ */
+extern int g_dwFrontEndSurfaceHeight;
+
+#if TGR_RENDERER == TGR_RENDERER_D3D
+/**
+ * The bits of a pixel of the surface of the front end.
+ *
+ * @ghidraAddress BRD3D: 0x10690a00
+ */
+extern int g_dwFrontEndSurfaceBitDepth;
+
+/**
+ * The refresh rate of the surface of the front end, 0 for the default.
+ *
+ * @ghidraAddress BRD3D: 0x10690a04
+ */
+extern int g_dwFrontEndSurfaceRefreshRate;
+#endif
+
+/**
  * Whether ActivateMenuScreen() is entering the screen the game returns to.
  *
  * @ghidraAddress BRD3D: 0x10aa2878
