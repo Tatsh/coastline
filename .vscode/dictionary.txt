@@ -741,6 +741,7 @@ textureaddressv
 textureanim
 texturemag
 textureperspective
+texturescan
 thiscall
 timerintr
 tiretype

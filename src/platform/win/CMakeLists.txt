@@ -26,6 +26,7 @@ add_library(
   season.cpp
   snapshot.c
   sound.cpp
+  texturescan.cpp
   timer.c
   wavread.c
   winmain-${TGR_RENDERER}.cpp)
