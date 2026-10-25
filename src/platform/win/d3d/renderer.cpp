@@ -1,5 +1,6 @@
 #include "platform/win/d3d/renderer.h"
 
+#include <cstdlib>
 #include <cstring>
 #include <new>
 
@@ -49,6 +50,21 @@ HRESULT RenderHost::ValidateObjectRenderResources() {
         return E_FAIL;
     }
     return S_OK;
+}
+
+// The colours a ramp of a material has.
+#define MATERIAL_RAMP_SIZE 16
+
+D3DMaterial::D3DMaterial(IDirect3D2 *pDirect3D2, IDirect3DDevice2 *pD3DDevice) {
+    memset(&desc, 0, sizeof(desc));
+    desc.dwSize = sizeof(desc);
+    desc.dwRampSize = MATERIAL_RAMP_SIZE;
+    desc.dcvDiffuse.a = 1.0f;
+    pDirect3D2->CreateMaterial(&pMaterial, nullptr);
+    pMaterial->SetMaterial(&desc);
+    pMaterial->GetHandle(pD3DDevice, &hMaterial);
+    nUnknown58 = 0;
+    pMaterial->SetMaterial(&desc);
 }
 
 void D3DMaterial::Release() {
@@ -562,6 +578,20 @@ int DirectDrawRenderer::ReleaseViewportAndMaterial() {
     return 0;
 }
 
+// Make the material of the renderer black and the background of its viewport.
+static inline void SetBlackBackground(DirectDrawRenderer *pRenderer) {
+    D3DMaterial *pMaterial = pRenderer->pMaterial;
+
+    pMaterial->desc.dcvDiffuse.r = 0.0f;
+    pMaterial->desc.dcvDiffuse.g = 0.0f;
+    pMaterial->desc.dcvDiffuse.b = 0.0f;
+    pMaterial->nUnknown58 = 1;
+    pMaterial->desc.dwRampSize = 1;
+    pMaterial->nUnknown58 = 0;
+    pMaterial->pMaterial->SetMaterial(&pMaterial->desc);
+    pRenderer->pViewport->SetBackground(pMaterial->hMaterial);
+}
+
 HRESULT DirectDrawRenderer::BeginRenderScene() {
     D3DRECT rect;
     HRESULT hr;
@@ -571,20 +601,57 @@ HRESULT DirectDrawRenderer::BeginRenderScene() {
     rect.x2 = g_dwConfigFramebufferWidth;
     rect.y2 = g_dwConfigFramebufferHeight;
 
-    // The background of the viewport is a black material, cleared to and shown once.
-    pMaterial->desc.dcvDiffuse.r = 0.0f;
-    pMaterial->desc.dcvDiffuse.g = 0.0f;
-    pMaterial->desc.dcvDiffuse.b = 0.0f;
-    pMaterial->nUnknown58 = 1;
-    pMaterial->nUnknown58 = 0;
-    pMaterial->desc.dwRampSize = 1;
-    pMaterial->pMaterial->SetMaterial(&pMaterial->desc);
-    pViewport->SetBackground(pMaterial->hMaterial);
+    // The viewport is cleared to its black background and shown once.
+    SetBlackBackground(this);
     pViewport->Clear(1, &rect, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER);
     hr = pPrimarySurface->Flip(pBackBuffer, DDFLIP_WAIT);
     while (pPrimarySurface->GetFlipStatus(DDGFS_ISFLIPDONE) != DD_OK) {
     }
     return hr;
+}
+
+HRESULT DirectDrawRenderer::InitializeViewportAndRenderContext() {
+    D3DVIEWPORT2 viewport;
+    float fAspect;
+    int nWidth;
+    int nHeight;
+    HRESULT hr;
+
+    if (pD3DDevice == nullptr || pViewport == nullptr) {
+        return RENDERER_E_NOT_READY;
+    }
+    nWidth = abs(rcViewport.right - rcViewport.left);
+    nHeight = abs(rcViewport.bottom - rcViewport.top);
+    fAspect = nWidth != 0 ? static_cast<float>(nHeight) / nWidth : 1.0f;
+    // The clip volume spans the width from -1 to 1 and the height in proportion.
+    memset(&viewport, 0, sizeof(viewport));
+    viewport.dwSize = sizeof(viewport);
+    viewport.dwX = 0;
+    viewport.dwY = 0;
+    viewport.dwWidth = nWidth;
+    viewport.dwHeight = nHeight;
+    viewport.dvClipX = -1.0f;
+    viewport.dvClipY = fAspect;
+    viewport.dvClipWidth = 2.0f;
+    viewport.dvClipHeight = fAspect + fAspect;
+    viewport.dvMinZ = 0.0f;
+    viewport.dvMaxZ = 1.0f;
+    hr = pViewport->SetViewport2(&viewport);
+    if (FAILED(hr)) {
+        return hr;
+    }
+    hr = pD3DDevice->SetCurrentViewport(pViewport);
+    if (FAILED(hr)) {
+        return hr;
+    }
+    if (pMaterial != nullptr) {
+        pMaterial->Release();
+        delete pMaterial;
+    }
+    // The original writes through a material that was not allocated.
+    pMaterial = new (std::nothrow) D3DMaterial(pDirect3D2, pD3DDevice);
+    SetBlackBackground(this);
+    return S_OK;
 }
 
 HRESULT DirectDrawRenderer::SetPrimarySurfacePalette() {

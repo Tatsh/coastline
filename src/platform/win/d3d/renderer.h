@@ -128,6 +128,15 @@ public:
     int nUnknown58;                /*!< Cleared when the background is set. */
 
     /**
+     * Create an opaque material of Direct3D and its handle on a device.
+     *
+     * @param pDirect3D2 The Direct3D interface that creates the material.
+     * @param pD3DDevice The device the handle belongs to.
+     * @ghidraAddress BRD3D: 0x1000a100
+     */
+    D3DMaterial(IDirect3D2 *pDirect3D2, IDirect3DDevice2 *pD3DDevice);
+
+    /**
      * Release the material of Direct3D.
      *
      * @ghidraAddress BRD3D: 0x1000a170
