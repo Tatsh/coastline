@@ -155,8 +155,10 @@ dpaid
 dpal
 dperr
 dplconnection
+dpmsg
 dpname
 dpplayer
+dpreceive
 dpsession
 dpspguid
 drawtexturedrect

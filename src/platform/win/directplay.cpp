@@ -429,6 +429,65 @@ HANDLE g_hDepartedPlayerStackMutex;
 HANDLE g_hNetRaceOrderMutex;
 HANDLE g_hNetNotifyMutex;
 
+bool g_bNetWorkerThreadRunning;
+HANDLE g_hNetWorkerStopEvent;
+HANDLE g_hNetWorkerThread;
+
+void StopNetworkWorkerThread(void) {
+    if (!g_bNetWorkerThreadRunning) {
+        return;
+    }
+    SetEvent(g_hNetWorkerStopEvent);
+    WaitForSingleObject(g_hNetWorkerThread, INFINITE);
+    CloseHandle(g_hNetWorkerThread);
+    g_hNetWorkerThread = nullptr;
+    CloseHandle(g_hNetWorkerStopEvent);
+    g_hNetWorkerStopEvent = nullptr;
+    g_bNetWorkerThreadRunning = false;
+}
+
+static inline void FreeGlobalBuffer(void *pBuffer) {
+    GlobalUnlock(GlobalHandle(pBuffer));
+    GlobalFree(GlobalHandle(pBuffer));
+}
+
+HRESULT ReceiveAndDispatchDirectPlayMessages(DirectPlayInfo *pInfo) {
+    DPMSG_GENERIC *pMessage = nullptr;
+    DWORD dwSize = 0;
+    DPID dpidFrom;
+    DPID dpidTo;
+    HRESULT hResult;
+
+    do {
+        do {
+            dpidFrom = 0;
+            dpidTo = 0;
+            hResult =
+                pInfo->pDirectPlay->Receive(&dpidFrom, &dpidTo, DPRECEIVE_ALL, pMessage, &dwSize);
+            if (hResult == DPERR_BUFFERTOOSMALL) {
+                if (pMessage != nullptr) {
+                    FreeGlobalBuffer(pMessage);
+                }
+                pMessage = static_cast<DPMSG_GENERIC *>(GlobalLock(GlobalAlloc(GHND, dwSize)));
+                if (pMessage == nullptr) {
+                    hResult = E_OUTOFMEMORY;
+                }
+            }
+        } while (hResult == DPERR_BUFFERTOOSMALL);
+        if (SUCCEEDED(hResult) && dwSize >= sizeof(DPMSG_GENERIC)) {
+            if (dpidFrom == DPID_SYSMSG) {
+                HandleDirectPlaySystemMessage(pInfo, pMessage, dwSize, dpidFrom, dpidTo);
+            } else {
+                HandleMultiplayerSessionMessage(pInfo, pMessage, dwSize, dpidFrom, dpidTo);
+            }
+        }
+    } while (SUCCEEDED(hResult));
+    if (pMessage != nullptr) {
+        FreeGlobalBuffer(pMessage);
+    }
+    return DP_OK;
+}
+
 static inline void CloseMutex(HANDLE *phMutex) {
     if (*phMutex != nullptr) {
         CloseHandle(*phMutex);

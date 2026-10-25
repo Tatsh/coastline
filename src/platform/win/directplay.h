@@ -204,11 +204,13 @@ HRESULT ShutdownDirectPlaySession(DirectPlayInfo *pInfo);
 DWORD WINAPI DirectPlayReceiveThreadProc(void *pParameter);
 
 /**
- * Receive and handle every waiting message of the local player.
+ * Receive and handle every waiting message of the local player, growing the buffer of the
+ * messages in global memory as a message needs, until the receive fails.
  *
  * @param pInfo The info of the player.
  * @return Always DP_OK.
  * @ghidraAddress BRD3D: 0x1000c350
+ * @ghidraAddress BRGlide: 0x10009880
  */
 HRESULT ReceiveAndDispatchDirectPlayMessages(DirectPlayInfo *pInfo);
 
@@ -482,12 +484,65 @@ extern HANDLE g_hNetRaceOrderMutex;
 extern HANDLE g_hNetNotifyMutex;
 
 /**
- * Stop the thread that works for the host of a network game.
+ * Whether the worker thread of the host runs.
+ *
+ * @ghidraAddress BRD3D: 0x11828d18
+ * @ghidraAddress BRGlide: 0x1184c078
+ */
+extern bool g_bNetWorkerThreadRunning;
+
+/**
+ * The event that stops the worker thread of the host.
+ *
+ * @ghidraAddress BRD3D: 0x11826b00
+ * @ghidraAddress BRGlide: 0x11849e60
+ */
+extern HANDLE g_hNetWorkerStopEvent;
+
+/**
+ * The worker thread of the host.
+ *
+ * @ghidraAddress BRD3D: 0x11828d1c
+ * @ghidraAddress BRGlide: 0x1184c07c
+ */
+extern HANDLE g_hNetWorkerThread;
+
+/**
+ * Stop the thread that works for the host of a network game, wait for it, and close it and its
+ * stop event.
  *
  * @ghidraAddress BRD3D: 0x10072270
  * @ghidraAddress BRGlide: 0x1006b1e0
  */
 void StopNetworkWorkerThread(void);
+
+/**
+ * Handle a message of the system of DirectPlay. The return, if any, is not recovered yet.
+ *
+ * @param pInfo The info of the local player.
+ * @param pMessage The message.
+ * @param dwSize The size of the message.
+ * @param dpidFrom The sender, DPID_SYSMSG.
+ * @param dpidTo The receiver.
+ * @ghidraAddress BRD3D: 0x1000c170
+ * @ghidraAddress BRGlide: 0x100096a0
+ */
+void HandleDirectPlaySystemMessage(
+    DirectPlayInfo *pInfo, DPMSG_GENERIC *pMessage, DWORD dwSize, DPID dpidFrom, DPID dpidTo);
+
+/**
+ * Handle a message another player of the session sent. The return, if any, is not recovered yet.
+ *
+ * @param pInfo The info of the local player.
+ * @param pMessage The message.
+ * @param dwSize The size of the message.
+ * @param dpidFrom The sender.
+ * @param dpidTo The receiver.
+ * @ghidraAddress BRD3D: 0x1000baf0
+ * @ghidraAddress BRGlide: 0x10009010
+ */
+void HandleMultiplayerSessionMessage(
+    DirectPlayInfo *pInfo, DPMSG_GENERIC *pMessage, DWORD dwSize, DPID dpidFrom, DPID dpidTo);
 
 /**
  * End the network play of a game. The host stops its worker thread, the session of DirectPlay
