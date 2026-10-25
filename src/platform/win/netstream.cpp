@@ -185,3 +185,23 @@ int NetStream::StreamGetWriteSize() {
 unsigned char *NetStream::StreamGetBufferPtr() {
     return pBuffer;
 }
+
+float ConvertFixedAngleToFloat(short nValue) {
+    return nValue * -(1.0f / 32768.0f);
+}
+
+float ByteToFloat(unsigned char bValue) {
+    return bValue * 1.41015625f;
+}
+
+float FixedToRadians(short nValue) {
+    return nValue * (1.0f / 128.0f);
+}
+
+float SignedShortToFloat(short nValue) {
+    return nValue * (1.0f / 256.0f);
+}
+
+float ConvertCharToScaledFloat(signed char bValue) {
+    return bValue * (1.0f / 8.0f);
+}

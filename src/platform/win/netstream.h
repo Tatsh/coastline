@@ -206,3 +206,53 @@ public:
  * @ghidraAddress BRGlide: 0x11849f30
  */
 extern NetStream g_aNetPlayerStreams[NET_PLAYER_STREAM_COUNT];
+
+/**
+ * Scale a field of a packet of two bytes by -1/32768.
+ *
+ * @param nValue The field.
+ * @return The value.
+ * @ghidraAddress BRD3D: 0x10007280
+ * @ghidraAddress BRGlide: 0x100075f0
+ */
+float ConvertFixedAngleToFloat(short nValue);
+
+/**
+ * Scale a field of a packet of one unsigned byte by 1.41015625.
+ *
+ * @param bValue The field.
+ * @return The value.
+ * @ghidraAddress BRD3D: 0x100072a0
+ * @ghidraAddress BRGlide: 0x10007610
+ */
+float ByteToFloat(unsigned char bValue);
+
+/**
+ * Scale a field of a packet of two bytes by 1/128.
+ *
+ * @param nValue The field.
+ * @return The value.
+ * @ghidraAddress BRD3D: 0x10007380
+ * @ghidraAddress BRGlide: 0x100076f0
+ */
+float FixedToRadians(short nValue);
+
+/**
+ * Scale a field of a packet of two bytes by 1/256.
+ *
+ * @param nValue The field.
+ * @return The value.
+ * @ghidraAddress BRD3D: 0x100073a0
+ * @ghidraAddress BRGlide: 0x10007710
+ */
+float SignedShortToFloat(short nValue);
+
+/**
+ * Scale a field of a packet of one signed byte by 1/8.
+ *
+ * @param bValue The field.
+ * @return The value.
+ * @ghidraAddress BRD3D: 0x100073c0
+ * @ghidraAddress BRGlide: 0x10007730
+ */
+float ConvertCharToScaledFloat(signed char bValue);
