@@ -26,6 +26,15 @@ typedef struct {
     f32 y; /*!< The component along the y axis. */
 } Vec2f;
 
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+/** A point or direction in space, in double precision. */
+typedef struct {
+    f64 x; /*!< The component along the x axis. */
+    f64 y; /*!< The component along the y axis. */
+    f64 z; /*!< The component along the z axis. */
+} Vec3d;
+#endif
+
 /**
  * @ghidraAddress USA: 0x8028b790
  * @ghidraAddress EUR: 0x8028da40
@@ -701,6 +710,60 @@ void SetRngSeed(u32 seed);
  * @ghidraAddress BRGlide: 0x100353d0
  */
 u32 AdvanceRng(void);
+
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+/**
+ * The square of the length of a vector in double precision.
+ *
+ * @param v The vector.
+ * @return The square of its length.
+ * @ghidraAddress BRD3D: 0x100305b0
+ * @ghidraAddress BRGlide: 0x1001dc40
+ */
+f64 Vec3dLengthSquared(Vec3d *v);
+
+/**
+ * The length of a vector in double precision.
+ *
+ * @param v The vector.
+ * @return Its length.
+ * @ghidraAddress BRD3D: 0x100305f0
+ * @ghidraAddress BRGlide: 0x1001dc80
+ */
+f64 Vec3dLength(Vec3d *v);
+
+/**
+ * Scale a vector in double precision to a length of 1 in place, unless its length is 0.
+ *
+ * @param v The vector.
+ * @return The vector.
+ * @ghidraAddress BRD3D: 0x10030600
+ * @ghidraAddress BRGlide: 0x1001dc90
+ */
+Vec3d *Vec3dNormalize(Vec3d *v);
+
+/**
+ * The dot product of two vectors in double precision.
+ *
+ * @param a The first vector.
+ * @param b The second vector.
+ * @return The dot product.
+ * @ghidraAddress BRD3D: 0x10030640
+ * @ghidraAddress BRGlide: 0x1001dcd0
+ */
+f64 Vec3dDot(Vec3d *a, Vec3d *b);
+
+/**
+ * The cross product of two vectors in double precision.
+ *
+ * @param a The first vector.
+ * @param b The second vector.
+ * @param out The vector that receives a cross b.
+ * @ghidraAddress BRD3D: 0x10030670
+ * @ghidraAddress BRGlide: 0x1001dd00
+ */
+void Vec3dCross(Vec3d *a, Vec3d *b, Vec3d *out);
+#endif
 
 #ifdef __cplusplus
 }

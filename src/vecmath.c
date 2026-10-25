@@ -651,3 +651,38 @@ u32 AdvanceRng(void) {
     g_dwRandomSeed = (g_dwRandomSeed * RNG_MULTIPLIER) & RNG_MASK;
     return g_dwRandomSeed;
 }
+
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+f64 Vec3dLengthSquared(Vec3d *v) {
+    f64 x = v->x;
+    f64 y = v->y;
+    f64 z = v->z;
+
+    return x * x + y * y + z * z;
+}
+
+f64 Vec3dLength(Vec3d *v) {
+    return sqrt(Vec3dLengthSquared(v));
+}
+
+Vec3d *Vec3dNormalize(Vec3d *v) {
+    f64 length = Vec3dLength(v);
+
+    if (length != 0.0) {
+        v->x /= length;
+        v->y /= length;
+        v->z /= length;
+    }
+    return v;
+}
+
+f64 Vec3dDot(Vec3d *a, Vec3d *b) {
+    return a->x * b->x + a->y * b->y + a->z * b->z;
+}
+
+void Vec3dCross(Vec3d *a, Vec3d *b, Vec3d *out) {
+    out->x = a->y * b->z - a->z * b->y;
+    out->y = a->z * b->x - a->x * b->z;
+    out->z = a->x * b->y - a->y * b->x;
+}
+#endif
