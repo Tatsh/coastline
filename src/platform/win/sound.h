@@ -366,14 +366,18 @@ struct SoundBufferNode {
     void *pSampleData;           /*!< The data of the sample, in locked global memory. */
     DWORD dwSampleSize;          /*!< The size of the sample in bytes. */
     WAVEFORMATEX *pWaveFormat;   /*!< The format of the sample, in locked global memory. */
-    char abUnknownC[0x10];       /* +0x0c */
+    DWORD dwFrequency;           /*!< The frequency of the buffer, in samples a second. */
+    int nPan;                    /*!< The pan, from 0 to 800 with the centre at 400. */
+    int nVolume;                 /*!< The volume before the volume of the sound effects. */
+    char abUnknown18[4];         /* +0x18 */
     int bPlaying;                /*!< Whether the buffer plays. */
     char abUnknown20[4];         /* +0x20 */
     int bHardware;               /*!< Whether the buffer is in the memory of the sound card. */
     int bStickyFocus;            /*!< Whether the buffer plays while the window is not active. */
     char abUnknown2c[0x70];      /* +0x2c */
     IDirectSoundBuffer *pBuffer; /*!< The buffer of DirectSound. */
-    char abUnknownA0[0x108];     /* +0xa0 */
+    int nNameOffset;             /*!< The offset in szPath of the name of the file, or 0. */
+    char szPath[MAX_PATH];       /*!< The path of the file of the sample. */
     SoundBufferNode *pNext;      /*!< The next node of the list. */
 };
 
@@ -473,8 +477,8 @@ void ResetSoundBankTables(void);
 
 /** A sound sample loaded into DirectSound. The layout past the buffers is not recovered yet. */
 struct SoundSample {
-    IDirectSoundBuffer *apChannelBuffers[SOUND_CHANNEL_COUNT]; /*!< A buffer for each channel. */
-    char abUnknown3c[0xc];                                     /* +0x3c */
+    SoundBufferNode *apChannelBuffers[SOUND_CHANNEL_COUNT]; /*!< A buffer for each channel. */
+    char abUnknown3c[0xc];                                  /* +0x3c */
 };
 
 /**
@@ -537,14 +541,73 @@ extern void *g_SfxWaveVariantTable[SOUND_CHANNEL_COUNT];
 extern void *g_LoopingSoundTable[SOUND_CHANNEL_COUNT];
 
 /**
- * Load a wave file into a buffer of DirectSound.
+ * Read a wave file into locked global memory.
  *
  * @param pszPath The path of the file.
- * @return The buffer, or null.
+ * @param pdwSize Receives the size of the data.
+ * @param pdwSamples Receives the number of samples.
+ * @param ppFormat Receives the format.
+ * @param ppData Receives the data.
+ * @return 0, or an error.
+ * @ghidraAddress BRD3D: 0x10076fa0
+ * @ghidraAddress BRGlide: 0x10070280
+ */
+int WaveLoadFile(
+    const char *pszPath, DWORD *pdwSize, DWORD *pdwSamples, WAVEFORMATEX **ppFormat, void **ppData);
+
+/**
+ * Add a node at the end of a list of sound buffers, not playing.
+ *
+ * @param pHead The head of the list.
+ * @param pNode The node.
+ * @return Always 0.
+ * @ghidraAddress BRD3D: 0x10072450
+ * @ghidraAddress BRGlide: 0x1006b3c0
+ */
+int AppendSoundBufferToList(SoundBufferNode *pHead, SoundBufferNode *pNode);
+
+/**
+ * Set the pan of the buffer of a node from nPan.
+ *
+ * @param pNode The node.
+ * @return The result of SetPan().
+ * @ghidraAddress BRD3D: 0x10072490
+ * @ghidraAddress BRGlide: 0x1006b400
+ */
+HRESULT ApplySoundBufferPan(SoundBufferNode *pNode);
+
+/**
+ * Set the frequency of the buffer of a node from dwFrequency.
+ *
+ * @param pNode The node.
+ * @return The result of SetFrequency().
+ * @ghidraAddress BRD3D: 0x100724b0
+ * @ghidraAddress BRGlide: 0x1006b420
+ */
+HRESULT ApplySoundBufferFrequency(SoundBufferNode *pNode);
+
+/**
+ * Set the volume of the buffer of a node from nVolume scaled by g_bSfxVolume, or silence it when
+ * the sound effects are off.
+ *
+ * @param pNode The node.
+ * @return The result of SetVolume().
+ * @ghidraAddress BRD3D: 0x100724d0
+ * @ghidraAddress BRGlide: 0x1006b440
+ */
+HRESULT ApplySoundBufferVolume(SoundBufferNode *pNode);
+
+/**
+ * Load a wave file into a node of a buffer of DirectSound at the end of g_SoundBufferListHead, at
+ * its own frequency, the centre, and the volume of the sound effects. A step that fails frees what
+ * it created.
+ *
+ * @param pszPath The path of the file.
+ * @return The node, or null.
  * @ghidraAddress BRD3D: 0x10072ca0
  * @ghidraAddress BRGlide: 0x1006bc10
  */
-IDirectSoundBuffer *LoadAudioFile(const char *pszPath);
+SoundBufferNode *LoadAudioFile(const char *pszPath);
 
 /**
  * Load the variants of the wave of a sound effect of a race.

@@ -444,6 +444,82 @@ HRESULT FreeSoundBufferList(SoundBufferNode *pHead) {
 
 SoundBufferNode *g_apSoundChannelBuffer[SOUND_CHANNEL_COUNT];
 
+int AppendSoundBufferToList(SoundBufferNode *pHead, SoundBufferNode *pNode) {
+    SoundBufferNode *pTail = pHead;
+
+    pNode->pNext = nullptr;
+    pNode->bPlaying = false;
+    while (pTail->pNext != nullptr) {
+        pTail = pTail->pNext;
+    }
+    pTail->pNext = pNode;
+    return 0;
+}
+
+// The pan and the volume of a node at the centre, and the scale of their steps in hundredths of a
+// decibel.
+#define SOUND_LEVEL_CENTER 400
+#define SOUND_LEVEL_STEP 10
+
+HRESULT ApplySoundBufferPan(SoundBufferNode *pNode) {
+    return pNode->pBuffer->SetPan((pNode->nPan - SOUND_LEVEL_CENTER) * SOUND_LEVEL_STEP);
+}
+
+HRESULT ApplySoundBufferFrequency(SoundBufferNode *pNode) {
+    return pNode->pBuffer->SetFrequency(pNode->dwFrequency);
+}
+
+HRESULT ApplySoundBufferVolume(SoundBufferNode *pNode) {
+    unsigned nScaled;
+
+    if (!g_bSfxVolume) {
+        return pNode->pBuffer->SetVolume(DSBVOLUME_MIN);
+    }
+    nScaled = static_cast<unsigned>(pNode->nVolume * g_bSfxVolume) / MAX_VOLUME;
+    return pNode->pBuffer->SetVolume(
+        static_cast<LONG>((nScaled - SOUND_LEVEL_CENTER) * SOUND_LEVEL_STEP));
+}
+
+SoundBufferNode *LoadAudioFile(const char *pszPath) {
+    SoundBufferNode *pNode = static_cast<SoundBufferNode *>(
+        GlobalLock(GlobalAlloc(GMEM_ZEROINIT, sizeof(SoundBufferNode))));
+    DWORD dwSamples;
+    const char *pszName;
+
+    if (pNode == nullptr) {
+        return nullptr;
+    }
+    pNode->pSampleData = nullptr;
+    pNode->pWaveFormat = nullptr;
+    pNode->pBuffer = nullptr;
+    pNode->bStickyFocus = false;
+    strcpy(pNode->szPath, pszPath);
+    if (WaveLoadFile(
+            pszPath, &pNode->dwSampleSize, &dwSamples, &pNode->pWaveFormat, &pNode->pSampleData) !=
+            0 ||
+        CreateDirectSoundBufferFromSample(pNode) != DS_OK ||
+        AppendSoundBufferToList(&g_SoundBufferListHead, pNode) != 0) {
+        ReleaseSoundBuffer(pNode);
+        if (pNode->pWaveFormat != nullptr) {
+            FreeLockedGlobalMemory(pNode->pWaveFormat);
+        }
+        if (pNode->pSampleData != nullptr) {
+            FreeLockedGlobalMemory(pNode->pSampleData);
+        }
+        FreeLockedGlobalMemory(pNode);
+        return nullptr;
+    }
+    pszName = strrchr(pNode->szPath, '\\');
+    pNode->nNameOffset = pszName != nullptr ? static_cast<int>(pszName + 1 - pNode->szPath) : 0;
+    pNode->dwFrequency = pNode->pWaveFormat->nSamplesPerSec;
+    pNode->nPan = SOUND_LEVEL_CENTER;
+    pNode->nVolume = SOUND_LEVEL_CENTER;
+    ApplySoundBufferVolume(pNode);
+    ApplySoundBufferFrequency(pNode);
+    ApplySoundBufferPan(pNode);
+    return pNode;
+}
+
 bool MuteAllActiveSoundChannels(void) {
     if (!g_bSoundEnabledIni || g_pDirectSound == nullptr || g_dwDirectSoundRefCount == 0) {
         return true;
@@ -501,7 +577,7 @@ bool LoadSoundSet(int nSet) {
     }
     for (int nSample = 1; nSample < g_dwLoadedSoundSampleCount - 1; nSample++) {
         for (int i = 0; i < SOUND_CHANNEL_COUNT; i++) {
-            IDirectSoundBuffer *&pBuffer = g_aSoundChannelBuffers[nSample].apChannelBuffers[i];
+            SoundBufferNode *&pBuffer = g_aSoundChannelBuffers[nSample].apChannelBuffers[i];
 
             if (!g_SoundBankIndexTableA[nSample].anChannels[i]) {
                 pBuffer = nullptr;
