@@ -1,6 +1,6 @@
 # PC port game code from 0x10030000 to 0x10040000
 
-37 of 307 routines done.
+38 of 307 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -88,7 +88,7 @@ the same name, for a routine the port retained from the N64 game.
 | `IsGameCdInDrive`                                 |        |                 |      1 |    202 | `0x1003e100` | `0x100377a0` | `undefined IsGameCdInDrive()`                                                                                   |
 | `ExtractVehicleBaseColor`                         |        | ✅ `0x8021d2a0` |      0 |    201 | `0x10035452` | `0x1002eb03` | `undefined ExtractVehicleBaseColor()`                                                                           |
 | `SeasonCongratsUI_UpdatePrimaryBannerImage`       |        |                 |      1 |    200 | `0x1003f440` | `0x10038980` | `undefined SeasonCongratsUI_UpdatePrimaryBannerImage()`                                                         |
-| `ShutdownApplication`                             |   📝   |                 |      8 |    195 | `0x10038f30` | `0x100325b0` | `void ShutdownApplication(int nReason)`                                                                         |
+| `ShutdownApplication`                             |   ✅   |                 |      8 |    195 | `0x10038f30` | `0x100325b0` | `void ShutdownApplication(int nExitCode)`                                                                       |
 | `CopyTextureAndPaletteFromSegment`                |        |                 |      1 |    188 | `0x10038450` | `0x10031ac0` | `undefined CopyTextureAndPaletteFromSegment()`                                                                  |
 | `guLookAtReflectF`                                |        | ✅ `0x80261150` |      3 |    186 | `0x10030e20` | `0x1002a4d0` | `undefined guLookAtReflectF()`                                                                                  |
 | `FindNetworkSlotByPlayerId`                       |        |                 |      1 |    185 | `0x10036030` | `0x1002f6d0` | `undefined FindNetworkSlotByPlayerId()`                                                                         |
@@ -128,7 +128,7 @@ the same name, for a routine the port retained from the N64 game.
 | `Mtx3x3TransformVec`                              |   ✅   | ✅ `0x802250fc` |      1 |    115 | `0x1003b3f0` | `0x10034a70` | `undefined Mtx3x3TransformVec()`                                                                                |
 | `GameOptionsUI_UpdateForceFeedbackLabel`          |        |                 |      1 |    113 | `0x1003fcb0` | `0x100391f0` | `undefined GameOptionsUI_UpdateForceFeedbackLabel()`                                                            |
 | `IsTrackSelectable`                               |        |                 |      6 |    112 | `0x1003f2b0` | `0x100387f0` | `uint IsTrackSelectable(int nDepthIndex)`                                                                       |
-| `DisconnectNetworkSession`                        |        |                 |      7 |    111 | `0x1003bf60` | `0x100355f0` | `void DisconnectNetworkSession(void)`                                                                           |
+| `DisconnectNetworkSession`                        |   📝   |                 |      7 |    111 | `0x1003bf60` | `0x100355f0` | `void DisconnectNetworkSession(void)`                                                                           |
 | `CloseAndReleaseDirectPlay`                       |        |                 |      2 |    108 | `0x1003c550` | `0x10035be0` | `undefined CloseAndReleaseDirectPlay()`                                                                         |
 | `SendNetworkFinishPositionMessage`                |        |                 |      2 |    108 | `0x1003db50` | `0x100371f0` | `undefined SendNetworkFinishPositionMessage()`                                                                  |
 | `guPerspectiveF`                                  |        | ✅ `0x80265180` |      2 |    106 | `0x10030930` | `0x10029fe0` | `undefined guPerspectiveF()`                                                                                    |
@@ -170,7 +170,7 @@ the same name, for a routine the port retained from the N64 game.
 | `UpdateControllerState`                           |        | ✅ `0x8021a9b4` |      1 |     79 | `0x100337e9` | `0x1002ce9a` | `undefined UpdateControllerState()`                                                                             |
 | `ShowNetworkErrorMessage`                         |        |                 |      2 |     78 | `0x1003dbc0` | `0x10037260` | `undefined ShowNetworkErrorMessage()`                                                                           |
 | `AudioOptionsUI_UpdateVolumeLevelIndicatorPos`    |        |                 |      1 |     78 | `0x1003ea40` | `0x10038060` | `undefined AudioOptionsUI_UpdateVolumeLevelIndicatorPos()`                                                      |
-| `ShutdownDirectPlay`                              |        |                 |      1 |     78 | `0x1003bfd0` | `0x10035660` | `undefined ShutdownDirectPlay()`                                                                                |
+| `ShutdownDirectPlay`                              |   📝   |                 |      1 |     78 | `0x1003bfd0` | `0x10035660` | `void ShutdownDirectPlay(void)`                                                                                 |
 | `SendNetworkRaceStateMessage`                     |        |                 |      4 |     77 | `0x1003d9a0` | `0x10037040` | `undefined SendNetworkRaceStateMessage()`                                                                       |
 | `SendNetworkReadyMessage`                         |        |                 |      2 |     77 | `0x1003d950` | `0x10036ff0` | `undefined SendNetworkReadyMessage()`                                                                           |
 | `SendNetworkMessage4`                             |        |                 |      1 |     77 | `0x1003da40` | `0x100370e0` | `undefined SendNetworkMessage4()`                                                                               |

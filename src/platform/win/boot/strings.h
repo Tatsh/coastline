@@ -52,3 +52,10 @@ void LoadStringTableFromDll(void);
  * @ghidraAddress BRGlide: 0x1006d280
  */
 const char *GetStringResource(unsigned nResourceId);
+
+/**
+ * Free the buffer of the strings.
+ *
+ * @ghidraAddress BRD3D: 0x10074050
+ */
+void FreeStringTable(void);

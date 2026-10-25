@@ -14,6 +14,7 @@ airplanetrigger
 alabel
 alphadither
 andi
+apfn
 apsz
 arcadetimes
 argn
@@ -34,6 +35,7 @@ bgtz
 bilerp
 bitspixel
 blez
+blit
 bnel
 bnez
 boxz
@@ -186,6 +188,7 @@ fsanitize
 ftofrac
 funclets
 funcs
+gamestate
 genld
 getcount
 getcurrfaultedthread

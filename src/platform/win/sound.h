@@ -93,3 +93,24 @@ void MuteAllActiveSoundChannels(void);
  * @ghidraAddress BRD3D: 0x10002510
  */
 void PlayCdAudioFromCurrentTrack(void);
+
+/**
+ * Release DirectSound and its buffers.
+ *
+ * @ghidraAddress BRD3D: 0x10073730
+ */
+void ShutdownDirectSound(void);
+
+/**
+ * Release the device of the music.
+ *
+ * @ghidraAddress BRD3D: 0x10002cf0
+ */
+void ReleaseMusicDeviceReference(void);
+
+/**
+ * Release the music library.
+ *
+ * @ghidraAddress BRD3D: 0x1002aea0
+ */
+void ShutdownEarSound(void);

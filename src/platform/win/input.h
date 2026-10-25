@@ -47,3 +47,24 @@ extern InputBinding g_awDefaultKeyBindingsDevice2[INPUT_BINDING_COUNT];
  * @ghidraAddress BRGlide: 0x100b3a98
  */
 extern InputBinding g_awDefaultKeyBindingsDevice3[INPUT_BINDING_COUNT];
+
+/**
+ * Release the DirectInput device of the game controller.
+ *
+ * @ghidraAddress BRD3D: 0x10079550
+ */
+void ReleaseJoystickDevice(void);
+
+/**
+ * Release the DirectInput device of the keyboard.
+ *
+ * @ghidraAddress BRD3D: 0x10078bc0
+ */
+void ReleaseKeyboardDevice(void);
+
+/**
+ * Release DirectInput.
+ *
+ * @ghidraAddress BRD3D: 0x10078db0
+ */
+void ShutdownDirectInput(void);

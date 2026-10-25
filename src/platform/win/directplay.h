@@ -48,3 +48,25 @@ void TickNetworkPauseRequest(void);
  * @ghidraAddress BRD3D: 0x1003c3a0
  */
 void WINAPI HandleNetworkWindowMessage(HWND hWnd, UINT nMessage, WPARAM wParam, LPARAM lParam);
+
+/**
+ * End the network play of a game.
+ *
+ * @param nReason 1 as the game ends. Its meaning is not recovered yet.
+ * @ghidraAddress BRD3D: 0x10005be0
+ */
+void ShutdownNetworkSubsystem(int nReason);
+
+/**
+ * Release DirectPlay.
+ *
+ * @ghidraAddress BRD3D: 0x1003bfd0
+ */
+void ShutdownDirectPlay(void);
+
+/**
+ * Leave the session of DirectPlay.
+ *
+ * @ghidraAddress BRD3D: 0x1003bf60
+ */
+void DisconnectNetworkSession(void);

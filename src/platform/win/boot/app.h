@@ -118,12 +118,68 @@ extern bool g_bWindowMinimized;
 extern bool g_bWindowMaximized;
 
 /**
- * Release the subsystems of the game as the main window goes.
+ * Release every subsystem of the game and end the process.
  *
- * @param nReason 0 from the window. Its meaning is not recovered yet.
+ * @param nExitCode The exit code of the process.
  * @ghidraAddress BRD3D: 0x10038f30
  */
-void ShutdownApplication(int nReason);
+[[noreturn]] void ShutdownApplication(int nExitCode);
+
+/**
+ * The state of the game, an index into g_apfnGameStateHandlers.
+ *
+ * @ghidraAddress BRD3D: 0x10690a14
+ */
+extern int g_dwGameState;
+
+/**
+ * The routine that runs a frame of each state of the game.
+ *
+ * @ghidraAddress BRD3D: 0x100aa5b0
+ */
+extern void (*g_apfnGameStateHandlers[])(void);
+
+/**
+ * Release the renderer of the backend, if one is set.
+ *
+ * @ghidraAddress BRD3D: 0x10b501cc
+ */
+extern void (*g_pfnRenderBackendShutdown)(void);
+
+/**
+ * Release the texture subsystem, if one is set.
+ *
+ * @ghidraAddress BRD3D: 0x118aa0d0
+ */
+extern void (*g_pfnShutdownTextureSubsystem)(void);
+
+/**
+ * Release the render device, if one is set.
+ *
+ * @ghidraAddress BRD3D: 0x10690a28
+ */
+extern void (*g_pfnRenderDeviceShutdown)(void);
+
+/**
+ * Free the buffers of the sectors of the track.
+ *
+ * @ghidraAddress BRD3D: 0x1002c4a0
+ */
+void FreeAllTrackSectorBuffers(void);
+
+/**
+ * Forget the snapshots of frames.
+ *
+ * @ghidraAddress BRD3D: 0x10016990
+ */
+void InvalidateFrameSnapshotSlots(void);
+
+/**
+ * Free the bitmaps of the paint shop.
+ *
+ * @ghidraAddress BRD3D: 0x10061620
+ */
+void FreeAllPaintBitmaps(void);
 
 class DirectDrawRenderer;
 

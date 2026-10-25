@@ -54,3 +54,14 @@ const char *GetStringResource(unsigned nResourceId) {
     }
     return g_apszStringResourceTable[nResourceId];
 }
+
+void FreeStringTable(void) {
+    if (g_pStringTableBuffer == nullptr) {
+        return;
+    }
+    // The entries of the table still point into the freed buffer.
+    free(g_pStringTableBuffer);
+    g_pStringTableBuffer = nullptr;
+    g_dwStringTableUsedBytes = 0;
+    g_dwStringTableBufferSize = 0;
+}
