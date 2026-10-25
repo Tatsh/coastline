@@ -50,6 +50,13 @@ HRESULT RenderHost::ValidateObjectRenderResources() {
     return S_OK;
 }
 
+void D3DMaterial::Release() {
+    if (pMaterial != nullptr) {
+        pMaterial->Release();
+        pMaterial = nullptr;
+    }
+}
+
 DirectDrawRenderer::DirectDrawRenderer() {
     memset(this, 0, sizeof(*this));
     dwSize = sizeof(*this);
@@ -67,11 +74,11 @@ void DirectDrawRenderer::Cleanup() {
 
 HRESULT DirectDrawRenderer::InitializeWindow(HWND hNewWnd,
                                              GUID *pDriverGuid,
-                                             GUID *pDeviceGuid,
                                              int nWidth,
                                              int nHeight,
                                              int nBitDepth,
-                                             int nModeFlags,
+                                             void *pSurfaceFormat,
+                                             GUID *pDeviceGuid,
                                              bool bOption) {
     HRESULT hr;
 
@@ -85,12 +92,12 @@ HRESULT DirectDrawRenderer::InitializeWindow(HWND hNewWnd,
         dwFlags &= ~4;
     }
     hr = SelectDriverDeviceAndModeFromConfig(pDriverGuid,
-                                             pDeviceGuid,
                                              nWidth,
                                              nHeight,
                                              nBitDepth,
-                                             nModeFlags,
-                                             1,
+                                             pSurfaceFormat,
+                                             pDeviceGuid,
+                                             true,
                                              &pDriver,
                                              &pDevice,
                                              &pMode);
@@ -259,6 +266,22 @@ int DirectDrawRenderer::DestroyD3DDevice() {
     if (pBackBuffer != nullptr) {
         pBackBuffer->Release();
         pBackBuffer = nullptr;
+    }
+    return 0;
+}
+
+int DirectDrawRenderer::ReleaseViewportAndMaterial() {
+    // The original sets bit 4 of the state rather than clearing a bit.
+    dwRenderStateFlags |= 0x10;
+    if (pMaterial != nullptr) {
+        pMaterial->Release();
+        delete pMaterial;
+        pMaterial = nullptr;
+    }
+    if (pViewport != nullptr) {
+        pD3DDevice->DeleteViewport(pViewport);
+        pViewport->Release();
+        pViewport = nullptr;
     }
     return 0;
 }

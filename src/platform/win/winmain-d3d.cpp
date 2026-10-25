@@ -212,7 +212,7 @@ HRESULT CreateRenderWindow(DWORD dwExStyle,
     if (g_dwPlayMusicMode == 2) {
         InitializeEarSound(hWnd);
     }
-    hr = pRenderer->InitializeWindow(hWnd, pDriverGuid, nullptr, 0, 0, 0, 0, true);
+    hr = pRenderer->InitializeWindow(hWnd, pDriverGuid, 0, 0, 0, nullptr, nullptr, true);
     if (FAILED(hr)) {
         pRenderer->Cleanup();
         delete pRenderer;

@@ -70,10 +70,25 @@ public:
 
 class RenderHost;
 
+/** A Direct3D material. The layout before pMaterial is not recovered yet. */
+class D3DMaterial {
+public:
+    char abUnknown0[0x54];         /* +0x00 */
+    IDirect3DMaterial2 *pMaterial; /*!< The material of Direct3D. */
+
+    /**
+     * Release the material of Direct3D.
+     *
+     * @ghidraAddress BRD3D: 0x1000a170
+     */
+    void Release();
+};
+
 /** The DirectDraw and Direct3D objects of a window. */
 class DirectDrawRenderer {
 public:
-    int anUnknown0[3];                   /* +0x00 */
+    int anUnknown0[2];                   /* +0x00 */
+    D3DMaterial *pMaterial;              /*!< The material of the viewport. */
     int dwDeviceInit;                    /*!< Whether the device is initialised. */
     int dwSize;                          /*!< The size of the renderer. */
     int dwFlags;                         /*!< Options of the renderer. Bit 2 is set by default. */
@@ -121,22 +136,22 @@ public:
      *
      * @param hWnd The window.
      * @param pDriverGuid The DirectDraw driver, or `nullptr` for the default.
-     * @param pDeviceGuid The Direct3D device, or `nullptr` for the default.
      * @param nWidth The width of the mode, or 0.
      * @param nHeight The height of the mode, or 0.
      * @param nBitDepth The bits of a pixel of the mode, or 0.
-     * @param nModeFlags Options of the selection, or 0.
+     * @param pSurfaceFormat The format of the surfaces, or `nullptr`.
+     * @param pDeviceGuid The Direct3D device, or `nullptr` for the default.
      * @param bOption Whether bit 2 of dwFlags is set. Its meaning is not recovered yet.
      * @return `S_OK`, or the error of the step that failed.
      * @ghidraAddress BRD3D: 0x1000a1e0
      */
     HRESULT InitializeWindow(HWND hWnd,
                              GUID *pDriverGuid,
-                             GUID *pDeviceGuid,
                              int nWidth,
                              int nHeight,
                              int nBitDepth,
-                             int nModeFlags,
+                             void *pSurfaceFormat,
+                             GUID *pDeviceGuid,
                              bool bOption);
 
     /**
@@ -444,28 +459,83 @@ void InitializeAllTextureSurfaces(void);
 extern bool g_dwNullStubEnable;
 
 /**
- * Select the driver, device, and mode of a renderer from the configuration.
+ * Select the driver, device, and mode of a renderer, finding the drivers first if the game has
+ * not. A mode is matched to the size asked for, or the mode of the desktop is taken.
  *
  * @param pDriverGuid The DirectDraw driver, or `nullptr` for the default.
- * @param pDeviceGuid The Direct3D device, or `nullptr` for the default.
  * @param nWidth The width of the mode, or 0.
  * @param nHeight The height of the mode, or 0.
  * @param nBitDepth The bits of a pixel of the mode, or 0.
- * @param nModeFlags Options of the selection, or 0.
- * @param nBehavior Always 1.
+ * @param pSurfaceFormat The format of the surfaces, or `nullptr`.
+ * @param pDeviceGuid The Direct3D device, or `nullptr` for the default.
+ * @param bMatchMode Whether a mode is matched to the size rather than taken from the desktop.
  * @param ppDriver Receives the driver.
  * @param ppDevice Receives the device.
  * @param ppMode Receives the mode.
- * @return `S_OK`, or the error of the selection.
+ * @return `S_OK`, the error of the search for drivers, RENDERER_E_NOT_CREATED without a driver
+ * or an output, or RENDERER_E_NOT_IN_GDI_MODE without a device and a mode.
  * @ghidraAddress BRD3D: 0x1001a790
  */
 HRESULT SelectDriverDeviceAndModeFromConfig(GUID *pDriverGuid,
-                                            GUID *pDeviceGuid,
                                             int nWidth,
                                             int nHeight,
                                             int nBitDepth,
-                                            int nModeFlags,
-                                            int nBehavior,
+                                            void *pSurfaceFormat,
+                                            GUID *pDeviceGuid,
+                                            bool bMatchMode,
                                             DirectDrawDriver **ppDriver,
                                             void **ppDevice,
                                             void **ppMode);
+
+/**
+ * Whether the DirectDraw drivers were found, in bit 0.
+ *
+ * @ghidraAddress BRD3D: 0x104bbe18
+ */
+extern unsigned char g_bDirectDrawDriversEnumerated;
+
+/**
+ * Find the DirectDraw drivers and their devices and modes, once.
+ *
+ * @return `S_OK`, or the error of DirectDraw.
+ * @ghidraAddress BRD3D: 0x1001b970
+ */
+HRESULT EnsureDirectDrawDriversEnumerated(void);
+
+/**
+ * Select a device of a driver and a mode that matches a size.
+ *
+ * @param pDriver The driver.
+ * @param pDeviceGuid The Direct3D device, or `nullptr` for the default.
+ * @param nWidth The width of the mode.
+ * @param nHeight The height of the mode.
+ * @param nBitDepth The bits of a pixel of the mode.
+ * @param pSurfaceFormat The format of the surfaces, or `nullptr`.
+ * @param ppDevice Receives the device.
+ * @param ppMode Receives the mode.
+ * @return Whether a device and a mode were found.
+ * @ghidraAddress BRD3D: 0x1001a6e0
+ */
+bool SelectDeviceAndDisplayMode(DirectDrawDriver *pDriver,
+                                GUID *pDeviceGuid,
+                                int nWidth,
+                                int nHeight,
+                                int nBitDepth,
+                                void *pSurfaceFormat,
+                                void **ppDevice,
+                                void **ppMode);
+
+/**
+ * Select a device of a driver and the mode of the desktop.
+ *
+ * @param pDriver The driver.
+ * @param pDeviceGuid The Direct3D device, or `nullptr` for the default.
+ * @param ppDevice Receives the device.
+ * @param ppMode Receives the mode.
+ * @return Whether a device and a mode were found.
+ * @ghidraAddress BRD3D: 0x1001a610
+ */
+bool FindDesktopDisplayModeAndDevice(DirectDrawDriver *pDriver,
+                                     GUID *pDeviceGuid,
+                                     void **ppDevice,
+                                     void **ppMode);
