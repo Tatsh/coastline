@@ -17,6 +17,7 @@ alloconload
 allplayers
 alphablendenable
 alphadither
+anchorfile
 andi
 apfn
 appnotstarted
@@ -107,6 +108,7 @@ cpdext
 cpdist
 cplens
 cplext
+cppreference
 createdibsection
 createmesgqueue
 createplayerorgroup
@@ -732,9 +734,11 @@ superbuild
 surfacelost
 swwwwfgdafch
 syms
+synchapi
 syncprintf
 szlong
 tagfile
+tagfiles
 tatsh
 texrect
 textdetail
@@ -814,6 +818,7 @@ vmodeldl
 vmodeltex
 vretrace
 vsince
+waitforsingleobject
 wasstilldrawing
 waveformatex
 wavread

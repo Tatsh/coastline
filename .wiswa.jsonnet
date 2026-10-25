@@ -137,6 +137,7 @@
         '.claude/worktrees/**',
         '3rdparty/**',
         'asm/**',
+        'docs/*.tags',
         'progress/**',
         'tools/splat/symbol_addrs.*.txt',
       ],
@@ -147,6 +148,18 @@
   },
   pre_commit_config+: {
     exclude: '^(3rdparty|asm)/',
+    // The tag file of cppreference is an upstream file larger than the default limit.
+    repos: [
+      repo + (if std.objectHas(repo, 'hooks') then {
+                hooks: [
+                  if hook.id == 'check-added-large-files' then
+                    hook { exclude: '^docs/cppreference\\.tags$|' + hook.exclude }
+                  else hook
+                  for hook in repo.hooks
+                ],
+              } else {})
+      for repo in super.repos
+    ],
   },
   gitattributes+: [
     '/3rdparty/** -text linguist-vendored',

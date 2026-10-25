@@ -1,0 +1,971 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<tagfile>
+  <compound kind="struct">
+    <name>BITMAP</name>
+    <filename>wingdi/ns-wingdi-bitmap?.</filename>
+  </compound>
+  <compound kind="struct">
+    <name>DDCOLORKEY</name>
+    <filename>ddraw/ns-ddraw-ddcolorkey?.</filename>
+  </compound>
+  <compound kind="struct">
+    <name>DDPIXELFORMAT</name>
+    <filename>ddraw/ns-ddraw-ddpixelformat?.</filename>
+  </compound>
+  <compound kind="struct">
+    <name>DDSCAPS</name>
+    <filename>ddraw/ns-ddraw-ddscaps?.</filename>
+  </compound>
+  <compound kind="struct">
+    <name>DDSURFACEDESC</name>
+    <filename>ddraw/ns-ddraw-ddsurfacedesc?.</filename>
+  </compound>
+  <compound kind="struct">
+    <name>GUID</name>
+    <filename>guiddef/ns-guiddef-guid?.</filename>
+  </compound>
+  <compound kind="class">
+    <name>IDirectDrawPalette</name>
+    <filename>ddraw/nn-ddraw-idirectdrawpalette?.</filename>
+    <member kind="function">
+      <type />
+      <name>GetEntries</name>
+      <anchorfile>ddraw/nf-ddraw-idirectdrawpalette-getentries?.</anchorfile>
+      <anchor />
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>Initialize</name>
+      <anchorfile>ddraw/nf-ddraw-idirectdrawpalette-initialize?.</anchorfile>
+      <anchor />
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>SetEntries</name>
+      <anchorfile>ddraw/nf-ddraw-idirectdrawpalette-setentries?.</anchorfile>
+      <anchor />
+      <arglist>()</arglist>
+    </member>
+  </compound>
+  <compound kind="class">
+    <name>IUnknown</name>
+    <filename>unknwn/nn-unknwn-iunknown?.</filename>
+    <member kind="function">
+      <type />
+      <name>AddRef</name>
+      <anchorfile>unknwn/nf-unknwn-iunknown-addref?.</anchorfile>
+      <anchor />
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>Release</name>
+      <anchorfile>unknwn/nf-unknwn-iunknown-release?.</anchorfile>
+      <anchor />
+      <arglist>()</arglist>
+    </member>
+  </compound>
+  <compound kind="struct">
+    <name>MEMORYSTATUS</name>
+    <filename>winbase/ns-winbase-memorystatus?.</filename>
+  </compound>
+  <compound kind="struct">
+    <name>MINMAXINFO</name>
+    <filename>winuser/ns-winuser-minmaxinfo?.</filename>
+  </compound>
+  <compound kind="struct">
+    <name>MMCKINFO</name>
+    <filename>mmiscapi/ns-mmiscapi-mmckinfo?.</filename>
+  </compound>
+  <compound kind="struct">
+    <name>MSG</name>
+    <filename>winuser/ns-winuser-msg?.</filename>
+  </compound>
+  <compound kind="struct">
+    <name>OSVERSIONINFOA</name>
+    <filename>winnt/ns-winnt-osversioninfoa?.</filename>
+  </compound>
+  <compound kind="struct">
+    <name>PALETTEENTRY</name>
+    <filename>wingdi/ns-wingdi-paletteentry?.</filename>
+  </compound>
+  <compound kind="struct">
+    <name>PCMWAVEFORMAT</name>
+    <filename>mmeapi/ns-mmeapi-pcmwaveformat?.</filename>
+  </compound>
+  <compound kind="struct">
+    <name>RECT</name>
+    <filename>windef/ns-windef-rect?.</filename>
+  </compound>
+  <compound kind="struct">
+    <name>WAVEFORMATEX</name>
+    <filename>mmeapi/ns-mmeapi-waveformatex?.</filename>
+  </compound>
+  <compound kind="struct">
+    <name>WINDOWPOS</name>
+    <filename>winuser/ns-winuser-windowpos?.</filename>
+  </compound>
+  <compound kind="struct">
+    <name>WNDCLASSA</name>
+    <filename>winuser/ns-winuser-wndclassa?.</filename>
+  </compound>
+  <compound kind="file">
+    <name>combaseapi.h</name>
+    <filename>combaseapi/?.</filename>
+    <member kind="function">
+      <type />
+      <name>CoCreateInstance</name>
+      <anchorfile>combaseapi/nf-combaseapi-cocreateinstance?.</anchorfile>
+      <anchor />
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>CoUninitialize</name>
+      <anchorfile>combaseapi/nf-combaseapi-couninitialize?.</anchorfile>
+      <anchor />
+      <arglist>()</arglist>
+    </member>
+  </compound>
+  <compound kind="file">
+    <name>ddraw.h</name>
+    <filename>ddraw/?.</filename>
+    <member kind="function">
+      <type />
+      <name>DirectDrawCreate</name>
+      <anchorfile>ddraw/nf-ddraw-directdrawcreate?.</anchorfile>
+      <anchor />
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>DirectDrawEnumerateA</name>
+      <anchorfile>ddraw/nf-ddraw-directdrawenumeratea?.</anchorfile>
+      <anchor />
+      <arglist>()</arglist>
+    </member>
+  </compound>
+  <compound kind="file">
+    <name>debugapi.h</name>
+    <filename>debugapi/?.</filename>
+    <member kind="function">
+      <type />
+      <name>OutputDebugStringA</name>
+      <anchorfile>debugapi/nf-debugapi-outputdebugstringa?.</anchorfile>
+      <anchor />
+      <arglist>()</arglist>
+    </member>
+  </compound>
+  <compound kind="file">
+    <name>guiddef.h</name>
+    <filename>guiddef/?.</filename>
+    <member kind="function">
+      <type />
+      <name>IsEqualGUID</name>
+      <anchorfile>guiddef/nf-guiddef-isequalguid?.</anchorfile>
+      <anchor />
+      <arglist>()</arglist>
+    </member>
+  </compound>
+  <compound kind="file">
+    <name>handleapi.h</name>
+    <filename>handleapi/?.</filename>
+    <member kind="function">
+      <type />
+      <name>CloseHandle</name>
+      <anchorfile>handleapi/nf-handleapi-closehandle?.</anchorfile>
+      <anchor />
+      <arglist>()</arglist>
+    </member>
+  </compound>
+  <compound kind="file">
+    <name>libloaderapi.h</name>
+    <filename>libloaderapi/?.</filename>
+    <member kind="function">
+      <type />
+      <name>DisableThreadLibraryCalls</name>
+      <anchorfile>libloaderapi/nf-libloaderapi-disablethreadlibrarycalls?.</anchorfile>
+      <anchor />
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>FreeLibrary</name>
+      <anchorfile>libloaderapi/nf-libloaderapi-freelibrary?.</anchorfile>
+      <anchor />
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>GetModuleHandleA</name>
+      <anchorfile>libloaderapi/nf-libloaderapi-getmodulehandlea?.</anchorfile>
+      <anchor />
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>GetProcAddress</name>
+      <anchorfile>libloaderapi/nf-libloaderapi-getprocaddress?.</anchorfile>
+      <anchor />
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>LoadLibraryA</name>
+      <anchorfile>libloaderapi/nf-libloaderapi-loadlibrarya?.</anchorfile>
+      <anchor />
+      <arglist>()</arglist>
+    </member>
+  </compound>
+  <compound kind="file">
+    <name>mmiscapi.h</name>
+    <filename>mmiscapi/?.</filename>
+    <member kind="function">
+      <type />
+      <name>mmioAdvance</name>
+      <anchorfile>mmiscapi/nf-mmiscapi-mmioadvance?.</anchorfile>
+      <anchor />
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>mmioAscend</name>
+      <anchorfile>mmiscapi/nf-mmiscapi-mmioascend?.</anchorfile>
+      <anchor />
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>mmioClose</name>
+      <anchorfile>mmiscapi/nf-mmiscapi-mmioclose?.</anchorfile>
+      <anchor />
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>mmioDescend</name>
+      <anchorfile>mmiscapi/nf-mmiscapi-mmiodescend?.</anchorfile>
+      <anchor />
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>mmioGetInfo</name>
+      <anchorfile>mmiscapi/nf-mmiscapi-mmiogetinfo?.</anchorfile>
+      <anchor />
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>mmioOpenA</name>
+      <anchorfile>mmiscapi/nf-mmiscapi-mmioopena?.</anchorfile>
+      <anchor />
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>mmioRead</name>
+      <anchorfile>mmiscapi/nf-mmiscapi-mmioread?.</anchorfile>
+      <anchor />
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>mmioSeek</name>
+      <anchorfile>mmiscapi/nf-mmiscapi-mmioseek?.</anchorfile>
+      <anchor />
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>mmioSetInfo</name>
+      <anchorfile>mmiscapi/nf-mmiscapi-mmiosetinfo?.</anchorfile>
+      <anchor />
+      <arglist>()</arglist>
+    </member>
+  </compound>
+  <compound kind="file">
+    <name>msacm.h</name>
+    <filename>msacm/?.</filename>
+    <member kind="function">
+      <type />
+      <name>acmMetrics</name>
+      <anchorfile>msacm/nf-msacm-acmmetrics?.</anchorfile>
+      <anchor />
+      <arglist>()</arglist>
+    </member>
+  </compound>
+  <compound kind="file">
+    <name>objbase.h</name>
+    <filename>objbase/?.</filename>
+    <member kind="function">
+      <type />
+      <name>CoInitialize</name>
+      <anchorfile>objbase/nf-objbase-coinitialize?.</anchorfile>
+      <anchor />
+      <arglist>()</arglist>
+    </member>
+  </compound>
+  <compound kind="file">
+    <name>processthreadsapi.h</name>
+    <filename>processthreadsapi/?.</filename>
+    <member kind="function">
+      <type />
+      <name>CreateThread</name>
+      <anchorfile>processthreadsapi/nf-processthreadsapi-createthread?.</anchorfile>
+      <anchor />
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>ExitThread</name>
+      <anchorfile>processthreadsapi/nf-processthreadsapi-exitthread?.</anchorfile>
+      <anchor />
+      <arglist>()</arglist>
+    </member>
+  </compound>
+  <compound kind="file">
+    <name>profileapi.h</name>
+    <filename>profileapi/?.</filename>
+    <member kind="function">
+      <type />
+      <name>QueryPerformanceCounter</name>
+      <anchorfile>profileapi/nf-profileapi-queryperformancecounter?.</anchorfile>
+      <anchor />
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>QueryPerformanceFrequency</name>
+      <anchorfile>profileapi/nf-profileapi-queryperformancefrequency?.</anchorfile>
+      <anchor />
+      <arglist>()</arglist>
+    </member>
+  </compound>
+  <compound kind="file">
+    <name>synchapi.h</name>
+    <filename>synchapi/?.</filename>
+    <member kind="function">
+      <type />
+      <name>CreateEventA</name>
+      <anchorfile>synchapi/nf-synchapi-createeventa?.</anchorfile>
+      <anchor />
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>CreateMutexA</name>
+      <anchorfile>synchapi/nf-synchapi-createmutexa?.</anchorfile>
+      <anchor />
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>DeleteCriticalSection</name>
+      <anchorfile>synchapi/nf-synchapi-deletecriticalsection?.</anchorfile>
+      <anchor />
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>EnterCriticalSection</name>
+      <anchorfile>synchapi/nf-synchapi-entercriticalsection?.</anchorfile>
+      <anchor />
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>InitializeCriticalSection</name>
+      <anchorfile>synchapi/nf-synchapi-initializecriticalsection?.</anchorfile>
+      <anchor />
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>LeaveCriticalSection</name>
+      <anchorfile>synchapi/nf-synchapi-leavecriticalsection?.</anchorfile>
+      <anchor />
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>ReleaseMutex</name>
+      <anchorfile>synchapi/nf-synchapi-releasemutex?.</anchorfile>
+      <anchor />
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>SetEvent</name>
+      <anchorfile>synchapi/nf-synchapi-setevent?.</anchorfile>
+      <anchor />
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>Sleep</name>
+      <anchorfile>synchapi/nf-synchapi-sleep?.</anchorfile>
+      <anchor />
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>WaitForMultipleObjects</name>
+      <anchorfile>synchapi/nf-synchapi-waitformultipleobjects?.</anchorfile>
+      <anchor />
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>WaitForSingleObject</name>
+      <anchorfile>synchapi/nf-synchapi-waitforsingleobject?.</anchorfile>
+      <anchor />
+      <arglist>()</arglist>
+    </member>
+  </compound>
+  <compound kind="file">
+    <name>sysinfoapi.h</name>
+    <filename>sysinfoapi/?.</filename>
+    <member kind="function">
+      <type />
+      <name>GetVersionExA</name>
+      <anchorfile>sysinfoapi/nf-sysinfoapi-getversionexa?.</anchorfile>
+      <anchor />
+      <arglist>()</arglist>
+    </member>
+  </compound>
+  <compound kind="file">
+    <name>timeapi.h</name>
+    <filename>timeapi/?.</filename>
+    <member kind="function">
+      <type />
+      <name>timeBeginPeriod</name>
+      <anchorfile>timeapi/nf-timeapi-timebeginperiod?.</anchorfile>
+      <anchor />
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>timeEndPeriod</name>
+      <anchorfile>timeapi/nf-timeapi-timeendperiod?.</anchorfile>
+      <anchor />
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>timeGetTime</name>
+      <anchorfile>timeapi/nf-timeapi-timegettime?.</anchorfile>
+      <anchor />
+      <arglist>()</arglist>
+    </member>
+  </compound>
+  <compound kind="file">
+    <name>vfw.h</name>
+    <filename>vfw/?.</filename>
+    <member kind="function">
+      <type />
+      <name>mmioFOURCC</name>
+      <anchorfile>vfw/nf-vfw-mmiofourcc?.</anchorfile>
+      <anchor />
+      <arglist>()</arglist>
+    </member>
+  </compound>
+  <compound kind="file">
+    <name>winbase.h</name>
+    <filename>winbase/?.</filename>
+    <member kind="function">
+      <type />
+      <name>GlobalAlloc</name>
+      <anchorfile>winbase/nf-winbase-globalalloc?.</anchorfile>
+      <anchor />
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>GlobalFree</name>
+      <anchorfile>winbase/nf-winbase-globalfree?.</anchorfile>
+      <anchor />
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>GlobalHandle</name>
+      <anchorfile>winbase/nf-winbase-globalhandle?.</anchorfile>
+      <anchor />
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>GlobalLock</name>
+      <anchorfile>winbase/nf-winbase-globallock?.</anchorfile>
+      <anchor />
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>GlobalMemoryStatus</name>
+      <anchorfile>winbase/nf-winbase-globalmemorystatus?.</anchorfile>
+      <anchor />
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>GlobalUnlock</name>
+      <anchorfile>winbase/nf-winbase-globalunlock?.</anchorfile>
+      <anchor />
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>lstrcpyA</name>
+      <anchorfile>winbase/nf-winbase-lstrcpya?.</anchorfile>
+      <anchor />
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>lstrlenA</name>
+      <anchorfile>winbase/nf-winbase-lstrlena?.</anchorfile>
+      <anchor />
+      <arglist>()</arglist>
+    </member>
+  </compound>
+  <compound kind="file">
+    <name>winerror.h</name>
+    <filename>winerror/?.</filename>
+    <member kind="function">
+      <type />
+      <name>FAILED</name>
+      <anchorfile>winerror/nf-winerror-failed?.</anchorfile>
+      <anchor />
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>SUCCEEDED</name>
+      <anchorfile>winerror/nf-winerror-succeeded?.</anchorfile>
+      <anchor />
+      <arglist>()</arglist>
+    </member>
+  </compound>
+  <compound kind="file">
+    <name>wingdi.h</name>
+    <filename>wingdi/?.</filename>
+    <member kind="function">
+      <type />
+      <name>CreateCompatibleDC</name>
+      <anchorfile>wingdi/nf-wingdi-createcompatibledc?.</anchorfile>
+      <anchor />
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>DeleteDC</name>
+      <anchorfile>wingdi/nf-wingdi-deletedc?.</anchorfile>
+      <anchor />
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>DeleteObject</name>
+      <anchorfile>wingdi/nf-wingdi-deleteobject?.</anchorfile>
+      <anchor />
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>GetDeviceCaps</name>
+      <anchorfile>wingdi/nf-wingdi-getdevicecaps?.</anchorfile>
+      <anchor />
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>GetObjectA</name>
+      <anchorfile>wingdi/nf-wingdi-getobjecta?.</anchorfile>
+      <anchor />
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>GetPixel</name>
+      <anchorfile>wingdi/nf-wingdi-getpixel?.</anchorfile>
+      <anchor />
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>GetStockObject</name>
+      <anchorfile>wingdi/nf-wingdi-getstockobject?.</anchorfile>
+      <anchor />
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>GetSystemPaletteEntries</name>
+      <anchorfile>wingdi/nf-wingdi-getsystempaletteentries?.</anchorfile>
+      <anchor />
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>RGB</name>
+      <anchorfile>wingdi/nf-wingdi-rgb?.</anchorfile>
+      <anchor />
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>SelectObject</name>
+      <anchorfile>wingdi/nf-wingdi-selectobject?.</anchorfile>
+      <anchor />
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>SetPixel</name>
+      <anchorfile>wingdi/nf-wingdi-setpixel?.</anchorfile>
+      <anchor />
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>StretchBlt</name>
+      <anchorfile>wingdi/nf-wingdi-stretchblt?.</anchorfile>
+      <anchor />
+      <arglist>()</arglist>
+    </member>
+  </compound>
+  <compound kind="file">
+    <name>winreg.h</name>
+    <filename>winreg/?.</filename>
+    <member kind="function">
+      <type />
+      <name>RegCloseKey</name>
+      <anchorfile>winreg/nf-winreg-regclosekey?.</anchorfile>
+      <anchor />
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>RegOpenKeyExA</name>
+      <anchorfile>winreg/nf-winreg-regopenkeyexa?.</anchorfile>
+      <anchor />
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>RegQueryValueExA</name>
+      <anchorfile>winreg/nf-winreg-regqueryvalueexa?.</anchorfile>
+      <anchor />
+      <arglist>()</arglist>
+    </member>
+  </compound>
+  <compound kind="file">
+    <name>winuser.h</name>
+    <filename>winuser/?.</filename>
+    <member kind="function">
+      <type />
+      <name>BringWindowToTop</name>
+      <anchorfile>winuser/nf-winuser-bringwindowtotop?.</anchorfile>
+      <anchor />
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>CreateWindowExA</name>
+      <anchorfile>winuser/nf-winuser-createwindowexa?.</anchorfile>
+      <anchor />
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>DefWindowProcA</name>
+      <anchorfile>winuser/nf-winuser-defwindowproca?.</anchorfile>
+      <anchor />
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>DestroyWindow</name>
+      <anchorfile>winuser/nf-winuser-destroywindow?.</anchorfile>
+      <anchor />
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>DispatchMessageA</name>
+      <anchorfile>winuser/nf-winuser-dispatchmessagea?.</anchorfile>
+      <anchor />
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>DrawMenuBar</name>
+      <anchorfile>winuser/nf-winuser-drawmenubar?.</anchorfile>
+      <anchor />
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>DrawText</name>
+      <anchorfile>winuser/nf-winuser-drawtext?.</anchorfile>
+      <anchor />
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>FindWindowA</name>
+      <anchorfile>winuser/nf-winuser-findwindowa?.</anchorfile>
+      <anchor />
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>GetActiveWindow</name>
+      <anchorfile>winuser/nf-winuser-getactivewindow?.</anchorfile>
+      <anchor />
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>GetDC</name>
+      <anchorfile>winuser/nf-winuser-getdc?.</anchorfile>
+      <anchor />
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>GetDesktopWindow</name>
+      <anchorfile>winuser/nf-winuser-getdesktopwindow?.</anchorfile>
+      <anchor />
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>GetForegroundWindow</name>
+      <anchorfile>winuser/nf-winuser-getforegroundwindow?.</anchorfile>
+      <anchor />
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>GetLastActivePopup</name>
+      <anchorfile>winuser/nf-winuser-getlastactivepopup?.</anchorfile>
+      <anchor />
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>GetWindowLongA</name>
+      <anchorfile>winuser/nf-winuser-getwindowlonga?.</anchorfile>
+      <anchor />
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>GetWindowRect</name>
+      <anchorfile>winuser/nf-winuser-getwindowrect?.</anchorfile>
+      <anchor />
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>GetWindowThreadProcessId</name>
+      <anchorfile>winuser/nf-winuser-getwindowthreadprocessid?.</anchorfile>
+      <anchor />
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>InvalidateRect</name>
+      <anchorfile>winuser/nf-winuser-invalidaterect?.</anchorfile>
+      <anchor />
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>IsIconic</name>
+      <anchorfile>winuser/nf-winuser-isiconic?.</anchorfile>
+      <anchor />
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>IsWindow</name>
+      <anchorfile>winuser/nf-winuser-iswindow?.</anchorfile>
+      <anchor />
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>LoadAcceleratorsA</name>
+      <anchorfile>winuser/nf-winuser-loadacceleratorsa?.</anchorfile>
+      <anchor />
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>LoadCursorA</name>
+      <anchorfile>winuser/nf-winuser-loadcursora?.</anchorfile>
+      <anchor />
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>LoadIconA</name>
+      <anchorfile>winuser/nf-winuser-loadicona?.</anchorfile>
+      <anchor />
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>LoadImageA</name>
+      <anchorfile>winuser/nf-winuser-loadimagea?.</anchorfile>
+      <anchor />
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>LoadStringA</name>
+      <anchorfile>winuser/nf-winuser-loadstringa?.</anchorfile>
+      <anchor />
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>MessageBoxA</name>
+      <anchorfile>winuser/nf-winuser-messageboxa?.</anchorfile>
+      <anchor />
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>PeekMessageA</name>
+      <anchorfile>winuser/nf-winuser-peekmessagea?.</anchorfile>
+      <anchor />
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>PostMessageA</name>
+      <anchorfile>winuser/nf-winuser-postmessagea?.</anchorfile>
+      <anchor />
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>PostQuitMessage</name>
+      <anchorfile>winuser/nf-winuser-postquitmessage?.</anchorfile>
+      <anchor />
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>RedrawWindow</name>
+      <anchorfile>winuser/nf-winuser-redrawwindow?.</anchorfile>
+      <anchor />
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>RegisterClassA</name>
+      <anchorfile>winuser/nf-winuser-registerclassa?.</anchorfile>
+      <anchor />
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>RegisterWindowMessageA</name>
+      <anchorfile>winuser/nf-winuser-registerwindowmessagea?.</anchorfile>
+      <anchor />
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>ReleaseDC</name>
+      <anchorfile>winuser/nf-winuser-releasedc?.</anchorfile>
+      <anchor />
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>SendMessageA</name>
+      <anchorfile>winuser/nf-winuser-sendmessagea?.</anchorfile>
+      <anchor />
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>SetCursor</name>
+      <anchorfile>winuser/nf-winuser-setcursor?.</anchorfile>
+      <anchor />
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>SetForegroundWindow</name>
+      <anchorfile>winuser/nf-winuser-setforegroundwindow?.</anchorfile>
+      <anchor />
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>SetTimer</name>
+      <anchorfile>winuser/nf-winuser-settimer?.</anchorfile>
+      <anchor />
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>SetWindowLongA</name>
+      <anchorfile>winuser/nf-winuser-setwindowlonga?.</anchorfile>
+      <anchor />
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>ShowWindow</name>
+      <anchorfile>winuser/nf-winuser-showwindow?.</anchorfile>
+      <anchor />
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>TranslateAcceleratorA</name>
+      <anchorfile>winuser/nf-winuser-translateacceleratora?.</anchorfile>
+      <anchor />
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>TranslateMessage</name>
+      <anchorfile>winuser/nf-winuser-translatemessage?.</anchorfile>
+      <anchor />
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>UnregisterClassA</name>
+      <anchorfile>winuser/nf-winuser-unregisterclassa?.</anchorfile>
+      <anchor />
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>UpdateWindow</name>
+      <anchorfile>winuser/nf-winuser-updatewindow?.</anchorfile>
+      <anchor />
+      <arglist>()</arglist>
+    </member>
+    <member kind="function">
+      <type />
+      <name>wsprintfA</name>
+      <anchorfile>winuser/nf-winuser-wsprintfa?.</anchorfile>
+      <anchor />
+      <arglist>()</arglist>
+    </member>
+  </compound>
+</tagfile>
