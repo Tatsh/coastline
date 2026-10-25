@@ -33,6 +33,17 @@ int CountBitWidth(unsigned nMask) {
     return nWidth;
 }
 
+int CountTrailingZeroBits32(unsigned nMask) {
+    int nCount = 0;
+
+    // An empty mask loops for ever, as in the original.
+    while (!(nMask & 1)) {
+        nMask >>= 1;
+        nCount++;
+    }
+    return nCount;
+}
+
 int PopCount32(unsigned nMask) {
     int nCount = 0;
 

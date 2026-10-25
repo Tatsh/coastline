@@ -1,5 +1,7 @@
 #include "platform/win/render.h"
 
+#include <cstring>
+
 #include "platform/win/boot/app.h"
 #include "platform/win/settings.h"
 #include "screen.h"
@@ -56,6 +58,24 @@ void InitializeRenderSubsystems(int nMode) {
 void CopyConfigFramebufferSize(void) {
     g_dwScreenWidth = g_dwConfigFramebufferWidth;
     g_dwScreenHeight = g_dwConfigFramebufferHeight;
+}
+
+// The number of words Copy8Dwords() copies.
+#define COPY_WORD_COUNT 8
+
+void ResetVertexConversionCache(void) {
+    g_dwVertexConvCacheCount = 0;
+    g_dwRelocatedPointerCount = 0;
+}
+
+void SetPointerRelocationBase(unsigned dwOldBase, unsigned dwNewBase) {
+    ResetVertexConversionCache();
+    g_dwOldBaseAddress = dwOldBase;
+    g_dwNewBaseAddress = dwNewBase;
+}
+
+void Copy8Dwords(void *pDest, const void *pSrc) {
+    memcpy(pDest, pSrc, COPY_WORD_COUNT * sizeof(unsigned));
 }
 
 void ResetModelDataPool(void) {

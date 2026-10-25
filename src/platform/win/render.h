@@ -203,6 +203,67 @@ extern float *g_pModelDataPoolCursor;
 void CopyConfigFramebufferSize(void);
 
 /**
+ * The number of vertices of the cache of converted vertices.
+ *
+ * @ghidraAddress BRD3D: 0x1067b54c
+ * @ghidraAddress BRGlide: 0x105b76f4
+ */
+extern int g_dwVertexConvCacheCount;
+
+/**
+ * The number of pointers relocated.
+ *
+ * @ghidraAddress BRD3D: 0x1067b548
+ * @ghidraAddress BRGlide: 0x105b76f0
+ */
+extern int g_dwRelocatedPointerCount;
+
+/**
+ * The address the pointers to relocate are based at.
+ *
+ * @ghidraAddress BRD3D: 0x1057553c
+ * @ghidraAddress BRGlide: 0x104b16e4
+ */
+extern unsigned g_dwOldBaseAddress;
+
+/**
+ * The address the pointers are relocated to.
+ *
+ * @ghidraAddress BRD3D: 0x10575538
+ * @ghidraAddress BRGlide: 0x104b16e0
+ */
+extern unsigned g_dwNewBaseAddress;
+
+/**
+ * Empty the cache of converted vertices and the count of relocated pointers.
+ *
+ * @ghidraAddress BRD3D: 0x1002b9c0
+ * @ghidraAddress BRGlide: 0x10018a30
+ */
+void ResetVertexConversionCache(void);
+
+/**
+ * Empty the cache of converted vertices and record the address the pointers to relocate are based
+ * at and the address they move to.
+ *
+ * @param dwOldBase The address the pointers are based at.
+ * @param dwNewBase The address the pointers move to.
+ * @ghidraAddress BRD3D: 0x1002b9a0
+ * @ghidraAddress BRGlide: 0x10018a10
+ */
+void SetPointerRelocationBase(unsigned dwOldBase, unsigned dwNewBase);
+
+/**
+ * Copy eight words.
+ *
+ * @param pDest Receives the words.
+ * @param pSrc The words.
+ * @ghidraAddress BRD3D: 0x1002b930
+ * @ghidraAddress BRGlide: 0x100189a0
+ */
+void Copy8Dwords(void *pDest, const void *pSrc);
+
+/**
  * Empty the pool of the data of the models.
  *
  * @ghidraAddress BRD3D: 0x1002b950

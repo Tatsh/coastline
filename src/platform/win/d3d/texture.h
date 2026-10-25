@@ -44,6 +44,15 @@ DDPIXELFORMAT *LookupPixelFormatById(int nId);
 int CountBitWidth(unsigned nMask);
 
 /**
+ * Count the clear bits below the lowest set bit of a mask. An empty mask does not return.
+ *
+ * @param nMask The mask.
+ * @return The index of the lowest set bit.
+ * @ghidraAddress BRD3D: 0x10009860
+ */
+int CountTrailingZeroBits32(unsigned nMask);
+
+/**
  * Count the set bits of a mask.
  *
  * @param nMask The mask.
