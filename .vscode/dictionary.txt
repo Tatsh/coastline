@@ -136,7 +136,10 @@ docstrings
 doubleword
 dpal
 dperr
+dplconnection
 dpname
+dpplayer
+dpsession
 dpspguid
 drawtexturedrect
 dsdx
@@ -334,6 +337,7 @@ menuitemrom
 mesg
 mfhi
 mflo
+migratehost
 minimizebox
 minode
 mktemp
@@ -481,6 +485,7 @@ seasoncars
 seasonpoints
 seasonraces
 sendmesg
+serverplayer
 setblendcolor
 setcimg
 setcompare

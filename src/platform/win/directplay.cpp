@@ -213,6 +213,100 @@ BOOL WINAPI EnumConnectionsCallback_StoreServiceProvider(const GUID *pGuidServic
     return TRUE;
 }
 
+HRESULT ConnectFromDirectPlayLobby(DirectPlayInfo *pInfo) {
+    IDirectPlay3A *pDirectPlay = nullptr;
+    IDirectPlayLobby3A *pLobby = nullptr;
+    DPLCONNECTION *pConnection = nullptr;
+    DWORD dwSize;
+    DPID dpidPlayer;
+    bool bIsHost;
+    HRESULT hResult;
+
+    hResult = CoCreateInstance(CLSID_DirectPlayLobby,
+                               nullptr,
+                               CLSCTX_INPROC_SERVER,
+                               IID_IDirectPlayLobby3A,
+                               reinterpret_cast<void **>(&pLobby));
+    if (SUCCEEDED(hResult)) {
+        hResult = pLobby->GetConnectionSettings(0, nullptr, &dwSize);
+        if (hResult == DPERR_BUFFERTOOSMALL) {
+            pConnection = static_cast<DPLCONNECTION *>(GlobalLock(GlobalAlloc(GHND, dwSize)));
+            if (pConnection == nullptr) {
+                hResult = E_OUTOFMEMORY;
+            } else {
+                hResult = pLobby->GetConnectionSettings(0, pConnection, &dwSize);
+            }
+        }
+    }
+    if (pConnection != nullptr && SUCCEEDED(hResult)) {
+        bIsHost = (pConnection->dwFlags & DPLCONNECTION_CREATESESSION) != 0;
+        pConnection->lpSessionDesc->dwFlags = DPSESSION_MIGRATEHOST | DPSESSION_KEEPALIVE;
+        pConnection->lpSessionDesc->dwMaxPlayers = 8;
+        hResult = pLobby->SetConnectionSettings(0, 0, pConnection);
+        // The IDirectPlay4A of the connection is used through its IDirectPlay3A methods.
+        if (SUCCEEDED(hResult)) {
+            hResult = pLobby->ConnectEx(
+                0, IID_IDirectPlay4A, reinterpret_cast<void **>(&pDirectPlay), nullptr);
+        }
+        if (SUCCEEDED(hResult)) {
+            hResult = pDirectPlay->CreatePlayer(&dpidPlayer,
+                                                pConnection->lpPlayerName,
+                                                pInfo->hPlayerEvent,
+                                                nullptr,
+                                                0,
+                                                bIsHost ? DPPLAYER_SERVERPLAYER : 0);
+        }
+        if (SUCCEEDED(hResult)) {
+            pInfo->pDirectPlay = pDirectPlay;
+            pInfo->dpidPlayer = dpidPlayer;
+            pInfo->bIsHost = (pConnection->dwFlags & DPLCONNECTION_CREATESESSION) ? TRUE : FALSE;
+            strcpy(g_GlobalRallyConfig.szPlayerName, pConnection->lpPlayerName->lpszShortNameA);
+            if (pConnection->lpSessionDesc->lpszSessionNameA != nullptr) {
+                strcpy(g_szSessionName, pConnection->lpSessionDesc->lpszSessionNameA);
+            }
+            hResult = DP_OK;
+            pDirectPlay = nullptr;
+        }
+    }
+    if (pDirectPlay != nullptr) {
+        pDirectPlay->Release();
+    }
+    if (pLobby != nullptr) {
+        pLobby->Release();
+    }
+    if (pConnection != nullptr) {
+        GlobalUnlock(GlobalHandle(pConnection));
+        GlobalFree(GlobalHandle(pConnection));
+    }
+    return hResult;
+}
+
+HRESULT CreateDirectPlayLobby(IDirectPlayLobby2A **ppLobby) {
+    IDirectPlayLobbyA *pLobbyA = nullptr;
+    IDirectPlayLobby2A *pLobby2 = nullptr;
+    HRESULT hResult;
+
+    hResult = DirectPlayLobbyCreateA(nullptr, &pLobbyA, nullptr, nullptr, 0);
+    if (SUCCEEDED(hResult)) {
+        hResult =
+            pLobbyA->QueryInterface(IID_IDirectPlayLobby2A, reinterpret_cast<void **>(&pLobby2));
+    }
+    if (FAILED(hResult)) {
+        if (pLobbyA != nullptr) {
+            pLobbyA->Release();
+        }
+        if (pLobby2 != nullptr) {
+            pLobby2->Release();
+        }
+        return hResult;
+    }
+    pLobbyA->Release();
+    // The result of the enumeration is discarded.
+    EnumeratePlayerAddress(g_hMainWindow, pLobby2);
+    *ppLobby = pLobby2;
+    return DP_OK;
+}
+
 void ShowNetworkErrorMessage(const char *pszFormat, HRESULT hResult) {
     char szMessage[200];
 

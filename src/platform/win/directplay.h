@@ -213,13 +213,34 @@ DWORD WINAPI DirectPlayReceiveThreadProc(void *pParameter);
 HRESULT ReceiveAndDispatchDirectPlayMessages(DirectPlayInfo *pInfo);
 
 /**
- * Connect to the session of the lobby that launched the game.
+ * Connect to the session of the lobby that launched the game, and create the local player in it.
+ * The name of the player and of the session are copied from the lobby.
  *
- * @param pInfo The info to fill.
+ * @param pInfo The info to fill, whose player event is already created.
  * @return DP_OK, DPERR_NOTLOBBIED when no lobby launched the game, or another error.
  * @ghidraAddress BRD3D: 0x10038cb0
+ * @ghidraAddress BRGlide: 0x10032320
  */
 HRESULT ConnectFromDirectPlayLobby(DirectPlayInfo *pInfo);
+
+/**
+ * The name of the network session.
+ *
+ * @ghidraAddress BRD3D: 0x10a9d018
+ * @ghidraAddress BRGlide: 0x10ac40a8
+ */
+extern char g_szSessionName[];
+
+/**
+ * Enumerate the parts of the address of the local player for the lobby.
+ *
+ * @param hWnd The main window.
+ * @param pLobby The lobby.
+ * @return The result of EnumAddress.
+ * @ghidraAddress BRD3D: 0x1003d8a0
+ * @ghidraAddress BRGlide: 0x10036f40
+ */
+HRESULT EnumeratePlayerAddress(HWND hWnd, IDirectPlayLobby2A *pLobby);
 
 /**
  * Create the DirectPlay object.
@@ -232,11 +253,12 @@ HRESULT ConnectFromDirectPlayLobby(DirectPlayInfo *pInfo);
 HRESULT CreateDirectPlayObject(IDirectPlay3A **ppDirectPlay);
 
 /**
- * Create the DirectPlay lobby.
+ * Create the DirectPlay lobby and enumerate the address of the local player.
  *
- * @param ppLobby Receives the lobby.
- * @return The result of the creation.
+ * @param ppLobby Receives the lobby on success.
+ * @return DP_OK, or the error of the creation.
  * @ghidraAddress BRD3D: 0x1003d7b0
+ * @ghidraAddress BRGlide: 0x10036e50
  */
 HRESULT CreateDirectPlayLobby(IDirectPlayLobby2A **ppLobby);
 
