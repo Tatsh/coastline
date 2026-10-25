@@ -1,5 +1,5 @@
-#include <stdlib.h>
-#include <string.h>
+#include <cstdlib>
+#include <cstring>
 
 #include <d3dtypes.h>
 #include <windows.h>
@@ -12,21 +12,21 @@
 // The size of the buffer of a line of BossRally.ini.
 #define INI_LINE_SIZE 256
 
-DWORD g_dwTotalPhysicalMemory;
+size_t g_dwTotalPhysicalMemory;
 
-BOOL FocusExistingBossRallyInstance(void) {
+bool FocusExistingBossRallyInstance(void) {
     HWND hWindow;
     HWND hForeground;
     DWORD dwForegroundThread;
 
     hWindow = FindWindowA("BossRally", "Boss Rally");
-    if (hWindow == NULL) {
-        return TRUE;
+    if (hWindow == nullptr) {
+        return true;
     }
     hForeground = GetForegroundWindow();
-    dwForegroundThread = GetWindowThreadProcessId(hForeground, NULL);
+    dwForegroundThread = GetWindowThreadProcessId(hForeground, nullptr);
     // The other instance is left as it is when it already has the focus.
-    if (GetWindowThreadProcessId(hWindow, NULL) != dwForegroundThread || IsIconic(hWindow)) {
+    if (GetWindowThreadProcessId(hWindow, nullptr) != dwForegroundThread || IsIconic(hWindow)) {
         hWindow = GetLastActivePopup(hWindow);
         if (IsIconic(hWindow)) {
             ShowWindow(hWindow, SW_RESTORE);
@@ -35,7 +35,7 @@ BOOL FocusExistingBossRallyInstance(void) {
         SetForegroundWindow(hWindow);
     }
     OutputDebugStringA("CheckPrevious App - Another instance of this app is already running.\n");
-    return FALSE;
+    return false;
 }
 
 void RefreshTotalPhysicalMemory(void) {
@@ -52,14 +52,14 @@ void RefreshTotalPhysicalMemory(void) {
 static inline const char *GetIniValue(const char *pszLine, const char *pszKey) {
     size_t nLength = strlen(pszKey);
 
-    return strncmp(pszLine, pszKey, nLength) == 0 ? pszLine + nLength : NULL;
+    return strncmp(pszLine, pszKey, nLength) == 0 ? pszLine + nLength : nullptr;
 }
 
 // The value that follows a key anywhere on the command line.
 static inline const char *GetCommandLineValue(const char *pszCmdLine, const char *pszKey) {
     const char *pszFound = strstr(pszCmdLine, pszKey);
 
-    return pszFound != NULL ? pszFound + strlen(pszKey) : NULL;
+    return pszFound != nullptr ? pszFound + strlen(pszKey) : nullptr;
 }
 
 // Copy a directory of BossRally.ini, without the line feed that ends the line.
@@ -71,56 +71,56 @@ static inline void CopyIniDirectory(char *pszDirectory, const char *pszValue) {
 static inline void ApplyIniLine(const char *pszLine) {
     const char *pszValue;
 
-    if ((pszValue = GetIniValue(pszLine, "NetworkPlay=")) != NULL) {
+    if ((pszValue = GetIniValue(pszLine, "NetworkPlay=")) != nullptr) {
         g_dwNetworkPlayMode = atoi(pszValue);
-    } else if ((pszValue = GetIniValue(pszLine, "chosenTrack=")) != NULL) {
+    } else if ((pszValue = GetIniValue(pszLine, "chosenTrack=")) != nullptr) {
         g_dwSelectedTrackId = atoi(pszValue);
-    } else if ((pszValue = GetIniValue(pszLine, "chosenCar=")) != NULL) {
+    } else if ((pszValue = GetIniValue(pszLine, "chosenCar=")) != nullptr) {
         g_dwChosenCar = atoi(pszValue);
-    } else if ((pszValue = GetIniValue(pszLine, "chosenWeather=")) != NULL) {
+    } else if ((pszValue = GetIniValue(pszLine, "chosenWeather=")) != nullptr) {
         g_dwChosenWeather = atoi(pszValue);
-    } else if ((pszValue = GetIniValue(pszLine, "gameMode=")) != NULL) {
+    } else if ((pszValue = GetIniValue(pszLine, "gameMode=")) != nullptr) {
         g_dwGameMode = atoi(pszValue);
-    } else if ((pszValue = GetIniValue(pszLine, "ReadJoystick=")) != NULL) {
+    } else if ((pszValue = GetIniValue(pszLine, "ReadJoystick=")) != nullptr) {
         g_GlobalRallyConfig.dwInputDeviceType = atoi(pszValue);
         g_GlobalRallyConfig.SelectActiveInputBindings();
-    } else if ((pszValue = GetIniValue(pszLine, "HandlingType=")) != NULL) {
+    } else if ((pszValue = GetIniValue(pszLine, "HandlingType=")) != nullptr) {
         g_dwHandlingType = atoi(pszValue);
-    } else if ((pszValue = GetIniValue(pszLine, "SuspensionType=")) != NULL) {
+    } else if ((pszValue = GetIniValue(pszLine, "SuspensionType=")) != nullptr) {
         g_dwSuspensionType = atoi(pszValue);
-    } else if ((pszValue = GetIniValue(pszLine, "TireType=")) != NULL) {
+    } else if ((pszValue = GetIniValue(pszLine, "TireType=")) != nullptr) {
         g_dwTireType = atoi(pszValue);
-    } else if ((pszValue = GetIniValue(pszLine, "TransmissionType=")) != NULL) {
+    } else if ((pszValue = GetIniValue(pszLine, "TransmissionType=")) != nullptr) {
         g_dwTransmissionType = atoi(pszValue);
-    } else if ((pszValue = GetIniValue(pszLine, "TrackDir=")) != NULL) {
+    } else if ((pszValue = GetIniValue(pszLine, "TrackDir=")) != nullptr) {
         CopyIniDirectory(g_szTracks, pszValue);
-    } else if ((pszValue = GetIniValue(pszLine, "CarDir=")) != NULL) {
+    } else if ((pszValue = GetIniValue(pszLine, "CarDir=")) != nullptr) {
         CopyIniDirectory(g_szCarsDirPath, pszValue);
-    } else if ((pszValue = GetIniValue(pszLine, "SFXDir=")) != NULL) {
+    } else if ((pszValue = GetIniValue(pszLine, "SFXDir=")) != nullptr) {
         CopyIniDirectory(g_szSfxDirPath, pszValue);
-    } else if ((pszValue = GetIniValue(pszLine, "Interpolate=")) != NULL) {
+    } else if ((pszValue = GetIniValue(pszLine, "Interpolate=")) != nullptr) {
         g_bInterpolateFrames = atoi(pszValue);
-    } else if ((pszValue = GetIniValue(pszLine, "SpeedSensitive=")) != NULL) {
+    } else if ((pszValue = GetIniValue(pszLine, "SpeedSensitive=")) != nullptr) {
         g_bAutomaticGearboxIni = atoi(pszValue);
-    } else if ((pszValue = GetIniValue(pszLine, "D3DDrawCarShadow=")) != NULL) {
+    } else if ((pszValue = GetIniValue(pszLine, "D3DDrawCarShadow=")) != nullptr) {
         g_bDisableCarShadow = atoi(pszValue) == 0;
-    } else if ((pszValue = GetIniValue(pszLine, "RunBenchmark=")) != NULL) {
+    } else if ((pszValue = GetIniValue(pszLine, "RunBenchmark=")) != nullptr) {
         g_dwRunBenchmark = atoi(pszValue);
-    } else if ((pszValue = GetIniValue(pszLine, "PlayMusic=")) != NULL) {
+    } else if ((pszValue = GetIniValue(pszLine, "PlayMusic=")) != nullptr) {
         g_dwPlayMusicMode = atoi(pszValue);
-    } else if ((pszValue = GetIniValue(pszLine, "PlaySFX=")) != NULL) {
+    } else if ((pszValue = GetIniValue(pszLine, "PlaySFX=")) != nullptr) {
         g_bSoundEnabledIni = atoi(pszValue);
-    } else if ((pszValue = GetIniValue(pszLine, "D3DAlphaCompare=")) != NULL) {
+    } else if ((pszValue = GetIniValue(pszLine, "D3DAlphaCompare=")) != nullptr) {
         g_bD3DAlphaCompare = atoi(pszValue);
-    } else if ((pszValue = GetIniValue(pszLine, "D3DAlwaysSquareTextures=")) != NULL) {
+    } else if ((pszValue = GetIniValue(pszLine, "D3DAlwaysSquareTextures=")) != nullptr) {
         g_dwD3DAlwaysSquareTextures = atoi(pszValue);
-    } else if ((pszValue = GetIniValue(pszLine, "D3DClearZBuffer=")) != NULL) {
+    } else if ((pszValue = GetIniValue(pszLine, "D3DClearZBuffer=")) != nullptr) {
         g_dwD3DClearZBuffer = atoi(pszValue);
-    } else if ((pszValue = GetIniValue(pszLine, "D3DWaitCanFlip=")) != NULL) {
+    } else if ((pszValue = GetIniValue(pszLine, "D3DWaitCanFlip=")) != nullptr) {
         g_bD3DWaitCanFlip = atoi(pszValue);
-    } else if ((pszValue = GetIniValue(pszLine, "D3DWaitFlipDone=")) != NULL) {
+    } else if ((pszValue = GetIniValue(pszLine, "D3DWaitFlipDone=")) != nullptr) {
         g_bD3DWaitFlipDone = atoi(pszValue);
-    } else if ((pszValue = GetIniValue(pszLine, "D3DInvSrcAlpha=")) != NULL) {
+    } else if ((pszValue = GetIniValue(pszLine, "D3DInvSrcAlpha=")) != nullptr) {
         g_dwD3DDestBlendMode = atoi(pszValue) != 0 ? D3DBLEND_INVSRCALPHA : D3DBLEND_ONE;
     }
 }
@@ -129,62 +129,62 @@ static inline void ApplyCommandLine(const char *pszCmdLine) {
     const char *pszValue;
     char *pszEnd;
 
-    if ((pszValue = GetCommandLineValue(pszCmdLine, "NetworkPlay=")) != NULL) {
+    if ((pszValue = GetCommandLineValue(pszCmdLine, "NetworkPlay=")) != nullptr) {
         g_dwNetworkPlayMode = atoi(pszValue);
     }
-    if ((pszValue = GetCommandLineValue(pszCmdLine, "szPlayerName=")) != NULL) {
+    if ((pszValue = GetCommandLineValue(pszCmdLine, "szPlayerName=")) != nullptr) {
         // The name ends at the first space or line feed.
         strcpy(g_GlobalRallyConfig.szPlayerName, pszValue);
-        if ((pszEnd = strchr(g_GlobalRallyConfig.szPlayerName, ' ')) != NULL) {
+        if ((pszEnd = strchr(g_GlobalRallyConfig.szPlayerName, ' ')) != nullptr) {
             *pszEnd = '\0';
         }
-        if ((pszEnd = strchr(g_GlobalRallyConfig.szPlayerName, '\n')) != NULL) {
+        if ((pszEnd = strchr(g_GlobalRallyConfig.szPlayerName, '\n')) != nullptr) {
             *pszEnd = '\0';
         }
     }
-    if ((pszValue = GetCommandLineValue(pszCmdLine, "chosenTrack=")) != NULL) {
+    if ((pszValue = GetCommandLineValue(pszCmdLine, "chosenTrack=")) != nullptr) {
         g_dwSelectedTrackId = atoi(pszValue);
     }
-    if ((pszValue = GetCommandLineValue(pszCmdLine, "chosenCar=")) != NULL) {
+    if ((pszValue = GetCommandLineValue(pszCmdLine, "chosenCar=")) != nullptr) {
         g_dwChosenCar = atoi(pszValue);
     }
-    if ((pszValue = GetCommandLineValue(pszCmdLine, "chosenWeather=")) != NULL) {
+    if ((pszValue = GetCommandLineValue(pszCmdLine, "chosenWeather=")) != nullptr) {
         g_dwChosenWeather = atoi(pszValue);
     }
-    if ((pszValue = GetCommandLineValue(pszCmdLine, "gameMode=")) != NULL) {
+    if ((pszValue = GetCommandLineValue(pszCmdLine, "gameMode=")) != nullptr) {
         g_dwGameMode = atoi(pszValue);
     }
-    if ((pszValue = GetCommandLineValue(pszCmdLine, "ReadJoystick=")) != NULL) {
+    if ((pszValue = GetCommandLineValue(pszCmdLine, "ReadJoystick=")) != nullptr) {
         g_GlobalRallyConfig.dwInputDeviceType = atoi(pszValue);
         g_GlobalRallyConfig.SelectActiveInputBindings();
     }
-    if ((pszValue = GetCommandLineValue(pszCmdLine, "HandlingType=")) != NULL) {
+    if ((pszValue = GetCommandLineValue(pszCmdLine, "HandlingType=")) != nullptr) {
         g_dwHandlingType = atoi(pszValue);
     }
-    if ((pszValue = GetCommandLineValue(pszCmdLine, "SuspensionType=")) != NULL) {
+    if ((pszValue = GetCommandLineValue(pszCmdLine, "SuspensionType=")) != nullptr) {
         g_dwSuspensionType = atoi(pszValue);
     }
-    if ((pszValue = GetCommandLineValue(pszCmdLine, "TireType=")) != NULL) {
+    if ((pszValue = GetCommandLineValue(pszCmdLine, "TireType=")) != nullptr) {
         g_dwTireType = atoi(pszValue);
     }
-    if ((pszValue = GetCommandLineValue(pszCmdLine, "TransmissionType=")) != NULL) {
+    if ((pszValue = GetCommandLineValue(pszCmdLine, "TransmissionType=")) != nullptr) {
         g_dwTransmissionType = atoi(pszValue);
     }
-    if ((pszValue = GetCommandLineValue(pszCmdLine, "cPlayers=")) != NULL) {
+    if ((pszValue = GetCommandLineValue(pszCmdLine, "cPlayers=")) != nullptr) {
         g_bNetMaxPlayers = atoi(pszValue);
     }
-    if ((pszValue = GetCommandLineValue(pszCmdLine, "bcar=")) != NULL) {
+    if ((pszValue = GetCommandLineValue(pszCmdLine, "bcar=")) != nullptr) {
         g_wNetAllowedCarsMask = atoi(pszValue);
     }
-    if ((pszValue = GetCommandLineValue(pszCmdLine, "btire=")) != NULL) {
+    if ((pszValue = GetCommandLineValue(pszCmdLine, "btire=")) != nullptr) {
         g_bNetTireSetting = atoi(pszValue);
     }
-    if ((pszValue = GetCommandLineValue(pszCmdLine, "bsuspension=")) != NULL) {
+    if ((pszValue = GetCommandLineValue(pszCmdLine, "bsuspension=")) != nullptr) {
         g_bNetSuspensionSetting = atoi(pszValue);
     }
 }
 
-void LoadBossRallyIniSettings(LPSTR pszCmdLine) {
+void LoadBossRallyIniSettings(const char *pszCmdLine) {
     char szLine[INI_LINE_SIZE];
     GameFile *pFile;
 
@@ -192,12 +192,12 @@ void LoadBossRallyIniSettings(LPSTR pszCmdLine) {
     strcat(g_szBossRallyIniPath, "BossRally.ini");
     if (FileExists(g_szBossRallyIniPath)) {
         pFile = FileOpenForReading(g_szBossRallyIniPath);
-        while (FileReadLine(szLine, sizeof(szLine), pFile) != NULL) {
+        while (FileReadLine(szLine, sizeof(szLine), pFile) != nullptr) {
             ApplyIniLine(szLine);
         }
         FileClose(pFile);
     }
-    if (pszCmdLine != NULL && pszCmdLine[0] != '\0') {
+    if (pszCmdLine != nullptr && pszCmdLine[0] != '\0') {
         ApplyCommandLine(pszCmdLine);
     }
 }

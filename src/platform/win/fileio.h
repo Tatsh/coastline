@@ -6,9 +6,8 @@
  * ends the process.
  */
 
-#include <stdio.h>
-
-#include <windows.h>
+#include <cstddef>
+#include <cstdio>
 
 /** A file opened by FileOpenForReading(). */
 struct GameFile {
@@ -21,7 +20,7 @@ struct GameFile {
  *
  * @ghidraAddress BRD3D: 0x10220ce0
  */
-extern BOOL g_bVerboseFileTrace;
+extern bool g_bVerboseFileTrace;
 
 /**
  * Allocate memory, ending the process when none is left.
@@ -31,7 +30,7 @@ extern BOOL g_bVerboseFileTrace;
  * @return The memory, or `NULL` for a size of 0.
  * @ghidraAddress BRD3D: 0x10003390
  */
-void *AllocateMemoryChecked(int nSize, const char *szCaller);
+void *AllocateMemoryChecked(size_t nSize, const char *szCaller);
 
 /**
  * Whether a file can be opened for reading.
@@ -40,7 +39,7 @@ void *AllocateMemoryChecked(int nSize, const char *szCaller);
  * @return Whether the file opened.
  * @ghidraAddress BRD3D: 0x10003320
  */
-BOOL FileExists(const char *pszPath);
+bool FileExists(const char *pszPath);
 
 /**
  * Open a file for reading in binary mode. A file that does not open is reported in
@@ -72,7 +71,7 @@ long GetFileLength(GameFile *pFile);
  * end of the file.
  * @ghidraAddress BRD3D: 0x100031e0
  */
-char *FileReadLine(char *pszLine, int nSize, GameFile *pFile);
+char *FileReadLine(char *pszLine, size_t nSize, GameFile *pFile);
 
 /**
  * Close a file and free it. A file that does not close ends the process.

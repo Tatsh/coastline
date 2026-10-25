@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cstddef>
+
 #include <windows.h>
 
 /**
@@ -8,7 +10,7 @@
  * @ghidraAddress BRD3D: 0x118abe2c
  * @ghidraAddress BRGlide: 0x105ccbc0
  */
-extern DWORD g_dwAppExitCode;
+extern int g_dwAppExitCode;
 
 /**
  * Directory the game is installed in, read from the registry, with a trailing separator.
@@ -49,7 +51,7 @@ extern int g_nRallyMainCmdShow;
  * @ghidraAddress BRD3D: 0x1022b348
  * @ghidraAddress BRGlide: 0x10226e78
  */
-extern DWORD g_dwTotalPhysicalMemory;
+extern size_t g_dwTotalPhysicalMemory;
 
 /**
  * The module of the game, set by InitializeApplication().
@@ -77,7 +79,7 @@ extern HACCEL g_hAccelTable;
  *
  * @ghidraAddress BRD3D: 0x100bd594
  */
-extern LPCSTR g_pszMainWindowClassName;
+extern const char *g_pszMainWindowClassName;
 
 /**
  * Whether the application is active. A frame runs only while it, g_dwActivateState, and not
@@ -85,21 +87,21 @@ extern LPCSTR g_pszMainWindowClassName;
  *
  * @ghidraAddress BRD3D: 0x10680598
  */
-extern DWORD g_dwAppActive;
+extern bool g_dwAppActive;
 
 /**
  * Whether the main window is activated.
  *
  * @ghidraAddress BRD3D: 0x1068059c
  */
-extern DWORD g_dwActivateState;
+extern bool g_dwActivateState;
 
 /**
  * Whether the main window is minimised.
  *
  * @ghidraAddress BRD3D: 0x106805a0
  */
-extern DWORD g_dwActivateMinimized;
+extern bool g_dwActivateMinimized;
 
 /** The DirectDraw renderer of a window. The layout is not recovered yet. */
 class DirectDrawRenderer {
@@ -156,7 +158,7 @@ void InitializeDirectPlay(void);
  * @ghidraAddress BRD3D: 0x10030210
  * @ghidraAddress BRGlide: 0x1001d8a0
  */
-void GetDXVersion(DWORD *pdwVersion, DWORD *pdwRevision);
+void GetDXVersion(unsigned *pdwVersion, unsigned *pdwRevision);
 
 /**
  * Bring an instance of the game that is already running to the front.
@@ -165,7 +167,7 @@ void GetDXVersion(DWORD *pdwVersion, DWORD *pdwRevision);
  * @ghidraAddress BRD3D: 0x10007b10
  * @ghidraAddress BRGlide: 0x10007e80
  */
-BOOL FocusExistingBossRallyInstance(void);
+bool FocusExistingBossRallyInstance(void);
 
 /**
  * Read the amount of physical memory the machine has.
@@ -190,7 +192,7 @@ void ReadInstallDirectoryFromRegistry(void);
  * @return Whether the application started.
  * @ghidraAddress BRD3D: 0x100796b0
  */
-BOOL InitializeApplication(void);
+bool InitializeApplication(void);
 
 /**
  * Create the main window.
@@ -199,7 +201,7 @@ BOOL InitializeApplication(void);
  * @ghidraAddress BRD3D: 0x100798f0
  * @ghidraAddress BRGlide: 0x10019670
  */
-BOOL CreateMainWindow(void);
+bool CreateMainWindow(void);
 
 /**
  * Run the message loop until the game quits.

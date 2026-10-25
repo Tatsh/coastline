@@ -1,7 +1,7 @@
 #include "platform/win/boot/rallyconfig.h"
 
-#include <stdio.h>
-#include <string.h>
+#include <cstdio>
+#include <cstring>
 
 #include "platform/win/boot/app.h"
 
@@ -10,7 +10,7 @@
 #define CONFIG_FILE_VERSION 2
 
 // The defaults of the menu selections, in the order of adwMenuSelectionBackup.
-static constexpr DWORD kDefaultMenuSelections[MENU_SELECTION_COUNT] = {
+static constexpr int kDefaultMenuSelections[MENU_SELECTION_COUNT] = {
     2, 0, 0, 1, 1, 1, 0, 3, 0, 0, 4, 0};
 
 RallyConfig g_GlobalRallyConfig;
@@ -39,12 +39,12 @@ void RallyConfig::LoadDeviceDefaultBindings(int nDevice) {
            sizeof(InputBinding[INPUT_BINDING_COUNT]));
 }
 
-void RallyConfig::SetInputBinding(int nDevice, int nControl, WORD wKind, BYTE nKeyCode) {
+void RallyConfig::SetInputBinding(int nDevice, int nControl, int nKind, int nKeyCode) {
     InputBinding *pBindings = GetDeviceBindings(nDevice);
     InputBinding *pBinding = &pBindings[nControl];
     const InputBinding *pDefault = &GetDefaultBindings(nDevice)[nControl];
 
-    pBinding->wControl = (wKind & 0xff00) | nKeyCode;
+    pBinding->wControl = (nKind & 0xff00) | (nKeyCode & 0xff);
     for (int i = 0; i < 2; i++) {
         // The original repeats the same work for each control of the table.
         for (int nPass = 0; nPass < INPUT_BINDING_COUNT; nPass++) {
@@ -59,12 +59,12 @@ void RallyConfig::SetInputBinding(int nDevice, int nControl, WORD wKind, BYTE nK
     }
 }
 
-WORD RallyConfig::GetInputBindingFlags(int nDevice, int nControl) {
+int RallyConfig::GetInputBindingFlags(int nDevice, int nControl) {
     return GetDeviceBindings(nDevice)[nControl].wControl & 0xff00;
 }
 
-BYTE RallyConfig::GetInputBindingKeyCode(int nDevice, int nControl) {
-    WORD wControl = GetDeviceBindings(nDevice)[nControl].wControl;
+int RallyConfig::GetInputBindingKeyCode(int nDevice, int nControl) {
+    int wControl = GetDeviceBindings(nDevice)[nControl].wControl;
 
     if (nDevice >= 1 && nDevice <= 3 && wControl >= 0x8000) {
         return wControl >> 8;
@@ -79,9 +79,9 @@ void RallyConfig::InitRallyConfigDefaults() {
     memcpy(aInputBindingsDevice3, g_awDefaultKeyBindingsDevice3, sizeof(aInputBindingsDevice3));
     dwInputDeviceType = 0;
     pActiveInputBindings = aInputBindingsKeyboard;
-    bCarShadowSelection = TRUE;
-    bSpecularLightingSelection = TRUE;
-    bForceFeedbackEnabled = TRUE;
+    bCarShadowSelection = true;
+    bSpecularLightingSelection = true;
+    bForceFeedbackEnabled = true;
     memset(szSavedModemPhoneNumber, 0, sizeof(szSavedModemPhoneNumber));
     memset(szPlayerName, 0, sizeof(szPlayerName));
     dwDisplayModeWidth = 640;
@@ -94,7 +94,7 @@ void RallyConfig::InitRallyConfigDefaults() {
     memcpy(adwMenuSelectionBackup, kDefaultMenuSelections, sizeof(adwMenuSelectionBackup));
     memset(szTcpIpPort, 0, sizeof(szTcpIpPort));
     memset(szTcpIpAddress, 0, sizeof(szTcpIpAddress));
-    bSkidMarksSelection = TRUE;
+    bSkidMarksSelection = true;
 }
 
 RallyConfig &RallyConfig::CopyRallyConfig(const RallyConfig &other) {
@@ -109,15 +109,15 @@ static inline bool ReadConfigField(FILE *pFile, void *pField, size_t nSize) {
     return fread(pField, nSize, 1, pFile) == 1;
 }
 
-BOOL RallyConfig::LoadRallyConfigFile(const char *pszPath) {
+bool RallyConfig::LoadRallyConfigFile(const char *pszPath) {
     FILE *pFile;
     char achMagic[4];
-    DWORD dwVersion;
+    int dwVersion;
     bool bRead;
 
     pFile = fopen(pszPath, "rb");
-    if (pFile == NULL) {
-        return FALSE;
+    if (pFile == nullptr) {
+        return false;
     }
     RallyConfig backup;
     backup.CopyRallyConfig(*this);
@@ -139,7 +139,8 @@ BOOL RallyConfig::LoadRallyConfigFile(const char *pszPath) {
         ReadConfigField(pFile, &dwMusicVolume, sizeof(dwMusicVolume));
     // Each selection is read on its own.
     for (int i = 0; bRead && i < MENU_SELECTION_COUNT; i++) {
-        bRead = ReadConfigField(pFile, &adwMenuSelectionBackup[i], sizeof(DWORD));
+        bRead =
+            ReadConfigField(pFile, &adwMenuSelectionBackup[i], sizeof(adwMenuSelectionBackup[i]));
     }
     // The bindings come last, after the device that selects them.
     bRead = bRead && ReadConfigField(pFile, szTcpIpPort, sizeof(szTcpIpPort)) &&
@@ -152,13 +153,13 @@ BOOL RallyConfig::LoadRallyConfigFile(const char *pszPath) {
             ReadConfigField(pFile, aInputBindingsDevice3, sizeof(aInputBindingsDevice3));
     if (bRead) {
         fclose(pFile);
-        return TRUE;
+        return true;
     }
     // The settings before the read are restored and then replaced by the defaults.
     CopyRallyConfig(backup);
     fclose(pFile);
     InitRallyConfigDefaults();
-    return FALSE;
+    return false;
 }
 
 void ReadInstallDirectoryFromRegistry(void) {
@@ -172,8 +173,12 @@ void ReadInstallDirectoryFromRegistry(void) {
                       KEY_READ,
                       &hKey) == ERROR_SUCCESS) {
         dwSize = MAX_PATH;
-        nResult = RegQueryValueExA(
-            hKey, "Directory", NULL, NULL, reinterpret_cast<BYTE *>(g_szInstallDirectory), &dwSize);
+        nResult = RegQueryValueExA(hKey,
+                                   "Directory",
+                                   nullptr,
+                                   nullptr,
+                                   reinterpret_cast<BYTE *>(g_szInstallDirectory),
+                                   &dwSize);
         RegCloseKey(hKey);
         if (nResult == ERROR_SUCCESS) {
             if (g_szInstallDirectory[strlen(g_szInstallDirectory) - 1] != '\\') {

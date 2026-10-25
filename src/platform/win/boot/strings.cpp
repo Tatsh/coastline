@@ -1,26 +1,27 @@
 #include "platform/win/boot/strings.h"
 
-#include <stdlib.h>
-#include <string.h>
+#include <cstdlib>
+#include <cstring>
+
+#include <windows.h>
 
 #include "platform/win/fileio.h"
 
 // The language resource library, beside the game.
 #define STRING_LIBRARY "BRString.dll"
 
-LPCSTR g_apszStringResourceTable[STRING_RESOURCE_COUNT + 1];
+const char *g_apszStringResourceTable[STRING_RESOURCE_COUNT + 1];
 char *g_pStringTableBuffer;
-DWORD g_dwStringTableUsedBytes;
-DWORD g_dwStringTableBufferSize;
+size_t g_dwStringTableUsedBytes;
+size_t g_dwStringTableBufferSize;
 
 void LoadStringTableFromDll(void) {
     GameFile *pFile;
     HMODULE hLibrary;
-    UINT nId;
     int nLength;
 
-    memset(&g_apszStringResourceTable[1], 0, STRING_RESOURCE_COUNT * sizeof(LPCSTR));
-    if (g_pStringTableBuffer != NULL) {
+    memset(&g_apszStringResourceTable[1], 0, STRING_RESOURCE_COUNT * sizeof(const char *));
+    if (g_pStringTableBuffer != nullptr) {
         return;
     }
     // The strings take less room than the library that includes them.
@@ -28,12 +29,12 @@ void LoadStringTableFromDll(void) {
     g_dwStringTableBufferSize = GetFileLength(pFile);
     FileClose(pFile);
     hLibrary = LoadLibraryA(STRING_LIBRARY);
-    if (hLibrary == NULL) {
+    if (hLibrary == nullptr) {
         return;
     }
     g_pStringTableBuffer = static_cast<char *>(malloc(g_dwStringTableBufferSize));
-    if (g_pStringTableBuffer != NULL) {
-        for (nId = 1; nId <= STRING_RESOURCE_COUNT; nId++) {
+    if (g_pStringTableBuffer != nullptr) {
+        for (unsigned nId = 1; nId <= STRING_RESOURCE_COUNT; nId++) {
             nLength = LoadStringA(hLibrary,
                                   nId,
                                   g_pStringTableBuffer + g_dwStringTableUsedBytes,
@@ -47,9 +48,9 @@ void LoadStringTableFromDll(void) {
     FreeLibrary(hLibrary);
 }
 
-LPCSTR GetStringResource(UINT nResourceId) {
+const char *GetStringResource(unsigned nResourceId) {
     if (nResourceId < 1 || nResourceId > STRING_RESOURCE_COUNT) {
-        return NULL;
+        return nullptr;
     }
     return g_apszStringResourceTable[nResourceId];
 }

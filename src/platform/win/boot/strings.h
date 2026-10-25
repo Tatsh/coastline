@@ -1,6 +1,6 @@
 #pragma once
 
-#include <windows.h>
+#include <cstddef>
 
 /** The number of strings of the language resource library, numbered from 1. */
 #define STRING_RESOURCE_COUNT 302
@@ -11,7 +11,7 @@
  * @ghidraAddress BRD3D: 0x11829370
  * @ghidraAddress BRGlide: 0x1186c488
  */
-extern LPCSTR g_apszStringResourceTable[STRING_RESOURCE_COUNT + 1];
+extern const char *g_apszStringResourceTable[STRING_RESOURCE_COUNT + 1];
 
 /**
  * The buffer the strings are loaded into, allocated once.
@@ -25,14 +25,14 @@ extern char *g_pStringTableBuffer;
  *
  * @ghidraAddress BRD3D: 0x11829830
  */
-extern DWORD g_dwStringTableUsedBytes;
+extern size_t g_dwStringTableUsedBytes;
 
 /**
  * The size of g_pStringTableBuffer, the size of the library file.
  *
  * @ghidraAddress BRD3D: 0x11829834
  */
-extern DWORD g_dwStringTableBufferSize;
+extern size_t g_dwStringTableBufferSize;
 
 /**
  * Load the string table of the language resource library. The table is cleared each time, and the
@@ -51,4 +51,4 @@ void LoadStringTableFromDll(void);
  * @ghidraAddress BRD3D: 0x10074030
  * @ghidraAddress BRGlide: 0x1006d280
  */
-LPCSTR GetStringResource(UINT nResourceId);
+const char *GetStringResource(unsigned nResourceId);

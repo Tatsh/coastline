@@ -1,12 +1,14 @@
 #include "platform/win/fileio.h"
 
-#include <stdlib.h>
-#include <string.h>
+#include <cstdlib>
+#include <cstring>
+
+#include <windows.h>
 
 // The size of the buffer of a message to the debugger.
 #define MESSAGE_SIZE 1024
 
-BOOL g_bVerboseFileTrace;
+bool g_bVerboseFileTrace;
 
 long GetFileLength(GameFile *pFile) {
     long nPosition = ftell(pFile->pFile);
@@ -33,7 +35,7 @@ GameFile *FileOpenForReading(const char *pszPath) {
         OutputDebugStringA(szMessage);
     }
     pFile->pFile = fopen(pFile->pszPath, "rb");
-    if (pFile->pFile == NULL) {
+    if (pFile->pFile == nullptr) {
         pErrorFile = fopen("c:\\RallyError.txt", "w");
         sprintf(szMessage, "CHK_FReadOpen(): error opening file %s.\n", pFile->pszPath);
         // The original passes the message to fprintf() as the format.
@@ -45,15 +47,14 @@ GameFile *FileOpenForReading(const char *pszPath) {
     return pFile;
 }
 
-char *FileReadLine(char *pszLine, int nSize, GameFile *pFile) {
-    int nCount;
+char *FileReadLine(char *pszLine, size_t nSize, GameFile *pFile) {
     int c;
 
-    for (nCount = 0; nCount < nSize; nCount++) {
+    for (size_t nCount = 0; nCount < nSize; nCount++) {
         c = fgetc(pFile->pFile);
         if (c == EOF) {
             if (nCount == 0) {
-                return NULL;
+                return nullptr;
             }
             *pszLine = '\0';
             return pszLine + 1;
@@ -94,7 +95,7 @@ void FileClose(GameFile *pFile) {
     free(pFile);
 }
 
-BOOL FileExists(const char *pszPath) {
+bool FileExists(const char *pszPath) {
     char szMessage[MESSAGE_SIZE];
     FILE *pFile;
 
@@ -103,22 +104,22 @@ BOOL FileExists(const char *pszPath) {
         OutputDebugStringA(szMessage);
     }
     pFile = fopen(pszPath, "rb");
-    if (pFile == NULL) {
-        return FALSE;
+    if (pFile == nullptr) {
+        return false;
     }
     fclose(pFile);
-    return TRUE;
+    return true;
 }
 
-void *AllocateMemoryChecked(int nSize, const char *szCaller) {
+void *AllocateMemoryChecked(size_t nSize, const char *szCaller) {
     char szMessage[MESSAGE_SIZE];
     void *pMemory;
 
     if (nSize == 0) {
-        return NULL;
+        return nullptr;
     }
     pMemory = malloc(nSize);
-    if (pMemory == NULL) {
+    if (pMemory == nullptr) {
         sprintf(szMessage, "CHK_AllocateMemory(): Out of memory: couldn't allocate %s\n", szCaller);
         OutputDebugStringA(szMessage);
         exit(1);

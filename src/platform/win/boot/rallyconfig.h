@@ -15,24 +15,24 @@ public:
     InputBinding aInputBindingsDevice2[INPUT_BINDING_COUNT]; /*!< Second controller bindings. */
     InputBinding aInputBindingsDevice3[INPUT_BINDING_COUNT]; /*!< Third controller bindings. */
     /** The device the game reads, 1 to 3 for a game controller and any other for the keyboard. */
-    DWORD dwInputDeviceType;
+    int dwInputDeviceType;
     InputBinding *pActiveInputBindings;     /*!< The bindings of dwInputDeviceType, not saved. */
-    BOOL bCarShadowSelection;               /*!< Whether the shadow of a car is drawn. */
-    BOOL bSpecularLightingSelection;        /*!< Whether specular lighting is drawn. */
-    BOOL bForceFeedbackEnabled;             /*!< Whether force feedback is on. */
+    int bCarShadowSelection;                /*!< Whether the shadow of a car is drawn. */
+    int bSpecularLightingSelection;         /*!< Whether specular lighting is drawn. */
+    int bForceFeedbackEnabled;              /*!< Whether force feedback is on. */
     char szSavedModemPhoneNumber[MAX_PATH]; /*!< The number the modem dials last. */
     char szPlayerName[1024];                /*!< The name of the player. */
-    DWORD dwDisplayModeWidth;               /*!< The width of the display mode. */
-    DWORD dwDisplayModeHeight;              /*!< The height of the display mode. */
-    DWORD dwDisplayModeBitDepth;            /*!< The bits of a pixel of the display mode. */
-    DWORD dwDisplayModeExtra;               /*!< A fourth value of the display mode. */
+    int dwDisplayModeWidth;                 /*!< The width of the display mode. */
+    int dwDisplayModeHeight;                /*!< The height of the display mode. */
+    int dwDisplayModeBitDepth;              /*!< The bits of a pixel of the display mode. */
+    int dwDisplayModeExtra;                 /*!< A fourth value of the display mode. */
     GUID DisplayDriverGuid;                 /*!< The DirectDraw driver, all zero for the default. */
-    DWORD dwSfxVolume;                      /*!< The volume of sound effects. */
-    DWORD dwMusicVolume;                    /*!< The volume of music. */
-    DWORD adwMenuSelectionBackup[MENU_SELECTION_COUNT]; /*!< The last choices of the menus. */
-    char szTcpIpPort[32];                               /*!< The TCP/IP port of network play. */
-    char szTcpIpAddress[64];                            /*!< The TCP/IP address of network play. */
-    BOOL bSkidMarksSelection;                           /*!< Whether skid marks are drawn. */
+    int dwSfxVolume;                        /*!< The volume of sound effects. */
+    int dwMusicVolume;                      /*!< The volume of music. */
+    int adwMenuSelectionBackup[MENU_SELECTION_COUNT]; /*!< The last choices of the menus. */
+    char szTcpIpPort[32];                             /*!< The TCP/IP port of network play. */
+    char szTcpIpAddress[64];                          /*!< The TCP/IP address of network play. */
+    int bSkidMarksSelection;                          /*!< Whether skid marks are drawn. */
 
     /**
      * Set the defaults.
@@ -61,12 +61,12 @@ public:
      *
      * @param nDevice The device, 1 to 3 for a game controller and any other for the keyboard.
      * @param nControl The control of the game.
-     * @param wKind The kind of device in the high byte.
+     * @param nKind The kind of device in the high byte.
      * @param nKeyCode The key or button in the low byte.
      * @ghidraAddress BRD3D: 0x10069b10
      * @ghidraAddress BRGlide: 0x10062b80
      */
-    void SetInputBinding(int nDevice, int nControl, WORD wKind, BYTE nKeyCode);
+    void SetInputBinding(int nDevice, int nControl, int nKind, int nKeyCode);
 
     /**
      * The kind of device of a binding.
@@ -77,7 +77,7 @@ public:
      * @ghidraAddress BRD3D: 0x10069bc0
      * @ghidraAddress BRGlide: 0x10062c30
      */
-    WORD GetInputBindingFlags(int nDevice, int nControl);
+    int GetInputBindingFlags(int nDevice, int nControl);
 
     /**
      * The key or button of a binding. A control of a game controller with its top bit set keeps
@@ -89,7 +89,7 @@ public:
      * @ghidraAddress BRD3D: 0x10069c30
      * @ghidraAddress BRGlide: 0x10062ca0
      */
-    BYTE GetInputBindingKeyCode(int nDevice, int nControl);
+    int GetInputBindingKeyCode(int nDevice, int nControl);
 
     /**
      * Set every setting to its default and bind each device to its default controls.
@@ -118,7 +118,7 @@ public:
      * @ghidraAddress BRD3D: 0x10069ff0
      * @ghidraAddress BRGlide: 0x10063060
      */
-    BOOL LoadRallyConfigFile(const char *pszPath);
+    bool LoadRallyConfigFile(const char *pszPath);
 
     /**
      * The bindings of a device.
@@ -162,4 +162,4 @@ extern RallyConfig g_GlobalRallyConfig;
  * @ghidraAddress BRGlide: 0x10007f40
  * @stub{BRGlide}
  */
-void LoadBossRallyIniSettings(LPSTR pszCmdLine);
+void LoadBossRallyIniSettings(const char *pszCmdLine);

@@ -3,7 +3,7 @@
  * Entry point of the Direct3D library. The launcher loads BRD3D.dll and calls its RallyMain
  * export with the arguments of WinMain().
  */
-#include <string.h>
+#include <cstring>
 
 #include <objbase.h>
 #include <windows.h>
@@ -18,23 +18,23 @@
 // The accelerator table of the main window, a resource of the library.
 #define IDR_MAIN_ACCELERATORS 0x71
 
-BOOL InitializeApplication(void) {
-    DWORD dwVersion;
-    DWORD dwRevision;
+bool InitializeApplication(void) {
+    unsigned dwVersion;
+    unsigned dwRevision;
 
-    g_hAppInstance = GetModuleHandleA(NULL);
-    if (g_hAppInstance == NULL) {
-        return FALSE;
+    g_hAppInstance = GetModuleHandleA(nullptr);
+    if (g_hAppInstance == nullptr) {
+        return false;
     }
     GetDXVersion(&dwVersion, &dwRevision);
     if (dwVersion < 0x600) {
-        MessageBoxA(NULL, "This game requires DirectX 6.", "Boss Rally Error", MB_ICONERROR);
-        return FALSE;
+        MessageBoxA(nullptr, "This game requires DirectX 6.", "Boss Rally Error", MB_ICONERROR);
+        return false;
     }
     if (!FocusExistingBossRallyInstance()) {
-        return FALSE;
+        return false;
     }
-    return CreateMainWindow() != FALSE;
+    return CreateMainWindow();
 }
 
 void ShutdownMainWindow(void) {
@@ -45,16 +45,16 @@ void ShutdownMainWindow(void) {
 void RunMessageLoop(void) {
     MSG msg;
 
-    if (g_hAppInstance == NULL || g_hMainWindow == NULL) {
+    if (g_hAppInstance == nullptr || g_hMainWindow == nullptr) {
         return;
     }
     g_hAccelTable = LoadAcceleratorsA(g_hAppInstance, MAKEINTRESOURCEA(IDR_MAIN_ACCELERATORS));
     for (;;) {
-        if (PeekMessageA(&msg, NULL, 0, 0, PM_REMOVE)) {
+        if (PeekMessageA(&msg, nullptr, 0, 0, PM_REMOVE)) {
             if (msg.message == WM_QUIT) {
                 break;
             }
-            if (g_hAccelTable == NULL ||
+            if (g_hAccelTable == nullptr ||
                 !TranslateAcceleratorA(g_hMainWindow, g_hAccelTable, &msg)) {
                 TranslateMessage(&msg);
                 DispatchMessageA(&msg);
@@ -75,7 +75,7 @@ void RunMessageLoop(void) {
 extern "C" __declspec(dllexport) int
 RallyMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR pszCmdLine, int nCmdShow) {
     g_dwAppExitCode = 0;
-    if (SUCCEEDED(CoInitialize(NULL))) {
+    if (SUCCEEDED(CoInitialize(nullptr))) {
         RefreshTotalPhysicalMemory();
         ReadInstallDirectoryFromRegistry();
         LoadStringTableFromDll();
@@ -99,15 +99,15 @@ RallyMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR pszCmdLine, int nC
 int DestroyMainWindow(void) {
     DirectDrawRenderer *pRenderer;
 
-    if (g_hMainWindow != NULL && IsWindow(g_hMainWindow)) {
+    if (g_hMainWindow != nullptr && IsWindow(g_hMainWindow)) {
         DestroyWindow(g_hMainWindow);
-        g_hMainWindow = NULL;
+        g_hMainWindow = nullptr;
     }
     pRenderer = g_pMainRenderWindow;
-    if (pRenderer != NULL) {
+    if (pRenderer != nullptr) {
         pRenderer->Cleanup();
         delete pRenderer;
-        g_pMainRenderWindow = NULL;
+        g_pMainRenderWindow = nullptr;
     }
     return 0;
 }

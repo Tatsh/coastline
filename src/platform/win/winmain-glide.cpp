@@ -3,7 +3,7 @@
  * Entry point of the Glide library. The launcher loads BRGlide.dll and calls its RallyMain export
  * with the arguments of WinMain().
  */
-#include <string.h>
+#include <cstring>
 
 #include <objbase.h>
 #include <windows.h>
@@ -23,9 +23,9 @@
 extern "C" __declspec(dllexport) int
 RallyMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR pszCmdLine, int nCmdShow) {
     g_dwAppExitCode = 0;
-    if (SUCCEEDED(CoInitialize(NULL))) {
-        DWORD dwVersion;
-        DWORD dwRevision;
+    if (SUCCEEDED(CoInitialize(nullptr))) {
+        unsigned dwVersion;
+        unsigned dwRevision;
 
         g_hRallyMainInstance = hInstance;
         g_hRallyMainPrevInstance = hPrevInstance;
@@ -33,7 +33,7 @@ RallyMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR pszCmdLine, int nC
         g_nRallyMainCmdShow = nCmdShow;
         GetDXVersion(&dwVersion, &dwRevision);
         if (dwVersion < 0x600) {
-            MessageBoxA(NULL, GetStringResource(0x128), GetStringResource(0x126), MB_ICONERROR);
+            MessageBoxA(nullptr, GetStringResource(0x128), GetStringResource(0x126), MB_ICONERROR);
             return 0;
         }
         if (!FocusExistingBossRallyInstance()) {
