@@ -1,4 +1,5 @@
-#pragma once
+#ifndef COASTLINE_PLATFORM_WIN_SNAPSHOT_H
+#define COASTLINE_PLATFORM_WIN_SNAPSHOT_H
 
 /**
  * @file
@@ -32,3 +33,5 @@ void InvalidateFrameSnapshotSlots(void);
 #ifdef __cplusplus
 }
 #endif
+
+#endif // COASTLINE_PLATFORM_WIN_SNAPSHOT_H

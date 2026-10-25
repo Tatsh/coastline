@@ -1,4 +1,5 @@
-#pragma once
+#ifndef COASTLINE_PLATFORM_WIN_FILEIO_H
+#define COASTLINE_PLATFORM_WIN_FILEIO_H
 
 /**
  * @file
@@ -118,3 +119,5 @@ void CHK_FClose(GameFile *pFile);
 #ifdef __cplusplus
 }
 #endif
+
+#endif // COASTLINE_PLATFORM_WIN_FILEIO_H

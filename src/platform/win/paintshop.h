@@ -1,4 +1,5 @@
-#pragma once
+#ifndef COASTLINE_PLATFORM_WIN_PAINTSHOP_H
+#define COASTLINE_PLATFORM_WIN_PAINTSHOP_H
 
 /**
  * @file
@@ -59,3 +60,5 @@ void FreeAllPaintBitmaps(void);
 #ifdef __cplusplus
 }
 #endif
+
+#endif // COASTLINE_PLATFORM_WIN_PAINTSHOP_H
