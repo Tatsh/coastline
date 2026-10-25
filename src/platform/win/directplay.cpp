@@ -8,6 +8,7 @@
 // The headers below need the types of windows.h.
 #include <objbase.h>
 
+#include "laps.h"
 #include "platform/win/boot/app.h"
 #include "platform/win/boot/rallyconfig.h"
 #include "platform/win/boot/strings.h"
@@ -15,6 +16,7 @@
 #include "platform/win/frontend.h"
 #include "platform/win/netstream.h"
 #include "platform/win/settings.h"
+#include "trackselect.h"
 
 // The index of each service provider in g_aServiceProviders.
 #define SERVICE_PROVIDER_IPX 0
@@ -910,4 +912,71 @@ void ShowNetworkErrorMessage(const char *pszFormat, HRESULT hResult) {
 
     wsprintfA(szMessage, pszFormat, GetDirectPlayErrorString(hResult));
     MessageBoxA(nullptr, szMessage, GetStringResource(0x126), MB_OK);
+}
+
+// The cars g_dwCarMenuIndex steps through.
+#define CAR_MENU_CHOICES 32
+
+static inline void FreeSessionDesc(DPSESSIONDESC2 *pDesc) {
+    GlobalUnlock(GlobalHandle(pDesc));
+    GlobalFree(GlobalHandle(pDesc));
+}
+
+HRESULT LoadNetworkSettings(void) {
+    DPSESSIONDESC2 *pDesc = nullptr;
+    DPSESSIONDESC2 descUnused;
+
+    if (g_DirectPlayInfo.pDirectPlay == nullptr) {
+        return DPERR_INVALIDOBJECT;
+    }
+    // The description is cleared and never read.
+    memset(&descUnused, 0, sizeof(descUnused));
+    HRESULT hResult = GetDirectPlaySessionDesc(g_DirectPlayInfo.pDirectPlay, &pDesc);
+    if (FAILED(hResult)) {
+        if (pDesc != nullptr) {
+            FreeSessionDesc(pDesc);
+        }
+        return hResult;
+    }
+    g_dwTrackMenuIndex = g_dwSelectedTrackId = pDesc->dwUser1;
+    g_dwSelectedWeather = g_dwChosenWeather = pDesc->dwUser2;
+    g_dwSelectedCarClass = pDesc->dwUser3;
+    g_dwTotalLaps = g_dwTotalLapsSetting = pDesc->dwUser4;
+    ApplyCarGroupPreset();
+    int nFirstCar = g_dwCarMenuIndex;
+    if (!IsCarSelectable(nFirstCar)) {
+        do {
+            if (++g_dwCarMenuIndex >= CAR_MENU_CHOICES) {
+                g_dwCarMenuIndex = 0;
+            }
+        } while (g_dwCarMenuIndex != nFirstCar && !IsCarSelectable(g_dwCarMenuIndex));
+    }
+    if (pDesc->lpszSessionNameA != nullptr) {
+        strcpy(g_szSessionName, pDesc->lpszSessionNameA);
+    }
+    FreeSessionDesc(pDesc);
+    return DP_OK;
+}
+
+HRESULT GetDirectPlaySessionDesc(IDirectPlay3A *pDirectPlay, DPSESSIONDESC2 **ppDesc) {
+    DWORD dwSize;
+    DPSESSIONDESC2 *pDesc = nullptr;
+
+    HRESULT hResult = pDirectPlay->GetSessionDesc(nullptr, &dwSize);
+    if (hResult == DPERR_BUFFERTOOSMALL) {
+        pDesc = static_cast<DPSESSIONDESC2 *>(GlobalLock(GlobalAlloc(GHND, dwSize)));
+        if (pDesc == nullptr) {
+            hResult = E_OUTOFMEMORY;
+        } else {
+            hResult = pDirectPlay->GetSessionDesc(pDesc, &dwSize);
+            if (SUCCEEDED(hResult)) {
+                *ppDesc = pDesc;
+                pDesc = nullptr;
+            }
+        }
+    }
+    if (pDesc != nullptr) {
+        FreeSessionDesc(pDesc);
+    }
+    return hResult;
 }

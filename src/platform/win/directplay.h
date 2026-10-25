@@ -938,12 +938,26 @@ void HandleDirectPlaySystemMessageClient(
     DirectPlayInfo *pInfo, DPMSG_GENERIC *pMessage, DWORD dwSize, DPID dpidFrom, DPID dpidTo);
 
 /**
- * Read the settings of the network session again after its description changed.
+ * Get the description of the session of DirectPlay in a buffer of locked global memory.
  *
+ * @param pDirectPlay The DirectPlay object.
+ * @param ppDesc Receives the description, for the caller to unlock and free.
+ * @return The result of GetSessionDesc, or `E_OUTOFMEMORY` when the buffer cannot be allocated.
+ * @ghidraAddress BRD3D: 0x1003d0b0
+ * @ghidraAddress BRGlide: 0x10036740
+ */
+HRESULT GetDirectPlaySessionDesc(IDirectPlay3A *pDirectPlay, DPSESSIONDESC2 **ppDesc);
+
+/**
+ * Read the track, the weather, the class of car, the laps, and the name of the network session
+ * from its description, and choose a car of the class that can be chosen.
+ *
+ * @return `DP_OK`, the error of GetDirectPlaySessionDesc(), or `DPERR_INVALIDOBJECT` without
+ * DirectPlay.
  * @ghidraAddress BRD3D: 0x1003ce80
  * @ghidraAddress BRGlide: 0x10036510
  */
-void LoadNetworkSettings(void);
+HRESULT LoadNetworkSettings(void);
 
 /** A player in a slot of the session. */
 struct SessionSlot {
