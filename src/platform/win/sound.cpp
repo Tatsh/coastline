@@ -519,6 +519,14 @@ bool SetSoundBufferFrequency(SoundBufferNode *pNode, DWORD dwFrequency) {
     return true;
 }
 
+bool IsSoundBufferPlaying(SoundBufferNode *pNode) {
+    DWORD dwStatus = 0;
+    if (pNode->pBuffer->GetStatus(&dwStatus) != DS_OK) {
+        return false;
+    }
+    return (dwStatus & DSBSTATUS_PLAYING) != 0;
+}
+
 bool SetSoundVoiceFrequencyFloat(int nSample, int nVoice, float fFrequency) {
     return SetSoundChannelFrequency(nSample, nVoice * 2, static_cast<DWORD>(fFrequency));
 }

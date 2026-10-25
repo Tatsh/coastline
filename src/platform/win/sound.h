@@ -637,6 +637,16 @@ HRESULT PlaySoundBuffer(SoundBufferNode *pNode, int bLooping);
 bool SetSoundBufferFrequency(SoundBufferNode *pNode, DWORD dwFrequency);
 
 /**
+ * Report whether the buffer of a node plays.
+ *
+ * @param pNode The node.
+ * @return Whether it plays, and false when its status cannot be read.
+ * @ghidraAddress BRD3D: 0x10073020
+ * @ghidraAddress BRGlide: 0x1006bf90
+ */
+bool IsSoundBufferPlaying(SoundBufferNode *pNode);
+
+/**
  * Set the frequency of a channel of a sample, when sound is on.
  *
  * @param nSample The sample.
