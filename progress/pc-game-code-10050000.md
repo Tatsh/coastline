@@ -1,6 +1,6 @@
 # PC port game code from 0x10050000 to 0x10060000
 
-6 of 84 routines done.
+7 of 84 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -9,7 +9,7 @@ the same name, for a routine the port retained from the N64 game.
 
 | Name                                      | Status | N64             | # xref | Length | BRD3D        | BRGlide      | Signature                                                                                                                                       |
 | ----------------------------------------- | :----: | --------------- | -----: | -----: | ------------ | ------------ | ----------------------------------------------------------------------------------------------------------------------------------------------- |
-| `InitializeFrontEndResources`             |   📝   |                 |      2 |   8349 | `0x1005d440` | `0x10056260` | `undefined InitializeFrontEndResources()`                                                                                                       |
+| `InitializeFrontEndResources`             |   ✅   |                 |      2 |   8349 | `0x1005d440` | `0x10056260` | `bool InitializeFrontEndResources(void)`                                                                                                        |
 | `BuildNetworkCarSetupUI`                  |        |                 |      4 |   4109 | `0x10058750` | `0x10051600` | `undefined BuildNetworkCarSetupUI()`                                                                                                            |
 | `BuildPreRaceInfoUI`                      |        |                 |      2 |   3990 | `0x100509f0` | `0x100498a0` | `undefined BuildPreRaceInfoUI()`                                                                                                                |
 | `ComputeAiVehicleInput`                   |        |                 |      3 |   3867 |              | `0x1005e690` | `undefined ComputeAiVehicleInput()`                                                                                                             |
@@ -43,7 +43,7 @@ the same name, for a routine the port retained from the N64 game.
 | `InitMenuDirectDrawSurfaces`              |        |                 |      1 |    362 | `0x1005f690` |              | `undefined InitMenuDirectDrawSurfaces()`                                                                                                        |
 | `SaveFileList::LoadSeasonDescription`     |        |                 |      1 |    343 | `0x1005ccd0` | `0x10055af0` | `undefined LoadSeasonDescription(SaveFileList * this, undefined4 param_1)`                                                                      |
 | `InitJoystickBindingNames`                |   ✅   |                 |      1 |    333 | `0x1005fdb0` | `0x10058af0` | `void InitJoystickBindingNames(void)`                                                                                                           |
-| `InitMenuSpriteRects`                     |        |                 |      1 |    309 | `0x1005f800` | `0x10058540` | `undefined InitMenuSpriteRects()`                                                                                                               |
+| `InitMenuSpriteRects`                     |   📝   |                 |      1 |    309 | `0x1005f800` | `0x10058540` | `void InitMenuSpriteRects(void)`                                                                                                                |
 | `MenuScreen::ActivateMenuScreen`          |   📝   |                 |      1 |    304 | `0x1005ae70` | `0x10053d20` | `int ActivateMenuScreen(MenuScreen * this)`                                                                                                     |
 | `ApplyLoadedSeasonSettings`               |        |                 |      2 |    289 | `0x1005fbc0` | `0x10058900` | `undefined ApplyLoadedSeasonSettings()`                                                                                                         |
 | `BlitSurfaceRegion`                       |        |                 |      7 |    237 | `0x1005f5a0` | `0x10058380` | `void BlitSurfaceRegion(int nDestX, int nDestY, WORD wSurfaceIndex, int * pRect, uint dwFlags)`                                                 |

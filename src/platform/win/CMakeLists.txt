@@ -14,6 +14,7 @@ add_library(
   earsound.cpp
   fileio.c
   frametimer.cpp
+  frontend.cpp
   input.cpp
   paintshop.c
   snapshot.c
