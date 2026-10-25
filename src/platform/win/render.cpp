@@ -298,6 +298,20 @@ void CopyDamageTextureLevels(DWORD *pdwLevels) {
     memcpy(pdwLevels, g_adwDamageTextureLevels, sizeof(g_adwDamageTextureLevels));
 }
 
+void (*g_pfnReloadTextureEntryData)(int nEntry);
+
+void IncrementDamageTextureLevel(int nTexture, const int *pnEntries, int *pnLevels) {
+    if (nTexture < 0 || nTexture >= DAMAGE_TEXTURE_COUNT) {
+        return;
+    }
+    if (pnLevels[nTexture] >= DAMAGE_TEXTURE_MAX_LEVEL) {
+        return;
+    }
+    pnLevels[nTexture]++;
+    SetTextureEntryDamageLevel(pnEntries[nTexture], pnLevels[nTexture]);
+    g_pfnReloadTextureEntryData(pnEntries[nTexture]);
+}
+
 int GetTexelsPerLoadWord(int nSize) {
     switch (nSize) {
     case 0:

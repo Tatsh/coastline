@@ -142,6 +142,32 @@ void SetDisplayModeWithFallback(int nWidth, int nHeight, int nBitDepth, int nExt
  */
 void SetTextureEntryDamageLevel(int nEntry, int nDamageLevel);
 
+/**
+ * Load the data of a texture the game loaded again, set by InitializeTextureSubsystem().
+ *
+ * @ghidraAddress BRD3D: 0x118aa0c0
+ * @ghidraAddress BRGlide: 0x118ed1d8
+ */
+extern void (*g_pfnReloadTextureEntryData)(int nEntry);
+
+/** The highest level of damage of IncrementDamageTextureLevel(). */
+#define DAMAGE_TEXTURE_MAX_LEVEL 3
+
+/** The number of damage textures of IncrementDamageTextureLevel(). */
+#define DAMAGE_TEXTURE_COUNT 8
+
+/**
+ * Raise the level of damage of a damage texture by one, up to DAMAGE_TEXTURE_MAX_LEVEL, and load
+ * the texture again.
+ *
+ * @param nTexture The damage texture, below DAMAGE_TEXTURE_COUNT.
+ * @param pnEntries The entry of each damage texture.
+ * @param pnLevels The level of damage of each damage texture.
+ * @ghidraAddress BRD3D: 0x10074ed0
+ * @ghidraAddress BRGlide: 0x1006e130
+ */
+void IncrementDamageTextureLevel(int nTexture, const int *pnEntries, int *pnLevels);
+
 #if TGR_RENDERER == TGR_RENDERER_D3D
 /**
  * Set the routines of the Direct3D device: the flip of the main window shows a frame, and the
