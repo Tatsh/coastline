@@ -15,6 +15,7 @@
 #include "platform/win/settings.h"
 #include "platform/win/timer.h"
 #include "platform/win/wavread.h"
+#include "soundchannel.h"
 
 IDirectSound *g_pDirectSound;
 int g_dwDirectSoundRefCount;
@@ -789,6 +790,19 @@ bool InitSoundChannelWithVolume(
     SetAudioChannelLooping(nChannel, nLoopLength);
     SetAudioChannelStereoLevels(nChannel, dwLevels);
     return StartSoundChannelPlayback(nSample, nChannel, nLoopLength);
+}
+
+bool InitSoundChannel(s16 channel, s32 sample, u32 length, u32 loopLength) {
+    return InitSoundChannelWithVolume(channel,
+                                      sample,
+                                      static_cast<int>(length),
+                                      static_cast<int>(loopLength),
+                                      MAX_STEREO_LEVEL << 16 | MAX_STEREO_LEVEL);
+}
+
+bool StartSoundChannelMuted(s16 channel, s32 sample, u32 length, u32 loopLength) {
+    return InitSoundChannelWithVolume(
+        channel, sample, static_cast<int>(length), static_cast<int>(loopLength), 0);
 }
 
 bool SetStereoAndPlaySoundChannel(int nSample, int nChannel, DWORD dwLevels, int bLooping) {

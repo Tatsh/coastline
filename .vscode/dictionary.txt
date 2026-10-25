@@ -682,6 +682,7 @@ snapcraft
 sndlevl
 snowdl
 softshok
+soundchannel
 soundptr
 soundtik
 specon
