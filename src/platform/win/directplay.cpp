@@ -882,6 +882,18 @@ int PopDepartedPlayerSlot(void) {
 // The status of a slot of a peer in its low 6 bits.
 #define NET_PEER_STATUS_MASK 0x3f
 
+// The status of a slot below which GetNormalizedSlotStatusFlags() gives 0.
+#define NET_PEER_STATUS_BASE 4
+
+int GetNormalizedSlotStatusFlags(int nSlot) {
+    NetPeerSlot &slot = g_aNetPeerSlots[nSlot];
+    // The mutex is taken around a read that takes it again.
+    WaitForSingleObject(slot.hMutex, INFINITE);
+    int nStatus = (GetSlotStatusThreadSafe(nSlot) & NET_PEER_STATUS_MASK) - NET_PEER_STATUS_BASE;
+    ReleaseMutex(slot.hMutex);
+    return nStatus > 0 ? nStatus : 0;
+}
+
 DPID GetSlotPlayerId(int nSlot) {
     DPID dpidPlayer;
 
@@ -1176,4 +1188,18 @@ void CopySessionNameToBuffer(NetworkSessionSettings *pSettings) {
         strcpy(pSettings->szSessionName, g_szSessionName);
     }
     pSettings->bSecureServer = FALSE;
+}
+
+// The player count of GetDirectPlaySessionPlayerCount() without a description.
+#define SESSION_PLAYER_COUNT_UNKNOWN 0xffff
+
+DWORD GetDirectPlaySessionPlayerCount(void) {
+    DPSESSIONDESC2 *pDesc = nullptr;
+
+    if (FAILED(GetDirectPlaySessionDesc(g_DirectPlayInfo.pDirectPlay, &pDesc))) {
+        return SESSION_PLAYER_COUNT_UNKNOWN;
+    }
+    DWORD dwCount = pDesc->dwCurrentPlayers;
+    FreeSessionDesc(pDesc);
+    return dwCount;
 }

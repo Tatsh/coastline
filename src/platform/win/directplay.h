@@ -778,6 +778,25 @@ DPID GetSlotPlayerId(int nSlot);
 int GetSlotStatusThreadSafe(int nSlot);
 
 /**
+ * The status of a slot of a peer in its low 6 bits, less 4, under the mutex of the slot.
+ *
+ * @param nSlot The slot.
+ * @return The status less 4, or 0 for a status of 4 or less.
+ * @ghidraAddress BRD3D: 0x10005f40
+ * @ghidraAddress BRGlide: 0x100062b0
+ */
+int GetNormalizedSlotStatusFlags(int nSlot);
+
+/**
+ * The number of players in the network session.
+ *
+ * @return The number, or 0xffff when the description of the session is not available.
+ * @ghidraAddress BRD3D: 0x1000c670
+ * @ghidraAddress BRGlide: 0x10009ba0
+ */
+DWORD GetDirectPlaySessionPlayerCount(void);
+
+/**
  * Set the status of a slot of a peer under the mutex of the slot.
  *
  * @param nSlot The slot.
