@@ -652,6 +652,32 @@ void MenuScreen::DestroyPanels() {
     g_wMenuHoverIndex = 0;
 }
 
+// The string of the caption of the message box of an error.
+#define ERROR_CAPTION_STRING 0xaa
+
+ErrorMessage g_ErrorMessageTable[ERROR_MESSAGE_COUNT] = {
+    {true, 0xa2},
+    {true, 0xa3},
+    {false, 0xa4},
+    {false, 0xa5},
+    {true, 0xa6},
+    {false, 0xa7},
+    {true, 0xa8},
+    {true, 0xa9},
+};
+
+void ShowErrorMessage(int nErrorCode) {
+    // A code of ERROR_MESSAGE_COUNT passes the test and reads past the end of the table.
+    if (nErrorCode > ERROR_MESSAGE_COUNT) {
+        return;
+    }
+    const char *pszMessage = GetStringResource(g_ErrorMessageTable[nErrorCode].nStringId);
+    MessageBoxA(g_hMainWindow, pszMessage + 1, GetStringResource(ERROR_CAPTION_STRING), MB_OK);
+    if (g_ErrorMessageTable[nErrorCode].bFatal) {
+        exit(1);
+    }
+}
+
 void BackupMenuSelections(void) {
     int *pBackup = g_GlobalRallyConfig.adwMenuSelectionBackup;
 

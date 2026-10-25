@@ -1215,8 +1215,26 @@ extern int g_dwHandlingTypeMenuIndex;
  */
 extern int g_dwSelectedCarClass;
 
+/** An error of the game that ShowErrorMessage() can show. */
+struct ErrorMessage {
+    int bFatal;         /*!< Whether the game exits after the message. */
+    unsigned nStringId; /*!< The string of the message. */
+};
+
+/** The number of entries of g_ErrorMessageTable. */
+#define ERROR_MESSAGE_COUNT 8
+
 /**
- * Show an error of the game.
+ * The errors of the game, indexed by the code of the error.
+ *
+ * @ghidraAddress BRD3D: 0x100ac660
+ * @ghidraAddress BRGlide: 0x100abe00
+ */
+extern ErrorMessage g_ErrorMessageTable[ERROR_MESSAGE_COUNT];
+
+/**
+ * Show an error of the game in a message box from its second character, and exit when the error is
+ * fatal. A code above ERROR_MESSAGE_COUNT shows nothing.
  *
  * @param nErrorCode The error.
  * @ghidraAddress BRD3D: 0x1003e260
