@@ -469,6 +469,17 @@ extern SoundBankRow g_SoundBankIndexTableB;
 extern SoundBankRow g_SoundBankIndexTableC;
 
 /**
+ * Record a sound for the even channel of a voice in the first row of the banks and in the rows of
+ * the variants and the looping sounds, as one more than its index.
+ *
+ * @param nVoice The voice, half the channel.
+ * @param nIndex The index of the sound.
+ * @ghidraAddress BRD3D: 0x10073080
+ * @ghidraAddress BRGlide: 0x1006bff0
+ */
+void SetSoundBankEntryIndex(int nVoice, int nIndex);
+
+/**
  * Clear the first entries of the three tables of the banks of sounds.
  *
  * @ghidraAddress BRD3D: 0x10073060

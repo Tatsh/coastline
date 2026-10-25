@@ -664,6 +664,13 @@ void ResetSoundBankTables(void) {
     }
 }
 
+void SetSoundBankEntryIndex(int nVoice, int nIndex) {
+    int nEntry = nIndex + 1;
+    g_SoundBankIndexTableA[0].anChannels[nVoice * 2] = nEntry;
+    g_SoundBankIndexTableB.anChannels[nVoice * 2] = nEntry;
+    g_SoundBankIndexTableC.anChannels[nVoice * 2] = nEntry;
+}
+
 // The size of the path of a sample.
 #define SAMPLE_PATH_SIZE 0x400
 
