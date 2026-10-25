@@ -14,6 +14,7 @@
 #include "platform/win/earsound.h"
 #include "platform/win/settings.h"
 #include "platform/win/timer.h"
+#include "platform/win/wavread.h"
 
 IDirectSound *g_pDirectSound;
 int g_dwDirectSoundRefCount;

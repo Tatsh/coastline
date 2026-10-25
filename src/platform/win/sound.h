@@ -541,21 +541,6 @@ extern void *g_SfxWaveVariantTable[SOUND_CHANNEL_COUNT];
 extern void *g_LoopingSoundTable[SOUND_CHANNEL_COUNT];
 
 /**
- * Read a wave file into locked global memory.
- *
- * @param pszPath The path of the file.
- * @param pdwSize Receives the size of the data.
- * @param pdwSamples Receives the number of samples.
- * @param ppFormat Receives the format.
- * @param ppData Receives the data.
- * @return 0, or an error.
- * @ghidraAddress BRD3D: 0x10076fa0
- * @ghidraAddress BRGlide: 0x10070280
- */
-int WaveLoadFile(
-    const char *pszPath, DWORD *pdwSize, DWORD *pdwSamples, WAVEFORMATEX **ppFormat, void **ppData);
-
-/**
  * Add a node at the end of a list of sound buffers, not playing.
  *
  * @param pHead The head of the list.

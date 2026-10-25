@@ -81,6 +81,8 @@ centered
 channelmix
 chatbar
 chnl
+ckid
+cksize
 cleargeometrymode
 coasttr
 coasttrk
@@ -273,6 +275,7 @@ ffunction
 finalrom
 finetune
 fixedh
+fourcc
 fovy
 foxundermoon
 fpart
@@ -317,7 +320,9 @@ hilite
 hinstance
 histk
 hmenu
+hmmio
 horzres
+hpstr
 hresult
 huft
 iasm
@@ -445,6 +450,9 @@ minimizebox
 minode
 mirrwd
 mktemp
+mmckinfo
+mmio
+mmioinfo
 mnrwd
 moddi
 modelpart
@@ -517,6 +525,7 @@ paletteindexed
 palettized
 parmsa
 pathlib
+pcmwaveformat
 permuter
 persp
 perspnorm
@@ -534,6 +543,7 @@ pfsisplug
 pfsnumfiles
 pfsreadwritefile
 pfsrepairid
+phmmio
 piacs
 pidma
 pifdata
@@ -778,6 +788,7 @@ vretrace
 vsince
 wasstilldrawing
 waveformatex
+wavread
 wdangling
 weatherselect
 werror

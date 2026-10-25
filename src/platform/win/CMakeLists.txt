@@ -22,6 +22,7 @@ add_library(
   snapshot.c
   sound.cpp
   timer.c
+  wavread.c
   winmain-${TGR_RENDERER}.cpp)
 # The DirectDraw and Direct3D renderer belongs to the Direct3D library alone.
 if(TGR_RENDERER STREQUAL "d3d")
