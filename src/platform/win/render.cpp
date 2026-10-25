@@ -182,6 +182,28 @@ void ClearSplitScreenRenderState(void) {
     memset(g_anSkidMarkTail, 0, sizeof(g_anSkidMarkTail));
 }
 
+int g_dwCopyTextureDataOnRelocate;
+
+void SetCopyTextureDataOnRelocate(int bCopy) {
+    g_dwCopyTextureDataOnRelocate = bCopy;
+}
+
+int g_dwTextureLoadCategory;
+
+void SetTextureLoadCategory(int nCategory) {
+    g_dwTextureLoadCategory = nCategory;
+}
+
+DWORD g_adwDamageTextureLevels[DAMAGE_TEXTURE_LEVEL_COUNT];
+
+void ClearDamageTextureLevels(void) {
+    memset(g_adwDamageTextureLevels, 0, sizeof(g_adwDamageTextureLevels));
+}
+
+void CopyDamageTextureLevels(DWORD *pdwLevels) {
+    memcpy(pdwLevels, g_adwDamageTextureLevels, sizeof(g_adwDamageTextureLevels));
+}
+
 TextureUploadRequest g_aTextureUploadQueue[TEXTURE_UPLOAD_QUEUE_SIZE];
 int g_dwTextureUploadQueueHead;
 int g_dwTextureUploadQueueTail;

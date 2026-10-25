@@ -418,6 +418,68 @@ extern HANDLE g_hTextureUploadQueueMutex;
 void InitializeTextureUploadQueue(void);
 
 /**
+ * Whether the data of a texture is copied when its pointers are relocated.
+ *
+ * @ghidraAddress BRD3D: 0x10675540
+ * @ghidraAddress BRGlide: 0x105b16e8
+ */
+extern int g_dwCopyTextureDataOnRelocate;
+
+/**
+ * Set whether the data of a texture is copied when its pointers are relocated.
+ *
+ * @param bCopy Whether to copy.
+ * @ghidraAddress BRD3D: 0x1002b9d0
+ * @ghidraAddress BRGlide: 0x10018a40
+ */
+void SetCopyTextureDataOnRelocate(int bCopy);
+
+/**
+ * The category of the textures loaded next. Its values are not recovered yet.
+ *
+ * @ghidraAddress BRD3D: 0x118aa088
+ * @ghidraAddress BRGlide: 0x118ed1a0
+ */
+extern int g_dwTextureLoadCategory;
+
+/**
+ * Set the category of the textures loaded next.
+ *
+ * @param nCategory The category.
+ * @ghidraAddress BRD3D: 0x10074dc0
+ * @ghidraAddress BRGlide: 0x1006e020
+ */
+void SetTextureLoadCategory(int nCategory);
+
+/** The number of entries of g_adwDamageTextureLevels. */
+#define DAMAGE_TEXTURE_LEVEL_COUNT 8
+
+/**
+ * The levels of damage of the textures of the vehicles.
+ *
+ * @ghidraAddress BRD3D: 0x11829850
+ * @ghidraAddress BRGlide: 0x1186c968
+ */
+extern DWORD g_adwDamageTextureLevels[DAMAGE_TEXTURE_LEVEL_COUNT];
+
+/**
+ * Clear g_adwDamageTextureLevels.
+ *
+ * @ghidraAddress BRD3D: 0x10074e00
+ * @ghidraAddress BRGlide: 0x1006e060
+ */
+void ClearDamageTextureLevels(void);
+
+/**
+ * Copy g_adwDamageTextureLevels.
+ *
+ * @param pdwLevels Receives the DAMAGE_TEXTURE_LEVEL_COUNT levels.
+ * @ghidraAddress BRD3D: 0x10074e20
+ * @ghidraAddress BRGlide: 0x1006e080
+ */
+void CopyDamageTextureLevels(DWORD *pdwLevels);
+
+/**
  * Upload the next texture of the queue of textures to upload.
  *
  * @ghidraAddress BRD3D: 0x10074fc0
