@@ -259,9 +259,9 @@ LeoDiskHandle:0x74
 LoadAllSoundEffects
 LoadAndDecompressAsset
 LoadAndPlayTrackBgm
+LoadCar
 LoadMenuItemModels
 LoadMusicModule
-LoadOrCopyVehicleModel
 LoadSaveDataFromEeprom
 LoadTextureFromRom
 LoadTrackGeometryFromRom

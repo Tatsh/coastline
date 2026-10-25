@@ -113,7 +113,7 @@ void SetMaterialColor(VehicleModel *m, s32 r, s32 g, s32 b) {
 void FixupVehicleModelPointers(VehicleModel *m) {
     fixups++;
 }
-void LoadOrCopyVehicleModel(s32 slot, s32 car, void *source) {
+void LoadCar(s32 slot, s32 car, void *source) {
     loads[0] = slot;
     loads[1] = car;
     loads[2] = source != NULL;

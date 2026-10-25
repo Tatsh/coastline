@@ -261,9 +261,9 @@ LoadAndActivateTrackWithPaintColor
 LoadAndDecompressAsset
 LoadAndPlayTrackBgm
 LoadCachedGlyphTextures
+LoadCar
 LoadMenuItemModels
 LoadMusicModule
-LoadOrCopyVehicleModel
 LoadSaveDataFromEeprom
 LoadTextureFromRom
 LoadTrackGeometryFromRom

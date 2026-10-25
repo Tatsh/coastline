@@ -106,7 +106,7 @@ void LoadVehicleModelFromRom(VehicleModel *model, s32 car) {
     DecompressFromRom(model, g_aCarModels[car].modelRom, NULL);
 }
 
-void LoadOrCopyVehicleModel(s32 slot, s32 car, void *source) {
+void LoadCar(s32 slot, s32 car, void *source) {
     if (source == NULL) {
         LoadVehicleModelFromRom(&g_aVehicleModels[slot], car);
     } else {

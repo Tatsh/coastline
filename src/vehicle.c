@@ -696,7 +696,7 @@ void SetVehicleModelSlot(Vehicle *vehicle, s32 slot) {
 }
 
 void InstallVehicleModel(Vehicle *vehicle, s32 slot, s32 car) {
-    LoadOrCopyVehicleModel(slot, car, NULL);
+    LoadCar(slot, car, NULL);
     SetVehicleModelSlot(vehicle, slot);
 #if TGR_REGION == TGR_REGION_JP
     ExtractVehicleBaseColor(vehicle, vehicle->model);
@@ -706,14 +706,14 @@ void InstallVehicleModel(Vehicle *vehicle, s32 slot, s32 car) {
 #if TGR_REGION == TGR_REGION_EU
 /* The European release has a second, identical copy of InstallVehicleModel(). */
 void InstallVehicleModelCopy(Vehicle *vehicle, s32 slot, s32 car) {
-    LoadOrCopyVehicleModel(slot, car, NULL);
+    LoadCar(slot, car, NULL);
     SetVehicleModelSlot(vehicle, slot);
 }
 #endif
 
 #if TGR_REGION == TGR_REGION_JP
 void LoadAndActivateTrackWithPaintColor(Vehicle *vehicle, s32 slot, s32 car) {
-    LoadOrCopyVehicleModel(slot, car, NULL);
+    LoadCar(slot, car, NULL);
     SetVehicleModelSlot(vehicle, slot);
     SetMaterialColor(
         vehicle->model, vehicle->color[0] >> 3, vehicle->color[1] >> 3, vehicle->color[2] >> 3);

@@ -880,7 +880,7 @@ void FixupVehicleModelPointers(VehicleModel *model);
  * @ghidraAddress EUR: 0x8021e7e4
  * @ghidraAddress JPN: 0x8021e0b4
  */
-void LoadOrCopyVehicleModel(s32 slot, s32 car, void *source);
+void LoadCar(s32 slot, s32 car, void *source);
 
 /**
  * Decompress the model of a car from the cartridge, and keep its size.
