@@ -25,6 +25,9 @@ had in 2000 and 2001, as the Wayback Machine of archive.org captured them. The n
 of DirectX 7 are codes, so the title of each page is fetched once and kept in the cache file. The
 pages of DirectX 8 are named after the names they document.
 
+With `--c-headers-output`, a tag file links each header of the C library to its page on
+cppreference.com, which the tag file of cppreference lacks.
+
 With `--wine-output`, a third tag file links the rest of the names to the lines of the headers of
 Wine that define them, at the release WINE_TAG. The names of the other tag files, and those of
 `--exclude-tags` such as the tag file of cppreference, are not linked again.
@@ -66,6 +69,11 @@ PAGES_OF_NAMES = {
 HEADER_PAGES = {
     'windows.h': '../winprog/using-the-windows-headers',
 }
+# The headers of the C library as of C23, each with a page `c/header/<name>` on cppreference.com.
+C_HEADERS = ('assert', 'complex', 'ctype', 'errno', 'fenv', 'float', 'inttypes', 'iso646', 'limits',
+             'locale', 'math', 'setjmp', 'signal', 'stdalign', 'stdarg', 'stdatomic', 'stdbit',
+             'stdbool', 'stdckdint', 'stddef', 'stdint', 'stdio', 'stdlib', 'stdnoreturn', 'string',
+             'tgmath', 'threads', 'time', 'uchar', 'wchar', 'wctype')
 # A header the sources include.
 INCLUDE = re.compile(r'^\s*#\s*include\s*<([\w./]+)>', re.MULTILINE)
 # The kind of an entry of the multimedia pages by the last word of the title of its page.
@@ -444,6 +452,16 @@ def wine_tagfile(wine: Path, free: set[str], identifiers: set[str], linked: set[
   return tagfile
 
 
+def c_headers_tagfile() -> ET.Element:
+  """The tag file of the headers of the C library, relative to https://en.cppreference.com/w/."""
+  tagfile = ET.Element('tagfile')
+  for header in C_HEADERS:
+    compound = ET.SubElement(tagfile, 'compound', kind='file')
+    ET.SubElement(compound, 'name').text = f'{header}.h'
+    ET.SubElement(compound, 'filename').text = f'c/header/{header}'
+  return tagfile
+
+
 def tag_names(path: Path) -> set[str]:
   """The names of a tag file, without the scopes of its members."""
   return {
@@ -486,6 +504,9 @@ def main() -> int:
   parser.add_argument('--archive-cache',
                       type=Path,
                       help='the file that keeps the titles of the archived pages between runs')
+  parser.add_argument('--c-headers-output',
+                      type=Path,
+                      help='the tag file of the headers of the C library to write')
   parser.add_argument('--wine-output',
                       type=Path,
                       help='the tag file of the definitions in the headers of Wine to write')
@@ -600,6 +621,9 @@ def main() -> int:
     pages, dx8 = archive_pages(args.archive_cache)
     write_tagfile(archive_tagfile(pages, dx8, free, identifiers, linked), args.archive_output)
     linked |= tag_names(args.archive_output)
+  if args.c_headers_output:
+    write_tagfile(c_headers_tagfile(), args.c_headers_output)
+    linked |= tag_names(args.c_headers_output)
   if args.wine_output:
     for path in args.exclude_tags:
       linked |= tag_names(path)

@@ -293,6 +293,7 @@ farproc
 fbrwd
 fcntl
 fdata
+fenv
 ffreestanding
 ffunction
 finalrom
@@ -726,12 +727,17 @@ standardvgamode
 startthread
 statuscode
 statusline
+stdalign
 stdarg
+stdatomic
+stdbit
 stdbool
+stdckdint
 stddef
 stdint
 stdlib
 stdmethod
+stdnoreturn
 steeradj
 steerangle
 steerarr
@@ -766,6 +772,7 @@ textureanim
 texturemag
 textureperspective
 texturescan
+tgmath
 thiscall
 timerintr
 tiretype
@@ -837,6 +844,7 @@ waitforsingleobject
 wasstilldrawing
 waveformatex
 wavread
+wctype
 wdangling
 weatherselect
 werror

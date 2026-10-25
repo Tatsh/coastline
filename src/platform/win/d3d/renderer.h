@@ -53,7 +53,7 @@ class DisplayMode;
 /** A DirectDraw driver the game found. */
 class DirectDrawDriver {
 public:
-    unsigned dwFlags;               /*!< DIRECTDRAW_DRIVER_USABLE and DIRECTDRAW_DRIVER_PRIMARY. */
+    unsigned dwFlags;               /*!< #DIRECTDRAW_DRIVER_USABLE | #DIRECTDRAW_DRIVER_PRIMARY. */
     GUID guid;                      /*!< The GUID of the driver. */
     char *pszName;                  /*!< The name of the driver, allocated. */
     char *pszDescription;           /*!< The description of the driver, allocated. */

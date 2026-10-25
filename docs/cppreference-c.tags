@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<tagfile>
+  <compound kind="file">
+    <name>assert.h</name>
+    <filename>c/header/assert</filename>
+  </compound>
+  <compound kind="file">
+    <name>complex.h</name>
+    <filename>c/header/complex</filename>
+  </compound>
+  <compound kind="file">
+    <name>ctype.h</name>
+    <filename>c/header/ctype</filename>
+  </compound>
+  <compound kind="file">
+    <name>errno.h</name>
+    <filename>c/header/errno</filename>
+  </compound>
+  <compound kind="file">
+    <name>fenv.h</name>
+    <filename>c/header/fenv</filename>
+  </compound>
+  <compound kind="file">
+    <name>float.h</name>
+    <filename>c/header/float</filename>
+  </compound>
+  <compound kind="file">
+    <name>inttypes.h</name>
+    <filename>c/header/inttypes</filename>
+  </compound>
+  <compound kind="file">
+    <name>iso646.h</name>
+    <filename>c/header/iso646</filename>
+  </compound>
+  <compound kind="file">
+    <name>limits.h</name>
+    <filename>c/header/limits</filename>
+  </compound>
+  <compound kind="file">
+    <name>locale.h</name>
+    <filename>c/header/locale</filename>
+  </compound>
+  <compound kind="file">
+    <name>math.h</name>
+    <filename>c/header/math</filename>
+  </compound>
+  <compound kind="file">
+    <name>setjmp.h</name>
+    <filename>c/header/setjmp</filename>
+  </compound>
+  <compound kind="file">
+    <name>signal.h</name>
+    <filename>c/header/signal</filename>
+  </compound>
+  <compound kind="file">
+    <name>stdalign.h</name>
+    <filename>c/header/stdalign</filename>
+  </compound>
+  <compound kind="file">
+    <name>stdarg.h</name>
+    <filename>c/header/stdarg</filename>
+  </compound>
+  <compound kind="file">
+    <name>stdatomic.h</name>
+    <filename>c/header/stdatomic</filename>
+  </compound>
+  <compound kind="file">
+    <name>stdbit.h</name>
+    <filename>c/header/stdbit</filename>
+  </compound>
+  <compound kind="file">
+    <name>stdbool.h</name>
+    <filename>c/header/stdbool</filename>
+  </compound>
+  <compound kind="file">
+    <name>stdckdint.h</name>
+    <filename>c/header/stdckdint</filename>
+  </compound>
+  <compound kind="file">
+    <name>stddef.h</name>
+    <filename>c/header/stddef</filename>
+  </compound>
+  <compound kind="file">
+    <name>stdint.h</name>
+    <filename>c/header/stdint</filename>
+  </compound>
+  <compound kind="file">
+    <name>stdio.h</name>
+    <filename>c/header/stdio</filename>
+  </compound>
+  <compound kind="file">
+    <name>stdlib.h</name>
+    <filename>c/header/stdlib</filename>
+  </compound>
+  <compound kind="file">
+    <name>stdnoreturn.h</name>
+    <filename>c/header/stdnoreturn</filename>
+  </compound>
+  <compound kind="file">
+    <name>string.h</name>
+    <filename>c/header/string</filename>
+  </compound>
+  <compound kind="file">
+    <name>tgmath.h</name>
+    <filename>c/header/tgmath</filename>
+  </compound>
+  <compound kind="file">
+    <name>threads.h</name>
+    <filename>c/header/threads</filename>
+  </compound>
+  <compound kind="file">
+    <name>time.h</name>
+    <filename>c/header/time</filename>
+  </compound>
+  <compound kind="file">
+    <name>uchar.h</name>
+    <filename>c/header/uchar</filename>
+  </compound>
+  <compound kind="file">
+    <name>wchar.h</name>
+    <filename>c/header/wchar</filename>
+  </compound>
+  <compound kind="file">
+    <name>wctype.h</name>
+    <filename>c/header/wctype</filename>
+  </compound>
+</tagfile>

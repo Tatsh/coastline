@@ -103,6 +103,7 @@ if(BUILD_DOCS OR BUILD_DOCS_ONLY)
   # the headers of Wine. tools/doxygen/win32_tags.py writes every tag file but that of cppreference.
   set(DOXYGEN_TAGFILES
       "${CMAKE_SOURCE_DIR}/docs/cppreference.tags=https://en.cppreference.com/w/"
+      "${CMAKE_SOURCE_DIR}/docs/cppreference-c.tags=https://en.cppreference.com/w/"
       "${CMAKE_SOURCE_DIR}/docs/win32.tags=https://learn.microsoft.com/en-us/windows/win32/api/"
       "${CMAKE_SOURCE_DIR}/docs/directx-archive.tags=https://web.archive.org/web/"
       "${CMAKE_SOURCE_DIR}/docs/wine.tags=https://gitlab.winehq.org/wine/wine/-/blob/wine-11.0/include/"
