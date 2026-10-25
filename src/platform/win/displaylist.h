@@ -547,6 +547,65 @@ GbiCommand *HandleGbiLoadMatrix(GbiCommand *pCommand);
  */
 GbiCommand *HandleGbiMoveMem(GbiCommand *pCommand);
 
+/**
+ * The left edge of the tile, in texels with two bits of fraction.
+ *
+ * @ghidraAddress BRD3D: 0x118aa080
+ * @ghidraAddress BRGlide: 0x118ed198
+ */
+extern int g_dwTileSizeUls;
+
+/**
+ * The top edge of the tile, in texels with two bits of fraction.
+ *
+ * @ghidraAddress BRD3D: 0x11829838
+ * @ghidraAddress BRGlide: 0x1186c950
+ */
+extern int g_dwTileSizeUlt;
+
+/**
+ * The right edge of the tile, in texels with two bits of fraction.
+ *
+ * @ghidraAddress BRD3D: 0x1182983c
+ * @ghidraAddress BRGlide: 0x1186c954
+ */
+extern int g_dwTileSizeLrs;
+
+/**
+ * The bottom edge of the tile, in texels with two bits of fraction.
+ *
+ * @ghidraAddress BRD3D: 0x118a9870
+ * @ghidraAddress BRGlide: 0x118ec988
+ */
+extern int g_dwTileSizeLrt;
+
+/**
+ * The width of the tile, in whole texels.
+ *
+ * @ghidraAddress BRD3D: 0x11829840
+ * @ghidraAddress BRGlide: 0x1186c958
+ */
+extern int g_dwTileSizeWidth;
+
+/**
+ * The height of the tile, in whole texels.
+ *
+ * @ghidraAddress BRD3D: 0x118aa094
+ * @ghidraAddress BRGlide: 0x118ed1ac
+ */
+extern int g_dwTileSizeHeight;
+
+/**
+ * Set the edges of the tile, and its width and height in whole texels.
+ *
+ * @param pCommand The command, the upper left corner in its first word and the lower right in its
+ * second, as signed fields of 12 bits.
+ * @return The next command.
+ * @ghidraAddress BRD3D: 0x1001cf30
+ * @ghidraAddress BRGlide: 0x1001ec30
+ */
+GbiCommand *HandleGbiSetTileSize(GbiCommand *pCommand);
+
 #if TGR_RENDERER == TGR_RENDERER_D3D
 /**
  * Set the primitive colour from the RGBA colour of the command.

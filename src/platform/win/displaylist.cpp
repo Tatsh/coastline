@@ -338,6 +338,24 @@ GbiCommand *HandleGbiMoveMem(GbiCommand *pCommand) {
     return pCommand + 1;
 }
 
+int g_dwTileSizeUls;
+int g_dwTileSizeUlt;
+int g_dwTileSizeLrs;
+int g_dwTileSizeLrt;
+int g_dwTileSizeWidth;
+int g_dwTileSizeHeight;
+
+GbiCommand *HandleGbiSetTileSize(GbiCommand *pCommand) {
+    g_dwTileSizeUls = GbiSignedField12(pCommand->w0, 12);
+    g_dwTileSizeUlt = GbiSignedField12(pCommand->w0, 0);
+    g_dwTileSizeLrs = GbiSignedField12(pCommand->w1, 12);
+    g_dwTileSizeLrt = GbiSignedField12(pCommand->w1, 0);
+    // The edges are inclusive, so the size counts one texel more than their difference.
+    g_dwTileSizeWidth = (g_dwTileSizeLrs - g_dwTileSizeUls + 4) >> 2;
+    g_dwTileSizeHeight = (g_dwTileSizeLrt - g_dwTileSizeUlt + 4) >> 2;
+    return pCommand + 1;
+}
+
 int g_dwScissorLeft;
 int g_dwScissorTop;
 int g_dwScissorRight;

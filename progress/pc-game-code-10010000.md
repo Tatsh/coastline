@@ -1,6 +1,6 @@
 # PC port game code from 0x10010000 to 0x10020000
 
-60 of 157 routines done.
+61 of 157 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -78,7 +78,7 @@ the same name, for a routine the port retained from the N64 game.
 | `HandleGbiSetEnvColor`                                 |   ✅   |                 |      1 |    183 | `0x1001cb40` | `0x1001e930` | `GbiCommand * HandleGbiSetEnvColor(GbiCommand * pCommand)`                                                                                                                                                                                   |
 | `HandleGbiSetPrimColor`                                |   ✅   |                 |      1 |    183 | `0x1001cca0` | `0x1001ea80` | `GbiCommand * HandleGbiSetPrimColor(GbiCommand * pCommand)`                                                                                                                                                                                  |
 | `DrawText`                                             |        | ✅ `0x8022f5dc` |     34 |    180 | `0x10019300` | `0x100168c0` | `void DrawText(char * szText, int xPos, int yPos)`                                                                                                                                                                                           |
-| `HandleGbiSetTileSize`                                 |        |                 |      1 |    178 | `0x1001cf30` | `0x1001ec30` | `undefined HandleGbiSetTileSize()`                                                                                                                                                                                                           |
+| `HandleGbiSetTileSize`                                 |   ✅   |                 |      1 |    178 | `0x1001cf30` | `0x1001ec30` | `GbiCommand * HandleGbiSetTileSize(GbiCommand * pCommand)`                                                                                                                                                                                   |
 | `SubmitVertexToRenderBufferFogged`                     |        |                 |      1 |    176 | `0x1001ca90` |              | `undefined SubmitVertexToRenderBufferFogged()`                                                                                                                                                                                               |
 | `UpdateLightningFlash`                                 |        | ✅ `0x8023a0bc` |      1 |    174 | `0x10019620` | `0x10016be0` | `void UpdateLightningFlash(void)`                                                                                                                                                                                                            |
 | `InitGlideRenderDevice`                                |   📝   |                 |      1 |    173 |              | `0x1001e080` | `int InitGlideRenderDevice(void)`                                                                                                                                                                                                            |
