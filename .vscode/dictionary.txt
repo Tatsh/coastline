@@ -771,7 +771,6 @@ trakracel
 tranx
 trisurface
 trrwd
-trunc
 txls
 typeh
 typel

@@ -68,9 +68,9 @@ coastline_add_test(timing "${_src}/timing.c")
 coastline_add_test(track ${_vecmath} ${_common})
 coastline_add_test(trackrender ${_vecmath})
 coastline_add_test(vecmath ${_vecmath})
-coastline_add_test(vehicle ${_vecmath} "${_src}/rigidbody.c" stubs/mathutil.c)
+coastline_add_test(vehicle ${_vecmath} "${_src}/rigidbody.c" "${_src}/mathutil.c")
 coastline_add_test(vehiclerender ${_vecmath} ${_gu})
-coastline_add_test(visgrid "${_src}/visgrid.c" stubs/mathutil.c)
+coastline_add_test(visgrid "${_src}/visgrid.c" "${_src}/mathutil.c")
 coastline_add_test(weather ${_common})
 
 # The libultra C library, renamed apart from the host's.
