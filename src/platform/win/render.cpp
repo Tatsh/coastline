@@ -90,6 +90,31 @@ void ByteSwapArray16(unsigned short *pData, int nCount) {
     }
 }
 
+int GetMipLevelFromDimension(int nDimension) {
+    if (nDimension <= 1) {
+        return 0;
+    }
+    if (nDimension <= 2) {
+        return 1;
+    }
+    if (nDimension <= 4) {
+        return 2;
+    }
+    if (nDimension <= 8) {
+        return 3;
+    }
+    if (nDimension <= 16) {
+        return 4;
+    }
+    if (nDimension <= 32) {
+        return 5;
+    }
+    if (nDimension <= 64) {
+        return 6;
+    }
+    return nDimension <= 128 ? 7 : 8;
+}
+
 void ResetRenderCommandBufferStack(void) {
     ShadowClipVertex *pNext = nullptr;
 

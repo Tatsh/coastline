@@ -173,6 +173,16 @@ void InitGbiGlideRenderer(void);
 void InitializeTextureSubsystem(void);
 
 /**
+ * Get the exponent of the smallest power of two from 1 to 256 not below a dimension of a texture.
+ *
+ * @param nDimension The dimension.
+ * @return The exponent, from 0 to 8, and 8 for a dimension above 256.
+ * @ghidraAddress BRD3D: 0x10027c00
+ * @ghidraAddress BRGlide: 0x10027290
+ */
+int GetMipLevelFromDimension(int nDimension);
+
+/**
  * The number of vertices converted into g_afModelVertexPool.
  *
  * @ghidraAddress BRD3D: 0x1067d550
