@@ -25,9 +25,9 @@ void LoadStringTableFromDll(void) {
         return;
     }
     // The strings take less room than the library that includes them.
-    pFile = FileOpenForReading(STRING_LIBRARY);
+    pFile = CHK_FReadOpen(STRING_LIBRARY);
     g_dwStringTableBufferSize = GetFileLength(pFile);
-    FileClose(pFile);
+    CHK_FClose(pFile);
     hLibrary = LoadLibraryA(STRING_LIBRARY);
     if (hLibrary == nullptr) {
         return;

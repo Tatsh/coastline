@@ -6,14 +6,21 @@
  * ends the process.
  */
 
-#include <cstddef>
-#include <cstdio>
+#include <stddef.h>
+#include <stdio.h>
+#ifndef __cplusplus
+#include <stdbool.h>
+#endif
 
-/** A file opened by FileOpenForReading(). */
-struct GameFile {
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+/** A file opened by CHK_FReadOpen(). */
+typedef struct GameFile {
     FILE *pFile;   /*!< The stream of the C library. */
     char *pszPath; /*!< A copy of the path, for the messages. */
-};
+} GameFile;
 
 /**
  * Whether the routines write each file they open or close to the debugger.
@@ -30,7 +37,7 @@ extern bool g_bVerboseFileTrace;
  * @return The memory, or `NULL` for a size of 0.
  * @ghidraAddress BRD3D: 0x10003390
  */
-void *AllocateMemoryChecked(size_t nSize, const char *szCaller);
+void *CHK_AllocateMemory(size_t nSize, const char *szCaller);
 
 /**
  * Whether a file can be opened for reading.
@@ -39,7 +46,7 @@ void *AllocateMemoryChecked(size_t nSize, const char *szCaller);
  * @return Whether the file opened.
  * @ghidraAddress BRD3D: 0x10003320
  */
-bool FileExists(const char *pszPath);
+bool CHK_FileExists(const char *pszPath);
 
 /**
  * Open a file for reading in binary mode. A file that does not open is reported in
@@ -49,7 +56,7 @@ bool FileExists(const char *pszPath);
  * @return The open file.
  * @ghidraAddress BRD3D: 0x10002fe0
  */
-GameFile *FileOpenForReading(const char *pszPath);
+GameFile *CHK_FReadOpen(const char *pszPath);
 
 /**
  * The length of a file, leaving its position unchanged.
@@ -79,4 +86,8 @@ char *FileReadLine(char *pszLine, size_t nSize, GameFile *pFile);
  * @param pFile The open file.
  * @ghidraAddress BRD3D: 0x10003290
  */
-void FileClose(GameFile *pFile);
+void CHK_FClose(GameFile *pFile);
+
+#ifdef __cplusplus
+}
+#endif

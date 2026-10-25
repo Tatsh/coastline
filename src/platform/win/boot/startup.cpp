@@ -190,12 +190,12 @@ void LoadBossRallyIniSettings(const char *pszCmdLine) {
 
     strcpy(g_szBossRallyIniPath, g_szInstallDirectory);
     strcat(g_szBossRallyIniPath, "BossRally.ini");
-    if (FileExists(g_szBossRallyIniPath)) {
-        pFile = FileOpenForReading(g_szBossRallyIniPath);
+    if (CHK_FileExists(g_szBossRallyIniPath)) {
+        pFile = CHK_FReadOpen(g_szBossRallyIniPath);
         while (FileReadLine(szLine, sizeof(szLine), pFile) != nullptr) {
             ApplyIniLine(szLine);
         }
-        FileClose(pFile);
+        CHK_FClose(pFile);
     }
     if (pszCmdLine != nullptr && pszCmdLine[0] != '\0') {
         ApplyCommandLine(pszCmdLine);

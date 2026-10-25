@@ -1,7 +1,9 @@
 #include "platform/win/fileio.h"
 
-#include <cstdlib>
-#include <cstring>
+#include <stdbool.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 #include <windows.h>
 
@@ -20,15 +22,13 @@ long GetFileLength(GameFile *pFile) {
     return nLength;
 }
 
-GameFile *FileOpenForReading(const char *pszPath) {
+GameFile *CHK_FReadOpen(const char *pszPath) {
     char szMessage[MESSAGE_SIZE];
     GameFile *pFile;
     FILE *pErrorFile;
 
-    pFile =
-        static_cast<GameFile *>(AllocateMemoryChecked(sizeof(GameFile), "CHK_FReadOpen():pfil"));
-    pFile->pszPath =
-        static_cast<char *>(AllocateMemoryChecked(strlen(pszPath) + 1, "CHK_FReadOpen():szName"));
+    pFile = CHK_AllocateMemory(sizeof(GameFile), "CHK_FReadOpen():pfil");
+    pFile->pszPath = CHK_AllocateMemory(strlen(pszPath) + 1, "CHK_FReadOpen():szName");
     strcpy(pFile->pszPath, pszPath);
     if (g_bVerboseFileTrace) {
         sprintf(szMessage, "CHK_FReadOpen(%s)\n", pFile->pszPath);
@@ -74,12 +74,12 @@ char *FileReadLine(char *pszLine, size_t nSize, GameFile *pFile) {
             *pszLine = '\0';
             return pszLine + 1;
         }
-        *pszLine++ = static_cast<char>(c);
+        *pszLine++ = (char)c;
     }
     return pszLine;
 }
 
-void FileClose(GameFile *pFile) {
+void CHK_FClose(GameFile *pFile) {
     char szMessage[MESSAGE_SIZE];
 
     if (g_bVerboseFileTrace) {
@@ -95,7 +95,7 @@ void FileClose(GameFile *pFile) {
     free(pFile);
 }
 
-bool FileExists(const char *pszPath) {
+bool CHK_FileExists(const char *pszPath) {
     char szMessage[MESSAGE_SIZE];
     FILE *pFile;
 
@@ -111,7 +111,7 @@ bool FileExists(const char *pszPath) {
     return true;
 }
 
-void *AllocateMemoryChecked(size_t nSize, const char *szCaller) {
+void *CHK_AllocateMemory(size_t nSize, const char *szCaller) {
     char szMessage[MESSAGE_SIZE];
     void *pMemory;
 
