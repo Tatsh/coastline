@@ -1,7 +1,9 @@
 #include "platform/win/displaylist.h"
 
+#include <cmath>
 #include <cstdlib>
 #include <cstring>
+#include <functional>
 
 #include "platform/win/settings.h"
 #include "weather.h"
@@ -571,7 +573,106 @@ void ApplyGeometryModeChanges(void) {
 }
 
 D3DCOLOR g_dwVertexConstantColor;
-void (*g_pfnSubmitVertexToRenderBuffer)(GbiVertex *pVertex) = SubmitVertexToRenderBuffer;
+float g_fVertexFogRange;
+int g_dwFogAlphaCutoff;
+
+// The scale from a channel of the colour of a vertex to a byte.
+#define VERTEX_COLOR_SCALE 255.0f
+
+// Take an entry of g_renderBuffer for a vertex, or report the entry it already has.
+static inline D3DTLVERTEX *ClaimRenderBufferEntry(GbiVertex *pVertex, int *pnIndex) {
+    if (std::greater_equal<>{}(pVertex, g_aGbiVertexCache) &&
+        std::less<>{}(pVertex, g_aGbiVertexCache + GBI_VERTEX_CACHE_SIZE)) {
+        if (pVertex->nRenderBufferIndex != -1) {
+            *pnIndex = pVertex->nRenderBufferIndex;
+            return nullptr;
+        }
+        pVertex->nRenderBufferIndex = g_nRenderBufferIndex;
+        g_apVertexPool[g_nVertexPoolCount++] = pVertex;
+    }
+    *pnIndex = g_nRenderBufferIndex++;
+    return &g_renderBuffer[*pnIndex];
+}
+
+static inline void CopyVertexPosition(D3DTLVERTEX *pOut, const GbiVertex *pVertex) {
+    pOut->sx = pVertex->fX;
+    pOut->sy = pVertex->fY;
+    pOut->sz = pVertex->fZ;
+    pOut->rhw = pVertex->fRhw;
+}
+
+static inline void CopyVertexTexCoords(D3DTLVERTEX *pOut, const GbiVertex *pVertex) {
+    pOut->tu = pVertex->fU;
+    pOut->tv = pVertex->fV;
+}
+
+static inline D3DCOLOR VertexColor(const GbiVertex *pVertex) {
+    // The channels round to the nearest byte and are not limited, so one above 255 runs into the
+    // channel above it.
+    DWORD dwRed = static_cast<DWORD>(std::lrintf(pVertex->fRed * VERTEX_COLOR_SCALE));
+    DWORD dwGreen = static_cast<DWORD>(std::lrintf(pVertex->fGreen * VERTEX_COLOR_SCALE));
+    DWORD dwBlue = static_cast<DWORD>(std::lrintf(pVertex->fBlue * VERTEX_COLOR_SCALE));
+    return ((dwRed | 0xffffff00) << 8 | dwGreen) << 8 | dwBlue;
+}
+
+static inline D3DCOLOR VertexFog(const GbiVertex *pVertex) {
+    int nAlpha = static_cast<int>(g_fVertexFogRange * pVertex->fRhw);
+    if (nAlpha < g_dwFogAlphaCutoff) {
+        nAlpha = 0;
+    }
+    if (nAlpha > 0xff) {
+        nAlpha = 0xff;
+    }
+    return static_cast<D3DCOLOR>(nAlpha) << 24;
+}
+
+int SubmitVertexToRenderBuffer(GbiVertex *pVertex) {
+    int nIndex;
+    D3DTLVERTEX *pOut = ClaimRenderBufferEntry(pVertex, &nIndex);
+    if (pOut != nullptr) {
+        CopyVertexPosition(pOut, pVertex);
+        pOut->color = VertexColor(pVertex);
+        CopyVertexTexCoords(pOut, pVertex);
+    }
+    return nIndex;
+}
+
+int SubmitVertexToRenderBufferEx(GbiVertex *pVertex) {
+    int nIndex;
+    D3DTLVERTEX *pOut = ClaimRenderBufferEntry(pVertex, &nIndex);
+    if (pOut != nullptr) {
+        CopyVertexPosition(pOut, pVertex);
+        pOut->color = VertexColor(pVertex);
+        pOut->specular = VertexFog(pVertex);
+        CopyVertexTexCoords(pOut, pVertex);
+    }
+    return nIndex;
+}
+
+int SubmitVertexToRenderBufferConstColor(GbiVertex *pVertex) {
+    int nIndex;
+    D3DTLVERTEX *pOut = ClaimRenderBufferEntry(pVertex, &nIndex);
+    if (pOut != nullptr) {
+        CopyVertexPosition(pOut, pVertex);
+        pOut->color = g_dwVertexConstantColor;
+        CopyVertexTexCoords(pOut, pVertex);
+    }
+    return nIndex;
+}
+
+int SubmitVertexToRenderBufferFogged(GbiVertex *pVertex) {
+    int nIndex;
+    D3DTLVERTEX *pOut = ClaimRenderBufferEntry(pVertex, &nIndex);
+    if (pOut != nullptr) {
+        CopyVertexPosition(pOut, pVertex);
+        pOut->color = g_dwVertexConstantColor;
+        pOut->specular = VertexFog(pVertex);
+        CopyVertexTexCoords(pOut, pVertex);
+    }
+    return nIndex;
+}
+
+int (*g_pfnSubmitVertexToRenderBuffer)(GbiVertex *pVertex) = SubmitVertexToRenderBuffer;
 
 // The colours of the combine modes that draw in one colour.
 #define VERTEX_CONSTANT_COLOR_WHITE 0xffffffff

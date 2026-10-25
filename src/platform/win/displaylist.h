@@ -648,7 +648,8 @@ struct GbiVertex {
     char abUnknown18[8];    /* +0x18 */
     float fRhw;             /*!< The reciprocal of the homogeneous w. */
     float fU;               /*!< The u of the texture. */
-    char abUnknown28[0x40]; /* +0x28 */
+    float fV;               /*!< The v of the texture. */
+    char abUnknown2C[0x3c]; /* +0x2C */
     int nRenderBufferIndex; /*!< The entry of g_renderBuffer of the vertex, -1 for none. */
 };
 
@@ -716,43 +717,65 @@ extern int g_nRenderIndexCount;
 void ResetRenderBufferAndVertexPool(void);
 
 /**
- * Copy a vertex into g_renderBuffer with its colour.
+ * The scale from the reciprocal of w of a vertex to the alpha of its fog.
+ *
+ * @ghidraAddress BRD3D: 0x104c15c8
+ */
+extern float g_fVertexFogRange;
+
+/**
+ * The alpha of fog below which a vertex takes none.
+ *
+ * @ghidraAddress BRD3D: 0x104bbe30
+ */
+extern int g_dwFogAlphaCutoff;
+
+/**
+ * Copy a vertex into g_renderBuffer with its colour. A vertex of g_aGbiVertexCache already copied
+ * since the last flush is not copied again.
  *
  * @param pVertex The vertex.
+ * @return The entry of g_renderBuffer of the vertex.
  * @ghidraAddress BRD3D: 0x1001bc90
  */
-void SubmitVertexToRenderBuffer(GbiVertex *pVertex);
+int SubmitVertexToRenderBuffer(GbiVertex *pVertex);
 
 /**
- * Copy a vertex into g_renderBuffer with its colour and its fog.
+ * Copy a vertex into g_renderBuffer with its colour and its fog, as SubmitVertexToRenderBuffer()
+ * does.
  *
  * @param pVertex The vertex.
+ * @return The entry of g_renderBuffer of the vertex.
  * @ghidraAddress BRD3D: 0x1001c690
  */
-void SubmitVertexToRenderBufferEx(GbiVertex *pVertex);
+int SubmitVertexToRenderBufferEx(GbiVertex *pVertex);
 
 /**
- * Copy a vertex into g_renderBuffer with g_dwVertexConstantColor.
+ * Copy a vertex into g_renderBuffer with g_dwVertexConstantColor, as SubmitVertexToRenderBuffer()
+ * does.
  *
  * @param pVertex The vertex.
+ * @return The entry of g_renderBuffer of the vertex.
  * @ghidraAddress BRD3D: 0x1001ca10
  */
-void SubmitVertexToRenderBufferConstColor(GbiVertex *pVertex);
+int SubmitVertexToRenderBufferConstColor(GbiVertex *pVertex);
 
 /**
- * Copy a vertex into g_renderBuffer with g_dwVertexConstantColor and its fog.
+ * Copy a vertex into g_renderBuffer with g_dwVertexConstantColor and its fog, as
+ * SubmitVertexToRenderBuffer() does.
  *
  * @param pVertex The vertex.
+ * @return The entry of g_renderBuffer of the vertex.
  * @ghidraAddress BRD3D: 0x1001ca90
  */
-void SubmitVertexToRenderBufferFogged(GbiVertex *pVertex);
+int SubmitVertexToRenderBufferFogged(GbiVertex *pVertex);
 
 /**
  * The routine that copies a vertex into g_renderBuffer, chosen for the combine mode.
  *
  * @ghidraAddress BRD3D: 0x100a79ec
  */
-extern void (*g_pfnSubmitVertexToRenderBuffer)(GbiVertex *pVertex);
+extern int (*g_pfnSubmitVertexToRenderBuffer)(GbiVertex *pVertex);
 
 /**
  * Draw the triangles waiting in g_renderBuffer, when there are any, and empty it.
