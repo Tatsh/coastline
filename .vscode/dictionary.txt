@@ -664,6 +664,7 @@ vmodeldl
 vmodeltex
 vretrace
 vsince
+waveformatex
 wdangling
 weatherselect
 werror

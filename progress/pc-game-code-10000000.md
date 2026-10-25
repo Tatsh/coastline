@@ -1,6 +1,6 @@
 # PC port game code from 0x10000000 to 0x10010000
 
-65 of 246 routines done.
+66 of 246 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -65,7 +65,7 @@ the same name, for a routine the port retained from the N64 game.
 | `DirectDrawRenderer::InitializeWindow`                     |   ✅   |                 |      1 |    222 | `0x1000a1e0` |              | `long InitializeWindow(DirectDrawRenderer * this, HWND hWnd, GUID * pDriverGuid, int nWidth, int nHeight, int nBitDepth, void * pSurfaceFormat, GUID * pDeviceGuid, bool bOption)` |
 | `PodArchive::FindPodIndexByName`                           |        |                 |      1 |    213 | `0x10008670` | `0x10008850` | `undefined FindPodIndexByName(PodArchive * this, undefined4 param_1)`                                                                                                              |
 | `Vehicle::ComputeCameraBasis`                              |        | ✅ `0x80220ff4` |      1 |    210 | `0x10001890` | `0x10001bb0` | `void ComputeCameraBasis(Vehicle * this, float * pUnusedStackSlot)`                                                                                                                |
-| `ReleaseMusicDeviceReference`                              |   📝   |                 |      1 |    209 | `0x10002cf0` | `0x10003030` | `void ReleaseMusicDeviceReference(void)`                                                                                                                                           |
+| `ReleaseMusicDeviceReference`                              |   ✅   |                 |      1 |    209 | `0x10002cf0` | `0x10003030` | `bool ReleaseMusicDeviceReference(void)`                                                                                                                                           |
 | `InitializeNetworkMutexes`                                 |        |                 |      2 |    205 | `0x10005b10` | `0x10005e80` | `undefined InitializeNetworkMutexes()`                                                                                                                                             |
 | `Vehicle::InitCameraForVehicle`                            |        | ✅ `0x80221864` |      1 |    201 | `0x10001ff0` | `0x10002310` | `void InitCameraForVehicle(Vehicle * this)`                                                                                                                                        |
 | `TickNetworkPauseRequest`                                  |   📝   |                 |      2 |    194 | `0x10004fc0` | `0x10005330` | `void TickNetworkPauseRequest(void)`                                                                                                                                               |
