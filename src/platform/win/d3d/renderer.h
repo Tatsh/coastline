@@ -47,21 +47,26 @@
 /** The primary DirectDraw driver, selected without a GUID. */
 #define DIRECTDRAW_DRIVER_PRIMARY 0x2
 
-/** A DirectDraw driver the game found. The layout after pNext is not recovered yet. */
+class D3DDeviceNode;
+class DisplayMode;
+
+/** A DirectDraw driver the game found. */
 class DirectDrawDriver {
 public:
-    unsigned dwFlags;        /*!< DIRECTDRAW_DRIVER_USABLE and DIRECTDRAW_DRIVER_PRIMARY. */
-    GUID guid;               /*!< The GUID of the driver. */
-    char *pszName;           /*!< The name of the driver, allocated. */
-    char *pszDescription;    /*!< The description of the driver, allocated. */
-    DDCAPS hardwareCaps;     /*!< What the hardware of the driver does. */
-    DDCAPS softwareCaps;     /*!< What the emulation of the driver does. */
-    int nUnknown314;         /*!< Cleared before the modes are found. */
-    int anUnknown318[2];     /* +0x318 */
-    int nUnknown320;         /*!< Cleared before the devices are found. */
-    int anUnknown324[2];     /* +0x324 */
-    DirectDrawDriver *pPrev; /*!< The driver found before. */
-    DirectDrawDriver *pNext; /*!< The next driver found. */
+    unsigned dwFlags;               /*!< DIRECTDRAW_DRIVER_USABLE and DIRECTDRAW_DRIVER_PRIMARY. */
+    GUID guid;                      /*!< The GUID of the driver. */
+    char *pszName;                  /*!< The name of the driver, allocated. */
+    char *pszDescription;           /*!< The description of the driver, allocated. */
+    DDCAPS hardwareCaps;            /*!< What the hardware of the driver does. */
+    DDCAPS softwareCaps;            /*!< What the emulation of the driver does. */
+    int nDisplayModeCount;          /*!< The display modes of the driver. */
+    DisplayMode *pDisplayModesHead; /*!< The first display mode. */
+    DisplayMode *pDisplayModesTail; /*!< The last display mode. */
+    int nD3DDeviceCount;            /*!< The Direct3D devices of the driver. */
+    D3DDeviceNode *pD3DDevicesHead; /*!< The first Direct3D device. */
+    D3DDeviceNode *pD3DDevicesTail; /*!< The last Direct3D device. */
+    DirectDrawDriver *pPrev;        /*!< The driver found before. */
+    DirectDrawDriver *pNext;        /*!< The next driver found. */
 
     /** Start a driver that is not usable, with empty abilities. */
     DirectDrawDriver() : pPrev(nullptr), pNext(nullptr) {
@@ -70,10 +75,12 @@ public:
         hardwareCaps.dwSize = sizeof(hardwareCaps);
         memset(&softwareCaps, 0, sizeof(softwareCaps));
         softwareCaps.dwSize = sizeof(softwareCaps);
-        nUnknown314 = 0;
-        memset(anUnknown318, 0, sizeof(anUnknown318));
-        nUnknown320 = 0;
-        memset(anUnknown324, 0, sizeof(anUnknown324));
+        nDisplayModeCount = 0;
+        pDisplayModesHead = nullptr;
+        pDisplayModesTail = nullptr;
+        nD3DDeviceCount = 0;
+        pD3DDevicesHead = nullptr;
+        pD3DDevicesTail = nullptr;
     }
 
     /**
@@ -155,6 +162,16 @@ public:
     char abUnknown14[8];        /* +0x14 */
     D3DDEVICEDESC hardwareDesc; /*!< What the hardware of the device does. */
     D3DDEVICEDESC softwareDesc; /*!< What the emulation of the device does. */
+    int anUnknown214[3];        /* +0x214 */
+    D3DDeviceNode *pPrev;       /*!< The device of the driver before. */
+    D3DDeviceNode *pNext;       /*!< The next device of the driver. */
+
+    /**
+     * Release what the device holds before it is freed.
+     *
+     * @ghidraAddress BRD3D: 0x1001aee0
+     */
+    void ReleaseD3DDeviceNode();
 
     /**
      * Whether the device is a device of the hardware, one with a colour model of its own.
@@ -178,6 +195,8 @@ public:
 class DisplayMode {
 public:
     DDSURFACEDESC desc; /*!< The description of the mode. */
+    DisplayMode *pPrev; /*!< The mode of the driver before. */
+    DisplayMode *pNext; /*!< The next mode of the driver. */
 
     /**
      * The size and the bits of a pixel of the mode.
@@ -746,10 +765,39 @@ extern int g_dwDirectDrawDriverCount;
 
 /** What the search of the DirectDraw drivers found. */
 struct DriverEnumContext {
-    int bSucceeded; /*!< Whether each driver was recorded. */
-    int nFound;     /*!< The drivers DirectDraw reported. */
-    int nUnknown8;  /*!< Set to 0 and not read by the search. */
+    int bSucceeded;           /*!< Whether each driver was recorded. */
+    int nFound;               /*!< The drivers DirectDraw reported. */
+    DirectDrawDriver *pOwner; /*!< The driver whose modes or devices are found, if any. */
 };
+
+/**
+ * Record a display mode of a driver that DirectDraw reports.
+ *
+ * @param pDesc The description of the mode.
+ * @param pContext The DriverEnumContext of the search.
+ * @return Whether the search goes on.
+ * @ghidraAddress BRD3D: 0x1001aa70
+ */
+HRESULT WINAPI EnumDisplayModesCallback_AddMode(DDSURFACEDESC *pDesc, LPVOID pContext);
+
+/**
+ * Record a Direct3D device of a driver that Direct3D reports.
+ *
+ * @param pGuid The GUID of the device.
+ * @param pszDescription The description of the device.
+ * @param pszName The name of the device.
+ * @param pHardwareDesc What the hardware of the device does.
+ * @param pSoftwareDesc What the emulation of the device does.
+ * @param pContext The DriverEnumContext of the search.
+ * @return Whether the search goes on.
+ * @ghidraAddress BRD3D: 0x1001ab90
+ */
+HRESULT WINAPI EnumD3DDevicesCallback(GUID *pGuid,
+                                      LPSTR pszDescription,
+                                      LPSTR pszName,
+                                      D3DDEVICEDESC *pHardwareDesc,
+                                      D3DDEVICEDESC *pSoftwareDesc,
+                                      LPVOID pContext);
 
 /**
  * Record a DirectDraw driver that DirectDraw reports.

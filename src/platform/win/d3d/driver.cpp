@@ -183,10 +183,10 @@ HRESULT DirectDrawDriver::InitializeDirectDrawDriver(GUID *pGuid,
                 hr = DDERR_NO3D;
             } else {
                 dwFlags &= ~8;
-                nUnknown314 = 0;
+                nDisplayModeCount = 0;
                 if (SUCCEEDED(hr = EnumerateDisplayModes(pDirectDraw2))) {
                     dwFlags &= ~0x10;
-                    nUnknown320 = 0;
+                    nD3DDeviceCount = 0;
                     if (SUCCEEDED(hr = EnumerateD3DDevices(pDirect3D2))) {
                         dwFlags |= DIRECTDRAW_DRIVER_USABLE;
                         hr = S_OK;
@@ -235,6 +235,102 @@ bool DirectDrawDriver::CompareDirectDrawDriverGuid(const GUID *pGuid) {
     return memcmp(&guid, pGuid, sizeof(guid)) == 0;
 }
 
+// Take an element off a list linked through pPrev and pNext, with the head and the tail of the
+// list.
+template <typename T>
+static inline void UnlinkListNode(T *pNode, T **ppHead, T **ppTail) {
+    if (pNode->pPrev != nullptr) {
+        pNode->pPrev->pNext = pNode->pNext;
+    } else {
+        *ppHead = pNode->pNext;
+    }
+    if (pNode->pNext != nullptr) {
+        pNode->pNext->pPrev = pNode->pPrev;
+    } else {
+        *ppTail = pNode->pPrev;
+    }
+    pNode->pPrev = nullptr;
+    pNode->pNext = nullptr;
+}
+
+HRESULT DirectDrawDriver::EnumerateDisplayModes(IDirectDraw2 *pDirectDraw2) {
+    DriverEnumContext context = {true, 0, this};
+    HRESULT hr;
+
+    if (dwFlags & 8) {
+        return S_OK;
+    }
+    if (pDirectDraw2 == nullptr) {
+        return RENDERER_E_NOT_CREATED;
+    }
+    hr = pDirectDraw2->EnumDisplayModes(0, nullptr, &context, EnumDisplayModesCallback_AddMode);
+    if (FAILED(hr)) {
+        return hr;
+    }
+    // Each mode DirectDraw reported must be in the list.
+    if (!context.bSucceeded || context.nFound == 0 || nDisplayModeCount != context.nFound) {
+        return RENDERER_E_NOT_IN_GDI_MODE;
+    }
+    dwFlags |= 8;
+    return S_OK;
+}
+
+void DirectDrawDriver::FlushDirectDrawModeEnumerationList() {
+    DisplayMode *pMode = pDisplayModesHead;
+
+    while (pMode != nullptr) {
+        DisplayMode *pNextMode = pMode->pNext;
+
+        UnlinkListNode(pMode, &pDisplayModesHead, &pDisplayModesTail);
+        delete pMode;
+        pMode = pNextMode;
+    }
+    nDisplayModeCount = 0;
+    pDisplayModesHead = nullptr;
+    pDisplayModesTail = nullptr;
+    dwFlags &= ~8;
+}
+
+HRESULT DirectDrawDriver::EnumerateD3DDevices(IDirect3D2 *pDirect3D2) {
+    DriverEnumContext context = {true, 0, this};
+    HRESULT hr;
+
+    if (dwFlags & 0x10) {
+        return S_OK;
+    }
+    if (pDirect3D2 == nullptr) {
+        return RENDERER_E_NOT_CREATED;
+    }
+    hr = pDirect3D2->EnumDevices(EnumD3DDevicesCallback, &context);
+    if (FAILED(hr)) {
+        return hr;
+    }
+    // Each device Direct3D reported must be in the list.
+    if (!context.bSucceeded || context.nFound == 0 || nD3DDeviceCount != context.nFound) {
+        return RENDERER_E_NOT_IN_GDI_MODE;
+    }
+    dwFlags |= 0x10;
+    return S_OK;
+}
+
+int DirectDrawDriver::FlushDirect3DDeviceList() {
+    D3DDeviceNode *pDevice = pD3DDevicesHead;
+
+    while (pDevice != nullptr) {
+        D3DDeviceNode *pNextDevice = pDevice->pNext;
+
+        UnlinkListNode(pDevice, &pD3DDevicesHead, &pD3DDevicesTail);
+        pDevice->ReleaseD3DDeviceNode();
+        delete pDevice;
+        pDevice = pNextDevice;
+    }
+    nD3DDeviceCount = 0;
+    pD3DDevicesHead = nullptr;
+    pD3DDevicesTail = nullptr;
+    dwFlags &= ~0x10;
+    return 0;
+}
+
 GUID *DirectDrawDriver::GetDirectDrawDriverGuid() {
     return (dwFlags & DIRECTDRAW_DRIVER_PRIMARY) != 0 ? nullptr : &guid;
 }
@@ -254,7 +350,7 @@ HRESULT EnsureDirectDrawDriversEnumerated(void) {
 }
 
 HRESULT EnumerateDirectDrawDrivers(void) {
-    DriverEnumContext context = {true, 0, 0};
+    DriverEnumContext context = {true, 0, nullptr};
     HRESULT hr;
 
     hr = DirectDrawEnumerateA(EnumDirectDrawDriversCallback, &context);
