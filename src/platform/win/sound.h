@@ -433,6 +433,37 @@ HRESULT StopSoundBuffer(SoundBufferNode *pNode);
 extern SoundBufferNode *g_apSoundChannelBuffer[SOUND_CHANNEL_COUNT];
 
 /**
+ * Report whether the buffer of a channel plays, when sound is on.
+ *
+ * @param nChannel The channel.
+ * @return Whether it plays, false without a buffer, and true without sound.
+ * @ghidraAddress BRD3D: 0x10072fe0
+ * @ghidraAddress BRGlide: 0x1006bf50
+ */
+bool IsSoundChannelPlaying(int nChannel);
+
+/**
+ * Stop the buffer of a channel, when sound is on.
+ *
+ * @param nChannel The channel.
+ * @return Whether the buffer stopped, and true without a buffer or without sound.
+ * @ghidraAddress BRD3D: 0x10072580
+ * @ghidraAddress BRGlide: 0x1006b4f0
+ */
+bool StopAudioChannel(int nChannel);
+
+/**
+ * Set whether the buffer of a channel plays in a loop, when sound is on.
+ *
+ * @param nChannel The channel.
+ * @param bLooping Whether it loops.
+ * @return Whether it was set, false without a buffer, and true without sound.
+ * @ghidraAddress BRD3D: 0x10072640
+ * @ghidraAddress BRGlide: 0x1006b5b0
+ */
+bool SetAudioChannelLooping(int nChannel, int bLooping);
+
+/**
  * A row of the banks of sounds: which channels of a sample of a set are loaded. The layout past
  * the channels is not recovered yet.
  */

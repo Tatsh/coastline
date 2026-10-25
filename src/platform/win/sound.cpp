@@ -506,6 +506,40 @@ static inline bool IsDirectSoundActive(void) {
     return g_bSoundEnabledIni && g_pDirectSound != nullptr && g_dwDirectSoundRefCount != 0;
 }
 
+bool IsSoundChannelPlaying(int nChannel) {
+    if (!IsDirectSoundActive()) {
+        return true;
+    }
+    SoundBufferNode *pNode = g_apSoundChannelBuffer[nChannel];
+    if (pNode == nullptr) {
+        return false;
+    }
+    return IsSoundBufferPlaying(pNode);
+}
+
+bool StopAudioChannel(int nChannel) {
+    if (!IsDirectSoundActive()) {
+        return true;
+    }
+    SoundBufferNode *pNode = g_apSoundChannelBuffer[nChannel];
+    if (pNode == nullptr) {
+        return true;
+    }
+    return StopSoundBuffer(pNode) == DS_OK;
+}
+
+bool SetAudioChannelLooping(int nChannel, int bLooping) {
+    if (!IsDirectSoundActive()) {
+        return true;
+    }
+    SoundBufferNode *pNode = g_apSoundChannelBuffer[nChannel];
+    if (pNode == nullptr) {
+        return false;
+    }
+    pNode->bLooping = bLooping;
+    return true;
+}
+
 bool SetSoundBufferFrequency(SoundBufferNode *pNode, DWORD dwFrequency) {
     if (!IsDirectSoundActive()) {
         return true;
