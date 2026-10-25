@@ -1,5 +1,6 @@
 #include "platform/win/input.h"
 
+#include <cstdio>
 #include <cstring>
 #include <new>
 
@@ -74,6 +75,50 @@ bool WINAPI ResetMouseCursorToCenter(int) {
 #define BUTTON_DOWN_MASK 0x80
 // The distance an axis is pushed for GetPressedJoystickControl() to report it.
 #define JOYSTICK_AXIS_THRESHOLD 50
+
+JoystickControlName g_aJoystickButtonNamesA[JOYSTICK_NAME_COUNT_A];
+JoystickControlName g_aJoystickButtonNamesB[JOYSTICK_NAME_COUNT_B];
+
+// The bytes of each table of names that InitJoystickBindingNames() clears.
+#define JOYSTICK_NAMES_CLEARED_A 0xdc
+#define JOYSTICK_NAMES_CLEARED_B 0x158
+// The buttons named in each table, and the first code of its axes.
+#define JOYSTICK_BUTTON_COUNT_A 4
+#define JOYSTICK_AXIS_CODE_A 0x86
+#define JOYSTICK_BUTTON_COUNT_B 128
+#define JOYSTICK_AXIS_CODE_B 0x80
+// The string of the format of the name of a button, and the first string of an axis.
+#define JOYSTICK_BUTTON_NAME_STRING 0xc3
+#define JOYSTICK_AXIS_NAME_STRING 0xc4
+
+static inline void
+FillJoystickNames(JoystickControlName *pNames, int nCount, int nButtonCount, int nAxisCode) {
+    for (int i = 0; i < nCount; i++) {
+        if (i < nButtonCount) {
+            pNames[i].nCode = i;
+            sprintf(pNames[i].szName, GetStringResource(JOYSTICK_BUTTON_NAME_STRING), i);
+        } else {
+            pNames[i].nCode = nAxisCode + (i - nButtonCount);
+            // The original passes the name to sprintf() as the format.
+            sprintf(pNames[i].szName,
+                    "%s",
+                    GetStringResource(JOYSTICK_AXIS_NAME_STRING + (i - nButtonCount)));
+        }
+    }
+}
+
+void InitJoystickBindingNames(void) {
+    memset(g_aJoystickButtonNamesA, 0, JOYSTICK_NAMES_CLEARED_A);
+    memset(g_aJoystickButtonNamesB, 0, JOYSTICK_NAMES_CLEARED_B);
+    FillJoystickNames(g_aJoystickButtonNamesA,
+                      JOYSTICK_NAME_COUNT_A,
+                      JOYSTICK_BUTTON_COUNT_A,
+                      JOYSTICK_AXIS_CODE_A);
+    FillJoystickNames(g_aJoystickButtonNamesB,
+                      JOYSTICK_NAME_COUNT_B,
+                      JOYSTICK_BUTTON_COUNT_B,
+                      JOYSTICK_AXIS_CODE_B);
+}
 
 int GetPressedMouseButton(void) {
     DIMOUSESTATE state;

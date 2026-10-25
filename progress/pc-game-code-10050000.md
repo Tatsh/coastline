@@ -1,6 +1,6 @@
 # PC port game code from 0x10050000 to 0x10060000
 
-5 of 84 routines done.
+6 of 84 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -42,7 +42,7 @@ the same name, for a routine the port retained from the N64 game.
 | `InitMenuSurfaces`                        |        |                 |      1 |    379 |              | `0x100583c0` | `undefined InitMenuSurfaces()`                                                                                                                  |
 | `InitMenuDirectDrawSurfaces`              |        |                 |      1 |    362 | `0x1005f690` |              | `undefined InitMenuDirectDrawSurfaces()`                                                                                                        |
 | `SaveFileList::LoadSeasonDescription`     |        |                 |      1 |    343 | `0x1005ccd0` | `0x10055af0` | `undefined LoadSeasonDescription(SaveFileList * this, undefined4 param_1)`                                                                      |
-| `InitJoystickBindingNames`                |        |                 |      1 |    333 | `0x1005fdb0` | `0x10058af0` | `undefined InitJoystickBindingNames()`                                                                                                          |
+| `InitJoystickBindingNames`                |   ✅   |                 |      1 |    333 | `0x1005fdb0` | `0x10058af0` | `void InitJoystickBindingNames(void)`                                                                                                           |
 | `InitMenuSpriteRects`                     |        |                 |      1 |    309 | `0x1005f800` | `0x10058540` | `undefined InitMenuSpriteRects()`                                                                                                               |
 | `MenuScreen::ActivateMenuScreen`          |   📝   |                 |      1 |    304 | `0x1005ae70` | `0x10053d20` | `int ActivateMenuScreen(MenuScreen * this)`                                                                                                     |
 | `ApplyLoadedSeasonSettings`               |        |                 |      2 |    289 | `0x1005fbc0` | `0x10058900` | `undefined ApplyLoadedSeasonSettings()`                                                                                                         |

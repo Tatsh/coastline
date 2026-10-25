@@ -519,6 +519,43 @@ bool WINAPI ResetMouseCursorToCenter(int nUnused);
 /** The control of the bottom of the Y axis of a game controller. */
 #define JOYSTICK_CONTROL_Y_POSITIVE 0x8300
 
+/** A control of a game controller and the name the menus show for it. */
+struct JoystickControlName {
+    int nCode;       /*!< The control. */
+    char szName[32]; /*!< The name of the control. */
+};
+
+/** The number of entries of g_aJoystickButtonNamesA. */
+#define JOYSTICK_NAME_COUNT_A 10
+/** The number of entries of g_aJoystickButtonNamesB. */
+#define JOYSTICK_NAME_COUNT_B 134
+
+/**
+ * The names of four buttons and six axes of a game controller. Its use is not recovered yet.
+ *
+ * @ghidraAddress BRD3D: 0x10b4e7a8
+ * @ghidraAddress BRGlide: 0x10b71b08
+ */
+extern JoystickControlName g_aJoystickButtonNamesA[JOYSTICK_NAME_COUNT_A];
+
+/**
+ * The names of 128 buttons and six axes of a game controller. Its use is not recovered yet.
+ *
+ * @ghidraAddress BRD3D: 0x10b4e910
+ * @ghidraAddress BRGlide: 0x10b71c70
+ */
+extern JoystickControlName g_aJoystickButtonNamesB[JOYSTICK_NAME_COUNT_B];
+
+/**
+ * Fill the names of the controls of a game controller. A button is named with its number in the
+ * format of string 0xc3, and the axes take strings 0xc4 to 0xc9. Only the first bytes of the
+ * tables are cleared before, as in the original.
+ *
+ * @ghidraAddress BRD3D: 0x1005fdb0
+ * @ghidraAddress BRGlide: 0x10058af0
+ */
+void InitJoystickBindingNames(void);
+
 /**
  * Read the buttons of the mouse and find the first one that went down.
  *
