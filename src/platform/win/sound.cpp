@@ -658,6 +658,19 @@ bool SetSoundBufferStereoLevels(SoundBufferNode *pNode, DWORD dwLevels) {
     return ApplySoundBufferVolume(pNode) == DS_OK && ApplySoundBufferPan(pNode) == DS_OK;
 }
 
+SoundChannelState g_aSoundChannelState[SOUND_CHANNEL_COUNT];
+
+bool SetAudioChannelStereoLevels(int nChannel, DWORD dwLevels) {
+    if (!IsDirectSoundActive()) {
+        return true;
+    }
+    if (!SetSoundBufferStereoLevels(g_apSoundChannelBuffer[nChannel], dwLevels)) {
+        return false;
+    }
+    g_aSoundChannelState[nChannel].dwStereoLevels = dwLevels;
+    return true;
+}
+
 bool SetStereoAndPlaySoundChannel(int nSample, int nChannel, DWORD dwLevels, int bLooping) {
     SoundBufferNode *pNode;
 

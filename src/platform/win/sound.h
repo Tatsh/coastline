@@ -743,6 +743,33 @@ bool StopSoundVoice(int nSample, int nVoice);
  */
 bool SetSoundBufferStereoLevels(SoundBufferNode *pNode, DWORD dwLevels);
 
+/** The settings last applied to the buffer of a channel. */
+struct SoundChannelState {
+    char abUnknown00[8];   /* +0x00 */
+    long long llFrequency; /*!< The frequency, before the scale of the sample. */
+    char abUnknown10[4];   /* +0x10 */
+    DWORD dwStereoLevels;  /*!< The levels of the two sides, as SetSoundBufferStereoLevels(). */
+};
+
+/**
+ * The settings last applied to the buffer of each channel.
+ *
+ * @ghidraAddress BRD3D: 0x11828d20
+ * @ghidraAddress BRGlide: 0x1184c080
+ */
+extern SoundChannelState g_aSoundChannelState[SOUND_CHANNEL_COUNT];
+
+/**
+ * Set the levels of the two sides of the buffer of a channel and record them, when sound is on.
+ *
+ * @param nChannel The channel.
+ * @param dwLevels The levels, as SetSoundBufferStereoLevels().
+ * @return Whether the levels were set, and true without sound.
+ * @ghidraAddress BRD3D: 0x100727c0
+ * @ghidraAddress BRGlide: 0x1006b730
+ */
+bool SetAudioChannelStereoLevels(int nChannel, DWORD dwLevels);
+
 /**
  * Set the levels of the two sides of a channel of a sample and play it, when sound is on.
  *
