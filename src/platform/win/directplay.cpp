@@ -12,6 +12,7 @@
 #include "platform/win/boot/rallyconfig.h"
 #include "platform/win/boot/strings.h"
 #include "platform/win/frontend.h"
+#include "platform/win/netstream.h"
 #include "platform/win/settings.h"
 
 // The index of each service provider in g_aServiceProviders.
@@ -32,6 +33,18 @@ int GetSelectedServiceProvider(GUID **ppGuid) {
     *ppGuid = &g_aServiceProviders[g_dwServiceProviderIndex].guid;
     return 0;
 }
+
+void SendNetworkMessage6ToSession(void) {
+    if (g_pDirectPlayInfo != nullptr && g_pDirectPlayInfo->dpidPlayer != 0) {
+        SendNetworkMessage6(g_pDirectPlayInfo, g_pDirectPlayInfo->dpidPlayer);
+    }
+}
+
+void ResetNetworkStreamWithTimestamp(NetStream *pStream) {
+    pStream->StreamResetReadWrite();
+    pStream->StreamWriteInt24(g_dwNetWorkerCurrentTime);
+}
+
 int g_dwLaunchedFromLobby;
 int g_dwLobbyIsHost;
 int g_dwSessionEnumPending;

@@ -68,6 +68,44 @@ extern int g_dwServiceProviderIndex;
 int GetSelectedServiceProvider(GUID **ppGuid);
 
 /**
+ * The time of the worker thread of network play, written at the start of a packet.
+ *
+ * @ghidraAddress BRD3D: 0x11828d10
+ * @ghidraAddress BRGlide: 0x1184c070
+ */
+extern unsigned g_dwNetWorkerCurrentTime;
+
+/**
+ * Send message 6 of the game to a player.
+ *
+ * @param pInfo The session.
+ * @param dpidTo The player.
+ * @return The result of the send. Its meaning is not recovered yet.
+ * @ghidraAddress BRD3D: 0x1003da90
+ * @ghidraAddress BRGlide: 0x10037130
+ */
+int SendNetworkMessage6(DirectPlayInfo *pInfo, DPID dpidTo);
+
+/**
+ * Send message 6 of the game to the player of the session, when there is one.
+ *
+ * @ghidraAddress BRD3D: 0x1003dae0
+ * @ghidraAddress BRGlide: 0x10037180
+ */
+void SendNetworkMessage6ToSession(void);
+
+class NetStream;
+
+/**
+ * Empty a stream and write the time of the worker thread of network play at its start.
+ *
+ * @param pStream The stream.
+ * @ghidraAddress BRD3D: 0x10071bf0
+ * @ghidraAddress BRGlide: 0x1006ab60
+ */
+void ResetNetworkStreamWithTimestamp(NetStream *pStream);
+
+/**
  * The telephone number of a modem connection.
  *
  * @ghidraAddress BRD3D: 0x10a9cdf0
