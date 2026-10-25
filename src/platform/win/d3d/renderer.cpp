@@ -52,6 +52,140 @@ HRESULT RenderHost::ValidateObjectRenderResources() {
     return S_OK;
 }
 
+// The size of the texture of the loading screen, whatever the size of its image.
+#define LOADING_SCREEN_TEXTURE_SIZE 256
+// The pixel format of the texture of the loading screen.
+#define LOADING_SCREEN_PIXEL_FORMAT 0xb
+// The frames the loading screen is drawn and flipped in.
+#define LOADING_SCREEN_FRAME_COUNT 2
+// The specular colour of the vertices of the loading screen.
+#define LOADING_SCREEN_SPECULAR 0xff0000ff
+
+// A call of the device is made again after each restore of lost surfaces.
+template <typename Call>
+static inline HRESULT RetryWhileSurfacesLost(DirectDrawRenderer *pRenderer, Call call) {
+    HRESULT hResult = call();
+
+    while (hResult == DDERR_SURFACELOST) {
+        while (pRenderer->RestoreLostSurfaces() == DDERR_SURFACELOST) {
+        }
+        hResult = call();
+    }
+    return hResult;
+}
+
+static inline void
+SetLoadingScreenVertex(D3DTLVERTEX *pVertex, float fX, float fY, float fU, float fV) {
+    pVertex->sx = fX;
+    pVertex->sy = fY;
+    pVertex->sz = 0.0f;
+    pVertex->rhw = 1.0f;
+    pVertex->color = 0xffffffff;
+    pVertex->specular = LOADING_SCREEN_SPECULAR;
+    pVertex->tu = fU;
+    pVertex->tv = fV;
+}
+
+HRESULT RenderHost::RenderLoadingScreen(DirectDrawRenderer *pWindowRenderer,
+                                        const char *pszImage,
+                                        unsigned nImageKey) {
+    IDirect3DDevice2 *pDevice;
+    IDirect3DViewport2 *pViewport;
+    void *pImage;
+    int nWidth;
+    int nHeight;
+    float fLeft;
+    float fTop;
+    float fRight;
+    float fBottom;
+    D3DRECT rect;
+    D3DTLVERTEX aVertices[3];
+    HRESULT hResult;
+    HRESULT hFlip = DD_OK;
+
+    if (pWindowRenderer == nullptr ||
+        (pWindowRenderer->dwRenderStateFlags & RENDERER_STATE_READY) != RENDERER_STATE_READY) {
+        return E_FAIL;
+    }
+    pDevice = pWindowRenderer->pD3DDevice;
+    pViewport = pWindowRenderer->pViewport;
+    if (pWindowRenderer->pDirect3D2 == nullptr || pDevice == nullptr || pViewport == nullptr) {
+        return E_FAIL;
+    }
+    // The result is discarded.
+    pWindowRenderer->BeginRenderScene();
+    // The pixels of the image are never freed.
+    pImage = LoadRgba5551ImageFile(pszImage, nImageKey, &nWidth, &nHeight);
+    g_LoadingScreenImageState.CreateD3DTextureDefault(pDevice,
+                                                      pImage,
+                                                      LOADING_SCREEN_TEXTURE_SIZE,
+                                                      LOADING_SCREEN_TEXTURE_SIZE,
+                                                      LOADING_SCREEN_PIXEL_FORMAT);
+    for (int nFrame = 0; nFrame < LOADING_SCREEN_FRAME_COUNT; nFrame++) {
+        hResult =
+            RetryWhileSurfacesLost(pWindowRenderer, [pDevice] { return pDevice->BeginScene(); });
+        if (hResult != D3D_OK) {
+            return hResult;
+        }
+        // A state the device refuses skips the drawing and ends the scene.
+        if (pDevice->SetRenderState(D3DRENDERSTATE_SPECULARENABLE, FALSE) == D3D_OK &&
+            pDevice->SetRenderState(D3DRENDERSTATE_ZENABLE, TRUE) == D3D_OK &&
+            pDevice->SetRenderState(D3DRENDERSTATE_TEXTUREHANDLE, 0) == D3D_OK &&
+            pDevice->SetRenderState(D3DRENDERSTATE_DITHERENABLE, TRUE) == D3D_OK) {
+            rect.x1 = 0;
+            rect.y1 = 0;
+            rect.x2 = g_dwConfigFramebufferWidth;
+            rect.y2 = g_dwConfigFramebufferHeight;
+            pViewport->Clear(1, &rect, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER);
+            pDevice->SetRenderState(D3DRENDERSTATE_SHADEMODE, D3DSHADE_FLAT);
+            pDevice->SetRenderState(D3DRENDERSTATE_ALPHABLENDENABLE, FALSE);
+            pDevice->SetRenderState(D3DRENDERSTATE_ZWRITEENABLE, FALSE);
+            pDevice->SetRenderState(D3DRENDERSTATE_WRAPU, FALSE);
+            pDevice->SetRenderState(D3DRENDERSTATE_WRAPV, FALSE);
+            pDevice->SetRenderState(D3DRENDERSTATE_TEXTUREPERSPECTIVE, TRUE);
+            pDevice->SetRenderState(D3DRENDERSTATE_TEXTUREHANDLE,
+                                    g_LoadingScreenImageState.hTexture);
+
+            fLeft = static_cast<float>((g_dwConfigFramebufferWidth - nWidth) / 2);
+            if (fLeft < 0.0f) {
+                fLeft = 0.0f;
+            }
+            fTop = static_cast<float>((g_dwConfigFramebufferHeight - nHeight) / 2);
+            if (fTop < 0.0f) {
+                fTop = 0.0f;
+            }
+            fRight = fLeft + LOADING_SCREEN_TEXTURE_SIZE;
+            fBottom = fTop + LOADING_SCREEN_TEXTURE_SIZE;
+
+            SetLoadingScreenVertex(&aVertices[0], fLeft, fTop, 0.0f, 0.0f);
+            SetLoadingScreenVertex(&aVertices[1], fRight, fBottom, 1.0f, 1.0f);
+            SetLoadingScreenVertex(&aVertices[2], fLeft, fBottom, 0.0f, 1.0f);
+            pDevice->DrawPrimitive(
+                D3DPT_TRIANGLELIST, D3DVT_TLVERTEX, aVertices, 3, D3DDP_WAIT | D3DDP_DONOTCLIP);
+            SetLoadingScreenVertex(&aVertices[0], fLeft, fTop, 0.0f, 0.0f);
+            SetLoadingScreenVertex(&aVertices[1], fRight, fTop, 1.0f, 0.0f);
+            SetLoadingScreenVertex(&aVertices[2], fRight, fBottom, 1.0f, 1.0f);
+            pDevice->DrawPrimitive(
+                D3DPT_TRIANGLELIST, D3DVT_TLVERTEX, aVertices, 3, D3DDP_WAIT | D3DDP_DONOTCLIP);
+            // A device that refuses Gouraud shading ends the screen with its scene open and its
+            // texture held.
+            if (pDevice->SetRenderState(D3DRENDERSTATE_SHADEMODE, D3DSHADE_GOURAUD) != D3D_OK) {
+                return D3D_OK;
+            }
+        }
+        hResult =
+            RetryWhileSurfacesLost(pWindowRenderer, [pDevice] { return pDevice->EndScene(); });
+        if (hResult != D3D_OK) {
+            return hResult;
+        }
+        hFlip = pWindowRenderer->pPrimarySurface->Flip(pWindowRenderer->pBackBuffer, DDFLIP_WAIT);
+        while (pWindowRenderer->pPrimarySurface->GetFlipStatus(DDGFS_ISFLIPDONE) != DD_OK) {
+        }
+    }
+    g_LoadingScreenImageState.ReleaseD3DTextureInterfaces();
+    return hFlip;
+}
+
 // The colours a ramp of a material has.
 #define MATERIAL_RAMP_SIZE 16
 

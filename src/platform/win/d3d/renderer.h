@@ -417,6 +417,54 @@ public:
     void Release();
 };
 
+/** A texture of Direct3D created from an image in memory. */
+class D3DTexture {
+public:
+    IUnknown *apInterfaces[3]; /*!< The surfaces and texture of Direct3D, released in order. */
+    D3DTEXTUREHANDLE hTexture; /*!< The handle of the texture on the device. */
+
+    /**
+     * Create the texture from an image with the default options.
+     *
+     * @param pDevice The device the texture belongs to.
+     * @param pImage The pixels of the image.
+     * @param nWidth The width of the texture.
+     * @param nHeight The height of the texture.
+     * @param nPixelFormatId The pixel format of the texture.
+     * @return 1 when the texture was created.
+     * @ghidraAddress BRD3D: 0x10009ea0
+     */
+    int CreateD3DTextureDefault(
+        IDirect3DDevice2 *pDevice, void *pImage, int nWidth, int nHeight, int nPixelFormatId);
+
+    /**
+     * Release the interfaces of the texture and clear its handle.
+     *
+     * @ghidraAddress BRD3D: 0x1000a0b0
+     */
+    void ReleaseD3DTextureInterfaces();
+};
+
+/**
+ * The texture of the image of the loading screen.
+ *
+ * @ghidraAddress BRD3D: 0x10277680
+ */
+extern D3DTexture g_LoadingScreenImageState;
+
+/**
+ * Load an image file of RGBA 5551 pixels.
+ *
+ * @param pszPath The path of the image.
+ * @param nAdlerExpected The Adler-32 checksum the image must have.
+ * @param pnWidth Receives the width of the image.
+ * @param pnHeight Receives the height of the image.
+ * @return The pixels of the image.
+ * @ghidraAddress BRD3D: 0x10009ad0
+ */
+void *
+LoadRgba5551ImageFile(const char *pszPath, unsigned nAdlerExpected, int *pnWidth, int *pnHeight);
+
 /** The DirectDraw and Direct3D objects of a window. */
 class DirectDrawRenderer {
 public:
@@ -716,16 +764,19 @@ public:
     HRESULT SetRenderer(DirectDrawRenderer *pNewRenderer);
 
     /**
-     * Show an image of the game while the game loads.
+     * Show an image of the game while the game loads. The image is drawn as a 256 by 256 texture in
+     * the centre of the screen, and the frame is drawn and flipped twice.
      *
      * @param pWindowRenderer The renderer of the window.
      * @param pszImage The name of the image.
-     * @param nImageKey A constant the game passes with the image, 0x2ac7e58b.
+     * @param nImageKey The Adler-32 checksum the image must have, 0x2ac7e58b for the splash.
+     * @return The result of the last flip, the error of a scene, or `E_FAIL` for a renderer that is
+     * not ready.
      * @ghidraAddress BRD3D: 0x10008e30
      */
-    void RenderLoadingScreen(DirectDrawRenderer *pWindowRenderer,
-                             const char *pszImage,
-                             unsigned nImageKey);
+    HRESULT RenderLoadingScreen(DirectDrawRenderer *pWindowRenderer,
+                                const char *pszImage,
+                                unsigned nImageKey);
 
     /**
      * Whether the renderer is ready and has its Direct3D objects.

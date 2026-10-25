@@ -13,6 +13,7 @@ aiframes
 airplane
 airplanetrigger
 alabel
+alphablendenable
 alphadither
 andi
 apfn
@@ -144,6 +145,7 @@ dmawrite
 dmmx
 dndebug
 docstrings
+donotclip
 doubleword
 dpaid
 dpal
@@ -154,13 +156,16 @@ dpplayer
 dpsession
 dpspguid
 drawtexturedrect
+drenderstate
 dsdx
+dshade
 dsinf
 dsll
 dsra
 dsrl
 dtdy
 dtgr
+dtlvertex
 dvcpkg
 dxversion
 dzlib
@@ -225,6 +230,7 @@ ghnd
 glabel
 glist
 globl
+gouraud
 gpack
 graphviz
 gridstarts
@@ -529,6 +535,7 @@ settilesize
 settimer
 settimg
 setzimg
+shademode
 shellcheck
 shellformat
 shiftl
@@ -544,6 +551,7 @@ sltu
 smokepos
 snapcraft
 snowdl
+specularenable
 speedgate
 spimdisasm
 sprayadv
@@ -577,6 +585,7 @@ stkptr
 strequal
 subu
 superbuild
+surfacelost
 swwwwfgdafch
 syms
 syncprintf
@@ -590,6 +599,7 @@ textlod
 textlut
 textpersp
 textureanim
+textureperspective
 thiscall
 timerintr
 tiretype
@@ -600,6 +610,7 @@ tlbwi
 tlnext
 tlut
 tluts
+tlvertex
 tolower
 toupper
 trackrender
@@ -662,6 +673,8 @@ wiswa's
 wmaybe
 wndclassa
 worktrees
+wrapu
+wrapv
 writeback
 writebackdcache
 writebackdcacheall
@@ -692,9 +705,11 @@ yieldthread
 yscale
 zbuffer
 zbufferbitdepth
+zenable
 zizmor
 zmode
 zsize
 zsrcsel
 zutil
+zwriteenable
 Ångström
