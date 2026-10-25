@@ -17,6 +17,7 @@ struct GbiCommand {
     unsigned w0; /*!< The first word, the opcode in its high byte. */
     union {
         const GbiViewport *pViewport; /*!< The second word as the viewport a command sets. */
+        const void *pData;            /*!< The second word as the memory a command moves. */
         unsigned w1;                  /*!< The second word. */
         float f1;                     /*!< The second word as a float. */
         GbiCommand *pTarget; /*!< The second word as the display list a branch or a call runs. */
@@ -499,6 +500,52 @@ extern int g_bGbiLightsTransformed;
  * @ghidraAddress BRGlide: 0x100239c0
  */
 GbiCommand *HandleGbiMoveWord(GbiCommand *pCommand);
+
+/**
+ * The matrix that takes a vertex of the display lists to the screen.
+ *
+ * @ghidraAddress BRD3D: 0x104c4d10
+ * @ghidraAddress BRGlide: 0x105d1760
+ */
+extern float g_GbiMvpMatrix[4][4];
+
+/**
+ * The second vector of the look-at of the display lists, as a move memory command gives it.
+ *
+ * @ghidraAddress BRD3D: 0x104c1698
+ * @ghidraAddress BRGlide: 0x105ce2d8
+ */
+extern const void *g_pGbiLookAtY;
+
+/**
+ * The first vector of the look-at of the display lists, as a move memory command gives it.
+ *
+ * @ghidraAddress BRD3D: 0x104c169c
+ * @ghidraAddress BRGlide: 0x105ce2dc
+ */
+extern const void *g_pGbiLookAtX;
+
+/**
+ * Copy the matrix of the command into g_GbiMvpMatrix.
+ *
+ * @param pCommand The command, the matrix in its second word.
+ * @return The next command.
+ * @ghidraAddress BRD3D: 0x10024240
+ * @ghidraAddress BRGlide: 0x10023900
+ */
+GbiCommand *HandleGbiLoadMatrix(GbiCommand *pCommand);
+
+/**
+ * Set the viewport, a vector of the look-at, a light, or g_GbiMvpMatrix from memory. Every other
+ * index is skipped.
+ *
+ * @param pCommand The command, the index in bits 16 to 23 of its first word and the size of a light
+ * in its low 16 bits.
+ * @return The next command.
+ * @ghidraAddress BRD3D: 0x10024150
+ * @ghidraAddress BRGlide: 0x10023810
+ */
+GbiCommand *HandleGbiMoveMem(GbiCommand *pCommand);
 
 #if TGR_RENDERER == TGR_RENDERER_D3D
 /**

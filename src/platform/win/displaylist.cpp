@@ -1,6 +1,7 @@
 #include "platform/win/displaylist.h"
 
 #include <cstdlib>
+#include <cstring>
 
 #include "platform/win/settings.h"
 
@@ -275,6 +276,62 @@ GbiCommand *HandleGbiMoveWord(GbiCommand *pCommand) {
     // The fog and the normalisation of the perspective have cases of their own that do nothing.
     case GBI_MOVE_WORD_FOG:
     case GBI_MOVE_WORD_PERSPECTIVE_NORMALIZE:
+    default:
+        break;
+    }
+    return pCommand + 1;
+}
+
+float g_GbiMvpMatrix[4][4];
+const void *g_pGbiLookAtY;
+const void *g_pGbiLookAtX;
+
+GbiCommand *HandleGbiLoadMatrix(GbiCommand *pCommand) {
+    memcpy(g_GbiMvpMatrix, pCommand->pData, sizeof(g_GbiMvpMatrix));
+    return pCommand + 1;
+}
+
+// The memory a move memory command sets, by the index in bits 16 to 23 of its first word.
+#define GBI_MOVE_MEM_VIEWPORT 0x80
+#define GBI_MOVE_MEM_LOOK_AT_Y 0x82
+#define GBI_MOVE_MEM_LOOK_AT_X 0x84
+#define GBI_MOVE_MEM_LIGHT_0 0x86
+#define GBI_MOVE_MEM_LIGHT_1 0x88
+#define GBI_MOVE_MEM_LIGHT_2 0x8a
+#define GBI_MOVE_MEM_LIGHT_3 0x8c
+#define GBI_MOVE_MEM_LIGHT_4 0x8e
+#define GBI_MOVE_MEM_LIGHT_5 0x90
+#define GBI_MOVE_MEM_LIGHT_6 0x92
+#define GBI_MOVE_MEM_LIGHT_7 0x94
+#define GBI_MOVE_MEM_MATRIX 0x9e
+
+GbiCommand *HandleGbiMoveMem(GbiCommand *pCommand) {
+    unsigned dwIndex = pCommand->w0 >> 16 & 0xff;
+
+    switch (dwIndex) {
+    case GBI_MOVE_MEM_VIEWPORT:
+        return HandleGbiSetViewport(pCommand);
+    case GBI_MOVE_MEM_LOOK_AT_Y:
+        g_pGbiLookAtY = pCommand->pData;
+        break;
+    case GBI_MOVE_MEM_LOOK_AT_X:
+        g_pGbiLookAtX = pCommand->pData;
+        break;
+    case GBI_MOVE_MEM_LIGHT_0:
+    case GBI_MOVE_MEM_LIGHT_1:
+    case GBI_MOVE_MEM_LIGHT_2:
+    case GBI_MOVE_MEM_LIGHT_3:
+    case GBI_MOVE_MEM_LIGHT_4:
+    case GBI_MOVE_MEM_LIGHT_5:
+    case GBI_MOVE_MEM_LIGHT_6:
+    case GBI_MOVE_MEM_LIGHT_7:
+        memcpy(&g_aGbiLights[(dwIndex - GBI_MOVE_MEM_LIGHT_0) / 2],
+               pCommand->pData,
+               pCommand->w0 & 0xffff);
+        g_bGbiLightsTransformed = false;
+        break;
+    case GBI_MOVE_MEM_MATRIX:
+        return HandleGbiLoadMatrix(pCommand);
     default:
         break;
     }
