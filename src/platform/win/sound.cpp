@@ -299,6 +299,17 @@ bool PauseMusicPlayback(void) {
     return g_pfnEarChangeChannelControl(g_dwEarMusicChannel, 4) != 0;
 }
 
+bool UnpauseMusicPlayback(void) {
+    if (g_dwPlayMusicMode == 1) {
+        return ReplayCurrentMusicTrack();
+    }
+    if (!IsMusicPlaying()) {
+        return true;
+    }
+    // The channel receives control 12, and any result but 0 succeeds.
+    return g_pfnEarChangeChannelControl(g_dwEarMusicChannel, 12) != 0;
+}
+
 bool ReplayCurrentMusicTrack(void) {
     if (!IsMusicPlaying()) {
         return true;

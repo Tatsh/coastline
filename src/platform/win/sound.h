@@ -321,6 +321,15 @@ bool PauseCdAudio(void);
 bool PauseMusicPlayback(void);
 
 /**
+ * Resume the music when the game is no longer paused.
+ *
+ * @return Whether the music resumed, and true when no music plays.
+ * @ghidraAddress BRD3D: 0x10002bd0
+ * @ghidraAddress BRGlide: 0x10002f10
+ */
+bool UnpauseMusicPlayback(void);
+
+/**
  * Silence every channel of sound that has a buffer, and centre its pan, when DirectSound plays
  * sound effects.
  *

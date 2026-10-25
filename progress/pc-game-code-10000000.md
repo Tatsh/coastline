@@ -1,6 +1,6 @@
 # PC port game code from 0x10000000 to 0x10010000
 
-170 of 246 routines done.
+171 of 246 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -146,8 +146,8 @@ the same name, for a routine the port retained from the N64 game.
 | `PodFileHelper::ExtractFileName`                           |   ✅   |                 |      2 |     74 | `0x10008b90` | `0x10008d70` | `undefined ExtractFileName(PodFileHelper * this)`                                                                                                                                  |
 | `PopDepartedPlayerSlot`                                    |        |                 |      1 |     74 | `0x10005d90` | `0x10006100` | `uint PopDepartedPlayerSlot(void)`                                                                                                                                                 |
 | `PopJoinedPlayerSlot`                                      |        |                 |      1 |     74 | `0x10005d40` | `0x100060b0` | `uint PopJoinedPlayerSlot(void)`                                                                                                                                                   |
-| `UnpauseMusicPlayback`                                     |        |                 |      2 |     73 | `0x10002bd0` | `0x10002f10` | `undefined UnpauseMusicPlayback()`                                                                                                                                                 |
 | `PauseMusicPlayback`                                       |   ✅   |                 |      2 |     73 | `0x10002b70` | `0x10002eb0` | `bool PauseMusicPlayback(void)`                                                                                                                                                    |
+| `UnpauseMusicPlayback`                                     |   ✅   |                 |      2 |     73 | `0x10002bd0` | `0x10002f10` | `bool UnpauseMusicPlayback(void)`                                                                                                                                                  |
 | `CopyRgb565Rect`                                           |        |                 |      1 |     73 |              | `0x100013f0` | `undefined CopyRgb565Rect()`                                                                                                                                                       |
 | `D3DTexture::ReleaseD3DTextureInterfaces`                  |   ✅   |                 |      4 |     70 | `0x1000a0b0` |              | `void ReleaseD3DTextureInterfaces(D3DTexture * this)`                                                                                                                              |
 | `DirectDrawRenderer::ReleasePrimaryPalette`                |   ✅   |                 |      5 |     68 | `0x1000ab20` |              | `undefined ReleasePrimaryPalette(DirectDrawRenderer * this)`                                                                                                                       |
