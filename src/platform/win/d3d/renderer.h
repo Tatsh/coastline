@@ -399,7 +399,7 @@ public:
     D3DMATERIAL desc;              /*!< The description of the material. */
     D3DMATERIALHANDLE hMaterial;   /*!< The handle of the material on the device. */
     IDirect3DMaterial2 *pMaterial; /*!< The material of Direct3D. */
-    int nUnknown58;                /*!< Cleared when the background is set. */
+    int bDirty;                    /*!< Whether desc changed since it was given to pMaterial. */
 
     /**
      * Create an opaque material of Direct3D and its handle on a device.
@@ -416,6 +416,14 @@ public:
      * @ghidraAddress BRD3D: 0x1000a170
      */
     void Release();
+
+    /**
+     * Give desc to the material of Direct3D when it changed.
+     *
+     * @return The result of SetMaterial(), or 0 when desc did not change.
+     * @ghidraAddress BRD3D: 0x1001c620
+     */
+    HRESULT CommitMaterialIfDirty();
 };
 
 /** A texture of Direct3D created from an image in memory. */

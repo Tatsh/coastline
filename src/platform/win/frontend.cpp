@@ -384,8 +384,8 @@ HRESULT MenuScreen::ClearBackBuffer() {
     pMaterial->desc.dcvDiffuse.r = MENU_BACKGROUND_RED;
     pMaterial->desc.dcvDiffuse.g = 0.0f;
     pMaterial->desc.dcvDiffuse.b = 0.0f;
-    pMaterial->nUnknown58 = 1;
-    pMaterial->nUnknown58 = 0;
+    pMaterial->bDirty = 1;
+    pMaterial->bDirty = 0;
     pMaterial->desc.dwRampSize = 1;
     pMaterial->pMaterial->SetMaterial(&pMaterial->desc);
     pRenderer->pViewport->SetBackground(pMaterial->hMaterial);

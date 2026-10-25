@@ -202,8 +202,16 @@ D3DMaterial::D3DMaterial(IDirect3D2 *pDirect3D2, IDirect3DDevice2 *pD3DDevice) {
     pDirect3D2->CreateMaterial(&pMaterial, nullptr);
     pMaterial->SetMaterial(&desc);
     pMaterial->GetHandle(pD3DDevice, &hMaterial);
-    nUnknown58 = 0;
+    bDirty = 0;
     pMaterial->SetMaterial(&desc);
+}
+
+HRESULT D3DMaterial::CommitMaterialIfDirty() {
+    if (!bDirty) {
+        return 0;
+    }
+    bDirty = false;
+    return pMaterial->SetMaterial(&desc);
 }
 
 void D3DMaterial::Release() {
@@ -922,9 +930,9 @@ static inline void SetBlackBackground(DirectDrawRenderer *pRenderer) {
     pMaterial->desc.dcvDiffuse.r = 0.0f;
     pMaterial->desc.dcvDiffuse.g = 0.0f;
     pMaterial->desc.dcvDiffuse.b = 0.0f;
-    pMaterial->nUnknown58 = 1;
+    pMaterial->bDirty = 1;
     pMaterial->desc.dwRampSize = 1;
-    pMaterial->nUnknown58 = 0;
+    pMaterial->bDirty = 0;
     pMaterial->pMaterial->SetMaterial(&pMaterial->desc);
     pRenderer->pViewport->SetBackground(pMaterial->hMaterial);
 }
