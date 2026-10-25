@@ -283,6 +283,12 @@ static inline void SetGbiLightColor(unsigned char *pColor, unsigned dwRgba) {
     pColor[2] = static_cast<unsigned char>(dwRgba >> 8);
 }
 
+void HalveAmbientLightColor(GbiLight *pLight) {
+    pLight->abColorCopy[2] >>= 1;
+    pLight->abColorCopy[1] >>= 1;
+    pLight->abColorCopy[0] >>= 1;
+}
+
 GbiCommand *HandleGbiMoveWord(GbiCommand *pCommand) {
     unsigned dwOffset;
 
