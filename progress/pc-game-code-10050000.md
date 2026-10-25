@@ -1,6 +1,6 @@
 # PC port game code from 0x10050000 to 0x10060000
 
-19 of 84 routines done.
+20 of 84 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -78,7 +78,7 @@ the same name, for a routine the port retained from the N64 game.
 | `UpdateMouseButtonEdges`                  |   ✅   |                 |      6 |     56 | `0x1005fff0` | `0x10059060` | `void UpdateMouseButtonEdges(void)`                                                                                                             |
 | `GlideDisplayModeNode::InsertSorted`      |        |                 |      1 |     53 |              | `0x10058d00` | `undefined InsertSorted(GlideDisplayModeNode * this, undefined4 param_1)`                                                                       |
 | `ClearKeyboardStateBuffers`               |   ✅   |                 |      2 |     41 | `0x1005ff30` | `0x10058fa0` | `void ClearKeyboardStateBuffers(void)`                                                                                                          |
-| `GetSessionSlotFlag`                      |        |                 |      2 |     40 | `0x100586d0` | `0x10051580` | `undefined GetSessionSlotFlag()`                                                                                                                |
+| `GetSessionSlotFlag`                      |   ✅   |                 |      2 |     40 | `0x100586d0` | `0x10051580` | `int GetSessionSlotFlag(uint dpidPlayer)`                                                                                                       |
 | `GlideDisplayModeNode::DeleteChain`       |        |                 |      2 |     37 |              | `0x10058c90` | `undefined DeleteChain(GlideDisplayModeNode * this)`                                                                                            |
 | `LookupKeyCharacter`                      |        |                 |      1 |     37 | `0x1005b540` | `0x10054360` | `undefined LookupKeyCharacter()`                                                                                                                |
 | `ResetSessionSlotTable`                   |   ✅   |                 |      5 |     35 | `0x100586a0` | `0x10051550` | `void ResetSessionSlotTable(void)`                                                                                                              |

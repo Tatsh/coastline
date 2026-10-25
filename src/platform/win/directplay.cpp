@@ -562,6 +562,15 @@ static inline void FreeGlobalBuffer(void *pBuffer) {
 
 SessionSlot g_aSessionSlots[SESSION_SLOT_COUNT];
 
+int GetSessionSlotFlag(DPID dpidPlayer) {
+    for (const SessionSlot &slot : g_aSessionSlots) {
+        if (slot.dpidPlayer == dpidPlayer) {
+            return slot.nFlag;
+        }
+    }
+    return 0;
+}
+
 void HandleDirectPlaySystemMessageHost(
     DirectPlayInfo *pInfo, DPMSG_GENERIC *pMessage, DWORD, DPID, DPID dpidTo) {
     DPMSG_SECUREMESSAGE *pSecure;

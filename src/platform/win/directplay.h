@@ -1074,6 +1074,16 @@ HRESULT CloseAndReleaseDirectPlay(void);
 extern SessionSlot g_aSessionSlots[SESSION_SLOT_COUNT];
 
 /**
+ * Get the flag of the slot of a player of the session.
+ *
+ * @param dpidPlayer The player.
+ * @return The flag, or 0 when no slot has the player.
+ * @ghidraAddress BRD3D: 0x100586d0
+ * @ghidraAddress BRGlide: 0x10051580
+ */
+int GetSessionSlotFlag(DPID dpidPlayer);
+
+/**
  * The message the main window receives with a notice of network play in locked global memory as
  * the second parameter. The window frees the notice.
  */
