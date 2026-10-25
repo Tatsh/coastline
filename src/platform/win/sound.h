@@ -53,40 +53,155 @@ void InitializeMusicPlayback(void);
 WPARAM GetEarMusicEventHandle(void);
 
 /**
- * Play a track of music.
+ * Play a track of music, through the CD audio in music mode 1 and the EAR library otherwise.
  *
  * @param nModeIndex The track.
+ * @return Always true.
  * @ghidraAddress BRD3D: 0x100027c0
+ * @ghidraAddress BRGlide: 0x10002af0
  */
-void SetCurrentMusicTrack(int nModeIndex);
+bool SetCurrentMusicTrack(int nModeIndex);
+
+/**
+ * Post a request to play a track of the CD audio to the window of the music.
+ *
+ * @param nTrack The track.
+ * @return Always true.
+ * @ghidraAddress BRD3D: 0x10002870
+ * @ghidraAddress BRGlide: 0x10002ba0
+ */
+bool PostCdAudioPlayNotify(int nTrack);
+
+/**
+ * Play a track of music through the EAR library.
+ *
+ * @param nTrack The track.
+ * @return Always true.
+ * @ghidraAddress BRD3D: 0x100027f0
+ * @ghidraAddress BRGlide: 0x10002b20
+ */
+bool PlayEarMusicTrack(int nTrack);
+
+/**
+ * The track of music that plays, from the CD audio in music mode 1 and the EAR library otherwise.
+ *
+ * @return The track.
+ * @ghidraAddress BRD3D: 0x10002910
+ * @ghidraAddress BRGlide: 0x10002c50
+ */
+int GetCurrentMusicTrack(void);
+
+/**
+ * The track of the CD audio that plays.
+ *
+ * @return The track.
+ * @ghidraAddress BRD3D: 0x100024c0
+ */
+int GetCdAudioCurrentTrack(void);
+
+/**
+ * The track of music the EAR library plays.
+ *
+ * @return The track.
+ * @ghidraAddress BRD3D: 0x10002490
+ */
+int GetEarMusicCurrentTrack(void);
+
+/**
+ * Play the tracks of the CD audio from a track on.
+ *
+ * @param hWnd The window told when the tracks end.
+ * @param nTrack The first track.
+ * @return The error of MCI, or 0.
+ * @ghidraAddress BRD3D: 0x10002550
+ * @ghidraAddress BRGlide: 0x10002870
+ */
+MCIERROR MciPlayCdTracks(HWND hWnd, unsigned char nTrack);
+
+/**
+ * The track of music that plays.
+ *
+ * @ghidraAddress BRD3D: 0x10220cd4
+ * @ghidraAddress BRGlide: 0x1021c804
+ */
+extern int g_nCurrentMusicTrack;
+
+/**
+ * The first track of music.
+ *
+ * @ghidraAddress BRD3D: 0x10220c44
+ * @ghidraAddress BRGlide: 0x1021c774
+ */
+extern int g_nMusicTrackMin;
+
+/**
+ * The last track of music.
+ *
+ * @ghidraAddress BRD3D: 0x10220c38
+ * @ghidraAddress BRGlide: 0x1021c768
+ */
+extern int g_nMusicTrackMax;
+
+/**
+ * The window told when the tracks of the CD audio end.
+ *
+ * @ghidraAddress BRD3D: 0x10220c4c
+ * @ghidraAddress BRGlide: 0x1021c77c
+ */
+extern HWND g_hMusicNotifyWnd;
+
+/**
+ * Whether the CD audio was paused.
+ *
+ * @ghidraAddress BRD3D: 0x10220cd8
+ * @ghidraAddress BRGlide: 0x1021c808
+ */
+extern bool g_bCdAudioPlaying;
 
 /**
  * Play the next track of music, from the first again after the last.
  *
+ * @return Always true.
  * @ghidraAddress BRD3D: 0x100029b0
+ * @ghidraAddress BRGlide: 0x10002cf0
  */
-void AdvanceMusicTrackWrapping(void);
+bool AdvanceMusicTrackWrapping(void);
 
 /**
- * Stop the track of music that plays.
+ * Stop the track of music that plays. A CD audio that does not stop has its device closed.
  *
+ * @return Whether the music stopped, and true when no music plays.
  * @ghidraAddress BRD3D: 0x10002c30
+ * @ghidraAddress BRGlide: 0x10002f70
  */
-void StopMusicTrack(void);
+bool StopMusicTrack(void);
 
 /**
- * Close the channel of the music library.
+ * Close the music channel of the EAR library.
  *
+ * @return The result of the EAR library, or 1 when no music plays.
  * @ghidraAddress BRD3D: 0x10002440
+ * @ghidraAddress BRGlide: 0x10002760
  */
-void ShutDownEarMusicChannel(void);
+int ShutDownEarMusicChannel(void);
+
+/**
+ * Pause the CD audio. A CD audio that does not pause has its device closed.
+ *
+ * @return Whether the CD audio paused, and true when no music plays.
+ * @ghidraAddress BRD3D: 0x10002ae0
+ * @ghidraAddress BRGlide: 0x10002e20
+ */
+bool PauseCdAudio(void);
 
 /**
  * Pause the music while the game is paused.
  *
+ * @return Whether the music paused, and true when no music plays.
  * @ghidraAddress BRD3D: 0x10002b70
+ * @ghidraAddress BRGlide: 0x10002eb0
  */
-void PauseMusicPlayback(void);
+bool PauseMusicPlayback(void);
 
 /**
  * Silence every channel of sound that plays.
@@ -96,11 +211,13 @@ void PauseMusicPlayback(void);
 void MuteAllActiveSoundChannels(void);
 
 /**
- * Play the track of the CD audio that is current, again.
+ * Play the tracks of the CD audio from the current track on.
  *
+ * @return Whether the tracks play, and true when no music plays.
  * @ghidraAddress BRD3D: 0x10002510
+ * @ghidraAddress BRGlide: 0x10002830
  */
-void PlayCdAudioFromCurrentTrack(void);
+bool PlayCdAudioFromCurrentTrack(void);
 
 /**
  * DirectSound.

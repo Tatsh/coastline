@@ -354,6 +354,7 @@ math
 mathutil
 maxcontrollers
 mcideviceid
+mcierror
 mcinotify
 mdebug
 mdfile
