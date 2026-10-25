@@ -452,19 +452,6 @@ public:
  */
 extern D3DTexture g_LoadingScreenImageState;
 
-/**
- * Load an image file of RGBA 5551 pixels.
- *
- * @param pszPath The path of the image.
- * @param nAdlerExpected The Adler-32 checksum the image must have.
- * @param pnWidth Receives the width of the image.
- * @param pnHeight Receives the height of the image.
- * @return The pixels of the image.
- * @ghidraAddress BRD3D: 0x10009ad0
- */
-void *
-LoadRgba5551ImageFile(const char *pszPath, unsigned nAdlerExpected, int *pnWidth, int *pnHeight);
-
 /** The DirectDraw and Direct3D objects of a window. */
 class DirectDrawRenderer {
 public:

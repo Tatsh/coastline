@@ -59,6 +59,33 @@ bool CHK_FileExists(const char *pszPath);
 GameFile *CHK_FReadOpen(const char *pszPath);
 
 /**
+ * Read items of a file. A read that ends part way through ends the process.
+ *
+ * @param pBuffer The buffer that receives the items.
+ * @param nSize The size of an item.
+ * @param nCount The number of items.
+ * @param pFile The open file.
+ * @return false when nothing was read at the end of the file, and true otherwise.
+ * @ghidraAddress BRD3D: 0x100030e0
+ * @ghidraAddress BRGlide: 0x10003430
+ */
+bool FCHK_FRead(void *pBuffer, size_t nSize, size_t nCount, GameFile *pFile);
+
+/**
+ * Read items of a file. A read at the end of the file, or one that ends part way through, ends the
+ * process.
+ *
+ * @param pBuffer The buffer that receives the items.
+ * @param nSize The size of an item.
+ * @param nCount The number of items.
+ * @param pFile The open file.
+ * @return The buffer.
+ * @ghidraAddress BRD3D: 0x10003170
+ * @ghidraAddress BRGlide: 0x100034c0
+ */
+void *CHK_FRead(void *pBuffer, size_t nSize, size_t nCount, GameFile *pFile);
+
+/**
  * The length of a file, leaving its position unchanged.
  *
  * @param pFile The open file.

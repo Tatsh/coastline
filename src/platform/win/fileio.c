@@ -47,6 +47,41 @@ GameFile *CHK_FReadOpen(const char *pszPath) {
     return pFile;
 }
 
+bool FCHK_FRead(void *pBuffer, size_t nSize, size_t nCount, GameFile *pFile) {
+    char szMessage[MESSAGE_SIZE];
+    size_t nRead;
+
+    if (nSize * nCount == 0) {
+        return true;
+    }
+    nRead = fread(pBuffer, nSize, nCount, pFile->pFile);
+    if (nRead == 0) {
+        return false;
+    }
+    if (nRead != nCount) {
+        sprintf(szMessage,
+                "FCHK_FRead(): trying to read %d bytes, but got only %d bytes.\n",
+                (int)(nSize * nCount),
+                (int)(nRead * nSize));
+        OutputDebugStringA(szMessage);
+        exit(1);
+    }
+    return true;
+}
+
+void *CHK_FRead(void *pBuffer, size_t nSize, size_t nCount, GameFile *pFile) {
+    char szMessage[MESSAGE_SIZE];
+
+    if (!FCHK_FRead(pBuffer, nSize, nCount, pFile)) {
+        sprintf(szMessage,
+                "CHK_FRead(): trying to read %u bytes, but got EOF.\n",
+                (unsigned)(nCount * nSize));
+        OutputDebugStringA(szMessage);
+        exit(1);
+    }
+    return pBuffer;
+}
+
 char *FileReadLine(char *pszLine, size_t nSize, GameFile *pFile) {
     int c;
 

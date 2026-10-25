@@ -103,6 +103,16 @@ else()
   add_library(coastline_game STATIC vecmath.c)
   target_link_libraries(coastline_game PRIVATE coastline_common)
   list(APPEND COASTLINE_LIBRARIES coastline_game)
+
+  # The PC libraries link the checksum of the vendored zlib 1.0.4 and not its inflate side.
+  set(_zlib "${CMAKE_SOURCE_DIR}/3rdparty/zlib-1.0.4")
+  add_library(coastline_zlib STATIC "${_zlib}/adler32.c")
+  # zlib 1.0.4 defines its routines in the style C23 removed.
+  set_target_properties(coastline_zlib PROPERTIES C_STANDARD 90)
+  target_include_directories(coastline_zlib PUBLIC "${_zlib}")
+  target_compile_options(coastline_zlib PRIVATE -w)
+  target_link_libraries(coastline_common INTERFACE coastline_zlib)
+  list(APPEND COASTLINE_LIBRARIES coastline_zlib)
 endif()
 
 add_custom_target(archives DEPENDS ${COASTLINE_LIBRARIES})
