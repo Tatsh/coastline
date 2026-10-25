@@ -19,6 +19,7 @@
 #include "platform/win/sound.h"
 #include "platform/win/timer.h"
 #include "profile.h"
+#include "trackselect.h"
 #if TGR_RENDERER == TGR_RENDERER_D3D
 #include "platform/win/d3d/ddutil.h"
 #include "platform/win/d3d/renderer.h"
@@ -654,6 +655,24 @@ void MenuScreen::DestroyPanels() {
         delete pPanel;
     }
     g_wMenuHoverIndex = 0;
+}
+
+// The settings of the car a game mode starts with.
+#define DEFAULT_TRANSMISSION_TYPE 1
+#define DEFAULT_TIRE_TYPE 2
+#define DEFAULT_SUSPENSION_TYPE 1
+#define DEFAULT_HANDLING_TYPE 1
+
+void ResetGameModeConfig(void) {
+    g_dwSelectedTrackId = 0;
+    g_dwChosenWeather = 0;
+    g_dwChosenCar = 0;
+    g_dwTransmissionType = DEFAULT_TRANSMISSION_TYPE;
+    g_dwTireType = DEFAULT_TIRE_TYPE;
+    g_dwSuspensionType = DEFAULT_SUSPENSION_TYPE;
+    g_GlobalRallyConfig.dwInputDeviceType = 0;
+    g_GlobalRallyConfig.pActiveInputBindings = g_GlobalRallyConfig.aInputBindingsKeyboard;
+    g_dwHandlingType = DEFAULT_HANDLING_TYPE;
 }
 
 // The string of the caption of the message box of an error.

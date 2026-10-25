@@ -1343,6 +1343,15 @@ void ApplyCarGroupPreset(void);
  */
 int IsCarSelectable(int nCar);
 
+/**
+ * Reset the track, the weather, the car and its settings, and the input device, to the keyboard,
+ * for a new game mode.
+ *
+ * @ghidraAddress BRD3D: 0x1003dfc0
+ * @ghidraAddress BRGlide: 0x10037660
+ */
+void ResetGameModeConfig(void);
+
 /** An error of the game that ShowErrorMessage() can show. */
 struct ErrorMessage {
     int bFatal;         /*!< Whether the game exits after the message. */
