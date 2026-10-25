@@ -11,6 +11,7 @@
  * The message the music library sends the main window, in music mode 2.
  *
  * @ghidraAddress BRD3D: 0x10575478
+ * @ghidraAddress BRGlide: 0x104b1620
  */
 extern UINT g_uEarSoundWindowMessage;
 
@@ -22,12 +23,15 @@ extern UINT g_uEarSoundWindowMessage;
 extern MCIDEVICEID g_dwMciCdAudioDeviceId;
 
 /**
- * Start the sound of the game for a window, when the game plays music in mode 2.
+ * Load the EAR library and start it for a window, when the game plays music in mode 2. Only the
+ * first call does the work. A failure shows a message and exits the game.
  *
- * @param hWnd The window.
+ * @param hWnd The window the library posts its messages to.
+ * @return Always true.
  * @ghidraAddress BRD3D: 0x1002adc0
+ * @ghidraAddress BRGlide: 0x10017e30
  */
-void InitializeEarSound(HWND hWnd);
+bool InitializeEarSound(HWND hWnd);
 
 /**
  * Start the music library and its channel.

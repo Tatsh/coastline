@@ -10,6 +10,7 @@ add_library(
   boot/strings.cpp
   directplay.cpp
   dllmain.c
+  earsound.cpp
   fileio.cpp
   winmain-${TGR_RENDERER}.cpp)
 # The DirectDraw and Direct3D renderer belongs to the Direct3D library alone.
