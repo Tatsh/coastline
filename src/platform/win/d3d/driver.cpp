@@ -7,6 +7,25 @@
 DirectDrawDriver *g_pDirectDrawDriverListHead;
 DirectDrawDriver *g_pDirectDrawDriverListTail;
 
+// Add an element to the end of a list linked through pPrev and pNext, and count it.
+template <typename T>
+static inline HRESULT AppendListNode(T *pNode, T **ppHead, T **ppTail, int *pnCount) {
+    if (pNode == nullptr) {
+        return E_INVALIDARG;
+    }
+    pNode->pNext = nullptr;
+    pNode->pPrev = *ppTail;
+    if (*ppTail != nullptr) {
+        (*ppTail)->pNext = pNode;
+    }
+    *ppTail = pNode;
+    if (*ppHead == nullptr) {
+        *ppHead = pNode;
+    }
+    (*pnCount)++;
+    return S_OK;
+}
+
 DirectDrawDriver *FindDirectDrawDriverOrDefault(GUID *pGuid) {
     DirectDrawDriver *pPrimary;
     DirectDrawDriver *pDriver = FindDirectDrawDriverByGuid(pGuid, &pPrimary, nullptr);
@@ -111,6 +130,54 @@ BOOL WINAPI EnumDirectDrawDriversCallback(GUID *pGuid,
     return DDENUMRET_OK;
 }
 
+HRESULT WINAPI EnumDisplayModesCallback_AddMode(DDSURFACEDESC *pDesc, LPVOID pContext) {
+    DriverEnumContext *pEnum = static_cast<DriverEnumContext *>(pContext);
+    DisplayMode *pMode;
+
+    if (pEnum == nullptr || pEnum->pOwner == nullptr) {
+        return DDENUMRET_OK;
+    }
+    // A description of another size stops the search.
+    if (pDesc == nullptr || pDesc->dwSize != sizeof(DDSURFACEDESC)) {
+        return DDENUMRET_CANCEL;
+    }
+    pMode = new (std::nothrow) DisplayMode;
+    if (pMode == nullptr) {
+        return DDENUMRET_OK;
+    }
+    pMode->desc = *pDesc;
+    // A mode that is not added is not freed.
+    if (SUCCEEDED(pEnum->pOwner->EnqueueDirectDrawModeNode(pMode))) {
+        pEnum->nFound++;
+    }
+    return DDENUMRET_OK;
+}
+
+HRESULT WINAPI EnumD3DDevicesCallback(GUID *pGuid,
+                                      LPSTR pszDescription,
+                                      LPSTR pszName,
+                                      D3DDEVICEDESC *pHardwareDesc,
+                                      D3DDEVICEDESC *pSoftwareDesc,
+                                      LPVOID pContext) {
+    DriverEnumContext *pEnum = static_cast<DriverEnumContext *>(pContext);
+    D3DDeviceNode *pDevice;
+
+    if (pEnum == nullptr || pEnum->pOwner == nullptr) {
+        return D3DENUMRET_OK;
+    }
+    pDevice = new (std::nothrow) D3DDeviceNode;
+    if (pDevice == nullptr) {
+        return D3DENUMRET_OK;
+    }
+    // A device that is not read or not added is not freed.
+    if (SUCCEEDED(pDevice->InitD3DDeviceNode(
+            pGuid, pszDescription, pszName, pHardwareDesc, pSoftwareDesc)) &&
+        SUCCEEDED(pEnum->pOwner->AppendDirect3DDeviceNode(pDevice))) {
+        pEnum->nFound++;
+    }
+    return D3DENUMRET_OK;
+}
+
 HRESULT DisplayMode::GetSurfaceDescDimensions(int *pnWidth,
                                               int *pnHeight,
                                               int *pnBitDepth,
@@ -129,6 +196,20 @@ HRESULT DisplayMode::GetSurfaceDescDimensions(int *pnWidth,
 
 bool D3DDeviceNode::IsHardwareDevice() {
     return hardwareDesc.dcmColorModel != 0;
+}
+
+void D3DDeviceNode::ReleaseD3DDeviceNode() {
+    FlushTextureFormatList();
+    if (pszDescription != nullptr) {
+        free(pszDescription);
+        pszDescription = nullptr;
+    }
+    if (pszName != nullptr) {
+        free(pszName);
+        pszName = nullptr;
+    }
+    pPrev = nullptr;
+    pNext = nullptr;
 }
 
 // The name and the description a driver gets when DirectDraw reports none.
@@ -291,6 +372,10 @@ void DirectDrawDriver::FlushDirectDrawModeEnumerationList() {
     dwFlags &= ~8;
 }
 
+HRESULT DirectDrawDriver::EnqueueDirectDrawModeNode(DisplayMode *pMode) {
+    return AppendListNode(pMode, &pDisplayModesHead, &pDisplayModesTail, &nDisplayModeCount);
+}
+
 HRESULT DirectDrawDriver::EnumerateD3DDevices(IDirect3D2 *pDirect3D2) {
     DriverEnumContext context = {true, 0, this};
     HRESULT hr;
@@ -331,6 +416,10 @@ int DirectDrawDriver::FlushDirect3DDeviceList() {
     return 0;
 }
 
+HRESULT DirectDrawDriver::AppendDirect3DDeviceNode(D3DDeviceNode *pDevice) {
+    return AppendListNode(pDevice, &pD3DDevicesHead, &pD3DDevicesTail, &nD3DDeviceCount);
+}
+
 GUID *DirectDrawDriver::GetDirectDrawDriverGuid() {
     return (dwFlags & DIRECTDRAW_DRIVER_PRIMARY) != 0 ? nullptr : &guid;
 }
@@ -365,20 +454,10 @@ HRESULT EnumerateDirectDrawDrivers(void) {
 }
 
 HRESULT AppendDirectDrawDriverNode(DirectDrawDriver *pDriver) {
-    if (pDriver == nullptr) {
-        return E_INVALIDARG;
-    }
-    pDriver->pNext = nullptr;
-    pDriver->pPrev = g_pDirectDrawDriverListTail;
-    if (g_pDirectDrawDriverListTail != nullptr) {
-        g_pDirectDrawDriverListTail->pNext = pDriver;
-    }
-    g_pDirectDrawDriverListTail = pDriver;
-    if (g_pDirectDrawDriverListHead == nullptr) {
-        g_pDirectDrawDriverListHead = pDriver;
-    }
-    g_dwDirectDrawDriverCount++;
-    return S_OK;
+    return AppendListNode(pDriver,
+                          &g_pDirectDrawDriverListHead,
+                          &g_pDirectDrawDriverListTail,
+                          &g_dwDirectDrawDriverCount);
 }
 
 DirectDrawDriver *

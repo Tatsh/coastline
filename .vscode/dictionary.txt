@@ -105,6 +105,7 @@ decaleditor
 declear
 decleared
 decomp
+denumret
 destroythread
 devicearrival
 devicecaps

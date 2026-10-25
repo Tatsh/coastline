@@ -117,6 +117,24 @@ public:
     int FlushDirect3DDeviceList();
 
     /**
+     * Add a display mode to the end of the modes of the driver.
+     *
+     * @param pMode The mode.
+     * @return `S_OK`, or `E_INVALIDARG` without a mode.
+     * @ghidraAddress BRD3D: 0x1001b430
+     */
+    HRESULT EnqueueDirectDrawModeNode(DisplayMode *pMode);
+
+    /**
+     * Add a Direct3D device to the end of the devices of the driver.
+     *
+     * @param pDevice The device.
+     * @return `S_OK`, or `E_INVALIDARG` without a device.
+     * @ghidraAddress BRD3D: 0x1001b630
+     */
+    HRESULT AppendDirect3DDeviceNode(D3DDeviceNode *pDevice);
+
+    /**
      * Read a driver DirectDraw reports, with its devices and its modes.
      *
      * @param pGuid The GUID of the driver, or `nullptr` for the primary.
@@ -157,9 +175,10 @@ class RenderHost;
 /** A Direct3D device of a driver. The layout after softwareDesc is not recovered yet. */
 class D3DDeviceNode {
 public:
-    int nUnknown0;              /* +0x00 */
+    unsigned dwFlags;           /*!< Flags of the device, of which bits 0 and 1 start clear. */
     GUID guid;                  /*!< The GUID of the device. */
-    char abUnknown14[8];        /* +0x14 */
+    char *pszName;              /*!< The name of the device, allocated. */
+    char *pszDescription;       /*!< The description of the device, allocated. */
     D3DDEVICEDESC hardwareDesc; /*!< What the hardware of the device does. */
     D3DDEVICEDESC softwareDesc; /*!< What the emulation of the device does. */
     int anUnknown214[3];        /* +0x214 */
@@ -172,6 +191,40 @@ public:
      * @ghidraAddress BRD3D: 0x1001aee0
      */
     void ReleaseD3DDeviceNode();
+
+    /** Start a device without texts, with empty descriptions. */
+    D3DDeviceNode() : pszName(nullptr), pszDescription(nullptr), pPrev(nullptr), pNext(nullptr) {
+        dwFlags &= ~3u;
+        memset(&hardwareDesc, 0, sizeof(hardwareDesc));
+        hardwareDesc.dwSize = sizeof(hardwareDesc);
+        memset(&softwareDesc, 0, sizeof(softwareDesc));
+        softwareDesc.dwSize = sizeof(softwareDesc);
+        memset(anUnknown214, 0, sizeof(anUnknown214));
+    }
+
+    /**
+     * Read a device Direct3D reports.
+     *
+     * @param pGuid The GUID of the device.
+     * @param pszNewDescription The description of the device.
+     * @param pszNewName The name of the device.
+     * @param pHardwareDesc What the hardware of the device does.
+     * @param pSoftwareDesc What the emulation of the device does.
+     * @return `S_OK`, or an error for a device that is not read.
+     * @ghidraAddress BRD3D: 0x1001ade0
+     */
+    HRESULT InitD3DDeviceNode(GUID *pGuid,
+                              LPSTR pszNewDescription,
+                              LPSTR pszNewName,
+                              D3DDEVICEDESC *pHardwareDesc,
+                              D3DDEVICEDESC *pSoftwareDesc);
+
+    /**
+     * Free the texture formats of the device.
+     *
+     * @ghidraAddress BRD3D: 0x1001afb0
+     */
+    void FlushTextureFormatList();
 
     /**
      * Whether the device is a device of the hardware, one with a colour model of its own.
@@ -197,6 +250,12 @@ public:
     DDSURFACEDESC desc; /*!< The description of the mode. */
     DisplayMode *pPrev; /*!< The mode of the driver before. */
     DisplayMode *pNext; /*!< The next mode of the driver. */
+
+    /** Start an empty mode. */
+    DisplayMode() : pPrev(nullptr), pNext(nullptr) {
+        memset(&desc, 0, sizeof(desc));
+        desc.dwSize = sizeof(desc);
+    }
 
     /**
      * The size and the bits of a pixel of the mode.
