@@ -1,6 +1,6 @@
 # PC port game code from 0x10010000 to 0x10020000
 
-45 of 157 routines done.
+46 of 157 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -144,7 +144,7 @@ the same name, for a routine the port retained from the N64 game.
 | `GetSurfaceDescBitDepth`                               |   ✅   |                 |      1 |     32 | `0x1001ac60` |              | `int GetSurfaceDescBitDepth(void * this)`                                                                                                                                                                                                    |
 | `GetPrecipitationTextureDimensions`                    |        |                 |      1 |     31 | `0x1001a4b0` |              | `void GetPrecipitationTextureDimensions(void)`                                                                                                                                                                                               |
 | `FindDirectDrawDriverOrDefault`                        |   ✅   |                 |      7 |     29 | `0x1001a550` |              | `DirectDrawDriver * FindDirectDrawDriverOrDefault(GUID * pGuid)`                                                                                                                                                                             |
-| `D3DMaterial::CommitMaterialIfDirty`                   |        |                 |      1 |     28 | `0x1001c620` |              | `undefined CommitMaterialIfDirty(D3DMaterial * this)`                                                                                                                                                                                        |
+| `D3DMaterial::CommitMaterialIfDirty`                   |   ✅   |                 |      1 |     28 | `0x1001c620` |              | `undefined CommitMaterialIfDirty(D3DMaterial * this)`                                                                                                                                                                                        |
 | `ResetRenderDeviceCallbacks`                           |   ✅   |                 |      2 |     26 | `0x1001bae0` |              | `int ResetRenderDeviceCallbacks(void)`                                                                                                                                                                                                       |
 | `PresentFrameCallback_GlideBufferSwap`                 |        |                 |      1 |     26 |              | `0x1001dd50` | `undefined PresentFrameCallback_GlideBufferSwap()`                                                                                                                                                                                           |
 | `InvalidateFrameSnapshotSlots`                         |   ✅   |                 |      4 |     20 | `0x10016990` | `0x10013f00` | `void InvalidateFrameSnapshotSlots(void)`                                                                                                                                                                                                    |

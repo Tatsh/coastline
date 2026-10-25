@@ -16,6 +16,7 @@ add_library(
   fileio.c
   frametimer.cpp
   frontend.cpp
+  ghost.cpp
   input.cpp
   netstream.cpp
   paintshop.c

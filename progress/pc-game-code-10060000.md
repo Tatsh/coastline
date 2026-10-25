@@ -1,6 +1,6 @@
 # PC port game code from 0x10060000 to 0x10070000
 
-31 of 169 routines done.
+32 of 169 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -157,7 +157,7 @@ the same name, for a routine the port retained from the N64 game.
 | `StartRaceWithPlayerCount`               |        | ✅ `0x80200128` |      1 |     23 | `0x100697e0` | `0x10062850` | `undefined StartRaceWithPlayerCount()`                                                                                                   |
 | `ApplyGhostKeyframeForVehicle`           |        |                 |      2 |     21 | `0x1006acf0` | `0x10063ca0` | `undefined ApplyGhostKeyframeForVehicle()`                                                                                               |
 | `SaveClockForPause`                      |   ✅   | ✅ `0x8022af34` |      2 |     21 | `0x10067980` | `0x100609f0` | `void SaveClockForPause(void)`                                                                                                           |
-| `SetGhostFrameCountFromSize`             |        |                 |      1 |     20 | `0x1006ae00` | `0x10063db0` | `undefined SetGhostFrameCountFromSize()`                                                                                                 |
+| `SetGhostFrameCountFromSize`             |   ✅   |                 |      1 |     20 | `0x1006ae00` | `0x10063db0` | `void SetGhostFrameCountFromSize(uint dwSize)`                                                                                           |
 | `RestoreClockAfterPause`                 |        | ✅ `0x8022af64` |      1 |     19 | `0x100679a0` | `0x10060a10` | `undefined RestoreClockAfterPause()`                                                                                                     |
 | `ResetFrameBlocks`                       |        | ✅ `0x80255e64` |      1 |     18 | `0x10069580` | `0x100625f0` | `undefined ResetFrameBlocks()`                                                                                                           |
 | `SetGameModeAndRefreshVehicleMaterials`  |        |                 |      1 |     18 | `0x100697c0` | `0x10062830` | `undefined SetGameModeAndRefreshVehicleMaterials()`                                                                                      |
