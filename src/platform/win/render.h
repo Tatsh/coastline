@@ -368,8 +368,25 @@ extern int g_anSkidMarkTail[SKID_MARK_TRACK_COUNT];
  */
 void ClearSplitScreenRenderState(void);
 
+/** A texture waiting in g_aTextureUploadQueue. */
+struct TextureUploadRequest {
+    int nEntry;      /*!< The entry of the texture the game loaded. */
+    unsigned dwData; /*!< The second argument of g_pfnUploadTextureEntryToSurface. */
+};
+
+/** The number of entries of g_aTextureUploadQueue. */
+#define TEXTURE_UPLOAD_QUEUE_SIZE 256
+
 /**
- * The first texture of the queue of textures to upload.
+ * The textures to upload, a ring from g_dwTextureUploadQueueTail to g_dwTextureUploadQueueHead.
+ *
+ * @ghidraAddress BRD3D: 0x118a9880
+ * @ghidraAddress BRGlide: 0x118ec998
+ */
+extern TextureUploadRequest g_aTextureUploadQueue[TEXTURE_UPLOAD_QUEUE_SIZE];
+
+/**
+ * The entry of g_aTextureUploadQueue the next texture to queue takes.
  *
  * @ghidraAddress BRD3D: 0x118a9878
  * @ghidraAddress BRGlide: 0x118ec990
@@ -377,7 +394,7 @@ void ClearSplitScreenRenderState(void);
 extern int g_dwTextureUploadQueueHead;
 
 /**
- * The last texture of the queue of textures to upload.
+ * The entry of g_aTextureUploadQueue of the next texture to upload.
  *
  * @ghidraAddress BRD3D: 0x118aa098
  * @ghidraAddress BRGlide: 0x118ed1b0

@@ -3,6 +3,7 @@
 #include <cstring>
 
 #include "platform/win/boot/app.h"
+#include "platform/win/displaylist.h"
 #include "platform/win/settings.h"
 #include "screen.h"
 
@@ -181,10 +182,27 @@ void ClearSplitScreenRenderState(void) {
     memset(g_anSkidMarkTail, 0, sizeof(g_anSkidMarkTail));
 }
 
+TextureUploadRequest g_aTextureUploadQueue[TEXTURE_UPLOAD_QUEUE_SIZE];
+int g_dwTextureUploadQueueHead;
+int g_dwTextureUploadQueueTail;
+HANDLE g_hTextureUploadQueueMutex;
+
 void InitializeTextureUploadQueue(void) {
     g_dwTextureUploadQueueHead = 0;
     g_dwTextureUploadQueueTail = 0;
     g_hTextureUploadQueueMutex = CreateMutexA(nullptr, false, nullptr);
+}
+
+void ProcessTextureUploadQueueEntry(void) {
+    WaitForSingleObject(g_hTextureUploadQueueMutex, INFINITE);
+    if (g_dwTextureUploadQueueTail != g_dwTextureUploadQueueHead) {
+        const TextureUploadRequest &request = g_aTextureUploadQueue[g_dwTextureUploadQueueTail];
+        g_pfnUploadTextureEntryToSurface(request.nEntry, request.dwData);
+        if (++g_dwTextureUploadQueueTail >= TEXTURE_UPLOAD_QUEUE_SIZE) {
+            g_dwTextureUploadQueueTail = 0;
+        }
+    }
+    ReleaseMutex(g_hTextureUploadQueueMutex);
 }
 
 void ResetModelDataPool(void) {
