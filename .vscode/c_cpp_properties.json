@@ -27,7 +27,9 @@
       "includePath": [
         "${workspaceFolder}/3rdparty/zlib-1.0.4",
         "${workspaceFolder}/src",
-        "${workspaceFolder}/src/libultra/include"
+        "${workspaceFolder}/src/libultra/include",
+        "/usr/lib/mingw64-toolchain/x86_64-w64-mingw32/include",
+        "/usr/lib/mingw64-toolchain/lib/gcc/x86_64-w64-mingw32/16/include/"
       ],
       "intelliSenseMode": "linux-gcc-x86",
       "name": "N64 (USA)"
