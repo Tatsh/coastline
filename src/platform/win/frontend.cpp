@@ -55,6 +55,8 @@ int g_dwAccumUnlockedCarMask;
 int g_dwAccumUnlockedTrackMask;
 int g_dwHandlingTypeMenuIndex = 4;
 int g_dwSelectedCarClass;
+int g_dwAppliedCarGroupPreset;
+unsigned g_dwSelectableCarMask = 0x102;
 const int g_adwInputDeviceMenuIndexToDevice[INPUT_DEVICE_MENU_CHOICES] = {0, 1, 2, 3};
 int g_dwOptionForceFeedback;
 int g_dwOptionCarShadow;
@@ -687,6 +689,39 @@ int EnterTimeAttackMode(void) {
     }
     g_dwGameMode = GAME_MODE_TIME_ATTACK;
     return true;
+}
+
+void ApplyCarGroupPreset(void) {
+    if (g_dwAppliedCarGroupPreset == g_dwSelectedCarClass) {
+        return;
+    }
+    g_dwAppliedCarGroupPreset = g_dwSelectedCarClass;
+    switch (g_dwSelectedCarClass) {
+    case 0:
+        g_dwSelectableCarMask = 0x102;
+        g_dwCarMenuIndex = 1;
+        break;
+    case 1:
+        g_dwSelectableCarMask = 0x81;
+        g_dwCarMenuIndex = 0;
+        break;
+    case 2:
+        g_dwSelectableCarMask = 0x4050;
+        g_dwCarMenuIndex = 6;
+        break;
+    case 3:
+        g_dwSelectableCarMask = 0x202c;
+        g_dwCarMenuIndex = 3;
+        break;
+    case 4:
+        g_dwSelectableCarMask = 0x1e00;
+        g_dwCarMenuIndex = 11;
+        break;
+    default:
+        g_dwCarMenuIndex = 1;
+        g_dwSelectableCarMask = 0x102;
+        break;
+    }
 }
 
 void BackupMenuSelections(void) {

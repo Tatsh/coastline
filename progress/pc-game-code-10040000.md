@@ -1,6 +1,6 @@
 # PC port game code from 0x10040000 to 0x10050000
 
-10 of 263 routines done.
+11 of 263 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -104,7 +104,7 @@ the same name, for a routine the port retained from the N64 game.
 | `MultiplayerGameSetupUI_OnBackAsClient`            |        |                 |      1 |    178 | `0x10044970` | `0x1003dec0` | `undefined MultiplayerGameSetupUI_OnBackAsClient()`                                                                                                                                                       |
 | `MultiplayerGameSetupUI_OnBackAsHost`              |        |                 |      1 |    170 | `0x10044a30` | `0x1003df80` | `undefined MultiplayerGameSetupUI_OnBackAsHost()`                                                                                                                                                         |
 | `SeasonUI_UpdateSeasonNameLabel`                   |        |                 |      6 |    163 | `0x10041300` | `0x1003a860` | `undefined SeasonUI_UpdateSeasonNameLabel()`                                                                                                                                                              |
-| `ApplyCarGroupPreset`                              |        |                 |      4 |    162 | `0x10044540` | `0x1003da90` | `undefined ApplyCarGroupPreset()`                                                                                                                                                                         |
+| `ApplyCarGroupPreset`                              |   ✅   |                 |      4 |    162 | `0x10044540` | `0x1003da90` | `void ApplyCarGroupPreset(void)`                                                                                                                                                                          |
 | `RaceResultsTotalsUI_OnContinue`                   |        |                 |      1 |    161 | `0x10047290` | `0x100406e0` | `undefined RaceResultsTotalsUI_OnContinue()`                                                                                                                                                              |
 | `MenuScreen::EndFrame`                             |   ✅   |                 |      1 |    160 | `0x100488c0` | `0x10041d10` | `bool EndFrame(MenuScreen * this)`                                                                                                                                                                        |
 | `SaveSeasonUI_OnBack`                              |        |                 |      1 |    158 | `0x10046eb0` | `0x10040300` | `undefined SaveSeasonUI_OnBack()`                                                                                                                                                                         |

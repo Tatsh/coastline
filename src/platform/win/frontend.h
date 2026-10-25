@@ -1237,6 +1237,41 @@ extern int g_dwHandlingTypeMenuIndex;
  */
 extern int g_dwSelectedCarClass;
 
+/**
+ * The class of car ApplyCarGroupPreset() last applied.
+ *
+ * @ghidraAddress BRD3D: 0x10aa2a44
+ * @ghidraAddress BRGlide: 0x10ac5d9c
+ */
+extern int g_dwAppliedCarGroupPreset;
+
+/**
+ * The cars of the chosen class, one bit for each car.
+ *
+ * @ghidraAddress BRD3D: 0x100ab3e8
+ * @ghidraAddress BRGlide: 0x100aab88
+ */
+extern unsigned g_dwSelectableCarMask;
+
+/**
+ * Set the cars of the chosen class and choose the first of them, when the class changed since the
+ * last call. An unknown class takes the cars of the first.
+ *
+ * @ghidraAddress BRD3D: 0x10044540
+ * @ghidraAddress BRGlide: 0x1003da90
+ */
+void ApplyCarGroupPreset(void);
+
+/**
+ * Report whether a car can be chosen in the current mode of the game.
+ *
+ * @param nCar The car.
+ * @return Nonzero when the car can be chosen.
+ * @ghidraAddress BRD3D: 0x1003f320
+ * @ghidraAddress BRGlide: 0x10038860
+ */
+int IsCarSelectable(int nCar);
+
 /** An error of the game that ShowErrorMessage() can show. */
 struct ErrorMessage {
     int bFatal;         /*!< Whether the game exits after the message. */
