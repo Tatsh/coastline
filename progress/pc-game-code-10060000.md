@@ -1,6 +1,6 @@
 # PC port game code from 0x10060000 to 0x10070000
 
-17 of 169 routines done.
+19 of 169 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -30,7 +30,7 @@ the same name, for a routine the port retained from the N64 game.
 | `RallyConfig::SaveConfigToFile`          |        |                 |      8 |   1023 | `0x1006a4a0` | `0x100634b0` | `BOOL SaveConfigToFile(RallyConfig * this, int pConfig)`                                                                                 |
 | `ShowGlideSplashImage`                   |        |                 |      2 |    994 |              | `0x1006c990` | `undefined ShowGlideSplashImage()`                                                                                                       |
 | `Vehicle::SetupVehicleForRaceStart`      |        | ✅ `0x80228a6c` |      2 |    979 | `0x10065740` | `0x1005e7b0` | `undefined SetupVehicleForRaceStart(Vehicle * this)`                                                                                     |
-| `MouseDevice::PollMouseDevice`           |        |                 |      1 |    939 | `0x100603a0` | `0x10059410` | `undefined PollMouseDevice(MouseDevice * this, undefined4 param_1)`                                                                      |
+| `MouseDevice::PollMouseDevice`           |   ✅   |                 |      1 |    939 | `0x100603a0` | `0x10059410` | `void PollMouseDevice(MouseDevice * this, void * hWnd)`                                                                                  |
 | `Vehicle::ComputeTrackPosition`          |        | ✅ `0x80227214` |      3 |    937 | `0x10064350` | `0x1005d3c0` | `undefined ComputeTrackPosition(Vehicle * this)`                                                                                         |
 | `Vehicle::TraceTrackSplineRecursive`     |        | ✅ `0x80226d9c` |      3 |    856 | `0x10063ff0` | `0x1005d060` | `undefined TraceTrackSplineRecursive(Vehicle * this, undefined4 param_1, undefined4 param_2, undefined4 param_3)`                        |
 | `Vehicle::TransformAllWheelMatrices`     |        | ✅ `0x80221e0c` |      2 |    776 | `0x10061c60` | `0x1005ace0` | `undefined TransformAllWheelMatrices(Vehicle * this)`                                                                                    |
@@ -161,7 +161,7 @@ the same name, for a routine the port retained from the N64 game.
 | `RestoreClockAfterPause`                 |        | ✅ `0x8022af64` |      1 |     19 | `0x100679a0` | `0x10060a10` | `undefined RestoreClockAfterPause()`                                                                                                     |
 | `ResetFrameBlocks`                       |        | ✅ `0x80255e64` |      1 |     18 | `0x10069580` | `0x100625f0` | `undefined ResetFrameBlocks()`                                                                                                           |
 | `SetGameModeAndRefreshVehicleMaterials`  |        |                 |      1 |     18 | `0x100697c0` | `0x10062830` | `undefined SetGameModeAndRefreshVehicleMaterials()`                                                                                      |
-| `UpdateMouseInput`                       |        |                 |      1 |     18 | `0x10060260` | `0x100592d0` | `undefined UpdateMouseInput()`                                                                                                           |
+| `UpdateMouseInput`                       |   ✅   |                 |      1 |     18 | `0x10060260` | `0x100592d0` | `void UpdateMouseInput(void)`                                                                                                            |
 | `ClearGhostPlaybackState`                |        |                 |      3 |     17 | `0x1006abb0` | `0x10063b60` | `undefined ClearGhostPlaybackState()`                                                                                                    |
 | `RegisterRallyConfigAtExit`              |        |                 |      1 |     14 | `0x10069a70` | `0x10062ae0` | `undefined RegisterRallyConfigAtExit()`                                                                                                  |
 | `GetGhostKeyframeDataSize`               |        |                 |      4 |     12 | `0x1006aba0` | `0x10063b50` | `undefined GetGhostKeyframeDataSize()`                                                                                                   |

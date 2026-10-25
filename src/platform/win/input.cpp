@@ -9,6 +9,7 @@
 #include "platform/win/boot/rallyconfig.h"
 #include "platform/win/boot/strings.h"
 #include "platform/win/settings.h"
+#include "platform/win/sound.h"
 
 IDirectInputA *g_pDirectInput;
 int g_dwDirectInputRefCount;
@@ -43,7 +44,12 @@ int g_adwMouseButtonRaw[MOUSE_BUTTON_COUNT];
 int g_adwMouseButtonPressed[MOUSE_BUTTON_COUNT];
 int g_dwEntityHalfWidth;
 int g_dwEntityHalfHeight;
-int g_adwEntityMetricScratch[MOUSE_METRIC_COUNT];
+MouseMenuState g_MouseMenuState;
+bool g_fCharInputSuppressed;
+short g_dwMouseScrollDirection = 1;
+unsigned short g_wMenuHoverIndex;
+DWORD g_dwLastInputActivityTime;
+MouseDevice *g_pMousePosition;
 
 void UpdateMouseButtonEdges(void) {
     for (int i = 0; i < MOUSE_BUTTON_COUNT; i++) {
@@ -57,7 +63,7 @@ bool WINAPI ResetMouseCursorToCenter(int) {
     g_pMouseDevice->nCursorX = g_dwConfigFramebufferWidth / 2;
     g_dwEntityHalfHeight = g_dwConfigFramebufferHeight;
     g_pMouseDevice->nCursorY = g_dwConfigFramebufferHeight / 2;
-    memset(g_adwEntityMetricScratch, 0, sizeof(g_adwEntityMetricScratch));
+    memset(&g_MouseMenuState, 0, sizeof(g_MouseMenuState));
     return true;
 }
 
@@ -202,9 +208,149 @@ void PollKeyboardState(void) {
 
 MouseDevice::MouseDevice() {
     pDevice = nullptr;
-    for (int &nState : anState) {
-        nState = 0;
+    for (int i = 0; i < MOUSE_BUTTON_COUNT; i++) {
+        abHeld[i] = 0;
+        abClicked[i] = 0;
     }
+    bPressPending = 0;
+}
+
+// The time the hover of a menu waits before it moves again, in milliseconds.
+#define MENU_SCROLL_REPEAT_MS 120
+
+// The cursor of the mouse stays within the screen, the far edge included.
+static inline int ClampCursor(int nPosition, int nLimit) {
+    if (nPosition < 0) {
+        return 0;
+    }
+    return nPosition >= nLimit ? nLimit : nPosition;
+}
+
+void MouseDevice::PollMouseDevice(HWND) {
+    DIMOUSESTATE state;
+    DWORD dwNow;
+    HRESULT hResult;
+    bool bKeyLeft;
+    bool bAnyDown;
+
+    if (g_fCharInputSuppressed) {
+        return;
+    }
+    dwNow = GetHighResolutionTime();
+    g_MouseMenuState.dwScrollRepeatTimerMs += dwNow - g_MouseMenuState.dwPollLastTimeMs;
+    g_MouseMenuState.dwPollLastTimeMs = dwNow;
+    if (static_cast<int>(g_MouseMenuState.dwScrollRepeatTimerMs) > MENU_SCROLL_REPEAT_MS) {
+        g_MouseMenuState.bScrollRepeatReady = true;
+    }
+    if (pDevice == nullptr) {
+        return;
+    }
+    pDevice->Acquire();
+    hResult = pDevice->GetDeviceState(sizeof(state), &state);
+    // The device is acquired twice before each read that follows a loss.
+    while (hResult == DIERR_INPUTLOST && SUCCEEDED(pDevice->Acquire())) {
+        pDevice->Acquire();
+        hResult = pDevice->GetDeviceState(sizeof(state), &state);
+    }
+    nCursorX += state.lX;
+    nCursorY += state.lY;
+    nWheel += state.lZ;
+    nCursorX = ClampCursor(nCursorX, g_dwEntityHalfWidth);
+    nCursorY = ClampCursor(nCursorY, g_dwEntityHalfHeight);
+    bAnyDown = false;
+    for (int i = 0; i < MOUSE_BUTTON_COUNT; i++) {
+        abButtons[i] = state.rgbButtons[i] & BUTTON_DOWN_MASK;
+        bAnyDown = bAnyDown || abButtons[i] != 0;
+    }
+    if (bAnyDown) {
+        bPressPending = 1;
+    }
+
+    if (g_adwKeyPressedEdge[DIK_F11]) {
+        SelectPreviousMusicTrack();
+    }
+    if (g_adwKeyPressedEdge[DIK_F12]) {
+        SelectNextMusicTrack();
+    }
+    if (g_MouseMenuState.bScrollRepeatReady) {
+        if (g_abKeyboardState[DIK_UP] & BUTTON_DOWN_MASK) {
+            g_MouseMenuState.bScrollDecPending = true;
+            g_dwMouseScrollDirection = -1;
+            g_MouseMenuState.dwScrollRepeatTimerMs = 0;
+        }
+        if (g_abKeyboardState[DIK_DOWN] & BUTTON_DOWN_MASK) {
+            g_MouseMenuState.bScrollIncPending = true;
+            g_dwMouseScrollDirection = 1;
+            g_MouseMenuState.dwScrollRepeatTimerMs = 0;
+        }
+    }
+    if (g_adwKeyPressedEdge[DIK_LEFT]) {
+        bKeyLeft = true;
+        g_dwMouseScrollDirection = -1;
+        g_MouseMenuState.dwScrollRepeatTimerMs = 0;
+    } else {
+        bKeyLeft = g_MouseMenuState.bKeyLeftAsButton0;
+    }
+    if (g_adwKeyPressedEdge[DIK_RIGHT]) {
+        g_MouseMenuState.bKeyRightAsButton1 = true;
+        g_dwMouseScrollDirection = 1;
+        g_MouseMenuState.dwScrollRepeatTimerMs = 0;
+    }
+    if (bKeyLeft) {
+        abButtons[0] = 1;
+        bPressPending = 0;
+        g_MouseMenuState.bScrollRepeatReady = false;
+    }
+    if (g_MouseMenuState.bKeyRightAsButton1) {
+        abButtons[1] = 1;
+        bPressPending = 0;
+        g_MouseMenuState.bScrollRepeatReady = false;
+    }
+    if (g_MouseMenuState.bScrollRepeatReady) {
+        if (g_MouseMenuState.bScrollDecPending) {
+            g_wMenuHoverIndex--;
+            g_MouseMenuState.bScrollRepeatReady = false;
+        }
+        if (g_MouseMenuState.bScrollIncPending) {
+            g_wMenuHoverIndex++;
+            g_MouseMenuState.bScrollRepeatReady = false;
+        }
+    }
+    g_MouseMenuState.bKeyRightAsButton1 = false;
+    g_MouseMenuState.bKeyLeftAsButton0 = false;
+    g_MouseMenuState.bScrollIncPending = false;
+    g_MouseMenuState.bScrollDecPending = false;
+
+    if (nCursorX != nPrevCursorX || nCursorY != nPrevCursorY ||
+        memcmp(abButtons, abPrevButtons, sizeof(abButtons)) != 0) {
+        g_dwLastInputActivityTime = GetHighResolutionTime();
+    }
+    nPrevCursorX = nCursorX;
+    nPrevCursorY = nCursorY;
+    memcpy(abPrevButtons, abButtons, sizeof(abButtons));
+
+    for (int &bDown : g_adwMouseButtonRaw) {
+        bDown = 0;
+    }
+    // A button counts as pressed for the game when it is let go.
+    for (int i = 0; i < MOUSE_BUTTON_COUNT; i++) {
+        if (abButtons[i] && !abHeld[i]) {
+            abHeld[i] = 1;
+        } else if (!abButtons[i] && abHeld[i]) {
+            abHeld[i] = 0;
+            abClicked[i] = 1;
+            bPressPending = 0;
+            g_adwMouseButtonRaw[i] = 1;
+        } else {
+            abClicked[i] = 0;
+        }
+    }
+    g_pMousePosition = this;
+    UpdateMouseButtonEdges();
+}
+
+void UpdateMouseInput(void) {
+    g_pMouseDevice->PollMouseDevice(g_hMainWindow);
 }
 
 int ShowInfoMessageBox(HWND hWnd, HRESULT, const char *pszText) {

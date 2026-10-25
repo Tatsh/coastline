@@ -179,6 +179,24 @@ extern bool g_bCdAudioPlaying;
 bool AdvanceMusicTrackWrapping(void);
 
 /**
+ * Play the track of music before the current one, staying at the first.
+ *
+ * @return Always true.
+ * @ghidraAddress BRD3D: 0x10002930
+ * @ghidraAddress BRGlide: 0x10002c70
+ */
+bool SelectPreviousMusicTrack(void);
+
+/**
+ * Play the track of music after the current one, staying at the last.
+ *
+ * @return Always true.
+ * @ghidraAddress BRD3D: 0x10002970
+ * @ghidraAddress BRGlide: 0x10002cb0
+ */
+bool SelectNextMusicTrack(void);
+
+/**
  * Stop the track of music that plays. A CD audio that does not stop has its device closed.
  *
  * @return Whether the music stopped, and true when no music plays.

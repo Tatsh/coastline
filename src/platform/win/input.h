@@ -15,11 +15,18 @@
 /** The mouse of the game. The layout is not recovered past the members below. */
 class MouseDevice {
 public:
-    int nCursorX;                 /*!< The horizontal position of the cursor. */
-    int nCursorY;                 /*!< The vertical position of the cursor. */
-    char abUnknown8[0x24];        /* +0x08 */
-    int anState[9];               /*!< Cleared by the constructor. Not recovered yet. */
-    IDirectInputDeviceA *pDevice; /*!< The DirectInput device of the mouse. */
+    int nCursorX;                   /*!< The horizontal position of the cursor. */
+    int nCursorY;                   /*!< The vertical position of the cursor. */
+    int nWheel;                     /*!< The position of the wheel. */
+    int nPrevCursorX;               /*!< nCursorX when the mouse was read before. */
+    int nPrevCursorY;               /*!< nCursorY when the mouse was read before. */
+    char abUnknown14[0x10];         /* +0x14 */
+    unsigned char abButtons[4];     /*!< The buttons that are down, 0x80 for down. */
+    unsigned char abPrevButtons[4]; /*!< abButtons when the mouse was read before. */
+    int abHeld[4];                  /*!< Whether each button is held down. */
+    int abClicked[4];               /*!< Whether each button was let go since the read before. */
+    int bPressPending;              /*!< Set while a button is down, cleared when one is let go. */
+    IDirectInputDeviceA *pDevice;   /*!< The DirectInput device of the mouse. */
 
     /**
      * Clear the state of the mouse.
@@ -47,7 +54,86 @@ public:
      * @ghidraAddress BRGlide: 0x10059320
      */
     void ReleaseMouseDevice();
+
+    /**
+     * Read the mouse and the arrows of the keyboard for the menus. The cursor moves within the
+     * screen, F11 and F12 select the track of music before and after, the up and down arrows
+     * move the hover of a menu at a repeat of 120 milliseconds, and the left and right arrows act
+     * as the first two buttons. A button counts as clicked when it is let go.
+     *
+     * @param hWnd Not read.
+     * @ghidraAddress BRD3D: 0x100603a0
+     * @ghidraAddress BRGlide: 0x10059410
+     */
+    void PollMouseDevice(HWND hWnd);
 };
+
+/** The state of the menus the mouse and the arrows of the keyboard move. */
+struct MouseMenuState {
+    int bScrollDecPending;       /*!< Whether the hover of a menu moves up. */
+    int bScrollIncPending;       /*!< Whether the hover of a menu moves down. */
+    int bKeyLeftAsButton0;       /*!< Whether the left arrow acts as the first button. */
+    int bKeyRightAsButton1;      /*!< Whether the right arrow acts as the second button. */
+    int bScrollRepeatReady;      /*!< Whether the repeat of the hover may move it again. */
+    DWORD dwPollLastTimeMs;      /*!< The time of the last poll, in milliseconds. */
+    DWORD dwScrollRepeatTimerMs; /*!< The time since the hover last moved, in milliseconds. */
+};
+
+/**
+ * The state of the menus the mouse and the arrows of the keyboard move.
+ *
+ * @ghidraAddress BRD3D: 0x10aa3398
+ * @ghidraAddress BRGlide: 0x10ac66f8
+ */
+extern MouseMenuState g_MouseMenuState;
+
+/**
+ * Whether the input of characters is held back, which stops the poll of the mouse.
+ *
+ * @ghidraAddress BRD3D: 0x10aa2844
+ * @ghidraAddress BRGlide: 0x10ac5b9c
+ */
+extern bool g_fCharInputSuppressed;
+
+/**
+ * The direction the hover of a menu moved last, -1 up and 1 down.
+ *
+ * @ghidraAddress BRD3D: 0x100ab3dc
+ * @ghidraAddress BRGlide: 0x100aab7c
+ */
+extern short g_dwMouseScrollDirection;
+
+/**
+ * The item of a menu under the hover.
+ *
+ * @ghidraAddress BRD3D: 0x10aa286c
+ * @ghidraAddress BRGlide: 0x10ac5bc4
+ */
+extern unsigned short g_wMenuHoverIndex;
+
+/**
+ * The time of the last change of the mouse, in milliseconds.
+ *
+ * @ghidraAddress BRD3D: 0x10aa33e8
+ * @ghidraAddress BRGlide: 0x10ac6748
+ */
+extern DWORD g_dwLastInputActivityTime;
+
+/**
+ * The mouse that was read last.
+ *
+ * @ghidraAddress BRD3D: 0x10aa2a78
+ * @ghidraAddress BRGlide: 0x10ac5dd8
+ */
+extern MouseDevice *g_pMousePosition;
+
+/**
+ * Read the mouse for the main window.
+ *
+ * @ghidraAddress BRD3D: 0x10060260
+ * @ghidraAddress BRGlide: 0x100592d0
+ */
+void UpdateMouseInput(void);
 
 /**
  * Show a message of the input with the caption of string 0xaa.
@@ -363,8 +449,6 @@ extern int g_adwKeyPrevDown[KEYBOARD_KEY_COUNT];
 
 /** The number of buttons of the mouse the game reads. */
 #define MOUSE_BUTTON_COUNT 4
-/** The number of entries of g_adwEntityMetricScratch. */
-#define MOUSE_METRIC_COUNT 7
 
 /**
  * Whether each button of the mouse was down when the mouse was read before.
@@ -407,15 +491,6 @@ extern int g_dwEntityHalfWidth;
 extern int g_dwEntityHalfHeight;
 
 /**
- * Values of the motion of the mouse that the centring of the cursor clears. Their meaning is not
- * recovered yet.
- *
- * @ghidraAddress BRD3D: 0x10aa3398
- * @ghidraAddress BRGlide: 0x10ac66f8
- */
-extern int g_adwEntityMetricScratch[MOUSE_METRIC_COUNT];
-
-/**
  * Find the buttons of the mouse that went down since the mouse was read before.
  *
  * @ghidraAddress BRD3D: 0x1005fff0
@@ -424,7 +499,7 @@ extern int g_adwEntityMetricScratch[MOUSE_METRIC_COUNT];
 void UpdateMouseButtonEdges(void);
 
 /**
- * Put the cursor of the mouse in the centre of the screen and clear its motion.
+ * Put the cursor of the mouse in the centre of the screen and clear g_MouseMenuState.
  *
  * @param nUnused Not read.
  * @return Always true.

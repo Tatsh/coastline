@@ -1,6 +1,6 @@
 # PC port game code from 0x10000000 to 0x10010000
 
-89 of 246 routines done.
+91 of 246 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -163,8 +163,8 @@ the same name, for a routine the port retained from the N64 game.
 | `AdvanceMusicTrackWrapping`                                |   ✅   |                 |      1 |     64 | `0x100029b0` | `0x10002cf0` | `bool AdvanceMusicTrackWrapping(void)`                                                                                                                                             |
 | `QuantizeFloatToLightIndex`                                |        |                 |      6 |     62 | `0x100066a0` | `0x10006a10` | `undefined QuantizeFloatToLightIndex()`                                                                                                                                            |
 | `RandomizeMusicTrack`                                      |        |                 |      2 |     62 | `0x100028d0` | `0x10002c00` | `undefined RandomizeMusicTrack()`                                                                                                                                                  |
-| `SelectNextMusicTrack`                                     |        |                 |      2 |     61 | `0x10002970` | `0x10002cb0` | `undefined SelectNextMusicTrack()`                                                                                                                                                 |
-| `SelectPreviousMusicTrack`                                 |        |                 |      2 |     61 | `0x10002930` | `0x10002c70` | `undefined SelectPreviousMusicTrack()`                                                                                                                                             |
+| `SelectNextMusicTrack`                                     |   ✅   |                 |      2 |     61 | `0x10002970` | `0x10002cb0` | `bool SelectNextMusicTrack(void)`                                                                                                                                                  |
+| `SelectPreviousMusicTrack`                                 |   ✅   |                 |      2 |     61 | `0x10002930` | `0x10002c70` | `bool SelectPreviousMusicTrack(void)`                                                                                                                                              |
 | `PodArchive::PodArchive`                                   |        |                 |      1 |     61 | `0x10008580` | `0x10008760` | `undefined4 * PodArchive(PodArchive * this)`                                                                                                                                       |
 | `ConvertFloatToFixedAngle`                                 |        |                 |     12 |     60 | `0x100065e0` | `0x10006950` | `int ConvertFloatToFixedAngle(float fAngle)`                                                                                                                                       |
 | `GetSlotPlayerId`                                          |   ✅   |                 |      7 |     60 | `0x10005cf0` | `0x10006060` | `uint GetSlotPlayerId(int nSlot)`                                                                                                                                                  |

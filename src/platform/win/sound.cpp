@@ -114,6 +114,30 @@ int GetCurrentMusicTrack(void) {
     return GetEarMusicCurrentTrack();
 }
 
+bool SelectPreviousMusicTrack(void) {
+    if (g_dwPlayMusicMode == 0 || g_nMusicDeviceRefCount == 0) {
+        return true;
+    }
+    g_nCurrentMusicTrack = GetCurrentMusicTrack() - 1;
+    if (g_nCurrentMusicTrack < g_nMusicTrackMin) {
+        g_nCurrentMusicTrack = g_nMusicTrackMin;
+    }
+    SetCurrentMusicTrack(g_nCurrentMusicTrack);
+    return true;
+}
+
+bool SelectNextMusicTrack(void) {
+    if (g_dwPlayMusicMode == 0 || g_nMusicDeviceRefCount == 0) {
+        return true;
+    }
+    g_nCurrentMusicTrack = GetCurrentMusicTrack() + 1;
+    if (g_nCurrentMusicTrack > g_nMusicTrackMax) {
+        g_nCurrentMusicTrack = g_nMusicTrackMax;
+    }
+    SetCurrentMusicTrack(g_nCurrentMusicTrack);
+    return true;
+}
+
 bool AdvanceMusicTrackWrapping(void) {
     if (g_dwPlayMusicMode == 0 || g_nMusicDeviceRefCount == 0) {
         return true;

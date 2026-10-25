@@ -521,6 +521,15 @@ void DispatchGameStateFrame(void);
 void NullStub(void);
 
 /**
+ * The time from the performance counter, or from the system when there is none.
+ *
+ * @return The time in milliseconds.
+ * @ghidraAddress BRD3D: 0x10075020
+ * @ghidraAddress BRGlide: 0x1006e280
+ */
+DWORD GetHighResolutionTime(void);
+
+/**
  * Whether the front end is up. MenuScreen::ShutdownFrontEnd() clears it, notices of network play
  * are posted only while it is set, and NullStub() is called after the textures are loaded again.
  *
