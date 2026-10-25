@@ -281,13 +281,80 @@ extern void *g_pSoundBufferList;
  */
 extern IDirectSoundBuffer *g_apSoundChannelBuffer[SOUND_CHANNEL_COUNT];
 
+/** The entries of each table of the banks of sounds that ResetSoundBankTables() clears. */
+#define SOUND_BANK_TABLE_COUNT 15
+
 /**
- * Clear the tables of the banks of sounds.
+ * The first table of indices of the banks of sounds. Its size and meaning are not recovered yet.
+ *
+ * @ghidraAddress BRD3D: 0x100b6540
+ * @ghidraAddress BRGlide: 0x100b5d48
+ */
+extern int g_SoundBankIndexTableA[];
+
+/**
+ * The second table of indices of the banks of sounds. Its meaning is not recovered yet.
+ *
+ * @ghidraAddress BRD3D: 0x100b6c00
+ * @ghidraAddress BRGlide: 0x100b6408
+ */
+extern int g_SoundBankIndexTableB[SOUND_BANK_TABLE_COUNT];
+
+/**
+ * The third table of indices of the banks of sounds. Its size and meaning are not recovered yet.
+ *
+ * @ghidraAddress BRD3D: 0x100b6c48
+ * @ghidraAddress BRGlide: 0x100b6450
+ */
+extern int g_SoundBankIndexTableC[];
+
+/**
+ * Clear the first entries of the three tables of the banks of sounds.
  *
  * @ghidraAddress BRD3D: 0x10073060
  * @ghidraAddress BRGlide: 0x1006bfd0
  */
 void ResetSoundBankTables(void);
+
+/** A sound sample loaded into DirectSound. The layout past the buffers is not recovered yet. */
+struct SoundSample {
+    IDirectSoundBuffer *apChannelBuffers[SOUND_CHANNEL_COUNT]; /*!< A buffer for each channel. */
+    char abUnknown3c[0xc];                                     /* +0x3c */
+};
+
+/**
+ * The sound samples loaded. The number of entries is not recovered yet.
+ *
+ * @ghidraAddress BRD3D: 0x100b5df0
+ * @ghidraAddress BRGlide: 0x100b55f8
+ */
+extern SoundSample g_aSoundChannelBuffers[];
+
+/**
+ * The number of entries of g_aSoundChannelBuffers that are loaded.
+ *
+ * @ghidraAddress BRD3D: 0x11828f00
+ * @ghidraAddress BRGlide: 0x1184c260
+ */
+extern int g_dwLoadedSoundSampleCount;
+
+/**
+ * Stop every sound buffer of a list.
+ *
+ * @param ppList The list.
+ * @ghidraAddress BRD3D: 0x10072bf0
+ * @ghidraAddress BRGlide: 0x1006bb60
+ */
+void StopAllSoundBuffersInList(void **ppList);
+
+/**
+ * Free a list of sound buffers.
+ *
+ * @param ppList The list.
+ * @ghidraAddress BRD3D: 0x10072c20
+ * @ghidraAddress BRGlide: 0x1006bb90
+ */
+void FreeSoundBufferList(void **ppList);
 
 /**
  * Add a user of DirectSound when sound effects play. The first user clears the channels and the
@@ -302,12 +369,14 @@ void ResetSoundBankTables(void);
 bool InitializeDirectSound(void);
 
 /**
- * Stop the sounds and reset the state of the audio.
+ * Stop and free the list of sound buffers and clear the buffers of the channels of every loaded
+ * sample and of the channels that play, when DirectSound plays sound effects.
  *
+ * @return Always true.
  * @ghidraAddress BRD3D: 0x100734f0
  * @ghidraAddress BRGlide: 0x1006c460
  */
-void ResetAudioSubsystem(void);
+bool ResetAudioSubsystem(void);
 
 /**
  * Drop a user of DirectSound. The last user resets the audio, stops and releases the primary

@@ -174,6 +174,30 @@ static inline void FreeLockedGlobalMemory(void *pMemory) {
 }
 
 IDirectSoundBuffer *g_apSoundChannelBuffer[SOUND_CHANNEL_COUNT];
+int g_dwLoadedSoundSampleCount;
+
+void ResetSoundBankTables(void) {
+    for (int i = 0; i < SOUND_BANK_TABLE_COUNT; i++) {
+        g_SoundBankIndexTableA[i] = 0;
+        g_SoundBankIndexTableB[i] = 0;
+        g_SoundBankIndexTableC[i] = 0;
+    }
+}
+
+bool ResetAudioSubsystem(void) {
+    if (!g_bSoundEnabledIni || g_pDirectSound == nullptr || g_dwDirectSoundRefCount == 0) {
+        return true;
+    }
+    StopAllSoundBuffersInList(&g_pSoundBufferList);
+    FreeSoundBufferList(&g_pSoundBufferList);
+    for (int i = 0; i < g_dwLoadedSoundSampleCount; i++) {
+        memset(g_aSoundChannelBuffers[i].apChannelBuffers,
+               0,
+               sizeof(g_aSoundChannelBuffers[i].apChannelBuffers));
+    }
+    memset(g_apSoundChannelBuffer, 0, sizeof(g_apSoundChannelBuffer));
+    return true;
+}
 
 // The wave format of the primary buffer.
 #define PRIMARY_SAMPLE_RATE 22050
