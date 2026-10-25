@@ -1,6 +1,6 @@
 # PC port game code from 0x10000000 to 0x10010000
 
-78 of 246 routines done.
+79 of 246 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -55,7 +55,7 @@ the same name, for a routine the port retained from the N64 game.
 | `WaitForPlayerIdAssignment`                                |        |                 |      1 |    287 | `0x10004a90` | `0x10004e00` | `uint WaitForPlayerIdAssignment(void)`                                                                                                                                             |
 | `DDCopyBitmap`                                             |        |                 |      2 |    275 | `0x1000b820` |              | `int DDCopyBitmap(HDC hdcDest, HANDLE hBitmap, uint p3, int height)`                                                                                                               |
 | `DDLoadBitmap`                                             |        |                 |      2 |    269 | `0x1000b680` |              | `uint DDLoadBitmap(int * pDevice, LPCSTR pszName, int cx, int cy)`                                                                                                                 |
-| `ShutdownNetworkSubsystem`                                 |   📝   |                 |      2 |    264 | `0x10005be0` | `0x10005f50` | `void ShutdownNetworkSubsystem(int nReason)`                                                                                                                                       |
+| `ShutdownNetworkSubsystem`                                 |   ✅   |                 |      2 |    264 | `0x10005be0` | `0x10005f50` | `bool ShutdownNetworkSubsystem(int nReason)`                                                                                                                                       |
 | `CHK_FReadOpen`                                            |   ✅   |                 |      6 |    255 | `0x10002fe0` | `0x10003320` | `GameFile * CHK_FReadOpen(char * pszPath)`                                                                                                                                         |
 | `DDColorMatch`                                             |        |                 |      1 |    255 | `0x1000b940` |              | `uint DDColorMatch(int * pSurface, COLORREF clearColor)`                                                                                                                           |
 | `LoadRgba5551ImageFile`                                    |   ✅   |                 |      1 |    253 | `0x10009ad0` |              | `void * LoadRgba5551ImageFile(char * pszPath, uint nAdlerExpected, int * pnWidth, int * pnHeight)`                                                                                 |

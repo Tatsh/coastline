@@ -417,6 +417,49 @@ const char *GetDirectPlayErrorString(HRESULT hResult) {
     }
 }
 
+NetPeerSlot g_aNetPeerSlots[NET_PEER_SLOT_COUNT];
+HANDLE g_hNetRaceStartMutex;
+HANDLE g_hNetReceiveMutex;
+HANDLE g_hNetPauseMutex;
+HANDLE g_hNetUnpauseMutex;
+HANDLE g_hNetReadyMutex;
+HANDLE g_hNetKeyframeMutex;
+HANDLE g_hJoinedPlayerStackMutex;
+HANDLE g_hDepartedPlayerStackMutex;
+HANDLE g_hNetRaceOrderMutex;
+HANDLE g_hNetNotifyMutex;
+
+static inline void CloseMutex(HANDLE *phMutex) {
+    if (*phMutex != nullptr) {
+        CloseHandle(*phMutex);
+        *phMutex = nullptr;
+    }
+}
+
+bool ShutdownNetworkSubsystem(int) {
+    bool bShutDown;
+
+    // Network play mode 2 is the host.
+    if (g_dwNetworkPlayMode > 1) {
+        StopNetworkWorkerThread();
+    }
+    bShutDown = ShutdownDirectPlaySession(&g_DirectPlayInfo) == DP_OK;
+    CloseMutex(&g_hNetRaceStartMutex);
+    CloseMutex(&g_hNetReceiveMutex);
+    CloseMutex(&g_hNetPauseMutex);
+    CloseMutex(&g_hNetUnpauseMutex);
+    CloseMutex(&g_hNetReadyMutex);
+    CloseMutex(&g_hNetKeyframeMutex);
+    CloseMutex(&g_hJoinedPlayerStackMutex);
+    CloseMutex(&g_hDepartedPlayerStackMutex);
+    CloseMutex(&g_hNetRaceOrderMutex);
+    CloseMutex(&g_hNetNotifyMutex);
+    for (NetPeerSlot &slot : g_aNetPeerSlots) {
+        CloseMutex(&slot.hMutex);
+    }
+    return bShutDown;
+}
+
 void FreeServiceProviderConnectionData(void) {
     for (ServiceProvider &provider : g_aServiceProviders) {
         if (provider.pConnectionData != nullptr) {

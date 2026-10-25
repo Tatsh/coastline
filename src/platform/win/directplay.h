@@ -384,14 +384,121 @@ void TickNetworkPauseRequest(void);
  */
 void WINAPI HandleNetworkWindowMessage(HWND hWnd, UINT nMessage, WPARAM wParam, LPARAM lParam);
 
+/** A peer of a network game. The layout past the mutex is not recovered yet. */
+struct NetPeerSlot {
+    HANDLE hMutex;          /*!< The mutex of the peer. */
+    char abUnknown4[0x974]; /* +0x04 */
+};
+
+/** The number of entries of g_aNetPeerSlots. */
+#define NET_PEER_SLOT_COUNT 16
+
 /**
- * End the network play of a game.
+ * The peers of a network game.
  *
- * @param nReason 1 as the game ends. Its meaning is not recovered yet.
+ * @ghidraAddress BRD3D: 0x10221328
+ * @ghidraAddress BRGlide: 0x1021ce58
+ */
+extern NetPeerSlot g_aNetPeerSlots[NET_PEER_SLOT_COUNT];
+
+/**
+ * The mutex of the start of a network race.
+ *
+ * @ghidraAddress BRD3D: 0x10220cec
+ * @ghidraAddress BRGlide: 0x1021c81c
+ */
+extern HANDLE g_hNetRaceStartMutex;
+
+/**
+ * The mutex of the messages received.
+ *
+ * @ghidraAddress BRD3D: 0x1022131c
+ * @ghidraAddress BRGlide: 0x1021ce4c
+ */
+extern HANDLE g_hNetReceiveMutex;
+
+/**
+ * The mutex of a pause of a network game.
+ *
+ * @ghidraAddress BRD3D: 0x1022af04
+ * @ghidraAddress BRGlide: 0x10226a34
+ */
+extern HANDLE g_hNetPauseMutex;
+
+/**
+ * The mutex of the end of a pause of a network game.
+ *
+ * @ghidraAddress BRD3D: 0x10220ddc
+ * @ghidraAddress BRGlide: 0x1021c90c
+ */
+extern HANDLE g_hNetUnpauseMutex;
+
+/**
+ * The mutex of the players that are ready.
+ *
+ * @ghidraAddress BRD3D: 0x10221324
+ * @ghidraAddress BRGlide: 0x1021ce54
+ */
+extern HANDLE g_hNetReadyMutex;
+
+/**
+ * The mutex of the key frames of a network race.
+ *
+ * @ghidraAddress BRD3D: 0x1022af34
+ * @ghidraAddress BRGlide: 0x10226a64
+ */
+extern HANDLE g_hNetKeyframeMutex;
+
+/**
+ * The mutex of the stack of players that joined.
+ *
+ * @ghidraAddress BRD3D: 0x1022af2c
+ * @ghidraAddress BRGlide: 0x10226a5c
+ */
+extern HANDLE g_hJoinedPlayerStackMutex;
+
+/**
+ * The mutex of the stack of players that departed.
+ *
+ * @ghidraAddress BRD3D: 0x1022af30
+ * @ghidraAddress BRGlide: 0x10226a60
+ */
+extern HANDLE g_hDepartedPlayerStackMutex;
+
+/**
+ * The mutex of the order of a network race.
+ *
+ * @ghidraAddress BRD3D: 0x1022af28
+ * @ghidraAddress BRGlide: 0x10226a58
+ */
+extern HANDLE g_hNetRaceOrderMutex;
+
+/**
+ * The mutex of the notices of network play.
+ *
+ * @ghidraAddress BRD3D: 0x1022af24
+ * @ghidraAddress BRGlide: 0x10226a54
+ */
+extern HANDLE g_hNetNotifyMutex;
+
+/**
+ * Stop the thread that works for the host of a network game.
+ *
+ * @ghidraAddress BRD3D: 0x10072270
+ * @ghidraAddress BRGlide: 0x1006b1e0
+ */
+void StopNetworkWorkerThread(void);
+
+/**
+ * End the network play of a game. The host stops its worker thread, the session of DirectPlay
+ * shuts down, and every mutex of network play is closed.
+ *
+ * @param nReason Not read. The callers pass 1.
+ * @return Whether the session of DirectPlay shut down.
  * @ghidraAddress BRD3D: 0x10005be0
  * @ghidraAddress BRGlide: 0x10005f50
  */
-void ShutdownNetworkSubsystem(int nReason);
+bool ShutdownNetworkSubsystem(int nReason);
 
 /**
  * End network play, free the connection data of the service providers, write the count of
