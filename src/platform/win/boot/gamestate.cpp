@@ -24,8 +24,6 @@ int (*g_apfnGameStateHandlers[])(void) = {
     GameState_RunFrontEnd,
 };
 
-// The first set of sounds.
-#define FIRST_SOUND_SET 0
 // Set the display mode of the configuration with the renderer of the library.
 static inline void ResetConfiguredRenderSubsystems(void) {
     ResetRenderSubsystems(RENDER_BACKEND_MODE,
@@ -37,7 +35,7 @@ static inline void ResetConfiguredRenderSubsystems(void) {
 
 int GameState_InitResources(void) {
     OpenBossRallyPodAndInit();
-    LoadSoundSet(FIRST_SOUND_SET);
+    LoadSoundSet(SOUND_SET_FRONT_END);
     InitJoystickBindingNames();
     g_dwGameState = GAME_STATE_RUN_FRONT_END;
     return true;
@@ -96,7 +94,7 @@ int GameState_RunFrontEnd(void) {
         return true;
     }
     if (pScreen == nullptr && g_dwNullStubEnable) {
-        LoadSoundSet(FIRST_SOUND_SET);
+        LoadSoundSet(SOUND_SET_FRONT_END);
         InitializeFrontEndResources();
         g_dwLastInputActivityTime = GetHighResolutionTime();
         pScreen = g_pActiveMenuScreen;

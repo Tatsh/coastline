@@ -224,15 +224,6 @@ int GameState_RunFrontEnd(void);
  */
 bool OpenBossRallyPodAndInit(void);
 
-/**
- * Load a set of sounds.
- *
- * @param nSet The set.
- * @ghidraAddress BRD3D: 0x10073320
- * @ghidraAddress BRGlide: 0x1006c290
- */
-void LoadSoundSet(int nSet);
-
 #if TGR_RENDERER == TGR_RENDERER_GLIDE
 /**
  * Show an image of the Glide library over the whole screen.

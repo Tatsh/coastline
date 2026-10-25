@@ -459,11 +459,64 @@ bool MuteAllActiveSoundChannels(void) {
 int g_dwLoadedSoundSampleCount;
 
 void ResetSoundBankTables(void) {
-    for (int i = 0; i < SOUND_BANK_TABLE_COUNT; i++) {
-        g_SoundBankIndexTableA[i] = 0;
-        g_SoundBankIndexTableB[i] = 0;
-        g_SoundBankIndexTableC[i] = 0;
+    for (int i = 0; i < SOUND_CHANNEL_COUNT; i++) {
+        g_SoundBankIndexTableA[0].anChannels[i] = 0;
+        g_SoundBankIndexTableB.anChannels[i] = 0;
+        g_SoundBankIndexTableC.anChannels[i] = 0;
     }
+}
+
+// The size of the path of a sample.
+#define SAMPLE_PATH_SIZE 0x400
+
+bool LoadSoundSet(int nSet) {
+    const char *const *ppszFiles;
+    char szPath[SAMPLE_PATH_SIZE];
+    bool bLoaded = true;
+
+    if (!g_bSoundEnabledIni || g_pDirectSound == nullptr || g_dwDirectSoundRefCount == 0) {
+        return true;
+    }
+    if (nSet == SOUND_SET_FRONT_END) {
+        ppszFiles = g_SoundSetTableB;
+        g_dwLoadedSoundSampleCount = SOUND_SET_FRONT_END_COUNT;
+    } else if (nSet == SOUND_SET_RACE) {
+        ppszFiles = g_SoundSetTableA;
+        g_dwLoadedSoundSampleCount = SOUND_SET_RACE_COUNT;
+        for (int i = 0; i < SOUND_CHANNEL_COUNT; i++) {
+            if (g_SoundBankIndexTableA[0].anChannels[i]) {
+                if (!LoadSfxWaveVariants(i / 2)) {
+                    bLoaded = false;
+                }
+            } else {
+                g_aSoundChannelBuffers[0].apChannelBuffers[i] = nullptr;
+                g_SfxWaveVariantTable[i] = nullptr;
+                g_LoopingSoundTable[i] = nullptr;
+            }
+        }
+    } else {
+        // The original reads the files of another set through a pointer it does not set, and
+        // the pointer is null here.
+        ppszFiles = nullptr;
+    }
+    for (int nSample = 1; nSample < g_dwLoadedSoundSampleCount - 1; nSample++) {
+        for (int i = 0; i < SOUND_CHANNEL_COUNT; i++) {
+            IDirectSoundBuffer *&pBuffer = g_aSoundChannelBuffers[nSample].apChannelBuffers[i];
+
+            if (!g_SoundBankIndexTableA[nSample].anChannels[i]) {
+                pBuffer = nullptr;
+                continue;
+            }
+            // Each channel of the sample loads the file of the sample again.
+            strcpy(szPath, g_szSfxDirPath);
+            strcat(szPath, ppszFiles[nSample]);
+            pBuffer = LoadAudioFile(szPath);
+            if (pBuffer == nullptr) {
+                bLoaded = false;
+            }
+        }
+    }
+    return bLoaded;
 }
 
 bool ResetAudioSubsystem(void) {

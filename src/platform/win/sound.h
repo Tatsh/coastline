@@ -428,32 +428,40 @@ HRESULT StopSoundBuffer(SoundBufferNode *pNode);
  */
 extern SoundBufferNode *g_apSoundChannelBuffer[SOUND_CHANNEL_COUNT];
 
-/** The entries of each table of the banks of sounds that ResetSoundBankTables() clears. */
-#define SOUND_BANK_TABLE_COUNT 15
+/**
+ * A row of the banks of sounds: which channels of a sample of a set are loaded. The layout past
+ * the channels is not recovered yet.
+ */
+struct SoundBankRow {
+    int anChannels[SOUND_CHANNEL_COUNT]; /*!< Nonzero for each channel of the sample loaded. */
+    int anUnknown3c[3];                  /* +0x3c */
+};
 
 /**
- * The first table of indices of the banks of sounds. Its size and meaning are not recovered yet.
+ * The banks of sounds, a row for each sample of a set. g_SoundBankIndexTableB and
+ * g_SoundBankIndexTableC follow as rows 24 and 25. The number of rows is not recovered yet.
  *
  * @ghidraAddress BRD3D: 0x100b6540
  * @ghidraAddress BRGlide: 0x100b5d48
  */
-extern int g_SoundBankIndexTableA[];
+extern SoundBankRow g_SoundBankIndexTableA[];
 
 /**
- * The second table of indices of the banks of sounds. Its meaning is not recovered yet.
+ * The row of the banks of sounds after the 24 rows of g_SoundBankIndexTableA. Its meaning is not
+ * recovered yet.
  *
  * @ghidraAddress BRD3D: 0x100b6c00
  * @ghidraAddress BRGlide: 0x100b6408
  */
-extern int g_SoundBankIndexTableB[SOUND_BANK_TABLE_COUNT];
+extern SoundBankRow g_SoundBankIndexTableB;
 
 /**
- * The third table of indices of the banks of sounds. Its size and meaning are not recovered yet.
+ * The row of the banks of sounds after g_SoundBankIndexTableB. Its meaning is not recovered yet.
  *
  * @ghidraAddress BRD3D: 0x100b6c48
  * @ghidraAddress BRGlide: 0x100b6450
  */
-extern int g_SoundBankIndexTableC[];
+extern SoundBankRow g_SoundBankIndexTableC;
 
 /**
  * Clear the first entries of the three tables of the banks of sounds.
@@ -484,6 +492,81 @@ extern SoundSample g_aSoundChannelBuffers[];
  * @ghidraAddress BRGlide: 0x1184c260
  */
 extern int g_dwLoadedSoundSampleCount;
+
+/** The sets of sounds of LoadSoundSet(). */
+enum {
+    SOUND_SET_FRONT_END, /*!< The sounds of the front end. */
+    SOUND_SET_RACE,      /*!< The sounds of a race. */
+};
+
+/** The number of samples of the set of the front end. */
+#define SOUND_SET_FRONT_END_COUNT 9
+/** The number of samples of the set of a race. */
+#define SOUND_SET_RACE_COUNT 25
+
+/**
+ * The files of the samples of the set of a race, under g_szSfxDirPath. The first is null.
+ *
+ * @ghidraAddress BRD3D: 0x100b8938
+ * @ghidraAddress BRGlide: 0x100b8140
+ */
+extern const char *const g_SoundSetTableA[SOUND_SET_RACE_COUNT];
+
+/**
+ * The files of the samples of the set of the front end, under g_szSfxDirPath. The first is null.
+ *
+ * @ghidraAddress BRD3D: 0x100b89a0
+ * @ghidraAddress BRGlide: 0x100b81a8
+ */
+extern const char *const g_SoundSetTableB[SOUND_SET_FRONT_END_COUNT];
+
+/**
+ * The variants of the waves of the sound effects of a race, one for each channel.
+ *
+ * @ghidraAddress BRD3D: 0x100b64b0
+ * @ghidraAddress BRGlide: 0x100b5cb8
+ */
+extern void *g_SfxWaveVariantTable[SOUND_CHANNEL_COUNT];
+
+/**
+ * The looping sounds of a race, one for each channel.
+ *
+ * @ghidraAddress BRD3D: 0x100b64f8
+ * @ghidraAddress BRGlide: 0x100b5d00
+ */
+extern void *g_LoopingSoundTable[SOUND_CHANNEL_COUNT];
+
+/**
+ * Load a wave file into a buffer of DirectSound.
+ *
+ * @param pszPath The path of the file.
+ * @return The buffer, or null.
+ * @ghidraAddress BRD3D: 0x10072ca0
+ * @ghidraAddress BRGlide: 0x1006bc10
+ */
+IDirectSoundBuffer *LoadAudioFile(const char *pszPath);
+
+/**
+ * Load the variants of the wave of a sound effect of a race.
+ *
+ * @param nEffect The effect, half the channel.
+ * @return Whether the variants loaded.
+ * @ghidraAddress BRD3D: 0x100730a0
+ * @ghidraAddress BRGlide: 0x1006c010
+ */
+bool LoadSfxWaveVariants(int nEffect);
+
+/**
+ * Load the samples of a set of sounds into the channels the banks of sounds enable, from the
+ * second sample to the one before the last. The set of a race first loads the variants of its sound
+ * effects. Nothing loads without sound.
+ *
+ * @param nSet The set, by the SOUND_SET_ values.
+ * @return Whether every sample loaded.
+ * @ghidraAddress BRD3D: 0x10073320
+ * @ghidraAddress BRGlide: 0x1006c290
+ */
+bool LoadSoundSet(int nSet);
 
 /**
  * Stop every sound buffer of a list.
