@@ -1,7 +1,7 @@
 {
   "_wiswa": {
-    "commandLine": "wiswa --skip-remote --skip-yarn -q -o .wiswa-ci/wiswa-out",
-    "lastRun": "2026-10-25T15:23:07Z",
+    "commandLine": "wiswa --skip-remote -q",
+    "lastRun": "2026-10-21T04:34:42Z",
     "version": "7f9c68f"
   },
   "contributors": ["Andrew Udvare <audvare@gmail.com>"],
