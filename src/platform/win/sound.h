@@ -676,6 +676,19 @@ bool SetSoundChannelStereo(int nSample, int nChannel, DWORD dwLevels);
 bool SetSoundVoiceStereo(int nSample, int nVoice, DWORD dwLevels);
 
 /**
+ * Set the levels of the two sides of the even channel of a voice of a sample and play it in a
+ * loop.
+ *
+ * @param nSample The sample.
+ * @param nVoice The voice, half the channel.
+ * @param dwLevels The levels, as SetSoundBufferStereoLevels() takes them.
+ * @return The result of SetStereoAndPlaySoundChannel().
+ * @ghidraAddress BRD3D: 0x10072b10
+ * @ghidraAddress BRGlide: 0x1006ba80
+ */
+bool PlayLoopedSoundVoiceWithStereo(int nSample, int nVoice, DWORD dwLevels);
+
+/**
  * Load a wave file into a node of a buffer of DirectSound at the end of g_SoundBufferListHead, at
  * its own frequency, the centre, and the volume of the sound effects. A step that fails frees what
  * it created.

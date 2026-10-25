@@ -573,6 +573,10 @@ bool SetSoundVoiceStereo(int nSample, int nVoice, DWORD dwLevels) {
     return SetSoundChannelStereo(nSample, nVoice * 2, dwLevels);
 }
 
+bool PlayLoopedSoundVoiceWithStereo(int nSample, int nVoice, DWORD dwLevels) {
+    return SetStereoAndPlaySoundChannel(nSample, nVoice * 2, dwLevels, true);
+}
+
 SoundBufferNode *LoadAudioFile(const char *pszPath) {
     SoundBufferNode *pNode = static_cast<SoundBufferNode *>(
         GlobalLock(GlobalAlloc(GMEM_ZEROINIT, sizeof(SoundBufferNode))));
