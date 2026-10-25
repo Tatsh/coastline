@@ -506,6 +506,31 @@ static inline bool IsDirectSoundActive(void) {
     return g_bSoundEnabledIni && g_pDirectSound != nullptr && g_dwDirectSoundRefCount != 0;
 }
 
+bool SetSoundBufferFrequency(SoundBufferNode *pNode, DWORD dwFrequency) {
+    if (!IsDirectSoundActive()) {
+        return true;
+    }
+    if (pNode == nullptr) {
+        return false;
+    }
+    pNode->dwFrequency = dwFrequency;
+    // The result of the frequency is discarded.
+    ApplySoundBufferFrequency(pNode);
+    return true;
+}
+
+bool SetSoundVoiceFrequencyFloat(int nSample, int nVoice, float fFrequency) {
+    return SetSoundChannelFrequency(nSample, nVoice * 2, static_cast<DWORD>(fFrequency));
+}
+
+bool SetSoundChannelFrequency(int nSample, int nChannel, DWORD dwFrequency) {
+    if (!IsDirectSoundActive()) {
+        return true;
+    }
+    return SetSoundBufferFrequency(g_aSoundChannelBuffers[nSample].apChannelBuffers[nChannel],
+                                   dwFrequency);
+}
+
 // The largest level of a side of SetSoundBufferStereoLevels().
 #define MAX_STEREO_LEVEL 32
 

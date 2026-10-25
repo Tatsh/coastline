@@ -615,6 +615,41 @@ HRESULT RestartOrPlaySoundBuffer(SoundBufferNode *pNode);
 HRESULT PlaySoundBuffer(SoundBufferNode *pNode, int bLooping);
 
 /**
+ * Set the frequency of the buffer of a node, when sound is on.
+ *
+ * @param pNode The node.
+ * @param dwFrequency The frequency, in samples a second.
+ * @return Whether the frequency was set, and true without sound.
+ * @ghidraAddress BRD3D: 0x10072700
+ * @ghidraAddress BRGlide: 0x1006b670
+ */
+bool SetSoundBufferFrequency(SoundBufferNode *pNode, DWORD dwFrequency);
+
+/**
+ * Set the frequency of a channel of a sample, when sound is on.
+ *
+ * @param nSample The sample.
+ * @param nChannel The channel.
+ * @param dwFrequency The frequency, in samples a second.
+ * @return Whether the frequency was set, and true without sound.
+ * @ghidraAddress BRD3D: 0x10072770
+ * @ghidraAddress BRGlide: 0x1006b6e0
+ */
+bool SetSoundChannelFrequency(int nSample, int nChannel, DWORD dwFrequency);
+
+/**
+ * Set the frequency of the even channel of a voice of a sample, dropping the fraction.
+ *
+ * @param nSample The sample.
+ * @param nVoice The voice, half the channel.
+ * @param fFrequency The frequency, in samples a second.
+ * @return The result of SetSoundChannelFrequency().
+ * @ghidraAddress BRD3D: 0x10072750
+ * @ghidraAddress BRGlide: 0x1006b6c0
+ */
+bool SetSoundVoiceFrequencyFloat(int nSample, int nVoice, float fFrequency);
+
+/**
  * Set the volume and the pan of the buffer of a node from the levels of its two sides.
  *
  * @param pNode The node.
