@@ -134,6 +134,14 @@ void ResetFrameTimer(void);
 DWORD GetFrameTickCounter(void);
 
 /**
+ * End the period of the timer of one millisecond the frame timer began without the performance
+ * counter.
+ *
+ * @ghidraAddress BRD3D: 0x10075240
+ */
+void EndHighResolutionTimerPeriod(void);
+
+/**
  * Start the timing of the frames of a race again.
  *
  * @ghidraAddress BRD3D: 0x1002c4d0

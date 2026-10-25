@@ -65,3 +65,9 @@ void ResetFrameTimerState(void) {
     g_bFrameTimerReset = true;
     ResetFrameTimer();
 }
+
+void EndHighResolutionTimerPeriod(void) {
+    if (!g_bFrameTimerHasPerfCounter) {
+        timeEndPeriod(1);
+    }
+}
