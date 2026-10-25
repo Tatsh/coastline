@@ -35,6 +35,7 @@
     {
       "cStandard": "c23",
       "compilerArgs": ["-m32"],
+      "compilerPath": "/usr/lib/mingw64-toolchain/bin/x86_64-w64-mingw32-g++",
       "cppStandard": "c++23",
       "defines": [
         "TGR_PLATFORM=2",
@@ -60,6 +61,7 @@
     {
       "cStandard": "c23",
       "compilerArgs": ["-m32"],
+      "compilerPath": "/usr/lib/mingw64-toolchain/bin/x86_64-w64-mingw32-g++",
       "cppStandard": "c++23",
       "defines": [
         "TGR_PLATFORM=2",
