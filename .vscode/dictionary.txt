@@ -47,6 +47,7 @@ bgtz
 bilerp
 bitspixel
 blez
+blit
 bnel
 bnez
 boxz
@@ -98,6 +99,7 @@ cpdext
 cpdist
 cplens
 cplext
+createdibsection
 createmesgqueue
 createplayerorgroup
 createthread
@@ -120,9 +122,11 @@ dbuild
 dcmake
 dcosf
 ddbd
+ddbltfast
 ddcaps
 ddckey
 ddcolorkey
+ddcopybitmap
 ddenumret
 dderr
 ddflip
@@ -137,6 +141,7 @@ ddscl
 ddsd
 ddsdm
 ddsurfacedesc
+ddutil
 debugtext
 decaldraw
 decaleditor
@@ -301,6 +306,7 @@ haccel
 handoff
 hardshok
 hasm
+hbitmap
 hdlr
 hdwr
 headtex
@@ -493,6 +499,7 @@ numlights
 numpydoc
 objcopy
 objdump
+offscreenplain
 oneline
 osversioninfoa
 otherlook
@@ -764,6 +771,7 @@ vmodeldl
 vmodeltex
 vretrace
 vsince
+wasstilldrawing
 waveformatex
 wdangling
 weatherselect

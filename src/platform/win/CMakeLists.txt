@@ -27,6 +27,7 @@ if(TGR_RENDERER STREQUAL "d3d")
     coastline_main
     PRIVATE boot/gamestate.cpp
             boot/shutdown.cpp
+            d3d/ddutil.cpp
             d3d/devicecaps.cpp
             d3d/driver.cpp
             d3d/renderer.cpp
