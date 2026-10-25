@@ -1,6 +1,6 @@
 # PC port game code from 0x10000000 to 0x10010000
 
-107 of 246 routines done.
+108 of 246 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -47,7 +47,7 @@ the same name, for a routine the port retained from the N64 game.
 | `D3DTexture::UploadSurfaceToTexture`                       |   ✅   |                 |      2 |    327 | `0x10009ed0` |              | `bool UploadSurfaceToTexture(D3DTexture * this, void * pImage, int nWidth, int nHeight)`                                                                                           |
 | `CheckVehicleVisibility`                                   |        | ✅ `0x802303d4` |      2 |    322 | `0x1000ca90` | `0x10009fc0` | `void CheckVehicleVisibility(float * pEntity)`                                                                                                                                     |
 | `DirectDrawRenderer::ChangeDisplayModeAndReinitDirectDraw` |   ✅   |                 |      1 |    316 | `0x1000b390` |              | `HRESULT ChangeDisplayModeAndReinitDirectDraw(DirectDrawRenderer * this, GUID * pGuid, D3DDeviceNode * pDevice, DisplayMode * pMode)`                                              |
-| `SwitchDisplayModeAndRebuildDevice`                        |   📝   |                 |      2 |    315 | `0x1000b4d0` |              | `int SwitchDisplayModeAndRebuildDevice(void * this, void * pThis, int width, int height, int bpp)`                                                                                 |
+| `DirectDrawRenderer::SwitchDisplayModeAndRebuildDevice`    |   ✅   |                 |      2 |    315 | `0x1000b4d0` |              | `int SwitchDisplayModeAndRebuildDevice(DirectDrawRenderer * this, int nWidth, int nHeight, int nBitDepth, int nExtra)`                                                             |
 | `SendPlayerJoinPacket`                                     |        |                 |      3 |    309 | `0x10004590` | `0x10004900` | `undefined SendPlayerJoinPacket()`                                                                                                                                                 |
 | `ProjectWorldToScreenRect`                                 |        | ✅ `0x80233e10` |      1 |    308 | `0x1000f480` | `0x1000c9e0` | `void ProjectWorldToScreenRect(int base, uint matrix, int scale, short * outA, short * outB)`                                                                                      |
 | `UpdateCameraLookAtTarget`                                 |        | ✅ `0x80220e84` |      1 |    302 | `0x10001760` | `0x10001a80` | `void UpdateCameraLookAtTarget(float * pEntityState)`                                                                                                                              |

@@ -412,6 +412,66 @@ HRESULT DirectDrawRenderer::ChangeDisplayModeAndReinitDirectDraw(GUID *pGuid,
     return S_OK;
 }
 
+int DirectDrawRenderer::SwitchDisplayModeAndRebuildDevice(int nWidth,
+                                                          int nHeight,
+                                                          int nBitDepth,
+                                                          int nExtra) {
+    DisplayMode *pOldMode;
+    D3DDeviceNode *pOldDevice;
+    DisplayMode *pNewMode;
+    D3DDeviceNode *pNewDevice;
+    D3DDeviceNode *pFallback;
+    HRESULT hr;
+
+    if (hWnd == nullptr || !IsWindow(hWnd)) {
+        return RENDERER_E_NOT_READY;
+    }
+    pOldMode = pMode;
+    pOldDevice = pDevice;
+    // The fourth value of the mode is not passed on, as in the original.
+    pNewMode = pDriver->FindDisplayMode(nWidth, nHeight, nBitDepth, nullptr, nullptr, nullptr);
+    if (pNewMode == nullptr) {
+        return RENDERER_E_NOT_CREATED;
+    }
+    if (pNewMode->IsDisplayModeSupportedByDevice(pOldDevice)) {
+        pNewDevice = nullptr;
+    } else {
+        pNewDevice = pDriver->FindRenderDevice(&pOldDevice->guid, pNewMode, &pFallback, nullptr);
+        if (pNewDevice == nullptr) {
+            pNewDevice = pFallback;
+            if (pNewDevice == nullptr) {
+                return RENDERER_E_NOT_IN_GDI_MODE;
+            }
+        }
+    }
+    DestroyD3DDevice();
+    ReleasePrimarySurface();
+    pMode = pNewMode;
+    if (pNewDevice != nullptr) {
+        pDevice = pNewDevice;
+    }
+    hr = SetDisplayMode();
+    if (FAILED(hr)) {
+        return hr;
+    }
+    hr = CreatePrimaryFlipChain();
+    if (SUCCEEDED(hr)) {
+        hr = InitializeRenderDevice();
+        if (SUCCEEDED(hr)) {
+            SendMessageA(hWnd, WM_RENDERER_CREATED + 3, 0, 0);
+            return S_OK;
+        }
+        ReleasePrimarySurface();
+    }
+    // The old mode and device are set and created again, and the error is reported.
+    pMode = pOldMode;
+    pDevice = pOldDevice;
+    SetDisplayMode();
+    CreatePrimaryFlipChain();
+    InitializeRenderDevice();
+    return hr;
+}
+
 int DirectDrawRenderer::DestroyDirectDrawRendererObjects() {
     SendMessageA(hWnd, WM_RENDERER_DESTROYING, 0, reinterpret_cast<LPARAM>(this));
     DestroyD3DDevice();
