@@ -584,6 +584,28 @@ public:
     int DestroyDirectDrawRendererObjects();
 
     /**
+     * Create the DirectDraw objects of the window: select the driver, the device, and the mode,
+     * create the DirectDraw objects, set the cooperative level and the display mode, create the
+     * chain of flipped surfaces and the render device, and tell the window with
+     * `WM_RENDERER_CREATED`. A step that fails releases the objects.
+     *
+     * @return `S_OK`, `RENDERER_E_NOT_READY` without a window, or the error of the step that
+     * failed.
+     * @ghidraAddress BRD3D: 0x1000a2c0
+     */
+    HRESULT InitializeDirectDraw();
+
+    /**
+     * Find the driver of pDriver again, or the default, and the device and the mode of pDevice and
+     * pMode on it, enumerating the drivers first when they are not.
+     *
+     * @return `S_OK`, `RENDERER_E_NOT_CREATED` without a driver, `RENDERER_E_NOT_IN_GDI_MODE`
+     * without a device and a mode, or the error of the enumeration.
+     * @ghidraAddress BRD3D: 0x1000a390
+     */
+    HRESULT SelectDriverDeviceAndMode();
+
+    /**
      * Create the DirectDraw object of the driver and its second and Direct3D interfaces.
      *
      * @return `S_OK`, or the error of the step that failed.

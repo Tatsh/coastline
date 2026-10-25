@@ -274,6 +274,144 @@ HRESULT DirectDrawRenderer::InitializeWindow(HWND hNewWnd,
     return S_OK;
 }
 
+HRESULT DirectDrawRenderer::InitializeDirectDraw() {
+    HRESULT hr;
+
+    if (hWnd == nullptr || !IsWindow(hWnd)) {
+        return RENDERER_E_NOT_READY;
+    }
+    hr = SelectDriverDeviceAndMode();
+    if (FAILED(hr)) {
+        return hr;
+    }
+    if (FAILED(hr = CreateDirectDrawObjects()) || FAILED(hr = SetCooperativeLevel()) ||
+        FAILED(hr = SetDisplayMode()) || FAILED(hr = CreatePrimaryFlipChain()) ||
+        FAILED(hr = InitializeRenderDevice())) {
+        DestroyDirectDrawRendererObjects();
+        return hr;
+    }
+    SendMessageA(hWnd, WM_RENDERER_CREATED, 0, reinterpret_cast<LPARAM>(this));
+    return S_OK;
+}
+
+HRESULT DirectDrawRenderer::SelectDriverDeviceAndMode() {
+    DirectDrawDriver *pNewDriver;
+    GUID *pDeviceGuid;
+    int nWidth;
+    int nHeight;
+    int nBitDepth;
+    int nRefreshRate;
+    DisplayMode *pNewMode;
+    D3DDeviceNode *pNewDevice;
+    HRESULT hr;
+
+    if (!(g_bDirectDrawDriversEnumerated & 1)) {
+        hr = EnsureDirectDrawDriversEnumerated();
+        if (FAILED(hr)) {
+            return hr;
+        }
+    }
+    pDeviceGuid = pDevice != nullptr ? &pDevice->guid : nullptr;
+    pNewDriver = FindDirectDrawDriverOrDefault(
+        pDriver != nullptr ? pDriver->GetDirectDrawDriverGuid() : nullptr);
+    if (pNewDriver == nullptr) {
+        return RENDERER_E_NOT_CREATED;
+    }
+    if (pMode != nullptr) {
+        pMode->GetSurfaceDescDimensions(&nWidth, &nHeight, &nBitDepth, &nRefreshRate);
+    } else {
+        nWidth = 0;
+        nHeight = 0;
+        nBitDepth = 0;
+        nRefreshRate = 0;
+    }
+    if (!SelectDeviceAndDisplayMode(pNewDriver,
+                                    pDeviceGuid,
+                                    nWidth,
+                                    nHeight,
+                                    nBitDepth,
+                                    reinterpret_cast<void *>(nRefreshRate),
+                                    &pNewMode,
+                                    &pNewDevice)) {
+        return RENDERER_E_NOT_IN_GDI_MODE;
+    }
+    pMode = pNewMode;
+    pDriver = pNewDriver;
+    pDevice = pNewDevice;
+    return S_OK;
+}
+
+// The display mode a move to another driver takes without a mode.
+#define DEFAULT_MODE_WIDTH 640
+#define DEFAULT_MODE_HEIGHT 480
+#define DEFAULT_MODE_BIT_DEPTH 16
+
+HRESULT DirectDrawRenderer::ChangeDisplayModeAndReinitDirectDraw(GUID *pGuid,
+                                                                 D3DDeviceNode *pNewDevice,
+                                                                 DisplayMode *pNewMode) {
+    DirectDrawDriver *pNewDriver;
+    GUID *pDeviceGuid;
+    int nWidth;
+    int nHeight;
+    int nBitDepth;
+    int nRefreshRate;
+    DisplayMode *pSelectedMode;
+    D3DDeviceNode *pSelectedDevice;
+    DirectDrawDriver *pOldDriver;
+    DisplayMode *pOldMode;
+    D3DDeviceNode *pOldDevice;
+    HRESULT hr;
+
+    pNewDriver = FindDirectDrawDriverOrDefault(pGuid);
+    if (pNewDriver == nullptr) {
+        return RENDERER_E_NOT_CREATED;
+    }
+    if (pNewDevice != nullptr) {
+        pDeviceGuid = &pNewDevice->guid;
+    } else if (pDevice != nullptr) {
+        pDeviceGuid = &pDevice->guid;
+    } else {
+        pDeviceGuid = nullptr;
+    }
+    if (pNewMode != nullptr) {
+        pNewMode->GetSurfaceDescDimensions(&nWidth, &nHeight, &nBitDepth, &nRefreshRate);
+    } else {
+        nWidth = DEFAULT_MODE_WIDTH;
+        nHeight = DEFAULT_MODE_HEIGHT;
+        nBitDepth = DEFAULT_MODE_BIT_DEPTH;
+        nRefreshRate = 0;
+    }
+    if (!SelectDeviceAndDisplayMode(pNewDriver,
+                                    pDeviceGuid,
+                                    nWidth,
+                                    nHeight,
+                                    nBitDepth,
+                                    reinterpret_cast<void *>(nRefreshRate),
+                                    &pSelectedMode,
+                                    &pSelectedDevice)) {
+        return RENDERER_E_NOT_IN_GDI_MODE;
+    }
+    pOldDevice = pDevice;
+    pOldDriver = pDriver;
+    pOldMode = pMode;
+    DestroyDirectDrawRendererObjects();
+    pDriver = pNewDriver;
+    pMode = pSelectedMode;
+    pDevice = pSelectedDevice;
+    hr = InitializeDirectDraw();
+    if (FAILED(hr)) {
+        // The objects of the old driver are created again, and the error of the new one reported.
+        DestroyDirectDrawRendererObjects();
+        pDriver = pOldDriver;
+        pDevice = pOldDevice;
+        pMode = pOldMode;
+        InitializeDirectDraw();
+        return hr;
+    }
+    SendMessageA(hWnd, WM_RENDERER_CREATED + 2, 0, 0);
+    return S_OK;
+}
+
 int DirectDrawRenderer::DestroyDirectDrawRendererObjects() {
     SendMessageA(hWnd, WM_RENDERER_DESTROYING, 0, reinterpret_cast<LPARAM>(this));
     DestroyD3DDevice();
