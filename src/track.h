@@ -164,7 +164,7 @@ typedef struct {
 /** The header of the loaded track. Its fields join this structure as they are reconstructed. */
 typedef struct {
     u32 size; /*!< The bytes of the track once decompressed, first written here by the loading. */
-    s32 headerSize; /*!< The size of this header, which must be TRACK_HEADER_SIZE. */
+    s32 headerSize; /*!< The size of this header, which must be #TRACK_HEADER_SIZE. */
     u8 unreconstructed8[0xC - 0x8];    /*!< Not yet reconstructed. */
     TrackSurface *surfaces;            /*!< What each triangle belongs to, by its index. */
     u8 unreconstructed10[0x14 - 0x10]; /*!< Not yet reconstructed. */

@@ -492,7 +492,7 @@ HRESULT EnumeratePlayerAddress(HWND hWnd, IDirectPlayLobby2A *pLobby);
  * @param dwDataSize Not read.
  * @param pData The data of the part.
  * @param pContext Not read.
- * @return Always TRUE, to continue the enumeration.
+ * @return Always #TRUE, to continue the enumeration.
  * @ghidraAddress BRD3D: 0x1003d850
  * @ghidraAddress BRGlide: 0x10036ef0
  */
@@ -540,7 +540,7 @@ HRESULT RefreshNetworkSessionList(IDirectPlay3A *pDirectPlay);
  * @param pName The name of the connection.
  * @param dwFlags Not read.
  * @param pContext Not read.
- * @return Always TRUE, to continue the enumeration.
+ * @return Always #TRUE, to continue the enumeration.
  * @ghidraAddress BRD3D: 0x1003c430
  * @ghidraAddress BRGlide: 0x10035ac0
  */

@@ -183,7 +183,7 @@ GbiCommand *HandleGbiClearGeometryMode(GbiCommand *pCommand);
 GbiCommand *HandleGbiSetGeometryMode(GbiCommand *pCommand);
 
 /**
- * Pop the stack of matrices. A pop that empties it sets its depth to GBI_MATRIX_STACK_RESET_DEPTH.
+ * Pop the stack of matrices. A pop that empties it sets its depth to #GBI_MATRIX_STACK_RESET_DEPTH.
  *
  * @param pCommand The command.
  * @return The next command.

@@ -1455,7 +1455,7 @@ extern ErrorMessage g_ErrorMessageTable[ERROR_MESSAGE_COUNT];
 
 /**
  * Show an error of the game in a message box from its second character, and exit when the error is
- * fatal. A code above ERROR_MESSAGE_COUNT shows nothing.
+ * fatal. A code above #ERROR_MESSAGE_COUNT shows nothing.
  *
  * @param nErrorCode The error.
  * @ghidraAddress BRD3D: 0x1003e260

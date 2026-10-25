@@ -68,7 +68,7 @@ typedef struct {
     f32 stickY;            /*!< The vertical position of the stick, from -1 to 1. */
     f32 steering;          /*!< The steering, from -1 to 1. */
     s8 steeringInput;      /*!< The steering as the stick, the pad, or the recording gives it. */
-    u8 controllerLayout;   /*!< The button layout of the race, from 0 to CONTROLLER_LAYOUTS - 1. */
+    u8 controllerLayout;   /*!< The button layout of the race, from 0 to #CONTROLLER_LAYOUTS - 1. */
     s32 controllerMissing; /*!< Set when the controller of the player does not respond. */
     u8 *recordBuffers[INPUT_RECORDERS];   /*!< The buffers that record two bytes of input each
                                                frame, or NULL. */
@@ -80,7 +80,7 @@ typedef struct {
     s32 playbackLimit;    /*!< The size of the recording played, in bytes. */
     u16 history[INPUT_HISTORY_SIZE]; /*!< The last button changes, the newest at historyIndex. */
     s32 historyIndex; /*!< The index of the newest button change, moving down as changes come. */
-    s32 playerIndex;  /*!< The player of the input, from 0 to MAX_PLAYERS - 1. */
+    s32 playerIndex;  /*!< The player of the input, from 0 to #MAX_PLAYERS - 1. */
     OSContPad *pad;   /*!< The pad the controller reads fill. */
 } PlayerInputState;
 

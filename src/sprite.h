@@ -29,7 +29,7 @@ typedef struct {
     s32 originY;     /*!< The y the picture is drawn from on the screen. */
     s32 drawWidth;   /*!< The width the picture is drawn at on the screen, negative to flip it. */
     s32 drawHeight;  /*!< The height the picture is drawn at on the screen. */
-    u8 style; /*!< The style of a paint tool on the pictures of the tools, or SPRITE_STYLE_TINTED
+    u8 style; /*!< The style of a paint tool on the pictures of the tools, or #SPRITE_STYLE_TINTED
                    for a sprite drawn in a colour. */
 } Sprite;
 

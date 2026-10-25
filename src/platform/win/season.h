@@ -14,7 +14,7 @@
 
 /**
  * How the season resumes as the menus show. Its values are not recovered past
- * SEASON_RESUME_STATE_RESTART.
+ * #SEASON_RESUME_STATE_RESTART.
  *
  * @ghidraAddress BRD3D: 0x10220b20
  * @ghidraAddress BRGlide: 0x1021c650

@@ -127,10 +127,10 @@ public:
 
     /**
      * Make the name of an entry from a path: the name of the file, in capitals, padded with zeros
-     * to POD_ENTRY_NAME_SIZE bytes. A longer name ends the game.
+     * to #POD_ENTRY_NAME_SIZE bytes. A longer name ends the game.
      *
      * @param pszPath The path.
-     * @param pszName Receives the name, POD_ENTRY_NAME_SIZE bytes.
+     * @param pszName Receives the name, #POD_ENTRY_NAME_SIZE bytes.
      * @ghidraAddress BRD3D: 0x100085f0
      * @ghidraAddress BRGlide: 0x100087d0
      */

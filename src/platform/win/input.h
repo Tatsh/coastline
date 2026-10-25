@@ -569,7 +569,7 @@ int GetPressedMouseButton(void);
  * Read the game controller and find a control that is pressed, to bind it. A game controller
  * that does not exist is created as the first one.
  *
- * @param pwControl Receives JOYSTICK_CONTROL_BUTTON for a button, or the control of an axis
+ * @param pwControl Receives #JOYSTICK_CONTROL_BUTTON for a button, or the control of an axis
  * pushed past 50.
  * @return The button pressed, 0 for an axis, -1 for no control, or 1 without a game controller.
  * @ghidraAddress BRD3D: 0x10077200

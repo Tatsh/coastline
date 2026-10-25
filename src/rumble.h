@@ -33,7 +33,7 @@ extern OSMesgQueue g_SiMesgQueue;
 
 /**
  * Whether each controller holds a Rumble Pak. The start of the system checks all four; the rumble
- * reads the first RUMBLE_CHANNELS.
+ * reads the first #RUMBLE_CHANNELS.
  *
  * @ghidraAddress USA: 0x8031b1e8
  * @ghidraAddress EUR: 0x8031d6e8

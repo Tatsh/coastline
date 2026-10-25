@@ -628,7 +628,7 @@ f32 Atan2f(f32 x, f32 y);
  * @param v1 The second corner of the triangle.
  * @param v2 The third corner of the triangle.
  * @param normal The normal of the triangle.
- * @return TRUE if the point lies within the triangle, FALSE otherwise.
+ * @return #TRUE if the point lies within the triangle, #FALSE otherwise.
  * @ghidraAddress USA: 0x8022591c
  * @ghidraAddress EUR: 0x80226c5c
  * @ghidraAddress JPN: 0x8022644c
@@ -646,7 +646,7 @@ s32 PointInTriangle3D(Vec3f *point, Vec3f *v0, Vec3f *v1, Vec3f *v2, Vec3f *norm
  * @param v2 The third corner of the triangle.
  * @param normal The normal of the triangle.
  * @param tolerance The least value of the test against each edge for the point to pass it.
- * @return TRUE if the point passes the test against every edge, FALSE otherwise.
+ * @return #TRUE if the point passes the test against every edge, #FALSE otherwise.
  * @ghidraAddress USA: 0x80225a40
  * @ghidraAddress EUR: 0x80226d80
  * @ghidraAddress JPN: 0x80226570

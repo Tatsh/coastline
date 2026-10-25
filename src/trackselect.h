@@ -12,7 +12,7 @@
 extern "C" {
 #endif
 
-/** The tracks, the mirrored ones TRACK_MIRRORED places after the others. */
+/** The tracks, the mirrored ones #TRACK_MIRRORED places after the others. */
 enum {
     TRACK_DESERT,            /*!< The desert. */
     TRACK_MOUNTAIN,          /*!< The mountain. */

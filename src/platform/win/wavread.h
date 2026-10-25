@@ -60,7 +60,7 @@ int WaveStartDataRead(HMMIO *phmmio, MMCKINFO *pckData, MMCKINFO *pckRiff);
  * @param pDest Receives the data.
  * @param pckData The chunk of data, whose size is reduced by the bytes read.
  * @param pdwActualRead Receives the bytes read, or 0 on an error.
- * @return 0, 1 when the information of the file is not read, WAVE_ERROR_CORRUPT_WAVE_FILE, or the
+ * @return 0, 1 when the information of the file is not read, #WAVE_ERROR_CORRUPT_WAVE_FILE, or the
  * error of the multimedia I/O.
  * @ghidraAddress BRD3D: 0x10076ed0
  * @ghidraAddress BRGlide: 0x100701b0

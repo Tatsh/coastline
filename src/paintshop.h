@@ -433,7 +433,7 @@ void ResetPaintShopState(void);
 /**
  * Draw the message of an error of the controller pak in a box.
  *
- * @param error The error, a PFS_ERR_ value or PAK_ERROR_TRANSFER.
+ * @param error The error, a PFS_ERR_ value or #PAK_ERROR_TRANSFER.
  * @param operation PAINT_TOOL_LOAD or PAINT_TOOL_SAVE.
  * @param inCarSelect 1 when the dialog runs on the car select screen.
  * @ghidraAddress USA: 0x80244d84
@@ -497,7 +497,7 @@ void AllocateEditorBuffers(void);
  * @param operation PAINT_TOOL_LOAD or PAINT_TOOL_SAVE.
  * @param inCarSelect 1 when the dialog runs on the car select screen.
  * @param done Set once the dialog is done.
- * @return 0 while it runs and once the decals are moved, PAK_DIALOG_CANCELLED when the player
+ * @return 0 while it runs and once the decals are moved, #PAK_DIALOG_CANCELLED when the player
  *         cancels the swap of the rumble pak on the car select screen, or an error.
  * @ghidraAddress USA: 0x80248f88
  * @ghidraAddress EUR: 0x8024a56c

@@ -262,7 +262,7 @@ typedef struct {
     struct Vehicle *vehicle;           /*!< The vehicle of the racer, or NULL. */
     s32 index;                         /*!< The index of the racer in g_aRacerSlots. */
     u32 status; /*!< The RACER_ bits. The clock of the racer runs while the bits of
-                     RACER_CLOCK_STOPPED are clear. */
+                     #RACER_CLOCK_STOPPED are clear. */
     u8 unreconstructed6C[0x74 - 0x6C]; /*!< Not read by the routines reconstructed so far. */
     s32 straggler; /*!< Set for a racer past the thirteenth after the players. The championship
                         slows the vehicle of a straggler more, and the racers of each kind share
@@ -518,7 +518,7 @@ typedef struct Vehicle {
     s32 selectedCar;         /*!< The car under the cursor of the car selection screen. */
     s32 carModel;            /*!< The index of the car in g_aCarModels. */
     u8 color[3];             /*!< The color of the paint of the car, as red, green, and blue. */
-    u8 ghostMode;  /*!< VEHICLE_GHOST while the vehicle fades back in after it is put back on the
+    u8 ghostMode;  /*!< #VEHICLE_GHOST while the vehicle fades back in after it is put back on the
                         track. */
     f32 opacity;   /*!< How solid the vehicle is drawn, from 0 to 1. */
     s32 otherLook; /*!< Whether the car is drawn in its other look, without its textured parts or

@@ -157,10 +157,10 @@ extern void (*g_pfnReloadTextureEntryData)(int nEntry);
 #define DAMAGE_TEXTURE_COUNT 8
 
 /**
- * Raise the level of damage of a damage texture by one, up to DAMAGE_TEXTURE_MAX_LEVEL, and load
+ * Raise the level of damage of a damage texture by one, up to #DAMAGE_TEXTURE_MAX_LEVEL, and load
  * the texture again.
  *
- * @param nTexture The damage texture, below DAMAGE_TEXTURE_COUNT.
+ * @param nTexture The damage texture, below #DAMAGE_TEXTURE_COUNT.
  * @param pnEntries The entry of each damage texture.
  * @param pnLevels The level of damage of each damage texture.
  * @ghidraAddress BRD3D: 0x10074ed0
@@ -170,9 +170,9 @@ void IncrementDamageTextureLevel(int nTexture, const int *pnEntries, int *pnLeve
 
 /**
  * Raise the level of damage of a damage texture or of one of its two neighbours, wrapping at the
- * ends, chosen at random from those below DAMAGE_TEXTURE_MAX_LEVEL.
+ * ends, chosen at random from those below #DAMAGE_TEXTURE_MAX_LEVEL.
  *
- * @param nTexture The damage texture, below DAMAGE_TEXTURE_COUNT.
+ * @param nTexture The damage texture, below #DAMAGE_TEXTURE_COUNT.
  * @param pnEntries The entry of each damage texture.
  * @param pnLevels The level of damage of each damage texture.
  * @ghidraAddress BRD3D: 0x10074e40
@@ -680,7 +680,7 @@ void ClearDamageTextureLevels(void);
 /**
  * Copy g_adwDamageTextureLevels.
  *
- * @param pdwLevels Receives the DAMAGE_TEXTURE_LEVEL_COUNT levels.
+ * @param pdwLevels Receives the #DAMAGE_TEXTURE_LEVEL_COUNT levels.
  * @ghidraAddress BRD3D: 0x10074e20
  * @ghidraAddress BRGlide: 0x1006e080
  */

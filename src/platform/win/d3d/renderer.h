@@ -522,7 +522,7 @@ public:
     int dwSize;                          /*!< The size of the renderer. */
     int dwFlags;                         /*!< Options of the renderer. Bit 2 is set by default. */
     int nUnknown18;                      /* +0x18 */
-    int dwRenderStateFlags;              /*!< The objects created, RENDERER_STATE_READY for all. */
+    int dwRenderStateFlags;              /*!< The objects created, #RENDERER_STATE_READY for all. */
     HWND hWnd;                           /*!< The window drawn into. */
     int nGdiModeRefCount;                /*!< How many times the screen was given to GDI. */
     int nUnknown28;                      /* +0x28 */
@@ -595,9 +595,9 @@ public:
      * Create the DirectDraw objects of the window: select the driver, the device, and the mode,
      * create the DirectDraw objects, set the cooperative level and the display mode, create the
      * chain of flipped surfaces and the render device, and tell the window with
-     * `WM_RENDERER_CREATED`. A step that fails releases the objects.
+     * #WM_RENDERER_CREATED. A step that fails releases the objects.
      *
-     * @return `S_OK`, `RENDERER_E_NOT_READY` without a window, or the error of the step that
+     * @return `S_OK`, #RENDERER_E_NOT_READY without a window, or the error of the step that
      * failed.
      * @ghidraAddress BRD3D: 0x1000a2c0
      */
@@ -607,7 +607,7 @@ public:
      * Find the driver of pDriver again, or the default, and the device and the mode of pDevice and
      * pMode on it, enumerating the drivers first when they are not.
      *
-     * @return `S_OK`, `RENDERER_E_NOT_CREATED` without a driver, `RENDERER_E_NOT_IN_GDI_MODE`
+     * @return `S_OK`, #RENDERER_E_NOT_CREATED without a driver, #RENDERER_E_NOT_IN_GDI_MODE
      * without a device and a mode, or the error of the enumeration.
      * @ghidraAddress BRD3D: 0x1000a390
      */
@@ -632,7 +632,7 @@ public:
     /**
      * Take the screen for the window alone.
      *
-     * @return `S_OK`, the error of DirectDraw, or RENDERER_E_NOT_READY without a window.
+     * @return `S_OK`, the error of DirectDraw, or #RENDERER_E_NOT_READY without a window.
      * @ghidraAddress BRD3D: 0x1000a590
      */
     HRESULT SetCooperativeLevel();
@@ -806,7 +806,7 @@ public:
      * comes back on the last.
      *
      * @param bEnter Whether the screen goes to GDI.
-     * @return `S_OK`, the error of the change, or RENDERER_E_NOT_IN_GDI_MODE for a return that
+     * @return `S_OK`, the error of the change, or #RENDERER_E_NOT_IN_GDI_MODE for a return that
      * was not requested.
      * @ghidraAddress BRD3D: 0x1000b220
      */
@@ -815,7 +815,7 @@ public:
     /**
      * Restore the front, back, and depth buffers that were lost, and the textures of the host.
      *
-     * @return `S_OK`, the error of a restore, or RENDERER_E_NOT_READY.
+     * @return `S_OK`, the error of a restore, or #RENDERER_E_NOT_READY.
      * @ghidraAddress BRD3D: 0x1000b2c0
      */
     HRESULT RestoreLostSurfaces();
@@ -824,7 +824,7 @@ public:
      * The rectangle of the viewport.
      *
      * @param pRect Receives the rectangle.
-     * @return `S_OK`, or RENDERER_E_NOT_READY.
+     * @return `S_OK`, or #RENDERER_E_NOT_READY.
      * @ghidraAddress BRD3D: 0x1000b350
      */
     HRESULT GetDeviceViewportRect(RECT *pRect);
@@ -862,7 +862,7 @@ public:
      * Draw through a renderer.
      *
      * @param pNewRenderer The renderer.
-     * @return `S_OK`, or RENDERER_E_NOT_CREATED without a renderer.
+     * @return `S_OK`, or #RENDERER_E_NOT_CREATED without a renderer.
      * @ghidraAddress BRD3D: 0x10001140
      */
     HRESULT SetRenderer(DirectDrawRenderer *pNewRenderer);
@@ -885,7 +885,7 @@ public:
     /**
      * Whether the renderer is ready and has its Direct3D objects.
      *
-     * @return `S_OK`, RENDERER_E_NOT_READY for a renderer not ready, or `E_FAIL`.
+     * @return `S_OK`, #RENDERER_E_NOT_READY for a renderer not ready, or `E_FAIL`.
      * @ghidraAddress BRD3D: 0x10001160
      */
     HRESULT ValidateRenderDeviceState();
@@ -1253,8 +1253,8 @@ void InitializeAllTextureSurfaces(void);
  * @param ppDriver Receives the driver.
  * @param ppMode Receives the mode.
  * @param ppDevice Receives the device.
- * @return `S_OK`, the error of the search for drivers, RENDERER_E_NOT_CREATED without a driver
- * or an output, or RENDERER_E_NOT_IN_GDI_MODE without a device and a mode.
+ * @return `S_OK`, the error of the search for drivers, #RENDERER_E_NOT_CREATED without a driver
+ * or an output, or #RENDERER_E_NOT_IN_GDI_MODE without a device and a mode.
  * @ghidraAddress BRD3D: 0x1001a790
  */
 HRESULT SelectDriverDeviceAndModeFromConfig(GUID *pDriverGuid,
@@ -1425,7 +1425,7 @@ BOOL WINAPI EnumDirectDrawDriversCallback(GUID *pGuid,
 /**
  * Find the DirectDraw drivers and their devices and modes.
  *
- * @return `S_OK`, the error of DirectDraw, or RENDERER_E_NOT_IN_GDI_MODE when a driver was not
+ * @return `S_OK`, the error of DirectDraw, or #RENDERER_E_NOT_IN_GDI_MODE when a driver was not
  * recorded.
  * @ghidraAddress BRD3D: 0x1001b9a0
  */

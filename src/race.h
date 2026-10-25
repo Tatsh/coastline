@@ -46,7 +46,7 @@ typedef struct {
     const char *title; /*!< The small title above the lines, or NULL to end the captions. */
     f32 duration;      /*!< The time it shows, in seconds. */
     const char *lines[CAPTION_LINES];  /*!< The lines, ending with NULL when there are fewer than
-                                            CAPTION_LINES. */
+                                            #CAPTION_LINES. */
     u8 unreconstructed1C[0x20 - 0x1C]; /*!< Not yet reconstructed. */
 } RaceCaption;
 

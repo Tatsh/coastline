@@ -79,8 +79,8 @@ enum {
 
 /** The settings of the options menu, which the configuration on a Controller Pak keeps. */
 typedef struct {
-    s32 musicVolume; /*!< The level of the music, from 0 to VOLUME_LEVELS - 1. */
-    s32 sfxVolume;   /*!< The level of the sound effects, from 0 to VOLUME_LEVELS - 1. */
+    s32 musicVolume; /*!< The level of the music, from 0 to #VOLUME_LEVELS - 1. */
+    s32 sfxVolume;   /*!< The level of the sound effects, from 0 to #VOLUME_LEVELS - 1. */
     s32 speedInMph;  /*!< Whether speeds show in miles an hour rather than kilometres. */
 } OptionSettings;
 
@@ -485,7 +485,7 @@ void ProcessDataSaveLoadMenu(void);
  * Load the profile of both players, the equipment of the second player, and the options from the
  * EEPROM of the cartridge, when the EEPROM responds and passes its checksum.
  *
- * @return TRUE when the data was loaded, FALSE when the EEPROM is missing, unreadable, or fails
+ * @return #TRUE when the data was loaded, #FALSE when the EEPROM is missing, unreadable, or fails
  *     its checksum.
  * @ghidraAddress EUR: 0x80211ca0
  * @ghidraAddress JPN: 0x80211b60

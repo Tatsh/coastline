@@ -608,9 +608,9 @@ void SetScreenPendingSelection(s32 item);
  * @param bottomRed The red component of the bottom of the gradient.
  * @param bottomGreen The green component of the bottom of the gradient.
  * @param bottomBlue The blue component of the bottom of the gradient.
- * @return MENU_RESULT_CHOSEN once an item is chosen, MENU_RESULT_CANCELLED once the screen is
- *         left, MENU_RESULT_UP or MENU_RESULT_DOWN when an adjustable item is changed, and 0 while
- *         the screen runs.
+ * @return #MENU_RESULT_CHOSEN once an item is chosen, #MENU_RESULT_CANCELLED once the screen is
+ *         left, #MENU_RESULT_UP or #MENU_RESULT_DOWN when an adjustable item is changed, and 0
+ *         while the screen runs.
  * @ghidraAddress USA: 0x8020ad5c
  * @ghidraAddress EUR: 0x8020ab3c
  * @ghidraAddress JPN: 0x8020a73c

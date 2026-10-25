@@ -95,7 +95,7 @@ typedef struct {
 extern VisibleCell g_aVisibleCellTuples[VISIBLE_CELLS + 1];
 
 /**
- * Whether the cells in view were more than VISIBLE_CELLS.
+ * Whether the cells in view were more than #VISIBLE_CELLS.
  *
  * @ghidraAddress USA: 0x8028c76c
  * @ghidraAddress EUR: 0x8028eecc
