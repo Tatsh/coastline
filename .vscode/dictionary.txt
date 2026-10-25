@@ -357,6 +357,7 @@ paintshop
 painttex
 pakmenu
 paks
+paletteentry
 pathlib
 permuter
 persp

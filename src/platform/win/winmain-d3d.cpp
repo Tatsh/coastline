@@ -376,6 +376,48 @@ LRESULT HandleWindowActivate(HWND hWnd, WPARAM wParam, LPARAM lParam) {
     return DefWindowProcA(hWnd, WM_ACTIVATE, wParam, lParam);
 }
 
+LRESULT HandleWindowActivateApp(HWND hWnd, WPARAM wParam, LPARAM lParam) {
+    DirectDrawRenderer *pRenderer;
+
+    g_dwAppActive = wParam;
+    if (!wParam) {
+        // The game pauses as it goes behind, unless it is paused or a replay plays.
+        if (!g_dwRacePauseState && !g_dwReplayPlaybackMode) {
+            SaveClockForPause();
+            PauseMusicPlayback();
+            MuteAllActiveSoundChannels();
+            g_dwPauseMenuSelection = 0;
+            // A network race that has started and not finished asks the others to pause instead.
+            if (g_dwNetworkPlayMode && g_bNetRaceStartReached && !g_dwReplayPlaybackMode &&
+                g_aVehicles_LapCount < g_dwTotalLaps) {
+                RequestNetworkPause();
+                TickNetworkPauseRequest();
+            } else {
+                g_dwRacePauseState = true;
+            }
+        }
+        NullStub();
+    }
+    if (GetRenderBackendMode() == 1) {
+        pRenderer = GetWindowRenderer(hWnd);
+        if (g_dwAppActive) {
+            if (pRenderer != nullptr) {
+                pRenderer->dwFlags |= 8;
+                pRenderer->RestoreLostSurfaces();
+                pRenderer->SetPrimarySurfacePalette();
+            }
+        } else if (pRenderer != nullptr) {
+            pRenderer->dwFlags &= ~8;
+            InvalidateRect(hWnd, nullptr, FALSE);
+        }
+    }
+    if (g_dwAppActive) {
+        NullStub();
+        ResetFrameTimerState();
+    }
+    return DefWindowProcA(hWnd, WM_ACTIVATEAPP, wParam, lParam);
+}
+
 LRESULT HandleWindowClose(HWND hWnd) {
     DestroyWindow(hWnd);
     return 0;
@@ -495,6 +537,79 @@ LRESULT HandleWindowSize(HWND hWnd, WPARAM wParam, LPARAM lParam) {
         break;
     }
     return DefWindowProcA(hWnd, WM_SIZE, wParam, lParam);
+}
+
+LRESULT HandleWindowSysCommand(HWND hWnd, WPARAM wParam, LPARAM lParam) {
+    DirectDrawRenderer *pRenderer = GetWindowRenderer(hWnd);
+
+    switch (wParam) {
+    case SC_SIZE:
+    case SC_MOVE:
+        // The window is not moved or resized.
+        return 0;
+    case SC_MINIMIZE:
+        g_bWindowMinimized = true;
+        g_bWindowMaximized = false;
+        break;
+    case SC_MAXIMIZE:
+        g_bWindowMaximized = true;
+        g_bWindowMinimized = false;
+        return 0;
+    case SC_RESTORE:
+        if (g_bWindowMinimized && pRenderer != nullptr) {
+            pRenderer->RestoreLostSurfaces();
+        }
+        g_bWindowMinimized = false;
+        g_bWindowMaximized = false;
+        break;
+    }
+    return DefWindowProcA(hWnd, WM_SYSCOMMAND, wParam, lParam);
+}
+
+// The smallest viewport the window is given.
+#define MIN_VIEWPORT_WIDTH 320
+#define MIN_VIEWPORT_HEIGHT 200
+
+LRESULT HandleWindowPosChanging(HWND hWnd, WPARAM wParam, LPARAM lParam) {
+    DirectDrawRenderer *pRenderer = GetWindowRenderer(hWnd);
+    WINDOWPOS *pPos = reinterpret_cast<WINDOWPOS *>(lParam);
+    RECT rcWindow;
+    RECT rcView;
+    unsigned nWidth;
+    unsigned nHeight;
+    unsigned nViewWidth;
+    unsigned nViewHeight;
+
+    if (pRenderer != nullptr && (pRenderer->dwRenderStateFlags & 2) != 0 && !g_bWindowMinimized &&
+        pPos != nullptr) {
+        if (IsIconic(hWnd)) {
+            g_bWindowMinimized = true;
+        } else {
+            // The window takes the position and the size of the viewport.
+            GetWindowRect(hWnd, &rcWindow);
+            nWidth = abs(rcWindow.right - rcWindow.left);
+            nHeight = abs(rcWindow.bottom - rcWindow.top);
+            pRenderer->GetDeviceViewportRect(&rcView);
+            nViewWidth = abs(rcView.right - rcView.left);
+            nViewHeight = abs(rcView.bottom - rcView.top);
+            if (nViewWidth < MIN_VIEWPORT_WIDTH) {
+                nViewWidth = MIN_VIEWPORT_WIDTH;
+            }
+            if (nViewHeight < MIN_VIEWPORT_HEIGHT) {
+                nViewHeight = MIN_VIEWPORT_HEIGHT;
+            }
+            if (nViewWidth == nWidth && nViewHeight == nHeight) {
+                pPos->flags |= SWP_NOSIZE | SWP_NOMOVE;
+            } else {
+                pPos->x = rcView.left;
+                pPos->y = rcView.top;
+                pPos->cx = nViewWidth;
+                pPos->cy = nViewHeight;
+                pPos->flags &= ~(SWP_NOSIZE | SWP_NOMOVE);
+            }
+        }
+    }
+    return DefWindowProcA(hWnd, WM_WINDOWPOSCHANGING, wParam, lParam);
 }
 
 LRESULT AttachRenderDeviceToWindow(HWND hWnd, LPARAM lParam) {

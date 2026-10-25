@@ -74,6 +74,20 @@ void StopMusicTrack(void);
 void ShutDownEarMusicChannel(void);
 
 /**
+ * Pause the music while the game is paused.
+ *
+ * @ghidraAddress BRD3D: 0x10002b70
+ */
+void PauseMusicPlayback(void);
+
+/**
+ * Silence every channel of sound that plays.
+ *
+ * @ghidraAddress BRD3D: 0x10072e00
+ */
+void MuteAllActiveSoundChannels(void);
+
+/**
  * Play the track of the CD audio that is current, again.
  *
  * @ghidraAddress BRD3D: 0x10002510

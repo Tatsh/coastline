@@ -18,6 +18,27 @@ void InitializeDirectPlayForDesktopWindow(void);
 extern bool g_dwDirectPlaySessionActive;
 
 /**
+ * Whether the race of a network game has started.
+ *
+ * @ghidraAddress BRD3D: 0x1022af14
+ */
+extern bool g_bNetRaceStartReached;
+
+/**
+ * Ask the other players of a network game to pause.
+ *
+ * @ghidraAddress BRD3D: 0x10004be0
+ */
+void RequestNetworkPause(void);
+
+/**
+ * Send the request to pause of a network game.
+ *
+ * @ghidraAddress BRD3D: 0x10004fc0
+ */
+void TickNetworkPauseRequest(void);
+
+/**
  * Give a message of the main window to the network play.
  *
  * @param hWnd The main window.

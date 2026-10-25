@@ -226,13 +226,13 @@ int DirectDrawRenderer::ReleasePrimaryPalette() {
         pPrimaryPalette->Release();
         pPrimaryPalette = nullptr;
     }
-    if (pSavedPaletteEntries != nullptr) {
-        operator delete(pSavedPaletteEntries);
-        pSavedPaletteEntries = nullptr;
+    if (pGamePaletteEntries != nullptr) {
+        operator delete(pGamePaletteEntries);
+        pGamePaletteEntries = nullptr;
     }
-    if (pPaletteEntries != nullptr) {
-        operator delete(pPaletteEntries);
-        pPaletteEntries = nullptr;
+    if (pGdiPaletteEntries != nullptr) {
+        operator delete(pGdiPaletteEntries);
+        pGdiPaletteEntries = nullptr;
     }
     nPaletteEntryCount = 0;
     return 0;
@@ -261,6 +261,52 @@ int DirectDrawRenderer::DestroyD3DDevice() {
         pBackBuffer = nullptr;
     }
     return 0;
+}
+
+HRESULT DirectDrawRenderer::SetPrimarySurfacePalette() {
+    HRESULT hr;
+
+    if (pPrimarySurface == nullptr || pPrimaryPalette == nullptr) {
+        return S_OK;
+    }
+    hr = pPrimarySurface->SetPalette(pPrimaryPalette);
+    return FAILED(hr) ? hr : S_OK;
+}
+
+HRESULT DirectDrawRenderer::RestoreGdiPaletteAndFlipToGdi() {
+    HRESULT hr;
+
+    if (pPrimaryPalette != nullptr) {
+        hr = pPrimaryPalette->GetEntries(0, 0, nPaletteEntryCount, pGamePaletteEntries);
+        if (FAILED(hr)) {
+            return hr;
+        }
+        hr = pPrimaryPalette->SetEntries(0, 0, nPaletteEntryCount, pGdiPaletteEntries);
+        if (FAILED(hr)) {
+            return hr;
+        }
+    }
+    if (pDirectDraw2 != nullptr) {
+        hr = pDirectDraw2->FlipToGDISurface();
+        if (FAILED(hr)) {
+            return hr;
+        }
+    }
+    if (hWnd != nullptr && IsWindow(hWnd)) {
+        DrawMenuBar(hWnd);
+        RedrawWindow(hWnd, nullptr, nullptr, RDW_FRAME);
+    }
+    return S_OK;
+}
+
+HRESULT DirectDrawRenderer::RestoreGamePaletteEntries() {
+    HRESULT hr;
+
+    if (pPrimaryPalette == nullptr) {
+        return S_OK;
+    }
+    hr = pPrimaryPalette->SetEntries(0, 0, nPaletteEntryCount, pGamePaletteEntries);
+    return FAILED(hr) ? hr : S_OK;
 }
 
 HRESULT DirectDrawRenderer::AdjustGdiModeRefCount(bool bEnter) {

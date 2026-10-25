@@ -161,6 +161,56 @@ LRESULT CALLBACK MainWindowProc(HWND hWnd, UINT nMessage, WPARAM wParam, LPARAM 
 extern bool g_dwRacePauseState;
 
 /**
+ * The choice of the pause menu.
+ *
+ * @ghidraAddress BRD3D: 0x10680734
+ */
+extern int g_dwPauseMenuSelection;
+
+/**
+ * Whether a replay plays.
+ *
+ * @ghidraAddress BRD3D: 0x106909e0
+ */
+extern bool g_dwReplayPlaybackMode;
+
+/**
+ * The laps the first vehicle has driven.
+ *
+ * @ghidraAddress BRD3D: 0x10acee50
+ */
+extern int g_aVehicles_LapCount;
+
+/**
+ * The laps of the race.
+ *
+ * @ghidraAddress BRD3D: 0x100bd3e0
+ */
+extern int g_dwTotalLaps;
+
+/**
+ * Store the clock as the game pauses.
+ *
+ * @ghidraAddress BRD3D: 0x10067980
+ */
+void SaveClockForPause(void);
+
+/**
+ * Start the timing of frames again.
+ *
+ * @ghidraAddress BRD3D: 0x1002c4d0
+ */
+void ResetFrameTimerState(void);
+
+/**
+ * The renderer the game was set to use.
+ *
+ * @return 1 for the renderer of the window.
+ * @ghidraAddress BRD3D: 0x1006a980
+ */
+int GetRenderBackendMode(void);
+
+/**
  * Set whether the application is active from the state of `WM_ACTIVATE`.
  *
  * @param wParam The first parameter of `WM_ACTIVATE`.

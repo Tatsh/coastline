@@ -91,8 +91,8 @@ public:
     IDirectDrawSurface *pPrimarySurface; /*!< The front buffer. */
     IDirectDrawPalette *pPrimaryPalette; /*!< The palette of the front buffer. */
     int nPaletteEntryCount;              /*!< The entries of the two palette buffers. */
-    void *pPaletteEntries;               /*!< A buffer of palette entries. */
-    void *pSavedPaletteEntries;          /*!< A second buffer of palette entries. */
+    PALETTEENTRY *pGdiPaletteEntries;    /*!< The palette of GDI, set while GDI has the screen. */
+    PALETTEENTRY *pGamePaletteEntries;   /*!< The palette of the game, saved for GDI. */
     IDirectDrawSurface *pBackBuffer;     /*!< The surface the device draws into. */
     IDirectDrawSurface *pZBuffer;        /*!< The depth buffer attached to pBackBuffer. */
     IDirect3DDevice2 *pD3DDevice;        /*!< The Direct3D device. */
@@ -252,6 +252,14 @@ public:
      * @ghidraAddress BRD3D: 0x1000b280
      */
     HRESULT SetDeviceNotificationCallback(RenderHost *pRenderHost);
+
+    /**
+     * Give the palette to the front buffer.
+     *
+     * @return `S_OK`, or the error of DirectDraw.
+     * @ghidraAddress BRD3D: 0x1000b150
+     */
+    HRESULT SetPrimarySurfacePalette();
 
     /**
      * Give the screen to GDI, with its palette, so a menu or a dialog can show.
