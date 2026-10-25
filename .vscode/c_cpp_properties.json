@@ -27,12 +27,60 @@
       "includePath": [
         "${workspaceFolder}/3rdparty/zlib-1.0.4",
         "${workspaceFolder}/src",
+        "${workspaceFolder}/src/libultra/include"
+      ],
+      "intelliSenseMode": "linux-gcc-x86",
+      "name": "N64 (USA)"
+    },
+    {
+      "cStandard": "c23",
+      "compilerArgs": ["-m32"],
+      "cppStandard": "c++23",
+      "defines": [
+        "TGR_PLATFORM=2",
+        "TGR_PLATFORM_N64=1",
+        "TGR_PLATFORM_WIN=2",
+        "TGR_REGION=1",
+        "TGR_REGION_EU=3",
+        "TGR_REGION_JP=2",
+        "TGR_REGION_US=1",
+        "TGR_RENDERER=1",
+        "TGR_RENDERER_D3D=1",
+        "TGR_RENDERER_GLIDE=2"
+      ],
+      "includePath": [
+        "${workspaceFolder}/src",
         "${workspaceFolder}/src/libultra/include",
         "/usr/lib/mingw64-toolchain/x86_64-w64-mingw32/include",
         "/usr/lib/mingw64-toolchain/lib/gcc/x86_64-w64-mingw32/16/include/"
       ],
-      "intelliSenseMode": "linux-gcc-x86",
-      "name": "N64 (USA)"
+      "intelliSenseMode": "windows-gcc-x86",
+      "name": "Windows (Direct3D)"
+    },
+    {
+      "cStandard": "c23",
+      "compilerArgs": ["-m32"],
+      "cppStandard": "c++23",
+      "defines": [
+        "TGR_PLATFORM=2",
+        "TGR_PLATFORM_N64=1",
+        "TGR_PLATFORM_WIN=2",
+        "TGR_REGION=1",
+        "TGR_REGION_EU=3",
+        "TGR_REGION_JP=2",
+        "TGR_REGION_US=1",
+        "TGR_RENDERER=2",
+        "TGR_RENDERER_D3D=1",
+        "TGR_RENDERER_GLIDE=2"
+      ],
+      "includePath": [
+        "${workspaceFolder}/src",
+        "${workspaceFolder}/src/libultra/include",
+        "/usr/lib/mingw64-toolchain/x86_64-w64-mingw32/include",
+        "/usr/lib/mingw64-toolchain/lib/gcc/x86_64-w64-mingw32/16/include/"
+      ],
+      "intelliSenseMode": "windows-gcc-x86",
+      "name": "Windows (Glide)"
     }
   ],
   "env": {},
