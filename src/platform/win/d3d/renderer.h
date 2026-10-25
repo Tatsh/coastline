@@ -952,6 +952,47 @@ HRESULT AppendDirectDrawDriverNode(DirectDrawDriver *pDriver);
  */
 extern IDirect3DDevice2 *g_pD3DDevice2;
 
+/** The bit of g_dwDirtyRenderStateMask of the cull mode. */
+#define RENDER_STATE_DIRTY_CULL_MODE 0x10
+
+/** The bit of g_dwDirtyRenderStateMask of the comparison of depth. */
+#define RENDER_STATE_DIRTY_Z_FUNC 0x20
+
+/**
+ * The render states whose pending value differs from the value the device has, a bit for each.
+ *
+ * @ghidraAddress BRD3D: 0x10277370
+ */
+extern DWORD g_dwDirtyRenderStateMask;
+
+/**
+ * The cull mode the device is to take.
+ *
+ * @ghidraAddress BRD3D: 0x10277388
+ */
+extern DWORD g_dwPendingRS_CullMode;
+
+/**
+ * The comparison of depth the device is to take.
+ *
+ * @ghidraAddress BRD3D: 0x1027738c
+ */
+extern DWORD g_dwPendingRS_ZFunc;
+
+/**
+ * The cull mode the device has.
+ *
+ * @ghidraAddress BRD3D: 0x10277408
+ */
+extern DWORD g_dwAppliedRS_CullMode;
+
+/**
+ * The comparison of depth the device has.
+ *
+ * @ghidraAddress BRD3D: 0x1027740c
+ */
+extern DWORD g_dwAppliedRS_ZFunc;
+
 /**
  * Find the driver a GUID selects, and the primary driver on the way.
  *

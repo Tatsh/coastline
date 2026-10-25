@@ -120,10 +120,12 @@ extern GbiCommand *g_apGbiDisplayListReturnStack[GBI_DISPLAY_LIST_STACK_SIZE];
 void SelectVertexSubmitterForCombineMode(unsigned dwCombineHi, unsigned dwCombineLo);
 
 /**
- * Apply the geometry mode after a change.
+ * Apply the geometry mode after a change: the culling and the comparison of depth of the device
+ * when they changed, and the handlers of vertices and triangles in g_apfnGbiHandlers.
  *
  * @ghidraAddress BRD3D: 0x1001e7c0
  * @ghidraAddress BRGlide: 0x1001fd70
+ * @stub{BRGlide}
  */
 void ApplyGeometryModeChanges(void);
 
@@ -866,6 +868,141 @@ GbiCommand *HandleGbiTri1Smooth(GbiCommand *pCommand);
  * @ghidraAddress BRGlide: 0x1001fa30
  */
 GbiCommand *HandleGbiTri2Smooth(GbiCommand *pCommand);
+
+/**
+ * Load vertices with lighting.
+ *
+ * @param pCommand The command.
+ * @return The next command.
+ * @ghidraAddress BRD3D: 0x10021e80
+ */
+GbiCommand *HandleGbiVertexLit(GbiCommand *pCommand);
+
+/**
+ * Load vertices with lighting modulated by the environment colour.
+ *
+ * @param pCommand The command.
+ * @return The next command.
+ * @ghidraAddress BRD3D: 0x10022480
+ * @ghidraAddress BRGlide: 0x100221d0
+ */
+GbiCommand *HandleGbiVertexLitEnvColorModulated(GbiCommand *pCommand);
+
+/**
+ * Load vertices that generate their texture coordinates.
+ *
+ * @param pCommand The command.
+ * @return The next command.
+ * @ghidraAddress BRD3D: 0x100228f0
+ * @ghidraAddress BRGlide: 0x10022600
+ */
+GbiCommand *HandleGbiVertexTexGen(GbiCommand *pCommand);
+
+/**
+ * Load vertices that generate their texture coordinates linearly.
+ *
+ * @param pCommand The command.
+ * @return The next command.
+ * @ghidraAddress BRD3D: 0x100231d0
+ * @ghidraAddress BRGlide: 0x10022bf0
+ */
+GbiCommand *HandleGbiVertexTexGenLinear(GbiCommand *pCommand);
+
+/**
+ * Load vertices with lighting without the depth buffer.
+ *
+ * @param pCommand The command.
+ * @return The next command.
+ * @ghidraAddress BRD3D: 0x10023cc0
+ * @ghidraAddress BRGlide: 0x10023360
+ */
+GbiCommand *HandleGbiVertexLitNoZBuffer(GbiCommand *pCommand);
+
+/**
+ * Load vertices without lighting without the depth buffer.
+ *
+ * @param pCommand The command.
+ * @return The next command.
+ * @ghidraAddress BRD3D: 0x10023a10
+ * @ghidraAddress BRGlide: 0x10023110
+ */
+GbiCommand *HandleGbiVertexUnlitNoZBuffer(GbiCommand *pCommand);
+
+/**
+ * Draw one triangle with flat shading.
+ *
+ * @param pCommand The command.
+ * @return The next command.
+ * @ghidraAddress BRD3D: 0x1001e980
+ * @ghidraAddress BRGlide: 0x1001fef0
+ */
+GbiCommand *HandleGbiTri1Flat(GbiCommand *pCommand);
+
+/**
+ * Draw two triangles with flat shading.
+ *
+ * @param pCommand The command.
+ * @return The next command.
+ * @ghidraAddress BRD3D: 0x10020380
+ * @ghidraAddress BRGlide: 0x10020cf0
+ */
+GbiCommand *HandleGbiTri2Flat(GbiCommand *pCommand);
+
+/**
+ * Draw one triangle with smooth shading without the depth buffer.
+ *
+ * @param pCommand The command.
+ * @return The next command.
+ * @ghidraAddress BRD3D: 0x1001fbe0
+ * @ghidraAddress BRGlide: 0x10020900
+ */
+GbiCommand *HandleGbiTri1SmoothNoZBuffer(GbiCommand *pCommand);
+
+/**
+ * Draw two triangles with smooth shading without the depth buffer.
+ *
+ * @param pCommand The command.
+ * @return The next command.
+ * @ghidraAddress BRD3D: 0x10020860
+ * @ghidraAddress BRGlide: 0x10020d70
+ */
+GbiCommand *HandleGbiTri2SmoothNoZBuffer(GbiCommand *pCommand);
+
+/**
+ * Draw one triangle with flat shading without the depth buffer.
+ *
+ * @param pCommand The command.
+ * @return The next command.
+ * @ghidraAddress BRD3D: 0x1001f2b0
+ * @ghidraAddress BRGlide: 0x100203f0
+ */
+GbiCommand *HandleGbiTri1FlatNoZBuffer(GbiCommand *pCommand);
+
+/**
+ * Draw two triangles with flat shading without the depth buffer.
+ *
+ * @param pCommand The command.
+ * @return The next command.
+ * @ghidraAddress BRD3D: 0x100205f0
+ * @ghidraAddress BRGlide: 0x10020d30
+ */
+GbiCommand *HandleGbiTri2FlatNoZBuffer(GbiCommand *pCommand);
+
+#if TGR_RENDERER == TGR_RENDERER_D3D
+/**
+ * The comparison of depth of the geometry mode.
+ *
+ * @ghidraAddress BRD3D: 0x104c16a0
+ */
+extern DWORD g_dwD3DZFunc;
+
+/**
+ * Whether the combine mode takes the routine that modulates the lighting by the environment colour.
+ *
+ * @ghidraAddress BRD3D: 0x104c0dc0
+ */
+extern int g_bCombineModeSpecialSubmitter;
+#endif
 
 /** The opcodes of the commands of the display lists that have handlers of their own. */
 enum GbiOpcode {

@@ -14,6 +14,11 @@
 RenderHost *g_pRenderHost;
 IDirect3D2 *g_pDirect3D2;
 IDirect3DDevice2 *g_pD3DDevice2;
+DWORD g_dwDirtyRenderStateMask;
+DWORD g_dwPendingRS_CullMode;
+DWORD g_dwPendingRS_ZFunc;
+DWORD g_dwAppliedRS_CullMode;
+DWORD g_dwAppliedRS_ZFunc;
 
 RenderHost::RenderHost() : pRenderer(nullptr) {
 }

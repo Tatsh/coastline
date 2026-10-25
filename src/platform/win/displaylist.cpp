@@ -497,3 +497,75 @@ static constexpr std::array<GbiHandler, GBI_HANDLER_COUNT> MakeGbiHandlers() {
 }
 
 std::array<GbiHandler, GBI_HANDLER_COUNT> g_apfnGbiHandlers = MakeGbiHandlers();
+
+#if TGR_RENDERER == TGR_RENDERER_D3D
+// The bits of the geometry mode of the console that ApplyGeometryModeChanges() reads.
+#define GBI_GEOMETRY_Z_BUFFER 0x1
+#define GBI_GEOMETRY_SHADING_SMOOTH 0x200
+#define GBI_GEOMETRY_CULL_FRONT 0x1000
+#define GBI_GEOMETRY_CULL_BACK 0x2000
+#define GBI_GEOMETRY_LIGHTING 0x20000
+#define GBI_GEOMETRY_TEXTURE_GEN 0x40000
+#define GBI_GEOMETRY_TEXTURE_GEN_LINEAR 0x80000
+
+DWORD g_dwD3DZFunc;
+int g_bCombineModeSpecialSubmitter;
+
+static inline void
+SetPendingRenderState(DWORD *pdwPending, DWORD dwApplied, DWORD dwValue, DWORD dwDirtyBit) {
+    *pdwPending = dwValue;
+    if (dwApplied == dwValue) {
+        g_dwDirtyRenderStateMask &= ~dwDirtyBit;
+    } else {
+        g_dwDirtyRenderStateMask |= dwDirtyBit;
+    }
+}
+
+void ApplyGeometryModeChanges(void) {
+    unsigned dwChanged = g_dwGbiPrevGeometryMode ^ g_dwGbiGeometryMode;
+    unsigned dwMode = g_dwGbiGeometryMode;
+
+    if (dwChanged & (GBI_GEOMETRY_CULL_FRONT | GBI_GEOMETRY_CULL_BACK)) {
+        DWORD dwCullMode = D3DCULL_NONE;
+        if (dwMode & GBI_GEOMETRY_CULL_FRONT) {
+            dwCullMode = D3DCULL_CW;
+        } else if (dwMode & GBI_GEOMETRY_CULL_BACK) {
+            dwCullMode = D3DCULL_CCW;
+        }
+        SetPendingRenderState(&g_dwPendingRS_CullMode,
+                              g_dwAppliedRS_CullMode,
+                              dwCullMode,
+                              RENDER_STATE_DIRTY_CULL_MODE);
+    }
+    if (dwChanged & GBI_GEOMETRY_Z_BUFFER) {
+        g_dwD3DZFunc = (dwMode & GBI_GEOMETRY_Z_BUFFER) ? D3DCMP_LESS : D3DCMP_ALWAYS;
+        SetPendingRenderState(
+            &g_dwPendingRS_ZFunc, g_dwAppliedRS_ZFunc, g_dwD3DZFunc, RENDER_STATE_DIRTY_Z_FUNC);
+    }
+    bool bSmooth = (dwMode & GBI_GEOMETRY_SHADING_SMOOTH) != 0;
+    if (dwMode & GBI_GEOMETRY_Z_BUFFER) {
+        if (dwMode & GBI_GEOMETRY_LIGHTING) {
+            g_apfnGbiHandlers[GBI_OP_VERTEX] = g_bCombineModeSpecialSubmitter ?
+                                                   HandleGbiVertexLitEnvColorModulated :
+                                                   HandleGbiVertexLit;
+        } else {
+            g_apfnGbiHandlers[GBI_OP_VERTEX] = HandleGbiVertexUnlit;
+        }
+        if (dwMode & GBI_GEOMETRY_TEXTURE_GEN) {
+            g_apfnGbiHandlers[GBI_OP_VERTEX] = (dwMode & GBI_GEOMETRY_TEXTURE_GEN_LINEAR) ?
+                                                   HandleGbiVertexTexGenLinear :
+                                                   HandleGbiVertexTexGen;
+        }
+        g_apfnGbiHandlers[GBI_OP_TRI1] = bSmooth ? HandleGbiTri1Smooth : HandleGbiTri1Flat;
+        g_apfnGbiHandlers[GBI_OP_TRI2] = bSmooth ? HandleGbiTri2Smooth : HandleGbiTri2Flat;
+    } else {
+        g_apfnGbiHandlers[GBI_OP_VERTEX] = (dwMode & GBI_GEOMETRY_LIGHTING) ?
+                                               HandleGbiVertexLitNoZBuffer :
+                                               HandleGbiVertexUnlitNoZBuffer;
+        g_apfnGbiHandlers[GBI_OP_TRI1] =
+            bSmooth ? HandleGbiTri1SmoothNoZBuffer : HandleGbiTri1FlatNoZBuffer;
+        g_apfnGbiHandlers[GBI_OP_TRI2] =
+            bSmooth ? HandleGbiTri2SmoothNoZBuffer : HandleGbiTri2FlatNoZBuffer;
+    }
+}
+#endif

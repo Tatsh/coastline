@@ -127,6 +127,7 @@ dbuild
 dclipstatus
 dcmake
 dcosf
+dcull
 ddbd
 ddbltfast
 ddcaps
