@@ -34,12 +34,12 @@ struct ServiceProvider {
 extern DirectPlayInfo g_DirectPlayInfo;
 
 /**
- * The DirectPlay object other routines read, pointing at the first member of g_DirectPlayInfo.
+ * The DirectPlay info other routines read, g_DirectPlayInfo once DirectPlay starts.
  *
  * @ghidraAddress BRD3D: 0x10a9d008
  * @ghidraAddress BRGlide: 0x10ac4098
  */
-extern IDirectPlay3A **g_ppDirectPlay;
+extern DirectPlayInfo *g_pDirectPlayInfo;
 
 /**
  * The service providers, indexed by IPX, TCP/IP, modem, and serial in that order.
@@ -362,11 +362,21 @@ extern bool g_dwDirectPlaySessionActive;
 extern bool g_bNetRaceStartReached;
 
 /**
- * Request a pause from the other players of a network game.
+ * The ticks a request of a pause of a network game has waited, 0 for no request.
  *
- * @ghidraAddress BRD3D: 0x10004be0
+ * @ghidraAddress BRD3D: 0x1022aaf4
+ * @ghidraAddress BRGlide: 0x10226624
  */
-void RequestNetworkPause(void);
+extern int g_nNetPauseRequestTicks;
+
+/**
+ * Request a pause from the other players of a network game, when no request waits.
+ *
+ * @return Always true.
+ * @ghidraAddress BRD3D: 0x10004be0
+ * @ghidraAddress BRGlide: 0x10004f50
+ */
+bool RequestNetworkPause(void);
 
 /**
  * Send the request to pause of a network game.
@@ -621,10 +631,64 @@ void LoadNetworkSettings(void);
 
 /** A player in a slot of the session. */
 struct SessionSlot {
-    DPID dpidPlayer;    /*!< The player, or 0xffffffff for a free slot. */
-    int nFlag;          /*!< Cleared when the player departs. Its meaning is not recovered yet. */
-    char abUnknown8[4]; /* +0x08 */
+    DPID dpidPlayer; /*!< The player, or 0xffffffff for a free slot. */
+    int nFlag;       /*!< Cleared when the player departs. Its meaning is not recovered yet. */
+    int nSeen;       /*!< Cleared when the table is reset. Its meaning is not recovered yet. */
 };
+
+/**
+ * Whether the sends of network play are blocked.
+ *
+ * @ghidraAddress BRD3D: 0x10aa288c
+ * @ghidraAddress BRGlide: 0x10ac5be4
+ */
+extern bool g_dwNetworkSendBlocked;
+
+/**
+ * Free every slot of the session and unblock the sends.
+ *
+ * @ghidraAddress BRD3D: 0x100586a0
+ * @ghidraAddress BRGlide: 0x10051550
+ */
+void ResetSessionSlotTable(void);
+
+/** A network player of a race. The layout is not recovered past the members below. */
+struct NetPlayerSlot {
+    HANDLE hMutex;           /*!< The mutex of the slot. */
+    DPID dpidOwner;          /*!< The player of the session that controls the slot. */
+    char abUnknown8[0x24];   /* +0x08 */
+    int dwState;             /*!< The state of the slot in its low 6 bits, 0 for free. */
+    char abUnknown30[0x93c]; /* +0x30 */
+};
+
+/** The number of entries of g_aNetPlayerSlots. */
+#define NET_PLAYER_SLOT_COUNT 16
+
+/**
+ * The network players of a race.
+ *
+ * @ghidraAddress BRD3D: 0x11786828
+ * @ghidraAddress BRGlide: 0x117a9b88
+ */
+extern NetPlayerSlot g_aNetPlayerSlots[NET_PLAYER_SLOT_COUNT];
+
+/**
+ * Destroy the groups of players of the session.
+ *
+ * @ghidraAddress BRD3D: 0x1003d070
+ * @ghidraAddress BRGlide: 0x10036700
+ */
+void DestroyNetworkGroups(void);
+
+/**
+ * Destroy the groups and the local player, close and release DirectPlay, and count one DirectPlay
+ * object less.
+ *
+ * @return Always DP_OK.
+ * @ghidraAddress BRD3D: 0x1003c550
+ * @ghidraAddress BRGlide: 0x10035be0
+ */
+HRESULT CloseAndReleaseDirectPlay(void);
 
 /** The number of entries of g_aSessionSlots. */
 #define SESSION_SLOT_COUNT 8

@@ -25,7 +25,7 @@
 #define NETWORK_TIMER_PERIOD 1000
 
 DirectPlayInfo g_DirectPlayInfo;
-IDirectPlay3A **g_ppDirectPlay;
+DirectPlayInfo *g_pDirectPlayInfo;
 ServiceProvider g_aServiceProviders[SERVICE_PROVIDER_COUNT];
 bool g_dwLaunchedFromLobby;
 bool g_dwLobbyIsHost;
@@ -88,7 +88,7 @@ bool InitializeDirectPlay(void) {
         g_dwLaunchedFromLobby = true;
     }
 
-    g_ppDirectPlay = &g_DirectPlayInfo.pDirectPlay;
+    g_pDirectPlayInfo = &g_DirectPlayInfo;
     if (!g_dwLaunchedFromLobby) {
         // The result of the enumeration is discarded.
         g_DirectPlayInfo.pDirectPlay->EnumConnections(
@@ -494,6 +494,59 @@ void HandleDirectPlaySystemMessageClient(
     default:
         break;
     }
+}
+
+bool g_dwNetworkSendBlocked;
+NetPlayerSlot g_aNetPlayerSlots[NET_PLAYER_SLOT_COUNT];
+int g_nNetPauseRequestTicks;
+
+// The state of a slot below 5 is one the departure of its owner frees.
+#define NET_PLAYER_STATE_MASK 0x3f
+#define NET_PLAYER_STATE_FREEABLE_LIMIT 5
+
+void ClearNetworkPlayerSlotsByOwner(DPID dpidOwner) {
+    for (NetPlayerSlot &slot : g_aNetPlayerSlots) {
+        WaitForSingleObject(slot.hMutex, INFINITE);
+        if (slot.dpidOwner == dpidOwner &&
+            (slot.dwState & NET_PLAYER_STATE_MASK) < NET_PLAYER_STATE_FREEABLE_LIMIT) {
+            slot.dwState = 0;
+        }
+        ReleaseMutex(slot.hMutex);
+    }
+}
+
+void ResetSessionSlotTable(void) {
+    g_dwNetworkSendBlocked = false;
+    for (SessionSlot &slot : g_aSessionSlots) {
+        slot.dpidPlayer = 0xffffffff;
+        slot.nFlag = 0;
+        slot.nSeen = 0;
+    }
+}
+
+bool RequestNetworkPause(void) {
+    WaitForSingleObject(g_hNetPauseMutex, INFINITE);
+    if (g_nNetPauseRequestTicks == 0) {
+        g_nNetPauseRequestTicks = 1;
+    }
+    ReleaseMutex(g_hNetPauseMutex);
+    return true;
+}
+
+HRESULT CloseAndReleaseDirectPlay(void) {
+    DestroyNetworkGroups();
+    if (g_pDirectPlayInfo->pDirectPlay != nullptr) {
+        if (g_pDirectPlayInfo->dpidPlayer != 0) {
+            g_pDirectPlayInfo->pDirectPlay->DestroyPlayer(g_pDirectPlayInfo->dpidPlayer);
+            g_pDirectPlayInfo->dpidPlayer = 0;
+        }
+        g_pDirectPlayInfo->pDirectPlay->Close();
+        g_pDirectPlayInfo->pDirectPlay->Release();
+        g_pDirectPlayInfo->pDirectPlay = nullptr;
+    }
+    g_DirectPlayInfo.pDirectPlay = nullptr;
+    g_dwDirectPlayInstanceCount--;
+    return DP_OK;
 }
 
 // A notice of a player is formatted into locked global memory.

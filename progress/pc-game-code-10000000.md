@@ -1,6 +1,6 @@
 # PC port game code from 0x10000000 to 0x10010000
 
-83 of 246 routines done.
+84 of 246 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -186,8 +186,8 @@ the same name, for a routine the port retained from the N64 game.
 | `FloatToByteIndex`                                         |        |                 |      2 |     54 | `0x10006620` | `0x10006990` | `undefined FloatToByteIndex()`                                                                                                                                                     |
 | `DirectDrawRenderer::DestroyDirectDrawRendererObjects`     |   ✅   |                 |      5 |     53 | `0x1000a350` |              | `int DestroyDirectDrawRendererObjects(DirectDrawRenderer * this)`                                                                                                                  |
 | `RequestNetworkUnpause`                                    |        |                 |      2 |     52 | `0x10004c20` | `0x10004f90` | `undefined RequestNetworkUnpause()`                                                                                                                                                |
-| `RequestNetworkPause`                                      |   📝   |                 |      2 |     52 | `0x10004be0` | `0x10004f50` | `void RequestNetworkPause(void)`                                                                                                                                                   |
 | `DirectDrawRenderer::GetDeviceViewportRect`                |   ✅   |                 |      2 |     52 | `0x1000b350` |              | `long GetDeviceViewportRect(DirectDrawRenderer * this, RECT * pRect)`                                                                                                              |
+| `RequestNetworkPause`                                      |   ✅   |                 |      2 |     52 | `0x10004be0` | `0x10004f50` | `bool RequestNetworkPause(void)`                                                                                                                                                   |
 | `Signed24BitToFloat`                                       |        |                 |      2 |     51 | `0x10007340` | `0x100076b0` | `undefined Signed24BitToFloat()`                                                                                                                                                   |
 | `CheckNetworkRaceStartTime`                                |        |                 |      1 |     51 | `0x10006160` | `0x100064d0` | `void CheckNetworkRaceStartTime(void)`                                                                                                                                             |
 | `SetRgb565ImageColorKey`                                   |        |                 |      1 |     51 |              | `0x100014a0` | `undefined SetRgb565ImageColorKey()`                                                                                                                                               |

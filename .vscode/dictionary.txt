@@ -222,6 +222,7 @@ fovy
 foxundermoon
 fpart
 fpcsr
+freeable
 frontwheel
 fsanitize
 ftofrac

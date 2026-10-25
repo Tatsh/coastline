@@ -1,6 +1,6 @@
 # PC port game code from 0x10050000 to 0x10060000
 
-0 of 84 routines done.
+1 of 84 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -81,7 +81,7 @@ the same name, for a routine the port retained from the N64 game.
 | `GetSessionSlotFlag`                      |        |                 |      2 |     40 | `0x100586d0` | `0x10051580` | `undefined GetSessionSlotFlag()`                                                                                                                |
 | `GlideDisplayModeNode::DeleteChain`       |        |                 |      2 |     37 |              | `0x10058c90` | `undefined DeleteChain(GlideDisplayModeNode * this)`                                                                                            |
 | `LookupKeyCharacter`                      |        |                 |      1 |     37 | `0x1005b540` | `0x10054360` | `undefined LookupKeyCharacter()`                                                                                                                |
-| `ResetSessionSlotTable`                   |        |                 |      5 |     35 | `0x100586a0` | `0x10051550` | `void ResetSessionSlotTable(void)`                                                                                                              |
+| `ResetSessionSlotTable`                   |   ✅   |                 |      5 |     35 | `0x100586a0` | `0x10051550` | `void ResetSessionSlotTable(void)`                                                                                                              |
 | `MenuFont::ScalarDeletingDestructor`      |        |                 |      1 |     30 | `0x1005b0a0` | `0x10053ec0` | `undefined ScalarDeletingDestructor(MenuFont * this, undefined4 param_1)`                                                                       |
 | `MenuItemList::ScalarDeletingDestructor`  |        |                 |      1 |     30 | `0x1005b8d0` | `0x100546f0` | `undefined ScalarDeletingDestructor(MenuItemList * this, undefined4 param_1)`                                                                   |
 | `SaveFileList::ScalarDeletingDestructor`  |        |                 |      1 |     30 | `0x1005cbf0` | `0x10055a10` | `undefined ScalarDeletingDestructor(SaveFileList * this, undefined4 param_1)`                                                                   |
