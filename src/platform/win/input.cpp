@@ -516,6 +516,15 @@ HRESULT SetJoystickAxisRange(IDirectInputDevice2A *pDevice,
 int g_bForceFeedbackAvailable;
 DIEFFECT g_DiConditionEffect;
 DICONDITION g_aDiConditionParams[2];
+
+void SetForceFeedbackMagnitude(LONG lMagnitude) {
+    g_aDiConditionParams[0].lPositiveCoefficient = lMagnitude;
+    g_aDiConditionParams[0].lNegativeCoefficient = lMagnitude;
+    if (g_pConditionEffect != nullptr) {
+        g_pConditionEffect->SetParameters(&g_DiConditionEffect, DIEP_TYPESPECIFICPARAMS);
+    }
+}
+
 LONG g_alConditionEffectDirection[2];
 int g_dwForceFeedbackMagnitude;
 int g_bForceFeedbackForceStopped;

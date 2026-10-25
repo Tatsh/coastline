@@ -649,6 +649,16 @@ extern DIEFFECT g_DiConditionEffect;
 extern DICONDITION g_aDiConditionParams[2];
 
 /**
+ * Set both coefficients of the first spring of g_DiConditionEffect, and give the effect its new
+ * parameters when it exists.
+ *
+ * @param lMagnitude The coefficient.
+ * @ghidraAddress BRD3D: 0x100790b0
+ * @ghidraAddress BRGlide: 0x100723a0
+ */
+void SetForceFeedbackMagnitude(LONG lMagnitude);
+
+/**
  * The direction of g_DiConditionEffect.
  *
  * @ghidraAddress BRD3D: 0x118abdf0
