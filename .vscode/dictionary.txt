@@ -135,6 +135,9 @@ dndebug
 docstrings
 doubleword
 dpal
+dperr
+dpname
+dpspguid
 drawtexturedrect
 dsdx
 dsinf
@@ -201,6 +204,7 @@ getthreadpri
 gettime
 gfxtask
 ghidra
+ghnd
 glabel
 glist
 globl
@@ -308,6 +312,7 @@ lsavercp
 lsaverest
 lsend
 lshift
+lstrcpy
 lyield
 mabi
 mainmenu
@@ -367,6 +372,7 @@ noreorder
 nostartfiles
 nostdinc
 nostdlib
+notlobbied
 ntrj
 ntrp
 numl
@@ -629,6 +635,7 @@ writeback
 writebackdcache
 writebackdcacheall
 wrongway
+wsprintf
 wtype
 wuninitialized
 wunused

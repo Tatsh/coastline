@@ -535,13 +535,6 @@ void DispatchGameStateFrame(void);
 void NullStub(void);
 
 /**
- * Initialise DirectPlay.
- *
- * @ghidraAddress BRD3D: 0x1003bd80
- */
-void InitializeDirectPlay(void);
-
-/**
  * Query the installed DirectX version by creating its objects in turn.
  *
  * @param pdwVersion Receives the version, 0x600 for DirectX 6, or 0 when DirectDraw is missing.

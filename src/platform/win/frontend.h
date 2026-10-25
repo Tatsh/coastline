@@ -2,6 +2,7 @@
 
 #include <windows.h>
 
+class MenuWidget;
 class SaveFileList;
 
 /** A screen of the front end menus. */
@@ -107,6 +108,14 @@ bool InitializeFrontEndResources(void);
  * @ghidraAddress BRGlide: 0x10ac5c5c
  */
 extern MenuScreen *g_pActiveMenuScreen;
+
+/**
+ * The list of sessions of the screen to join or create a network game, while it exists.
+ *
+ * @ghidraAddress BRD3D: 0x10aa29d4
+ * @ghidraAddress BRGlide: 0x10ac5d2c
+ */
+extern MenuWidget *g_pJoinCreateGameMenu;
 
 /**
  * A buffer of the front end, passed to FrontEndWindowProc() and not read by it.
