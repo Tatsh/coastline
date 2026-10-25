@@ -752,6 +752,22 @@ void SetForceFeedbackShortDuration(void);
 void StartForceFeedbackJolt(void);
 
 /**
+ * The time of the console the game emulates, in ticks of its CPU counter.
+ *
+ * @ghidraAddress BRD3D: 0x118abde0
+ * @ghidraAddress BRGlide: 0x118eeef8
+ */
+extern unsigned long long g_qwEmulatedOsTime;
+
+/**
+ * Advance g_qwEmulatedOsTime by a frame of 1/30 of a second.
+ *
+ * @ghidraAddress BRD3D: 0x10078c10
+ * @ghidraAddress BRGlide: 0x10071f00
+ */
+void AdvanceEmulatedOsTime(void);
+
+/**
  * Create the condition effect, a spring on X and Y that lasts until it stops, and the jolt
  * effect, a square wave, of force feedback of the game controller.
  *
