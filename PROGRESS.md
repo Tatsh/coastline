@@ -96,10 +96,10 @@ The programs are `BRD3D.dll`, `BRGlide.dll`.
 | Excluded as Compiler-generated (static initialisers, atexit registrations, and exception funclets) |   114 |
 | Excluded as Thunk (import or jump thunk the linker generates)                                      |    73 |
 | To reconstruct                                                                                     | 1,639 |
-| Done                                                                                               |   520 |
+| Done                                                                                               |   522 |
 | Stubbed (not counted as done)                                                                      |     0 |
 | Declared only (not counted as done)                                                                |    49 |
-| Share done                                                                                         | 31.7% |
+| Share done                                                                                         | 31.8% |
 | Only in BRGlide                                                                                    |    46 |
 
 ### By release
@@ -108,14 +108,14 @@ A routine counts for a release when its address in that release is tagged.
 
 | Release       | Routines | Done | Share |
 | ------------- | -------: | ---: | ----: |
-| `BRD3D.dll`   |    1,593 |  520 | 32.6% |
-| `BRGlide.dll` |    1,446 |  336 | 23.2% |
+| `BRD3D.dll`   |    1,593 |  522 | 32.8% |
+| `BRGlide.dll` |    1,446 |  338 | 23.4% |
 
 ### By component
 
 | Component | Routines | Done | Stubbed | Share |
 | --------- | -------: | ---: | ------: | ----: |
-| Game code |    1,638 |  520 |       0 | 31.7% |
+| Game code |    1,638 |  522 |       0 | 31.9% |
 | zlib      |        1 |    0 |       0 |  0.0% |
 
 ## All releases
@@ -131,15 +131,15 @@ address in the PC libraries.
 | `usa.z64`     | Nintendo 64 |      801 |  801 | 100.0% |
 | `eur.z64`     | Nintendo 64 |      819 |  819 | 100.0% |
 | `jpn.z64`     | Nintendo 64 |      822 |  822 | 100.0% |
-| `BRD3D.dll`   | PC port     |    1,593 |  520 |  32.6% |
-| `BRGlide.dll` | PC port     |    1,446 |  336 |  23.2% |
+| `BRD3D.dll`   | PC port     |    1,593 |  522 |  32.8% |
+| `BRGlide.dll` | PC port     |    1,446 |  338 |  23.4% |
 
 | Measure                                         | Count |
 | ----------------------------------------------- | ----: |
 | Routines of the PC port shared with the N64     |   352 |
 | Shared and done in every N64 release            |   352 |
-| Shared and done in every release of both groups |    39 |
-| Shared, done on the N64, and not yet on the PC  |   313 |
+| Shared and done in every release of both groups |    41 |
+| Shared, done on the N64, and not yet on the PC  |   311 |
 
 ## Parts
 
@@ -160,7 +160,7 @@ block of the master program.
 | [n64-sdk-libultra-80260000.md](progress/n64-sdk-libultra-80260000.md) | Nintendo 64 | SDK (libultra) | `0x80260000`-`0x80270000` |      208 |  208 | 100.0% |
 | [pc-game-code-10000000.md](progress/pc-game-code-10000000.md)         | PC port     | Game code      | `0x10000000`-`0x10010000` |      246 |  166 |  67.5% |
 | [pc-zlib-10000000.md](progress/pc-zlib-10000000.md)                   | PC port     | zlib           | `0x10000000`-`0x10010000` |        1 |    0 |   0.0% |
-| [pc-game-code-10010000.md](progress/pc-game-code-10010000.md)         | PC port     | Game code      | `0x10010000`-`0x10020000` |      157 |   79 |  50.3% |
+| [pc-game-code-10010000.md](progress/pc-game-code-10010000.md)         | PC port     | Game code      | `0x10010000`-`0x10020000` |      157 |   81 |  51.6% |
 | [pc-game-code-10020000.md](progress/pc-game-code-10020000.md)         | PC port     | Game code      | `0x10020000`-`0x10030000` |      176 |   41 |  23.3% |
 | [pc-game-code-10030000.md](progress/pc-game-code-10030000.md)         | PC port     | Game code      | `0x10030000`-`0x10040000` |      307 |   64 |  20.8% |
 | [pc-game-code-10040000.md](progress/pc-game-code-10040000.md)         | PC port     | Game code      | `0x10040000`-`0x10050000` |      263 |   11 |   4.2% |

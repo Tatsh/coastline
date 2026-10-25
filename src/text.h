@@ -10,7 +10,11 @@
  * primitive color at its bottom. A string may change both colors with a `%` code of two letters.
  */
 
-#include <PR/ultratypes.h>
+#include "types.h"
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /** Where DrawText() places text against its position. */
 enum TextAlignment {
@@ -439,6 +443,8 @@ void SetTextGradientColorsFromBytes(const u8 *color, const u8 *color2);
  * @ghidraAddress USA: 0x8022f5d0
  * @ghidraAddress EUR: 0x80230ae0
  * @ghidraAddress JPN: 0x80230800
+ * @ghidraAddress BRD3D: 0x100192f0
+ * @ghidraAddress BRGlide: 0x100168b0
  */
 void SetTextSize(s32 size);
 
@@ -451,6 +457,8 @@ void SetTextSize(s32 size);
  * @ghidraAddress USA: 0x8022f5dc
  * @ghidraAddress EUR: 0x80230aec
  * @ghidraAddress JPN: 0x8023080c
+ * @ghidraAddress BRD3D: 0x10019300
+ * @ghidraAddress BRGlide: 0x100168c0
  */
 void DrawText(const char *text, s32 x, s32 y);
 
@@ -479,5 +487,9 @@ void DrawHudLabelAtFraction(const char *text, f32 x, f32 y, s32 unused);
  * @ghidraAddress JPN: 0x80230950
  */
 s32 MeasureTextWidth(const char *text, s32 size);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

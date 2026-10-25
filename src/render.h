@@ -9,6 +9,7 @@
 #include <PR/gbi.h>
 #include <PR/ultratypes.h>
 
+#include "displaylistptr.h"
 #include "vecmath.h"
 
 /**
@@ -95,15 +96,6 @@ typedef struct {
     s32 height;       /*!< The height, in screen pixels. */
     s32 vehicleIndex; /*!< The vehicle of the player the view follows. */
 } ViewportRect;
-
-/**
- * The next command of the display list.
- *
- * @ghidraAddress USA: 0x8028a858
- * @ghidraAddress EUR: 0x8028ca58
- * @ghidraAddress JPN: 0x8028c528
- */
-extern Gfx *gDisplayListPtr;
 
 /**
  * The projection of the current view.
