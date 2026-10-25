@@ -51,6 +51,7 @@ blit
 bnel
 bnez
 boxz
+brielle
 bsky
 bsuspension
 btire

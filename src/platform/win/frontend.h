@@ -1085,6 +1085,86 @@ void ReleaseMenuSurfaces(void);
 extern int g_dwNetworkMenuState;
 
 /**
+ * Whether the cheat that unlocks every track was entered.
+ *
+ * @ghidraAddress BRD3D: 0x10aa28f8
+ * @ghidraAddress BRGlide: 0x10ac5c50
+ */
+extern int g_dwCheatAllTracksUnlocked;
+
+/**
+ * Whether the cheat that unlocks the bonus tracks was entered.
+ *
+ * @ghidraAddress BRD3D: 0x10aa28fc
+ * @ghidraAddress BRGlide: 0x10ac5c54
+ */
+extern int g_dwCheatBonusTracksUnlocked;
+
+/**
+ * Whether the cheat that unlocks the bonus cars was entered.
+ *
+ * @ghidraAddress BRD3D: 0x10aa28f4
+ * @ghidraAddress BRGlide: 0x10ac5c4c
+ */
+extern int g_dwCheatBonusCarsUnlocked;
+
+/**
+ * Whether the cheat that shows the closing sequence was entered.
+ *
+ * @ghidraAddress BRD3D: 0x10aa2a40
+ * @ghidraAddress BRGlide: 0x10ac5d98
+ */
+extern int g_dwCheatOutroSequenceEnabled;
+
+/**
+ * The force of an impact below which a vehicle does not deform.
+ *
+ * @ghidraAddress BRD3D: 0x100ac6a4
+ * @ghidraAddress BRGlide: 0x100abe44
+ */
+extern short g_wVehicleDeformMinThreshold;
+
+/**
+ * Unlock every track, play the sound of a cheat, and set the network menus to state 2.
+ *
+ * @ghidraAddress BRD3D: 0x10047500
+ * @ghidraAddress BRGlide: 0x10040930
+ */
+void Cheat_Hazel_UnlockAllTracks(void);
+
+/**
+ * Unlock the bonus tracks, play the sound of a cheat, and set the network menus to state 2.
+ *
+ * @ghidraAddress BRD3D: 0x10047530
+ * @ghidraAddress BRGlide: 0x10040960
+ */
+void Cheat_Brielle_UnlockBonusTracks(void);
+
+/**
+ * Stop the vehicles deforming, play the sound of this cheat, and set the network menus to state 3.
+ *
+ * @ghidraAddress BRD3D: 0x10047560
+ * @ghidraAddress BRGlide: 0x10040990
+ */
+void Cheat_DisableVehicleDeformation(void);
+
+/**
+ * Show the closing sequence, play the sound of a cheat, and set the network menus to state 2.
+ *
+ * @ghidraAddress BRD3D: 0x10047590
+ * @ghidraAddress BRGlide: 0x100409c0
+ */
+void Cheat_Sophia_EnableOutroSequence(void);
+
+/**
+ * Unlock the bonus cars, play the sound of a cheat, and set the network menus to state 2.
+ *
+ * @ghidraAddress BRD3D: 0x100475c0
+ * @ghidraAddress BRGlide: 0x100409f0
+ */
+void Cheat_Lynette_UnlockBonusCars(void);
+
+/**
  * The index of the network session chosen in the list of sessions.
  *
  * @ghidraAddress BRD3D: 0x10aa2880
