@@ -1,6 +1,6 @@
 # PC port game code from 0x10060000 to 0x10070000
 
-10 of 169 routines done.
+12 of 169 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -115,7 +115,7 @@ the same name, for a routine the port retained from the N64 game.
 | `AllocHiliteBlock`                       |        | ✅ `0x80255d4c` |      1 |     77 | `0x100694e0` | `0x10062550` | `undefined AllocHiliteBlock()`                                                                                                           |
 | `RacerSlot::FreeEnemyCarColorPanels`     |        |                 |      1 |     75 | `0x100664c0` | `0x1005f530` | `undefined FreeEnemyCarColorPanels(RacerSlot * this)`                                                                                    |
 | `GetPaintJobEntryParams`                 |        |                 |      2 |     72 | `0x10060fb0` | `0x1005a020` | `undefined GetPaintJobEntryParams()`                                                                                                     |
-| `FreeCarPaintTextures`                   |        |                 |      2 |     71 | `0x100613b0` | `0x1005a420` | `undefined FreeCarPaintTextures()`                                                                                                       |
+| `FreeCarPaintTextures`                   |   ✅   |                 |      2 |     71 | `0x100613b0` | `0x1005a420` | `void FreeCarPaintTextures(void)`                                                                                                        |
 | `ResetMouseCursorToCenter`               |        |                 |      1 |     71 | `0x10060210` | `0x10059280` | `uint ResetMouseCursorToCenter(void * pUnused)`                                                                                          |
 | `LoadPaintDamageBitmaps`                 |        |                 |      1 |     70 | `0x10061410` | `0x1005a490` | `undefined LoadPaintDamageBitmaps()`                                                                                                     |
 | `UpdateWaterfallSound`                   |        | ✅ `0x8022ba10` |      1 |     70 | `0x10068210` | `0x10061280` | `undefined UpdateWaterfallSound()`                                                                                                       |
@@ -127,7 +127,7 @@ the same name, for a routine the port retained from the N64 game.
 | `UnmarkTrackSections`                    |        | ✅ `0x80255c50` |      2 |     53 | `0x100616c0` | `0x1005a740` | `undefined UnmarkTrackSections()`                                                                                                        |
 | `ResetGhostRecording`                    |        |                 |      1 |     51 | `0x1006aa50` | `0x10063a00` | `undefined ResetGhostRecording()`                                                                                                        |
 | `PlaySoundEffect`                        |        | ✅ `0x8022b370` |      2 |     50 | `0x10067d40` | `0x10060db0` | `undefined PlaySoundEffect()`                                                                                                            |
-| `FreeAllPaintBitmaps`                    |   📝   |                 |      1 |     50 | `0x10061620` | `0x1005a6a0` | `void FreeAllPaintBitmaps(void)`                                                                                                         |
+| `FreeAllPaintBitmaps`                    |   ✅   |                 |      1 |     50 | `0x10061620` | `0x1005a6a0` | `void FreeAllPaintBitmaps(void)`                                                                                                         |
 | `ResetAllPlayers`                        |        | ✅ `0x80200154` |      1 |     49 | `0x10069800` | `0x10062870` | `undefined ResetAllPlayers()`                                                                                                            |
 | `MouseDevice::SyncMouseAcquireState`     |        |                 |      3 |     48 | `0x10060750` | `0x100597c0` | `undefined SyncMouseAcquireState(MouseDevice * this, undefined4 param_1)`                                                                |
 | `ApplyAudioVolumeSettings`               |        |                 |      6 |     46 | `0x10060d90` | `0x10059e00` | `void ApplyAudioVolumeSettings(void)`                                                                                                    |

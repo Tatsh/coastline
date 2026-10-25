@@ -9,8 +9,10 @@
 #include "platform/win/directplay.h"
 #include "platform/win/frontend.h"
 #include "platform/win/input.h"
+#include "platform/win/paintshop.h"
 #include "platform/win/podarchive.h"
 #include "platform/win/settings.h"
+#include "platform/win/snapshot.h"
 #include "platform/win/sound.h"
 
 void ShutdownApplication(int nExitCode) {

@@ -167,20 +167,6 @@ extern void (*g_pfnRenderDeviceShutdown)(void);
  */
 void FreeAllTrackSectorBuffers(void);
 
-/**
- * Forget the snapshots of frames.
- *
- * @ghidraAddress BRD3D: 0x10016990
- */
-void InvalidateFrameSnapshotSlots(void);
-
-/**
- * Free the bitmaps of the paint shop.
- *
- * @ghidraAddress BRD3D: 0x10061620
- */
-void FreeAllPaintBitmaps(void);
-
 class DirectDrawRenderer;
 
 /**

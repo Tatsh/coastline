@@ -14,6 +14,8 @@ add_library(
   earsound.cpp
   fileio.c
   input.cpp
+  paintshop.c
+  snapshot.c
   sound.cpp
   winmain-${TGR_RENDERER}.cpp)
 # The DirectDraw and Direct3D renderer belongs to the Direct3D library alone.

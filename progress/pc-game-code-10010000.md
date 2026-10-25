@@ -1,6 +1,6 @@
 # PC port game code from 0x10010000 to 0x10020000
 
-41 of 158 routines done.
+42 of 158 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -148,7 +148,7 @@ the same name, for a routine the port retained from the N64 game.
 | `D3DMaterial::CommitMaterialIfDirty`                   |        |                 |      1 |     28 | `0x1001c620` |              | `undefined CommitMaterialIfDirty(D3DMaterial * this)`                                                                                                                                                                                        |
 | `ResetRenderDeviceCallbacks`                           |        |                 |      2 |     26 | `0x1001bae0` |              | `undefined ResetRenderDeviceCallbacks()`                                                                                                                                                                                                     |
 | `PresentFrameCallback_GlideBufferSwap`                 |        |                 |      1 |     26 |              | `0x1001dd50` | `undefined PresentFrameCallback_GlideBufferSwap()`                                                                                                                                                                                           |
-| `InvalidateFrameSnapshotSlots`                         |   📝   |                 |      4 |     20 | `0x10016990` | `0x10013f00` | `void InvalidateFrameSnapshotSlots(void)`                                                                                                                                                                                                    |
+| `InvalidateFrameSnapshotSlots`                         |   ✅   |                 |      4 |     20 | `0x10016990` | `0x10013f00` | `void InvalidateFrameSnapshotSlots(void)`                                                                                                                                                                                                    |
 | `HandleGbiSetTexRectDepth`                             |        |                 |      1 |     17 | `0x1001cd80` | `0x1001eb30` | `undefined HandleGbiSetTexRectDepth()`                                                                                                                                                                                                       |
 | `HandleGbiSetTexRectW`                                 |        |                 |      1 |     17 | `0x1001cd60` | `0x1001eb10` | `undefined HandleGbiSetTexRectW()`                                                                                                                                                                                                           |
 | `ShadowClipPlaneDistance_MaxU`                         |        |                 |      1 |     14 | `0x10010970` | `0x1000ded0` | `undefined ShadowClipPlaneDistance_MaxU()`                                                                                                                                                                                                   |
