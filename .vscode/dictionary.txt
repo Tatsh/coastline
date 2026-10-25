@@ -47,7 +47,6 @@ bgtz
 bilerp
 bitspixel
 blez
-blit
 bnel
 bnez
 boxz

@@ -137,7 +137,7 @@ public:
     /**
      * Clear the back buffer of the display. The Glide library does nothing here.
      *
-     * @return The result of the blit, or E_FAIL.
+     * @return 0, or E_FAIL when the renderer has no device or viewport.
      * @ghidraAddress BRD3D: 0x1005afa0
      */
     virtual HRESULT ClearBackBuffer();
@@ -297,6 +297,47 @@ extern char g_szTimeAttackSaveFileName[];
  * @ghidraAddress BRGlide: 0x100425e0
  */
 void BuildFrontEndRootMenuUI(MenuScreen *pScreen);
+
+/** The number of entries of g_aMenuGlyphRects. */
+#define MENU_GLYPH_RECT_COUNT 68
+/** The number of entries of g_aMenuAltGlyphRects. */
+#define MENU_ALT_GLYPH_RECT_COUNT 20
+/** The number of entries of g_aMenuLargeIconRects. */
+#define MENU_LARGE_ICON_RECT_COUNT 15
+/** The number of entries of g_aMenuLargeIconRects3Col. */
+#define MENU_LARGE_ICON_3_COLUMN_RECT_COUNT 9
+
+/**
+ * The 16 by 16 glyphs of the menus, eight to a row.
+ *
+ * @ghidraAddress BRD3D: 0x10a9d180
+ * @ghidraAddress BRGlide: 0x10ac4208
+ */
+extern RECT g_aMenuGlyphRects[MENU_GLYPH_RECT_COUNT];
+
+/**
+ * The 39 by 44 glyphs of the menus, five to a row.
+ *
+ * @ghidraAddress BRD3D: 0x10a9d638
+ * @ghidraAddress BRGlide: 0x10ac46c0
+ */
+extern RECT g_aMenuAltGlyphRects[MENU_ALT_GLYPH_RECT_COUNT];
+
+/**
+ * The 128 by 128 icons of the menus, five to a row.
+ *
+ * @ghidraAddress BRD3D: 0x10a9da50
+ * @ghidraAddress BRGlide: 0x10ac4ad8
+ */
+extern RECT g_aMenuLargeIconRects[MENU_LARGE_ICON_RECT_COUNT];
+
+/**
+ * The 128 by 128 icons of the menus, three to a row. The table follows g_aMenuLargeIconRects.
+ *
+ * @ghidraAddress BRD3D: 0x10a9db40
+ * @ghidraAddress BRGlide: 0x10ac4bc8
+ */
+extern RECT g_aMenuLargeIconRects3Col[MENU_LARGE_ICON_3_COLUMN_RECT_COUNT];
 
 /**
  * Set the rectangles of the sprites of the menus.

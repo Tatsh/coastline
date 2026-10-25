@@ -1,6 +1,6 @@
 # PC port game code from 0x10050000 to 0x10060000
 
-9 of 84 routines done.
+11 of 84 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -43,7 +43,7 @@ the same name, for a routine the port retained from the N64 game.
 | `InitMenuDirectDrawSurfaces`              |        |                 |      1 |    362 | `0x1005f690` |              | `undefined InitMenuDirectDrawSurfaces()`                                                                                                        |
 | `SaveFileList::LoadSeasonDescription`     |        |                 |      1 |    343 | `0x1005ccd0` | `0x10055af0` | `undefined LoadSeasonDescription(SaveFileList * this, undefined4 param_1)`                                                                      |
 | `InitJoystickBindingNames`                |   ✅   |                 |      1 |    333 | `0x1005fdb0` | `0x10058af0` | `void InitJoystickBindingNames(void)`                                                                                                           |
-| `InitMenuSpriteRects`                     |   📝   |                 |      1 |    309 | `0x1005f800` | `0x10058540` | `void InitMenuSpriteRects(void)`                                                                                                                |
+| `InitMenuSpriteRects`                     |   ✅   |                 |      1 |    309 | `0x1005f800` | `0x10058540` | `void InitMenuSpriteRects(void)`                                                                                                                |
 | `MenuScreen::ActivateMenuScreen`          |   📝   |                 |      1 |    304 | `0x1005ae70` | `0x10053d20` | `int ActivateMenuScreen(MenuScreen * this)`                                                                                                     |
 | `ApplyLoadedSeasonSettings`               |        |                 |      2 |    289 | `0x1005fbc0` | `0x10058900` | `undefined ApplyLoadedSeasonSettings()`                                                                                                         |
 | `BlitSurfaceRegion`                       |        |                 |      7 |    237 | `0x1005f5a0` | `0x10058380` | `void BlitSurfaceRegion(int nDestX, int nDestY, WORD wSurfaceIndex, int * pRect, uint dwFlags)`                                                 |
@@ -54,7 +54,7 @@ the same name, for a routine the port retained from the N64 game.
 | `MenuFont::DrawText`                      |        | ✅ `0x8022f5dc` |      1 |    212 | `0x1005b2b0` | `0x100540d0` | `undefined DrawText(MenuFont * this)`                                                                                                           |
 | `MenuFont::DrawMenuItemText`              |        |                 |      1 |    196 | `0x1005b390` | `0x100541b0` | `undefined DrawMenuItemText(MenuFont * this, undefined4 param_1, undefined4 param_2)`                                                           |
 | `SyncDisplaySettings`                     |        |                 |      4 |    183 | `0x1005fcf0` | `0x10058a30` | `undefined SyncDisplaySettings()`                                                                                                               |
-| `MenuScreen::ClearBackBuffer`             |   📝   |                 |      1 |    167 | `0x1005afa0` |              | `long ClearBackBuffer(MenuScreen * this)`                                                                                                       |
+| `MenuScreen::ClearBackBuffer`             |   ✅   |                 |      1 |    167 | `0x1005afa0` |              | `long ClearBackBuffer(MenuScreen * this)`                                                                                                       |
 | `SaveFileList::WriteSeasonDescFile`       |        |                 |      1 |    162 | `0x1005cc20` | `0x10055a40` | `undefined WriteSeasonDescFile(SaveFileList * this, undefined4 param_1)`                                                                        |
 | `MenuFont::MeasureTextAltFont`            |        |                 |      1 |    153 | `0x1005b160` | `0x10053f80` | `undefined MeasureTextAltFont(MenuFont * this)`                                                                                                 |
 | `MenuFont::MeasureText`                   |        |                 |      1 |    140 | `0x1005b0d0` | `0x10053ef0` | `undefined MeasureText(MenuFont * this)`                                                                                                        |

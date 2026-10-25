@@ -9,6 +9,7 @@
 #include "platform/win/boot/strings.h"
 #include "platform/win/directplay.h"
 #include "platform/win/input.h"
+#include "platform/win/settings.h"
 #if TGR_RENDERER == TGR_RENDERER_D3D
 #include "platform/win/d3d/renderer.h"
 #endif
@@ -24,6 +25,10 @@ int g_adwFrontEndResourceFlags[FRONT_END_RESOURCE_FLAG_COUNT];
 MenuScreen *g_pRootMenuScreen;
 char g_szSeasonSaveFileName[MAX_PATH];
 char g_szTimeAttackSaveFileName[MAX_PATH];
+RECT g_aMenuGlyphRects[MENU_GLYPH_RECT_COUNT];
+RECT g_aMenuAltGlyphRects[MENU_ALT_GLYPH_RECT_COUNT];
+RECT g_aMenuLargeIconRects[MENU_LARGE_ICON_RECT_COUNT];
+RECT g_aMenuLargeIconRects3Col[MENU_LARGE_ICON_3_COLUMN_RECT_COUNT];
 
 // The size of the scratch buffer of the front end.
 #define FRONT_END_SCRATCH_SIZE 0x400
@@ -124,6 +129,47 @@ MenuScreen::~MenuScreen() {
     apFiles[1] = nullptr;
 }
 
+bool MenuScreen::BeginFrame() {
+    ClearBackBuffer();
+    return true;
+}
+
+#if TGR_RENDERER == TGR_RENDERER_D3D
+// The red of the background of the menus, 64 of 255.
+#define MENU_BACKGROUND_RED (64.0f / 255.0f)
+
+HRESULT MenuScreen::ClearBackBuffer() {
+    DirectDrawRenderer *pRenderer = g_pRenderHost->pRenderer;
+    IDirect3DViewport2 *pViewport = pRenderer->pViewport;
+    D3DMaterial *pMaterial;
+    D3DRECT rect;
+
+    if (pRenderer->pDirect3D2 == nullptr || pRenderer->pD3DDevice == nullptr ||
+        pViewport == nullptr) {
+        return E_FAIL;
+    }
+    rect.x1 = 0;
+    rect.y1 = 0;
+    rect.x2 = g_dwConfigFramebufferWidth;
+    rect.y2 = g_dwConfigFramebufferHeight;
+    pMaterial = pRenderer->pMaterial;
+    pMaterial->desc.dcvDiffuse.r = MENU_BACKGROUND_RED;
+    pMaterial->desc.dcvDiffuse.g = 0.0f;
+    pMaterial->desc.dcvDiffuse.b = 0.0f;
+    pMaterial->nUnknown58 = 1;
+    pMaterial->nUnknown58 = 0;
+    pMaterial->desc.dwRampSize = 1;
+    pMaterial->pMaterial->SetMaterial(&pMaterial->desc);
+    pRenderer->pViewport->SetBackground(pMaterial->hMaterial);
+    pViewport->Clear(1, &rect, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER);
+    return 0;
+}
+#else
+HRESULT MenuScreen::ClearBackBuffer() {
+    return 0;
+}
+#endif
+
 #if TGR_RENDERER == TGR_RENDERER_D3D
 void MenuScreen::FlipAndWait() {
     DirectDrawRenderer *pRenderer = g_pRenderHost->pRenderer;
@@ -146,6 +192,23 @@ void MenuScreen::DestroyPanels() {
         delete pPanel;
     }
     g_wMenuHoverIndex = 0;
+}
+
+// Place the rectangles of a table on a grid of cells, row by row.
+static inline void SetGridRects(RECT *pRects, int nCount, int nColumns, int nWidth, int nHeight) {
+    for (int i = 0; i < nCount; i++) {
+        pRects[i].left = i % nColumns * nWidth;
+        pRects[i].top = i / nColumns * nHeight;
+        pRects[i].right = pRects[i].left + nWidth;
+        pRects[i].bottom = pRects[i].top + nHeight;
+    }
+}
+
+void InitMenuSpriteRects(void) {
+    SetGridRects(g_aMenuGlyphRects, MENU_GLYPH_RECT_COUNT, 8, 16, 16);
+    SetGridRects(g_aMenuAltGlyphRects, MENU_ALT_GLYPH_RECT_COUNT, 5, 39, 44);
+    SetGridRects(g_aMenuLargeIconRects, MENU_LARGE_ICON_RECT_COUNT, 5, 128, 128);
+    SetGridRects(g_aMenuLargeIconRects3Col, MENU_LARGE_ICON_3_COLUMN_RECT_COUNT, 3, 128, 128);
 }
 
 bool InitializeFrontEndResources(void) {

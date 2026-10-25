@@ -1,6 +1,6 @@
 # PC port game code from 0x10040000 to 0x10050000
 
-4 of 263 routines done.
+5 of 263 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -269,6 +269,6 @@ the same name, for a routine the port retained from the N64 game.
 | `PreRaceInfoUI_OnBack`                             |        |                 |      1 |     13 | `0x10046f50` | `0x100403a0` | `undefined PreRaceInfoUI_OnBack()`                                                                                                                                                                        |
 | `ResultsSummaryExitSeasonConfirmUI_OnNo`           |        |                 |      1 |     13 | `0x10047050` | `0x100404a0` | `undefined ResultsSummaryExitSeasonConfirmUI_OnNo()`                                                                                                                                                      |
 | `RaceResultsInfoUI_OnSelectLap2`                   |        |                 |      1 |     11 | `0x100412d0` | `0x1003a830` | `undefined RaceResultsInfoUI_OnSelectLap2()`                                                                                                                                                              |
-| `MenuScreen::BeginFrame`                           |   📝   |                 |      1 |     11 | `0x100488b0` | `0x10041d00` | `bool BeginFrame(MenuScreen * this)`                                                                                                                                                                      |
+| `MenuScreen::BeginFrame`                           |   ✅   |                 |      1 |     11 | `0x100488b0` | `0x10041d00` | `bool BeginFrame(MenuScreen * this)`                                                                                                                                                                      |
 | `MenuPanel::~MenuPanel`                            |   📝   |                 |      1 |      7 | `0x100484e0` | `0x10041930` | `undefined ~MenuPanel(MenuPanel * this)`                                                                                                                                                                  |
 | `ReturnTrue`                                       |        |                 |     20 |      6 | `0x10042af0` | `0x100385e0` | `BOOL ReturnTrue(void)`                                                                                                                                                                                   |
