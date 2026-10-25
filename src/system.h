@@ -89,9 +89,6 @@ extern InflateAllocator g_inflateAllocator;
  */
 extern u32 g_dwScreenUnblankDelay;
 
-/** A routine the main loop calls once per frame. */
-typedef void (*ScreenCallback)(void);
-
 /**
  * Set up the display, the RSP and RDP state, and the system threads.
  *
@@ -100,38 +97,6 @@ typedef void (*ScreenCallback)(void);
  * @ghidraAddress JPN: 0x8021c938
  */
 void InitRenderingSubsystem(void);
-
-/**
- * Set the routine the main loop calls each frame.
- *
- * @param callback The routine to call each frame.
- * @ghidraAddress USA: 0x8021c6e4
- * @ghidraAddress EUR: 0x8021d8d8
- * @ghidraAddress JPN: 0x8021d1a8
- */
-void SetCurrentScreenCallback(ScreenCallback callback);
-
-/**
- * Set a routine FlushDisplayList() calls once, when the RDP has finished the frame before, so that
- * it can change data that frame drew from.
- *
- * @param callback The routine to call once.
- * @ghidraAddress USA: 0x8021c6b8
- * @ghidraAddress EUR: 0x8021d8ac
- * @ghidraAddress JPN: 0x8021d17c
- */
-void SetNextScreenCallback(ScreenCallback callback);
-
-/**
- * Return whether a routine is the current screen.
- *
- * @param callback The routine to compare with the current screen.
- * @return 1 if the routine is the current screen, 0 otherwise.
- * @ghidraAddress USA: 0x8021c6d0
- * @ghidraAddress EUR: 0x8021d8c4
- * @ghidraAddress JPN: 0x8021d194
- */
-s32 IsCurrentScreen(ScreenCallback callback);
 
 /**
  * Call the current screen routine forever.
@@ -828,29 +793,6 @@ extern u32 g_dwFrameTimestamp;
 extern s32 g_dwPrevElapsedTimeMs;
 
 /**
- * The routines of the screen: the current one, the next, and a second.
- *
- * @ghidraAddress USA: 0x8031b318
- * @ghidraAddress EUR: 0x8031d818
- * @ghidraAddress JPN: 0x8031c448
- */
-extern ScreenCallback g_pfnCurrentScreen;
-
-/**
- * @ghidraAddress USA: 0x8031b31c
- * @ghidraAddress EUR: 0x8031d81c
- * @ghidraAddress JPN: 0x8031c44c
- */
-extern ScreenCallback g_pfnNextScreen;
-
-/**
- * @ghidraAddress USA: 0x8031b320
- * @ghidraAddress EUR: 0x8031d820
- * @ghidraAddress JPN: 0x8031c450
- */
-extern ScreenCallback g_pfnSecondaryScreen;
-
-/**
  * The words the DMA reads sizes and chunk lengths into.
  *
  * @ghidraAddress USA: 0x8031b328
@@ -1077,25 +1019,6 @@ void ViRetraceThread(void *arg);
  * @ghidraAddress JPN: 0x8021d16c
  */
 void UnusedFrameTimingStub(void);
-
-/**
- * Set the second routine of the screen.
- *
- * @param callback The routine.
- * @ghidraAddress USA: 0x8021c6c4
- * @ghidraAddress EUR: 0x8021d8b8
- * @ghidraAddress JPN: 0x8021d188
- */
-void SetSecondaryScreenCallback(ScreenCallback callback);
-
-/**
- * Call the routine of the current screen.
- *
- * @ghidraAddress USA: 0x8021c6f0
- * @ghidraAddress EUR: 0x8021d8e4
- * @ghidraAddress JPN: 0x8021d1b4
- */
-void CallCurrentGameMode(void);
 
 /**
  * Wait for the next retrace.
