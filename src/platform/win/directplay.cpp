@@ -691,6 +691,13 @@ int GetLocalPlayerIndex(void) {
     return g_dwLocalNetPlayerId;
 }
 
+bool InitServiceProviderAndStartTimer(void) {
+    InitializeNetworkServiceProvider();
+    g_dwNetworkTimerId = SetTimer(g_hMainWindow, NETWORK_TIMER_ID, NETWORK_TIMER_PERIOD, nullptr);
+    g_dwDirectPlaySessionActive = true;
+    return true;
+}
+
 HRESULT CloseAndReleaseDirectPlay(void) {
     DestroyNetworkGroups();
     if (g_pDirectPlayInfo->pDirectPlay != nullptr) {

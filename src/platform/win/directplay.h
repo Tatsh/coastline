@@ -1053,6 +1053,24 @@ extern NetPlayerSlot g_aNetPlayerSlots[NET_PLAYER_SLOT_COUNT];
 void DestroyNetworkGroups(void);
 
 /**
+ * Start the service provider of network play chosen.
+ *
+ * @ghidraAddress BRD3D: 0x1003c020
+ * @ghidraAddress BRGlide: 0x100356b0
+ */
+void InitializeNetworkServiceProvider(void);
+
+/**
+ * Start the service provider chosen and the timer of network play of the main window, and mark the
+ * DirectPlay session open.
+ *
+ * @return Always true.
+ * @ghidraAddress BRD3D: 0x1003c230
+ * @ghidraAddress BRGlide: 0x100358c0
+ */
+bool InitServiceProviderAndStartTimer(void);
+
+/**
  * Destroy the groups and the local player, close and release DirectPlay, and count one DirectPlay
  * object less.
  *
