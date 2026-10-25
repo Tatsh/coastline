@@ -451,3 +451,49 @@ GbiCommand *HandleGbiSetScissorIntCoords(GbiCommand *pCommand) {
     return pCommand + 1;
 }
 #endif
+
+GbiCommand *HandleGbiEndDisplayList(GbiCommand *pCommand) {
+    if (g_dwGbiDisplayListStackDepth == 0) {
+        return nullptr;
+    }
+    return g_apGbiDisplayListReturnStack[--g_dwGbiDisplayListStackDepth];
+}
+
+static constexpr std::array<GbiHandler, GBI_HANDLER_COUNT> MakeGbiHandlers() {
+    std::array<GbiHandler, GBI_HANDLER_COUNT> apfnHandlers{};
+
+    for (GbiHandler &pfnHandler : apfnHandlers) {
+        pfnHandler = HandleGbiNoOp;
+    }
+    apfnHandlers[GBI_OP_MATRIX] = HandleGbiMatrix;
+    apfnHandlers[GBI_OP_MOVE_MEM] = HandleGbiMoveMem;
+    apfnHandlers[GBI_OP_VERTEX] = HandleGbiVertexUnlit;
+    apfnHandlers[GBI_OP_DISPLAY_LIST] = HandleGbiDisplayList;
+    apfnHandlers[GBI_OP_TRI2] = HandleGbiTri2Smooth;
+    apfnHandlers[GBI_OP_CLEAR_GEOMETRY_MODE] = HandleGbiClearGeometryMode;
+    apfnHandlers[GBI_OP_SET_GEOMETRY_MODE] = HandleGbiSetGeometryMode;
+    apfnHandlers[GBI_OP_END_DISPLAY_LIST] = HandleGbiEndDisplayList;
+    apfnHandlers[GBI_OP_SET_OTHER_MODE_L] = HandleGbiSetOtherModeL;
+    apfnHandlers[GBI_OP_MOVE_WORD] = HandleGbiMoveWord;
+    apfnHandlers[GBI_OP_POP_MATRIX] = HandleGbiPopMatrix;
+    apfnHandlers[GBI_OP_TRI1] = HandleGbiTri1Smooth;
+    apfnHandlers[GBI_OP_BIND_TEXTURE_ENTRY] = HandleGbiBindTextureEntry;
+    apfnHandlers[GBI_OP_LOAD_PREPARED_TEXTURE] = HandleGbiLoadPreparedTexture;
+    apfnHandlers[GBI_OP_SET_TEX_RECT_W] = HandleGbiSetTexRectW;
+    apfnHandlers[GBI_OP_SET_TEX_RECT_DEPTH] = HandleGbiSetTexRectDepth;
+    apfnHandlers[GBI_OP_FILL_RECTANGLE_INT_COORDS] = HandleGbiFillRectangleIntCoords;
+    apfnHandlers[GBI_OP_SET_SCISSOR_INT_COORDS] = HandleGbiSetScissorIntCoords;
+    apfnHandlers[GBI_OP_TEXTURE_RECTANGLE] = HandleGbiTextureRectangle;
+    apfnHandlers[GBI_OP_TEXTURE_RECTANGLE_NATIVE] = HandleGbiTextureRectangleNative;
+    apfnHandlers[GBI_OP_SET_SCISSOR] = HandleGbiSetScissor;
+    apfnHandlers[GBI_OP_SET_TILE_SIZE] = HandleGbiSetTileSize;
+    apfnHandlers[GBI_OP_FILL_RECTANGLE] = HandleGbiFillRectangle;
+    apfnHandlers[GBI_OP_SET_FILL_COLOR] = HandleGbiSetFillColor;
+    apfnHandlers[GBI_OP_SET_FOG_COLOR] = HandleGbiSetFogColor;
+    apfnHandlers[GBI_OP_SET_PRIM_COLOR] = HandleGbiSetPrimColor;
+    apfnHandlers[GBI_OP_SET_ENV_COLOR] = HandleGbiSetEnvColor;
+    apfnHandlers[GBI_OP_SET_COMBINE] = HandleGbiSetCombine;
+    return apfnHandlers;
+}
+
+std::array<GbiHandler, GBI_HANDLER_COUNT> g_apfnGbiHandlers = MakeGbiHandlers();

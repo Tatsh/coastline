@@ -6,6 +6,8 @@
  * and returns the command to run next.
  */
 
+#include <array>
+
 #if TGR_RENDERER == TGR_RENDERER_D3D
 #include <d3d.h>
 #include <windows.h>
@@ -721,6 +723,7 @@ void FlushIndexedRenderBuffer(void);
  * @ghidraAddress BRD3D: 0x118aa0b4
  */
 extern void (*g_pfnBindTextureEntry)(int nEntry);
+#endif
 
 /**
  * Draw the triangles waiting, and bind a texture the game loaded in place of the commands that load
@@ -730,6 +733,8 @@ extern void (*g_pfnBindTextureEntry)(int nEntry);
  * and the number of commands it replaces in its second.
  * @return The command after those it replaces.
  * @ghidraAddress BRD3D: 0x1001bd70
+ * @ghidraAddress BRGlide: 0x1001e2e0
+ * @stub{BRGlide}
  */
 GbiCommand *HandleGbiBindTextureEntry(GbiCommand *pCommand);
 
@@ -739,6 +744,8 @@ GbiCommand *HandleGbiBindTextureEntry(GbiCommand *pCommand);
  * @param pCommand The command, the colour in its second word.
  * @return The next command.
  * @ghidraAddress BRD3D: 0x1001cca0
+ * @ghidraAddress BRGlide: 0x1001ea80
+ * @stub{BRGlide}
  */
 GbiCommand *HandleGbiSetPrimColor(GbiCommand *pCommand);
 
@@ -748,9 +755,10 @@ GbiCommand *HandleGbiSetPrimColor(GbiCommand *pCommand);
  * @param pCommand The command, the colour in its second word.
  * @return The next command.
  * @ghidraAddress BRD3D: 0x1001cc70
+ * @ghidraAddress BRGlide: 0x1001ea60
+ * @stub{BRGlide}
  */
 GbiCommand *HandleGbiSetFogColor(GbiCommand *pCommand);
-#endif
 
 /**
  * The left edge of the scissor, in pixels.
@@ -784,7 +792,6 @@ extern int g_dwScissorRight;
  */
 extern int g_dwScissorBottom;
 
-#if TGR_RENDERER == TGR_RENDERER_D3D
 /**
  * Set the scissor from corners in pixels of the console with two bits of fraction, dropping the
  * fractions, and clip the device to it.
@@ -793,6 +800,8 @@ extern int g_dwScissorBottom;
  * second.
  * @return The next command.
  * @ghidraAddress BRD3D: 0x1001cda0
+ * @ghidraAddress BRGlide: 0x1001eb50
+ * @stub{BRGlide}
  */
 GbiCommand *HandleGbiSetScissor(GbiCommand *pCommand);
 
@@ -803,6 +812,104 @@ GbiCommand *HandleGbiSetScissor(GbiCommand *pCommand);
  * second.
  * @return The next command.
  * @ghidraAddress BRD3D: 0x1001ce70
+ * @ghidraAddress BRGlide: 0x1001ebc0
+ * @stub{BRGlide}
  */
 GbiCommand *HandleGbiSetScissorIntCoords(GbiCommand *pCommand);
-#endif
+
+/**
+ * Return from a display list to the command after its call.
+ *
+ * @param pCommand The command.
+ * @return The command after the call, or `nullptr` at the end of the display list of the frame.
+ * @ghidraAddress BRD3D: 0x10020da0
+ * @ghidraAddress BRGlide: 0x10021060
+ */
+GbiCommand *HandleGbiEndDisplayList(GbiCommand *pCommand);
+
+/**
+ * Multiply or load the projection or the model view matrix, and update g_GbiMvpMatrix.
+ *
+ * @param pCommand The command.
+ * @return The next command.
+ * @ghidraAddress BRD3D: 0x10020dc0
+ * @ghidraAddress BRGlide: 0x10021080
+ */
+GbiCommand *HandleGbiMatrix(GbiCommand *pCommand);
+
+/**
+ * Load vertices without lighting.
+ *
+ * @param pCommand The command.
+ * @return The next command.
+ * @ghidraAddress BRD3D: 0x10021bd0
+ * @ghidraAddress BRGlide: 0x10021a20
+ */
+GbiCommand *HandleGbiVertexUnlit(GbiCommand *pCommand);
+
+/**
+ * Draw one triangle with smooth shading.
+ *
+ * @param pCommand The command.
+ * @return The next command.
+ * @ghidraAddress BRD3D: 0x1001cff0
+ * @ghidraAddress BRGlide: 0x1001ecf0
+ */
+GbiCommand *HandleGbiTri1Smooth(GbiCommand *pCommand);
+
+/**
+ * Draw two triangles with smooth shading.
+ *
+ * @param pCommand The command.
+ * @return The next command.
+ * @ghidraAddress BRD3D: 0x1001e170
+ * @ghidraAddress BRGlide: 0x1001fa30
+ */
+GbiCommand *HandleGbiTri2Smooth(GbiCommand *pCommand);
+
+/** The opcodes of the commands of the display lists that have handlers of their own. */
+enum GbiOpcode {
+    GBI_OP_MATRIX = 0x01,                    /*!< HandleGbiMatrix(). */
+    GBI_OP_MOVE_MEM = 0x03,                  /*!< HandleGbiMoveMem(). */
+    GBI_OP_VERTEX = 0x04,                    /*!< A handler of vertices. */
+    GBI_OP_DISPLAY_LIST = 0x06,              /*!< HandleGbiDisplayList(). */
+    GBI_OP_TRI2 = 0xb1,                      /*!< A handler of two triangles. */
+    GBI_OP_CLEAR_GEOMETRY_MODE = 0xb6,       /*!< HandleGbiClearGeometryMode(). */
+    GBI_OP_SET_GEOMETRY_MODE = 0xb7,         /*!< HandleGbiSetGeometryMode(). */
+    GBI_OP_END_DISPLAY_LIST = 0xb8,          /*!< HandleGbiEndDisplayList(). */
+    GBI_OP_SET_OTHER_MODE_L = 0xb9,          /*!< HandleGbiSetOtherModeL(). */
+    GBI_OP_MOVE_WORD = 0xbc,                 /*!< HandleGbiMoveWord(). */
+    GBI_OP_POP_MATRIX = 0xbd,                /*!< HandleGbiPopMatrix(). */
+    GBI_OP_TRI1 = 0xbf,                      /*!< A handler of one triangle. */
+    GBI_OP_BIND_TEXTURE_ENTRY = 0xdc,        /*!< HandleGbiBindTextureEntry(). */
+    GBI_OP_LOAD_PREPARED_TEXTURE = 0xdd,     /*!< HandleGbiLoadPreparedTexture(). */
+    GBI_OP_SET_TEX_RECT_W = 0xde,            /*!< HandleGbiSetTexRectW(). */
+    GBI_OP_SET_TEX_RECT_DEPTH = 0xdf,        /*!< HandleGbiSetTexRectDepth(). */
+    GBI_OP_FILL_RECTANGLE_INT_COORDS = 0xe1, /*!< HandleGbiFillRectangleIntCoords(). */
+    GBI_OP_SET_SCISSOR_INT_COORDS = 0xe2,    /*!< HandleGbiSetScissorIntCoords(). */
+    GBI_OP_TEXTURE_RECTANGLE = 0xe3,         /*!< HandleGbiTextureRectangle(). */
+    GBI_OP_TEXTURE_RECTANGLE_NATIVE = 0xe4,  /*!< HandleGbiTextureRectangleNative(). */
+    GBI_OP_SET_SCISSOR = 0xed,               /*!< HandleGbiSetScissor(). */
+    GBI_OP_SET_TILE_SIZE = 0xf2,             /*!< HandleGbiSetTileSize(). */
+    GBI_OP_FILL_RECTANGLE = 0xf6,            /*!< HandleGbiFillRectangle(). */
+    GBI_OP_SET_FILL_COLOR = 0xf7,            /*!< HandleGbiSetFillColor(). */
+    GBI_OP_SET_FOG_COLOR = 0xf8,             /*!< HandleGbiSetFogColor(). */
+    GBI_OP_SET_PRIM_COLOR = 0xfa,            /*!< HandleGbiSetPrimColor(). */
+    GBI_OP_SET_ENV_COLOR = 0xfb,             /*!< HandleGbiSetEnvColor(). */
+    GBI_OP_SET_COMBINE = 0xfc,               /*!< HandleGbiSetCombine(). */
+};
+
+/** A handler of a command of a display list. */
+typedef GbiCommand *(*GbiHandler)(GbiCommand *pCommand);
+
+/** The number of entries of g_apfnGbiHandlers, one for each opcode. */
+#define GBI_HANDLER_COUNT 256
+
+/**
+ * The handlers of the commands of the display lists, by the opcode in the high byte of the first
+ * word. Every opcode without a handler of its own takes HandleGbiNoOp().
+ *
+ * @ghidraAddress BRD3D: 0x100a79f0
+ * @ghidraAddress BRGlide: 0x100a9a58
+ */
+extern std::array<GbiHandler, GBI_HANDLER_COUNT> g_apfnGbiHandlers;
