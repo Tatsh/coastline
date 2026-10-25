@@ -12,6 +12,17 @@
 #include "platform/win/d3d/renderer.h"
 #endif
 
+int g_dwGameState;
+int g_dwGameModeFrameCounter;
+int g_dwGameModeContinue = true;
+int (*g_apfnGameStateHandlers[])(void) = {
+    GameState_InitResources,
+    GameState_EnterGameMode,
+    GameState_RunGameMode,
+    GameState_ShowLoadingScreenAndInitGame,
+    GameState_RunFrontEnd,
+};
+
 // The first set of sounds.
 #define FIRST_SOUND_SET 0
 // The mode of ResetRenderSubsystems() of each renderer.
