@@ -91,6 +91,41 @@ void ByteSwapArray16(unsigned short *pData, int nCount) {
     }
 }
 
+// The halfwords of a group ByteSwapFourShorts() swaps, and the words of a group ByteSwap3DWords()
+// reverses.
+#define SHORT_QUAD_COUNT 4
+#define WORD_TRIPLE_COUNT 3
+
+void ByteSwapShortQuadArray(unsigned short *pData, int nCount) {
+    for (int i = 0; i < nCount; i++) {
+        ByteSwapFourShorts(pData + i * SHORT_QUAD_COUNT);
+    }
+}
+
+void ByteSwapFourShorts(unsigned short *pData) {
+    for (int i = 0; i < SHORT_QUAD_COUNT; i++) {
+        pData[i] = static_cast<unsigned short>(pData[i] << 8 | pData[i] >> 8);
+    }
+}
+
+void ByteSwap3DWordsArray(unsigned char *pData, int nCount) {
+    for (int i = 0; i < nCount; i++) {
+        ByteSwap3DWords(pData + i * WORD_TRIPLE_COUNT * sizeof(unsigned));
+    }
+}
+
+void ByteSwap3DWords(unsigned char *pData) {
+    for (int i = 0; i < WORD_TRIPLE_COUNT; i++) {
+        unsigned char *pWord = pData + i * sizeof(unsigned);
+        unsigned char bByte = pWord[3];
+        pWord[3] = pWord[0];
+        pWord[0] = bByte;
+        bByte = pWord[2];
+        pWord[2] = pWord[1];
+        pWord[1] = bByte;
+    }
+}
+
 #if TGR_RENDERER == TGR_RENDERER_D3D
 static inline DWORD WidenColorChannel5(DWORD dwChannel) {
     // The low bits are repeated, not the high bits.

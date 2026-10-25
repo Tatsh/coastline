@@ -1,6 +1,6 @@
 # PC port game code from 0x10030000 to 0x10040000
 
-64 of 307 routines done.
+65 of 307 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -176,7 +176,7 @@ the same name, for a routine the port retained from the N64 game.
 | `SendNetworkMessage4`                             |        |                 |      1 |     77 | `0x1003da40` | `0x100370e0` | `undefined SendNetworkMessage4()`                                                                                                                                       |
 | `ByteSwapTrackSegmentList`                        |        |                 |      1 |     76 | `0x10038250` | `0x10031910` | `undefined ByteSwapTrackSegmentList()`                                                                                                                                  |
 | `Vec3fDistance`                                   |   ✅   | ✅ `0x80224a78` |      9 |     75 | `0x1003b0e0` | `0x10034760` | `float Vec3fDistance(float * pVecA, float * pVecB)`                                                                                                                     |
-| `ByteSwap3DWords`                                 |        |                 |      7 |     75 | `0x100383c0` | `0x10018af0` | `void ByteSwap3DWords(BYTE * pData)`                                                                                                                                    |
+| `ByteSwap3DWords`                                 |   ✅   |                 |      7 |     75 | `0x100383c0` | `0x10018af0` | `void ByteSwap3DWords(uchar * pData)`                                                                                                                                   |
 | `ResetFrameClock`                                 |        | ✅ `0x8021c46c` |      1 |     75 | `0x10034a8a` | `0x1002e13b` | `undefined ResetFrameClock()`                                                                                                                                           |
 | `SaveSeasonUI_UpdateSlotSelection`                |        |                 |      1 |     74 | `0x1003eb10` | `0x10038100` | `undefined SaveSeasonUI_UpdateSlotSelection()`                                                                                                                          |
 | `SaveTimeAttackUI_UpdateSlotSelection`            |        |                 |      1 |     74 | `0x1003ec30` | `0x10038250` | `undefined SaveTimeAttackUI_UpdateSlotSelection()`                                                                                                                      |
