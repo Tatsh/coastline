@@ -7,3 +7,14 @@
  * @ghidraAddress BRGlide: 0x10061440
  */
 void MuteVehicleSoundVoices(void);
+
+/**
+ * Give the voice of a player an entry of the banks of sounds, load its sound effect again, and
+ * start the engine muted on its first channel.
+ *
+ * @param nPlayer The player, whose voice and effect share its index.
+ * @param nIndex The entry of the banks of sounds.
+ * @ghidraAddress BRD3D: 0x10068260
+ * @ghidraAddress BRGlide: 0x100612d0
+ */
+void ReinitPlayerEngineSoundChannel(int nPlayer, int nIndex);

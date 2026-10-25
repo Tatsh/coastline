@@ -1,6 +1,6 @@
 # PC port game code from 0x10060000 to 0x10070000
 
-36 of 169 routines done.
+37 of 169 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -121,7 +121,7 @@ the same name, for a routine the port retained from the N64 game.
 | `LoadPaintDamageBitmaps`                 |   ✅   |                 |      1 |     70 | `0x10061410` | `0x1005a490` | `void LoadPaintDamageBitmaps(void)`                                                                                                      |
 | `GetCarPaintBitmap`                      |        |                 |      4 |     63 | `0x10060f70` | `0x10059fe0` | `undefined GetCarPaintBitmap()`                                                                                                          |
 | `ClearPerFrameVariables`                 |        | ✅ `0x80225f30` |      1 |     62 | `0x100633e0` | `0x1005c450` | `undefined ClearPerFrameVariables()`                                                                                                     |
-| `ReinitPlayerEngineSoundChannel`         |        |                 |      1 |     62 | `0x10068260` | `0x100612d0` | `undefined ReinitPlayerEngineSoundChannel()`                                                                                             |
+| `ReinitPlayerEngineSoundChannel`         |   ✅   |                 |      1 |     62 | `0x10068260` | `0x100612d0` | `void ReinitPlayerEngineSoundChannel(int nPlayer, int nIndex)`                                                                           |
 | `DeserializeSaveData`                    |        | ✅ `0x8022ae70` |      2 |     60 | `0x10067900` | `0x10060970` | `undefined DeserializeSaveData()`                                                                                                        |
 | `RacerSlot::UpdateRemoteVehicleFrame`    |        |                 |      1 |     58 | `0x10069330` | `0x100623a0` | `undefined UpdateRemoteVehicleFrame(RacerSlot * this)`                                                                                   |
 | `UnmarkTrackSections`                    |        | ✅ `0x80255c50` |      2 |     53 | `0x100616c0` | `0x1005a740` | `undefined UnmarkTrackSections()`                                                                                                        |

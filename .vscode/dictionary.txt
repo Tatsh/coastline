@@ -683,6 +683,7 @@ sndlevl
 snowdl
 softshok
 soundchannel
+soundeffect
 soundptr
 soundtik
 specon
