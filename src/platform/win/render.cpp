@@ -167,6 +167,23 @@ void ByteSwap3DWords(unsigned char *pData) {
     }
 }
 
+TextureMapEntry g_aTextureMapEntries[TEXTURE_MAP_ENTRY_COUNT];
+int g_dwTextureMapEntryCount;
+unsigned g_dwTextureMapAddressBias;
+
+bool LookupTextureMapEntry(unsigned dwAddress, int *pnWidth, int *pnHeight) {
+    unsigned dwKey = dwAddress + g_dwTextureMapAddressBias;
+
+    for (int i = g_dwTextureMapEntryCount - 1; i >= 0; i--) {
+        if (g_aTextureMapEntries[i].dwAddress == dwKey) {
+            *pnWidth = g_aTextureMapEntries[i].nWidth;
+            *pnHeight = g_aTextureMapEntries[i].nHeight;
+            return true;
+        }
+    }
+    return false;
+}
+
 #if TGR_RENDERER == TGR_RENDERER_D3D
 static inline DWORD WidenColorChannel5(DWORD dwChannel) {
     // The low bits are repeated, not the high bits.

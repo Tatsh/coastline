@@ -448,6 +448,54 @@ void ByteSwapShortQuadArray(unsigned short *pData, int nCount);
  */
 void ByteSwap3DWords(unsigned char *pData);
 
+/** A texture of the console that a texture of another size replaces, from the texture map. */
+struct TextureMapEntry {
+    unsigned nId;       /*!< The number of the entry in the texture map. */
+    unsigned dwAddress; /*!< The address of the texture of the console. */
+    int nWidth;         /*!< The width of the replacement. */
+    int nHeight;        /*!< The height of the replacement. */
+};
+
+/** The number of entries of g_aTextureMapEntries. */
+#define TEXTURE_MAP_ENTRY_COUNT 256
+
+/**
+ * The entries the texture map file lists.
+ *
+ * @ghidraAddress BRD3D: 0x106c7e78
+ * @ghidraAddress BRGlide: 0x106eef08
+ */
+extern TextureMapEntry g_aTextureMapEntries[TEXTURE_MAP_ENTRY_COUNT];
+
+/**
+ * The entries of g_aTextureMapEntries in use.
+ *
+ * @ghidraAddress BRD3D: 0x10a99778
+ * @ghidraAddress BRGlide: 0x10ac0808
+ */
+extern int g_dwTextureMapEntryCount;
+
+/**
+ * The amount added to an address before it is looked up in g_aTextureMapEntries.
+ *
+ * @ghidraAddress BRD3D: 0x10a9977c
+ * @ghidraAddress BRGlide: 0x10ac080c
+ */
+extern unsigned g_dwTextureMapAddressBias;
+
+/**
+ * Get the size of the replacement of a texture of the console, searching the texture map from its
+ * last entry.
+ *
+ * @param dwAddress The address of the texture, before g_dwTextureMapAddressBias.
+ * @param pnWidth Receives the width of the replacement.
+ * @param pnHeight Receives the height of the replacement.
+ * @return Whether the texture map lists the texture.
+ * @ghidraAddress BRD3D: 0x10037930
+ * @ghidraAddress BRGlide: 0x10030fd0
+ */
+bool LookupTextureMapEntry(unsigned dwAddress, int *pnWidth, int *pnHeight);
+
 /**
  * Reverse the bytes of each word of a run of groups of three words.
  *

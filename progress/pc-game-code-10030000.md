@@ -1,6 +1,6 @@
 # PC port game code from 0x10030000 to 0x10040000
 
-88 of 307 routines done.
+89 of 307 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -163,7 +163,7 @@ the same name, for a routine the port retained from the N64 game.
 | `AllocIoMessage`                                  |        | ✅ `0x802172d0` |      1 |     84 | `0x10031190` | `0x1002a840` | `undefined AllocIoMessage()`                                                                                                                                            |
 | `IsVehicleMaterialTexture`                        |        |                 |      1 |     84 | `0x10037070` | `0x10030710` | `undefined IsVehicleMaterialTexture()`                                                                                                                                  |
 | `Vec3fCross`                                      |   ✅   | ✅ `0x8022439c` |     23 |     83 | `0x1003ac30` | `0x100342b0` | `void Vec3fCross(float * pResult, float * pVecA, float * pVecB)`                                                                                                        |
-| `LookupTextureMapEntry`                           |        |                 |      1 |     83 | `0x10037930` | `0x10030fd0` | `undefined LookupTextureMapEntry()`                                                                                                                                     |
+| `LookupTextureMapEntry`                           |   ✅   |                 |      1 |     83 | `0x10037930` | `0x10030fd0` | `bool LookupTextureMapEntry(uint dwAddress, int * pnWidth, int * pnHeight)`                                                                                             |
 | `OnChatMessageEdited`                             |        |                 |      1 |     81 | `0x1003f110` | `0x10038650` | `undefined OnChatMessageEdited()`                                                                                                                                       |
 | `OnTcpIpAddressEdited`                            |        |                 |      1 |     81 | `0x1003f0b0` | `0x100385f0` | `undefined OnTcpIpAddressEdited()`                                                                                                                                      |
 | `OnTcpIpPortEdited`                               |        |                 |      1 |     81 | `0x1003f050` | `0x10038580` | `undefined OnTcpIpPortEdited()`                                                                                                                                         |
