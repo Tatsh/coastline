@@ -560,6 +560,7 @@ pjrwd
 placedvel
 playerlost
 playerselect
+podarchive
 popmtx
 ppsz
 preapproved
@@ -704,6 +705,7 @@ stickx
 stickyfocus
 stkptr
 strequal
+strupr
 subu
 sunweth
 superbuild

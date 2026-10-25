@@ -18,6 +18,7 @@ add_library(
   frontend.cpp
   input.cpp
   paintshop.c
+  podarchive.cpp
   render.cpp
   snapshot.c
   sound.cpp
