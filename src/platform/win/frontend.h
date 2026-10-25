@@ -938,12 +938,34 @@ void ShowRaceResultsScreen(void);
 void ReturnToNetworkLobbyScreen(void);
 
 /**
- * Show the screen of the time attack.
+ * Show the menu of a finished time attack, when it is not shown already.
  *
+ * @param nUnused Not read.
+ * @return 0 when the menu cannot be created, 1 otherwise.
+ * @ghidraAddress BRD3D: 0x10044b90
+ * @ghidraAddress BRGlide: 0x1003e0e0
+ */
+int ShowTimeAttackMenu(int nUnused);
+
+/**
+ * Show the menu to save the ghost car of a time attack, when it is not shown already.
+ *
+ * @param nUnused Not read.
+ * @return 0 when the menu cannot be created, 1 otherwise.
+ * @ghidraAddress BRD3D: 0x10044e20
+ * @ghidraAddress BRGlide: 0x1003e370
+ */
+int ShowSaveGhostMenu(int nUnused);
+
+/**
+ * Enter the time attack mode, first showing the menus of a finished time attack when the first
+ * vehicle has driven every lap.
+ *
+ * @return Always true.
  * @ghidraAddress BRD3D: 0x10041930
  * @ghidraAddress BRGlide: 0x1003ae90
  */
-void EnterTimeAttackMode(void);
+int EnterTimeAttackMode(void);
 
 /**
  * Show the lobby of network play.

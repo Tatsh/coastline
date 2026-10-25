@@ -283,6 +283,7 @@ LRESULT CALLBACK MainWindowProc(HWND hWnd, UINT nMessage, WPARAM wParam, LPARAM 
  * The laps the first vehicle has driven.
  *
  * @ghidraAddress BRD3D: 0x10acee50
+ * @ghidraAddress BRGlide: 0x10af21b0
  */
 extern int g_aVehicles_LapCount;
 

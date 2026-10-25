@@ -7,6 +7,8 @@
 
 #include <windows.h>
 
+#include "game.h"
+#include "laps.h"
 #include "platform/win/boot/app.h"
 #include "platform/win/boot/rallyconfig.h"
 #include "platform/win/boot/strings.h"
@@ -676,6 +678,15 @@ void ShowErrorMessage(int nErrorCode) {
     if (g_ErrorMessageTable[nErrorCode].bFatal) {
         exit(1);
     }
+}
+
+int EnterTimeAttackMode(void) {
+    if (g_aVehicles_LapCount >= g_dwTotalLaps) {
+        ShowTimeAttackMenu(0);
+        ShowSaveGhostMenu(0);
+    }
+    g_dwGameMode = GAME_MODE_TIME_ATTACK;
+    return true;
 }
 
 void BackupMenuSelections(void) {
