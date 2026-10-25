@@ -844,12 +844,82 @@ void InitMenuSurfaces(void);
 
 /**
  * Copy adwMenuSelectionBackup of g_GlobalRallyConfig and its other settings back into the choices
- * of the menus.
+ * of the menus. The input device of the configuration is taken from the choice of the menu before
+ * the choice is restored, and a restored choice of 1 becomes 2. The cars and tracks the choices
+ * unlocked are added to the selectable ones.
  *
  * @ghidraAddress BRD3D: 0x1003e3a0
  * @ghidraAddress BRGlide: 0x100379b0
  */
 void RestoreMenuSelections(void);
+
+#if TGR_RENDERER == TGR_RENDERER_D3D
+/**
+ * Choose the DirectDraw driver and the display mode of g_GlobalRallyConfig.
+ *
+ * @ghidraAddress BRD3D: 0x1003e2c0
+ */
+void SelectConfiguredDisplayMode(void);
+#endif
+
+/** The number of entries of g_adwInputDeviceMenuIndexToDevice. */
+#define INPUT_DEVICE_MENU_CHOICES 4
+
+/**
+ * The input device of each choice of the menu, 0 for the keyboard and 1 to 3 for a controller.
+ *
+ * @ghidraAddress BRD3D: 0x100ac520
+ * @ghidraAddress BRGlide: 0x100abcc0
+ */
+extern const int g_adwInputDeviceMenuIndexToDevice[INPUT_DEVICE_MENU_CHOICES];
+
+/**
+ * The choice of the menu of force feedback, 0 for on.
+ *
+ * @ghidraAddress BRD3D: 0x10aa2a1c
+ * @ghidraAddress BRGlide: 0x10ac5d74
+ */
+extern int g_dwOptionForceFeedback;
+
+/**
+ * The choice of the menu of the shadow of the car, 0 for on.
+ *
+ * @ghidraAddress BRD3D: 0x10aa2a20
+ * @ghidraAddress BRGlide: 0x10ac5d78
+ */
+extern int g_dwOptionCarShadow;
+
+/**
+ * The choice of the menu of specular lighting, 0 for on.
+ *
+ * @ghidraAddress BRD3D: 0x10aa2a24
+ * @ghidraAddress BRGlide: 0x10ac5d7c
+ */
+extern int g_dwOptionSpecularLighting;
+
+/**
+ * The choice of the menu of skid marks, 0 for on.
+ *
+ * @ghidraAddress BRD3D: 0x10aa2a28
+ * @ghidraAddress BRGlide: 0x10ac5d80
+ */
+extern int g_dwOptionSkidMarks;
+
+/**
+ * The cars that can be chosen, one bit to a car.
+ *
+ * @ghidraAddress BRD3D: 0x100ab3e4
+ * @ghidraAddress BRGlide: 0x100aab84
+ */
+extern unsigned short g_wUnlockedCarModeMask;
+
+/**
+ * The tracks that can be chosen, one bit to a track.
+ *
+ * @ghidraAddress BRD3D: 0x100ab3ec
+ * @ghidraAddress BRGlide: 0x100aab8c
+ */
+extern int g_dwSelectableTrackMaskAlt;
 
 /**
  * Show the screen of the results of a race.

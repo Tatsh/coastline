@@ -53,6 +53,13 @@ int g_dwAccumUnlockedCarMask;
 int g_dwAccumUnlockedTrackMask;
 int g_dwHandlingTypeMenuIndex = 4;
 int g_dwSelectedCarClass;
+const int g_adwInputDeviceMenuIndexToDevice[INPUT_DEVICE_MENU_CHOICES] = {0, 1, 2, 3};
+int g_dwOptionForceFeedback;
+int g_dwOptionCarShadow;
+int g_dwOptionSpecularLighting;
+int g_dwOptionSkidMarks;
+unsigned short g_wUnlockedCarModeMask = 0x102;
+int g_dwSelectableTrackMaskAlt = 0x24;
 int g_dwNetworkMenuState;
 int g_dwSelectedSessionIndex;
 MenuWidget *g_pJoinCreateGameMenu;
@@ -660,6 +667,56 @@ void BackupMenuSelections(void) {
     pBackup[9] = g_dwAccumUnlockedTrackMask;
     pBackup[10] = g_dwHandlingTypeMenuIndex;
     pBackup[11] = g_dwSelectedCarClass;
+}
+
+#if TGR_RENDERER == TGR_RENDERER_D3D
+void SelectConfiguredDisplayMode(void) {
+    g_pSelectedDisplayDriver =
+        FindDirectDrawDriverOrDefault(&g_GlobalRallyConfig.DisplayDriverGuid);
+    g_pSelectedDisplayMode = FindDisplayModeWithFallback(g_pSelectedDisplayDriver,
+                                                         g_GlobalRallyConfig.dwDisplayModeWidth,
+                                                         g_GlobalRallyConfig.dwDisplayModeHeight,
+                                                         g_GlobalRallyConfig.dwDisplayModeBitDepth,
+                                                         0,
+                                                         g_pSelectedRenderDevice);
+}
+#endif
+
+void RestoreMenuSelections(void) {
+    const int *pBackup = g_GlobalRallyConfig.adwMenuSelectionBackup;
+
+    // The device comes from the choice before the choice is restored below.
+    g_GlobalRallyConfig.dwInputDeviceType =
+        g_adwInputDeviceMenuIndexToDevice[g_dwSelectedInputDevice];
+    g_GlobalRallyConfig.SelectActiveInputBindings();
+    g_dwOptionForceFeedback = !g_GlobalRallyConfig.bForceFeedbackEnabled;
+    g_dwOptionCarShadow = !g_GlobalRallyConfig.bCarShadowSelection;
+    g_dwOptionSpecularLighting = !g_GlobalRallyConfig.bSpecularLightingSelection;
+    g_dwOptionSkidMarks = !g_GlobalRallyConfig.bSkidMarksSelection;
+    strcpy(g_szModemPhoneNumber, g_GlobalRallyConfig.szSavedModemPhoneNumber);
+#if TGR_RENDERER == TGR_RENDERER_D3D
+    SelectConfiguredDisplayMode();
+#else
+    NullStub();
+#endif
+    g_dwTrackMenuIndex = pBackup[0];
+    g_dwSelectedWeather = pBackup[1];
+    g_dwSelectedTransmission = pBackup[2];
+    g_dwTireMenuIndex = pBackup[3];
+    g_dwSuspensionMenuIndex = pBackup[4];
+    g_dwCarMenuIndex = pBackup[5];
+    g_dwSelectedInputDevice = pBackup[6];
+    // A choice of 1 is restored as 2, as in the original.
+    if (g_dwSelectedInputDevice == 1) {
+        g_dwSelectedInputDevice = 2;
+    }
+    g_dwTotalLapsSetting = pBackup[7];
+    g_dwHandlingTypeMenuIndex = pBackup[10];
+    g_wUnlockedCarModeMask |= static_cast<unsigned short>(pBackup[8]);
+    g_dwAccumUnlockedCarMask = pBackup[8];
+    g_dwAccumUnlockedTrackMask = pBackup[9];
+    g_dwSelectedCarClass = pBackup[11];
+    g_dwSelectableTrackMaskAlt |= pBackup[9];
 }
 
 // Place the rectangles of a table on a grid of cells, row by row.

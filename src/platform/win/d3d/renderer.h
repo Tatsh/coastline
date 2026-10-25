@@ -1185,3 +1185,24 @@ DisplayMode *FindDisplayModeWithFallback(DirectDrawDriver *pDriver,
  * @ghidraAddress BRD3D: 0x100aa8a8
  */
 extern int g_dwScreenBitDepth;
+
+/**
+ * The DirectDraw driver chosen in the configuration.
+ *
+ * @ghidraAddress BRD3D: 0x118ac238
+ */
+extern DirectDrawDriver *g_pSelectedDisplayDriver;
+
+/**
+ * The Direct3D device chosen in the menus, or null.
+ *
+ * @ghidraAddress BRD3D: 0x118ac23c
+ */
+extern D3DDeviceNode *g_pSelectedRenderDevice;
+
+/**
+ * The display mode chosen in the configuration.
+ *
+ * @ghidraAddress BRD3D: 0x118ac240
+ */
+extern DisplayMode *g_pSelectedDisplayMode;
