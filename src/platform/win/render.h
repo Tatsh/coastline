@@ -32,7 +32,7 @@ extern int g_dwRenderBackendMode;
  * @ghidraAddress BRD3D: 0x10690a20
  * @ghidraAddress BRGlide: 0x106b7ab4
  */
-extern void (*g_pfnRenderDeviceReset)(void);
+extern int (*g_pfnRenderDeviceReset)(void);
 
 /**
  * Start the renderer of the backend, set by SetRenderBackendMode().
@@ -125,16 +125,19 @@ void ResetRenderSubsystems(int nMode, int nWidth, int nHeight, int nBitDepth, in
  * @param nExtra The fourth value of the display mode.
  * @ghidraAddress BRD3D: 0x1001bb00
  * @ghidraAddress BRGlide: 0x1001e130
+ * @stub{BRGlide}
  */
 void SetDisplayModeWithFallback(int nWidth, int nHeight, int nBitDepth, int nExtra);
 
 #if TGR_RENDERER == TGR_RENDERER_D3D
 /**
- * Reset the routines of the Direct3D device.
+ * Set the routines of the Direct3D device: the flip of the main window shows a frame, and the
+ * shutdown of the device does nothing.
  *
+ * @return Always true.
  * @ghidraAddress BRD3D: 0x1001bae0
  */
-void ResetRenderDeviceCallbacks(void);
+int ResetRenderDeviceCallbacks(void);
 
 /**
  * Start the renderer of the display lists of the game with Direct3D.
@@ -146,9 +149,10 @@ void InitGbiD3DRenderer(void);
 /**
  * Start the Glide device.
  *
+ * @return The result of the start. Its meaning is not recovered yet.
  * @ghidraAddress BRGlide: 0x1001e080
  */
-void InitGlideRenderDevice(void);
+int InitGlideRenderDevice(void);
 
 /**
  * Start the renderer of the display lists of the game with Glide.

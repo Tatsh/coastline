@@ -6,6 +6,7 @@
 
 #include "platform/win/boot/app.h"
 #include "platform/win/d3d/texture.h"
+#include "platform/win/render.h"
 #include "platform/win/settings.h"
 #include "screen.h"
 
@@ -908,4 +909,45 @@ HRESULT DirectDrawRenderer::GetDeviceViewportRect(RECT *pRect) {
     }
     *pRect = rcViewport;
     return S_OK;
+}
+
+void DirectDrawRenderer::FlipPrimarySurfaceAndWait() {
+    if (g_bD3DWaitCanFlip) {
+        while (pPrimarySurface->GetFlipStatus(DDGFS_CANFLIP) != DD_OK) {
+        }
+    }
+    pPrimarySurface->Flip(pBackBuffer, DDFLIP_WAIT);
+    if (g_bD3DWaitFlipDone) {
+        while (pPrimarySurface->GetFlipStatus(DDGFS_ISFLIPDONE) != DD_OK) {
+        }
+    }
+    g_bRenderTargetCleared = false;
+}
+
+void PresentFrameCallback_FlipSurfaces(void) {
+    g_pMainRenderWindow->FlipPrimarySurfaceAndWait();
+}
+
+int ResetRenderDeviceCallbacks(void) {
+    g_pfnPresentFrame = PresentFrameCallback_FlipSurfaces;
+    g_pfnRenderDeviceShutdown = NullStub;
+    return true;
+}
+
+// The display mode the game falls back to when the device is not created in the mode requested.
+#define FALLBACK_MODE_WIDTH 640
+#define FALLBACK_MODE_HEIGHT 480
+#define FALLBACK_MODE_BIT_DEPTH 16
+
+void SetDisplayModeWithFallback(int nWidth, int nHeight, int nBitDepth, int nExtra) {
+    if (!ApplySelectedDisplayMode(nWidth, nHeight, nBitDepth, nExtra) &&
+        (nWidth != g_dwScreenWidth || nHeight != g_dwScreenHeight ||
+         nBitDepth != g_dwScreenBitDepth || nExtra != g_dwCurrentDisplayModeBpp)) {
+        g_pMainRenderWindow->SwitchDisplayModeAndRebuildDevice(nWidth, nHeight, nBitDepth, nExtra);
+        if (!g_pMainRenderWindow->dwDeviceInit) {
+            g_pMainRenderWindow->SwitchDisplayModeAndRebuildDevice(
+                FALLBACK_MODE_WIDTH, FALLBACK_MODE_HEIGHT, FALLBACK_MODE_BIT_DEPTH, 0);
+        }
+    }
+    ResetRenderDeviceCallbacks();
 }

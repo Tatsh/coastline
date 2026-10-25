@@ -59,6 +59,7 @@ buildsystems
 bzero
 camframe
 campoints
+canflip
 cantaddplayer
 cantcreategroup
 cantcreateplayer

@@ -688,6 +688,27 @@ public:
     HRESULT BeginRenderScene();
 
     /**
+     * Flip the back buffer to the front, waiting first until the front buffer can flip when
+     * g_bD3DWaitCanFlip is set and afterwards until the flip is done when g_bD3DWaitFlipDone is
+     * set. g_bRenderTargetCleared is cleared.
+     *
+     * @ghidraAddress BRD3D: 0x1000b610
+     */
+    void FlipPrimarySurfaceAndWait();
+
+    /**
+     * Switch the display mode of the window and create the device again.
+     *
+     * @param nWidth The width of the display mode.
+     * @param nHeight The height of the display mode.
+     * @param nBitDepth The bits of a pixel of the display mode.
+     * @param nExtra The fourth value of the display mode.
+     * @return The result of the switch. Its meaning is not recovered yet.
+     * @ghidraAddress BRD3D: 0x1000b4d0
+     */
+    int SwitchDisplayModeAndRebuildDevice(int nWidth, int nHeight, int nBitDepth, int nExtra);
+
+    /**
      * Release the Direct3D device, its viewport, and the back and depth buffers, telling the host
      * first.
      *
@@ -1185,6 +1206,47 @@ DisplayMode *FindDisplayModeWithFallback(DirectDrawDriver *pDriver,
  * @ghidraAddress BRD3D: 0x100aa8a8
  */
 extern int g_dwScreenBitDepth;
+
+/**
+ * The fourth value of the display mode set.
+ *
+ * @ghidraAddress BRD3D: 0x106c6644
+ */
+extern int g_dwCurrentDisplayModeBpp;
+
+/**
+ * Whether the render target was cleared since the last flip.
+ *
+ * @ghidraAddress BRD3D: 0x102776a0
+ */
+extern int g_bRenderTargetCleared;
+
+/**
+ * Show the frame drawn, set by ResetRenderDeviceCallbacks().
+ *
+ * @ghidraAddress BRD3D: 0x10690a24
+ */
+extern void (*g_pfnPresentFrame)(void);
+
+/**
+ * Flip the frame of the main window.
+ *
+ * @ghidraAddress BRD3D: 0x1001bad0
+ */
+void PresentFrameCallback_FlipSurfaces(void);
+
+/**
+ * Move the main window to the DirectDraw driver of g_GlobalRallyConfig when it differs from the
+ * driver of the window, in the display mode of the driver nearest a size and a depth.
+ *
+ * @param nWidth The width of the display mode.
+ * @param nHeight The height of the display mode.
+ * @param nBitDepth The bits of a pixel of the display mode.
+ * @param nExtra The fourth value of the display mode.
+ * @return Whether the window moved to the driver.
+ * @ghidraAddress BRD3D: 0x1007ac20
+ */
+bool ApplySelectedDisplayMode(int nWidth, int nHeight, int nBitDepth, int nExtra);
 
 /**
  * The DirectDraw driver chosen in the configuration.
