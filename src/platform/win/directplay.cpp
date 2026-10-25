@@ -50,29 +50,58 @@ HRESULT DirectPlaySendLocked(IDirectPlay3A *pDirectPlay,
     return hResult;
 }
 
-// The type of message 6 of the game.
+// The types of the messages of the game.
+#define NETWORK_MESSAGE_3 0x60000003
 #define NETWORK_MESSAGE_6 0x60000006
+#define NETWORK_MESSAGE_7 0x60000007
 
-// Message 6 of the game.
-struct NetworkMessage6 {
+// A message of the game of two words, the second naming a player.
+struct NetworkPlayerMessage {
     DWORD dwType;
     DPID dpidPlayer;
 };
 
+static inline HRESULT SendNetworkPlayerMessage(DirectPlayInfo *pInfo,
+                                               NetworkPlayerMessage *pMessage) {
+    return DirectPlaySendLocked(pInfo->pDirectPlay,
+                                pInfo->dpidPlayer,
+                                DPID_ALLPLAYERS,
+                                DPSEND_GUARANTEED,
+                                pMessage,
+                                sizeof(*pMessage));
+}
+
+HRESULT SendNetworkMessage3(DirectPlayInfo *pInfo) {
+    NetworkPlayerMessage message;
+
+    if (pInfo == nullptr || pInfo->pDirectPlay == nullptr || g_dwNetworkSendBlocked) {
+        return 0;
+    }
+    // The second word is sent unwritten.
+    message.dwType = NETWORK_MESSAGE_3;
+    return SendNetworkPlayerMessage(pInfo, &message);
+}
+
 HRESULT SendNetworkMessage6(DirectPlayInfo *pInfo, DPID dpidPlayer) {
-    NetworkMessage6 message;
+    NetworkPlayerMessage message;
 
     if (pInfo == nullptr || pInfo->pDirectPlay == nullptr) {
         return 0;
     }
     message.dpidPlayer = dpidPlayer;
     message.dwType = NETWORK_MESSAGE_6;
-    return DirectPlaySendLocked(pInfo->pDirectPlay,
-                                pInfo->dpidPlayer,
-                                DPID_ALLPLAYERS,
-                                DPSEND_GUARANTEED,
-                                &message,
-                                sizeof(message));
+    return SendNetworkPlayerMessage(pInfo, &message);
+}
+
+HRESULT SendNetworkMessage7(DirectPlayInfo *pInfo, DPID dpidPlayer) {
+    NetworkPlayerMessage message;
+
+    if (pInfo == nullptr || pInfo->pDirectPlay == nullptr) {
+        return 0;
+    }
+    message.dpidPlayer = dpidPlayer;
+    message.dwType = NETWORK_MESSAGE_7;
+    return SendNetworkPlayerMessage(pInfo, &message);
 }
 
 void SendNetworkMessage6ToSession(void) {

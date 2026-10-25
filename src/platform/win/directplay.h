@@ -107,6 +107,28 @@ HRESULT DirectPlaySendLocked(IDirectPlay3A *pDirectPlay,
 HRESULT SendNetworkMessage6(DirectPlayInfo *pInfo, DPID dpidPlayer);
 
 /**
+ * Send message 3 of the game from the local player to every player, unless the sends are blocked.
+ * The second word of the message is never written.
+ *
+ * @param pInfo The session.
+ * @return The result of the send, or 0 without DirectPlay or with the sends blocked.
+ * @ghidraAddress BRD3D: 0x1003d9f0
+ * @ghidraAddress BRGlide: 0x10037090
+ */
+HRESULT SendNetworkMessage3(DirectPlayInfo *pInfo);
+
+/**
+ * Send message 7 of the game, which names a player, from the local player to every player.
+ *
+ * @param pInfo The session.
+ * @param dpidPlayer The player the message names.
+ * @return The result of the send, or 0 without DirectPlay.
+ * @ghidraAddress BRD3D: 0x1003db00
+ * @ghidraAddress BRGlide: 0x100371a0
+ */
+HRESULT SendNetworkMessage7(DirectPlayInfo *pInfo, DPID dpidPlayer);
+
+/**
  * Send message 6 of the game naming the local player, when there is one.
  *
  * @ghidraAddress BRD3D: 0x1003dae0
