@@ -6,6 +6,7 @@
 #include <windows.h>
 
 #include "platform/win/boot/app.h"
+#include "platform/win/boot/rallyconfig.h"
 #include "platform/win/boot/strings.h"
 
 IDirectInputA *g_pDirectInput;
@@ -194,6 +195,134 @@ HRESULT SetJoystickAxisRange(IDirectInputDevice2A *pDevice,
     property.lMin = lMin;
     property.lMax = lMax;
     return pDevice->SetProperty(guidProperty, &property.diph);
+}
+
+bool g_bForceFeedbackAvailable;
+
+// The input device type of the first game controller.
+#define INPUT_DEVICE_FIRST_CONTROLLER 2
+// The range of an axis of the game controller.
+#define JOYSTICK_AXIS_MIN -128
+#define JOYSTICK_AXIS_MAX 128
+
+BOOL CALLBACK EnumJoysticksCallback_CreateDevice(const DIDEVICEINSTANCEA *pInstance,
+                                                 void *pContext) {
+    IDirectInputDeviceA *pDevice;
+    GUID guidInstance = pInstance->guidInstance;
+    HRESULT hResult;
+    const char *pszError;
+
+    if (FAILED(g_pDirectInput->CreateDevice(guidInstance, &pDevice, nullptr))) {
+        OutputDebugStringA("Error: Failed to create device.\n");
+        return DIENUM_STOP;
+    }
+    hResult = pDevice->QueryInterface(IID_IDirectInputDevice2A,
+                                      reinterpret_cast<void **>(&g_pJoystickDevice));
+    pDevice->Release();
+    if (FAILED(hResult)) {
+        OutputDebugStringA("Error: Failed to obtain interface.\n");
+        return DIENUM_STOP;
+    }
+    if (FAILED(g_pJoystickDevice->SetCooperativeLevel(
+            g_hMainWindow, static_cast<DWORD>(reinterpret_cast<DWORD_PTR>(pContext))))) {
+        pszError = "Error: Failed to set cooperative level.\n";
+    } else if (FAILED(g_pJoystickDevice->SetDataFormat(&c_dfDIJoystick2))) {
+        pszError = "Error: Failed to set game device data format.\n";
+    } else {
+        return DIENUM_STOP;
+    }
+    OutputDebugStringA(pszError);
+    g_pJoystickDevice->Release();
+    g_pJoystickDevice = nullptr;
+    return DIENUM_STOP;
+}
+
+// A property that is not set releases the game controller.
+static inline int ReleaseJoystickAfterFailure(const char *pszError) {
+    OutputDebugStringA(pszError);
+    g_pJoystickDevice->Unacquire();
+    g_pJoystickDevice->Release();
+    g_pJoystickDevice = nullptr;
+    return 0;
+}
+
+int InitializeJoystickDevice(void) {
+    DIPROPDWORD autoCenter;
+
+    if (g_GlobalRallyConfig.dwInputDeviceType == 0 || ++g_dwJoystickDeviceRefCount != 1) {
+        return g_GlobalRallyConfig.dwInputDeviceType;
+    }
+    if (g_GlobalRallyConfig.bForceFeedbackEnabled &&
+        g_pDirectInput->EnumDevices(DIDEVTYPE_JOYSTICK,
+                                    EnumJoysticksCallback_CreateDevice,
+                                    reinterpret_cast<void *>(DISCL_EXCLUSIVE | DISCL_FOREGROUND),
+                                    DIEDFL_ATTACHEDONLY | DIEDFL_FORCEFEEDBACK) == DI_OK &&
+        g_pJoystickDevice != nullptr) {
+        g_bForceFeedbackAvailable = true;
+        autoCenter.diph.dwSize = sizeof(autoCenter);
+        autoCenter.diph.dwHeaderSize = sizeof(autoCenter.diph);
+        autoCenter.diph.dwObj = 0;
+        autoCenter.diph.dwHow = DIPH_DEVICE;
+        autoCenter.dwData = DIPROPAUTOCENTER_OFF;
+        if (FAILED(g_pJoystickDevice->SetProperty(DIPROP_AUTOCENTER, &autoCenter.diph))) {
+            OutputDebugStringA("Error: Failed to change device property.\n");
+        }
+        TryAcquireJoystickDevice();
+        CreateForceFeedbackEffects(1000, 8000);
+    } else {
+        g_pDirectInput->EnumDevices(DIDEVTYPE_JOYSTICK,
+                                    EnumJoysticksCallback_CreateDevice,
+                                    reinterpret_cast<void *>(DISCL_NONEXCLUSIVE | DISCL_FOREGROUND),
+                                    DIEDFL_ATTACHEDONLY);
+        TryAcquireJoystickDevice();
+        g_bForceFeedbackAvailable = false;
+    }
+    if (g_pJoystickDevice == nullptr) {
+        return 0;
+    }
+    if (FAILED(SetJoystickAxisRange(g_pJoystickDevice,
+                                    DIPROP_RANGE,
+                                    DIJOFS_X,
+                                    DIPH_BYOFFSET,
+                                    JOYSTICK_AXIS_MIN,
+                                    JOYSTICK_AXIS_MAX))) {
+        return ReleaseJoystickAfterFailure(
+            "Error: IDirectInputDevice::SetProperty(DIPH_RANGE) FAILED\n");
+    }
+    if (FAILED(SetJoystickPropertyDword(
+            g_pJoystickDevice, DIPROP_DEADZONE, DIJOFS_X, DIPH_BYOFFSET, 0))) {
+        return ReleaseJoystickAfterFailure(
+            "Error: IDirectInputDevice::SetProperty(DIPH_WORD) FAILED\n");
+    }
+    if (FAILED(SetJoystickAxisRange(g_pJoystickDevice,
+                                    DIPROP_RANGE,
+                                    DIJOFS_Y,
+                                    DIPH_BYOFFSET,
+                                    JOYSTICK_AXIS_MIN,
+                                    JOYSTICK_AXIS_MAX))) {
+        return ReleaseJoystickAfterFailure(
+            "Error: IDirectInputDevice::SetProperty(DIPH_RANGE) FAILED\n");
+    }
+    if (FAILED(SetJoystickPropertyDword(
+            g_pJoystickDevice, DIPROP_DEADZONE, DIJOFS_Y, DIPH_BYOFFSET, 0))) {
+        return ReleaseJoystickAfterFailure(
+            "Error: IDirectInputDevice::SetProperty(DIPH_WORD) FAILED\n");
+    }
+    return g_GlobalRallyConfig.dwInputDeviceType;
+}
+
+void ProbeJoystickDevice(void) {
+    int dwInputDeviceType = g_GlobalRallyConfig.dwInputDeviceType;
+    int bForceFeedbackEnabled = g_GlobalRallyConfig.bForceFeedbackEnabled;
+
+    g_GlobalRallyConfig.dwInputDeviceType = INPUT_DEVICE_FIRST_CONTROLLER;
+    g_GlobalRallyConfig.SelectActiveInputBindings();
+    g_GlobalRallyConfig.bForceFeedbackEnabled = true;
+    InitializeJoystickDevice();
+    ReleaseJoystickDevice();
+    g_GlobalRallyConfig.dwInputDeviceType = dwInputDeviceType;
+    g_GlobalRallyConfig.SelectActiveInputBindings();
+    g_GlobalRallyConfig.bForceFeedbackEnabled = bForceFeedbackEnabled;
 }
 
 void ReleaseKeyboardDevice(void) {

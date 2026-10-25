@@ -407,6 +407,61 @@ void ClearKeyboardStateBuffers(void);
 void UpdateKeyboardEdgeState(void);
 
 /**
+ * Whether the game controller has force feedback.
+ *
+ * @ghidraAddress BRD3D: 0x118abdbc
+ * @ghidraAddress BRGlide: 0x118eeed4
+ */
+extern bool g_bForceFeedbackAvailable;
+
+/**
+ * Create the jolt and condition effects of force feedback of the game controller. The return, if
+ * any, is not recovered yet.
+ *
+ * @param nJoltDuration The first value the game passes, 1000. Its meaning is not recovered yet.
+ * @param nConditionDuration The second value the game passes, 8000. Its meaning is not recovered
+ * yet.
+ * @ghidraAddress BRD3D: 0x10079390
+ * @ghidraAddress BRGlide: 0x10072680
+ */
+void CreateForceFeedbackEffects(int nJoltDuration, int nConditionDuration);
+
+/**
+ * Create the device of the first attached game controller DirectInput enumerates, as its second
+ * interface, with the cooperation the enumeration passes and the format of DIJOYSTATE2. A step
+ * that fails is written to the debugger and releases the device.
+ *
+ * @param pInstance The game controller.
+ * @param pContext The flags of cooperation.
+ * @return Always DIENUM_STOP.
+ * @ghidraAddress BRD3D: 0x100790e0
+ * @ghidraAddress BRGlide: 0x100723d0
+ */
+BOOL CALLBACK EnumJoysticksCallback_CreateDevice(const DIDEVICEINSTANCEA *pInstance,
+                                                 void *pContext);
+
+/**
+ * Add a user of the game controller of dwInputDeviceType. The first user creates the device,
+ * exclusively with force feedback when it is on and available and shared otherwise, and sets the
+ * range of X and Y to -128 to 128 with no dead zone. A property that is not set releases the
+ * device.
+ *
+ * @return dwInputDeviceType of g_GlobalRallyConfig, or 0 without a game controller.
+ * @ghidraAddress BRD3D: 0x100791d0
+ * @ghidraAddress BRGlide: 0x100724c0
+ */
+int InitializeJoystickDevice(void);
+
+/**
+ * Create and release the first game controller with force feedback on, to find whether one is
+ * attached. The type of the input device, its bindings, and force feedback are restored after.
+ *
+ * @ghidraAddress BRD3D: 0x100795d0
+ * @ghidraAddress BRGlide: 0x100728c0
+ */
+void ProbeJoystickDevice(void);
+
+/**
  * Read the keyboard into g_abKeyboardState and find the keys that went down.
  *
  * @ghidraAddress BRD3D: 0x1005ffb0

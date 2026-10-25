@@ -25,6 +25,7 @@ argn
 argparse
 asciz
 atexit
+attachedonly
 audiomix
 autobrief
 badvaddr
@@ -134,10 +135,17 @@ deviceremovecomplete
 devmgr
 dfrac
 dialogs
+dideviceinstancea
+didevtype
+diedfl
+dienum
 dierr
+dijofs
 dijoystate
 dinline
 diph
+diprop
+dipropautocenter
 dipropdword
 diproprange
 directplay
