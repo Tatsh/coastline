@@ -5,12 +5,29 @@
 #include <cstring>
 #include <functional>
 
+#include "displaylistptr.h"
+#include "platform/win/boot/app.h"
+#include "platform/win/render.h"
 #include "platform/win/settings.h"
+#include "platform/win/timer.h"
 #include "weather.h"
 
 #if TGR_RENDERER == TGR_RENDERER_D3D
 #include "platform/win/d3d/renderer.h"
 #endif
+
+// The headers of Windows name the drawing of text of GDI DrawText.
+#undef DrawText
+#include "text.h"
+
+// The bits of the geometry mode of the console the handlers read.
+#define GBI_GEOMETRY_Z_BUFFER 0x1
+#define GBI_GEOMETRY_SHADING_SMOOTH 0x200
+#define GBI_GEOMETRY_CULL_FRONT 0x1000
+#define GBI_GEOMETRY_CULL_BACK 0x2000
+#define GBI_GEOMETRY_LIGHTING 0x20000
+#define GBI_GEOMETRY_TEXTURE_GEN 0x40000
+#define GBI_GEOMETRY_TEXTURE_GEN_LINEAR 0x80000
 
 float g_fTexRectScaleW = 1.0f;
 float g_fTexRectDepth;
@@ -454,6 +471,117 @@ void FlushDirtyRenderStates(void) {
     g_dwDirtyRenderStateMask = 0;
 }
 
+char g_szDebugOverlayText[DEBUG_OVERLAY_TEXT_SIZE];
+DWORD g_dwD3DAlphaFunc;
+int g_dwFpsSampleFrames = 5;
+int g_dwFpsFrameCountdown = -1;
+DWORD g_adwFpsFrameTimeSamples[FPS_FRAME_TIME_SAMPLE_COUNT];
+DWORD g_dwGbiLastFrameTime;
+DWORD g_dwGbiFrameDeltaTime;
+
+// The bytes of the display list of the text drawn over a frame.
+#define OVERLAY_DISPLAY_LIST_SIZE 0x8000
+// The size and the position of the text drawn over a frame.
+#define OVERLAY_TEXT_SIZE 20
+#define OVERLAY_TEXT_X 0
+#define OVERLAY_TEXT_Y 60
+// The first word of the command that ends a display list.
+#define GBI_END_DISPLAY_LIST_W0 0xb8000000
+
+// Start or end the scene, restoring the surfaces as long as they are lost.
+static inline bool RunSceneCall(HRESULT (STDMETHODCALLTYPE IDirect3DDevice2::*pfnCall)()) {
+    HRESULT hResult = (g_pD3DDevice2->*pfnCall)();
+    while (hResult == DDERR_SURFACELOST) {
+        while (g_pMainRenderWindow->RestoreLostSurfaces() == DDERR_SURFACELOST) {
+        }
+        hResult = (g_pD3DDevice2->*pfnCall)();
+    }
+    return hResult == D3D_OK;
+}
+
+static inline void ResetFrameRenderStates(void) {
+    g_dwPendingRS_AlphaTestEnable = false;
+    g_dwPendingRS_AlphaBlendEnable = false;
+    g_dwPendingRS_ZWriteEnable = true;
+    g_dwPendingRS_SrcBlend = D3DBLEND_ONE;
+    g_dwPendingRS_DestBlend = D3DBLEND_ZERO;
+    g_dwPendingRS_CullMode = D3DCULL_CCW;
+    g_dwD3DZFunc = g_dwPendingRS_ZFunc = D3DCMP_LESS;
+    g_dwPendingRS_AlphaRef = 8;
+    g_dwD3DAlphaFunc = g_dwPendingRS_AlphaFunc = D3DCMP_GREATEREQUAL;
+    g_dwPendingRS_AddressU = D3DTADDRESS_WRAP;
+    g_dwPendingRS_AddressV = D3DTADDRESS_WRAP;
+    g_dwDirtyRenderStateMask = 0xffffffff;
+    FlushDirtyRenderStates();
+    g_dwGbiGeometryMode = GBI_GEOMETRY_Z_BUFFER | GBI_GEOMETRY_CULL_BACK;
+    g_pD3DDevice2->SetRenderState(D3DRENDERSTATE_SPECULARENABLE, false);
+    g_pD3DDevice2->SetRenderState(D3DRENDERSTATE_ZENABLE, true);
+    g_pD3DDevice2->SetRenderState(D3DRENDERSTATE_TEXTUREHANDLE, 0);
+    g_pD3DDevice2->SetRenderState(D3DRENDERSTATE_DITHERENABLE, true);
+    if (!g_bD3DAlphaCompare) {
+        g_pD3DDevice2->SetRenderState(D3DRENDERSTATE_COLORKEYENABLE, true);
+    }
+    g_pD3DDevice2->SetRenderState(D3DRENDERSTATE_SHADEMODE, D3DSHADE_GOURAUD);
+    g_pD3DDevice2->SetRenderState(D3DRENDERSTATE_WRAPU, false);
+    g_pD3DDevice2->SetRenderState(D3DRENDERSTATE_WRAPV, false);
+    g_pD3DDevice2->SetRenderState(D3DRENDERSTATE_TEXTUREPERSPECTIVE, true);
+    g_pD3DDevice2->SetRenderState(D3DRENDERSTATE_TEXTUREMIN, D3DFILTER_LINEAR);
+    g_pD3DDevice2->SetRenderState(D3DRENDERSTATE_TEXTUREMAG, D3DFILTER_LINEAR);
+}
+
+static inline void RecordFrameTime(void) {
+    DWORD dwNow = GetHighResolutionTime();
+    DWORD dwDelta = dwNow - g_dwGbiLastFrameTime;
+    int nEntry = g_dwFpsFrameCountdown;
+
+    g_dwGbiLastFrameTime = dwNow;
+    g_dwGbiFrameDeltaTime = dwDelta;
+    if (nEntry < 0) {
+        // The first frame fills every sample with its time.
+        nEntry = 0;
+        if (g_dwFpsSampleFrames > 0) {
+            for (int i = 0; i < g_dwFpsSampleFrames; i++) {
+                g_adwFpsFrameTimeSamples[i] = dwDelta;
+            }
+            nEntry = g_dwFpsSampleFrames;
+        }
+    }
+    if (++nEntry >= g_dwFpsSampleFrames) {
+        nEntry = 0;
+    }
+    g_dwFpsFrameCountdown = nEntry;
+    g_adwFpsFrameTimeSamples[nEntry] = dwDelta;
+}
+
+void RenderGbiDisplayListFrame(GbiCommand *pDisplayList) {
+    GbiCommand aOverlayDisplayList[OVERLAY_DISPLAY_LIST_SIZE / sizeof(GbiCommand)];
+
+    ClearRenderTargetOnce();
+    if (!RunSceneCall(&IDirect3DDevice2::BeginScene)) {
+        return;
+    }
+    ResetFrameRenderStates();
+    g_nRenderIndexCount = 0;
+    g_nRenderBufferIndex = 0;
+    g_nVertexPoolCount = 0;
+    g_dwGbiDisplayListStackDepth = 0;
+    ProcessTextureUploadQueueEntry();
+    ExecuteGbiDisplayList(pDisplayList);
+    gDisplayListPtr = aOverlayDisplayList;
+    SetTextSize(OVERLAY_TEXT_SIZE);
+    DrawText(g_szDebugOverlayText, OVERLAY_TEXT_X, OVERLAY_TEXT_Y);
+    gDisplayListPtr->w0 = GBI_END_DISPLAY_LIST_W0;
+    gDisplayListPtr->w1 = 0;
+    gDisplayListPtr++;
+    ExecuteGbiDisplayList(aOverlayDisplayList);
+    FlushIndexedRenderBuffer();
+    if (!RunSceneCall(&IDirect3DDevice2::EndScene)) {
+        return;
+    }
+    g_pfnPresentFrame();
+    RecordFrameTime();
+}
+
 void (*g_pfnBindTextureEntry)(int nEntry);
 
 GbiCommand *HandleGbiBindTextureEntry(GbiCommand *pCommand) {
@@ -568,14 +696,6 @@ void ExecuteGbiDisplayList(GbiCommand *pCommand) {
 }
 
 #if TGR_RENDERER == TGR_RENDERER_D3D
-// The bits of the geometry mode of the console that ApplyGeometryModeChanges() reads.
-#define GBI_GEOMETRY_Z_BUFFER 0x1
-#define GBI_GEOMETRY_SHADING_SMOOTH 0x200
-#define GBI_GEOMETRY_CULL_FRONT 0x1000
-#define GBI_GEOMETRY_CULL_BACK 0x2000
-#define GBI_GEOMETRY_LIGHTING 0x20000
-#define GBI_GEOMETRY_TEXTURE_GEN 0x40000
-#define GBI_GEOMETRY_TEXTURE_GEN_LINEAR 0x80000
 
 DWORD g_dwD3DZFunc;
 int g_bCombineModeSpecialSubmitter;

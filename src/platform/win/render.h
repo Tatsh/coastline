@@ -401,6 +401,14 @@ extern HANDLE g_hTextureUploadQueueMutex;
 void InitializeTextureUploadQueue(void);
 
 /**
+ * Upload the next texture of the queue of textures to upload.
+ *
+ * @ghidraAddress BRD3D: 0x10074fc0
+ * @ghidraAddress BRGlide: 0x1006e220
+ */
+void ProcessTextureUploadQueueEntry(void);
+
+/**
  * Empty the cache of converted vertices and the count of relocated pointers.
  *
  * @ghidraAddress BRD3D: 0x1002b9c0

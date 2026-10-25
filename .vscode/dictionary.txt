@@ -89,6 +89,7 @@ coasttr
 coasttrk
 colc
 colored
+colorkeyenable
 combkey
 congrat
 contpfs
@@ -236,6 +237,7 @@ dsll
 dsra
 dsrl
 dsscl
+dtaddress
 dtdy
 dtgr
 dtlvertex
@@ -737,6 +739,7 @@ textpersp
 textureaddressu
 textureaddressv
 textureanim
+texturemag
 textureperspective
 thiscall
 timerintr

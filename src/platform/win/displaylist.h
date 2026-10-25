@@ -879,6 +879,77 @@ void FlushIndexedRenderBuffer(void);
  */
 void FlushDirtyRenderStates(void);
 
+/** The size of g_szDebugOverlayText, the room before the next datum. */
+#define DEBUG_OVERLAY_TEXT_SIZE 0x408
+
+/**
+ * The text drawn over each frame. The game never writes it.
+ *
+ * @ghidraAddress BRD3D: 0x118ab478
+ * @ghidraAddress BRGlide: 0x118ee590
+ */
+extern char g_szDebugOverlayText[DEBUG_OVERLAY_TEXT_SIZE];
+
+/**
+ * The comparison of the test of alpha the display lists start a frame with.
+ *
+ * @ghidraAddress BRD3D: 0x104bbe28
+ */
+extern DWORD g_dwD3DAlphaFunc;
+
+/** The number of entries of g_adwFpsFrameTimeSamples. */
+#define FPS_FRAME_TIME_SAMPLE_COUNT 120
+
+/**
+ * The number of frames the frame rate is averaged over.
+ *
+ * @ghidraAddress BRD3D: 0x100b5420
+ * @ghidraAddress BRGlide: 0x100b4c28
+ */
+extern int g_dwFpsSampleFrames;
+
+/**
+ * The entry of g_adwFpsFrameTimeSamples written last, negative before the first frame.
+ *
+ * @ghidraAddress BRD3D: 0x100b5424
+ * @ghidraAddress BRGlide: 0x100b4c2c
+ */
+extern int g_dwFpsFrameCountdown;
+
+/**
+ * The times of the last frames, in milliseconds.
+ *
+ * @ghidraAddress BRD3D: 0x10b4ffe8
+ * @ghidraAddress BRGlide: 0x10b73348
+ */
+extern DWORD g_adwFpsFrameTimeSamples[FPS_FRAME_TIME_SAMPLE_COUNT];
+
+/**
+ * The time the last frame was shown, in milliseconds.
+ *
+ * @ghidraAddress BRD3D: 0x104c5194
+ * @ghidraAddress BRGlide: 0x105d17dc
+ */
+extern DWORD g_dwGbiLastFrameTime;
+
+/**
+ * The time between the last two frames shown, in milliseconds.
+ *
+ * @ghidraAddress BRD3D: 0x104c5198
+ */
+extern DWORD g_dwGbiFrameDeltaTime;
+
+/**
+ * Draw a frame of the game with Direct3D: start the scene, set the render states the display lists
+ * start from, run the display list and the text over the frame, end the scene, show the frame, and
+ * record its time. Surfaces lost are restored, and the frame is dropped when the scene cannot start
+ * or end.
+ *
+ * @param pDisplayList The display list of the frame.
+ * @ghidraAddress BRD3D: 0x10024550
+ */
+void RenderGbiDisplayListFrame(GbiCommand *pDisplayList);
+
 /**
  * Bind a texture the game loaded, set by InitializeTextureSubsystem().
  *
