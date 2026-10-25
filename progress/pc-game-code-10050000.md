@@ -1,6 +1,6 @@
 # PC port game code from 0x10050000 to 0x10060000
 
-7 of 84 routines done.
+9 of 84 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -64,7 +64,7 @@ the same name, for a routine the port retained from the N64 game.
 | `MenuItemList::SetItemData`               |        |                 |      1 |    110 | `0x1005c200` | `0x10055020` | `undefined SetItemData(MenuItemList * this, undefined4 param_1, undefined4 param_2, undefined4 param_3)`                                        |
 | `SaveFileList::CountMatchingFiles`        |        |                 |      1 |    101 | `0x1005d0a0` | `0x10055ed0` | `undefined CountMatchingFiles(SaveFileList * this, undefined4 param_1)`                                                                         |
 | `MenuFont::DrawThrottledMenuGlyph`        |        |                 |      1 |     86 | `0x1005b250` | `0x10054070` | `undefined DrawThrottledMenuGlyph(MenuFont * this, undefined4 param_1, undefined4 param_2)`                                                     |
-| `SaveFileList::SaveFileList`              |        |                 |      2 |     82 | `0x1005cb90` | `0x100559b0` | `undefined SaveFileList(SaveFileList * this)`                                                                                                   |
+| `SaveFileList::SaveFileList`              |   ✅   |                 |      2 |     82 | `0x1005cb90` | `0x100559b0` | `SaveFileList * SaveFileList(SaveFileList * this)`                                                                                              |
 | `MenuFont::ComputeCenteredX`              |        |                 |      1 |     80 | `0x1005b200` | `0x10054020` | `undefined ComputeCenteredX(MenuFont * this)`                                                                                                   |
 | `MenuFont::MenuFont`                      |        |                 |      2 |     77 | `0x1005b050` | `0x10053e70` | `undefined MenuFont(MenuFont * this)`                                                                                                           |
 | `MenuItemList::BlitSurfaceById`           |        |                 |      1 |     73 | `0x1005c270` | `0x10055090` | `undefined BlitSurfaceById(MenuItemList * this, undefined4 param_1, undefined4 param_2, undefined4 param_3)`                                    |
@@ -91,5 +91,5 @@ the same name, for a routine the port retained from the N64 game.
 | `GlideDisplayModeNode::Init`              |        |                 |      1 |     19 |              | `0x10058c70` | `undefined Init(GlideDisplayModeNode * this)`                                                                                                   |
 | `ReleaseMenuSurfacesAndFail`              |        |                 |      2 |     18 | `0x1005f580` | `0x10058360` | `undefined ReleaseMenuSurfacesAndFail()`                                                                                                        |
 | `MenuFont::~MenuFont`                     |        |                 |      5 |      7 | `0x1005b0c0` | `0x10053ee0` | `void ~MenuFont(MenuFont * this)`                                                                                                               |
-| `SaveFileList::~SaveFileList`             |        |                 |      1 |      7 | `0x1005cc10` | `0x10055a30` | `undefined ~SaveFileList(SaveFileList * this)`                                                                                                  |
+| `SaveFileList::~SaveFileList`             |   ✅   |                 |      1 |      7 | `0x1005cc10` | `0x10055a30` | `void ~SaveFileList(SaveFileList * this)`                                                                                                       |
 | `MenuFont::DrawGlyphNoOp`                 |        |                 |      1 |      5 | `0x1005b7e0` | `0x10054600` | `undefined DrawGlyphNoOp(MenuFont * this, undefined4 param_1, undefined4 param_2, undefined4 param_3)`                                          |

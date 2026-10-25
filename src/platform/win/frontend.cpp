@@ -1,11 +1,17 @@
 #include "platform/win/frontend.h"
 
+#include <cstdio>
 #include <cstring>
 #include <new>
 
 #include <windows.h>
 
+#include "platform/win/boot/strings.h"
+#include "platform/win/directplay.h"
 #include "platform/win/input.h"
+#if TGR_RENDERER == TGR_RENDERER_D3D
+#include "platform/win/d3d/renderer.h"
+#endif
 
 MenuScreen *g_pActiveMenuScreen;
 void *g_pFrontEndScratchBuffer;
@@ -73,6 +79,74 @@ static const char *const s_apszMenuImageFiles[MENU_IMAGE_COUNT] = {
     "images\\lightr.bmp",    "images\\lightg.bmp",    "images\\tire2on.bmp",
     "images\\tire2off.bmp",  "images\\listbox2.bmp",  "images\\trakQ.bmp",
     "images\\trakQ_.bmp"};
+
+// The string of the format of the default names of the saved files.
+#define SAVE_FILE_DEFAULT_NAME_STRING 0xbe
+// The error a list of saved files that is not allocated shows.
+#define SAVE_FILE_LIST_ERROR 6
+
+SaveFileList::SaveFileList() {
+    memset(aszNames, 0, sizeof(aszNames));
+    for (char *pszName : aszNames) {
+        strcpy(pszName, g_szEmptyUiString);
+    }
+}
+
+SaveFileList::~SaveFileList() {
+}
+
+MenuScreen::MenuScreen() {
+    dwFlags = 0;
+    nUnknownC = 0;
+    wPanelCount = 0;
+    wUnknown12 = 0;
+    nUnknown64 = 0;
+    bRunning = true;
+    wUnknownBC = 0;
+    for (SaveFileList *&pFiles : apFiles) {
+        pFiles = new (std::nothrow) SaveFileList();
+        if (pFiles == nullptr) {
+            ShowErrorMessage(SAVE_FILE_LIST_ERROR);
+        }
+    }
+    // A list that is not allocated is written to all the same, as in the original.
+    for (int i = 0; i < SAVE_FILE_NAME_COUNT; i++) {
+        sprintf(apFiles[0]->aszNames[i], GetStringResource(SAVE_FILE_DEFAULT_NAME_STRING), i);
+        sprintf(apFiles[1]->aszNames[i], GetStringResource(SAVE_FILE_DEFAULT_NAME_STRING), i);
+    }
+    memset(abUnknown6c, 0, sizeof(abUnknown6c));
+}
+
+MenuScreen::~MenuScreen() {
+    delete apFiles[0];
+    apFiles[0] = nullptr;
+    delete apFiles[1];
+    apFiles[1] = nullptr;
+}
+
+#if TGR_RENDERER == TGR_RENDERER_D3D
+void MenuScreen::FlipAndWait() {
+    DirectDrawRenderer *pRenderer = g_pRenderHost->pRenderer;
+
+    pRenderer->pPrimarySurface->Flip(pRenderer->pBackBuffer, DDFLIP_WAIT);
+    while (pRenderer->pPrimarySurface->GetFlipStatus(DDGFS_ISFLIPDONE) != DD_OK) {
+        Sleep(0);
+    }
+}
+#endif
+
+void MenuScreen::DestroyPanels() {
+    for (int nPanel = 0; nPanel < wPanelCount; nPanel++) {
+        MenuPanel *pPanel = apPanels[nPanel];
+
+        for (MenuWidget *&pWidget : pPanel->apWidgets) {
+            delete pWidget;
+            pWidget = nullptr;
+        }
+        delete pPanel;
+    }
+    g_wMenuHoverIndex = 0;
+}
 
 bool InitializeFrontEndResources(void) {
     memset(g_aMenuImages, 0, sizeof(g_aMenuImages));

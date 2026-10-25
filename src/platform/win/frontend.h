@@ -4,8 +4,60 @@
 // The headers below need the types of windows.h.
 #include <ddraw.h>
 
-class MenuWidget;
-class SaveFileList;
+/** The number of names of a SaveFileList. */
+#define SAVE_FILE_NAME_COUNT 100
+/** The size of a name of a SaveFileList. */
+#define SAVE_FILE_NAME_SIZE 0x104
+/** The number of widgets of a MenuPanel. */
+#define MENU_PANEL_WIDGET_COUNT 200
+/** The number of panels of a MenuScreen. */
+#define MENU_SCREEN_PANEL_COUNT 20
+
+/** The names of the saved files a screen of the front end lists. */
+class SaveFileList {
+public:
+    char aszNames[SAVE_FILE_NAME_COUNT][SAVE_FILE_NAME_SIZE]; /*!< The names, empty at the start. */
+
+    /**
+     * Clear every name.
+     *
+     * @ghidraAddress BRD3D: 0x1005cb90
+     * @ghidraAddress BRGlide: 0x100559b0
+     */
+    SaveFileList();
+
+    /**
+     * Do nothing.
+     *
+     * @ghidraAddress BRD3D: 0x1005cc10
+     * @ghidraAddress BRGlide: 0x10055a30
+     */
+    virtual ~SaveFileList();
+};
+
+/** An item of a panel of the front end. The layout is not recovered yet. */
+class MenuWidget {
+public:
+    /**
+     * @ghidraAddress BRD3D: 0x100478c0
+     * @ghidraAddress BRGlide: 0x10040d10
+     */
+    virtual ~MenuWidget();
+};
+
+/** A panel of a screen of the front end. The layout is not recovered past the widgets. */
+class MenuPanel {
+public:
+    char abUnknown4[0x14];                          /* +0x04 */
+    MenuWidget *apWidgets[MENU_PANEL_WIDGET_COUNT]; /*!< The items of the panel. */
+    char abUnknown338[0x10];                        /* +0x338 */
+
+    /**
+     * @ghidraAddress BRD3D: 0x100484e0
+     * @ghidraAddress BRGlide: 0x10041930
+     */
+    virtual ~MenuPanel();
+};
 
 /** A screen of the front end menus. */
 class MenuScreen {
@@ -57,10 +109,12 @@ public:
      */
     virtual int ActivateMenuScreen();
     /**
-     * Flip the frame to the display and wait for it.
+     * Flip the frame to the display and wait for the flip to finish. The Glide library flips its
+     * own way.
      *
      * @ghidraAddress BRD3D: 0x10048960
      * @ghidraAddress BRGlide: 0x10041db0
+     * @stub{BRGlide}
      */
     virtual void FlipAndWait();
     /**
@@ -73,7 +127,8 @@ public:
      */
     virtual void ShutdownFrontEnd(int bPartial);
     /**
-     * Free the panels of the screen.
+     * Delete every widget of every panel and the panels, and put the hover back on the first item.
+     * The pointers to the panels and their count are retained.
      *
      * @ghidraAddress BRD3D: 0x10048aa0
      * @ghidraAddress BRGlide: 0x10041ed0
@@ -88,10 +143,17 @@ public:
     virtual HRESULT ClearBackBuffer();
 
     void (*pfnBuildMenu)(MenuScreen *pScreen); /*!< Builds the items of the screen. */
-    char abUnknown8[0x60];                     /* +0x08 */
-    int bRunning;             /*!< Whether the screen runs and reads window messages. */
-    char abUnknown6c[0x54];   /* +0x6c */
-    SaveFileList *apFiles[2]; /*!< The two lists of saved files of the screen. */
+    int dwFlags;                /*!< Options of the screen. Bit 0x10 stops EndFrame(). */
+    int nUnknownC;              /*!< Set as the screen shows. Its meaning is not recovered yet. */
+    unsigned short wPanelCount; /*!< The number of entries of apPanels in use. */
+    unsigned short wUnknown12;  /*!< Cleared at the start. Its meaning is not recovered yet. */
+    MenuPanel *apPanels[MENU_SCREEN_PANEL_COUNT]; /*!< The panels of the screen. */
+    int nUnknown64;            /*!< Cleared at the start. Its meaning is not recovered yet. */
+    int bRunning;              /*!< Whether the screen runs and reads window messages. */
+    char abUnknown6c[0x50];    /*!< Cleared at the start. Their meaning is not recovered yet. */
+    unsigned short wUnknownBC; /*!< Cleared at the start. Its meaning is not recovered yet. */
+    char abUnknownBE[2];       /* +0xbe */
+    SaveFileList *apFiles[2];  /*!< The two lists of saved files of the screen. */
 };
 
 /**
