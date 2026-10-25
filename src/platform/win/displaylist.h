@@ -649,7 +649,12 @@ struct GbiVertex {
     float fRhw;             /*!< The reciprocal of the homogeneous w. */
     float fU;               /*!< The u of the texture. */
     float fV;               /*!< The v of the texture. */
-    char abUnknown2C[0x3c]; /* +0x2C */
+    char abUnknown2C[0x10]; /* +0x2C */
+    int nClipFlags;         /*!< The planes of the view the vertex lies outside, a bit for each. */
+    char abUnknown40[0x10]; /* +0x40 */
+    float fS;               /*!< The s of the texture before g_fTexCoordScaleS. */
+    float fT;               /*!< The t of the texture before g_fTexCoordScaleT. */
+    char abUnknown58[0x10]; /* +0x58 */
     int nRenderBufferIndex; /*!< The entry of g_renderBuffer of the vertex, -1 for none. */
 };
 
@@ -776,6 +781,53 @@ int SubmitVertexToRenderBufferFogged(GbiVertex *pVertex);
  * @ghidraAddress BRD3D: 0x100a79ec
  */
 extern int (*g_pfnSubmitVertexToRenderBuffer)(GbiVertex *pVertex);
+
+/**
+ * The scale from the s of a vertex to its u.
+ *
+ * @ghidraAddress BRD3D: 0x118aa08c
+ */
+extern float g_fTexCoordScaleS;
+
+/**
+ * The scale from the t of a vertex to its v.
+ *
+ * @ghidraAddress BRD3D: 0x118aa090
+ */
+extern float g_fTexCoordScaleT;
+
+/**
+ * Clip a triangle to the planes of the view and submit what remains.
+ *
+ * @param pVertex0 The first vertex.
+ * @param pVertex1 The second vertex.
+ * @param pVertex2 The third vertex.
+ * @ghidraAddress BRD3D: 0x1001d420
+ */
+void ClipAndSubmitTriangle(GbiVertex *pVertex0, GbiVertex *pVertex1, GbiVertex *pVertex2);
+
+/**
+ * Submit a triangle to g_renderBuffer, its vertices from the last, and draw the triangles waiting
+ * when either buffer has no room for three more entries.
+ *
+ * @param pVertex0 The first vertex.
+ * @param pVertex1 The second vertex.
+ * @param pVertex2 The third vertex.
+ * @ghidraAddress BRD3D: 0x1001e4e0
+ */
+void SubmitTriangleToRenderBuffer(GbiVertex *pVertex0, GbiVertex *pVertex1, GbiVertex *pVertex2);
+
+/**
+ * Submit a triangle of g_aGbiVertexCache. A triangle outside one plane of the view is dropped, one
+ * across a plane is clipped, and the texture coordinates of one inside every plane are scaled
+ * first.
+ *
+ * @param nVertex0 The entry of the first vertex.
+ * @param nVertex1 The entry of the second vertex.
+ * @param nVertex2 The entry of the third vertex.
+ * @ghidraAddress BRD3D: 0x1001e5d0
+ */
+void SubmitIndexedTriangle(int nVertex0, int nVertex1, int nVertex2);
 
 /**
  * Draw the triangles waiting in g_renderBuffer, when there are any, and empty it.

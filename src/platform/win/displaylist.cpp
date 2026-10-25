@@ -673,6 +673,47 @@ int SubmitVertexToRenderBufferFogged(GbiVertex *pVertex) {
 }
 
 int (*g_pfnSubmitVertexToRenderBuffer)(GbiVertex *pVertex) = SubmitVertexToRenderBuffer;
+float g_fTexCoordScaleS;
+float g_fTexCoordScaleT;
+
+// The entries a triangle takes in each buffer.
+#define TRIANGLE_VERTICES 3
+
+void SubmitTriangleToRenderBuffer(GbiVertex *pVertex0, GbiVertex *pVertex1, GbiVertex *pVertex2) {
+    g_awRenderIndexBuffer[g_nRenderIndexCount++] =
+        static_cast<WORD>(g_pfnSubmitVertexToRenderBuffer(pVertex2));
+    g_awRenderIndexBuffer[g_nRenderIndexCount++] =
+        static_cast<WORD>(g_pfnSubmitVertexToRenderBuffer(pVertex1));
+    g_awRenderIndexBuffer[g_nRenderIndexCount++] =
+        static_cast<WORD>(g_pfnSubmitVertexToRenderBuffer(pVertex0));
+    if (g_nRenderBufferIndex + TRIANGLE_VERTICES > RENDER_BUFFER_SIZE ||
+        g_nRenderIndexCount + TRIANGLE_VERTICES > RENDER_BUFFER_SIZE) {
+        FlushIndexedRenderBuffer();
+    }
+}
+
+static inline void ScaleCachedVertexTexCoords(GbiVertex *pVertex) {
+    pVertex->fU = pVertex->fS * g_fTexCoordScaleS;
+    pVertex->fV = pVertex->fT * g_fTexCoordScaleT;
+}
+
+void SubmitIndexedTriangle(int nVertex0, int nVertex1, int nVertex2) {
+    GbiVertex *pVertex0 = &g_aGbiVertexCache[nVertex0];
+    GbiVertex *pVertex1 = &g_aGbiVertexCache[nVertex1];
+    GbiVertex *pVertex2 = &g_aGbiVertexCache[nVertex2];
+
+    if (pVertex0->nClipFlags & pVertex2->nClipFlags & pVertex1->nClipFlags) {
+        return;
+    }
+    if (pVertex0->nClipFlags | pVertex2->nClipFlags | pVertex1->nClipFlags) {
+        ClipAndSubmitTriangle(pVertex0, pVertex1, pVertex2);
+        return;
+    }
+    ScaleCachedVertexTexCoords(pVertex0);
+    ScaleCachedVertexTexCoords(pVertex1);
+    ScaleCachedVertexTexCoords(pVertex2);
+    SubmitTriangleToRenderBuffer(pVertex0, pVertex1, pVertex2);
+}
 
 // The colours of the combine modes that draw in one colour.
 #define VERTEX_CONSTANT_COLOR_WHITE 0xffffffff
