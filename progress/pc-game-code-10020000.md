@@ -1,6 +1,6 @@
 # PC port game code from 0x10020000 to 0x10030000
 
-72 of 176 routines done.
+73 of 176 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -182,6 +182,6 @@ the same name, for a routine the port retained from the N64 game.
 | `DispatchGameStateFrame`                 |   ✅   |                 |      1 |     12 | `0x1002f8f0` | `0x1001cf80` | `int DispatchGameStateFrame(void)`                                                                                                                                                                                                                                            |
 | `SetCopyTextureDataOnRelocate`           |   ✅   |                 |      2 |     10 | `0x1002b9d0` | `0x10018a40` | `void SetCopyTextureDataOnRelocate(int bCopy)`                                                                                                                                                                                                                                |
 | `ConstructStaticGlobalObject`            |        |                 |      1 |     10 | `0x1002c2a0` | `0x10019810` | `undefined ConstructStaticGlobalObject()`                                                                                                                                                                                                                                     |
-| `FloatToInt`                             |        | ✅ `0x802562e0` |     15 |      9 | `0x1002b920` | `0x10018990` | `int FloatToInt(float fValue)`                                                                                                                                                                                                                                                |
+| `FloatToInt`                             |   ✅   | ✅ `0x802562e0` |     15 |      9 | `0x1002b920` | `0x10018990` | `int FloatToInt(float fValue)`                                                                                                                                                                                                                                                |
 | `HandleGbiNoOp`                          |   ✅   |                 |    229 |      8 | `0x100243d0` | `0x10021240` | `GbiCommand * HandleGbiNoOp(GbiCommand * pCommand)`                                                                                                                                                                                                                           |
 | `GetRGBA32BytesPerPixel`                 |        |                 |      4 |      6 | `0x100257f0` |              | `undefined GetRGBA32BytesPerPixel()`                                                                                                                                                                                                                                          |

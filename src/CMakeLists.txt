@@ -101,7 +101,7 @@ if(TGR_PLATFORM STREQUAL "n64")
 else()
   # The game code the PC port retained from the N64 releases. A source joins this list when every
   # routine of it that the PC libraries have compiles for them.
-  add_library(coastline_game STATIC rigidbody.c vecmath.c)
+  add_library(coastline_game STATIC mathutil-win.c rigidbody.c vecmath.c visgrid.c)
   target_link_libraries(coastline_game PRIVATE coastline_common)
   list(APPEND COASTLINE_LIBRARIES coastline_game)
 
