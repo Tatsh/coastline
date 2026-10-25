@@ -12,6 +12,7 @@
 #include <PR/sptask.h>
 #include <PR/ultratypes.h>
 
+#include "frametime.h"
 #include "screen.h"
 
 /** The bump allocator zcalloc() draws from. */
@@ -261,15 +262,6 @@ extern u16 *g_apFramebuffers[2];
  * @ghidraAddress JPN: 0x8028c7b4
  */
 extern s32 g_dwFrameDeltaMs;
-
-/**
- * The time the last frame took, in seconds.
- *
- * @ghidraAddress USA: 0x8028aad8
- * @ghidraAddress EUR: 0x8028cce0
- * @ghidraAddress JPN: 0x8028c7b0
- */
-extern f32 g_fFrameDeltaTime;
 
 /**
  * The time UpdateFrameTiming() counts, in milliseconds.

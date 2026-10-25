@@ -1,6 +1,6 @@
 # PC port game code from 0x10010000 to 0x10020000
 
-81 of 157 routines done.
+82 of 157 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -123,7 +123,7 @@ the same name, for a routine the port retained from the N64 game.
 | `InitRandomRainParticles`                              |        | ✅ `0x80239cf0` |      1 |     75 | `0x10019490` | `0x10016a50` | `void InitRandomRainParticles(void)`                                                                                                                                                                                                         |
 | `HandleGbiFillRectangleIntCoords`                      |   ✅   |                 |      1 |     73 | `0x1001c7a0` | `0x1001e720` | `GbiCommand * HandleGbiFillRectangleIntCoords(GbiCommand * pCommand)`                                                                                                                                                                        |
 | `ResetRenderBufferAndVertexPool`                       |   ✅   |                 |      2 |     72 | `0x1001c640` |              | `void ResetRenderBufferAndVertexPool(void)`                                                                                                                                                                                                  |
-| `TickDebugOverlayMessageTimer`                         |        |                 |      1 |     71 | `0x10017740` | `0x10014cb0` | `void TickDebugOverlayMessageTimer(void * pRenderNode)`                                                                                                                                                                                      |
+| `TickDebugOverlayMessageTimer`                         |   ✅   |                 |      1 |     71 | `0x10017740` | `0x10014cb0` | `void TickDebugOverlayMessageTimer(void)`                                                                                                                                                                                                    |
 | `BitDepthToDDBD`                                       |   ✅   |                 |      1 |     70 | `0x1001a8c0` |              | `DWORD BitDepthToDDBD(int nBitDepth)`                                                                                                                                                                                                        |
 | `SetTextCustomColors`                                  |        | ✅ `0x8022f530` |      3 |     69 | `0x100192a0` | `0x10016860` | `undefined SetTextCustomColors()`                                                                                                                                                                                                            |
 | `DirectDrawDriver::CompareDirectDrawDriverGuid`        |   ✅   |                 |      1 |     65 | `0x1001b2d0` |              | `bool CompareDirectDrawDriverGuid(DirectDrawDriver * this, GUID * pGuid)`                                                                                                                                                                    |

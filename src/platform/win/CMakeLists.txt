@@ -18,6 +18,7 @@ add_library(
   frametimer.cpp
   frontend.cpp
   ghost.cpp
+  hud.cpp
   input.cpp
   netstream.cpp
   paintshop.c
