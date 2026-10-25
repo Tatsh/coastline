@@ -3,6 +3,7 @@ abiflags
 accel
 acmux
 activebank
+activeplayers
 adbl
 addi
 addiu
@@ -15,6 +16,7 @@ alabel
 alphadither
 andi
 apfn
+appnotstarted
 apsz
 arcadetimes
 argn
@@ -47,6 +49,15 @@ buildsystems
 bzero
 camframe
 campoints
+cantaddplayer
+cantcreategroup
+cantcreateplayer
+cantcreateprocess
+cantcreatesession
+cantloadcapi
+cantloadsecuritypackage
+cantloadsspi
+capsnotavailableyet
 carmodel
 carselect
 cartrominit
@@ -166,6 +177,8 @@ eepromlongwrite
 eepromprobe
 eepromread
 eepromwrite
+encryptionfailed
+encryptionnotsupported
 enddl
 endforeach
 endfunction
@@ -246,6 +259,7 @@ inttypes
 inval
 invaldcache
 invalicache
+invalidplayer
 invsrcalpha
 iobusy
 isrc
@@ -295,6 +309,7 @@ llcvt
 lnext
 loadtlut
 lods
+logondenied
 loguy
 lookat
 lookathil
@@ -372,13 +387,17 @@ ngre
 noat
 noload
 nolod
+nonewplayers
 nonmatching
 noone
+noplayers
 noreorder
+noserviceprovider
 nostartfiles
 nostdinc
 nostdlib
 notlobbied
+notloggedin
 ntrj
 ntrp
 numl
@@ -428,6 +447,7 @@ pipx
 pirawdma
 pirawread
 placedvel
+playerlost
 playerselect
 popmtx
 ppsz
@@ -488,6 +508,8 @@ seasonpoints
 seasonraces
 sendmesg
 serverplayer
+serviceproviderloaded
+sessionlost
 setblendcolor
 setcimg
 setcompare
@@ -511,6 +533,7 @@ shellcheck
 shellformat
 shiftl
 shiftt
+signfailed
 siint
 simgr
 sinf
@@ -596,6 +619,7 @@ undraft
 undrafted
 undriven
 unistd
+unknownapplication
 unrotated
 urllib
 urlopen

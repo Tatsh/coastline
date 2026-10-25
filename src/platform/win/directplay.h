@@ -319,10 +319,19 @@ BOOL WINAPI EnumConnectionsCallback_StoreServiceProvider(const GUID *pGuidServic
 void ShowNetworkErrorMessage(const char *pszFormat, HRESULT hResult);
 
 /**
+ * The name of an error GetDirectPlayErrorString() does not know, written in hexadecimal.
+ *
+ * @ghidraAddress BRD3D: 0x10a9bfe0
+ * @ghidraAddress BRGlide: 0x10ac3070
+ */
+extern char g_szDirectPlayErrorBuffer[16];
+
+/**
  * Give the name of a DirectPlay error.
  *
  * @param hResult The error.
- * @return The name of the error, such as "DPERR_PENDING".
+ * @return The name of the error, such as "DPERR_PENDING", or the error in hexadecimal in
+ * g_szDirectPlayErrorBuffer when the error is not known.
  * @ghidraAddress BRD3D: 0x1003dc10
  * @ghidraAddress BRGlide: 0x100372b0
  */
