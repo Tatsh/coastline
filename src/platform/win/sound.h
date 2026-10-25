@@ -451,8 +451,8 @@ struct SoundBankRow {
 extern SoundBankRow g_SoundBankIndexTableA[];
 
 /**
- * The row of the banks of sounds after the 24 rows of g_SoundBankIndexTableA. Its meaning is not
- * recovered yet.
+ * The row of the banks of sounds after the 24 rows of g_SoundBankIndexTableA: for each channel of
+ * the sound effects of a race, the index in g_apszSfxNamePrefixes of the file of its variant.
  *
  * @ghidraAddress BRD3D: 0x100b6c00
  * @ghidraAddress BRGlide: 0x100b6408
@@ -460,7 +460,8 @@ extern SoundBankRow g_SoundBankIndexTableA[];
 extern SoundBankRow g_SoundBankIndexTableB;
 
 /**
- * The row of the banks of sounds after g_SoundBankIndexTableB. Its meaning is not recovered yet.
+ * The row of the banks of sounds after g_SoundBankIndexTableB: for each channel of the sound
+ * effects of a race, the index in g_apszSfxNamePrefixes of the file of its looping sound.
  *
  * @ghidraAddress BRD3D: 0x100b6c48
  * @ghidraAddress BRGlide: 0x100b6450
@@ -530,7 +531,7 @@ extern const char *const g_SoundSetTableB[SOUND_SET_FRONT_END_COUNT];
  * @ghidraAddress BRD3D: 0x100b64b0
  * @ghidraAddress BRGlide: 0x100b5cb8
  */
-extern void *g_SfxWaveVariantTable[SOUND_CHANNEL_COUNT];
+extern SoundBufferNode *g_SfxWaveVariantTable[SOUND_CHANNEL_COUNT];
 
 /**
  * The looping sounds of a race, one for each channel.
@@ -538,7 +539,16 @@ extern void *g_SfxWaveVariantTable[SOUND_CHANNEL_COUNT];
  * @ghidraAddress BRD3D: 0x100b64f8
  * @ghidraAddress BRGlide: 0x100b5d00
  */
-extern void *g_LoopingSoundTable[SOUND_CHANNEL_COUNT];
+extern SoundBufferNode *g_LoopingSoundTable[SOUND_CHANNEL_COUNT];
+
+/**
+ * The prefixes of the names of the files of the sound effects of a race, under g_szSfxDirPath. The
+ * first is null, and the number of entries is not recovered yet.
+ *
+ * @ghidraAddress BRD3D: 0x100b84f4
+ * @ghidraAddress BRGlide: 0x100b7cfc
+ */
+extern const char *const g_apszSfxNamePrefixes[];
 
 /**
  * Add a node at the end of a list of sound buffers, not playing.
@@ -595,10 +605,13 @@ HRESULT ApplySoundBufferVolume(SoundBufferNode *pNode);
 SoundBufferNode *LoadAudioFile(const char *pszPath);
 
 /**
- * Load the variants of the wave of a sound effect of a race.
+ * Load the three files of a sound effect of a race, named by the prefixes the banks of sounds
+ * select for its channel: the wave (`.wav`), the variant (`h.wav`), and the looping sound
+ * (`r.wav`). Without sound, or when the first bank does not enable the channel, the three are
+ * cleared.
  *
  * @param nEffect The effect, half the channel.
- * @return Whether the variants loaded.
+ * @return Whether the files loaded, and false at once when the looping sound does not.
  * @ghidraAddress BRD3D: 0x100730a0
  * @ghidraAddress BRGlide: 0x1006c010
  */

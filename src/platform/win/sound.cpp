@@ -546,6 +546,45 @@ void ResetSoundBankTables(void) {
 // The size of the path of a sample.
 #define SAMPLE_PATH_SIZE 0x400
 
+// Load the file of a sound effect under the directory of the sound effects.
+static inline SoundBufferNode *
+LoadSfxFile(char *pszPath, const char *pszPrefix, const char *pszSuffix) {
+    strcpy(pszPath, g_szSfxDirPath);
+    strcat(pszPath, pszPrefix);
+    strcat(pszPath, pszSuffix);
+    return LoadAudioFile(pszPath);
+}
+
+bool LoadSfxWaveVariants(int nEffect) {
+    int nChannel = nEffect * 2;
+    char szPath[SAMPLE_PATH_SIZE];
+    bool bLoaded = true;
+
+    if (!g_bSoundEnabledIni || g_pDirectSound == nullptr || g_dwDirectSoundRefCount == 0 ||
+        !g_SoundBankIndexTableA[0].anChannels[nChannel]) {
+        g_aSoundChannelBuffers[0].apChannelBuffers[nChannel] = nullptr;
+        g_SfxWaveVariantTable[nChannel] = nullptr;
+        g_LoopingSoundTable[nChannel] = nullptr;
+        return bLoaded;
+    }
+    g_aSoundChannelBuffers[0].apChannelBuffers[nChannel] = LoadSfxFile(
+        szPath, g_apszSfxNamePrefixes[g_SoundBankIndexTableA[0].anChannels[nChannel]], ".wav");
+    if (g_aSoundChannelBuffers[0].apChannelBuffers[nChannel] == nullptr) {
+        bLoaded = false;
+    }
+    g_SfxWaveVariantTable[nChannel] = LoadSfxFile(
+        szPath, g_apszSfxNamePrefixes[g_SoundBankIndexTableB.anChannels[nChannel]], "h.wav");
+    if (g_SfxWaveVariantTable[nChannel] == nullptr) {
+        bLoaded = false;
+    }
+    g_LoopingSoundTable[nChannel] = LoadSfxFile(
+        szPath, g_apszSfxNamePrefixes[g_SoundBankIndexTableC.anChannels[nChannel]], "r.wav");
+    if (g_LoopingSoundTable[nChannel] == nullptr) {
+        return false;
+    }
+    return bLoaded;
+}
+
 bool LoadSoundSet(int nSet) {
     const char *const *ppszFiles;
     char szPath[SAMPLE_PATH_SIZE];
@@ -562,6 +601,7 @@ bool LoadSoundSet(int nSet) {
         g_dwLoadedSoundSampleCount = SOUND_SET_RACE_COUNT;
         for (int i = 0; i < SOUND_CHANNEL_COUNT; i++) {
             if (g_SoundBankIndexTableA[0].anChannels[i]) {
+                // An odd channel loads the effect of the channel before it, as in the original.
                 if (!LoadSfxWaveVariants(i / 2)) {
                     bLoaded = false;
                 }
