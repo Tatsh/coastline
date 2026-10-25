@@ -5,6 +5,7 @@
 #include <windows.h>
 
 #include "platform/win/boot/app.h"
+#include "platform/win/boot/strings.h"
 
 IDirectInputA *g_pDirectInput;
 int g_dwDirectInputRefCount;
@@ -15,6 +16,100 @@ IDirectInputDevice2A *g_pJoystickDevice;
 int g_dwJoystickDeviceRefCount;
 IDirectInputEffect *g_pJoltEffect;
 IDirectInputEffect *g_pConditionEffect;
+
+MouseDevice::MouseDevice() {
+    pDevice = nullptr;
+    for (int &nState : anState) {
+        nState = 0;
+    }
+}
+
+int ShowInfoMessageBox(HWND hWnd, HRESULT, const char *pszText) {
+    return MessageBoxA(hWnd, pszText, GetStringResource(0xaa), MB_OK);
+}
+
+bool MouseDevice::CreateMouseDevice(HWND hWnd) {
+    HRESULT hResult;
+
+    hResult = g_pDirectInput->CreateDevice(GUID_SysMouse, &pDevice, nullptr);
+    if (FAILED(hResult)) {
+        ShowInfoMessageBox(hWnd, hResult, GetStringResource(0xac));
+        return false;
+    }
+    hResult = pDevice->SetDataFormat(&c_dfDIMouse);
+    if (FAILED(hResult)) {
+        ShowInfoMessageBox(hWnd, hResult, GetStringResource(0xad));
+        return false;
+    }
+    hResult = pDevice->SetCooperativeLevel(hWnd, DISCL_EXCLUSIVE | DISCL_FOREGROUND);
+    if (FAILED(hResult)) {
+        ShowInfoMessageBox(hWnd, hResult, GetStringResource(0xae));
+        return false;
+    }
+    return true;
+}
+
+void MouseDevice::ReleaseMouseDevice() {
+    if (pDevice != nullptr) {
+        pDevice->Unacquire();
+        pDevice->Release();
+        pDevice = nullptr;
+    }
+}
+
+bool InitializeDirectInput(void) {
+    if (++g_dwDirectInputRefCount != 1) {
+        return true;
+    }
+    if (FAILED(DirectInputCreateA(g_hAppInstance, DIRECTINPUT_VERSION, &g_pDirectInput, nullptr))) {
+        MessageBoxA(
+            g_hMainWindow, GetStringResource(0x127), GetStringResource(0x126), MB_ICONERROR);
+        return false;
+    }
+    g_pMouseDevice = new (std::nothrow) MouseDevice();
+    // The device is created through the pointer whether or not the allocation succeeded.
+    g_pMouseDevice->CreateMouseDevice(g_hMainWindow);
+    return true;
+}
+
+bool TryAcquireJoystickDevice(void) {
+    if (g_pJoystickDevice == nullptr) {
+        return false;
+    }
+    return SUCCEEDED(g_pJoystickDevice->Acquire());
+}
+
+HRESULT SetJoystickPropertyDword(IDirectInputDevice2A *pDevice,
+                                 REFGUID guidProperty,
+                                 DWORD dwObject,
+                                 DWORD dwHow,
+                                 DWORD dwData) {
+    DIPROPDWORD property;
+
+    property.diph.dwSize = sizeof(property);
+    property.diph.dwHeaderSize = sizeof(property.diph);
+    property.diph.dwObj = dwObject;
+    property.diph.dwHow = dwHow;
+    property.dwData = dwData;
+    return pDevice->SetProperty(guidProperty, &property.diph);
+}
+
+HRESULT SetJoystickAxisRange(IDirectInputDevice2A *pDevice,
+                             REFGUID guidProperty,
+                             DWORD dwObject,
+                             DWORD dwHow,
+                             LONG lMin,
+                             LONG lMax) {
+    DIPROPRANGE property;
+
+    property.diph.dwSize = sizeof(property);
+    property.diph.dwHeaderSize = sizeof(property.diph);
+    property.diph.dwObj = dwObject;
+    property.diph.dwHow = dwHow;
+    property.lMin = lMin;
+    property.lMax = lMax;
+    return pDevice->SetProperty(guidProperty, &property.diph);
+}
 
 void ReleaseKeyboardDevice(void) {
     if (--g_dwKeyboardDeviceRefCount < 0) {

@@ -135,8 +135,12 @@ devmgr
 dfrac
 dialogs
 dinline
+diph
+dipropdword
+diproprange
 directplay
 disasm
+discl
 divdi
 divremi
 dlabel

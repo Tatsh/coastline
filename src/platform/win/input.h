@@ -12,17 +12,106 @@
 // The headers below need the types of windows.h.
 #include <dinput.h>
 
-/** The mouse of the game. The layout is not recovered yet. */
+/** The mouse of the game. The layout is not recovered past the members below. */
 class MouseDevice {
 public:
+    char abUnknown0[0x2c];        /* +0x00 */
+    int anState[9];               /*!< Cleared by the constructor. Not recovered yet. */
+    IDirectInputDeviceA *pDevice; /*!< The DirectInput device of the mouse. */
+
     /**
-     * Release the DirectInput device of the mouse.
+     * Clear the state of the mouse.
+     *
+     * @ghidraAddress BRD3D: 0x10060280
+     * @ghidraAddress BRGlide: 0x100592f0
+     */
+    MouseDevice();
+
+    /**
+     * Create the DirectInput device of the system mouse for a window, in the format of a mouse and
+     * with exclusive use in the foreground. A step that fails shows a message.
+     *
+     * @param hWnd The window.
+     * @return Whether the device was created.
+     * @ghidraAddress BRD3D: 0x100602e0
+     * @ghidraAddress BRGlide: 0x10059350
+     */
+    bool CreateMouseDevice(HWND hWnd);
+
+    /**
+     * Unacquire and release the DirectInput device of the mouse.
      *
      * @ghidraAddress BRD3D: 0x100602b0
      * @ghidraAddress BRGlide: 0x10059320
      */
     void ReleaseMouseDevice();
 };
+
+/**
+ * Show a message of the input with the caption of string 0xaa.
+ *
+ * @param hWnd The window that owns the message.
+ * @param hResult Not read.
+ * @param pszText The message.
+ * @return The result of MessageBoxA().
+ * @ghidraAddress BRD3D: 0x10060030
+ * @ghidraAddress BRGlide: 0x100590a0
+ */
+int ShowInfoMessageBox(HWND hWnd, HRESULT hResult, const char *pszText);
+
+/**
+ * Add a user of DirectInput. The first user creates DirectInput, version 5, and the mouse, and a
+ * DirectInput that is not created shows a message.
+ *
+ * @return Whether DirectInput exists.
+ * @ghidraAddress BRD3D: 0x10078cd0
+ * @ghidraAddress BRGlide: 0x10071fc0
+ */
+bool InitializeDirectInput(void);
+
+/**
+ * Acquire the DirectInput device of the game controller.
+ *
+ * @return Whether the device was acquired, and false without a device.
+ * @ghidraAddress BRD3D: 0x100773d0
+ * @ghidraAddress BRGlide: 0x100706b0
+ */
+bool TryAcquireJoystickDevice(void);
+
+/**
+ * Set a property of a DIPROPDWORD on a DirectInput device.
+ *
+ * @param pDevice The device.
+ * @param guidProperty The property.
+ * @param dwObject The object of the device, or 0 for the device.
+ * @param dwHow How dwObject is read.
+ * @param dwData The value.
+ * @return The result of SetProperty().
+ * @ghidraAddress BRD3D: 0x10078c80
+ * @ghidraAddress BRGlide: 0x10071f70
+ */
+HRESULT SetJoystickPropertyDword(
+    IDirectInputDevice2A *pDevice, REFGUID guidProperty, DWORD dwObject, DWORD dwHow, DWORD dwData);
+
+/**
+ * Set a property of a DIPROPRANGE on a DirectInput device.
+ *
+ * @param pDevice The device.
+ * @param guidProperty The property.
+ * @param dwObject The object of the device, or 0 for the device.
+ * @param dwHow How dwObject is read.
+ * @param lMin The low end of the range.
+ * @param lMax The high end of the range.
+ * @return The result of SetProperty().
+ * @ghidraAddress BRD3D: 0x10078c30
+ * @ghidraAddress BRGlide: 0x10071f20
+ */
+HRESULT SetJoystickAxisRange(IDirectInputDevice2A *pDevice,
+                             REFGUID guidProperty,
+                             DWORD dwObject,
+                             DWORD dwHow,
+                             LONG lMin,
+                             LONG lMax);
 
 /**
  * DirectInput.

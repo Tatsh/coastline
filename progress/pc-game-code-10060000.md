@@ -1,6 +1,6 @@
 # PC port game code from 0x10060000 to 0x10070000
 
-12 of 169 routines done.
+16 of 169 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -85,7 +85,7 @@ the same name, for a routine the port retained from the N64 game.
 | `AdvanceAlongTrackRoute`                 |        | ✅ `0x802290c4` |      2 |    204 | `0x10065c80` | `0x1005ecf0` | `undefined AdvanceAlongTrackRoute()`                                                                                                     |
 | `ChooseVehicleCar`                       |        | ✅ `0x80225f88` |      3 |    201 | `0x10063420` | `0x1005c490` | `undefined ChooseVehicleCar()`                                                                                                           |
 | `ComputeDampingForces`                   |        | ✅ `0x8025ef70` |      1 |    200 | `0x1006f650` | `0x10068600` | `undefined ComputeDampingForces()`                                                                                                       |
-| `MouseDevice::CreateMouseDevice`         |        |                 |      1 |    181 | `0x100602e0` | `0x10059350` | `int CreateMouseDevice(MouseDevice * this, undefined4 param_1)`                                                                          |
+| `MouseDevice::CreateMouseDevice`         |   ✅   |                 |      1 |    181 | `0x100602e0` | `0x10059350` | `bool CreateMouseDevice(MouseDevice * this, void * hWnd)`                                                                                |
 | `RallyConfig::SetInputBinding`           |   ✅   |                 |      4 |    169 | `0x10069b10` | `0x10062b80` | `void SetInputBinding(RallyConfig * this, int nDevice, int nControl, WORD wKind, BYTE nKeyCode)`                                         |
 | `ResetAllSoundState`                     |        | ✅ `0x8022b428` |      1 |    143 | `0x10067dc0` | `0x10060e30` | `undefined ResetAllSoundState()`                                                                                                         |
 | `ConvertInputToN64ControllerPad`         |        |                 |      1 |    136 | `0x10060e00` | `0x10059e70` | `undefined ConvertInputToN64ControllerPad()`                                                                                             |
@@ -141,10 +141,10 @@ the same name, for a routine the port retained from the N64 game.
 | `PlaySoundOnAllPlayerChannels`           |        |                 |      1 |     37 | `0x100683d0` | `0x10061440` | `undefined PlaySoundOnAllPlayerChannels()`                                                                                               |
 | `InitializeRenderSubsystems`             |        |                 |      1 |     36 | `0x1006aa20` | `0x100639d0` | `undefined InitializeRenderSubsystems()`                                                                                                 |
 | `IsTriangleInUnitCube`                   |        | ✅ `0x8025d018` |      3 |     35 | `0x1006daf0` | `0x10066aa0` | `undefined IsTriangleInUnitCube()`                                                                                                       |
-| `MouseDevice::Init`                      |        |                 |      1 |     35 | `0x10060280` | `0x100592f0` | `void Init(MouseDevice * this)`                                                                                                          |
+| `MouseDevice::Init`                      |   ✅   |                 |      1 |     35 | `0x10060280` | `0x100592f0` | `MouseDevice * Init(MouseDevice * this)`                                                                                                 |
 | `Vehicle::ClearVehicleDamageState`       |        | ✅ `0x80228a3c` |      1 |     34 | `0x10065710` | `0x1005e780` | `undefined ClearVehicleDamageState(Vehicle * this)`                                                                                      |
-| `MouseDevice::ReleaseMouseDevice`        |   📝   |                 |      1 |     34 | `0x100602b0` | `0x10059320` | `void ReleaseMouseDevice(MouseDevice * this)`                                                                                            |
-| `ShowInfoMessageBox`                     |        |                 |      4 |     33 | `0x10060030` | `0x100590a0` | `undefined ShowInfoMessageBox()`                                                                                                         |
+| `MouseDevice::ReleaseMouseDevice`        |   ✅   |                 |      1 |     34 | `0x100602b0` | `0x10059320` | `void ReleaseMouseDevice(MouseDevice * this)`                                                                                            |
+| `ShowInfoMessageBox`                     |   ✅   |                 |      4 |     33 | `0x10060030` | `0x100590a0` | `int ShowInfoMessageBox(void * hWnd, long hResult, char * pszText)`                                                                      |
 | `SetColorTintMultipliers`                |        |                 |      3 |     30 | `0x10061460` | `0x1005a4e0` | `undefined SetColorTintMultipliers()`                                                                                                    |
 | `PrepareTrackSections`                   |        | ✅ `0x80255ca0` |      1 |     30 | `0x10061700` | `0x1005a780` | `undefined PrepareTrackSections()`                                                                                                       |
 | `IncreaseBgmVolume`                      |        | ✅ `0x80211840` |      1 |     29 | `0x10060d50` | `0x10059dc0` | `undefined IncreaseBgmVolume()`                                                                                                          |
