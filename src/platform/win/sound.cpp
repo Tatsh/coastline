@@ -481,6 +481,60 @@ HRESULT ApplySoundBufferVolume(SoundBufferNode *pNode) {
         static_cast<LONG>((nScaled - SOUND_LEVEL_CENTER) * SOUND_LEVEL_STEP));
 }
 
+HRESULT RestartOrPlaySoundBuffer(SoundBufferNode *pNode) {
+    DWORD dwFlags = pNode->bLooping ? DSBPLAY_LOOPING : 0;
+    DWORD dwStatus = 0;
+    HRESULT hr;
+
+    if (pNode->pBuffer->GetStatus(&dwStatus) == DS_OK && (dwStatus & DSBSTATUS_PLAYING)) {
+        return pNode->pBuffer->SetCurrentPosition(0);
+    }
+    hr = pNode->pBuffer->Play(0, 0, dwFlags);
+    if (hr == DS_OK) {
+        pNode->bPlaying = true;
+    }
+    return hr;
+}
+
+HRESULT PlaySoundBuffer(SoundBufferNode *pNode, int bLooping) {
+    pNode->bLooping = bLooping;
+    return RestartOrPlaySoundBuffer(pNode);
+}
+
+// Whether sound effects play through DirectSound.
+static inline bool IsDirectSoundActive(void) {
+    return g_bSoundEnabledIni && g_pDirectSound != nullptr && g_dwDirectSoundRefCount != 0;
+}
+
+bool SetStereoAndPlaySoundChannel(int nSample, int nChannel, DWORD dwLevels, int bLooping) {
+    SoundBufferNode *pNode;
+
+    if (!IsDirectSoundActive()) {
+        return true;
+    }
+    pNode = g_aSoundChannelBuffers[nSample].apChannelBuffers[nChannel];
+    if (!SetSoundBufferStereoLevels(pNode, dwLevels)) {
+        return false;
+    }
+    return PlaySoundBuffer(pNode, bLooping) == DS_OK;
+}
+
+bool PlaySoundChannelOneWithStereo(int nSample, DWORD dwLevels, int bLooping) {
+    return SetStereoAndPlaySoundChannel(nSample, 1, dwLevels, bLooping);
+}
+
+bool SetSoundChannelStereo(int nSample, int nChannel, DWORD dwLevels) {
+    if (!IsDirectSoundActive()) {
+        return true;
+    }
+    return SetSoundBufferStereoLevels(g_aSoundChannelBuffers[nSample].apChannelBuffers[nChannel],
+                                      dwLevels);
+}
+
+bool SetSoundVoiceStereo(int nSample, int nVoice, DWORD dwLevels) {
+    return SetSoundChannelStereo(nSample, nVoice * 2, dwLevels);
+}
+
 SoundBufferNode *LoadAudioFile(const char *pszPath) {
     SoundBufferNode *pNode = static_cast<SoundBufferNode *>(
         GlobalLock(GlobalAlloc(GMEM_ZEROINIT, sizeof(SoundBufferNode))));

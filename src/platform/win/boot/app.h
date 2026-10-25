@@ -214,6 +214,14 @@ int GameState_ShowLoadingScreenAndInitGame(void);
 int GameState_RunFrontEnd(void);
 
 /**
+ * Go back to the front end after a game, setting it up again.
+ *
+ * @ghidraAddress BRD3D: 0x1002f690
+ * @ghidraAddress BRGlide: 0x1001cd50
+ */
+void SetGameStateFrontEnd(void);
+
+/**
  * Open BossRally.pod, and set up the renderer, the damage bitmaps of the paint, DirectInput, the
  * keyboard, the music when it plays, and DirectSound when sound is on. The Glide library shows its
  * splash image once the renderer is set up.

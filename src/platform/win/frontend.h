@@ -986,6 +986,14 @@ extern int g_dwFrontEndSurfaceRefreshRate;
 #endif
 
 /**
+ * Whether the screen of the setup of the car of network play shows.
+ *
+ * @ghidraAddress BRD3D: 0x10aa285c
+ * @ghidraAddress BRGlide: 0x10ac5bb4
+ */
+extern int g_dwInNetworkCarSetup;
+
+/**
  * Whether ActivateMenuScreen() is entering the screen the game returns to.
  *
  * @ghidraAddress BRD3D: 0x10aa2878

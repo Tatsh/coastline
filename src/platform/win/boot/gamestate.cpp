@@ -142,6 +142,11 @@ int GameState_RunFrontEnd(void) {
     return true;
 }
 
+void SetGameStateFrontEnd(void) {
+    g_dwNullStubEnable = true;
+    g_dwGameState = GAME_STATE_RUN_FRONT_END;
+}
+
 int DispatchGameStateFrame(void) {
     return g_apfnGameStateHandlers[g_dwGameState]();
 }

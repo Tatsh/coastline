@@ -218,6 +218,7 @@ drytire
 dsbcaps
 dsbpan
 dsbplay
+dsbstatus
 dsbufferdesc
 dsbvolume
 dsdx
@@ -507,6 +508,7 @@ ntrp
 numl
 numlight
 numlights
+numpadenter
 numpydoc
 objcopy
 objdump

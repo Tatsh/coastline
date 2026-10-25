@@ -195,6 +195,14 @@ extern float g_afModelVertexPool[];
 extern float *g_pModelDataPoolCursor;
 
 /**
+ * Make the size of the frame the size of the framebuffer of the configuration.
+ *
+ * @ghidraAddress BRD3D: 0x1003128c
+ * @ghidraAddress BRGlide: 0x1002a93c
+ */
+void CopyConfigFramebufferSize(void);
+
+/**
  * Empty the pool of the data of the models.
  *
  * @ghidraAddress BRD3D: 0x1002b950

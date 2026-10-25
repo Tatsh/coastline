@@ -758,3 +758,31 @@ void ProbeJoystickDevice(void);
  * @ghidraAddress BRGlide: 0x10059020
  */
 void PollKeyboardState(void);
+
+/**
+ * The first key of g_adwKeyPressedEdge pressed in this frame.
+ *
+ * @return The index of the key, or -1 when none was pressed.
+ * @ghidraAddress BRD3D: 0x1005ffd0
+ * @ghidraAddress BRGlide: 0x10059040
+ */
+int GetFirstPressedKeyIndex(void);
+
+/**
+ * Whether a button of the mouse was pressed or, outside the setup of the car of network play,
+ * Return, Enter of the keypad, Left, or Right was pressed in this frame.
+ *
+ * @return Whether one was pressed.
+ * @ghidraAddress BRD3D: 0x1003e080
+ * @ghidraAddress BRGlide: 0x10037720
+ */
+bool IsInputOrEventActive(void);
+
+/**
+ * Whether a key or a button of the mouse was pressed in this frame.
+ *
+ * @return Whether one was pressed.
+ * @ghidraAddress BRD3D: 0x1003e0e0
+ * @ghidraAddress BRGlide: 0x10037780
+ */
+bool CheckForUserInput(void);

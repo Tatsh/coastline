@@ -1,6 +1,6 @@
 # PC port game code from 0x10050000 to 0x10060000
 
-17 of 84 routines done.
+18 of 84 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -85,8 +85,8 @@ the same name, for a routine the port retained from the N64 game.
 | `MenuFont::ScalarDeletingDestructor`      |        |                 |      1 |     30 | `0x1005b0a0` | `0x10053ec0` | `undefined ScalarDeletingDestructor(MenuFont * this, undefined4 param_1)`                                                                       |
 | `MenuItemList::ScalarDeletingDestructor`  |        |                 |      1 |     30 | `0x1005b8d0` | `0x100546f0` | `undefined ScalarDeletingDestructor(MenuItemList * this, undefined4 param_1)`                                                                   |
 | `SaveFileList::ScalarDeletingDestructor`  |        |                 |      1 |     30 | `0x1005cbf0` | `0x10055a10` | `undefined ScalarDeletingDestructor(SaveFileList * this, undefined4 param_1)`                                                                   |
-| `GetFirstPressedKeyIndex`                 |        |                 |      2 |     28 | `0x1005ffd0` | `0x10059040` | `undefined GetFirstPressedKeyIndex()`                                                                                                           |
 | `MenuItemList::~MenuItemList`             |        |                 |      2 |     28 | `0x1005b8f0` | `0x10054710` | `undefined ~MenuItemList(MenuItemList * this)`                                                                                                  |
+| `GetFirstPressedKeyIndex`                 |   ✅   |                 |      2 |     28 | `0x1005ffd0` | `0x10059040` | `int GetFirstPressedKeyIndex(void)`                                                                                                             |
 | `PollKeyboardState`                       |   ✅   |                 |      1 |     23 | `0x1005ffb0` | `0x10059020` | `void PollKeyboardState(void)`                                                                                                                  |
 | `GlideDisplayModeNode::Init`              |        |                 |      1 |     19 |              | `0x10058c70` | `undefined Init(GlideDisplayModeNode * this)`                                                                                                   |
 | `ReleaseMenuSurfacesAndFail`              |   ✅   |                 |      2 |     18 | `0x1005f580` | `0x10058360` | `bool ReleaseMenuSurfacesAndFail(HWND hWnd)`                                                                                                    |

@@ -369,7 +369,7 @@ struct SoundBufferNode {
     DWORD dwFrequency;           /*!< The frequency of the buffer, in samples a second. */
     int nPan;                    /*!< The pan, from 0 to 800 with the centre at 400. */
     int nVolume;                 /*!< The volume before the volume of the sound effects. */
-    char abUnknown18[4];         /* +0x18 */
+    int bLooping;                /*!< Whether the buffer plays in a loop. */
     int bPlaying;                /*!< Whether the buffer plays. */
     char abUnknown20[4];         /* +0x20 */
     int bHardware;               /*!< Whether the buffer is in the memory of the sound card. */
@@ -591,6 +591,89 @@ HRESULT ApplySoundBufferFrequency(SoundBufferNode *pNode);
  * @ghidraAddress BRGlide: 0x1006b440
  */
 HRESULT ApplySoundBufferVolume(SoundBufferNode *pNode);
+
+/**
+ * Play the buffer of a node from its start: a buffer that plays goes back to its start, and one
+ * that does not starts, in a loop when bLooping is set, and is marked as playing.
+ *
+ * @param pNode The node.
+ * @return The result of SetCurrentPosition() or Play().
+ * @ghidraAddress BRD3D: 0x10072a00
+ * @ghidraAddress BRGlide: 0x1006b970
+ */
+HRESULT RestartOrPlaySoundBuffer(SoundBufferNode *pNode);
+
+/**
+ * Set whether the buffer of a node loops and play it from its start.
+ *
+ * @param pNode The node.
+ * @param bLooping Whether the buffer plays in a loop.
+ * @return The result of RestartOrPlaySoundBuffer().
+ * @ghidraAddress BRD3D: 0x100729e0
+ * @ghidraAddress BRGlide: 0x1006b950
+ */
+HRESULT PlaySoundBuffer(SoundBufferNode *pNode, int bLooping);
+
+/**
+ * Set the volume and the pan of the buffer of a node from the levels of its two sides.
+ *
+ * @param pNode The node.
+ * @param dwLevels The level of the left side in the high word and of the right in the low word,
+ * each up to 32.
+ * @return Whether the levels were set.
+ * @ghidraAddress BRD3D: 0x10072820
+ * @ghidraAddress BRGlide: 0x1006b790
+ */
+bool SetSoundBufferStereoLevels(SoundBufferNode *pNode, DWORD dwLevels);
+
+/**
+ * Set the levels of the two sides of a channel of a sample and play it, when sound is on.
+ *
+ * @param nSample The sample, an index into g_aSoundChannelBuffers.
+ * @param nChannel The channel.
+ * @param dwLevels The levels, as SetSoundBufferStereoLevels() takes them.
+ * @param bLooping Whether the buffer plays in a loop.
+ * @return Whether the levels were set and the buffer played, and true without sound.
+ * @ghidraAddress BRD3D: 0x10072a90
+ * @ghidraAddress BRGlide: 0x1006ba00
+ */
+bool SetStereoAndPlaySoundChannel(int nSample, int nChannel, DWORD dwLevels, int bLooping);
+
+/**
+ * Set the levels of the two sides of channel 1 of a sample and play it.
+ *
+ * @param nSample The sample.
+ * @param dwLevels The levels, as SetSoundBufferStereoLevels() takes them.
+ * @param bLooping Whether the buffer plays in a loop.
+ * @return The result of SetStereoAndPlaySoundChannel().
+ * @ghidraAddress BRD3D: 0x10072a70
+ * @ghidraAddress BRGlide: 0x1006b9e0
+ */
+bool PlaySoundChannelOneWithStereo(int nSample, DWORD dwLevels, int bLooping);
+
+/**
+ * Set the levels of the two sides of a channel of a sample, when sound is on.
+ *
+ * @param nSample The sample.
+ * @param nChannel The channel.
+ * @param dwLevels The levels, as SetSoundBufferStereoLevels() takes them.
+ * @return Whether the levels were set, and true without sound.
+ * @ghidraAddress BRD3D: 0x10072b30
+ * @ghidraAddress BRGlide: 0x1006baa0
+ */
+bool SetSoundChannelStereo(int nSample, int nChannel, DWORD dwLevels);
+
+/**
+ * Set the levels of the two sides of the even channel of a voice of a sample.
+ *
+ * @param nSample The sample.
+ * @param nVoice The voice, half the channel.
+ * @param dwLevels The levels, as SetSoundBufferStereoLevels() takes them.
+ * @return The result of SetSoundChannelStereo().
+ * @ghidraAddress BRD3D: 0x10072b80
+ * @ghidraAddress BRGlide: 0x1006baf0
+ */
+bool SetSoundVoiceStereo(int nSample, int nVoice, DWORD dwLevels);
 
 /**
  * Load a wave file into a node of a buffer of DirectSound at the end of g_SoundBufferListHead, at

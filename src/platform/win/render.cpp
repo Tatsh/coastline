@@ -1,6 +1,8 @@
 #include "platform/win/render.h"
 
 #include "platform/win/boot/app.h"
+#include "platform/win/settings.h"
+#include "screen.h"
 
 int g_dwRenderBackendMode;
 
@@ -49,6 +51,11 @@ void InitializeRenderSubsystems(int nMode) {
     g_pfnInitializeTextureSubsystem();
     g_pfnRenderBackendInit();
     ResetModelDataPool();
+}
+
+void CopyConfigFramebufferSize(void) {
+    g_dwScreenWidth = g_dwConfigFramebufferWidth;
+    g_dwScreenHeight = g_dwConfigFramebufferHeight;
 }
 
 void ResetModelDataPool(void) {

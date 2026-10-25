@@ -9,6 +9,7 @@
 #include "platform/win/boot/app.h"
 #include "platform/win/boot/rallyconfig.h"
 #include "platform/win/boot/strings.h"
+#include "platform/win/frontend.h"
 #include "platform/win/settings.h"
 #include "platform/win/sound.h"
 #include "platform/win/timer.h"
@@ -250,6 +251,32 @@ void PollKeyboardState(void) {
     if (SUCCEEDED(ReadKeyboardState(g_abKeyboardState))) {
         UpdateKeyboardEdgeState();
     }
+}
+
+int GetFirstPressedKeyIndex(void) {
+    for (int i = 0; i < KEYBOARD_KEY_COUNT; i++) {
+        if (g_adwKeyPressedEdge[i]) {
+            return i;
+        }
+    }
+    return -1;
+}
+
+bool IsInputOrEventActive(void) {
+    for (int i = 0; i < MOUSE_BUTTON_COUNT; i++) {
+        if (g_adwMouseButtonPressed[i]) {
+            return true;
+        }
+    }
+    if (g_dwInNetworkCarSetup) {
+        return false;
+    }
+    return g_adwKeyPressedEdge[DIK_RETURN] || g_adwKeyPressedEdge[DIK_NUMPADENTER] ||
+           g_adwKeyPressedEdge[DIK_LEFT] || g_adwKeyPressedEdge[DIK_RIGHT];
+}
+
+bool CheckForUserInput(void) {
+    return GetFirstPressedKeyIndex() >= 0 || IsInputOrEventActive();
 }
 
 MouseDevice::MouseDevice() {
