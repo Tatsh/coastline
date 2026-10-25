@@ -135,6 +135,77 @@ public:
     HRESULT AppendDirect3DDeviceNode(D3DDeviceNode *pDevice);
 
     /**
+     * Find a display mode of a size and a depth.
+     *
+     * @param nWidth The width of the mode.
+     * @param nHeight The height of the mode.
+     * @param nBitDepth The bits of a pixel of the mode.
+     * @param pUnused Not read.
+     * @param ppFallback Receives the last mode of 640 by 480 at 8 bits on the way, or the first
+     * mode searched, unless `nullptr`.
+     * @param pFirst The mode the search starts at, or `nullptr` for the first.
+     * @return The mode, or `nullptr` when none matches.
+     * @ghidraAddress BRD3D: 0x1001b490
+     */
+    DisplayMode *FindDisplayMode(int nWidth,
+                                 int nHeight,
+                                 int nBitDepth,
+                                 void *pUnused,
+                                 DisplayMode **ppFallback,
+                                 DisplayMode *pFirst);
+
+    /**
+     * Select the device a GUID names, or report the device the game prefers: a device of the
+     * hardware, then the emulation of RGB, then that of MMX, then the first device.
+     *
+     * @param pGuid The GUID of the device, or `nullptr`.
+     * @param ppPreferred Receives the device the game prefers, unless `nullptr`.
+     * @param pFirst The device the search starts at, or `nullptr` for the first.
+     * @return The device the GUID names, or `nullptr`.
+     * @ghidraAddress BRD3D: 0x1001b690
+     */
+    D3DDeviceNode *
+    SelectPreferredD3DDevice(GUID *pGuid, D3DDeviceNode **ppPreferred, D3DDeviceNode *pFirst);
+
+    /**
+     * Find the device a GUID names that supports a display mode.
+     *
+     * @param pGuid The GUID of the device.
+     * @param pMode The mode.
+     * @param ppFallback Receives the last device on the way that supports the mode, unless
+     * `nullptr`.
+     * @param pFirst The device the search starts at, or `nullptr` for the first.
+     * @return The device, or `nullptr` when none matches.
+     * @ghidraAddress BRD3D: 0x1001b7c0
+     */
+    D3DDeviceNode *FindRenderDevice(GUID *pGuid,
+                                    DisplayMode *pMode,
+                                    D3DDeviceNode **ppFallback,
+                                    D3DDeviceNode *pFirst);
+
+    /**
+     * Find a display mode of a size and a depth that a device supports.
+     *
+     * @param nWidth The width of the mode.
+     * @param nHeight The height of the mode.
+     * @param nBitDepth The bits of a pixel of the mode.
+     * @param pUnused Not read.
+     * @param pDevice The device.
+     * @param ppFallback Receives the last mode on the way that the device supports, unless
+     * `nullptr`.
+     * @param pFirst The mode the search starts at, or `nullptr` for the first.
+     * @return The mode, or `nullptr` when none matches.
+     * @ghidraAddress BRD3D: 0x1001b880
+     */
+    DisplayMode *FindDisplayModeForDevice(int nWidth,
+                                          int nHeight,
+                                          int nBitDepth,
+                                          void *pUnused,
+                                          D3DDeviceNode *pDevice,
+                                          DisplayMode **ppFallback,
+                                          DisplayMode *pFirst);
+
+    /**
      * Read a driver DirectDraw reports, with its devices and its modes.
      *
      * @param pGuid The GUID of the driver, or `nullptr` for the primary.
@@ -193,6 +264,15 @@ public:
      * @ghidraAddress BRD3D: 0x1001aee0
      */
     void ReleaseD3DDeviceNode();
+
+    /**
+     * Whether a GUID names the device, a device that was read alone.
+     *
+     * @param pGuid The GUID, or `nullptr`.
+     * @return Whether the GUID names the device.
+     * @ghidraAddress BRD3D: 0x1001ada0
+     */
+    bool CompareD3DDeviceGuid(const GUID *pGuid);
 
     /** Start a device without texts, with empty descriptions. */
     D3DDeviceNode()
@@ -282,6 +362,34 @@ public:
      */
     HRESULT
     GetSurfaceDescDimensions(int *pnWidth, int *pnHeight, int *pnBitDepth, int *pnRefreshRate);
+
+    /**
+     * The bits of a pixel of the mode.
+     *
+     * @return The bits, or 0 for a description without a pixel format.
+     * @ghidraAddress BRD3D: 0x1001ac60
+     */
+    int GetSurfaceDescBitDepth();
+
+    /**
+     * Whether a device can draw in the depth of the mode.
+     *
+     * @param pDevice The device, or `nullptr`.
+     * @return Whether the device draws in the depth.
+     * @ghidraAddress BRD3D: 0x1001acf0
+     */
+    bool IsDisplayModeSupportedByDevice(D3DDeviceNode *pDevice);
+
+    /**
+     * Whether the mode has a size and a depth.
+     *
+     * @param nWidth The width.
+     * @param nHeight The height.
+     * @param nBitDepth The bits of a pixel.
+     * @return Whether the mode has them.
+     * @ghidraAddress BRD3D: 0x1001ad50
+     */
+    bool IsDisplayModeMatch(int nWidth, int nHeight, int nBitDepth);
 };
 
 /** A Direct3D material and the description it was set from. */
@@ -813,6 +921,15 @@ bool FindDesktopDisplayModeAndDevice(DirectDrawDriver *pDriver,
  * @ghidraAddress BRD3D: 0x1001a870
  */
 int DDBDToBitDepth(DWORD dwMask);
+
+/**
+ * The `DDBD_` flag of a depth.
+ *
+ * @param nBitDepth The bits, 1, 2, 4, 8, 16, 24, or 32.
+ * @return The flag, or 0 for another depth.
+ * @ghidraAddress BRD3D: 0x1001a8c0
+ */
+DWORD BitDepthToDDBD(int nBitDepth);
 
 /**
  * What the hardware of the device created last does.

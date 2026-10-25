@@ -71,6 +71,117 @@ DirectDrawDriver *FindDirectDrawDriverOrDefault(GUID *pGuid) {
     return pDriver != nullptr ? pDriver : pPrimary;
 }
 
+DisplayMode *FindDisplayModeWithFallback(DirectDrawDriver *pDriver,
+                                         int nWidth,
+                                         int nHeight,
+                                         int nBitDepth,
+                                         int nUnknown,
+                                         D3DDeviceNode *pDevice) {
+    DisplayMode *pFallback;
+    DisplayMode *pMode;
+
+    if (pDriver == nullptr) {
+        return nullptr;
+    }
+    if (pDevice == nullptr) {
+        pMode = pDriver->FindDisplayMode(
+            nWidth, nHeight, nBitDepth, reinterpret_cast<void *>(nUnknown), &pFallback, nullptr);
+    } else {
+        pMode = pDriver->FindDisplayModeForDevice(nWidth,
+                                                  nHeight,
+                                                  nBitDepth,
+                                                  reinterpret_cast<void *>(nUnknown),
+                                                  pDevice,
+                                                  &pFallback,
+                                                  nullptr);
+    }
+    return pMode != nullptr ? pMode : pFallback;
+}
+
+bool FindDesktopDisplayModeAndDevice(DirectDrawDriver *pDriver,
+                                     GUID *pDeviceGuid,
+                                     DisplayMode **ppMode,
+                                     D3DDeviceNode **ppDevice) {
+    HWND hDesktop;
+    HDC hdc;
+    int nWidth;
+    int nHeight;
+    int nBitDepth;
+    DisplayMode *pMode;
+    D3DDeviceNode *pDevice;
+    D3DDeviceNode *pFallback;
+
+    if (pDriver == nullptr || ppMode == nullptr || ppDevice == nullptr) {
+        return false;
+    }
+    hDesktop = GetDesktopWindow();
+    hdc = GetDC(hDesktop);
+    nWidth = GetDeviceCaps(hdc, HORZRES);
+    nHeight = GetDeviceCaps(hdc, VERTRES);
+    nBitDepth = GetDeviceCaps(hdc, BITSPIXEL) * GetDeviceCaps(hdc, PLANES);
+    ReleaseDC(hDesktop, hdc);
+    pMode = pDriver->FindDisplayMode(nWidth, nHeight, nBitDepth, nullptr, nullptr, nullptr);
+    if (pMode == nullptr) {
+        return false;
+    }
+    pDevice = pDriver->FindRenderDevice(pDeviceGuid, pMode, &pFallback, nullptr);
+    if (pDevice == nullptr) {
+        pDevice = pFallback;
+        if (pDevice == nullptr) {
+            return false;
+        }
+    }
+    *ppMode = pMode;
+    *ppDevice = pDevice;
+    return true;
+}
+
+// The mode a renderer takes when it is not given a size and a depth.
+#define DEFAULT_MODE_WIDTH 640
+#define DEFAULT_MODE_HEIGHT 480
+#define DEFAULT_MODE_BIT_DEPTH 16
+
+bool SelectDeviceAndDisplayMode(DirectDrawDriver *pDriver,
+                                GUID *pDeviceGuid,
+                                int nWidth,
+                                int nHeight,
+                                int nBitDepth,
+                                void *pSurfaceFormat,
+                                DisplayMode **ppMode,
+                                D3DDeviceNode **ppDevice) {
+    D3DDeviceNode *pDevice;
+    D3DDeviceNode *pPreferred;
+    DisplayMode *pMode;
+    DisplayMode *pFallback;
+
+    if (pDriver == nullptr || ppMode == nullptr || ppDevice == nullptr) {
+        return false;
+    }
+    pDevice = pDriver->SelectPreferredD3DDevice(pDeviceGuid, &pPreferred, nullptr);
+    if (pDevice == nullptr) {
+        pDevice = pPreferred;
+        if (pDevice == nullptr) {
+            return false;
+        }
+    }
+    if (nWidth == 0 || nHeight == 0 || nBitDepth == 0) {
+        nWidth = DEFAULT_MODE_WIDTH;
+        nHeight = DEFAULT_MODE_HEIGHT;
+        nBitDepth = DEFAULT_MODE_BIT_DEPTH;
+    }
+    pMode = pDriver->FindDisplayModeForDevice(
+        nWidth, nHeight, nBitDepth, pSurfaceFormat, pDevice, &pFallback, nullptr);
+    if (pMode == nullptr) {
+        pMode = pFallback;
+        if (pMode == nullptr) {
+            return false;
+        }
+    }
+    *ppMode = pMode;
+    *ppDevice = pDevice;
+    return true;
+}
+
 HRESULT SelectDriverDeviceAndModeFromConfig(GUID *pDriverGuid,
                                             int nWidth,
                                             int nHeight,
@@ -135,6 +246,27 @@ int DDBDToBitDepth(DWORD dwMask) {
         return 24;
     }
     return (dwMask & DDBD_32) ? 32 : 0;
+}
+
+DWORD BitDepthToDDBD(int nBitDepth) {
+    switch (nBitDepth) {
+    case 1:
+        return DDBD_1;
+    case 2:
+        return DDBD_2;
+    case 4:
+        return DDBD_4;
+    case 8:
+        return DDBD_8;
+    case 16:
+        return DDBD_16;
+    case 24:
+        return DDBD_24;
+    case 32:
+        return DDBD_32;
+    default:
+        return 0;
+    }
 }
 
 bool IsPixelFormatPalettized(const DDPIXELFORMAT *pFormat) {
@@ -241,6 +373,14 @@ HRESULT WINAPI EnumD3DDevicesCallback(GUID *pGuid,
     return D3DENUMRET_OK;
 }
 
+int DisplayMode::GetSurfaceDescBitDepth() {
+    if (desc.dwSize != sizeof(desc) || (desc.dwFlags & DDSD_PIXELFORMAT) == 0 ||
+        desc.ddpfPixelFormat.dwSize != sizeof(desc.ddpfPixelFormat)) {
+        return 0;
+    }
+    return desc.ddpfPixelFormat.dwRGBBitCount;
+}
+
 HRESULT DisplayMode::GetSurfaceDescDimensions(int *pnWidth,
                                               int *pnHeight,
                                               int *pnBitDepth,
@@ -257,8 +397,31 @@ HRESULT DisplayMode::GetSurfaceDescDimensions(int *pnWidth,
     return S_OK;
 }
 
+bool DisplayMode::IsDisplayModeSupportedByDevice(D3DDeviceNode *pDevice) {
+    DWORD dwDepth;
+
+    if (pDevice == nullptr) {
+        return false;
+    }
+    dwDepth = BitDepthToDDBD(GetSurfaceDescBitDepth());
+    if (pDevice->IsHardwareDevice()) {
+        return (pDevice->hardwareDesc.dwDeviceRenderBitDepth & dwDepth) != 0;
+    }
+    return (pDevice->softwareDesc.dwDeviceRenderBitDepth & dwDepth) != 0;
+}
+
+bool DisplayMode::IsDisplayModeMatch(int nWidth, int nHeight, int nBitDepth) {
+    return desc.dwSize == sizeof(desc) && static_cast<int>(desc.dwWidth) == nWidth &&
+           static_cast<int>(desc.dwHeight) == nHeight &&
+           static_cast<int>(desc.ddpfPixelFormat.dwRGBBitCount) == nBitDepth;
+}
+
 bool D3DDeviceNode::IsHardwareDevice() {
     return hardwareDesc.dcmColorModel != 0;
+}
+
+bool D3DDeviceNode::CompareD3DDeviceGuid(const GUID *pGuid) {
+    return pGuid != nullptr && (dwFlags & 1) != 0 && memcmp(&guid, pGuid, sizeof(guid)) == 0;
 }
 
 HRESULT D3DDeviceNode::InitD3DDeviceNode(GUID *pGuid,
@@ -471,6 +634,38 @@ HRESULT DirectDrawDriver::EnqueueDirectDrawModeNode(DisplayMode *pMode) {
     return AppendListNode(pMode, &pDisplayModesHead, &pDisplayModesTail, &nDisplayModeCount);
 }
 
+// The mode the search of a mode falls back to.
+#define FALLBACK_SEARCH_WIDTH 640
+#define FALLBACK_SEARCH_HEIGHT 480
+#define FALLBACK_SEARCH_BIT_DEPTH 8
+
+DisplayMode *DirectDrawDriver::FindDisplayMode(int nWidth,
+                                               int nHeight,
+                                               int nBitDepth,
+                                               void *pUnused,
+                                               DisplayMode **ppFallback,
+                                               DisplayMode *pFirst) {
+    DisplayMode *pMode = pFirst != nullptr ? pFirst : pDisplayModesHead;
+
+    if (ppFallback != nullptr) {
+        *ppFallback = pMode;
+    }
+    while (pMode != nullptr) {
+        DisplayMode *pNextMode = pMode->pNext;
+
+        if (pMode->IsDisplayModeMatch(nWidth, nHeight, nBitDepth)) {
+            return pMode;
+        }
+        if (pMode->IsDisplayModeMatch(
+                FALLBACK_SEARCH_WIDTH, FALLBACK_SEARCH_HEIGHT, FALLBACK_SEARCH_BIT_DEPTH) &&
+            ppFallback != nullptr) {
+            *ppFallback = pMode;
+        }
+        pMode = pNextMode;
+    }
+    return nullptr;
+}
+
 HRESULT DirectDrawDriver::EnumerateD3DDevices(IDirect3D2 *pDirect3D2) {
     DriverEnumContext context = {true, 0, this};
     HRESULT hr;
@@ -513,6 +708,118 @@ int DirectDrawDriver::FlushDirect3DDeviceList() {
 
 HRESULT DirectDrawDriver::AppendDirect3DDeviceNode(D3DDeviceNode *pDevice) {
     return AppendListNode(pDevice, &pD3DDevicesHead, &pD3DDevicesTail, &nD3DDeviceCount);
+}
+
+D3DDeviceNode *DirectDrawDriver::SelectPreferredD3DDevice(GUID *pGuid,
+                                                          D3DDeviceNode **ppPreferred,
+                                                          D3DDeviceNode *pFirst) {
+    D3DDeviceNode *pDevice;
+    D3DDeviceNode *pHardware = nullptr;
+    D3DDeviceNode *pMmx = nullptr;
+    D3DDeviceNode *pRgb = nullptr;
+
+    if (ppPreferred != nullptr) {
+        *ppPreferred = nullptr;
+    }
+    pFirst = pFirst != nullptr ? pFirst : pD3DDevicesHead;
+    for (pDevice = pFirst; pDevice != nullptr;) {
+        D3DDeviceNode *pNextDevice = pDevice->pNext;
+
+        if (pDevice->CompareD3DDeviceGuid(pGuid)) {
+            return pDevice;
+        }
+        if (pDevice->IsHardwareDevice() && pHardware == nullptr) {
+            pHardware = pDevice;
+        }
+        if (IsEqualGUID(pDevice->guid, IID_IDirect3DRGBDevice) && pRgb == nullptr) {
+            pRgb = pDevice;
+        }
+        if (IsEqualGUID(pDevice->guid, IID_IDirect3DMMXDevice) && pMmx == nullptr) {
+            pMmx = pDevice;
+        }
+        pDevice = pNextDevice;
+    }
+    if (ppPreferred != nullptr) {
+        if (pHardware != nullptr) {
+            *ppPreferred = pHardware;
+        } else if (pRgb != nullptr) {
+            *ppPreferred = pRgb;
+        } else if (pMmx != nullptr) {
+            *ppPreferred = pMmx;
+        } else if (pFirst != nullptr) {
+            *ppPreferred = pFirst;
+        }
+    }
+    return nullptr;
+}
+
+D3DDeviceNode *DirectDrawDriver::FindRenderDevice(GUID *pGuid,
+                                                  DisplayMode *pMode,
+                                                  D3DDeviceNode **ppFallback,
+                                                  D3DDeviceNode *pFirst) {
+    D3DDeviceNode *pDevice;
+
+    if (pMode == nullptr) {
+        if (ppFallback != nullptr) {
+            *ppFallback = nullptr;
+        }
+        return nullptr;
+    }
+    pDevice = pFirst != nullptr ? pFirst : pD3DDevicesHead;
+    if (ppFallback != nullptr && pMode->IsDisplayModeSupportedByDevice(pDevice)) {
+        *ppFallback = pDevice;
+    }
+    while (pDevice != nullptr) {
+        D3DDeviceNode *pNextDevice = pDevice->pNext;
+
+        if (pDevice->CompareD3DDeviceGuid(pGuid)) {
+            if (pMode->IsDisplayModeSupportedByDevice(pDevice)) {
+                return pDevice;
+            }
+        } else if (pMode->IsDisplayModeSupportedByDevice(pDevice) && ppFallback != nullptr) {
+            // The original tests a device of the hardware apart, to the same end.
+            *ppFallback = pDevice;
+        }
+        pDevice = pNextDevice;
+    }
+    return nullptr;
+}
+
+DisplayMode *DirectDrawDriver::FindDisplayModeForDevice(int nWidth,
+                                                        int nHeight,
+                                                        int nBitDepth,
+                                                        void *pUnused,
+                                                        D3DDeviceNode *pDevice,
+                                                        DisplayMode **ppFallback,
+                                                        DisplayMode *pFirst) {
+    DisplayMode *pMode;
+
+    if (pDevice == nullptr) {
+        if (ppFallback != nullptr) {
+            *ppFallback = nullptr;
+        }
+        return nullptr;
+    }
+    pMode = pFirst != nullptr ? pFirst : pDisplayModesHead;
+    // The original reads the first mode of an empty list as well, and the test here does not.
+    if (ppFallback != nullptr && pMode != nullptr &&
+        pMode->IsDisplayModeSupportedByDevice(pDevice)) {
+        *ppFallback = pMode;
+    }
+    while (pMode != nullptr) {
+        DisplayMode *pNextMode = pMode->pNext;
+
+        if (pMode->IsDisplayModeMatch(nWidth, nHeight, nBitDepth)) {
+            if (pMode->IsDisplayModeSupportedByDevice(pDevice)) {
+                return pMode;
+            }
+        } else if (pMode->IsDisplayModeSupportedByDevice(pDevice) && ppFallback != nullptr) {
+            // The original tests a mode of 640 by 480 at 16 bits apart, to the same end.
+            *ppFallback = pMode;
+        }
+        pMode = pNextMode;
+    }
+    return nullptr;
 }
 
 GUID *DirectDrawDriver::GetDirectDrawDriverGuid() {

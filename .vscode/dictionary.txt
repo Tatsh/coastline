@@ -32,6 +32,7 @@ beqz
 bestlaptime
 bgtz
 bilerp
+bitspixel
 blez
 bnel
 bnez
@@ -127,6 +128,7 @@ dmaread
 dmaterial
 dmaterialhandle
 dmawrite
+dmmx
 dndebug
 docstrings
 doubleword
@@ -211,6 +213,7 @@ hilite
 hinstance
 histk
 hmenu
+horzres
 hresult
 huft
 iasm
