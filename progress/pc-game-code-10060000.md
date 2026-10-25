@@ -1,6 +1,6 @@
 # PC port game code from 0x10060000 to 0x10070000
 
-32 of 169 routines done.
+34 of 169 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -125,7 +125,7 @@ the same name, for a routine the port retained from the N64 game.
 | `DeserializeSaveData`                    |        | ✅ `0x8022ae70` |      2 |     60 | `0x10067900` | `0x10060970` | `undefined DeserializeSaveData()`                                                                                                        |
 | `RacerSlot::UpdateRemoteVehicleFrame`    |        |                 |      1 |     58 | `0x10069330` | `0x100623a0` | `undefined UpdateRemoteVehicleFrame(RacerSlot * this)`                                                                                   |
 | `UnmarkTrackSections`                    |        | ✅ `0x80255c50` |      2 |     53 | `0x100616c0` | `0x1005a740` | `undefined UnmarkTrackSections()`                                                                                                        |
-| `ResetGhostRecording`                    |        |                 |      1 |     51 | `0x1006aa50` | `0x10063a00` | `undefined ResetGhostRecording()`                                                                                                        |
+| `ResetGhostRecording`                    |   ✅   |                 |      1 |     51 | `0x1006aa50` | `0x10063a00` | `void ResetGhostRecording(void)`                                                                                                         |
 | `PlaySoundEffect`                        |        | ✅ `0x8022b370` |      2 |     50 | `0x10067d40` | `0x10060db0` | `undefined PlaySoundEffect()`                                                                                                            |
 | `FreeAllPaintBitmaps`                    |   ✅   |                 |      1 |     50 | `0x10061620` | `0x1005a6a0` | `void FreeAllPaintBitmaps(void)`                                                                                                         |
 | `ResetAllPlayers`                        |        | ✅ `0x80200154` |      1 |     49 | `0x10069800` | `0x10062870` | `undefined ResetAllPlayers()`                                                                                                            |
@@ -133,7 +133,7 @@ the same name, for a routine the port retained from the N64 game.
 | `ApplyAudioVolumeSettings`               |   ✅   |                 |      6 |     46 | `0x10060d90` | `0x10059e00` | `void ApplyAudioVolumeSettings(void)`                                                                                                    |
 | `RecordVehicleKeyframe`                  |        |                 |      1 |     44 | `0x100609e0` | `0x10059a50` | `void RecordVehicleKeyframe(void * pVideoSettings)`                                                                                      |
 | `CompareRacerSortKeyAscending`           |        |                 |      2 |     43 | `0x10066620` | `0x1005f690` | `undefined CompareRacerSortKeyAscending()`                                                                                               |
-| `FillMemoryPatternBytes`                 |        |                 |      2 |     43 | `0x10060780` | `0x100597f0` | `void FillMemoryPatternBytes(void * pDest, uint cb, byte value)`                                                                         |
+| `FillMemoryPatternBytes`                 |   ✅   |                 |      2 |     43 | `0x10060780` | `0x100597f0` | `void FillMemoryPatternBytes(void * pDest, uint nCount, int nByte)`                                                                      |
 | `SetRenderBackendMode`                   |   ✅   |                 |      2 |     43 | `0x1006a990` | `0x10063940` | `void SetRenderBackendMode(int nMode)`                                                                                                   |
 | `PlaneDistance`                          |        | ✅ `0x8025b704` |     14 |     41 | `0x1006c9a0` | `0x10065950` | `float PlaneDistance(float * pVecA, float fBias, float * pVecB)`                                                                         |
 | `MatrixToPositionQuaternion`             |        |                 |      1 |     41 | `0x100695a0` | `0x10062610` | `undefined MatrixToPositionQuaternion()`                                                                                                 |
