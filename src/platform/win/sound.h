@@ -722,6 +722,17 @@ bool SetSoundChannelStereo(int nSample, int nChannel, DWORD dwLevels);
 bool SetSoundVoiceStereo(int nSample, int nVoice, DWORD dwLevels);
 
 /**
+ * Set the levels of the two sides of channel 1 of a sample and play it once.
+ *
+ * @param nSample The sample.
+ * @param dwLevels The levels, as SetSoundBufferStereoLevels() takes them.
+ * @return The result of PlaySoundChannelOneWithStereo().
+ * @ghidraAddress BRD3D: 0x10072af0
+ * @ghidraAddress BRGlide: 0x1006ba60
+ */
+bool PlaySoundChannelOneOnce(int nSample, DWORD dwLevels);
+
+/**
  * Set the levels of the two sides of the even channel of a voice of a sample and play it in a
  * loop.
  *

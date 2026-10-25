@@ -586,6 +586,10 @@ bool PlaySoundChannelOneWithStereo(int nSample, DWORD dwLevels, int bLooping) {
     return SetStereoAndPlaySoundChannel(nSample, 1, dwLevels, bLooping);
 }
 
+bool PlaySoundChannelOneOnce(int nSample, DWORD dwLevels) {
+    return PlaySoundChannelOneWithStereo(nSample, dwLevels, false);
+}
+
 bool SetSoundChannelStereo(int nSample, int nChannel, DWORD dwLevels) {
     if (!IsDirectSoundActive()) {
         return true;
