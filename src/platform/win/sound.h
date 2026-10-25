@@ -232,6 +232,16 @@ extern int g_nMusicTrackMin;
 extern int g_nMusicTrackMax;
 
 /**
+ * Choose a track of music at random from track 3 to g_nMusicTrackMax, other than the track that
+ * plays when there are more than six tracks.
+ *
+ * @return The track.
+ * @ghidraAddress BRD3D: 0x100028d0
+ * @ghidraAddress BRGlide: 0x10002c00
+ */
+int RandomizeMusicTrack(void);
+
+/**
  * The window told when the tracks of the CD audio end.
  *
  * @ghidraAddress BRD3D: 0x10220c4c

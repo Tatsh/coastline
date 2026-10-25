@@ -120,6 +120,31 @@ bool RouteMusicInitByFlag(HWND hWnd) {
     return InitSoftwareMusicStack(hWnd);
 }
 
+// The first track of music RandomizeMusicTrack() chooses, and the tracks it leaves out of the range
+// of its random number.
+#define RANDOM_MUSIC_FIRST_TRACK 3
+#define RANDOM_MUSIC_TRACKS_LEFT_OUT 5
+// The most tracks with which RandomizeMusicTrack() may choose the track that plays.
+#define RANDOM_MUSIC_REPEAT_TRACKS 6
+// The range of rand().
+#define RAND_RANGE 0x8000
+
+int RandomizeMusicTrack(void) {
+    int nTrack;
+
+    do {
+        nTrack = rand() * (g_nMusicTrackMax - RANDOM_MUSIC_TRACKS_LEFT_OUT) / RAND_RANGE +
+                 RANDOM_MUSIC_FIRST_TRACK;
+        if (nTrack < RANDOM_MUSIC_FIRST_TRACK) {
+            nTrack = RANDOM_MUSIC_FIRST_TRACK;
+        }
+        if (nTrack > g_nMusicTrackMax) {
+            nTrack = g_nMusicTrackMax;
+        }
+    } while (g_nMusicTrackMax > RANDOM_MUSIC_REPEAT_TRACKS && nTrack == g_nCurrentMusicTrack);
+    return nTrack;
+}
+
 int GetEarMusicCurrentTrack(void) {
     if (g_dwPlayMusicMode == 0 || g_nMusicDeviceRefCount == 0) {
         return 0;
