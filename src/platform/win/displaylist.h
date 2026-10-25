@@ -1261,3 +1261,12 @@ typedef GbiCommand *(*GbiHandler)(GbiCommand *pCommand);
  * @ghidraAddress BRGlide: 0x100a9a58
  */
 extern std::array<GbiHandler, GBI_HANDLER_COUNT> g_apfnGbiHandlers;
+
+/**
+ * Run a display list through g_apfnGbiHandlers until a handler returns `nullptr`.
+ *
+ * @param pCommand The first command, or `nullptr` for none.
+ * @ghidraAddress BRD3D: 0x10024a90
+ * @ghidraAddress BRGlide: 0x10023c90
+ */
+void ExecuteGbiDisplayList(GbiCommand *pCommand);

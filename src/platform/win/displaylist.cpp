@@ -561,6 +561,12 @@ static constexpr std::array<GbiHandler, GBI_HANDLER_COUNT> MakeGbiHandlers() {
 
 std::array<GbiHandler, GBI_HANDLER_COUNT> g_apfnGbiHandlers = MakeGbiHandlers();
 
+void ExecuteGbiDisplayList(GbiCommand *pCommand) {
+    while (pCommand != nullptr) {
+        pCommand = g_apfnGbiHandlers[pCommand->w0 >> 24](pCommand);
+    }
+}
+
 #if TGR_RENDERER == TGR_RENDERER_D3D
 // The bits of the geometry mode of the console that ApplyGeometryModeChanges() reads.
 #define GBI_GEOMETRY_Z_BUFFER 0x1
