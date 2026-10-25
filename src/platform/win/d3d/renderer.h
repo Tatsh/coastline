@@ -972,11 +972,57 @@ FindDirectDrawDriverByGuid(GUID *pGuid, DirectDrawDriver **ppPrimary, DirectDraw
  */
 int ReturnZero(void);
 
-/** A texture the game loaded. The layout is not recovered past its identifier. */
+/** A texture the game loaded. The layout is not recovered past its size. */
 struct TextureEntry {
-    int nTextureId;         /*!< The entry of g_ppTextureIdTable of the texture. */
-    char abUnknown4[0x2b4]; /* +0x04 */
+    int nTextureId;          /*!< The entry of g_ppTextureIdTable of the texture. */
+    char abUnknown4[0x1c];   /* +0x04 */
+    int nLod;                /*!< The level of detail, as CalculateTextureDimensions() reads it. */
+    int nAspectRatio;        /*!< The aspect ratio, as CalculateTextureDimensions() reads it. */
+    char abUnknown28[0x290]; /* +0x28 */
 };
+
+/**
+ * Get the size of a texture the game loaded.
+ *
+ * @param pWidth Receives the width.
+ * @param pHeight Receives the height.
+ * @param nEntry The entry of g_pTextureEntries.
+ * @ghidraAddress BRD3D: 0x100290a0
+ */
+void GetTextureEntryDimensions(int *pWidth, int *pHeight, int nEntry);
+
+/** The number of entries of g_adwPrecipitationTextureIds. */
+#define PRECIPITATION_TEXTURE_COUNT 2
+
+/**
+ * The entries of g_pTextureEntries of the textures of precipitation.
+ *
+ * @ghidraAddress BRD3D: 0x11829100
+ */
+extern int g_adwPrecipitationTextureIds[PRECIPITATION_TEXTURE_COUNT];
+
+/**
+ * The width of the texture of precipitation GetPrecipitationTextureDimensions() last read.
+ *
+ * @ghidraAddress BRD3D: 0x104b2554
+ */
+extern int g_dwPrecipTextureWidth;
+
+/**
+ * The height of the texture of precipitation GetPrecipitationTextureDimensions() last read.
+ *
+ * @ghidraAddress BRD3D: 0x104b2558
+ */
+extern int g_dwPrecipTextureHeight;
+
+/**
+ * Read the size of a texture of precipitation into g_dwPrecipTextureWidth and
+ * g_dwPrecipTextureHeight.
+ *
+ * @param nIndex The entry of g_adwPrecipitationTextureIds.
+ * @ghidraAddress BRD3D: 0x1001a4b0
+ */
+void GetPrecipitationTextureDimensions(int nIndex);
 
 /**
  * The number of entries of g_pTextureEntries.

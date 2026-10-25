@@ -201,6 +201,19 @@ void InitializeTextureSubsystem(void);
 int GetMipLevelFromDimension(int nDimension);
 
 /**
+ * Get the size of a texture from the codes of Glide for its level of detail and its aspect ratio.
+ *
+ * @param pWidth Receives the width.
+ * @param pHeight Receives the height. It is not written for an aspect ratio above 6.
+ * @param nLod The level of detail, from 0 for 256 texels to 8 for 1, and 1 texel above 8.
+ * @param nAspectRatio The aspect ratio, from 0 for eight times as wide as high to 6 for eight times
+ * as high as wide.
+ * @ghidraAddress BRD3D: 0x10028720
+ * @ghidraAddress BRGlide: 0x10029290
+ */
+void CalculateTextureDimensions(int *pWidth, int *pHeight, int nLod, int nAspectRatio);
+
+/**
  * The number of vertices converted into g_afModelVertexPool.
  *
  * @ghidraAddress BRD3D: 0x1067d550

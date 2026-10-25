@@ -7,6 +7,7 @@
 
 #include "platform/win/d3d/renderer.h"
 #include "platform/win/fileio.h"
+#include "platform/win/render.h"
 
 // The pixel format LoadRgba5551ImageFile() converts an image to.
 #define RGBA5551_IMAGE_PIXEL_FORMAT 0xb
@@ -245,6 +246,19 @@ D3DTexture g_LoadingScreenImageState;
 unsigned g_dwTextureEntryCount;
 TextureEntry *g_pTextureEntries;
 D3DTexture **g_ppTextureIdTable;
+int g_adwPrecipitationTextureIds[PRECIPITATION_TEXTURE_COUNT];
+int g_dwPrecipTextureWidth;
+int g_dwPrecipTextureHeight;
+
+void GetTextureEntryDimensions(int *pWidth, int *pHeight, int nEntry) {
+    const TextureEntry &entry = g_pTextureEntries[nEntry];
+    CalculateTextureDimensions(pWidth, pHeight, entry.nLod, entry.nAspectRatio);
+}
+
+void GetPrecipitationTextureDimensions(int nIndex) {
+    GetTextureEntryDimensions(
+        &g_dwPrecipTextureWidth, &g_dwPrecipTextureHeight, g_adwPrecipitationTextureIds[nIndex]);
+}
 
 void InitializeAllTextureSurfaces(void) {
     for (unsigned i = 0; i < g_dwTextureEntryCount; i++) {

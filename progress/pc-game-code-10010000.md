@@ -1,6 +1,6 @@
 # PC port game code from 0x10010000 to 0x10020000
 
-47 of 157 routines done.
+48 of 157 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -142,7 +142,7 @@ the same name, for a routine the port retained from the N64 game.
 | `ScaleVertexTexCoords`                                 |        |                 |      2 |     33 | `0x1001e4b0` | `0x1001fcf0` | `undefined ScaleVertexTexCoords()`                                                                                                                                                                                                           |
 | `HandleGbiLoadPreparedTexture`                         |        |                 |      1 |     32 | `0x1001be10` | `0x1001e300` | `undefined HandleGbiLoadPreparedTexture()`                                                                                                                                                                                                   |
 | `GetSurfaceDescBitDepth`                               |   ✅   |                 |      1 |     32 | `0x1001ac60` |              | `int GetSurfaceDescBitDepth(void * this)`                                                                                                                                                                                                    |
-| `GetPrecipitationTextureDimensions`                    |        |                 |      1 |     31 | `0x1001a4b0` |              | `void GetPrecipitationTextureDimensions(void)`                                                                                                                                                                                               |
+| `GetPrecipitationTextureDimensions`                    |   ✅   |                 |      1 |     31 | `0x1001a4b0` |              | `void GetPrecipitationTextureDimensions(int nIndex)`                                                                                                                                                                                         |
 | `FindDirectDrawDriverOrDefault`                        |   ✅   |                 |      7 |     29 | `0x1001a550` |              | `DirectDrawDriver * FindDirectDrawDriverOrDefault(GUID * pGuid)`                                                                                                                                                                             |
 | `D3DMaterial::CommitMaterialIfDirty`                   |   ✅   |                 |      1 |     28 | `0x1001c620` |              | `undefined CommitMaterialIfDirty(D3DMaterial * this)`                                                                                                                                                                                        |
 | `ResetRenderDeviceCallbacks`                           |   ✅   |                 |      2 |     26 | `0x1001bae0` |              | `int ResetRenderDeviceCallbacks(void)`                                                                                                                                                                                                       |

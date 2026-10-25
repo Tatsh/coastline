@@ -129,6 +129,43 @@ int GetMipLevelFromDimension(int nDimension) {
     return nDimension <= 128 ? 7 : 8;
 }
 
+// The texels of the side of a texture at level of detail 0.
+#define TEXTURE_LOD_0_SIZE 256
+// The highest level of detail, of a single texel.
+#define TEXTURE_LOD_MAX 8
+
+void CalculateTextureDimensions(int *pWidth, int *pHeight, int nLod, int nAspectRatio) {
+    *pWidth = static_cast<unsigned>(nLod) <= TEXTURE_LOD_MAX ? TEXTURE_LOD_0_SIZE >> nLod : 1;
+    switch (nAspectRatio) {
+    case 0:
+        *pHeight = *pWidth / 8;
+        break;
+    case 1:
+        *pHeight = *pWidth / 4;
+        break;
+    case 2:
+        *pHeight = *pWidth / 2;
+        break;
+    case 3:
+        *pHeight = *pWidth;
+        break;
+    case 4:
+        *pHeight = *pWidth;
+        *pWidth /= 2;
+        break;
+    case 5:
+        *pHeight = *pWidth;
+        *pWidth /= 4;
+        break;
+    case 6:
+        *pHeight = *pWidth;
+        *pWidth /= 8;
+        break;
+    default:
+        break;
+    }
+}
+
 void ResetRenderCommandBufferStack(void) {
     ShadowClipVertex *pNext = nullptr;
 
