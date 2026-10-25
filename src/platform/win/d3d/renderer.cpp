@@ -2,10 +2,6 @@
 
 #include <cstring>
 
-// Messages the renderer sends its window after it creates its objects and before it releases them.
-#define WM_RENDERER_CREATED 0xbd0
-#define WM_RENDERER_DESTROYING 0xbd1
-
 RenderHost *g_pRenderHost;
 IDirect3D2 *g_pDirect3D2;
 IDirect3DDevice2 *g_pD3DDevice2;

@@ -5,8 +5,10 @@
  */
 #include <cstring>
 
-#include <objbase.h>
 #include <windows.h>
+// The headers below need the types of windows.h.
+#include <dbt.h>
+#include <objbase.h>
 
 #include "platform/win/boot/app.h"
 #include "platform/win/boot/rallyconfig.h"
@@ -243,4 +245,112 @@ int DestroyMainWindow(void) {
         g_pMainRenderWindow = nullptr;
     }
     return 0;
+}
+
+// Handle a message of music mode 2, the music library. Return whether the message was its own.
+static inline bool
+HandleEarSoundMessage(UINT nMessage, WPARAM wParam, LPARAM lParam, LRESULT *pResult) {
+    if (nMessage == g_uEarSoundWindowMessage) {
+        // A track that ends plays the next.
+        if (lParam == 2 && wParam == GetEarMusicEventHandle()) {
+            AdvanceMusicTrackWrapping();
+        }
+        *pResult = 0;
+        return true;
+    }
+    if (nMessage == WM_DEVICECHANGE) {
+        if (wParam == DBT_DEVICEARRIVAL) {
+            InitializeMusicPlayback();
+            SetCurrentMusicTrack(1);
+        }
+        if (wParam == DBT_DEVICEQUERYREMOVE || wParam == DBT_DEVICEREMOVEPENDING ||
+            wParam == DBT_DEVICEREMOVECOMPLETE) {
+            StopMusicTrack();
+            ShutDownEarMusicChannel();
+        }
+        *pResult = 1;
+        return true;
+    }
+    return false;
+}
+
+LRESULT CALLBACK MainWindowProc(HWND hWnd, UINT nMessage, WPARAM wParam, LPARAM lParam) {
+    DirectDrawRenderer *pRenderer;
+    LRESULT result;
+
+    // The front end and the network play see each message first.
+    if (g_pActiveStringTable != nullptr && g_pActiveStringTable->pUnknown68 != nullptr) {
+        FrontEndWindowProc(g_pFrontEndScratchBuffer, hWnd, nMessage, wParam, lParam);
+        if (g_dwDirectPlaySessionActive) {
+            HandleNetworkWindowMessage(hWnd, nMessage, wParam, lParam);
+        }
+    }
+    if (g_dwPlayMusicMode == 2 && HandleEarSoundMessage(nMessage, wParam, lParam, &result)) {
+        return result;
+    }
+    switch (nMessage) {
+    case WM_CREATE:
+    case WM_RENDERER_CREATED + 2:
+    case WM_RENDERER_CREATED + 3:
+    case WM_RENDERER_CREATED + 4:
+        // The handlers of the original return 0, and their code is shared with ReturnZero().
+        return 0;
+    case WM_DESTROY:
+        return HandleWindowDestroy(hWnd);
+    case WM_MOVE:
+        return HandleWindowMove(hWnd, wParam, lParam);
+    case WM_SIZE:
+        return HandleWindowSize(hWnd, wParam, lParam);
+    case WM_ACTIVATE:
+        UpdateAppActiveStateFromActivate(wParam);
+        return HandleWindowActivate(hWnd, wParam, lParam);
+    case WM_CLOSE:
+        return HandleWindowClose(hWnd);
+    case WM_ERASEBKGND:
+        return HandleWindowEraseBackground(hWnd, wParam, lParam);
+    case WM_ACTIVATEAPP:
+        return HandleWindowActivateApp(hWnd, wParam, lParam);
+    case WM_SETCURSOR:
+        return HandleWindowSetCursor(hWnd, wParam, lParam);
+    case WM_GETMINMAXINFO:
+        return HandleWindowGetMinMaxInfo(hWnd, wParam, lParam);
+    case WM_WINDOWPOSCHANGING:
+        return HandleWindowPosChanging(hWnd, wParam, lParam);
+    case WM_DISPLAYCHANGE:
+        return HandleDisplayChange(hWnd);
+    case WM_NCPAINT:
+        return HandleWindowNcPaint(hWnd, wParam, lParam);
+    case WM_COMMAND:
+        return HandleWindowCommand(hWnd, wParam, lParam);
+    case WM_SYSCOMMAND:
+        return HandleWindowSysCommand(hWnd, wParam, lParam);
+    case WM_ENTERMENULOOP:
+        return HandleWindowEnterMenuLoop(hWnd, wParam, lParam);
+    case WM_EXITMENULOOP:
+        return HandleWindowExitMenuLoop(hWnd, wParam, lParam);
+    case MM_MCINOTIFY:
+        if (g_dwPlayMusicMode != 1) {
+            break;
+        }
+        // A track of the CD audio that ends plays again, unless the race is paused.
+        if (static_cast<MCIDEVICEID>(lParam) == g_dwMciCdAudioDeviceId &&
+            wParam == MCI_NOTIFY_SUCCESSFUL && !g_dwRacePauseState) {
+            PlayCdAudioFromCurrentTrack();
+        }
+        return 0;
+    case WM_RENDERER_IS_READY:
+        pRenderer = reinterpret_cast<DirectDrawRenderer *>(GetWindowLongA(hWnd, GWL_USERDATA));
+        return pRenderer != nullptr &&
+               (pRenderer->dwRenderStateFlags & RENDERER_STATE_READY) == RENDERER_STATE_READY;
+    case WM_RENDERER_GET:
+        return GetWindowLongA(hWnd, GWL_USERDATA);
+    case WM_RENDERER_GET_BACK_BUFFER:
+        pRenderer = reinterpret_cast<DirectDrawRenderer *>(GetWindowLongA(hWnd, GWL_USERDATA));
+        return pRenderer != nullptr ? reinterpret_cast<LRESULT>(pRenderer->pBackBuffer) : 0;
+    case WM_RENDERER_CREATED:
+        return AttachRenderDeviceToWindow(hWnd, lParam);
+    case WM_RENDERER_DESTROYING:
+        return DetachRenderDeviceFromWindow(hWnd, lParam);
+    }
+    return DefWindowProcA(hWnd, nMessage, wParam, lParam);
 }

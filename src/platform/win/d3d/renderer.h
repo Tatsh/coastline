@@ -15,6 +15,21 @@
 /** A renderer that is not ready to draw. */
 #define RENDERER_E_NOT_READY static_cast<HRESULT>(0x88762713)
 
+/** The message a renderer sends its window after it creates its objects, with itself. */
+#define WM_RENDERER_CREATED 0xbd0
+
+/** The message a renderer sends its window before it releases its objects, with itself. */
+#define WM_RENDERER_DESTROYING 0xbd1
+
+/** Query the window for whether its renderer can draw. */
+#define WM_RENDERER_IS_READY 0x7e8
+
+/** Query the window for its renderer. */
+#define WM_RENDERER_GET 0x7e9
+
+/** Query the window for the back buffer of its renderer. */
+#define WM_RENDERER_GET_BACK_BUFFER 0x7ea
+
 /** The bits of DirectDrawRenderer::dwRenderStateFlags of a renderer that can draw. */
 #define RENDERER_STATE_READY 0x1f
 

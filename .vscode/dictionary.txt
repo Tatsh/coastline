@@ -96,6 +96,8 @@ declear
 decleared
 decomp
 destroythread
+devicearrival
+deviceremovecomplete
 devmgr
 dfrac
 dialogs
@@ -138,15 +140,18 @@ enddl
 endforeach
 endfunction
 endlabel
+entermenuloop
 epirawdma
 epirawread
 epirawwrite
+erasebkgnd
 eret
 errck
 esbenp
 exceptasm
 excmask
 exhaustpos
+exitmenuloop
 extraout
 fcntl
 fdata
@@ -286,6 +291,8 @@ maskt
 math
 mathutil
 maxcontrollers
+mcideviceid
+mcinotify
 mdebug
 mdfile
 mdsft
@@ -320,6 +327,7 @@ mtxcatl
 mtxutil
 mult
 mypy
+ncpaint
 nearbycount
 negu
 ngre
@@ -577,6 +585,7 @@ werror
 wextra
 wheeldl
 wheelpos
+windowposchanging
 winget
 winmain
 wiswa

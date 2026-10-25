@@ -132,6 +132,211 @@ extern HCURSOR g_hArrowCursor;
 LRESULT CALLBACK MainWindowProc(HWND hWnd, UINT nMessage, WPARAM wParam, LPARAM lParam);
 
 /**
+ * Whether the race is paused.
+ *
+ * @ghidraAddress BRD3D: 0x106909b4
+ */
+extern bool g_dwRacePauseState;
+
+/**
+ * Set whether the application is active from the state of `WM_ACTIVATE`.
+ *
+ * @param wParam The first parameter of `WM_ACTIVATE`.
+ * @ghidraAddress BRD3D: 0x10077090
+ */
+void UpdateAppActiveStateFromActivate(WPARAM wParam);
+
+/**
+ * Handle `WM_ACTIVATE`.
+ *
+ * @param hWnd The main window.
+ * @param wParam The state of the activation.
+ * @param lParam The other window.
+ * @return The result of the message.
+ * @ghidraAddress BRD3D: 0x1007a070
+ */
+LRESULT HandleWindowActivate(HWND hWnd, WPARAM wParam, LPARAM lParam);
+
+/**
+ * Handle `WM_ACTIVATEAPP`.
+ *
+ * @param hWnd The main window.
+ * @param wParam Whether the application is activated.
+ * @param lParam The thread of the other application.
+ * @return The result of the message.
+ * @ghidraAddress BRD3D: 0x1007a090
+ */
+LRESULT HandleWindowActivateApp(HWND hWnd, WPARAM wParam, LPARAM lParam);
+
+/**
+ * Handle `WM_CLOSE`.
+ *
+ * @param hWnd The main window.
+ * @return The result of the message.
+ * @ghidraAddress BRD3D: 0x1007a190
+ */
+LRESULT HandleWindowClose(HWND hWnd);
+
+/**
+ * Handle `WM_COMMAND`.
+ *
+ * @param hWnd The main window.
+ * @param wParam The command.
+ * @param lParam The control of the command.
+ * @return The result of the message.
+ * @ghidraAddress BRD3D: 0x1007a1a0
+ */
+LRESULT HandleWindowCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);
+
+/**
+ * Handle `WM_DESTROY`.
+ *
+ * @param hWnd The main window.
+ * @return The result of the message.
+ * @ghidraAddress BRD3D: 0x1007a1d0
+ */
+LRESULT HandleWindowDestroy(HWND hWnd);
+
+/**
+ * Handle `WM_DISPLAYCHANGE`.
+ *
+ * @param hWnd The main window.
+ * @return The result of the message.
+ * @ghidraAddress BRD3D: 0x1007a1f0
+ */
+LRESULT HandleDisplayChange(HWND hWnd);
+
+/**
+ * Handle `WM_ERASEBKGND`.
+ *
+ * @param hWnd The main window.
+ * @param wParam The device context.
+ * @param lParam Not used by the message.
+ * @return The result of the message.
+ * @ghidraAddress BRD3D: 0x1007a210
+ */
+LRESULT HandleWindowEraseBackground(HWND hWnd, WPARAM wParam, LPARAM lParam);
+
+/**
+ * Handle `WM_ENTERMENULOOP`.
+ *
+ * @param hWnd The main window.
+ * @param wParam Whether the menu is a popup.
+ * @param lParam Not used by the message.
+ * @return The result of the message.
+ * @ghidraAddress BRD3D: 0x1007a260
+ */
+LRESULT HandleWindowEnterMenuLoop(HWND hWnd, WPARAM wParam, LPARAM lParam);
+
+/**
+ * Handle `WM_EXITMENULOOP`.
+ *
+ * @param hWnd The main window.
+ * @param wParam Whether the menu is a popup.
+ * @param lParam Not used by the message.
+ * @return The result of the message.
+ * @ghidraAddress BRD3D: 0x1007a2b0
+ */
+LRESULT HandleWindowExitMenuLoop(HWND hWnd, WPARAM wParam, LPARAM lParam);
+
+/**
+ * Handle `WM_GETMINMAXINFO`.
+ *
+ * @param hWnd The main window.
+ * @param wParam Not used by the message.
+ * @param lParam The `MINMAXINFO` of the window.
+ * @return The result of the message.
+ * @ghidraAddress BRD3D: 0x1007a300
+ */
+LRESULT HandleWindowGetMinMaxInfo(HWND hWnd, WPARAM wParam, LPARAM lParam);
+
+/**
+ * Handle `WM_MOVE`.
+ *
+ * @param hWnd The main window.
+ * @param wParam Not used by the message.
+ * @param lParam The position of the client area.
+ * @return The result of the message.
+ * @ghidraAddress BRD3D: 0x1007a380
+ */
+LRESULT HandleWindowMove(HWND hWnd, WPARAM wParam, LPARAM lParam);
+
+/**
+ * Handle `WM_NCPAINT`.
+ *
+ * @param hWnd The main window.
+ * @param wParam The region to paint.
+ * @param lParam Not used by the message.
+ * @return The result of the message.
+ * @ghidraAddress BRD3D: 0x1007a3a0
+ */
+LRESULT HandleWindowNcPaint(HWND hWnd, WPARAM wParam, LPARAM lParam);
+
+/**
+ * Handle `WM_SETCURSOR`.
+ *
+ * @param hWnd The main window.
+ * @param wParam The window under the cursor.
+ * @param lParam The hit test and the message.
+ * @return The result of the message.
+ * @ghidraAddress BRD3D: 0x1007a3f0
+ */
+LRESULT HandleWindowSetCursor(HWND hWnd, WPARAM wParam, LPARAM lParam);
+
+/**
+ * Handle `WM_SIZE`.
+ *
+ * @param hWnd The main window.
+ * @param wParam The kind of resize.
+ * @param lParam The size of the client area.
+ * @return The result of the message.
+ * @ghidraAddress BRD3D: 0x1007a450
+ */
+LRESULT HandleWindowSize(HWND hWnd, WPARAM wParam, LPARAM lParam);
+
+/**
+ * Handle `WM_SYSCOMMAND`.
+ *
+ * @param hWnd The main window.
+ * @param wParam The command.
+ * @param lParam The position of the cursor.
+ * @return The result of the message.
+ * @ghidraAddress BRD3D: 0x1007a4e0
+ */
+LRESULT HandleWindowSysCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);
+
+/**
+ * Handle `WM_WINDOWPOSCHANGING`.
+ *
+ * @param hWnd The main window.
+ * @param wParam Not used by the message.
+ * @param lParam The `WINDOWPOS` of the window.
+ * @return The result of the message.
+ * @ghidraAddress BRD3D: 0x1007a590
+ */
+LRESULT HandleWindowPosChanging(HWND hWnd, WPARAM wParam, LPARAM lParam);
+
+/**
+ * Store the renderer that has created its objects in the user data of its window.
+ *
+ * @param hWnd The main window.
+ * @param lParam The renderer.
+ * @return The result of the message.
+ * @ghidraAddress BRD3D: 0x1007a6a0
+ */
+LRESULT AttachRenderDeviceToWindow(HWND hWnd, LPARAM lParam);
+
+/**
+ * Clear the renderer that is releasing its objects from the user data of its window.
+ *
+ * @param hWnd The main window.
+ * @param lParam The renderer.
+ * @return The result of the message.
+ * @ghidraAddress BRD3D: 0x1007a6f0
+ */
+LRESULT DetachRenderDeviceFromWindow(HWND hWnd, LPARAM lParam);
+
+/**
  * Create a window and the renderer that draws into it, and show the window. A renderer that
  * does not start is reported in a message box and destroys the window.
  *
