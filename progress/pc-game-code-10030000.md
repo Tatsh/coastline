@@ -1,6 +1,6 @@
 # PC port game code from 0x10030000 to 0x10040000
 
-72 of 307 routines done.
+75 of 307 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -171,9 +171,9 @@ the same name, for a routine the port retained from the N64 game.
 | `ShowNetworkErrorMessage`                         |   ✅   |                 |      2 |     78 | `0x1003dbc0` | `0x10037260` | `void ShowNetworkErrorMessage(char * pszFormat, long hResult)`                                                                                                          |
 | `AudioOptionsUI_UpdateVolumeLevelIndicatorPos`    |        |                 |      1 |     78 | `0x1003ea40` | `0x10038060` | `undefined AudioOptionsUI_UpdateVolumeLevelIndicatorPos()`                                                                                                              |
 | `ShutdownDirectPlay`                              |   ✅   |                 |      1 |     78 | `0x1003bfd0` | `0x10035660` | `void ShutdownDirectPlay(void)`                                                                                                                                         |
-| `SendNetworkRaceStateMessage`                     |        |                 |      4 |     77 | `0x1003d9a0` | `0x10037040` | `undefined SendNetworkRaceStateMessage()`                                                                                                                               |
-| `SendNetworkReadyMessage`                         |        |                 |      2 |     77 | `0x1003d950` | `0x10036ff0` | `undefined SendNetworkReadyMessage()`                                                                                                                                   |
-| `SendNetworkMessage4`                             |        |                 |      1 |     77 | `0x1003da40` | `0x100370e0` | `undefined SendNetworkMessage4()`                                                                                                                                       |
+| `SendNetworkRaceStateMessage`                     |   ✅   |                 |      4 |     77 | `0x1003d9a0` | `0x10037040` | `HRESULT SendNetworkRaceStateMessage(DirectPlayInfo * pInfo, uint dwState)`                                                                                             |
+| `SendNetworkReadyMessage`                         |   ✅   |                 |      2 |     77 | `0x1003d950` | `0x10036ff0` | `HRESULT SendNetworkReadyMessage(DirectPlayInfo * pInfo, uint dwReady)`                                                                                                 |
+| `SendNetworkMessage4`                             |   ✅   |                 |      1 |     77 | `0x1003da40` | `0x100370e0` | `HRESULT SendNetworkMessage4(DirectPlayInfo * pInfo, uint dpidPlayer)`                                                                                                  |
 | `ByteSwapTrackSegmentList`                        |        |                 |      1 |     76 | `0x10038250` | `0x10031910` | `undefined ByteSwapTrackSegmentList()`                                                                                                                                  |
 | `Vec3fDistance`                                   |   ✅   | ✅ `0x80224a78` |      9 |     75 | `0x1003b0e0` | `0x10034760` | `float Vec3fDistance(float * pVecA, float * pVecB)`                                                                                                                     |
 | `ByteSwap3DWords`                                 |   ✅   |                 |      7 |     75 | `0x100383c0` | `0x10018af0` | `void ByteSwap3DWords(uchar * pData)`                                                                                                                                   |

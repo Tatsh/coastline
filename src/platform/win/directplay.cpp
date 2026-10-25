@@ -51,14 +51,20 @@ HRESULT DirectPlaySendLocked(IDirectPlay3A *pDirectPlay,
 }
 
 // The types of the messages of the game.
+#define NETWORK_MESSAGE_READY 0x60000002
 #define NETWORK_MESSAGE_3 0x60000003
+#define NETWORK_MESSAGE_4 0x60000004
+#define NETWORK_MESSAGE_RACE_STATE 0x60000005
 #define NETWORK_MESSAGE_6 0x60000006
 #define NETWORK_MESSAGE_7 0x60000007
 
-// A message of the game of two words, the second naming a player.
+// A message of the game of two words, the second naming a player or giving a value.
 struct NetworkPlayerMessage {
     DWORD dwType;
-    DPID dpidPlayer;
+    union {
+        DPID dpidPlayer;
+        DWORD dwValue;
+    };
 };
 
 static inline HRESULT SendNetworkPlayerMessage(DirectPlayInfo *pInfo,
@@ -80,6 +86,29 @@ HRESULT SendNetworkMessage3(DirectPlayInfo *pInfo) {
     // The second word is sent unwritten.
     message.dwType = NETWORK_MESSAGE_3;
     return SendNetworkPlayerMessage(pInfo, &message);
+}
+
+static inline HRESULT SendNetworkValueMessage(DirectPlayInfo *pInfo, DWORD dwType, DWORD dwValue) {
+    NetworkPlayerMessage message;
+
+    if (pInfo == nullptr || pInfo->pDirectPlay == nullptr || g_dwNetworkSendBlocked) {
+        return 0;
+    }
+    message.dwType = dwType;
+    message.dwValue = dwValue;
+    return SendNetworkPlayerMessage(pInfo, &message);
+}
+
+HRESULT SendNetworkReadyMessage(DirectPlayInfo *pInfo, DWORD dwReady) {
+    return SendNetworkValueMessage(pInfo, NETWORK_MESSAGE_READY, dwReady);
+}
+
+HRESULT SendNetworkMessage4(DirectPlayInfo *pInfo, DPID dpidPlayer) {
+    return SendNetworkValueMessage(pInfo, NETWORK_MESSAGE_4, dpidPlayer);
+}
+
+HRESULT SendNetworkRaceStateMessage(DirectPlayInfo *pInfo, DWORD dwState) {
+    return SendNetworkValueMessage(pInfo, NETWORK_MESSAGE_RACE_STATE, dwState);
 }
 
 HRESULT SendNetworkMessage6(DirectPlayInfo *pInfo, DPID dpidPlayer) {

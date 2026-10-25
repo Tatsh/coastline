@@ -118,6 +118,41 @@ HRESULT SendNetworkMessage6(DirectPlayInfo *pInfo, DPID dpidPlayer);
 HRESULT SendNetworkMessage3(DirectPlayInfo *pInfo);
 
 /**
+ * Send whether the slot of a player is ready from the local player to every player, unless sends
+ * are blocked.
+ *
+ * @param pInfo The session.
+ * @param dwReady The flag of the slot of the local player, from GetSessionSlotFlag().
+ * @return The result of the send, or 0 without DirectPlay or while sends are blocked.
+ * @ghidraAddress BRD3D: 0x1003d950
+ * @ghidraAddress BRGlide: 0x10036ff0
+ */
+HRESULT SendNetworkReadyMessage(DirectPlayInfo *pInfo, DWORD dwReady);
+
+/**
+ * Send message 4 of the game, which identifies a player to boot, from the local player to every
+ * player, unless sends are blocked.
+ *
+ * @param pInfo The session.
+ * @param dpidPlayer The player.
+ * @return The result of the send, or 0 without DirectPlay or while sends are blocked.
+ * @ghidraAddress BRD3D: 0x1003da40
+ * @ghidraAddress BRGlide: 0x100370e0
+ */
+HRESULT SendNetworkMessage4(DirectPlayInfo *pInfo, DPID dpidPlayer);
+
+/**
+ * Send a state of the race from the local player to every player, unless sends are blocked.
+ *
+ * @param pInfo The session.
+ * @param dwState The state.
+ * @return The result of the send, or 0 without DirectPlay or while sends are blocked.
+ * @ghidraAddress BRD3D: 0x1003d9a0
+ * @ghidraAddress BRGlide: 0x10037040
+ */
+HRESULT SendNetworkRaceStateMessage(DirectPlayInfo *pInfo, DWORD dwState);
+
+/**
  * Send message 7 of the game, which names a player, from the local player to every player.
  *
  * @param pInfo The session.
