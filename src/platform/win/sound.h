@@ -804,6 +804,27 @@ bool AssignAudioChannel(int nSample, int nChannel);
 bool SetAudioChannelFrequency(int nChannel, long long llFrequency);
 
 /**
+ * The settings requested for the buffer of each channel.
+ *
+ * @ghidraAddress BRD3D: 0x118ac720
+ * @ghidraAddress BRGlide: 0x118eef40
+ */
+extern SoundChannelState g_aSoundChannelRequested[SOUND_CHANNEL_COUNT];
+
+/**
+ * Play the buffer of a sample for a channel and give it to the channel, when sound is on. The
+ * frequency of the buffer, without the scale of the channel, is requested and recorded.
+ *
+ * @param nSample The sample.
+ * @param nChannel The channel.
+ * @param bLooping Whether the buffer plays in a loop.
+ * @return Whether the buffer plays, false without a buffer, and true without sound.
+ * @ghidraAddress BRD3D: 0x10072910
+ * @ghidraAddress BRGlide: 0x1006b880
+ */
+bool StartSoundChannelPlayback(int nSample, int nChannel, int bLooping);
+
+/**
  * Set the levels of the two sides of a channel of a sample and play it, when sound is on.
  *
  * @param nSample The sample, an index into g_aSoundChannelBuffers.

@@ -688,6 +688,8 @@ bool AssignAudioChannel(int nSample, int nChannel) {
 
 // 2 to the power of -32, the unit of the frequency of SetAudioChannelFrequency().
 #define FREQUENCY_FRACTION_SCALE (1.0 / 4294967296.0)
+// The units of the frequency of SetAudioChannelFrequency() in a sample a second.
+#define FREQUENCY_FRACTION_UNITS 4294967296.0
 
 bool SetAudioChannelFrequency(int nChannel, long long llFrequency) {
     if (!IsDirectSoundActive()) {
@@ -700,6 +702,27 @@ bool SetAudioChannelFrequency(int nChannel, long long llFrequency) {
         return false;
     }
     g_aSoundChannelState[nChannel].llFrequency = llFrequency;
+    return true;
+}
+
+SoundChannelState g_aSoundChannelRequested[SOUND_CHANNEL_COUNT];
+
+bool StartSoundChannelPlayback(int nSample, int nChannel, int bLooping) {
+    SoundBufferNode *pNode;
+
+    if (!IsDirectSoundActive()) {
+        return true;
+    }
+    pNode = g_aSoundChannelBuffers[nSample].apChannelBuffers[nChannel];
+    if (pNode == nullptr || PlaySoundBuffer(pNode, bLooping) != DS_OK) {
+        return false;
+    }
+    // The inverse of SetAudioChannelFrequency(), from the frequency of the buffer.
+    g_aSoundChannelRequested[nChannel].llFrequency =
+        static_cast<long long>(static_cast<double>(static_cast<long long>(pNode->dwFrequency)) *
+                               FREQUENCY_FRACTION_UNITS / g_adChannelFrequencyScale[nChannel]);
+    g_apSoundChannelBuffer[nChannel] = pNode;
+    g_aSoundChannelState[nChannel].llFrequency = g_aSoundChannelRequested[nChannel].llFrequency;
     return true;
 }
 
