@@ -6,6 +6,7 @@
 add_library(
   coastline_main OBJECT
   boot/dxversion.cpp
+  boot/gamestate.cpp
   boot/rallyconfig.cpp
   boot/startup.cpp
   boot/strings.cpp
@@ -25,8 +26,7 @@ add_library(
 if(TGR_RENDERER STREQUAL "d3d")
   target_sources(
     coastline_main
-    PRIVATE boot/gamestate.cpp
-            boot/shutdown.cpp
+    PRIVATE boot/shutdown.cpp
             d3d/ddutil.cpp
             d3d/devicecaps.cpp
             d3d/driver.cpp

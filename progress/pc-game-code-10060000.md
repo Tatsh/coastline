@@ -1,6 +1,6 @@
 # PC port game code from 0x10060000 to 0x10070000
 
-20 of 169 routines done.
+21 of 169 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -28,7 +28,7 @@ the same name, for a routine the port retained from the N64 game.
 | `MakeEnemyCarColorPanels`                |        |                 |      1 |   1110 | `0x10065d50` | `0x1005edc0` | `undefined MakeEnemyCarColorPanels()`                                                                                                    |
 | `UpdateRacerSlotMotion`                  |        | ✅ `0x8022c9fc` |      1 |   1073 | `0x10068ef0` | `0x10061f60` | `undefined UpdateRacerSlotMotion()`                                                                                                      |
 | `RallyConfig::SaveConfigToFile`          |   ✅   |                 |      8 |   1023 | `0x1006a4a0` | `0x100634b0` | `bool SaveConfigToFile(RallyConfig * this, char * pszPath)`                                                                              |
-| `ShowGlideSplashImage`                   |        |                 |      2 |    994 |              | `0x1006c990` | `undefined ShowGlideSplashImage()`                                                                                                       |
+| `ShowGlideSplashImage`                   |   📝   |                 |      2 |    994 |              | `0x1006c990` | `undefined ShowGlideSplashImage()`                                                                                                       |
 | `Vehicle::SetupVehicleForRaceStart`      |        | ✅ `0x80228a6c` |      2 |    979 | `0x10065740` | `0x1005e7b0` | `undefined SetupVehicleForRaceStart(Vehicle * this)`                                                                                     |
 | `MouseDevice::PollMouseDevice`           |   ✅   |                 |      1 |    939 | `0x100603a0` | `0x10059410` | `void PollMouseDevice(MouseDevice * this, void * hWnd)`                                                                                  |
 | `Vehicle::ComputeTrackPosition`          |        | ✅ `0x80227214` |      3 |    937 | `0x10064350` | `0x1005d3c0` | `undefined ComputeTrackPosition(Vehicle * this)`                                                                                         |
@@ -46,7 +46,7 @@ the same name, for a routine the port retained from the N64 game.
 | `BuildVehicleKeyframe`                   |        |                 |      2 |    554 | `0x100607b0` | `0x10059820` | `void BuildVehicleKeyframe(void * pHost, void * pSource)`                                                                                |
 | `BuildTrackTriangleCache`                |        | ✅ `0x8025f18c` |      6 |    551 | `0x1006f720` | `0x100686d0` | `uint BuildTrackTriangleCache(float fPosX, int fPosY)`                                                                                   |
 | `InitRacerSlot`                          |        | ✅ `0x802291f8` |      1 |    538 | `0x100662a0` | `0x1005f310` | `undefined InitRacerSlot()`                                                                                                              |
-| `InitGameAndShowMenus`                   |        | ✅ `0x802001b4` |      1 |    525 | `0x10069840` | `0x100628b0` | `undefined InitGameAndShowMenus()`                                                                                                       |
+| `InitGameAndShowMenus`                   |   ✅   | ✅ `0x802001b4` |      1 |    525 | `0x10069840` | `0x100628b0` | `undefined InitGameAndShowMenus()`                                                                                                       |
 | `RallyConfig::CopyRallyConfig`           |   ✅   |                 |      2 |    524 | `0x10069de0` | `0x10062e50` | `RallyConfig * CopyRallyConfig(RallyConfig * this, RallyConfig * other)`                                                                 |
 | `CountTriangleWinding`                   |        | ✅ `0x8025c8dc` |      1 |    492 | `0x1006d660` | `0x10066610` | `undefined CountTriangleWinding()`                                                                                                       |
 | `Vehicle::RespawnVehicle`                |        | ✅ `0x80226248` |      2 |    468 | `0x10063660` | `0x1005c6d0` | `undefined RespawnVehicle(Vehicle * this)`                                                                                               |
@@ -106,7 +106,7 @@ the same name, for a routine the port retained from the N64 game.
 | `UpdateAirplaneSound`                    |        | ✅ `0x8022b954` |      1 |    102 | `0x10068180` | `0x100611f0` | `undefined UpdateAirplaneSound()`                                                                                                        |
 | `LoadBitmapFromFile`                     |        |                 |      3 |    101 | `0x100611a0` | `0x1005a210` | `undefined LoadBitmapFromFile()`                                                                                                         |
 | `RallyConfig::GetInputBindingFlags`      |   ✅   |                 |      6 |     98 | `0x10069bc0` | `0x10062c30` | `WORD GetInputBindingFlags(RallyConfig * this, int nDevice, int nControl)`                                                               |
-| `ResetRenderSubsystems`                  |        |                 |      3 |     90 | `0x1006a9c0` | `0x10063970` | `undefined ResetRenderSubsystems()`                                                                                                      |
+| `ResetRenderSubsystems`                  |   📝   |                 |      3 |     90 | `0x1006a9c0` | `0x10063970` | `undefined ResetRenderSubsystems()`                                                                                                      |
 | `ConvertBitmap24ToRgba32`                |        |                 |      1 |     89 | `0x10060ea0` | `0x10059f10` | `undefined ConvertBitmap24ToRgba32()`                                                                                                    |
 | `RallyConfig::GetInputBindingKeyCode`    |   ✅   |                 |      6 |     87 | `0x10069c30` | `0x10062ca0` | `BYTE GetInputBindingKeyCode(RallyConfig * this, int nDevice, int nControl)`                                                             |
 | `MarkTrackSections`                      |        | ✅ `0x80255ba0` |      2 |     82 | `0x10061660` | `0x1005a6e0` | `undefined MarkTrackSections()`                                                                                                          |

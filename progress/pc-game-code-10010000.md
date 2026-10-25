@@ -1,6 +1,6 @@
 # PC port game code from 0x10010000 to 0x10020000
 
-42 of 158 routines done.
+42 of 157 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -126,7 +126,6 @@ the same name, for a routine the port retained from the N64 game.
 | `TickDebugOverlayMessageTimer`                         |        |                 |      1 |     71 | `0x10017740` | `0x10014cb0` | `void TickDebugOverlayMessageTimer(void * pRenderNode)`                                                                                                                                                                                      |
 | `BitDepthToDDBD`                                       |   ✅   |                 |      1 |     70 | `0x1001a8c0` |              | `DWORD BitDepthToDDBD(int nBitDepth)`                                                                                                                                                                                                        |
 | `SetTextCustomColors`                                  |        | ✅ `0x8022f530` |      3 |     69 | `0x100192a0` | `0x10016860` | `undefined SetTextCustomColors()`                                                                                                                                                                                                            |
-| `GameState_LoadGameAndShowMenus`                       |        |                 |      1 |     67 |              | `0x1001cdd0` | `undefined GameState_LoadGameAndShowMenus()`                                                                                                                                                                                                 |
 | `DirectDrawDriver::CompareDirectDrawDriverGuid`        |   ✅   |                 |      1 |     65 | `0x1001b2d0` |              | `bool CompareDirectDrawDriverGuid(DirectDrawDriver * this, GUID * pGuid)`                                                                                                                                                                    |
 | `D3DDeviceNode::ReleaseD3DDeviceNode`                  |   ✅   |                 |      1 |     64 | `0x1001aee0` |              | `void ReleaseD3DDeviceNode(D3DDeviceNode * this)`                                                                                                                                                                                            |
 | `ResolveRenderDeviceOrFind`                            |        |                 |      1 |     63 | `0x1001a5d0` |              | `int ResolveRenderDeviceOrFind(void * pDeviceList, uint dwFlags)`                                                                                                                                                                            |

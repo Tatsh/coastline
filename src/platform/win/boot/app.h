@@ -125,10 +125,20 @@ extern bool g_bWindowMaximized;
  */
 [[noreturn]] void ShutdownApplication(int nExitCode);
 
+/** The states of the game, in the order of g_apfnGameStateHandlers. */
+enum {
+    GAME_STATE_INIT_RESOURCES,  /*!< Load the resources of the game. */
+    GAME_STATE_ENTER_GAME_MODE, /*!< Start the mode of the game. */
+    GAME_STATE_RUN_GAME_MODE,   /*!< Run a frame of the mode of the game. */
+    GAME_STATE_LOAD_GAME,       /*!< Show the loading screen and set up the game. */
+    GAME_STATE_RUN_FRONT_END,   /*!< Run a frame of the front end. */
+};
+
 /**
  * The state of the game, an index into g_apfnGameStateHandlers.
  *
  * @ghidraAddress BRD3D: 0x10690a14
+ * @ghidraAddress BRGlide: 0x105ccbbc
  */
 extern int g_dwGameState;
 
@@ -136,8 +146,114 @@ extern int g_dwGameState;
  * The routine that runs a frame of each state of the game.
  *
  * @ghidraAddress BRD3D: 0x100aa5b0
+ * @ghidraAddress BRGlide: 0x100a9900
  */
-extern void (*g_apfnGameStateHandlers[])(void);
+extern int (*g_apfnGameStateHandlers[])(void);
+
+/**
+ * The frames the mode of the game has run.
+ *
+ * @ghidraAddress BRD3D: 0x10690a10
+ * @ghidraAddress BRGlide: 0x105ccbb8
+ */
+extern int g_dwGameModeFrameCounter;
+
+/**
+ * What GameState_RunGameMode() returns, 1 at the start.
+ *
+ * @ghidraAddress BRD3D: 0x100aa5a8
+ * @ghidraAddress BRGlide: 0x100a98f8
+ */
+extern int g_dwGameModeContinue;
+
+/**
+ * Open the pod of the game files, load the first sound set and the names of the controls of the
+ * game controller, and go on to the front end.
+ *
+ * @return Always true.
+ * @ghidraAddress BRD3D: 0x1002f6b0
+ * @ghidraAddress BRGlide: 0x1001cd70
+ */
+int GameState_InitResources(void);
+
+/**
+ * Go on to run the mode of the game.
+ *
+ * @return Always true.
+ * @ghidraAddress BRD3D: 0x1002f6e0
+ * @ghidraAddress BRGlide: 0x1001cda0
+ */
+int GameState_EnterGameMode(void);
+
+/**
+ * Run a frame of the mode of the game.
+ *
+ * @return g_dwGameModeContinue.
+ * @ghidraAddress BRD3D: 0x1002f6f0
+ * @ghidraAddress BRGlide: 0x1001cdb0
+ */
+int GameState_RunGameMode(void);
+
+/**
+ * Set the display mode of the configuration, show the loading screen, set up the game, and go on
+ * to enter the mode of the game. Direct3D sets the display mode once more after the loading screen.
+ *
+ * @return Always true.
+ * @ghidraAddress BRD3D: 0x1002f710
+ * @ghidraAddress BRGlide: 0x1001cdd0
+ */
+int GameState_ShowLoadingScreenAndInitGame(void);
+
+/**
+ * Run a frame of the front end.
+ *
+ * @return The result of the frame. Its meaning is not recovered yet.
+ * @ghidraAddress BRD3D: 0x1002f790
+ * @ghidraAddress BRGlide: 0x1001ce20
+ */
+int GameState_RunFrontEnd(void);
+
+/**
+ * Open BossRally.pod, and set up the renderer, the damage bitmaps of the paint, DirectInput, the
+ * keyboard, and the music.
+ *
+ * @ghidraAddress BRD3D: 0x10038ec0
+ * @ghidraAddress BRGlide: 0x10032530
+ */
+void OpenBossRallyPodAndInit(void);
+
+/**
+ * Load a set of sounds.
+ *
+ * @param nSet The set.
+ * @ghidraAddress BRD3D: 0x10073320
+ * @ghidraAddress BRGlide: 0x1006c290
+ */
+void LoadSoundSet(int nSet);
+
+/**
+ * Shut the renderer down when one runs, and start the renderer of a mode in a display mode.
+ *
+ * @param nMode The mode of the renderer, 1 for Direct3D and 3 for Glide.
+ * @param nWidth The width of the display mode.
+ * @param nHeight The height of the display mode.
+ * @param nBitDepth The bits of a pixel of the display mode.
+ * @param nExtra The fourth value of the display mode.
+ * @ghidraAddress BRD3D: 0x1006a9c0
+ * @ghidraAddress BRGlide: 0x10063970
+ */
+void ResetRenderSubsystems(int nMode, int nWidth, int nHeight, int nBitDepth, int nExtra);
+
+#if TGR_RENDERER == TGR_RENDERER_GLIDE
+/**
+ * Show an image of the Glide library over the whole screen.
+ *
+ * @param pszPath The path of the image.
+ * @param nUnknown Always 0. Its meaning is not recovered yet.
+ * @ghidraAddress BRGlide: 0x1006c990
+ */
+void ShowGlideSplashImage(const char *pszPath, int nUnknown);
+#endif
 
 /**
  * Release the renderer of the backend, if one is set.
@@ -467,9 +583,11 @@ int DestroyMainWindow(void);
 /**
  * Run a frame of the current state of the game.
  *
+ * @return The result of the routine of the state.
  * @ghidraAddress BRD3D: 0x1002f8f0
+ * @ghidraAddress BRGlide: 0x1001cf80
  */
-void DispatchGameStateFrame(void);
+int DispatchGameStateFrame(void);
 
 /**
  * Do nothing.
