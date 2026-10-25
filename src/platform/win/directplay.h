@@ -435,6 +435,81 @@ extern int g_nNetPauseRequestTicks;
 bool RequestNetworkPause(void);
 
 /**
+ * The ticks a request of the end of a pause of a network game has waited, 0 for no request.
+ *
+ * @ghidraAddress BRD3D: 0x10221314
+ * @ghidraAddress BRGlide: 0x1021ce44
+ */
+extern int g_nNetUnpauseRequestTicks;
+
+/**
+ * Request the end of a pause from the other players of a network game, when no request waits.
+ *
+ * @return Always true.
+ * @ghidraAddress BRD3D: 0x10004c20
+ * @ghidraAddress BRGlide: 0x10004f90
+ */
+bool RequestNetworkUnpause(void);
+
+/**
+ * Whether the local player is ready to start a network race.
+ *
+ * @ghidraAddress BRD3D: 0x1022aaa8
+ * @ghidraAddress BRGlide: 0x102265d8
+ */
+extern int g_bNetReadyToStart;
+
+/**
+ * Mark the local player ready to start a network race.
+ *
+ * @return Always true.
+ * @ghidraAddress BRD3D: 0x10004bb0
+ * @ghidraAddress BRGlide: 0x10004f20
+ */
+bool SetNetworkReadyToStartFlag(void);
+
+/**
+ * Whether the messages received are processed.
+ *
+ * @ghidraAddress BRD3D: 0x10220dd0
+ * @ghidraAddress BRGlide: 0x1021c900
+ */
+extern int g_bNetReceiveEnabled;
+
+/**
+ * Process the messages received.
+ *
+ * @ghidraAddress BRD3D: 0x10006090
+ * @ghidraAddress BRGlide: 0x10006400
+ */
+void EnableNetworkReceive(void);
+
+/**
+ * Stop processing the messages received.
+ *
+ * @ghidraAddress BRD3D: 0x100060c0
+ * @ghidraAddress BRGlide: 0x10006430
+ */
+void DisableNetworkReceive(void);
+
+/**
+ * The slot of the local player of a network game, -1 before one is assigned.
+ *
+ * @ghidraAddress BRD3D: 0x10094294
+ * @ghidraAddress BRGlide: 0x1007b264
+ */
+extern int g_dwLocalNetPlayerId;
+
+/**
+ * Get the slot of the local player of a network game.
+ *
+ * @return The slot, or -1 before one is assigned.
+ * @ghidraAddress BRD3D: 0x10005d30
+ * @ghidraAddress BRGlide: 0x100060a0
+ */
+int GetLocalPlayerIndex(void);
+
+/**
  * Send the request to pause of a network game.
  *
  * @ghidraAddress BRD3D: 0x10004fc0
@@ -472,6 +547,24 @@ struct NetPeerSlot {
  * @ghidraAddress BRGlide: 0x1021ce58
  */
 extern NetPeerSlot g_aNetPeerSlots[NET_PEER_SLOT_COUNT];
+
+/**
+ * The order of the players of a network race.
+ *
+ * @ghidraAddress BRD3D: 0x102212d0
+ * @ghidraAddress BRGlide: 0x1021ce00
+ */
+extern int g_adwNetRaceOrder[NET_PEER_SLOT_COUNT];
+
+/**
+ * Get an entry of the order of a network race.
+ *
+ * @param nIndex The index of the entry.
+ * @return The entry.
+ * @ghidraAddress BRD3D: 0x10005e40
+ * @ghidraAddress BRGlide: 0x100061b0
+ */
+int GetNetworkRaceOrderEntry(int nIndex);
 
 /**
  * The player of the session in a slot of a peer, read under the mutex of the slot.

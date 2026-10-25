@@ -447,6 +447,15 @@ HANDLE g_hDepartedPlayerStackMutex;
 HANDLE g_hNetRaceOrderMutex;
 HANDLE g_hNetNotifyMutex;
 
+int g_adwNetRaceOrder[NET_PEER_SLOT_COUNT];
+
+int GetNetworkRaceOrderEntry(int nIndex) {
+    WaitForSingleObject(g_hNetRaceOrderMutex, INFINITE);
+    int nEntry = g_adwNetRaceOrder[nIndex];
+    ReleaseMutex(g_hNetRaceOrderMutex);
+    return nEntry;
+}
+
 int g_bNetWorkerThreadRunning;
 HANDLE g_hNetWorkerStopEvent;
 HANDLE g_hNetWorkerThread;
@@ -549,6 +558,46 @@ bool RequestNetworkPause(void) {
     }
     ReleaseMutex(g_hNetPauseMutex);
     return true;
+}
+
+int g_nNetUnpauseRequestTicks;
+
+bool RequestNetworkUnpause(void) {
+    WaitForSingleObject(g_hNetUnpauseMutex, INFINITE);
+    if (g_nNetUnpauseRequestTicks == 0) {
+        g_nNetUnpauseRequestTicks = 1;
+    }
+    ReleaseMutex(g_hNetUnpauseMutex);
+    return true;
+}
+
+int g_bNetReadyToStart;
+
+bool SetNetworkReadyToStartFlag(void) {
+    WaitForSingleObject(g_hNetReadyMutex, INFINITE);
+    g_bNetReadyToStart = true;
+    ReleaseMutex(g_hNetReadyMutex);
+    return true;
+}
+
+int g_bNetReceiveEnabled;
+
+void EnableNetworkReceive(void) {
+    WaitForSingleObject(g_hNetReceiveMutex, INFINITE);
+    g_bNetReceiveEnabled = true;
+    ReleaseMutex(g_hNetReceiveMutex);
+}
+
+void DisableNetworkReceive(void) {
+    WaitForSingleObject(g_hNetReceiveMutex, INFINITE);
+    g_bNetReceiveEnabled = false;
+    ReleaseMutex(g_hNetReceiveMutex);
+}
+
+int g_dwLocalNetPlayerId = -1;
+
+int GetLocalPlayerIndex(void) {
+    return g_dwLocalNetPlayerId;
 }
 
 HRESULT CloseAndReleaseDirectPlay(void) {
