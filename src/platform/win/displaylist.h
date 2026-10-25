@@ -844,6 +844,27 @@ void SubmitTriangleToRenderBuffer(GbiVertex *pVertex0, GbiVertex *pVertex1, GbiV
 void SubmitIndexedTriangle(int nVertex0, int nVertex1, int nVertex2);
 
 /**
+ * Clip a triangle to the planes of the view and submit what remains at the far depth.
+ *
+ * @param pVertex0 The first vertex.
+ * @param pVertex1 The second vertex.
+ * @param pVertex2 The third vertex.
+ * @ghidraAddress BRD3D: 0x1001ff90
+ */
+void ClipAndSubmitTriangleAtFarDepth(GbiVertex *pVertex0, GbiVertex *pVertex1, GbiVertex *pVertex2);
+
+/**
+ * Submit a triangle of g_aGbiVertexCache as SubmitIndexedTriangle() does, clipping one across a
+ * plane of the view through ClipAndSubmitTriangleAtFarDepth().
+ *
+ * @param nVertex0 The entry of the first vertex.
+ * @param nVertex1 The entry of the second vertex.
+ * @param nVertex2 The entry of the third vertex.
+ * @ghidraAddress BRD3D: 0x10020ba0
+ */
+void SubmitIndexedTriangleRasterized(int nVertex0, int nVertex1, int nVertex2);
+
+/**
  * Draw the triangles waiting in g_renderBuffer, when there are any, and empty it.
  *
  * @ghidraAddress BRD3D: 0x1001d3a0
@@ -1108,42 +1129,66 @@ GbiCommand *HandleGbiTri1Flat(GbiCommand *pCommand);
 GbiCommand *HandleGbiTri2Flat(GbiCommand *pCommand);
 
 /**
- * Draw one triangle with smooth shading without the depth buffer.
+ * Draw a triangle of g_aGbiVertexCache in the colour of its first vertex, without the depth buffer.
  *
- * @param pCommand The command.
+ * @param nVertex0 The entry of the first vertex, whose colour the triangle takes.
+ * @param nVertex1 The entry of the second vertex.
+ * @param nVertex2 The entry of the third vertex.
+ * @ghidraAddress BRD3D: 0x1001f550
+ * @ghidraAddress BRGlide: 0x10020460
+ */
+void DrawFlatShadedTriangleDepthScaled(int nVertex0, int nVertex1, int nVertex2);
+
+/**
+ * Draw one triangle with smooth shading without the depth buffer, after giving the device the
+ * dirty render states.
+ *
+ * @param pCommand The command, the entries of g_aGbiVertexCache of the triangle in the low three
+ * bytes of its second word.
  * @return The next command.
  * @ghidraAddress BRD3D: 0x1001fbe0
  * @ghidraAddress BRGlide: 0x10020900
+ * @stub{BRGlide}
  */
 GbiCommand *HandleGbiTri1SmoothNoZBuffer(GbiCommand *pCommand);
 
 /**
- * Draw two triangles with smooth shading without the depth buffer.
+ * Draw two triangles with smooth shading without the depth buffer, after giving the device the
+ * dirty render states.
  *
- * @param pCommand The command.
+ * @param pCommand The command, the entries of g_aGbiVertexCache of each triangle in the low three
+ * bytes of each word.
  * @return The next command.
  * @ghidraAddress BRD3D: 0x10020860
  * @ghidraAddress BRGlide: 0x10020d70
+ * @stub{BRGlide}
  */
 GbiCommand *HandleGbiTri2SmoothNoZBuffer(GbiCommand *pCommand);
 
 /**
- * Draw one triangle with flat shading without the depth buffer.
+ * Draw one triangle with flat shading without the depth buffer, after giving the device the dirty
+ * render states. The top byte of the second word chooses the vertex whose colour the triangle
+ * takes.
  *
- * @param pCommand The command.
+ * @param pCommand The command, the entries of g_aGbiVertexCache of the triangle in the low three
+ * bytes of its second word.
  * @return The next command.
  * @ghidraAddress BRD3D: 0x1001f2b0
  * @ghidraAddress BRGlide: 0x100203f0
+ * @stub{BRGlide}
  */
 GbiCommand *HandleGbiTri1FlatNoZBuffer(GbiCommand *pCommand);
 
 /**
- * Draw two triangles with flat shading without the depth buffer.
+ * Draw two triangles with flat shading without the depth buffer, after giving the device the dirty
+ * render states.
  *
- * @param pCommand The command.
+ * @param pCommand The command, the entries of g_aGbiVertexCache of each triangle in the low three
+ * bytes of each word.
  * @return The next command.
  * @ghidraAddress BRD3D: 0x100205f0
  * @ghidraAddress BRGlide: 0x10020d30
+ * @stub{BRGlide}
  */
 GbiCommand *HandleGbiTri2FlatNoZBuffer(GbiCommand *pCommand);
 

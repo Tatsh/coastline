@@ -757,7 +757,14 @@ void ScaleVertexTexCoords(GbiVertex *pVertex, const GbiVertexSource *pSource) {
     pVertex->fV = pSource->fT * g_fTexCoordScaleT;
 }
 
-void SubmitIndexedTriangle(int nVertex0, int nVertex1, int nVertex2) {
+// A routine that clips a triangle of g_aGbiVertexCache and submits what remains.
+typedef void (*TriangleClipper)(GbiVertex *pVertex0, GbiVertex *pVertex1, GbiVertex *pVertex2);
+
+// A routine that draws a triangle of g_aGbiVertexCache by the entries of its vertices.
+typedef void (*IndexedTriangleDrawer)(int nVertex0, int nVertex1, int nVertex2);
+
+static inline void
+SubmitIndexedTriangleClipped(int nVertex0, int nVertex1, int nVertex2, TriangleClipper pfnClip) {
     GbiVertex *pVertex0 = &g_aGbiVertexCache[nVertex0];
     GbiVertex *pVertex1 = &g_aGbiVertexCache[nVertex1];
     GbiVertex *pVertex2 = &g_aGbiVertexCache[nVertex2];
@@ -766,7 +773,7 @@ void SubmitIndexedTriangle(int nVertex0, int nVertex1, int nVertex2) {
         return;
     }
     if (pVertex0->nClipFlags | pVertex2->nClipFlags | pVertex1->nClipFlags) {
-        ClipAndSubmitTriangle(pVertex0, pVertex1, pVertex2);
+        pfnClip(pVertex0, pVertex1, pVertex2);
         return;
     }
     ScaleVertexTexCoords(pVertex0, &pVertex0->source);
@@ -775,63 +782,93 @@ void SubmitIndexedTriangle(int nVertex0, int nVertex1, int nVertex2) {
     SubmitTriangleToRenderBuffer(pVertex0, pVertex1, pVertex2);
 }
 
-// Submit the triangle of the entries of g_aGbiVertexCache in the low three bytes of a word, from
-// the third.
-static inline void SubmitGbiTriangleWord(unsigned dwWord) {
-    SubmitIndexedTriangle(dwWord >> 16 & 0xff, dwWord >> 8 & 0xff, dwWord & 0xff);
+void SubmitIndexedTriangle(int nVertex0, int nVertex1, int nVertex2) {
+    SubmitIndexedTriangleClipped(nVertex0, nVertex1, nVertex2, ClipAndSubmitTriangle);
 }
 
-GbiCommand *HandleGbiTri1Smooth(GbiCommand *pCommand) {
-    FlushDirtyRenderStates();
-    SubmitGbiTriangleWord(pCommand->w1);
-    return pCommand + 1;
+void SubmitIndexedTriangleRasterized(int nVertex0, int nVertex1, int nVertex2) {
+    SubmitIndexedTriangleClipped(nVertex0, nVertex1, nVertex2, ClipAndSubmitTriangleAtFarDepth);
 }
 
-GbiCommand *HandleGbiTri2Smooth(GbiCommand *pCommand) {
-    FlushDirtyRenderStates();
-    SubmitGbiTriangleWord(pCommand->w0);
-    SubmitGbiTriangleWord(pCommand->w1);
-    return pCommand + 1;
-}
-
-static inline unsigned GbiTriangleVertex(unsigned dwWord, int nByte) {
+static inline int GbiTriangleVertex(unsigned dwWord, int nByte) {
     return dwWord >> (nByte * 8) & 0xff;
 }
 
-GbiCommand *HandleGbiTri1Flat(GbiCommand *pCommand) {
+// Draw the triangle of the entries of g_aGbiVertexCache in the low three bytes of a word, from the
+// third.
+static inline void DrawGbiTriangleWord(unsigned dwWord, IndexedTriangleDrawer pfnDraw) {
+    pfnDraw(
+        GbiTriangleVertex(dwWord, 2), GbiTriangleVertex(dwWord, 1), GbiTriangleVertex(dwWord, 0));
+}
+
+static inline GbiCommand *DrawGbiTri1(GbiCommand *pCommand, IndexedTriangleDrawer pfnDraw) {
+    FlushDirtyRenderStates();
+    DrawGbiTriangleWord(pCommand->w1, pfnDraw);
+    return pCommand + 1;
+}
+
+static inline GbiCommand *DrawGbiTri2(GbiCommand *pCommand, IndexedTriangleDrawer pfnDraw) {
+    FlushDirtyRenderStates();
+    DrawGbiTriangleWord(pCommand->w0, pfnDraw);
+    DrawGbiTriangleWord(pCommand->w1, pfnDraw);
+    return pCommand + 1;
+}
+
+static inline GbiCommand *DrawGbiTri1Flat(GbiCommand *pCommand, IndexedTriangleDrawer pfnDraw) {
     unsigned dwWord = pCommand->w1;
 
     FlushDirtyRenderStates();
     // The vertex the top byte chooses comes first, in the order of the console.
     switch (GbiTriangleVertex(dwWord, 3)) {
     case 0:
-        DrawFlatShadedTriangle(GbiTriangleVertex(dwWord, 2),
-                               GbiTriangleVertex(dwWord, 1),
-                               GbiTriangleVertex(dwWord, 0));
+        pfnDraw(GbiTriangleVertex(dwWord, 2),
+                GbiTriangleVertex(dwWord, 1),
+                GbiTriangleVertex(dwWord, 0));
         break;
     case 1:
-        DrawFlatShadedTriangle(GbiTriangleVertex(dwWord, 1),
-                               GbiTriangleVertex(dwWord, 0),
-                               GbiTriangleVertex(dwWord, 2));
+        pfnDraw(GbiTriangleVertex(dwWord, 1),
+                GbiTriangleVertex(dwWord, 0),
+                GbiTriangleVertex(dwWord, 2));
         break;
     default:
-        DrawFlatShadedTriangle(GbiTriangleVertex(dwWord, 0),
-                               GbiTriangleVertex(dwWord, 2),
-                               GbiTriangleVertex(dwWord, 1));
+        pfnDraw(GbiTriangleVertex(dwWord, 0),
+                GbiTriangleVertex(dwWord, 2),
+                GbiTriangleVertex(dwWord, 1));
         break;
     }
     return pCommand + 1;
 }
 
+GbiCommand *HandleGbiTri1Smooth(GbiCommand *pCommand) {
+    return DrawGbiTri1(pCommand, SubmitIndexedTriangle);
+}
+
+GbiCommand *HandleGbiTri2Smooth(GbiCommand *pCommand) {
+    return DrawGbiTri2(pCommand, SubmitIndexedTriangle);
+}
+
+GbiCommand *HandleGbiTri1Flat(GbiCommand *pCommand) {
+    return DrawGbiTri1Flat(pCommand, DrawFlatShadedTriangle);
+}
+
 GbiCommand *HandleGbiTri2Flat(GbiCommand *pCommand) {
-    FlushDirtyRenderStates();
-    DrawFlatShadedTriangle(GbiTriangleVertex(pCommand->w0, 2),
-                           GbiTriangleVertex(pCommand->w0, 1),
-                           GbiTriangleVertex(pCommand->w0, 0));
-    DrawFlatShadedTriangle(GbiTriangleVertex(pCommand->w1, 2),
-                           GbiTriangleVertex(pCommand->w1, 1),
-                           GbiTriangleVertex(pCommand->w1, 0));
-    return pCommand + 1;
+    return DrawGbiTri2(pCommand, DrawFlatShadedTriangle);
+}
+
+GbiCommand *HandleGbiTri1SmoothNoZBuffer(GbiCommand *pCommand) {
+    return DrawGbiTri1(pCommand, SubmitIndexedTriangleRasterized);
+}
+
+GbiCommand *HandleGbiTri2SmoothNoZBuffer(GbiCommand *pCommand) {
+    return DrawGbiTri2(pCommand, SubmitIndexedTriangleRasterized);
+}
+
+GbiCommand *HandleGbiTri1FlatNoZBuffer(GbiCommand *pCommand) {
+    return DrawGbiTri1Flat(pCommand, DrawFlatShadedTriangleDepthScaled);
+}
+
+GbiCommand *HandleGbiTri2FlatNoZBuffer(GbiCommand *pCommand) {
+    return DrawGbiTri2(pCommand, DrawFlatShadedTriangleDepthScaled);
 }
 
 // The colours of the combine modes that draw in one colour.
