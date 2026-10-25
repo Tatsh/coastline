@@ -407,3 +407,28 @@ float SignedShortToFloat(short nValue);
  * @ghidraAddress BRGlide: 0x10007730
  */
 float ConvertCharToScaledFloat(signed char bValue);
+
+/** A player of network play and the progress that ranks it. */
+struct NetPlayerProgress {
+    int nPlayer;     /*!< The player. */
+    float fProgress; /*!< The progress of the player in the race. */
+};
+
+/**
+ * The players of network play, sorted by their progress.
+ *
+ * @ghidraAddress BRD3D: 0x11826b50
+ * @ghidraAddress BRGlide: 0x11849eb0
+ */
+extern NetPlayerProgress g_aNetPlayerProgressSort[NET_PLAYER_STREAM_COUNT];
+
+/**
+ * Order two NetPlayerProgress entries for qsort() by their progress, the greatest first.
+ *
+ * @param pA The first entry.
+ * @param pB The second entry.
+ * @return 1 when the first entry has less progress than the second, and 0 otherwise.
+ * @ghidraAddress BRD3D: 0x10071b60
+ * @ghidraAddress BRGlide: 0x1006aad0
+ */
+int CompareNetworkPlayerProgressDescending(const void *pA, const void *pB);
