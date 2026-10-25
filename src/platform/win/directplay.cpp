@@ -880,6 +880,17 @@ bool InitServiceProviderAndStartTimer(void) {
     return true;
 }
 
+bool InitServiceProviderAndStartSession(void) {
+    InitializeNetworkServiceProvider();
+    g_dwNetworkTimerId = SetTimer(g_hMainWindow, NETWORK_TIMER_ID, NETWORK_TIMER_PERIOD, nullptr);
+    g_dwDirectPlaySessionActive = true;
+    if (g_pJoinCreateGameMenu != nullptr) {
+        // The result of the enumeration is discarded.
+        RefreshNetworkSessionList(g_DirectPlayInfo.pDirectPlay);
+    }
+    return true;
+}
+
 HRESULT CloseAndReleaseDirectPlay(void) {
     DestroyNetworkGroups();
     if (g_pDirectPlayInfo->pDirectPlay != nullptr) {

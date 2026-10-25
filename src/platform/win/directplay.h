@@ -1325,6 +1325,17 @@ void InitializeNetworkServiceProvider(void);
 bool InitServiceProviderAndStartTimer(void);
 
 /**
+ * Start the service provider chosen and the timer of network play as
+ * InitServiceProviderAndStartTimer() does, then enumerate the sessions again while the list of
+ * sessions exists.
+ *
+ * @return Always true.
+ * @ghidraAddress BRD3D: 0x1003c1e0
+ * @ghidraAddress BRGlide: 0x10035870
+ */
+bool InitServiceProviderAndStartSession(void);
+
+/**
  * Destroy the groups and the local player, close and release DirectPlay, and count one DirectPlay
  * object less.
  *
