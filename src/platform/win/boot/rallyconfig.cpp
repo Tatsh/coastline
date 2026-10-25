@@ -162,6 +162,51 @@ bool RallyConfig::LoadRallyConfigFile(const char *pszPath) {
     return false;
 }
 
+// Write one field of BossRally.cfg.
+static inline bool WriteConfigField(FILE *pFile, const void *pField, size_t nSize) {
+    return fwrite(pField, nSize, 1, pFile) == 1;
+}
+
+bool RallyConfig::SaveConfigToFile(const char *pszPath) {
+    FILE *pFile;
+    int dwVersion = CONFIG_FILE_VERSION;
+    bool bWritten;
+
+    pFile = fopen(pszPath, "wb");
+    if (pFile == nullptr) {
+        return false;
+    }
+    bWritten =
+        WriteConfigField(pFile, CONFIG_FILE_MAGIC, strlen(CONFIG_FILE_MAGIC)) &&
+        WriteConfigField(pFile, &dwVersion, sizeof(dwVersion)) &&
+        WriteConfigField(pFile, &bCarShadowSelection, sizeof(bCarShadowSelection)) &&
+        WriteConfigField(pFile, &bSpecularLightingSelection, sizeof(bSpecularLightingSelection)) &&
+        WriteConfigField(pFile, &bForceFeedbackEnabled, sizeof(bForceFeedbackEnabled)) &&
+        WriteConfigField(pFile, szSavedModemPhoneNumber, sizeof(szSavedModemPhoneNumber)) &&
+        WriteConfigField(pFile, szPlayerName, sizeof(szPlayerName)) &&
+        WriteConfigField(pFile, &dwDisplayModeWidth, sizeof(dwDisplayModeWidth)) &&
+        WriteConfigField(pFile, &dwDisplayModeHeight, sizeof(dwDisplayModeHeight)) &&
+        WriteConfigField(pFile, &dwDisplayModeBitDepth, sizeof(dwDisplayModeBitDepth)) &&
+        WriteConfigField(pFile, &dwDisplayModeExtra, sizeof(dwDisplayModeExtra)) &&
+        WriteConfigField(pFile, &DisplayDriverGuid, sizeof(DisplayDriverGuid)) &&
+        WriteConfigField(pFile, &dwSfxVolume, sizeof(dwSfxVolume)) &&
+        WriteConfigField(pFile, &dwMusicVolume, sizeof(dwMusicVolume));
+    for (int i = 0; bWritten && i < MENU_SELECTION_COUNT; i++) {
+        bWritten =
+            WriteConfigField(pFile, &adwMenuSelectionBackup[i], sizeof(adwMenuSelectionBackup[i]));
+    }
+    bWritten = bWritten && WriteConfigField(pFile, szTcpIpPort, sizeof(szTcpIpPort)) &&
+               WriteConfigField(pFile, szTcpIpAddress, sizeof(szTcpIpAddress)) &&
+               WriteConfigField(pFile, &bSkidMarksSelection, sizeof(bSkidMarksSelection)) &&
+               WriteConfigField(pFile, &dwInputDeviceType, sizeof(dwInputDeviceType)) &&
+               WriteConfigField(pFile, aInputBindingsKeyboard, sizeof(aInputBindingsKeyboard)) &&
+               WriteConfigField(pFile, aInputBindingsDevice1, sizeof(aInputBindingsDevice1)) &&
+               WriteConfigField(pFile, aInputBindingsDevice2, sizeof(aInputBindingsDevice2)) &&
+               WriteConfigField(pFile, aInputBindingsDevice3, sizeof(aInputBindingsDevice3));
+    fclose(pFile);
+    return bWritten;
+}
+
 void ReadInstallDirectoryFromRegistry(void) {
     HKEY hKey;
     DWORD dwSize;

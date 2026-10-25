@@ -1,6 +1,6 @@
 # PC port game code from 0x10030000 to 0x10040000
 
-51 of 307 routines done.
+52 of 307 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -111,7 +111,7 @@ the same name, for a routine the port retained from the N64 game.
 | `OnModemPhoneNumberEdited`                        |        |                 |      1 |    143 | `0x1003ef90` | `0x100384c0` | `undefined OnModemPhoneNumberEdited()`                                                                                                                                  |
 | `GetDirectPlayPlayerName`                         |        |                 |      1 |    142 | `0x1003d180` | `0x10036810` | `undefined GetDirectPlayPlayerName()`                                                                                                                                   |
 | `Vec3fNormalize`                                  |   ✅   | ✅ `0x80224760` |     27 |    141 | `0x1003ae50` | `0x100344d0` | `void Vec3fNormalize(float * pVec)`                                                                                                                                     |
-| `BackupMenuSelections`                            |        |                 |      9 |    137 | `0x1003e310` | `0x10037920` | `void BackupMenuSelections(void)`                                                                                                                                       |
+| `BackupMenuSelections`                            |   ✅   |                 |      9 |    137 | `0x1003e310` | `0x10037920` | `void BackupMenuSelections(void)`                                                                                                                                       |
 | `CarSetupUI_UpdateCarNameLabel`                   |        |                 |      3 |    136 | `0x1003f760` | `0x10038ca0` | `undefined CarSetupUI_UpdateCarNameLabel()`                                                                                                                             |
 | `HostNetworkSession`                              |        |                 |      3 |    135 | `0x1003c150` | `0x100357e0` | `undefined HostNetworkSession()`                                                                                                                                        |
 | `HandleNetworkWindowMessage`                      |   📝   |                 |      1 |    134 | `0x1003c3a0` | `0x10035a30` | `void HandleNetworkWindowMessage(HWND hWnd, UINT nMessage, WPARAM wParam, LPARAM lParam)`                                                                               |

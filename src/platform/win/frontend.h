@@ -35,7 +35,7 @@ public:
     virtual ~SaveFileList();
 };
 
-/** An item of a panel of the front end. The layout is not recovered yet. */
+/** An item of a panel of the front end. The layout is not recovered past the position. */
 class MenuWidget {
 public:
     /**
@@ -43,7 +43,32 @@ public:
      * @ghidraAddress BRGlide: 0x10040d10
      */
     virtual ~MenuWidget();
+    /**
+     * @ghidraAddress BRD3D: 0x100480a0
+     * @ghidraAddress BRGlide: 0x100414f0
+     */
+    virtual void UpdateBlinkTimer();
+    /**
+     * @ghidraAddress BRD3D: 0x10048010
+     * @ghidraAddress BRGlide: 0x10041460
+     */
+    virtual void Draw();
+    /**
+     * Run a frame of the item.
+     *
+     * @return Whether the item still runs.
+     * @ghidraAddress BRD3D: 0x10048180
+     * @ghidraAddress BRGlide: 0x100415d0
+     */
+    virtual bool Update();
+
+    char abUnknown4[0x38]; /* +0x04 */
+    float fX;              /*!< The left of the item on the screen. */
+    float fY;              /*!< The top of the item on the screen. */
 };
+
+/** The index in apWidgets of the mouse cursor of the first panel of the root screen. */
+#define MENU_CURSOR_WIDGET_INDEX (MENU_PANEL_WIDGET_COUNT - 1)
 
 /** A panel of a screen of the front end. The layout is not recovered past the widgets. */
 class MenuPanel {
@@ -57,6 +82,14 @@ public:
      * @ghidraAddress BRGlide: 0x10041930
      */
     virtual ~MenuPanel();
+    /**
+     * Run a frame of every item of the panel.
+     *
+     * @return Whether the panel still runs.
+     * @ghidraAddress BRD3D: 0x10048530
+     * @ghidraAddress BRGlide: 0x10041980
+     */
+    virtual bool RunFrame();
 };
 
 /** A screen of the front end menus. */
@@ -143,14 +176,15 @@ public:
     virtual HRESULT ClearBackBuffer();
 
     void (*pfnBuildMenu)(MenuScreen *pScreen); /*!< Builds the items of the screen. */
-    int dwFlags;                /*!< Options of the screen. Bit 0x10 stops EndFrame(). */
-    int nUnknownC;              /*!< Set as the screen shows. Its meaning is not recovered yet. */
-    unsigned short wPanelCount; /*!< The number of entries of apPanels in use. */
-    unsigned short wUnknown12;  /*!< Cleared at the start. Its meaning is not recovered yet. */
+    int dwFlags;                  /*!< Options of the screen. Bit 0x10 stops EndFrame(). */
+    int nUnknownC;                /*!< Set as the screen shows. Its meaning is not recovered yet. */
+    unsigned short wPanelCount;   /*!< The number of entries of apPanels in use. */
+    unsigned short wCurrentPanel; /*!< The index of the panel that runs. */
     MenuPanel *apPanels[MENU_SCREEN_PANEL_COUNT]; /*!< The panels of the screen. */
-    int nUnknown64;            /*!< Cleared at the start. Its meaning is not recovered yet. */
-    int bRunning;              /*!< Whether the screen runs and reads window messages. */
-    char abUnknown6c[0x50];    /*!< Cleared at the start. Their meaning is not recovered yet. */
+    MenuPanel *pCurrentPanel;                     /*!< The panel that runs. */
+    int bRunning; /*!< Whether the screen runs and reads window messages. */
+    /** Whether each panel of apPanels runs its items. */
+    int anPanelActive[MENU_SCREEN_PANEL_COUNT];
     unsigned short wUnknownBC; /*!< Cleared at the start. Its meaning is not recovered yet. */
     char abUnknownBE[2];       /* +0xbe */
     SaveFileList *apFiles[2];  /*!< The two lists of saved files of the screen. */
@@ -346,6 +380,142 @@ extern RECT g_aMenuLargeIconRects3Col[MENU_LARGE_ICON_3_COLUMN_RECT_COUNT];
  * @ghidraAddress BRGlide: 0x10058540
  */
 void InitMenuSpriteRects(void);
+
+/**
+ * Copy the choices of the menus to adwMenuSelectionBackup of g_GlobalRallyConfig.
+ *
+ * @ghidraAddress BRD3D: 0x1003e310
+ * @ghidraAddress BRGlide: 0x10037920
+ */
+void BackupMenuSelections(void);
+
+/**
+ * The number of frames of the front end, counted while the music is not chosen by hand.
+ *
+ * @ghidraAddress BRD3D: 0x10aa2a4c
+ * @ghidraAddress BRGlide: 0x10ac5da4
+ */
+extern int g_dwFrontEndFrameCounter;
+
+/**
+ * The track of the CD the menus show, counted from the first music track.
+ *
+ * @ghidraAddress BRD3D: 0x10aa2a34
+ * @ghidraAddress BRGlide: 0x10ac5d8c
+ */
+extern int g_dwSelectedCdTrack;
+
+/**
+ * Whether the list of network sessions is refreshing. No frame is flipped while it refreshes.
+ *
+ * @ghidraAddress BRD3D: 0x10aa2874
+ * @ghidraAddress BRGlide: 0x10ac5bcc
+ */
+extern int g_dwSessionListRefreshing;
+
+/**
+ * Whether the root screen is the screen that shows.
+ *
+ * @ghidraAddress BRD3D: 0x10aa2868
+ * @ghidraAddress BRGlide: 0x10ac5bc0
+ */
+extern int g_dwFrontEndAtRootMenu;
+
+/**
+ * The chosen track.
+ *
+ * @ghidraAddress BRD3D: 0x100ac648
+ * @ghidraAddress BRGlide: 0x100abde8
+ */
+extern int g_dwTrackMenuIndex;
+
+/**
+ * The chosen weather.
+ *
+ * @ghidraAddress BRD3D: 0x10aa2a00
+ * @ghidraAddress BRGlide: 0x10ac5d58
+ */
+extern int g_dwSelectedWeather;
+
+/**
+ * The chosen transmission.
+ *
+ * @ghidraAddress BRD3D: 0x10aa2a08
+ * @ghidraAddress BRGlide: 0x10ac5d60
+ */
+extern int g_dwSelectedTransmission;
+
+/**
+ * The chosen tyres.
+ *
+ * @ghidraAddress BRD3D: 0x100ac64c
+ * @ghidraAddress BRGlide: 0x100abdec
+ */
+extern int g_dwTireMenuIndex;
+
+/**
+ * The chosen suspension.
+ *
+ * @ghidraAddress BRD3D: 0x100ac650
+ * @ghidraAddress BRGlide: 0x100abdf0
+ */
+extern int g_dwSuspensionMenuIndex;
+
+/**
+ * The chosen car.
+ *
+ * @ghidraAddress BRD3D: 0x100ac654
+ * @ghidraAddress BRGlide: 0x100abdf4
+ */
+extern int g_dwCarMenuIndex;
+
+/**
+ * The chosen input device.
+ *
+ * @ghidraAddress BRD3D: 0x10aa2a0c
+ * @ghidraAddress BRGlide: 0x10ac5d64
+ */
+extern int g_dwSelectedInputDevice;
+
+/**
+ * The chosen number of laps.
+ *
+ * @ghidraAddress BRD3D: 0x100ac658
+ * @ghidraAddress BRGlide: 0x100abdf8
+ */
+extern int g_dwTotalLapsSetting;
+
+/**
+ * The cars unlocked so far, one bit to a car.
+ *
+ * @ghidraAddress BRD3D: 0x10aa2a10
+ * @ghidraAddress BRGlide: 0x10ac5d68
+ */
+extern int g_dwAccumUnlockedCarMask;
+
+/**
+ * The tracks unlocked so far, one bit to a track.
+ *
+ * @ghidraAddress BRD3D: 0x10aa2a14
+ * @ghidraAddress BRGlide: 0x10ac5d6c
+ */
+extern int g_dwAccumUnlockedTrackMask;
+
+/**
+ * The chosen handling.
+ *
+ * @ghidraAddress BRD3D: 0x100ac65c
+ * @ghidraAddress BRGlide: 0x100abdfc
+ */
+extern int g_dwHandlingTypeMenuIndex;
+
+/**
+ * The chosen class of car.
+ *
+ * @ghidraAddress BRD3D: 0x10aa2a18
+ * @ghidraAddress BRGlide: 0x10ac5d70
+ */
+extern int g_dwSelectedCarClass;
 
 /**
  * Show an error of the game.

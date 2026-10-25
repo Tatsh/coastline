@@ -121,6 +121,16 @@ public:
     bool LoadRallyConfigFile(const char *pszPath);
 
     /**
+     * Write the settings to a configuration file of version 2.
+     *
+     * @param pszPath Path of the file.
+     * @return Whether every field was written.
+     * @ghidraAddress BRD3D: 0x1006a4a0
+     * @ghidraAddress BRGlide: 0x100634b0
+     */
+    bool SaveConfigToFile(const char *pszPath);
+
+    /**
      * The bindings of a device.
      *
      * @param nDevice The device, 1 to 3 for a game controller and any other for the keyboard.

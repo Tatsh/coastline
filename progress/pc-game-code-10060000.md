@@ -1,6 +1,6 @@
 # PC port game code from 0x10060000 to 0x10070000
 
-19 of 169 routines done.
+20 of 169 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -27,7 +27,7 @@ the same name, for a routine the port retained from the N64 game.
 | `RallyConfig::LoadRallyConfigFile`       |   ✅   |                 |      1 |   1194 | `0x10069ff0` | `0x10063060` | `BOOL LoadRallyConfigFile(RallyConfig * this, char * pszPath)`                                                                           |
 | `MakeEnemyCarColorPanels`                |        |                 |      1 |   1110 | `0x10065d50` | `0x1005edc0` | `undefined MakeEnemyCarColorPanels()`                                                                                                    |
 | `UpdateRacerSlotMotion`                  |        | ✅ `0x8022c9fc` |      1 |   1073 | `0x10068ef0` | `0x10061f60` | `undefined UpdateRacerSlotMotion()`                                                                                                      |
-| `RallyConfig::SaveConfigToFile`          |        |                 |      8 |   1023 | `0x1006a4a0` | `0x100634b0` | `BOOL SaveConfigToFile(RallyConfig * this, int pConfig)`                                                                                 |
+| `RallyConfig::SaveConfigToFile`          |   ✅   |                 |      8 |   1023 | `0x1006a4a0` | `0x100634b0` | `bool SaveConfigToFile(RallyConfig * this, char * pszPath)`                                                                              |
 | `ShowGlideSplashImage`                   |        |                 |      2 |    994 |              | `0x1006c990` | `undefined ShowGlideSplashImage()`                                                                                                       |
 | `Vehicle::SetupVehicleForRaceStart`      |        | ✅ `0x80228a6c` |      2 |    979 | `0x10065740` | `0x1005e7b0` | `undefined SetupVehicleForRaceStart(Vehicle * this)`                                                                                     |
 | `MouseDevice::PollMouseDevice`           |   ✅   |                 |      1 |    939 | `0x100603a0` | `0x10059410` | `void PollMouseDevice(MouseDevice * this, void * hWnd)`                                                                                  |

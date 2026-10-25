@@ -6,10 +6,13 @@
 
 #include <windows.h>
 
+#include "platform/win/boot/app.h"
+#include "platform/win/boot/rallyconfig.h"
 #include "platform/win/boot/strings.h"
 #include "platform/win/directplay.h"
 #include "platform/win/input.h"
 #include "platform/win/settings.h"
+#include "platform/win/sound.h"
 #if TGR_RENDERER == TGR_RENDERER_D3D
 #include "platform/win/d3d/renderer.h"
 #endif
@@ -29,6 +32,22 @@ RECT g_aMenuGlyphRects[MENU_GLYPH_RECT_COUNT];
 RECT g_aMenuAltGlyphRects[MENU_ALT_GLYPH_RECT_COUNT];
 RECT g_aMenuLargeIconRects[MENU_LARGE_ICON_RECT_COUNT];
 RECT g_aMenuLargeIconRects3Col[MENU_LARGE_ICON_3_COLUMN_RECT_COUNT];
+int g_dwFrontEndFrameCounter;
+int g_dwSelectedCdTrack;
+int g_dwSessionListRefreshing;
+int g_dwFrontEndAtRootMenu;
+int g_dwTrackMenuIndex = 2;
+int g_dwSelectedWeather;
+int g_dwSelectedTransmission;
+int g_dwTireMenuIndex = 1;
+int g_dwSuspensionMenuIndex = 1;
+int g_dwCarMenuIndex = 1;
+int g_dwSelectedInputDevice;
+int g_dwTotalLapsSetting = 3;
+int g_dwAccumUnlockedCarMask;
+int g_dwAccumUnlockedTrackMask;
+int g_dwHandlingTypeMenuIndex = 4;
+int g_dwSelectedCarClass;
 
 // The size of the scratch buffer of the front end.
 #define FRONT_END_SCRATCH_SIZE 0x400
@@ -104,8 +123,8 @@ MenuScreen::MenuScreen() {
     dwFlags = 0;
     nUnknownC = 0;
     wPanelCount = 0;
-    wUnknown12 = 0;
-    nUnknown64 = 0;
+    wCurrentPanel = 0;
+    pCurrentPanel = nullptr;
     bRunning = true;
     wUnknownBC = 0;
     for (SaveFileList *&pFiles : apFiles) {
@@ -119,7 +138,7 @@ MenuScreen::MenuScreen() {
         sprintf(apFiles[0]->aszNames[i], GetStringResource(SAVE_FILE_DEFAULT_NAME_STRING), i);
         sprintf(apFiles[1]->aszNames[i], GetStringResource(SAVE_FILE_DEFAULT_NAME_STRING), i);
     }
-    memset(abUnknown6c, 0, sizeof(abUnknown6c));
+    memset(anPanelActive, 0, sizeof(anPanelActive));
 }
 
 MenuScreen::~MenuScreen() {
@@ -131,6 +150,91 @@ MenuScreen::~MenuScreen() {
 
 bool MenuScreen::BeginFrame() {
     ClearBackBuffer();
+    return true;
+}
+
+// The value of g_dwPlayMusicMode while the music is chosen by hand.
+#define PLAY_MUSIC_MODE_MANUAL 2
+// The number of frames between two reads of the music track.
+#define MUSIC_TRACK_POLL_FRAMES 120
+// The track of the CD the first music track is.
+#define FIRST_MUSIC_CD_TRACK 2
+// The bit of dwFlags that stops EndFrame().
+#define MENU_SCREEN_FLAG_NO_END_FRAME 0x10
+
+bool MenuScreen::EndFrame() {
+    MenuScreen *pActiveScreen;
+    MenuWidget *pCursor;
+    bool bReadTrack;
+
+    if (dwFlags & MENU_SCREEN_FLAG_NO_END_FRAME) {
+        return false;
+    }
+    bReadTrack = false;
+    if (g_dwPlayMusicMode == PLAY_MUSIC_MODE_MANUAL) {
+        bReadTrack = true;
+    } else {
+        if (g_dwFrontEndFrameCounter % MUSIC_TRACK_POLL_FRAMES == 0) {
+            bReadTrack = true;
+        }
+        g_dwFrontEndFrameCounter++;
+    }
+    if (bReadTrack) {
+        g_dwSelectedCdTrack = GetCurrentMusicTrack() - FIRST_MUSIC_CD_TRACK;
+    }
+    // The cursor belongs to the root screen, which is active while the cursor runs.
+    pActiveScreen = g_pActiveMenuScreen;
+    g_pActiveMenuScreen = g_pRootMenuScreen;
+    pCursor = g_pRootMenuScreen->apPanels[0]->apWidgets[MENU_CURSOR_WIDGET_INDEX];
+    pCursor->fX = static_cast<float>(g_pMouseDevice->nCursorX);
+    pCursor->fY = static_cast<float>(g_pMouseDevice->nCursorY);
+    pCursor->Update();
+    g_pActiveMenuScreen = pActiveScreen;
+    if (!g_dwSessionListRefreshing) {
+        FlipAndWait();
+    }
+    return true;
+}
+
+// Save the configuration and shut the front end down as the screen stops running.
+static inline void StopMenuScreen(MenuScreen *pScreen) {
+    BackupMenuSelections();
+    g_GlobalRallyConfig.SaveConfigToFile(g_szConfigFilePath);
+    pScreen->wCurrentPanel = 0;
+    pScreen->ShutdownFrontEnd(false);
+}
+
+bool MenuScreen::RunFrame() {
+    MenuScreen *pActiveScreen;
+
+    if (!bRunning) {
+        StopMenuScreen(this);
+        return false;
+    }
+    BeginFrame();
+    pActiveScreen = g_pActiveMenuScreen;
+    g_pActiveMenuScreen = g_pRootMenuScreen;
+    // The original passes g_pFrontEndScratchBuffer as this, and the routine does not read it.
+    UpdateMouseInput();
+    g_pActiveMenuScreen = pActiveScreen;
+    PollKeyboardState();
+    g_dwFrontEndAtRootMenu = g_pActiveMenuScreen == g_pRootMenuScreen;
+    wCurrentPanel = 0;
+    for (int i = 0; i < wPanelCount; i++) {
+        pCurrentPanel = apPanels[i];
+        if (pCurrentPanel == nullptr) {
+            return false;
+        }
+        wCurrentPanel = static_cast<unsigned short>(i);
+        if (anPanelActive[i] && !pCurrentPanel->RunFrame()) {
+            return false;
+        }
+    }
+    EndFrame();
+    if (!bRunning) {
+        StopMenuScreen(this);
+        return false;
+    }
     return true;
 }
 
@@ -192,6 +296,23 @@ void MenuScreen::DestroyPanels() {
         delete pPanel;
     }
     g_wMenuHoverIndex = 0;
+}
+
+void BackupMenuSelections(void) {
+    int *pBackup = g_GlobalRallyConfig.adwMenuSelectionBackup;
+
+    pBackup[0] = g_dwTrackMenuIndex;
+    pBackup[1] = g_dwSelectedWeather;
+    pBackup[2] = g_dwSelectedTransmission;
+    pBackup[3] = g_dwTireMenuIndex;
+    pBackup[4] = g_dwSuspensionMenuIndex;
+    pBackup[5] = g_dwCarMenuIndex;
+    pBackup[6] = g_dwSelectedInputDevice;
+    pBackup[7] = g_dwTotalLapsSetting;
+    pBackup[8] = g_dwAccumUnlockedCarMask;
+    pBackup[9] = g_dwAccumUnlockedTrackMask;
+    pBackup[10] = g_dwHandlingTypeMenuIndex;
+    pBackup[11] = g_dwSelectedCarClass;
 }
 
 // Place the rectangles of a table on a grid of cells, row by row.
