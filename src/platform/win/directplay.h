@@ -417,6 +417,22 @@ HRESULT ConnectFromDirectPlayLobby(DirectPlayInfo *pInfo);
  */
 extern char g_szSessionName[];
 
+/** The settings of a network session the game hosts. */
+struct NetworkSessionSettings {
+    char szSessionName[200]; /*!< The name of the session. */
+    BOOL bSecureServer;      /*!< Whether the session is created with DPSESSION_SECURESERVER. */
+};
+
+/**
+ * Copy g_szSessionName into the settings of a session when it is longer than one character, and
+ * clear whether the session is secure.
+ *
+ * @param pSettings The settings.
+ * @ghidraAddress BRD3D: 0x1003d130
+ * @ghidraAddress BRGlide: 0x100367c0
+ */
+void CopySessionNameToBuffer(NetworkSessionSettings *pSettings);
+
 /**
  * Enumerate the parts of the address of the local player for the lobby.
  *

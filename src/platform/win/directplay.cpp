@@ -1115,3 +1115,11 @@ HRESULT GetDirectPlaySessionDesc(IDirectPlay3A *pDirectPlay, DPSESSIONDESC2 **pp
     }
     return hResult;
 }
+
+void CopySessionNameToBuffer(NetworkSessionSettings *pSettings) {
+    // A name of one character is not copied.
+    if (strlen(g_szSessionName) > 1) {
+        strcpy(pSettings->szSessionName, g_szSessionName);
+    }
+    pSettings->bSecureServer = FALSE;
+}
