@@ -473,3 +473,58 @@ GbiCommand *HandleGbiSetPrimColor(GbiCommand *pCommand);
  */
 GbiCommand *HandleGbiSetFogColor(GbiCommand *pCommand);
 #endif
+
+/**
+ * The left edge of the scissor, in pixels.
+ *
+ * @ghidraAddress BRD3D: 0x104c516c
+ * @ghidraAddress BRGlide: 0x105d17bc
+ */
+extern int g_dwScissorLeft;
+
+/**
+ * The top edge of the scissor, in pixels from the bottom of the screen.
+ *
+ * @ghidraAddress BRD3D: 0x104c01a0
+ * @ghidraAddress BRGlide: 0x105ccfe0
+ */
+extern int g_dwScissorTop;
+
+/**
+ * The right edge of the scissor, in pixels.
+ *
+ * @ghidraAddress BRD3D: 0x104c5164
+ * @ghidraAddress BRGlide: 0x105d17b8
+ */
+extern int g_dwScissorRight;
+
+/**
+ * The bottom edge of the scissor, in pixels from the bottom of the screen.
+ *
+ * @ghidraAddress BRD3D: 0x104c5170
+ * @ghidraAddress BRGlide: 0x105d17c0
+ */
+extern int g_dwScissorBottom;
+
+#if TGR_RENDERER == TGR_RENDERER_D3D
+/**
+ * Set the scissor from corners in pixels of the console with two bits of fraction, dropping the
+ * fractions, and clip the device to it.
+ *
+ * @param pCommand The command, the upper left corner in its first word and the lower right in its
+ * second.
+ * @return The next command.
+ * @ghidraAddress BRD3D: 0x1001cda0
+ */
+GbiCommand *HandleGbiSetScissor(GbiCommand *pCommand);
+
+/**
+ * Set the scissor from corners in whole pixels of the console, and clip the device to it.
+ *
+ * @param pCommand The command, the upper left corner in its first word and the lower right in its
+ * second.
+ * @return The next command.
+ * @ghidraAddress BRD3D: 0x1001ce70
+ */
+GbiCommand *HandleGbiSetScissorIntCoords(GbiCommand *pCommand);
+#endif

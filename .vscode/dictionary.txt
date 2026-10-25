@@ -84,6 +84,7 @@ chnl
 ckid
 cksize
 cleargeometrymode
+clipintersectionall
 coasttr
 coasttrk
 colc
@@ -123,6 +124,7 @@ datacrc
 datarootdir
 dblclks
 dbuild
+dclipstatus
 dcmake
 dcosf
 ddbd
@@ -435,6 +437,7 @@ maskt
 math
 mathutil
 maxcontrollers
+maxz
 mcideviceid
 mcierror
 mcinotify
@@ -452,6 +455,8 @@ mflo
 migratehost
 minimizebox
 minode
+miny
+minz
 mirrwd
 mktemp
 mmckinfo

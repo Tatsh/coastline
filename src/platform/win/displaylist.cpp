@@ -234,3 +234,47 @@ GbiCommand *HandleGbiSetGeometryMode(GbiCommand *pCommand) {
 GbiCommand *HandleGbiNoOp(GbiCommand *pCommand) {
     return pCommand + 1;
 }
+
+int g_dwScissorLeft;
+int g_dwScissorTop;
+int g_dwScissorRight;
+int g_dwScissorBottom;
+
+#if TGR_RENDERER == TGR_RENDERER_D3D
+static inline void
+SetScissorAndClipStatus(int nUpperLeftX, int nUpperLeftY, int nLowerRightX, int nLowerRightY) {
+    D3DCLIPSTATUS clipStatus;
+    int nHeight = g_dwConfigFramebufferHeight;
+
+    clipStatus.dwFlags = D3DCLIPSTATUS_EXTENTS2;
+    clipStatus.dwStatus = D3DSTATUS_CLIPINTERSECTIONALL;
+    clipStatus.minz = 0.0f;
+    clipStatus.maxz = 1.0f;
+    g_dwScissorLeft = nUpperLeftX;
+    g_dwScissorTop = nHeight - nUpperLeftY;
+    g_dwScissorRight = nLowerRightX;
+    g_dwScissorBottom = nHeight - nLowerRightY;
+    clipStatus.minx = static_cast<float>(g_dwScissorLeft);
+    clipStatus.maxx = static_cast<float>(g_dwScissorRight);
+    // The edges are turned over twice, back to the rows of the console.
+    clipStatus.miny = static_cast<float>(nHeight - g_dwScissorTop);
+    clipStatus.maxy = static_cast<float>(nHeight - g_dwScissorBottom);
+    g_pD3DDevice2->SetClipStatus(&clipStatus);
+}
+
+GbiCommand *HandleGbiSetScissor(GbiCommand *pCommand) {
+    SetScissorAndClipStatus(GbiPixelField10(pCommand->w0, 12),
+                            GbiPixelField10(pCommand->w0, 0),
+                            GbiPixelField10(pCommand->w1, 12),
+                            GbiPixelField10(pCommand->w1, 0));
+    return pCommand + 1;
+}
+
+GbiCommand *HandleGbiSetScissorIntCoords(GbiCommand *pCommand) {
+    SetScissorAndClipStatus(GbiField12(pCommand->w0, 12),
+                            GbiField12(pCommand->w0, 0),
+                            GbiField12(pCommand->w1, 12),
+                            GbiField12(pCommand->w1, 0));
+    return pCommand + 1;
+}
+#endif
