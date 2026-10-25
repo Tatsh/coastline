@@ -396,10 +396,14 @@ void TickNetworkPauseRequest(void);
  */
 void WINAPI HandleNetworkWindowMessage(HWND hWnd, UINT nMessage, WPARAM wParam, LPARAM lParam);
 
-/** A peer of a network game. The layout past the mutex is not recovered yet. */
+/** A peer of a network game. The layout is not recovered past the members below. */
 struct NetPeerSlot {
-    HANDLE hMutex;          /*!< The mutex of the peer. */
-    char abUnknown4[0x974]; /* +0x04 */
+    HANDLE hMutex;           /*!< The mutex of the peer. */
+    DPID dpidPlayer;         /*!< The player of the session in the slot. */
+    char abUnknown8[0x24];   /* +0x08 */
+    int dwStatus;            /*!< The status of the slot, 0 in its low 6 bits for no player. */
+    char abUnknown30[0x540]; /* +0x30 */
+    char szName[0x408];      /*!< The name of the player. Its size is not recovered yet. */
 };
 
 /** The number of entries of g_aNetPeerSlots. */
@@ -412,6 +416,80 @@ struct NetPeerSlot {
  * @ghidraAddress BRGlide: 0x1021ce58
  */
 extern NetPeerSlot g_aNetPeerSlots[NET_PEER_SLOT_COUNT];
+
+/**
+ * The player of the session in a slot of a peer, read under the mutex of the slot.
+ *
+ * @param nSlot The slot.
+ * @return The player.
+ * @ghidraAddress BRD3D: 0x10005cf0
+ * @ghidraAddress BRGlide: 0x10006060
+ */
+DPID GetSlotPlayerId(int nSlot);
+
+/**
+ * The status of a slot of a peer, read under the mutex of the slot.
+ *
+ * @param nSlot The slot.
+ * @return The status.
+ * @ghidraAddress BRD3D: 0x10004a10
+ * @ghidraAddress BRGlide: 0x10004d80
+ */
+int GetSlotStatusThreadSafe(int nSlot);
+
+/**
+ * Set the status of a slot of a peer under the mutex of the slot.
+ *
+ * @param nSlot The slot.
+ * @param dwStatus The status.
+ * @ghidraAddress BRD3D: 0x10004a50
+ * @ghidraAddress BRGlide: 0x10004dc0
+ */
+void SetSlotStatusThreadSafe(int nSlot, int dwStatus);
+
+/**
+ * The line of status of network play the game shows. Its size is not recovered yet.
+ *
+ * @ghidraAddress BRD3D: 0x10220e80
+ * @ghidraAddress BRGlide: 0x1021c9b0
+ */
+extern char g_szNetStatusString[];
+
+/**
+ * Whether g_szNetStatusString changed since it was shown.
+ *
+ * @ghidraAddress BRD3D: 0x1022af08
+ * @ghidraAddress BRGlide: 0x10226a38
+ */
+extern bool g_bNetStatusStringDirty;
+
+/**
+ * Set the line of status of network play under the mutex of the notices.
+ *
+ * @param pszStatus The line.
+ * @ghidraAddress BRD3D: 0x10003530
+ * @ghidraAddress BRGlide: 0x100038a0
+ */
+void SetGlobalStatusString(const char *pszStatus);
+
+/** The number of entries of g_anDepartedPlayerSlotStack. */
+#define DEPARTED_PLAYER_STACK_SIZE 16
+
+/**
+ * The slots of the players that departed, for the race to remove.
+ *
+ * @ghidraAddress BRD3D: 0x10221288
+ * @ghidraAddress BRGlide: 0x1021cdb8
+ */
+extern int g_anDepartedPlayerSlotStack[DEPARTED_PLAYER_STACK_SIZE];
+
+/**
+ * The index of the top of g_anDepartedPlayerSlotStack.
+ *
+ * @ghidraAddress BRD3D: 0x10221318
+ * @ghidraAddress BRGlide: 0x1021ce48
+ */
+extern int g_nDepartedPlayerStackTop;
 
 /**
  * The mutex of the start of a network race.
@@ -553,7 +631,9 @@ void HandleDirectPlaySystemMessage(
 void ClearNetworkPlayerSlotsByOwner(DPID dpidOwner);
 
 /**
- * Remove a player that departed from a race of the network.
+ * Remove a player that departed from a race of the network. Each slot of a peer of the player
+ * with a status is pushed on g_anDepartedPlayerSlotStack and cleared, and the line of status
+ * reports that the player left.
  *
  * @param dpidPlayer The player.
  * @ghidraAddress BRD3D: 0x10005fe0

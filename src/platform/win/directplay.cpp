@@ -549,6 +549,63 @@ HRESULT CloseAndReleaseDirectPlay(void) {
     return DP_OK;
 }
 
+char g_szNetStatusString[0x400];
+bool g_bNetStatusStringDirty;
+int g_anDepartedPlayerSlotStack[DEPARTED_PLAYER_STACK_SIZE];
+int g_nDepartedPlayerStackTop;
+
+// The status of a slot of a peer in its low 6 bits.
+#define NET_PEER_STATUS_MASK 0x3f
+
+DPID GetSlotPlayerId(int nSlot) {
+    DPID dpidPlayer;
+
+    WaitForSingleObject(g_aNetPeerSlots[nSlot].hMutex, INFINITE);
+    dpidPlayer = g_aNetPeerSlots[nSlot].dpidPlayer;
+    ReleaseMutex(g_aNetPeerSlots[nSlot].hMutex);
+    return dpidPlayer;
+}
+
+int GetSlotStatusThreadSafe(int nSlot) {
+    int dwStatus;
+
+    WaitForSingleObject(g_aNetPeerSlots[nSlot].hMutex, INFINITE);
+    dwStatus = g_aNetPeerSlots[nSlot].dwStatus;
+    ReleaseMutex(g_aNetPeerSlots[nSlot].hMutex);
+    return dwStatus;
+}
+
+void SetSlotStatusThreadSafe(int nSlot, int dwStatus) {
+    WaitForSingleObject(g_aNetPeerSlots[nSlot].hMutex, INFINITE);
+    g_aNetPeerSlots[nSlot].dwStatus = dwStatus;
+    ReleaseMutex(g_aNetPeerSlots[nSlot].hMutex);
+}
+
+void SetGlobalStatusString(const char *pszStatus) {
+    WaitForSingleObject(g_hNetNotifyMutex, INFINITE);
+    strcpy(g_szNetStatusString, pszStatus);
+    g_bNetStatusStringDirty = true;
+    ReleaseMutex(g_hNetNotifyMutex);
+}
+
+void HandlePlayerDisconnect(DPID dpidPlayer) {
+    char szStatus[0x400];
+
+    for (int nSlot = 0; nSlot < NET_PEER_SLOT_COUNT; nSlot++) {
+        if (GetSlotPlayerId(nSlot) != dpidPlayer ||
+            (GetSlotStatusThreadSafe(nSlot) & NET_PEER_STATUS_MASK) == 0) {
+            continue;
+        }
+        WaitForSingleObject(g_hDepartedPlayerStackMutex, INFINITE);
+        g_anDepartedPlayerSlotStack[++g_nDepartedPlayerStackTop] = nSlot;
+        ReleaseMutex(g_hDepartedPlayerStackMutex);
+        SetSlotStatusThreadSafe(nSlot, 0);
+        // The status line begins with the code %15.
+        sprintf(szStatus, "%%15%s left the game.", g_aNetPeerSlots[nSlot].szName);
+        SetGlobalStatusString(szStatus);
+    }
+}
+
 // A notice of a player is formatted into locked global memory.
 static char *FormatPlayerNotice(const char *pszFormat, const char *pszName) {
     char *pszNotice;
