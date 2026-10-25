@@ -1,3 +1,4 @@
+#include <cstdlib>
 #include <cstring>
 #include <new>
 
@@ -128,6 +129,100 @@ HRESULT DisplayMode::GetSurfaceDescDimensions(int *pnWidth,
 
 bool D3DDeviceNode::IsHardwareDevice() {
     return hardwareDesc.dcmColorModel != 0;
+}
+
+// The name and the description a driver gets when DirectDraw reports none.
+#define UNKNOWN_DRIVER_TEXT "UNKNOWN"
+
+// Copy a text of a driver into memory of its own.
+static inline char *CopyDriverText(const char *pszText) {
+    size_t nLength;
+    char *pszCopy;
+
+    if (pszText == nullptr) {
+        pszText = UNKNOWN_DRIVER_TEXT;
+    }
+    nLength = strlen(pszText);
+    pszCopy = static_cast<char *>(malloc(nLength + 1));
+    if (pszCopy != nullptr) {
+        strncpy(pszCopy, pszText, nLength);
+        pszCopy[nLength] = '\0';
+    }
+    return pszCopy;
+}
+
+HRESULT DirectDrawDriver::InitializeDirectDrawDriver(GUID *pGuid,
+                                                     LPSTR pszNewName,
+                                                     LPSTR pszNewDescription) {
+    IDirectDraw *pDirectDraw = nullptr;
+    IDirectDraw2 *pDirectDraw2 = nullptr;
+    IDirect3D2 *pDirect3D2 = nullptr;
+    HRESULT hr;
+
+    if (dwFlags & DIRECTDRAW_DRIVER_USABLE) {
+        return S_OK;
+    }
+    if (pGuid == nullptr) {
+        dwFlags |= DIRECTDRAW_DRIVER_PRIMARY;
+    } else {
+        guid = *pGuid;
+    }
+    pszName = CopyDriverText(pszNewName);
+    pszDescription = CopyDriverText(pszNewDescription);
+    if (SUCCEEDED(hr = DirectDrawCreate(pGuid, &pDirectDraw, nullptr)) &&
+        SUCCEEDED(hr = pDirectDraw->QueryInterface(IID_IDirectDraw2,
+                                                   reinterpret_cast<void **>(&pDirectDraw2))) &&
+        SUCCEEDED(hr = pDirectDraw->QueryInterface(IID_IDirect3D2,
+                                                   reinterpret_cast<void **>(&pDirect3D2)))) {
+        g_pDirect3D2 = pDirect3D2;
+        hardwareCaps.dwSize = sizeof(hardwareCaps);
+        softwareCaps.dwSize = sizeof(softwareCaps);
+        if (SUCCEEDED(hr = pDirectDraw2->GetCaps(&hardwareCaps, &softwareCaps))) {
+            // A driver whose hardware has no depth buffer cannot draw in 3D.
+            if (hardwareCaps.dwZBufferBitDepths == 0) {
+                hr = DDERR_NO3D;
+            } else {
+                dwFlags &= ~8;
+                nUnknown314 = 0;
+                if (SUCCEEDED(hr = EnumerateDisplayModes(pDirectDraw2))) {
+                    dwFlags &= ~0x10;
+                    nUnknown320 = 0;
+                    if (SUCCEEDED(hr = EnumerateD3DDevices(pDirect3D2))) {
+                        dwFlags |= DIRECTDRAW_DRIVER_USABLE;
+                        hr = S_OK;
+                    }
+                }
+            }
+        }
+    }
+    // The interfaces are only for the search.
+    if (pDirect3D2 != nullptr) {
+        pDirect3D2->Release();
+        g_pDirect3D2 = nullptr;
+    }
+    if (pDirectDraw2 != nullptr) {
+        pDirectDraw2->Release();
+    }
+    if (pDirectDraw != nullptr) {
+        pDirectDraw->Release();
+    }
+    return hr;
+}
+
+void DirectDrawDriver::ShutdownDirectDrawDriver() {
+    FlushDirect3DDeviceList();
+    FlushDirectDrawModeEnumerationList();
+    if (pszDescription != nullptr) {
+        free(pszDescription);
+        pszDescription = nullptr;
+    }
+    if (pszName != nullptr) {
+        free(pszName);
+        pszName = nullptr;
+    }
+    pPrev = nullptr;
+    pNext = nullptr;
+    dwFlags &= ~DIRECTDRAW_DRIVER_USABLE;
 }
 
 bool DirectDrawDriver::CompareDirectDrawDriverGuid(const GUID *pGuid) {

@@ -52,10 +52,14 @@ class DirectDrawDriver {
 public:
     unsigned dwFlags;        /*!< DIRECTDRAW_DRIVER_USABLE and DIRECTDRAW_DRIVER_PRIMARY. */
     GUID guid;               /*!< The GUID of the driver. */
-    char abUnknown14[8];     /* +0x14 */
+    char *pszName;           /*!< The name of the driver, allocated. */
+    char *pszDescription;    /*!< The description of the driver, allocated. */
     DDCAPS hardwareCaps;     /*!< What the hardware of the driver does. */
     DDCAPS softwareCaps;     /*!< What the emulation of the driver does. */
-    int anUnknown314[6];     /* +0x314 */
+    int nUnknown314;         /*!< Cleared before the modes are found. */
+    int anUnknown318[2];     /* +0x318 */
+    int nUnknown320;         /*!< Cleared before the devices are found. */
+    int anUnknown324[2];     /* +0x324 */
     DirectDrawDriver *pPrev; /*!< The driver found before. */
     DirectDrawDriver *pNext; /*!< The next driver found. */
 
@@ -66,8 +70,44 @@ public:
         hardwareCaps.dwSize = sizeof(hardwareCaps);
         memset(&softwareCaps, 0, sizeof(softwareCaps));
         softwareCaps.dwSize = sizeof(softwareCaps);
-        memset(anUnknown314, 0, sizeof(anUnknown314));
+        nUnknown314 = 0;
+        memset(anUnknown318, 0, sizeof(anUnknown318));
+        nUnknown320 = 0;
+        memset(anUnknown324, 0, sizeof(anUnknown324));
     }
+
+    /**
+     * Find the display modes of the driver.
+     *
+     * @param pDirectDraw2 The DirectDraw interface of the driver.
+     * @return `S_OK`, or the error of DirectDraw.
+     * @ghidraAddress BRD3D: 0x1001b320
+     */
+    HRESULT EnumerateDisplayModes(IDirectDraw2 *pDirectDraw2);
+
+    /**
+     * Free the display modes of the driver.
+     *
+     * @ghidraAddress BRD3D: 0x1001b3b0
+     */
+    void FlushDirectDrawModeEnumerationList();
+
+    /**
+     * Find the Direct3D devices of the driver.
+     *
+     * @param pDirect3D2 The Direct3D interface of the driver.
+     * @return `S_OK`, or the error of Direct3D.
+     * @ghidraAddress BRD3D: 0x1001b510
+     */
+    HRESULT EnumerateD3DDevices(IDirect3D2 *pDirect3D2);
+
+    /**
+     * Free the Direct3D devices of the driver.
+     *
+     * @return 0.
+     * @ghidraAddress BRD3D: 0x1001b5a0
+     */
+    int FlushDirect3DDeviceList();
 
     /**
      * Read a driver DirectDraw reports, with its devices and its modes.
