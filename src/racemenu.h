@@ -11,6 +11,7 @@
 #include <PR/ultratypes.h>
 
 #include "model.h"
+#include "seasons.h"
 #include "texrect.h"
 #include "vehicle.h"
 
@@ -371,24 +372,6 @@ extern Gfx g_aMenuChoiceMarkerDisplayList[];
  * @ghidraAddress JPN: 0x80316af0
  */
 extern Mtx g_MenuChoiceMarkerMtx;
-
-/** A season of the championship. */
-typedef struct {
-    const char *name;          /*!< The name of the season. */
-    const char *subtitle;      /*!< The heading of the records of the season. */
-    s32 raceCount;             /*!< The number of races of the season. */
-    s32 pointsNeeded;          /*!< The points a season needs to advance to the next. */
-    u8 cars[2];                /*!< The two cars of the season, shown in its records. */
-    u16 unlocks;               /*!< The cars passing the season unlocks, as bits of the unlocks. */
-    u8 races[SEASON_RACES][2]; /*!< The track and the weather of each race. */
-} Season;
-
-/**
- * @ghidraAddress USA: 0x8028b944
- * @ghidraAddress EUR: 0x8028dbf4
- * @ghidraAddress JPN: 0x8028d624
- */
-extern Season g_SeasonTable[SEASONS];
 
 /**
  * The items of the track menu: the tracks, then the loads and resets.
