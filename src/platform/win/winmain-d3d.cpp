@@ -362,11 +362,6 @@ LRESULT CALLBACK MainWindowProc(HWND hWnd, UINT nMessage, WPARAM wParam, LPARAM 
     return DefWindowProcA(hWnd, nMessage, wParam, lParam);
 }
 
-// The renderer the window stores, set by AttachRenderDeviceToWindow().
-static inline DirectDrawRenderer *GetWindowRenderer(HWND hWnd) {
-    return reinterpret_cast<DirectDrawRenderer *>(GetWindowLongA(hWnd, GWL_USERDATA));
-}
-
 static inline bool IsRendererReady(const DirectDrawRenderer *pRenderer) {
     return pRenderer != nullptr &&
            (pRenderer->dwRenderStateFlags & RENDERER_STATE_READY) == RENDERER_STATE_READY;

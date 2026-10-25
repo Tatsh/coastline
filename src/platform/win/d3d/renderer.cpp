@@ -5,6 +5,7 @@
 #include <new>
 
 #include "platform/win/boot/app.h"
+#include "platform/win/boot/rallyconfig.h"
 #include "platform/win/d3d/texture.h"
 #include "platform/win/render.h"
 #include "platform/win/settings.h"
@@ -909,6 +910,28 @@ HRESULT DirectDrawRenderer::GetDeviceViewportRect(RECT *pRect) {
     }
     *pRect = rcViewport;
     return S_OK;
+}
+
+bool ApplySelectedDisplayMode(int nWidth, int nHeight, int nBitDepth, int nExtra) {
+    DirectDrawRenderer *pRenderer = GetWindowRenderer(g_hMainWindow);
+    DirectDrawDriver *pDriver;
+    D3DDeviceNode *pDevice;
+    DisplayMode *pMode;
+
+    if (pRenderer == nullptr) {
+        return false;
+    }
+    pDriver = FindDisplayDeviceByGuid(&g_GlobalRallyConfig.DisplayDriverGuid);
+    if (pRenderer->pDriver == pDriver || pDriver == nullptr) {
+        return false;
+    }
+    pDevice = pRenderer->pDevice;
+    if (pDevice == nullptr) {
+        return false;
+    }
+    pMode = FindDisplayModeWithFallback(pDriver, nWidth, nHeight, nBitDepth, nExtra, pDevice);
+    return pRenderer->ChangeDisplayModeAndReinitDirectDraw(
+               &g_GlobalRallyConfig.DisplayDriverGuid, pDevice, pMode) == S_OK;
 }
 
 void DirectDrawRenderer::FlipPrimarySurfaceAndWait() {

@@ -709,6 +709,19 @@ public:
     int SwitchDisplayModeAndRebuildDevice(int nWidth, int nHeight, int nBitDepth, int nExtra);
 
     /**
+     * Move the renderer to another DirectDraw driver, a device, and a display mode, and create its
+     * DirectDraw objects again.
+     *
+     * @param pGuid The GUID of the driver.
+     * @param pDevice The device.
+     * @param pMode The display mode.
+     * @return `S_OK`, or the error of the move.
+     * @ghidraAddress BRD3D: 0x1000b390
+     */
+    HRESULT
+    ChangeDisplayModeAndReinitDirectDraw(GUID *pGuid, D3DDeviceNode *pDevice, DisplayMode *pMode);
+
+    /**
      * Release the Direct3D device, its viewport, and the back and depth buffers, telling the host
      * first.
      *
@@ -1188,7 +1201,8 @@ bool IsPixelFormatPalettized(const DDPIXELFORMAT *pFormat);
  * @param nWidth The width of the mode.
  * @param nHeight The height of the mode.
  * @param nBitDepth The bits of a pixel of the mode.
- * @param nUnknown Always 0. Its meaning is not recovered yet.
+ * @param nUnknown The fourth value of the display mode, 0 from some callers. Its meaning is not
+ * recovered yet.
  * @param pDevice The device, or `nullptr`.
  * @return The mode, or `nullptr` when the driver has none.
  * @ghidraAddress BRD3D: 0x1001a570
@@ -1234,6 +1248,25 @@ extern void (*g_pfnPresentFrame)(void);
  * @ghidraAddress BRD3D: 0x1001bad0
  */
 void PresentFrameCallback_FlipSurfaces(void);
+
+/**
+ * The renderer a window stores, set by AttachRenderDeviceToWindow().
+ *
+ * @param hWnd The window.
+ * @return The renderer, or null.
+ */
+static inline DirectDrawRenderer *GetWindowRenderer(HWND hWnd) {
+    return reinterpret_cast<DirectDrawRenderer *>(GetWindowLongA(hWnd, GWL_USERDATA));
+}
+
+/**
+ * Find the DirectDraw driver of a GUID and make it the selected one.
+ *
+ * @param pGuid The GUID.
+ * @return The driver, or the first driver when none has the GUID.
+ * @ghidraAddress BRD3D: 0x1007a7d0
+ */
+DirectDrawDriver *FindDisplayDeviceByGuid(GUID *pGuid);
 
 /**
  * Move the main window to the DirectDraw driver of g_GlobalRallyConfig when it differs from the
