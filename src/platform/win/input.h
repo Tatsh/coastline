@@ -433,6 +433,38 @@ void UpdateMouseButtonEdges(void);
  */
 bool WINAPI ResetMouseCursorToCenter(int nUnused);
 
+/** The control of a button of a game controller GetPressedJoystickControl() reports. */
+#define JOYSTICK_CONTROL_BUTTON 0x100
+/** The control of the left of the X axis of a game controller. */
+#define JOYSTICK_CONTROL_X_NEGATIVE 0x8000
+/** The control of the right of the X axis of a game controller. */
+#define JOYSTICK_CONTROL_X_POSITIVE 0x8100
+/** The control of the top of the Y axis of a game controller. */
+#define JOYSTICK_CONTROL_Y_NEGATIVE 0x8200
+/** The control of the bottom of the Y axis of a game controller. */
+#define JOYSTICK_CONTROL_Y_POSITIVE 0x8300
+
+/**
+ * Read the buttons of the mouse and find the first one that went down.
+ *
+ * @return The button, or -1 for none or without a mouse.
+ * @ghidraAddress BRD3D: 0x10077310
+ * @ghidraAddress BRGlide: 0x100705f0
+ */
+int GetPressedMouseButton(void);
+
+/**
+ * Read the game controller and find a control that is pressed, to bind it. A game controller
+ * that does not exist is created as the first one.
+ *
+ * @param pwControl Receives JOYSTICK_CONTROL_BUTTON for a button, or the control of an axis
+ * pushed past 50.
+ * @return The button pressed, 0 for an axis, -1 for no control, or 1 without a game controller.
+ * @ghidraAddress BRD3D: 0x10077200
+ * @ghidraAddress BRGlide: 0x100704e0
+ */
+int GetPressedJoystickControl(unsigned *pwControl);
+
 /**
  * Clear both states of the mouse.
  *

@@ -145,6 +145,7 @@ dienum
 dierr
 dijofs
 dijoystate
+dimousestate
 dinline
 diph
 diprop

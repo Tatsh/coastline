@@ -61,6 +61,79 @@ bool WINAPI ResetMouseCursorToCenter(int) {
     return true;
 }
 
+// The input device type of the first game controller.
+#define INPUT_DEVICE_FIRST_CONTROLLER 2
+// The bit of a button in a state of DirectInput that is set while the button is down.
+#define BUTTON_DOWN_MASK 0x80
+// The distance an axis is pushed for GetPressedJoystickControl() to report it.
+#define JOYSTICK_AXIS_THRESHOLD 50
+
+int GetPressedMouseButton(void) {
+    DIMOUSESTATE state;
+    HRESULT hResult;
+
+    if (g_pMouseDevice == nullptr || g_pMouseDevice->pDevice == nullptr) {
+        return -1;
+    }
+    for (int &bDown : g_adwMouseButtonRaw) {
+        bDown = 0;
+    }
+    hResult = g_pMouseDevice->pDevice->GetDeviceState(sizeof(state), &state);
+    // A lost device is acquired again and the state that was not read is used.
+    if (hResult == DIERR_INPUTLOST) {
+        g_pMouseDevice->pDevice->Acquire();
+    }
+    for (int i = 0; i < MOUSE_BUTTON_COUNT; i++) {
+        if (state.rgbButtons[i] & BUTTON_DOWN_MASK) {
+            g_adwMouseButtonRaw[i] = 1;
+        }
+    }
+    UpdateMouseButtonEdges();
+    for (int i = 0; i < MOUSE_BUTTON_COUNT; i++) {
+        if (g_adwMouseButtonPressed[i] != 0) {
+            return i;
+        }
+    }
+    return -1;
+}
+
+int GetPressedJoystickControl(unsigned *pwControl) {
+    DIJOYSTATE2 state;
+    HRESULT hResult;
+
+    if (g_pJoystickDevice == nullptr) {
+        g_GlobalRallyConfig.dwInputDeviceType = INPUT_DEVICE_FIRST_CONTROLLER;
+        g_GlobalRallyConfig.SelectActiveInputBindings();
+        InitializeJoystickDevice();
+        if (g_pJoystickDevice == nullptr) {
+            return 1;
+        }
+    }
+    g_pJoystickDevice->Poll();
+    hResult = g_pJoystickDevice->GetDeviceState(sizeof(state), &state);
+    if (hResult == DIERR_INPUTLOST) {
+        TryAcquireJoystickDevice();
+    }
+    for (int i = 0; i < static_cast<int>(sizeof(state.rgbButtons)); i++) {
+        if (state.rgbButtons[i] & BUTTON_DOWN_MASK) {
+            *pwControl = JOYSTICK_CONTROL_BUTTON;
+            return i;
+        }
+    }
+    if (state.lX < -JOYSTICK_AXIS_THRESHOLD) {
+        *pwControl = JOYSTICK_CONTROL_X_NEGATIVE;
+    } else if (state.lX > JOYSTICK_AXIS_THRESHOLD) {
+        *pwControl = JOYSTICK_CONTROL_X_POSITIVE;
+    } else if (state.lY < -JOYSTICK_AXIS_THRESHOLD) {
+        *pwControl = JOYSTICK_CONTROL_Y_NEGATIVE;
+    } else if (state.lY > JOYSTICK_AXIS_THRESHOLD) {
+        *pwControl = JOYSTICK_CONTROL_Y_POSITIVE;
+    } else {
+        return -1;
+    }
+    return 0;
+}
+
 void ResetMouseState(void) {
     memset(g_aMouseStateBuffers, 0, sizeof(g_aMouseStateBuffers));
     g_dwMouseStatePrevIndex = 0;
@@ -223,8 +296,6 @@ HRESULT SetJoystickAxisRange(IDirectInputDevice2A *pDevice,
 
 bool g_bForceFeedbackAvailable;
 
-// The input device type of the first game controller.
-#define INPUT_DEVICE_FIRST_CONTROLLER 2
 // The range of an axis of the game controller.
 #define JOYSTICK_AXIS_MIN -128
 #define JOYSTICK_AXIS_MAX 128
