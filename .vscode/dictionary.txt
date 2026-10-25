@@ -251,6 +251,7 @@ fovy
 foxundermoon
 fpart
 fpcsr
+frametimer
 freeable
 frontwheel
 fsanitize

@@ -17,6 +17,7 @@
 #include "platform/win/d3d/renderer.h"
 #include "platform/win/d3d/texture.h"
 #include "platform/win/directplay.h"
+#include "platform/win/frametimer.h"
 #include "platform/win/frontend.h"
 #include "platform/win/settings.h"
 #include "platform/win/sound.h"

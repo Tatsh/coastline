@@ -238,13 +238,6 @@ extern int g_dwTotalLaps;
 void SaveClockForPause(void);
 
 /**
- * Start the timing of frames again.
- *
- * @ghidraAddress BRD3D: 0x1002c4d0
- */
-void ResetFrameTimerState(void);
-
-/**
  * The renderer the game was set to use.
  *
  * @return 1 for the renderer of the window.

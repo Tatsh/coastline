@@ -13,6 +13,7 @@ add_library(
   dllmain.c
   earsound.cpp
   fileio.c
+  frametimer.cpp
   input.cpp
   paintshop.c
   snapshot.c
