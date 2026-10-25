@@ -406,6 +406,95 @@ int DirectDrawRenderer::ReleasePrimaryPalette() {
     return 0;
 }
 
+// Create a depth buffer of the size of the back buffer and attach it. Return whether it was.
+static inline HRESULT CreateDepthBuffer(DirectDrawRenderer *pRenderer,
+                                        const D3DDEVICEDESC *pDesc,
+                                        DWORD dwMemoryCaps,
+                                        bool *pbAttached) {
+    DDSURFACEDESC backDesc;
+    DDSURFACEDESC depthDesc;
+    HRESULT hr;
+
+    *pbAttached = false;
+    memset(&backDesc, 0, sizeof(backDesc));
+    backDesc.dwSize = sizeof(backDesc);
+    hr = pRenderer->pBackBuffer->GetSurfaceDesc(&backDesc);
+    if (FAILED(hr)) {
+        return hr;
+    }
+    memset(&depthDesc, 0, sizeof(depthDesc));
+    depthDesc.dwSize = sizeof(depthDesc);
+    depthDesc.dwFlags = DDSD_CAPS | DDSD_HEIGHT | DDSD_WIDTH | DDSD_ZBUFFERBITDEPTH;
+    depthDesc.dwHeight = backDesc.dwHeight;
+    depthDesc.dwWidth = backDesc.dwWidth;
+    depthDesc.dwZBufferBitDepth = DDBDToBitDepth(pDesc->dwDeviceZBufferBitDepth);
+    depthDesc.ddsCaps.dwCaps = dwMemoryCaps | DDSCAPS_ZBUFFER;
+    // A depth buffer that is not created or not attached leaves the device without one.
+    if (SUCCEEDED(
+            pRenderer->pDirectDraw2->CreateSurface(&depthDesc, &pRenderer->pZBuffer, nullptr))) {
+        if (FAILED(pRenderer->pBackBuffer->AddAttachedSurface(pRenderer->pZBuffer))) {
+            if (pRenderer->pZBuffer != nullptr) {
+                pRenderer->pZBuffer->Release();
+                pRenderer->pZBuffer = nullptr;
+            }
+        } else {
+            *pbAttached = true;
+        }
+    }
+    return S_OK;
+}
+
+HRESULT DirectDrawRenderer::InitializeRenderDevice() {
+    DDSCAPS caps;
+    const D3DDEVICEDESC *pDesc;
+    DWORD dwMemoryCaps;
+    HRESULT hr;
+    bool bAttached;
+
+    if (hWnd == nullptr || !IsWindow(hWnd) || pDevice == nullptr || pMode == nullptr ||
+        pDirectDraw2 == nullptr || pDirect3D2 == nullptr || pPrimarySurface == nullptr) {
+        return RENDERER_E_NOT_READY;
+    }
+    caps.dwCaps = DDSCAPS_BACKBUFFER;
+    hr = pPrimarySurface->GetAttachedSurface(&caps, &pBackBuffer);
+    if (FAILED(hr)) {
+        return hr;
+    }
+    // A device of the hardware puts its depth buffer in video memory.
+    if (pDevice->IsHardwareDevice()) {
+        pDesc = &pDevice->hardwareDesc;
+        dwMemoryCaps = DDSCAPS_VIDEOMEMORY;
+    } else {
+        pDesc = &pDevice->softwareDesc;
+        dwMemoryCaps = DDSCAPS_SYSTEMMEMORY;
+    }
+    dwDeviceInit = 0;
+    if ((dwFlags & 4) != 0 && pDesc->dwDeviceZBufferBitDepth != 0) {
+        hr = CreateDepthBuffer(this, pDesc, dwMemoryCaps, &bAttached);
+        if (FAILED(hr)) {
+            return hr;
+        }
+        dwDeviceInit = bAttached;
+    }
+    hr = pDirect3D2->CreateDevice(pDevice->guid, pBackBuffer, &pD3DDevice);
+    if (FAILED(hr)) {
+        return hr;
+    }
+    g_pD3DDevice2 = pD3DDevice;
+    QueryD3DDeviceCaps(pD3DDevice);
+    pDevice->EnumerateDeviceTextureFormats(pD3DDevice);
+    dwRenderStateFlags |= 8;
+    hr = CreateAndAttachViewport();
+    if (FAILED(hr)) {
+        return hr;
+    }
+    if (pHost != nullptr) {
+        pHost->ValidateRenderDeviceState();
+    }
+    EnumerateTextureFormats(g_pD3DDevice2);
+    return S_OK;
+}
+
 int DirectDrawRenderer::DestroyD3DDevice() {
     if (pHost != nullptr) {
         pHost->OnDestroyDevice();

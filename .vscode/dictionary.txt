@@ -84,6 +84,7 @@ dblclks
 dbuild
 dcmake
 dcosf
+ddbd
 ddivu
 ddpcaps
 ddpf
@@ -631,6 +632,7 @@ yarnrc
 yieldthread
 yscale
 zbuffer
+zbufferbitdepth
 zizmor
 zmode
 zsize

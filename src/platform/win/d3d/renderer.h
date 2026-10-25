@@ -73,6 +73,33 @@ public:
 
 class RenderHost;
 
+/** A Direct3D device of a driver. The layout after softwareDesc is not recovered yet. */
+class D3DDeviceNode {
+public:
+    int nUnknown0;              /* +0x00 */
+    GUID guid;                  /*!< The GUID of the device. */
+    char abUnknown14[8];        /* +0x14 */
+    D3DDEVICEDESC hardwareDesc; /*!< What the hardware of the device does. */
+    D3DDEVICEDESC softwareDesc; /*!< What the emulation of the device does. */
+
+    /**
+     * Whether the device is a device of the hardware, one with a colour model of its own.
+     *
+     * @return Whether the device is a device of the hardware.
+     * @ghidraAddress BRD3D: 0x1001ad90
+     */
+    bool IsHardwareDevice();
+
+    /**
+     * Find the texture formats a device created from the node supports.
+     *
+     * @param pD3DDevice The device created.
+     * @return `S_OK`, or the error of Direct3D.
+     * @ghidraAddress BRD3D: 0x1001af20
+     */
+    HRESULT EnumerateDeviceTextureFormats(IDirect3DDevice2 *pD3DDevice);
+};
+
 /** A display mode of a driver. The layout after desc is not recovered yet. */
 class DisplayMode {
 public:
@@ -111,7 +138,7 @@ class DirectDrawRenderer {
 public:
     int anUnknown0[2];                   /* +0x00 */
     D3DMaterial *pMaterial;              /*!< The material of the viewport. */
-    int dwDeviceInit;                    /*!< Whether the device is initialised. */
+    int dwDeviceInit;                    /*!< Whether the device has a depth buffer. */
     int dwSize;                          /*!< The size of the renderer. */
     int dwFlags;                         /*!< Options of the renderer. Bit 2 is set by default. */
     int nUnknown18;                      /* +0x18 */
@@ -121,7 +148,7 @@ public:
     int nUnknown28;                      /* +0x28 */
     DirectDrawDriver *pDriver;           /*!< The driver selected. */
     DisplayMode *pMode;                  /*!< The display mode selected. */
-    void *pDevice;                       /*!< The Direct3D device selected. */
+    D3DDeviceNode *pDevice;              /*!< The Direct3D device selected. */
     IDirectDraw *pDirectDraw;            /*!< The DirectDraw object of the driver. */
     IDirectDraw2 *pDirectDraw2;          /*!< The second interface of pDirectDraw. */
     IDirect3D2 *pDirect3D2;              /*!< The Direct3D interface of pDirectDraw. */
@@ -263,6 +290,14 @@ public:
      * @ghidraAddress BRD3D: 0x1000ab70
      */
     HRESULT InitializeRenderDevice();
+
+    /**
+     * Create the viewport of the device and attach it, with its material.
+     *
+     * @return `S_OK`, or the error of Direct3D.
+     * @ghidraAddress BRD3D: 0x1000adf0
+     */
+    HRESULT CreateAndAttachViewport();
 
     /**
      * Release the Direct3D device, its viewport, and the back and depth buffers, telling the host
@@ -507,7 +542,7 @@ HRESULT SelectDriverDeviceAndModeFromConfig(GUID *pDriverGuid,
                                             bool bMatchMode,
                                             DirectDrawDriver **ppDriver,
                                             DisplayMode **ppMode,
-                                            void **ppDevice);
+                                            D3DDeviceNode **ppDevice);
 
 /**
  * Whether the DirectDraw drivers were found, in bit 0.
@@ -545,7 +580,7 @@ bool SelectDeviceAndDisplayMode(DirectDrawDriver *pDriver,
                                 int nBitDepth,
                                 void *pSurfaceFormat,
                                 DisplayMode **ppMode,
-                                void **ppDevice);
+                                D3DDeviceNode **ppDevice);
 
 /**
  * Select a device of a driver and the mode of the desktop.
@@ -560,7 +595,32 @@ bool SelectDeviceAndDisplayMode(DirectDrawDriver *pDriver,
 bool FindDesktopDisplayModeAndDevice(DirectDrawDriver *pDriver,
                                      GUID *pDeviceGuid,
                                      DisplayMode **ppMode,
-                                     void **ppDevice);
+                                     D3DDeviceNode **ppDevice);
+
+/**
+ * The bits of a depth from the `DDBD_` flag of the depth.
+ *
+ * @param dwMask The flags of the depths, of which the deepest counts.
+ * @return The bits.
+ * @ghidraAddress BRD3D: 0x1001a870
+ */
+int DDBDToBitDepth(DWORD dwMask);
+
+/**
+ * Read what a Direct3D device can do.
+ *
+ * @param pD3DDevice The device.
+ * @ghidraAddress BRD3D: 0x10008d90
+ */
+void QueryD3DDeviceCaps(IDirect3DDevice2 *pD3DDevice);
+
+/**
+ * Find the texture formats of a Direct3D device for the game.
+ *
+ * @param pD3DDevice The device.
+ * @ghidraAddress BRD3D: 0x10009bd0
+ */
+void EnumerateTextureFormats(IDirect3DDevice2 *pD3DDevice);
 
 /**
  * Whether a pixel format indexes a palette of 1, 2, 4, or 8 bits.
@@ -583,8 +643,12 @@ bool IsPixelFormatPalettized(const DDPIXELFORMAT *pFormat);
  * @return The mode, or `nullptr` when the driver has none.
  * @ghidraAddress BRD3D: 0x1001a570
  */
-DisplayMode *FindDisplayModeWithFallback(
-    DirectDrawDriver *pDriver, int nWidth, int nHeight, int nBitDepth, int nUnknown, void *pDevice);
+DisplayMode *FindDisplayModeWithFallback(DirectDrawDriver *pDriver,
+                                         int nWidth,
+                                         int nHeight,
+                                         int nBitDepth,
+                                         int nUnknown,
+                                         D3DDeviceNode *pDevice);
 
 /**
  * The width of the display mode set.

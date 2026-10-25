@@ -20,10 +20,10 @@ HRESULT SelectDriverDeviceAndModeFromConfig(GUID *pDriverGuid,
                                             bool bMatchMode,
                                             DirectDrawDriver **ppDriver,
                                             DisplayMode **ppMode,
-                                            void **ppDevice) {
+                                            D3DDeviceNode **ppDevice) {
     DirectDrawDriver *pDriver;
     DisplayMode *pMode;
-    void *pDevice;
+    D3DDeviceNode *pDevice;
     HRESULT hr;
     bool bFound;
 
@@ -75,6 +75,10 @@ HRESULT DisplayMode::GetSurfaceDescDimensions(int *pnWidth,
     *pnBitDepth = desc.ddpfPixelFormat.dwRGBBitCount;
     *pnRefreshRate = 0;
     return S_OK;
+}
+
+bool D3DDeviceNode::IsHardwareDevice() {
+    return hardwareDesc.dcmColorModel != 0;
 }
 
 bool DirectDrawDriver::CompareDirectDrawDriverGuid(const GUID *pGuid) {
