@@ -9,6 +9,10 @@
 
 #include "types.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /** A point or direction in space. */
 typedef struct {
     f32 x; /*!< The component along the x axis. */
@@ -697,5 +701,9 @@ void SetRngSeed(u32 seed);
  * @ghidraAddress BRGlide: 0x100353d0
  */
 u32 AdvanceRng(void);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

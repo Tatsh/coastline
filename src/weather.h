@@ -6,9 +6,12 @@
  * The weather of a race and the flags the renderer tests.
  */
 
-#include <PR/ultratypes.h>
-
+#include "types.h"
 #include "vecmath.h"
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /** The weathers, in the order of the weather menu. */
 enum {
@@ -25,6 +28,8 @@ enum {
  * @ghidraAddress USA: 0x8028c800
  * @ghidraAddress EUR: 0x8028ef60
  * @ghidraAddress JPN: 0x8028e9b0
+ * @ghidraAddress BRD3D: 0x104bbe08
+ * @ghidraAddress BRGlide: 0x104b15e8
  */
 extern u32 g_dwCurrentWeather;
 
@@ -34,6 +39,8 @@ extern u32 g_dwCurrentWeather;
  * @ghidraAddress USA: 0x8028aa78
  * @ghidraAddress EUR: 0x8028cc80
  * @ghidraAddress JPN: 0x8028c750
+ * @ghidraAddress BRD3D: 0x106c6618
+ * @ghidraAddress BRGlide: 0x106ed6a8
  */
 extern u32 g_dwWeatherActive;
 
@@ -41,6 +48,8 @@ extern u32 g_dwWeatherActive;
  * @ghidraAddress USA: 0x8028aa80
  * @ghidraAddress EUR: 0x8028cc88
  * @ghidraAddress JPN: 0x8028c758
+ * @ghidraAddress BRD3D: 0x106c661c
+ * @ghidraAddress BRGlide: 0x106ed6ac
  */
 extern u32 g_dwNightMode;
 
@@ -48,6 +57,8 @@ extern u32 g_dwNightMode;
  * @ghidraAddress USA: 0x8028aa84
  * @ghidraAddress EUR: 0x8028cc8c
  * @ghidraAddress JPN: 0x8028c75c
+ * @ghidraAddress BRD3D: 0x106c6620
+ * @ghidraAddress BRGlide: 0x106ed6b0
  */
 extern u32 g_dwSnowMode;
 
@@ -55,6 +66,8 @@ extern u32 g_dwSnowMode;
  * @ghidraAddress USA: 0x8028aa8c
  * @ghidraAddress EUR: 0x8028cc94
  * @ghidraAddress JPN: 0x8028c764
+ * @ghidraAddress BRD3D: 0x106c6624
+ * @ghidraAddress BRGlide: 0x106ed6b4
  */
 extern u32 g_dwRainMode;
 
@@ -325,5 +338,9 @@ void UpdatePrecipitationParticles(void);
  * @ghidraAddress JPN: 0x8023b794
  */
 void RenderPrecipitationEffect(void);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif
