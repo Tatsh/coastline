@@ -13,7 +13,8 @@
 /** The binding of one control of the game to a key, a button, or an axis. */
 struct InputBinding {
     WORD wControl; /*!< The key or button in the low byte and the kind of device in the high. */
-    BYTE abUnknown2[4]; /* +0x02 */
+    /** More controls of the defaults that select the binding, 0 where another binding uses one. */
+    WORD awAlternateControls[2];
 };
 
 /**

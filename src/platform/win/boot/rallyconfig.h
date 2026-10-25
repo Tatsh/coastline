@@ -47,6 +47,51 @@ public:
     }
 
     /**
+     * Bind a device to its default controls.
+     *
+     * @param nDevice The device, 1 to 3 for a game controller and any other for the keyboard.
+     * @ghidraAddress BRD3D: 0x10069aa0
+     * @ghidraAddress BRGlide: 0x10062b10
+     */
+    void LoadDeviceDefaultBindings(int nDevice);
+
+    /**
+     * Bind a control of a device. The alternate controls are taken from the defaults, and an
+     * alternate that another binding of the device uses is cleared.
+     *
+     * @param nDevice The device, 1 to 3 for a game controller and any other for the keyboard.
+     * @param nControl The control of the game.
+     * @param wKind The kind of device in the high byte.
+     * @param nKeyCode The key or button in the low byte.
+     * @ghidraAddress BRD3D: 0x10069b10
+     * @ghidraAddress BRGlide: 0x10062b80
+     */
+    void SetInputBinding(int nDevice, int nControl, WORD wKind, BYTE nKeyCode);
+
+    /**
+     * The kind of device of a binding.
+     *
+     * @param nDevice The device, 1 to 3 for a game controller and any other for the keyboard.
+     * @param nControl The control of the game.
+     * @return The high byte of the control of the binding, in place.
+     * @ghidraAddress BRD3D: 0x10069bc0
+     * @ghidraAddress BRGlide: 0x10062c30
+     */
+    WORD GetInputBindingFlags(int nDevice, int nControl);
+
+    /**
+     * The key or button of a binding. A control of a game controller with its top bit set keeps
+     * the code in its high byte.
+     *
+     * @param nDevice The device, 1 to 3 for a game controller and any other for the keyboard.
+     * @param nControl The control of the game.
+     * @return The key or button.
+     * @ghidraAddress BRD3D: 0x10069c30
+     * @ghidraAddress BRGlide: 0x10062ca0
+     */
+    BYTE GetInputBindingKeyCode(int nDevice, int nControl);
+
+    /**
      * Set every setting to its default and bind each device to its default controls.
      *
      * @ghidraAddress BRD3D: 0x10069c90
@@ -75,22 +120,28 @@ public:
      */
     BOOL LoadRallyConfigFile(const char *pszPath);
 
+    /**
+     * The bindings of a device.
+     *
+     * @param nDevice The device, 1 to 3 for a game controller and any other for the keyboard.
+     * @return The table of the device.
+     */
+    InputBinding *GetDeviceBindings(int nDevice) {
+        switch (nDevice) {
+        case 1:
+            return aInputBindingsDevice1;
+        case 2:
+            return aInputBindingsDevice2;
+        case 3:
+            return aInputBindingsDevice3;
+        default:
+            return aInputBindingsKeyboard;
+        }
+    }
+
     /** Point pActiveInputBindings at the table of dwInputDeviceType. */
     void SelectActiveInputBindings() {
-        switch (dwInputDeviceType) {
-        case 1:
-            pActiveInputBindings = aInputBindingsDevice1;
-            break;
-        case 2:
-            pActiveInputBindings = aInputBindingsDevice2;
-            break;
-        case 3:
-            pActiveInputBindings = aInputBindingsDevice3;
-            break;
-        default:
-            pActiveInputBindings = aInputBindingsKeyboard;
-            break;
-        }
+        pActiveInputBindings = GetDeviceBindings(dwInputDeviceType);
     }
 };
 

@@ -15,8 +15,61 @@ static constexpr DWORD kDefaultMenuSelections[MENU_SELECTION_COUNT] = {
 
 RallyConfig g_GlobalRallyConfig;
 
+// The default bindings of a device, 1 to 3 for a game controller and any other for the keyboard.
+static inline InputBinding *GetDefaultBindings(int nDevice) {
+    switch (nDevice) {
+    case 1:
+        return g_awDefaultKeyBindingsDevice1;
+    case 2:
+        return g_awDefaultKeyBindingsDevice2;
+    case 3:
+        return g_awDefaultKeyBindingsDevice3;
+    default:
+        return g_awDefaultKeyBindingsDevice0;
+    }
+}
+
 RallyConfig::RallyConfig() {
     InitRallyConfigDefaults();
+}
+
+void RallyConfig::LoadDeviceDefaultBindings(int nDevice) {
+    memcpy(GetDeviceBindings(nDevice),
+           GetDefaultBindings(nDevice),
+           sizeof(InputBinding[INPUT_BINDING_COUNT]));
+}
+
+void RallyConfig::SetInputBinding(int nDevice, int nControl, WORD wKind, BYTE nKeyCode) {
+    InputBinding *pBindings = GetDeviceBindings(nDevice);
+    InputBinding *pBinding = &pBindings[nControl];
+    const InputBinding *pDefault = &GetDefaultBindings(nDevice)[nControl];
+
+    pBinding->wControl = (wKind & 0xff00) | nKeyCode;
+    for (int i = 0; i < 2; i++) {
+        // The original repeats the same work for each control of the table.
+        for (int nPass = 0; nPass < INPUT_BINDING_COUNT; nPass++) {
+            pBinding->awAlternateControls[i] = pDefault->awAlternateControls[i];
+            for (int j = 0; j < INPUT_BINDING_COUNT; j++) {
+                if (pBindings[j].wControl == pBinding->awAlternateControls[i]) {
+                    pBinding->awAlternateControls[i] = 0;
+                    break;
+                }
+            }
+        }
+    }
+}
+
+WORD RallyConfig::GetInputBindingFlags(int nDevice, int nControl) {
+    return GetDeviceBindings(nDevice)[nControl].wControl & 0xff00;
+}
+
+BYTE RallyConfig::GetInputBindingKeyCode(int nDevice, int nControl) {
+    WORD wControl = GetDeviceBindings(nDevice)[nControl].wControl;
+
+    if (nDevice >= 1 && nDevice <= 3 && wControl >= 0x8000) {
+        return wControl >> 8;
+    }
+    return wControl & 0xff;
 }
 
 void RallyConfig::InitRallyConfigDefaults() {
