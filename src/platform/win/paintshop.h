@@ -6,6 +6,8 @@
  * The bitmaps of the paint shop of the PC port.
  */
 
+#include <windows.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -40,6 +42,57 @@ extern CarPaintTextureSet g_CarPaintTextureSets[CAR_PAINT_GROUP_COUNT][CAR_PAINT
  * @ghidraAddress BRGlide: 0x10ac67b0
  */
 extern void *g_apPaintDamageBitmaps[PAINT_DAMAGE_BITMAP_COUNT];
+
+/**
+ * The width of the bitmap ConvertBitmap24ToRgba32() converted last.
+ *
+ * @ghidraAddress BRD3D: 0x10aa3464
+ * @ghidraAddress BRGlide: 0x10ac67c4
+ */
+extern int g_dwConvertedBitmapWidth;
+
+/**
+ * The height of the bitmap ConvertBitmap24ToRgba32() converted last.
+ *
+ * @ghidraAddress BRD3D: 0x10aa3468
+ * @ghidraAddress BRGlide: 0x10ac67c8
+ */
+extern int g_dwConvertedBitmapHeight;
+
+/**
+ * Copy the rows of a bitmap of 24 bits from the bottom up into pixels of RGBA 8888, opaque.
+ *
+ * @param pDest The pixels, width by height.
+ * @param pSrc The rows of the bitmap, the bottom row first in memory.
+ * @param nWidth The width.
+ * @param nHeight The height.
+ * @param nStride The bytes of a row of the bitmap.
+ * @ghidraAddress BRD3D: 0x10060f00
+ * @ghidraAddress BRGlide: 0x10059f70
+ */
+void CopyBgr24ToRgba32Flipped(
+    unsigned char *pDest, const unsigned char *pSrc, int nWidth, int nHeight, int nStride);
+
+/**
+ * Convert a bitmap of 24 bits to pixels of RGBA 8888 from malloc(), and record its size in
+ * g_dwConvertedBitmapWidth and g_dwConvertedBitmapHeight.
+ *
+ * @param pBitmap The bitmap.
+ * @return The pixels, or null for a bitmap of another depth or when they are not allocated.
+ * @ghidraAddress BRD3D: 0x10060ea0
+ * @ghidraAddress BRGlide: 0x10059f10
+ */
+void *ConvertBitmap24ToRgba32(const BITMAP *pBitmap);
+
+/**
+ * Load a bitmap file of 24 bits as pixels of RGBA 8888.
+ *
+ * @param pszPath The path of the file.
+ * @return The pixels from malloc(), or null.
+ * @ghidraAddress BRD3D: 0x100611a0
+ * @ghidraAddress BRGlide: 0x1005a210
+ */
+void *LoadBitmapFromFile(const char *pszPath);
 
 /**
  * Load the bitmaps of the damage of the paint from `Paint\damage%d.bmp`.

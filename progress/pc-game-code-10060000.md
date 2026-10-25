@@ -1,6 +1,6 @@
 # PC port game code from 0x10060000 to 0x10070000
 
-21 of 169 routines done.
+25 of 169 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -102,12 +102,12 @@ the same name, for a routine the port retained from the N64 game.
 | `RallyConfig::LoadDeviceDefaultBindings` |   ✅   |                 |      4 |    103 | `0x10069aa0` | `0x10062b10` | `void LoadDeviceDefaultBindings(RallyConfig * this, int nDevice)`                                                                        |
 | `RecordGhostKeyframe`                    |        |                 |      1 |    103 | `0x1006aab0` | `0x10063a60` | `undefined RecordGhostKeyframe()`                                                                                                        |
 | `ApplyWeather`                           |        | ✅ `0x80200050` |      2 |    102 | `0x10069740` | `0x100627b0` | `undefined ApplyWeather()`                                                                                                               |
-| `CopyBgr24ToRgba32Flipped`               |        |                 |      1 |    102 | `0x10060f00` | `0x10059f70` | `undefined CopyBgr24ToRgba32Flipped()`                                                                                                   |
 | `UpdateAirplaneSound`                    |        | ✅ `0x8022b954` |      1 |    102 | `0x10068180` | `0x100611f0` | `undefined UpdateAirplaneSound()`                                                                                                        |
-| `LoadBitmapFromFile`                     |        |                 |      3 |    101 | `0x100611a0` | `0x1005a210` | `undefined LoadBitmapFromFile()`                                                                                                         |
+| `CopyBgr24ToRgba32Flipped`               |   ✅   |                 |      1 |    102 | `0x10060f00` | `0x10059f70` | `undefined CopyBgr24ToRgba32Flipped()`                                                                                                   |
+| `LoadBitmapFromFile`                     |   ✅   |                 |      3 |    101 | `0x100611a0` | `0x1005a210` | `undefined LoadBitmapFromFile()`                                                                                                         |
 | `RallyConfig::GetInputBindingFlags`      |   ✅   |                 |      6 |     98 | `0x10069bc0` | `0x10062c30` | `WORD GetInputBindingFlags(RallyConfig * this, int nDevice, int nControl)`                                                               |
 | `ResetRenderSubsystems`                  |   📝   |                 |      3 |     90 | `0x1006a9c0` | `0x10063970` | `undefined ResetRenderSubsystems()`                                                                                                      |
-| `ConvertBitmap24ToRgba32`                |        |                 |      1 |     89 | `0x10060ea0` | `0x10059f10` | `undefined ConvertBitmap24ToRgba32()`                                                                                                    |
+| `ConvertBitmap24ToRgba32`                |   ✅   |                 |      1 |     89 | `0x10060ea0` | `0x10059f10` | `void * ConvertBitmap24ToRgba32(BITMAP * pBitmap)`                                                                                       |
 | `RallyConfig::GetInputBindingKeyCode`    |   ✅   |                 |      6 |     87 | `0x10069c30` | `0x10062ca0` | `BYTE GetInputBindingKeyCode(RallyConfig * this, int nDevice, int nControl)`                                                             |
 | `MarkTrackSections`                      |        | ✅ `0x80255ba0` |      2 |     82 | `0x10061660` | `0x1005a6e0` | `undefined MarkTrackSections()`                                                                                                          |
 | `AllocDisplayListBlock`                  |        | ✅ `0x80255cd0` |     13 |     77 | `0x10069490` | `0x10062500` | `void * AllocDisplayListBlock(void)`                                                                                                     |
@@ -118,7 +118,7 @@ the same name, for a routine the port retained from the N64 game.
 | `FreeCarPaintTextures`                   |   ✅   |                 |      2 |     71 | `0x100613b0` | `0x1005a420` | `void FreeCarPaintTextures(void)`                                                                                                        |
 | `ResetMouseCursorToCenter`               |   ✅   |                 |      1 |     71 | `0x10060210` | `0x10059280` | `bool ResetMouseCursorToCenter(int nUnused)`                                                                                             |
 | `UpdateWaterfallSound`                   |        | ✅ `0x8022ba10` |      1 |     70 | `0x10068210` | `0x10061280` | `undefined UpdateWaterfallSound()`                                                                                                       |
-| `LoadPaintDamageBitmaps`                 |   📝   |                 |      1 |     70 | `0x10061410` | `0x1005a490` | `undefined LoadPaintDamageBitmaps()`                                                                                                     |
+| `LoadPaintDamageBitmaps`                 |   ✅   |                 |      1 |     70 | `0x10061410` | `0x1005a490` | `void LoadPaintDamageBitmaps(void)`                                                                                                      |
 | `GetCarPaintBitmap`                      |        |                 |      4 |     63 | `0x10060f70` | `0x10059fe0` | `undefined GetCarPaintBitmap()`                                                                                                          |
 | `ClearPerFrameVariables`                 |        | ✅ `0x80225f30` |      1 |     62 | `0x100633e0` | `0x1005c450` | `undefined ClearPerFrameVariables()`                                                                                                     |
 | `ReinitPlayerEngineSoundChannel`         |        |                 |      1 |     62 | `0x10068260` | `0x100612d0` | `undefined ReinitPlayerEngineSoundChannel()`                                                                                             |
