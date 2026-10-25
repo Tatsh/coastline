@@ -32,6 +32,7 @@ bool g_dwLobbyIsHost;
 bool g_dwSessionEnumPending;
 UINT_PTR g_dwNetworkTimerId;
 IDirectPlayLobby2A *g_pDirectPlayLobby;
+int g_dwDirectPlayInstanceCount;
 bool g_bDirectPlayReceiveThreadStarted;
 CRITICAL_SECTION g_DirectPlaySendCritSec;
 HANDLE g_hDirectPlayReceiveStopEvent;
@@ -413,6 +414,30 @@ const char *GetDirectPlayErrorString(HRESULT hResult) {
     default:
         wsprintfA(g_szDirectPlayErrorBuffer, "0x%08X", hResult);
         return g_szDirectPlayErrorBuffer;
+    }
+}
+
+void FreeServiceProviderConnectionData(void) {
+    for (ServiceProvider &provider : g_aServiceProviders) {
+        if (provider.pConnectionData != nullptr) {
+            GlobalUnlock(GlobalHandle(provider.pConnectionData));
+            GlobalFree(GlobalHandle(provider.pConnectionData));
+            provider.pConnectionData = nullptr;
+        }
+    }
+}
+
+void ShutdownDirectPlay(void) {
+    char szMessage[0x104];
+
+    ShutdownNetworkSubsystem(1);
+    FreeServiceProviderConnectionData();
+    sprintf(
+        szMessage, "DirectPlay interface final instance count = %d\n", g_dwDirectPlayInstanceCount);
+    OutputDebugStringA(szMessage);
+    // The lobby is released and its pointer is not cleared.
+    if (g_pDirectPlayLobby != nullptr) {
+        g_pDirectPlayLobby->Release();
     }
 }
 

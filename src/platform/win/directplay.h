@@ -389,15 +389,34 @@ void WINAPI HandleNetworkWindowMessage(HWND hWnd, UINT nMessage, WPARAM wParam, 
  *
  * @param nReason 1 as the game ends. Its meaning is not recovered yet.
  * @ghidraAddress BRD3D: 0x10005be0
+ * @ghidraAddress BRGlide: 0x10005f50
  */
 void ShutdownNetworkSubsystem(int nReason);
 
 /**
- * Release DirectPlay.
+ * End network play, free the connection data of the service providers, write the count of
+ * DirectPlay objects left to the debugger, and release the lobby.
  *
  * @ghidraAddress BRD3D: 0x1003bfd0
+ * @ghidraAddress BRGlide: 0x10035660
  */
 void ShutdownDirectPlay(void);
+
+/**
+ * Free the connection data of every service provider.
+ *
+ * @ghidraAddress BRD3D: 0x1003cfe0
+ * @ghidraAddress BRGlide: 0x10036670
+ */
+void FreeServiceProviderConnectionData(void);
+
+/**
+ * The number of DirectPlay objects that exist.
+ *
+ * @ghidraAddress BRD3D: 0x10a9d004
+ * @ghidraAddress BRGlide: 0x10ac4094
+ */
+extern int g_dwDirectPlayInstanceCount;
 
 /**
  * Leave the session of DirectPlay.

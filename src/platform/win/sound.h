@@ -113,8 +113,10 @@ void ShutdownDirectSound(void);
 void ReleaseMusicDeviceReference(void);
 
 /**
- * Release the music library.
+ * Drop a user of the EAR library. The last user shuts the library down.
  *
+ * @return Always true.
  * @ghidraAddress BRD3D: 0x1002aea0
+ * @ghidraAddress BRGlide: 0x10017f10
  */
-void ShutdownEarSound(void);
+bool ShutdownEarSound(void);

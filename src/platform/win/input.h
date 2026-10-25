@@ -2,8 +2,99 @@
 
 /**
  * @file
- * The control bindings of the PC port.
+ * The control bindings and the DirectInput devices of the PC port.
  */
+
+#ifndef DIRECTINPUT_VERSION
+#define DIRECTINPUT_VERSION 0x0500
+#endif
+#include <windows.h>
+// The headers below need the types of windows.h.
+#include <dinput.h>
+
+/** The mouse of the game. The layout is not recovered yet. */
+class MouseDevice {
+public:
+    /**
+     * Release the DirectInput device of the mouse.
+     *
+     * @ghidraAddress BRD3D: 0x100602b0
+     * @ghidraAddress BRGlide: 0x10059320
+     */
+    void ReleaseMouseDevice();
+};
+
+/**
+ * DirectInput.
+ *
+ * @ghidraAddress BRD3D: 0x118abd70
+ * @ghidraAddress BRGlide: 0x118eee88
+ */
+extern IDirectInputA *g_pDirectInput;
+
+/**
+ * The users of DirectInput. The last ShutdownDirectInput() releases it.
+ *
+ * @ghidraAddress BRD3D: 0x118abde8
+ * @ghidraAddress BRGlide: 0x118eef00
+ */
+extern int g_dwDirectInputRefCount;
+
+/**
+ * The mouse, created with DirectInput.
+ *
+ * @ghidraAddress BRD3D: 0x10aa2e80
+ * @ghidraAddress BRGlide: 0x10ac61e0
+ */
+extern MouseDevice *g_pMouseDevice;
+
+/**
+ * The DirectInput device of the keyboard.
+ *
+ * @ghidraAddress BRD3D: 0x118abdd0
+ * @ghidraAddress BRGlide: 0x118eeee8
+ */
+extern IDirectInputDeviceA *g_pKeyboardDevice;
+
+/**
+ * The users of the keyboard device.
+ *
+ * @ghidraAddress BRD3D: 0x118abdd8
+ * @ghidraAddress BRGlide: 0x118eeef0
+ */
+extern int g_dwKeyboardDeviceRefCount;
+
+/**
+ * The DirectInput device of the game controller.
+ *
+ * @ghidraAddress BRD3D: 0x118abdd4
+ * @ghidraAddress BRGlide: 0x118eeeec
+ */
+extern IDirectInputDevice2A *g_pJoystickDevice;
+
+/**
+ * The users of the game controller device.
+ *
+ * @ghidraAddress BRD3D: 0x118abe00
+ * @ghidraAddress BRGlide: 0x118eef18
+ */
+extern int g_dwJoystickDeviceRefCount;
+
+/**
+ * The jolt effect of force feedback of the game controller.
+ *
+ * @ghidraAddress BRD3D: 0x118abdfc
+ * @ghidraAddress BRGlide: 0x118eef14
+ */
+extern IDirectInputEffect *g_pJoltEffect;
+
+/**
+ * The condition effect of force feedback of the game controller.
+ *
+ * @ghidraAddress BRD3D: 0x118abdec
+ * @ghidraAddress BRGlide: 0x118eef04
+ */
+extern IDirectInputEffect *g_pConditionEffect;
 
 /** The number of controls a binding table has. */
 #define INPUT_BINDING_COUNT 28
@@ -49,22 +140,28 @@ extern InputBinding g_awDefaultKeyBindingsDevice2[INPUT_BINDING_COUNT];
 extern InputBinding g_awDefaultKeyBindingsDevice3[INPUT_BINDING_COUNT];
 
 /**
- * Release the DirectInput device of the game controller.
+ * Drop a user of the game controller device. The last user releases the effects of force feedback
+ * and the device. A count that falls below 0 is set back to 0.
  *
  * @ghidraAddress BRD3D: 0x10079550
+ * @ghidraAddress BRGlide: 0x10072840
  */
 void ReleaseJoystickDevice(void);
 
 /**
- * Release the DirectInput device of the keyboard.
+ * Drop a user of the keyboard device. The last user releases the device. A count that falls below
+ * 0 is set back to 0.
  *
  * @ghidraAddress BRD3D: 0x10078bc0
+ * @ghidraAddress BRGlide: 0x10071eb0
  */
 void ReleaseKeyboardDevice(void);
 
 /**
- * Release DirectInput.
+ * Drop a user of DirectInput. The last user frees the mouse and releases DirectInput.
  *
+ * @return Always true.
  * @ghidraAddress BRD3D: 0x10078db0
+ * @ghidraAddress BRGlide: 0x100720a0
  */
-void ShutdownDirectInput(void);
+bool ShutdownDirectInput(void);

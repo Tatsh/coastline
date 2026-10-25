@@ -146,6 +146,13 @@ bool LoadEarSoundDll(int bUsePds) {
     return true;
 }
 
+bool ShutdownEarSound(void) {
+    if (--g_dwEarSoundInitRefCount == 0) {
+        g_pfnEarShutDownEar();
+    }
+    return true;
+}
+
 bool InitializeEarSound(HWND hWnd) {
     if (++g_dwEarSoundInitRefCount != 1) {
         return true;
