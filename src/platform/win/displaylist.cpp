@@ -256,6 +256,14 @@ GbiCommand *HandleGbiNoOp(GbiCommand *pCommand) {
     return pCommand + 1;
 }
 
+unsigned g_dwGbiRenderMode;
+
+GbiCommand *HandleGbiSetRenderMode(GbiCommand *pCommand) {
+    g_dwGbiRenderMode = pCommand->w1;
+    ApplyRdpRenderMode(g_dwGbiRenderMode);
+    return pCommand + 1;
+}
+
 int g_dwGbiNumLights;
 GbiLight g_aGbiLights[GBI_LIGHT_COUNT];
 int g_bGbiLightsTransformed;

@@ -214,9 +214,26 @@ GbiCommand *HandleGbiDisplayList(GbiCommand *pCommand);
 GbiCommand *HandleGbiNoOp(GbiCommand *pCommand);
 
 /**
+ * The render mode of the console the display lists set last.
+ *
+ * @ghidraAddress BRD3D: 0x104c1694
+ * @ghidraAddress BRGlide: 0x105ce2d4
+ */
+extern unsigned g_dwGbiRenderMode;
+
+/**
+ * Apply the blending, the depth, and the test of alpha of a render mode of the console.
+ *
+ * @param dwRenderMode The render mode.
+ * @ghidraAddress BRD3D: 0x10020fa0
+ * @ghidraAddress BRGlide: 0x10021270
+ */
+void ApplyRdpRenderMode(unsigned dwRenderMode);
+
+/**
  * Set the render mode.
  *
- * @param pCommand The command.
+ * @param pCommand The command, the render mode in its second word.
  * @return The next command.
  * @ghidraAddress BRD3D: 0x10020f80
  * @ghidraAddress BRGlide: 0x10021250
