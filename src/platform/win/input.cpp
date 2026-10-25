@@ -295,6 +295,81 @@ HRESULT SetJoystickAxisRange(IDirectInputDevice2A *pDevice,
 }
 
 bool g_bForceFeedbackAvailable;
+DIEFFECT g_DiConditionEffect;
+DICONDITION g_aDiConditionParams[2];
+LONG g_alConditionEffectDirection[2];
+int g_dwForceFeedbackMagnitude;
+bool g_bForceFeedbackForceStopped;
+DIEFFECT g_DiJoltEffect;
+DIPERIODIC g_DiJoltPeriodic;
+DWORD g_dwForceFeedbackDuration = 125000;
+LONG g_adwForceFeedbackDirection[2] = {-1, 0};
+
+// The saturation and the gain of the effects of force feedback.
+#define FORCE_FEEDBACK_FULL 10000
+// The period of the square wave of the jolt in microseconds.
+#define JOLT_PERIOD 250000
+
+// The effects play on X and Y by offsets, in Cartesian directions, and with no trigger.
+static inline void SetUpForceFeedbackEffect(DIEFFECT *pEffect,
+                                            DWORD dwDuration,
+                                            DWORD *pdwAxes,
+                                            LONG *plDirection,
+                                            DWORD cbParams,
+                                            void *pParams) {
+    pEffect->dwSize = sizeof(*pEffect);
+    pEffect->dwFlags = DIEFF_CARTESIAN | DIEFF_OBJECTOFFSETS;
+    pEffect->dwDuration = dwDuration;
+    pEffect->dwSamplePeriod = 0;
+    pEffect->dwGain = FORCE_FEEDBACK_FULL;
+    pEffect->dwTriggerButton = DIEB_NOTRIGGER;
+    pEffect->dwTriggerRepeatInterval = 0;
+    pEffect->cAxes = 2;
+    pEffect->rgdwAxes = pdwAxes;
+    pEffect->rglDirection = plDirection;
+    pEffect->lpEnvelope = nullptr;
+    pEffect->cbTypeSpecificParams = cbParams;
+    pEffect->lpvTypeSpecificParams = pParams;
+}
+
+static inline void SetSpring(DICONDITION *pCondition, LONG lCoefficient) {
+    pCondition->lOffset = 0;
+    pCondition->lPositiveCoefficient = lCoefficient;
+    pCondition->lNegativeCoefficient = lCoefficient;
+    pCondition->dwPositiveSaturation = FORCE_FEEDBACK_FULL;
+    pCondition->dwNegativeSaturation = FORCE_FEEDBACK_FULL;
+    pCondition->lDeadBand = 0;
+}
+
+HRESULT CreateForceFeedbackEffects(int nCoefficientX, int nCoefficientY) {
+    // The effects retain a pointer to the axes after the routine returns.
+    DWORD adwAxes[2] = {DIJOFS_X, DIJOFS_Y};
+
+    SetSpring(&g_aDiConditionParams[0], nCoefficientX);
+    SetSpring(&g_aDiConditionParams[1], nCoefficientY);
+    SetUpForceFeedbackEffect(&g_DiConditionEffect,
+                             INFINITE,
+                             adwAxes,
+                             g_alConditionEffectDirection,
+                             sizeof(g_aDiConditionParams),
+                             g_aDiConditionParams);
+    if (g_pJoystickDevice->CreateEffect(
+            GUID_Spring, &g_DiConditionEffect, &g_pConditionEffect, nullptr) == DI_OK) {
+        g_dwForceFeedbackMagnitude = nCoefficientX;
+        g_bForceFeedbackForceStopped = true;
+    }
+    g_DiJoltPeriodic.dwMagnitude = FORCE_FEEDBACK_FULL;
+    g_DiJoltPeriodic.lOffset = 0;
+    g_DiJoltPeriodic.dwPhase = 0;
+    g_DiJoltPeriodic.dwPeriod = JOLT_PERIOD;
+    SetUpForceFeedbackEffect(&g_DiJoltEffect,
+                             g_dwForceFeedbackDuration,
+                             adwAxes,
+                             g_adwForceFeedbackDirection,
+                             sizeof(g_DiJoltPeriodic),
+                             &g_DiJoltPeriodic);
+    return g_pJoystickDevice->CreateEffect(GUID_Square, &g_DiJoltEffect, &g_pJoltEffect, nullptr);
+}
 
 // The range of an axis of the game controller.
 #define JOYSTICK_AXIS_MIN -128

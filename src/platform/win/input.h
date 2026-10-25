@@ -521,16 +521,88 @@ void UpdateKeyboardEdgeState(void);
 extern bool g_bForceFeedbackAvailable;
 
 /**
- * Create the jolt and condition effects of force feedback of the game controller. The return, if
- * any, is not recovered yet.
+ * The condition effect of force feedback, a spring on X and Y.
  *
- * @param nJoltDuration The first value the game passes, 1000. Its meaning is not recovered yet.
- * @param nConditionDuration The second value the game passes, 8000. Its meaning is not recovered
- * yet.
+ * @ghidraAddress BRD3D: 0x118ab880
+ * @ghidraAddress BRGlide: 0x118ee998
+ */
+extern DIEFFECT g_DiConditionEffect;
+
+/**
+ * The springs of X and Y of g_DiConditionEffect.
+ *
+ * @ghidraAddress BRD3D: 0x118abd08
+ * @ghidraAddress BRGlide: 0x118eee20
+ */
+extern DICONDITION g_aDiConditionParams[2];
+
+/**
+ * The direction of g_DiConditionEffect.
+ *
+ * @ghidraAddress BRD3D: 0x118abdf0
+ * @ghidraAddress BRGlide: 0x118eef08
+ */
+extern LONG g_alConditionEffectDirection[2];
+
+/**
+ * The strength of the spring of X once the condition effect exists.
+ *
+ * @ghidraAddress BRD3D: 0x118abd78
+ * @ghidraAddress BRGlide: 0x118eee90
+ */
+extern int g_dwForceFeedbackMagnitude;
+
+/**
+ * Whether the condition effect does not play. Set once the effect is created.
+ *
+ * @ghidraAddress BRD3D: 0x118abdf8
+ * @ghidraAddress BRGlide: 0x118eef10
+ */
+extern bool g_bForceFeedbackForceStopped;
+
+/**
+ * The jolt effect of force feedback, a square wave.
+ *
+ * @ghidraAddress BRD3D: 0x118abd88
+ * @ghidraAddress BRGlide: 0x118eeea0
+ */
+extern DIEFFECT g_DiJoltEffect;
+
+/**
+ * The square wave of g_DiJoltEffect.
+ *
+ * @ghidraAddress BRD3D: 0x118abac0
+ * @ghidraAddress BRGlide: 0x118eebd8
+ */
+extern DIPERIODIC g_DiJoltPeriodic;
+
+/**
+ * The duration of the jolt in microseconds, 125000.
+ *
+ * @ghidraAddress BRD3D: 0x100bd438
+ * @ghidraAddress BRGlide: 0x100bcc40
+ */
+extern DWORD g_dwForceFeedbackDuration;
+
+/**
+ * The direction of the jolt, along the negative X axis.
+ *
+ * @ghidraAddress BRD3D: 0x100bd430
+ * @ghidraAddress BRGlide: 0x100bcc38
+ */
+extern LONG g_adwForceFeedbackDirection[2];
+
+/**
+ * Create the condition effect, a spring on X and Y that lasts until it stops, and the jolt
+ * effect, a square wave, of force feedback of the game controller.
+ *
+ * @param nCoefficientX The strength of the spring of X, 1000 as the game passes it.
+ * @param nCoefficientY The strength of the spring of Y, 8000 as the game passes it.
+ * @return The result of the creation of the jolt.
  * @ghidraAddress BRD3D: 0x10079390
  * @ghidraAddress BRGlide: 0x10072680
  */
-void CreateForceFeedbackEffects(int nJoltDuration, int nConditionDuration);
+HRESULT CreateForceFeedbackEffects(int nCoefficientX, int nCoefficientY);
 
 /**
  * Create the device of the first attached game controller DirectInput enumerates, as its second
