@@ -7,6 +7,13 @@
 
 #include <windows.h>
 
+/** The milliseconds of a period of ticks. */
+#define TICK_PERIOD_MS 100
+/** The ticks of a period. */
+#define TICKS_PER_PERIOD 3
+/** The milliseconds of a tick, rounded down. */
+#define TICK_INTERVAL_MS 33
+
 /** The clock of the frames, from the performance counter or in milliseconds without one. */
 class FrameTimer {
 public:
@@ -70,7 +77,7 @@ extern int g_bFrameTimerHasPerfCounter;
 extern LARGE_INTEGER g_liFrameTimerFrequency;
 
 /**
- * The time of the last reset of the ticks, in milliseconds.
+ * The time of the current tick, in milliseconds.
  *
  * @ghidraAddress BRD3D: 0x118ab118
  * @ghidraAddress BRGlide: 0x118ee230
@@ -116,6 +123,15 @@ extern int g_bFrameTimerReset;
  * @ghidraAddress BRGlide: 0x1006e360
  */
 void ResetFrameTimer(void);
+
+/**
+ * Get the time of the current tick.
+ *
+ * @return The time in milliseconds.
+ * @ghidraAddress BRD3D: 0x100750f0
+ * @ghidraAddress BRGlide: 0x1006e350
+ */
+DWORD GetFrameTickCounter(void);
 
 /**
  * Start the timing of the frames of a race again.

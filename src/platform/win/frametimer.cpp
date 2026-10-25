@@ -20,10 +20,6 @@ int g_bFrameTimerReset = true;
 #define FRAMES_PER_SECOND 30
 // The milliseconds of a frame without the performance counter.
 #define FRAME_INTERVAL_MS 33
-// The ticks of the frames come three to each tenth of a second.
-#define TICK_PERIOD_MS 100
-#define TICKS_PER_PERIOD 3
-#define TICK_INTERVAL_MS 33
 
 FrameTimer *FrameTimer::InitializeFrameTimer() {
     if (!g_bFrameTimerInitialized) {
@@ -48,6 +44,10 @@ void FrameTimer::SnapshotTimerState() {
         dwCurrentTimeMs = GetHighResolutionTime();
         dwNextIntervalMs = dwFrameIntervalMs;
     }
+}
+
+DWORD GetFrameTickCounter(void) {
+    return g_dwFrameTickTime;
 }
 
 void ResetFrameTimer(void) {
