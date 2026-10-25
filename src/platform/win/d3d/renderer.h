@@ -5,6 +5,8 @@
  * The DirectDraw and Direct3D renderer of a window, and the host that the game reaches it through.
  */
 
+#include <cstring>
+
 #include <d3d.h>
 #include <ddraw.h>
 #include <windows.h>
@@ -50,8 +52,40 @@ class DirectDrawDriver {
 public:
     unsigned dwFlags;        /*!< DIRECTDRAW_DRIVER_USABLE and DIRECTDRAW_DRIVER_PRIMARY. */
     GUID guid;               /*!< The GUID of the driver. */
-    char abUnknown14[0x31c]; /* +0x14 */
+    char abUnknown14[8];     /* +0x14 */
+    DDCAPS hardwareCaps;     /*!< What the hardware of the driver does. */
+    DDCAPS softwareCaps;     /*!< What the emulation of the driver does. */
+    int anUnknown314[6];     /* +0x314 */
+    DirectDrawDriver *pPrev; /*!< The driver found before. */
     DirectDrawDriver *pNext; /*!< The next driver found. */
+
+    /** Start a driver that is not usable, with empty abilities. */
+    DirectDrawDriver() : pPrev(nullptr), pNext(nullptr) {
+        dwFlags &= ~DIRECTDRAW_DRIVER_USABLE;
+        memset(&hardwareCaps, 0, sizeof(hardwareCaps));
+        hardwareCaps.dwSize = sizeof(hardwareCaps);
+        memset(&softwareCaps, 0, sizeof(softwareCaps));
+        softwareCaps.dwSize = sizeof(softwareCaps);
+        memset(anUnknown314, 0, sizeof(anUnknown314));
+    }
+
+    /**
+     * Read a driver DirectDraw reports, with its devices and its modes.
+     *
+     * @param pGuid The GUID of the driver, or `nullptr` for the primary.
+     * @param pszName The name of the driver.
+     * @param pszDescription The description of the driver.
+     * @return `S_OK`, or the error of DirectDraw.
+     * @ghidraAddress BRD3D: 0x1001b090
+     */
+    HRESULT InitializeDirectDrawDriver(GUID *pGuid, LPSTR pszName, LPSTR pszDescription);
+
+    /**
+     * Free the devices and the modes of the driver.
+     *
+     * @ghidraAddress BRD3D: 0x1001b280
+     */
+    void ShutdownDirectDrawDriver();
 
     /**
      * Whether a GUID selects the driver, a usable driver alone. No GUID selects the primary.
@@ -500,6 +534,22 @@ DirectDrawDriver *FindDirectDrawDriverOrDefault(GUID *pGuid);
  * @ghidraAddress BRD3D: 0x104bbe20
  */
 extern DirectDrawDriver *g_pDirectDrawDriverListHead;
+
+/**
+ * The last DirectDraw driver the game found.
+ *
+ * @ghidraAddress BRD3D: 0x104bbe24
+ */
+extern DirectDrawDriver *g_pDirectDrawDriverListTail;
+
+/**
+ * Add a driver to the end of the list of drivers.
+ *
+ * @param pDriver The driver.
+ * @return `S_OK`, or `E_INVALIDARG` without a driver.
+ * @ghidraAddress BRD3D: 0x1001ba10
+ */
+HRESULT AppendDirectDrawDriverNode(DirectDrawDriver *pDriver);
 
 /**
  * The Direct3D device of the renderer that created it last.

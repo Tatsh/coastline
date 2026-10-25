@@ -85,6 +85,8 @@ dbuild
 dcmake
 dcosf
 ddbd
+ddcaps
+ddenumret
 ddflip
 ddgfs
 ddivu

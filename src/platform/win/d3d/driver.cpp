@@ -1,8 +1,10 @@
 #include <cstring>
+#include <new>
 
 #include "platform/win/d3d/renderer.h"
 
 DirectDrawDriver *g_pDirectDrawDriverListHead;
+DirectDrawDriver *g_pDirectDrawDriverListTail;
 
 DirectDrawDriver *FindDirectDrawDriverOrDefault(GUID *pGuid) {
     DirectDrawDriver *pPrimary;
@@ -83,6 +85,31 @@ bool IsPixelFormatPalettized(const DDPIXELFORMAT *pFormat) {
                                 DDPF_PALETTEINDEXED8)) != 0;
 }
 
+BOOL WINAPI EnumDirectDrawDriversCallback(GUID *pGuid,
+                                          LPSTR pszDescription,
+                                          LPSTR pszName,
+                                          LPVOID pContext) {
+    DriverEnumContext *pEnum = static_cast<DriverEnumContext *>(pContext);
+    DirectDrawDriver *pDriver;
+
+    if (pEnum == nullptr) {
+        return DDENUMRET_OK;
+    }
+    pDriver = new (std::nothrow) DirectDrawDriver;
+    if (pDriver == nullptr) {
+        return DDENUMRET_OK;
+    }
+    // A driver that is not read or not added is freed, and the search goes on without it.
+    if (FAILED(pDriver->InitializeDirectDrawDriver(pGuid, pszName, pszDescription)) ||
+        FAILED(AppendDirectDrawDriverNode(pDriver))) {
+        pDriver->ShutdownDirectDrawDriver();
+        delete pDriver;
+        return DDENUMRET_OK;
+    }
+    pEnum->nFound++;
+    return DDENUMRET_OK;
+}
+
 HRESULT DisplayMode::GetSurfaceDescDimensions(int *pnWidth,
                                               int *pnHeight,
                                               int *pnBitDepth,
@@ -144,6 +171,23 @@ HRESULT EnumerateDirectDrawDrivers(void) {
         return S_OK;
     }
     return RENDERER_E_NOT_IN_GDI_MODE;
+}
+
+HRESULT AppendDirectDrawDriverNode(DirectDrawDriver *pDriver) {
+    if (pDriver == nullptr) {
+        return E_INVALIDARG;
+    }
+    pDriver->pNext = nullptr;
+    pDriver->pPrev = g_pDirectDrawDriverListTail;
+    if (g_pDirectDrawDriverListTail != nullptr) {
+        g_pDirectDrawDriverListTail->pNext = pDriver;
+    }
+    g_pDirectDrawDriverListTail = pDriver;
+    if (g_pDirectDrawDriverListHead == nullptr) {
+        g_pDirectDrawDriverListHead = pDriver;
+    }
+    g_dwDirectDrawDriverCount++;
+    return S_OK;
 }
 
 DirectDrawDriver *
