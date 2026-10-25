@@ -4,6 +4,7 @@
 #include <cstring>
 
 #include "platform/win/settings.h"
+#include "weather.h"
 
 #if TGR_RENDERER == TGR_RENDERER_D3D
 #include "platform/win/d3d/renderer.h"
@@ -566,6 +567,71 @@ void ApplyGeometryModeChanges(void) {
             bSmooth ? HandleGbiTri1SmoothNoZBuffer : HandleGbiTri1FlatNoZBuffer;
         g_apfnGbiHandlers[GBI_OP_TRI2] =
             bSmooth ? HandleGbiTri2SmoothNoZBuffer : HandleGbiTri2FlatNoZBuffer;
+    }
+}
+
+D3DCOLOR g_dwVertexConstantColor;
+void (*g_pfnSubmitVertexToRenderBuffer)(GbiVertex *pVertex) = SubmitVertexToRenderBuffer;
+
+// The colours of the combine modes that draw in one colour.
+#define VERTEX_CONSTANT_COLOR_WHITE 0xffffffff
+#define VERTEX_CONSTANT_COLOR_BLACK 0xff000000
+
+static inline bool
+IsCombineMode(unsigned dwHi, unsigned dwLo, unsigned dwModeHi, unsigned dwModeLo) {
+    return dwHi == dwModeHi && dwLo == dwModeLo;
+}
+
+// Take the routine that copies a vertex with its fog in weather, and with its colour alone in
+// sunshine.
+static inline void SelectWeatherVertexSubmitter(void) {
+    g_pfnSubmitVertexToRenderBuffer =
+        g_dwWeatherActive ? SubmitVertexToRenderBufferEx : SubmitVertexToRenderBuffer;
+}
+
+static inline void SelectConstantColorVertexSubmitter(D3DCOLOR dwColor) {
+    g_dwVertexConstantColor = dwColor;
+    g_pfnSubmitVertexToRenderBuffer =
+        g_dwWeatherActive ? SubmitVertexToRenderBufferFogged : SubmitVertexToRenderBufferConstColor;
+}
+
+void SelectVertexSubmitterForCombineMode(unsigned dwCombineHi, unsigned dwCombineLo) {
+    bool bSpecial = false;
+
+    g_bCombineModeSpecialSubmitter = false;
+    if (IsCombineMode(dwCombineHi, dwCombineLo, 0xfcffffff, 0xfffcf87c)) {
+        SelectConstantColorVertexSubmitter(VERTEX_CONSTANT_COLOR_WHITE);
+    } else if (IsCombineMode(dwCombineHi, dwCombineLo, 0xfcffffff, 0xfffe793c)) {
+        SelectWeatherVertexSubmitter();
+    } else if (IsCombineMode(dwCombineHi, dwCombineLo, 0xfc567eac, 0xfffff3f9)) {
+        SelectConstantColorVertexSubmitter(VERTEX_CONSTANT_COLOR_BLACK);
+    } else if (IsCombineMode(dwCombineHi, dwCombineLo, 0xfcff97ff, 0xff2dfeff)) {
+        SelectWeatherVertexSubmitter();
+    } else if (IsCombineMode(dwCombineHi, dwCombineLo, 0xfcffffff, 0xfffdf2f9)) {
+        SelectWeatherVertexSubmitter();
+    } else if (IsCombineMode(dwCombineHi, dwCombineLo, 0xfcffffff, 0xffff73b9)) {
+        SelectConstantColorVertexSubmitter(VERTEX_CONSTANT_COLOR_WHITE);
+    } else if (IsCombineMode(dwCombineHi, dwCombineLo, 0xfc127e08, 0xf3fff2f8)) {
+        // Without night or rain, the routine chosen last is kept.
+        if (g_dwNightMode || g_dwRainMode) {
+            SelectWeatherVertexSubmitter();
+        }
+    } else if (IsCombineMode(dwCombineHi, dwCombineLo, 0xfc317e02, 0x5ffef3fa) ||
+               IsCombineMode(dwCombineHi, dwCombineLo, 0xfc317e02, 0x51fef3fa)) {
+        SelectWeatherVertexSubmitter();
+        bSpecial = true;
+        g_bCombineModeSpecialSubmitter = true;
+    } else if (IsCombineMode(dwCombineHi, dwCombineLo, 0xfc127fff, 0xfffff838)) {
+        SelectConstantColorVertexSubmitter(VERTEX_CONSTANT_COLOR_BLACK);
+    } else {
+        SelectWeatherVertexSubmitter();
+    }
+    if (bSpecial) {
+        if (g_apfnGbiHandlers[GBI_OP_VERTEX] == HandleGbiVertexLit) {
+            g_apfnGbiHandlers[GBI_OP_VERTEX] = HandleGbiVertexLitEnvColorModulated;
+        }
+    } else if (g_apfnGbiHandlers[GBI_OP_VERTEX] == HandleGbiVertexLitEnvColorModulated) {
+        g_apfnGbiHandlers[GBI_OP_VERTEX] = HandleGbiVertexLit;
     }
 }
 #endif

@@ -110,12 +110,15 @@ extern int g_dwGbiDisplayListStackDepth;
 extern GbiCommand *g_apGbiDisplayListReturnStack[GBI_DISPLAY_LIST_STACK_SIZE];
 
 /**
- * Choose the routine that submits vertices for a combine mode.
+ * Choose the routine that submits vertices for a combine mode, and the colour of the combine modes
+ * that draw in one colour. One combine mode takes the handler of lit vertices that modulates by the
+ * environment colour, and every other gives it up.
  *
  * @param dwCombineHi The first word of the combine mode.
  * @param dwCombineLo The second word of the combine mode.
  * @ghidraAddress BRD3D: 0x1001c820
  * @ghidraAddress BRGlide: 0x1001e7a0
+ * @stub{BRGlide}
  */
 void SelectVertexSubmitterForCombineMode(unsigned dwCombineHi, unsigned dwCombineLo);
 
@@ -713,6 +716,45 @@ extern int g_nRenderIndexCount;
 void ResetRenderBufferAndVertexPool(void);
 
 /**
+ * Copy a vertex into g_renderBuffer with its colour.
+ *
+ * @param pVertex The vertex.
+ * @ghidraAddress BRD3D: 0x1001bc90
+ */
+void SubmitVertexToRenderBuffer(GbiVertex *pVertex);
+
+/**
+ * Copy a vertex into g_renderBuffer with its colour and its fog.
+ *
+ * @param pVertex The vertex.
+ * @ghidraAddress BRD3D: 0x1001c690
+ */
+void SubmitVertexToRenderBufferEx(GbiVertex *pVertex);
+
+/**
+ * Copy a vertex into g_renderBuffer with g_dwVertexConstantColor.
+ *
+ * @param pVertex The vertex.
+ * @ghidraAddress BRD3D: 0x1001ca10
+ */
+void SubmitVertexToRenderBufferConstColor(GbiVertex *pVertex);
+
+/**
+ * Copy a vertex into g_renderBuffer with g_dwVertexConstantColor and its fog.
+ *
+ * @param pVertex The vertex.
+ * @ghidraAddress BRD3D: 0x1001ca90
+ */
+void SubmitVertexToRenderBufferFogged(GbiVertex *pVertex);
+
+/**
+ * The routine that copies a vertex into g_renderBuffer, chosen for the combine mode.
+ *
+ * @ghidraAddress BRD3D: 0x100a79ec
+ */
+extern void (*g_pfnSubmitVertexToRenderBuffer)(GbiVertex *pVertex);
+
+/**
  * Draw the triangles waiting in g_renderBuffer, when there are any, and empty it.
  *
  * @ghidraAddress BRD3D: 0x1001d3a0
@@ -1002,6 +1044,13 @@ extern DWORD g_dwD3DZFunc;
  * @ghidraAddress BRD3D: 0x104c0dc0
  */
 extern int g_bCombineModeSpecialSubmitter;
+
+/**
+ * The colour of the vertices of the combine modes that draw in one colour.
+ *
+ * @ghidraAddress BRD3D: 0x104c0bb4
+ */
+extern D3DCOLOR g_dwVertexConstantColor;
 #endif
 
 /** The opcodes of the commands of the display lists that have handlers of their own. */
