@@ -17,6 +17,7 @@ add_library(
   frametimer.cpp
   frontend.cpp
   input.cpp
+  netstream.cpp
   paintshop.c
   podarchive.cpp
   render.cpp
