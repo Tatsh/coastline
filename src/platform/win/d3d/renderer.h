@@ -18,9 +18,29 @@
 /** The bits of DirectDrawRenderer::dwRenderStateFlags of a renderer that can draw. */
 #define RENDERER_STATE_READY 0x1f
 
-/** A DirectDraw driver the game found. */
+/** A DirectDraw driver usable by the game. */
+#define DIRECTDRAW_DRIVER_USABLE 0x1
+
+/** The primary DirectDraw driver, selected without a GUID. */
+#define DIRECTDRAW_DRIVER_PRIMARY 0x2
+
+/** A DirectDraw driver the game found. The layout after pNext is not recovered yet. */
 class DirectDrawDriver {
 public:
+    unsigned dwFlags;        /*!< DIRECTDRAW_DRIVER_USABLE and DIRECTDRAW_DRIVER_PRIMARY. */
+    GUID guid;               /*!< The GUID of the driver. */
+    char abUnknown14[0x31c]; /* +0x14 */
+    DirectDrawDriver *pNext; /*!< The next driver found. */
+
+    /**
+     * Whether a GUID selects the driver, a usable driver alone. No GUID selects the primary.
+     *
+     * @param pGuid The GUID, or `nullptr` for the primary driver.
+     * @return Whether the GUID selects the driver.
+     * @ghidraAddress BRD3D: 0x1001b2d0
+     */
+    bool CompareDirectDrawDriverGuid(const GUID *pGuid);
+
     /**
      * The GUID that selects the driver.
      *
@@ -54,8 +74,8 @@ public:
     int nPaletteEntryCount;              /*!< The entries of the two palette buffers. */
     void *pPaletteEntries;               /*!< A buffer of palette entries. */
     void *pSavedPaletteEntries;          /*!< A second buffer of palette entries. */
-    void *pSurfaceForDevice;             /*!< The surface the device draws into. */
-    void *pStencilOrAuxSurface;          /*!< A surface beside pSurfaceForDevice. */
+    IDirectDrawSurface *pBackBuffer;     /*!< The surface the device draws into. */
+    IDirectDrawSurface *pZBuffer;        /*!< The depth buffer attached to pBackBuffer. */
     IDirect3DDevice2 *pD3DDevice;        /*!< The Direct3D device. */
     IDirect3DViewport2 *pViewport;       /*!< The viewport of pD3DDevice. */
     int anUnknown68[8];                  /* +0x68 */
@@ -156,6 +176,14 @@ public:
     HRESULT CreatePrimaryFlipChain();
 
     /**
+     * Create the palette of the front buffer when the mode has one.
+     *
+     * @return `S_OK`, or the error of DirectDraw.
+     * @ghidraAddress BRD3D: 0x1000a8d0
+     */
+    HRESULT InitializePrimaryPalette();
+
+    /**
      * Release the front buffer and its palette.
      *
      * @return 0.
@@ -180,11 +208,21 @@ public:
     HRESULT InitializeRenderDevice();
 
     /**
-     * Release the Direct3D device and its viewport.
+     * Release the Direct3D device, its viewport, and the back and depth buffers, telling the host
+     * first.
      *
+     * @return 0.
      * @ghidraAddress BRD3D: 0x1000ad70
      */
-    void DestroyD3DDevice();
+    int DestroyD3DDevice();
+
+    /**
+     * Release the viewport of the device and its material.
+     *
+     * @return 0.
+     * @ghidraAddress BRD3D: 0x1000aea0
+     */
+    int ReleaseViewportAndMaterial();
 
     /**
      * Give the renderer the host that draws through it, and give the host the renderer.
@@ -207,6 +245,14 @@ public:
      * @ghidraAddress BRD3D: 0x10001130
      */
     RenderHost();
+
+    /**
+     * Prepare for the device of the renderer to go.
+     *
+     * @return 0.
+     * @ghidraAddress BRD3D: 0x10001180
+     */
+    int OnDestroyDevice();
 
     /**
      * Draw through a renderer.
@@ -268,6 +314,40 @@ extern IDirect3D2 *g_pDirect3D2;
  * @ghidraAddress BRD3D: 0x1001a550
  */
 DirectDrawDriver *FindDirectDrawDriverOrDefault(GUID *pGuid);
+
+/**
+ * The DirectDraw drivers the game found, linked by DirectDrawDriver::pNext.
+ *
+ * @ghidraAddress BRD3D: 0x104bbe20
+ */
+extern DirectDrawDriver *g_pDirectDrawDriverListHead;
+
+/**
+ * The Direct3D device of the renderer that created it last.
+ *
+ * @ghidraAddress BRD3D: 0x10277368
+ */
+extern IDirect3DDevice2 *g_pD3DDevice2;
+
+/**
+ * Find the driver a GUID selects, and the primary driver on the way.
+ *
+ * @param pGuid The GUID, or `nullptr` for the primary driver.
+ * @param ppPrimary Receives the primary driver, or the first driver searched, unless `nullptr`.
+ * @param pFirst The driver the search starts at, or `nullptr` for the first driver found.
+ * @return The driver, or `nullptr` when the GUID selects none.
+ * @ghidraAddress BRD3D: 0x1001ba70
+ */
+DirectDrawDriver *
+FindDirectDrawDriverByGuid(GUID *pGuid, DirectDrawDriver **ppPrimary, DirectDrawDriver *pFirst);
+
+/**
+ * Do nothing.
+ *
+ * @return 0.
+ * @ghidraAddress BRD3D: 0x1007a1c0
+ */
+int ReturnZero(void);
 
 /**
  * Select the driver, device, and mode of a renderer from the configuration.

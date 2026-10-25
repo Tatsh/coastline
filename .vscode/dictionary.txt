@@ -87,6 +87,8 @@ dcosf
 ddivu
 ddscaps
 ddscl
+ddsd
+ddsurfacedesc
 debugtext
 decaldraw
 decaleditor
@@ -380,6 +382,7 @@ popmtx
 ppsz
 preapproved
 prenmi
+primarysurface
 probetlb
 putfld
 pycache

@@ -2,12 +2,13 @@
 
 #include <cstring>
 
-// Messages the renderer sends its window before it creates its objects and after it releases them.
+// Messages the renderer sends its window after it creates its objects and before it releases them.
 #define WM_RENDERER_CREATED 0xbd0
 #define WM_RENDERER_DESTROYING 0xbd1
 
 RenderHost *g_pRenderHost;
 IDirect3D2 *g_pDirect3D2;
+IDirect3DDevice2 *g_pD3DDevice2;
 
 RenderHost::RenderHost() : pRenderer(nullptr) {
 }
@@ -26,6 +27,11 @@ HRESULT RenderHost::ValidateRenderDeviceState() {
         return RENDERER_E_NOT_READY;
     }
     return ValidateObjectRenderResources();
+}
+
+int RenderHost::OnDestroyDevice() {
+    ReturnZero();
+    return 0;
 }
 
 HRESULT RenderHost::ValidateObjectRenderResources() {
@@ -174,6 +180,31 @@ int DirectDrawRenderer::RestoreDisplayMode() {
     return 0;
 }
 
+HRESULT DirectDrawRenderer::CreatePrimaryFlipChain() {
+    DDSURFACEDESC desc;
+    HRESULT hr;
+
+    if (pDevice == nullptr || pDirectDraw2 == nullptr) {
+        return RENDERER_E_NOT_READY;
+    }
+    memset(&desc, 0, sizeof(desc));
+    desc.dwSize = sizeof(desc);
+    desc.dwFlags = DDSD_CAPS | DDSD_BACKBUFFERCOUNT;
+    desc.ddsCaps.dwCaps =
+        DDSCAPS_PRIMARYSURFACE | DDSCAPS_FLIP | DDSCAPS_COMPLEX | DDSCAPS_3DDEVICE;
+    desc.dwBackBufferCount = 1;
+    hr = pDirectDraw2->CreateSurface(&desc, &pPrimarySurface, nullptr);
+    if (FAILED(hr)) {
+        return hr;
+    }
+    hr = InitializePrimaryPalette();
+    if (FAILED(hr)) {
+        return hr;
+    }
+    dwRenderStateFlags |= 4;
+    return S_OK;
+}
+
 int DirectDrawRenderer::ReleasePrimarySurface() {
     dwRenderStateFlags &= ~4;
     ReleasePrimaryPalette();
@@ -198,6 +229,31 @@ int DirectDrawRenderer::ReleasePrimaryPalette() {
         pPaletteEntries = nullptr;
     }
     nPaletteEntryCount = 0;
+    return 0;
+}
+
+int DirectDrawRenderer::DestroyD3DDevice() {
+    if (pHost != nullptr) {
+        pHost->OnDestroyDevice();
+    }
+    ReleaseViewportAndMaterial();
+    dwRenderStateFlags &= ~8;
+    if (pD3DDevice != nullptr) {
+        pD3DDevice->Release();
+        pD3DDevice = nullptr;
+        g_pD3DDevice2 = nullptr;
+    }
+    if (pZBuffer != nullptr) {
+        if (pBackBuffer != nullptr) {
+            pBackBuffer->DeleteAttachedSurface(0, pZBuffer);
+        }
+        pZBuffer->Release();
+        pZBuffer = nullptr;
+    }
+    if (pBackBuffer != nullptr) {
+        pBackBuffer->Release();
+        pBackBuffer = nullptr;
+    }
     return 0;
 }
 
