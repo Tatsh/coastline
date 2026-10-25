@@ -534,7 +534,55 @@ void HandleDirectPlaySystemMessage(
     DirectPlayInfo *pInfo, DPMSG_GENERIC *pMessage, DWORD dwSize, DPID dpidFrom, DPID dpidTo);
 
 /**
- * Handle a message of the system of DirectPlay for the host of the session.
+ * Free the slots of the network players a player of the session controls.
+ *
+ * @param dpidOwner The player.
+ * @ghidraAddress BRD3D: 0x10071480
+ * @ghidraAddress BRGlide: 0x1006a3f0
+ */
+void ClearNetworkPlayerSlotsByOwner(DPID dpidOwner);
+
+/**
+ * Remove a player that departed from a race of the network.
+ *
+ * @param dpidPlayer The player.
+ * @ghidraAddress BRD3D: 0x10005fe0
+ * @ghidraAddress BRGlide: 0x10006350
+ */
+void HandlePlayerDisconnect(DPID dpidPlayer);
+
+/**
+ * Handle the packets of a secure message as the host.
+ *
+ * @param pInfo The info of the local player.
+ * @param pData The data of the message.
+ * @param dwSize The size of the data.
+ * @param dpidFrom The sender.
+ * @param dpidTo The receiver.
+ * @ghidraAddress BRD3D: 0x100360f0
+ * @ghidraAddress BRGlide: 0x1002f790
+ */
+void ProcessMultiplayerPackets(
+    DirectPlayInfo *pInfo, void *pData, DWORD dwSize, DPID dpidFrom, DPID dpidTo);
+
+/**
+ * Handle the packets of a secure message as a client.
+ *
+ * @param pInfo The info of the local player.
+ * @param pData The data of the message.
+ * @param dwSize The size of the data.
+ * @param dpidFrom The sender.
+ * @param dpidTo The receiver.
+ * @ghidraAddress BRD3D: 0x10003580
+ * @ghidraAddress BRGlide: 0x100038f0
+ */
+void ProcessNetworkDataStream(
+    DirectPlayInfo *pInfo, void *pData, DWORD dwSize, DPID dpidFrom, DPID dpidTo);
+
+/**
+ * Handle a message of the system of DirectPlay for the host of the session. A player that departs
+ * while the front end is down frees its slots and exits the race, and the data of a secure
+ * message goes to ProcessMultiplayerPackets().
  *
  * @param pInfo The info of the local player.
  * @param pMessage The message.
@@ -548,7 +596,9 @@ void HandleDirectPlaySystemMessageHost(
     DirectPlayInfo *pInfo, DPMSG_GENERIC *pMessage, DWORD dwSize, DPID dpidFrom, DPID dpidTo);
 
 /**
- * Handle a message of the system of DirectPlay for a client of the session.
+ * Handle a message of the system of DirectPlay for a client of the session. A player that departs
+ * while the front end is down exits the race, and the data of a secure message goes to
+ * ProcessNetworkDataStream().
  *
  * @param pInfo The info of the local player.
  * @param pMessage The message.

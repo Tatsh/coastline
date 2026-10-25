@@ -453,6 +453,49 @@ static inline void FreeGlobalBuffer(void *pBuffer) {
 
 SessionSlot g_aSessionSlots[SESSION_SLOT_COUNT];
 
+void HandleDirectPlaySystemMessageHost(
+    DirectPlayInfo *pInfo, DPMSG_GENERIC *pMessage, DWORD, DPID, DPID dpidTo) {
+    DPMSG_SECUREMESSAGE *pSecure;
+
+    switch (pMessage->dwType) {
+    case DPSYS_DESTROYPLAYERORGROUP:
+        if (!g_dwNullStubEnable) {
+            DPID dpidPlayer = reinterpret_cast<DPMSG_DESTROYPLAYERORGROUP *>(pMessage)->dpId;
+
+            ClearNetworkPlayerSlotsByOwner(dpidPlayer);
+            HandlePlayerDisconnect(dpidPlayer);
+        }
+        break;
+    case DPSYS_SECUREMESSAGE:
+        pSecure = reinterpret_cast<DPMSG_SECUREMESSAGE *>(pMessage);
+        ProcessMultiplayerPackets(
+            pInfo, pSecure->lpData, pSecure->dwDataSize, pSecure->dpIdFrom, dpidTo);
+        break;
+    default:
+        break;
+    }
+}
+
+void HandleDirectPlaySystemMessageClient(
+    DirectPlayInfo *pInfo, DPMSG_GENERIC *pMessage, DWORD, DPID, DPID dpidTo) {
+    DPMSG_SECUREMESSAGE *pSecure;
+
+    switch (pMessage->dwType) {
+    case DPSYS_DESTROYPLAYERORGROUP:
+        if (!g_dwNullStubEnable) {
+            HandlePlayerDisconnect(reinterpret_cast<DPMSG_DESTROYPLAYERORGROUP *>(pMessage)->dpId);
+        }
+        break;
+    case DPSYS_SECUREMESSAGE:
+        pSecure = reinterpret_cast<DPMSG_SECUREMESSAGE *>(pMessage);
+        ProcessNetworkDataStream(
+            pInfo, pSecure->lpData, pSecure->dwDataSize, pSecure->dpIdFrom, dpidTo);
+        break;
+    default:
+        break;
+    }
+}
+
 // A notice of a player is formatted into locked global memory.
 static char *FormatPlayerNotice(const char *pszFormat, const char *pszName) {
     char *pszNotice;
