@@ -203,6 +203,7 @@ dmmx
 dndebug
 docstrings
 donotclip
+donotupdateextents
 doubleword
 dpaid
 dpal

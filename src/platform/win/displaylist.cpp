@@ -356,6 +356,39 @@ GbiCommand *HandleGbiSetTileSize(GbiCommand *pCommand) {
     return pCommand + 1;
 }
 
+#if TGR_RENDERER == TGR_RENDERER_D3D
+GbiVertex g_aGbiVertexCache[GBI_VERTEX_CACHE_SIZE];
+GbiVertex *g_apVertexPool[GBI_VERTEX_CACHE_SIZE];
+int g_nVertexPoolCount;
+D3DTLVERTEX g_renderBuffer[RENDER_BUFFER_SIZE];
+int g_nRenderBufferIndex;
+WORD g_awRenderIndexBuffer[RENDER_BUFFER_SIZE];
+int g_nRenderIndexCount;
+
+void ResetRenderBufferAndVertexPool(void) {
+    for (int i = 0; i < g_nVertexPoolCount; i++) {
+        g_apVertexPool[i]->nRenderBufferIndex = -1;
+    }
+    g_nRenderIndexCount = 0;
+    g_nRenderBufferIndex = 0;
+    g_nVertexPoolCount = 0;
+}
+
+void FlushIndexedRenderBuffer(void) {
+    if (g_nRenderIndexCount == 0) {
+        return;
+    }
+    g_pD3DDevice2->DrawIndexedPrimitive(D3DPT_TRIANGLELIST,
+                                        D3DVT_TLVERTEX,
+                                        g_renderBuffer,
+                                        g_nRenderBufferIndex,
+                                        g_awRenderIndexBuffer,
+                                        g_nRenderIndexCount,
+                                        D3DDP_DONOTCLIP | D3DDP_DONOTUPDATEEXTENTS);
+    ResetRenderBufferAndVertexPool();
+}
+#endif
+
 int g_dwScissorLeft;
 int g_dwScissorTop;
 int g_dwScissorRight;

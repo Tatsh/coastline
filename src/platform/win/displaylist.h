@@ -6,6 +6,11 @@
  * and returns the command to run next.
  */
 
+#if TGR_RENDERER == TGR_RENDERER_D3D
+#include <d3d.h>
+#include <windows.h>
+#endif
+
 /** A viewport of the console, in pixels with two bits of fraction. */
 struct GbiViewport {
     short anScale[4];     /*!< The scale of x, y, z, and an unused fourth value. */
@@ -607,6 +612,91 @@ extern int g_dwTileSizeHeight;
 GbiCommand *HandleGbiSetTileSize(GbiCommand *pCommand);
 
 #if TGR_RENDERER == TGR_RENDERER_D3D
+/** A vertex of the display lists after its transform. The layout is not recovered in full. */
+struct GbiVertex {
+    float fX;               /*!< The x on the screen. */
+    float fY;               /*!< The y on the screen. */
+    float fZ;               /*!< The depth. */
+    float fRed;             /*!< The red, from 0 to 1. */
+    float fGreen;           /*!< The green, from 0 to 1. */
+    float fBlue;            /*!< The blue, from 0 to 1. */
+    char abUnknown18[8];    /* +0x18 */
+    float fRhw;             /*!< The reciprocal of the homogeneous w. */
+    float fU;               /*!< The u of the texture. */
+    char abUnknown28[0x40]; /* +0x28 */
+    int nRenderBufferIndex; /*!< The entry of g_renderBuffer of the vertex, -1 for none. */
+};
+
+/** The number of entries of g_aGbiVertexCache and g_apVertexPool. */
+#define GBI_VERTEX_CACHE_SIZE 128
+
+/** The number of entries of g_renderBuffer and g_awRenderIndexBuffer. */
+#define RENDER_BUFFER_SIZE 512
+
+/**
+ * The vertices the display lists loaded.
+ *
+ * @ghidraAddress BRD3D: 0x104c16d0
+ */
+extern GbiVertex g_aGbiVertexCache[GBI_VERTEX_CACHE_SIZE];
+
+/**
+ * The vertices of g_aGbiVertexCache copied into g_renderBuffer since the last flush.
+ *
+ * @ghidraAddress BRD3D: 0x104c0bc0
+ */
+extern GbiVertex *g_apVertexPool[GBI_VERTEX_CACHE_SIZE];
+
+/**
+ * The number of entries of g_apVertexPool in use.
+ *
+ * @ghidraAddress BRD3D: 0x104c5190
+ */
+extern int g_nVertexPoolCount;
+
+/**
+ * The vertices waiting to be drawn.
+ *
+ * @ghidraAddress BRD3D: 0x104bc1a0
+ */
+extern D3DTLVERTEX g_renderBuffer[RENDER_BUFFER_SIZE];
+
+/**
+ * The number of entries of g_renderBuffer in use.
+ *
+ * @ghidraAddress BRD3D: 0x104c5188
+ */
+extern int g_nRenderBufferIndex;
+
+/**
+ * The indices of the triangles waiting to be drawn, into g_renderBuffer.
+ *
+ * @ghidraAddress BRD3D: 0x104c4d50
+ */
+extern WORD g_awRenderIndexBuffer[RENDER_BUFFER_SIZE];
+
+/**
+ * The number of entries of g_awRenderIndexBuffer in use.
+ *
+ * @ghidraAddress BRD3D: 0x104c518c
+ */
+extern int g_nRenderIndexCount;
+
+/**
+ * Empty g_renderBuffer and g_awRenderIndexBuffer, and mark each vertex of g_apVertexPool as not in
+ * g_renderBuffer.
+ *
+ * @ghidraAddress BRD3D: 0x1001c640
+ */
+void ResetRenderBufferAndVertexPool(void);
+
+/**
+ * Draw the triangles waiting in g_renderBuffer, when there are any, and empty it.
+ *
+ * @ghidraAddress BRD3D: 0x1001d3a0
+ */
+void FlushIndexedRenderBuffer(void);
+
 /**
  * Set the primitive colour from the RGBA colour of the command.
  *
