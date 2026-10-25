@@ -134,6 +134,8 @@ deviceremovecomplete
 devmgr
 dfrac
 dialogs
+dierr
+dijoystate
 dinline
 diph
 dipropdword
@@ -274,6 +276,7 @@ infcodes
 inffast
 inftrees
 infutil
+inputlost
 intr
 inttypes
 inval
@@ -409,6 +412,7 @@ noat
 noload
 nolod
 nonewplayers
+nonexclusive
 nonmatching
 noone
 noplayers

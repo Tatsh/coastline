@@ -1,6 +1,6 @@
 # PC port game code from 0x10050000 to 0x10060000
 
-1 of 84 routines done.
+4 of 84 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -72,12 +72,12 @@ the same name, for a routine the port retained from the N64 game.
 | `ToggleSelectedSessionSlotFlag`           |        |                 |      1 |     72 | `0x10058700` | `0x100515b0` | `undefined ToggleSelectedSessionSlotFlag()`                                                                                                     |
 | `ReleaseMenuSurfaces`                     |        |                 |      2 |     68 | `0x1005f530` | `0x10058300` | `undefined ReleaseMenuSurfaces()`                                                                                                               |
 | `MenuItemList::UpdateAndRenderMenuWidget` |        |                 |      1 |     68 | `0x1005cb40` | `0x10055960` | `undefined UpdateAndRenderMenuWidget(MenuItemList * this, undefined4 param_1)`                                                                  |
-| `UpdateKeyboardEdgeState`                 |        |                 |      3 |     67 | `0x1005ff60` | `0x10058fd0` | `undefined UpdateKeyboardEdgeState()`                                                                                                           |
+| `UpdateKeyboardEdgeState`                 |   ✅   |                 |      3 |     67 | `0x1005ff60` | `0x10058fd0` | `void UpdateKeyboardEdgeState(void)`                                                                                                            |
 | `GlideDisplayModeNode::IsLessOrEqual`     |        |                 |      2 |     59 |              | `0x10058cc0` | `undefined IsLessOrEqual(GlideDisplayModeNode * this, undefined4 param_1)`                                                                      |
 | `MenuFont::DrawGlyphAltFont`              |        |                 |      1 |     59 | `0x1005b7a0` | `0x100545c0` | `undefined DrawGlyphAltFont(MenuFont * this, undefined4 param_1, undefined4 param_2, undefined4 param_3, undefined4 param_4)`                   |
 | `UpdateMouseButtonEdges`                  |        |                 |      6 |     56 | `0x1005fff0` | `0x10059060` | `void UpdateMouseButtonEdges(void)`                                                                                                             |
 | `GlideDisplayModeNode::InsertSorted`      |        |                 |      1 |     53 |              | `0x10058d00` | `undefined InsertSorted(GlideDisplayModeNode * this, undefined4 param_1)`                                                                       |
-| `ClearKeyboardStateBuffers`               |        |                 |      2 |     41 | `0x1005ff30` | `0x10058fa0` | `undefined ClearKeyboardStateBuffers()`                                                                                                         |
+| `ClearKeyboardStateBuffers`               |   ✅   |                 |      2 |     41 | `0x1005ff30` | `0x10058fa0` | `void ClearKeyboardStateBuffers(void)`                                                                                                          |
 | `GetSessionSlotFlag`                      |        |                 |      2 |     40 | `0x100586d0` | `0x10051580` | `undefined GetSessionSlotFlag()`                                                                                                                |
 | `GlideDisplayModeNode::DeleteChain`       |        |                 |      2 |     37 |              | `0x10058c90` | `undefined DeleteChain(GlideDisplayModeNode * this)`                                                                                            |
 | `LookupKeyCharacter`                      |        |                 |      1 |     37 | `0x1005b540` | `0x10054360` | `undefined LookupKeyCharacter()`                                                                                                                |
@@ -87,7 +87,7 @@ the same name, for a routine the port retained from the N64 game.
 | `SaveFileList::ScalarDeletingDestructor`  |        |                 |      1 |     30 | `0x1005cbf0` | `0x10055a10` | `undefined ScalarDeletingDestructor(SaveFileList * this, undefined4 param_1)`                                                                   |
 | `GetFirstPressedKeyIndex`                 |        |                 |      2 |     28 | `0x1005ffd0` | `0x10059040` | `undefined GetFirstPressedKeyIndex()`                                                                                                           |
 | `MenuItemList::~MenuItemList`             |        |                 |      2 |     28 | `0x1005b8f0` | `0x10054710` | `undefined ~MenuItemList(MenuItemList * this)`                                                                                                  |
-| `PollKeyboardState`                       |        |                 |      1 |     23 | `0x1005ffb0` | `0x10059020` | `undefined PollKeyboardState()`                                                                                                                 |
+| `PollKeyboardState`                       |   ✅   |                 |      1 |     23 | `0x1005ffb0` | `0x10059020` | `void PollKeyboardState(void)`                                                                                                                  |
 | `GlideDisplayModeNode::Init`              |        |                 |      1 |     19 |              | `0x10058c70` | `undefined Init(GlideDisplayModeNode * this)`                                                                                                   |
 | `ReleaseMenuSurfacesAndFail`              |        |                 |      2 |     18 | `0x1005f580` | `0x10058360` | `undefined ReleaseMenuSurfacesAndFail()`                                                                                                        |
 | `MenuFont::~MenuFont`                     |        |                 |      5 |      7 | `0x1005b0c0` | `0x10053ee0` | `void ~MenuFont(MenuFont * this)`                                                                                                               |

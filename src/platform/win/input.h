@@ -254,3 +254,162 @@ void ReleaseKeyboardDevice(void);
  * @ghidraAddress BRGlide: 0x100720a0
  */
 bool ShutdownDirectInput(void);
+
+/** The number of keys of the state of a keyboard. */
+#define KEYBOARD_KEY_COUNT 256
+
+/** The state of a mouse the game polls. The layout is not recovered yet. */
+struct MouseInputState {
+    char abUnknown0[0x1c]; /* +0x00 */
+};
+
+/**
+ * The two states of the keyboard, the current one and the one before.
+ *
+ * @ghidraAddress BRD3D: 0x118ab8b8
+ * @ghidraAddress BRGlide: 0x118ee9d0
+ */
+extern unsigned char g_aabKeyboardStateBuffers[2][KEYBOARD_KEY_COUNT];
+
+/**
+ * The entry of g_aabKeyboardStateBuffers that is current.
+ *
+ * @ghidraAddress BRD3D: 0x118abad8
+ * @ghidraAddress BRGlide: 0x118eebf0
+ */
+extern int g_dwKeyboardStateCurIndex;
+
+/**
+ * The entry of g_aabKeyboardStateBuffers from before.
+ *
+ * @ghidraAddress BRD3D: 0x118ab8b4
+ * @ghidraAddress BRGlide: 0x118ee9cc
+ */
+extern int g_dwKeyboardStatePrevIndex;
+
+/**
+ * The two states of the game controller, the current one and the one before.
+ *
+ * @ghidraAddress BRD3D: 0x118abae0
+ * @ghidraAddress BRGlide: 0x118eebf8
+ */
+extern DIJOYSTATE2 g_aJoystickStateBuffers[2];
+
+/**
+ * The entry of g_aJoystickStateBuffers that is current.
+ *
+ * @ghidraAddress BRD3D: 0x118abab8
+ * @ghidraAddress BRGlide: 0x118eebd0
+ */
+extern int g_dwJoystickStateCurIndex;
+
+/**
+ * The entry of g_aJoystickStateBuffers from before.
+ *
+ * @ghidraAddress BRD3D: 0x118abd7c
+ * @ghidraAddress BRGlide: 0x118eee94
+ */
+extern int g_dwJoystickStatePrevIndex;
+
+/**
+ * The two states of the mouse, the current one and the one before.
+ *
+ * @ghidraAddress BRD3D: 0x118abd38
+ * @ghidraAddress BRGlide: 0x118eee50
+ */
+extern MouseInputState g_aMouseStateBuffers[2];
+
+/**
+ * The entry of g_aMouseStateBuffers that is current.
+ *
+ * @ghidraAddress BRD3D: 0x118abd80
+ * @ghidraAddress BRGlide: 0x118eee98
+ */
+extern int g_dwMouseStateCurIndex;
+
+/**
+ * The entry of g_aMouseStateBuffers from before.
+ *
+ * @ghidraAddress BRD3D: 0x118abad4
+ * @ghidraAddress BRGlide: 0x118eebec
+ */
+extern int g_dwMouseStatePrevIndex;
+
+/**
+ * The keys of the keyboard the game read last, as DirectInput reports them.
+ *
+ * @ghidraAddress BRD3D: 0x10aa3288
+ * @ghidraAddress BRGlide: 0x10ac65e8
+ */
+extern unsigned char g_abKeyboardState[KEYBOARD_KEY_COUNT];
+
+/**
+ * Whether each key went down since the keyboard was read before.
+ *
+ * @ghidraAddress BRD3D: 0x10aa2a80
+ * @ghidraAddress BRGlide: 0x10ac5de0
+ */
+extern int g_adwKeyPressedEdge[KEYBOARD_KEY_COUNT];
+
+/**
+ * Whether each key was down when the keyboard was read before.
+ *
+ * @ghidraAddress BRD3D: 0x10aa2e88
+ * @ghidraAddress BRGlide: 0x10ac61e8
+ */
+extern int g_adwKeyPrevDown[KEYBOARD_KEY_COUNT];
+
+/**
+ * Clear both states of the mouse.
+ *
+ * @ghidraAddress BRD3D: 0x100770c0
+ * @ghidraAddress BRGlide: 0x100703a0
+ */
+void ResetMouseState(void);
+
+/**
+ * Add a user of the keyboard. The first user clears the states of the keyboard, the game
+ * controller, and the mouse, and creates and acquires the device of the system keyboard for the
+ * main window, shared in the foreground.
+ *
+ * @return Whether the keyboard device exists.
+ * @ghidraAddress BRD3D: 0x100770f0
+ * @ghidraAddress BRGlide: 0x100703d0
+ */
+bool InitializeKeyboardDevice(void);
+
+/**
+ * Read the state of the keyboard, acquiring the device again and reading once more when the input
+ * was lost.
+ *
+ * @param pabState Receives the state of each key.
+ * @return The result of the last read, or 1 without a device.
+ * @ghidraAddress BRD3D: 0x100771b0
+ * @ghidraAddress BRGlide: 0x10070490
+ */
+HRESULT ReadKeyboardState(unsigned char *pabState);
+
+/**
+ * Clear the state of the keyboard. Only the first 64 entries of g_adwKeyPressedEdge and
+ * g_adwKeyPrevDown are cleared, as in the original.
+ *
+ * @ghidraAddress BRD3D: 0x1005ff30
+ * @ghidraAddress BRGlide: 0x10058fa0
+ */
+void ClearKeyboardStateBuffers(void);
+
+/**
+ * Find the keys that went down since the keyboard was read before.
+ *
+ * @ghidraAddress BRD3D: 0x1005ff60
+ * @ghidraAddress BRGlide: 0x10058fd0
+ */
+void UpdateKeyboardEdgeState(void);
+
+/**
+ * Read the keyboard into g_abKeyboardState and find the keys that went down.
+ *
+ * @ghidraAddress BRD3D: 0x1005ffb0
+ * @ghidraAddress BRGlide: 0x10059020
+ */
+void PollKeyboardState(void);
