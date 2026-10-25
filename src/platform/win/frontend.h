@@ -1165,6 +1165,84 @@ void Cheat_Sophia_EnableOutroSequence(void);
 void Cheat_Lynette_UnlockBonusCars(void);
 
 /**
+ * Whether the cheat that unlocks every car was entered.
+ *
+ * @ghidraAddress BRD3D: 0x10aa28f0
+ * @ghidraAddress BRGlide: 0x10ac5c48
+ */
+extern int g_dwCheatAllCarsUnlocked;
+
+/**
+ * Unlock every car, play the sound of a cheat, and set the network menus to state 2.
+ *
+ * @ghidraAddress BRD3D: 0x100474d0
+ * @ghidraAddress BRGlide: 0x10040900
+ */
+void Cheat_Benjamin_UnlockAllCars(void);
+
+/** A cheat and the word that enters it. */
+struct CheatCode {
+    void (*pfnApply)(void); /*!< The routine of the cheat. */
+    const char *pszCode;    /*!< The word, in lowercase, or null for the end of the table. */
+};
+
+/** The number of entries of g_aCheatCodes, with the entry that ends it. */
+#define CHEAT_CODE_COUNT 7
+
+/**
+ * The cheats, ended by an entry without a word.
+ *
+ * @ghidraAddress BRD3D: 0x100ac6a8
+ * @ghidraAddress BRGlide: 0x100abe48
+ */
+extern CheatCode g_aCheatCodes[CHEAT_CODE_COUNT];
+
+/** The number of entries of g_anCheatInputBuffer. */
+#define CHEAT_INPUT_BUFFER_SIZE 32
+
+/**
+ * The last characters typed for the cheats, a ring that wraps at its end.
+ *
+ * @ghidraAddress BRD3D: 0x10a9e150
+ * @ghidraAddress BRGlide: 0x10ac51d8
+ */
+extern int g_anCheatInputBuffer[CHEAT_INPUT_BUFFER_SIZE];
+
+/**
+ * The entry of g_anCheatInputBuffer the next character fills.
+ *
+ * @ghidraAddress BRD3D: 0x10aa2a48
+ * @ghidraAddress BRGlide: 0x10ac5da0
+ */
+extern int g_dwCheatInputCount;
+
+/**
+ * The last character the window received, or 0 once it is read.
+ *
+ * @ghidraAddress BRD3D: 0x10aa33e4
+ * @ghidraAddress BRGlide: 0x10ac6744
+ */
+extern int g_dwLastWmCharParam;
+
+/**
+ * Add the last character the window received to the characters of the cheats, in lowercase, and
+ * apply each cheat whose word they end with.
+ *
+ * @ghidraAddress BRD3D: 0x10047610
+ * @ghidraAddress BRGlide: 0x10040a40
+ */
+void ProcessCheatCodeInput(void);
+
+/**
+ * Apply each cheat whose word the characters of the cheats end with.
+ *
+ * @ghidraAddress BRD3D: 0x10047660
+ * @ghidraAddress BRGlide: 0x10040a90
+ * @stub{BRGlide}
+ */
+void CheckCheatCodeMatches(void);
+
+/**
  * The index of the network session chosen in the list of sessions.
  *
  * @ghidraAddress BRD3D: 0x10aa2880

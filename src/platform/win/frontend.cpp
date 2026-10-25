@@ -745,6 +745,60 @@ void Cheat_Lynette_UnlockBonusCars(void) {
     EnableCheat(&g_dwCheatBonusCarsUnlocked);
 }
 
+int g_dwCheatAllCarsUnlocked;
+
+void Cheat_Benjamin_UnlockAllCars(void) {
+    EnableCheat(&g_dwCheatAllCarsUnlocked);
+}
+
+CheatCode g_aCheatCodes[CHEAT_CODE_COUNT] = {
+    {Cheat_DisableVehicleDeformation, "madeleine"},
+    {Cheat_Benjamin_UnlockAllCars, "benjamin"},
+    {Cheat_Brielle_UnlockBonusTracks, "brielle"},
+    {Cheat_Lynette_UnlockBonusCars, "lynette"},
+    {Cheat_Sophia_EnableOutroSequence, "sophia"},
+    {Cheat_Hazel_UnlockAllTracks, "hazel"},
+    {nullptr, nullptr},
+};
+int g_anCheatInputBuffer[CHEAT_INPUT_BUFFER_SIZE];
+int g_dwCheatInputCount;
+int g_dwLastWmCharParam;
+
+void CheckCheatCodeMatches(void) {
+    for (CheatCode *pCheat = g_aCheatCodes; pCheat->pszCode != nullptr; pCheat++) {
+        int nLength = static_cast<int>(strlen(pCheat->pszCode));
+        int i;
+
+        for (i = 0; i < nLength; i++) {
+            int nEntry = (g_dwCheatInputCount + i - nLength) & (CHEAT_INPUT_BUFFER_SIZE - 1);
+            if (pCheat->pszCode[i] != static_cast<char>(g_anCheatInputBuffer[nEntry])) {
+                break;
+            }
+        }
+        if (i == nLength) {
+            pCheat->pfnApply();
+        }
+    }
+}
+
+void ProcessCheatCodeInput(void) {
+    char chInput;
+
+    if (g_dwLastWmCharParam == 0) {
+        return;
+    }
+    chInput = static_cast<char>(g_dwLastWmCharParam);
+    if (chInput >= 'A' && chInput <= 'Z') {
+        chInput += 'a' - 'A';
+    }
+    g_anCheatInputBuffer[g_dwCheatInputCount++] = chInput;
+    if (g_dwCheatInputCount >= CHEAT_INPUT_BUFFER_SIZE) {
+        g_dwCheatInputCount = 0;
+    }
+    CheckCheatCodeMatches();
+    g_dwLastWmCharParam = 0;
+}
+
 int EnterTimeAttackMode(void) {
     if (g_aVehicles_LapCount >= g_dwTotalLaps) {
         ShowTimeAttackMenu(0);
