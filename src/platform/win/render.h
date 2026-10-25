@@ -131,6 +131,17 @@ void ResetRenderSubsystems(int nMode, int nWidth, int nHeight, int nBitDepth, in
  */
 void SetDisplayModeWithFallback(int nWidth, int nHeight, int nBitDepth, int nExtra);
 
+/**
+ * Set the level of damage of a texture the game loaded.
+ *
+ * @param nEntry The entry of the texture.
+ * @param nDamageLevel The level of damage.
+ * @ghidraAddress BRD3D: 0x10025800
+ * @ghidraAddress BRGlide: 0x10024e30
+ * @stub{BRGlide}
+ */
+void SetTextureEntryDamageLevel(int nEntry, int nDamageLevel);
+
 #if TGR_RENDERER == TGR_RENDERER_D3D
 /**
  * Set the routines of the Direct3D device: the flip of the main window shows a frame, and the

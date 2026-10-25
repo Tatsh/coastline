@@ -254,6 +254,10 @@ void AliasTextureEntrySurface(int nEntry, int nSourceEntry) {
     g_pTextureEntries[nEntry].nTextureId = g_pTextureEntries[nSourceEntry].nTextureId;
 }
 
+void SetTextureEntryDamageLevel(int nEntry, int nDamageLevel) {
+    g_pTextureEntries[nEntry].nDamageLevel = nDamageLevel;
+}
+
 void GetTextureEntryDimensions(int *pWidth, int *pHeight, int nEntry) {
     const TextureEntry &entry = g_pTextureEntries[nEntry];
     CalculateTextureDimensions(pWidth, pHeight, entry.nLod, entry.nAspectRatio);

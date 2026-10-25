@@ -1154,7 +1154,9 @@ struct TextureEntry {
     char abUnknown4[0x1c];   /* +0x04 */
     int nLod;                /*!< The level of detail, as CalculateTextureDimensions() reads it. */
     int nAspectRatio;        /*!< The aspect ratio, as CalculateTextureDimensions() reads it. */
-    char abUnknown28[0x290]; /* +0x28 */
+    char abUnknown28[0x254]; /* +0x28 */
+    int nDamageLevel;        /*!< The level of damage, from 0 to 3. */
+    char abUnknown280[0x38]; /* +0x280 */
 };
 
 /**
