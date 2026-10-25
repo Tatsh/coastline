@@ -611,6 +611,24 @@ extern int g_dwTileSizeHeight;
  */
 GbiCommand *HandleGbiSetTileSize(GbiCommand *pCommand);
 
+/**
+ * Upload a texture the game loaded to its surface, set by InitializeTextureSubsystem().
+ *
+ * @ghidraAddress BRD3D: 0x118aa0b8
+ * @ghidraAddress BRGlide: 0x118ed1d0
+ */
+extern void (*g_pfnUploadTextureEntryToSurface)(int nEntry, unsigned dwUnused);
+
+/**
+ * Upload a texture the game loaded to its surface.
+ *
+ * @param pCommand The command, the entry of the texture in the low 24 bits of its first word.
+ * @return The next command.
+ * @ghidraAddress BRD3D: 0x1001be10
+ * @ghidraAddress BRGlide: 0x1001e300
+ */
+GbiCommand *HandleGbiLoadPreparedTexture(GbiCommand *pCommand);
+
 #if TGR_RENDERER == TGR_RENDERER_D3D
 /** A vertex of the display lists after its transform. The layout is not recovered in full. */
 struct GbiVertex {
@@ -696,6 +714,24 @@ void ResetRenderBufferAndVertexPool(void);
  * @ghidraAddress BRD3D: 0x1001d3a0
  */
 void FlushIndexedRenderBuffer(void);
+
+/**
+ * Bind a texture the game loaded, set by InitializeTextureSubsystem().
+ *
+ * @ghidraAddress BRD3D: 0x118aa0b4
+ */
+extern void (*g_pfnBindTextureEntry)(int nEntry);
+
+/**
+ * Draw the triangles waiting, and bind a texture the game loaded in place of the commands that load
+ * it on the console.
+ *
+ * @param pCommand The command, the entry of g_pTextureEntries in the low 24 bits of its first word
+ * and the number of commands it replaces in its second.
+ * @return The command after those it replaces.
+ * @ghidraAddress BRD3D: 0x1001bd70
+ */
+GbiCommand *HandleGbiBindTextureEntry(GbiCommand *pCommand);
 
 /**
  * Set the primitive colour from the RGBA colour of the command.

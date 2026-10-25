@@ -356,6 +356,9 @@ GbiCommand *HandleGbiSetTileSize(GbiCommand *pCommand) {
     return pCommand + 1;
 }
 
+// The bits of the first word of a command that give the entry of a texture the game loaded.
+#define GBI_TEXTURE_ENTRY_MASK 0xffffff
+
 #if TGR_RENDERER == TGR_RENDERER_D3D
 GbiVertex g_aGbiVertexCache[GBI_VERTEX_CACHE_SIZE];
 GbiVertex *g_apVertexPool[GBI_VERTEX_CACHE_SIZE];
@@ -387,7 +390,23 @@ void FlushIndexedRenderBuffer(void) {
                                         D3DDP_DONOTCLIP | D3DDP_DONOTUPDATEEXTENTS);
     ResetRenderBufferAndVertexPool();
 }
+
+void (*g_pfnBindTextureEntry)(int nEntry);
+
+GbiCommand *HandleGbiBindTextureEntry(GbiCommand *pCommand) {
+    int nEntry = pCommand->w0 & GBI_TEXTURE_ENTRY_MASK;
+    FlushIndexedRenderBuffer();
+    g_pfnBindTextureEntry(nEntry);
+    return pCommand + pCommand->w1;
+}
 #endif
+
+void (*g_pfnUploadTextureEntryToSurface)(int nEntry, unsigned dwUnused);
+
+GbiCommand *HandleGbiLoadPreparedTexture(GbiCommand *pCommand) {
+    g_pfnUploadTextureEntryToSurface(pCommand->w0 & GBI_TEXTURE_ENTRY_MASK, pCommand->w1);
+    return pCommand + 1;
+}
 
 int g_dwScissorLeft;
 int g_dwScissorTop;
