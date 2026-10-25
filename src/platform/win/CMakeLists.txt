@@ -11,6 +11,7 @@ add_library(
   boot/startup.cpp
   boot/strings.cpp
   directplay.cpp
+  displaylist.cpp
   dllmain.c
   earsound.cpp
   fileio.c

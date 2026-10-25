@@ -185,6 +185,7 @@ diproprange
 directplay
 disasm
 discl
+displaylist
 divdi
 divremi
 dlabel
@@ -277,6 +278,7 @@ ffunction
 finalrom
 finetune
 fixedh
+fogcolor
 fourcc
 fovy
 foxundermoon
