@@ -18,6 +18,7 @@
 #include "render.h"
 #include "soundchannel.h"
 #include "soundeffect.h"
+#include "soundsource.h"
 #include "vehicle.h"
 
 /** The sample rate the audio interface is asked for. */
@@ -467,32 +468,6 @@ void CheckSoundEffectLoopPoints(void);
  */
 void AudioMixingThreadMain(void *arg);
 
-/** The nearest sound of the track this frame and the last. */
-typedef struct {
-    Vec3f position;                 /*!< Where the nearest sound is. */
-    Vec3f previousPosition;         /*!< Where the sound was in the last frame. */
-    CameraFrame *listener;          /*!< The camera that hears the sound. */
-    CameraFrame *previousListener;  /*!< The camera that heard the sound in the last frame. */
-    Vec3f previousListenerPosition; /*!< Where the camera was in the last frame. */
-    s32 sound;                      /*!< The sound effect, or -1. */
-    s32 previousSound;              /*!< The sound effect of the last frame, or -1. */
-    s32 source;                     /*!< The source of the sound, or -1. */
-    s32 previousSource;             /*!< The source of the last frame, or -1. */
-    f32 distance;                   /*!< How far the sound is from its camera. */
-    f32 frequency; /*!< The frequency in hertz, negative for a source that does not move. */
-    s32 volume;    /*!< The volume out of 256. */
-    s32 playing;   /*!< Whether the sound plays. */
-} SoundSourceTracking;
-
-/**
- * The nearest sound of the track.
- *
- * @ghidraAddress USA: 0x8028b7a0
- * @ghidraAddress EUR: 0x8028da50
- * @ghidraAddress JPN: 0x8028d480
- */
-extern SoundSourceTracking g_ClosestSoundSource;
-
 /**
  * The factor the Doppler effect raises a sound by, from the motion of the source and the listener
  * along the line between them over the frame.
@@ -543,24 +518,6 @@ void ComputeStereoPan(
  */
 void UpdateClosestSoundSource(
     s32 source, s32 sound, s32 volume, f32 frequency, Vec3f *position, CameraFrame *listener);
-
-/**
- * Forget the nearest sound of the track found the last frame.
- *
- * @ghidraAddress USA: 0x8022b404
- * @ghidraAddress EUR: 0x8022c914
- * @ghidraAddress JPN: 0x8022c0cc
- */
-void ResetSoundSourceTracking(void);
-
-/**
- * Stop the sounds of the track and forget their sources.
- *
- * @ghidraAddress USA: 0x8022b428
- * @ghidraAddress EUR: 0x8022c938
- * @ghidraAddress JPN: 0x8022c0f0
- */
-void ResetAllSoundState(void);
 
 /**
  * Play the nearest sound of the track on its channel, panned and pitched for the camera.

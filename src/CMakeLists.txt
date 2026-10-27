@@ -130,7 +130,7 @@ target_sources(coastline_game PRIVATE assetdma.c camerarender.c collisionstep.c 
                                      rledecompress.c routeposition.c textrender.c textstyle.c timingframe.c
                                      vehicleengine.c vehiclephysics.c)
 
-target_sources(coastline_game PRIVATE tracetrack.c iomessage.c texturestream.c soundeffect.c)
+target_sources(coastline_game PRIVATE tracetrack.c iomessage.c texturestream.c soundeffect.c soundsource.c)
 
 if(TGR_PLATFORM STREQUAL "win")
   target_sources(coastline_game PRIVATE driving.c)
