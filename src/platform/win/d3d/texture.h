@@ -25,13 +25,6 @@ struct TexturePixelFormat {
 };
 
 /**
- * The pixel formats of textures, with the identifiers 2, 3, 4, 0xb, and 0xc.
- *
- * @ghidraAddress BRD3D: 0x100a6230
- */
-extern TexturePixelFormat g_aTexturePixelFormats[TEXTURE_PIXEL_FORMAT_COUNT];
-
-/**
  * Find a pixel format of textures by its identifier.
  *
  * @param nId The identifier.

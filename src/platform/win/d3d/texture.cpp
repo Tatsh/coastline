@@ -13,9 +13,10 @@
 // The pixel format LoadRgba5551ImageFile() converts an image to.
 #define RGBA5551_IMAGE_PIXEL_FORMAT 0xb
 
+namespace {
+// @ghidraAddress BRD3D: 0x100a6230
 TexturePixelFormat g_aTexturePixelFormats[TEXTURE_PIXEL_FORMAT_COUNT] = {
     {2, 0, {}, {}}, {3, 0, {}, {}}, {4, 0, {}, {}}, {0xb, 0, {}, {}}, {0xc, 0, {}, {}}};
-namespace {
 // @ghidraAddress BRD3D: 0x11849870
 unsigned short g_awRgba5551FileBuffer[RGBA5551_IMAGE_PIXEL_COUNT];
 } // namespace
@@ -280,8 +281,12 @@ unsigned g_dwTextureEntryCount;
 TextureEntry *g_pTextureEntries;
 D3DTexture **g_ppTextureIdTable;
 int g_adwPrecipitationTextureIds[PRECIPITATION_TEXTURE_COUNT];
+namespace {
+// @ghidraAddress BRD3D: 0x104b2554
 int g_dwPrecipTextureWidth;
+// @ghidraAddress BRD3D: 0x104b2558
 int g_dwPrecipTextureHeight;
+} // namespace
 
 void AliasTextureEntrySurface(int nEntry, int nSourceEntry) {
     g_pTextureEntries[nEntry].nTextureId = g_pTextureEntries[nSourceEntry].nTextureId;

@@ -343,7 +343,7 @@ HRESULT DirectDrawRenderer::SelectDriverDeviceAndMode() {
             return hr;
         }
     }
-    pDeviceGuid = pDevice != nullptr ? &pDevice->guid : nullptr;
+    pDeviceGuid = pDevice != nullptr ? pDevice->GetGuid() : nullptr;
     pNewDriver = FindDirectDrawDriverOrDefault(
         pDriver != nullptr ? pDriver->GetDirectDrawDriverGuid() : nullptr);
     if (pNewDriver == nullptr) {
@@ -399,9 +399,9 @@ HRESULT DirectDrawRenderer::ChangeDisplayModeAndReinitDirectDraw(GUID *pGuid,
         return RENDERER_E_NOT_CREATED;
     }
     if (pNewDevice != nullptr) {
-        pDeviceGuid = &pNewDevice->guid;
+        pDeviceGuid = pNewDevice->GetGuid();
     } else if (pDevice != nullptr) {
-        pDeviceGuid = &pDevice->guid;
+        pDeviceGuid = pDevice->GetGuid();
     } else {
         pDeviceGuid = nullptr;
     }
@@ -468,7 +468,8 @@ int DirectDrawRenderer::SwitchDisplayModeAndRebuildDevice(int nWidth,
     if (pNewMode->IsDisplayModeSupportedByDevice(pOldDevice)) {
         pNewDevice = nullptr;
     } else {
-        pNewDevice = pDriver->FindRenderDevice(&pOldDevice->guid, pNewMode, &pFallback, nullptr);
+        pNewDevice =
+            pDriver->FindRenderDevice(pOldDevice->GetGuid(), pNewMode, &pFallback, nullptr);
         if (pNewDevice == nullptr) {
             pNewDevice = pFallback;
             if (pNewDevice == nullptr) {
@@ -844,10 +845,10 @@ HRESULT DirectDrawRenderer::InitializeRenderDevice() {
     }
     // A device of the hardware puts its depth buffer in video memory.
     if (pDevice->IsHardwareDevice()) {
-        pDesc = &pDevice->hardwareDesc;
+        pDesc = pDevice->GetHardwareDescription();
         dwMemoryCaps = DDSCAPS_VIDEOMEMORY;
     } else {
-        pDesc = &pDevice->softwareDesc;
+        pDesc = pDevice->GetSoftwareDescription();
         dwMemoryCaps = DDSCAPS_SYSTEMMEMORY;
     }
     dwDeviceInit = 0;
@@ -858,7 +859,7 @@ HRESULT DirectDrawRenderer::InitializeRenderDevice() {
         }
         dwDeviceInit = bAttached;
     }
-    hr = pDirect3D2->CreateDevice(pDevice->guid, pBackBuffer, &pD3DDevice);
+    hr = pDirect3D2->CreateDevice(*pDevice->GetGuid(), pBackBuffer, &pD3DDevice);
     if (FAILED(hr)) {
         return hr;
     }
@@ -1139,8 +1140,8 @@ DirectDrawDriver *FindDisplayDeviceByGuid(GUID *pGuid) {
     int nIndex = 0;
 
     for (DirectDrawDriver *pDriver = g_pDirectDrawDriverListHead; pDriver != nullptr;
-         pDriver = pDriver->pNext, nIndex++) {
-        if (memcmp(&pDriver->guid, pGuid, sizeof(GUID)) != 0) {
+         pDriver = pDriver->GetNext(), nIndex++) {
+        if (memcmp(pDriver->GetGuid(), pGuid, sizeof(GUID)) != 0) {
             continue;
         }
         g_pSelectedDisplayDriver = FindDirectDrawDriverOrDefault(pGuid);

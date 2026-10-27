@@ -5,7 +5,11 @@
 #include "platform/win/d3d/renderer.h"
 
 DirectDrawDriver *g_pDirectDrawDriverListHead;
+
+namespace {
+// @ghidraAddress BRD3D: 0x104bbe24
 DirectDrawDriver *g_pDirectDrawDriverListTail;
+} // namespace
 
 // The name and the description a driver or a device gets when none is reported.
 #define UNKNOWN_DRIVER_TEXT "UNKNOWN"
@@ -31,18 +35,18 @@ static inline char *CopyDriverText(const char *pszText) {
 // list.
 template <typename T>
 static inline void UnlinkListNode(T *pNode, T **ppHead, T **ppTail) {
-    if (pNode->pPrev != nullptr) {
-        pNode->pPrev->pNext = pNode->pNext;
+    if (pNode->GetPrevious() != nullptr) {
+        pNode->GetPrevious()->SetNext(pNode->GetNext());
     } else {
-        *ppHead = pNode->pNext;
+        *ppHead = pNode->GetNext();
     }
-    if (pNode->pNext != nullptr) {
-        pNode->pNext->pPrev = pNode->pPrev;
+    if (pNode->GetNext() != nullptr) {
+        pNode->GetNext()->SetPrevious(pNode->GetPrevious());
     } else {
-        *ppTail = pNode->pPrev;
+        *ppTail = pNode->GetPrevious();
     }
-    pNode->pPrev = nullptr;
-    pNode->pNext = nullptr;
+    pNode->SetPrevious(nullptr);
+    pNode->SetNext(nullptr);
 }
 
 // Add an element to the end of a list linked through pPrev and pNext, and count it.
@@ -51,10 +55,10 @@ static inline HRESULT AppendListNode(T *pNode, T **ppHead, T **ppTail, int *pnCo
     if (pNode == nullptr) {
         return E_INVALIDARG;
     }
-    pNode->pNext = nullptr;
-    pNode->pPrev = *ppTail;
+    pNode->SetNext(nullptr);
+    pNode->SetPrevious(*ppTail);
     if (*ppTail != nullptr) {
-        (*ppTail)->pNext = pNode;
+        (*ppTail)->SetNext(pNode);
     }
     *ppTail = pNode;
     if (*ppHead == nullptr) {
@@ -315,7 +319,7 @@ HRESULT WINAPI EnumDisplayModesCallback_AddMode(DDSURFACEDESC *pDesc, LPVOID pCo
     if (pMode == nullptr) {
         return DDENUMRET_OK;
     }
-    pMode->desc = *pDesc;
+    pMode->SetDescription(*pDesc);
     // A mode that is not added is not freed.
     if (SUCCEEDED(
             static_cast<DirectDrawDriver *>(pEnum->pOwner)->EnqueueDirectDrawModeNode(pMode))) {
@@ -339,7 +343,7 @@ HRESULT WINAPI EnumDeviceTextureFormatsCallback_AddFormat(DDSURFACEDESC *pDesc, 
     if (pFormat == nullptr) {
         return D3DENUMRET_OK;
     }
-    pFormat->desc = *pDesc;
+    pFormat->SetDescription(*pDesc);
     // A format that is not added is not freed.
     if (SUCCEEDED(static_cast<D3DDeviceNode *>(pEnum->pOwner)->EnqueueTextureFormatNode(pFormat))) {
         pEnum->nFound++;
@@ -405,9 +409,9 @@ bool DisplayMode::IsDisplayModeSupportedByDevice(D3DDeviceNode *pDevice) {
     }
     dwDepth = BitDepthToDDBD(GetSurfaceDescBitDepth());
     if (pDevice->IsHardwareDevice()) {
-        return (pDevice->hardwareDesc.dwDeviceRenderBitDepth & dwDepth) != 0;
+        return (pDevice->GetHardwareDescription()->dwDeviceRenderBitDepth & dwDepth) != 0;
     }
-    return (pDevice->softwareDesc.dwDeviceRenderBitDepth & dwDepth) != 0;
+    return (pDevice->GetSoftwareDescription()->dwDeviceRenderBitDepth & dwDepth) != 0;
 }
 
 bool DisplayMode::IsDisplayModeMatch(int nWidth, int nHeight, int nBitDepth) {
@@ -491,7 +495,7 @@ void D3DDeviceNode::FlushTextureFormatList() {
     }
     pFormat = pTextureFormatsHead;
     while (pFormat != nullptr) {
-        DisplayMode *pNextFormat = pFormat->pNext;
+        DisplayMode *pNextFormat = pFormat->GetNext();
 
         UnlinkListNode(pFormat, &pTextureFormatsHead, &pTextureFormatsTail);
         delete pFormat;
@@ -618,7 +622,7 @@ void DirectDrawDriver::FlushDirectDrawModeEnumerationList() {
     DisplayMode *pMode = pDisplayModesHead;
 
     while (pMode != nullptr) {
-        DisplayMode *pNextMode = pMode->pNext;
+        DisplayMode *pNextMode = pMode->GetNext();
 
         UnlinkListNode(pMode, &pDisplayModesHead, &pDisplayModesTail);
         delete pMode;
@@ -651,7 +655,7 @@ DisplayMode *DirectDrawDriver::FindDisplayMode(int nWidth,
         *ppFallback = pMode;
     }
     while (pMode != nullptr) {
-        DisplayMode *pNextMode = pMode->pNext;
+        DisplayMode *pNextMode = pMode->GetNext();
 
         if (pMode->IsDisplayModeMatch(nWidth, nHeight, nBitDepth)) {
             return pMode;
@@ -692,7 +696,7 @@ int DirectDrawDriver::FlushDirect3DDeviceList() {
     D3DDeviceNode *pDevice = pD3DDevicesHead;
 
     while (pDevice != nullptr) {
-        D3DDeviceNode *pNextDevice = pDevice->pNext;
+        D3DDeviceNode *pNextDevice = pDevice->GetNext();
 
         UnlinkListNode(pDevice, &pD3DDevicesHead, &pD3DDevicesTail);
         pDevice->ReleaseD3DDeviceNode();
@@ -723,7 +727,7 @@ D3DDeviceNode *DirectDrawDriver::SelectPreferredD3DDevice(GUID *pGuid,
     }
     pFirst = pFirst != nullptr ? pFirst : pD3DDevicesHead;
     for (pDevice = pFirst; pDevice != nullptr;) {
-        D3DDeviceNode *pNextDevice = pDevice->pNext;
+        D3DDeviceNode *pNextDevice = pDevice->GetNext();
 
         if (pDevice->CompareD3DDeviceGuid(pGuid)) {
             return pDevice;
@@ -731,10 +735,10 @@ D3DDeviceNode *DirectDrawDriver::SelectPreferredD3DDevice(GUID *pGuid,
         if (pDevice->IsHardwareDevice() && pHardware == nullptr) {
             pHardware = pDevice;
         }
-        if (IsEqualGUID(pDevice->guid, IID_IDirect3DRGBDevice) && pRgb == nullptr) {
+        if (IsEqualGUID(*pDevice->GetGuid(), IID_IDirect3DRGBDevice) && pRgb == nullptr) {
             pRgb = pDevice;
         }
-        if (IsEqualGUID(pDevice->guid, IID_IDirect3DMMXDevice) && pMmx == nullptr) {
+        if (IsEqualGUID(*pDevice->GetGuid(), IID_IDirect3DMMXDevice) && pMmx == nullptr) {
             pMmx = pDevice;
         }
         pDevice = pNextDevice;
@@ -770,7 +774,7 @@ D3DDeviceNode *DirectDrawDriver::FindRenderDevice(GUID *pGuid,
         *ppFallback = pDevice;
     }
     while (pDevice != nullptr) {
-        D3DDeviceNode *pNextDevice = pDevice->pNext;
+        D3DDeviceNode *pNextDevice = pDevice->GetNext();
 
         if (pDevice->CompareD3DDeviceGuid(pGuid)) {
             if (pMode->IsDisplayModeSupportedByDevice(pDevice)) {
@@ -807,7 +811,7 @@ DisplayMode *DirectDrawDriver::FindDisplayModeForDevice(int nWidth,
         *ppFallback = pMode;
     }
     while (pMode != nullptr) {
-        DisplayMode *pNextMode = pMode->pNext;
+        DisplayMode *pNextMode = pMode->GetNext();
 
         if (pMode->IsDisplayModeMatch(nWidth, nHeight, nBitDepth)) {
             if (pMode->IsDisplayModeSupportedByDevice(pDevice)) {
@@ -870,12 +874,12 @@ FindDirectDrawDriverByGuid(GUID *pGuid, DirectDrawDriver **ppPrimary, DirectDraw
         *ppPrimary = pDriver;
     }
     while (pDriver != nullptr) {
-        DirectDrawDriver *pNext = pDriver->pNext;
+        DirectDrawDriver *pNext = pDriver->GetNext();
 
         if (pDriver->CompareDirectDrawDriverGuid(pGuid)) {
             return pDriver;
         }
-        if ((pDriver->dwFlags & DIRECTDRAW_DRIVER_PRIMARY) != 0 && ppPrimary != nullptr) {
+        if ((pDriver->GetFlags() & DIRECTDRAW_DRIVER_PRIMARY) != 0 && ppPrimary != nullptr) {
             *ppPrimary = pDriver;
         }
         pDriver = pNext;

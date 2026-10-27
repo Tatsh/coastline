@@ -54,7 +54,7 @@ class DisplayMode;
 
 /** A DirectDraw driver the game found. */
 class DirectDrawDriver {
-public:
+private:
     unsigned dwFlags;               /*!< #DIRECTDRAW_DRIVER_USABLE | #DIRECTDRAW_DRIVER_PRIMARY. */
     GUID guid;                      /*!< The GUID of the driver. */
     char *pszName;                  /*!< The name of the driver, allocated. */
@@ -69,6 +69,26 @@ public:
     D3DDeviceNode *pD3DDevicesTail; /*!< The last Direct3D device. */
     DirectDrawDriver *pPrev;        /*!< The driver found before. */
     DirectDrawDriver *pNext;        /*!< The next driver found. */
+
+public:
+    unsigned GetFlags() const {
+        return dwFlags;
+    }
+    const GUID *GetGuid() const {
+        return &guid;
+    }
+    DirectDrawDriver *GetPrevious() const {
+        return pPrev;
+    }
+    DirectDrawDriver *GetNext() const {
+        return pNext;
+    }
+    void SetPrevious(DirectDrawDriver *driver) {
+        pPrev = driver;
+    }
+    void SetNext(DirectDrawDriver *driver) {
+        pNext = driver;
+    }
 
     /** Start a driver that is not usable, with empty abilities. */
     DirectDrawDriver() : pPrev(nullptr), pNext(nullptr) {
@@ -85,6 +105,7 @@ public:
         pD3DDevicesTail = nullptr;
     }
 
+private:
     /**
      * Find the display modes of the driver.
      *
@@ -118,6 +139,7 @@ public:
      */
     int FlushDirect3DDeviceList();
 
+public:
     /**
      * Add a display mode to the end of the modes of the driver.
      *
@@ -247,7 +269,7 @@ class RenderHost;
 
 /** A Direct3D device of a driver. The layout after softwareDesc is not recovered yet. */
 class D3DDeviceNode {
-public:
+private:
     unsigned dwFlags;           /*!< Flags of the device, of which bits 0 and 1 start clear. */
     GUID guid;                  /*!< The GUID of the device. */
     char *pszDescription;       /*!< The description of the device, allocated. */
@@ -259,6 +281,29 @@ public:
     DisplayMode *pTextureFormatsTail; /*!< The last texture format. */
     D3DDeviceNode *pPrev;             /*!< The device of the driver before. */
     D3DDeviceNode *pNext;             /*!< The next device of the driver. */
+
+public:
+    GUID *GetGuid() {
+        return &guid;
+    }
+    const D3DDEVICEDESC *GetHardwareDescription() const {
+        return &hardwareDesc;
+    }
+    const D3DDEVICEDESC *GetSoftwareDescription() const {
+        return &softwareDesc;
+    }
+    D3DDeviceNode *GetPrevious() const {
+        return pPrev;
+    }
+    D3DDeviceNode *GetNext() const {
+        return pNext;
+    }
+    void SetPrevious(D3DDeviceNode *device) {
+        pPrev = device;
+    }
+    void SetNext(D3DDeviceNode *device) {
+        pNext = device;
+    }
 
     /**
      * Free the texture formats, the description, and the name of the device, and unlink it,
@@ -306,6 +351,7 @@ public:
                               D3DDEVICEDESC *pHardwareDesc,
                               D3DDEVICEDESC *pSoftwareDesc);
 
+private:
     /**
      * Free the texture formats of the device.
      *
@@ -313,6 +359,7 @@ public:
      */
     void FlushTextureFormatList();
 
+public:
     /**
      * Add a texture format to the end of the formats of the device.
      *
@@ -342,10 +389,27 @@ public:
 
 /** A display mode of a driver. The layout after desc is not recovered yet. */
 class DisplayMode {
-public:
+private:
     DDSURFACEDESC desc; /*!< The description of the mode. */
     DisplayMode *pPrev; /*!< The mode of the driver before. */
     DisplayMode *pNext; /*!< The next mode of the driver. */
+
+public:
+    void SetDescription(const DDSURFACEDESC &description) {
+        desc = description;
+    }
+    DisplayMode *GetPrevious() const {
+        return pPrev;
+    }
+    DisplayMode *GetNext() const {
+        return pNext;
+    }
+    void SetPrevious(DisplayMode *mode) {
+        pPrev = mode;
+    }
+    void SetNext(DisplayMode *mode) {
+        pNext = mode;
+    }
 
     /** Start an empty mode. */
     DisplayMode() : pPrev(nullptr), pNext(nullptr) {
@@ -366,6 +430,7 @@ public:
     HRESULT
     GetSurfaceDescDimensions(int *pnWidth, int *pnHeight, int *pnBitDepth, int *pnRefreshRate);
 
+private:
     /**
      * The bits of a pixel of the mode.
      *
@@ -374,6 +439,7 @@ public:
      */
     int GetSurfaceDescBitDepth();
 
+public:
     /**
      * Whether a device can draw in the depth of the mode.
      *
@@ -1024,13 +1090,6 @@ DirectDrawDriver *FindDirectDrawDriverOrDefault(GUID *pGuid);
 extern DirectDrawDriver *g_pDirectDrawDriverListHead;
 
 /**
- * The last DirectDraw driver the game found.
- *
- * @ghidraAddress BRD3D: 0x104bbe24
- */
-extern DirectDrawDriver *g_pDirectDrawDriverListTail;
-
-/**
  * Add a driver to the end of the list of drivers.
  *
  * @param pDriver The driver.
@@ -1324,20 +1383,6 @@ void AliasTextureEntrySurface(int nEntry, int nSourceEntry);
  * @ghidraAddress BRD3D: 0x11829100
  */
 extern int g_adwPrecipitationTextureIds[PRECIPITATION_TEXTURE_COUNT];
-
-/**
- * The width of the texture of precipitation GetPrecipitationTextureDimensions() last read.
- *
- * @ghidraAddress BRD3D: 0x104b2554
- */
-extern int g_dwPrecipTextureWidth;
-
-/**
- * The height of the texture of precipitation GetPrecipitationTextureDimensions() last read.
- *
- * @ghidraAddress BRD3D: 0x104b2558
- */
-extern int g_dwPrecipTextureHeight;
 
 /**
  * Read the size of a texture of precipitation into g_dwPrecipTextureWidth and
