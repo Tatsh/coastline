@@ -335,8 +335,8 @@ int CreateTextureFromTmemShadow(unsigned char *pTmem) {
             break;
         }
     }
-    std::memset(image.abUnknown0, 0, 4);
-    image.abUnknown0[4] = 3;
+    image.nOption1 = 0;
+    image.nOption2 = 3;
     image.nWidth = image.nDecodedWidth =
         static_cast<int>(1u << (static_cast<unsigned>(tile.nMaskS) & 31));
     image.nHeight = image.nDecodedHeight =
@@ -350,8 +350,7 @@ int CreateTextureFromTmemShadow(unsigned char *pTmem) {
         image.nHeight = static_cast<int>(static_cast<unsigned>(image.nHeight) << 1);
     }
     image.nPixelFormatId = ChooseTexturePixelFormat(tile.nSize, tile.nFormat, image.bColorCombine);
-    unsigned type = 2;
-    std::memcpy(image.abUnknown14, &type, sizeof(type));
+    image.nOption3 = 2;
     image.bClampS = tile.bClampS != 0;
     image.bClampT = tile.bClampT != 0;
     int edgeWidth =
@@ -378,8 +377,10 @@ int CreateTextureFromTmemShadow(unsigned char *pTmem) {
         image.nLargestLod = image.nLod;
         g_dwTexScanMaxTileIndex = image.nTileIndex;
     }
-    unsigned options[] = {1, 1, 0xc0000000u, 0};
-    std::memcpy(image.abUnknown2c, options, sizeof(options));
+    image.nOption4 = 1;
+    image.nOption5 = 1;
+    image.dwOption6 = 0xc0000000;
+    image.nOption7 = 0;
     image.nPixelBytes = ComputeMipChainByteSize(
         image.nLargestLod, image.nLod, image.nAspectRatio, image.nPixelFormatId);
     if (image.nPixelBytes > 0x80000) {

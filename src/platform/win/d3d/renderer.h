@@ -1153,17 +1153,22 @@ int ReturnZero(void);
 
 /** Image metadata shared by texture entries and temporary texture conversions. */
 struct TextureImageData {
-    char abUnknown0[8]; /* +0x00 */
+    int nOption1;           /*!< Initialized to 0 by image construction. */
+    unsigned char nOption2; /*!< Initialized to 3 by image construction. */
+    char abUnknown5[3];
     int nWidth;
     int nHeight;
     int nPixelFormatId;
-    char abUnknown14[4]; /* +0x14 */
+    int nOption3; /*!< Initialized to 0 for direct images and 2 for captured texture scans. */
     int nLargestLod;
-    int nLod;               /*!< The level of detail, as CalculateTextureDimensions() reads it. */
-    int nAspectRatio;       /*!< The aspect ratio, as CalculateTextureDimensions() reads it. */
-    int bClampS;            /*!< Whether texture binding clamps s. */
-    int bClampT;            /*!< Whether texture binding clamps t. */
-    char abUnknown2c[0x10]; /* +0x2c */
+    int nLod;           /*!< The level of detail, as CalculateTextureDimensions() reads it. */
+    int nAspectRatio;   /*!< The aspect ratio, as CalculateTextureDimensions() reads it. */
+    int bClampS;        /*!< Whether texture binding clamps s. */
+    int bClampT;        /*!< Whether texture binding clamps t. */
+    int nOption4;       /*!< Initialized to 1 by image construction. */
+    int nOption5;       /*!< Initialized to 1 by image construction. */
+    unsigned dwOption6; /*!< Initialized to 0xc0000000 by image construction. */
+    int nOption7;       /*!< Initialized to 0 by image construction. */
     unsigned nColorKey;
     int nPixelBytes;
     int nDecodedWidth;

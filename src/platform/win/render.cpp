@@ -1648,9 +1648,9 @@ unsigned CreateTextureFromN64Image(const unsigned char *pImage,
     int paddedWidth = 1 << widthBits;
     int paddedHeight = 1 << heightBits;
     TextureImageData image;
-    std::memset(image.abUnknown0, 0, 4);
-    image.abUnknown0[4] = 3;
-    std::memset(image.abUnknown14, 0, sizeof(image.abUnknown14));
+    image.nOption1 = 0;
+    image.nOption2 = 3;
+    image.nOption3 = 0;
     image.nSourceWidth = image.nWidth = nWidth;
     image.nSourceHeight = image.nHeight = nHeight;
     image.nDecodedWidth = paddedWidth;
@@ -1761,8 +1761,10 @@ unsigned CreateTextureFromN64Image(const unsigned char *pImage,
         CalculateTextureAspectRatio(&image.nAspectRatio, width, height);
     }
     image.nColorKey = 0;
-    unsigned options[] = {1, 1, 0xc0000000u, 0};
-    std::memcpy(image.abUnknown2c, options, sizeof(options));
+    image.nOption4 = 1;
+    image.nOption5 = 1;
+    image.dwOption6 = 0xc0000000;
+    image.nOption7 = 0;
     image.dwFlags = g_dwTextureLoadCategory;
     image.nDecodedBytes = image.nPixelBytes;
     unsigned char *pixels = GetTextureImagePixels(&image);
