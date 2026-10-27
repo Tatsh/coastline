@@ -67,6 +67,10 @@ extern s32 g_dwCameraRayHitCount;
  */
 extern u16 g_awCameraRayHitInstances[];
 
+#if TGR_PLATFORM == TGR_PLATFORM_WIN && defined(__cplusplus)
+extern "C" {
+#endif
+
 /**
  * Keep a camera out of the track: if the line from the look-at point of a vehicle to the camera
  * passes through a triangle, and so does the line from a target point, put the camera just in
@@ -79,9 +83,6 @@ extern u16 g_awCameraRayHitInstances[];
  * @ghidraAddress EUR: 0x80221b50
  * @ghidraAddress JPN: 0x80221340
  */
-#if TGR_PLATFORM == TGR_PLATFORM_WIN && defined(__cplusplus)
-extern "C" {
-#endif
 void ResolveVehicleTrackCollision(Vehicle *vehicle, CameraFrame *camera, Vec3f *target);
 
 /**
@@ -154,6 +155,10 @@ void UpdateCameraViewBasisAndFov(Vehicle *vehicle, CameraFrame *camera);
  */
 void UpdateCameraSystem(Vehicle *vehicle);
 
+#if TGR_PLATFORM == TGR_PLATFORM_WIN && defined(__cplusplus)
+extern "C" {
+#endif
+
 /**
  * Set up the cameras of a vehicle at the start of a race.
  *
@@ -162,9 +167,6 @@ void UpdateCameraSystem(Vehicle *vehicle);
  * @ghidraAddress EUR: 0x80222ba4
  * @ghidraAddress JPN: 0x80222394
  */
-#if TGR_PLATFORM == TGR_PLATFORM_WIN && defined(__cplusplus)
-extern "C" {
-#endif
 void InitCameraForVehicle(Vehicle *vehicle);
 #if TGR_PLATFORM == TGR_PLATFORM_WIN && defined(__cplusplus)
 }

@@ -276,6 +276,10 @@ s32 CastRayAgainstTrack(Vec3f *outPoint,
                         f32 *groundDistance,
                         s32 *groundSurface);
 
+#if TGR_PLATFORM == TGR_PLATFORM_WIN && defined(__cplusplus)
+extern "C" {
+#endif
+
 /**
  * The triangles of the cell of the grid of the track under a point.
  *
@@ -288,9 +292,6 @@ s32 CastRayAgainstTrack(Vec3f *outPoint,
  * @ghidraAddress JPN: 0x8021f110
  * @ghidraAddress BRD3D: 0x10002de0
  */
-#if TGR_PLATFORM == TGR_PLATFORM_WIN && defined(__cplusplus)
-extern "C" {
-#endif
 u32 LookupTrackGridCell(f32 x, f32 y);
 
 /**
