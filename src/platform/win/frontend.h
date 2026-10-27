@@ -143,7 +143,7 @@ public:
      * @ghidraAddress BRD3D: 0x10048010
      * @ghidraAddress BRGlide: 0x10041460
      */
-    virtual void Draw();
+    virtual int Draw();
     /**
      * Run a frame of the item.
      *
@@ -155,22 +155,18 @@ public:
 
     /**
      * @ghidraAddress BRD3D: 0x10047a10
-     * @stub
      */
     virtual int DrawCurrentImage();
     /**
      * @ghidraAddress BRD3D: 0x100479d0
-     * @stub
      */
     virtual int BlitSurfaceById(int nImage, int x, int y);
     /**
      * @ghidraAddress BRD3D: 0x10047980
-     * @stub
      */
     virtual int DrawSpriteRegion(const RECT *pRect);
     /**
      * @ghidraAddress BRD3D: 0x10047930
-     * @stub
      */
     virtual int DrawSprite();
     /**

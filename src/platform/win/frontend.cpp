@@ -386,6 +386,56 @@ void MenuWidget::SetText(const char *pszText,
     nHeight = font.nHeight;
 }
 
+int MenuWidget::BlitSurfaceById(int nImage, int x, int y) {
+    const MenuSprite &sprite = g_aMenuSprites[nImage];
+    BlitSurfaceRegion(x, y, static_cast<WORD>(nImage), &sprite.rc, sprite.dwFlags);
+    return 1;
+}
+
+int MenuWidget::DrawSprite() {
+    if (nSpriteId >= 0) {
+        const MenuSprite &sprite = g_aMenuSprites[nSpriteId];
+        DWORD flags = sprite.dwFlags;
+        int image = sprite.nImage;
+        int y = ConvertMenuCoordinate(fY);
+        int x = ConvertMenuCoordinate(fX);
+        BlitSurfaceRegion(x, y, static_cast<WORD>(image), &sprite.rc, flags);
+    }
+    return 1;
+}
+
+int MenuWidget::DrawSpriteRegion(const RECT *pRect) {
+    DWORD flags = g_aMenuSprites[nSpriteId].dwFlags;
+    WORD image = static_cast<WORD>(nSpriteId);
+    int y = ConvertMenuCoordinate(fY);
+    int x = ConvertMenuCoordinate(fX);
+    BlitSurfaceRegion(x, y, image, pRect, flags);
+    return 1;
+}
+
+int MenuWidget::DrawCurrentImage() {
+    if (!bCustomFrameDurations) {
+        DrawSprite();
+    } else {
+        nSpriteId = anSpriteIds[nAnimationFrame];
+        DrawSpriteRegion(&pImageRects[nAnimationFrame]);
+    }
+    return 1;
+}
+
+int MenuWidget::Draw() {
+    if (dwTertiaryFlags & 1) {
+        if (dwFlags & 0x100000) {
+            fonts[0].pVTable->DrawText(&fonts[0]);
+        } else if (!(dwFlags & 0x200000)) {
+            if (!DrawCurrentImage()) {
+                return 0;
+            }
+        }
+    }
+    return 1;
+}
+
 int MenuPanel::RestoreSelection() {
     short index = static_cast<short>(g_wMenuHoverIndex);
     if (index >= static_cast<int>(wNavigationCount)) {
