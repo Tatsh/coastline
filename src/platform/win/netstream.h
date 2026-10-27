@@ -228,6 +228,15 @@ int FloatToSignedByteIndex(float fValue);
 int ConvertFloatToFixedAngle(float fValue);
 
 /**
+ * Quantise a coordinate in steps of 1/8192 within the unsigned 24-bit range.
+ *
+ * @param fValue Coordinate.
+ * @return Quantised coordinate.
+ * @ghidraAddress BRD3D: 0x100066e0
+ */
+int ConvertFloatToFixedAngleNoClamp(float fValue);
+
+/**
  * Round a value divided by 1.41015625 to the nearest integer, limited to the range of an unsigned
  * byte.
  *

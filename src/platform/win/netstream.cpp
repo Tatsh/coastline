@@ -211,6 +211,10 @@ int ConvertFloatToFixedAngle(float fValue) {
     return RoundAndClamp(0.5f - fValue * 32768.0f, -32768, 32767);
 }
 
+int ConvertFloatToFixedAngleNoClamp(float fValue) {
+    return RoundAndClamp(0.5f - fValue * -8192.0f, 0, 0xffffff);
+}
+
 int FloatToByteIndex(float fValue) {
     return RoundAndClamp(0.5f - fValue * -(1.0f / 1.41015625f), 0, 255);
 }

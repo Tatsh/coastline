@@ -10,6 +10,7 @@
 #include "pause.h"
 #include "platform/win/frontend.h"
 #include "platform/win/input.h"
+#include "platform/win/netstream.h"
 #include "platform/win/season.h"
 
 unsigned g_adwGhostFrameCount[GHOST_RECORDING_COUNT];
@@ -23,6 +24,159 @@ float g_fGhostBestLapTime;
 int g_dwLoadedGhostLapCount;
 const char g_szGhostSaveMagic[4] = {'R', 'G', 'h', 'o'};
 const unsigned g_dwGhostFileHeader = 0;
+
+struct CompactGhostFrame {
+    short anOrientation[4];
+    unsigned nPositionXAndFlags;
+    unsigned nPositionYAndFlags;
+    short nPositionZ;
+    signed char nSteering;
+    unsigned char bWheelOffsetAndLight;
+    unsigned char abWheelContactAndSurface[2];
+    unsigned char abReserved[2];
+};
+
+static inline bool IsKeyframeFlagSet(float value) {
+    return value > 0.0f || value < 0.0f;
+}
+
+void PackKeyframeToCompactBuffer(u8 *pBuffer, const KeyframeState *pState) {
+    CompactGhostFrame frame;
+    frame.anOrientation[0] =
+        static_cast<short>((ConvertFloatToFixedAngle(pState->orientation.w) & 0xfffe) |
+                           IsKeyframeFlagSet(pState->afEffectFlags[1]));
+    frame.anOrientation[1] =
+        static_cast<short>((ConvertFloatToFixedAngle(pState->orientation.x) & 0xfffe) |
+                           IsKeyframeFlagSet(pState->afEffectFlags[2]));
+    frame.anOrientation[2] =
+        static_cast<short>((ConvertFloatToFixedAngle(pState->orientation.y) & 0xfffe) |
+                           IsKeyframeFlagSet(pState->afEffectFlags[3]));
+    frame.anOrientation[3] =
+        static_cast<short>((ConvertFloatToFixedAngle(pState->orientation.z) & 0xfffe) |
+                           IsKeyframeFlagSet(pState->afEffectFlags[4]));
+    frame.nPositionXAndFlags =
+        (ConvertFloatToFixedAngleNoClamp(pState->position.x) & 0xfffff8) |
+        IsKeyframeFlagSet(pState->fGearControl) |
+        (IsKeyframeFlagSet(pState->afEffectFlags[0]) << 1) |
+        (IsKeyframeFlagSet(pState->afEffectFlags[5]) << 2) |
+        (static_cast<unsigned>(FloatToByteIndex(pState->afWheelAngle[0])) << 24);
+    frame.nPositionYAndFlags =
+        (ConvertFloatToFixedAngleNoClamp(pState->position.y) & 0xfffffc) |
+        (IsKeyframeFlagSet(pState->fBraking) << 1) | IsKeyframeFlagSet(pState->fReverse) |
+        (static_cast<unsigned>((FloatToSectorIndex(pState->fSector) & 0x3f) |
+                               (QuantizeFloatToLightIndex(pState->afLight[1]) << 6))
+         << 24);
+    frame.nPositionZ = static_cast<short>(ConvertFloatToFixedAngle16B(pState->position.z));
+    frame.nSteering = static_cast<signed char>(ConvertFloatToSignedByte(pState->fSteering));
+    frame.bWheelOffsetAndLight =
+        static_cast<unsigned char>((FloatToSignedByteIndex(pState->fWheelOffset) & 0x3f) |
+                                   (QuantizeFloatToLightIndex(pState->afLight[0]) << 6));
+    for (int pair = 0; pair < 2; ++pair) {
+        const int first = pair * 2;
+        const int second = first + 1;
+        frame.abWheelContactAndSurface[pair] = static_cast<unsigned char>(
+            (IsKeyframeFlagSet(pState->afWheelContact[first]) << 7) |
+            ((static_cast<int>(pState->afWheelSurface[first]) & 7) << 4) |
+            (IsKeyframeFlagSet(pState->afWheelContact[second]) << 3) |
+            (static_cast<int>(pState->afWheelSurface[second]) & 7));
+    }
+    memcpy(pBuffer, &frame, GHOST_FRAME_SIZE - sizeof(frame.abReserved));
+}
+
+void DeserializeKeyframeState(KeyframeState *pState, const u8 *pBuffer) {
+    CompactGhostFrame frame;
+    memcpy(&frame, pBuffer, sizeof(frame));
+    pState->orientation.w = ConvertFixedAngleToFloat(frame.anOrientation[0]);
+    pState->orientation.x = ConvertFixedAngleToFloat(frame.anOrientation[1]);
+    pState->orientation.y = ConvertFixedAngleToFloat(frame.anOrientation[2]);
+    pState->orientation.z = ConvertFixedAngleToFloat(frame.anOrientation[3]);
+    pState->position.x = ConvertUintToScaledFloat(frame.nPositionXAndFlags & 0xffffff);
+    pState->position.y = ConvertUintToScaledFloat(frame.nPositionYAndFlags & 0xffffff);
+    pState->position.z = FixedToRadians(frame.nPositionZ);
+    pState->fSteering = ConvertCharToScaledFloat(frame.nSteering);
+    pState->fWheelOffset = SignedByteToFloat(frame.bWheelOffsetAndLight & 0x3f);
+    pState->afLight[0] = GetLightLevelScale(frame.bWheelOffsetAndLight >> 6);
+    pState->afWheelAngle[0] = ByteToFloat(frame.nPositionXAndFlags >> 24);
+    pState->afWheelAngle[1] = pState->afWheelAngle[0];
+    float rearAngle = pState->afWheelAngle[0] + 35.0f;
+    if (rearAngle >= 360.0f) {
+        rearAngle -= 360.0f;
+    }
+    pState->afWheelAngle[2] = rearAngle;
+    pState->afWheelAngle[3] = rearAngle;
+    for (int pair = 0; pair < 2; ++pair) {
+        const unsigned flags = frame.abWheelContactAndSurface[pair];
+        pState->afWheelContact[pair * 2] = static_cast<float>(flags >> 7);
+        pState->afWheelSurface[pair * 2] = static_cast<float>((flags >> 4) & 7);
+        pState->afWheelContact[pair * 2 + 1] = static_cast<float>((flags >> 3) & 1);
+        pState->afWheelSurface[pair * 2 + 1] = static_cast<float>(flags & 7);
+    }
+    pState->fGearControl = (frame.nPositionXAndFlags & 1) ? 128.0f : 0.0f;
+    pState->fBraking = (frame.nPositionYAndFlags & 2) ? 1.0f : 0.0f;
+    pState->fReverse = (frame.nPositionYAndFlags & 1) ? 1.0f : 0.0f;
+    const unsigned sectorAndLight = frame.nPositionYAndFlags >> 24;
+    pState->fSector = IndexToWorldCoord(sectorAndLight & 0x3f);
+    pState->afLight[1] = GetLightLevelScale(sectorAndLight >> 6);
+    pState->afEffectFlags[0] = (frame.nPositionXAndFlags & 2) ? 128.0f : 0.0f;
+    for (int i = 0; i < 4; ++i) {
+        pState->afEffectFlags[i + 1] = (frame.anOrientation[i] & 1) ? 128.0f : 0.0f;
+    }
+    pState->afEffectFlags[5] = (frame.nPositionXAndFlags & 4) ? 128.0f : 0.0f;
+}
+
+static inline float BlendKeyframeValue(float from, float to, float share) {
+    return from + (to - from) * share;
+}
+
+void InterpolateKeyframeState(KeyframeState *pOut,
+                              float fShare,
+                              KeyframeState *pFrom,
+                              KeyframeState *pTo) {
+    if (!(fShare > 0.0f)) {
+        fShare = 0.0f;
+    } else if (!(fShare < 10.0f)) {
+        // The original upper limit is ten rather than the unit interpolation range.
+        fShare = 10.0f;
+    }
+    const float fromW = pFrom->orientation.w;
+    const float toW = pTo->orientation.w;
+    const bool reverse = (fromW >= 0.0f && toW < 0.0f && fromW - toW >= 1.0f) ||
+                         (toW >= 0.0f && fromW < 0.0f && toW - fromW >= 1.0f);
+    const float sign = reverse ? -1.0f : 1.0f;
+    pOut->orientation.w = BlendKeyframeValue(fromW, toW * sign, fShare);
+    pOut->orientation.x =
+        BlendKeyframeValue(pFrom->orientation.x, pTo->orientation.x * sign, fShare);
+    pOut->orientation.y =
+        BlendKeyframeValue(pFrom->orientation.y, pTo->orientation.y * sign, fShare);
+    pOut->orientation.z =
+        BlendKeyframeValue(pFrom->orientation.z, pTo->orientation.z * sign, fShare);
+    Vec3fLerp(&pOut->position, &pTo->position, &pFrom->position, fShare);
+    Vec3fLerp(&pOut->linearVelocity, &pTo->linearVelocity, &pFrom->linearVelocity, fShare);
+    Vec3fLerp(&pOut->angularVelocity, &pTo->angularVelocity, &pFrom->angularVelocity, fShare);
+    pOut->fSteering = BlendKeyframeValue(pFrom->fSteering, pTo->fSteering, fShare);
+    pOut->fWheelOffset = BlendKeyframeValue(pFrom->fWheelOffset, pTo->fWheelOffset, fShare);
+    for (int i = 0; i < 4; ++i) {
+        pOut->afWheelAngle[i] =
+            BlendKeyframeValue(pFrom->afWheelAngle[i], pTo->afWheelAngle[i], fShare);
+        pOut->afWheelContact[i] =
+            BlendKeyframeValue(pFrom->afWheelContact[i], pTo->afWheelContact[i], fShare);
+        pOut->afWheelSurface[i] =
+            BlendKeyframeValue(pFrom->afWheelSurface[i], pTo->afWheelSurface[i], fShare);
+    }
+    pOut->fGearControl = BlendKeyframeValue(pFrom->fGearControl, pTo->fGearControl, fShare);
+    pOut->fBraking = BlendKeyframeValue(pFrom->fBraking, pTo->fBraking, fShare);
+    pOut->fReverse = BlendKeyframeValue(pFrom->fReverse, pTo->fReverse, fShare);
+    pOut->fProgress = BlendKeyframeValue(pFrom->fProgress, pTo->fProgress, fShare);
+    pOut->fSector = BlendKeyframeValue(pFrom->fSector, pTo->fSector, fShare);
+    for (int i = 0; i < 2; ++i) {
+        pOut->afLight[i] = BlendKeyframeValue(pFrom->afLight[i], pTo->afLight[i], fShare);
+    }
+    for (int i = 0; i < 5; ++i) {
+        pOut->afEffectFlags[i] =
+            BlendKeyframeValue(pFrom->afEffectFlags[i], pTo->afEffectFlags[i], fShare);
+    }
+    pOut->afEffectFlags[5] = pTo->afEffectFlags[5];
+}
 
 u8 *GetGhostKeyframeBuffer(void) {
     return g_aGhostKeyframes[0];

@@ -19,6 +19,58 @@
 /** The maximum number of frames in each recording. */
 #define GHOST_MAX_FRAMES 65536
 
+/** Vehicle pose and interpolated controls before compact frame encoding. */
+struct KeyframeState {
+    Quaternion orientation;
+    Vec3f position;
+    Vec3f linearVelocity;
+    Vec3f angularVelocity;
+    float fSteering;
+    float fWheelOffset;
+    float afWheelAngle[4];
+    float afWheelContact[4];
+    float afWheelSurface[4];
+    float fGearControl;
+    float fBraking;
+    float fReverse;
+    float fProgress;
+    float fSector;
+    float afLight[2];
+    float afEffectFlags[6];
+};
+
+/**
+ * Encode a pose and controls into a compact ghost frame, preserving its final two bytes.
+ *
+ * @param pBuffer Destination frame.
+ * @param pState Pose and controls.
+ * @ghidraAddress BRD3D: 0x10006bd0
+ */
+void PackKeyframeToCompactBuffer(u8 *pBuffer, const KeyframeState *pState);
+
+/**
+ * Decode a compact ghost frame into pose and controls. Velocities and progress are not written.
+ *
+ * @param pState Destination pose and controls.
+ * @param pBuffer Encoded frame.
+ * @ghidraAddress BRD3D: 0x10007730
+ */
+void DeserializeKeyframeState(KeyframeState *pState, const u8 *pBuffer);
+
+/**
+ * Interpolate poses and controls, reversing the target quaternion for distant scalar signs.
+ *
+ * @param pOut Destination frame.
+ * @param fShare Interpolation share, clamped from zero to ten.
+ * @param pFrom Initial frame.
+ * @param pTo Target frame.
+ * @ghidraAddress BRD3D: 0x100079e0
+ */
+void InterpolateKeyframeState(KeyframeState *pOut,
+                              float fShare,
+                              KeyframeState *pFrom,
+                              KeyframeState *pTo);
+
 /** The metadata stored before the frames of a recording. */
 struct GhostRecordingInfo {
     s8 track;                 /*!< The recorded track, or -1 without a valid recording. */
