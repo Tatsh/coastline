@@ -91,7 +91,13 @@ void ResolveVehicleTrackCollision(Vehicle *vehicle, CameraFrame *camera, Vec3f *
  * @ghidraAddress EUR: 0x80221f98
  * @ghidraAddress JPN: 0x80221788
  */
+#if TGR_PLATFORM == TGR_PLATFORM_WIN && defined(__cplusplus)
+extern "C" {
+#endif
 void UpdateCameraChase(Vehicle *vehicle, CameraFrame *camera, f32 share);
+#if TGR_PLATFORM == TGR_PLATFORM_WIN && defined(__cplusplus)
+}
+#endif
 
 /**
  * Put the look-at point above a vehicle, ahead of it by a lead that shrinks with its speed.

@@ -1,5 +1,7 @@
 #include "vehiclereset.h"
 
+#include "camera.h"
+#include "game.h"
 #include "track.h"
 
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
@@ -456,4 +458,67 @@ void ResetVehicleEffects(Vehicle *vehicle) {
     for (i = 0; i < VEHICLE_WHEELS * SPRAY_SEGMENTS; i++) {
         surface[i] = TRACK_SURFACE_START;
     }
+}
+
+#define RESPAWN_FALL_DEPTH 10.0f
+#define RESPAWN_HEIGHT 2.0
+#define RESPAWN_SPREAD 0.01f
+#define RESPAWN_OPACITY 0.1f
+#define AI_START_GRACE -180
+
+void RespawnVehicle(Vehicle *vehicle) {
+    if (vehicle->body.uprightFrames >= 0 &&
+        !(vehicle->matrix[3][2] < g_LoadedTrack.minZ - RESPAWN_FALL_DEPTH)) {
+        return;
+    }
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+    ResetVehicleEffects(vehicle);
+#endif
+    InitVehiclePhysics(vehicle);
+#if TGR_PLATFORM == TGR_PLATFORM_WIN || TGR_REGION == TGR_REGION_US
+    if (g_dwGameMode == GAME_MODE_TIME_ATTACK) {
+#else
+    if (g_dwGameMode == GAME_MODE_TIME_ATTACK || g_dwGameMode == GAME_MODE_DEMO) {
+#endif
+        SetVehiclePosition(vehicle,
+                           vehicle->section->points[vehicle->pointIndex].position.x,
+                           vehicle->section->points[vehicle->pointIndex].position.y,
+                           vehicle->section->points[vehicle->pointIndex].position.z +
+                               RESPAWN_HEIGHT);
+    } else {
+        SetVehiclePosition(vehicle,
+                           vehicle->section->points[vehicle->pointIndex].position.x +
+                               (f32)vehicle->index * RESPAWN_SPREAD,
+                           vehicle->section->points[vehicle->pointIndex].position.y,
+                           vehicle->section->points[vehicle->pointIndex].position.z +
+                               RESPAWN_HEIGHT);
+    }
+    InitVehicleOrientationFromAngle(vehicle,
+                                    Atan2f(vehicle->trackDirection.x, vehicle->trackDirection.y));
+    SetVehicleVelocity(vehicle, 0.0f, 0.0f, 0.0f);
+    SetVehicleTurnRate(vehicle, 0.0f, 0.0f, 0.0f);
+    vehicle->body.wheels[0]->ground = NULL;
+    vehicle->body.wheels[0]->contactFrames = 0;
+    vehicle->body.wheels[0]->surface = TRACK_SURFACE_START;
+    vehicle->body.wheels[1]->ground = NULL;
+    vehicle->body.wheels[1]->contactFrames = 0;
+    vehicle->body.wheels[1]->surface = TRACK_SURFACE_START;
+    vehicle->body.wheels[3]->ground = NULL;
+    vehicle->body.wheels[3]->contactFrames = 0;
+    vehicle->body.wheels[3]->surface = TRACK_SURFACE_START;
+    vehicle->body.wheels[2]->ground = NULL;
+    vehicle->body.wheels[2]->contactFrames = 0;
+    vehicle->body.wheels[2]->surface = TRACK_SURFACE_START;
+    vehicle->forcedForwardFrames = 0;
+    vehicle->forcedReverseFrames = 0;
+    vehicle->reverseFrames = 0;
+    vehicle->forwardFrames = AI_START_GRACE;
+    vehicle->body.uprightFrames = 0;
+    vehicle->ghostMode = VEHICLE_GHOST;
+    vehicle->opacity = RESPAWN_OPACITY;
+    UpdateCameraChase(vehicle, &vehicle->cameras[VEHICLE_CAMERA_CHASE], 1.0f);
+    vehicle->cameraChanged = 1;
+    vehicle->chasePosition.x = vehicle->cameras[VEHICLE_CAMERA_CHASE].position.x;
+    vehicle->chasePosition.y = vehicle->cameras[VEHICLE_CAMERA_CHASE].position.y;
+    vehicle->chasePosition.z = vehicle->cameras[VEHICLE_CAMERA_CHASE].position.z;
 }

@@ -52,12 +52,19 @@ typedef struct Vehicle {
     s32 suspensionStiffness;
     s32 mouseSensitivity;
     s32 chosenTransmission;
-    u8 abUnknownEa0[0x60]; /* +0xea0 */
+    s32 forcedForwardFrames;
+    s32 forcedReverseFrames;
+    s32 reverseFrames;
+    s32 forwardFrames;
+    u8 abUnknownEb0[0x50]; /* +0xeb0 */
     struct RacerSlot *racer;
-    u8 abUnknownF04[0x88]; /* +0xf04 */
+    u8 abUnknownF04[0x74]; /* +0xf04 */
+    s32 cameraChanged;
+    u8 abUnknownF7c[0x10]; /* +0xf7c */
     struct TrackSection *section;
     s32 pointIndex;
-    u8 abUnknownF94[0x14]; /* +0xf94 */
+    Vec3f trackDirection;
+    u8 abUnknownFa0[8]; /* +0xfa0 */
     s32 lap;
     u8 abUnknownFac[0x38]; /* +0xfac */
     f32 bestLapTime;
@@ -84,11 +91,13 @@ typedef struct Vehicle {
     CameraFrame *activeCamera;
     CameraFrame *previousCamera;
     CameraFrame cameras[VEHICLE_CAMERAS];
-    u8 abUnknown28d4[0xd4]; /* +0x28d4 */
+    u8 abUnknown28d4[0x18]; /* +0x28d4 */
+    Vec3f chasePosition;
+    u8 abUnknown28f8[0xb0]; /* +0x28f8 */
     s32 carModel;
     u8 color[3];
     u8 ghostMode;
-    u8 abUnknown29b0[4]; /* +0x29b0 */
+    f32 opacity;
     s32 customCarModel;
     u8 abUnknown29b8[8]; /* +0x29b8 */
     PlayerInputState *input;
@@ -129,6 +138,15 @@ typedef struct Vehicle {
      * @ghidraAddress BRD3D: 0x10065630
      */
     void ResetVehicleEffects(void);
+    /**
+     * @ghidraAddress BRD3D: 0x10063660
+     */
+    void RespawnVehicle(void);
+    /**
+     * @ghidraAddress BRD3D: 0x100015d0
+     * @stub
+     */
+    void UpdateCameraChase(CameraFrame *camera, f32 share);
     /**
      * @ghidraAddress BRD3D: 0x10076420
      */

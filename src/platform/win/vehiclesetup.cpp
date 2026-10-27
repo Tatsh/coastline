@@ -1,5 +1,6 @@
 #include <PR/gu.h>
 
+#include "camera.h"
 #include "game.h"
 #include "trackselect.h"
 #include "vehicle.h"
@@ -20,6 +21,14 @@ void Vehicle::InitVehiclePhysics(void) {
 
 void Vehicle::ResetVehicleEffects(void) {
     ::ResetVehicleEffects(this);
+}
+
+void Vehicle::RespawnVehicle(void) {
+    ::RespawnVehicle(this);
+}
+
+void UpdateCameraChase(Vehicle *vehicle, CameraFrame *camera, f32 share) {
+    vehicle->UpdateCameraChase(camera, share);
 }
 
 void Vehicle::SetVehiclePosition(f32 x, f32 y, f32 z) {
