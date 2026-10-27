@@ -236,6 +236,7 @@ extern u8 g_aParticleTexture[];
  * @ghidraAddress USA: 0x80361c40
  * @ghidraAddress EUR: 0x80364140
  * @ghidraAddress JPN: 0x80362db0
+ * @ghidraAddress BRD3D: 0x104b2570
  */
 extern s16 g_awRainParticlePos[WEATHER_VIEWS][RAIN_PARTICLE_SLOTS][3];
 
@@ -294,6 +295,7 @@ extern u8 g_abPrecipitationTextures[WEATHER_VIEWS][RAIN_STREAK_TEXTURE_SIDE *
  * @ghidraAddress USA: 0x80239cf0
  * @ghidraAddress EUR: 0x8023b200
  * @ghidraAddress JPN: 0x8023ad00
+ * @ghidraAddress BRD3D: 0x10019490
  */
 void InitRandomRainParticles(void);
 

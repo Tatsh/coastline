@@ -62,19 +62,6 @@
 #define SCREEN_HALF_WIDTH 640.0f
 #define SCREEN_HALF_HEIGHT 480.0f
 
-void InitRandomRainParticles(void) {
-    s32 view, i;
-
-    g_dwRainParticleCount = RAIN_PARTICLES;
-    for (view = 0; view < WEATHER_VIEWS; view++) {
-        for (i = 0; i < RAIN_PARTICLES; i++) {
-            g_awRainParticlePos[view][i][0] = AdvanceRng();
-            g_awRainParticlePos[view][i][1] = AdvanceRng();
-            g_awRainParticlePos[view][i][2] = AdvanceRng();
-        }
-    }
-}
-
 void UpdateWindDirection(void) {
     g_fWindAngle += ((f32)(s32)(AdvanceRng() & 0xFFFF) * RANDOM_TO_TWO - 1.0f) * g_fFrameDeltaTime;
     if (g_fWindAngle >= WIND_TURN) {
