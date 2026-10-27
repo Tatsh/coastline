@@ -728,14 +728,24 @@ OSIoMesg *AllocIoMessage(void);
 }
 #endif
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /**
  * Wait for every DMA started to finish.
  *
  * @ghidraAddress USA: 0x8021735c
  * @ghidraAddress EUR: 0x8021837c
  * @ghidraAddress JPN: 0x80217ccc
+ * @ghidraAddress BRD3D: 0x100311e4
+ * @ghidraAddress BRGlide: 0x1002a894
  */
 void WaitForDmaMessages(void);
+
+#ifdef __cplusplus
+}
+#endif
 
 /**
  * Return 0. Nothing calls it.
@@ -822,14 +832,24 @@ void ViRetraceThread(void *arg);
  */
 void UnusedFrameTimingStub(void);
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /**
  * Wait for the next retrace.
  *
  * @ghidraAddress USA: 0x8021e1c0
  * @ghidraAddress EUR: 0x8021f3c0
  * @ghidraAddress JPN: 0x8021ec90
+ * @ghidraAddress BRD3D: 0x10035b91
+ * @ghidraAddress BRGlide: 0x1002f242
  */
 void WaitForVblankMessage(void);
+
+#ifdef __cplusplus
+}
+#endif
 
 /**
  * Do nothing; where a debugger would stop.

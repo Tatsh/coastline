@@ -127,14 +127,6 @@
 
 u64 g_qwTimestampBase = 0;
 
-void WaitForDmaMessages(void) {
-    if (g_dwIoMessagePendingCount != 0) {
-        do {
-            osRecvMesg(&g_DmaMessageQueue, NULL, OS_MESG_BLOCK);
-        } while (--g_dwIoMessagePendingCount != 0);
-    }
-}
-
 s32 UnusedVblankQueryStub(s32 unused0, s32 unused1) {
     return 0;
 }
@@ -638,10 +630,6 @@ u32 DecompressFromRom(void *dst, u32 romOffset, DecompressJob *job) {
         job->pendingChunkSize = g_dwDmaChunkSize;
     }
     return decompressedSize;
-}
-
-void WaitForVblankMessage(void) {
-    osRecvMesg(&g_ViRetraceMesgQueue, NULL, OS_MESG_BLOCK);
 }
 
 void StubFunction(s32 unused) {
