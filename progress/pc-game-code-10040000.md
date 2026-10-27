@@ -1,6 +1,6 @@
 # PC port game code from 0x10040000 to 0x10050000
 
-217 of 264 routines done.
+218 of 264 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -85,10 +85,10 @@ the same name, for a routine the port retained from the N64 game.
 | `ShowRaceResultsScreen`                            |   ✅   |                 |      2 |    201 | `0x10045ea0` | `0x1003f340` | `int ShowRaceResultsScreen(void)`                                                                                                                         |
 | `ShowAudioOptionsMenu`                             |        |                 |      1 |    201 | `0x100455e0` | `0x1003ea70` | `undefined ShowAudioOptionsMenu()`                                                                                                                        |
 | `ShowGameOptionsMenu`                              |        |                 |      1 |    201 | `0x100456b0` | `0x1003eb40` | `undefined ShowGameOptionsMenu()`                                                                                                                         |
-| `ShowModemDialUpScreen`                            |        |                 |      1 |    201 | `0x10043da0` | `0x1003d2f0` | `uint ShowModemDialUpScreen(uint allocParam)`                                                                                                             |
 | `ShowInputOptionsMenu`                             |   ✅   |                 |      1 |    201 | `0x100452c0` | `0x1003e810` | `int ShowInputOptionsMenu(void)`                                                                                                                          |
 | `ShowKeyConfigScreen`                              |   ✅   |                 |      1 |    201 | `0x100434c0` | `0x1003ca10` | `int ShowKeyConfigScreen(void)`                                                                                                                           |
 | `ShowLoadSeasonMenu`                               |   ✅   |                 |      1 |    201 | `0x10045af0` | `0x1003ef90` | `int ShowLoadSeasonMenu(void)`                                                                                                                            |
+| `ShowModemDialUpScreen`                            |   ✅   |                 |      1 |    201 | `0x10043da0` | `0x1003d2f0` | `int ShowModemDialUpScreen(void)`                                                                                                                         |
 | `ShowNotEnoughPointsScreen`                        |   ✅   |                 |      1 |    201 | `0x10043330` | `0x1003c880` | `int ShowNotEnoughPointsScreen(void)`                                                                                                                     |
 | `ShowRaceResultsTotalsScreen`                      |   ✅   |                 |      1 |    201 | `0x100460a0` | `0x1003f540` | `int ShowRaceResultsTotalsScreen(void)`                                                                                                                   |
 | `ShowSeasonCongratsScreen`                         |   ✅   |                 |      1 |    201 | `0x10043260` | `0x1003c7b0` | `int ShowSeasonCongratsScreen(void)`                                                                                                                      |
