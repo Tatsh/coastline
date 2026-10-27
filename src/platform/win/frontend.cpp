@@ -1769,6 +1769,28 @@ int RestoreMenuItemTextB(MenuWidget *pWidget) {
     return RestoreSavedMenuText(pWidget, g_pSaveTimeAttackEditMenu, g_dwTimeAttackSaveSlotNamed);
 }
 
+static inline int HandleSavedMenuTextEntry(MenuWidget *pWidget,
+                                           int (*toggle)(MenuWidget *),
+                                           int (*restore)(MenuWidget *)) {
+    if (g_adwKeyPressedEdge[DIK_Y]) {
+        toggle(pWidget);
+    } else if (CheckForUserInput()) {
+        restore(pWidget);
+    } else {
+        return 1;
+    }
+    g_dwLastWmCharParam = 0;
+    return -1;
+}
+
+int SaveSeasonUI_HandleTextEntry(MenuWidget *pWidget) {
+    return HandleSavedMenuTextEntry(pWidget, ToggleMenuItemTextEditA, RestoreMenuItemTextA);
+}
+
+int SaveTimeAttackMenuUI_HandleTextEntry(MenuWidget *pWidget) {
+    return HandleSavedMenuTextEntry(pWidget, ToggleMenuItemTextEditB, RestoreMenuItemTextB);
+}
+
 int PreRaceExitSeasonConfirmUI_OnYes(MenuWidget *pWidget) {
     pWidget->pScreen->DestroyPanels();
     delete g_pActiveMenuScreen;

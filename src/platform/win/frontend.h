@@ -298,6 +298,22 @@ int RestoreMenuItemTextA(MenuWidget *pWidget);
 int RestoreMenuItemTextB(MenuWidget *pWidget);
 
 /**
+ * Process championship save text confirmation or cancellation.
+ *
+ * @ghidraAddress BRD3D: 0x10047210
+ * @ghidraAddress BRGlide: 0x10040660
+ */
+int SaveSeasonUI_HandleTextEntry(MenuWidget *pWidget);
+
+/**
+ * Process time attack save text confirmation or cancellation.
+ *
+ * @ghidraAddress BRD3D: 0x10047250
+ * @ghidraAddress BRGlide: 0x100406a0
+ */
+int SaveTimeAttackMenuUI_HandleTextEntry(MenuWidget *pWidget);
+
+/**
  * @ghidraAddress BRD3D: 0x10a9d078
  * @ghidraAddress BRGlide: 0x10ac4100
  */
