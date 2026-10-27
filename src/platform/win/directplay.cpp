@@ -1388,6 +1388,38 @@ bool RequestNetworkPause(void) {
     return true;
 }
 
+int CountActivePlayerSlots(void) {
+    const int count = g_dwNumActiveVehicles;
+    int active = 0;
+    for (int i = 0; i < count; ++i) {
+        if (g_aVehicles[i].driver) {
+            ++active;
+        }
+    }
+    return active;
+}
+
+void MaybeSendAllPlayersReadyPacket(void) {
+    WaitForSingleObject(g_hNetReadyMutex, INFINITE);
+    int ready = g_bNetReadyToStart;
+    ReleaseMutex(g_hNetReadyMutex);
+    if (ready) {
+        const unsigned active = static_cast<unsigned>(CountActivePlayerSlots());
+        if (active == GetDirectPlaySessionPlayerCount()) {
+            SendPlayerInfoPacket(&g_DirectPlayInfo,
+                                 static_cast<unsigned char>(g_dwLocalNetPlayerId),
+                                 static_cast<unsigned char>(g_dwChosenCar),
+                                 g_aVehicles[0].color[0],
+                                 g_aVehicles[0].color[1],
+                                 g_aVehicles[0].color[2],
+                                 g_DirectPlayInfo.dpidPlayer,
+                                 g_GlobalRallyConfig.szPlayerName,
+                                 3,
+                                 0);
+        }
+    }
+}
+
 void TickNetworkPauseRequest(void) {
     WaitForSingleObject(g_hNetPauseMutex, INFINITE);
     int ticks = g_nNetPauseRequestTicks;

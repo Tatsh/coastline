@@ -739,9 +739,15 @@ void TickNetworkPauseRequest(void);
 
 /**
  * @ghidraAddress BRD3D: 0x100053f0
- * @stub
+ * @ghidraAddress BRGlide: 0x10005760
  */
 void MaybeSendAllPlayersReadyPacket(void);
+
+/**
+ * @ghidraAddress BRD3D: 0x10005470
+ * @ghidraAddress BRGlide: 0x100057e0
+ */
+int CountActivePlayerSlots(void);
 
 /**
  * @ghidraAddress BRD3D: 0x100046d0
