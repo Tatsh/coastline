@@ -438,6 +438,37 @@ int DetectDuplicateKeyBindings(int nDevice);
 int KeyConfigUI_PollKeyCapture(MenuWidget *pWidget);
 
 /**
+ * @ghidraAddress BRD3D: 0x10045110
+ * @ghidraAddress BRGlide: 0x1003e660
+ */
+int ShowCarSetupScreen(void);
+
+/**
+ * @ghidraAddress BRD3D: 0x1004a580
+ * @ghidraAddress BRGlide: 0x100439b0
+ * @stub
+ */
+void BuildCarSetupUI(MenuScreen *pScreen);
+
+/**
+ * @ghidraAddress BRD3D: 0x10045050
+ * @ghidraAddress BRGlide: 0x1003e5a0
+ */
+int SeasonProgressInfoUI_OnCarSetup(MenuWidget *pWidget);
+
+/**
+ * @ghidraAddress BRD3D: 0x10046380
+ * @ghidraAddress BRGlide: 0x1003f820
+ */
+int LoadTimeAttackMenuUI_OnCarSetup(MenuWidget *pWidget);
+
+/**
+ * @ghidraAddress BRD3D: 0x100ac304
+ * @ghidraAddress BRGlide: 0x100abaa4
+ */
+extern int g_bRaceSetupShowCarSetup;
+
+/**
  * @ghidraAddress BRD3D: 0x100437b0
  * @ghidraAddress BRGlide: 0x1003cd00
  */

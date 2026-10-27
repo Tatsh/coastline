@@ -1814,6 +1814,28 @@ int MainMenuUI_OnPlayCredits(MenuWidget *pWidget) {
     return 0;
 }
 
+int ShowCarSetupScreen(void) {
+    return ShowCachedMenuScreen(g_pCachedMenu_CarSetup, BuildCarSetupUI);
+}
+
+int SeasonProgressInfoUI_OnCarSetup(MenuWidget *) {
+    g_bRaceSetupShowCarSetup = 0;
+    ShowCarSetupScreen();
+    g_bRaceSetupShowCarSetup = 1;
+    g_pCarSetupMenu->pfnAction = CarSetupUI_OnBackToSeasonProgressInfo;
+    g_dwGameMode = GAME_MODE_CHAMPIONSHIP;
+    return 1;
+}
+
+int LoadTimeAttackMenuUI_OnCarSetup(MenuWidget *) {
+    g_bRaceSetupShowCarSetup = 0;
+    ShowCarSetupScreen();
+    g_bRaceSetupShowCarSetup = 1;
+    g_pCarSetupMenu->pfnAction = CarSetupUI_OnBackToTimeAttack;
+    g_dwGameMode = GAME_MODE_TIME_ATTACK;
+    return 1;
+}
+
 int NetworkCarSetupUI_OnBootPlayer(MenuWidget *) {
     if (g_pDirectPlayInfo->dpidPlayer != g_dwNetCarSetupSelectedPlayerId) {
         SendNetworkMessage4(g_pDirectPlayInfo, g_dwNetCarSetupSelectedPlayerId);
