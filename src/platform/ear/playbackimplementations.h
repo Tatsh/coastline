@@ -21,10 +21,7 @@ private:
      * @stub
      */
     int InitializeEarPlayback(const void *source, int streaming, int looping) override;
-    /**
-     * @ghidraAddress EAR: 0x10012ba7
-     * @stub
-     */
+    /** @ghidraAddress EAR: 0x10012ba7 */
     std::uint16_t AllocateEarEventId() override;
     /** @ghidraAddress EAR: 0x1000b1c6 */
     void CloseRegisteredEarPlayback() override;

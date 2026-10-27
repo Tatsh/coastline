@@ -4,7 +4,9 @@
 
 #include <dsound.h>
 
+#include "directsoundoutput.h"
 #include "error.h"
+#include "playbackimplementations.h"
 
 namespace {
 // @ghidraAddress EAR: 0x1003b9a4
@@ -18,14 +20,63 @@ void *g_pDirectSoundLockRegion2;
 // @ghidraAddress EAR: 0x1003b9b4
 DWORD g_dwDirectSoundLockRegion1Bytes;
 } // namespace
-#include "playbackimplementations.h"
-
 PcmWaveStream::PcmWaveStream() {
     sampleBuffer = nullptr;
     file = nullptr;
     dataBytes = 0;
     readOffset = 0;
     writeOffset = 0;
+}
+
+std::uint16_t PcmWaveStream::AllocateEarEventId() {
+    DSBUFFERDESC description = {};
+    // The native DirectSound descriptor predates the later GUID extension.
+    description.dwSize = 20;
+    description.dwFlags = 0x101e0;
+    description.dwBufferBytes = GetPlaybackBufferBytes();
+    description.lpwfxFormat = &format;
+    if (CreateDirectSoundPlaybackBuffer(g_pEarDirectSoundOutput->GetDirectSoundInterface(),
+                                        &description) != DS_OK) {
+        SetEarLastError(0x11);
+        return 0;
+    }
+    ResetPlaybackBufferFrequency();
+    ProcessEarPlaybackSmoothing();
+    void *region1;
+    void *region2;
+    DWORD region1Bytes;
+    DWORD region2Bytes;
+    HRESULT result = GetDirectSoundBuffer()->Lock(
+        0, GetPlaybackBufferBytes(), &region1, &region1Bytes, &region2, &region2Bytes, 0);
+    if (result == DSERR_BUFFERLOST) {
+        GetDirectSoundBuffer()->Restore();
+        result = GetDirectSoundBuffer()->Lock(
+            0, GetPlaybackBufferBytes(), &region1, &region1Bytes, &region2, &region2Bytes, 0);
+        if (result != DS_OK) {
+            SetEarLastError(0x13);
+            return 0;
+        }
+    }
+    // Other initial lock failures still proceed through the native copy path.
+    std::memcpy(region1, sampleBuffer, region1Bytes);
+    if (region2) {
+        std::memcpy(region2, sampleBuffer + region1Bytes, region2Bytes);
+    }
+    if (GetDirectSoundBuffer()->Unlock(region1, region1Bytes, region2, region2Bytes) != DS_OK) {
+        return 0;
+    }
+    if (HasNonStreamingStartPosition()) {
+        long double position =
+            static_cast<long double>(GetPlaybackBufferBytes()) * GetPlaybackStartPosition();
+        DWORD offset = position >= -0x1p63L && position < 0x1p63L ?
+                           static_cast<DWORD>(static_cast<std::int64_t>(position)) :
+                           0;
+        if (GetDirectSoundBuffer()->SetCurrentPosition(offset) != DS_OK) {
+            return 0;
+        }
+        ClearPlaybackStartPosition();
+    }
+    return g_wEarObjectHandleCounter++;
 }
 
 void PcmWaveStream::ReleaseEarPlaybackResources() {

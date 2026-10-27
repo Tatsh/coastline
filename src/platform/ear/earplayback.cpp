@@ -2,6 +2,7 @@
 
 #include <bit>
 #include <cstring>
+#include <memory>
 
 #include <dsound.h>
 
@@ -11,6 +12,7 @@
 
 std::uint16_t g_wPlaybackSmoothingPassCount = 2;
 int g_earPlaybackSmoothingEnabled;
+std::uint16_t g_wEarObjectHandleCounter = 1;
 
 namespace {
 // @ghidraAddress EAR: 0x1002ea68
@@ -47,7 +49,7 @@ EarPlayback::EarPlayback() {
     suppressionEnabled = 0;
     suppressionMarker = 0;
     startMilliseconds = 0;
-    std::memset(unknown70, 0, sizeof(unknown70));
+    bufferBytes = 0;
     streamHalfBytes = 0;
     targetMatrixEntry = g_earPlaybackDefaultMatrixEntry;
     previousMatrixEntry = g_earPlaybackDefaultMatrixEntry;
@@ -70,6 +72,15 @@ EarPlayback::EarPlayback() {
 
 void EarPlayback::SetEarPlaybackFlags(std::uint16_t value) {
     flags = value;
+}
+
+std::uint16_t EarPlayback::AllocateEarEventId() {
+    return g_wEarObjectHandleCounter++;
+}
+
+HRESULT EarPlayback::CreateDirectSoundPlaybackBuffer(IDirectSound *device,
+                                                     _DSBUFFERDESC *description) {
+    return device->CreateSoundBuffer(description, std::addressof(directSound.buffer), nullptr);
 }
 
 int EarPlayback::GetStatus() {

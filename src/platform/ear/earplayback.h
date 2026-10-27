@@ -8,6 +8,8 @@
 
 class EarWaveSample;
 class EarPreset;
+struct IDirectSound;
+struct _DSBUFFERDESC;
 
 class [[gnu::packed]] EarPlayback {
 public:
@@ -83,10 +85,7 @@ public:
     virtual int InitializeEarPlayback(const void *source, int streaming, int looping);
 
 private:
-    /**
-     * @ghidraAddress EAR: 0x10012715
-     * @stub
-     */
+    /** @ghidraAddress EAR: 0x10012715 */
     virtual std::uint16_t AllocateEarEventId();
     /** @ghidraAddress EAR: 0x100125fd */
     virtual void UpdateDirectSoundPlaybackFrequency();
@@ -173,6 +172,23 @@ public:
     virtual void SetEarPlaybackNotification(std::uint32_t flags, std::uint16_t event);
 
 protected:
+    HRESULT CreateDirectSoundPlaybackBuffer(IDirectSound *device, _DSBUFFERDESC *description);
+    void ResetPlaybackBufferFrequency() {
+        frequency = baseFrequency;
+    }
+    std::uint32_t GetPlaybackBufferBytes() const {
+        return bufferBytes;
+    }
+    bool HasNonStreamingStartPosition() const {
+        return startPositionSpecified && !streaming;
+    }
+    double GetPlaybackStartPosition() const {
+        return startPosition;
+    }
+    void ClearPlaybackStartPosition() {
+        startPositionSpecified = 0;
+        startPosition = 0;
+    }
     IDirectSoundBuffer *GetDirectSoundBuffer() const {
         return directSound.buffer;
     }
@@ -233,7 +249,7 @@ private:
     std::uint32_t previousFrequency;
     [[maybe_unused]] std::uint8_t unknown6c[2]; /* +0x6c */
     std::uint16_t smoothingPass;
-    [[maybe_unused]] std::uint8_t unknown70[4]; /* +0x70 */
+    std::uint32_t bufferBytes;
     std::uint32_t streamHalfBytes;
     double startPosition;
     double frequencyScale;
@@ -249,5 +265,8 @@ extern std::uint16_t g_wPlaybackSmoothingPassCount;
 
 /** @ghidraAddress EAR: 0x1003b7b8 */
 extern int g_earPlaybackSmoothingEnabled;
+
+/** @ghidraAddress EAR: 0x10036144 */
+extern std::uint16_t g_wEarObjectHandleCounter;
 
 #endif
