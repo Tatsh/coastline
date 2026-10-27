@@ -231,6 +231,7 @@ void FlushDisplayList(void);
  * @ghidraAddress USA: 0x80217c94
  * @ghidraAddress EUR: 0x80218cb4
  * @ghidraAddress JPN: 0x80218604
+ * @ghidraAddress BRD3D: 0x100314de
  */
 void ClearDepthBuffer(void);
 
@@ -273,6 +274,7 @@ extern s32 g_bRaceScreenActive;
  * @ghidraAddress USA: 0x80217e20
  * @ghidraAddress EUR: 0x80218e40
  * @ghidraAddress JPN: 0x80218790
+ * @ghidraAddress BRD3D: 0x100314e3
  */
 void ClearZBufferRect(s32 x, s32 y, s32 width, s32 height);
 

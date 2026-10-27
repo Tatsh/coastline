@@ -19,6 +19,7 @@ add_library(
   earsound.cpp
   fileio.c
   frametimer.cpp
+  framebuffer.cpp
   frontend.cpp
   gameinit.cpp
   ghost.cpp

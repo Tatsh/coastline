@@ -707,6 +707,7 @@ void ClearRenderStats(void);
  * @ghidraAddress USA: 0x8021a540
  * @ghidraAddress EUR: 0x8021b630
  * @ghidraAddress JPN: 0x8021af0c
+ * @ghidraAddress BRD3D: 0x10033493
  */
 void ClearFramebuffersLowRes(void);
 
@@ -866,6 +867,7 @@ void UnblankDisplay(void);
  * @ghidraAddress USA: 0x8021a4c8
  * @ghidraAddress EUR: 0x8021b5b0
  * @ghidraAddress JPN: 0x8021ae8c
+ * @ghidraAddress BRD3D: 0x1003348e
  */
 void ClearFramebuffersHighRes(void);
 
