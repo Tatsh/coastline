@@ -1022,7 +1022,7 @@ int ShowChampionshipSeasonMenu(void) {
 
 int ShowSaveGhostMenu(int) {
     g_fGhostBestLapTime = g_aVehicles[0].bestLapTime;
-    g_fGhostBestRaceTime = g_aVehicles[0].raceTime;
+    g_fGhostBestRaceTime = g_aVehicles[0].totalTime;
     return ShowCachedMenuScreen(g_pCachedMenu_SaveGhost, BuildSaveTimeAttackMenuUI);
 }
 
