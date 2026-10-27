@@ -42,3 +42,8 @@ typedef struct Vehicle {
  * @ghidraAddress BRD3D: 0x10acdea8
  */
 extern Vehicle g_aVehicles[16];
+
+/**
+ * @ghidraAddress BRD3D: 0x100b37d0
+ */
+extern u8 g_abPlayerColorsRgb[][3];

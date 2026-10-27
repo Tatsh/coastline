@@ -10,6 +10,7 @@
 
 #include "instantreplay.h"
 #include "laps.h"
+#include "pause.h"
 #include "platform/win/boot/app.h"
 #include "platform/win/boot/rallyconfig.h"
 #include "platform/win/boot/strings.h"
@@ -21,6 +22,7 @@
 #include "platform/win/timer.h"
 #include "platform/win/vehicle.h"
 #include "trackselect.h"
+#include "vehiclecount.h"
 
 // The index of each service provider in g_aServiceProviders.
 #define SERVICE_PROVIDER_IPX 0
@@ -1449,8 +1451,89 @@ const RECT g_rcNetCarSetupPlayerList = {32, 370, 610, 467};
 int g_dwNetworkCarSetupShown;
 int g_dwNetworkDataStreamActive;
 unsigned g_dwNetRaceStartTimeMs;
+NetClockSample g_aNetClockSamples[8];
+int g_nNetClockSampleIndex;
+unsigned g_dwNetBestClockRoundTrip;
+char g_szSlotPlayerNameBuffer[0x400];
+int g_dwNetworkDataReceived;
+int g_nPendingNetSoundEffect;
 const char *g_apszPlaceNames[8] = {
     "First!", "Second!", "Third!", "Fourth.", "Fifth.", "Sixth.", "7th.", "8th."};
+
+char *GetSlotPlayerName(int nSlot) {
+    NetPeerSlot &slot = g_aNetPeerSlots[nSlot];
+    WaitForSingleObject(slot.hMutex, INFINITE);
+    std::strcpy(g_szSlotPlayerNameBuffer, slot.szName);
+    ReleaseMutex(slot.hMutex);
+    return g_szSlotPlayerNameBuffer;
+}
+
+int SendTimeSyncReply(DirectPlayInfo *pInfo, unsigned timestamp) {
+    NetStream stream;
+    WriteTimestampToStream(&stream);
+    stream.StreamWriteByte(static_cast<unsigned char>((g_dwLocalNetPlayerId & 0xf) | 0xd0));
+    stream.StreamWriteInt24(timestamp);
+    return SendNetworkStreamReliable(pInfo, &stream);
+}
+
+void SyncNetworkClockFromServer(unsigned serverFrame,
+                                unsigned localTime,
+                                unsigned echoedFrame,
+                                unsigned roundTrip) {
+    if (roundTrip <= g_dwNetBestClockRoundTrip && roundTrip != 0) {
+        for (const NetClockSample &sample : g_aNetClockSamples) {
+            if (sample.dwServerFrame == echoedFrame) {
+                unsigned offset =
+                    roundTrip / 2 - sample.dwLocalTime + localTime + sample.dwServerFrame;
+                ResetFrameTimer();
+                g_dwNetBestClockRoundTrip = roundTrip;
+                g_dwNetClockBaseMs = GetFrameTickCounter() - offset;
+            }
+        }
+    }
+    g_aNetClockSamples[g_nNetClockSampleIndex].dwServerFrame = serverFrame;
+    g_aNetClockSamples[g_nNetClockSampleIndex].dwLocalTime = localTime;
+    g_nNetClockSampleIndex++;
+    if (g_nNetClockSampleIndex >= 8) {
+        g_nNetClockSampleIndex = 0;
+    }
+}
+
+void LoadNetworkPlayerColors(void) {
+    g_aVehicles[0].color[2] = g_abPlayerColorsRgb[g_dwLocalNetPlayerId][2];
+    g_aVehicles[0].color[1] = g_abPlayerColorsRgb[g_dwLocalNetPlayerId][1];
+    g_aVehicles[0].color[0] = g_abPlayerColorsRgb[g_dwLocalNetPlayerId][0];
+}
+
+int SendPlayerJoinPacket(DirectPlayInfo *pInfo,
+                         unsigned char player,
+                         unsigned char red,
+                         unsigned char green,
+                         unsigned char blue,
+                         const char *name,
+                         unsigned char tag) {
+    NetStream stream;
+    stream.StreamResetReadWrite();
+    stream.StreamWriteInt24(0);
+    stream.StreamWriteByte(static_cast<unsigned char>((g_dwLocalNetPlayerId & 0xf) | tag | 0xe0));
+    stream.StreamWriteByte(player);
+    stream.StreamWriteByte(static_cast<unsigned char>(g_dwChosenCar));
+    stream.StreamWriteByte(red);
+    stream.StreamWriteByte(green);
+    stream.StreamWriteByte(blue);
+    bool ended = false;
+    for (int i = 0; i < 24; i++) {
+        if (ended) {
+            stream.StreamWriteByte(0);
+        } else {
+            stream.StreamWriteByte(static_cast<unsigned char>(name[i]));
+            if (name[i] == 0) {
+                ended = true;
+            }
+        }
+    }
+    return SendNetworkStreamReliable(pInfo, &stream);
+}
 
 int SendNetworkStreamReliable(DirectPlayInfo *pInfo, NetStream *pStream) {
     if (!g_dwNetworkDataStreamActive) {

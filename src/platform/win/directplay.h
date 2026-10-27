@@ -751,14 +751,93 @@ extern int g_dwNetworkCarSetupShown;
 
 /** A peer of a network game. The layout is not recovered past the members below. */
 struct NetPeerSlot {
-    HANDLE hMutex;           /*!< The mutex of the peer. */
-    DPID dpidPlayer;         /*!< The player of the session in the slot. */
-    char abUnknown8[0x24];   /* +0x08 */
-    int dwStatus;            /*!< The status of the slot, 0 in its low 6 bits for no player. */
-    char abUnknown30[0x540]; /* +0x30 */
-    char szName[0x404];      /*!< The name of the player. Its size is not recovered yet. */
-    int dwPingMs;            /*!< The time of the last round trip to the player, in milliseconds. */
+    HANDLE hMutex;
+    DPID dpidPlayer;
+    unsigned dwLastUpdateTime;
+    unsigned adwSnapshotTimes[8];
+    int dwStatus;
+    int nCar;
+    unsigned char color[3];
+    char abUnknown37; /* +0x37 */
+    unsigned adwSnapshotTypes[8];
+    KeyframeState aSnapshots[8];
+    unsigned nSnapshotCount;
+    int nCurrentSnapshot;
+    int nAppliedSnapshot;
+    char abUnknown564[0xc]; /* +0x564 */
+    char szName[0x400];
+    unsigned dwRaceTime;
+    int dwPingMs;
 };
+
+struct NetClockSample {
+    unsigned dwServerFrame;
+    unsigned dwLocalTime;
+};
+
+/**
+ * @ghidraAddress BRD3D: 0x1022aab0
+ */
+extern NetClockSample g_aNetClockSamples[8];
+
+/**
+ * @ghidraAddress BRD3D: 0x1022af38
+ */
+extern int g_nNetClockSampleIndex;
+
+/**
+ * @ghidraAddress BRD3D: 0x1022af3c
+ */
+extern unsigned g_dwNetBestClockRoundTrip;
+
+/**
+ * @ghidraAddress BRD3D: 0x1022aaf8
+ */
+extern char g_szSlotPlayerNameBuffer[0x400];
+
+/**
+ * @ghidraAddress BRD3D: 0x106909d8
+ */
+extern int g_dwNetworkDataReceived;
+
+/**
+ * @ghidraAddress BRD3D: 0x1022aef8
+ */
+extern int g_nPendingNetSoundEffect;
+
+/**
+ * @ghidraAddress BRD3D: 0x10005e70
+ */
+char *GetSlotPlayerName(int nSlot);
+
+/**
+ * @ghidraAddress BRD3D: 0x10004910
+ */
+int SendTimeSyncReply(DirectPlayInfo *pInfo, unsigned timestamp);
+
+/**
+ * @ghidraAddress BRD3D: 0x100034a0
+ */
+void SyncNetworkClockFromServer(unsigned serverFrame,
+                                unsigned localTime,
+                                unsigned echoedFrame,
+                                unsigned roundTrip);
+
+/**
+ * @ghidraAddress BRD3D: 0x100049c0
+ */
+void LoadNetworkPlayerColors(void);
+
+/**
+ * @ghidraAddress BRD3D: 0x10004590
+ */
+int SendPlayerJoinPacket(DirectPlayInfo *pInfo,
+                         unsigned char player,
+                         unsigned char red,
+                         unsigned char green,
+                         unsigned char blue,
+                         const char *name,
+                         unsigned char tag);
 
 /** The number of entries of g_aNetPeerSlots. */
 #define NET_PEER_SLOT_COUNT 16
