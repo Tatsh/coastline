@@ -1,6 +1,6 @@
 # PC port game code from 0x10040000 to 0x10050000
 
-248 of 264 routines done.
+249 of 264 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -18,7 +18,7 @@ the same name, for a routine the port retained from the N64 game.
 | `BuildKeyConfigUI`                                 |   🚧   |                 |      2 |   1834 | `0x1004cac0` | `0x10045ef0` | `void BuildKeyConfigUI(MenuScreen * pScreen)`                                                                                                             |
 | `BuildOptionsMenuUI`                               |   ✅   |                 |      2 |   1749 | `0x1004bdc0` | `0x100451f0` | `int BuildOptionsMenuUI(MenuScreen * screen)`                                                                                                             |
 | `MenuScreen::ShutdownFrontEnd`                     |   ✅   |                 |      1 |   1668 | `0x10048b20` | `0x10041f50` | `void ShutdownFrontEnd(MenuScreen * this, int bPartial)`                                                                                                  |
-| `BuildInputOptionsUI`                              |   🚧   |                 |      2 |   1565 | `0x1004c4a0` | `0x100458d0` | `void BuildInputOptionsUI(MenuScreen * pScreen)`                                                                                                          |
+| `BuildInputOptionsUI`                              |   ✅   |                 |      2 |   1565 | `0x1004c4a0` | `0x100458d0` | `void BuildInputOptionsUI(MenuScreen * pScreen)`                                                                                                          |
 | `BuildD3DDeviceSelectUI`                           |   🚧   |                 |      2 |   1210 | `0x1004d640` |              | `void BuildD3DDeviceSelectUI(MenuScreen * pScreen)`                                                                                                       |
 | `BuildDisplayModeSelectUI`                         |   🚧   |                 |      2 |   1210 | `0x1004db00` | `0x100469b0` | `void BuildDisplayModeSelectUI(MenuScreen * pScreen)`                                                                                                     |
 | `BuildVideoOptionsUI`                              |   🚧   |                 |      2 |   1092 | `0x1004d1f0` | `0x10046620` | `void BuildVideoOptionsUI(MenuScreen * pScreen)`                                                                                                          |
