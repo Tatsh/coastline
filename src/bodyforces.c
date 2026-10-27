@@ -7,12 +7,190 @@
 #include "weather.h"
 
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
+f32 g_fCollisionImpulseScale = 1.0f;
+
 #define FORCE_PRODUCT(a, b) ((long double)(a) * (b))
 #else
 #define FORCE_PRODUCT(a, b) ((a) * (b))
 #endif
 
 #define SIGN(x) ((x) == 0.0f ? 0.0 : (0.0f < (x) ? 1.0 : -1.0))
+
+s32 ApplyCollisionImpulse(
+    RigidBody *body, Vec3f *point, Vec3f *normal, s32 friction, f32 restitution) {
+    Vec3f *velocity = &body->stepStates[1].velocity;
+    Vec3f *angular = &body->stepStates[1].angularVelocity;
+    f32 transpose[3][3], rotation[3][3], skew[3][3], a[3][3], b[3][3], k[3][3], unit[3][3];
+    Vec3f arm, copy, motion, across, target, impulse, linear, turn, spin;
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+    long double rawInto, highMotion[3], acrossX, slide[3], bounce;
+    f32 inverseMass;
+#else
+    Vec3f unitZ, slide;
+    f32 bounce;
+#endif
+    f32 into, speed;
+    s32 i, j;
+
+#if TGR_PLATFORM != TGR_PLATFORM_WIN
+    /* The original copies the unit vector along z and never reads the copy. */
+    unitZ = g_vecUnitZ;
+    (void)unitZ;
+#endif
+    copy.x = point->x;
+    copy.y = point->y;
+    copy.z = point->z;
+    TransposeCopyMatrix3x3(transpose, rotation, body->orientation);
+    Mtx3fMulVec3f(&arm, transpose, &copy);
+    /* How the point moves. */
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+    highMotion[0] =
+        FORCE_PRODUCT(angular->y, arm.z) - FORCE_PRODUCT(arm.y, angular->z) + velocity->x;
+    highMotion[1] =
+        FORCE_PRODUCT(angular->z, arm.x) - FORCE_PRODUCT(arm.z, angular->x) + velocity->y;
+    highMotion[2] =
+        FORCE_PRODUCT(angular->x, arm.y) - FORCE_PRODUCT(arm.x, angular->y) + velocity->z;
+    motion.x = highMotion[0];
+    motion.y = highMotion[1];
+    motion.z = highMotion[2];
+    rawInto = FORCE_PRODUCT(normal->x, motion.x) +
+              (normal->y * highMotion[1] + normal->z * highMotion[2]);
+    if (0.0f <= rawInto) {
+        return 0;
+    }
+#else
+    motion.x = angular->y * arm.z - arm.y * angular->z;
+    motion.y = angular->z * arm.x - arm.z * angular->x;
+    motion.z = angular->x * arm.y - arm.x * angular->y;
+    motion.x = velocity->x + motion.x;
+    motion.y = velocity->y + motion.y;
+    motion.z = velocity->z + motion.z;
+    into = motion.z * normal->z + (normal->x * motion.x + normal->y * motion.y);
+    if (0.0f <= into) {
+        return 0;
+    }
+
+#endif
+
+    /* The mass the point moves with along each axis. */
+    BuildSkewSymmetricMatrix(skew, &arm);
+    Mtx3fMultiply(a, body->inverseInertia, rotation);
+    Mtx3fMultiply(b, transpose, a);
+    Mtx3fMultiply(k, b, skew);
+    Mtx3fMultiply(a, skew, k);
+    for (i = 0; i < 3; i++) {
+        for (j = 0; j < 3; j++) {
+            unit[i][j] = i == j ? 1.0f : 0.0f;
+        }
+    }
+    unit[2][2] = unit[1][1] = unit[0][0] = 1.0f / body->mass;
+    SubtractMatrix3x3(k, unit, a);
+
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+    into = Vec3fDot(normal, &motion);
+    acrossX = FORCE_PRODUCT(normal->x, into);
+#else
+    into = motion.z * normal->z + (normal->x * motion.x + normal->y * motion.y);
+    across.x = normal->x * into;
+#endif
+    across.y = normal->y * into;
+    across.z = normal->z * into;
+    speed = into < 0.0f ? -into : into;
+    if (MAX_IMPACT_SPEED < speed) {
+        speed = MAX_IMPACT_SPEED;
+    }
+    RecordImpact(body, speed);
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+    if (body->framesSinceImpact >= 11 && !(restitution >= 0.0001f)) {
+#else
+    if (body->framesSinceImpact >= 11 && restitution < 0.0001f) {
+#endif
+        RecordImpactVolume(body, speed);
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+        velocity->x *= g_fCollisionImpulseScale;
+        velocity->y *= g_fCollisionImpulseScale;
+        velocity->z *= g_fCollisionImpulseScale;
+        acrossX *= 0.9f;
+#else
+        across.x = across.x * 0.9f;
+#endif
+        across.y = across.y * 0.9f;
+        across.z = across.z * 0.9f;
+        motion.x = motion.x * 0.9f;
+        motion.y = motion.y * 0.9f;
+        motion.z = motion.z * 0.9f;
+    }
+    /* Stop the point moving into the surface, and retain a part of its slide along it. */
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+    slide[0] = motion.x - acrossX;
+    slide[1] = (long double)motion.y - across.y;
+    slide[2] = (long double)motion.z - across.z;
+    for (i = 0; i < 3; i++) {
+        slide[i] = friction ? slide[i] * 0.2f : 0.0L;
+    }
+    target.x = acrossX + slide[0];
+    target.y = across.y + slide[1];
+    target.z = across.z + slide[2];
+#else
+    slide.x = motion.x - across.x;
+    slide.y = motion.y - across.y;
+    slide.z = motion.z - across.z;
+    if (friction) {
+        slide.x = slide.x * 0.2f;
+        slide.y = slide.y * 0.2f;
+        slide.z = slide.z * 0.2f;
+    } else {
+        slide.x = 0.0f;
+        slide.y = 0.0f;
+        slide.z = 0.0f;
+    }
+    target.x = across.x + slide.x;
+    target.y = across.y + slide.y;
+    target.z = across.z + slide.z;
+#endif
+    SolveLinearSystem3x3(&impulse, k, &target);
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+    inverseMass = 1.0f / body->mass;
+    linear.x = impulse.x * inverseMass;
+    linear.y = impulse.y * inverseMass;
+    linear.z = impulse.z * inverseMass;
+    turn.x = FORCE_PRODUCT(arm.y, impulse.z) - FORCE_PRODUCT(impulse.y, arm.z);
+    turn.y = FORCE_PRODUCT(arm.z, impulse.x) - FORCE_PRODUCT(impulse.z, arm.x);
+    turn.z = FORCE_PRODUCT(arm.x, impulse.y) - FORCE_PRODUCT(impulse.x, arm.y);
+#else
+    linear.x = impulse.x * (1.0f / body->mass);
+    linear.y = impulse.y * (1.0f / body->mass);
+    linear.z = impulse.z * (1.0f / body->mass);
+    turn.x = arm.y * impulse.z - impulse.y * arm.z;
+    turn.y = arm.z * impulse.x - impulse.z * arm.x;
+    turn.z = arm.x * impulse.y - impulse.x * arm.y;
+#endif
+    Mtx3fMulVec3f(&spin, b, &turn);
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+    bounce = (long double)restitution - -1.05f;
+    velocity->x = velocity->x - linear.x * bounce;
+    velocity->y = velocity->y - linear.y * bounce;
+    velocity->z = velocity->z - linear.z * bounce;
+    angular->x = angular->x - spin.x * bounce;
+    angular->y = angular->y - spin.y * bounce;
+    angular->z = angular->z - spin.z * bounce;
+#else
+    bounce = 1.05f + restitution;
+    linear.x = linear.x * bounce;
+    linear.y = linear.y * bounce;
+    linear.z = linear.z * bounce;
+    spin.x = spin.x * bounce;
+    spin.y = spin.y * bounce;
+    spin.z = spin.z * bounce;
+    velocity->x = velocity->x - linear.x;
+    velocity->y = velocity->y - linear.y;
+    velocity->z = velocity->z - linear.z;
+    angular->x = angular->x - spin.x;
+    angular->y = angular->y - spin.y;
+    angular->z = angular->z - spin.z;
+#endif
+    return 1;
+}
 
 s32 BounceOffPlane(RigidBody *body, Vec3f *normal, s32 damp, s32 spin) {
     Vec3f *velocity = &body->stepStates[1].velocity;
@@ -200,7 +378,7 @@ f32 CastWheelRay(RigidBody *body, RigidBody *wheel) {
     return nearest;
 }
 
-/* The original picks the wheel by a switch without a default, and keeps the last one otherwise. */
+/* The original picks the wheel by a switch without a default, and retains the last one otherwise. */
 #pragma GCC diagnostic push
 #if !defined(__clang__)
 #pragma GCC diagnostic ignored "-Wmaybe-uninitialized"

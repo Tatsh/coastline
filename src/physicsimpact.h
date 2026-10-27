@@ -30,7 +30,7 @@ static inline void RecordImpact(RigidBody *body, f32 speed) {
     }
 }
 
-/* Keep the loudest hit for the sound. */
+/* Retain the loudest hit for the sound. */
 static inline void RecordImpactVolume(RigidBody *body, f32 speed) {
     u8 volume = ImpactVolume(speed);
 

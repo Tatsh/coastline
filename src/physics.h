@@ -23,6 +23,21 @@
 /** The surfaces of the track. */
 #define TRACK_SURFACES 8
 
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#ifdef __cplusplus
+extern "C" {
+#endif
+/**
+ * The velocity retained before an old contact applies its impulse.
+ *
+ * @ghidraAddress BRD3D: 0x100b5968
+ */
+extern f32 g_fCollisionImpulseScale;
+#ifdef __cplusplus
+}
+#endif
+#endif
+
 /** A node of the list of the triangles that cross the box of a body. */
 typedef struct CollisionTriangleNode {
     TrackTriangle *triangle;            /*!< The triangle. */
@@ -392,9 +407,12 @@ s32 BounceOffPlane(RigidBody *body, Vec3f *normal, s32 damp, s32 spin);
  */
 s32 UnusedCollisionResponseStub(void *body, void *normal, void *damp);
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 /**
  * Give the next step of a body the impulse at a point of it, in its frame, that stops the point
- * moving into a surface, record a hard hit, and keep a part of the slide along the surface.
+ * moving into a surface, record a hard hit, and retain a part of the slide along the surface.
  *
  * @param body The body whose next step receives the impulse.
  * @param point The point of contact, in the frame of the body.
@@ -405,13 +423,11 @@ s32 UnusedCollisionResponseStub(void *body, void *normal, void *damp);
  * @ghidraAddress USA: 0x8025bbb8
  * @ghidraAddress EUR: 0x8025d19c
  * @ghidraAddress JPN: 0x8025cb2c
+ * @ghidraAddress BRD3D: 0x1006ccd0
  */
 s32 ApplyCollisionImpulse(
     RigidBody *body, Vec3f *point, Vec3f *normal, s32 friction, f32 restitution);
 
-#ifdef __cplusplus
-extern "C" {
-#endif
 /**
  * Add a triangle to the list of those that cross the box.
  *
