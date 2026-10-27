@@ -1,6 +1,6 @@
 # PC port game code from 0x10010000 to 0x10020000
 
-130 of 162 routines done.
+131 of 162 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -121,7 +121,7 @@ the same name, for a routine the port retained from the N64 game.
 | `FormatGapToLeaderString`                              |   ✅   |                 |      2 |     79 | `0x10017c80` | `0x100151f0` | `char * FormatGapToLeaderString(Vehicle * vehicles, int index)`                                                                                                                                                                              |
 | `DDBDToBitDepth`                                       |   ✅   |                 |      1 |     77 | `0x1001a870` |              | `int DDBDToBitDepth(DWORD dwMask)`                                                                                                                                                                                                           |
 | `DirectDrawDriver::ShutdownDirectDrawDriver`           |   ✅   |                 |      1 |     77 | `0x1001b280` |              | `void ShutdownDirectDrawDriver(DirectDrawDriver * this)`                                                                                                                                                                                     |
-| `InitRandomRainParticles`                              |        | ✅ `0x80239cf0` |      1 |     75 | `0x10019490` | `0x10016a50` | `void InitRandomRainParticles(void)`                                                                                                                                                                                                         |
+| `InitRandomRainParticles`                              |   ✅   | ✅ `0x80239cf0` |      1 |     75 | `0x10019490` | `0x10016a50` | `void InitRandomRainParticles(void)`                                                                                                                                                                                                         |
 | `HandleGbiFillRectangleIntCoords`                      |   ✅   |                 |      1 |     73 | `0x1001c7a0` | `0x1001e720` | `GbiCommand * HandleGbiFillRectangleIntCoords(GbiCommand * pCommand)`                                                                                                                                                                        |
 | `ResetRenderBufferAndVertexPool`                       |   ✅   |                 |      2 |     72 | `0x1001c640` |              | `void ResetRenderBufferAndVertexPool(void)`                                                                                                                                                                                                  |
 | `TickDebugOverlayMessageTimer`                         |   ✅   |                 |      1 |     71 | `0x10017740` | `0x10014cb0` | `void TickDebugOverlayMessageTimer(void)`                                                                                                                                                                                                    |
