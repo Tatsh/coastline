@@ -117,7 +117,7 @@ int GameState_RunFrontEnd(void) {
     }
     if (!pScreen->bBuilt) {
 #if TGR_RENDERER == TGR_RENDERER_D3D
-        DisplayMode *pMode = g_pMainRenderWindow->pMode;
+        DisplayMode *pMode = g_pMainRenderWindow->GetMode();
 
         if (pMode != nullptr) {
             pMode->GetSurfaceDescDimensions(&g_dwFrontEndSurfaceWidth,

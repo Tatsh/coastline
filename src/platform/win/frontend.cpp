@@ -1115,11 +1115,11 @@ bool MenuScreen::RunFrame() {
 
 HRESULT MenuScreen::ClearBackBuffer() {
     DirectDrawRenderer *pRenderer = g_pRenderHost->GetRenderer();
-    IDirect3DViewport2 *pViewport = pRenderer->pViewport;
+    IDirect3DViewport2 *pViewport = pRenderer->GetViewport();
     D3DMaterial *pMaterial;
     D3DRECT rect;
 
-    if (pRenderer->pDirect3D2 == nullptr || pRenderer->pD3DDevice == nullptr ||
+    if (pRenderer->GetDirect3D2() == nullptr || pRenderer->GetD3DDevice() == nullptr ||
         pViewport == nullptr) {
         return E_FAIL;
     }
@@ -1127,15 +1127,11 @@ HRESULT MenuScreen::ClearBackBuffer() {
     rect.y1 = 0;
     rect.x2 = g_dwConfigFramebufferWidth;
     rect.y2 = g_dwConfigFramebufferHeight;
-    pMaterial = pRenderer->pMaterial;
-    pMaterial->desc.dcvDiffuse.r = MENU_BACKGROUND_RED;
-    pMaterial->desc.dcvDiffuse.g = 0.0f;
-    pMaterial->desc.dcvDiffuse.b = 0.0f;
-    pMaterial->bDirty = 1;
-    pMaterial->bDirty = 0;
-    pMaterial->desc.dwRampSize = 1;
-    pMaterial->pMaterial->SetMaterial(&pMaterial->desc);
-    pRenderer->pViewport->SetBackground(pMaterial->hMaterial);
+    pMaterial = pRenderer->GetMaterial();
+    pMaterial->SetDiffuseColor(MENU_BACKGROUND_RED, 0.0f, 0.0f);
+    pMaterial->SetRampSize(1);
+    pMaterial->ApplyDescription();
+    pRenderer->GetViewport()->SetBackground(pMaterial->GetMaterialHandle());
     pViewport->Clear(1, &rect, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER);
     return 0;
 }
@@ -1194,7 +1190,7 @@ void BlitSurfaceRegion(int nDestX, int nDestY, WORD wImage, const RECT *pRect, D
                 }
             }
         }
-        hr = g_pRenderHost->GetRenderer()->pBackBuffer->BltFast(
+        hr = g_pRenderHost->GetRenderer()->GetBackBuffer()->BltFast(
             nDestX, nDestY, g_aMenuImages[wImage].pSurface, &rc, dwFlags);
         if (hr == DDERR_SURFACELOST) {
             RestoreMenuSurfaces();
@@ -1207,7 +1203,7 @@ bool InitMenuDirectDrawSurfaces(void) {
     DDSURFACEDESC desc;
     char szMessage[0x100];
 
-    g_pMenuDirectDraw = g_pRenderHost->GetRenderer()->pDirectDraw2;
+    g_pMenuDirectDraw = g_pRenderHost->GetRenderer()->GetDirectDraw2();
     if (g_dwMenuSurfaceInitCount != 0) {
         g_aMenuImages[0].pSurface =
             DDLoadBitmap(g_pMenuDirectDraw, "images\\loading.bmp", 0, 0, &desc);
@@ -1259,8 +1255,8 @@ void ReleaseMenuSurfaces(void) {
 void MenuScreen::FlipAndWait() {
     DirectDrawRenderer *pRenderer = g_pRenderHost->GetRenderer();
 
-    pRenderer->pPrimarySurface->Flip(pRenderer->pBackBuffer, DDFLIP_WAIT);
-    while (pRenderer->pPrimarySurface->GetFlipStatus(DDGFS_ISFLIPDONE) != DD_OK) {
+    pRenderer->GetPrimarySurface()->Flip(pRenderer->GetBackBuffer(), DDFLIP_WAIT);
+    while (pRenderer->GetPrimarySurface()->GetFlipStatus(DDGFS_ISFLIPDONE) != DD_OK) {
         Sleep(0);
     }
 }
