@@ -5137,6 +5137,88 @@ void BuildVideoOptionsUI(MenuScreen *screen) {
 }
 #endif
 
+template <auto Action>
+    requires std::invocable<decltype(Action)> && std::same_as<decltype(Action()), int>
+static int InvokeRootMenuAction(MenuWidget *) {
+    return Action();
+}
+
+static inline int RootMenuUI_ShowTimeAttack(MenuWidget *) {
+    return ShowTimeAttackMenu(0);
+}
+
+void BuildFrontEndRootMenuUI(MenuScreen *screen) {
+    screen->SetCurrentPanelIndex(0);
+    screen->SetPanelActive(screen->GetPanelCount(), 1);
+    MenuPanel *panel = new (std::nothrow) MenuPanel();
+    screen->SetPanel(screen->GetPanelCount(), panel);
+    if (!panel) {
+        ShowErrorMessage(4);
+    }
+    screen->SetPanelCount(screen->GetPanelCount() + 1);
+    panel->SetScreen(screen);
+    panel->SetFlags(0);
+    panel->SetX(195);
+    panel->SetY(125);
+    AddMenuWidget(panel, screen, 0, 0, 9, 0, 0);
+    panel->SetWidgetCount(panel->GetWidgetCount() + 1);
+    MenuWidget *widget = new (std::nothrow) MenuWidget();
+    panel->SetWidget(199, widget);
+    if (!widget) {
+        ShowErrorMessage(4);
+    }
+    widget->Initialize(screen, 0, 0, 9, 2, 5, 0, 1);
+    SetMenuWidgetLabel(
+        AddMenuWidget(panel, screen, panel->GetX(), 10, 0x100009, 1, -1), 1, &g_rcMenuTitleBar);
+    panel->SetWidgetCount(panel->GetWidgetCount() + 1);
+    const float offsets[] = {0, 19, 38, 57, 76, 95, 114};
+    const short images[] = {6, 7, 8, 10, 9};
+    int (*const actions[])(MenuWidget *) = {InvokeRootMenuAction<ShowChampionshipSeasonMenu>,
+                                            InvokeRootMenuAction<ShowMultiplayerNameScreen>,
+                                            RootMenuUI_ShowTimeAttack,
+                                            InvokeRootMenuAction<ShowRaceSetupMenu>,
+                                            InvokeRootMenuAction<ShowOptionsMenu>,
+                                            MainMenuUI_OnPlayCredits,
+                                            InvokeRootMenuAction<ShowQuitGameConfirmMenu>};
+    int (*const idleActions[])(MenuWidget *) = {ValidateEntityState,
+                                                ValidateEntityStateAlwaysTrue,
+                                                ValidateEntityStateAlwaysTrue,
+                                                ValidateEntityState,
+                                                ValidateEntityStateAlwaysTrue,
+                                                ProcessCheatInputAndValidateEntity,
+                                                ValidateEntityStateAlwaysTrue};
+    for (int index = 0; index < 7; index++) {
+        widget = AddMenuWidget(
+            panel,
+            screen,
+            panel->GetX(),
+            index == 0 ?
+                panel->GetY() :
+                static_cast<float>(static_cast<long double>(panel->GetY()) + offsets[index]),
+            0x102001,
+            1,
+            -1);
+        widget->SetIdleActionCallback(idleActions[index]);
+        widget->SetActionCallback(actions[index]);
+        SetMenuWidgetLabel(widget, index + 2, &g_rcMenuCenterPanel);
+        if (index < 6) {
+            widget->SetLinkedWidgetCount(widget->GetLinkedWidgetCount() + 1);
+            widget->SetLinkedWidgetIndex(0, panel->GetWidgetCount() + 1);
+        }
+        panel->SetWidgetCount(panel->GetWidgetCount() + 1);
+        panel->SetNavigationCount(panel->GetNavigationCount() + 1);
+        if (index < 5) {
+            AddMenuWidget(panel, screen, 80, 46, 0x809, 0, images[index]);
+            panel->SetWidgetCount(panel->GetWidgetCount() + 1);
+        }
+    }
+    widget = AddMenuWidget(panel, screen, panel->GetX(), 29, 0x100009, 1, -1);
+    widget->SetSpriteId(3);
+    widget->SetText(g_szSpace, 1, 1, &g_rcMenuRootTitleBar);
+    g_dwRootMenuStringIndex = panel->GetWidgetCount();
+    panel->SetWidgetCount(panel->GetWidgetCount() + 1);
+}
+
 static inline int ChampionshipSeasonUI_ShowLoadSeason(MenuWidget *) {
     return ShowLoadSeasonMenu();
 }
