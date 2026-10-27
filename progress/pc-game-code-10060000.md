@@ -1,6 +1,6 @@
 # PC port game code from 0x10060000 to 0x10070000
 
-156 of 173 routines done.
+157 of 173 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -172,8 +172,8 @@ the same name, for a routine the port retained from the N64 game.
 | `RallyConfig::RallyConfig`               |   ✅   |                 |      2 |     12 | `0x10069a90` | `0x10062b00` | `RallyConfig * RallyConfig(RallyConfig * this)`                                                                                    |
 | `StartGhostRecording`                    |   ✅   |                 |      3 |     11 | `0x1006aa90` | `0x10063a40` | `void StartGhostRecording(void)`                                                                                                   |
 | `PlayBeepSound`                          |   ✅   | ✅ `0x8022b3c4` |      2 |     11 | `0x10067d80` | `0x10060df0` | `void PlayBeepSound(void)`                                                                                                         |
-| `Vehicle::ClearCameraChanged`            |        | ✅ `0x8022bcac` |      1 |     11 | `0x100683c0` | `0x10061430` | `undefined ClearCameraChanged(Vehicle * this)`                                                                                     |
 | `PlayGoSound`                            |   ✅   | ✅ `0x8022b3e4` |      1 |     11 | `0x10067d90` | `0x10060e00` | `void PlayGoSound(void)`                                                                                                           |
+| `Vehicle::ClearCameraChanged`            |   ✅   | ✅ `0x8022bcac` |      1 |     11 | `0x100683c0` | `0x10061430` | `void ClearCameraChanged(Vehicle * this)`                                                                                          |
 | `InitGlobalRallyConfig`                  |        |                 |      1 |     10 | `0x10069a60` | `0x10062ad0` | `undefined InitGlobalRallyConfig()`                                                                                                |
 | `AiVehicleControllerCallback`            |   ✅   |                 |      3 |      9 | `0x10065620` |              | `void AiVehicleControllerCallback(Vehicle * vehicle)`                                                                              |
 | `PlayerVehicleControllerCallback`        |   ✅   |                 |      3 |      9 | `0x10063fe0` |              | `void PlayerVehicleControllerCallback(Vehicle * vehicle)`                                                                          |
