@@ -643,15 +643,6 @@ void UpdateWaterfallSound(s32 instance, Vec3f *position, CameraFrame *camera);
 void StubSoundUpdate(CameraFrame *camera);
 
 /**
- * Load the sound effects of a race and start their channels muted.
- *
- * @ghidraAddress USA: 0x8022baa0
- * @ghidraAddress EUR: 0x8022cfb0
- * @ghidraAddress JPN: 0x8022c768
- */
-void LoadAllSoundEffects(void);
-
-/**
  * Play the engine, the impacts and the rumble of a vehicle for a frame.
  *
  * @param vehicle The vehicle.

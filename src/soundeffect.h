@@ -13,7 +13,11 @@ extern "C" {
 #endif
 
 /** The sound effects of a race. */
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#define SOUND_EFFECTS 25
+#else
 #define SOUND_EFFECTS 16
+#endif
 
 /**
  * The sound effects: the engine, which the airplane shares, the hits, the skids and the rolling on
@@ -73,6 +77,17 @@ typedef struct {
  * @ghidraAddress BRGlide: 0x100b32b0
  */
 extern SoundEffect g_aSoundEffects[SOUND_EFFECTS];
+
+/**
+ * Load the sound effects of a race and start their channels muted.
+ *
+ * @ghidraAddress USA: 0x8022baa0
+ * @ghidraAddress EUR: 0x8022cfb0
+ * @ghidraAddress JPN: 0x8022c768
+ * @ghidraAddress BRD3D: 0x100682a0
+ * @ghidraAddress BRGlide: 0x10061310
+ */
+void LoadAllSoundEffects(void);
 
 #ifdef __cplusplus
 }
