@@ -23,6 +23,7 @@ add_library(
   ghost.cpp
   hud.cpp
   input.cpp
+  menufont.cpp
   netstream.cpp
   paintshop.c
   podarchive.cpp
