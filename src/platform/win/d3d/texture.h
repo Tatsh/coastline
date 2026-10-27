@@ -118,6 +118,15 @@ extern unsigned char g_abTextureDecodeBuffer[RGBA5551_IMAGE_PIXEL_COUNT * 4];
 void UnpackRgba5551ToRgba8(unsigned char *pDest, const unsigned short *pSrc, int nCount);
 
 /**
+ * Convert a host-loaded N64 RGBA 5551 word to four RGBA bytes.
+ *
+ * @param nColor The word loaded from the big-endian image bytes.
+ * @return RGBA channels from the least to the most significant byte.
+ * @ghidraAddress BRD3D: 0x10027b10
+ */
+unsigned ConvertN64Rgba5551ToRgba8(unsigned nColor);
+
+/**
  * Convert pixels of RGBA 8888 to a pixel format of the device.
  *
  * @param pDest Receives the pixels.

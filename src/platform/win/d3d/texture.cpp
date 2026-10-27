@@ -1,5 +1,6 @@
 #include "platform/win/d3d/texture.h"
 
+#include <bit>
 #include <cstdlib>
 #include <cstring>
 
@@ -216,6 +217,13 @@ void UnpackRgba5551ToRgba8(unsigned char *pDest, const unsigned short *pSrc, int
         *pDest++ = static_cast<unsigned char>(((nPixel << 3) & 0xf8) | (nPixel & 7));
         *pDest++ = (nPixel & 0x8000) ? 0xff : 0;
     }
+}
+
+unsigned ConvertN64Rgba5551ToRgba8(unsigned nColor) {
+    unsigned short pixel = std::rotr(std::byteswap(static_cast<unsigned short>(nColor)), 1);
+    unsigned color;
+    UnpackRgba5551ToRgba8(reinterpret_cast<unsigned char *>(&color), &pixel, 1);
+    return color;
 }
 
 void *
