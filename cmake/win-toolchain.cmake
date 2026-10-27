@@ -18,6 +18,11 @@ find_program(
   CMAKE_CXX_COMPILER i686-w64-mingw32-g++
   PATHS "${MINGW_ROOT}/bin" ${_mingw_bins}
   REQUIRED)
+get_filename_component(_mingw_compiler_bin "${CMAKE_C_COMPILER}" DIRECTORY)
+find_program(
+  CMAKE_RC_COMPILER i686-w64-mingw32-windres
+  PATHS "${MINGW_ROOT}/bin" ${_mingw_bins} "${_mingw_compiler_bin}"
+  REQUIRED)
 
 # The port is reconstructed for modern compilers, not for MSVC 6.
 set(CMAKE_C_STANDARD 23)
