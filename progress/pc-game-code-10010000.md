@@ -1,6 +1,6 @@
 # PC port game code from 0x10010000 to 0x10020000
 
-108 of 161 routines done.
+109 of 162 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -152,6 +152,7 @@ the same name, for a routine the port retained from the N64 game.
 | `ResetRenderDeviceCallbacks`                           |   ✅   |                 |      2 |     26 | `0x1001bae0` |              | `int ResetRenderDeviceCallbacks(void)`                                                                                                                                                                                                       |
 | `PresentFrameCallback_GlideBufferSwap`                 |        |                 |      1 |     26 |              | `0x1001dd50` | `undefined PresentFrameCallback_GlideBufferSwap()`                                                                                                                                                                                           |
 | `InvalidateFrameSnapshotSlots`                         |   ✅   |                 |      4 |     20 | `0x10016990` | `0x10013f00` | `void InvalidateFrameSnapshotSlots(void)`                                                                                                                                                                                                    |
+| `Copy8Dwords`                                          |   ✅   |                 |      2 |     20 |              | `0x100189a0` | `void Copy8Dwords(void * pDest, void * pSrc)`                                                                                                                                                                                                |
 | `HandleGbiSetTexRectDepth`                             |   ✅   |                 |      1 |     17 | `0x1001cd80` | `0x1001eb30` | `GbiCommand * HandleGbiSetTexRectDepth(GbiCommand * pCommand)`                                                                                                                                                                               |
 | `HandleGbiSetTexRectW`                                 |   ✅   |                 |      1 |     17 | `0x1001cd60` | `0x1001eb10` | `GbiCommand * HandleGbiSetTexRectW(GbiCommand * pCommand)`                                                                                                                                                                                   |
 | `ShadowClipPlaneDistance_MaxU`                         |        |                 |      1 |     14 | `0x10010970` | `0x1000ded0` | `undefined ShadowClipPlaneDistance_MaxU()`                                                                                                                                                                                                   |
