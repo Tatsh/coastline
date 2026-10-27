@@ -1,6 +1,6 @@
 # PC port game code from 0x10050000 to 0x10060000
 
-39 of 88 routines done.
+40 of 88 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -38,7 +38,7 @@ the same name, for a routine the port retained from the N64 game.
 | `MenuItemList::Draw`                      |        |                 |      1 |    581 | `0x1005c2c0` | `0x100550e0` | `undefined Draw(MenuItemList * this, undefined4 param_1)`                                                                                       |
 | `InitRacerSlot`                           |        | ✅ `0x802291f8` |      1 |    538 |              | `0x1005f310` | `undefined InitRacerSlot()`                                                                                                                     |
 | `MenuItemList::RemoveItem`                |        |                 |      1 |    510 | `0x1005c000` | `0x10054e20` | `undefined RemoveItem(MenuItemList * this, undefined4 param_1)`                                                                                 |
-| `MenuFont::HandleTextInput`               |        |                 |      0 |    441 | `0x1005b570` | `0x10054390` | `undefined HandleTextInput(MenuFont * this)`                                                                                                    |
+| `MenuFont::HandleTextInput`               |   ✅   |                 |      0 |    441 | `0x1005b570` | `0x10054390` | `schar HandleTextInput(MenuFont * this)`                                                                                                        |
 | `SaveFileList::ScanSaveFiles`             |   ✅   |                 |      1 |    380 | `0x1005cf20` | `0x10055d40` | `int ScanSaveFiles(SaveFileList * this, char * pszPattern)`                                                                                     |
 | `InitMenuSurfaces`                        |   📝   |                 |      1 |    379 |              | `0x100583c0` | `undefined InitMenuSurfaces()`                                                                                                                  |
 | `InitMenuDirectDrawSurfaces`              |   ✅   |                 |      1 |    362 | `0x1005f690` |              | `bool InitMenuDirectDrawSurfaces(void)`                                                                                                         |
