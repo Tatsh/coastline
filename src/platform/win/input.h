@@ -629,6 +629,12 @@ extern int g_dwEntityHalfHeight;
 void UpdateMouseButtonEdges(void);
 
 /**
+ * @ghidraAddress BRD3D: 0x1003e070
+ * @ghidraAddress BRGlide: 0x10037710
+ */
+void PollInputAndUpdateEdges(void);
+
+/**
  * Put the cursor of the mouse in the centre of the screen and clear g_MouseMenuState.
  *
  * @param hWnd The main window. It is not read.

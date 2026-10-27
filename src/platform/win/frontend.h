@@ -215,7 +215,8 @@ public:
     int (*pfnUpdate)(MenuWidget *);
     int (*pfnAction)(MenuActionWidget *);
     int (*pfnIdleAction)(MenuWidget *);
-    char abUnknown10[0xc]; /* +0x10 */
+    int (*pfnTextEditComplete)(MenuWidget *);
+    char abUnknown14[8]; /* +0x14 */
     unsigned dwFlags;
     char abUnknown20[4]; /* +0x20 */
     unsigned dwSecondaryFlags;
@@ -361,6 +362,12 @@ int InputOptionsUI_OnRestoreDefaults(MenuWidget *pWidget);
  * @ghidraAddress BRGlide: 0x1003c950
  */
 int InputOptionsUI_OnCycleInputDevice(MenuWidget *pWidget);
+
+/**
+ * @ghidraAddress BRD3D: 0x1003ee50
+ * @ghidraAddress BRGlide: 0x10038380
+ */
+int ProcessMenuTextEditInput(MenuWidget *pWidget, short nFont);
 
 /**
  * @ghidraAddress BRD3D: 0x10043710

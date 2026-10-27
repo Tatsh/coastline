@@ -1814,6 +1814,35 @@ int MainMenuUI_OnPlayCredits(MenuWidget *pWidget) {
     return 0;
 }
 
+void PollInputAndUpdateEdges(void) {
+    UpdateKeyboardEdgeState();
+    UpdateMouseButtonEdges();
+}
+
+int ProcessMenuTextEditInput(MenuWidget *pWidget, short nFont) {
+    MenuFont *font = &pWidget->fonts[nFont];
+    MenuFontVTable *vtable = font->pVTable;
+    vtable->MeasureText(font);
+    if (!font->bDrawCaret) {
+        vtable->DrawText(font);
+        return 0;
+    }
+    signed char result = vtable->HandleTextInput(font);
+    if (result <= 0 || (pWidget->dwFlags & 2)) {
+        if (!g_dwInNetworkCarSetup) {
+            g_dwMenuTextEditActive = 0;
+            font->bDrawCaret = 0;
+            pWidget->dwFlags &= ~2u;
+        }
+        PollInputAndUpdateEdges();
+        if (pWidget->pfnTextEditComplete) {
+            pWidget->pfnTextEditComplete(pWidget);
+        }
+    }
+    vtable->DrawText(font);
+    return 1;
+}
+
 int FindControlNameIndex(int nTable, int nCode) {
     InputControlName *names;
     int count;
