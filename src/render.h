@@ -281,6 +281,7 @@ extern u16 g_wPerspNorm;
  * @ghidraAddress USA: 0x8028aacc
  * @ghidraAddress EUR: 0x8028ccd4
  * @ghidraAddress JPN: 0x8028c7a4
+ * @ghidraAddress BRD3D: 0x106c0210
  */
 extern f32 gFrustumFar;
 
@@ -290,6 +291,7 @@ extern f32 gFrustumFar;
  * @ghidraAddress USA: 0x8028aac4
  * @ghidraAddress EUR: 0x8028cccc
  * @ghidraAddress JPN: 0x8028c79c
+ * @ghidraAddress BRD3D: 0x106c53c0
  */
 extern f32 g_fFrustumFovAngle;
 

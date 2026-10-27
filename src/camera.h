@@ -250,6 +250,7 @@ extern u16 g_awCameraRayNearbyInstances[];
  * @ghidraAddress USA: 0x8031abf0
  * @ghidraAddress EUR: 0x8031d0f0
  * @ghidraAddress JPN: 0x8031bd20
+ * @ghidraAddress BRD3D: 0x106c2990
  */
 extern Vec3f g_afFrustumCenter;
 
@@ -259,6 +260,7 @@ extern Vec3f g_afFrustumCenter;
  * @ghidraAddress USA: 0x8031abd0
  * @ghidraAddress EUR: 0x8031d0d0
  * @ghidraAddress JPN: 0x8031bd00
+ * @ghidraAddress BRD3D: 0x106c56f8
  */
 extern Vec3f g_vFrustumHalfRight;
 
@@ -268,9 +270,13 @@ extern Vec3f g_vFrustumHalfRight;
  * @ghidraAddress USA: 0x8031abe0
  * @ghidraAddress EUR: 0x8031d0e0
  * @ghidraAddress JPN: 0x8031bd10
+ * @ghidraAddress BRD3D: 0x106c0690
  */
 extern Vec3f g_vFrustumHalfUp;
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 /**
  * Set up the corners of the far rectangle of the view of a camera, which the shadows clip to.
  *
@@ -282,7 +288,11 @@ extern Vec3f g_vFrustumHalfUp;
  * @ghidraAddress USA: 0x8021b0c4
  * @ghidraAddress EUR: 0x8021c200
  * @ghidraAddress JPN: 0x8021bad0
+ * @ghidraAddress BRD3D: 0x10033cb1
  */
 void SetupFrustumCorners(CameraFrame *camera, f32 fov, f32 farDistance, f32 width, f32 height);
+#ifdef __cplusplus
+}
+#endif
 
 #endif

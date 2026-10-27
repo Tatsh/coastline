@@ -4,6 +4,7 @@
 #include "cameraprojection.h"
 #include "render.h"
 #include "util.h"
+#include "visgrid.h"
 
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
 #include "platform/win/gbicommand.h"
@@ -15,6 +16,12 @@ f32 g_afScratchMatrix[4][4];
 f32 g_fCameraNearScale;
 f32 g_fCameraFarDistance;
 u16 g_wPerspNorm;
+Vec3f g_avFrustumPoints[FRUSTUM_POINTS];
+Vec3f g_afFrustumCenter;
+Vec3f g_vFrustumHalfRight;
+Vec3f g_vFrustumHalfUp;
+f32 gFrustumFar;
+f32 g_fFrustumFovAngle;
 #else
 #include <PR/R4300.h>
 #endif
@@ -63,6 +70,67 @@ u16 g_wPerspNorm;
         guMtxF2L(g_afViewProjMatrix, g_pProjectionMtx);                                            \
     }
 #endif
+
+/* The share of the way from the camera to each corner of the far rectangle the frustum keeps. */
+#define FRUSTUM_CORNER_SHARE 0.75f
+
+void SetupFrustumCorners(CameraFrame *camera, f32 fov, f32 farDistance, f32 width, f32 height) {
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+    long double sine;
+    f32 halfWidth, halfHeight;
+
+    __asm__("fsin" : "=t"(sine) : "0"((long double)fov));
+    halfWidth = sine * farDistance;
+    halfHeight = (long double)halfWidth * height / width;
+#else
+    f32 halfWidth = sinf(fov) * farDistance;
+    f32 halfHeight = halfWidth * height / width;
+#endif
+
+    if (g_dwNumViewports == 2) {
+        halfHeight *= 0.5f;
+    }
+    g_avFrustumPoints[FRUSTUM_CAMERA].x = camera->position.x;
+    g_avFrustumPoints[FRUSTUM_CAMERA].y = camera->position.y;
+    g_avFrustumPoints[FRUSTUM_CAMERA].z = camera->position.z;
+    Vec3fMulAdd(
+        &g_afFrustumCenter, &g_avFrustumPoints[FRUSTUM_CAMERA], &camera->forward, farDistance);
+    Vec3fScale(&g_vFrustumHalfRight, &camera->side, halfWidth);
+    Vec3fScale(&g_vFrustumHalfUp, &camera->up, halfHeight);
+    g_avFrustumPoints[FRUSTUM_FAR].x = g_afFrustumCenter.x;
+    g_avFrustumPoints[FRUSTUM_FAR].y = g_afFrustumCenter.y;
+    g_avFrustumPoints[FRUSTUM_FAR].z = g_afFrustumCenter.z;
+
+    Vec3fAdd(&g_avFrustumPoints[FRUSTUM_RIGHT_TOP], &g_afFrustumCenter, &g_vFrustumHalfRight);
+    Vec3fAddInPlace(&g_avFrustumPoints[FRUSTUM_RIGHT_TOP], &g_vFrustumHalfUp);
+    Vec3fAdd(&g_avFrustumPoints[FRUSTUM_RIGHT_BOTTOM], &g_afFrustumCenter, &g_vFrustumHalfRight);
+    Vec3fSubtractInPlace(&g_avFrustumPoints[FRUSTUM_RIGHT_BOTTOM], &g_vFrustumHalfUp);
+    Vec3fSubtract(&g_avFrustumPoints[FRUSTUM_LEFT_TOP], &g_afFrustumCenter, &g_vFrustumHalfRight);
+    Vec3fAddInPlace(&g_avFrustumPoints[FRUSTUM_LEFT_TOP], &g_vFrustumHalfUp);
+    Vec3fSubtract(
+        &g_avFrustumPoints[FRUSTUM_LEFT_BOTTOM], &g_afFrustumCenter, &g_vFrustumHalfRight);
+    Vec3fSubtractInPlace(&g_avFrustumPoints[FRUSTUM_LEFT_BOTTOM], &g_vFrustumHalfUp);
+
+    /* The corners are pulled a quarter of the way back towards the camera; the far point is not. */
+    Vec3fLerp(&g_avFrustumPoints[FRUSTUM_LEFT_TOP],
+              &g_avFrustumPoints[FRUSTUM_LEFT_TOP],
+              &g_avFrustumPoints[FRUSTUM_CAMERA],
+              FRUSTUM_CORNER_SHARE);
+    Vec3fLerp(&g_avFrustumPoints[FRUSTUM_LEFT_BOTTOM],
+              &g_avFrustumPoints[FRUSTUM_LEFT_BOTTOM],
+              &g_avFrustumPoints[FRUSTUM_CAMERA],
+              FRUSTUM_CORNER_SHARE);
+    Vec3fLerp(&g_avFrustumPoints[FRUSTUM_RIGHT_TOP],
+              &g_avFrustumPoints[FRUSTUM_RIGHT_TOP],
+              &g_avFrustumPoints[FRUSTUM_CAMERA],
+              FRUSTUM_CORNER_SHARE);
+    Vec3fLerp(&g_avFrustumPoints[FRUSTUM_RIGHT_BOTTOM],
+              &g_avFrustumPoints[FRUSTUM_RIGHT_BOTTOM],
+              &g_avFrustumPoints[FRUSTUM_CAMERA],
+              FRUSTUM_CORNER_SHARE);
+    gFrustumFar = farDistance;
+    g_fFrustumFovAngle = fov;
+}
 
 void SetupCameraMatrix(CameraFrame *camera, f32 fov, f32 farDistance, f32 width, f32 height) {
     guLookAtF(g_ViewLookAtMtx,
