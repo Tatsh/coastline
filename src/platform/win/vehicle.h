@@ -152,6 +152,13 @@ typedef struct Vehicle {
     void SimulateVehiclePhysicsSubstep(void);
 
     /**
+     * Transform the body and wheel matrices for drawing.
+     *
+     * @ghidraAddress BRD3D: 0x10061c60
+     */
+    void TransformAllWheelMatrices(void);
+
+    /**
      * Drive the vehicle with its computer controller.
      *
      * @ghidraAddress BRD3D: 0x10064700

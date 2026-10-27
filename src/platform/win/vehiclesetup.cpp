@@ -2,6 +2,8 @@
 
 #include "camera.h"
 #include "game.h"
+#include "ghost.h"
+#include "instantreplay.h"
 #include "trackselect.h"
 #include "vehicle.h"
 #include "vehiclechoice.h"
@@ -14,6 +16,24 @@ void AiVehicleControllerCallback(Vehicle *vehicle) {
 
 void Vehicle::SimulateVehiclePhysicsSubstep(void) {
     ::SimulateVehiclePhysicsSubstep(this);
+}
+
+void UpdateVehicleReplayPose(Vehicle *vehicle) {
+    if (gInstantReplayActive || (g_dwGameMode == GAME_MODE_TIME_ATTACK && vehicle->index == 1 &&
+                                 vehicle->input->playbackBuffer)) {
+        ApplyGhostKeyframeForVehicle(vehicle);
+        UpdateVehicleWheelTransforms(vehicle);
+    } else if (g_dwGameMode == GAME_MODE_DEMO && vehicle->index == 0 &&
+               vehicle->input->playbackBuffer) {
+        ApplyGhostKeyframeToVehicle(vehicle, 1);
+        UpdateVehicleWheelTransforms(vehicle);
+    } else {
+        RecordGhostKeyframe(vehicle);
+    }
+}
+
+void Vehicle::TransformAllWheelMatrices(void) {
+    ::TransformAllWheelMatrices(this);
 }
 
 void Vehicle::SetVehicleVelocity(f32 x, f32 y, f32 z) {

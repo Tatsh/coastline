@@ -1,5 +1,7 @@
 #include "vehiclephysics.h"
 
+#include <PR/gu.h>
+
 #include "physics.h"
 #include "timing.h"
 
@@ -15,9 +17,69 @@
 #endif
 
 #define PHYSICS_STEP (1.0f / 30.0f)
+#define WHEEL_DRAW_DROP 0.254f
+#define TWO_RAD_TO_DEG 114.5915527f
 #define VECTOR_AXIS(v, axis) ((&(v)->x)[axis])
 #define KEEP_UNREVERSED(velocity, damped)                                                          \
     ((velocity) = SIGN_OF(damped) == SIGN_OF(velocity) ? (damped) : 0.0f)
+
+void UpdateVehicleWheelTransforms(Vehicle *vehicle) {
+    s32 i;
+
+    UpdateWheelHeights(&vehicle->body);
+    for (i = 0; i < VEHICLE_WHEELS; i++) {
+        QuaternionToMatrix(vehicle->body.wheels[i]->orientation, &vehicle->body.wheels[i]->state);
+    }
+}
+
+/* Place the matrix of a wheel at the wheel, in the frame of the vehicle, transforming the
+ * translation rows in place as points. */
+#define PLACE_WHEEL(out, body, wheel)                                                              \
+    Mtx4x4TransformPoint((Vec3f *)(out)[3], (body)->orientation, (Vec3f *)(wheel)->orientation[3])
+
+/* Apply wheel roll before steering. */
+#define STEER_WHEEL(out, wheel, roll, steer)                                                       \
+    guRotateF(roll, (wheel)->rollAngle, 0.0f, 1.0f, 0.0f);                                         \
+    guRotateF(steer, (wheel)->steerAngle *TWO_RAD_TO_DEG, 0.0f, 0.0f, 1.0f);                       \
+    guMtxCatF(roll, steer, out)
+
+/* Move the wheel bodies of a vehicle down, or back up, by the drop of the drawing. */
+#define DROP_WHEELS(vehicle, op)                                                                   \
+    (vehicle)->wheelBodies[0].orientation[3][2] =                                                  \
+        (vehicle)->wheelBodies[0].orientation[3][2] op WHEEL_DRAW_DROP;                            \
+    (vehicle)->wheelBodies[1].orientation[3][2] =                                                  \
+        (vehicle)->wheelBodies[1].orientation[3][2] op WHEEL_DRAW_DROP;                            \
+    (vehicle)->wheelBodies[2].orientation[3][2] =                                                  \
+        (vehicle)->wheelBodies[2].orientation[3][2] op WHEEL_DRAW_DROP;                            \
+    (vehicle)->wheelBodies[3].orientation[3][2] =                                                  \
+        (vehicle)->wheelBodies[3].orientation[3][2] op WHEEL_DRAW_DROP
+
+void TransformAllWheelMatrices(Vehicle *vehicle) {
+    f32 roll[4][4];
+    f32 turn[4][4];
+    f32 steer[4][4];
+
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+    UpdateVehicleReplayPose(vehicle);
+#endif
+    guRotateF(turn, vehicle->body.rollAngle, 1.0f, 0.0f, 0.0f);
+    guMtxCatF(turn, vehicle->body.orientation, vehicle->matrix);
+    DROP_WHEELS(vehicle, +);
+    /* The rear wheels by their roll, then the front ones by their roll and steering. */
+    guRotateF(turn, vehicle->wheelBodies[0].rollAngle, 0.0f, 1.0f, 0.0f);
+    guMtxCatF(turn, vehicle->body.orientation, vehicle->wheelMatrices[2]);
+    PLACE_WHEEL(vehicle->wheelMatrices[2], &vehicle->body, &vehicle->wheelBodies[0]);
+    guRotateF(turn, vehicle->wheelBodies[2].rollAngle, 0.0f, 1.0f, 0.0f);
+    guMtxCatF(turn, vehicle->body.orientation, vehicle->wheelMatrices[3]);
+    PLACE_WHEEL(vehicle->wheelMatrices[3], &vehicle->body, &vehicle->wheelBodies[2]);
+    STEER_WHEEL(turn, &vehicle->wheelBodies[1], roll, steer);
+    guMtxCatF(turn, vehicle->body.orientation, vehicle->wheelMatrices[1]);
+    PLACE_WHEEL(vehicle->wheelMatrices[1], &vehicle->body, &vehicle->wheelBodies[1]);
+    STEER_WHEEL(turn, &vehicle->wheelBodies[3], roll, steer);
+    guMtxCatF(turn, vehicle->body.orientation, vehicle->wheelMatrices[0]);
+    PLACE_WHEEL(vehicle->wheelMatrices[0], &vehicle->body, &vehicle->wheelBodies[3]);
+    DROP_WHEELS(vehicle, -);
+}
 
 void SimulateVehiclePhysicsSubstep(Vehicle *vehicle) {
     RigidBody *body = &vehicle->body;
@@ -101,9 +163,6 @@ void SimulateVehiclePhysicsSubstep(Vehicle *vehicle) {
     StepVehicleCollisions(body);
 #endif
     memcpy(state, &body->stepStates[1], sizeof(RigidBodyState));
-    UpdateWheelHeights(body);
-    for (i = 0; i < VEHICLE_WHEELS; i++) {
-        QuaternionToMatrix(body->wheels[i]->orientation, &body->wheels[i]->state);
-    }
+    UpdateVehicleWheelTransforms(vehicle);
     AddTimingMarker(0, 0, 0x80, 0, 0xFF);
 }
