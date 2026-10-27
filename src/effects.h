@@ -32,6 +32,7 @@ typedef struct {
  * @ghidraAddress USA: 0x80366a80
  * @ghidraAddress EUR: 0x80368f80
  * @ghidraAddress JPN: 0x80367bf0
+ * @ghidraAddress BRD3D: 0x10a99bb8
  */
 extern Particle g_aParticlePool[PARTICLES];
 
@@ -41,6 +42,7 @@ extern Particle g_aParticlePool[PARTICLES];
  * @ghidraAddress USA: 0x8028c830
  * @ghidraAddress EUR: 0x8028ef90
  * @ghidraAddress JPN: 0x8028e9e0
+ * @ghidraAddress BRD3D: 0x10a99ba8
  */
 extern u16 g_wParticleFreeListHead;
 
@@ -50,6 +52,7 @@ extern u16 g_wParticleFreeListHead;
  * @ghidraAddress USA: 0x8028c834
  * @ghidraAddress EUR: 0x8028ef94
  * @ghidraAddress JPN: 0x8028e9e4
+ * @ghidraAddress BRD3D: 0x10a99bb0
  */
 extern u16 g_wExhaustParticleListHead;
 
@@ -59,6 +62,7 @@ extern u16 g_wExhaustParticleListHead;
  * @ghidraAddress USA: 0x8028c838
  * @ghidraAddress EUR: 0x8028ef98
  * @ghidraAddress JPN: 0x8028e9e8
+ * @ghidraAddress BRD3D: 0x10a99bac
  */
 extern u16 g_wTireSmokeListHead;
 
@@ -68,6 +72,7 @@ extern u16 g_wTireSmokeListHead;
  * @ghidraAddress USA: 0x8028c83c
  * @ghidraAddress EUR: 0x8028ef9c
  * @ghidraAddress JPN: 0x8028e9ec
+ * @ghidraAddress BRD3D: 0x10a99bb4
  */
 extern u16 g_wPavedTireSmokeListHead;
 

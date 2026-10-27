@@ -30,6 +30,7 @@ add_library(
   modelrelocation.cpp
   netstream.cpp
   paintshop.c
+  particlesnapshot.cpp
   podarchive.cpp
   racercolor.cpp
   racerslot.cpp
