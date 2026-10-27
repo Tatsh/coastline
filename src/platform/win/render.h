@@ -1139,3 +1139,16 @@ void Copy8Dwords(void *pDest, const void *pSrc);
  * @ghidraAddress BRGlide: 0x100189c0
  */
 void ResetModelDataPool(void);
+
+/** @ghidraAddress BRD3D: 0x104d51c0 */
+extern unsigned char g_abWeatherShadeTexture[16];
+
+/** @ghidraAddress BRD3D: 0x105553e4 */
+extern unsigned g_dwWeatherShadeTextureId;
+
+/**
+ * Create a uniform intensity texture for the chosen weather.
+ *
+ * @ghidraAddress BRD3D: 0x1002a740
+ */
+void CreateWeatherShadeTexture(void);

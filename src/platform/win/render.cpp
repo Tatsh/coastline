@@ -907,3 +907,13 @@ void ResetModelDataPool(void) {
     g_dwConvertedVertexCount = 0;
     g_pModelDataPoolCursor = g_afModelVertexPool;
 }
+
+unsigned char g_abWeatherShadeTexture[16];
+unsigned g_dwWeatherShadeTextureId;
+
+void CreateWeatherShadeTexture(void) {
+    unsigned char intensity = g_dwChosenWeather == 2 || g_dwChosenWeather == 3 ? 0x20 : 0x80;
+    std::memset(g_abWeatherShadeTexture, intensity, sizeof(g_abWeatherShadeTexture));
+    g_dwWeatherShadeTextureId = g_pfnCreateTextureFromN64ImageAutoLoadSize(
+        g_abWeatherShadeTexture, nullptr, 4, 4, G_IM_SIZ_8b, G_IM_FMT_I, 0, 0, 1, 1, 0, 0, 1, 0);
+}
