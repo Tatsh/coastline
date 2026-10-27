@@ -24,6 +24,14 @@
 void ShutdownGameSessionToSeasonMenu(void);
 
 /**
+ * Clear race resume data and shut down the session with exit state eight.
+ *
+ * @ghidraAddress BRD3D: 0x10039000
+ * @ghidraAddress BRGlide: 0x10032680
+ */
+void ExitRaceSessionToMenu(void);
+
+/**
  * Release the active race session and restore front-end display settings.
  *
  * @ghidraAddress BRD3D: 0x10035bd1
@@ -51,6 +59,11 @@ struct SeasonRaceResult {
     float raceTime;                    /*!< The race time in seconds. */
     float lapTimes[12];                /*!< The recorded lap times. */
     u8 unreconstructed58[0xb0 - 0x58]; /*!< The remaining saved result fields. */
+};
+
+/** The result prefix and additional state reset when returning from a race. */
+struct SeasonResumeState : SeasonRaceResult {
+    u8 unreconstructedB0[0x68]; /* +0xb0 */
 };
 
 /**
@@ -280,7 +293,7 @@ int ResetSeasonSaveBuffers(void);
  * @ghidraAddress BRD3D: 0x10220b20
  * @ghidraAddress BRGlide: 0x1021c650
  */
-extern SeasonRaceResult g_SeasonResumeState;
+extern SeasonResumeState g_SeasonResumeState;
 
 /**
  * The round of the season the menus show.

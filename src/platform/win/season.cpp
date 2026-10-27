@@ -34,7 +34,13 @@ PlayerProfile g_aSeasonSaveBuffers[2];
 int g_dwSeasonYear;
 int g_dwSeasonRound;
 s8 g_bSeasonClass;
-SeasonRaceResult g_SeasonResumeState;
+SeasonResumeState g_SeasonResumeState;
+
+void ExitRaceSessionToMenu(void) {
+    memset(&g_SeasonResumeState, 0, sizeof(g_SeasonResumeState));
+    g_SeasonResumeState.state = 8;
+    ShutdownGameSession();
+}
 SeasonRaceResult g_LastRaceResultCopy;
 float g_afLastRaceLapTimes[12];
 u8 g_abSeasonRoundPlace[SEASON_RACES];
