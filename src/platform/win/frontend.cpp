@@ -2078,6 +2078,35 @@ int PopulateVideoSettingsLists(void) {
 }
 
 #if TGR_RENDERER == TGR_RENDERER_D3D
+int PopulateDisplayDeviceList(void) {
+    GUID *guid =
+        g_pSelectedDisplayDriver ? g_pSelectedDisplayDriver->GetDirectDrawDriverGuid() : nullptr;
+    g_pSelectedDisplayDriver = FindDirectDrawDriverOrDefault(guid);
+    if (!g_pSelectedDisplayDriver) {
+        return 0;
+    }
+    int index = 0;
+    for (DirectDrawDriver *driver = g_pDirectDrawDriverListHead; driver; index++) {
+        DirectDrawDriver *next = driver->GetNext();
+        char text[80];
+        if (driver->GetFlags() & DIRECTDRAW_DRIVER_PRIMARY) {
+            wsprintfA(text, "%s (Primary)", driver->GetName());
+            g_dwActiveDisplayDeviceIndex = index;
+            g_dwSelectedDisplayDeviceIndex = index;
+        } else {
+            wsprintfA(text, "%s", driver->GetName());
+        }
+        if (g_pD3DDeviceSelectMenu) {
+            g_pD3DDeviceSelectMenu->GetItemList().AddItem(text, 0, 1, &g_rcMenuDeviceListBox, true);
+            g_pD3DDeviceSelectMenu->GetItemList().SetItemData(
+                driver->GetGuid(), sizeof(GUID), index);
+        }
+        driver = next;
+    }
+    g_pSelectedDisplayDriver = FindDisplayDeviceByGuid(&g_GlobalRallyConfig.DisplayDriverGuid);
+    return 1;
+}
+
 int ShowD3DDeviceSelectMenu(void) {
     if (!ShowCachedMenuScreen(g_pCachedMenu_VideoSettings, BuildD3DDeviceSelectUI)) {
         return 0;

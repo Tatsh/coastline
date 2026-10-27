@@ -77,6 +77,9 @@ public:
     const GUID *GetGuid() const {
         return &guid;
     }
+    const char *GetName() const {
+        return pszName;
+    }
     DirectDrawDriver *GetPrevious() const {
         return pPrev;
     }

@@ -975,9 +975,11 @@ int PopulateVideoSettingsLists(void);
  * Populate available display devices.
  *
  * @ghidraAddress BRD3D: 0x1007a840
- * @stub
  */
 int PopulateDisplayDeviceList(void);
+
+/** @ghidraAddress BRD3D: 0x100ab528 */
+extern RECT g_rcMenuDeviceListBox;
 
 /**
  * Populate available display modes for the selected device.
