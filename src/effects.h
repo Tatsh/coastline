@@ -107,6 +107,7 @@ extern u8 g_aTireSprayTexture[];
  */
 s32 ComputeScreenDepthZ(f32 z, f32 w);
 
+#if TGR_PLATFORM == TGR_PLATFORM_N64
 /**
  * Count down to the next puff of exhaust, faster as the engine revs, and blow it out behind the
  * vehicle when the pool has a free puff.
@@ -117,6 +118,7 @@ s32 ComputeScreenDepthZ(f32 z, f32 w);
  * @ghidraAddress JPN: 0x8023c188
  */
 void SpawnExhaustParticle(Vehicle *vehicle);
+#endif
 
 /**
  * Throw the newest segment of the spray of each wheel from the surface under it, while the wheel

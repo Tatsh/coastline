@@ -198,44 +198,6 @@ s32 ComputeScreenDepthZ(f32 z, f32 w) {
     return (s32)((z / w * (f32)g_dwViewportScaleZ + (f32)g_dwViewportTransZ) * 32.0f);
 }
 
-void SpawnExhaustParticle(Vehicle *vehicle) {
-    Particle *particle;
-    Vec3f exhaust;
-    f32 revs, random, size;
-    u16 index;
-
-    random = (f32)(AdvanceRng() & 0x1FFF);
-    revs = vehicle->engineRpm * 0.001f;
-    vehicle->exhaustTimer += g_fFrameDeltaTime * (1.0f + revs + random * (1.0f / 65536.0f));
-    if (!(vehicle->exhaustTimer > 0.25f)) {
-        return;
-    }
-    index = g_wParticleFreeListHead;
-    if (index == 0) {
-        return;
-    }
-    vehicle->exhaustTimer = 0.0f;
-    particle = &g_aParticlePool[index];
-    g_wParticleFreeListHead = particle->next;
-    particle->next = g_wExhaustParticleListHead;
-    g_wExhaustParticleListHead = index;
-    Vec3fScale(&particle->velocity, &vehicle->frame.forward, -1.5f - revs);
-
-    /* The exhaust is behind and above the third wheel, and to its side. */
-    Vec3fSubtract(&exhaust, &vehicle->wheelFrames[2].position, &vehicle->frame.forward);
-    Vec3fMulAdd(&exhaust, &exhaust, &vehicle->frame.up, 0.2f);
-    Vec3fMulAdd(&exhaust, &exhaust, &vehicle->frame.side, 0.2f);
-    random = (f32)(AdvanceRng() & 0xFFFF) * RANDOM_SHARE;
-    Vec3fSubtract(&particle->position, &vehicle->exhaustPosition, &exhaust);
-    Vec3fMulAdd(&particle->position, &exhaust, &particle->position, random * random);
-    vehicle->exhaustPosition = exhaust;
-
-    size = 1.0f + revs * 0.1f;
-    particle->size = size * 0.15f;
-    particle->fade = (u32)(1.0f / (Vec3fLength(&vehicle->placedVelocity) + size) * 255.0f);
-    particle->alpha = 255;
-}
-
 void EmitTireSpray(Vehicle *vehicle) {
     RigidBody *bodies[VEHICLE_WHEELS];
     Vtx *head;

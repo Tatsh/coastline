@@ -186,7 +186,6 @@ private:
 public:
     /**
      * @ghidraAddress BRD3D: 0x10039020
-     * @stub
      */
     void SpawnExhaustParticle();
     /**
