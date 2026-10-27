@@ -138,6 +138,10 @@ RECT g_rcMenuLeftColumn = {67, 0, 167, 0};
 RECT g_rcMenuRightColumnMid = {330, 0, 447, 0};
 RECT g_rcMenuRightListBox = {440, 128, 540, 204};
 RECT g_rcMenuRightColumnWide = {478, 0, 578, 0};
+RECT g_rcMenuNetworkPlayers = {484, 10, 621, 96};
+RECT g_rcMenuLeftColumnNarrow = {88, 0, 185, 0};
+RECT g_rcMenuRightColumn = {440, 0, 540, 0};
+RECT g_rcMenuFullScreen = {0, 0, 639, 479};
 RECT g_rcMenuSubPanel = {87, 61, 186, 132};
 RECT g_rcMenuRightLabel = {330, 70, 447, 86};
 const char g_szSpace[] = " ";
@@ -3417,6 +3421,149 @@ static inline MenuWidget *AddMenuWidget(
 static inline void SetMenuWidgetLabel(MenuWidget *widget, int stringId, const RECT *rect) {
     widget->nSpriteId = 3;
     widget->SetText(GetStringResource(stringId), 1, 1, rect);
+}
+
+void BuildNetworkCarSetupUI(MenuScreen *pScreen) {
+    pScreen->wCurrentPanel = 0;
+    g_dwGameMode = 6;
+    BackupMenuSelections();
+    ResolveRaceSelections();
+    pScreen->anPanelActive[pScreen->wPanelCount] = 1;
+    MenuPanel *panel = new (std::nothrow) MenuPanel();
+    pScreen->apPanels[pScreen->wPanelCount] = panel;
+    if (!panel) {
+        ShowErrorMessage(4);
+    }
+    ++pScreen->wPanelCount;
+    panel->pScreen = pScreen;
+    panel->nFlags = 0;
+    panel->fX = 195;
+    panel->fY = 111;
+    auto add = [&](float x, float y, unsigned flags, int mode, short image) {
+        return AddMenuWidget(panel, pScreen, x, y, flags, mode, image);
+    };
+    add(0, 0, 9, 0, 0);
+    ++panel->wWidgetCount;
+    add(0, 320, 9, 0, 95);
+    ++panel->wWidgetCount;
+    int (*actions[5])(MenuWidget *) = {CarSetupUI_OnCycleCar,
+                                       CarSetupUI_OnCycleTireType,
+                                       CarSetupUI_OnCycleSuspensionType,
+                                       CarSetupUI_OnCycleHandlingType,
+                                       CarSetupUI_OnCycleTransmissionType};
+    for (int i = 0; i < 5; ++i) {
+        MenuWidget *widget = add(panel->fX, panel->fY + 19 * i, 0x102001, 1, -1);
+        widget->pfnIdleAction = ValidateEntityState;
+        widget->pfnAction = actions[i];
+        SetMenuWidgetLabel(widget, 0x14 + i, &g_rcMenuCenterPanel);
+        ++panel->wWidgetCount;
+        ++panel->wNavigationCount;
+    }
+    if (g_dwNetworkPlayMode == 2) {
+        MenuWidget *widget = add(panel->fX, panel->fY + 95, 0x102001, 1, -1);
+        widget->pfnIdleAction = ValidateEntityState;
+        widget->pfnAction = NetworkCarSetupUI_OnBootPlayer;
+        SetMenuWidgetLabel(widget, 0x68, &g_rcMenuCenterPanel);
+        ++panel->wWidgetCount;
+        ++panel->wNavigationCount;
+    }
+    MenuWidget *widget = add(panel->fX, panel->fY + 114, 0x102001, 1, -1);
+    widget->pfnIdleAction = ValidateEntityState;
+    widget->pfnAction = NetworkCarSetupUI_OnRefreshSessionDesc;
+    widget->pfnAfterUpdate = NetworkCarSetupUI_OnEscape;
+    SetMenuWidgetLabel(widget, g_dwLobbyIsHost ? 0x19 : 0x69, &g_rcMenuCenterPanel);
+    ++panel->wWidgetCount;
+    ++panel->wNavigationCount;
+    widget = add(panel->fX, panel->fY + 133, 0x102001, 1, -1);
+    widget->pfnIdleAction = ValidateEntityState;
+    widget->pfnAction = ReturnToMultiplayerLobby;
+    SetMenuWidgetLabel(widget, 0xc, &g_rcMenuCenterPanel);
+    ++panel->wWidgetCount;
+    ++panel->wNavigationCount;
+    widget = add(32, 330, 0x3001, 1, -1);
+    widget->pfnUpdate = NetworkCarSetupUI_PollChatListSelection;
+    widget->itemList.nSelectionMode = 1;
+    MenuItemList *list = &widget->itemList;
+    list->pVTable->Initialize(list, 0x1840001, &g_rcNetCarSetupPlayerList, 5, 0, -1);
+    g_pNetworkCarSetupMenu = widget;
+    ++panel->wWidgetCount;
+    widget = add(32, 330, 0x200001, 1, -1);
+    widget->pfnAction = CompleteConnectionTextEdit;
+    widget->pfnUpdate = OnChatMessageEdited;
+    widget->pfnTextEditComplete = NetworkCarSetupUI_SendChatMessage;
+    widget->nSpriteId = 3;
+    widget->SetText(g_szEmptyUiString, 0, 1, &g_rcMenuCenterPanel);
+    MenuFont *font = &widget->fonts[0];
+    widget->rcBounds.left = font->rcBounds.left = 32;
+    widget->rcBounds.right = font->rcBounds.right = 415;
+    widget->rcBounds.top = font->rcBounds.top = 330;
+    widget->rcBounds.bottom = font->rcBounds.bottom = 346;
+    font->nInputMaxWidth = 367;
+    g_dwMenuTextEditActive = 0;
+    g_dwInNetworkCarSetup = 1;
+    font->bDrawCaret = 1;
+    ++panel->wWidgetCount;
+    widget = add(484, 2, 0x1001, 1, -1);
+    widget->pfnUpdate = NetworkCarSetupUI_UpdateSelectedPlayer;
+    widget->itemList.nSelectionMode = 1;
+    list = &widget->itemList;
+    list->pVTable->Initialize(
+        list, g_dwNetworkPlayMode == 2 ? 0x2040001 : 0x3040001, &g_rcMenuNetworkPlayers, 4, 0, -1);
+    g_pNetworkPlayerListMenu = widget;
+    ++panel->wWidgetCount;
+    add(61, 244, 9, 1, 54);
+    ++panel->wWidgetCount;
+    widget = add(73, 214, 1, 1, 53);
+    widget->pfnUpdate = CarSetupUI_UpdateSteeringIndicatorPos;
+    ++panel->wWidgetCount;
+    widget = add(339, 70, 1, 1, 11);
+    widget->pfnUpdate = CarSetupUI_UpdateCarImage;
+    ++widget->nLinkedWidgetCount;
+    widget->anLinkedWidgetIndices[0] = panel->wWidgetCount + 1;
+    ++panel->wWidgetCount;
+    widget = add(panel->fX, 137, 0x101001, 1, -1);
+    widget->pfnUpdate = CarSetupUI_UpdateCarNameLabel;
+    widget->nSpriteId = 3;
+    widget->SetText(g_szSpace, 1, 1, &g_rcMenuRightLabel);
+    ++panel->wWidgetCount;
+    widget = add(108, 66, 1, 1, 25);
+    widget->pfnUpdate = CarSetupUI_UpdateTiresImage;
+    ++widget->nLinkedWidgetCount;
+    widget->anLinkedWidgetIndices[0] = panel->wWidgetCount + 1;
+    ++panel->wWidgetCount;
+    widget = add(panel->fX, 123, 0x101001, 1, -1);
+    widget->pfnUpdate = CarSetupUI_UpdateTiresLabel;
+    widget->nSpriteId = 3;
+    widget->SetText(g_szSpace, 1, 1, &g_rcMenuLeftColumnNarrow);
+    ++panel->wWidgetCount;
+    widget = add(476, 129, 1, 1, 14);
+    widget->pfnUpdate = CarSetupUI_UpdateShocksImage;
+    ++widget->nLinkedWidgetCount;
+    widget->anLinkedWidgetIndices[0] = panel->wWidgetCount + 1;
+    ++panel->wWidgetCount;
+    widget = add(panel->fX, 181, 0x101001, 1, -1);
+    widget->pfnUpdate = CarSetupUI_UpdateShocksLabel;
+    widget->nSpriteId = 3;
+    widget->SetText(g_szSpace, 1, 1, &g_rcMenuRightColumn);
+    ++panel->wWidgetCount;
+    widget = add(505, 200, 1, 1, 12);
+    widget->pfnUpdate = CarSetupUI_UpdateTransmissionImage;
+    ++widget->nLinkedWidgetCount;
+    widget->anLinkedWidgetIndices[0] = panel->wWidgetCount + 1;
+    ++panel->wWidgetCount;
+    widget = add(panel->fX, 262, 0x101001, 1, -1);
+    widget->pfnUpdate = CarSetupUI_UpdateTransmissionLabel;
+    widget->nSpriteId = 3;
+    widget->SetText(g_szSpace, 1, 1, &g_rcMenuRightColumnWide);
+    ++panel->wWidgetCount;
+    widget = add(320, 10, 0x100001, 1, -1);
+    widget->nSpriteId = 0x34;
+    widget->SetText(g_szSpace, 1, 4, &g_rcMenuFullScreen);
+    font = &widget->fonts[0];
+    auto fontVTable = font->pVTable;
+    strcpy(font->szText, g_szSessionName);
+    fontVTable->MeasureText(font);
+    ++panel->wWidgetCount;
 }
 
 static inline void AddMenuActionButtons(MenuPanel *panel,

@@ -2076,6 +2076,22 @@ extern RECT g_rcMenuRightListBox;
  */
 extern RECT g_rcMenuRightColumnWide;
 /**
+ * @ghidraAddress BRD3D: 0x100ab3f8
+ */
+extern RECT g_rcMenuNetworkPlayers;
+/**
+ * @ghidraAddress BRD3D: 0x100ab498
+ */
+extern RECT g_rcMenuLeftColumnNarrow;
+/**
+ * @ghidraAddress BRD3D: 0x100ab488
+ */
+extern RECT g_rcMenuRightColumn;
+/**
+ * @ghidraAddress BRD3D: 0x100ab438
+ */
+extern RECT g_rcMenuFullScreen;
+/**
  * @ghidraAddress BRD3D: 0x100ab458
  */
 extern RECT g_rcMenuSubPanel;
@@ -2330,9 +2346,29 @@ int ShowNetworkCarSetupScreen(MenuWidget *pWidget = nullptr);
 
 /**
  * @ghidraAddress BRD3D: 0x10058750
- * @stub
  */
 void BuildNetworkCarSetupUI(MenuScreen *pScreen);
+
+/**
+ * @ghidraAddress BRD3D: 0x10043a00
+ */
+int NetworkCarSetupUI_OnRefreshSessionDesc(MenuWidget *pWidget);
+/**
+ * @ghidraAddress BRD3D: 0x10043810
+ */
+int NetworkCarSetupUI_OnEscape(MenuWidget *pWidget);
+/**
+ * @ghidraAddress BRD3D: 0x1003ebe0
+ */
+int NetworkCarSetupUI_UpdateSelectedPlayer(MenuWidget *pWidget);
+/**
+ * @ghidraAddress BRD3D: 0x1003f7f0
+ */
+int CarSetupUI_UpdateTiresLabel(MenuWidget *pWidget);
+/**
+ * @ghidraAddress BRD3D: 0x1003f720
+ */
+int CarSetupUI_UpdateCarImage(MenuWidget *pWidget);
 
 /**
  * @ghidraAddress BRD3D: 0x1003e100
