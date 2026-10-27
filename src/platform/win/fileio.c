@@ -39,7 +39,7 @@ GameFile *CHK_FReadOpen(const char *pszPath) {
         pErrorFile = fopen("c:\\RallyError.txt", "w");
         sprintf(szMessage, "CHK_FReadOpen(): error opening file %s.\n", pFile->pszPath);
         // The original passes the message to fprintf() as the format.
-        fputs(szMessage, pErrorFile);
+        fprintf(pErrorFile, szMessage);
         OutputDebugStringA(szMessage);
         fclose(pErrorFile);
         exit(1);
@@ -82,10 +82,10 @@ void *CHK_FRead(void *pBuffer, size_t nSize, size_t nCount, GameFile *pFile) {
     return pBuffer;
 }
 
-char *FileReadLine(char *pszLine, size_t nSize, GameFile *pFile) {
+char *FileReadLine(char *pszLine, int nSize, GameFile *pFile) {
     int c;
 
-    for (size_t nCount = 0; nCount < nSize; nCount++) {
+    for (int nCount = 0; nCount < nSize; nCount++) {
         c = fgetc(pFile->pFile);
         if (c == EOF) {
             if (nCount == 0) {

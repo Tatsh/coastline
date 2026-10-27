@@ -72,6 +72,7 @@ int CHK_FileExists(const char *pszPath);
  * @param pszPath The path of the file.
  * @return The open file.
  * @ghidraAddress BRD3D: 0x10002fe0
+ * @ghidraAddress SetVideo: 0x00401050
  */
 GameFile *CHK_FReadOpen(const char *pszPath);
 
@@ -121,14 +122,16 @@ long GetFileLength(GameFile *pFile);
  * @return The byte after the terminator of the line, the end of a full buffer, or `NULL` at the
  * end of the file.
  * @ghidraAddress BRD3D: 0x100031e0
+ * @ghidraAddress SetVideo: 0x00401150
  */
-char *FileReadLine(char *pszLine, size_t nSize, GameFile *pFile);
+char *FileReadLine(char *pszLine, int nSize, GameFile *pFile);
 
 /**
  * Close a file and free it. A file that does not close ends the process.
  *
  * @param pFile The open file.
  * @ghidraAddress BRD3D: 0x10003290
+ * @ghidraAddress SetVideo: 0x00401370
  */
 void CHK_FClose(GameFile *pFile);
 
