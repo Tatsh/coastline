@@ -1,6 +1,6 @@
 # PC port game code from 0x10040000 to 0x10050000
 
-220 of 264 routines done.
+221 of 264 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -47,7 +47,7 @@ the same name, for a routine the port retained from the N64 game.
 | `JoinSessionAndShowRaceSetup`                      |        |                 |      3 |    340 | `0x10044280` | `0x1003d7d0` | `undefined JoinSessionAndShowRaceSetup()`                                                                                                                 |
 | `RaceResultsInfoUI_UpdateSelectedTimeLabel`        |        |                 |      1 |    339 | `0x10040ee0` | `0x1003a420` | `undefined RaceResultsInfoUI_UpdateSelectedTimeLabel()`                                                                                                   |
 | `CarSetupUI_OnCycleCar`                            |   ✅   |                 |      2 |    330 | `0x10042b30` |              | `int CarSetupUI_OnCycleCar(MenuActionWidget * pItem)`                                                                                                     |
-| `SaveSeasonUI_OnSlotSelected`                      |        |                 |      1 |    328 | `0x10042020` | `0x1003b580` | `undefined SaveSeasonUI_OnSlotSelected()`                                                                                                                 |
+| `SaveSeasonUI_OnSlotSelected`                      |   ✅   |                 |      1 |    328 | `0x10042020` | `0x1003b580` | `int SaveSeasonUI_OnSlotSelected(MenuItemList * pList, int * pnSlot)`                                                                                     |
 | `TimeAttackUI_UpdateBestLapLabel`                  |        |                 |      2 |    320 | `0x10041180` | `0x1003a6d0` | `undefined TimeAttackUI_UpdateBestLapLabel()`                                                                                                             |
 | `TimeAttackUI_UpdateRaceTimeLabel`                 |        |                 |      2 |    320 | `0x10041040` | `0x1003a580` | `undefined TimeAttackUI_UpdateRaceTimeLabel()`                                                                                                            |
 | `MenuScreen::MenuScreen`                           |   ✅   |                 |     37 |    310 | `0x10048710` | `0x10041b60` | `MenuScreen * MenuScreen(MenuScreen * this)`                                                                                                              |
