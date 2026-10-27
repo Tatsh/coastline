@@ -425,6 +425,14 @@ int ModemConnectionUI_EnableContinueIfNumberEntered(MenuWidget *pWidget);
 int CarSetupUI_UpdateSteeringIndicatorPos(MenuWidget *pWidget);
 
 /**
+ * Update the volume-channel image and its first animation frame.
+ *
+ * @ghidraAddress BRD3D: 0x1003e950
+ * @ghidraAddress BRGlide: 0x10037f70
+ */
+int AudioOptionsUI_UpdateVolumeChannelImage(MenuWidget *pWidget);
+
+/**
  * @ghidraAddress BRD3D: 0x10aa29bc
  * @ghidraAddress BRGlide: 0x10ac5d14
  */

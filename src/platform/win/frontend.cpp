@@ -1113,6 +1113,13 @@ int CarSetupUI_UpdateSteeringIndicatorPos(MenuWidget *pWidget) {
     return 1;
 }
 
+int AudioOptionsUI_UpdateVolumeChannelImage(MenuWidget *pWidget) {
+    short image = g_bAudioOptionsSfxSelected ? 0x68 : 0x69;
+    pWidget->anSpriteIds[0] = image;
+    pWidget->nSpriteId = image;
+    return 1;
+}
+
 int ShowVideoOptionsMenu(void) {
     return ShowCachedMenuScreen(g_pCachedMenu_InputConfig, BuildVideoOptionsUI);
 }
