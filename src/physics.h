@@ -108,18 +108,19 @@ extern CollisionTriangleNode *g_pNextCollisionTriangleNode;
 extern s32 g_dwCollisionContactType;
 #endif
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 /**
  * The triangle of the last collision.
  *
  * @ghidraAddress USA: 0x802a4a2c
  * @ghidraAddress EUR: 0x802a71ec
  * @ghidraAddress JPN: 0x802a6c8c
+ * @ghidraAddress BRD3D: 0x11754e3c
  */
 extern TrackTriangle *g_pCollisionTriangle;
 
-#ifdef __cplusplus
-extern "C" {
-#endif
 /**
  * Whether the triangles of the cache are collected from the last.
  *
@@ -639,6 +640,9 @@ void ComputeCollisionPenetration(
 }
 #endif
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 /**
  * Collide the next step of a body with the listed triangles that cross its box, and move it back
  * out of those it hit.
@@ -649,6 +653,7 @@ void ComputeCollisionPenetration(
  * @ghidraAddress USA: 0x8025dfcc
  * @ghidraAddress EUR: 0x8025f5b0
  * @ghidraAddress JPN: 0x8025ef40
+ * @ghidraAddress BRD3D: 0x1006e760
  */
 s32 CollideBodyWithTriangles(RigidBody *body, f32 box[4][4]);
 
@@ -662,10 +667,6 @@ s32 CollideBodyWithTriangles(RigidBody *body, f32 box[4][4]);
  * @ghidraAddress JPN: 0x8025f4e8
  */
 void StepVehicleCollisions(RigidBody *body);
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 /**
  * Set a force to the drag on the body of a vehicle, which grows on the surface that slows it.
  *
