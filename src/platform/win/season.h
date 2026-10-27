@@ -15,6 +15,23 @@
 /** The resume state that starts a season again at its first round. */
 #define SEASON_RESUME_STATE_RESTART 5
 
+/**
+ * Shut down the race with the season restart state selected.
+ *
+ * @ghidraAddress BRD3D: 0x10071120
+ * @ghidraAddress BRGlide: 0x1006a070
+ */
+void ShutdownGameSessionToSeasonMenu(void);
+
+/**
+ * Release the active race session and restore front-end display settings.
+ *
+ * @ghidraAddress BRD3D: 0x10035bd1
+ * @ghidraAddress BRGlide: 0x1002f282
+ * @stub
+ */
+void ShutdownGameSession(void);
+
 /** The year label's buffer size. */
 #define SEASON_YEAR_LABEL_SIZE 32
 

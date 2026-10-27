@@ -15,6 +15,11 @@
 #include "seasons.h"
 #include "trackselect.h"
 
+void ShutdownGameSessionToSeasonMenu(void) {
+    g_SeasonResumeState.state = SEASON_RESUME_STATE_RESTART;
+    ShutdownGameSession();
+}
+
 Season g_SeasonTable[SEASONS] = {
     {0xdf, 2, 10, {1, 8}, 0x0081, {{2, 0}, {4, 0}, {0, 0}, {0, 0}}},
     {0xe0, 3, 15, {0, 7}, 0x0050, {{0, 0}, {2, 0}, {4, 2}, {0, 0}}},
