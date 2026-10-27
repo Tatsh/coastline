@@ -1,6 +1,6 @@
 # PC port game code from 0x10050000 to 0x10060000
 
-69 of 96 routines done.
+70 of 96 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -103,5 +103,5 @@ the same name, for a routine the port retained from the N64 game.
 | `MenuFont::~MenuFont`                     |   ✅   |                 |      5 |      7 | `0x1005b0c0` | `0x10053ee0` | `void ~MenuFont(MenuFont * this)`                                                                                           |
 | `SaveFileList::~SaveFileList`             |   ✅   |                 |      1 |      7 | `0x1005cc10` | `0x10055a30` | `void ~SaveFileList(SaveFileList * this)`                                                                                   |
 | `GetCarPaintEntryValue`                   |        |                 |      3 |      6 |              | `0x1005a070` | `undefined GetCarPaintEntryValue()`                                                                                         |
-| `MenuFont::DrawGlyphNoOp`                 |   🚧   |                 |      0 |      5 | `0x1005b7e0` | `0x10054600` | `undefined DrawGlyphNoOp(MenuFont * this, undefined4 param_1, undefined4 param_2, undefined4 param_3)`                      |
+| `MenuFont::DrawGlyphNoOp`                 |   ✅   |                 |      0 |      5 | `0x1005b7e0` | `0x10054600` | `int DrawGlyphNoOp(MenuFont * this, undefined4 param_1, undefined4 param_2, undefined4 param_3)`                            |
 | `ReturnZero`                              |        |                 |      4 |      3 |              | `0x10053e60` | `undefined ReturnZero()`                                                                                                    |
