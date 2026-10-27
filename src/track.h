@@ -409,15 +409,16 @@ extern u8 g_abTrackSection2Data[TRACK_SECTION_DATA_SIZE];
  */
 extern u32 g_dwCurrentTrackRomOffset;
 
+#if TGR_PLATFORM != TGR_PLATFORM_WIN
 /**
  * Where the textures of the loaded track are on the cartridge, after its compressed geometry.
  *
  * @ghidraAddress USA: 0x8028a880
  * @ghidraAddress EUR: 0x8028ca80
  * @ghidraAddress JPN: 0x8028c550
- * @ghidraAddress BRD3D: 0x10690bec
  */
 extern u32 g_dwTrackTextureRomOffset;
+#endif
 
 /**
  * The segment of textures last streamed, or -1.

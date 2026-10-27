@@ -37,6 +37,7 @@ add_library(
   sound.cpp
   texturescan.cpp
   trackanimation.cpp
+  tracktexture.cpp
   timer.c
   vehicle.cpp
   vehiclesetup.cpp
