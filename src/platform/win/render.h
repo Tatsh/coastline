@@ -328,6 +328,14 @@ extern ConvertedModelVertex *g_pModelDataPoolCursor;
  */
 void CopyConfigFramebufferSize(void);
 
+/**
+ * Refresh screen dimensions from the configured framebuffer size.
+ *
+ * @ghidraAddress BRD3D: 0x10031282
+ * @ghidraAddress BRGlide: 0x1002a932
+ */
+void RefreshScreenDimensions(void);
+
 /** A run of vertices of the console converted to floats. */
 struct VertexConvCacheEntry {
     const Vtx *pSource;                /*!< The vertices of the console. */

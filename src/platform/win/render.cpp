@@ -110,6 +110,10 @@ void CopyConfigFramebufferSize(void) {
     g_dwScreenHeight = g_dwConfigFramebufferHeight;
 }
 
+void RefreshScreenDimensions(void) {
+    CopyConfigFramebufferSize();
+}
+
 // The number of words Copy8Dwords() copies.
 #define COPY_WORD_COUNT 8
 
