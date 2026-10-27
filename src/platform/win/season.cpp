@@ -116,10 +116,13 @@ bool LoadSeasonSaveFile(int nMode, bool bAllowFailure) {
 }
 
 bool SaveSeasonSaveFile(void) {
-    u8 abProfileBytes[SEASON_SAVE_PAYLOAD_SIZE];
-    // The saved payload extends beyond the 332-byte profile into adjacent memory.
-    memcpy(abProfileBytes, g_pPrimarySeasonSave, sizeof(abProfileBytes));
-    u32 dwChecksum = adler32(adler32(0, nullptr, 0), abProfileBytes, sizeof(abProfileBytes));
+    u32 dwChecksum = adler32(0, nullptr, 0);
+    if (g_pPrimarySeasonSave) {
+        u8 abProfileBytes[SEASON_SAVE_PAYLOAD_SIZE];
+        // The saved payload extends beyond the 332-byte profile into adjacent memory.
+        memcpy(abProfileBytes, g_pPrimarySeasonSave, sizeof(abProfileBytes));
+        dwChecksum = adler32(dwChecksum, abProfileBytes, sizeof(abProfileBytes));
+    }
     FILE *pFile = fopen(g_szSeasonSaveFileName, "wb");
     if (!pFile) {
         return false;
