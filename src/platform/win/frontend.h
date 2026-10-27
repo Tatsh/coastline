@@ -2415,7 +2415,6 @@ void BuildJoinCreateGameUI(MenuScreen *pScreen);
 
 /**
  * @ghidraAddress BRD3D: 0x10052030
- * @stub
  */
 void BuildSeasonProgressInfoUI(MenuScreen *pScreen);
 
