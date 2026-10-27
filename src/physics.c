@@ -406,55 +406,6 @@ s32 InvalidateTriCacheSectorAt(f32 x, f32 y) {
     return 0;
 }
 
-s32 TestObbIntersection(f32 rotation[3][3], Vec3f *offset, Vec3f *halfA, Vec3f *halfB) {
-    f32 r[3][3];
-    f32(*m)[3] = rotation;
-    f32 tx = offset->x, ty = offset->y, tz = offset->z;
-    f32 ax = halfA->x, ay = halfA->y, az = halfA->z;
-    f32 bx = halfB->x, by = halfB->y, bz = halfB->z;
-    s32 overlap = 1;
-
-    r[0][0] = ABS(m[0][0]);
-    r[0][1] = ABS(m[0][1]);
-    r[0][2] = ABS(m[0][2]);
-    r[1][0] = ABS(m[1][0]);
-    r[1][1] = ABS(m[1][1]);
-    r[1][2] = ABS(m[1][2]);
-    r[2][0] = ABS(m[2][0]);
-    r[2][1] = ABS(m[2][1]);
-    r[2][2] = ABS(m[2][2]);
-    /* The axes of the two boxes, in the order of the original. */
-    overlap &= ABS(tx) <= ax + bx * r[0][0] + by * r[0][1] + r[0][2] * bz;
-    overlap &= ABS(tx * m[0][0] + ty * m[1][0] + m[2][0] * tz) <=
-               bx + ax * r[0][0] + ay * r[1][0] + r[2][0] * az;
-    overlap &= ABS(ty) <= ay + bx * r[1][0] + by * r[1][1] + r[1][2] * bz;
-    overlap &= ABS(tz) <= az + bx * r[2][0] + by * r[2][1] + r[2][2] * bz;
-    overlap &= ABS(tx * m[0][1] + ty * m[1][1] + m[2][1] * tz) <=
-               by + ax * r[0][1] + ay * r[1][1] + r[2][1] * az;
-    overlap &= ABS(tx * m[0][2] + ty * m[1][2] + m[2][2] * tz) <=
-               bz + ax * r[0][2] + ay * r[1][2] + r[2][2] * az;
-    /* The products of their edges. */
-    overlap &= ABS(tz * m[1][0] - m[2][0] * ty) <=
-               ay * r[2][0] + az * r[1][0] + by * r[0][2] + bz * r[0][1];
-    overlap &= ABS(tz * m[1][1] - m[2][1] * ty) <=
-               ay * r[2][1] + az * r[1][1] + bx * r[0][2] + bz * r[0][0];
-    overlap &= ABS(tz * m[1][2] - m[2][2] * ty) <=
-               ay * r[2][2] + az * r[1][2] + bx * r[0][1] + by * r[0][0];
-    overlap &= ABS(tx * m[2][0] - m[0][0] * tz) <=
-               ax * r[2][0] + az * r[0][0] + by * r[1][2] + bz * r[1][1];
-    overlap &= ABS(tx * m[2][1] - m[0][1] * tz) <=
-               ax * r[2][1] + az * r[0][1] + bx * r[1][2] + bz * r[1][0];
-    overlap &= ABS(tx * m[2][2] - m[0][2] * tz) <=
-               ax * r[2][2] + az * r[0][2] + bx * r[1][1] + by * r[1][0];
-    overlap &= ABS(ty * m[0][0] - m[1][0] * tx) <=
-               ax * r[1][0] + ay * r[0][0] + by * r[2][2] + bz * r[2][1];
-    overlap &= ABS(ty * m[0][1] - m[1][1] * tx) <=
-               ax * r[1][1] + ay * r[0][1] + bx * r[2][2] + bz * r[2][0];
-    overlap &= ABS(ty * m[0][2] - m[1][2] * tx) <=
-               ax * r[1][2] + ay * r[0][2] + bx * r[2][1] + by * r[2][0];
-    return overlap;
-}
-
 /* Collide one vehicle with another: share their speed, then push it by its impulse. */
 static inline void
 PushVehicle(RacerSlot *slot, RigidBodyState *state, Vec3f *shared, Vec3f *towards, Vec3f *normal) {

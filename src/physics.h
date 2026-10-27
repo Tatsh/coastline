@@ -746,9 +746,6 @@ void ComputeSpringForces(RigidBody *body);
  * @ghidraAddress BRD3D: 0x1006f650
  */
 void ComputeDampingForces(RigidBody *body);
-#ifdef __cplusplus
-}
-#endif
 
 /**
  * Whether two boxes overlap, by the separating axes of their faces and of the products of their
@@ -762,12 +759,10 @@ void ComputeDampingForces(RigidBody *body);
  * @ghidraAddress USA: 0x8025f4f8
  * @ghidraAddress EUR: 0x802609d4
  * @ghidraAddress JPN: 0x80260484
+ * @ghidraAddress BRD3D: 0x1006f950
  */
 s32 TestObbIntersection(f32 rotation[3][3], Vec3f *offset, Vec3f *halfA, Vec3f *halfB);
 
-#ifdef __cplusplus
-extern "C" {
-#endif
 /**
  * Collide each pair of the vehicles of the race that are near, sharing their speed along the line
  * between them and pushing them apart. It stops at the first pair whose boxes do not meet.

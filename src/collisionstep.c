@@ -132,6 +132,128 @@ s32 TipBalancedVehicle(RigidBody *body) {
 }
 #pragma GCC diagnostic pop
 
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+/* The x87 reduction order differs between face axes and each group of edge axes. */
+#define OBB_ABS(x) (!((x) >= 0.0f) ? -(x) : (x))
+#define OBB_LEQ(a, b) (!((a) > (b)))
+#define OBB_SUM3(base, a, b, c) ((((c) + (b)) + (a)) + (base))
+#define OBB_DOT0(a, b, c) (((c) + (a)) + (b))
+#define OBB_DOT1(a, b, c) (((a) + (c)) + (b))
+#define OBB_SUM4_X(a, b, c, d) ((((a) + (b)) + (d)) + (c))
+#define OBB_SUM4_YZ(a, b, c, d) ((((b) + (d)) + (c)) + (a))
+#else
+#define OBB_ABS(x) ABS(x)
+#define OBB_LEQ(a, b) ((a) <= (b))
+#define OBB_SUM3(base, a, b, c) ((((base) + (a)) + (b)) + (c))
+#define OBB_DOT0(a, b, c) (((a) + (b)) + (c))
+#define OBB_DOT1(a, b, c) (((a) + (b)) + (c))
+#define OBB_SUM4_X(a, b, c, d) ((((a) + (b)) + (c)) + (d))
+#define OBB_SUM4_YZ(a, b, c, d) ((((a) + (b)) + (c)) + (d))
+#endif
+
+s32 TestObbIntersection(f32 rotation[3][3], Vec3f *offset, Vec3f *halfA, Vec3f *halfB) {
+    f32 r[3][3];
+    f32(*m)[3] = rotation;
+    f32 tx = offset->x, ty = offset->y, tz = offset->z;
+    f32 ax = halfA->x, ay = halfA->y, az = halfA->z;
+    f32 bx = halfB->x, by = halfB->y, bz = halfB->z;
+    s32 overlap = 1;
+
+    r[0][0] = OBB_ABS(m[0][0]);
+    r[0][1] = OBB_ABS(m[0][1]);
+    r[0][2] = OBB_ABS(m[0][2]);
+    r[1][0] = OBB_ABS(m[1][0]);
+    r[1][1] = OBB_ABS(m[1][1]);
+    r[1][2] = OBB_ABS(m[1][2]);
+    r[2][0] = OBB_ABS(m[2][0]);
+    r[2][1] = OBB_ABS(m[2][1]);
+    r[2][2] = OBB_ABS(m[2][2]);
+    /* The axes of the two boxes, in the order of the original. */
+    overlap &= OBB_LEQ(OBB_ABS(tx),
+                       OBB_SUM3(ax,
+                                COLLISION_PRODUCT(bx, r[0][0]),
+                                COLLISION_PRODUCT(by, r[0][1]),
+                                COLLISION_PRODUCT(r[0][2], bz)));
+    overlap &= OBB_LEQ(OBB_ABS(OBB_DOT0(COLLISION_PRODUCT(tx, m[0][0]),
+                                        COLLISION_PRODUCT(ty, m[1][0]),
+                                        COLLISION_PRODUCT(m[2][0], tz))),
+                       OBB_SUM3(bx,
+                                COLLISION_PRODUCT(ax, r[0][0]),
+                                COLLISION_PRODUCT(ay, r[1][0]),
+                                COLLISION_PRODUCT(r[2][0], az)));
+    overlap &= OBB_LEQ(OBB_ABS(ty),
+                       OBB_SUM3(ay,
+                                COLLISION_PRODUCT(bx, r[1][0]),
+                                COLLISION_PRODUCT(by, r[1][1]),
+                                COLLISION_PRODUCT(r[1][2], bz)));
+    overlap &= OBB_LEQ(OBB_ABS(tz),
+                       OBB_SUM3(az,
+                                COLLISION_PRODUCT(bx, r[2][0]),
+                                COLLISION_PRODUCT(by, r[2][1]),
+                                COLLISION_PRODUCT(r[2][2], bz)));
+    overlap &= OBB_LEQ(OBB_ABS(OBB_DOT1(COLLISION_PRODUCT(tx, m[0][1]),
+                                        COLLISION_PRODUCT(ty, m[1][1]),
+                                        COLLISION_PRODUCT(m[2][1], tz))),
+                       OBB_SUM3(by,
+                                COLLISION_PRODUCT(ax, r[0][1]),
+                                COLLISION_PRODUCT(ay, r[1][1]),
+                                COLLISION_PRODUCT(r[2][1], az)));
+    overlap &= OBB_LEQ(OBB_ABS(OBB_DOT1(COLLISION_PRODUCT(tx, m[0][2]),
+                                        COLLISION_PRODUCT(ty, m[1][2]),
+                                        COLLISION_PRODUCT(m[2][2], tz))),
+                       OBB_SUM3(bz,
+                                COLLISION_PRODUCT(ax, r[0][2]),
+                                COLLISION_PRODUCT(ay, r[1][2]),
+                                COLLISION_PRODUCT(r[2][2], az)));
+    /* The products of their edges. */
+    overlap &= OBB_LEQ(OBB_ABS(COLLISION_PRODUCT(tz, m[1][0]) - COLLISION_PRODUCT(m[2][0], ty)),
+                       OBB_SUM4_X(COLLISION_PRODUCT(ay, r[2][0]),
+                                  COLLISION_PRODUCT(az, r[1][0]),
+                                  COLLISION_PRODUCT(by, r[0][2]),
+                                  COLLISION_PRODUCT(bz, r[0][1])));
+    overlap &= OBB_LEQ(OBB_ABS(COLLISION_PRODUCT(tz, m[1][1]) - COLLISION_PRODUCT(m[2][1], ty)),
+                       OBB_SUM4_X(COLLISION_PRODUCT(ay, r[2][1]),
+                                  COLLISION_PRODUCT(az, r[1][1]),
+                                  COLLISION_PRODUCT(bx, r[0][2]),
+                                  COLLISION_PRODUCT(bz, r[0][0])));
+    overlap &= OBB_LEQ(OBB_ABS(COLLISION_PRODUCT(tz, m[1][2]) - COLLISION_PRODUCT(m[2][2], ty)),
+                       OBB_SUM4_X(COLLISION_PRODUCT(ay, r[2][2]),
+                                  COLLISION_PRODUCT(az, r[1][2]),
+                                  COLLISION_PRODUCT(bx, r[0][1]),
+                                  COLLISION_PRODUCT(by, r[0][0])));
+    overlap &= OBB_LEQ(OBB_ABS(COLLISION_PRODUCT(tx, m[2][0]) - COLLISION_PRODUCT(m[0][0], tz)),
+                       OBB_SUM4_YZ(COLLISION_PRODUCT(ax, r[2][0]),
+                                   COLLISION_PRODUCT(az, r[0][0]),
+                                   COLLISION_PRODUCT(by, r[1][2]),
+                                   COLLISION_PRODUCT(bz, r[1][1])));
+    overlap &= OBB_LEQ(OBB_ABS(COLLISION_PRODUCT(tx, m[2][1]) - COLLISION_PRODUCT(m[0][1], tz)),
+                       OBB_SUM4_YZ(COLLISION_PRODUCT(ax, r[2][1]),
+                                   COLLISION_PRODUCT(az, r[0][1]),
+                                   COLLISION_PRODUCT(bx, r[1][2]),
+                                   COLLISION_PRODUCT(bz, r[1][0])));
+    overlap &= OBB_LEQ(OBB_ABS(COLLISION_PRODUCT(tx, m[2][2]) - COLLISION_PRODUCT(m[0][2], tz)),
+                       OBB_SUM4_YZ(COLLISION_PRODUCT(ax, r[2][2]),
+                                   COLLISION_PRODUCT(az, r[0][2]),
+                                   COLLISION_PRODUCT(bx, r[1][1]),
+                                   COLLISION_PRODUCT(by, r[1][0])));
+    overlap &= OBB_LEQ(OBB_ABS(COLLISION_PRODUCT(ty, m[0][0]) - COLLISION_PRODUCT(m[1][0], tx)),
+                       OBB_SUM4_YZ(COLLISION_PRODUCT(ax, r[1][0]),
+                                   COLLISION_PRODUCT(ay, r[0][0]),
+                                   COLLISION_PRODUCT(by, r[2][2]),
+                                   COLLISION_PRODUCT(bz, r[2][1])));
+    overlap &= OBB_LEQ(OBB_ABS(COLLISION_PRODUCT(ty, m[0][1]) - COLLISION_PRODUCT(m[1][1], tx)),
+                       OBB_SUM4_YZ(COLLISION_PRODUCT(ax, r[1][1]),
+                                   COLLISION_PRODUCT(ay, r[0][1]),
+                                   COLLISION_PRODUCT(bx, r[2][2]),
+                                   COLLISION_PRODUCT(bz, r[2][0])));
+    overlap &= OBB_LEQ(OBB_ABS(COLLISION_PRODUCT(ty, m[0][2]) - COLLISION_PRODUCT(m[1][2], tx)),
+                       OBB_SUM4_YZ(COLLISION_PRODUCT(ax, r[1][2]),
+                                   COLLISION_PRODUCT(ay, r[0][2]),
+                                   COLLISION_PRODUCT(bx, r[2][1]),
+                                   COLLISION_PRODUCT(by, r[2][0])));
+    return overlap;
+}
+
 /* The steps of the collisions in a frame. */
 #define COLLISION_STEPS 4
 
