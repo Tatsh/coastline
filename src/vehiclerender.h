@@ -61,6 +61,7 @@ extern s32 g_dwVehicleFogAlpha;
  * @ghidraAddress USA: 0x80351c80
  * @ghidraAddress EUR: 0x80354180
  * @ghidraAddress JPN: 0x80352df0
+ * @ghidraAddress BRD3D: 0x10277b68
  */
 extern s32 g_adwVehicleInViewRange[MAX_VEHICLES];
 
@@ -265,6 +266,10 @@ void TransformWheelPositions(s32 index);
  */
 void RenderWheelModels(Vehicle *vehicle);
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /**
  * Decide whether a vehicle is drawn in the view being drawn, and set the fog at it.
  *
@@ -272,8 +277,13 @@ void RenderWheelModels(Vehicle *vehicle);
  * @ghidraAddress USA: 0x802303d4
  * @ghidraAddress EUR: 0x802318e4
  * @ghidraAddress JPN: 0x802316e4
+ * @ghidraAddress BRD3D: 0x1000ca90
  */
 void CheckVehicleVisibility(Vehicle *vehicle);
+
+#ifdef __cplusplus
+}
+#endif
 
 /**
  * Draw a vehicle: its level of detail, lights, lit parts, underside, near details, specular

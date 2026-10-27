@@ -433,6 +433,7 @@ extern u32 g_adwLightRampColors[4];
  * @ghidraAddress USA: 0x80351c70
  * @ghidraAddress EUR: 0x80354170
  * @ghidraAddress JPN: 0x80352de0
+ * @ghidraAddress BRD3D: 0x10277e60
  */
 extern s32 g_adwVehicleVisible[];
 
@@ -513,6 +514,7 @@ extern s32 g_dwVehicleLodBias;
  * @ghidraAddress USA: 0x8028aa70
  * @ghidraAddress EUR: 0x8028cc78
  * @ghidraAddress JPN: 0x8028c748
+ * @ghidraAddress BRD3D: 0x106c6614
  */
 extern s32 g_dwVehicleCullingDisabled;
 

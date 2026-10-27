@@ -17,6 +17,7 @@
 #include "wheelframe.h"
 
 #define VEHICLE_GHOST 2
+#define MAX_VEHICLES 16
 #define VEHICLE_LAP_TIMES 12
 
 /** Recovered fields of a Windows vehicle. */
@@ -136,7 +137,7 @@ typedef struct Vehicle {
     f32 pitchInput;
     f32 accelerator;
     f32 rollInput;
-    u8 abUnknown2730[4]; /* +0x2730 */
+    f32 fogFactor;
     CameraFrame *activeCamera;
     CameraFrame *previousCamera;
     CameraFrame cameras[VEHICLE_CAMERAS];
@@ -360,7 +361,7 @@ void PlayerVehicleControllerCallback(Vehicle *vehicle);
  *
  * @ghidraAddress BRD3D: 0x10acdea8
  */
-extern Vehicle g_aVehicles[16];
+extern Vehicle g_aVehicles[MAX_VEHICLES];
 
 /**
  * @ghidraAddress BRD3D: 0x100b37d0

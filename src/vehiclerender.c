@@ -35,9 +35,6 @@
 /* The distance that dims the light of the sun once at night, in tens of units. */
 #define NIGHT_LIGHT_DISTANCE 10.0f
 
-/* How far ahead of a vehicle its headlights are tested against the view, at night and in rain. */
-#define HEADLIGHT_REACH 6.0f
-
 /* The length of the direction of the headlights in the lights of a vehicle. */
 #define HEADLIGHT_DIRECTION 120.0f
 
@@ -234,41 +231,6 @@ void RenderWheelModels(Vehicle *vehicle) {
         }
         gSPPopMatrix(gDisplayListPtr++, G_MTX_MODELVIEW);
     }
-}
-
-void CheckVehicleVisibility(Vehicle *vehicle) {
-    f32 distance;
-    Vec3f ahead;
-
-    /* The distance to the camera is computed and not used. */
-    distance = Vec3fDistance(&vehicle->frame.position, &g_pActiveCamera->position);
-    (void)distance;
-    g_adwVehicleVisible[vehicle->index] = FALSE;
-    g_adwVehicleInViewRange[vehicle->index] = FALSE;
-    vehicle->fogFactor = ComputeFogFactorAtPoint(&vehicle->frame.position);
-    if (vehicle != g_pActiveCameraVehicle) {
-        if (g_dwNightMode || g_dwRainMode) {
-            /* The beams of the headlights may be in view when the car is not. */
-            Vec3fMulAdd(&ahead, &vehicle->frame.position, &vehicle->frame.forward, HEADLIGHT_REACH);
-            if (!IsPointVisible(ahead.x, ahead.y) &&
-                !IsPointVisible(vehicle->frame.position.x, vehicle->frame.position.y)) {
-                return;
-            }
-        } else if (!IsPointVisible(vehicle->frame.position.x, vehicle->frame.position.y)) {
-            return;
-        }
-    }
-    if (vehicle == g_pActiveCameraVehicle &&
-        (vehicle->activeCamera == &vehicle->cameras[VEHICLE_CAMERA_COCKPIT] ||
-         vehicle->activeCamera == &vehicle->cameras[VEHICLE_CAMERA_MIRROR]) &&
-        !g_dwVehicleCullingDisabled) {
-        g_adwVehicleInViewRange[vehicle->index] = TRUE;
-        return;
-    }
-    if (vehicle->ghostMode != VEHICLE_GHOST) {
-        g_adwVehicleVisible[vehicle->index] = TRUE;
-    }
-    g_adwVehicleInViewRange[vehicle->index] = TRUE;
 }
 
 /** The word of the colour of a light, as gSPLightColor() takes it. */
