@@ -1,18 +1,58 @@
 #ifndef COASTLINE_EAR_PLAYBACKIMPLEMENTATIONS_H
 #define COASTLINE_EAR_PLAYBACKIMPLEMENTATIONS_H
 
+#include <windows.h>
+// Multimedia declarations require the core Windows SDK types first.
+#include <mmreg.h>
+#include <mmsystem.h>
+
 #include "earplayback.h"
 
 class [[gnu::packed]] PcmWaveStream : public EarPlayback {
 public:
-    /**
-     * @ghidraAddress EAR: 0x1000af00
-     * @stub
-     */
+    /** @ghidraAddress EAR: 0x1000af00 */
     PcmWaveStream();
 
 private:
-    [[maybe_unused]] std::uint8_t unknownAc[0x2e]; /* +0xac */
+    /** @ghidraAddress EAR: 0x1000af60 */
+    void ReleaseEarPlaybackResources() override;
+    /**
+     * @ghidraAddress EAR: 0x1000b8fa
+     * @stub
+     */
+    int InitializeEarPlayback(const void *source, int streaming, int looping) override;
+    /**
+     * @ghidraAddress EAR: 0x10012ba7
+     * @stub
+     */
+    std::uint16_t AllocateEarEventId() override;
+    /** @ghidraAddress EAR: 0x1000b1c6 */
+    void CloseRegisteredEarPlayback() override;
+    /** @ghidraAddress EAR: 0x1000af76 */
+    void RefillEarPlaybackStream() override;
+    /**
+     * @ghidraAddress EAR: 0x100129c9
+     * @stub
+     */
+    void CopyEarPlaybackSamplesToOutput() override;
+    /** @ghidraAddress EAR: 0x1000b260 */
+    void CompleteEarPlayback() override;
+    /**
+     * @ghidraAddress EAR: 0x10012b34
+     * @stub
+     */
+    int CheckEarPlaybackLoopCompletion() override;
+    /** @ghidraAddress EAR: 0x10009ac0 */
+    std::uint32_t GetEarPlaybackMediaLength() override;
+
+    HMMIO file;
+    DWORD readOffset;
+    LONG dataStartOffset;
+    LONG originalFileOffset;
+    char *sampleBuffer;
+    DWORD dataBytes;
+    WAVEFORMATEX format;
+    DWORD writeOffset;
 };
 
 class [[gnu::packed]] MemoryWaveStream : public EarPlayback {
