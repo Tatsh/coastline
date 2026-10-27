@@ -6,6 +6,7 @@
 #include <initializer_list>
 #include <new>
 
+#include <hud.h>
 #include <windows.h>
 
 #include "game.h"
@@ -190,12 +191,6 @@ int g_bHudShowLapCounter = 1;
  * @ghidraAddress BRD3D: 0x100bd3ec
  */
 int g_bHudShowRaceTimer = 1;
-
-/**
- * Whether to display lap times.
- * @ghidraAddress BRD3D: 0x100bd3f0
- */
-int g_bHudShowLapTimes = 1;
 
 /**
  * Whether to display the speedometer.

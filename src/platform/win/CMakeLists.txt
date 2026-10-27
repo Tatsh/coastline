@@ -23,6 +23,7 @@ add_library(
   frontend.cpp
   gameinit.cpp
   ghost.cpp
+  hudlaplist.cpp
   hud.cpp
   input.cpp
   menufont.cpp

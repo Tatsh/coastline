@@ -10,6 +10,7 @@
 #include <PR/gbi.h>
 #include <PR/ultratypes.h>
 
+#include "render.h"
 #include "texrect.h"
 
 /** The views that keep their own dashboard. */
@@ -122,6 +123,37 @@ void StubDashboard(void);
  * @ghidraAddress BRD3D: 0x100171f0
  */
 void DrawLabelWithTime(const char *label, const char *color, f32 seconds, s32 x, s32 y);
+
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+/**
+ * Whether to display completed lap times.
+ *
+ * @ghidraAddress BRD3D: 0x100bd3f0
+ */
+extern s32 g_bHudShowLapTimes;
+
+/**
+ * Draw the active vehicle's completed lap times in the current viewport.
+ *
+ * @ghidraAddress BRD3D: 0x10017f30
+ */
+void DrawLapTimeListHud(const ViewportRect *viewports);
+
+/**
+ * Draw a numbered lap time in minutes, seconds, and hundredths.
+ *
+ * @ghidraAddress BRD3D: 0x10017fe0
+ */
+void DrawFormattedLapTimeText(const char *color, s32 lap, f32 seconds, s32 x, s32 y);
+
+#ifdef __cplusplus
+}
+#endif
+#endif
 
 /**
  * Draw the times the mode of play shows at the top right of a view.

@@ -23,3 +23,15 @@ void DrawLabelWithTime(const char *label, const char *color, f32 seconds, s32 x,
     DrawText(text, x, TIME_NEXT_LINE(y));
     DrawText(label, x, y);
 }
+
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+void DrawFormattedLapTimeText(const char *color, s32 lap, f32 seconds, s32 x, s32 y) {
+    s32 hundredths = TIME_HUNDREDTHS(seconds);
+    s32 whole = hundredths / 100;
+    s32 minutes = whole / 60;
+    char text[32];
+
+    sprintf(text, "%s%d. %d:%02d.%02d", color, lap, minutes, whole % 60, hundredths % 100);
+    DrawText(text, x, y);
+}
+#endif
