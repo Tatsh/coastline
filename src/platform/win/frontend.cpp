@@ -242,7 +242,7 @@ bool MenuScreen::ActivateMenuScreen() {
         bBuilt = true;
         bRunning = true;
     }
-    if (g_SeasonResumeState == SEASON_RESUME_STATE_RESTART) {
+    if (g_SeasonResumeState.state == SEASON_RESUME_STATE_RESTART) {
         g_dwSeasonRound = 0;
         memset(g_szSeasonRoundLabel, 0, sizeof(g_szSeasonRoundLabel));
         g_SeasonProgress.round = 0;
@@ -253,7 +253,8 @@ bool MenuScreen::ActivateMenuScreen() {
         g_dwGameMode = GAME_MODE_CHAMPIONSHIP;
     }
     if (g_dwGameMode == GAME_MODE_CHAMPIONSHIP) {
-        if (g_SeasonResumeState == 0 || g_SeasonResumeState == SEASON_RESUME_STATE_RESTART) {
+        if (g_SeasonResumeState.state == 0 ||
+            g_SeasonResumeState.state == SEASON_RESUME_STATE_RESTART) {
             if (!RestoreSeasonProgressState()) {
                 return false;
             }

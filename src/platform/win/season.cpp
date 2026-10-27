@@ -8,6 +8,7 @@
 #include "game.h"
 #include "platform/win/boot/rallyconfig.h"
 #include "platform/win/frontend.h"
+#include "platform/win/ghost.h"
 #include "platform/win/settings.h"
 #include "profile.h"
 #include "seasons.h"
@@ -28,7 +29,20 @@ PlayerProfile *g_pPrimarySeasonSave;
 PlayerProfile *g_pSecondarySeasonSave;
 int g_dwSeasonYear;
 int g_dwSeasonRound;
-int g_bSeasonClass;
+s8 g_bSeasonClass;
+SeasonRaceResult g_SeasonResumeState;
+SeasonRaceResult g_LastRaceResultCopy;
+float g_afLastRaceLapTimes[12];
+u8 g_abSeasonRoundPlace[SEASON_RACES];
+u16 g_awSeasonRoundPoints[SEASON_RACES];
+char g_szSeasonYearLabel[SEASON_YEAR_LABEL_SIZE];
+char g_szSeasonRoundLabel[SEASON_ROUND_LABEL_SIZE];
+int g_dwSeasonSavedRound;
+int g_dwLastRaceResultField18;
+int g_dwSeasonTotalPoints;
+int g_SeasonProgressPrev_Class;
+int g_dwSeasonFailed;
+int g_dwSeasonRoundQualified;
 const char g_szSeasonSaveMagic[4] = {'R', 'S', 'e', 'a'};
 const char g_szAutoSaveBrf[] = "AutoSave.brf";
 char g_szSeasonSaveSlotName[SEASON_SAVE_SLOT_NAME_SIZE];
@@ -36,6 +50,96 @@ SeasonSaveSettings g_LoadedSeasonSettings;
 char g_szSecondarySeasonSaveSlotName[SEASON_SAVE_SLOT_NAME_SIZE];
 int g_dwSaveSlotPlayerIndex;
 u8 g_abSaveFileReadBuffer[SEASON_SAVE_PAYLOAD_SIZE];
+
+static inline void UpdateSeasonLabels(void) {
+    sprintf(g_szSeasonYearLabel, "%d", g_dwSeasonYear + 1);
+    sprintf(g_szSeasonRoundLabel, "%d", g_dwSeasonRound + 1);
+}
+
+static inline int CurrentSeasonPoints(void) {
+    int nPoints = 0;
+    for (int nRound = 0; nRound < SEASON_RACES; ++nRound) {
+        nPoints += g_SeasonProgress.seasonRacePoints[g_bSeasonClass][nRound];
+    }
+    return nPoints;
+}
+
+void ApplyLoadedSeasonSettings(bool bUpdatePoints) {
+    g_bSeasonClass = g_SeasonProgress.season;
+    g_dwTransmissionType = g_SeasonProgress.transmission;
+    g_dwSuspensionType = g_SeasonProgress.suspension;
+    g_dwTireType = g_SeasonProgress.tires;
+    g_dwSeasonYear = g_SeasonProgress.championshipFlags;
+    g_dwSeasonRound = g_SeasonProgress.round;
+    g_GlobalRallyConfig.dwInputDeviceType = g_SeasonProgress.controllerLayout;
+    g_GlobalRallyConfig.SelectActiveInputBindings();
+    UpdateSeasonLabels();
+    g_dwSeasonSavedRound = g_dwSeasonRound;
+    if (bUpdatePoints) {
+        g_dwSeasonTotalPoints = CurrentSeasonPoints();
+    }
+    g_dwAccumUnlockedCarMask |= g_SeasonProgress.unlocks;
+    g_dwAccumUnlockedTrackMask |= g_SeasonProgress.unlockedTracks;
+}
+
+static inline void ClearCurrentSeasonRecords(PlayerProfile *pProfile) {
+    memset(pProfile->seasonPlaces[pProfile->season],
+           0,
+           sizeof(pProfile->seasonPlaces[pProfile->season]));
+    memset(pProfile->seasonRacePoints[pProfile->season],
+           0,
+           sizeof(pProfile->seasonRacePoints[pProfile->season]));
+    memset(pProfile->seasonTimes[pProfile->season],
+           0,
+           sizeof(pProfile->seasonTimes[pProfile->season]));
+}
+
+bool RestoreSeasonProgressState(void) {
+    if (!g_SeasonResumeState.state) {
+        memcpy(&g_LastRaceResultCopy, &g_SeasonResumeState, sizeof(g_LastRaceResultCopy));
+    }
+    g_dwChosenWeather = g_SeasonResumeState.weather;
+    g_bSeasonClass = g_SeasonResumeState.season;
+    g_dwSeasonYear = g_SeasonResumeState.year;
+    g_dwSelectedTrackId = g_SeasonResumeState.track;
+    g_dwLastRaceResultField18 = g_SeasonResumeState.resultValue;
+    g_dwSeasonRound = g_SeasonResumeState.round;
+    g_abSeasonRoundPlace[g_dwSeasonRound] = g_SeasonResumeState.position + 1;
+    g_awSeasonRoundPoints[g_dwSeasonRound] = g_SeasonResumeState.points;
+    g_fGhostBestRaceTime = g_SeasonResumeState.raceTime;
+    UpdateSeasonLabels();
+    memcpy(g_afLastRaceLapTimes, g_SeasonResumeState.lapTimes, sizeof(g_afLastRaceLapTimes));
+    g_dwSeasonTotalPoints = CurrentSeasonPoints();
+    if (g_SeasonProgress.round || g_dwGameMode == GAME_MODE_AFTER_SEASON ||
+        g_SeasonResumeState.state) {
+        return true;
+    }
+    u8 nPreviousClass = static_cast<u8>(g_SeasonProgressPrev_Class);
+    if (g_SeasonProgress.season <= nPreviousClass &&
+        (g_SeasonProgress.season != 0 || nPreviousClass == 0)) {
+        g_dwGameMode = GAME_MODE_CHAMPIONSHIP;
+        g_dwSeasonRoundQualified = true;
+        ClearCurrentSeasonRecords(&g_SeasonProgress);
+        ClearCurrentSeasonRecords(g_pPrimarySeasonSave);
+        ClearCurrentSeasonRecords(g_pSecondarySeasonSave);
+        return true;
+    }
+    g_dwGameMode = GAME_MODE_AFTER_SEASON;
+    if (!g_SeasonProgress.season && nPreviousClass > 0) {
+        if (g_SeasonResumeState.year < 5) {
+            g_dwSeasonFailed = true;
+        }
+        ApplyLoadedSeasonSettings(false);
+    } else {
+        ApplyLoadedSeasonSettings(true);
+    }
+    if (g_SeasonResumeState.season < 4 && g_SeasonResumeState.year < 1) {
+        g_dwSeasonFailed = true;
+    }
+    g_pActiveMenuScreen->bRunning = false;
+    g_pActiveMenuScreen->ShutdownFrontEnd(false);
+    return false;
+}
 
 static inline void ReadSeasonSaveTrailer(FILE *pFile) {
     fseek(pFile, 0, SEEK_END);
