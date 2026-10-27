@@ -370,6 +370,19 @@ SaveFileList::SaveFileList() {
     }
 }
 
+MenuItemList::MenuItemList()
+    : pfnSelectionChanged(nullptr), pfnScrollUp(nullptr), pfnScrollDown(nullptr),
+      pfnScrollDrag(nullptr), pfnItemChanged(nullptr), dwFlags(0), fX(0), fY(0), itemData{},
+      wItemCount(0), nFirstVisibleRow(0), wVisibleRowCount(0), nScrollUpImage(-1),
+      nScrollDownImage(-1), nBackgroundImage(-1), nScrollThumbImage(-1), bScrollUpHovered(0),
+      bScrollDownHovered(0), abUnknown1a9a4{}, fScrollThumbX(0), fScrollThumbY(0),
+      bScrollDragging(0), bHorizontalScrollbar(0), bVerticalScrollbar(0), fMinScrollThumbX(0),
+      fMaxScrollThumbX(0), fMinScrollThumbY(0), fMaxScrollThumbY(0), fScrollThumbTravel(0) {
+}
+
+MenuItemList::~MenuItemList() {
+}
+
 SaveFileList::~SaveFileList() {
 }
 

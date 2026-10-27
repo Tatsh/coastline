@@ -127,12 +127,10 @@ class MenuItemList {
 public:
     /**
      * @ghidraAddress BRD3D: 0x1005b7f0
-     * @stub
      */
     MenuItemList();
     /**
      * @ghidraAddress BRD3D: 0x1005b8f0
-     * @stub
      */
     virtual ~MenuItemList();
 
