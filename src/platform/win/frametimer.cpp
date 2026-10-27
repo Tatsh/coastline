@@ -1,6 +1,8 @@
 #include "platform/win/frametimer.h"
 
 #include <windows.h>
+
+#include "platform/win/snapshot.h"
 // The headers below need the types of windows.h.
 #include <mmsystem.h>
 
@@ -79,14 +81,6 @@ const DWORD g_adwFrameTickIncrements[TICKS_PER_PERIOD] = {33, 33, 34};
  * @ghidraAddress BRGlide: 0x105bcae4
  */
 [[maybe_unused]] int g_dwRaceFrameCounter;
-
-/**
- * Whether the timing of the frames was started again.
- *
- * @ghidraAddress BRD3D: 0x100a66e8
- * @ghidraAddress BRGlide: 0x100a5ea8
- */
-[[maybe_unused]] int g_bFrameTimerReset = true;
 
 } // namespace
 
