@@ -12,6 +12,11 @@ extern "C" {
  */
 extern void (*g_pfnRenderBackendSubmitDisplayList)(struct GbiCommand *pDisplayList);
 
+/**
+ * @ghidraAddress BRD3D: 0x118aa0a4
+ */
+extern void (*g_pfnAliasTextureEntrySurface)(int nEntry, int nSourceEntry);
+
 #ifdef __cplusplus
 }
 #endif

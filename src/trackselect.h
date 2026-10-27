@@ -14,12 +14,16 @@ extern "C" {
 
 /** The tracks, the mirrored ones #TRACK_MIRRORED places after the others. */
 enum {
-    TRACK_DESERT,            /*!< The desert. */
-    TRACK_MOUNTAIN,          /*!< The mountain. */
-    TRACK_COASTLINE,         /*!< The coastline. */
-    TRACK_STRIP_MINE,        /*!< The strip mine. */
-    TRACK_JUNGLE,            /*!< The jungle. */
-    TRACK_MIRROR_DESERT,     /*!< The desert, mirrored. */
+    TRACK_DESERT,     /*!< The desert. */
+    TRACK_MOUNTAIN,   /*!< The mountain. */
+    TRACK_COASTLINE,  /*!< The coastline. */
+    TRACK_STRIP_MINE, /*!< The strip mine. */
+    TRACK_JUNGLE,     /*!< The jungle. */
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+    TRACK_MIRROR_DESERT = 6, /*!< The desert, mirrored. */
+#else
+    TRACK_MIRROR_DESERT, /*!< The desert, mirrored. */
+#endif
     TRACK_MIRROR_MOUNTAIN,   /*!< The mountain, mirrored. */
     TRACK_MIRROR_COASTLINE,  /*!< The coastline, mirrored. */
     TRACK_MIRROR_STRIP_MINE, /*!< The strip mine, mirrored. */

@@ -1520,10 +1520,6 @@ unsigned CreateTextureFromN64Image(const unsigned char *pImage,
 unsigned char *GetTextureEntryPixelsWithPaint(int nEntry, unsigned *pSize);
 
 /**
- * @ghidraAddress BRD3D: 0x118aa0a4
- */
-extern void (*g_pfnAliasTextureEntrySurface)(int nEntry, int nSourceEntry);
-/**
  * @ghidraAddress BRD3D: 0x118aa0a8
  */
 extern decltype(&DecodeN64TextureToPixelBuffer) g_pfnDecodeN64TextureToPixelBuffer;

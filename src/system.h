@@ -170,6 +170,7 @@ extern s32 g_dwFrameDeltaMs;
  * @ghidraAddress USA: 0x8028aad4
  * @ghidraAddress EUR: 0x8028ccdc
  * @ghidraAddress JPN: 0x8028c7ac
+ * @ghidraAddress BRD3D: 0x106c56d8
  */
 extern s32 g_dwElapsedTimeMs;
 

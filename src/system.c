@@ -118,13 +118,6 @@
 /* A fill of the depth buffer with the farthest depth, as two depths. */
 #define FARTHEST_DEPTHS ((u32)GPACK_ZDZ(G_MAXFIXED, 0) << 16 | GPACK_ZDZ(G_MAXFIXED, 0))
 
-/* A frame of an animated texture with no texels or no palette on the cartridge. */
-#define TEXTURE_ROM_NONE ((u32) - 1)
-
-/* The bytes of the palettes of a 4-bit texture and of an 8-bit one. */
-#define CI4_PALETTE_BYTES (16 * sizeof(u16))
-#define PALETTE_BYTES (256 * sizeof(u16))
-
 u64 g_qwTimestampBase = 0;
 
 s32 UnusedVblankQueryStub(s32 unused0, s32 unused1) {
@@ -366,84 +359,6 @@ void ClearFramebuffersLowRes(void) {
     FlushDisplayList();
     g_dwKeepScreenBlanked = FALSE;
 #endif
-}
-
-void StreamAnimatedTrackTextures(void) {
-    ModelTexture *texture;
-    TextureAnimation *animation;
-    OSIoMesg *message;
-    s32 snowTint, i, frame, frameCount;
-    u32 phase, imageRom, paletteRom;
-
-    snowTint = g_dwSnowMode != 0 && g_dwSelectedTrackId != TRACK_COASTLINE &&
-               g_dwSelectedTrackId != TRACK_MIRROR_COASTLINE;
-    for (i = 0; i < g_LoadedTrack.textureCount; i++) {
-        texture = &g_LoadedTrack.textures[i];
-        if (texture->image == NULL) {
-            continue;
-        }
-        if (!texture->animated) {
-            if (g_dwSnowMode == (u32)g_dwStreamedSnowMode) {
-                continue;
-            }
-            paletteRom = (texture->source.paletteRomIndex & 0xFFF) << 5;
-        } else {
-            animation = texture->source.animation;
-            frameCount = animation->frameCount;
-            /* The phase is taken from the time of the first frame onward, as if it were 0. */
-            phase = (u32)g_dwElapsedTimeMs %
-                    (animation->frames[frameCount - 1].time - animation->frames[0].time);
-            if (frameCount == 2 && animation->frames[0].time == TEXTURE_ROM_NONE) {
-                /* A texture of the snow, then the texture of the other weathers. */
-                if ((u32)g_dwStreamedSnowMode == g_dwSnowMode) {
-                    continue;
-                }
-                frame = g_dwSnowMode == 0;
-                imageRom = frame ? TEXTURE_ROM_NONE : animation->frames[frame].imageRom;
-                paletteRom = animation->frames[frame].paletteRom;
-            } else {
-                if (g_dwRacePauseState) {
-                    continue;
-                }
-                if (snowTint && texture->format == TEXTURE_FORMAT_SNOW_STILL) {
-                    frame = 0;
-                } else {
-                    for (frame = 1; frame < frameCount; frame++) {
-                        if (phase < animation->frames[frame].time) {
-                            break;
-                        }
-                    }
-                    frame--;
-                }
-                imageRom = animation->frames[frame].imageRom;
-                paletteRom = animation->frames[frame].paletteRom;
-            }
-            if (texture->size != 0 && imageRom != TEXTURE_ROM_NONE) {
-                message = AllocIoMessage();
-                texture = &g_LoadedTrack.textures[i];
-                osPiStartDma(message,
-                             OS_MESG_PRI_NORMAL,
-                             OS_READ,
-                             imageRom + g_dwTrackTextureRomOffset,
-                             texture->image,
-                             texture->size,
-                             &g_DmaMessageQueue);
-                texture = &g_LoadedTrack.textures[i];
-            }
-        }
-        if (texture->palette != NULL && paletteRom != TEXTURE_ROM_NONE) {
-            message = AllocIoMessage();
-            texture = &g_LoadedTrack.textures[i];
-            osPiStartDma(message,
-                         OS_MESG_PRI_NORMAL,
-                         OS_READ,
-                         paletteRom + g_dwTrackTextureRomOffset,
-                         texture->palette,
-                         texture->format == TEXTURE_FORMAT_CI4 ? CI4_PALETTE_BYTES : PALETTE_BYTES,
-                         &g_DmaMessageQueue);
-        }
-    }
-    g_dwStreamedSnowMode = g_dwSnowMode;
 }
 
 void RspDoneThread(void *arg) {

@@ -35,8 +35,8 @@ typedef struct {
  * its palette are on the cartridge, from g_dwTrackTextureRomOffset, or -1 for none.
  */
 typedef struct {
-    u32 time;       /*!< The time the frame starts at, in milliseconds. */
-    u32 imageRom;   /*!< The offset of the texels from g_dwTrackTextureRomOffset, or -1. */
+    u32 time;     /*!< The time the frame starts at, in milliseconds. */
+    u32 imageRom; /*!< The texel offset, or packed entry indices after upload on Windows, or -1. */
     u32 paletteRom; /*!< The offset of the palette from g_dwTrackTextureRomOffset, or -1. */
 } TextureAnimationFrame;
 
@@ -86,6 +86,16 @@ typedef struct {
     unsigned size : 18;    /*!< The length of the texels in bytes. */
 #endif
 } ModelTexture;
+
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#define MODEL_TEXTURE_ANIMATED(texture) (((texture)->textureFlags >> 20) & 1u)
+#define MODEL_TEXTURE_FORMAT(texture) (((texture)->textureFlags >> 24) & 0xfu)
+#define MODEL_TEXTURE_SIZE(texture) ((texture)->textureFlags & 0x3ffffu)
+#else
+#define MODEL_TEXTURE_ANIMATED(texture) ((texture)->animated)
+#define MODEL_TEXTURE_FORMAT(texture) ((texture)->format)
+#define MODEL_TEXTURE_SIZE(texture) ((texture)->size)
+#endif
 
 /* The formats of a texture of a model. */
 #define TEXTURE_FORMAT_CI4 1 /*!< 4-bit texels with a palette of 16 colors. */
@@ -847,14 +857,23 @@ void UnblankDisplay(void);
  */
 void ClearFramebuffersHighRes(void);
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /**
- * Copy the current frames of the animated textures of the track, and their snow versions, from the
- * cartridge.
+ * Select current animated track textures and their snow variants. N64 copies texels and palettes
+ * from cartridge; Windows aliases uploaded texture entries.
  *
  * @ghidraAddress USA: 0x8021a5b8
  * @ghidraAddress EUR: 0x8021b6d0
  * @ghidraAddress JPN: 0x8021afac
+ * @ghidraAddress BRD3D: 0x10033498
  */
 void StreamAnimatedTrackTextures(void);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

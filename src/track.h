@@ -415,6 +415,7 @@ extern u32 g_dwCurrentTrackRomOffset;
  * @ghidraAddress USA: 0x8028a880
  * @ghidraAddress EUR: 0x8028ca80
  * @ghidraAddress JPN: 0x8028c550
+ * @ghidraAddress BRD3D: 0x10690bec
  */
 extern u32 g_dwTrackTextureRomOffset;
 
@@ -433,6 +434,7 @@ extern s32 g_dwStreamDmaPrevSegment;
  * @ghidraAddress USA: 0x8028aa88
  * @ghidraAddress EUR: 0x8028cc90
  * @ghidraAddress JPN: 0x8028c760
+ * @ghidraAddress BRD3D: 0x100aa8a0
  */
 extern s32 g_dwStreamedSnowMode;
 
