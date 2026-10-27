@@ -1,6 +1,6 @@
 # PC port game code from 0x10060000 to 0x10070000
 
-137 of 174 routines done.
+140 of 174 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -112,7 +112,7 @@ the same name, for a routine the port retained from the N64 game.
 | `ResetRenderSubsystems`                  |   ✅   |                 |      3 |     90 | `0x1006a9c0` | `0x10063970` | `void ResetRenderSubsystems(int nMode, int nWidth, int nHeight, int nBitDepth, int nExtra)`                                              |
 | `ConvertBitmap24ToRgba32`                |   ✅   |                 |      1 |     89 | `0x10060ea0` | `0x10059f10` | `void * ConvertBitmap24ToRgba32(BITMAP * pBitmap)`                                                                                       |
 | `RallyConfig::GetInputBindingKeyCode`    |   ✅   |                 |      6 |     87 | `0x10069c30` | `0x10062ca0` | `BYTE GetInputBindingKeyCode(RallyConfig * this, int nDevice, int nControl)`                                                             |
-| `MarkTrackSections`                      |        | ✅ `0x80255ba0` |      2 |     82 | `0x10061660` | `0x1005a6e0` | `undefined MarkTrackSections()`                                                                                                          |
+| `MarkTrackSections`                      |   ✅   | ✅ `0x80255ba0` |      2 |     82 | `0x10061660` | `0x1005a6e0` | `void MarkTrackSections(TrackSection * section)`                                                                                         |
 | `AllocDisplayListBlock`                  |   ✅   | ✅ `0x80255cd0` |     13 |     77 | `0x10069490` | `0x10062500` | `DisplayListBlock * AllocDisplayListBlock(void)`                                                                                         |
 | `AllocLightBlock`                        |   ✅   | ✅ `0x80255dd8` |      4 |     77 | `0x10069530` | `0x100625a0` | `LookAt * AllocLightBlock(void)`                                                                                                         |
 | `AllocHiliteBlock`                       |   ✅   | ✅ `0x80255d4c` |      1 |     77 | `0x100694e0` | `0x10062550` | `Hilite * AllocHiliteBlock(void)`                                                                                                        |
@@ -127,7 +127,7 @@ the same name, for a routine the port retained from the N64 game.
 | `ReinitPlayerEngineSoundChannel`         |   ✅   |                 |      1 |     62 | `0x10068260` | `0x100612d0` | `void ReinitPlayerEngineSoundChannel(int nPlayer, int nIndex)`                                                                           |
 | `DeserializeSaveData`                    |        | ✅ `0x8022ae70` |      2 |     60 | `0x10067900` | `0x10060970` | `undefined DeserializeSaveData()`                                                                                                        |
 | `RacerSlot::UpdateRemoteVehicleFrame`    |        |                 |      1 |     58 | `0x10069330` | `0x100623a0` | `undefined UpdateRemoteVehicleFrame(RacerSlot * this)`                                                                                   |
-| `UnmarkTrackSections`                    |        | ✅ `0x80255c50` |      2 |     53 | `0x100616c0` | `0x1005a740` | `undefined UnmarkTrackSections()`                                                                                                        |
+| `UnmarkTrackSections`                    |   ✅   | ✅ `0x80255c50` |      2 |     53 | `0x100616c0` | `0x1005a740` | `void UnmarkTrackSections(TrackSection * section)`                                                                                       |
 | `ResetGhostRecording`                    |   ✅   |                 |      1 |     51 | `0x1006aa50` | `0x10063a00` | `void ResetGhostRecording(void)`                                                                                                         |
 | `PlaySoundEffect`                        |   ✅   | ✅ `0x8022b370` |      2 |     50 | `0x10067d40` | `0x10060db0` | `void PlaySoundEffect(int sound)`                                                                                                        |
 | `FreeAllPaintBitmaps`                    |   ✅   |                 |      1 |     50 | `0x10061620` | `0x1005a6a0` | `void FreeAllPaintBitmaps(void)`                                                                                                         |
@@ -149,7 +149,7 @@ the same name, for a routine the port retained from the N64 game.
 | `Vehicle::ClearVehicleDamageState`       |   ✅   | ✅ `0x80228a3c` |      1 |     34 | `0x10065710` | `0x1005e780` | `void ClearVehicleDamageState(Vehicle * this)`                                                                                           |
 | `ShowInfoMessageBox`                     |   ✅   |                 |      4 |     33 | `0x10060030` | `0x100590a0` | `int ShowInfoMessageBox(void * hWnd, long hResult, char * pszText)`                                                                      |
 | `SetColorTintMultipliers`                |   ✅   |                 |      3 |     30 | `0x10061460` | `0x1005a4e0` | `void SetColorTintMultipliers(int nRed, int nGreen, int nBlue)`                                                                          |
-| `PrepareTrackSections`                   |        | ✅ `0x80255ca0` |      1 |     30 | `0x10061700` | `0x1005a780` | `undefined PrepareTrackSections()`                                                                                                       |
+| `PrepareTrackSections`                   |   ✅   | ✅ `0x80255ca0` |      1 |     30 | `0x10061700` | `0x1005a780` | `void PrepareTrackSections(void)`                                                                                                        |
 | `IncreaseBgmVolume`                      |        | ✅ `0x80211840` |      1 |     29 | `0x10060d50` | `0x10059dc0` | `undefined IncreaseBgmVolume()`                                                                                                          |
 | `IncreaseSfxVolume`                      |        | ✅ `0x802118f8` |      1 |     29 | `0x10060dc0` | `0x10059e30` | `undefined IncreaseSfxVolume()`                                                                                                          |
 | `SaveRaceSnapshot`                       |        | ✅ `0x8022aed8` |      1 |     29 | `0x10067940` | `0x100609b0` | `undefined SaveRaceSnapshot()`                                                                                                           |
