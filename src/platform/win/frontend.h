@@ -895,7 +895,6 @@ extern const char *g_apszBgmTrackNames[12];
 
 /**
  * @ghidraAddress BRD3D: 0x1004e830
- * @stub
  */
 int BuildGameOptionsUI(MenuScreen *pScreen);
 

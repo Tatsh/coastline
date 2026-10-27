@@ -4943,6 +4943,94 @@ int BuildModemConnectionUI(MenuScreen *screen) {
     return 1;
 }
 
+int BuildGameOptionsUI(MenuScreen *screen) {
+    screen->SetCurrentPanelIndex(0);
+    screen->SetPanelActive(screen->GetPanelCount(), 1);
+    MenuPanel *panel = new (std::nothrow) MenuPanel();
+    screen->SetPanel(screen->GetPanelCount(), panel);
+    if (!panel) {
+        ShowErrorMessage(4);
+    }
+    screen->SetPanelCount(screen->GetPanelCount() + 1);
+    panel->SetScreen(screen);
+    panel->SetFlags(0);
+    panel->SetX(195);
+    panel->SetY(130);
+    AddMenuWidget(panel, screen, 0, 0, 9, 0, 0);
+    panel->SetWidgetCount(panel->GetWidgetCount() + 1);
+    SetMenuWidgetLabel(
+        AddMenuWidget(panel, screen, panel->GetX(), 10, 0x100009, 1, -1), 0x22, &g_rcMenuTitleBar);
+    panel->SetWidgetCount(panel->GetWidgetCount() + 1);
+    ProbeJoystickDevice();
+    MenuWidget *widget = AddMenuWidget(panel,
+                                       screen,
+                                       panel->GetX(),
+                                       panel->GetY(),
+                                       g_bForceFeedbackAvailable ? 0x102001 : 0x102011,
+                                       1,
+                                       -1);
+    widget->SetIdleActionCallback(ValidateEntityState);
+    widget->SetActionCallback(GameOptionsUI_OnToggleForceFeedback);
+    bool available = g_bForceFeedbackAvailable != 0;
+    widget->SetSpriteId(available ? 3 : 2);
+    widget->SetText(GetStringResource(0x30), 1, available, &g_rcMenuCenterPanel);
+    panel->SetWidgetCount(panel->GetWidgetCount() + 1);
+    panel->SetNavigationCount(panel->GetNavigationCount() + 1);
+    const int strings[] = {0x31, 0x32, 0x33, 0xc};
+    const float offsets[] = {19, 38, 57, 114};
+    int (*const actions[])(MenuWidget *) = {GameOptionsUI_OnToggleSkidMarks,
+                                            GameOptionsUI_OnToggleSpecularLighting,
+                                            GameOptionsUI_OnToggleCarShadow,
+                                            GameOptionsUI_OnBack};
+    for (int index = 0; index < 4; index++) {
+        widget = AddMenuWidget(
+            panel,
+            screen,
+            panel->GetX(),
+            static_cast<float>(static_cast<long double>(panel->GetY()) + offsets[index]),
+            0x102001,
+            1,
+            -1);
+        widget->SetIdleActionCallback(ValidateEntityState);
+        widget->SetActionCallback(actions[index]);
+        SetMenuWidgetLabel(widget, strings[index], &g_rcMenuCenterPanel);
+        if (index == 3) {
+            g_pOptionsSubMenu = widget;
+        }
+        panel->SetWidgetCount(panel->GetWidgetCount() + 1);
+        panel->SetNavigationCount(panel->GetNavigationCount() + 1);
+    }
+    AddMenuWidget(panel, screen, 80, 46, 9, 0, 9);
+    panel->SetWidgetCount(panel->GetWidgetCount() + 1);
+    const float imageX[] = {336, 67, 440, 484};
+    const float imageY[] = {48, 199, 114, 214};
+    const short images[] = {0x61, 0x8c, 0x65, 99};
+    const float labelY[] = {166, 279, 196, 273};
+    const RECT *bounds[] = {
+        &g_rcMenuWideColumn, &g_rcMenuLeftColumn, &g_rcMenuRightColumn, &g_rcMenuRightColumnWide};
+    int (*const imageUpdates[])(MenuWidget *) = {GameOptionsUI_UpdateForceFeedbackImage,
+                                                 GameOptionsUI_UpdateSkidMarksImage,
+                                                 GameOptionsUI_UpdateSpecularLightingImage,
+                                                 GameOptionsUI_UpdateCarShadowImage};
+    int (*const labelUpdates[])(MenuWidget *) = {GameOptionsUI_UpdateForceFeedbackLabel,
+                                                 GameOptionsUI_UpdateSkidMarksLabel,
+                                                 GameOptionsUI_UpdateSpecularLightingLabel,
+                                                 GameOptionsUI_UpdateCarShadowLabel};
+    for (int index = 0; index < 4; index++) {
+        widget = AddMenuWidget(panel, screen, imageX[index], imageY[index], 1, 1, images[index]);
+        widget->SetUpdateCallback(imageUpdates[index]);
+        widget->SetLinkedWidgetCount(widget->GetLinkedWidgetCount() + 1);
+        widget->SetLinkedWidgetIndex(0, panel->GetWidgetCount() + 1);
+        panel->SetWidgetCount(panel->GetWidgetCount() + 1);
+        widget = AddMenuWidget(panel, screen, panel->GetX(), labelY[index], 0x101001, 1, -1);
+        widget->SetUpdateCallback(labelUpdates[index]);
+        widget->SetSpriteId(3);
+        widget->SetText(g_szSpace, 1, 1, bounds[index]);
+        panel->SetWidgetCount(panel->GetWidgetCount() + 1);
+    }
+    return 1;
+}
+
 int BuildAudioOptionsUI(MenuScreen *screen) {
     screen->SetCurrentPanelIndex(0);
     screen->SetPanelActive(screen->GetPanelCount(), 1);
