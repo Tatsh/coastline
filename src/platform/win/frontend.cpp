@@ -2214,6 +2214,35 @@ int ShowLoadGhostMenu(void) {
     return ShowCachedMenuScreen(g_pCachedMenu_LoadGhost, BuildLoadTimeAttackMenuUI);
 }
 
+int JoinSessionAndShowRaceSetup(void) {
+    g_dwLobbyIsHost = 0;
+    g_dwSessionEnumPending = 0;
+    bool ready = g_dwMenuScreenActivated != 0;
+    if (!ready) {
+        if (g_dwServiceProviderIndex == 2 || g_dwServiceProviderIndex == 3) {
+            g_dwSessionEnumPending = 1;
+            if (g_dwServiceProviderIndex == 2 && strlen(g_szModemPhoneNumber) < 7) {
+                return 1;
+            }
+            if (g_pNetworkSessionJoinMenu &&
+                g_pJoinCreateGameMenu->GetItemList().GetItemCount() > 0) {
+                ready = JoinNetworkSession() != 0;
+            } else {
+                InitServiceProviderAndStartSession();
+            }
+        } else {
+            ready = JoinNetworkSession() != 0;
+        }
+    }
+    if (ready) {
+        if (!ShowCachedMenuScreen(g_pCachedMenu_RaceSetupNetwork, BuildMultiplayerGameSetupUI)) {
+            return 0;
+        }
+        g_pMultiplayerGameSetupMenu->SetActionCallback(MultiplayerGameSetupUI_OnBackAsClient);
+    }
+    return 1;
+}
+
 int ShowHostRaceSetupScreen(void) {
     g_dwLobbyIsHost = 1;
     g_dwNetworkPlayMode = 2;

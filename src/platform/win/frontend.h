@@ -2430,7 +2430,6 @@ int BuildJoinCreateGameUI(MenuScreen *pScreen);
 
 /**
  * @ghidraAddress BRD3D: 0x10044280
- * @stub
  */
 int JoinSessionAndShowRaceSetup(void);
 
