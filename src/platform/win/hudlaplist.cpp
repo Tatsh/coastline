@@ -9,6 +9,7 @@
 #include "render.h"
 #include "text.h"
 #include "vehicle.h"
+#include "vehicleaccess.h"
 #include "vehiclecount.h"
 
 s32 g_bHudShowLapTimes = 1;
@@ -23,9 +24,9 @@ void DrawLapTimeListHud(const ViewportRect *viewports) {
         SetTextAlignRight();
         SetTextSize(15);
         y = (s32)((u32)y + below + 37);
-        for (s32 index = 0; index < g_pActiveCameraVehicle->lap; ++index) {
+        for (s32 index = 0; index < VEHICLE_GET(g_pActiveCameraVehicle, Lap); ++index) {
             DrawFormattedLapTimeText(
-                "%ww", index + 1, g_pActiveCameraVehicle->lapTimes[index], x, y);
+                "%ww", index + 1, VEHICLE_GET(g_pActiveCameraVehicle, LapTimes)[index], x, y);
             y = (s32)((u32)y + 15);
         }
     }
@@ -36,15 +37,16 @@ long double ComputeTimeGapToLeader(const Vehicle *vehicles, int index) {
     long double gap = 0.0L;
 
     for (int other = 0; other < g_dwNumActiveVehicles; ++other) {
-        if (vehicles[other].racePosition < bestPosition) {
-            bestPosition = vehicles[other].racePosition;
-            gap = (long double)vehicles[other].distance - vehicles[index].distance;
+        if (VEHICLE_GET(&(vehicles[other]), RacePosition) < bestPosition) {
+            bestPosition = VEHICLE_GET(&(vehicles[other]), RacePosition);
+            gap = (long double)VEHICLE_GET(&(vehicles[other]), Distance) -
+                  VEHICLE_GET(&(vehicles[index]), Distance);
         }
     }
     if (gap == 0.0L || std::isnan(gap)) {
         return gap;
     }
-    long double speed = (long double)vehicles[index].speedKph * 0.44642857f;
+    long double speed = (long double)VEHICLE_GET(&(vehicles[index]), SpeedKph) * 0.44642857f;
     if (speed == 0.0L || std::isnan(speed)) {
         return 1000.0L;
     }

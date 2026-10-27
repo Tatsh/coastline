@@ -2,6 +2,7 @@
 #include "fade.h"
 #include "modeldisplaylist.h"
 #include "system.h"
+#include "vehicleaccess.h"
 #include "vehiclerender.h"
 #include "weather.h"
 
@@ -27,22 +28,22 @@ void RenderVehicleHeadlightBeams(Vehicle *vehicle) {
     if (!g_dwNightMode && !g_dwRainMode) {
         return;
     }
-    if (!g_adwVehicleVisible[vehicle->index]) {
+    if (!g_adwVehicleVisible[VEHICLE_GET(vehicle, Index)]) {
         return;
     }
     if (vehicle == g_pActiveCameraVehicle &&
-        g_pActiveCamera == &g_pActiveCameraVehicle->cameras[VEHICLE_CAMERA_BUMPER]) {
+        g_pActiveCamera == &VEHICLE_GET(g_pActiveCameraVehicle, Cameras)[VEHICLE_CAMERA_BUMPER]) {
         return;
     }
-    if (vehicle->ghostMode == VEHICLE_GHOST) {
+    if (VEHICLE_GET(vehicle, GhostMode) == VEHICLE_GHOST) {
         return;
     }
-    g_pCurrentVehicleModelData = vehicle->model;
+    g_pCurrentVehicleModelData = VEHICLE_GET(vehicle, Model);
     gSPMatrix(gDisplayListPtr++,
-              g_apVehicleModelMatrix[vehicle->index],
+              g_apVehicleModelMatrix[VEHICLE_GET(vehicle, Index)],
               G_MTX_MODELVIEW | G_MTX_LOAD | G_MTX_PUSH);
     gSPMatrix(gDisplayListPtr++, g_pProjectionMtx, G_MTX_PROJECTION | G_MTX_LOAD | G_MTX_NOPUSH);
-    gSPForceMatrix(gDisplayListPtr++, g_apVehicleLightMatrix[vehicle->index]);
+    gSPForceMatrix(gDisplayListPtr++, g_apVehicleLightMatrix[VEHICLE_GET(vehicle, Index)]);
     gSPDisplayList(gDisplayListPtr++, g_aClipRatioDisplayLists[FAR_CLIP_RATIO - 1]);
     DrawTexturedTile(HEADLIGHT_BEAM_TEXTURE, g_pCurrentVehicleModelData->textures);
     gDPPipeSync(gDisplayListPtr++);
@@ -61,7 +62,8 @@ void RenderVehicleHeadlightBeams(Vehicle *vehicle) {
 
     /* Beams shining at the camera glare the view, the more the nearer. */
     if (vehicle != g_pActiveCameraVehicle) {
-        Vec3fAdd(&toCamera, &vehicle->frame.position, &vehicle->frame.forward);
+        Vec3fAdd(
+            &toCamera, &VEHICLE_GET(vehicle, Frame).position, &VEHICLE_GET(vehicle, Frame).forward);
         Vec3fSubtract(&toCamera, &g_pActiveCamera->position, &toCamera);
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
         rawDistance = Vec3fLength(&toCamera);
@@ -77,12 +79,12 @@ void RenderVehicleHeadlightBeams(Vehicle *vehicle) {
 #else
             if (Vec3fDot(&toCamera, &g_pActiveCamera->forward) < 0.0f) {
 #endif
-                Vec3fScale(&beam, &vehicle->frame.forward, 1.0f);
+                Vec3fScale(&beam, &VEHICLE_GET(vehicle, Frame).forward, 1.0f);
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
-                Vec3fMulAddInPlace(&beam, &vehicle->frame.up, 0.0f);
+                Vec3fMulAddInPlace(&beam, &VEHICLE_GET(vehicle, Frame).up, 0.0f);
 #else
                 /* The beam tilt multiplies the up axis by negative zero. */
-                Vec3fMulAddInPlace(&beam, &vehicle->frame.up, -0.0f);
+                Vec3fMulAddInPlace(&beam, &VEHICLE_GET(vehicle, Frame).up, -0.0f);
 #endif
                 along = Vec3fDot(&toCamera, &beam);
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
@@ -100,8 +102,8 @@ void RenderVehicleHeadlightBeams(Vehicle *vehicle) {
             }
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
             if (Vec3fDot(&toCamera, &g_pActiveCamera->forward) > 0.95f) {
-                Vec3fScale(&beam, &vehicle->frame.forward, 1.0f);
-                Vec3fMulAddInPlace(&beam, &vehicle->frame.up, 0.0f);
+                Vec3fScale(&beam, &VEHICLE_GET(vehicle, Frame).forward, 1.0f);
+                Vec3fMulAddInPlace(&beam, &VEHICLE_GET(vehicle, Frame).up, 0.0f);
                 along = Vec3fDot(&toCamera, &beam);
                 glare = Vec3fDot(&toCamera, &g_pActiveCamera->forward) * along;
                 if (0.95f < glare) {

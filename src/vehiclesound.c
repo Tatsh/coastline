@@ -8,6 +8,7 @@
 #include "soundmix.h"
 #include "soundpan.h"
 #include "soundsource.h"
+#include "vehicleaccess.h"
 #include "weather.h"
 
 #if TGR_PLATFORM == TGR_PLATFORM_N64
@@ -42,19 +43,20 @@
 
 /* Rumble the controller of a local player's vehicle. */
 static void Rumble(Vehicle *vehicle, s16 onFrames, s16 offFrames, s16 frames) {
-    if (vehicle->index < (s32)g_dwNumLocalPlayers) {
-        g_awRumbleCounter[vehicle->index] = 0;
-        g_awRumbleMotorOn[vehicle->index] = 0;
-        g_awRumbleOnFrames[vehicle->index] = onFrames;
-        g_awRumbleOffFrames[vehicle->index] = offFrames;
-        g_awRumbleFramesLeft[vehicle->index] = frames;
-        g_awRumbleActive[vehicle->index] = 1;
+    if (VEHICLE_GET(vehicle, Index) < (s32)g_dwNumLocalPlayers) {
+        g_awRumbleCounter[VEHICLE_GET(vehicle, Index)] = 0;
+        g_awRumbleMotorOn[VEHICLE_GET(vehicle, Index)] = 0;
+        g_awRumbleOnFrames[VEHICLE_GET(vehicle, Index)] = onFrames;
+        g_awRumbleOffFrames[VEHICLE_GET(vehicle, Index)] = offFrames;
+        g_awRumbleFramesLeft[VEHICLE_GET(vehicle, Index)] = frames;
+        g_awRumbleActive[VEHICLE_GET(vehicle, Index)] = 1;
     }
 }
 
 /* Rumble for a skid, unless the controller already rumbles. */
 static void RumbleSkid(Vehicle *vehicle, s16 offFrames, s16 frames) {
-    if (vehicle->index < (s32)g_dwNumLocalPlayers && !g_awRumbleActive[vehicle->index]) {
+    if (VEHICLE_GET(vehicle, Index) < (s32)g_dwNumLocalPlayers &&
+        !g_awRumbleActive[VEHICLE_GET(vehicle, Index)]) {
         Rumble(vehicle, 1, offFrames, frames);
     }
 }
@@ -90,19 +92,19 @@ static s32 IsRollSound(s32 sound) {
 
 /* Choose the skid of a vehicle on a surface, louder the longer it lasts. */
 static void ChooseSkidEffect(Vehicle *vehicle, s32 surface, s32 skid) {
-    vehicle->effectVolume = skid;
+    VEHICLE_SET(vehicle, EffectVolume, skid);
     if (g_dwCurrentWeather == SNOW_WEATHER) {
         switch (surface) {
         case 0:
         case 1:
         case 2:
         case 3:
-            vehicle->effectSound = SOUND_EFFECT_SKID_SURFACE_0;
-            vehicle->effectVolume = skid >> 1;
+            VEHICLE_SET(vehicle, EffectSound, SOUND_EFFECT_SKID_SURFACE_0);
+            VEHICLE_SET(vehicle, EffectVolume, skid >> 1);
             break;
         case TRACK_SURFACE_SLOW:
-            vehicle->effectSound = SOUND_EFFECT_SKID_SURFACE_0;
-            vehicle->effectVolume = 0;
+            VEHICLE_SET(vehicle, EffectSound, SOUND_EFFECT_SKID_SURFACE_0);
+            VEHICLE_SET(vehicle, EffectVolume, 0);
             break;
         }
     } else {
@@ -110,28 +112,30 @@ static void ChooseSkidEffect(Vehicle *vehicle, s32 surface, s32 skid) {
         case 0:
         case 3:
             RumbleSkid(vehicle, 9, 10);
-            vehicle->effectSound = SOUND_EFFECT_SKID_SURFACE_0;
+            VEHICLE_SET(vehicle, EffectSound, SOUND_EFFECT_SKID_SURFACE_0);
             break;
         case 1:
             RumbleSkid(vehicle, 14, 15);
-            vehicle->effectSound = SOUND_EFFECT_SKID_SURFACE_1;
+            VEHICLE_SET(vehicle, EffectSound, SOUND_EFFECT_SKID_SURFACE_1);
             break;
         case 2:
             RumbleSkid(vehicle, 12, 13);
-            vehicle->effectSound = SOUND_EFFECT_SKID_SURFACE_2;
+            VEHICLE_SET(vehicle, EffectSound, SOUND_EFFECT_SKID_SURFACE_2);
             break;
         case TRACK_SURFACE_SLOW:
-            vehicle->effectSound = SOUND_EFFECT_SLOW_SURFACE;
+            VEHICLE_SET(vehicle, EffectSound, SOUND_EFFECT_SLOW_SURFACE);
             break;
         }
-        vehicle->effectVolume = vehicle->body.skidding >> 1;
+        VEHICLE_SET(vehicle, EffectVolume, VEHICLE_GET(vehicle, Body).skidding >> 1);
     }
-    vehicle->effectPriority = PRIORITY_SKID;
-    if (vehicle->skidFrames++ >= SKID_SWELL_FRAMES + 1) {
-        vehicle->skidFrames = SKID_SWELL_FRAMES;
+    VEHICLE_SET(vehicle, EffectPriority, PRIORITY_SKID);
+    if (VEHICLE_ADVANCE_SKID_FRAMES(vehicle) >= SKID_SWELL_FRAMES + 1) {
+        VEHICLE_SET(vehicle, SkidFrames, SKID_SWELL_FRAMES);
     }
-    vehicle->effectVolume = vehicle->effectVolume * vehicle->skidFrames;
-    vehicle->effectVolume = vehicle->effectVolume / SKID_SWELL_DIVISOR;
+    VEHICLE_SET(vehicle,
+                EffectVolume,
+                VEHICLE_GET(vehicle, EffectVolume) * VEHICLE_GET(vehicle, SkidFrames));
+    VEHICLE_SET(vehicle, EffectVolume, VEHICLE_GET(vehicle, EffectVolume) / SKID_SWELL_DIVISOR);
 }
 
 /* Choose the rolling of a vehicle on a surface, louder the faster it goes. */
@@ -142,48 +146,49 @@ static void ChooseRollEffect(Vehicle *vehicle, s32 surface) {
         case 1:
         case 2:
         case 3:
-            vehicle->effectSound = SOUND_EFFECT_ROLL_SNOW;
+            VEHICLE_SET(vehicle, EffectSound, SOUND_EFFECT_ROLL_SNOW);
             break;
         case TRACK_SURFACE_SLOW:
-            vehicle->effectSound = SOUND_EFFECT_ROLL_SURFACE_0;
+            VEHICLE_SET(vehicle, EffectSound, SOUND_EFFECT_ROLL_SURFACE_0);
             break;
         default:
-            vehicle->effectSound = SOUND_EFFECT_NONE;
+            VEHICLE_SET(vehicle, EffectSound, SOUND_EFFECT_NONE);
             break;
         }
     } else {
         switch (surface) {
         case 0:
         case 3:
-            vehicle->effectSound = SOUND_EFFECT_ROLL_SURFACE_0;
+            VEHICLE_SET(vehicle, EffectSound, SOUND_EFFECT_ROLL_SURFACE_0);
             break;
         case 1:
-            vehicle->effectSound = SOUND_EFFECT_ROLL_SURFACE_1;
+            VEHICLE_SET(vehicle, EffectSound, SOUND_EFFECT_ROLL_SURFACE_1);
             break;
         case 2:
-            vehicle->effectSound = SOUND_EFFECT_ROLL_SURFACE_2;
+            VEHICLE_SET(vehicle, EffectSound, SOUND_EFFECT_ROLL_SURFACE_2);
             break;
         case TRACK_SURFACE_SLOW:
-            vehicle->effectSound = SOUND_EFFECT_SLOW_SURFACE;
+            VEHICLE_SET(vehicle, EffectSound, SOUND_EFFECT_SLOW_SURFACE);
             break;
         default:
-            vehicle->effectSound = SOUND_EFFECT_NONE;
+            VEHICLE_SET(vehicle, EffectSound, SOUND_EFFECT_NONE);
             break;
         }
     }
-    vehicle->effectPriority = PRIORITY_ROLL;
+    VEHICLE_SET(vehicle, EffectPriority, PRIORITY_ROLL);
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
     {
-        long double volume =
-            Vec3fLength(&vehicle->placedVelocity) * ((f32)ROLL_MAX_VOLUME / ROLL_FULL_SPEED);
-        vehicle->effectVolume = volume >= -0x1p63L && volume < 0x1p63L ? (s32)(s64)volume : 0;
+        long double volume = Vec3fLength(&VEHICLE_GET(vehicle, PlacedVelocity)) *
+                             ((f32)ROLL_MAX_VOLUME / ROLL_FULL_SPEED);
+        VEHICLE_SET(
+            vehicle, EffectVolume, volume >= -0x1p63L && volume < 0x1p63L ? (s32)(s64)volume : 0);
     }
 #else
-    vehicle->effectVolume =
-        (s32)(Vec3fLength(&vehicle->placedVelocity) * (f32)ROLL_MAX_VOLUME / ROLL_FULL_SPEED);
+    vehicle->effectVolume = (s32)(Vec3fLength(&VEHICLE_GET(vehicle, PlacedVelocity)) *
+                                  (f32)ROLL_MAX_VOLUME / ROLL_FULL_SPEED);
 #endif
-    if (vehicle->effectVolume > ROLL_MAX_VOLUME) {
-        vehicle->effectVolume = ROLL_MAX_VOLUME;
+    if (VEHICLE_GET(vehicle, EffectVolume) > ROLL_MAX_VOLUME) {
+        VEHICLE_SET(vehicle, EffectVolume, ROLL_MAX_VOLUME);
     }
 }
 
@@ -199,47 +204,62 @@ ChooseVehicleEffect(Vehicle *vehicle, s32 channel, s32 previousSound, CameraFram
 #else
     if (g_aSoundEffectChannels[channel + 1].step == 0 ||
 #endif
-        (!vehicle->body.skidding && IsSkidSound(previousSound))) {
-        vehicle->effectSound = SOUND_EFFECT_NONE;
-        vehicle->effectVolume = 0;
-        vehicle->effectPriority = 0;
+        (!VEHICLE_GET(vehicle, Body).skidding && IsSkidSound(previousSound))) {
+        VEHICLE_SET(vehicle, EffectSound, SOUND_EFFECT_NONE);
+        VEHICLE_SET(vehicle, EffectVolume, 0);
+        VEHICLE_SET(vehicle, EffectPriority, 0);
     }
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
     PlayVehicleEventSounds(vehicle, listener);
 #else
     TakeHitEffect(vehicle,
-                  vehicle->body.vehicleImpactVolume,
+                  VEHICLE_GET(vehicle, Body).vehicleImpactVolume,
                   SOUND_EFFECT_VEHICLE_IMPACT,
                   PRIORITY_VEHICLE_IMPACT,
                   5,
                   1,
                   30);
-    vehicle->body.vehicleImpactVolume = 0;
-    TakeHitEffect(
-        vehicle, vehicle->body.impactVolume, SOUND_EFFECT_IMPACT, PRIORITY_IMPACT, 100, 1, 30);
-    vehicle->body.impactVolume = 0;
-    TakeHitEffect(vehicle, vehicle->body.landed, SOUND_EFFECT_LANDING, PRIORITY_LANDING, 3, 2, 20);
-    vehicle->body.landed = 0;
+    VEHICLE_GET(vehicle, Body).vehicleImpactVolume = 0;
+    TakeHitEffect(vehicle,
+                  VEHICLE_GET(vehicle, Body).impactVolume,
+                  SOUND_EFFECT_IMPACT,
+                  PRIORITY_IMPACT,
+                  100,
+                  1,
+                  30);
+    VEHICLE_GET(vehicle, Body).impactVolume = 0;
+    TakeHitEffect(vehicle,
+                  VEHICLE_GET(vehicle, Body).landed,
+                  SOUND_EFFECT_LANDING,
+                  PRIORITY_LANDING,
+                  3,
+                  2,
+                  20);
+    VEHICLE_GET(vehicle, Body).landed = 0;
 #endif
 
-    sound = vehicle->effectSound;
+    sound = VEHICLE_GET(vehicle, EffectSound);
     if (sound != SOUND_EFFECT_NONE && !IsSkidSound(sound) && !IsRollSound(sound)) {
         return;
     }
 #if TGR_PLATFORM == TGR_PLATFORM_N64
-    vehicle->body.unreconstructed202 = 0;
+    VEHICLE_GET(vehicle, Body).unreconstructed202 = 0;
 #endif
-    surface = vehicle->wheelBodies[1].contactFrames ? vehicle->wheelBodies[1].surface : -1;
-    skid = vehicle->body.skidding;
+    surface = VEHICLE_GET(vehicle, WheelBodies)[1].contactFrames ?
+                  VEHICLE_GET(vehicle, WheelBodies)[1].surface :
+                  -1;
+    skid = VEHICLE_GET(vehicle, Body).skidding;
     /* A skid takes over from a quieter effect, from rolling, and from the skid of the last frame.
      */
-    if (vehicle->effectVolume < skid || (skid && vehicle->effectPriority < PRIORITY_SKID) ||
-        (skid && vehicle->effectPriority == PRIORITY_SKID && IsSkidSound(previousSound))) {
+    if (VEHICLE_GET(vehicle, EffectVolume) < skid ||
+        (skid && VEHICLE_GET(vehicle, EffectPriority) < PRIORITY_SKID) ||
+        (skid && VEHICLE_GET(vehicle, EffectPriority) == PRIORITY_SKID &&
+         IsSkidSound(previousSound))) {
         ChooseSkidEffect(vehicle, surface, skid);
     } else {
-        vehicle->skidFrames = 0;
+        VEHICLE_SET(vehicle, SkidFrames, 0);
     }
-    sound = vehicle->effectSound;
+    sound = VEHICLE_GET(vehicle, EffectSound);
     if (sound == SOUND_EFFECT_NONE || IsRollSound(sound)) {
         ChooseRollEffect(vehicle, surface);
     }
@@ -247,7 +267,7 @@ ChooseVehicleEffect(Vehicle *vehicle, s32 channel, s32 previousSound, CameraFram
 
 void UpdateVehicleSounds(Vehicle *vehicle) {
     Vehicle *viewed = &g_aVehicles[g_aViewportRects[0].vehicleIndex];
-    s32 channel = vehicle->index * CHANNELS_PER_VEHICLE;
+    s32 channel = VEHICLE_GET(vehicle, Index) * CHANNELS_PER_VEHICLE;
     CameraFrame *listener;
     SoundEffect *effect;
     s32 changed;
@@ -261,7 +281,7 @@ void UpdateVehicleSounds(Vehicle *vehicle) {
     f32 roundedFrequency;
 #endif
 
-    if (g_dwRacePauseState || vehicle->racer == NULL) {
+    if (g_dwRacePauseState || VEHICLE_GET(vehicle, Racer) == NULL) {
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
         ClearVehicleSoundChannel(channel);
 #else
@@ -272,26 +292,30 @@ void UpdateVehicleSounds(Vehicle *vehicle) {
     }
     changed = FALSE;
     if (g_dwNumViewports == 1) {
-        listener = viewed->activeCamera;
-        if (vehicle->cameraChanged || viewed->cameraChanged) {
+        listener = VEHICLE_GET(viewed, ActiveCamera);
+        if (VEHICLE_GET(vehicle, CameraChanged) || VEHICLE_GET(viewed, CameraChanged)) {
             changed = TRUE;
         }
     } else {
-        listener = vehicle->activeCamera;
-        if (vehicle->cameraChanged || viewed->cameraChanged ||
-            g_aVehicles[g_aViewportRects[1].vehicleIndex].cameraChanged) {
+        listener = VEHICLE_GET(vehicle, ActiveCamera);
+        if (VEHICLE_GET(vehicle, CameraChanged) || VEHICLE_GET(viewed, CameraChanged) ||
+            VEHICLE_GET(&(g_aVehicles[g_aViewportRects[1].vehicleIndex]), CameraChanged)) {
             changed = TRUE;
         }
     }
-    vehicle->dopplerFactor = ComputeDopplerFactor(&vehicle->frame.position,
-                                                  &vehicle->previousPosition,
-                                                  &listener->position,
-                                                  &vehicle->previousListenerPosition);
-    ComputeStereoPan(&vehicle->frame.position, listener, &upper, &lower, &volume, FALSE);
+    VEHICLE_SET(vehicle,
+                DopplerFactor,
+                ComputeDopplerFactor(&VEHICLE_GET(vehicle, Frame).position,
+                                     &VEHICLE_GET(vehicle, PreviousPosition),
+                                     &listener->position,
+                                     &VEHICLE_GET(vehicle, PreviousListenerPosition)));
+    ComputeStereoPan(
+        &VEHICLE_GET(vehicle, Frame).position, listener, &upper, &lower, &volume, FALSE);
 
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
-    frequency = (long double)vehicle->engineRpm * (0.0f < vehicle->engineRpm ? 0.5f : -0.5f) *
-                15.714286f * vehicle->dopplerFactor;
+    frequency = (long double)VEHICLE_GET(vehicle, EngineRpm) *
+                (0.0f < VEHICLE_GET(vehicle, EngineRpm) ? 0.5f : -0.5f) * 15.714286f *
+                VEHICLE_GET(vehicle, DopplerFactor);
 #else
     if (0.0f < vehicle->engineRpm) {
         frequency = vehicle->engineRpm * 0.5f * ENGINE_RPM_SCALE * SAMPLE_RATE;
@@ -312,14 +336,16 @@ void UpdateVehicleSounds(Vehicle *vehicle) {
     ) {
         frequency = 0.0f;
     }
-    if (vehicle->index == 0) {
+    if (VEHICLE_GET(vehicle, Index) == 0) {
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
-        SetVehicleSoundEchoOffset(g_LoadedTrack.instances[vehicle->groundInstances[0]].flags &
-                                          TRACK_INSTANCE_SHELTER ?
-                                      SHELTER_ECHO_OFFSET :
-                                      0);
+        SetVehicleSoundEchoOffset(
+            g_LoadedTrack.instances[VEHICLE_GET(vehicle, GroundInstances)[0]].flags &
+                    TRACK_INSTANCE_SHELTER ?
+                SHELTER_ECHO_OFFSET :
+                0);
 #else
-        if (g_LoadedTrack.instances[vehicle->groundInstances[0]].flags & TRACK_INSTANCE_SHELTER) {
+        if (g_LoadedTrack.instances[VEHICLE_GET(vehicle, GroundInstances)[0]].flags &
+            TRACK_INSTANCE_SHELTER) {
             g_dwSoundEffectEchoOffset = SHELTER_ECHO_OFFSET;
         } else {
             g_dwSoundEffectEchoOffset = 0;
@@ -335,11 +361,11 @@ void UpdateVehicleSounds(Vehicle *vehicle) {
 #endif
     }
 
-    previousSound = vehicle->effectSound;
+    previousSound = VEHICLE_GET(vehicle, EffectSound);
     ChooseVehicleEffect(vehicle, channel, previousSound, listener);
 
     /* Only the first vehicle plays its effects. */
-    if (vehicle->effectSound == SOUND_EFFECT_NONE) {
+    if (VEHICLE_GET(vehicle, EffectSound) == SOUND_EFFECT_NONE) {
         if (channel == 0) {
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
             ClearVehicleSoundChannel(channel + 1);
@@ -350,7 +376,7 @@ void UpdateVehicleSounds(Vehicle *vehicle) {
         }
     } else {
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
-        frequency = (long double)vehicle->dopplerFactor * SAMPLE_RATE;
+        frequency = (long double)VEHICLE_GET(vehicle, DopplerFactor) * SAMPLE_RATE;
         roundedFrequency = frequency;
         if (EFFECT_MAX_FREQUENCY < frequency || !(roundedFrequency >= 0.0f)) {
             roundedFrequency = 0.0f;
@@ -364,13 +390,13 @@ void UpdateVehicleSounds(Vehicle *vehicle) {
             frequency = 0.0f;
         }
 #endif
-        if (previousSound != vehicle->effectSound && channel == 0) {
-            effect = &g_aSoundEffects[vehicle->effectSound];
+        if (previousSound != VEHICLE_GET(vehicle, EffectSound) && channel == 0) {
+            effect = &g_aSoundEffects[VEHICLE_GET(vehicle, EffectSound)];
             StartSoundChannelMuted(
                 (s16)(channel + 1), effect->sample, effect->length, effect->loopLength);
         }
         if (!changed && channel == 0) {
-            effectVolume = (s32)((u32)vehicle->effectVolume * (u32)volume) >> 7;
+            effectVolume = (s32)((u32)VEHICLE_GET(vehicle, EffectVolume) * (u32)volume) >> 7;
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
             SetVehicleSoundChannel(
                 channel + 1, FrequencyStep(frequency), PackVolume(effectVolume, upper, lower));
@@ -381,12 +407,18 @@ void UpdateVehicleSounds(Vehicle *vehicle) {
         }
     }
     if (g_dwNumViewports == 1) {
-        vehicle->previousListenerPosition.x = viewed->activeCamera->position.x;
-        vehicle->previousListenerPosition.y = viewed->activeCamera->position.y;
-        vehicle->previousListenerPosition.z = viewed->activeCamera->position.z;
+        VEHICLE_GET(vehicle, PreviousListenerPosition).x =
+            VEHICLE_GET(viewed, ActiveCamera)->position.x;
+        VEHICLE_GET(vehicle, PreviousListenerPosition).y =
+            VEHICLE_GET(viewed, ActiveCamera)->position.y;
+        VEHICLE_GET(vehicle, PreviousListenerPosition).z =
+            VEHICLE_GET(viewed, ActiveCamera)->position.z;
     } else {
-        vehicle->previousListenerPosition.x = vehicle->activeCamera->position.x;
-        vehicle->previousListenerPosition.y = vehicle->activeCamera->position.y;
-        vehicle->previousListenerPosition.z = vehicle->activeCamera->position.z;
+        VEHICLE_GET(vehicle, PreviousListenerPosition).x =
+            VEHICLE_GET(vehicle, ActiveCamera)->position.x;
+        VEHICLE_GET(vehicle, PreviousListenerPosition).y =
+            VEHICLE_GET(vehicle, ActiveCamera)->position.y;
+        VEHICLE_GET(vehicle, PreviousListenerPosition).z =
+            VEHICLE_GET(vehicle, ActiveCamera)->position.z;
     }
 }

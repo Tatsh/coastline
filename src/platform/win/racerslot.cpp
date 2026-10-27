@@ -4,12 +4,14 @@
 
 #include "platform/win/ghost.h"
 #include "platform/win/settings.h"
+#include "vehicleaccess.h"
 
 void RacerSlot::UpdateRemoteVehicleFrame(void) {
     if (vehicle == nullptr) {
         return;
     }
-    if (g_dwNetworkPlayMode != 0 && !ApplyRemoteVehicleState(vehicle, vehicle->index)) {
+    if (g_dwNetworkPlayMode != 0 &&
+        !ApplyRemoteVehicleState(vehicle, VEHICLE_GET(vehicle, Index))) {
         return;
     }
     vehicle->TransformAllWheelMatrices();

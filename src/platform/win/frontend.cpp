@@ -10,6 +10,8 @@
 #include <io.h>
 #include <windows.h>
 
+#include "vehicleaccess.h"
+
 #pragma push_macro("errno")
 #undef errno
 #include <PR/os_cont.h>
@@ -1694,8 +1696,8 @@ int ShowChampionshipSeasonMenu(void) {
 }
 
 int ShowSaveGhostMenu(int) {
-    g_fGhostBestLapTime = g_aVehicles[0].bestLapTime;
-    g_fGhostBestRaceTime = g_aVehicles[0].totalTime;
+    g_fGhostBestLapTime = VEHICLE_GET(&(g_aVehicles[0]), BestLapTime);
+    g_fGhostBestRaceTime = VEHICLE_GET(&(g_aVehicles[0]), TotalTime);
     return ShowCachedMenuScreen(g_pCachedMenu_SaveGhost, BuildSaveTimeAttackMenuUI);
 }
 
@@ -2032,7 +2034,7 @@ int ReturnToMainMenuFromSeason(void) {
     g_dwGameMode = GAME_MODE_TIME_ATTACK;
     ResetMenuSelectionsToDefaults();
     bool wasCached = g_pCachedMenu_MainMenu != nullptr;
-    g_pPrimarySeasonSave = nullptr;
+    g_aVehicles[0].SetProfile(nullptr);
     g_LoadedSeasonSettings.car = 1;
     g_dwGameMode = GAME_MODE_TIME_ATTACK;
     g_bRaceSetupShowCarSetup = 1;
@@ -2546,7 +2548,7 @@ int MultiplayerGameSetupUI_OnEscape(MenuWidget *pWidget) {
 int ChampionshipSeasonUI_OnStartNewSeason(MenuWidget *) {
     g_dwGameMode = GAME_MODE_CHAMPIONSHIP;
     ResetMenuSelectionsToDefaults();
-    g_pPrimarySeasonSave = nullptr;
+    g_aVehicles[0].SetProfile(nullptr);
     ShowPreRaceInfoScreen();
     g_pExitSeasonConfirmMenu->SetActionCallback(PreRaceInfoUI_OnBackToChampionshipSeason);
     g_dwGameMode = GAME_MODE_CHAMPIONSHIP;
@@ -5062,7 +5064,7 @@ void ProcessCheatCodeInput(void) {
 }
 
 int EnterTimeAttackMode(void) {
-    if (g_aVehicles[0].lap >= g_dwTotalLaps) {
+    if (VEHICLE_GET(&(g_aVehicles[0]), Lap) >= g_dwTotalLaps) {
         ShowTimeAttackMenu(0);
         ShowSaveGhostMenu(0);
     }

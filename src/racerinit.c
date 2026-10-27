@@ -4,6 +4,7 @@
 #include "screen.h"
 #include "trackmenuitem.h"
 #include "trackselect.h"
+#include "vehicleaccess.h"
 #include "vehiclecount.h"
 #include "weather.h"
 #if TGR_PLATFORM != TGR_PLATFORM_WIN
@@ -59,7 +60,7 @@ void InitRacerSlot(RacerSlot *slot) {
     RACER_SLOT_SET(slot, Straggler, index < (s32)g_dwNumLocalPlayers + LEADING_RACERS ? 0 : 1);
     if (RACER_SLOT_GET(slot, Index) < count) {
         RACER_SLOT_SET(slot, Vehicle, &g_aVehicles[RACER_SLOT_GET(slot, Index)]);
-        RACER_SLOT_GET(slot, Vehicle)->racer = slot;
+        VEHICLE_SET(RACER_SLOT_GET(slot, Vehicle), Racer, slot);
 #if TGR_PLATFORM != TGR_PLATFORM_WIN
         return;
 #endif
@@ -104,10 +105,11 @@ void InitRacerSlot(RacerSlot *slot) {
         RACER_SLOT_SET(slot, TotalTime, 0.0f);
         RACER_SLOT_SET(slot, BestLapTime, 0.0f);
         ARCADE_WEATHER(weather);
-        RACER_SLOT_SET(
-            slot,
-            TimeLeft,
-            SELECTED_TRACK_ITEM()->arcadeTimes[g_aVehicles[0].tableIndex][weather].startTime);
+        RACER_SLOT_SET(slot,
+                       TimeLeft,
+                       SELECTED_TRACK_ITEM()
+                           ->arcadeTimes[VEHICLE_GET(&(g_aVehicles[0]), TableIndex)][weather]
+                           .startTime);
         RACER_SLOT_SET(slot, RacePosition, g_dwNumVehicles - RACER_SLOT_GET(slot, Index) - 1);
     }
 #if TGR_PLATFORM == TGR_PLATFORM_WIN

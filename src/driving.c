@@ -1,6 +1,7 @@
 #include "driving.h"
 
 #include "racerslotaccess.h"
+#include "vehicleaccess.h"
 
 #if TGR_PLATFORM == TGR_PLATFORM_N64
 #include <PR/gu.h>
@@ -31,7 +32,7 @@ typedef long double AiReal;
 #define AI_INTERMEDIATE(value) ((long double)(value))
 #define AI_LESS(a, b) (!((a) >= (b)))
 #define AI_ZERO(value) (!((value) < 0.0f) && !((value) > 0.0f))
-#define AI_ACTIVE_PROFILE (g_aVehicles[0].profile)
+#define AI_ACTIVE_PROFILE VEHICLE_GET(&g_aVehicles[0], Profile)
 #else
 typedef f32 AiReal;
 #define AI_INTERMEDIATE(value) (value)
@@ -105,16 +106,17 @@ static s32 AiSign(AiReal value) {
 
 /* The point of the route a computer looks ahead to, farther the faster it goes. */
 static void FindAiLookPoint(Vehicle *vehicle, Vec3f *out) {
-    TrackSection *section = vehicle->section;
-    s32 index = vehicle->pointIndex;
+    TrackSection *section = VEHICLE_GET(vehicle, Section);
+    s32 index = VEHICLE_GET(vehicle, PointIndex);
     TrackPoint *point;
-    AiReal look = Vec3fLength(&vehicle->placedVelocity) * AI_LOOK_PER_SPEED + AI_LOOK_BASE;
+    AiReal look =
+        Vec3fLength(&VEHICLE_GET(vehicle, PlacedVelocity)) * AI_LOOK_PER_SPEED + AI_LOOK_BASE;
     AiReal step;
 
     /* The original stores the point of the vehicle first and overwrites it after the walk. */
-    out->x = vehicle->section->points[vehicle->pointIndex].position.x;
-    out->y = vehicle->section->points[vehicle->pointIndex].position.y;
-    out->z = vehicle->section->points[vehicle->pointIndex].position.z;
+    out->x = VEHICLE_GET(vehicle, Section)->points[VEHICLE_GET(vehicle, PointIndex)].position.x;
+    out->y = VEHICLE_GET(vehicle, Section)->points[VEHICLE_GET(vehicle, PointIndex)].position.y;
+    out->z = VEHICLE_GET(vehicle, Section)->points[VEHICLE_GET(vehicle, PointIndex)].position.z;
     if (AI_LOOK_MAX < look) {
         look = AI_LOOK_MAX;
     }
@@ -145,21 +147,28 @@ static void FindAiLookPoint(Vehicle *vehicle, Vec3f *out) {
  * moment ahead. Return the offset to the left. */
 static f32 MeasureAiRoutePosition(Vehicle *vehicle) {
     /* The point is read again from the vehicle at each use. */
-    Vec3fDirection(&vehicle->trackForward,
-                   &vehicle->section->points[vehicle->pointIndex].position,
-                   &vehicle->section->points[vehicle->pointIndex + 1].position);
-    Vec3fSubtract(&vehicle->trackSide,
-                  &vehicle->section->points[vehicle->pointIndex].left,
-                  &vehicle->section->points[vehicle->pointIndex].right);
-    Vec3fCross(&vehicle->trackUp, &vehicle->trackForward, &vehicle->trackSide);
-    Vec3fNormalize(&vehicle->trackUp);
-    Vec3fCross(&vehicle->trackSide, &vehicle->trackUp, &vehicle->trackForward);
-    Vec3fNormalize(&vehicle->trackSide);
-    Vec3fSubtract(&vehicle->trackOffset,
-                  &vehicle->frame.position,
-                  &vehicle->section->points[vehicle->pointIndex].position);
-    Vec3fMulAddInPlace(&vehicle->trackOffset, &vehicle->placedVelocity, AI_LOOK_TIME);
-    return Vec3fDot(&vehicle->trackSide, &vehicle->trackOffset);
+    Vec3fDirection(
+        &VEHICLE_GET(vehicle, TrackForward),
+        &VEHICLE_GET(vehicle, Section)->points[VEHICLE_GET(vehicle, PointIndex)].position,
+        &VEHICLE_GET(vehicle, Section)->points[VEHICLE_GET(vehicle, PointIndex) + 1].position);
+    Vec3fSubtract(&VEHICLE_GET(vehicle, TrackSide),
+                  &VEHICLE_GET(vehicle, Section)->points[VEHICLE_GET(vehicle, PointIndex)].left,
+                  &VEHICLE_GET(vehicle, Section)->points[VEHICLE_GET(vehicle, PointIndex)].right);
+    Vec3fCross(&VEHICLE_GET(vehicle, TrackUp),
+               &VEHICLE_GET(vehicle, TrackForward),
+               &VEHICLE_GET(vehicle, TrackSide));
+    Vec3fNormalize(&VEHICLE_GET(vehicle, TrackUp));
+    Vec3fCross(&VEHICLE_GET(vehicle, TrackSide),
+               &VEHICLE_GET(vehicle, TrackUp),
+               &VEHICLE_GET(vehicle, TrackForward));
+    Vec3fNormalize(&VEHICLE_GET(vehicle, TrackSide));
+    Vec3fSubtract(
+        &VEHICLE_GET(vehicle, TrackOffset),
+        &VEHICLE_GET(vehicle, Frame).position,
+        &VEHICLE_GET(vehicle, Section)->points[VEHICLE_GET(vehicle, PointIndex)].position);
+    Vec3fMulAddInPlace(
+        &VEHICLE_GET(vehicle, TrackOffset), &VEHICLE_GET(vehicle, PlacedVelocity), AI_LOOK_TIME);
+    return Vec3fDot(&VEHICLE_GET(vehicle, TrackSide), &VEHICLE_GET(vehicle, TrackOffset));
 }
 
 /* Correct a computer that strays from the route or skids across it. Return how hard it corrects. */
@@ -213,10 +222,11 @@ static f32 CorrectAiLine(Vehicle *vehicle,
                         0.1f;
             }
         }
-    } else if (AI_CORRECT_SPEED < Vec3fLength(&vehicle->placedVelocity)) {
-        velocitySign = AiSign(Vec3fDot(&vehicle->placedVelocity, &vehicle->trackSide));
-        wheelSign = AiSign(Vec3fDot(&vehicle->wheelFrames[0].forward, across));
-        forwardSign = AiSign(Vec3fDot(&vehicle->frame.forward, across));
+    } else if (AI_CORRECT_SPEED < Vec3fLength(&VEHICLE_GET(vehicle, PlacedVelocity))) {
+        velocitySign = AiSign(
+            Vec3fDot(&VEHICLE_GET(vehicle, PlacedVelocity), &VEHICLE_GET(vehicle, TrackSide)));
+        wheelSign = AiSign(Vec3fDot(&VEHICLE_GET(vehicle, WheelFrames)[0].forward, across));
+        forwardSign = AiSign(Vec3fDot(&VEHICLE_GET(vehicle, Frame).forward, across));
         if (velocitySign != 0 || forwardSign != 0) {
             if (velocitySign != 0 && velocitySign + forwardSign == 0) {
                 if (velocitySign == 1 && wheelSign == 1) {
@@ -238,7 +248,7 @@ static f32 CorrectAiLine(Vehicle *vehicle,
                 steer = 0.4f;
             } else if (wheelSign != 0 || forwardSign != 0) {
                 if (wheelSign == 0 && velocitySign == 0) {
-                    vehicle->input->buttons &= ~INPUT_ACCELERATE;
+                    VEHICLE_GET(vehicle, Input)->buttons &= ~INPUT_ACCELERATE;
                 } else if (wheelSign == forwardSign) {
                     if (wheelSign == 1) {
                         g_bAiNudgeRight = TRUE;
@@ -248,9 +258,9 @@ static f32 CorrectAiLine(Vehicle *vehicle,
                         g_bAiNudgeLeft = TRUE;
                     }
                     steer = 0.5f;
-                    vehicle->input->buttons &= ~INPUT_ACCELERATE;
+                    VEHICLE_GET(vehicle, Input)->buttons &= ~INPUT_ACCELERATE;
                 } else if (wheelSign == 0 || wheelSign + velocitySign != 0) {
-                    vehicle->input->buttons &= ~INPUT_ACCELERATE;
+                    VEHICLE_GET(vehicle, Input)->buttons &= ~INPUT_ACCELERATE;
                 }
             }
         }
@@ -283,8 +293,8 @@ static f32 ReadAiLineAhead(Vehicle *vehicle) {
         }
         Vec3fCross(&normal, &ahead, &toLeft);
         Vec3fNormalize(&normal);
-        climb = Vec3fDot(&vehicle->placedVelocity, &normal);
-        lateral = Vec3fDot(&vehicle->placedVelocity, &toLeft) * 0.03f;
+        climb = Vec3fDot(&VEHICLE_GET(vehicle, PlacedVelocity), &normal);
+        lateral = Vec3fDot(&VEHICLE_GET(vehicle, PlacedVelocity), &toLeft) * 0.03f;
         i++;
         if (climb < lateral) {
             excess = lateral;
@@ -294,12 +304,12 @@ static f32 ReadAiLineAhead(Vehicle *vehicle) {
             excess = climb;
         }
         if ((f32)i * 6.0f < excess) {
-            vehicle->input->buttons &= ~INPUT_ACCELERATE;
-            vehicle->input->buttons |= INPUT_BRAKE;
+            VEHICLE_GET(vehicle, Input)->buttons &= ~INPUT_ACCELERATE;
+            VEHICLE_GET(vehicle, Input)->buttons |= INPUT_BRAKE;
             return 2.0f;
         }
         if ((f32)i * 4.5f < excess) {
-            vehicle->input->buttons &= ~INPUT_ACCELERATE;
+            VEHICLE_GET(vehicle, Input)->buttons &= ~INPUT_ACCELERATE;
             return 2.0f;
         }
         if ((f32)i * 3.0f < excess) {
@@ -362,58 +372,61 @@ static f32 ShapeAiSteering(AiReal side, f32 steer) {
 /* Drive a computer forward with the steering, or back out of where it is stuck, and brake when it
  * rolls the wrong way. */
 static void ApplyAiDrive(Vehicle *vehicle, f32 side, f32 forwardSpeed) {
-    f32 speed = Vec3fLength(&vehicle->placedVelocity);
+    f32 speed = Vec3fLength(&VEHICLE_GET(vehicle, PlacedVelocity));
     s32 reverse;
 
-    if (0.0f <= vehicle->accelerator) {
-        if (vehicle->forcedReverseFrames != 0) {
-            vehicle->forcedReverseFrames--;
+    if (0.0f <= VEHICLE_GET(vehicle, Accelerator)) {
+        if (VEHICLE_GET(vehicle, ForcedReverseFrames) != 0) {
+            VEHICLE_SET(
+                vehicle, ForcedReverseFrames, VEHICLE_GET(vehicle, ForcedReverseFrames) - 1);
             reverse = TRUE;
         } else if (AI_LESS(forwardSpeed, -1.0f)) {
-            vehicle->input->buttons |= INPUT_BRAKE;
+            VEHICLE_GET(vehicle, Input)->buttons |= INPUT_BRAKE;
             return;
         } else {
             reverse = FALSE;
         }
-    } else if (vehicle->forcedForwardFrames != 0) {
-        vehicle->forcedForwardFrames--;
+    } else if (VEHICLE_GET(vehicle, ForcedForwardFrames) != 0) {
+        VEHICLE_SET(vehicle, ForcedForwardFrames, VEHICLE_GET(vehicle, ForcedForwardFrames) - 1);
         reverse = FALSE;
     } else if (1.0f < forwardSpeed) {
-        vehicle->input->buttons |= INPUT_BRAKE;
+        VEHICLE_GET(vehicle, Input)->buttons |= INPUT_BRAKE;
         return;
     } else {
         reverse = TRUE;
     }
 
     if (!reverse) {
-        vehicle->input->steering = -side;
-        vehicle->forwardFrames++;
-        if (vehicle->forwardFrames >= AI_STUCK_CHECK_FRAMES && AI_LESS(speed, AI_STUCK_SPEED)) {
-            vehicle->forcedReverseFrames = AI_UNSTICK_FRAMES;
-            vehicle->reverseFrames = 0;
-            vehicle->forwardFrames = 0;
+        VEHICLE_GET(vehicle, Input)->steering = -side;
+        VEHICLE_SET(vehicle, ForwardFrames, VEHICLE_GET(vehicle, ForwardFrames) + 1);
+        if (VEHICLE_GET(vehicle, ForwardFrames) >= AI_STUCK_CHECK_FRAMES &&
+            AI_LESS(speed, AI_STUCK_SPEED)) {
+            VEHICLE_SET(vehicle, ForcedReverseFrames, AI_UNSTICK_FRAMES);
+            VEHICLE_SET(vehicle, ReverseFrames, 0);
+            VEHICLE_SET(vehicle, ForwardFrames, 0);
         }
         return;
     }
-    vehicle->input->buttons |= INPUT_ACCELERATE;
+    VEHICLE_GET(vehicle, Input)->buttons |= INPUT_ACCELERATE;
     if (AI_LESS(side, 0.0f)) {
-        vehicle->input->steering = -1.0f;
+        VEHICLE_GET(vehicle, Input)->steering = -1.0f;
     } else {
-        vehicle->input->steering = 1.0f;
+        VEHICLE_GET(vehicle, Input)->steering = 1.0f;
     }
-    vehicle->input->buttons |= INPUT_REVERSE;
-    if (vehicle->reverseFrames >= AI_REVERSE_FLIP_FRAMES) {
-        if (vehicle->reverseFrames >= AI_REVERSE_RESET_FRAMES) {
-            vehicle->reverseFrames = AI_REVERSE_RESET_TO;
+    VEHICLE_GET(vehicle, Input)->buttons |= INPUT_REVERSE;
+    if (VEHICLE_GET(vehicle, ReverseFrames) >= AI_REVERSE_FLIP_FRAMES) {
+        if (VEHICLE_GET(vehicle, ReverseFrames) >= AI_REVERSE_RESET_FRAMES) {
+            VEHICLE_SET(vehicle, ReverseFrames, AI_REVERSE_RESET_TO);
         } else {
-            vehicle->input->steering = vehicle->input->steering * -1.0;
+            VEHICLE_GET(vehicle, Input)->steering = VEHICLE_GET(vehicle, Input)->steering * -1.0;
         }
     }
-    vehicle->reverseFrames++;
-    if (vehicle->reverseFrames >= AI_STUCK_CHECK_FRAMES && AI_LESS(speed, AI_STUCK_SPEED)) {
-        vehicle->forcedForwardFrames = AI_UNSTICK_FRAMES;
-        vehicle->reverseFrames = 0;
-        vehicle->forwardFrames = 0;
+    VEHICLE_SET(vehicle, ReverseFrames, VEHICLE_GET(vehicle, ReverseFrames) + 1);
+    if (VEHICLE_GET(vehicle, ReverseFrames) >= AI_STUCK_CHECK_FRAMES &&
+        AI_LESS(speed, AI_STUCK_SPEED)) {
+        VEHICLE_SET(vehicle, ForcedForwardFrames, AI_UNSTICK_FRAMES);
+        VEHICLE_SET(vehicle, ReverseFrames, 0);
+        VEHICLE_SET(vehicle, ForwardFrames, 0);
     }
 }
 
@@ -436,7 +449,7 @@ static f32 PassAiVehicles(Vehicle *vehicle, f32 sideOffset) {
             continue;
         }
         lapLength = g_LoadedTrack.rootSection->points[0].distance;
-        gap = AI_INTERMEDIATE(other->distance) - vehicle->distance;
+        gap = AI_INTERMEDIATE(VEHICLE_GET(other, Distance)) - VEHICLE_GET(vehicle, Distance);
         while (lapLength < gap) {
             gap -= lapLength;
         }
@@ -445,7 +458,7 @@ static f32 PassAiVehicles(Vehicle *vehicle, f32 sideOffset) {
         }
         if (0.0f < gap && AI_LESS(gap, best)) {
             best = gap;
-            sideGap = AI_INTERMEDIATE(other->trackSideOffset) - sideOffset;
+            sideGap = AI_INTERMEDIATE(VEHICLE_GET(other, TrackSideOffset)) - sideOffset;
             if (AI_LESS(sideGap, AI_PASS_SIDE)) {
                 highPush = (1.0f - gap * (1.0f / AI_PASS_RANGE)) * -AI_PASS_PUSH;
                 push = highPush;
@@ -467,7 +480,7 @@ static f32 PassAiVehicles(Vehicle *vehicle, f32 sideOffset) {
     if (found != -1) {
         updated = AI_INTERMEDIATE(sideOffset) + push;
         sideOffset = updated;
-        vehicle->trackSideDistance = AI_LESS(updated, 0.0f) ? -sideOffset : sideOffset;
+        VEHICLE_SET(vehicle, TrackSideDistance, AI_LESS(updated, 0.0f) ? -sideOffset : sideOffset);
     }
     return sideOffset;
 }
@@ -475,14 +488,14 @@ static f32 PassAiVehicles(Vehicle *vehicle, f32 sideOffset) {
 /* Constrain a computer's vehicle to the route by removing its speed across it, and slow it by the
  * mode. */
 static void HoldAiToRoute(Vehicle *vehicle, f32 sideOffset, f32 halfWidth, f32 forwardSpeed) {
-    Vec3f *velocity = &vehicle->body.state.velocity;
+    Vec3f *velocity = &VEHICLE_GET(vehicle, Body).state.velocity;
     AiReal hold;
     f32 along;
     f32 across;
     f32 upward;
     s16 weather;
 
-    if (AI_LESS(vehicle->trackSideDistance, AI_INTERMEDIATE(halfWidth) + 1.0f)) {
+    if (AI_LESS(VEHICLE_GET(vehicle, TrackSideDistance), AI_INTERMEDIATE(halfWidth) + 1.0f)) {
         hold = (AI_INTERMEDIATE(forwardSpeed) - AI_HOLD_SPEED) * AI_HOLD_SCALE;
         if (AI_LESS(hold, 0.0f)) {
             hold *= -0.25f;
@@ -490,14 +503,14 @@ static void HoldAiToRoute(Vehicle *vehicle, f32 sideOffset, f32 halfWidth, f32 f
         if (AI_HOLD_MAX < hold) {
             hold = AI_HOLD_MAX;
         }
-        along = Vec3fDot(velocity, &vehicle->trackForward);
+        along = Vec3fDot(velocity, &VEHICLE_GET(vehicle, TrackForward));
         /* The original computes the speed across the route and overwrites it unread. */
-        across = Vec3fDot(velocity, &vehicle->trackSide);
-        upward = Vec3fDot(velocity, &vehicle->trackUp);
+        across = Vec3fDot(velocity, &VEHICLE_GET(vehicle, TrackSide));
+        upward = Vec3fDot(velocity, &VEHICLE_GET(vehicle, TrackUp));
         across = -(sideOffset * hold);
-        Vec3fScale(velocity, &vehicle->trackForward, along);
-        Vec3fMulAddInPlace(velocity, &vehicle->trackSide, across);
-        Vec3fMulAddInPlace(velocity, &vehicle->trackUp, upward);
+        Vec3fScale(velocity, &VEHICLE_GET(vehicle, TrackForward), along);
+        Vec3fMulAddInPlace(velocity, &VEHICLE_GET(vehicle, TrackSide), across);
+        Vec3fMulAddInPlace(velocity, &VEHICLE_GET(vehicle, TrackUp), upward);
     }
     if (g_dwGameMode == GAME_MODE_CHAMPIONSHIP) {
 #if TGR_REGION == TGR_REGION_EU
@@ -510,7 +523,7 @@ static void HoldAiToRoute(Vehicle *vehicle, f32 sideOffset, f32 halfWidth, f32 f
         Vec3fScaleInPlace(
             velocity,
             g_aafAiVelocityRetention[AI_ACTIVE_PROFILE->season][AI_ACTIVE_PROFILE->round]
-                                    [RACER_SLOT_GET(vehicle->racer, Straggler)]);
+                                    [RACER_SLOT_GET(VEHICLE_GET(vehicle, Racer), Straggler)]);
 #endif
     } else if (g_dwGameMode == GAME_MODE_ARCADE
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
@@ -548,29 +561,34 @@ static void PlanAiDrive(Vehicle *vehicle) {
     f32 steer;
     f32 multiplier;
 
-    if (vehicle->input->buttons & INPUT_VIEW_TRACKSIDE) {
-        vehicle->cameraChanged = 1;
+    if (VEHICLE_GET(vehicle, Input)->buttons & INPUT_VIEW_TRACKSIDE) {
+        VEHICLE_SET(vehicle, CameraChanged, 1);
         PlaceTrackCamera(vehicle);
     }
     AddTimingMarker(0, 255, 255, 255, 255);
     FindAiLookPoint(vehicle, &target);
-    if (TraceTrackSplineRecursive(vehicle, 0, vehicle->pointIndex, vehicle->section)) {
+    if (TraceTrackSplineRecursive(
+            vehicle, 0, VEHICLE_GET(vehicle, PointIndex), VEHICLE_GET(vehicle, Section))) {
         Vec3fMidpoint(&g_vTraceFarPoint, &g_vTraceFarPoint, &g_vTraceHalfwayPoint);
-        if (AI_ZERO(vehicle->aiTarget.x) && AI_ZERO(vehicle->aiTarget.y) &&
-            AI_ZERO(vehicle->aiTarget.z)) {
-            vehicle->aiTarget.x = g_vTraceFarPoint.x;
-            vehicle->aiTarget.y = g_vTraceFarPoint.y;
-            vehicle->aiTarget.z = g_vTraceFarPoint.z;
+        if (AI_ZERO(VEHICLE_GET(vehicle, AiTarget).x) &&
+            AI_ZERO(VEHICLE_GET(vehicle, AiTarget).y) &&
+            AI_ZERO(VEHICLE_GET(vehicle, AiTarget).z)) {
+            VEHICLE_GET(vehicle, AiTarget).x = g_vTraceFarPoint.x;
+            VEHICLE_GET(vehicle, AiTarget).y = g_vTraceFarPoint.y;
+            VEHICLE_GET(vehicle, AiTarget).z = g_vTraceFarPoint.z;
         } else {
-            Vec3fLerp(&vehicle->aiTarget,
-                      &vehicle->aiTarget,
+            Vec3fLerp(&VEHICLE_GET(vehicle, AiTarget),
+                      &VEHICLE_GET(vehicle, AiTarget),
                       &g_vTraceFarPoint,
                       AI_TARGET_FOLLOW + AI_INTERMEDIATE(g_fFrameDeltaTime));
         }
     }
-    Vec3fLerp(&vehicle->aiTarget, &vehicle->aiTarget, &target, AI_TARGET_PULL);
-    forwardSpeed = Vec3fDot(&vehicle->placedVelocity, &vehicle->frame.forward);
-    Vec3fDirection(&direction, &vehicle->frame.position, &vehicle->aiTarget);
+    Vec3fLerp(
+        &VEHICLE_GET(vehicle, AiTarget), &VEHICLE_GET(vehicle, AiTarget), &target, AI_TARGET_PULL);
+    forwardSpeed =
+        Vec3fDot(&VEHICLE_GET(vehicle, PlacedVelocity), &VEHICLE_GET(vehicle, Frame).forward);
+    Vec3fDirection(
+        &direction, &VEHICLE_GET(vehicle, Frame).position, &VEHICLE_GET(vehicle, AiTarget));
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
     up.x = 0.0f;
     up.y = 0.0f;
@@ -581,30 +599,30 @@ static void PlanAiDrive(Vehicle *vehicle) {
     Vec3fCross(&across, &up, &direction);
     /* The original computes this product and never reads it. */
     Vec3fCross(&unread, &direction, &across);
-    side = (f32)Vec3fDot(&vehicle->frame.side, &direction);
-    vehicle->accelerator = Vec3fDot(&vehicle->frame.forward, &direction);
-    vehicle->input->buttons |= INPUT_ACCELERATE;
+    side = (f32)Vec3fDot(&VEHICLE_GET(vehicle, Frame).side, &direction);
+    VEHICLE_SET(vehicle, Accelerator, Vec3fDot(&VEHICLE_GET(vehicle, Frame).forward, &direction));
+    VEHICLE_GET(vehicle, Input)->buttons |= INPUT_ACCELERATE;
 
     sideOffset = MeasureAiRoutePosition(vehicle);
-    heading = Vec3fDot(&vehicle->frame.forward, &vehicle->trackSide);
+    heading = Vec3fDot(&VEHICLE_GET(vehicle, Frame).forward, &VEHICLE_GET(vehicle, TrackSide));
     g_bAiNudgeLeft = FALSE;
     g_bAiNudgeRight = FALSE;
     sideDistance = AI_LESS(sideOffset, 0.0f) ? -sideOffset : sideOffset;
-    point = &vehicle->section->points[vehicle->pointIndex];
+    point = &VEHICLE_GET(vehicle, Section)->points[VEHICLE_GET(vehicle, PointIndex)];
     Vec3fSubtract(&edge, &point->left, &point->position);
-    rawHalfWidth = Vec3fDot(&vehicle->trackSide, &edge);
+    rawHalfWidth = Vec3fDot(&VEHICLE_GET(vehicle, TrackSide), &edge);
     halfWidth = rawHalfWidth;
     steer = CorrectAiLine(vehicle, sideOffset, sideDistance, heading, rawHalfWidth, &across);
 
     multiplier = ReadAiLineAhead(vehicle);
-    if (AI_CORRECT_SPEED < Vec3fLength(&vehicle->placedVelocity)) {
+    if (AI_CORRECT_SPEED < Vec3fLength(&VEHICLE_GET(vehicle, PlacedVelocity))) {
         side *= multiplier;
         if (1.0f < side) {
-            vehicle->input->buttons &= ~INPUT_ACCELERATE;
+            VEHICLE_GET(vehicle, Input)->buttons &= ~INPUT_ACCELERATE;
             side = 1.0f;
         } else if (AI_LESS(side, -1.0f)) {
             side = -1.0f;
-            vehicle->input->buttons &= ~INPUT_ACCELERATE;
+            VEHICLE_GET(vehicle, Input)->buttons &= ~INPUT_ACCELERATE;
         }
     }
     side = ShapeAiSteering(side, steer);
@@ -618,17 +636,17 @@ static void PlanAiDrive(Vehicle *vehicle) {
 }
 
 void UpdateAiVehicleBehavior(Vehicle *vehicle) {
-    Vec3f *spin = &vehicle->body.state.angularVelocity;
+    Vec3f *spin = &VEHICLE_GET(vehicle, Body).state.angularVelocity;
     f32 length;
     AiReal rawLength;
 
-    if (!(RACER_SLOT_GET(vehicle->racer, Status) & RACER_HELD)) {
+    if (!(RACER_SLOT_GET(VEHICLE_GET(vehicle, Racer), Status) & RACER_HELD)) {
         PlanAiDrive(vehicle);
     }
     AddTimingMarker(0, 0, 130, 0, 255);
     rawLength = Vec3fLength(spin);
     length = rawLength;
-    if (AI_MAX_SPIN < rawLength && vehicle->wheelBodies[0].contactFrames) {
+    if (AI_MAX_SPIN < rawLength && VEHICLE_GET(vehicle, WheelBodies)[0].contactFrames) {
         Vec3fScaleInPlace(spin, AI_INTERMEDIATE(1.0f) / length);
     }
     UpdateVehiclePhysicsFrame(vehicle);

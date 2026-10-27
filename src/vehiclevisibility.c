@@ -1,5 +1,6 @@
 #include "camera.h"
 #include "render.h"
+#include "vehicleaccess.h"
 #include "vehiclerender.h"
 #include "visgrid.h"
 #include "weather.h"
@@ -12,38 +13,45 @@ void CheckVehicleVisibility(Vehicle *vehicle) {
     Vec3f ahead;
 
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
-    if (vehicle->driver == NULL) {
+    if (VEHICLE_GET(vehicle, Driver) == NULL) {
         return;
     }
 #endif
 
     /* The distance to the camera is computed and not used. */
-    distance = Vec3fDistance(&vehicle->frame.position, &g_pActiveCamera->position);
+    distance = Vec3fDistance(&VEHICLE_GET(vehicle, Frame).position, &g_pActiveCamera->position);
     (void)distance;
-    g_adwVehicleVisible[vehicle->index] = FALSE;
-    g_adwVehicleInViewRange[vehicle->index] = FALSE;
-    vehicle->fogFactor = ComputeFogFactorAtPoint(&vehicle->frame.position);
+    g_adwVehicleVisible[VEHICLE_GET(vehicle, Index)] = FALSE;
+    g_adwVehicleInViewRange[VEHICLE_GET(vehicle, Index)] = FALSE;
+    VEHICLE_SET(vehicle, FogFactor, ComputeFogFactorAtPoint(&VEHICLE_GET(vehicle, Frame).position));
     if (vehicle != g_pActiveCameraVehicle) {
         if (g_dwNightMode || g_dwRainMode) {
             /* The beams of the headlights may be in view when the car is not. */
-            Vec3fMulAdd(&ahead, &vehicle->frame.position, &vehicle->frame.forward, HEADLIGHT_REACH);
+            Vec3fMulAdd(&ahead,
+                        &VEHICLE_GET(vehicle, Frame).position,
+                        &VEHICLE_GET(vehicle, Frame).forward,
+                        HEADLIGHT_REACH);
             if (!IsPointVisible(ahead.x, ahead.y) &&
-                !IsPointVisible(vehicle->frame.position.x, vehicle->frame.position.y)) {
+                !IsPointVisible(VEHICLE_GET(vehicle, Frame).position.x,
+                                VEHICLE_GET(vehicle, Frame).position.y)) {
                 return;
             }
-        } else if (!IsPointVisible(vehicle->frame.position.x, vehicle->frame.position.y)) {
+        } else if (!IsPointVisible(VEHICLE_GET(vehicle, Frame).position.x,
+                                   VEHICLE_GET(vehicle, Frame).position.y)) {
             return;
         }
     }
     if (vehicle == g_pActiveCameraVehicle &&
-        (vehicle->activeCamera == &vehicle->cameras[VEHICLE_CAMERA_COCKPIT] ||
-         vehicle->activeCamera == &vehicle->cameras[VEHICLE_CAMERA_MIRROR]) &&
+        (VEHICLE_GET(vehicle, ActiveCamera) ==
+             &VEHICLE_GET(vehicle, Cameras)[VEHICLE_CAMERA_COCKPIT] ||
+         VEHICLE_GET(vehicle, ActiveCamera) ==
+             &VEHICLE_GET(vehicle, Cameras)[VEHICLE_CAMERA_MIRROR]) &&
         !g_dwVehicleCullingDisabled) {
-        g_adwVehicleInViewRange[vehicle->index] = TRUE;
+        g_adwVehicleInViewRange[VEHICLE_GET(vehicle, Index)] = TRUE;
         return;
     }
-    if (vehicle->ghostMode != VEHICLE_GHOST) {
-        g_adwVehicleVisible[vehicle->index] = TRUE;
+    if (VEHICLE_GET(vehicle, GhostMode) != VEHICLE_GHOST) {
+        g_adwVehicleVisible[VEHICLE_GET(vehicle, Index)] = TRUE;
     }
-    g_adwVehicleInViewRange[vehicle->index] = TRUE;
+    g_adwVehicleInViewRange[VEHICLE_GET(vehicle, Index)] = TRUE;
 }

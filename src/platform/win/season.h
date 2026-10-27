@@ -270,14 +270,14 @@ bool SaveSeasonSaveFile(void);
  *
  * @ghidraAddress BRD3D: 0x10aced34
  */
-#define g_pPrimarySeasonSave (g_aVehicles[0].profile)
+#define g_pPrimarySeasonSave (g_aVehicles[0].GetProfile())
 
 /**
  * The profile used to save progress for the second player.
  *
  * @ghidraAddress BRD3D: 0x10ad189c
  */
-#define g_pSecondarySeasonSave (g_aVehicles[1].profile)
+#define g_pSecondarySeasonSave (g_aVehicles[1].GetProfile())
 
 /**
  * Clear both players' save profiles, using static buffers for unassigned profiles.

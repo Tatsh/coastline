@@ -1,4 +1,6 @@
 #include "camera.h"
+#include "racerslotaccess.h"
+#include "vehicleaccess.h"
 #if TGR_PLATFORM == TGR_PLATFORM_N64
 #include <PR/gu.h>
 #endif
@@ -11,7 +13,6 @@
 
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
 #include <math.h>
-#define RACER_FINISHED 2
 #define CONTROL_REAL long double
 #define CONTROL_LESS(a, b) (!((a) >= (b)))
 #define CONTROL_NONZERO(x) ((x) < 0.0L || (x) > 0.0L)
@@ -79,8 +80,9 @@ void AddVehicleJolt(s32 index, f32 amount) {
 
 /* Whether a viewport follows the vehicle. */
 static s32 IsVehicleViewed(Vehicle *vehicle) {
-    return vehicle->index == g_aViewportRects[0].vehicleIndex ||
-           (g_dwNumViewports >= 2 && vehicle->index == g_aViewportRects[1].vehicleIndex);
+    return VEHICLE_GET(vehicle, Index) == g_aViewportRects[0].vehicleIndex ||
+           (g_dwNumViewports >= 2 &&
+            VEHICLE_GET(vehicle, Index) == g_aViewportRects[1].vehicleIndex);
 }
 
 #if TGR_PLATFORM == TGR_PLATFORM_WIN || TGR_REGION == TGR_REGION_US
@@ -95,7 +97,7 @@ static void ChooseReplayCamera(Vehicle *vehicle);
 #pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
 #endif
 void ChooseReplayCamera(Vehicle *vehicle) {
-    CameraFrame *trackside = &vehicle->cameras[VEHICLE_CAMERA_TRACKSIDE];
+    CameraFrame *trackside = &VEHICLE_GET(vehicle, Cameras)[VEHICLE_CAMERA_TRACKSIDE];
     Vec3f *point = g_LoadedTrack.cameraPoints;
     Vec3f chosen;
     f32 best = CAMERA_POINT_FAR;
@@ -108,9 +110,9 @@ void ChooseReplayCamera(Vehicle *vehicle) {
     s32 i;
 
     for (i = 0; i < g_LoadedTrack.cameraPointCount; i++, point++) {
-        dx = (CONTROL_REAL)vehicle->frame.position.x - point->x;
-        dy = (CONTROL_REAL)vehicle->frame.position.y - point->y;
-        dz = (CONTROL_REAL)vehicle->frame.position.z - point->z;
+        dx = (CONTROL_REAL)VEHICLE_GET(vehicle, Frame).position.x - point->x;
+        dy = (CONTROL_REAL)VEHICLE_GET(vehicle, Frame).position.y - point->y;
+        dz = (CONTROL_REAL)VEHICLE_GET(vehicle, Frame).position.z - point->z;
         if (!(CAMERA_POINT_MAX_DROP < dz)) {
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
             storedX = dx;
@@ -128,21 +130,24 @@ void ChooseReplayCamera(Vehicle *vehicle) {
         }
     }
     if (CONTROL_LESS(best, CAMERA_POINT_RANGE_SQUARED)) {
-        if (vehicle->activeCamera != trackside || !CONTROL_EQUAL(trackside->position.x, chosen.x) ||
+        if (VEHICLE_GET(vehicle, ActiveCamera) != trackside ||
+            !CONTROL_EQUAL(trackside->position.x, chosen.x) ||
             !CONTROL_EQUAL(trackside->position.y, chosen.y) ||
             !CONTROL_EQUAL(trackside->position.z, chosen.z)) {
-            vehicle->cameraChanged = 1;
+            VEHICLE_SET(vehicle, CameraChanged, 1);
         }
         trackside->position.x = chosen.x;
         trackside->position.y = chosen.y;
         trackside->position.z = chosen.z;
-        vehicle->activeCamera = trackside;
-    } else if (vehicle->activeCamera == trackside) {
-        vehicle->cameraChanged = 1;
+        VEHICLE_SET(vehicle, ActiveCamera, trackside);
+    } else if (VEHICLE_GET(vehicle, ActiveCamera) == trackside) {
+        VEHICLE_SET(vehicle, CameraChanged, 1);
         if (g_bReplayCockpitNext || g_dwReplayCameraHoldTimer) {
-            vehicle->activeCamera = &vehicle->cameras[VEHICLE_CAMERA_COCKPIT];
+            VEHICLE_SET(
+                vehicle, ActiveCamera, &VEHICLE_GET(vehicle, Cameras)[VEHICLE_CAMERA_COCKPIT]);
         } else {
-            vehicle->activeCamera = &vehicle->cameras[VEHICLE_CAMERA_CHASE];
+            VEHICLE_SET(
+                vehicle, ActiveCamera, &VEHICLE_GET(vehicle, Cameras)[VEHICLE_CAMERA_CHASE]);
         }
         g_dwReplayCameraSwitchTimer = REPLAY_VIEW_FRAMES;
         g_bReplayCockpitNext = !g_bReplayCockpitNext;
@@ -156,7 +161,8 @@ static void ChooseVehicleView(Vehicle *vehicle) {
     s32 choose = FALSE;
     s32 hold = FALSE;
 
-    if ((vehicle->racer->status & RACER_FINISHED) && IsVehicleViewed(vehicle)) {
+    if ((RACER_SLOT_GET(VEHICLE_GET(vehicle, Racer), Status) & RACER_FINISHED) &&
+        IsVehicleViewed(vehicle)) {
         if (g_dwReplayCameraSwitchTimer == 0) {
             choose = TRUE;
         }
@@ -176,112 +182,120 @@ static void ChooseVehicleView(Vehicle *vehicle) {
         ChooseReplayCamera(vehicle);
         hold = TRUE;
     }
-    if (hold && (vehicle->input->buttons & INPUT_VIEWS)) {
+    if (hold && (VEHICLE_GET(vehicle, Input)->buttons & INPUT_VIEWS)) {
         g_dwReplayCameraSwitchTimer = REPLAY_CHOSEN_VIEW_FRAMES;
     }
 
-    if (vehicle->input->buttons & INPUT_VIEW_COCKPIT) {
-        vehicle->activeCamera = &vehicle->cameras[VEHICLE_CAMERA_COCKPIT];
-        vehicle->cameraChanged = 1;
-        TransferFlags(vehicle->input, INPUT_VIEW_COCKPIT);
+    if (VEHICLE_GET(vehicle, Input)->buttons & INPUT_VIEW_COCKPIT) {
+        VEHICLE_SET(vehicle, ActiveCamera, &VEHICLE_GET(vehicle, Cameras)[VEHICLE_CAMERA_COCKPIT]);
+        VEHICLE_SET(vehicle, CameraChanged, 1);
+        TransferFlags(VEHICLE_GET(vehicle, Input), INPUT_VIEW_COCKPIT);
     }
-    if (vehicle->input->buttons & INPUT_VIEW_TRACKSIDE) {
+    if (VEHICLE_GET(vehicle, Input)->buttons & INPUT_VIEW_TRACKSIDE) {
         PlaceTrackCamera(vehicle);
-        vehicle->cameraChanged = 1;
-        TransferFlags(vehicle->input, INPUT_VIEW_TRACKSIDE);
+        VEHICLE_SET(vehicle, CameraChanged, 1);
+        TransferFlags(VEHICLE_GET(vehicle, Input), INPUT_VIEW_TRACKSIDE);
     }
-    if (vehicle->input->buttons & INPUT_VIEW_CHASE) {
-        vehicle->activeCamera = &vehicle->cameras[VEHICLE_CAMERA_CHASE];
-        vehicle->cameraChanged = 1;
-        TransferFlags(vehicle->input, INPUT_VIEW_CHASE);
+    if (VEHICLE_GET(vehicle, Input)->buttons & INPUT_VIEW_CHASE) {
+        VEHICLE_SET(vehicle, ActiveCamera, &VEHICLE_GET(vehicle, Cameras)[VEHICLE_CAMERA_CHASE]);
+        VEHICLE_SET(vehicle, CameraChanged, 1);
+        TransferFlags(VEHICLE_GET(vehicle, Input), INPUT_VIEW_CHASE);
     }
-    if (g_dwNumViewports == 1 && (vehicle->input->buttons & INPUT_VIEW_BUMPER)) {
-        vehicle->activeCamera = &vehicle->cameras[VEHICLE_CAMERA_BUMPER];
-        vehicle->cameraChanged = 1;
-        TransferFlags(vehicle->input, INPUT_VIEW_BUMPER);
+    if (g_dwNumViewports == 1 && (VEHICLE_GET(vehicle, Input)->buttons & INPUT_VIEW_BUMPER)) {
+        VEHICLE_SET(vehicle, ActiveCamera, &VEHICLE_GET(vehicle, Cameras)[VEHICLE_CAMERA_BUMPER]);
+        VEHICLE_SET(vehicle, CameraChanged, 1);
+        TransferFlags(VEHICLE_GET(vehicle, Input), INPUT_VIEW_BUMPER);
     }
 }
 
 /* Read the steering, the stick and the buttons into the controls of a vehicle. */
 static void ReadVehicleControls(Vehicle *vehicle) {
-    f32 steering = vehicle->input->steering;
+    f32 steering = VEHICLE_GET(vehicle, Input)->steering;
     f32 stickY;
     u32 buttons;
 
     if (STEER_DEAD_ZONE < steering) {
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
-        vehicle->steering =
-            ReadVehicleControlAxis(steering, -STEER_DEAD_ZONE, 1.111111164093017578125f, 1);
+        VEHICLE_SET(
+            vehicle,
+            Steering,
+            ReadVehicleControlAxis(steering, -STEER_DEAD_ZONE, 1.111111164093017578125f, 1));
 #else
         vehicle->steering = (steering - STEER_DEAD_ZONE) / STEER_RANGE;
         vehicle->steering = vehicle->steering * -vehicle->steering;
 #endif
     } else if (CONTROL_LESS(steering, -STEER_DEAD_ZONE)) {
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
-        vehicle->steering =
-            ReadVehicleControlAxis(steering, +STEER_DEAD_ZONE, 1.111111164093017578125f, 0);
+        VEHICLE_SET(
+            vehicle,
+            Steering,
+            ReadVehicleControlAxis(steering, +STEER_DEAD_ZONE, 1.111111164093017578125f, 0));
 #else
         vehicle->steering = (steering + STEER_DEAD_ZONE) / STEER_RANGE;
         vehicle->steering = vehicle->steering * vehicle->steering;
 #endif
     } else {
-        vehicle->steering = 0.0f;
+        VEHICLE_SET(vehicle, Steering, 0.0f);
     }
 
     ChooseVehicleView(vehicle);
 
-    stickY = vehicle->input->stickY;
+    stickY = VEHICLE_GET(vehicle, Input)->stickY;
     if (DRIVE_DEAD_ZONE < stickY) {
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
-        vehicle->accelerator =
-            ReadVehicleControlAxis(stickY, -DRIVE_DEAD_ZONE, 1.33333337306976318359375f, 0);
+        VEHICLE_SET(
+            vehicle,
+            Accelerator,
+            ReadVehicleControlAxis(stickY, -DRIVE_DEAD_ZONE, 1.33333337306976318359375f, 0));
 #else
         vehicle->accelerator = (stickY - DRIVE_DEAD_ZONE) / DRIVE_RANGE;
         vehicle->accelerator = vehicle->accelerator * vehicle->accelerator;
 #endif
     } else if (CONTROL_LESS(stickY, -DRIVE_DEAD_ZONE)) {
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
-        vehicle->accelerator =
-            ReadVehicleControlAxis(stickY, +DRIVE_DEAD_ZONE, 1.33333337306976318359375f, 1);
+        VEHICLE_SET(
+            vehicle,
+            Accelerator,
+            ReadVehicleControlAxis(stickY, +DRIVE_DEAD_ZONE, 1.33333337306976318359375f, 1));
 #else
         vehicle->accelerator = (stickY + DRIVE_DEAD_ZONE) / DRIVE_RANGE;
         vehicle->accelerator = vehicle->accelerator * -vehicle->accelerator;
 #endif
     } else {
-        vehicle->accelerator = 0.0f;
+        VEHICLE_SET(vehicle, Accelerator, 0.0f);
     }
-    if (vehicle->flyMode) {
-        vehicle->rollInput = 0.0f;
+    if (VEHICLE_GET(vehicle, FlyMode)) {
+        VEHICLE_SET(vehicle, RollInput, 0.0f);
     }
 
-    buttons = vehicle->input->buttons;
+    buttons = VEHICLE_GET(vehicle, Input)->buttons;
     if (buttons & INPUT_Z) {
-        if (!vehicle->flyMode) {
-            vehicle->accelerator = 1.0f;
+        if (!VEHICLE_GET(vehicle, FlyMode)) {
+            VEHICLE_SET(vehicle, Accelerator, 1.0f);
         }
-    } else if (vehicle->flyMode) {
+    } else if (VEHICLE_GET(vehicle, FlyMode)) {
         /* Without Z, the stick pitches a flying vehicle. */
-        vehicle->pitchInput = vehicle->accelerator;
-        vehicle->accelerator = 0.0f;
+        VEHICLE_SET(vehicle, PitchInput, VEHICLE_GET(vehicle, Accelerator));
+        VEHICLE_SET(vehicle, Accelerator, 0.0f);
     }
-    if (vehicle->input->buttons & INPUT_UP) {
-        vehicle->accelerator = 1.0f;
+    if (VEHICLE_GET(vehicle, Input)->buttons & INPUT_UP) {
+        VEHICLE_SET(vehicle, Accelerator, 1.0f);
     }
-    if (vehicle->input->buttons & INPUT_DOWN) {
-        vehicle->accelerator = -1.0f;
+    if (VEHICLE_GET(vehicle, Input)->buttons & INPUT_DOWN) {
+        VEHICLE_SET(vehicle, Accelerator, -1.0f);
     }
-    if (vehicle->input->buttons & INPUT_RIGHT) {
-        if (vehicle->flyMode) {
-            vehicle->rollInput = 1.0f;
+    if (VEHICLE_GET(vehicle, Input)->buttons & INPUT_RIGHT) {
+        if (VEHICLE_GET(vehicle, FlyMode)) {
+            VEHICLE_SET(vehicle, RollInput, 1.0f);
         } else {
-            vehicle->steering = -1.0f;
+            VEHICLE_SET(vehicle, Steering, -1.0f);
         }
     }
-    if (vehicle->input->buttons & INPUT_LEFT) {
-        if (vehicle->flyMode) {
-            vehicle->rollInput = -1.0f;
+    if (VEHICLE_GET(vehicle, Input)->buttons & INPUT_LEFT) {
+        if (VEHICLE_GET(vehicle, FlyMode)) {
+            VEHICLE_SET(vehicle, RollInput, -1.0f);
         } else {
-            vehicle->steering = 1.0f;
+            VEHICLE_SET(vehicle, Steering, 1.0f);
         }
     }
 }
@@ -291,33 +305,39 @@ static void DriveAfterSeason(Vehicle *vehicle) {
     Vec3f ahead;
     Vec3f velocity;
 
-    Vec3fMulAddInPlace(&vehicle->frame.position, &vehicle->frame.forward, VICTORY_LOOK_AHEAD);
+    Vec3fMulAddInPlace(&VEHICLE_GET(vehicle, Frame).position,
+                       &VEHICLE_GET(vehicle, Frame).forward,
+                       VICTORY_LOOK_AHEAD);
     ComputeTrackPosition(vehicle);
-    ahead.x = vehicle->trackForward.x;
-    ahead.y = vehicle->trackForward.y;
-    ahead.z = vehicle->trackForward.z;
-    Vec3fMulAddInPlace(&vehicle->frame.position, &vehicle->frame.forward, -VICTORY_LOOK_AHEAD);
+    ahead.x = VEHICLE_GET(vehicle, TrackForward).x;
+    ahead.y = VEHICLE_GET(vehicle, TrackForward).y;
+    ahead.z = VEHICLE_GET(vehicle, TrackForward).z;
+    Vec3fMulAddInPlace(&VEHICLE_GET(vehicle, Frame).position,
+                       &VEHICLE_GET(vehicle, Frame).forward,
+                       -VICTORY_LOOK_AHEAD);
     ComputeTrackPosition(vehicle);
 
-    vehicle->input->buttons &= ~(INPUT_VIEWS | INPUT_RECORDED_ACTIONS);
-    if (CONTROL_LESS(vehicle->distance, VICTORY_SLOW_DISTANCE)) {
-        Vec3fScale(&velocity, &vehicle->trackForward, VICTORY_SPEED);
+    VEHICLE_GET(vehicle, Input)->buttons &= ~(INPUT_VIEWS | INPUT_RECORDED_ACTIONS);
+    if (CONTROL_LESS(VEHICLE_GET(vehicle, Distance), VICTORY_SLOW_DISTANCE)) {
+        Vec3fScale(&velocity, &VEHICLE_GET(vehicle, TrackForward), VICTORY_SPEED);
     } else {
         Vec3fScale(&velocity,
-                   &vehicle->trackForward,
-                   (VICTORY_END_DISTANCE - (CONTROL_REAL)vehicle->distance) * 0.5f);
-        if (VICTORY_BRAKE_DISTANCE < vehicle->distance) {
-            vehicle->input->buttons |= INPUT_BRAKE;
-            if (VICTORY_STOP_DISTANCE < vehicle->distance) {
+                   &VEHICLE_GET(vehicle, TrackForward),
+                   (VICTORY_END_DISTANCE - (CONTROL_REAL)VEHICLE_GET(vehicle, Distance)) * 0.5f);
+        if (VICTORY_BRAKE_DISTANCE < VEHICLE_GET(vehicle, Distance)) {
+            VEHICLE_GET(vehicle, Input)->buttons |= INPUT_BRAKE;
+            if (VICTORY_STOP_DISTANCE < VEHICLE_GET(vehicle, Distance)) {
                 velocity.x = velocity.y = velocity.z = 0.0f;
             }
         } else {
-            vehicle->input->buttons |= INPUT_EBRAKE;
+            VEHICLE_GET(vehicle, Input)->buttons |= INPUT_EBRAKE;
         }
     }
-    vehicle->steerAngle = Vec3fDot(&ahead, &vehicle->frame.side) * VICTORY_STEER_SCALE;
-    velocity.x -= (CONTROL_REAL)vehicle->trackOffset.x * VICTORY_CENTERING;
-    velocity.y -= (CONTROL_REAL)vehicle->trackOffset.y * VICTORY_CENTERING;
+    VEHICLE_SET(vehicle,
+                SteerAngle,
+                Vec3fDot(&ahead, &VEHICLE_GET(vehicle, Frame).side) * VICTORY_STEER_SCALE);
+    velocity.x -= (CONTROL_REAL)VEHICLE_GET(vehicle, TrackOffset).x * VICTORY_CENTERING;
+    velocity.y -= (CONTROL_REAL)VEHICLE_GET(vehicle, TrackOffset).y * VICTORY_CENTERING;
     SetVehicleVelocity(vehicle, velocity.x, velocity.y, velocity.z);
 }
 
@@ -335,40 +355,41 @@ static void SwingJoltWeight(Vehicle *vehicle) {
     f32 jolt;
 #endif
 
-    Vec3fAdd(&corner, &vehicle->frame.position, &vehicle->frame.forward);
-    Vec3fAddInPlace(&corner, &vehicle->frame.side);
-    Vec3fAdd(&predicted, &vehicle->joltPosition, &vehicle->joltVelocity);
-    previousOffset.x = vehicle->joltOffset.x;
-    previousOffset.y = vehicle->joltOffset.y;
-    previousOffset.z = vehicle->joltOffset.z;
-    Vec3fSubtract(&vehicle->joltOffset, &vehicle->joltPosition, &corner);
-    length = Vec3fLength(&vehicle->joltOffset);
+    Vec3fAdd(&corner, &VEHICLE_GET(vehicle, Frame).position, &VEHICLE_GET(vehicle, Frame).forward);
+    Vec3fAddInPlace(&corner, &VEHICLE_GET(vehicle, Frame).side);
+    Vec3fAdd(&predicted, &VEHICLE_GET(vehicle, JoltPosition), &VEHICLE_GET(vehicle, JoltVelocity));
+    previousOffset.x = VEHICLE_GET(vehicle, JoltOffset).x;
+    previousOffset.y = VEHICLE_GET(vehicle, JoltOffset).y;
+    previousOffset.z = VEHICLE_GET(vehicle, JoltOffset).z;
+    Vec3fSubtract(&VEHICLE_GET(vehicle, JoltOffset), &VEHICLE_GET(vehicle, JoltPosition), &corner);
+    length = Vec3fLength(&VEHICLE_GET(vehicle, JoltOffset));
     if (CONTROL_NONZERO(length)) {
-        Vec3fScaleInPlace(&vehicle->joltOffset, length / (1.0f + length) / length);
+        Vec3fScaleInPlace(&VEHICLE_GET(vehicle, JoltOffset), length / (1.0f + length) / length);
     }
     /* The root of a distance, not of its square. */
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
-    distance = Vec3fDistance(&vehicle->joltOffset, &previousOffset);
+    distance = Vec3fDistance(&VEHICLE_GET(vehicle, JoltOffset), &previousOffset);
     distance = sqrtf(distance);
-    jolt = distance / (Vec3fLength(&vehicle->joltVelocity) + 1.0f);
+    jolt = distance / (Vec3fLength(&VEHICLE_GET(vehicle, JoltVelocity)) + 1.0f);
 #else
-    jolt = sqrtf(Vec3fDistance(&vehicle->joltOffset, &previousOffset)) /
-           (Vec3fLength(&vehicle->joltVelocity) + 1.0f);
+    jolt = sqrtf(Vec3fDistance(&VEHICLE_GET(vehicle, JoltOffset), &previousOffset)) /
+           (Vec3fLength(&VEHICLE_GET(vehicle, JoltVelocity)) + 1.0f);
 #endif
     if (JOLT_THRESHOLD < jolt) {
-        AddVehicleJolt(vehicle->index, jolt + jolt);
+        AddVehicleJolt(VEHICLE_GET(vehicle, Index), jolt + jolt);
     }
-    vehicle->joltPosition.x = corner.x;
-    vehicle->joltPosition.y = corner.y;
-    vehicle->joltPosition.z = corner.z;
+    VEHICLE_GET(vehicle, JoltPosition).x = corner.x;
+    VEHICLE_GET(vehicle, JoltPosition).y = corner.y;
+    VEHICLE_GET(vehicle, JoltPosition).z = corner.z;
     /* The new position less the predicted one, not the reverse. */
-    Vec3fSubtract(&vehicle->joltVelocity, &vehicle->joltPosition, &predicted);
-    vehicle->joltVelocity.z -= JOLT_GRAVITY;
+    Vec3fSubtract(
+        &VEHICLE_GET(vehicle, JoltVelocity), &VEHICLE_GET(vehicle, JoltPosition), &predicted);
+    VEHICLE_GET(vehicle, JoltVelocity).z -= JOLT_GRAVITY;
 }
 
 void ProcessVehicleInputAndPhysics(Vehicle *vehicle) {
     if (g_dwTrackMirrored) {
-        vehicle->input->steering = -vehicle->input->steering;
+        VEHICLE_GET(vehicle, Input)->steering = -VEHICLE_GET(vehicle, Input)->steering;
     }
     ReadVehicleControls(vehicle);
     if (g_dwGameMode == GAME_MODE_AFTER_SEASON) {
@@ -378,7 +399,7 @@ void ProcessVehicleInputAndPhysics(Vehicle *vehicle) {
     ApplyPlayerVehicleEffects(vehicle);
 #endif
     UpdateVehiclePhysicsFrame(vehicle);
-    if (!vehicle->flyMode) {
+    if (!VEHICLE_GET(vehicle, FlyMode)) {
         SwingJoltWeight(vehicle);
     }
 #if TGR_PLATFORM == TGR_PLATFORM_WIN

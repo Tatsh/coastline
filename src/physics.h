@@ -18,7 +18,7 @@
 #include "vecmath.h"
 
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
-struct Vehicle;
+#include "vehiclefwd.h"
 #endif
 
 /** The weathers the grip of a surface differs in: dry, rain and snow. */
@@ -709,7 +709,7 @@ s32 CollideBodyWithTriangles(RigidBody *body, f32 box[4][4]);
  * @param body The body of the vehicle.
  * @ghidraAddress BRD3D: 0x1006ec80
  */
-void StepVehicleCollisions(struct Vehicle *vehicle, RigidBody *body);
+void StepVehicleCollisions(Vehicle *vehicle, RigidBody *body);
 #else
 /**
  * Step the vehicle body through a frame, collide it, and count its upside-down frames.

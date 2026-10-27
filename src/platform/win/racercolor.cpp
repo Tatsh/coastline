@@ -9,6 +9,7 @@
 #include "racerslot.h"
 #include "racerslotaccess.h"
 #include "vehicle.h"
+#include "vehicleaccess.h"
 #include "vehiclecolor.h"
 #include "weather.h"
 
@@ -42,11 +43,11 @@ void MakeEnemyCarColorPanels(RacerSlot *slot) {
     SetColorTintMultipliers(RACER_SLOT_GET(slot, Color)[0],
                             RACER_SLOT_GET(slot, Color)[1],
                             RACER_SLOT_GET(slot, Color)[2]);
-    SetMaterialPaletteColors(vehicle->model,
+    SetMaterialPaletteColors(VEHICLE_GET(vehicle, Model),
                              RACER_SLOT_GET(slot, Color)[0] >> 3,
                              RACER_SLOT_GET(slot, Color)[1] >> 3,
                              RACER_SLOT_GET(slot, Color)[2] >> 3);
-    s32 count = vehicle->model->textureEntryCount;
+    s32 count = VEHICLE_GET(vehicle, Model)->textureEntryCount;
     RACER_SLOT_SET(slot, ColorPanelCount, count + 4);
     RACER_SLOT_SET(
         slot,
@@ -56,47 +57,47 @@ void MakeEnemyCarColorPanels(RacerSlot *slot) {
     for (s32 index = 0; index < count; index++) {
         CopyRacerColorPanel(slot,
                             index,
-                            vehicle->model->textureEntries[index],
+                            VEHICLE_GET(vehicle, Model)->textureEntries[index],
                             "MakeEnemyCarColorPanels: penm->aptex[i]");
     }
-    VehicleModel *model = vehicle->model;
+    VehicleModel *model = VEHICLE_GET(vehicle, Model);
     u16 *palette = model->textures[model->materialTextures[VEHICLE_MATERIAL_REAR_LIGHTS]].palette;
     if (palette == nullptr || g_dwNullStubEnable) {
         return;
     }
     /* Unused light-panel entries remain uninitialised, as in the original. */
-    if (vehicle->model->lightTextureEntries[0] != 0) {
+    if (VEHICLE_GET(vehicle, Model)->lightTextureEntries[0] != 0) {
         SetVehicleLightPalette(palette, 0, g_dwNightMode || g_dwRainMode);
         CopyRacerColorPanel(slot,
                             count,
-                            vehicle->model->lightTextureEntries[0],
+                            VEHICLE_GET(vehicle, Model)->lightTextureEntries[0],
                             "MakeEnemyCarColorPanels: penm->aptex[cptex+0]");
     }
-    if (vehicle->model->lightTextureEntries[1] != 0) {
+    if (VEHICLE_GET(vehicle, Model)->lightTextureEntries[1] != 0) {
         SetVehicleLightPalette(palette, 1, 0);
         CopyRacerColorPanel(slot,
                             count + 1,
-                            vehicle->model->lightTextureEntries[1],
+                            VEHICLE_GET(vehicle, Model)->lightTextureEntries[1],
                             "MakeEnemyCarColorPanels: penm->aptex[cptex+1]");
     }
-    if (vehicle->model->lightTextureEntries[2] != 0) {
+    if (VEHICLE_GET(vehicle, Model)->lightTextureEntries[2] != 0) {
         SetVehicleLightPalette(palette, 2, 0);
         CopyRacerColorPanel(slot,
                             count + 2,
-                            vehicle->model->lightTextureEntries[2],
+                            VEHICLE_GET(vehicle, Model)->lightTextureEntries[2],
                             "MakeEnemyCarColorPanels: penm->aptex[cptex+2]");
     }
-    if (vehicle->model->lightTextureEntries[3] != 0) {
+    if (VEHICLE_GET(vehicle, Model)->lightTextureEntries[3] != 0) {
         SetVehicleLightPalette(palette, 3, 0);
         CopyRacerColorPanel(slot,
                             count + 3,
-                            vehicle->model->lightTextureEntries[3],
+                            VEHICLE_GET(vehicle, Model)->lightTextureEntries[3],
                             "MakeEnemyCarColorPanels: penm->aptex[cptex+3]");
     }
 }
 
 void ApplyEnemyCarColorPanels(Vehicle *vehicle, RacerSlot *slot) {
-    VehicleModel *model = vehicle->model;
+    VehicleModel *model = VEHICLE_GET(vehicle, Model);
     s32 count = model->textureEntryCount;
     for (s32 index = 0; index < count; index++) {
         EnqueueTextureUploadEntry(model->textureEntries[index],

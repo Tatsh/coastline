@@ -3,11 +3,12 @@
 #include "seasons.h"
 #include "trackselect.h"
 #include "vehicle.h"
+#include "vehicleaccess.h"
 #include "weather.h"
 
 void SetTrackFromSeason(void) {
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
-    PlayerProfile *profile = g_aVehicles[0].profile;
+    PlayerProfile *profile = VEHICLE_GET(&(g_aVehicles[0]), Profile);
 #else
     PlayerProfile *profile = g_pActiveProfile;
 #endif

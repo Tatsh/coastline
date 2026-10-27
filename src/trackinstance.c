@@ -13,6 +13,7 @@
 #include "trackrender.h"
 #include "trackshadow.h"
 #include "util.h"
+#include "vehicleaccess.h"
 #include "weather.h"
 
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
@@ -113,12 +114,12 @@ static inline void ProjectShadowTriangleWord(TrackInstance *instance,
                                              ShadowVertex *loaded,
                                              u32 word) {
     ProjectClippedShadowTriangle(instance,
-                                 vehicle->shadowQuad,
-                                 vehicle->shadowCornerValid,
+                                 VEHICLE_GET(vehicle, ShadowQuad),
+                                 VEHICLE_GET(vehicle, ShadowCornerValid),
                                  &loaded[word & 0x1f],
                                  &loaded[(word >> 8) & 0x1f],
                                  &loaded[(word >> 16) & 0x1f],
-                                 vehicle->matrix);
+                                 VEHICLE_GET(vehicle, Matrix));
 }
 
 void RenderTrackInstance(
@@ -157,7 +158,7 @@ void RenderTrackInstance(s32 index, s32 vehicles, s32 deferred) {
     u8 bits;
 
     if (vehicles == 0 ||
-        g_pActiveCamera == &g_pActiveCameraVehicle->cameras[VEHICLE_CAMERA_MIRROR] ||
+        g_pActiveCamera == &VEHICLE_GET(g_pActiveCameraVehicle, Cameras)[VEHICLE_CAMERA_MIRROR] ||
         (instance->flags & TRACK_INSTANCE_NO_SHADOW)
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
         || !g_GlobalRallyConfig.bCarShadowSelection
@@ -293,9 +294,11 @@ void RenderTrackInstance(s32 index, s32 vehicles, s32 deferred) {
                 continue;
             }
             /* A vehicle casts no shadow seen from its own cockpit or bumper. */
-            if ((g_pActiveCamera == &g_pActiveCameraVehicle->cameras[VEHICLE_CAMERA_COCKPIT] ||
-                 g_pActiveCamera == &g_pActiveCameraVehicle->cameras[VEHICLE_CAMERA_BUMPER]) &&
-                i == g_pActiveCameraVehicle->index) {
+            if ((g_pActiveCamera ==
+                     &VEHICLE_GET(g_pActiveCameraVehicle, Cameras)[VEHICLE_CAMERA_COCKPIT] ||
+                 g_pActiveCamera ==
+                     &VEHICLE_GET(g_pActiveCameraVehicle, Cameras)[VEHICLE_CAMERA_BUMPER]) &&
+                i == VEHICLE_GET(g_pActiveCameraVehicle, Index)) {
                 continue;
             }
             vehicle = &firstVehicle[i];
@@ -303,7 +306,7 @@ void RenderTrackInstance(s32 index, s32 vehicles, s32 deferred) {
             if (g_bDisableCarShadow) {
                 ResetRenderCommandBufferStack();
             }
-            fogAlpha = (long double)vehicle->fogFactor * 255.0f;
+            fogAlpha = (long double)VEHICLE_GET(vehicle, FogFactor) * 255.0f;
 #endif
             gDPPipeSync(out++);
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
@@ -314,14 +317,14 @@ void RenderTrackInstance(s32 index, s32 vehicles, s32 deferred) {
             out++;
 
             /* The texture lies along the vehicle on the ground, centred under it. */
-            g_vShadowForward = vehicle->frame.forward;
+            g_vShadowForward = VEHICLE_GET(vehicle, Frame).forward;
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
             if (!(g_vShadowForward.x < 0.0f || g_vShadowForward.x > 0.0f) &&
                 !(g_vShadowForward.y < 0.0f || g_vShadowForward.y > 0.0f)) {
 #else
             if (g_vShadowForward.x == 0.0f && g_vShadowForward.y == 0.0f) {
 #endif
-                g_vShadowForward = vehicle->frame.up;
+                g_vShadowForward = VEHICLE_GET(vehicle, Frame).up;
             }
             g_vShadowForward.z = 0.0f;
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
@@ -332,20 +335,22 @@ void RenderTrackInstance(s32 index, s32 vehicles, s32 deferred) {
             if (!(rawLength >= 0.5f)) {
                 length = 0.5f;
             }
-            direction.x = vehicle->frame.side.x;
-            direction.y = vehicle->frame.side.y;
+            direction.x = VEHICLE_GET(vehicle, Frame).side.x;
+            direction.y = VEHICLE_GET(vehicle, Frame).side.y;
             rawWidth = Vec2fLength(&direction);
             if (!(rawWidth >= 0.5f)) {
                 rawWidth = 0.5f;
             }
-            lengthScale = (long double)SHADOW_LENGTH_SCALE / vehicle->model->wheels[0].x / length;
-            widthScale = (long double)SHADOW_WIDTH_SCALE / vehicle->model->wheels[0].y / rawWidth;
+            lengthScale = (long double)SHADOW_LENGTH_SCALE /
+                          VEHICLE_GET(vehicle, Model)->wheels[0].x / length;
+            widthScale = (long double)SHADOW_WIDTH_SCALE /
+                         VEHICLE_GET(vehicle, Model)->wheels[0].y / rawWidth;
 #else
             lengthScale = Vec2fLength((Vec2f *)&g_vShadowForward);
             if (lengthScale < 0.5f) {
                 lengthScale = 0.5f;
             }
-            widthScale = Vec2fLength((Vec2f *)&vehicle->frame.side);
+            widthScale = Vec2fLength((Vec2f *)&VEHICLE_GET(vehicle, Frame).side);
             if (widthScale < 0.5f) {
                 widthScale = 0.5f;
             }
@@ -359,8 +364,10 @@ void RenderTrackInstance(s32 index, s32 vehicles, s32 deferred) {
             acrossX = SHADOW_PRODUCT(g_vShadowForward.x, widthScale);
             acrossY = SHADOW_PRODUCT(-g_vShadowForward.y, widthScale);
             memcpy(g_afMvpMatrix, instance->matrix, sizeof(g_afMvpMatrix));
-            g_afMvpMatrix[3][0] = SHADOW_DIFFERENCE(g_afMvpMatrix[3][0], vehicle->frame.position.x);
-            g_afMvpMatrix[3][1] = SHADOW_DIFFERENCE(g_afMvpMatrix[3][1], vehicle->frame.position.y);
+            g_afMvpMatrix[3][0] =
+                SHADOW_DIFFERENCE(g_afMvpMatrix[3][0], VEHICLE_GET(vehicle, Frame).position.x);
+            g_afMvpMatrix[3][1] =
+                SHADOW_DIFFERENCE(g_afMvpMatrix[3][1], VEHICLE_GET(vehicle, Frame).position.y);
             g_afScratchMatrix[0][0] = alongX;
             g_afScratchMatrix[0][1] = acrossY;
             g_afScratchMatrix[0][2] = 0.0f;
@@ -399,10 +406,12 @@ void RenderTrackInstance(s32 index, s32 vehicles, s32 deferred) {
             if (!g_bShadowCullDisabled) {
                 saved = gDisplayListPtr;
                 gDisplayListPtr = out;
-                SetScissorRect(vehicle->shadowCorners[0][0],
-                               vehicle->shadowCorners[1][1],
-                               vehicle->shadowCorners[1][0] - vehicle->shadowCorners[0][0],
-                               vehicle->shadowCorners[0][1] - vehicle->shadowCorners[1][1]);
+                SetScissorRect(VEHICLE_GET(vehicle, ShadowCorners)[0][0],
+                               VEHICLE_GET(vehicle, ShadowCorners)[1][1],
+                               VEHICLE_GET(vehicle, ShadowCorners)[1][0] -
+                                   VEHICLE_GET(vehicle, ShadowCorners)[0][0],
+                               VEHICLE_GET(vehicle, ShadowCorners)[0][1] -
+                                   VEHICLE_GET(vehicle, ShadowCorners)[1][1]);
                 out = gDisplayListPtr;
                 gDisplayListPtr = saved;
             }

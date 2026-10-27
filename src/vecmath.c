@@ -146,11 +146,11 @@ void Vec3fCross(Vec3f *out, Vec3f *a, Vec3f *b) {
 }
 
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
-long double Vec3fDot(Vec3f *a, Vec3f *b) {
+long double Vec3fDot(const Vec3f *a, const Vec3f *b) {
     return (long double)a->x * b->x + ((long double)a->y * b->y + (long double)a->z * b->z);
 }
 #else
-f32 Vec3fDot(Vec3f *a, Vec3f *b) {
+f32 Vec3fDot(const Vec3f *a, const Vec3f *b) {
     return b->z * a->z + (a->x * b->x + a->y * b->y);
 }
 #endif

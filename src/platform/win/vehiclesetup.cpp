@@ -18,6 +18,7 @@
 #include "sound.h"
 #include "trackselect.h"
 #include "vehicle.h"
+#include "vehicleaccess.h"
 #include "vehiclechoice.h"
 #include "vehiclephysics.h"
 #include "vehiclereset.h"
@@ -85,26 +86,26 @@ s32 Vehicle::TraceTrackSplineRecursive(s32 depth, s32 pointIndex, TrackSection *
 
 void ApplyPlayerVehicleEffects(Vehicle *vehicle) {
     if (g_dwInputButtonMask & 0x10000) {
-        vehicle->body.unreconstructed202 = 0x80;
+        VEHICLE_GET(vehicle, Body).unreconstructed202 = 0x80;
     }
     if (g_dwInputButtonMask & 0x20000) {
-        vehicle->body.unreconstructed203 = 0x80;
+        VEHICLE_GET(vehicle, Body).unreconstructed203 = 0x80;
     }
     if (g_dwInputButtonMask & 0x40000) {
-        vehicle->body.unreconstructed204 = 0x80;
+        VEHICLE_GET(vehicle, Body).unreconstructed204 = 0x80;
     }
     if (g_dwInputButtonMask & 0x80000) {
-        vehicle->body.replayEffects[0] = 0x80;
+        VEHICLE_GET(vehicle, Body).replayEffects[0] = 0x80;
     }
     if (g_dwInputButtonMask & 0x80) {
-        vehicle->body.replayEffects[1] = 0x80;
+        VEHICLE_GET(vehicle, Body).replayEffects[1] = 0x80;
     }
 }
 
 void ApplyPlayerVehicleRespawnRequest(Vehicle *vehicle) {
     if (g_bRespawnRequested) {
-        if (!(RACER_SLOT_GET(vehicle->racer, Status) & 3) && !gInstantReplayActive) {
-            vehicle->body.uprightFrames = -1;
+        if (!(RACER_SLOT_GET(VEHICLE_GET(vehicle, Racer), Status) & 3) && !gInstantReplayActive) {
+            VEHICLE_GET(vehicle, Body).uprightFrames = -1;
         }
         g_bRespawnRequested = 0;
     }
@@ -132,18 +133,20 @@ s32 IsVehicleSteeringSpeedSensitive(void) {
 
 s32 ShouldStepVehiclePhysics(Vehicle *vehicle) {
     if (gInstantReplayActive ||
-        (g_dwGameMode == GAME_MODE_TIME_ATTACK && vehicle->index == 1 &&
-         vehicle->input->playbackBuffer) ||
-        (g_dwGameMode == GAME_MODE_DEMO && vehicle->index == 0 && vehicle->input->playbackBuffer)) {
+        (g_dwGameMode == GAME_MODE_TIME_ATTACK && VEHICLE_GET(vehicle, Index) == 1 &&
+         VEHICLE_GET(vehicle, Input)->playbackBuffer) ||
+        (g_dwGameMode == GAME_MODE_DEMO && VEHICLE_GET(vehicle, Index) == 0 &&
+         VEHICLE_GET(vehicle, Input)->playbackBuffer)) {
         return 0;
     }
     return g_dwGameMode == GAME_MODE_DEMO || g_dwGameMode == GAME_MODE_AFTER_SEASON ||
-           g_bNetRaceStartReached || vehicle->wheelBodies[1].contactFrames <= 90;
+           g_bNetRaceStartReached || VEHICLE_GET(vehicle, WheelBodies)[1].contactFrames <= 90;
 }
 
 void FinishVehiclePhysicsFrame(Vehicle *vehicle) {
     if (g_dwNetworkPlayMode) {
-        if (vehicle->driver == PlayerVehicleControllerCallback && !gInstantReplayActive) {
+        if (VEHICLE_GET(vehicle, Driver) == PlayerVehicleControllerCallback &&
+            !gInstantReplayActive) {
             RecordVehicleKeyframe(vehicle);
         }
     } else if (!gInstantReplayActive) {
@@ -152,12 +155,13 @@ void FinishVehiclePhysicsFrame(Vehicle *vehicle) {
 }
 
 void UpdateVehicleReplayPose(Vehicle *vehicle) {
-    if (gInstantReplayActive || (g_dwGameMode == GAME_MODE_TIME_ATTACK && vehicle->index == 1 &&
-                                 vehicle->input->playbackBuffer)) {
+    if (gInstantReplayActive ||
+        (g_dwGameMode == GAME_MODE_TIME_ATTACK && VEHICLE_GET(vehicle, Index) == 1 &&
+         VEHICLE_GET(vehicle, Input)->playbackBuffer)) {
         ApplyGhostKeyframeForVehicle(vehicle);
         UpdateVehicleWheelTransforms(vehicle);
-    } else if (g_dwGameMode == GAME_MODE_DEMO && vehicle->index == 0 &&
-               vehicle->input->playbackBuffer) {
+    } else if (g_dwGameMode == GAME_MODE_DEMO && VEHICLE_GET(vehicle, Index) == 0 &&
+               VEHICLE_GET(vehicle, Input)->playbackBuffer) {
         ApplyGhostKeyframeToVehicle(vehicle, 1);
         UpdateVehicleWheelTransforms(vehicle);
     } else {

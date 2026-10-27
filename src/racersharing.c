@@ -1,6 +1,7 @@
 #include "racersharing.h"
 
 #include "racerslotaccess.h"
+#include "vehicleaccess.h"
 
 #if TGR_PLATFORM == TGR_PLATFORM_N64
 #include <PR/os_libc.h>
@@ -87,18 +88,24 @@ static f32 RacerSharingKey(RacerSlot *slot, Vehicle *player, f32 lapLength) {
     SharingReal rawGap;
 
     if (vehicle != NULL) {
-        if (vehicle != player && vehicle->index < (s32)g_dwNumLocalPlayers) {
+        if (vehicle != player && VEHICLE_GET(vehicle, Index) < (s32)g_dwNumLocalPlayers) {
             return KEY_OTHER_PLAYER;
         }
-        if (g_dwGameMode == GAME_MODE_CHAMPIONSHIP && vehicle->index >= (s32)g_dwNumLocalPlayers &&
-            (RACER_SLOT_GET(vehicle->racer, Status) & RACER_FINISHED) &&
-            vehicle->ghostMode == VEHICLE_GHOST && SHARING_ZERO(vehicle->opacity)) {
+        if (g_dwGameMode == GAME_MODE_CHAMPIONSHIP &&
+            VEHICLE_GET(vehicle, Index) >= (s32)g_dwNumLocalPlayers &&
+            (RACER_SLOT_GET(VEHICLE_GET(vehicle, Racer), Status) & RACER_FINISHED) &&
+            VEHICLE_GET(vehicle, GhostMode) == VEHICLE_GHOST &&
+            SHARING_ZERO(VEHICLE_GET(vehicle, Opacity))) {
             return KEY_FINISHED;
         }
-        rawGap = (SHARING_INTERMEDIATE(player->distance) - vehicle->distance) +
-                 SHARING_INTERMEDIATE(vehicle->distanceLaps - player->distanceLaps) * lapLength;
+        rawGap =
+            (SHARING_INTERMEDIATE(VEHICLE_GET(player, Distance)) - VEHICLE_GET(vehicle, Distance)) +
+            SHARING_INTERMEDIATE(VEHICLE_GET(vehicle, DistanceLaps) -
+                                 VEHICLE_GET(player, DistanceLaps)) *
+                lapLength;
         gap = WrapHalfLap(rawGap, lapLength);
-        return Vec3fDistance(&player->frame.position, &vehicle->frame.position) +
+        return Vec3fDistance(&VEHICLE_GET(player, Frame).position,
+                             &VEHICLE_GET(vehicle, Frame).position) +
                SHARING_INTERMEDIATE(gap) * gap;
     }
     if (g_dwGameMode == GAME_MODE_CHAMPIONSHIP &&
@@ -106,11 +113,12 @@ static f32 RacerSharingKey(RacerSlot *slot, Vehicle *player, f32 lapLength) {
         (RACER_SLOT_GET(slot, Status) & RACER_FINISHED)) {
         return KEY_FINISHED;
     }
-    rawGap = SHARING_INTERMEDIATE(RACER_SLOT_GET(slot, DistanceLaps) - player->distanceLaps) *
+    rawGap = SHARING_INTERMEDIATE(RACER_SLOT_GET(slot, DistanceLaps) -
+                                  VEHICLE_GET(player, DistanceLaps)) *
                  lapLength +
-             (SHARING_INTERMEDIATE(player->distance) - RACER_SLOT_GET(slot, Distance));
+             (SHARING_INTERMEDIATE(VEHICLE_GET(player, Distance)) - RACER_SLOT_GET(slot, Distance));
     gap = WrapHalfLap(rawGap, lapLength);
-    return Vec3fDistance(&player->frame.position, &RACER_SLOT_GET(slot, Position)) +
+    return Vec3fDistance(&VEHICLE_GET(player, Frame).position, &RACER_SLOT_GET(slot, Position)) +
            SHARING_INTERMEDIATE(gap) * gap;
 }
 
@@ -119,26 +127,26 @@ static void ReleaseRacerVehicle(RacerSlot *slot, Vehicle *vehicle, f32 key) {
 #if TGR_PLATFORM == TGR_PLATFORM_N64
     osSyncPrintf("enemy %d loses slot %d (dist=%f)\n", slot->index, vehicle->index, (double)key);
 #endif
-    RACER_SLOT_GET(slot, Position) = vehicle->frame.position;
-    RACER_SLOT_GET(slot, Velocity) = vehicle->placedVelocity;
-    RACER_SLOT_SET(slot, SpeedKph, vehicle->speedKph);
-    RACER_SLOT_SET(slot, Section, vehicle->section);
-    RACER_SLOT_SET(slot, PointIndex, vehicle->pointIndex);
-    RACER_SLOT_SET(slot, LapTime, vehicle->lapTime);
-    RACER_SLOT_SET(slot, BestLapTime, vehicle->bestLapTime);
-    RACER_SLOT_SET(slot, TotalTime, vehicle->totalTime);
-    RACER_SLOT_SET(slot, TimeLeft, vehicle->timeLeft);
-    RACER_SLOT_SET(slot, Lap, vehicle->lap);
-    RACER_SLOT_SET(slot, DistanceLaps, vehicle->distanceLaps);
-    RACER_SLOT_SET(slot, MaxGate, vehicle->maxGate);
-    RACER_SLOT_SET(slot, Gate, vehicle->gate);
+    RACER_SLOT_GET(slot, Position) = VEHICLE_GET(vehicle, Frame).position;
+    RACER_SLOT_GET(slot, Velocity) = VEHICLE_GET(vehicle, PlacedVelocity);
+    RACER_SLOT_SET(slot, SpeedKph, VEHICLE_GET(vehicle, SpeedKph));
+    RACER_SLOT_SET(slot, Section, VEHICLE_GET(vehicle, Section));
+    RACER_SLOT_SET(slot, PointIndex, VEHICLE_GET(vehicle, PointIndex));
+    RACER_SLOT_SET(slot, LapTime, VEHICLE_GET(vehicle, LapTime));
+    RACER_SLOT_SET(slot, BestLapTime, VEHICLE_GET(vehicle, BestLapTime));
+    RACER_SLOT_SET(slot, TotalTime, VEHICLE_GET(vehicle, TotalTime));
+    RACER_SLOT_SET(slot, TimeLeft, VEHICLE_GET(vehicle, TimeLeft));
+    RACER_SLOT_SET(slot, Lap, VEHICLE_GET(vehicle, Lap));
+    RACER_SLOT_SET(slot, DistanceLaps, VEHICLE_GET(vehicle, DistanceLaps));
+    RACER_SLOT_SET(slot, MaxGate, VEHICLE_GET(vehicle, MaxGate));
+    RACER_SLOT_SET(slot, Gate, VEHICLE_GET(vehicle, Gate));
     osSyncPrintf("saving lap (%d/%d) and gate (%d/%d)\n",
                  slot->lap,
                  slot->distanceLaps,
                  slot->maxGate,
                  slot->gate);
-    RACER_SLOT_SET(slot, Distance, vehicle->distance);
-    RACER_SLOT_SET(slot, RacePosition, vehicle->racePosition);
+    RACER_SLOT_SET(slot, Distance, VEHICLE_GET(vehicle, Distance));
+    RACER_SLOT_SET(slot, RacePosition, VEHICLE_GET(vehicle, RacePosition));
 }
 
 /* Give a racer a vehicle, placed on the route where the racer is, facing along it. */
@@ -150,41 +158,41 @@ static void AcquireRacerVehicle(RacerSlot *slot, Vehicle *vehicle) {
 #if TGR_PLATFORM == TGR_PLATFORM_N64
     osSyncPrintf("enemy %d acquires slot %d\n", slot->index, vehicle->index);
 #endif
-    vehicle->speedKph = RACER_SLOT_GET(slot, SpeedKph);
-    vehicle->section = RACER_SLOT_GET(slot, Section);
-    vehicle->pointIndex = RACER_SLOT_GET(slot, PointIndex);
-    vehicle->lapTime = RACER_SLOT_GET(slot, LapTime);
-    vehicle->bestLapTime = RACER_SLOT_GET(slot, BestLapTime);
-    vehicle->totalTime = RACER_SLOT_GET(slot, TotalTime);
-    vehicle->timeLeft = RACER_SLOT_GET(slot, TimeLeft);
-    vehicle->lap = RACER_SLOT_GET(slot, Lap);
-    vehicle->distanceLaps = RACER_SLOT_GET(slot, DistanceLaps);
-    vehicle->maxGate = RACER_SLOT_GET(slot, MaxGate);
-    vehicle->gate = RACER_SLOT_GET(slot, Gate);
+    VEHICLE_SET(vehicle, SpeedKph, RACER_SLOT_GET(slot, SpeedKph));
+    VEHICLE_SET(vehicle, Section, RACER_SLOT_GET(slot, Section));
+    VEHICLE_SET(vehicle, PointIndex, RACER_SLOT_GET(slot, PointIndex));
+    VEHICLE_SET(vehicle, LapTime, RACER_SLOT_GET(slot, LapTime));
+    VEHICLE_SET(vehicle, BestLapTime, RACER_SLOT_GET(slot, BestLapTime));
+    VEHICLE_SET(vehicle, TotalTime, RACER_SLOT_GET(slot, TotalTime));
+    VEHICLE_SET(vehicle, TimeLeft, RACER_SLOT_GET(slot, TimeLeft));
+    VEHICLE_SET(vehicle, Lap, RACER_SLOT_GET(slot, Lap));
+    VEHICLE_SET(vehicle, DistanceLaps, RACER_SLOT_GET(slot, DistanceLaps));
+    VEHICLE_SET(vehicle, MaxGate, RACER_SLOT_GET(slot, MaxGate));
+    VEHICLE_SET(vehicle, Gate, RACER_SLOT_GET(slot, Gate));
     osSyncPrintf("restoring lap (%d/%d) and gate (%d/%d)\n",
                  vehicle->lap,
                  vehicle->distanceLaps,
                  vehicle->maxGate,
                  vehicle->gate);
-    vehicle->distance = RACER_SLOT_GET(slot, Distance);
-    vehicle->racer = slot;
-    vehicle->ghostMode = 0;
-    vehicle->opacity = 1.0f;
-    vehicle->cameraChanged = 1;
-    vehicle->racePosition = RACER_SLOT_GET(slot, RacePosition);
+    VEHICLE_SET(vehicle, Distance, RACER_SLOT_GET(slot, Distance));
+    VEHICLE_SET(vehicle, Racer, slot);
+    VEHICLE_SET(vehicle, GhostMode, 0);
+    VEHICLE_SET(vehicle, Opacity, 1.0f);
+    VEHICLE_SET(vehicle, CameraChanged, 1);
+    VEHICLE_SET(vehicle, RacePosition, RACER_SLOT_GET(slot, RacePosition));
     InitVehiclePhysics(vehicle);
     ResetVehicleEffects(vehicle);
-    vehicle->previousPosition = RACER_SLOT_GET(slot, PreviousPosition);
+    VEHICLE_GET(vehicle, PreviousPosition) = RACER_SLOT_GET(slot, PreviousPosition);
     SetVehiclePosition(vehicle,
                        RACER_SLOT_GET(slot, Position).x,
                        RACER_SLOT_GET(slot, Position).y,
                        RACER_SLOT_GET(slot, Position).z + ACQUIRE_HEIGHT);
     /* Stored a second time. */
-    vehicle->ghostMode = 0;
-    vehicle->opacity = 1.0f;
-    vehicle->color[0] = RACER_SLOT_GET(slot, Color)[0];
-    vehicle->color[1] = RACER_SLOT_GET(slot, Color)[1];
-    vehicle->color[2] = RACER_SLOT_GET(slot, Color)[2];
+    VEHICLE_SET(vehicle, GhostMode, 0);
+    VEHICLE_SET(vehicle, Opacity, 1.0f);
+    VEHICLE_GET(vehicle, Color)[0] = RACER_SLOT_GET(slot, Color)[0];
+    VEHICLE_GET(vehicle, Color)[1] = RACER_SLOT_GET(slot, Color)[1];
+    VEHICLE_GET(vehicle, Color)[2] = RACER_SLOT_GET(slot, Color)[2];
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
     ApplyEnemyCarColorPanels(vehicle, slot);
 #else
@@ -192,50 +200,57 @@ static void AcquireRacerVehicle(RacerSlot *slot, Vehicle *vehicle) {
 #endif
 
     /* The point is found again from the vehicle for each call. */
-    Vec3fSubtract(&left,
-                  &vehicle->section->points[vehicle->pointIndex].left,
-                  &vehicle->section->points[vehicle->pointIndex].position);
-    Vec3fSubtract(&nextLeft,
-                  &vehicle->section->points[vehicle->pointIndex + 1].left,
-                  &vehicle->section->points[vehicle->pointIndex + 1].position);
-    Vec3fDirection(&vehicle->frame.forward,
-                   &vehicle->section->points[vehicle->pointIndex].position,
-                   &vehicle->section->points[vehicle->pointIndex + 1].position);
-    Vec3fMidpoint(&vehicle->frame.side, &left, &nextLeft);
-    Vec3fCross(&vehicle->frame.up, &vehicle->frame.forward, &vehicle->frame.side);
-    Vec3fNormalize(&vehicle->frame.up);
-    Vec3fCross(&vehicle->frame.side, &vehicle->frame.up, &vehicle->frame.forward);
-    Vec3fNormalize(&vehicle->frame.side);
-    vehicle->trackDirection = vehicle->frame.forward;
+    Vec3fSubtract(
+        &left,
+        &VEHICLE_GET(vehicle, Section)->points[VEHICLE_GET(vehicle, PointIndex)].left,
+        &VEHICLE_GET(vehicle, Section)->points[VEHICLE_GET(vehicle, PointIndex)].position);
+    Vec3fSubtract(
+        &nextLeft,
+        &VEHICLE_GET(vehicle, Section)->points[VEHICLE_GET(vehicle, PointIndex) + 1].left,
+        &VEHICLE_GET(vehicle, Section)->points[VEHICLE_GET(vehicle, PointIndex) + 1].position);
+    Vec3fDirection(
+        &VEHICLE_GET(vehicle, Frame).forward,
+        &VEHICLE_GET(vehicle, Section)->points[VEHICLE_GET(vehicle, PointIndex)].position,
+        &VEHICLE_GET(vehicle, Section)->points[VEHICLE_GET(vehicle, PointIndex) + 1].position);
+    Vec3fMidpoint(&VEHICLE_GET(vehicle, Frame).side, &left, &nextLeft);
+    Vec3fCross(&VEHICLE_GET(vehicle, Frame).up,
+               &VEHICLE_GET(vehicle, Frame).forward,
+               &VEHICLE_GET(vehicle, Frame).side);
+    Vec3fNormalize(&VEHICLE_GET(vehicle, Frame).up);
+    Vec3fCross(&VEHICLE_GET(vehicle, Frame).side,
+               &VEHICLE_GET(vehicle, Frame).up,
+               &VEHICLE_GET(vehicle, Frame).forward);
+    Vec3fNormalize(&VEHICLE_GET(vehicle, Frame).side);
+    VEHICLE_GET(vehicle, TrackDirection) = VEHICLE_GET(vehicle, Frame).forward;
     /* The frame is set from itself, to set the orientation of the body. */
-    SetVehicleFrameMatrix(vehicle, vehicle->matrix);
-    if (RACER_SLOT_GET(vehicle->racer, Status) & RACER_HELD) {
+    SetVehicleFrameMatrix(vehicle, VEHICLE_GET(vehicle, Matrix));
+    if (RACER_SLOT_GET(VEHICLE_GET(vehicle, Racer), Status) & RACER_HELD) {
         SetVehicleVelocity(vehicle, 0.0f, 0.0f, 0.0f);
     } else {
         SetVehicleVelocity(vehicle,
-                           vehicle->frame.forward.x * ACQUIRE_SPEED,
-                           vehicle->frame.forward.y * ACQUIRE_SPEED,
-                           vehicle->frame.forward.z * ACQUIRE_SPEED);
+                           VEHICLE_GET(vehicle, Frame).forward.x * ACQUIRE_SPEED,
+                           VEHICLE_GET(vehicle, Frame).forward.y * ACQUIRE_SPEED,
+                           VEHICLE_GET(vehicle, Frame).forward.z * ACQUIRE_SPEED);
     }
     /* Each wheel pointer is read again for each store, the third wheel after the fourth. */
-    vehicle->body.wheels[0]->ground = NULL;
-    vehicle->body.wheels[0]->contactFrames = 0;
-    vehicle->body.wheels[0]->surface = TRACK_SURFACE_START;
-    vehicle->body.wheels[1]->ground = NULL;
-    vehicle->body.wheels[1]->contactFrames = 0;
-    vehicle->body.wheels[1]->surface = TRACK_SURFACE_START;
-    vehicle->body.wheels[3]->ground = NULL;
-    vehicle->body.wheels[3]->contactFrames = 0;
-    vehicle->body.wheels[3]->surface = TRACK_SURFACE_START;
-    vehicle->body.wheels[2]->ground = NULL;
-    vehicle->body.wheels[2]->contactFrames = 0;
-    vehicle->body.wheels[2]->surface = TRACK_SURFACE_START;
-    vehicle->forcedForwardFrames = 0;
-    vehicle->forcedReverseFrames = 0;
-    vehicle->reverseFrames = 0;
-    vehicle->forwardFrames = AI_START_GRACE;
-    vehicle->body.uprightFrames = ACQUIRE_UPRIGHT_FRAMES;
-    vehicle->steerAngle = 0.0f;
+    VEHICLE_GET(vehicle, Body).wheels[0]->ground = NULL;
+    VEHICLE_GET(vehicle, Body).wheels[0]->contactFrames = 0;
+    VEHICLE_GET(vehicle, Body).wheels[0]->surface = TRACK_SURFACE_START;
+    VEHICLE_GET(vehicle, Body).wheels[1]->ground = NULL;
+    VEHICLE_GET(vehicle, Body).wheels[1]->contactFrames = 0;
+    VEHICLE_GET(vehicle, Body).wheels[1]->surface = TRACK_SURFACE_START;
+    VEHICLE_GET(vehicle, Body).wheels[3]->ground = NULL;
+    VEHICLE_GET(vehicle, Body).wheels[3]->contactFrames = 0;
+    VEHICLE_GET(vehicle, Body).wheels[3]->surface = TRACK_SURFACE_START;
+    VEHICLE_GET(vehicle, Body).wheels[2]->ground = NULL;
+    VEHICLE_GET(vehicle, Body).wheels[2]->contactFrames = 0;
+    VEHICLE_GET(vehicle, Body).wheels[2]->surface = TRACK_SURFACE_START;
+    VEHICLE_SET(vehicle, ForcedForwardFrames, 0);
+    VEHICLE_SET(vehicle, ForcedReverseFrames, 0);
+    VEHICLE_SET(vehicle, ReverseFrames, 0);
+    VEHICLE_SET(vehicle, ForwardFrames, AI_START_GRACE);
+    VEHICLE_GET(vehicle, Body).uprightFrames = ACQUIRE_UPRIGHT_FRAMES;
+    VEHICLE_SET(vehicle, SteerAngle, 0.0f);
 }
 
 void ManageAiRacerSlots(Vehicle *player) {
@@ -257,11 +272,11 @@ void ManageAiRacerSlots(Vehicle *player) {
     }
     if (g_dwNumVehicles >= 2) {
         /* The player's entry goes first, and the others sort behind it. */
-        progress = entries[player->index].progress;
-        entries[player->index].progress = entries[0].progress;
+        progress = entries[VEHICLE_GET(player, Index)].progress;
+        entries[VEHICLE_GET(player, Index)].progress = entries[0].progress;
         entries[0].progress = progress;
-        entries[0].slot = player->index;
-        entries[player->index].slot = 0;
+        entries[0].slot = VEHICLE_GET(player, Index);
+        entries[VEHICLE_GET(player, Index)].slot = 0;
         QuickSort(&entries[1], g_dwNumVehicles - 1, sizeof(RacerProgress), CompareRacerProgressAsc);
     }
 
@@ -284,7 +299,8 @@ void ManageAiRacerSlots(Vehicle *player) {
                 }
                 noVehicle = FALSE;
                 if (!(RACER_SLOT_GET(slot, Status) & RACER_FINISHED) ||
-                    vehicle->ghostMode != VEHICLE_GHOST || !SHARING_ZERO(vehicle->opacity)) {
+                    VEHICLE_GET(vehicle, GhostMode) != VEHICLE_GHOST ||
+                    !SHARING_ZERO(VEHICLE_GET(vehicle, Opacity))) {
                     continue;
                 }
             } else {
@@ -292,7 +308,7 @@ void ManageAiRacerSlots(Vehicle *player) {
                     continue;
                 }
                 noVehicle = FALSE;
-                if (vehicle->slotCooldown) {
+                if (VEHICLE_GET(vehicle, SlotCooldown)) {
                     continue;
                 }
                 if (!(RELEASE_KEY < (double)entries[i].progress)) {
@@ -302,8 +318,8 @@ void ManageAiRacerSlots(Vehicle *player) {
             ReleaseRacerVehicle(slot, vehicle, entries[i].progress);
             freeVehicles[freeCount++] = RACER_SLOT_GET(slot, Vehicle);
             RACER_SLOT_SET(slot, Vehicle, NULL);
-            vehicle->racer = NULL;
-            vehicle->slotCooldown = SLOT_COOLDOWN_FRAMES;
+            VEHICLE_SET(vehicle, Racer, NULL);
+            VEHICLE_SET(vehicle, SlotCooldown, SLOT_COOLDOWN_FRAMES);
         }
         if (noVehicle) {
 #if TGR_PLATFORM == TGR_PLATFORM_N64
@@ -322,7 +338,7 @@ void ManageAiRacerSlots(Vehicle *player) {
                 RACER_SLOT_GET(slot, Vehicle) == NULL) {
                 AcquireRacerVehicle(slot, freeVehicles[--freeCount]);
             }
-            player->nearestRacers[i] = &g_aRacerSlots[entries[i].slot];
+            VEHICLE_GET(player, NearestRacers)[i] = &g_aRacerSlots[entries[i].slot];
             i++;
             if (freeCount == 0 || i >= g_dwNumVehicles) {
                 break;

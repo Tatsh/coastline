@@ -7,6 +7,7 @@
 #include "system.h"
 #include "track.h"
 #include "util.h"
+#include "vehicleaccess.h"
 #include "vehiclerender.h"
 #include "weather.h"
 
@@ -25,7 +26,7 @@ static inline void BindVehicleTextureEntry(u32 entry) {
 
 static inline s32 HasVehicleAltVariant(Vehicle *vehicle) {
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
-    return vehicle->customCarModel;
+    return VEHICLE_GET(vehicle, CustomCarModel);
 #else
     return vehicle->otherLook;
 #endif
@@ -193,36 +194,38 @@ void RenderVehicleModel(Vehicle *vehicle, s32 lodOffset) {
 
     inTunnel = FALSE;
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
-    if (vehicle->driver == NULL || vehicle->body.wheels[0] == NULL ||
-        vehicle->body.wheels[2] == NULL || vehicle->body.wheels[1] == NULL ||
-        vehicle->body.wheels[3] == NULL) {
+    if (VEHICLE_GET(vehicle, Driver) == NULL || VEHICLE_GET(vehicle, Body).wheels[0] == NULL ||
+        VEHICLE_GET(vehicle, Body).wheels[2] == NULL ||
+        VEHICLE_GET(vehicle, Body).wheels[1] == NULL ||
+        VEHICLE_GET(vehicle, Body).wheels[3] == NULL) {
         return;
     }
 #endif
-    if (!g_adwVehicleInViewRange[vehicle->index]) {
+    if (!g_adwVehicleInViewRange[VEHICLE_GET(vehicle, Index)]) {
         return;
     }
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
-    rawDistance = Vec3fDistance(&vehicle->frame.position, &g_pActiveCamera->position);
+    rawDistance = Vec3fDistance(&VEHICLE_GET(vehicle, Frame).position, &g_pActiveCamera->position);
     distance = rawDistance;
 #else
-    distance = Vec3fDistance(&vehicle->frame.position, &g_pActiveCamera->position);
+    distance = Vec3fDistance(&VEHICLE_GET(vehicle, Frame).position, &g_pActiveCamera->position);
 #endif
-    if (vehicle->ghostMode == VEHICLE_GHOST) {
+    if (VEHICLE_GET(vehicle, GhostMode) == VEHICLE_GHOST) {
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
-        g_dwVehicleFogAlpha = (s32)(s64)((long double)vehicle->opacity * 255.0f);
+        g_dwVehicleFogAlpha = (s32)(s64)((long double)VEHICLE_GET(vehicle, Opacity) * 255.0f);
 #else
         g_dwVehicleFogAlpha = (s32)(vehicle->opacity * 255.0f);
 #endif
         gDPSetFogColor(gDisplayListPtr++, g_bFogR, g_bFogG, g_bFogB, g_dwVehicleFogAlpha);
     }
-    vehicle->inTunnel = FALSE;
-    if (vehicle->groundInstanceCount &&
-        (g_LoadedTrack.instances[vehicle->groundInstances[0]].flags & TRACK_INSTANCE_TUNNEL)) {
-        vehicle->inTunnel = TRUE;
+    VEHICLE_SET(vehicle, InTunnel, FALSE);
+    if (VEHICLE_GET(vehicle, GroundInstanceCount) &&
+        (g_LoadedTrack.instances[VEHICLE_GET(vehicle, GroundInstances)[0]].flags &
+         TRACK_INSTANCE_TUNNEL)) {
+        VEHICLE_SET(vehicle, InTunnel, TRUE);
         inTunnel = TRUE;
     }
-    g_pCurrentVehicleModelData = vehicle->model;
+    g_pCurrentVehicleModelData = VEHICLE_GET(vehicle, Model);
 
     /* With the screen split in two, the far cars are drawn coarser. */
     if (g_dwNumViewports == 2) {
@@ -253,10 +256,10 @@ void RenderVehicleModel(Vehicle *vehicle, s32 lodOffset) {
     }
 
     guScaleF(g_afScratchMatrix, 1.0f / 255.0f, 1.0f / 255.0f, 1.0f / 255.0f);
-    guMtxCatF(g_afScratchMatrix, vehicle->matrix, g_mtxVehicleModelScaled);
+    guMtxCatF(g_afScratchMatrix, VEHICLE_GET(vehicle, Matrix), g_mtxVehicleModelScaled);
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
-    g_apVehicleModelMatrix[vehicle->index] = AllocDisplayListBlock()->matrix;
-    CopyMatrix4x4(g_mtxVehicleModelScaled, g_apVehicleModelMatrix[vehicle->index]);
+    g_apVehicleModelMatrix[VEHICLE_GET(vehicle, Index)] = AllocDisplayListBlock()->matrix;
+    CopyMatrix4x4(g_mtxVehicleModelScaled, g_apVehicleModelMatrix[VEHICLE_GET(vehicle, Index)]);
 #else
     g_apVehicleModelMatrix[vehicle->index] = (Mtx *)AllocDisplayListBlock();
     guMtxF2L(g_mtxVehicleModelScaled, g_apVehicleModelMatrix[vehicle->index]);
@@ -264,19 +267,21 @@ void RenderVehicleModel(Vehicle *vehicle, s32 lodOffset) {
     guMtxCatF(g_mtxVehicleModelScaled, g_afViewProjMatrix, g_afMvpMatrix);
     NormalizeLightMatrix(g_afMvpMatrix);
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
-    g_apVehicleLightMatrix[vehicle->index] = AllocDisplayListBlock()->matrix;
-    CopyMatrix4x4(g_afMvpMatrix, g_apVehicleLightMatrix[vehicle->index]);
+    g_apVehicleLightMatrix[VEHICLE_GET(vehicle, Index)] = AllocDisplayListBlock()->matrix;
+    CopyMatrix4x4(g_afMvpMatrix, g_apVehicleLightMatrix[VEHICLE_GET(vehicle, Index)]);
 #else
     g_apVehicleLightMatrix[vehicle->index] = (Mtx *)AllocDisplayListBlock();
     guMtxF2L(g_afMvpMatrix, g_apVehicleLightMatrix[vehicle->index]);
 #endif
     if (vehicle == g_pActiveCameraVehicle &&
-        (vehicle->activeCamera == &vehicle->cameras[VEHICLE_CAMERA_COCKPIT] ||
-         vehicle->activeCamera == &vehicle->cameras[VEHICLE_CAMERA_MIRROR]) &&
+        (VEHICLE_GET(vehicle, ActiveCamera) ==
+             &VEHICLE_GET(vehicle, Cameras)[VEHICLE_CAMERA_COCKPIT] ||
+         VEHICLE_GET(vehicle, ActiveCamera) ==
+             &VEHICLE_GET(vehicle, Cameras)[VEHICLE_CAMERA_MIRROR]) &&
         !g_dwVehicleCullingDisabled) {
         return;
     }
-    g_anVehicleLod[vehicle->index] = lod;
+    g_anVehicleLod[VEHICLE_GET(vehicle, Index)] = lod;
 
     /* The light of the sun dims with the distance at night, and is gone in a tunnel. The ambient
      * colour is also stored in a local that is never read again. */
@@ -311,16 +316,17 @@ void RenderVehicleModel(Vehicle *vehicle, s32 lodOffset) {
         ambientColor = PackLightColor(ambient[0], ambient[1], ambient[2]);
     }
     gSPMatrix(gDisplayListPtr++,
-              g_apVehicleModelMatrix[vehicle->index],
+              g_apVehicleModelMatrix[VEHICLE_GET(vehicle, Index)],
               G_MTX_MODELVIEW | G_MTX_LOAD | G_MTX_PUSH);
     gSPMatrix(gDisplayListPtr++, g_pProjectionMtx, G_MTX_PROJECTION | G_MTX_LOAD | G_MTX_NOPUSH);
 
     /* At night the light comes from the camera; the highlight sits halfway to the camera. */
     if (g_dwNightMode) {
-        if (g_pActiveCamera == &g_pActiveCameraVehicle->cameras[VEHICLE_CAMERA_TRACKSIDE]) {
+        if (g_pActiveCamera ==
+            &VEHICLE_GET(g_pActiveCameraVehicle, Cameras)[VEHICLE_CAMERA_TRACKSIDE]) {
             Vec3fNegate(&g_vecVehicleLightDir, &g_pActiveCamera->forward);
         } else {
-            Vec3fNegate(&g_vecVehicleLightDir, &g_pActiveCameraVehicle->frame.forward);
+            Vec3fNegate(&g_vecVehicleLightDir, &VEHICLE_GET(g_pActiveCameraVehicle, Frame).forward);
         }
     } else {
         g_vecVehicleLightDir.x = g_afLightDirection[0];
@@ -329,7 +335,7 @@ void RenderVehicleModel(Vehicle *vehicle, s32 lodOffset) {
     }
     Vec3fNormalize(&g_vecVehicleLightDir);
     g_vecVehicleHiliteDir = g_vecVehicleLightDir;
-    Vec3fSubtract(&toCamera, &g_pActiveCamera->position, &vehicle->frame.position);
+    Vec3fSubtract(&toCamera, &g_pActiveCamera->position, &VEHICLE_GET(vehicle, Frame).position);
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
     rawLength = Vec3fLength(&toCamera);
     length = rawLength;
@@ -364,9 +370,10 @@ void RenderVehicleModel(Vehicle *vehicle, s32 lodOffset) {
     /* A camera exactly at the vehicle looks at a point nudged off it. */
     nudgeZ = 0.0f;
     nudgeX = 0.0f;
-    if (VehicleRenderEqual(g_pActiveCamera->position.x, vehicle->frame.position.x) &&
-        VehicleRenderEqual(g_pActiveCamera->position.y, vehicle->frame.position.y)) {
-        if (VehicleRenderEqual(g_pActiveCamera->position.z, vehicle->frame.position.z)) {
+    if (VehicleRenderEqual(g_pActiveCamera->position.x, VEHICLE_GET(vehicle, Frame).position.x) &&
+        VehicleRenderEqual(g_pActiveCamera->position.y, VEHICLE_GET(vehicle, Frame).position.y)) {
+        if (VehicleRenderEqual(g_pActiveCamera->position.z,
+                               VEHICLE_GET(vehicle, Frame).position.z)) {
             nudgeZ = 1.0f;
         } else {
             nudgeX = 0.1f;
@@ -384,9 +391,9 @@ void RenderVehicleModel(Vehicle *vehicle, s32 lodOffset) {
                     g_pActiveCamera->position.x,
                     g_pActiveCamera->position.y,
                     g_pActiveCamera->position.z,
-                    vehicle->frame.position.x + nudgeX,
-                    vehicle->frame.position.y,
-                    vehicle->frame.position.z + nudgeZ,
+                    VEHICLE_GET(vehicle, Frame).position.x + nudgeX,
+                    VEHICLE_GET(vehicle, Frame).position.y,
+                    VEHICLE_GET(vehicle, Frame).position.z + nudgeZ,
                     0.0f,
                     0.0f,
                     1.0f,
@@ -406,16 +413,16 @@ void RenderVehicleModel(Vehicle *vehicle, s32 lodOffset) {
 
     /* At night and in the rain, the light points back along the car of the camera. */
     if (g_dwNightMode || g_dwRainMode) {
-        g_aVehicleLights[vehicle->index] = g_DefaultLights;
-        g_aVehicleLights[vehicle->index].l[0].l.dir[0] =
-            VehicleHeadlightDirection(g_pActiveCameraVehicle->frame.forward.x);
-        g_aVehicleLights[vehicle->index].l[0].l.dir[1] =
-            VehicleHeadlightDirection(g_pActiveCameraVehicle->frame.forward.y);
-        g_aVehicleLights[vehicle->index].l[0].l.dir[2] =
-            VehicleHeadlightDirection(g_pActiveCameraVehicle->frame.forward.z);
+        g_aVehicleLights[VEHICLE_GET(vehicle, Index)] = g_DefaultLights;
+        g_aVehicleLights[VEHICLE_GET(vehicle, Index)].l[0].l.dir[0] =
+            VehicleHeadlightDirection(VEHICLE_GET(g_pActiveCameraVehicle, Frame).forward.x);
+        g_aVehicleLights[VEHICLE_GET(vehicle, Index)].l[0].l.dir[1] =
+            VehicleHeadlightDirection(VEHICLE_GET(g_pActiveCameraVehicle, Frame).forward.y);
+        g_aVehicleLights[VEHICLE_GET(vehicle, Index)].l[0].l.dir[2] =
+            VehicleHeadlightDirection(VEHICLE_GET(g_pActiveCameraVehicle, Frame).forward.z);
         gSPNumLights(gDisplayListPtr++, NUMLIGHTS_1);
-        gSPLight(gDisplayListPtr++, &g_aVehicleLights[vehicle->index].l[0], 1);
-        gSPLight(gDisplayListPtr++, &g_aVehicleLights[vehicle->index].a, 2);
+        gSPLight(gDisplayListPtr++, &g_aVehicleLights[VEHICLE_GET(vehicle, Index)].l[0], 1);
+        gSPLight(gDisplayListPtr++, &g_aVehicleLights[VEHICLE_GET(vehicle, Index)].a, 2);
     } else {
         gSPNumLights(gDisplayListPtr++, NUMLIGHTS_1);
         gSPLight(gDisplayListPtr++, &g_DefaultLights.l[0], 1);
@@ -426,7 +433,8 @@ void RenderVehicleModel(Vehicle *vehicle, s32 lodOffset) {
     gSPSetGeometryMode(gDisplayListPtr++, G_ZBUFFER | G_SHADE | G_LIGHTING | G_SHADING_SMOOTH);
     if (g_dwWeatherActive) {
         gSPSetGeometryMode(gDisplayListPtr++, G_FOG);
-        g_dwVehicleOtherModeLBlend = vehicle->ghostMode == VEHICLE_GHOST ? BLEND_PLAIN : BLEND_FOG;
+        g_dwVehicleOtherModeLBlend =
+            VEHICLE_GET(vehicle, GhostMode) == VEHICLE_GHOST ? BLEND_PLAIN : BLEND_FOG;
     } else {
         g_dwVehicleOtherModeLBlend = BLEND_PLAIN;
     }
@@ -434,7 +442,7 @@ void RenderVehicleModel(Vehicle *vehicle, s32 lodOffset) {
                        g_dwTrackMirrored != g_dwViewportMirrored ? G_CULL_FRONT : G_CULL_BACK);
     gSPClearGeometryMode(gDisplayListPtr++,
                          g_dwTrackMirrored != g_dwViewportMirrored ? G_CULL_BACK : G_CULL_FRONT);
-    if (vehicle->ghostMode == VEHICLE_GHOST) {
+    if (VEHICLE_GET(vehicle, GhostMode) == VEHICLE_GHOST) {
         g_dwVehicleOtherModeLFlags = FLAGS_GHOST;
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
         gDPSetPrimColor(gDisplayListPtr++, 0, 0, 0, 0, 0, g_dwVehicleFogAlpha);
@@ -472,12 +480,12 @@ void RenderVehicleModel(Vehicle *vehicle, s32 lodOffset) {
     gDPSetTextureLOD(gDisplayListPtr++, G_TL_TILE);
     gSPClearGeometryMode(gDisplayListPtr++, G_TEXTURE_GEN | G_TEXTURE_GEN_LINEAR);
     SetVehicleLightColors(dirColor, ambientColor);
-    if (vehicle->ghostMode == VEHICLE_GHOST) {
+    if (VEHICLE_GET(vehicle, GhostMode) == VEHICLE_GHOST) {
         RenderWheelModels(vehicle);
     }
     /* The matrix of the lighting is forced from its address as the CPU sees it, unlike the wheels.
      */
-    gSPForceMatrix(gDisplayListPtr++, g_apVehicleLightMatrix[vehicle->index]);
+    gSPForceMatrix(gDisplayListPtr++, g_apVehicleLightMatrix[VEHICLE_GET(vehicle, Index)]);
     gDPLoadTLUT_pal16(gDisplayListPtr++, SHADE_PALETTE, g_awVehicleShadePalette);
     gSPLookAt(gDisplayListPtr++, hiliteLookAt);
 
@@ -533,8 +541,8 @@ void RenderVehicleModel(Vehicle *vehicle, s32 lodOffset) {
                                ->materialTextures[VEHICLE_MATERIAL_REAR_LIGHTS]]
                 .palette != NULL &&
         !g_dwNullStubEnable) {
-        s32 lightVariant = (vehicle->input->buttons & BRAKE_BUTTONS) ? 1 : 0;
-        if (!(vehicle->throttle >= 0.0f)) {
+        s32 lightVariant = (VEHICLE_GET(vehicle, Input)->buttons & BRAKE_BUTTONS) ? 1 : 0;
+        if (!(VEHICLE_GET(vehicle, Throttle) >= 0.0f)) {
             lightVariant += 2;
         }
         g_pfnAliasTextureEntrySurface(
@@ -596,8 +604,8 @@ void RenderVehicleModel(Vehicle *vehicle, s32 lodOffset) {
     SetModelTiles();
 
     /* The underside shows only from below the car. */
-    Vec3fSubtract(&toVehicle, &vehicle->frame.position, &g_pActiveCamera->position);
-    if (Vec3fDot(&vehicle->frame.up, &toVehicle) > 0.0) {
+    Vec3fSubtract(&toVehicle, &VEHICLE_GET(vehicle, Frame).position, &g_pActiveCamera->position);
+    if (Vec3fDot(&VEHICLE_GET(vehicle, Frame).up, &toVehicle) > 0.0) {
         DrawTexturedTile(UNDERSIDE_TEXTURE, g_pCurrentVehicleModelData->textures);
         DrawLitParts(dirColor, ambientColor, displayLists[VEHICLE_DL_UNDERSIDE], TRUE);
     }
@@ -727,7 +735,8 @@ void RenderVehicleModel(Vehicle *vehicle, s32 lodOffset) {
     gDPSetRenderMode(gDisplayListPtr++, g_dwVehicleOtherModeLBlend, g_dwVehicleOtherModeLFlags);
     gDPTileSync(gDisplayListPtr++);
     gDPSetTextureLUT(gDisplayListPtr++, G_TT_NONE);
-    reflection = g_abVehicleReflectionTexSelect[g_dwVehicleViewModeIndex][vehicle->inTunnel];
+    reflection =
+        g_abVehicleReflectionTexSelect[g_dwVehicleViewModeIndex][VEHICLE_GET(vehicle, InTunnel)];
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
     BindVehicleTextureEntry(g_apVehicleReflectionTextures[reflection]);
 #else
@@ -748,8 +757,9 @@ void RenderVehicleModel(Vehicle *vehicle, s32 lodOffset) {
 #endif
     gDPSetTextureLUT(gDisplayListPtr++, G_TT_RGBA16);
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
-    offset = 0xffffffdfu -
-             (u32)(s64)((long double)g_pActiveCameraVehicle->cameraHeading * -20.3718318939209f);
+    offset =
+        0xffffffdfu - (u32)(s64)((long double)VEHICLE_GET(g_pActiveCameraVehicle, CameraHeading) *
+                                 -20.3718318939209f);
 #else
     offset = 31 - (64 - (s32)(g_pActiveCameraVehicle->cameraHeading * (f32)64 * 0.3183098733f));
 #endif
@@ -768,7 +778,7 @@ void RenderVehicleModel(Vehicle *vehicle, s32 lodOffset) {
     SetVehicleLightColors(dirColor, ambientColor);
     gDPSetTextureFilter(gDisplayListPtr++, g_dwTextureFilterMode);
     gDPSetTextureLUT(gDisplayListPtr++, G_TT_NONE);
-    if (vehicle->ghostMode != VEHICLE_GHOST) {
+    if (VEHICLE_GET(vehicle, GhostMode) != VEHICLE_GHOST) {
         RenderWheelModels(vehicle);
     }
     gDPPipeSync(gDisplayListPtr++);

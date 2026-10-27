@@ -101,6 +101,11 @@ if(TGR_PLATFORM STREQUAL "n64")
 else()
   # The game code the PC port retained from the N64 releases. A source joins this list when every
   # routine of it that the PC libraries have compiles for them.
+  set_source_files_properties(
+    camerachange.c camerachase.c cameracollision.c displaylistops.c fog.c headlight.c
+    playercontrol.c routeposition.c seasontrack.c tracetrack.c trackinstance.c vehiclechoice.c
+    vehiclemodelrender.c vehiclephysics.c vehiclereset.c vehiclesound.c vehiclevisibility.c
+    wheelrender.c PROPERTIES LANGUAGE CXX)
   set_source_files_properties(controllerread.c inputtranslate.c PROPERTIES LANGUAGE CXX)
   set_source_files_properties(volumecontrols.c PROPERTIES LANGUAGE CXX)
   set_source_files_properties(ambientsound.c PROPERTIES LANGUAGE CXX)

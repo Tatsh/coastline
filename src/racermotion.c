@@ -7,6 +7,7 @@
 #include "pause.h"
 #include "racers.h"
 #include "racerslotaccess.h"
+#include "vehicleaccess.h"
 #include "vehiclecount.h"
 
 #if TGR_PLATFORM == TGR_PLATFORM_N64
@@ -34,14 +35,14 @@
 #define DRIVE_RACER_VEHICLE(slot)                                                                  \
     {                                                                                              \
         Vehicle *vehicle = RACER_SLOT_GET(slot, Vehicle);                                          \
-        Vec3f *from = &vehicle->frame.position;                                                    \
-        Vec3f *to = &vehicle->previousPosition;                                                    \
+        Vec3f *from = &VEHICLE_GET(vehicle, Frame).position;                                       \
+        Vec3f *to = &VEHICLE_GET(vehicle, PreviousPosition);                                       \
         to->x = from->x;                                                                           \
         to->y = from->y;                                                                           \
         to->z = from->z;                                                                           \
     }                                                                                              \
-    if (RACER_SLOT_GET(slot, Vehicle)->driver != NULL) {                                           \
-        RACER_SLOT_GET(slot, Vehicle)->driver(RACER_SLOT_GET(slot, Vehicle));                      \
+    if (VEHICLE_GET(RACER_SLOT_GET(slot, Vehicle), Driver) != NULL) {                              \
+        VEHICLE_GET(RACER_SLOT_GET(slot, Vehicle), Driver)(RACER_SLOT_GET(slot, Vehicle));         \
     }
 
 void UpdateRacerSlotMotion(RacerSlot *slot) {
@@ -60,10 +61,10 @@ void UpdateRacerSlotMotion(RacerSlot *slot) {
     }
 #endif
     if (RACER_SLOT_GET(slot, Vehicle) != NULL &&
-        RACER_SLOT_GET(slot, Vehicle)->driver == RACER_AI_DRIVER &&
+        VEHICLE_GET(RACER_SLOT_GET(slot, Vehicle), Driver) == RACER_AI_DRIVER &&
         g_dwGameMode != GAME_MODE_AFTER_SEASON) {
-        RACER_SLOT_GET(slot, Vehicle)->input->buttons &= INPUT_VIEWS;
-        RACER_SLOT_GET(slot, Vehicle)->input->steering = 0.0f;
+        VEHICLE_GET(RACER_SLOT_GET(slot, Vehicle), Input)->buttons &= INPUT_VIEWS;
+        VEHICLE_GET(RACER_SLOT_GET(slot, Vehicle), Input)->steering = 0.0f;
     }
     if (g_dwRacePauseState) {
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
@@ -80,10 +81,10 @@ void UpdateRacerSlotMotion(RacerSlot *slot) {
         if (RACER_SLOT_GET(slot, Vehicle) == NULL) {
             return;
         }
-        RACER_SLOT_GET(slot, Vehicle)->input->buttons |= INPUT_BRAKE;
-        RACER_SLOT_GET(slot, Vehicle)->gear = 0;
+        VEHICLE_GET(RACER_SLOT_GET(slot, Vehicle), Input)->buttons |= INPUT_BRAKE;
+        VEHICLE_SET(RACER_SLOT_GET(slot, Vehicle), Gear, 0);
         DRIVE_RACER_VEHICLE(slot);
-        RACER_SLOT_GET(slot, Vehicle)->gear = 0;
+        VEHICLE_SET(RACER_SLOT_GET(slot, Vehicle), Gear, 0);
         return;
     }
     if (RACER_SLOT_GET(slot, Status) & RACER_FINISHED) {
@@ -92,38 +93,47 @@ void UpdateRacerSlotMotion(RacerSlot *slot) {
         }
         if (g_dwGameMode != GAME_MODE_CHAMPIONSHIP ||
             RACER_SLOT_GET(slot, Index) < (s32)g_dwNumLocalPlayers) {
-            RACER_SLOT_GET(slot, Vehicle)->input->buttons = INPUT_BRAKE | INPUT_EBRAKE;
-            RACER_SLOT_GET(slot, Vehicle)->input->steeringInput = FINISHED_STEERING_INPUT;
-            RACER_SLOT_GET(slot, Vehicle)->input->steering = -1.0f;
+            VEHICLE_GET(RACER_SLOT_GET(slot, Vehicle), Input)->buttons = INPUT_BRAKE | INPUT_EBRAKE;
+            VEHICLE_GET(RACER_SLOT_GET(slot, Vehicle), Input)->steeringInput =
+                FINISHED_STEERING_INPUT;
+            VEHICLE_GET(RACER_SLOT_GET(slot, Vehicle), Input)->steering = -1.0f;
         }
         if (g_dwGameMode == GAME_MODE_CHAMPIONSHIP &&
             RACER_SLOT_GET(slot, Index) >= (s32)g_dwNumLocalPlayers) {
-            RACER_SLOT_GET(slot, Vehicle)->ghostMode = VEHICLE_GHOST;
-            RACER_SLOT_GET(slot, Vehicle)->opacity -= g_fFrameDeltaTime;
-            if (MOTION_LESS(RACER_SLOT_GET(slot, Vehicle)->opacity, 0.0f)) {
-                RACER_SLOT_GET(slot, Vehicle)->opacity = 0.0f;
+            VEHICLE_SET(RACER_SLOT_GET(slot, Vehicle), GhostMode, VEHICLE_GHOST);
+            VEHICLE_SET(RACER_SLOT_GET(slot, Vehicle),
+                        Opacity,
+                        VEHICLE_GET(RACER_SLOT_GET(slot, Vehicle), Opacity) - (g_fFrameDeltaTime));
+            if (MOTION_LESS(VEHICLE_GET(RACER_SLOT_GET(slot, Vehicle), Opacity), 0.0f)) {
+                VEHICLE_SET(RACER_SLOT_GET(slot, Vehicle), Opacity, 0.0f);
             }
         }
         DRIVE_RACER_VEHICLE(slot);
         return;
     }
     if (RACER_SLOT_GET(slot, Vehicle) != NULL) {
-        if (RACER_SLOT_GET(slot, Vehicle)->ghostMode == VEHICLE_GHOST) {
-            RACER_SLOT_GET(slot, Vehicle)->opacity +=
-                MOTION_INTERMEDIATE(g_fFrameDeltaTime) * GHOST_FADE_RATE;
+        if (VEHICLE_GET(RACER_SLOT_GET(slot, Vehicle), GhostMode) == VEHICLE_GHOST) {
+            VEHICLE_SET(RACER_SLOT_GET(slot, Vehicle),
+                        Opacity,
+                        VEHICLE_GET(RACER_SLOT_GET(slot, Vehicle), Opacity) +
+                            (MOTION_INTERMEDIATE(g_fFrameDeltaTime) * GHOST_FADE_RATE));
             if (g_dwGameMode == GAME_MODE_TIME_ATTACK && RACER_SLOT_GET(slot, Index) != 0) {
                 /* The ghost of a time attack stays faint. */
-                if (TIME_ATTACK_GHOST_OPACITY < RACER_SLOT_GET(slot, Vehicle)->opacity) {
-                    RACER_SLOT_GET(slot, Vehicle)->opacity = TIME_ATTACK_GHOST_OPACITY;
+                if (TIME_ATTACK_GHOST_OPACITY <
+                    VEHICLE_GET(RACER_SLOT_GET(slot, Vehicle), Opacity)) {
+                    VEHICLE_SET(RACER_SLOT_GET(slot, Vehicle), Opacity, TIME_ATTACK_GHOST_OPACITY);
                 }
-            } else if (1.0f <= RACER_SLOT_GET(slot, Vehicle)->opacity) {
-                RACER_SLOT_GET(slot, Vehicle)->opacity = 1.0f;
-                RACER_SLOT_GET(slot, Vehicle)->ghostMode = 0;
+            } else if (1.0f <= VEHICLE_GET(RACER_SLOT_GET(slot, Vehicle), Opacity)) {
+                VEHICLE_SET(RACER_SLOT_GET(slot, Vehicle), Opacity, 1.0f);
+                VEHICLE_SET(RACER_SLOT_GET(slot, Vehicle), GhostMode, 0);
             }
         }
         DRIVE_RACER_VEHICLE(slot);
-        RACER_SLOT_GET(slot, Vehicle)->odometer +=
-            MOTION_INTERMEDIATE(RACER_SLOT_GET(slot, Vehicle)->speedKph) * g_fFrameDeltaTime;
+        VEHICLE_SET(RACER_SLOT_GET(slot, Vehicle),
+                    Odometer,
+                    VEHICLE_GET(RACER_SLOT_GET(slot, Vehicle), Odometer) +
+                        MOTION_INTERMEDIATE(VEHICLE_GET(RACER_SLOT_GET(slot, Vehicle), SpeedKph)) *
+                            g_fFrameDeltaTime);
         return;
     }
 
@@ -136,17 +146,19 @@ void UpdateRacerSlotMotion(RacerSlot *slot) {
                 point[1].distance) /
                (MOTION_INTERMEDIATE(point[0].distance) - point[1].distance);
     pacer = &g_aVehicles[g_dwNumLocalPlayers + RACER_SLOT_GET(slot, Straggler)];
-    if (pacer->racer != NULL) {
+    if (VEHICLE_GET(pacer, Racer) != NULL) {
         AdvanceAlongTrackRoute(RACER_SLOT_GET(slot, Section),
                                RACER_SLOT_GET(slot, PointIndex),
                                fraction,
-                               Vec3fLength(&pacer->placedVelocity) * g_fFrameDeltaTime);
+                               Vec3fLength(&VEHICLE_GET(pacer, PlacedVelocity)) *
+                                   g_fFrameDeltaTime);
         RACER_SLOT_SET(
             slot,
             Distance,
             RACER_SLOT_GET(slot, Distance) +
-                (Vec3fLength(&g_aVehicles[g_dwNumLocalPlayers + RACER_SLOT_GET(slot, Straggler)]
-                                  .placedVelocity) *
+                (Vec3fLength(&VEHICLE_GET(
+                     &(g_aVehicles[g_dwNumLocalPlayers + RACER_SLOT_GET(slot, Straggler)]),
+                     PlacedVelocity)) *
                  g_fFrameDeltaTime));
     } else {
         AdvanceAlongTrackRoute(RACER_SLOT_GET(slot, Section),

@@ -13,6 +13,7 @@
 #include "vehiclecamera.h"
 #include "vehicleeffects.h"
 #include "vehicleforces.h"
+#include "vehiclefwd.h"
 #include "vehiclemodel.h"
 #include "wheelframe.h"
 
@@ -20,8 +21,10 @@
 #define MAX_VEHICLES 16
 #define VEHICLE_LAP_TIMES 12
 
+#ifdef __cplusplus
 /** Recovered fields of a Windows vehicle. */
-typedef struct Vehicle {
+class Vehicle {
+private:
     union {
         CameraFrame frame;
         struct {
@@ -73,7 +76,7 @@ typedef struct Vehicle {
     RacerSlot *nearestRacers[RACER_SLOTS];
     RacerSlot *racer;
     s32 slotCooldown;
-    void (*driver)(struct Vehicle *vehicle);
+    void (*driver)(Vehicle *vehicle);
     Vec3f aiTarget;
     Vec3f trackPoint;
     Vec3f trackForward;
@@ -175,18 +178,713 @@ typedef struct Vehicle {
     Vec3f previousCollisionPosition;
     char checkpointMessageText[20];
     u8 abUnknown2ad0[0x98]; /* +0x2ad0 */
-#ifdef __cplusplus
+public:
+    s32 AdvanceSkidFrames() {
+        return skidFrames++;
+    }
+    s32 CastGroundRay();
+    void DriveRearWheel(RigidBody *body, RigidBody *wheel, f32 dt);
+    void DriveFrontWheel(RigidBody *body, RigidBody *wheel, f32 dt);
+    void ApplyWheelSideGrip(RigidBody *body, f32 dt);
+    f32 GetAccelerator() const {
+        return accelerator;
+    }
+    f32 SetAccelerator(f32 value) {
+        return accelerator = value;
+    }
+    CameraFrame *GetActiveCamera() const {
+        return activeCamera;
+    }
+    CameraFrame *SetActiveCamera(CameraFrame *value) {
+        return activeCamera = value;
+    }
+    auto &GetAiTarget() {
+        return aiTarget;
+    }
+    const auto &GetAiTarget() const {
+        return aiTarget;
+    }
+    s32 SetBestLap(s32 value) {
+        return bestLap = value;
+    }
+    f32 GetBestLapTime() const {
+        return bestLapTime;
+    }
+    f32 SetBestLapTime(f32 value) {
+        return bestLapTime = value;
+    }
+    auto &GetBody() {
+        return body;
+    }
+    const auto &GetBody() const {
+        return body;
+    }
+    f32 GetBrake() const {
+        return brake;
+    }
+    f32 SetBrake(f32 value) {
+        return brake = value;
+    }
+    s32 GetCameraChanged() const {
+        return cameraChanged;
+    }
+    s32 SetCameraChanged(s32 value) {
+        return cameraChanged = value;
+    }
+    f32 GetCameraHeading() const {
+        return cameraHeading;
+    }
+    f32 SetCameraHeading(f32 value) {
+        return cameraHeading = value;
+    }
+    auto &GetCameras() {
+        return cameras;
+    }
+    const auto &GetCameras() const {
+        return cameras;
+    }
+    s32 GetCarModel() const {
+        return carModel;
+    }
+    f32 GetChaseLag() const {
+        return chaseLag;
+    }
+    f32 SetChaseLag(f32 value) {
+        return chaseLag = value;
+    }
+    auto &GetChasePosition() {
+        return chasePosition;
+    }
+    const auto &GetChasePosition() const {
+        return chasePosition;
+    }
+    f32 GetChaseSpeed() const {
+        return chaseSpeed;
+    }
+    f32 SetChaseSpeed(f32 value) {
+        return chaseSpeed = value;
+    }
+    auto &GetCheckpointMessageText() {
+        return checkpointMessageText;
+    }
+    const auto &GetCheckpointMessageText() const {
+        return checkpointMessageText;
+    }
+    s32 GetChosenTransmission() const {
+        return chosenTransmission;
+    }
+    f32 GetCollisionPull() const {
+        return collisionPull;
+    }
+    f32 SetCollisionPull(f32 value) {
+        return collisionPull = value;
+    }
+    auto &GetColor() {
+        return color;
+    }
+    const auto &GetColor() const {
+        return color;
+    }
+    s32 GetCustomCarModel() const {
+        return customCarModel;
+    }
+    s16 SetDentJitter(s16 value) {
+        return dentJitter = value;
+    }
+    auto &GetDents() {
+        return dents;
+    }
+    const auto &GetDents() const {
+        return dents;
+    }
+    f32 GetDistance() const {
+        return distance;
+    }
+    f32 SetDistance(f32 value) {
+        return distance = value;
+    }
+    s32 GetDistanceLaps() const {
+        return distanceLaps;
+    }
+    s32 SetDistanceLaps(s32 value) {
+        return distanceLaps = value;
+    }
+    f32 GetDopplerFactor() const {
+        return dopplerFactor;
+    }
+    f32 SetDopplerFactor(f32 value) {
+        return dopplerFactor = value;
+    }
+    auto GetDriver() const {
+        return driver;
+    }
+    s32 GetEffectPriority() const {
+        return effectPriority;
+    }
+    s32 SetEffectPriority(s32 value) {
+        return effectPriority = value;
+    }
+    s32 GetEffectSound() const {
+        return effectSound;
+    }
+    s32 SetEffectSound(s32 value) {
+        return effectSound = value;
+    }
+    s32 GetEffectVolume() const {
+        return effectVolume;
+    }
+    s32 SetEffectVolume(s32 value) {
+        return effectVolume = value;
+    }
+    f32 GetEngineRpm() const {
+        return engineRpm;
+    }
+    f32 SetEngineRpm(f32 value) {
+        return engineRpm = value;
+    }
+    f32 GetFinalDrive() const {
+        return finalDrive;
+    }
+    f32 SetFinalDrive(f32 value) {
+        return finalDrive = value;
+    }
+    s32 GetFlyMode() const {
+        return flyMode;
+    }
+    f32 GetFogFactor() const {
+        return fogFactor;
+    }
+    f32 SetFogFactor(f32 value) {
+        return fogFactor = value;
+    }
+    s32 GetForcedForwardFrames() const {
+        return forcedForwardFrames;
+    }
+    s32 SetForcedForwardFrames(s32 value) {
+        return forcedForwardFrames = value;
+    }
+    s32 GetForcedReverseFrames() const {
+        return forcedReverseFrames;
+    }
+    s32 SetForcedReverseFrames(s32 value) {
+        return forcedReverseFrames = value;
+    }
+    auto &GetForces() {
+        return forces;
+    }
+    const auto &GetForces() const {
+        return forces;
+    }
+    s32 GetForwardFrames() const {
+        return forwardFrames;
+    }
+    s32 SetForwardFrames(s32 value) {
+        return forwardFrames = value;
+    }
+    auto &GetFrame() {
+        return frame;
+    }
+    const auto &GetFrame() const {
+        return frame;
+    }
+    f32 SetFrontLoad(f32 value) {
+        return frontLoad = value;
+    }
+    u8 SetFrontSliding(u8 value) {
+        return frontSliding = value;
+    }
+    s32 GetGate() const {
+        return gate;
+    }
+    s32 SetGate(s32 value) {
+        return gate = value;
+    }
+    s32 GetGear() const {
+        return gear;
+    }
+    s32 SetGear(s32 value) {
+        return gear = value;
+    }
+    s32 GetGearCount() const {
+        return gearCount;
+    }
+    s32 SetGearCount(s32 value) {
+        return gearCount = value;
+    }
+    auto &GetGearRatios() {
+        return gearRatios;
+    }
+    const auto &GetGearRatios() const {
+        return gearRatios;
+    }
+    u8 GetGhostMode() const {
+        return ghostMode;
+    }
+    u8 SetGhostMode(u8 value) {
+        return ghostMode = value;
+    }
+    s32 GetGridIndex() const {
+        return gridIndex;
+    }
+    s32 SetGroundHits(s32 value) {
+        return groundHits = value;
+    }
+    s32 GetGroundInstanceCount() const {
+        return groundInstanceCount;
+    }
+    s32 SetGroundInstanceCount(s32 value) {
+        return groundInstanceCount = value;
+    }
+    const auto &GetGroundInstances() const {
+        return groundInstances;
+    }
+    s32 GetInTunnel() const {
+        return inTunnel;
+    }
+    s32 SetInTunnel(s32 value) {
+        return inTunnel = value;
+    }
+    s32 GetIndex() const {
+        return index;
+    }
+    s32 SetIndex(s32 value) {
+        return index = value;
+    }
+    auto &GetInitialChasePosition() {
+        return initialChasePosition;
+    }
+    const auto &GetInitialChasePosition() const {
+        return initialChasePosition;
+    }
+    PlayerInputState *GetInput() const {
+        return input;
+    }
+    auto &GetJoltOffset() {
+        return joltOffset;
+    }
+    const auto &GetJoltOffset() const {
+        return joltOffset;
+    }
+    auto &GetJoltPosition() {
+        return joltPosition;
+    }
+    const auto &GetJoltPosition() const {
+        return joltPosition;
+    }
+    auto &GetJoltVelocity() {
+        return joltVelocity;
+    }
+    const auto &GetJoltVelocity() const {
+        return joltVelocity;
+    }
+    s32 GetLap() const {
+        return lap;
+    }
+    s32 SetLap(s32 value) {
+        return lap = value;
+    }
+    f32 GetLapTime() const {
+        return lapTime;
+    }
+    f32 SetLapTime(f32 value) {
+        return lapTime = value;
+    }
+    auto &GetLapTimes() {
+        return lapTimes;
+    }
+    const auto &GetLapTimes() const {
+        return lapTimes;
+    }
+    f32 GetLookAhead() const {
+        return lookAhead;
+    }
+    f32 SetLookAhead(f32 value) {
+        return lookAhead = value;
+    }
+    auto &GetLookAt() {
+        return lookAt;
+    }
+    const auto &GetLookAt() const {
+        return lookAt;
+    }
+    auto &GetMatrix() {
+        return matrix;
+    }
+    const auto &GetMatrix() const {
+        return matrix;
+    }
+    s32 GetMaxGate() const {
+        return maxGate;
+    }
+    s32 SetMaxGate(s32 value) {
+        return maxGate = value;
+    }
+    const char *GetMessage() const {
+        return message;
+    }
+    const char *SetMessage(const char *value) {
+        return message = value;
+    }
+    auto &GetMessageText() {
+        return messageText;
+    }
+    const auto &GetMessageText() const {
+        return messageText;
+    }
+    f32 SetMessageTime(f32 value) {
+        return messageTime = value;
+    }
+    VehicleModel *GetModel() const {
+        return model;
+    }
+    VehicleModel *SetModel(VehicleModel *value) {
+        return model = value;
+    }
+    s32 SetNearbyInstanceCount(s32 value) {
+        return nearbyInstanceCount = value;
+    }
+    auto &GetNearestRacers() {
+        return nearestRacers;
+    }
+    const auto &GetNearestRacers() const {
+        return nearestRacers;
+    }
+    f32 GetOdometer() const {
+        return odometer;
+    }
+    f32 SetOdometer(f32 value) {
+        return odometer = value;
+    }
+    f32 GetOpacity() const {
+        return opacity;
+    }
+    f32 SetOpacity(f32 value) {
+        return opacity = value;
+    }
+    f32 GetPitchInput() const {
+        return pitchInput;
+    }
+    f32 SetPitchInput(f32 value) {
+        return pitchInput = value;
+    }
+    auto &GetPlacedVelocity() {
+        return placedVelocity;
+    }
+    const auto &GetPlacedVelocity() const {
+        return placedVelocity;
+    }
+    s32 GetPointIndex() const {
+        return pointIndex;
+    }
+    s32 SetPointIndex(s32 value) {
+        return pointIndex = value;
+    }
+    CameraFrame *SetPreviousCamera(CameraFrame *value) {
+        return previousCamera = value;
+    }
+    auto &GetPreviousCollisionPosition() {
+        return previousCollisionPosition;
+    }
+    const auto &GetPreviousCollisionPosition() const {
+        return previousCollisionPosition;
+    }
+    auto &GetPreviousListenerPosition() {
+        return previousListenerPosition;
+    }
+    const auto &GetPreviousListenerPosition() const {
+        return previousListenerPosition;
+    }
+    auto &GetPreviousPosition() {
+        return previousPosition;
+    }
+    const auto &GetPreviousPosition() const {
+        return previousPosition;
+    }
+    PlayerProfile *GetProfile() const {
+        return profile;
+    }
+    PlayerProfile *SetProfile(PlayerProfile *value) {
+        return profile = value;
+    }
+    s32 GetRacePosition() const {
+        return racePosition;
+    }
+    s32 SetRacePosition(s32 value) {
+        return racePosition = value;
+    }
+    RacerSlot *GetRacer() const {
+        return racer;
+    }
+    RacerSlot *SetRacer(RacerSlot *value) {
+        return racer = value;
+    }
+    f32 SetRearLoad(f32 value) {
+        return rearLoad = value;
+    }
+    u8 SetRearSliding(u8 value) {
+        return rearSliding = value;
+    }
+    s32 SetRearWheelDrive(s32 value) {
+        return rearWheelDrive = value;
+    }
+    s32 GetReverseFrames() const {
+        return reverseFrames;
+    }
+    s32 SetReverseFrames(s32 value) {
+        return reverseFrames = value;
+    }
+    f32 GetRollInput() const {
+        return rollInput;
+    }
+    f32 SetRollInput(f32 value) {
+        return rollInput = value;
+    }
+    struct TrackSection *GetSection() const {
+        return section;
+    }
+    struct TrackSection *SetSection(struct TrackSection *value) {
+        return section = value;
+    }
+    auto &GetShadowCornerValid() {
+        return shadowCornerValid;
+    }
+    const auto &GetShadowCornerValid() const {
+        return shadowCornerValid;
+    }
+    const auto &GetShadowCorners() const {
+        return shadowCorners;
+    }
+    auto &GetShadowQuad() {
+        return shadowQuad;
+    }
+    const auto &GetShadowQuad() const {
+        return shadowQuad;
+    }
+    s16 GetSkidFrames() const {
+        return skidFrames;
+    }
+    s16 SetSkidFrames(s16 value) {
+        return skidFrames = value;
+    }
+    s32 GetSkipDrive() const {
+        return skipDrive;
+    }
+    s32 SetSkipDrive(s32 value) {
+        return skipDrive = value;
+    }
+    s32 GetSlotCooldown() const {
+        return slotCooldown;
+    }
+    s32 SetSlotCooldown(s32 value) {
+        return slotCooldown = value;
+    }
+    auto &GetSmokeTimers() {
+        return smokeTimers;
+    }
+    const auto &GetSmokeTimers() const {
+        return smokeTimers;
+    }
+    f32 GetSpeedKph() const {
+        return speedKph;
+    }
+    f32 SetSpeedKph(f32 value) {
+        return speedKph = value;
+    }
+    auto &GetSprayAdvanced() {
+        return sprayAdvanced;
+    }
+    const auto &GetSprayAdvanced() const {
+        return sprayAdvanced;
+    }
+    auto &GetSprayFramesLeft() {
+        return sprayFramesLeft;
+    }
+    const auto &GetSprayFramesLeft() const {
+        return sprayFramesLeft;
+    }
+    auto &GetSprayOrigin() {
+        return sprayOrigin;
+    }
+    const auto &GetSprayOrigin() const {
+        return sprayOrigin;
+    }
+    auto &GetSprayPhases() {
+        return sprayPhases;
+    }
+    const auto &GetSprayPhases() const {
+        return sprayPhases;
+    }
+    auto &GetSpraySegmentSurfaces() {
+        return spraySegmentSurfaces;
+    }
+    const auto &GetSpraySegmentSurfaces() const {
+        return spraySegmentSurfaces;
+    }
+    auto &GetSpraySurfaces() {
+        return spraySurfaces;
+    }
+    const auto &GetSpraySurfaces() const {
+        return spraySurfaces;
+    }
+    auto &GetSprayVelocities() {
+        return sprayVelocities;
+    }
+    const auto &GetSprayVelocities() const {
+        return sprayVelocities;
+    }
+    auto &GetSprayVertices() {
+        return sprayVertices;
+    }
+    const auto &GetSprayVertices() const {
+        return sprayVertices;
+    }
+    f32 GetSteerAngle() const {
+        return steerAngle;
+    }
+    f32 SetSteerAngle(f32 value) {
+        return steerAngle = value;
+    }
+    s8 GetSteerReturn() const {
+        return steerReturn;
+    }
+    s8 SetSteerReturn(s8 value) {
+        return steerReturn = value;
+    }
+    f32 GetSteering() const {
+        return steering;
+    }
+    f32 SetSteering(f32 value) {
+        return steering = value;
+    }
+    s32 GetSteeringMode() const {
+        return steeringMode;
+    }
+    const char *SetSubMessage(const char *value) {
+        return subMessage = value;
+    }
+    f32 SetSubMessageTime(f32 value) {
+        return subMessageTime = value;
+    }
+    s32 GetSuspensionStiffness() const {
+        return suspensionStiffness;
+    }
+    s32 GetTableIndex() const {
+        return tableIndex;
+    }
+    s32 SetTableIndex(s32 value) {
+        return tableIndex = value;
+    }
+    f32 GetThrottle() const {
+        return throttle;
+    }
+    f32 SetThrottle(f32 value) {
+        return throttle = value;
+    }
+    f32 GetTimeLeft() const {
+        return timeLeft;
+    }
+    f32 SetTimeLeft(f32 value) {
+        return timeLeft = value;
+    }
+    s32 GetTireType() const {
+        return tireType;
+    }
+    auto &GetTorqueCurve() {
+        return torqueCurve;
+    }
+    const auto &GetTorqueCurve() const {
+        return torqueCurve;
+    }
+    f32 GetTotalTime() const {
+        return totalTime;
+    }
+    f32 SetTotalTime(f32 value) {
+        return totalTime = value;
+    }
+    auto &GetTrackDirection() {
+        return trackDirection;
+    }
+    const auto &GetTrackDirection() const {
+        return trackDirection;
+    }
+    auto &GetTrackForward() {
+        return trackForward;
+    }
+    const auto &GetTrackForward() const {
+        return trackForward;
+    }
+    auto &GetTrackOffset() {
+        return trackOffset;
+    }
+    const auto &GetTrackOffset() const {
+        return trackOffset;
+    }
+    auto &GetTrackPoint() {
+        return trackPoint;
+    }
+    const auto &GetTrackPoint() const {
+        return trackPoint;
+    }
+    auto &GetTrackSide() {
+        return trackSide;
+    }
+    const auto &GetTrackSide() const {
+        return trackSide;
+    }
+    f32 GetTrackSideDistance() const {
+        return trackSideDistance;
+    }
+    f32 SetTrackSideDistance(f32 value) {
+        return trackSideDistance = value;
+    }
+    f32 GetTrackSideOffset() const {
+        return trackSideOffset;
+    }
+    f32 SetTrackSideOffset(f32 value) {
+        return trackSideOffset = value;
+    }
+    auto &GetTrackUp() {
+        return trackUp;
+    }
+    const auto &GetTrackUp() const {
+        return trackUp;
+    }
+    s32 GetTransmission() const {
+        return transmission;
+    }
+    s32 SetTransmission(s32 value) {
+        return transmission = value;
+    }
+    auto &GetWheelBodies() {
+        return wheelBodies;
+    }
+    const auto &GetWheelBodies() const {
+        return wheelBodies;
+    }
+    const auto &GetWheelFrames() const {
+        return wheelFrames;
+    }
+    auto &GetWheelMatrices() {
+        return wheelMatrices;
+    }
+    const auto &GetWheelMatrices() const {
+        return wheelMatrices;
+    }
+
     /** @ghidraAddress BRD3D: 0x10063840 */
     void ApplyPlayerVehicleInput(void);
 
+private:
     /**
      * @ghidraAddress BRD3D: 0x10064350
      */
     void ComputeTrackPosition(void);
 
+public:
     /** @ghidraAddress BRD3D: 0x10075f10 */
     void UpdateVehiclePhysicsFrame(void);
 
+private:
     /**
      * @ghidraAddress BRD3D: 0x10061f70
      */
@@ -207,6 +905,7 @@ typedef struct Vehicle {
      */
     void SimulateVehiclePhysicsSubstep(void);
 
+public:
     /**
      * Transform the body and wheel matrices for drawing.
      *
@@ -221,6 +920,7 @@ typedef struct Vehicle {
      */
     void ComputeAiVehicleInput(void);
 
+private:
     /**
      * Assign computer vehicles to racers near this player.
      *
@@ -237,12 +937,16 @@ typedef struct Vehicle {
 
     /** @ghidraAddress BRD3D: 0x10063ff0 */
     s32 TraceTrackSplineRecursive(s32 depth, s32 pointIndex, TrackSection *section);
+
+public:
     /**
      * Initialise the player slot, profile defaults, and vehicle selection.
      *
      * @ghidraAddress BRD3D: 0x100634f0
      */
     void InitPlayerVehicleSlot(void);
+
+private:
     /**
      * @ghidraAddress BRD3D: 0x10076c90
      */
@@ -311,11 +1015,14 @@ typedef struct Vehicle {
      * @ghidraAddress BRD3D: 0x10001ff0
      */
     void InitCameraForVehicle(void);
+
+public:
     /**
      * @ghidraAddress BRD3D: 0x100019d0
      */
     void UpdateCameraSystem(void);
 
+private:
     /**
      * @ghidraAddress BRD3D: 0x100683c0
      */
@@ -344,8 +1051,8 @@ typedef struct Vehicle {
      * @ghidraAddress BRD3D: 0x100769a0
      */
     void SetVehicleTurnRate(f32 x, f32 y, f32 z);
+};
 #endif
-} Vehicle;
 
 #ifdef __cplusplus
 extern "C" {
@@ -375,12 +1082,14 @@ void PlayerVehicleControllerCallback(Vehicle *vehicle);
 }
 #endif
 
+#ifdef __cplusplus
 /**
  * Vehicles of the Windows race.
  *
  * @ghidraAddress BRD3D: 0x10acdea8
  */
 extern Vehicle g_aVehicles[MAX_VEHICLES];
+#endif
 
 /**
  * @ghidraAddress BRD3D: 0x100b37d0

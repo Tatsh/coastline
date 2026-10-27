@@ -3,9 +3,9 @@
 
 #include "types.h"
 #include "vecmath.h"
+#include "vehiclefwd.h"
 
 struct TrackSection;
-struct Vehicle;
 
 /** The racers of a race. */
 #define RACER_SLOTS 20
@@ -45,7 +45,7 @@ typedef struct RacerSlot {
     s32 racePosition;                  /*!< The place in the race, from 0 for the leader. */
     u8 unreconstructed58[0x5C - 0x58]; /*!< Not read by the routines reconstructed so far. */
     u8 color[3];                       /*!< The color of the vehicle the racer drives. */
-    struct Vehicle *vehicle;           /*!< The vehicle of the racer, or NULL. */
+    Vehicle *vehicle;                  /*!< The vehicle of the racer, or NULL. */
     s32 index;                         /*!< The index of the racer in g_aRacerSlots. */
     u32 status; /*!< The RACER_ bits. The clock of the racer runs while the bits of
                      #RACER_CLOCK_STOPPED are clear. */
@@ -260,7 +260,7 @@ void MakeEnemyCarColorPanels(RacerSlot *slot);
 /**
  * @ghidraAddress BRD3D: 0x100661b0
  */
-void ApplyEnemyCarColorPanels(struct Vehicle *vehicle, RacerSlot *slot);
+void ApplyEnemyCarColorPanels(Vehicle *vehicle, RacerSlot *slot);
 #endif
 
 #ifdef __cplusplus

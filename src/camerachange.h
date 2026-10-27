@@ -1,7 +1,7 @@
 #ifndef COASTLINE_CAMERA_CHANGE_H
 #define COASTLINE_CAMERA_CHANGE_H
 
-struct Vehicle;
+#include "vehiclefwd.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -15,7 +15,7 @@ extern "C" {
  * @ghidraAddress EUR: 0x8022d1bc
  * @ghidraAddress JPN: 0x8022c974
  */
-void ClearCameraChanged(struct Vehicle *vehicle);
+void ClearCameraChanged(Vehicle *vehicle);
 
 #ifdef __cplusplus
 }

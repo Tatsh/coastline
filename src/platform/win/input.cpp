@@ -25,6 +25,7 @@
 #include "platform/win/timer.h"
 #include "playerinput.h"
 #include "vehicle.h"
+#include "vehicleaccess.h"
 
 MouseDevice *g_pMouseDevice;
 
@@ -518,7 +519,7 @@ static inline void ReadMouseBindingState(void) {
     // All three accumulators use the previous horizontal accumulator in the binary.
     state.lAccumulatedY = previous.lAccumulatedX + mouse.lY;
     state.lAccumulatedZ = previous.lAccumulatedX + mouse.lZ;
-    int sensitivity = g_aVehicles[0].steeringMode;
+    int sensitivity = VEHICLE_GET(&(g_aVehicles[0]), SteeringMode);
     if (sensitivity < 0) {
         sensitivity = 0;
     } else if (sensitivity > 7) {
@@ -579,7 +580,7 @@ unsigned ReadInputDevicesButtonMask(int *pnSteering, int *pnAcceleration) {
     ReadMouseBindingState();
     if (IsInputBindingPressed(15)) {
         if (!g_dwNetworkPlayMode || !g_bNetRaceStartReached || gInstantReplayActive ||
-            g_aVehicles[0].lap >= g_dwTotalLaps) {
+            VEHICLE_GET(&(g_aVehicles[0]), Lap) >= g_dwTotalLaps) {
             g_bNetGamePaused = 1;
             g_dwInputButtonMask = 0x4000;
             return g_dwInputButtonMask;

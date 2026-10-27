@@ -14,6 +14,7 @@
 #include "platform/win/input.h"
 #include "platform/win/netstream.h"
 #include "platform/win/season.h"
+#include "vehicleaccess.h"
 #include "vehiclephysics.h"
 
 unsigned g_adwGhostFrameCount[GHOST_RECORDING_COUNT];
@@ -455,74 +456,84 @@ void PositionQuaternionToMatrix4x4(f32 matrix[4][4], const QuaternionPose *pPose
 
 void BuildVehicleKeyframe(KeyframeState *pState, Vehicle *pVehicle) {
     QuaternionPose pose;
-    MatrixToPositionQuaternion(&pose, pVehicle->body.orientation);
+    MatrixToPositionQuaternion(&pose, VEHICLE_GET(pVehicle, Body).orientation);
     pState->orientation = pose.orientation;
     pState->position = pose.position;
-    pState->linearVelocity = pVehicle->body.state.velocity;
-    pState->angularVelocity = pVehicle->body.state.angularVelocity;
-    pState->fBodyRollAngle = pVehicle->body.rollAngle;
-    pState->fSteerAngle = pVehicle->wheelBodies[1].steerAngle;
+    pState->linearVelocity = VEHICLE_GET(pVehicle, Body).state.velocity;
+    pState->angularVelocity = VEHICLE_GET(pVehicle, Body).state.angularVelocity;
+    pState->fBodyRollAngle = VEHICLE_GET(pVehicle, Body).rollAngle;
+    pState->fSteerAngle = VEHICLE_GET(pVehicle, WheelBodies)[1].steerAngle;
     const int wheels[4] = {0, 2, 1, 3};
     for (int i = 0; i < 4; ++i) {
-        const RigidBody &wheel = pVehicle->wheelBodies[wheels[i]];
+        const RigidBody &wheel = VEHICLE_GET(pVehicle, WheelBodies)[wheels[i]];
         pState->afWheelAngle[i] = wheel.rollAngle;
         pState->afWheelContact[i] = static_cast<float>(wheel.contactFrames);
         pState->afWheelSurface[i] = static_cast<float>(static_cast<s8>(wheel.surface));
     }
-    pState->fGearControl = static_cast<float>(pVehicle->body.skidding);
-    pState->fBraking = (pVehicle->input->buttons & 0xc0000) ? 1.0f : 0.0f;
-    pState->fReverse = !(pVehicle->throttle >= 0.0f) ? 1.0f : 0.0f;
-    pState->fProgress = pVehicle->lap == g_dwTotalLaps ? 4188888.0f : pVehicle->distance;
-    pState->fEngineRpm = pVehicle->engineRpm;
-    pState->afLight[0] = static_cast<float>(pVehicle->body.vehicleImpactVolume);
-    pState->afLight[1] = static_cast<float>(pVehicle->body.impactVolume);
-    pState->afEffectFlags[0] = static_cast<float>(pVehicle->body.landed);
-    pState->afEffectFlags[1] = static_cast<float>(pVehicle->body.unreconstructed202);
-    pState->afEffectFlags[2] = static_cast<float>(pVehicle->body.unreconstructed203);
-    pState->afEffectFlags[3] = static_cast<float>(pVehicle->body.unreconstructed204);
-    pState->afEffectFlags[4] = static_cast<float>(pVehicle->body.replayEffects[0]);
-    pState->afEffectFlags[5] = static_cast<float>(pVehicle->body.replayEffects[1]);
+    pState->fGearControl = static_cast<float>(VEHICLE_GET(pVehicle, Body).skidding);
+    pState->fBraking = (VEHICLE_GET(pVehicle, Input)->buttons & 0xc0000) ? 1.0f : 0.0f;
+    pState->fReverse = !(VEHICLE_GET(pVehicle, Throttle) >= 0.0f) ? 1.0f : 0.0f;
+    pState->fProgress =
+        VEHICLE_GET(pVehicle, Lap) == g_dwTotalLaps ? 4188888.0f : VEHICLE_GET(pVehicle, Distance);
+    pState->fEngineRpm = VEHICLE_GET(pVehicle, EngineRpm);
+    pState->afLight[0] = static_cast<float>(VEHICLE_GET(pVehicle, Body).vehicleImpactVolume);
+    pState->afLight[1] = static_cast<float>(VEHICLE_GET(pVehicle, Body).impactVolume);
+    pState->afEffectFlags[0] = static_cast<float>(VEHICLE_GET(pVehicle, Body).landed);
+    pState->afEffectFlags[1] = static_cast<float>(VEHICLE_GET(pVehicle, Body).unreconstructed202);
+    pState->afEffectFlags[2] = static_cast<float>(VEHICLE_GET(pVehicle, Body).unreconstructed203);
+    pState->afEffectFlags[3] = static_cast<float>(VEHICLE_GET(pVehicle, Body).unreconstructed204);
+    pState->afEffectFlags[4] = static_cast<float>(VEHICLE_GET(pVehicle, Body).replayEffects[0]);
+    pState->afEffectFlags[5] = static_cast<float>(VEHICLE_GET(pVehicle, Body).replayEffects[1]);
 }
 
 void ApplyVehicleKeyframe(Vehicle *pVehicle, const KeyframeState *pState) {
-    pVehicle->body.state.orientation = pState->orientation;
-    pVehicle->body.state.position = pState->position;
+    VEHICLE_GET(pVehicle, Body).state.orientation = pState->orientation;
+    VEHICLE_GET(pVehicle, Body).state.position = pState->position;
     const QuaternionPose pose = {pState->orientation, pState->position};
-    PositionQuaternionToMatrix4x4(pVehicle->body.orientation, &pose);
-    pVehicle->body.state.velocity = pState->linearVelocity;
-    pVehicle->body.state.angularVelocity = pState->angularVelocity;
-    pVehicle->body.rollAngle = pState->fBodyRollAngle;
-    pVehicle->wheelBodies[1].steerAngle = pState->fSteerAngle;
-    pVehicle->wheelBodies[3].steerAngle = pState->fSteerAngle;
+    PositionQuaternionToMatrix4x4(VEHICLE_GET(pVehicle, Body).orientation, &pose);
+    VEHICLE_GET(pVehicle, Body).state.velocity = pState->linearVelocity;
+    VEHICLE_GET(pVehicle, Body).state.angularVelocity = pState->angularVelocity;
+    VEHICLE_GET(pVehicle, Body).rollAngle = pState->fBodyRollAngle;
+    VEHICLE_GET(pVehicle, WheelBodies)[1].steerAngle = pState->fSteerAngle;
+    VEHICLE_GET(pVehicle, WheelBodies)[3].steerAngle = pState->fSteerAngle;
     const int wheels[4] = {0, 2, 1, 3};
     for (int i = 0; i < 4; ++i) {
-        RigidBody &wheel = pVehicle->wheelBodies[wheels[i]];
+        RigidBody &wheel = VEHICLE_GET(pVehicle, WheelBodies)[wheels[i]];
         wheel.rollAngle = pState->afWheelAngle[i];
         wheel.contactFrames = static_cast<int>(pState->afWheelContact[i]);
         wheel.surface = static_cast<u8>(static_cast<int>(pState->afWheelSurface[i]));
     }
-    pVehicle->body.skidding = static_cast<u8>(static_cast<int>(pState->fGearControl));
+    VEHICLE_GET(pVehicle, Body).skidding = static_cast<u8>(static_cast<int>(pState->fGearControl));
     if (IsKeyframeFlagSet(pState->fBraking)) {
-        pVehicle->input->buttons |= 0x40000;
+        VEHICLE_GET(pVehicle, Input)->buttons |= 0x40000;
     } else {
-        pVehicle->input->buttons &= ~0x40000u;
+        VEHICLE_GET(pVehicle, Input)->buttons &= ~0x40000u;
     }
-    pVehicle->throttle = IsKeyframeFlagSet(pState->fReverse) ? -1.0f : 1.0f;
-    if (!(pVehicle->distance > 0.0f) || pVehicle->distance + 1000.0f > pState->fProgress) {
-        pVehicle->distance = pState->fProgress;
+    VEHICLE_SET(pVehicle, Throttle, IsKeyframeFlagSet(pState->fReverse) ? -1.0f : 1.0f);
+    if (!(VEHICLE_GET(pVehicle, Distance) > 0.0f) ||
+        VEHICLE_GET(pVehicle, Distance) + 1000.0f > pState->fProgress) {
+        VEHICLE_SET(pVehicle, Distance, pState->fProgress);
     }
-    pVehicle->engineRpm = pState->fEngineRpm;
-    pVehicle->body.vehicleImpactVolume = static_cast<u8>(static_cast<int>(pState->afLight[0]));
-    pVehicle->body.impactVolume = static_cast<u8>(static_cast<int>(pState->afLight[1]));
-    pVehicle->body.landed = static_cast<u8>(static_cast<int>(pState->afEffectFlags[0]));
-    pVehicle->body.unreconstructed202 = static_cast<u8>(static_cast<int>(pState->afEffectFlags[1]));
-    pVehicle->body.unreconstructed203 = static_cast<u8>(static_cast<int>(pState->afEffectFlags[2]));
-    pVehicle->body.unreconstructed204 = static_cast<u8>(static_cast<int>(pState->afEffectFlags[3]));
-    pVehicle->body.replayEffects[0] = static_cast<u8>(static_cast<int>(pState->afEffectFlags[4]));
-    pVehicle->body.replayEffects[1] = static_cast<u8>(static_cast<int>(pState->afEffectFlags[5]));
-    ComputeDeltaQuaternion(&pVehicle->body.state);
-    pVehicle->body.stepStates[0] = pVehicle->body.state;
-    pVehicle->body.stepStates[1] = pVehicle->body.state;
+    VEHICLE_SET(pVehicle, EngineRpm, pState->fEngineRpm);
+    VEHICLE_GET(pVehicle, Body).vehicleImpactVolume =
+        static_cast<u8>(static_cast<int>(pState->afLight[0]));
+    VEHICLE_GET(pVehicle, Body).impactVolume =
+        static_cast<u8>(static_cast<int>(pState->afLight[1]));
+    VEHICLE_GET(pVehicle, Body).landed =
+        static_cast<u8>(static_cast<int>(pState->afEffectFlags[0]));
+    VEHICLE_GET(pVehicle, Body).unreconstructed202 =
+        static_cast<u8>(static_cast<int>(pState->afEffectFlags[1]));
+    VEHICLE_GET(pVehicle, Body).unreconstructed203 =
+        static_cast<u8>(static_cast<int>(pState->afEffectFlags[2]));
+    VEHICLE_GET(pVehicle, Body).unreconstructed204 =
+        static_cast<u8>(static_cast<int>(pState->afEffectFlags[3]));
+    VEHICLE_GET(pVehicle, Body).replayEffects[0] =
+        static_cast<u8>(static_cast<int>(pState->afEffectFlags[4]));
+    VEHICLE_GET(pVehicle, Body).replayEffects[1] =
+        static_cast<u8>(static_cast<int>(pState->afEffectFlags[5]));
+    ComputeDeltaQuaternion(&VEHICLE_GET(pVehicle, Body).state);
+    VEHICLE_GET(pVehicle, Body).stepStates[0] = VEHICLE_GET(pVehicle, Body).state;
+    VEHICLE_GET(pVehicle, Body).stepStates[1] = VEHICLE_GET(pVehicle, Body).state;
 }
 
 unsigned ApplyRemoteVehicleState(Vehicle *vehicle, int slotIndex) {
@@ -545,7 +556,7 @@ void RecordVehicleKeyframe(Vehicle *vehicle) {
 }
 
 void RecordGhostKeyframe(Vehicle *pVehicle) {
-    const int index = pVehicle->index;
+    const int index = VEHICLE_GET(pVehicle, Index);
     if (!g_bGhostRecordingActive || g_dwRacePauseState ||
         static_cast<int>(g_adwGhostFrameCount[index]) >= GHOST_MAX_FRAMES) {
         return;
@@ -562,31 +573,31 @@ void ApplyGhostKeyframeToVehicle(Vehicle *pVehicle, int nRecording) {
     const u8 *frame =
         g_aGhostKeyframes[nRecording] + g_adwGhostPlaybackFrame[nRecording] * GHOST_FRAME_SIZE;
     DeserializeKeyframeState(&state, frame);
-    state.fProgress = pVehicle->distance;
+    state.fProgress = VEHICLE_GET(pVehicle, Distance);
     ApplyVehicleKeyframe(pVehicle, &state);
     if (gInstantReplayActive == 2) {
-        pVehicle->body.vehicleImpactVolume = 0;
-        pVehicle->body.impactVolume = 0;
-        pVehicle->body.landed = 0;
-        pVehicle->body.unreconstructed202 = 0;
-        pVehicle->body.unreconstructed203 = 0;
-        pVehicle->body.unreconstructed204 = 0;
-        pVehicle->body.replayEffects[0] = 0;
-        pVehicle->body.replayEffects[1] = 0;
-        pVehicle->body.replayEffects[2] = 0;
+        VEHICLE_GET(pVehicle, Body).vehicleImpactVolume = 0;
+        VEHICLE_GET(pVehicle, Body).impactVolume = 0;
+        VEHICLE_GET(pVehicle, Body).landed = 0;
+        VEHICLE_GET(pVehicle, Body).unreconstructed202 = 0;
+        VEHICLE_GET(pVehicle, Body).unreconstructed203 = 0;
+        VEHICLE_GET(pVehicle, Body).unreconstructed204 = 0;
+        VEHICLE_GET(pVehicle, Body).replayEffects[0] = 0;
+        VEHICLE_GET(pVehicle, Body).replayEffects[1] = 0;
+        VEHICLE_GET(pVehicle, Body).replayEffects[2] = 0;
     }
     if (g_adwGhostPlaybackFrame[nRecording] <
         static_cast<int>(g_adwGhostFrameCount[nRecording] - 2)) {
         DeserializeKeyframeState(&state, frame + GHOST_FRAME_SIZE);
-        pVehicle->body.state.velocity.x =
-            (state.position.x - pVehicle->body.state.position.x) * 30.0f;
-        pVehicle->body.state.velocity.y =
-            (state.position.y - pVehicle->body.state.position.y) * 30.0f;
-        pVehicle->body.state.velocity.z =
-            (state.position.z - pVehicle->body.state.position.z) * 30.0f;
+        VEHICLE_GET(pVehicle, Body).state.velocity.x =
+            (state.position.x - VEHICLE_GET(pVehicle, Body).state.position.x) * 30.0f;
+        VEHICLE_GET(pVehicle, Body).state.velocity.y =
+            (state.position.y - VEHICLE_GET(pVehicle, Body).state.position.y) * 30.0f;
+        VEHICLE_GET(pVehicle, Body).state.velocity.z =
+            (state.position.z - VEHICLE_GET(pVehicle, Body).state.position.z) * 30.0f;
     }
 }
 
 void ApplyGhostKeyframeForVehicle(Vehicle *pVehicle) {
-    ApplyGhostKeyframeToVehicle(pVehicle, pVehicle->index);
+    ApplyGhostKeyframeToVehicle(pVehicle, VEHICLE_GET(pVehicle, Index));
 }

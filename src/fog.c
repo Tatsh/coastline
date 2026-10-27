@@ -4,6 +4,7 @@
 #include "render.h"
 #include "track.h"
 #include "trackselect.h"
+#include "vehicleaccess.h"
 #include "weather.h"
 
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
@@ -115,11 +116,11 @@ void SetupFog(void) {
         /* The intensity follows the height of the vehicle of the view within the track. */
         vehicle = g_pActiveCameraVehicle;
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
-        level = ((long double)vehicle->frame.position.z - g_LoadedTrack.minZ) /
+        level = ((long double)VEHICLE_GET(vehicle, Frame).position.z - g_LoadedTrack.minZ) /
                 ((long double)g_LoadedTrack.maxZ - g_LoadedTrack.minZ) * 255.0L;
         intensity = FogTruncateToWord(level);
 #else
-        level = (vehicle->frame.position.z - g_LoadedTrack.minZ) /
+        level = (VEHICLE_GET(vehicle, Frame).position.z - g_LoadedTrack.minZ) /
                 (g_LoadedTrack.maxZ - g_LoadedTrack.minZ) * 255.0f;
         intensity = (s32)level;
 #endif

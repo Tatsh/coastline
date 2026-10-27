@@ -1,5 +1,6 @@
 #include "camera.h"
 #include "tricache.h"
+#include "vehicleaccess.h"
 
 #define TRACK_CLEARANCE 0.1f
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
@@ -61,15 +62,16 @@ void ResolveVehicleTrackCollision(Vehicle *vehicle, CameraFrame *camera, Vec3f *
 #endif
 
     g_bVehicleTrackCollisionCorrected = FALSE;
-    slots[0] = BuildTrackTriangleCache(vehicle->lookAt.x, vehicle->lookAt.y);
+    slots[0] =
+        BuildTrackTriangleCache(VEHICLE_GET(vehicle, LookAt).x, VEHICLE_GET(vehicle, LookAt).y);
     slots[1] = BuildTrackTriangleCache(camera->position.x, camera->position.y);
     slotCount = slots[0] == slots[1] ? 1 : 2;
 
     /* The line from the look-at point to just beyond the camera. */
-    Vec3fSubtract(&direction, &camera->position, &vehicle->lookAt);
+    Vec3fSubtract(&direction, &camera->position, &VEHICLE_GET(vehicle, LookAt));
     length = Vec3fLength(&direction);
     limit = length != 0.0f ? (length + TRACK_CLEARANCE) / length : 1.0f;
-    FIND_TRACK_HIT(&vehicle->lookAt);
+    FIND_TRACK_HIT(&VEHICLE_GET(vehicle, LookAt));
     if (hit == NULL) {
         return;
     }
@@ -81,13 +83,13 @@ void ResolveVehicleTrackCollision(Vehicle *vehicle, CameraFrame *camera, Vec3f *
     if (hit == NULL) {
         return;
     }
-    distance = Vec3fDistance(&camera->position, &vehicle->lookAt);
+    distance = Vec3fDistance(&camera->position, &VEHICLE_GET(vehicle, LookAt));
     Vec3fMulAdd(&camera->position, &hitPoint, &hit->normal, TRACK_CAMERA_CLEARANCE);
-    Vec3fSubtract(&offset, &camera->position, &vehicle->lookAt);
+    Vec3fSubtract(&offset, &camera->position, &VEHICLE_GET(vehicle, LookAt));
     newLength = Vec3fLength(&offset);
     if (distance < newLength && newLength != 0.0f) {
         Vec3fScaleInPlace(&offset, distance / newLength);
-        Vec3fAdd(&camera->position, &vehicle->lookAt, &offset);
+        Vec3fAdd(&camera->position, &VEHICLE_GET(vehicle, LookAt), &offset);
     }
     g_bVehicleTrackCollisionCorrected = TRUE;
 }

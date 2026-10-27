@@ -5,6 +5,7 @@
 #include "track.h"
 #include "trackmenuitem.h"
 #include "trackselect.h"
+#include "vehicleaccess.h"
 #include "vehiclecount.h"
 #include "weather.h"
 
@@ -26,32 +27,40 @@
 
 /* Copy the orientation of the body into both of its step states, a coordinate at a time. */
 #define COPY_ORIENTATION_TO_STEPS(vehicle)                                                         \
-    (vehicle)->body.stepStates[1].orientation.w = (vehicle)->body.state.orientation.w;             \
-    (vehicle)->body.stepStates[0].orientation.w = (vehicle)->body.state.orientation.w;             \
-    (vehicle)->body.stepStates[1].orientation.x = (vehicle)->body.state.orientation.x;             \
-    (vehicle)->body.stepStates[0].orientation.x = (vehicle)->body.state.orientation.x;             \
-    (vehicle)->body.stepStates[1].orientation.y = (vehicle)->body.state.orientation.y;             \
-    (vehicle)->body.stepStates[0].orientation.y = (vehicle)->body.state.orientation.y;             \
-    (vehicle)->body.stepStates[1].orientation.z = (vehicle)->body.state.orientation.z;             \
-    (vehicle)->body.stepStates[0].orientation.z = (vehicle)->body.state.orientation.z
+    VEHICLE_GET((vehicle), Body).stepStates[1].orientation.w =                                     \
+        VEHICLE_GET((vehicle), Body).state.orientation.w;                                          \
+    VEHICLE_GET((vehicle), Body).stepStates[0].orientation.w =                                     \
+        VEHICLE_GET((vehicle), Body).state.orientation.w;                                          \
+    VEHICLE_GET((vehicle), Body).stepStates[1].orientation.x =                                     \
+        VEHICLE_GET((vehicle), Body).state.orientation.x;                                          \
+    VEHICLE_GET((vehicle), Body).stepStates[0].orientation.x =                                     \
+        VEHICLE_GET((vehicle), Body).state.orientation.x;                                          \
+    VEHICLE_GET((vehicle), Body).stepStates[1].orientation.y =                                     \
+        VEHICLE_GET((vehicle), Body).state.orientation.y;                                          \
+    VEHICLE_GET((vehicle), Body).stepStates[0].orientation.y =                                     \
+        VEHICLE_GET((vehicle), Body).state.orientation.y;                                          \
+    VEHICLE_GET((vehicle), Body).stepStates[1].orientation.z =                                     \
+        VEHICLE_GET((vehicle), Body).state.orientation.z;                                          \
+    VEHICLE_GET((vehicle), Body).stepStates[0].orientation.z =                                     \
+        VEHICLE_GET((vehicle), Body).state.orientation.z
 
 void SetVehiclePosition(Vehicle *vehicle, f32 x, f32 y, f32 z) {
-    vehicle->matrix[3][0] = x;
-    vehicle->matrix[3][1] = y;
-    vehicle->matrix[3][2] = z;
-    vehicle->sprayOrigin.x = x;
-    vehicle->sprayOrigin.y = y;
-    vehicle->sprayOrigin.z = z;
-    vehicle->body.state.position.x = x;
-    vehicle->body.state.position.y = y;
-    vehicle->body.state.position.z = z;
-    vehicle->body.stepStates[1].position.x = x;
-    vehicle->body.stepStates[1].position.y = y;
-    vehicle->body.stepStates[1].position.z = z;
-    vehicle->body.stepStates[0].position.x = x;
-    vehicle->body.stepStates[0].position.y = y;
-    vehicle->body.stepStates[0].position.z = z;
-    QuaternionToMatrix(vehicle->body.orientation, &vehicle->body.state);
+    VEHICLE_GET(vehicle, Matrix)[3][0] = x;
+    VEHICLE_GET(vehicle, Matrix)[3][1] = y;
+    VEHICLE_GET(vehicle, Matrix)[3][2] = z;
+    VEHICLE_GET(vehicle, SprayOrigin).x = x;
+    VEHICLE_GET(vehicle, SprayOrigin).y = y;
+    VEHICLE_GET(vehicle, SprayOrigin).z = z;
+    VEHICLE_GET(vehicle, Body).state.position.x = x;
+    VEHICLE_GET(vehicle, Body).state.position.y = y;
+    VEHICLE_GET(vehicle, Body).state.position.z = z;
+    VEHICLE_GET(vehicle, Body).stepStates[1].position.x = x;
+    VEHICLE_GET(vehicle, Body).stepStates[1].position.y = y;
+    VEHICLE_GET(vehicle, Body).stepStates[1].position.z = z;
+    VEHICLE_GET(vehicle, Body).stepStates[0].position.x = x;
+    VEHICLE_GET(vehicle, Body).stepStates[0].position.y = y;
+    VEHICLE_GET(vehicle, Body).stepStates[0].position.z = z;
+    QuaternionToMatrix(VEHICLE_GET(vehicle, Body).orientation, &VEHICLE_GET(vehicle, Body).state);
 }
 
 void InitVehicleOrientationFromAngle(Vehicle *vehicle, f32 angle) {
@@ -66,28 +75,28 @@ void InitVehicleOrientationFromAngle(Vehicle *vehicle, f32 angle) {
 
     (void)unused;
 #endif
-    vehicle->matrix[0][0] = forwardX;
-    vehicle->matrix[0][1] = forwardY;
-    vehicle->matrix[0][2] = 0.0f;
-    vehicle->matrix[1][0] = sideX;
-    vehicle->matrix[1][1] = sideY;
-    vehicle->matrix[1][2] = 0.0f;
-    vehicle->matrix[2][1] = 0.0f;
-    vehicle->matrix[2][0] = 0.0f;
-    vehicle->matrix[2][2] = 1.0f;
-    vehicle->body.state.orientation.w = cosf(half);
-    vehicle->body.state.orientation.y = 0.0f;
-    vehicle->body.state.orientation.x = 0.0f;
-    vehicle->body.state.orientation.z = sinf(half);
+    VEHICLE_GET(vehicle, Matrix)[0][0] = forwardX;
+    VEHICLE_GET(vehicle, Matrix)[0][1] = forwardY;
+    VEHICLE_GET(vehicle, Matrix)[0][2] = 0.0f;
+    VEHICLE_GET(vehicle, Matrix)[1][0] = sideX;
+    VEHICLE_GET(vehicle, Matrix)[1][1] = sideY;
+    VEHICLE_GET(vehicle, Matrix)[1][2] = 0.0f;
+    VEHICLE_GET(vehicle, Matrix)[2][1] = 0.0f;
+    VEHICLE_GET(vehicle, Matrix)[2][0] = 0.0f;
+    VEHICLE_GET(vehicle, Matrix)[2][2] = 1.0f;
+    VEHICLE_GET(vehicle, Body).state.orientation.w = cosf(half);
+    VEHICLE_GET(vehicle, Body).state.orientation.y = 0.0f;
+    VEHICLE_GET(vehicle, Body).state.orientation.x = 0.0f;
+    VEHICLE_GET(vehicle, Body).state.orientation.z = sinf(half);
     COPY_ORIENTATION_TO_STEPS(vehicle);
-    QuaternionToMatrix(vehicle->body.orientation, &vehicle->body.state);
+    QuaternionToMatrix(VEHICLE_GET(vehicle, Body).orientation, &VEHICLE_GET(vehicle, Body).state);
 }
 
 void SetVehicleFrameMatrix(Vehicle *vehicle, f32 (*m)[4]) {
-    memcpy(vehicle->matrix, m, sizeof(vehicle->matrix));
-    MatrixToQuaternion(m, &vehicle->body.state.orientation);
+    memcpy(VEHICLE_GET(vehicle, Matrix), m, sizeof(VEHICLE_GET(vehicle, Matrix)));
+    MatrixToQuaternion(m, &VEHICLE_GET(vehicle, Body).state.orientation);
     COPY_ORIENTATION_TO_STEPS(vehicle);
-    QuaternionToMatrix(vehicle->body.orientation, &vehicle->body.state);
+    QuaternionToMatrix(VEHICLE_GET(vehicle, Body).orientation, &VEHICLE_GET(vehicle, Body).state);
 }
 
 void RotateVehicleByEuler(Vehicle *vehicle, f32 yaw, f32 pitch, f32 roll) {
@@ -102,47 +111,53 @@ void RotateVehicleByEuler(Vehicle *vehicle, f32 yaw, f32 pitch, f32 roll) {
     turn.x = 0.0f;
     turn.y = 0.0f;
     turn.z = sine;
-    QuaternionMultiply(&vehicle->body.state.orientation, &vehicle->body.state.orientation, &turn);
+    QuaternionMultiply(&VEHICLE_GET(vehicle, Body).state.orientation,
+                       &VEHICLE_GET(vehicle, Body).state.orientation,
+                       &turn);
     sine = sinf(pitch);
     turn.w = cosf(pitch);
     turn.x = 0.0f;
     turn.y = sine;
     turn.z = 0.0f;
-    QuaternionMultiply(&vehicle->body.state.orientation, &vehicle->body.state.orientation, &turn);
+    QuaternionMultiply(&VEHICLE_GET(vehicle, Body).state.orientation,
+                       &VEHICLE_GET(vehicle, Body).state.orientation,
+                       &turn);
     sine = sinf(roll);
     turn.w = cosf(roll);
     turn.x = sine;
     turn.y = 0.0f;
     turn.z = 0.0f;
-    QuaternionMultiply(&vehicle->body.state.orientation, &vehicle->body.state.orientation, &turn);
-    QuaternionNormalize(&vehicle->body.state.orientation);
+    QuaternionMultiply(&VEHICLE_GET(vehicle, Body).state.orientation,
+                       &VEHICLE_GET(vehicle, Body).state.orientation,
+                       &turn);
+    QuaternionNormalize(&VEHICLE_GET(vehicle, Body).state.orientation);
     COPY_ORIENTATION_TO_STEPS(vehicle);
 }
 
 void SetVehicleTurnRate(Vehicle *vehicle, f32 x, f32 y, f32 z) {
-    vehicle->body.state.angularVelocity.x = x;
-    vehicle->body.state.angularVelocity.y = y;
-    vehicle->body.state.angularVelocity.z = z;
-    vehicle->body.stepStates[1].angularVelocity.x = x;
-    vehicle->body.stepStates[1].angularVelocity.y = y;
-    vehicle->body.stepStates[1].angularVelocity.z = z;
-    vehicle->body.stepStates[0].angularVelocity.x = x;
-    vehicle->body.stepStates[0].angularVelocity.y = y;
-    vehicle->body.stepStates[0].angularVelocity.z = z;
+    VEHICLE_GET(vehicle, Body).state.angularVelocity.x = x;
+    VEHICLE_GET(vehicle, Body).state.angularVelocity.y = y;
+    VEHICLE_GET(vehicle, Body).state.angularVelocity.z = z;
+    VEHICLE_GET(vehicle, Body).stepStates[1].angularVelocity.x = x;
+    VEHICLE_GET(vehicle, Body).stepStates[1].angularVelocity.y = y;
+    VEHICLE_GET(vehicle, Body).stepStates[1].angularVelocity.z = z;
+    VEHICLE_GET(vehicle, Body).stepStates[0].angularVelocity.x = x;
+    VEHICLE_GET(vehicle, Body).stepStates[0].angularVelocity.y = y;
+    VEHICLE_GET(vehicle, Body).stepStates[0].angularVelocity.z = z;
 }
 
 void SetVehicleVelocity(Vehicle *vehicle, f32 x, f32 y, f32 z) {
-    Vec3f *placed = &vehicle->placedVelocity;
+    Vec3f *placed = &VEHICLE_GET(vehicle, PlacedVelocity);
 
-    vehicle->body.state.velocity.x = x;
-    vehicle->body.state.velocity.y = y;
-    vehicle->body.state.velocity.z = z;
-    vehicle->body.stepStates[1].velocity.x = x;
-    vehicle->body.stepStates[1].velocity.y = y;
-    vehicle->body.stepStates[1].velocity.z = z;
-    vehicle->body.stepStates[0].velocity.x = x;
-    vehicle->body.stepStates[0].velocity.y = y;
-    vehicle->body.stepStates[0].velocity.z = z;
+    VEHICLE_GET(vehicle, Body).state.velocity.x = x;
+    VEHICLE_GET(vehicle, Body).state.velocity.y = y;
+    VEHICLE_GET(vehicle, Body).state.velocity.z = z;
+    VEHICLE_GET(vehicle, Body).stepStates[1].velocity.x = x;
+    VEHICLE_GET(vehicle, Body).stepStates[1].velocity.y = y;
+    VEHICLE_GET(vehicle, Body).stepStates[1].velocity.z = z;
+    VEHICLE_GET(vehicle, Body).stepStates[0].velocity.x = x;
+    VEHICLE_GET(vehicle, Body).stepStates[0].velocity.y = y;
+    VEHICLE_GET(vehicle, Body).stepStates[0].velocity.z = z;
     placed->x = x;
     placed->y = y;
     placed->z = z;
@@ -150,52 +165,54 @@ void SetVehicleVelocity(Vehicle *vehicle, f32 x, f32 y, f32 z) {
 
 void ResetVehicleState(Vehicle *vehicle) {
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
-    const VehicleModel *spec = vehicle->model;
+    const VehicleModel *spec = VEHICLE_GET(vehicle, Model);
 #else
     const CarPhysicsSpec *spec = &g_aCarPhysicsSpecs[vehicle->carModel];
 #endif
 
     /* The frames of the vehicle and its cameras, all but camera 4, and of its wheels. */
-    FinishFrameMatrix(vehicle->matrix);
-    FinishFrameMatrix((f32(*)[4]) & vehicle->cameras[VEHICLE_CAMERA_COCKPIT]);
-    vehicle->cameras[VEHICLE_CAMERA_COCKPIT].fov = DEFAULT_CAMERA_FOV;
-    FinishFrameMatrix((f32(*)[4]) & vehicle->cameras[VEHICLE_CAMERA_CHASE]);
-    vehicle->cameras[VEHICLE_CAMERA_CHASE].fov = DEFAULT_CAMERA_FOV;
-    FinishFrameMatrix((f32(*)[4]) & vehicle->cameras[VEHICLE_CAMERA_BUMPER]);
-    vehicle->cameras[VEHICLE_CAMERA_BUMPER].fov = DEFAULT_CAMERA_FOV;
-    FinishFrameMatrix((f32(*)[4]) & vehicle->cameras[VEHICLE_CAMERA_TRACKSIDE]);
-    vehicle->cameras[VEHICLE_CAMERA_TRACKSIDE].fov = DEFAULT_CAMERA_FOV;
-    FinishFrameMatrix((f32(*)[4]) & vehicle->cameras[VEHICLE_CAMERA_MIRROR]);
-    vehicle->cameras[VEHICLE_CAMERA_MIRROR].fov = DEFAULT_CAMERA_FOV;
-    vehicle->activeCamera = &vehicle->cameras[VEHICLE_CAMERA_COCKPIT];
+    FinishFrameMatrix(VEHICLE_GET(vehicle, Matrix));
+    FinishFrameMatrix((f32(*)[4]) & VEHICLE_GET(vehicle, Cameras)[VEHICLE_CAMERA_COCKPIT]);
+    VEHICLE_GET(vehicle, Cameras)[VEHICLE_CAMERA_COCKPIT].fov = DEFAULT_CAMERA_FOV;
+    FinishFrameMatrix((f32(*)[4]) & VEHICLE_GET(vehicle, Cameras)[VEHICLE_CAMERA_CHASE]);
+    VEHICLE_GET(vehicle, Cameras)[VEHICLE_CAMERA_CHASE].fov = DEFAULT_CAMERA_FOV;
+    FinishFrameMatrix((f32(*)[4]) & VEHICLE_GET(vehicle, Cameras)[VEHICLE_CAMERA_BUMPER]);
+    VEHICLE_GET(vehicle, Cameras)[VEHICLE_CAMERA_BUMPER].fov = DEFAULT_CAMERA_FOV;
+    FinishFrameMatrix((f32(*)[4]) & VEHICLE_GET(vehicle, Cameras)[VEHICLE_CAMERA_TRACKSIDE]);
+    VEHICLE_GET(vehicle, Cameras)[VEHICLE_CAMERA_TRACKSIDE].fov = DEFAULT_CAMERA_FOV;
+    FinishFrameMatrix((f32(*)[4]) & VEHICLE_GET(vehicle, Cameras)[VEHICLE_CAMERA_MIRROR]);
+    VEHICLE_GET(vehicle, Cameras)[VEHICLE_CAMERA_MIRROR].fov = DEFAULT_CAMERA_FOV;
+    VEHICLE_SET(vehicle, ActiveCamera, &VEHICLE_GET(vehicle, Cameras)[VEHICLE_CAMERA_COCKPIT]);
 #if TGR_PLATFORM == TGR_PLATFORM_N64
-    vehicle->model = NULL;
+    VEHICLE_GET(vehicle, Model) = NULL;
 #endif
-    FinishFrameMatrix(vehicle->wheelMatrices[0]);
-    FinishFrameMatrix(vehicle->wheelMatrices[1]);
-    FinishFrameMatrix(vehicle->wheelMatrices[2]);
-    FinishFrameMatrix(vehicle->wheelMatrices[3]);
+    FinishFrameMatrix(VEHICLE_GET(vehicle, WheelMatrices)[0]);
+    FinishFrameMatrix(VEHICLE_GET(vehicle, WheelMatrices)[1]);
+    FinishFrameMatrix(VEHICLE_GET(vehicle, WheelMatrices)[2]);
+    FinishFrameMatrix(VEHICLE_GET(vehicle, WheelMatrices)[3]);
     SetVehicleVelocity(vehicle, 0.0f, 0.0f, 0.0f);
-    vehicle->section = NULL;
-    vehicle->pointIndex = 0;
-    vehicle->previousCamera = NULL;
+    VEHICLE_SET(vehicle, Section, NULL);
+    VEHICLE_SET(vehicle, PointIndex, 0);
+    VEHICLE_SET(vehicle, PreviousCamera, NULL);
 
-    memcpy(vehicle->gearRatios, spec->gearRatios, sizeof(vehicle->gearRatios));
-    vehicle->torqueCurve[0] = spec->torqueCurve[0];
-    vehicle->torqueCurve[1] = spec->torqueCurve[1];
-    vehicle->torqueCurve[2] = spec->torqueCurve[2];
-    vehicle->torqueCurve[3] = spec->torqueCurve[3];
-    vehicle->finalDrive = spec->finalDrive;
-    vehicle->gearCount = spec->gearCount;
-    vehicle->transmission = vehicle->chosenTransmission;
-    vehicle->rearWheelDrive = spec->rearWheelDrive;
-    vehicle->body.boxSize.x = spec->boxSize.x;
-    vehicle->body.boxSize.y = spec->boxSize.y;
-    vehicle->body.boxSize.z = spec->boxSize.z;
-    vehicle->body.boxCenterZ = spec->boxCenterZ;
-    vehicle->tableIndex = spec->tableIndex;
+    memcpy(VEHICLE_GET(vehicle, GearRatios),
+           spec->gearRatios,
+           sizeof(VEHICLE_GET(vehicle, GearRatios)));
+    VEHICLE_GET(vehicle, TorqueCurve)[0] = spec->torqueCurve[0];
+    VEHICLE_GET(vehicle, TorqueCurve)[1] = spec->torqueCurve[1];
+    VEHICLE_GET(vehicle, TorqueCurve)[2] = spec->torqueCurve[2];
+    VEHICLE_GET(vehicle, TorqueCurve)[3] = spec->torqueCurve[3];
+    VEHICLE_SET(vehicle, FinalDrive, spec->finalDrive);
+    VEHICLE_SET(vehicle, GearCount, spec->gearCount);
+    VEHICLE_SET(vehicle, Transmission, VEHICLE_GET(vehicle, ChosenTransmission));
+    VEHICLE_SET(vehicle, RearWheelDrive, spec->rearWheelDrive);
+    VEHICLE_GET(vehicle, Body).boxSize.x = spec->boxSize.x;
+    VEHICLE_GET(vehicle, Body).boxSize.y = spec->boxSize.y;
+    VEHICLE_GET(vehicle, Body).boxSize.z = spec->boxSize.z;
+    VEHICLE_GET(vehicle, Body).boxCenterZ = spec->boxCenterZ;
+    VEHICLE_SET(vehicle, TableIndex, spec->tableIndex);
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
-    vehicle->model = NULL;
+    VEHICLE_SET(vehicle, Model, NULL);
 #endif
 }
 
@@ -222,90 +239,96 @@ void ResetVehicleState(Vehicle *vehicle) {
     SetRigidBodyForce(force, 0.0f, 0.0f, 0.0f, px, py, 0.0f, RIGID_BODY_FORCE_BODY)
 
 void InitVehiclePhysics(Vehicle *vehicle) {
-    vehicle->skipDrive = 1;
-    vehicle->gear = 0;
-    vehicle->steerAngle = 0.0f;
-    vehicle->engineRpm = 0.0f;
-    if (vehicle->model != NULL) {
-        vehicle->body.kind = RIGID_BODY_BOX_1;
-        vehicle->body.size.y = 2.0f;
-        vehicle->body.mass = 1000.0f;
-        vehicle->body.size.x = 3.5f;
-        vehicle->body.size.z = 1.5f;
-        InitRigidBody(&vehicle->body);
-        vehicle->body.state.position.x = 0.0f;
-        vehicle->body.state.position.y = 0.0f;
-        vehicle->body.state.position.z = 2.0f;
-        vehicle->body.state.velocity.x = 0.0f;
-        vehicle->body.state.velocity.y = 0.0f;
-        vehicle->body.state.velocity.z = 0.0f;
-        vehicle->body.state.orientation.x = 0.0f;
-        vehicle->body.state.orientation.y = 0.0f;
-        vehicle->body.state.orientation.z = 0.0f;
-        vehicle->body.state.angularVelocity.x = 0.0f;
-        vehicle->body.state.angularVelocity.y = 0.0f;
-        vehicle->body.state.angularVelocity.z = 0.0f;
-        vehicle->body.state.orientation.w = 1.0f;
-        QuaternionToMatrix(vehicle->body.orientation, &vehicle->body.state);
-        vehicle->body.springRate = ((f32)vehicle->suspensionStiffness * 4.0f + 20.0f) * 16000.0f;
-        vehicle->body.damping = -3000.0f;
+    VEHICLE_SET(vehicle, SkipDrive, 1);
+    VEHICLE_SET(vehicle, Gear, 0);
+    VEHICLE_SET(vehicle, SteerAngle, 0.0f);
+    VEHICLE_SET(vehicle, EngineRpm, 0.0f);
+    if (VEHICLE_GET(vehicle, Model) != NULL) {
+        VEHICLE_GET(vehicle, Body).kind = RIGID_BODY_BOX_1;
+        VEHICLE_GET(vehicle, Body).size.y = 2.0f;
+        VEHICLE_GET(vehicle, Body).mass = 1000.0f;
+        VEHICLE_GET(vehicle, Body).size.x = 3.5f;
+        VEHICLE_GET(vehicle, Body).size.z = 1.5f;
+        InitRigidBody(&VEHICLE_GET(vehicle, Body));
+        VEHICLE_GET(vehicle, Body).state.position.x = 0.0f;
+        VEHICLE_GET(vehicle, Body).state.position.y = 0.0f;
+        VEHICLE_GET(vehicle, Body).state.position.z = 2.0f;
+        VEHICLE_GET(vehicle, Body).state.velocity.x = 0.0f;
+        VEHICLE_GET(vehicle, Body).state.velocity.y = 0.0f;
+        VEHICLE_GET(vehicle, Body).state.velocity.z = 0.0f;
+        VEHICLE_GET(vehicle, Body).state.orientation.x = 0.0f;
+        VEHICLE_GET(vehicle, Body).state.orientation.y = 0.0f;
+        VEHICLE_GET(vehicle, Body).state.orientation.z = 0.0f;
+        VEHICLE_GET(vehicle, Body).state.angularVelocity.x = 0.0f;
+        VEHICLE_GET(vehicle, Body).state.angularVelocity.y = 0.0f;
+        VEHICLE_GET(vehicle, Body).state.angularVelocity.z = 0.0f;
+        VEHICLE_GET(vehicle, Body).state.orientation.w = 1.0f;
+        QuaternionToMatrix(VEHICLE_GET(vehicle, Body).orientation,
+                           &VEHICLE_GET(vehicle, Body).state);
+        VEHICLE_GET(vehicle, Body).springRate =
+            ((f32)VEHICLE_GET(vehicle, SuspensionStiffness) * 4.0f + 20.0f) * 16000.0f;
+        VEHICLE_GET(vehicle, Body).damping = -3000.0f;
 
         /* The rear and the front wheel of the model, and those of the other side mirrored. */
-        vehicle->wheelBodies[0].suspension = 0;
-        vehicle->wheelBodies[0].ground = NULL;
-        vehicle->wheelBodies[0].spinRate = 0;
-        vehicle->wheelBodies[0].kind = RIGID_BODY_NO_ROTATION;
-        vehicle->wheelBodies[0].mass = 0.0f;
-        vehicle->wheelBodies[0].size.x = 0.0f;
-        vehicle->wheelBodies[0].size.y = 0.0f;
-        vehicle->wheelBodies[0].size.z = 0.0f;
-        InitRigidBody(&vehicle->wheelBodies[0]);
-        INIT_WHEEL_STATE(
-            &vehicle->wheelBodies[0], vehicle->model->wheels[2].x, vehicle->model->wheels[2].y);
-        vehicle->wheelBodies[2].suspension = 0;
-        vehicle->wheelBodies[2].ground = NULL;
-        vehicle->wheelBodies[2].spinRate = 0;
-        vehicle->wheelBodies[2].kind = RIGID_BODY_NO_ROTATION;
-        vehicle->wheelBodies[2].mass = 0.0f;
-        vehicle->wheelBodies[2].size.x = 0.0f;
-        vehicle->wheelBodies[2].size.y = 0.0f;
-        vehicle->wheelBodies[2].size.z = 0.0f;
-        InitRigidBody(&vehicle->wheelBodies[2]);
-        INIT_WHEEL_STATE(
-            &vehicle->wheelBodies[2], vehicle->model->wheels[2].x, -vehicle->model->wheels[2].y);
-        vehicle->wheelBodies[1].suspension = 0;
-        vehicle->wheelBodies[1].ground = NULL;
-        vehicle->wheelBodies[1].spinRate = 0;
-        vehicle->wheelBodies[1].kind = RIGID_BODY_NO_ROTATION;
-        vehicle->wheelBodies[1].mass = 0.0f;
-        vehicle->wheelBodies[1].size.x = 0.0f;
-        vehicle->wheelBodies[1].size.y = 0.0f;
-        vehicle->wheelBodies[1].size.z = 0.0f;
-        InitRigidBody(&vehicle->wheelBodies[1]);
-        INIT_WHEEL_STATE(
-            &vehicle->wheelBodies[1], vehicle->model->wheels[1].x, vehicle->model->wheels[1].y);
-        vehicle->wheelBodies[3].suspension = 0;
-        vehicle->wheelBodies[3].ground = NULL;
-        vehicle->wheelBodies[3].spinRate = 0;
-        vehicle->wheelBodies[3].kind = RIGID_BODY_NO_ROTATION;
-        vehicle->wheelBodies[3].mass = 0.0f;
-        vehicle->wheelBodies[3].size.x = 0.0f;
-        vehicle->wheelBodies[3].size.y = 0.0f;
-        vehicle->wheelBodies[3].size.z = 0.0f;
-        InitRigidBody(&vehicle->wheelBodies[3]);
-        INIT_WHEEL_STATE(
-            &vehicle->wheelBodies[3], vehicle->model->wheels[1].x, -vehicle->model->wheels[1].y);
-        vehicle->body.wheels[0] = &vehicle->wheelBodies[0];
-        vehicle->body.wheels[1] = &vehicle->wheelBodies[2];
-        vehicle->body.wheels[2] = &vehicle->wheelBodies[1];
-        vehicle->body.wheels[3] = &vehicle->wheelBodies[3];
+        VEHICLE_GET(vehicle, WheelBodies)[0].suspension = 0;
+        VEHICLE_GET(vehicle, WheelBodies)[0].ground = NULL;
+        VEHICLE_GET(vehicle, WheelBodies)[0].spinRate = 0;
+        VEHICLE_GET(vehicle, WheelBodies)[0].kind = RIGID_BODY_NO_ROTATION;
+        VEHICLE_GET(vehicle, WheelBodies)[0].mass = 0.0f;
+        VEHICLE_GET(vehicle, WheelBodies)[0].size.x = 0.0f;
+        VEHICLE_GET(vehicle, WheelBodies)[0].size.y = 0.0f;
+        VEHICLE_GET(vehicle, WheelBodies)[0].size.z = 0.0f;
+        InitRigidBody(&VEHICLE_GET(vehicle, WheelBodies)[0]);
+        INIT_WHEEL_STATE(&VEHICLE_GET(vehicle, WheelBodies)[0],
+                         VEHICLE_GET(vehicle, Model)->wheels[2].x,
+                         VEHICLE_GET(vehicle, Model)->wheels[2].y);
+        VEHICLE_GET(vehicle, WheelBodies)[2].suspension = 0;
+        VEHICLE_GET(vehicle, WheelBodies)[2].ground = NULL;
+        VEHICLE_GET(vehicle, WheelBodies)[2].spinRate = 0;
+        VEHICLE_GET(vehicle, WheelBodies)[2].kind = RIGID_BODY_NO_ROTATION;
+        VEHICLE_GET(vehicle, WheelBodies)[2].mass = 0.0f;
+        VEHICLE_GET(vehicle, WheelBodies)[2].size.x = 0.0f;
+        VEHICLE_GET(vehicle, WheelBodies)[2].size.y = 0.0f;
+        VEHICLE_GET(vehicle, WheelBodies)[2].size.z = 0.0f;
+        InitRigidBody(&VEHICLE_GET(vehicle, WheelBodies)[2]);
+        INIT_WHEEL_STATE(&VEHICLE_GET(vehicle, WheelBodies)[2],
+                         VEHICLE_GET(vehicle, Model)->wheels[2].x,
+                         -VEHICLE_GET(vehicle, Model)->wheels[2].y);
+        VEHICLE_GET(vehicle, WheelBodies)[1].suspension = 0;
+        VEHICLE_GET(vehicle, WheelBodies)[1].ground = NULL;
+        VEHICLE_GET(vehicle, WheelBodies)[1].spinRate = 0;
+        VEHICLE_GET(vehicle, WheelBodies)[1].kind = RIGID_BODY_NO_ROTATION;
+        VEHICLE_GET(vehicle, WheelBodies)[1].mass = 0.0f;
+        VEHICLE_GET(vehicle, WheelBodies)[1].size.x = 0.0f;
+        VEHICLE_GET(vehicle, WheelBodies)[1].size.y = 0.0f;
+        VEHICLE_GET(vehicle, WheelBodies)[1].size.z = 0.0f;
+        InitRigidBody(&VEHICLE_GET(vehicle, WheelBodies)[1]);
+        INIT_WHEEL_STATE(&VEHICLE_GET(vehicle, WheelBodies)[1],
+                         VEHICLE_GET(vehicle, Model)->wheels[1].x,
+                         VEHICLE_GET(vehicle, Model)->wheels[1].y);
+        VEHICLE_GET(vehicle, WheelBodies)[3].suspension = 0;
+        VEHICLE_GET(vehicle, WheelBodies)[3].ground = NULL;
+        VEHICLE_GET(vehicle, WheelBodies)[3].spinRate = 0;
+        VEHICLE_GET(vehicle, WheelBodies)[3].kind = RIGID_BODY_NO_ROTATION;
+        VEHICLE_GET(vehicle, WheelBodies)[3].mass = 0.0f;
+        VEHICLE_GET(vehicle, WheelBodies)[3].size.x = 0.0f;
+        VEHICLE_GET(vehicle, WheelBodies)[3].size.y = 0.0f;
+        VEHICLE_GET(vehicle, WheelBodies)[3].size.z = 0.0f;
+        InitRigidBody(&VEHICLE_GET(vehicle, WheelBodies)[3]);
+        INIT_WHEEL_STATE(&VEHICLE_GET(vehicle, WheelBodies)[3],
+                         VEHICLE_GET(vehicle, Model)->wheels[1].x,
+                         -VEHICLE_GET(vehicle, Model)->wheels[1].y);
+        VEHICLE_GET(vehicle, Body).wheels[0] = &VEHICLE_GET(vehicle, WheelBodies)[0];
+        VEHICLE_GET(vehicle, Body).wheels[1] = &VEHICLE_GET(vehicle, WheelBodies)[2];
+        VEHICLE_GET(vehicle, Body).wheels[2] = &VEHICLE_GET(vehicle, WheelBodies)[1];
+        VEHICLE_GET(vehicle, Body).wheels[3] = &VEHICLE_GET(vehicle, WheelBodies)[3];
 
         /* The springs over the wheels, then gravity. */
-        INIT_BODY_FORCE(&vehicle->forces[VEHICLE_FORCE_SPRING_0], -1.5f, -1.0f);
-        INIT_BODY_FORCE(&vehicle->forces[VEHICLE_FORCE_SPRING_2], -1.5f, 1.0f);
-        INIT_BODY_FORCE(&vehicle->forces[VEHICLE_FORCE_SPRING_1], 1.5f, -1.0f);
-        INIT_BODY_FORCE(&vehicle->forces[VEHICLE_FORCE_SPRING_3], 1.5f, 1.0f);
-        SetRigidBodyForce(&vehicle->forces[VEHICLE_FORCE_GRAVITY],
+        INIT_BODY_FORCE(&VEHICLE_GET(vehicle, Forces)[VEHICLE_FORCE_SPRING_0], -1.5f, -1.0f);
+        INIT_BODY_FORCE(&VEHICLE_GET(vehicle, Forces)[VEHICLE_FORCE_SPRING_2], -1.5f, 1.0f);
+        INIT_BODY_FORCE(&VEHICLE_GET(vehicle, Forces)[VEHICLE_FORCE_SPRING_1], 1.5f, -1.0f);
+        INIT_BODY_FORCE(&VEHICLE_GET(vehicle, Forces)[VEHICLE_FORCE_SPRING_3], 1.5f, 1.0f);
+        SetRigidBodyForce(&VEHICLE_GET(vehicle, Forces)[VEHICLE_FORCE_GRAVITY],
                           0.0f,
                           0.0f,
                           -15450.75f,
@@ -313,7 +336,7 @@ void InitVehiclePhysics(Vehicle *vehicle) {
                           0.0f,
                           0.0f,
                           RIGID_BODY_FORCE_WORLD);
-        SetRigidBodyForce(&vehicle->forces[VEHICLE_FORCE_FRONT_WHEEL_GRAVITY],
+        SetRigidBodyForce(&VEHICLE_GET(vehicle, Forces)[VEHICLE_FORCE_FRONT_WHEEL_GRAVITY],
                           0.0f,
                           0.0f,
                           -(10.5f * 9.81f),
@@ -321,7 +344,7 @@ void InitVehiclePhysics(Vehicle *vehicle) {
                           0.0f,
                           0.0f,
                           RIGID_BODY_FORCE_WORLD);
-        SetRigidBodyForce(&vehicle->forces[VEHICLE_FORCE_REAR_WHEEL_GRAVITY],
+        SetRigidBodyForce(&VEHICLE_GET(vehicle, Forces)[VEHICLE_FORCE_REAR_WHEEL_GRAVITY],
                           0.0f,
                           0.0f,
                           -(10.5f * 9.81f),
@@ -329,39 +352,51 @@ void InitVehiclePhysics(Vehicle *vehicle) {
                           0.0f,
                           0.0f,
                           RIGID_BODY_FORCE_WORLD);
-        vehicle->forces[VEHICLE_FORCE_SPRING_0].next = &vehicle->forces[VEHICLE_FORCE_SPRING_2];
-        vehicle->forces[VEHICLE_FORCE_SPRING_2].next = &vehicle->forces[VEHICLE_FORCE_SPRING_1];
-        vehicle->forces[VEHICLE_FORCE_SPRING_1].next = &vehicle->forces[VEHICLE_FORCE_SPRING_3];
-        vehicle->forces[VEHICLE_FORCE_SPRING_3].next = &vehicle->forces[VEHICLE_FORCE_GRAVITY];
-        vehicle->forces[VEHICLE_FORCE_GRAVITY].next = NULL;
-        vehicle->body.forces = &vehicle->forces[VEHICLE_FORCE_SPRING_0];
+        VEHICLE_GET(vehicle, Forces)
+        [VEHICLE_FORCE_SPRING_0].next = &VEHICLE_GET(vehicle, Forces)[VEHICLE_FORCE_SPRING_2];
+        VEHICLE_GET(vehicle, Forces)
+        [VEHICLE_FORCE_SPRING_2].next = &VEHICLE_GET(vehicle, Forces)[VEHICLE_FORCE_SPRING_1];
+        VEHICLE_GET(vehicle, Forces)
+        [VEHICLE_FORCE_SPRING_1].next = &VEHICLE_GET(vehicle, Forces)[VEHICLE_FORCE_SPRING_3];
+        VEHICLE_GET(vehicle, Forces)
+        [VEHICLE_FORCE_SPRING_3].next = &VEHICLE_GET(vehicle, Forces)[VEHICLE_FORCE_GRAVITY];
+        VEHICLE_GET(vehicle, Forces)[VEHICLE_FORCE_GRAVITY].next = NULL;
+        VEHICLE_GET(vehicle, Body).forces = &VEHICLE_GET(vehicle, Forces)[VEHICLE_FORCE_SPRING_0];
 
         /* The drive of each wheel, then the gravity of its axle. */
-        INIT_BODY_FORCE(&vehicle->forces[VEHICLE_FORCE_WHEEL_0], 0.0f, 0.0f);
-        INIT_BODY_FORCE(&vehicle->forces[VEHICLE_FORCE_WHEEL_2], 0.0f, 0.0f);
-        INIT_BODY_FORCE(&vehicle->forces[VEHICLE_FORCE_WHEEL_1], 0.0f, 0.0f);
-        INIT_BODY_FORCE(&vehicle->forces[VEHICLE_FORCE_WHEEL_3], 0.0f, 0.0f);
-        vehicle->wheelBodies[0].forces = &vehicle->forces[VEHICLE_FORCE_WHEEL_0];
-        vehicle->wheelBodies[2].forces = &vehicle->forces[VEHICLE_FORCE_WHEEL_2];
-        vehicle->wheelBodies[1].forces = &vehicle->forces[VEHICLE_FORCE_WHEEL_1];
-        vehicle->wheelBodies[3].forces = &vehicle->forces[VEHICLE_FORCE_WHEEL_3];
-        vehicle->forces[VEHICLE_FORCE_REAR_WHEEL_GRAVITY].next = NULL;
-        vehicle->forces[VEHICLE_FORCE_FRONT_WHEEL_GRAVITY].next = NULL;
-        vehicle->forces[VEHICLE_FORCE_WHEEL_0].next =
-            &vehicle->forces[VEHICLE_FORCE_REAR_WHEEL_GRAVITY];
-        vehicle->forces[VEHICLE_FORCE_WHEEL_2].next =
-            &vehicle->forces[VEHICLE_FORCE_REAR_WHEEL_GRAVITY];
-        vehicle->forces[VEHICLE_FORCE_WHEEL_1].next =
-            &vehicle->forces[VEHICLE_FORCE_FRONT_WHEEL_GRAVITY];
-        vehicle->forces[VEHICLE_FORCE_WHEEL_3].next =
-            &vehicle->forces[VEHICLE_FORCE_FRONT_WHEEL_GRAVITY];
+        INIT_BODY_FORCE(&VEHICLE_GET(vehicle, Forces)[VEHICLE_FORCE_WHEEL_0], 0.0f, 0.0f);
+        INIT_BODY_FORCE(&VEHICLE_GET(vehicle, Forces)[VEHICLE_FORCE_WHEEL_2], 0.0f, 0.0f);
+        INIT_BODY_FORCE(&VEHICLE_GET(vehicle, Forces)[VEHICLE_FORCE_WHEEL_1], 0.0f, 0.0f);
+        INIT_BODY_FORCE(&VEHICLE_GET(vehicle, Forces)[VEHICLE_FORCE_WHEEL_3], 0.0f, 0.0f);
+        VEHICLE_GET(vehicle, WheelBodies)
+        [0].forces = &VEHICLE_GET(vehicle, Forces)[VEHICLE_FORCE_WHEEL_0];
+        VEHICLE_GET(vehicle, WheelBodies)
+        [2].forces = &VEHICLE_GET(vehicle, Forces)[VEHICLE_FORCE_WHEEL_2];
+        VEHICLE_GET(vehicle, WheelBodies)
+        [1].forces = &VEHICLE_GET(vehicle, Forces)[VEHICLE_FORCE_WHEEL_1];
+        VEHICLE_GET(vehicle, WheelBodies)
+        [3].forces = &VEHICLE_GET(vehicle, Forces)[VEHICLE_FORCE_WHEEL_3];
+        VEHICLE_GET(vehicle, Forces)[VEHICLE_FORCE_REAR_WHEEL_GRAVITY].next = NULL;
+        VEHICLE_GET(vehicle, Forces)[VEHICLE_FORCE_FRONT_WHEEL_GRAVITY].next = NULL;
+        VEHICLE_GET(vehicle, Forces)
+        [VEHICLE_FORCE_WHEEL_0].next =
+            &VEHICLE_GET(vehicle, Forces)[VEHICLE_FORCE_REAR_WHEEL_GRAVITY];
+        VEHICLE_GET(vehicle, Forces)
+        [VEHICLE_FORCE_WHEEL_2].next =
+            &VEHICLE_GET(vehicle, Forces)[VEHICLE_FORCE_REAR_WHEEL_GRAVITY];
+        VEHICLE_GET(vehicle, Forces)
+        [VEHICLE_FORCE_WHEEL_1].next =
+            &VEHICLE_GET(vehicle, Forces)[VEHICLE_FORCE_FRONT_WHEEL_GRAVITY];
+        VEHICLE_GET(vehicle, Forces)
+        [VEHICLE_FORCE_WHEEL_3].next =
+            &VEHICLE_GET(vehicle, Forces)[VEHICLE_FORCE_FRONT_WHEEL_GRAVITY];
 
         /* The dampers over the wheels, then the drag. */
-        INIT_BODY_FORCE(&vehicle->forces[VEHICLE_FORCE_DAMPER_0], -1.5f, -1.0f);
-        INIT_BODY_FORCE(&vehicle->forces[VEHICLE_FORCE_DAMPER_2], -1.5f, 1.0f);
-        INIT_BODY_FORCE(&vehicle->forces[VEHICLE_FORCE_DAMPER_1], 1.5f, -1.0f);
-        INIT_BODY_FORCE(&vehicle->forces[VEHICLE_FORCE_DAMPER_3], 1.5f, 1.0f);
-        SetRigidBodyForce(&vehicle->forces[VEHICLE_FORCE_DRAG],
+        INIT_BODY_FORCE(&VEHICLE_GET(vehicle, Forces)[VEHICLE_FORCE_DAMPER_0], -1.5f, -1.0f);
+        INIT_BODY_FORCE(&VEHICLE_GET(vehicle, Forces)[VEHICLE_FORCE_DAMPER_2], -1.5f, 1.0f);
+        INIT_BODY_FORCE(&VEHICLE_GET(vehicle, Forces)[VEHICLE_FORCE_DAMPER_1], 1.5f, -1.0f);
+        INIT_BODY_FORCE(&VEHICLE_GET(vehicle, Forces)[VEHICLE_FORCE_DAMPER_3], 1.5f, 1.0f);
+        SetRigidBodyForce(&VEHICLE_GET(vehicle, Forces)[VEHICLE_FORCE_DRAG],
                           0.0f,
                           0.0f,
                           0.0f,
@@ -369,15 +404,19 @@ void InitVehiclePhysics(Vehicle *vehicle) {
                           0.0f,
                           0.0f,
                           RIGID_BODY_FORCE_WORLD);
-        vehicle->forces[VEHICLE_FORCE_DAMPER_0].next = &vehicle->forces[VEHICLE_FORCE_DAMPER_2];
-        vehicle->forces[VEHICLE_FORCE_DAMPER_2].next = &vehicle->forces[VEHICLE_FORCE_DAMPER_1];
-        vehicle->forces[VEHICLE_FORCE_DAMPER_1].next = &vehicle->forces[VEHICLE_FORCE_DAMPER_3];
-        vehicle->body.tireType = vehicle->tireType;
-        vehicle->forces[VEHICLE_FORCE_DRAG].next = NULL;
-        vehicle->steerReturn = 0;
-        vehicle->frontLoad = 0;
-        vehicle->rearLoad = 0;
-        vehicle->forces[VEHICLE_FORCE_DAMPER_3].next = &vehicle->forces[VEHICLE_FORCE_DRAG];
+        VEHICLE_GET(vehicle, Forces)
+        [VEHICLE_FORCE_DAMPER_0].next = &VEHICLE_GET(vehicle, Forces)[VEHICLE_FORCE_DAMPER_2];
+        VEHICLE_GET(vehicle, Forces)
+        [VEHICLE_FORCE_DAMPER_2].next = &VEHICLE_GET(vehicle, Forces)[VEHICLE_FORCE_DAMPER_1];
+        VEHICLE_GET(vehicle, Forces)
+        [VEHICLE_FORCE_DAMPER_1].next = &VEHICLE_GET(vehicle, Forces)[VEHICLE_FORCE_DAMPER_3];
+        VEHICLE_GET(vehicle, Body).tireType = VEHICLE_GET(vehicle, TireType);
+        VEHICLE_GET(vehicle, Forces)[VEHICLE_FORCE_DRAG].next = NULL;
+        VEHICLE_SET(vehicle, SteerReturn, 0);
+        VEHICLE_SET(vehicle, FrontLoad, 0);
+        VEHICLE_SET(vehicle, RearLoad, 0);
+        VEHICLE_GET(vehicle, Forces)
+        [VEHICLE_FORCE_DAMPER_3].next = &VEHICLE_GET(vehicle, Forces)[VEHICLE_FORCE_DRAG];
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
         NullStub();
         NullStub();
@@ -385,8 +424,8 @@ void InitVehiclePhysics(Vehicle *vehicle) {
         NullStub();
 #endif
     }
-    vehicle->rearSliding = 0;
-    vehicle->frontSliding = 0;
+    VEHICLE_SET(vehicle, RearSliding, 0);
+    VEHICLE_SET(vehicle, FrontSliding, 0);
 }
 
 /* The spray of the wheels: where each starts its phase, and how far apart. */
@@ -411,25 +450,27 @@ void ResetVehicleEffects(Vehicle *vehicle) {
     s32 l;
 
     /* The staggered starts are written and at once cleared. */
-    start = (f32)vehicle->index * SPRAY_FRAMES_STEP;
-    vehicle->sprayFramesLeft[0] = start;
-    vehicle->sprayFramesLeft[1] = start + SPRAY_FRAMES_SPREAD;
-    vehicle->sprayFramesLeft[2] = vehicle->sprayFramesLeft[1] + SPRAY_FRAMES_SPREAD;
-    vehicle->sprayFramesLeft[3] = vehicle->sprayFramesLeft[2] + SPRAY_FRAMES_SPREAD;
+    start = (f32)VEHICLE_GET(vehicle, Index) * SPRAY_FRAMES_STEP;
+    VEHICLE_GET(vehicle, SprayFramesLeft)[0] = start;
+    VEHICLE_GET(vehicle, SprayFramesLeft)[1] = start + SPRAY_FRAMES_SPREAD;
+    VEHICLE_GET(vehicle, SprayFramesLeft)
+    [2] = VEHICLE_GET(vehicle, SprayFramesLeft)[1] + SPRAY_FRAMES_SPREAD;
+    VEHICLE_GET(vehicle, SprayFramesLeft)
+    [3] = VEHICLE_GET(vehicle, SprayFramesLeft)[2] + SPRAY_FRAMES_SPREAD;
     for (j = 0; j < VEHICLE_WHEELS; j++) {
-        vehicle->sprayAdvanced[j] = 0;
-        vehicle->spraySurfaces[j] = TRACK_SURFACE_START;
+        VEHICLE_GET(vehicle, SprayAdvanced)[j] = 0;
+        VEHICLE_GET(vehicle, SpraySurfaces)[j] = TRACK_SURFACE_START;
     }
     for (k = 0; k < VEHICLE_WHEELS; k++) {
-        vehicle->smokeTimers[k] = (f32)k * SMOKE_TIMER_STEP;
+        VEHICLE_GET(vehicle, SmokeTimers)[k] = (f32)k * SMOKE_TIMER_STEP;
     }
     for (l = 0; l < VEHICLE_WHEELS; l++) {
-        vehicle->sprayPhases[l] = 0.0f;
-        vehicle->sprayFramesLeft[l] = 0.0f;
+        VEHICLE_GET(vehicle, SprayPhases)[l] = 0.0f;
+        VEHICLE_GET(vehicle, SprayFramesLeft)[l] = 0.0f;
     }
 
-    velocity = &vehicle->sprayVelocities[0][0][0][0];
-    vertex = &vehicle->sprayVertices[0][0][0];
+    velocity = &VEHICLE_GET(vehicle, SprayVelocities)[0][0][0][0];
+    vertex = &VEHICLE_GET(vehicle, SprayVertices)[0][0][0];
     for (i = 0; i < VEHICLE_WHEELS * SPRAY_SEGMENTS * SPRAY_SEGMENT_VERTICES; i++) {
         velocity[2] = 0;
         velocity[1] = velocity[2];
@@ -459,7 +500,7 @@ void ResetVehicleEffects(Vehicle *vehicle) {
         vertex++;
     }
 
-    surface = &vehicle->spraySegmentSurfaces[0][0];
+    surface = &VEHICLE_GET(vehicle, SpraySegmentSurfaces)[0][0];
     for (i = 0; i < VEHICLE_WHEELS * SPRAY_SEGMENTS; i++) {
         surface[i] = TRACK_SURFACE_START;
     }
@@ -472,8 +513,8 @@ void ResetVehicleEffects(Vehicle *vehicle) {
 #define AI_START_GRACE -180
 
 void RespawnVehicle(Vehicle *vehicle) {
-    if (vehicle->body.uprightFrames >= 0 &&
-        !(vehicle->matrix[3][2] < g_LoadedTrack.minZ - RESPAWN_FALL_DEPTH)) {
+    if (VEHICLE_GET(vehicle, Body).uprightFrames >= 0 &&
+        !(VEHICLE_GET(vehicle, Matrix)[3][2] < g_LoadedTrack.minZ - RESPAWN_FALL_DEPTH)) {
         return;
     }
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
@@ -485,60 +526,68 @@ void RespawnVehicle(Vehicle *vehicle) {
 #else
     if (g_dwGameMode == GAME_MODE_TIME_ATTACK || g_dwGameMode == GAME_MODE_DEMO) {
 #endif
-        SetVehiclePosition(vehicle,
-                           vehicle->section->points[vehicle->pointIndex].position.x,
-                           vehicle->section->points[vehicle->pointIndex].position.y,
-                           vehicle->section->points[vehicle->pointIndex].position.z +
-                               RESPAWN_HEIGHT);
+        SetVehiclePosition(
+            vehicle,
+            VEHICLE_GET(vehicle, Section)->points[VEHICLE_GET(vehicle, PointIndex)].position.x,
+            VEHICLE_GET(vehicle, Section)->points[VEHICLE_GET(vehicle, PointIndex)].position.y,
+            VEHICLE_GET(vehicle, Section)->points[VEHICLE_GET(vehicle, PointIndex)].position.z +
+                RESPAWN_HEIGHT);
     } else {
-        SetVehiclePosition(vehicle,
-                           vehicle->section->points[vehicle->pointIndex].position.x +
-                               (f32)vehicle->index * RESPAWN_SPREAD,
-                           vehicle->section->points[vehicle->pointIndex].position.y,
-                           vehicle->section->points[vehicle->pointIndex].position.z +
-                               RESPAWN_HEIGHT);
+        SetVehiclePosition(
+            vehicle,
+            VEHICLE_GET(vehicle, Section)->points[VEHICLE_GET(vehicle, PointIndex)].position.x +
+                (f32)VEHICLE_GET(vehicle, Index) * RESPAWN_SPREAD,
+            VEHICLE_GET(vehicle, Section)->points[VEHICLE_GET(vehicle, PointIndex)].position.y,
+            VEHICLE_GET(vehicle, Section)->points[VEHICLE_GET(vehicle, PointIndex)].position.z +
+                RESPAWN_HEIGHT);
     }
-    InitVehicleOrientationFromAngle(vehicle,
-                                    Atan2f(vehicle->trackDirection.x, vehicle->trackDirection.y));
+    InitVehicleOrientationFromAngle(
+        vehicle,
+        Atan2f(VEHICLE_GET(vehicle, TrackDirection).x, VEHICLE_GET(vehicle, TrackDirection).y));
     SetVehicleVelocity(vehicle, 0.0f, 0.0f, 0.0f);
     SetVehicleTurnRate(vehicle, 0.0f, 0.0f, 0.0f);
-    vehicle->body.wheels[0]->ground = NULL;
-    vehicle->body.wheels[0]->contactFrames = 0;
-    vehicle->body.wheels[0]->surface = TRACK_SURFACE_START;
-    vehicle->body.wheels[1]->ground = NULL;
-    vehicle->body.wheels[1]->contactFrames = 0;
-    vehicle->body.wheels[1]->surface = TRACK_SURFACE_START;
-    vehicle->body.wheels[3]->ground = NULL;
-    vehicle->body.wheels[3]->contactFrames = 0;
-    vehicle->body.wheels[3]->surface = TRACK_SURFACE_START;
-    vehicle->body.wheels[2]->ground = NULL;
-    vehicle->body.wheels[2]->contactFrames = 0;
-    vehicle->body.wheels[2]->surface = TRACK_SURFACE_START;
-    vehicle->forcedForwardFrames = 0;
-    vehicle->forcedReverseFrames = 0;
-    vehicle->reverseFrames = 0;
-    vehicle->forwardFrames = AI_START_GRACE;
-    vehicle->body.uprightFrames = 0;
-    vehicle->ghostMode = VEHICLE_GHOST;
-    vehicle->opacity = RESPAWN_OPACITY;
-    UpdateCameraChase(vehicle, &vehicle->cameras[VEHICLE_CAMERA_CHASE], 1.0f);
-    vehicle->cameraChanged = 1;
-    vehicle->chasePosition.x = vehicle->cameras[VEHICLE_CAMERA_CHASE].position.x;
-    vehicle->chasePosition.y = vehicle->cameras[VEHICLE_CAMERA_CHASE].position.y;
-    vehicle->chasePosition.z = vehicle->cameras[VEHICLE_CAMERA_CHASE].position.z;
+    VEHICLE_GET(vehicle, Body).wheels[0]->ground = NULL;
+    VEHICLE_GET(vehicle, Body).wheels[0]->contactFrames = 0;
+    VEHICLE_GET(vehicle, Body).wheels[0]->surface = TRACK_SURFACE_START;
+    VEHICLE_GET(vehicle, Body).wheels[1]->ground = NULL;
+    VEHICLE_GET(vehicle, Body).wheels[1]->contactFrames = 0;
+    VEHICLE_GET(vehicle, Body).wheels[1]->surface = TRACK_SURFACE_START;
+    VEHICLE_GET(vehicle, Body).wheels[3]->ground = NULL;
+    VEHICLE_GET(vehicle, Body).wheels[3]->contactFrames = 0;
+    VEHICLE_GET(vehicle, Body).wheels[3]->surface = TRACK_SURFACE_START;
+    VEHICLE_GET(vehicle, Body).wheels[2]->ground = NULL;
+    VEHICLE_GET(vehicle, Body).wheels[2]->contactFrames = 0;
+    VEHICLE_GET(vehicle, Body).wheels[2]->surface = TRACK_SURFACE_START;
+    VEHICLE_SET(vehicle, ForcedForwardFrames, 0);
+    VEHICLE_SET(vehicle, ForcedReverseFrames, 0);
+    VEHICLE_SET(vehicle, ReverseFrames, 0);
+    VEHICLE_SET(vehicle, ForwardFrames, AI_START_GRACE);
+    VEHICLE_GET(vehicle, Body).uprightFrames = 0;
+    VEHICLE_SET(vehicle, GhostMode, VEHICLE_GHOST);
+    VEHICLE_SET(vehicle, Opacity, RESPAWN_OPACITY);
+    UpdateCameraChase(vehicle, &VEHICLE_GET(vehicle, Cameras)[VEHICLE_CAMERA_CHASE], 1.0f);
+    VEHICLE_SET(vehicle, CameraChanged, 1);
+    VEHICLE_GET(vehicle, ChasePosition).x =
+        VEHICLE_GET(vehicle, Cameras)[VEHICLE_CAMERA_CHASE].position.x;
+    VEHICLE_GET(vehicle, ChasePosition).y =
+        VEHICLE_GET(vehicle, Cameras)[VEHICLE_CAMERA_CHASE].position.y;
+    VEHICLE_GET(vehicle, ChasePosition).z =
+        VEHICLE_GET(vehicle, Cameras)[VEHICLE_CAMERA_CHASE].position.z;
 }
 
 void InitVehicleColorAndPhysics(Vehicle *vehicle) {
     /* The Japanese release does not paint the model here. */
 #if TGR_PLATFORM == TGR_PLATFORM_WIN || TGR_REGION != TGR_REGION_JP
-    SetMaterialColor(
-        vehicle->model, vehicle->color[0] >> 3, vehicle->color[1] >> 3, vehicle->color[2] >> 3);
+    SetMaterialColor(VEHICLE_GET(vehicle, Model),
+                     VEHICLE_GET(vehicle, Color)[0] >> 3,
+                     VEHICLE_GET(vehicle, Color)[1] >> 3,
+                     VEHICLE_GET(vehicle, Color)[2] >> 3);
 #endif
     InitVehiclePhysics(vehicle);
 }
 
 void SetVehicleModelSlot(Vehicle *vehicle, s32 slot) {
-    vehicle->model = &g_aVehicleModels[slot];
+    VEHICLE_SET(vehicle, Model, &g_aVehicleModels[slot]);
     InitVehicleColorAndPhysics(vehicle);
 }
 
@@ -546,9 +595,9 @@ void ClearVehicleDamageState(Vehicle *vehicle) {
     s32 i;
 
     for (i = 0; i < VEHICLE_DENT_SIDES; i++) {
-        vehicle->dents[i] = 0;
+        VEHICLE_GET(vehicle, Dents)[i] = 0;
     }
-    vehicle->dentJitter = 0;
+    VEHICLE_SET(vehicle, DentJitter, 0);
 }
 
 #define GRID_COLUMN_SPACING 3.0f
@@ -582,13 +631,14 @@ void SetupVehicleForRaceStart(Vehicle *vehicle) {
         (g_dwGameMode == GAME_MODE_PRACTICE && g_dwNumLocalPlayers == 1) ||
         g_dwGameMode == GAME_MODE_CHAMPIONSHIP) {
         /* Alone on the grid, in the middle of the front row. */
-        SetVehicleModelSlot(vehicle, vehicle->index);
+        SetVehicleModelSlot(vehicle, VEHICLE_GET(vehicle, Index));
         row = 0.0f;
         column = 0.5f;
     } else {
-        SetVehicleModelSlot(vehicle, vehicle->index);
+        SetVehicleModelSlot(vehicle, VEHICLE_GET(vehicle, Index));
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
-        gridIndex = g_dwNetworkPlayMode ? vehicle->gridIndex : vehicle->index;
+        gridIndex =
+            g_dwNetworkPlayMode ? VEHICLE_GET(vehicle, GridIndex) : VEHICLE_GET(vehicle, Index);
         row = (f32)(gridIndex >> 1);
         column = (f32)((gridIndex & 1) ^ 1);
 #else
@@ -622,77 +672,81 @@ void SetupVehicleForRaceStart(Vehicle *vehicle) {
             forwardY * GRID_ROW_SPACING * (row + 1.0f),
         g_LoadedTrack.startPosition.z + GRID_HEIGHT);
 #endif
-    vehicle->distance = (row + 0.5f) * -GRID_ROW_SPACING;
+    VEHICLE_SET(vehicle, Distance, (row + 0.5f) * -GRID_ROW_SPACING);
     InitVehicleOrientationFromAngle(vehicle, g_LoadedTrack.startHeading);
-    vehicle->previousPosition = vehicle->frame.position;
-    vehicle->previousListenerPosition = vehicle->frame.position;
+    VEHICLE_GET(vehicle, PreviousPosition) = VEHICLE_GET(vehicle, Frame).position;
+    VEHICLE_GET(vehicle, PreviousListenerPosition) = VEHICLE_GET(vehicle, Frame).position;
     InitCameraForVehicle(vehicle);
-    vehicle->forcedForwardFrames = 0;
-    vehicle->forcedReverseFrames = 0;
-    vehicle->reverseFrames = 0;
-    vehicle->forwardFrames = AI_START_GRACE;
+    VEHICLE_SET(vehicle, ForcedForwardFrames, 0);
+    VEHICLE_SET(vehicle, ForcedReverseFrames, 0);
+    VEHICLE_SET(vehicle, ReverseFrames, 0);
+    VEHICLE_SET(vehicle, ForwardFrames, AI_START_GRACE);
     SetVehicleVelocity(vehicle, 0.0f, 0.0f, 0.0f);
 
     root = g_LoadedTrack.rootSection;
     if (root != NULL) {
-        vehicle->lapTime = 0.0f;
-        vehicle->totalTime = 0.0f;
-        vehicle->bestLapTime = 0.0f;
+        VEHICLE_SET(vehicle, LapTime, 0.0f);
+        VEHICLE_SET(vehicle, TotalTime, 0.0f);
+        VEHICLE_SET(vehicle, BestLapTime, 0.0f);
         weather = g_dwCurrentWeather - 1;
         if (weather >= ARCADE_WEATHERS || weather < 0) {
             weather = 0;
         }
-        vehicle->timeLeft =
-            SELECTED_SETUP_TRACK()->arcadeTimes[vehicle->tableIndex][weather].startTime;
-        vehicle->pointIndex = 0;
-        vehicle->section = g_LoadedTrack.rootSection;
-        Vec3fDirection(&vehicle->trackDirection,
+        VEHICLE_SET(vehicle,
+                    TimeLeft,
+                    SELECTED_SETUP_TRACK()
+                        ->arcadeTimes[VEHICLE_GET(vehicle, TableIndex)][weather]
+                        .startTime);
+        VEHICLE_SET(vehicle, PointIndex, 0);
+        VEHICLE_SET(vehicle, Section, g_LoadedTrack.rootSection);
+        Vec3fDirection(&VEHICLE_GET(vehicle, TrackDirection),
                        &g_LoadedTrack.rootSection->points[0].position,
                        &g_LoadedTrack.rootSection->points[1].position);
     } else {
-        vehicle->trackDirection.y = 0.0f;
-        vehicle->trackDirection.z = 0.0f;
-        vehicle->trackDirection.x = 1.0f;
+        VEHICLE_GET(vehicle, TrackDirection).y = 0.0f;
+        VEHICLE_GET(vehicle, TrackDirection).z = 0.0f;
+        VEHICLE_GET(vehicle, TrackDirection).x = 1.0f;
     }
 
-    vehicle->lap = 0;
-    vehicle->bestLap = 0;
-    vehicle->racePosition = g_dwNumVehicles - vehicle->index - 1;
-    vehicle->maxGate = 0;
+    VEHICLE_SET(vehicle, Lap, 0);
+    VEHICLE_SET(vehicle, BestLap, 0);
+    VEHICLE_SET(vehicle, RacePosition, g_dwNumVehicles - VEHICLE_GET(vehicle, Index) - 1);
+    VEHICLE_SET(vehicle, MaxGate, 0);
     /* The players and the vehicles of these modes start behind the first gate. */
-    if (vehicle->index < (s32)g_dwNumLocalPlayers || g_dwGameMode == GAME_MODE_ARCADE ||
-        g_dwGameMode == GAME_MODE_TIME_ATTACK || g_dwGameMode == GAME_MODE_DEMO
+    if (VEHICLE_GET(vehicle, Index) < (s32)g_dwNumLocalPlayers ||
+        g_dwGameMode == GAME_MODE_ARCADE || g_dwGameMode == GAME_MODE_TIME_ATTACK ||
+        g_dwGameMode == GAME_MODE_DEMO
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
         || g_dwGameMode == GAME_MODE_NETWORK
 #endif
     ) {
-        vehicle->distanceLaps = -1;
-        vehicle->gate = -1;
+        VEHICLE_SET(vehicle, DistanceLaps, -1);
+        VEHICLE_SET(vehicle, Gate, -1);
     } else {
-        vehicle->distanceLaps = 0;
-        vehicle->gate = 0;
+        VEHICLE_SET(vehicle, DistanceLaps, 0);
+        VEHICLE_SET(vehicle, Gate, 0);
     }
-    vehicle->groundInstanceCount = 0;
-    vehicle->nearbyInstanceCount = 0;
-    vehicle->cameraHeading = 0.0f;
-    vehicle->odometer = 0.0f;
-    vehicle->speedKph = 0.0f;
-    vehicle->joltPosition.x = 0.0f;
-    vehicle->joltPosition.y = 0.0f;
-    vehicle->joltPosition.z = 0.0f;
-    vehicle->joltVelocity.x = 0.0f;
-    vehicle->joltVelocity.y = 0.0f;
-    vehicle->joltVelocity.z = 0.0f;
-    vehicle->joltOffset.x = 0.0f;
-    vehicle->joltOffset.y = 0.0f;
-    vehicle->joltOffset.z = 0.0f;
-    vehicle->groundHits = 0;
-    vehicle->slotCooldown = 0;
+    VEHICLE_SET(vehicle, GroundInstanceCount, 0);
+    VEHICLE_SET(vehicle, NearbyInstanceCount, 0);
+    VEHICLE_SET(vehicle, CameraHeading, 0.0f);
+    VEHICLE_SET(vehicle, Odometer, 0.0f);
+    VEHICLE_SET(vehicle, SpeedKph, 0.0f);
+    VEHICLE_GET(vehicle, JoltPosition).x = 0.0f;
+    VEHICLE_GET(vehicle, JoltPosition).y = 0.0f;
+    VEHICLE_GET(vehicle, JoltPosition).z = 0.0f;
+    VEHICLE_GET(vehicle, JoltVelocity).x = 0.0f;
+    VEHICLE_GET(vehicle, JoltVelocity).y = 0.0f;
+    VEHICLE_GET(vehicle, JoltVelocity).z = 0.0f;
+    VEHICLE_GET(vehicle, JoltOffset).x = 0.0f;
+    VEHICLE_GET(vehicle, JoltOffset).y = 0.0f;
+    VEHICLE_GET(vehicle, JoltOffset).z = 0.0f;
+    VEHICLE_SET(vehicle, GroundHits, 0);
+    VEHICLE_SET(vehicle, SlotCooldown, 0);
     ResetVehicleEffects(vehicle);
     ClearVehicleDamageState(vehicle);
-    vehicle->cameraChanged = 0;
-    vehicle->effectSound = 0;
-    vehicle->effectVolume = 0;
-    vehicle->effectPriority = 0;
-    vehicle->dopplerFactor = 1.0f;
+    VEHICLE_SET(vehicle, CameraChanged, 0);
+    VEHICLE_SET(vehicle, EffectSound, 0);
+    VEHICLE_SET(vehicle, EffectVolume, 0);
+    VEHICLE_SET(vehicle, EffectPriority, 0);
+    VEHICLE_SET(vehicle, DopplerFactor, 1.0f);
 }

@@ -134,7 +134,7 @@ typedef struct {
  * A vehicle. The game prints its size, 0x2090 bytes, at start-up. Its fields join this structure as
  * the routines that use them are reconstructed.
  */
-typedef struct Vehicle {
+struct Vehicle {
     union {
         CameraFrame frame; /*!< The axes and position of the vehicle. */
         struct {
@@ -337,7 +337,7 @@ typedef struct Vehicle {
     s16 dentJitter; /*!< A small offset, from -4 to 3, that changes with each dent to vary the
                          dents. */
     u8 unreconstructed208E[0x2090 - 0x208E]; /*!< Padding to the end of the vehicle. */
-} Vehicle;
+};
 
 /**
  * @ghidraAddress USA: 0x8031b760

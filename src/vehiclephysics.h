@@ -7,6 +7,9 @@
 extern "C" {
 #endif
 
+/** Advance the player-controlled vehicle for one frame. */
+void UpdatePhysicsStep(Vehicle *vehicle);
+
 /** Advance spring, tyre, damping, and collision calculations for a vehicle. */
 void SimulateVehiclePhysicsSubstep(Vehicle *vehicle);
 

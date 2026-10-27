@@ -1,11 +1,13 @@
 #include "ambientsound.h"
 
+#include "racerslotaccess.h"
 #include "soundchannel.h"
 #include "soundeffect.h"
 #include "soundmix.h"
 #include "soundpan.h"
 #include "soundsource.h"
 #include "vehicle.h"
+#include "vehicleaccess.h"
 #include "vehiclecount.h"
 
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
@@ -32,8 +34,9 @@
 
 /* Whether the camera of a view changed this frame, which keeps the old pitch and volume. */
 static s32 IsAnyViewCameraChanged(void) {
-    return g_aVehicles[g_aViewportRects[0].vehicleIndex].cameraChanged ||
-           (g_dwNumViewports != 1 && g_aVehicles[g_aViewportRects[1].vehicleIndex].cameraChanged);
+    return VEHICLE_GET(&(g_aVehicles[g_aViewportRects[0].vehicleIndex]), CameraChanged) ||
+           (g_dwNumViewports != 1 &&
+            VEHICLE_GET(&(g_aVehicles[g_aViewportRects[1].vehicleIndex]), CameraChanged));
 }
 
 void UpdateAmbientSoundChannel(void) {
@@ -55,7 +58,7 @@ void UpdateAmbientSoundChannel(void) {
     }
 #endif
     /* The first vehicle always has its racer. */
-    if (g_aVehicles[0].racer->status & RACER_HELD) {
+    if (RACER_SLOT_GET(VEHICLE_GET(&(g_aVehicles[0]), Racer), Status) & RACER_HELD) {
         return;
     }
     if (g_dwChannel3PlayingSfxId != -1) {

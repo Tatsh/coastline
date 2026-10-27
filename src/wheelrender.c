@@ -2,6 +2,7 @@
 
 #include "modeldisplaylist.h"
 #include "util.h"
+#include "vehicleaccess.h"
 #include "vehiclerender.h"
 #include "weather.h"
 
@@ -41,7 +42,7 @@ void RenderWheelModels(Vehicle *vehicle) {
     for (i = 0; i < VEHICLE_WHEELS; i++) {
         gDPPipeSync(gDisplayListPtr++);
         gDPSetCycleType(gDisplayListPtr++, G_CYC_2CYCLE);
-        if (vehicle->ghostMode == VEHICLE_GHOST) {
+        if (VEHICLE_GET(vehicle, GhostMode) == VEHICLE_GHOST) {
             /* A ghost fades out through the alpha of the environment. */
             gDPSetRenderMode(gDisplayListPtr++, g_dwVehicleOtherModeLBlend, FLAGS_GHOST_WHEEL);
             gDPSetEnvColor(gDisplayListPtr++, 0, 0, 0, g_dwVehicleFogAlpha);
@@ -83,7 +84,8 @@ void RenderWheelModels(Vehicle *vehicle) {
             gDPSetRenderMode(gDisplayListPtr++, g_dwVehicleOtherModeLBlend, FLAGS_FAR);
         }
         guScaleF(g_afScratchMatrix, 1.0f / 255.0f, 1.0f / 255.0f, 1.0f / 255.0f);
-        guMtxCatF(g_afScratchMatrix, vehicle->wheelMatrices[i], g_mtxVehicleModelScaled);
+        guMtxCatF(
+            g_afScratchMatrix, VEHICLE_GET(vehicle, WheelMatrices)[i], g_mtxVehicleModelScaled);
         block = CopyWheelMatrix(g_mtxVehicleModelScaled);
         gSPMatrix(gDisplayListPtr++, block, G_MTX_MODELVIEW | G_MTX_LOAD | G_MTX_PUSH);
         guMtxCatF(g_mtxVehicleModelScaled, g_afViewProjMatrix, g_afMvpMatrix);

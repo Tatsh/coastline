@@ -1,4 +1,5 @@
 #include "driving.h"
+#include "vehicleaccess.h"
 
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
 #include <string.h>
@@ -71,7 +72,7 @@ s32 TraceTrackSplineRecursive(Vehicle *vehicle, s32 depth, s32 pointIndex, Track
         middle.x = (TRACE_REAL(point->right.x) + point->left.x) * 0.5f;
         middle.y = (TRACE_REAL(point->right.y) + point->left.y) * 0.5f;
         for (i = 1; i < last; i++) {
-            if (!TestLineSegmentIntersection((Vec2f *)&vehicle->frame.position,
+            if (!TestLineSegmentIntersection((Vec2f *)&VEHICLE_GET(vehicle, Frame).position,
                                              &middle,
                                              (Vec2f *)&g_avTraceLeftLane[i],
                                              (Vec2f *)&g_avTraceRightLane[i])) {
@@ -86,16 +87,17 @@ s32 TraceTrackSplineRecursive(Vehicle *vehicle, s32 depth, s32 pointIndex, Track
             g_pBestTraceSection = section;
             g_dwBestTracePoint = pointIndex;
             if (depth >= 3) {
-                if (TestLineSegmentIntersection((Vec2f *)&vehicle->frame.position,
+                if (TestLineSegmentIntersection((Vec2f *)&VEHICLE_GET(vehicle, Frame).position,
                                                 (Vec2f *)&g_avTraceCenterLine[2],
                                                 (Vec2f *)&g_avTraceLeftHalf[1],
                                                 (Vec2f *)&g_avTraceLeftLane[1])) {
                     g_bAiNudgeLeft = FALSE;
                     g_bAiNudgeRight = TRUE;
-                } else if (TestLineSegmentIntersection((Vec2f *)&vehicle->frame.position,
-                                                       (Vec2f *)&g_avTraceCenterLine[2],
-                                                       (Vec2f *)&g_avTraceRightHalf[1],
-                                                       (Vec2f *)&g_avTraceRightLane[1])) {
+                } else if (TestLineSegmentIntersection(
+                               (Vec2f *)&VEHICLE_GET(vehicle, Frame).position,
+                               (Vec2f *)&g_avTraceCenterLine[2],
+                               (Vec2f *)&g_avTraceRightHalf[1],
+                               (Vec2f *)&g_avTraceRightLane[1])) {
                     g_bAiNudgeLeft = TRUE;
                     g_bAiNudgeRight = FALSE;
                 } else {

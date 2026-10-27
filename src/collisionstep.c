@@ -1,6 +1,7 @@
 #include "physics.h"
 #include "physicsimpact.h"
 #include "racerslotaccess.h"
+#include "vehicleaccess.h"
 
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
 #include <math.h>
@@ -269,29 +270,30 @@ PushVehicle(RacerSlot *slot, RigidBodyState *state, Vec3f *shared, Vec3f *toward
     arm.x = towards->x * 2.5f;
     arm.y = towards->y * 2.5f;
     arm.z = towards->z * 2.5f;
-    Mtx4fInverseRotate(&local, RACER_SLOT_GET(slot, Vehicle)->body.orientation, &arm);
+    Mtx4fInverseRotate(&local, VEHICLE_GET(RACER_SLOT_GET(slot, Vehicle), Body).orientation, &arm);
     state->velocity.x = state->velocity.x - shared->x;
     state->velocity.y = state->velocity.y - shared->y;
     state->velocity.z = state->velocity.z - shared->z;
-    memcpy(&RACER_SLOT_GET(slot, Vehicle)->body.stepStates[1],
-           &RACER_SLOT_GET(slot, Vehicle)->body.state,
+    memcpy(&VEHICLE_GET(RACER_SLOT_GET(slot, Vehicle), Body).stepStates[1],
+           &VEHICLE_GET(RACER_SLOT_GET(slot, Vehicle), Body).state,
            sizeof(RigidBodyState));
-    ApplyCollisionImpulse(&RACER_SLOT_GET(slot, Vehicle)->body, &local, normal, 0, 0.45f);
-    memcpy(&RACER_SLOT_GET(slot, Vehicle)->body.state,
-           &RACER_SLOT_GET(slot, Vehicle)->body.stepStates[1],
+    ApplyCollisionImpulse(
+        &VEHICLE_GET(RACER_SLOT_GET(slot, Vehicle), Body), &local, normal, 0, 0.45f);
+    memcpy(&VEHICLE_GET(RACER_SLOT_GET(slot, Vehicle), Body).state,
+           &VEHICLE_GET(RACER_SLOT_GET(slot, Vehicle), Body).stepStates[1],
            sizeof(RigidBodyState));
-    RACER_SLOT_GET(slot, Vehicle)->body.stepStates[1].velocity.x =
-        shared->x + RACER_SLOT_GET(slot, Vehicle)->body.stepStates[1].velocity.x;
-    RACER_SLOT_GET(slot, Vehicle)->body.stepStates[1].velocity.y =
-        shared->y + RACER_SLOT_GET(slot, Vehicle)->body.stepStates[1].velocity.y;
-    RACER_SLOT_GET(slot, Vehicle)->body.stepStates[1].velocity.z =
-        shared->z + RACER_SLOT_GET(slot, Vehicle)->body.stepStates[1].velocity.z;
-    RACER_SLOT_GET(slot, Vehicle)->body.stepStates[0].velocity.x =
-        RACER_SLOT_GET(slot, Vehicle)->body.stepStates[1].velocity.x;
-    RACER_SLOT_GET(slot, Vehicle)->body.stepStates[0].velocity.y =
-        RACER_SLOT_GET(slot, Vehicle)->body.stepStates[1].velocity.y;
-    RACER_SLOT_GET(slot, Vehicle)->body.stepStates[0].velocity.z =
-        RACER_SLOT_GET(slot, Vehicle)->body.stepStates[1].velocity.z;
+    VEHICLE_GET(RACER_SLOT_GET(slot, Vehicle), Body).stepStates[1].velocity.x =
+        shared->x + VEHICLE_GET(RACER_SLOT_GET(slot, Vehicle), Body).stepStates[1].velocity.x;
+    VEHICLE_GET(RACER_SLOT_GET(slot, Vehicle), Body).stepStates[1].velocity.y =
+        shared->y + VEHICLE_GET(RACER_SLOT_GET(slot, Vehicle), Body).stepStates[1].velocity.y;
+    VEHICLE_GET(RACER_SLOT_GET(slot, Vehicle), Body).stepStates[1].velocity.z =
+        shared->z + VEHICLE_GET(RACER_SLOT_GET(slot, Vehicle), Body).stepStates[1].velocity.z;
+    VEHICLE_GET(RACER_SLOT_GET(slot, Vehicle), Body).stepStates[0].velocity.x =
+        VEHICLE_GET(RACER_SLOT_GET(slot, Vehicle), Body).stepStates[1].velocity.x;
+    VEHICLE_GET(RACER_SLOT_GET(slot, Vehicle), Body).stepStates[0].velocity.y =
+        VEHICLE_GET(RACER_SLOT_GET(slot, Vehicle), Body).stepStates[1].velocity.y;
+    VEHICLE_GET(RACER_SLOT_GET(slot, Vehicle), Body).stepStates[0].velocity.z =
+        VEHICLE_GET(RACER_SLOT_GET(slot, Vehicle), Body).stepStates[1].velocity.z;
     state->velocity.x = shared->x + state->velocity.x;
     state->velocity.y = shared->y + state->velocity.y;
     state->velocity.z = shared->z + state->velocity.z;
@@ -312,17 +314,18 @@ void CollideVehicles(void) {
     /* The original reads each vehicle from its slot afresh at each use. */
     for (i = 0; i < g_dwNumVehicles; i++) {
         if (RACER_SLOT_GET(&(g_aRacerSlots[i]), Vehicle) == NULL ||
-            RACER_SLOT_GET(&(g_aRacerSlots[i]), Vehicle)->ghostMode == VEHICLE_GHOST) {
+            VEHICLE_GET(RACER_SLOT_GET(&(g_aRacerSlots[i]), Vehicle), GhostMode) == VEHICLE_GHOST) {
             continue;
         }
-        RACER_SLOT_GET(&(g_aRacerSlots[i]), Vehicle)->body.framesSinceVehicleImpact++;
-        sa = &RACER_SLOT_GET(&(g_aRacerSlots[i]), Vehicle)->body.state;
+        VEHICLE_GET(RACER_SLOT_GET(&(g_aRacerSlots[i]), Vehicle), Body).framesSinceVehicleImpact++;
+        sa = &VEHICLE_GET(RACER_SLOT_GET(&(g_aRacerSlots[i]), Vehicle), Body).state;
         for (j = i + 1; j < g_dwNumVehicles; j++) {
             if (RACER_SLOT_GET(&(g_aRacerSlots[j]), Vehicle) == NULL ||
-                RACER_SLOT_GET(&(g_aRacerSlots[j]), Vehicle)->ghostMode == VEHICLE_GHOST) {
+                VEHICLE_GET(RACER_SLOT_GET(&(g_aRacerSlots[j]), Vehicle), GhostMode) ==
+                    VEHICLE_GHOST) {
                 continue;
             }
-            sb = &RACER_SLOT_GET(&(g_aRacerSlots[j]), Vehicle)->body.state;
+            sb = &VEHICLE_GET(RACER_SLOT_GET(&(g_aRacerSlots[j]), Vehicle), Body).state;
             apart.x = sa->position.x - sb->position.x;
             apart.y = sa->position.y - sb->position.y;
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
@@ -344,10 +347,12 @@ void CollideVehicles(void) {
 #else
             extents = g_vVehicleObbHalfExtents;
 #endif
-            Transpose4x4Into3x3(transposeB,
-                                RACER_SLOT_GET(&(g_aRacerSlots[j]), Vehicle)->body.orientation);
-            CopyMatrix4x4To3x3(rotationA,
-                               RACER_SLOT_GET(&(g_aRacerSlots[i]), Vehicle)->body.orientation);
+            Transpose4x4Into3x3(
+                transposeB,
+                VEHICLE_GET(RACER_SLOT_GET(&(g_aRacerSlots[j]), Vehicle), Body).orientation);
+            CopyMatrix4x4To3x3(
+                rotationA,
+                VEHICLE_GET(RACER_SLOT_GET(&(g_aRacerSlots[i]), Vehicle), Body).orientation);
             Mtx3fMultiply(relative, transposeB, rotationA);
             offset.x = sa->position.x - sb->position.x;
             offset.y = sa->position.y - sb->position.y;
@@ -372,16 +377,20 @@ void CollideVehicles(void) {
             if (MAX_IMPACT_SPEED < closing) {
                 closing = MAX_IMPACT_SPEED;
             }
-            if (RACER_SLOT_GET(&(g_aRacerSlots[i]), Vehicle)->body.framesSinceVehicleImpact >= 41) {
+            if (VEHICLE_GET(RACER_SLOT_GET(&(g_aRacerSlots[i]), Vehicle), Body)
+                    .framesSinceVehicleImpact >= 41) {
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
                 volume = (u32)(128.0L - closing * -4.70370388031005859375f);
 #else
                 volume = (u32)(127.0f * closing / MAX_IMPACT_SPEED + 128.0f);
 #endif
-                RACER_SLOT_GET(&(g_aRacerSlots[i]), Vehicle)->body.vehicleImpactVolume = volume;
-                RACER_SLOT_GET(&(g_aRacerSlots[j]), Vehicle)->body.vehicleImpactVolume = volume;
+                VEHICLE_GET(RACER_SLOT_GET(&(g_aRacerSlots[i]), Vehicle), Body)
+                    .vehicleImpactVolume = volume;
+                VEHICLE_GET(RACER_SLOT_GET(&(g_aRacerSlots[j]), Vehicle), Body)
+                    .vehicleImpactVolume = volume;
             }
-            RACER_SLOT_GET(&(g_aRacerSlots[i]), Vehicle)->body.framesSinceVehicleImpact = 0;
+            VEHICLE_GET(RACER_SLOT_GET(&(g_aRacerSlots[i]), Vehicle), Body)
+                .framesSinceVehicleImpact = 0;
             back.x = apart.x * -1.0f;
             back.y = apart.y * -1.0f;
             back.z = apart.z * -1.0f;
@@ -389,12 +398,15 @@ void CollideVehicles(void) {
             PushVehicle(&g_aRacerSlots[j], sb, &shared, &apart, &back);
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
             if (g_dwNetworkPlayMode) {
-                RACER_SLOT_GET(&(g_aRacerSlots[i]), Vehicle)->body.stepStates[0].velocity.x =
-                    sa->velocity.x;
-                RACER_SLOT_GET(&(g_aRacerSlots[i]), Vehicle)->body.stepStates[0].velocity.y =
-                    sa->velocity.y;
-                RACER_SLOT_GET(&(g_aRacerSlots[i]), Vehicle)->body.stepStates[0].velocity.z =
-                    sa->velocity.z;
+                VEHICLE_GET(RACER_SLOT_GET(&(g_aRacerSlots[i]), Vehicle), Body)
+                    .stepStates[0]
+                    .velocity.x = sa->velocity.x;
+                VEHICLE_GET(RACER_SLOT_GET(&(g_aRacerSlots[i]), Vehicle), Body)
+                    .stepStates[0]
+                    .velocity.y = sa->velocity.y;
+                VEHICLE_GET(RACER_SLOT_GET(&(g_aRacerSlots[i]), Vehicle), Body)
+                    .stepStates[0]
+                    .velocity.z = sa->velocity.z;
             }
 #endif
         }
@@ -622,14 +634,17 @@ void StepVehicleCollisions(RigidBody *body) {
     AddTimingMarker(0, 0x80, 0x80, 0, 0xFF);
     memcpy(&body->stepStates[0], &body->stepStates[1], sizeof(RigidBodyState));
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
-    if (vehicle->driver != AiVehicleControllerCallback) {
+    if (VEHICLE_GET(vehicle, Driver) != AiVehicleControllerCallback) {
         if (COLLISION_LESS(body->orientation[2][2], UPRIGHT_LIMIT)) {
             if (body->uprightFrames < 0) {
                 body->uprightFrames = -1;
             }
-            dx = (long double)body->orientation[3][0] - vehicle->previousCollisionPosition.x;
-            dy = (long double)body->orientation[3][1] - vehicle->previousCollisionPosition.y;
-            dz = (long double)body->orientation[3][2] - vehicle->previousCollisionPosition.z;
+            dx = (long double)body->orientation[3][0] -
+                 VEHICLE_GET(vehicle, PreviousCollisionPosition).x;
+            dy = (long double)body->orientation[3][1] -
+                 VEHICLE_GET(vehicle, PreviousCollisionPosition).y;
+            dz = (long double)body->orientation[3][2] -
+                 VEHICLE_GET(vehicle, PreviousCollisionPosition).z;
             storedDx = dx;
             storedDz = dz;
             displacement = (dx * storedDx + dy * dy) + dz * storedDz;
@@ -652,8 +667,8 @@ void StepVehicleCollisions(RigidBody *body) {
         }
     }
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
-    vehicle->previousCollisionPosition.x = body->orientation[3][0];
-    vehicle->previousCollisionPosition.y = body->orientation[3][1];
-    vehicle->previousCollisionPosition.z = body->orientation[3][2];
+    VEHICLE_GET(vehicle, PreviousCollisionPosition).x = body->orientation[3][0];
+    VEHICLE_GET(vehicle, PreviousCollisionPosition).y = body->orientation[3][1];
+    VEHICLE_GET(vehicle, PreviousCollisionPosition).z = body->orientation[3][2];
 #endif
 }

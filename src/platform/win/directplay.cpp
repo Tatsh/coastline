@@ -6,6 +6,8 @@
 #include <cstring>
 
 #include <windows.h>
+
+#include "vehicleaccess.h"
 // The headers below need the types of windows.h.
 #include <objbase.h>
 
@@ -1447,7 +1449,7 @@ int CountActivePlayerSlots(void) {
     const int count = g_dwNumActiveVehicles;
     int active = 0;
     for (int i = 0; i < count; ++i) {
-        if (g_aVehicles[i].driver) {
+        if (VEHICLE_GET(&(g_aVehicles[i]), Driver)) {
             ++active;
         }
     }
@@ -1464,9 +1466,9 @@ void MaybeSendAllPlayersReadyPacket(void) {
             SendPlayerInfoPacket(&g_DirectPlayInfo,
                                  static_cast<unsigned char>(g_dwLocalNetPlayerId),
                                  static_cast<unsigned char>(g_dwChosenCar),
-                                 g_aVehicles[0].color[0],
-                                 g_aVehicles[0].color[1],
-                                 g_aVehicles[0].color[2],
+                                 VEHICLE_GET(&(g_aVehicles[0]), Color)[0],
+                                 VEHICLE_GET(&(g_aVehicles[0]), Color)[1],
+                                 VEHICLE_GET(&(g_aVehicles[0]), Color)[2],
                                  g_DirectPlayInfo.dpidPlayer,
                                  g_GlobalRallyConfig.szPlayerName,
                                  3,
@@ -1489,15 +1491,15 @@ void TickNetworkPauseRequest(void) {
     }
     ReleaseMutex(g_hNetPauseMutex);
     if (ticks != 0 && g_dwNetworkPlayMode && g_bNetRaceStartReached && !gInstantReplayActive &&
-        g_aVehicles[0].lap < g_dwTotalLaps) {
+        VEHICLE_GET(&(g_aVehicles[0]), Lap) < g_dwTotalLaps) {
         int state = GetSlotStatusThreadSafe(g_dwLocalNetPlayerId);
         state = (state & ~0x40) | 0x80;
         SendPlayerInfoPacket(&g_DirectPlayInfo,
                              static_cast<unsigned char>(g_dwLocalNetPlayerId),
                              static_cast<unsigned char>(g_dwChosenCar),
-                             g_aVehicles[0].color[0],
-                             g_aVehicles[0].color[1],
-                             g_aVehicles[0].color[2],
+                             VEHICLE_GET(&(g_aVehicles[0]), Color)[0],
+                             VEHICLE_GET(&(g_aVehicles[0]), Color)[1],
+                             VEHICLE_GET(&(g_aVehicles[0]), Color)[2],
                              g_DirectPlayInfo.dpidPlayer,
                              g_GlobalRallyConfig.szPlayerName,
                              state,
@@ -1596,9 +1598,9 @@ void SyncNetworkClockFromServer(unsigned serverFrame,
 }
 
 void LoadNetworkPlayerColors(void) {
-    g_aVehicles[0].color[2] = g_abPlayerColorsRgb[g_dwLocalNetPlayerId][2];
-    g_aVehicles[0].color[1] = g_abPlayerColorsRgb[g_dwLocalNetPlayerId][1];
-    g_aVehicles[0].color[0] = g_abPlayerColorsRgb[g_dwLocalNetPlayerId][0];
+    VEHICLE_GET(&(g_aVehicles[0]), Color)[2] = g_abPlayerColorsRgb[g_dwLocalNetPlayerId][2];
+    VEHICLE_GET(&(g_aVehicles[0]), Color)[1] = g_abPlayerColorsRgb[g_dwLocalNetPlayerId][1];
+    VEHICLE_GET(&(g_aVehicles[0]), Color)[0] = g_abPlayerColorsRgb[g_dwLocalNetPlayerId][0];
 }
 
 int SendPlayerJoinPacket(DirectPlayInfo *pInfo,
@@ -1953,7 +1955,7 @@ void HandleMultiplayerSessionMessage(
 
 static inline int FindNetworkVehicle(DPID player) {
     for (int i = 0; i < g_dwNumActiveVehicles; i++) {
-        if (GetSlotPlayerId(g_aVehicles[i].index) == player) {
+        if (GetSlotPlayerId(VEHICLE_GET(&(g_aVehicles[i]), Index)) == player) {
             return i;
         }
     }
@@ -1969,7 +1971,7 @@ static inline void HandleClientSessionMessage(NetworkSessionMessage *message, DP
         text[0] = 0;
         vehicle = FindNetworkVehicle(sender);
         if (vehicle != -1) {
-            std::strcpy(text, GetSlotPlayerName(g_aVehicles[vehicle].index));
+            std::strcpy(text, GetSlotPlayerName(VEHICLE_GET(&(g_aVehicles[vehicle]), Index)));
             std::strcat(text, ": ");
         }
         std::strcat(text, message->szText);
@@ -1981,7 +1983,7 @@ static inline void HandleClientSessionMessage(NetworkSessionMessage *message, DP
             g_dwNetworkDataStreamActive = true;
             vehicle = FindNetworkVehicle(sender);
             if (vehicle != -1) {
-                std::strcpy(text, GetSlotPlayerName(g_aVehicles[vehicle].index));
+                std::strcpy(text, GetSlotPlayerName(VEHICLE_GET(&(g_aVehicles[vehicle]), Index)));
                 std::strcat(text, " booted you from the game.");
                 SetGlobalStatusString(text);
             }
@@ -1998,7 +2000,7 @@ static inline void HandleClientSessionMessage(NetworkSessionMessage *message, DP
         if (sender == message->dwValue) {
             vehicle = FindNetworkVehicle(sender);
             if (vehicle != -1) {
-                int slot = g_aVehicles[vehicle].index;
+                int slot = VEHICLE_GET(&(g_aVehicles[vehicle]), Index);
                 if ((GetSlotStatusThreadSafe(slot) & 0x3f) != 0) {
                     WaitForSingleObject(g_hDepartedPlayerStackMutex, INFINITE);
                     g_anDepartedPlayerSlotStack[++g_nDepartedPlayerStackTop] = slot;
@@ -2016,7 +2018,7 @@ static inline void HandleClientSessionMessage(NetworkSessionMessage *message, DP
         if (sender == message->dwValue) {
             vehicle = FindNetworkVehicle(sender);
             if (vehicle != -1) {
-                std::strcpy(text, GetSlotPlayerName(g_aVehicles[vehicle].index));
+                std::strcpy(text, GetSlotPlayerName(VEHICLE_GET(&(g_aVehicles[vehicle]), Index)));
                 std::strcat(text, " returned to race lobby.");
                 SetGlobalStatusString(text);
             }
@@ -2028,7 +2030,7 @@ static inline void HandleClientSessionMessage(NetworkSessionMessage *message, DP
             if (vehicle != -1 && message->finish.nPosition >= 0 && message->finish.nPosition < 8) {
                 std::sprintf(text,
                              "%s finished %s",
-                             GetSlotPlayerName(g_aVehicles[vehicle].index),
+                             GetSlotPlayerName(VEHICLE_GET(&(g_aVehicles[vehicle]), Index)),
                              g_apszPlaceNames[message->finish.nPosition]);
                 SetGlobalStatusString(text);
             }
@@ -2319,9 +2321,9 @@ void ProcessNetworkDataStream(
             g_bNetSuspensionSetting = stream.StreamReadByte();
             SendPlayerJoinPacket(pInfo,
                                  static_cast<unsigned char>(player),
-                                 g_aVehicles[0].color[0],
-                                 g_aVehicles[0].color[1],
-                                 g_aVehicles[0].color[2],
+                                 VEHICLE_GET(&(g_aVehicles[0]), Color)[0],
+                                 VEHICLE_GET(&(g_aVehicles[0]), Color)[1],
+                                 VEHICLE_GET(&(g_aVehicles[0]), Color)[2],
                                  g_GlobalRallyConfig.szPlayerName,
                                  0x10);
             SetSlotStatusThreadSafe(player, 2);

@@ -353,11 +353,11 @@ void SaveAutoSaveSeason(void) {
 
 int ResetSeasonSaveBuffers(void) {
     if (!g_pPrimarySeasonSave) {
-        g_pPrimarySeasonSave = &g_aSeasonSaveBuffers[0];
+        g_aVehicles[0].SetProfile(&g_aSeasonSaveBuffers[0]);
     }
     memset(g_pPrimarySeasonSave, 0, sizeof(*g_pPrimarySeasonSave));
     if (!g_pSecondarySeasonSave) {
-        g_pSecondarySeasonSave = &g_aSeasonSaveBuffers[1];
+        g_aVehicles[1].SetProfile(&g_aSeasonSaveBuffers[1]);
     }
     memset(g_pSecondarySeasonSave, 0, sizeof(*g_pSecondarySeasonSave));
     return 1;

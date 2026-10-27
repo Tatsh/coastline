@@ -14,6 +14,7 @@
 #include "race.h"
 #include "screen.h"
 #include "vehicle.h"
+#include "vehicleaccess.h"
 #include "vehiclecount.h"
 #include "weather.h"
 
@@ -47,9 +48,9 @@ void PrepareWindowsGameSession(void) {
 
 void PrepareWindowsGameMenus(void) {
     if (g_dwGameMode == GAME_MODE_ARCADE || g_dwGameMode == GAME_MODE_NETWORK) {
-        g_aVehicles[0].profile->unlockedTracks = 0xffff;
-        g_aVehicles[0].profile->unlocks = 0xffff;
-        g_aVehicles[0].profile->unlockedWeathers = 0xffff;
+        VEHICLE_GET(&(g_aVehicles[0]), Profile)->unlockedTracks = 0xffff;
+        VEHICLE_GET(&(g_aVehicles[0]), Profile)->unlocks = 0xffff;
+        VEHICLE_GET(&(g_aVehicles[0]), Profile)->unlockedWeathers = 0xffff;
     }
     StartRaceWithPlayerCount(1);
     SetCurrentScreenCallback(NullStub);
@@ -80,10 +81,10 @@ void FinishWindowsGameSessionSetup(void) {
         g_dwNumLocalPlayers = 1;
     }
     g_dwCurrentWeather = g_dwChosenWeather;
-    g_aVehicles[0].profile->handling = g_dwHandlingType;
-    g_aVehicles[0].profile->transmission = g_dwTransmissionType;
-    g_aVehicles[0].profile->suspension = g_dwSuspensionType;
-    g_aVehicles[0].profile->tires = g_dwTireType;
+    VEHICLE_GET(&(g_aVehicles[0]), Profile)->handling = g_dwHandlingType;
+    VEHICLE_GET(&(g_aVehicles[0]), Profile)->transmission = g_dwTransmissionType;
+    VEHICLE_GET(&(g_aVehicles[0]), Profile)->suspension = g_dwSuspensionType;
+    VEHICLE_GET(&(g_aVehicles[0]), Profile)->tires = g_dwTireType;
     /* The Windows build retains the disabled audio and debug calls. */
     NullStub();
     NullStub();

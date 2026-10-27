@@ -5,6 +5,7 @@
 #include "track.h"
 #include "trackselect.h"
 #include "vehicle.h"
+#include "vehicleaccess.h"
 #include "vehiclecount.h"
 #include "weather.h"
 
@@ -101,22 +102,22 @@ void ProcessAllDisplayLists(void) {
     /* The models the vehicles share are patched for good. */
     for (i = 0, vehicle = g_aVehicles; i < g_dwNumActiveVehicles; i++, vehicle++) {
         for (lod = 0; lod < VEHICLE_LODS; lod++) {
-            if (vehicle->ghostMode == VEHICLE_GHOST) {
+            if (VEHICLE_GET(vehicle, GhostMode) == VEHICLE_GHOST) {
                 for (k = 0; k < VEHICLE_DISPLAY_LISTS; k++) {
-                    ProcessDisplayList(vehicle->model->displayLists[lod][k],
+                    ProcessDisplayList(VEHICLE_GET(vehicle, Model)->displayLists[lod][k],
                                        g_aaDlGhostRenderModes);
                 }
                 for (k = 0; k < VEHICLE_WHEEL_DISPLAY_LISTS; k++) {
-                    ProcessDisplayList(vehicle->model->wheelDisplayLists[lod][k],
+                    ProcessDisplayList(VEHICLE_GET(vehicle, Model)->wheelDisplayLists[lod][k],
                                        g_aaDlGhostWheelRenderModes);
                 }
             } else {
                 for (k = 0; k < VEHICLE_DISPLAY_LISTS; k++) {
-                    ProcessDisplayList(vehicle->model->displayLists[lod][k],
+                    ProcessDisplayList(VEHICLE_GET(vehicle, Model)->displayLists[lod][k],
                                        g_aaDlTrackRenderModes);
                 }
                 for (k = 0; k < VEHICLE_WHEEL_DISPLAY_LISTS; k++) {
-                    ProcessDisplayList(vehicle->model->wheelDisplayLists[lod][k],
+                    ProcessDisplayList(VEHICLE_GET(vehicle, Model)->wheelDisplayLists[lod][k],
                                        g_aaDlTrackRenderModes);
                 }
             }

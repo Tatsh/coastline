@@ -1,6 +1,8 @@
 #ifndef COASTLINE_VEHICLEEFFECTS_H
 #define COASTLINE_VEHICLEEFFECTS_H
 
+#include "vehiclefwd.h"
+
 /** The sides around a car that dent apart, by the direction of the blow. */
 #define VEHICLE_DENT_SIDES 8
 
@@ -13,9 +15,8 @@
 extern "C" {
 #endif
 
-struct Vehicle;
 /** Reset wheel spray and smoke timers. */
-void ResetVehicleEffects(struct Vehicle *vehicle);
+void ResetVehicleEffects(Vehicle *vehicle);
 
 #ifdef __cplusplus
 }

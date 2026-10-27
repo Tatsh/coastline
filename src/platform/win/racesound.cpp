@@ -9,6 +9,7 @@
 #include "soundmix.h"
 #include "soundpan.h"
 #include "vehicle.h"
+#include "vehicleaccess.h"
 #include "vehiclecount.h"
 #include "vehiclesound.h"
 
@@ -27,7 +28,7 @@ void LoadAllSoundEffects(void) {
     }
     ResetSoundBankTables();
     for (int i = 0; i < g_dwNumActiveVehicles; ++i) {
-        SetSoundBankEntryIndex(i, g_aVehicles[i].carModel);
+        SetSoundBankEntryIndex(i, VEHICLE_GET(&(g_aVehicles[i]), CarModel));
     }
     LoadSoundSet(1);
     StartSoundChannelMuted(0,
@@ -94,7 +95,8 @@ static u32 VehicleEventLevels(Vehicle *vehicle, CameraFrame *listener, s32 mono)
     f32 lower;
     s32 volume;
 
-    ComputeStereoPan(&vehicle->frame.position, listener, &upper, &lower, &volume, FALSE);
+    ComputeStereoPan(
+        &VEHICLE_GET(vehicle, Frame).position, listener, &upper, &lower, &volume, FALSE);
     if (mono) {
         if (mono == 1 && volume > 2) {
             volume = 32;
@@ -108,32 +110,32 @@ void PlayVehicleEventSounds(Vehicle *vehicle, CameraFrame *listener) {
     u32 levels;
     u8 strength;
 
-    strength = vehicle->body.vehicleImpactVolume;
+    strength = VEHICLE_GET(vehicle, Body).vehicleImpactVolume;
     if (strength > 127) {
         levels = VehicleEventLevels(vehicle, listener, 0);
         PlaySoundChannelOneOnce(strength < 171 ? 17 : strength < 213 ? 16 : 1, levels);
         SetForceFeedbackShortDuration();
         StartForceFeedbackJolt();
     }
-    vehicle->body.vehicleImpactVolume = 0;
-    strength = vehicle->body.impactVolume;
+    VEHICLE_GET(vehicle, Body).vehicleImpactVolume = 0;
+    strength = VEHICLE_GET(vehicle, Body).impactVolume;
     if (strength > 127) {
         levels = VehicleEventLevels(vehicle, listener, 0);
         PlaySoundChannelOneOnce(strength < 171 ? 19 : strength < 213 ? 18 : 2, levels);
         StartForceFeedbackJolt();
         SetForceFeedbackShortDuration();
     }
-    vehicle->body.impactVolume = 0;
-    if (vehicle->body.landed > 127) {
+    VEHICLE_GET(vehicle, Body).impactVolume = 0;
+    if (VEHICLE_GET(vehicle, Body).landed > 127) {
         levels = VehicleEventLevels(vehicle, listener, 0);
         PlaySoundChannelOneOnce(3, levels);
     }
-    vehicle->body.landed = 0;
+    VEHICLE_GET(vehicle, Body).landed = 0;
 
-    u8 *events[4] = {&vehicle->body.unreconstructed202,
-                     &vehicle->body.unreconstructed203,
-                     &vehicle->body.unreconstructed204,
-                     &vehicle->body.replayEffects[0]};
+    u8 *events[4] = {&VEHICLE_GET(vehicle, Body).unreconstructed202,
+                     &VEHICLE_GET(vehicle, Body).unreconstructed203,
+                     &VEHICLE_GET(vehicle, Body).unreconstructed204,
+                     &VEHICLE_GET(vehicle, Body).replayEffects[0]};
     for (s32 i = 0; i < 4; i++) {
         if (*events[i] > 127) {
             levels = VehicleEventLevels(vehicle, listener, 1);
@@ -142,24 +144,25 @@ void PlayVehicleEventSounds(Vehicle *vehicle, CameraFrame *listener) {
         *events[i] = 0;
     }
 
-    if (vehicle->body.replayEffects[1] > 127) {
+    if (VEHICLE_GET(vehicle, Body).replayEffects[1] > 127) {
         levels = VehicleEventLevels(vehicle, listener, 2);
-        if (vehicle->dopplerFactor >= 0.0f) {
+        if (VEHICLE_GET(vehicle, DopplerFactor) >= 0.0f) {
             SetSoundVoiceFrequencyFloat(
                 24,
-                vehicle->index,
-                static_cast<float>(static_cast<long double>(vehicle->dopplerFactor) * 22050.0f));
+                VEHICLE_GET(vehicle, Index),
+                static_cast<float>(static_cast<long double>(VEHICLE_GET(vehicle, DopplerFactor)) *
+                                   22050.0f));
             // The original formats the Doppler factor for a discarded diagnostic.
             NullStub();
         }
-        if (vehicle->body.replayEffects[2] <= 127) {
-            PlayLoopedSoundVoiceWithStereo(24, vehicle->index, levels);
+        if (VEHICLE_GET(vehicle, Body).replayEffects[2] <= 127) {
+            PlayLoopedSoundVoiceWithStereo(24, VEHICLE_GET(vehicle, Index), levels);
         } else {
-            SetSoundVoiceStereo(24, vehicle->index, levels);
+            SetSoundVoiceStereo(24, VEHICLE_GET(vehicle, Index), levels);
         }
-    } else if (vehicle->body.replayEffects[2] > 127) {
-        StopSoundVoice(24, vehicle->index);
+    } else if (VEHICLE_GET(vehicle, Body).replayEffects[2] > 127) {
+        StopSoundVoice(24, VEHICLE_GET(vehicle, Index));
     }
-    vehicle->body.replayEffects[2] = vehicle->body.replayEffects[1];
-    vehicle->body.replayEffects[1] = 0;
+    VEHICLE_GET(vehicle, Body).replayEffects[2] = VEHICLE_GET(vehicle, Body).replayEffects[1];
+    VEHICLE_GET(vehicle, Body).replayEffects[1] = 0;
 }

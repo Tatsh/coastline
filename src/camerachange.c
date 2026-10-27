@@ -1,7 +1,8 @@
 #include "camerachange.h"
 
 #include "vehicle.h"
+#include "vehicleaccess.h"
 
 void ClearCameraChanged(Vehicle *vehicle) {
-    vehicle->cameraChanged = 0;
+    VEHICLE_SET(vehicle, CameraChanged, 0);
 }

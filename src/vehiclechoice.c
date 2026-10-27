@@ -2,9 +2,10 @@
 
 #include "game.h"
 #include "seasons.h"
+#include "vehicleaccess.h"
 
 VehicleCarChoice ChooseVehicleCarId(Vehicle *vehicle, s32 *carId) {
-    s32 season = g_aVehicles[0].profile->season;
+    s32 season = VEHICLE_GET(&(g_aVehicles[0]), Profile)->season;
     s32 unlockSeason = season;
     s16 unlocks;
     s32 car;
@@ -12,13 +13,13 @@ VehicleCarChoice ChooseVehicleCarId(Vehicle *vehicle, s32 *carId) {
     if (season >= 4) {
         unlockSeason = 3;
     }
-    if (vehicle->index >= (s32)g_dwNumLocalPlayers) {
+    if (VEHICLE_GET(vehicle, Index) >= (s32)g_dwNumLocalPlayers) {
         if (g_dwGameMode == GAME_MODE_ARCADE
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
             || g_dwGameMode == GAME_MODE_NETWORK
 #endif
         ) {
-            *carId = g_aVehicles[0].carModel;
+            *carId = VEHICLE_GET(&(g_aVehicles[0]), CarModel);
             return CAR_CHOICE_COPIED;
         }
         unlocks = g_SeasonTable[unlockSeason].unlocks;
@@ -31,11 +32,11 @@ VehicleCarChoice ChooseVehicleCarId(Vehicle *vehicle, s32 *carId) {
         if (car == 16) {
             car = 5;
         }
-        if ((s32)g_dwNumLocalPlayers < vehicle->index) {
+        if ((s32)g_dwNumLocalPlayers < VEHICLE_GET(vehicle, Index)) {
             *carId = car;
             return CAR_CHOICE_SELECTED;
         }
-        car = g_SeasonTable[season].cars[vehicle->index - g_dwNumLocalPlayers];
+        car = g_SeasonTable[season].cars[VEHICLE_GET(vehicle, Index) - g_dwNumLocalPlayers];
     } else if (g_dwGameMode == GAME_MODE_CHAMPIONSHIP) {
         car = g_SeasonTable[season].cars[0];
     } else {
