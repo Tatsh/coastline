@@ -295,6 +295,36 @@ int SeasonFileUI_UpdateRoundLabel(MenuWidget *pWidget);
 int SeasonUI_UpdateSeasonNameLabel(MenuWidget *pWidget);
 
 /**
+ * @ghidraAddress BRD3D: 0x10040730
+ * @ghidraAddress BRGlide: 0x10039c70
+ */
+int RaceSetupUI_UpdateTrackImage(MenuWidget *pWidget);
+
+/**
+ * @ghidraAddress BRD3D: 0x100407e0
+ * @ghidraAddress BRGlide: 0x10039d20
+ */
+int RaceSetupUI_UpdateWeatherImage(MenuWidget *pWidget);
+
+/**
+ * @ghidraAddress BRD3D: 0x100ac550
+ * @ghidraAddress BRGlide: 0x100abcf0
+ */
+extern const short g_awTrackImageIds[];
+
+/**
+ * @ghidraAddress BRD3D: 0x100ac590
+ * @ghidraAddress BRGlide: 0x100abd30
+ */
+extern const signed char g_abWeatherImageIds[];
+
+/**
+ * @ghidraAddress BRD3D: 0x10aa28a8
+ * @ghidraAddress BRGlide: 0x10ac5c00
+ */
+extern unsigned char g_bSeasonRoundListBrowsing;
+
+/**
  * @ghidraAddress BRD3D: 0x10aa28e8
  * @ghidraAddress BRGlide: 0x10ac5c40
  */

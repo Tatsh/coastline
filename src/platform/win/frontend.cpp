@@ -1729,6 +1729,29 @@ int GameOptionsUI_OnToggleSpecularLighting(MenuWidget *) {
     return 1;
 }
 
+int RaceSetupUI_UpdateTrackImage(MenuWidget *pWidget) {
+    int track = g_dwTrackMenuIndex;
+    if (g_dwGameMode == GAME_MODE_CHAMPIONSHIP) {
+        int round = g_bSeasonRoundListBrowsing ? g_dwSeasonSavedRound : g_dwSeasonRound;
+        track = g_SeasonTable[g_bSeasonClass].races[round][0];
+    }
+    pWidget->nSpriteId = g_awTrackImageIds[track];
+    return 1;
+}
+
+int RaceSetupUI_UpdateWeatherImage(MenuWidget *pWidget) {
+    if (g_pActiveMenuScreen == g_pCachedMenu_LoadGhost && !g_dwTimeAttackLoadSelected) {
+        return -2;
+    }
+    int weather = g_dwSelectedWeather;
+    if (g_dwGameMode == GAME_MODE_CHAMPIONSHIP) {
+        int round = g_bSeasonRoundListBrowsing ? g_dwSeasonSavedRound : g_dwSeasonRound;
+        weather = g_SeasonTable[g_bSeasonClass].races[round][1];
+    }
+    pWidget->nSpriteId = g_abWeatherImageIds[weather];
+    return 1;
+}
+
 int SeasonUI_UpdateSeasonNameLabel(MenuWidget *pWidget) {
     int season = g_dwSeasonLoaded ? g_bSeasonClass : 0;
     if (strlen(GetStringResource(g_SeasonTable[season].nameStringId)) == 0) {
