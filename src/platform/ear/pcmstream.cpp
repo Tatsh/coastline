@@ -2,7 +2,22 @@
 #include <cstdlib>
 #include <cstring>
 
+#include <dsound.h>
+
 #include "error.h"
+
+namespace {
+// @ghidraAddress EAR: 0x1003b9a4
+DWORD g_dwDirectSoundLockRegion2Bytes;
+// @ghidraAddress EAR: 0x1003b9a8
+DWORD g_dwDirectSoundLockOffset;
+// @ghidraAddress EAR: 0x1003b9ac
+void *g_pDirectSoundLockRegion1;
+// @ghidraAddress EAR: 0x1003b9b0
+void *g_pDirectSoundLockRegion2;
+// @ghidraAddress EAR: 0x1003b9b4
+DWORD g_dwDirectSoundLockRegion1Bytes;
+} // namespace
 #include "playbackimplementations.h"
 
 PcmWaveStream::PcmWaveStream() {
@@ -45,6 +60,57 @@ void PcmWaveStream::CompleteEarPlayback() {
 
 std::uint32_t PcmWaveStream::GetEarPlaybackMediaLength() {
     return dataBytes;
+}
+
+void PcmWaveStream::CopyEarPlaybackSamplesToOutput() {
+    g_dwDirectSoundLockOffset = GetStreamHalfBytes() * !GetStreamHalfIndex();
+    HRESULT result = GetDirectSoundBuffer()->Lock(g_dwDirectSoundLockOffset,
+                                                  GetStreamHalfBytes(),
+                                                  &g_pDirectSoundLockRegion1,
+                                                  &g_dwDirectSoundLockRegion1Bytes,
+                                                  &g_pDirectSoundLockRegion2,
+                                                  &g_dwDirectSoundLockRegion2Bytes,
+                                                  0);
+    if (result == DSERR_BUFFERLOST) {
+        GetDirectSoundBuffer()->Restore();
+        result = GetDirectSoundBuffer()->Lock(g_dwDirectSoundLockOffset,
+                                              GetStreamHalfBytes(),
+                                              &g_pDirectSoundLockRegion1,
+                                              &g_dwDirectSoundLockRegion1Bytes,
+                                              &g_pDirectSoundLockRegion2,
+                                              &g_dwDirectSoundLockRegion2Bytes,
+                                              0);
+        if (result != DS_OK) {
+            SetEarLastError(0x13);
+            MarkComplete();
+            return;
+        }
+    }
+    // Other initial lock failures still proceed through the native copy path.
+    std::memcpy(g_pDirectSoundLockRegion1,
+                sampleBuffer + g_dwDirectSoundLockOffset,
+                g_dwDirectSoundLockRegion1Bytes);
+    if (g_pDirectSoundLockRegion2) {
+        std::memcpy(g_pDirectSoundLockRegion2,
+                    sampleBuffer + g_dwDirectSoundLockOffset + g_dwDirectSoundLockRegion1Bytes,
+                    g_dwDirectSoundLockRegion2Bytes);
+    }
+    if (GetDirectSoundBuffer()->Unlock(g_pDirectSoundLockRegion1,
+                                       g_dwDirectSoundLockRegion1Bytes,
+                                       g_pDirectSoundLockRegion2,
+                                       g_dwDirectSoundLockRegion2Bytes) != DS_OK) {
+        MarkComplete();
+    }
+}
+
+int PcmWaveStream::CheckEarPlaybackLoopCompletion() {
+    if (IncrementLoopDrainCount() < 2) {
+        CopyEarPlaybackSamplesToOutput();
+    } else {
+        GetDirectSoundBuffer()->Stop();
+        EndStreamingPlaybackLoop();
+    }
+    return IsDirectSoundBufferStopped();
 }
 
 void PcmWaveStream::RefillEarPlaybackStream() {

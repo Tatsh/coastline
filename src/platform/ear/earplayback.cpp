@@ -63,7 +63,7 @@ EarPlayback::EarPlayback() {
     frequencyScale = 1;
     baseFrequencyScale = 1;
     cachedBackendParameter = -1;
-    std::memset(unknown9c, 0, sizeof(unknown9c));
+    loopDrainCount = 0;
     // Native construction does not initialise flags or baseFrequency.
     InitializeDirectSoundPlaybackState();
 }

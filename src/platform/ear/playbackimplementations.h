@@ -30,17 +30,11 @@ private:
     void CloseRegisteredEarPlayback() override;
     /** @ghidraAddress EAR: 0x1000af76 */
     void RefillEarPlaybackStream() override;
-    /**
-     * @ghidraAddress EAR: 0x100129c9
-     * @stub
-     */
+    /** @ghidraAddress EAR: 0x100129c9 */
     void CopyEarPlaybackSamplesToOutput() override;
     /** @ghidraAddress EAR: 0x1000b260 */
     void CompleteEarPlayback() override;
-    /**
-     * @ghidraAddress EAR: 0x10012b34
-     * @stub
-     */
+    /** @ghidraAddress EAR: 0x10012b34 */
     int CheckEarPlaybackLoopCompletion() override;
     /** @ghidraAddress EAR: 0x10009ac0 */
     std::uint32_t GetEarPlaybackMediaLength() override;

@@ -162,7 +162,7 @@ public:
     /** @ghidraAddress EAR: 0x1000a8f0 */
     virtual int IsBufferedEarPlaybackComplete();
 
-private:
+protected:
     /** @ghidraAddress EAR: 0x100126dd */
     virtual int IsDirectSoundBufferStopped();
 
@@ -173,6 +173,16 @@ public:
     virtual void SetEarPlaybackNotification(std::uint32_t flags, std::uint16_t event);
 
 protected:
+    IDirectSoundBuffer *GetDirectSoundBuffer() const {
+        return directSound.buffer;
+    }
+    std::uint32_t IncrementLoopDrainCount() {
+        return ++loopDrainCount;
+    }
+    void EndStreamingPlaybackLoop() {
+        looping = 0;
+        streaming = 0;
+    }
     std::uint16_t GetPlaybackSourceFlags() const {
         return flags;
     }
@@ -230,7 +240,7 @@ private:
     double baseFrequencyScale;
     std::uint32_t baseFrequency;
     double cachedBackendParameter;
-    [[maybe_unused]] std::uint8_t unknown9c[4]; /* +0x9c */
+    std::uint32_t loopDrainCount;
     EarDirectSoundPlaybackState directSound;
 };
 
