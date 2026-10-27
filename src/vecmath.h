@@ -200,6 +200,7 @@ void Vec3fScaleByInverse(Vec3f *out, Vec3f *v, f32 divisor);
  * @ghidraAddress JPN: 0x802250c4
  * @ghidraAddress BRD3D: 0x1003ad70
  * @ghidraAddress BRGlide: 0x100343f0
+ * @stub{BRGlide}
  */
 void Vec3fDivideInPlace(Vec3f *v, f32 divisor);
 

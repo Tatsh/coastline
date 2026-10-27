@@ -205,10 +205,17 @@ void Vec3fScaleByInverse(Vec3f *out, Vec3f *v, f32 divisor) {
 }
 
 void Vec3fDivideInPlace(Vec3f *v, f32 divisor) {
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+    long double inverse = 1.0L / divisor;
+    v->x *= inverse;
+    v->y *= inverse;
+    v->z *= inverse;
+#else
     divisor = 1.0f / divisor;
     v->x *= divisor;
     v->y *= divisor;
     v->z *= divisor;
+#endif
 }
 
 #if TGR_PLATFORM == TGR_PLATFORM_N64
