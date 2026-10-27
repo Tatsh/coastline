@@ -107,6 +107,41 @@ extern "C" {
 extern VehicleModel g_aVehicleModels[];
 
 /**
+ * The car whose model each slot holds.
+ *
+ * @ghidraAddress USA: 0x8031b238
+ * @ghidraAddress EUR: 0x8031d738
+ * @ghidraAddress JPN: 0x8031c368
+ * @ghidraAddress BRD3D: 0x106c6558
+ */
+extern s32 g_adwVehicleModelSlotCars[];
+
+/**
+ * Load a car model into a slot, fix up its pointers, and record the car.
+ *
+ * @param slot The slot of g_aVehicleModels.
+ * @param car The index of the car in g_aCarModels.
+ * @param source A decompressed N64 model to copy, or NULL to load the asset. Windows treats a
+ * non-null source as fatal.
+ * @ghidraAddress USA: 0x8021d5e4
+ * @ghidraAddress EUR: 0x8021e7e4
+ * @ghidraAddress JPN: 0x8021e0b4
+ * @ghidraAddress BRD3D: 0x10035520
+ */
+void LoadCar(s32 slot, s32 car, void *source);
+
+/**
+ * Load a car model from platform asset storage.
+ *
+ * @param model Where to decompress it.
+ * @param car The index of the car in g_aCarModels.
+ * @ghidraAddress USA: 0x8021d534
+ * @ghidraAddress EUR: 0x8021e734
+ * @ghidraAddress JPN: 0x8021e004
+ */
+void LoadVehicleModelFromRom(VehicleModel *model, s32 car);
+
+/**
  * Paint the materials of a model a colour of 5 bits a channel.
  *
  * @param model The model.

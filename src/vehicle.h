@@ -117,15 +117,6 @@ extern s32 g_dwCarCount;
  */
 extern CarPhysicsSpec g_aCarPhysicsSpecs[CAR_MODELS];
 
-/**
- * The car whose model each slot holds.
- *
- * @ghidraAddress USA: 0x8031b238
- * @ghidraAddress EUR: 0x8031d738
- * @ghidraAddress JPN: 0x8031c368
- */
-extern s32 g_adwVehicleModelSlotCars[];
-
 /** The decompression of the model of a car into a slot. */
 typedef struct {
     DecompressJob job; /*!< The decompression from the cartridge. */
@@ -654,30 +645,6 @@ void ChooseVehicleCar(Vehicle *vehicle);
  * @ghidraAddress JPN: 0x80229408
  */
 void DriveAiVehicle(Vehicle *vehicle);
-
-/**
- * Load the model of a car into a slot from the cartridge, or copy it from memory that holds it,
- * then fix up its pointers and record the car of the slot.
- *
- * @param slot The slot of g_aVehicleModels.
- * @param car The index of the car in g_aCarModels.
- * @param source The decompressed model to copy, or NULL to load it from the cartridge.
- * @ghidraAddress USA: 0x8021d5e4
- * @ghidraAddress EUR: 0x8021e7e4
- * @ghidraAddress JPN: 0x8021e0b4
- */
-void LoadCar(s32 slot, s32 car, void *source);
-
-/**
- * Decompress the model of a car from the cartridge, and keep its size.
- *
- * @param model Where to decompress it.
- * @param car The index of the car in g_aCarModels.
- * @ghidraAddress USA: 0x8021d534
- * @ghidraAddress EUR: 0x8021e734
- * @ghidraAddress JPN: 0x8021e004
- */
-void LoadVehicleModelFromRom(VehicleModel *model, s32 car);
 
 /**
  * How the steering answers the stick, as the steering mode of a vehicle sets it: the lock at rest

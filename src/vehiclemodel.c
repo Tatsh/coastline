@@ -131,17 +131,6 @@ void LoadVehicleModelFromRom(VehicleModel *model, s32 car) {
     DecompressFromRom(model, g_aCarModels[car].modelRom, NULL);
 }
 
-void LoadCar(s32 slot, s32 car, void *source) {
-    if (source == NULL) {
-        LoadVehicleModelFromRom(&g_aVehicleModels[slot], car);
-    } else {
-        /* The source must be a model not yet remapped, whose addresses are of the first slot. */
-        memcpy(&g_aVehicleModels[slot], source, g_aCarModels[car].modelSize);
-    }
-    FixupVehicleModelPointers(&g_aVehicleModels[slot]);
-    g_adwVehicleModelSlotCars[slot] = car;
-}
-
 s32 IsVehicleModelValid(s32 car) {
     return g_aCarModels[car].modelRomEnd != 0;
 }
