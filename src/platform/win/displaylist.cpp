@@ -25,6 +25,56 @@
 
 // The bits of the geometry mode of the console the handlers read.
 #define GBI_GEOMETRY_Z_BUFFER 0x1
+
+namespace {
+// @ghidraAddress BRD3D: 0x10277370
+DWORD g_dwDirtyRenderStateMask;
+// @ghidraAddress BRD3D: 0x10277378
+DWORD g_dwPendingRS_ZWriteEnable;
+// @ghidraAddress BRD3D: 0x1027737c
+DWORD g_dwPendingRS_AlphaTestEnable;
+// @ghidraAddress BRD3D: 0x10277380
+DWORD g_dwPendingRS_SrcBlend;
+// @ghidraAddress BRD3D: 0x10277384
+DWORD g_dwPendingRS_DestBlend;
+// @ghidraAddress BRD3D: 0x10277388
+DWORD g_dwPendingRS_CullMode;
+// @ghidraAddress BRD3D: 0x1027738c
+DWORD g_dwPendingRS_ZFunc;
+// @ghidraAddress BRD3D: 0x10277390
+DWORD g_dwPendingRS_AlphaRef;
+// @ghidraAddress BRD3D: 0x10277394
+DWORD g_dwPendingRS_AlphaFunc;
+// @ghidraAddress BRD3D: 0x10277398
+DWORD g_dwPendingRS_AddressU;
+// @ghidraAddress BRD3D: 0x1027739c
+DWORD g_dwPendingRS_AddressV;
+// @ghidraAddress BRD3D: 0x102773a0
+DWORD g_dwPendingRS_AlphaBlendEnable;
+// @ghidraAddress BRD3D: 0x102773f8
+DWORD g_dwAppliedRS_ZWriteEnable;
+// @ghidraAddress BRD3D: 0x102773fc
+DWORD g_dwAppliedRS_AlphaTestEnable;
+// @ghidraAddress BRD3D: 0x10277400
+DWORD g_dwAppliedRS_SrcBlend;
+// @ghidraAddress BRD3D: 0x10277404
+DWORD g_dwAppliedRS_DestBlend;
+// @ghidraAddress BRD3D: 0x10277408
+DWORD g_dwAppliedRS_CullMode;
+// @ghidraAddress BRD3D: 0x1027740c
+DWORD g_dwAppliedRS_ZFunc;
+// @ghidraAddress BRD3D: 0x10277410
+DWORD g_dwAppliedRS_AlphaRef;
+// @ghidraAddress BRD3D: 0x10277414
+DWORD g_dwAppliedRS_AlphaFunc;
+// @ghidraAddress BRD3D: 0x10277418
+DWORD g_dwAppliedRS_AddressU;
+// @ghidraAddress BRD3D: 0x1027741c
+DWORD g_dwAppliedRS_AddressV;
+// @ghidraAddress BRD3D: 0x10277420
+DWORD g_dwAppliedRS_AlphaBlendEnable;
+} // namespace
+
 #define GBI_GEOMETRY_SHADING_SMOOTH 0x200
 #define GBI_GEOMETRY_CULL_FRONT 0x1000
 #define GBI_GEOMETRY_CULL_BACK 0x2000

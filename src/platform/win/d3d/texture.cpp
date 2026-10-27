@@ -276,7 +276,6 @@ unsigned GetAvailableTextureMemory(void) {
     return dwFree;
 }
 
-D3DTexture g_LoadingScreenImageState;
 unsigned g_dwTextureEntryCount;
 TextureEntry *g_pTextureEntries;
 D3DTexture **g_ppTextureIdTable;

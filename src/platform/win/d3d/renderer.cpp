@@ -11,32 +11,14 @@
 #include "platform/win/settings.h"
 #include "screen.h"
 
+namespace {
+// @ghidraAddress BRD3D: 0x10277680
+D3DTexture g_LoadingScreenImageState;
+} // namespace
+
 RenderHost *g_pRenderHost;
 IDirect3D2 *g_pDirect3D2;
 IDirect3DDevice2 *g_pD3DDevice2;
-DWORD g_dwDirtyRenderStateMask;
-DWORD g_dwPendingRS_ZWriteEnable;
-DWORD g_dwPendingRS_AlphaTestEnable;
-DWORD g_dwPendingRS_SrcBlend;
-DWORD g_dwPendingRS_DestBlend;
-DWORD g_dwPendingRS_CullMode;
-DWORD g_dwPendingRS_ZFunc;
-DWORD g_dwPendingRS_AlphaRef;
-DWORD g_dwPendingRS_AlphaFunc;
-DWORD g_dwPendingRS_AddressU;
-DWORD g_dwPendingRS_AddressV;
-DWORD g_dwPendingRS_AlphaBlendEnable;
-DWORD g_dwAppliedRS_ZWriteEnable;
-DWORD g_dwAppliedRS_AlphaTestEnable;
-DWORD g_dwAppliedRS_SrcBlend;
-DWORD g_dwAppliedRS_DestBlend;
-DWORD g_dwAppliedRS_CullMode;
-DWORD g_dwAppliedRS_ZFunc;
-DWORD g_dwAppliedRS_AlphaRef;
-DWORD g_dwAppliedRS_AlphaFunc;
-DWORD g_dwAppliedRS_AddressU;
-DWORD g_dwAppliedRS_AddressV;
-DWORD g_dwAppliedRS_AlphaBlendEnable;
 
 RenderHost::RenderHost() : pRenderer(nullptr) {
 }
