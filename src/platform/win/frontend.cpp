@@ -1096,6 +1096,13 @@ int ShowDisplayModeSelectMenu(void) {
     return 1;
 }
 
+int PopulateVideoSettingsLists(void) {
+    if (!PopulateDisplayDeviceList()) {
+        return 0;
+    }
+    return PopulateDisplayModeList() != 0;
+}
+
 #if TGR_RENDERER == TGR_RENDERER_D3D
 int ShowD3DDeviceSelectMenu(void) {
     if (!ShowCachedMenuScreen(g_pCachedMenu_VideoSettings, BuildD3DDeviceSelectUI)) {
