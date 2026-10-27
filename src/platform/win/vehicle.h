@@ -310,6 +310,11 @@ typedef struct Vehicle {
      * @ghidraAddress BRD3D: 0x100019d0
      */
     void UpdateCameraSystem(void);
+
+    /**
+     * @ghidraAddress BRD3D: 0x100683c0
+     */
+    void ClearCameraChanged(void);
     /**
      * @ghidraAddress BRD3D: 0x100011f0
      */

@@ -35,7 +35,3 @@
 
 /* The RSP takes physical addresses, which are the KSEG0 addresses less its base. */
 #define TO_RSP_ADDRESS(p) ((u32)((u8 *)(p) - K0BASE))
-
-void ClearCameraChanged(Vehicle *vehicle) {
-    vehicle->cameraChanged = 0;
-}

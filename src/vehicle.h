@@ -1,6 +1,8 @@
 #ifndef COASTLINE_VEHICLE_H
 #define COASTLINE_VEHICLE_H
 
+#include "camerachange.h"
+
 /**
  * @file
  * The vehicles of a race, the cars they are, and their place on the track.
@@ -873,16 +875,6 @@ void SortRacersByPosition(void);
  * @ghidraAddress JPN: 0x8022a230
  */
 void ManageAiRacerSlots(Vehicle *player);
-
-/**
- * Clear the flag of a vehicle that marks the change of its camera.
- *
- * @param vehicle The vehicle.
- * @ghidraAddress USA: 0x8022bcac
- * @ghidraAddress EUR: 0x8022d1bc
- * @ghidraAddress JPN: 0x8022c974
- */
-void ClearCameraChanged(Vehicle *vehicle);
 
 /**
  * Move a racer for a frame: drive its vehicle, or advance it along the route of the track when it
