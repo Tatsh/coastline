@@ -12,6 +12,11 @@
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
 #include "platform/win/settings.h"
 #include "screen.h"
+#define RESET_FREE(name) ::name
+#define SET_MODEL_SLOT(vehicle, slot) (vehicle)->SetVehicleModelSlot(slot)
+#else
+#define RESET_FREE(name) name
+#define SET_MODEL_SLOT(vehicle, slot) SetVehicleModelSlot(vehicle, slot)
 #endif
 
 #if TGR_PLATFORM == TGR_PLATFORM_N64
@@ -586,9 +591,14 @@ void InitVehicleColorAndPhysics(Vehicle *vehicle) {
     InitVehiclePhysics(vehicle);
 }
 
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+void Vehicle::SetVehicleModelSlot(s32 slot) {
+    Vehicle *vehicle = this;
+#else
 void SetVehicleModelSlot(Vehicle *vehicle, s32 slot) {
+#endif
     VEHICLE_SET(vehicle, Model, &g_aVehicleModels[slot]);
-    InitVehicleColorAndPhysics(vehicle);
+    RESET_FREE(InitVehicleColorAndPhysics)(vehicle);
 }
 
 void ClearVehicleDamageState(Vehicle *vehicle) {
@@ -611,7 +621,12 @@ void ClearVehicleDamageState(Vehicle *vehicle) {
 #define SELECTED_SETUP_TRACK() ((TrackMenuItem *)g_apTrackMenuItems[g_dwSelectedTrackId])
 #endif
 
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+void Vehicle::SetupVehicleForRaceStart(void) {
+    Vehicle *vehicle = this;
+#else
 void SetupVehicleForRaceStart(Vehicle *vehicle) {
+#endif
     TrackSection *root;
     f32 row;
     f32 column;
@@ -626,16 +641,16 @@ void SetupVehicleForRaceStart(Vehicle *vehicle) {
 #endif
     s16 weather;
 
-    ResetVehicleState(vehicle);
+    RESET_FREE(ResetVehicleState)(vehicle);
     if (g_dwGameMode == GAME_MODE_TIME_ATTACK || g_dwGameMode == GAME_MODE_DEMO ||
         (g_dwGameMode == GAME_MODE_PRACTICE && g_dwNumLocalPlayers == 1) ||
         g_dwGameMode == GAME_MODE_CHAMPIONSHIP) {
         /* Alone on the grid, in the middle of the front row. */
-        SetVehicleModelSlot(vehicle, VEHICLE_GET(vehicle, Index));
+        SET_MODEL_SLOT(vehicle, VEHICLE_GET(vehicle, Index));
         row = 0.0f;
         column = 0.5f;
     } else {
-        SetVehicleModelSlot(vehicle, VEHICLE_GET(vehicle, Index));
+        SET_MODEL_SLOT(vehicle, VEHICLE_GET(vehicle, Index));
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
         gridIndex =
             g_dwNetworkPlayMode ? VEHICLE_GET(vehicle, GridIndex) : VEHICLE_GET(vehicle, Index);
@@ -655,14 +670,14 @@ void SetupVehicleForRaceStart(Vehicle *vehicle) {
     sideY = sinf(g_LoadedTrack.startHeading + QUARTER_TURN);
 #endif
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
-    SetVehiclePosition(vehicle,
-                       g_LoadedTrack.startPosition.x -
-                           ((long double)sideX * (f32)(column - 0.5f)) * GRID_COLUMN_SPACING -
-                           ((long double)forwardX * (f32)(row + 1.0f)) * GRID_ROW_SPACING,
-                       g_LoadedTrack.startPosition.y -
-                           (sideY * (f32)(column - 0.5f)) * GRID_COLUMN_SPACING -
-                           ((long double)forwardY * (f32)(row + 1.0f)) * GRID_ROW_SPACING,
-                       g_LoadedTrack.startPosition.z + GRID_HEIGHT);
+    RESET_FREE(SetVehiclePosition)(
+        vehicle,
+        g_LoadedTrack.startPosition.x -
+            ((long double)sideX * (f32)(column - 0.5f)) * GRID_COLUMN_SPACING -
+            ((long double)forwardX * (f32)(row + 1.0f)) * GRID_ROW_SPACING,
+        g_LoadedTrack.startPosition.y - (sideY * (f32)(column - 0.5f)) * GRID_COLUMN_SPACING -
+            ((long double)forwardY * (f32)(row + 1.0f)) * GRID_ROW_SPACING,
+        g_LoadedTrack.startPosition.z + GRID_HEIGHT);
 #else
     SetVehiclePosition(
         vehicle,
@@ -673,15 +688,15 @@ void SetupVehicleForRaceStart(Vehicle *vehicle) {
         g_LoadedTrack.startPosition.z + GRID_HEIGHT);
 #endif
     VEHICLE_SET(vehicle, Distance, (row + 0.5f) * -GRID_ROW_SPACING);
-    InitVehicleOrientationFromAngle(vehicle, g_LoadedTrack.startHeading);
+    RESET_FREE(InitVehicleOrientationFromAngle)(vehicle, g_LoadedTrack.startHeading);
     VEHICLE_GET(vehicle, PreviousPosition) = VEHICLE_GET(vehicle, Frame).position;
     VEHICLE_GET(vehicle, PreviousListenerPosition) = VEHICLE_GET(vehicle, Frame).position;
-    InitCameraForVehicle(vehicle);
+    RESET_FREE(InitCameraForVehicle)(vehicle);
     VEHICLE_SET(vehicle, ForcedForwardFrames, 0);
     VEHICLE_SET(vehicle, ForcedReverseFrames, 0);
     VEHICLE_SET(vehicle, ReverseFrames, 0);
     VEHICLE_SET(vehicle, ForwardFrames, AI_START_GRACE);
-    SetVehicleVelocity(vehicle, 0.0f, 0.0f, 0.0f);
+    RESET_FREE(SetVehicleVelocity)(vehicle, 0.0f, 0.0f, 0.0f);
 
     root = g_LoadedTrack.rootSection;
     if (root != NULL) {
@@ -742,8 +757,8 @@ void SetupVehicleForRaceStart(Vehicle *vehicle) {
     VEHICLE_GET(vehicle, JoltOffset).z = 0.0f;
     VEHICLE_SET(vehicle, GroundHits, 0);
     VEHICLE_SET(vehicle, SlotCooldown, 0);
-    ResetVehicleEffects(vehicle);
-    ClearVehicleDamageState(vehicle);
+    RESET_FREE(ResetVehicleEffects)(vehicle);
+    RESET_FREE(ClearVehicleDamageState)(vehicle);
     VEHICLE_SET(vehicle, CameraChanged, 0);
     VEHICLE_SET(vehicle, EffectSound, 0);
     VEHICLE_SET(vehicle, EffectVolume, 0);

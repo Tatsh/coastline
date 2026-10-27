@@ -193,10 +193,6 @@ void Vehicle::InitVehicleColorAndPhysics(void) {
     ::InitVehicleColorAndPhysics(this);
 }
 
-void Vehicle::SetVehicleModelSlot(s32 slot) {
-    ::SetVehicleModelSlot(this, slot);
-}
-
 void Vehicle::InstallVehicleModel(s32 slot, s32 car) {
     SetColorTintMultipliers(color[0], color[1], color[2]);
     LoadCar(slot, car, nullptr);
@@ -212,10 +208,6 @@ void Vehicle::ApplyImpactDamageTexture(s32 side) {
 
 void Vehicle::ClearVehicleDamageState(void) {
     ::ClearVehicleDamageState(this);
-}
-
-void Vehicle::SetupVehicleForRaceStart(void) {
-    ::SetupVehicleForRaceStart(this);
 }
 
 void Vehicle::ResetVehicleEffects(void) {

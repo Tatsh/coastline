@@ -13,12 +13,16 @@ void ResetVehicleState(Vehicle *vehicle);
 void InitVehiclePhysics(Vehicle *vehicle);
 /** Paint the selected model and initialise its physics. */
 void InitVehicleColorAndPhysics(Vehicle *vehicle);
+#if TGR_PLATFORM == TGR_PLATFORM_N64
 /** Bind a model slot and initialise its colour and physics. */
 void SetVehicleModelSlot(Vehicle *vehicle, s32 slot);
+#endif
 /** Clear dents and the dent variation. */
 void ClearVehicleDamageState(Vehicle *vehicle);
+#if TGR_PLATFORM == TGR_PLATFORM_N64
 /** Place the vehicle on the starting grid and initialise race state. */
 void SetupVehicleForRaceStart(Vehicle *vehicle);
+#endif
 /** Return an overturned or fallen vehicle to its current route point. */
 void RespawnVehicle(Vehicle *vehicle);
 /** Set velocity in the rigid-body integration states and the recorded placement. */
