@@ -4,21 +4,11 @@
 #include "audiomix.h"
 #include "race.h"
 #include "rumble.h"
+#include "soundpan.h"
 #include "system.h"
 #include "track.h"
 #include "trackselect.h"
 #include "weather.h"
-
-/* A sound pans over 10 units across the camera, from 0 to 1, with the far side at 1.7 and the near
- * side raised 60% of the way to full. A narrow pan moves 40% as far. */
-#define PAN_RANGE 10.0f
-#define PAN_NARROW 0.4f
-#define PAN_LOUD 1.7f
-#define PAN_QUIET_RAISE 0.6f
-
-/* The volume of a sound is 1024 over its distance, from no nearer than 32. */
-#define SOUND_VOLUME_SCALE 1024.0f
-#define SOUND_NEAREST 32.0
 
 /* The channels: two for each vehicle, the engine then its effects, and the track on 3. */
 #define CHANNELS_PER_VEHICLE 2
@@ -58,42 +48,6 @@
 
 /* The weather the skids and rolling sound as snow in. */
 #define SNOW_WEATHER WEATHER_SNOW
-
-void ComputeStereoPan(
-    Vec3f *source, CameraFrame *camera, f32 *upper, f32 *lower, s32 *volume, s32 narrow) {
-    Vec3f offset;
-    f32 share;
-    f32 rest;
-    f32 distance;
-
-    Vec3fSubtract(&offset, source, &camera->position);
-    /* The distance across the camera first, then the share of the upper half. */
-    share = camera->side.z * offset.z + (offset.x * camera->side.x + offset.y * camera->side.y);
-    if (PAN_RANGE < share) {
-        share = PAN_RANGE;
-    } else if (share < -PAN_RANGE) {
-        share = -PAN_RANGE;
-    }
-    if (narrow) {
-        share *= PAN_NARROW;
-    }
-    share = (share + PAN_RANGE) / (PAN_RANGE + PAN_RANGE);
-    rest = 1.0f - share;
-    if (share < rest) {
-        share *= PAN_LOUD;
-        rest += PAN_QUIET_RAISE * (1.0f - rest);
-    } else {
-        rest *= PAN_LOUD;
-        share += PAN_QUIET_RAISE * (1.0f - share);
-    }
-    *upper = share;
-    *lower = rest;
-    distance = Vec3fLength(&offset);
-    if ((double)distance < SOUND_NEAREST) {
-        distance = SOUND_NEAREST;
-    }
-    *volume = (s32)(SOUND_VOLUME_SCALE / distance);
-}
 
 /* The step of a channel that plays a frequency. */
 static u64 FrequencyStep(f32 frequency) {
