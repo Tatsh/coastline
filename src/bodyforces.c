@@ -8,13 +8,84 @@
 
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
 f32 g_fCollisionImpulseScale = 1.0f;
+CollisionContactState g_CollisionContactState;
+Vec3f g_vCollisionContact;
+Vec3f g_vCollisionPenetration;
+
+#define CONTACT_LESS(a, b) (!((a) >= (b)))
 
 #define FORCE_PRODUCT(a, b) ((long double)(a) * (b))
 #else
+#define CONTACT_LESS(a, b) ((a) < (b))
 #define FORCE_PRODUCT(a, b) ((a) * (b))
 #endif
 
+#define CONTACT_ABS(a) ((a) < 0.0f ? -(a) : (a))
+#define COMPONENT(v, axis) ((&(v)->x)[axis])
+
 #define SIGN(x) ((x) == 0.0f ? 0.0 : (0.0f < (x) ? 1.0 : -1.0))
+
+void ComputeCollisionPenetration(
+    RigidBody *body, Vec3f *normal, f32 offset, Vec3f *contact, Vec3f triangle[3]) {
+    f32 middle[3];
+    f32 distance;
+    s32 i;
+
+    if (g_dwCollisionContactType != 2) {
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+        distance = Vec3fDot(normal, contact) - offset;
+#else
+        distance =
+            contact->z * normal->z + (normal->x * contact->x + normal->y * contact->y) - offset;
+#endif
+    } else {
+        /* The face of the box by the middle of the triangle, signed by its x as the original. */
+        for (i = 0; i < 3; i++) {
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+            middle[i] = (((long double)COMPONENT(&triangle[0], i) + COMPONENT(&triangle[1], i)) +
+                         COMPONENT(&triangle[2], i)) *
+                        0.3333333432674407958984375f;
+#else
+            middle[i] = COMPONENT(&triangle[2], i) +
+                        (COMPONENT(&triangle[0], i) + COMPONENT(&triangle[1], i));
+            /* The original stores the sum before dividing it. */
+            middle[i] = middle[i] / 3.0f;
+#endif
+        }
+        if (CONTACT_LESS(CONTACT_ABS(middle[0]), CONTACT_ABS(middle[1]))) {
+            if (CONTACT_LESS(CONTACT_ABS(middle[0]), CONTACT_ABS(middle[2]))) {
+                g_vCollisionContact.z = 0.0f;
+                g_vCollisionContact.y = g_vCollisionContact.z;
+                g_vCollisionContact.x = (f32)(CONTACT_LESS(middle[0], 0.0f) ? -1 : 1) * 0.5f;
+            } else {
+                g_vCollisionContact.y = 0.0f;
+                g_vCollisionContact.x = g_vCollisionContact.y;
+                g_vCollisionContact.z = (f32)(CONTACT_LESS(middle[0], 0.0f) ? -1 : 1) * 0.5f;
+            }
+        } else if (CONTACT_LESS(CONTACT_ABS(middle[1]), CONTACT_ABS(middle[2]))) {
+            g_vCollisionContact.z = 0.0f;
+            g_vCollisionContact.x = g_vCollisionContact.z;
+            g_vCollisionContact.y = (f32)(CONTACT_LESS(middle[0], 0.0f) ? -1 : 1) * 0.5f;
+        } else {
+            g_vCollisionContact.y = 0.0f;
+            g_vCollisionContact.x = g_vCollisionContact.y;
+            g_vCollisionContact.z = (f32)(CONTACT_LESS(middle[0], 0.0f) ? -1 : 1) * 0.5f;
+        }
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+        distance = Vec3fDot(normal, &g_vCollisionContact) - offset;
+#else
+        distance = g_vCollisionContact.z * normal->z +
+                   (normal->x * g_vCollisionContact.x + normal->y * g_vCollisionContact.y) - offset;
+#endif
+        /* The original scales x by the length and the width, and the word after the contact. */
+        g_vCollisionContact.x = g_vCollisionContact.x * body->boxSize.x;
+        g_vCollisionContact.x = g_vCollisionContact.x * body->boxSize.y;
+        g_fCollisionContactW = g_fCollisionContactW * body->boxSize.z;
+    }
+    g_vCollisionPenetration.x = normal->x * -distance;
+    g_vCollisionPenetration.y = normal->y * -distance;
+    g_vCollisionPenetration.z = normal->z * -distance;
+}
 
 s32 ApplyCollisionImpulse(
     RigidBody *body, Vec3f *point, Vec3f *normal, s32 friction, f32 restitution) {
@@ -378,7 +449,8 @@ f32 CastWheelRay(RigidBody *body, RigidBody *wheel) {
     return nearest;
 }
 
-/* The original picks the wheel by a switch without a default, and retains the last one otherwise. */
+/* The original picks the wheel by a switch without a default, and retains the last one otherwise.
+ */
 #pragma GCC diagnostic push
 #if !defined(__clang__)
 #pragma GCC diagnostic ignored "-Wmaybe-uninitialized"

@@ -24,9 +24,24 @@
 #define TRACK_SURFACES 8
 
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
+typedef union CollisionContactState {
+    s32 type; /*!< The contact classification before correction. */
+    f32 w;    /*!< The same word scaled as a float during correction. */
+} CollisionContactState;
+
 #ifdef __cplusplus
 extern "C" {
 #endif
+/**
+ * The shared contact word.
+ *
+ * @ghidraAddress BRD3D: 0x1175549c
+ */
+extern CollisionContactState g_CollisionContactState;
+
+#define g_dwCollisionContactType (g_CollisionContactState.type)
+#define g_fCollisionContactW (g_CollisionContactState.w)
+
 /**
  * The velocity retained before an old contact applies its impulse.
  *
@@ -81,6 +96,7 @@ extern CollisionTriangleNode *g_pNextCollisionTriangleNode;
 }
 #endif
 
+#if TGR_PLATFORM != TGR_PLATFORM_WIN
 /**
  * How the last collision with a triangle is resolved: 1 against its plane alone, 2 at the face of
  * the box nearest the triangle, otherwise at the corner of the box.
@@ -90,6 +106,7 @@ extern CollisionTriangleNode *g_pNextCollisionTriangleNode;
  * @ghidraAddress JPN: 0x802a6c88
  */
 extern s32 g_dwCollisionContactType;
+#endif
 
 /**
  * The triangle of the last collision.
@@ -189,6 +206,7 @@ extern Vec3f g_vCollisionContact;
 }
 #endif
 
+#if TGR_PLATFORM != TGR_PLATFORM_WIN
 /**
  * The word after g_vCollisionContact, which ComputeCollisionPenetration() scales.
  *
@@ -197,19 +215,21 @@ extern Vec3f g_vCollisionContact;
  * @ghidraAddress JPN: 0x8037fc24
  */
 extern f32 g_fCollisionContactW;
+#endif
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 /**
  * How far the last collision put the body into the triangle.
  *
  * @ghidraAddress USA: 0x8037eac8
  * @ghidraAddress EUR: 0x80380fc8
  * @ghidraAddress JPN: 0x8037fc38
+ * @ghidraAddress BRD3D: 0x11754e40
  */
 extern Vec3f g_vCollisionPenetration;
 
-#ifdef __cplusplus
-extern "C" {
-#endif
 /**
  * Empty the cache of the triangles and the list of the triangles that cross the box.
  *
@@ -597,6 +617,9 @@ s32 UnusedTrackCollisionStub(void *body);
  */
 s32 TipBalancedVehicle(RigidBody *body);
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 /**
  * Find how far the box of a body is into a triangle.
  *
@@ -608,9 +631,13 @@ s32 TipBalancedVehicle(RigidBody *body);
  * @ghidraAddress USA: 0x8025dcb8
  * @ghidraAddress EUR: 0x8025f29c
  * @ghidraAddress JPN: 0x8025ec2c
+ * @ghidraAddress BRD3D: 0x1006e4c0
  */
 void ComputeCollisionPenetration(
     RigidBody *body, Vec3f *normal, f32 offset, Vec3f *contact, Vec3f triangle[3]);
+#ifdef __cplusplus
+}
+#endif
 
 /**
  * Collide the next step of a body with the listed triangles that cross its box, and move it back

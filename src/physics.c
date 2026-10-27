@@ -476,54 +476,6 @@ s32 TipBalancedVehicle(RigidBody *body) {
 }
 #pragma GCC diagnostic pop
 
-void ComputeCollisionPenetration(
-    RigidBody *body, Vec3f *normal, f32 offset, Vec3f *contact, Vec3f triangle[3]) {
-    f32 middle[3];
-    f32 distance;
-    s32 i;
-
-    if (g_dwCollisionContactType != 2) {
-        distance =
-            contact->z * normal->z + (normal->x * contact->x + normal->y * contact->y) - offset;
-    } else {
-        /* The face of the box by the middle of the triangle, signed by its x as the original. */
-        for (i = 0; i < 3; i++) {
-            middle[i] = COMPONENT(&triangle[2], i) +
-                        (COMPONENT(&triangle[0], i) + COMPONENT(&triangle[1], i));
-            /* The original stores the sum before dividing it. */
-            middle[i] = middle[i] / 3.0f;
-        }
-        if (ABS(middle[0]) < ABS(middle[1])) {
-            if (ABS(middle[0]) < ABS(middle[2])) {
-                g_vCollisionContact.z = 0.0f;
-                g_vCollisionContact.y = g_vCollisionContact.z;
-                g_vCollisionContact.x = (f32)(middle[0] < 0.0f ? -1 : 1) * 0.5f;
-            } else {
-                g_vCollisionContact.y = 0.0f;
-                g_vCollisionContact.x = g_vCollisionContact.y;
-                g_vCollisionContact.z = (f32)(middle[0] < 0.0f ? -1 : 1) * 0.5f;
-            }
-        } else if (ABS(middle[1]) < ABS(middle[2])) {
-            g_vCollisionContact.z = 0.0f;
-            g_vCollisionContact.x = g_vCollisionContact.z;
-            g_vCollisionContact.y = (f32)(middle[0] < 0.0f ? -1 : 1) * 0.5f;
-        } else {
-            g_vCollisionContact.y = 0.0f;
-            g_vCollisionContact.x = g_vCollisionContact.y;
-            g_vCollisionContact.z = (f32)(middle[0] < 0.0f ? -1 : 1) * 0.5f;
-        }
-        distance = g_vCollisionContact.z * normal->z +
-                   (normal->x * g_vCollisionContact.x + normal->y * g_vCollisionContact.y) - offset;
-        /* The original scales x by the length and the width, and the word after the contact. */
-        g_vCollisionContact.x = g_vCollisionContact.x * body->boxSize.x;
-        g_vCollisionContact.x = g_vCollisionContact.x * body->boxSize.y;
-        g_fCollisionContactW = g_fCollisionContactW * body->boxSize.z;
-    }
-    g_vCollisionPenetration.x = normal->x * -distance;
-    g_vCollisionPenetration.y = normal->y * -distance;
-    g_vCollisionPenetration.z = normal->z * -distance;
-}
-
 /* The original passes the spin flag to the bounce without setting it outside the demonstration. */
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
