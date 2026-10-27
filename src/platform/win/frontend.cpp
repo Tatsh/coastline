@@ -2425,6 +2425,16 @@ int RaceResultsTotalsUI_UpdateRoundsCompletedLabel(MenuWidget *pWidget) {
                                    static_cast<int>(static_cast<unsigned>(g_dwSeasonRound) + 1));
 }
 
+int RaceResultsTotalsUI_UpdatePointsNeededLabel(MenuWidget *pWidget) {
+    int points = static_cast<int>(
+        static_cast<unsigned>(g_SeasonTable[g_SeasonResumeState.season].pointsNeeded) -
+        static_cast<unsigned>(g_dwSeasonTotalPoints));
+    if (points < 0) {
+        points = 0;
+    }
+    return DrawResultsNumericLabel(pWidget, points);
+}
+
 int SeasonProgressInfoUI_UpdatePointsNeededLabel(MenuWidget *pWidget) {
     char text[32] = {};
     int season = g_dwSeasonLoaded ? g_bSeasonClass : 0;

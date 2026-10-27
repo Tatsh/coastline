@@ -414,6 +414,14 @@ int RaceResultsTotalsUI_UpdateTotalPointsLabel(MenuWidget *pWidget);
 int RaceResultsTotalsUI_UpdateRoundsCompletedLabel(MenuWidget *pWidget);
 
 /**
+ * Draw the remaining points for the season stored in the resume state.
+ *
+ * @ghidraAddress BRD3D: 0x100417b0
+ * @ghidraAddress BRGlide: 0x1003ad10
+ */
+int RaceResultsTotalsUI_UpdatePointsNeededLabel(MenuWidget *pWidget);
+
+/**
  * Draw the remaining points required to advance, with negative results clamped to zero.
  *
  * @ghidraAddress BRD3D: 0x100415a0
