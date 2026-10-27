@@ -1,6 +1,6 @@
 # PC port game code from 0x10060000 to 0x10070000
 
-141 of 174 routines done.
+142 of 174 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -13,7 +13,7 @@ the same name, for a routine the port retained from the N64 game.
 | `Vehicle::UpdateVehicleEngineAndGearbox` |   ✅   | ✅ `0x80222050` |      1 |   3226 | `0x10061f70` | `0x1005aff0` | `void UpdateVehicleEngineAndGearbox(Vehicle * this)`                                                                                     |
 | `ApplySideGrip`                          |   ✅   | ✅ `0x80259d14` |      1 |   3070 | `0x1006b5f0` | `0x100645a0` | `void ApplySideGrip(RigidBody * body, float dt, float * rearLoad, float * frontLoad, uchar * rearSliding, uchar * frontSliding)`         |
 | `Vehicle::UpdateVehicleSounds`           |        | ✅ `0x8022bcb4` |      1 |   2757 | `0x10068400` | `0x10061470` | `undefined UpdateVehicleSounds(Vehicle * this)`                                                                                          |
-| `RacerSlot::UpdateRaceProgress`          |   🚧   | ✅ `0x8022a0e0` |      2 |   2534 | `0x10066e90` | `0x1005ff00` | `void UpdateRaceProgress(RacerSlot * this)`                                                                                              |
+| `RacerSlot::UpdateRaceProgress`          |   ✅   | ✅ `0x8022a0e0` |      2 |   2534 | `0x10066e90` | `0x1005ff00` | `void UpdateRaceProgress(RacerSlot * this)`                                                                                              |
 | `Vehicle::ManageAiRacerSlots`            |   ✅   | ✅ `0x80229700` |      1 |   2103 | `0x10066650` | `0x1005f6c0` | `void ManageAiRacerSlots(Vehicle * this)`                                                                                                |
 | `Vehicle::ApplyPlayerVehicleInput`       |   ✅   |                 |      1 |   1951 | `0x10063840` |              | `void ApplyPlayerVehicleInput(Vehicle * this)`                                                                                           |
 | `Vehicle::InitVehiclePhysics`            |   ✅   | ✅ `0x80222d54` |      3 |   1909 | `0x10062c50` | `0x1005bcc0` | `void InitVehiclePhysics(Vehicle * this)`                                                                                                |
