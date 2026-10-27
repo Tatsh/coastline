@@ -1258,11 +1258,21 @@ void ResetSessionSlotTable(void);
 
 /** A network player of a race. The layout is not recovered past the members below. */
 struct NetPlayerSlot {
-    HANDLE hMutex;           /*!< The mutex of the slot. */
-    DPID dpidOwner;          /*!< The player of the session that controls the slot. */
-    char abUnknown8[0x24];   /* +0x08 */
-    int dwState;             /*!< The state of the slot in its low 6 bits, 0 for free. */
-    char abUnknown30[0x93c]; /* +0x30 */
+    HANDLE hMutex;         /*!< The mutex of the slot. */
+    DPID dpidOwner;        /*!< The player of the session that controls the slot. */
+    char abUnknown8[0x24]; /* +0x08 */
+    int dwState;           /*!< The state of the slot in its low 6 bits, 0 for free. */
+    int nStatusValue;
+    unsigned char bStatusOptionA;
+    unsigned char bStatusOptionB;
+    unsigned char bStatusOptionC;
+    char abUnknown37[0x525]; /* +0x37 */
+    char szPlayerName[0x400];
+    unsigned dwLastTimeSync;
+    unsigned dwRaceTime;
+    unsigned short wTimeSyncValue;
+    char abUnknown966[2]; /* +0x966 */
+    unsigned dwFinishTime;
 };
 
 /** The number of entries of g_aNetPlayerSlots. */

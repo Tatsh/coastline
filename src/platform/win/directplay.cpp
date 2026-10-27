@@ -835,6 +835,84 @@ int FlushNetworkPlayerStreams(DirectPlayInfo *pInfo) {
     return result;
 }
 
+void BuildNetworkPlayerStatusPackets(void) {
+    bool active = false;
+    for (int i = 0; i < NET_PLAYER_SLOT_COUNT; i++) {
+        NetPlayerSlot &recipient = g_aNetPlayerSlots[i];
+        NetStream &stream = g_aNetPlayerStreams[i];
+        LockNetworkWorkerSlot(recipient);
+        int state = recipient.dwState & 0x3f;
+        if (state >= 1) {
+            active = true;
+            if (state == 1) {
+                WriteGameSettingsPacket(&stream, static_cast<unsigned char>(i));
+            } else {
+                for (int j = 0; j < NET_PLAYER_SLOT_COUNT; j++) {
+                    NetPlayerSlot &subject = g_aNetPlayerSlots[j];
+                    NetPlayerSlot &peer = g_aNetPeerSlotMatrix[i][j];
+                    char playerName[0x400];
+                    LockNetworkWorkerSlot(subject);
+                    LockNetworkWorkerSlot(peer);
+                    int statusValue = subject.nStatusValue;
+                    unsigned char optionA = subject.bStatusOptionA;
+                    unsigned char optionB = subject.bStatusOptionB;
+                    unsigned char optionC = subject.bStatusOptionC;
+                    std::strcpy(playerName, subject.szPlayerName);
+                    int subjectState = subject.dwState;
+                    bool changed = peer.dwState != subjectState;
+                    if (changed && (subjectState & 0x3f) == 2 && i == j) {
+                        peer.dwState = subjectState;
+                        changed = false;
+                    }
+                    ReleaseMutex(peer.hMutex);
+                    if (changed) {
+                        WritePlayerStatusPacket(&stream,
+                                                static_cast<unsigned char>(j),
+                                                subjectState,
+                                                statusValue,
+                                                optionA,
+                                                optionB,
+                                                optionC,
+                                                playerName,
+                                                subject.dpidOwner);
+                    }
+                    ReleaseMutex(subject.hMutex);
+                }
+            }
+            WritePlayerRankingPacket(&stream, static_cast<unsigned char>(i));
+            if (g_dwNetWorkerCurrentTime > recipient.dwLastTimeSync + 1000 && !g_bNetRaceStarted &&
+                WriteTimeSyncPacket(&stream,
+                                    static_cast<unsigned char>(i),
+                                    recipient.dwRaceTime,
+                                    recipient.wTimeSyncValue)) {
+                recipient.dwLastTimeSync = g_dwNetWorkerCurrentTime;
+                for (int j = 0; j < NET_PLAYER_SLOT_COUNT; j++) {
+                    if (j == i) {
+                        continue;
+                    }
+                    NetPlayerSlot &subject = g_aNetPlayerSlots[j];
+                    LockNetworkWorkerSlot(subject);
+                    bool fits = true;
+                    if ((subject.dwState & 0x3f) >= 1) {
+                        fits = WriteTimeSyncPacket(&stream,
+                                                   static_cast<unsigned char>(j),
+                                                   subject.dwRaceTime,
+                                                   subject.wTimeSyncValue);
+                    }
+                    ReleaseMutex(subject.hMutex);
+                    if (!fits) {
+                        break;
+                    }
+                }
+            }
+        }
+        ReleaseMutex(recipient.hMutex);
+    }
+    if (!active) {
+        g_bNetRaceStarted = false;
+    }
+}
+
 static inline int GetNetPlayerSlotStateLocked(NetPlayerSlot &slot) {
     WaitForSingleObject(slot.hMutex, INFINITE);
     int nState = slot.dwState;

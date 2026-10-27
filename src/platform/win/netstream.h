@@ -474,3 +474,26 @@ extern int g_adwNetPlayerRankPosition[NET_PLAYER_STREAM_COUNT];
  * @stub{BRGlide}
  */
 bool WritePlayerRankingPacket(NetStream *pStream, unsigned char bPlayer);
+
+/**
+ * @ghidraAddress BRD3D: 0x10071f40
+ */
+bool WritePlayerStatusPacket(NetStream *pStream,
+                             unsigned char bPlayer,
+                             int nState,
+                             int nStatusValue,
+                             unsigned char bOptionA,
+                             unsigned char bOptionB,
+                             unsigned char bOptionC,
+                             const char *szPlayerName,
+                             unsigned dwOwner);
+
+/**
+ * @ghidraAddress BRD3D: 0x10072080
+ */
+bool WriteGameSettingsPacket(NetStream *pStream, unsigned char bPlayer);
+
+/**
+ * @ghidraAddress BRD3D: 0x10221280
+ */
+extern int g_bNetGameSettingUnk_10221280;

@@ -2,6 +2,10 @@
 
 #include <cmath>
 
+#include "platform/win/directplay.h"
+#include "platform/win/settings.h"
+#include "trackselect.h"
+
 NetStream g_aNetPlayerStreams[NET_PLAYER_STREAM_COUNT];
 
 // The number of bits of a byte.
@@ -337,5 +341,68 @@ bool WritePlayerRankingPacket(NetStream *pStream, unsigned char bPlayer) {
         pStream->StreamWriteByte(static_cast<unsigned char>(
             g_adwNetPlayerRankPosition[i] | g_adwNetPlayerRankPosition[i + 1] << 4));
     }
+    return true;
+}
+
+bool WritePlayerStatusPacket(NetStream *pStream,
+                             unsigned char bPlayer,
+                             int nState,
+                             int nStatusValue,
+                             unsigned char bOptionA,
+                             unsigned char bOptionB,
+                             unsigned char bOptionC,
+                             const char *szPlayerName,
+                             unsigned dwOwner) {
+    int state = nState & 0x3f;
+    int size = pStream->StreamGetWriteSize() + 10;
+    if (state <= 2) {
+        size += 24;
+    }
+    if (state == 4) {
+        size += 3;
+    }
+    if (size > NET_PACKET_MAX_SIZE) {
+        return false;
+    }
+    pStream->StreamWriteByte(bPlayer);
+    pStream->StreamWriteByte(static_cast<unsigned char>(nState));
+    pStream->StreamWriteByte(static_cast<unsigned char>(nStatusValue));
+    pStream->StreamWriteByte(bOptionA);
+    pStream->StreamWriteByte(bOptionB);
+    pStream->StreamWriteByte(bOptionC);
+    pStream->StreamWriteInt32(dwOwner);
+    if (state <= 2) {
+        bool ended = false;
+        for (int i = 0; i < 24; i++) {
+            if (ended) {
+                pStream->StreamWriteByte(0);
+            } else {
+                pStream->StreamWriteByte(static_cast<unsigned char>(szPlayerName[i]));
+                if (szPlayerName[i] == 0) {
+                    ended = true;
+                }
+            }
+        }
+    }
+    if (state == 4) {
+        pStream->StreamWriteInt24(g_dwNetRaceStartCountdownTime);
+    }
+    return true;
+}
+
+int g_bNetGameSettingUnk_10221280;
+
+bool WriteGameSettingsPacket(NetStream *pStream, unsigned char bPlayer) {
+    if (pStream->StreamGetWriteSize() + 9 > NET_PACKET_MAX_SIZE) {
+        return false;
+    }
+    pStream->StreamWriteByte(bPlayer | 0xe0);
+    pStream->StreamWriteByte(static_cast<unsigned char>(g_bNetMaxPlayers));
+    pStream->StreamWriteByte(static_cast<unsigned char>(g_dwSelectedTrackId));
+    pStream->StreamWriteByte(static_cast<unsigned char>(g_dwChosenWeather));
+    pStream->StreamWriteInt16(g_wNetAllowedCarsMask);
+    pStream->StreamWriteByte(static_cast<unsigned char>(g_bNetGameSettingUnk_10221280));
+    pStream->StreamWriteByte(static_cast<unsigned char>(g_bNetTireSetting));
+    pStream->StreamWriteByte(static_cast<unsigned char>(g_bNetSuspensionSetting));
     return true;
 }
