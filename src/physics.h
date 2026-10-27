@@ -178,6 +178,9 @@ extern Vec3f g_vCollisionPenetration;
  */
 void ResetCollisionCaches(void);
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 /**
  * Add the forces of the list of a body to its sums of force and torque.
  *
@@ -185,6 +188,7 @@ void ResetCollisionCaches(void);
  * @ghidraAddress USA: 0x802594bc
  * @ghidraAddress EUR: 0x8025aa8c
  * @ghidraAddress JPN: 0x8025a41c
+ * @ghidraAddress BRD3D: 0x1006aeb0
  */
 void SumBodyForces(RigidBody *body);
 
@@ -197,6 +201,7 @@ void SumBodyForces(RigidBody *body);
  * @ghidraAddress USA: 0x80259634
  * @ghidraAddress EUR: 0x8025ac04
  * @ghidraAddress JPN: 0x8025a594
+ * @ghidraAddress BRD3D: 0x1006aff0
  */
 void SumWheelForces(RigidBody *body, RigidBody *wheel);
 
@@ -208,6 +213,7 @@ void SumWheelForces(RigidBody *body, RigidBody *wheel);
  * @ghidraAddress USA: 0x8025980c
  * @ghidraAddress EUR: 0x8025addc
  * @ghidraAddress JPN: 0x8025a76c
+ * @ghidraAddress BRD3D: 0x1006b170
  */
 void ComputeVehicleAccelerations(RigidBody *body);
 
@@ -218,8 +224,12 @@ void ComputeVehicleAccelerations(RigidBody *body);
  * @ghidraAddress USA: 0x8025993c
  * @ghidraAddress EUR: 0x8025af0c
  * @ghidraAddress JPN: 0x8025a89c
+ * @ghidraAddress BRD3D: 0x1006b260
  */
 void ComputeVehicleForces(RigidBody *body);
+#ifdef __cplusplus
+}
+#endif
 
 /**
  * The velocity of the point of a body over a wheel at the height of the body, in the frame of the
