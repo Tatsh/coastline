@@ -523,6 +523,12 @@ void ApplyVehicleKeyframe(Vehicle *pVehicle, const KeyframeState *pState) {
     pVehicle->body.stepStates[1] = pVehicle->body.state;
 }
 
+void RecordVehicleKeyframe(Vehicle *vehicle) {
+    KeyframeState state;
+    BuildVehicleKeyframe(&state, vehicle);
+    SendLocalVehicleStateUpdate(&state);
+}
+
 void RecordGhostKeyframe(Vehicle *pVehicle) {
     const int index = pVehicle->index;
     if (!g_bGhostRecordingActive || g_dwRacePauseState ||

@@ -311,7 +311,6 @@ void BuildVehicleKeyframe(KeyframeState *pState, Vehicle *pVehicle);
 
 /**
  * @ghidraAddress BRD3D: 0x100609e0
- * @stub
  */
 void RecordVehicleKeyframe(Vehicle *vehicle);
 

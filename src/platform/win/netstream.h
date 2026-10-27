@@ -507,6 +507,12 @@ struct KeyframeState;
 void DeserializeVehicleState(KeyframeState *pState, NetStream *pStream);
 
 /**
+ * @ghidraAddress BRD3D: 0x10005130
+ * @stub
+ */
+unsigned SendLocalVehicleStateUpdate(KeyframeState *state);
+
+/**
  * @ghidraAddress BRD3D: 0x100073e0
  */
 void DeserializeKeyframeDelta(KeyframeState *pState,
