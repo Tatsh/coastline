@@ -955,6 +955,7 @@ private:
      */
     void UpdateVehicleEngineAndGearbox(void);
 
+public:
     /**
      * Store the vehicle's three paint colour bytes.
      *
@@ -963,6 +964,7 @@ private:
      */
     void SetVehiclePaintColorRgb(u8 red, u8 green, u8 blue);
 
+private:
     /**
      * Advance spring, tyre, damping, and collision calculations.
      *

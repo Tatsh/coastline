@@ -52,26 +52,6 @@ s32 IsVehicleMaterialPalette(const void *palette) {
 /* The room for the message of a car too big. */
 #define LOAD_MESSAGE_SIZE 0x50
 
-void ExtractVehicleBaseColor(Vehicle *vehicle, VehicleModel *model) {
-    ModelTexture *texture = &model->textures[model->materialTextures[VEHICLE_MATERIAL_PAINT]];
-    u16 *palette = texture->palette;
-    s32 color;
-    s32 red;
-    s32 green;
-    s32 blue;
-
-    if (palette != NULL && texture->format == TEXTURE_FORMAT_CI4) {
-        /* Each 5-bit component widened to 8 bits, its top bits repeated below. */
-        color = palette[0];
-        red = ((color >> 13) & 7) | ((color >> 8) & 0xF8);
-        green = ((color >> 8) & 7) | ((color >> 3) & 0xF8);
-        blue = ((color >> 3) & 7) | ((color << 2) & 0xF8);
-        vehicle->color[2] = blue;
-        vehicle->color[1] = green;
-        vehicle->color[0] = red;
-    }
-}
-
 /* Remap a pointer of a model loaded for the first slot to the slot of the model. */
 #define REMAP_MODEL_POINTER(pointer, model)                                                        \
     RemapPointer((u32 *)(pointer), MODEL_SLOT_LO, MODEL_SLOT_HI, (u32)(model))

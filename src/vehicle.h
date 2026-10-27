@@ -2,6 +2,7 @@
 #define COASTLINE_VEHICLE_H
 
 #include "camerachange.h"
+#include "vehiclepaint.h"
 #include "vehiclestatus.h"
 #include "vehicletrackpos.h"
 
@@ -548,18 +549,6 @@ void ResetVehicleState(Vehicle *vehicle);
  * @ghidraAddress JPN: 0x802212d8
  */
 void BindPlayerInputToVehicle(Vehicle *vehicle);
-
-/**
- * Set the colour of the paint of a vehicle from the first colour of the palette of the paint
- * texture of a model, when that texture has a palette and is of the format 1.
- *
- * @param vehicle The vehicle.
- * @param model The model.
- * @ghidraAddress USA: 0x8021d2a0
- * @ghidraAddress EUR: 0x8021e4a0
- * @ghidraAddress JPN: 0x8021dd70
- */
-void ExtractVehicleBaseColor(Vehicle *vehicle, VehicleModel *model);
 
 /**
  * Whether the model of a car is on the cartridge.

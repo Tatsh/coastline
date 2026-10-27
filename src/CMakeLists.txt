@@ -106,7 +106,7 @@ else()
     playercontrol.c routeposition.c seasontrack.c tracetrack.c trackinstance.c vehiclechoice.c
     vehiclemodelrender.c vehiclephysics.c vehiclereset.c vehiclesound.c vehiclevisibility.c
     wheelrender.c vehiclestatus.c vehicletrackpos.c vehicledeform.c racerstate.c racers.c
-    exhaustspawn.c tiresmokespawn.c PROPERTIES LANGUAGE CXX)
+    exhaustspawn.c tiresmokespawn.c vehiclepaint.c PROPERTIES LANGUAGE CXX)
   set_source_files_properties(controllerread.c inputtranslate.c PROPERTIES LANGUAGE CXX)
   set_source_files_properties(volumecontrols.c PROPERTIES LANGUAGE CXX)
   set_source_files_properties(ambientsound.c PROPERTIES LANGUAGE CXX)
@@ -149,6 +149,7 @@ target_sources(coastline_game PRIVATE vehicledeform.c)
 target_sources(coastline_game PRIVATE racerstate.c)
 target_sources(coastline_game PRIVATE exhaustspawn.c)
 target_sources(coastline_game PRIVATE tiresmokespawn.c)
+target_sources(coastline_game PRIVATE vehiclepaint.c)
 target_sources(coastline_game PRIVATE vehiclesound.c)
 target_sources(coastline_game PRIVATE racersharing.c)
 target_sources(coastline_game PRIVATE racermotion.c frametime.c)
