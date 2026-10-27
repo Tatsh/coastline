@@ -11,7 +11,6 @@ u8 g_nTextAlignment;
 s32 g_nTextDrawX;
 s32 g_nTextDrawY;
 s32 g_nFontSize;
-s32 g_dwScreenScaleShift;
 #endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 
 #define SMALL_FONT_MAX_SIZE 25
