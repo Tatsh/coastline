@@ -64,7 +64,7 @@ void PackKeyframeToCompactBuffer(u8 *pBuffer, const KeyframeState *pState) {
     frame.nPositionYAndFlags =
         (ConvertFloatToFixedAngleNoClamp(pState->position.y) & 0xfffffc) |
         (IsKeyframeFlagSet(pState->fBraking) << 1) | IsKeyframeFlagSet(pState->fReverse) |
-        (static_cast<unsigned>((FloatToSectorIndex(pState->fSector) & 0x3f) |
+        (static_cast<unsigned>((FloatToEngineRpmIndex(pState->fEngineRpm) & 0x3f) |
                                (QuantizeFloatToLightIndex(pState->afLight[1]) << 6))
          << 24);
     frame.nPositionZ = static_cast<short>(ConvertFloatToFixedAngle16B(pState->position.z));
@@ -115,9 +115,9 @@ void DeserializeKeyframeState(KeyframeState *pState, const u8 *pBuffer) {
     pState->fGearControl = (frame.nPositionXAndFlags & 1) ? 128.0f : 0.0f;
     pState->fBraking = (frame.nPositionYAndFlags & 2) ? 1.0f : 0.0f;
     pState->fReverse = (frame.nPositionYAndFlags & 1) ? 1.0f : 0.0f;
-    const unsigned sectorAndLight = frame.nPositionYAndFlags >> 24;
-    pState->fSector = IndexToWorldCoord(sectorAndLight & 0x3f);
-    pState->afLight[1] = GetLightLevelScale(sectorAndLight >> 6);
+    const unsigned engineAndLight = frame.nPositionYAndFlags >> 24;
+    pState->fEngineRpm = EngineRpmIndexToFloat(engineAndLight & 0x3f);
+    pState->afLight[1] = GetLightLevelScale(engineAndLight >> 6);
     pState->afEffectFlags[0] = (frame.nPositionXAndFlags & 2) ? 128.0f : 0.0f;
     for (int i = 0; i < 4; ++i) {
         pState->afEffectFlags[i + 1] = (frame.anOrientation[i] & 1) ? 128.0f : 0.0f;
@@ -168,7 +168,7 @@ void InterpolateKeyframeState(KeyframeState *pOut,
     pOut->fBraking = BlendKeyframeValue(pFrom->fBraking, pTo->fBraking, fShare);
     pOut->fReverse = BlendKeyframeValue(pFrom->fReverse, pTo->fReverse, fShare);
     pOut->fProgress = BlendKeyframeValue(pFrom->fProgress, pTo->fProgress, fShare);
-    pOut->fSector = BlendKeyframeValue(pFrom->fSector, pTo->fSector, fShare);
+    pOut->fEngineRpm = BlendKeyframeValue(pFrom->fEngineRpm, pTo->fEngineRpm, fShare);
     for (int i = 0; i < 2; ++i) {
         pOut->afLight[i] = BlendKeyframeValue(pFrom->afLight[i], pTo->afLight[i], fShare);
     }
@@ -471,7 +471,7 @@ void BuildVehicleKeyframe(KeyframeState *pState, Vehicle *pVehicle) {
     pState->fBraking = (pVehicle->input->buttons & 0xc0000) ? 1.0f : 0.0f;
     pState->fReverse = !(pVehicle->throttle >= 0.0f) ? 1.0f : 0.0f;
     pState->fProgress = pVehicle->lap == g_dwTotalLaps ? 4188888.0f : pVehicle->progress;
-    pState->fSector = pVehicle->sector;
+    pState->fEngineRpm = pVehicle->engineRpm;
     pState->afLight[0] = static_cast<float>(pVehicle->body.vehicleImpactVolume);
     pState->afLight[1] = static_cast<float>(pVehicle->body.impactVolume);
     pState->afEffectFlags[0] = static_cast<float>(pVehicle->body.replayEffects[3]);
@@ -509,7 +509,7 @@ void ApplyVehicleKeyframe(Vehicle *pVehicle, const KeyframeState *pState) {
     if (!(pVehicle->progress > 0.0f) || pVehicle->progress + 1000.0f > pState->fProgress) {
         pVehicle->progress = pState->fProgress;
     }
-    pVehicle->sector = pState->fSector;
+    pVehicle->engineRpm = pState->fEngineRpm;
     pVehicle->body.vehicleImpactVolume = static_cast<u8>(static_cast<int>(pState->afLight[0]));
     pVehicle->body.impactVolume = static_cast<u8>(static_cast<int>(pState->afLight[1]));
     pVehicle->body.replayEffects[3] = static_cast<u8>(static_cast<int>(pState->afEffectFlags[0]));

@@ -22,7 +22,7 @@ typedef struct Vehicle {
     RigidBody body;
     RigidBody wheelBodies[4];
     u8 abUnknownBa0[0x284]; /* +0xba0 */
-    f32 sector;
+    f32 engineRpm;
     f32 gearRatios[CAR_GEAR_RATIOS];
     f32 torqueCurve[4];
     f32 finalDrive;

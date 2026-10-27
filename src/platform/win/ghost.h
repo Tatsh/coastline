@@ -35,7 +35,7 @@ struct KeyframeState {
     float fBraking;
     float fReverse;
     float fProgress;
-    float fSector;
+    float fEngineRpm;
     float afLight[2];
     float afEffectFlags[6];
 };

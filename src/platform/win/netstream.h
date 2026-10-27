@@ -250,14 +250,14 @@ int ConvertFloatToFixedAngleNoClamp(float fValue);
 int FloatToByteIndex(float fValue);
 
 /**
- * Map a coordinate from 400 to 8000 to the nearest of 64 steps.
+ * Map engine speed from 400 to 8000 RPM to the nearest of 64 steps.
  *
- * @param fValue The coordinate.
+ * @param fValue Engine speed, in revolutions per minute.
  * @return The step, from 0 to 63.
  * @ghidraAddress BRD3D: 0x10006660
  * @ghidraAddress BRGlide: 0x100069d0
  */
-int FloatToSectorIndex(float fValue);
+int FloatToEngineRpmIndex(float fValue);
 
 /**
  * Round twice a value to the nearest integer, limited to the range of a field of 24 bits.
@@ -320,14 +320,14 @@ unsigned char QuantizeFloatToLightIndex(float fScale);
 float SignedByteToFloat(unsigned char bValue);
 
 /**
- * Map one of 64 steps to a coordinate from 400 to 8000.
+ * Map one of 64 steps to engine speed from 400 to 8000 RPM.
  *
  * @param bIndex The step.
- * @return The coordinate.
+ * @return Engine speed, in revolutions per minute.
  * @ghidraAddress BRD3D: 0x100072c0
  * @ghidraAddress BRGlide: 0x10007630
  */
-float IndexToWorldCoord(unsigned char bIndex);
+float EngineRpmIndexToFloat(unsigned char bIndex);
 
 /**
  * Get the brightness of a light level.

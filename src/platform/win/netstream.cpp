@@ -219,7 +219,7 @@ int FloatToByteIndex(float fValue) {
     return RoundAndClamp(0.5f - fValue * -(1.0f / 1.41015625f), 0, 255);
 }
 
-int FloatToSectorIndex(float fValue) {
+int FloatToEngineRpmIndex(float fValue) {
     return RoundAndClamp(0.5f - (fValue - 400.0f) * -(63.0f / 7600.0f), 0, 63);
 }
 
@@ -258,7 +258,7 @@ float SignedByteToFloat(unsigned char bValue) {
     return nValue * -(1.0f / 128.0f);
 }
 
-float IndexToWorldCoord(unsigned char bIndex) {
+float EngineRpmIndexToFloat(unsigned char bIndex) {
     return 400.0f - bIndex * -(7600.0f / 63.0f);
 }
 
@@ -423,7 +423,8 @@ static inline void ReadNetworkQuaternion(KeyframeState *pState, NetStream *pStre
 }
 
 static inline void ReadNetworkLightsAndEffects(KeyframeState *pState, NetStream *pStream) {
-    pState->fSector = IndexToWorldCoord(static_cast<unsigned char>(pStream->BitStreamReadBits(6)));
+    pState->fEngineRpm =
+        EngineRpmIndexToFloat(static_cast<unsigned char>(pStream->BitStreamReadBits(6)));
     pState->afLight[0] = GetLightLevelScale(static_cast<char>(pStream->BitStreamReadBits(2)));
     pState->afLight[1] = GetLightLevelScale(static_cast<char>(pStream->BitStreamReadBits(2)));
     for (int i = 0; i < 6; i++) {
