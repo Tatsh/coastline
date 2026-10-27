@@ -1152,7 +1152,11 @@ int ReturnZero(void);
 
 /** Image metadata shared by texture entries and temporary texture conversions. */
 struct TextureImageData {
-    char abUnknown0[0x1c];  /* +0x00 */
+    char abUnknown0[8]; /* +0x00 */
+    int nWidth;
+    int nHeight;
+    int nPixelFormatId;
+    char abUnknown14[8];    /* +0x14 */
     int nLod;               /*!< The level of detail, as CalculateTextureDimensions() reads it. */
     int nAspectRatio;       /*!< The aspect ratio, as CalculateTextureDimensions() reads it. */
     int bClampS;            /*!< Whether texture binding clamps s. */
@@ -1176,7 +1180,9 @@ struct TextureImageData {
     char abUnknown290[4];             /* +0x290 */
     unsigned char abEnvColor[4];
     unsigned char abPrimColor[4];
-    char abUnknown29c[0x10]; /* +0x29c */
+    char abUnknown29c[8]; /* +0x29c */
+    int nSourceWidth;
+    int nSourceHeight;
 };
 
 /** A loaded texture, its image metadata and texture-coordinate scales. */

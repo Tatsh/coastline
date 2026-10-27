@@ -13,6 +13,7 @@
 #include "platform/win/displaylist.h"
 #include "platform/win/fileio.h"
 #include "platform/win/settings.h"
+#include "platform/win/texturescan.h"
 #include "screen.h"
 #include "weather.h"
 
@@ -1163,4 +1164,34 @@ void ResizeTextureImage(unsigned char *pDest,
 void ReloadTextureEntryData(int nEntry) {
     unsigned char *pixels = GetTextureImagePixels(&g_pTextureEntries[nEntry].data);
     g_pfnUploadTextureEntryToSurface(nEntry, TextureUploadData(pixels));
+}
+
+unsigned ResizeTextureMipChain(unsigned char *pDest,
+                               const unsigned char *pSource,
+                               TextureImageData *pImage) {
+    int pixelSize = GetTexturePixelSize(pImage->nPixelFormatId);
+    int sourceWidth = pImage->nSourceWidth;
+    int sourceHeight = pImage->nSourceHeight;
+    int width = pImage->nWidth;
+    int height = pImage->nHeight;
+    pImage->nDecodedWidth = sourceWidth;
+    pImage->nDecodedHeight = sourceHeight;
+    unsigned bytes = 0;
+    for (int level = g_dwTexScanRenderTileIndex; level < pImage->nTileIndex; level++) {
+        ResizeTextureImage(
+            pDest, width, height, pSource, sourceWidth, sourceHeight, pImage->nPixelFormatId);
+        unsigned outputBytes = static_cast<unsigned>(width) * static_cast<unsigned>(height) *
+                               static_cast<unsigned>(pixelSize);
+        unsigned sourceBytes = static_cast<unsigned>(sourceWidth) *
+                               static_cast<unsigned>(sourceHeight) *
+                               static_cast<unsigned>(pixelSize);
+        bytes += outputBytes;
+        pDest += static_cast<int>(outputBytes);
+        pSource += static_cast<int>(sourceBytes);
+        width >>= 1;
+        height >>= 1;
+        sourceWidth >>= 1;
+        sourceHeight >>= 1;
+    }
+    return bytes;
 }

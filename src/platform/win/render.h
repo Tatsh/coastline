@@ -1294,3 +1294,15 @@ unsigned char *GetTextureImagePixels(TextureImageData *pImage);
  * @ghidraAddress BRD3D: 0x10029060
  */
 void ReloadTextureEntryData(int nEntry);
+
+/**
+ * Resize consecutive decoded mip levels and record the decoded source dimensions.
+ *
+ * @param pDest The output mip pixels.
+ * @param pSource The source mip pixels.
+ * @param pImage The image metadata.
+ * @return The output byte count.
+ * @ghidraAddress BRD3D: 0x10028b20
+ */
+unsigned
+ResizeTextureMipChain(unsigned char *pDest, const unsigned char *pSource, TextureImageData *pImage);
