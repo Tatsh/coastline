@@ -377,6 +377,18 @@ int SaveSeasonUI_OnSlotSelected(MenuItemList *pList, int *pnSlot);
 int SaveSeasonUI_OnSlotNameEntered(MenuItemList *pList, int nStatus);
 
 /**
+ * @ghidraAddress BRD3D: 0x1003eb90
+ * @ghidraAddress BRGlide: 0x10038180
+ */
+int JoinCreateGameUI_UpdateSessionSelection(MenuWidget *pWidget);
+
+/**
+ * @ghidraAddress BRD3D: 0x1003ec80
+ * @ghidraAddress BRGlide: 0x100382a0
+ */
+int KeyConfigUI_UpdateActionSelection(MenuWidget *pWidget);
+
+/**
  * Open cached input options, building the screen on its first visit.
  *
  * @ghidraAddress BRD3D: 0x100452c0

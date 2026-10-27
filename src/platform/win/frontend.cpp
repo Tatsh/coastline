@@ -1136,6 +1136,16 @@ static inline void UpdateMenuListSelection(MenuWidget *pWidget, int &selection) 
     }
 }
 
+int JoinCreateGameUI_UpdateSessionSelection(MenuWidget *pWidget) {
+    UpdateMenuListSelection(pWidget, g_dwSelectedSessionIndex);
+    return 1;
+}
+
+int KeyConfigUI_UpdateActionSelection(MenuWidget *pWidget) {
+    UpdateMenuListSelection(pWidget, g_dwKeyConfigSelectedAction);
+    return 1;
+}
+
 int LoadFileListUI_UpdateSlotSelection(MenuWidget *pWidget) {
     UpdateMenuListSelection(pWidget, g_dwFileListSelectedSlot);
     return 1;
