@@ -12,6 +12,7 @@
 #include <PR/sptask.h>
 #include <PR/ultratypes.h>
 
+#include "displaylistops.h"
 #include "frametime.h"
 #include "screen.h"
 
@@ -100,15 +101,6 @@ extern u32 g_dwScreenUnblankDelay;
 void InitRenderingSubsystem(void);
 
 /**
- * Call the current screen routine forever.
- *
- * @ghidraAddress USA: 0x8021c718
- * @ghidraAddress EUR: 0x8021d90c
- * @ghidraAddress JPN: 0x8021d1dc
- */
-void GameModeMainLoop(void);
-
-/**
  * Copy bytes from the cartridge into memory by DMA, in blocks of 4 KB.
  *
  * @param dst The memory to copy into.
@@ -190,15 +182,6 @@ void InitDmaRequest(DecompressJob *job, u8 *buffer);
  * @ghidraAddress JPN: 0x8021d800
  */
 u32 DecompressFromRom(void *dst, u32 romOffset, DecompressJob *job);
-
-/**
- * Patch the render modes of the track and vehicle display lists for the current weather.
- *
- * @ghidraAddress USA: 0x8021b97c
- * @ghidraAddress EUR: 0x8021cab8
- * @ghidraAddress JPN: 0x8021c388
- */
-void ProcessAllDisplayLists(void);
 
 /**
  * Whether the display stays black whatever a frame would show.
@@ -417,20 +400,6 @@ void ClearDepthBuffer(void);
  * @ghidraAddress JPN: 0x8021cf78
  */
 void UpdateFrameTiming(void);
-
-/**
- * @ghidraAddress USA: 0x8021c740
- * @ghidraAddress EUR: 0x8021d940
- * @ghidraAddress JPN: 0x8021d210
- */
-void StubUpdateCallback(void);
-
-/**
- * @ghidraAddress USA: 0x8021c6b0
- * @ghidraAddress EUR: 0x8021d8a4
- * @ghidraAddress JPN: 0x8021d174
- */
-void StubRenderCallback(void);
 
 /**
  * Whether the screen of a race runs, which makes UpdateFrameTiming() step a fixed 1/30 of a second

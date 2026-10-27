@@ -1489,38 +1489,6 @@ void UpdateFrameTiming(void) {
 void UnusedFrameTimingStub(void) {
 }
 
-void StubRenderCallback(void) {
-}
-
-void SetNextScreenCallback(ScreenCallback callback) {
-    g_pfnNextScreen = callback;
-}
-
-void SetSecondaryScreenCallback(ScreenCallback callback) {
-    g_pfnSecondaryScreen = callback;
-}
-
-s32 IsCurrentScreen(ScreenCallback callback) {
-    return callback == g_pfnCurrentScreen;
-}
-
-void SetCurrentScreenCallback(ScreenCallback callback) {
-    g_pfnCurrentScreen = callback;
-}
-
-void CallCurrentGameMode(void) {
-    g_pfnCurrentScreen();
-}
-
-void GameModeMainLoop(void) {
-    for (;;) {
-        CallCurrentGameMode();
-    }
-}
-
-void StubUpdateCallback(void) {
-}
-
 void DmaRead(void *dst, u32 romOffset, s32 size) {
     osInvalDCache(dst, size);
     while (size > DMA_BLOCK_SIZE) {

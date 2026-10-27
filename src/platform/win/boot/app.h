@@ -10,6 +10,8 @@
 
 #include <windows.h>
 
+#include "screen.h"
+
 /**
  * Exit code RallyMain() returns to the launcher.
  *
@@ -555,14 +557,6 @@ int DestroyMainWindow(void);
  * @ghidraAddress BRGlide: 0x1001cf80
  */
 int DispatchGameStateFrame(void);
-
-/**
- * Do nothing.
- *
- * @ghidraAddress BRD3D: 0x10008b80
- * @ghidraAddress BRGlide: 0x10008d60
- */
-void NullStub(void);
 
 /**
  * Whether the front end is up. MenuScreen::ShutdownFrontEnd() clears it, notices of network play

@@ -232,6 +232,3 @@ void PodArchive::SetFilePath(const char *pszPath) {
         strcpy(szPath, pszPath);
     }
 }
-
-void NullStub(void) {
-}

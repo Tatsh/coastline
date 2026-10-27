@@ -1,5 +1,6 @@
 #include "game.h"
 
+#if TGR_PLATFORM == TGR_PLATFORM_N64
 #include <PR/os.h>
 
 #include "audio.h"
@@ -17,6 +18,17 @@
 
 /* The cartridge offset of the music of the menus. */
 #define ROM_MENU_MUSIC ((u32)_menuMusicSegmentRomStart)
+#else
+#include "displaylistops.h"
+#include "screen.h"
+#include "weather.h"
+
+u32 g_dwWeatherActive;
+u32 g_dwNightMode;
+u32 g_dwSnowMode;
+u32 g_dwRainMode;
+u32 g_dwNumLocalPlayers = 1;
+#endif
 
 void ApplyWeather(u32 weather) {
     g_dwNightMode = g_dwRainMode = g_dwSnowMode = 0;
@@ -40,18 +52,27 @@ void ApplyWeather(u32 weather) {
         g_dwNightMode = 1;
         break;
     }
+#if TGR_PLATFORM == TGR_PLATFORM_N64
     ProcessAllDisplayLists();
+#endif
 }
 
+#if TGR_PLATFORM == TGR_PLATFORM_N64
 void MainMenuEntry(void) {
     ProcessMainMenu();
 }
+#endif
 
 void StartRaceWithPlayerCount(u32 players) {
     g_dwNumLocalPlayers = players;
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+    SetCurrentScreenCallback(NullStub);
+#else
     SetCurrentScreenCallback(ProcessTrackMenu);
+#endif
 }
 
+#if TGR_PLATFORM == TGR_PLATFORM_N64
 void ResetAllPlayers(void) {
     int i;
 
@@ -113,3 +134,9 @@ void InitGameAndShowMenus(void) {
 
     GameModeMainLoop();
 }
+#else
+void SetWeatherAndRefreshVehicleMaterials(u32 weather) {
+    ApplyWeather(weather);
+    ProcessAllDisplayLists();
+}
+#endif

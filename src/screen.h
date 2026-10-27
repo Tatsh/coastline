@@ -41,6 +41,7 @@ extern s32 g_dwScreenHeight;
  * @ghidraAddress USA: 0x8031b318
  * @ghidraAddress EUR: 0x8031d818
  * @ghidraAddress JPN: 0x8031c448
+ * @ghidraAddress BRD3D: 0x106c0964
  */
 extern ScreenCallback g_pfnCurrentScreen;
 
@@ -48,6 +49,7 @@ extern ScreenCallback g_pfnCurrentScreen;
  * @ghidraAddress USA: 0x8031b31c
  * @ghidraAddress EUR: 0x8031d81c
  * @ghidraAddress JPN: 0x8031c44c
+ * @ghidraAddress BRD3D: 0x106c198c
  */
 extern ScreenCallback g_pfnNextScreen;
 
@@ -55,6 +57,7 @@ extern ScreenCallback g_pfnNextScreen;
  * @ghidraAddress USA: 0x8031b320
  * @ghidraAddress EUR: 0x8031d820
  * @ghidraAddress JPN: 0x8031c450
+ * @ghidraAddress BRD3D: 0x106c1608
  */
 extern ScreenCallback g_pfnSecondaryScreen;
 
@@ -65,6 +68,7 @@ extern ScreenCallback g_pfnSecondaryScreen;
  * @ghidraAddress USA: 0x8021c6e4
  * @ghidraAddress EUR: 0x8021d8d8
  * @ghidraAddress JPN: 0x8021d1a8
+ * @ghidraAddress BRD3D: 0x10034c66
  */
 void SetCurrentScreenCallback(ScreenCallback callback);
 
@@ -76,6 +80,7 @@ void SetCurrentScreenCallback(ScreenCallback callback);
  * @ghidraAddress USA: 0x8021c6b8
  * @ghidraAddress EUR: 0x8021d8ac
  * @ghidraAddress JPN: 0x8021d17c
+ * @ghidraAddress BRD3D: 0x10034c37
  */
 void SetNextScreenCallback(ScreenCallback callback);
 
@@ -87,6 +92,7 @@ void SetNextScreenCallback(ScreenCallback callback);
  * @ghidraAddress USA: 0x8021c6d0
  * @ghidraAddress EUR: 0x8021d8c4
  * @ghidraAddress JPN: 0x8021d194
+ * @ghidraAddress BRD3D: 0x10034c51
  */
 s32 IsCurrentScreen(ScreenCallback callback);
 
@@ -97,6 +103,7 @@ s32 IsCurrentScreen(ScreenCallback callback);
  * @ghidraAddress USA: 0x8021c6c4
  * @ghidraAddress EUR: 0x8021d8b8
  * @ghidraAddress JPN: 0x8021d188
+ * @ghidraAddress BRD3D: 0x10034c44
  */
 void SetSecondaryScreenCallback(ScreenCallback callback);
 
@@ -110,6 +117,46 @@ void SetSecondaryScreenCallback(ScreenCallback callback);
  * @ghidraAddress BRGlide: 0x1002e324
  */
 void CallCurrentGameMode(void);
+
+/**
+ * Call the current screen routine forever on N64 and return immediately on Windows.
+ *
+ * @ghidraAddress USA: 0x8021c718
+ * @ghidraAddress EUR: 0x8021d90c
+ * @ghidraAddress JPN: 0x8021d1dc
+ * @ghidraAddress BRD3D: 0x10034c7e
+ */
+void GameModeMainLoop(void);
+
+/**
+ * Empty update callback.
+ *
+ * @ghidraAddress USA: 0x8021c740
+ * @ghidraAddress EUR: 0x8021d940
+ * @ghidraAddress JPN: 0x8021d210
+ * @ghidraAddress BRD3D: 0x10034c83
+ */
+void StubUpdateCallback(void);
+
+/**
+ * Empty render callback.
+ *
+ * @ghidraAddress USA: 0x8021c6b0
+ * @ghidraAddress EUR: 0x8021d8a4
+ * @ghidraAddress JPN: 0x8021d174
+ * @ghidraAddress BRD3D: 0x10034c32
+ */
+void StubRenderCallback(void);
+
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+/**
+ * Do nothing.
+ *
+ * @ghidraAddress BRD3D: 0x10008b80
+ * @ghidraAddress BRGlide: 0x10008d60
+ */
+void NullStub(void);
+#endif
 
 #ifdef __cplusplus
 }

@@ -12,6 +12,16 @@
 extern "C" {
 #endif
 
+/**
+ * Number of local players.
+ *
+ * @ghidraAddress USA: 0x8026ff08
+ * @ghidraAddress EUR: 0x80271ed8
+ * @ghidraAddress JPN: 0x80271988
+ * @ghidraAddress BRD3D: 0x100b4050
+ */
+extern u32 g_dwNumLocalPlayers;
+
 /** The modes of play, in the order of the main menu. */
 enum {
     GAME_MODE_CHAMPIONSHIP,     /*!< The seasons of the championship. */
@@ -57,14 +67,25 @@ extern s32 g_dwGameMode;
 extern s32 g_dwRaceSessionType;
 
 /**
- * Set the weather flags for a weather of the weather menu, and patch the display lists to match.
+ * Set weather flags and, on N64, patch display lists to match.
  *
  * @param weather The weather, a `WEATHER_*` value.
  * @ghidraAddress USA: 0x80200050
  * @ghidraAddress EUR: 0x80200050
  * @ghidraAddress JPN: 0x80200050
+ * @ghidraAddress BRD3D: 0x10069740
  */
 void ApplyWeather(u32 weather);
+
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+/**
+ * Set weather flags and refresh vehicle materials.
+ *
+ * @param weather Weather option.
+ * @ghidraAddress BRD3D: 0x100697c0
+ */
+void SetWeatherAndRefreshVehicleMaterials(u32 weather);
+#endif
 
 /**
  * The screen routine of the main menu.
@@ -76,12 +97,13 @@ void ApplyWeather(u32 weather);
 void MainMenuEntry(void);
 
 /**
- * Set the number of local players and start the race screen. Nothing calls it.
+ * Set the number of local players and select the initial race callback.
  *
  * @param players The number of local players.
  * @ghidraAddress USA: 0x80200128
  * @ghidraAddress EUR: 0x80200128
  * @ghidraAddress JPN: 0x80200128
+ * @ghidraAddress BRD3D: 0x100697e0
  */
 void StartRaceWithPlayerCount(u32 players);
 

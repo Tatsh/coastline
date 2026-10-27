@@ -9,6 +9,8 @@
 #include <PR/os_cont.h>
 #include <PR/ultratypes.h>
 
+#include "game.h"
+
 /** The number of players the input state holds. */
 #define MAX_PLAYERS 4
 
@@ -105,15 +107,6 @@ extern PlayerInputState g_aPlayerInputState[MAX_PLAYERS];
  * @ghidraAddress JPN: 0x8031b510
  */
 extern OSContPad g_aContPadData[MAX_PLAYERS];
-
-/**
- * The number of players at this console.
- *
- * @ghidraAddress USA: 0x8026ff08
- * @ghidraAddress EUR: 0x80271ed8
- * @ghidraAddress JPN: 0x80271988
- */
-extern u32 g_dwNumLocalPlayers;
 
 /**
  * The cheats, ending with a NULL sequence.
