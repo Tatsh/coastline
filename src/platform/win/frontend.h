@@ -171,7 +171,6 @@ private:
     virtual int UpdateHoverInRect(const RECT *bounds);
     /**
      * @ghidraAddress BRD3D: 0x1005c590
-     * @stub
      */
     virtual int ProcessInput(int *selection);
 

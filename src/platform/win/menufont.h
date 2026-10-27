@@ -117,6 +117,9 @@ public:
     unsigned char SetStyle(unsigned char value) {
         return bStyle = value;
     }
+    unsigned char GetStyle() const {
+        return bStyle;
+    }
     short GetWidth() const {
         return nWidth;
     }
@@ -152,6 +155,9 @@ public:
     }
     LONG GetBoundsLeft() const {
         return rcBounds.left;
+    }
+    const RECT &GetBounds() const {
+        return rcBounds;
     }
     LONG SetBoundsLeft(LONG value) {
         return rcBounds.left = value;

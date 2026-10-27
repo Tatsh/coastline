@@ -38,6 +38,9 @@ public:
     int GetCursorY() const {
         return nCursorY;
     }
+    int GetPreviousCursorY() const {
+        return nPrevCursorY;
+    }
     void SetCursorX(int value) {
         nCursorX = value;
     }

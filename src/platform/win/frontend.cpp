@@ -98,6 +98,14 @@ MenuWidget *g_pOptionsSubMenu;
 int g_dwFileListSelectedSlot = -1;
 
 namespace {
+// @ghidraAddress BRD3D: 0x10aa2a5c
+unsigned g_dwMenuListRepeatAccumMs;
+// @ghidraAddress BRD3D: 0x10aa2a60
+unsigned g_dwMenuListRepeatLastTick;
+// @ghidraAddress BRD3D: 0x10aa2a64
+float g_fMenuListDragDeltaX;
+// @ghidraAddress BRD3D: 0x10aa2a68
+float g_fMenuListDragDeltaY;
 // @ghidraAddress BRD3D: 0x10aa2598
 unsigned g_dwUnlockedCarMask = 0x102;
 // @ghidraAddress BRD3D: 0x100ab3d8
@@ -1023,6 +1031,183 @@ int MenuPanel::RestoreSelection() {
 static inline bool MenuBoundsIncludeCursor(const RECT &bounds, const MouseDevice *pMouse) {
     return bounds.left <= pMouse->GetCursorX() && bounds.right >= pMouse->GetCursorX() &&
            bounds.top <= pMouse->GetCursorY() && bounds.bottom >= pMouse->GetCursorY();
+}
+
+int MenuItemList::ProcessInput(int *selection) {
+    auto truncate = [](long double value) {
+        if (!(value >= -0x1p63L && value < 0x1p63L)) {
+            return 0;
+        }
+        return static_cast<int>(static_cast<long long>(value));
+    };
+    auto clamp = [](long double value, float minimum, float maximum) {
+        float result = static_cast<float>(value);
+        if (!(value >= minimum)) {
+            result = minimum;
+        } else if (value > maximum) {
+            result = maximum;
+        }
+        return result;
+    };
+    auto updateThumbY = [this] {
+        rcScrollThumb.top = ConvertMenuCoordinate(fScrollThumbY);
+        rcScrollThumb.bottom = static_cast<int>(static_cast<unsigned>(rcScrollThumb.top) + 16u);
+    };
+    if (dwFlags & 0x18) {
+        return 0;
+    }
+    bool repeated = false;
+    if (dwFlags & 0x80000) {
+        if (!g_pMouseDevice->IsButtonHeld(0) && !g_pMouseDevice->IsButtonHeld(1)) {
+            bScrollDragging = 0;
+            dwFlags &= ~0x80002u;
+        } else {
+            dwFlags |= 0x22;
+            unsigned now = GetHighResolutionTime();
+            g_dwMenuListRepeatAccumMs += now - g_dwMenuListRepeatLastTick;
+            g_dwMenuListRepeatLastTick = now;
+            if (static_cast<int>(g_dwMenuListRepeatAccumMs) < 60) {
+                return 1;
+            }
+            g_dwMenuListRepeatAccumMs = 0;
+            repeated = true;
+        }
+    }
+    if ((UpdateHoverInRect(&rcScrollThumb) || bScrollDragging) && !(dwFlags & 0x200000)) {
+        if (!(dwFlags & 2)) {
+            return 1;
+        }
+        long double ratio =
+            static_cast<long double>(wItemCount <= 1 ? 1 : wItemCount - 1) / fScrollThumbTravel;
+        if (bHorizontalScrollbar) {
+            int delta = static_cast<int>(static_cast<unsigned>(g_pMousePosition->GetCursorX()) -
+                                         static_cast<unsigned>(rcScrollThumb.left));
+            if (!bScrollDragging) {
+                g_fMenuListDragDeltaX = static_cast<float>(delta);
+            }
+            long double position = static_cast<long double>(delta) +
+                                   g_pMousePosition->GetCursorX() - g_fMenuListDragDeltaX;
+            fScrollThumbX = clamp(position, fMinScrollThumbX, fMaxScrollThumbX);
+            rcScrollThumb.left = ConvertMenuCoordinate(fScrollThumbX);
+            rcScrollThumb.right = static_cast<int>(static_cast<unsigned>(rcScrollThumb.left) + 16u);
+            if (wItemCount > 1) {
+                nFirstVisibleRow = static_cast<short>(
+                    truncate((static_cast<long double>(fScrollThumbX) - fMinScrollThumbX) * ratio));
+            }
+        } else if (bVerticalScrollbar) {
+            float cursorY = static_cast<float>(g_pMousePosition->GetCursorY());
+            long double movement =
+                static_cast<long double>(cursorY) - g_pMousePosition->GetPreviousCursorY();
+            if (!bScrollDragging) {
+                g_fMenuListDragDeltaY =
+                    static_cast<float>(static_cast<long double>(cursorY) - rcScrollThumb.top);
+            }
+            long double position =
+                movement + g_pMousePosition->GetCursorY() - g_fMenuListDragDeltaY;
+            fScrollThumbY = clamp(position, fMinScrollThumbY, fMaxScrollThumbY);
+            updateThumbY();
+            if (wItemCount > 1) {
+                nFirstVisibleRow = static_cast<short>(
+                    truncate((static_cast<long double>(fScrollThumbY) - fMinScrollThumbY) * ratio));
+            }
+        }
+        if (pfnScrollDrag) {
+            pfnScrollDrag();
+        }
+        bScrollDragging = 1;
+        return 1;
+    }
+    if (UpdateHoverInRect(&rcScrollUp) && !(dwFlags & 0x200000)) {
+        if (!(dwFlags & 2)) {
+            bScrollUpHovered = 0;
+            return 1;
+        }
+        nFirstVisibleRow = static_cast<short>(nFirstVisibleRow - 1);
+        bScrollUpHovered = 1;
+        if (nFirstVisibleRow < 0) {
+            nFirstVisibleRow = 0;
+        }
+        if (pfnScrollUp) {
+            pfnScrollUp();
+        }
+        unsigned rows = static_cast<unsigned short>(wItemCount - 1);
+        if (!rows) {
+            rows = 1;
+        }
+        fScrollThumbY = clamp(static_cast<long double>(fScrollThumbY) -
+                                  static_cast<long double>(fScrollThumbTravel) / rows,
+                              fMinScrollThumbY,
+                              fMaxScrollThumbY);
+        updateThumbY();
+        return 1;
+    }
+    if (UpdateHoverInRect(&rcScrollDown) && !(dwFlags & 0x200000)) {
+        if (!(dwFlags & 2)) {
+            bScrollDownHovered = 0;
+            return 1;
+        }
+        nFirstVisibleRow = static_cast<short>(nFirstVisibleRow + 1);
+        bScrollDownHovered = 1;
+        if (nFirstVisibleRow >= wItemCount) {
+            nFirstVisibleRow = static_cast<short>(wItemCount - 1);
+        }
+        if (pfnScrollDown) {
+            pfnScrollDown();
+        }
+        unsigned rows = static_cast<unsigned short>(wItemCount - 1);
+        if (!rows) {
+            rows = 1;
+        }
+        fScrollThumbY = clamp(static_cast<long double>(fScrollThumbTravel) / rows + fScrollThumbY,
+                              fMinScrollThumbY,
+                              fMaxScrollThumbY);
+        updateThumbY();
+        return 1;
+    }
+    if (repeated) {
+        return 0;
+    }
+    bool hovered = false;
+    int last = nFirstVisibleRow + wVisibleRowCount;
+    if (last > 100) {
+        last = 100;
+    }
+    for (int index = nFirstVisibleRow; index < last; ++index) {
+        MenuFont &font = fonts[index];
+        if (font.GetFlags() & 0x10) {
+            font.SetStyle(0);
+            continue;
+        }
+        if (!UpdateHoverInRect(&font.GetBounds()) || !font.GetText()[0]) {
+            font.SetStyle(1);
+            continue;
+        }
+        hovered = true;
+        if (dwFlags & 0x1000000) {
+            continue;
+        }
+        if (dwFlags & 0x100) {
+            int style = static_cast<signed char>(font.GetStyle());
+            font.SetStyle(style == 0 || style == 2 ? 1 : style == 1 ? 2 : 0);
+            dwFlags &= ~0x100u;
+        }
+        if (IsInputOrEventActive()) {
+            PollInputAndUpdateEdges();
+            if (!(font.GetFlags() & 0x10)) {
+                *selection = index;
+                PlaySoundChannelOneOnce(1, 0x200020);
+                g_dwNetworkMenuState = 1;
+                if (pfnSelectionChanged) {
+                    pfnSelectionChanged(this, selection);
+                }
+            }
+        }
+    }
+    if (!hovered) {
+        dwFlags &= ~0x22u;
+        return 0;
+    }
+    return 1;
 }
 
 int MenuItemList::UpdateHoverInRect(const RECT *bounds) {
