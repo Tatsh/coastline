@@ -133,6 +133,7 @@ RECT g_rcMenuRightColumnMid = {330, 0, 447, 0};
 RECT g_rcMenuRightListBox = {440, 128, 540, 204};
 RECT g_rcMenuRightColumnWide = {478, 0, 578, 0};
 RECT g_rcMenuSubPanel = {87, 61, 186, 132};
+RECT g_rcMenuRightLabel = {330, 70, 447, 86};
 const char g_szSpace[] = " ";
 RECT g_rcHoverTopLeft = {0, 0, 200, 200};
 RECT g_rcHoverBottomLeft = {0, 380, 200, 480};
@@ -3380,6 +3381,114 @@ static inline void SetMenuWidgetLabel(MenuWidget *widget, int stringId, const RE
     widget->SetText(GetStringResource(stringId), 1, 1, rect);
 }
 
+static inline void AddMenuActionButtons(MenuPanel *panel,
+                                        MenuScreen *screen,
+                                        int (*save)(MenuWidget *),
+                                        int (*options)(MenuWidget *)) {
+    float x = static_cast<float>(g_rcHoverBottomLeft.left);
+    float y = static_cast<float>(g_rcHoverBottomLeft.top);
+    int right;
+    for (int i = 0; i < 3; ++i) {
+        const short images[3] = {120, 82, 84};
+        int (*actions[3])(MenuWidget *) = {save, MenuScreen_OnReturnToMainMenu, options};
+        MenuWidget *widget = AddMenuWidget(panel, screen, x, y, 0x402001, 1, images[i]);
+        widget->pfnIdleAction = ValidateEntityState;
+        widget->pfnAction = actions[i];
+        widget->rcBounds.top = static_cast<int>(y);
+        if (i == 0) {
+            widget->rcBounds.left = static_cast<int>(x);
+            right = widget->rcBounds.left + 127;
+        } else {
+            widget->rcBounds.left = static_cast<int>(x);
+        }
+        widget->rcBounds.right = right;
+        widget->rcBounds.bottom = widget->rcBounds.top + 33;
+        widget->nImageMode = 0;
+        widget->anSpriteIds[0] = images[i] + 1;
+        ++panel->wWidgetCount;
+        y += 33;
+    }
+}
+
+void BuildRaceResultsTotalsUI(MenuScreen *pScreen) {
+    pScreen->wCurrentPanel = 0;
+    pScreen->anPanelActive[pScreen->wPanelCount] = 1;
+    MenuPanel *panel = new (std::nothrow) MenuPanel();
+    pScreen->apPanels[pScreen->wPanelCount] = panel;
+    if (!panel) {
+        ShowErrorMessage(4);
+    }
+    ++pScreen->wPanelCount;
+    panel->pScreen = pScreen;
+    panel->pfnBeforeWidgets = RaceResultsPanel_PreUpdateSelectLastRace;
+    panel->pfnAfterWidgets = RaceResultsPanel_PostUpdateRestoreSeasonProgress;
+    panel->nFlags = 0;
+    panel->fX = 195;
+    panel->fY = 130;
+    auto add = [&](float x, float y, unsigned flags, int mode, short image) {
+        return AddMenuWidget(panel, pScreen, x, y, flags, mode, image);
+    };
+    add(0, 0, 9, 0, 0);
+    ++panel->wWidgetCount;
+    SetMenuWidgetLabel(add(panel->fX, 10, 0x100009, 1, -1), 0x4f, &g_rcMenuTitleBar);
+    ++panel->wWidgetCount;
+    MenuWidget *widget = add(panel->fX, panel->fY + 95, 0x102001, 1, -1);
+    widget->pfnIdleAction = ValidateEntityState;
+    widget->pfnAction = RaceResultsTotalsUI_OnContinue;
+    SetMenuWidgetLabel(widget, 0x50, &g_rcMenuCenterPanel);
+    ++panel->wWidgetCount;
+    ++panel->wNavigationCount;
+    widget = add(panel->fX, panel->fY + 114, 0x102001, 1, -1);
+    widget->pfnIdleAction = ValidateEntityState;
+    widget->pfnAction = RaceResultsTotalsUI_OnBack;
+    SetMenuWidgetLabel(widget, 0xc, &g_rcMenuCenterPanel);
+    ++panel->wWidgetCount;
+    ++panel->wNavigationCount;
+    AddMenuActionButtons(
+        panel, pScreen, RaceResultsTotalsUI_OnOpenSaveSeason, RaceResultsTotalsUI_OnOpenOptions);
+    SetMenuWidgetLabel(add(106, 85, 0x100001, 1, -1), 0x38, &g_rcMenuSubPanel);
+    ++panel->wWidgetCount;
+    widget = add(440, 66, 0x5001, 1, -1);
+    widget->pfnUpdate = SeasonUI_UpdateSeasonNameLabel;
+    widget->nSpriteId = 0x34;
+    widget->SetText(g_szEmptyUiString, 1, 4, &g_rcMenuSubPanel);
+    ++panel->wWidgetCount;
+    SetMenuWidgetLabel(add(106, 123, 0x100001, 1, -1), 0x36, &g_rcMenuSubPanel);
+    ++panel->wWidgetCount;
+    widget = add(440, 104, 0x5001, 1, -1);
+    widget->pfnUpdate = SeasonUI_UpdateYearOrdinalLabel;
+    widget->nSpriteId = 0x34;
+    widget->SetText(g_szEmptyUiString, 1, 4, &g_rcMenuSubPanel);
+    ++panel->wWidgetCount;
+    SetMenuWidgetLabel(add(0, 70, 0x100009, 1, -1), 0x52, &g_rcMenuRightLabel);
+    ++panel->wWidgetCount;
+    widget = add(330, 97, 0x5001, 1, -1);
+    widget->pfnUpdate = RaceResultsTotalsUI_UpdateRoundsCompletedLabel;
+    widget->nSpriteId = 5;
+    widget->SetText(g_szEmptyUiString, 1, 3, &g_rcMenuRightLabel);
+    ++panel->wWidgetCount;
+    SetMenuWidgetLabel(add(0, 150, 0x100009, 1, -1), 0x53, &g_rcMenuRightLabel);
+    ++panel->wWidgetCount;
+    SetMenuWidgetLabel(add(450, 125, 0x100009, 1, -1), 0x40, &g_rcMenuRightListBox);
+    ++panel->wWidgetCount;
+    SetMenuWidgetLabel(add(450, 185, 0x100009, 1, -1), 0x46, &g_rcMenuRightListBox);
+    ++panel->wWidgetCount;
+    widget = add(450, 141, 0x5001, 1, -1);
+    widget->pfnUpdate = RaceResultsTotalsUI_UpdatePointsNeededLabel;
+    widget->nSpriteId = 5;
+    widget->SetText(g_szEmptyUiString, 1, 3, &g_rcMenuRightListBox);
+    ++panel->wWidgetCount;
+    SetMenuWidgetLabel(add(panel->fX, 203, 0x100009, 1, -1), 0x40, &g_rcMenuRightColumnWide);
+    ++panel->wWidgetCount;
+    SetMenuWidgetLabel(add(panel->fX, 265, 0x100009, 1, -1), 0x41, &g_rcMenuRightColumnWide);
+    ++panel->wWidgetCount;
+    widget = add(450, 217, 0x5001, 1, -1);
+    widget->pfnUpdate = RaceResultsTotalsUI_UpdateTotalPointsLabel;
+    widget->nSpriteId = 5;
+    widget->SetText(g_szEmptyUiString, 1, 3, &g_rcMenuRightColumnWide);
+    ++panel->wWidgetCount;
+}
+
 void BuildRaceResultsInfoUI(MenuScreen *pScreen) {
     pScreen->wCurrentPanel = 0;
     g_dwSeasonSavedRound = g_dwSeasonRound;
@@ -3417,31 +3526,8 @@ void BuildRaceResultsInfoUI(MenuScreen *pScreen) {
         ++panel->wWidgetCount;
         ++panel->wNavigationCount;
     }
-    float x = static_cast<float>(g_rcHoverBottomLeft.left);
-    float y = static_cast<float>(g_rcHoverBottomLeft.top);
-    int right;
-    for (int i = 0; i < 3; ++i) {
-        const short images[3] = {120, 82, 84};
-        int (*buttonActions[3])(MenuWidget *) = {RaceResultsInfoUI_OnOpenSaveSeason,
-                                                 MenuScreen_OnReturnToMainMenu,
-                                                 RaceResultsInfoUI_OnOpenOptions};
-        MenuWidget *widget = add(x, y, 0x402001, 1, images[i]);
-        widget->pfnIdleAction = ValidateEntityState;
-        widget->pfnAction = buttonActions[i];
-        widget->rcBounds.top = static_cast<int>(y);
-        if (i == 0) {
-            widget->rcBounds.left = static_cast<int>(x);
-            right = widget->rcBounds.left + 127;
-        } else {
-            widget->rcBounds.left = static_cast<int>(x);
-        }
-        widget->rcBounds.right = right;
-        widget->rcBounds.bottom = widget->rcBounds.top + 33;
-        widget->nImageMode = 0;
-        widget->anSpriteIds[0] = images[i] + 1;
-        ++panel->wWidgetCount;
-        y += 33;
-    }
+    AddMenuActionButtons(
+        panel, pScreen, RaceResultsInfoUI_OnOpenSaveSeason, RaceResultsInfoUI_OnOpenOptions);
     SetMenuWidgetLabel(add(106, 123, 0x100001, 1, -1), 0x4c, &g_rcMenuSubPanel);
     ++panel->wWidgetCount;
     MenuWidget *widget = add(440, 79, 0x5001, 1, -1);
@@ -3543,31 +3629,8 @@ void BuildRaceResultsSummaryUI(MenuScreen *pScreen) {
     SetMenuWidgetLabel(widget, 0xc, &g_rcMenuCenterPanel);
     ++panel->wWidgetCount;
     ++panel->wNavigationCount;
-    float x = static_cast<float>(g_rcHoverBottomLeft.left);
-    float y = static_cast<float>(g_rcHoverBottomLeft.top);
-    int right;
-    for (int i = 0; i < 3; ++i) {
-        const short images[3] = {120, 82, 84};
-        int (*actions[3])(MenuWidget *) = {RaceResultsSummaryUI_OnOpenSaveSeason,
-                                           MenuScreen_OnReturnToMainMenu,
-                                           RaceResultsSummaryUI_OnOpenOptions};
-        widget = add(x, y, 0x402001, 1, images[i]);
-        widget->pfnIdleAction = ValidateEntityState;
-        widget->pfnAction = actions[i];
-        widget->rcBounds.top = static_cast<int>(y);
-        if (i == 0) {
-            widget->rcBounds.left = static_cast<int>(x);
-            right = widget->rcBounds.left + 127;
-        } else {
-            widget->rcBounds.left = static_cast<int>(x);
-        }
-        widget->rcBounds.right = right;
-        widget->rcBounds.bottom = widget->rcBounds.top + 33;
-        widget->nImageMode = 0;
-        widget->anSpriteIds[0] = images[i] + 1;
-        ++panel->wWidgetCount;
-        y += 33;
-    }
+    AddMenuActionButtons(
+        panel, pScreen, RaceResultsSummaryUI_OnOpenSaveSeason, RaceResultsSummaryUI_OnOpenOptions);
     SetMenuWidgetLabel(add(106, 85, 0x100001, 1, -1), 0x38, &g_rcMenuSubPanel);
     ++panel->wWidgetCount;
     widget = add(440, 66, 0x5001, 1, -1);
@@ -3675,30 +3738,7 @@ void BuildPreRaceInfoUI(MenuScreen *pScreen) {
     widget->SetText(GetStringResource(0xc), 1, 1, &g_rcMenuCenterPanel);
     ++panel->wWidgetCount;
     ++panel->wNavigationCount;
-    float x = static_cast<float>(g_rcHoverBottomLeft.left);
-    float y = static_cast<float>(g_rcHoverBottomLeft.top);
-    int right;
-    for (int i = 0; i < 3; ++i) {
-        const short images[3] = {120, 82, 84};
-        int (*actions[3])(MenuWidget *) = {
-            PreRaceInfoUI_OnSaveSeason, MenuScreen_OnReturnToMainMenu, PreRaceInfoUI_OnOptions};
-        widget = add(x, y, 0x402001, 1, images[i]);
-        widget->pfnIdleAction = ValidateEntityState;
-        widget->pfnAction = actions[i];
-        widget->rcBounds.top = static_cast<int>(y);
-        if (i == 0) {
-            widget->rcBounds.left = static_cast<int>(x);
-            right = widget->rcBounds.left + 127;
-        } else {
-            widget->rcBounds.left = static_cast<int>(x);
-        }
-        widget->rcBounds.right = right;
-        widget->rcBounds.bottom = widget->rcBounds.top + 33;
-        widget->nImageMode = 0;
-        widget->anSpriteIds[0] = images[i] + 1;
-        ++panel->wWidgetCount;
-        y += 33;
-    }
+    AddMenuActionButtons(panel, pScreen, PreRaceInfoUI_OnSaveSeason, PreRaceInfoUI_OnOptions);
     widget = add(73, 212, 1, 1, 22);
     widget->pfnUpdate = RaceSetupUI_UpdateWeatherImage;
     ++widget->nLinkedWidgetCount;

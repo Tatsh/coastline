@@ -2067,6 +2067,10 @@ extern RECT g_rcMenuRightColumnWide;
  */
 extern RECT g_rcMenuSubPanel;
 /**
+ * @ghidraAddress BRD3D: 0x100ab468
+ */
+extern RECT g_rcMenuRightLabel;
+/**
  * @ghidraAddress BRD3D: 0x100ad300
  */
 extern const char g_szSpace[];
