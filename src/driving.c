@@ -6,7 +6,6 @@
 #else
 #include "screen.h"
 #define AddTimingMarker(...) NullStub()
-#define RACER_HELD 1
 #endif
 
 #include "camera.h"

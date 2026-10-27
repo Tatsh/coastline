@@ -67,7 +67,7 @@ typedef struct Vehicle {
     s32 forcedReverseFrames;
     s32 reverseFrames;
     s32 forwardFrames;
-    u8 abUnknownEb0[0x50]; /* +0xeb0 */
+    struct RacerSlot *nearestRacers[RACER_SLOTS];
     struct RacerSlot *racer;
     s32 slotCooldown;
     void (*driver)(struct Vehicle *vehicle);
@@ -207,6 +207,13 @@ typedef struct Vehicle {
      * @ghidraAddress BRD3D: 0x10064700
      */
     void ComputeAiVehicleInput(void);
+
+    /**
+     * Assign computer vehicles to racers near this player.
+     *
+     * @ghidraAddress BRD3D: 0x10066650
+     */
+    void ManageAiRacerSlots(void);
 
     /** @ghidraAddress BRD3D: 0x10063ff0 */
     s32 TraceTrackSplineRecursive(s32 depth, s32 pointIndex, TrackSection *section);

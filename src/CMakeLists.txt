@@ -131,6 +131,7 @@ target_sources(coastline_game PRIVATE assetdma.c camerarender.c collisionstep.c 
                                      vehicleengine.c vehiclephysics.c)
 
 target_sources(coastline_game PRIVATE tracetrack.c iomessage.c texturestream.c soundeffect.c soundsource.c)
+target_sources(coastline_game PRIVATE racersharing.c)
 
 if(TGR_PLATFORM STREQUAL "win")
   target_sources(coastline_game PRIVATE driving.c)

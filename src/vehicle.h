@@ -134,15 +134,6 @@ typedef struct {
 /** The slots the models of the cars of the menus load into. */
 #define VEHICLE_MODEL_SLOTS 4
 
-/** The bits of the status of a racer that stop its clock. */
-#define RACER_CLOCK_STOPPED 0x3
-
-/** The bit of the status of a racer whose vehicle is held out of gear. */
-#define RACER_HELD 0x1
-
-/** The bit of the status of a racer that finished the race. */
-#define RACER_FINISHED 0x2
-
 /** The ghost mode of a vehicle that other vehicles pass through and that fades back in. */
 #define VEHICLE_GHOST 2
 

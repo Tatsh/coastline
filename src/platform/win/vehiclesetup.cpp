@@ -8,6 +8,7 @@
 #include "ghost.h"
 #include "input.h"
 #include "instantreplay.h"
+#include "racersharing.h"
 #include "settings.h"
 #include "trackselect.h"
 #include "vehicle.h"
@@ -27,6 +28,10 @@ void Vehicle::SetVehiclePaintColorRgb(u8 red, u8 green, u8 blue) {
 
 void Vehicle::ComputeAiVehicleInput(void) {
     ::UpdateAiVehicleBehavior(this);
+}
+
+void Vehicle::ManageAiRacerSlots(void) {
+    ::ManageAiRacerSlots(this);
 }
 
 void PlayerVehicleControllerCallback(Vehicle *vehicle) {

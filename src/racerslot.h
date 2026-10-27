@@ -10,6 +10,13 @@ struct Vehicle;
 /** The racers of a race. */
 #define RACER_SLOTS 20
 
+/** The racer status bits that stop its clock. */
+#define RACER_CLOCK_STOPPED 0x3
+/** The racer status bit that disengages its vehicle's gear. */
+#define RACER_HELD 0x1
+/** The racer status bit that marks a finished race. */
+#define RACER_FINISHED 0x2
+
 /**
  * A racer of a race. A racer with a vehicle copies the progress of the vehicle; one without moves
  * along the route by itself, and keeps the progress a vehicle takes up when it gets one.
