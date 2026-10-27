@@ -903,7 +903,7 @@ int BuildGameOptionsUI(MenuScreen *pScreen);
  *
  * @ghidraAddress BRD3D: 0x1004d1f0
  * @ghidraAddress BRGlide: 0x10046620
- * @stub
+ * @stub{BRGlide}
  */
 void BuildVideoOptionsUI(MenuScreen *pScreen);
 

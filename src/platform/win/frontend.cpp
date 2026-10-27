@@ -4943,6 +4943,63 @@ int BuildModemConnectionUI(MenuScreen *screen) {
     return 1;
 }
 
+#if TGR_RENDERER == TGR_RENDERER_D3D
+static inline int VideoOptionsUI_ShowDeviceSelect(MenuWidget *) {
+    return ShowD3DDeviceSelectMenu();
+}
+
+static inline int VideoOptionsUI_ShowDisplayModeSelect(MenuWidget *) {
+    return ShowDisplayModeSelectMenu();
+}
+
+void BuildVideoOptionsUI(MenuScreen *screen) {
+    screen->SetCurrentPanelIndex(0);
+    screen->SetPanelActive(screen->GetPanelCount(), 1);
+    MenuPanel *panel = new (std::nothrow) MenuPanel();
+    screen->SetPanel(screen->GetPanelCount(), panel);
+    if (!panel) {
+        ShowErrorMessage(4);
+    }
+    screen->SetPanelCount(screen->GetPanelCount() + 1);
+    panel->SetScreen(screen);
+    panel->SetFlags(0);
+    panel->SetX(195);
+    panel->SetY(130);
+    AddMenuWidget(panel, screen, 0, 0, 9, 0, 0);
+    panel->SetWidgetCount(panel->GetWidgetCount() + 1);
+    SetMenuWidgetLabel(
+        AddMenuWidget(panel, screen, panel->GetX(), 10, 0x100009, 1, -1), 0x20, &g_rcMenuTitleBar);
+    panel->SetWidgetCount(panel->GetWidgetCount() + 1);
+    AddMenuWidget(panel, screen, 80, 46, 9, 0, 9);
+    panel->SetWidgetCount(panel->GetWidgetCount() + 1);
+    const int strings[] = {0x29, 0x2a, 0xc};
+    const float offsets[] = {0, 19, 114};
+    int (*const actions[])(MenuWidget *) = {VideoOptionsUI_ShowDeviceSelect,
+                                            VideoOptionsUI_ShowDisplayModeSelect,
+                                            VideoOptionsUI_OnBack};
+    for (int index = 0; index < 3; index++) {
+        MenuWidget *widget = AddMenuWidget(
+            panel,
+            screen,
+            panel->GetX(),
+            index == 0 ?
+                panel->GetY() :
+                static_cast<float>(static_cast<long double>(panel->GetY()) + offsets[index]),
+            0x102001,
+            1,
+            -1);
+        widget->SetIdleActionCallback(ValidateEntityState);
+        widget->SetActionCallback(actions[index]);
+        SetMenuWidgetLabel(widget, strings[index], &g_rcMenuCenterPanel);
+        if (index == 2) {
+            g_pOptionsSubMenu = widget;
+        }
+        panel->SetWidgetCount(panel->GetWidgetCount() + 1);
+        panel->SetNavigationCount(panel->GetNavigationCount() + 1);
+    }
+}
+#endif
+
 static inline int InputOptionsUI_ShowKeyConfig(MenuWidget *) {
     return ShowKeyConfigScreen();
 }
