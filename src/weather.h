@@ -145,6 +145,7 @@ extern s32 g_dwLightningFlashCounter;
  * @ghidraAddress USA: 0x8028c804
  * @ghidraAddress EUR: 0x8028ef64
  * @ghidraAddress JPN: 0x8028e9b4
+ * @ghidraAddress BRD3D: 0x104b2550
  */
 extern s32 g_dwRainParticleCount;
 
@@ -174,6 +175,7 @@ extern f32 g_fWindStrength;
  * @ghidraAddress USA: 0x8028c810
  * @ghidraAddress EUR: 0x8028ef70
  * @ghidraAddress JPN: 0x8028e9c0
+ * @ghidraAddress BRD3D: 0x104bbde8
  */
 extern f32 g_fRainCameraSpeed;
 
@@ -183,6 +185,7 @@ extern f32 g_fRainCameraSpeed;
  * @ghidraAddress USA: 0x8028c814
  * @ghidraAddress EUR: 0x8028ef74
  * @ghidraAddress JPN: 0x8028e9c4
+ * @ghidraAddress BRD3D: 0x104b1f00
  */
 extern f32 g_fRainCameraSpeedScale;
 
@@ -211,6 +214,7 @@ extern f32 g_fLightningFlashTimer;
  * @ghidraAddress USA: 0x8028c824
  * @ghidraAddress EUR: 0x8028ef84
  * @ghidraAddress JPN: 0x8028e9d4
+ * @ghidraAddress BRD3D: 0x104bbe14
  */
 extern s32 g_bRainParticlesInitialized;
 
@@ -248,6 +252,7 @@ extern s16 g_awRainParticlePos[WEATHER_VIEWS][RAIN_PARTICLE_SLOTS][3];
  * @ghidraAddress USA: 0x803634b8
  * @ghidraAddress EUR: 0x803659b8
  * @ghidraAddress JPN: 0x80364628
+ * @ghidraAddress BRD3D: 0x104b0688
  */
 extern Vec3f g_avRainPrevCameraPos[WEATHER_VIEWS];
 
@@ -267,6 +272,7 @@ extern Vec3f g_vWindVelocity;
  * @ghidraAddress USA: 0x803634e0
  * @ghidraAddress EUR: 0x803659e0
  * @ghidraAddress JPN: 0x80364650
+ * @ghidraAddress BRD3D: 0x104bbdf0
  */
 extern Vec3f g_avRainVelocity[WEATHER_VIEWS];
 
@@ -349,6 +355,7 @@ void StubWeatherUpdate(void);
  * @ghidraAddress USA: 0x8023a1c8
  * @ghidraAddress EUR: 0x8023b6d8
  * @ghidraAddress JPN: 0x8023b1d8
+ * @ghidraAddress BRD3D: 0x100196d0
  */
 void UpdatePrecipitationParticles(void);
 
