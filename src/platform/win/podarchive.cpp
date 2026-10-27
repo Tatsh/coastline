@@ -102,6 +102,9 @@ inline void PodArchive::ClearPodArchive() {
     memset(szPath, 0, sizeof(szPath));
 }
 
+PodFileHelper::PodFileHelper() {
+}
+
 PodArchive::PodArchive() {
     ClearPodArchive();
 }

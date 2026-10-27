@@ -38,6 +38,12 @@ struct PodEntry {
 class PodFileHelper {
 public:
     /**
+     * @ghidraAddress BRD3D: 0x10008b70
+     * @ghidraAddress BRGlide: 0x10008d50
+     */
+    PodFileHelper();
+
+    /**
      * Copy the part of a path after its last backslash.
      *
      * @param pszPath The path.
