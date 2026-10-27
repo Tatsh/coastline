@@ -1,6 +1,6 @@
 # PC port game code from 0x10050000 to 0x10060000
 
-49 of 96 routines done.
+50 of 96 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -10,7 +10,7 @@ the same name, for a routine the port retained from the N64 game.
 | Name                                      | Status | N64             | # xref | Length | BRD3D        | BRGlide      | Signature                                                                                                                                       |
 | ----------------------------------------- | :----: | --------------- | -----: | -----: | ------------ | ------------ | ----------------------------------------------------------------------------------------------------------------------------------------------- |
 | `InitializeFrontEndResources`             |   ✅   |                 |      2 |   8349 | `0x1005d440` | `0x10056260` | `bool InitializeFrontEndResources(void)`                                                                                                        |
-| `BuildNetworkCarSetupUI`                  |   🚧   |                 |      4 |   4109 | `0x10058750` | `0x10051600` | `void BuildNetworkCarSetupUI(MenuScreen * pScreen)`                                                                                             |
+| `BuildNetworkCarSetupUI`                  |   ✅   |                 |      4 |   4109 | `0x10058750` | `0x10051600` | `void BuildNetworkCarSetupUI(MenuScreen * pScreen)`                                                                                             |
 | `BuildPreRaceInfoUI`                      |   ✅   |                 |      2 |   3990 | `0x100509f0` | `0x100498a0` | `void BuildPreRaceInfoUI(MenuScreen * pScreen)`                                                                                                 |
 | `ComputeAiVehicleInput`                   |        |                 |      3 |   3867 |              | `0x1005e690` | `undefined ComputeAiVehicleInput()`                                                                                                             |
 | `BuildSeasonProgressInfoUI`               |   ✅   |                 |      2 |   3862 | `0x10052030` | `0x1004aee0` | `void BuildSeasonProgressInfoUI(MenuScreen * pScreen)`                                                                                          |
