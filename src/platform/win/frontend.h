@@ -219,6 +219,9 @@ public:
     void SetSelectionChangedCallback(int (*callback)(MenuItemList *, int *)) {
         pfnSelectionChanged = callback;
     }
+    void SetItemChangedCallback(int (*callback)(MenuItemList *, int)) {
+        pfnItemChanged = callback;
+    }
     float GetMinScrollThumbY() const {
         return fMinScrollThumbY;
     }
@@ -590,6 +593,9 @@ int RestoreMenuItemTextB(MenuWidget *pWidget);
  * @ghidraAddress BRGlide: 0x10040660
  */
 int SaveSeasonUI_HandleTextEntry(MenuWidget *pWidget);
+
+/** @ghidraAddress BRD3D: 0x1003e7a0 */
+int OverwritePromptUI_DrawPromptBox(MenuWidget *pWidget);
 
 /**
  * Process time attack save text confirmation or cancellation.

@@ -5348,6 +5348,93 @@ void BuildLoadSeasonUI(MenuScreen *screen) {
     BuildSeasonFilePreview(panel, screen);
 }
 
+void BuildSaveSeasonUI(MenuScreen *screen) {
+    g_dwSaveSlotListIsSaveMode = 1;
+    g_pRootMenuScreen->GetFileList(0)->ScanSaveFiles("RallySeason*.BRF");
+    g_dwSaveSlotListIsSaveMode = 0;
+    screen->SetCurrentPanelIndex(0);
+    g_dwFileListSelectedSlot = -1;
+    screen->SetPanelActive(screen->GetPanelCount(), 1);
+    MenuPanel *panel = new (std::nothrow) MenuPanel();
+    screen->SetPanel(screen->GetPanelCount(), panel);
+    if (!panel) {
+        ShowErrorMessage(4);
+    }
+    screen->SetPanelCount(screen->GetPanelCount() + 1);
+    panel->SetScreen(screen);
+    panel->SetFlags(0);
+    panel->SetX(195);
+    panel->SetY(130);
+    AddMenuWidget(panel, screen, 0, 0, 9, 0, 0);
+    panel->SetWidgetCount(panel->GetWidgetCount() + 1);
+    SetMenuWidgetLabel(
+        AddMenuWidget(panel, screen, panel->GetX(), 10, 0x100009, 1, -1), 0x39, &g_rcMenuTitleBar);
+    panel->SetWidgetCount(panel->GetWidgetCount() + 1);
+    MenuWidget *widget = AddMenuWidget(panel, screen, panel->GetX(), panel->GetY(), 0x3001, 1, -1);
+    widget->SetUpdateCallback(SaveSeasonUI_UpdateSlotSelection);
+    MenuItemList &list = widget->GetItemList();
+    list.SetVerticalScrollbar(1);
+    list.Initialize(0x40001, &g_rcMenuListBox, 5, 0, -1);
+    list.SetSelectionChangedCallback(SaveSeasonUI_OnSlotSelected);
+    list.SetItemChangedCallback(SaveSeasonUI_OnSlotNameEntered);
+    for (int index = 0; index < SAVE_FILE_NAME_COUNT; index++) {
+        const char *name = g_pRootMenuScreen->GetFileList(0)->GetName(index);
+        if (name) {
+            list.AddItem(name, 0, 1, &g_rcMenuListBox, false);
+        }
+    }
+    panel->SetWidgetCount(panel->GetWidgetCount() + 1);
+    panel->SetNavigationCount(panel->GetNavigationCount() + 1);
+    widget = AddMenuWidget(panel,
+                           screen,
+                           panel->GetX(),
+                           static_cast<float>(static_cast<long double>(panel->GetY()) + 95),
+                           0x103011,
+                           1,
+                           -1);
+    widget->SetIdleActionCallback(ValidateEntityState);
+    widget->SetActionCallback(SaveSeasonUI_InvokeBackHandler);
+    widget->SetUpdateCallback(SaveSeasonUI_UpdateItemEnabledState);
+    widget->SetSpriteId(2);
+    widget->SetText(GetStringResource(0x1e), 1, 0, &g_rcMenuCenterPanel);
+    panel->SetWidgetCount(panel->GetWidgetCount() + 1);
+    panel->SetNavigationCount(panel->GetNavigationCount() + 1);
+    widget = AddMenuWidget(panel,
+                           screen,
+                           panel->GetX(),
+                           static_cast<float>(static_cast<long double>(panel->GetY()) + 114),
+                           0x102001,
+                           1,
+                           -1);
+    widget->SetIdleActionCallback(ValidateEntityState);
+    widget->SetActionCallback(SaveSeasonUI_OnBack);
+    SetMenuWidgetLabel(widget, 0xc, &g_rcMenuCenterPanel);
+    g_pSaveSeasonBackHandlerMenu = widget;
+    panel->SetWidgetCount(panel->GetWidgetCount() + 1);
+    panel->SetNavigationCount(panel->GetNavigationCount() + 1);
+    AddMenuWidget(panel, screen, 80, 46, 9, 0, 6);
+    panel->SetWidgetCount(panel->GetWidgetCount() + 1);
+    BuildSeasonFilePreview(panel, screen);
+    screen->SetPanelActive(screen->GetPanelCount(), 0);
+    panel = new (std::nothrow) MenuPanel();
+    screen->SetPanel(screen->GetPanelCount(), panel);
+    if (!panel) {
+        ShowErrorMessage(4);
+    }
+    screen->SetPanelCount(screen->GetPanelCount() + 1);
+    panel->SetScreen(screen);
+    panel->SetFlags(0);
+    panel->SetX(195);
+    panel->SetY(130);
+    widget = AddMenuWidget(panel, screen, 0, 232, 0x100009, 1, -1);
+    widget->SetIdleActionCallback(ValidateEntityState);
+    widget->SetUpdateCallback(SaveSeasonUI_HandleTextEntry);
+    widget->SetBeforeUpdateCallback(OverwritePromptUI_DrawPromptBox);
+    SetMenuWidgetLabel(widget, 0x3a, &g_rcMenuFullScreen);
+    g_pSaveSeasonMenu = widget;
+    panel->SetWidgetCount(panel->GetWidgetCount() + 1);
+}
+
 void BuildKeyConfigUI(MenuScreen *screen) {
     screen->SetCurrentPanelIndex(0);
     screen->SetPanelActive(screen->GetPanelCount(), 1);
