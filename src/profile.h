@@ -16,7 +16,7 @@ extern "C" {
 #define SEASONS 6      /*!< The seasons of the championship. */
 #define SEASON_RACES 4 /*!< The most races of a season. */
 
-/** The tracks a profile keeps records for: the five tracks and their mirrored versions. */
+/** Profiles record fourteen Windows tracks or five N64 tracks and their mirrored versions. */
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
 #define PROFILE_RECORD_TRACKS 14
 #else
