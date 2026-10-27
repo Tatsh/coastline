@@ -957,3 +957,14 @@ void ShutdownTextureSubsystem(void) {
     std::free(g_pTextureEntries);
     g_pTextureEntries = nullptr;
 }
+
+void UploadTextureEntryToSurface(int nEntry, TextureUploadData payload) {
+    if (nEntry == static_cast<int>(g_dwWeatherShadeTextureId)) {
+        return;
+    }
+    const TextureEntry &entry = g_pTextureEntries[nEntry];
+    int width;
+    int height;
+    CalculateTextureDimensions(&width, &height, entry.nLod, entry.nAspectRatio);
+    g_ppTextureIdTable[entry.nTextureId]->UploadSurfaceToTexture(payload.pixels, width, height);
+}

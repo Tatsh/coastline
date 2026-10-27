@@ -1167,3 +1167,12 @@ unsigned QueryAvailableTextureMemory(void);
  * @ghidraAddress BRD3D: 0x1002a7a0
  */
 void ShutdownTextureSubsystem(void);
+
+/**
+ * Copy a supplied pixel buffer into the device texture of a loaded entry.
+ *
+ * @param nEntry The loaded texture entry.
+ * @param payload The pixel buffer.
+ * @ghidraAddress BRD3D: 0x10028e00
+ */
+void UploadTextureEntryToSurface(int nEntry, TextureUploadData payload);
