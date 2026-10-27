@@ -221,15 +221,6 @@ void InitGbiD3DRenderer(void);
  */
 void ClearRenderTargetOnce(void);
 
-/**
- * Convert a colour of the console, RGBA 5551 with its bytes swapped, to RGBA 8888. Each channel of
- * five bits is widened by repeating its low three bits, and the alpha bit becomes 0 or 255.
- *
- * @param dwColor16 The colour in the low 16 bits.
- * @return The colour, red in the low byte.
- * @ghidraAddress BRD3D: 0x10027b10
- */
-DWORD ConvertColor16To32(DWORD dwColor16);
 #else
 /**
  * Start the Glide device.
