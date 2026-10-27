@@ -196,7 +196,6 @@ private:
 public:
     /**
      * @ghidraAddress BRD3D: 0x1005c000
-     * @stub
      */
     virtual int RemoveItem(int index);
 

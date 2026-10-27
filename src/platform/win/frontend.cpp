@@ -823,6 +823,53 @@ int MenuItemList::Draw(int selection) {
     return 1;
 }
 
+int MenuItemList::RemoveItem(int index) {
+    auto clearItem = [this](int item, bool clearDataValue) {
+        MenuFont &font = fonts[item];
+        font.SetText(g_szEmptyUiString);
+        font.SetStyle(0);
+        font.SetInputMaxWidth(0);
+        font.SetHeight(0);
+        font.SetWidth(0);
+        font.SetBoundsLeft(0);
+        font.SetBoundsTop(0);
+        font.SetBoundsRight(0);
+        font.SetBoundsBottom(0);
+        font.SetX(0);
+        font.SetY(0);
+        font.SetZ(0);
+        font.SetDrawCaret(0);
+        if (clearDataValue) {
+            font.SetItemData(0);
+        }
+        itemData[item] = {};
+    };
+    if (index >= 0) {
+        clearItem(index, true);
+    }
+    int shifted = 0;
+    int next = index + 1;
+    if (next != wItemCount) {
+        for (shifted = next; shifted <= wItemCount - 1; ++shifted) {
+            // The original copies the complete font object, including its virtual pointer.
+            memcpy(static_cast<void *>(&fonts[shifted - 1]),
+                   static_cast<const void *>(&fonts[shifted]),
+                   sizeof(MenuFont));
+            MenuItemData &data = itemData[shifted];
+            if (data.pData && static_cast<int>(data.dwSize) > 0) {
+                SetItemData(data.pData, data.dwSize, shifted - 1);
+            }
+        }
+        shifted = 0;
+    }
+    int last = wItemCount - 1;
+    if (last > shifted) {
+        clearItem(last, false);
+    }
+    --wItemCount;
+    return 1;
+}
+
 int MenuItemList::SetItemData(const void *data, unsigned size, int index) {
     if (index == -1) {
         index = wItemCount - 1;
