@@ -2497,7 +2497,6 @@ int BuildTimeAttackMenuUI(MenuScreen *pScreen);
 
 /**
  * @ghidraAddress BRD3D: 0x10059bb0
- * @stub
  */
 void BuildLoadTimeAttackMenuUI(MenuScreen *pScreen);
 

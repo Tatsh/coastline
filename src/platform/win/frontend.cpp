@@ -5533,6 +5533,119 @@ void BuildSaveSeasonUI(MenuScreen *screen) {
     panel->SetWidgetCount(panel->GetWidgetCount() + 1);
 }
 
+static inline void BuildTimeAttackFilePreview(MenuPanel *panel, MenuScreen *screen) {
+    const float valueY[] = {208, 240};
+    const float labelY[] = {224, 256};
+    const int labels[] = {0x6f, 0x3f};
+    int (*const updates[])(MenuWidget *) = {TimeAttackUI_UpdateRaceTimeLabel,
+                                            TimeAttackUI_UpdateBestLapLabel};
+    for (int index = 0; index < 2; index++) {
+        MenuWidget *widget = AddMenuWidget(panel, screen, 440, valueY[index], 0x101001, 1, -1);
+        widget->SetUpdateCallback(updates[index]);
+        widget->SetSpriteId(0x34);
+        widget->SetText(g_szSpace, 1, 4, &g_rcMenuRightColumnWide);
+        panel->SetWidgetCount(panel->GetWidgetCount() + 1);
+        SetMenuWidgetLabel(AddMenuWidget(panel, screen, 440, labelY[index], 0x100001, 1, -1),
+                           labels[index],
+                           &g_rcMenuRightColumnWide);
+        panel->SetWidgetCount(panel->GetWidgetCount() + 1);
+    }
+}
+
+void BuildLoadTimeAttackMenuUI(MenuScreen *screen) {
+    g_pRootMenuScreen->GetFileList(1)->ScanSaveFiles("TimeAttack*.GRF");
+    screen->SetCurrentPanelIndex(0);
+    g_dwTimeAttackLoadSelected = 0;
+    screen->SetPanelActive(screen->GetPanelCount(), 1);
+    MenuPanel *panel = new (std::nothrow) MenuPanel();
+    screen->SetPanel(screen->GetPanelCount(), panel);
+    if (!panel) {
+        ShowErrorMessage(4);
+    }
+    screen->SetPanelCount(screen->GetPanelCount() + 1);
+    panel->SetScreen(screen);
+    panel->SetFlags(0);
+    panel->SetX(195);
+    panel->SetY(111);
+    AddMenuWidget(panel, screen, 0, 0, 9, 0, 0);
+    panel->SetWidgetCount(panel->GetWidgetCount() + 1);
+    SetMenuWidgetLabel(
+        AddMenuWidget(panel, screen, panel->GetX(), 10, 0x100009, 1, -1), 0x6e, &g_rcMenuTitleBar);
+    panel->SetWidgetCount(panel->GetWidgetCount() + 1);
+    MenuWidget *widget = AddMenuWidget(panel, screen, panel->GetX(), panel->GetY(), 0x3001, 1, -1);
+    widget->SetUpdateCallback(LoadFileListUI_UpdateSlotSelection);
+    MenuItemList &list = widget->GetItemList();
+    list.SetVerticalScrollbar(1);
+    list.Initialize(0x40001, &g_rcMenuListBox, 5, 0, -1);
+    list.SetSelectionChangedCallback(LoadTimeAttackMenuUI_OnSlotSelected);
+    for (int index = 0; index < SAVE_FILE_NAME_COUNT; index++) {
+        const char *name = g_pRootMenuScreen->GetFileList(1)->GetName(index);
+        if (name) {
+            list.AddItem(name, 0, 1, &g_rcMenuListBox, true);
+        }
+    }
+    panel->SetWidgetCount(panel->GetWidgetCount() + 1);
+    panel->SetNavigationCount(panel->GetNavigationCount() + 1);
+    widget = AddMenuWidget(panel,
+                           screen,
+                           panel->GetX(),
+                           static_cast<float>(static_cast<long double>(panel->GetY()) + 114),
+                           0x103011,
+                           1,
+                           -1);
+    widget->SetIdleActionCallback(ValidateEntityState);
+    widget->SetActionCallback(LoadTimeAttackMenuUI_OnCarSetup);
+    widget->SetUpdateCallback(LoadTimeAttackMenuUI_UpdateItemEnabledState);
+    widget->SetSpriteId(2);
+    widget->SetText(GetStringResource(0x1e), 1, 0, &g_rcMenuCenterPanel);
+    panel->SetWidgetCount(panel->GetWidgetCount() + 1);
+    panel->SetNavigationCount(panel->GetNavigationCount() + 1);
+    widget = AddMenuWidget(panel,
+                           screen,
+                           panel->GetX(),
+                           static_cast<float>(static_cast<long double>(panel->GetY()) + 133),
+                           0x102001,
+                           1,
+                           -1);
+    widget->SetIdleActionCallback(ValidateEntityState);
+    widget->SetActionCallback(LoadTimeAttackMenuUI_OnBack);
+    SetMenuWidgetLabel(widget, 0xc, &g_rcMenuCenterPanel);
+    panel->SetWidgetCount(panel->GetWidgetCount() + 1);
+    panel->SetNavigationCount(panel->GetNavigationCount() + 1);
+    const float imageX[] = {438, 339, 73};
+    const float imageY[] = {123, 70, 212};
+    const short images[] = {0x11, 0xb, 0x16};
+    const float labelY[] = {181, 137, 275};
+    int (*const imageUpdates[])(MenuWidget *) = {
+        TimeAttackUI_UpdateTrackImage, CarSetupUI_UpdateCarImage, RaceSetupUI_UpdateWeatherImage};
+    int (*const labelUpdates[])(MenuWidget *) = {RaceSetupUI_UpdateTrackNameLabel,
+                                                 CarSetupUI_UpdateCarNameLabel,
+                                                 RaceSetupUI_UpdateWeatherLabel};
+    const RECT *const labelBounds[] = {
+        &g_rcMenuRightColumn, &g_rcMenuRightLabel, &g_rcMenuLeftColumn};
+    for (int index = 0; index < 3; index++) {
+        widget = AddMenuWidget(panel, screen, imageX[index], imageY[index], 1, 1, images[index]);
+        widget->SetUpdateCallback(imageUpdates[index]);
+        widget->SetLinkedWidgetCount(widget->GetLinkedWidgetCount() + 1);
+        widget->SetLinkedWidgetIndex(0, panel->GetWidgetCount() + 1);
+        panel->SetWidgetCount(panel->GetWidgetCount() + 1);
+        widget = AddMenuWidget(panel, screen, panel->GetX(), labelY[index], 0x101001, 1, -1);
+        widget->SetUpdateCallback(labelUpdates[index]);
+        widget->SetSpriteId(3);
+        widget->SetText(g_szSpace, 1, 1, labelBounds[index]);
+        panel->SetWidgetCount(panel->GetWidgetCount() + 1);
+    }
+    widget = AddMenuWidget(panel, screen, 106, 68, 0x5001, 1, -1);
+    widget->SetUpdateCallback(RaceSetupUI_UpdateLapCountLabel);
+    widget->SetSpriteId(5);
+    widget->SetText(g_szMenuDigitOne, 1, 3, &g_rcMenuSubPanel);
+    panel->SetWidgetCount(panel->GetWidgetCount() + 1);
+    SetMenuWidgetLabel(
+        AddMenuWidget(panel, screen, 106, 115, 0x100001, 1, -1), 0x1d, &g_rcMenuSubPanel);
+    panel->SetWidgetCount(panel->GetWidgetCount() + 1);
+    BuildTimeAttackFilePreview(panel, screen);
+}
+
 void BuildSaveTimeAttackMenuUI(MenuScreen *screen) {
     g_pRootMenuScreen->GetFileList(1)->ScanSaveFiles("TimeAttack*.GRF");
     screen->SetCurrentPanelIndex(0);
@@ -5581,22 +5694,7 @@ void BuildSaveTimeAttackMenuUI(MenuScreen *screen) {
     SetMenuWidgetLabel(widget, 0x1e, &g_rcMenuCenterPanel);
     panel->SetWidgetCount(panel->GetWidgetCount() + 1);
     panel->SetNavigationCount(panel->GetNavigationCount() + 1);
-    const float valueY[] = {208, 240};
-    const float labelY[] = {224, 256};
-    const int labels[] = {0x6f, 0x3f};
-    int (*const updates[])(MenuWidget *) = {TimeAttackUI_UpdateRaceTimeLabel,
-                                            TimeAttackUI_UpdateBestLapLabel};
-    for (int index = 0; index < 2; index++) {
-        widget = AddMenuWidget(panel, screen, 440, valueY[index], 0x101001, 1, -1);
-        widget->SetUpdateCallback(updates[index]);
-        widget->SetSpriteId(0x34);
-        widget->SetText(g_szSpace, 1, 4, &g_rcMenuRightColumnWide);
-        panel->SetWidgetCount(panel->GetWidgetCount() + 1);
-        SetMenuWidgetLabel(AddMenuWidget(panel, screen, 440, labelY[index], 0x100001, 1, -1),
-                           labels[index],
-                           &g_rcMenuRightColumnWide);
-        panel->SetWidgetCount(panel->GetWidgetCount() + 1);
-    }
+    BuildTimeAttackFilePreview(panel, screen);
     AddMenuWidget(panel, screen, 80, 46, 9, 0, 6);
     panel->SetWidgetCount(panel->GetWidgetCount() + 1);
     screen->SetPanelActive(screen->GetPanelCount(), 0);
