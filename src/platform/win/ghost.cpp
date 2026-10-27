@@ -9,10 +9,12 @@
 #include "instantreplay.h"
 #include "laps.h"
 #include "pause.h"
+#include "platform/win/directplay.h"
 #include "platform/win/frontend.h"
 #include "platform/win/input.h"
 #include "platform/win/netstream.h"
 #include "platform/win/season.h"
+#include "vehiclephysics.h"
 
 unsigned g_adwGhostFrameCount[GHOST_RECORDING_COUNT];
 int g_bGhostRecordingActive;
@@ -521,6 +523,19 @@ void ApplyVehicleKeyframe(Vehicle *pVehicle, const KeyframeState *pState) {
     ComputeDeltaQuaternion(&pVehicle->body.state);
     pVehicle->body.stepStates[0] = pVehicle->body.state;
     pVehicle->body.stepStates[1] = pVehicle->body.state;
+}
+
+unsigned ApplyRemoteVehicleState(Vehicle *vehicle, int slotIndex) {
+    if (slotIndex == GetLocalPlayerIndex() || g_dwRacePauseState != 0) {
+        return 1;
+    }
+    KeyframeState state;
+    if (!GetInterpolatedRemoteVehicleState(&state, slotIndex)) {
+        return 0;
+    }
+    ApplyVehicleKeyframe(vehicle, &state);
+    UpdateVehicleWheelTransforms(vehicle);
+    return 1;
 }
 
 void RecordVehicleKeyframe(Vehicle *vehicle) {

@@ -2,6 +2,20 @@
 
 #include <cstdlib>
 
+#include "platform/win/ghost.h"
+#include "platform/win/settings.h"
+
+void RacerSlot::UpdateRemoteVehicleFrame(void) {
+    if (vehicle == nullptr) {
+        return;
+    }
+    if (g_dwNetworkPlayMode != 0 && !ApplyRemoteVehicleState(vehicle, vehicle->index)) {
+        return;
+    }
+    vehicle->TransformAllWheelMatrices();
+    vehicle->UpdateCameraSystem();
+}
+
 void RacerSlot::InitRacerSlot(void) {
     ::InitRacerSlot(this);
 }

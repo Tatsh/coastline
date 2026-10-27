@@ -54,6 +54,12 @@ typedef struct RacerSlot {
 
 #ifdef __cplusplus
     /**
+     * @ghidraAddress BRD3D: 0x10069330
+     * @ghidraAddress BRGlide: 0x100623a0
+     */
+    void UpdateRemoteVehicleFrame(void);
+
+    /**
      * @ghidraAddress BRD3D: 0x100664c0
      */
     void FreeEnemyCarColorPanels(void);

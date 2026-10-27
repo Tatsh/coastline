@@ -315,6 +315,12 @@ void BuildVehicleKeyframe(KeyframeState *pState, Vehicle *pVehicle);
 void RecordVehicleKeyframe(Vehicle *vehicle);
 
 /**
+ * @ghidraAddress BRD3D: 0x10060cc0
+ * @ghidraAddress BRGlide: 0x10059d30
+ */
+unsigned ApplyRemoteVehicleState(Vehicle *vehicle, int slotIndex);
+
+/**
  * Restore sampled motion and effects, then synchronise integration states.
  *
  * @param pVehicle Destination vehicle.
