@@ -1239,29 +1239,6 @@ void StepVehicleCollisions(RigidBody *body) {
     }
 }
 
-void ComputeDragForce(RigidBody *body, RigidBodyForce *force) {
-    s32 surface0, surface1, surface2, surface3;
-    f32 extra[3];
-
-    force->vector.x = body->state.velocity.x * -110.0f;
-    force->vector.y = body->state.velocity.y * -110.0f;
-    force->vector.z = body->state.velocity.z * -110.0f;
-    surface0 = body->wheels[0]->surface;
-    surface1 = body->wheels[1]->surface;
-    surface2 = body->wheels[2]->surface;
-    surface3 = body->wheels[3]->surface;
-    if (4.0f < BODY_SPEED(body) && g_dwCurrentWeather != WEATHER_SNOW &&
-        (surface0 == TRACK_SURFACE_SLOW || surface1 == TRACK_SURFACE_SLOW ||
-         surface2 == TRACK_SURFACE_SLOW || surface3 == TRACK_SURFACE_SLOW)) {
-        extra[0] = body->state.velocity.x * -220.0f;
-        extra[1] = body->state.velocity.y * -220.0f;
-        extra[2] = body->state.velocity.z * -220.0f;
-        force->vector.x += extra[0];
-        force->vector.y += extra[1];
-        force->vector.z += extra[2];
-    }
-}
-
 f32 CastWheelRay(RigidBody *body, RigidBody *wheel) {
     TrackTriangle *triangle;
     Vec3f down, start, origin, direction, hit;

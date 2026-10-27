@@ -1,10 +1,44 @@
+#include <PR/gu.h>
+
 #include "physics.h"
+#include "track.h"
+#include "weather.h"
 
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
 #define FORCE_PRODUCT(a, b) ((long double)(a) * (b))
 #else
 #define FORCE_PRODUCT(a, b) ((a) * (b))
 #endif
+
+void ComputeDragForce(RigidBody *body, RigidBodyForce *force) {
+    s32 surface0, surface1, surface2, surface3;
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+    long double extra[3];
+#else
+    f32 extra[3];
+#endif
+
+    force->vector.x = body->state.velocity.x * -110.0f;
+    force->vector.y = body->state.velocity.y * -110.0f;
+    force->vector.z = body->state.velocity.z * -110.0f;
+    surface0 = body->wheels[0]->surface;
+    surface1 = body->wheels[1]->surface;
+    surface2 = body->wheels[2]->surface;
+    surface3 = body->wheels[3]->surface;
+    if (4.0f < sqrtf(FORCE_PRODUCT(body->state.velocity.z, body->state.velocity.z) +
+                     (FORCE_PRODUCT(body->state.velocity.x, body->state.velocity.x) +
+                      FORCE_PRODUCT(body->state.velocity.y, body->state.velocity.y))) &&
+        g_dwCurrentWeather != WEATHER_SNOW &&
+        (surface0 == TRACK_SURFACE_SLOW || surface1 == TRACK_SURFACE_SLOW ||
+         surface2 == TRACK_SURFACE_SLOW || surface3 == TRACK_SURFACE_SLOW)) {
+        extra[0] = FORCE_PRODUCT(body->state.velocity.x, -220.0f);
+        extra[1] = FORCE_PRODUCT(body->state.velocity.y, -220.0f);
+        extra[2] = FORCE_PRODUCT(body->state.velocity.z, -220.0f);
+        force->vector.x += extra[0];
+        force->vector.y += extra[1];
+        force->vector.z += extra[2];
+    }
+}
 
 void SumBodyForces(RigidBody *body) {
     RigidBodyForce *force;

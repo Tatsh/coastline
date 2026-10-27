@@ -556,6 +556,9 @@ s32 CollideBodyWithTriangles(RigidBody *body, f32 box[4][4]);
  */
 void StepVehicleCollisions(RigidBody *body);
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 /**
  * Set a force to the drag on the body of a vehicle, which grows on the surface that slows it.
  *
@@ -564,8 +567,12 @@ void StepVehicleCollisions(RigidBody *body);
  * @ghidraAddress USA: 0x8025e820
  * @ghidraAddress EUR: 0x8025fcfc
  * @ghidraAddress JPN: 0x8025f7ac
+ * @ghidraAddress BRD3D: 0x1006ef80
  */
 void ComputeDragForce(RigidBody *body, RigidBodyForce *force);
+#ifdef __cplusplus
+}
+#endif
 
 /**
  * Find the ground below a wheel in the cache of the triangles.
