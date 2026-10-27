@@ -329,6 +329,7 @@ void Vec3fAddInPlace(Vec3f *v, Vec3f *b);
  * @ghidraAddress JPN: 0x8022542c
  * @ghidraAddress BRD3D: 0x1003afa0
  * @ghidraAddress BRGlide: 0x10034620
+ * @stub{BRGlide}
  */
 void Vec3fLerp(Vec3f *out, Vec3f *a, Vec3f *b, f32 t);
 
@@ -344,6 +345,7 @@ void Vec3fLerp(Vec3f *out, Vec3f *a, Vec3f *b, f32 t);
  * @ghidraAddress JPN: 0x8022547c
  * @ghidraAddress BRD3D: 0x1003afe0
  * @ghidraAddress BRGlide: 0x10034660
+ * @stub{BRGlide}
  */
 void Vec3fMulAdd(Vec3f *out, Vec3f *a, Vec3f *b, f32 scale);
 

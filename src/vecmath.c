@@ -101,6 +101,12 @@ void FinishFrameMatrix(f32 m[4][4]) {
 #define RNG_MULTIPLIER 16807
 #define RNG_MASK 0x07FFFFFF
 
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#define VEC3F_INTERMEDIATE(value) ((long double)(value))
+#else
+#define VEC3F_INTERMEDIATE(value) (value)
+#endif
+
 /* The routines under TGR_PLATFORM_N64 alone are absent from the PC libraries. */
 #if TGR_PLATFORM == TGR_PLATFORM_N64
 f32 Powf(f32 base, f32 exponent) {
@@ -311,15 +317,15 @@ void Vec3fAddInPlace(Vec3f *v, Vec3f *b) {
 }
 
 void Vec3fLerp(Vec3f *out, Vec3f *a, Vec3f *b, f32 t) {
-    out->x = b->x + (a->x - b->x) * t;
-    out->y = b->y + (a->y - b->y) * t;
-    out->z = b->z + (a->z - b->z) * t;
+    out->x = b->x + (VEC3F_INTERMEDIATE(a->x) - b->x) * t;
+    out->y = b->y + (VEC3F_INTERMEDIATE(a->y) - b->y) * t;
+    out->z = b->z + (VEC3F_INTERMEDIATE(a->z) - b->z) * t;
 }
 
 void Vec3fMulAdd(Vec3f *out, Vec3f *a, Vec3f *b, f32 scale) {
-    out->x = b->x * scale + a->x;
-    out->y = b->y * scale + a->y;
-    out->z = b->z * scale + a->z;
+    out->x = VEC3F_INTERMEDIATE(b->x) * scale + a->x;
+    out->y = VEC3F_INTERMEDIATE(b->y) * scale + a->y;
+    out->z = VEC3F_INTERMEDIATE(b->z) * scale + a->z;
 }
 
 void Vec3fMulAddInPlace(Vec3f *v, Vec3f *b, f32 scale) {
