@@ -560,7 +560,7 @@ extern float g_aGbiModelViewStack[GBI_MATRIX_STACK_RESET_DEPTH][4][4];
  * @ghidraAddress BRD3D: 0x104c1698
  * @ghidraAddress BRGlide: 0x105ce2d8
  */
-extern const void *g_pGbiLookAtY;
+extern const Light *g_pGbiLookAtY;
 
 /**
  * The first vector of the look-at of the display lists, as a move memory command gives it.
@@ -568,7 +568,7 @@ extern const void *g_pGbiLookAtY;
  * @ghidraAddress BRD3D: 0x104c169c
  * @ghidraAddress BRGlide: 0x105ce2dc
  */
-extern const void *g_pGbiLookAtX;
+extern const Light *g_pGbiLookAtX;
 
 /**
  * Copy the matrix of the command into g_GbiMvpMatrix.

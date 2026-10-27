@@ -337,8 +337,8 @@ GbiCommand *HandleGbiMoveWord(GbiCommand *pCommand) {
 }
 
 float g_GbiMvpMatrix[4][4];
-const void *g_pGbiLookAtY;
-const void *g_pGbiLookAtX;
+const Light *g_pGbiLookAtY;
+const Light *g_pGbiLookAtX;
 
 GbiCommand *HandleGbiLoadMatrix(GbiCommand *pCommand) {
     memcpy(g_GbiMvpMatrix, pCommand->pData, sizeof(g_GbiMvpMatrix));
@@ -366,10 +366,10 @@ GbiCommand *HandleGbiMoveMem(GbiCommand *pCommand) {
     case GBI_MOVE_MEM_VIEWPORT:
         return HandleGbiSetViewport(pCommand);
     case GBI_MOVE_MEM_LOOK_AT_Y:
-        g_pGbiLookAtY = pCommand->pData;
+        g_pGbiLookAtY = pCommand->pLight;
         break;
     case GBI_MOVE_MEM_LOOK_AT_X:
-        g_pGbiLookAtX = pCommand->pData;
+        g_pGbiLookAtX = pCommand->pLight;
         break;
     case GBI_MOVE_MEM_LIGHT_0:
     case GBI_MOVE_MEM_LIGHT_1:
@@ -804,16 +804,18 @@ float g_fGbiAmbientColorR;
 float g_fGbiAmbientColorG;
 float g_fGbiAmbientColorB;
 
-void ComputeVertexDirectionalLight(const ConvertedModelVertex *pVertex, GbiVertexSource *pDest) {
+static void
+ShadeGbiVertex(const ConvertedModelVertex *pVertex, GbiVertexSource *pDest, bool bTexGen) {
     if (!g_dwGbiNumLights) {
         pDest->fRed = g_fGbiPrimColorR;
         pDest->fGreen = g_fGbiPrimColorG;
         pDest->fBlue = g_fGbiPrimColorB;
         return;
     }
-    float dot = static_cast<long double>(pVertex->normal.z) * g_GbiLight0Direction.z +
-                (static_cast<long double>(pVertex->normal.x) * g_GbiLight0Direction.x +
-                 static_cast<long double>(pVertex->normal.y) * g_GbiLight0Direction.y);
+    long double x = static_cast<long double>(pVertex->normal.x) * g_GbiLight0Direction.x;
+    long double y = static_cast<long double>(pVertex->normal.y) * g_GbiLight0Direction.y;
+    long double z = static_cast<long double>(pVertex->normal.z) * g_GbiLight0Direction.z;
+    float dot = bTexGen ? (z + y) + x : z + (x + y);
     if (!(dot >= 0.0f)) {
         pDest->fRed = g_fGbiAmbientColorR;
         pDest->fGreen = g_fGbiAmbientColorG;
@@ -827,6 +829,10 @@ void ComputeVertexDirectionalLight(const ConvertedModelVertex *pVertex, GbiVerte
     pDest->fRed = channel(g_fGbiLight0ColorR, g_fGbiAmbientColorR);
     pDest->fGreen = channel(g_fGbiLight0ColorG, g_fGbiAmbientColorG);
     pDest->fBlue = channel(g_fGbiLight0ColorB, g_fGbiAmbientColorB);
+}
+
+void ComputeVertexDirectionalLight(const ConvertedModelVertex *pVertex, GbiVertexSource *pDest) {
+    ShadeGbiVertex(pVertex, pDest, false);
 }
 
 float g_GbiProjectionMatrix[4][4];
@@ -1044,7 +1050,7 @@ static inline float TransformGbiVertexComponent(const Vec3f &position, int nColu
            g_GbiMvpMatrix[3][nColumn];
 }
 
-enum class LightTransformMode { Standard, EnvModulated, NoZBuffer };
+enum class LightTransformMode { Standard, EnvModulated, NoZBuffer, TexGen };
 
 static float
 TransformGbiLightDirectionRow(const float row[4], float x, float y, float z, int nLast) {
@@ -1078,16 +1084,22 @@ static void UpdateGbiDirectionalLight(LightTransformMode mode = LightTransformMo
         float z = light.dir[2];
         g_GbiLight0Direction.x = TransformGbiLightDirectionRow(
             matrix[0], x, y, z, mode == LightTransformMode::Standard ? 0 : 1);
-        g_GbiLight0Direction.y = TransformGbiLightDirectionRow(
-            matrix[1], x, y, z, mode == LightTransformMode::NoZBuffer ? 1 : 2);
-        g_GbiLight0Direction.z =
-            TransformGbiLightDirectionRow(matrix[2],
+        g_GbiLight0Direction.y =
+            TransformGbiLightDirectionRow(matrix[1],
                                           x,
                                           y,
                                           z,
-                                          mode == LightTransformMode::EnvModulated ? 1 :
-                                          mode == LightTransformMode::NoZBuffer    ? 0 :
-                                                                                     2);
+                                          mode == LightTransformMode::TexGen    ? 0 :
+                                          mode == LightTransformMode::NoZBuffer ? 1 :
+                                                                                  2);
+        g_GbiLight0Direction.z = TransformGbiLightDirectionRow(
+            matrix[2],
+            x,
+            y,
+            z,
+            mode == LightTransformMode::EnvModulated || mode == LightTransformMode::TexGen ? 1 :
+            mode == LightTransformMode::NoZBuffer                                          ? 0 :
+                                                                                             2);
         Vec3fNormalize(&g_GbiLight0Direction);
         const Light_t &ambient = g_aGbiLights[1].l;
         g_fGbiAmbientColorR = static_cast<float>(ambient.col[0]) * (1.0f / 255.0f);
@@ -1100,9 +1112,11 @@ static void UpdateGbiDirectionalLight(LightTransformMode mode = LightTransformMo
 static inline GbiCommand *LoadGbiVertices(GbiCommand *pCommand,
                                           bool bUseZBuffer,
                                           bool bLighting,
-                                          bool bEnvModulated = false) {
+                                          bool bEnvModulated = false,
+                                          bool bTexGen = false) {
     if (bLighting) {
-        UpdateGbiDirectionalLight(bEnvModulated ? LightTransformMode::EnvModulated :
+        UpdateGbiDirectionalLight(bTexGen       ? LightTransformMode::TexGen :
+                                  bEnvModulated ? LightTransformMode::EnvModulated :
                                   bUseZBuffer   ? LightTransformMode::Standard :
                                                   LightTransformMode::NoZBuffer);
     }
@@ -1119,8 +1133,11 @@ static inline GbiCommand *LoadGbiVertices(GbiCommand *pCommand,
         vertex.source.fW = TransformGbiVertexComponent(input.position, 3);
         vertex.source.fS = input.texture.x;
         vertex.source.fT = input.texture.y;
+        if (bTexGen) {
+            GenerateGbiVertexTextureCoordinates(&input, &vertex.source);
+        }
         if (bLighting) {
-            ComputeVertexDirectionalLight(&input, &vertex.source);
+            ShadeGbiVertex(&input, &vertex.source, bTexGen);
         } else {
             vertex.source.fRed = static_cast<long double>(input.normal.x) * (1.0f / 255.0f);
             vertex.source.fGreen = static_cast<long double>(input.normal.y) * (1.0f / 255.0f);
@@ -1169,8 +1186,8 @@ void GenerateGbiVertexTextureCoordinates(const ConvertedModelVertex *pInput,
                               static_cast<long double>(matrix[0][column]) * pInput->normal.x;
     }
     Vec3fNormalize(&normal);
-    const Light_t &lookX = static_cast<const Light *>(g_pGbiLookAtX)->l;
-    const Light_t &lookY = static_cast<const Light *>(g_pGbiLookAtY)->l;
+    const Light_t &lookX = g_pGbiLookAtX->l;
+    const Light_t &lookY = g_pGbiLookAtY->l;
     float s = ((static_cast<long double>(lookX.dir[0]) * normal.x +
                 static_cast<long double>(lookX.dir[1]) * normal.y) +
                static_cast<long double>(lookX.dir[2]) * normal.z) /
@@ -1215,6 +1232,10 @@ GbiCommand *HandleGbiVertexLitEnvColorModulated(GbiCommand *pCommand) {
 
 GbiCommand *HandleGbiVertexLitNoZBuffer(GbiCommand *pCommand) {
     return LoadGbiVertices(pCommand, false, true);
+}
+
+GbiCommand *HandleGbiVertexTexGen(GbiCommand *pCommand) {
+    return LoadGbiVertices(pCommand, true, true, false, true);
 }
 
 // The scale from a channel of the colour of a vertex to a byte.
