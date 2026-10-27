@@ -8,11 +8,13 @@ int __stdcall GetDirectSoundVersion();
 
 /**
  * @ghidraAddress EAR: 0x1000fc00
- * @stub
  */
 int __stdcall QueryDirectSoundProductVersion();
 
 /** @ghidraAddress EAR: 0x1003b7b4 */
 extern std::int32_t g_earAudioComponentsValidated;
+
+/** @ghidraAddress EAR: 0x1003b798 */
+extern std::uint16_t g_earAudioComponentValidationFlags;
 
 #endif
