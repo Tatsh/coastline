@@ -1026,6 +1026,12 @@ int MenuItemList::UpdateItemAndNotify(int nIndex) {
     return 1;
 }
 
+int MenuItemList::ReturnOne() {
+    return 1;
+}
+
+MenuPanel::~MenuPanel() = default;
+
 MenuPanel::MenuPanel() {
     nFlags = 0;
     wWidgetCount = 0;

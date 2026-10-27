@@ -224,7 +224,6 @@ private:
     virtual int Draw(int selection);
     /**
      * @ghidraAddress BRD3D: 0x10042af0
-     * @stub
      */
     virtual int ReturnOne();
 
