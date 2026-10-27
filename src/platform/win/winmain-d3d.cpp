@@ -348,12 +348,12 @@ LRESULT CALLBACK MainWindowProc(HWND hWnd, UINT nMessage, WPARAM wParam, LPARAM 
     case WM_RENDERER_IS_READY:
         pRenderer = reinterpret_cast<DirectDrawRenderer *>(GetWindowLongA(hWnd, GWL_USERDATA));
         return pRenderer != nullptr &&
-               (pRenderer->dwRenderStateFlags & RENDERER_STATE_READY) == RENDERER_STATE_READY;
+               (pRenderer->GetRenderStateFlags() & RENDERER_STATE_READY) == RENDERER_STATE_READY;
     case WM_RENDERER_GET:
         return GetWindowLongA(hWnd, GWL_USERDATA);
     case WM_RENDERER_GET_BACK_BUFFER:
         pRenderer = reinterpret_cast<DirectDrawRenderer *>(GetWindowLongA(hWnd, GWL_USERDATA));
-        return pRenderer != nullptr ? reinterpret_cast<LRESULT>(pRenderer->pBackBuffer) : 0;
+        return pRenderer != nullptr ? reinterpret_cast<LRESULT>(pRenderer->GetBackBuffer()) : 0;
     case WM_RENDERER_CREATED:
         return AttachRenderDeviceToWindow(hWnd, lParam);
     case WM_RENDERER_DESTROYING:
@@ -364,13 +364,13 @@ LRESULT CALLBACK MainWindowProc(HWND hWnd, UINT nMessage, WPARAM wParam, LPARAM 
 
 static inline bool IsRendererReady(const DirectDrawRenderer *pRenderer) {
     return pRenderer != nullptr &&
-           (pRenderer->dwRenderStateFlags & RENDERER_STATE_READY) == RENDERER_STATE_READY;
+           (pRenderer->GetRenderStateFlags() & RENDERER_STATE_READY) == RENDERER_STATE_READY;
 }
 
 // Whether a renderer draws the whole screen: ready, in front, and with the screen not given to GDI.
 static inline bool IsRendererFullScreen(const DirectDrawRenderer *pRenderer) {
-    return IsRendererReady(pRenderer) && (pRenderer->dwFlags & 8) != 0 &&
-           pRenderer->nGdiModeRefCount == 0;
+    return IsRendererReady(pRenderer) && (pRenderer->GetFlags() & 8) != 0 &&
+           pRenderer->GetGdiModeRefCount() == 0;
 }
 
 LRESULT HandleWindowActivate(HWND hWnd, WPARAM wParam, LPARAM lParam) {
@@ -403,12 +403,12 @@ LRESULT HandleWindowActivateApp(HWND hWnd, WPARAM wParam, LPARAM lParam) {
         pRenderer = GetWindowRenderer(hWnd);
         if (g_dwAppActive) {
             if (pRenderer != nullptr) {
-                pRenderer->dwFlags |= 8;
+                pRenderer->AddFlags(8);
                 pRenderer->RestoreLostSurfaces();
                 pRenderer->SetPrimarySurfacePalette();
             }
         } else if (pRenderer != nullptr) {
-            pRenderer->dwFlags &= ~8;
+            pRenderer->RemoveFlags(8);
             InvalidateRect(hWnd, nullptr, FALSE);
         }
     }
@@ -479,7 +479,7 @@ LRESULT HandleWindowGetMinMaxInfo(HWND hWnd, WPARAM wParam, LPARAM lParam) {
     RECT rc;
 
     // The window takes the size of the viewport alone while the display mode is set.
-    if (pRenderer == nullptr || (pRenderer->dwRenderStateFlags & 2) == 0 || g_bWindowMinimized) {
+    if (pRenderer == nullptr || (pRenderer->GetRenderStateFlags() & 2) == 0 || g_bWindowMinimized) {
         return DefWindowProcA(hWnd, WM_GETMINMAXINFO, wParam, lParam);
     }
     pRenderer->GetDeviceViewportRect(&rc);
@@ -502,11 +502,11 @@ LRESULT HandleWindowNcPaint(HWND hWnd, WPARAM wParam, LPARAM lParam) {
 LRESULT HandleWindowSetCursor(HWND hWnd, WPARAM wParam, LPARAM lParam) {
     DirectDrawRenderer *pRenderer = GetWindowRenderer(hWnd);
 
-    if (pRenderer == nullptr || (pRenderer->dwRenderStateFlags & 2) == 0) {
+    if (pRenderer == nullptr || (pRenderer->GetRenderStateFlags() & 2) == 0) {
         return DefWindowProcA(hWnd, WM_SETCURSOR, wParam, lParam);
     }
     // The cursor shows only while the screen is given to GDI or the renderer is behind.
-    if (pRenderer->nGdiModeRefCount == 0 && (pRenderer->dwFlags & 8) != 0) {
+    if (pRenderer->GetGdiModeRefCount() == 0 && (pRenderer->GetFlags() & 8) != 0) {
         SetCursor(nullptr);
     } else {
         SetCursor(g_hArrowCursor);
@@ -581,8 +581,8 @@ LRESULT HandleWindowPosChanging(HWND hWnd, WPARAM wParam, LPARAM lParam) {
     unsigned nViewWidth;
     unsigned nViewHeight;
 
-    if (pRenderer != nullptr && (pRenderer->dwRenderStateFlags & 2) != 0 && !g_bWindowMinimized &&
-        pPos != nullptr) {
+    if (pRenderer != nullptr && (pRenderer->GetRenderStateFlags() & 2) != 0 &&
+        !g_bWindowMinimized && pPos != nullptr) {
         if (IsIconic(hWnd)) {
             g_bWindowMinimized = true;
         } else {
@@ -622,9 +622,9 @@ LRESULT AttachRenderDeviceToWindow(HWND hWnd, LPARAM lParam) {
     SetWindowLongA(hWnd, GWL_USERDATA, lParam);
     // Bit 3 of the options marks the renderer of the active window.
     if (GetActiveWindow() == hWnd) {
-        pRenderer->dwFlags |= 8;
+        pRenderer->AddFlags(8);
     } else {
-        pRenderer->dwFlags &= ~8;
+        pRenderer->RemoveFlags(8);
     }
     return 0;
 }

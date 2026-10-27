@@ -544,17 +544,17 @@ IDirectDraw *GetDirectDrawFromD3DDevice(IDirect3DDevice2 *pDevice);
 
 /** The DirectDraw and Direct3D objects of a window. */
 class DirectDrawRenderer {
-public:
-    int anUnknown0[2];                   /* +0x00 */
+private:
+    [[maybe_unused]] int anUnknown0[2];  /* +0x00 */
     D3DMaterial *pMaterial;              /*!< The material of the viewport. */
     int dwDeviceInit;                    /*!< Whether the device has a depth buffer. */
     int dwSize;                          /*!< The size of the renderer. */
     int dwFlags;                         /*!< Options of the renderer. Bit 2 is set by default. */
-    int nUnknown18;                      /* +0x18 */
+    [[maybe_unused]] int nUnknown18;     /* +0x18 */
     int dwRenderStateFlags;              /*!< The objects created, #RENDERER_STATE_READY for all. */
     HWND hWnd;                           /*!< The window drawn into. */
     int nGdiModeRefCount;                /*!< How many times the screen was given to GDI. */
-    int nUnknown28;                      /* +0x28 */
+    [[maybe_unused]] int nUnknown28;     /* +0x28 */
     DirectDrawDriver *pDriver;           /*!< The driver selected. */
     DisplayMode *pMode;                  /*!< The display mode selected. */
     D3DDeviceNode *pDevice;              /*!< The Direct3D device selected. */
@@ -570,9 +570,62 @@ public:
     IDirectDrawSurface *pZBuffer;        /*!< The depth buffer attached to pBackBuffer. */
     IDirect3DDevice2 *pD3DDevice;        /*!< The Direct3D device. */
     IDirect3DViewport2 *pViewport;       /*!< The viewport of pD3DDevice. */
-    int anUnknown68[4];                  /* +0x68 */
+    [[maybe_unused]] int anUnknown68[4]; /* +0x68 */
     RECT rcViewport;                     /*!< The rectangle of the viewport. */
     RenderHost *pHost;                   /*!< The host told when the device changes. */
+
+    void RecordDisplayMode(int nWidth, int nHeight, int nBitDepth);
+    HRESULT CreateDepthBuffer(const D3DDEVICEDESC *pDesc, DWORD dwMemoryCaps, bool *pbAttached);
+
+public:
+    D3DMaterial *GetMaterial() const {
+        return pMaterial;
+    }
+    int GetDeviceInit() const {
+        return dwDeviceInit;
+    }
+    int GetFlags() const {
+        return dwFlags;
+    }
+    void AddFlags(int flags) {
+        dwFlags |= flags;
+    }
+    void RemoveFlags(int flags) {
+        dwFlags &= ~flags;
+    }
+    int GetRenderStateFlags() const {
+        return dwRenderStateFlags;
+    }
+    int GetGdiModeRefCount() const {
+        return nGdiModeRefCount;
+    }
+    DirectDrawDriver *GetDriver() const {
+        return pDriver;
+    }
+    DisplayMode *GetMode() const {
+        return pMode;
+    }
+    D3DDeviceNode *GetDevice() const {
+        return pDevice;
+    }
+    IDirectDraw2 *GetDirectDraw2() const {
+        return pDirectDraw2;
+    }
+    IDirect3D2 *GetDirect3D2() const {
+        return pDirect3D2;
+    }
+    IDirectDrawSurface *GetPrimarySurface() const {
+        return pPrimarySurface;
+    }
+    IDirectDrawSurface *GetBackBuffer() const {
+        return pBackBuffer;
+    }
+    IDirect3DDevice2 *GetD3DDevice() const {
+        return pD3DDevice;
+    }
+    IDirect3DViewport2 *GetViewport() const {
+        return pViewport;
+    }
 
     /**
      * Clear the renderer.
@@ -612,6 +665,7 @@ public:
                              GUID *pDeviceGuid,
                              bool bOption);
 
+private:
     /**
      * Tell the window that the objects are going and release them.
      *
@@ -738,6 +792,7 @@ public:
      */
     HRESULT InitializeViewportAndRenderContext();
 
+public:
     /**
      * Create the material of the background of the viewport.
      *
@@ -780,6 +835,7 @@ public:
     HRESULT
     ChangeDisplayModeAndReinitDirectDraw(GUID *pGuid, D3DDeviceNode *pDevice, DisplayMode *pMode);
 
+private:
     /**
      * Release the Direct3D device, its viewport, and the back and depth buffers, telling the host
      * first.
@@ -797,6 +853,7 @@ public:
      */
     int ReleaseViewportAndMaterial();
 
+public:
     /**
      * Give the renderer the host that draws through it, and give the host the renderer.
      *
@@ -814,6 +871,7 @@ public:
      */
     HRESULT SetPrimarySurfacePalette();
 
+private:
     /**
      * Give the screen to GDI, with its palette, so a menu or a dialog can show.
      *
@@ -830,6 +888,7 @@ public:
      */
     HRESULT RestoreGamePaletteEntries();
 
+public:
     /**
      * Give the screen to GDI or take it back. The screen goes to GDI on the first request and
      * comes back on the last.

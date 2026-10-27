@@ -1713,19 +1713,19 @@ void DrawFillRectangle(int nLeft, int nTop, int nRight, int nBottom) {
                                          static_cast<unsigned>(nTop));
     if (g_dwGbiRenderMode != 0x504340) {
         FlushIndexedRenderBuffer();
-        D3DMaterial *pMaterial = g_pMainRenderWindow->pMaterial;
+        D3DMaterial *pMaterial = g_pMainRenderWindow->GetMaterial();
         pMaterial->SetDiffuseColor(static_cast<float>(red) * (1.0f / 255.0f),
                                    static_cast<float>(green) * (1.0f / 255.0f),
                                    static_cast<float>(blue) * (1.0f / 255.0f));
         pMaterial->SetRampSize(1);
         pMaterial->CommitMaterialIfDirty();
-        g_pMainRenderWindow->pViewport->SetBackground(pMaterial->GetMaterialHandle());
+        g_pMainRenderWindow->GetViewport()->SetBackground(pMaterial->GetMaterialHandle());
         D3DRECT rect;
         rect.x1 = nLeft;
         rect.y1 = nScreenTop;
         rect.x2 = nRight;
         rect.y2 = nScreenBottom;
-        g_pMainRenderWindow->pViewport->Clear(1, &rect, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER);
+        g_pMainRenderWindow->GetViewport()->Clear(1, &rect, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER);
         return;
     }
     g_pfnSubmitVertexToRenderBuffer =

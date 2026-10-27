@@ -271,7 +271,7 @@ unsigned GetAvailableTextureMemory(void) {
     DWORD dwFree;
 
     caps.dwCaps = DDSCAPS_TEXTURE;
-    g_pRenderHost->GetRenderer()->pDirectDraw2->GetAvailableVidMem(&caps, &dwTotal, &dwFree);
+    g_pRenderHost->GetRenderer()->GetDirectDraw2()->GetAvailableVidMem(&caps, &dwTotal, &dwFree);
     return dwFree;
 }
 

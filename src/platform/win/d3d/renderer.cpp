@@ -51,7 +51,7 @@ HRESULT RenderHost::SetRenderer(DirectDrawRenderer *pNewRenderer) {
 
 HRESULT RenderHost::ValidateRenderDeviceState() {
     if (pRenderer == nullptr ||
-        (pRenderer->dwRenderStateFlags & RENDERER_STATE_READY) != RENDERER_STATE_READY) {
+        (pRenderer->GetRenderStateFlags() & RENDERER_STATE_READY) != RENDERER_STATE_READY) {
         return RENDERER_E_NOT_READY;
     }
     return ValidateObjectRenderResources();
@@ -72,9 +72,9 @@ int RenderHost::ReloadTextureSurfacesAfterRestore() {
 
 HRESULT RenderHost::ValidateObjectRenderResources() {
     if (pRenderer == nullptr ||
-        (pRenderer->dwRenderStateFlags & RENDERER_STATE_READY) != RENDERER_STATE_READY ||
-        pRenderer->pDirect3D2 == nullptr || pRenderer->pD3DDevice == nullptr ||
-        pRenderer->pViewport == nullptr) {
+        (pRenderer->GetRenderStateFlags() & RENDERER_STATE_READY) != RENDERER_STATE_READY ||
+        pRenderer->GetDirect3D2() == nullptr || pRenderer->GetD3DDevice() == nullptr ||
+        pRenderer->GetViewport() == nullptr) {
         return E_FAIL;
     }
     return S_OK;
@@ -132,12 +132,12 @@ HRESULT RenderHost::RenderLoadingScreen(DirectDrawRenderer *pWindowRenderer,
     HRESULT hFlip = DD_OK;
 
     if (pWindowRenderer == nullptr ||
-        (pWindowRenderer->dwRenderStateFlags & RENDERER_STATE_READY) != RENDERER_STATE_READY) {
+        (pWindowRenderer->GetRenderStateFlags() & RENDERER_STATE_READY) != RENDERER_STATE_READY) {
         return E_FAIL;
     }
-    pDevice = pWindowRenderer->pD3DDevice;
-    pViewport = pWindowRenderer->pViewport;
-    if (pWindowRenderer->pDirect3D2 == nullptr || pDevice == nullptr || pViewport == nullptr) {
+    pDevice = pWindowRenderer->GetD3DDevice();
+    pViewport = pWindowRenderer->GetViewport();
+    if (pWindowRenderer->GetDirect3D2() == nullptr || pDevice == nullptr || pViewport == nullptr) {
         return E_FAIL;
     }
     // The result is discarded.
@@ -206,8 +206,9 @@ HRESULT RenderHost::RenderLoadingScreen(DirectDrawRenderer *pWindowRenderer,
         if (hResult != D3D_OK) {
             return hResult;
         }
-        hFlip = pWindowRenderer->pPrimarySurface->Flip(pWindowRenderer->pBackBuffer, DDFLIP_WAIT);
-        while (pWindowRenderer->pPrimarySurface->GetFlipStatus(DDGFS_ISFLIPDONE) != DD_OK) {
+        hFlip = pWindowRenderer->GetPrimarySurface()->Flip(pWindowRenderer->GetBackBuffer(),
+                                                           DDFLIP_WAIT);
+        while (pWindowRenderer->GetPrimarySurface()->GetFlipStatus(DDGFS_ISFLIPDONE) != DD_OK) {
         }
     }
     g_LoadingScreenImageState.ReleaseD3DTextureInterfaces();
@@ -576,18 +577,17 @@ HRESULT DirectDrawRenderer::SetCooperativeLevel() {
 #define FALLBACK_MODE_BIT_DEPTH 16
 
 // Record the display mode that was set and the viewport that covers it.
-static inline void
-RecordDisplayMode(DirectDrawRenderer *pRenderer, int nWidth, int nHeight, int nBitDepth) {
-    pRenderer->rcViewport.left = 0;
-    pRenderer->rcViewport.top = 0;
-    pRenderer->rcViewport.right = nWidth;
-    pRenderer->rcViewport.bottom = nHeight;
+void DirectDrawRenderer::RecordDisplayMode(int nWidth, int nHeight, int nBitDepth) {
+    rcViewport.left = 0;
+    rcViewport.top = 0;
+    rcViewport.right = nWidth;
+    rcViewport.bottom = nHeight;
     g_dwConfigFramebufferWidth = nWidth;
     g_dwScreenWidth = nWidth;
     g_dwConfigFramebufferHeight = nHeight;
     g_dwScreenHeight = nHeight;
     g_dwScreenBitDepth = nBitDepth;
-    pRenderer->dwRenderStateFlags |= 2;
+    dwRenderStateFlags |= 2;
 }
 
 HRESULT DirectDrawRenderer::SetDisplayMode() {
@@ -608,7 +608,7 @@ HRESULT DirectDrawRenderer::SetDisplayMode() {
         nRefreshRate,
         nWidth == 320 && nHeight == 200 && nBitDepth == 8 ? DDSDM_STANDARDVGAMODE : 0);
     if (SUCCEEDED(hr)) {
-        RecordDisplayMode(this, nWidth, nHeight, nBitDepth);
+        RecordDisplayMode(nWidth, nHeight, nBitDepth);
         return hr;
     }
     // A mode that is not set falls back to 640 by 480 at its depth, then to its size at 16 bits.
@@ -621,7 +621,7 @@ HRESULT DirectDrawRenderer::SetDisplayMode() {
             HRESULT hrFallback = pDirectDraw2->SetDisplayMode(nWidth, nHeight, nBitDepth, 0, 0);
 
             if (SUCCEEDED(hrFallback)) {
-                RecordDisplayMode(this, nWidth, nHeight, nBitDepth);
+                RecordDisplayMode(nWidth, nHeight, nBitDepth);
                 return hrFallback;
             }
             hr = hrFallback;
@@ -637,7 +637,7 @@ HRESULT DirectDrawRenderer::SetDisplayMode() {
     }
     hr = pDirectDraw2->SetDisplayMode(nWidth, nHeight, nBitDepth, 0, 0);
     if (SUCCEEDED(hr)) {
-        RecordDisplayMode(this, nWidth, nHeight, nBitDepth);
+        RecordDisplayMode(nWidth, nHeight, nBitDepth);
     }
     return hr;
 }
@@ -791,10 +791,9 @@ int DirectDrawRenderer::ReleasePrimaryPalette() {
 }
 
 // Create a depth buffer of the size of the back buffer and attach it. Return whether it was.
-static inline HRESULT CreateDepthBuffer(DirectDrawRenderer *pRenderer,
-                                        const D3DDEVICEDESC *pDesc,
-                                        DWORD dwMemoryCaps,
-                                        bool *pbAttached) {
+HRESULT DirectDrawRenderer::CreateDepthBuffer(const D3DDEVICEDESC *pDesc,
+                                              DWORD dwMemoryCaps,
+                                              bool *pbAttached) {
     DDSURFACEDESC backDesc;
     DDSURFACEDESC depthDesc;
     HRESULT hr;
@@ -802,7 +801,7 @@ static inline HRESULT CreateDepthBuffer(DirectDrawRenderer *pRenderer,
     *pbAttached = false;
     memset(&backDesc, 0, sizeof(backDesc));
     backDesc.dwSize = sizeof(backDesc);
-    hr = pRenderer->pBackBuffer->GetSurfaceDesc(&backDesc);
+    hr = pBackBuffer->GetSurfaceDesc(&backDesc);
     if (FAILED(hr)) {
         return hr;
     }
@@ -814,12 +813,11 @@ static inline HRESULT CreateDepthBuffer(DirectDrawRenderer *pRenderer,
     depthDesc.dwZBufferBitDepth = DDBDToBitDepth(pDesc->dwDeviceZBufferBitDepth);
     depthDesc.ddsCaps.dwCaps = dwMemoryCaps | DDSCAPS_ZBUFFER;
     // A depth buffer that is not created or not attached results in a device without one.
-    if (SUCCEEDED(
-            pRenderer->pDirectDraw2->CreateSurface(&depthDesc, &pRenderer->pZBuffer, nullptr))) {
-        if (FAILED(pRenderer->pBackBuffer->AddAttachedSurface(pRenderer->pZBuffer))) {
-            if (pRenderer->pZBuffer != nullptr) {
-                pRenderer->pZBuffer->Release();
-                pRenderer->pZBuffer = nullptr;
+    if (SUCCEEDED(pDirectDraw2->CreateSurface(&depthDesc, &pZBuffer, nullptr))) {
+        if (FAILED(pBackBuffer->AddAttachedSurface(pZBuffer))) {
+            if (pZBuffer != nullptr) {
+                pZBuffer->Release();
+                pZBuffer = nullptr;
             }
         } else {
             *pbAttached = true;
@@ -854,7 +852,7 @@ HRESULT DirectDrawRenderer::InitializeRenderDevice() {
     }
     dwDeviceInit = 0;
     if ((dwFlags & 4) != 0 && pDesc->dwDeviceZBufferBitDepth != 0) {
-        hr = CreateDepthBuffer(this, pDesc, dwMemoryCaps, &bAttached);
+        hr = CreateDepthBuffer(pDesc, dwMemoryCaps, &bAttached);
         if (FAILED(hr)) {
             return hr;
         }
@@ -948,12 +946,12 @@ int DirectDrawRenderer::ReleaseViewportAndMaterial() {
 
 // Make the material of the renderer black and the background of its viewport.
 static inline void SetBlackBackground(DirectDrawRenderer *pRenderer) {
-    D3DMaterial *pMaterial = pRenderer->pMaterial;
+    D3DMaterial *pMaterial = pRenderer->GetMaterial();
 
     pMaterial->SetDiffuseColor(0.0f, 0.0f, 0.0f);
     pMaterial->SetRampSize(1);
     pMaterial->ApplyDescription();
-    pRenderer->pViewport->SetBackground(pMaterial->GetMaterialHandle());
+    pRenderer->GetViewport()->SetBackground(pMaterial->GetMaterialHandle());
 }
 
 HRESULT DirectDrawRenderer::BeginRenderScene() {
@@ -1166,10 +1164,10 @@ bool ApplySelectedDisplayMode(int nWidth, int nHeight, int nBitDepth, int nExtra
         return false;
     }
     pDriver = FindDisplayDeviceByGuid(&g_GlobalRallyConfig.DisplayDriverGuid);
-    if (pRenderer->pDriver == pDriver || pDriver == nullptr) {
+    if (pRenderer->GetDriver() == pDriver || pDriver == nullptr) {
         return false;
     }
-    pDevice = pRenderer->pDevice;
+    pDevice = pRenderer->GetDevice();
     if (pDevice == nullptr) {
         return false;
     }
@@ -1197,7 +1195,7 @@ void ClearRenderTargetOnce(void) {
     }
     if (g_dwD3DClearZBuffer) {
         D3DRECT rcClear = {{0}, {0}, {g_dwConfigFramebufferWidth}, {g_dwConfigFramebufferHeight}};
-        if (g_pMainRenderWindow->pViewport->Clear(
+        if (g_pMainRenderWindow->GetViewport()->Clear(
                 1, &rcClear, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER) != D3D_OK) {
             return;
         }
@@ -1225,7 +1223,7 @@ void SetDisplayModeWithFallback(int nWidth, int nHeight, int nBitDepth, int nExt
         (nWidth != g_dwScreenWidth || nHeight != g_dwScreenHeight ||
          nBitDepth != g_dwScreenBitDepth || nExtra != g_dwCurrentDisplayModeBpp)) {
         g_pMainRenderWindow->SwitchDisplayModeAndRebuildDevice(nWidth, nHeight, nBitDepth, nExtra);
-        if (!g_pMainRenderWindow->dwDeviceInit) {
+        if (!g_pMainRenderWindow->GetDeviceInit()) {
             g_pMainRenderWindow->SwitchDisplayModeAndRebuildDevice(
                 FALLBACK_MODE_WIDTH, FALLBACK_MODE_HEIGHT, FALLBACK_MODE_BIT_DEPTH, 0);
         }
