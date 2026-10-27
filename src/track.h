@@ -53,7 +53,13 @@ typedef struct TrackSection {
 
 /** A model placed on the track. Its fields join this structure as they are reconstructed. */
 typedef struct {
-    f32 matrix[4][4]; /*!< Where and how the model is placed. */
+    union {
+        f32 matrix[4][4]; /*!< Where and how the model is placed. */
+        struct {
+            Vec3f vector;
+            f32 w;
+        } rows[4];
+    };
     f32 invScale; /*!< One over the length of the x axis of the matrix, the inverse of the scale. */
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
     GbiCommand *displayList; /*!< The display list that draws the model. */
