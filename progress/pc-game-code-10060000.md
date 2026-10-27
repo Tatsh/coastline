@@ -1,6 +1,6 @@
 # PC port game code from 0x10060000 to 0x10070000
 
-73 of 172 routines done.
+74 of 172 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -121,7 +121,7 @@ the same name, for a routine the port retained from the N64 game.
 | `UpdateWaterfallSound`                   |        | ✅ `0x8022ba10` |      1 |     70 | `0x10068210` | `0x10061280` | `undefined UpdateWaterfallSound()`                                                                                                       |
 | `LoadPaintDamageBitmaps`                 |   ✅   |                 |      1 |     70 | `0x10061410` | `0x1005a490` | `void LoadPaintDamageBitmaps(void)`                                                                                                      |
 | `GetCarPaintBitmap`                      |        |                 |      4 |     63 | `0x10060f70` | `0x10059fe0` | `undefined GetCarPaintBitmap()`                                                                                                          |
-| `ClearPerFrameVariables`                 |        | ✅ `0x80225f30` |      1 |     62 | `0x100633e0` | `0x1005c450` | `undefined ClearPerFrameVariables()`                                                                                                     |
+| `ClearPerFrameVariables`                 |   ✅   | ✅ `0x80225f30` |      1 |     62 | `0x100633e0` | `0x1005c450` | `void ClearPerFrameVariables(void)`                                                                                                      |
 | `ReinitPlayerEngineSoundChannel`         |   ✅   |                 |      1 |     62 | `0x10068260` | `0x100612d0` | `void ReinitPlayerEngineSoundChannel(int nPlayer, int nIndex)`                                                                           |
 | `DeserializeSaveData`                    |        | ✅ `0x8022ae70` |      2 |     60 | `0x10067900` | `0x10060970` | `undefined DeserializeSaveData()`                                                                                                        |
 | `RacerSlot::UpdateRemoteVehicleFrame`    |        |                 |      1 |     58 | `0x10069330` | `0x100623a0` | `undefined UpdateRemoteVehicleFrame(RacerSlot * this)`                                                                                   |

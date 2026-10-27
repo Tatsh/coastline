@@ -1,6 +1,6 @@
 # PC port game code from 0x10050000 to 0x10060000
 
-40 of 88 routines done.
+41 of 88 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -93,7 +93,7 @@ the same name, for a routine the port retained from the N64 game.
 | `PollKeyboardState`                       |   ✅   |                 |      1 |     23 | `0x1005ffb0` | `0x10059020` | `void PollKeyboardState(void)`                                                                                                                  |
 | `GlideDisplayModeNode::Init`              |        |                 |      1 |     19 |              | `0x10058c70` | `undefined Init(GlideDisplayModeNode * this)`                                                                                                   |
 | `ReleaseMenuSurfacesAndFail`              |   ✅   |                 |      2 |     18 | `0x1005f580` | `0x10058360` | `bool ReleaseMenuSurfacesAndFail(HWND hWnd)`                                                                                                    |
-| `MenuFont::~MenuFont`                     |        |                 |      5 |      7 | `0x1005b0c0` | `0x10053ee0` | `void ~MenuFont(MenuFont * this)`                                                                                                               |
+| `MenuFont::~MenuFont`                     |   ✅   |                 |      5 |      7 | `0x1005b0c0` | `0x10053ee0` | `void ~MenuFont(MenuFont * this)`                                                                                                               |
 | `SaveFileList::~SaveFileList`             |   ✅   |                 |      1 |      7 | `0x1005cc10` | `0x10055a30` | `void ~SaveFileList(SaveFileList * this)`                                                                                                       |
 | `MenuFont::DrawGlyphNoOp`                 |        |                 |      0 |      5 | `0x1005b7e0` | `0x10054600` | `undefined DrawGlyphNoOp(MenuFont * this, undefined4 param_1, undefined4 param_2, undefined4 param_3)`                                          |
 | `ReturnZero`                              |        |                 |      4 |      3 |              | `0x10053e60` | `undefined ReturnZero()`                                                                                                                        |
