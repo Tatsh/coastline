@@ -182,12 +182,6 @@ int g_adwKeyPrevDown[KEYBOARD_KEY_COUNT];
 int g_dwInputPollCounter;
 
 /**
- * Whether to display the speedometer.
- * @ghidraAddress BRD3D: 0x100bd3f4
- */
-int g_bHudShowSpeedometer = 1;
-
-/**
  * Whether to display network standings.
  * @ghidraAddress BRD3D: 0x100bd3fc
  */

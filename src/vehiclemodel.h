@@ -8,6 +8,13 @@
 /** The wheels of a vehicle. */
 #define VEHICLE_WHEELS 4
 
+/** How a car shows the revolutions of its engine. */
+enum {
+    TACHOMETER_NEEDLE,
+    TACHOMETER_BAR_DIMMED,
+    TACHOMETER_BAR_HIDDEN,
+};
+
 /* The detail of the model of a car. */
 #define VEHICLE_LODS 3           /*!< The levels of detail of the model, the nearest first. */
 #define VEHICLE_DISPLAY_LISTS 10 /*!< The display lists of each level of detail. */
@@ -57,7 +64,26 @@ typedef struct VehicleModel {
     f32 boxCenterZ;
     s8 gearCount;
     s8 driveMode;
-    u8 abUnknownDa[0x7f26]; /* +0xda */
+    u8 abUnknownDa; /* +0xda */
+    u8 tachometer;
+    u8 abUnknownDc[8]; /* +0xdc */
+    s8 dashboardWidth;
+    s8 dashboardHeight;
+    s8 gearX;
+    s8 gearY;
+    s8 gearWidth;
+    s8 gearHeight;
+    union {
+        s8 needleX;
+        s8 barSegments;
+    };
+    s8 needleY;
+    f32 needleFullAngle;
+    f32 needleRestAngle;
+    u8 abUnknownF4[8]; /* +0xf4 */
+    s32 gearImageBytes;
+    u8 abUnknown100[0x400]; /* +0x100 */
+    u8 dashboardImages[0x7b00];
 #endif
     u32 triangleCount; /*!< The triangles of the model, counted into the statistics of the frame. */
 #if TGR_PLATFORM == TGR_PLATFORM_WIN

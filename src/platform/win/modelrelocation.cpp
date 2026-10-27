@@ -102,7 +102,7 @@ void ByteSwapAndRelocateCarModel(VehicleModel *model) {
             }
         }
     }
-    ClearDamageTextureLevels();
+    ClearDamageTextureEntries();
     ConvertCarDisplayLists(model->displayLists);
     SwapModelValue(model->unreconstructed90);
     /* The original relocates the following field without swapping it. */

@@ -49,14 +49,6 @@
  */
 extern u8 g_abPlayerColorsRgb[][3];
 
-/** How a car shows the revolutions of its engine. */
-enum {
-    TACHOMETER_NEEDLE,     /*!< A needle over the dashboard. */
-    TACHOMETER_BAR_DIMMED, /*!< A bar of palette colors whose segments past the revolutions dim. */
-    TACHOMETER_BAR_HIDDEN, /*!< A bar of palette colors whose segments past the revolutions
-                                disappear. */
-};
-
 /** A car the players can choose. Its fields join this structure as they are reconstructed. */
 typedef struct {
     const char *name;                /*!< The name of the car, in capitals. */

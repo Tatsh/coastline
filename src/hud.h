@@ -19,6 +19,7 @@
 /** The colors of a palette of the dashboard. */
 #define DASHBOARD_PALETTE_COLORS 256
 
+#if TGR_PLATFORM == TGR_PLATFORM_N64
 /**
  * The car and the night flag of the dashboard each view has loaded, the car in the low byte.
  *
@@ -72,7 +73,9 @@ extern u16 g_aawDashboardPalettes[DASHBOARD_VIEWS][DASHBOARD_PALETTE_COLORS];
  * @ghidraAddress JPN: 0x80362aa0
  */
 extern u16 g_awDashboardBarPalette[DASHBOARD_PALETTE_COLORS];
+#endif
 
+#if TGR_PLATFORM == TGR_PLATFORM_N64
 /**
  * The needle of each view, for each frame buffer so a frame does not change one being drawn.
  *
@@ -81,6 +84,7 @@ extern u16 g_awDashboardBarPalette[DASHBOARD_PALETTE_COLORS];
  * @ghidraAddress JPN: 0x80362ca0
  */
 extern Vtx g_aGaugeNeedleVerts[2][DASHBOARD_VIEWS][4];
+#endif
 
 /**
  * The text of the speed.
@@ -91,6 +95,25 @@ extern Vtx g_aGaugeNeedleVerts[2][DASHBOARD_VIEWS][4];
  */
 extern char g_szHudSpeedTextBuf[16];
 
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#ifdef __cplusplus
+extern "C" {
+#endif
+/**
+ * Whether to display the dashboard and speedometer.
+ * @ghidraAddress BRD3D: 0x100bd3f4
+ */
+extern s32 g_bHudShowSpeedometer;
+/**
+ * Draw the current viewport's dashboard, gear, and tachometer.
+ * @param viewports The records of the views.
+ * @ghidraAddress BRD3D: 0x10016b40
+ */
+void RenderDashboardGauges(const ViewportRect *viewports);
+#ifdef __cplusplus
+}
+#endif
+#else
 /**
  * Draw the dashboard of the active vehicle: its face, its gear and its tachometer.
  *
@@ -99,6 +122,7 @@ extern char g_szHudSpeedTextBuf[16];
  * @ghidraAddress JPN: 0x80238990
  */
 void RenderDashboardGauges(void);
+#endif
 
 /**
  * Does nothing.

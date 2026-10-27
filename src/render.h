@@ -122,7 +122,8 @@ typedef struct {
     s32 height;       /*!< The height, in screen pixels. */
     s32 vehicleIndex; /*!< The vehicle of the player the view follows. */
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
-    u8 abUnknown14[0x44];
+    s32 dashboardTextureEntries[16];
+    s32 dashboardGearTextureEntry;
 #endif
 } ViewportRect;
 
