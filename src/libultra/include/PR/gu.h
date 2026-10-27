@@ -178,6 +178,7 @@ void guTranslate(Mtx *m, float x, float y, float z);
  * @ghidraAddress USA: 0x80260bc0
  * @ghidraAddress EUR: 0x80262050
  * @ghidraAddress JPN: 0x80261b00
+ * @ghidraAddress BRD3D: 0x10030ee0
  */
 void guRotateF(float mf[4][4], float a, float x, float y, float z);
 

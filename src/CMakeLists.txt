@@ -106,7 +106,7 @@ else()
                           vehiclechoice.c visgrid.c
                           libultra/gu/lookat.c libultra/gu/lookatref.c libultra/gu/mtxcatf.c
                           libultra/gu/mtxutil.c libultra/gu/scale.c libultra/gu/translate.c
-                          libultra/gu/perspective.c libultra/io/controller.c)
+                          libultra/gu/perspective.c libultra/gu/rotate.c libultra/io/controller.c)
   target_link_libraries(coastline_game PRIVATE coastline_common)
   list(APPEND COASTLINE_LIBRARIES coastline_game)
 
