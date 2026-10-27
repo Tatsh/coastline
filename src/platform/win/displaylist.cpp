@@ -1050,7 +1050,7 @@ static inline float TransformGbiVertexComponent(const Vec3f &position, int nColu
            g_GbiMvpMatrix[3][nColumn];
 }
 
-enum class LightTransformMode { Standard, EnvModulated, NoZBuffer, TexGen };
+enum class LightTransformMode { Standard, EnvModulated, NoZBuffer, TexGen, TexGenLinear };
 
 static float
 TransformGbiLightDirectionRow(const float row[4], float x, float y, float z, int nLast) {
@@ -1082,24 +1082,36 @@ static void UpdateGbiDirectionalLight(LightTransformMode mode = LightTransformMo
         float x = light.dir[0];
         float y = light.dir[1];
         float z = light.dir[2];
+        if (mode == LightTransformMode::TexGenLinear) {
+            // This handler multiplies the second matrix column by the light's z byte.
+            y = light.dir[2];
+            z = light.dir[1];
+        }
         g_GbiLight0Direction.x = TransformGbiLightDirectionRow(
-            matrix[0], x, y, z, mode == LightTransformMode::Standard ? 0 : 1);
-        g_GbiLight0Direction.y =
-            TransformGbiLightDirectionRow(matrix[1],
-                                          x,
-                                          y,
-                                          z,
-                                          mode == LightTransformMode::TexGen    ? 0 :
-                                          mode == LightTransformMode::NoZBuffer ? 1 :
-                                                                                  2);
+            matrix[0],
+            x,
+            y,
+            z,
+            mode == LightTransformMode::Standard || mode == LightTransformMode::TexGenLinear ? 0 :
+                                                                                               1);
+        g_GbiLight0Direction.y = TransformGbiLightDirectionRow(
+            matrix[1],
+            x,
+            y,
+            z,
+            mode == LightTransformMode::TexGen || mode == LightTransformMode::TexGenLinear ? 0 :
+            mode == LightTransformMode::NoZBuffer                                          ? 1 :
+                                                                                             2);
         g_GbiLight0Direction.z = TransformGbiLightDirectionRow(
             matrix[2],
             x,
             y,
             z,
-            mode == LightTransformMode::EnvModulated || mode == LightTransformMode::TexGen ? 1 :
-            mode == LightTransformMode::NoZBuffer                                          ? 0 :
-                                                                                             2);
+            mode == LightTransformMode::EnvModulated || mode == LightTransformMode::TexGen ||
+                    mode == LightTransformMode::TexGenLinear ?
+                1 :
+            mode == LightTransformMode::NoZBuffer ? 0 :
+                                                    2);
         Vec3fNormalize(&g_GbiLight0Direction);
         const Light_t &ambient = g_aGbiLights[1].l;
         g_fGbiAmbientColorR = static_cast<float>(ambient.col[0]) * (1.0f / 255.0f);
@@ -1113,9 +1125,10 @@ static inline GbiCommand *LoadGbiVertices(GbiCommand *pCommand,
                                           bool bUseZBuffer,
                                           bool bLighting,
                                           bool bEnvModulated = false,
-                                          bool bTexGen = false) {
+                                          int nTexGen = 0) {
     if (bLighting) {
-        UpdateGbiDirectionalLight(bTexGen       ? LightTransformMode::TexGen :
+        UpdateGbiDirectionalLight(nTexGen == 2  ? LightTransformMode::TexGenLinear :
+                                  nTexGen == 1  ? LightTransformMode::TexGen :
                                   bEnvModulated ? LightTransformMode::EnvModulated :
                                   bUseZBuffer   ? LightTransformMode::Standard :
                                                   LightTransformMode::NoZBuffer);
@@ -1133,11 +1146,13 @@ static inline GbiCommand *LoadGbiVertices(GbiCommand *pCommand,
         vertex.source.fW = TransformGbiVertexComponent(input.position, 3);
         vertex.source.fS = input.texture.x;
         vertex.source.fT = input.texture.y;
-        if (bTexGen) {
+        if (nTexGen == 2) {
+            GenerateGbiVertexTextureCoordinatesLinear(&input, &vertex.source);
+        } else if (nTexGen == 1) {
             GenerateGbiVertexTextureCoordinates(&input, &vertex.source);
         }
         if (bLighting) {
-            ShadeGbiVertex(&input, &vertex.source, bTexGen);
+            ShadeGbiVertex(&input, &vertex.source, nTexGen == 1);
         } else {
             vertex.source.fRed = static_cast<long double>(input.normal.x) * (1.0f / 255.0f);
             vertex.source.fGreen = static_cast<long double>(input.normal.y) * (1.0f / 255.0f);
@@ -1253,7 +1268,11 @@ GbiCommand *HandleGbiVertexLitNoZBuffer(GbiCommand *pCommand) {
 }
 
 GbiCommand *HandleGbiVertexTexGen(GbiCommand *pCommand) {
-    return LoadGbiVertices(pCommand, true, true, false, true);
+    return LoadGbiVertices(pCommand, true, true, false, 1);
+}
+
+GbiCommand *HandleGbiVertexTexGenLinear(GbiCommand *pCommand) {
+    return LoadGbiVertices(pCommand, true, true, false, 2);
 }
 
 // The scale from a channel of the colour of a vertex to a byte.
