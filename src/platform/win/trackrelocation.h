@@ -1,6 +1,10 @@
 #pragma once
 
+#include "platform/win/fileio.h"
 #include "track.h"
+
+/** @ghidraAddress BRD3D: 0x10038510 */
+void ReadAndRelocateTrackHeader(TrackHeader *track, GameFile *file);
 
 /**
  * @ghidraAddress BRD3D: 0x10037990

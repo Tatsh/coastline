@@ -184,7 +184,8 @@ typedef struct {
     u16 *gridCellStarts;    /*!< Where the list of each cell starts in gridTriangles, by cell. */
     f32 minX;               /*!< The least x of the track. */
     f32 maxX;               /*!< The greatest x of the track. */
-    u8 unreconstructed30[0x38 - 0x30]; /*!< Not yet reconstructed. */
+    f32 minY;
+    f32 maxY;
     f32 minZ;            /*!< The least z of the track, where lightning strikes from. */
     f32 maxZ;            /*!< The greatest z of the track. */
     Vec3f startPosition; /*!< The point the vehicles of the starting grid are placed from. */
@@ -194,17 +195,17 @@ typedef struct {
 #else
     Gfx *skyDisplayList; /*!< The display list of the sky, or NULL for a sky of the fog colour. */
 #endif
-    u8 unreconstructed54[0x5C - 0x54]; /*!< Not yet reconstructed. */
-    const char **instanceNames;        /*!< The names of the placed models, by index, or NULL. */
-    TrackInstance *instances;          /*!< The placed models. */
-    s32 instanceCount;                 /*!< The number of placed models. */
+    u8 *reservedSkyData[2];     /* +0x54 */
+    const char **instanceNames; /*!< The names of the placed models, by index, or NULL. */
+    TrackInstance *instances;   /*!< The placed models. */
+    s32 instanceCount;          /*!< The number of placed models. */
     u16 *gridInstances; /*!< The placed models of each cell of the 64 by 64 grid, cell by cell. */
     u16 *gridInstanceStarts;   /*!< Where the list of each cell starts in gridInstances, by cell. */
     TrackSection *rootSection; /*!< The section at the start line, whose first point gives the
                                     distance of a lap. */
-    u8 unreconstructed74[0x78 - 0x74]; /*!< Not yet reconstructed. */
-    TrackSection **sections;           /*!< Every section, for a search. */
-    s32 sectionCount;                  /*!< The number of sections. */
+    u8 *reservedRouteData;     /* +0x74 */
+    TrackSection **sections;   /*!< Every section, for a search. */
+    s32 sectionCount;          /*!< The number of sections. */
     u8 fogColor[3]; /*!< The colour of the fog of the track, red, green, and blue from 0 to 255. */
     u8 unreconstructed83[0x84 - 0x83]; /*!< Not yet reconstructed. */
     Vec3f *cameraPoints;  /*!< The points the trackside camera of a replay may stand at. */
