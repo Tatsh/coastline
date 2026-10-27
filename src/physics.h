@@ -100,14 +100,21 @@ extern s32 g_dwCollisionContactType;
  */
 extern TrackTriangle *g_pCollisionTriangle;
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 /**
  * Whether the triangles of the cache are collected from the last.
  *
  * @ghidraAddress USA: 0x802a4a30
  * @ghidraAddress EUR: 0x802a71f0
  * @ghidraAddress JPN: 0x802a6c90
+ * @ghidraAddress BRD3D: 0x117554e8
  */
 extern s32 g_bTrackCollisionFrameToggle;
+#ifdef __cplusplus
+}
+#endif
 
 /**
  * The grip of the tyres on each surface in each weather, the load below which they hold, and the
@@ -548,6 +555,9 @@ s32 IsTriangleInUnitCube(Vec3f triangle[3], Vec3f *normal);
 }
 #endif
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 /**
  * List the triangles of the cache under a body that cross its box.
  *
@@ -557,8 +567,12 @@ s32 IsTriangleInUnitCube(Vec3f triangle[3], Vec3f *normal);
  * @ghidraAddress USA: 0x8025d060
  * @ghidraAddress EUR: 0x8025e644
  * @ghidraAddress JPN: 0x8025dfd4
+ * @ghidraAddress BRD3D: 0x1006db20
  */
 s32 CollectTrianglesInBox(RigidBody *body, f32 box[4][4]);
+#ifdef __cplusplus
+}
+#endif
 
 /**
  * An empty collision of a body with the track.

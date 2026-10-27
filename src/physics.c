@@ -8,6 +8,7 @@
 #include "physicsimpact.h"
 #include "timing.h"
 #include "track.h"
+#include "trianglebox.h"
 #include "vehicle.h"
 #include "weather.h"
 
@@ -391,53 +392,6 @@ void PrintCollisionTriangleCount(void) {
         }
         osSyncPrintf("----%d-------------------------------\n", count);
     }
-}
-
-/* Move a triangle into the unit cube of a box, and find its normal there. */
-static inline void TriangleInBox(Vec3f corners[3], Vec3f *normal, f32 box[4][4], TrackTriangle *t) {
-    Vec3f e1, e2;
-
-    Mtx4x4TransformPoint(&corners[0], box, t->vertices[0]);
-    Mtx4x4TransformPoint(&corners[1], box, t->vertices[1]);
-    Mtx4x4TransformPoint(&corners[2], box, t->vertices[2]);
-    e1.x = corners[1].x - corners[0].x;
-    e1.y = corners[1].y - corners[0].y;
-    e1.z = corners[1].z - corners[0].z;
-    e2.x = corners[2].x - corners[0].x;
-    e2.y = corners[2].y - corners[0].y;
-    e2.z = corners[2].z - corners[0].z;
-    normal->x = e1.y * e2.z - e2.y * e1.z;
-    normal->y = e1.z * e2.x - e2.z * e1.x;
-    normal->z = e1.x * e2.y - e2.x * e1.y;
-}
-
-s32 CollectTrianglesInBox(RigidBody *body, f32 box[4][4]) {
-    TrackTriangle *triangles;
-    Vec3f corners[3], normal;
-    s32 slot, count, i;
-    s32 found = 0;
-
-    slot = BuildTrackTriangleCache(body->orientation[3][0], body->orientation[3][1]);
-    count = g_awTriCacheTriCount[slot];
-    triangles = g_aTriCacheTriangles[slot];
-    if (g_bTrackCollisionFrameToggle) {
-        for (i = count - 1; i >= 0; i--) {
-            TriangleInBox(corners, &normal, box, &triangles[i]);
-            if (IsTriangleInUnitCube(corners, &normal)) {
-                PushCollisionTriangle(&triangles[i]);
-                found++;
-            }
-        }
-    } else {
-        for (i = 0; i < count; i++) {
-            TriangleInBox(corners, &normal, box, &triangles[i]);
-            if (IsTriangleInUnitCube(corners, &normal)) {
-                PushCollisionTriangle(&triangles[i]);
-                found++;
-            }
-        }
-    }
-    return found;
 }
 
 s32 UnusedTrackCollisionStub(void *body) {

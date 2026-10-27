@@ -3,6 +3,40 @@
 #include "physics.h"
 #include "rigidbody.h"
 #include "track.h"
+#include "trianglebox.h"
+
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+s32 g_bTrackCollisionFrameToggle;
+#endif
+
+s32 CollectTrianglesInBox(RigidBody *body, f32 box[4][4]) {
+    TrackTriangle *triangles;
+    Vec3f corners[3], normal;
+    s32 slot, count, i;
+    s32 found = 0;
+
+    slot = BuildTrackTriangleCache(body->orientation[3][0], body->orientation[3][1]);
+    count = g_awTriCacheTriCount[slot];
+    triangles = g_aTriCacheTriangles[slot];
+    if (g_bTrackCollisionFrameToggle) {
+        for (i = count - 1; i >= 0; i--) {
+            TriangleInBox(corners, &normal, box, &triangles[i]);
+            if (IsTriangleInUnitCube(corners, &normal)) {
+                PushCollisionTriangle(&triangles[i]);
+                found++;
+            }
+        }
+    } else {
+        for (i = 0; i < count; i++) {
+            TriangleInBox(corners, &normal, box, &triangles[i]);
+            if (IsTriangleInUnitCube(corners, &normal)) {
+                PushCollisionTriangle(&triangles[i]);
+                found++;
+            }
+        }
+    }
+    return found;
+}
 
 #define GRID_SECTOR(x, y) ((s32)(y) / 32 * 64 + (s32)(x) / 32)
 
