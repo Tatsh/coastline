@@ -1156,7 +1156,9 @@ struct TextureEntry {
     int nAspectRatio;        /*!< The aspect ratio, as CalculateTextureDimensions() reads it. */
     char abUnknown28[0x254]; /* +0x28 */
     int nDamageLevel;        /*!< The level of damage, from 0 to 3. */
-    char abUnknown280[0x38]; /* +0x280 */
+    char abUnknown280[0x30]; /* +0x280 */
+    float fTextureScaleS;
+    float fTextureScaleT;
 };
 
 /**
@@ -1224,6 +1226,11 @@ extern unsigned g_dwTextureEntryCount;
  * @ghidraAddress BRD3D: 0x1057543c
  */
 extern TextureEntry *g_pTextureEntries;
+
+/**
+ * @ghidraAddress BRD3D: 0x10024b60
+ */
+unsigned AllocateTextureEntry(void);
 
 /**
  * The textures of Direct3D by identifier.

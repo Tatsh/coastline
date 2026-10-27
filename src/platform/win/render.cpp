@@ -470,6 +470,14 @@ void CreateGlobalEffectTextures(void) {
 }
 
 #if TGR_RENDERER == TGR_RENDERER_D3D
+unsigned DuplicateTextureEntryHalfScale(unsigned nTexture) {
+    unsigned nDuplicate = AllocateTextureEntry();
+    g_pTextureEntries[nDuplicate] = g_pTextureEntries[nTexture];
+    g_pTextureEntries[nDuplicate].fTextureScaleS *= 0.5f;
+    g_pTextureEntries[nDuplicate].fTextureScaleT *= 0.5f;
+    return nDuplicate;
+}
+
 void LoadHudOverlayTexture(void) {
     g_dwHudOverlayTextureId = g_pfnCreateTextureFromN64ImageAutoLoadSize(
         g_abHudOverlayTextureData, nullptr, 64, 64, 1, 4, 0, 0, 1, 1, 15, 15, 1, 0);
