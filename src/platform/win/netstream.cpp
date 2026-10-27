@@ -447,9 +447,9 @@ void DeserializeVehicleState(KeyframeState *pState, NetStream *pStream) {
         ConvertCharToScaledFloat(static_cast<signed char>(pStream->BitStreamReadBits(5) << 3));
     pState->angularVelocity.z =
         ConvertCharToScaledFloat(static_cast<signed char>(pStream->BitStreamReadBits(5) << 3));
-    pState->fSteering =
+    pState->fBodyRollAngle =
         ConvertCharToScaledFloat(static_cast<signed char>(pStream->BitStreamReadBits(4) << 4));
-    pState->fWheelOffset =
+    pState->fSteerAngle =
         SignedByteToFloat(static_cast<unsigned char>(pStream->BitStreamReadBits(4) << 2));
     pState->afWheelAngle[0] =
         ByteToFloat(static_cast<unsigned char>(pStream->BitStreamReadBits(4) << 4));
