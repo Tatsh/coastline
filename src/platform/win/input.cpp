@@ -25,28 +25,349 @@
 #include "playerinput.h"
 #include "vehicle.h"
 
-IDirectInputA *g_pDirectInput;
-int g_dwDirectInputRefCount;
 MouseDevice *g_pMouseDevice;
+
+namespace {
+
+/**
+ * DirectInput.
+ *
+ * @ghidraAddress BRD3D: 0x118abd70
+ * @ghidraAddress BRGlide: 0x118eee88
+ */
+IDirectInputA *g_pDirectInput;
+
+/**
+ * The users of DirectInput. The last ShutdownDirectInput() releases it.
+ *
+ * @ghidraAddress BRD3D: 0x118abde8
+ * @ghidraAddress BRGlide: 0x118eef00
+ */
+int g_dwDirectInputRefCount;
+
+/**
+ * The DirectInput device of the keyboard.
+ *
+ * @ghidraAddress BRD3D: 0x118abdd0
+ * @ghidraAddress BRGlide: 0x118eeee8
+ */
 IDirectInputDeviceA *g_pKeyboardDevice;
+
+/**
+ * The users of the keyboard device.
+ *
+ * @ghidraAddress BRD3D: 0x118abdd8
+ * @ghidraAddress BRGlide: 0x118eeef0
+ */
 int g_dwKeyboardDeviceRefCount;
+
+/**
+ * The DirectInput device of the game controller.
+ *
+ * @ghidraAddress BRD3D: 0x118abdd4
+ * @ghidraAddress BRGlide: 0x118eeeec
+ */
 IDirectInputDevice2A *g_pJoystickDevice;
+
+/**
+ * The users of the game controller device.
+ *
+ * @ghidraAddress BRD3D: 0x118abe00
+ * @ghidraAddress BRGlide: 0x118eef18
+ */
 int g_dwJoystickDeviceRefCount;
+
+/**
+ * The jolt effect of force feedback of the game controller.
+ *
+ * @ghidraAddress BRD3D: 0x118abdfc
+ * @ghidraAddress BRGlide: 0x118eef14
+ */
 IDirectInputEffect *g_pJoltEffect;
+
+/**
+ * The condition effect of force feedback of the game controller.
+ *
+ * @ghidraAddress BRD3D: 0x118abdec
+ * @ghidraAddress BRGlide: 0x118eef04
+ */
 IDirectInputEffect *g_pConditionEffect;
 
+/**
+ * The two states of the keyboard, the current one and the one before.
+ *
+ * @ghidraAddress BRD3D: 0x118ab8b8
+ * @ghidraAddress BRGlide: 0x118ee9d0
+ */
 unsigned char g_aabKeyboardStateBuffers[2][KEYBOARD_KEY_COUNT];
+
+/**
+ * The entry of g_aabKeyboardStateBuffers that is current.
+ *
+ * @ghidraAddress BRD3D: 0x118abad8
+ * @ghidraAddress BRGlide: 0x118eebf0
+ */
 int g_dwKeyboardStateCurIndex;
+
+/**
+ * The entry of g_aabKeyboardStateBuffers from before.
+ *
+ * @ghidraAddress BRD3D: 0x118ab8b4
+ * @ghidraAddress BRGlide: 0x118ee9cc
+ */
 int g_dwKeyboardStatePrevIndex;
+
+/**
+ * The two states of the game controller, the current one and the one before.
+ *
+ * @ghidraAddress BRD3D: 0x118abae0
+ * @ghidraAddress BRGlide: 0x118eebf8
+ */
 DIJOYSTATE2 g_aJoystickStateBuffers[2];
+
+/**
+ * The entry of g_aJoystickStateBuffers that is current.
+ *
+ * @ghidraAddress BRD3D: 0x118abab8
+ * @ghidraAddress BRGlide: 0x118eebd0
+ */
 int g_dwJoystickStateCurIndex;
+
+/**
+ * The entry of g_aJoystickStateBuffers from before.
+ *
+ * @ghidraAddress BRD3D: 0x118abd7c
+ * @ghidraAddress BRGlide: 0x118eee94
+ */
 int g_dwJoystickStatePrevIndex;
+
+/**
+ * The two states of the mouse, the current one and the one before.
+ *
+ * @ghidraAddress BRD3D: 0x118abd38
+ * @ghidraAddress BRGlide: 0x118eee50
+ */
 MouseInputState g_aMouseStateBuffers[2];
+
+/**
+ * The entry of g_aMouseStateBuffers that is current.
+ *
+ * @ghidraAddress BRD3D: 0x118abd80
+ * @ghidraAddress BRGlide: 0x118eee98
+ */
 int g_dwMouseStateCurIndex;
+
+/**
+ * The entry of g_aMouseStateBuffers from before.
+ *
+ * @ghidraAddress BRD3D: 0x118abad4
+ * @ghidraAddress BRGlide: 0x118eebec
+ */
 int g_dwMouseStatePrevIndex;
+
+/**
+ * Whether each key was down when the keyboard was read before.
+ *
+ * @ghidraAddress BRD3D: 0x10aa2e88
+ * @ghidraAddress BRGlide: 0x10ac61e8
+ */
+int g_adwKeyPrevDown[KEYBOARD_KEY_COUNT];
+
+/**
+ * Input poll count, saturated at 32767.
+ * @ghidraAddress BRD3D: 0x118abddc
+ */
+int g_dwInputPollCounter;
+
+/**
+ * Whether to display the lap counter.
+ * @ghidraAddress BRD3D: 0x100bd3e8
+ */
+int g_bHudShowLapCounter = 1;
+
+/**
+ * Whether to display the race timer.
+ * @ghidraAddress BRD3D: 0x100bd3ec
+ */
+int g_bHudShowRaceTimer = 1;
+
+/**
+ * Whether to display lap times.
+ * @ghidraAddress BRD3D: 0x100bd3f0
+ */
+int g_bHudShowLapTimes = 1;
+
+/**
+ * Whether to display the speedometer.
+ * @ghidraAddress BRD3D: 0x100bd3f4
+ */
+int g_bHudShowSpeedometer = 1;
+
+/**
+ * Whether to display race position.
+ * @ghidraAddress BRD3D: 0x100bd3f8
+ */
+int g_bHudShowPosition = 1;
+
+/**
+ * Whether to display network standings.
+ * @ghidraAddress BRD3D: 0x100bd3fc
+ */
+int g_bHudShowNetworkStandings = 1;
+
+/**
+ * Whether to display the frame rate.
+ * @ghidraAddress BRD3D: 0x10b501d8
+ */
+int g_bShowFpsCounter;
+
+/**
+ * Whether to hide network standings through the P key toggle.
+ * @ghidraAddress BRD3D: 0x118abdc8
+ */
+int g_bHideNetStandingsHud;
+
+/**
+ * Initial timestamp for benchmark frame rate measurement, in milliseconds.
+ * @ghidraAddress BRD3D: 0x118abd00
+ */
+DWORD g_dwBenchmarkStartTime;
+
+/**
+ * Initial interpolated frame count for benchmark measurement.
+ * @ghidraAddress BRD3D: 0x118abd74
+ */
+int g_dwBenchmarkStartFrameCount;
+
+/**
+ * Whether each button of the mouse was down when the mouse was read before.
+ *
+ * @ghidraAddress BRD3D: 0x10aa3388
+ * @ghidraAddress BRGlide: 0x10ac66e8
+ */
+int g_adwMouseButtonPrev[MOUSE_BUTTON_COUNT];
+
+/**
+ * The width of the screen the cursor of the mouse moves in. Its name is not recovered yet.
+ *
+ * @ghidraAddress BRD3D: 0x10aa33b8
+ * @ghidraAddress BRGlide: 0x10ac6718
+ */
+int g_dwEntityHalfWidth;
+
+/**
+ * The height of the screen the cursor of the mouse moves in. Its name is not recovered yet.
+ *
+ * @ghidraAddress BRD3D: 0x10aa33b4
+ * @ghidraAddress BRGlide: 0x10ac6714
+ */
+int g_dwEntityHalfHeight;
+
+/**
+ * The state of the menus the mouse and the arrows of the keyboard move.
+ *
+ * @ghidraAddress BRD3D: 0x10aa3398
+ * @ghidraAddress BRGlide: 0x10ac66f8
+ */
+MouseMenuState g_MouseMenuState;
+
+/**
+ * The condition effect of force feedback, a spring on X and Y.
+ *
+ * @ghidraAddress BRD3D: 0x118ab880
+ * @ghidraAddress BRGlide: 0x118ee998
+ */
+DIEFFECT g_DiConditionEffect;
+
+/**
+ * The springs of X and Y of g_DiConditionEffect.
+ *
+ * @ghidraAddress BRD3D: 0x118abd08
+ * @ghidraAddress BRGlide: 0x118eee20
+ */
+DICONDITION g_aDiConditionParams[2];
+
+/**
+ * The direction of g_DiConditionEffect.
+ *
+ * @ghidraAddress BRD3D: 0x118abdf0
+ * @ghidraAddress BRGlide: 0x118eef08
+ */
+LONG g_alConditionEffectDirection[2];
+
+/**
+ * The strength of the spring of X once the condition effect exists.
+ *
+ * @ghidraAddress BRD3D: 0x118abd78
+ * @ghidraAddress BRGlide: 0x118eee90
+ */
+int g_dwForceFeedbackMagnitude;
+
+/**
+ * Whether the condition effect does not play. Set once the effect is created.
+ *
+ * @ghidraAddress BRD3D: 0x118abdf8
+ * @ghidraAddress BRGlide: 0x118eef10
+ */
+int g_bForceFeedbackForceStopped;
+
+/**
+ * The jolt effect of force feedback, a square wave.
+ *
+ * @ghidraAddress BRD3D: 0x118abd88
+ * @ghidraAddress BRGlide: 0x118eeea0
+ */
+DIEFFECT g_DiJoltEffect;
+
+/**
+ * The square wave of g_DiJoltEffect.
+ *
+ * @ghidraAddress BRD3D: 0x118abac0
+ * @ghidraAddress BRGlide: 0x118eebd8
+ */
+DIPERIODIC g_DiJoltPeriodic;
+
+/**
+ * The duration of the jolt in microseconds, 125000.
+ *
+ * @ghidraAddress BRD3D: 0x100bd438
+ * @ghidraAddress BRGlide: 0x100bcc40
+ */
+DWORD g_dwForceFeedbackDuration = 125000;
+
+/**
+ * Gain used in spring ramp calculations, in ten-thousandths.
+ *
+ * @ghidraAddress BRD3D: 0x100bd424
+ */
+int g_dwForceFeedbackGain = 10000;
+
+/**
+ * Lower bound of the spring ramp before gain scaling.
+ *
+ * @ghidraAddress BRD3D: 0x100bd428
+ */
+int g_dwForceFeedbackMagnitudeMax = 2000;
+
+/**
+ * Upper bound of the spring ramp before gain scaling.
+ *
+ * @ghidraAddress BRD3D: 0x100bd42c
+ */
+int g_dwForceFeedbackConstantForce = 10000;
+
+/**
+ * The time of the console the game emulates, in ticks of its CPU counter.
+ *
+ * @ghidraAddress BRD3D: 0x118abde0
+ * @ghidraAddress BRGlide: 0x118eeef8
+ */
+u64 g_qwEmulatedOsTime;
+
+} // namespace
+
 unsigned char g_abKeyboardState[KEYBOARD_KEY_COUNT];
 int g_adwKeyPressedEdge[KEYBOARD_KEY_COUNT];
-int g_adwKeyPrevDown[KEYBOARD_KEY_COUNT];
 
 static inline bool IsButtonPressedEdge(unsigned char previous, unsigned char current) {
     return !(previous & 0x80) && (current & 0x80);
@@ -162,21 +483,10 @@ unsigned char IsInputBindingPressed(int nBinding) {
     return result;
 }
 
-int g_dwInputPollCounter;
 unsigned g_dwInputButtonMask;
-int g_bHudShowLapCounter = 1;
-int g_bHudShowRaceTimer = 1;
-int g_bHudShowLapTimes = 1;
-int g_bHudShowSpeedometer = 1;
-int g_bHudShowPosition = 1;
-int g_bHudShowNetworkStandings = 1;
-int g_bShowFpsCounter;
-int g_bHideNetStandingsHud;
 int g_bRespawnRequested;
 int g_bNetReadyToStartSent;
 int g_bNetGamePaused;
-DWORD g_dwBenchmarkStartTime;
-int g_dwBenchmarkStartFrameCount;
 int g_anMouseAxisRanges[8] = {803, 618, 475, 366, 281, 216, 166, 128};
 
 static inline void ClampMouseAxis(LONG &axis, LONG &accumulated, int range) {
@@ -199,7 +509,8 @@ static inline void ReadMouseBindingState(void) {
         return;
     }
     DIMOUSESTATE mouse;
-    const HRESULT result = g_pMouseDevice->GetDirectInputDevice()->GetDeviceState(sizeof(mouse), &mouse);
+    const HRESULT result =
+        g_pMouseDevice->GetDirectInputDevice()->GetDeviceState(sizeof(mouse), &mouse);
     if (result != DI_OK) {
         if (result == DIERR_INPUTLOST) {
             g_pMouseDevice->GetDirectInputDevice()->Acquire();
@@ -441,12 +752,8 @@ unsigned ReadInputDevicesButtonMask(int *pnSteering, int *pnAcceleration) {
 // The entries of the edges of the keys ClearKeyboardStateBuffers() clears.
 #define KEY_EDGE_CLEAR_COUNT 64
 
-int g_adwMouseButtonPrev[MOUSE_BUTTON_COUNT];
 int g_adwMouseButtonRaw[MOUSE_BUTTON_COUNT];
 int g_adwMouseButtonPressed[MOUSE_BUTTON_COUNT];
-int g_dwEntityHalfWidth;
-int g_dwEntityHalfHeight;
-MouseMenuState g_MouseMenuState;
 int g_fCharInputSuppressed;
 short g_dwMouseScrollDirection = 1;
 unsigned short g_wMenuHoverIndex;
@@ -936,8 +1243,6 @@ HRESULT SetJoystickAxisRange(IDirectInputDevice2A *pDevice,
 }
 
 int g_bForceFeedbackAvailable;
-DIEFFECT g_DiConditionEffect;
-DICONDITION g_aDiConditionParams[2];
 
 void SetForceFeedbackMagnitude(LONG lMagnitude) {
     g_aDiConditionParams[0].lPositiveCoefficient = lMagnitude;
@@ -947,16 +1252,7 @@ void SetForceFeedbackMagnitude(LONG lMagnitude) {
     }
 }
 
-LONG g_alConditionEffectDirection[2];
-int g_dwForceFeedbackMagnitude;
-int g_bForceFeedbackForceStopped;
-DIEFFECT g_DiJoltEffect;
-DIPERIODIC g_DiJoltPeriodic;
-DWORD g_dwForceFeedbackDuration = 125000;
 LONG g_adwForceFeedbackDirection[2] = {-1, 0};
-int g_dwForceFeedbackGain = 10000;
-int g_dwForceFeedbackMagnitudeMax = 2000;
-int g_dwForceFeedbackConstantForce = 10000;
 
 // The durations of the effects of force feedback, in microseconds.
 #define FORCE_FEEDBACK_LONG_DURATION 250000
@@ -1036,8 +1332,6 @@ void SetForceFeedbackShortDuration(void) {
         g_dwForceFeedbackDuration = FORCE_FEEDBACK_SHORT_DURATION;
     }
 }
-
-u64 g_qwEmulatedOsTime;
 
 // The ticks of the CPU counter of the console in a frame of 1/30 of a second.
 #define OS_TICKS_PER_FRAME (46875000 / 30)

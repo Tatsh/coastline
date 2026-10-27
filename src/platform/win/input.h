@@ -115,14 +115,6 @@ struct MouseMenuState {
 };
 
 /**
- * The state of the menus the mouse and the arrows of the keyboard move.
- *
- * @ghidraAddress BRD3D: 0x10aa3398
- * @ghidraAddress BRGlide: 0x10ac66f8
- */
-extern MouseMenuState g_MouseMenuState;
-
-/**
  * Whether the input of characters is held back, which stops the poll of the mouse.
  *
  * @ghidraAddress BRD3D: 0x10aa2844
@@ -237,76 +229,12 @@ HRESULT SetJoystickAxisRange(IDirectInputDevice2A *pDevice,
                              LONG lMax);
 
 /**
- * DirectInput.
- *
- * @ghidraAddress BRD3D: 0x118abd70
- * @ghidraAddress BRGlide: 0x118eee88
- */
-extern IDirectInputA *g_pDirectInput;
-
-/**
- * The users of DirectInput. The last ShutdownDirectInput() releases it.
- *
- * @ghidraAddress BRD3D: 0x118abde8
- * @ghidraAddress BRGlide: 0x118eef00
- */
-extern int g_dwDirectInputRefCount;
-
-/**
  * The mouse, created with DirectInput.
  *
  * @ghidraAddress BRD3D: 0x10aa2e80
  * @ghidraAddress BRGlide: 0x10ac61e0
  */
 extern MouseDevice *g_pMouseDevice;
-
-/**
- * The DirectInput device of the keyboard.
- *
- * @ghidraAddress BRD3D: 0x118abdd0
- * @ghidraAddress BRGlide: 0x118eeee8
- */
-extern IDirectInputDeviceA *g_pKeyboardDevice;
-
-/**
- * The users of the keyboard device.
- *
- * @ghidraAddress BRD3D: 0x118abdd8
- * @ghidraAddress BRGlide: 0x118eeef0
- */
-extern int g_dwKeyboardDeviceRefCount;
-
-/**
- * The DirectInput device of the game controller.
- *
- * @ghidraAddress BRD3D: 0x118abdd4
- * @ghidraAddress BRGlide: 0x118eeeec
- */
-extern IDirectInputDevice2A *g_pJoystickDevice;
-
-/**
- * The users of the game controller device.
- *
- * @ghidraAddress BRD3D: 0x118abe00
- * @ghidraAddress BRGlide: 0x118eef18
- */
-extern int g_dwJoystickDeviceRefCount;
-
-/**
- * The jolt effect of force feedback of the game controller.
- *
- * @ghidraAddress BRD3D: 0x118abdfc
- * @ghidraAddress BRGlide: 0x118eef14
- */
-extern IDirectInputEffect *g_pJoltEffect;
-
-/**
- * The condition effect of force feedback of the game controller.
- *
- * @ghidraAddress BRD3D: 0x118abdec
- * @ghidraAddress BRGlide: 0x118eef04
- */
-extern IDirectInputEffect *g_pConditionEffect;
 
 /** The number of controls a binding table has. */
 #define INPUT_BINDING_COUNT 28
@@ -411,64 +339,10 @@ unsigned char IsInputBindingPressed(int nBinding);
 unsigned char IsInputBindingHeld(int nBinding);
 
 /**
- * Input poll count, saturated at 32767.
- * @ghidraAddress BRD3D: 0x118abddc
- */
-extern int g_dwInputPollCounter;
-
-/**
  * Most recent race or replay action mask.
  * @ghidraAddress BRD3D: 0x118abad0
  */
 extern unsigned g_dwInputButtonMask;
-
-/**
- * Whether to display the lap counter.
- * @ghidraAddress BRD3D: 0x100bd3e8
- */
-extern int g_bHudShowLapCounter;
-
-/**
- * Whether to display the race timer.
- * @ghidraAddress BRD3D: 0x100bd3ec
- */
-extern int g_bHudShowRaceTimer;
-
-/**
- * Whether to display lap times.
- * @ghidraAddress BRD3D: 0x100bd3f0
- */
-extern int g_bHudShowLapTimes;
-
-/**
- * Whether to display the speedometer.
- * @ghidraAddress BRD3D: 0x100bd3f4
- */
-extern int g_bHudShowSpeedometer;
-
-/**
- * Whether to display race position.
- * @ghidraAddress BRD3D: 0x100bd3f8
- */
-extern int g_bHudShowPosition;
-
-/**
- * Whether to display network standings.
- * @ghidraAddress BRD3D: 0x100bd3fc
- */
-extern int g_bHudShowNetworkStandings;
-
-/**
- * Whether to display the frame rate.
- * @ghidraAddress BRD3D: 0x10b501d8
- */
-extern int g_bShowFpsCounter;
-
-/**
- * Whether to hide network standings through the P key toggle.
- * @ghidraAddress BRD3D: 0x118abdc8
- */
-extern int g_bHideNetStandingsHud;
 
 /**
  * Whether the respawn binding was pressed.
@@ -489,94 +363,10 @@ extern int g_bNetReadyToStartSent;
 extern int g_bNetGamePaused;
 
 /**
- * Initial timestamp for benchmark frame rate measurement, in milliseconds.
- * @ghidraAddress BRD3D: 0x118abd00
- */
-extern DWORD g_dwBenchmarkStartTime;
-
-/**
- * Initial interpolated frame count for benchmark measurement.
- * @ghidraAddress BRD3D: 0x118abd74
- */
-extern int g_dwBenchmarkStartFrameCount;
-
-/**
  * Movement ranges for the eight mouse sensitivity settings.
  * @ghidraAddress BRD3D: 0x100bd400
  */
 extern int g_anMouseAxisRanges[8];
-
-/**
- * The two states of the keyboard, the current one and the one before.
- *
- * @ghidraAddress BRD3D: 0x118ab8b8
- * @ghidraAddress BRGlide: 0x118ee9d0
- */
-extern unsigned char g_aabKeyboardStateBuffers[2][KEYBOARD_KEY_COUNT];
-
-/**
- * The entry of g_aabKeyboardStateBuffers that is current.
- *
- * @ghidraAddress BRD3D: 0x118abad8
- * @ghidraAddress BRGlide: 0x118eebf0
- */
-extern int g_dwKeyboardStateCurIndex;
-
-/**
- * The entry of g_aabKeyboardStateBuffers from before.
- *
- * @ghidraAddress BRD3D: 0x118ab8b4
- * @ghidraAddress BRGlide: 0x118ee9cc
- */
-extern int g_dwKeyboardStatePrevIndex;
-
-/**
- * The two states of the game controller, the current one and the one before.
- *
- * @ghidraAddress BRD3D: 0x118abae0
- * @ghidraAddress BRGlide: 0x118eebf8
- */
-extern DIJOYSTATE2 g_aJoystickStateBuffers[2];
-
-/**
- * The entry of g_aJoystickStateBuffers that is current.
- *
- * @ghidraAddress BRD3D: 0x118abab8
- * @ghidraAddress BRGlide: 0x118eebd0
- */
-extern int g_dwJoystickStateCurIndex;
-
-/**
- * The entry of g_aJoystickStateBuffers from before.
- *
- * @ghidraAddress BRD3D: 0x118abd7c
- * @ghidraAddress BRGlide: 0x118eee94
- */
-extern int g_dwJoystickStatePrevIndex;
-
-/**
- * The two states of the mouse, the current one and the one before.
- *
- * @ghidraAddress BRD3D: 0x118abd38
- * @ghidraAddress BRGlide: 0x118eee50
- */
-extern MouseInputState g_aMouseStateBuffers[2];
-
-/**
- * The entry of g_aMouseStateBuffers that is current.
- *
- * @ghidraAddress BRD3D: 0x118abd80
- * @ghidraAddress BRGlide: 0x118eee98
- */
-extern int g_dwMouseStateCurIndex;
-
-/**
- * The entry of g_aMouseStateBuffers from before.
- *
- * @ghidraAddress BRD3D: 0x118abad4
- * @ghidraAddress BRGlide: 0x118eebec
- */
-extern int g_dwMouseStatePrevIndex;
 
 /**
  * The keys of the keyboard the game read last, as DirectInput reports them.
@@ -594,24 +384,8 @@ extern unsigned char g_abKeyboardState[KEYBOARD_KEY_COUNT];
  */
 extern int g_adwKeyPressedEdge[KEYBOARD_KEY_COUNT];
 
-/**
- * Whether each key was down when the keyboard was read before.
- *
- * @ghidraAddress BRD3D: 0x10aa2e88
- * @ghidraAddress BRGlide: 0x10ac61e8
- */
-extern int g_adwKeyPrevDown[KEYBOARD_KEY_COUNT];
-
 /** The number of buttons of the mouse the game reads. */
 #define MOUSE_BUTTON_COUNT 4
-
-/**
- * Whether each button of the mouse was down when the mouse was read before.
- *
- * @ghidraAddress BRD3D: 0x10aa3388
- * @ghidraAddress BRGlide: 0x10ac66e8
- */
-extern int g_adwMouseButtonPrev[MOUSE_BUTTON_COUNT];
 
 /**
  * Whether each button of the mouse is down.
@@ -628,22 +402,6 @@ extern int g_adwMouseButtonRaw[MOUSE_BUTTON_COUNT];
  * @ghidraAddress BRGlide: 0x10ac6730
  */
 extern int g_adwMouseButtonPressed[MOUSE_BUTTON_COUNT];
-
-/**
- * The width of the screen the cursor of the mouse moves in. Its name is not recovered yet.
- *
- * @ghidraAddress BRD3D: 0x10aa33b8
- * @ghidraAddress BRGlide: 0x10ac6718
- */
-extern int g_dwEntityHalfWidth;
-
-/**
- * The height of the screen the cursor of the mouse moves in. Its name is not recovered yet.
- *
- * @ghidraAddress BRD3D: 0x10aa33b4
- * @ghidraAddress BRGlide: 0x10ac6714
- */
-extern int g_dwEntityHalfHeight;
 
 /**
  * Find the buttons of the mouse that went down since the mouse was read before.
@@ -809,22 +567,6 @@ void UpdateKeyboardEdgeState(void);
 extern int g_bForceFeedbackAvailable;
 
 /**
- * The condition effect of force feedback, a spring on X and Y.
- *
- * @ghidraAddress BRD3D: 0x118ab880
- * @ghidraAddress BRGlide: 0x118ee998
- */
-extern DIEFFECT g_DiConditionEffect;
-
-/**
- * The springs of X and Y of g_DiConditionEffect.
- *
- * @ghidraAddress BRD3D: 0x118abd08
- * @ghidraAddress BRGlide: 0x118eee20
- */
-extern DICONDITION g_aDiConditionParams[2];
-
-/**
  * Set both coefficients of the first spring of g_DiConditionEffect, and give the effect its new
  * parameters when it exists.
  *
@@ -835,81 +577,12 @@ extern DICONDITION g_aDiConditionParams[2];
 void SetForceFeedbackMagnitude(LONG lMagnitude);
 
 /**
- * The direction of g_DiConditionEffect.
- *
- * @ghidraAddress BRD3D: 0x118abdf0
- * @ghidraAddress BRGlide: 0x118eef08
- */
-extern LONG g_alConditionEffectDirection[2];
-
-/**
- * The strength of the spring of X once the condition effect exists.
- *
- * @ghidraAddress BRD3D: 0x118abd78
- * @ghidraAddress BRGlide: 0x118eee90
- */
-extern int g_dwForceFeedbackMagnitude;
-
-/**
- * Whether the condition effect does not play. Set once the effect is created.
- *
- * @ghidraAddress BRD3D: 0x118abdf8
- * @ghidraAddress BRGlide: 0x118eef10
- */
-extern int g_bForceFeedbackForceStopped;
-
-/**
- * The jolt effect of force feedback, a square wave.
- *
- * @ghidraAddress BRD3D: 0x118abd88
- * @ghidraAddress BRGlide: 0x118eeea0
- */
-extern DIEFFECT g_DiJoltEffect;
-
-/**
- * The square wave of g_DiJoltEffect.
- *
- * @ghidraAddress BRD3D: 0x118abac0
- * @ghidraAddress BRGlide: 0x118eebd8
- */
-extern DIPERIODIC g_DiJoltPeriodic;
-
-/**
- * The duration of the jolt in microseconds, 125000.
- *
- * @ghidraAddress BRD3D: 0x100bd438
- * @ghidraAddress BRGlide: 0x100bcc40
- */
-extern DWORD g_dwForceFeedbackDuration;
-
-/**
  * The direction of the jolt, along the negative X axis.
  *
  * @ghidraAddress BRD3D: 0x100bd430
  * @ghidraAddress BRGlide: 0x100bcc38
  */
 extern LONG g_adwForceFeedbackDirection[2];
-
-/**
- * Gain used in spring ramp calculations, in ten-thousandths.
- *
- * @ghidraAddress BRD3D: 0x100bd424
- */
-extern int g_dwForceFeedbackGain;
-
-/**
- * Lower bound of the spring ramp before gain scaling.
- *
- * @ghidraAddress BRD3D: 0x100bd428
- */
-extern int g_dwForceFeedbackMagnitudeMax;
-
-/**
- * Upper bound of the spring ramp before gain scaling.
- *
- * @ghidraAddress BRD3D: 0x100bd42c
- */
-extern int g_dwForceFeedbackConstantForce;
 
 /**
  * Start or stop the spring and ramp its coefficient towards the scaled force bounds.
