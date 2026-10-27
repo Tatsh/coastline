@@ -336,6 +336,7 @@ extern RacePhaseStep g_aRacePhaseTable[RACE_PHASES];
  * @ghidraAddress USA: 0x8028b300
  * @ghidraAddress EUR: 0x8028d5b0
  * @ghidraAddress JPN: 0x8028cfe0
+ * @ghidraAddress BRD3D: 0x118ab470
  */
 extern s32 g_dwRaceFinishOrderCounter;
 

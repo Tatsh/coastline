@@ -17,6 +17,7 @@
 #include "wheelframe.h"
 
 #define VEHICLE_GHOST 2
+#define VEHICLE_LAP_TIMES 12
 
 /** Recovered fields of a Windows vehicle. */
 typedef struct Vehicle {
@@ -95,14 +96,18 @@ typedef struct Vehicle {
     s32 lap;
     s32 distanceLaps;
     f32 lapTime;
-    u8 abUnknownFb4[0x30]; /* +0xfb4 */
+    f32 lapTimes[VEHICLE_LAP_TIMES];
     f32 bestLapTime;
     s32 bestLap;
     f32 totalTime;
     f32 timeLeft;
     f32 distance;
     s32 racePosition;
-    u8 abUnknownFfc[0x24]; /* +0xffc */
+    const char *message;
+    f32 messageTime;
+    const char *subMessage;
+    f32 subMessageTime;
+    char messageText[20];
     s32 groundHits;
     Vec3f placedVelocity;
     f32 speedKph;
@@ -161,7 +166,8 @@ typedef struct Vehicle {
     s16 dentJitter;
     u8 abUnknown29da[0xd6]; /* +0x29da */
     Vec3f previousCollisionPosition;
-    u8 abUnknown2abc[0xac]; /* +0x2abc */
+    char checkpointMessageText[20];
+    u8 abUnknown2ad0[0x98]; /* +0x2ad0 */
 #ifdef __cplusplus
     /** @ghidraAddress BRD3D: 0x10063840 */
     void ApplyPlayerVehicleInput(void);

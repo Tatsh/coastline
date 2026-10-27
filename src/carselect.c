@@ -12,6 +12,7 @@
 #include "game.h"
 #include "heap.h"
 #include "input.h"
+#include "laptime.h"
 #include "mainmenu.h"
 #include "options.h"
 #include "paintshop.h"
@@ -295,13 +296,6 @@ void RenderCameraView(Model *model,
     if (IsVehicleModelLoaded(load)) {
         SetVehicleModelSlot(g_pActiveCameraVehicle, slot);
     }
-}
-
-void FormatLapTime(char *out, f32 seconds) {
-    s32 hundredths = (s32)(seconds * 100.0f);
-    s32 whole = hundredths / 100;
-
-    sprintf(out, "%d'%02d\"%02d", whole / 60, whole - whole / 60 * 60, hundredths - whole * 100);
 }
 
 /** Play a sound of the screen on a free channel. */

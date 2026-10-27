@@ -73,7 +73,6 @@ typedef struct RacerSlot {
      * Count crossed gates and laps and update race records.
      *
      * @ghidraAddress BRD3D: 0x10066e90
-     * @stub
      */
     void UpdateRaceProgress(void);
 #endif

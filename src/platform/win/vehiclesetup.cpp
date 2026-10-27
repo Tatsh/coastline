@@ -1,6 +1,7 @@
 #include <PR/gu.h>
 
 #include "boot/rallyconfig.h"
+#include "boot/strings.h"
 #include "camera.h"
 #include "directplay.h"
 #include "driving.h"
@@ -8,6 +9,7 @@
 #include "ghost.h"
 #include "input.h"
 #include "instantreplay.h"
+#include "raceprogress.h"
 #include "racermotion.h"
 #include "racers.h"
 #include "racersharing.h"
@@ -41,8 +43,16 @@ void RacerSlot::UpdateRacerSlotMotion(void) {
     ::UpdateRacerSlotMotion(this);
 }
 
-void UpdateRaceProgress(RacerSlot *slot) {
-    slot->UpdateRaceProgress();
+void RacerSlot::UpdateRaceProgress(void) {
+    ::UpdateRaceProgress(this);
+}
+
+const char *GetRaceProgressMessage(s32 id) {
+    return GetStringResource(id);
+}
+
+const char *GetNetworkRaceFinishMessage(void) {
+    return g_szEmptyUiString;
 }
 
 s32 IsNetworkRacerMotionDisabled(RacerSlot *slot) {

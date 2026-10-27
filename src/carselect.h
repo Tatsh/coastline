@@ -1,6 +1,8 @@
 #ifndef COASTLINE_CARSELECT_H
 #define COASTLINE_CARSELECT_H
 
+#include "laptime.h"
+
 /**
  * @file
  * The car selection screen, which also shows the results of a race and of a season, and the views
@@ -490,17 +492,6 @@ void RenderCameraView(Model *model,
                       s32 secondSlot,
                       f32 spread,
                       f32 angle);
-
-/**
- * Write a time as minutes, seconds and hundredths.
- *
- * @param out The buffer to write to.
- * @param seconds The time, in seconds.
- * @ghidraAddress USA: 0x8020cf44
- * @ghidraAddress EUR: 0x8020cd24
- * @ghidraAddress JPN: 0x8020c91c
- */
-void FormatLapTime(char *out, f32 seconds);
 
 /**
  * Run one frame of the car selection screen, or of the results when g_dwIsReviewMode is set.
