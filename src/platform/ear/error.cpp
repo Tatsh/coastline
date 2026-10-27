@@ -6,7 +6,6 @@
 #include "window.h"
 
 std::uint32_t g_bShowEarErrors;
-HWND g_hEarNotifyWindow;
 const char *const g_earErrorMessages[47] = {
     "No Error",
     "EAR was passed an incorrect validation number",
