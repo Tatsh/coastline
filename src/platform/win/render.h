@@ -72,9 +72,6 @@ extern void (*g_pfnInitializeTextureSubsystem)(void);
  */
 extern void (*g_pfnRenderBackendShutdown)(void);
 
-/** @ghidraAddress BRD3D: 0x10b501d0 */
-extern void (*g_pfnRenderBackendSubmitDisplayList)(GbiCommand *pDisplayList);
-
 /**
  * Release the texture subsystem, if one is set.
  *
@@ -884,14 +881,6 @@ extern int g_dwMaxTexHeightLowQuality;
  * @ghidraAddress BRD3D: 0x1002a5a0
  */
 void SelectTextureQualityFromVideoMemory(void);
-/**
- * @ghidraAddress BRD3D: 0x100a60e0
- */
-extern int g_adwHudFont1GlyphOffsets[26];
-/**
- * @ghidraAddress BRD3D: 0x100a61c0
- */
-extern int g_adwHudFont3GlyphOffsets[26];
 /**
  * @ghidraAddress BRD3D: 0x1009b4c8
  */

@@ -1,4 +1,4 @@
-#include <ultra64.h>
+#include <PR/gu.h>
 
 /* The fixed-point form has 16 fractional bits. */
 #define FTOFIX32(x) (s32)((x) * (float)0x00010000)
