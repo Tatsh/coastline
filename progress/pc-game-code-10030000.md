@@ -1,6 +1,6 @@
 # PC port game code from 0x10030000 to 0x10040000
 
-89 of 307 routines done.
+90 of 307 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -190,7 +190,7 @@ the same name, for a routine the port retained from the N64 game.
 | `guScaleF`                                        |        | ✅ `0x80260800` |      4 |     70 | `0x100310f0` | `0x1002a7a0` | `undefined guScaleF()`                                                                                                                                                  |
 | `SelectConfiguredDisplayMode`                     |   ✅   |                 |      1 |     69 | `0x1003e2c0` |              | `void SelectConfiguredDisplayMode(void)`                                                                                                                                |
 | `SendNetworkMessage3`                             |   ✅   |                 |      1 |     69 | `0x1003d9f0` | `0x10037090` | `HRESULT SendNetworkMessage3(DirectPlayInfo * pInfo)`                                                                                                                   |
-| `ResetSeasonSaveBuffers`                          |        |                 |      2 |     68 | `0x1003e1d0` | `0x10037870` | `undefined ResetSeasonSaveBuffers()`                                                                                                                                    |
+| `ResetSeasonSaveBuffers`                          |   ✅   |                 |      2 |     68 | `0x1003e1d0` | `0x10037870` | `int ResetSeasonSaveBuffers(void)`                                                                                                                                      |
 | `FreeServiceProviderConnectionData`               |   ✅   |                 |      1 |     68 | `0x1003cfe0` | `0x10036670` | `void FreeServiceProviderConnectionData(void)`                                                                                                                          |
 | `SnapshotParticleState`                           |        |                 |      1 |     67 | `0x1003a610` | `0x10033c90` | `undefined SnapshotParticleState()`                                                                                                                                     |
 | `SendNetworkMessage6`                             |   ✅   |                 |      1 |     67 | `0x1003da90` | `0x10037130` | `HRESULT SendNetworkMessage6(DirectPlayInfo * pInfo, uint dpidPlayer)`                                                                                                  |

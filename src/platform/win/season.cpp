@@ -1,5 +1,7 @@
 #include "platform/win/season.h"
 
+#include <cstring>
+
 #include "game.h"
 #include "platform/win/boot/rallyconfig.h"
 #include "platform/win/frontend.h"
@@ -18,9 +20,24 @@ Season g_SeasonTable[SEASONS] = {
 };
 
 PlayerProfile g_SeasonProgress;
+PlayerProfile g_aSeasonSaveBuffers[2];
+PlayerProfile *g_pPrimarySeasonSave;
+PlayerProfile *g_pSecondarySeasonSave;
 int g_dwSeasonYear;
 int g_dwSeasonRound;
 int g_bSeasonClass;
+
+int ResetSeasonSaveBuffers(void) {
+    if (!g_pPrimarySeasonSave) {
+        g_pPrimarySeasonSave = &g_aSeasonSaveBuffers[0];
+    }
+    memset(g_pPrimarySeasonSave, 0, sizeof(*g_pPrimarySeasonSave));
+    if (!g_pSecondarySeasonSave) {
+        g_pSecondarySeasonSave = &g_aSeasonSaveBuffers[1];
+    }
+    memset(g_pSecondarySeasonSave, 0, sizeof(*g_pSecondarySeasonSave));
+    return 1;
+}
 
 void SyncSeasonProgress(void) {
     g_SeasonProgress.transmission = g_dwTransmissionType;

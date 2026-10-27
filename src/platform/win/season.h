@@ -6,11 +6,35 @@
  * and their saving and restoring.
  */
 
+#include "profile.h"
+
 /** The size of g_szSeasonRoundLabel. */
 #define SEASON_ROUND_LABEL_SIZE 32
 
 /** The value of g_SeasonResumeState that starts a season again at its first round. */
 #define SEASON_RESUME_STATE_RESTART 5
+
+/**
+ * The profile used to save progress for the first player.
+ *
+ * @ghidraAddress BRD3D: 0x10aced34
+ */
+extern PlayerProfile *g_pPrimarySeasonSave;
+
+/**
+ * The profile used to save progress for the second player.
+ *
+ * @ghidraAddress BRD3D: 0x10ad189c
+ */
+extern PlayerProfile *g_pSecondarySeasonSave;
+
+/**
+ * Clear both players' save profiles, using static buffers for unassigned profiles.
+ *
+ * @return Always 1.
+ * @ghidraAddress BRD3D: 0x1003e1d0
+ */
+int ResetSeasonSaveBuffers(void);
 
 /**
  * How the season resumes as the menus show. Its values are not recovered past

@@ -76,6 +76,7 @@ extern PlayerProfile *g_pActiveProfile;
  * @ghidraAddress USA: 0x80324300
  * @ghidraAddress EUR: 0x80326840
  * @ghidraAddress JPN: 0x80325470
+ * @ghidraAddress BRD3D: 0x10af9890
  */
 extern PlayerProfile g_aSeasonSaveBuffers[2];
 
