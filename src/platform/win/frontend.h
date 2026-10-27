@@ -435,6 +435,12 @@ int CarSetupUI_UpdateSteeringIndicatorPos(MenuWidget *pWidget);
 int AudioOptionsUI_UpdateVolumeChannelImage(MenuWidget *pWidget);
 
 /**
+ * @ghidraAddress BRD3D: 0x1003ea40
+ * @ghidraAddress BRGlide: 0x10038060
+ */
+int AudioOptionsUI_UpdateVolumeLevelIndicatorPos(MenuWidget *pWidget);
+
+/**
  * @ghidraAddress BRD3D: 0x1003eae0
  * @ghidraAddress BRGlide: 0x10038220
  */

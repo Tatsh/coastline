@@ -1120,6 +1120,14 @@ int AudioOptionsUI_UpdateVolumeChannelImage(MenuWidget *pWidget) {
     return 1;
 }
 
+int AudioOptionsUI_UpdateVolumeLevelIndicatorPos(MenuWidget *pWidget) {
+    unsigned volume = g_bAudioOptionsSfxSelected ? g_GlobalRallyConfig.dwSfxVolume :
+                                                   g_GlobalRallyConfig.dwMusicVolume;
+    int position = static_cast<int>(volume * 8u + 74u);
+    pWidget->fX = static_cast<float>(position);
+    return 1;
+}
+
 static inline void UpdateMenuListSelection(MenuWidget *pWidget, int &selection) {
     MenuItemList *list = &pWidget->itemList;
     int result = list->pVTable->PollSelection(list, selection);
