@@ -232,6 +232,7 @@ disasm
 discl
 displaylist
 displaylistops
+displaymodelist
 divdi
 divremi
 dlabel
@@ -684,6 +685,7 @@ pirawread
 pjrwd
 placedvel
 playbacklifetime
+playbacksmoothing
 playercontrol
 playerinput
 playerlost
