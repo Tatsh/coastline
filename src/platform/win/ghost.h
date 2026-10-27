@@ -78,7 +78,7 @@ struct GhostRecordingInfo {
     u8 car;                  /*!< The recorded car. */
     u8 unreconstructed02[5]; /*!< The remaining recorded race settings. */
     s8 weather;              /*!< The recorded weather option. */
-    u8 unreconstructed08[8]; /*!< The remaining recorded race settings. */
+    u32 reserved[2];         /*!< Zero for a new recording, or all bits set after a failed load. */
 };
 
 /**

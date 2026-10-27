@@ -18,7 +18,9 @@
 #include "options.h"
 #include "physics.h"
 #include "racemenu.h"
+#include "racephases.h"
 #include "racerender.h"
+#include "racespecials.h"
 #include "render.h"
 #include "replay.h"
 #include "rumble.h"
@@ -86,8 +88,6 @@ static void LeaveRace(void) {
         SetFadeTarget(0.0f, FADE_SECONDS);
     }
 }
-
-#include "racephaseadvance.h"
 
 void LoadAndPlayTrackBgm(void) {
     ResetMusicPlaybackState();
@@ -258,8 +258,6 @@ static void SetupRaceVehicles(void) {
         break;
     }
 }
-
-#include "racespecialinit.h"
 
 /* Set the race up, the first frame of its screen. */
 static void InitRace(void) {
@@ -487,115 +485,6 @@ static void CheckInstantReplayEnd(void) {
         LeaveRace();
     }
 }
-
-#include "racehold.h"
-
-/* Keep a time attack's recording of the first player when it beats the ghost, or when there is
- * none worth keeping. */
-static void KeepTimeAttackRecording(s32 player) {
-    s32 j;
-
-    osSyncPrintf("# Format SB BitSize 24 Rows %d Columns 1\n",
-                 g_aVehicles[player].input->recordPositions[player] >> 1);
-    for (j = 0; j < g_aVehicles[player].input->recordPositions[player]; j += 2) {
-        osSyncPrintf("%.02x %.02x\n",
-                     g_aVehicles[player].input->recordBuffers[player][j],
-                     g_aVehicles[player].input->recordBuffers[player][j + 1]);
-    }
-    if (player == 0) {
-        if (g_aVehicles[player].input->recordPositions[player] < (s32)g_dwGhostRecordingSize ||
-            g_abGhostRecording[0] != g_dwSelectedTrackId ||
-            (s32)g_dwGhostRecordingSize <= RECORDING_HEADER_SIZE) {
-            osSyncPrintf("%d: %d<%d=%d || %d!=%d=%d || %d<=%d=%d\n",
-                         player,
-                         g_aVehicles[player].input->recordPositions[player],
-                         g_dwGhostRecordingSize,
-                         g_aVehicles[player].input->recordPositions[player] <
-                             (s32)g_dwGhostRecordingSize,
-                         g_abGhostRecording[0],
-                         g_dwSelectedTrackId,
-                         g_abGhostRecording[0] != g_dwSelectedTrackId,
-                         g_dwGhostRecordingSize,
-                         RECORDING_HEADER_SIZE,
-                         (s32)g_dwGhostRecordingSize <= RECORDING_HEADER_SIZE);
-            g_dwGhostRecordingSize = g_aVehicles[player].input->recordPositions[player];
-            memcpy(g_abGhostRecording,
-                   g_aVehicles[player].input->recordBuffers[player],
-                   g_dwGhostRecordingSize);
-            g_aVehicles[player].message = "NEW RECORD!";
-            g_aVehicles[player].messageTime = 1.0f;
-            FormatLapTime(g_aVehicles[player].messageText, g_aVehicles[player].totalTime);
-            g_aVehicles[player].subMessage = g_aVehicles[player].messageText;
-            g_aVehicles[player].subMessageTime = 1.0f;
-            g_dwSaveAvailable = TRUE;
-        }
-    }
-    g_aVehicles[player].input->recordBuffers[player] = NULL;
-}
-
-/* Run the race, and tell whether to go on to the next phase. */
-static s32 RunRacingPhase(void) {
-    s32 allFinished, i, j;
-
-    allFinished = TRUE;
-#if TGR_REGION == TGR_REGION_US
-    if ((g_dwGameMode == GAME_MODE_DEMO &&
-         ((g_dwRaceSessionType == RACE_SESSION_SCROLLING_CREDITS &&
-           ENDING_RACE_SECONDS < g_aVehicles[0].totalTime) ||
-          (g_dwRaceSessionType != RACE_SESSION_SCROLLING_CREDITS &&
-           ATTRACT_RACE_SECONDS < g_aVehicles[0].totalTime))) ||
-#else
-    /* The demonstration race ends with its recording. */
-    if ((g_dwGameMode == GAME_MODE_DEMO &&
-         ((g_dwRaceSessionType == RACE_SESSION_SCROLLING_CREDITS &&
-           ENDING_RACE_SECONDS < g_aVehicles[0].totalTime) ||
-          (g_dwRaceSessionType == RACE_SESSION_CREDIT_CAPTIONS &&
-           CREDITS_RACE_SECONDS < g_aVehicles[0].totalTime) ||
-          (g_dwRaceSessionType == RACE_SESSION_ATTRACT &&
-           g_aVehicles[0].input->playbackPosition == g_aVehicles[0].input->playbackLimit))) ||
-#endif
-        (g_dwGameMode == GAME_MODE_AFTER_SEASON &&
-         AFTER_SEASON_RACE_SECONDS < g_aVehicles[0].totalTime)) {
-        if (!IsFadingOut()) {
-            SetFadeTarget(0.0f, FADE_SECONDS);
-            FadeSfxTo(0.0f, FADE_SECONDS);
-            g_dwRaceExitState = TRUE;
-            gInstantReplayActive = FALSE;
-            g_bReplayAfterRace = FALSE;
-            allFinished = FALSE;
-        }
-    }
-    for (i = 0; i < (s32)g_dwNumLocalPlayers; i++) {
-        if (!(g_aRacerSlots[i].status & RACER_FINISHED)) {
-            allFinished = FALSE;
-            continue;
-        }
-        if (g_dwGameMode == GAME_MODE_TIME_ATTACK &&
-            g_aVehicles[i].input->recordBuffers[i] != NULL) {
-            KeepTimeAttackRecording(i);
-        } else if (g_dwGameMode == GAME_MODE_ARCADE) {
-            /* A finished player records no further. */
-            for (j = 0; j < (s32)g_dwNumLocalPlayers; j++) {
-                g_aVehicles[i].input->recordLimits[j] = g_aVehicles[i].input->recordPositions[j];
-            }
-        }
-    }
-    if (allFinished) {
-        return TRUE;
-    }
-    if (g_dwGameMode == GAME_MODE_ARCADE && g_dwNumLocalPlayers == 1 &&
-        (f64)g_aVehicles[0].timeLeft == 0.0) {
-        g_bReplayAfterRace = FALSE;
-        g_aVehicles[1].message = g_aVehicles[0].message = "%ryTIME UP!";
-        g_aVehicles[1].messageTime = 2.0f;
-        g_aVehicles[0].messageTime = g_aVehicles[1].messageTime;
-        return TRUE;
-    }
-    return FALSE;
-}
-
-#include "racephasestep.h"
-#include "racespecials.h"
 
 
 /* Take the input of the pause menu, and tell whether the race stays paused. */

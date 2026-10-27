@@ -308,6 +308,7 @@ extern f32 g_afStartLightThresholds[START_LIGHT_STEPS];
  * @ghidraAddress USA: 0x802707a8
  * @ghidraAddress EUR: 0x80272778
  * @ghidraAddress JPN: 0x80272228
+ * @ghidraAddress BRD3D: 0x10680610
  */
 extern s32 g_dwSaveAvailable;
 

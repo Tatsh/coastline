@@ -9,6 +9,7 @@
 #include <PR/ultratypes.h>
 
 #include "input.h"
+#include "recordingformat.h"
 #include "rle.h"
 #include "vehicle.h"
 
@@ -40,9 +41,6 @@ extern u8 _endingRecordingSegmentRomStart[];
 
 /** The cartridge offset of the ghost recording, which the race after the splash screens replays. */
 #define ROM_GHOST_RECORDING ((u32)_ghostRecordingSegmentRomStart)
-
-/** The bytes a recording of input starts with: the track, the car and its setup. */
-#define RECORDING_HEADER_SIZE 8
 
 /** The size of the buffer a player's input is recorded into. */
 #define RECORDING_CAPACITY 0xDE5C
