@@ -26,6 +26,14 @@ typedef struct {
     f32 startTime;      /*!< The time the race starts with, in seconds. */
 } ArcadeTimes;
 
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+/** The adjacent palette and image filenames for a sky texture. */
+typedef struct {
+    char palette[32];
+    char image[32];
+} SkyTextureFiles;
+#endif
+
 /**
  * A track: its item of the track menu, where its geometry and its two sections of route are on
  * the cartridge, and its arcade times. The end of the geometry is 0 for a track that does not
@@ -35,7 +43,11 @@ typedef struct {
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
     u8 unreconstructed0[4]; /* +0x0 */
     u32 flags;
-    u8 unreconstructed8[0x24]; /* +0x8 */
+    u8 unreconstructed8[0x14]; /* +0x8 */
+    const SkyTextureFiles *daySkyFiles;
+    u8 unreconstructed20[4]; /* +0x20 */
+    const SkyTextureFiles *nightSkyFiles;
+    u8 unreconstructed28[4]; /* +0x28 */
 #else
     MenuItem item;      /*!< The item of the track menu. */
     u32 trackRom;       /*!< The cartridge offset of the compressed geometry. */
@@ -52,6 +64,16 @@ typedef struct {
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+/**
+ * The track descriptors.
+ *
+ * @ghidraAddress USA: 0x80270854
+ * @ghidraAddress EUR: 0x80272834
+ * @ghidraAddress JPN: 0x802722f4
+ * @ghidraAddress BRD3D: 0x100bbae8
+ */
+extern TrackMenuItem g_aTrackDescriptors[];
 
 /**
  * The items of the track menu: the tracks, then the loads and resets.

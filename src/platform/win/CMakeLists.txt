@@ -42,6 +42,7 @@ add_library(
   terrain.cpp
   texturescan.cpp
   trackanimation.cpp
+  trackload.cpp
   tracktexture.cpp
   timer.c
   vehicle.cpp

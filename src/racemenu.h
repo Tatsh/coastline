@@ -44,15 +44,6 @@
 #define MENU_RESULT_UP 3        /*!< The player moved up. */
 #define MENU_RESULT_DOWN 4      /*!< The player moved down. */
 
-/**
- * The tracks.
- *
- * @ghidraAddress USA: 0x80270854
- * @ghidraAddress EUR: 0x80272834
- * @ghidraAddress JPN: 0x802722f4
- */
-extern TrackMenuItem g_aTrackDescriptors[];
-
 /** A routine that tells whether a menu item may be chosen. */
 typedef s32 (*MenuItemFilter)(s32 item);
 

@@ -369,6 +369,7 @@ u16 NextGridCellInstance(TrackGridCursor *cursor);
  * @ghidraAddress USA: 0x8021de5c
  * @ghidraAddress EUR: 0x8021f05c
  * @ghidraAddress JPN: 0x8021e92c
+ * @ghidraAddress BRD3D: 0x10037b10
  */
 void LoadTrackGeometryFromRom(s32 track);
 
@@ -376,7 +377,11 @@ void LoadTrackGeometryFromRom(s32 track);
 #define TRACK_HEADER_SIZE 0x230
 
 /* The limits of a track. */
-#define TRACK_MAX_SIZE 0x171400   /*!< The most bytes a track may take. */
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#define TRACK_MAX_SIZE 4000000
+#else
+#define TRACK_MAX_SIZE 0x171400 /*!< The most bytes a track may take. */
+#endif
 #define TRACK_MAX_INSTANCES 0x800 /*!< The most placed models a track may have. */
 
 /** The bytes of the header of each of the two sections of the route of the loaded track. */
@@ -438,6 +443,7 @@ extern u32 g_dwTrackTextureRomOffset;
  * @ghidraAddress USA: 0x8028aa7c
  * @ghidraAddress EUR: 0x8028cc84
  * @ghidraAddress JPN: 0x8028c754
+ * @ghidraAddress BRD3D: 0x100aa89c
  */
 extern s32 g_dwStreamDmaPrevSegment;
 
