@@ -794,6 +794,48 @@ D3DCOLOR g_dwVertexConstantColor;
 float g_fVertexFogRange;
 int g_dwFogAlphaCutoff;
 
+int ComputeVertexClipCodes(const GbiVertexSource *pVertex) {
+    int nFlags = 0;
+    // The x87 comparisons also classify unordered values as outside.
+    if (!(pVertex->fW >= 0.0f)) {
+        nFlags |= 1;
+    }
+    if (!(pVertex->fZ + pVertex->fW >= 0.0f)) {
+        nFlags |= 2;
+    }
+    if (!(pVertex->fW - pVertex->fZ >= 0.0f)) {
+        nFlags |= 4;
+    }
+    if (!(pVertex->fX + pVertex->fW >= 0.0f)) {
+        nFlags |= 8;
+    }
+    if (!(pVertex->fW - pVertex->fX >= 0.0f)) {
+        nFlags |= 16;
+    }
+    if (!(pVertex->fY + pVertex->fW >= 0.0f)) {
+        nFlags |= 32;
+    }
+    if (!(pVertex->fW - pVertex->fY >= 0.0f)) {
+        nFlags |= 64;
+    }
+    return nFlags;
+}
+
+void TransformVertexToScreen(
+    GbiVertex *pDest, const GbiVertexSource *pSource, float fRed, float fGreen, float fBlue) {
+    // The x87 arithmetic retains extended precision until each float is stored.
+    pDest->fRhw = 1.0L / pSource->fW;
+    pDest->fX = static_cast<long double>(pSource->fX) * g_fViewportScaleX * pDest->fRhw +
+                g_fViewportTranslateX;
+    pDest->fY = static_cast<long double>(pSource->fY) * g_fViewportScaleY * pDest->fRhw +
+                g_fViewportTranslateY;
+    pDest->fZ =
+        static_cast<long double>(pSource->fZ) * g_fDepthScale * pDest->fRhw + g_fDepthOffset;
+    pDest->fRed = fRed;
+    pDest->fGreen = fGreen;
+    pDest->fBlue = fBlue;
+}
+
 // The scale from a channel of the colour of a vertex to a byte.
 #define VERTEX_COLOR_SCALE 255.0f
 

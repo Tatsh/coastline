@@ -694,10 +694,16 @@ GbiCommand *HandleGbiLoadPreparedTexture(GbiCommand *pCommand);
 #if TGR_RENDERER == TGR_RENDERER_D3D
 /** The vertex a command of the display lists loaded. The layout is not recovered in full. */
 struct GbiVertexSource {
-    char abUnknown0[0x10];  /* +0x00 */
-    float fS;               /*!< The s of the texture before g_fTexCoordScaleS. */
-    float fT;               /*!< The t of the texture before g_fTexCoordScaleT. */
-    char abUnknown18[0x10]; /* +0x18 */
+    char abUnknown0[4]; /* +0x00 */
+    float fX;
+    float fY;
+    float fZ;
+    float fS; /*!< The s of the texture before g_fTexCoordScaleS. */
+    float fT; /*!< The t of the texture before g_fTexCoordScaleT. */
+    float fW;
+    float fRed;
+    float fGreen;
+    float fBlue;
 };
 
 /** A vertex of the display lists after its transform. The layout is not recovered in full. */
@@ -717,6 +723,26 @@ struct GbiVertex {
     GbiVertexSource source; /*!< The vertex as the command loaded it. */
     int nRenderBufferIndex; /*!< The entry of g_renderBuffer of the vertex, -1 for none. */
 };
+
+/**
+ * @ghidraAddress BRD3D: 0x100a79e0
+ */
+extern float g_fDepthScale;
+/**
+ * @ghidraAddress BRD3D: 0x100a79e4
+ */
+extern float g_fDepthOffset;
+
+/**
+ * @ghidraAddress BRD3D: 0x10022dc0
+ */
+int ComputeVertexClipCodes(const GbiVertexSource *pVertex);
+
+/**
+ * @ghidraAddress BRD3D: 0x100222d0
+ */
+void TransformVertexToScreen(
+    GbiVertex *pDest, const GbiVertexSource *pSource, float fRed, float fGreen, float fBlue);
 
 /** The number of entries of g_aGbiVertexCache and g_apVertexPool. */
 #define GBI_VERTEX_CACHE_SIZE 128
