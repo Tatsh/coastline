@@ -2538,7 +2538,6 @@ void BuildSeasonProgressInfoUI(MenuScreen *pScreen);
 
 /**
  * @ghidraAddress BRD3D: 0x1004b430
- * @stub
  */
 void BuildRaceSetupUI(MenuScreen *pScreen);
 

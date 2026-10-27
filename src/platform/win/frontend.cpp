@@ -6962,6 +6962,110 @@ void BuildMultiplayerConnectionUI(MenuScreen *pScreen) {
     panel->SetWidgetCount(panel->GetWidgetCount() + 1);
 }
 
+static inline void
+BuildRaceSetupPreview(MenuPanel *panel, MenuScreen *screen, bool conditionalTrack) {
+    MenuWidget *widget = AddMenuWidget(panel, screen, 73, 212, 1, 1, 22);
+    widget->SetUpdateCallback(RaceSetupUI_UpdateWeatherImage);
+    widget->SetLinkedWidgetCount(widget->GetLinkedWidgetCount() + 1);
+    widget->SetLinkedWidgetIndex(0, panel->GetWidgetCount() + 1);
+    panel->SetWidgetCount(panel->GetWidgetCount() + 1);
+    widget = AddMenuWidget(panel, screen, panel->GetX(), 275, 0x101001, 1, -1);
+    widget->SetUpdateCallback(RaceSetupUI_UpdateWeatherLabel);
+    widget->SetSpriteId(3);
+    widget->SetText(g_szSpace, 1, 1, &g_rcMenuLeftColumn);
+    panel->SetWidgetCount(panel->GetWidgetCount() + 1);
+    if (!conditionalTrack || g_bRaceSetupShowCarSetup) {
+        widget = AddMenuWidget(panel, screen, 325, 72, 1, 1, 17);
+        widget->SetUpdateCallback(RaceSetupUI_UpdateTrackImage);
+        widget->SetLinkedWidgetCount(widget->GetLinkedWidgetCount() + 1);
+        widget->SetLinkedWidgetIndex(0, panel->GetWidgetCount() + 1);
+        panel->SetWidgetCount(panel->GetWidgetCount() + 1);
+        widget = AddMenuWidget(panel, screen, panel->GetX(), 152, 0x101001, 1, -1);
+        widget->SetUpdateCallback(RaceSetupUI_UpdateTrackNameLabel);
+        widget->SetSpriteId(3);
+        widget->SetText(g_szSpace, 1, 1, &g_rcMenuRightColumnMid);
+        panel->SetWidgetCount(panel->GetWidgetCount() + 1);
+    }
+    widget = AddMenuWidget(panel, screen, 106, 68, 0x5001, 1, -1);
+    widget->SetUpdateCallback(RaceSetupUI_UpdateLapCountLabel);
+    widget->SetSpriteId(5);
+    widget->SetText(g_szMenuDigitOne, 1, 3, &g_rcMenuSubPanel);
+    panel->SetWidgetCount(panel->GetWidgetCount() + 1);
+    SetMenuWidgetLabel(
+        AddMenuWidget(panel, screen, 106, 115, 0x100001, 1, -1), 0x1d, &g_rcMenuSubPanel);
+    panel->SetWidgetCount(panel->GetWidgetCount() + 1);
+}
+
+void BuildRaceSetupUI(MenuScreen *screen) {
+    screen->SetCurrentPanelIndex(0);
+    float offset = 0;
+    screen->SetPanelActive(screen->GetPanelCount(), 1);
+    MenuPanel *panel = new (std::nothrow) MenuPanel();
+    screen->SetPanel(screen->GetPanelCount(), panel);
+    if (!panel) {
+        ShowErrorMessage(4);
+    }
+    screen->SetPanelCount(screen->GetPanelCount() + 1);
+    panel->SetScreen(screen);
+    panel->SetFlags(0);
+    panel->SetX(195);
+    panel->SetY(130);
+    auto add = [&](float x, float y, unsigned flags, int mode, short image) {
+        return AddMenuWidget(panel, screen, x, y, flags, mode, image);
+    };
+    add(0, 0, 9, 0, 0);
+    panel->SetWidgetCount(panel->GetWidgetCount() + 1);
+    SetMenuWidgetLabel(add(panel->GetX(), 10, 0x100009, 1, -1), 0x1a, &g_rcMenuTitleBar);
+    panel->SetWidgetCount(panel->GetWidgetCount() + 1);
+    if (g_bRaceSetupShowCarSetup) {
+        MenuWidget *widget = add(panel->GetX(), panel->GetY(), 0x102001, 1, -1);
+        widget->SetIdleActionCallback(ValidateEntityStateAlwaysTrue);
+        widget->SetActionCallback(RaceSetupUI_OnCycleTrack);
+        SetMenuWidgetLabel(widget, 0x1b, &g_rcMenuCenterPanel);
+        panel->SetWidgetCount(panel->GetWidgetCount() + 1);
+        panel->SetNavigationCount(panel->GetNavigationCount() + 1);
+        offset = 19;
+    }
+    int (*const actions[])(MenuWidget *) = {RaceSetupUI_OnCycleWeather,
+                                            RaceSetupUI_OnCycleLapCount,
+                                            InvokeRootMenuAction<ShowCarSetupScreen>};
+    const int labels[] = {0x1c, 0x1d, 0x1e};
+    const float spacing[] = {19, 57, 19};
+    for (int index = 0; index < 3; index++) {
+        MenuWidget *widget =
+            add(panel->GetX(),
+                static_cast<float>(static_cast<long double>(offset) + panel->GetY()),
+                0x102001,
+                1,
+                -1);
+        widget->SetIdleActionCallback(index == 2 ? ValidateEntityStateAlwaysTrue :
+                                                   ValidateEntityState);
+        widget->SetActionCallback(actions[index]);
+        SetMenuWidgetLabel(widget, labels[index], &g_rcMenuCenterPanel);
+        offset = static_cast<float>(static_cast<long double>(offset) + spacing[index]);
+        panel->SetWidgetCount(panel->GetWidgetCount() + 1);
+        panel->SetNavigationCount(panel->GetNavigationCount() + 1);
+    }
+    // The back button replaces this uncounted widget in the panel.
+    add(panel->GetX(),
+        static_cast<float>(static_cast<long double>(offset) + panel->GetY()),
+        0x102001,
+        1,
+        -1);
+    MenuWidget *widget = add(panel->GetX(),
+                             static_cast<float>(static_cast<long double>(panel->GetY()) + 114),
+                             0x102001,
+                             1,
+                             -1);
+    widget->SetIdleActionCallback(ValidateEntityState);
+    widget->SetActionCallback(RaceSetupUI_OnBack);
+    SetMenuWidgetLabel(widget, 0xc, &g_rcMenuCenterPanel);
+    g_pRaceSetupMenu = widget;
+    panel->SetWidgetCount(panel->GetWidgetCount() + 1);
+    panel->SetNavigationCount(panel->GetNavigationCount() + 1);
+    BuildRaceSetupPreview(panel, screen, true);
+}
+
 void BuildMultiplayerGameSetupUI(MenuScreen *pScreen) {
     pScreen->SetCurrentPanelIndex(0);
     pScreen->SetPanelActive(pScreen->GetPanelCount(), 1);
@@ -7010,33 +7114,7 @@ void BuildMultiplayerGameSetupUI(MenuScreen *pScreen) {
     g_pMultiplayerGameSetupMenu = widget;
     panel->SetWidgetCount(panel->GetWidgetCount() + 1);
     panel->SetNavigationCount(panel->GetNavigationCount() + 1);
-    widget = add(73, 212, 1, 1, 22);
-    widget->SetUpdateCallback(RaceSetupUI_UpdateWeatherImage);
-    widget->SetLinkedWidgetCount(widget->GetLinkedWidgetCount() + 1);
-    widget->SetLinkedWidgetIndex(0, panel->GetWidgetCount() + 1);
-    panel->SetWidgetCount(panel->GetWidgetCount() + 1);
-    widget = add(panel->GetX(), 275, 0x101001, 1, -1);
-    widget->SetUpdateCallback(RaceSetupUI_UpdateWeatherLabel);
-    widget->SetSpriteId(3);
-    widget->SetText(g_szSpace, 1, 1, &g_rcMenuLeftColumn);
-    panel->SetWidgetCount(panel->GetWidgetCount() + 1);
-    widget = add(325, 72, 1, 1, 17);
-    widget->SetUpdateCallback(RaceSetupUI_UpdateTrackImage);
-    widget->SetLinkedWidgetCount(widget->GetLinkedWidgetCount() + 1);
-    widget->SetLinkedWidgetIndex(0, panel->GetWidgetCount() + 1);
-    panel->SetWidgetCount(panel->GetWidgetCount() + 1);
-    widget = add(panel->GetX(), 152, 0x101001, 1, -1);
-    widget->SetUpdateCallback(RaceSetupUI_UpdateTrackNameLabel);
-    widget->SetSpriteId(3);
-    widget->SetText(g_szSpace, 1, 1, &g_rcMenuRightColumnMid);
-    panel->SetWidgetCount(panel->GetWidgetCount() + 1);
-    widget = add(106, 68, 0x5001, 1, -1);
-    widget->SetUpdateCallback(RaceSetupUI_UpdateLapCountLabel);
-    widget->SetSpriteId(5);
-    widget->SetText(g_szMenuDigitOne, 1, 3, &g_rcMenuSubPanel);
-    panel->SetWidgetCount(panel->GetWidgetCount() + 1);
-    SetMenuWidgetLabel(add(106, 115, 0x100001, 1, -1), 0x1d, &g_rcMenuSubPanel);
-    panel->SetWidgetCount(panel->GetWidgetCount() + 1);
+    BuildRaceSetupPreview(panel, pScreen, false);
     widget = add(437, 141, 1, 1, 86);
     widget->SetUpdateCallback(MultiplayerSetupUI_UpdateCarGroupImage);
     panel->SetWidgetCount(panel->GetWidgetCount() + 1);
