@@ -819,6 +819,46 @@ extern MenuWidget *g_pD3DDeviceSelectMenu;
 extern MenuWidget *g_pSaveSeasonBackHandlerMenu;
 
 /**
+ * @ghidraAddress BRD3D: 0x10044970
+ */
+int MultiplayerGameSetupUI_OnBackAsClient(MenuActionWidget *pItem);
+
+/**
+ * @ghidraAddress BRD3D: 0x10044a30
+ */
+int MultiplayerGameSetupUI_OnBackAsHost(MenuActionWidget *pItem);
+
+/**
+ * @ghidraAddress BRD3D: 0x100444c0
+ */
+int CreateGameMenuUI_OnBack(MenuActionWidget *pItem);
+
+/**
+ * @ghidraAddress BRD3D: 0x10044ae0
+ */
+int JoinCreateGameUI_OnBack(MenuActionWidget *pItem);
+
+/**
+ * @ghidraAddress BRD3D: 0x100464e0
+ */
+int CarSetupUI_OnBackToRaceSetup(MenuActionWidget *pItem);
+
+/**
+ * @ghidraAddress BRD3D: 0x10045090
+ */
+int LoadSeasonUI_OnContinueSeason(MenuActionWidget *pItem);
+
+/**
+ * @ghidraAddress BRD3D: 0x100458c0
+ */
+int CarSetupUI_OnOpenOptions(MenuActionWidget *pItem);
+
+/**
+ * @ghidraAddress BRD3D: 0x100458e0
+ */
+int CarSetupUI_OnOpenSaveSeason(MenuActionWidget *pItem);
+
+/**
  * @ghidraAddress BRD3D: 0x10046dc0
  */
 int PreRaceInfoUI_OnBackToLoadSeason(MenuActionWidget *pItem);

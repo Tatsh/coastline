@@ -942,6 +942,107 @@ int PreRaceInfoUI_OnBack(MenuActionWidget *) {
     return 0;
 }
 
+int MultiplayerGameSetupUI_OnBackAsClient(MenuActionWidget *pItem) {
+    if (g_dwLaunchedFromLobby) {
+        pItem->pScreen->ShutdownFrontEnd(0);
+        ShutdownApplication(0);
+    }
+    ReturnFromCachedMenu(pItem, g_pCachedMenu_RaceSetupNetwork, g_pCachedMenu_JoinCreateGame);
+    if (g_pNetworkSessionJoinMenu) {
+        g_pNetworkSessionJoinMenu->dwFlags &= ~0x10u;
+    }
+    DisconnectNetworkSession();
+    g_dwSessionEnumPending = 1;
+    if ((g_dwServiceProviderIndex == 0 || g_dwServiceProviderIndex == 1) &&
+        !g_dwLaunchedFromLobby) {
+        InitializeNetworkServiceProvider();
+    }
+    if ((g_dwServiceProviderIndex == 2 || g_dwServiceProviderIndex == 3) &&
+        g_pNetworkSessionJoinMenu) {
+        g_pNetworkSessionJoinMenu->dwFlags &= ~0x10u;
+    }
+    return 0;
+}
+
+int MultiplayerGameSetupUI_OnBackAsHost(MenuActionWidget *pItem) {
+    if (g_dwLaunchedFromLobby) {
+        pItem->pScreen->ShutdownFrontEnd(0);
+        ShutdownApplication(0);
+    }
+    ReturnFromCachedMenu(pItem, g_pCachedMenu_RaceSetupNetwork, g_pCachedMenu_CreateGame);
+    DisconnectNetworkSession();
+    if ((g_dwServiceProviderIndex == 0 || g_dwServiceProviderIndex == 1) &&
+        !g_dwLaunchedFromLobby) {
+        InitializeNetworkServiceProvider();
+    }
+    if ((g_dwServiceProviderIndex == 2 || g_dwServiceProviderIndex == 3) &&
+        g_pNetworkSessionJoinMenu) {
+        g_pNetworkSessionJoinMenu->dwFlags &= ~0x10u;
+        g_pNetworkSessionJoinMenu->bJoining = 0;
+    }
+    return 0;
+}
+
+int CreateGameMenuUI_OnBack(MenuActionWidget *pItem) {
+    MenuScreen *pDestination;
+    NetworkMenuWidget *pJoinMenu;
+    pItem->pScreen->DestroyPanels();
+    delete g_pActiveMenuScreen;
+    pJoinMenu = g_pNetworkSessionJoinMenu;
+    pDestination = g_pCachedMenu_JoinCreateGame;
+    g_pCachedMenu_CreateGame = nullptr;
+    g_pMultiplayerGameSetupMenu = nullptr;
+    g_pActiveMenuScreen = pDestination;
+    if (pJoinMenu) {
+        pJoinMenu->dwFlags &= ~0x10u;
+    }
+    if ((g_dwServiceProviderIndex == 0 || g_dwServiceProviderIndex == 1) &&
+        !g_dwLaunchedFromLobby) {
+        DisconnectNetworkSession();
+        g_dwSessionEnumPending = 1;
+        InitializeNetworkServiceProvider();
+    }
+    return 0;
+}
+
+int JoinCreateGameUI_OnBack(MenuActionWidget *pItem) {
+    MenuScreen *pDestination;
+    pItem->pScreen->DestroyPanels();
+    delete g_pActiveMenuScreen;
+    pDestination = g_pCachedMenu_MultiplayerConnection;
+    g_pCachedMenu_JoinCreateGame = nullptr;
+    g_pMultiplayerGameSetupMenu = nullptr;
+    g_pNetworkSessionJoinMenu = nullptr;
+    g_pJoinCreateGameMenu = nullptr;
+    g_dwSelectedSessionIndex = 0;
+    g_pActiveMenuScreen = pDestination;
+    DisconnectNetworkSession();
+    return 0;
+}
+
+int CarSetupUI_OnBackToRaceSetup(MenuActionWidget *pItem) {
+    return ReturnFromCachedMenu(pItem, g_pCachedMenu_CarSetup, g_pCachedMenu_MainMenu);
+}
+
+int LoadSeasonUI_OnContinueSeason(MenuActionWidget *) {
+    ShowPreRaceInfoScreen();
+    g_pExitSeasonConfirmMenu->pfnAction = PreRaceInfoUI_OnBackToLoadSeason;
+    g_dwGameMode = GAME_MODE_CHAMPIONSHIP;
+    return 1;
+}
+
+int CarSetupUI_OnOpenOptions(MenuActionWidget *) {
+    ShowOptionsMenu();
+    g_pOptionsSubMenu->pfnAction = OptionsMenuUI_OnBackToCarSetup;
+    return 1;
+}
+
+int CarSetupUI_OnOpenSaveSeason(MenuActionWidget *) {
+    ShowSaveSeasonScreen();
+    g_pSaveSeasonBackHandlerMenu->pfnAction = SaveSeasonUI_OnBackToCarSetup;
+    return 1;
+}
+
 int OptionsMenuUI_OnBackToRaceResultsInfo(MenuActionWidget *pItem) {
     return ReturnFromOptionsMenu(pItem, g_pCachedMenu_RaceResults);
 }
