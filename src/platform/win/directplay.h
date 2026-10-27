@@ -1058,7 +1058,7 @@ void BuildNetworkPlayerStatusPackets(void);
  * @ghidraAddress BRD3D: 0x10072170
  * @ghidraAddress BRGlide: 0x1006b0e0
  */
-void FlushNetworkPlayerStreams(DirectPlayInfo *pInfo);
+int FlushNetworkPlayerStreams(DirectPlayInfo *pInfo);
 
 /**
  * Do the work of the host of a network game once a second, sleeping until each second. The loop
@@ -1283,6 +1283,16 @@ extern NetPlayerSlot g_aNetPlayerSlots[NET_PLAYER_SLOT_COUNT];
  * @ghidraAddress BRGlide: 0x117b3258
  */
 extern NetPlayerSlot g_aNetPeerSlotMatrix[NET_PLAYER_SLOT_COUNT][NET_PLAYER_SLOT_COUNT];
+
+/**
+ * @ghidraAddress BRD3D: 0x1178fef0
+ */
+extern int g_bNetRaceStarted;
+
+/**
+ * @ghidraAddress BRD3D: 0x11828d14
+ */
+extern unsigned g_dwNetRaceStartCountdownTime;
 
 /**
  * The state of a network player of a race, under the mutex of its slot.

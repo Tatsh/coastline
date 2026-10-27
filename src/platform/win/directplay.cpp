@@ -754,6 +754,87 @@ NetPlayerSlot g_aNetPlayerSlots[NET_PLAYER_SLOT_COUNT];
 NetPlayerSlot g_aNetPeerSlotMatrix[NET_PLAYER_SLOT_COUNT][NET_PLAYER_SLOT_COUNT];
 int g_nNetPauseRequestTicks;
 
+int g_bNetRaceStarted;
+unsigned g_dwNetRaceStartCountdownTime;
+
+static inline void LockNetworkWorkerSlot(NetPlayerSlot &slot) {
+    HANDLE handles[2] = {g_hNetWorkerStopEvent, slot.hMutex};
+    if (WaitForMultipleObjects(2, handles, FALSE, INFINITE) == WAIT_OBJECT_0) {
+        ExitThread(0);
+    }
+}
+
+void PromoteReadyNetworkPlayersToStart(void) {
+    for (NetPlayerSlot &slot : g_aNetPlayerSlots) {
+        LockNetworkWorkerSlot(slot);
+        int state = slot.dwState & 0x3f;
+        ReleaseMutex(slot.hMutex);
+        if (state >= 2 && state != 3) {
+            return;
+        }
+    }
+    for (int i = 0; i < NET_PLAYER_SLOT_COUNT; i++) {
+        NetPlayerSlot &slot = g_aNetPlayerSlots[i];
+        LockNetworkWorkerSlot(slot);
+        bool ready = (slot.dwState & 0x3f) == 3;
+        ReleaseMutex(slot.hMutex);
+        if (ready) {
+            NetPlayerSlot &peer = g_aNetPeerSlotMatrix[i][i];
+            LockNetworkWorkerSlot(peer);
+            bool waiting = (peer.dwState & 0x3f) != 3;
+            ReleaseMutex(peer.hMutex);
+            if (waiting) {
+                return;
+            }
+        }
+    }
+    for (NetPlayerSlot &slot : g_aNetPlayerSlots) {
+        LockNetworkWorkerSlot(slot);
+        if ((slot.dwState & 0x3f) == 3) {
+            slot.dwState = 4;
+            g_bNetRaceStarted = true;
+            g_dwNetRaceStartCountdownTime = g_dwNetWorkerCurrentTime + 3000;
+        }
+        ReleaseMutex(slot.hMutex);
+    }
+}
+
+void ResetAllNetworkPlayerStreams(void) {
+    for (int i = 0; i < NET_PLAYER_SLOT_COUNT; i++) {
+        NetPlayerSlot &slot = g_aNetPlayerSlots[i];
+        LockNetworkWorkerSlot(slot);
+        ResetNetworkStreamWithTimestamp(&g_aNetPlayerStreams[i]);
+        ReleaseMutex(slot.hMutex);
+    }
+}
+
+int FlushNetworkPlayerStreams(DirectPlayInfo *pInfo) {
+    int result = 0;
+    for (int i = 0; i < NET_PLAYER_SLOT_COUNT; i++) {
+        NetPlayerSlot &slot = g_aNetPlayerSlots[i];
+        LockNetworkWorkerSlot(slot);
+        NetStream &stream = g_aNetPlayerStreams[i];
+        if ((slot.dwState & 0x3f) >= 1 && stream.StreamGetWriteSize() > 3) {
+            if (i == 0) {
+                ProcessNetworkDataStream(pInfo,
+                                         stream.StreamGetBufferPtr(),
+                                         stream.StreamGetWriteSize(),
+                                         DPID_SERVERPLAYER,
+                                         DPID_SERVERPLAYER);
+            } else if (DirectPlaySendLocked(pInfo->pDirectPlay,
+                                            DPID_SERVERPLAYER,
+                                            slot.dpidOwner,
+                                            0,
+                                            stream.StreamGetBufferPtr(),
+                                            stream.StreamGetWriteSize()) != 0) {
+                result = -1;
+            }
+        }
+        ReleaseMutex(slot.hMutex);
+    }
+    return result;
+}
+
 static inline int GetNetPlayerSlotStateLocked(NetPlayerSlot &slot) {
     WaitForSingleObject(slot.hMutex, INFINITE);
     int nState = slot.dwState;
