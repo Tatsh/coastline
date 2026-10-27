@@ -121,6 +121,14 @@ void SetMaterialColor(VehicleModel *model, s32 red, s32 green, s32 blue);
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
 
 /**
+ * Accept the vehicle model without checking cartridge metadata.
+ *
+ * @ghidraAddress BRD3D: 0x1003557b
+ * @ghidraAddress BRGlide: 0x1002ec2c
+ */
+s32 IsVehicleModelValid(void);
+
+/**
  * The model whose material textures are being captured.
  *
  * @ghidraAddress BRD3D: 0x106c7c3c

@@ -6,6 +6,10 @@
 VehicleModel *g_pTextureCaptureVehicleModel;
 s32 g_dwTextureCaptureOverflowCount;
 
+s32 IsVehicleModelValid(void) {
+    return 1;
+}
+
 void AppendVehicleModelTextureEntry(s32 entry) {
     VehicleModel *model = g_pTextureCaptureVehicleModel;
     s32 count = model->textureEntryCount;
