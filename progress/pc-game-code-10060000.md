@@ -1,6 +1,6 @@
 # PC port game code from 0x10060000 to 0x10070000
 
-123 of 173 routines done.
+126 of 173 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -128,7 +128,7 @@ the same name, for a routine the port retained from the N64 game.
 | `RacerSlot::UpdateRemoteVehicleFrame`    |        |                 |      1 |     58 | `0x10069330` | `0x100623a0` | `undefined UpdateRemoteVehicleFrame(RacerSlot * this)`                                                                                   |
 | `UnmarkTrackSections`                    |        | ✅ `0x80255c50` |      2 |     53 | `0x100616c0` | `0x1005a740` | `undefined UnmarkTrackSections()`                                                                                                        |
 | `ResetGhostRecording`                    |   ✅   |                 |      1 |     51 | `0x1006aa50` | `0x10063a00` | `void ResetGhostRecording(void)`                                                                                                         |
-| `PlaySoundEffect`                        |        | ✅ `0x8022b370` |      2 |     50 | `0x10067d40` | `0x10060db0` | `undefined PlaySoundEffect()`                                                                                                            |
+| `PlaySoundEffect`                        |   ✅   | ✅ `0x8022b370` |      2 |     50 | `0x10067d40` | `0x10060db0` | `void PlaySoundEffect(int sound)`                                                                                                        |
 | `FreeAllPaintBitmaps`                    |   ✅   |                 |      1 |     50 | `0x10061620` | `0x1005a6a0` | `void FreeAllPaintBitmaps(void)`                                                                                                         |
 | `ResetAllPlayers`                        |   ✅   | ✅ `0x80200154` |      1 |     49 | `0x10069800` | `0x10062870` | `void ResetAllPlayers(void)`                                                                                                             |
 | `MouseDevice::SyncMouseAcquireState`     |        |                 |      3 |     48 | `0x10060750` | `0x100597c0` | `undefined SyncMouseAcquireState(MouseDevice * this, undefined4 param_1)`                                                                |
@@ -171,9 +171,9 @@ the same name, for a routine the port retained from the N64 game.
 | `GetGhostKeyframeDataSize`               |   ✅   |                 |      4 |     12 | `0x1006aba0` | `0x10063b50` | `uint GetGhostKeyframeDataSize(void)`                                                                                                    |
 | `RallyConfig::RallyConfig`               |   ✅   |                 |      2 |     12 | `0x10069a90` | `0x10062b00` | `RallyConfig * RallyConfig(RallyConfig * this)`                                                                                          |
 | `StartGhostRecording`                    |   ✅   |                 |      3 |     11 | `0x1006aa90` | `0x10063a40` | `void StartGhostRecording(void)`                                                                                                         |
-| `PlayBeepSound`                          |        | ✅ `0x8022b3c4` |      2 |     11 | `0x10067d80` | `0x10060df0` | `undefined PlayBeepSound()`                                                                                                              |
-| `PlayGoSound`                            |        | ✅ `0x8022b3e4` |      1 |     11 | `0x10067d90` | `0x10060e00` | `undefined PlayGoSound()`                                                                                                                |
+| `PlayBeepSound`                          |   ✅   | ✅ `0x8022b3c4` |      2 |     11 | `0x10067d80` | `0x10060df0` | `void PlayBeepSound(void)`                                                                                                               |
 | `Vehicle::ClearCameraChanged`            |        | ✅ `0x8022bcac` |      1 |     11 | `0x100683c0` | `0x10061430` | `undefined ClearCameraChanged(Vehicle * this)`                                                                                           |
+| `PlayGoSound`                            |   ✅   | ✅ `0x8022b3e4` |      1 |     11 | `0x10067d90` | `0x10060e00` | `void PlayGoSound(void)`                                                                                                                 |
 | `InitGlobalRallyConfig`                  |        |                 |      1 |     10 | `0x10069a60` | `0x10062ad0` | `undefined InitGlobalRallyConfig()`                                                                                                      |
 | `AiVehicleControllerCallback`            |   ✅   |                 |      3 |      9 | `0x10065620` |              | `void AiVehicleControllerCallback(Vehicle * vehicle)`                                                                                    |
 | `PlayerVehicleControllerCallback`        |   ✅   |                 |      3 |      9 | `0x10063fe0` |              | `void PlayerVehicleControllerCallback(Vehicle * vehicle)`                                                                                |
