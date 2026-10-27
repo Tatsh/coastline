@@ -360,6 +360,7 @@ extern int g_dwVertexConvCacheCount;
  * @param pFloatVerts The vertices converted.
  * @ghidraAddress BRD3D: 0x1002bf00
  * @ghidraAddress BRGlide: 0x10018fc0
+ * @stub{BRGlide}
  */
 void AddVertexConversionCacheEntry(const Vtx *pSource,
                                    int nVertexCount,
@@ -834,6 +835,7 @@ void PackCombineMode(GbiCommand *pCommand,
  *
  * @ghidraAddress BRD3D: 0x100737e0
  * @ghidraAddress BRGlide: 0x1006c750
+ * @stub{BRGlide}
  */
 void LoadHudOverlayTexture(void);
 
@@ -1043,6 +1045,7 @@ extern int g_dwAlphaRampStripRowCount;
  *
  * @ghidraAddress BRD3D: 0x10073950
  * @ghidraAddress BRGlide: 0x1006c800
+ * @stub{BRGlide}
  */
 void LoadParticleTexture(void);
 
@@ -1051,6 +1054,7 @@ void LoadParticleTexture(void);
  *
  * @ghidraAddress BRD3D: 0x10073980
  * @ghidraAddress BRGlide: 0x1006c820
+ * @stub{BRGlide}
  */
 void LoadTireTrailTexture(void);
 
@@ -1059,6 +1063,7 @@ void LoadTireTrailTexture(void);
  *
  * @ghidraAddress BRD3D: 0x100739b0
  * @ghidraAddress BRGlide: 0x1006c850
+ * @stub{BRGlide}
  */
 void LoadVehicleEnvMapTexture(void);
 
@@ -1067,6 +1072,7 @@ void LoadVehicleEnvMapTexture(void);
  *
  * @ghidraAddress BRD3D: 0x100739e0
  * @ghidraAddress BRGlide: 0x1006c880
+ * @stub{BRGlide}
  */
 void CreateFallbackEnvironmentTexture(void);
 
@@ -1075,6 +1081,7 @@ void CreateFallbackEnvironmentTexture(void);
  *
  * @ghidraAddress BRD3D: 0x10073a10
  * @ghidraAddress BRGlide: 0x1006c8b0
+ * @stub{BRGlide}
  */
 void CreateAlphaRampTextures(void);
 
