@@ -1492,7 +1492,6 @@ int CalculateTextureAspectRatio(int *pAspectRatio, int nWidth, int nHeight);
  * Create a device texture from an N64 image and its load options.
  *
  * @ghidraAddress BRD3D: 0x10027c60
- * @stub{BRD3D}
  */
 unsigned CreateTextureFromN64Image(const unsigned char *pImage,
                                    const unsigned char *pPalette,
@@ -1540,3 +1539,16 @@ extern decltype(&CloneTextureEntryWithNewImageData) g_pfnCloneTextureEntryWithNe
  * @ghidraAddress BRD3D: 0x118aa0cc
  */
 extern decltype(&UploadTrackTextureVariants) g_pfnUploadTrackTextureVariants;
+
+/**
+ * The width limit selected for the current texture category.
+ *
+ * @ghidraAddress BRD3D: 0x100a7df4
+ */
+extern int g_dwCurrentMaxTextureWidth;
+/**
+ * The height limit selected for the current texture category.
+ *
+ * @ghidraAddress BRD3D: 0x100a7df8
+ */
+extern int g_dwCurrentMaxTextureHeight;

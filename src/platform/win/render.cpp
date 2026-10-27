@@ -1638,3 +1638,147 @@ int CalculateTextureAspectRatio(int *pAspectRatio, int nWidth, int nHeight) {
     *pAspectRatio = wide ? level : 6 - level;
     return ratio == 64 || ratio == 32 || ratio == 16 || (!wide && ratio == 8);
 }
+
+int g_dwCurrentMaxTextureWidth;
+int g_dwCurrentMaxTextureHeight;
+
+unsigned CreateTextureFromN64Image(const unsigned char *pImage,
+                                   const unsigned char *pPalette,
+                                   int nWidth,
+                                   int nHeight,
+                                   int nLineBytes,
+                                   int nSize,
+                                   int nFormat,
+                                   int nOption7,
+                                   int nOption8,
+                                   int nOption9,
+                                   int nOption10,
+                                   int nOption11,
+                                   int nOption12,
+                                   int nOption13,
+                                   int nOption14) {
+    int widthBits = GetMipLevelFromDimension(nWidth);
+    int heightBits = GetMipLevelFromDimension(nHeight);
+    int paddedWidth = 1 << widthBits;
+    int paddedHeight = 1 << heightBits;
+    TextureImageData image;
+    std::memset(image.abUnknown0, 0, 4);
+    image.abUnknown0[4] = 3;
+    std::memset(image.abUnknown14, 0, sizeof(image.abUnknown14));
+    image.nSourceWidth = image.nWidth = nWidth;
+    image.nSourceHeight = image.nHeight = nHeight;
+    image.nDecodedWidth = paddedWidth;
+    image.nDecodedHeight = paddedHeight;
+    CalculateTextureLodFromDimensions(&image.nLargestLod, paddedWidth, paddedHeight);
+    image.nLod = image.nLargestLod;
+    image.nTileIndex = 0;
+    image.nTileLimit = 1;
+    TexScanTile &tile = image.aTiles[0];
+    tile.nTmem = 0;
+    tile.nMaskS = widthBits;
+    tile.nMaskT = heightBits;
+    tile.nLineBytes = nLineBytes;
+    tile.nSize = nSize;
+    tile.nFormat = nFormat;
+    tile.nShiftS = nOption11;
+    tile.nShiftT = nOption12;
+    tile.nUls = 2;
+    tile.nUlt = 2;
+    tile.nLrs = static_cast<int>((static_cast<unsigned>(nWidth) << 2) - 2);
+    tile.nLrt = static_cast<int>((static_cast<unsigned>(nHeight) << 2) - 2);
+    image.nRowSwapMask = nOption14;
+    image.bColorCombine = 0;
+    image.bOwnsPaintBuffers = 0;
+    std::memset(image.abEnvColor, 0, sizeof(image.abEnvColor));
+    std::memset(image.abPrimColor, 0, sizeof(image.abPrimColor));
+    g_bTexScanPrimColorSet = 0;
+    g_bTexScanEnvColorSet = 0;
+    image.nPixelFormatId = ChooseTexturePixelFormat(nSize, nFormat, 0);
+    image.nPixelBytes = GetTexturePixelSize(image.nPixelFormatId) * paddedWidth * paddedHeight;
+    image.bClampS = nOption9 != 0;
+    image.bClampT = nOption10 != 0;
+    image.pImage = const_cast<unsigned char *>(pImage);
+    image.pPalette = pPalette;
+    image.nLoadBytes = nOption7;
+    image.nOption8 = nOption8;
+    if ((g_dwTextureLoadCategory & 2) && !g_dwNullStubEnable) {
+        g_dwCurrentMaxTextureWidth = g_dwMaxTexWidthHighQuality;
+        g_dwCurrentMaxTextureHeight = g_dwMaxTexHeightHighQuality;
+    } else {
+        g_dwCurrentMaxTextureWidth = g_dwMaxTexWidthLowQuality;
+        g_dwCurrentMaxTextureHeight = g_dwMaxTexHeightLowQuality;
+    }
+    auto requiresSquare = []() {
+        return g_dwD3DAlwaysSquareTextures || ((g_D3DHalDeviceDesc.dpcTriCaps.dwTextureCaps |
+                                                g_D3DHelDeviceDesc.dpcTriCaps.dwTextureCaps) &
+                                               D3DPTEXTURECAPS_SQUAREONLY);
+    };
+    bool exceedsDevice = (g_D3DHalDeviceDesc.dwMaxTextureWidth &&
+                          static_cast<unsigned>(nWidth) > g_D3DHalDeviceDesc.dwMaxTextureWidth) ||
+                         (g_D3DHalDeviceDesc.dwMaxTextureHeight &&
+                          static_cast<unsigned>(nHeight) > g_D3DHalDeviceDesc.dwMaxTextureHeight);
+    bool exceedsQuality =
+        nOption13 && (nWidth > g_dwCurrentMaxTextureWidth || nHeight > g_dwCurrentMaxTextureHeight);
+    if (!nOption7 && !nOption8 && !requiresSquare() && !exceedsDevice && !exceedsQuality) {
+        CalculateTextureAspectRatio(&image.nAspectRatio, paddedWidth, paddedHeight);
+    } else {
+        int width = nWidth;
+        int height = nHeight;
+        auto update = [&]() {
+            CalculateTextureLodFromDimensions(&image.nLod, width, height);
+            CalculateTextureAspectRatio(&image.nAspectRatio, width, height);
+            image.nLargestLod = static_cast<int>(static_cast<unsigned>(image.nLod) +
+                                                 static_cast<unsigned>(g_dwTexScanMaxTileIndex));
+        };
+        if (nOption7) {
+            width /= 2;
+            update();
+        }
+        if (nOption8) {
+            height /= 2;
+            update();
+        }
+        if (g_D3DHalDeviceDesc.dwMaxTextureWidth &&
+            static_cast<unsigned>(width) > g_D3DHalDeviceDesc.dwMaxTextureWidth) {
+            width = static_cast<int>(g_D3DHalDeviceDesc.dwMaxTextureWidth);
+            update();
+        }
+        if (g_D3DHalDeviceDesc.dwMaxTextureHeight &&
+            static_cast<unsigned>(height) > g_D3DHalDeviceDesc.dwMaxTextureHeight) {
+            height = static_cast<int>(g_D3DHalDeviceDesc.dwMaxTextureHeight);
+            update();
+        }
+        if (nOption13 && width > g_dwCurrentMaxTextureWidth) {
+            width = g_dwCurrentMaxTextureWidth;
+            update();
+        }
+        if (nOption13 && height > g_dwCurrentMaxTextureHeight) {
+            height = g_dwCurrentMaxTextureHeight;
+            update();
+        }
+        if (requiresSquare() && width != height) {
+            if (width >= height) {
+                width = nOption13 && width >= g_dwCurrentMaxTextureWidth ?
+                            g_dwCurrentMaxTextureWidth :
+                            1 << GetMipLevelFromDimension(width);
+                height = width;
+            } else {
+                height = nOption13 && height >= g_dwCurrentMaxTextureHeight ?
+                             g_dwCurrentMaxTextureHeight :
+                             1 << GetMipLevelFromDimension(height);
+                width = height;
+            }
+            update();
+        }
+        image.nWidth = width;
+        image.nHeight = height;
+        CalculateTextureAspectRatio(&image.nAspectRatio, width, height);
+    }
+    image.nColorKey = 0;
+    unsigned options[] = {1, 1, 0xc0000000u, 0};
+    std::memcpy(image.abUnknown2c, options, sizeof(options));
+    image.dwFlags = g_dwTextureLoadCategory;
+    image.nDecodedBytes = image.nPixelBytes;
+    unsigned char *pixels = GetTextureImagePixels(&image);
+    return CreateTextureFromImage(&image, pixels);
+}
