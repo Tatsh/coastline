@@ -108,7 +108,9 @@ struct MenuItemListVTable {
     char abUnknown0[0x10]; /* +0x00 */
     int(__thiscall *AddItem)(
         MenuItemList *, const char *, unsigned, unsigned char, const RECT *, bool);
-    char abUnknown14[0x18]; /* +0x14 */
+    char abUnknown14[0xc]; /* +0x14 */
+    int(__thiscall *PollSelection)(MenuItemList *, int);
+    char abUnknown24[8]; /* +0x24 */
     int(__thiscall *RemoveItem)(MenuItemList *, int);
 };
 
@@ -431,6 +433,30 @@ int CarSetupUI_UpdateSteeringIndicatorPos(MenuWidget *pWidget);
  * @ghidraAddress BRGlide: 0x10037f70
  */
 int AudioOptionsUI_UpdateVolumeChannelImage(MenuWidget *pWidget);
+
+/**
+ * @ghidraAddress BRD3D: 0x1003eae0
+ * @ghidraAddress BRGlide: 0x10038220
+ */
+int LoadFileListUI_UpdateSlotSelection(MenuWidget *pWidget);
+
+/**
+ * @ghidraAddress BRD3D: 0x1003eb60
+ * @ghidraAddress BRGlide: 0x10038150
+ */
+int SeasonRoundList_UpdateRoundSelection(MenuWidget *pWidget);
+
+/**
+ * @ghidraAddress BRD3D: 0x1003ee20
+ * @ghidraAddress BRGlide: 0x10038350
+ */
+int AudioOptionsUI_UpdateCdTrackSelection(MenuWidget *pWidget);
+
+/**
+ * @ghidraAddress BRD3D: 0x1003ebc0
+ * @ghidraAddress BRGlide: 0x100381b0
+ */
+int NetworkCarSetupUI_PollChatListSelection(MenuWidget *pWidget);
 
 /**
  * @ghidraAddress BRD3D: 0x10aa29bc

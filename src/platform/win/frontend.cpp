@@ -1120,6 +1120,43 @@ int AudioOptionsUI_UpdateVolumeChannelImage(MenuWidget *pWidget) {
     return 1;
 }
 
+static inline void UpdateMenuListSelection(MenuWidget *pWidget, int &selection) {
+    MenuItemList *list = &pWidget->itemList;
+    int result = list->pVTable->PollSelection(list, selection);
+    if (result >= 0) {
+        selection = result;
+    }
+}
+
+int LoadFileListUI_UpdateSlotSelection(MenuWidget *pWidget) {
+    UpdateMenuListSelection(pWidget, g_dwFileListSelectedSlot);
+    return 1;
+}
+
+int SeasonRoundList_UpdateRoundSelection(MenuWidget *pWidget) {
+    UpdateMenuListSelection(pWidget, g_dwSeasonSavedRound);
+    return 1;
+}
+
+int AudioOptionsUI_UpdateCdTrackSelection(MenuWidget *pWidget) {
+    MenuItemList *list = &pWidget->itemList;
+    int track = g_dwSelectedCdTrack;
+    if (track < 0 || track >= 12) {
+        track = -1;
+    }
+    int result = list->pVTable->PollSelection(list, track);
+    if (result >= 0) {
+        g_dwSelectedCdTrack = result;
+    }
+    return 1;
+}
+
+int NetworkCarSetupUI_PollChatListSelection(MenuWidget *pWidget) {
+    MenuItemList *list = &pWidget->itemList;
+    list->pVTable->PollSelection(list, g_dwSelectedSessionIndex);
+    return 1;
+}
+
 int ShowVideoOptionsMenu(void) {
     return ShowCachedMenuScreen(g_pCachedMenu_InputConfig, BuildVideoOptionsUI);
 }
