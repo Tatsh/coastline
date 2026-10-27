@@ -9,6 +9,8 @@
 #include "profile.h"
 #include "vehicle.h"
 
+class MenuItemList;
+
 /** The size of g_szSeasonRoundLabel. */
 #define SEASON_ROUND_LABEL_SIZE 32
 
@@ -384,4 +386,4 @@ class MenuWidget;
  * @return Zero when the file does not open, otherwise one.
  * @ghidraAddress BRD3D: 0x10042170
  */
-int LoadSeasonUI_OnSlotSelected(MenuWidget *pUnused, const int *pnSlot);
+int LoadSeasonUI_OnSlotSelected(MenuItemList *pUnused, const int *pnSlot);
