@@ -37,7 +37,7 @@ private:
     };
     s32 index;
     s32 gridIndex;
-    u8 abUnknown148[0x1a]; /* +0x148 */
+    char playerName[0x1a];
     s16 skidFrames;
     RigidBody body;
     RigidBody wheelBodies[4];
@@ -493,6 +493,12 @@ public:
     }
     s32 GetGridIndex() const {
         return gridIndex;
+    }
+    s32 SetGridIndex(s32 value) {
+        return gridIndex = value;
+    }
+    char *GetPlayerName() {
+        return playerName;
     }
     s32 SetGroundHits(s32 value) {
         return groundHits = value;
@@ -1035,10 +1041,14 @@ private:
      * @ghidraAddress BRD3D: 0x10063420
      */
     void ChooseVehicleCar(void);
+
+public:
     /**
      * @ghidraAddress BRD3D: 0x10076ae0
      */
     void SetVehicleCarId(s32 carId);
+
+private:
     /**
      * @ghidraAddress BRD3D: 0x100767a0
      */

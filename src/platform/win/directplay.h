@@ -1055,6 +1055,9 @@ unsigned ReadPlayerSlotColorRgb(int slotIndex,
                                 unsigned char *green,
                                 unsigned char *blue);
 
+/** @ghidraAddress BRD3D: 0x1002f130 */
+void AddNetworkPlayerSlot(int slotIndex);
+
 /**
  * Set the line of status of network play under the mutex of the notices.
  *

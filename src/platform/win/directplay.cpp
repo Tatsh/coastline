@@ -23,6 +23,7 @@
 #include "platform/win/hud.h"
 #include "platform/win/input.h"
 #include "platform/win/netstream.h"
+#include "platform/win/racesound.h"
 #include "platform/win/settings.h"
 #include "platform/win/sound.h"
 #include "platform/win/timer.h"
@@ -2731,6 +2732,21 @@ unsigned ReadPlayerSlotColorRgb(int slotIndex,
     ReleaseMutex(slot.hMutex);
     return car;
 }
+void AddNetworkPlayerSlot(int slotIndex) {
+    auto &color = g_aVehicles[g_dwNumActiveVehicles].GetColor();
+    unsigned car = ReadPlayerSlotColorRgb(slotIndex, &color[0], &color[1], &color[2]);
+    g_aVehicles[g_dwNumActiveVehicles].SetVehicleCarId(static_cast<s32>(car));
+    Vehicle &namedVehicle = g_aVehicles[g_dwNumActiveVehicles];
+    const char *name = GetSlotPlayerName(slotIndex);
+    int player = g_dwNumActiveVehicles;
+    std::strcpy(namedVehicle.GetPlayerName(), name);
+    ReinitPlayerEngineSoundChannel(player, namedVehicle.GetCarModel());
+    Vehicle &vehicle = g_aVehicles[g_dwNumActiveVehicles];
+    g_dwNumActiveVehicles = static_cast<s32>(static_cast<u32>(g_dwNumActiveVehicles) + 1u);
+    vehicle.SetGridIndex(slotIndex);
+    g_dwNumVehicles = static_cast<s32>(static_cast<u32>(g_dwNumVehicles) + 1u);
+}
+
 int g_anDepartedPlayerSlotStack[PLAYER_SLOT_STACK_SIZE];
 int g_nDepartedPlayerStackTop;
 int g_anJoinedPlayerSlotStack[PLAYER_SLOT_STACK_SIZE];
