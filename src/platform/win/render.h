@@ -1176,3 +1176,12 @@ void ShutdownTextureSubsystem(void);
  * @ghidraAddress BRD3D: 0x10028e00
  */
 void UploadTextureEntryToSurface(int nEntry, TextureUploadData payload);
+
+/**
+ * Replace a static model texture's image with its loaded device texture entry.
+ *
+ * @param pTexture The model texture descriptor.
+ * @param nOption13 The final texture creation option.
+ * @ghidraAddress BRD3D: 0x1002a280
+ */
+void CreateDeviceTextureFromImageHeader(ModelTexture *pTexture, int nOption13);

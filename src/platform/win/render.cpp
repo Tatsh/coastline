@@ -968,3 +968,40 @@ void UploadTextureEntryToSurface(int nEntry, TextureUploadData payload) {
     CalculateTextureDimensions(&width, &height, entry.nLod, entry.nAspectRatio);
     g_ppTextureIdTable[entry.nTextureId]->UploadSurfaceToTexture(payload.pixels, width, height);
 }
+
+void CreateDeviceTextureFromImageHeader(ModelTexture *pTexture, int nOption13) {
+    if (!pTexture->image || (pTexture->textureFlags & 0x100000)) {
+        return;
+    }
+    unsigned flags = pTexture->textureFlags;
+    unsigned format = flags >> 24 & 0xf;
+    int size;
+    int n64Format;
+    if (format == TEXTURE_FORMAT_CI4) {
+        size = G_IM_SIZ_4b;
+        n64Format = G_IM_FMT_CI;
+    } else if (format == TEXTURE_FORMAT_I8) {
+        size = G_IM_SIZ_8b;
+        n64Format = G_IM_FMT_I;
+    } else {
+        size = G_IM_SIZ_16b;
+        n64Format = G_IM_FMT_RGBA;
+    }
+    int width = 1 << GetMipLevelFromDimension(pTexture->width);
+    int height = 1 << GetMipLevelFromDimension(pTexture->height);
+    pTexture->textureEntry = g_pfnCreateTextureFromN64ImageAutoLoadSize(
+        pTexture->image,
+        reinterpret_cast<const unsigned char *>(pTexture->palette),
+        width,
+        height,
+        size,
+        n64Format,
+        flags >> 31,
+        flags >> 30 & 1,
+        flags >> 29 & 1,
+        flags >> 28 & 1,
+        0,
+        0,
+        1,
+        nOption13);
+}

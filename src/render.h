@@ -51,7 +51,14 @@ typedef struct {
  * A texture of a model and its palette. Its fields join this structure as they are reconstructed.
  */
 typedef struct {
-    u8 *image;    /*!< The texels. */
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+    union {
+        u8 *image;             /*!< The texels before device texture creation. */
+        unsigned textureEntry; /*!< The loaded entry after device texture creation. */
+    };
+#else
+    u8 *image; /*!< The texels. */
+#endif
     u16 *palette; /*!< The 16 colors of the palette, in RGBA 5551. */
     union {
         u32 paletteRomIndex; /*!< The palette offset, in units of 32 bytes in the low 12 bits. */
