@@ -30,8 +30,7 @@ BlendCamera(CameraFrame &out, const CameraFrame &from, const CameraFrame &to, lo
 }
 } // namespace
 
-inline void
-Vehicle::InterpolateSnapshotState(const Vehicle &from, const Vehicle &to, long double share) {
+inline void Vehicle::CopySnapshotState(const Vehicle &from) {
     std::memcpy(this, &from, sizeof(*this));
     const auto repairCamera = [&](CameraFrame *camera) -> CameraFrame * {
         for (int i : {0, 5, 1, 2, 3}) {
@@ -47,6 +46,11 @@ Vehicle::InterpolateSnapshotState(const Vehicle &from, const Vehicle &to, long d
     if (from.previousCamera != nullptr) {
         previousCamera = repairCamera(from.previousCamera);
     }
+}
+
+inline void
+Vehicle::InterpolateSnapshotState(const Vehicle &from, const Vehicle &to, long double share) {
+    CopySnapshotState(from);
     for (int row = 0; row < 4; ++row) {
         for (int column = 0; column < 3; ++column) {
             matrix[row][column] = Blend(from.matrix[row][column], to.matrix[row][column], share);
@@ -62,6 +66,21 @@ Vehicle::InterpolateSnapshotState(const Vehicle &from, const Vehicle &to, long d
     for (int camera : {0, 1, 2, 3, 5}) {
         BlendCamera(cameras[camera], from.cameras[camera], to.cameras[camera], share);
     }
+}
+
+void FrameSnapshot::Capture() {
+    for (int i = 0; i < (g_dwNumActiveVehicles == 0 ? 1 : g_dwNumActiveVehicles); ++i) {
+        vehicles[i].CopySnapshotState(g_aVehicles[i]);
+    }
+    const int racerCount = g_dwNumVehicles;
+    for (int i = 0; i < racerCount; ++i) {
+        std::memcpy(&racers[i], &g_aRacerSlots[i], sizeof(racers[i]));
+        if (const auto vehicle = g_aRacerSlots[i].GetVehicle()) {
+            racers[i].SetVehicle(&vehicles[vehicle - g_aVehicles]);
+        }
+    }
+    std::memcpy(&viewport, &g_aViewportRects[0], sizeof(viewport));
+    SnapshotParticleState(&particles);
 }
 
 void FrameSnapshot::InterpolateFrom(const FrameSnapshot &from,

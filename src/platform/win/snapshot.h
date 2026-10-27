@@ -33,6 +33,7 @@ public:
     const CameraFrame &GetPrimaryCamera() const {
         return *vehicles[0].GetActiveCamera();
     }
+    void Capture();
     void InterpolateFrom(const FrameSnapshot &from, const FrameSnapshot &to, long double share);
 };
 
