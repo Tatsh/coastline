@@ -67,6 +67,7 @@ extern u8 g_aabInputRecordings[][0xF000];
  * @ghidraAddress USA: 0x80315e3c
  * @ghidraAddress EUR: 0x80317b2c
  * @ghidraAddress JPN: 0x8031656c
+ * @ghidraAddress BRD3D: 0x106909c8
  */
 extern s32 g_dwBestReplayLength;
 
@@ -74,6 +75,7 @@ extern s32 g_dwBestReplayLength;
  * @ghidraAddress USA: 0x80315e40
  * @ghidraAddress EUR: 0x80317b30
  * @ghidraAddress JPN: 0x80316570
+ * @ghidraAddress BRD3D: 0x10680668
  */
 extern s32 g_dwBestReplayPlayer;
 
@@ -83,15 +85,17 @@ extern s32 g_dwBestReplayPlayer;
  * @ghidraAddress USA: 0x80315e48
  * @ghidraAddress EUR: 0x80317b38
  * @ghidraAddress JPN: 0x80316578
+ * @ghidraAddress BRD3D: 0x10680670
  */
-extern u8 *g_apReplayGhostPtrs[4];
+extern u8 *g_apReplayGhostPtrs[];
 
 /**
  * @ghidraAddress USA: 0x80315e58
  * @ghidraAddress EUR: 0x80317b48
  * @ghidraAddress JPN: 0x80316588
+ * @ghidraAddress BRD3D: 0x106806e8
  */
-extern s32 g_adwReplayGhostSizes[4];
+extern s32 g_adwReplayGhostSizes[];
 
 /** The bytes of the recording of each local player's input over the last lap. */
 #define LAST_LAP_RECORDING_SIZE 0x3840

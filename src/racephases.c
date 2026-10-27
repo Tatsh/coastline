@@ -1,11 +1,7 @@
 #include "racephases.h"
 
 #include <PR/os.h>
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
-#include <string.h>
-#else
-#include <PR/os_libc.h>
-#endif
+
 #include "fade.h"
 #include "frametime.h"
 #include "game.h"
@@ -20,14 +16,22 @@
 #include "vehiclecount.h"
 #include "weather.h"
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
+#include <string.h>
+
 #include "platform/win/boot/strings.h"
 #include "platform/win/directplay.h"
 #include "platform/win/ghost.h"
 #include "platform/win/input.h"
 #include "platform/win/settings.h"
+#else
+#include <PR/os_libc.h>
+
+#include "replay.h"
+#endif
+
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
 #define RACE_GHOST_TRACK ((u32)(s32)g_GhostRecordingInfo.track)
 #else
-#include "replay.h"
 #define RACE_GHOST_TRACK g_abGhostRecording[0]
 #endif
 #define FADE_SECONDS 0.2f

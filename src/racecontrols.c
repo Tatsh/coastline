@@ -56,7 +56,7 @@ static s32 ApplyUnpauseAcknowledgement(s32 paused) {
 }
 #else
 #define RACE_TRANSFER_INPUT(state, mask) TransferFlags(state, mask)
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 
 /* Take the input of the pause menu, and tell whether the race stays paused. */
 s32 ProcessPauseMenu(s32 paused) {
@@ -84,7 +84,7 @@ s32 ProcessPauseMenu(s32 paused) {
         paused = ApplyUnpauseAcknowledgement(paused);
         goto networkTick;
     }
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
     for (i = 0; i < (s32)g_dwNumLocalPlayers; i++) {
 #if TGR_PLATFORM != TGR_PLATFORM_WIN
         UpdateStickRepeat(VEHICLE_GET(&g_aVehicles[i], Input));
@@ -222,7 +222,7 @@ s32 ProcessPauseMenu(s32 paused) {
                 IncreaseSfxVolume();
             }
         }
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
     }
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
 networkTick:
@@ -307,6 +307,6 @@ s32 ProcessRaceButtons(s32 paused) {
             return paused;
         }
     }
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
     return paused;
 }

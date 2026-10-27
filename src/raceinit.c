@@ -22,17 +22,20 @@
 #include "platform/win/settings.h"
 #include "platform/win/sound.h"
 
+#else
+#include <PR/os_libc.h>
+
+#include "assetdma.h"
+#include "audiomix.h"
+#endif
+
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
 /**
  * The next of the two attract recordings to load.
  *
  * @ghidraAddress BRD3D: 0x106909f4
  */
 static s32 g_dwAttractDemoIndex;
-#else
-#include <PR/os_libc.h>
-
-#include "assetdma.h"
-#include "audiomix.h"
 #endif
 
 #define CHAMPIONSHIP_VEHICLES 20
@@ -141,7 +144,7 @@ void SetupRaceVehicles(void) {
             }
         }
         goto replays;
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
     case GAME_MODE_AFTER_SEASON:
         g_dwNumLocalPlayers = 1;
         g_dwNumVehicles = 1;
@@ -212,7 +215,7 @@ void SetupRaceVehicles(void) {
             break;
         }
         VEHICLE_GET(&g_aVehicles[0], Input)->playbackPosition = RECORDING_HEADER_SIZE;
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
         VEHICLE_GET(&g_aVehicles[0], Input)->recordBuffers[0] = NULL;
         VEHICLE_GET(&g_aVehicles[0], Input)->recordBuffers[1] = NULL;
         vehicle = &g_aVehicles[0];

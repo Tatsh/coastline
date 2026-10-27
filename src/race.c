@@ -18,6 +18,7 @@
 #include "options.h"
 #include "physics.h"
 #include "racecontrols.h"
+#include "racefinish.h"
 #include "raceinit.h"
 #include "raceload.h"
 #include "racemenu.h"
@@ -128,99 +129,6 @@ static void CheckInstantReplayEnd(void) {
     other = g_dwBestReplayPlayer == 0;
     if (g_aVehicles[other].input->playbackLimit == g_aVehicles[other].input->playbackPosition) {
         LeaveRace();
-    }
-}
-
-/* Choose the instant replay of the best recording of the players. */
-static void ChooseInstantReplay(void) {
-    s32 i, j;
-
-    g_dwBestReplayLength = g_aVehicles[0].input->recordPositions[0];
-    g_dwBestReplayPlayer = 0;
-    for (i = 1; i < (s32)g_dwNumLocalPlayers; i++) {
-        if (g_aVehicles[i].input->recordPositions[i] < g_dwBestReplayLength) {
-            g_dwBestReplayLength = g_aVehicles[i].input->recordPositions[i];
-            g_dwBestReplayPlayer = i;
-        }
-    }
-    for (i = 0; i < (s32)g_dwNumLocalPlayers; i++) {
-        g_apReplayGhostPtrs[i] = g_aVehicles[i].input->recordBuffers[g_dwBestReplayPlayer];
-        g_adwReplayGhostSizes[i] = g_aVehicles[i].input->recordPositions[g_dwBestReplayPlayer];
-    }
-    for (i = 0; i < (s32)g_dwNumLocalPlayers; i++) {
-        for (j = 0; j < (s32)g_dwNumLocalPlayers; j++) {
-            /* The address of the positions is printed rather than one of them. */
-            osSyncPrintf(
-                "veh[%d]->recIndex[%d] = %d\n", i, j, g_aVehicles[i].input->recordPositions);
-            g_aVehicles[i].input->recordBuffers[j] = NULL;
-        }
-    }
-    osSyncPrintf("bestNumber = %d, bestIndex = %d\n", g_dwBestReplayPlayer, g_dwBestReplayLength);
-}
-
-/* Go on from the race once the screen faded out. */
-static void FinishRace(void) {
-    s32 i, j;
-
-    for (i = 0; i < MAX_VEHICLES; i++) {
-        for (j = 0; j < (s32)g_dwNumLocalPlayers; j++) {
-            g_aVehicles[i].input->recordLimits[j] = g_aVehicles[i].input->recordPositions[j];
-        }
-    }
-    g_dwSoundEffectEchoOffset = 0;
-    for (i = 0; i < RACE_SOUND_CHANNELS; i++) {
-        g_aSoundEffectChannels[i].volume = 0;
-        g_aSoundEffectChannels[i].mixVolume = 0;
-        g_aSoundEffectChannels[i].step = 0;
-        g_aSoundEffectChannels[i].sample = g_SilenceSampleData;
-    }
-    g_bRaceScreenActive = FALSE;
-    if (g_dwRaceExitState) {
-        if (g_bReplayAfterRace) {
-            if (!gInstantReplayActive) {
-                ChooseInstantReplay();
-            }
-            gInstantReplayActive = TRUE;
-        } else {
-            ClearFramebuffersHighRes();
-            g_dwTrackMirrored = FALSE;
-            if (g_dwGameMode == GAME_MODE_AFTER_SEASON) {
-                if (g_aVehicles[0].profile->season) {
-                season:
-                    /* After the race of a season or the credits, the championship goes on. */
-                    g_dwGameMode = GAME_MODE_CHAMPIONSHIP;
-                    SetTrackFromSeason();
-                    g_bSaveLoadEntryPoint = SAVE_LOAD_FROM_SEASON;
-                    SetCurrentScreenCallback(ProcessDataSaveLoadMenu);
-                } else {
-                    /* The last season ends with the credits. */
-                    StartEndingCredits();
-                }
-            } else if (g_dwGameMode == GAME_MODE_DEMO &&
-                       g_dwRaceSessionType == RACE_SESSION_SCROLLING_CREDITS) {
-                /* The credits share the return to the championship of the race after a season. */
-                goto season;
-            } else if (g_dwSavedResultsValid &&
-                       (g_dwGameMode == GAME_MODE_TIME_ATTACK || g_dwGameMode == GAME_MODE_ARCADE ||
-                        g_dwGameMode == GAME_MODE_CHAMPIONSHIP)) {
-                RestoreRaceResultsFromSlots();
-                SetCurrentScreenCallback(ProcessRaceResultsScreen);
-            } else if (g_dwGameMode == GAME_MODE_DEMO &&
-                       g_dwRaceSessionType == RACE_SESSION_CREDIT_CAPTIONS) {
-                SetCurrentScreenCallback(ProcessOptionsMenu);
-            } else if (g_dwGameMode == GAME_MODE_DEMO &&
-                       g_dwRaceSessionType == RACE_SESSION_ATTRACT && !g_bDemoInterrupted) {
-                SetCurrentScreenCallback(ProcessSplashScreens);
-            } else {
-                SetCurrentScreenCallback(ProcessMainMenu);
-            }
-            gInstantReplayActive = FALSE;
-        }
-        g_dwRaceInitialized = FALSE;
-    }
-    g_wRaceScreenLoopExited = TRUE;
-    for (i = 0; i < MAX_VEHICLES; i++) {
-        g_aVehicles[i].input->playbackBuffer = NULL;
     }
 }
 

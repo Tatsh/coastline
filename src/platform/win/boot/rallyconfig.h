@@ -19,6 +19,12 @@ public:
     const char *GetPlayerName() const {
         return szPlayerName;
     }
+    int GetSfxVolume() const {
+        return dwSfxVolume;
+    }
+    int GetMusicVolume() const {
+        return dwMusicVolume;
+    }
 
     InputBinding aInputBindingsKeyboard[INPUT_BINDING_COUNT]; /*!< The keyboard bindings. */
     InputBinding aInputBindingsDevice1[INPUT_BINDING_COUNT]; /*!< First game controller bindings. */
