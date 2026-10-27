@@ -17,6 +17,7 @@
 #include "debugmessage.h"
 #include "displaylistops.h"
 #include "frametime.h"
+#include "render.h"
 #include "screen.h"
 #include "screendraw.h"
 
@@ -129,6 +130,7 @@ extern u16 g_wScreenFrameCount;
  * @ghidraAddress USA: 0x8028a8a0
  * @ghidraAddress EUR: 0x8028caa4
  * @ghidraAddress JPN: 0x8028c574
+ * @ghidraAddress BRD3D: 0x106c0688
  */
 extern u32 g_dwColorDitherMode;
 
@@ -138,6 +140,7 @@ extern u32 g_dwColorDitherMode;
  * @ghidraAddress USA: 0x8028a89c
  * @ghidraAddress EUR: 0x8028caa0
  * @ghidraAddress JPN: 0x8028c570
+ * @ghidraAddress BRD3D: 0x106c0920
  */
 extern u32 g_dwAlphaDitherMode;
 
@@ -168,23 +171,37 @@ extern s32 g_dwFrameDeltaMs;
  */
 extern s32 g_dwElapsedTimeMs;
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /**
- * Start the display list of a frame in the low resolution, 320 by 240.
+ * Start the display list of a frame in the low-resolution mode.
  *
  * @ghidraAddress USA: 0x80219a1c
  * @ghidraAddress EUR: 0x8021aa3c
  * @ghidraAddress JPN: 0x8021a394
+ * @ghidraAddress BRD3D: 0x10032873
  */
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+void StartLowResFrame(ViewportRect *views);
+#else
 void StartLowResFrame(void);
+#endif
 
 /**
- * Start the display list of a frame in the high resolution, 640 by 480.
+ * Start the display list of a frame in the high-resolution mode.
  *
  * @ghidraAddress USA: 0x80219a3c
  * @ghidraAddress EUR: 0x8021aa5c
  * @ghidraAddress JPN: 0x8021a3b4
+ * @ghidraAddress BRD3D: 0x10032886
  */
 void StartHighResFrame(void);
+
+#ifdef __cplusplus
+}
+#endif
 
 /**
  * End the display list of the frame and run it.
@@ -820,10 +837,18 @@ void FaultThread(void *arg);
 void BootIdleThread(void *arg);
 
 /** The commands of the display list of each frame. */
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#define DISPLAY_LIST_COMMANDS 12000
+#else
 #define DISPLAY_LIST_COMMANDS 6000
+#endif
 
 /** The commands at the start of the display list of each frame that the frame does not use. */
 #define DISPLAY_LIST_RESERVED 64
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /**
  * Start the display list of a frame in a resolution, with the render modes every frame starts
@@ -833,8 +858,17 @@ void BootIdleThread(void *arg);
  * @ghidraAddress USA: 0x80219470
  * @ghidraAddress EUR: 0x8021a490
  * @ghidraAddress JPN: 0x80219de0
+ * @ghidraAddress BRD3D: 0x100322e6
  */
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+void BeginDisplayList(ViewportRect *views, s32 highRes);
+#else
 void BeginDisplayList(s32 highRes);
+#endif
+
+#ifdef __cplusplus
+}
+#endif
 
 /**
  * Do nothing. The arguments are variable, as of a print compiled out.
@@ -1001,6 +1035,7 @@ extern u32 g_dwLastFlushValue;
  * @ghidraAddress USA: 0x8028a84c
  * @ghidraAddress EUR: 0x8028ca4c
  * @ghidraAddress JPN: 0x8028c51c
+ * @ghidraAddress BRD3D: 0x106c65e0
  */
 extern s32 g_dwDisplayModeChangeCountdown;
 
@@ -1041,6 +1076,7 @@ extern OSViMode g_ViModePalLan1;
  * @ghidraAddress USA: 0x8028aa4c
  * @ghidraAddress EUR: 0x8028cc54
  * @ghidraAddress JPN: 0x8028c724
+ * @ghidraAddress BRD3D: 0x106c6604
  */
 extern s32 g_dwViGammaEnabled;
 

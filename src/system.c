@@ -122,9 +122,6 @@
 /* A fill of the depth buffer with the farthest depth, as two depths. */
 #define FARTHEST_DEPTHS ((u32)GPACK_ZDZ(G_MAXFIXED, 0) << 16 | GPACK_ZDZ(G_MAXFIXED, 0))
 
-/* The gap between the views and the edges of the screen. */
-#define VIEWPORT_MARGIN 8
-
 /* A frame of an animated texture with no texels or no palette on the cartridge. */
 #define TEXTURE_ROM_NONE ((u32) - 1)
 
@@ -290,117 +287,6 @@ void ClearZBufferRect(s32 x, s32 y, s32 width, s32 height) {
                      G_IM_SIZ_16b,
                      g_dwScreenWidth << g_dwScreenScaleShift,
                      TO_RSP_ADDRESS(g_apFramebuffers[g_dwFrameBufferIndex]));
-}
-
-void BeginDisplayList(s32 highRes) {
-    if (highRes != g_dwScreenScaleShift) {
-        g_dwDisplayModeChangeCountdown = 1;
-        g_dwScreenScaleShift = highRes;
-    }
-    AddTimingMarker(0, 0, 0x82, 0, 0xFF);
-#if TGR_REGION == TGR_REGION_JP
-    ResetGlyphCache();
-#endif
-    switch (g_dwNumViewports) {
-    case 1:
-        g_aViewportRects[0].x = VIEWPORT_MARGIN;
-        g_aViewportRects[0].y = VIEWPORT_MARGIN;
-        g_aViewportRects[0].width = g_dwScreenWidth - 2 * VIEWPORT_MARGIN;
-        g_aViewportRects[0].height = g_dwScreenHeight - 2 * VIEWPORT_MARGIN;
-        break;
-    case 2:
-        /* The two views stop 88 pixels short of the right of the screen. */
-        g_aViewportRects[1].x = VIEWPORT_MARGIN;
-        g_aViewportRects[1].y = (g_dwScreenHeight >> 1) + 1;
-        g_aViewportRects[1].width = g_dwScreenWidth - 96;
-        g_aViewportRects[1].height = (g_dwScreenHeight >> 1) - VIEWPORT_MARGIN;
-        g_aViewportRects[0].x = VIEWPORT_MARGIN;
-        g_aViewportRects[0].y = VIEWPORT_MARGIN;
-        g_aViewportRects[0].width = g_dwScreenWidth - 96;
-        g_aViewportRects[0].height = (g_dwScreenHeight >> 1) - VIEWPORT_MARGIN;
-        break;
-    }
-    ClearRenderStats();
-    ResetFrameBlocks();
-    if (g_dwDisplayModeChangeCountdown != 0 && g_dwDisplayModeChangeCountdown - 1 == 0) {
-        if (g_dwScreenScaleShift) {
-            /* The frame buffers of the high resolution end where the first of the low starts. */
-            g_apFramebuffers[0] = g_aFramebuffer0 - (g_aFramebuffer1 - g_aFramebuffer0) * 6;
-            g_apFramebuffers[1] = g_aFramebuffer0 - (g_aFramebuffer1 - g_aFramebuffer0) * 2;
-        } else {
-            g_apFramebuffers[0] = g_aFramebuffer0;
-            g_apFramebuffers[1] = g_aFramebuffer1;
-        }
-    }
-    gDisplayListPtr = DISPLAY_LIST_START();
-    g_dwTextureFilterMode = g_bBilinearFiltering ? G_TF_BILERP : G_TF_POINT;
-    g_dwColorDitherMode = G_CD_BAYER;
-    g_dwAlphaDitherMode = G_AD_PATTERN;
-    gSPSegment(gDisplayListPtr++, 0, 0);
-    gDPPipeSync(gDisplayListPtr++);
-    SetScissorRect(0, 0, g_dwScreenWidth, g_dwScreenHeight);
-    gDPSetCombineLERP(gDisplayListPtr++,
-                      0,
-                      0,
-                      0,
-                      PRIMITIVE,
-                      0,
-                      0,
-                      0,
-                      PRIMITIVE,
-                      0,
-                      0,
-                      0,
-                      COMBINED,
-                      0,
-                      0,
-                      0,
-                      COMBINED);
-    gDPSetTextureLOD(gDisplayListPtr++, G_TL_TILE);
-    gDPSetTextureLUT(gDisplayListPtr++, G_TT_NONE);
-    gDPSetTextureDetail(gDisplayListPtr++, G_TD_CLAMP);
-    gDPSetTexturePersp(gDisplayListPtr++, G_TP_PERSP);
-    gDPSetTextureFilter(gDisplayListPtr++, g_dwTextureFilterMode);
-    gDPSetTextureConvert(gDisplayListPtr++, G_TC_FILT);
-    gDPSetCombineKey(gDisplayListPtr++, G_CK_NONE);
-    gDPSetAlphaCompare(gDisplayListPtr++, G_AC_THRESHOLD);
-    gDPSetRenderMode(gDisplayListPtr++, G_RM_OPA_SURF, G_RM_OPA_SURF2);
-    gDPSetColorDither(gDisplayListPtr++, g_dwColorDitherMode);
-    /* The alpha dither goes to the field of the colour dither. */
-    gDPSetColorDither(gDisplayListPtr++, g_dwAlphaDitherMode);
-    gDPSetCycleType(gDisplayListPtr++, G_CYC_1CYCLE);
-    gDPSetBlendColor(gDisplayListPtr++, 0, 0, 0, 0);
-    gSPMatrix(gDisplayListPtr++,
-              TO_RSP_ADDRESS(&g_mtxIdentity),
-              G_MTX_MODELVIEW | G_MTX_LOAD | G_MTX_NOPUSH);
-    gSPClearGeometryMode(gDisplayListPtr++,
-                         G_SHADE | G_SHADING_SMOOTH | G_CULL_BOTH | G_FOG | G_LIGHTING |
-                             G_TEXTURE_GEN | G_TEXTURE_GEN_LINEAR | G_LOD);
-    gSPSetGeometryMode(gDisplayListPtr++, G_CULL_BACK);
-    if (g_bGbiClipping) {
-        gSPSetGeometryMode(gDisplayListPtr++, G_CLIPPING);
-    } else {
-        gSPClearGeometryMode(gDisplayListPtr++, G_CLIPPING);
-    }
-    gSPDisplayList(gDisplayListPtr++, g_aClipRatioDisplayLists[g_dwClipRatioIndex]);
-    gSPTexture(gDisplayListPtr++, 0, 0, 0, G_TX_RENDERTILE, G_OFF);
-    gDPSetColorImage(gDisplayListPtr++,
-                     G_IM_FMT_RGBA,
-                     G_IM_SIZ_16b,
-                     g_dwScreenWidth << g_dwScreenScaleShift,
-                     TO_RSP_ADDRESS(g_apFramebuffers[g_dwFrameBufferIndex]));
-    gDPSetDepthImage(gDisplayListPtr++, TO_RSP_ADDRESS(g_aDepthBuffer));
-    osViSetSpecialFeatures(OS_VI_DITHER_FILTER_ON);
-    osViSetSpecialFeatures(OS_VI_DIVOT_ON);
-    osViSetSpecialFeatures(g_dwViGammaEnabled ? OS_VI_GAMMA_ON : OS_VI_GAMMA_OFF);
-}
-
-void StartLowResFrame(void) {
-    BeginDisplayList(0);
-}
-
-void StartHighResFrame(void) {
-    BeginDisplayList(1);
 }
 
 void StubEmptyVoid(s32 unused0, ...) {

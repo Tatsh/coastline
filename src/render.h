@@ -318,8 +318,13 @@ extern f32 g_ViewLookAtMtx[4][4];
  * @ghidraAddress USA: 0x8028a8c0
  * @ghidraAddress EUR: 0x8028cac8
  * @ghidraAddress JPN: 0x8028c598
+ * @ghidraAddress BRD3D: 0x100aa730
  */
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+extern f32 g_mtxIdentity[4][4];
+#else
 extern Mtx g_mtxIdentity;
+#endif
 
 /**
  * The vertices, triangles, and polygons drawn this frame.
@@ -427,6 +432,7 @@ extern s32 g_adwVehicleVisible[];
  * @ghidraAddress USA: 0x8028a900
  * @ghidraAddress EUR: 0x8028cb08
  * @ghidraAddress JPN: 0x8028c5d8
+ * @ghidraAddress BRD3D: 0x100aa770
  */
 extern Gfx g_aClipRatioDisplayLists[CLIP_RATIOS][5];
 
@@ -652,6 +658,7 @@ extern s32 g_dwViewportIndex;
  * @ghidraAddress USA: 0x8028a8a4
  * @ghidraAddress EUR: 0x8028caa8
  * @ghidraAddress JPN: 0x8028c578
+ * @ghidraAddress BRD3D: 0x106c65fc
  */
 extern s32 g_dwClipRatioIndex;
 
@@ -661,6 +668,7 @@ extern s32 g_dwClipRatioIndex;
  * @ghidraAddress USA: 0x8028aa50
  * @ghidraAddress EUR: 0x8028cc58
  * @ghidraAddress JPN: 0x8028c728
+ * @ghidraAddress BRD3D: 0x100aa884
  */
 extern s32 g_bGbiClipping;
 

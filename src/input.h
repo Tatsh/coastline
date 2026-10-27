@@ -86,6 +86,7 @@ extern s32 g_dwMultiplayerMode;
  * @ghidraAddress USA: 0x8028aa68
  * @ghidraAddress EUR: 0x8028cc70
  * @ghidraAddress JPN: 0x8028c740
+ * @ghidraAddress BRD3D: 0x100aa890
  */
 extern s32 g_bBilinearFiltering;
 
