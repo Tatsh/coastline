@@ -106,6 +106,8 @@ void SetSfxFadeLevelImmediate(float level) {
 #else
 f32 g_fFadeTarget;
 f32 g_fFadeLevel;
+f32 g_fFadeRate;
+s32 g_dwFadeAutoReverse;
 #endif
 
 void SnapScreenFade(float level) {
@@ -117,19 +119,30 @@ void SnapScreenFade(float level) {
 s32 IsFadingIn(void) {
     return g_fFadeRate > 0.0f && !g_dwFadeAutoReverse;
 }
+#endif
+
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+/* The x87 queries accept unordered comparisons as less than or equal. */
+#define FADE_LESS(left, right) (!((left) >= (right)))
+#define FADE_EQUAL(left, right) (!((left) < (right) || (left) > (right)))
+#else
+#define FADE_LESS(left, right) ((left) < (right))
+#define FADE_EQUAL(left, right) ((left) == (right))
+#endif
 
 s32 IsFadingOut(void) {
-    return g_fFadeRate < 0.0f || g_dwFadeAutoReverse;
+    return FADE_LESS(g_fFadeRate, 0.0f) || g_dwFadeAutoReverse;
 }
 
 s32 IsFadeComplete(void) {
-    return g_fFadeTarget == g_fFadeLevel && !g_dwFadeAutoReverse;
+    return FADE_EQUAL(g_fFadeTarget, g_fFadeLevel) && !g_dwFadeAutoReverse;
 }
 
 s32 IsFadedToBlack(void) {
-    return g_fFadeRate < 0.0f && g_fFadeLevel == 0.0f && !g_dwFadeAutoReverse;
+    return FADE_LESS(g_fFadeRate, 0.0f) && FADE_EQUAL(g_fFadeLevel, 0.0f) && !g_dwFadeAutoReverse;
 }
 
+#if TGR_PLATFORM == TGR_PLATFORM_N64
 s32 IsFadedToWhite(void) {
     return g_fFadeRate > 0.0f && g_fFadeLevel == 1.0f && !g_dwFadeAutoReverse;
 }

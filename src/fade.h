@@ -76,6 +76,7 @@ extern f32 g_fScreenFogPulse;
  * @ghidraAddress EUR: 0x8028da04
  * @ghidraAddress JPN: 0x8028d434
  * @ghidraAddress BRD3D: 0x10575510
+ * @ghidraAddress BRGlide: 0x104b16b8
  */
 extern f32 g_fFadeTarget;
 
@@ -85,6 +86,8 @@ extern f32 g_fFadeTarget;
  * @ghidraAddress USA: 0x8028b758
  * @ghidraAddress EUR: 0x8028da08
  * @ghidraAddress JPN: 0x8028d438
+ * @ghidraAddress BRD3D: 0x10575514
+ * @ghidraAddress BRGlide: 0x104b16bc
  */
 extern f32 g_fFadeRate;
 
@@ -93,6 +96,7 @@ extern f32 g_fFadeRate;
  * @ghidraAddress EUR: 0x8028da0c
  * @ghidraAddress JPN: 0x8028d43c
  * @ghidraAddress BRD3D: 0x10575518
+ * @ghidraAddress BRGlide: 0x104b16c0
  */
 extern f32 g_fFadeLevel;
 
@@ -173,6 +177,8 @@ extern s32 g_dwSfxFadeSkipFrame;
  * @ghidraAddress USA: 0x8028b784
  * @ghidraAddress EUR: 0x8028da34
  * @ghidraAddress JPN: 0x8028d464
+ * @ghidraAddress BRD3D: 0x10575530
+ * @ghidraAddress BRGlide: 0x104b16d8
  */
 extern s32 g_dwFadeAutoReverse;
 
@@ -294,6 +300,8 @@ s32 IsFadingIn(void);
  * @ghidraAddress USA: 0x802238fc
  * @ghidraAddress EUR: 0x80224c3c
  * @ghidraAddress JPN: 0x8022442c
+ * @ghidraAddress BRD3D: 0x1002b2a0
+ * @ghidraAddress BRGlide: 0x10018310
  */
 s32 IsFadingOut(void);
 
@@ -304,6 +312,8 @@ s32 IsFadingOut(void);
  * @ghidraAddress USA: 0x80223940
  * @ghidraAddress EUR: 0x80224c80
  * @ghidraAddress JPN: 0x80224470
+ * @ghidraAddress BRD3D: 0x1002b2d0
+ * @ghidraAddress BRGlide: 0x10018340
  */
 s32 IsFadeComplete(void);
 
@@ -314,6 +324,8 @@ s32 IsFadeComplete(void);
  * @ghidraAddress USA: 0x80223988
  * @ghidraAddress EUR: 0x80224cc8
  * @ghidraAddress JPN: 0x802244b8
+ * @ghidraAddress BRD3D: 0x1002b300
+ * @ghidraAddress BRGlide: 0x10018370
  */
 s32 IsFadedToBlack(void);
 
