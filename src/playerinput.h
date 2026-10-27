@@ -81,14 +81,14 @@ extern "C" {
 extern PlayerInputState g_aPlayerInputState[MAX_PLAYERS];
 
 /**
- * The pads the controller reads fill, one per player.
+ * Emulated controller pad storage for four ports.
  *
  * @ghidraAddress USA: 0x8031a3e0
  * @ghidraAddress EUR: 0x8031c8e0
  * @ghidraAddress JPN: 0x8031b510
  * @ghidraAddress BRD3D: 0x106c65a0
  */
-extern OSContPad g_aContPadData[MAX_PLAYERS];
+extern OSContPad g_aContPadData[MAXCONTROLLERS];
 
 /**
  * Reset the input of a player.

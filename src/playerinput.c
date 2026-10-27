@@ -2,7 +2,7 @@
 
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
 PlayerInputState g_aPlayerInputState[MAX_PLAYERS];
-OSContPad g_aContPadData[MAX_PLAYERS];
+OSContPad g_aContPadData[MAXCONTROLLERS];
 #endif
 
 void InitPlayerInputState(PlayerInputState *state) {
@@ -12,5 +12,6 @@ void InitPlayerInputState(PlayerInputState *state) {
     state->recordBuffers[0] = NULL;
     state->playbackBuffer = NULL;
     state->playerIndex = player;
+    /* Windows slots above three receive addresses beyond controller pad storage. */
     state->pad = &g_aContPadData[player];
 }
