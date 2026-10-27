@@ -41,6 +41,7 @@ typedef struct {
  * @ghidraAddress USA: 0x8035d1d0
  * @ghidraAddress EUR: 0x8035f6d0
  * @ghidraAddress JPN: 0x8035e340
+ * @ghidraAddress BRD3D: 0x10364000
  */
 extern VisibleCell g_aVisibleCellTuples[VISIBLE_CELLS + 1];
 
@@ -50,6 +51,7 @@ extern VisibleCell g_aVisibleCellTuples[VISIBLE_CELLS + 1];
  * @ghidraAddress USA: 0x8028c76c
  * @ghidraAddress EUR: 0x8028eecc
  * @ghidraAddress JPN: 0x8028e91c
+ * @ghidraAddress BRD3D: 0x102e5ed0
  */
 extern s32 g_bVisibleCellListOverflow;
 
@@ -59,6 +61,7 @@ extern s32 g_bVisibleCellListOverflow;
  * @ghidraAddress USA: 0x8028c740
  * @ghidraAddress EUR: 0x8028eea0
  * @ghidraAddress JPN: 0x8028e8f0
+ * @ghidraAddress BRD3D: 0x103643a4
  */
 extern s32 g_nVisibleInstanceCount;
 
@@ -69,6 +72,7 @@ extern s32 g_nVisibleInstanceCount;
  * @ghidraAddress USA: 0x80351d80
  * @ghidraAddress EUR: 0x80354280
  * @ghidraAddress JPN: 0x80352ef0
+ * @ghidraAddress BRD3D: 0x1038b4c0
  */
 extern u8 g_abInstanceVisibilityMask[];
 
@@ -79,6 +83,7 @@ extern u8 g_abInstanceVisibilityMask[];
  * @ghidraAddress USA: 0x8028c778
  * @ghidraAddress EUR: 0x8028eed8
  * @ghidraAddress JPN: 0x8028e928
+ * @ghidraAddress BRD3D: 0x10363fec
  */
 extern s32 g_nVisibleCellIdxNear;
 
@@ -86,6 +91,7 @@ extern s32 g_nVisibleCellIdxNear;
  * @ghidraAddress USA: 0x8028c788
  * @ghidraAddress EUR: 0x8028eee8
  * @ghidraAddress JPN: 0x8028e938
+ * @ghidraAddress BRD3D: 0x102e5ec0
  */
 extern s32 g_nVisibleCellIdxMid;
 
@@ -93,6 +99,7 @@ extern s32 g_nVisibleCellIdxMid;
  * @ghidraAddress USA: 0x8028c780
  * @ghidraAddress EUR: 0x8028eee0
  * @ghidraAddress JPN: 0x8028e930
+ * @ghidraAddress BRD3D: 0x102e5f24
  */
 extern s32 g_nVisibleCellIdxFar;
 
@@ -146,6 +153,7 @@ extern u32 g_dwInstanceHideFlags;
  * @ghidraAddress USA: 0x8028c770
  * @ghidraAddress EUR: 0x8028eed0
  * @ghidraAddress JPN: 0x8028e920
+ * @ghidraAddress BRD3D: 0x1039b6cc
  */
 extern u16 g_wActiveInstanceHideMask;
 
@@ -182,6 +190,7 @@ extern u32 g_dwTrackOtherModeLFlags;
  * @ghidraAddress USA: 0x8035d4fc
  * @ghidraAddress EUR: 0x8035f9fc
  * @ghidraAddress JPN: 0x8035e66c
+ * @ghidraAddress BRD3D: 0x102e5ed8
  */
 extern s32 g_nNearbyVehicleCount;
 
@@ -189,6 +198,7 @@ extern s32 g_nNearbyVehicleCount;
  * @ghidraAddress USA: 0x8035d4e8
  * @ghidraAddress EUR: 0x8035f9e8
  * @ghidraAddress JPN: 0x8035e658
+ * @ghidraAddress BRD3D: 0x102e5ee0
  */
 extern s32 g_anNearbyVehicleIdx[MAX_VEHICLES];
 
@@ -198,6 +208,7 @@ extern s32 g_anNearbyVehicleIdx[MAX_VEHICLES];
  * @ghidraAddress USA: 0x8035d4d8
  * @ghidraAddress EUR: 0x8035f9d8
  * @ghidraAddress JPN: 0x8035e648
+ * @ghidraAddress BRD3D: 0x10363f28
  */
 extern f32 g_afNearbyVehicleDot[MAX_VEHICLES];
 
@@ -207,6 +218,7 @@ extern f32 g_afNearbyVehicleDot[MAX_VEHICLES];
  * @ghidraAddress USA: 0x8035d500
  * @ghidraAddress EUR: 0x8035fa00
  * @ghidraAddress JPN: 0x8035e670
+ * @ghidraAddress BRD3D: 0x102e54a8
  */
 extern Vec3f g_vVehicleVisibilityDelta;
 
@@ -225,6 +237,7 @@ extern f32 g_fViewMatrixMaxAbs;
  * @ghidraAddress USA: 0x8028c774
  * @ghidraAddress EUR: 0x8028eed4
  * @ghidraAddress JPN: 0x8028e924
+ * @ghidraAddress BRD3D: 0x103643b8
  */
 extern LookAt *g_pTrackLookAt;
 
@@ -234,6 +247,7 @@ extern LookAt *g_pTrackLookAt;
  * @ghidraAddress USA: 0x8028c640
  * @ghidraAddress EUR: 0x8028eda0
  * @ghidraAddress JPN: 0x8028e7f0
+ * @ghidraAddress BRD3D: 0x100a64e8
  */
 extern Lights1 g_aTrackLights[4];
 
@@ -241,6 +255,7 @@ extern Lights1 g_aTrackLights[4];
  * @ghidraAddress USA: 0x8028c6a0
  * @ghidraAddress EUR: 0x8028ee00
  * @ghidraAddress JPN: 0x8028e850
+ * @ghidraAddress BRD3D: 0x10364388
  */
 extern s32 g_nTrackLightBufferIndex;
 
@@ -250,6 +265,7 @@ extern s32 g_nTrackLightBufferIndex;
  * @ghidraAddress USA: 0x8035d510
  * @ghidraAddress EUR: 0x8035fa10
  * @ghidraAddress JPN: 0x8035e680
+ * @ghidraAddress BRD3D: 0x103643a8
  */
 extern Vec3f g_vTrackLightDirection;
 
@@ -355,6 +371,21 @@ s32 CompareVisibleCellDistance(const void *a, const void *b);
 }
 #endif
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+/**
+ * Build visible instances, shadow receivers, lighting, and projected vehicle shadow bounds.
+ * @param viewports The records of the views.
+ * @param slots The racers and their current vehicles.
+ * @param vehicles The active vehicle array.
+ * @ghidraAddress BRD3D: 0x10010dc0
+ */
+void BuildVisibleInstanceList(const ViewportRect *viewports,
+                              const RacerSlot *slots,
+                              const Vehicle *vehicles);
+#else
 /**
  * List the placed models of the cells in view, the nearest cells first, mark the models the
  * nearest vehicles cast shadows on, set the lights and the reflections of the track, and find the
@@ -365,6 +396,10 @@ s32 CompareVisibleCellDistance(const void *a, const void *b);
  * @ghidraAddress JPN: 0x80236308
  */
 void BuildVisibleInstanceList(void);
+#endif
+#ifdef __cplusplus
+}
+#endif
 
 /**
  * Draw the placed models in view: in the first pass the opaque ones, leaving the translucent ones,

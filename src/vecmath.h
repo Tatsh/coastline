@@ -266,7 +266,7 @@ void Vec3fNormalize(Vec3f *v);
  * @ghidraAddress BRD3D: 0x1003aee0
  * @ghidraAddress BRGlide: 0x10034560
  */
-void Vec3fSubtract(Vec3f *out, Vec3f *a, Vec3f *b);
+void Vec3fSubtract(Vec3f *out, const Vec3f *a, const Vec3f *b);
 
 /**
  * Subtract one vector from another in place.

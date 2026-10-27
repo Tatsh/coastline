@@ -109,7 +109,8 @@ else()
     wheelrender.c vehiclestatus.c vehicletrackpos.c vehicledeform.c racerstate.c racers.c
     exhaustspawn.c tiresmokespawn.c tiresprayemit.c tirespray.c vehiclepaint.c precipitationupdate.c
     billboardparticles.c particlesmokerender.c particleexhaustrender.c tiresprayrender.c precipitationrender.c
-    sky.c hudrace.c hudmessage.c dashboard.c raceresults.c hudoverlay.c PROPERTIES LANGUAGE CXX)
+    sky.c hudrace.c hudmessage.c dashboard.c raceresults.c hudoverlay.c visibleinstances.c
+    PROPERTIES LANGUAGE CXX)
   set_source_files_properties(controllerread.c inputtranslate.c PROPERTIES LANGUAGE CXX)
   set_source_files_properties(volumecontrols.c PROPERTIES LANGUAGE CXX)
   set_source_files_properties(ambientsound.c PROPERTIES LANGUAGE CXX)
@@ -186,6 +187,7 @@ target_sources(coastline_game PRIVATE dashboard.c)
 target_sources(coastline_game PRIVATE raceresults.c)
 target_sources(coastline_game PRIVATE hudoverlay.c)
 target_sources(coastline_game PRIVATE screenrect.c)
+target_sources(coastline_game PRIVATE visibleinstances.c)
 target_sources(coastline_game PRIVATE skystate.c visiblecompare.c)
 target_sources(coastline_game PRIVATE raininit.c)
 target_sources(coastline_game PRIVATE wind.c)

@@ -188,6 +188,12 @@ private:
     void AgeSpraySegment(s32 wheel, s32 age);
 
 public:
+    void MarkNearbyInstanceShadows(u8 *mask, u8 bit) const {
+        for (s32 index = 0; index < nearbyInstanceCount; ++index) {
+            mask[nearbyInstances[index]] |= bit;
+        }
+    }
+    inline void UpdateShadowScreenRect(const ViewportRect *viewports);
     void MoveTireSpraySegments(s32 step, s16 fall);
     /**
      * @ghidraAddress BRD3D: 0x10039020

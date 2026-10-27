@@ -122,6 +122,7 @@ extern f32 g_fStartLightsDrop;
  * @ghidraAddress USA: 0x8026ff64
  * @ghidraAddress EUR: 0x80271f34
  * @ghidraAddress JPN: 0x802719e4
+ * @ghidraAddress BRD3D: 0x10680618
  */
 extern s32 g_dwAirplaneInstance;
 

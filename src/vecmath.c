@@ -304,7 +304,7 @@ void Vec3fNormalize(Vec3f *v) {
 #endif
 }
 
-void Vec3fSubtract(Vec3f *out, Vec3f *a, Vec3f *b) {
+void Vec3fSubtract(Vec3f *out, const Vec3f *a, const Vec3f *b) {
     out->x = a->x - b->x;
     out->y = a->y - b->y;
     out->z = a->z - b->z;
