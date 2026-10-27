@@ -1,9 +1,8 @@
-#include "bossrally.h"
-
 #include <cstring>
 
 #include <dshow.h>
 #include <process.h>
+#include <windows.h>
 
 namespace {
 
@@ -383,6 +382,7 @@ int RunMoviePlayerMessageLoop(void) {
 
 } // namespace
 
+/** @ghidraAddress BossRally: 0x00401340 */
 int WINAPI WinMain(HINSTANCE instance,
                    HINSTANCE previousInstance,
                    LPSTR commandLine,
