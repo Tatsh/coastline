@@ -17,6 +17,10 @@
 #include "render.h"
 #include "vecmath.h"
 
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#include "platform/win/gbicommand.h"
+#endif
+
 /** A point of the route, across the track. */
 typedef struct {
     Vec3f left;     /*!< The left edge of the track. */
@@ -50,7 +54,11 @@ typedef struct TrackSection {
 typedef struct {
     f32 matrix[4][4]; /*!< Where and how the model is placed. */
     f32 invScale; /*!< One over the length of the x axis of the matrix, the inverse of the scale. */
-    Gfx *displayList;  /*!< The display list that draws the model. */
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+    GbiCommand *displayList; /*!< The display list that draws the model. */
+#else
+    Gfx *displayList; /*!< The display list that draws the model. */
+#endif
     u16 groups;        /*!< The groups of the model, hidden near a model that hides them. */
     u16 hidesGroups;   /*!< The groups the model hides while a ray from the camera hits it. */
     u16 flags;         /*!< The TRACK_INSTANCE_ flags. */

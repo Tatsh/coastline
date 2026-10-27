@@ -3,6 +3,7 @@
 #include "model.h"
 #include "platform/win/render.h"
 #include "platform/win/texturescan.h"
+#include "platform/win/trackrelocation.h"
 
 template <typename T>
 static inline void SwapModelValue(T &value) {
@@ -18,6 +19,34 @@ static inline void RelocateModelPointer(T *&pointer) {
     unsigned word = std::bit_cast<unsigned>(pointer);
     RelocatePointerValue(&word);
     pointer = std::bit_cast<T *>(word);
+}
+
+void ByteSwapTrackInstance(TrackInstance *instance) {
+    for (auto &row : instance->matrix) {
+        for (float &value : row) {
+            SwapModelValue(value);
+        }
+    }
+    SwapModelValue(instance->invScale);
+    SwapModelValue(instance->displayList);
+    RelocateModelPointer(instance->displayList);
+    SwapModelValue(instance->groups);
+    SwapModelValue(instance->hidesGroups);
+    SwapModelValue(instance->flags);
+    SwapModelValue(instance->vertexCount);
+    SwapModelValue(instance->triangleCount);
+    SwapModelValue(instance->polygonCount);
+    ByteSwapAndRelocateDisplayList(instance->displayList);
+    ProcessTrackNodeDisplayList(instance);
+    SetTextureLoadCategory(1);
+    g_pfnPreprocessDisplayListTextures(instance->displayList);
+}
+
+void ByteSwapTrackInstances(TrackHeader *track) {
+    TrackInstance *instance = track->instances;
+    for (int i = 0; i < track->instanceCount; ++i, ++instance) {
+        ByteSwapTrackInstance(instance);
+    }
 }
 
 void RelocateModelPointers(Model *model) {
