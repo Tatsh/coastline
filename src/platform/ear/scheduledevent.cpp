@@ -14,6 +14,19 @@ static inline std::int32_t AddTimer(std::int32_t timer, std::uint32_t elapsed) {
 }
 } // namespace
 
+int ScheduledEarEvent::GetScheduledEventPlaybackStatus() {
+    return playback->GetStatus();
+}
+
+int ScheduledEarEvent::IsScheduledEventPlaybackComplete() {
+    return playback->IsBufferedEarPlaybackComplete();
+}
+
+void ScheduledEarEvent::RequestScheduledEventStop() {
+    playback->SetEarPlaybackLooping(0);
+    playback->MarkComplete();
+}
+
 int ScheduledEarEvent::CanStartScheduledEarEvent() {
     return !playbackInitialized && startDelayMs <= 0 && (!attenuationRequired || attenuation > 0) &&
            (!repeatLimitEnabled || repeatCount < repeatLimit);

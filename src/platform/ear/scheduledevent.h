@@ -18,6 +18,13 @@ public:
      */
     ~ScheduledEarEvent();
 
+    /** @ghidraAddress EAR: 0x10007310 */
+    int GetScheduledEventPlaybackStatus();
+    /** @ghidraAddress EAR: 0x10007330 */
+    int IsScheduledEventPlaybackComplete();
+    /** @ghidraAddress EAR: 0x10007350 */
+    void RequestScheduledEventStop();
+
     /** @ghidraAddress EAR: 0x10007380 */
     int CanStartScheduledEarEvent();
     /** @ghidraAddress EAR: 0x10007400 */

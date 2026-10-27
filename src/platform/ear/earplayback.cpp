@@ -22,6 +22,10 @@ const double g_earMaximumDirectionalGain = 1;
 const double g_adPlaybackSmoothingWeights[3] = {1.0, 0.5, 1.0};
 // @ghidraAddress EAR: 0x1002ee40
 const double g_earDirectSoundGainPercentScale = 100;
+// @ghidraAddress EAR: 0x1003b878
+std::uint32_t g_earBufferedPlaybackCurrentHalfStart;
+// @ghidraAddress EAR: 0x1003b87c
+std::uint32_t g_earBufferedPlaybackCursor;
 } // namespace
 
 int EarPlayback::GetStatus() {
@@ -55,6 +59,27 @@ int EarPlayback::ResumeEarPlayback() {
 
 int EarPlayback::CheckEarPlaybackLoopCompletion() {
     return IsDirectSoundBufferStopped();
+}
+
+int EarPlayback::IsBufferedEarPlaybackComplete() {
+    if (completionRequested) {
+        return 1;
+    }
+    if ((looping && !streaming) || !active) {
+        return 0;
+    }
+    g_earBufferedPlaybackCursor = GetDirectSoundPlaybackCursor();
+    if (streaming) {
+        g_earBufferedPlaybackCurrentHalfStart = streamHalfIndex * streamHalfBytes;
+        if (g_earBufferedPlaybackCursor >= g_earBufferedPlaybackCurrentHalfStart &&
+            g_earBufferedPlaybackCursor <=
+                g_earBufferedPlaybackCurrentHalfStart + streamHalfBytes) {
+            RefillEarPlaybackStream();
+        }
+    } else {
+        completionRequested = IsDirectSoundBufferStopped();
+    }
+    return completionRequested;
 }
 
 void EarPlayback::OnPlaybackWaveSampleAttached(EarWaveSample *sample) {

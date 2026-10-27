@@ -144,11 +144,12 @@ public:
 private:
     /** @ghidraAddress EAR: 0x10012e2b */
     virtual void OnBackendPlaybackParameterChanged();
-    /**
-     * @ghidraAddress EAR: 0x1000a8f0
-     * @stub
-     */
+
+public:
+    /** @ghidraAddress EAR: 0x1000a8f0 */
     virtual int IsBufferedEarPlaybackComplete();
+
+private:
     /** @ghidraAddress EAR: 0x100126dd */
     virtual int IsDirectSoundBufferStopped();
 
@@ -167,7 +168,7 @@ private:
     int looping;
     int streaming;
     int completionRequested;
-    [[maybe_unused]] std::uint8_t unknown20[4]; /* +0x20 */
+    std::uint32_t streamHalfIndex;
     int active;
     int muted;
     int status;
@@ -186,7 +187,8 @@ private:
     std::uint32_t previousFrequency;
     [[maybe_unused]] std::uint8_t unknown6c[2]; /* +0x6c */
     std::uint16_t smoothingPass;
-    [[maybe_unused]] std::uint8_t unknown70[8]; /* +0x70 */
+    [[maybe_unused]] std::uint8_t unknown70[4]; /* +0x70 */
+    std::uint32_t streamHalfBytes;
     double startPosition;
     double frequencyScale;
     double baseFrequencyScale;
