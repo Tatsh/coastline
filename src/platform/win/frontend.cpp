@@ -22,6 +22,7 @@
 #include "profile.h"
 #include "seasons.h"
 #include "trackselect.h"
+#include "vehicle.h"
 #if TGR_RENDERER == TGR_RENDERER_D3D
 #include "platform/win/d3d/ddutil.h"
 #include "platform/win/d3d/renderer.h"
@@ -895,7 +896,7 @@ void ProcessCheatCodeInput(void) {
 }
 
 int EnterTimeAttackMode(void) {
-    if (g_aVehicles_LapCount >= g_dwTotalLaps) {
+    if (g_aVehicles[0].lap >= g_dwTotalLaps) {
         ShowTimeAttackMenu(0);
         ShowSaveGhostMenu(0);
     }

@@ -7,6 +7,7 @@
  */
 
 #include "profile.h"
+#include "vehicle.h"
 
 /** The size of g_szSeasonRoundLabel. */
 #define SEASON_ROUND_LABEL_SIZE 32
@@ -237,14 +238,14 @@ bool SaveSeasonSaveFile(void);
  *
  * @ghidraAddress BRD3D: 0x10aced34
  */
-extern PlayerProfile *g_pPrimarySeasonSave;
+#define g_pPrimarySeasonSave (g_aVehicles[0].profile)
 
 /**
  * The profile used to save progress for the second player.
  *
  * @ghidraAddress BRD3D: 0x10ad189c
  */
-extern PlayerProfile *g_pSecondarySeasonSave;
+#define g_pSecondarySeasonSave (g_aVehicles[1].profile)
 
 /**
  * Clear both players' save profiles, using static buffers for unassigned profiles.

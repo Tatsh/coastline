@@ -26,8 +26,6 @@ Season g_SeasonTable[SEASONS] = {
 
 PlayerProfile g_SeasonProgress;
 PlayerProfile g_aSeasonSaveBuffers[2];
-PlayerProfile *g_pPrimarySeasonSave;
-PlayerProfile *g_pSecondarySeasonSave;
 int g_dwSeasonYear;
 int g_dwSeasonRound;
 s8 g_bSeasonClass;
