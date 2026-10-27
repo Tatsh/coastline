@@ -123,11 +123,12 @@ extern s32 g_nAudioChannelCount;
 extern u8 g_bBgmVolume;
 
 /**
- * The volume of the music the player chose.
+ * The music-volume factor, from 0 to 255.
  *
  * @ghidraAddress USA: 0x802a49c8
  * @ghidraAddress EUR: 0x802a7188
  * @ghidraAddress JPN: 0x802a6c28
+ * @ghidraAddress BRD3D: 0x100bbadc
  */
 extern u8 g_bMusicVolume;
 
@@ -470,7 +471,6 @@ void CheckSoundEffectLoopPoints(void);
  * @ghidraAddress JPN: 0x80258c9c
  */
 void AudioMixingThreadMain(void *arg);
-
 
 /**
  * Do nothing with a camera.

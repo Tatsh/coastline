@@ -71,6 +71,12 @@ extern f32 g_fHeadlightGlare;
  * @ghidraAddress BRD3D: 0x105754f8
  */
 extern f32 g_fScreenFogPulse;
+
+/**
+ * The effect fade level scaled to a byte, separate from the selected effect volume.
+ * @ghidraAddress BRD3D: 0x100bbae4
+ */
+extern u8 g_bSfxFadeVolume;
 #endif
 
 /**
@@ -210,6 +216,7 @@ extern s32 g_dwFadeAutoReverse;
  * @ghidraAddress USA: 0x8031b410
  * @ghidraAddress EUR: 0x8031d910
  * @ghidraAddress JPN: 0x8031c540
+ * @ghidraAddress BRD3D: 0x105754f0
  */
 extern s32 g_adwFadeRectLeftPerBuffer[2];
 
@@ -217,6 +224,7 @@ extern s32 g_adwFadeRectLeftPerBuffer[2];
  * @ghidraAddress USA: 0x8031b418
  * @ghidraAddress EUR: 0x8031d918
  * @ghidraAddress JPN: 0x8031c548
+ * @ghidraAddress BRD3D: 0x105754e8
  */
 extern s32 g_adwFadeRectRightPerBuffer[2];
 
@@ -410,6 +418,7 @@ void DrawScreenFadeOverlay(float level);
  * @ghidraAddress USA: 0x80223f54
  * @ghidraAddress EUR: 0x80225294
  * @ghidraAddress JPN: 0x80224a84
+ * @ghidraAddress BRD3D: 0x1002b670
  */
 void UpdateFadeTransitions(void);
 
