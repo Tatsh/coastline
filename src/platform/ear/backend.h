@@ -15,6 +15,15 @@ int __stdcall GetDirectSoundVersion(void);
  */
 int __stdcall QueryDirectSoundProductVersion(void);
 
+/** @ghidraAddress EAR: 0x10010115 */
+int __stdcall ValidateEarStereoSolution(uint32_t enabled);
+/** @ghidraAddress EAR: 0x10010132 */
+int __stdcall SetReservedEarInitializationOption(uint32_t option);
+/** @ghidraAddress EAR: 0x100100fd */
+int RejectUnsupportedInitializationFeature4000(void);
+/** @ghidraAddress EAR: 0x10010104 */
+int RejectUnsupportedInitializationFeature2000(void);
+
 /** @ghidraAddress EAR: 0x1003b7b4 */
 extern int32_t g_earAudioComponentsValidated;
 

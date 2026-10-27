@@ -10,6 +10,8 @@
 class EarEnvironment;
 class EarPreset;
 class EarPlayback;
+class EarChannel;
+class EarPresetTable;
 
 template <typename Value>
     requires std::is_class_v<Value>
@@ -70,5 +72,10 @@ extern EarActiveEventRegistry g_ActiveEventRegistry;
 
 /** @ghidraAddress EAR: 0x1003b620 */
 extern EarDwordPointerRegistry<EarPlayback> g_PlaybackRegistry;
+
+/** @ghidraAddress EAR: 0x1003b460 */
+extern EarWordPointerRegistry<EarChannel> g_ChannelRegistry;
+/** @ghidraAddress EAR: 0x1003b370 */
+extern EarWordPointerRegistry<EarPresetTable> g_MatrixRegistry;
 
 #endif

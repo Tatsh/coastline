@@ -24,6 +24,7 @@ public:
 class CMapWordToPtr : public CObject {
 public:
     BOOL Lookup(WORD key, void *&value) const;
+    void InitHashTable(UINT hashSize, BOOL allocate = TRUE);
 
 private:
     class Association;
@@ -41,6 +42,7 @@ public:
     UINT GetHashTableSize() const;
     void SetAt(void *key, void *value);
     BOOL RemoveKey(void *key);
+    void InitHashTable(UINT hashSize, BOOL allocate = TRUE);
 
 private:
     class Association;

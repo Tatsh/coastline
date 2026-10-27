@@ -8,8 +8,7 @@
 
 UINT g_uPlaybackTimerId;
 WORD g_wTimerResolutionMs;
-DWORD g_dwTimerMinimumPeriodMs;
-DWORD g_dwTimerMaximumPeriodMs;
+TIMECAPS g_earTimerCapabilities;
 DWORD g_dwPreviousPlaybackUpdateTimeMs;
 DWORD g_dwPlaybackUpdateTimeMs;
 
@@ -36,6 +35,10 @@ void __stdcall EAR_DLL_ShutDownTimer(void) {
     g_uPlaybackTimerId = 0;
 }
 
+int __stdcall EarStartTimerExportWrapper(void) {
+    return EAR_DLL_StartTimer();
+}
+
 int __stdcall EAR_DLL_StartTimer(void) {
     SetEarLastError(0);
     if (!IsEarReady()) {
@@ -45,9 +48,9 @@ int __stdcall EAR_DLL_StartTimer(void) {
         // Startup proceeds even when cancellation fails.
         EarShutDownTimerExportWrapper();
     }
-    DWORD period = g_dwTimerMinimumPeriodMs > 5 ? g_dwTimerMinimumPeriodMs : 5;
-    if (period >= g_dwTimerMaximumPeriodMs) {
-        period = g_dwTimerMaximumPeriodMs;
+    DWORD period = g_earTimerCapabilities.wPeriodMin > 5 ? g_earTimerCapabilities.wPeriodMin : 5;
+    if (period >= g_earTimerCapabilities.wPeriodMax) {
+        period = g_earTimerCapabilities.wPeriodMax;
     }
     g_wTimerResolutionMs = (WORD)period;
     timeBeginPeriod(g_wTimerResolutionMs);

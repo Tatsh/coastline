@@ -19,6 +19,12 @@ extern "C" {
 void __stdcall
 CopyDirectionalMatrixEntry(uint16_t matrix, uint16_t direction, EarDirectionalMatrixEntry *entry);
 
+/**
+ * @ghidraAddress EAR: 0x1000ebd0
+ * @stub
+ */
+int __stdcall EarRegisterMatrixExportWrapper(uint32_t flags);
+
 #ifdef __cplusplus
 }
 #endif

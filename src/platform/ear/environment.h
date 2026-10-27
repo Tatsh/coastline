@@ -3,6 +3,12 @@
 
 #include <cstdint>
 
+/**
+ * @ghidraAddress EAR: 0x100046bd
+ * @stub
+ */
+void RegisterDefaultEnvironment(void);
+
 /** The physical meanings of the reserved registration properties remain unidentified. */
 class [[gnu::packed]] EarEnvironment {
 public:

@@ -5,6 +5,7 @@
 
 #include "directionalmatrix.h"
 #include "directsoundstate.h"
+#include "playbacksmoothing.h"
 
 class EarWaveSample;
 class EarPreset;
@@ -290,12 +291,6 @@ private:
     std::uint32_t loopDrainCount;
     EarDirectSoundPlaybackState directSound;
 };
-
-/** @ghidraAddress EAR: 0x100360b8 */
-extern std::uint16_t g_wPlaybackSmoothingPassCount;
-
-/** @ghidraAddress EAR: 0x1003b7b8 */
-extern int g_earPlaybackSmoothingEnabled;
 
 /** @ghidraAddress EAR: 0x10036144 */
 extern std::uint16_t g_wEarObjectHandleCounter;

@@ -5,6 +5,8 @@
 int32_t g_bEarCodeValidated;
 int32_t g_bEarComponentsInitialized;
 int32_t g_bEarInitializationComplete;
+int32_t g_bMixerAccessDisabled;
+int32_t g_bConfigurationValidationDisabled;
 
 int IsEarReady(void) {
     return g_bEarCodeValidated && g_bEarComponentsInitialized && g_bEarInitializationComplete;

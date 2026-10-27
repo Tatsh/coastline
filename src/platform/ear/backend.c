@@ -6,8 +6,34 @@
 #include <windows.h>
 #include <winver.h>
 
+#include "error.h"
+
 int32_t g_earAudioComponentsValidated;
 uint16_t g_earAudioComponentValidationFlags;
+
+// @ghidraAddress EAR: 0x1003b7d0
+[[maybe_unused, gnu::used]] static uint32_t g_dwEarReservedInitializationOption;
+
+int __stdcall ValidateEarStereoSolution(uint32_t enabled) {
+    if (enabled) {
+        SetEarLastError(0x20);
+        return 0;
+    }
+    return 1;
+}
+
+int __stdcall SetReservedEarInitializationOption(uint32_t option) {
+    g_dwEarReservedInitializationOption = option;
+    return 1;
+}
+
+int RejectUnsupportedInitializationFeature4000(void) {
+    return 0;
+}
+
+int RejectUnsupportedInitializationFeature2000(void) {
+    return 0;
+}
 
 // @ghidraAddress EAR: 0x1003b9a0
 static const char g_earEmptyVersionPrefix[] = "";

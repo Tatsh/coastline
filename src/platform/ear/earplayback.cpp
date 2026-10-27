@@ -11,8 +11,6 @@
 #include "volume.h"
 #include "window.h"
 
-std::uint16_t g_wPlaybackSmoothingPassCount = 2;
-int g_earPlaybackSmoothingEnabled;
 std::uint16_t g_wEarObjectHandleCounter = 1;
 
 namespace {
