@@ -1,6 +1,6 @@
 # PC port game code from 0x10040000 to 0x10050000
 
-229 of 264 routines done.
+231 of 264 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -36,7 +36,7 @@ the same name, for a routine the port retained from the N64 game.
 | `LoadTimeAttackMenuUI_OnSlotSelected`              |        |                 |      1 |    527 | `0x10042880` | `0x1003bde0` | `undefined LoadTimeAttackMenuUI_OnSlotSelected()`                                                                                                         |
 | `NetworkCarSetupUI_OnRefreshSessionDesc`           |   ✅   |                 |      1 |    491 | `0x10043a00` | `0x1003cf50` | `int NetworkCarSetupUI_OnRefreshSessionDesc(MenuWidget * pWidget)`                                                                                        |
 | `NetworkCarSetupUI_OnEscape`                       |   ✅   |                 |      1 |    490 | `0x10043810` | `0x1003cd60` | `int NetworkCarSetupUI_OnEscape(MenuWidget * pWidget)`                                                                                                    |
-| `MenuWidget::MenuWidget`                           |   🚧   |                 |    410 |    478 | `0x100476c0` | `0x10040b10` | `void * MenuWidget(MenuWidget * this)`                                                                                                                    |
+| `MenuWidget::MenuWidget`                           |   ✅   |                 |    410 |    478 | `0x100476c0` | `0x10040b10` | `MenuWidget * MenuWidget(MenuWidget * this)`                                                                                                              |
 | `SaveTimeAttackMenuUI_OnSlotNameEntered`           |        |                 |      1 |    468 | `0x10042560` | `0x1003bac0` | `undefined SaveTimeAttackMenuUI_OnSlotNameEntered()`                                                                                                      |
 | `MenuPanel::RunFrame`                              |   ✅   |                 |      0 |    468 | `0x10048530` | `0x10041980` | `bool RunFrame(MenuPanel * this)`                                                                                                                         |
 | `RaceSetupUI_OnCycleTrack`                         |   ✅   |                 |      2 |    457 | `0x10042ee0` | `0x1003c430` | `int RaceSetupUI_OnCycleTrack(MenuActionWidget * pItem)`                                                                                                  |
@@ -132,7 +132,7 @@ the same name, for a routine the port retained from the N64 game.
 | `AudioOptionsUI_OnCycleSfxVolume`                  |   ✅   |                 |      3 |     99 | `0x10042cf0` | `0x1003c240` | `int AudioOptionsUI_OnCycleSfxVolume(MenuWidget * pWidget)`                                                                                               |
 | `CarSetupUI_OnCycleHandlingType`                   |   ✅   |                 |      2 |     99 | `0x10042c80` | `0x1003c1d0` | `int CarSetupUI_OnCycleHandlingType(MenuWidget * pWidget)`                                                                                                |
 | `RaceSetupUI_UpdateTrackImage`                     |   ✅   |                 |      6 |     98 | `0x10040730` | `0x10039c70` | `int RaceSetupUI_UpdateTrackImage(MenuWidget * pWidget)`                                                                                                  |
-| `MenuWidget::~MenuWidget`                          |   📝   |                 |      1 |     97 | `0x100478c0` | `0x10040d10` | `undefined ~MenuWidget(MenuWidget * this)`                                                                                                                |
+| `MenuWidget::~MenuWidget`                          |   ✅   |                 |      1 |     97 | `0x100478c0` | `0x10040d10` | `void ~MenuWidget(MenuWidget * this)`                                                                                                                     |
 | `CarSetupUI_OnCycleSuspensionType`                 |   ✅   |                 |      2 |     93 | `0x10042e20` | `0x1003c370` | `int CarSetupUI_OnCycleSuspensionType(MenuWidget * pWidget)`                                                                                              |
 | `CarSetupUI_OnCycleTireType`                       |   ✅   |                 |      2 |     93 | `0x10042dc0` | `0x1003c310` | `int CarSetupUI_OnCycleTireType(MenuWidget * pWidget)`                                                                                                    |
 | `CarSetupUI_OnCycleTransmissionType`               |   ✅   |                 |      2 |     93 | `0x10042e80` | `0x1003c3d0` | `int CarSetupUI_OnCycleTransmissionType(MenuWidget * pWidget)`                                                                                            |
