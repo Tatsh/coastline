@@ -1157,7 +1157,9 @@ struct TextureImageData {
     int nAspectRatio;       /*!< The aspect ratio, as CalculateTextureDimensions() reads it. */
     int bClampS;            /*!< Whether texture binding clamps s. */
     int bClampT;            /*!< Whether texture binding clamps t. */
-    char abUnknown2c[0x20]; /* +0x2c */
+    char abUnknown2c[0x18]; /* +0x2c */
+    int nDecodedWidth;
+    int nDecodedHeight;
     const unsigned char *pImage;
     const unsigned char *pPalette;
     char abUnknown54[8]; /* +0x54 */

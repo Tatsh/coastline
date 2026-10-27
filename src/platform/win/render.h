@@ -1226,3 +1226,13 @@ int GetTexturePixelSize(int nPixelFormatId);
  * @ghidraAddress BRD3D: 0x10028630
  */
 int FindMatchingTextureEntry(const TextureImageData *pImage);
+
+/**
+ * Append image metadata and a device texture identifier to the loaded entries.
+ *
+ * @param pImage The image metadata.
+ * @param nTextureId The device texture identifier.
+ * @return The loaded texture entry.
+ * @ghidraAddress BRD3D: 0x100284a0
+ */
+unsigned RegisterTextureEntry(const TextureImageData *pImage, int nTextureId);

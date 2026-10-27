@@ -1045,3 +1045,28 @@ int FindMatchingTextureEntry(const TextureImageData *pImage) {
     }
     return -1;
 }
+
+static long double TextureCoordinateShiftFactor(int shift) {
+    if (static_cast<unsigned>(shift) <= 10) {
+        return static_cast<long double>(1024 >> shift) * (1.0f / 1024.0f);
+    }
+    int factor = static_cast<int>(1u << ((16u - static_cast<unsigned>(shift)) & 31));
+    return factor;
+}
+
+unsigned RegisterTextureEntry(const TextureImageData *pImage, int nTextureId) {
+    unsigned nEntry = AllocateTextureEntry();
+    TextureEntry &entry = g_pTextureEntries[nEntry];
+    entry.data = *pImage;
+    entry.nTextureId = nTextureId;
+    entry.fTextureScaleS = (1.0L / 32.0L) / entry.data.nDecodedWidth;
+    entry.fTextureScaleT = (1.0L / 32.0L) / entry.data.nDecodedHeight;
+    const TexScanTile &tile = pImage->aTiles[pImage->nTileIndex];
+    if (tile.nShiftS) {
+        entry.fTextureScaleS = TextureCoordinateShiftFactor(tile.nShiftS) * entry.fTextureScaleS;
+    }
+    if (tile.nShiftT) {
+        entry.fTextureScaleT = TextureCoordinateShiftFactor(tile.nShiftT) * entry.fTextureScaleT;
+    }
+    return nEntry;
+}
