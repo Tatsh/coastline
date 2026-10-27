@@ -2385,9 +2385,8 @@ int ShowQuitGameConfirmMenu(void);
 
 /**
  * @ghidraAddress BRD3D: 0x10059760
- * @stub
  */
-void BuildTimeAttackMenuUI(MenuScreen *pScreen);
+int BuildTimeAttackMenuUI(MenuScreen *pScreen);
 
 /**
  * @ghidraAddress BRD3D: 0x10059bb0

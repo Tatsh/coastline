@@ -2187,9 +2187,13 @@ int RaceSetupUI_OnCycleWeather(MenuActionWidget *) {
     return 1;
 }
 
+static inline void BuildTimeAttackMenuScreen(MenuScreen *screen) {
+    BuildTimeAttackMenuUI(screen);
+}
+
 int ShowTimeAttackMenu(int) {
     SetActiveMenuItemText(" ");
-    return ShowCachedMenuScreen(g_pCachedMenu_TimeAttack, BuildTimeAttackMenuUI);
+    return ShowCachedMenuScreen(g_pCachedMenu_TimeAttack, BuildTimeAttackMenuScreen);
 }
 
 int ShowLoadGhostMenu(void) {
@@ -4275,6 +4279,50 @@ static inline int BuildConfirmationUI(MenuScreen *screen,
     SetMenuWidgetLabel(widget, noLabel, &g_rcMenuCenterPanel);
     panel->SetWidgetCount(panel->GetWidgetCount() + 1);
     panel->SetNavigationCount(panel->GetNavigationCount() + 1);
+    return 1;
+}
+
+static inline int TimeAttackMenuUI_OnStart(MenuWidget *) {
+    return ReturnToMainMenuFromSeason();
+}
+
+static inline int TimeAttackMenuUI_OnLoadGhost(MenuWidget *) {
+    return ShowLoadGhostMenu();
+}
+
+int BuildTimeAttackMenuUI(MenuScreen *screen) {
+    screen->SetCurrentPanelIndex(0);
+    screen->SetPanelActive(screen->GetPanelCount(), 1);
+    MenuPanel *panel = new (std::nothrow) MenuPanel();
+    screen->SetPanel(screen->GetPanelCount(), panel);
+    if (!panel) {
+        ShowErrorMessage(4);
+    }
+    screen->SetPanelCount(screen->GetPanelCount() + 1);
+    panel->SetScreen(screen);
+    panel->SetFlags(0);
+    panel->SetX(195);
+    panel->SetY(130);
+    AddMenuWidget(panel, screen, 0, 0, 9, 0, 0);
+    panel->SetWidgetCount(panel->GetWidgetCount() + 1);
+    MenuWidget *widget = AddMenuWidget(panel, screen, panel->GetX(), 10, 0x100009, 1, -1);
+    SetMenuWidgetLabel(widget, 106, &g_rcMenuTitleBar);
+    panel->SetWidgetCount(panel->GetWidgetCount() + 1);
+    const float offsets[3] = {0, 19, 114};
+    const int labels[3] = {107, 108, 12};
+    int (*actions[3])(MenuWidget *) = {
+        TimeAttackMenuUI_OnStart, TimeAttackMenuUI_OnLoadGhost, TimeAttackMenuUI_OnBack};
+    for (int i = 0; i < 3; ++i) {
+        float y = static_cast<float>(static_cast<long double>(panel->GetY()) + offsets[i]);
+        widget = AddMenuWidget(panel, screen, panel->GetX(), y, 0x102001, 1, -1);
+        widget->SetIdleActionCallback(ValidateEntityState);
+        widget->SetActionCallback(actions[i]);
+        SetMenuWidgetLabel(widget, labels[i], &g_rcMenuCenterPanel);
+        panel->SetWidgetCount(panel->GetWidgetCount() + 1);
+        panel->SetNavigationCount(panel->GetNavigationCount() + 1);
+    }
+    AddMenuWidget(panel, screen, 80, 46, 9, 0, 8);
+    panel->SetWidgetCount(panel->GetWidgetCount() + 1);
     return 1;
 }
 
