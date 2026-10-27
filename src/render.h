@@ -107,6 +107,9 @@ typedef struct {
     s32 width;        /*!< The width, in screen pixels. */
     s32 height;       /*!< The height, in screen pixels. */
     s32 vehicleIndex; /*!< The vehicle of the player the view follows. */
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+    u8 abUnknown14[0x44];
+#endif
 } ViewportRect;
 
 /**
@@ -228,6 +231,7 @@ extern s32 g_dwNumViewports;
  * @ghidraAddress USA: 0x8031b2c8
  * @ghidraAddress EUR: 0x8031d7c8
  * @ghidraAddress JPN: 0x8031c3f8
+ * @ghidraAddress BRD3D: 0x106c1628
  */
 extern ViewportRect g_aViewportRects[];
 
