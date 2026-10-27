@@ -8,8 +8,11 @@
 #include "ghost.h"
 #include "input.h"
 #include "instantreplay.h"
+#include "racermotion.h"
+#include "racers.h"
 #include "racersharing.h"
 #include "settings.h"
+#include "sound.h"
 #include "trackselect.h"
 #include "vehicle.h"
 #include "vehiclechoice.h"
@@ -32,6 +35,25 @@ void Vehicle::ComputeAiVehicleInput(void) {
 
 void Vehicle::ManageAiRacerSlots(void) {
     ::ManageAiRacerSlots(this);
+}
+
+void RacerSlot::UpdateRacerSlotMotion(void) {
+    ::UpdateRacerSlotMotion(this);
+}
+
+void UpdateRaceProgress(RacerSlot *slot) {
+    slot->UpdateRaceProgress();
+}
+
+s32 IsNetworkRacerMotionDisabled(RacerSlot *slot) {
+    return g_dwNetworkPlayMode && slot->vehicle == nullptr;
+}
+
+void ClearRacerSoundChannels(void) {
+    for (s32 i = 0; i < 5; i++) {
+        g_aSoundChannelRequested[i].llFrequency = 0;
+        g_aSoundChannelRequested[i].dwStereoLevels = 0;
+    }
 }
 
 void PlayerVehicleControllerCallback(Vehicle *vehicle) {

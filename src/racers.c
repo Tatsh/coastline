@@ -11,6 +11,7 @@
 #include "mathutil.h"
 #include "race.h"
 #include "racemenu.h"
+#include "racermotion.h"
 #include "racersharing.h"
 #include "render.h"
 #include "system.h"
@@ -53,15 +54,6 @@
 
 /* The length of the color prefix of a message. */
 #define COLOR_PREFIX_LENGTH 3
-
-/* A ghost fades in this fast, up to this in time attack; a racer without a vehicle moves this far
- * a frame when no vehicle of its kind sets the pace. */
-#define GHOST_FADE_RATE 1.6f
-#define TIME_ATTACK_GHOST_OPACITY 0.375f
-#define IDLE_RACER_STEP 2.22f
-
-/* The steering a finished player's vehicle holds. */
-#define FINISHED_STEERING_INPUT -127
 
 /* Whether a segment crosses a gate, seen from above. The original hands the positions themselves
  * to the flat test, which reads only x and y. */
@@ -416,115 +408,6 @@ void UpdateRaceProgress(RacerSlot *slot) {
         vehicle->bestLapTime = slot->bestLapTime;
         vehicle->distance = slot->distance;
     }
-}
-
-/* Step the vehicle of a racer, retaining its last position and letting its driver drive it. The
- * vehicle is read from the racer at each use. */
-#define DRIVE_RACER_VEHICLE(slot)                                                                  \
-    {                                                                                              \
-        Vehicle *vehicle = (slot)->vehicle;                                                        \
-        Vec3f *from = &vehicle->frame.position;                                                    \
-        Vec3f *to = &vehicle->previousPosition;                                                    \
-        to->x = from->x;                                                                           \
-        to->y = from->y;                                                                           \
-        to->z = from->z;                                                                           \
-    }                                                                                              \
-    if ((slot)->vehicle->driver != NULL) {                                                         \
-        (slot)->vehicle->driver((slot)->vehicle);                                                  \
-    }
-
-void UpdateRacerSlotMotion(RacerSlot *slot) {
-    Vehicle *pacer;
-    TrackPoint *point;
-    f32 lapLength;
-    f32 fraction;
-    s32 i;
-
-    /* The vehicle is read from the racer at each use. */
-    if (slot->vehicle != NULL && slot->vehicle->driver == DriveAiVehicle &&
-        g_dwGameMode != GAME_MODE_AFTER_SEASON) {
-        slot->vehicle->input->buttons &= INPUT_VIEWS;
-        slot->vehicle->input->steering = 0.0f;
-    }
-    if (g_dwRacePauseState) {
-        for (i = 0; i != 5; i++) {
-            g_aSoundEffectChannels[i].step = 0;
-            g_aSoundEffectChannels[i].volume = 0;
-        }
-        return;
-    }
-    if (slot->status & RACER_HELD) {
-        if (slot->vehicle == NULL) {
-            return;
-        }
-        slot->vehicle->input->buttons |= INPUT_BRAKE;
-        slot->vehicle->gear = 0;
-        DRIVE_RACER_VEHICLE(slot);
-        slot->vehicle->gear = 0;
-        return;
-    }
-    if (slot->status & RACER_FINISHED) {
-        if (slot->vehicle == NULL) {
-            return;
-        }
-        if (g_dwGameMode != GAME_MODE_CHAMPIONSHIP || slot->index < (s32)g_dwNumLocalPlayers) {
-            slot->vehicle->input->buttons = INPUT_BRAKE | INPUT_EBRAKE;
-            slot->vehicle->input->steeringInput = FINISHED_STEERING_INPUT;
-            slot->vehicle->input->steering = -1.0f;
-        }
-        if (g_dwGameMode == GAME_MODE_CHAMPIONSHIP && slot->index >= (s32)g_dwNumLocalPlayers) {
-            slot->vehicle->ghostMode = VEHICLE_GHOST;
-            slot->vehicle->opacity -= g_fFrameDeltaTime;
-            if (slot->vehicle->opacity < 0.0f) {
-                slot->vehicle->opacity = 0.0f;
-            }
-        }
-        DRIVE_RACER_VEHICLE(slot);
-        return;
-    }
-    if (slot->vehicle != NULL) {
-        if (slot->vehicle->ghostMode == VEHICLE_GHOST) {
-            slot->vehicle->opacity += g_fFrameDeltaTime * GHOST_FADE_RATE;
-            if (g_dwGameMode == GAME_MODE_TIME_ATTACK && slot->index != 0) {
-                /* The ghost of a time attack stays faint. */
-                if (TIME_ATTACK_GHOST_OPACITY < slot->vehicle->opacity) {
-                    slot->vehicle->opacity = TIME_ATTACK_GHOST_OPACITY;
-                }
-            } else if (1.0f <= slot->vehicle->opacity) {
-                slot->vehicle->opacity = 1.0f;
-                slot->vehicle->ghostMode = 0;
-            }
-        }
-        DRIVE_RACER_VEHICLE(slot);
-        slot->vehicle->odometer += slot->vehicle->speedKph * g_fFrameDeltaTime;
-        return;
-    }
-
-    /* A racer without a vehicle keeps the pace of a vehicle of its kind. */
-    slot->previousPosition = slot->position;
-    lapLength = g_LoadedTrack.rootSection->points[0].distance;
-    point = &slot->section->points[slot->pointIndex];
-    fraction = ((lapLength * (f32)(slot->distanceLaps + 1) - slot->distance) - point[1].distance) /
-               (point[0].distance - point[1].distance);
-    pacer = &g_aVehicles[g_dwNumLocalPlayers + slot->straggler];
-    if (pacer->racer != NULL) {
-        AdvanceAlongTrackRoute(slot->section,
-                               slot->pointIndex,
-                               fraction,
-                               Vec3fLength(&pacer->placedVelocity) * g_fFrameDeltaTime);
-        slot->distance +=
-            Vec3fLength(&g_aVehicles[g_dwNumLocalPlayers + slot->straggler].placedVelocity) *
-            g_fFrameDeltaTime;
-    } else {
-        AdvanceAlongTrackRoute(slot->section, slot->pointIndex, fraction, IDLE_RACER_STEP);
-        slot->distance += IDLE_RACER_STEP;
-    }
-    slot->section = g_pTrackRouteSection;
-    slot->pointIndex = g_dwTrackRoutePointIndex;
-    slot->position = g_vTrackRoutePoint;
-    Vec3fSubtract(&slot->velocity, &slot->position, &slot->previousPosition);
-    Vec3fScaleInPlace(&slot->velocity, 1.0f / g_fFrameDeltaTime);
-    UpdateRaceProgress(slot);
 }
 
 void UpdateRacerSlotRaceState(RacerSlot *slot) {

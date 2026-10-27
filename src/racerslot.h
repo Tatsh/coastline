@@ -61,6 +61,21 @@ typedef struct RacerSlot {
      * @ghidraAddress BRD3D: 0x100662a0
      */
     void InitRacerSlot(void);
+
+    /**
+     * Drive the assigned vehicle or advance this racer along the route.
+     *
+     * @ghidraAddress BRD3D: 0x10068ef0
+     */
+    void UpdateRacerSlotMotion(void);
+
+    /**
+     * Count crossed gates and laps and update race records.
+     *
+     * @ghidraAddress BRD3D: 0x10066e90
+     * @stub
+     */
+    void UpdateRaceProgress(void);
 #endif
 #endif
 } RacerSlot;
