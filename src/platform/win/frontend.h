@@ -357,6 +357,12 @@ int ResultsSummaryExitSeasonConfirmUI_OnYes(MenuWidget *pWidget);
 int InputOptionsUI_OnRestoreDefaults(MenuWidget *pWidget);
 
 /**
+ * @ghidraAddress BRD3D: 0x10043400
+ * @ghidraAddress BRGlide: 0x1003c950
+ */
+int InputOptionsUI_OnCycleInputDevice(MenuWidget *pWidget);
+
+/**
  * @ghidraAddress BRD3D: 0x10043710
  * @ghidraAddress BRGlide: 0x1003cc60
  */

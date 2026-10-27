@@ -1814,6 +1814,33 @@ int MainMenuUI_OnPlayCredits(MenuWidget *pWidget) {
     return 0;
 }
 
+int InputOptionsUI_OnCycleInputDevice(MenuWidget *) {
+    if (g_adwMouseButtonPressed[1]) {
+        g_dwSelectedInputDevice =
+            static_cast<int>(static_cast<unsigned>(g_dwSelectedInputDevice) + 1);
+        if (g_dwSelectedInputDevice >= 4) {
+            g_dwSelectedInputDevice = 0;
+        }
+        if (g_dwSelectedInputDevice == 1) {
+            g_dwSelectedInputDevice = 2;
+        }
+    } else if (g_adwMouseButtonPressed[0]) {
+        g_dwSelectedInputDevice =
+            static_cast<int>(static_cast<unsigned>(g_dwSelectedInputDevice) - 1);
+        if (g_dwSelectedInputDevice < 0) {
+            g_dwSelectedInputDevice = 3;
+        }
+        if (g_dwSelectedInputDevice == 1) {
+            g_dwSelectedInputDevice = 0;
+        }
+    }
+    g_GlobalRallyConfig.adwMenuSelectionBackup[6] = g_dwSelectedInputDevice;
+    g_GlobalRallyConfig.dwInputDeviceType =
+        g_adwInputDeviceMenuIndexToDevice[g_dwSelectedInputDevice];
+    g_GlobalRallyConfig.SelectActiveInputBindings();
+    return 1;
+}
+
 int InputOptionsUI_OnRestoreDefaults(MenuWidget *) {
     if (static_cast<unsigned>(g_dwSelectedInputDevice) <= 3) {
         g_GlobalRallyConfig.LoadDeviceDefaultBindings(g_dwSelectedInputDevice);
