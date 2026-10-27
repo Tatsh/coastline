@@ -485,9 +485,13 @@ HRESULT UpdateNetworkSessionSettings(void);
 
 /**
  * @ghidraAddress BRD3D: 0x10005b10
- * @stub
  */
 bool InitializeNetworkMutexes(void);
+
+/**
+ * @ghidraAddress BRD3D: 0x10005960
+ */
+bool ResetNetworkState(void);
 
 /**
  * Copy g_szSessionName into the settings of a session when it is longer than one character, and

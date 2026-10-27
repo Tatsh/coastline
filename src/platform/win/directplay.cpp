@@ -16,6 +16,7 @@
 #include "platform/win/boot/strings.h"
 #include "platform/win/frametimer.h"
 #include "platform/win/frontend.h"
+#include "platform/win/input.h"
 #include "platform/win/netstream.h"
 #include "platform/win/settings.h"
 #include "platform/win/sound.h"
@@ -1857,6 +1858,81 @@ static inline void ResetPeerSnapshotsForJoin(NetPeerSlot &slot) {
     slot.nAppliedSnapshot = -1;
     std::memset(slot.abUnknown564, 0, sizeof(slot.abUnknown564));
     slot.dwPingMs = 0;
+}
+
+bool ResetNetworkState(void) {
+    for (NetPeerSlot &slot : g_aNetPeerSlots) {
+        WaitForSingleObject(slot.hMutex, INFINITE);
+        slot.dwLastUpdateTime = 0;
+        std::memset(slot.adwSnapshotTimes, 0, sizeof(slot.adwSnapshotTimes));
+        slot.dwStatus = 0;
+        std::memset(slot.adwSnapshotTypes, 0, sizeof(slot.adwSnapshotTypes));
+        slot.nSnapshotCount = 0;
+        slot.nCurrentSnapshot = 0;
+        slot.nAppliedSnapshot = -1;
+        std::memset(slot.abUnknown564, 0, sizeof(slot.abUnknown564));
+        slot.dwPingMs = 0;
+        ReleaseMutex(slot.hMutex);
+    }
+    WaitForSingleObject(g_hNetNotifyMutex, INFINITE);
+    g_nPendingNetSoundEffect = -1;
+    g_bNetStatusStringDirty = 0;
+    g_szNetStatusString[0] = '\0';
+    ReleaseMutex(g_hNetNotifyMutex);
+    WaitForSingleObject(g_hNetRaceOrderMutex, INFINITE);
+    std::memset(g_adwNetRaceOrder, 0, sizeof(g_adwNetRaceOrder));
+    ReleaseMutex(g_hNetRaceOrderMutex);
+    WaitForSingleObject(g_hJoinedPlayerStackMutex, INFINITE);
+    g_nJoinedPlayerStackTop = -1;
+    ReleaseMutex(g_hJoinedPlayerStackMutex);
+    WaitForSingleObject(g_hDepartedPlayerStackMutex, INFINITE);
+    g_nDepartedPlayerStackTop = -1;
+    ReleaseMutex(g_hDepartedPlayerStackMutex);
+    WaitForSingleObject(g_hNetReadyMutex, INFINITE);
+    g_bNetReadyToStart = 0;
+    ReleaseMutex(g_hNetReadyMutex);
+    WaitForSingleObject(g_hNetPauseMutex, INFINITE);
+    g_nNetPauseRequestTicks = 0;
+    ReleaseMutex(g_hNetPauseMutex);
+    WaitForSingleObject(g_hNetUnpauseMutex, INFINITE);
+    g_nNetUnpauseRequestTicks = 0;
+    ReleaseMutex(g_hNetUnpauseMutex);
+    WaitForSingleObject(g_hNetReceiveMutex, INFINITE);
+    g_bNetReceiveEnabled = 0;
+    ReleaseMutex(g_hNetReceiveMutex);
+    WaitForSingleObject(g_hNetRaceStartMutex, INFINITE);
+    g_dwNetRaceStartFrame = ~0u;
+    ReleaseMutex(g_hNetRaceStartMutex);
+    g_dwNetClockBaseMs = 0;
+    g_dwNetBestClockRoundTrip = ~0u;
+    for (NetClockSample &sample : g_aNetClockSamples) {
+        sample.dwServerFrame = 0;
+        sample.dwLocalTime = 0;
+    }
+    g_bNetGamePaused = 0;
+    g_dwNetworkDataReceived = 0;
+    return true;
+}
+
+bool InitializeNetworkMutexes(void) {
+    for (NetPeerSlot &slot : g_aNetPeerSlots) {
+        slot.hMutex = CreateMutexA(nullptr, false, nullptr);
+    }
+    g_hNetNotifyMutex = CreateMutexA(nullptr, false, nullptr);
+    g_hNetRaceOrderMutex = CreateMutexA(nullptr, false, nullptr);
+    g_hJoinedPlayerStackMutex = CreateMutexA(nullptr, false, nullptr);
+    g_hDepartedPlayerStackMutex = CreateMutexA(nullptr, false, nullptr);
+    g_dwNetLastKeyframeFrame = 0;
+    g_dwNetClockBaseMs = 0;
+    ResetFrameTimer();
+    g_hNetKeyframeMutex = CreateMutexA(nullptr, false, nullptr);
+    g_hNetReadyMutex = CreateMutexA(nullptr, false, nullptr);
+    g_hNetPauseMutex = CreateMutexA(nullptr, false, nullptr);
+    g_hNetUnpauseMutex = CreateMutexA(nullptr, false, nullptr);
+    g_hNetReceiveMutex = CreateMutexA(nullptr, false, nullptr);
+    g_hNetRaceStartMutex = CreateMutexA(nullptr, false, nullptr);
+    ResetNetworkState();
+    return true;
 }
 
 static inline void ApplyLocalNetworkStatus(int state) {
