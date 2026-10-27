@@ -371,6 +371,12 @@ int ModemConnectionUI_OnAccept(MenuWidget *pWidget);
 int SaveSeasonUI_OnSlotSelected(MenuItemList *pList, int *pnSlot);
 
 /**
+ * @ghidraAddress BRD3D: 0x10041df0
+ * @ghidraAddress BRGlide: 0x1003b350
+ */
+int SaveSeasonUI_OnSlotNameEntered(MenuItemList *pList, int nStatus);
+
+/**
  * Open cached input options, building the screen on its first visit.
  *
  * @ghidraAddress BRD3D: 0x100452c0

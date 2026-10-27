@@ -2025,6 +2025,37 @@ int ModemConnectionUI_OnAccept(MenuWidget *pWidget) {
     return 0;
 }
 
+int SaveSeasonUI_OnSlotNameEntered(MenuItemList *pList, int nStatus) {
+    if (!g_dwSeasonLoaded) {
+        return 0;
+    }
+    if (nStatus == -1) {
+        strcpy(pList->fonts[g_dwFileListSelectedSlot].szText, g_szMenuItemTextBackup);
+        return 1;
+    }
+    char fileName[260];
+    char number[4];
+    strcpy(fileName, "RallySeason");
+    _itoa(g_dwFileListSelectedSlot, number, 10);
+    strcat(fileName, number);
+    strcat(fileName, ".brf");
+    strcpy(g_szSeasonSaveFileName, fileName);
+    strcpy(g_pRootMenuScreen->apFiles[0]->aszNames[g_dwFileListSelectedSlot],
+           pList->fonts[g_dwFileListSelectedSlot].szText);
+    strcpy(g_szSeasonSaveSlotName, pList->fonts[g_dwFileListSelectedSlot].szText);
+    if (!g_pPrimarySeasonSave->season && !g_pPrimarySeasonSave->round) {
+        memset(g_pPrimarySeasonSave->seasonPlaces, 0, sizeof(g_pPrimarySeasonSave->seasonPlaces));
+        memset(g_pPrimarySeasonSave->seasonRacePoints,
+               0,
+               sizeof(g_pPrimarySeasonSave->seasonRacePoints));
+        memset(g_pPrimarySeasonSave->seasonTimes, 0, sizeof(g_pPrimarySeasonSave->seasonTimes));
+    }
+    // The slot is marked as named even when writing fails.
+    SaveSeasonSaveFile();
+    g_dwSaveSeasonSlotNamed = 1;
+    return 1;
+}
+
 int SaveSeasonUI_OnSlotSelected(MenuItemList *pList, int *pnSlot) {
     int slot = *pnSlot;
     if (slot < 0) {
