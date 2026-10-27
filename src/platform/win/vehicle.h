@@ -222,7 +222,7 @@ public:
     /** @ghidraAddress BRD3D: 0x10076a70 */
     void InstallVehicleModel(s32 slot, s32 car);
     /** @ghidraAddress BRD3D: 0x1000ef80 */
-    void DeformVehicleMeshByImpact(Vec3f *direction, s32 amount);
+    void DeformVehicleMeshByImpact(Vec3f *direction, s16 amount);
     void ApplyImpactDamageTexture(s32 side);
     s32 AdvanceSkidFrames() {
         return skidFrames++;

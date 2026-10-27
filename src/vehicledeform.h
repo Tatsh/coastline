@@ -18,9 +18,6 @@ extern "C" {
 extern s16 g_wVehicleDeformMaxDent;
 #endif
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
-void DeformVehicleMeshByImpact(Vehicle *vehicle, Vec3f *direction, s32 amount);
-#else
 /**
  * Dent the model on the side of an impact unless the side is already dented deeply enough.
  *
@@ -32,7 +29,6 @@ void DeformVehicleMeshByImpact(Vehicle *vehicle, Vec3f *direction, s32 amount);
  * @ghidraAddress JPN: 0x80234b90
  */
 void DeformVehicleMeshByImpact(Vehicle *vehicle, Vec3f *direction, s16 amount);
-#endif
 
 #ifdef __cplusplus
 }

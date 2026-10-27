@@ -30,12 +30,11 @@ static inline s32 DentOffset(s32 dent, s32 noise, s32 below, s32 above, s32 shif
     return (dent * ((noise & 0xF) - above)) >> shift;
 }
 
+void DeformVehicleMeshByImpact(Vehicle *vehicle, Vec3f *direction, s16 amount) {
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
-void DeformVehicleMeshByImpact(Vehicle *vehicle, Vec3f *direction, s32 amount) {
     GbiCommand *command;
     ConvertedModelVertex *vertex;
 #else
-void DeformVehicleMeshByImpact(Vehicle *vehicle, Vec3f *direction, s16 amount) {
     Gfx *command;
     Vtx *vertex;
 #endif
@@ -86,7 +85,7 @@ void DeformVehicleMeshByImpact(Vehicle *vehicle, Vec3f *direction, s16 amount) {
         side = 7;
     }
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
-    amount = (s32)((u32)amount << 2);
+    amount = (s16)((u32)(s32)amount << 2);
     /* Texture damage precedes the maximum-dent check. */
     vehicle->ApplyImpactDamageTexture(side);
 #else
@@ -95,14 +94,7 @@ void DeformVehicleMeshByImpact(Vehicle *vehicle, Vec3f *direction, s16 amount) {
     if (VEHICLE_GET(vehicle, Dents)[side] >= MAX_DENT) {
         return;
     }
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
-    VEHICLE_GET(vehicle, Dents)
-    [side] = (s16)((u32)(s32)VEHICLE_GET(vehicle, Dents)[side] + (u32)amount);
-    /* Vertex displacement uses the low signed word of the scaled impact. */
-    amount = (s16)amount;
-#else
     VEHICLE_GET(vehicle, Dents)[side] += amount;
-#endif
     VEHICLE_SET(vehicle, DentJitter, ((VEHICLE_GET(vehicle, DentJitter) + 5) & 7) - 4);
     jitter = VEHICLE_GET(vehicle, DentJitter);
     /* A negative offset is moved up by one. */

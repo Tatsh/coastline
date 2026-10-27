@@ -10,7 +10,7 @@
 
 Vehicle g_aVehicles[16];
 
-void Vehicle::DeformVehicleMeshByImpact(Vec3f *direction, s32 amount) {
+void Vehicle::DeformVehicleMeshByImpact(Vec3f *direction, s16 amount) {
     ::DeformVehicleMeshByImpact(this, direction, amount);
 }
 
