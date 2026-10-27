@@ -277,6 +277,12 @@ int CarSetupUI_OnAcceptAndSave(MenuActionWidget *pWidget);
 int AudioOptionsUI_OnCycleSfxVolume(MenuActionWidget *pWidget);
 
 /**
+ * @ghidraAddress BRD3D: 0x10042d60
+ * @ghidraAddress BRGlide: 0x1003c2b0
+ */
+int AudioOptionsUI_OnCycleMusicVolume(MenuActionWidget *pWidget);
+
+/**
  * @ghidraAddress BRD3D: 0x100ab3d8
  * @ghidraAddress BRGlide: 0x100aab78
  */

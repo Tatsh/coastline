@@ -1582,6 +1582,25 @@ int AudioOptionsUI_OnCycleSfxVolume(MenuActionWidget *) {
     return 1;
 }
 
+int AudioOptionsUI_OnCycleMusicVolume(MenuActionWidget *) {
+    g_bAudioOptionsSfxSelected = 0;
+    if (g_adwMouseButtonPressed[1]) {
+        g_GlobalRallyConfig.dwMusicVolume =
+            static_cast<int>(static_cast<unsigned>(g_GlobalRallyConfig.dwMusicVolume) + 1);
+        if (g_GlobalRallyConfig.dwMusicVolume > 9) {
+            g_GlobalRallyConfig.dwMusicVolume = 0;
+        }
+    } else if (g_adwMouseButtonPressed[0]) {
+        g_GlobalRallyConfig.dwMusicVolume =
+            static_cast<int>(static_cast<unsigned>(g_GlobalRallyConfig.dwMusicVolume) - 1);
+        if (g_GlobalRallyConfig.dwMusicVolume < 0) {
+            g_GlobalRallyConfig.dwMusicVolume = 9;
+        }
+    }
+    ApplyAudioVolumeSettings();
+    return 1;
+}
+
 int AudioOptionsUI_OnBackAndSave(MenuActionWidget *pItem) {
     ReturnFromCachedMenu(pItem, g_pCachedMenu_GameplaySettings, g_pCachedMenu_Options);
     BackupMenuSelections();
