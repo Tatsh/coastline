@@ -1,5 +1,21 @@
 #include "platform/win/menufont.h"
 
+#include <cstring>
+
+MenuFont::MenuFont() {
+    pVTable = &g_MenuFontVTable;
+    std::memset(szText, 0, sizeof(szText));
+    fZ = 0.0f;
+    fY = 0.0f;
+    fX = 0.0f;
+    nHeight = 0;
+    nWidth = 0;
+    nInputMaxWidth = 0;
+    bDrawCaret = 0;
+    dwFlags = 0;
+    bStyle = 1;
+}
+
 static inline void MeasureMenuText(MenuFont *pFont, bool alternate) {
     unsigned short width = 0;
     short height = pFont->nHeight;

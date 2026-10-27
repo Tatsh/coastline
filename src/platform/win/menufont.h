@@ -28,7 +28,17 @@ struct MenuFontVTable {
     long double(__thiscall *ComputeCenteredX)(MenuFont *);
 };
 
+/**
+ * @ghidraAddress BRD3D: 0x1008f728
+ */
+extern MenuFontVTable g_MenuFontVTable;
+
 struct MenuFont {
+    /**
+     * @ghidraAddress BRD3D: 0x1005b050
+     */
+    MenuFont();
+
     /**
      * @ghidraAddress BRD3D: 0x1005b0d0
      */
