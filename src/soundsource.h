@@ -57,6 +57,23 @@ void ResetSoundSourceTracking(void);
  */
 void ResetAllSoundState(void);
 
+/**
+ * Offer a sound of the track as the nearest this frame; the nearest plays.
+ *
+ * @param source The source the sound is kept under.
+ * @param sound The sound effect.
+ * @param volume The volume, out of 256.
+ * @param frequency The frequency, in hertz, negative for a source that does not move.
+ * @param position The position of the source.
+ * @param listener The camera that hears it.
+ * @ghidraAddress USA: 0x8022b494
+ * @ghidraAddress EUR: 0x8022c9a4
+ * @ghidraAddress JPN: 0x8022c15c
+ * @ghidraAddress BRD3D: 0x10067e50
+ */
+void UpdateClosestSoundSource(
+    s32 source, s32 sound, s32 volume, f32 frequency, Vec3f *position, CameraFrame *listener);
+
 #ifdef __cplusplus
 }
 #endif

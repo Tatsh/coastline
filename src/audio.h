@@ -504,22 +504,6 @@ void ComputeStereoPan(
     Vec3f *source, CameraFrame *camera, f32 *upper, f32 *lower, s32 *volume, s32 narrow);
 
 /**
- * Offer a sound of the track as the nearest this frame; the nearest plays.
- *
- * @param source The source the sound is kept under.
- * @param sound The sound effect.
- * @param volume The volume, out of 256.
- * @param frequency The frequency, in hertz, negative for a source that does not move.
- * @param position The position of the source.
- * @param listener The camera that hears it.
- * @ghidraAddress USA: 0x8022b494
- * @ghidraAddress EUR: 0x8022c9a4
- * @ghidraAddress JPN: 0x8022c15c
- */
-void UpdateClosestSoundSource(
-    s32 source, s32 sound, s32 volume, f32 frequency, Vec3f *position, CameraFrame *listener);
-
-/**
  * Play the nearest sound of the track on its channel, panned and pitched for the camera.
  *
  * @ghidraAddress USA: 0x8022b534

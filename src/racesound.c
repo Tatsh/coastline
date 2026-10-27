@@ -128,23 +128,6 @@ void ComputeStereoPan(
     *volume = (s32)(SOUND_VOLUME_SCALE / distance);
 }
 
-void UpdateClosestSoundSource(
-    s32 source, s32 sound, s32 volume, f32 frequency, Vec3f *position, CameraFrame *listener) {
-    f32 distance = Vec3fDistance(position, &listener->position);
-
-    if (distance < g_ClosestSoundSource.distance) {
-        g_ClosestSoundSource.position.x = position->x;
-        g_ClosestSoundSource.position.y = position->y;
-        g_ClosestSoundSource.position.z = position->z;
-        g_ClosestSoundSource.listener = listener;
-        g_ClosestSoundSource.distance = distance;
-        g_ClosestSoundSource.sound = sound;
-        g_ClosestSoundSource.source = source;
-        g_ClosestSoundSource.frequency = frequency;
-        g_ClosestSoundSource.volume = volume;
-    }
-}
-
 /* The step of a channel that plays a frequency. */
 static u64 FrequencyStep(f32 frequency) {
     return (u64)((double)(frequency * (1.0f / SAMPLE_RATE)) * STEP_ONE);
