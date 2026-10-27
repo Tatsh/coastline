@@ -1341,6 +1341,14 @@ extern unsigned char g_abDecodedTexturePixels[];
 void ModulateTextureWithIntensityPlane(const TextureImageData *pImage, unsigned char *pPixels);
 
 /**
+ * @ghidraAddress BRD3D: 0x10061210
+ */
+void ModulateRgbaByMask(unsigned char *pixels,
+                         int width,
+                         int height,
+                         const unsigned char *mask);
+
+/**
  * The byte count produced by the last decoded texture operation.
  *
  * @ghidraAddress BRD3D: 0x105553f8

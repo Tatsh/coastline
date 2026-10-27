@@ -1194,6 +1194,18 @@ unsigned ResizeTextureMipChain(unsigned char *pDest,
     return bytes;
 }
 
+void ModulateRgbaByMask(unsigned char *pixels, int width, int height, const unsigned char *mask) {
+    int count = static_cast<int>(static_cast<unsigned>(width) * static_cast<unsigned>(height));
+    for (int i = 0; i < count; ++i) {
+        unsigned intensity = mask[0];
+        pixels[0] = pixels[0] * intensity / 255;
+        pixels[1] = pixels[1] * intensity / 255;
+        pixels[2] = pixels[2] * intensity / 255;
+        pixels += 4;
+        mask += 4;
+    }
+}
+
 void ModulateTextureWithIntensityPlane(const TextureImageData *pImage, unsigned char *pPixels) {
     unsigned imageBytes = static_cast<unsigned>(pImage->nSourceWidth) *
                           static_cast<unsigned>(pImage->nSourceHeight) * 4;
