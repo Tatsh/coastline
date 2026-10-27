@@ -1,6 +1,6 @@
 # PC port game code from 0x10010000 to 0x10020000
 
-87 of 159 routines done.
+88 of 159 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -82,7 +82,7 @@ the same name, for a routine the port retained from the N64 game.
 | `SubmitVertexToRenderBufferFogged`                     |   ✅   |                 |      1 |    176 | `0x1001ca90` |              | `int SubmitVertexToRenderBufferFogged(GbiVertex * pVertex)`                                                                                                                                                                                  |
 | `UpdateLightningFlash`                                 |        | ✅ `0x8023a0bc` |      1 |    174 | `0x10019620` | `0x10016be0` | `void UpdateLightningFlash(void)`                                                                                                                                                                                                            |
 | `InitGlideRenderDevice`                                |   📝   |                 |      1 |    173 |              | `0x1001e080` | `int InitGlideRenderDevice(void)`                                                                                                                                                                                                            |
-| `LerpVertexFromPool`                                   |        |                 |     14 |    170 | `0x1001d940` | `0x1001f200` | `void LerpVertexFromPool(int pVertexA, int pVertexB, float fLerpFactor)`                                                                                                                                                                     |
+| `LerpVertexFromPool`                                   |   ✅   |                 |     14 |    170 | `0x1001d940` | `0x1001f200` | `GbiVertexSource * LerpVertexFromPool(GbiVertexSource * pFirst, GbiVertexSource * pSecond, float fFraction)`                                                                                                                                 |
 | `SelectDeviceAndDisplayMode`                           |   ✅   |                 |      3 |    168 | `0x1001a6e0` |              | `bool SelectDeviceAndDisplayMode(DirectDrawDriver * pDriver, GUID * pDeviceGuid, int nWidth, int nHeight, int nBitDepth, void * pSurfaceFormat, DisplayMode * * ppMode, D3DDeviceNode * * ppDevice)`                                         |
 | `DrawDebugOverlayBanner`                               |        |                 |      1 |    164 | `0x10017690` | `0x10014c00` | `void DrawDebugOverlayBanner(void * pRenderNode)`                                                                                                                                                                                            |
 | `DrawLapTimeListHud`                                   |        |                 |      1 |    163 | `0x10017f30` | `0x100154a0` | `void DrawLapTimeListHud(void * pRenderNode)`                                                                                                                                                                                                |

@@ -1,6 +1,6 @@
 # PC port game code from 0x10030000 to 0x10040000
 
-113 of 307 routines done.
+114 of 307 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -203,8 +203,8 @@ the same name, for a routine the port retained from the N64 game.
 | `Vec3fDistanceSquared`                            |   ✅   | ✅ `0x80224acc` |      2 |     63 | `0x1003b130` | `0x100347b0` | `undefined Vec3fDistanceSquared()`                                                                                                                                      |
 | `CarSetupUI_UpdateCarImage`                       |        |                 |      3 |     61 | `0x1003f720` | `0x10038c60` | `undefined CarSetupUI_UpdateCarImage()`                                                                                                                                 |
 | `ReadControllers`                                 |        | ✅ `0x8021a964` |      1 |     59 | `0x100337ae` | `0x1002ce5f` | `undefined ReadControllers()`                                                                                                                                           |
-| `guMtxIdentF`                                     |        | ✅ `0x80260fd0` |      1 |     59 | `0x100307d0` | `0x10029e80` | `void guMtxIdentF(float[4] * matrix)`                                                                                                                                   |
 | `PlayerInputState::InitPlayerInputState`          |   ✅   | ✅ `0x80255b54` |      1 |     59 | `0x10035fe0` | `0x1002f680` | `void InitPlayerInputState(PlayerInputState * this)`                                                                                                                    |
+| `guMtxIdentF`                                     |   ✅   | ✅ `0x80260fd0` |      1 |     59 | `0x100307d0` | `0x10029e80` | `void guMtxIdentF(float[4] * matrix)`                                                                                                                                   |
 | `ComputeTrackMaxCellIndex`                        |        |                 |      1 |     58 | `0x10037fa0` | `0x10031660` | `undefined ComputeTrackMaxCellIndex()`                                                                                                                                  |
 | `Vec3fLerp`                                       |   ✅   | ✅ `0x802248fc` |     18 |     57 | `0x1003afa0` | `0x10034620` | `void Vec3fLerp(float * pResult, float * pTo, float * pFrom, float fFactor)`                                                                                            |
 | `ConvertDoubleToSignedByte`                       |   ✅   |                 |     12 |     56 | `0x10030de0` | `0x1002a490` | `int ConvertDoubleToSignedByte(double dValue)`                                                                                                                          |
