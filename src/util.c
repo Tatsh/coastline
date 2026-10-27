@@ -61,17 +61,18 @@ void GetTextureScaleAndMask(u32 size, s32 *scale, s32 *maskBits) {
 #pragma GCC diagnostic pop
 #endif
 
-#if TGR_PLATFORM == TGR_PLATFORM_N64
 #include "trackselect.h"
 
-/* The first grid row of the sections that tracks 3 and 8 extend to row 0. */
+/* The first grid row extended to row 0 on the strip mine and its mirrored version. */
 #define TRACK_SECTION_ROW_EXTENDED 2
 
+#if TGR_PLATFORM == TGR_PLATFORM_N64
 /* QuickSort() hands ranges of this many elements or fewer to ShortSort(). */
 #define SHORT_SORT_LIMIT 8
 
 /* The ranges QuickSort() can defer, enough for any count that fits in 32 bits. */
 #define SORT_STACK_SIZE 30
+#endif
 
 void MarkTrackSections(TrackSection *section) {
     for (; section != NULL; section = section->next) {
@@ -83,7 +84,8 @@ void MarkTrackSections(TrackSection *section) {
         }
         section->flags |= TRACK_SECTION_VISITED;
         if (section->gridMinY == TRACK_SECTION_ROW_EXTENDED &&
-            (g_dwSelectedTrackId == 3 || g_dwSelectedTrackId == 8)) {
+            (g_dwSelectedTrackId == TRACK_STRIP_MINE ||
+             g_dwSelectedTrackId == TRACK_MIRROR_STRIP_MINE)) {
             section->gridMinY = 0;
         }
         MarkTrackSections(section->child);
@@ -103,7 +105,6 @@ void PrepareTrackSections(void) {
     MarkTrackSections(g_LoadedTrack.rootSection);
     UnmarkTrackSections(g_LoadedTrack.rootSection);
 }
-#endif
 
 DisplayListBlock *AllocDisplayListBlock(void) {
     if (g_dwDisplayListBlockCount < FRAME_DISPLAY_LIST_BLOCKS) {

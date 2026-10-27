@@ -97,12 +97,14 @@ typedef void (*SwapFunc)(void *a, void *b, u32 size);
 
 /**
  * Mark every section of a tree of the route as visited, skipping sections already visited and
- * alternate branches. On tracks 3 and 8, a section whose grid starts at row 2 starts at row 0.
+ * alternate branches. On the strip mine and its mirrored version, a section whose grid starts at
+ * row 2 starts at row 0.
  *
  * @param section The first section of the tree.
  * @ghidraAddress USA: 0x80255ba0
  * @ghidraAddress EUR: 0x80257170
  * @ghidraAddress JPN: 0x80256b00
+ * @ghidraAddress BRD3D: 0x10061660
  */
 void MarkTrackSections(TrackSection *section);
 
@@ -113,6 +115,7 @@ void MarkTrackSections(TrackSection *section);
  * @ghidraAddress USA: 0x80255c50
  * @ghidraAddress EUR: 0x80257220
  * @ghidraAddress JPN: 0x80256bb0
+ * @ghidraAddress BRD3D: 0x100616c0
  */
 void UnmarkTrackSections(TrackSection *section);
 
@@ -122,6 +125,7 @@ void UnmarkTrackSections(TrackSection *section);
  * @ghidraAddress USA: 0x80255ca0
  * @ghidraAddress EUR: 0x80257270
  * @ghidraAddress JPN: 0x80256c00
+ * @ghidraAddress BRD3D: 0x10061700
  */
 void PrepareTrackSections(void);
 
