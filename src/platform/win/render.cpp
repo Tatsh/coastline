@@ -1195,3 +1195,34 @@ unsigned ResizeTextureMipChain(unsigned char *pDest,
     }
     return bytes;
 }
+
+void ModulateTextureWithIntensityPlane(const TextureImageData *pImage, unsigned char *pPixels) {
+    unsigned imageBytes = static_cast<unsigned>(pImage->nSourceWidth) *
+                          static_cast<unsigned>(pImage->nSourceHeight) * 4;
+    ResizeTextureImage(g_abTextureResampleBuffer,
+                       pImage->nSourceWidth,
+                       pImage->nSourceHeight,
+                       pPixels + static_cast<int>(imageBytes),
+                       pImage->nSourceWidth / 2,
+                       pImage->nSourceHeight / 2,
+                       0xb);
+    const unsigned char *intensity = g_abTextureResampleBuffer;
+    for (int row = 0; row < pImage->nSourceHeight; row++) {
+        for (int column = 0; column < pImage->nSourceWidth; column++) {
+            unsigned color;
+            unsigned multiplier;
+            std::memcpy(&color, pPixels, sizeof(color));
+            std::memcpy(&multiplier, intensity, sizeof(multiplier));
+            auto scale = [multiplier](unsigned channel) {
+                unsigned product = channel * multiplier;
+                return static_cast<unsigned>(
+                    (static_cast<unsigned long long>(product) * 0x88888889u) >> 35);
+            };
+            unsigned result = (scale(color >> 16 & 0xff) << 16) | (scale(color >> 8 & 0xff) << 8) |
+                              scale(color & 0xff) | (color & 0xff000000);
+            std::memcpy(pPixels, &result, sizeof(result));
+            pPixels += 4;
+            intensity += 4;
+        }
+    }
+}

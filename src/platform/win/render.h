@@ -1306,3 +1306,26 @@ void ReloadTextureEntryData(int nEntry);
  */
 unsigned
 ResizeTextureMipChain(unsigned char *pDest, const unsigned char *pSource, TextureImageData *pImage);
+
+/**
+ * The byte work buffer for resized decoded texture pixels.
+ *
+ * @ghidraAddress BRD3D: 0x104d51d0
+ */
+extern unsigned char g_abTextureResampleBuffer[];
+
+/**
+ * The byte work buffer for decoded texture pixels.
+ *
+ * @ghidraAddress BRD3D: 0x11829870
+ */
+extern unsigned char g_abDecodedTexturePixels[];
+
+/**
+ * Modulate decoded RGB by the half-sized intensity plane following its pixels.
+ *
+ * @param pImage The image metadata.
+ * @param pPixels The decoded pixels and following intensity plane.
+ * @ghidraAddress BRD3D: 0x10028a10
+ */
+void ModulateTextureWithIntensityPlane(const TextureImageData *pImage, unsigned char *pPixels);
