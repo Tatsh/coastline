@@ -1658,6 +1658,13 @@ int SeasonProgressInfoUI_OnSaveSeason(MenuWidget *) {
     return 1;
 }
 
+void SetActiveMenuItemText(const char *pszText) {
+    MenuWidget *pWidget = g_pActiveMenuScreen->apPanels[0]->apWidgets[g_dwRootMenuStringIndex];
+    if (pWidget) {
+        pWidget->SetText(pszText, 1, 1, &g_rcMenuRootTitleBar);
+    }
+}
+
 int CarSetupUI_OnAcceptAndSave(MenuActionWidget *pWidget) {
     pWidget->pScreen->bRunning = 0;
     pWidget->pScreen->ShutdownFrontEnd(0);

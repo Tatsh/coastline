@@ -1555,9 +1555,21 @@ void BuildOptionsMenuUI(MenuScreen *pScreen);
 
 /**
  * @ghidraAddress BRD3D: 0x100419d0
- * @stub
+ * @ghidraAddress BRGlide: 0x1003af30
  */
 void SetActiveMenuItemText(const char *pszText);
+
+/**
+ * @ghidraAddress BRD3D: 0x10a9dbd0
+ * @ghidraAddress BRGlide: 0x10ac4c58
+ */
+extern int g_dwRootMenuStringIndex;
+
+/**
+ * @ghidraAddress BRD3D: 0x100ab558
+ * @ghidraAddress BRGlide: 0x100aacf8
+ */
+extern const RECT g_rcMenuRootTitleBar;
 
 /**
  * @ghidraAddress BRD3D: 0x10aa29c8
