@@ -1,6 +1,6 @@
 # PC port game code from 0x10010000 to 0x10020000
 
-120 of 162 routines done.
+121 of 162 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -87,7 +87,7 @@ the same name, for a routine the port retained from the N64 game.
 | `DrawDebugOverlayBanner`                               |        |                 |      1 |    164 | `0x10017690` | `0x10014c00` | `void DrawDebugOverlayBanner(void * pRenderNode)`                                                                                                                                                                                            |
 | `DrawLapTimeListHud`                                   |        |                 |      1 |    163 | `0x10017f30` | `0x100154a0` | `void DrawLapTimeListHud(void * pRenderNode)`                                                                                                                                                                                                |
 | `DrawScrollingText`                                    |   ✅   | ✅ `0x80200764` |      1 |    160 | `0x10015bd0` | `0x10013140` | `void DrawScrollingText(ViewportRect * viewport)`                                                                                                                                                                                            |
-| `DrawLabelWithTime`                                    |        | ✅ `0x80238714` |      3 |    159 | `0x100171f0` | `0x10014760` | `undefined DrawLabelWithTime()`                                                                                                                                                                                                              |
+| `DrawLabelWithTime`                                    |   ✅   | ✅ `0x80238714` |      3 |    159 | `0x100171f0` | `0x10014760` | `void DrawLabelWithTime(char * label, char * color, float seconds, int x, int y)`                                                                                                                                                            |
 | `AcquireNextFrameSnapshotSlot`                         |        |                 |      1 |    157 | `0x100169b0` | `0x10013f20` | `void AcquireNextFrameSnapshotSlot(void)`                                                                                                                                                                                                    |
 | `HandleGbiBindTextureEntry`                            |   ✅   |                 |      1 |    149 | `0x1001bd70` | `0x1001e2e0` | `GbiCommand * HandleGbiBindTextureEntry(GbiCommand * pCommand)`                                                                                                                                                                              |
 | `DrawFormattedLapTimeText`                             |        |                 |      1 |    144 | `0x10017fe0` | `0x10015550` | `void DrawFormattedLapTimeText(void * pRenderNode, int nIndex)`                                                                                                                                                                              |
