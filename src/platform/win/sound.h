@@ -42,6 +42,7 @@ bool InitializeEarSound(HWND hWnd);
  *
  * @return Always true.
  * @ghidraAddress BRD3D: 0x10002260
+ * @ghidraAddress BRGlide: 0x10002580
  */
 bool InitializeMusicPlayback(void);
 

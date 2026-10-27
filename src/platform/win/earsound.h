@@ -2,8 +2,8 @@
 
 /**
  * @file
- * The routines of the EAR library, earias.dll or earpds.dll, found when the library loads. The
- * parameters of the routines are not recovered yet, and each is modelled as an int.
+ * The routines of the EAR library, earias.dll or earpds.dll, found when the library loads.
+ * Unrecovered parameters use integer arguments.
  */
 
 #include <windows.h>
@@ -21,14 +21,25 @@ typedef int(WINAPI *EarAssignHwndProc)(HWND hWnd);
 
 /** Parameters shared with the EAR event mixer. */
 struct EarPlayParams {
-    char abUnknown00[4]; /* +0x00 */
+    unsigned short wSize;
+    unsigned short wType;
     int nTrack;
     WPARAM hEvent;
-    char abUnknown0c[16]; /* +0x0c */
+    unsigned short wChannel;
+    unsigned short awUnknown0e[3]; /* +0x0e */
+    unsigned adwUnknown14[2];      /* +0x14 */
     unsigned dwPlayFlags;
-    char abUnknown20[34]; /* +0x20 */
+    unsigned adwUnknown20[2];      /* +0x20 */
+    unsigned short awUnknown28[2]; /* +0x28 */
+    unsigned adwUnknown2c[4];      /* +0x2c */
+    unsigned short awUnknown3c[3]; /* +0x3c */
     unsigned short wPlaybackControl;
-    char abUnknown44[60]; /* +0x44 */
+    unsigned short awUnknown44[2]; /* +0x44 */
+    unsigned dwUnknown48;          /* +0x48 */
+    unsigned short awUnknown4c[2]; /* +0x4c */
+    unsigned adwUnknown50[8];      /* +0x50 */
+    unsigned short awUnknown70[7]; /* +0x70 */
+    unsigned short wUnknown7e;     /* +0x7e */
 };
 
 /** Mix an EAR event and return its event identifier. */

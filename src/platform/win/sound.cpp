@@ -98,6 +98,64 @@ bool OpenCdaudioMci(HWND hWnd) {
     return true;
 }
 
+bool InitializeMusicPlayback(void) {
+    if (g_dwPlayMusicMode == 0 || g_nMusicDeviceRefCount == 0 || g_bMusicActive != 0) {
+        return true;
+    }
+    if (g_pfnEarRegisterChannel(g_dwEarMusicChannel, 6, 10000, 5) == 0) {
+        g_bMusicActive = 0;
+        return true;
+    }
+    if (g_bEarOutputInitialized == 0) {
+        g_pfnEarRegisterMatrix(1);
+    }
+    int nChannel = g_dwEarMusicChannel;
+    g_bEarOutputInitialized = 1;
+    g_EarPlayParams.wSize = 128;
+    g_EarPlayParams.wType = 30;
+    g_EarPlayParams.nTrack = 0;
+    g_EarPlayParams.hEvent = 0;
+    g_EarPlayParams.wChannel = nChannel;
+    g_EarPlayParams.awUnknown0e[0] = 1;
+    g_EarPlayParams.awUnknown0e[1] = 0;
+    g_EarPlayParams.awUnknown0e[2] = 10000;
+    g_EarPlayParams.adwUnknown14[0] = 10000;
+    g_EarPlayParams.adwUnknown14[1] = 0;
+    g_EarPlayParams.dwPlayFlags = 0;
+    g_EarPlayParams.adwUnknown20[0] = 0;
+    g_EarPlayParams.adwUnknown20[1] = 0;
+    g_EarPlayParams.awUnknown28[0] = 4;
+    g_EarPlayParams.awUnknown28[1] = 0;
+    g_EarPlayParams.adwUnknown2c[0] = 0;
+    g_EarPlayParams.adwUnknown2c[1] = 0;
+    g_EarPlayParams.adwUnknown2c[2] = 0;
+    g_EarPlayParams.adwUnknown2c[3] = 1;
+    g_EarPlayParams.awUnknown3c[0] = 0;
+    g_EarPlayParams.awUnknown3c[1] = 10000;
+    g_EarPlayParams.awUnknown3c[2] = 10000;
+    g_EarPlayParams.wPlaybackControl = 0;
+    g_EarPlayParams.awUnknown44[0] = 0;
+    g_EarPlayParams.awUnknown44[1] = 0;
+    g_EarPlayParams.dwUnknown48 = 0;
+    g_EarPlayParams.awUnknown4c[0] = 0;
+    g_EarPlayParams.awUnknown4c[1] = 0;
+    for (unsigned i = 0; i < 8; ++i) {
+        g_EarPlayParams.adwUnknown50[i] = i == 4 ? 4 : 0;
+    }
+    g_EarPlayParams.awUnknown70[0] = 0;
+    g_EarPlayParams.awUnknown70[1] = 1000;
+    g_EarPlayParams.awUnknown70[2] = 2500;
+    g_EarPlayParams.awUnknown70[3] = 5000;
+    g_EarPlayParams.awUnknown70[4] = 7500;
+    g_EarPlayParams.awUnknown70[5] = 9000;
+    g_EarPlayParams.awUnknown70[6] = 10000;
+    /* The final two bytes retain callback changes. */
+    g_nMusicTrackMin = g_pfnEarChangeChannelControl(nChannel, 0x10000020);
+    g_nMusicTrackMax = g_pfnEarChangeChannelControl(g_dwEarMusicChannel, 0x10000040);
+    g_bMusicActive = 1;
+    return true;
+}
+
 WPARAM GetEarMusicEventHandle(void) {
     return g_EarPlayParams.hEvent;
 }
