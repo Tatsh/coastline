@@ -271,6 +271,18 @@ public:
 int CarSetupUI_OnAcceptAndSave(MenuActionWidget *pWidget);
 
 /**
+ * @ghidraAddress BRD3D: 0x100408d0
+ * @ghidraAddress BRGlide: 0x10039e10
+ */
+int RaceSetupUI_UpdateLapCountLabel(MenuWidget *pWidget);
+
+/**
+ * @ghidraAddress BRD3D: 0x10aa28e8
+ * @ghidraAddress BRGlide: 0x10ac5c40
+ */
+extern int g_dwTimeAttackLoadSelected;
+
+/**
  * @ghidraAddress BRD3D: 0x10042c80
  * @ghidraAddress BRGlide: 0x1003c1d0
  */

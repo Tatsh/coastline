@@ -1729,6 +1729,17 @@ int GameOptionsUI_OnToggleSpecularLighting(MenuWidget *) {
     return 1;
 }
 
+int RaceSetupUI_UpdateLapCountLabel(MenuWidget *pWidget) {
+    if (g_pActiveMenuScreen != g_pCachedMenu_LoadGhost || g_dwTimeAttackLoadSelected) {
+        MenuFont *font = &pWidget->fonts[0];
+        _itoa(g_dwTotalLaps, font->szText, 10);
+        MenuFontVTable *vtable = font->pVTable;
+        vtable->MeasureTextAltFont(font);
+        vtable->DrawTextAltFont(font);
+    }
+    return 1;
+}
+
 int CarSetupUI_OnAcceptAndSave(MenuActionWidget *pWidget) {
     pWidget->pScreen->bRunning = 0;
     pWidget->pScreen->ShutdownFrontEnd(0);
