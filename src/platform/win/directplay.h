@@ -1321,6 +1321,7 @@ int FindNetworkSlotByPlayerId(DPID dpidPlayer);
  * @param dpidTo The receiver.
  * @ghidraAddress BRD3D: 0x10003580
  * @ghidraAddress BRGlide: 0x100038f0
+ * @stub{BRGlide}
  */
 void ProcessNetworkDataStream(
     DirectPlayInfo *pInfo, void *pData, DWORD dwSize, DPID dpidFrom, DPID dpidTo);

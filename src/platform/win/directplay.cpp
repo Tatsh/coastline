@@ -816,7 +816,8 @@ int FindNetworkSlotByPlayerId(DPID dpidPlayer) {
     return -1;
 }
 
-static inline int FindOldestNetworkSnapshot(const NetPlayerSlot &slot) {
+template <typename Slot>
+static inline int FindOldestNetworkSnapshot(const Slot &slot) {
     unsigned oldest = 0xffffffff;
     int index = 0;
     for (int i = 0; i < 8; i++) {
@@ -826,6 +827,40 @@ static inline int FindOldestNetworkSnapshot(const NetPlayerSlot &slot) {
         }
     }
     return index;
+}
+
+template <typename Slot>
+static inline void ReadNetworkDeltaSnapshot(Slot &slot, NetStream &stream, unsigned timestamp) {
+    int oldest = FindOldestNetworkSnapshot(slot);
+    int newest = 0;
+    int previous = 0;
+    unsigned newestTime = 0;
+    unsigned previousTime = 0;
+    for (int i = 0; i < 8; i++) {
+        if (slot.adwSnapshotTypes[i] == 0x40 && slot.adwSnapshotTimes[i] > newestTime) {
+            newest = i;
+            newestTime = slot.adwSnapshotTimes[i];
+        }
+    }
+    for (int i = 0; i < 8; i++) {
+        if (slot.adwSnapshotTypes[i] == 0x40 && slot.adwSnapshotTimes[i] > previousTime &&
+            i != newest) {
+            previous = i;
+            previousTime = slot.adwSnapshotTimes[i];
+        }
+    }
+    unsigned difference = slot.adwSnapshotTimes[newest] - slot.adwSnapshotTimes[previous];
+    float share = difference == 0 ?
+                      1.0f :
+                      static_cast<float>(
+                          static_cast<long double>(timestamp - slot.adwSnapshotTimes[previous]) /
+                          static_cast<int>(difference));
+    slot.nCurrentSnapshot = oldest;
+    slot.adwSnapshotTimes[oldest] = timestamp;
+    slot.adwSnapshotTypes[oldest] = 0x80;
+    InterpolateKeyframeState(
+        &slot.aSnapshots[oldest], share, &slot.aSnapshots[previous], &slot.aSnapshots[newest]);
+    DeserializeKeyframeDelta(&slot.aSnapshots[oldest], &slot.aSnapshots[newest], &stream);
 }
 
 static inline void
@@ -845,36 +880,7 @@ ReadHostSnapshot(NetPlayerSlot &slot, NetStream &stream, unsigned timestamp, boo
             DeserializeVehicleState(&discarded, &stream);
         }
     } else if (timestamp > slot.adwSnapshotTimes[slot.nCurrentSnapshot]) {
-        int oldest = FindOldestNetworkSnapshot(slot);
-        int newest = 0;
-        int previous = 0;
-        unsigned newestTime = 0;
-        unsigned previousTime = 0;
-        for (int i = 0; i < 8; i++) {
-            if (slot.adwSnapshotTypes[i] == 0x40 && slot.adwSnapshotTimes[i] > newestTime) {
-                newest = i;
-                newestTime = slot.adwSnapshotTimes[i];
-            }
-        }
-        for (int i = 0; i < 8; i++) {
-            if (slot.adwSnapshotTypes[i] == 0x40 && slot.adwSnapshotTimes[i] > previousTime &&
-                i != newest) {
-                previous = i;
-                previousTime = slot.adwSnapshotTimes[i];
-            }
-        }
-        unsigned difference = slot.adwSnapshotTimes[newest] - slot.adwSnapshotTimes[previous];
-        float share = difference == 0 ?
-                          1.0f :
-                          static_cast<float>(static_cast<long double>(
-                                                 timestamp - slot.adwSnapshotTimes[previous]) /
-                                             static_cast<int>(difference));
-        slot.nCurrentSnapshot = oldest;
-        slot.adwSnapshotTimes[oldest] = timestamp;
-        slot.adwSnapshotTypes[oldest] = 0x80;
-        InterpolateKeyframeState(
-            &slot.aSnapshots[oldest], share, &slot.aSnapshots[previous], &slot.aSnapshots[newest]);
-        DeserializeKeyframeDelta(&slot.aSnapshots[oldest], &slot.aSnapshots[newest], &stream);
+        ReadNetworkDeltaSnapshot(slot, stream, timestamp);
     } else {
         // Rejected deltas still consume their bits using an uninitialised reference frame.
         DeserializeKeyframeDelta(&discarded, &discarded, &stream);
@@ -1748,6 +1754,312 @@ void HandleMultiplayerSessionMessage(
         } else {
             GlobalUnlock(GlobalHandle(line));
             GlobalFree(GlobalHandle(line));
+        }
+    }
+}
+
+static inline int FindNetworkVehicle(DPID player) {
+    for (int i = 0; i < g_dwNumActiveVehicles; i++) {
+        if (GetSlotPlayerId(g_aVehicles[i].index) == player) {
+            return i;
+        }
+    }
+    return -1;
+}
+
+static inline void HandleClientSessionMessage(NetworkSessionMessage *message, DPID sender) {
+    char text[0x400];
+    int vehicle;
+    switch (message->dwType) {
+    case 0x60000000:
+    case 0x60000001:
+        text[0] = 0;
+        vehicle = FindNetworkVehicle(sender);
+        if (vehicle != -1) {
+            std::strcpy(text, GetSlotPlayerName(g_aVehicles[vehicle].index));
+            std::strcat(text, ": ");
+        }
+        std::strcat(text, message->szText);
+        SetGlobalStatusString(text);
+        break;
+    case 0x60000004:
+        if (message->dwValue == GetSlotPlayerId(g_dwLocalNetPlayerId)) {
+            DestroyLocalDirectPlayPlayer();
+            g_dwNetworkDataStreamActive = true;
+            vehicle = FindNetworkVehicle(sender);
+            if (vehicle != -1) {
+                std::strcpy(text, GetSlotPlayerName(g_aVehicles[vehicle].index));
+                std::strcat(text, " booted you from the game.");
+                SetGlobalStatusString(text);
+            }
+        }
+        break;
+    case 0x60000005:
+        WaitForSingleObject(g_hNetNotifyMutex, INFINITE);
+        if (message->dwValue >= 4 && message->dwValue <= 7) {
+            g_nPendingNetSoundEffect = message->dwValue + 16;
+        }
+        ReleaseMutex(g_hNetNotifyMutex);
+        break;
+    case 0x60000006:
+        if (sender == message->dwValue) {
+            vehicle = FindNetworkVehicle(sender);
+            if (vehicle != -1) {
+                int slot = g_aVehicles[vehicle].index;
+                if ((GetSlotStatusThreadSafe(slot) & 0x3f) != 0) {
+                    WaitForSingleObject(g_hDepartedPlayerStackMutex, INFINITE);
+                    g_anDepartedPlayerSlotStack[++g_nDepartedPlayerStackTop] = slot;
+                    ReleaseMutex(g_hDepartedPlayerStackMutex);
+                    // The original clears the vehicle index rather than the slot index.
+                    SetSlotStatusThreadSafe(vehicle, 0);
+                    std::strcpy(text, GetSlotPlayerName(slot));
+                    std::strcat(text, " left the race.");
+                    SetGlobalStatusString(text);
+                }
+            }
+        }
+        break;
+    case 0x60000007:
+        if (sender == message->dwValue) {
+            vehicle = FindNetworkVehicle(sender);
+            if (vehicle != -1) {
+                std::strcpy(text, GetSlotPlayerName(g_aVehicles[vehicle].index));
+                std::strcat(text, " returned to race lobby.");
+                SetGlobalStatusString(text);
+            }
+        }
+        break;
+    case 0x60000008:
+        if (sender == DPID_SERVERPLAYER) {
+            vehicle = FindNetworkVehicle(message->finish.dpidPlayer);
+            if (vehicle != -1 && message->finish.nPosition >= 0 && message->finish.nPosition < 8) {
+                std::sprintf(text,
+                             "%s finished %s",
+                             GetSlotPlayerName(g_aVehicles[vehicle].index),
+                             g_apszPlaceNames[message->finish.nPosition]);
+                SetGlobalStatusString(text);
+            }
+        }
+        break;
+    default:
+        break;
+    }
+}
+
+static inline void ResetPeerSnapshotsForJoin(NetPeerSlot &slot) {
+    slot.dwLastUpdateTime = 0;
+    std::memset(slot.adwSnapshotTimes, 0, sizeof(slot.adwSnapshotTimes));
+    slot.dwStatus = 0;
+    std::memset(slot.adwSnapshotTypes, 0, sizeof(slot.adwSnapshotTypes));
+    std::memset(slot.aSnapshots, 0, sizeof(slot.aSnapshots));
+    slot.nSnapshotCount = 0;
+    slot.nCurrentSnapshot = 0;
+    slot.nAppliedSnapshot = -1;
+    std::memset(slot.abUnknown564, 0, sizeof(slot.abUnknown564));
+    slot.dwPingMs = 0;
+}
+
+static inline void ApplyLocalNetworkStatus(int state) {
+    if ((state & 0x3f) == 3) {
+        WaitForSingleObject(g_hNetReadyMutex, INFINITE);
+        g_bNetReadyToStart = false;
+        ReleaseMutex(g_hNetReadyMutex);
+    }
+    if ((state & 0x80) != 0) {
+        WaitForSingleObject(g_hNetPauseMutex, INFINITE);
+        g_nNetPauseRequestTicks = 0;
+        ReleaseMutex(g_hNetPauseMutex);
+        g_bNetGamePaused = true;
+    }
+    if ((state & 0x40) != 0) {
+        if (g_bNetGamePaused) {
+            g_bNetGamePaused = false;
+        }
+        if (g_dwRacePauseState) {
+            g_dwNetworkDataReceived = true;
+        }
+        WaitForSingleObject(g_hNetUnpauseMutex, INFINITE);
+        g_nNetUnpauseRequestTicks = 0;
+        ReleaseMutex(g_hNetUnpauseMutex);
+    }
+    if ((state & 0x3f) == 4) {
+        WaitForSingleObject(g_hNetRaceStartMutex, INFINITE);
+        unsigned frame = GetElapsedFrameCount();
+        g_dwNetRaceStartFrame = g_dwNetRaceStartTimeMs / TICK_PERIOD_MS * TICKS_PER_PERIOD +
+                                g_dwNetRaceStartTimeMs % TICK_PERIOD_MS / TICK_INTERVAL_MS;
+        if (g_dwNetRaceStartFrame > frame + 90) {
+            g_dwNetRaceStartFrame = frame + 90;
+        }
+        ReleaseMutex(g_hNetRaceStartMutex);
+    }
+}
+
+static inline void
+ReadClientSnapshot(NetPeerSlot &slot, NetStream &stream, unsigned timestamp, bool delta) {
+    if ((slot.dwStatus & 0x3f) >= 2) {
+        slot.nSnapshotCount++;
+        if (delta) {
+            ReadNetworkDeltaSnapshot(slot, stream, timestamp);
+        } else {
+            slot.nCurrentSnapshot = FindOldestNetworkSnapshot(slot);
+            slot.adwSnapshotTimes[slot.nCurrentSnapshot] = timestamp;
+            slot.adwSnapshotTypes[slot.nCurrentSnapshot] = 0x40;
+            DeserializeVehicleState(&slot.aSnapshots[slot.nCurrentSnapshot], &stream);
+        }
+        int elapsed = static_cast<int>((g_dwNetLastKeyframeFrame - timestamp) * 2u);
+        slot.dwPingMs = static_cast<int>(static_cast<unsigned>(elapsed / 3) * 100 +
+                                         static_cast<unsigned>(elapsed % 3) * 33);
+    } else {
+        KeyframeState discarded;
+        if (delta) {
+            // The original consumes an inactive peer's delta with an uninitialised reference.
+            DeserializeKeyframeDelta(&discarded, &discarded, &stream);
+        } else {
+            DeserializeVehicleState(&discarded, &stream);
+        }
+    }
+}
+
+void ProcessNetworkDataStream(
+    DirectPlayInfo *pInfo, void *pData, DWORD dwSize, DPID dpidFrom, DPID) {
+    NetStream stream;
+    stream.StreamAttachBuffer(static_cast<unsigned char *>(pData), dwSize);
+    WaitForSingleObject(g_hNetReceiveMutex, INFINITE);
+    bool receive = g_bNetReceiveEnabled != 0;
+    ReleaseMutex(g_hNetReceiveMutex);
+    if (!receive) {
+        return;
+    }
+    stream.StreamResetRead();
+    unsigned timestamp = stream.StreamReadInt24();
+    WaitForSingleObject(g_hNetKeyframeMutex, INFINITE);
+    g_dwNetLastKeyframeFrame = GetElapsedFrameCount();
+    ReleaseMutex(g_hNetKeyframeMutex);
+    while (!stream.StreamIsAtEnd()) {
+        unsigned header = stream.StreamReadByte();
+        int player = header & 0xf;
+        NetPeerSlot &slot = g_aNetPeerSlots[player];
+        switch (header & 0xe0) {
+        case 0: {
+            if (dpidFrom != DPID_SERVERPLAYER) {
+                return;
+            }
+            int state = stream.StreamReadByte();
+            int car = stream.StreamReadByte();
+            unsigned char red = stream.StreamReadByte();
+            unsigned char green = stream.StreamReadByte();
+            unsigned char blue = stream.StreamReadByte();
+            unsigned owner = stream.StreamReadInt32();
+            char name[25];
+            bool hasName = (state & 0x3f) <= 2;
+            if (hasName) {
+                for (int i = 0; i < 24; i++) {
+                    name[i] = static_cast<char>(stream.StreamReadByte());
+                }
+                name[24] = 0;
+            }
+            if ((state & 0x3f) == 4) {
+                g_dwNetRaceStartTimeMs = stream.StreamReadInt24();
+            }
+            WaitForSingleObject(slot.hMutex, INFINITE);
+            if (player != g_dwLocalNetPlayerId && slot.dwStatus != state && (state & 0x3f) == 2) {
+                WaitForSingleObject(g_hJoinedPlayerStackMutex, INFINITE);
+                g_anJoinedPlayerSlotStack[++g_nJoinedPlayerStackTop] = player;
+                ReleaseMutex(g_hJoinedPlayerStackMutex);
+                ResetPeerSnapshotsForJoin(slot);
+            }
+            if (player == g_dwLocalNetPlayerId) {
+                ApplyLocalNetworkStatus(state);
+            }
+            slot.dwLastUpdateTime = timestamp;
+            slot.dwStatus = state;
+            slot.nCar = car;
+            slot.color[0] = red;
+            slot.color[1] = green;
+            slot.color[2] = blue;
+            slot.dpidPlayer = owner;
+            if (hasName) {
+                std::strcpy(slot.szName, name);
+            }
+            SendPlayerInfoPacket(pInfo,
+                                 static_cast<unsigned char>(player),
+                                 static_cast<unsigned char>(car),
+                                 red,
+                                 green,
+                                 blue,
+                                 owner,
+                                 name,
+                                 state,
+                                 0x10);
+            ReleaseMutex(slot.hMutex);
+            break;
+        }
+        case 0x20:
+            if (dpidFrom != DPID_SERVERPLAYER) {
+                return;
+            }
+            WaitForSingleObject(g_hNetRaceOrderMutex, INFINITE);
+            for (int i = 0; i < NET_PEER_SLOT_COUNT; i += 2) {
+                unsigned ranks = stream.StreamReadByte();
+                g_adwNetRaceOrder[i] = ranks & 0xf;
+                g_adwNetRaceOrder[i + 1] = ranks >> 4;
+            }
+            ReleaseMutex(g_hNetRaceOrderMutex);
+            break;
+        case 0x40:
+        case 0x80:
+            WaitForSingleObject(slot.hMutex, INFINITE);
+            ReadClientSnapshot(slot, stream, timestamp, (header & 0xe0) == 0x80);
+            ReleaseMutex(slot.hMutex);
+            break;
+        case 0x60:
+            HandleClientSessionMessage(static_cast<NetworkSessionMessage *>(pData), dpidFrom);
+            return;
+        case 0xc0: {
+            if (dpidFrom != DPID_SERVERPLAYER) {
+                return;
+            }
+            unsigned localTime = GetHighResolutionTime();
+            unsigned raceTime = stream.StreamReadInt24();
+            unsigned roundTrip = stream.StreamReadInt16();
+            WaitForSingleObject(slot.hMutex, INFINITE);
+            slot.dwRaceTime = raceTime;
+            slot.dwPingMs = roundTrip;
+            ReleaseMutex(slot.hMutex);
+            if (player == g_dwLocalNetPlayerId) {
+                SendTimeSyncReply(pInfo, timestamp);
+                SyncNetworkClockFromServer(timestamp, localTime, raceTime, roundTrip);
+            }
+            break;
+        }
+        case 0xe0:
+            if (dpidFrom != DPID_SERVERPLAYER) {
+                return;
+            }
+            g_dwLocalNetPlayerId = player;
+            LoadNetworkPlayerColors();
+            g_bNetMaxPlayers = stream.StreamReadByte();
+            g_dwSelectedTrackId = stream.StreamReadByte();
+            g_dwChosenWeather = stream.StreamReadByte();
+            g_wNetAllowedCarsMask = stream.StreamReadInt16();
+            g_bNetGameSettingUnk_10221280 = stream.StreamReadByte();
+            g_bNetTireSetting = stream.StreamReadByte();
+            g_bNetSuspensionSetting = stream.StreamReadByte();
+            SendPlayerJoinPacket(pInfo,
+                                 static_cast<unsigned char>(player),
+                                 g_aVehicles[0].color[0],
+                                 g_aVehicles[0].color[1],
+                                 g_aVehicles[0].color[2],
+                                 g_GlobalRallyConfig.szPlayerName,
+                                 0x10);
+            SetSlotStatusThreadSafe(player, 2);
+            break;
+        default:
+            std::fprintf(stderr,
+                         "Error: unknown command %02X received from server (player %d).\n",
+                         header & 0xe0,
+                         player);
+            return;
         }
     }
 }
