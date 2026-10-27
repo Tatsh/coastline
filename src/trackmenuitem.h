@@ -33,7 +33,9 @@ typedef struct {
  */
 typedef struct {
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
-    u8 unreconstructed0[0x2c]; /* +0x0 */
+    u8 unreconstructed0[4]; /* +0x0 */
+    u32 flags;
+    u8 unreconstructed8[0x24]; /* +0x8 */
 #else
     MenuItem item;      /*!< The item of the track menu. */
     u32 trackRom;       /*!< The cartridge offset of the compressed geometry. */

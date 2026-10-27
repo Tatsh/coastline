@@ -818,6 +818,22 @@ extern MenuWidget *g_pD3DDeviceSelectMenu;
  */
 extern MenuWidget *g_pSaveSeasonBackHandlerMenu;
 
+/** @ghidraAddress BRD3D: 0x10042b30 */
+int CarSetupUI_OnCycleCar(MenuActionWidget *pItem);
+/** @ghidraAddress BRD3D: 0x10042ee0 */
+int RaceSetupUI_OnCycleTrack(MenuActionWidget *pItem);
+/** @ghidraAddress BRD3D: 0x100430b0 */
+int RaceSetupUI_OnCycleLapCount(MenuActionWidget *pItem);
+/** @ghidraAddress BRD3D: 0x10043180 */
+int RaceSetupUI_OnCycleWeather(MenuActionWidget *pItem);
+
+/** @ghidraAddress BRD3D: 0x100ac368 */
+extern int g_adwCarNameStringIds[];
+/** @ghidraAddress BRD3D: 0x100ac308 */
+extern int g_adwTrackNameStringIds[];
+/** @ghidraAddress BRD3D: 0x100ac3b0 */
+extern int g_adwWeatherLabelStrIds[];
+
 /**
  * @ghidraAddress BRD3D: 0x100446d0
  */

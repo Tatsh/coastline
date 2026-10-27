@@ -1598,6 +1598,16 @@ int GetSessionSlotFlag(DPID dpidPlayer);
 #define WM_NETWORK_NOTICE 0x501
 
 /**
+ * @ghidraAddress BRD3D: 0x10a9dd28
+ */
+extern char g_szNetworkChatText[];
+
+/**
+ * @ghidraAddress BRD3D: 0x1003d210
+ */
+HRESULT SendNetworkChatMessage(HWND hWindow, DirectPlayInfo *pInfo, bool bNotice);
+
+/**
  * Handle a message another player of the session sent. The return, if any, is not recovered yet.
  *
  * @param pInfo The info of the local player.

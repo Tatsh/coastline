@@ -76,6 +76,7 @@ cantloadsspi
 capsnotavailableyet
 carmodel
 carmt
+carphysics
 carselect
 cartrominit
 carwnoshad
@@ -624,6 +625,7 @@ pyproject
 racedata
 racemenu
 racerecords
+racerinit
 racerslot
 racesound
 rallyconfig
@@ -663,6 +665,7 @@ ripgreprc
 rmonspin
 rodata
 rombuilder
+routewalk
 rshift
 rtti
 rxsize
@@ -809,6 +812,7 @@ tlvertex
 tmsf
 tolower
 toupper
+trackmenuitem
 trackrender
 trak
 trakc
@@ -838,11 +842,13 @@ urllib
 urlopen
 vars
 vecmath
+vehiclecamera
 vehiclechoice
 vehiclecount
 vehicleindex
 vehiclemodel
 vehiclerender
+vehiclereset
 vehiclesetup
 vehprofile
 vendored

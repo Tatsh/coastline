@@ -24,6 +24,7 @@
 #include "profile.h"
 #include "screen.h"
 #include "seasons.h"
+#include "trackmenuitem.h"
 #include "trackselect.h"
 #include "vehicle.h"
 #if TGR_RENDERER == TGR_RENDERER_D3D
@@ -744,6 +745,124 @@ int ShowSaveGhostMenu(int) {
     g_fGhostBestLapTime = g_aVehicles[0].bestLapTime;
     g_fGhostBestRaceTime = g_aVehicles[0].raceTime;
     return ShowCachedMenuScreen(g_pCachedMenu_SaveGhost, BuildSaveTimeAttackMenuUI);
+}
+
+static inline void PostSelectionNotice(void) {
+    SendNetworkChatMessage(g_hMainWindow, g_pDirectPlayInfo, true);
+    strcpy(g_szNetworkChatText, "");
+}
+
+template <typename Available>
+static inline void CycleAvailableMenuChoice(
+    int &choice, int count, int step, Available available, bool skipWrappedStop) {
+    choice += step;
+    if (choice >= count) {
+        choice = 0;
+    } else if (choice < 0) {
+        choice = count - 1;
+    }
+    const int first = choice;
+    if (available(choice)) {
+        return;
+    }
+    for (;;) {
+        choice += step;
+        bool wrapped = false;
+        if (choice >= count) {
+            choice = 0;
+            wrapped = true;
+        } else if (choice < 0) {
+            choice = count - 1;
+            wrapped = true;
+        }
+        /* Track cycling skips the stop comparison on the wrapped iteration. */
+        if ((!skipWrappedStop || !wrapped) && choice == first) {
+            return;
+        }
+        if (available(choice)) {
+            return;
+        }
+    }
+}
+
+int CarSetupUI_OnCycleCar(MenuActionWidget *) {
+    if (g_adwMouseButtonPressed[1]) {
+        CycleAvailableMenuChoice(g_dwCarMenuIndex, 32, 1, IsCarSelectable, false);
+    } else if (g_adwMouseButtonPressed[0]) {
+        CycleAvailableMenuChoice(g_dwCarMenuIndex, 32, -1, IsCarSelectable, false);
+    }
+    g_dwChosenCar = g_adwCarMenuIndexToCarId[g_dwCarMenuIndex];
+    if (g_DirectPlayInfo.pDirectPlay) {
+        int car = g_dwCarMenuIndex;
+        if (car > 15) {
+            car -= 16;
+        }
+        sprintf(g_szNetworkChatText,
+                GetStringResource(0xb7),
+                GetStringResource(g_adwCarNameStringIds[car]));
+        PostSelectionNotice();
+    }
+    return 1;
+}
+
+int RaceSetupUI_OnCycleTrack(MenuActionWidget *) {
+    const int count = g_dwCheatBonusTracksUnlocked ? 15 : 12;
+    if (g_adwMouseButtonPressed[1]) {
+        CycleAvailableMenuChoice(g_dwTrackMenuIndex, count, 1, IsTrackSelectable, true);
+    } else if (g_adwMouseButtonPressed[0]) {
+        CycleAvailableMenuChoice(g_dwTrackMenuIndex, count, -1, IsTrackSelectable, true);
+    }
+    g_dwSelectedTrackId = g_adwTrackMenuIndexToTrackId[g_dwTrackMenuIndex];
+    if (g_DirectPlayInfo.pDirectPlay) {
+        sprintf(g_szNetworkChatText,
+                GetStringResource(0xb8),
+                GetStringResource(g_adwTrackNameStringIds[g_dwSelectedTrackId]));
+        if (g_apTrackMenuItems[g_dwSelectedTrackId]->flags & 0x10) {
+            strcat(g_szNetworkChatText, GetStringResource(0xb0));
+        }
+        PostSelectionNotice();
+    }
+    return 1;
+}
+
+int RaceSetupUI_OnCycleLapCount(MenuActionWidget *) {
+    if (g_adwMouseButtonPressed[1]) {
+        if (++g_dwTotalLaps > 12) {
+            g_dwTotalLaps = 1;
+        }
+    } else if (g_adwMouseButtonPressed[0]) {
+        if (--g_dwTotalLaps < 1) {
+            g_dwTotalLaps = 12;
+        }
+    }
+    g_dwTotalLapsSetting = g_dwTotalLaps;
+    if (g_DirectPlayInfo.pDirectPlay) {
+        char number[32];
+        _itoa(g_dwTotalLaps, number, 10);
+        sprintf(g_szNetworkChatText, GetStringResource(0xb9), number);
+        PostSelectionNotice();
+    }
+    return 1;
+}
+
+int RaceSetupUI_OnCycleWeather(MenuActionWidget *) {
+    if (g_adwMouseButtonPressed[1]) {
+        if (++g_dwSelectedWeather > 4) {
+            g_dwSelectedWeather = 0;
+        }
+    } else if (g_adwMouseButtonPressed[0]) {
+        if (--g_dwSelectedWeather < 0) {
+            g_dwSelectedWeather = 4;
+        }
+    }
+    g_dwChosenWeather = g_adwWeatherMenuIndexToWeather[g_dwSelectedWeather];
+    if (g_DirectPlayInfo.pDirectPlay) {
+        sprintf(g_szNetworkChatText,
+                GetStringResource(0xba),
+                GetStringResource(g_adwWeatherLabelStrIds[g_dwChosenWeather]));
+        PostSelectionNotice();
+    }
+    return 1;
 }
 
 int ShowTimeAttackMenu(int) {

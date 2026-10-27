@@ -1651,6 +1651,55 @@ HRESULT FormatNetworkChatLine(
     return result;
 }
 
+struct NetworkChatPacket {
+    DWORD dwType;
+    char szText[1];
+};
+
+HRESULT SendNetworkChatMessage(HWND hWindow, DirectPlayInfo *pInfo, bool bNotice) {
+    if (!pInfo || !pInfo->pDirectPlay || g_dwNetworkSendBlocked) {
+        return DP_OK;
+    }
+    char *line = nullptr;
+    NetworkChatPacket *packet = nullptr;
+    char *text = static_cast<char *>(GlobalLock(GlobalAlloc(GHND, 201)));
+    HRESULT result;
+    if (!text) {
+        result = E_OUTOFMEMORY;
+    } else {
+        strcpy(text, g_szNetworkChatText);
+        result = FormatNetworkChatLine(pInfo->pDirectPlay, pInfo->dpidPlayer, text, &line, bNotice);
+        if (SUCCEEDED(result)) {
+            PostMessageA(hWindow, WM_NETWORK_NOTICE, 0, reinterpret_cast<LPARAM>(line));
+            line = nullptr;
+            DWORD size = lstrlenA(text) + 8;
+            packet = static_cast<NetworkChatPacket *>(GlobalLock(GlobalAlloc(GHND, size)));
+            if (!packet) {
+                result = E_OUTOFMEMORY;
+            } else {
+                packet->dwType = 0x60000000 + bNotice;
+                lstrcpyA(packet->szText, text);
+                result = DirectPlaySendLocked(pInfo->pDirectPlay,
+                                              pInfo->dpidPlayer,
+                                              DPID_ALLPLAYERS,
+                                              DPSEND_GUARANTEED,
+                                              packet,
+                                              size);
+            }
+        }
+    }
+    if (text) {
+        FreeGlobalBuffer(text);
+    }
+    if (line) {
+        FreeGlobalBuffer(line);
+    }
+    if (packet) {
+        FreeGlobalBuffer(packet);
+    }
+    return result;
+}
+
 struct NetworkSessionMessage {
     DWORD dwType;
     union {
