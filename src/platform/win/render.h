@@ -252,6 +252,7 @@ void InitGbiGlideRenderer(void);
  *
  * @ghidraAddress BRD3D: 0x1002a640
  * @ghidraAddress BRGlide: 0x10029b50
+ * @stub{BRGlide}
  */
 void InitializeTextureSubsystem(void);
 
