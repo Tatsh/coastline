@@ -500,15 +500,28 @@ OSIntMask osGetIntMask(void);
  */
 OSIntMask osSetIntMask(OSIntMask im);
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /**
- * Read the Count register, which increments at half the CPU clock.
+ * Read the CPU counter, or advance the emulated counter on Windows.
  *
- * @return The value of the Count register.
+ * @return The counter value.
  * @ghidraAddress USA: 0x802649f0
  * @ghidraAddress EUR: 0x80266250
  * @ghidraAddress JPN: 0x80265c80
+ * @ghidraAddress BRD3D: 0x10060e90
  */
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+u64 osGetCount(void);
+#else
 u32 osGetCount(void);
+#endif
+
+#ifdef __cplusplus
+}
+#endif
 
 /**
  * Invalidate the data cache over a range.

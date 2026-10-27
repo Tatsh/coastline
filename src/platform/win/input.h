@@ -12,6 +12,8 @@
 // The headers below need the types of windows.h.
 #include <dinput.h>
 
+#include "emulatedclock.h"
+
 /** The mouse of the game. The layout is not recovered past the members below. */
 class MouseDevice {
 public:
@@ -932,22 +934,6 @@ void SetForceFeedbackShortDuration(void);
  * @ghidraAddress BRGlide: 0x100721c0
  */
 void StartForceFeedbackJolt(void);
-
-/**
- * The time of the console the game emulates, in ticks of its CPU counter.
- *
- * @ghidraAddress BRD3D: 0x118abde0
- * @ghidraAddress BRGlide: 0x118eeef8
- */
-extern unsigned long long g_qwEmulatedOsTime;
-
-/**
- * Advance g_qwEmulatedOsTime by a frame of 1/30 of a second.
- *
- * @ghidraAddress BRD3D: 0x10078c10
- * @ghidraAddress BRGlide: 0x10071f00
- */
-void AdvanceEmulatedOsTime(void);
 
 /**
  * Create the condition effect, a spring on X and Y that lasts until it stops, and the jolt

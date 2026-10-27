@@ -1026,13 +1026,14 @@ void SetForceFeedbackShortDuration(void) {
     }
 }
 
-unsigned long long g_qwEmulatedOsTime;
+u64 g_qwEmulatedOsTime;
 
 // The ticks of the CPU counter of the console in a frame of 1/30 of a second.
 #define OS_TICKS_PER_FRAME (46875000 / 30)
 
-void AdvanceEmulatedOsTime(void) {
+u64 AdvanceEmulatedOsTime(void) {
     g_qwEmulatedOsTime += OS_TICKS_PER_FRAME;
+    return g_qwEmulatedOsTime;
 }
 
 void StartForceFeedbackJolt(void) {
