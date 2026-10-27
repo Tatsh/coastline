@@ -1,6 +1,6 @@
 # PC port game code from 0x10040000 to 0x10050000
 
-257 of 264 routines done.
+258 of 264 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -37,7 +37,7 @@ the same name, for a routine the port retained from the N64 game.
 | `NetworkCarSetupUI_OnRefreshSessionDesc`           |   ✅   |                 |      1 |    491 | `0x10043a00` | `0x1003cf50` | `int NetworkCarSetupUI_OnRefreshSessionDesc(MenuWidget * pWidget)`                                                                                        |
 | `NetworkCarSetupUI_OnEscape`                       |   ✅   |                 |      1 |    490 | `0x10043810` | `0x1003cd60` | `int NetworkCarSetupUI_OnEscape(MenuWidget * pWidget)`                                                                                                    |
 | `MenuWidget::MenuWidget`                           |   ✅   |                 |    410 |    478 | `0x100476c0` | `0x10040b10` | `MenuWidget * MenuWidget(MenuWidget * this)`                                                                                                              |
-| `SaveTimeAttackMenuUI_OnSlotNameEntered`           |   📝   |                 |      1 |    468 | `0x10042560` | `0x1003bac0` | `undefined SaveTimeAttackMenuUI_OnSlotNameEntered()`                                                                                                      |
+| `SaveTimeAttackMenuUI_OnSlotNameEntered`           |   ✅   |                 |      1 |    468 | `0x10042560` | `0x1003bac0` | `int SaveTimeAttackMenuUI_OnSlotNameEntered(MenuItemList * list, int status)`                                                                             |
 | `MenuPanel::RunFrame`                              |   ✅   |                 |      0 |    468 | `0x10048530` | `0x10041980` | `bool RunFrame(MenuPanel * this)`                                                                                                                         |
 | `RaceSetupUI_OnCycleTrack`                         |   ✅   |                 |      2 |    457 | `0x10042ee0` | `0x1003c430` | `int RaceSetupUI_OnCycleTrack(MenuActionWidget * pItem)`                                                                                                  |
 | `ReturnToNetworkLobbyScreen`                       |   ✅   |                 |      1 |    407 | `0x100447d0` | `0x1003dd20` | `int ReturnToNetworkLobbyScreen(void)`                                                                                                                    |
