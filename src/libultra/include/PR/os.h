@@ -349,6 +349,7 @@ extern OSViMode osViModeNtscLan1;
  * @ghidraAddress EUR: 0x802a7c50
  * @ghidraAddress JPN: 0x802a7790
  * @ghidraAddress BRD3D: 0x100adfb8
+ * @ghidraAddress BRGlide: 0x100ad7c0
  */
 extern u64 osClockRate;
 

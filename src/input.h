@@ -325,6 +325,7 @@ void UpdateControllerState(void);
  * @ghidraAddress EUR: 0x8021d37c
  * @ghidraAddress JPN: 0x8021cc4c
  * @ghidraAddress BRD3D: 0x10034a85
+ * @ghidraAddress BRGlide: 0x1002e136
  */
 void InitControllersAndPaks(void);
 

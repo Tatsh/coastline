@@ -3,6 +3,10 @@
 #include "input.h"
 #include "rumble.h"
 
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+void InitControllersAndPaks(void) {}
+#endif
+
 void StartControllerRead(void) {
     if (!g_dwContReadPending) {
         g_dwContReadPending = TRUE;
