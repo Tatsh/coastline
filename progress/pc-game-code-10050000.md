@@ -1,6 +1,6 @@
 # PC port game code from 0x10050000 to 0x10060000
 
-63 of 96 routines done.
+66 of 96 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -23,16 +23,16 @@ the same name, for a routine the port retained from the N64 game.
 | `BuildSaveSeasonUI`                       |   📝   |                 |      2 |   2433 | `0x10050060` | `0x10048f10` | `void BuildSaveSeasonUI(MenuScreen * pScreen)`                                                                              |
 | `ApplyPlayerVehicleInput`                 |        |                 |      3 |   1960 |              | `0x1005d050` | `undefined ApplyPlayerVehicleInput()`                                                                                       |
 | `BuildSaveTimeAttackMenuUI`               |   🚧   |                 |      2 |   1932 | `0x1005a6e0` | `0x10053590` | `void BuildSaveTimeAttackMenuUI(MenuScreen * pScreen)`                                                                      |
-| `BuildPlayerNameEntryUI`                  |   🚧   |                 |      2 |   1570 | `0x100563e0` | `0x1004f290` | `void BuildPlayerNameEntryUI(MenuScreen * pScreen)`                                                                         |
+| `BuildPlayerNameEntryUI`                  |   ✅   |                 |      2 |   1570 | `0x100563e0` | `0x1004f290` | `int BuildPlayerNameEntryUI(MenuScreen * screen)`                                                                           |
 | `BuildCreateGameMenuUI`                   |        |                 |      2 |   1558 | `0x100575f0` | `0x100504a0` | `undefined BuildCreateGameMenuUI()`                                                                                         |
-| `BuildJoinCreateGameUI`                   |   🚧   |                 |      2 |   1532 | `0x10056ff0` | `0x1004fea0` | `void BuildJoinCreateGameUI(MenuScreen * pScreen)`                                                                          |
+| `BuildJoinCreateGameUI`                   |   🚧   |                 |      2 |   1532 | `0x10056ff0` | `0x1004fea0` | `int BuildJoinCreateGameUI(MenuScreen * screen)`                                                                            |
 | `BuildModemConnectionUI`                  |   🚧   |                 |      2 |   1498 | `0x10056a10` | `0x1004f8c0` | `void BuildModemConnectionUI(MenuScreen * pScreen)`                                                                         |
 | `MenuItemList::ProcessInput`              |   ✅   |                 |      1 |   1453 | `0x1005c590` | `0x100553b0` | `int ProcessInput(MenuItemList * this, int * selection)`                                                                    |
 | `BuildTimeAttackMenuUI`                   |   ✅   |                 |      2 |   1091 | `0x10059760` | `0x10052610` | `int BuildTimeAttackMenuUI(MenuScreen * screen)`                                                                            |
 | `MenuItemList::AddItem`                   |   ✅   |                 |      1 |    997 | `0x1005bc10` | `0x10054a30` | `int AddItem(MenuItemList * this, char * text, uint flags, uchar style, RECT * bounds, bool full)`                          |
-| `BuildSeasonCongratsUI`                   |   📝   |                 |      2 |    923 | `0x10051990` | `0x1004a840` | `void BuildSeasonCongratsUI(MenuScreen * pScreen)`                                                                          |
+| `BuildSeasonCongratsUI`                   |   ✅   |                 |      2 |    923 | `0x10051990` | `0x1004a840` | `int BuildSeasonCongratsUI(MenuScreen * screen)`                                                                            |
 | `SaveFileList::GenerateNextSaveFileName`  |   ✅   |                 |      1 |    803 | `0x1005d110` | `0x10055f40` | `void GenerateNextSaveFileName(SaveFileList * this, char * pszPattern, char * * ppszName)`                                  |
-| `BuildNotEnoughPointsUI`                  |   📝   |                 |      2 |    760 | `0x10051d30` | `0x1004abe0` | `void BuildNotEnoughPointsUI(MenuScreen * pScreen)`                                                                         |
+| `BuildNotEnoughPointsUI`                  |   ✅   |                 |      2 |    760 | `0x10051d30` | `0x1004abe0` | `int BuildNotEnoughPointsUI(MenuScreen * screen)`                                                                           |
 | `RestoreSeasonProgressState`              |   ✅   |                 |      1 |    629 | `0x1005f940` | `0x10058680` | `bool RestoreSeasonProgressState(void)`                                                                                     |
 | `MenuItemList::Initialize`                |   ✅   |                 |      1 |    618 | `0x1005b910` | `0x10054730` | `int Initialize(MenuItemList * this, uint flags, RECT * bounds, int visibleRows, int firstVisibleRow, int backgroundImage)` |
 | `MenuItemList::Draw`                      |   ✅   |                 |      1 |    581 | `0x1005c2c0` | `0x100550e0` | `int Draw(MenuItemList * this, int selection)`                                                                              |
