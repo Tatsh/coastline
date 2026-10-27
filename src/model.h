@@ -268,6 +268,7 @@ void LoopModelAnimations(Model *model);
  * @ghidraAddress USA: 0x8021d84c
  * @ghidraAddress EUR: 0x8021ea4c
  * @ghidraAddress JPN: 0x8021e31c
+ * @ghidraAddress BRD3D: 0x1003563a
  */
 void AdvanceModelAnimations(Model *model);
 
