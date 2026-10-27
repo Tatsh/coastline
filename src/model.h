@@ -171,16 +171,21 @@ void DrawRotatedModel(Model *model, f32 x, f32 y, f32 z, f32 angle);
 void DrawModelAt(Model *model, f32 x, f32 y, f32 z, f32 angle, f32 scale);
 
 /**
- * Decompress a model from the cartridge to a buffer and turn its offsets into pointers.
+ * Load a model into a buffer and turn its offsets into pointers.
  *
- * @param dst The buffer to decompress to.
- * @param romOffset The offset of the compressed model on the cartridge.
- * @return The buffer.
+ * @param dst The destination buffer.
+ * @param source The archive path on Windows, or the cartridge offset on the console.
+ * @return The loaded model.
  * @ghidraAddress USA: 0x8021de2c
  * @ghidraAddress EUR: 0x8021f02c
  * @ghidraAddress JPN: 0x8021e8fc
+ * @ghidraAddress BRD3D: 0x10036bd0
  */
-Model *DecompressModel(void *dst, u32 romOffset);
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+Model *DecompressModel(void *dst, const char *source);
+#else
+Model *DecompressModel(void *dst, u32 source);
+#endif
 
 /**
  * Move a pointer that falls in a range of offsets to the same place from a base.

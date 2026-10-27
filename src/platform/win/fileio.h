@@ -17,6 +17,11 @@
 extern "C" {
 #endif
 
+/**
+ * @ghidraAddress BRD3D: 0x100378b0
+ */
+void ReadEntireFile(void *buffer, const char *path, int size);
+
 /** A file opened by CHK_FReadOpen(). */
 typedef struct GameFile {
     FILE *pFile;   /*!< The stream of the C library. */
