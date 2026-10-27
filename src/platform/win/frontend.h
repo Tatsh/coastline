@@ -1028,6 +1028,14 @@ int MultiplayerConnectionUI_OnSelectIpx(MenuWidget *pWidget);
 void BuildMultiplayerConnectionUI(MenuScreen *pScreen);
 
 /**
+ * Open cached connection settings, building the screen on its first visit.
+ *
+ * @return Whether the screen was allocated or already cached.
+ * @ghidraAddress BRD3D: 0x10043cd0
+ */
+int ShowMultiplayerConnectionScreen(MenuWidget *pWidget = nullptr);
+
+/**
  * @ghidraAddress BRD3D: 0x10044030
  */
 int MultiplayerConnectionUI_UpdateIpxItem(MenuWidget *pWidget);

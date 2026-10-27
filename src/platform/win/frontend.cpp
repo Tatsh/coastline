@@ -1125,6 +1125,10 @@ int ShowInputOptionsMenu(void) {
     return ShowCachedMenuScreen(g_pCachedMenu_Credits, BuildInputOptionsUI);
 }
 
+int ShowMultiplayerConnectionScreen(MenuWidget *) {
+    return ShowCachedMenuScreen(g_pCachedMenu_MultiplayerConnection, BuildMultiplayerConnectionUI);
+}
+
 int SeasonRoundList_SetBrowsingFlag(MenuWidget *) {
     g_bSeasonRoundListBrowsing = 1;
     return 1;
