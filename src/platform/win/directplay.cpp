@@ -1510,6 +1510,34 @@ void TickNetworkPauseRequest(void) {
 
 int g_nNetUnpauseRequestTicks;
 
+void TickNetworkUnpauseRequest(void) {
+    WaitForSingleObject(g_hNetUnpauseMutex, INFINITE);
+    int ticks = g_nNetUnpauseRequestTicks;
+    if (ticks != 0) {
+        ticks = std::bit_cast<int>(static_cast<unsigned>(ticks) + 1u);
+        g_nNetUnpauseRequestTicks = ticks;
+        if (ticks >= 100) {
+            g_dwNetworkDataReceived = 1;
+            ticks = 0;
+            g_nNetUnpauseRequestTicks = 0;
+        }
+    }
+    ReleaseMutex(g_hNetUnpauseMutex);
+    if (ticks != 0) {
+        int state = (GetSlotStatusThreadSafe(g_dwLocalNetPlayerId) & ~0x80) | 0x40;
+        SendPlayerInfoPacket(&g_DirectPlayInfo,
+                             static_cast<unsigned char>(g_dwLocalNetPlayerId),
+                             static_cast<unsigned char>(g_dwChosenCar),
+                             VEHICLE_GET(&(g_aVehicles[0]), Color)[0],
+                             VEHICLE_GET(&(g_aVehicles[0]), Color)[1],
+                             VEHICLE_GET(&(g_aVehicles[0]), Color)[2],
+                             g_DirectPlayInfo.dpidPlayer,
+                             g_GlobalRallyConfig.szPlayerName,
+                             state,
+                             0);
+    }
+}
+
 bool RequestNetworkUnpause(void) {
     WaitForSingleObject(g_hNetUnpauseMutex, INFINITE);
     if (g_nNetUnpauseRequestTicks == 0) {
@@ -1543,6 +1571,54 @@ void DisableNetworkReceive(void) {
 }
 
 int g_dwLocalNetPlayerId = -1;
+
+unsigned WaitForPlayerIdAssignment(void) {
+    g_dwLocalNetPlayerId = -1;
+    for (;;) {
+        int result = SendPlayerJoinPacket(&g_DirectPlayInfo,
+                                          static_cast<unsigned char>(g_dwLocalNetPlayerId),
+                                          VEHICLE_GET(&(g_aVehicles[0]), Color)[0],
+                                          VEHICLE_GET(&(g_aVehicles[0]), Color)[1],
+                                          VEHICLE_GET(&(g_aVehicles[0]), Color)[2],
+                                          g_GlobalRallyConfig.szPlayerName,
+                                          0);
+        DWORD start = GetHighResolutionTime();
+        if (g_DirectPlayInfo.bIsHost) {
+            g_dwLocalNetPlayerId = 0;
+            LoadNetworkPlayerColors();
+            SendPlayerJoinPacket(&g_DirectPlayInfo,
+                                 static_cast<unsigned char>(g_dwLocalNetPlayerId),
+                                 VEHICLE_GET(&(g_aVehicles[0]), Color)[0],
+                                 VEHICLE_GET(&(g_aVehicles[0]), Color)[1],
+                                 VEHICLE_GET(&(g_aVehicles[0]), Color)[2],
+                                 g_GlobalRallyConfig.szPlayerName,
+                                 0x10);
+            SendPlayerInfoPacket(&g_DirectPlayInfo,
+                                 static_cast<unsigned char>(g_dwLocalNetPlayerId),
+                                 static_cast<unsigned char>(g_dwChosenCar),
+                                 VEHICLE_GET(&(g_aVehicles[0]), Color)[0],
+                                 VEHICLE_GET(&(g_aVehicles[0]), Color)[1],
+                                 VEHICLE_GET(&(g_aVehicles[0]), Color)[2],
+                                 g_DirectPlayInfo.dpidPlayer,
+                                 g_GlobalRallyConfig.szPlayerName,
+                                 2,
+                                 0x10);
+        }
+        if (g_dwLocalNetPlayerId != -1) {
+            return result != -1;
+        }
+        DWORD deadline = start + 2000;
+        do {
+            if (GetHighResolutionTime() >= deadline) {
+                break;
+            }
+            Sleep(0);
+        } while (g_dwLocalNetPlayerId == -1);
+        if (g_dwLocalNetPlayerId != -1) {
+            return result != -1;
+        }
+    }
+}
 
 const RECT g_rcNetCarSetupPlayerList = {32, 370, 610, 467};
 DPID g_dwNetCarSetupSelectedPlayerId = 0xffffffff;

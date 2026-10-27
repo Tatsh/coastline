@@ -675,6 +675,9 @@ bool RequestNetworkPause(void);
  */
 extern int g_nNetUnpauseRequestTicks;
 
+/** @ghidraAddress BRD3D: 0x10005090 */
+void TickNetworkUnpauseRequest(void);
+
 /**
  * Request the end of a pause from the other players of a network game, when no request waits.
  *
@@ -903,6 +906,9 @@ int SendPlayerJoinPacket(DirectPlayInfo *pInfo,
                          unsigned char blue,
                          const char *name,
                          unsigned char tag);
+
+/** @ghidraAddress BRD3D: 0x10004a90 */
+unsigned WaitForPlayerIdAssignment(void);
 
 /** The number of entries of g_aNetPeerSlots. */
 #define NET_PEER_SLOT_COUNT 16
