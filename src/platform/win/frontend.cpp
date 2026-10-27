@@ -1551,6 +1551,18 @@ int KeyConfigUI_OnBack(MenuActionWidget *pItem) {
     return 0;
 }
 
+int CarSetupUI_OnAcceptAndSave(MenuActionWidget *pWidget) {
+    pWidget->pScreen->bRunning = 0;
+    pWidget->pScreen->ShutdownFrontEnd(0);
+    if (g_dwGameMode == GAME_MODE_CHAMPIONSHIP) {
+        g_dwTotalLaps = 3;
+    }
+    BackupMenuSelections();
+    g_GlobalRallyConfig.SaveConfigToFile(g_szConfigFilePath);
+    SaveAutoSaveSeason();
+    return 0;
+}
+
 int AudioOptionsUI_OnCycleSfxVolume(MenuActionWidget *) {
     g_bAudioOptionsSfxSelected = 1;
     if (g_adwMouseButtonPressed[1]) {

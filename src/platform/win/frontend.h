@@ -267,7 +267,6 @@ public:
 /**
  * @ghidraAddress BRD3D: 0x10043760
  * @ghidraAddress BRGlide: 0x1003ccb0
- * @stub
  */
 int CarSetupUI_OnAcceptAndSave(MenuActionWidget *pWidget);
 
