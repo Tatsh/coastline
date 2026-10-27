@@ -82,9 +82,8 @@ int GetSelectedPaintOption(void);
  * @param pDest Receives the pixels.
  * @param nWidth The destination width.
  * @param nHeight The destination height.
- * @return Whether the paint rectangle was copied.
+ * @return Always 1, including a null image or an empty rectangle.
  * @ghidraAddress BRD3D: 0x10061480
- * @stub{BRD3D}
  */
 int BlitPaintImageToPixels(const void *pImage,
                            int nLeft,

@@ -2,6 +2,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 CarPaintTextureSet g_CarPaintTextureSets[CAR_PAINT_GROUP_COUNT][CAR_PAINT_SET_COUNT];
 void *g_apPaintDamageBitmaps[PAINT_DAMAGE_BITMAP_COUNT];
@@ -28,6 +29,39 @@ void GetPaintRectangle(int nGroup, int nSet, int *pLeft, int *pRight, int *pTop,
 
 int GetSelectedPaintOption(void) {
     return g_nSelectedPaintOption10;
+}
+
+int BlitPaintImageToPixels(const void *pImage,
+                           int nLeft,
+                           int nRight,
+                           int nTop,
+                           int nBottom,
+                           unsigned char *pDest,
+                           int nWidth,
+                           int nHeight) {
+    int width = (int)((unsigned)nRight - (unsigned)nLeft);
+    int height = (int)((unsigned)nBottom - (unsigned)nTop);
+    if (pImage != NULL && width > 0 && height > 0) {
+        const unsigned char *source = pImage;
+        for (int y = 0; y < height; y++) {
+            unsigned char *dest = pDest + ((nHeight - nTop - y - 1) * nWidth + nLeft) * 4;
+            for (int x = 0; x < width; x++) {
+                unsigned pixel;
+                memcpy(&pixel, source, sizeof(pixel));
+                memcpy(dest, &pixel, sizeof(pixel));
+                if (source[0] == 0 && source[1] == source[2]) {
+                    unsigned intensity = source[1];
+                    dest[0] = (unsigned char)((int)(intensity * (unsigned)g_dwColorTintRed) / 255);
+                    dest[1] =
+                        (unsigned char)((int)(intensity * (unsigned)g_dwColorTintGreen) / 255);
+                    dest[2] = (unsigned char)((int)(intensity * (unsigned)g_dwColorTintBlue) / 255);
+                }
+                source += 4;
+                dest += 4;
+            }
+        }
+    }
+    return 1;
 }
 
 // The bits of a pixel of the bitmaps the paint shop reads.
