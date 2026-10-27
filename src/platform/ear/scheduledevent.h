@@ -29,12 +29,36 @@ public:
     int CanStartScheduledEarEvent();
     /** @ghidraAddress EAR: 0x10007400 */
     void AdvanceScheduledEventTimers(std::uint32_t elapsedMilliseconds);
+    /** @ghidraAddress EAR: 0x10008126 */
+    int StartScheduledEarEvent();
 
 private:
+    /**
+     * @ghidraAddress EAR: 0x10007dfc
+     * @stub
+     */
+    int InitializeScheduledEarEventPlayback();
+    /** @ghidraAddress EAR: 0x100080e8 */
+    void UpdateScheduledEventDopplerScale();
+    /**
+     * @ghidraAddress EAR: 0x100081ec
+     * @stub
+     */
+    long double CalculateScheduledEventDopplerScale();
+    /**
+     * @ghidraAddress EAR: 0x1000854e
+     * @stub
+     */
+    void DeactivateScheduledEarEvent();
+
     [[maybe_unused]] std::uint8_t unknown0[0xc]; /* +0x00 */
     EarPlayback *playback;
     int playbackInitialized;
-    [[maybe_unused]] std::uint8_t unknown14[0x18]; /* +0x14 */
+    int playbackStarted;
+    [[maybe_unused]] std::uint8_t unknown18[8]; /* +0x18 */
+    int frequencyScaleOverrideEnabled;
+    int dopplerEnabled;
+    [[maybe_unused]] std::uint8_t unknown28[4]; /* +0x28 */
     int lifetimeCountdownSuppressed;
     int activeDurationLimitEnabled;
     int attenuationRequired;

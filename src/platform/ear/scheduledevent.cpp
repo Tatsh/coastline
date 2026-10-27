@@ -3,6 +3,7 @@
 #include <bit>
 
 #include "earplayback.h"
+#include "error.h"
 
 namespace {
 static inline std::int32_t SubtractTimer(std::int32_t timer, std::uint32_t elapsed) {
@@ -25,6 +26,38 @@ int ScheduledEarEvent::IsScheduledEventPlaybackComplete() {
 void ScheduledEarEvent::RequestScheduledEventStop() {
     playback->SetEarPlaybackLooping(0);
     playback->MarkComplete();
+}
+
+void ScheduledEarEvent::UpdateScheduledEventDopplerScale() {
+    if (frequencyScaleOverrideEnabled || dopplerEnabled) {
+        playback->SetEarPlaybackFrequencyScale(
+            static_cast<double>(CalculateScheduledEventDopplerScale()));
+    }
+}
+
+int ScheduledEarEvent::StartScheduledEarEvent() {
+    if (!playbackInitialized) {
+        playbackInitialized = InitializeScheduledEarEventPlayback();
+    }
+    if (!playbackInitialized) {
+        DeactivateScheduledEarEvent();
+        SetEarLastError(0x1a);
+        return 0;
+    }
+    if (playback->GetStatus()) {
+        return 0;
+    }
+    if (frequencyScaleOverrideEnabled || dopplerEnabled) {
+        playback->SetEarPlaybackFrequencyScale(
+            static_cast<double>(CalculateScheduledEventDopplerScale()));
+    }
+    playback->ProcessEarPlaybackSmoothing();
+    if (!playback->StartEarPlayback()) {
+        DeactivateScheduledEarEvent();
+        return 0;
+    }
+    playbackStarted = 1;
+    return 1;
 }
 
 int ScheduledEarEvent::CanStartScheduledEarEvent() {

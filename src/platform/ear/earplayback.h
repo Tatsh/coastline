@@ -93,8 +93,12 @@ private:
     virtual std::uint16_t AllocateEarEventId();
     /** @ghidraAddress EAR: 0x100125fd */
     virtual void UpdateDirectSoundPlaybackFrequency();
+
+public:
     /** @ghidraAddress EAR: 0x1000a9bf */
     virtual int StartEarPlayback();
+
+private:
     /** @ghidraAddress EAR: 0x10012860 */
     virtual int PlayDirectSoundEventBuffer();
     /** @ghidraAddress EAR: 0x1000a99f */
