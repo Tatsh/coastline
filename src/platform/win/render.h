@@ -1152,3 +1152,11 @@ extern unsigned g_dwWeatherShadeTextureId;
  * @ghidraAddress BRD3D: 0x1002a740
  */
 void CreateWeatherShadeTexture(void);
+
+/**
+ * Query the free video memory available for textures on the active DirectDraw device.
+ *
+ * @return The free bytes reported by DirectDraw.
+ * @ghidraAddress BRD3D: 0x1003e220
+ */
+unsigned QueryAvailableTextureMemory(void);

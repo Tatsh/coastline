@@ -917,3 +917,12 @@ void CreateWeatherShadeTexture(void) {
     g_dwWeatherShadeTextureId = g_pfnCreateTextureFromN64ImageAutoLoadSize(
         g_abWeatherShadeTexture, nullptr, 4, 4, G_IM_SIZ_8b, G_IM_FMT_I, 0, 0, 1, 1, 0, 0, 1, 0);
 }
+
+unsigned QueryAvailableTextureMemory(void) {
+    DDSCAPS caps;
+    caps.dwCaps = DDSCAPS_TEXTURE;
+    DWORD total;
+    DWORD available;
+    g_pRenderHost->pRenderer->pDirectDraw2->GetAvailableVidMem(&caps, &total, &available);
+    return available;
+}
