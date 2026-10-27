@@ -33,8 +33,8 @@ void Vehicle::ApplyPlayerVehicleInput(void) {
     ::ProcessVehicleInputAndPhysics(this);
 }
 
-void ComputeTrackPosition(Vehicle *vehicle) {
-    vehicle->ComputeTrackPosition();
+void Vehicle::ComputeTrackPosition(void) {
+    ::ComputeTrackPosition(this);
 }
 
 void ApplyPlayerVehicleEffects(Vehicle *vehicle) {

@@ -140,9 +140,9 @@ void Vec3fCross(Vec3f *out, Vec3f *a, Vec3f *b) {
     f32 ax = a->x, ay = a->y, az = a->z;
     f32 bx = b->x, by = b->y, bz = b->z;
 
-    out->z = ax * by - bx * ay;
-    out->y = az * bx - bz * ax;
-    out->x = ay * bz - by * az;
+    out->z = VEC3F_INTERMEDIATE(ax) * by - VEC3F_INTERMEDIATE(bx) * ay;
+    out->y = VEC3F_INTERMEDIATE(az) * bx - VEC3F_INTERMEDIATE(bz) * ax;
+    out->x = VEC3F_INTERMEDIATE(ay) * bz - VEC3F_INTERMEDIATE(by) * az;
 }
 
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
@@ -220,12 +220,24 @@ void Vec3fCopy(Vec3f *out, Vec3f *v) {
 #endif
 
 void Vec3fDirection(Vec3f *out, Vec3f *from, Vec3f *to) {
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+    long double highDx = (long double)to->x - from->x;
+    long double highDy = (long double)to->y - from->y;
+    f32 dx = highDx;
+    f32 dy = highDy;
+    f32 dz = (long double)to->z - from->z;
+    f32 square = highDx * dx + highDy * dy + (long double)dz * dz;
+    long double length = sqrtl(square);
+
+    if (length != 0.0L && !isnan(length)) {
+#else
     f32 dx = to->x - from->x;
     f32 dy = to->y - from->y;
     f32 dz = to->z - from->z;
     f32 length = sqrtf(dx * dx + dy * dy + dz * dz);
 
     if (length != 0.0f) {
+#endif
         length = 1.0f / length;
         out->x = dx * length;
         out->y = dy * length;
@@ -329,15 +341,15 @@ void Vec3fMulAdd(Vec3f *out, Vec3f *a, Vec3f *b, f32 scale) {
 }
 
 void Vec3fMulAddInPlace(Vec3f *v, Vec3f *b, f32 scale) {
-    v->x += b->x * scale;
-    v->y += b->y * scale;
-    v->z += b->z * scale;
+    v->x += VEC3F_INTERMEDIATE(b->x) * scale;
+    v->y += VEC3F_INTERMEDIATE(b->y) * scale;
+    v->z += VEC3F_INTERMEDIATE(b->z) * scale;
 }
 
 void Vec3fMidpoint(Vec3f *out, Vec3f *a, Vec3f *b) {
-    out->x = (b->x + a->x) * 0.5f;
-    out->y = (b->y + a->y) * 0.5f;
-    out->z = (b->z + a->z) * 0.5f;
+    out->x = (VEC3F_INTERMEDIATE(b->x) + a->x) * 0.5f;
+    out->y = (VEC3F_INTERMEDIATE(b->y) + a->y) * 0.5f;
+    out->z = (VEC3F_INTERMEDIATE(b->z) + a->z) * 0.5f;
 }
 
 void Vec3fClear(Vec3f *v) {
@@ -364,6 +376,18 @@ f32 Vec2fDistance(Vec2f *a, Vec2f *b) {
 }
 #endif
 
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+long double Vec3fDistance(Vec3f *a, Vec3f *b) {
+    long double dx = (long double)a->x - b->x;
+    long double dy = (long double)a->y - b->y;
+    long double dz = (long double)a->z - b->z;
+    f32 roundedDx = dx;
+    f32 roundedDy = dy;
+    f32 square = dx * roundedDx + dy * roundedDy + dz * dz;
+
+    return sqrtl(square);
+}
+#else
 f32 Vec3fDistance(Vec3f *a, Vec3f *b) {
     f32 dx = a->x - b->x;
     f32 dy = a->y - b->y;
@@ -371,6 +395,7 @@ f32 Vec3fDistance(Vec3f *a, Vec3f *b) {
 
     return sqrtf(dx * dx + dy * dy + dz * dz);
 }
+#endif
 
 f32 Vec3fDistanceSquared(Vec3f *a, Vec3f *b) {
     f32 dx = a->x - b->x;

@@ -68,6 +68,7 @@ f32 Powf(f32 base, f32 exponent);
  * @ghidraAddress JPN: 0x80224ecc
  * @ghidraAddress BRD3D: 0x1003ac30
  * @ghidraAddress BRGlide: 0x100342b0
+ * @stub{BRGlide}
  */
 void Vec3fCross(Vec3f *out, Vec3f *a, Vec3f *b);
 
@@ -224,6 +225,7 @@ void Vec3fCopy(Vec3f *out, Vec3f *v);
  * @ghidraAddress JPN: 0x80225120
  * @ghidraAddress BRD3D: 0x1003ada0
  * @ghidraAddress BRGlide: 0x10034420
+ * @stub{BRGlide}
  */
 void Vec3fDirection(Vec3f *out, Vec3f *from, Vec3f *to);
 
@@ -360,6 +362,7 @@ void Vec3fMulAdd(Vec3f *out, Vec3f *a, Vec3f *b, f32 scale);
  * @ghidraAddress JPN: 0x802254c0
  * @ghidraAddress BRD3D: 0x1003b020
  * @ghidraAddress BRGlide: 0x100346a0
+ * @stub{BRGlide}
  */
 void Vec3fMulAddInPlace(Vec3f *v, Vec3f *b, f32 scale);
 
@@ -374,6 +377,7 @@ void Vec3fMulAddInPlace(Vec3f *v, Vec3f *b, f32 scale);
  * @ghidraAddress JPN: 0x80225504
  * @ghidraAddress BRD3D: 0x1003b050
  * @ghidraAddress BRGlide: 0x100346d0
+ * @stub{BRGlide}
  */
 void Vec3fMidpoint(Vec3f *out, Vec3f *a, Vec3f *b);
 
@@ -408,6 +412,16 @@ long double Vec2fDistance(Vec2f *a, Vec2f *b);
 f32 Vec2fDistance(Vec2f *a, Vec2f *b);
 #endif
 
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+/**
+ * The distance between two points, returned in extended precision.
+ *
+ * @ghidraAddress BRD3D: 0x1003b0e0
+ * @ghidraAddress BRGlide: 0x10034760
+ * @stub{BRGlide}
+ */
+long double Vec3fDistance(Vec3f *a, Vec3f *b);
+#else
 /**
  * The distance between two points.
  *
@@ -417,10 +431,9 @@ f32 Vec2fDistance(Vec2f *a, Vec2f *b);
  * @ghidraAddress USA: 0x80224a78
  * @ghidraAddress EUR: 0x80225db8
  * @ghidraAddress JPN: 0x802255a8
- * @ghidraAddress BRD3D: 0x1003b0e0
- * @ghidraAddress BRGlide: 0x10034760
  */
 f32 Vec3fDistance(Vec3f *a, Vec3f *b);
+#endif
 
 /**
  * The square of the distance between two points.
