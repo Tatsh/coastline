@@ -9,6 +9,7 @@
 #include "platform/win/timer.h"
 #include "screen.h"
 #include "trackselect.h"
+#include "vehicle.h"
 #if TGR_RENDERER == TGR_RENDERER_D3D
 #include "platform/win/d3d/renderer.h"
 #endif
@@ -149,4 +150,11 @@ void SetGameStateFrontEnd(void) {
 
 int DispatchGameStateFrame(void) {
     return g_apfnGameStateHandlers[g_dwGameState]();
+}
+
+void ResetAllPlayers(void) {
+    for (int player = 0; player < MAX_PLAYERS; ++player) {
+        g_aVehicles[player].InitPlayerVehicleSlot();
+        g_aPlayerInputState[player].InitPlayerInputState();
+    }
 }

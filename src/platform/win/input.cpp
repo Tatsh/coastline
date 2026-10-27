@@ -22,6 +22,7 @@
 #include "platform/win/snapshot.h"
 #include "platform/win/sound.h"
 #include "platform/win/timer.h"
+#include "playerinput.h"
 #include "vehicle.h"
 
 IDirectInputA *g_pDirectInput;
@@ -451,6 +452,10 @@ short g_dwMouseScrollDirection = 1;
 unsigned short g_wMenuHoverIndex;
 DWORD g_dwLastInputActivityTime;
 MouseDevice *g_pMousePosition;
+
+void PlayerInputState::InitPlayerInputState(void) {
+    ::InitPlayerInputState(this);
+}
 
 void UpdateMouseButtonEdges(void) {
     for (int i = 0; i < MOUSE_BUTTON_COUNT; i++) {

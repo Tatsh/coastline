@@ -441,16 +441,6 @@ void UpdateStickRepeat(PlayerInputState *state) {
     CheckAnalogStickPositive(state, &state->repeatRight, &state->stickX, INPUT_RIGHT);
 }
 
-void InitPlayerInputState(PlayerInputState *state) {
-    s32 player = state - g_aPlayerInputState;
-
-    state->recordBuffers[1] = NULL;
-    state->recordBuffers[0] = NULL;
-    state->playbackBuffer = NULL;
-    state->playerIndex = player;
-    state->pad = &g_aContPadData[player];
-}
-
 void StartControllerRead(void) {
     if (!g_dwContReadPending) {
         g_dwContReadPending = TRUE;

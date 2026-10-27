@@ -113,6 +113,7 @@ void StartRaceWithPlayerCount(u32 players);
  * @ghidraAddress USA: 0x80200154
  * @ghidraAddress EUR: 0x80200154
  * @ghidraAddress JPN: 0x80200154
+ * @ghidraAddress BRD3D: 0x10069800
  */
 void ResetAllPlayers(void);
 

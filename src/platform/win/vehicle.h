@@ -1,13 +1,9 @@
 #pragma once
 
+#include "playerinput.h"
 #include "profile.h"
 #include "rigidbody.h"
 #include "types.h"
-
-/** Vehicle controls read by replay sampling. */
-typedef struct VehicleInputState {
-    u32 buttons;
-} VehicleInputState;
 
 /** Recovered fields of a Windows vehicle. */
 typedef struct Vehicle {
@@ -32,8 +28,17 @@ typedef struct Vehicle {
     u8 abUnknownFf8[0x19b4]; /* +0xff8 */
     u8 color[3];
     u8 abUnknown29af[0x11]; /* +0x29af */
-    VehicleInputState *input;
+    PlayerInputState *input;
     u8 abUnknown29c4[0x1a4]; /* +0x29c4 */
+#ifdef __cplusplus
+    /**
+     * Initialise the player slot, profile defaults, and vehicle selection.
+     *
+     * @ghidraAddress BRD3D: 0x100634f0
+     * @stub
+     */
+    void InitPlayerVehicleSlot(void);
+#endif
 } Vehicle;
 
 /**
