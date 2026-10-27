@@ -1,6 +1,6 @@
 # PC port game code from 0x10060000 to 0x10070000
 
-62 of 170 routines done.
+63 of 170 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -25,7 +25,7 @@ the same name, for a routine the port retained from the N64 game.
 | `CollideBodyWithTriangles`               |        | ✅ `0x8025dfcc` |      1 |   1301 | `0x1006e760` | `0x10067710` | `undefined CollideBodyWithTriangles()`                                                                                                   |
 | `Vehicle::SimulateVehiclePhysicsSubstep` |        | ✅ `0x80221940` |      1 |   1206 | `0x10061720` | `0x1005a7a0` | `undefined SimulateVehiclePhysicsSubstep(Vehicle * this)`                                                                                |
 | `RallyConfig::LoadRallyConfigFile`       |   ✅   |                 |      1 |   1194 | `0x10069ff0` | `0x10063060` | `BOOL LoadRallyConfigFile(RallyConfig * this, char * pszPath)`                                                                           |
-| `MakeEnemyCarColorPanels`                |        |                 |      1 |   1110 | `0x10065d50` | `0x1005edc0` | `undefined MakeEnemyCarColorPanels()`                                                                                                    |
+| `MakeEnemyCarColorPanels`                |   🚧   |                 |      1 |   1110 | `0x10065d50` | `0x1005edc0` | `void MakeEnemyCarColorPanels(RacerSlot * slot)`                                                                                         |
 | `UpdateRacerSlotMotion`                  |        | ✅ `0x8022c9fc` |      1 |   1073 | `0x10068ef0` | `0x10061f60` | `undefined UpdateRacerSlotMotion()`                                                                                                      |
 | `RallyConfig::SaveConfigToFile`          |   ✅   |                 |      8 |   1023 | `0x1006a4a0` | `0x100634b0` | `bool SaveConfigToFile(RallyConfig * this, char * pszPath)`                                                                              |
 | `ShowGlideSplashImage`                   |   📝   |                 |      2 |    994 |              | `0x1006c990` | `undefined ShowGlideSplashImage()`                                                                                                       |
@@ -45,7 +45,7 @@ the same name, for a routine the port retained from the N64 game.
 | `CastWheelRay`                           |        | ✅ `0x8025e96c` |      1 |    581 | `0x1006f0c0` | `0x10068070` | `undefined CastWheelRay()`                                                                                                               |
 | `BuildVehicleKeyframe`                   |   ✅   |                 |      2 |    554 | `0x100607b0` | `0x10059820` | `void BuildVehicleKeyframe(KeyframeState * pState, Vehicle * pVehicle)`                                                                  |
 | `BuildTrackTriangleCache`                |        | ✅ `0x8025f18c` |      6 |    551 | `0x1006f720` | `0x100686d0` | `uint BuildTrackTriangleCache(float fPosX, int fPosY)`                                                                                   |
-| `InitRacerSlot`                          |        | ✅ `0x802291f8` |      1 |    538 | `0x100662a0` | `0x1005f310` | `undefined InitRacerSlot()`                                                                                                              |
+| `RacerSlot::InitRacerSlot`               |   ✅   | ✅ `0x802291f8` |      1 |    538 | `0x100662a0` |              | `void InitRacerSlot(RacerSlot * this)`                                                                                                   |
 | `InitGameAndShowMenus`                   |   ✅   | ✅ `0x802001b4` |      1 |    525 | `0x10069840` | `0x100628b0` | `void InitGameAndShowMenus(void)`                                                                                                        |
 | `RallyConfig::CopyRallyConfig`           |   ✅   |                 |      2 |    524 | `0x10069de0` | `0x10062e50` | `RallyConfig * CopyRallyConfig(RallyConfig * this, RallyConfig * other)`                                                                 |
 | `CountTriangleWinding`                   |        | ✅ `0x8025c8dc` |      1 |    492 | `0x1006d660` | `0x10066610` | `undefined CountTriangleWinding()`                                                                                                       |
@@ -57,7 +57,7 @@ the same name, for a routine the port retained from the N64 game.
 | `ComputeStereoPan`                       |        | ✅ `0x8022b1d4` |     10 |    380 | `0x10067bc0` | `0x10060c30` | `void ComputeStereoPan(float * pPosition, float pViewMatrix, float * pOutLeft, float * pOutRight, DWORD * pOutDistance, int bHalfScale)` |
 | `Vehicle::InitPlayerVehicleSlot`         |   ✅   | ✅ `0x80226100` |      1 |    368 | `0x100634f0` | `0x1005c560` | `void InitPlayerVehicleSlot(Vehicle * this)`                                                                                             |
 | `PositionQuaternionToMatrix4x4`          |   ✅   |                 |      1 |    363 | `0x100695d0` | `0x10062640` | `void PositionQuaternionToMatrix4x4(float[4] * matrix, QuaternionPose * pPose)`                                                          |
-| `FindTrackRoutePoint`                    |        | ✅ `0x80228e4c` |      1 |    345 | `0x10065b20` | `0x1005eb90` | `undefined FindTrackRoutePoint()`                                                                                                        |
+| `FindTrackRoutePoint`                    |   🚧   | ✅ `0x80228e4c` |      1 |    345 | `0x10065b20` | `0x1005eb90` | `void FindTrackRoutePoint(TrackSection * section, float distance)`                                                                       |
 | `DoesSegmentCrossUnitCube`               |        | ✅ `0x8025cbf8` |      1 |    332 | `0x1006d850` | `0x10066800` | `undefined DoesSegmentCrossUnitCube()`                                                                                                   |
 | `RallyConfig::InitRallyConfigDefaults`   |   ✅   |                 |      2 |    330 | `0x10069c90` | `0x10062d00` | `void InitRallyConfigDefaults(RallyConfig * this)`                                                                                       |
 | `DoesTriangleCrossUnitCube`              |        | ✅ `0x8025ce28` |      1 |    322 | `0x1006d9a0` | `0x10066950` | `undefined DoesTriangleCrossUnitCube()`                                                                                                  |

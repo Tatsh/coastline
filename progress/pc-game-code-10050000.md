@@ -1,6 +1,6 @@
 # PC port game code from 0x10050000 to 0x10060000
 
-29 of 86 routines done.
+29 of 87 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -10,7 +10,7 @@ the same name, for a routine the port retained from the N64 game.
 | Name                                      | Status | N64             | # xref | Length | BRD3D        | BRGlide      | Signature                                                                                                                                       |
 | ----------------------------------------- | :----: | --------------- | -----: | -----: | ------------ | ------------ | ----------------------------------------------------------------------------------------------------------------------------------------------- |
 | `InitializeFrontEndResources`             |   ✅   |                 |      2 |   8349 | `0x1005d440` | `0x10056260` | `bool InitializeFrontEndResources(void)`                                                                                                        |
-| `BuildNetworkCarSetupUI`                  |        |                 |      4 |   4109 | `0x10058750` | `0x10051600` | `undefined BuildNetworkCarSetupUI()`                                                                                                            |
+| `BuildNetworkCarSetupUI`                  |   🚧   |                 |      4 |   4109 | `0x10058750` | `0x10051600` | `void BuildNetworkCarSetupUI(MenuScreen * pScreen)`                                                                                             |
 | `BuildPreRaceInfoUI`                      |   📝   |                 |      2 |   3990 | `0x100509f0` | `0x100498a0` | `void BuildPreRaceInfoUI(MenuScreen * pScreen)`                                                                                                 |
 | `ComputeAiVehicleInput`                   |        |                 |      3 |   3867 |              | `0x1005e690` | `undefined ComputeAiVehicleInput()`                                                                                                             |
 | `BuildSeasonProgressInfoUI`               |   🚧   |                 |      2 |   3862 | `0x10052030` | `0x1004aee0` | `void BuildSeasonProgressInfoUI(MenuScreen * pScreen)`                                                                                          |
@@ -36,6 +36,7 @@ the same name, for a routine the port retained from the N64 game.
 | `RestoreSeasonProgressState`              |   ✅   |                 |      1 |    629 | `0x1005f940` | `0x10058680` | `bool RestoreSeasonProgressState(void)`                                                                                                         |
 | `MenuItemList::Initialize`                |        |                 |      1 |    618 | `0x1005b910` | `0x10054730` | `undefined Initialize(MenuItemList * this, undefined4 param_1, undefined4 param_2, undefined4 param_3, undefined4 param_4, undefined4 param_5)` |
 | `MenuItemList::Draw`                      |        |                 |      1 |    581 | `0x1005c2c0` | `0x100550e0` | `undefined Draw(MenuItemList * this, undefined4 param_1)`                                                                                       |
+| `InitRacerSlot`                           |        | ✅ `0x802291f8` |      1 |    538 |              | `0x1005f310` | `undefined InitRacerSlot()`                                                                                                                     |
 | `MenuItemList::RemoveItem`                |        |                 |      1 |    510 | `0x1005c000` | `0x10054e20` | `undefined RemoveItem(MenuItemList * this, undefined4 param_1)`                                                                                 |
 | `MenuFont::HandleTextInput`               |        |                 |      1 |    441 | `0x1005b570` | `0x10054390` | `undefined HandleTextInput(MenuFont * this)`                                                                                                    |
 | `SaveFileList::ScanSaveFiles`             |   ✅   |                 |      1 |    380 | `0x1005cf20` | `0x10055d40` | `int ScanSaveFiles(SaveFileList * this, char * pszPattern)`                                                                                     |

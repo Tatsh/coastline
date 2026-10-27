@@ -1,6 +1,6 @@
 # PC port game code from 0x10040000 to 0x10050000
 
-96 of 264 routines done.
+97 of 264 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -56,7 +56,7 @@ the same name, for a routine the port retained from the N64 game.
 | `ShowRaceResultsSummaryScreen`                     |   ✅   |                 |      1 |    293 | `0x10045f70` | `0x1003f410` | `int ShowRaceResultsSummaryScreen(void)`                                                                                                                                                                  |
 | `ReturnToMainMenuFromSeason`                       |        |                 |      1 |    284 | `0x10046260` | `0x1003f700` | `undefined ReturnToMainMenuFromSeason()`                                                                                                                                                                  |
 | `DetectDuplicateKeyBindings`                       |        |                 |      5 |    277 | `0x10040330` | `0x10039870` | `BOOL DetectDuplicateKeyBindings(DWORD dwParam)`                                                                                                                                                          |
-| `ShowNetworkCarSetupScreen`                        |        |                 |      2 |    254 | `0x100446d0` | `0x1003dc20` | `undefined ShowNetworkCarSetupScreen()`                                                                                                                                                                   |
+| `ShowNetworkCarSetupScreen`                        |   ✅   |                 |      2 |    254 | `0x100446d0` | `0x1003dc20` | `int ShowNetworkCarSetupScreen(void)`                                                                                                                                                                     |
 | `ValidateEntityState`                              |        |                 |    122 |    251 | `0x10047360` | `0x100407b0` | `BOOL ValidateEntityState(int pEntity)`                                                                                                                                                                   |
 | `MenuScreen::RunFrame`                             |   ✅   |                 |      1 |    249 | `0x100489a0` | `0x10041dd0` | `bool RunFrame(MenuScreen * this)`                                                                                                                                                                        |
 | `MenuWidget::SetText`                              |        |                 |      1 |    247 | `0x10047eb0` | `0x10041300` | `undefined SetText(MenuWidget * this, undefined4 param_1, undefined4 param_2, undefined4 param_3, undefined4 param_4)`                                                                                    |
