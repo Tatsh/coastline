@@ -692,6 +692,9 @@ f32 ComputeFogFactorAtPoint(Vec3f *point);
 }
 #endif
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 /**
  * The largest absolute value of the first three rows of a matrix.
  *
@@ -700,8 +703,12 @@ f32 ComputeFogFactorAtPoint(Vec3f *point);
  * @ghidraAddress USA: 0x80217420
  * @ghidraAddress EUR: 0x80218440
  * @ghidraAddress JPN: 0x80217d90
+ * @ghidraAddress BRD3D: 0x100312a7
  */
 f32 GetMaxAbsValue12(f32 m[4][4]);
+#ifdef __cplusplus
+}
+#endif
 
 #ifdef __cplusplus
 extern "C" {
