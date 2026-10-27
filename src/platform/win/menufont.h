@@ -1,5 +1,8 @@
 #pragma once
 
+#include <cstdlib>
+#include <cstring>
+
 #include <windows.h>
 
 static inline int ConvertMenuCoordinate(float value) {
@@ -10,7 +13,7 @@ static inline int ConvertMenuCoordinate(float value) {
     return static_cast<int>(static_cast<long long>(value));
 }
 
-struct MenuFont;
+class MenuFont;
 
 struct MenuGlyph {
     short nWidth;
@@ -28,36 +31,8 @@ extern MenuGlyph g_MenuFontGlyphTable[95];
  */
 extern MenuGlyph g_AltFontGlyphTable[95];
 
-/**
- * @ghidraAddress BRD3D: 0x10aa2a54
- */
-extern int g_dwGlyphThrottleAccumMs;
-/**
- * @ghidraAddress BRD3D: 0x10aa2a58
- */
-extern unsigned g_dwGlyphThrottleLastTick;
-
-struct MenuFontVTable {
-    char abUnknown0[4]; /* +0x00 */
-    void(__thiscall *MeasureText)(MenuFont *);
-    void(__thiscall *MeasureTextAltFont)(MenuFont *);
-    void(__thiscall *DrawMenuItemText)(MenuFont *, float, float);
-    void(__thiscall *DrawText)(MenuFont *);
-    signed char(__thiscall *HandleTextInput)(MenuFont *);
-    int(__thiscall *DrawGlyph)(MenuFont *, short, float, float, int);
-    char abUnknown1c[4]; /* +0x1c */
-    int(__thiscall *DrawGlyphAltFont)(MenuFont *, short, float, float, int);
-    void(__thiscall *DrawThrottledMenuGlyph)(MenuFont *, float, float);
-    long double(__thiscall *ComputeCenteredX)(MenuFont *);
-    void(__thiscall *DrawTextAltFont)(MenuFont *);
-};
-
-/**
- * @ghidraAddress BRD3D: 0x1008f728
- */
-extern MenuFontVTable g_MenuFontVTable;
-
-struct MenuFont {
+class MenuFont {
+public:
     /**
      * @ghidraAddress BRD3D: 0x1005b050
      */
@@ -66,50 +41,147 @@ struct MenuFont {
     /**
      * @ghidraAddress BRD3D: 0x1005b0c0
      */
-    ~MenuFont();
+    virtual ~MenuFont();
 
     /**
      * @ghidraAddress BRD3D: 0x1005b0d0
      */
-    void MeasureText();
+    virtual void MeasureText();
     /**
      * @ghidraAddress BRD3D: 0x1005b160
      */
-    void MeasureTextAltFont();
-    /**
-     * @ghidraAddress BRD3D: 0x1005b200
-     */
-    long double ComputeCenteredX();
-    /**
-     * @ghidraAddress BRD3D: 0x1005b730
-     */
-    int DrawGlyph(short nImage, float x, float y, int nStyle);
-    /**
-     * @ghidraAddress BRD3D: 0x1005b7a0
-     */
-    int DrawGlyphAltFont(short nImage, float x, float y, int nStyle);
-    /**
-     * @ghidraAddress BRD3D: 0x1005b250
-     */
-    void DrawThrottledMenuGlyph(float x, float y);
-    /**
-     * @ghidraAddress BRD3D: 0x1005b2b0
-     */
-    void DrawText();
+    virtual void MeasureTextAltFont();
     /**
      * @ghidraAddress BRD3D: 0x1005b390
      */
-    void DrawMenuItemText(float x, float y);
+    virtual void DrawMenuItemText(float x, float y);
     /**
-     * @ghidraAddress BRD3D: 0x1005b460
+     * @ghidraAddress BRD3D: 0x1005b2b0
      */
-    void DrawTextAltFont();
+    virtual void DrawText();
     /**
      * @ghidraAddress BRD3D: 0x1005b570
      */
-    signed char HandleTextInput();
+    virtual signed char HandleTextInput();
 
-    MenuFontVTable *pVTable;
+private:
+    /**
+     * @ghidraAddress BRD3D: 0x1005b730
+     */
+    virtual int DrawGlyph(short nImage, float x, float y, int nStyle);
+    /**
+     * @ghidraAddress BRD3D: 0x1005b7e0
+     * @stub
+     */
+    virtual int DrawGlyphNoOp(short nImage, float x, float y);
+    /**
+     * @ghidraAddress BRD3D: 0x1005b7a0
+     */
+    virtual int DrawGlyphAltFont(short nImage, float x, float y, int nStyle);
+    /**
+     * @ghidraAddress BRD3D: 0x1005b250
+     */
+    virtual void DrawThrottledMenuGlyph(float x, float y);
+
+public:
+    /**
+     * @ghidraAddress BRD3D: 0x1005b200
+     */
+    virtual long double ComputeCenteredX();
+    /**
+     * @ghidraAddress BRD3D: 0x1005b460
+     */
+    virtual void DrawTextAltFont();
+
+    const char *GetText() const {
+        return szText;
+    }
+    void SetText(const char *text) {
+        std::strcpy(szText, text);
+    }
+    void AppendText(const char *text) {
+        std::strcat(szText, text);
+    }
+    void CopyTextPrefix(const char *text, size_t size) {
+        std::strncpy(szText, text, size);
+    }
+    void SetNumber(int value) {
+        _itoa(value, szText, 10);
+    }
+    unsigned GetFlags() const {
+        return dwFlags;
+    }
+    unsigned SetFlags(unsigned value) {
+        return dwFlags = value;
+    }
+    unsigned char SetStyle(unsigned char value) {
+        return bStyle = value;
+    }
+    short GetWidth() const {
+        return nWidth;
+    }
+    short SetWidth(short value) {
+        return nWidth = value;
+    }
+    short GetHeight() const {
+        return nHeight;
+    }
+    short SetHeight(short value) {
+        return nHeight = value;
+    }
+    float SetX(float value) {
+        return fX = value;
+    }
+    float GetY() const {
+        return fY;
+    }
+    float SetY(float value) {
+        return fY = value;
+    }
+    float SetZ(float value) {
+        return fZ = value;
+    }
+    short SetInputMaxWidth(short value) {
+        return nInputMaxWidth = value;
+    }
+    int GetDrawCaret() const {
+        return bDrawCaret;
+    }
+    int SetDrawCaret(int value) {
+        return bDrawCaret = value;
+    }
+    LONG GetBoundsLeft() const {
+        return rcBounds.left;
+    }
+    LONG SetBoundsLeft(LONG value) {
+        return rcBounds.left = value;
+    }
+    LONG GetBoundsTop() const {
+        return rcBounds.top;
+    }
+    LONG SetBoundsTop(LONG value) {
+        return rcBounds.top = value;
+    }
+    LONG GetBoundsRight() const {
+        return rcBounds.right;
+    }
+    LONG SetBoundsRight(LONG value) {
+        return rcBounds.right = value;
+    }
+    LONG SetBoundsBottom(LONG value) {
+        return rcBounds.bottom = value;
+    }
+    unsigned GetItemData() const {
+        return dwItemData;
+    }
+    unsigned SetItemData(unsigned value) {
+        return dwItemData = value;
+    }
+
+private:
+    void MeasureMenuText(bool alternate);
+    void DrawMenuText(float x, float y, bool alternate, bool useFontY);
+
     unsigned dwFlags;
     unsigned char bStyle;
     char szText[1024];

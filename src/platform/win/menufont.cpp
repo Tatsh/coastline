@@ -8,15 +8,17 @@
 #include "platform/win/sound.h"
 #include "platform/win/timer.h"
 
+namespace {
+// @ghidraAddress BRD3D: 0x10aa2a54
 int g_dwGlyphThrottleAccumMs;
+// @ghidraAddress BRD3D: 0x10aa2a58
 unsigned g_dwGlyphThrottleLastTick;
+} // namespace
 
 MenuFont::~MenuFont() {
-    pVTable = &g_MenuFontVTable;
 }
 
 MenuFont::MenuFont() {
-    pVTable = &g_MenuFontVTable;
     std::memset(szText, 0, sizeof(szText));
     fZ = 0.0f;
     fY = 0.0f;
@@ -29,7 +31,8 @@ MenuFont::MenuFont() {
     bStyle = 1;
 }
 
-static inline void MeasureMenuText(MenuFont *pFont, bool alternate) {
+void MenuFont::MeasureMenuText(bool alternate) {
+    MenuFont *pFont = this;
     unsigned short width = 0;
     short height = pFont->nHeight;
     short index = 0;
@@ -60,11 +63,11 @@ static inline void MeasureMenuText(MenuFont *pFont, bool alternate) {
 }
 
 void MenuFont::MeasureText() {
-    MeasureMenuText(this, false);
+    MeasureMenuText(false);
 }
 
 void MenuFont::MeasureTextAltFont() {
-    MeasureMenuText(this, true);
+    MeasureMenuText(true);
 }
 
 long double MenuFont::ComputeCenteredX() {
@@ -114,14 +117,14 @@ void MenuFont::DrawThrottledMenuGlyph(float x, float y) {
         static_cast<int>(static_cast<unsigned>(g_dwGlyphThrottleAccumMs) + delta);
     if (g_dwGlyphThrottleAccumMs >= 120) {
         g_dwGlyphThrottleAccumMs = 0;
-        pVTable->DrawGlyph(
-            this, g_MenuFontGlyphTable['_' - ' '].nImage, x, y, static_cast<signed char>(bStyle));
+        DrawGlyph(g_MenuFontGlyphTable['_' - ' '].nImage, x, y, static_cast<signed char>(bStyle));
     }
 }
 
-static inline void DrawMenuText(MenuFont *pFont, float x, float y, bool alternate, bool useFontY) {
+void MenuFont::DrawMenuText(float x, float y, bool alternate, bool useFontY) {
+    MenuFont *pFont = this;
     if (pFont->dwFlags & 1) {
-        x = pFont->pVTable->ComputeCenteredX(pFont);
+        x = pFont->ComputeCenteredX();
     }
     short index = 0;
     for (;;) {
@@ -137,13 +140,17 @@ static inline void DrawMenuText(MenuFont *pFont, float x, float y, bool alternat
             const MenuGlyph &glyph =
                 alternate ? g_AltFontGlyphTable[glyphIndex] : g_MenuFontGlyphTable[glyphIndex];
             if (glyph.nImage != -1) {
-                auto draw =
-                    alternate ? pFont->pVTable->DrawGlyphAltFont : pFont->pVTable->DrawGlyph;
-                draw(pFont,
-                     glyph.nImage,
-                     x,
-                     useFontY ? pFont->fY : y,
-                     static_cast<signed char>(pFont->bStyle));
+                if (alternate) {
+                    pFont->DrawGlyphAltFont(glyph.nImage,
+                                            x,
+                                            useFontY ? pFont->fY : y,
+                                            static_cast<signed char>(pFont->bStyle));
+                } else {
+                    pFont->DrawGlyph(glyph.nImage,
+                                     x,
+                                     useFontY ? pFont->fY : y,
+                                     static_cast<signed char>(pFont->bStyle));
+                }
                 int width = glyph.nWidth - (alternate ? 6 : 0);
                 x = static_cast<long double>(x) + width;
             }
@@ -153,20 +160,20 @@ static inline void DrawMenuText(MenuFont *pFont, float x, float y, bool alternat
         index = static_cast<short>(static_cast<unsigned short>(index) + 1);
     }
     if (pFont->bDrawCaret) {
-        pFont->pVTable->DrawThrottledMenuGlyph(pFont, x, useFontY ? pFont->fY : y);
+        pFont->DrawThrottledMenuGlyph(x, useFontY ? pFont->fY : y);
     }
 }
 
 void MenuFont::DrawText() {
-    DrawMenuText(this, fX, fY, false, true);
+    DrawMenuText(fX, fY, false, true);
 }
 
 void MenuFont::DrawMenuItemText(float x, float y) {
-    DrawMenuText(this, x, y, false, false);
+    DrawMenuText(x, y, false, false);
 }
 
 void MenuFont::DrawTextAltFont() {
-    DrawMenuText(this, fX, fY, true, true);
+    DrawMenuText(fX, fY, true, true);
 }
 
 signed char MenuFont::HandleTextInput() {
@@ -205,7 +212,7 @@ signed char MenuFont::HandleTextInput() {
             // Unmapped input remains pending.
             return 1;
         }
-        pVTable->MeasureText(this);
+        MeasureText();
         if (nWidth < nInputMaxWidth) {
             size_t length = std::strlen(szText);
             szText[length] = character;

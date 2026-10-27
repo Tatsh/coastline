@@ -102,31 +102,110 @@ class MenuScreen;
 class MenuWidget;
 using MenuActionWidget = MenuWidget;
 using NetworkMenuWidget = MenuWidget;
-struct MenuItemList;
-
-struct MenuItemListVTable {
-    char abUnknown0[4]; /* +0x00 */
-    int(__thiscall *BlitSurfaceById)(MenuItemList *, unsigned short, float, float);
-    int(__thiscall *Draw)(MenuItemList *, int);
-    char abUnknownc[4]; /* +0x0c */
-    int(__thiscall *AddItem)(
-        MenuItemList *, const char *, unsigned, unsigned char, const RECT *, bool);
-    int(__thiscall *Initialize)(MenuItemList *, unsigned, const RECT *, int, int, int);
-    char abUnknown18[4]; /* +0x18 */
-    int(__thiscall *ProcessInput)(MenuItemList *, int *);
-    int(__thiscall *PollSelection)(MenuItemList *, int);
-    int(__thiscall *UpdateItemAndNotify)(MenuItemList *, int);
-    int(__thiscall *SetItemData)(MenuItemList *, const void *, unsigned, int);
-    int(__thiscall *RemoveItem)(MenuItemList *, int);
-};
+class MenuItemList;
 
 struct MenuItemData {
     unsigned dwSize;
     unsigned char *pData;
 };
 
-struct MenuItemList {
-    MenuItemListVTable *pVTable;
+class MenuItemList {
+public:
+    /**
+     * @ghidraAddress BRD3D: 0x1005b7f0
+     * @stub
+     */
+    MenuItemList();
+    /**
+     * @ghidraAddress BRD3D: 0x1005b8f0
+     * @stub
+     */
+    virtual ~MenuItemList();
+
+private:
+    /**
+     * @ghidraAddress BRD3D: 0x1005c270
+     */
+    virtual int BlitSurfaceById(unsigned short image, float x, float y);
+    /**
+     * @ghidraAddress BRD3D: 0x1005c2c0
+     */
+    virtual int Draw(int selection);
+    /**
+     * @ghidraAddress BRD3D: 0x10042af0
+     * @stub
+     */
+    virtual int ReturnOne();
+
+public:
+    /**
+     * @ghidraAddress BRD3D: 0x1005bc10
+     */
+    virtual int
+    AddItem(const char *text, unsigned flags, unsigned char style, const RECT *bounds, bool full);
+    /**
+     * @ghidraAddress BRD3D: 0x1005b910
+     * @stub
+     */
+    virtual int Initialize(unsigned flags,
+                           const RECT *bounds,
+                           int visibleRows,
+                           int firstVisibleRow,
+                           int backgroundImage);
+
+private:
+    /**
+     * @ghidraAddress BRD3D: 0x1005c510
+     * @stub
+     */
+    virtual int UpdateHoverInRect(const RECT *bounds);
+    /**
+     * @ghidraAddress BRD3D: 0x1005c590
+     * @stub
+     */
+    virtual int ProcessInput(int *selection);
+
+public:
+    /**
+     * @ghidraAddress BRD3D: 0x1005cb40
+     */
+    virtual int UpdateAndRenderMenuWidget(int selection);
+    /**
+     * @ghidraAddress BRD3D: 0x1005bb80
+     * @ghidraAddress BRGlide: 0x100549a0
+     */
+    virtual int UpdateItemAndNotify(int nIndex);
+
+private:
+    /**
+     * @ghidraAddress BRD3D: 0x1005c200
+     */
+    virtual int SetItemData(const void *data, unsigned size, int index);
+
+public:
+    /**
+     * @ghidraAddress BRD3D: 0x1005c000
+     * @stub
+     */
+    virtual int RemoveItem(int index);
+
+    MenuFont &GetFont(int index) {
+        return fonts[index];
+    }
+    unsigned short GetItemCount() const {
+        return wItemCount;
+    }
+    unsigned GetFlags() const {
+        return dwFlags;
+    }
+    unsigned SetFlags(unsigned value) {
+        return dwFlags = value;
+    }
+    int SetVerticalScrollbar(int value) {
+        return bVerticalScrollbar = value;
+    }
+
+private:
     int (*pfnSelectionChanged)(MenuItemList *, int *);
     void (*pfnScrollUp)(void);
     void (*pfnScrollDown)(void);
@@ -166,33 +245,6 @@ struct MenuItemList {
     float fMinScrollThumbY;
     float fMaxScrollThumbY;
     float fScrollThumbTravel;
-
-    /**
-     * @ghidraAddress BRD3D: 0x1005bb80
-     * @ghidraAddress BRGlide: 0x100549a0
-     */
-    int UpdateItemAndNotify(int nIndex);
-    /**
-     * @ghidraAddress BRD3D: 0x1005c200
-     */
-    int SetItemData(const void *data, unsigned size, int index);
-    /**
-     * @ghidraAddress BRD3D: 0x1005c270
-     */
-    int BlitSurfaceById(unsigned short image, float x, float y);
-    /**
-     * @ghidraAddress BRD3D: 0x1005cb40
-     */
-    int UpdateAndRenderMenuWidget(int selection);
-    /**
-     * @ghidraAddress BRD3D: 0x1005bc10
-     */
-    int
-    AddItem(const char *text, unsigned flags, unsigned char style, const RECT *bounds, bool full);
-    /**
-     * @ghidraAddress BRD3D: 0x1005c2c0
-     */
-    int Draw(int selection);
 };
 
 /** An item of a panel of the front end. */

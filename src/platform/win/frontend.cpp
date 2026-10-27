@@ -386,33 +386,33 @@ void MenuWidget::SetText(const char *pszText,
                          unsigned char bStyle,
                          const RECT *pRect) {
     MenuFont &font = fonts[0];
-    std::strcpy(font.szText, pszText);
-    MenuFontVTable *pVTable = font.pVTable;
-    font.dwFlags |= dwTextFlags;
-    font.bStyle = bStyle;
-    font.nInputMaxWidth = 0;
-    font.nHeight = 0;
-    font.nWidth = 0;
-    font.rcBounds.left = pRect->left;
-    font.rcBounds.right = pRect->right;
-    font.fX = fX;
-    font.fY = fY;
-    font.fZ = 0.0f;
-    font.bDrawCaret = 0;
+    font.SetText(pszText);
+
+    font.SetFlags(font.GetFlags() | (dwTextFlags));
+    font.SetStyle(bStyle);
+    font.SetInputMaxWidth(0);
+    font.SetHeight(0);
+    font.SetWidth(0);
+    font.SetBoundsLeft(pRect->left);
+    font.SetBoundsRight(pRect->right);
+    font.SetX(fX);
+    font.SetY(fY);
+    font.SetZ(0.0f);
+    font.SetDrawCaret(0);
     if (bStyle == 3) {
-        pVTable->MeasureTextAltFont(&font);
+        font.MeasureTextAltFont();
     } else {
-        pVTable->MeasureText(&font);
+        font.MeasureText();
     }
     if (dwTextFlags & 1) {
-        pVTable->ComputeCenteredX(&font);
+        font.ComputeCenteredX();
     }
     rcBounds.top = ConvertMenuCoordinate(fY);
     rcBounds.left = pRect->left;
     rcBounds.right = pRect->right;
-    rcBounds.bottom = static_cast<int>(static_cast<unsigned>(rcBounds.top) + font.nHeight);
-    nWidth = font.nWidth;
-    nHeight = font.nHeight;
+    rcBounds.bottom = static_cast<int>(static_cast<unsigned>(rcBounds.top) + font.GetHeight());
+    nWidth = font.GetWidth();
+    nHeight = font.GetHeight();
 }
 
 int MenuWidget::BlitSurfaceById(int nImage, int x, int y) {
@@ -455,7 +455,7 @@ int MenuWidget::DrawCurrentImage() {
 int MenuWidget::Draw() {
     if (dwTertiaryFlags & 1) {
         if (dwFlags & 0x100000) {
-            fonts[0].pVTable->DrawText(&fonts[0]);
+            fonts[0].DrawText();
         } else if (!(dwFlags & 0x200000)) {
             if (!DrawCurrentImage()) {
                 return 0;
@@ -542,7 +542,7 @@ bool MenuWidget::Update() {
             nAnimationFrame = 0;
             if ((flags & 0x100000) && !(flags & 0x10) && pfnIdleAction) {
                 nSpriteId = 3;
-                fonts[0].bStyle = 1;
+                fonts[0].SetStyle(1);
                 Draw();
                 return true;
             }
@@ -560,45 +560,45 @@ int MenuItemList::AddItem(
         return 0;
     }
     if (wItemCount >= 100) {
-        pVTable->RemoveItem(this, 0);
+        RemoveItem(0);
         wItemCount = 99;
     }
     if (full) {
-        strcpy(fonts[wItemCount].szText, text);
+        fonts[wItemCount].SetText(text);
     } else {
-        strncpy(fonts[wItemCount].szText, text, 10);
-        strcat(fonts[wItemCount].szText, g_szEmptyString);
+        fonts[wItemCount].CopyTextPrefix(text, 10);
+        fonts[wItemCount].AppendText(g_szEmptyString);
     }
     MenuFont &font = fonts[wItemCount];
-    font.dwFlags |= flags;
-    font.bStyle = style;
-    font.nInputMaxWidth = 0;
-    font.nHeight = 0;
-    font.nWidth = 0;
-    font.rcBounds.left = bounds->left;
-    font.rcBounds.right = bounds->right;
-    font.rcBounds.top =
-        static_cast<int>(static_cast<unsigned>(ConvertMenuCoordinate(fY)) + 19u * wItemCount);
-    font.rcBounds.bottom = static_cast<int>(static_cast<unsigned>(font.rcBounds.top) + 18u);
-    font.fX = static_cast<float>(bounds->left);
-    font.fY = static_cast<float>(font.rcBounds.top);
-    font.fZ = 0;
-    font.bDrawCaret = 0;
+    font.SetFlags(font.GetFlags() | (flags));
+    font.SetStyle(style);
+    font.SetInputMaxWidth(0);
+    font.SetHeight(0);
+    font.SetWidth(0);
+    font.SetBoundsLeft(bounds->left);
+    font.SetBoundsRight(bounds->right);
+    font.SetBoundsTop(
+        static_cast<int>(static_cast<unsigned>(ConvertMenuCoordinate(fY)) + 19u * wItemCount));
+    font.SetBoundsBottom(static_cast<int>(static_cast<unsigned>(font.GetBoundsTop()) + 18u));
+    font.SetX(static_cast<float>(bounds->left));
+    font.SetY(static_cast<float>(font.GetBoundsTop()));
+    font.SetZ(0);
+    font.SetDrawCaret(0);
     if (style == 3) {
-        font.pVTable->MeasureTextAltFont(&font);
+        font.MeasureTextAltFont();
     } else {
-        font.pVTable->MeasureText(&font);
+        font.MeasureText();
     }
     MenuFont &measured = fonts[wItemCount];
-    measured.nInputMaxWidth = static_cast<short>(static_cast<unsigned>(measured.rcBounds.right) -
-                                                 measured.rcBounds.left - 16u);
+    measured.SetInputMaxWidth(static_cast<short>(static_cast<unsigned>(measured.GetBoundsRight()) -
+                                                 measured.GetBoundsLeft() - 16u));
     ++wItemCount;
     if (dwFlags & 0x800000) {
         short row = static_cast<short>(wVisibleRowCount + nFirstVisibleRow);
         if (row >= 100) {
             row = static_cast<short>(wItemCount - 1);
         }
-        if (!_stricmp(fonts[row].szText, g_szEmptyUiString)) {
+        if (!_stricmp(fonts[row].GetText(), g_szEmptyUiString)) {
             return 0;
         }
         ++nFirstVisibleRow;
@@ -627,10 +627,10 @@ int MenuItemList::AddItem(
 
 int MenuItemList::Draw(int selection) {
     if (nBackgroundImage >= 0) {
-        pVTable->BlitSurfaceById(this, nBackgroundImage, fBackgroundX, fBackgroundY);
+        BlitSurfaceById(nBackgroundImage, fBackgroundX, fBackgroundY);
     }
-    if (!(dwFlags & 0x1000000) && selection >= 0 && !(fonts[selection].dwFlags & 0x10)) {
-        fonts[selection].bStyle = 4;
+    if (!(dwFlags & 0x1000000) && selection >= 0 && !(fonts[selection].GetFlags() & 0x10)) {
+        fonts[selection].SetStyle(4);
     }
     int rowOffset = 0;
     for (int row = 0; row < wVisibleRowCount; ++row, rowOffset += 19) {
@@ -639,36 +639,33 @@ int MenuItemList::Draw(int selection) {
             continue;
         }
         MenuFont *font = &fonts[index];
-        MenuFontVTable *vtable = font->pVTable;
-        vtable->MeasureText(font);
-        font->rcBounds.left = rcBounds.left;
-        font->rcBounds.right = rcBounds.right;
+
+        font->MeasureText();
+        font->SetBoundsLeft(rcBounds.left);
+        font->SetBoundsRight(rcBounds.right);
         int y = static_cast<int>(static_cast<unsigned>(rcBounds.top) + rowOffset);
-        font->rcBounds.top = y;
-        font->rcBounds.bottom = static_cast<int>(static_cast<unsigned>(y) + 18u);
-        vtable->DrawMenuItemText(font, static_cast<float>(rcBounds.left), static_cast<float>(y));
+        font->SetBoundsTop(y);
+        font->SetBoundsBottom(static_cast<int>(static_cast<unsigned>(y) + 18u));
+        font->DrawMenuItemText(static_cast<float>(rcBounds.left), static_cast<float>(y));
         if (dwFlags & 0x2000000) {
             int x = static_cast<int>(static_cast<unsigned>(rcBounds.left) - 19u);
-            bool ready = GetSessionSlotFlag(font->dwItemData) != 0;
-            pVTable->BlitSurfaceById(
-                this, ready ? 0x8b : 0x8a, static_cast<float>(x), static_cast<float>(y));
+            bool ready = GetSessionSlotFlag(font->GetItemData()) != 0;
+            BlitSurfaceById(ready ? 0x8b : 0x8a, static_cast<float>(x), static_cast<float>(y));
         }
     }
     if (!(dwFlags & 0x200000)) {
         if (nScrollUpImage > 0) {
-            pVTable->BlitSurfaceById(this,
-                                     bScrollUpHovered ? 0x2f : nScrollUpImage,
-                                     static_cast<float>(rcScrollUp.left),
-                                     static_cast<float>(rcScrollUp.top));
+            BlitSurfaceById(bScrollUpHovered ? 0x2f : nScrollUpImage,
+                            static_cast<float>(rcScrollUp.left),
+                            static_cast<float>(rcScrollUp.top));
         }
         if (nScrollDownImage > 0) {
-            pVTable->BlitSurfaceById(this,
-                                     bScrollDownHovered ? 0x2d : nScrollDownImage,
-                                     static_cast<float>(rcScrollDown.left),
-                                     static_cast<float>(rcScrollDown.top));
+            BlitSurfaceById(bScrollDownHovered ? 0x2d : nScrollDownImage,
+                            static_cast<float>(rcScrollDown.left),
+                            static_cast<float>(rcScrollDown.top));
         }
         if (nScrollThumbImage > 0) {
-            pVTable->BlitSurfaceById(this, nScrollThumbImage, fScrollThumbX, fScrollThumbY);
+            BlitSurfaceById(nScrollThumbImage, fScrollThumbX, fScrollThumbY);
         }
     }
     return 1;
@@ -702,10 +699,10 @@ int MenuItemList::BlitSurfaceById(unsigned short image, float x, float y) {
 
 int MenuItemList::UpdateAndRenderMenuWidget(int selection) {
     int result = -1;
-    MenuItemListVTable *vtable = pVTable;
-    vtable->Draw(this, selection);
+
+    Draw(selection);
     if (!g_dwMenuTextEditActive && !g_dwModalDialogBlocking) {
-        vtable->ProcessInput(this, &result);
+        ProcessInput(&result);
     }
     ++g_wMenuHoverIndexPrev;
     return result;
@@ -713,15 +710,15 @@ int MenuItemList::UpdateAndRenderMenuWidget(int selection) {
 
 int MenuItemList::UpdateItemAndNotify(int nIndex) {
     MenuFont *font = &fonts[nIndex];
-    MenuFontVTable *vtable = font->pVTable;
-    vtable->MeasureText(font);
-    if (!font->bDrawCaret) {
+
+    font->MeasureText();
+    if (!font->GetDrawCaret()) {
         return 0;
     }
-    signed char result = vtable->HandleTextInput(font);
+    signed char result = font->HandleTextInput();
     if (result <= 0) {
         g_dwMenuTextEditActive = 0;
-        font->bDrawCaret = 0;
+        font->SetDrawCaret(0);
         if (pfnItemChanged) {
             pfnItemChanged(this, result < 0 ? -1 : nIndex);
         }
@@ -823,7 +820,7 @@ int MenuWidget::UpdateBlinkTimer() {
             if (nAnimationElapsed > anFrameDurations[nAnimationFrame]) {
                 nAnimationElapsed = 0;
                 dwFlags |= 0x100;
-                itemList.dwFlags |= 0x100;
+                itemList.SetFlags(itemList.GetFlags() | (0x100));
                 nAnimationFrame =
                     static_cast<short>(static_cast<unsigned short>(nAnimationFrame) + 1);
                 if (anFrameDurations[nAnimationFrame] <= 0) {
@@ -833,7 +830,7 @@ int MenuWidget::UpdateBlinkTimer() {
         } else if (nAnimationElapsed > 60) {
             nAnimationElapsed = 0;
             dwFlags |= 0x100;
-            itemList.dwFlags |= 0x100;
+            itemList.SetFlags(itemList.GetFlags() | (0x100));
         }
     }
     return 1;
@@ -1309,21 +1306,21 @@ int SeasonRoundList_ClearBrowsingFlag(MenuWidget *) {
 }
 
 int CreateGameUI_EnableContinueIfNameEntered(MenuWidget *pWidget) {
-    if (strlen(pWidget->fonts[0].szText)) {
+    if (strlen(pWidget->fonts[0].GetText())) {
         g_pCreateGameContinueItem->dwFlags &= ~0x10u;
     }
     return 1;
 }
 
 int PlayerNameEntryUI_EnableContinueIfNameEntered(MenuWidget *pWidget) {
-    if (strlen(pWidget->fonts[0].szText)) {
+    if (strlen(pWidget->fonts[0].GetText())) {
         g_pPlayerNameContinueItem->dwFlags &= ~0x10u;
     }
     return 1;
 }
 
 int ModemConnectionUI_EnableContinueIfNumberEntered(MenuWidget *pWidget) {
-    if (strlen(pWidget->fonts[0].szText)) {
+    if (strlen(pWidget->fonts[0].GetText())) {
         g_pModemContinueItem->dwFlags &= ~0x10u;
     }
     return 1;
@@ -1352,7 +1349,7 @@ int AudioOptionsUI_UpdateVolumeLevelIndicatorPos(MenuWidget *pWidget) {
 
 static inline void UpdateMenuListSelection(MenuWidget *pWidget, int &selection) {
     MenuItemList *list = &pWidget->itemList;
-    int result = list->pVTable->PollSelection(list, selection);
+    int result = list->UpdateAndRenderMenuWidget(selection);
     if (result >= 0) {
         selection = result;
     }
@@ -1377,7 +1374,8 @@ int JoinCreateGameUI_UpdateSessionSelection(MenuWidget *pWidget) {
 
 int NetworkCarSetupUI_UpdateSelectedPlayer(MenuWidget *pWidget) {
     UpdateMenuListSelection(pWidget, g_dwSelectedSessionIndex);
-    g_dwNetCarSetupSelectedPlayerId = pWidget->itemList.fonts[g_dwSelectedSessionIndex].dwItemData;
+    g_dwNetCarSetupSelectedPlayerId =
+        pWidget->itemList.GetFont(g_dwSelectedSessionIndex).GetItemData();
     return 1;
 }
 
@@ -1388,15 +1386,15 @@ int KeyConfigUI_UpdateActionSelection(MenuWidget *pWidget) {
 
 int SaveSeasonUI_UpdateSlotSelection(MenuWidget *pWidget) {
     MenuItemList *list = &pWidget->itemList;
-    MenuItemListVTable *vtable = list->pVTable;
-    int selection = vtable->PollSelection(list, g_dwFileListSelectedSlot);
+
+    int selection = list->UpdateAndRenderMenuWidget(g_dwFileListSelectedSlot);
     if (selection >= 0) {
         g_dwFileListSelectedSlot = selection;
     } else {
         selection = g_dwFileListSelectedSlot;
     }
     if (g_dwMenuTextEditActive && selection >= 0) {
-        vtable->UpdateItemAndNotify(list, selection);
+        list->UpdateItemAndNotify(selection);
     }
     return 1;
 }
@@ -1417,7 +1415,7 @@ int AudioOptionsUI_UpdateCdTrackSelection(MenuWidget *pWidget) {
     if (track < 0 || track >= 12) {
         track = -1;
     }
-    int result = list->pVTable->PollSelection(list, track);
+    int result = list->UpdateAndRenderMenuWidget(track);
     if (result >= 0) {
         g_dwSelectedCdTrack = result;
     }
@@ -1426,13 +1424,13 @@ int AudioOptionsUI_UpdateCdTrackSelection(MenuWidget *pWidget) {
 
 int NetworkCarSetupUI_PollChatListSelection(MenuWidget *pWidget) {
     MenuItemList *list = &pWidget->itemList;
-    list->pVTable->PollSelection(list, g_dwSelectedSessionIndex);
+    list->UpdateAndRenderMenuWidget(g_dwSelectedSessionIndex);
     return 1;
 }
 
 static inline int SynchronizeEditedMenuText(MenuWidget *pWidget, char *destination) {
     ProcessMenuTextEditInput(pWidget, 0);
-    const char *text = pWidget->fonts[0].szText;
+    const char *text = pWidget->fonts[0].GetText();
     if (_stricmp(destination, text)) {
         strcpy(destination, text);
     }
@@ -1445,10 +1443,10 @@ int OnChatMessageEdited(MenuWidget *pWidget) {
 
 int NetworkCarSetupUI_SendChatMessage(MenuWidget *pWidget) {
     DirectPlayInfo *info = g_pDirectPlayInfo;
-    strcpy(g_szNetworkChatText, pWidget->fonts[0].szText);
+    strcpy(g_szNetworkChatText, pWidget->fonts[0].GetText());
     SendNetworkChatMessage(g_hMainWindow, info, false);
     strcpy(g_szNetworkChatText, g_szEmptyUiString);
-    strcpy(pWidget->fonts[0].szText, g_szEmptyUiString);
+    pWidget->fonts[0].SetText(g_szEmptyUiString);
     return 1;
 }
 
@@ -2318,13 +2316,13 @@ int GameOptionsUI_OnToggleSpecularLighting(MenuWidget *) {
 
 static inline int ToggleSavedMenuText(MenuWidget *pWidget, MenuItemList *&list) {
     pWidget->pScreen->anPanelActive[1] = 0;
-    MenuFont &font = list->fonts[g_dwFileListSelectedSlot];
-    font.bDrawCaret = !font.bDrawCaret;
-    MenuFont &selected = list->fonts[g_dwFileListSelectedSlot];
-    g_dwMenuTextEditActive = selected.bDrawCaret;
+    MenuFont &font = list->GetFont(g_dwFileListSelectedSlot);
+    font.SetDrawCaret(!font.GetDrawCaret());
+    MenuFont &selected = list->GetFont(g_dwFileListSelectedSlot);
+    g_dwMenuTextEditActive = selected.GetDrawCaret();
     if (g_dwMenuTextEditActive) {
-        strcpy(g_szMenuItemTextBackup, selected.szText);
-        strcpy(selected.szText, g_szEmptyUiString);
+        strcpy(g_szMenuItemTextBackup, selected.GetText());
+        selected.SetText(g_szEmptyUiString);
     }
     return 1;
 }
@@ -2341,7 +2339,7 @@ static inline int RestoreSavedMenuText(MenuWidget *pWidget, MenuItemList *&list,
     pWidget->pScreen->anPanelActive[1] = 0;
     named = 0;
     if (g_dwMenuTextEditActive) {
-        strcpy(list->fonts[g_dwFileListSelectedSlot].szText, g_szMenuItemTextBackup);
+        list->GetFont(g_dwFileListSelectedSlot).SetText(g_szMenuItemTextBackup);
         strcpy(g_szMenuItemTextBackup, g_szEmptyUiString);
     }
     return 1;
@@ -2444,7 +2442,7 @@ int SaveSeasonUI_OnSlotNameEntered(MenuItemList *pList, int nStatus) {
         return 0;
     }
     if (nStatus == -1) {
-        strcpy(pList->fonts[g_dwFileListSelectedSlot].szText, g_szMenuItemTextBackup);
+        pList->GetFont(g_dwFileListSelectedSlot).SetText(g_szMenuItemTextBackup);
         return 1;
     }
     char fileName[260];
@@ -2455,8 +2453,8 @@ int SaveSeasonUI_OnSlotNameEntered(MenuItemList *pList, int nStatus) {
     strcat(fileName, ".brf");
     strcpy(g_szSeasonSaveFileName, fileName);
     strcpy(g_pRootMenuScreen->apFiles[0]->aszNames[g_dwFileListSelectedSlot],
-           pList->fonts[g_dwFileListSelectedSlot].szText);
-    strcpy(g_szSeasonSaveSlotName, pList->fonts[g_dwFileListSelectedSlot].szText);
+           pList->GetFont(g_dwFileListSelectedSlot).GetText());
+    strcpy(g_szSeasonSaveSlotName, pList->GetFont(g_dwFileListSelectedSlot).GetText());
     if (!g_pPrimarySeasonSave->season && !g_pPrimarySeasonSave->round) {
         memset(g_pPrimarySeasonSave->seasonPlaces, 0, sizeof(g_pPrimarySeasonSave->seasonPlaces));
         memset(g_pPrimarySeasonSave->seasonRacePoints,
@@ -2676,13 +2674,13 @@ int KeyConfigUI_BeginKeyCapture(MenuWidget *) {
 
 int ValidateEntityState(MenuWidget *pWidget) {
     unsigned flags = pWidget->dwFlags;
-    if ((flags & (0x10 | 0x1000000)) || (pWidget->itemList.dwFlags & 0x1000000)) {
+    if ((flags & (0x10 | 0x1000000)) || (pWidget->itemList.GetFlags() & 0x1000000)) {
         return 0;
     }
     if (g_dwMenuHoverActive &&
         (g_pMouseDevice->IsButtonHeld(0) || g_pMouseDevice->IsButtonHeld(1) ||
          g_pMouseDevice->IsButtonHeld(2) || g_pMouseDevice->IsButtonHeld(3))) {
-        pWidget->fonts[0].bStyle = 4;
+        pWidget->fonts[0].SetStyle(4);
         return 1;
     }
     if (flags & 0x100) {
@@ -2690,16 +2688,16 @@ int ValidateEntityState(MenuWidget *pWidget) {
             static_cast<short>(static_cast<unsigned short>(pWidget->nSpriteId) + 1);
         switch (pWidget->nSpriteId) {
         case 2:
-            pWidget->fonts[0].bStyle = 0;
+            pWidget->fonts[0].SetStyle(0);
             break;
         case 3:
-            pWidget->fonts[0].bStyle = 1;
+            pWidget->fonts[0].SetStyle(1);
             break;
         case 4:
-            pWidget->fonts[0].bStyle = 2;
+            pWidget->fonts[0].SetStyle(2);
             break;
         case 52:
-            pWidget->fonts[0].bStyle = 4;
+            pWidget->fonts[0].SetStyle(4);
             break;
         default:
             pWidget->nSpriteId = 2;
@@ -2760,7 +2758,7 @@ int MultiplayerConnectionUI_UpdateModemItem(MenuWidget *pWidget) {
 static inline int BeginMenuTextEdit(MenuWidget *pWidget) {
     if (!g_dwMenuTextEditActive) {
         g_dwMenuTextEditActive = 1;
-        pWidget->fonts[0].bDrawCaret = !pWidget->fonts[0].bDrawCaret;
+        pWidget->fonts[0].SetDrawCaret(!pWidget->fonts[0].GetDrawCaret());
     }
     return 1;
 }
@@ -2929,9 +2927,9 @@ int KeyConfigUI_UpdateBindingLabel(MenuWidget *pWidget) {
     }
     MenuFont *font = &pWidget->fonts[0];
     if (updateText) {
-        strcpy(font->szText, text);
+        font->SetText(text);
     }
-    font->pVTable->MeasureText(font);
+    font->MeasureText();
     ProcessMenuTextEditInput(pWidget, 0);
     return 1;
 }
@@ -2943,17 +2941,17 @@ void PollInputAndUpdateEdges(void) {
 
 int ProcessMenuTextEditInput(MenuWidget *pWidget, short nFont) {
     MenuFont *font = &pWidget->fonts[nFont];
-    MenuFontVTable *vtable = font->pVTable;
-    vtable->MeasureText(font);
-    if (!font->bDrawCaret) {
-        vtable->DrawText(font);
+
+    font->MeasureText();
+    if (!font->GetDrawCaret()) {
+        font->DrawText();
         return 0;
     }
-    signed char result = vtable->HandleTextInput(font);
+    signed char result = font->HandleTextInput();
     if (result <= 0 || (pWidget->dwFlags & 2)) {
         if (!g_dwInNetworkCarSetup) {
             g_dwMenuTextEditActive = 0;
-            font->bDrawCaret = 0;
+            font->SetDrawCaret(0);
             pWidget->dwFlags &= ~2u;
         }
         PollInputAndUpdateEdges();
@@ -2961,7 +2959,7 @@ int ProcessMenuTextEditInput(MenuWidget *pWidget, short nFont) {
             pWidget->pfnTextEditComplete(pWidget);
         }
     }
-    vtable->DrawText(font);
+    font->DrawText();
     return 1;
 }
 
@@ -3081,10 +3079,10 @@ int SeasonUI_UpdateSeasonNameLabel(MenuWidget *pWidget) {
         return 0;
     }
     MenuFont *font = &pWidget->fonts[0];
-    strcpy(font->szText, _strupr(GetStringResource(g_SeasonTable[season].nameStringId)));
-    MenuFontVTable *vtable = font->pVTable;
-    vtable->MeasureText(font);
-    vtable->DrawText(font);
+    font->SetText(_strupr(GetStringResource(g_SeasonTable[season].nameStringId)));
+
+    font->MeasureText();
+    font->DrawText();
     return 1;
 }
 
@@ -3105,10 +3103,10 @@ int SeasonUI_UpdateYearOrdinalLabel(MenuWidget *pWidget) {
     char text[128];
     sprintf(text, "%s%s", g_szSeasonYearLabel, GetStringResource(suffix));
     MenuFont *font = &pWidget->fonts[0];
-    strcpy(font->szText, text);
-    MenuFontVTable *vtable = font->pVTable;
-    vtable->MeasureText(font);
-    vtable->DrawText(font);
+    font->SetText(text);
+
+    font->MeasureText();
+    font->DrawText();
     return 1;
 }
 
@@ -3118,7 +3116,7 @@ static inline int UpdateLoadedMenuItemState(MenuWidget *pWidget, int loaded) {
     } else {
         pWidget->dwFlags |= 0x1010u;
         pWidget->nSpriteId = 2;
-        pWidget->fonts[0].bStyle = 0;
+        pWidget->fonts[0].SetStyle(0);
     }
     return 1;
 }
@@ -3133,18 +3131,18 @@ int LoadTimeAttackMenuUI_UpdateItemEnabledState(MenuWidget *pWidget) {
 
 static inline void DrawAlternateMenuLabel(MenuWidget *pWidget, const char *text) {
     MenuFont *font = &pWidget->fonts[0];
-    strcpy(font->szText, text);
-    MenuFontVTable *vtable = font->pVTable;
-    vtable->MeasureTextAltFont(font);
-    vtable->DrawTextAltFont(font);
+    font->SetText(text);
+
+    font->MeasureTextAltFont();
+    font->DrawTextAltFont();
 }
 
 static inline int DrawSeasonRoundValue(MenuWidget *pWidget, int value) {
     MenuFont *font = &pWidget->fonts[0];
-    _itoa(value, font->szText, 10);
-    MenuFontVTable *vtable = font->pVTable;
-    vtable->MeasureTextAltFont(font);
-    vtable->DrawTextAltFont(font);
+    font->SetNumber(value);
+
+    font->MeasureTextAltFont();
+    font->DrawTextAltFont();
     return 1;
 }
 
@@ -3238,42 +3236,42 @@ int SeasonProgressInfoUI_UpdateRoundLabel(MenuWidget *pWidget) {
     sprintf(
         g_szSeasonRoundLabel, "%d", static_cast<int>(static_cast<unsigned>(g_dwSeasonRound) + 1));
     MenuFont *font = &pWidget->fonts[0];
-    strcpy(font->szText, GetStringResource(0x37));
-    strcat(font->szText, "  ");
-    strcat(font->szText, g_szSeasonRoundLabel);
-    MenuFontVTable *vtable = font->pVTable;
-    vtable->MeasureText(font);
-    vtable->DrawText(font);
+    font->SetText(GetStringResource(0x37));
+    font->AppendText("  ");
+    font->AppendText(g_szSeasonRoundLabel);
+
+    font->MeasureText();
+    font->DrawText();
     return 1;
 }
 
 int KeyConfigUI_UpdateDuplicateBindingWarning(MenuWidget *pWidget) {
     MenuFont *font = &pWidget->fonts[0];
     if (g_dwKeyBindingDuplicatesFound) {
-        strcpy(font->szText, GetStringResource(0xaf));
-        font->bStyle = g_adwKeyBindingDuplicateFlags[g_dwKeyConfigSelectedAction] ? 4 : 1;
+        font->SetText(GetStringResource(0xaf));
+        font->SetStyle(g_adwKeyBindingDuplicateFlags[g_dwKeyConfigSelectedAction] ? 4 : 1);
     } else {
-        strcpy(font->szText, " ");
+        font->SetText(" ");
     }
-    MenuFontVTable *vtable = font->pVTable;
-    vtable->MeasureText(font);
+
+    font->MeasureText();
     ProcessMenuTextEditInput(pWidget, 0);
     return 1;
 }
 
 int PreRaceInfoUI_UpdateBackButtonText(MenuWidget *pWidget) {
     int stringId = g_dwGameMode == 0 && g_SeasonResumeState.state == 0 ? 0x51 : 0xc;
-    strcpy(pWidget->fonts[0].szText, GetStringResource(stringId));
+    pWidget->fonts[0].SetText(GetStringResource(stringId));
     MenuFont *font = &pWidget->fonts[0];
-    font->pVTable->MeasureText(font);
+    font->MeasureText();
     return 1;
 }
 
 static inline void DrawPrimaryMenuLabel(MenuWidget *pWidget, const char *text) {
     MenuFont *font = &pWidget->fonts[0];
-    MenuFontVTable *vtable = font->pVTable;
-    strcpy(font->szText, text);
-    vtable->MeasureText(font);
+
+    font->SetText(text);
+    font->MeasureText();
     ProcessMenuTextEditInput(pWidget, 0);
 }
 
@@ -3366,10 +3364,10 @@ int RaceSetupUI_UpdateTrackNameLabel(MenuWidget *pWidget) {
     }
     if (g_apTrackMenuItems[track]->flags & 0x10) {
         float y = pWidget->fY;
-        pWidget->fonts[0].fY = 130.0f;
+        pWidget->fonts[0].SetY(130.0f);
         DrawPrimaryMenuLabel(pWidget, GetStringResource(0xb0));
         // The widget supplies the font's restored coordinate.
-        pWidget->fonts[0].fY = y;
+        pWidget->fonts[0].SetY(y);
     }
     DrawPrimaryMenuLabel(pWidget, text);
     return 1;
@@ -3381,7 +3379,7 @@ int RaceSetupUI_UpdateWeatherLabel(MenuWidget *pWidget) {
     MenuFont *font = &pWidget->fonts[0];
     int stringId;
     if (loadingGhost) {
-        font->fY -= 8.0f;
+        font->SetY(font->GetY() - (8.0f));
         stringId = 0x1c;
     } else {
         int weather = g_dwSelectedWeather;
@@ -3392,12 +3390,12 @@ int RaceSetupUI_UpdateWeatherLabel(MenuWidget *pWidget) {
         stringId = g_adwWeatherLabelStrIds[weather];
     }
     const char *text = GetStringResource(stringId);
-    MenuFontVTable *vtable = font->pVTable;
-    strcpy(font->szText, text);
-    vtable->MeasureText(font);
+
+    font->SetText(text);
+    font->MeasureText();
     ProcessMenuTextEditInput(pWidget, 0);
     if (loadingGhost) {
-        font->fY += 8.0f;
+        font->SetY(font->GetY() + (8.0f));
     }
     return 1;
 }
@@ -3405,10 +3403,10 @@ int RaceSetupUI_UpdateWeatherLabel(MenuWidget *pWidget) {
 int RaceSetupUI_UpdateLapCountLabel(MenuWidget *pWidget) {
     if (g_pActiveMenuScreen != g_pCachedMenu_LoadGhost || g_dwTimeAttackLoadSelected) {
         MenuFont *font = &pWidget->fonts[0];
-        _itoa(g_dwTotalLaps, font->szText, 10);
-        MenuFontVTable *vtable = font->pVTable;
-        vtable->MeasureTextAltFont(font);
-        vtable->DrawTextAltFont(font);
+        font->SetNumber(g_dwTotalLaps);
+
+        font->MeasureTextAltFont();
+        font->DrawTextAltFont();
     }
     return 1;
 }
@@ -3511,7 +3509,7 @@ int MultiplayerGameSetupUI_OnBackAsHost(MenuActionWidget *pItem) {
     if ((g_dwServiceProviderIndex == 2 || g_dwServiceProviderIndex == 3) &&
         g_pNetworkSessionJoinMenu) {
         g_pNetworkSessionJoinMenu->dwFlags &= ~0x10u;
-        g_pNetworkSessionJoinMenu->fonts[0].bStyle = 0;
+        g_pNetworkSessionJoinMenu->fonts[0].SetStyle(0);
     }
     return 0;
 }
@@ -3775,9 +3773,9 @@ void BuildNetworkCarSetupUI(MenuScreen *pScreen) {
     ++panel->wNavigationCount;
     widget = add(32, 330, 0x3001, 1, -1);
     widget->pfnUpdate = NetworkCarSetupUI_PollChatListSelection;
-    widget->itemList.bVerticalScrollbar = 1;
+    widget->itemList.SetVerticalScrollbar(1);
     MenuItemList *list = &widget->itemList;
-    list->pVTable->Initialize(list, 0x1840001, &g_rcNetCarSetupPlayerList, 5, 0, -1);
+    list->Initialize(0x1840001, &g_rcNetCarSetupPlayerList, 5, 0, -1);
     g_pNetworkCarSetupMenu = widget;
     ++panel->wWidgetCount;
     widget = add(32, 330, 0x200001, 1, -1);
@@ -3787,21 +3785,21 @@ void BuildNetworkCarSetupUI(MenuScreen *pScreen) {
     widget->nSpriteId = 3;
     widget->SetText(g_szEmptyUiString, 0, 1, &g_rcMenuCenterPanel);
     MenuFont *font = &widget->fonts[0];
-    widget->rcBounds.left = font->rcBounds.left = 32;
-    widget->rcBounds.right = font->rcBounds.right = 415;
-    widget->rcBounds.top = font->rcBounds.top = 330;
-    widget->rcBounds.bottom = font->rcBounds.bottom = 346;
-    font->nInputMaxWidth = 367;
+    widget->rcBounds.left = font->SetBoundsLeft(32);
+    widget->rcBounds.right = font->SetBoundsRight(415);
+    widget->rcBounds.top = font->SetBoundsTop(330);
+    widget->rcBounds.bottom = font->SetBoundsBottom(346);
+    font->SetInputMaxWidth(367);
     g_dwMenuTextEditActive = 0;
     g_dwInNetworkCarSetup = 1;
-    font->bDrawCaret = 1;
+    font->SetDrawCaret(1);
     ++panel->wWidgetCount;
     widget = add(484, 2, 0x1001, 1, -1);
     widget->pfnUpdate = NetworkCarSetupUI_UpdateSelectedPlayer;
-    widget->itemList.bVerticalScrollbar = 1;
+    widget->itemList.SetVerticalScrollbar(1);
     list = &widget->itemList;
-    list->pVTable->Initialize(
-        list, g_dwNetworkPlayMode == 2 ? 0x2040001 : 0x3040001, &g_rcMenuNetworkPlayers, 4, 0, -1);
+    list->Initialize(
+        g_dwNetworkPlayMode == 2 ? 0x2040001 : 0x3040001, &g_rcMenuNetworkPlayers, 4, 0, -1);
     g_pNetworkPlayerListMenu = widget;
     ++panel->wWidgetCount;
     add(61, 244, 9, 1, 54);
@@ -3853,9 +3851,9 @@ void BuildNetworkCarSetupUI(MenuScreen *pScreen) {
     widget->nSpriteId = 0x34;
     widget->SetText(g_szSpace, 1, 4, &g_rcMenuFullScreen);
     font = &widget->fonts[0];
-    auto fontVTable = font->pVTable;
-    strcpy(font->szText, g_szSessionName);
-    fontVTable->MeasureText(font);
+
+    font->SetText(g_szSessionName);
+    font->MeasureText();
     ++panel->wWidgetCount;
 }
 
@@ -4074,14 +4072,13 @@ void BuildRaceResultsSummaryUI(MenuScreen *pScreen) {
     ++panel->wWidgetCount;
     MenuWidget *widget = add(panel->fX, panel->fY, 0x3001, 1, -1);
     MenuItemList *list = &widget->itemList;
-    MenuItemListVTable *listVTable = list->pVTable;
+
     widget->pfnUpdate = SeasonRoundList_UpdateRoundSelection;
-    list->bVerticalScrollbar = 1;
-    listVTable->Initialize(list, 0x200000, &g_rcMenuListBox, 5, 0, -1);
+    list->SetVerticalScrollbar(1);
+    list->Initialize(0x200000, &g_rcMenuListBox, 5, 0, -1);
     widget->pfnBeforeUpdate = SeasonRoundList_SetBrowsingFlag;
     widget->pfnAfterUpdate = SeasonRoundList_ClearBrowsingFlag;
     if (g_SeasonTable[g_bSeasonClass].raceCount > 0) {
-        auto addItem = listVTable->AddItem;
         int round = 0;
         do {
             char label[32];
@@ -4090,7 +4087,7 @@ void BuildRaceResultsSummaryUI(MenuScreen *pScreen) {
             strcat(label, g_szSpace);
             ++round;
             strcat(label, _strupr(_itoa(round, number, 10)));
-            addItem(list, label, 1, 1, &g_rcMenuCenterPanel, true);
+            list->AddItem(label, 1, 1, &g_rcMenuCenterPanel, true);
         } while (round < g_SeasonTable[g_bSeasonClass].raceCount);
     }
     ++panel->wWidgetCount;
@@ -4319,14 +4316,14 @@ void BuildMultiplayerConnectionUI(MenuScreen *pScreen) {
         widget->nSpriteId = 3;
         widget->SetText(g_szEmptyUiString, 1, 1, &g_rcMenuCenterPanel);
         MenuFont *font = &widget->fonts[0];
-        font->pVTable->MeasureText(font);
-        widget->rcBounds.left = font->rcBounds.left = 155;
-        widget->rcBounds.right = font->rcBounds.right = 347;
-        widget->rcBounds.top = font->rcBounds.top = top;
-        widget->rcBounds.bottom = font->rcBounds.bottom = top + 16;
-        font->nInputMaxWidth =
-            static_cast<short>(static_cast<unsigned short>(font->rcBounds.right) -
-                               static_cast<unsigned short>(font->rcBounds.left) - 16);
+        font->MeasureText();
+        widget->rcBounds.left = font->SetBoundsLeft(155);
+        widget->rcBounds.right = font->SetBoundsRight(347);
+        widget->rcBounds.top = font->SetBoundsTop(top);
+        widget->rcBounds.bottom = font->SetBoundsBottom(top + 16);
+        font->SetInputMaxWidth(
+            static_cast<short>(static_cast<unsigned short>(font->GetBoundsRight()) -
+                               static_cast<unsigned short>(font->GetBoundsLeft()) - 16));
         ++panel->wWidgetCount;
         ++panel->wNavigationCount;
         if (i == 0) {
@@ -4459,18 +4456,18 @@ void BuildPreRaceInfoUI(MenuScreen *pScreen) {
     widget = add(panel->fX, panel->fY, 0x3001, 1, -1);
     MenuItemList *list = &widget->itemList;
     widget->pfnUpdate = SeasonRoundList_UpdateRoundSelection;
-    list->bVerticalScrollbar = 1;
-    list->pVTable->Initialize(list, 0x240000, &g_rcMenuListBox, 5, 0, -1);
+    list->SetVerticalScrollbar(1);
+    list->Initialize(0x240000, &g_rcMenuListBox, 5, 0, -1);
     widget->pfnBeforeUpdate = SeasonRoundList_SetBrowsingFlag;
     widget->pfnAfterUpdate = SeasonRoundList_ClearBrowsingFlag;
     if (g_SeasonTable[g_bSeasonClass].raceCount > 0) {
-        auto addItem = list->pVTable->AddItem;
+
         for (int round = 0; round < g_SeasonTable[g_bSeasonClass].raceCount; ++round) {
             char number[32];
             char label[32];
             _itoa(round + 1, number, 10);
             sprintf(label, GetStringResource(0xbf), _strupr(number));
-            addItem(list, label, 1, 1, &g_rcMenuCenterPanel, true);
+            list->AddItem(label, 1, 1, &g_rcMenuCenterPanel, true);
         }
     }
     ++panel->wWidgetCount;
