@@ -1,6 +1,6 @@
 # PC port game code from 0x10040000 to 0x10050000
 
-244 of 264 routines done.
+245 of 264 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -75,7 +75,7 @@ the same name, for a routine the port retained from the N64 game.
 | `ShowTimeAttackMenu`                               |   ✅   |                 |      2 |    214 | `0x10044b90` | `0x1003e0e0` | `int ShowTimeAttackMenu(int nUnused)`                                                                                                                     |
 | `ShowSeasonProgressInfoScreen`                     |   ✅   |                 |      1 |    212 | `0x10045dc0` | `0x1003f260` | `int ShowSeasonProgressInfoScreen(MenuWidget * pWidget)`                                                                                                  |
 | `RaceSetupUI_OnCycleWeather`                       |   ✅   |                 |      2 |    210 | `0x10043180` | `0x1003c6d0` | `int RaceSetupUI_OnCycleWeather(MenuActionWidget * pItem)`                                                                                                |
-| `EnterNetworkLobbyScreen`                          |   📝   |                 |      1 |    210 | `0x100441a0` | `0x1003d6f0` | `undefined EnterNetworkLobbyScreen()`                                                                                                                     |
+| `EnterNetworkLobbyScreen`                          |   ✅   |                 |      1 |    210 | `0x100441a0` | `0x1003d6f0` | `undefined EnterNetworkLobbyScreen()`                                                                                                                     |
 | `RaceSetupUI_OnCycleLapCount`                      |   ✅   |                 |      2 |    206 | `0x100430b0` | `0x1003c600` | `int RaceSetupUI_OnCycleLapCount(MenuActionWidget * pItem)`                                                                                               |
 | `MultiplayerGameSetupUI_OnCycleCarClass`           |   ✅   |                 |      1 |    202 | `0x10044600` | `0x1003db50` | `int MultiplayerGameSetupUI_OnCycleCarClass(MenuWidget * pWidget)`                                                                                        |
 | `ShowSaveSeasonScreen`                             |   ✅   |                 |      6 |    201 | `0x10045bc0` | `0x1003f060` | `int ShowSaveSeasonScreen(void)`                                                                                                                          |
