@@ -1170,8 +1170,8 @@ struct TextureImageData {
     int nDecodedHeight;
     unsigned char *pImage;
     const unsigned char *pPalette;
-    int nLoadBytes;
-    int nOption8;
+    int bMirrorS;
+    int bMirrorT;
     int nTileIndex; /*!< The active tile of aTiles. */
     int nTileLimit;
     TexScanTile aTiles[TEX_SCAN_TILE_COUNT];

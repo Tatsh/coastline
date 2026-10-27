@@ -1252,8 +1252,8 @@ unsigned char *GetTextureImagePixels(TextureImageData *pImage) {
                             pImage->pImage,
                             pImage->pPalette,
                             tile.nFormat,
-                            pImage->nLoadBytes,
-                            pImage->nOption8,
+                            pImage->bMirrorS,
+                            pImage->bMirrorT,
                             pImage->nTileIndex,
                             pImage->nTileLimit,
                             pImage->aTiles,
@@ -1699,8 +1699,8 @@ unsigned CreateTextureFromN64Image(const unsigned char *pImage,
     image.bClampT = nOption10 != 0;
     image.pImage = const_cast<unsigned char *>(pImage);
     image.pPalette = pPalette;
-    image.nLoadBytes = nOption7;
-    image.nOption8 = nOption8;
+    image.bMirrorS = nOption7;
+    image.bMirrorT = nOption8;
     if ((g_dwTextureLoadCategory & 2) && !g_dwNullStubEnable) {
         g_dwCurrentMaxTextureWidth = g_dwMaxTexWidthHighQuality;
         g_dwCurrentMaxTextureHeight = g_dwMaxTexHeightHighQuality;

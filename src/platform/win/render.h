@@ -1355,8 +1355,8 @@ extern unsigned g_dwTexturePixelByteCount;
  * @param pImage The captured image bytes.
  * @param pPalette The captured palette bytes.
  * @param nFormat The N64 image format.
- * @param nLoadBytes The load line byte count.
- * @param nOption8 The eighth decode option.
+ * @param bMirrorS Whether to append reflected columns to each row.
+ * @param bMirrorT Whether to append reflected rows to each tile.
  * @param nTileIndex The first tile.
  * @param nTileLimit The exclusive tile limit.
  * @param pTiles The captured tile records.
@@ -1380,8 +1380,8 @@ void DecodeTexturePixels(unsigned char *pDest,
                          const unsigned char *pImage,
                          const unsigned char *pPalette,
                          int nFormat,
-                         int nLoadBytes,
-                         int nOption8,
+                         int bMirrorS,
+                         int bMirrorT,
                          int nTileIndex,
                          int nTileLimit,
                          const TexScanTile *pTiles,
