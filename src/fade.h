@@ -22,6 +22,7 @@ extern "C" {
  * @ghidraAddress USA: 0x8028b740
  * @ghidraAddress EUR: 0x8028d9f0
  * @ghidraAddress JPN: 0x8028d420
+ * @ghidraAddress BRD3D: 0x10575508
  */
 extern s32 g_dwFadeRectLeft;
 
@@ -29,6 +30,7 @@ extern s32 g_dwFadeRectLeft;
  * @ghidraAddress USA: 0x8028b744
  * @ghidraAddress EUR: 0x8028d9f4
  * @ghidraAddress JPN: 0x8028d424
+ * @ghidraAddress BRD3D: 0x10575500
  */
 extern s32 g_dwFadeRectRight;
 
@@ -36,6 +38,7 @@ extern s32 g_dwFadeRectRight;
  * @ghidraAddress USA: 0x8028b748
  * @ghidraAddress EUR: 0x8028d9f8
  * @ghidraAddress JPN: 0x8028d428
+ * @ghidraAddress BRD3D: 0x1057550c
  */
 extern s32 g_dwFadeRectTop;
 
@@ -43,6 +46,7 @@ extern s32 g_dwFadeRectTop;
  * @ghidraAddress USA: 0x8028b74c
  * @ghidraAddress EUR: 0x8028d9fc
  * @ghidraAddress JPN: 0x8028d42c
+ * @ghidraAddress BRD3D: 0x105754fc
  */
 extern s32 g_dwFadeRectBottom;
 

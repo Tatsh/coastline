@@ -125,6 +125,10 @@ typedef union {
 #define G_SETZIMG 0xFE           /*!< Set the depth image. */
 #define G_RDPFULLSYNC 0xE9       /*!< Wait for the RDP to finish and raise its interrupt. */
 
+/* The drawing commands with integer coordinates of the Windows port. */
+#define G_FILLRECT_INT_COORDS 0xE1
+#define G_SETSCISSOR_INT_COORDS 0xE2
+
 /* The parameters of gSPMatrix(). */
 #define G_MTX_MODELVIEW 0x00  /*!< The modelview matrix. */
 #define G_MTX_PROJECTION 0x01 /*!< The projection matrix. */
@@ -560,13 +564,22 @@ typedef struct {
 #define gDPSetPrimDepth(pkt, z, dz)                                                                \
     gDisplayListWords(pkt, _SHIFTL(G_SETPRIMDEPTH, 24, 8), _SHIFTL(z, 16, 16) | _SHIFTL(dz, 0, 16))
 
-/** Set the scissor rectangle, whose corners are converted to 10.2 fixed point. */
+/** Set the scissor rectangle: integer coordinates on Windows, 10.2 fixed point on N64. */
+#if defined(TGR_PLATFORM) && TGR_PLATFORM == TGR_PLATFORM_WIN
+#define gDPSetScissor(pkt, mode, ulx, uly, lrx, lry)                                               \
+    gDisplayListWords(                                                                             \
+        pkt,                                                                                       \
+        _SHIFTL(G_SETSCISSOR_INT_COORDS, 24, 8) | _SHIFTL((u32)(s64)(f32)(ulx), 12, 12) |          \
+            _SHIFTL((u32)(s64)(f32)(uly), 0, 12),                                                  \
+        _SHIFTL((u32)(s64)(f32)(lrx), 12, 12) | _SHIFTL((u32)(s64)(f32)(lry), 0, 12))
+#else
 #define gDPSetScissor(pkt, mode, ulx, uly, lrx, lry)                                               \
     gDisplayListWords(pkt,                                                                         \
                       _SHIFTL(G_SETSCISSOR, 24, 8) | _SHIFTL((s32)((f32)(ulx) * 4.0f), 12, 12) |   \
                           _SHIFTL((s32)((f32)(uly) * 4.0f), 0, 12),                                \
                       _SHIFTL(mode, 24, 2) | _SHIFTL((s32)((f32)(lrx) * 4.0f), 12, 12) |           \
                           _SHIFTL((s32)((f32)(lry) * 4.0f), 0, 12))
+#endif
 /** Set the render mode from the modes of the first and second cycles. */
 #define gDPSetRenderMode(pkt, c0, c1)                                                              \
     gSPSetOtherMode(pkt, G_SETOTHERMODE_L, G_MDSFT_RENDERMODE, 29, (c0) | (c1))
@@ -629,10 +642,18 @@ typedef struct {
 /** Set the fill colour, a 32-bit word of one or two packed pixels. */
 #define gDPSetFillColor(pkt, d) gDisplayListWords(pkt, _SHIFTL(G_SETFILLCOLOR, 24, 8), (u32)(d))
 /** Fill a rectangle, its corners inclusive, with the fill colour. */
+#if defined(TGR_PLATFORM) && TGR_PLATFORM == TGR_PLATFORM_WIN
+#define gDPFillRectangle(pkt, ulx, uly, lrx, lry)                                                  \
+    gDisplayListWords(pkt,                                                                         \
+                      _SHIFTL(G_FILLRECT_INT_COORDS, 24, 8) | _SHIFTL(lrx, 12, 12) |               \
+                          _SHIFTL(lry, 0, 12),                                                     \
+                      _SHIFTL(ulx, 12, 12) | _SHIFTL(uly, 0, 12))
+#else
 #define gDPFillRectangle(pkt, ulx, uly, lrx, lry)                                                  \
     gDisplayListWords(pkt,                                                                         \
                       _SHIFTL(G_FILLRECT, 24, 8) | _SHIFTL(lrx, 14, 10) | _SHIFTL(lry, 2, 10),     \
                       _SHIFTL(ulx, 14, 10) | _SHIFTL(uly, 2, 10))
+#endif
 /** Set the G_TT_* texture palette. */
 #define gDPSetTextureLUT(pkt, type) gSPSetOtherMode(pkt, G_SETOTHERMODE_H, G_MDSFT_TEXTLUT, 2, type)
 /** Set the G_TP_* texture perspective correction. */

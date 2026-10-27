@@ -13,6 +13,7 @@
 /* The y past which the fog of the desert turns grey. */
 #define DESERT_HAZE_Y 1024.0f
 
+/* A colour of a light, as the microcode reads it. */
 #define LIGHT_COLOR(red, green, blue) ((u32)(red) << 24 | (u32)(green) << 16 | (u32)(blue) << 8)
 
 #if TGR_PLATFORM == TGR_PLATFORM_WIN

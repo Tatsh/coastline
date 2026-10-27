@@ -10,6 +10,7 @@
 #include <PR/ultratypes.h>
 
 #include "displaylistptr.h"
+#include "screendraw.h"
 #include "vecmath.h"
 
 /**
@@ -771,22 +772,6 @@ void SetupFog(void);
 void RestoreCurrentViewport(void);
 
 /**
- * Fill a rectangle of the screen with a colour.
- *
- * @param x The left edge, in the pixels of the low resolution, which high resolution doubles.
- * @param y The upper edge.
- * @param width The width.
- * @param height The height.
- * @param red The red of the colour, from 0 to 255, of which the upper 5 bits count.
- * @param green The green of the colour.
- * @param blue The blue of the colour.
- * @ghidraAddress USA: 0x80218104
- * @ghidraAddress EUR: 0x80219124
- * @ghidraAddress JPN: 0x80218a74
- */
-void DrawFilledRect(s32 x, s32 y, s32 width, s32 height, s32 red, s32 green, s32 blue);
-
-/**
  * Do nothing.
  *
  * @ghidraAddress USA: 0x80217c8c
@@ -808,33 +793,6 @@ void StubEmpty(void);
  * @ghidraAddress JPN: 0x8021a768
  */
 void SetupViewportAndScissor(s32 x, s32 y, s32 width, s32 height, s32 setScissor);
-
-/**
- * Outline a rectangle of the screen with lines a pixel wide.
- *
- * @param x The left edge.
- * @param y The upper edge.
- * @param width The width.
- * @param height The height.
- * @ghidraAddress USA: 0x80219f6c
- * @ghidraAddress EUR: 0x8021af8c
- * @ghidraAddress JPN: 0x8021a8e4
- */
-void DrawRdpOutlineRect(s32 x, s32 y, s32 width, s32 height);
-
-/**
- * Frame a rectangle of the screen, such as the rear-view mirror, with a dark border and light
- * rings.
- *
- * @param x The left edge.
- * @param y The upper edge.
- * @param width The width.
- * @param height The height.
- * @ghidraAddress USA: 0x8021a0f8
- * @ghidraAddress EUR: 0x8021b118
- * @ghidraAddress JPN: 0x8021aa70
- */
-void DrawRdpBorderRect(s32 x, s32 y, s32 width, s32 height);
 
 #if TGR_REGION == TGR_REGION_JP || TGR_REGION == TGR_REGION_EU
 /**

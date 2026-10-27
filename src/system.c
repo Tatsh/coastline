@@ -122,20 +122,8 @@
 #define DISPLAY_LIST_START()                                                                       \
     (g_pDisplayListBase + g_dwFrameBufferIndex * DISPLAY_LIST_COMMANDS + DISPLAY_LIST_RESERVED)
 
-/* A fill of the frame buffer with a colour of 8-bit components, as two pixels. */
-#define FILL_COLOR(red, green, blue)                                                               \
-    ((u16)GPACK_RGBA5551(red, green, blue, 1) | (u16)GPACK_RGBA5551(red, green, blue, 1) << 16)
-
 /* A fill of the depth buffer with the farthest depth, as two depths. */
 #define FARTHEST_DEPTHS ((u32)GPACK_ZDZ(G_MAXFIXED, 0) << 16 | GPACK_ZDZ(G_MAXFIXED, 0))
-
-/* A colour of a light, as the microcode reads it. */
-
-/* A blend of the colour of the frame buffer and the colour drawn, by the alpha of the fog. */
-#define RENDER_MODE_FOG_BLEND_C1                                                                   \
-    (IM_RD | CVG_DST_FULL | ZMODE_OPA | FORCE_BL |                                                 \
-     GBL_c1(G_BL_CLR_MEM, G_BL_A_FOG, G_BL_CLR_IN, G_BL_1MA))
-#define RENDER_MODE_FOG_BLEND_C2 GBL_c2(G_BL_CLR_MEM, G_BL_A_FOG, G_BL_CLR_IN, G_BL_1MA)
 
 /* The gap between the views and the edges of the screen. */
 #define VIEWPORT_MARGIN 8
@@ -320,41 +308,6 @@ void ClearZBufferRect(s32 x, s32 y, s32 width, s32 height) {
                      TO_RSP_ADDRESS(g_apFramebuffers[g_dwFrameBufferIndex]));
 }
 
-void ClearScreen(s32 red, s32 green, s32 blue) {
-    gDPPipeSync(gDisplayListPtr++);
-    gDPSetRenderMode(gDisplayListPtr++, G_RM_OPA_SURF, G_RM_OPA_SURF2);
-    gDPSetCycleType(gDisplayListPtr++, G_CYC_FILL);
-    gDPSetFillColor(gDisplayListPtr++, FILL_COLOR(red, green, blue));
-    gDPFillRectangle(gDisplayListPtr++,
-                     0,
-                     0,
-                     (g_dwScreenWidth << g_dwScreenScaleShift) - 1,
-                     (g_dwScreenHeight << g_dwScreenScaleShift) - 1);
-    gDPPipeSync(gDisplayListPtr++);
-    gDPSetCycleType(gDisplayListPtr++, G_CYC_1CYCLE);
-}
-
-void DrawFilledRect(s32 x, s32 y, s32 width, s32 height, s32 red, s32 green, s32 blue) {
-    if (g_dwScreenScaleShift) {
-        x *= 2;
-        y *= 2;
-        width *= 2;
-        height *= 2;
-    }
-    gDPPipeSync(gDisplayListPtr++);
-    gDPSetRenderMode(gDisplayListPtr++, G_RM_OPA_SURF, G_RM_OPA_SURF2);
-    gDPSetCycleType(gDisplayListPtr++, G_CYC_FILL);
-    gDPSetFillColor(gDisplayListPtr++, FILL_COLOR(red, green, blue));
-    /* The lower right corner is doubled a second time in the high resolution. */
-    gDPFillRectangle(gDisplayListPtr++,
-                     x,
-                     y,
-                     ((x + width) << g_dwScreenScaleShift) - 1,
-                     ((y + height) << g_dwScreenScaleShift) - 1);
-    gDPPipeSync(gDisplayListPtr++);
-    gDPSetCycleType(gDisplayListPtr++, G_CYC_1CYCLE);
-}
-
 void BeginDisplayList(s32 highRes) {
     if (highRes != g_dwScreenScaleShift) {
         g_dwDisplayModeChangeCountdown = 1;
@@ -469,37 +422,6 @@ void StartHighResFrame(void) {
 void StubEmptyVoid(s32 unused0, ...) {
 }
 
-void SetScissorRect(s32 x, s32 y, s32 width, s32 height) {
-    if (x < g_dwFadeRectLeft) {
-        width = width - g_dwFadeRectLeft + x;
-        x = g_dwFadeRectLeft;
-    }
-    if (g_dwFadeRectRight < x + width) {
-        width = g_dwFadeRectRight - x;
-    }
-    if (width < 0) {
-        width = 0;
-    }
-    if (y < g_dwFadeRectTop) {
-        height = height - g_dwFadeRectTop + y;
-        y = g_dwFadeRectTop;
-    }
-    if (g_dwFadeRectBottom < y + height) {
-        height = g_dwFadeRectBottom - y;
-    }
-    if (height < 0) {
-        height = 0;
-    }
-    if (g_dwScreenScaleShift) {
-        x *= 2;
-        y *= 2;
-        width *= 2;
-        height *= 2;
-    }
-    gDPPipeSync(gDisplayListPtr++);
-    gDPSetScissor(gDisplayListPtr++, G_SC_NON_INTERLACE, x, y, x + width, y + height);
-}
-
 void SetViewport(s32 x, s32 y, s32 width, s32 height, s32 setScissor) {
     g_dwViewportIndex = (g_dwViewportIndex + 1) & (VIEWPORTS - 1);
     if (setScissor) {
@@ -564,42 +486,6 @@ void RestoreCurrentViewport(void) {
     gSPViewport(gDisplayListPtr++, &g_aViewports[g_dwViewportIndex]);
     g_dwViewportScaleZ = g_aViewports[g_dwViewportIndex].vp.vscale[2];
     g_dwViewportTransZ = g_aViewports[g_dwViewportIndex].vp.vtrans[2];
-}
-
-void DrawRdpOutlineRect(s32 x, s32 y, s32 width, s32 height) {
-    gDPPipeSync(gDisplayListPtr++);
-    /* With the alpha of the fog at 255, the blend retains the colour of the frame buffer. */
-    gDPSetRenderMode(gDisplayListPtr++, RENDER_MODE_FOG_BLEND_C1, RENDER_MODE_FOG_BLEND_C2);
-    gDPSetCycleType(gDisplayListPtr++, G_CYC_1CYCLE);
-    gDPSetFogColor(gDisplayListPtr++, 0, 0, 0, 0xFF);
-    gDPFillRectangle(gDisplayListPtr++, x, y, x + width, y + 1);
-    gDPFillRectangle(gDisplayListPtr++, x, y + height - 1, x + width, y + height);
-    gDPFillRectangle(gDisplayListPtr++, x, y, x + 1, y + height);
-    gDPFillRectangle(gDisplayListPtr++, x + width - 1, y, x + width, y + height);
-}
-
-void DrawRdpBorderRect(s32 x, s32 y, s32 width, s32 height) {
-    gDPPipeSync(gDisplayListPtr++);
-    gDPSetRenderMode(gDisplayListPtr++, G_RM_OPA_SURF, G_RM_OPA_SURF2);
-    gDPSetCycleType(gDisplayListPtr++, G_CYC_FILL);
-    gDPSetFillColor(gDisplayListPtr++, FILL_COLOR(0, 0, 0));
-    gDPSetFogColor(gDisplayListPtr++, 0, 0, 0, 0xFF);
-    gDPFillRectangle(gDisplayListPtr++, x - 1, y - 2, x + width, y - 1);
-    gDPFillRectangle(gDisplayListPtr++, x - 1, y + height, x + width, y + height + 1);
-    gDPFillRectangle(gDisplayListPtr++, x - 2, y - 1, x - 1, y + height);
-    gDPFillRectangle(gDisplayListPtr++, x + width, y - 1, x + width + 1, y + height);
-    gDPPipeSync(gDisplayListPtr++);
-    gDPSetRenderMode(gDisplayListPtr++, RENDER_MODE_FOG_BLEND_C1, RENDER_MODE_FOG_BLEND_C2);
-    gDPSetCycleType(gDisplayListPtr++, G_CYC_1CYCLE);
-    gDPSetFogColor(gDisplayListPtr++, 0, 0, 0, 0xFF);
-    gDPFillRectangle(gDisplayListPtr++, x, y, x + width, y + 1);
-    gDPFillRectangle(gDisplayListPtr++, x, y + height - 1, x + width, y + height);
-    gDPFillRectangle(gDisplayListPtr++, x, y, x + 1, y + height);
-    gDPFillRectangle(gDisplayListPtr++, x + width - 1, y, x + width, y + height);
-    gDPFillRectangle(gDisplayListPtr++, x - 3, y - 3, x + width + 3, y - 2);
-    gDPFillRectangle(gDisplayListPtr++, x - 3, y + height + 2, x + width + 3, y + height + 3);
-    gDPFillRectangle(gDisplayListPtr++, x - 3, y - 3, x - 2, y + height + 3);
-    gDPFillRectangle(gDisplayListPtr++, x + width + 2, y - 3, x + width + 3, y + height + 3);
 }
 
 #if TGR_REGION == TGR_REGION_JP || TGR_REGION == TGR_REGION_EU

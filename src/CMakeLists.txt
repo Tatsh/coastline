@@ -78,7 +78,7 @@ if(TGR_PLATFORM STREQUAL "n64")
                     racemenu.c racers.c racesound.c replay.c rigidbody.c rumble.c sky.c snapshot.c splash.c sprite.c system.c text.c texrect.c timing.c track.c trackrender.c util.c vecmath.c vehicle.c vehiclemodel.c vehiclerender.c vehiclesetup.c visgrid.c weather.c weatherselect.c)
   list(APPEND _game_sources bodyforces.c camerachase.c cameracollision.c displaylistops.c
                            frameclear.c playerinput.c profileinit.c renderinit.c screen.c seasontrack.c
-                           vehiclechoice.c trackgrid.c tricache.c vehiclereset.c fog.c)
+                           vehiclechoice.c trackgrid.c tricache.c vehiclereset.c fog.c screendraw.c)
   # These sources write the Japanese text in UTF-8. The Japanese release compiles copies with the
   # text in the glyph codes of its font.
   if(TGR_REGION STREQUAL "jp")
@@ -104,7 +104,7 @@ else()
   add_library(
     coastline_game STATIC bodyforces.c camerachase.c cameracollision.c displaylistops.c fade.c
                           fog.c frameclear.c game.c heap.c mathutil.c playerinput.c profileinit.c
-                          rigidbody.c renderinit.c screen.c seasontrack.c trackgrid.c tricache.c
+                          rigidbody.c renderinit.c screen.c screendraw.c seasontrack.c trackgrid.c tricache.c
                           util.c vecmath.c
                           vehiclechoice.c vehiclemodel.c vehiclereset.c visgrid.c
                           libultra/gu/lookat.c libultra/gu/lookathil.c libultra/gu/lookatref.c

@@ -17,6 +17,7 @@
 #include "displaylistops.h"
 #include "frametime.h"
 #include "screen.h"
+#include "screendraw.h"
 
 /** The bump allocator zcalloc() draws from. */
 typedef struct {
@@ -248,31 +249,6 @@ extern s32 g_dwFrameDeltaMs;
  * @ghidraAddress JPN: 0x8028c7ac
  */
 extern s32 g_dwElapsedTimeMs;
-
-/**
- * Limit drawing to a rectangle, clipped to the frame.
- *
- * @param x The left edge, in pixels.
- * @param y The top edge, in pixels.
- * @param width The width, in pixels.
- * @param height The height, in pixels.
- * @ghidraAddress USA: 0x80219a78
- * @ghidraAddress EUR: 0x8021aa98
- * @ghidraAddress JPN: 0x8021a3f0
- */
-void SetScissorRect(s32 x, s32 y, s32 width, s32 height);
-
-/**
- * Add a fill of the whole frame with a colour to the display list.
- *
- * @param red The red component, from 0 to 255.
- * @param green The green component, from 0 to 255.
- * @param blue The blue component, from 0 to 255.
- * @ghidraAddress USA: 0x80217fb8
- * @ghidraAddress EUR: 0x80218fd8
- * @ghidraAddress JPN: 0x80218928
- */
-void ClearScreen(s32 red, s32 green, s32 blue);
 
 /**
  * Start the display list of a frame in the low resolution, 320 by 240.
