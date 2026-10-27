@@ -26,6 +26,112 @@ TrackTriangle *g_pCollisionTriangle;
 
 #define ABS(x) ((x) < 0.0f ? -(x) : (x))
 
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#define COLLISION_DISTANCE_TYPE long double
+#define COLLISION_SIGN(x) (!((x) < 0.0f) && !((x) > 0.0f) ? 0.0L : ((x) > 0.0f ? 1.0L : -1.0L))
+#define COLLISION_NEAREST(a, b) ((a) >= (b))
+#else
+#define COLLISION_DISTANCE_TYPE f32
+#define SIGN(x) ((x) == 0.0f ? 0.0 : (0.0f < (x) ? 1.0 : -1.0))
+#define COLLISION_NEAREST(a, b) (!((a) < (b)))
+#endif
+
+/* The distance of a point from the ground of a wheel, either side of it. */
+static inline COLLISION_DISTANCE_TYPE GroundDistance(RigidBody *wheel, Vec3f *point) {
+    if (COLLISION_LESS(PlaneDistance(&wheel->groundNormal, wheel->groundOffset, point), 0.0f)) {
+        return -PlaneDistance(&wheel->groundNormal, wheel->groundOffset, point);
+    }
+    return PlaneDistance(&wheel->groundNormal, wheel->groundOffset, point);
+}
+
+/* A touching wheel initialises the final corner and wheel used after the loop. */
+#pragma GCC diagnostic push
+#if !defined(__clang__)
+#pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
+#endif
+#pragma GCC diagnostic ignored "-Wuninitialized"
+s32 TipBalancedVehicle(RigidBody *body) {
+    RigidBody *wheel;
+    Vec3f corner, point, velocity, nudge;
+    f32 nearest, along;
+    COLLISION_DISTANCE_TYPE distance, tilt;
+    s32 touching, i;
+    Vec3f *spin;
+
+    QuaternionToMatrix(body->orientation, &body->stepStates[0]);
+    nearest = 100.0f;
+    touching = 0;
+    /* The nearest of the corners of the box over the wheels on the ground to their ground. */
+    for (i = 0; i < VEHICLE_WHEELS; i++) {
+        if (!body->wheels[i]->contactFrames) {
+            continue;
+        }
+        touching++;
+        wheel = body->wheels[i];
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+        corner.x = (f32)(COLLISION_SIGN(wheel->state.position.x) *
+                         COLLISION_PRODUCT(body->boxSize.x, 0.5f));
+        corner.y = (f32)(COLLISION_SIGN(wheel->state.position.y) *
+                         COLLISION_PRODUCT(body->boxSize.y, 0.5f));
+        corner.z = body->boxCenterZ - COLLISION_PRODUCT(body->boxSize.z, 0.5f);
+#else
+        corner.x = (f32)(SIGN(wheel->state.position.x) * (f64)(body->boxSize.x * 0.5f));
+        corner.y = (f32)(SIGN(wheel->state.position.y) * (f64)(body->boxSize.y * 0.5f));
+        corner.z = -body->boxSize.z * 0.5f + body->boxCenterZ;
+#endif
+        Mtx4x4TransformPoint(&point, body->orientation, &corner);
+        distance = GroundDistance(wheel, &point);
+        if (COLLISION_NEAREST(nearest, distance)) {
+            nearest = distance;
+        }
+    }
+    if (touching >= 3 || touching <= 0) {
+        return 0;
+    }
+    osSyncPrintf("-- Stand Dist = %f\n", (f64)nearest);
+    if ((f64)nearest > 0.6) {
+        return 0;
+    }
+    GetBodyPointVelocity(&velocity, body, &corner);
+    along = COLLISION_PRODUCT(wheel->groundNormal.z, velocity.z) +
+            (COLLISION_PRODUCT(velocity.x, wheel->groundNormal.x) +
+             COLLISION_PRODUCT(velocity.y, wheel->groundNormal.y));
+    osSyncPrintf("-- Stand Vel = %f\n", (f64)along);
+    if (ABS(along) > 0.1f) {
+        return 0;
+    }
+    /* Roll it towards the way its nose leans across the ground. */
+    tilt = COLLISION_PRODUCT(body->groundNormal.z, body->orientation[0][2]) +
+           (COLLISION_PRODUCT(body->orientation[0][0], body->groundNormal.x) +
+            COLLISION_PRODUCT(body->orientation[0][1], body->groundNormal.y));
+    if (0.0f < tilt) {
+        nudge.x = 0.0f;
+        nudge.y = 0.1f;
+        nudge.z = 0.0f;
+    } else {
+        nudge.x = 0.0f;
+        nudge.y = -0.1f;
+        nudge.z = 0.0f;
+    }
+    osSyncPrintf("-- Stand Point = %f\n", (f64)tilt);
+    Mtx3x3MulVec3f(&point, body->orientation, &nudge);
+    spin = &body->stepStates[0].angularVelocity;
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+    spin->x = spin->x - COLLISION_PRODUCT(point.x, -2.0f);
+    spin->y = spin->y - COLLISION_PRODUCT(point.y, -2.0f);
+    spin->z = spin->z - COLLISION_PRODUCT(point.z, -2.0f);
+#else
+    for (i = 0; i < 2; i++) {
+        spin->x = point.x + spin->x;
+        spin->y = point.y + spin->y;
+        spin->z = point.z + spin->z;
+    }
+#endif
+    ComputeDeltaQuaternion(&body->stepStates[0]);
+    return 1;
+}
+#pragma GCC diagnostic pop
+
 /* The steps of the collisions in a frame. */
 #define COLLISION_STEPS 4
 

@@ -620,6 +620,7 @@ extern "C" {
  * @param body The body of the vehicle.
  * @return Whether it was rolled.
  * @ghidraAddress USA: 0x8025d368
+ * @ghidraAddress BRD3D: 0x1006ddc0
  * @ghidraAddress EUR: 0x8025e94c
  * @ghidraAddress JPN: 0x8025e2dc
  */
