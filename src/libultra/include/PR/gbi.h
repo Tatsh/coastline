@@ -440,10 +440,17 @@ typedef struct {
                           _SHIFTL(sizeof(Vtx) * (n) - 1, 0, 10),                                   \
                       (u32)(v))
 
+#if defined(TGR_PLATFORM) && TGR_PLATFORM == TGR_PLATFORM_WIN
+#define __gsSP1Triangle_w1f(v0, v1, v2, flag)                                                      \
+    ((flag) == 0 ? _SHIFTL(v0, 16, 8) | _SHIFTL(v1, 8, 8) | _SHIFTL(v2, 0, 8) :                    \
+     (flag) == 1 ? _SHIFTL(v1, 16, 8) | _SHIFTL(v2, 8, 8) | _SHIFTL(v0, 0, 8) :                    \
+                   _SHIFTL(v2, 16, 8) | _SHIFTL(v0, 8, 8) | _SHIFTL(v1, 0, 8))
+#else
 #define __gsSP1Triangle_w1f(v0, v1, v2, flag)                                                      \
     ((flag) == 0 ? _SHIFTL((v0) * 2, 16, 8) | _SHIFTL((v1) * 2, 8, 8) | _SHIFTL((v2) * 2, 0, 8) :  \
      (flag) == 1 ? _SHIFTL((v1) * 2, 16, 8) | _SHIFTL((v2) * 2, 8, 8) | _SHIFTL((v0) * 2, 0, 8) :  \
                    _SHIFTL((v2) * 2, 16, 8) | _SHIFTL((v0) * 2, 8, 8) | _SHIFTL((v1) * 2, 0, 8))
+#endif
 
 /** Draw two triangles of the vertex buffer. */
 #define gSP2Triangles(pkt, v00, v01, v02, flag0, v10, v11, v12, flag1)                             \

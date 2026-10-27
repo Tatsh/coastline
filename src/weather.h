@@ -224,6 +224,7 @@ extern s32 g_bRainParticlesInitialized;
  * @ghidraAddress USA: 0x802a3790
  * @ghidraAddress EUR: 0x802a5f50
  * @ghidraAddress JPN: 0x802a59f0
+ * @ghidraAddress BRD3D: 0x100baac8
  */
 extern u8 g_aParticleTexture[];
 

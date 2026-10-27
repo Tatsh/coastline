@@ -803,6 +803,9 @@ public:
     const auto &GetSprayVertices() const {
         return sprayVertices;
     }
+    const auto &GetSprayMatrix() const {
+        return sprayMtx;
+    }
     f32 GetSteerAngle() const {
         return steerAngle;
     }

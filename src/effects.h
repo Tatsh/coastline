@@ -134,6 +134,21 @@ void SpawnExhaustParticle(Vehicle *vehicle);
 void EmitTireSpray(Vehicle *vehicle);
 #endif
 
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#ifdef __cplusplus
+extern "C" {
+#endif
+/**
+ * Draw the supplied racers' tyre spray, including snow only on the coastline tracks.
+ *
+ * @param slots The racer slots supplying the current vehicle bindings.
+ * @ghidraAddress BRD3D: 0x10013a40
+ */
+void DrawTireSpray(const RacerSlot *slots);
+#ifdef __cplusplus
+}
+#endif
+#else
 /**
  * Draw the spray of the wheels of every racer, except in the snow away from the tracks that show
  * it there.
@@ -143,6 +158,7 @@ void EmitTireSpray(Vehicle *vehicle);
  * @ghidraAddress JPN: 0x8023cb60
  */
 void DrawTireSpray(void);
+#endif
 
 #if TGR_PLATFORM == TGR_PLATFORM_N64
 /**
@@ -272,6 +288,22 @@ void RenderTireSmoke(const ViewportRect *viewports);
 void RenderTireSmoke(void);
 #endif
 
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#ifdef __cplusplus
+extern "C" {
+#endif
+/**
+ * Draw snapshot exhaust in snow, restore particle modes and draw the supplied racers' spray.
+ *
+ * @param viewports The records of the views for the billboard renderer.
+ * @param slots The racers whose tyre spray is drawn.
+ * @ghidraAddress BRD3D: 0x10014450
+ */
+void RenderExhaustAndTireSpray(const ViewportRect *viewports, const RacerSlot *slots);
+#ifdef __cplusplus
+}
+#endif
+#else
 /**
  * Draw the exhaust in the snow with the matrix RenderTireSmoke() set, then the spray.
  *
@@ -280,5 +312,6 @@ void RenderTireSmoke(void);
  * @ghidraAddress JPN: 0x8023ebd0
  */
 void RenderExhaustAndTireSpray(void);
+#endif
 
 #endif
