@@ -12,6 +12,7 @@
 #include "laps.h"
 #include "model.h"
 #include "pause.h"
+#include "render.h"
 #include "vecmath.h"
 
 /** The phases of a race, which g_aRacePhaseTable times. */
@@ -583,8 +584,13 @@ void ScrollTextUp(void);
  * @ghidraAddress USA: 0x80200764
  * @ghidraAddress EUR: 0x80200794
  * @ghidraAddress JPN: 0x80200754
+ * @ghidraAddress BRD3D: 0x10015bd0
  */
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+void DrawScrollingText(const ViewportRect *viewport);
+#else
 void DrawScrollingText(void);
+#endif
 
 /**
  * Run one frame of the screen of a race: set the race up, step its phases, move and draw the

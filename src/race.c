@@ -146,24 +146,6 @@ void StartCreditsRace(void) {
     SetCurrentScreenCallback(ProcessRacingScreen);
 }
 
-void DrawScrollingText(void) {
-    s32 i;
-
-    SetTextCustomColors(0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF);
-    SetTextStyleNormal();
-    SetTextAlignCenter();
-    SetScissorRect(g_aViewportRects[0].x,
-                   g_aViewportRects[0].y,
-                   g_aViewportRects[0].width,
-                   g_aViewportRects[0].height);
-    for (i = 0; g_aCreditScrollLines[i].text != NULL; i++) {
-        if (g_aCreditScrollLines[i].y >= -0x4F && g_aCreditScrollLines[i].y < 0x118) {
-            SetTextSize(g_aCreditScrollLines[i].size);
-            DrawText(g_aCreditScrollLines[i].text, SCREEN_CENTER_X, g_aCreditScrollLines[i].y);
-        }
-    }
-}
-
 /* Read the car and its setup from the header of the recording a vehicle replays. */
 static void SetupFromRecording(Vehicle *vehicle) {
     vehicle->steeringMode = vehicle->input->playbackBuffer[2];
