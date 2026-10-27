@@ -155,6 +155,7 @@ target_sources(coastline_game PRIVATE headlight.c)
 target_sources(coastline_game PRIVATE vehiclemodelrender.c)
 if(TGR_PLATFORM STREQUAL "win")
   set_source_files_properties(vehiclemodelrender.c PROPERTIES LANGUAGE CXX)
+  target_sources(coastline_game PRIVATE convertedvertex.c)
   target_sources(coastline_game PRIVATE libultra/io/contreaddata.c)
 endif()
 
