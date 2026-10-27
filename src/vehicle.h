@@ -3,6 +3,7 @@
 
 #include "camerachange.h"
 #include "vehiclestatus.h"
+#include "vehicletrackpos.h"
 
 /**
  * @file
@@ -346,18 +347,6 @@ struct Vehicle {
  * @ghidraAddress JPN: 0x8031c890
  */
 extern Vehicle g_aVehicles[MAX_VEHICLES];
-
-/**
- * Find the nearest point of the route to a vehicle and add how far it went along the route to its
- * distance. A vehicle that has not crossed out of its point and stays near it keeps it.
- *
- * @param vehicle The vehicle.
- * @return 0 if no point is near enough, 1 otherwise.
- * @ghidraAddress USA: 0x8021eb50
- * @ghidraAddress EUR: 0x8021fe50
- * @ghidraAddress JPN: 0x8021f640
- */
-s32 UpdateVehicleTrackPosition(Vehicle *vehicle);
 
 /**
  * Run a frame of a vehicle: fly it, or put it on the ground, drive its wheels and step its

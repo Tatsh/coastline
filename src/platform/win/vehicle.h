@@ -218,11 +218,6 @@ public:
     void CheckWrongWayWarning();
     /** @ghidraAddress BRD3D: 0x10075960 */
     void UpdateVehicleGridPosition();
-    /**
-     * @ghidraAddress BRD3D: 0x10075360
-     * @stub{BRD3D}
-     */
-    s32 UpdateVehicleTrackPosition();
     s32 AdvanceSkidFrames() {
         return skidFrames++;
     }
@@ -919,6 +914,10 @@ public:
     void ApplyPlayerVehicleInput(void);
 
 private:
+    /**
+     * @ghidraAddress BRD3D: 0x10075360
+     */
+    s32 UpdateVehicleTrackPosition();
     /**
      * @ghidraAddress BRD3D: 0x10064350
      */

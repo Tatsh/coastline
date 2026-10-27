@@ -7,6 +7,7 @@
 #include "racerslotaccess.h"
 #include "track.h"
 #include "vehicleaccess.h"
+#include "vehicletrackpos.h"
 
 #define GRID_CELL 32
 #define GRID_CELLS 64
@@ -148,10 +149,6 @@ void UpdateVehicleGridPosition(Vehicle *vehicle) {
     } else if (VEHICLE_GET(vehicle, GridY) >= GRID_CELLS) {
         VEHICLE_SET(vehicle, GridY, GRID_CELLS - 1);
     }
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
-    vehicle->UpdateVehicleTrackPosition();
-#else
     UpdateVehicleTrackPosition(vehicle);
-#endif
 }
 #pragma GCC diagnostic pop

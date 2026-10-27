@@ -5,8 +5,13 @@
 #include "camerachange.h"
 #include "vehicleaccess.h"
 #include "vehiclestatus.h"
+#include "vehicletrackpos.h"
 
 Vehicle g_aVehicles[16];
+
+s32 Vehicle::UpdateVehicleTrackPosition() {
+    return ::UpdateVehicleTrackPosition(this);
+}
 
 void Vehicle::UpdateRaceTimers() {
     ::UpdateRaceTimers(this);
