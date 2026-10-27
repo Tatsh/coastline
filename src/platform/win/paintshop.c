@@ -31,6 +31,23 @@ int GetSelectedPaintOption(void) {
     return g_nSelectedPaintOption10;
 }
 
+int HasPaintTintPixels(const void *pImage, int nLeft, int nRight, int nTop, int nBottom) {
+    int width = (int)((unsigned)nRight - (unsigned)nLeft);
+    int height = (int)((unsigned)nBottom - (unsigned)nTop);
+    if (pImage != NULL && width > 0 && height > 0) {
+        const unsigned char *pixel = pImage;
+        for (int y = 0; y < height; y++) {
+            for (int x = 0; x < width; x++) {
+                if (pixel[0] == 0 && pixel[1] == pixel[2]) {
+                    return 1;
+                }
+                pixel += 4;
+            }
+        }
+    }
+    return 0;
+}
+
 int BlitPaintImageToPixels(const void *pImage,
                            int nLeft,
                            int nRight,

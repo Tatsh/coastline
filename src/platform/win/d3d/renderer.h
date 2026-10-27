@@ -1180,8 +1180,8 @@ struct TextureImageData {
     int bOwnsPaintBuffers; /*!< Whether paint buffer memory is released with this image. */
     int nPaintGroup;
     int nPaintSet;
-    int nDamageLevel;                 /*!< The level of damage, from 0 to 3. */
-    char abUnknown27c[4];             /* +0x27c */
+    int nDamageLevel; /*!< The level of damage, from 0 to 3. */
+    int bHasTintPixels;
     unsigned char *apPaintBuffers[4]; /*!< Pixel buffers for the four damage levels. */
     unsigned nPaintPixelBytes;
     unsigned char abEnvColor[4];

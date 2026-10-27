@@ -72,6 +72,19 @@ void GetPaintRectangle(int nGroup, int nSet, int *pLeft, int *pRight, int *pTop,
 int GetSelectedPaintOption(void);
 
 /**
+ * Test whether packed paint pixels contain a pixel to tint.
+ *
+ * @param pImage The packed rectangle pixels.
+ * @param nLeft The left bound.
+ * @param nRight The right bound.
+ * @param nTop The top bound.
+ * @param nBottom The bottom bound.
+ * @return Whether a pixel has red zero and equal green and blue.
+ * @ghidraAddress BRD3D: 0x100615b0
+ */
+int HasPaintTintPixels(const void *pImage, int nLeft, int nRight, int nTop, int nBottom);
+
+/**
  * Copy paint pixels into the destination rectangle, flipping rows and applying the paint tint.
  *
  * @param pImage The paint image.
