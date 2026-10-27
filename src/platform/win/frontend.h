@@ -2443,9 +2443,13 @@ void BuildChampionshipSeasonUI(MenuScreen *pScreen);
 
 /**
  * @ghidraAddress BRD3D: 0x1005a6e0
- * @stub
  */
 void BuildSaveTimeAttackMenuUI(MenuScreen *pScreen);
+
+/** @ghidraAddress BRD3D: 0x10042740 */
+int SaveTimeAttackMenuUI_OnSlotSelected(MenuItemList *pList, int *pnSlot);
+/** @ghidraAddress BRD3D: 0x10042560 */
+int SaveTimeAttackMenuUI_OnSlotNameEntered(MenuItemList *pList, int status);
 
 /**
  * @ghidraAddress BRD3D: 0x10044d00
