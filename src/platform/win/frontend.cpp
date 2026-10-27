@@ -30,6 +30,7 @@
 #if TGR_RENDERER == TGR_RENDERER_D3D
 #include "platform/win/d3d/ddutil.h"
 #include "platform/win/d3d/renderer.h"
+#include "platform/win/render.h"
 #endif
 
 MenuScreen *g_pActiveMenuScreen;
@@ -1727,6 +1728,38 @@ int GameOptionsUI_OnToggleSpecularLighting(MenuWidget *) {
     g_GlobalRallyConfig.bSpecularLightingSelection =
         g_adwSpecularLightingMenuIndexToValue[g_dwOptionSpecularLighting];
     return 1;
+}
+
+int MainMenuUI_OnPlayCredits(MenuWidget *pWidget) {
+    SetActiveMenuItemText(" ");
+    g_dwGameMode = GAME_MODE_DEMO;
+    if (g_dwCheatOutroSequenceEnabled) {
+        g_dwRaceSessionType = RACE_SESSION_SCROLLING_CREDITS;
+        g_dwSeasonLoaded = 0;
+    } else {
+        g_dwRaceSessionType = RACE_SESSION_CREDIT_CAPTIONS;
+    }
+    pWidget->pScreen->bRunning = 0;
+    pWidget->pScreen->ShutdownFrontEnd(0);
+    return 0;
+}
+
+int InputOptionsUI_OnRestoreDefaults(MenuWidget *) {
+    if (static_cast<unsigned>(g_dwSelectedInputDevice) <= 3) {
+        g_GlobalRallyConfig.LoadDeviceDefaultBindings(g_dwSelectedInputDevice);
+    }
+    return 1;
+}
+
+int QuitGameConfirmUI_OnConfirmQuit(MenuWidget *pWidget) {
+#if TGR_RENDERER == TGR_RENDERER_D3D
+    QueryAvailableTextureMemory();
+#endif
+    BackupMenuSelections();
+    g_GlobalRallyConfig.SaveConfigToFile(g_szConfigFilePath);
+    pWidget->pScreen->ShutdownFrontEnd(0);
+    ShutdownDirectPlaySession(g_pDirectPlayInfo);
+    ShutdownApplication(0);
 }
 
 int RaceSetupUI_UpdateTrackImage(MenuWidget *pWidget) {

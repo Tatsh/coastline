@@ -295,6 +295,24 @@ int SeasonFileUI_UpdateRoundLabel(MenuWidget *pWidget);
 int SeasonUI_UpdateSeasonNameLabel(MenuWidget *pWidget);
 
 /**
+ * @ghidraAddress BRD3D: 0x10041970
+ * @ghidraAddress BRGlide: 0x1003aed0
+ */
+int MainMenuUI_OnPlayCredits(MenuWidget *pWidget);
+
+/**
+ * @ghidraAddress BRD3D: 0x100406c0
+ * @ghidraAddress BRGlide: 0x10039c00
+ */
+int InputOptionsUI_OnRestoreDefaults(MenuWidget *pWidget);
+
+/**
+ * @ghidraAddress BRD3D: 0x10043710
+ * @ghidraAddress BRGlide: 0x1003cc60
+ */
+int QuitGameConfirmUI_OnConfirmQuit(MenuWidget *pWidget);
+
+/**
  * @ghidraAddress BRD3D: 0x10040730
  * @ghidraAddress BRGlide: 0x10039c70
  */
