@@ -1,0 +1,3 @@
+EXPORTS
+    _EAR_DLL_GetLastError@0=EAR_DLL_GetLastError@0
+    _EAR_DLL_ShowLastError@0=EAR_DLL_ShowLastError@0
