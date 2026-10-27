@@ -1,4 +1,10 @@
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#include <PR/gu.h>
+
+#include "platform/win/packedvalue.h"
+#else
 #include "guint.h"
+#endif
 
 void guLookAtReflectF(float mf[4][4],
                       LookAt *l,
@@ -11,6 +17,15 @@ void guLookAtReflectF(float mf[4][4],
                       float xUp,
                       float yUp,
                       float zUp) {
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+    guLookAtF(mf, xEye, yEye, zEye, xAt, yAt, zAt, xUp, yUp, zUp);
+    l->l[0].l.dir[0] = ConvertDoubleToSignedByte(mf[0][0]);
+    l->l[0].l.dir[1] = ConvertDoubleToSignedByte(mf[1][0]);
+    l->l[0].l.dir[2] = ConvertDoubleToSignedByte(mf[2][0]);
+    l->l[1].l.dir[0] = ConvertDoubleToSignedByte(mf[0][1]);
+    l->l[1].l.dir[1] = ConvertDoubleToSignedByte(mf[1][1]);
+    l->l[1].l.dir[2] = ConvertDoubleToSignedByte(mf[2][1]);
+#else
     float len, xLook, yLook, zLook, xRight, yRight, zRight;
 
     guMtxIdentF(mf);
@@ -84,8 +99,10 @@ void guLookAtReflectF(float mf[4][4],
     mf[1][3] = 0.0f;
     mf[2][3] = 0.0f;
     mf[3][3] = 1.0f;
+#endif
 }
 
+#if TGR_PLATFORM != TGR_PLATFORM_WIN
 void guLookAtReflect(Mtx *m,
                      LookAt *l,
                      float xEye,
@@ -102,3 +119,4 @@ void guLookAtReflect(Mtx *m,
     guLookAtReflectF(mf, l, xEye, yEye, zEye, xAt, yAt, zAt, xUp, yUp, zUp);
     guMtxF2L(mf, m);
 }
+#endif

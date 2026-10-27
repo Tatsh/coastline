@@ -333,6 +333,7 @@ void guLookAt(Mtx *m,
  * @ghidraAddress USA: 0x80261150
  * @ghidraAddress EUR: 0x802625e0
  * @ghidraAddress JPN: 0x80262080
+ * @ghidraAddress BRD3D: 0x10030e20
  */
 void guLookAtReflectF(float mf[4][4],
                       LookAt *l,
