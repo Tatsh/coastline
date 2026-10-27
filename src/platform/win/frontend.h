@@ -10,6 +10,8 @@
 // The headers below need the types of windows.h.
 #include <ddraw.h>
 
+#include "platform/win/menufont.h"
+
 /** The number of names of a SaveFileList. */
 #define SAVE_FILE_NAME_COUNT 100
 /** The size of a name of a SaveFileList. */
@@ -193,7 +195,6 @@ public:
     virtual int UpdateSlideAnimation();
     /**
      * @ghidraAddress BRD3D: 0x10047eb0
-     * @stub
      */
     virtual void
     SetText(const char *pszText, unsigned dwTextFlags, unsigned char bStyle, const RECT *pRect);
@@ -227,7 +228,9 @@ public:
     float fX;
     float fY;
     float fZ;
-    char abUnknown48[8]; /* +0x48 */
+    short nWidth;
+    short nHeight;
+    char abUnknown4c[4]; /* +0x4c */
     RECT rcBounds;
     char abUnknown60[0xc8]; /* +0x60 */
     short nAnimationFrame;
@@ -240,9 +243,8 @@ public:
     short anSpriteIds[50];
     char abUnknown2aa4[0x44]; /* +0x2aa4 */
     MenuScreen *pScreen;
-    char abUnknown2aec[0x78]; /* +0x2aec */
-    unsigned char bTextStyle;
-    char abUnknown2b65[0xc9f]; /* +0x2b65 */
+    char abUnknown2aec[0x70]; /* +0x2aec */
+    MenuFont fonts[3];
     int bSlideX;
     int bSlideY;
     signed char nSlideDirectionX;

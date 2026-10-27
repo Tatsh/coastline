@@ -352,6 +352,48 @@ void SaveFileList::GenerateNextSaveFileName(char *pszPattern, char **ppszName) {
     strcat(*ppszName, extension);
 }
 
+static inline int ConvertMenuCoordinate(float value) {
+    if (!(static_cast<long double>(value) >= -0x1p63L &&
+          static_cast<long double>(value) < 0x1p63L)) {
+        return 0;
+    }
+    return static_cast<int>(static_cast<long long>(value));
+}
+
+void MenuWidget::SetText(const char *pszText,
+                         unsigned dwTextFlags,
+                         unsigned char bStyle,
+                         const RECT *pRect) {
+    MenuFont &font = fonts[0];
+    std::strcpy(font.szText, pszText);
+    MenuFontVTable *pVTable = font.pVTable;
+    font.dwFlags |= dwTextFlags;
+    font.bStyle = bStyle;
+    font.nInputMaxWidth = 0;
+    font.nHeight = 0;
+    font.nWidth = 0;
+    font.rcBounds.left = pRect->left;
+    font.rcBounds.right = pRect->right;
+    font.fX = fX;
+    font.fY = fY;
+    font.fZ = 0.0f;
+    font.bDrawCaret = 0;
+    if (bStyle == 3) {
+        pVTable->MeasureTextAltFont(&font);
+    } else {
+        pVTable->MeasureText(&font);
+    }
+    if (dwTextFlags & 1) {
+        pVTable->ComputeCenteredX(&font);
+    }
+    rcBounds.top = ConvertMenuCoordinate(fY);
+    rcBounds.left = pRect->left;
+    rcBounds.right = pRect->right;
+    rcBounds.bottom = static_cast<int>(static_cast<unsigned>(rcBounds.top) + font.nHeight);
+    nWidth = font.nWidth;
+    nHeight = font.nHeight;
+}
+
 int MenuPanel::RestoreSelection() {
     short index = static_cast<short>(g_wMenuHoverIndex);
     if (index >= static_cast<int>(wNavigationCount)) {
@@ -1425,7 +1467,7 @@ int MultiplayerGameSetupUI_OnBackAsHost(MenuActionWidget *pItem) {
     if ((g_dwServiceProviderIndex == 2 || g_dwServiceProviderIndex == 3) &&
         g_pNetworkSessionJoinMenu) {
         g_pNetworkSessionJoinMenu->dwFlags &= ~0x10u;
-        g_pNetworkSessionJoinMenu->bTextStyle = 0;
+        g_pNetworkSessionJoinMenu->fonts[0].bStyle = 0;
     }
     return 0;
 }

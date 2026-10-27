@@ -2210,7 +2210,7 @@ void DisconnectNetworkSession(void) {
     if (g_dwServiceProviderIndex != SERVICE_PROVIDER_MODEM &&
         g_dwServiceProviderIndex != SERVICE_PROVIDER_SERIAL &&
         g_pNetworkSessionJoinMenu != nullptr) {
-        g_pNetworkSessionJoinMenu->bTextStyle = false;
+        g_pNetworkSessionJoinMenu->fonts[0].bStyle = false;
         g_pNetworkSessionJoinMenu->dwFlags &= ~0x10;
     }
     g_dwDirectPlaySessionActive = false;
