@@ -1,6 +1,6 @@
 # PC port game code from 0x10060000 to 0x10070000
 
-41 of 169 routines done.
+45 of 169 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -79,7 +79,7 @@ the same name, for a routine the port retained from the N64 game.
 | `GetWheelWorldVelocity`                  |        | ✅ `0x80259b1c` |      1 |    218 | `0x1006b430` | `0x100643e0` | `undefined GetWheelWorldVelocity()`                                                                                                      |
 | `ComputeDopplerFactor`                   |        | ✅ `0x8022b0f8` |      3 |    216 | `0x10067ae0` | `0x10060b50` | `undefined ComputeDopplerFactor()`                                                                                                       |
 | `ResetVehicleEffects`                    |        | ✅ `0x802288d4` |      3 |    216 | `0x10065630` | `0x1005e6a0` | `undefined ResetVehicleEffects()`                                                                                                        |
-| `UpdateReplayScrubControls`              |        |                 |      1 |    215 | `0x1006ad10` | `0x10063cc0` | `undefined UpdateReplayScrubControls()`                                                                                                  |
+| `UpdateReplayScrubControls`              |   ✅   |                 |      1 |    215 | `0x1006ad10` | `0x10063cc0` | `void UpdateReplayScrubControls(void)`                                                                                                   |
 | `GetBodyPointVelocity`                   |        | ✅ `0x80259c18` |      3 |    214 | `0x1006b510` | `0x100644c0` | `undefined GetBodyPointVelocity()`                                                                                                       |
 | `ReadInstallDirectoryFromRegistry`       |   ✅   |                 |      1 |    212 | `0x1006a8a0` | `0x10063860` | `void ReadInstallDirectoryFromRegistry(void)`                                                                                            |
 | `AdvanceAlongTrackRoute`                 |        | ✅ `0x802290c4` |      2 |    204 | `0x10065c80` | `0x1005ecf0` | `undefined AdvanceAlongTrackRoute()`                                                                                                     |
@@ -96,7 +96,7 @@ the same name, for a routine the port retained from the N64 game.
 | `UpdateWheelTransforms`                  |        |                 |      4 |    119 | `0x10061be0` | `0x1005ac60` | `undefined UpdateWheelTransforms()`                                                                                                      |
 | `ModulateRgbaByMask`                     |        |                 |      1 |    119 | `0x10061210` | `0x1005a280` | `undefined ModulateRgbaByMask()`                                                                                                         |
 | `SerializeSaveData`                      |        | ✅ `0x8022adcc` |      2 |    117 | `0x10067880` | `0x100608f0` | `undefined SerializeSaveData()`                                                                                                          |
-| `AdvanceGhostRecordFrame`                |        |                 |      1 |    111 | `0x1006ab20` | `0x10063ad0` | `undefined AdvanceGhostRecordFrame()`                                                                                                    |
+| `AdvanceGhostRecordFrame`                |   ✅   |                 |      1 |    111 | `0x1006ab20` | `0x10063ad0` | `void AdvanceGhostRecordFrame(void)`                                                                                                     |
 | `AppendUniqueGlideErrorMessage`          |        |                 |      1 |    109 |              | `0x1006ff50` | `undefined AppendUniqueGlideErrorMessage()`                                                                                              |
 | `HasKeyColorPixelInRect`                 |        |                 |      2 |    105 | `0x100615b0` | `0x1005a630` | `undefined HasKeyColorPixelInRect()`                                                                                                     |
 | `RallyConfig::LoadDeviceDefaultBindings` |   ✅   |                 |      4 |    103 | `0x10069aa0` | `0x10062b10` | `void LoadDeviceDefaultBindings(RallyConfig * this, int nDevice)`                                                                        |
@@ -162,7 +162,7 @@ the same name, for a routine the port retained from the N64 game.
 | `ResetFrameBlocks`                       |        | ✅ `0x80255e64` |      1 |     18 | `0x10069580` | `0x100625f0` | `undefined ResetFrameBlocks()`                                                                                                           |
 | `SetGameModeAndRefreshVehicleMaterials`  |        |                 |      1 |     18 | `0x100697c0` | `0x10062830` | `undefined SetGameModeAndRefreshVehicleMaterials()`                                                                                      |
 | `UpdateMouseInput`                       |   ✅   |                 |      1 |     18 | `0x10060260` | `0x100592d0` | `void UpdateMouseInput(void)`                                                                                                            |
-| `ClearGhostPlaybackState`                |        |                 |      3 |     17 | `0x1006abb0` | `0x10063b60` | `undefined ClearGhostPlaybackState()`                                                                                                    |
+| `ClearGhostPlaybackState`                |   ✅   |                 |      3 |     17 | `0x1006abb0` | `0x10063b60` | `void ClearGhostPlaybackState(void)`                                                                                                     |
 | `RegisterRallyConfigAtExit`              |        |                 |      1 |     14 | `0x10069a70` | `0x10062ae0` | `undefined RegisterRallyConfigAtExit()`                                                                                                  |
 | `GetGhostKeyframeDataSize`               |   ✅   |                 |      4 |     12 | `0x1006aba0` | `0x10063b50` | `uint GetGhostKeyframeDataSize(void)`                                                                                                    |
 | `RallyConfig::RallyConfig`               |   ✅   |                 |      2 |     12 | `0x10069a90` | `0x10062b00` | `RallyConfig * RallyConfig(RallyConfig * this)`                                                                                          |
@@ -176,5 +176,5 @@ the same name, for a routine the port retained from the N64 game.
 | `GetCarPaintEntryValue`                  |        |                 |      3 |      6 | `0x10061000` | `0x1005a070` | `undefined GetCarPaintEntryValue()`                                                                                                      |
 | `GetGhostKeyframeBuffer`                 |   ✅   |                 |      2 |      6 | `0x1006ab90` | `0x10063b40` | `uchar * GetGhostKeyframeBuffer(void)`                                                                                                   |
 | `GetGhostPlaybackKeyframeBuffer`         |   ✅   |                 |      2 |      6 | `0x1006adf0` | `0x10063da0` | `uchar * GetGhostPlaybackKeyframeBuffer(void)`                                                                                           |
-| `IsGhostRecordingActive`                 |        |                 |      1 |      6 | `0x1006aaa0` | `0x10063a50` | `undefined IsGhostRecordingActive()`                                                                                                     |
 | `GetRenderBackendMode`                   |   ✅   |                 |      1 |      6 | `0x1006a980` |              | `int GetRenderBackendMode(void)`                                                                                                         |
+| `IsGhostRecordingActive`                 |   ✅   |                 |      1 |      6 | `0x1006aaa0` | `0x10063a50` | `int IsGhostRecordingActive(void)`                                                                                                       |
