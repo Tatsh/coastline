@@ -1,6 +1,6 @@
 # PC port game code from 0x10060000 to 0x10070000
 
-129 of 173 routines done.
+132 of 173 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -14,7 +14,7 @@ the same name, for a routine the port retained from the N64 game.
 | `ApplySideGrip`                          |   ✅   | ✅ `0x80259d14` |      1 |   3070 | `0x1006b5f0` | `0x100645a0` | `void ApplySideGrip(RigidBody * body, float dt, float * rearLoad, float * frontLoad, uchar * rearSliding, uchar * frontSliding)`         |
 | `Vehicle::UpdateVehicleSounds`           |        | ✅ `0x8022bcb4` |      1 |   2757 | `0x10068400` | `0x10061470` | `undefined UpdateVehicleSounds(Vehicle * this)`                                                                                          |
 | `RacerSlot::UpdateRaceProgress`          |        | ✅ `0x8022a0e0` |      2 |   2534 | `0x10066e90` | `0x1005ff00` | `undefined UpdateRaceProgress(RacerSlot * this)`                                                                                         |
-| `Vehicle::ManageAiRacerSlots`            |        | ✅ `0x80229700` |      1 |   2103 | `0x10066650` | `0x1005f6c0` | `undefined ManageAiRacerSlots(Vehicle * this)`                                                                                           |
+| `Vehicle::ManageAiRacerSlots`            |   ✅   | ✅ `0x80229700` |      1 |   2103 | `0x10066650` | `0x1005f6c0` | `void ManageAiRacerSlots(Vehicle * this)`                                                                                                |
 | `Vehicle::ApplyPlayerVehicleInput`       |   ✅   |                 |      1 |   1951 | `0x10063840` |              | `void ApplyPlayerVehicleInput(Vehicle * this)`                                                                                           |
 | `Vehicle::InitVehiclePhysics`            |   ✅   | ✅ `0x80222d54` |      3 |   1909 | `0x10062c50` | `0x1005bcc0` | `void InitVehiclePhysics(Vehicle * this)`                                                                                                |
 | `TipBalancedVehicle`                     |   ✅   | ✅ `0x8025d368` |      1 |   1782 | `0x1006ddc0` | `0x10066d70` | `int TipBalancedVehicle(RigidBody * body)`                                                                                               |
@@ -77,7 +77,7 @@ the same name, for a routine the port retained from the N64 game.
 | `ComputeWheelLocalVelocity`              |   ✅   | ✅ `0x80259a18` |      4 |    228 | `0x1006b340` | `0x100642f0` | `void ComputeWheelLocalVelocity(Vec3f * out, RigidBody * body, RigidBody * wheel)`                                                       |
 | `ComputeVehicleForces`                   |   ✅   | ✅ `0x8025993c` |      2 |    223 | `0x1006b260` | `0x10064210` | `void ComputeVehicleForces(RigidBody * body)`                                                                                            |
 | `GetWheelWorldVelocity`                  |   ✅   | ✅ `0x80259b1c` |      1 |    218 | `0x1006b430` | `0x100643e0` | `void GetWheelWorldVelocity(Vec3f * out, RigidBody * body, RigidBody * wheel)`                                                           |
-| `ComputeDopplerFactor`                   |        | ✅ `0x8022b0f8` |      3 |    216 | `0x10067ae0` | `0x10060b50` | `undefined ComputeDopplerFactor()`                                                                                                       |
+| `ComputeDopplerFactor`                   |   ✅   | ✅ `0x8022b0f8` |      3 |    216 | `0x10067ae0` | `0x10060b50` | `float10 ComputeDopplerFactor(Vec3f * source, Vec3f * previousSource, Vec3f * listener, Vec3f * previousListener)`                       |
 | `Vehicle::ResetVehicleEffects`           |   ✅   | ✅ `0x802288d4` |      3 |    216 | `0x10065630` |              | `void ResetVehicleEffects(Vehicle * this)`                                                                                               |
 | `UpdateReplayScrubControls`              |   ✅   |                 |      1 |    215 | `0x1006ad10` | `0x10063cc0` | `void UpdateReplayScrubControls(void)`                                                                                                   |
 | `GetBodyPointVelocity`                   |   ✅   | ✅ `0x80259c18` |      3 |    214 | `0x1006b510` | `0x100644c0` | `void GetBodyPointVelocity(Vec3f * out, RigidBody * body, Vec3f * point)`                                                                |
@@ -134,7 +134,7 @@ the same name, for a routine the port retained from the N64 game.
 | `MouseDevice::SyncMouseAcquireState`     |        |                 |      3 |     48 | `0x10060750` | `0x100597c0` | `undefined SyncMouseAcquireState(MouseDevice * this, undefined4 param_1)`                                                                |
 | `ApplyAudioVolumeSettings`               |   ✅   |                 |      6 |     46 | `0x10060d90` | `0x10059e00` | `void ApplyAudioVolumeSettings(void)`                                                                                                    |
 | `RecordVehicleKeyframe`                  |   🚧   |                 |      1 |     44 | `0x100609e0` | `0x10059a50` | `void RecordVehicleKeyframe(Vehicle * vehicle)`                                                                                          |
-| `CompareRacerSortKeyAscending`           |        |                 |      2 |     43 | `0x10066620` | `0x1005f690` | `undefined CompareRacerSortKeyAscending()`                                                                                               |
+| `CompareRacerProgressAsc`                |   ✅   | ✅ `0x80229510` |      2 |     43 | `0x10066620` |              | `int CompareRacerProgressAsc(RacerProgress * first, RacerProgress * second)`                                                             |
 | `FillMemoryPatternBytes`                 |   ✅   |                 |      2 |     43 | `0x10060780` | `0x100597f0` | `void FillMemoryPatternBytes(void * pDest, uint nCount, int nByte)`                                                                      |
 | `SetRenderBackendMode`                   |   ✅   |                 |      2 |     43 | `0x1006a990` | `0x10063940` | `void SetRenderBackendMode(int nMode)`                                                                                                   |
 | `PlaneDistance`                          |   ✅   | ✅ `0x8025b704` |     14 |     41 | `0x1006c9a0` | `0x10065950` | `float10 PlaneDistance(Vec3f * normal, float offset, Vec3f * point)`                                                                     |

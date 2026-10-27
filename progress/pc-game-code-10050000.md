@@ -1,6 +1,6 @@
 # PC port game code from 0x10050000 to 0x10060000
 
-42 of 94 routines done.
+42 of 95 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -85,6 +85,7 @@ the same name, for a routine the port retained from the N64 game.
 | `MenuFont::DrawGlyphAltFont`              |   ✅   |                 |      1 |     59 | `0x1005b7a0` | `0x100545c0` | `int DrawGlyphAltFont(MenuFont * this, short nImage, float x, float y, int nStyle)`                                                             |
 | `UpdateMouseButtonEdges`                  |   ✅   |                 |      6 |     56 | `0x1005fff0` | `0x10059060` | `void UpdateMouseButtonEdges(void)`                                                                                                             |
 | `GlideDisplayModeNode::InsertSorted`      |        |                 |      1 |     53 |              | `0x10058d00` | `undefined InsertSorted(GlideDisplayModeNode * this, undefined4 param_1)`                                                                       |
+| `CompareRacerSortKeyAscending`            |        |                 |      2 |     43 |              | `0x1005f690` | `undefined CompareRacerSortKeyAscending()`                                                                                                      |
 | `ClearKeyboardStateBuffers`               |   ✅   |                 |      2 |     41 | `0x1005ff30` | `0x10058fa0` | `void ClearKeyboardStateBuffers(void)`                                                                                                          |
 | `GetSessionSlotFlag`                      |   ✅   |                 |      2 |     40 | `0x100586d0` | `0x10051580` | `int GetSessionSlotFlag(uint dpidPlayer)`                                                                                                       |
 | `GlideDisplayModeNode::DeleteChain`       |        |                 |      2 |     37 |              | `0x10058c90` | `undefined DeleteChain(GlideDisplayModeNode * this)`                                                                                            |
