@@ -2300,6 +2300,40 @@ static inline void DrawAlternateMenuLabel(MenuWidget *pWidget, const char *text)
     vtable->DrawTextAltFont(font);
 }
 
+int SeasonUI_UpdateTotalPointsLabel(MenuWidget *pWidget) {
+    char text[32] = {};
+    if (!g_dwSeasonLoaded) {
+        strcpy(text, "0");
+    } else {
+        int points = 0;
+        for (int round = 0; round < SEASON_RACES; round++) {
+            points += g_SeasonProgress.seasonRacePoints[g_bSeasonClass][round];
+        }
+        _itoa(points, text, 10);
+    }
+    if (strlen(text) == 0) {
+        return 0;
+    }
+    DrawAlternateMenuLabel(pWidget, _strupr(text));
+    return 1;
+}
+
+int SeasonProgressInfoUI_UpdatePointsNeededLabel(MenuWidget *pWidget) {
+    char text[32] = {};
+    int season = g_dwSeasonLoaded ? g_bSeasonClass : 0;
+    int points = static_cast<int>(static_cast<unsigned>(g_SeasonTable[season].pointsNeeded) -
+                                  static_cast<unsigned>(g_dwSeasonTotalPoints));
+    if (points < 0) {
+        points = 0;
+    }
+    _itoa(points, text, 10);
+    if (strlen(text) == 0) {
+        return 0;
+    }
+    DrawAlternateMenuLabel(pWidget, _strupr(text));
+    return 1;
+}
+
 int SeasonFileUI_UpdateYearLabel(MenuWidget *pWidget) {
     sprintf(g_szSeasonYearLabel, "%d", static_cast<int>(static_cast<unsigned>(g_dwSeasonYear) + 1));
     DrawAlternateMenuLabel(pWidget, g_szSeasonYearLabel);

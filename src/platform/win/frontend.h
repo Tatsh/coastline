@@ -342,6 +342,22 @@ int SeasonProgressInfoUI_UpdateRoundLabel(MenuWidget *pWidget);
 int SeasonUI_UpdateSeasonNameLabel(MenuWidget *pWidget);
 
 /**
+ * Draw the sum of the selected season's four race scores, or zero before loading.
+ *
+ * @ghidraAddress BRD3D: 0x100414b0
+ * @ghidraAddress BRGlide: 0x1003aa10
+ */
+int SeasonUI_UpdateTotalPointsLabel(MenuWidget *pWidget);
+
+/**
+ * Draw the remaining points required to advance, with negative results clamped to zero.
+ *
+ * @ghidraAddress BRD3D: 0x100415a0
+ * @ghidraAddress BRGlide: 0x1003ab00
+ */
+int SeasonProgressInfoUI_UpdatePointsNeededLabel(MenuWidget *pWidget);
+
+/**
  * @ghidraAddress BRD3D: 0x10041970
  * @ghidraAddress BRGlide: 0x1003aed0
  */
