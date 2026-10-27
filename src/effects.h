@@ -246,6 +246,21 @@ void RenderBillboardParticles(
 void RenderBillboardParticles(u16 head, s32 red, s32 green, s32 blue);
 #endif
 
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#ifdef __cplusplus
+extern "C" {
+#endif
+/**
+ * Set the billboard matrix and draw snapshot tyre smoke in the track colours, except at night.
+ *
+ * @param viewports The records of the views supplied to the particle renderer.
+ * @ghidraAddress BRD3D: 0x100140e0
+ */
+void RenderTireSmoke(const ViewportRect *viewports);
+#ifdef __cplusplus
+}
+#endif
+#else
 /**
  * Set g_afBillboardMatrix for the current view, and draw the tyre smoke in the colours of the
  * track, except at night.
@@ -255,6 +270,7 @@ void RenderBillboardParticles(u16 head, s32 red, s32 green, s32 blue);
  * @ghidraAddress JPN: 0x8023e724
  */
 void RenderTireSmoke(void);
+#endif
 
 /**
  * Draw the exhaust in the snow with the matrix RenderTireSmoke() set, then the spray.

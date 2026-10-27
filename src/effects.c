@@ -4,78 +4,13 @@
 #include <PR/gu.h>
 #include <PR/os_libc.h>
 
+#include "particlecommands.h"
 #include "race.h"
 #include "render.h"
 #include "system.h"
 #include "track.h"
 #include "trackselect.h"
 #include "weather.h"
-
-/* Load the particle texture to be drawn as rectangles of the primitive colour. */
-#define LoadParticleTexture()                                                                      \
-    gDPPipeSync(gDisplayListPtr++);                                                                \
-    gDPSetCycleType(gDisplayListPtr++, G_CYC_1CYCLE);                                              \
-    gSPTexture(gDisplayListPtr++, 0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON);                       \
-    gDPSetTextureFilter(gDisplayListPtr++, g_dwTextureFilterMode);                                 \
-    gDPSetCombineLERP(gDisplayListPtr++,                                                           \
-                      0,                                                                           \
-                      0,                                                                           \
-                      0,                                                                           \
-                      PRIMITIVE,                                                                   \
-                      TEXEL0,                                                                      \
-                      0,                                                                           \
-                      PRIMITIVE,                                                                   \
-                      0,                                                                           \
-                      0,                                                                           \
-                      0,                                                                           \
-                      0,                                                                           \
-                      PRIMITIVE,                                                                   \
-                      TEXEL0,                                                                      \
-                      0,                                                                           \
-                      PRIMITIVE,                                                                   \
-                      0);                                                                          \
-    gDPSetTextureImage(gDisplayListPtr++, G_IM_FMT_I, G_IM_SIZ_16b, 1, g_aParticleTexture);        \
-    gDPSetTile(gDisplayListPtr++,                                                                  \
-               G_IM_FMT_I,                                                                         \
-               G_IM_SIZ_16b,                                                                       \
-               0,                                                                                  \
-               0,                                                                                  \
-               G_TX_LOADTILE,                                                                      \
-               0,                                                                                  \
-               G_TX_WRAP,                                                                          \
-               6,                                                                                  \
-               G_TX_NOLOD,                                                                         \
-               G_TX_WRAP,                                                                          \
-               6,                                                                                  \
-               G_TX_NOLOD);                                                                        \
-    gDPLoadSync(gDisplayListPtr++);                                                                \
-    gDPLoadBlock(gDisplayListPtr++, G_TX_LOADTILE, 0, 0, PARTICLE_LOAD_TEXELS, PARTICLE_LOAD_DXT); \
-    gDPPipeSync(gDisplayListPtr++);                                                                \
-    gDPSetTile(gDisplayListPtr++,                                                                  \
-               G_IM_FMT_I,                                                                         \
-               G_IM_SIZ_8b,                                                                        \
-               8,                                                                                  \
-               0,                                                                                  \
-               G_TX_RENDERTILE,                                                                    \
-               0,                                                                                  \
-               G_TX_WRAP,                                                                          \
-               6,                                                                                  \
-               G_TX_NOLOD,                                                                         \
-               G_TX_WRAP,                                                                          \
-               6,                                                                                  \
-               G_TX_NOLOD);                                                                        \
-    gDPSetTileSize(gDisplayListPtr++, G_TX_RENDERTILE, 0, 0, 63 << 2, 63 << 2);                    \
-    gDPSetTextureLUT(gDisplayListPtr++, G_TT_NONE);                                                \
-    gDPSetTexturePersp(gDisplayListPtr++, G_TP_NONE)
-
-/* Put back the modes the rest of the frame draws with. */
-#define RestoreParticleModes()                                                                     \
-    gDPPipeSync(gDisplayListPtr++);                                                                \
-    gDPSetTexturePersp(gDisplayListPtr++, G_TP_PERSP);                                             \
-    gDPSetDepthSource(gDisplayListPtr++, G_ZS_PIXEL);                                              \
-    gDPSetColorDither(gDisplayListPtr++, g_dwColorDitherMode);                                     \
-    gDPSetAlphaDither(gDisplayListPtr++, g_dwAlphaDitherMode);                                     \
-    gDPSetAlphaCompare(gDisplayListPtr++, G_AC_THRESHOLD)
 
 s32 ComputeScreenDepthZ(f32 z, f32 w) {
     return (s32)((z / w * (f32)g_dwViewportScaleZ + (f32)g_dwViewportTransZ) * 32.0f);
@@ -187,65 +122,8 @@ void DrawTireSpray(void) {
     gSPSetGeometryMode(gDisplayListPtr++, G_CULL_BACK);
 }
 
-void RenderTireSmoke(void) {
-    LoadParticleTexture();
-
-    /* The view, then the axes of a puff to those of the screen, then the perspective. */
-    MtxInvert4x4(g_afMvpMatrix, (f32(*)[4])g_pActiveCamera);
-    g_afScratchMatrix[0][0] = 0.0f;
-    g_afScratchMatrix[0][1] = 0.0f;
-    g_afScratchMatrix[0][2] = -1.0f;
-    g_afScratchMatrix[0][3] = 0.0f;
-    g_afScratchMatrix[1][0] = -1.0f;
-    g_afScratchMatrix[1][1] = 0.0f;
-    g_afScratchMatrix[1][2] = 0.0f;
-    g_afScratchMatrix[1][3] = 0.0f;
-    g_afScratchMatrix[2][0] = 0.0f;
-    g_afScratchMatrix[2][1] = -1.0f;
-    g_afScratchMatrix[2][2] = 0.0f;
-    g_afScratchMatrix[2][3] = 0.0f;
-    g_afScratchMatrix[3][0] = 0.0f;
-    g_afScratchMatrix[3][1] = 0.0f;
-    g_afScratchMatrix[3][2] = 0.0f;
-    g_afScratchMatrix[3][3] = 1.0f;
-    Mtx4x4Multiply(g_afMvpMatrix, g_afMvpMatrix, g_afScratchMatrix);
-    /* The copy is not read again. */
-    memcpy(g_afScratchMatrix, g_afMvpMatrix, sizeof(g_afScratchMatrix));
-    Mtx4x4Multiply(g_afBillboardMatrix, g_afMvpMatrix, g_afPerspectiveMatrix);
-
-    gDPSetDepthSource(gDisplayListPtr++, G_ZS_PRIM);
-    gDPSetColorDither(gDisplayListPtr++, G_CD_DISABLE);
-    if (!g_dwNightMode) {
-        /* The colour dither's bits, which leave the alpha dither at its pattern. */
-        gDPSetAlphaDither(gDisplayListPtr++, G_CD_DISABLE);
-        /* The alpha compare is set to dither the smoke along with the render mode. */
-        gDPSetRenderMode(gDisplayListPtr++,
-                         Z_CMP | Z_UPD | CVG_DST_FULL | ZMODE_OPA | G_AC_DITHER |
-                             GBL_c1(G_BL_CLR_IN, G_BL_0, G_BL_CLR_IN, G_BL_1),
-                         GBL_c2(G_BL_CLR_IN, G_BL_0, G_BL_CLR_IN, G_BL_1));
-        gDPSetBlendColor(gDisplayListPtr++, 0, 0, 0, 0);
-        switch (g_dwSelectedTrackId) {
-        case 1:
-        case 6:
-            RenderBillboardParticles(g_wTireSmokeListHead, 0x60, 0x54, 0x38);
-            RenderBillboardParticles(g_wPavedTireSmokeListHead, 0x60, 0x5C, 0x50);
-            break;
-        case 4:
-        case 9:
-            RenderBillboardParticles(g_wTireSmokeListHead, 0x70, 0x58, 0x38);
-            RenderBillboardParticles(g_wPavedTireSmokeListHead, 0x70, 0x68, 0x58);
-            break;
-        default:
-            RenderBillboardParticles(g_wTireSmokeListHead, 0xA0, 0x88, 0x60);
-            RenderBillboardParticles(g_wPavedTireSmokeListHead, 0x70, 0x68, 0x58);
-            break;
-        }
-    }
-    RestoreParticleModes();
-}
-
 void RenderExhaustAndTireSpray(void) {
-    LoadParticleTexture();
+    ConfigureParticleTexture();
     gDPSetDepthSource(gDisplayListPtr++, G_ZS_PRIM);
     gDPSetColorDither(gDisplayListPtr++, G_CD_DISABLE);
     if (g_dwSnowMode) {
