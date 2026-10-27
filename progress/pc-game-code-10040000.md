@@ -1,6 +1,6 @@
 # PC port game code from 0x10040000 to 0x10050000
 
-206 of 264 routines done.
+208 of 264 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -114,8 +114,8 @@ the same name, for a routine the port retained from the N64 game.
 | `SaveSeasonUI_OnBackToRaceResultsSummary`          |   ✅   |                 |      1 |    158 | `0x10046a30` | `0x1003fe80` | `int SaveSeasonUI_OnBackToRaceResultsSummary(MenuActionWidget * pItem)`                                                                                   |
 | `SaveSeasonUI_OnBackToRaceResultsTotals`           |   ✅   |                 |      1 |    158 | `0x10046b10` | `0x1003ff60` | `int SaveSeasonUI_OnBackToRaceResultsTotals(MenuActionWidget * pItem)`                                                                                    |
 | `SaveSeasonUI_OnBackToSeasonProgressInfo`          |   ✅   |                 |      1 |    158 | `0x10046870` | `0x1003fcc0` | `int SaveSeasonUI_OnBackToSeasonProgressInfo(MenuActionWidget * pItem)`                                                                                   |
-| `RaceResultsTotalsUI_UpdateRoundsCompletedLabel`   |        |                 |      1 |    157 | `0x10041670` | `0x1003abd0` | `undefined RaceResultsTotalsUI_UpdateRoundsCompletedLabel()`                                                                                              |
-| `RaceResultsTotalsUI_UpdateTotalPointsLabel`       |        |                 |      1 |    156 | `0x10041710` | `0x1003ac70` | `undefined RaceResultsTotalsUI_UpdateTotalPointsLabel()`                                                                                                  |
+| `RaceResultsTotalsUI_UpdateRoundsCompletedLabel`   |   ✅   |                 |      1 |    157 | `0x10041670` | `0x1003abd0` | `int RaceResultsTotalsUI_UpdateRoundsCompletedLabel(MenuWidget * pWidget)`                                                                                |
+| `RaceResultsTotalsUI_UpdateTotalPointsLabel`       |   ✅   |                 |      1 |    156 | `0x10041710` | `0x1003ac70` | `int RaceResultsTotalsUI_UpdateTotalPointsLabel(MenuWidget * pWidget)`                                                                                    |
 | `FindGameCdDrive`                                  |   ✅   |                 |      1 |    147 | `0x10045a00` | `0x1003ee90` | `int FindGameCdDrive(void)`                                                                                                                               |
 | `LoadSeasonUI_OnBack`                              |   ✅   |                 |      1 |    146 | `0x10046e10` | `0x10040260` | `int LoadSeasonUI_OnBack(MenuActionWidget * pItem)`                                                                                                       |
 | `RestoreMenuItemTextA`                             |   ✅   |                 |      1 |    144 | `0x10041ac0` | `0x1003b020` | `int RestoreMenuItemTextA(MenuWidget * pWidget)`                                                                                                          |
