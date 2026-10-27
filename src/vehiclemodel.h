@@ -96,6 +96,16 @@ extern "C" {
 #endif
 
 /**
+ * The models of the cars the vehicles drive, in slots. The link script places them.
+ *
+ * @ghidraAddress USA: 0x803c8000
+ * @ghidraAddress EUR: 0x803c8000
+ * @ghidraAddress JPN: 0x803c8000
+ * @ghidraAddress BRD3D: 0x100c12a0
+ */
+extern VehicleModel g_aVehicleModels[];
+
+/**
  * Paint the materials of a model a colour of 5 bits a channel.
  *
  * @param model The model.

@@ -11,6 +11,12 @@ extern "C" {
 void ResetVehicleState(Vehicle *vehicle);
 /** Initialise the body, wheels, and force chains for the selected model. */
 void InitVehiclePhysics(Vehicle *vehicle);
+/** Paint the selected model and initialise its physics. */
+void InitVehicleColorAndPhysics(Vehicle *vehicle);
+/** Bind a model slot and initialise its colour and physics. */
+void SetVehicleModelSlot(Vehicle *vehicle, s32 slot);
+/** Clear dents and the dent variation. */
+void ClearVehicleDamageState(Vehicle *vehicle);
 /** Return an overturned or fallen vehicle to its current route point. */
 void RespawnVehicle(Vehicle *vehicle);
 /** Set velocity in the rigid-body integration states and the recorded placement. */

@@ -1,6 +1,9 @@
 #ifndef COASTLINE_VEHICLEEFFECTS_H
 #define COASTLINE_VEHICLEEFFECTS_H
 
+/** The sides around a car that dent apart, by the direction of the blow. */
+#define VEHICLE_DENT_SIDES 8
+
 /** The segments of the spray a wheel throws. */
 #define SPRAY_SEGMENTS 9
 /** The vertices of each segment of the spray, of which the first two are drawn. */

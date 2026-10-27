@@ -522,3 +522,26 @@ void RespawnVehicle(Vehicle *vehicle) {
     vehicle->chasePosition.y = vehicle->cameras[VEHICLE_CAMERA_CHASE].position.y;
     vehicle->chasePosition.z = vehicle->cameras[VEHICLE_CAMERA_CHASE].position.z;
 }
+
+void InitVehicleColorAndPhysics(Vehicle *vehicle) {
+    /* The Japanese release does not paint the model here. */
+#if TGR_PLATFORM == TGR_PLATFORM_WIN || TGR_REGION != TGR_REGION_JP
+    SetMaterialColor(
+        vehicle->model, vehicle->color[0] >> 3, vehicle->color[1] >> 3, vehicle->color[2] >> 3);
+#endif
+    InitVehiclePhysics(vehicle);
+}
+
+void SetVehicleModelSlot(Vehicle *vehicle, s32 slot) {
+    vehicle->model = &g_aVehicleModels[slot];
+    InitVehicleColorAndPhysics(vehicle);
+}
+
+void ClearVehicleDamageState(Vehicle *vehicle) {
+    s32 i;
+
+    for (i = 0; i < VEHICLE_DENT_SIDES; i++) {
+        vehicle->dents[i] = 0;
+    }
+    vehicle->dentJitter = 0;
+}

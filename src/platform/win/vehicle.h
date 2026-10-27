@@ -114,7 +114,9 @@ typedef struct Vehicle {
     u8 abUnknown29b8[8]; /* +0x29b8 */
     PlayerInputState *input;
     VehicleModel *model;
-    u8 abUnknown29c8[0x1a0]; /* +0x29c8 */
+    s16 dents[VEHICLE_DENT_SIDES];
+    s16 dentJitter;
+    u8 abUnknown29da[0x18e]; /* +0x29da */
 #ifdef __cplusplus
     /**
      * Initialise the player slot, profile defaults, and vehicle selection.
@@ -146,6 +148,18 @@ typedef struct Vehicle {
      * @ghidraAddress BRD3D: 0x10062c50
      */
     void InitVehiclePhysics(void);
+    /**
+     * @ghidraAddress BRD3D: 0x10076a00
+     */
+    void InitVehicleColorAndPhysics(void);
+    /**
+     * @ghidraAddress BRD3D: 0x10076a40
+     */
+    void SetVehicleModelSlot(s32 slot);
+    /**
+     * @ghidraAddress BRD3D: 0x10065710
+     */
+    void ClearVehicleDamageState(void);
     /**
      * @ghidraAddress BRD3D: 0x10065630
      */

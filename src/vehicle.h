@@ -34,9 +34,6 @@
 /** The laps of a race whose times a vehicle keeps. */
 #define VEHICLE_LAP_TIMES 5
 
-/** The sides around a car that dent apart, by the direction of the blow. */
-#define VEHICLE_DENT_SIDES 8
-
 /**
  * The color of each player's vehicle, as red, green and blue.
  *
@@ -116,15 +113,6 @@ extern s32 g_dwCarCount;
  * @ghidraAddress JPN: 0x8028d010
  */
 extern CarPhysicsSpec g_aCarPhysicsSpecs[CAR_MODELS];
-
-/**
- * The models of the cars the vehicles drive, in slots. The link script places them.
- *
- * @ghidraAddress USA: 0x803c8000
- * @ghidraAddress EUR: 0x803c8000
- * @ghidraAddress JPN: 0x803c8000
- */
-extern VehicleModel g_aVehicleModels[];
 
 /**
  * The car whose model each slot holds.

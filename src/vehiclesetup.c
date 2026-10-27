@@ -62,15 +62,6 @@ void InitPlayerVehicleSlot(Vehicle *vehicle) {
     vehicle->customDecals = 0;
 }
 
-void ClearVehicleDamageState(Vehicle *vehicle) {
-    s32 i;
-
-    for (i = 0; i < VEHICLE_DENT_SIDES; i++) {
-        vehicle->dents[i] = 0;
-    }
-    vehicle->dentJitter = 0;
-}
-
 void SetupVehicleForRaceStart(Vehicle *vehicle) {
     TrackSection *root;
     f32 row;

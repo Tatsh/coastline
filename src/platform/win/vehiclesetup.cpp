@@ -19,6 +19,18 @@ void Vehicle::InitVehiclePhysics(void) {
     ::InitVehiclePhysics(this);
 }
 
+void Vehicle::InitVehicleColorAndPhysics(void) {
+    ::InitVehicleColorAndPhysics(this);
+}
+
+void Vehicle::SetVehicleModelSlot(s32 slot) {
+    ::SetVehicleModelSlot(this, slot);
+}
+
+void Vehicle::ClearVehicleDamageState(void) {
+    ::ClearVehicleDamageState(this);
+}
+
 void Vehicle::ResetVehicleEffects(void) {
     ::ResetVehicleEffects(this);
 }
