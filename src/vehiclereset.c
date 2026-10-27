@@ -1,5 +1,7 @@
 #include "vehiclereset.h"
 
+#include "track.h"
+
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
 #include "screen.h"
 #endif
@@ -378,4 +380,80 @@ void InitVehiclePhysics(Vehicle *vehicle) {
     }
     vehicle->rearSliding = 0;
     vehicle->frontSliding = 0;
+}
+
+/* The spray of the wheels: where each starts its phase, and how far apart. */
+#define SPRAY_FRAMES_STEP 0.137f
+#define SPRAY_FRAMES_SPREAD 0.034f
+#define SMOKE_TIMER_STEP 0.15f
+#define SPRAY_VERTEX_ALPHA 0xFF
+
+void ResetVehicleEffects(Vehicle *vehicle) {
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+    ConvertedModelVertex *vertex;
+#else
+    Vtx *vertex;
+#endif
+    s16 *velocity;
+    s16 *surface;
+    f32 start;
+    s32 i;
+    /* Each loop over the wheels has its own counter, and the original unrolls them. */
+    s32 j;
+    s32 k;
+    s32 l;
+
+    /* The staggered starts are written and at once cleared. */
+    start = (f32)vehicle->index * SPRAY_FRAMES_STEP;
+    vehicle->sprayFramesLeft[0] = start;
+    vehicle->sprayFramesLeft[1] = start + SPRAY_FRAMES_SPREAD;
+    vehicle->sprayFramesLeft[2] = vehicle->sprayFramesLeft[1] + SPRAY_FRAMES_SPREAD;
+    vehicle->sprayFramesLeft[3] = vehicle->sprayFramesLeft[2] + SPRAY_FRAMES_SPREAD;
+    for (j = 0; j < VEHICLE_WHEELS; j++) {
+        vehicle->sprayAdvanced[j] = 0;
+        vehicle->spraySurfaces[j] = TRACK_SURFACE_START;
+    }
+    for (k = 0; k < VEHICLE_WHEELS; k++) {
+        vehicle->smokeTimers[k] = (f32)k * SMOKE_TIMER_STEP;
+    }
+    for (l = 0; l < VEHICLE_WHEELS; l++) {
+        vehicle->sprayPhases[l] = 0.0f;
+        vehicle->sprayFramesLeft[l] = 0.0f;
+    }
+
+    velocity = &vehicle->sprayVelocities[0][0][0][0];
+    vertex = &vehicle->sprayVertices[0][0][0];
+    for (i = 0; i < VEHICLE_WHEELS * SPRAY_SEGMENTS * SPRAY_SEGMENT_VERTICES; i++) {
+        velocity[2] = 0;
+        velocity[1] = velocity[2];
+        velocity[0] = velocity[2];
+        velocity += 3;
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+        vertex->position.x = 0.0f;
+        vertex->position.y = 0.0f;
+        vertex->position.z = 0.0f;
+        vertex->normal.x = 0.0f;
+        vertex->normal.y = 0.0f;
+        vertex->normal.z = 0.0f;
+#else
+        vertex->v.ob[0] = 0;
+        vertex->v.ob[1] = 0;
+        vertex->v.ob[2] = 0;
+        vertex->v.cn[0] = 0;
+        /* Both kinds of vertex are cleared alike. */
+        if (i & 1) {
+            vertex->v.cn[1] = 0;
+        } else {
+            vertex->v.cn[1] = 0;
+        }
+        vertex->v.cn[2] = 0;
+        vertex->v.cn[3] = SPRAY_VERTEX_ALPHA;
+#endif
+        vertex++;
+    }
+
+    surface = &vehicle->spraySegmentSurfaces[0][0];
+    for (i = 0; i < VEHICLE_WHEELS * SPRAY_SEGMENTS; i++) {
+        surface[i] = TRACK_SURFACE_START;
+    }
 }

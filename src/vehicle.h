@@ -24,6 +24,7 @@
 #include "vecmath.h"
 #include "vehiclecamera.h"
 #include "vehiclecount.h"
+#include "vehicleeffects.h"
 #include "vehicleforces.h"
 #include "vehiclemodel.h"
 
@@ -167,11 +168,6 @@ typedef struct {
     Vec3f position; /*!< The position of the wheel. */
     f32 positionW;  /*!< 1, the last column of the matrix. */
 } WheelFrame;
-
-/** The segments of the spray a wheel throws. */
-#define SPRAY_SEGMENTS 9
-/** The vertices of each segment of the spray, of which the first two are drawn. */
-#define SPRAY_SEGMENT_VERTICES 4
 
 /**
  * A vehicle. The game prints its size, 0x2090 bytes, at start-up. Its fields join this structure as

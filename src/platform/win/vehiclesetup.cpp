@@ -18,6 +18,10 @@ void Vehicle::InitVehiclePhysics(void) {
     ::InitVehiclePhysics(this);
 }
 
+void Vehicle::ResetVehicleEffects(void) {
+    ::ResetVehicleEffects(this);
+}
+
 void Vehicle::SetVehiclePosition(f32 x, f32 y, f32 z) {
     ::SetVehiclePosition(this, x, y, z);
 }

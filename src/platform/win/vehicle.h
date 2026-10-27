@@ -3,12 +3,14 @@
 #include <render.h>
 
 #include "carphysics.h"
+#include "convertedvertex.h"
 #include "playerinput.h"
 #include "profile.h"
 #include "racerslot.h"
 #include "rigidbody.h"
 #include "types.h"
 #include "vehiclecamera.h"
+#include "vehicleeffects.h"
 #include "vehicleforces.h"
 #include "vehiclemodel.h"
 
@@ -65,7 +67,17 @@ typedef struct Vehicle {
     f32 progress;
     u8 abUnknownFf8[0x2c]; /* +0xff8 */
     Vec3f placedVelocity;
-    u8 abUnknown1030[0x1698]; /* +0x1030 */
+    u8 abUnknown1030[0x3c]; /* +0x1030 */
+    f32 smokeTimers[VEHICLE_WHEELS];
+    u8 abUnknown107c[0x30]; /* +0x107c */
+    f32 sprayFramesLeft[VEHICLE_WHEELS];
+    s32 spraySurfaces[VEHICLE_WHEELS];
+    f32 sprayPhases[VEHICLE_WHEELS];
+    s32 sprayAdvanced[VEHICLE_WHEELS];
+    u8 abUnknown10ec[0x34]; /* +0x10ec */
+    ConvertedModelVertex sprayVertices[VEHICLE_WHEELS][SPRAY_SEGMENTS][SPRAY_SEGMENT_VERTICES];
+    s16 sprayVelocities[VEHICLE_WHEELS][SPRAY_SEGMENTS][SPRAY_SEGMENT_VERTICES][3];
+    s16 spraySegmentSurfaces[VEHICLE_WHEELS][SPRAY_SEGMENTS];
     Vec3f sprayOrigin;
     f32 inputMatrix[4][4];
     u8 abUnknown2714[0x20]; /* +0x2714 */
@@ -113,6 +125,10 @@ typedef struct Vehicle {
      * @ghidraAddress BRD3D: 0x10062c50
      */
     void InitVehiclePhysics(void);
+    /**
+     * @ghidraAddress BRD3D: 0x10065630
+     */
+    void ResetVehicleEffects(void);
     /**
      * @ghidraAddress BRD3D: 0x10076420
      */

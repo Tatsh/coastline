@@ -10,6 +10,7 @@
 #include <windows.h>
 
 #include "../../render.h"
+#include "convertedvertex.h"
 #include "platform/win/fontdata.h"
 #include "platform/win/textureupload.h"
 #include "vecmath.h"
@@ -297,12 +298,6 @@ int ComputeMipChainByteSize(int nSmallLod, int nLargeLod, int nAspectRatio);
  * @ghidraAddress BRGlide: 0x105b96f8
  */
 extern int g_dwConvertedVertexCount;
-
-struct ConvertedModelVertex {
-    Vec3f position;
-    Vec2f texture;
-    Vec3f normal;
-};
 
 /**
  * The pool of the data of the models the renderer draws.
