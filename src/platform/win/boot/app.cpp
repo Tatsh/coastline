@@ -27,10 +27,12 @@ void FreeAllRacerColorPanels(void) {
     gDisplayListPtr->w1 = 0;
     gDisplayListPtr++;
     g_pfnRenderBackendSubmitDisplayList(commands);
+    auto getKeyState = GetAsyncKeyState;
+    auto sleep = Sleep;
     for (;;) {
-        if (GetAsyncKeyState(VK_ESCAPE) != 0) {
+        if (getKeyState(VK_ESCAPE) != 0) {
             ShutdownApplication(1);
         }
-        Sleep(1);
+        sleep(1);
     }
 }
