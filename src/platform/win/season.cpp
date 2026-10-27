@@ -32,6 +32,88 @@ int g_bSeasonClass;
 const char g_szSeasonSaveMagic[4] = {'R', 'S', 'e', 'a'};
 const char g_szAutoSaveBrf[] = "AutoSave.brf";
 char g_szSeasonSaveSlotName[SEASON_SAVE_SLOT_NAME_SIZE];
+SeasonSaveSettings g_LoadedSeasonSettings;
+char g_szSecondarySeasonSaveSlotName[SEASON_SAVE_SLOT_NAME_SIZE];
+int g_dwSaveSlotPlayerIndex;
+u8 g_abSaveFileReadBuffer[SEASON_SAVE_PAYLOAD_SIZE];
+
+static inline void ReadSeasonSaveTrailer(FILE *pFile) {
+    fseek(pFile, 0, SEEK_END);
+    long nSettingsOffset = ftell(pFile) - sizeof(SeasonSaveSettings) - SEASON_SAVE_SLOT_NAME_SIZE;
+    fseek(pFile, nSettingsOffset, SEEK_SET);
+    // The original accepts short reads in the settings and slot label.
+    fread(&g_LoadedSeasonSettings.transmission, 4, 1, pFile);
+    fread(&g_LoadedSeasonSettings.tires, 4, 1, pFile);
+    fread(&g_LoadedSeasonSettings.suspension, 4, 1, pFile);
+    fread(&g_LoadedSeasonSettings.car, 4, 1, pFile);
+    fread(&g_LoadedSeasonSettings.handling, 4, 1, pFile);
+    fseek(pFile, 0, SEEK_END);
+    long nLabelOffset = ftell(pFile) - SEASON_SAVE_SLOT_NAME_SIZE;
+    fseek(pFile, nLabelOffset, SEEK_SET);
+    fread(g_szSeasonSaveSlotName, 1, sizeof(g_szSeasonSaveSlotName), pFile);
+    memcpy(g_szSecondarySeasonSaveSlotName,
+           g_szSeasonSaveSlotName,
+           sizeof(g_szSecondarySeasonSaveSlotName));
+}
+
+static inline void ApplySeasonProfilePreservingOtherPlayer(void) {
+    PlayerProfile *pOtherProfile =
+        g_dwSaveSlotPlayerIndex == 0 ? g_pSecondarySeasonSave : g_pPrimarySeasonSave;
+    int nHandling = pOtherProfile->handling;
+    int nTransmission = pOtherProfile->transmission;
+    int nTires = pOtherProfile->tires;
+    int nSuspension = pOtherProfile->suspension;
+    int nControllerLayout = pOtherProfile->controllerLayout;
+    memcpy(g_pPrimarySeasonSave, g_abSaveFileReadBuffer, sizeof(*g_pPrimarySeasonSave));
+    memcpy(g_pSecondarySeasonSave, g_abSaveFileReadBuffer, sizeof(*g_pSecondarySeasonSave));
+    pOtherProfile->handling = nHandling;
+    pOtherProfile->transmission = nTransmission;
+    pOtherProfile->tires = nTires;
+    pOtherProfile->suspension = nSuspension;
+    pOtherProfile->controllerLayout = nControllerLayout;
+}
+
+bool LoadSeasonSaveFile(int nMode, bool bAllowFailure) {
+    FILE *pFile = nullptr;
+    if (nMode == SEASON_LOAD_CURRENT) {
+        memcpy(g_abSaveFileReadBuffer, &g_SeasonProgress, sizeof(g_SeasonProgress));
+    } else {
+        pFile = fopen(g_szSeasonSaveFileName, "rb");
+        if (!pFile) {
+            return bAllowFailure;
+        }
+        u32 dwChecksum;
+        if (fread(g_abSaveFileReadBuffer, 1, sizeof(g_szSeasonSaveMagic), pFile) !=
+                sizeof(g_szSeasonSaveMagic) ||
+            memcmp(g_abSaveFileReadBuffer, g_szSeasonSaveMagic, sizeof(g_szSeasonSaveMagic)) != 0 ||
+            fread(&dwChecksum, 1, sizeof(dwChecksum), pFile) != sizeof(dwChecksum) ||
+            fread(g_abSaveFileReadBuffer, 1, sizeof(g_abSaveFileReadBuffer), pFile) !=
+                sizeof(g_abSaveFileReadBuffer) ||
+            adler32(adler32(0, nullptr, 0),
+                    g_abSaveFileReadBuffer,
+                    sizeof(g_abSaveFileReadBuffer)) != dwChecksum) {
+            fclose(pFile);
+            return bAllowFailure;
+        }
+    }
+    if (nMode == SEASON_LOAD_FILE) {
+        if (!ResetSeasonSaveBuffers()) {
+            return false;
+        }
+        if (!g_pPrimarySeasonSave || !g_pSecondarySeasonSave) {
+            return false;
+        }
+        memcpy(g_pPrimarySeasonSave, g_abSaveFileReadBuffer, sizeof(*g_pPrimarySeasonSave));
+        memcpy(g_pSecondarySeasonSave, g_abSaveFileReadBuffer, sizeof(*g_pSecondarySeasonSave));
+        ReadSeasonSaveTrailer(pFile);
+    } else {
+        ApplySeasonProfilePreservingOtherPlayer();
+    }
+    if (nMode != SEASON_LOAD_CURRENT) {
+        fclose(pFile);
+    }
+    return true;
+}
 
 bool SaveSeasonSaveFile(void) {
     u8 abProfileBytes[SEASON_SAVE_PAYLOAD_SIZE];

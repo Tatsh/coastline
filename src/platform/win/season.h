@@ -20,6 +20,61 @@
 /** The bytes reserved for the saved slot label. */
 #define SEASON_SAVE_SLOT_NAME_SIZE 128
 
+/** Apply g_SeasonProgress without reading a file. */
+#define SEASON_LOAD_CURRENT 0
+
+/** Read the saved profile and its trailing menu settings. */
+#define SEASON_LOAD_FILE 4
+
+/** The menu settings appended to a saved season. */
+struct SeasonSaveSettings {
+    int transmission; /*!< The chosen transmission. */
+    int tires;        /*!< The chosen tyres. */
+    int suspension;   /*!< The chosen suspension. */
+    int car;          /*!< The chosen car. */
+    int handling;     /*!< The chosen handling. */
+};
+
+/**
+ * The settings read from the end of a season file.
+ *
+ * @ghidraAddress BRD3D: 0x10ad0978
+ */
+extern SeasonSaveSettings g_LoadedSeasonSettings;
+
+/**
+ * The slot label copied for the second player after loading.
+ *
+ * @ghidraAddress BRD3D: 0x10ad34f8
+ */
+extern char g_szSecondarySeasonSaveSlotName[SEASON_SAVE_SLOT_NAME_SIZE];
+
+/**
+ * The player whose profile is being loaded, 0 or 1.
+ *
+ * @ghidraAddress BRD3D: 0x10690a18
+ */
+extern int g_dwSaveSlotPlayerIndex;
+
+/**
+ * The shared buffer for profile and configuration file reads.
+ *
+ * @ghidraAddress BRD3D: 0x11782e28
+ */
+extern u8 g_abSaveFileReadBuffer[SEASON_SAVE_PAYLOAD_SIZE];
+
+/**
+ * Apply g_SeasonProgress for #SEASON_LOAD_CURRENT or validate a saved file for other modes.
+ * #SEASON_LOAD_FILE also restores trailing menu settings. Other modes preserve the other player's
+ * controls while replacing both profiles.
+ *
+ * @param nMode The profile source and restoration mode.
+ * @param bAllowFailure Whether open, header, payload, and checksum failures return success.
+ * @return Whether loading succeeded or an allowed file failure occurred.
+ * @ghidraAddress BRD3D: 0x10070610
+ */
+bool LoadSeasonSaveFile(int nMode, bool bAllowFailure);
+
 /**
  * The four-byte signature of a saved season.
  *
