@@ -361,6 +361,14 @@ int ReturnToVideoOptionsFromDeviceSelect(MenuWidget *pWidget);
 int ModemConnectionUI_OnAccept(MenuWidget *pWidget);
 
 /**
+ * Start naming a new championship slot or activate confirmation for an existing file.
+ *
+ * @ghidraAddress BRD3D: 0x10042020
+ * @ghidraAddress BRGlide: 0x1003b580
+ */
+int SaveSeasonUI_OnSlotSelected(MenuItemList *pList, int *pnSlot);
+
+/**
  * Open cached input options, building the screen on its first visit.
  *
  * @ghidraAddress BRD3D: 0x100452c0

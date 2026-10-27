@@ -1894,6 +1894,33 @@ int ModemConnectionUI_OnAccept(MenuWidget *pWidget) {
     return 0;
 }
 
+int SaveSeasonUI_OnSlotSelected(MenuItemList *pList, int *pnSlot) {
+    int slot = *pnSlot;
+    if (slot < 0) {
+        return 0;
+    }
+    g_pSaveSeasonEditMenu = pList;
+    g_dwFileListSelectedSlot = slot;
+    char fileName[256];
+    char number[4];
+    strcpy(fileName, "RallySeason");
+    _itoa(slot, number, 10);
+    strcat(fileName, number);
+    strcat(fileName, ".brf");
+    FILE *file = fopen(fileName, "r");
+    bool missing = file == nullptr;
+    if (file) {
+        fclose(file);
+    }
+    PollInputAndUpdateEdges();
+    if (missing) {
+        ToggleMenuItemTextEditA(g_pSaveSeasonMenu);
+    } else {
+        g_pSaveSeasonMenu->pScreen->anPanelActive[1] = 1;
+    }
+    return 1;
+}
+
 int PreRaceExitSeasonConfirmUI_OnYes(MenuWidget *pWidget) {
     pWidget->pScreen->DestroyPanels();
     delete g_pActiveMenuScreen;
