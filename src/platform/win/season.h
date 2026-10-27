@@ -14,6 +14,42 @@
 /** The value of g_SeasonResumeState that starts a season again at its first round. */
 #define SEASON_RESUME_STATE_RESTART 5
 
+/** The bytes of profile memory written to a season file. */
+#define SEASON_SAVE_PAYLOAD_SIZE 512
+
+/** The bytes reserved for the saved slot label. */
+#define SEASON_SAVE_SLOT_NAME_SIZE 128
+
+/**
+ * The four-byte signature of a saved season.
+ *
+ * @ghidraAddress BRD3D: 0x100b5d94
+ */
+extern const char g_szSeasonSaveMagic[4];
+
+/**
+ * The path used for automatic season saves.
+ *
+ * @ghidraAddress BRD3D: 0x100ad310
+ */
+extern const char g_szAutoSaveBrf[];
+
+/**
+ * The label appended to a saved season.
+ *
+ * @ghidraAddress BRD3D: 0x10ad0990
+ */
+extern char g_szSeasonSaveSlotName[SEASON_SAVE_SLOT_NAME_SIZE];
+
+/**
+ * Write the first player's profile, checksum, settings, and slot label to g_szSeasonSaveFileName.
+ *
+ * @return Whether the file opened and all checked writes completed. Settings writes and close
+ * errors are ignored.
+ * @ghidraAddress BRD3D: 0x100709a0
+ */
+bool SaveSeasonSaveFile(void);
+
 /**
  * The profile used to save progress for the first player.
  *

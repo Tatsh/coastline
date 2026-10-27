@@ -31,10 +31,11 @@ typedef struct {
     u8 round;              /*!< The race of the season being raced, from 0. */
     u8 seasonPlaces[SEASONS][SEASON_RACES]; /*!< The place of each race of each season, from 0 for
                                                  the winner. */
-    u16 seasonPoints[SEASONS];              /*!< The points scored in each season. */
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
-    u8 unreconstructed2A[0x50 - 0x2A]; /*!< Not read by the routines reconstructed so far. */
+    u16 seasonRacePoints[SEASONS][SEASON_RACES]; /*!< The points scored in each race. */
+    u8 unreconstructed4E[0x50 - 0x4E];           /*!< Padding before seasonTimes. */
 #else
+    u16 seasonPoints[SEASONS];         /*!< The points scored in each season. */
     u8 unreconstructed2A[0x2C - 0x2A]; /*!< Padding before seasonTimes. */
 #endif
     f32 seasonTimes[SEASONS][SEASON_RACES]; /*!< The time of each race of each season, in

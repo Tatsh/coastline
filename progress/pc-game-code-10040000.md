@@ -1,6 +1,6 @@
 # PC port game code from 0x10040000 to 0x10050000
 
-19 of 264 routines done.
+20 of 264 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -126,7 +126,7 @@ the same name, for a routine the port retained from the N64 game.
 | `CreateGameMenuUI_OnBack`                          |        |                 |      1 |    122 | `0x100444c0` | `0x1003da10` | `undefined CreateGameMenuUI_OnBack()`                                                                                                                                                                     |
 | `ResultsSummaryExitSeasonConfirmUI_OnYes`          |        |                 |      1 |    119 | `0x10046fd0` | `0x10040420` | `undefined ResultsSummaryExitSeasonConfirmUI_OnYes()`                                                                                                                                                     |
 | `MenuScreen::DestroyPanels`                        |   ✅   |                 |      1 |    119 | `0x10048aa0` | `0x10041ed0` | `void DestroyPanels(MenuScreen * this)`                                                                                                                                                                   |
-| `SaveAutoSaveSeason`                               |   📝   |                 |      2 |    115 | `0x10041b50` | `0x1003b0b0` | `undefined SaveAutoSaveSeason()`                                                                                                                                                                          |
+| `SaveAutoSaveSeason`                               |   ✅   |                 |      2 |    115 | `0x10041b50` | `0x1003b0b0` | `void SaveAutoSaveSeason(void)`                                                                                                                                                                           |
 | `SeasonFileUI_UpdateRoundLabel`                    |        |                 |      2 |    107 | `0x10040ac0` | `0x1003a000` | `undefined SeasonFileUI_UpdateRoundLabel()`                                                                                                                                                               |
 | `SeasonFileUI_UpdateYearLabel`                     |        |                 |      2 |    107 | `0x10040a50` | `0x10039f90` | `undefined SeasonFileUI_UpdateYearLabel()`                                                                                                                                                                |
 | `AudioOptionsUI_OnCycleSfxVolume`                  |        |                 |      3 |     99 | `0x10042cf0` | `0x1003c240` | `undefined AudioOptionsUI_OnCycleSfxVolume()`                                                                                                                                                             |

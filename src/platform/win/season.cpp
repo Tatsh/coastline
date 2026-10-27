@@ -1,6 +1,9 @@
 #include "platform/win/season.h"
 
+#include <cstdio>
 #include <cstring>
+
+#include <zlib.h>
 
 #include "game.h"
 #include "platform/win/boot/rallyconfig.h"
@@ -26,6 +29,56 @@ PlayerProfile *g_pSecondarySeasonSave;
 int g_dwSeasonYear;
 int g_dwSeasonRound;
 int g_bSeasonClass;
+const char g_szSeasonSaveMagic[4] = {'R', 'S', 'e', 'a'};
+const char g_szAutoSaveBrf[] = "AutoSave.brf";
+char g_szSeasonSaveSlotName[SEASON_SAVE_SLOT_NAME_SIZE];
+
+bool SaveSeasonSaveFile(void) {
+    u8 abProfileBytes[SEASON_SAVE_PAYLOAD_SIZE];
+    // The saved payload extends beyond the 332-byte profile into adjacent memory.
+    memcpy(abProfileBytes, g_pPrimarySeasonSave, sizeof(abProfileBytes));
+    u32 dwChecksum = adler32(adler32(0, nullptr, 0), abProfileBytes, sizeof(abProfileBytes));
+    FILE *pFile = fopen(g_szSeasonSaveFileName, "wb");
+    if (!pFile) {
+        return false;
+    }
+    if (fwrite(g_szSeasonSaveMagic, 1, sizeof(g_szSeasonSaveMagic), pFile) !=
+            sizeof(g_szSeasonSaveMagic) ||
+        fwrite(&dwChecksum, 1, sizeof(dwChecksum), pFile) != sizeof(dwChecksum) ||
+        fwrite(g_pPrimarySeasonSave, 1, SEASON_SAVE_PAYLOAD_SIZE, pFile) !=
+            SEASON_SAVE_PAYLOAD_SIZE) {
+        fclose(pFile);
+        return false;
+    }
+    // The original ignores failures in the five settings writes and the final close.
+    fwrite(&g_dwSelectedTransmission, 4, 1, pFile);
+    fwrite(&g_dwTireMenuIndex, 4, 1, pFile);
+    fwrite(&g_dwSuspensionMenuIndex, 4, 1, pFile);
+    fwrite(&g_dwCarMenuIndex, 4, 1, pFile);
+    fwrite(&g_dwHandlingTypeMenuIndex, 4, 1, pFile);
+    if (fwrite(g_szSeasonSaveSlotName, 1, sizeof(g_szSeasonSaveSlotName), pFile) !=
+        sizeof(g_szSeasonSaveSlotName)) {
+        fclose(pFile);
+        return false;
+    }
+    fclose(pFile);
+    return true;
+}
+
+void SaveAutoSaveSeason(void) {
+    if (!g_pPrimarySeasonSave) {
+        return;
+    }
+    strcpy(g_szSeasonSaveFileName, g_szAutoSaveBrf);
+    if (!g_pPrimarySeasonSave->season && !g_pPrimarySeasonSave->round) {
+        memset(g_pPrimarySeasonSave->seasonPlaces, 0, sizeof(g_pPrimarySeasonSave->seasonPlaces));
+        memset(g_pPrimarySeasonSave->seasonRacePoints,
+               0,
+               sizeof(g_pPrimarySeasonSave->seasonRacePoints));
+        memset(g_pPrimarySeasonSave->seasonTimes, 0, sizeof(g_pPrimarySeasonSave->seasonTimes));
+    }
+    SaveSeasonSaveFile();
+}
 
 int ResetSeasonSaveBuffers(void) {
     if (!g_pPrimarySeasonSave) {
