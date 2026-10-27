@@ -179,37 +179,6 @@ void StartCreditsRace(void) {
     SetCurrentScreenCallback(ProcessRacingScreen);
 }
 
-void StartEndingCredits(void) {
-    g_dwGameMode = GAME_MODE_DEMO;
-    g_dwRaceSessionType = RACE_SESSION_SCROLLING_CREDITS;
-    SetCurrentScreenCallback(ProcessRacingScreen);
-}
-
-void CalculateScrollPositions(void) {
-    CreditLine *line;
-    s32 i;
-    s32 y, above, size;
-
-    y = 240;
-    for (i = 0; g_aCreditScrollLines[i].text != NULL; i++) {
-        line = &g_aCreditScrollLines[i];
-        size = line->size;
-        /* A line sits on its baseline, three quarters of its size down. */
-        above = size * 3 / 4;
-        y += above;
-        line->y = y;
-        y = y + size - above + line->gap;
-    }
-}
-
-void ScrollTextUp(void) {
-    s32 i;
-
-    for (i = 0; g_aCreditScrollLines[i].text != NULL; i++) {
-        g_aCreditScrollLines[i].y--;
-    }
-}
-
 void DrawScrollingText(void) {
     s32 i;
 

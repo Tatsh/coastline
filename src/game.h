@@ -155,6 +155,8 @@ void StartCreditsRace(void);
  * @ghidraAddress USA: 0x8020068c
  * @ghidraAddress EUR: 0x802006bc
  * @ghidraAddress JPN: 0x8020067c
+ * @ghidraAddress BRD3D: 0x1002c390
+ * @ghidraAddress BRGlide: 0x10019900
  */
 void StartEndingCredits(void);
 

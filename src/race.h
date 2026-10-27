@@ -239,6 +239,8 @@ extern RaceCaption g_aCreditCaptions[];
  * @ghidraAddress USA: 0x80270194
  * @ghidraAddress EUR: 0x80272164
  * @ghidraAddress JPN: 0x80271c14
+ * @ghidraAddress BRD3D: 0x100a66f0
+ * @ghidraAddress BRGlide: 0x100a5eb0
  */
 extern CreditLine g_aCreditScrollLines[];
 
@@ -551,6 +553,8 @@ void RenderStartLights(void);
  * @ghidraAddress USA: 0x802006c8
  * @ghidraAddress EUR: 0x802006f8
  * @ghidraAddress JPN: 0x802006b8
+ * @ghidraAddress BRD3D: 0x1002c3c0
+ * @ghidraAddress BRGlide: 0x10019930
  */
 void CalculateScrollPositions(void);
 
@@ -560,6 +564,8 @@ void CalculateScrollPositions(void);
  * @ghidraAddress USA: 0x8020072c
  * @ghidraAddress EUR: 0x8020075c
  * @ghidraAddress JPN: 0x8020071c
+ * @ghidraAddress BRD3D: 0x1002c410
+ * @ghidraAddress BRGlide: 0x10019980
  */
 void ScrollTextUp(void);
 
