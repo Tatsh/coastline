@@ -862,6 +862,17 @@ bool MouseDevice::CreateMouseDevice(HWND hWnd) {
     return true;
 }
 
+void MouseDevice::SyncMouseAcquireState(HWND hWnd) {
+    IDirectInputDeviceA *device = pDevice;
+    if (device && g_pActiveMenuScreen->bBuilt) {
+        if (g_fHostWindowActive) {
+            device->Unacquire();
+        } else {
+            device->Acquire();
+        }
+    }
+}
+
 void MouseDevice::ReleaseMouseDevice() {
     if (pDevice != nullptr) {
         pDevice->Unacquire();

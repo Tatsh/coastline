@@ -71,13 +71,14 @@ public:
 
     /**
      * @ghidraAddress BRD3D: 0x10060750
-     * @stub
+     * @ghidraAddress BRGlide: 0x100597c0
      */
     void SyncMouseAcquireState(HWND hWnd);
 };
 
 /**
  * @ghidraAddress BRD3D: 0x10aa33e0
+ * @ghidraAddress BRGlide: 0x10ac6740
  */
 extern int g_fHostWindowActive;
 
