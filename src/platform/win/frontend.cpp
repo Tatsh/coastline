@@ -2313,6 +2313,19 @@ int SeasonFileUI_UpdateRoundLabel(MenuWidget *pWidget) {
     return 1;
 }
 
+int SeasonProgressInfoUI_UpdateRoundLabel(MenuWidget *pWidget) {
+    sprintf(
+        g_szSeasonRoundLabel, "%d", static_cast<int>(static_cast<unsigned>(g_dwSeasonRound) + 1));
+    MenuFont *font = &pWidget->fonts[0];
+    strcpy(font->szText, GetStringResource(0x37));
+    strcat(font->szText, "  ");
+    strcat(font->szText, g_szSeasonRoundLabel);
+    MenuFontVTable *vtable = font->pVTable;
+    vtable->MeasureText(font);
+    vtable->DrawText(font);
+    return 1;
+}
+
 int RaceSetupUI_UpdateLapCountLabel(MenuWidget *pWidget) {
     if (g_pActiveMenuScreen != g_pCachedMenu_LoadGhost || g_dwTimeAttackLoadSelected) {
         MenuFont *font = &pWidget->fonts[0];

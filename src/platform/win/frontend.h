@@ -328,6 +328,14 @@ int SeasonFileUI_UpdateYearLabel(MenuWidget *pWidget);
 int SeasonFileUI_UpdateRoundLabel(MenuWidget *pWidget);
 
 /**
+ * Draw the season progress round with its label and two separating spaces.
+ *
+ * @ghidraAddress BRD3D: 0x10040b30
+ * @ghidraAddress BRGlide: 0x1003a070
+ */
+int SeasonProgressInfoUI_UpdateRoundLabel(MenuWidget *pWidget);
+
+/**
  * @ghidraAddress BRD3D: 0x10041300
  * @ghidraAddress BRGlide: 0x1003a860
  */
