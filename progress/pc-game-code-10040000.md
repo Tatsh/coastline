@@ -1,6 +1,6 @@
 # PC port game code from 0x10040000 to 0x10050000
 
-110 of 264 routines done.
+111 of 264 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -59,7 +59,7 @@ the same name, for a routine the port retained from the N64 game.
 | `ShowNetworkCarSetupScreen`                        |   ✅   |                 |      2 |    254 | `0x100446d0` | `0x1003dc20` | `int ShowNetworkCarSetupScreen(void)`                                                                                                                     |
 | `ValidateEntityState`                              |        |                 |    122 |    251 | `0x10047360` | `0x100407b0` | `BOOL ValidateEntityState(int pEntity)`                                                                                                                   |
 | `MenuScreen::RunFrame`                             |   ✅   |                 |      1 |    249 | `0x100489a0` | `0x10041dd0` | `bool RunFrame(MenuScreen * this)`                                                                                                                        |
-| `MenuWidget::SetText`                              |   🚧   |                 |      1 |    247 | `0x10047eb0` | `0x10041300` | `undefined SetText(MenuWidget * this, undefined4 param_1, undefined4 param_2, undefined4 param_3, undefined4 param_4)`                                    |
+| `MenuWidget::SetText`                              |   ✅   |                 |      1 |    247 | `0x10047eb0` | `0x10041300` | `void SetText(MenuWidget * this, char * pszText, uint dwTextFlags, uchar bStyle, RECT * pRect)`                                                           |
 | `SeasonUI_UpdateYearOrdinalLabel`                  |        |                 |      4 |    245 | `0x100413b0` | `0x1003a910` | `undefined SeasonUI_UpdateYearOrdinalLabel()`                                                                                                             |
 | `ShowChampionshipSeasonMenu`                       |   ✅   |                 |      1 |    244 | `0x10045900` | `0x1003ed90` | `int ShowChampionshipSeasonMenu(void)`                                                                                                                    |
 | `ShowRaceSetupMenu`                                |   ✅   |                 |      1 |    244 | `0x10044f50` | `0x1003e4a0` | `int ShowRaceSetupMenu(void)`                                                                                                                             |
