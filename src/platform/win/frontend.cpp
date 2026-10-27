@@ -2371,6 +2371,39 @@ int NetworkCarSetupUI_OnRefreshSessionDesc(MenuWidget *) {
     return 1;
 }
 
+void EnterNetworkLobbyScreen(void) {
+    g_dwServiceProviderIndex = 1;
+    ResetSessionSlotTable();
+    if (g_dwLobbyIsHost) {
+        DPSESSIONDESC2 *desc = nullptr;
+        if (g_DirectPlayInfo.pDirectPlay) {
+            GetDirectPlaySessionDesc(g_DirectPlayInfo.pDirectPlay, &desc);
+        }
+        if (desc) {
+            desc->dwFlags &= ~0x20u;
+            g_DirectPlayInfo.pDirectPlay->SetSessionDesc(desc, 0);
+        }
+    }
+    ShowMultiplayerNameScreen();
+    ShowMultiplayerConnectionScreen();
+    ShowJoinCreateGameScreen();
+    if (g_dwLobbyIsHost) {
+        ShowCreateGameScreen();
+        ShowHostRaceSetupScreen();
+    } else {
+        LoadNetworkSettings();
+        JoinSessionAndShowRaceSetup();
+    }
+    if (g_dwLobbyIsHost) {
+        if (!g_dwNetworkCarSetupShown) {
+            HostNetworkSession();
+            g_dwNetworkCarSetupShown = 1;
+            return;
+        }
+        UpdateNetworkSessionSettings();
+    }
+}
+
 int NetworkCarSetupUI_OnEscape(MenuWidget *pWidget) {
     if (g_dwNetworkDataStreamActive) {
         if (!g_dwLaunchedFromLobby) {
