@@ -35,13 +35,13 @@ private:
 
     /** @ghidraAddress EAR: 0x1000b2a3 */
     int OpenWaveFileStream(const char *path);
-    /**
-     * @ghidraAddress EAR: 0x1000b2ec
-     * @stub
-     */
+    /** @ghidraAddress EAR: 0x1000b2ec */
     int PreparePcmWaveStream(const void *source);
     /** @ghidraAddress EAR: 0x10012e1b */
     int CheckWavePlaybackDeviceAccess();
+
+    void CloseWaveFileStream();
+    int FailPcmWavePreparation(std::uint32_t error);
 
     HMMIO file;
     DWORD readOffset;

@@ -8,6 +8,7 @@
 #include "error.h"
 #include "playbackimplementations.h"
 #include "registry.h"
+#include "wavechunks.h"
 
 namespace {
 // @ghidraAddress EAR: 0x1003b9a4
@@ -20,6 +21,10 @@ void *g_pDirectSoundLockRegion1;
 void *g_pDirectSoundLockRegion2;
 // @ghidraAddress EAR: 0x1003b9b4
 DWORD g_dwDirectSoundLockRegion1Bytes;
+// @ghidraAddress EAR: 0x1002ebc8
+const double g_earPcmHalfBufferScale = 0.5;
+// @ghidraAddress EAR: 0x1002ebd0
+const double g_earPcmMillisecondScale = 0.001;
 
 static inline std::uint32_t TruncatePlaybackInteger(long double value) {
     // Invalid x87 integer conversions produce zero in the low 32 bits.
@@ -46,6 +51,129 @@ int PcmWaveStream::OpenWaveFileStream(const char *path) {
 }
 
 int PcmWaveStream::CheckWavePlaybackDeviceAccess() {
+    return 1;
+}
+
+void PcmWaveStream::CloseWaveFileStream() {
+    if (file) {
+        if (!(GetPlaybackSourceFlags() & 0x6000)) {
+            mmioClose(file, 0);
+        } else {
+            mmioSeek(file, originalFileOffset, SEEK_SET);
+        }
+        file = nullptr;
+    }
+}
+
+int PcmWaveStream::FailPcmWavePreparation(std::uint32_t error) {
+    SetEarLastError(error);
+    if (sampleBuffer) {
+        std::free(sampleBuffer);
+    }
+    sampleBuffer = nullptr;
+    CloseWaveFileStream();
+    return 0;
+}
+
+int PcmWaveStream::PreparePcmWaveStream(const void *source) {
+    DWORD offset = 0;
+    if (!file) {
+        return FailPcmWavePreparation(0x0d);
+    }
+    originalFileOffset = mmioSeek(file, 0, SEEK_CUR);
+    if (mmioDescend(file, &g_RiffWaveChunk, nullptr, 0)) {
+        return FailPcmWavePreparation(0x0e);
+    }
+    if (g_RiffWaveChunk.ckid != FOURCC_RIFF ||
+        g_RiffWaveChunk.fccType != mmioFOURCC('W', 'A', 'V', 'E')) {
+        return FailPcmWavePreparation(0x0f);
+    }
+    if (mmioDescend(file, &g_WaveFormatChunk, &g_RiffWaveChunk, MMIO_FINDCHUNK)) {
+        return FailPcmWavePreparation(0x0e);
+    }
+    // Native reading includes cbSize even for a 16-byte PCM format chunk.
+    if (mmioRead(file, static_cast<char *>(static_cast<void *>(&format)), sizeof(format)) !=
+        sizeof(format)) {
+        return FailPcmWavePreparation(0x0e);
+    }
+    if (g_WaveFormatChunk.cksize != sizeof(format)) {
+        mmioSeek(file, std::bit_cast<LONG>(g_WaveFormatChunk.cksize - sizeof(format)), SEEK_CUR);
+    }
+    if (format.wFormatTag != WAVE_FORMAT_PCM) {
+        return FailPcmWavePreparation(0x0f);
+    }
+    if (mmioAscend(file, &g_WaveFormatChunk, 0)) {
+        return FailPcmWavePreparation(0x0e);
+    }
+    if (mmioDescend(file, &g_WaveDataChunk, &g_RiffWaveChunk, MMIO_FINDCHUNK)) {
+        return FailPcmWavePreparation(0x0e);
+    }
+    dataBytes = g_WaveDataChunk.cksize;
+    if (!CheckWavePlaybackDeviceAccess()) {
+        return FailPcmWavePreparation(6);
+    }
+    if (IsEarPlaybackStreaming() && dataBytes > g_earMaximumStreamingBufferBytes) {
+        SetPlaybackBufferBytes(g_earMaximumStreamingBufferBytes);
+    } else {
+        SetPlaybackBufferBytes(dataBytes);
+        DisablePlaybackStreaming();
+    }
+    SetStreamHalfBytes(TruncatePlaybackInteger(static_cast<long double>(GetPlaybackBufferBytes()) *
+                                               g_earPcmHalfBufferScale));
+    sampleBuffer = static_cast<char *>(std::malloc(GetPlaybackBufferBytes()));
+    if (!sampleBuffer) {
+        return FailPcmWavePreparation(0x10);
+    }
+    std::memset(sampleBuffer, format.wBitsPerSample == 16 ? 0 : 0x80, GetPlaybackBufferBytes());
+    dataStartOffset = mmioSeek(file, 0, SEEK_CUR);
+    if (dataStartOffset == -1) {
+        return FailPcmWavePreparation(0x0e);
+    }
+    if (GetPlaybackStartMilliseconds()) {
+        long double position = static_cast<long double>(format.nAvgBytesPerSec) *
+                               GetPlaybackStartMilliseconds() * g_earPcmMillisecondScale;
+        offset = TruncatePlaybackInteger(position) % dataBytes;
+        SpecifyPlaybackStartPosition();
+    }
+    if (HasPlaybackStartPosition() && IsEarPlaybackStreaming()) {
+        offset += TruncatePlaybackInteger(static_cast<long double>(dataBytes) *
+                                          GetPlaybackStartPosition());
+        if (offset % 2) {
+            --offset;
+        }
+        readOffset = offset;
+        if (mmioSeek(file,
+                     std::bit_cast<LONG>(static_cast<DWORD>(dataStartOffset) + readOffset),
+                     SEEK_SET) == -1) {
+            return FailPcmWavePreparation(0x0e);
+        }
+        ClearPlaybackStartPosition();
+    }
+    readOffset += static_cast<DWORD>(
+        mmioRead(file, sampleBuffer, std::bit_cast<LONG>(GetPlaybackBufferBytes())));
+    if (readOffset != GetPlaybackBufferBytes() + offset) {
+        if (readOffset == offset - 1) {
+            return FailPcmWavePreparation(0x0e);
+        }
+        if (IsPlaybackLooping()) {
+            if (mmioSeek(file, dataStartOffset, SEEK_SET) == -1) {
+                return FailPcmWavePreparation(0x0e);
+            }
+            offset = readOffset - offset;
+            readOffset = static_cast<DWORD>(
+                mmioRead(file,
+                         sampleBuffer + offset,
+                         std::bit_cast<LONG>(GetPlaybackBufferBytes() - offset)));
+            if (readOffset != GetPlaybackBufferBytes() - offset) {
+                return FailPcmWavePreparation(0x0e);
+            }
+        } else {
+            DisablePlaybackStreaming();
+        }
+    }
+    if (!IsEarPlaybackStreaming()) {
+        CloseWaveFileStream();
+    }
     return 1;
 }
 
@@ -140,14 +268,7 @@ void PcmWaveStream::ReleaseEarPlaybackResources() {
 
 void PcmWaveStream::CloseRegisteredEarPlayback() {
     EarPlayback::CloseRegisteredEarPlayback();
-    if (file) {
-        if (!(GetPlaybackSourceFlags() & 0x6000)) {
-            mmioClose(file, 0);
-        } else {
-            mmioSeek(file, originalFileOffset, SEEK_SET);
-        }
-        file = nullptr;
-    }
+    CloseWaveFileStream();
     if (sampleBuffer) {
         std::free(sampleBuffer);
     }

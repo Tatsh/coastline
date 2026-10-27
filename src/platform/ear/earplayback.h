@@ -159,6 +159,24 @@ public:
     virtual int IsBufferedEarPlaybackComplete();
 
 protected:
+    void SetPlaybackBufferBytes(std::uint32_t bytes) {
+        bufferBytes = bytes;
+    }
+    void SetStreamHalfBytes(std::uint32_t bytes) {
+        streamHalfBytes = bytes;
+    }
+    void DisablePlaybackStreaming() {
+        streaming = 0;
+    }
+    std::uint16_t GetPlaybackStartMilliseconds() const {
+        return startMilliseconds;
+    }
+    bool HasPlaybackStartPosition() const {
+        return startPositionSpecified != 0;
+    }
+    void SpecifyPlaybackStartPosition() {
+        startPositionSpecified = 1;
+    }
     void SetPlaybackStreamingAndLooping(int isStreaming, int isLooping) {
         streaming = isStreaming;
         looping = isLooping;
@@ -203,7 +221,7 @@ protected:
         startPosition = 0;
     }
     IDirectSoundBuffer *GetDirectSoundBuffer() const {
-        return directSound.buffer;
+        return directSound.GetBuffer();
     }
     std::uint32_t IncrementLoopDrainCount() {
         return ++loopDrainCount;

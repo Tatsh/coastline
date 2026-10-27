@@ -81,7 +81,7 @@ std::uint16_t EarPlayback::AllocateEarEventId() {
 
 HRESULT EarPlayback::CreateDirectSoundPlaybackBuffer(IDirectSound *device,
                                                      _DSBUFFERDESC *description) {
-    return device->CreateSoundBuffer(description, std::addressof(directSound.buffer), nullptr);
+    return directSound.CreateBuffer(device, description);
 }
 
 void EarPlayback::CloseRegisteredEarPlayback() {
@@ -330,24 +330,29 @@ void EarDirectSoundPlaybackState::Initialize() {
     playCursor = 0;
 }
 
+HRESULT EarDirectSoundPlaybackState::CreateBuffer(IDirectSound *device,
+                                                  _DSBUFFERDESC *description) {
+    return device->CreateSoundBuffer(description, std::addressof(buffer), nullptr);
+}
+
+void EarDirectSoundPlaybackState::UpdateCursors() {
+    buffer->GetCurrentPosition(std::addressof(playCursor), std::addressof(writeCursor));
+}
+
 void EarPlayback::InitializeDirectSoundPlaybackState() {
     directSound.Initialize();
-    directSound.playCursor = 1;
+    directSound.SetPlayCursor(1);
 }
 
 DWORD EarPlayback::GetDirectSoundPlaybackCursor() {
     if (playbackHandle && !completionRequested) {
-        // Native heap allocation and cursor offsets provide DWORD alignment.
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Waddress-of-packed-member"
-        directSound.buffer->GetCurrentPosition(&directSound.playCursor, &directSound.writeCursor);
-#pragma clang diagnostic pop
+        directSound.UpdateCursors();
     }
-    return directSound.playCursor;
+    return directSound.GetPlayCursor();
 }
 
 void EarPlayback::UpdateDirectSoundPlaybackFrequency() {
-    if (!directSound.buffer) {
+    if (!directSound.GetBuffer()) {
         return;
     }
     std::uint32_t smoothed;
@@ -365,11 +370,11 @@ void EarPlayback::UpdateDirectSoundPlaybackFrequency() {
     if (smoothed > 100000) {
         smoothed = 100000;
     }
-    directSound.buffer->SetFrequency(smoothed);
+    directSound.GetBuffer()->SetFrequency(smoothed);
 }
 
 int EarPlayback::PlayDirectSoundEventBuffer() {
-    if (!directSound.buffer) {
+    if (!directSound.GetBuffer()) {
         SetEarLastError(19);
         return FALSE;
     }
@@ -377,7 +382,7 @@ int EarPlayback::PlayDirectSoundEventBuffer() {
         return TRUE;
     }
     DWORD flags = looping || streaming ? DSBPLAY_LOOPING : 0;
-    if (directSound.buffer->Play(0, 0, flags) != DS_OK) {
+    if (directSound.GetBuffer()->Play(0, 0, flags) != DS_OK) {
         SetEarLastError(20);
         return FALSE;
     }
@@ -385,10 +390,10 @@ int EarPlayback::PlayDirectSoundEventBuffer() {
 }
 
 int EarPlayback::StopDirectSoundEventBuffer() {
-    if (!directSound.buffer) {
+    if (!directSound.GetBuffer()) {
         return FALSE;
     }
-    if (active && directSound.buffer->Stop() != DS_OK) {
+    if (active && directSound.GetBuffer()->Stop() != DS_OK) {
         SetEarLastError(37);
         return FALSE;
     }
@@ -396,16 +401,16 @@ int EarPlayback::StopDirectSoundEventBuffer() {
 }
 
 void EarPlayback::ReleaseDirectSoundEventBuffer() {
-    if (directSound.buffer) {
-        directSound.buffer->Stop();
-        directSound.buffer->Release();
-        directSound.buffer = nullptr;
+    if (directSound.GetBuffer()) {
+        directSound.GetBuffer()->Stop();
+        directSound.GetBuffer()->Release();
+        directSound.ClearBuffer();
     }
 }
 
 int EarPlayback::IsDirectSoundBufferStopped() {
     DWORD bufferStatus;
-    directSound.buffer->GetStatus(&bufferStatus);
+    directSound.GetBuffer()->GetStatus(&bufferStatus);
     return (bufferStatus & DSBSTATUS_PLAYING) == 0;
 }
 
@@ -429,7 +434,7 @@ void EarPlayback::UpdateDirectSoundPlaybackGainAndPan() {
         static_cast<long double>(delta) * g_adPlaybackSmoothingWeights[smoothingPass]));
     LONG pan = std::bit_cast<LONG>(static_cast<std::uint32_t>(previousMatrixEntry.pan) + step);
     if (playbackHandle) {
-        directSound.buffer->SetVolume(ConvertPercentGainToDirectSoundVolume(interpolated));
-        directSound.buffer->SetPan(pan);
+        directSound.GetBuffer()->SetVolume(ConvertPercentGainToDirectSoundVolume(interpolated));
+        directSound.GetBuffer()->SetPan(pan);
     }
 }
