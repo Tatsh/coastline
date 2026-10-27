@@ -480,8 +480,8 @@ bool WINAPI ResetMouseCursorToCenter(HWND) {
 // The distance an axis is pushed for GetPressedJoystickControl() to report it.
 #define JOYSTICK_AXIS_THRESHOLD 50
 
-JoystickControlName g_aJoystickButtonNamesA[JOYSTICK_NAME_COUNT_A];
-JoystickControlName g_aJoystickButtonNamesB[JOYSTICK_NAME_COUNT_B];
+InputControlName g_aJoystickButtonNamesA[JOYSTICK_NAME_COUNT_A];
+InputControlName g_aJoystickButtonNamesB[JOYSTICK_NAME_COUNT_B];
 
 // The bytes of each table of names that InitJoystickBindingNames() clears.
 #define JOYSTICK_NAMES_CLEARED_A 0xdc
@@ -496,7 +496,7 @@ JoystickControlName g_aJoystickButtonNamesB[JOYSTICK_NAME_COUNT_B];
 #define JOYSTICK_AXIS_NAME_STRING 0xc4
 
 static inline void
-FillJoystickNames(JoystickControlName *pNames, int nCount, int nButtonCount, int nAxisCode) {
+FillJoystickNames(InputControlName *pNames, int nCount, int nButtonCount, int nAxisCode) {
     for (int i = 0; i < nCount; i++) {
         if (i < nButtonCount) {
             pNames[i].nCode = i;

@@ -649,8 +649,8 @@ bool WINAPI ResetMouseCursorToCenter(HWND hWnd);
 /** The control of the bottom of the Y axis of a game controller. */
 #define JOYSTICK_CONTROL_Y_POSITIVE 0x8300
 
-/** A control of a game controller and the name the menus show for it. */
-struct JoystickControlName {
+/** A control and its label in the menus. */
+struct InputControlName {
     int nCode;       /*!< The control. */
     char szName[32]; /*!< The name of the control. */
 };
@@ -666,7 +666,7 @@ struct JoystickControlName {
  * @ghidraAddress BRD3D: 0x10b4e7a8
  * @ghidraAddress BRGlide: 0x10b71b08
  */
-extern JoystickControlName g_aJoystickButtonNamesA[JOYSTICK_NAME_COUNT_A];
+extern InputControlName g_aJoystickButtonNamesA[JOYSTICK_NAME_COUNT_A];
 
 /**
  * The names of 128 buttons and six axes of a game controller. Its use is not recovered yet.
@@ -674,7 +674,22 @@ extern JoystickControlName g_aJoystickButtonNamesA[JOYSTICK_NAME_COUNT_A];
  * @ghidraAddress BRD3D: 0x10b4e910
  * @ghidraAddress BRGlide: 0x10b71c70
  */
-extern JoystickControlName g_aJoystickButtonNamesB[JOYSTICK_NAME_COUNT_B];
+extern InputControlName g_aJoystickButtonNamesB[JOYSTICK_NAME_COUNT_B];
+
+/** The number of keyboard control labels. */
+#define KEYBOARD_CONTROL_NAME_COUNT 120
+
+/**
+ * @ghidraAddress BRD3D: 0x100b4338
+ * @ghidraAddress BRGlide: 0x100b3b40
+ */
+extern InputControlName g_aKeyboardControlNames[KEYBOARD_CONTROL_NAME_COUNT];
+
+/**
+ * @ghidraAddress BRD3D: 0x10040040
+ * @ghidraAddress BRGlide: 0x10039580
+ */
+int FindControlNameIndex(int nTable, int nCode);
 
 /**
  * Fill the names of the controls of a game controller. A button is named with its number in the

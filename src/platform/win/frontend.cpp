@@ -1814,6 +1814,34 @@ int MainMenuUI_OnPlayCredits(MenuWidget *pWidget) {
     return 0;
 }
 
+int FindControlNameIndex(int nTable, int nCode) {
+    InputControlName *names;
+    int count;
+    switch (nTable) {
+    case 0:
+        names = g_aKeyboardControlNames;
+        count = KEYBOARD_CONTROL_NAME_COUNT;
+        break;
+    case 3:
+        names = g_aJoystickButtonNamesA;
+        count = JOYSTICK_NAME_COUNT_A;
+        break;
+    case 2:
+    case 1:
+        names = g_aJoystickButtonNamesB;
+        count = JOYSTICK_NAME_COUNT_B;
+        break;
+    default:
+        return 0;
+    }
+    for (int i = 0; i < count; i++) {
+        if (names[i].nCode == nCode) {
+            return i;
+        }
+    }
+    return 0;
+}
+
 int InputOptionsUI_OnCycleInputDevice(MenuWidget *) {
     if (g_adwMouseButtonPressed[1]) {
         g_dwSelectedInputDevice =
