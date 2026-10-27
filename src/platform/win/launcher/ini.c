@@ -4,10 +4,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include <windows.h>
+#include "platform/win/fileio.h"
 
-// @ghidraAddress BRally: 0x00403218
-static int g_bDebugTrace;
 // @ghidraAddress BRally: 0x0040308c
 static char g_cListCommentChar = '#';
 // @ghidraAddress BRally: 0x00403220
@@ -29,38 +27,9 @@ static void FreeStringList(LauncherStringList *list) {
     // The original does not free the list record.
 }
 
-int FileExists(const char *path) {
-    if (g_bDebugTrace) {
-        char message[1024];
-        sprintf(message, "CHK_FileExists(%s)\n", path);
-        OutputDebugStringA(message);
-    }
-    FILE *file = fopen(path, "rb");
-    if (!file) {
-        return 0;
-    }
-    fclose(file);
-    return 1;
-}
-
-void *AllocateMemoryChecked(size_t bytes, const char *description) {
-    if (!bytes) {
-        return nullptr;
-    }
-    void *memory = malloc(bytes);
-    if (!memory) {
-        char message[1024];
-        sprintf(
-            message, "CHK_AllocateMemory(): Out of memory: couldn't allocate %s\n", description);
-        OutputDebugStringA(message);
-        exit(1);
-    }
-    return memory;
-}
-
 LauncherIniSectionIterator *FindIniSection(LauncherIniFile *file, const char *sectionName) {
     LauncherIniSectionIterator *iterator =
-        AllocateMemoryChecked(sizeof(*iterator), "SetSubstituteDir():pins");
+        CHK_AllocateMemory(sizeof(*iterator), "SetSubstituteDir():pins");
     iterator->file = file;
     iterator->sectionIndex = -1;
     if (file) {
@@ -205,10 +174,10 @@ static LauncherStringList *ReadStringListFile(const char *path) {
         }
     }
     fclose(file);
-    LauncherStringList *list = AllocateMemoryChecked(sizeof(*list), "PRJ");
+    LauncherStringList *list = CHK_AllocateMemory(sizeof(*list), "PRJ");
     list->count = count;
-    list->indices = AllocateMemoryChecked(count * 4, "rgiObj");
-    list->lines = AllocateMemoryChecked(list->count * 4, "rgszObj");
+    list->indices = CHK_AllocateMemory(count * 4, "rgiObj");
+    list->lines = CHK_AllocateMemory(list->count * 4, "rgszObj");
     file = fopen(path, "rt");
     if (!file) {
         printf("ReadList: error opening file %s.\n", path);
@@ -221,7 +190,7 @@ static LauncherStringList *ReadStringListFile(const char *path) {
             if (newline) {
                 *newline = '\0';
             }
-            list->lines[index] = AllocateMemoryChecked(strlen(buffer) + 1, "ReadList():szObji");
+            list->lines[index] = CHK_AllocateMemory(strlen(buffer) + 1, "ReadList():szObji");
             strcpy(list->lines[index], buffer);
             list->indices[index] = index;
             ++index;
@@ -233,7 +202,7 @@ static LauncherStringList *ReadStringListFile(const char *path) {
 }
 
 LauncherIniFile *ReadIniFile(const char *path) {
-    LauncherIniFile *file = AllocateMemoryChecked(sizeof(*file), "ReadINI():pini");
+    LauncherIniFile *file = CHK_AllocateMemory(sizeof(*file), "ReadINI():pini");
     char comment = GetListCommentChar();
     SetListCommentChar(';');
     file->list = ReadStringListFile(path);

@@ -130,7 +130,7 @@ void CHK_FClose(GameFile *pFile) {
     free(pFile);
 }
 
-bool CHK_FileExists(const char *pszPath) {
+int CHK_FileExists(const char *pszPath) {
     char szMessage[MESSAGE_SIZE];
     FILE *pFile;
 

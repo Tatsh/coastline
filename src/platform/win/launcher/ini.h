@@ -19,10 +19,6 @@ typedef struct LauncherIniSectionIterator {
     int sectionIndex;
 } LauncherIniSectionIterator;
 
-/** @ghidraAddress BRally: 0x00401050 */
-int FileExists(const char *path);
-/** @ghidraAddress BRally: 0x004010c0 */
-void *AllocateMemoryChecked(size_t bytes, const char *description);
 /** @ghidraAddress BRally: 0x00401130 */
 LauncherIniSectionIterator *FindIniSection(LauncherIniFile *file, const char *sectionName);
 /** @ghidraAddress BRally: 0x004011c0 */

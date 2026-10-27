@@ -32,6 +32,8 @@ typedef struct GameFile {
  * Whether the routines write each file they open or close to the debugger.
  *
  * @ghidraAddress BRD3D: 0x10220ce0
+ * @ghidraAddress BRally: 0x00403218
+ * @ghidraAddress SetVideo: 0x0040e000
  */
 extern int g_bVerboseFileTrace;
 
@@ -42,6 +44,8 @@ extern int g_bVerboseFileTrace;
  * @param szCaller What the memory is for, written to the debugger when the allocation fails.
  * @return The memory, or `NULL` for a size of 0.
  * @ghidraAddress BRD3D: 0x10003390
+ * @ghidraAddress BRally: 0x004010c0
+ * @ghidraAddress SetVideo: 0x00401470
  */
 void *CHK_AllocateMemory(size_t nSize, const char *szCaller);
 
@@ -56,8 +60,10 @@ void *CHK_ReAllocateMemory(void *pMemory, size_t nSize, const char *szCaller);
  * @param pszPath The path of the file.
  * @return Whether the file opened.
  * @ghidraAddress BRD3D: 0x10003320
+ * @ghidraAddress BRally: 0x00401050
+ * @ghidraAddress SetVideo: 0x00401400
  */
-bool CHK_FileExists(const char *pszPath);
+int CHK_FileExists(const char *pszPath);
 
 /**
  * Open a file for reading in binary mode. A file that does not open is reported in

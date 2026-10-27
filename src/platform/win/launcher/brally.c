@@ -6,6 +6,7 @@
 #include <windows.h>
 
 #include "ini.h"
+#include "platform/win/fileio.h"
 
 typedef int(__cdecl *RallyMainProc)(HINSTANCE, HINSTANCE, LPSTR, int);
 
@@ -84,7 +85,7 @@ int WINAPI WinMain(HINSTANCE instance,
     ReadInstallDirectoryFromRegistry();
     strcpy(g_szIniFilePath, g_szInstallDir);
     strcat(g_szIniFilePath, "BossRally.ini");
-    if (!FileExists(g_szIniFilePath)) {
+    if (!CHK_FileExists(g_szIniFilePath)) {
         AppendSpawnArgument("SetVideo.exe");
         if (_spawnv(_P_WAIT, "SetVideo.exe", g_apszSpawnArgv)) {
             MessageBoxA(desktop, "User canceled SetVideo.exe", "Boss Rally", MB_OK);
