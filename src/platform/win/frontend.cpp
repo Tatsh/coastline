@@ -126,6 +126,14 @@ int g_dwMenuTextEditActive;
 unsigned short g_wMenuHoverIndexPrev;
 int g_dwMenuHoverActive;
 RECT g_rcMenuCenterPanel = {148, 110, 358, 260};
+RECT g_rcMenuTitleBar = {100, 10, 410, 29};
+RECT g_rcMenuListBox = {188, 130, 300, 225};
+RECT g_rcMenuLeftColumn = {67, 0, 167, 0};
+RECT g_rcMenuRightColumnMid = {330, 0, 447, 0};
+RECT g_rcMenuRightListBox = {440, 128, 540, 204};
+RECT g_rcMenuRightColumnWide = {478, 0, 578, 0};
+RECT g_rcMenuSubPanel = {87, 61, 186, 132};
+const char g_szSpace[] = " ";
 RECT g_rcHoverTopLeft = {0, 0, 200, 200};
 RECT g_rcHoverBottomLeft = {0, 380, 200, 480};
 MenuWidget *g_pSaveTimeAttackMenu;
@@ -544,6 +552,22 @@ int MenuItemList::UpdateItemAndNotify(int nIndex) {
         }
     }
     return 1;
+}
+
+MenuPanel::MenuPanel() {
+    nFlags = 0;
+    wWidgetCount = 0;
+    fX = 0;
+    fY = 0;
+    anUnknown4[0] = 0;
+    anUnknown4[1] = 0;
+    anUnknown4[2] = 0;
+    for (int i = 0; i < MENU_PANEL_WIDGET_COUNT; ++i) {
+        apWidgets[i] = nullptr;
+    }
+    pScreen = nullptr;
+    wNavigationCount = 0;
+    wSelectedIndex = 0;
 }
 
 int MenuPanel::RestoreSelection() {
@@ -1095,12 +1119,12 @@ int ShowInputOptionsMenu(void) {
     return ShowCachedMenuScreen(g_pCachedMenu_Credits, BuildInputOptionsUI);
 }
 
-int SeasonRoundList_SetBrowsingFlag(void) {
+int SeasonRoundList_SetBrowsingFlag(MenuWidget *) {
     g_bSeasonRoundListBrowsing = 1;
     return 1;
 }
 
-int SeasonRoundList_ClearBrowsingFlag(void) {
+int SeasonRoundList_ClearBrowsingFlag(MenuWidget *) {
     g_bSeasonRoundListBrowsing = 0;
     return 1;
 }
@@ -1508,7 +1532,7 @@ int ShowJoinCreateGameScreen(void) {
     return 1;
 }
 
-int ShowSeasonProgressInfoScreen(void) {
+int ShowSeasonProgressInfoScreen(MenuWidget *) {
     g_dwSeasonSavedRound = g_dwSeasonRound;
     return ShowCachedMenuScreen(g_pCachedMenu_SeasonProgressInfo, BuildSeasonProgressInfoUI);
 }
@@ -3338,6 +3362,153 @@ int ShowRaceResultsSummaryScreen(void) {
                                               BuildRaceResultsSummaryUI,
                                               g_pRaceResultsSummaryMenuScreen,
                                               BuildResultsSummaryExitSeasonConfirmUI);
+}
+
+void BuildPreRaceInfoUI(MenuScreen *pScreen) {
+    pScreen->wCurrentPanel = 0;
+    pScreen->anPanelActive[pScreen->wPanelCount] = 1;
+    MenuPanel *panel = new (std::nothrow) MenuPanel();
+    pScreen->apPanels[pScreen->wPanelCount] = panel;
+    if (!panel) {
+        ShowErrorMessage(4);
+    }
+    ++pScreen->wPanelCount;
+    panel->pScreen = pScreen;
+    panel->nFlags = 0;
+    panel->fX = 195;
+    panel->fY = 130;
+    auto add = [&](float x, float y, unsigned flags, int mode, short image) {
+        MenuWidget *widget = new (std::nothrow) MenuWidget();
+        panel->apWidgets[panel->wWidgetCount] = widget;
+        if (!widget) {
+            ShowErrorMessage(4);
+        }
+        widget->Initialize(pScreen, x, y, flags, 2, 5, mode, image);
+        return widget;
+    };
+    auto text = [](MenuWidget *widget, int stringId, const RECT *rect) {
+        widget->nSpriteId = 3;
+        widget->SetText(GetStringResource(stringId), 1, 1, rect);
+    };
+    add(0, 0, 9, 0, 0);
+    ++panel->wWidgetCount;
+    MenuWidget *widget = add(panel->fX, 10, 0x100009, 1, -1);
+    text(widget, 0x3d, &g_rcMenuTitleBar);
+    ++panel->wWidgetCount;
+    widget = add(panel->fX, panel->fY, 0x3001, 1, -1);
+    MenuItemList *list = &widget->itemList;
+    widget->pfnUpdate = SeasonRoundList_UpdateRoundSelection;
+    list->nSelectionMode = 1;
+    list->pVTable->Initialize(list, 0x240000, &g_rcMenuListBox, 5, 0, -1);
+    widget->pfnFocusEnter = SeasonRoundList_SetBrowsingFlag;
+    widget->pfnFocusExit = SeasonRoundList_ClearBrowsingFlag;
+    if (g_SeasonTable[g_bSeasonClass].raceCount > 0) {
+        auto addItem = list->pVTable->AddItem;
+        for (int round = 0; round < g_SeasonTable[g_bSeasonClass].raceCount; ++round) {
+            char number[32];
+            char label[32];
+            _itoa(round + 1, number, 10);
+            sprintf(label, GetStringResource(0xbf), std::atoi(number));
+            addItem(list, label, 1, 1, &g_rcMenuCenterPanel, true);
+        }
+    }
+    ++panel->wWidgetCount;
+    widget = add(panel->fX, panel->fY + 95, 0x102001, 1, -1);
+    widget->pfnIdleAction = ValidateEntityState;
+    widget->pfnAction = ShowSeasonProgressInfoScreen;
+    widget->nSpriteId = 2;
+    widget->SetText(GetStringResource(0x1e), 1, 0, &g_rcMenuCenterPanel);
+    ++panel->wWidgetCount;
+    ++panel->wNavigationCount;
+    widget = add(panel->fX, panel->fY + 114, 0x102001, 1, -1);
+    widget->pfnIdleAction = ValidateEntityState;
+    widget->pfnAction = PreRaceInfoUI_OnBack;
+    widget->pfnFocusEnter = PreRaceInfoUI_UpdateBackButtonText;
+    widget->nSpriteId = 3;
+    widget->SetText(GetStringResource(0xc), 1, 1, &g_rcMenuCenterPanel);
+    ++panel->wWidgetCount;
+    ++panel->wNavigationCount;
+    float x = static_cast<float>(g_rcHoverBottomLeft.left);
+    float y = static_cast<float>(g_rcHoverBottomLeft.top);
+    int right;
+    for (int i = 0; i < 3; ++i) {
+        const short images[3] = {120, 82, 84};
+        int (*actions[3])(MenuWidget *) = {
+            PreRaceInfoUI_OnSaveSeason, MenuScreen_OnReturnToMainMenu, PreRaceInfoUI_OnOptions};
+        widget = add(x, y, 0x402001, 1, images[i]);
+        widget->pfnIdleAction = ValidateEntityState;
+        widget->pfnAction = actions[i];
+        widget->rcBounds.top = static_cast<int>(y);
+        if (i == 0) {
+            widget->rcBounds.left = static_cast<int>(x);
+            right = widget->rcBounds.left + 127;
+        } else {
+            widget->rcBounds.left = static_cast<int>(x);
+        }
+        widget->rcBounds.right = right;
+        widget->rcBounds.bottom = widget->rcBounds.top + 33;
+        widget->nImageMode = 0;
+        widget->anSpriteIds[0] = images[i] + 1;
+        ++panel->wWidgetCount;
+        y += 33;
+    }
+    widget = add(73, 212, 1, 1, 22);
+    widget->pfnUpdate = RaceSetupUI_UpdateWeatherImage;
+    ++widget->nLinkedWidgetCount;
+    widget->anLinkedWidgetIndices[0] = panel->wWidgetCount + 1;
+    ++panel->wWidgetCount;
+    widget = add(panel->fX, 275, 0x101001, 1, -1);
+    widget->pfnUpdate = RaceSetupUI_UpdateWeatherLabel;
+    widget->nSpriteId = 3;
+    widget->SetText(g_szSpace, 1, 1, &g_rcMenuLeftColumn);
+    ++panel->wWidgetCount;
+    widget = add(325, 72, 1, 1, 17);
+    widget->pfnUpdate = RaceSetupUI_UpdateTrackImage;
+    ++widget->nLinkedWidgetCount;
+    widget->anLinkedWidgetIndices[0] = panel->wWidgetCount + 1;
+    ++panel->wWidgetCount;
+    widget = add(panel->fX, 152, 0x101001, 1, -1);
+    widget->pfnUpdate = RaceSetupUI_UpdateTrackNameLabel;
+    widget->nSpriteId = 3;
+    widget->SetText(g_szSpace, 1, 1, &g_rcMenuRightColumnMid);
+    ++panel->wWidgetCount;
+    text(add(450, 147, 0x100009, 1, -1), 0x3e, &g_rcMenuRightListBox);
+    ++panel->wWidgetCount;
+    widget = add(450, 128, 0x5001, 1, -1);
+    widget->pfnUpdate = PreRaceInfoUI_UpdateBestTimeLabel;
+    widget->nSpriteId = 0x34;
+    widget->SetText(g_szEmptyUiString, 1, 4, &g_rcMenuRightListBox);
+    ++panel->wWidgetCount;
+    text(add(450, 185, 0x100009, 1, -1), 0x3f, &g_rcMenuRightListBox);
+    ++panel->wWidgetCount;
+    widget = add(450, 166, 0x5001, 1, -1);
+    widget->pfnUpdate = PreRaceInfoUI_UpdateBestLapLabel;
+    widget->nSpriteId = 0x34;
+    widget->SetText(g_szEmptyUiString, 1, 4, &g_rcMenuRightListBox);
+    ++panel->wWidgetCount;
+    text(add(panel->fX, 203, 0x100009, 1, -1), 0x40, &g_rcMenuRightColumnWide);
+    ++panel->wWidgetCount;
+    text(add(panel->fX, 265, 0x100009, 1, -1), 0x41, &g_rcMenuRightColumnWide);
+    ++panel->wWidgetCount;
+    widget = add(450, 217, 0x5001, 1, -1);
+    widget->pfnUpdate = SeasonUI_UpdateTotalPointsLabel;
+    widget->nSpriteId = 5;
+    widget->SetText(g_szEmptyUiString, 1, 3, &g_rcMenuRightColumnWide);
+    ++panel->wWidgetCount;
+    text(add(106, 85, 0x100001, 1, -1), 0x38, &g_rcMenuSubPanel);
+    ++panel->wWidgetCount;
+    widget = add(440, 66, 0x5001, 1, -1);
+    widget->pfnUpdate = SeasonUI_UpdateSeasonNameLabel;
+    widget->nSpriteId = 0x34;
+    widget->SetText(g_szEmptyUiString, 1, 4, &g_rcMenuSubPanel);
+    ++panel->wWidgetCount;
+    text(add(106, 123, 0x100001, 1, -1), 0x36, &g_rcMenuSubPanel);
+    ++panel->wWidgetCount;
+    widget = add(440, 104, 0x5001, 1, -1);
+    widget->pfnUpdate = SeasonUI_UpdateYearOrdinalLabel;
+    widget->nSpriteId = 0x34;
+    widget->SetText(g_szEmptyUiString, 1, 4, &g_rcMenuSubPanel);
+    ++panel->wWidgetCount;
 }
 
 int ShowPreRaceInfoScreen(void) {

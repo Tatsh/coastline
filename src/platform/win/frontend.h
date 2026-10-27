@@ -108,7 +108,8 @@ struct MenuItemListVTable {
     char abUnknown0[0x10]; /* +0x00 */
     int(__thiscall *AddItem)(
         MenuItemList *, const char *, unsigned, unsigned char, const RECT *, bool);
-    char abUnknown14[0xc]; /* +0x14 */
+    int(__thiscall *Initialize)(MenuItemList *, unsigned, const RECT *, int, int, int);
+    char abUnknown18[8]; /* +0x18 */
     int(__thiscall *PollSelection)(MenuItemList *, int);
     int(__thiscall *UpdateItemAndNotify)(MenuItemList *, int);
     char abUnknown28[4]; /* +0x28 */
@@ -124,7 +125,9 @@ struct MenuItemList {
     MenuFont fonts[100];
     char abUnknown1a60c[0x320]; /* +0x1a60c */
     unsigned short wItemCount;
-    char abUnknown1a92e[0xa6]; /* +0x1a92e */
+    char abUnknown1a92e[0x8e]; /* +0x1a92e */
+    int nSelectionMode;
+    char abUnknown1a9c0[0x14]; /* +0x1a9c0 */
 
     /**
      * @ghidraAddress BRD3D: 0x1005bb80
@@ -226,7 +229,8 @@ public:
     int (*pfnAction)(MenuActionWidget *);
     int (*pfnIdleAction)(MenuWidget *);
     int (*pfnTextEditComplete)(MenuWidget *);
-    char abUnknown14[8]; /* +0x14 */
+    int (*pfnFocusEnter)(MenuWidget *);
+    int (*pfnFocusExit)(MenuWidget *);
     unsigned dwFlags;
     char abUnknown20[4]; /* +0x20 */
     unsigned dwSecondaryFlags;
@@ -435,7 +439,7 @@ int ShowInputOptionsMenu(void);
  * @ghidraAddress BRD3D: 0x1003e8b0
  * @ghidraAddress BRGlide: 0x10037ed0
  */
-int SeasonRoundList_SetBrowsingFlag(void);
+int SeasonRoundList_SetBrowsingFlag(MenuWidget *pWidget = nullptr);
 
 /**
  * Select the current round for season previews.
@@ -443,7 +447,7 @@ int SeasonRoundList_SetBrowsingFlag(void);
  * @ghidraAddress BRD3D: 0x1003e8c0
  * @ghidraAddress BRGlide: 0x10037ee0
  */
-int SeasonRoundList_ClearBrowsingFlag(void);
+int SeasonRoundList_ClearBrowsingFlag(MenuWidget *pWidget = nullptr);
 
 /**
  * Enable game creation after text has been entered.
@@ -1428,14 +1432,26 @@ extern int g_dwMenuTextEditActive;
 /** The index in apWidgets of the mouse cursor of the first panel of the root screen. */
 #define MENU_CURSOR_WIDGET_INDEX (MENU_PANEL_WIDGET_COUNT - 1)
 
-/** A panel of a screen of the front end. The layout is not recovered past the widgets. */
+/** A panel of a screen of the front end. */
 class MenuPanel {
 public:
-    char abUnknown4[0x14];                          /* +0x04 */
+    int anUnknown4[3]; /* +0x04 */
+    int nFlags;
+    unsigned short wWidgetCount;
+    char abUnknown16[2];                            /* +0x16 */
     MenuWidget *apWidgets[MENU_PANEL_WIDGET_COUNT]; /*!< The items of the panel. */
-    char abUnknown338[0xc];                         /* +0x338 */
+    float fX;
+    float fY;
+    MenuScreen *pScreen;
     unsigned short wNavigationCount;
     unsigned short wSelectedIndex;
+
+    /**
+     * Clear widget pointers and panel selections.
+     *
+     * @ghidraAddress BRD3D: 0x10048470
+     */
+    MenuPanel();
 
     /**
      * @ghidraAddress BRD3D: 0x100484f0
@@ -2021,6 +2037,38 @@ extern int g_dwMenuHoverActive;
  */
 extern RECT g_rcMenuCenterPanel;
 /**
+ * @ghidraAddress BRD3D: 0x100ab508
+ */
+extern RECT g_rcMenuTitleBar;
+/**
+ * @ghidraAddress BRD3D: 0x100ab4d8
+ */
+extern RECT g_rcMenuListBox;
+/**
+ * @ghidraAddress BRD3D: 0x100ab4b8
+ */
+extern RECT g_rcMenuLeftColumn;
+/**
+ * @ghidraAddress BRD3D: 0x100ab4a8
+ */
+extern RECT g_rcMenuRightColumnMid;
+/**
+ * @ghidraAddress BRD3D: 0x100ab4f8
+ */
+extern RECT g_rcMenuRightListBox;
+/**
+ * @ghidraAddress BRD3D: 0x100ab478
+ */
+extern RECT g_rcMenuRightColumnWide;
+/**
+ * @ghidraAddress BRD3D: 0x100ab458
+ */
+extern RECT g_rcMenuSubPanel;
+/**
+ * @ghidraAddress BRD3D: 0x100ad300
+ */
+extern const char g_szSpace[];
+/**
  * @ghidraAddress BRD3D: 0x100ab418
  */
 extern RECT g_rcHoverTopLeft;
@@ -2109,13 +2157,21 @@ extern MenuWidget *g_pD3DDeviceSelectMenu;
  */
 extern MenuWidget *g_pSaveSeasonBackHandlerMenu;
 
-/** @ghidraAddress BRD3D: 0x10042b30 */
+/**
+ * @ghidraAddress BRD3D: 0x10042b30
+ */
 int CarSetupUI_OnCycleCar(MenuActionWidget *pItem);
-/** @ghidraAddress BRD3D: 0x10042ee0 */
+/**
+ * @ghidraAddress BRD3D: 0x10042ee0
+ */
 int RaceSetupUI_OnCycleTrack(MenuActionWidget *pItem);
-/** @ghidraAddress BRD3D: 0x100430b0 */
+/**
+ * @ghidraAddress BRD3D: 0x100430b0
+ */
 int RaceSetupUI_OnCycleLapCount(MenuActionWidget *pItem);
-/** @ghidraAddress BRD3D: 0x10043180 */
+/**
+ * @ghidraAddress BRD3D: 0x10043180
+ */
 int RaceSetupUI_OnCycleWeather(MenuActionWidget *pItem);
 
 /**
@@ -2309,7 +2365,7 @@ int ShowJoinCreateGameScreen(void);
 /**
  * @ghidraAddress BRD3D: 0x10045dc0
  */
-int ShowSeasonProgressInfoScreen(void);
+int ShowSeasonProgressInfoScreen(MenuWidget *pWidget = nullptr);
 
 /**
  * @ghidraAddress BRD3D: 0x10044f50
@@ -3589,6 +3645,15 @@ int ShowRaceResultsSummaryScreen(void);
  * @ghidraAddress BRD3D: 0x100509f0
  */
 void BuildPreRaceInfoUI(MenuScreen *pScreen);
+
+/**
+ * @ghidraAddress BRD3D: 0x10040c00
+ */
+int PreRaceInfoUI_UpdateBestTimeLabel(MenuWidget *pWidget);
+/**
+ * @ghidraAddress BRD3D: 0x10040d70
+ */
+int PreRaceInfoUI_UpdateBestLapLabel(MenuWidget *pWidget);
 
 /**
  * @ghidraAddress BRD3D: 0x10049f40
