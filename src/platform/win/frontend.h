@@ -556,11 +556,1213 @@ private:
     const RECT *pImageRects;
 };
 
-/**
- * @ghidraAddress BRD3D: 0x10043760
- * @ghidraAddress BRGlide: 0x1003ccb0
- */
-int CarSetupUI_OnAcceptAndSave(MenuActionWidget *pWidget);
+class AudioOptionsUI {
+public:
+    /**
+     * Update the volume-channel image and its first animation frame.
+     *
+     * @ghidraAddress BRD3D: 0x1003e950
+     * @ghidraAddress BRGlide: 0x10037f70
+     */
+    static int UpdateVolumeChannelImage(MenuWidget *pWidget);
+
+    /**
+     * @ghidraAddress BRD3D: 0x1003ea40
+     * @ghidraAddress BRGlide: 0x10038060
+     */
+    static int UpdateVolumeLevelIndicatorPos(MenuWidget *pWidget);
+
+    /**
+     * @ghidraAddress BRD3D: 0x1003ee20
+     * @ghidraAddress BRGlide: 0x10038350
+     */
+    static int UpdateCdTrackSelection(MenuWidget *pWidget);
+
+    /**
+     * @ghidraAddress BRD3D: 0x1004e810
+     * @ghidraAddress BRGlide: 0x100476c0
+     */
+    static int OnMusicTrackChanged(MenuItemList *pList, int *pTrack);
+
+    /**
+     * @ghidraAddress BRD3D: 0x10042cf0
+     * @ghidraAddress BRGlide: 0x1003c240
+     */
+    static int OnCycleSfxVolume(MenuActionWidget *pWidget);
+
+    /**
+     * @ghidraAddress BRD3D: 0x10042d60
+     * @ghidraAddress BRGlide: 0x1003c2b0
+     */
+    static int OnCycleMusicVolume(MenuActionWidget *pWidget);
+
+    /**
+     * @ghidraAddress BRD3D: 0x100466c0
+     */
+    static int OnBackAndSave(MenuActionWidget *pItem);
+};
+
+class CarSetupUI {
+public:
+    /**
+     * @ghidraAddress BRD3D: 0x10043760
+     * @ghidraAddress BRGlide: 0x1003ccb0
+     */
+    static int OnAcceptAndSave(MenuActionWidget *pWidget);
+
+    /**
+     * Position the steering indicator for the selected handling choice.
+     *
+     * @ghidraAddress BRD3D: 0x1003e920
+     * @ghidraAddress BRGlide: 0x10037f40
+     */
+    static int UpdateSteeringIndicatorPos(MenuWidget *pWidget);
+
+    /**
+     * @ghidraAddress BRD3D: 0x10042c80
+     * @ghidraAddress BRGlide: 0x1003c1d0
+     */
+    static int OnCycleHandlingType(MenuWidget *pWidget);
+
+    /**
+     * @ghidraAddress BRD3D: 0x10042dc0
+     * @ghidraAddress BRGlide: 0x1003c310
+     */
+    static int OnCycleTireType(MenuWidget *pWidget);
+
+    /**
+     * @ghidraAddress BRD3D: 0x10042e20
+     * @ghidraAddress BRGlide: 0x1003c370
+     */
+    static int OnCycleSuspensionType(MenuWidget *pWidget);
+
+    /**
+     * @ghidraAddress BRD3D: 0x10042e80
+     * @ghidraAddress BRGlide: 0x1003c3d0
+     */
+    static int OnCycleTransmissionType(MenuWidget *pWidget);
+
+    /**
+     * @ghidraAddress BRD3D: 0x10040870
+     * @ghidraAddress BRGlide: 0x10039db0
+     */
+    static int UpdateTransmissionImage(MenuWidget *pWidget);
+
+    /**
+     * @ghidraAddress BRD3D: 0x10040890
+     * @ghidraAddress BRGlide: 0x10039dd0
+     */
+    static int UpdateTiresImage(MenuWidget *pWidget);
+
+    /**
+     * @ghidraAddress BRD3D: 0x100408b0
+     * @ghidraAddress BRGlide: 0x10039df0
+     */
+    static int UpdateShocksImage(MenuWidget *pWidget);
+
+    /**
+     * @ghidraAddress BRD3D: 0x10042b30
+     */
+    static int OnCycleCar(MenuActionWidget *pItem);
+
+    /**
+     * @ghidraAddress BRD3D: 0x1003f760
+     * @ghidraAddress BRGlide: 0x10038ca0
+     */
+    static int UpdateCarNameLabel(MenuWidget *pWidget);
+
+    /**
+     * @ghidraAddress BRD3D: 0x1003f860
+     * @ghidraAddress BRGlide: 0x10038da0
+     */
+    static int UpdateTransmissionLabel(MenuWidget *pWidget);
+
+    /**
+     * @ghidraAddress BRD3D: 0x1003f990
+     * @ghidraAddress BRGlide: 0x10038ed0
+     */
+    static int UpdateShocksLabel(MenuWidget *pWidget);
+
+    /**
+     * @ghidraAddress BRD3D: 0x1003f7f0
+     */
+    static int UpdateTiresLabel(MenuWidget *pWidget);
+
+    /**
+     * @ghidraAddress BRD3D: 0x1003f720
+     */
+    static int UpdateCarImage(MenuWidget *pWidget);
+
+    /**
+     * @ghidraAddress BRD3D: 0x100464e0
+     */
+    static int OnBackToRaceSetup(MenuActionWidget *pItem);
+
+    /**
+     * @ghidraAddress BRD3D: 0x100458c0
+     */
+    static int OnOpenOptions(MenuActionWidget *pItem);
+
+    /**
+     * @ghidraAddress BRD3D: 0x100458e0
+     */
+    static int OnOpenSaveSeason(MenuActionWidget *pItem);
+
+    /**
+     * @ghidraAddress BRD3D: 0x10046cd0
+     */
+    static int OnBackToSeasonProgressInfo(MenuActionWidget *pItem);
+
+    /**
+     * @ghidraAddress BRD3D: 0x10046d20
+     */
+    static int OnBackToTimeAttack(MenuActionWidget *pItem);
+};
+
+class ChampionshipSeasonUI {
+public:
+    /**
+     * Reset championship choices and open pre-race information for a new season.
+     *
+     * @ghidraAddress BRD3D: 0x10045aa0
+     * @ghidraAddress BRGlide: 0x1003ef40
+     */
+    static int OnStartNewSeason(MenuWidget *pWidget);
+
+    /**
+     * @ghidraAddress BRD3D: 0x10046c90
+     */
+    static int OnBack(MenuActionWidget *pItem);
+};
+
+class ConnectionUI {
+public:
+    /**
+     * @ghidraAddress BRD3D: 0x10042ac0
+     * @ghidraAddress BRGlide: 0x1003c020
+     */
+    static int OnToggleTextEdit(MenuWidget *pWidget);
+
+    /**
+     * @ghidraAddress BRD3D: 0x10040930
+     * @ghidraAddress BRGlide: 0x10039e70
+     */
+    static int UpdateServiceProviderImage(MenuWidget *pWidget);
+
+    /**
+     * @ghidraAddress BRD3D: 0x1003fc40
+     * @ghidraAddress BRGlide: 0x10039180
+     */
+    static int UpdateServiceProviderLabel(MenuWidget *pWidget);
+};
+
+class CreateGameMenuUI {
+public:
+    /**
+     * @ghidraAddress BRD3D: 0x10042b00
+     * @ghidraAddress BRGlide: 0x1003c050
+     */
+    static int OnToggleTextEdit(MenuWidget *pWidget);
+
+    /**
+     * @ghidraAddress BRD3D: 0x100444c0
+     */
+    static int OnBack(MenuActionWidget *pItem);
+};
+
+class CreateGameUI {
+public:
+    /**
+     * Enable game creation after text has been entered.
+     *
+     * @ghidraAddress BRD3D: 0x1003f280
+     * @ghidraAddress BRGlide: 0x100387c0
+     */
+    static int EnableContinueIfNameEntered(MenuWidget *pWidget);
+};
+
+class D3DDeviceSelectUI {
+public:
+    /**
+     * @ghidraAddress BRD3D: 0x1003ed10
+     */
+    static int UpdateDeviceSelection(MenuWidget *pWidget);
+
+    /** @ghidraAddress BRD3D: 0x1003ecb0 */
+    static int OnSetDriver(MenuWidget *pWidget);
+};
+
+class DisplayModeSelectUI {
+public:
+    /**
+     * @ghidraAddress BRD3D: 0x1003edf0
+     * @ghidraAddress BRGlide: 0x10038320
+     */
+    static int UpdateModeSelection(MenuWidget *pWidget);
+
+    /** @ghidraAddress BRD3D: 0x1003ed40 */
+    static int OnSetMode(MenuWidget *pWidget);
+};
+
+class GameOptionsUI {
+public:
+    /**
+     * Draw the force feedback choice, displaying off when the device lacks support.
+     *
+     * @ghidraAddress BRD3D: 0x10040950
+     * @ghidraAddress BRGlide: 0x10039e90
+     */
+    static int UpdateForceFeedbackImage(MenuWidget *pWidget);
+
+    /**
+     * @ghidraAddress BRD3D: 0x10043590
+     * @ghidraAddress BRGlide: 0x1003cae0
+     */
+    static int OnToggleForceFeedback(MenuWidget *pWidget);
+
+    /**
+     * @ghidraAddress BRD3D: 0x100435f0
+     * @ghidraAddress BRGlide: 0x1003cb40
+     */
+    static int OnToggleSkidMarks(MenuWidget *pWidget);
+
+    /**
+     * @ghidraAddress BRD3D: 0x10043650
+     * @ghidraAddress BRGlide: 0x1003cba0
+     */
+    static int OnToggleCarShadow(MenuWidget *pWidget);
+
+    /**
+     * @ghidraAddress BRD3D: 0x100436b0
+     * @ghidraAddress BRGlide: 0x1003cc00
+     */
+    static int OnToggleSpecularLighting(MenuWidget *pWidget);
+
+    /**
+     * @ghidraAddress BRD3D: 0x100409b0
+     * @ghidraAddress BRGlide: 0x10039ef0
+     */
+    static int UpdateCarShadowImage(MenuWidget *pWidget);
+
+    /**
+     * @ghidraAddress BRD3D: 0x100409d0
+     * @ghidraAddress BRGlide: 0x10039f10
+     */
+    static int UpdateSpecularLightingImage(MenuWidget *pWidget);
+
+    /**
+     * @ghidraAddress BRD3D: 0x10040990
+     * @ghidraAddress BRGlide: 0x10039ed0
+     */
+    static int UpdateSkidMarksImage(MenuWidget *pWidget);
+
+    /**
+     * @ghidraAddress BRD3D: 0x1003fda0
+     * @ghidraAddress BRGlide: 0x100392e0
+     */
+    static int UpdateCarShadowLabel(MenuWidget *pWidget);
+
+    /**
+     * @ghidraAddress BRD3D: 0x1003fd30
+     * @ghidraAddress BRGlide: 0x10039270
+     */
+    static int UpdateSkidMarksLabel(MenuWidget *pWidget);
+
+    /**
+     * @ghidraAddress BRD3D: 0x1003fe10
+     * @ghidraAddress BRGlide: 0x10039350
+     */
+    static int UpdateSpecularLightingLabel(MenuWidget *pWidget);
+
+    /**
+     * @ghidraAddress BRD3D: 0x1003fcb0
+     * @ghidraAddress BRGlide: 0x100391f0
+     */
+    static int UpdateForceFeedbackLabel(MenuWidget *pWidget);
+
+    /**
+     * @ghidraAddress BRD3D: 0x10046710
+     */
+    static int OnBack(MenuActionWidget *pItem);
+};
+
+class InputOptionsUI {
+public:
+    /**
+     * @ghidraAddress BRD3D: 0x100406c0
+     * @ghidraAddress BRGlide: 0x10039c00
+     */
+    static int OnRestoreDefaults(MenuWidget *pWidget);
+
+    /**
+     * @ghidraAddress BRD3D: 0x10043400
+     * @ghidraAddress BRGlide: 0x1003c950
+     */
+    static int OnCycleInputDevice(MenuWidget *pWidget);
+
+    /**
+     * @ghidraAddress BRD3D: 0x10041870
+     * @ghidraAddress BRGlide: 0x1003add0
+     */
+    static int UpdateInputDeviceImage(MenuWidget *pWidget);
+
+    /**
+     * @ghidraAddress BRD3D: 0x1003ffd0
+     * @ghidraAddress BRGlide: 0x10039510
+     */
+    static int UpdateInputDeviceLabel(MenuWidget *pWidget);
+
+    /**
+     * @ghidraAddress BRD3D: 0x100465a0
+     */
+    static int OnBack(MenuActionWidget *pItem);
+};
+
+class JoinCreateGameUI {
+public:
+    /**
+     * @ghidraAddress BRD3D: 0x1003eb90
+     * @ghidraAddress BRGlide: 0x10038180
+     */
+    static int UpdateSessionSelection(MenuWidget *pWidget);
+
+    /**
+     * @ghidraAddress BRD3D: 0x10044ae0
+     */
+    static int OnBack(MenuActionWidget *pItem);
+};
+
+class KeyConfigUI {
+public:
+    /**
+     * @ghidraAddress BRD3D: 0x1003ec80
+     * @ghidraAddress BRGlide: 0x100382a0
+     */
+    static int UpdateActionSelection(MenuWidget *pWidget);
+
+    /**
+     * @ghidraAddress BRD3D: 0x100400e0
+     * @ghidraAddress BRGlide: 0x10039620
+     */
+    static int UpdateBindingLabel(MenuWidget *pWidget);
+
+    /**
+     * @ghidraAddress BRD3D: 0x1003f8d0
+     * @ghidraAddress BRGlide: 0x10038e10
+     */
+    static int UpdateDuplicateBindingWarning(MenuWidget *pWidget);
+
+    /**
+     * @ghidraAddress BRD3D: 0x10040450
+     * @ghidraAddress BRGlide: 0x10039990
+     */
+    static int PollKeyCapture(MenuWidget *pWidget);
+
+    /**
+     * @ghidraAddress BRD3D: 0x10040680
+     * @ghidraAddress BRGlide: 0x10039bc0
+     */
+    static int BeginKeyCapture(MenuWidget *pWidget);
+
+    /**
+     * @ghidraAddress BRD3D: 0x10046560
+     */
+    static int OnBack(MenuActionWidget *pItem);
+};
+
+class LoadFileListUI {
+public:
+    /**
+     * @ghidraAddress BRD3D: 0x1003eae0
+     * @ghidraAddress BRGlide: 0x10038220
+     */
+    static int UpdateSlotSelection(MenuWidget *pWidget);
+};
+
+class LoadSeasonUI {
+public:
+    /**
+     * Enable continuing after a championship slot has been opened.
+     *
+     * @ghidraAddress BRD3D: 0x10041890
+     * @ghidraAddress BRGlide: 0x1003adf0
+     */
+    static int UpdateContinueButtonState(MenuWidget *pWidget);
+
+    /**
+     * @ghidraAddress BRD3D: 0x100450c0
+     * @ghidraAddress BRGlide: 0x1003e610
+     */
+    static int OnLoadAutoSave(MenuWidget *pWidget);
+
+    /**
+     * @ghidraAddress BRD3D: 0x10045090
+     */
+    static int OnContinueSeason(MenuActionWidget *pItem);
+
+    /**
+     * @ghidraAddress BRD3D: 0x10046e10
+     */
+    static int OnBack(MenuActionWidget *pItem);
+};
+
+class LoadTimeAttackMenuUI {
+public:
+    /**
+     * Enable a time attack item after a saved slot has been selected.
+     *
+     * @ghidraAddress BRD3D: 0x100418f0
+     * @ghidraAddress BRGlide: 0x1003ae50
+     */
+    static int UpdateItemEnabledState(MenuWidget *pWidget);
+
+    /**
+     * @ghidraAddress BRD3D: 0x10046380
+     * @ghidraAddress BRGlide: 0x1003f820
+     */
+    static int OnCarSetup(MenuWidget *pWidget);
+
+    /** @ghidraAddress BRD3D: 0x10042880 */
+    static int OnSlotSelected(MenuItemList *pList, int *pnSlot);
+
+    /**
+     * @ghidraAddress BRD3D: 0x10044de0
+     */
+    static int OnBack(MenuActionWidget *pItem);
+};
+
+class MainMenuUI {
+public:
+    /**
+     * @ghidraAddress BRD3D: 0x10041970
+     * @ghidraAddress BRGlide: 0x1003aed0
+     */
+    static int OnPlayCredits(MenuWidget *pWidget);
+};
+
+class ModemConnectionUI {
+public:
+    /**
+     * Select the modem provider and restore the cached join or create screen.
+     *
+     * @ghidraAddress BRD3D: 0x10043f50
+     * @ghidraAddress BRGlide: 0x1003d4a0
+     */
+    static int OnAccept(MenuWidget *pWidget);
+
+    /**
+     * Enable continuing after a modem number has been entered.
+     *
+     * @ghidraAddress BRD3D: 0x1003f020
+     * @ghidraAddress BRGlide: 0x10038550
+     */
+    static int EnableContinueIfNumberEntered(MenuWidget *pWidget);
+
+    /**
+     * @ghidraAddress BRD3D: 0x10044b40
+     */
+    static int OnBack(MenuActionWidget *pItem);
+};
+
+class MultiplayerConnectionUI {
+public:
+    /**
+     * @ghidraAddress BRD3D: 0x10044010
+     */
+    static int OnSelectIpx(MenuWidget *pWidget);
+
+    /**
+     * @ghidraAddress BRD3D: 0x10044030
+     */
+    static int UpdateIpxItem(MenuWidget *pWidget);
+
+    /**
+     * @ghidraAddress BRD3D: 0x10044050
+     */
+    static int OnSelectTcpIp(MenuWidget *pWidget);
+
+    /**
+     * @ghidraAddress BRD3D: 0x10044070
+     */
+    static int UpdateTcpIpItem(MenuWidget *pWidget);
+
+    /**
+     * @ghidraAddress BRD3D: 0x10044090
+     */
+    static int OnSelectModem(MenuWidget *pWidget);
+
+    /**
+     * @ghidraAddress BRD3D: 0x100440b0
+     */
+    static int UpdateModemItem(MenuWidget *pWidget);
+
+    /**
+     * @ghidraAddress BRD3D: 0x100463c0
+     */
+    static int OnBack(MenuActionWidget *pItem);
+};
+
+class MultiplayerGameSetupUI {
+public:
+    /**
+     * Exit an active network game launched through a lobby.
+     *
+     * @ghidraAddress BRD3D: 0x100437d0
+     * @ghidraAddress BRGlide: 0x1003cd20
+     */
+    static int OnEscape(MenuWidget *pWidget);
+
+    /**
+     * @ghidraAddress BRD3D: 0x10044600
+     */
+    static int OnCycleCarClass(MenuWidget *pWidget);
+
+    /**
+     * @ghidraAddress BRD3D: 0x10044970
+     */
+    static int OnBackAsClient(MenuActionWidget *pItem);
+
+    /**
+     * @ghidraAddress BRD3D: 0x10044a30
+     */
+    static int OnBackAsHost(MenuActionWidget *pItem);
+};
+
+class MultiplayerSetupUI {
+public:
+    /**
+     * @ghidraAddress BRD3D: 0x1003f5e0
+     * @ghidraAddress BRGlide: 0x10038b20
+     */
+    static int UpdateCarGroupImage(MenuWidget *pWidget);
+
+    /**
+     * @ghidraAddress BRD3D: 0x1003f680
+     * @ghidraAddress BRGlide: 0x10038bc0
+     */
+    static int UpdateCarGroupSubImage(MenuWidget *pWidget);
+};
+
+class NetworkCarSetupUI {
+public:
+    /**
+     * @ghidraAddress BRD3D: 0x1003ebc0
+     * @ghidraAddress BRGlide: 0x100381b0
+     */
+    static int PollChatListSelection(MenuWidget *pWidget);
+
+    /**
+     * @ghidraAddress BRD3D: 0x1003f170
+     * @ghidraAddress BRGlide: 0x100386b0
+     */
+    static int SendChatMessage(MenuWidget *pWidget);
+
+    /**
+     * @ghidraAddress BRD3D: 0x100437b0
+     * @ghidraAddress BRGlide: 0x1003cd00
+     */
+    static int OnBootPlayer(MenuWidget *pWidget);
+
+    /**
+     * @ghidraAddress BRD3D: 0x10043a00
+     */
+    static int OnRefreshSessionDesc(MenuWidget *pWidget);
+
+    /**
+     * @ghidraAddress BRD3D: 0x10043810
+     */
+    static int OnEscape(MenuWidget *pWidget);
+
+    /**
+     * @ghidraAddress BRD3D: 0x1003ebe0
+     */
+    static int UpdateSelectedPlayer(MenuWidget *pWidget);
+};
+
+class OptionsMenuUI {
+public:
+    /**
+     * @ghidraAddress BRD3D: 0x10046520
+     */
+    static int OnBack(MenuActionWidget *pItem);
+
+    /**
+     * @ghidraAddress BRD3D: 0x10046bb0
+     */
+    static int OnBackToCarSetup(MenuActionWidget *pItem);
+
+    /**
+     * @ghidraAddress BRD3D: 0x10046750
+     */
+    static int OnBackToPreRaceInfo(MenuActionWidget *pItem);
+
+    /**
+     * @ghidraAddress BRD3D: 0x10046830
+     */
+    static int OnBackToSeasonProgressInfo(MenuActionWidget *pItem);
+
+    /**
+     * @ghidraAddress BRD3D: 0x10046910
+     */
+    static int OnBackToRaceResultsInfo(MenuActionWidget *pItem);
+
+    /**
+     * @ghidraAddress BRD3D: 0x100469f0
+     */
+    static int OnBackToRaceResultsSummary(MenuActionWidget *pItem);
+
+    /**
+     * @ghidraAddress BRD3D: 0x10046ad0
+     */
+    static int OnBackToRaceResultsTotals(MenuActionWidget *pItem);
+};
+
+class OverwritePromptUI {
+public:
+    /** @ghidraAddress BRD3D: 0x1003e7a0 */
+    static int DrawPromptBox(MenuWidget *pWidget);
+};
+
+class PlayerNameEntryUI {
+public:
+    /**
+     * Enable continuing after a player name has been entered.
+     *
+     * @ghidraAddress BRD3D: 0x1003ef60
+     * @ghidraAddress BRGlide: 0x10038490
+     */
+    static int EnableContinueIfNameEntered(MenuWidget *pWidget);
+
+    /**
+     * @ghidraAddress BRD3D: 0x10042a90
+     * @ghidraAddress BRGlide: 0x1003bff0
+     */
+    static int OnToggleTextEdit(MenuWidget *pWidget);
+
+    /**
+     * @ghidraAddress BRD3D: 0x10043fc0
+     */
+    static int OnBack(MenuActionWidget *pItem);
+};
+
+class PreRaceExitSeasonConfirmUI {
+public:
+    /**
+     * @ghidraAddress BRD3D: 0x10046f60
+     * @ghidraAddress BRGlide: 0x100403b0
+     */
+    static int OnYes(MenuWidget *pWidget);
+
+    /**
+     * @ghidraAddress BRD3D: 0x10046fc0
+     * @ghidraAddress BRGlide: 0x10040410
+     */
+    static int OnNo(MenuWidget *pWidget);
+};
+
+class PreRaceInfoUI {
+public:
+    /**
+     * @ghidraAddress BRD3D: 0x1003e840
+     * @ghidraAddress BRGlide: 0x10037e60
+     */
+    static int UpdateBackButtonText(MenuWidget *pWidget);
+
+    /**
+     * @ghidraAddress BRD3D: 0x10045780
+     * @ghidraAddress BRGlide: 0x1003ec10
+     */
+    static int OnOptions(MenuWidget *pWidget);
+
+    /**
+     * @ghidraAddress BRD3D: 0x100457a0
+     * @ghidraAddress BRGlide: 0x1003ec30
+     */
+    static int OnSaveSeason(MenuWidget *pWidget);
+
+    /**
+     * @ghidraAddress BRD3D: 0x10046dc0
+     */
+    static int OnBackToLoadSeason(MenuActionWidget *pItem);
+
+    /**
+     * @ghidraAddress BRD3D: 0x10046d70
+     */
+    static int OnBackToChampionshipSeason(MenuActionWidget *pItem);
+
+    /**
+     * @ghidraAddress BRD3D: 0x10046f50
+     */
+    static int OnBack(MenuActionWidget *pItem);
+
+    /**
+     * @ghidraAddress BRD3D: 0x10040c00
+     */
+    static int UpdateBestTimeLabel(MenuWidget *pWidget);
+
+    /**
+     * @ghidraAddress BRD3D: 0x10040d70
+     */
+    static int UpdateBestLapLabel(MenuWidget *pWidget);
+};
+
+class QuitGameConfirmUI {
+public:
+    /**
+     * @ghidraAddress BRD3D: 0x10043710
+     * @ghidraAddress BRGlide: 0x1003cc60
+     */
+    static int OnConfirmQuit(MenuWidget *pWidget);
+
+    /**
+     * @ghidraAddress BRD3D: 0x100464a0
+     */
+    static int OnBack(MenuActionWidget *pItem);
+};
+
+class RaceResultsInfoUI {
+public:
+    /**
+     * @ghidraAddress BRD3D: 0x100412c0
+     * @ghidraAddress BRGlide: 0x1003a820
+     */
+    static int OnSelectLap1(MenuWidget *pWidget);
+
+    /**
+     * @ghidraAddress BRD3D: 0x100412d0
+     * @ghidraAddress BRGlide: 0x1003a830
+     */
+    static int OnSelectLap2(MenuWidget *pWidget);
+
+    /**
+     * @ghidraAddress BRD3D: 0x100412e0
+     * @ghidraAddress BRGlide: 0x1003a840
+     */
+    static int OnSelectLap3(MenuWidget *pWidget);
+
+    /**
+     * @ghidraAddress BRD3D: 0x100412f0
+     * @ghidraAddress BRGlide: 0x1003a850
+     */
+    static int OnSelectTotalTime(MenuWidget *pWidget);
+
+    /**
+     * @ghidraAddress BRD3D: 0x10045800
+     */
+    static int OnOpenOptions(MenuActionWidget *pItem);
+
+    /**
+     * @ghidraAddress BRD3D: 0x10045820
+     */
+    static int OnOpenSaveSeason(MenuActionWidget *pItem);
+
+    /**
+     * @ghidraAddress BRD3D: 0x10040ee0
+     */
+    static int UpdateSelectedTimeLabel(MenuWidget *pWidget);
+};
+
+class RaceResultsSummaryUI {
+public:
+    /**
+     * @ghidraAddress BRD3D: 0x10045840
+     */
+    static int OnOpenOptions(MenuActionWidget *pItem);
+
+    /**
+     * @ghidraAddress BRD3D: 0x10045860
+     */
+    static int OnOpenSaveSeason(MenuActionWidget *pItem);
+
+    /**
+     * @ghidraAddress BRD3D: 0x100470a0
+     */
+    static int OnBack(MenuActionWidget *pItem);
+};
+
+class RaceResultsTotalsUI {
+public:
+    /**
+     * Draw the total points of the race results.
+     *
+     * @ghidraAddress BRD3D: 0x10041710
+     * @ghidraAddress BRGlide: 0x1003ac70
+     */
+    static int UpdateTotalPointsLabel(MenuWidget *pWidget);
+
+    /**
+     * Draw the number of completed rounds in the race results.
+     *
+     * @ghidraAddress BRD3D: 0x10041670
+     * @ghidraAddress BRGlide: 0x1003abd0
+     */
+    static int UpdateRoundsCompletedLabel(MenuWidget *pWidget);
+
+    /**
+     * Draw the remaining points for the season stored in the resume state.
+     *
+     * @ghidraAddress BRD3D: 0x100417b0
+     * @ghidraAddress BRGlide: 0x1003ad10
+     */
+    static int UpdatePointsNeededLabel(MenuWidget *pWidget);
+
+    /**
+     * @ghidraAddress BRD3D: 0x100470e0
+     */
+    static int OnBack(MenuActionWidget *pItem);
+
+    /**
+     * @ghidraAddress BRD3D: 0x10045880
+     */
+    static int OnOpenOptions(MenuActionWidget *pItem);
+
+    /**
+     * @ghidraAddress BRD3D: 0x100458a0
+     */
+    static int OnOpenSaveSeason(MenuActionWidget *pItem);
+
+    /**
+     * Apply championship progress and switch from totals to the next championship screen.
+     *
+     * @param pItem The action item on the totals screen.
+     * @return Zero.
+     * @ghidraAddress BRD3D: 0x10047290
+     */
+    static int OnContinue(MenuActionWidget *pItem);
+};
+
+class RaceSetupUI {
+public:
+    /**
+     * @ghidraAddress BRD3D: 0x100408d0
+     * @ghidraAddress BRGlide: 0x10039e10
+     */
+    static int UpdateLapCountLabel(MenuWidget *pWidget);
+
+    /**
+     * @ghidraAddress BRD3D: 0x10040730
+     * @ghidraAddress BRGlide: 0x10039c70
+     */
+    static int UpdateTrackImage(MenuWidget *pWidget);
+
+    /**
+     * @ghidraAddress BRD3D: 0x100407e0
+     * @ghidraAddress BRGlide: 0x10039d20
+     */
+    static int UpdateWeatherImage(MenuWidget *pWidget);
+
+    /**
+     * @ghidraAddress BRD3D: 0x10042ee0
+     */
+    static int OnCycleTrack(MenuActionWidget *pItem);
+
+    /**
+     * @ghidraAddress BRD3D: 0x100430b0
+     */
+    static int OnCycleLapCount(MenuActionWidget *pItem);
+
+    /**
+     * @ghidraAddress BRD3D: 0x10043180
+     */
+    static int OnCycleWeather(MenuActionWidget *pItem);
+
+    /**
+     * @ghidraAddress BRD3D: 0x1003fa00
+     * @ghidraAddress BRGlide: 0x10038f40
+     */
+    static int UpdateTrackNameLabel(MenuWidget *pWidget);
+
+    /**
+     * @ghidraAddress BRD3D: 0x1003fe80
+     * @ghidraAddress BRGlide: 0x100393c0
+     */
+    static int UpdateWeatherLabel(MenuWidget *pWidget);
+
+    /**
+     * @ghidraAddress BRD3D: 0x10046450
+     */
+    static int OnBack(MenuActionWidget *pItem);
+
+    /**
+     * @ghidraAddress BRD3D: 0x10044cb0
+     */
+    static int OnBackToTimeAttack(MenuActionWidget *pItem);
+};
+
+class ResultsSummaryExitSeasonConfirmUI {
+public:
+    /**
+     * @ghidraAddress BRD3D: 0x10046fd0
+     * @ghidraAddress BRGlide: 0x10040420
+     */
+    static int OnYes(MenuWidget *pWidget);
+
+    /**
+     * @ghidraAddress BRD3D: 0x10047050
+     * @ghidraAddress BRGlide: 0x100404a0
+     */
+    static int OnNo(MenuWidget *pWidget);
+};
+
+class SaveSeasonUI {
+public:
+    /**
+     * Process championship save text confirmation or cancellation.
+     *
+     * @ghidraAddress BRD3D: 0x10047210
+     * @ghidraAddress BRGlide: 0x10040660
+     */
+    static int HandleTextEntry(MenuWidget *pWidget);
+
+    /**
+     * Start naming a new championship slot or activate confirmation for an existing file.
+     *
+     * @ghidraAddress BRD3D: 0x10042020
+     * @ghidraAddress BRGlide: 0x1003b580
+     */
+    static int OnSlotSelected(MenuItemList *pList, int *pnSlot);
+
+    /**
+     * @ghidraAddress BRD3D: 0x1003eb10
+     * @ghidraAddress BRGlide: 0x10038100
+     */
+    static int UpdateSlotSelection(MenuWidget *pWidget);
+
+    /**
+     * @ghidraAddress BRD3D: 0x10041df0
+     * @ghidraAddress BRGlide: 0x1003b350
+     */
+    static int OnSlotNameEntered(MenuItemList *pList, int nStatus);
+
+    /**
+     * @ghidraAddress BRD3D: 0x100450f0
+     * @ghidraAddress BRGlide: 0x1003e640
+     */
+    static int InvokeBackHandler(MenuWidget *pWidget);
+
+    /**
+     * @ghidraAddress BRD3D: 0x100418d0
+     * @ghidraAddress BRGlide: 0x1003ae30
+     */
+    static int UpdateItemEnabledState(MenuWidget *pWidget);
+
+    /**
+     * @ghidraAddress BRD3D: 0x10046bf0
+     */
+    static int OnBackToCarSetup(MenuActionWidget *pItem);
+
+    /**
+     * @ghidraAddress BRD3D: 0x10046790
+     */
+    static int OnBackToPreRaceInfo(MenuActionWidget *pItem);
+
+    /**
+     * @ghidraAddress BRD3D: 0x10046870
+     */
+    static int OnBackToSeasonProgressInfo(MenuActionWidget *pItem);
+
+    /**
+     * @ghidraAddress BRD3D: 0x10046eb0
+     */
+    static int OnBack(MenuActionWidget *pItem);
+
+    /**
+     * @ghidraAddress BRD3D: 0x10046950
+     */
+    static int OnBackToRaceResultsInfo(MenuActionWidget *pItem);
+
+    /**
+     * @ghidraAddress BRD3D: 0x10046a30
+     */
+    static int OnBackToRaceResultsSummary(MenuActionWidget *pItem);
+
+    /**
+     * @ghidraAddress BRD3D: 0x10046b10
+     */
+    static int OnBackToRaceResultsTotals(MenuActionWidget *pItem);
+};
+
+class SaveTimeAttackMenuUI {
+public:
+    /**
+     * Process time attack save text confirmation or cancellation.
+     *
+     * @ghidraAddress BRD3D: 0x10047250
+     * @ghidraAddress BRGlide: 0x100406a0
+     */
+    static int HandleTextEntry(MenuWidget *pWidget);
+
+    /** @ghidraAddress BRD3D: 0x10042740 */
+    static int OnSlotSelected(MenuItemList *pList, int *pnSlot);
+
+    /** @ghidraAddress BRD3D: 0x10042560 */
+    static int OnSlotNameEntered(MenuItemList *pList, int status);
+
+    /**
+     * @ghidraAddress BRD3D: 0x10044f00
+     */
+    static int OnBack(MenuActionWidget *pItem);
+};
+
+class SaveTimeAttackUI {
+public:
+    /** @ghidraAddress BRD3D: 0x1003ec30 */
+    static int UpdateSlotSelection(MenuWidget *pWidget);
+};
+
+class SeasonCongratsUI {
+public:
+    /**
+     * @ghidraAddress BRD3D: 0x100471f0
+     * @ghidraAddress BRGlide: 0x10040640
+     */
+    static int PollAnyKey(MenuWidget *pWidget);
+
+    /**
+     * @ghidraAddress BRD3D: 0x1003f440
+     * @ghidraAddress BRGlide: 0x10038980
+     */
+    static int UpdatePrimaryBannerImage(MenuWidget *pWidget);
+
+    /**
+     * @ghidraAddress BRD3D: 0x1003f540
+     * @ghidraAddress BRGlide: 0x10038a80
+     */
+    static int UpdateSecondaryBannerImage(MenuWidget *pWidget);
+};
+
+class SeasonFileUI {
+public:
+    /**
+     * @ghidraAddress BRD3D: 0x10040a50
+     * @ghidraAddress BRGlide: 0x10039f90
+     */
+    static int UpdateYearLabel(MenuWidget *pWidget);
+
+    /**
+     * @ghidraAddress BRD3D: 0x10040ac0
+     * @ghidraAddress BRGlide: 0x1003a000
+     */
+    static int UpdateRoundLabel(MenuWidget *pWidget);
+};
+
+class SeasonProgressInfoUI {
+public:
+    /**
+     * Draw the season progress round with its label and two separating spaces.
+     *
+     * @ghidraAddress BRD3D: 0x10040b30
+     * @ghidraAddress BRGlide: 0x1003a070
+     */
+    static int UpdateRoundLabel(MenuWidget *pWidget);
+
+    /**
+     * Draw the remaining points required to advance, with negative results clamped to zero.
+     *
+     * @ghidraAddress BRD3D: 0x100415a0
+     * @ghidraAddress BRGlide: 0x1003ab00
+     */
+    static int UpdatePointsNeededLabel(MenuWidget *pWidget);
+
+    /**
+     * @ghidraAddress BRD3D: 0x10045050
+     * @ghidraAddress BRGlide: 0x1003e5a0
+     */
+    static int OnCarSetup(MenuWidget *pWidget);
+
+    /**
+     * @ghidraAddress BRD3D: 0x10047340
+     * @ghidraAddress BRGlide: 0x10040790
+     */
+    static int OnResetRound(MenuWidget *pWidget);
+
+    /**
+     * @ghidraAddress BRD3D: 0x100457c0
+     * @ghidraAddress BRGlide: 0x1003ec50
+     */
+    static int OnOptions(MenuWidget *pWidget);
+
+    /**
+     * @ghidraAddress BRD3D: 0x100457e0
+     * @ghidraAddress BRGlide: 0x1003ec70
+     */
+    static int OnSaveSeason(MenuWidget *pWidget);
+
+    /**
+     * @ghidraAddress BRD3D: 0x10047060
+     */
+    static int OnBack(MenuActionWidget *pItem);
+};
+
+class SeasonUI {
+public:
+    /**
+     * @ghidraAddress BRD3D: 0x1003ea90
+     * @ghidraAddress BRGlide: 0x100380b0
+     */
+    static int UpdateRoundPointsLabel(MenuWidget *pWidget);
+
+    /**
+     * @ghidraAddress BRD3D: 0x1003e8d0
+     * @ghidraAddress BRGlide: 0x10037ef0
+     */
+    static int UpdateRoundPlaceLabel(MenuWidget *pWidget);
+
+    /**
+     * @ghidraAddress BRD3D: 0x10041300
+     * @ghidraAddress BRGlide: 0x1003a860
+     */
+    static int UpdateSeasonNameLabel(MenuWidget *pWidget);
+
+    /**
+     * Draw the year with the translated suffix for its ordinal.
+     *
+     * @ghidraAddress BRD3D: 0x100413b0
+     * @ghidraAddress BRGlide: 0x1003a910
+     */
+    static int UpdateYearOrdinalLabel(MenuWidget *pWidget);
+
+    /**
+     * Draw the sum of the selected season's four race scores, or zero before loading.
+     *
+     * @ghidraAddress BRD3D: 0x100414b0
+     * @ghidraAddress BRGlide: 0x1003aa10
+     */
+    static int UpdateTotalPointsLabel(MenuWidget *pWidget);
+};
+
+class TimeAttackMenuUI {
+public:
+    /**
+     * @ghidraAddress BRD3D: 0x10044c70
+     */
+    static int OnBack(MenuActionWidget *pItem);
+};
+
+class TimeAttackUI {
+public:
+    /**
+     * Update the selected time attack track image after a saved slot has been selected.
+     *
+     * @ghidraAddress BRD3D: 0x100407a0
+     * @ghidraAddress BRGlide: 0x10039ce0
+     */
+    static int UpdateTrackImage(MenuWidget *pWidget);
+
+    /** @ghidraAddress BRD3D: 0x10041040 */
+    static int UpdateRaceTimeLabel(MenuWidget *pWidget);
+
+    /** @ghidraAddress BRD3D: 0x10041180 */
+    static int UpdateBestLapLabel(MenuWidget *pWidget);
+};
+
+class VideoOptionsUI {
+public:
+    /**
+     * @ghidraAddress BRD3D: 0x100465e0
+     */
+    static int OnBack(MenuActionWidget *pItem);
+};
 
 /**
  * @ghidraAddress BRD3D: 0x10041a00
@@ -587,41 +1789,6 @@ int RestoreMenuItemTextA(MenuWidget *pWidget);
 int RestoreMenuItemTextB(MenuWidget *pWidget);
 
 /**
- * Process championship save text confirmation or cancellation.
- *
- * @ghidraAddress BRD3D: 0x10047210
- * @ghidraAddress BRGlide: 0x10040660
- */
-int SaveSeasonUI_HandleTextEntry(MenuWidget *pWidget);
-
-/** @ghidraAddress BRD3D: 0x1003e7a0 */
-int OverwritePromptUI_DrawPromptBox(MenuWidget *pWidget);
-
-/**
- * Process time attack save text confirmation or cancellation.
- *
- * @ghidraAddress BRD3D: 0x10047250
- * @ghidraAddress BRGlide: 0x100406a0
- */
-int SaveTimeAttackMenuUI_HandleTextEntry(MenuWidget *pWidget);
-
-/**
- * Exit an active network game launched through a lobby.
- *
- * @ghidraAddress BRD3D: 0x100437d0
- * @ghidraAddress BRGlide: 0x1003cd20
- */
-int MultiplayerGameSetupUI_OnEscape(MenuWidget *pWidget);
-
-/**
- * Reset championship choices and open pre-race information for a new season.
- *
- * @ghidraAddress BRD3D: 0x10045aa0
- * @ghidraAddress BRGlide: 0x1003ef40
- */
-int ChampionshipSeasonUI_OnStartNewSeason(MenuWidget *pWidget);
-
-/**
  * Destroy the active network setup screen and restore the cached race setup.
  *
  * @ghidraAddress BRD3D: 0x10046400
@@ -644,67 +1811,15 @@ int ReturnToVideoOptionsFromResolution(MenuWidget *pWidget);
  */
 int ReturnToVideoOptionsFromDeviceSelect(MenuWidget *pWidget);
 
-/**
- * Select the modem provider and restore the cached join or create screen.
- *
- * @ghidraAddress BRD3D: 0x10043f50
- * @ghidraAddress BRGlide: 0x1003d4a0
- */
-int ModemConnectionUI_OnAccept(MenuWidget *pWidget);
-
-/**
- * Start naming a new championship slot or activate confirmation for an existing file.
- *
- * @ghidraAddress BRD3D: 0x10042020
- * @ghidraAddress BRGlide: 0x1003b580
- */
-int SaveSeasonUI_OnSlotSelected(MenuItemList *pList, int *pnSlot);
-
-/**
- * @ghidraAddress BRD3D: 0x1003eb10
- * @ghidraAddress BRGlide: 0x10038100
- */
-int SaveSeasonUI_UpdateSlotSelection(MenuWidget *pWidget);
-
-/** @ghidraAddress BRD3D: 0x1003ec30 */
-int SaveTimeAttackUI_UpdateSlotSelection(MenuWidget *pWidget);
-
 /** @ghidraAddress BRD3D: 0x1003c9b0 */
 void RefreshSessionListSlots(void);
 
 /** @ghidraAddress BRD3D: 0x1003d030 */
 int GetSelectedSessionGuid(GUID *guid);
 
-/**
- * @ghidraAddress BRD3D: 0x10041df0
- * @ghidraAddress BRGlide: 0x1003b350
- */
-int SaveSeasonUI_OnSlotNameEntered(MenuItemList *pList, int nStatus);
-
-/**
- * @ghidraAddress BRD3D: 0x1003eb90
- * @ghidraAddress BRGlide: 0x10038180
- */
-int JoinCreateGameUI_UpdateSessionSelection(MenuWidget *pWidget);
-
-/**
- * @ghidraAddress BRD3D: 0x1003ec80
- * @ghidraAddress BRGlide: 0x100382a0
- */
-int KeyConfigUI_UpdateActionSelection(MenuWidget *pWidget);
-
 #if TGR_RENDERER == TGR_RENDERER_D3D
-/**
- * @ghidraAddress BRD3D: 0x1003ed10
- */
-int D3DDeviceSelectUI_UpdateDeviceSelection(MenuWidget *pWidget);
-#endif
 
-/**
- * @ghidraAddress BRD3D: 0x1003edf0
- * @ghidraAddress BRGlide: 0x10038320
- */
-int DisplayModeSelectUI_UpdateModeSelection(MenuWidget *pWidget);
+#endif
 
 /**
  * @ghidraAddress BRD3D: 0x10aa2a30
@@ -736,24 +1851,8 @@ int SeasonRoundList_SetBrowsingFlag(MenuWidget *pWidget = nullptr);
  */
 int SeasonRoundList_ClearBrowsingFlag(MenuWidget *pWidget = nullptr);
 
-/**
- * Enable game creation after text has been entered.
- *
- * @ghidraAddress BRD3D: 0x1003f280
- * @ghidraAddress BRGlide: 0x100387c0
- */
-int CreateGameUI_EnableContinueIfNameEntered(MenuWidget *pWidget);
-
 /** @ghidraAddress BRD3D: 0x1003f210 */
 int OnSessionNameEdited(MenuWidget *pWidget);
-
-/**
- * Enable continuing after a player name has been entered.
- *
- * @ghidraAddress BRD3D: 0x1003ef60
- * @ghidraAddress BRGlide: 0x10038490
- */
-int PlayerNameEntryUI_EnableContinueIfNameEntered(MenuWidget *pWidget);
 
 /**
  * @ghidraAddress BRD3D: 0x1003eef0
@@ -766,82 +1865,16 @@ int OnPlayerNameEdited(MenuWidget *pWidget);
 int OnModemPhoneNumberEdited(MenuWidget *pWidget);
 
 /**
- * Enable continuing after a modem number has been entered.
- *
- * @ghidraAddress BRD3D: 0x1003f020
- * @ghidraAddress BRGlide: 0x10038550
- */
-int ModemConnectionUI_EnableContinueIfNumberEntered(MenuWidget *pWidget);
-
-/**
- * Position the steering indicator for the selected handling choice.
- *
- * @ghidraAddress BRD3D: 0x1003e920
- * @ghidraAddress BRGlide: 0x10037f40
- */
-int CarSetupUI_UpdateSteeringIndicatorPos(MenuWidget *pWidget);
-
-/**
- * Update the volume-channel image and its first animation frame.
- *
- * @ghidraAddress BRD3D: 0x1003e950
- * @ghidraAddress BRGlide: 0x10037f70
- */
-int AudioOptionsUI_UpdateVolumeChannelImage(MenuWidget *pWidget);
-
-/**
- * @ghidraAddress BRD3D: 0x1003ea40
- * @ghidraAddress BRGlide: 0x10038060
- */
-int AudioOptionsUI_UpdateVolumeLevelIndicatorPos(MenuWidget *pWidget);
-
-/**
- * @ghidraAddress BRD3D: 0x1003eae0
- * @ghidraAddress BRGlide: 0x10038220
- */
-int LoadFileListUI_UpdateSlotSelection(MenuWidget *pWidget);
-
-/**
  * @ghidraAddress BRD3D: 0x1003eb60
  * @ghidraAddress BRGlide: 0x10038150
  */
 int SeasonRoundList_UpdateRoundSelection(MenuWidget *pWidget);
 
 /**
- * @ghidraAddress BRD3D: 0x1003ea90
- * @ghidraAddress BRGlide: 0x100380b0
- */
-int SeasonUI_UpdateRoundPointsLabel(MenuWidget *pWidget);
-
-/**
- * @ghidraAddress BRD3D: 0x1003e8d0
- * @ghidraAddress BRGlide: 0x10037ef0
- */
-int SeasonUI_UpdateRoundPlaceLabel(MenuWidget *pWidget);
-
-/**
- * @ghidraAddress BRD3D: 0x1003ee20
- * @ghidraAddress BRGlide: 0x10038350
- */
-int AudioOptionsUI_UpdateCdTrackSelection(MenuWidget *pWidget);
-
-/**
- * @ghidraAddress BRD3D: 0x1003ebc0
- * @ghidraAddress BRGlide: 0x100381b0
- */
-int NetworkCarSetupUI_PollChatListSelection(MenuWidget *pWidget);
-
-/**
  * @ghidraAddress BRD3D: 0x1003f110
  * @ghidraAddress BRGlide: 0x10038650
  */
 int OnChatMessageEdited(MenuWidget *pWidget);
-
-/**
- * @ghidraAddress BRD3D: 0x1003f170
- * @ghidraAddress BRGlide: 0x100386b0
- */
-int NetworkCarSetupUI_SendChatMessage(MenuWidget *pWidget);
 
 /**
  * @ghidraAddress BRD3D: 0x1003f0b0
@@ -972,11 +2005,6 @@ int ShowDisplayModeSelectMenu(void);
  */
 void BuildDisplayModeSelectUI(MenuScreen *pScreen);
 
-/** @ghidraAddress BRD3D: 0x1003ecb0 */
-int D3DDeviceSelectUI_OnSetDriver(MenuWidget *pWidget);
-/** @ghidraAddress BRD3D: 0x1003ed40 */
-int DisplayModeSelectUI_OnSetMode(MenuWidget *pWidget);
-
 /**
  * Populate the video settings lists.
  *
@@ -1036,132 +2064,6 @@ extern char g_szMenuItemTextBackup[];
 extern int g_dwTimeAttackSaveSlotNamed;
 
 /**
- * @ghidraAddress BRD3D: 0x100408d0
- * @ghidraAddress BRGlide: 0x10039e10
- */
-int RaceSetupUI_UpdateLapCountLabel(MenuWidget *pWidget);
-
-/**
- * @ghidraAddress BRD3D: 0x10040a50
- * @ghidraAddress BRGlide: 0x10039f90
- */
-int SeasonFileUI_UpdateYearLabel(MenuWidget *pWidget);
-
-/**
- * @ghidraAddress BRD3D: 0x10040ac0
- * @ghidraAddress BRGlide: 0x1003a000
- */
-int SeasonFileUI_UpdateRoundLabel(MenuWidget *pWidget);
-
-/**
- * Draw the season progress round with its label and two separating spaces.
- *
- * @ghidraAddress BRD3D: 0x10040b30
- * @ghidraAddress BRGlide: 0x1003a070
- */
-int SeasonProgressInfoUI_UpdateRoundLabel(MenuWidget *pWidget);
-
-/**
- * @ghidraAddress BRD3D: 0x10041300
- * @ghidraAddress BRGlide: 0x1003a860
- */
-int SeasonUI_UpdateSeasonNameLabel(MenuWidget *pWidget);
-
-/**
- * Draw the year with the translated suffix for its ordinal.
- *
- * @ghidraAddress BRD3D: 0x100413b0
- * @ghidraAddress BRGlide: 0x1003a910
- */
-int SeasonUI_UpdateYearOrdinalLabel(MenuWidget *pWidget);
-
-/**
- * Enable continuing after a championship slot has been opened.
- *
- * @ghidraAddress BRD3D: 0x10041890
- * @ghidraAddress BRGlide: 0x1003adf0
- */
-int LoadSeasonUI_UpdateContinueButtonState(MenuWidget *pWidget);
-
-/**
- * Enable a time attack item after a saved slot has been selected.
- *
- * @ghidraAddress BRD3D: 0x100418f0
- * @ghidraAddress BRGlide: 0x1003ae50
- */
-int LoadTimeAttackMenuUI_UpdateItemEnabledState(MenuWidget *pWidget);
-
-/**
- * Draw the sum of the selected season's four race scores, or zero before loading.
- *
- * @ghidraAddress BRD3D: 0x100414b0
- * @ghidraAddress BRGlide: 0x1003aa10
- */
-int SeasonUI_UpdateTotalPointsLabel(MenuWidget *pWidget);
-
-/**
- * Draw the total points of the race results.
- *
- * @ghidraAddress BRD3D: 0x10041710
- * @ghidraAddress BRGlide: 0x1003ac70
- */
-int RaceResultsTotalsUI_UpdateTotalPointsLabel(MenuWidget *pWidget);
-
-/**
- * Draw the number of completed rounds in the race results.
- *
- * @ghidraAddress BRD3D: 0x10041670
- * @ghidraAddress BRGlide: 0x1003abd0
- */
-int RaceResultsTotalsUI_UpdateRoundsCompletedLabel(MenuWidget *pWidget);
-
-/**
- * Draw the remaining points for the season stored in the resume state.
- *
- * @ghidraAddress BRD3D: 0x100417b0
- * @ghidraAddress BRGlide: 0x1003ad10
- */
-int RaceResultsTotalsUI_UpdatePointsNeededLabel(MenuWidget *pWidget);
-
-/**
- * Draw the remaining points required to advance, with negative results clamped to zero.
- *
- * @ghidraAddress BRD3D: 0x100415a0
- * @ghidraAddress BRGlide: 0x1003ab00
- */
-int SeasonProgressInfoUI_UpdatePointsNeededLabel(MenuWidget *pWidget);
-
-/**
- * @ghidraAddress BRD3D: 0x10041970
- * @ghidraAddress BRGlide: 0x1003aed0
- */
-int MainMenuUI_OnPlayCredits(MenuWidget *pWidget);
-
-/**
- * @ghidraAddress BRD3D: 0x10046f60
- * @ghidraAddress BRGlide: 0x100403b0
- */
-int PreRaceExitSeasonConfirmUI_OnYes(MenuWidget *pWidget);
-
-/**
- * @ghidraAddress BRD3D: 0x10046fd0
- * @ghidraAddress BRGlide: 0x10040420
- */
-int ResultsSummaryExitSeasonConfirmUI_OnYes(MenuWidget *pWidget);
-
-/**
- * @ghidraAddress BRD3D: 0x100406c0
- * @ghidraAddress BRGlide: 0x10039c00
- */
-int InputOptionsUI_OnRestoreDefaults(MenuWidget *pWidget);
-
-/**
- * @ghidraAddress BRD3D: 0x10043400
- * @ghidraAddress BRGlide: 0x1003c950
- */
-int InputOptionsUI_OnCycleInputDevice(MenuWidget *pWidget);
-
-/**
  * @ghidraAddress BRD3D: 0x1003ee50
  * @ghidraAddress BRGlide: 0x10038380
  */
@@ -1188,12 +2090,6 @@ extern KeyConfigEntry g_aKeyConfigEntries[KEY_CONFIG_ENTRY_COUNT];
 extern int g_dwKeyConfigSelectedAction;
 
 /**
- * @ghidraAddress BRD3D: 0x100400e0
- * @ghidraAddress BRGlide: 0x10039620
- */
-int KeyConfigUI_UpdateBindingLabel(MenuWidget *pWidget);
-
-/**
  * @ghidraAddress BRD3D: 0x100ac6a0
  * @ghidraAddress BRGlide: 0x100abe40
  */
@@ -1218,12 +2114,6 @@ extern int g_dwKeyCaptureComplete;
 extern int g_dwKeyBindingDuplicatesFound;
 
 /**
- * @ghidraAddress BRD3D: 0x1003f8d0
- * @ghidraAddress BRGlide: 0x10038e10
- */
-int KeyConfigUI_UpdateDuplicateBindingWarning(MenuWidget *pWidget);
-
-/**
  * @ghidraAddress BRD3D: 0x10a9d5c0
  * @ghidraAddress BRGlide: 0x10ac4648
  */
@@ -1234,12 +2124,6 @@ extern int g_adwKeyBindingDuplicateFlags[KEY_CONFIG_ENTRY_COUNT];
  * @ghidraAddress BRGlide: 0x10039870
  */
 int DetectDuplicateKeyBindings(int nDevice);
-
-/**
- * @ghidraAddress BRD3D: 0x10040450
- * @ghidraAddress BRGlide: 0x10039990
- */
-int KeyConfigUI_PollKeyCapture(MenuWidget *pWidget);
 
 /**
  * @ghidraAddress BRD3D: 0x10045110
@@ -1255,34 +2139,10 @@ int ShowCarSetupScreen(void);
 void BuildCarSetupUI(MenuScreen *pScreen);
 
 /**
- * @ghidraAddress BRD3D: 0x10045050
- * @ghidraAddress BRGlide: 0x1003e5a0
- */
-int SeasonProgressInfoUI_OnCarSetup(MenuWidget *pWidget);
-
-/**
- * @ghidraAddress BRD3D: 0x10046380
- * @ghidraAddress BRGlide: 0x1003f820
- */
-int LoadTimeAttackMenuUI_OnCarSetup(MenuWidget *pWidget);
-
-/**
  * @ghidraAddress BRD3D: 0x100ac304
  * @ghidraAddress BRGlide: 0x100abaa4
  */
 extern int g_bRaceSetupShowCarSetup;
-
-/**
- * @ghidraAddress BRD3D: 0x100437b0
- * @ghidraAddress BRGlide: 0x1003cd00
- */
-int NetworkCarSetupUI_OnBootPlayer(MenuWidget *pWidget);
-
-/**
- * @ghidraAddress BRD3D: 0x100450c0
- * @ghidraAddress BRGlide: 0x1003e610
- */
-int LoadSeasonUI_OnLoadAutoSave(MenuWidget *pWidget);
 
 /**
  * @ghidraAddress BRD3D: 0x100471b0
@@ -1295,48 +2155,6 @@ int OnListDialogItemSelected(MenuWidget *pWidget);
  * @ghidraAddress BRGlide: 0x10040570
  */
 int OnPressAnyKeyContinue(MenuWidget *pWidget);
-
-/**
- * @ghidraAddress BRD3D: 0x100471f0
- * @ghidraAddress BRGlide: 0x10040640
- */
-int SeasonCongratsUI_PollAnyKey(MenuWidget *pWidget);
-
-/**
- * @ghidraAddress BRD3D: 0x1003e840
- * @ghidraAddress BRGlide: 0x10037e60
- */
-int PreRaceInfoUI_UpdateBackButtonText(MenuWidget *pWidget);
-
-/**
- * @ghidraAddress BRD3D: 0x1003f440
- * @ghidraAddress BRGlide: 0x10038980
- */
-int SeasonCongratsUI_UpdatePrimaryBannerImage(MenuWidget *pWidget);
-
-/**
- * @ghidraAddress BRD3D: 0x1003f540
- * @ghidraAddress BRGlide: 0x10038a80
- */
-int SeasonCongratsUI_UpdateSecondaryBannerImage(MenuWidget *pWidget);
-
-/**
- * @ghidraAddress BRD3D: 0x1003f5e0
- * @ghidraAddress BRGlide: 0x10038b20
- */
-int MultiplayerSetupUI_UpdateCarGroupImage(MenuWidget *pWidget);
-
-/**
- * @ghidraAddress BRD3D: 0x1003f680
- * @ghidraAddress BRGlide: 0x10038bc0
- */
-int MultiplayerSetupUI_UpdateCarGroupSubImage(MenuWidget *pWidget);
-
-/**
- * @ghidraAddress BRD3D: 0x10040680
- * @ghidraAddress BRGlide: 0x10039bc0
- */
-int KeyConfigUI_BeginKeyCapture(MenuWidget *pWidget);
 
 /**
  * @ghidraAddress BRD3D: 0x10047360
@@ -1357,11 +2175,6 @@ int ValidateEntityStateAlwaysTrue(MenuWidget *pWidget);
 int ProcessCheatInputAndValidateEntity(MenuWidget *pWidget);
 
 /**
- * @ghidraAddress BRD3D: 0x10044010
- */
-int MultiplayerConnectionUI_OnSelectIpx(MenuWidget *pWidget);
-
-/**
  * @ghidraAddress BRD3D: 0x100558a0
  */
 void BuildMultiplayerConnectionUI(MenuScreen *pScreen);
@@ -1373,49 +2186,6 @@ void BuildMultiplayerConnectionUI(MenuScreen *pScreen);
  * @ghidraAddress BRD3D: 0x10043cd0
  */
 int ShowMultiplayerConnectionScreen(MenuWidget *pWidget = nullptr);
-
-/**
- * @ghidraAddress BRD3D: 0x10044030
- */
-int MultiplayerConnectionUI_UpdateIpxItem(MenuWidget *pWidget);
-
-/**
- * @ghidraAddress BRD3D: 0x10044050
- */
-int MultiplayerConnectionUI_OnSelectTcpIp(MenuWidget *pWidget);
-
-/**
- * @ghidraAddress BRD3D: 0x10044070
- */
-int MultiplayerConnectionUI_UpdateTcpIpItem(MenuWidget *pWidget);
-
-/**
- * @ghidraAddress BRD3D: 0x10044090
- */
-int MultiplayerConnectionUI_OnSelectModem(MenuWidget *pWidget);
-
-/**
- * @ghidraAddress BRD3D: 0x100440b0
- */
-int MultiplayerConnectionUI_UpdateModemItem(MenuWidget *pWidget);
-
-/**
- * @ghidraAddress BRD3D: 0x10042a90
- * @ghidraAddress BRGlide: 0x1003bff0
- */
-int PlayerNameEntryUI_OnToggleTextEdit(MenuWidget *pWidget);
-
-/**
- * @ghidraAddress BRD3D: 0x10042ac0
- * @ghidraAddress BRGlide: 0x1003c020
- */
-int ConnectionUI_OnToggleTextEdit(MenuWidget *pWidget);
-
-/**
- * @ghidraAddress BRD3D: 0x10042b00
- * @ghidraAddress BRGlide: 0x1003c050
- */
-int CreateGameMenuUI_OnToggleTextEdit(MenuWidget *pWidget);
 
 /**
  * @ghidraAddress BRD3D: 0x100409f0
@@ -1430,58 +2200,6 @@ int RaceResultsPanel_PreUpdateSelectLastRace(void);
 int RaceResultsPanel_PostUpdateRestoreSeasonProgress(void);
 
 /**
- * @ghidraAddress BRD3D: 0x10047340
- * @ghidraAddress BRGlide: 0x10040790
- */
-int SeasonProgressInfoUI_OnResetRound(MenuWidget *pWidget);
-
-/**
- * @ghidraAddress BRD3D: 0x100450f0
- * @ghidraAddress BRGlide: 0x1003e640
- */
-int SaveSeasonUI_InvokeBackHandler(MenuWidget *pWidget);
-
-/**
- * @ghidraAddress BRD3D: 0x1004e810
- * @ghidraAddress BRGlide: 0x100476c0
- */
-int AudioOptionsUI_OnMusicTrackChanged(MenuItemList *pList, int *pTrack);
-
-/**
- * @ghidraAddress BRD3D: 0x10043710
- * @ghidraAddress BRGlide: 0x1003cc60
- */
-int QuitGameConfirmUI_OnConfirmQuit(MenuWidget *pWidget);
-
-/**
- * @ghidraAddress BRD3D: 0x10040730
- * @ghidraAddress BRGlide: 0x10039c70
- */
-int RaceSetupUI_UpdateTrackImage(MenuWidget *pWidget);
-
-/**
- * Update the selected time attack track image after a saved slot has been selected.
- *
- * @ghidraAddress BRD3D: 0x100407a0
- * @ghidraAddress BRGlide: 0x10039ce0
- */
-int TimeAttackUI_UpdateTrackImage(MenuWidget *pWidget);
-
-/** @ghidraAddress BRD3D: 0x10041040 */
-int TimeAttackUI_UpdateRaceTimeLabel(MenuWidget *pWidget);
-
-/** @ghidraAddress BRD3D: 0x10041180 */
-int TimeAttackUI_UpdateBestLapLabel(MenuWidget *pWidget);
-
-/**
- * Draw the force feedback choice, displaying off when the device lacks support.
- *
- * @ghidraAddress BRD3D: 0x10040950
- * @ghidraAddress BRGlide: 0x10039e90
- */
-int GameOptionsUI_UpdateForceFeedbackImage(MenuWidget *pWidget);
-
-/**
  * @ghidraAddress BRD3D: 0x100ac570
  * @ghidraAddress BRGlide: 0x100abd10
  */
@@ -1492,12 +2210,6 @@ extern const short g_awTimeAttackTrackImageIds[];
  * @ghidraAddress BRGlide: 0x100abdd0
  */
 extern const signed char g_abForceFeedbackImageIds[2];
-
-/**
- * @ghidraAddress BRD3D: 0x100407e0
- * @ghidraAddress BRGlide: 0x10039d20
- */
-int RaceSetupUI_UpdateWeatherImage(MenuWidget *pWidget);
 
 /**
  * @ghidraAddress BRD3D: 0x100ac550
@@ -1524,54 +2236,6 @@ extern unsigned char g_bSeasonRoundListBrowsing;
 extern int g_dwTimeAttackLoadSelected;
 
 /**
- * @ghidraAddress BRD3D: 0x10042c80
- * @ghidraAddress BRGlide: 0x1003c1d0
- */
-int CarSetupUI_OnCycleHandlingType(MenuWidget *pWidget);
-
-/**
- * @ghidraAddress BRD3D: 0x10042dc0
- * @ghidraAddress BRGlide: 0x1003c310
- */
-int CarSetupUI_OnCycleTireType(MenuWidget *pWidget);
-
-/**
- * @ghidraAddress BRD3D: 0x10042e20
- * @ghidraAddress BRGlide: 0x1003c370
- */
-int CarSetupUI_OnCycleSuspensionType(MenuWidget *pWidget);
-
-/**
- * @ghidraAddress BRD3D: 0x10042e80
- * @ghidraAddress BRGlide: 0x1003c3d0
- */
-int CarSetupUI_OnCycleTransmissionType(MenuWidget *pWidget);
-
-/**
- * @ghidraAddress BRD3D: 0x10043590
- * @ghidraAddress BRGlide: 0x1003cae0
- */
-int GameOptionsUI_OnToggleForceFeedback(MenuWidget *pWidget);
-
-/**
- * @ghidraAddress BRD3D: 0x100435f0
- * @ghidraAddress BRGlide: 0x1003cb40
- */
-int GameOptionsUI_OnToggleSkidMarks(MenuWidget *pWidget);
-
-/**
- * @ghidraAddress BRD3D: 0x10043650
- * @ghidraAddress BRGlide: 0x1003cba0
- */
-int GameOptionsUI_OnToggleCarShadow(MenuWidget *pWidget);
-
-/**
- * @ghidraAddress BRD3D: 0x100436b0
- * @ghidraAddress BRGlide: 0x1003cc00
- */
-int GameOptionsUI_OnToggleSpecularLighting(MenuWidget *pWidget);
-
-/**
  * @ghidraAddress BRD3D: 0x100ac530
  * @ghidraAddress BRGlide: 0x100abcd0
  */
@@ -1596,94 +2260,10 @@ extern const int g_adwCarShadowMenuIndexToValue[2];
 extern const int g_adwSpecularLightingMenuIndexToValue[2];
 
 /**
- * @ghidraAddress BRD3D: 0x100412c0
- * @ghidraAddress BRGlide: 0x1003a820
- */
-int RaceResultsInfoUI_OnSelectLap1(MenuWidget *pWidget);
-
-/**
- * @ghidraAddress BRD3D: 0x100412d0
- * @ghidraAddress BRGlide: 0x1003a830
- */
-int RaceResultsInfoUI_OnSelectLap2(MenuWidget *pWidget);
-
-/**
- * @ghidraAddress BRD3D: 0x100412e0
- * @ghidraAddress BRGlide: 0x1003a840
- */
-int RaceResultsInfoUI_OnSelectLap3(MenuWidget *pWidget);
-
-/**
- * @ghidraAddress BRD3D: 0x100412f0
- * @ghidraAddress BRGlide: 0x1003a850
- */
-int RaceResultsInfoUI_OnSelectTotalTime(MenuWidget *pWidget);
-
-/**
- * @ghidraAddress BRD3D: 0x100418d0
- * @ghidraAddress BRGlide: 0x1003ae30
- */
-int SaveSeasonUI_UpdateItemEnabledState(MenuWidget *pWidget);
-
-/**
- * @ghidraAddress BRD3D: 0x10046fc0
- * @ghidraAddress BRGlide: 0x10040410
- */
-int PreRaceExitSeasonConfirmUI_OnNo(MenuWidget *pWidget);
-
-/**
- * @ghidraAddress BRD3D: 0x10047050
- * @ghidraAddress BRGlide: 0x100404a0
- */
-int ResultsSummaryExitSeasonConfirmUI_OnNo(MenuWidget *pWidget);
-
-/**
  * @ghidraAddress BRD3D: 0x10043fa0
  * @ghidraAddress BRGlide: 0x1003d4f0
  */
 int MenuScreen_OnReturnToMainMenu(MenuWidget *pWidget);
-
-/**
- * @ghidraAddress BRD3D: 0x10045780
- * @ghidraAddress BRGlide: 0x1003ec10
- */
-int PreRaceInfoUI_OnOptions(MenuWidget *pWidget);
-
-/**
- * @ghidraAddress BRD3D: 0x100457a0
- * @ghidraAddress BRGlide: 0x1003ec30
- */
-int PreRaceInfoUI_OnSaveSeason(MenuWidget *pWidget);
-
-/**
- * @ghidraAddress BRD3D: 0x100457c0
- * @ghidraAddress BRGlide: 0x1003ec50
- */
-int SeasonProgressInfoUI_OnOptions(MenuWidget *pWidget);
-
-/**
- * @ghidraAddress BRD3D: 0x100457e0
- * @ghidraAddress BRGlide: 0x1003ec70
- */
-int SeasonProgressInfoUI_OnSaveSeason(MenuWidget *pWidget);
-
-/**
- * @ghidraAddress BRD3D: 0x10042cf0
- * @ghidraAddress BRGlide: 0x1003c240
- */
-int AudioOptionsUI_OnCycleSfxVolume(MenuActionWidget *pWidget);
-
-/**
- * @ghidraAddress BRD3D: 0x10042d60
- * @ghidraAddress BRGlide: 0x1003c2b0
- */
-int AudioOptionsUI_OnCycleMusicVolume(MenuActionWidget *pWidget);
-
-/**
- * @ghidraAddress BRD3D: 0x10040870
- * @ghidraAddress BRGlide: 0x10039db0
- */
-int CarSetupUI_UpdateTransmissionImage(MenuWidget *pWidget);
 
 /**
  * @ghidraAddress BRD3D: 0x100ac598
@@ -1692,22 +2272,10 @@ int CarSetupUI_UpdateTransmissionImage(MenuWidget *pWidget);
 extern const signed char g_abTransmissionImageIds[2];
 
 /**
- * @ghidraAddress BRD3D: 0x10040890
- * @ghidraAddress BRGlide: 0x10039dd0
- */
-int CarSetupUI_UpdateTiresImage(MenuWidget *pWidget);
-
-/**
  * @ghidraAddress BRD3D: 0x100ac59c
  * @ghidraAddress BRGlide: 0x100abd3c
  */
 extern const signed char g_abTireImageIds[3];
-
-/**
- * @ghidraAddress BRD3D: 0x100408b0
- * @ghidraAddress BRGlide: 0x10039df0
- */
-int CarSetupUI_UpdateShocksImage(MenuWidget *pWidget);
 
 /**
  * @ghidraAddress BRD3D: 0x100ac5a0
@@ -1716,22 +2284,10 @@ int CarSetupUI_UpdateShocksImage(MenuWidget *pWidget);
 extern const signed char g_abSuspensionImageIds[3];
 
 /**
- * @ghidraAddress BRD3D: 0x10041870
- * @ghidraAddress BRGlide: 0x1003add0
- */
-int InputOptionsUI_UpdateInputDeviceImage(MenuWidget *pWidget);
-
-/**
  * @ghidraAddress BRD3D: 0x100ac628
  * @ghidraAddress BRGlide: 0x100abdc8
  */
 extern const signed char g_abInputDeviceImageIds[4];
-
-/**
- * @ghidraAddress BRD3D: 0x10040930
- * @ghidraAddress BRGlide: 0x10039e70
- */
-int ConnectionUI_UpdateServiceProviderImage(MenuWidget *pWidget);
 
 /**
  * @ghidraAddress BRD3D: 0x100ac62c
@@ -1740,34 +2296,16 @@ int ConnectionUI_UpdateServiceProviderImage(MenuWidget *pWidget);
 extern const signed char g_abServiceProviderImageIds[4];
 
 /**
- * @ghidraAddress BRD3D: 0x100409b0
- * @ghidraAddress BRGlide: 0x10039ef0
- */
-int GameOptionsUI_UpdateCarShadowImage(MenuWidget *pWidget);
-
-/**
  * @ghidraAddress BRD3D: 0x100ac634
  * @ghidraAddress BRGlide: 0x100abdd4
  */
 extern const signed char g_abCarShadowImageIds[2];
 
 /**
- * @ghidraAddress BRD3D: 0x100409d0
- * @ghidraAddress BRGlide: 0x10039f10
- */
-int GameOptionsUI_UpdateSpecularLightingImage(MenuWidget *pWidget);
-
-/**
  * @ghidraAddress BRD3D: 0x100ac638
  * @ghidraAddress BRGlide: 0x100abdd8
  */
 extern const signed char g_abSpecularLightingImageIds[2];
-
-/**
- * @ghidraAddress BRD3D: 0x10040990
- * @ghidraAddress BRGlide: 0x10039ed0
- */
-int GameOptionsUI_UpdateSkidMarksImage(MenuWidget *pWidget);
 
 /**
  * @ghidraAddress BRD3D: 0x100ac640
@@ -2236,23 +2774,6 @@ extern MenuWidget *g_pDisplayModeSelectMenu;
 extern MenuWidget *g_pD3DDeviceSelectMenu;
 
 /**
- * @ghidraAddress BRD3D: 0x10042b30
- */
-int CarSetupUI_OnCycleCar(MenuActionWidget *pItem);
-/**
- * @ghidraAddress BRD3D: 0x10042ee0
- */
-int RaceSetupUI_OnCycleTrack(MenuActionWidget *pItem);
-/**
- * @ghidraAddress BRD3D: 0x100430b0
- */
-int RaceSetupUI_OnCycleLapCount(MenuActionWidget *pItem);
-/**
- * @ghidraAddress BRD3D: 0x10043180
- */
-int RaceSetupUI_OnCycleWeather(MenuActionWidget *pItem);
-
-/**
  * @ghidraAddress BRD3D: 0x100ac368
  * @ghidraAddress BRGlide: 0x100abb08
  */
@@ -2264,33 +2785,10 @@ extern int g_adwCarNameStringIds[];
 extern int g_adwTrackNameStringIds[];
 
 /**
- * @ghidraAddress BRD3D: 0x1003f760
- * @ghidraAddress BRGlide: 0x10038ca0
- */
-int CarSetupUI_UpdateCarNameLabel(MenuWidget *pWidget);
-
-/**
- * @ghidraAddress BRD3D: 0x1003fa00
- * @ghidraAddress BRGlide: 0x10038f40
- */
-int RaceSetupUI_UpdateTrackNameLabel(MenuWidget *pWidget);
-/**
  * @ghidraAddress BRD3D: 0x100ac3b0
  * @ghidraAddress BRGlide: 0x100abb50
  */
 extern int g_adwWeatherLabelStrIds[];
-
-/**
- * @ghidraAddress BRD3D: 0x1003fe80
- * @ghidraAddress BRGlide: 0x100393c0
- */
-int RaceSetupUI_UpdateWeatherLabel(MenuWidget *pWidget);
-
-/**
- * @ghidraAddress BRD3D: 0x1003f860
- * @ghidraAddress BRGlide: 0x10038da0
- */
-int CarSetupUI_UpdateTransmissionLabel(MenuWidget *pWidget);
 
 /**
  * @ghidraAddress BRD3D: 0x100ac3a8
@@ -2299,22 +2797,10 @@ int CarSetupUI_UpdateTransmissionLabel(MenuWidget *pWidget);
 extern int g_adwTransmissionLabelStrIds[];
 
 /**
- * @ghidraAddress BRD3D: 0x1003f990
- * @ghidraAddress BRGlide: 0x10038ed0
- */
-int CarSetupUI_UpdateShocksLabel(MenuWidget *pWidget);
-
-/**
  * @ghidraAddress BRD3D: 0x100ac358
  * @ghidraAddress BRGlide: 0x100abaf8
  */
 extern int g_adwSuspensionLabelStrIds[];
-
-/**
- * @ghidraAddress BRD3D: 0x1003ffd0
- * @ghidraAddress BRGlide: 0x10039510
- */
-int InputOptionsUI_UpdateInputDeviceLabel(MenuWidget *pWidget);
 
 /**
  * @ghidraAddress BRD3D: 0x100ac3e0
@@ -2323,22 +2809,10 @@ int InputOptionsUI_UpdateInputDeviceLabel(MenuWidget *pWidget);
 extern int g_adwInputDeviceLabelStrIds[];
 
 /**
- * @ghidraAddress BRD3D: 0x1003fc40
- * @ghidraAddress BRGlide: 0x10039180
- */
-int ConnectionUI_UpdateServiceProviderLabel(MenuWidget *pWidget);
-
-/**
  * @ghidraAddress BRD3D: 0x100ac3f0
  * @ghidraAddress BRGlide: 0x100abb90
  */
 extern int g_adwServiceProviderLabelStrIds[];
-
-/**
- * @ghidraAddress BRD3D: 0x1003fda0
- * @ghidraAddress BRGlide: 0x100392e0
- */
-int GameOptionsUI_UpdateCarShadowLabel(MenuWidget *pWidget);
 
 /**
  * @ghidraAddress BRD3D: 0x100ac408
@@ -2347,34 +2821,16 @@ int GameOptionsUI_UpdateCarShadowLabel(MenuWidget *pWidget);
 extern int g_adwCarShadowLabelStrIds[];
 
 /**
- * @ghidraAddress BRD3D: 0x1003fd30
- * @ghidraAddress BRGlide: 0x10039270
- */
-int GameOptionsUI_UpdateSkidMarksLabel(MenuWidget *pWidget);
-
-/**
  * @ghidraAddress BRD3D: 0x100ac418
  * @ghidraAddress BRGlide: 0x100abbb8
  */
 extern int g_adwSkidMarksLabelStrIds[];
 
 /**
- * @ghidraAddress BRD3D: 0x1003fe10
- * @ghidraAddress BRGlide: 0x10039350
- */
-int GameOptionsUI_UpdateSpecularLightingLabel(MenuWidget *pWidget);
-
-/**
  * @ghidraAddress BRD3D: 0x100ac410
  * @ghidraAddress BRGlide: 0x100abbb0
  */
 extern int g_adwSpecularLightingLabelStrIds[];
-
-/**
- * @ghidraAddress BRD3D: 0x1003fcb0
- * @ghidraAddress BRGlide: 0x100391f0
- */
-int GameOptionsUI_UpdateForceFeedbackLabel(MenuWidget *pWidget);
 
 /**
  * @ghidraAddress BRD3D: 0x100ac400
@@ -2393,29 +2849,10 @@ int ShowNetworkCarSetupScreen(MenuWidget *pWidget = nullptr);
 void BuildNetworkCarSetupUI(MenuScreen *pScreen);
 
 /**
- * @ghidraAddress BRD3D: 0x10043a00
- */
-int NetworkCarSetupUI_OnRefreshSessionDesc(MenuWidget *pWidget);
-/**
- * @ghidraAddress BRD3D: 0x10043810
- */
-int NetworkCarSetupUI_OnEscape(MenuWidget *pWidget);
-/**
- * @ghidraAddress BRD3D: 0x1003ebe0
- */
-int NetworkCarSetupUI_UpdateSelectedPlayer(MenuWidget *pWidget);
-/**
- * @ghidraAddress BRD3D: 0x1003f7f0
- */
-int CarSetupUI_UpdateTiresLabel(MenuWidget *pWidget);
-/**
  * @ghidraAddress BRD3D: 0x100ac348
  */
 extern const int g_adwTireLabelStrIds[3];
-/**
- * @ghidraAddress BRD3D: 0x1003f720
- */
-int CarSetupUI_UpdateCarImage(MenuWidget *pWidget);
+
 /**
  * @ghidraAddress BRD3D: 0x100ac5a8
  */
@@ -2445,11 +2882,6 @@ void BuildChampionshipSeasonUI(MenuScreen *pScreen);
  * @ghidraAddress BRD3D: 0x1005a6e0
  */
 void BuildSaveTimeAttackMenuUI(MenuScreen *pScreen);
-
-/** @ghidraAddress BRD3D: 0x10042740 */
-int SaveTimeAttackMenuUI_OnSlotSelected(MenuItemList *pList, int *pnSlot);
-/** @ghidraAddress BRD3D: 0x10042560 */
-int SaveTimeAttackMenuUI_OnSlotNameEntered(MenuItemList *pList, int status);
 
 /**
  * @ghidraAddress BRD3D: 0x10044d00
@@ -2500,18 +2932,10 @@ int BuildTimeAttackMenuUI(MenuScreen *pScreen);
  */
 void BuildLoadTimeAttackMenuUI(MenuScreen *pScreen);
 
-/** @ghidraAddress BRD3D: 0x10042880 */
-int LoadTimeAttackMenuUI_OnSlotSelected(MenuItemList *pList, int *pnSlot);
-
 /**
  * @ghidraAddress BRD3D: 0x10057c10
  */
 void BuildMultiplayerGameSetupUI(MenuScreen *pScreen);
-
-/**
- * @ghidraAddress BRD3D: 0x10044600
- */
-int MultiplayerGameSetupUI_OnCycleCarClass(MenuWidget *pWidget);
 
 /**
  * @ghidraAddress BRD3D: 0x100563e0
@@ -2545,266 +2969,6 @@ void BuildRaceSetupUI(MenuScreen *pScreen);
  * @ghidraAddress BRD3D: 0x10049c20
  */
 int BuildQuitGameConfirmUI(MenuScreen *pScreen);
-
-/**
- * @ghidraAddress BRD3D: 0x10044970
- */
-int MultiplayerGameSetupUI_OnBackAsClient(MenuActionWidget *pItem);
-
-/**
- * @ghidraAddress BRD3D: 0x10044a30
- */
-int MultiplayerGameSetupUI_OnBackAsHost(MenuActionWidget *pItem);
-
-/**
- * @ghidraAddress BRD3D: 0x100444c0
- */
-int CreateGameMenuUI_OnBack(MenuActionWidget *pItem);
-
-/**
- * @ghidraAddress BRD3D: 0x10044ae0
- */
-int JoinCreateGameUI_OnBack(MenuActionWidget *pItem);
-
-/**
- * @ghidraAddress BRD3D: 0x100464e0
- */
-int CarSetupUI_OnBackToRaceSetup(MenuActionWidget *pItem);
-
-/**
- * @ghidraAddress BRD3D: 0x10045090
- */
-int LoadSeasonUI_OnContinueSeason(MenuActionWidget *pItem);
-
-/**
- * @ghidraAddress BRD3D: 0x100458c0
- */
-int CarSetupUI_OnOpenOptions(MenuActionWidget *pItem);
-
-/**
- * @ghidraAddress BRD3D: 0x100458e0
- */
-int CarSetupUI_OnOpenSaveSeason(MenuActionWidget *pItem);
-
-/**
- * @ghidraAddress BRD3D: 0x10046dc0
- */
-int PreRaceInfoUI_OnBackToLoadSeason(MenuActionWidget *pItem);
-
-/**
- * @ghidraAddress BRD3D: 0x10046d70
- */
-int PreRaceInfoUI_OnBackToChampionshipSeason(MenuActionWidget *pItem);
-
-/**
- * @ghidraAddress BRD3D: 0x10046cd0
- */
-int CarSetupUI_OnBackToSeasonProgressInfo(MenuActionWidget *pItem);
-
-/**
- * @ghidraAddress BRD3D: 0x10046d20
- */
-int CarSetupUI_OnBackToTimeAttack(MenuActionWidget *pItem);
-
-/**
- * @ghidraAddress BRD3D: 0x10043fc0
- */
-int PlayerNameEntryUI_OnBack(MenuActionWidget *pItem);
-
-/**
- * @ghidraAddress BRD3D: 0x10046450
- */
-int RaceSetupUI_OnBack(MenuActionWidget *pItem);
-
-/**
- * @ghidraAddress BRD3D: 0x10044cb0
- */
-int RaceSetupUI_OnBackToTimeAttack(MenuActionWidget *pItem);
-
-/**
- * @ghidraAddress BRD3D: 0x10044b40
- */
-int ModemConnectionUI_OnBack(MenuActionWidget *pItem);
-
-/**
- * @ghidraAddress BRD3D: 0x10046e10
- */
-int LoadSeasonUI_OnBack(MenuActionWidget *pItem);
-
-/**
- * @ghidraAddress BRD3D: 0x10044f00
- */
-int SaveTimeAttackMenuUI_OnBack(MenuActionWidget *pItem);
-
-/**
- * @ghidraAddress BRD3D: 0x10046560
- */
-int KeyConfigUI_OnBack(MenuActionWidget *pItem);
-
-/**
- * @ghidraAddress BRD3D: 0x100466c0
- */
-int AudioOptionsUI_OnBackAndSave(MenuActionWidget *pItem);
-
-/**
- * @ghidraAddress BRD3D: 0x10046f50
- */
-int PreRaceInfoUI_OnBack(MenuActionWidget *pItem);
-
-/**
- * @ghidraAddress BRD3D: 0x10046520
- */
-int OptionsMenuUI_OnBack(MenuActionWidget *pItem);
-
-/**
- * @ghidraAddress BRD3D: 0x10046bb0
- */
-int OptionsMenuUI_OnBackToCarSetup(MenuActionWidget *pItem);
-
-/**
- * @ghidraAddress BRD3D: 0x10046750
- */
-int OptionsMenuUI_OnBackToPreRaceInfo(MenuActionWidget *pItem);
-
-/**
- * @ghidraAddress BRD3D: 0x10046830
- */
-int OptionsMenuUI_OnBackToSeasonProgressInfo(MenuActionWidget *pItem);
-
-/**
- * @ghidraAddress BRD3D: 0x10046bf0
- */
-int SaveSeasonUI_OnBackToCarSetup(MenuActionWidget *pItem);
-
-/**
- * @ghidraAddress BRD3D: 0x10046790
- */
-int SaveSeasonUI_OnBackToPreRaceInfo(MenuActionWidget *pItem);
-
-/**
- * @ghidraAddress BRD3D: 0x10046870
- */
-int SaveSeasonUI_OnBackToSeasonProgressInfo(MenuActionWidget *pItem);
-
-/**
- * @ghidraAddress BRD3D: 0x10046eb0
- */
-int SaveSeasonUI_OnBack(MenuActionWidget *pItem);
-
-/**
- * @ghidraAddress BRD3D: 0x10046c90
- */
-int ChampionshipSeasonUI_OnBack(MenuActionWidget *pItem);
-
-/**
- * @ghidraAddress BRD3D: 0x10046710
- */
-int GameOptionsUI_OnBack(MenuActionWidget *pItem);
-
-/**
- * @ghidraAddress BRD3D: 0x100465a0
- */
-int InputOptionsUI_OnBack(MenuActionWidget *pItem);
-
-/**
- * @ghidraAddress BRD3D: 0x10044de0
- */
-int LoadTimeAttackMenuUI_OnBack(MenuActionWidget *pItem);
-
-/**
- * @ghidraAddress BRD3D: 0x100463c0
- */
-int MultiplayerConnectionUI_OnBack(MenuActionWidget *pItem);
-
-/**
- * @ghidraAddress BRD3D: 0x100464a0
- */
-int QuitGameConfirmUI_OnBack(MenuActionWidget *pItem);
-
-/**
- * @ghidraAddress BRD3D: 0x100470e0
- */
-int RaceResultsTotalsUI_OnBack(MenuActionWidget *pItem);
-
-/**
- * @ghidraAddress BRD3D: 0x10047060
- */
-int SeasonProgressInfoUI_OnBack(MenuActionWidget *pItem);
-
-/**
- * @ghidraAddress BRD3D: 0x10044c70
- */
-int TimeAttackMenuUI_OnBack(MenuActionWidget *pItem);
-
-/**
- * @ghidraAddress BRD3D: 0x100465e0
- */
-int VideoOptionsUI_OnBack(MenuActionWidget *pItem);
-
-/**
- * @ghidraAddress BRD3D: 0x10045800
- */
-int RaceResultsInfoUI_OnOpenOptions(MenuActionWidget *pItem);
-
-/**
- * @ghidraAddress BRD3D: 0x10045820
- */
-int RaceResultsInfoUI_OnOpenSaveSeason(MenuActionWidget *pItem);
-
-/**
- * @ghidraAddress BRD3D: 0x10045840
- */
-int RaceResultsSummaryUI_OnOpenOptions(MenuActionWidget *pItem);
-
-/**
- * @ghidraAddress BRD3D: 0x10045860
- */
-int RaceResultsSummaryUI_OnOpenSaveSeason(MenuActionWidget *pItem);
-
-/**
- * @ghidraAddress BRD3D: 0x10045880
- */
-int RaceResultsTotalsUI_OnOpenOptions(MenuActionWidget *pItem);
-
-/**
- * @ghidraAddress BRD3D: 0x100458a0
- */
-int RaceResultsTotalsUI_OnOpenSaveSeason(MenuActionWidget *pItem);
-
-/**
- * @ghidraAddress BRD3D: 0x10046910
- */
-int OptionsMenuUI_OnBackToRaceResultsInfo(MenuActionWidget *pItem);
-
-/**
- * @ghidraAddress BRD3D: 0x10046950
- */
-int SaveSeasonUI_OnBackToRaceResultsInfo(MenuActionWidget *pItem);
-
-/**
- * @ghidraAddress BRD3D: 0x100469f0
- */
-int OptionsMenuUI_OnBackToRaceResultsSummary(MenuActionWidget *pItem);
-
-/**
- * @ghidraAddress BRD3D: 0x10046a30
- */
-int SaveSeasonUI_OnBackToRaceResultsSummary(MenuActionWidget *pItem);
-
-/**
- * @ghidraAddress BRD3D: 0x10046ad0
- */
-int OptionsMenuUI_OnBackToRaceResultsTotals(MenuActionWidget *pItem);
-
-/**
- * @ghidraAddress BRD3D: 0x10046b10
- */
-int SaveSeasonUI_OnBackToRaceResultsTotals(MenuActionWidget *pItem);
-
-/**
- * @ghidraAddress BRD3D: 0x100470a0
- */
-int RaceResultsSummaryUI_OnBack(MenuActionWidget *pItem);
 
 /**
  * @ghidraAddress BRD3D: 0x100451e0
@@ -3582,11 +3746,6 @@ void ResetMenuSelectionsToDefaults(void);
 void BuildRaceResultsInfoUI(MenuScreen *pScreen);
 
 /**
- * @ghidraAddress BRD3D: 0x10040ee0
- */
-int RaceResultsInfoUI_UpdateSelectedTimeLabel(MenuWidget *pWidget);
-
-/**
  * @ghidraAddress BRD3D: 0x10053cf0
  */
 void BuildRaceResultsSummaryUI(MenuScreen *pScreen);
@@ -3649,15 +3808,6 @@ int ShowRaceResultsSummaryScreen(MenuWidget *pWidget = nullptr);
 void BuildPreRaceInfoUI(MenuScreen *pScreen);
 
 /**
- * @ghidraAddress BRD3D: 0x10040c00
- */
-int PreRaceInfoUI_UpdateBestTimeLabel(MenuWidget *pWidget);
-/**
- * @ghidraAddress BRD3D: 0x10040d70
- */
-int PreRaceInfoUI_UpdateBestLapLabel(MenuWidget *pWidget);
-
-/**
  * @ghidraAddress BRD3D: 0x10049f40
  */
 int BuildPreRaceExitSeasonConfirmUI(MenuScreen *pScreen);
@@ -3695,12 +3845,3 @@ int ShowLoadSeasonMenu(void);
  * @ghidraAddress BRD3D: 0x10045bc0
  */
 int ShowSaveSeasonScreen(void);
-
-/**
- * Apply championship progress and switch from totals to the next championship screen.
- *
- * @param pItem The action item on the totals screen.
- * @return Zero.
- * @ghidraAddress BRD3D: 0x10047290
- */
-int RaceResultsTotalsUI_OnContinue(MenuActionWidget *pItem);
