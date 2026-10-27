@@ -89,6 +89,51 @@ extern SoundEffect g_aSoundEffects[SOUND_EFFECTS];
  */
 void LoadAllSoundEffects(void);
 
+/**
+ * The sound effect channel 3 plays once, or -1.
+ *
+ * @ghidraAddress USA: 0x8028b7ec
+ * @ghidraAddress EUR: 0x8028da9c
+ * @ghidraAddress JPN: 0x8028d4cc
+ * @ghidraAddress BRD3D: 0x10aa3470
+ * @ghidraAddress BRGlide: 0x10ac67d0
+ */
+extern s32 g_dwChannel3PlayingSfxId;
+
+/**
+ * Play a sound effect once on channel 3.
+ *
+ * @param sound The sound effect.
+ * @ghidraAddress USA: 0x8022b370
+ * @ghidraAddress EUR: 0x8022c880
+ * @ghidraAddress JPN: 0x8022c038
+ * @ghidraAddress BRD3D: 0x10067d40
+ * @ghidraAddress BRGlide: 0x10060db0
+ */
+void PlaySoundEffect(s32 sound);
+
+/**
+ * Play the beep of the countdown, and of the laps.
+ *
+ * @ghidraAddress USA: 0x8022b3c4
+ * @ghidraAddress EUR: 0x8022c8d4
+ * @ghidraAddress JPN: 0x8022c08c
+ * @ghidraAddress BRD3D: 0x10067d80
+ * @ghidraAddress BRGlide: 0x10060df0
+ */
+void PlayBeepSound(void);
+
+/**
+ * Play the sound of the start of the race.
+ *
+ * @ghidraAddress USA: 0x8022b3e4
+ * @ghidraAddress EUR: 0x8022c8f4
+ * @ghidraAddress JPN: 0x8022c0ac
+ * @ghidraAddress BRD3D: 0x10067d90
+ * @ghidraAddress BRGlide: 0x10060e00
+ */
+void PlayGoSound(void);
+
 #ifdef __cplusplus
 }
 #endif

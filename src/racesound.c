@@ -131,21 +131,6 @@ void ComputeStereoPan(
     *volume = (s32)(SOUND_VOLUME_SCALE / distance);
 }
 
-void PlaySoundEffect(s32 sound) {
-    SoundEffect *effect = &g_aSoundEffects[sound];
-
-    InitSoundChannel(TRACK_SOUND_CHANNEL, effect->sample, effect->length, effect->loopLength);
-    g_dwChannel3PlayingSfxId = sound;
-}
-
-void PlayBeepSound(void) {
-    PlaySoundEffect(SOUND_EFFECT_BEEP);
-}
-
-void PlayGoSound(void) {
-    PlaySoundEffect(SOUND_EFFECT_GO);
-}
-
 void ResetSoundSourceTracking(void) {
     g_ClosestSoundSource.sound = -1;
     g_ClosestSoundSource.source = -1;

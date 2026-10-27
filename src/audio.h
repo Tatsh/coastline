@@ -467,15 +467,6 @@ void CheckSoundEffectLoopPoints(void);
  */
 void AudioMixingThreadMain(void *arg);
 
-/**
- * The sound effect channel 3 plays once, or -1.
- *
- * @ghidraAddress USA: 0x8028b7ec
- * @ghidraAddress EUR: 0x8028da9c
- * @ghidraAddress JPN: 0x8028d4cc
- */
-extern s32 g_dwChannel3PlayingSfxId;
-
 /** The nearest sound of the track this frame and the last. */
 typedef struct {
     Vec3f position;                 /*!< Where the nearest sound is. */
@@ -538,16 +529,6 @@ void ComputeStereoPan(
     Vec3f *source, CameraFrame *camera, f32 *upper, f32 *lower, s32 *volume, s32 narrow);
 
 /**
- * Play a sound effect once on channel 3.
- *
- * @param sound The sound effect.
- * @ghidraAddress USA: 0x8022b370
- * @ghidraAddress EUR: 0x8022c880
- * @ghidraAddress JPN: 0x8022c038
- */
-void PlaySoundEffect(s32 sound);
-
-/**
  * Offer a sound of the track as the nearest this frame; the nearest plays.
  *
  * @param source The source the sound is kept under.
@@ -562,24 +543,6 @@ void PlaySoundEffect(s32 sound);
  */
 void UpdateClosestSoundSource(
     s32 source, s32 sound, s32 volume, f32 frequency, Vec3f *position, CameraFrame *listener);
-
-/**
- * Play the beep of the countdown, and of the laps.
- *
- * @ghidraAddress USA: 0x8022b3c4
- * @ghidraAddress EUR: 0x8022c8d4
- * @ghidraAddress JPN: 0x8022c08c
- */
-void PlayBeepSound(void);
-
-/**
- * Play the sound of the start of the race.
- *
- * @ghidraAddress USA: 0x8022b3e4
- * @ghidraAddress EUR: 0x8022c8f4
- * @ghidraAddress JPN: 0x8022c0ac
- */
-void PlayGoSound(void);
 
 /**
  * Forget the nearest sound of the track found the last frame.
