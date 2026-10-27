@@ -35,58 +35,11 @@ s32 g_dwSfxFadeSkipFrame;
 #include "system.h"
 #include "util.h"
 
-/* The glare shows from this level and grows no further than the next. */
-#define GLARE_MIN_LEVEL 0.1f
-#define GLARE_MAX_LEVEL 0.7f
-
 /* The frames the wipe blacks the uncovered screen after the screen has faded out. */
 #define BLACK_FRAMES 3
 
 /* The volume of a fade level of 1. */
 #define MAX_VOLUME 255.0
-
-void RenderHeadlightGlare(void) {
-    if (g_fHeadlightGlare < GLARE_MIN_LEVEL) {
-        return;
-    }
-    if (g_fHeadlightGlare > GLARE_MAX_LEVEL) {
-        g_fHeadlightGlare = GLARE_MAX_LEVEL;
-    }
-    gDPPipeSync(gDisplayListPtr++);
-    gDPSetCycleType(gDisplayListPtr++, G_CYC_1CYCLE);
-    gDPSetRenderMode(gDisplayListPtr++,
-                     IM_RD | CVG_DST_SAVE | FORCE_BL |
-                         GBL_c1(G_BL_CLR_IN, G_BL_A_IN, G_BL_CLR_MEM, G_BL_1MA),
-                     GBL_c2(G_BL_CLR_IN, G_BL_A_IN, G_BL_CLR_MEM, G_BL_1MA));
-    gDPSetCombineLERP(gDisplayListPtr++,
-                      0,
-                      0,
-                      0,
-                      PRIMITIVE,
-                      0,
-                      0,
-                      0,
-                      PRIMITIVE,
-                      0,
-                      0,
-                      0,
-                      PRIMITIVE,
-                      0,
-                      0,
-                      0,
-                      PRIMITIVE);
-    gDPSetPrimColor(gDisplayListPtr++, 0, 0, 0xFF, 0xFF, 0xFF, (s32)(255.0f * g_fHeadlightGlare));
-    gDPSetColorDither(gDisplayListPtr++, G_CD_DISABLE);
-    gDPFillRectangle(gDisplayListPtr++,
-                     g_aViewportRects[g_dwCurrentSplitScreenIndex].x,
-                     g_aViewportRects[g_dwCurrentSplitScreenIndex].y,
-                     g_aViewportRects[g_dwCurrentSplitScreenIndex].x +
-                         g_aViewportRects[g_dwCurrentSplitScreenIndex].width,
-                     g_aViewportRects[g_dwCurrentSplitScreenIndex].y +
-                         g_aViewportRects[g_dwCurrentSplitScreenIndex].height);
-    gDPPipeSync(gDisplayListPtr++);
-    gDPSetColorDither(gDisplayListPtr++, g_dwColorDitherMode);
-}
 
 #endif
 

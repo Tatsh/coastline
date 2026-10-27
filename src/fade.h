@@ -12,6 +12,10 @@
 
 #include <PR/ultratypes.h>
 
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#include "render.h"
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -226,6 +230,15 @@ extern s32 g_adwFadeRectRightPerBuffer[2];
  */
 void ResetHeadlightGlare(void);
 
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+/**
+ * Draw white glare over the selected viewport, clamping the supplied opacity to 0.7.
+ * @param viewports The viewport array.
+ * @param level The glare opacity, omitted below 0.1 or for an unordered value.
+ * @ghidraAddress BRD3D: 0x1002af10
+ */
+void RenderHeadlightGlare(const ViewportRect *viewports, f32 level);
+#else
 /**
  * Draw the glare of the headlights over the view as white of its opacity, when it is strong
  * enough.
@@ -235,6 +248,7 @@ void ResetHeadlightGlare(void);
  * @ghidraAddress JPN: 0x80223fb0
  */
 void RenderHeadlightGlare(void);
+#endif
 
 /**
  * Fade the screen towards a level over a time in seconds. A fade out asked for while the screen
