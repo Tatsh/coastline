@@ -101,6 +101,10 @@ int MenuFont::DrawGlyph(short nImage, float x, float y, int nStyle) {
     return 1;
 }
 
+int MenuFont::DrawGlyphNoOp(short, float, float) {
+    return 0;
+}
+
 int MenuFont::DrawGlyphAltFont(short nImage, float x, float y, int nStyle) {
     DWORD flags = g_aMenuSprites[5].dwFlags;
     int destY = ConvertMenuCoordinate(y);

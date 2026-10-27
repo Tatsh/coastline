@@ -71,7 +71,6 @@ private:
     virtual int DrawGlyph(short nImage, float x, float y, int nStyle);
     /**
      * @ghidraAddress BRD3D: 0x1005b7e0
-     * @stub
      */
     virtual int DrawGlyphNoOp(short nImage, float x, float y);
     /**
