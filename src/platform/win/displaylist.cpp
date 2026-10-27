@@ -744,6 +744,116 @@ SetPendingRenderState(DWORD *pdwPending, DWORD dwApplied, DWORD dwValue, DWORD d
     }
 }
 
+void ApplyRdpRenderMode(unsigned dwRenderMode) {
+    auto zWrite = [](DWORD value) {
+        SetPendingRenderState(&g_dwPendingRS_ZWriteEnable,
+                              g_dwAppliedRS_ZWriteEnable,
+                              value,
+                              RENDER_STATE_DIRTY_Z_WRITE_ENABLE);
+    };
+    auto alphaTest = [](DWORD value) {
+        SetPendingRenderState(&g_dwPendingRS_AlphaTestEnable,
+                              g_dwAppliedRS_AlphaTestEnable,
+                              value,
+                              RENDER_STATE_DIRTY_ALPHA_TEST_ENABLE);
+    };
+    auto alphaBlend = [](DWORD value) {
+        SetPendingRenderState(&g_dwPendingRS_AlphaBlendEnable,
+                              g_dwAppliedRS_AlphaBlendEnable,
+                              value,
+                              RENDER_STATE_DIRTY_ALPHA_BLEND_ENABLE);
+    };
+    auto blend = [](DWORD source, DWORD destination) {
+        SetPendingRenderState(
+            &g_dwPendingRS_SrcBlend, g_dwAppliedRS_SrcBlend, source, RENDER_STATE_DIRTY_SRC_BLEND);
+        SetPendingRenderState(&g_dwPendingRS_DestBlend,
+                              g_dwAppliedRS_DestBlend,
+                              destination,
+                              RENDER_STATE_DIRTY_DEST_BLEND);
+    };
+    auto alphaFunction = [](DWORD reference, DWORD function) {
+        SetPendingRenderState(&g_dwPendingRS_AlphaRef,
+                              g_dwAppliedRS_AlphaRef,
+                              reference,
+                              RENDER_STATE_DIRTY_ALPHA_REF);
+        g_dwD3DAlphaFunc = function;
+        SetPendingRenderState(&g_dwPendingRS_AlphaFunc,
+                              g_dwAppliedRS_AlphaFunc,
+                              function,
+                              RENDER_STATE_DIRTY_ALPHA_FUNC);
+    };
+    auto zFunction = [](DWORD function) {
+        g_dwD3DZFunc = function;
+        SetPendingRenderState(
+            &g_dwPendingRS_ZFunc, g_dwAppliedRS_ZFunc, function, RENDER_STATE_DIRTY_Z_FUNC);
+    };
+
+    zWrite(TRUE);
+    if (dwRenderMode == 0x504f50 || dwRenderMode == 4 || dwRenderMode == 0xc184240 ||
+        dwRenderMode == 0x504240) {
+        alphaFunction(8, D3DCMP_GREATEREQUAL);
+        if (!g_bRdpBlendStateOverride) {
+            blend(D3DBLEND_SRCALPHA,
+                  dwRenderMode == 4 ? g_dwD3DDestBlendMode : D3DBLEND_INVSRCALPHA);
+        }
+        alphaTest(TRUE);
+        alphaBlend(TRUE);
+        if (dwRenderMode == 0x504f50 || dwRenderMode == 4) {
+            zFunction(D3DCMP_EQUAL);
+        }
+        return;
+    }
+    if (dwRenderMode == 3) {
+        g_bRdpBlendStateOverride = false;
+        return;
+    }
+    if (dwRenderMode == 1) {
+        zFunction(D3DCMP_LESSEQUAL);
+        zWrite(FALSE);
+        return;
+    }
+    if (dwRenderMode == 0) {
+        zFunction(D3DCMP_LESS);
+        alphaTest(TRUE);
+        alphaBlend(FALSE);
+        return;
+    }
+    if (dwRenderMode == 0xd1849d8) {
+        blend(D3DBLEND_SRCCOLOR, D3DBLEND_ONE);
+        zWrite(FALSE);
+        alphaBlend(TRUE);
+        g_bRdpBlendStateOverride = true;
+        return;
+    }
+    if (dwRenderMode & 0x1800) {
+        if (dwRenderMode & 0x10000) {
+            if (!g_bD3DAlphaCompare) {
+                return;
+            }
+            alphaFunction(128, D3DCMP_GREATEREQUAL);
+        } else {
+            alphaFunction(1, D3DCMP_GREATEREQUAL);
+            if (!g_bRdpBlendStateOverride) {
+                blend(D3DBLEND_SRCALPHA, D3DBLEND_INVSRCALPHA);
+            }
+            zWrite(FALSE);
+        }
+        alphaTest(TRUE);
+        alphaBlend(TRUE);
+        return;
+    }
+    if (!g_bRdpBlendStateOverride) {
+        blend(D3DBLEND_ONE, D3DBLEND_ZERO);
+    }
+    g_dwD3DAlphaFunc = D3DCMP_ALWAYS;
+    SetPendingRenderState(&g_dwPendingRS_AlphaFunc,
+                          g_dwAppliedRS_AlphaFunc,
+                          g_dwD3DAlphaFunc,
+                          RENDER_STATE_DIRTY_ALPHA_FUNC);
+    alphaTest(FALSE);
+    alphaBlend(FALSE);
+}
+
 void ApplyGeometryModeChanges(void) {
     unsigned dwChanged = g_dwGbiPrevGeometryMode ^ g_dwGbiGeometryMode;
     unsigned dwMode = g_dwGbiGeometryMode;
