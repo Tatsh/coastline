@@ -1,3 +1,3 @@
 #include "vehicle.h"
 
-Vehicle g_aVehicles[8];
+Vehicle g_aVehicles[16];
