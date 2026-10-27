@@ -1,6 +1,6 @@
 # PC port game code from 0x10040000 to 0x10050000
 
-251 of 264 routines done.
+252 of 264 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -11,7 +11,7 @@ the same name, for a routine the port retained from the N64 game.
 | -------------------------------------------------- | :----: | --------------- | -----: | -----: | ------------ | ------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `BuildCarSetupUI`                                  |   🚧   |                 |      2 |   3746 | `0x1004a580` | `0x100439b0` | `void BuildCarSetupUI(MenuScreen * pScreen)`                                                                                                              |
 | `BuildGameOptionsUI`                               |   ✅   |                 |      2 |   2679 | `0x1004e830` | `0x100476e0` | `int BuildGameOptionsUI(MenuScreen * screen)`                                                                                                             |
-| `BuildFrontEndRootMenuUI`                          |   📝   |                 |      1 |   2659 | `0x100491b0` | `0x100425e0` | `void BuildFrontEndRootMenuUI(MenuScreen * pScreen)`                                                                                                      |
+| `BuildFrontEndRootMenuUI`                          |   ✅   |                 |      1 |   2659 | `0x100491b0` | `0x100425e0` | `void BuildFrontEndRootMenuUI(MenuScreen * pScreen)`                                                                                                      |
 | `BuildRaceSetupUI`                                 |   🚧   |                 |      4 |   2439 | `0x1004b430` | `0x10044860` | `void BuildRaceSetupUI(MenuScreen * pScreen)`                                                                                                             |
 | `BuildLoadSeasonUI`                                |   📝   |                 |      2 |   2387 | `0x1004f700` | `0x100485b0` | `void BuildLoadSeasonUI(MenuScreen * pScreen)`                                                                                                            |
 | `BuildAudioOptionsUI`                              |   ✅   |                 |      2 |   2114 | `0x1004dfc0` | `0x10046e70` | `int BuildAudioOptionsUI(MenuScreen * screen)`                                                                                                            |
