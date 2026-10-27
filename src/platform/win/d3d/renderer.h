@@ -1226,6 +1226,17 @@ extern int g_adwPrecipitationTextureIds[PRECIPITATION_TEXTURE_COUNT];
 void GetPrecipitationTextureDimensions(int nIndex);
 
 /**
+ * Copy one converted ramp texel into a scaled precipitation texture position.
+ *
+ * @param nTileIndex The texture page.
+ * @param nSrcX The coordinate scaled by texture height.
+ * @param nSrcY The coordinate scaled by texture width.
+ * @param nSrcRow The converted ramp texel.
+ * @ghidraAddress BRD3D: 0x1001a4d0
+ */
+extern "C" void CopyTileColumnScaled(int nTileIndex, int nSrcX, int nSrcY, int nSrcRow);
+
+/**
  * The number of entries of g_pTextureEntries.
  *
  * @ghidraAddress BRD3D: 0x105553f0

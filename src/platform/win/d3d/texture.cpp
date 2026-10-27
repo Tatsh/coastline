@@ -9,6 +9,7 @@
 #include "platform/win/d3d/renderer.h"
 #include "platform/win/fileio.h"
 #include "platform/win/render.h"
+#include "weather.h"
 
 // The pixel format LoadRgba5551ImageFile() converts an image to.
 #define RGBA5551_IMAGE_PIXEL_FORMAT 0xb
@@ -303,6 +304,22 @@ void GetTextureEntryDimensions(int *pWidth, int *pHeight, int nEntry) {
 void GetPrecipitationTextureDimensions(int nIndex) {
     GetTextureEntryDimensions(
         &g_dwPrecipTextureWidth, &g_dwPrecipTextureHeight, g_adwPrecipitationTextureIds[nIndex]);
+}
+
+void CopyTileColumnScaled(int nTileIndex, int nSrcX, int nSrcY, int nSrcRow) {
+    int row = (int)((unsigned)nSrcX * (unsigned)g_dwPrecipTextureHeight) / 64;
+    int column = (int)((unsigned)nSrcY * (unsigned)g_dwPrecipTextureWidth) / 64;
+
+    for (int byte = 0; byte < g_dwAlphaRampStripRowCount; ++byte) {
+        unsigned destination =
+            ((unsigned)row * (unsigned)g_dwPrecipTextureWidth + (unsigned)column) *
+                (unsigned)g_dwAlphaRampStripRowCount +
+            (unsigned)byte;
+        unsigned source = (unsigned)nSrcRow * (unsigned)g_dwAlphaRampStripRowCount + (unsigned)byte;
+
+        g_abPrecipitationTextures[nTileIndex][(int)destination] =
+            g_abAlphaRampPixelStrip[(int)source];
+    }
 }
 
 void InitializeAllTextureSurfaces(void) {
