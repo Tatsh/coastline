@@ -1,6 +1,6 @@
 # PC port game code from 0x10000000 to 0x10010000
 
-224 of 247 routines done.
+225 of 247 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -105,7 +105,7 @@ the same name, for a routine the port retained from the N64 game.
 | `ConvertBgr24ToRgb565FlipVertical`                         |        |                 |      1 |    117 |              | `0x100011c0` | `undefined ConvertBgr24ToRgb565FlipVertical()`                                                                                                                                          |
 | `HandleDirectPlaySystemMessageHost`                        |   ✅   |                 |      1 |    116 | `0x1000c000` | `0x10009530` | `void HandleDirectPlaySystemMessageHost(DirectPlayInfo * pInfo, void * pMessage, uint dwSize, uint dpidFrom, uint dpidTo)`                                                              |
 | `DirectDrawRenderer::DestroyD3DDevice`                     |   ✅   |                 |      2 |    114 | `0x1000ad70` |              | `int DestroyD3DDevice(DirectDrawRenderer * this)`                                                                                                                                       |
-| `StepDebugHiddenInstance`                                  |        | ✅ `0x80254d90` |      1 |    114 | `0x1000ba70` | `0x10008f90` | `void StepDebugHiddenInstance(void)`                                                                                                                                                    |
+| `StepDebugHiddenInstance`                                  |   ✅   | ✅ `0x80254d90` |      1 |    114 | `0x1000ba70` | `0x10008f90` | `void StepDebugHiddenInstance(void)`                                                                                                                                                    |
 | `GetDirectDrawFromD3DDevice`                               |   ✅   |                 |      1 |    111 | `0x10009e30` |              | `void * GetDirectDrawFromD3DDevice(void * pDevice)`                                                                                                                                     |
 | `InitSoftwareMusicStack`                                   |   ✅   |                 |      1 |    110 | `0x100025f0` | `0x10002910` | `bool InitSoftwareMusicStack(void * hWnd)`                                                                                                                                              |
 | `MciPlayCdTracks`                                          |   ✅   |                 |      1 |    109 | `0x10002550` | `0x10002870` | `uint MciPlayCdTracks(void * hWnd, byte nTrack)`                                                                                                                                        |

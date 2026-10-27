@@ -79,6 +79,8 @@ extern u16 g_wBitmapTextColor;
  * @ghidraAddress USA: 0x8028dde0
  * @ghidraAddress EUR: 0x80290580
  * @ghidraAddress JPN: 0x80290020
+ * @ghidraAddress BRD3D: 0x10277b20
+ * @ghidraAddress BRGlide: 0x10273308
  */
 extern s32 g_nDebugInstanceCycleStep;
 
@@ -118,6 +120,8 @@ void InitBitmapText(void);
  * @ghidraAddress USA: 0x80254d90
  * @ghidraAddress EUR: 0x80256330
  * @ghidraAddress JPN: 0x80255cc0
+ * @ghidraAddress BRD3D: 0x1000ba70
+ * @ghidraAddress BRGlide: 0x10008f90
  */
 void StepDebugHiddenInstance(void);
 

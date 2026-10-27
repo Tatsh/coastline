@@ -127,33 +127,6 @@ void InitBitmapText(void) {
     g_bBitmapTextNarrow = FALSE;
 }
 
-void StepDebugHiddenInstance(void) {
-    s32 i;
-
-    if (g_nDebugInstanceCycleStep == 0) {
-        return;
-    }
-    for (;;) {
-        g_nDebugHiddenInstanceIndex += g_nDebugInstanceCycleStep;
-        if (g_nDebugHiddenInstanceIndex >= g_LoadedTrack.instanceCount) {
-            g_nDebugHiddenInstanceIndex = 0;
-        }
-        if (g_nDebugHiddenInstanceIndex < 0) {
-            g_nDebugHiddenInstanceIndex = g_LoadedTrack.instanceCount - 1;
-        }
-        if (g_nDebugHiddenInstanceIndex == 0) {
-            break;
-        }
-        for (i = 0; i < g_nOpaqueVisibleInstanceCount; i++) {
-            if (g_awVisibleInstanceList[i] == g_nDebugHiddenInstanceIndex) {
-                goto found;
-            }
-        }
-    }
-found:
-    g_nDebugInstanceCycleStep = 0;
-}
-
 void BeginDebugStats(void) {
     s32 frameMicroseconds;
     f32 cyclesPerMillisecond;

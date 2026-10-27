@@ -231,6 +231,8 @@ extern TrackHeader g_LoadedTrack;
  * @ghidraAddress USA: 0x80352580
  * @ghidraAddress EUR: 0x80354a80
  * @ghidraAddress JPN: 0x803536f0
+ * @ghidraAddress BRD3D: 0x10362f28
+ * @ghidraAddress BRGlide: 0x1035e710
  */
 extern u16 g_awVisibleInstanceList[];
 
@@ -240,6 +242,8 @@ extern u16 g_awVisibleInstanceList[];
  * @ghidraAddress USA: 0x8028c744
  * @ghidraAddress EUR: 0x8028eea4
  * @ghidraAddress JPN: 0x8028e8f4
+ * @ghidraAddress BRD3D: 0x103643b4
+ * @ghidraAddress BRGlide: 0x1035fb9c
  */
 extern s32 g_nOpaqueVisibleInstanceCount;
 
@@ -249,6 +253,8 @@ extern s32 g_nOpaqueVisibleInstanceCount;
  * @ghidraAddress USA: 0x8028c754
  * @ghidraAddress EUR: 0x8028eeb4
  * @ghidraAddress JPN: 0x8028e904
+ * @ghidraAddress BRD3D: 0x1039b6c0
+ * @ghidraAddress BRGlide: 0x10396ea8
  */
 extern s32 g_nDebugHiddenInstanceIndex;
 
