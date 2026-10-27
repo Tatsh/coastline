@@ -1,6 +1,6 @@
 # PC port game code from 0x10030000 to 0x10040000
 
-117 of 307 routines done.
+119 of 307 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -184,10 +184,10 @@ the same name, for a routine the port retained from the N64 game.
 | `SeasonUI_UpdateRoundPointsLabel`                 |        |                 |      2 |     73 | `0x1003ea90` | `0x100380b0` | `undefined SeasonUI_UpdateRoundPointsLabel()`                                                                                                                           |
 | `SeasonUI_UpdateRoundPlaceLabel`                  |        |                 |      2 |     72 | `0x1003e8d0` | `0x10037ef0` | `undefined SeasonUI_UpdateRoundPlaceLabel()`                                                                                                                            |
 | `NetworkCarSetupUI_UpdateSelectedPlayer`          |        |                 |      1 |     72 | `0x1003ebe0` | `0x100381d0` | `undefined NetworkCarSetupUI_UpdateSelectedPlayer()`                                                                                                                    |
-| `guTranslateF`                                    |        | ✅ `0x80260e30` |      3 |     71 | `0x10031140` | `0x1002a7f0` | `undefined guTranslateF()`                                                                                                                                              |
+| `guTranslateF`                                    |   ✅   | ✅ `0x80260e30` |      3 |     71 | `0x10031140` | `0x1002a7f0` | `void guTranslateF(float[4] * mf, float x, float y, float z)`                                                                                                           |
 | `CopySessionNameToBuffer`                         |   ✅   |                 |      1 |     71 | `0x1003d130` | `0x100367c0` | `void CopySessionNameToBuffer(NetworkSessionSettings * pSettings)`                                                                                                      |
 | `InitServiceProviderAndStartSession`              |   ✅   |                 |      1 |     71 | `0x1003c1e0` | `0x10035870` | `bool InitServiceProviderAndStartSession(void)`                                                                                                                         |
-| `guScaleF`                                        |        | ✅ `0x80260800` |      4 |     70 | `0x100310f0` | `0x1002a7a0` | `undefined guScaleF()`                                                                                                                                                  |
+| `guScaleF`                                        |   ✅   | ✅ `0x80260800` |      4 |     70 | `0x100310f0` | `0x1002a7a0` | `void guScaleF(float[4] * mf, float x, float y, float z)`                                                                                                               |
 | `SelectConfiguredDisplayMode`                     |   ✅   |                 |      1 |     69 | `0x1003e2c0` |              | `void SelectConfiguredDisplayMode(void)`                                                                                                                                |
 | `SendNetworkMessage3`                             |   ✅   |                 |      1 |     69 | `0x1003d9f0` | `0x10037090` | `HRESULT SendNetworkMessage3(DirectPlayInfo * pInfo)`                                                                                                                   |
 | `ResetSeasonSaveBuffers`                          |   ✅   |                 |      2 |     68 | `0x1003e1d0` | `0x10037870` | `int ResetSeasonSaveBuffers(void)`                                                                                                                                      |
