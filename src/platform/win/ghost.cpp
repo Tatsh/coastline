@@ -175,6 +175,10 @@ void FillMemoryPatternBytes(void *pDest, size_t nCount, int nByte) {
     memset(pDest, nByte, nCount);
 }
 
+void StartGhostRecording(void) {
+    g_bGhostRecordingActive = true;
+}
+
 void ResetGhostRecording(void) {
     int nRecordings = GHOST_RECORDING_COUNT;
     if (g_dwGameMode == GAME_MODE_TIME_ATTACK || g_dwGameMode == GAME_MODE_DEMO) {
