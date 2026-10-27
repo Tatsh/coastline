@@ -1,5 +1,5 @@
-#ifndef COASTLINE_TRACKSHADOW_H
-#define COASTLINE_TRACKSHADOW_H
+#ifndef COASTLINE_TRACK_SHADOW_H
+#define COASTLINE_TRACK_SHADOW_H
 
 #include "convertedvertex.h"
 #include "track.h"
