@@ -145,6 +145,14 @@ typedef struct Vehicle {
     u8 abUnknown2abc[0xac]; /* +0x2abc */
 #ifdef __cplusplus
     /**
+     * Store the vehicle's three paint colour bytes.
+     *
+     * @ghidraAddress BRD3D: 0x10035ca0
+     * @ghidraAddress BRGlide: 0x1002f340
+     */
+    void SetVehiclePaintColorRgb(u8 red, u8 green, u8 blue);
+
+    /**
      * Advance spring, tyre, damping, and collision calculations.
      *
      * @ghidraAddress BRD3D: 0x10061720

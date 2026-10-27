@@ -14,6 +14,12 @@ void AiVehicleControllerCallback(Vehicle *vehicle) {
     vehicle->ComputeAiVehicleInput();
 }
 
+void Vehicle::SetVehiclePaintColorRgb(u8 red, u8 green, u8 blue) {
+    color[0] = red;
+    color[1] = green;
+    color[2] = blue;
+}
+
 void Vehicle::SimulateVehiclePhysicsSubstep(void) {
     ::SimulateVehiclePhysicsSubstep(this);
 }
