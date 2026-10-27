@@ -471,6 +471,24 @@ int AudioOptionsUI_UpdateCdTrackSelection(MenuWidget *pWidget);
 int NetworkCarSetupUI_PollChatListSelection(MenuWidget *pWidget);
 
 /**
+ * @ghidraAddress BRD3D: 0x1003f110
+ * @ghidraAddress BRGlide: 0x10038650
+ */
+int OnChatMessageEdited(MenuWidget *pWidget);
+
+/**
+ * @ghidraAddress BRD3D: 0x1003f0b0
+ * @ghidraAddress BRGlide: 0x100385f0
+ */
+int OnTcpIpAddressEdited(MenuWidget *pWidget);
+
+/**
+ * @ghidraAddress BRD3D: 0x1003f050
+ * @ghidraAddress BRGlide: 0x10038580
+ */
+int OnTcpIpPortEdited(MenuWidget *pWidget);
+
+/**
  * @ghidraAddress BRD3D: 0x10aa29bc
  * @ghidraAddress BRGlide: 0x10ac5d14
  */

@@ -1157,6 +1157,27 @@ int NetworkCarSetupUI_PollChatListSelection(MenuWidget *pWidget) {
     return 1;
 }
 
+static inline int SynchronizeEditedMenuText(MenuWidget *pWidget, char *destination) {
+    ProcessMenuTextEditInput(pWidget, 0);
+    const char *text = pWidget->fonts[0].szText;
+    if (_stricmp(destination, text)) {
+        strcpy(destination, text);
+    }
+    return 1;
+}
+
+int OnChatMessageEdited(MenuWidget *pWidget) {
+    return SynchronizeEditedMenuText(pWidget, g_szNetworkChatText);
+}
+
+int OnTcpIpAddressEdited(MenuWidget *pWidget) {
+    return SynchronizeEditedMenuText(pWidget, g_GlobalRallyConfig.szTcpIpAddress);
+}
+
+int OnTcpIpPortEdited(MenuWidget *pWidget) {
+    return SynchronizeEditedMenuText(pWidget, g_GlobalRallyConfig.szTcpIpPort);
+}
+
 int ShowVideoOptionsMenu(void) {
     return ShowCachedMenuScreen(g_pCachedMenu_InputConfig, BuildVideoOptionsUI);
 }
