@@ -844,6 +844,7 @@ void LoadHudOverlayTexture(void);
  *
  * @ghidraAddress BRD3D: 0x10073820
  * @ghidraAddress BRGlide: 0x1006c790
+ * @stub{BRGlide}
  */
 void LoadHudGlyphTextureSets(void);
 
