@@ -125,8 +125,19 @@ extern Light g_MenuDirectionalLight;
  * @ghidraAddress USA: 0x80271d98
  * @ghidraAddress EUR: 0x80273d78
  * @ghidraAddress JPN: 0x80273838
+ * @ghidraAddress BRD3D: 0x10690a1c
  */
 extern s32 g_dwDrawModelListNoZBuffer;
+
+/**
+ * The light of the parts of a model lit by their light ramp, by its index.
+ *
+ * @ghidraAddress USA: 0x80271d9c
+ * @ghidraAddress EUR: 0x80273d7c
+ * @ghidraAddress JPN: 0x8027383c
+ * @ghidraAddress BRD3D: 0x100aa5d0
+ */
+extern u32 g_adwModelShadeColors[4];
 
 /**
  * Draw the parts of a model, the opaque ones first, under a matrix.
@@ -137,7 +148,6 @@ extern s32 g_dwDrawModelListNoZBuffer;
  * @ghidraAddress EUR: 0x80209b50
  * @ghidraAddress JPN: 0x80209750
  * @ghidraAddress BRD3D: 0x1002fb20
- * @stub{BRD3D}
  */
 void DrawModelList(Model *model, f32 m[4][4]);
 

@@ -385,6 +385,7 @@ extern s32 g_bTrackTextureLod;
  * @ghidraAddress USA: 0x8028aa48
  * @ghidraAddress EUR: 0x8028cc50
  * @ghidraAddress JPN: 0x8028c720
+ * @ghidraAddress BRD3D: 0x100aa880
  */
 extern s32 g_bSmoothShading;
 

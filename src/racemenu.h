@@ -276,15 +276,6 @@ extern Texture g_ArrowRightTextureDesc;
 extern Texture g_BgTextureDesc;
 
 /**
- * The light of the parts of a model lit by their light ramp, by its index.
- *
- * @ghidraAddress USA: 0x80271d9c
- * @ghidraAddress EUR: 0x80273d7c
- * @ghidraAddress JPN: 0x8027383c
- */
-extern u32 g_adwModelShadeColors[4];
-
-/**
  * Whether the vertices of the beam of the spotlight over the stage are set; nothing sets it.
  *
  * @ghidraAddress USA: 0x80271dac

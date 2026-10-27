@@ -19,6 +19,7 @@
 
 #include "../../render.h"
 #include "convertedvertex.h"
+#include "platform/win/combine.h"
 #include "platform/win/fontdata.h"
 #include "platform/win/textureupload.h"
 #include "renderbackend.h"
@@ -769,49 +770,6 @@ int EncodeCombinerSelectorWide(int nInput);
 int EncodeCombinerSelectorNarrow(int nInput);
 
 struct GbiCommand;
-
-/**
- * Build the command that sets the combine mode of two cycles from the inputs of the colour
- * combiner, as EncodeCombinerSelectorWide() and EncodeCombinerSelectorNarrow() take them, packed as
- * the console packs them.
- *
- * @param pCommand Receives the command.
- * @param nColorA0 The input a of the colour of the first cycle.
- * @param nColorB0 The input b of the colour of the first cycle.
- * @param nColorC0 The input c of the colour of the first cycle.
- * @param nColorD0 The input d of the colour of the first cycle.
- * @param nAlphaA0 The input a of the alpha of the first cycle.
- * @param nAlphaB0 The input b of the alpha of the first cycle.
- * @param nAlphaC0 The input c of the alpha of the first cycle.
- * @param nAlphaD0 The input d of the alpha of the first cycle.
- * @param nColorA1 The input a of the colour of the second cycle.
- * @param nColorB1 The input b of the colour of the second cycle.
- * @param nColorC1 The input c of the colour of the second cycle.
- * @param nColorD1 The input d of the colour of the second cycle.
- * @param nAlphaA1 The input a of the alpha of the second cycle.
- * @param nAlphaB1 The input b of the alpha of the second cycle.
- * @param nAlphaC1 The input c of the alpha of the second cycle.
- * @param nAlphaD1 The input d of the alpha of the second cycle.
- * @ghidraAddress BRD3D: 0x1002f900
- * @ghidraAddress BRGlide: 0x1001cf90
- */
-void PackCombineMode(GbiCommand *pCommand,
-                     int nColorA0,
-                     int nColorB0,
-                     int nColorC0,
-                     int nColorD0,
-                     int nAlphaA0,
-                     int nAlphaB0,
-                     int nAlphaC0,
-                     int nAlphaD0,
-                     int nColorA1,
-                     int nColorB1,
-                     int nColorC1,
-                     int nColorD1,
-                     int nAlphaA1,
-                     int nAlphaB1,
-                     int nAlphaC1,
-                     int nAlphaD1);
 
 /**
  * Load the texture of the overlay of the display of the race.
