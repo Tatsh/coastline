@@ -35,9 +35,6 @@ s32 g_dwSfxFadeSkipFrame;
 #include "system.h"
 #include "util.h"
 
-/* The frames the wipe blacks the uncovered screen after the screen has faded out. */
-#define BLACK_FRAMES 3
-
 #endif
 
 void SetFadeTarget(float target, float seconds) {
@@ -118,92 +115,6 @@ s32 IsFadedToWhite(void) {
 }
 
 void UnusedScreenFadeStub(void) {
-}
-
-/* Fill the full height of the screen with the colour set, between two columns of pixels. */
-#define FillScreenColumns(left, right)                                                             \
-    gDPFillRectangle(gDisplayListPtr++,                                                            \
-                     (left) << g_dwScreenScaleShift,                                               \
-                     0,                                                                            \
-                     ((right) << g_dwScreenScaleShift) - 1,                                        \
-                     (g_dwScreenHeight << g_dwScreenScaleShift) - 1)
-
-void ApplyScreenFade(void) {
-    /* The frames left that the wipe blacks the uncovered screen, two at boot, not BLACK_FRAMES. */
-    /**
-     * @ghidraAddress USA: 0x8028b788
-     * @ghidraAddress EUR: 0x8028da38
-     * @ghidraAddress JPN: 0x8028d468
-     */
-    static s32 g_dwScreenFadeFramesRemaining = 2;
-    s32 left;
-    s32 right;
-
-    if (g_fFadeLevel == 1.0f) {
-        return;
-    }
-    gDPPipeSync(gDisplayListPtr++);
-    gDPSetCycleType(gDisplayListPtr++, G_CYC_1CYCLE);
-    gDPSetRenderMode(gDisplayListPtr++,
-                     FORCE_BL | GBL_c1(G_BL_CLR_IN, G_BL_0, G_BL_CLR_IN, G_BL_1),
-                     GBL_c2(G_BL_CLR_IN, G_BL_0, G_BL_CLR_IN, G_BL_1));
-    gDPSetCombineLERP(gDisplayListPtr++,
-                      0,
-                      0,
-                      0,
-                      PRIMITIVE,
-                      0,
-                      0,
-                      0,
-                      PRIMITIVE,
-                      0,
-                      0,
-                      0,
-                      PRIMITIVE,
-                      0,
-                      0,
-                      0,
-                      PRIMITIVE);
-    gDPSetScissor(gDisplayListPtr++,
-                  G_SC_NON_INTERLACE,
-                  0,
-                  0,
-                  g_dwScreenWidth << g_dwScreenScaleShift,
-                  g_dwScreenHeight << g_dwScreenScaleShift);
-    gDPSetPrimColor(gDisplayListPtr++, 0xFF, 0xFF, 0, 0, 0, 0);
-
-    /* Black from where the other framebuffer was covered to the left edge of the picture. */
-    if (g_dwFadeRectLeft) {
-        left = g_adwFadeRectLeftPerBuffer[g_dwFrameBufferIndex ^ 1];
-        if (g_dwFadeRectLeft < left) {
-            left = 0;
-        }
-        right = g_dwFadeRectLeft;
-        if (left) {
-            left--;
-        }
-        if (IsFadedToBlack()) {
-            g_dwScreenFadeFramesRemaining = BLACK_FRAMES;
-        }
-        FillScreenColumns(left, right);
-    }
-
-    /* Black right of the picture, or the whole screen once faded out, for a few frames. */
-    if (g_dwFadeRectRight < g_dwScreenWidth) {
-        left = g_dwFadeRectRight;
-        right = g_dwScreenWidth;
-        if (g_dwScreenFadeFramesRemaining) {
-            g_dwScreenFadeFramesRemaining--;
-            FillScreenColumns(left, right);
-        }
-    } else if (g_fFadeLevel == 0.0f) {
-        right = g_dwScreenWidth;
-        if (g_dwScreenFadeFramesRemaining) {
-            g_dwScreenFadeFramesRemaining--;
-            FillScreenColumns(0, right);
-        }
-    }
-    gDPPipeSync(gDisplayListPtr++);
 }
 
 void DrawScreenFadeOverlay(float level) {

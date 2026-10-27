@@ -398,6 +398,7 @@ void UnusedScreenFadeStub(void);
  * @ghidraAddress USA: 0x80223a70
  * @ghidraAddress EUR: 0x80224db0
  * @ghidraAddress JPN: 0x802245a0
+ * @ghidraAddress BRD3D: 0x1002b340
  */
 void ApplyScreenFade(void);
 
