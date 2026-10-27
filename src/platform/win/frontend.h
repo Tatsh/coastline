@@ -289,6 +289,12 @@ int SeasonFileUI_UpdateYearLabel(MenuWidget *pWidget);
 int SeasonFileUI_UpdateRoundLabel(MenuWidget *pWidget);
 
 /**
+ * @ghidraAddress BRD3D: 0x10041300
+ * @ghidraAddress BRGlide: 0x1003a860
+ */
+int SeasonUI_UpdateSeasonNameLabel(MenuWidget *pWidget);
+
+/**
  * @ghidraAddress BRD3D: 0x10aa28e8
  * @ghidraAddress BRGlide: 0x10ac5c40
  */

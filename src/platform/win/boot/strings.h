@@ -16,7 +16,7 @@
  * @ghidraAddress BRD3D: 0x11829370
  * @ghidraAddress BRGlide: 0x1186c488
  */
-extern const char *g_apszStringResourceTable[STRING_RESOURCE_COUNT + 1];
+extern char *g_apszStringResourceTable[STRING_RESOURCE_COUNT + 1];
 
 /**
  * The buffer the strings are loaded into, allocated once.
@@ -56,7 +56,7 @@ void LoadStringTableFromDll(void);
  * @ghidraAddress BRD3D: 0x10074030
  * @ghidraAddress BRGlide: 0x1006d280
  */
-const char *GetStringResource(unsigned nResourceId);
+char *GetStringResource(unsigned nResourceId);
 
 /**
  * Free the buffer of the strings.

@@ -1729,6 +1729,19 @@ int GameOptionsUI_OnToggleSpecularLighting(MenuWidget *) {
     return 1;
 }
 
+int SeasonUI_UpdateSeasonNameLabel(MenuWidget *pWidget) {
+    int season = g_dwSeasonLoaded ? g_bSeasonClass : 0;
+    if (strlen(GetStringResource(g_SeasonTable[season].nameStringId)) == 0) {
+        return 0;
+    }
+    MenuFont *font = &pWidget->fonts[0];
+    strcpy(font->szText, _strupr(GetStringResource(g_SeasonTable[season].nameStringId)));
+    MenuFontVTable *vtable = font->pVTable;
+    vtable->MeasureText(font);
+    vtable->DrawText(font);
+    return 1;
+}
+
 static inline void DrawAlternateMenuLabel(MenuWidget *pWidget, const char *text) {
     MenuFont *font = &pWidget->fonts[0];
     strcpy(font->szText, text);

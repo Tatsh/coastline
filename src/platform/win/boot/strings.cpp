@@ -10,7 +10,7 @@
 // The language resource library, beside the game.
 #define STRING_LIBRARY "BRString.dll"
 
-const char *g_apszStringResourceTable[STRING_RESOURCE_COUNT + 1];
+char *g_apszStringResourceTable[STRING_RESOURCE_COUNT + 1];
 char *g_pStringTableBuffer;
 size_t g_dwStringTableUsedBytes;
 size_t g_dwStringTableBufferSize;
@@ -20,7 +20,7 @@ void LoadStringTableFromDll(void) {
     HMODULE hLibrary;
     int nLength;
 
-    memset(&g_apszStringResourceTable[1], 0, STRING_RESOURCE_COUNT * sizeof(const char *));
+    memset(&g_apszStringResourceTable[1], 0, STRING_RESOURCE_COUNT * sizeof(char *));
     if (g_pStringTableBuffer != nullptr) {
         return;
     }
@@ -48,7 +48,7 @@ void LoadStringTableFromDll(void) {
     FreeLibrary(hLibrary);
 }
 
-const char *GetStringResource(unsigned nResourceId) {
+char *GetStringResource(unsigned nResourceId) {
     if (nResourceId < 1 || nResourceId > STRING_RESOURCE_COUNT) {
         return nullptr;
     }
