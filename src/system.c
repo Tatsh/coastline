@@ -157,9 +157,6 @@ void ClearZBufferRect(s32 x, s32 y, s32 width, s32 height) {
                      TO_RSP_ADDRESS(g_apFramebuffers[g_dwFrameBufferIndex]));
 }
 
-void StubEmptyVoid(s32 unused0, ...) {
-}
-
 #if TGR_REGION == TGR_REGION_JP || TGR_REGION == TGR_REGION_EU
 void BlankDisplay(void) {
 #if TGR_REGION == TGR_REGION_EU

@@ -954,7 +954,12 @@ void BeginDisplayList(s32 highRes);
  * @ghidraAddress USA: 0x80219a5c
  * @ghidraAddress EUR: 0x8021aa7c
  * @ghidraAddress JPN: 0x8021a3d4
+ * @ghidraAddress BRD3D: 0x1003289a
+ * @ghidraAddress BRGlide: 0x1002bf4b
  */
+#ifdef __cplusplus
+extern "C"
+#endif
 void StubEmptyVoid(s32 unused0, ...);
 
 /**
