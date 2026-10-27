@@ -3358,6 +3358,27 @@ int SaveSeasonUI_OnSlotNameEntered(MenuItemList *pList, int nStatus) {
     return 1;
 }
 
+int SaveTimeAttackMenuUI_OnSlotSelected(MenuItemList *list, int *slot) {
+    g_dwFileListSelectedSlot = *slot;
+    g_pSaveTimeAttackEditMenu = list;
+    char fileName[260];
+    char number[4];
+    if (list->GetFont(g_dwFileListSelectedSlot).GetText()) {
+        std::strcpy(fileName, "TimeAttack");
+        _itoa(g_dwFileListSelectedSlot, number, 10);
+        std::strcat(fileName, number);
+        std::strcat(fileName, ".grf");
+    }
+    FILE *file = std::fopen(fileName, "r");
+    if (file) {
+        std::fclose(file);
+        g_pSaveTimeAttackMenu->GetScreen()->SetPanelActive(1, 1);
+    } else {
+        ToggleMenuItemTextEditB(g_pSaveTimeAttackMenu);
+    }
+    return 1;
+}
+
 int SaveSeasonUI_OnSlotSelected(MenuItemList *pList, int *pnSlot) {
     int slot = *pnSlot;
     if (slot < 0) {
