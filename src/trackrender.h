@@ -401,6 +401,22 @@ void BuildVisibleInstanceList(void);
 }
 #endif
 
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+/**
+ * Draw track geometry, vehicle shadows, and skid marks from the supplied race arrays.
+ *
+ * @param viewports The records of the views.
+ * @param deferred Whether this is the second pass.
+ * @param slots The racers and their current vehicles.
+ * @param vehicles The active vehicle array.
+ * @ghidraAddress BRD3D: 0x10011590
+ * @stub{BRD3D}
+ */
+void RenderTrackGeometry(const ViewportRect *viewports,
+                         s32 deferred,
+                         const RacerSlot *slots,
+                         Vehicle *vehicles);
+#else
 /**
  * Draw the placed models in view: in the first pass the opaque ones, leaving the translucent ones,
  * and in the second pass those, the farthest first.
@@ -411,5 +427,6 @@ void BuildVisibleInstanceList(void);
  * @ghidraAddress JPN: 0x80236ebc
  */
 void RenderTrackGeometry(s32 deferred);
+#endif
 
 #endif
