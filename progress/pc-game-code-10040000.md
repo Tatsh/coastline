@@ -1,6 +1,6 @@
 # PC port game code from 0x10040000 to 0x10050000
 
-245 of 264 routines done.
+246 of 264 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -40,7 +40,7 @@ the same name, for a routine the port retained from the N64 game.
 | `SaveTimeAttackMenuUI_OnSlotNameEntered`           |        |                 |      1 |    468 | `0x10042560` | `0x1003bac0` | `undefined SaveTimeAttackMenuUI_OnSlotNameEntered()`                                                                                                      |
 | `MenuPanel::RunFrame`                              |   ✅   |                 |      0 |    468 | `0x10048530` | `0x10041980` | `bool RunFrame(MenuPanel * this)`                                                                                                                         |
 | `RaceSetupUI_OnCycleTrack`                         |   ✅   |                 |      2 |    457 | `0x10042ee0` | `0x1003c430` | `int RaceSetupUI_OnCycleTrack(MenuActionWidget * pItem)`                                                                                                  |
-| `ReturnToNetworkLobbyScreen`                       |   📝   |                 |      1 |    407 | `0x100447d0` | `0x1003dd20` | `undefined ReturnToNetworkLobbyScreen()`                                                                                                                  |
+| `ReturnToNetworkLobbyScreen`                       |   ✅   |                 |      1 |    407 | `0x100447d0` | `0x1003dd20` | `int ReturnToNetworkLobbyScreen(void)`                                                                                                                    |
 | `MenuWidget::UpdateSlideAnimation`                 |   ✅   |                 |      1 |    373 | `0x10047d30` | `0x10041180` | `int UpdateSlideAnimation(MenuWidget * this)`                                                                                                             |
 | `PreRaceInfoUI_UpdateBestLapLabel`                 |   ✅   |                 |      1 |    358 | `0x10040d70` | `0x1003a2b0` | `int PreRaceInfoUI_UpdateBestLapLabel(MenuWidget * widget)`                                                                                               |
 | `PreRaceInfoUI_UpdateBestTimeLabel`                |   ✅   |                 |      1 |    358 | `0x10040c00` | `0x1003a140` | `int PreRaceInfoUI_UpdateBestTimeLabel(MenuWidget * widget)`                                                                                              |
