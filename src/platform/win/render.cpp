@@ -1,5 +1,6 @@
 #include "platform/win/render.h"
 
+#include <bit>
 #include <cstdlib>
 #include <cstring>
 
@@ -153,6 +154,76 @@ void RelocateGbiVertexCommand(GbiCommand *pCommand) {
 
 static inline unsigned SwapDisplayListWord(unsigned dwWord) {
     return dwWord << 24 | (dwWord << 8 & 0xff0000) | (dwWord >> 8 & 0xff00) | dwWord >> 24;
+}
+
+template <typename T>
+static inline void SwapAndRelocateTexturePointer(T *&pPointer) {
+    unsigned dwAddress = SwapDisplayListWord(std::bit_cast<unsigned>(pPointer));
+    RelocatePointerValue(&dwAddress);
+    pPointer = std::bit_cast<T *>(dwAddress);
+}
+
+void ByteSwapTextureVariantTable(TextureAnimation *pAnimation) {
+    if (pAnimation == nullptr) {
+        return;
+    }
+    pAnimation->frameCount = SwapVertexHalfword(pAnimation->frameCount);
+    unsigned dwHeaderWord;
+    memcpy(&dwHeaderWord, pAnimation->unreconstructed4, sizeof(dwHeaderWord));
+    dwHeaderWord = SwapDisplayListWord(dwHeaderWord);
+    memcpy(pAnimation->unreconstructed4, &dwHeaderWord, sizeof(dwHeaderWord));
+    for (int nFrame = 0; nFrame < pAnimation->frameCount; nFrame++) {
+        pAnimation->frames[nFrame].time = SwapDisplayListWord(pAnimation->frames[nFrame].time);
+        pAnimation->frames[nFrame].imageRom =
+            SwapDisplayListWord(pAnimation->frames[nFrame].imageRom);
+        pAnimation->frames[nFrame].paletteRom =
+            SwapDisplayListWord(pAnimation->frames[nFrame].paletteRom);
+    }
+}
+
+void NullStub2(void *pMemory) {
+}
+
+void ByteSwapAndRelocateTextureDescriptor(ModelTexture *pTexture) {
+    SwapAndRelocateTexturePointer(pTexture->image);
+    SwapAndRelocateTexturePointer(pTexture->palette);
+    pTexture->source.paletteRomIndex = SwapDisplayListWord(pTexture->source.paletteRomIndex);
+    pTexture->width = SwapVertexHalfword(pTexture->width);
+    pTexture->height = SwapVertexHalfword(pTexture->height);
+    pTexture->tileT0 = SwapVertexHalfword(pTexture->tileT0);
+    pTexture->tileS0 = SwapVertexHalfword(pTexture->tileS0);
+    pTexture->tileT1 = SwapVertexHalfword(pTexture->tileT1);
+    pTexture->tileS1 = SwapVertexHalfword(pTexture->tileS1);
+    pTexture->textureFlags = SwapDisplayListWord(pTexture->textureFlags);
+    if (g_dwCopyTextureDataOnRelocate) {
+        unsigned nPaletteBytes = (pTexture->textureFlags & 0xf000000) == 0x1000000 ? 32 : 512;
+        if (pTexture->textureFlags & 0x100000) {
+            RelocatePointerValue(&pTexture->source.paletteRomIndex);
+            TextureAnimation *pAnimation = pTexture->source.animation;
+            ByteSwapTextureVariantTable(pAnimation);
+            // The sentinel suppresses image copying even when the selected image exists.
+            int nFrame = pAnimation->frameCount == 2 && pAnimation->frames[0].time == 0xffffffff;
+            unsigned nImageOffset = pAnimation->frames[nFrame].imageRom;
+            unsigned nPaletteOffset = pAnimation->frames[nFrame].paletteRom;
+            unsigned nImageBytes = pTexture->textureFlags & 0x3ffff;
+            if (nFrame == 0 && nImageBytes != 0 && nImageOffset != 0xffffffff) {
+                memcpy(pTexture->image, g_pTrackTextureTable + nImageOffset, nImageBytes);
+            }
+            if (pTexture->palette != nullptr && nPaletteOffset != 0xffffffff) {
+                memcpy(pTexture->palette, g_pTrackTextureTable + nPaletteOffset, nPaletteBytes);
+            }
+        } else if (pTexture->palette != nullptr) {
+            unsigned nPaletteOffset = (pTexture->source.paletteRomIndex & 0xfff) << 5;
+            memcpy(pTexture->palette, g_pTrackTextureTable + nPaletteOffset, nPaletteBytes);
+        }
+    }
+    NullStub2(pTexture->palette);
+}
+
+void ByteSwapTextureDescriptorArray(ModelTexture *pTextures, int nCount) {
+    for (int nTexture = 0; nTexture < nCount; nTexture++) {
+        ByteSwapAndRelocateTextureDescriptor(&pTextures[nTexture]);
+    }
 }
 
 void ByteSwapAndRelocateDisplayList(GbiCommand *pCommands) {

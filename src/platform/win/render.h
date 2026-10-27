@@ -9,6 +9,7 @@
 #include <PR/gbi.h>
 #include <windows.h>
 
+#include "../../render.h"
 #include "vecmath.h"
 
 struct GbiCommand;
@@ -385,6 +386,31 @@ void RelocateGbiVertexCommand(GbiCommand *pCommand);
  * @ghidraAddress BRD3D: 0x1002bf80
  */
 void ByteSwapAndRelocateDisplayList(GbiCommand *pCommands);
+
+/**
+ * @ghidraAddress BRD3D: 0x10690bec
+ */
+extern unsigned char *g_pTrackTextureTable;
+
+/**
+ * @ghidraAddress BRD3D: 0x1002bc90
+ */
+void ByteSwapTextureVariantTable(TextureAnimation *pAnimation);
+
+/**
+ * @ghidraAddress BRD3D: 0x1002baa0
+ */
+void ByteSwapAndRelocateTextureDescriptor(ModelTexture *pTexture);
+
+/**
+ * @ghidraAddress BRD3D: 0x1002ba80
+ */
+void ByteSwapTextureDescriptorArray(ModelTexture *pTextures, int nCount);
+
+/**
+ * @ghidraAddress BRD3D: 0x10075330
+ */
+void NullStub2(void *pMemory);
 
 /**
  * The number of pointers relocated.

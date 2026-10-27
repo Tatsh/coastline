@@ -64,15 +64,19 @@ typedef struct {
     s16 tileT1; /*!< The last texel row the tile covers. */
     s16 tileS1; /*!< The last texel column the tile covers. */
     u8 unreconstructed18[0x20 - 0x18]; /*!< Bytes not yet reconstructed. */
-    unsigned mirrorS : 1;              /*!< Whether the texture repeats mirrored in s. */
-    unsigned mirrorT : 1;              /*!< Whether the texture repeats mirrored in t. */
-    unsigned clampS : 1;               /*!< Whether the texture clamps in s rather than wrapping. */
-    unsigned clampT : 1;               /*!< Whether the texture clamps in t rather than wrapping. */
-    unsigned format : 4;               /*!< The format, a TEXTURE_FORMAT_* value. */
-    unsigned : 3;                      /*!< Bits not yet reconstructed. */
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+    u32 textureFlags;
+#else
+    unsigned mirrorS : 1;  /*!< Whether the texture repeats mirrored in s. */
+    unsigned mirrorT : 1;  /*!< Whether the texture repeats mirrored in t. */
+    unsigned clampS : 1;   /*!< Whether the texture clamps in s rather than wrapping. */
+    unsigned clampT : 1;   /*!< Whether the texture clamps in t rather than wrapping. */
+    unsigned format : 4;   /*!< The format, a TEXTURE_FORMAT_* value. */
+    unsigned : 3;          /*!< Bits not yet reconstructed. */
     unsigned animated : 1; /*!< Whether source points to the frames of an animated texture. */
     unsigned : 2;          /*!< Bits not yet reconstructed. */
     unsigned size : 18;    /*!< The length of the texels in bytes. */
+#endif
 } ModelTexture;
 
 /* The formats of a texture of a model. */
