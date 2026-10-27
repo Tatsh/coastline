@@ -19,10 +19,11 @@
 
 #include "../../render.h"
 #include "convertedvertex.h"
-#include "renderbackend.h"
 #include "platform/win/fontdata.h"
 #include "platform/win/textureupload.h"
+#include "renderbackend.h"
 #include "vecmath.h"
+#include "vehicleview.h"
 
 struct GbiCommand;
 struct TextureImageData;
@@ -965,10 +966,6 @@ extern unsigned char g_abNightSkyPalette[32];
  * @ghidraAddress BRD3D: 0x118aa0f8
  */
 extern unsigned char g_abNightSkyTexture[2048];
-/**
- * @ghidraAddress BRD3D: 0x100a6498
- */
-extern unsigned g_apVehicleReflectionTextures[3];
 
 /**
  * @ghidraAddress BRD3D: 0x10073ac0

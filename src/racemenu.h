@@ -15,6 +15,7 @@
 #include "texrect.h"
 #include "trackmenuitem.h"
 #include "vehicle.h"
+#include "vehicleview.h"
 
 /** The flag of an item whose up and down change it in place, as the results 3 and 4. */
 #define MENU_ITEM_ADJUSTABLE 0x01
@@ -440,15 +441,6 @@ extern char g_szTrackSelectRecordTextBuf[];
  * @ghidraAddress JPN: 0x8031c4a0
  */
 extern VehicleModelLoad g_aVehicleModelSlots[VEHICLE_MODEL_SLOTS];
-
-/**
- * Set to 0 by the track menu.
- *
- * @ghidraAddress USA: 0x8028c328
- * @ghidraAddress EUR: 0x8028ea88
- * @ghidraAddress JPN: 0x8028e4d8
- */
-extern s32 g_dwVehicleViewModeIndex;
 
 /**
  * Whether a track may be chosen: in the championship only the track of the next race, in time

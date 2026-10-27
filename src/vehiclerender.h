@@ -11,6 +11,7 @@
 
 #include "vecmath.h"
 #include "vehicle.h"
+#include "vehicleview.h"
 
 /**
  * The model of the vehicle being drawn.
@@ -194,31 +195,6 @@ extern u8 g_aVehicleHighlightTexture[];
 extern u8 g_aVehicleNightHighlightTexture[];
 
 /**
- * The 32 by 128 textures of the reflection of the sky, of 4-bit colour indices, and their palettes.
- *
- * @ghidraAddress USA: 0x8028c308
- * @ghidraAddress EUR: 0x8028ea68
- * @ghidraAddress JPN: 0x8028e4b8
- */
-extern u8 *g_apVehicleReflectionTextures[4];
-
-/**
- * @ghidraAddress USA: 0x8028c318
- * @ghidraAddress EUR: 0x8028ea78
- * @ghidraAddress JPN: 0x8028e4c8
- */
-extern u16 *g_apVehicleReflectionTluts[4];
-
-/**
- * The reflection of each view mode, in the open and in a tunnel.
- *
- * @ghidraAddress USA: 0x8028c32c
- * @ghidraAddress EUR: 0x8028ea8c
- * @ghidraAddress JPN: 0x8028e4dc
- */
-extern u8 g_abVehicleReflectionTexSelect[4][2];
-
-/**
  * A count of frames; the fan of the speedometer needle is built while it is 0.
  *
  * @ghidraAddress USA: 0x8028c360
@@ -316,6 +292,10 @@ void CheckVehicleVisibility(Vehicle *vehicle);
 }
 #endif
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /**
  * Draw a vehicle: its level of detail, lights, lit parts, underside, near details, specular
  * highlight, the reflection of the sky on its paint, and its wheels.
@@ -325,8 +305,13 @@ void CheckVehicleVisibility(Vehicle *vehicle);
  * @ghidraAddress USA: 0x80230554
  * @ghidraAddress EUR: 0x80231a64
  * @ghidraAddress JPN: 0x80231864
+ * @ghidraAddress BRD3D: 0x1000cbe0
  */
 void RenderVehicleModel(Vehicle *vehicle, s32 lodOffset);
+
+#ifdef __cplusplus
+}
+#endif
 
 #ifdef __cplusplus
 extern "C" {
