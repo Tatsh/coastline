@@ -1261,7 +1261,17 @@ void ClipPolygonAndSubmitFlat(GbiVertex *pVertex0,
     ClipAndSubmitTriangleImpl<false, true>(pVertex0, pVertex1, pVertex2, fRed, fGreen, fBlue);
 }
 
-void DrawFlatShadedTriangle(int nVertex0, int nVertex1, int nVertex2) {
+void ClipPolygonAndSubmitDepthScaled(GbiVertex *pVertex0,
+                                     GbiVertex *pVertex1,
+                                     GbiVertex *pVertex2,
+                                     float fRed,
+                                     float fGreen,
+                                     float fBlue) {
+    ClipAndSubmitTriangleImpl<true, true>(pVertex0, pVertex1, pVertex2, fRed, fGreen, fBlue);
+}
+
+template <bool FarDepth>
+static void DrawFlatShadedTriangleImpl(int nVertex0, int nVertex1, int nVertex2) {
     GbiVertex *pVertex0 = &g_aGbiVertexCache[nVertex0];
     GbiVertex *pVertex1 = &g_aGbiVertexCache[nVertex1];
     GbiVertex *pVertex2 = &g_aGbiVertexCache[nVertex2];
@@ -1269,12 +1279,13 @@ void DrawFlatShadedTriangle(int nVertex0, int nVertex1, int nVertex2) {
         return;
     }
     if (pVertex0->nClipFlags | pVertex2->nClipFlags | pVertex1->nClipFlags) {
-        ClipPolygonAndSubmitFlat(pVertex0,
-                                 pVertex1,
-                                 pVertex2,
-                                 pVertex0->source.fRed,
-                                 pVertex0->source.fGreen,
-                                 pVertex0->source.fBlue);
+        auto clip = FarDepth ? ClipPolygonAndSubmitDepthScaled : ClipPolygonAndSubmitFlat;
+        clip(pVertex0,
+             pVertex1,
+             pVertex2,
+             pVertex0->source.fRed,
+             pVertex0->source.fGreen,
+             pVertex0->source.fBlue);
         return;
     }
     ScaleVertexTexCoords(pVertex0, &pVertex0->source);
@@ -1292,6 +1303,14 @@ void DrawFlatShadedTriangle(int nVertex0, int nVertex1, int nVertex2) {
     pVertex2->fRed = color2.x;
     pVertex2->fGreen = color2.y;
     pVertex2->fBlue = color2.z;
+}
+
+void DrawFlatShadedTriangle(int nVertex0, int nVertex1, int nVertex2) {
+    DrawFlatShadedTriangleImpl<false>(nVertex0, nVertex1, nVertex2);
+}
+
+void DrawFlatShadedTriangleDepthScaled(int nVertex0, int nVertex1, int nVertex2) {
+    DrawFlatShadedTriangleImpl<true>(nVertex0, nVertex1, nVertex2);
 }
 
 // A routine that clips a triangle of g_aGbiVertexCache and submits what remains.

@@ -943,6 +943,18 @@ void ClipPolygonAndSubmitFlat(GbiVertex *pVertex0,
                               float fBlue);
 
 /**
+ * Clip and submit a triangle with one colour at the fixed far depth.
+ *
+ * @ghidraAddress BRD3D: 0x1001f7e0
+ */
+void ClipPolygonAndSubmitDepthScaled(GbiVertex *pVertex0,
+                                     GbiVertex *pVertex1,
+                                     GbiVertex *pVertex2,
+                                     float fRed,
+                                     float fGreen,
+                                     float fBlue);
+
+/**
  * Submit a triangle to g_renderBuffer, its vertices from the last, and draw the triangles waiting
  * when either buffer has no room for three more entries.
  *
