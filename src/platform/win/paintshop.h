@@ -138,6 +138,18 @@ extern CarPaintTextureSet g_CarPaintTextureSets[CAR_PAINT_GROUP_COUNT][CAR_PAINT
 extern void *g_apPaintDamageBitmaps[PAINT_DAMAGE_BITMAP_COUNT];
 
 /**
+ * Scale RGB by the first channel of the selected 64 by 64 damage mask, preserving alpha.
+ *
+ * @param damage The damage level, from 1 to 3.
+ * @param pixels The RGBA pixels to update.
+ * @param width The width in pixels.
+ * @param height The height in pixels.
+ * @ghidraAddress BRD3D: 0x10061290
+ * @ghidraAddress BRGlide: 0x1005a300
+ */
+void ApplyPaintDamageOverlay(int damage, unsigned char *pixels, int width, int height);
+
+/**
  * The multiplier of the red of the tint of the paint.
  *
  * @ghidraAddress BRD3D: 0x10aa3440

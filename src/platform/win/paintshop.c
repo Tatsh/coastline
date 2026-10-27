@@ -15,6 +15,30 @@ int g_nSelectedPaintOption10;
 int g_nPaintTextureGroup;
 int g_nPaintTextureSetIndex;
 
+void ApplyPaintDamageOverlay(int damage, unsigned char *pixels, int width, int height) {
+    const unsigned char *mask = g_apPaintDamageBitmaps[damage - 1];
+    unsigned rowCoordinate = 0;
+
+    if (mask == NULL || height <= 0 || width <= 0) {
+        return;
+    }
+    for (int y = 0; y < height; y++) {
+        unsigned maskRow = (unsigned)((int)rowCoordinate / height) * 64;
+        unsigned columnCoordinate = 0;
+        for (int x = 0; x < width; x++) {
+            unsigned maskColumn = (unsigned)((int)columnCoordinate / width);
+            unsigned maskOffset = (maskRow + maskColumn) * 4;
+            unsigned intensity = mask[(int)maskOffset];
+            pixels[0] = pixels[0] * intensity / 255;
+            pixels[1] = pixels[1] * intensity / 255;
+            pixels[2] = pixels[2] * intensity / 255;
+            pixels += 4;
+            columnCoordinate += 64;
+        }
+        rowCoordinate += 64;
+    }
+}
+
 void *GetPaintImage(int nGroup, int nSet, int nDamage) {
     CarPaintTextureSet *set = &g_CarPaintTextureSets[nGroup][nSet];
     g_nSelectedPaintOption10 = set->nOption10;
