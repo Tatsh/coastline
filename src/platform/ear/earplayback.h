@@ -29,10 +29,7 @@ public:
     int IsEarPlaybackStreaming();
 
 protected:
-    /**
-     * @ghidraAddress EAR: 0x1000a6a0
-     * @stub
-     */
+    /** @ghidraAddress EAR: 0x1000a6a0 */
     EarPlayback();
 
 private:

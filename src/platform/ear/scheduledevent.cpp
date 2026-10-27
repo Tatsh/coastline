@@ -2,6 +2,7 @@
 
 #include <bit>
 #include <concepts>
+#include <cstring>
 #include <new>
 
 #include <mmsystem.h>
@@ -59,6 +60,82 @@ static inline std::int32_t AddTimer(std::int32_t timer, std::uint32_t elapsed) {
     return std::bit_cast<std::int32_t>(static_cast<std::uint32_t>(timer) + elapsed);
 }
 } // namespace
+
+ScheduledEarEvent::ScheduledEarEvent(std::uint16_t flags, const void *incoming) {
+    playbackInitialized = 0;
+    playbackStarted = 0;
+    looping = 0;
+    streaming = 0;
+    frequencyScaleOverrideEnabled = 0;
+    dopplerEnabled = 0;
+    fadingOut = 0;
+    lifetimeCountdownSuppressed = 0;
+    activeDurationLimitEnabled = 0;
+    attenuationRequired = 0;
+    distanceLimitEnabled = 0;
+    trackElapsedTime = 0;
+    suppressionEnabled = 0;
+    suppressionMarker = 0;
+    std::memset(unknown46, 0, sizeof(unknown46));
+    attenuation = 10000;
+    directionIndex = 0;
+    matrixId = 16;
+    startDelayMs = 0;
+    remainingLifetimeMs = 0;
+    remainingActiveTimeMs = 0;
+    elapsedTimeMs = 0;
+    attenuationDecrement = 0;
+    distance = 0;
+    maximumDistance = 0;
+    previousDistance = 0;
+    previousRadialSpeed = 0;
+    previousDistanceTime = 0;
+    accumulatedDistance = 0;
+    accumulatedTime = 0;
+    distanceSampleCount = 0;
+    crossingActive = 0;
+    crossingInitialSpeed = 0;
+    crossingSpeedStep = 0;
+    crossingStep = 0;
+    radialDirection = 1;
+    environmentId = 0;
+    std::memset(unknownA6, 0, sizeof(unknownA6));
+    frequencyScale = 1;
+    baseFrequencyScale = 1;
+    startPosition = 0;
+    backendParameter = 0;
+    notificationFlags = 0;
+    std::memset(unknownCc, 0, sizeof(unknownCc));
+    std::memset(unknownD4, 0, sizeof(unknownD4));
+    notificationEvent = 0;
+    // Native construction does not initialise reservedEventControl.
+    allocatedSource = nullptr;
+    playback = nullptr;
+    sourceType = flags & 0xff;
+    sourceFlags = flags & 0xff00;
+    source.address = incoming;
+    if ((sourceType == 0 || sourceType == 31) && !(sourceFlags & 0x6000)) {
+        allocatedSource = static_cast<char *>(MfcAllocateWithNewHandler(MAX_PATH));
+        if (!allocatedSource) {
+            SetEarLastError(0x10);
+            this->~ScheduledEarEvent();
+            return;
+        }
+        std::strncpy(allocatedSource, static_cast<const char *>(incoming), MAX_PATH);
+        allocatedSource[MAX_PATH - 1] = '\0';
+        source.address = allocatedSource;
+    } else if (sourceType == 0 && (sourceFlags & 0x6000) == 0x2000) {
+        sourceType = 2;
+    }
+    if (!CreateEarPlaybackImplementation(sourceFlags)) {
+        SetEarLastError(0x17);
+        this->~ScheduledEarEvent();
+    }
+    if (!playback) {
+        SetEarLastError(0x10);
+        this->~ScheduledEarEvent();
+    }
+}
 
 ScheduledEarEvent::~ScheduledEarEvent() {
     if (playback) {

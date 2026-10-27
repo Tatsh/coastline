@@ -1,6 +1,7 @@
 #include "earplayback.h"
 
 #include <bit>
+#include <cstring>
 
 #include <dsound.h>
 
@@ -12,6 +13,8 @@ std::uint16_t g_wPlaybackSmoothingPassCount = 2;
 int g_earPlaybackSmoothingEnabled;
 
 namespace {
+// @ghidraAddress EAR: 0x1002ea68
+const EarDirectionalMatrixEntry g_earPlaybackDefaultMatrixEntry = {0, 0};
 // @ghidraAddress EAR: 0x1002ea78
 const double g_earPlaybackScaleZero = 0;
 // @ghidraAddress EAR: 0x1002ea80
@@ -27,6 +30,43 @@ std::uint32_t g_earBufferedPlaybackCurrentHalfStart;
 // @ghidraAddress EAR: 0x1003b87c
 std::uint32_t g_earBufferedPlaybackCursor;
 } // namespace
+
+EarPlayback::EarPlayback() {
+    sample = nullptr;
+    notificationFlags = 0;
+    notificationEvent = 0;
+    looping = 0;
+    streaming = 0;
+    completionRequested = 0;
+    streamHalfIndex = 1;
+    active = 0;
+    muted = 0;
+    status = 0;
+    backendOverrideEnabled = 0;
+    startPositionSpecified = 0;
+    suppressionEnabled = 0;
+    suppressionMarker = 0;
+    startMilliseconds = 0;
+    std::memset(unknown70, 0, sizeof(unknown70));
+    streamHalfBytes = 0;
+    targetMatrixEntry = g_earPlaybackDefaultMatrixEntry;
+    previousMatrixEntry = g_earPlaybackDefaultMatrixEntry;
+    directionIndex = 0;
+    targetGain = 0;
+    previousGain = 0;
+    frequency = 0;
+    previousFrequency = 0;
+    matrixId = 16;
+    reservedEventControl = 0;
+    smoothingPass = 0;
+    startPosition = 0;
+    frequencyScale = 1;
+    baseFrequencyScale = 1;
+    cachedBackendParameter = -1;
+    std::memset(unknown9c, 0, sizeof(unknown9c));
+    // Native construction does not initialise flags or baseFrequency.
+    InitializeDirectSoundPlaybackState();
+}
 
 void EarPlayback::SetEarPlaybackFlags(std::uint16_t value) {
     flags = value;

@@ -14,10 +14,7 @@ union EarEventSource {
 
 class [[gnu::packed]] ScheduledEarEvent {
 public:
-    /**
-     * @ghidraAddress EAR: 0x100077e0
-     * @stub
-     */
+    /** @ghidraAddress EAR: 0x100077e0 */
     ScheduledEarEvent(std::uint16_t flags, const void *source);
     /** @ghidraAddress EAR: 0x10007d6a */
     ~ScheduledEarEvent();
