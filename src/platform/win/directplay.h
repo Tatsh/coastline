@@ -1365,11 +1365,6 @@ extern NetPlayerSlot g_aNetPeerSlotMatrix[NET_PLAYER_SLOT_COUNT][NET_PLAYER_SLOT
 extern int g_bNetRaceStarted;
 
 /**
- * @ghidraAddress BRD3D: 0x11828d14
- */
-extern unsigned g_dwNetRaceStartCountdownTime;
-
-/**
  * The state of a network player of a race, under the mutex of its slot.
  *
  * @param nSlot The slot.

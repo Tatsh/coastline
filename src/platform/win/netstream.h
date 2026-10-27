@@ -520,3 +520,8 @@ void DeserializeVehicleState(KeyframeState *pState, NetStream *pStream);
 void DeserializeKeyframeDelta(KeyframeState *pState,
                               const KeyframeState *pBase,
                               NetStream *pStream);
+
+/**
+ * @ghidraAddress BRD3D: 0x11828d14
+ */
+extern unsigned g_dwNetRaceStartCountdownTime;
