@@ -11,6 +11,8 @@
 #include "track.h"
 #include "vehicle.h"
 
+#define RANDOM_TO_TWO (2.0f / 65535.0f)
+
 /* The rain is kept around a point this far ahead of the camera. */
 #define EYE_AHEAD 3.0f
 
