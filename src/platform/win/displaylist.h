@@ -796,6 +796,13 @@ extern float g_fVertexFogRange;
 extern int g_dwFogAlphaCutoff;
 
 /**
+ * Set the device fog state and the vertex fog range for the active weather.
+ *
+ * @ghidraAddress BRD3D: 0x100243e0
+ */
+void UpdateD3DFogRenderState(void);
+
+/**
  * Copy a vertex into g_renderBuffer with its colour. A vertex of g_aGbiVertexCache already copied
  * since the last flush is not copied again.
  *

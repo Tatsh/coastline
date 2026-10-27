@@ -794,6 +794,17 @@ D3DCOLOR g_dwVertexConstantColor;
 float g_fVertexFogRange;
 int g_dwFogAlphaCutoff;
 
+void UpdateD3DFogRenderState(void) {
+    if (g_dwWeatherActive) {
+        g_fVertexFogRange = !g_dwRainMode && !g_dwSnowMode && g_dwNightMode ? 16384.0f : 8192.0f;
+        g_dwFogAlphaCutoff = 8;
+        g_pD3DDevice2->SetRenderState(D3DRENDERSTATE_FOGENABLE, true);
+        g_pD3DDevice2->SetRenderState(D3DRENDERSTATE_FOGTABLEMODE, 0);
+    } else {
+        g_pD3DDevice2->SetRenderState(D3DRENDERSTATE_FOGENABLE, false);
+    }
+}
+
 int ComputeVertexClipCodes(const GbiVertexSource *pVertex) {
     int nFlags = 0;
     // The x87 comparisons also classify unordered values as outside.
