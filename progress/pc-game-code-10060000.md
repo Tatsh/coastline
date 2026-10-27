@@ -1,6 +1,6 @@
 # PC port game code from 0x10060000 to 0x10070000
 
-37 of 169 routines done.
+40 of 169 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -157,14 +157,14 @@ the same name, for a routine the port retained from the N64 game.
 | `StartRaceWithPlayerCount`               |        | ✅ `0x80200128` |      1 |     23 | `0x100697e0` | `0x10062850` | `undefined StartRaceWithPlayerCount()`                                                                                                   |
 | `ApplyGhostKeyframeForVehicle`           |        |                 |      2 |     21 | `0x1006acf0` | `0x10063ca0` | `undefined ApplyGhostKeyframeForVehicle()`                                                                                               |
 | `SaveClockForPause`                      |   ✅   | ✅ `0x8022af34` |      2 |     21 | `0x10067980` | `0x100609f0` | `void SaveClockForPause(void)`                                                                                                           |
-| `SetGhostFrameCountFromSize`             |   ✅   |                 |      1 |     20 | `0x1006ae00` | `0x10063db0` | `void SetGhostFrameCountFromSize(uint dwSize)`                                                                                           |
+| `SetGhostFrameCountFromSize`             |   ✅   |                 |      1 |     20 | `0x1006ae00` | `0x10063db0` | `uint SetGhostFrameCountFromSize(uint dwSize)`                                                                                           |
 | `RestoreClockAfterPause`                 |        | ✅ `0x8022af64` |      1 |     19 | `0x100679a0` | `0x10060a10` | `undefined RestoreClockAfterPause()`                                                                                                     |
 | `ResetFrameBlocks`                       |        | ✅ `0x80255e64` |      1 |     18 | `0x10069580` | `0x100625f0` | `undefined ResetFrameBlocks()`                                                                                                           |
 | `SetGameModeAndRefreshVehicleMaterials`  |        |                 |      1 |     18 | `0x100697c0` | `0x10062830` | `undefined SetGameModeAndRefreshVehicleMaterials()`                                                                                      |
 | `UpdateMouseInput`                       |   ✅   |                 |      1 |     18 | `0x10060260` | `0x100592d0` | `void UpdateMouseInput(void)`                                                                                                            |
 | `ClearGhostPlaybackState`                |        |                 |      3 |     17 | `0x1006abb0` | `0x10063b60` | `undefined ClearGhostPlaybackState()`                                                                                                    |
 | `RegisterRallyConfigAtExit`              |        |                 |      1 |     14 | `0x10069a70` | `0x10062ae0` | `undefined RegisterRallyConfigAtExit()`                                                                                                  |
-| `GetGhostKeyframeDataSize`               |        |                 |      4 |     12 | `0x1006aba0` | `0x10063b50` | `undefined GetGhostKeyframeDataSize()`                                                                                                   |
+| `GetGhostKeyframeDataSize`               |   ✅   |                 |      4 |     12 | `0x1006aba0` | `0x10063b50` | `uint GetGhostKeyframeDataSize(void)`                                                                                                    |
 | `RallyConfig::RallyConfig`               |   ✅   |                 |      2 |     12 | `0x10069a90` | `0x10062b00` | `RallyConfig * RallyConfig(RallyConfig * this)`                                                                                          |
 | `StartGhostRecording`                    |        |                 |      3 |     11 | `0x1006aa90` | `0x10063a40` | `undefined StartGhostRecording()`                                                                                                        |
 | `PlayBeepSound`                          |        | ✅ `0x8022b3c4` |      2 |     11 | `0x10067d80` | `0x10060df0` | `undefined PlayBeepSound()`                                                                                                              |
@@ -174,7 +174,7 @@ the same name, for a routine the port retained from the N64 game.
 | `AiVehicleControllerCallback`            |        |                 |      3 |      9 | `0x10065620` |              | `undefined AiVehicleControllerCallback()`                                                                                                |
 | `PlayerVehicleControllerCallback`        |        |                 |      3 |      9 | `0x10063fe0` |              | `undefined PlayerVehicleControllerCallback()`                                                                                            |
 | `GetCarPaintEntryValue`                  |        |                 |      3 |      6 | `0x10061000` | `0x1005a070` | `undefined GetCarPaintEntryValue()`                                                                                                      |
-| `GetGhostKeyframeBuffer`                 |        |                 |      2 |      6 | `0x1006ab90` | `0x10063b40` | `undefined GetGhostKeyframeBuffer()`                                                                                                     |
-| `GetGhostPlaybackKeyframeBuffer`         |        |                 |      2 |      6 | `0x1006adf0` | `0x10063da0` | `undefined GetGhostPlaybackKeyframeBuffer()`                                                                                             |
+| `GetGhostKeyframeBuffer`                 |   ✅   |                 |      2 |      6 | `0x1006ab90` | `0x10063b40` | `uchar * GetGhostKeyframeBuffer(void)`                                                                                                   |
+| `GetGhostPlaybackKeyframeBuffer`         |   ✅   |                 |      2 |      6 | `0x1006adf0` | `0x10063da0` | `uchar * GetGhostPlaybackKeyframeBuffer(void)`                                                                                           |
 | `IsGhostRecordingActive`                 |        |                 |      1 |      6 | `0x1006aaa0` | `0x10063a50` | `undefined IsGhostRecordingActive()`                                                                                                     |
 | `GetRenderBackendMode`                   |   ✅   |                 |      1 |      6 | `0x1006a980` |              | `int GetRenderBackendMode(void)`                                                                                                         |

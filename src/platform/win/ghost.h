@@ -16,6 +16,123 @@
 /** The number of entries of g_adwGhostFrameCount. */
 #define GHOST_RECORDING_COUNT 8
 
+/** The maximum number of frames in each recording. */
+#define GHOST_MAX_FRAMES 65536
+
+/** The metadata stored before the frames of a recording. */
+struct GhostRecordingInfo {
+    s8 track;                 /*!< The recorded track, or -1 without a valid recording. */
+    u8 car;                   /*!< The recorded car. */
+    u8 unreconstructed02[14]; /*!< The remaining recorded race settings. */
+};
+
+/**
+ * The metadata of the ghost recording.
+ *
+ * @ghidraAddress BRD3D: 0x10680738
+ */
+extern GhostRecordingInfo g_GhostRecordingInfo;
+
+/**
+ * The number of metadata bytes written before the frames.
+ *
+ * @ghidraAddress BRD3D: 0x10680730
+ */
+extern unsigned g_dwGhostRecordingSize;
+
+/**
+ * The encoded frames of all ghost recordings.
+ *
+ * @ghidraAddress BRD3D: 0x10b50308
+ */
+extern u8 g_aGhostKeyframes[GHOST_RECORDING_COUNT][GHOST_MAX_FRAMES * GHOST_FRAME_SIZE];
+
+/**
+ * The best race time of the ghost, in seconds.
+ *
+ * @ghidraAddress BRD3D: 0x10aa28c8
+ */
+extern float g_fGhostBestRaceTime;
+
+/**
+ * The best lap time of the ghost, in seconds.
+ *
+ * @ghidraAddress BRD3D: 0x10aa28cc
+ */
+extern float g_fGhostBestLapTime;
+
+/**
+ * The lap-count option read from a ghost file.
+ *
+ * @ghidraAddress BRD3D: 0x10ad098c
+ */
+extern int g_dwLoadedGhostLapCount;
+
+/**
+ * The four-byte signature of a ghost file.
+ *
+ * @ghidraAddress BRD3D: 0x100b5d9c
+ */
+extern const char g_szGhostSaveMagic[4];
+
+/**
+ * The zero marker preceding the length in a current ghost file.
+ *
+ * @ghidraAddress BRD3D: 0x1008fc1c
+ */
+extern const unsigned g_dwGhostFileHeader;
+
+/**
+ * Get the encoded frames of the first recording.
+ *
+ * @return The recording buffer.
+ * @ghidraAddress BRD3D: 0x1006ab90
+ */
+u8 *GetGhostKeyframeBuffer(void);
+
+/**
+ * Get the encoded frames used for ghost playback.
+ *
+ * @return The second recording buffer.
+ * @ghidraAddress BRD3D: 0x1006adf0
+ */
+u8 *GetGhostPlaybackKeyframeBuffer(void);
+
+/**
+ * Get the size of the encoded frames of the first recording.
+ *
+ * @return The size in bytes.
+ * @ghidraAddress BRD3D: 0x1006aba0
+ */
+unsigned GetGhostKeyframeDataSize(void);
+
+/**
+ * Read a current or legacy ghost file and validate its Adler checksum.
+ *
+ * @param pszPath The ghost file path.
+ * @param bAllowFailure Whether a failed load returns success after clearing the metadata and times.
+ * @return Whether loading succeeded or a permitted failure occurred.
+ * @ghidraAddress BRD3D: 0x10070af0
+ */
+bool ReadGhostFileData(const char *pszPath, bool bAllowFailure);
+
+/**
+ * Read the ghost file selected in the front end.
+ *
+ * @param bAllowFailure Whether a failed load returns success.
+ * @return The result of ReadGhostFileData().
+ * @ghidraAddress BRD3D: 0x10070e60
+ */
+bool LoadGhostFile(bool bAllowFailure);
+
+/**
+ * Write the ghost recording, times, checksum, menu settings, and slot label to the selected file.
+ *
+ * @return Whether the file opened and all checked writes completed.
+ * @ghidraAddress BRD3D: 0x10070e80
+ */
+bool SaveGhostFile(void);
+
 /**
  * The number of frames of the recordings of the ghost cars.
  *
@@ -36,10 +153,11 @@ extern int g_bGhostRecordingActive;
  * Set the number of frames of the second recording from its size.
  *
  * @param dwSize The size of the recording in bytes.
+ * @return The number of complete frames.
  * @ghidraAddress BRD3D: 0x1006ae00
  * @ghidraAddress BRGlide: 0x10063db0
  */
-void SetGhostFrameCountFromSize(unsigned dwSize);
+unsigned SetGhostFrameCountFromSize(unsigned dwSize);
 
 /**
  * Clear the number of frames of the recordings, only the first in time attack and the demonstration
