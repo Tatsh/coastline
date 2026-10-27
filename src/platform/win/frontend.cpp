@@ -21,6 +21,7 @@
 #include "platform/win/sound.h"
 #include "platform/win/timer.h"
 #include "profile.h"
+#include "screen.h"
 #include "seasons.h"
 #include "trackselect.h"
 #include "vehicle.h"
@@ -697,6 +698,74 @@ static inline int ShowCachedMenuScreen(MenuScreen *&pScreen, void (*pfnBuild)(Me
         g_pActiveMenuScreen = pScreen;
     }
     return 1;
+}
+
+int ShowTimeAttackMenu(int) {
+    SetActiveMenuItemText(" ");
+    return ShowCachedMenuScreen(g_pCachedMenu_TimeAttack, BuildTimeAttackMenuUI);
+}
+
+int ShowLoadGhostMenu(void) {
+    g_fGhostBestRaceTime = 0.0f;
+    g_fGhostBestLapTime = 0.0f;
+    return ShowCachedMenuScreen(g_pCachedMenu_LoadGhost, BuildLoadTimeAttackMenuUI);
+}
+
+int ShowHostRaceSetupScreen(void) {
+    g_dwLobbyIsHost = 1;
+    g_dwNetworkPlayMode = 2;
+    g_dwSessionEnumPending = 0;
+    if (!ShowCachedMenuScreen(g_pCachedMenu_RaceSetupNetwork, BuildMultiplayerGameSetupUI)) {
+        return 0;
+    }
+    g_pMultiplayerGameSetupMenu->pfnAction = MultiplayerGameSetupUI_OnBackAsHost;
+    return 1;
+}
+
+int ShowMultiplayerNameScreen(void) {
+    SetActiveMenuItemText(" ");
+    ResolveRaceSelections();
+    return ShowCachedMenuScreen(g_pCachedMenu_MultiplayerName, BuildPlayerNameEntryUI);
+}
+
+int ShowJoinCreateGameScreen(void) {
+    if (!ShowCachedMenuScreen(g_pCachedMenu_JoinCreateGame, BuildJoinCreateGameUI)) {
+        return 0;
+    }
+    if (!g_dwDirectPlaySessionActive && !g_dwLaunchedFromLobby &&
+        (g_dwServiceProviderIndex == 0 || g_dwServiceProviderIndex == 1)) {
+        InitializeNetworkServiceProvider();
+    }
+    return 1;
+}
+
+int ShowSeasonProgressInfoScreen(void) {
+    g_dwSeasonSavedRound = g_dwSeasonRound;
+    return ShowCachedMenuScreen(g_pCachedMenu_SeasonProgressInfo, BuildSeasonProgressInfoUI);
+}
+
+int ShowRaceSetupMenu(void) {
+    bool wasCached;
+    SetActiveMenuItemText(" ");
+    g_dwGameMode = GAME_MODE_ARCADE;
+    ResetMenuSelectionsToDefaults();
+    wasCached = g_pCachedMenu_MainMenu != nullptr;
+    if (!ShowCachedMenuScreen(g_pCachedMenu_MainMenu, BuildRaceSetupUI)) {
+        return 0;
+    }
+    if (!wasCached) {
+        NullStub();
+        ResetGameModeConfig();
+        ResolveRaceSelections();
+    }
+    return 1;
+}
+
+int ShowQuitGameConfirmMenu(void) {
+    SetActiveMenuItemText(" ");
+    PlaySoundChannelOneOnce(3, 0x200020);
+    g_dwNetworkMenuState = 3;
+    return ShowCachedMenuScreen(g_pCachedMenu_MainMenuAlternate, BuildQuitGameConfirmUI);
 }
 
 int ShowOptionsMenu(void) {

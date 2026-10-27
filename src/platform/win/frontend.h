@@ -819,6 +819,89 @@ extern MenuWidget *g_pD3DDeviceSelectMenu;
 extern MenuWidget *g_pSaveSeasonBackHandlerMenu;
 
 /**
+ * @ghidraAddress BRD3D: 0x10044d00
+ */
+int ShowLoadGhostMenu(void);
+
+/**
+ * @ghidraAddress BRD3D: 0x100443e0
+ */
+int ShowHostRaceSetupScreen(void);
+
+/**
+ * @ghidraAddress BRD3D: 0x10043bf0
+ */
+int ShowMultiplayerNameScreen(void);
+
+/**
+ * @ghidraAddress BRD3D: 0x10043e70
+ */
+int ShowJoinCreateGameScreen(void);
+
+/**
+ * @ghidraAddress BRD3D: 0x10045dc0
+ */
+int ShowSeasonProgressInfoScreen(void);
+
+/**
+ * @ghidraAddress BRD3D: 0x10044f50
+ */
+int ShowRaceSetupMenu(void);
+
+/**
+ * @ghidraAddress BRD3D: 0x10046170
+ */
+int ShowQuitGameConfirmMenu(void);
+
+/**
+ * @ghidraAddress BRD3D: 0x10059760
+ * @stub
+ */
+void BuildTimeAttackMenuUI(MenuScreen *pScreen);
+
+/**
+ * @ghidraAddress BRD3D: 0x10059bb0
+ * @stub
+ */
+void BuildLoadTimeAttackMenuUI(MenuScreen *pScreen);
+
+/**
+ * @ghidraAddress BRD3D: 0x10057c10
+ * @stub
+ */
+void BuildMultiplayerGameSetupUI(MenuScreen *pScreen);
+
+/**
+ * @ghidraAddress BRD3D: 0x100563e0
+ * @stub
+ */
+void BuildPlayerNameEntryUI(MenuScreen *pScreen);
+
+/**
+ * @ghidraAddress BRD3D: 0x10056ff0
+ * @stub
+ */
+void BuildJoinCreateGameUI(MenuScreen *pScreen);
+
+/**
+ * @ghidraAddress BRD3D: 0x10052030
+ * @stub
+ */
+void BuildSeasonProgressInfoUI(MenuScreen *pScreen);
+
+/**
+ * @ghidraAddress BRD3D: 0x1004b430
+ * @stub
+ */
+void BuildRaceSetupUI(MenuScreen *pScreen);
+
+/**
+ * @ghidraAddress BRD3D: 0x10049c20
+ * @stub
+ */
+void BuildQuitGameConfirmUI(MenuScreen *pScreen);
+
+/**
  * @ghidraAddress BRD3D: 0x10044970
  */
 int MultiplayerGameSetupUI_OnBackAsClient(MenuActionWidget *pItem);
@@ -1338,6 +1421,7 @@ void ReturnToNetworkLobbyScreen(void);
  * @return 0 when the menu cannot be created, 1 otherwise.
  * @ghidraAddress BRD3D: 0x10044b90
  * @ghidraAddress BRGlide: 0x1003e0e0
+ * @stub{BRGlide}
  */
 int ShowTimeAttackMenu(int nUnused);
 
