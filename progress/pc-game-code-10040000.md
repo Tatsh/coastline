@@ -1,6 +1,6 @@
 # PC port game code from 0x10040000 to 0x10050000
 
-250 of 264 routines done.
+251 of 264 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -22,7 +22,7 @@ the same name, for a routine the port retained from the N64 game.
 | `BuildD3DDeviceSelectUI`                           |   🚧   |                 |      2 |   1210 | `0x1004d640` |              | `void BuildD3DDeviceSelectUI(MenuScreen * pScreen)`                                                                                                       |
 | `BuildDisplayModeSelectUI`                         |   🚧   |                 |      2 |   1210 | `0x1004db00` | `0x100469b0` | `void BuildDisplayModeSelectUI(MenuScreen * pScreen)`                                                                                                     |
 | `BuildVideoOptionsUI`                              |   ✅   |                 |      2 |   1092 | `0x1004d1f0` | `0x10046620` | `void BuildVideoOptionsUI(MenuScreen * pScreen)`                                                                                                          |
-| `BuildChampionshipSeasonUI`                        |   🚧   |                 |      2 |   1091 | `0x1004f2b0` | `0x10048160` | `void BuildChampionshipSeasonUI(MenuScreen * pScreen)`                                                                                                    |
+| `BuildChampionshipSeasonUI`                        |   ✅   |                 |      2 |   1091 | `0x1004f2b0` | `0x10048160` | `void BuildChampionshipSeasonUI(MenuScreen * pScreen)`                                                                                                    |
 | `BuildPreRaceExitSeasonConfirmUI`                  |   ✅   |                 |      2 |    800 | `0x10049f40` | `0x10043370` | `int BuildPreRaceExitSeasonConfirmUI(MenuScreen * screen)`                                                                                                |
 | `BuildResultsSummaryExitSeasonConfirmUI`           |   ✅   |                 |      2 |    800 | `0x1004a260` | `0x10043690` | `int BuildResultsSummaryExitSeasonConfirmUI(MenuScreen * screen)`                                                                                         |
 | `BuildQuitGameConfirmUI`                           |   ✅   |                 |      2 |    794 | `0x10049c20` | `0x10043050` | `int BuildQuitGameConfirmUI(MenuScreen * screen)`                                                                                                         |
