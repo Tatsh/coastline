@@ -22,4 +22,17 @@ typedef struct TextureUploadRequest {
     TextureUploadData payload; /*!< The second argument of g_pfnUploadTextureEntryToSurface. */
 } TextureUploadRequest;
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+/**
+ * @ghidraAddress BRD3D: 0x118aa0bc
+ */
+extern u8 *(*g_pfnGetTextureEntryPixelsWithPaint)(int nEntry, unsigned *pSize);
+
+#ifdef __cplusplus
+}
+#endif
+
 #endif

@@ -5,26 +5,13 @@
 #include "render.h"
 #include "system.h"
 #include "vehicle.h"
+#include "vehiclecolor.h"
 
 /* The room for the message of a car too big. */
 #define LOAD_MESSAGE_SIZE 0x50
 
 void SetMaterialColor(VehicleModel *model, s32 red, s32 green, s32 blue) {
-    ModelTexture *texture;
-    u16 *palette;
-    s32 i;
-
-    for (i = 0; i < VEHICLE_MATERIALS; i++) {
-        texture = &model->textures[model->materialTextures[i]];
-        palette = texture->palette;
-        if (palette != NULL && texture->format == TEXTURE_FORMAT_CI4) {
-            /* The alpha bit is kept from the entry of the material's own index, not from 0. */
-            palette[0] = (palette[i] & 1) | (red << 11) | (green << 6) | (blue << 1);
-            /* The second entry is a darker shade. */
-            palette[1] =
-                (palette[i] & 1) | ((red & 0x1E) << 10) | ((green & 0x1E) << 5) | (blue & 0x1E);
-        }
-    }
+    SetMaterialPaletteColors(model, red, green, blue);
 }
 
 void ExtractVehicleBaseColor(Vehicle *vehicle, VehicleModel *model) {

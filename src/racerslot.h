@@ -86,7 +86,6 @@ void InitRacerSlot(RacerSlot *slot);
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
 /**
  * @ghidraAddress BRD3D: 0x10065d50
- * @stub
  */
 void MakeEnemyCarColorPanels(RacerSlot *slot);
 
