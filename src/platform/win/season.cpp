@@ -1,5 +1,6 @@
 #include "platform/win/season.h"
 
+#include <bit>
 #include <cstdio>
 #include <cstring>
 
@@ -16,6 +17,66 @@
 #include "seasons.h"
 #include "trackselect.h"
 #include "weather.h"
+
+void ProcessSeasonResults(void) {
+    if (g_dwGameMode != GAME_MODE_CHAMPIONSHIP || !g_dwSavedResultsValid) {
+        return;
+    }
+    for (int i = 0; i < static_cast<int>(g_dwNumLocalPlayers); ++i) {
+        PlayerProfile *profile = g_aVehicles[i].GetProfile();
+        int points = 0;
+        for (int race = 0; race < SEASON_RACES; ++race) {
+            points += profile->seasonRacePoints[profile->season][race];
+        }
+        ++profile->round;
+        if (profile->round == g_SeasonTable[profile->season].raceCount) {
+            profile->round = 0;
+            if (points >= g_SeasonTable[profile->season].pointsNeeded) {
+                profile->unlocks |= g_SeasonTable[profile->season].unlocks;
+                ++profile->season;
+                if (profile->season == SEASONS) {
+                    bool perfect = true;
+                    for (int race = 0; race < g_SeasonTable[SEASONS - 1].raceCount; ++race) {
+                        if (profile->seasonPlaces[SEASONS - 1][race] != 0) {
+                            perfect = false;
+                            break;
+                        }
+                    }
+                    if (perfect) {
+                        unsigned mine = (profile->championshipFlags & 1) ? TRACK_MIRROR_STRIP_MINE :
+                                                                           TRACK_STRIP_MINE;
+                        profile->unlockedTracks |= 1u << mine;
+                    }
+                    switch (profile->championshipFlags) {
+                    case 0:
+                        profile->unlocks |= 0x0400;
+                        break;
+                    case 1:
+                        profile->unlocks |= 0x2200;
+                        break;
+                    case 2:
+                        profile->unlocks |= 0x0800;
+                        break;
+                    case 3:
+                        profile->unlocks |= 0x5000;
+                        break;
+                    case 4:
+                        profile->unlocks |= 0x8000;
+                        break;
+                    }
+                    profile->season = 0;
+                    profile->championshipFlags =
+                        std::bit_cast<s32>(static_cast<u32>(profile->championshipFlags) + 1u);
+                }
+            }
+        }
+        unsigned trackBase = (profile->championshipFlags & 1) ? TRACK_MIRRORED : 0;
+        unsigned track = g_SeasonTable[profile->season].races[profile->round][0];
+        unsigned weather = g_SeasonTable[profile->season].races[profile->round][1];
+        profile->unlockedTracks |= 1u << ((track + trackBase) & 31u);
+        profile->unlockedWeathers |= 1u << (weather & 31u);
+    }
+}
 
 void ExitRaceAndProcessSeasonResults(void) {
     std::memset(&g_SeasonResumeState, 0, sizeof(g_SeasonResumeState));

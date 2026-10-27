@@ -264,6 +264,7 @@ extern s32 g_bReplayAfterRace;
  * @ghidraAddress USA: 0x80270790
  * @ghidraAddress EUR: 0x80272760
  * @ghidraAddress JPN: 0x80272210
+ * @ghidraAddress BRD3D: 0x106909b8
  */
 extern s32 g_dwSavedResultsValid;
 
@@ -646,14 +647,12 @@ extern "C"
 #endif
 
 /**
- * Score the season of the championship: advance to the next season when its points allow, unlock
- * its bonuses, and write the lines of the message of its result.
+ * Score championship progress and unlock bonuses when the season's points qualify.
  *
  * @ghidraAddress USA: 0x802063a4
  * @ghidraAddress EUR: 0x80206564
  * @ghidraAddress JPN: 0x80206638
  * @ghidraAddress BRD3D: 0x1002f4c0
- * @stub{BRD3D}
  */
 void ProcessSeasonResults(void);
 
