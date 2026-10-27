@@ -1,5 +1,6 @@
 #include "platform/win/d3d/renderer.h"
 
+#include <concepts>
 #include <cstdlib>
 #include <cstring>
 #include <new>
@@ -73,6 +74,9 @@ HRESULT RenderHost::ValidateObjectRenderResources() {
 
 // A call of the device is made again after each restore of lost surfaces.
 template <typename Call>
+    requires requires(Call call) {
+        { call() } -> std::same_as<HRESULT>;
+    }
 static inline HRESULT RetryWhileSurfacesLost(DirectDrawRenderer *pRenderer, Call call) {
     HRESULT hResult = call();
 

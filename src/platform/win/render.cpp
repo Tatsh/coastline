@@ -6,6 +6,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <new>
+#include <type_traits>
 
 #include "debugmessage.h"
 #include "displaylistops.h"
@@ -204,6 +205,7 @@ static inline unsigned SwapDisplayListWord(unsigned dwWord) {
 }
 
 template <typename T>
+    requires(std::is_object_v<T> && sizeof(T *) == sizeof(unsigned))
 static inline void SwapAndRelocateTexturePointer(T *&pPointer) {
     unsigned dwAddress = SwapDisplayListWord(std::bit_cast<unsigned>(pPointer));
     RelocatePointerValue(&dwAddress);

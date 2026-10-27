@@ -1,6 +1,7 @@
 #include "platform/win/earsound.h"
 
 #include <cstdlib>
+#include <type_traits>
 
 #include <windows.h>
 
@@ -54,6 +55,7 @@ EarProc0 g_pfnEarShutDownTimer;
 EarProc0 g_pfnEarUpdateEar;
 
 template <typename T>
+    requires(std::is_pointer_v<T> && std::is_function_v<std::remove_pointer_t<T>>)
 static inline void FindEarProc(T &pfnProc, const char *pszName) {
     pfnProc = reinterpret_cast<T>(
         reinterpret_cast<void (*)(void)>(GetProcAddress(g_hEarSoundDll, pszName)));

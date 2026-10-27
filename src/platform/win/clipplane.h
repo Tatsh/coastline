@@ -1,7 +1,25 @@
 #ifndef COASTLINE_WIN_CLIP_PLANE_H
 #define COASTLINE_WIN_CLIP_PLANE_H
 
+#include <concepts>
+#include <type_traits>
+
 template <typename Polygon, typename Distance, typename Interpolate, typename Recycle>
+concept LinkedPolygonClipping = requires(Polygon *polygon,
+                                         decltype(polygon->pHead) vertex,
+                                         Distance distance,
+                                         Interpolate interpolate,
+                                         Recycle recycle) {
+    requires std::is_pointer_v<decltype(polygon->pHead)>;
+    { polygon->nCount } -> std::same_as<int &>;
+    { vertex->pNext } -> std::same_as<decltype(polygon->pHead) &>;
+    { distance(vertex) } -> std::convertible_to<float>;
+    { interpolate(vertex, vertex, 0.0f) } -> std::same_as<decltype(polygon->pHead)>;
+    { recycle(vertex) } -> std::same_as<void>;
+};
+
+template <typename Polygon, typename Distance, typename Interpolate, typename Recycle>
+    requires LinkedPolygonClipping<Polygon, Distance, Interpolate, Recycle>
 static inline void ClipLinkedPolygonPlane(Polygon *pPolygon,
                                           Distance distance,
                                           Interpolate interpolate,

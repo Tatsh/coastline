@@ -1,5 +1,6 @@
 #include "platform/win/directplay.h"
 
+#include <concepts>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
@@ -847,6 +848,14 @@ int FindNetworkSlotByPlayerId(DPID dpidPlayer) {
 }
 
 template <typename Slot>
+concept NetworkSnapshotSlot = requires(Slot &slot, const Slot &readOnly) {
+    { readOnly.adwSnapshotTimes[0] } -> std::same_as<const unsigned &>;
+    { slot.adwSnapshotTypes[0] } -> std::same_as<unsigned &>;
+    { slot.nCurrentSnapshot } -> std::same_as<int &>;
+    { slot.aSnapshots[0] } -> std::same_as<KeyframeState &>;
+};
+
+template <NetworkSnapshotSlot Slot>
 static inline int FindOldestNetworkSnapshot(const Slot &slot) {
     unsigned oldest = 0xffffffff;
     int index = 0;
@@ -859,7 +868,7 @@ static inline int FindOldestNetworkSnapshot(const Slot &slot) {
     return index;
 }
 
-template <typename Slot>
+template <NetworkSnapshotSlot Slot>
 static inline void ReadNetworkDeltaSnapshot(Slot &slot, NetStream &stream, unsigned timestamp) {
     int oldest = FindOldestNetworkSnapshot(slot);
     int newest = 0;

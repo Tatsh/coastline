@@ -1,10 +1,12 @@
 #include <bit>
 #include <cstring>
+#include <type_traits>
 
 #include "platform/win/render.h"
 #include "platform/win/trackrelocation.h"
 
 template <typename T>
+    requires(std::is_trivially_copyable_v<T> && sizeof(T) == sizeof(unsigned))
 static inline void ByteSwapTrackField(T &field) {
     unsigned word;
     std::memcpy(&word, &field, sizeof(word));

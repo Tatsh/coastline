@@ -1163,6 +1163,8 @@ static void RecycleClipVertex(GbiVertexSource *pVertex) {
 }
 
 template <typename Distance>
+    requires std::invocable<Distance &, GbiVertexSource *> &&
+             std::convertible_to<std::invoke_result_t<Distance &, GbiVertexSource *>, float>
 static void ClipPolygonPlane(GbiClipPolygon *pPolygon, Distance distance) {
     ClipLinkedPolygonPlane(pPolygon, distance, LerpVertexFromPool, RecycleClipVertex);
 }

@@ -1,3 +1,4 @@
+#include <concepts>
 #include <cstdlib>
 #include <cstring>
 #include <new>
@@ -34,6 +35,14 @@ static inline char *CopyDriverText(const char *pszText) {
 // Take an element off a list linked through pPrev and pNext, with the head and the tail of the
 // list.
 template <typename T>
+concept LinkedDriverNode = requires(T *node) {
+    { node->GetPrevious() } -> std::same_as<T *>;
+    { node->GetNext() } -> std::same_as<T *>;
+    { node->SetPrevious(node) } -> std::same_as<void>;
+    { node->SetNext(node) } -> std::same_as<void>;
+};
+
+template <LinkedDriverNode T>
 static inline void UnlinkListNode(T *pNode, T **ppHead, T **ppTail) {
     if (pNode->GetPrevious() != nullptr) {
         pNode->GetPrevious()->SetNext(pNode->GetNext());
@@ -50,7 +59,7 @@ static inline void UnlinkListNode(T *pNode, T **ppHead, T **ppTail) {
 }
 
 // Add an element to the end of a list linked through pPrev and pNext, and count it.
-template <typename T>
+template <LinkedDriverNode T>
 static inline HRESULT AppendListNode(T *pNode, T **ppHead, T **ppTail, int *pnCount) {
     if (pNode == nullptr) {
         return E_INVALIDARG;

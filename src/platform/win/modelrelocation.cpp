@@ -1,4 +1,5 @@
 #include <bit>
+#include <type_traits>
 
 #include "displaylistops.h"
 #include "model.h"
@@ -7,6 +8,7 @@
 #include "platform/win/trackrelocation.h"
 
 template <typename T>
+    requires(std::is_trivially_copyable_v<T> && (sizeof(T) == 2 || sizeof(T) == 4))
 static inline void SwapModelValue(T &value) {
     if constexpr (sizeof(T) == 2) {
         value = std::bit_cast<T>(std::byteswap(std::bit_cast<u16>(value)));
@@ -16,6 +18,7 @@ static inline void SwapModelValue(T &value) {
 }
 
 template <typename T>
+    requires((std::is_object_v<T> || std::is_void_v<T>) && sizeof(T *) == sizeof(unsigned))
 static inline void RelocateModelPointer(T *&pointer) {
     unsigned word = std::bit_cast<unsigned>(pointer);
     RelocatePointerValue(&word);

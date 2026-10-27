@@ -1,6 +1,7 @@
 #include "platform/win/d3d/texture.h"
 
 #include <bit>
+#include <concepts>
 #include <cstdlib>
 #include <cstring>
 
@@ -436,7 +437,8 @@ bool D3DTexture::CreateD3DTextureDefault(
 }
 
 // The pixels of an image are copied row after row into the rows of a locked surface.
-template <typename Pixel>
+template <std::unsigned_integral Pixel>
+    requires(sizeof(Pixel) == 1 || sizeof(Pixel) == 2 || sizeof(Pixel) == 4)
 static inline void
 CopyImageRows(unsigned char *pRow, const Pixel *pSrc, int nWidth, int nHeight, LONG lPitch) {
     for (int y = 0; y < nHeight; y++) {

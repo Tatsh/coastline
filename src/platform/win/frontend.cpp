@@ -1,5 +1,6 @@
 #include "platform/win/frontend.h"
 
+#include <concepts>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
@@ -1703,7 +1704,7 @@ static inline void PostSelectionNotice(void) {
     strcpy(g_szNetworkChatText, "");
 }
 
-template <typename Available>
+template <std::predicate<int> Available>
 static inline void CycleAvailableMenuChoice(
     int &choice, int count, int step, Available available, bool skipWrappedStop) {
     choice += step;
