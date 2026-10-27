@@ -9,9 +9,34 @@
 #include "platform/win/boot/app.h"
 
 PodArchive g_BossRallyPodArchive;
+
+namespace {
+
+/**
+ * The entries of the pod file being written.
+ *
+ * @ghidraAddress BRD3D: 0x1022b358
+ * @ghidraAddress BRGlide: 0x10226e88
+ */
 PodEntry g_aPodArchiveEntries[POD_WRITER_ENTRY_COUNT];
+
+/**
+ * The number of entries of g_aPodArchiveEntries in use.
+ *
+ * @ghidraAddress BRD3D: 0x10277358
+ * @ghidraAddress BRGlide: 0x10272e88
+ */
 int g_nPodArchiveEntryCount;
+
+/**
+ * The pod file being written.
+ *
+ * @ghidraAddress BRD3D: 0x1027735c
+ * @ghidraAddress BRGlide: 0x10272e8c
+ */
 FILE *g_pPodArchiveFile;
+
+} // namespace
 
 // The size of the buffer of a message of FatalErrorWithMessage().
 #define FATAL_MESSAGE_SIZE 0x400
@@ -69,16 +94,16 @@ void PodFileHelper::FileWriteChecked(FILE *pFile, const void *pBuffer, unsigned 
 }
 
 // Clear the header, the directory, the file, and the path of an archive.
-static inline void ClearPodArchive(PodArchive *pArchive) {
-    pArchive->pEntries = nullptr;
-    pArchive->pFile = nullptr;
-    pArchive->dwDirectorySize = 0;
-    memset(&pArchive->header, 0, sizeof(pArchive->header));
-    memset(pArchive->szPath, 0, sizeof(pArchive->szPath));
+inline void PodArchive::ClearPodArchive() {
+    pEntries = nullptr;
+    pFile = nullptr;
+    dwDirectorySize = 0;
+    memset(&header, 0, sizeof(header));
+    memset(szPath, 0, sizeof(szPath));
 }
 
 PodArchive::PodArchive() {
-    ClearPodArchive(this);
+    ClearPodArchive();
 }
 
 PodArchive::~PodArchive() {
@@ -224,7 +249,7 @@ void PodArchive::ClosePodFile() {
     if (pEntries != nullptr) {
         ::operator delete(pEntries);
     }
-    ClearPodArchive(this);
+    ClearPodArchive();
 }
 
 void PodArchive::SetFilePath(const char *pszPath) {

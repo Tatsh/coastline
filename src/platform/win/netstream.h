@@ -14,7 +14,7 @@
 
 /** A stream of the bytes and bits of a packet, read and written from the most significant bit. */
 class NetStream {
-public:
+private:
     int nReadBit;           /*!< The bits read of the byte at nReadPos. */
     int nReadPos;           /*!< The byte read next. */
     int nWriteBit;          /*!< The bits written of the byte at nWritePos. */
@@ -22,6 +22,7 @@ public:
     unsigned char *pBuffer; /*!< The bytes, abBuffer or a buffer attached. */
     unsigned char abBuffer[NET_STREAM_BUFFER_SIZE]; /*!< The bytes of a stream of its own. */
 
+public:
     /**
      * An empty stream of its own bytes.
      *
@@ -111,6 +112,7 @@ public:
      */
     unsigned BitStreamReadBits(int nBits);
 
+private:
     /**
      * Move the reading to the next whole byte.
      *
@@ -119,6 +121,7 @@ public:
      */
     void StreamAlignReadByte();
 
+public:
     /**
      * Whether the reading arrived at the end of the data written.
      *
@@ -174,6 +177,7 @@ public:
      */
     void BitStreamWriteBits(unsigned nValue, int nBits);
 
+private:
     /**
      * Move the writing to the next whole byte.
      *
@@ -182,6 +186,7 @@ public:
      */
     void StreamFlushWriteByte();
 
+public:
     /**
      * The number of bytes written, counting a byte partly written.
      *

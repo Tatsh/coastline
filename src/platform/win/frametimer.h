@@ -16,7 +16,7 @@
 
 /** The clock of the frames, from the performance counter or in milliseconds without one. */
 class FrameTimer {
-public:
+private:
     LARGE_INTEGER liFrameInterval; /*!< The counts of the performance counter in a frame. */
     LARGE_INTEGER liCurrentCount;  /*!< The count read last. */
     LARGE_INTEGER liNextInterval;  /*!< Set to liFrameInterval when the clock is read. */
@@ -35,6 +35,7 @@ public:
      */
     FrameTimer *InitializeFrameTimer();
 
+public:
     /**
      * Read the clock and set the next interval to the interval of a frame.
      *
@@ -45,92 +46,12 @@ public:
 };
 
 /**
- * The clock of the frames of a race.
- *
- * @ghidraAddress BRD3D: 0x106806b0
- * @ghidraAddress BRGlide: 0x105bc858
- */
-extern FrameTimer g_FrameTimer;
-
-/**
- * Whether the frequency of the performance counter was read for the frames.
- *
- * @ghidraAddress BRD3D: 0x118ab140
- * @ghidraAddress BRGlide: 0x118ee258
- */
-extern int g_bFrameTimerInitialized;
-
-/**
- * Whether the system has a performance counter for the frames.
- *
- * @ghidraAddress BRD3D: 0x118ab144
- * @ghidraAddress BRGlide: 0x118ee25c
- */
-extern int g_bFrameTimerHasPerfCounter;
-
-/**
- * The frequency of the performance counter for the frames.
- *
- * @ghidraAddress BRD3D: 0x118ab138
- * @ghidraAddress BRGlide: 0x118ee250
- */
-extern LARGE_INTEGER g_liFrameTimerFrequency;
-
-/**
- * The time of the current tick, in milliseconds.
- *
- * @ghidraAddress BRD3D: 0x118ab118
- * @ghidraAddress BRGlide: 0x118ee230
- */
-extern DWORD g_dwFrameTickTime;
-
-/**
- * The entry of g_adwFrameTickIncrements of the current tick.
- *
- * @ghidraAddress BRD3D: 0x118ab12c
- * @ghidraAddress BRGlide: 0x118ee244
- */
-extern DWORD g_dwFrameTickPhase;
-
-/**
- * The milliseconds of each tick of a period, 33, 33, and 34 to make a tenth of a second.
- *
- * @ghidraAddress BRD3D: 0x100bbac8
- * @ghidraAddress BRGlide: 0x100bb2d0
- */
-extern const DWORD g_adwFrameTickIncrements[TICKS_PER_PERIOD];
-
-/**
  * Advance the ticks by one, the time of the current tick by the milliseconds of its phase.
  *
  * @ghidraAddress BRD3D: 0x10075150
  * @ghidraAddress BRGlide: 0x1006e3b0
  */
 void AdvanceFrameTickCounter(void);
-
-/**
- * The ticks of the frames, three for each tenth of a second.
- *
- * @ghidraAddress BRD3D: 0x118ab134
- * @ghidraAddress BRGlide: 0x118ee24c
- */
-extern DWORD g_dwFrameTickCounter;
-
-/**
- * The frame of the race, -1 before the first.
- *
- * @ghidraAddress BRD3D: 0x1068093c
- * @ghidraAddress BRGlide: 0x105bcae4
- */
-extern int g_dwRaceFrameCounter;
-
-/**
- * Whether the timing of the frames was started again.
- *
- * @ghidraAddress BRD3D: 0x100a66e8
- * @ghidraAddress BRGlide: 0x100a5ea8
- */
-extern int g_bFrameTimerReset;
 
 /**
  * Start the ticks of the frames from the current time, at three for each tenth of a second.

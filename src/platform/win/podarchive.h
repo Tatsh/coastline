@@ -101,7 +101,9 @@ void FatalErrorWithMessage(const char *pszFormat, ...);
 
 /** A pod file the game reads, and the writer of one. */
 class PodArchive {
-public:
+private:
+    void ClearPodArchive();
+
     PodFileHelper helper;       /*!< The routines of the files. */
     PodHeader header;           /*!< The header of the file. */
     PodEntry *pEntries;         /*!< The directory, from new. */
@@ -109,6 +111,7 @@ public:
     char szPath[POD_PATH_SIZE]; /*!< The path of the file. */
     unsigned dwDirectorySize;   /*!< The size of the directory in bytes. */
 
+public:
     /**
      * An archive without a file.
      *
@@ -125,6 +128,7 @@ public:
      */
     virtual ~PodArchive();
 
+private:
     /**
      * Make the name of an entry from a path: the name of the file, in capitals, padded with zeros
      * to #POD_ENTRY_NAME_SIZE bytes. A longer name ends the game.
@@ -225,8 +229,10 @@ public:
      * @ghidraAddress BRD3D: 0x100088d0
      * @ghidraAddress BRGlide: 0x10008ab0
      */
+public:
     virtual void OpenPodFile();
 
+private:
     /**
      * Create a pod file to write, after the space of its header, and clear the entries of the
      * writer.
@@ -265,6 +271,7 @@ public:
      * @ghidraAddress BRD3D: 0x10008970
      * @ghidraAddress BRGlide: 0x10008b50
      */
+public:
     void ClosePodFile();
 
     /**
@@ -284,27 +291,3 @@ public:
  * @ghidraAddress BRGlide: 0x10ac0810
  */
 extern PodArchive g_BossRallyPodArchive;
-
-/**
- * The entries of the pod file being written.
- *
- * @ghidraAddress BRD3D: 0x1022b358
- * @ghidraAddress BRGlide: 0x10226e88
- */
-extern PodEntry g_aPodArchiveEntries[POD_WRITER_ENTRY_COUNT];
-
-/**
- * The number of entries of g_aPodArchiveEntries in use.
- *
- * @ghidraAddress BRD3D: 0x10277358
- * @ghidraAddress BRGlide: 0x10272e88
- */
-extern int g_nPodArchiveEntryCount;
-
-/**
- * The pod file being written.
- *
- * @ghidraAddress BRD3D: 0x1027735c
- * @ghidraAddress BRGlide: 0x10272e8c
- */
-extern FILE *g_pPodArchiveFile;

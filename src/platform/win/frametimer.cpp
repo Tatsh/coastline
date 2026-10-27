@@ -6,15 +6,89 @@
 
 #include "platform/win/timer.h"
 
+namespace {
+
+/**
+ * The clock of the frames of a race.
+ *
+ * @ghidraAddress BRD3D: 0x106806b0
+ * @ghidraAddress BRGlide: 0x105bc858
+ */
 FrameTimer g_FrameTimer;
+
+/**
+ * Whether the frequency of the performance counter was read for the frames.
+ *
+ * @ghidraAddress BRD3D: 0x118ab140
+ * @ghidraAddress BRGlide: 0x118ee258
+ */
 int g_bFrameTimerInitialized;
+
+/**
+ * Whether the system has a performance counter for the frames.
+ *
+ * @ghidraAddress BRD3D: 0x118ab144
+ * @ghidraAddress BRGlide: 0x118ee25c
+ */
 int g_bFrameTimerHasPerfCounter;
+
+/**
+ * The frequency of the performance counter for the frames.
+ *
+ * @ghidraAddress BRD3D: 0x118ab138
+ * @ghidraAddress BRGlide: 0x118ee250
+ */
 LARGE_INTEGER g_liFrameTimerFrequency;
+
+/**
+ * The time of the current tick, in milliseconds.
+ *
+ * @ghidraAddress BRD3D: 0x118ab118
+ * @ghidraAddress BRGlide: 0x118ee230
+ */
 DWORD g_dwFrameTickTime;
+
+/**
+ * The entry of g_adwFrameTickIncrements of the current tick.
+ *
+ * @ghidraAddress BRD3D: 0x118ab12c
+ * @ghidraAddress BRGlide: 0x118ee244
+ */
 DWORD g_dwFrameTickPhase;
-DWORD g_dwFrameTickCounter;
-int g_dwRaceFrameCounter;
-int g_bFrameTimerReset = true;
+
+/**
+ * The milliseconds of each tick of a period, 33, 33, and 34 to make a tenth of a second.
+ *
+ * @ghidraAddress BRD3D: 0x100bbac8
+ * @ghidraAddress BRGlide: 0x100bb2d0
+ */
+const DWORD g_adwFrameTickIncrements[TICKS_PER_PERIOD] = {33, 33, 34};
+
+/**
+ * The ticks of the frames, three for each tenth of a second.
+ *
+ * @ghidraAddress BRD3D: 0x118ab134
+ * @ghidraAddress BRGlide: 0x118ee24c
+ */
+[[maybe_unused]] DWORD g_dwFrameTickCounter;
+
+/**
+ * The frame of the race, -1 before the first.
+ *
+ * @ghidraAddress BRD3D: 0x1068093c
+ * @ghidraAddress BRGlide: 0x105bcae4
+ */
+[[maybe_unused]] int g_dwRaceFrameCounter;
+
+/**
+ * Whether the timing of the frames was started again.
+ *
+ * @ghidraAddress BRD3D: 0x100a66e8
+ * @ghidraAddress BRGlide: 0x100a5ea8
+ */
+[[maybe_unused]] int g_bFrameTimerReset = true;
+
+} // namespace
 
 // The frames of a second.
 #define FRAMES_PER_SECOND 30
@@ -58,8 +132,6 @@ void ResetFrameTimer(void) {
     g_dwFrameTickCounter =
         dwNow / TICK_PERIOD_MS * TICKS_PER_PERIOD + dwNow % TICK_PERIOD_MS / TICK_INTERVAL_MS;
 }
-
-const DWORD g_adwFrameTickIncrements[TICKS_PER_PERIOD] = {33, 33, 34};
 
 void AdvanceFrameTickCounter(void) {
     if (++g_dwFrameTickPhase > TICKS_PER_PERIOD - 1) {
