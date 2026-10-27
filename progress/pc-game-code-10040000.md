@@ -1,6 +1,6 @@
 # PC port game code from 0x10040000 to 0x10050000
 
-212 of 264 routines done.
+213 of 264 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -160,7 +160,7 @@ the same name, for a routine the port retained from the N64 game.
 | `ProcessCheatCodeInput`                            |   ✅   |                 |      1 |     71 | `0x10047610` | `0x10040a40` | `void ProcessCheatCodeInput(void)`                                                                                                                        |
 | `MenuWidget::Draw`                                 |   ✅   |                 |      1 |     70 | `0x10048010` | `0x10041460` | `int Draw(MenuWidget * this)`                                                                                                                             |
 | `MenuWidget::DrawCurrentImage`                     |   ✅   |                 |      1 |     68 | `0x10047a10` | `0x10040e60` | `int DrawCurrentImage(MenuWidget * this)`                                                                                                                 |
-| `ReturnToVideoOptionsFromDeviceSelect`             |        |                 |      2 |     66 | `0x10046620` |              | `undefined ReturnToVideoOptionsFromDeviceSelect()`                                                                                                        |
+| `ReturnToVideoOptionsFromDeviceSelect`             |   ✅   |                 |      2 |     66 | `0x10046620` |              | `int ReturnToVideoOptionsFromDeviceSelect(MenuWidget * pWidget)`                                                                                          |
 | `ReturnToVideoOptionsFromResolution`               |   ✅   |                 |      2 |     66 | `0x10046670` | `0x1003fac0` | `int ReturnToVideoOptionsFromResolution(MenuWidget * pWidget)`                                                                                            |
 | `ModemConnectionUI_OnAccept`                       |        |                 |      1 |     66 | `0x10043f50` | `0x1003d4a0` | `undefined ModemConnectionUI_OnAccept()`                                                                                                                  |
 | `CarSetupUI_OnBackToSeasonProgressInfo`            |   ✅   |                 |      1 |     66 | `0x10046cd0` | `0x10040120` | `int CarSetupUI_OnBackToSeasonProgressInfo(MenuActionWidget * pItem)`                                                                                     |
