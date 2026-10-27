@@ -753,7 +753,7 @@ void BindTextureEntry(int nEntry) {
     }
     const TextureEntry &entry = g_pTextureEntries[nEntry];
     g_pD3DDevice2->SetRenderState(D3DRENDERSTATE_TEXTUREHANDLE,
-                                  g_ppTextureIdTable[entry.nTextureId]->hTexture);
+                                  g_ppTextureIdTable[entry.nTextureId]->GetTextureHandle());
     SetPendingRenderState(&g_dwPendingRS_AddressU,
                           g_dwAppliedRS_AddressU,
                           entry.data.bClampS == 1 ? D3DTADDRESS_CLAMP : D3DTADDRESS_WRAP,

@@ -430,12 +430,17 @@ public:
 
 /** A texture of Direct3D created from an image in memory. */
 class D3DTexture {
-public:
+private:
     IDirectDrawSurface *pSysMemSurface; /*!< The surface the image is written to. */
     IDirectDrawSurface *pDeviceSurface; /*!< The texture surface, pSysMemSurface in software. */
     IUnknown *pUnknown8;                /*!< Released with the surfaces. */
     D3DTEXTUREHANDLE hTexture;          /*!< The handle of the texture on the device. */
     unsigned char abUnknown10[0x10];
+
+public:
+    D3DTEXTUREHANDLE GetTextureHandle() const {
+        return hTexture;
+    }
 
     /**
      * Create the texture from an image. A device of hardware gets a texture surface in video
@@ -835,8 +840,13 @@ public:
 
 /** What the game draws through: the renderer of the main window. */
 class RenderHost {
-public:
+private:
     DirectDrawRenderer *pRenderer; /*!< The renderer, set by SetRenderer(). */
+
+public:
+    DirectDrawRenderer *GetRenderer() const {
+        return pRenderer;
+    }
 
     /**
      * Start without a renderer.

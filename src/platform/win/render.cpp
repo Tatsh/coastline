@@ -928,7 +928,7 @@ unsigned QueryAvailableTextureMemory(void) {
     caps.dwCaps = DDSCAPS_TEXTURE;
     DWORD total;
     DWORD available;
-    g_pRenderHost->pRenderer->pDirectDraw2->GetAvailableVidMem(&caps, &total, &available);
+    g_pRenderHost->GetRenderer()->pDirectDraw2->GetAvailableVidMem(&caps, &total, &available);
     return available;
 }
 

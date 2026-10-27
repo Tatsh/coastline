@@ -172,7 +172,7 @@ HRESULT RenderHost::RenderLoadingScreen(DirectDrawRenderer *pWindowRenderer,
             pDevice->SetRenderState(D3DRENDERSTATE_WRAPV, FALSE);
             pDevice->SetRenderState(D3DRENDERSTATE_TEXTUREPERSPECTIVE, TRUE);
             pDevice->SetRenderState(D3DRENDERSTATE_TEXTUREHANDLE,
-                                    g_LoadingScreenImageState.hTexture);
+                                    g_LoadingScreenImageState.GetTextureHandle());
 
             fLeft = static_cast<float>((g_dwConfigFramebufferWidth - nWidth) / 2);
             if (fLeft < 0.0f) {

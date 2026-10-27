@@ -15,7 +15,10 @@
 
 TexturePixelFormat g_aTexturePixelFormats[TEXTURE_PIXEL_FORMAT_COUNT] = {
     {2, 0, {}, {}}, {3, 0, {}, {}}, {4, 0, {}, {}}, {0xb, 0, {}, {}}, {0xc, 0, {}, {}}};
+namespace {
+// @ghidraAddress BRD3D: 0x11849870
 unsigned short g_awRgba5551FileBuffer[RGBA5551_IMAGE_PIXEL_COUNT];
+} // namespace
 
 DDPIXELFORMAT *LookupPixelFormatById(int nId) {
     for (TexturePixelFormat &format : g_aTexturePixelFormats) {
@@ -206,7 +209,11 @@ int ConvertRGBAToPixelFormatWithColorKey(
     void *pDest, const void *pSrc, int nSize, int nPixelFormatId, unsigned *pColorKey) {
     return ConvertRGBAToPixelFormatImpl<true>(pDest, pSrc, nSize, nPixelFormatId, pColorKey);
 }
+namespace {
+// In the original, the file buffer overlaps the upper half of the decoded pixel buffer.
+// @ghidraAddress BRD3D: 0x11829870
 unsigned char g_abTextureDecodeBuffer[RGBA5551_IMAGE_PIXEL_COUNT * 4];
+} // namespace
 
 void UnpackRgba5551ToRgba8(unsigned char *pDest, const unsigned short *pSrc, int nCount) {
     for (int i = 0; i < nCount; i++) {
@@ -264,7 +271,7 @@ unsigned GetAvailableTextureMemory(void) {
     DWORD dwFree;
 
     caps.dwCaps = DDSCAPS_TEXTURE;
-    g_pRenderHost->pRenderer->pDirectDraw2->GetAvailableVidMem(&caps, &dwTotal, &dwFree);
+    g_pRenderHost->GetRenderer()->pDirectDraw2->GetAvailableVidMem(&caps, &dwTotal, &dwFree);
     return dwFree;
 }
 
