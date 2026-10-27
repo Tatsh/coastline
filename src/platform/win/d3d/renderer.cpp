@@ -950,14 +950,10 @@ int DirectDrawRenderer::ReleaseViewportAndMaterial() {
 static inline void SetBlackBackground(DirectDrawRenderer *pRenderer) {
     D3DMaterial *pMaterial = pRenderer->pMaterial;
 
-    pMaterial->desc.dcvDiffuse.r = 0.0f;
-    pMaterial->desc.dcvDiffuse.g = 0.0f;
-    pMaterial->desc.dcvDiffuse.b = 0.0f;
-    pMaterial->bDirty = 1;
-    pMaterial->desc.dwRampSize = 1;
-    pMaterial->bDirty = 0;
-    pMaterial->pMaterial->SetMaterial(&pMaterial->desc);
-    pRenderer->pViewport->SetBackground(pMaterial->hMaterial);
+    pMaterial->SetDiffuseColor(0.0f, 0.0f, 0.0f);
+    pMaterial->SetRampSize(1);
+    pMaterial->ApplyDescription();
+    pRenderer->pViewport->SetBackground(pMaterial->GetMaterialHandle());
 }
 
 HRESULT DirectDrawRenderer::BeginRenderScene() {

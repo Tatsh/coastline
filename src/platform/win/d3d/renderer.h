@@ -397,11 +397,32 @@ public:
 
 /** A Direct3D material and the description it was set from. */
 class D3DMaterial {
-public:
+private:
     D3DMATERIAL desc;              /*!< The description of the material. */
     D3DMATERIALHANDLE hMaterial;   /*!< The handle of the material on the device. */
     IDirect3DMaterial2 *pMaterial; /*!< The material of Direct3D. */
     int bDirty;                    /*!< Whether desc changed since it was given to pMaterial. */
+
+public:
+    D3DMATERIALHANDLE GetMaterialHandle() const {
+        return hMaterial;
+    }
+
+    void SetDiffuseColor(float red, float green, float blue) {
+        desc.dcvDiffuse.r = red;
+        desc.dcvDiffuse.g = green;
+        desc.dcvDiffuse.b = blue;
+        bDirty = 1;
+    }
+
+    void SetRampSize(DWORD size) {
+        desc.dwRampSize = size;
+    }
+
+    HRESULT ApplyDescription() {
+        bDirty = 0;
+        return pMaterial->SetMaterial(&desc);
+    }
 
     /**
      * Create an opaque material of Direct3D and its handle on a device.
@@ -435,7 +456,7 @@ private:
     IDirectDrawSurface *pDeviceSurface; /*!< The texture surface, pSysMemSurface in software. */
     IUnknown *pUnknown8;                /*!< Released with the surfaces. */
     D3DTEXTUREHANDLE hTexture;          /*!< The handle of the texture on the device. */
-    unsigned char abUnknown10[0x10];
+    [[maybe_unused]] unsigned char abUnknown10[0x10];
 
 public:
     D3DTEXTUREHANDLE GetTextureHandle() const {
@@ -903,6 +924,7 @@ public:
      */
     HRESULT ValidateRenderDeviceState();
 
+private:
     /**
      * Whether the renderer is ready and has Direct3D, a device, and a viewport.
      *
