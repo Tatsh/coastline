@@ -11,6 +11,10 @@
 
 #include "vecmath.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /** A part of a model: its display list, how it is drawn, and where. */
 typedef struct {
     Gfx *displayList; /*!< The display list that draws the part, or NULL. */
@@ -265,5 +269,9 @@ void PlayModelAnimationsOnce(Model *model);
  * @ghidraAddress JPN: 0x8021e8cc
  */
 Model *DmaReadAndFixupTrackModel(void *dst, u32 romStart, u32 romEnd);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif
