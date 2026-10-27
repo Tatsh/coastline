@@ -1,6 +1,6 @@
 # PC port game code from 0x10050000 to 0x10060000
 
-29 of 88 routines done.
+32 of 88 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -59,8 +59,8 @@ the same name, for a routine the port retained from the N64 game.
 | `SyncSeasonProgress`                      |   ✅   |                 |      4 |    183 | `0x1005fcf0` | `0x10058a30` | `void SyncSeasonProgress(void)`                                                                                                                 |
 | `MenuScreen::ClearBackBuffer`             |   ✅   |                 |      1 |    167 | `0x1005afa0` |              | `long ClearBackBuffer(MenuScreen * this)`                                                                                                       |
 | `SaveFileList::WriteSeasonDescFile`       |   ✅   |                 |      1 |    162 | `0x1005cc20` | `0x10055a40` | `int WriteSeasonDescFile(SaveFileList * this, int nUnused)`                                                                                     |
-| `MenuFont::MeasureTextAltFont`            |        |                 |      1 |    153 | `0x1005b160` | `0x10053f80` | `void MeasureTextAltFont(MenuFont * this)`                                                                                                      |
-| `MenuFont::MeasureText`                   |        |                 |      1 |    140 | `0x1005b0d0` | `0x10053ef0` | `void MeasureText(MenuFont * this)`                                                                                                             |
+| `MenuFont::MeasureTextAltFont`            |   ✅   |                 |      1 |    153 | `0x1005b160` | `0x10053f80` | `void MeasureTextAltFont(MenuFont * this)`                                                                                                      |
+| `MenuFont::MeasureText`                   |   ✅   |                 |      1 |    140 | `0x1005b0d0` | `0x10053ef0` | `void MeasureText(MenuFont * this)`                                                                                                             |
 | `MenuItemList::UpdateItemAndNotify`       |        |                 |      1 |    132 | `0x1005bb80` | `0x100549a0` | `undefined UpdateItemAndNotify(MenuItemList * this, undefined4 param_1)`                                                                        |
 | `MenuItemList::UpdateHoverInRect`         |        |                 |      1 |    117 | `0x1005c510` | `0x10055330` | `undefined UpdateHoverInRect(MenuItemList * this, undefined4 param_1)`                                                                          |
 | `MenuFont::DrawGlyph`                     |        |                 |      1 |    112 | `0x1005b730` | `0x10054550` | `undefined DrawGlyph(MenuFont * this, undefined4 param_1, undefined4 param_2, undefined4 param_3, undefined4 param_4)`                          |
@@ -68,7 +68,7 @@ the same name, for a routine the port retained from the N64 game.
 | `SaveFileList::CountMatchingFiles`        |   ✅   |                 |      1 |    101 | `0x1005d0a0` | `0x10055ed0` | `int CountMatchingFiles(SaveFileList * this, char * pszPattern)`                                                                                |
 | `MenuFont::DrawThrottledMenuGlyph`        |        |                 |      1 |     86 | `0x1005b250` | `0x10054070` | `undefined DrawThrottledMenuGlyph(MenuFont * this, undefined4 param_1, undefined4 param_2)`                                                     |
 | `SaveFileList::SaveFileList`              |   ✅   |                 |      2 |     82 | `0x1005cb90` | `0x100559b0` | `SaveFileList * SaveFileList(SaveFileList * this)`                                                                                              |
-| `MenuFont::ComputeCenteredX`              |        |                 |      1 |     80 | `0x1005b200` | `0x10054020` | `float10 ComputeCenteredX(MenuFont * this)`                                                                                                     |
+| `MenuFont::ComputeCenteredX`              |   ✅   |                 |      1 |     80 | `0x1005b200` | `0x10054020` | `float10 ComputeCenteredX(MenuFont * this)`                                                                                                     |
 | `MenuFont::MenuFont`                      |        |                 |      2 |     77 | `0x1005b050` | `0x10053e70` | `undefined MenuFont(MenuFont * this)`                                                                                                           |
 | `MenuItemList::BlitSurfaceById`           |        |                 |      1 |     73 | `0x1005c270` | `0x10055090` | `undefined BlitSurfaceById(MenuItemList * this, undefined4 param_1, undefined4 param_2, undefined4 param_3)`                                    |
 | `RestoreMenuSurfaces`                     |   ✅   |                 |      1 |     73 | `0x1005f4e0` | `0x10001320` | `bool RestoreMenuSurfaces(void)`                                                                                                                |
