@@ -1,6 +1,6 @@
 # PC port game code from 0x10050000 to 0x10060000
 
-43 of 96 routines done.
+44 of 96 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -15,7 +15,7 @@ the same name, for a routine the port retained from the N64 game.
 | `ComputeAiVehicleInput`                   |        |                 |      3 |   3867 |              | `0x1005e690` | `undefined ComputeAiVehicleInput()`                                                                                                             |
 | `BuildSeasonProgressInfoUI`               |   🚧   |                 |      2 |   3862 | `0x10052030` | `0x1004aee0` | `void BuildSeasonProgressInfoUI(MenuScreen * pScreen)`                                                                                          |
 | `BuildRaceResultsSummaryUI`               |   📝   |                 |      2 |   3669 | `0x10053cf0` | `0x1004cba0` | `void BuildRaceResultsSummaryUI(MenuScreen * pScreen)`                                                                                          |
-| `BuildRaceResultsInfoUI`                  |   📝   |                 |      2 |   3475 | `0x10052f50` | `0x1004be00` | `void BuildRaceResultsInfoUI(MenuScreen * pScreen)`                                                                                             |
+| `BuildRaceResultsInfoUI`                  |   ✅   |                 |      2 |   3475 | `0x10052f50` | `0x1004be00` | `void BuildRaceResultsInfoUI(MenuScreen * pScreen)`                                                                                             |
 | `BuildRaceResultsTotalsUI`                |   📝   |                 |      2 |   3394 | `0x10054b50` | `0x1004da00` | `void BuildRaceResultsTotalsUI(MenuScreen * pScreen)`                                                                                           |
 | `BuildMultiplayerConnectionUI`            |        |                 |      2 |   2877 | `0x100558a0` | `0x1004e750` | `undefined BuildMultiplayerConnectionUI()`                                                                                                      |
 | `BuildLoadTimeAttackMenuUI`               |   🚧   |                 |      2 |   2863 | `0x10059bb0` | `0x10052a60` | `void BuildLoadTimeAttackMenuUI(MenuScreen * pScreen)`                                                                                          |
