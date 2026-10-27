@@ -1183,9 +1183,13 @@ void ScaleVertexTexCoords(GbiVertex *pVertex, const GbiVertexSource *pSource) {
     pVertex->fV = pSource->fT * g_fTexCoordScaleT;
 }
 
-template <bool FarDepth>
-static void
-ClipAndSubmitTriangleImpl(GbiVertex *pVertex0, GbiVertex *pVertex1, GbiVertex *pVertex2) {
+template <bool FarDepth, bool FlatColor = false>
+static void ClipAndSubmitTriangleImpl(GbiVertex *pVertex0,
+                                      GbiVertex *pVertex1,
+                                      GbiVertex *pVertex2,
+                                      float fRed = 0,
+                                      float fGreen = 0,
+                                      float fBlue = 0) {
     pVertex0->source.pNext = &pVertex1->source;
     pVertex1->source.pNext = &pVertex2->source;
     pVertex2->source.pNext = &pVertex0->source;
@@ -1213,6 +1217,9 @@ ClipAndSubmitTriangleImpl(GbiVertex *pVertex0, GbiVertex *pVertex1, GbiVertex *p
     for (int i = 0; i < polygon.nCount; ++i) {
         GbiVertexSource *pVertex = polygon.pHead;
         polygon.pHead = pVertex->pNext;
+        float fVertexRed = FlatColor ? fRed : pVertex->fRed;
+        float fVertexGreen = FlatColor ? fGreen : pVertex->fGreen;
+        float fVertexBlue = FlatColor ? fBlue : pVertex->fBlue;
         if constexpr (FarDepth) {
             float fRhw = 1.0L / pVertex->fW;
             vertices[i].fX = static_cast<long double>(pVertex->fX) * g_fViewportScaleX * fRhw +
@@ -1221,12 +1228,11 @@ ClipAndSubmitTriangleImpl(GbiVertex *pVertex0, GbiVertex *pVertex1, GbiVertex *p
                              g_fViewportTranslateY;
             vertices[i].fZ = 0.999f;
             vertices[i].fRhw = 1.0f / 65535.0f;
-            vertices[i].fRed = pVertex->fRed;
-            vertices[i].fGreen = pVertex->fGreen;
-            vertices[i].fBlue = pVertex->fBlue;
+            vertices[i].fRed = fVertexRed;
+            vertices[i].fGreen = fVertexGreen;
+            vertices[i].fBlue = fVertexBlue;
         } else {
-            TransformVertexToScreen(
-                &vertices[i], pVertex, pVertex->fRed, pVertex->fGreen, pVertex->fBlue);
+            TransformVertexToScreen(&vertices[i], pVertex, fVertexRed, fVertexGreen, fVertexBlue);
         }
         ScaleVertexTexCoords(&vertices[i], pVertex);
         RecycleClipVertex(pVertex);
@@ -1244,6 +1250,48 @@ void ClipAndSubmitTriangleAtFarDepth(GbiVertex *pVertex0,
                                      GbiVertex *pVertex1,
                                      GbiVertex *pVertex2) {
     ClipAndSubmitTriangleImpl<true>(pVertex0, pVertex1, pVertex2);
+}
+
+void ClipPolygonAndSubmitFlat(GbiVertex *pVertex0,
+                              GbiVertex *pVertex1,
+                              GbiVertex *pVertex2,
+                              float fRed,
+                              float fGreen,
+                              float fBlue) {
+    ClipAndSubmitTriangleImpl<false, true>(pVertex0, pVertex1, pVertex2, fRed, fGreen, fBlue);
+}
+
+void DrawFlatShadedTriangle(int nVertex0, int nVertex1, int nVertex2) {
+    GbiVertex *pVertex0 = &g_aGbiVertexCache[nVertex0];
+    GbiVertex *pVertex1 = &g_aGbiVertexCache[nVertex1];
+    GbiVertex *pVertex2 = &g_aGbiVertexCache[nVertex2];
+    if (pVertex0->nClipFlags & pVertex2->nClipFlags & pVertex1->nClipFlags) {
+        return;
+    }
+    if (pVertex0->nClipFlags | pVertex2->nClipFlags | pVertex1->nClipFlags) {
+        ClipPolygonAndSubmitFlat(pVertex0,
+                                 pVertex1,
+                                 pVertex2,
+                                 pVertex0->source.fRed,
+                                 pVertex0->source.fGreen,
+                                 pVertex0->source.fBlue);
+        return;
+    }
+    ScaleVertexTexCoords(pVertex0, &pVertex0->source);
+    ScaleVertexTexCoords(pVertex1, &pVertex1->source);
+    ScaleVertexTexCoords(pVertex2, &pVertex2->source);
+    Vec3f color1 = {pVertex1->fRed, pVertex1->fGreen, pVertex1->fBlue};
+    Vec3f color2 = {pVertex2->fRed, pVertex2->fGreen, pVertex2->fBlue};
+    pVertex1->fRed = pVertex2->fRed = pVertex0->fRed;
+    pVertex1->fGreen = pVertex2->fGreen = pVertex0->fGreen;
+    pVertex1->fBlue = pVertex2->fBlue = pVertex0->fBlue;
+    SubmitTriangleToRenderBuffer(pVertex0, pVertex1, pVertex2);
+    pVertex1->fRed = color1.x;
+    pVertex1->fGreen = color1.y;
+    pVertex1->fBlue = color1.z;
+    pVertex2->fRed = color2.x;
+    pVertex2->fGreen = color2.y;
+    pVertex2->fBlue = color2.z;
 }
 
 // A routine that clips a triangle of g_aGbiVertexCache and submits what remains.

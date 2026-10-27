@@ -931,6 +931,18 @@ void ScaleVertexTexCoords(GbiVertex *pVertex, const GbiVertexSource *pSource);
 void ClipAndSubmitTriangle(GbiVertex *pVertex0, GbiVertex *pVertex1, GbiVertex *pVertex2);
 
 /**
+ * Clip and submit a triangle with one colour for all surviving vertices.
+ *
+ * @ghidraAddress BRD3D: 0x1001eeb0
+ */
+void ClipPolygonAndSubmitFlat(GbiVertex *pVertex0,
+                              GbiVertex *pVertex1,
+                              GbiVertex *pVertex2,
+                              float fRed,
+                              float fGreen,
+                              float fBlue);
+
+/**
  * Submit a triangle to g_renderBuffer, its vertices from the last, and draw the triangles waiting
  * when either buffer has no room for three more entries.
  *
