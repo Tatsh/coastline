@@ -1024,6 +1024,7 @@ extern DWORD g_dwNetWorkerNextTickTime;
  *
  * @ghidraAddress BRD3D: 0x100716e0
  * @ghidraAddress BRGlide: 0x1006a650
+ * @stub{BRGlide}
  */
 void PromoteReadyNetworkPlayersToStart(void);
 
@@ -1032,6 +1033,7 @@ void PromoteReadyNetworkPlayersToStart(void);
  *
  * @ghidraAddress BRD3D: 0x10071870
  * @ghidraAddress BRGlide: 0x1006a7e0
+ * @stub{BRGlide}
  */
 void RankNetworkPlayersByProgress(void);
 
@@ -1040,6 +1042,7 @@ void RankNetworkPlayersByProgress(void);
  *
  * @ghidraAddress BRD3D: 0x10071b80
  * @ghidraAddress BRGlide: 0x1006aaf0
+ * @stub{BRGlide}
  */
 void ResetAllNetworkPlayerStreams(void);
 
@@ -1048,6 +1051,7 @@ void ResetAllNetworkPlayerStreams(void);
  *
  * @ghidraAddress BRD3D: 0x10071c10
  * @ghidraAddress BRGlide: 0x1006ab80
+ * @stub{BRGlide}
  */
 void BuildNetworkPlayerStatusPackets(void);
 
@@ -1057,6 +1061,7 @@ void BuildNetworkPlayerStatusPackets(void);
  * @param pInfo The session.
  * @ghidraAddress BRD3D: 0x10072170
  * @ghidraAddress BRGlide: 0x1006b0e0
+ * @stub{BRGlide}
  */
 int FlushNetworkPlayerStreams(DirectPlayInfo *pInfo);
 
@@ -1076,6 +1081,7 @@ DWORD WINAPI NetworkWorkerThreadProc(LPVOID pParameter);
  *
  * @ghidraAddress BRD3D: 0x10071560
  * @ghidraAddress BRGlide: 0x1006a4d0
+ * @stub{BRGlide}
  */
 void CreateNetworkPlayerSlotMutexes(void);
 
@@ -1276,18 +1282,27 @@ extern int g_dwNetworkSendBlocked;
  */
 void ResetSessionSlotTable(void);
 
-/** A network player of a race. The layout is not recovered past the members below. */
+struct NetCarSnapshot {
+    char abUnknown0[0x78]; /* +0x00 */
+    float fProgress;
+    char abUnknown7c[0x24]; /* +0x7c */
+};
+
+/** A network player of a race. */
 struct NetPlayerSlot {
     HANDLE hMutex;  /*!< The mutex of the slot. */
     DPID dpidOwner; /*!< The player of the session that controls the slot. */
     DWORD dwLastUpdateTime;
-    char abUnknownC[0x20]; /* +0x0c */
-    int dwState;           /*!< The state of the slot in its low 6 bits, 0 for free. */
+    unsigned adwSnapshotTimes[8];
+    int dwState; /*!< The state of the slot in its low 6 bits, 0 for free. */
     int nStatusValue;
     unsigned char bStatusOptionA;
     unsigned char bStatusOptionB;
     unsigned char bStatusOptionC;
-    char abUnknown37[0x525]; /* +0x37 */
+    char abUnknown37; /* +0x37 */
+    unsigned adwSnapshotTypes[8];
+    NetCarSnapshot aSnapshots[8];
+    int nCurrentSnapshot;
     char szPlayerName[0x400];
     unsigned dwLastTimeSync;
     unsigned dwRaceTime;

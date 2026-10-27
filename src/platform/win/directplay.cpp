@@ -825,6 +825,73 @@ static inline void LockNetworkWorkerSlot(NetPlayerSlot &slot) {
     }
 }
 
+static inline void FinishNetworkPlayer(NetPlayerSlot &slot) {
+    SendNetworkFinishPositionMessage(g_pDirectPlayInfo, slot.dpidOwner, g_dwNetNextFinishPosition);
+    slot.dwState = g_dwNetNextFinishPosition + 5;
+    g_dwNetNextFinishPosition++;
+}
+
+void RankNetworkPlayersByProgress(void) {
+    int finishCount = 0;
+    for (int i = NET_PLAYER_SLOT_COUNT - 1; i >= 0; i--) {
+        NetPlayerSlot &slot = g_aNetPlayerSlots[i];
+        LockNetworkWorkerSlot(slot);
+        int state = slot.dwState & 0x3f;
+        if (state >= 2 && state < 5 && slot.dwFinishTime != 0) {
+            g_aNetPlayerProgressSort[finishCount].nPlayer = i;
+            g_aNetPlayerProgressSort[finishCount].fProgress = static_cast<float>(slot.dwFinishTime);
+            finishCount++;
+        }
+        ReleaseMutex(slot.hMutex);
+    }
+    if (finishCount != 0) {
+        std::qsort(g_aNetPlayerProgressSort,
+                   finishCount,
+                   sizeof(NetPlayerProgress),
+                   CompareNetworkPlayerProgressDescending);
+        for (int i = finishCount - 1; i >= 0; i--) {
+            NetPlayerSlot &slot = g_aNetPlayerSlots[g_aNetPlayerProgressSort[i].nPlayer];
+            LockNetworkWorkerSlot(slot);
+            int state = slot.dwState & 0x3f;
+            if (state >= 2 && state < 5 && slot.dwFinishTime != 0) {
+                FinishNetworkPlayer(slot);
+            }
+            ReleaseMutex(slot.hMutex);
+        }
+    }
+    int activeCount = 0;
+    int tail = NET_PLAYER_SLOT_COUNT - 1;
+    for (int i = NET_PLAYER_SLOT_COUNT - 1; i >= 0; i--) {
+        NetPlayerSlot &slot = g_aNetPlayerSlots[i];
+        LockNetworkWorkerSlot(slot);
+        int state = slot.dwState & 0x3f;
+        if (state >= 2 && state < 5 &&
+            slot.aSnapshots[slot.nCurrentSnapshot].fProgress >= 4188888.0f) {
+            FinishNetworkPlayer(slot);
+        }
+        state = slot.dwState & 0x3f;
+        if (state >= 5) {
+            g_aNetPlayerProgressSort[activeCount].nPlayer = i;
+            g_aNetPlayerProgressSort[activeCount++].fProgress = 10000000.0f - slot.dwState;
+        } else if (state >= 2) {
+            g_aNetPlayerProgressSort[activeCount].nPlayer = i;
+            g_aNetPlayerProgressSort[activeCount++].fProgress =
+                slot.aSnapshots[slot.nCurrentSnapshot].fProgress;
+        } else {
+            g_aNetPlayerProgressSort[tail].nPlayer = i;
+            g_aNetPlayerProgressSort[tail--].fProgress = -10000000.0f - i;
+        }
+        ReleaseMutex(slot.hMutex);
+    }
+    std::qsort(g_aNetPlayerProgressSort,
+               activeCount,
+               sizeof(NetPlayerProgress),
+               CompareNetworkPlayerProgressDescending);
+    for (int i = 0; i < NET_PLAYER_SLOT_COUNT; i++) {
+        g_adwNetPlayerRankPosition[g_aNetPlayerProgressSort[i].nPlayer] = i;
+    }
+}
+
 void PromoteReadyNetworkPlayersToStart(void) {
     for (NetPlayerSlot &slot : g_aNetPlayerSlots) {
         LockNetworkWorkerSlot(slot);
