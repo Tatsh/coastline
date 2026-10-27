@@ -1,6 +1,6 @@
 # PC port game code from 0x10060000 to 0x10070000
 
-120 of 173 routines done.
+121 of 173 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -32,7 +32,7 @@ the same name, for a routine the port retained from the N64 game.
 | `Vehicle::SetupVehicleForRaceStart`      |   ✅   | ✅ `0x80228a6c` |      2 |    979 | `0x10065740` | `0x1005e7b0` | `void SetupVehicleForRaceStart(Vehicle * this)`                                                                                          |
 | `MouseDevice::PollMouseDevice`           |   ✅   |                 |      1 |    939 | `0x100603a0` | `0x10059410` | `void PollMouseDevice(MouseDevice * this, void * hWnd)`                                                                                  |
 | `Vehicle::ComputeTrackPosition`          |   ✅   | ✅ `0x80227214` |      3 |    937 | `0x10064350` | `0x1005d3c0` | `void ComputeTrackPosition(Vehicle * this)`                                                                                              |
-| `Vehicle::TraceTrackSplineRecursive`     |        | ✅ `0x80226d9c` |      3 |    856 | `0x10063ff0` | `0x1005d060` | `int TraceTrackSplineRecursive(Vehicle * this, int depth, int pointIndex, TrackSection * section)`                                       |
+| `Vehicle::TraceTrackSplineRecursive`     |   ✅   | ✅ `0x80226d9c` |      3 |    856 | `0x10063ff0` | `0x1005d060` | `int TraceTrackSplineRecursive(Vehicle * this, int depth, int pointIndex, TrackSection * section)`                                       |
 | `Vehicle::TransformAllWheelMatrices`     |   ✅   | ✅ `0x80221e0c` |      2 |    776 | `0x10061c60` | `0x1005ace0` | `void TransformAllWheelMatrices(Vehicle * this)`                                                                                         |
 | `StepVehicleCollisions`                  |   ✅   | ✅ `0x8025e55c` |      1 |    762 | `0x1006ec80` | `0x10067c30` | `void StepVehicleCollisions(Vehicle * vehicle, RigidBody * body)`                                                                        |
 | `BounceOffPlane`                         |   ✅   | ✅ `0x8025b73c` |      1 |    760 | `0x1006c9d0` | `0x10065980` | `int BounceOffPlane(RigidBody * body, Vec3f * normal, int damp, int spin)`                                                               |
