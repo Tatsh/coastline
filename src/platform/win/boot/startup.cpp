@@ -106,7 +106,7 @@ static inline void ApplyIniLine(const char *pszLine) {
     } else if ((pszValue = GetIniValue(pszLine, "Interpolate=")) != nullptr) {
         g_bInterpolateFrames = atoi(pszValue);
     } else if ((pszValue = GetIniValue(pszLine, "SpeedSensitive=")) != nullptr) {
-        g_bAutomaticGearboxIni = atoi(pszValue);
+        g_bSpeedSensitiveSteering = atoi(pszValue);
     } else if ((pszValue = GetIniValue(pszLine, "D3DDrawCarShadow=")) != nullptr) {
         g_bDisableCarShadow = atoi(pszValue) == 0;
     } else if ((pszValue = GetIniValue(pszLine, "RunBenchmark=")) != nullptr) {

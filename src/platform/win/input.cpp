@@ -212,7 +212,7 @@ static inline void ReadMouseBindingState(void) {
     // All three accumulators use the previous horizontal accumulator in the binary.
     state.lAccumulatedY = previous.lAccumulatedX + mouse.lY;
     state.lAccumulatedZ = previous.lAccumulatedX + mouse.lZ;
-    int sensitivity = g_aVehicles[0].mouseSensitivity;
+    int sensitivity = g_aVehicles[0].steeringMode;
     if (sensitivity < 0) {
         sensitivity = 0;
     } else if (sensitivity > 7) {

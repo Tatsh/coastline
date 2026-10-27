@@ -1,9 +1,11 @@
 #include <PR/gu.h>
 
+#include "boot/rallyconfig.h"
 #include "camera.h"
 #include "directplay.h"
 #include "game.h"
 #include "ghost.h"
+#include "input.h"
 #include "instantreplay.h"
 #include "settings.h"
 #include "trackselect.h"
@@ -30,8 +32,16 @@ void Vehicle::UpdateVehiclePhysicsFrame(void) {
     ::UpdateVehiclePhysicsFrame(this);
 }
 
-void UpdateVehicleEngineAndGearbox(Vehicle *vehicle) {
-    vehicle->UpdateVehicleEngineAndGearbox();
+void Vehicle::UpdateVehicleEngineAndGearbox(void) {
+    ::UpdateVehicleEngineAndGearbox(this);
+}
+
+s32 IsVehicleControlAnalogue(s32 control) {
+    return (g_GlobalRallyConfig.pActiveInputBindings[control].wControl & 0x8000) != 0;
+}
+
+s32 IsVehicleSteeringSpeedSensitive(void) {
+    return g_bSpeedSensitiveSteering;
 }
 
 s32 ShouldStepVehiclePhysics(Vehicle *vehicle) {

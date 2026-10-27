@@ -28,6 +28,12 @@ void UpdateVehicleWheelTransforms(Vehicle *vehicle);
 void TransformAllWheelMatrices(Vehicle *vehicle);
 
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
+/** Whether the selected binding for a driving control is an axis. */
+s32 IsVehicleControlAnalogue(s32 control);
+
+/** Whether speed reduces analogue steering lock. */
+s32 IsVehicleSteeringSpeedSensitive(void);
+
 /** Restore replay motion or record the current pose before drawing. */
 void UpdateVehicleReplayPose(Vehicle *vehicle);
 

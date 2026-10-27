@@ -57,7 +57,7 @@ typedef struct Vehicle {
     PlayerProfile *profile;
     s32 tireType;
     s32 suspensionStiffness;
-    s32 mouseSensitivity;
+    s32 steeringMode;
     s32 chosenTransmission;
     s32 forcedForwardFrames;
     s32 forcedReverseFrames;
@@ -157,7 +157,6 @@ typedef struct Vehicle {
 
     /**
      * @ghidraAddress BRD3D: 0x10061f70
-     * @stub
      */
     void UpdateVehicleEngineAndGearbox(void);
 

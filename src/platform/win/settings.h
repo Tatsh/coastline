@@ -104,11 +104,11 @@ extern char g_szSfxDirPath[];
 extern int g_bInterpolateFrames;
 
 /**
- * Whether the gearbox is automatic, from `SpeedSensitive=`.
+ * Whether speed reduces analogue steering lock, from `SpeedSensitive=`.
  *
  * @ghidraAddress BRD3D: 0x100b3664
  */
-extern int g_bAutomaticGearboxIni;
+extern int g_bSpeedSensitiveSteering;
 
 /**
  * Whether the shadow of a car is not drawn, the inverse of `D3DDrawCarShadow=`.
