@@ -10,6 +10,10 @@
 #include <PR/os_cont.h>
 #include <PR/ultratypes.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /** The controllers whose Rumble Paks the game drives. */
 #define RUMBLE_CHANNELS 2
 
@@ -141,5 +145,9 @@ void UpdateRumblePaks(s32 unused);
  * @ghidraAddress JPN: 0x8026175c
  */
 void PrepareRumblePaks(void);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* COASTLINE_RUMBLE_H */

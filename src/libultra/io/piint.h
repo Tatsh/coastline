@@ -8,6 +8,10 @@
 
 #include <ultra64.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /**
  * @ghidraAddress USA: 0x802a62e0
  * @ghidraAddress EUR: 0x802a7e40
@@ -181,5 +185,9 @@ void __osDevMgrMain(void *arg);
  * @ghidraAddress JPN: 0x8026f660
  */
 s32 __osLeoInterrupt(void);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* LIBULTRA_IO_PIINT_H */

@@ -8,6 +8,10 @@
 
 #include <ultra64.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /**
  * @ghidraAddress USA: 0x802a6280
  * @ghidraAddress EUR: 0x802a7d70
@@ -77,5 +81,9 @@ s32 __osSiRawWriteIo(u32 devAddr, u32 data);
  * @ghidraAddress JPN: 0x8026f630
  */
 int __osSiDeviceBusy(void);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* LIBULTRA_IO_SIINT_H */

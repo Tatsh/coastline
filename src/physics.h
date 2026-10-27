@@ -21,6 +21,10 @@
 #include "vehiclefwd.h"
 #endif
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /** The weathers the grip of a surface differs in: dry, rain and snow. */
 #define GRIP_WEATHERS 3
 
@@ -33,9 +37,6 @@ typedef union CollisionContactState {
     f32 w;    /*!< The same word scaled as a float during correction. */
 } CollisionContactState;
 
-#ifdef __cplusplus
-extern "C" {
-#endif
 /**
  * The shared contact word.
  *
@@ -87,9 +88,6 @@ extern f32 g_afVehiclePhysicsTableC1[3][GRIP_WEATHERS][TRACK_SURFACES];
  * @ghidraAddress BRD3D: 0x10070580
  */
 void SelectVehiclePhysicsTables(s32 model);
-#ifdef __cplusplus
-}
-#endif
 #endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 
 /** A node of the list of the triangles that cross the box of a body. */
@@ -101,9 +99,6 @@ typedef struct CollisionTriangleNode {
 /** The nodes of the list. */
 #define COLLISION_TRIANGLE_NODES 200
 
-#ifdef __cplusplus
-extern "C" {
-#endif
 /**
  * @ghidraAddress BRD3D: 0x11754e50
  * @ghidraAddress USA: 0x80379940
@@ -131,9 +126,6 @@ extern CollisionTriangleNode *g_pCollisionTriangleList;
  * @ghidraAddress JPN: 0x802a6c84
  */
 extern CollisionTriangleNode *g_pNextCollisionTriangleNode;
-#ifdef __cplusplus
-}
-#endif
 
 #if TGR_PLATFORM != TGR_PLATFORM_WIN
 /**
@@ -147,9 +139,6 @@ extern CollisionTriangleNode *g_pNextCollisionTriangleNode;
 extern s32 g_dwCollisionContactType;
 #endif /* TGR_PLATFORM != TGR_PLATFORM_WIN */
 
-#ifdef __cplusplus
-extern "C" {
-#endif
 /**
  * The triangle of the last collision.
  *
@@ -169,9 +158,6 @@ extern TrackTriangle *g_pCollisionTriangle;
  * @ghidraAddress BRD3D: 0x117554e8
  */
 extern s32 g_bTrackCollisionFrameToggle;
-#ifdef __cplusplus
-}
-#endif
 
 /**
  * The grip of the tyres on each surface in each weather, the load below which they hold, and the
@@ -231,9 +217,6 @@ extern Vec3f g_vecNegUnitZ;
  */
 extern Vec3f g_vVehicleObbHalfExtents;
 
-#ifdef __cplusplus
-extern "C" {
-#endif
 /**
  * Where the last collision with the track touched the body, in its frame.
  *
@@ -243,9 +226,6 @@ extern "C" {
  * @ghidraAddress BRD3D: 0x11755490
  */
 extern Vec3f g_vCollisionContact;
-#ifdef __cplusplus
-}
-#endif
 
 #if TGR_PLATFORM != TGR_PLATFORM_WIN
 /**
@@ -258,9 +238,6 @@ extern Vec3f g_vCollisionContact;
 extern f32 g_fCollisionContactW;
 #endif /* TGR_PLATFORM != TGR_PLATFORM_WIN */
 
-#ifdef __cplusplus
-extern "C" {
-#endif
 /**
  * How far the last collision put the body into the triangle.
  *
@@ -367,13 +344,7 @@ void GetWheelWorldVelocity(Vec3f *out, RigidBody *body, RigidBody *wheel);
  * @ghidraAddress BRD3D: 0x1006b510
  */
 void GetBodyPointVelocity(Vec3f *out, RigidBody *body, Vec3f *point);
-#ifdef __cplusplus
-}
-#endif
 
-#ifdef __cplusplus
-extern "C" {
-#endif
 /**
  * Cancel the sideways slip of the rear and the front of the body of a vehicle as far as the grip of
  * the tyres allows on their surfaces, and lean the body as it skids.
@@ -438,13 +409,7 @@ long double PlaneDistance(Vec3f *normal, f32 offset, Vec3f *point);
 #else
 f32 PlaneDistance(Vec3f *normal, f32 offset, Vec3f *point);
 #endif
-#ifdef __cplusplus
-}
-#endif
 
-#ifdef __cplusplus
-extern "C" {
-#endif
 /**
  * Stop the next step of a body moving into a plane, with a little bounce, record a hard hit, and
  * damp its spin about the plane.
@@ -460,9 +425,6 @@ extern "C" {
  * @ghidraAddress BRD3D: 0x1006c9d0
  */
 s32 BounceOffPlane(RigidBody *body, Vec3f *normal, s32 damp, s32 spin);
-#ifdef __cplusplus
-}
-#endif
 
 /**
  * An empty collision response.
@@ -477,9 +439,6 @@ s32 BounceOffPlane(RigidBody *body, Vec3f *normal, s32 damp, s32 spin);
  */
 s32 UnusedCollisionResponseStub(void *body, void *normal, void *damp);
 
-#ifdef __cplusplus
-extern "C" {
-#endif
 /**
  * Give the next step of a body the impulse at a point of it, in its frame, that stops the point
  * moving into a surface, record a hard hit, and retain a part of the slide along the surface.
@@ -508,9 +467,6 @@ s32 ApplyCollisionImpulse(
  * @ghidraAddress BRD3D: 0x1006d280
  */
 void PushCollisionTriangle(TrackTriangle *triangle);
-#ifdef __cplusplus
-}
-#endif
 
 /**
  * Print the length of the list on the debug output.
@@ -522,9 +478,6 @@ void PushCollisionTriangle(TrackTriangle *triangle);
 void PrintCollisionTriangleCount(void);
 
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
-#ifdef __cplusplus
-extern "C" {
-#endif
 /**
  * Classify a point against selected planes through the corners of the unit cube.
  *
@@ -534,14 +487,8 @@ extern "C" {
  * @ghidraAddress BRD3D: 0x1006d540
  */
 s32 ComputeAabbCornerPlaneClipCode(Vec3f *v, s32 mask);
-#ifdef __cplusplus
-}
-#endif
 #endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 
-#ifdef __cplusplus
-extern "C" {
-#endif
 /**
  * Sort out a triangle against the unit cube by its corners and its edges.
  *
@@ -554,13 +501,7 @@ extern "C" {
  * @ghidraAddress BRD3D: 0x1006d2b0
  */
 s32 ClassifyTriangleInUnitCube(Vec3f triangle[3]);
-#ifdef __cplusplus
-}
-#endif
 
-#ifdef __cplusplus
-extern "C" {
-#endif
 /**
  * How many times a triangle winds about a point of its plane, seen along the main axis of its
  * normal.
@@ -614,13 +555,7 @@ s32 DoesTriangleCrossUnitCube(Vec3f triangle[3], Vec3f *normal);
  * @ghidraAddress BRD3D: 0x1006daf0
  */
 s32 IsTriangleInUnitCube(Vec3f triangle[3], Vec3f *normal);
-#ifdef __cplusplus
-}
-#endif
 
-#ifdef __cplusplus
-extern "C" {
-#endif
 /**
  * List the triangles of the cache under a body that cross its box.
  *
@@ -633,9 +568,6 @@ extern "C" {
  * @ghidraAddress BRD3D: 0x1006db20
  */
 s32 CollectTrianglesInBox(RigidBody *body, f32 box[4][4]);
-#ifdef __cplusplus
-}
-#endif
 
 /**
  * An empty collision of a body with the track.
@@ -648,9 +580,6 @@ s32 CollectTrianglesInBox(RigidBody *body, f32 box[4][4]);
  */
 s32 UnusedTrackCollisionStub(void *body);
 
-#ifdef __cplusplus
-extern "C" {
-#endif
 /**
  * Roll a vehicle that stands still balanced on one or two wheels off its balance, printing what
  * it finds on the debug output.
@@ -679,13 +608,7 @@ s32 TipBalancedVehicle(RigidBody *body);
  */
 void ComputeCollisionPenetration(
     RigidBody *body, Vec3f *normal, f32 offset, Vec3f *contact, Vec3f triangle[3]);
-#ifdef __cplusplus
-}
-#endif
 
-#ifdef __cplusplus
-extern "C" {
-#endif
 /**
  * Collide the next step of a body with the listed triangles that cross its box, and move it back
  * out of those it hit.
@@ -732,13 +655,7 @@ void StepVehicleCollisions(RigidBody *body);
  * @ghidraAddress BRD3D: 0x1006ef80
  */
 void ComputeDragForce(RigidBody *body, RigidBodyForce *force);
-#ifdef __cplusplus
-}
-#endif
 
-#ifdef __cplusplus
-extern "C" {
-#endif
 /**
  * Find the ground below a wheel in the cache of the triangles.
  *
@@ -811,6 +728,7 @@ s32 TestObbIntersection(f32 rotation[3][3], Vec3f *offset, Vec3f *halfA, Vec3f *
  * @ghidraAddress JPN: 0x80260d70
  */
 void CollideVehicles(void);
+
 #ifdef __cplusplus
 }
 #endif

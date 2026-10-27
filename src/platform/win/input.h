@@ -157,6 +157,10 @@ extern DWORD g_dwLastInputActivityTime;
  */
 extern MouseDevice *g_pMousePosition;
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /**
  * Read the mouse for the main window.
  *
@@ -716,3 +720,6 @@ bool IsInputOrEventActive(void);
  * @ghidraAddress BRGlide: 0x10037780
  */
 bool CheckForUserInput(void);
+#ifdef __cplusplus
+}
+#endif

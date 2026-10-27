@@ -3,6 +3,10 @@
 
 #include <PR/gbi.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 typedef struct GbiCommand GbiCommand;
 
 typedef Vp GbiViewport;
@@ -33,5 +37,9 @@ struct GbiCommand {
         Gwords words;
     };
 };
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* COASTLINE_PLATFORM_WIN_GBICOMMAND_H */

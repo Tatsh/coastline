@@ -126,6 +126,10 @@ extern int g_bWindowMinimized;
  */
 extern int g_bWindowMaximized;
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /**
  * Release every subsystem of the game and end the process.
  *
@@ -259,6 +263,9 @@ void ShowGlideSplashImage(const char *pszPath, int nUnknown);
  * @ghidraAddress BRD3D: 0x1002c4a0
  */
 void FreeAllRacerColorPanels(void);
+#ifdef __cplusplus
+}
+#endif
 
 class DirectDrawRenderer;
 
@@ -275,6 +282,10 @@ extern const char *g_pszMainWindowTitle;
  * @ghidraAddress BRD3D: 0x118abe28
  */
 extern HCURSOR g_hArrowCursor;
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /**
  * Handle the messages of the main window.
@@ -638,3 +649,6 @@ void RunMessageLoop(void);
  * @ghidraAddress BRD3D: 0x10079720
  */
 void ShutdownMainWindow(void);
+#ifdef __cplusplus
+}
+#endif

@@ -2,6 +2,10 @@
 
 #include <windows.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /**
  * The number of game-loop durations averaged for the game frame rate.
  * @ghidraAddress BRD3D: 0x100aa008
@@ -43,3 +47,7 @@ extern int g_dwFpsFrameCountdown;
  * @ghidraAddress BRGlide: 0x10b73348
  */
 extern DWORD g_adwFpsFrameTimeSamples[FPS_FRAME_TIME_SAMPLE_COUNT];
+
+#ifdef __cplusplus
+}
+#endif

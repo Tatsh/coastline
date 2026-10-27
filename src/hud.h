@@ -16,6 +16,10 @@
 #include "vehiclefwd.h"
 #endif
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /** The views that keep their own dashboard. */
 #define DASHBOARD_VIEWS 2
 
@@ -23,17 +27,11 @@
 #define DASHBOARD_PALETTE_COLORS 256
 
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
-#ifdef __cplusplus
-extern "C" {
-#endif
 /**
  * The gear cell each view has loaded.
  * @ghidraAddress BRD3D: 0x100a73a8
  */
 extern s32 g_adwDashboardLoadedGear[DASHBOARD_VIEWS];
-#ifdef __cplusplus
-}
-#endif
 #endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 
 #if TGR_PLATFORM == TGR_PLATFORM_N64
@@ -118,9 +116,6 @@ extern char g_szHudSpeedTextBuf[16];
 #endif
 
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
-#ifdef __cplusplus
-extern "C" {
-#endif
 /**
  * Whether to display the dashboard and speedometer.
  * @ghidraAddress BRD3D: 0x100bd3f4
@@ -132,9 +127,6 @@ extern s32 g_bHudShowSpeedometer;
  * @ghidraAddress BRD3D: 0x10016b40
  */
 void RenderDashboardGauges(const ViewportRect *viewports);
-#ifdef __cplusplus
-}
-#endif
 #else
 /**
  * Draw the dashboard of the active vehicle: its face, its gear and its tachometer.
@@ -171,9 +163,6 @@ void StubDashboard(void);
 void DrawLabelWithTime(const char *label, const char *color, f32 seconds, s32 x, s32 y);
 
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 /**
  * Whether to display completed lap times.
@@ -196,15 +185,9 @@ void DrawLapTimeListHud(const ViewportRect *viewports);
  */
 void DrawFormattedLapTimeText(const char *color, s32 lap, f32 seconds, s32 x, s32 y);
 
-#ifdef __cplusplus
-}
-#endif
 #endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
-#ifdef __cplusplus
-extern "C" {
-#endif
 /**
  * Whether to display the lap counter.
  * @ghidraAddress BRD3D: 0x100bd3e8
@@ -242,9 +225,6 @@ void DrawRaceTimerHud(const ViewportRect *viewports);
  * @ghidraAddress BRD3D: 0x100173f0
  */
 void DrawLapCounterHud(const ViewportRect *viewports);
-#ifdef __cplusplus
-}
-#endif
 #else
 /**
  * Draw the times the mode of play shows at the top right of a view.
@@ -266,18 +246,12 @@ void DrawLapCounterHud(void);
 #endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
-#ifdef __cplusplus
-extern "C" {
-#endif
 /**
  * Draw the active vehicle's message unless paused or fading out.
  * @param viewports The records of the views.
  * @ghidraAddress BRD3D: 0x10017790
  */
 void DrawHudMessage(const ViewportRect *viewports);
-#ifdef __cplusplus
-}
-#endif
 #else
 /**
  * Draw the message of the active vehicle in the middle of a view.
@@ -290,9 +264,6 @@ void DrawHudMessage(void);
 #endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
-#ifdef __cplusplus
-extern "C" {
-#endif
 /**
  * Draw the dashboard, times, laps, messages, and speed for a viewport.
  * @param viewports The records of the views.
@@ -300,9 +271,6 @@ extern "C" {
  * @ghidraAddress BRD3D: 0x10017d90
  */
 void DrawSpeedAndHudOverlay(const ViewportRect *viewports, const Vehicle *vehicles);
-#ifdef __cplusplus
-}
-#endif
 #else
 /**
  * Draw the whole display of a view: the dashboard and times unless the camera is on the bumper,
@@ -323,5 +291,9 @@ void DrawSpeedAndHudOverlay(void);
  * @ghidraAddress JPN: 0x8028c744
  */
 extern s32 g_bShowHudHelpText;
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* COASTLINE_HUD_H */

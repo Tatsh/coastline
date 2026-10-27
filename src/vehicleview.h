@@ -3,6 +3,10 @@
 
 #include <PR/ultratypes.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /**
  * The 32 by 128 textures of the reflection of the sky, of 4-bit colour indices, and their palettes.
  *
@@ -47,5 +51,9 @@ extern u8 g_abVehicleReflectionTexSelect[4][2];
  * @ghidraAddress BRD3D: 0x10277ea0
  */
 extern s32 g_dwVehicleViewModeIndex;
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* COASTLINE_VEHICLE_VIEW_H */

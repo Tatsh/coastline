@@ -13,6 +13,10 @@
 #include "vecmath.h"
 #include "vehicle.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /** A puff of smoke or exhaust, in a list of the pool linked by index. */
 typedef struct {
     Vec3f position; /*!< The position of the puff in the world. */
@@ -135,9 +139,6 @@ void EmitTireSpray(Vehicle *vehicle);
 #endif /* TGR_PLATFORM == TGR_PLATFORM_N64 */
 
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
-#ifdef __cplusplus
-extern "C" {
-#endif
 /**
  * Draw the supplied racers' tyre spray, including snow only on the coastline tracks.
  *
@@ -145,9 +146,6 @@ extern "C" {
  * @ghidraAddress BRD3D: 0x10013a40
  */
 void DrawTireSpray(const RacerSlot *slots);
-#ifdef __cplusplus
-}
-#endif
 #else
 /**
  * Draw the spray of the wheels of every racer, except in the snow away from the tracks that show
@@ -172,10 +170,6 @@ void DrawTireSpray(void);
  */
 void SpawnTireSmoke(Vehicle *vehicle);
 #endif /* TGR_PLATFORM == TGR_PLATFORM_N64 */
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 /**
  * Drift, grow, and fade the exhaust, and free the puffs that have faded.
@@ -206,13 +200,6 @@ void UpdateTireSmoke(void);
  * @ghidraAddress BRD3D: 0x1003a4d0
  */
 void InitParticleSystem(void);
-#ifdef __cplusplus
-}
-#endif
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 /**
  * Update the effects of every racer for the weather: the exhaust in the snow, the tyre smoke in
@@ -224,14 +211,8 @@ extern "C" {
  * @ghidraAddress BRD3D: 0x1003a530
  */
 void UpdateAllVehicleEffects(void);
-#ifdef __cplusplus
-}
-#endif
 
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
-#ifdef __cplusplus
-extern "C" {
-#endif
 /**
  * Draw snapshot particle puffs as rectangles in the current view.
  *
@@ -244,9 +225,6 @@ extern "C" {
  */
 void RenderBillboardParticles(
     const ViewportRect *viewports, u32 head, s32 red, s32 green, s32 blue);
-#ifdef __cplusplus
-}
-#endif
 #else
 /**
  * Draw a list of puffs of the pool as rectangles of the particle texture facing the screen.
@@ -263,9 +241,6 @@ void RenderBillboardParticles(u16 head, s32 red, s32 green, s32 blue);
 #endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
-#ifdef __cplusplus
-extern "C" {
-#endif
 /**
  * Set the billboard matrix and draw snapshot tyre smoke in the track colours, except at night.
  *
@@ -273,9 +248,6 @@ extern "C" {
  * @ghidraAddress BRD3D: 0x100140e0
  */
 void RenderTireSmoke(const ViewportRect *viewports);
-#ifdef __cplusplus
-}
-#endif
 #else
 /**
  * Set g_afBillboardMatrix for the current view, and draw the tyre smoke in the colours of the
@@ -289,9 +261,6 @@ void RenderTireSmoke(void);
 #endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
-#ifdef __cplusplus
-extern "C" {
-#endif
 /**
  * Draw snapshot exhaust in snow, restore particle modes and draw the supplied racers' spray.
  *
@@ -300,9 +269,6 @@ extern "C" {
  * @ghidraAddress BRD3D: 0x10014450
  */
 void RenderExhaustAndTireSpray(const ViewportRect *viewports, const RacerSlot *slots);
-#ifdef __cplusplus
-}
-#endif
 #else
 /**
  * Draw the exhaust in the snow with the matrix RenderTireSmoke() set, then the spray.
@@ -313,5 +279,9 @@ void RenderExhaustAndTireSpray(const ViewportRect *viewports, const RacerSlot *s
  */
 void RenderExhaustAndTireSpray(void);
 #endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* COASTLINE_EFFECTS_H */

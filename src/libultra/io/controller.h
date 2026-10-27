@@ -9,6 +9,10 @@
 
 #include <ultra64.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /* Commands of the joybus. */
 #define CONT_CMD_REQUEST_STATUS 0 /*!< Request the type and status of a device. */
 #define CONT_CMD_READ_BUTTON 1    /*!< Read the buttons and the stick. */
@@ -419,5 +423,9 @@ s32 __osEepStatus(OSMesgQueue *mq, OSContStatus *data);
  */
 void __osPackEepReadData(u8 address);
 #endif /* TGR_REGION == TGR_REGION_JP || TGR_REGION == TGR_REGION_EU */
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* LIBULTRA_IO_CONTROLLER_H */

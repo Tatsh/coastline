@@ -17,6 +17,10 @@ class MenuItemList;
 /** The resume state that starts a season again at its first round. */
 #define SEASON_RESUME_STATE_RESTART 5
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /**
  * Shut down the race with the season restart state selected.
  *
@@ -375,8 +379,15 @@ void SaveAutoSaveSeason(void);
  * @ghidraAddress BRD3D: 0x10041bd0
  */
 void LoadAutoSaveSeason(void);
+#ifdef __cplusplus
+}
+#endif
 
 class MenuWidget;
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /**
  * Reset championship menus and load the selected season slot.
@@ -387,3 +398,6 @@ class MenuWidget;
  * @ghidraAddress BRD3D: 0x10042170
  */
 int LoadSeasonUI_OnSlotSelected(MenuItemList *pUnused, const int *pnSlot);
+#ifdef __cplusplus
+}
+#endif

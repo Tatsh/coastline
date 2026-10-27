@@ -6,6 +6,10 @@
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
 #include "platform/win/combine.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #define WriteFadeCombineMode(secondCycle)                                                          \
     PackCombineMode(gDisplayListPtr++,                                                             \
                     0,                                                                             \
@@ -24,6 +28,11 @@
                     0,                                                                             \
                     0,                                                                             \
                     1000 + G_ACMUX_##secondCycle)
+
+#ifdef __cplusplus
+}
+#endif
+
 #else
 #define WriteFadeCombineMode(secondCycle)                                                          \
     gDPSetCombineLERP(gDisplayListPtr++,                                                           \

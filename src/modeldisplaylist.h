@@ -4,6 +4,10 @@
 #include "displaylistops.h"
 #include "render.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /** Set up the tiles of the textures of a model: the load tile and the two render tiles. */
 static inline void SetModelTiles(void) {
     gDPSetTile(
@@ -32,5 +36,9 @@ static inline void SetVehicleLightColors(u32 dir, u32 ambient) {
     gSPLightColor(gDisplayListPtr++, LIGHT_1, dir);
     gSPLightColor(gDisplayListPtr++, LIGHT_2, ambient);
 }
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* COASTLINE_MODEL_DISPLAY_LIST_H */

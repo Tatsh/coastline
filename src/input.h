@@ -12,6 +12,10 @@
 #include "game.h"
 #include "playerinput.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /* The buttons of the input, which the menus read. The stick also presses the four directions. */
 #define INPUT_RIGHT 0x0001   /*!< The right of the directional pad or the stick. */
 #define INPUT_DOWN 0x0002    /*!< The down of the directional pad or the stick. */
@@ -282,10 +286,6 @@ extern s32 g_dwContReadPending;
  */
 extern u8 g_bPakPort0Initialized;
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 /**
  * Start a read of the controllers, unless one is already pending.
  *
@@ -316,10 +316,6 @@ void ReadControllers(void);
  */
 void UpdateControllerState(void);
 
-#ifdef __cplusplus
-}
-#endif
-
 /**
  * Probe the controllers and the Controller and Rumble Paks, running the controller check until each
  * warning is dismissed and the Controller Pak menu while the first player holds start.
@@ -330,10 +326,8 @@ void UpdateControllerState(void);
  * @ghidraAddress JPN: 0x8021cc4c
  * @ghidraAddress BRD3D: 0x10034a85
  */
-#ifdef __cplusplus
-extern "C" {
-#endif
 void InitControllersAndPaks(void);
+
 #ifdef __cplusplus
 }
 #endif

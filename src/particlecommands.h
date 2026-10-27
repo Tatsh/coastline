@@ -9,6 +9,10 @@
 #include "platform/win/render.h"
 #endif
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /* Load the console particle-image commands retained by the exhaust path. */
 #define LoadParticleTextureImage()                                                                 \
     gDPSetTextureImage(gDisplayListPtr++, G_IM_FMT_I, G_IM_SIZ_16b, 1, g_aParticleTexture);        \
@@ -125,5 +129,9 @@ static inline void ConfigureExhaustParticleTexture(void) {
     gDPSetColorDither(gDisplayListPtr++, g_dwColorDitherMode);                                     \
     gDPSetAlphaDither(gDisplayListPtr++, g_dwAlphaDitherMode);                                     \
     gDPSetAlphaCompare(gDisplayListPtr++, G_AC_THRESHOLD)
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* COASTLINE_PARTICLE_COMMANDS_H */

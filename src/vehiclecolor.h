@@ -3,14 +3,12 @@
 
 #include "vehiclemodel.h"
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
 void RefreshVehicleMaterialTextures(VehicleModel *model);
-#ifdef __cplusplus
-}
-#endif
 
 static inline void SetVehicleLightPalette(u16 *palette, s32 variant, s32 dark) {
     if (variant == 0) {
@@ -62,5 +60,9 @@ static inline void SetMaterialPaletteColors(VehicleModel *model, s32 red, s32 gr
         }
     }
 }
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* COASTLINE_VEHICLECOLOR_H */

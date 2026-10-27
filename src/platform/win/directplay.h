@@ -71,6 +71,10 @@ extern ServiceProvider g_aServiceProviders[SERVICE_PROVIDER_COUNT];
  */
 extern int g_dwServiceProviderIndex;
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /**
  * Report the GUID of the service provider chosen.
  *
@@ -184,8 +188,15 @@ HRESULT SendNetworkMessage7(DirectPlayInfo *pInfo, DPID dpidPlayer);
  * @ghidraAddress BRGlide: 0x10037180
  */
 void SendNetworkMessage6ToSession(void);
+#ifdef __cplusplus
+}
+#endif
 
 class NetStream;
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /**
  * Empty a stream and write the time of the worker thread of network play at its start.
@@ -1789,3 +1800,6 @@ extern int g_dwDirectPlayInstanceCount;
  * @ghidraAddress BRD3D: 0x1003bf60
  */
 void DisconnectNetworkSession(void);
+#ifdef __cplusplus
+}
+#endif

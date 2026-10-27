@@ -9,6 +9,10 @@
 #include <PR/os.h>
 #include <PR/ultratypes.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /** The ports of the console. */
 #define MAXCONTROLLERS 4
 
@@ -121,10 +125,6 @@ typedef struct {
     char game_name[16]; /*!< The file name, in the pak character set. */
 } OSPfsState;
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 /**
  * Wait until the controllers have powered up, then find which are present.
  * Windows returns 1 without changing the output arguments.
@@ -164,10 +164,6 @@ s32 osContStartReadData(OSMesgQueue *mq);
  * @ghidraAddress BRD3D: 0x10060e00
  */
 void osContGetReadData(OSContPad *data);
-
-#ifdef __cplusplus
-}
-#endif
 
 /**
  * Find which controllers have a Controller Pak inserted.
@@ -453,5 +449,9 @@ s32 osEepromWrite(OSMesgQueue *mq, u8 address, u8 *buffer);
  */
 s32 osEepromRead(OSMesgQueue *mq, u8 address, u8 *buffer);
 #endif /* TGR_REGION == TGR_REGION_JP || TGR_REGION == TGR_REGION_EU */
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* PR_OS_CONT_H */

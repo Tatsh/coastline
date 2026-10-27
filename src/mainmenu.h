@@ -11,6 +11,10 @@
 
 #include "racemenu.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /**
  * The items of the main menu, ending with NULL.
  *
@@ -107,5 +111,9 @@ void StartTimeAttack(void);
  * @ghidraAddress JPN: 0x80210f30
  */
 void ProcessMainMenu(void);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* COASTLINE_MAINMENU_H */

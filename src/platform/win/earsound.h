@@ -8,6 +8,10 @@
 
 #include <windows.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /** A routine of the EAR library with no parameters. */
 typedef int(WINAPI *EarProc0)(void);
 /** A routine of the EAR library with one parameter. */
@@ -357,3 +361,7 @@ extern EarProc0 g_pfnEarShutDownTimer;
  * @ghidraAddress BRGlide: 0x104b1664
  */
 extern EarProc0 g_pfnEarUpdateEar;
+
+#ifdef __cplusplus
+}
+#endif

@@ -8,6 +8,10 @@
 
 #include <ultra64.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /* What a context changes when the manager swaps it in. */
 #define VI_STATE_MODE_UPDATED 0x01   /*!< The video mode changed. */
 #define VI_STATE_XSCALE_UPDATED 0x02 /*!< The horizontal scale changed. */
@@ -147,5 +151,9 @@ void __osViSwapContext(void);
  * @ghidraAddress JPN: 0x8026dae0
  */
 __OSViContext *__osViGetCurrentContext(void);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* LIBULTRA_IO_VIINT_H */

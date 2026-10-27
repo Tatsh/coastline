@@ -9,6 +9,10 @@
 
 #include <PR/ultratypes.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /* Threads. */
 typedef s32 OSPri; /*!< The priority of a thread, from OS_PRIORITY_IDLE to OS_PRIORITY_MAX. */
 typedef s32 OSId;  /*!< The number that identifies a thread. */
@@ -505,10 +509,6 @@ OSIntMask osGetIntMask(void);
  */
 OSIntMask osSetIntMask(OSIntMask im);
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 /**
  * Read the CPU counter, or advance the emulated counter on Windows.
  *
@@ -522,10 +522,6 @@ extern "C" {
 u64 osGetCount(void);
 #else
 u32 osGetCount(void);
-#endif
-
-#ifdef __cplusplus
-}
 #endif
 
 /**
@@ -910,10 +906,6 @@ extern u8 aiHdwrBugFlag;
  */
 void osInitialize(void);
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 /**
  * Print to the debugger. The retail library discards the output.
  *
@@ -924,10 +916,6 @@ extern "C" {
  * @ghidraAddress BRD3D: 0x10008b80
  */
 void osSyncPrintf(const char *fmt, ...);
-
-#ifdef __cplusplus
-}
-#endif
 
 /**
  * Print to the remote monitor. The retail library discards the output.
@@ -1067,5 +1055,9 @@ double __ull_to_d(unsigned long long u);
  * @ghidraAddress JPN: 0x80267e48
  */
 float __ull_to_f(unsigned long long u);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* PR_OS_H */

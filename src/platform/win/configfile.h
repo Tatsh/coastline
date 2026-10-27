@@ -53,6 +53,10 @@ extern int g_bSpeedUnitsMph;
  */
 extern const char g_szCRallyConfigDat[];
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /**
  * Load the selected profile, ghost, or binary configuration data.
  *
@@ -63,3 +67,6 @@ extern const char g_szCRallyConfigDat[];
  * @ghidraAddress BRD3D: 0x10071130
  */
 bool LoadConfigData(int nConfigType, ConfigLoadArgument argument);
+#ifdef __cplusplus
+}
+#endif

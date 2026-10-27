@@ -45,6 +45,10 @@ public:
     void SnapshotTimerState();
 };
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /**
  * Advance the ticks by one, the time of the current tick by the milliseconds of its phase.
  *
@@ -85,3 +89,6 @@ void EndHighResolutionTimerPeriod(void);
  * @ghidraAddress BRGlide: 0x10019a40
  */
 void ResetFrameTimerState(void);
+#ifdef __cplusplus
+}
+#endif

@@ -3,6 +3,10 @@
 #include "platform/win/fileio.h"
 #include "track.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /** @ghidraAddress BRD3D: 0x106c8e78 */
 extern u8 g_abTrackGeometryBuffer[TRACK_MAX_SIZE];
 
@@ -69,3 +73,7 @@ void ByteSwapTrackVec3Array(TrackHeader *track);
  * @ghidraAddress BRD3D: 0x10038450
  */
 void CopyTextureAndPaletteFromSegment(ModelTexture *textures, int count);
+
+#ifdef __cplusplus
+}
+#endif

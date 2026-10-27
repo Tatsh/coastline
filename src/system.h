@@ -21,6 +21,10 @@
 #include "screen.h"
 #include "screendraw.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /** The bump allocator zcalloc() draws from. */
 typedef struct {
     u8 *cur; /*!< The next free byte. */
@@ -175,10 +179,6 @@ extern s32 g_dwFrameDeltaMs;
  */
 extern s32 g_dwElapsedTimeMs;
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 /**
  * Start the display list of a frame in the low-resolution mode.
  *
@@ -203,14 +203,6 @@ void StartLowResFrame(void);
  */
 void StartHighResFrame(void);
 
-#ifdef __cplusplus
-}
-#endif
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 /**
  * End the display list of the frame and run it.
  *
@@ -220,10 +212,6 @@ extern "C" {
  * @ghidraAddress BRD3D: 0x10033838
  */
 void FlushDisplayList(void);
-
-#ifdef __cplusplus
-}
-#endif
 
 /**
  * Fill the whole depth buffer with the farthest depth, then draw to the frame buffer again.
@@ -235,10 +223,6 @@ void FlushDisplayList(void);
  */
 void ClearDepthBuffer(void);
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 /**
  * Update the timing of the frames from the CPU timer.
  *
@@ -248,10 +232,6 @@ extern "C" {
  * @ghidraAddress BRD3D: 0x10034ad5
  */
 void UpdateFrameTiming(void);
-
-#ifdef __cplusplus
-}
-#endif
 
 /**
  * Whether the screen of a race runs, which makes UpdateFrameTiming() step a fixed 1/30 of a second
@@ -278,10 +258,6 @@ extern s32 g_bRaceScreenActive;
  */
 void ClearZBufferRect(s32 x, s32 y, s32 width, s32 height);
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 /**
  * Restart the clock of the frames from zero.
  *
@@ -291,10 +267,6 @@ extern "C" {
  * @ghidraAddress BRD3D: 0x10034a8a
  */
 void ResetFrameClock(void);
-
-#ifdef __cplusplus
-}
-#endif
 
 /**
  * The messages of the DMA, which AllocIoMessage() hands out in turn.
@@ -744,10 +716,6 @@ extern OSViMode g_ViModeNtscLan1;
 /** @ghidraAddress USA: 0x802a5d70 */
 extern OSViMode g_ViModeMpalLan1;
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 /**
  * Take a message of the DMA, waiting for a DMA to finish when every one is in flight.
  *
@@ -759,14 +727,6 @@ extern "C" {
  */
 OSIoMesg *AllocIoMessage(void);
 
-#ifdef __cplusplus
-}
-#endif
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 /**
  * Wait for every DMA started to finish.
  *
@@ -777,10 +737,6 @@ extern "C" {
  * @ghidraAddress BRGlide: 0x1002a894
  */
 void WaitForDmaMessages(void);
-
-#ifdef __cplusplus
-}
-#endif
 
 /**
  * Return 0. The routine has no callers.
@@ -797,11 +753,7 @@ void WaitForDmaMessages(void);
 #ifdef __cplusplus
 extern "C"
 #endif
-s32 UnusedVblankQueryStub(s32 unused0, s32 unused1);
-
-#ifdef __cplusplus
-extern "C" {
-#endif
+    s32 UnusedVblankQueryStub(s32 unused0, s32 unused1);
 
 /**
  * Forward each finished task of the RSP to g_RspDoneMsgQueue, marking the timing bars.
@@ -824,10 +776,6 @@ void RspDoneThread(void *arg);
  * @ghidraAddress JPN: 0x8021c698
  */
 void RdpDoneThread(void *arg);
-
-#ifdef __cplusplus
-}
-#endif
 
 #if TGR_REGION == TGR_REGION_JP || TGR_REGION == TGR_REGION_EU
 /**
@@ -863,10 +811,6 @@ extern s32 g_dwPreNmiResetPending;
 void PreNmiResetHandlerThread(void *arg);
 #endif /* TGR_REGION == TGR_REGION_JP || TGR_REGION == TGR_REGION_EU */
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 /**
  * Forward each retrace to g_ViRetraceMesgQueue and count it. Nothing starts it.
  *
@@ -878,10 +822,6 @@ extern "C" {
  */
 void ViRetraceThread(void *arg);
 
-#ifdef __cplusplus
-}
-#endif
-
 /**
  * Do nothing.
  *
@@ -890,10 +830,6 @@ void ViRetraceThread(void *arg);
  * @ghidraAddress JPN: 0x8021d16c
  */
 void UnusedFrameTimingStub(void);
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 /**
  * Wait for the next retrace.
@@ -905,10 +841,6 @@ extern "C" {
  * @ghidraAddress BRGlide: 0x1002f242
  */
 void WaitForVblankMessage(void);
-
-#ifdef __cplusplus
-}
-#endif
 
 /**
  * Do nothing; where a debugger would stop.
@@ -951,10 +883,6 @@ void BootIdleThread(void *arg);
 /** The commands at the start of the display list of each frame that the frame does not use. */
 #define DISPLAY_LIST_RESERVED 64
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 /**
  * Start the display list of a frame in a resolution, with the render modes every frame starts
  * with. A change of resolution takes effect at the next FlushDisplayList().
@@ -971,10 +899,6 @@ void BeginDisplayList(ViewportRect *views, s32 highRes);
 void BeginDisplayList(s32 highRes);
 #endif
 
-#ifdef __cplusplus
-}
-#endif
-
 /**
  * Do nothing. The arguments are variable, as of a print compiled out.
  *
@@ -988,7 +912,7 @@ void BeginDisplayList(s32 highRes);
 #ifdef __cplusplus
 extern "C"
 #endif
-void StubEmptyVoid(s32 unused0, ...);
+    void StubEmptyVoid(s32 unused0, ...);
 
 /**
  * The tasks of the RSP, one for each frame buffer.
@@ -1207,5 +1131,9 @@ extern OSViMode g_ViModePalLan1;
  * @ghidraAddress BRD3D: 0x106c6604
  */
 extern s32 g_dwViGammaEnabled;
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* COASTLINE_SYSTEM_H */

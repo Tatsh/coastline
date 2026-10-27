@@ -13,6 +13,10 @@
 
 #include <PR/ultratypes.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /**
  * Read a texel of the decal being edited.
  *
@@ -292,5 +296,9 @@ void SwapBytes(u8 *a, u8 *b);
  */
 void EmitScaledTextureRect(
     s32 textureWidth, s32 textureHeight, s32 x, s32 y, s32 width, s32 height);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* COASTLINE_DECALDRAW_H */

@@ -17,6 +17,10 @@
 #include "vehicle.h"
 #include "vehicleview.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /** The flag of an item whose up and down change it in place, as the results 3 and 4. */
 #define MENU_ITEM_ADJUSTABLE 0x01
 
@@ -574,5 +578,9 @@ void LoadMenuItemModels(MenuItem **items, s32 *itemCount);
  * @ghidraAddress JPN: 0x8020bde8
  */
 void ResetAndInitDisplay(MenuItem **items, s32 *itemCount);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* COASTLINE_RACEMENU_H */

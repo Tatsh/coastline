@@ -8,6 +8,10 @@
 
 #include <PR/ultratypes.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /** A compressed texture of the cartridge and the memory it is loaded into. */
 typedef struct {
     u32 romStart; /*!< The cartridge offset of the compressed texture. */
@@ -91,9 +95,6 @@ void DrawTexturedRect(Texture *texture,
                       s32 envAlpha,
                       s32 blendMode);
 
-#ifdef __cplusplus
-extern "C" {
-#endif
 /**
  * Get the texture coordinate scale of a texture side, and the bits of the mask that wraps it. A
  * side of more than 1024 texels is reported on the debug display and leaves the mask unset.
@@ -107,9 +108,6 @@ extern "C" {
  * @ghidraAddress BRD3D: 0x10031347
  */
 void GetTextureScaleAndMask(u32 size, s32 *scale, s32 *maskBits);
-#ifdef __cplusplus
-}
-#endif
 
 /**
  * Draw a texture stretched over a rectangle and upside down, shaded from black to red by its
@@ -157,5 +155,9 @@ void DrawColoredTexturedRect(u8 *texture,
                              s32 red,
                              s32 green,
                              s32 blue);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* COASTLINE_TEXRECT_H */

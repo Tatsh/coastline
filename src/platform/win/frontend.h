@@ -1751,6 +1751,10 @@ public:
     static int OnBack(MenuActionWidget *pItem);
 };
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /**
  * @ghidraAddress BRD3D: 0x10041a00
  * @ghidraAddress BRGlide: 0x1003af60
@@ -2185,6 +2189,9 @@ int RaceResultsPanel_PreUpdateSelectLastRace(void);
  * @ghidraAddress BRGlide: 0x10039f60
  */
 int RaceResultsPanel_PostUpdateRestoreSeasonProgress(void);
+#ifdef __cplusplus
+}
+#endif
 
 /**
  * @ghidraAddress BRD3D: 0x100ac570
@@ -2543,6 +2550,10 @@ private:
     [[maybe_unused]] char abUnknownBE[2]; /* +0xbe */
     SaveFileList *apFiles[2];             /*!< The two lists of saved files of the screen. */
 };
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /**
  * Set up the front end. The paths of the 145 menu images are allocated and filled, the resources
@@ -3050,6 +3061,9 @@ extern RECT g_aMenuAltGlyphRects[MENU_ALT_GLYPH_RECT_COUNT];
  * @ghidraAddress BRGlide: 0x10058540
  */
 void InitMenuSpriteRects(void);
+#ifdef __cplusplus
+}
+#endif
 
 /** A sprite of the menus, a part of a menu image. */
 struct MenuSprite {
@@ -3083,6 +3097,10 @@ extern int g_dwMenuSurfaceInitCount;
  */
 extern IDirectDraw2 *g_pMenuDirectDraw;
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /**
  * Load every menu image into a surface with a green colour key, showing the loading image while
  * the images load again.
@@ -3091,6 +3109,10 @@ extern IDirectDraw2 *g_pMenuDirectDraw;
  * @ghidraAddress BRD3D: 0x1005f690
  */
 bool InitMenuDirectDrawSurfaces(void);
+#ifdef __cplusplus
+}
+#endif
+
 #endif /* TGR_RENDERER == TGR_RENDERER_D3D */
 
 #if TGR_RENDERER == TGR_RENDERER_GLIDE
@@ -3100,6 +3122,10 @@ bool InitMenuDirectDrawSurfaces(void);
  * @ghidraAddress BRGlide: 0x100583c0
  */
 void InitMenuSurfaces(void);
+#endif
+
+#ifdef __cplusplus
+extern "C" {
 #endif
 
 /**
@@ -3112,18 +3138,33 @@ void InitMenuSurfaces(void);
  * @ghidraAddress BRGlide: 0x100379b0
  */
 void RestoreMenuSelections(void);
+#ifdef __cplusplus
+}
+#endif
 
 #if TGR_RENDERER == TGR_RENDERER_D3D
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /**
  * Choose the DirectDraw driver and the display mode of g_GlobalRallyConfig.
  *
  * @ghidraAddress BRD3D: 0x1003e2c0
  */
 void SelectConfiguredDisplayMode(void);
+#ifdef __cplusplus
+}
+#endif
+
 #endif
 
 /** The number of entries of g_adwInputDeviceMenuIndexToDevice. */
 #define INPUT_DEVICE_MENU_CHOICES 4
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /**
  * Show the screen of the results of a race.
@@ -3830,3 +3871,6 @@ int ShowLoadSeasonMenu(void);
  * @ghidraAddress BRD3D: 0x10045bc0
  */
 int ShowSaveSeasonScreen(void);
+#ifdef __cplusplus
+}
+#endif

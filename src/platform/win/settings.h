@@ -8,6 +8,10 @@
 #include "game.h"
 #include "trackselect.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /**
  * @ghidraAddress BRD3D: 0x100b8c90
  */
@@ -231,3 +235,7 @@ extern int g_dwConfigFramebufferWidth;
  * @ghidraAddress BRGlide: 0x100a7518
  */
 extern int g_dwConfigFramebufferHeight;
+
+#ifdef __cplusplus
+}
+#endif

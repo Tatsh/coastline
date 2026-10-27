@@ -3,6 +3,10 @@
 
 #include "types.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #define SAMPLE_RATE 11000.0f
 #define STEP_ONE 4294967296.0
 
@@ -39,5 +43,9 @@ static inline u32 PackVolume(s32 volume, f32 upper, f32 lower) {
     return (u32)(UpperVolume(volume, upper) + lower * (f32)volume);
 #endif
 }
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* COASTLINE_SOUND_MIX_H */

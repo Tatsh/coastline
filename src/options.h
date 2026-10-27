@@ -12,6 +12,10 @@
 #include "racemenu.h"
 #include "volumecontrols.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /** The levels of each volume, from 0 for silence. */
 #define VOLUME_LEVELS 11
 
@@ -407,8 +411,6 @@ extern u8 g_bPakDataStep;
  */
 extern u8 g_bPakDataWaitFrames;
 
-
-
 /**
  * Apply the music and effect volumes of the options.
  *
@@ -417,8 +419,6 @@ extern u8 g_bPakDataWaitFrames;
  * @ghidraAddress JPN: 0x80211694
  */
 void ApplyVolumeSettings(void);
-
-
 
 /**
  * Draw the hint of the volume items, and run the screen that loads or saves the configuration
@@ -522,5 +522,9 @@ s32 IsRumblePakMissing(void);
  * @ghidraAddress JPN: 0x80215964
  */
 s32 ProcessPakDataScreen(s32 dataType, u8 quiet);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* COASTLINE_OPTIONS_H */

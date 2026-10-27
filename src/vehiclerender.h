@@ -14,6 +14,10 @@
 #include "vehicledeform.h"
 #include "vehicleview.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /**
  * The model of the vehicle being drawn.
  *
@@ -254,10 +258,6 @@ extern Gfx g_aTrackShadowDisplayList[];
  */
 void TransformWheelPositions(s32 index);
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 /**
  * Draw the four wheels of a vehicle, faded like a ghost when it is one, and with the wheel for the
  * snow in the snow.
@@ -270,14 +270,6 @@ extern "C" {
  */
 void RenderWheelModels(Vehicle *vehicle);
 
-#ifdef __cplusplus
-}
-#endif
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 /**
  * Decide whether a vehicle is drawn in the view being drawn, and set the fog at it.
  *
@@ -288,14 +280,6 @@ extern "C" {
  * @ghidraAddress BRD3D: 0x1000ca90
  */
 void CheckVehicleVisibility(Vehicle *vehicle);
-
-#ifdef __cplusplus
-}
-#endif
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 /**
  * Draw a vehicle: its level of detail, lights, lit parts, underside, near details, specular
@@ -310,14 +294,6 @@ extern "C" {
  */
 void RenderVehicleModel(Vehicle *vehicle, s32 lodOffset);
 
-#ifdef __cplusplus
-}
-#endif
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 /**
  * Draw the beams of the headlights of a vehicle at night or in the rain, and glare the view when
  * they shine at the camera.
@@ -329,10 +305,6 @@ extern "C" {
  * @ghidraAddress BRD3D: 0x1000e950
  */
 void RenderVehicleHeadlightBeams(Vehicle *vehicle);
-
-#ifdef __cplusplus
-}
-#endif
 
 /**
  * Draw the needle of the speedometer, building its fan on the first frame.
@@ -363,5 +335,9 @@ void EmitTachometerDisplayList(Vehicle *vehicle);
  * @ghidraAddress JPN: 0x802349f0
  */
 void RenderTrackShadow(Vehicle *vehicle);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* COASTLINE_VEHICLERENDER_H */

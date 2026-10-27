@@ -14,6 +14,10 @@
 #include "vecmath.h"
 #include "vehicle.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /**
  * Whether shadows include triangles outside their texture and extend beyond their vehicle's
  * screen rectangle.
@@ -283,9 +287,6 @@ extern Vec3f g_vTrackLightDirection;
  */
 extern Vec3f g_vShadowForward;
 
-#ifdef __cplusplus
-extern "C" {
-#endif
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
 /**
  * Project a point and its radius to screen bounds outside the near-camera interval.
@@ -313,13 +314,6 @@ void ProjectWorldToScreenRect(
  */
 void ProjectWorldToScreenRect(const Vec3f *point, s32 size, s16 low[2], s16 high[2]);
 #endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
-#ifdef __cplusplus
-}
-#endif
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
 /**
@@ -350,14 +344,6 @@ void RenderTrackInstance(
 void RenderTrackInstance(s32 index, s32 vehicles, s32 deferred);
 #endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 
-#ifdef __cplusplus
-}
-#endif
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 /**
  * Order two cells in view by their distance from the camera.
  *
@@ -371,13 +357,6 @@ extern "C" {
  */
 s32 CompareVisibleCellDistance(const void *a, const void *b);
 
-#ifdef __cplusplus
-}
-#endif
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
 /**
  * Build visible instances, shadow receivers, lighting, and projected vehicle shadow bounds.
@@ -401,9 +380,6 @@ void BuildVisibleInstanceList(const ViewportRect *viewports,
  */
 void BuildVisibleInstanceList(void);
 #endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
-#ifdef __cplusplus
-}
-#endif
 
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
 /**
@@ -431,5 +407,9 @@ void RenderTrackGeometry(const ViewportRect *viewports,
  */
 void RenderTrackGeometry(s32 deferred);
 #endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* COASTLINE_TRACKRENDER_H */

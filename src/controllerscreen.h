@@ -11,6 +11,10 @@
 #include "racemenu.h"
 #include "texrect.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /**
  * The pictures of the five button layouts.
  *
@@ -84,5 +88,9 @@ void DrawControllerLayoutDiagram(s32 layout);
  * @ghidraAddress JPN: 0x80217a38
  */
 void ProcessControllerConfigScreen(void);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* COASTLINE_CONTROLLERSCREEN_H */

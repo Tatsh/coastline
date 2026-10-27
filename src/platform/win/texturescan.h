@@ -8,6 +8,10 @@
 #include "platform/win/displaylist.h"
 #include "platform/win/texturetile.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /** The states of the scan of a load of a texture, by the command that sets each. */
 enum TexScanLoadState {
     TEX_SCAN_IDLE = 0,         /*!< No load is being scanned. */
@@ -366,3 +370,7 @@ void PreprocessDisplayListTextures(GbiCommand *pCommand);
  * @ghidraAddress BRD3D: 0x118aa0c4
  */
 extern void (*g_pfnPreprocessDisplayListTextures)(GbiCommand *pCommand);
+
+#ifdef __cplusplus
+}
+#endif

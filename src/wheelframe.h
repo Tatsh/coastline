@@ -3,6 +3,10 @@
 
 #include "vecmath.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /** The axes and the position of a wheel, the rows of its matrix. */
 typedef struct {
     Vec3f forward;  /*!< The forward axis of the wheel. */
@@ -14,5 +18,9 @@ typedef struct {
     Vec3f position; /*!< The position of the wheel. */
     f32 positionW;  /*!< 1, the last column of the matrix. */
 } WheelFrame;
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* COASTLINE_WHEEL_FRAME_H */

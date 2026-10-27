@@ -8,6 +8,10 @@
 
 #include <PR/ultratypes.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
 struct GbiCommand;
 #endif
@@ -123,5 +127,9 @@ s32 __osSpRawStartDma(s32 direction, u32 devAddr, void *dramAddr, u32 size);
  * @ghidraAddress JPN: 0x8026d3b0
  */
 u32 __osSpDeviceBusy(void);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* PR_SPTASK_H */

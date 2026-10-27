@@ -1,5 +1,9 @@
 #pragma once
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /**
  * @file
  * The sound effects of the vehicles of a race of the PC port.
@@ -23,3 +27,7 @@ void MuteVehicleSoundVoices(void);
  * @ghidraAddress BRGlide: 0x100612d0
  */
 void ReinitPlayerEngineSoundChannel(int nPlayer, int nIndex);
+
+#ifdef __cplusplus
+}
+#endif

@@ -594,6 +594,10 @@ public:
     void ReleaseD3DTextureInterfaces();
 };
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /**
  * Find the DirectDraw object of a device through its render target. The reference the lookup
  * takes is released before the object is returned.
@@ -603,6 +607,9 @@ public:
  * @ghidraAddress BRD3D: 0x10009e30
  */
 IDirectDraw *GetDirectDrawFromD3DDevice(IDirect3DDevice2 *pDevice);
+#ifdef __cplusplus
+}
+#endif
 
 /** The DirectDraw and Direct3D objects of a window. */
 class DirectDrawRenderer {
@@ -1061,6 +1068,10 @@ extern RenderHost *g_pRenderHost;
  * @ghidraAddress BRD3D: 0x10277478
  */
 extern IDirect3D2 *g_pDirect3D2;
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /**
  * The first DirectDraw driver the game found with a GUID, or the default.
@@ -1601,6 +1612,9 @@ DirectDrawDriver *FindDisplayDeviceByGuid(GUID *pGuid);
  * @ghidraAddress BRD3D: 0x1007ac20
  */
 bool ApplySelectedDisplayMode(int nWidth, int nHeight, int nBitDepth, int nExtra);
+#ifdef __cplusplus
+}
+#endif
 
 /**
  * The DirectDraw driver chosen in the configuration.

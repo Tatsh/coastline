@@ -7,6 +7,10 @@
 #include "platform/win/combine.h"
 #endif
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /** Set the combiner of the track: the two levels of a texture mixed and then shaded. */
 static inline void SetTrackCombiner(DisplayListCommand *pkt) {
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
@@ -47,5 +51,9 @@ static inline void SetTrackCombiner(DisplayListCommand *pkt) {
                       COMBINED);
 #endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 }
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* COASTLINE_TRACKDISPLAYLIST_H */

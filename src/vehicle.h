@@ -34,6 +34,10 @@
 #include "vehiclemodel.h"
 #include "wheelframe.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /** The number of vehicles a race can hold. */
 #define MAX_VEHICLES 4
 
@@ -764,6 +768,10 @@ void ManageAiRacerSlots(Vehicle *player);
  * @ghidraAddress JPN: 0x8022d6c4
  */
 void UpdateRacerSlotMotion(RacerSlot *slot);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 

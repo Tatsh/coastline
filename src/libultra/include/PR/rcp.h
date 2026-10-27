@@ -1,6 +1,10 @@
 #ifndef PR_RCP_H
 #define PR_RCP_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /**
  * @file
  * Registers of the RCP, the RDRAM interface, and the peripheral interfaces.
@@ -207,5 +211,9 @@
 /* PIF RAM, where the controller commands go. */
 #define PIF_RAM_START 0x1FC007C0 /*!< The first byte of PIF RAM. */
 #define PIF_RAM_END 0x1FC007FF   /*!< The last byte of PIF RAM. */
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* PR_RCP_H */

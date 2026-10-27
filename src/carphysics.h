@@ -3,6 +3,10 @@
 
 #include "vecmath.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /** The gears of a gearbox, neutral first. */
 #define CAR_GEAR_RATIOS 7
 
@@ -19,5 +23,9 @@ typedef struct {
     f32 boxCenterZ;     /*!< The height of the middle of the box. */
     s32 tableIndex;     /*!< The class of the car among the arcade times of each track. */
 } CarPhysicsSpec;
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* COASTLINE_CARPHYSICS_H */

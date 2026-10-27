@@ -96,6 +96,10 @@ extern int g_dwGbiDisplayListStackDepth;
  */
 extern GbiCommand *g_apGbiDisplayListReturnStack[GBI_DISPLAY_LIST_STACK_SIZE];
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /**
  * Choose the routine that submits vertices for a combine mode, and the colour of the combine modes
  * that draw in one colour. One combine mode takes the handler of lit vertices that modulates by the
@@ -473,6 +477,9 @@ extern float g_fViewportTranslateY;
  * @ghidraAddress BRGlide: 0x10023920
  */
 GbiCommand *HandleGbiSetViewport(GbiCommand *pCommand);
+#ifdef __cplusplus
+}
+#endif
 
 /** A light of the display lists, in the shared console format. */
 using GbiLight = Light;
@@ -481,6 +488,10 @@ using GbiLight = Light;
 #define GBI_LIGHT_COUNT 8
 
 #if TGR_RENDERER == TGR_RENDERER_D3D
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /**
  * @ghidraAddress BRD3D: 0x1002c190
  */
@@ -490,6 +501,10 @@ void HalveGbiTriangleVertexIndices(GbiCommand *pCommand);
  * @ghidraAddress BRD3D: 0x1002c1b0
  */
 void HalveGbiTrianglePairVertexIndices(GbiCommand *pCommand);
+#ifdef __cplusplus
+}
+#endif
+
 #else
 /**
  * Halve each channel of the second copy of the colour of a light.
@@ -531,6 +546,10 @@ extern GbiLight g_aGbiLights[GBI_LIGHT_COUNT];
  * @ghidraAddress BRGlide: 0x105d17d0
  */
 extern int g_bGbiLightsTransformed;
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /**
  * Set the number of lights or the colour of a light. Every other word is skipped.
@@ -672,6 +691,9 @@ extern void (*g_pfnUploadTextureEntryToSurface)(int nEntry, TextureUploadData pa
  * @ghidraAddress BRGlide: 0x1001e300
  */
 GbiCommand *HandleGbiLoadPreparedTexture(GbiCommand *pCommand);
+#ifdef __cplusplus
+}
+#endif
 
 #if TGR_RENDERER == TGR_RENDERER_D3D
 /** The vertex a command of the display lists loaded. The layout is not recovered in full. */
@@ -720,6 +742,10 @@ extern float g_fGbiAmbientColorR;
 extern float g_fGbiAmbientColorG;
 /** @ghidraAddress BRD3D: 0x104c15f0 */
 extern float g_fGbiAmbientColorB;
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /**
  * Light a vertex normal with the first directional light and the ambient colour.
@@ -1100,7 +1126,15 @@ extern int g_nBoundTextureEntry;
  * @ghidraAddress BRD3D: 0x10028ca0
  */
 void BindTextureEntry(int nEntry);
+#ifdef __cplusplus
+}
+#endif
+
 #endif /* TGR_RENDERER == TGR_RENDERER_D3D */
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /**
  * Draw the triangles waiting, and bind a texture the game loaded in place of the commands that load
@@ -1514,3 +1548,6 @@ extern std::array<GbiHandler, GBI_HANDLER_COUNT> g_apfnGbiHandlers;
  * @ghidraAddress BRGlide: 0x10023c90
  */
 void ExecuteGbiDisplayList(GbiCommand *pCommand);
+#ifdef __cplusplus
+}
+#endif

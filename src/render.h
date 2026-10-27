@@ -17,6 +17,10 @@
 #include "platform/win/gbicommand.h"
 #endif
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /**
  * A frame of reference: three axes and a position, the rows of a 4 by 4 matrix whose last column
  * FinishFrameMatrix() sets, and a field of view. The world is z up. A vehicle and each of its
@@ -703,9 +707,6 @@ extern s32 g_dwClipRatioIndex;
  */
 extern s32 g_bGbiClipping;
 
-#ifdef __cplusplus
-extern "C" {
-#endif
 /**
  * Clear the counts of the vertices, triangles, and polygons drawn in a frame.
  *
@@ -715,9 +716,6 @@ extern "C" {
  * @ghidraAddress BRD3D: 0x10031227
  */
 void ClearRenderStats(void);
-#ifdef __cplusplus
-}
-#endif
 
 /**
  * Blank the screen and clear both frame buffers in the low resolution.
@@ -729,9 +727,6 @@ void ClearRenderStats(void);
  */
 void ClearFramebuffersLowRes(void);
 
-#ifdef __cplusplus
-extern "C" {
-#endif
 /**
  * Scale a whole matrix down by the largest magnitude of its first three rows, plus 0.375, so that
  * it fits the fixed point of the matrix the lighting is forced to.
@@ -743,13 +738,6 @@ extern "C" {
  * @ghidraAddress BRD3D: 0x10031342
  */
 void NormalizeLightMatrix(f32 m[4][4]);
-#ifdef __cplusplus
-}
-#endif
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 /**
  * Load a texture of a model into the texture memory and set up the tiles to draw it.
@@ -763,13 +751,6 @@ extern "C" {
  */
 void DrawTexturedTile(s32 index, ModelTexture *textures);
 
-#ifdef __cplusplus
-}
-#endif
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 /**
  * How thick the fog is at a point of the world, in the view being drawn.
  *
@@ -781,13 +762,7 @@ extern "C" {
  * @ghidraAddress BRD3D: 0x10031d3f
  */
 f32 ComputeFogFactorAtPoint(Vec3f *point);
-#ifdef __cplusplus
-}
-#endif
 
-#ifdef __cplusplus
-extern "C" {
-#endif
 /**
  * The largest absolute value of the first three rows of a matrix.
  *
@@ -799,13 +774,7 @@ extern "C" {
  * @ghidraAddress BRD3D: 0x100312a7
  */
 f32 GetMaxAbsValue12(f32 m[4][4]);
-#ifdef __cplusplus
-}
-#endif
 
-#ifdef __cplusplus
-extern "C" {
-#endif
 /**
  * Set the direction and the colours of the lights, and the light ramps, for the weather.
  *
@@ -815,13 +784,7 @@ extern "C" {
  * @ghidraAddress BRD3D: 0x10031dcf
  */
 void SetupWeatherLights(void);
-#ifdef __cplusplus
-}
-#endif
 
-#ifdef __cplusplus
-extern "C" {
-#endif
 /**
  * Set the colour and the range of the fog for the weather and the track, and add them to the
  * display list.
@@ -832,9 +795,6 @@ extern "C" {
  * @ghidraAddress BRD3D: 0x10031866
  */
 void SetupFog(void);
-#ifdef __cplusplus
-}
-#endif
 
 /**
  * Do nothing.
@@ -888,10 +848,6 @@ void UnblankDisplay(void);
  * @ghidraAddress BRD3D: 0x1003348e
  */
 void ClearFramebuffersHighRes(void);
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 /**
  * Select current animated track textures and their snow variants. N64 copies texels and palettes

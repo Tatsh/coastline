@@ -12,6 +12,10 @@
 #include "model.h"
 #include "texrect.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /**
  * Whether the splash screens have loaded their models and sounds.
  *
@@ -270,5 +274,9 @@ void ProcessSplashScreens(void);
  * @ghidraAddress JPN: 0x80207f30
  */
 void ProcessControllerCheck(void);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* COASTLINE_SPLASH_H */

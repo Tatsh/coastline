@@ -15,6 +15,10 @@
 #include "render.h"
 #include "vecmath.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /** The phases of a race, which g_aRacePhaseTable times. */
 enum {
     RACE_PHASE_HOLD,      /*!< The start lights stay in their first pose. */
@@ -599,10 +603,6 @@ void AnimateStartLights(void);
  */
 void UpdateRaceAnimations(void);
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 /**
  * Draw the start lights over the start of the track.
  *
@@ -612,10 +612,6 @@ extern "C" {
  * @ghidraAddress BRD3D: 0x100147b0
  */
 void RenderStartLights(void);
-
-#ifdef __cplusplus
-}
-#endif
 
 /**
  * Place the lines of the scrolling credits below the screen.
@@ -723,5 +719,9 @@ extern "C"
  * @ghidraAddress BRD3D: 0x1002f4c0
  */
 void ProcessSeasonResults(void);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* COASTLINE_RACE_H */

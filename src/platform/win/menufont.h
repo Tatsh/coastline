@@ -5,6 +5,10 @@
 
 #include <windows.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 static inline int ConvertMenuCoordinate(float value) {
     if (!(static_cast<long double>(value) >= -0x1p63L &&
           static_cast<long double>(value) < 0x1p63L)) {
@@ -12,6 +16,9 @@ static inline int ConvertMenuCoordinate(float value) {
     }
     return static_cast<int>(static_cast<long long>(value));
 }
+#ifdef __cplusplus
+}
+#endif
 
 class MenuFont;
 

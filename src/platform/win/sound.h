@@ -10,6 +10,10 @@
 #include <dsound.h>
 #include <mmsystem.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /**
  * The message the music library sends the main window, in music mode 2.
  *
@@ -1119,3 +1123,7 @@ bool ReleaseMusicDeviceReference(void);
  * @ghidraAddress BRGlide: 0x10017f10
  */
 bool ShutdownEarSound(void);
+
+#ifdef __cplusplus
+}
+#endif

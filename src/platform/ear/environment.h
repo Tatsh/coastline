@@ -3,11 +3,18 @@
 
 #include <cstdint>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /**
  * @ghidraAddress EAR: 0x100046bd
  * @stub
  */
 void RegisterDefaultEnvironment(void);
+#ifdef __cplusplus
+}
+#endif
 
 /** The physical meanings of the reserved registration properties remain unidentified. */
 class [[gnu::packed]] EarEnvironment {

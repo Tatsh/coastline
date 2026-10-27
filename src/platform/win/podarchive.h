@@ -96,6 +96,10 @@ public:
     void FileWriteChecked(FILE *pFile, const void *pBuffer, unsigned dwSize);
 };
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /**
  * Format a message of an error that is not shown, and end the game.
  *
@@ -104,6 +108,9 @@ public:
  * @ghidraAddress BRGlide: 0x10008ec0
  */
 void FatalErrorWithMessage(const char *pszFormat, ...);
+#ifdef __cplusplus
+}
+#endif
 
 /** A pod file the game reads, and the writer of one. */
 class PodArchive {

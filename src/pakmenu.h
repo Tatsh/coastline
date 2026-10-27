@@ -12,6 +12,10 @@
 
 #include "sprite.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /** The notes a Controller Pak holds. */
 #define PAK_NOTES 16
 
@@ -25,7 +29,7 @@
 #else
 #define GAME_CODE 0x4E54524A /*!< The game code of the notes, "NTRJ" in ASCII. */
 #define COMPANY_CODE 0x3238  /*!< The company code of the notes, "28" in ASCII. */
-#endif /* TGR_REGION == TGR_REGION_US */
+#endif                       /* TGR_REGION == TGR_REGION_US */
 
 /** The states of the Controller Pak menu. */
 enum {
@@ -249,5 +253,9 @@ void ProcessPakMenuScreen(void);
  * @ghidraAddress JPN: 0x802554c0
  */
 s32 InitPakAndEnumerateFiles(void);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* COASTLINE_PAKMENU_H */

@@ -14,6 +14,10 @@
 #include "vecmath.h"
 #include "vehicle.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /**
  * Whether the last call of ResolveVehicleTrackCollision() moved the camera.
  *
@@ -184,9 +188,6 @@ void InitCameraForVehicle(Vehicle *vehicle);
 }
 #endif
 
-#ifdef __cplusplus
-extern "C" {
-#endif
 /**
  * Build the view and the perspective of a camera for a rectangle of the screen, and set the far
  * distance.
@@ -202,9 +203,6 @@ extern "C" {
  * @ghidraAddress BRD3D: 0x10033e83
  */
 void SetupCameraMatrix(CameraFrame *camera, f32 fov, f32 farDistance, f32 width, f32 height);
-#ifdef __cplusplus
-}
-#endif
 
 /**
  * The size of the rear-view mirror over the bumper view: 0 for none, 1 small, 2 middling and 3
@@ -276,9 +274,6 @@ extern Vec3f g_vFrustumHalfRight;
  */
 extern Vec3f g_vFrustumHalfUp;
 
-#ifdef __cplusplus
-extern "C" {
-#endif
 /**
  * Set up the corners of the far rectangle of the view of a camera, which the shadows clip to.
  *
@@ -293,6 +288,7 @@ extern "C" {
  * @ghidraAddress BRD3D: 0x10033cb1
  */
 void SetupFrustumCorners(CameraFrame *camera, f32 fov, f32 farDistance, f32 width, f32 height);
+
 #ifdef __cplusplus
 }
 #endif

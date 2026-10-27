@@ -20,6 +20,10 @@
 #include "vecmath.h"
 #include "vehicleview.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /**
  * Display the current debug message on the fatal error screen.
  *
@@ -1455,3 +1459,7 @@ extern int g_dwCurrentMaxTextureWidth;
  * @ghidraAddress BRD3D: 0x100a7df8
  */
 extern int g_dwCurrentMaxTextureHeight;
+
+#ifdef __cplusplus
+}
+#endif

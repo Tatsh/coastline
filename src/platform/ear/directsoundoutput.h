@@ -25,9 +25,16 @@ private:
 /** @ghidraAddress EAR: 0x1003b99c */
 extern EarDirectSoundOutput *g_pEarDirectSoundOutput;
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /** @ghidraAddress EAR: 0x10010146 */
 void ShutdownDirectSoundOutput(void);
 /** @ghidraAddress EAR: 0x1001018d */
 int InitializeDirectSoundOutput(void);
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* COASTLINE_EAR_DIRECTSOUNDOUTPUT_H */

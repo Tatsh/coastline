@@ -10,6 +10,10 @@
 // The headers below need the types of windows.h.
 #include <ddraw.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /** The most pixels an image file of RGBA 5551 has, 256 by 256. */
 #define RGBA5551_IMAGE_PIXEL_COUNT 0x10000
 
@@ -143,3 +147,7 @@ int ConvertRGBAToPixelFormatWithColorKey(
  */
 void *
 LoadRgba5551ImageFile(const char *pszPath, unsigned nAdlerExpected, int *pnWidth, int *pnHeight);
+
+#ifdef __cplusplus
+}
+#endif

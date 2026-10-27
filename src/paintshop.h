@@ -14,6 +14,10 @@
 #include "vecmath.h"
 #include "vehicle.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /** The result of the dialog of the controller pak when the player cancels it. */
 #define PAK_DIALOG_CANCELLED 999
 
@@ -504,5 +508,9 @@ void AllocateEditorBuffers(void);
  * @ghidraAddress JPN: 0x8024a094
  */
 s32 ProcessDecalSaveLoad(VehicleModel *model, u8 player, u8 operation, u8 inCarSelect, u8 *done);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* COASTLINE_PAINTSHOP_H */

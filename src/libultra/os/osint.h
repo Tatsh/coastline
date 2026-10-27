@@ -9,6 +9,10 @@
 
 #include <ultra64.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 typedef struct {
     OSMesgQueue *messageQueue; /*!< The queue the event sends to, or NULL when none is set. */
     OSMesg message;            /*!< The message sent when the event occurs. */
@@ -268,5 +272,9 @@ void __osDispatchThread(void);
  * @ghidraAddress JPN: 0x8026cf00
  */
 void __osCleanupThread(void);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* LIBULTRA_OS_OSINT_H */

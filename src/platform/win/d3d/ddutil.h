@@ -10,6 +10,10 @@
 // The headers below need the types of windows.h.
 #include <ddraw.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /**
  * Create an off-screen surface and copy a bitmap into it. The bitmap is a resource of the game,
  * or failing that a file.
@@ -70,3 +74,7 @@ DWORD DDColorMatch(IDirectDrawSurface *pSurface, COLORREF color);
  * @ghidraAddress BRD3D: 0x1000ba40
  */
 HRESULT DDSetColorKey(IDirectDrawSurface *pSurface, COLORREF color);
+
+#ifdef __cplusplus
+}
+#endif

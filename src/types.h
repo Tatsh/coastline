@@ -12,6 +12,10 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #ifndef TRUE
 #define TRUE 1  /*!< The value of a true condition. */
 #define FALSE 0 /*!< The value of a false condition. */
@@ -29,6 +33,11 @@ typedef int64_t s64; /*!< A signed 64-bit integer. */
 
 typedef float f32;  /*!< A 32-bit floating-point number. */
 typedef double f64; /*!< A 64-bit floating-point number. */
+
+#ifdef __cplusplus
+}
+#endif
+
 #endif /* TGR_PLATFORM == TGR_PLATFORM_N64 */
 
 #endif /* COASTLINE_TYPES_H */

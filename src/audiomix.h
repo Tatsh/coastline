@@ -9,6 +9,10 @@
 
 #include <PR/ultratypes.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /** The bytes of the stereo ring buffer the mixers write. */
 #define AUDIO_RING_BYTES 0x4000
 
@@ -134,5 +138,9 @@ void MixAudioStereoSamples(s16 *ring, u32 bytes, u32 pairOffset);
  * @ghidraAddress JPN: 0x802574ec
  */
 void MixSoundEffectChannels(s16 *ring, u32 bytes, u32 offset);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* COASTLINE_AUDIOMIX_H */

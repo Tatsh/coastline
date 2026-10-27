@@ -9,6 +9,10 @@
 
 #include <PR/ultratypes.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /** The style of an 8-bit sprite that draws it in the primitive colour times its texels. */
 #define SPRITE_STYLE_TINTED 99
 
@@ -253,5 +257,9 @@ void DrawRectBorder(s32 x,
                     u8 red,
                     u8 green,
                     u8 blue);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* COASTLINE_SPRITE_H */

@@ -3,6 +3,10 @@
 
 #include "racerslot.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
 #define RACER_SLOT_GET(slot, field) ((slot)->Get##field())
 #define RACER_SLOT_SET(slot, field, value) ((slot)->Set##field(value))
@@ -49,5 +53,9 @@
 #define RACER_SLOT_GET_Straggler(slot) ((slot)->straggler)
 #define RACER_SLOT_SET_Straggler(slot, value) ((slot)->straggler = (value))
 #endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* COASTLINE_RACER_SLOT_ACCESS_H */

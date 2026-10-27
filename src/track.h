@@ -21,6 +21,10 @@
 #include "platform/win/gbicommand.h"
 #endif
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /** A point of the route, across the track. */
 typedef struct {
     Vec3f left;     /*!< The left edge of the track. */
@@ -273,9 +277,6 @@ extern s32 g_nDebugHiddenInstanceIndex;
 /** The most placed models CastRayAgainstTrack() lists. */
 #define RAY_INSTANCES 32
 
-#ifdef __cplusplus
-extern "C" {
-#endif
 /**
  * Drop a vertical line through a point onto the track. The ground is the nearest triangle facing
  * up at most 1.5 above the point, and failing one, the nearest within a unit above that.
@@ -305,9 +306,6 @@ s32 CastRayAgainstTrack(Vec3f *outPoint,
                         s32 *nearbyCount,
                         f32 *groundDistance,
                         s32 *groundSurface);
-#ifdef __cplusplus
-}
-#endif
 
 #if TGR_PLATFORM == TGR_PLATFORM_WIN && defined(__cplusplus)
 extern "C" {
@@ -514,5 +512,9 @@ u16 GetTrackGridCellCount(TrackGridCursor *cursor);
  * @ghidraAddress JPN: 0x8021f578
  */
 u16 GetInstanceGridCellCount(TrackGridCursor *cursor);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* COASTLINE_TRACK_H */

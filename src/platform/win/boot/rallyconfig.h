@@ -179,6 +179,10 @@ public:
  */
 extern RallyConfig g_GlobalRallyConfig;
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /**
  * Read BossRally.ini and apply the command line on top of it. Each line sets the key it begins
  * with, and each key found anywhere on the command line is set again.
@@ -189,3 +193,6 @@ extern RallyConfig g_GlobalRallyConfig;
  * @stub{BRGlide}
  */
 void LoadBossRallyIniSettings(const char *pszCmdLine);
+#ifdef __cplusplus
+}
+#endif

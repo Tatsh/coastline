@@ -1,5 +1,9 @@
 #pragma once
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /** A tile recorded by texture scans and loaded texture entries. */
 typedef struct TexScanTile {
     int nFormat;    /*!< The format of the texels. */
@@ -22,3 +26,7 @@ typedef struct TexScanTile {
 
 /** The number of tile records in a scan or loaded texture entry. */
 #define TEX_SCAN_TILE_COUNT 8
+
+#ifdef __cplusplus
+}
+#endif

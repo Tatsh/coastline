@@ -3,6 +3,10 @@
 
 #include "vehicle.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
 #define VEHICLE_GET(vehicle, field) ((vehicle)->Get##field())
 #define VEHICLE_SET(vehicle, field, value) ((vehicle)->Set##field(value))
@@ -214,5 +218,9 @@
 #define VEHICLE_GET_WheelFrames(vehicle) ((vehicle)->wheelFrames)
 #define VEHICLE_GET_WheelMatrices(vehicle) ((vehicle)->wheelMatrices)
 #endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* COASTLINE_VEHICLE_ACCESS_H */

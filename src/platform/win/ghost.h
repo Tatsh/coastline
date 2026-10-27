@@ -11,6 +11,10 @@
 #include "vecmath.h"
 #include "vehicle.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /** The size of a frame of the recording of a ghost car. */
 #define GHOST_FRAME_SIZE 24
 
@@ -359,3 +363,7 @@ void ApplyGhostKeyframeToVehicle(Vehicle *pVehicle, int nRecording);
  * @ghidraAddress BRD3D: 0x1006acf0
  */
 void ApplyGhostKeyframeForVehicle(Vehicle *pVehicle);
+
+#ifdef __cplusplus
+}
+#endif

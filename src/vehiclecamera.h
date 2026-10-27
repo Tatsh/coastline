@@ -1,6 +1,10 @@
 #ifndef COASTLINE_VEHICLECAMERA_H
 #define COASTLINE_VEHICLECAMERA_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /** The cameras of a vehicle. */
 enum {
     VEHICLE_CAMERA_COCKPIT,   /*!< The view from the driver's seat. */
@@ -12,5 +16,9 @@ enum {
     VEHICLE_CAMERA_MIRROR,    /*!< The rear-view mirror. */
     VEHICLE_CAMERAS,          /*!< The number of cameras of a vehicle. */
 };
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* COASTLINE_VEHICLECAMERA_H */

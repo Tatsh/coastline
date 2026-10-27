@@ -210,6 +210,10 @@ public:
  */
 extern NetStream g_aNetPlayerStreams[NET_PLAYER_STREAM_COUNT];
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /**
  * Round -128 times a value to the nearest integer, limited to the range of a field of six bits.
  *
@@ -560,6 +564,9 @@ void EncodeKeyframeBitstreamDelta(NetStream *stream, KeyframeState *state, Keyfr
 void DeserializeKeyframeDelta(KeyframeState *pState,
                               const KeyframeState *pBase,
                               NetStream *pStream);
+#ifdef __cplusplus
+}
+#endif
 
 /**
  * @ghidraAddress BRD3D: 0x11828d14

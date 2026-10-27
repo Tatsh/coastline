@@ -10,6 +10,10 @@
 
 #include <PR/ultratypes.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /** The quotient and remainder of ldiv(). */
 typedef struct {
     long quot; /*!< The quotient. */
@@ -131,5 +135,9 @@ ldiv_t ldiv(long num, long denom);
  * @ghidraAddress JPN: 0x802702f0
  */
 lldiv_t lldiv(long long num, long long denom);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* PR_OS_LIBC_H */

@@ -11,6 +11,10 @@
 #include "render.h"
 #endif
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /**
  * Whether the sky is left undrawn.
  *
@@ -20,10 +24,6 @@
  * @ghidraAddress BRD3D: 0x106c6608
  */
 extern s32 g_dwSkyboxDisabled;
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 /**
  * Whether the sky is a fill of the fog colour: at night, in snow or rain, on a track without a
@@ -37,14 +37,7 @@ extern "C" {
  */
 s32 IsSkyFogFilled(void);
 
-#ifdef __cplusplus
-}
-#endif
-
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
-#ifdef __cplusplus
-extern "C" {
-#endif
 /**
  * Draw the current sky or fog fill and set the frame's clipping ratio.
  *
@@ -52,9 +45,6 @@ extern "C" {
  * @ghidraAddress BRD3D: 0x100180b0
  */
 void RenderSkybox(const ViewportRect *viewports);
-#ifdef __cplusplus
-}
-#endif
 #else
 /**
  * Draw the sky of the current view, and set the clipping ratio for the frame.
@@ -65,5 +55,9 @@ void RenderSkybox(const ViewportRect *viewports);
  */
 void RenderSkybox(void);
 #endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* COASTLINE_SKY_H */

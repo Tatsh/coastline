@@ -10,6 +10,10 @@
 
 #include "racemenu.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /**
  * The items of the screen, ending with NULL.
  *
@@ -52,5 +56,9 @@ void TwoControllersPostDrawCallback(s32 item);
  * @ghidraAddress JPN: 0x802114c0
  */
 void ProcessPlayerCountSelect(void);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* COASTLINE_PLAYERSELECT_H */

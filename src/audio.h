@@ -24,6 +24,10 @@
 #include "vehicle.h"
 #include "vehiclesound.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /** The sample rate the audio interface is asked for. */
 #define AUDIO_FREQUENCY 21998
 
@@ -481,5 +485,9 @@ void AudioMixingThreadMain(void *arg);
  * @ghidraAddress JPN: 0x8022c760
  */
 void StubSoundUpdate(CameraFrame *camera);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* COASTLINE_AUDIO_H */

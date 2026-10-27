@@ -9,6 +9,10 @@
 
 #include <ultra64.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /** Start of the BSS segment, from the link script. */
 extern u8 _bss_start[];
 
@@ -43,5 +47,9 @@ void ramMain(void);
  * @ghidraAddress JPN: 0x8021f0b4
  */
 void OsBootEntry(void);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* PLATFORM_N64_BOOT_H */

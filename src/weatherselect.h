@@ -10,6 +10,10 @@
 
 #include "racemenu.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /**
  * The items of the screen, in the order of the weathers, ending with NULL.
  *
@@ -39,5 +43,9 @@ s32 IsWeatherSelectable(s32 weather);
  * @ghidraAddress JPN: 0x80210d18
  */
 void ProcessWeatherSelect(void);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* COASTLINE_WEATHERSELECT_H */

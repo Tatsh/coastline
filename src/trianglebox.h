@@ -3,6 +3,10 @@
 
 #include "physics.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /* Move a triangle into the unit cube of a box, and find its normal there. */
 static inline void TriangleInBox(Vec3f corners[3], Vec3f *normal, f32 box[4][4], TrackTriangle *t) {
     Vec3f e1, e2;
@@ -39,5 +43,9 @@ static inline void TriangleInBox(Vec3f corners[3], Vec3f *normal, f32 box[4][4],
     normal->z = e1.x * e2.y - e2.x * e1.y;
 #endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 }
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* COASTLINE_TRIANGLEBOX_H */

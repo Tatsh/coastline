@@ -1,6 +1,10 @@
 #ifndef COASTLINE_VEHICLEFORCES_H
 #define COASTLINE_VEHICLEFORCES_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /** The forces on the bodies of a vehicle. */
 enum {
     VEHICLE_FORCE_SPRING_0, /*!< The spring of the rear wheel of the first side, first in the list
@@ -23,5 +27,9 @@ enum {
     VEHICLE_FORCE_WHEEL_3, /*!< The drive of wheelBodies[3], before the gravity of its wheel. */
     VEHICLE_FORCES,        /*!< The number of forces of a vehicle. */
 };
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* COASTLINE_VEHICLEFORCES_H */

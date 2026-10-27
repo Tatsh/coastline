@@ -1,6 +1,10 @@
 #ifndef PR_R4300_H
 #define PR_R4300_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /**
  * @file
  * Address segments, coprocessor 0 registers, and status bits of the VR4300.
@@ -98,5 +102,9 @@
 #define TLBPGMASK_1M 0x001FE000   /*!< The mask of a 1 MB page. */
 #define TLBPGMASK_4M 0x007FE000   /*!< The mask of a 4 MB page. */
 #define TLBPGMASK_16M 0x01FFE000  /*!< The mask of a 16 MB page. */
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* PR_R4300_H */

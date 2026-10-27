@@ -11,6 +11,10 @@
 
 #include "sprite.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /** The colors of the palette of a decal. */
 #define DECAL_SWATCHES 16
 
@@ -873,5 +877,9 @@ void ProcessPaintShopExitConfirm(void);
  * @ghidraAddress JPN: 0x80254140
  */
 void ResetBrushAndSlotHistory(void);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* COASTLINE_DECALEDITOR_H */

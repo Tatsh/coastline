@@ -16,6 +16,10 @@
 #include "racemenu.h"
 #include "vehicle.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /** The steps of choosing a car, by the CAR_SELECT_ values. */
 enum {
     CAR_SELECT_CAR,          /*!< The choice of the car. */
@@ -510,5 +514,9 @@ void ProcessCarSelectScreen(void);
  * @ghidraAddress JPN: 0x80210ca0
  */
 void ProcessRaceResultsScreen(void);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* COASTLINE_CARSELECT_H */

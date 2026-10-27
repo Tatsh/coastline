@@ -10,6 +10,10 @@
 
 #include <ultra64.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /* Conversion flags. */
 #define FLAGS_SPACE 0x01 /*!< The space flag: a space before a positive number. */
 #define FLAGS_PLUS 0x02  /*!< The plus flag: a sign before every number. */
@@ -128,5 +132,9 @@ extern char g_szHexDigitsUpper[17];
  * @ghidraAddress JPN: 0x802ac230
  */
 extern const double g_adblPowersOfTen[9];
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* LIBULTRA_LIBC_XSTDIO_H */

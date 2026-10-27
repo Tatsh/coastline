@@ -1,6 +1,10 @@
 #ifndef PR_ULTRATYPES_H
 #define PR_ULTRATYPES_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /**
  * @file
  * Integer and floating-point types of libultra.
@@ -36,6 +40,10 @@ typedef double f64; /*!< A 64-bit floating-point number. */
 #ifndef TRUE
 #define TRUE 1  /*!< The value of a true condition. */
 #define FALSE 0 /*!< The value of a false condition. */
+#endif
+
+#ifdef __cplusplus
+}
 #endif
 
 #endif /* PR_ULTRATYPES_H */

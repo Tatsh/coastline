@@ -8,6 +8,10 @@
 
 #include <ultra64.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #ifndef MIN
 /** The lesser of a and b, each evaluated twice. */
 #define MIN(a, b) ((a) < (b) ? (a) : (b))
@@ -108,5 +112,9 @@ extern const float g_fCosfZero;
  * @ghidraAddress JPN: 0x802ac1b0
  */
 extern const float __libm_qnan_f;
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* LIBULTRA_GU_GUINT_H */

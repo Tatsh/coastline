@@ -8,6 +8,10 @@
 
 #include <PR/ultratypes.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /** A 4 by 4 matrix in s15.16 fixed point, with the integer halves before the fractions. */
 typedef union {
     s32 m[4][4]; /*!< The integer halves of the 16 elements in its first 8 words, then the
@@ -901,5 +905,9 @@ typedef struct {
         gImmp1(pkt, G_RDPHALF_1, _SHIFTL(s, 16, 16) | _SHIFTL(t, 0, 16));                          \
         gImmp1(pkt, G_RDPHALF_2, _SHIFTL(dsdx, 16, 16) | _SHIFTL(dtdy, 0, 16));                    \
     }
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* PR_GBI_H */
