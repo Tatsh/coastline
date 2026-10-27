@@ -732,9 +732,9 @@ BOOL CALLBACK EnumPlayersCallback_AddPlayerToList(
         return false;
     }
     if (!(dwFlags & DPENUMPLAYERS_SPECTATOR)) {
-        MenuItemList *list = &g_pNetworkPlayerListMenu->itemList;
+        MenuItemList *list = &g_pNetworkPlayerListMenu->GetItemList();
         list->AddItem(pName->lpszShortNameA, 0, 1, &g_rcMenuNetworkPlayers, true);
-        list = &g_pNetworkPlayerListMenu->itemList;
+        list = &g_pNetworkPlayerListMenu->GetItemList();
         list->GetFont(list->GetItemCount() - 1).SetItemData(dpidPlayer);
         MarkSessionListEntrySeen(dpidPlayer);
     }
@@ -2329,10 +2329,10 @@ void ProcessNetworkDataStream(
 
 void DestroyNetworkGroups(void) {
     if (g_pJoinCreateGameMenu != nullptr) {
-        unsigned count = g_pJoinCreateGameMenu->itemList.GetItemCount();
+        unsigned count = g_pJoinCreateGameMenu->GetItemList().GetItemCount();
         // The original advances the index even though removal shifts subsequent entries.
         for (unsigned i = 0; i < count; i++) {
-            MenuItemList &list = g_pJoinCreateGameMenu->itemList;
+            MenuItemList &list = g_pJoinCreateGameMenu->GetItemList();
             list.RemoveItem(i);
         }
     }
@@ -2348,8 +2348,8 @@ void DisconnectNetworkSession(void) {
     if (g_dwServiceProviderIndex != SERVICE_PROVIDER_MODEM &&
         g_dwServiceProviderIndex != SERVICE_PROVIDER_SERIAL &&
         g_pNetworkSessionJoinMenu != nullptr) {
-        g_pNetworkSessionJoinMenu->fonts[0].SetStyle(false);
-        g_pNetworkSessionJoinMenu->dwFlags &= ~0x10;
+        g_pNetworkSessionJoinMenu->GetFont(0).SetStyle(false);
+        g_pNetworkSessionJoinMenu->SetFlags(g_pNetworkSessionJoinMenu->GetFlags() & ~0x10);
     }
     g_dwDirectPlaySessionActive = false;
     g_dwLobbyIsHost = false;
@@ -2361,7 +2361,7 @@ LRESULT WINAPI HandleNetworkWindowMessage(HWND, UINT nMessage, WPARAM, LPARAM lP
     if (nMessage == 0x501) {
         char *text = reinterpret_cast<char *>(lParam);
         if (g_pNetworkCarSetupMenu != nullptr) {
-            MenuItemList &list = g_pNetworkCarSetupMenu->itemList;
+            MenuItemList &list = g_pNetworkCarSetupMenu->GetItemList();
             list.AddItem(text, 0, 1, &g_rcNetCarSetupPlayerList, true);
         }
         GlobalUnlock(GlobalHandle(text));

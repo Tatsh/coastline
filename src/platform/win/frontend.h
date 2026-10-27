@@ -279,11 +279,15 @@ public:
      * @ghidraAddress BRGlide: 0x100414f0
      */
     virtual int UpdateBlinkTimer();
+
+private:
     /**
      * @ghidraAddress BRD3D: 0x10048010
      * @ghidraAddress BRGlide: 0x10041460
      */
     virtual int Draw();
+
+public:
     /**
      * Run a frame of the item.
      *
@@ -293,6 +297,7 @@ public:
      */
     virtual bool Update();
 
+private:
     /**
      * @ghidraAddress BRD3D: 0x10047a10
      */
@@ -329,6 +334,8 @@ public:
      * @ghidraAddress BRD3D: 0x10047d30
      */
     virtual int UpdateSlideAnimation();
+
+public:
     /**
      * @ghidraAddress BRD3D: 0x10047eb0
      */
@@ -345,11 +352,110 @@ public:
                             unsigned dwTertiary,
                             int nMode,
                             short nImage);
+
+private:
     /**
      * @ghidraAddress BRD3D: 0x10048060
      */
     virtual bool IsBlockedByModalDialog();
 
+    MenuWidget *LinkedMenuWidget(int index);
+    bool UpdateMenuSlideAxis(int enabled,
+                             signed char direction,
+                             const float &saved,
+                             const float &target,
+                             float &current);
+
+public:
+    MenuScreen *GetScreen() const {
+        return pScreen;
+    }
+    MenuFont &GetFont(int index) {
+        return fonts[index];
+    }
+    MenuItemList &GetItemList() {
+        return itemList;
+    }
+    unsigned GetFlags() const {
+        return dwFlags;
+    }
+    void SetFlags(unsigned value) {
+        dwFlags = value;
+    }
+    float GetY() const {
+        return fY;
+    }
+    void SetX(float value) {
+        fX = value;
+    }
+    void SetY(float value) {
+        fY = value;
+    }
+    void SetSpriteId(short value) {
+        nSpriteId = value;
+    }
+    short GetSpriteId() const {
+        return nSpriteId;
+    }
+    void SetAnimationSpriteId(int index, short value) {
+        anSpriteIds[index] = value;
+    }
+    void SetImageMode(int value) {
+        nImageMode = value;
+    }
+    short GetLinkedWidgetCount() const {
+        return nLinkedWidgetCount;
+    }
+    void SetLinkedWidgetCount(short value) {
+        nLinkedWidgetCount = value;
+    }
+    void SetLinkedWidgetIndex(int index, short value) {
+        anLinkedWidgetIndices[index] = value;
+    }
+    LONG GetBoundsLeft() const {
+        return rcBounds.left;
+    }
+    LONG GetBoundsTop() const {
+        return rcBounds.top;
+    }
+    void SetBoundsLeft(LONG value) {
+        rcBounds.left = value;
+    }
+    void SetBoundsTop(LONG value) {
+        rcBounds.top = value;
+    }
+    void SetBoundsRight(LONG value) {
+        rcBounds.right = value;
+    }
+    void SetBoundsBottom(LONG value) {
+        rcBounds.bottom = value;
+    }
+    void SetUpdateCallback(int (*callback)(MenuWidget *)) {
+        pfnUpdate = callback;
+    }
+    void SetActionCallback(int (*callback)(MenuActionWidget *)) {
+        pfnAction = callback;
+    }
+    auto GetActionCallback() const {
+        return pfnAction;
+    }
+    void SetIdleActionCallback(int (*callback)(MenuWidget *)) {
+        pfnIdleAction = callback;
+    }
+    void SetTextEditCompleteCallback(int (*callback)(MenuWidget *)) {
+        pfnTextEditComplete = callback;
+    }
+    auto GetTextEditCompleteCallback() const {
+        return pfnTextEditComplete;
+    }
+    void SetBeforeUpdateCallback(int (*callback)(MenuWidget *)) {
+        pfnBeforeUpdate = callback;
+    }
+    void SetAfterUpdateCallback(int (*callback)(MenuWidget *)) {
+        pfnAfterUpdate = callback;
+    }
+
+private:
     int (*pfnUpdate)(MenuWidget *);
     int (*pfnAction)(MenuActionWidget *);
     int (*pfnIdleAction)(MenuWidget *);

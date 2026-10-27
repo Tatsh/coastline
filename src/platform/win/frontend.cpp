@@ -470,8 +470,8 @@ static inline void PlayMenuActionSound(int sample) {
     g_dwNetworkMenuState = sample;
 }
 
-static inline MenuWidget *LinkedMenuWidget(MenuWidget *pWidget, int index) {
-    return pWidget->pScreen->GetCurrentPanel()->GetWidget(pWidget->anLinkedWidgetIndices[index]);
+MenuWidget *MenuWidget::LinkedMenuWidget(int index) {
+    return pScreen->GetCurrentPanel()->GetWidget(anLinkedWidgetIndices[index]);
 }
 
 bool MenuWidget::Update() {
@@ -520,7 +520,7 @@ bool MenuWidget::Update() {
         }
         if ((dwFlags & 0x10000) && nLinkedWidgetCount > 0) {
             for (int i = 0; i < nLinkedWidgetCount; i++) {
-                MenuWidget *linked = LinkedMenuWidget(this, i);
+                MenuWidget *linked = LinkedMenuWidget(i);
                 linked->dwFlags |= 0x20000;
                 linked->nAnimationFrame = previousFrame;
                 linked->nAnimationElapsed = 0;
@@ -528,7 +528,7 @@ bool MenuWidget::Update() {
                 rcBounds.right =
                     static_cast<int>(static_cast<unsigned>(rcBounds.right) + linked->nWidth);
                 linked->Update();
-                LinkedMenuWidget(this, i)->dwFlags &= ~0x20000u;
+                LinkedMenuWidget(i)->dwFlags &= ~0x20000u;
             }
             Draw();
             return true;
@@ -857,19 +857,15 @@ int MenuWidget::StartSlideAnimation() {
     return 1;
 }
 
-static inline bool UpdateMenuSlideAxis(MenuWidget *pWidget,
-                                       int bEnabled,
-                                       signed char direction,
-                                       const float &saved,
-                                       const float &target,
-                                       float &current) {
+bool MenuWidget::UpdateMenuSlideAxis(
+    int bEnabled, signed char direction, const float &saved, const float &target, float &current) {
     if (!bEnabled || direction == 0) {
         return true;
     }
     if (direction != 1 && direction != -1) {
         return false;
     }
-    long double offset = pWidget->ComputeSlideOffset(pWidget->nSlideElapsed);
+    long double offset = ComputeSlideOffset(nSlideElapsed);
     long double position = direction == 1 ? saved + offset : saved - offset;
     current = position;
     bool done = direction == 1 ? position >= target : !(position > target);
@@ -888,10 +884,8 @@ int MenuWidget::UpdateSlideAnimation() {
         unsigned delta = now - static_cast<unsigned>(nSlideLastTime);
         nSlideLastTime = static_cast<int>(now);
         nSlideElapsed = static_cast<int>(static_cast<unsigned>(nSlideElapsed) + delta);
-        bool doneX =
-            UpdateMenuSlideAxis(this, bSlideX, nSlideDirectionX, fSavedX, fSlideTargetX, fX);
-        bool doneY =
-            UpdateMenuSlideAxis(this, bSlideY, nSlideDirectionY, fSavedY, fSlideTargetY, fY);
+        bool doneX = UpdateMenuSlideAxis(bSlideX, nSlideDirectionX, fSavedX, fSlideTargetX, fX);
+        bool doneY = UpdateMenuSlideAxis(bSlideY, nSlideDirectionY, fSavedY, fSlideTargetY, fY);
         if (doneX && doneY) {
             nSlideElapsed = 0;
             bSliding = 0;
@@ -920,7 +914,7 @@ void MenuWidget::Initialize(MenuScreen *pOwner,
 }
 
 bool MenuWidget::IsBlockedByModalDialog() {
-    if (g_pSaveSeasonMenu && g_pSaveSeasonMenu->pScreen->GetPanelActive(1) == 1) {
+    if (g_pSaveSeasonMenu && g_pSaveSeasonMenu->GetScreen()->GetPanelActive(1) == 1) {
         if (this != g_pSaveSeasonMenu) {
             g_dwModalDialogBlocking = 1;
             return true;
@@ -1057,8 +1051,8 @@ bool MenuScreen::EndFrame() {
     pActiveScreen = g_pActiveMenuScreen;
     g_pActiveMenuScreen = g_pRootMenuScreen;
     pCursor = g_pRootMenuScreen->GetPanel(0)->GetWidget(MENU_CURSOR_WIDGET_INDEX);
-    pCursor->fX = static_cast<float>(g_pMouseDevice->GetCursorX());
-    pCursor->fY = static_cast<float>(g_pMouseDevice->GetCursorY());
+    pCursor->SetX(static_cast<float>(g_pMouseDevice->GetCursorX()));
+    pCursor->SetY(static_cast<float>(g_pMouseDevice->GetCursorY()));
     pCursor->Update();
     g_pActiveMenuScreen = pActiveScreen;
     if (!g_dwSessionListRefreshing) {
@@ -1302,36 +1296,36 @@ int SeasonRoundList_ClearBrowsingFlag(MenuWidget *) {
 }
 
 int CreateGameUI_EnableContinueIfNameEntered(MenuWidget *pWidget) {
-    if (strlen(pWidget->fonts[0].GetText())) {
-        g_pCreateGameContinueItem->dwFlags &= ~0x10u;
+    if (strlen(pWidget->GetFont(0).GetText())) {
+        g_pCreateGameContinueItem->SetFlags(g_pCreateGameContinueItem->GetFlags() & ~0x10u);
     }
     return 1;
 }
 
 int PlayerNameEntryUI_EnableContinueIfNameEntered(MenuWidget *pWidget) {
-    if (strlen(pWidget->fonts[0].GetText())) {
-        g_pPlayerNameContinueItem->dwFlags &= ~0x10u;
+    if (strlen(pWidget->GetFont(0).GetText())) {
+        g_pPlayerNameContinueItem->SetFlags(g_pPlayerNameContinueItem->GetFlags() & ~0x10u);
     }
     return 1;
 }
 
 int ModemConnectionUI_EnableContinueIfNumberEntered(MenuWidget *pWidget) {
-    if (strlen(pWidget->fonts[0].GetText())) {
-        g_pModemContinueItem->dwFlags &= ~0x10u;
+    if (strlen(pWidget->GetFont(0).GetText())) {
+        g_pModemContinueItem->SetFlags(g_pModemContinueItem->GetFlags() & ~0x10u);
     }
     return 1;
 }
 
 int CarSetupUI_UpdateSteeringIndicatorPos(MenuWidget *pWidget) {
     int position = static_cast<int>(static_cast<unsigned>(g_dwHandlingTypeMenuIndex) * 11u + 61u);
-    pWidget->fX = static_cast<float>(position);
+    pWidget->SetX(static_cast<float>(position));
     return 1;
 }
 
 int AudioOptionsUI_UpdateVolumeChannelImage(MenuWidget *pWidget) {
     short image = g_bAudioOptionsSfxSelected ? 0x68 : 0x69;
-    pWidget->anSpriteIds[0] = image;
-    pWidget->nSpriteId = image;
+    pWidget->SetAnimationSpriteId(0, image);
+    pWidget->SetSpriteId(image);
     return 1;
 }
 
@@ -1339,12 +1333,12 @@ int AudioOptionsUI_UpdateVolumeLevelIndicatorPos(MenuWidget *pWidget) {
     unsigned volume = g_bAudioOptionsSfxSelected ? g_GlobalRallyConfig.dwSfxVolume :
                                                    g_GlobalRallyConfig.dwMusicVolume;
     int position = static_cast<int>(volume * 8u + 74u);
-    pWidget->fX = static_cast<float>(position);
+    pWidget->SetX(static_cast<float>(position));
     return 1;
 }
 
 static inline void UpdateMenuListSelection(MenuWidget *pWidget, int &selection) {
-    MenuItemList *list = &pWidget->itemList;
+    MenuItemList *list = &pWidget->GetItemList();
     int result = list->UpdateAndRenderMenuWidget(selection);
     if (result >= 0) {
         selection = result;
@@ -1371,7 +1365,7 @@ int JoinCreateGameUI_UpdateSessionSelection(MenuWidget *pWidget) {
 int NetworkCarSetupUI_UpdateSelectedPlayer(MenuWidget *pWidget) {
     UpdateMenuListSelection(pWidget, g_dwSelectedSessionIndex);
     g_dwNetCarSetupSelectedPlayerId =
-        pWidget->itemList.GetFont(g_dwSelectedSessionIndex).GetItemData();
+        pWidget->GetItemList().GetFont(g_dwSelectedSessionIndex).GetItemData();
     return 1;
 }
 
@@ -1381,7 +1375,7 @@ int KeyConfigUI_UpdateActionSelection(MenuWidget *pWidget) {
 }
 
 int SaveSeasonUI_UpdateSlotSelection(MenuWidget *pWidget) {
-    MenuItemList *list = &pWidget->itemList;
+    MenuItemList *list = &pWidget->GetItemList();
 
     int selection = list->UpdateAndRenderMenuWidget(g_dwFileListSelectedSlot);
     if (selection >= 0) {
@@ -1406,7 +1400,7 @@ int SeasonRoundList_UpdateRoundSelection(MenuWidget *pWidget) {
 }
 
 int AudioOptionsUI_UpdateCdTrackSelection(MenuWidget *pWidget) {
-    MenuItemList *list = &pWidget->itemList;
+    MenuItemList *list = &pWidget->GetItemList();
     int track = g_dwSelectedCdTrack;
     if (track < 0 || track >= 12) {
         track = -1;
@@ -1419,14 +1413,14 @@ int AudioOptionsUI_UpdateCdTrackSelection(MenuWidget *pWidget) {
 }
 
 int NetworkCarSetupUI_PollChatListSelection(MenuWidget *pWidget) {
-    MenuItemList *list = &pWidget->itemList;
+    MenuItemList *list = &pWidget->GetItemList();
     list->UpdateAndRenderMenuWidget(g_dwSelectedSessionIndex);
     return 1;
 }
 
 static inline int SynchronizeEditedMenuText(MenuWidget *pWidget, char *destination) {
     ProcessMenuTextEditInput(pWidget, 0);
-    const char *text = pWidget->fonts[0].GetText();
+    const char *text = pWidget->GetFont(0).GetText();
     if (_stricmp(destination, text)) {
         strcpy(destination, text);
     }
@@ -1439,10 +1433,10 @@ int OnChatMessageEdited(MenuWidget *pWidget) {
 
 int NetworkCarSetupUI_SendChatMessage(MenuWidget *pWidget) {
     DirectPlayInfo *info = g_pDirectPlayInfo;
-    strcpy(g_szNetworkChatText, pWidget->fonts[0].GetText());
+    strcpy(g_szNetworkChatText, pWidget->GetFont(0).GetText());
     SendNetworkChatMessage(g_hMainWindow, info, false);
     strcpy(g_szNetworkChatText, g_szEmptyUiString);
-    pWidget->fonts[0].SetText(g_szEmptyUiString);
+    pWidget->GetFont(0).SetText(g_szEmptyUiString);
     return 1;
 }
 
@@ -1694,7 +1688,7 @@ int ShowHostRaceSetupScreen(void) {
     if (!ShowCachedMenuScreen(g_pCachedMenu_RaceSetupNetwork, BuildMultiplayerGameSetupUI)) {
         return 0;
     }
-    g_pMultiplayerGameSetupMenu->pfnAction = MultiplayerGameSetupUI_OnBackAsHost;
+    g_pMultiplayerGameSetupMenu->SetActionCallback(MultiplayerGameSetupUI_OnBackAsHost);
     return 1;
 }
 
@@ -1776,13 +1770,13 @@ int NetworkCarSetupUI_OnEscape(MenuWidget *pWidget) {
             }
             if ((g_dwServiceProviderIndex == 2 || g_dwServiceProviderIndex == 3) &&
                 g_pNetworkSessionJoinMenu != nullptr) {
-                g_pNetworkSessionJoinMenu->dwFlags &= ~0x10u;
+                g_pNetworkSessionJoinMenu->SetFlags(g_pNetworkSessionJoinMenu->GetFlags() & ~0x10u);
             }
             g_dwNetworkDataStreamActive = 0;
             return 0;
         }
-        pWidget->pScreen->SetRunning(0);
-        pWidget->pScreen->ShutdownFrontEnd(0);
+        pWidget->GetScreen()->SetRunning(0);
+        pWidget->GetScreen()->ShutdownFrontEnd(0);
         ShutdownApplication(0);
     }
     if (g_dwNetworkEscapePending) {
@@ -1816,8 +1810,8 @@ int NetworkCarSetupUI_OnEscape(MenuWidget *pWidget) {
     if (g_dwNetworkSendBlocked) {
         BackupMenuSelections();
         g_GlobalRallyConfig.SaveConfigToFile(g_szConfigFilePath);
-        pWidget->pScreen->SetRunning(0);
-        pWidget->pScreen->ShutdownFrontEnd(0);
+        pWidget->GetScreen()->SetRunning(0);
+        pWidget->GetScreen()->ShutdownFrontEnd(0);
         g_dwInNetworkCarSetup = 0;
         PlaySoundChannelOneOnce(2, 0x200020);
         g_dwNetworkMenuState = 2;
@@ -1881,7 +1875,7 @@ int ReturnToMainMenuFromSeason(void) {
         NullStub();
         ResetGameModeConfig();
         ResolveRaceSelections();
-        g_pRaceSetupMenu->pfnAction = RaceSetupUI_OnBackToTimeAttack;
+        g_pRaceSetupMenu->SetActionCallback(RaceSetupUI_OnBackToTimeAttack);
     }
     return 1;
 }
@@ -1899,7 +1893,7 @@ int ShowOptionsMenu(void) {
 }
 
 static inline int ReturnFromOptionsMenu(MenuActionWidget *pItem, MenuScreen *&pTarget) {
-    pItem->pScreen->DestroyPanels();
+    pItem->GetScreen()->DestroyPanels();
     delete g_pActiveMenuScreen;
     g_pCachedMenu_Options = nullptr;
     g_pActiveMenuScreen = pTarget;
@@ -1907,7 +1901,7 @@ static inline int ReturnFromOptionsMenu(MenuActionWidget *pItem, MenuScreen *&pT
 }
 
 static inline int ReturnFromSaveSeasonMenu(MenuActionWidget *pItem, MenuScreen *&pTarget) {
-    pItem->pScreen->DestroyPanels();
+    pItem->GetScreen()->DestroyPanels();
     delete g_pActiveMenuScreen;
     g_pCachedMenu_SaveSeason = nullptr;
     g_pSaveSeasonMenu = nullptr;
@@ -1923,7 +1917,7 @@ static inline int ReturnFromSaveSeasonMenu(MenuActionWidget *pItem, MenuScreen *
 static inline int
 ReturnFromCachedMenu(MenuActionWidget *pItem, MenuScreen *&pCached, MenuScreen *&pTarget) {
     MenuScreen *pDestination;
-    pItem->pScreen->DestroyPanels();
+    pItem->GetScreen()->DestroyPanels();
     delete g_pActiveMenuScreen;
     pDestination = pTarget;
     pCached = nullptr;
@@ -2007,7 +2001,7 @@ int VideoOptionsUI_OnBack(MenuActionWidget *pItem) {
 
 int PreRaceInfoUI_OnBackToLoadSeason(MenuActionWidget *pItem) {
     MenuScreen *pDestination;
-    pItem->pScreen->DestroyPanels();
+    pItem->GetScreen()->DestroyPanels();
     delete g_pActiveMenuScreen;
     pDestination = g_pCachedMenu_LoadSeason;
     g_pCachedMenu_PreRaceInfo = nullptr;
@@ -2019,7 +2013,7 @@ int PreRaceInfoUI_OnBackToLoadSeason(MenuActionWidget *pItem) {
 
 int PreRaceInfoUI_OnBackToChampionshipSeason(MenuActionWidget *pItem) {
     MenuScreen *pDestination;
-    pItem->pScreen->DestroyPanels();
+    pItem->GetScreen()->DestroyPanels();
     delete g_pActiveMenuScreen;
     pDestination = g_pCachedMenu_TimeTrial;
     g_pCachedMenu_PreRaceInfo = nullptr;
@@ -2031,7 +2025,7 @@ int PreRaceInfoUI_OnBackToChampionshipSeason(MenuActionWidget *pItem) {
 
 int CarSetupUI_OnBackToSeasonProgressInfo(MenuActionWidget *pItem) {
     MenuScreen *pDestination;
-    pItem->pScreen->DestroyPanels();
+    pItem->GetScreen()->DestroyPanels();
     delete g_pActiveMenuScreen;
     pDestination = g_pCachedMenu_SeasonProgressInfo;
     g_pCachedMenu_CarSetup = nullptr;
@@ -2042,7 +2036,7 @@ int CarSetupUI_OnBackToSeasonProgressInfo(MenuActionWidget *pItem) {
 
 int CarSetupUI_OnBackToTimeAttack(MenuActionWidget *pItem) {
     MenuScreen *pDestination;
-    pItem->pScreen->DestroyPanels();
+    pItem->GetScreen()->DestroyPanels();
     delete g_pActiveMenuScreen;
     pDestination = g_pCachedMenu_TimeAttack;
     g_pCachedMenu_CarSetup = nullptr;
@@ -2053,7 +2047,7 @@ int CarSetupUI_OnBackToTimeAttack(MenuActionWidget *pItem) {
 
 int PlayerNameEntryUI_OnBack(MenuActionWidget *pItem) {
     MenuScreen *pDestination;
-    pItem->pScreen->DestroyPanels();
+    pItem->GetScreen()->DestroyPanels();
     delete g_pActiveMenuScreen;
     pDestination = g_pRootMenuScreen;
     g_pCachedMenu_MultiplayerName = nullptr;
@@ -2064,7 +2058,7 @@ int PlayerNameEntryUI_OnBack(MenuActionWidget *pItem) {
 
 int RaceSetupUI_OnBack(MenuActionWidget *pItem) {
     MenuScreen *pDestination;
-    pItem->pScreen->DestroyPanels();
+    pItem->GetScreen()->DestroyPanels();
     delete g_pActiveMenuScreen;
     pDestination = g_pRootMenuScreen;
     g_pCachedMenu_MainMenu = nullptr;
@@ -2075,7 +2069,7 @@ int RaceSetupUI_OnBack(MenuActionWidget *pItem) {
 
 int RaceSetupUI_OnBackToTimeAttack(MenuActionWidget *pItem) {
     MenuScreen *pDestination;
-    pItem->pScreen->DestroyPanels();
+    pItem->GetScreen()->DestroyPanels();
     delete g_pActiveMenuScreen;
     pDestination = g_pCachedMenu_TimeAttack;
     g_pCachedMenu_MainMenu = nullptr;
@@ -2086,7 +2080,7 @@ int RaceSetupUI_OnBackToTimeAttack(MenuActionWidget *pItem) {
 
 int ModemConnectionUI_OnBack(MenuActionWidget *pItem) {
     MenuScreen *pDestination;
-    pItem->pScreen->DestroyPanels();
+    pItem->GetScreen()->DestroyPanels();
     delete g_pActiveMenuScreen;
     pDestination = g_pCachedMenu_MultiplayerConnection;
     g_pCachedMenu_ModemDialUp = nullptr;
@@ -2096,7 +2090,7 @@ int ModemConnectionUI_OnBack(MenuActionWidget *pItem) {
 }
 
 int LoadSeasonUI_OnBack(MenuActionWidget *pItem) {
-    pItem->pScreen->DestroyPanels();
+    pItem->GetScreen()->DestroyPanels();
     delete g_pActiveMenuScreen;
     g_pCachedMenu_LoadSeason = nullptr;
     g_dwLoadSeasonSlotValid = 0;
@@ -2109,7 +2103,7 @@ int LoadSeasonUI_OnBack(MenuActionWidget *pItem) {
 
 int SaveTimeAttackMenuUI_OnBack(MenuActionWidget *pItem) {
     MenuScreen *pDestination;
-    pItem->pScreen->DestroyPanels();
+    pItem->GetScreen()->DestroyPanels();
     delete g_pCachedMenu_SaveGhost;
     pDestination = g_pCachedMenu_TimeAttack;
     g_pCachedMenu_SaveGhost = nullptr;
@@ -2125,7 +2119,7 @@ int KeyConfigUI_OnBack(MenuActionWidget *pItem) {
 }
 
 int CarSetupUI_UpdateTransmissionImage(MenuWidget *pWidget) {
-    pWidget->nSpriteId = g_abTransmissionImageIds[g_dwSelectedTransmission];
+    pWidget->SetSpriteId(g_abTransmissionImageIds[g_dwSelectedTransmission]);
     return 1;
 }
 
@@ -2133,42 +2127,42 @@ int CarSetupUI_UpdateCarImage(MenuWidget *pWidget) {
     if (g_pActiveMenuScreen == g_pCachedMenu_LoadGhost && !g_dwTimeAttackLoadSelected) {
         return -2;
     }
-    pWidget->nSpriteId = g_adwCarImageIds[g_dwCarMenuIndex];
+    pWidget->SetSpriteId(g_adwCarImageIds[g_dwCarMenuIndex]);
     return 1;
 }
 
 int CarSetupUI_UpdateTiresImage(MenuWidget *pWidget) {
-    pWidget->nSpriteId = g_abTireImageIds[g_dwTireMenuIndex];
+    pWidget->SetSpriteId(g_abTireImageIds[g_dwTireMenuIndex]);
     return 1;
 }
 
 int CarSetupUI_UpdateShocksImage(MenuWidget *pWidget) {
-    pWidget->nSpriteId = g_abSuspensionImageIds[g_dwSuspensionMenuIndex];
+    pWidget->SetSpriteId(g_abSuspensionImageIds[g_dwSuspensionMenuIndex]);
     return 1;
 }
 
 int InputOptionsUI_UpdateInputDeviceImage(MenuWidget *pWidget) {
-    pWidget->nSpriteId = g_abInputDeviceImageIds[g_dwSelectedInputDevice];
+    pWidget->SetSpriteId(g_abInputDeviceImageIds[g_dwSelectedInputDevice]);
     return 1;
 }
 
 int ConnectionUI_UpdateServiceProviderImage(MenuWidget *pWidget) {
-    pWidget->nSpriteId = g_abServiceProviderImageIds[g_dwServiceProviderIndex];
+    pWidget->SetSpriteId(g_abServiceProviderImageIds[g_dwServiceProviderIndex]);
     return 1;
 }
 
 int GameOptionsUI_UpdateCarShadowImage(MenuWidget *pWidget) {
-    pWidget->nSpriteId = g_abCarShadowImageIds[g_dwOptionCarShadow];
+    pWidget->SetSpriteId(g_abCarShadowImageIds[g_dwOptionCarShadow]);
     return 1;
 }
 
 int GameOptionsUI_UpdateSpecularLightingImage(MenuWidget *pWidget) {
-    pWidget->nSpriteId = g_abSpecularLightingImageIds[g_dwOptionSpecularLighting];
+    pWidget->SetSpriteId(g_abSpecularLightingImageIds[g_dwOptionSpecularLighting]);
     return 1;
 }
 
 int GameOptionsUI_UpdateSkidMarksImage(MenuWidget *pWidget) {
-    pWidget->nSpriteId = static_cast<short>(g_awSkidMarksImageIds[g_dwOptionSkidMarks]);
+    pWidget->SetSpriteId(static_cast<short>(g_awSkidMarksImageIds[g_dwOptionSkidMarks]));
     return 1;
 }
 
@@ -2194,7 +2188,7 @@ int RaceResultsInfoUI_OnSelectTotalTime(MenuWidget *) {
 
 int SaveSeasonUI_UpdateItemEnabledState(MenuWidget *pWidget) {
     if (g_dwSaveSeasonSlotNamed) {
-        pWidget->dwFlags &= ~0x1010u;
+        pWidget->SetFlags(pWidget->GetFlags() & ~0x1010u);
     }
     return 1;
 }
@@ -2210,32 +2204,32 @@ int ResultsSummaryExitSeasonConfirmUI_OnNo(MenuWidget *) {
 }
 
 int MenuScreen_OnReturnToMainMenu(MenuWidget *pWidget) {
-    pWidget->pScreen->ShutdownFrontEnd(1);
+    pWidget->GetScreen()->ShutdownFrontEnd(1);
     g_pActiveMenuScreen = g_pCachedMenu_MainMenu;
     return 0;
 }
 
 int PreRaceInfoUI_OnOptions(MenuWidget *) {
     ShowOptionsMenu();
-    g_pOptionsSubMenu->pfnAction = OptionsMenuUI_OnBackToPreRaceInfo;
+    g_pOptionsSubMenu->SetActionCallback(OptionsMenuUI_OnBackToPreRaceInfo);
     return 1;
 }
 
 int PreRaceInfoUI_OnSaveSeason(MenuWidget *) {
     ShowSaveSeasonScreen();
-    g_pSaveSeasonBackHandlerMenu->pfnAction = SaveSeasonUI_OnBackToPreRaceInfo;
+    g_pSaveSeasonBackHandlerMenu->SetActionCallback(SaveSeasonUI_OnBackToPreRaceInfo);
     return 1;
 }
 
 int SeasonProgressInfoUI_OnOptions(MenuWidget *) {
     ShowOptionsMenu();
-    g_pOptionsSubMenu->pfnAction = OptionsMenuUI_OnBackToSeasonProgressInfo;
+    g_pOptionsSubMenu->SetActionCallback(OptionsMenuUI_OnBackToSeasonProgressInfo);
     return 1;
 }
 
 int SeasonProgressInfoUI_OnSaveSeason(MenuWidget *) {
     ShowSaveSeasonScreen();
-    g_pSaveSeasonBackHandlerMenu->pfnAction = SaveSeasonUI_OnBackToSeasonProgressInfo;
+    g_pSaveSeasonBackHandlerMenu->SetActionCallback(SaveSeasonUI_OnBackToSeasonProgressInfo);
     return 1;
 }
 
@@ -2311,7 +2305,7 @@ int GameOptionsUI_OnToggleSpecularLighting(MenuWidget *) {
 }
 
 static inline int ToggleSavedMenuText(MenuWidget *pWidget, MenuItemList *&list) {
-    pWidget->pScreen->SetPanelActive(1, 0);
+    pWidget->GetScreen()->SetPanelActive(1, 0);
     MenuFont &font = list->GetFont(g_dwFileListSelectedSlot);
     font.SetDrawCaret(!font.GetDrawCaret());
     MenuFont &selected = list->GetFont(g_dwFileListSelectedSlot);
@@ -2332,7 +2326,7 @@ int ToggleMenuItemTextEditB(MenuWidget *pWidget) {
 }
 
 static inline int RestoreSavedMenuText(MenuWidget *pWidget, MenuItemList *&list, int &named) {
-    pWidget->pScreen->SetPanelActive(1, 0);
+    pWidget->GetScreen()->SetPanelActive(1, 0);
     named = 0;
     if (g_dwMenuTextEditActive) {
         list->GetFont(g_dwFileListSelectedSlot).SetText(g_szMenuItemTextBackup);
@@ -2373,8 +2367,8 @@ int SaveTimeAttackMenuUI_HandleTextEntry(MenuWidget *pWidget) {
 
 int MultiplayerGameSetupUI_OnEscape(MenuWidget *pWidget) {
     if (g_dwNetworkDataStreamActive && g_dwLaunchedFromLobby) {
-        pWidget->pScreen->SetRunning(0);
-        pWidget->pScreen->ShutdownFrontEnd(0);
+        pWidget->GetScreen()->SetRunning(0);
+        pWidget->GetScreen()->ShutdownFrontEnd(0);
         ShutdownApplication(0);
     }
     return 1;
@@ -2385,14 +2379,14 @@ int ChampionshipSeasonUI_OnStartNewSeason(MenuWidget *) {
     ResetMenuSelectionsToDefaults();
     g_pPrimarySeasonSave = nullptr;
     ShowPreRaceInfoScreen();
-    g_pExitSeasonConfirmMenu->pfnAction = PreRaceInfoUI_OnBackToChampionshipSeason;
+    g_pExitSeasonConfirmMenu->SetActionCallback(PreRaceInfoUI_OnBackToChampionshipSeason);
     g_dwGameMode = GAME_MODE_CHAMPIONSHIP;
     ResolveRaceSelections();
     return 1;
 }
 
 int ReturnToMultiplayerLobby(MenuWidget *pWidget) {
-    pWidget->pScreen->DestroyPanels();
+    pWidget->GetScreen()->DestroyPanels();
     delete g_pActiveMenuScreen;
     MenuScreen *screen = g_pCachedMenu_RaceSetupNetwork;
     g_pCachedMenu_NetworkCarSetup = nullptr;
@@ -2404,7 +2398,7 @@ int ReturnToMultiplayerLobby(MenuWidget *pWidget) {
 }
 
 int ReturnToVideoOptionsFromResolution(MenuWidget *pWidget) {
-    pWidget->pScreen->DestroyPanels();
+    pWidget->GetScreen()->DestroyPanels();
     delete g_pActiveMenuScreen;
     MenuScreen *screen = g_pCachedMenu_InputConfig;
     g_pCachedMenu_AudioSettings = nullptr;
@@ -2414,7 +2408,7 @@ int ReturnToVideoOptionsFromResolution(MenuWidget *pWidget) {
 }
 
 int ReturnToVideoOptionsFromDeviceSelect(MenuWidget *pWidget) {
-    pWidget->pScreen->DestroyPanels();
+    pWidget->GetScreen()->DestroyPanels();
     delete g_pActiveMenuScreen;
     MenuScreen *screen = g_pCachedMenu_InputConfig;
     g_pCachedMenu_VideoSettings = nullptr;
@@ -2425,7 +2419,7 @@ int ReturnToVideoOptionsFromDeviceSelect(MenuWidget *pWidget) {
 
 int ModemConnectionUI_OnAccept(MenuWidget *pWidget) {
     g_dwServiceProviderIndex = 2;
-    pWidget->pScreen->DestroyPanels();
+    pWidget->GetScreen()->DestroyPanels();
     delete g_pActiveMenuScreen;
     MenuScreen *screen = g_pCachedMenu_JoinCreateGame;
     g_pCachedMenu_ModemDialUp = nullptr;
@@ -2486,13 +2480,13 @@ int SaveSeasonUI_OnSlotSelected(MenuItemList *pList, int *pnSlot) {
     if (missing) {
         ToggleMenuItemTextEditA(g_pSaveSeasonMenu);
     } else {
-        g_pSaveSeasonMenu->pScreen->SetPanelActive(1, 1);
+        g_pSaveSeasonMenu->GetScreen()->SetPanelActive(1, 1);
     }
     return 1;
 }
 
 int PreRaceExitSeasonConfirmUI_OnYes(MenuWidget *pWidget) {
-    pWidget->pScreen->DestroyPanels();
+    pWidget->GetScreen()->DestroyPanels();
     delete g_pActiveMenuScreen;
     g_pActiveMenuScreen = nullptr;
     g_pPreRaceInfoMenuScreen = nullptr;
@@ -2515,7 +2509,7 @@ int ResultsSummaryExitSeasonConfirmUI_OnYes(MenuWidget *pWidget) {
     ClearCachedMenuPanels(g_pCachedMenu_RaceResults);
     ClearCachedMenuPanels(g_pCachedMenu_RaceResultsSummary);
     ClearCachedMenuPanels(g_pCachedMenu_RaceResultsTotals);
-    pWidget->pScreen->DestroyPanels();
+    pWidget->GetScreen()->DestroyPanels();
     delete g_pActiveMenuScreen;
     g_pPreRaceInfoMenuScreen = nullptr;
     g_pActiveMenuScreen = g_pCachedMenu_MainMenu;
@@ -2531,8 +2525,8 @@ int MainMenuUI_OnPlayCredits(MenuWidget *pWidget) {
     } else {
         g_dwRaceSessionType = RACE_SESSION_CREDIT_CAPTIONS;
     }
-    pWidget->pScreen->SetRunning(0);
-    pWidget->pScreen->ShutdownFrontEnd(0);
+    pWidget->GetScreen()->SetRunning(0);
+    pWidget->GetScreen()->ShutdownFrontEnd(0);
     return 0;
 }
 
@@ -2544,7 +2538,7 @@ int SeasonProgressInfoUI_OnCarSetup(MenuWidget *) {
     g_bRaceSetupShowCarSetup = 0;
     ShowCarSetupScreen();
     g_bRaceSetupShowCarSetup = 1;
-    g_pCarSetupMenu->pfnAction = CarSetupUI_OnBackToSeasonProgressInfo;
+    g_pCarSetupMenu->SetActionCallback(CarSetupUI_OnBackToSeasonProgressInfo);
     g_dwGameMode = GAME_MODE_CHAMPIONSHIP;
     return 1;
 }
@@ -2553,7 +2547,7 @@ int LoadTimeAttackMenuUI_OnCarSetup(MenuWidget *) {
     g_bRaceSetupShowCarSetup = 0;
     ShowCarSetupScreen();
     g_bRaceSetupShowCarSetup = 1;
-    g_pCarSetupMenu->pfnAction = CarSetupUI_OnBackToTimeAttack;
+    g_pCarSetupMenu->SetActionCallback(CarSetupUI_OnBackToTimeAttack);
     g_dwGameMode = GAME_MODE_TIME_ATTACK;
     return 1;
 }
@@ -2568,14 +2562,14 @@ int NetworkCarSetupUI_OnBootPlayer(MenuWidget *) {
 int LoadSeasonUI_OnLoadAutoSave(MenuWidget *) {
     LoadAutoSaveSeason();
     ShowPreRaceInfoScreen();
-    g_pExitSeasonConfirmMenu->pfnAction = PreRaceInfoUI_OnBackToLoadSeason;
+    g_pExitSeasonConfirmMenu->SetActionCallback(PreRaceInfoUI_OnBackToLoadSeason);
     g_dwGameMode = GAME_MODE_CHAMPIONSHIP;
     return 1;
 }
 
 int OnListDialogItemSelected(MenuWidget *pWidget) {
     ShowPreRaceInfoScreen();
-    pWidget->pScreen->DestroyPanels();
+    pWidget->GetScreen()->DestroyPanels();
     delete g_pCachedMenu_NotEnoughPoints;
     g_pCachedMenu_NotEnoughPoints = nullptr;
     return 0;
@@ -2590,7 +2584,7 @@ int OnPressAnyKeyContinue(MenuWidget *pWidget) {
         memset(g_SeasonProgress.seasonTimes, 0, sizeof(g_SeasonProgress.seasonTimes));
     }
     g_dwSeasonTotalPoints = 0;
-    pWidget->pScreen->DestroyPanels();
+    pWidget->GetScreen()->DestroyPanels();
     delete g_pCachedMenu_SeasonCongrats;
     g_pCachedMenu_SeasonCongrats = nullptr;
     return 0;
@@ -2599,14 +2593,14 @@ int OnPressAnyKeyContinue(MenuWidget *pWidget) {
 int SeasonCongratsUI_UpdatePrimaryBannerImage(MenuWidget *pWidget) {
     int flags = g_SeasonProgress.championshipFlags;
     if (flags > 0) {
-        pWidget->nSpriteId = flags <= 5 ? 0x74 - flags : -1;
+        pWidget->SetSpriteId(flags <= 5 ? 0x74 - flags : -1);
     }
     if (g_SeasonProgress.championshipFlags == 0) {
         unsigned season = g_SeasonProgress.season;
         if (season >= 1 && season <= 3) {
-            pWidget->nSpriteId = 0x45 + season * 2;
+            pWidget->SetSpriteId(0x45 + season * 2);
         } else {
-            pWidget->nSpriteId = season >= 4 && season <= 6 ? 0x4d : -1;
+            pWidget->SetSpriteId(season >= 4 && season <= 6 ? 0x4d : -1);
         }
     }
     return 1;
@@ -2617,35 +2611,35 @@ int SeasonCongratsUI_UpdateSecondaryBannerImage(MenuWidget *pWidget) {
     if (flags > 0) {
         switch (flags) {
         case 2:
-            pWidget->nSpriteId = 0x6d;
+            pWidget->SetSpriteId(0x6d);
             break;
         case 3:
-            pWidget->nSpriteId = 0x6e;
+            pWidget->SetSpriteId(0x6e);
             break;
         case 4:
-            pWidget->nSpriteId = 0x6c;
+            pWidget->SetSpriteId(0x6c);
             break;
         default:
-            pWidget->nSpriteId = -1;
+            pWidget->SetSpriteId(-1);
             break;
         }
     }
     if (g_SeasonProgress.championshipFlags == 0) {
         unsigned season = g_SeasonProgress.season;
-        pWidget->nSpriteId = season >= 1 && season <= 3 ? 0x46 + season * 2 : -1;
+        pWidget->SetSpriteId(season >= 1 && season <= 3 ? 0x46 + season * 2 : -1);
     }
     return 1;
 }
 
 int MultiplayerSetupUI_UpdateCarGroupImage(MenuWidget *pWidget) {
     unsigned group = static_cast<unsigned>(g_dwSelectedCarClass);
-    pWidget->nSpriteId = group >= 1 && group <= 4 ? 0x55 + group * 2 : 0x56;
+    pWidget->SetSpriteId(group >= 1 && group <= 4 ? 0x55 + group * 2 : 0x56);
     return 1;
 }
 
 int MultiplayerSetupUI_UpdateCarGroupSubImage(MenuWidget *pWidget) {
     unsigned group = static_cast<unsigned>(g_dwSelectedCarClass);
-    pWidget->nSpriteId = group >= 1 && group <= 4 ? 0x56 + group * 2 : -1;
+    pWidget->SetSpriteId(group >= 1 && group <= 4 ? 0x56 + group * 2 : -1);
     return 1;
 }
 
@@ -2669,37 +2663,37 @@ int KeyConfigUI_BeginKeyCapture(MenuWidget *) {
 }
 
 int ValidateEntityState(MenuWidget *pWidget) {
-    unsigned flags = pWidget->dwFlags;
-    if ((flags & (0x10 | 0x1000000)) || (pWidget->itemList.GetFlags() & 0x1000000)) {
+    unsigned flags = pWidget->GetFlags();
+    if ((flags & (0x10 | 0x1000000)) || (pWidget->GetItemList().GetFlags() & 0x1000000)) {
         return 0;
     }
     if (g_dwMenuHoverActive &&
         (g_pMouseDevice->IsButtonHeld(0) || g_pMouseDevice->IsButtonHeld(1) ||
          g_pMouseDevice->IsButtonHeld(2) || g_pMouseDevice->IsButtonHeld(3))) {
-        pWidget->fonts[0].SetStyle(4);
+        pWidget->GetFont(0).SetStyle(4);
         return 1;
     }
     if (flags & 0x100) {
-        pWidget->nSpriteId =
-            static_cast<short>(static_cast<unsigned short>(pWidget->nSpriteId) + 1);
-        switch (pWidget->nSpriteId) {
+        pWidget->SetSpriteId(
+            static_cast<short>(static_cast<unsigned short>(pWidget->GetSpriteId()) + 1));
+        switch (pWidget->GetSpriteId()) {
         case 2:
-            pWidget->fonts[0].SetStyle(0);
+            pWidget->GetFont(0).SetStyle(0);
             break;
         case 3:
-            pWidget->fonts[0].SetStyle(1);
+            pWidget->GetFont(0).SetStyle(1);
             break;
         case 4:
-            pWidget->fonts[0].SetStyle(2);
+            pWidget->GetFont(0).SetStyle(2);
             break;
         case 52:
-            pWidget->fonts[0].SetStyle(4);
+            pWidget->GetFont(0).SetStyle(4);
             break;
         default:
-            pWidget->nSpriteId = 2;
+            pWidget->SetSpriteId(2);
             break;
         }
-        pWidget->dwFlags = flags & ~0x100u;
+        pWidget->SetFlags(flags & ~0x100u);
     }
     return 1;
 }
@@ -2754,7 +2748,7 @@ int MultiplayerConnectionUI_UpdateModemItem(MenuWidget *pWidget) {
 static inline int BeginMenuTextEdit(MenuWidget *pWidget) {
     if (!g_dwMenuTextEditActive) {
         g_dwMenuTextEditActive = 1;
-        pWidget->fonts[0].SetDrawCaret(!pWidget->fonts[0].GetDrawCaret());
+        pWidget->GetFont(0).SetDrawCaret(!pWidget->GetFont(0).GetDrawCaret());
     }
     return 1;
 }
@@ -2793,7 +2787,7 @@ int SeasonProgressInfoUI_OnResetRound(MenuWidget *) {
 }
 
 int SaveSeasonUI_InvokeBackHandler(MenuWidget *pWidget) {
-    g_pSaveSeasonBackHandlerMenu->pfnAction(pWidget);
+    g_pSaveSeasonBackHandlerMenu->GetActionCallback()(pWidget);
     g_dwGameMode = GAME_MODE_CHAMPIONSHIP;
     return 0;
 }
@@ -2921,7 +2915,7 @@ int KeyConfigUI_UpdateBindingLabel(MenuWidget *pWidget) {
             updateText = false;
         }
     }
-    MenuFont *font = &pWidget->fonts[0];
+    MenuFont *font = &pWidget->GetFont(0);
     if (updateText) {
         font->SetText(text);
     }
@@ -2936,7 +2930,7 @@ void PollInputAndUpdateEdges(void) {
 }
 
 int ProcessMenuTextEditInput(MenuWidget *pWidget, short nFont) {
-    MenuFont *font = &pWidget->fonts[nFont];
+    MenuFont *font = &pWidget->GetFont(nFont);
 
     font->MeasureText();
     if (!font->GetDrawCaret()) {
@@ -2944,15 +2938,15 @@ int ProcessMenuTextEditInput(MenuWidget *pWidget, short nFont) {
         return 0;
     }
     signed char result = font->HandleTextInput();
-    if (result <= 0 || (pWidget->dwFlags & 2)) {
+    if (result <= 0 || (pWidget->GetFlags() & 2)) {
         if (!g_dwInNetworkCarSetup) {
             g_dwMenuTextEditActive = 0;
             font->SetDrawCaret(0);
-            pWidget->dwFlags &= ~2u;
+            pWidget->SetFlags(pWidget->GetFlags() & ~2u);
         }
         PollInputAndUpdateEdges();
-        if (pWidget->pfnTextEditComplete) {
-            pWidget->pfnTextEditComplete(pWidget);
+        if (pWidget->GetTextEditCompleteCallback()) {
+            pWidget->GetTextEditCompleteCallback()(pWidget);
         }
     }
     font->DrawText();
@@ -3027,7 +3021,7 @@ int QuitGameConfirmUI_OnConfirmQuit(MenuWidget *pWidget) {
 #endif
     BackupMenuSelections();
     g_GlobalRallyConfig.SaveConfigToFile(g_szConfigFilePath);
-    pWidget->pScreen->ShutdownFrontEnd(0);
+    pWidget->GetScreen()->ShutdownFrontEnd(0);
     ShutdownDirectPlaySession(g_pDirectPlayInfo);
     ShutdownApplication(0);
 }
@@ -3038,7 +3032,7 @@ int RaceSetupUI_UpdateTrackImage(MenuWidget *pWidget) {
         int round = g_bSeasonRoundListBrowsing ? g_dwSeasonSavedRound : g_dwSeasonRound;
         track = g_SeasonTable[g_bSeasonClass].races[round][0];
     }
-    pWidget->nSpriteId = g_awTrackImageIds[track];
+    pWidget->SetSpriteId(g_awTrackImageIds[track]);
     return 1;
 }
 
@@ -3046,13 +3040,13 @@ int TimeAttackUI_UpdateTrackImage(MenuWidget *pWidget) {
     if (g_pActiveMenuScreen == g_pCachedMenu_LoadGhost && !g_dwTimeAttackLoadSelected) {
         return -2;
     }
-    pWidget->nSpriteId = g_awTimeAttackTrackImageIds[g_dwTrackMenuIndex];
+    pWidget->SetSpriteId(g_awTimeAttackTrackImageIds[g_dwTrackMenuIndex]);
     return 1;
 }
 
 int GameOptionsUI_UpdateForceFeedbackImage(MenuWidget *pWidget) {
     int option = g_bForceFeedbackAvailable ? g_dwOptionForceFeedback : 1;
-    pWidget->nSpriteId = g_abForceFeedbackImageIds[option];
+    pWidget->SetSpriteId(g_abForceFeedbackImageIds[option]);
     return 1;
 }
 
@@ -3065,7 +3059,7 @@ int RaceSetupUI_UpdateWeatherImage(MenuWidget *pWidget) {
         int round = g_bSeasonRoundListBrowsing ? g_dwSeasonSavedRound : g_dwSeasonRound;
         weather = g_SeasonTable[g_bSeasonClass].races[round][1];
     }
-    pWidget->nSpriteId = g_abWeatherImageIds[weather];
+    pWidget->SetSpriteId(g_abWeatherImageIds[weather]);
     return 1;
 }
 
@@ -3074,7 +3068,7 @@ int SeasonUI_UpdateSeasonNameLabel(MenuWidget *pWidget) {
     if (strlen(GetStringResource(g_SeasonTable[season].nameStringId)) == 0) {
         return 0;
     }
-    MenuFont *font = &pWidget->fonts[0];
+    MenuFont *font = &pWidget->GetFont(0);
     font->SetText(_strupr(GetStringResource(g_SeasonTable[season].nameStringId)));
 
     font->MeasureText();
@@ -3098,7 +3092,7 @@ int SeasonUI_UpdateYearOrdinalLabel(MenuWidget *pWidget) {
     }
     char text[128];
     sprintf(text, "%s%s", g_szSeasonYearLabel, GetStringResource(suffix));
-    MenuFont *font = &pWidget->fonts[0];
+    MenuFont *font = &pWidget->GetFont(0);
     font->SetText(text);
 
     font->MeasureText();
@@ -3108,11 +3102,11 @@ int SeasonUI_UpdateYearOrdinalLabel(MenuWidget *pWidget) {
 
 static inline int UpdateLoadedMenuItemState(MenuWidget *pWidget, int loaded) {
     if (loaded) {
-        pWidget->dwFlags &= ~0x1010u;
+        pWidget->SetFlags(pWidget->GetFlags() & ~0x1010u);
     } else {
-        pWidget->dwFlags |= 0x1010u;
-        pWidget->nSpriteId = 2;
-        pWidget->fonts[0].SetStyle(0);
+        pWidget->SetFlags(pWidget->GetFlags() | 0x1010u);
+        pWidget->SetSpriteId(2);
+        pWidget->GetFont(0).SetStyle(0);
     }
     return 1;
 }
@@ -3126,7 +3120,7 @@ int LoadTimeAttackMenuUI_UpdateItemEnabledState(MenuWidget *pWidget) {
 }
 
 static inline void DrawAlternateMenuLabel(MenuWidget *pWidget, const char *text) {
-    MenuFont *font = &pWidget->fonts[0];
+    MenuFont *font = &pWidget->GetFont(0);
     font->SetText(text);
 
     font->MeasureTextAltFont();
@@ -3134,7 +3128,7 @@ static inline void DrawAlternateMenuLabel(MenuWidget *pWidget, const char *text)
 }
 
 static inline int DrawSeasonRoundValue(MenuWidget *pWidget, int value) {
-    MenuFont *font = &pWidget->fonts[0];
+    MenuFont *font = &pWidget->GetFont(0);
     font->SetNumber(value);
 
     font->MeasureTextAltFont();
@@ -3231,7 +3225,7 @@ int SeasonFileUI_UpdateRoundLabel(MenuWidget *pWidget) {
 int SeasonProgressInfoUI_UpdateRoundLabel(MenuWidget *pWidget) {
     sprintf(
         g_szSeasonRoundLabel, "%d", static_cast<int>(static_cast<unsigned>(g_dwSeasonRound) + 1));
-    MenuFont *font = &pWidget->fonts[0];
+    MenuFont *font = &pWidget->GetFont(0);
     font->SetText(GetStringResource(0x37));
     font->AppendText("  ");
     font->AppendText(g_szSeasonRoundLabel);
@@ -3242,7 +3236,7 @@ int SeasonProgressInfoUI_UpdateRoundLabel(MenuWidget *pWidget) {
 }
 
 int KeyConfigUI_UpdateDuplicateBindingWarning(MenuWidget *pWidget) {
-    MenuFont *font = &pWidget->fonts[0];
+    MenuFont *font = &pWidget->GetFont(0);
     if (g_dwKeyBindingDuplicatesFound) {
         font->SetText(GetStringResource(0xaf));
         font->SetStyle(g_adwKeyBindingDuplicateFlags[g_dwKeyConfigSelectedAction] ? 4 : 1);
@@ -3257,14 +3251,14 @@ int KeyConfigUI_UpdateDuplicateBindingWarning(MenuWidget *pWidget) {
 
 int PreRaceInfoUI_UpdateBackButtonText(MenuWidget *pWidget) {
     int stringId = g_dwGameMode == 0 && g_SeasonResumeState.state == 0 ? 0x51 : 0xc;
-    pWidget->fonts[0].SetText(GetStringResource(stringId));
-    MenuFont *font = &pWidget->fonts[0];
+    pWidget->GetFont(0).SetText(GetStringResource(stringId));
+    MenuFont *font = &pWidget->GetFont(0);
     font->MeasureText();
     return 1;
 }
 
 static inline void DrawPrimaryMenuLabel(MenuWidget *pWidget, const char *text) {
-    MenuFont *font = &pWidget->fonts[0];
+    MenuFont *font = &pWidget->GetFont(0);
 
     font->SetText(text);
     font->MeasureText();
@@ -3359,11 +3353,11 @@ int RaceSetupUI_UpdateTrackNameLabel(MenuWidget *pWidget) {
         track = g_dwTrackMenuIndex;
     }
     if (g_apTrackMenuItems[track]->flags & 0x10) {
-        float y = pWidget->fY;
-        pWidget->fonts[0].SetY(130.0f);
+        float y = pWidget->GetY();
+        pWidget->GetFont(0).SetY(130.0f);
         DrawPrimaryMenuLabel(pWidget, GetStringResource(0xb0));
         // The widget supplies the font's restored coordinate.
-        pWidget->fonts[0].SetY(y);
+        pWidget->GetFont(0).SetY(y);
     }
     DrawPrimaryMenuLabel(pWidget, text);
     return 1;
@@ -3372,7 +3366,7 @@ int RaceSetupUI_UpdateTrackNameLabel(MenuWidget *pWidget) {
 int RaceSetupUI_UpdateWeatherLabel(MenuWidget *pWidget) {
     bool loadingGhost =
         g_pActiveMenuScreen == g_pCachedMenu_LoadGhost && !g_dwTimeAttackLoadSelected;
-    MenuFont *font = &pWidget->fonts[0];
+    MenuFont *font = &pWidget->GetFont(0);
     int stringId;
     if (loadingGhost) {
         font->SetY(font->GetY() - (8.0f));
@@ -3398,7 +3392,7 @@ int RaceSetupUI_UpdateWeatherLabel(MenuWidget *pWidget) {
 
 int RaceSetupUI_UpdateLapCountLabel(MenuWidget *pWidget) {
     if (g_pActiveMenuScreen != g_pCachedMenu_LoadGhost || g_dwTimeAttackLoadSelected) {
-        MenuFont *font = &pWidget->fonts[0];
+        MenuFont *font = &pWidget->GetFont(0);
         font->SetNumber(g_dwTotalLaps);
 
         font->MeasureTextAltFont();
@@ -3408,8 +3402,8 @@ int RaceSetupUI_UpdateLapCountLabel(MenuWidget *pWidget) {
 }
 
 int CarSetupUI_OnAcceptAndSave(MenuActionWidget *pWidget) {
-    pWidget->pScreen->SetRunning(0);
-    pWidget->pScreen->ShutdownFrontEnd(0);
+    pWidget->GetScreen()->SetRunning(0);
+    pWidget->GetScreen()->ShutdownFrontEnd(0);
     if (g_dwGameMode == GAME_MODE_CHAMPIONSHIP) {
         g_dwTotalLaps = 3;
     }
@@ -3471,12 +3465,12 @@ int PreRaceInfoUI_OnBack(MenuActionWidget *) {
 
 int MultiplayerGameSetupUI_OnBackAsClient(MenuActionWidget *pItem) {
     if (g_dwLaunchedFromLobby) {
-        pItem->pScreen->ShutdownFrontEnd(0);
+        pItem->GetScreen()->ShutdownFrontEnd(0);
         ShutdownApplication(0);
     }
     ReturnFromCachedMenu(pItem, g_pCachedMenu_RaceSetupNetwork, g_pCachedMenu_JoinCreateGame);
     if (g_pNetworkSessionJoinMenu) {
-        g_pNetworkSessionJoinMenu->dwFlags &= ~0x10u;
+        g_pNetworkSessionJoinMenu->SetFlags(g_pNetworkSessionJoinMenu->GetFlags() & ~0x10u);
     }
     DisconnectNetworkSession();
     g_dwSessionEnumPending = 1;
@@ -3486,14 +3480,14 @@ int MultiplayerGameSetupUI_OnBackAsClient(MenuActionWidget *pItem) {
     }
     if ((g_dwServiceProviderIndex == 2 || g_dwServiceProviderIndex == 3) &&
         g_pNetworkSessionJoinMenu) {
-        g_pNetworkSessionJoinMenu->dwFlags &= ~0x10u;
+        g_pNetworkSessionJoinMenu->SetFlags(g_pNetworkSessionJoinMenu->GetFlags() & ~0x10u);
     }
     return 0;
 }
 
 int MultiplayerGameSetupUI_OnBackAsHost(MenuActionWidget *pItem) {
     if (g_dwLaunchedFromLobby) {
-        pItem->pScreen->ShutdownFrontEnd(0);
+        pItem->GetScreen()->ShutdownFrontEnd(0);
         ShutdownApplication(0);
     }
     ReturnFromCachedMenu(pItem, g_pCachedMenu_RaceSetupNetwork, g_pCachedMenu_CreateGame);
@@ -3504,8 +3498,8 @@ int MultiplayerGameSetupUI_OnBackAsHost(MenuActionWidget *pItem) {
     }
     if ((g_dwServiceProviderIndex == 2 || g_dwServiceProviderIndex == 3) &&
         g_pNetworkSessionJoinMenu) {
-        g_pNetworkSessionJoinMenu->dwFlags &= ~0x10u;
-        g_pNetworkSessionJoinMenu->fonts[0].SetStyle(0);
+        g_pNetworkSessionJoinMenu->SetFlags(g_pNetworkSessionJoinMenu->GetFlags() & ~0x10u);
+        g_pNetworkSessionJoinMenu->GetFont(0).SetStyle(0);
     }
     return 0;
 }
@@ -3513,7 +3507,7 @@ int MultiplayerGameSetupUI_OnBackAsHost(MenuActionWidget *pItem) {
 int CreateGameMenuUI_OnBack(MenuActionWidget *pItem) {
     MenuScreen *pDestination;
     NetworkMenuWidget *pJoinMenu;
-    pItem->pScreen->DestroyPanels();
+    pItem->GetScreen()->DestroyPanels();
     delete g_pActiveMenuScreen;
     pJoinMenu = g_pNetworkSessionJoinMenu;
     pDestination = g_pCachedMenu_JoinCreateGame;
@@ -3521,7 +3515,7 @@ int CreateGameMenuUI_OnBack(MenuActionWidget *pItem) {
     g_pMultiplayerGameSetupMenu = nullptr;
     g_pActiveMenuScreen = pDestination;
     if (pJoinMenu) {
-        pJoinMenu->dwFlags &= ~0x10u;
+        pJoinMenu->SetFlags(pJoinMenu->GetFlags() & ~0x10u);
     }
     if ((g_dwServiceProviderIndex == 0 || g_dwServiceProviderIndex == 1) &&
         !g_dwLaunchedFromLobby) {
@@ -3534,7 +3528,7 @@ int CreateGameMenuUI_OnBack(MenuActionWidget *pItem) {
 
 int JoinCreateGameUI_OnBack(MenuActionWidget *pItem) {
     MenuScreen *pDestination;
-    pItem->pScreen->DestroyPanels();
+    pItem->GetScreen()->DestroyPanels();
     delete g_pActiveMenuScreen;
     pDestination = g_pCachedMenu_MultiplayerConnection;
     g_pCachedMenu_JoinCreateGame = nullptr;
@@ -3553,20 +3547,20 @@ int CarSetupUI_OnBackToRaceSetup(MenuActionWidget *pItem) {
 
 int LoadSeasonUI_OnContinueSeason(MenuActionWidget *) {
     ShowPreRaceInfoScreen();
-    g_pExitSeasonConfirmMenu->pfnAction = PreRaceInfoUI_OnBackToLoadSeason;
+    g_pExitSeasonConfirmMenu->SetActionCallback(PreRaceInfoUI_OnBackToLoadSeason);
     g_dwGameMode = GAME_MODE_CHAMPIONSHIP;
     return 1;
 }
 
 int CarSetupUI_OnOpenOptions(MenuActionWidget *) {
     ShowOptionsMenu();
-    g_pOptionsSubMenu->pfnAction = OptionsMenuUI_OnBackToCarSetup;
+    g_pOptionsSubMenu->SetActionCallback(OptionsMenuUI_OnBackToCarSetup);
     return 1;
 }
 
 int CarSetupUI_OnOpenSaveSeason(MenuActionWidget *) {
     ShowSaveSeasonScreen();
-    g_pSaveSeasonBackHandlerMenu->pfnAction = SaveSeasonUI_OnBackToCarSetup;
+    g_pSaveSeasonBackHandlerMenu->SetActionCallback(SaveSeasonUI_OnBackToCarSetup);
     return 1;
 }
 
@@ -3576,7 +3570,7 @@ int OptionsMenuUI_OnBackToRaceResultsInfo(MenuActionWidget *pItem) {
 
 int RaceResultsInfoUI_OnOpenOptions(MenuActionWidget *) {
     ShowOptionsMenu();
-    g_pOptionsSubMenu->pfnAction = OptionsMenuUI_OnBackToRaceResultsInfo;
+    g_pOptionsSubMenu->SetActionCallback(OptionsMenuUI_OnBackToRaceResultsInfo);
     return 1;
 }
 
@@ -3586,7 +3580,7 @@ int SaveSeasonUI_OnBackToRaceResultsInfo(MenuActionWidget *pItem) {
 
 int RaceResultsInfoUI_OnOpenSaveSeason(MenuActionWidget *) {
     ShowSaveSeasonScreen();
-    g_pSaveSeasonBackHandlerMenu->pfnAction = SaveSeasonUI_OnBackToRaceResultsInfo;
+    g_pSaveSeasonBackHandlerMenu->SetActionCallback(SaveSeasonUI_OnBackToRaceResultsInfo);
     return 1;
 }
 
@@ -3596,7 +3590,7 @@ int OptionsMenuUI_OnBackToRaceResultsSummary(MenuActionWidget *pItem) {
 
 int RaceResultsSummaryUI_OnOpenOptions(MenuActionWidget *) {
     ShowOptionsMenu();
-    g_pOptionsSubMenu->pfnAction = OptionsMenuUI_OnBackToRaceResultsSummary;
+    g_pOptionsSubMenu->SetActionCallback(OptionsMenuUI_OnBackToRaceResultsSummary);
     return 1;
 }
 
@@ -3606,7 +3600,7 @@ int SaveSeasonUI_OnBackToRaceResultsSummary(MenuActionWidget *pItem) {
 
 int RaceResultsSummaryUI_OnOpenSaveSeason(MenuActionWidget *) {
     ShowSaveSeasonScreen();
-    g_pSaveSeasonBackHandlerMenu->pfnAction = SaveSeasonUI_OnBackToRaceResultsSummary;
+    g_pSaveSeasonBackHandlerMenu->SetActionCallback(SaveSeasonUI_OnBackToRaceResultsSummary);
     return 1;
 }
 
@@ -3616,7 +3610,7 @@ int OptionsMenuUI_OnBackToRaceResultsTotals(MenuActionWidget *pItem) {
 
 int RaceResultsTotalsUI_OnOpenOptions(MenuActionWidget *) {
     ShowOptionsMenu();
-    g_pOptionsSubMenu->pfnAction = OptionsMenuUI_OnBackToRaceResultsTotals;
+    g_pOptionsSubMenu->SetActionCallback(OptionsMenuUI_OnBackToRaceResultsTotals);
     return 1;
 }
 
@@ -3626,12 +3620,12 @@ int SaveSeasonUI_OnBackToRaceResultsTotals(MenuActionWidget *pItem) {
 
 int RaceResultsTotalsUI_OnOpenSaveSeason(MenuActionWidget *) {
     ShowSaveSeasonScreen();
-    g_pSaveSeasonBackHandlerMenu->pfnAction = SaveSeasonUI_OnBackToRaceResultsTotals;
+    g_pSaveSeasonBackHandlerMenu->SetActionCallback(SaveSeasonUI_OnBackToRaceResultsTotals);
     return 1;
 }
 
 int RaceResultsSummaryUI_OnBack(MenuActionWidget *pItem) {
-    pItem->pScreen->DestroyPanels();
+    pItem->GetScreen()->DestroyPanels();
     delete g_pActiveMenuScreen;
     g_pCachedMenu_RaceResultsSummary = nullptr;
     g_pActiveMenuScreen = g_pCachedMenu_RaceResults;
@@ -3706,7 +3700,7 @@ static inline MenuWidget *AddMenuWidget(
 }
 
 static inline void SetMenuWidgetLabel(MenuWidget *widget, int stringId, const RECT *rect) {
-    widget->nSpriteId = 3;
+    widget->SetSpriteId(3);
     widget->SetText(GetStringResource(stringId), 1, 1, rect);
 }
 
@@ -3740,60 +3734,60 @@ void BuildNetworkCarSetupUI(MenuScreen *pScreen) {
                                        CarSetupUI_OnCycleTransmissionType};
     for (int i = 0; i < 5; ++i) {
         MenuWidget *widget = add(panel->GetX(), panel->GetY() + 19 * i, 0x102001, 1, -1);
-        widget->pfnIdleAction = ValidateEntityState;
-        widget->pfnAction = actions[i];
+        widget->SetIdleActionCallback(ValidateEntityState);
+        widget->SetActionCallback(actions[i]);
         SetMenuWidgetLabel(widget, 0x14 + i, &g_rcMenuCenterPanel);
         panel->SetWidgetCount(panel->GetWidgetCount() + 1);
         panel->SetNavigationCount(panel->GetNavigationCount() + 1);
     }
     if (g_dwNetworkPlayMode == 2) {
         MenuWidget *widget = add(panel->GetX(), panel->GetY() + 95, 0x102001, 1, -1);
-        widget->pfnIdleAction = ValidateEntityState;
-        widget->pfnAction = NetworkCarSetupUI_OnBootPlayer;
+        widget->SetIdleActionCallback(ValidateEntityState);
+        widget->SetActionCallback(NetworkCarSetupUI_OnBootPlayer);
         SetMenuWidgetLabel(widget, 0x68, &g_rcMenuCenterPanel);
         panel->SetWidgetCount(panel->GetWidgetCount() + 1);
         panel->SetNavigationCount(panel->GetNavigationCount() + 1);
     }
     MenuWidget *widget = add(panel->GetX(), panel->GetY() + 114, 0x102001, 1, -1);
-    widget->pfnIdleAction = ValidateEntityState;
-    widget->pfnAction = NetworkCarSetupUI_OnRefreshSessionDesc;
-    widget->pfnAfterUpdate = NetworkCarSetupUI_OnEscape;
+    widget->SetIdleActionCallback(ValidateEntityState);
+    widget->SetActionCallback(NetworkCarSetupUI_OnRefreshSessionDesc);
+    widget->SetAfterUpdateCallback(NetworkCarSetupUI_OnEscape);
     SetMenuWidgetLabel(widget, g_dwLobbyIsHost ? 0x19 : 0x69, &g_rcMenuCenterPanel);
     panel->SetWidgetCount(panel->GetWidgetCount() + 1);
     panel->SetNavigationCount(panel->GetNavigationCount() + 1);
     widget = add(panel->GetX(), panel->GetY() + 133, 0x102001, 1, -1);
-    widget->pfnIdleAction = ValidateEntityState;
-    widget->pfnAction = ReturnToMultiplayerLobby;
+    widget->SetIdleActionCallback(ValidateEntityState);
+    widget->SetActionCallback(ReturnToMultiplayerLobby);
     SetMenuWidgetLabel(widget, 0xc, &g_rcMenuCenterPanel);
     panel->SetWidgetCount(panel->GetWidgetCount() + 1);
     panel->SetNavigationCount(panel->GetNavigationCount() + 1);
     widget = add(32, 330, 0x3001, 1, -1);
-    widget->pfnUpdate = NetworkCarSetupUI_PollChatListSelection;
-    widget->itemList.SetVerticalScrollbar(1);
-    MenuItemList *list = &widget->itemList;
+    widget->SetUpdateCallback(NetworkCarSetupUI_PollChatListSelection);
+    widget->GetItemList().SetVerticalScrollbar(1);
+    MenuItemList *list = &widget->GetItemList();
     list->Initialize(0x1840001, &g_rcNetCarSetupPlayerList, 5, 0, -1);
     g_pNetworkCarSetupMenu = widget;
     panel->SetWidgetCount(panel->GetWidgetCount() + 1);
     widget = add(32, 330, 0x200001, 1, -1);
-    widget->pfnAction = CompleteConnectionTextEdit;
-    widget->pfnUpdate = OnChatMessageEdited;
-    widget->pfnTextEditComplete = NetworkCarSetupUI_SendChatMessage;
-    widget->nSpriteId = 3;
+    widget->SetActionCallback(CompleteConnectionTextEdit);
+    widget->SetUpdateCallback(OnChatMessageEdited);
+    widget->SetTextEditCompleteCallback(NetworkCarSetupUI_SendChatMessage);
+    widget->SetSpriteId(3);
     widget->SetText(g_szEmptyUiString, 0, 1, &g_rcMenuCenterPanel);
-    MenuFont *font = &widget->fonts[0];
-    widget->rcBounds.left = font->SetBoundsLeft(32);
-    widget->rcBounds.right = font->SetBoundsRight(415);
-    widget->rcBounds.top = font->SetBoundsTop(330);
-    widget->rcBounds.bottom = font->SetBoundsBottom(346);
+    MenuFont *font = &widget->GetFont(0);
+    widget->SetBoundsLeft(font->SetBoundsLeft(32));
+    widget->SetBoundsRight(font->SetBoundsRight(415));
+    widget->SetBoundsTop(font->SetBoundsTop(330));
+    widget->SetBoundsBottom(font->SetBoundsBottom(346));
     font->SetInputMaxWidth(367);
     g_dwMenuTextEditActive = 0;
     g_dwInNetworkCarSetup = 1;
     font->SetDrawCaret(1);
     panel->SetWidgetCount(panel->GetWidgetCount() + 1);
     widget = add(484, 2, 0x1001, 1, -1);
-    widget->pfnUpdate = NetworkCarSetupUI_UpdateSelectedPlayer;
-    widget->itemList.SetVerticalScrollbar(1);
-    list = &widget->itemList;
+    widget->SetUpdateCallback(NetworkCarSetupUI_UpdateSelectedPlayer);
+    widget->GetItemList().SetVerticalScrollbar(1);
+    list = &widget->GetItemList();
     list->Initialize(
         g_dwNetworkPlayMode == 2 ? 0x2040001 : 0x3040001, &g_rcMenuNetworkPlayers, 4, 0, -1);
     g_pNetworkPlayerListMenu = widget;
@@ -3801,52 +3795,52 @@ void BuildNetworkCarSetupUI(MenuScreen *pScreen) {
     add(61, 244, 9, 1, 54);
     panel->SetWidgetCount(panel->GetWidgetCount() + 1);
     widget = add(73, 214, 1, 1, 53);
-    widget->pfnUpdate = CarSetupUI_UpdateSteeringIndicatorPos;
+    widget->SetUpdateCallback(CarSetupUI_UpdateSteeringIndicatorPos);
     panel->SetWidgetCount(panel->GetWidgetCount() + 1);
     widget = add(339, 70, 1, 1, 11);
-    widget->pfnUpdate = CarSetupUI_UpdateCarImage;
-    ++widget->nLinkedWidgetCount;
-    widget->anLinkedWidgetIndices[0] = panel->GetWidgetCount() + 1;
+    widget->SetUpdateCallback(CarSetupUI_UpdateCarImage);
+    widget->SetLinkedWidgetCount(widget->GetLinkedWidgetCount() + 1);
+    widget->SetLinkedWidgetIndex(0, panel->GetWidgetCount() + 1);
     panel->SetWidgetCount(panel->GetWidgetCount() + 1);
     widget = add(panel->GetX(), 137, 0x101001, 1, -1);
-    widget->pfnUpdate = CarSetupUI_UpdateCarNameLabel;
-    widget->nSpriteId = 3;
+    widget->SetUpdateCallback(CarSetupUI_UpdateCarNameLabel);
+    widget->SetSpriteId(3);
     widget->SetText(g_szSpace, 1, 1, &g_rcMenuRightLabel);
     panel->SetWidgetCount(panel->GetWidgetCount() + 1);
     widget = add(108, 66, 1, 1, 25);
-    widget->pfnUpdate = CarSetupUI_UpdateTiresImage;
-    ++widget->nLinkedWidgetCount;
-    widget->anLinkedWidgetIndices[0] = panel->GetWidgetCount() + 1;
+    widget->SetUpdateCallback(CarSetupUI_UpdateTiresImage);
+    widget->SetLinkedWidgetCount(widget->GetLinkedWidgetCount() + 1);
+    widget->SetLinkedWidgetIndex(0, panel->GetWidgetCount() + 1);
     panel->SetWidgetCount(panel->GetWidgetCount() + 1);
     widget = add(panel->GetX(), 123, 0x101001, 1, -1);
-    widget->pfnUpdate = CarSetupUI_UpdateTiresLabel;
-    widget->nSpriteId = 3;
+    widget->SetUpdateCallback(CarSetupUI_UpdateTiresLabel);
+    widget->SetSpriteId(3);
     widget->SetText(g_szSpace, 1, 1, &g_rcMenuLeftColumnNarrow);
     panel->SetWidgetCount(panel->GetWidgetCount() + 1);
     widget = add(476, 129, 1, 1, 14);
-    widget->pfnUpdate = CarSetupUI_UpdateShocksImage;
-    ++widget->nLinkedWidgetCount;
-    widget->anLinkedWidgetIndices[0] = panel->GetWidgetCount() + 1;
+    widget->SetUpdateCallback(CarSetupUI_UpdateShocksImage);
+    widget->SetLinkedWidgetCount(widget->GetLinkedWidgetCount() + 1);
+    widget->SetLinkedWidgetIndex(0, panel->GetWidgetCount() + 1);
     panel->SetWidgetCount(panel->GetWidgetCount() + 1);
     widget = add(panel->GetX(), 181, 0x101001, 1, -1);
-    widget->pfnUpdate = CarSetupUI_UpdateShocksLabel;
-    widget->nSpriteId = 3;
+    widget->SetUpdateCallback(CarSetupUI_UpdateShocksLabel);
+    widget->SetSpriteId(3);
     widget->SetText(g_szSpace, 1, 1, &g_rcMenuRightColumn);
     panel->SetWidgetCount(panel->GetWidgetCount() + 1);
     widget = add(505, 200, 1, 1, 12);
-    widget->pfnUpdate = CarSetupUI_UpdateTransmissionImage;
-    ++widget->nLinkedWidgetCount;
-    widget->anLinkedWidgetIndices[0] = panel->GetWidgetCount() + 1;
+    widget->SetUpdateCallback(CarSetupUI_UpdateTransmissionImage);
+    widget->SetLinkedWidgetCount(widget->GetLinkedWidgetCount() + 1);
+    widget->SetLinkedWidgetIndex(0, panel->GetWidgetCount() + 1);
     panel->SetWidgetCount(panel->GetWidgetCount() + 1);
     widget = add(panel->GetX(), 262, 0x101001, 1, -1);
-    widget->pfnUpdate = CarSetupUI_UpdateTransmissionLabel;
-    widget->nSpriteId = 3;
+    widget->SetUpdateCallback(CarSetupUI_UpdateTransmissionLabel);
+    widget->SetSpriteId(3);
     widget->SetText(g_szSpace, 1, 1, &g_rcMenuRightColumnWide);
     panel->SetWidgetCount(panel->GetWidgetCount() + 1);
     widget = add(320, 10, 0x100001, 1, -1);
-    widget->nSpriteId = 0x34;
+    widget->SetSpriteId(0x34);
     widget->SetText(g_szSpace, 1, 4, &g_rcMenuFullScreen);
-    font = &widget->fonts[0];
+    font = &widget->GetFont(0);
 
     font->SetText(g_szSessionName);
     font->MeasureText();
@@ -3864,19 +3858,19 @@ static inline void AddMenuActionButtons(MenuPanel *panel,
         const short images[3] = {120, 82, 84};
         int (*actions[3])(MenuWidget *) = {save, MenuScreen_OnReturnToMainMenu, options};
         MenuWidget *widget = AddMenuWidget(panel, screen, x, y, 0x402001, 1, images[i]);
-        widget->pfnIdleAction = ValidateEntityState;
-        widget->pfnAction = actions[i];
-        widget->rcBounds.top = static_cast<int>(y);
+        widget->SetIdleActionCallback(ValidateEntityState);
+        widget->SetActionCallback(actions[i]);
+        widget->SetBoundsTop(static_cast<int>(y));
         if (i == 0) {
-            widget->rcBounds.left = static_cast<int>(x);
-            right = widget->rcBounds.left + 127;
+            widget->SetBoundsLeft(static_cast<int>(x));
+            right = widget->GetBoundsLeft() + 127;
         } else {
-            widget->rcBounds.left = static_cast<int>(x);
+            widget->SetBoundsLeft(static_cast<int>(x));
         }
-        widget->rcBounds.right = right;
-        widget->rcBounds.bottom = widget->rcBounds.top + 33;
-        widget->nImageMode = 0;
-        widget->anSpriteIds[0] = images[i] + 1;
+        widget->SetBoundsRight(right);
+        widget->SetBoundsBottom(widget->GetBoundsTop() + 33);
+        widget->SetImageMode(0);
+        widget->SetAnimationSpriteId(0, images[i] + 1);
         panel->SetWidgetCount(panel->GetWidgetCount() + 1);
         y += 33;
     }
@@ -3905,14 +3899,14 @@ void BuildRaceResultsTotalsUI(MenuScreen *pScreen) {
     SetMenuWidgetLabel(add(panel->GetX(), 10, 0x100009, 1, -1), 0x4f, &g_rcMenuTitleBar);
     panel->SetWidgetCount(panel->GetWidgetCount() + 1);
     MenuWidget *widget = add(panel->GetX(), panel->GetY() + 95, 0x102001, 1, -1);
-    widget->pfnIdleAction = ValidateEntityState;
-    widget->pfnAction = RaceResultsTotalsUI_OnContinue;
+    widget->SetIdleActionCallback(ValidateEntityState);
+    widget->SetActionCallback(RaceResultsTotalsUI_OnContinue);
     SetMenuWidgetLabel(widget, 0x50, &g_rcMenuCenterPanel);
     panel->SetWidgetCount(panel->GetWidgetCount() + 1);
     panel->SetNavigationCount(panel->GetNavigationCount() + 1);
     widget = add(panel->GetX(), panel->GetY() + 114, 0x102001, 1, -1);
-    widget->pfnIdleAction = ValidateEntityState;
-    widget->pfnAction = RaceResultsTotalsUI_OnBack;
+    widget->SetIdleActionCallback(ValidateEntityState);
+    widget->SetActionCallback(RaceResultsTotalsUI_OnBack);
     SetMenuWidgetLabel(widget, 0xc, &g_rcMenuCenterPanel);
     panel->SetWidgetCount(panel->GetWidgetCount() + 1);
     panel->SetNavigationCount(panel->GetNavigationCount() + 1);
@@ -3921,22 +3915,22 @@ void BuildRaceResultsTotalsUI(MenuScreen *pScreen) {
     SetMenuWidgetLabel(add(106, 85, 0x100001, 1, -1), 0x38, &g_rcMenuSubPanel);
     panel->SetWidgetCount(panel->GetWidgetCount() + 1);
     widget = add(440, 66, 0x5001, 1, -1);
-    widget->pfnUpdate = SeasonUI_UpdateSeasonNameLabel;
-    widget->nSpriteId = 0x34;
+    widget->SetUpdateCallback(SeasonUI_UpdateSeasonNameLabel);
+    widget->SetSpriteId(0x34);
     widget->SetText(g_szEmptyUiString, 1, 4, &g_rcMenuSubPanel);
     panel->SetWidgetCount(panel->GetWidgetCount() + 1);
     SetMenuWidgetLabel(add(106, 123, 0x100001, 1, -1), 0x36, &g_rcMenuSubPanel);
     panel->SetWidgetCount(panel->GetWidgetCount() + 1);
     widget = add(440, 104, 0x5001, 1, -1);
-    widget->pfnUpdate = SeasonUI_UpdateYearOrdinalLabel;
-    widget->nSpriteId = 0x34;
+    widget->SetUpdateCallback(SeasonUI_UpdateYearOrdinalLabel);
+    widget->SetSpriteId(0x34);
     widget->SetText(g_szEmptyUiString, 1, 4, &g_rcMenuSubPanel);
     panel->SetWidgetCount(panel->GetWidgetCount() + 1);
     SetMenuWidgetLabel(add(0, 70, 0x100009, 1, -1), 0x52, &g_rcMenuRightLabel);
     panel->SetWidgetCount(panel->GetWidgetCount() + 1);
     widget = add(330, 97, 0x5001, 1, -1);
-    widget->pfnUpdate = RaceResultsTotalsUI_UpdateRoundsCompletedLabel;
-    widget->nSpriteId = 5;
+    widget->SetUpdateCallback(RaceResultsTotalsUI_UpdateRoundsCompletedLabel);
+    widget->SetSpriteId(5);
     widget->SetText(g_szEmptyUiString, 1, 3, &g_rcMenuRightLabel);
     panel->SetWidgetCount(panel->GetWidgetCount() + 1);
     SetMenuWidgetLabel(add(0, 150, 0x100009, 1, -1), 0x53, &g_rcMenuRightLabel);
@@ -3946,8 +3940,8 @@ void BuildRaceResultsTotalsUI(MenuScreen *pScreen) {
     SetMenuWidgetLabel(add(450, 185, 0x100009, 1, -1), 0x46, &g_rcMenuRightListBox);
     panel->SetWidgetCount(panel->GetWidgetCount() + 1);
     widget = add(450, 141, 0x5001, 1, -1);
-    widget->pfnUpdate = RaceResultsTotalsUI_UpdatePointsNeededLabel;
-    widget->nSpriteId = 5;
+    widget->SetUpdateCallback(RaceResultsTotalsUI_UpdatePointsNeededLabel);
+    widget->SetSpriteId(5);
     widget->SetText(g_szEmptyUiString, 1, 3, &g_rcMenuRightListBox);
     panel->SetWidgetCount(panel->GetWidgetCount() + 1);
     SetMenuWidgetLabel(add(panel->GetX(), 203, 0x100009, 1, -1), 0x40, &g_rcMenuRightColumnWide);
@@ -3955,8 +3949,8 @@ void BuildRaceResultsTotalsUI(MenuScreen *pScreen) {
     SetMenuWidgetLabel(add(panel->GetX(), 265, 0x100009, 1, -1), 0x41, &g_rcMenuRightColumnWide);
     panel->SetWidgetCount(panel->GetWidgetCount() + 1);
     widget = add(450, 217, 0x5001, 1, -1);
-    widget->pfnUpdate = RaceResultsTotalsUI_UpdateTotalPointsLabel;
-    widget->nSpriteId = 5;
+    widget->SetUpdateCallback(RaceResultsTotalsUI_UpdateTotalPointsLabel);
+    widget->SetSpriteId(5);
     widget->SetText(g_szEmptyUiString, 1, 3, &g_rcMenuRightColumnWide);
     panel->SetWidgetCount(panel->GetWidgetCount() + 1);
 }
@@ -3992,8 +3986,8 @@ void BuildRaceResultsInfoUI(MenuScreen *pScreen) {
     const float steps[5] = {0, 19, 38, 57, 95};
     for (int i = 0; i < 5; ++i) {
         MenuWidget *widget = add(panel->GetX(), panel->GetY() + steps[i], 0x102001, 1, -1);
-        widget->pfnIdleAction = ValidateEntityState;
-        widget->pfnAction = actions[i];
+        widget->SetIdleActionCallback(ValidateEntityState);
+        widget->SetActionCallback(actions[i]);
         SetMenuWidgetLabel(widget, i == 4 ? 0x1e : 0x48 + i, &g_rcMenuCenterPanel);
         panel->SetWidgetCount(panel->GetWidgetCount() + 1);
         panel->SetNavigationCount(panel->GetNavigationCount() + 1);
@@ -4003,42 +3997,42 @@ void BuildRaceResultsInfoUI(MenuScreen *pScreen) {
     SetMenuWidgetLabel(add(106, 123, 0x100001, 1, -1), 0x4c, &g_rcMenuSubPanel);
     panel->SetWidgetCount(panel->GetWidgetCount() + 1);
     MenuWidget *widget = add(440, 79, 0x5001, 1, -1);
-    widget->pfnUpdate = SeasonUI_UpdateRoundPlaceLabel;
-    widget->nSpriteId = 5;
+    widget->SetUpdateCallback(SeasonUI_UpdateRoundPlaceLabel);
+    widget->SetSpriteId(5);
     widget->SetText(g_szEmptyUiString, 1, 3, &g_rcMenuSubPanel);
     panel->SetWidgetCount(panel->GetWidgetCount() + 1);
     widget = add(73, 212, 1, 1, 22);
-    widget->pfnUpdate = RaceSetupUI_UpdateWeatherImage;
-    ++widget->nLinkedWidgetCount;
-    widget->anLinkedWidgetIndices[0] = panel->GetWidgetCount() + 1;
+    widget->SetUpdateCallback(RaceSetupUI_UpdateWeatherImage);
+    widget->SetLinkedWidgetCount(widget->GetLinkedWidgetCount() + 1);
+    widget->SetLinkedWidgetIndex(0, panel->GetWidgetCount() + 1);
     panel->SetWidgetCount(panel->GetWidgetCount() + 1);
     widget = add(panel->GetX(), 275, 0x101001, 1, -1);
-    widget->pfnUpdate = RaceSetupUI_UpdateWeatherLabel;
-    widget->nSpriteId = 3;
+    widget->SetUpdateCallback(RaceSetupUI_UpdateWeatherLabel);
+    widget->SetSpriteId(3);
     widget->SetText(g_szSpace, 1, 1, &g_rcMenuLeftColumn);
     panel->SetWidgetCount(panel->GetWidgetCount() + 1);
     widget = add(325, 72, 1, 1, 17);
-    widget->pfnUpdate = RaceSetupUI_UpdateTrackImage;
-    ++widget->nLinkedWidgetCount;
-    widget->anLinkedWidgetIndices[0] = panel->GetWidgetCount() + 1;
+    widget->SetUpdateCallback(RaceSetupUI_UpdateTrackImage);
+    widget->SetLinkedWidgetCount(widget->GetLinkedWidgetCount() + 1);
+    widget->SetLinkedWidgetIndex(0, panel->GetWidgetCount() + 1);
     panel->SetWidgetCount(panel->GetWidgetCount() + 1);
     widget = add(panel->GetX(), 152, 0x101001, 1, -1);
-    widget->pfnUpdate = RaceSetupUI_UpdateTrackNameLabel;
-    widget->nSpriteId = 3;
+    widget->SetUpdateCallback(RaceSetupUI_UpdateTrackNameLabel);
+    widget->SetSpriteId(3);
     widget->SetText(g_szSpace, 1, 1, &g_rcMenuRightColumnMid);
     panel->SetWidgetCount(panel->GetWidgetCount() + 1);
     SetMenuWidgetLabel(add(450, 185, 0x100009, 1, -1), 0x4d, &g_rcMenuRightListBox);
     panel->SetWidgetCount(panel->GetWidgetCount() + 1);
     widget = add(450, 166, 0x5001, 1, -1);
-    widget->pfnUpdate = RaceResultsInfoUI_UpdateSelectedTimeLabel;
-    widget->nSpriteId = 0x34;
+    widget->SetUpdateCallback(RaceResultsInfoUI_UpdateSelectedTimeLabel);
+    widget->SetSpriteId(0x34);
     widget->SetText(g_szEmptyUiString, 1, 4, &g_rcMenuRightListBox);
     panel->SetWidgetCount(panel->GetWidgetCount() + 1);
     SetMenuWidgetLabel(add(panel->GetX(), 258, 0x100009, 1, -1), 0x40, &g_rcMenuRightColumnWide);
     panel->SetWidgetCount(panel->GetWidgetCount() + 1);
     widget = add(450, 211, 0x5001, 1, -1);
-    widget->pfnUpdate = SeasonUI_UpdateRoundPointsLabel;
-    widget->nSpriteId = 5;
+    widget->SetUpdateCallback(SeasonUI_UpdateRoundPointsLabel);
+    widget->SetSpriteId(5);
     widget->SetText(g_szEmptyUiString, 1, 3, &g_rcMenuRightColumnWide);
     panel->SetWidgetCount(panel->GetWidgetCount() + 1);
 }
@@ -4067,13 +4061,13 @@ void BuildRaceResultsSummaryUI(MenuScreen *pScreen) {
     SetMenuWidgetLabel(add(panel->GetX(), 10, 0x100009, 1, -1), 0x4e, &g_rcMenuTitleBar);
     panel->SetWidgetCount(panel->GetWidgetCount() + 1);
     MenuWidget *widget = add(panel->GetX(), panel->GetY(), 0x3001, 1, -1);
-    MenuItemList *list = &widget->itemList;
+    MenuItemList *list = &widget->GetItemList();
 
-    widget->pfnUpdate = SeasonRoundList_UpdateRoundSelection;
+    widget->SetUpdateCallback(SeasonRoundList_UpdateRoundSelection);
     list->SetVerticalScrollbar(1);
     list->Initialize(0x200000, &g_rcMenuListBox, 5, 0, -1);
-    widget->pfnBeforeUpdate = SeasonRoundList_SetBrowsingFlag;
-    widget->pfnAfterUpdate = SeasonRoundList_ClearBrowsingFlag;
+    widget->SetBeforeUpdateCallback(SeasonRoundList_SetBrowsingFlag);
+    widget->SetAfterUpdateCallback(SeasonRoundList_ClearBrowsingFlag);
     if (g_SeasonTable[g_bSeasonClass].raceCount > 0) {
         int round = 0;
         do {
@@ -4089,14 +4083,14 @@ void BuildRaceResultsSummaryUI(MenuScreen *pScreen) {
     panel->SetWidgetCount(panel->GetWidgetCount() + 1);
     panel->SetNavigationCount(panel->GetNavigationCount() + 1);
     widget = add(panel->GetX(), panel->GetY() + 95, 0x102001, 1, -1);
-    widget->pfnIdleAction = ValidateEntityState;
-    widget->pfnAction = ShowRaceResultsTotalsScreen;
+    widget->SetIdleActionCallback(ValidateEntityState);
+    widget->SetActionCallback(ShowRaceResultsTotalsScreen);
     SetMenuWidgetLabel(widget, 0x1e, &g_rcMenuCenterPanel);
     panel->SetWidgetCount(panel->GetWidgetCount() + 1);
     panel->SetNavigationCount(panel->GetNavigationCount() + 1);
     widget = add(panel->GetX(), panel->GetY() + 114, 0x102001, 1, -1);
-    widget->pfnIdleAction = ValidateEntityState;
-    widget->pfnAction = RaceResultsSummaryUI_OnBack;
+    widget->SetIdleActionCallback(ValidateEntityState);
+    widget->SetActionCallback(RaceResultsSummaryUI_OnBack);
     SetMenuWidgetLabel(widget, 0xc, &g_rcMenuCenterPanel);
     panel->SetWidgetCount(panel->GetWidgetCount() + 1);
     panel->SetNavigationCount(panel->GetNavigationCount() + 1);
@@ -4105,49 +4099,49 @@ void BuildRaceResultsSummaryUI(MenuScreen *pScreen) {
     SetMenuWidgetLabel(add(106, 85, 0x100001, 1, -1), 0x38, &g_rcMenuSubPanel);
     panel->SetWidgetCount(panel->GetWidgetCount() + 1);
     widget = add(440, 66, 0x5001, 1, -1);
-    widget->pfnUpdate = SeasonUI_UpdateSeasonNameLabel;
-    widget->nSpriteId = 0x34;
+    widget->SetUpdateCallback(SeasonUI_UpdateSeasonNameLabel);
+    widget->SetSpriteId(0x34);
     widget->SetText(g_szEmptyUiString, 1, 4, &g_rcMenuSubPanel);
     panel->SetWidgetCount(panel->GetWidgetCount() + 1);
     SetMenuWidgetLabel(add(106, 123, 0x100001, 1, -1), 0x36, &g_rcMenuSubPanel);
     panel->SetWidgetCount(panel->GetWidgetCount() + 1);
     widget = add(440, 104, 0x5001, 1, -1);
-    widget->pfnUpdate = SeasonUI_UpdateYearOrdinalLabel;
-    widget->nSpriteId = 0x34;
+    widget->SetUpdateCallback(SeasonUI_UpdateYearOrdinalLabel);
+    widget->SetSpriteId(0x34);
     widget->SetText(g_szEmptyUiString, 1, 4, &g_rcMenuSubPanel);
     panel->SetWidgetCount(panel->GetWidgetCount() + 1);
     SetMenuWidgetLabel(add(106, 185, 0x100001, 1, -1), 0x4c, &g_rcMenuRightListBox);
     panel->SetWidgetCount(panel->GetWidgetCount() + 1);
     widget = add(440, 141, 0x5001, 1, -1);
-    widget->pfnUpdate = SeasonUI_UpdateRoundPlaceLabel;
-    widget->nSpriteId = 5;
+    widget->SetUpdateCallback(SeasonUI_UpdateRoundPlaceLabel);
+    widget->SetSpriteId(5);
     widget->SetText(g_szEmptyUiString, 1, 3, &g_rcMenuRightListBox);
     panel->SetWidgetCount(panel->GetWidgetCount() + 1);
     widget = add(73, 212, 1, 1, 22);
-    widget->pfnUpdate = RaceSetupUI_UpdateWeatherImage;
-    ++widget->nLinkedWidgetCount;
-    widget->anLinkedWidgetIndices[0] = panel->GetWidgetCount() + 1;
+    widget->SetUpdateCallback(RaceSetupUI_UpdateWeatherImage);
+    widget->SetLinkedWidgetCount(widget->GetLinkedWidgetCount() + 1);
+    widget->SetLinkedWidgetIndex(0, panel->GetWidgetCount() + 1);
     panel->SetWidgetCount(panel->GetWidgetCount() + 1);
     widget = add(panel->GetX(), 275, 0x101001, 1, -1);
-    widget->pfnUpdate = RaceSetupUI_UpdateWeatherLabel;
-    widget->nSpriteId = 3;
+    widget->SetUpdateCallback(RaceSetupUI_UpdateWeatherLabel);
+    widget->SetSpriteId(3);
     widget->SetText(g_szSpace, 1, 1, &g_rcMenuLeftColumn);
     panel->SetWidgetCount(panel->GetWidgetCount() + 1);
     widget = add(325, 72, 1, 1, 17);
-    widget->pfnUpdate = RaceSetupUI_UpdateTrackImage;
-    ++widget->nLinkedWidgetCount;
-    widget->anLinkedWidgetIndices[0] = panel->GetWidgetCount() + 1;
+    widget->SetUpdateCallback(RaceSetupUI_UpdateTrackImage);
+    widget->SetLinkedWidgetCount(widget->GetLinkedWidgetCount() + 1);
+    widget->SetLinkedWidgetIndex(0, panel->GetWidgetCount() + 1);
     panel->SetWidgetCount(panel->GetWidgetCount() + 1);
     widget = add(panel->GetX(), 152, 0x101001, 1, -1);
-    widget->pfnUpdate = RaceSetupUI_UpdateTrackNameLabel;
-    widget->nSpriteId = 3;
+    widget->SetUpdateCallback(RaceSetupUI_UpdateTrackNameLabel);
+    widget->SetSpriteId(3);
     widget->SetText(g_szSpace, 1, 1, &g_rcMenuRightColumnMid);
     panel->SetWidgetCount(panel->GetWidgetCount() + 1);
     SetMenuWidgetLabel(add(panel->GetX(), 258, 0x100009, 1, -1), 0x40, &g_rcMenuRightColumnWide);
     panel->SetWidgetCount(panel->GetWidgetCount() + 1);
     widget = add(450, 211, 0x5001, 1, -1);
-    widget->pfnUpdate = SeasonUI_UpdateRoundPointsLabel;
-    widget->nSpriteId = 5;
+    widget->SetUpdateCallback(SeasonUI_UpdateRoundPointsLabel);
+    widget->SetSpriteId(5);
     widget->SetText(g_szEmptyUiString, 1, 3, &g_rcMenuRightColumnWide);
     panel->SetWidgetCount(panel->GetWidgetCount() + 1);
 }
@@ -4173,44 +4167,44 @@ void BuildSeasonProgressInfoUI(MenuScreen *pScreen) {
     SetMenuWidgetLabel(add(panel->GetX(), 10, 0x100009, 1, -1), 0x44, &g_rcMenuTitleBar);
     panel->SetWidgetCount(panel->GetWidgetCount() + 1);
     MenuWidget *widget = add(panel->GetX(), panel->GetY() + 19, 0x102001, 1, -1);
-    widget->pfnIdleAction = ValidateEntityState;
-    widget->pfnAction = SeasonProgressInfoUI_OnResetRound;
+    widget->SetIdleActionCallback(ValidateEntityState);
+    widget->SetActionCallback(SeasonProgressInfoUI_OnResetRound);
     SetMenuWidgetLabel(widget, 0x45, &g_rcMenuCenterPanel);
     panel->SetWidgetCount(panel->GetWidgetCount() + 1);
     panel->SetNavigationCount(panel->GetNavigationCount() + 1);
     widget = add(panel->GetX(), panel->GetY() + 95, 0x102001, 1, -1);
-    widget->pfnIdleAction = ValidateEntityState;
-    widget->pfnAction = SeasonProgressInfoUI_OnCarSetup;
-    widget->nSpriteId = 2;
+    widget->SetIdleActionCallback(ValidateEntityState);
+    widget->SetActionCallback(SeasonProgressInfoUI_OnCarSetup);
+    widget->SetSpriteId(2);
     widget->SetText(GetStringResource(0x1e), 1, 0, &g_rcMenuCenterPanel);
     panel->SetWidgetCount(panel->GetWidgetCount() + 1);
     panel->SetNavigationCount(panel->GetNavigationCount() + 1);
     widget = add(panel->GetX(), panel->GetY() + 114, 0x102001, 1, -1);
-    widget->pfnIdleAction = ValidateEntityState;
-    widget->pfnAction = SeasonProgressInfoUI_OnBack;
+    widget->SetIdleActionCallback(ValidateEntityState);
+    widget->SetActionCallback(SeasonProgressInfoUI_OnBack);
     SetMenuWidgetLabel(widget, 0xc, &g_rcMenuCenterPanel);
     panel->SetWidgetCount(panel->GetWidgetCount() + 1);
     panel->SetNavigationCount(panel->GetNavigationCount() + 1);
     AddMenuActionButtons(
         panel, pScreen, SeasonProgressInfoUI_OnSaveSeason, SeasonProgressInfoUI_OnOptions);
     widget = add(73, 212, 1, 1, 22);
-    widget->pfnUpdate = RaceSetupUI_UpdateWeatherImage;
-    ++widget->nLinkedWidgetCount;
-    widget->anLinkedWidgetIndices[0] = panel->GetWidgetCount() + 1;
+    widget->SetUpdateCallback(RaceSetupUI_UpdateWeatherImage);
+    widget->SetLinkedWidgetCount(widget->GetLinkedWidgetCount() + 1);
+    widget->SetLinkedWidgetIndex(0, panel->GetWidgetCount() + 1);
     panel->SetWidgetCount(panel->GetWidgetCount() + 1);
     widget = add(panel->GetX(), 275, 0x101001, 1, -1);
-    widget->pfnUpdate = RaceSetupUI_UpdateWeatherLabel;
-    widget->nSpriteId = 3;
+    widget->SetUpdateCallback(RaceSetupUI_UpdateWeatherLabel);
+    widget->SetSpriteId(3);
     widget->SetText(g_szSpace, 1, 1, &g_rcMenuLeftColumn);
     panel->SetWidgetCount(panel->GetWidgetCount() + 1);
     widget = add(325, 72, 1, 1, 17);
-    widget->pfnUpdate = RaceSetupUI_UpdateTrackImage;
-    ++widget->nLinkedWidgetCount;
-    widget->anLinkedWidgetIndices[0] = panel->GetWidgetCount() + 1;
+    widget->SetUpdateCallback(RaceSetupUI_UpdateTrackImage);
+    widget->SetLinkedWidgetCount(widget->GetLinkedWidgetCount() + 1);
+    widget->SetLinkedWidgetIndex(0, panel->GetWidgetCount() + 1);
     panel->SetWidgetCount(panel->GetWidgetCount() + 1);
     widget = add(panel->GetX(), 152, 0x101001, 1, -1);
-    widget->pfnUpdate = RaceSetupUI_UpdateTrackNameLabel;
-    widget->nSpriteId = 3;
+    widget->SetUpdateCallback(RaceSetupUI_UpdateTrackNameLabel);
+    widget->SetSpriteId(3);
     widget->SetText(g_szSpace, 1, 1, &g_rcMenuRightColumnMid);
     panel->SetWidgetCount(panel->GetWidgetCount() + 1);
     SetMenuWidgetLabel(add(450, 125, 0x100009, 1, -1), 0x40, &g_rcMenuRightListBox);
@@ -4218,8 +4212,8 @@ void BuildSeasonProgressInfoUI(MenuScreen *pScreen) {
     SetMenuWidgetLabel(add(450, 185, 0x100009, 1, -1), 0x46, &g_rcMenuRightListBox);
     panel->SetWidgetCount(panel->GetWidgetCount() + 1);
     widget = add(450, 141, 0x5001, 1, -1);
-    widget->pfnUpdate = SeasonProgressInfoUI_UpdatePointsNeededLabel;
-    widget->nSpriteId = 5;
+    widget->SetUpdateCallback(SeasonProgressInfoUI_UpdatePointsNeededLabel);
+    widget->SetSpriteId(5);
     widget->SetText(g_szEmptyUiString, 1, 3, &g_rcMenuRightListBox);
     panel->SetWidgetCount(panel->GetWidgetCount() + 1);
     SetMenuWidgetLabel(add(panel->GetX(), 203, 0x100009, 1, -1), 0x40, &g_rcMenuRightColumnWide);
@@ -4227,27 +4221,27 @@ void BuildSeasonProgressInfoUI(MenuScreen *pScreen) {
     SetMenuWidgetLabel(add(panel->GetX(), 265, 0x100009, 1, -1), 0x41, &g_rcMenuRightColumnWide);
     panel->SetWidgetCount(panel->GetWidgetCount() + 1);
     widget = add(450, 217, 0x5001, 1, -1);
-    widget->pfnUpdate = SeasonUI_UpdateTotalPointsLabel;
-    widget->nSpriteId = 5;
+    widget->SetUpdateCallback(SeasonUI_UpdateTotalPointsLabel);
+    widget->SetSpriteId(5);
     widget->SetText(g_szEmptyUiString, 1, 3, &g_rcMenuRightColumnWide);
     panel->SetWidgetCount(panel->GetWidgetCount() + 1);
     SetMenuWidgetLabel(add(106, 85, 0x100001, 1, -1), 0x38, &g_rcMenuSubPanel);
     panel->SetWidgetCount(panel->GetWidgetCount() + 1);
     widget = add(440, 66, 0x5001, 1, -1);
-    widget->pfnUpdate = SeasonUI_UpdateSeasonNameLabel;
-    widget->nSpriteId = 0x34;
+    widget->SetUpdateCallback(SeasonUI_UpdateSeasonNameLabel);
+    widget->SetSpriteId(0x34);
     widget->SetText(g_szEmptyUiString, 1, 4, &g_rcMenuSubPanel);
     panel->SetWidgetCount(panel->GetWidgetCount() + 1);
     SetMenuWidgetLabel(add(106, 123, 0x100001, 1, -1), 0x36, &g_rcMenuSubPanel);
     panel->SetWidgetCount(panel->GetWidgetCount() + 1);
     widget = add(440, 104, 0x5001, 1, -1);
-    widget->pfnUpdate = SeasonUI_UpdateYearOrdinalLabel;
-    widget->nSpriteId = 0x34;
+    widget->SetUpdateCallback(SeasonUI_UpdateYearOrdinalLabel);
+    widget->SetSpriteId(0x34);
     widget->SetText(g_szEmptyUiString, 1, 4, &g_rcMenuSubPanel);
     panel->SetWidgetCount(panel->GetWidgetCount() + 1);
     widget = add(panel->GetX(), panel->GetY() - 19, 0x5001, 1, -1);
-    widget->pfnUpdate = SeasonProgressInfoUI_UpdateRoundLabel;
-    widget->nSpriteId = 0x34;
+    widget->SetUpdateCallback(SeasonProgressInfoUI_UpdateRoundLabel);
+    widget->SetSpriteId(0x34);
     widget->SetText(g_szEmptyUiString, 1, 4, &g_rcMenuCenterPanel);
     panel->SetWidgetCount(panel->GetWidgetCount() + 1);
 }
@@ -4281,22 +4275,22 @@ void BuildMultiplayerConnectionUI(MenuScreen *pScreen) {
                                        MultiplayerConnectionUI_UpdateModemItem};
     for (int i = 0; i < 3; ++i) {
         MenuWidget *widget = add(panel->GetX(), panel->GetY() + 19 * i, 0x102001, 1, -1);
-        widget->pfnIdleAction = updates[i];
-        widget->pfnAction = actions[i];
+        widget->SetIdleActionCallback(updates[i]);
+        widget->SetActionCallback(actions[i]);
         SetMenuWidgetLabel(widget, 0x55 + i, &g_rcMenuCenterPanel);
         panel->SetWidgetCount(panel->GetWidgetCount() + 1);
         panel->SetNavigationCount(panel->GetNavigationCount() + 1);
     }
     MenuWidget *widget = add(panel->GetX(), panel->GetY() + 114, 0x102001, 1, -1);
-    widget->pfnIdleAction = ValidateEntityState;
-    widget->pfnAction = MultiplayerConnectionUI_OnBack;
+    widget->SetIdleActionCallback(ValidateEntityState);
+    widget->SetActionCallback(MultiplayerConnectionUI_OnBack);
     SetMenuWidgetLabel(widget, 0xc, &g_rcMenuCenterPanel);
     panel->SetWidgetCount(panel->GetWidgetCount() + 1);
     panel->SetNavigationCount(panel->GetNavigationCount() + 1);
     add(95, 317, 9, 0, 103);
     panel->SetWidgetCount(panel->GetWidgetCount() + 1);
     widget = add(130, 336, 0x100009, 1, -1);
-    widget->nSpriteId = 0x34;
+    widget->SetSpriteId(0x34);
     widget->SetText(GetStringResource(0x59), 1, 4, &g_rcMenuCenterPanel);
     panel->SetWidgetCount(panel->GetWidgetCount() + 1);
     SetMenuWidgetLabel(add(130, 374, 0x100009, 1, -1), 0x5a, &g_rcMenuCenterPanel);
@@ -4306,17 +4300,17 @@ void BuildMultiplayerConnectionUI(MenuScreen *pScreen) {
     for (int i = 0; i < 2; ++i) {
         int top = 393 + 38 * i;
         widget = add(155, static_cast<float>(top), 0x200001, 1, -1);
-        widget->pfnAction = ConnectionUI_OnToggleTextEdit;
-        widget->pfnUpdate = i == 0 ? OnTcpIpPortEdited : OnTcpIpAddressEdited;
-        widget->pfnTextEditComplete = CompleteConnectionTextEdit;
-        widget->nSpriteId = 3;
+        widget->SetActionCallback(ConnectionUI_OnToggleTextEdit);
+        widget->SetUpdateCallback(i == 0 ? OnTcpIpPortEdited : OnTcpIpAddressEdited);
+        widget->SetTextEditCompleteCallback(CompleteConnectionTextEdit);
+        widget->SetSpriteId(3);
         widget->SetText(g_szEmptyUiString, 1, 1, &g_rcMenuCenterPanel);
-        MenuFont *font = &widget->fonts[0];
+        MenuFont *font = &widget->GetFont(0);
         font->MeasureText();
-        widget->rcBounds.left = font->SetBoundsLeft(155);
-        widget->rcBounds.right = font->SetBoundsRight(347);
-        widget->rcBounds.top = font->SetBoundsTop(top);
-        widget->rcBounds.bottom = font->SetBoundsBottom(top + 16);
+        widget->SetBoundsLeft(font->SetBoundsLeft(155));
+        widget->SetBoundsRight(font->SetBoundsRight(347));
+        widget->SetBoundsTop(font->SetBoundsTop(top));
+        widget->SetBoundsBottom(font->SetBoundsBottom(top + 16));
         font->SetInputMaxWidth(
             static_cast<short>(static_cast<unsigned short>(font->GetBoundsRight()) -
                                static_cast<unsigned short>(font->GetBoundsLeft()) - 16));
@@ -4332,13 +4326,13 @@ void BuildMultiplayerConnectionUI(MenuScreen *pScreen) {
     add(80, 46, 9, 0, 7);
     panel->SetWidgetCount(panel->GetWidgetCount() + 1);
     widget = add(339, 61, 1, 1, 69);
-    widget->pfnUpdate = ConnectionUI_UpdateServiceProviderImage;
-    ++widget->nLinkedWidgetCount;
-    widget->anLinkedWidgetIndices[0] = panel->GetWidgetCount() + 1;
+    widget->SetUpdateCallback(ConnectionUI_UpdateServiceProviderImage);
+    widget->SetLinkedWidgetCount(widget->GetLinkedWidgetCount() + 1);
+    widget->SetLinkedWidgetIndex(0, panel->GetWidgetCount() + 1);
     panel->SetWidgetCount(panel->GetWidgetCount() + 1);
     widget = add(panel->GetX(), 160, 0x101001, 1, -1);
-    widget->pfnUpdate = ConnectionUI_UpdateServiceProviderLabel;
-    widget->nSpriteId = 3;
+    widget->SetUpdateCallback(ConnectionUI_UpdateServiceProviderLabel);
+    widget->SetSpriteId(3);
     widget->SetText(g_szSpace, 1, 1, &g_rcMenuRightColumnMid);
     panel->SetWidgetCount(panel->GetWidgetCount() + 1);
 }
@@ -4370,58 +4364,59 @@ void BuildMultiplayerGameSetupUI(MenuScreen *pScreen) {
                                            MultiplayerGameSetupUI_OnCycleCarClass};
         for (int i = 0; i < 4; ++i) {
             MenuWidget *widget = add(panel->GetX(), panel->GetY() + 19 * i, 0x102001, 1, -1);
-            widget->pfnIdleAction = i == 0 ? ValidateEntityStateAlwaysTrue : ValidateEntityState;
-            widget->pfnAction = actions[i];
+            widget->SetIdleActionCallback(i == 0 ? ValidateEntityStateAlwaysTrue :
+                                                   ValidateEntityState);
+            widget->SetActionCallback(actions[i]);
             SetMenuWidgetLabel(widget, i == 3 ? 0x65 : 0x1b + i, &g_rcMenuCenterPanel);
             panel->SetWidgetCount(panel->GetWidgetCount() + 1);
             panel->SetNavigationCount(panel->GetNavigationCount() + 1);
         }
     }
     MenuWidget *widget = add(panel->GetX(), panel->GetY() + 95, 0x102001, 1, -1);
-    widget->pfnIdleAction = ValidateEntityState;
-    widget->pfnAction = ShowNetworkCarSetupScreen;
-    widget->pfnAfterUpdate = MultiplayerGameSetupUI_OnEscape;
+    widget->SetIdleActionCallback(ValidateEntityState);
+    widget->SetActionCallback(ShowNetworkCarSetupScreen);
+    widget->SetAfterUpdateCallback(MultiplayerGameSetupUI_OnEscape);
     SetMenuWidgetLabel(widget, g_dwLobbyIsHost ? 0x66 : 0x1e, &g_rcMenuCenterPanel);
     panel->SetWidgetCount(panel->GetWidgetCount() + 1);
     panel->SetNavigationCount(panel->GetNavigationCount() + 1);
     widget = add(panel->GetX(), panel->GetY() + 114, 0x102001, 1, -1);
-    widget->pfnIdleAction = ValidateEntityState;
+    widget->SetIdleActionCallback(ValidateEntityState);
     SetMenuWidgetLabel(widget, g_dwLaunchedFromLobby ? 0x67 : 0xc, &g_rcMenuCenterPanel);
     g_pMultiplayerGameSetupMenu = widget;
     panel->SetWidgetCount(panel->GetWidgetCount() + 1);
     panel->SetNavigationCount(panel->GetNavigationCount() + 1);
     widget = add(73, 212, 1, 1, 22);
-    widget->pfnUpdate = RaceSetupUI_UpdateWeatherImage;
-    ++widget->nLinkedWidgetCount;
-    widget->anLinkedWidgetIndices[0] = panel->GetWidgetCount() + 1;
+    widget->SetUpdateCallback(RaceSetupUI_UpdateWeatherImage);
+    widget->SetLinkedWidgetCount(widget->GetLinkedWidgetCount() + 1);
+    widget->SetLinkedWidgetIndex(0, panel->GetWidgetCount() + 1);
     panel->SetWidgetCount(panel->GetWidgetCount() + 1);
     widget = add(panel->GetX(), 275, 0x101001, 1, -1);
-    widget->pfnUpdate = RaceSetupUI_UpdateWeatherLabel;
-    widget->nSpriteId = 3;
+    widget->SetUpdateCallback(RaceSetupUI_UpdateWeatherLabel);
+    widget->SetSpriteId(3);
     widget->SetText(g_szSpace, 1, 1, &g_rcMenuLeftColumn);
     panel->SetWidgetCount(panel->GetWidgetCount() + 1);
     widget = add(325, 72, 1, 1, 17);
-    widget->pfnUpdate = RaceSetupUI_UpdateTrackImage;
-    ++widget->nLinkedWidgetCount;
-    widget->anLinkedWidgetIndices[0] = panel->GetWidgetCount() + 1;
+    widget->SetUpdateCallback(RaceSetupUI_UpdateTrackImage);
+    widget->SetLinkedWidgetCount(widget->GetLinkedWidgetCount() + 1);
+    widget->SetLinkedWidgetIndex(0, panel->GetWidgetCount() + 1);
     panel->SetWidgetCount(panel->GetWidgetCount() + 1);
     widget = add(panel->GetX(), 152, 0x101001, 1, -1);
-    widget->pfnUpdate = RaceSetupUI_UpdateTrackNameLabel;
-    widget->nSpriteId = 3;
+    widget->SetUpdateCallback(RaceSetupUI_UpdateTrackNameLabel);
+    widget->SetSpriteId(3);
     widget->SetText(g_szSpace, 1, 1, &g_rcMenuRightColumnMid);
     panel->SetWidgetCount(panel->GetWidgetCount() + 1);
     widget = add(106, 68, 0x5001, 1, -1);
-    widget->pfnUpdate = RaceSetupUI_UpdateLapCountLabel;
-    widget->nSpriteId = 5;
+    widget->SetUpdateCallback(RaceSetupUI_UpdateLapCountLabel);
+    widget->SetSpriteId(5);
     widget->SetText(g_szMenuDigitOne, 1, 3, &g_rcMenuSubPanel);
     panel->SetWidgetCount(panel->GetWidgetCount() + 1);
     SetMenuWidgetLabel(add(106, 115, 0x100001, 1, -1), 0x1d, &g_rcMenuSubPanel);
     panel->SetWidgetCount(panel->GetWidgetCount() + 1);
     widget = add(437, 141, 1, 1, 86);
-    widget->pfnUpdate = MultiplayerSetupUI_UpdateCarGroupImage;
+    widget->SetUpdateCallback(MultiplayerSetupUI_UpdateCarGroupImage);
     panel->SetWidgetCount(panel->GetWidgetCount() + 1);
     widget = add(476, 224, 1, 1, -1);
-    widget->pfnUpdate = MultiplayerSetupUI_UpdateCarGroupSubImage;
+    widget->SetUpdateCallback(MultiplayerSetupUI_UpdateCarGroupSubImage);
     panel->SetWidgetCount(panel->GetWidgetCount() + 1);
 }
 
@@ -4450,12 +4445,12 @@ void BuildPreRaceInfoUI(MenuScreen *pScreen) {
     text(widget, 0x3d, &g_rcMenuTitleBar);
     panel->SetWidgetCount(panel->GetWidgetCount() + 1);
     widget = add(panel->GetX(), panel->GetY(), 0x3001, 1, -1);
-    MenuItemList *list = &widget->itemList;
-    widget->pfnUpdate = SeasonRoundList_UpdateRoundSelection;
+    MenuItemList *list = &widget->GetItemList();
+    widget->SetUpdateCallback(SeasonRoundList_UpdateRoundSelection);
     list->SetVerticalScrollbar(1);
     list->Initialize(0x240000, &g_rcMenuListBox, 5, 0, -1);
-    widget->pfnBeforeUpdate = SeasonRoundList_SetBrowsingFlag;
-    widget->pfnAfterUpdate = SeasonRoundList_ClearBrowsingFlag;
+    widget->SetBeforeUpdateCallback(SeasonRoundList_SetBrowsingFlag);
+    widget->SetAfterUpdateCallback(SeasonRoundList_ClearBrowsingFlag);
     if (g_SeasonTable[g_bSeasonClass].raceCount > 0) {
 
         for (int round = 0; round < g_SeasonTable[g_bSeasonClass].raceCount; ++round) {
@@ -4468,53 +4463,53 @@ void BuildPreRaceInfoUI(MenuScreen *pScreen) {
     }
     panel->SetWidgetCount(panel->GetWidgetCount() + 1);
     widget = add(panel->GetX(), panel->GetY() + 95, 0x102001, 1, -1);
-    widget->pfnIdleAction = ValidateEntityState;
-    widget->pfnAction = ShowSeasonProgressInfoScreen;
-    widget->nSpriteId = 2;
+    widget->SetIdleActionCallback(ValidateEntityState);
+    widget->SetActionCallback(ShowSeasonProgressInfoScreen);
+    widget->SetSpriteId(2);
     widget->SetText(GetStringResource(0x1e), 1, 0, &g_rcMenuCenterPanel);
     panel->SetWidgetCount(panel->GetWidgetCount() + 1);
     panel->SetNavigationCount(panel->GetNavigationCount() + 1);
     widget = add(panel->GetX(), panel->GetY() + 114, 0x102001, 1, -1);
-    widget->pfnIdleAction = ValidateEntityState;
-    widget->pfnAction = PreRaceInfoUI_OnBack;
-    widget->pfnBeforeUpdate = PreRaceInfoUI_UpdateBackButtonText;
-    widget->nSpriteId = 3;
+    widget->SetIdleActionCallback(ValidateEntityState);
+    widget->SetActionCallback(PreRaceInfoUI_OnBack);
+    widget->SetBeforeUpdateCallback(PreRaceInfoUI_UpdateBackButtonText);
+    widget->SetSpriteId(3);
     widget->SetText(GetStringResource(0xc), 1, 1, &g_rcMenuCenterPanel);
     panel->SetWidgetCount(panel->GetWidgetCount() + 1);
     panel->SetNavigationCount(panel->GetNavigationCount() + 1);
     AddMenuActionButtons(panel, pScreen, PreRaceInfoUI_OnSaveSeason, PreRaceInfoUI_OnOptions);
     widget = add(73, 212, 1, 1, 22);
-    widget->pfnUpdate = RaceSetupUI_UpdateWeatherImage;
-    ++widget->nLinkedWidgetCount;
-    widget->anLinkedWidgetIndices[0] = panel->GetWidgetCount() + 1;
+    widget->SetUpdateCallback(RaceSetupUI_UpdateWeatherImage);
+    widget->SetLinkedWidgetCount(widget->GetLinkedWidgetCount() + 1);
+    widget->SetLinkedWidgetIndex(0, panel->GetWidgetCount() + 1);
     panel->SetWidgetCount(panel->GetWidgetCount() + 1);
     widget = add(panel->GetX(), 275, 0x101001, 1, -1);
-    widget->pfnUpdate = RaceSetupUI_UpdateWeatherLabel;
-    widget->nSpriteId = 3;
+    widget->SetUpdateCallback(RaceSetupUI_UpdateWeatherLabel);
+    widget->SetSpriteId(3);
     widget->SetText(g_szSpace, 1, 1, &g_rcMenuLeftColumn);
     panel->SetWidgetCount(panel->GetWidgetCount() + 1);
     widget = add(325, 72, 1, 1, 17);
-    widget->pfnUpdate = RaceSetupUI_UpdateTrackImage;
-    ++widget->nLinkedWidgetCount;
-    widget->anLinkedWidgetIndices[0] = panel->GetWidgetCount() + 1;
+    widget->SetUpdateCallback(RaceSetupUI_UpdateTrackImage);
+    widget->SetLinkedWidgetCount(widget->GetLinkedWidgetCount() + 1);
+    widget->SetLinkedWidgetIndex(0, panel->GetWidgetCount() + 1);
     panel->SetWidgetCount(panel->GetWidgetCount() + 1);
     widget = add(panel->GetX(), 152, 0x101001, 1, -1);
-    widget->pfnUpdate = RaceSetupUI_UpdateTrackNameLabel;
-    widget->nSpriteId = 3;
+    widget->SetUpdateCallback(RaceSetupUI_UpdateTrackNameLabel);
+    widget->SetSpriteId(3);
     widget->SetText(g_szSpace, 1, 1, &g_rcMenuRightColumnMid);
     panel->SetWidgetCount(panel->GetWidgetCount() + 1);
     text(add(450, 147, 0x100009, 1, -1), 0x3e, &g_rcMenuRightListBox);
     panel->SetWidgetCount(panel->GetWidgetCount() + 1);
     widget = add(450, 128, 0x5001, 1, -1);
-    widget->pfnUpdate = PreRaceInfoUI_UpdateBestTimeLabel;
-    widget->nSpriteId = 0x34;
+    widget->SetUpdateCallback(PreRaceInfoUI_UpdateBestTimeLabel);
+    widget->SetSpriteId(0x34);
     widget->SetText(g_szEmptyUiString, 1, 4, &g_rcMenuRightListBox);
     panel->SetWidgetCount(panel->GetWidgetCount() + 1);
     text(add(450, 185, 0x100009, 1, -1), 0x3f, &g_rcMenuRightListBox);
     panel->SetWidgetCount(panel->GetWidgetCount() + 1);
     widget = add(450, 166, 0x5001, 1, -1);
-    widget->pfnUpdate = PreRaceInfoUI_UpdateBestLapLabel;
-    widget->nSpriteId = 0x34;
+    widget->SetUpdateCallback(PreRaceInfoUI_UpdateBestLapLabel);
+    widget->SetSpriteId(0x34);
     widget->SetText(g_szEmptyUiString, 1, 4, &g_rcMenuRightListBox);
     panel->SetWidgetCount(panel->GetWidgetCount() + 1);
     text(add(panel->GetX(), 203, 0x100009, 1, -1), 0x40, &g_rcMenuRightColumnWide);
@@ -4522,22 +4517,22 @@ void BuildPreRaceInfoUI(MenuScreen *pScreen) {
     text(add(panel->GetX(), 265, 0x100009, 1, -1), 0x41, &g_rcMenuRightColumnWide);
     panel->SetWidgetCount(panel->GetWidgetCount() + 1);
     widget = add(450, 217, 0x5001, 1, -1);
-    widget->pfnUpdate = SeasonUI_UpdateTotalPointsLabel;
-    widget->nSpriteId = 5;
+    widget->SetUpdateCallback(SeasonUI_UpdateTotalPointsLabel);
+    widget->SetSpriteId(5);
     widget->SetText(g_szEmptyUiString, 1, 3, &g_rcMenuRightColumnWide);
     panel->SetWidgetCount(panel->GetWidgetCount() + 1);
     text(add(106, 85, 0x100001, 1, -1), 0x38, &g_rcMenuSubPanel);
     panel->SetWidgetCount(panel->GetWidgetCount() + 1);
     widget = add(440, 66, 0x5001, 1, -1);
-    widget->pfnUpdate = SeasonUI_UpdateSeasonNameLabel;
-    widget->nSpriteId = 0x34;
+    widget->SetUpdateCallback(SeasonUI_UpdateSeasonNameLabel);
+    widget->SetSpriteId(0x34);
     widget->SetText(g_szEmptyUiString, 1, 4, &g_rcMenuSubPanel);
     panel->SetWidgetCount(panel->GetWidgetCount() + 1);
     text(add(106, 123, 0x100001, 1, -1), 0x36, &g_rcMenuSubPanel);
     panel->SetWidgetCount(panel->GetWidgetCount() + 1);
     widget = add(440, 104, 0x5001, 1, -1);
-    widget->pfnUpdate = SeasonUI_UpdateYearOrdinalLabel;
-    widget->nSpriteId = 0x34;
+    widget->SetUpdateCallback(SeasonUI_UpdateYearOrdinalLabel);
+    widget->SetSpriteId(0x34);
     widget->SetText(g_szEmptyUiString, 1, 4, &g_rcMenuSubPanel);
     panel->SetWidgetCount(panel->GetWidgetCount() + 1);
 }
@@ -4568,7 +4563,7 @@ int RaceResultsTotalsUI_OnContinue(MenuActionWidget *pItem) {
     } else {
         ShowPreRaceInfoScreen();
     }
-    pItem->pScreen->DestroyPanels();
+    pItem->GetScreen()->DestroyPanels();
     delete g_pCachedMenu_RaceResultsTotals;
     g_pCachedMenu_RaceResultsTotals = nullptr;
     return 0;
