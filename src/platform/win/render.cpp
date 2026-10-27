@@ -1159,3 +1159,8 @@ void ResizeTextureImage(unsigned char *pDest,
         y = static_cast<long double>(y) + yStep;
     }
 }
+
+void ReloadTextureEntryData(int nEntry) {
+    unsigned char *pixels = GetTextureImagePixels(&g_pTextureEntries[nEntry].data);
+    g_pfnUploadTextureEntryToSurface(nEntry, TextureUploadData(pixels));
+}

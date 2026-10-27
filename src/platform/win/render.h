@@ -1276,3 +1276,21 @@ void ResizeTextureImage(unsigned char *pDest,
                         int sourceWidth,
                         int sourceHeight,
                         int nPixelFormatId);
+
+/**
+ * Decode an image descriptor into the texture pixel work buffers.
+ *
+ * @param pImage The image metadata.
+ * @return The decoded pixels.
+ * @ghidraAddress BRD3D: 0x10028860
+ * @stub{BRD3D}
+ */
+unsigned char *GetTextureImagePixels(TextureImageData *pImage);
+
+/**
+ * Decode a loaded entry again and upload the resulting pixels.
+ *
+ * @param nEntry The loaded texture entry.
+ * @ghidraAddress BRD3D: 0x10029060
+ */
+void ReloadTextureEntryData(int nEntry);
