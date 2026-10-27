@@ -1250,7 +1250,7 @@ int ShowCarSetupScreen(void);
 /**
  * @ghidraAddress BRD3D: 0x1004a580
  * @ghidraAddress BRGlide: 0x100439b0
- * @stub
+ * @stub{BRGlide}
  */
 void BuildCarSetupUI(MenuScreen *pScreen);
 

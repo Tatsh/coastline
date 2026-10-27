@@ -6329,6 +6329,42 @@ int BuildPlayerNameEntryUI(MenuScreen *screen) {
     return 1;
 }
 
+static inline void BuildCarSetupPreview(MenuPanel *panel, MenuScreen *screen) {
+    AddMenuWidget(panel, screen, 61, 244, 9, 1, 54);
+    panel->SetWidgetCount(panel->GetWidgetCount() + 1);
+    MenuWidget *widget = AddMenuWidget(panel, screen, 73, 214, 1, 1, 53);
+    widget->SetUpdateCallback(CarSetupUI_UpdateSteeringIndicatorPos);
+    panel->SetWidgetCount(panel->GetWidgetCount() + 1);
+    const float imageX[] = {339, 108, 476, 505};
+    const float imageY[] = {70, 66, 129, 200};
+    const short images[] = {11, 25, 14, 12};
+    const float labelY[] = {137, 123, 181, 262};
+    int (*const imageUpdates[])(MenuWidget *) = {CarSetupUI_UpdateCarImage,
+                                                 CarSetupUI_UpdateTiresImage,
+                                                 CarSetupUI_UpdateShocksImage,
+                                                 CarSetupUI_UpdateTransmissionImage};
+    int (*const labelUpdates[])(MenuWidget *) = {CarSetupUI_UpdateCarNameLabel,
+                                                 CarSetupUI_UpdateTiresLabel,
+                                                 CarSetupUI_UpdateShocksLabel,
+                                                 CarSetupUI_UpdateTransmissionLabel};
+    const RECT *const bounds[] = {&g_rcMenuRightLabel,
+                                  &g_rcMenuLeftColumnNarrow,
+                                  &g_rcMenuRightColumn,
+                                  &g_rcMenuRightColumnWide};
+    for (int index = 0; index < 4; index++) {
+        widget = AddMenuWidget(panel, screen, imageX[index], imageY[index], 1, 1, images[index]);
+        widget->SetUpdateCallback(imageUpdates[index]);
+        widget->SetLinkedWidgetCount(widget->GetLinkedWidgetCount() + 1);
+        widget->SetLinkedWidgetIndex(0, panel->GetWidgetCount() + 1);
+        panel->SetWidgetCount(panel->GetWidgetCount() + 1);
+        widget = AddMenuWidget(panel, screen, panel->GetX(), labelY[index], 0x101001, 1, -1);
+        widget->SetUpdateCallback(labelUpdates[index]);
+        widget->SetSpriteId(3);
+        widget->SetText(g_szSpace, 1, 1, bounds[index]);
+        panel->SetWidgetCount(panel->GetWidgetCount() + 1);
+    }
+}
+
 void BuildNetworkCarSetupUI(MenuScreen *pScreen) {
     pScreen->SetCurrentPanelIndex(0);
     g_dwGameMode = 6;
@@ -6417,51 +6453,7 @@ void BuildNetworkCarSetupUI(MenuScreen *pScreen) {
         g_dwNetworkPlayMode == 2 ? 0x2040001 : 0x3040001, &g_rcMenuNetworkPlayers, 4, 0, -1);
     g_pNetworkPlayerListMenu = widget;
     panel->SetWidgetCount(panel->GetWidgetCount() + 1);
-    add(61, 244, 9, 1, 54);
-    panel->SetWidgetCount(panel->GetWidgetCount() + 1);
-    widget = add(73, 214, 1, 1, 53);
-    widget->SetUpdateCallback(CarSetupUI_UpdateSteeringIndicatorPos);
-    panel->SetWidgetCount(panel->GetWidgetCount() + 1);
-    widget = add(339, 70, 1, 1, 11);
-    widget->SetUpdateCallback(CarSetupUI_UpdateCarImage);
-    widget->SetLinkedWidgetCount(widget->GetLinkedWidgetCount() + 1);
-    widget->SetLinkedWidgetIndex(0, panel->GetWidgetCount() + 1);
-    panel->SetWidgetCount(panel->GetWidgetCount() + 1);
-    widget = add(panel->GetX(), 137, 0x101001, 1, -1);
-    widget->SetUpdateCallback(CarSetupUI_UpdateCarNameLabel);
-    widget->SetSpriteId(3);
-    widget->SetText(g_szSpace, 1, 1, &g_rcMenuRightLabel);
-    panel->SetWidgetCount(panel->GetWidgetCount() + 1);
-    widget = add(108, 66, 1, 1, 25);
-    widget->SetUpdateCallback(CarSetupUI_UpdateTiresImage);
-    widget->SetLinkedWidgetCount(widget->GetLinkedWidgetCount() + 1);
-    widget->SetLinkedWidgetIndex(0, panel->GetWidgetCount() + 1);
-    panel->SetWidgetCount(panel->GetWidgetCount() + 1);
-    widget = add(panel->GetX(), 123, 0x101001, 1, -1);
-    widget->SetUpdateCallback(CarSetupUI_UpdateTiresLabel);
-    widget->SetSpriteId(3);
-    widget->SetText(g_szSpace, 1, 1, &g_rcMenuLeftColumnNarrow);
-    panel->SetWidgetCount(panel->GetWidgetCount() + 1);
-    widget = add(476, 129, 1, 1, 14);
-    widget->SetUpdateCallback(CarSetupUI_UpdateShocksImage);
-    widget->SetLinkedWidgetCount(widget->GetLinkedWidgetCount() + 1);
-    widget->SetLinkedWidgetIndex(0, panel->GetWidgetCount() + 1);
-    panel->SetWidgetCount(panel->GetWidgetCount() + 1);
-    widget = add(panel->GetX(), 181, 0x101001, 1, -1);
-    widget->SetUpdateCallback(CarSetupUI_UpdateShocksLabel);
-    widget->SetSpriteId(3);
-    widget->SetText(g_szSpace, 1, 1, &g_rcMenuRightColumn);
-    panel->SetWidgetCount(panel->GetWidgetCount() + 1);
-    widget = add(505, 200, 1, 1, 12);
-    widget->SetUpdateCallback(CarSetupUI_UpdateTransmissionImage);
-    widget->SetLinkedWidgetCount(widget->GetLinkedWidgetCount() + 1);
-    widget->SetLinkedWidgetIndex(0, panel->GetWidgetCount() + 1);
-    panel->SetWidgetCount(panel->GetWidgetCount() + 1);
-    widget = add(panel->GetX(), 262, 0x101001, 1, -1);
-    widget->SetUpdateCallback(CarSetupUI_UpdateTransmissionLabel);
-    widget->SetSpriteId(3);
-    widget->SetText(g_szSpace, 1, 1, &g_rcMenuRightColumnWide);
-    panel->SetWidgetCount(panel->GetWidgetCount() + 1);
+    BuildCarSetupPreview(panel, pScreen);
     widget = add(320, 10, 0x100001, 1, -1);
     widget->SetSpriteId(0x34);
     widget->SetText(g_szSpace, 1, 4, &g_rcMenuFullScreen);
@@ -6475,30 +6467,83 @@ void BuildNetworkCarSetupUI(MenuScreen *pScreen) {
 static inline void AddMenuActionButtons(MenuPanel *panel,
                                         MenuScreen *screen,
                                         int (*save)(MenuWidget *),
-                                        int (*options)(MenuWidget *)) {
+                                        int (*options)(MenuWidget *),
+                                        bool includeSave = true) {
     float x = static_cast<float>(g_rcHoverBottomLeft.left);
     float y = static_cast<float>(g_rcHoverBottomLeft.top);
     int right;
-    for (int i = 0; i < 3; ++i) {
+    const int first = includeSave ? 0 : 1;
+    for (int i = first; i < 3; ++i) {
         const short images[3] = {120, 82, 84};
         int (*actions[3])(MenuWidget *) = {save, MenuScreen_OnReturnToMainMenu, options};
         MenuWidget *widget = AddMenuWidget(panel, screen, x, y, 0x402001, 1, images[i]);
         widget->SetIdleActionCallback(ValidateEntityState);
         widget->SetActionCallback(actions[i]);
-        widget->SetBoundsTop(static_cast<int>(y));
-        if (i == 0) {
-            widget->SetBoundsLeft(static_cast<int>(x));
-            right = widget->GetBoundsLeft() + 127;
-        } else {
-            widget->SetBoundsLeft(static_cast<int>(x));
+        widget->SetBoundsTop(ConvertMenuCoordinate(y));
+        widget->SetBoundsLeft(ConvertMenuCoordinate(x));
+        if (i == first) {
+            right = static_cast<int>(static_cast<unsigned>(widget->GetBoundsLeft()) + 127u);
         }
         widget->SetBoundsRight(right);
-        widget->SetBoundsBottom(widget->GetBoundsTop() + 33);
+        widget->SetBoundsBottom(
+            static_cast<int>(static_cast<unsigned>(widget->GetBoundsTop()) + 33u));
         widget->SetImageMode(0);
-        widget->SetAnimationSpriteId(0, images[i] + 1);
+        widget->SetAnimationSpriteId(1, images[i] + 1);
         panel->SetWidgetCount(panel->GetWidgetCount() + 1);
         y += 33;
     }
+}
+
+void BuildCarSetupUI(MenuScreen *screen) {
+    screen->SetCurrentPanelIndex(0);
+    screen->SetPanelActive(screen->GetPanelCount(), 1);
+    MenuPanel *panel = new (std::nothrow) MenuPanel();
+    screen->SetPanel(screen->GetPanelCount(), panel);
+    if (!panel) {
+        ShowErrorMessage(4);
+    }
+    screen->SetPanelCount(screen->GetPanelCount() + 1);
+    panel->SetScreen(screen);
+    panel->SetFlags(0);
+    panel->SetX(195);
+    panel->SetY(111);
+    AddMenuWidget(panel, screen, 0, 0, 9, 0, 0);
+    panel->SetWidgetCount(panel->GetWidgetCount() + 1);
+    SetMenuWidgetLabel(
+        AddMenuWidget(panel, screen, panel->GetX(), 10, 0x100009, 1, -1), 0x13, &g_rcMenuTitleBar);
+    panel->SetWidgetCount(panel->GetWidgetCount() + 1);
+    int (*const actions[])(MenuWidget *) = {CarSetupUI_OnCycleCar,
+                                            CarSetupUI_OnCycleTireType,
+                                            CarSetupUI_OnCycleSuspensionType,
+                                            CarSetupUI_OnCycleHandlingType,
+                                            CarSetupUI_OnCycleTransmissionType,
+                                            CarSetupUI_OnAcceptAndSave,
+                                            CarSetupUI_OnBackToRaceSetup};
+    const float offsets[] = {0, 19, 38, 57, 76, 114, 133};
+    for (int index = 0; index < 7; index++) {
+        MenuWidget *widget = AddMenuWidget(
+            panel,
+            screen,
+            panel->GetX(),
+            static_cast<float>(static_cast<long double>(panel->GetY()) + offsets[index]),
+            0x102001,
+            1,
+            -1);
+        widget->SetIdleActionCallback(ValidateEntityState);
+        widget->SetActionCallback(actions[index]);
+        SetMenuWidgetLabel(widget, index == 6 ? 0xc : 0x14 + index, &g_rcMenuCenterPanel);
+        if (index == 6) {
+            g_pCarSetupMenu = widget;
+        }
+        panel->SetWidgetCount(panel->GetWidgetCount() + 1);
+        panel->SetNavigationCount(panel->GetNavigationCount() + 1);
+    }
+    AddMenuActionButtons(panel,
+                         screen,
+                         CarSetupUI_OnOpenSaveSeason,
+                         CarSetupUI_OnOpenOptions,
+                         g_dwGameMode == GAME_MODE_CHAMPIONSHIP);
+    BuildCarSetupPreview(panel, screen);
 }
 
 void BuildRaceResultsTotalsUI(MenuScreen *pScreen) {
