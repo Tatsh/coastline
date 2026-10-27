@@ -16,10 +16,7 @@ public:
 private:
     /** @ghidraAddress EAR: 0x1000af60 */
     void ReleaseEarPlaybackResources() override;
-    /**
-     * @ghidraAddress EAR: 0x1000b8fa
-     * @stub
-     */
+    /** @ghidraAddress EAR: 0x1000b8fa */
     int InitializeEarPlayback(const void *source, int streaming, int looping) override;
     /** @ghidraAddress EAR: 0x10012ba7 */
     std::uint16_t AllocateEarEventId() override;
@@ -35,6 +32,16 @@ private:
     int CheckEarPlaybackLoopCompletion() override;
     /** @ghidraAddress EAR: 0x10009ac0 */
     std::uint32_t GetEarPlaybackMediaLength() override;
+
+    /** @ghidraAddress EAR: 0x1000b2a3 */
+    int OpenWaveFileStream(const char *path);
+    /**
+     * @ghidraAddress EAR: 0x1000b2ec
+     * @stub
+     */
+    int PreparePcmWaveStream(const void *source);
+    /** @ghidraAddress EAR: 0x10012e1b */
+    int CheckWavePlaybackDeviceAccess();
 
     HMMIO file;
     DWORD readOffset;

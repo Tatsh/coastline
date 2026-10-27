@@ -8,6 +8,7 @@
 
 class EarEnvironment;
 class EarPreset;
+class EarPlayback;
 
 template <typename Value>
     requires std::is_class_v<Value>
@@ -21,6 +22,18 @@ public:
         }
         value = static_cast<Value *>(entry);
         return TRUE;
+    }
+};
+
+template <typename Value>
+    requires std::is_class_v<Value>
+class EarDwordPointerRegistry : public CMap<DWORD, DWORD, void *, void *> {
+public:
+    void SetDwordPointerMapValue(DWORD key, Value *value) {
+        SetAt(key, value);
+    }
+    BOOL RemovePlaybackRegistryKey(DWORD key) {
+        return RemoveKey(key);
     }
 };
 
@@ -53,5 +66,8 @@ extern EarWordPointerRegistry<EarEnvironment> g_EnvironmentRegistry;
 extern EarWordPointerRegistry<EarPreset> g_PresetRegistry;
 /** @ghidraAddress EAR: 0x1003b390 */
 extern EarActiveEventRegistry g_ActiveEventRegistry;
+
+/** @ghidraAddress EAR: 0x1003b620 */
+extern EarDwordPointerRegistry<EarPlayback> g_PlaybackRegistry;
 
 #endif

@@ -7,6 +7,7 @@
 #include "directsoundoutput.h"
 #include "error.h"
 #include "playbackimplementations.h"
+#include "registry.h"
 
 namespace {
 // @ghidraAddress EAR: 0x1003b9a4
@@ -19,6 +20,13 @@ void *g_pDirectSoundLockRegion1;
 void *g_pDirectSoundLockRegion2;
 // @ghidraAddress EAR: 0x1003b9b4
 DWORD g_dwDirectSoundLockRegion1Bytes;
+
+static inline std::uint32_t TruncatePlaybackInteger(long double value) {
+    // Invalid x87 integer conversions produce zero in the low 32 bits.
+    return value >= -0x1p63L && value < 0x1p63L ?
+               static_cast<std::uint32_t>(static_cast<std::int64_t>(value)) :
+               0;
+}
 } // namespace
 PcmWaveStream::PcmWaveStream() {
     sampleBuffer = nullptr;
@@ -26,6 +34,55 @@ PcmWaveStream::PcmWaveStream() {
     dataBytes = 0;
     readOffset = 0;
     writeOffset = 0;
+}
+
+int PcmWaveStream::OpenWaveFileStream(const char *path) {
+    file = mmioOpenA(const_cast<char *>(path), nullptr, 0);
+    if (!file) {
+        SetEarLastError(0x0d);
+        return 0;
+    }
+    return 1;
+}
+
+int PcmWaveStream::CheckWavePlaybackDeviceAccess() {
+    return 1;
+}
+
+int PcmWaveStream::InitializeEarPlayback(const void *source, int streaming, int looping) {
+    SetPlaybackStreamingAndLooping(streaming, looping);
+    if (!source) {
+        SetEarLastError(0x0d);
+        return 0;
+    }
+    std::uint16_t mode = GetPlaybackSourceFlags() & 0x6000;
+    if (!mode) {
+        if (!OpenWaveFileStream(static_cast<const char *>(source))) {
+            return 0;
+        }
+    } else if (mode == 0x4000) {
+        file = static_cast<HMMIO>(const_cast<void *>(source));
+    }
+    if (!PreparePcmWaveStream(source)) {
+        return 0;
+    }
+    SetPlaybackBaseFrequency(TruncatePlaybackInteger(
+        static_cast<long double>(format.nSamplesPerSec) * GetPlaybackBaseFrequencyScale()));
+    SetPlaybackHandle(AllocateEarEventId());
+    int count = g_PlaybackRegistry.GetCount();
+    if (static_cast<UINT>(count) == g_PlaybackRegistry.GetHashTableSize()) {
+        SetEarLastError(0x1a);
+        SetPlaybackHandle(0);
+    }
+    if (!HasPlaybackHandle()) {
+        if (sampleBuffer) {
+            std::free(sampleBuffer);
+            sampleBuffer = nullptr;
+        }
+        return 0;
+    }
+    g_PlaybackRegistry.SetDwordPointerMapValue(GetPlaybackHandle(), this);
+    return 1;
 }
 
 std::uint16_t PcmWaveStream::AllocateEarEventId() {
@@ -68,9 +125,7 @@ std::uint16_t PcmWaveStream::AllocateEarEventId() {
     if (HasNonStreamingStartPosition()) {
         long double position =
             static_cast<long double>(GetPlaybackBufferBytes()) * GetPlaybackStartPosition();
-        DWORD offset = position >= -0x1p63L && position < 0x1p63L ?
-                           static_cast<DWORD>(static_cast<std::int64_t>(position)) :
-                           0;
+        DWORD offset = TruncatePlaybackInteger(position);
         if (GetDirectSoundBuffer()->SetCurrentPosition(offset) != DS_OK) {
             return 0;
         }
@@ -100,7 +155,7 @@ void PcmWaveStream::CloseRegisteredEarPlayback() {
 }
 
 void PcmWaveStream::CompleteEarPlayback() {
-    if (!sampleBuffer || !HasPlaybackWaveSample()) {
+    if (!sampleBuffer || !HasPlaybackHandle()) {
         return;
     }
     if (CheckEarPlaybackLoopCompletion()) {

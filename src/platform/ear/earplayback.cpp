@@ -7,6 +7,7 @@
 #include <dsound.h>
 
 #include "error.h"
+#include "registry.h"
 #include "volume.h"
 #include "window.h"
 
@@ -34,7 +35,7 @@ std::uint32_t g_earBufferedPlaybackCursor;
 } // namespace
 
 EarPlayback::EarPlayback() {
-    sample = nullptr;
+    playbackHandle = 0;
     notificationFlags = 0;
     notificationEvent = 0;
     looping = 0;
@@ -81,6 +82,18 @@ std::uint16_t EarPlayback::AllocateEarEventId() {
 HRESULT EarPlayback::CreateDirectSoundPlaybackBuffer(IDirectSound *device,
                                                      _DSBUFFERDESC *description) {
     return device->CreateSoundBuffer(description, std::addressof(directSound.buffer), nullptr);
+}
+
+void EarPlayback::CloseRegisteredEarPlayback() {
+    if (!playbackHandle) {
+        return;
+    }
+    ReleaseDirectSoundEventBuffer();
+    if (notificationFlags & 2) {
+        PostEarWindowMessage(notificationEvent, 2);
+    }
+    g_PlaybackRegistry.RemovePlaybackRegistryKey(playbackHandle);
+    playbackHandle = 0;
 }
 
 int EarPlayback::GetStatus() {
@@ -237,7 +250,7 @@ void EarPlayback::SetEarPlaybackNotification(std::uint32_t flags, std::uint16_t 
 void EarPlayback::SetEarPlaybackDirectionalGain(std::uint16_t direction,
                                                 double gain,
                                                 std::uint16_t matrix) {
-    if (!sample) {
+    if (!playbackHandle) {
         return;
     }
     if (matrix == matrixId && direction == directionIndex &&
@@ -323,7 +336,7 @@ void EarPlayback::InitializeDirectSoundPlaybackState() {
 }
 
 DWORD EarPlayback::GetDirectSoundPlaybackCursor() {
-    if (sample && !completionRequested) {
+    if (playbackHandle && !completionRequested) {
         // Native heap allocation and cursor offsets provide DWORD alignment.
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Waddress-of-packed-member"
@@ -415,7 +428,7 @@ void EarPlayback::UpdateDirectSoundPlaybackGainAndPan() {
     std::uint32_t step = static_cast<std::uint32_t>(static_cast<std::int64_t>(
         static_cast<long double>(delta) * g_adPlaybackSmoothingWeights[smoothingPass]));
     LONG pan = std::bit_cast<LONG>(static_cast<std::uint32_t>(previousMatrixEntry.pan) + step);
-    if (sample) {
+    if (playbackHandle) {
         directSound.buffer->SetVolume(ConvertPercentGainToDirectSoundVolume(interpolated));
         directSound.buffer->SetPan(pan);
     }

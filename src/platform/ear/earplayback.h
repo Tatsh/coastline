@@ -105,10 +105,7 @@ private:
     virtual int ResumeEarPlayback();
 
 protected:
-    /**
-     * @ghidraAddress EAR: 0x1000a88b
-     * @stub
-     */
+    /** @ghidraAddress EAR: 0x1000a88b */
     virtual void CloseRegisteredEarPlayback();
 
 private:
@@ -162,6 +159,22 @@ public:
     virtual int IsBufferedEarPlaybackComplete();
 
 protected:
+    void SetPlaybackStreamingAndLooping(int isStreaming, int isLooping) {
+        streaming = isStreaming;
+        looping = isLooping;
+    }
+    double GetPlaybackBaseFrequencyScale() const {
+        return baseFrequencyScale;
+    }
+    void SetPlaybackBaseFrequency(std::uint32_t value) {
+        baseFrequency = value;
+    }
+    void SetPlaybackHandle(std::uint32_t handle) {
+        playbackHandle = handle;
+    }
+    std::uint32_t GetPlaybackHandle() const {
+        return playbackHandle;
+    }
     /** @ghidraAddress EAR: 0x100126dd */
     virtual int IsDirectSoundBufferStopped();
 
@@ -205,8 +218,8 @@ protected:
     bool IsPlaybackLooping() const {
         return looping != 0;
     }
-    bool HasPlaybackWaveSample() const {
-        return sample != nullptr;
+    bool HasPlaybackHandle() const {
+        return playbackHandle != 0;
     }
     void DisablePlaybackLooping() {
         looping = 0;
@@ -222,7 +235,7 @@ protected:
     }
 
 private:
-    EarWaveSample *sample;
+    std::uint32_t playbackHandle;
     std::uint32_t reservedEventControl;
     std::uint32_t notificationFlags;
     std::uint16_t notificationEvent;
