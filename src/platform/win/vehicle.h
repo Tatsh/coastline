@@ -128,7 +128,8 @@ private:
     s32 spraySurfaces[VEHICLE_WHEELS];
     f32 sprayPhases[VEHICLE_WHEELS];
     s32 sprayAdvanced[VEHICLE_WHEELS];
-    u8 abUnknown10ec[0x34]; /* +0x10ec */
+    Vec3f sprayPositions[VEHICLE_WHEELS];
+    u8 abUnknown111c[4]; /* +0x111c */
     ConvertedModelVertex sprayVertices[VEHICLE_WHEELS][SPRAY_SEGMENTS][SPRAY_SEGMENT_VERTICES];
     s16 sprayVelocities[VEHICLE_WHEELS][SPRAY_SEGMENTS][SPRAY_SEGMENT_VERTICES][3];
     s16 spraySegmentSurfaces[VEHICLE_WHEELS][SPRAY_SEGMENTS];
@@ -194,7 +195,6 @@ public:
     void SpawnTireSmoke();
     /**
      * @ghidraAddress BRD3D: 0x10039200
-     * @stub
      */
     void EmitTireSpray();
     void SetExhaustTimer(f32 value) {

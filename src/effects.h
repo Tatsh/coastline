@@ -120,6 +120,7 @@ s32 ComputeScreenDepthZ(f32 z, f32 w);
 void SpawnExhaustParticle(Vehicle *vehicle);
 #endif
 
+#if TGR_PLATFORM == TGR_PLATFORM_N64
 /**
  * Throw the newest segment of the spray of each wheel from the surface under it, while the wheel
  * is on the ground and a few frames after.
@@ -130,6 +131,7 @@ void SpawnExhaustParticle(Vehicle *vehicle);
  * @ghidraAddress JPN: 0x8023c428
  */
 void EmitTireSpray(Vehicle *vehicle);
+#endif
 
 /**
  * Draw the spray of the wheels of every racer, except in the snow away from the tracks that show
