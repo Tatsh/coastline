@@ -186,3 +186,92 @@ void ScanGbiSetOtherModeL(GbiCommand *pCommand) {
         g_bTexScanRenderModeBlendBit16 = false;
     }
 }
+
+int g_bTexScanColorCombine;
+int g_bTexScanPrimColorSet;
+int g_bTexScanEnvColorSet;
+unsigned char g_bTexScanPrimColorR;
+unsigned char g_bTexScanPrimColorG;
+unsigned char g_bTexScanPrimColorB;
+unsigned char g_bTexScanPrimColorA;
+unsigned char g_bTexScanEnvColorR;
+unsigned char g_bTexScanEnvColorG;
+unsigned char g_bTexScanEnvColorB;
+unsigned char g_bTexScanEnvColorA;
+void (*g_pfnPreprocessDisplayListTextures)(GbiCommand *pCommand);
+
+void PreprocessDisplayListTextures(GbiCommand *pCommand) {
+    if (!pCommand) {
+        return;
+    }
+    g_dwTexScanRenderTileIndex = 0;
+    g_dwTexScanMaxTileIndex = 0;
+    g_bTexScanColorCombine = false;
+    g_dwTexScanLoadState = TEX_SCAN_IDLE;
+    g_pTexScanCmdBlockStart = nullptr;
+    for (;; pCommand++) {
+        switch (pCommand->w0 >> 24) {
+        case GBI_OP_VERTEX:
+        case GBI_OP_TRI2:
+        case GBI_OP_TRI1:
+            FlushPendingTextureLoad(pCommand);
+            break;
+        case GBI_OP_END_DISPLAY_LIST:
+            return;
+        case GBI_OP_SET_OTHER_MODE_L:
+            ScanGbiSetOtherModeL(pCommand);
+            MarkTextureCommandBlockStart(pCommand);
+            break;
+        case 0xba:
+            ScanGbiSetOtherModeH(pCommand);
+            break;
+        case 0xbb:
+            ScanGbiTexture(pCommand);
+            break;
+        case 0xe6:
+            ScanGbiLoadSync(pCommand);
+            break;
+        case 0xe7:
+            ScanGbiPipeSync(pCommand);
+            break;
+        case 0xe8:
+            ScanGbiTileSync(pCommand);
+            break;
+        case 0xf0:
+            ScanGbiLoadTlut(pCommand);
+            break;
+        case GBI_OP_SET_TILE_SIZE:
+            ScanGbiSetTileSize(pCommand);
+            break;
+        case 0xf3:
+            ScanGbiLoadBlock(pCommand);
+            break;
+        case 0xf5:
+            ScanGbiSetTile(pCommand);
+            break;
+        case GBI_OP_SET_PRIM_COLOR:
+            g_bTexScanPrimColorR = pCommand->w1 >> 24;
+            g_bTexScanPrimColorG = pCommand->w1 >> 16;
+            g_bTexScanPrimColorB = pCommand->w1 >> 8;
+            g_bTexScanPrimColorA = pCommand->w1;
+            g_bTexScanPrimColorSet = true;
+            break;
+        case GBI_OP_SET_ENV_COLOR:
+            g_bTexScanEnvColorR = pCommand->w1 >> 24;
+            g_bTexScanEnvColorG = pCommand->w1 >> 16;
+            g_bTexScanEnvColorB = pCommand->w1 >> 8;
+            g_bTexScanEnvColorA = pCommand->w1;
+            g_bTexScanEnvColorSet = true;
+            break;
+        case GBI_OP_SET_COMBINE:
+            g_bTexScanColorCombine = pCommand->w0 == 0xfc50fe04 && pCommand->w1 == 0x3ffdf3f8;
+            break;
+        case 0xfd:
+            ScanGbiSetTextureImage(pCommand);
+            break;
+        default:
+            MarkTextureCommandBlockStart(pCommand);
+            break;
+        }
+    }
+}

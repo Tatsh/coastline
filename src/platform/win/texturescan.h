@@ -291,3 +291,70 @@ void ScanGbiSetOtherModeH(GbiCommand *pCommand);
  * @ghidraAddress BRGlide: 0x100295b0
  */
 void ScanGbiSetTile(GbiCommand *pCommand);
+
+/**
+ * @ghidraAddress BRD3D: 0x10575448
+ */
+extern int g_bTexScanColorCombine;
+/**
+ * @ghidraAddress BRD3D: 0x10575444
+ */
+extern int g_bTexScanPrimColorSet;
+/**
+ * @ghidraAddress BRD3D: 0x10575440
+ */
+extern int g_bTexScanEnvColorSet;
+/**
+ * @ghidraAddress BRD3D: 0x10555400
+ */
+extern unsigned char g_bTexScanPrimColorR;
+/**
+ * @ghidraAddress BRD3D: 0x10575410
+ */
+extern unsigned char g_bTexScanPrimColorG;
+/**
+ * @ghidraAddress BRD3D: 0x105553d8
+ */
+extern unsigned char g_bTexScanPrimColorB;
+/**
+ * @ghidraAddress BRD3D: 0x105551d0
+ */
+extern unsigned char g_bTexScanPrimColorA;
+/**
+ * @ghidraAddress BRD3D: 0x104d51b0
+ */
+extern unsigned char g_bTexScanEnvColorR;
+/**
+ * @ghidraAddress BRD3D: 0x105551d4
+ */
+extern unsigned char g_bTexScanEnvColorG;
+/**
+ * @ghidraAddress BRD3D: 0x104d51a8
+ */
+extern unsigned char g_bTexScanEnvColorB;
+/**
+ * @ghidraAddress BRD3D: 0x104c51a0
+ */
+extern unsigned char g_bTexScanEnvColorA;
+
+/**
+ * Convert a pending texture load when a drawing command consumes it.
+ *
+ * @param pCommand The drawing command.
+ * @ghidraAddress BRD3D: 0x10029410
+ * @stub{BRD3D}
+ */
+void FlushPendingTextureLoad(GbiCommand *pCommand);
+
+/**
+ * Scan a display list for texture loads until its end command.
+ *
+ * @param pCommand The first command, or null.
+ * @ghidraAddress BRD3D: 0x100290e0
+ */
+void PreprocessDisplayListTextures(GbiCommand *pCommand);
+
+/**
+ * @ghidraAddress BRD3D: 0x118aa0c4
+ */
+extern void (*g_pfnPreprocessDisplayListTextures)(GbiCommand *pCommand);
