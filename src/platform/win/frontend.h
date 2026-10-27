@@ -677,6 +677,34 @@ int QuitGameConfirmUI_OnConfirmQuit(MenuWidget *pWidget);
 int RaceSetupUI_UpdateTrackImage(MenuWidget *pWidget);
 
 /**
+ * Update the selected time attack track image after a saved slot has been selected.
+ *
+ * @ghidraAddress BRD3D: 0x100407a0
+ * @ghidraAddress BRGlide: 0x10039ce0
+ */
+int TimeAttackUI_UpdateTrackImage(MenuWidget *pWidget);
+
+/**
+ * Draw the force feedback choice, displaying off when the device lacks support.
+ *
+ * @ghidraAddress BRD3D: 0x10040950
+ * @ghidraAddress BRGlide: 0x10039e90
+ */
+int GameOptionsUI_UpdateForceFeedbackImage(MenuWidget *pWidget);
+
+/**
+ * @ghidraAddress BRD3D: 0x100ac570
+ * @ghidraAddress BRGlide: 0x100abd10
+ */
+extern const short g_awTimeAttackTrackImageIds[];
+
+/**
+ * @ghidraAddress BRD3D: 0x100ac630
+ * @ghidraAddress BRGlide: 0x100abdd0
+ */
+extern const signed char g_abForceFeedbackImageIds[2];
+
+/**
  * @ghidraAddress BRD3D: 0x100407e0
  * @ghidraAddress BRGlide: 0x10039d20
  */

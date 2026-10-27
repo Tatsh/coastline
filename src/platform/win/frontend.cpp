@@ -2288,6 +2288,20 @@ int RaceSetupUI_UpdateTrackImage(MenuWidget *pWidget) {
     return 1;
 }
 
+int TimeAttackUI_UpdateTrackImage(MenuWidget *pWidget) {
+    if (g_pActiveMenuScreen == g_pCachedMenu_LoadGhost && !g_dwTimeAttackLoadSelected) {
+        return -2;
+    }
+    pWidget->nSpriteId = g_awTimeAttackTrackImageIds[g_dwTrackMenuIndex];
+    return 1;
+}
+
+int GameOptionsUI_UpdateForceFeedbackImage(MenuWidget *pWidget) {
+    int option = g_bForceFeedbackAvailable ? g_dwOptionForceFeedback : 1;
+    pWidget->nSpriteId = g_abForceFeedbackImageIds[option];
+    return 1;
+}
+
 int RaceSetupUI_UpdateWeatherImage(MenuWidget *pWidget) {
     if (g_pActiveMenuScreen == g_pCachedMenu_LoadGhost && !g_dwTimeAttackLoadSelected) {
         return -2;
