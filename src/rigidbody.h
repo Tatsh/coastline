@@ -104,11 +104,13 @@ typedef struct RigidBody {
     u8 framesSinceVehicleImpact; /*!< The steps since another vehicle was hit. */
     u8 unreconstructed202;       /*!< Of unknown use; the vehicle sounds clear it while no
                                       effect other than a skid or a roll plays. */
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+    u8 unreconstructed203; /*!< An effect byte sampled by Windows replays. */
+    u8 unreconstructed204; /*!< An effect byte sampled by Windows replays. */
+    u8 replayEffects[3];   /*!< Additional effects sampled by Windows replays. */
+#endif
     u8 landed;   /*!< Set to 0x80 when a wheel lands, then cleared when the sound plays. */
     u8 skidding; /*!< Set to 0x80 when the tyres skid. */
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
-    u8 replayEffects[5]; /*!< Additional effects and controls sampled by Windows replays. */
-#endif
 } RigidBody;
 
 /**

@@ -467,17 +467,17 @@ void BuildVehicleKeyframe(KeyframeState *pState, Vehicle *pVehicle) {
         pState->afWheelContact[i] = static_cast<float>(wheel.contactFrames);
         pState->afWheelSurface[i] = static_cast<float>(static_cast<s8>(wheel.surface));
     }
-    pState->fGearControl = static_cast<float>(pVehicle->body.replayEffects[4]);
+    pState->fGearControl = static_cast<float>(pVehicle->body.skidding);
     pState->fBraking = (pVehicle->input->buttons & 0xc0000) ? 1.0f : 0.0f;
     pState->fReverse = !(pVehicle->throttle >= 0.0f) ? 1.0f : 0.0f;
     pState->fProgress = pVehicle->lap == g_dwTotalLaps ? 4188888.0f : pVehicle->distance;
     pState->fEngineRpm = pVehicle->engineRpm;
     pState->afLight[0] = static_cast<float>(pVehicle->body.vehicleImpactVolume);
     pState->afLight[1] = static_cast<float>(pVehicle->body.impactVolume);
-    pState->afEffectFlags[0] = static_cast<float>(pVehicle->body.replayEffects[3]);
+    pState->afEffectFlags[0] = static_cast<float>(pVehicle->body.landed);
     pState->afEffectFlags[1] = static_cast<float>(pVehicle->body.unreconstructed202);
-    pState->afEffectFlags[2] = static_cast<float>(pVehicle->body.landed);
-    pState->afEffectFlags[3] = static_cast<float>(pVehicle->body.skidding);
+    pState->afEffectFlags[2] = static_cast<float>(pVehicle->body.unreconstructed203);
+    pState->afEffectFlags[3] = static_cast<float>(pVehicle->body.unreconstructed204);
     pState->afEffectFlags[4] = static_cast<float>(pVehicle->body.replayEffects[0]);
     pState->afEffectFlags[5] = static_cast<float>(pVehicle->body.replayEffects[1]);
 }
@@ -499,7 +499,7 @@ void ApplyVehicleKeyframe(Vehicle *pVehicle, const KeyframeState *pState) {
         wheel.contactFrames = static_cast<int>(pState->afWheelContact[i]);
         wheel.surface = static_cast<u8>(static_cast<int>(pState->afWheelSurface[i]));
     }
-    pVehicle->body.replayEffects[4] = static_cast<u8>(static_cast<int>(pState->fGearControl));
+    pVehicle->body.skidding = static_cast<u8>(static_cast<int>(pState->fGearControl));
     if (IsKeyframeFlagSet(pState->fBraking)) {
         pVehicle->input->buttons |= 0x40000;
     } else {
@@ -512,10 +512,10 @@ void ApplyVehicleKeyframe(Vehicle *pVehicle, const KeyframeState *pState) {
     pVehicle->engineRpm = pState->fEngineRpm;
     pVehicle->body.vehicleImpactVolume = static_cast<u8>(static_cast<int>(pState->afLight[0]));
     pVehicle->body.impactVolume = static_cast<u8>(static_cast<int>(pState->afLight[1]));
-    pVehicle->body.replayEffects[3] = static_cast<u8>(static_cast<int>(pState->afEffectFlags[0]));
+    pVehicle->body.landed = static_cast<u8>(static_cast<int>(pState->afEffectFlags[0]));
     pVehicle->body.unreconstructed202 = static_cast<u8>(static_cast<int>(pState->afEffectFlags[1]));
-    pVehicle->body.landed = static_cast<u8>(static_cast<int>(pState->afEffectFlags[2]));
-    pVehicle->body.skidding = static_cast<u8>(static_cast<int>(pState->afEffectFlags[3]));
+    pVehicle->body.unreconstructed203 = static_cast<u8>(static_cast<int>(pState->afEffectFlags[2]));
+    pVehicle->body.unreconstructed204 = static_cast<u8>(static_cast<int>(pState->afEffectFlags[3]));
     pVehicle->body.replayEffects[0] = static_cast<u8>(static_cast<int>(pState->afEffectFlags[4]));
     pVehicle->body.replayEffects[1] = static_cast<u8>(static_cast<int>(pState->afEffectFlags[5]));
     ComputeDeltaQuaternion(&pVehicle->body.state);
@@ -546,10 +546,10 @@ void ApplyGhostKeyframeToVehicle(Vehicle *pVehicle, int nRecording) {
     if (gInstantReplayActive == 2) {
         pVehicle->body.vehicleImpactVolume = 0;
         pVehicle->body.impactVolume = 0;
-        pVehicle->body.replayEffects[3] = 0;
-        pVehicle->body.unreconstructed202 = 0;
         pVehicle->body.landed = 0;
-        pVehicle->body.skidding = 0;
+        pVehicle->body.unreconstructed202 = 0;
+        pVehicle->body.unreconstructed203 = 0;
+        pVehicle->body.unreconstructed204 = 0;
         pVehicle->body.replayEffects[0] = 0;
         pVehicle->body.replayEffects[1] = 0;
         pVehicle->body.replayEffects[2] = 0;
