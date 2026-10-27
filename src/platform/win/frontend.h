@@ -959,8 +959,9 @@ extern int g_dwSelectableTrackMaskAlt;
  *
  * @ghidraAddress BRD3D: 0x10045ea0
  * @ghidraAddress BRGlide: 0x1003f340
+ * @stub{BRGlide}
  */
-void ShowRaceResultsScreen(void);
+int ShowRaceResultsScreen(void);
 
 /**
  * Show the lobby of network play again after a race.
@@ -1590,3 +1591,70 @@ void ResolveRaceSelections(void);
  * @ghidraAddress BRD3D: 0x1003e680
  */
 void ResetMenuSelectionsToDefaults(void);
+
+/**
+ * @ghidraAddress BRD3D: 0x10aa2978
+ */
+extern MenuScreen *g_pRaceResultsSummaryMenuScreen;
+
+/**
+ * @ghidraAddress BRD3D: 0x10052f50
+ */
+void BuildRaceResultsInfoUI(MenuScreen *pScreen);
+
+/**
+ * @ghidraAddress BRD3D: 0x10053cf0
+ */
+void BuildRaceResultsSummaryUI(MenuScreen *pScreen);
+
+/**
+ * @ghidraAddress BRD3D: 0x10054b50
+ */
+void BuildRaceResultsTotalsUI(MenuScreen *pScreen);
+
+/**
+ * @ghidraAddress BRD3D: 0x1004a260
+ */
+void BuildResultsSummaryExitSeasonConfirmUI(MenuScreen *pScreen);
+
+/**
+ * @ghidraAddress BRD3D: 0x10051990
+ */
+void BuildSeasonCongratsUI(MenuScreen *pScreen);
+
+/**
+ * @ghidraAddress BRD3D: 0x10051d30
+ */
+void BuildNotEnoughPointsUI(MenuScreen *pScreen);
+
+/**
+ * Show cached championship congratulations, building the screen on its first visit.
+ *
+ * @return Whether the screen was allocated or already cached.
+ * @ghidraAddress BRD3D: 0x10043260
+ */
+int ShowSeasonCongratsScreen(void);
+
+/**
+ * Show cached championship failure results, building the screen on its first visit.
+ *
+ * @return Whether the screen was allocated or already cached.
+ * @ghidraAddress BRD3D: 0x10043330
+ */
+int ShowNotEnoughPointsScreen(void);
+
+/**
+ * Show cached race totals, building the screen on its first visit.
+ *
+ * @return Whether the screen was allocated or already cached.
+ * @ghidraAddress BRD3D: 0x100460a0
+ */
+int ShowRaceResultsTotalsScreen(void);
+
+/**
+ * Show cached race summary results and build an exit confirmation on the first visit.
+ *
+ * @return Whether both initial allocations succeeded, or the summary was already cached.
+ * @ghidraAddress BRD3D: 0x10045f70
+ */
+int ShowRaceResultsSummaryScreen(void);

@@ -83,6 +83,7 @@ MenuScreen *g_pCachedMenu_SeasonProgressInfo;
 MenuScreen *g_pCachedMenu_RaceResults;
 MenuScreen *g_pCachedMenu_RaceResultsSummary;
 MenuScreen *g_pCachedMenu_RaceResultsTotals;
+MenuScreen *g_pRaceResultsSummaryMenuScreen;
 MenuScreen *g_pCachedMenu_MultiplayerConnection;
 MenuScreen *g_pCachedMenu_Unused2944;
 MenuScreen *g_pCachedMenu_JoinCreateGame;
@@ -532,6 +533,56 @@ void MenuScreen::FlipAndWait() {
 #define SHUTDOWN_DELAY_STATE_3_MS 1540
 
 // Free a cached screen and report whether there was one.
+static inline int ShowCachedMenuScreen(MenuScreen *&pScreen, void (*pfnBuild)(MenuScreen *)) {
+    if (!pScreen) {
+        pScreen = new (std::nothrow) MenuScreen();
+        g_pActiveMenuScreen = pScreen;
+        if (!pScreen) {
+            return 0;
+        }
+        pScreen->pfnBuildMenu = pfnBuild;
+        pScreen->pfnBuildMenu(pScreen);
+        g_pActiveMenuScreen->bBuilt = true;
+        g_pActiveMenuScreen->bRunning = true;
+    } else {
+        g_pActiveMenuScreen = pScreen;
+    }
+    return 1;
+}
+
+int ShowRaceResultsScreen(void) {
+    return ShowCachedMenuScreen(g_pCachedMenu_RaceResults, BuildRaceResultsInfoUI);
+}
+
+int ShowRaceResultsTotalsScreen(void) {
+    return ShowCachedMenuScreen(g_pCachedMenu_RaceResultsTotals, BuildRaceResultsTotalsUI);
+}
+
+int ShowSeasonCongratsScreen(void) {
+    return ShowCachedMenuScreen(g_pCachedMenu_SeasonCongrats, BuildSeasonCongratsUI);
+}
+
+int ShowNotEnoughPointsScreen(void) {
+    return ShowCachedMenuScreen(g_pCachedMenu_NotEnoughPoints, BuildNotEnoughPointsUI);
+}
+
+int ShowRaceResultsSummaryScreen(void) {
+    const bool wasCached = g_pCachedMenu_RaceResultsSummary != nullptr;
+    if (!ShowCachedMenuScreen(g_pCachedMenu_RaceResultsSummary, BuildRaceResultsSummaryUI)) {
+        return 0;
+    }
+    if (!wasCached) {
+        g_pRaceResultsSummaryMenuScreen = new (std::nothrow) MenuScreen();
+        if (!g_pRaceResultsSummaryMenuScreen) {
+            return 0;
+        }
+        g_pRaceResultsSummaryMenuScreen->pfnBuildMenu = BuildResultsSummaryExitSeasonConfirmUI;
+        g_pRaceResultsSummaryMenuScreen->pfnBuildMenu(g_pRaceResultsSummaryMenuScreen);
+        g_pRaceResultsSummaryMenuScreen->bBuilt = true;
+    }
+    return 1;
+}
+
 static inline bool DestroyCachedMenu(MenuScreen *&pScreen) {
     if (pScreen == nullptr) {
         return false;
