@@ -59,6 +59,7 @@ extern s16 g_wSerialInterfaceIdle;
  * @ghidraAddress USA: 0x802a4bec
  * @ghidraAddress EUR: 0x802a7374
  * @ghidraAddress JPN: 0x802a6e14
+ * @ghidraAddress BRD3D: 0x11782ba8
  */
 extern s16 g_awRumbleActive[RUMBLE_CHANNELS];
 
@@ -68,6 +69,7 @@ extern s16 g_awRumbleActive[RUMBLE_CHANNELS];
  * @ghidraAddress USA: 0x802a4bf0
  * @ghidraAddress EUR: 0x802a7378
  * @ghidraAddress JPN: 0x802a6e18
+ * @ghidraAddress BRD3D: 0x11782bac
  */
 extern s16 g_awRumbleMotorOn[RUMBLE_CHANNELS];
 
@@ -77,6 +79,7 @@ extern s16 g_awRumbleMotorOn[RUMBLE_CHANNELS];
  * @ghidraAddress USA: 0x802a4bf4
  * @ghidraAddress EUR: 0x802a737c
  * @ghidraAddress JPN: 0x802a6e1c
+ * @ghidraAddress BRD3D: 0x11782bb0
  */
 extern s16 g_awRumbleOnFrames[RUMBLE_CHANNELS];
 
@@ -86,6 +89,7 @@ extern s16 g_awRumbleOnFrames[RUMBLE_CHANNELS];
  * @ghidraAddress USA: 0x802a4bf8
  * @ghidraAddress EUR: 0x802a7380
  * @ghidraAddress JPN: 0x802a6e20
+ * @ghidraAddress BRD3D: 0x11782bb4
  */
 extern s16 g_awRumbleOffFrames[RUMBLE_CHANNELS];
 
@@ -95,6 +99,7 @@ extern s16 g_awRumbleOffFrames[RUMBLE_CHANNELS];
  * @ghidraAddress USA: 0x802a4bfc
  * @ghidraAddress EUR: 0x802a7384
  * @ghidraAddress JPN: 0x802a6e24
+ * @ghidraAddress BRD3D: 0x11782bb8
  */
 extern s16 g_awRumbleCounter[RUMBLE_CHANNELS];
 
@@ -104,6 +109,7 @@ extern s16 g_awRumbleCounter[RUMBLE_CHANNELS];
  * @ghidraAddress USA: 0x802a4c00
  * @ghidraAddress EUR: 0x802a7388
  * @ghidraAddress JPN: 0x802a6e28
+ * @ghidraAddress BRD3D: 0x11782bbc
  */
 extern s16 g_awRumbleFramesLeft[RUMBLE_CHANNELS];
 

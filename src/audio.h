@@ -21,6 +21,7 @@
 #include "soundpan.h"
 #include "soundsource.h"
 #include "vehicle.h"
+#include "vehiclesound.h"
 
 /** The sample rate the audio interface is asked for. */
 #define AUDIO_FREQUENCY 21998
@@ -487,15 +488,5 @@ void UpdateAmbientSoundChannel(void);
  * @ghidraAddress JPN: 0x8022c760
  */
 void StubSoundUpdate(CameraFrame *camera);
-
-/**
- * Play the engine, the impacts and the rumble of a vehicle for a frame.
- *
- * @param vehicle The vehicle.
- * @ghidraAddress USA: 0x8022bcb4
- * @ghidraAddress EUR: 0x8022d1c4
- * @ghidraAddress JPN: 0x8022c97c
- */
-void UpdateVehicleSounds(Vehicle *vehicle);
 
 #endif

@@ -133,6 +133,7 @@ target_sources(coastline_game PRIVATE assetdma.c camerarender.c collisionstep.c 
 
 target_sources(coastline_game PRIVATE tracetrack.c iomessage.c texturestream.c soundeffect.c soundsource.c)
 target_sources(coastline_game PRIVATE soundpan.c)
+target_sources(coastline_game PRIVATE vehiclesound.c)
 target_sources(coastline_game PRIVATE racersharing.c)
 target_sources(coastline_game PRIVATE racermotion.c frametime.c)
 target_sources(coastline_game PRIVATE raceprogress.c laptime.c)

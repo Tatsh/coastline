@@ -33,7 +33,8 @@ typedef struct Vehicle {
     };
     s32 index;
     s32 gridIndex;
-    u8 abUnknown148[0x1c]; /* +0x148 */
+    u8 abUnknown148[0x1a]; /* +0x148 */
+    s16 skidFrames;
     RigidBody body;
     RigidBody wheelBodies[4];
     RigidBodyForce forces[VEHICLE_FORCES];
@@ -220,6 +221,13 @@ typedef struct Vehicle {
      * @ghidraAddress BRD3D: 0x10066650
      */
     void ManageAiRacerSlots(void);
+
+    /**
+     * Update engine, event, skid, and rolling sounds.
+     *
+     * @ghidraAddress BRD3D: 0x10068400
+     */
+    void UpdateVehicleSounds(void);
 
     /** @ghidraAddress BRD3D: 0x10063ff0 */
     s32 TraceTrackSplineRecursive(s32 depth, s32 pointIndex, TrackSection *section);
