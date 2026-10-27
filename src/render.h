@@ -347,6 +347,7 @@ extern s32 g_bSmoothShading;
  * @ghidraAddress USA: 0x8028ab58
  * @ghidraAddress EUR: 0x8028cd60
  * @ghidraAddress JPN: 0x8028c830
+ * @ghidraAddress BRD3D: 0x106c5ab0
  */
 extern u32 g_dwDirLightColor;
 
@@ -354,6 +355,7 @@ extern u32 g_dwDirLightColor;
  * @ghidraAddress USA: 0x8028ab5c
  * @ghidraAddress EUR: 0x8028cd64
  * @ghidraAddress JPN: 0x8028c834
+ * @ghidraAddress BRD3D: 0x106c29e8
  */
 extern u32 g_dwAmbientLightColor;
 
@@ -372,6 +374,7 @@ extern Lights1 g_DefaultLights;
  * @ghidraAddress USA: 0x8031b338
  * @ghidraAddress EUR: 0x8031d828
  * @ghidraAddress JPN: 0x8031c458
+ * @ghidraAddress BRD3D: 0x106c0670
  */
 extern f32 g_afLightDirection[3];
 
@@ -381,6 +384,7 @@ extern f32 g_afLightDirection[3];
  * @ghidraAddress USA: 0x8031b360
  * @ghidraAddress EUR: 0x8031d858
  * @ghidraAddress JPN: 0x8031c488
+ * @ghidraAddress BRD3D: 0x106c0950
  */
 extern u32 g_adwLightRampColors[4];
 
@@ -408,6 +412,7 @@ extern Gfx g_aClipRatioDisplayLists[CLIP_RATIOS][5];
  * @ghidraAddress USA: 0x8028ab40
  * @ghidraAddress EUR: 0x8028cd48
  * @ghidraAddress JPN: 0x8028c818
+ * @ghidraAddress BRD3D: 0x106c1580
  */
 extern u8 g_bDirLightR;
 
@@ -415,6 +420,7 @@ extern u8 g_bDirLightR;
  * @ghidraAddress USA: 0x8028ab44
  * @ghidraAddress EUR: 0x8028cd4c
  * @ghidraAddress JPN: 0x8028c81c
+ * @ghidraAddress BRD3D: 0x106c335c
  */
 extern u8 g_bDirLightG;
 
@@ -422,6 +428,7 @@ extern u8 g_bDirLightG;
  * @ghidraAddress USA: 0x8028ab48
  * @ghidraAddress EUR: 0x8028cd50
  * @ghidraAddress JPN: 0x8028c820
+ * @ghidraAddress BRD3D: 0x106c0968
  */
 extern u8 g_bDirLightB;
 
@@ -431,6 +438,7 @@ extern u8 g_bDirLightB;
  * @ghidraAddress USA: 0x8028ab4c
  * @ghidraAddress EUR: 0x8028cd54
  * @ghidraAddress JPN: 0x8028c824
+ * @ghidraAddress BRD3D: 0x10690bf0
  */
 extern u8 g_bAmbientLightR;
 
@@ -438,6 +446,7 @@ extern u8 g_bAmbientLightR;
  * @ghidraAddress USA: 0x8028ab50
  * @ghidraAddress EUR: 0x8028cd58
  * @ghidraAddress JPN: 0x8028c828
+ * @ghidraAddress BRD3D: 0x106c0960
  */
 extern u8 g_bAmbientLightG;
 
@@ -445,6 +454,7 @@ extern u8 g_bAmbientLightG;
  * @ghidraAddress USA: 0x8028ab54
  * @ghidraAddress EUR: 0x8028cd5c
  * @ghidraAddress JPN: 0x8028c82c
+ * @ghidraAddress BRD3D: 0x106c65bc
  */
 extern u8 g_bAmbientLightB;
 
@@ -564,6 +574,7 @@ extern s32 g_dwFogFactorScale;
  * @ghidraAddress USA: 0x8031b350
  * @ghidraAddress EUR: 0x8031d848
  * @ghidraAddress JPN: 0x8031c478
+ * @ghidraAddress BRD3D: 0x10690ff8
  */
 extern u8 g_abLightRampR[4];
 
@@ -571,6 +582,7 @@ extern u8 g_abLightRampR[4];
  * @ghidraAddress USA: 0x8031b354
  * @ghidraAddress EUR: 0x8031d84c
  * @ghidraAddress JPN: 0x8031c47c
+ * @ghidraAddress BRD3D: 0x106c6494
  */
 extern u8 g_abLightRampG[4];
 
@@ -578,6 +590,7 @@ extern u8 g_abLightRampG[4];
  * @ghidraAddress USA: 0x8031b358
  * @ghidraAddress EUR: 0x8031d850
  * @ghidraAddress JPN: 0x8031c480
+ * @ghidraAddress BRD3D: 0x106c3358
  */
 extern u8 g_abLightRampB[4];
 
@@ -687,14 +700,21 @@ f32 ComputeFogFactorAtPoint(Vec3f *point);
  */
 f32 GetMaxAbsValue12(f32 m[4][4]);
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 /**
  * Set the direction and the colours of the lights, and the light ramps, for the weather.
  *
  * @ghidraAddress USA: 0x80218d5c
  * @ghidraAddress EUR: 0x80219d7c
  * @ghidraAddress JPN: 0x802196cc
+ * @ghidraAddress BRD3D: 0x10031dcf
  */
 void SetupWeatherLights(void);
+#ifdef __cplusplus
+}
+#endif
 
 /**
  * Set the colour and the range of the fog for the weather and the track, and add them to the

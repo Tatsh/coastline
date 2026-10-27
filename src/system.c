@@ -130,7 +130,6 @@
 #define FARTHEST_DEPTHS ((u32)GPACK_ZDZ(G_MAXFIXED, 0) << 16 | GPACK_ZDZ(G_MAXFIXED, 0))
 
 /* A colour of a light, as the microcode reads it. */
-#define LIGHT_COLOR(red, green, blue) ((u32)(red) << 24 | (u32)(green) << 16 | (u32)(blue) << 8)
 
 /* A blend of the colour of the frame buffer and the colour drawn, by the alpha of the fog. */
 #define RENDER_MODE_FOG_BLEND_C1                                                                   \
@@ -569,86 +568,6 @@ void SetupFog(void) {
         (500 - g_dwFogMinDistance) * 256 / (g_dwFogMaxDistance - g_dwFogMinDistance);
     gSPFogPosition(gDisplayListPtr++, g_dwFogMinDistance, g_dwFogMaxDistance);
     gDPSetFogColor(gDisplayListPtr++, g_bFogR, g_bFogG, g_bFogB, 0xFF);
-}
-
-void SetupWeatherLights(void) {
-    s32 i;
-
-    if (!g_dwNightMode) {
-        g_afLightDirection[0] = 15.0f;
-        g_afLightDirection[1] = 10.0f;
-        g_afLightDirection[2] = 20.0f;
-        Vec3fNormalize((Vec3f *)g_afLightDirection);
-    }
-    if (g_dwSnowMode || g_dwRainMode) {
-        g_bDirLightR = (g_bFogR + 765) >> 2;
-        g_bDirLightG = (g_bFogG + 765) >> 2;
-        g_bDirLightB = (g_bFogB + 612) >> 2;
-        g_bAmbientLightR = g_bFogR * 5 / 8;
-        g_bAmbientLightG = g_bFogG * 5 / 8;
-        g_bAmbientLightB = g_bFogB * 5 / 8;
-    } else if (g_dwNightMode) {
-        g_bDirLightR = 0xDD;
-        g_bDirLightG = 0xEE;
-        g_bDirLightB = 0xFF;
-        g_bAmbientLightR = 0x3C;
-        g_bAmbientLightG = 0x39;
-        g_bAmbientLightB = 0x36;
-    } else if (g_dwWeatherActive) {
-        /* The fog blends the lights of a clear day toward its colour by its intensity. */
-        g_bDirLightR =
-            (((g_bFogR + 255) >> 1) * g_bFogIntensity + (255 - g_bFogIntensity) * 255) / 255;
-        g_bDirLightG =
-            (((g_bFogG + 255) >> 1) * g_bFogIntensity + (255 - g_bFogIntensity) * 255) / 255;
-        g_bDirLightB =
-            (((g_bFogB + 204) >> 1) * g_bFogIntensity + (255 - g_bFogIntensity) * 204) / 255;
-        g_bAmbientLightR =
-            (g_bFogR * 4 / 5 * g_bFogIntensity + (255 - g_bFogIntensity) * 102) / 255;
-        g_bAmbientLightG =
-            (g_bFogG * 4 / 5 * g_bFogIntensity + (255 - g_bFogIntensity) * 102) / 255;
-        g_bAmbientLightB =
-            (g_bFogB * 4 / 5 * g_bFogIntensity + (255 - g_bFogIntensity) * 119) / 255;
-    } else {
-        g_bDirLightR = 255;
-        g_bDirLightG = 255;
-        g_bDirLightB = 204;
-        g_bAmbientLightR = 102;
-        g_bAmbientLightG = 102;
-        g_bAmbientLightB = 119;
-    }
-    if (g_dwNightMode) {
-        g_abLightRampR[0] = g_abLightRampG[0] = g_abLightRampB[0] = 0x22;
-        g_abLightRampR[1] = g_abLightRampG[1] = g_abLightRampB[1] = 0x44;
-        g_abLightRampR[2] = g_abLightRampG[2] = g_abLightRampB[2] = 0x66;
-        g_abLightRampR[3] = g_abLightRampG[3] = g_abLightRampB[3] = 0xFF;
-    } else if (g_dwSnowMode) {
-        g_abLightRampR[0] = g_abLightRampG[0] = 0xD0;
-        g_abLightRampB[0] = 0xF0;
-        g_abLightRampR[1] = g_abLightRampG[1] = 0xE0;
-        g_abLightRampB[1] = 0xFF;
-        g_abLightRampR[2] = g_abLightRampG[2] = 0xF0;
-        g_abLightRampB[2] = 0xFF;
-        g_abLightRampR[3] = g_abLightRampG[3] = g_abLightRampB[3] = 0xFF;
-    } else {
-        g_abLightRampR[0] = g_bDirLightR >> 2;
-        g_abLightRampR[1] = g_bDirLightR >> 1;
-        g_abLightRampR[2] = (g_bDirLightR >> 1) + (g_bDirLightR >> 2);
-        g_abLightRampR[3] = g_bDirLightR;
-        g_abLightRampG[0] = g_bDirLightG >> 2;
-        g_abLightRampG[1] = g_bDirLightG >> 1;
-        g_abLightRampG[2] = (g_bDirLightG >> 1) + (g_bDirLightG >> 2);
-        g_abLightRampG[3] = g_bDirLightG;
-        g_abLightRampB[0] = g_bDirLightB >> 2;
-        g_abLightRampB[1] = g_bDirLightB >> 1;
-        g_abLightRampB[2] = (g_bDirLightB >> 1) + (g_bDirLightB >> 2);
-        g_abLightRampB[3] = g_bDirLightB;
-    }
-    g_dwAmbientLightColor = LIGHT_COLOR(g_bAmbientLightR, g_bAmbientLightG, g_bAmbientLightB);
-    g_dwDirLightColor = LIGHT_COLOR(g_bDirLightR, g_bDirLightG, g_bDirLightB);
-    for (i = 0; i < 4; i++) {
-        g_adwLightRampColors[i] =
-            LIGHT_COLOR(g_abLightRampR[i], g_abLightRampG[i], g_abLightRampB[i]);
-    }
 }
 
 void BeginDisplayList(s32 highRes) {

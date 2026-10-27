@@ -77,6 +77,7 @@ extern u32 g_dwRainMode;
  * @ghidraAddress USA: 0x8028ab20
  * @ghidraAddress EUR: 0x8028cd28
  * @ghidraAddress JPN: 0x8028c7f8
+ * @ghidraAddress BRD3D: 0x106c0260
  */
 extern u8 g_bFogR;
 
@@ -84,6 +85,7 @@ extern u8 g_bFogR;
  * @ghidraAddress USA: 0x8028ab24
  * @ghidraAddress EUR: 0x8028cd2c
  * @ghidraAddress JPN: 0x8028c7fc
+ * @ghidraAddress BRD3D: 0x106c1614
  */
 extern u8 g_bFogG;
 
@@ -91,6 +93,7 @@ extern u8 g_bFogG;
  * @ghidraAddress USA: 0x8028ab28
  * @ghidraAddress EUR: 0x8028cd30
  * @ghidraAddress JPN: 0x8028c800
+ * @ghidraAddress BRD3D: 0x106c0200
  */
 extern u8 g_bFogB;
 
@@ -100,6 +103,7 @@ extern u8 g_bFogB;
  * @ghidraAddress USA: 0x8028ab2c
  * @ghidraAddress EUR: 0x8028cd34
  * @ghidraAddress JPN: 0x8028c804
+ * @ghidraAddress BRD3D: 0x10690be8
  */
 extern u8 g_bFogIntensity;
 
