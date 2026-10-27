@@ -134,7 +134,7 @@ private:
     s16 sprayVelocities[VEHICLE_WHEELS][SPRAY_SEGMENTS][SPRAY_SEGMENT_VERTICES][3];
     s16 spraySegmentSurfaces[VEHICLE_WHEELS][SPRAY_SEGMENTS];
     Vec3f sprayOrigin;
-    f32 inputMatrix[4][4];
+    f32 sprayMtx[4][4];
     s32 inTunnel;
     f32 cameraHeading;
     u8 abUnknown271c[4]; /* +0x271c */

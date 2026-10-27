@@ -6,7 +6,14 @@
 typedef struct ConvertedModelVertex {
     Vec3f position;
     Vec2f texture;
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+    union {
+        Vec3f normal;
+        Vec3f color;
+    };
+#else
     Vec3f normal;
+#endif
 } ConvertedModelVertex;
 
 #ifdef __cplusplus

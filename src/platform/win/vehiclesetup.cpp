@@ -267,7 +267,7 @@ void Vehicle::SetVehicleTurnRate(f32 x, f32 y, f32 z) {
 }
 void Vehicle::BindPlayerInputToVehicle(void) {
     input = &g_aPlayerInputState[this - g_aVehicles];
-    guMtxIdentF(inputMatrix);
+    guMtxIdentF(sprayMtx);
 }
 
 void Vehicle::SetVehicleCarId(s32 carId) {
