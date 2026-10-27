@@ -711,7 +711,17 @@ void TickNetworkPauseRequest(void);
  * @param lParam The second parameter of the message.
  * @ghidraAddress BRD3D: 0x1003c3a0
  */
-void WINAPI HandleNetworkWindowMessage(HWND hWnd, UINT nMessage, WPARAM wParam, LPARAM lParam);
+LRESULT WINAPI HandleNetworkWindowMessage(HWND hWnd, UINT nMessage, WPARAM wParam, LPARAM lParam);
+
+/**
+ * @ghidraAddress BRD3D: 0x100ab408
+ */
+extern const RECT g_rcNetCarSetupPlayerList;
+
+/**
+ * @ghidraAddress BRD3D: 0x10aa2888
+ */
+extern int g_dwNetworkCarSetupShown;
 
 /** A peer of a network game. The layout is not recovered past the members below. */
 struct NetPeerSlot {
@@ -1360,10 +1370,11 @@ int GetNetworkPlayerSlotStatus(int nSlot);
 int GetNetworkPeerChannelStatus(int nSlot);
 
 /**
- * Destroy the groups of players of the session.
+ * Remove entries from the menu of network sessions.
  *
  * @ghidraAddress BRD3D: 0x1003d070
  * @ghidraAddress BRGlide: 0x10036700
+ * @stub{BRGlide}
  */
 void DestroyNetworkGroups(void);
 

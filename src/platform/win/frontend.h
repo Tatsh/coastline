@@ -68,9 +68,36 @@ public:
      */
     virtual bool Update();
 
-    char abUnknown4[0x38]; /* +0x04 */
-    float fX;              /*!< The left of the item on the screen. */
-    float fY;              /*!< The top of the item on the screen. */
+    char abUnknown4[0x18]; /* +0x04 */
+    unsigned dwFlags;
+    char abUnknown20[0x1c]; /* +0x20 */
+    float fX;               /*!< The left of the item on the screen. */
+    float fY;               /*!< The top of the item on the screen. */
+};
+
+struct MenuItemList;
+
+struct MenuItemListVTable {
+    char abUnknown0[0x10]; /* +0x00 */
+    int(__thiscall *AddItem)(
+        MenuItemList *, const char *, unsigned, unsigned char, const RECT *, bool);
+    char abUnknown14[0x18]; /* +0x14 */
+    int(__thiscall *RemoveItem)(MenuItemList *, int);
+};
+
+struct MenuItemList {
+    MenuItemListVTable *pVTable;
+    char abUnknown4[0x1a928]; /* +0x04 */
+    unsigned short wItemCount;
+    char abUnknown1a92e[0xa6]; /* +0x1a92e */
+};
+
+class NetworkMenuWidget : public MenuWidget {
+public:
+    char abUnknown44[0x2b20]; /* +0x44 */
+    unsigned char bJoining;
+    char abUnknown2b65[0xcd3]; /* +0x2b65 */
+    MenuItemList itemList;
 };
 
 /** The index in apWidgets of the mouse cursor of the first panel of the root screen. */
@@ -223,7 +250,7 @@ extern MenuScreen *g_pActiveMenuScreen;
  * @ghidraAddress BRD3D: 0x10aa29d4
  * @ghidraAddress BRGlide: 0x10ac5d2c
  */
-extern MenuWidget *g_pJoinCreateGameMenu;
+extern NetworkMenuWidget *g_pJoinCreateGameMenu;
 
 /**
  * A buffer of the front end, passed to FrontEndWindowProc() and not read by it.
@@ -673,7 +700,7 @@ extern MenuWidget *g_pSaveTimeAttackEditMenu;
  * @ghidraAddress BRD3D: 0x10aa29d8
  * @ghidraAddress BRGlide: 0x10ac5d30
  */
-extern MenuWidget *g_pNetworkSessionJoinMenu;
+extern NetworkMenuWidget *g_pNetworkSessionJoinMenu;
 
 /**
  * The menu of the setup of the car of network play.
@@ -681,7 +708,7 @@ extern MenuWidget *g_pNetworkSessionJoinMenu;
  * @ghidraAddress BRD3D: 0x10aa29e0
  * @ghidraAddress BRGlide: 0x10ac5d38
  */
-extern MenuWidget *g_pNetworkCarSetupMenu;
+extern NetworkMenuWidget *g_pNetworkCarSetupMenu;
 
 /**
  * The list of the players of network play.

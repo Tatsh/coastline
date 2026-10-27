@@ -1156,6 +1156,59 @@ void DisableNetworkReceive(void) {
 
 int g_dwLocalNetPlayerId = -1;
 
+const RECT g_rcNetCarSetupPlayerList = {32, 370, 610, 467};
+int g_dwNetworkCarSetupShown;
+
+void DestroyNetworkGroups(void) {
+    if (g_pJoinCreateGameMenu != nullptr) {
+        unsigned count = g_pJoinCreateGameMenu->itemList.wItemCount;
+        // The original advances the index even though removal shifts subsequent entries.
+        for (unsigned i = 0; i < count; i++) {
+            MenuItemList &list = g_pJoinCreateGameMenu->itemList;
+            list.pVTable->RemoveItem(&list, i);
+        }
+    }
+}
+
+void DisconnectNetworkSession(void) {
+    ResetSessionSlotTable();
+    KillTimer(g_hMainWindow, g_dwNetworkTimerId);
+    if (g_dwLobbyIsHost) {
+        StopNetworkWorkerThread();
+    }
+    CloseAndReleaseDirectPlay();
+    if (g_dwServiceProviderIndex != SERVICE_PROVIDER_MODEM &&
+        g_dwServiceProviderIndex != SERVICE_PROVIDER_SERIAL &&
+        g_pNetworkSessionJoinMenu != nullptr) {
+        g_pNetworkSessionJoinMenu->bJoining = false;
+        g_pNetworkSessionJoinMenu->dwFlags &= ~0x10;
+    }
+    g_dwDirectPlaySessionActive = false;
+    g_dwLobbyIsHost = false;
+    g_dwNetworkPlayMode = 0;
+    g_dwNetworkCarSetupShown = false;
+}
+
+LRESULT WINAPI HandleNetworkWindowMessage(HWND, UINT nMessage, WPARAM, LPARAM lParam) {
+    if (nMessage == 0x501) {
+        char *text = reinterpret_cast<char *>(lParam);
+        if (g_pNetworkCarSetupMenu != nullptr) {
+            MenuItemList &list = g_pNetworkCarSetupMenu->itemList;
+            list.pVTable->AddItem(&list, text, 0, 1, &g_rcNetCarSetupPlayerList, true);
+        }
+        GlobalUnlock(GlobalHandle(text));
+        GlobalFree(GlobalHandle(text));
+    } else if (nMessage == WM_TIMER) {
+        if (g_pJoinCreateGameMenu != nullptr) {
+            RefreshNetworkSessionList(g_DirectPlayInfo.pDirectPlay);
+        }
+        if (!g_dwLobbyIsHost) {
+            LoadNetworkSettings();
+        }
+    }
+    return 0;
+}
+
 int GetLocalPlayerIndex(void) {
     return g_dwLocalNetPlayerId;
 }
