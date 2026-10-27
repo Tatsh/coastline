@@ -146,3 +146,79 @@ void ComputeVehicleForces(RigidBody *body) {
     SumWheelForces(body, body->wheels[3]);
     ComputeVehicleAccelerations(body);
 }
+
+/* The velocity the spin of a body gives a point at an arm from its middle. */
+#define SPIN_VELOCITY(turn, body, arm)                                                             \
+    (turn)[0] = FORCE_PRODUCT((body)->state.angularVelocity.y, (arm).z) -                          \
+                FORCE_PRODUCT((arm).y, (body)->state.angularVelocity.z);                           \
+    (turn)[1] = FORCE_PRODUCT((body)->state.angularVelocity.z, (arm).x) -                          \
+                FORCE_PRODUCT((arm).z, (body)->state.angularVelocity.x);                           \
+    (turn)[2] = FORCE_PRODUCT((body)->state.angularVelocity.x, (arm).y) -                          \
+                FORCE_PRODUCT((arm).x, (body)->state.angularVelocity.y)
+
+/* Copy the velocity of a body to a vector. */
+#define COPY_BODY_VELOCITY(out, body)                                                              \
+    (out)->x = (body)->state.velocity.x;                                                           \
+    (out)->y = (body)->state.velocity.y;                                                           \
+    (out)->z = (body)->state.velocity.z
+
+void ComputeWheelLocalVelocity(Vec3f *out, RigidBody *body, RigidBody *wheel) {
+    Vec3f point;
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+    long double turn[3];
+#else
+    f32 turn[3];
+#endif
+    Vec3f arm;
+
+    point.x = wheel->state.position.x;
+    point.y = wheel->state.position.y;
+    point.z = 0.0f;
+    Mtx3x3MulVec3f(&arm, body->orientation, &point);
+    COPY_BODY_VELOCITY(out, body);
+    SPIN_VELOCITY(turn, body, arm);
+    point.x = turn[0] + out->x;
+    point.y = turn[1] + out->y;
+    point.z = turn[2] + out->z;
+    Mtx4fInverseRotate(out, body->orientation, &point);
+}
+
+void GetWheelWorldVelocity(Vec3f *out, RigidBody *body, RigidBody *wheel) {
+    Vec3f point;
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+    long double turn[3];
+#else
+    f32 turn[3];
+#endif
+    Vec3f arm;
+
+    point.x = wheel->state.position.x;
+    point.y = wheel->state.position.y;
+    point.z = wheel->state.position.z;
+    Mtx3x3MulVec3f(&arm, body->orientation, &point);
+    COPY_BODY_VELOCITY(out, body);
+    SPIN_VELOCITY(turn, body, arm);
+    out->x = turn[0] + out->x;
+    out->y = turn[1] + out->y;
+    out->z = turn[2] + out->z;
+}
+
+void GetBodyPointVelocity(Vec3f *out, RigidBody *body, Vec3f *point) {
+    Vec3f copy;
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+    long double turn[3];
+#else
+    f32 turn[3];
+#endif
+    Vec3f arm;
+
+    copy.x = point->x;
+    copy.y = point->y;
+    copy.z = point->z;
+    Mtx3x3MulVec3f(&arm, body->orientation, &copy);
+    COPY_BODY_VELOCITY(out, body);
+    SPIN_VELOCITY(turn, body, arm);
+    out->x = turn[0] + out->x;
+    out->y = turn[1] + out->y;
+    out->z = turn[2] + out->z;
+}

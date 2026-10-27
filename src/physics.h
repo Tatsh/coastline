@@ -227,9 +227,6 @@ void ComputeVehicleAccelerations(RigidBody *body);
  * @ghidraAddress BRD3D: 0x1006b260
  */
 void ComputeVehicleForces(RigidBody *body);
-#ifdef __cplusplus
-}
-#endif
 
 /**
  * The velocity of the point of a body over a wheel at the height of the body, in the frame of the
@@ -241,6 +238,7 @@ void ComputeVehicleForces(RigidBody *body);
  * @ghidraAddress USA: 0x80259a18
  * @ghidraAddress EUR: 0x8025afe8
  * @ghidraAddress JPN: 0x8025a978
+ * @ghidraAddress BRD3D: 0x1006b340
  */
 void ComputeWheelLocalVelocity(Vec3f *out, RigidBody *body, RigidBody *wheel);
 
@@ -253,6 +251,7 @@ void ComputeWheelLocalVelocity(Vec3f *out, RigidBody *body, RigidBody *wheel);
  * @ghidraAddress USA: 0x80259b1c
  * @ghidraAddress EUR: 0x8025b0ec
  * @ghidraAddress JPN: 0x8025aa7c
+ * @ghidraAddress BRD3D: 0x1006b430
  */
 void GetWheelWorldVelocity(Vec3f *out, RigidBody *body, RigidBody *wheel);
 
@@ -265,8 +264,12 @@ void GetWheelWorldVelocity(Vec3f *out, RigidBody *body, RigidBody *wheel);
  * @ghidraAddress USA: 0x80259c18
  * @ghidraAddress EUR: 0x8025b1e8
  * @ghidraAddress JPN: 0x8025ab78
+ * @ghidraAddress BRD3D: 0x1006b510
  */
 void GetBodyPointVelocity(Vec3f *out, RigidBody *body, Vec3f *point);
+#ifdef __cplusplus
+}
+#endif
 
 /**
  * Cancel the sideways slip of the rear and the front of the body of a vehicle as far as the grip of
