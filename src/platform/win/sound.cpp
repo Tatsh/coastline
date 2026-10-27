@@ -32,6 +32,7 @@ HWND g_hMusicNotifyWnd;
 int g_bCdAudioPlaying;
 unsigned char g_bCdMusicVolume;
 int g_bEarOutputInitialized;
+EarPlayParams g_EarPlayParams;
 const int g_adwBgmVolumeLevels[VOLUME_LEVEL_COUNT] = {
     0x00, 0x1c, 0x38, 0x55, 0x71, 0x8d, 0xaa, 0xc6, 0xe2, 0xff};
 const int g_adwSfxVolumeLevels[VOLUME_LEVEL_COUNT] = {
@@ -94,6 +95,30 @@ bool OpenCdaudioMci(HWND hWnd) {
     g_nMusicTrackMin = FIRST_MUSIC_CD_TRACK;
     g_nMusicTrackMax = static_cast<int>(status.dwReturn);
     g_bMusicActive = true;
+    return true;
+}
+
+WPARAM GetEarMusicEventHandle(void) {
+    return g_EarPlayParams.hEvent;
+}
+
+bool PlayEarMusicTrack(int nTrack) {
+    if (g_dwPlayMusicMode != 0 && g_nMusicDeviceRefCount != 0) {
+        if (nTrack < g_nMusicTrackMin) {
+            nTrack = g_nMusicTrackMin;
+        }
+        if (nTrack > g_nMusicTrackMax) {
+            nTrack = g_nMusicTrackMax;
+        }
+        g_nCurrentMusicTrack = nTrack;
+        if (g_bMusicActive != 0) {
+            g_pfnEarClearChannel(g_dwEarMusicChannel, 0);
+            g_EarPlayParams.dwPlayFlags = 0x100;
+            g_EarPlayParams.nTrack = nTrack;
+            g_EarPlayParams.wPlaybackControl = 0;
+            g_EarPlayParams.hEvent = g_pfnEarMixEvent(&g_EarPlayParams);
+        }
+    }
     return true;
 }
 

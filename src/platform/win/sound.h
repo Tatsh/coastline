@@ -50,6 +50,7 @@ bool InitializeMusicPlayback(void);
  *
  * @return The event.
  * @ghidraAddress BRD3D: 0x10002480
+ * @ghidraAddress BRGlide: 0x100027a0
  */
 WPARAM GetEarMusicEventHandle(void);
 

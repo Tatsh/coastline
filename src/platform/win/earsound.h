@@ -19,6 +19,27 @@ typedef int(WINAPI *EarProc4)(int nValue, int nValue2, int nValue3, int nValue4)
 /** The routine of the EAR library that takes the window it posts its messages to. */
 typedef int(WINAPI *EarAssignHwndProc)(HWND hWnd);
 
+/** Parameters shared with the EAR event mixer. */
+struct EarPlayParams {
+    char abUnknown00[4]; /* +0x00 */
+    int nTrack;
+    WPARAM hEvent;
+    char abUnknown0c[16]; /* +0x0c */
+    unsigned dwPlayFlags;
+    char abUnknown20[34]; /* +0x20 */
+    unsigned short wPlaybackControl;
+    char abUnknown44[60]; /* +0x44 */
+};
+
+/** Mix an EAR event and return its event identifier. */
+typedef WPARAM(WINAPI *EarMixEventProc)(EarPlayParams *pParams);
+
+/**
+ * @ghidraAddress BRD3D: 0x10220c50
+ * @ghidraAddress BRGlide: 0x1021c780
+ */
+extern EarPlayParams g_EarPlayParams;
+
 /**
  * The EAR library.
  *
@@ -156,7 +177,7 @@ extern EarProc1 g_pfnEarInitializeEar;
  * @ghidraAddress BRD3D: 0x1057546c
  * @ghidraAddress BRGlide: 0x104b1614
  */
-extern EarProc1 g_pfnEarMixEvent;
+extern EarMixEventProc g_pfnEarMixEvent;
 
 /**
  * _EAR_DLL_MoveEvent of the EAR library.

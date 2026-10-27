@@ -30,7 +30,7 @@ EarProc2 g_pfnEarGetEventStatus;
 EarProc0 g_pfnEarGetLastError;
 EarProc0 g_pfnEarGetVersion;
 EarProc1 g_pfnEarInitializeEar;
-EarProc1 g_pfnEarMixEvent;
+EarMixEventProc g_pfnEarMixEvent;
 EarProc1 g_pfnEarMoveEvent;
 EarProc2 g_pfnEarRegisterBank;
 EarProc4 g_pfnEarRegisterChannel;
