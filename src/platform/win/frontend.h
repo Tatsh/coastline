@@ -301,6 +301,18 @@ int SeasonUI_UpdateSeasonNameLabel(MenuWidget *pWidget);
 int MainMenuUI_OnPlayCredits(MenuWidget *pWidget);
 
 /**
+ * @ghidraAddress BRD3D: 0x10046f60
+ * @ghidraAddress BRGlide: 0x100403b0
+ */
+int PreRaceExitSeasonConfirmUI_OnYes(MenuWidget *pWidget);
+
+/**
+ * @ghidraAddress BRD3D: 0x10046fd0
+ * @ghidraAddress BRGlide: 0x10040420
+ */
+int ResultsSummaryExitSeasonConfirmUI_OnYes(MenuWidget *pWidget);
+
+/**
  * @ghidraAddress BRD3D: 0x100406c0
  * @ghidraAddress BRGlide: 0x10039c00
  */

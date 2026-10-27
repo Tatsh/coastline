@@ -1730,6 +1730,37 @@ int GameOptionsUI_OnToggleSpecularLighting(MenuWidget *) {
     return 1;
 }
 
+int PreRaceExitSeasonConfirmUI_OnYes(MenuWidget *pWidget) {
+    pWidget->pScreen->DestroyPanels();
+    delete g_pActiveMenuScreen;
+    g_pActiveMenuScreen = nullptr;
+    g_pPreRaceInfoMenuScreen = nullptr;
+    if (g_pCachedMenu_PreRaceInfo) {
+        delete g_pCachedMenu_PreRaceInfo;
+        g_pCachedMenu_PreRaceInfo = nullptr;
+    }
+    g_pActiveMenuScreen = g_pCachedMenu_MainMenu;
+    return 0;
+}
+
+static inline void ClearCachedMenuPanels(MenuScreen *&screen) {
+    if (screen) {
+        screen->DestroyPanels();
+        screen = nullptr;
+    }
+}
+
+int ResultsSummaryExitSeasonConfirmUI_OnYes(MenuWidget *pWidget) {
+    ClearCachedMenuPanels(g_pCachedMenu_RaceResults);
+    ClearCachedMenuPanels(g_pCachedMenu_RaceResultsSummary);
+    ClearCachedMenuPanels(g_pCachedMenu_RaceResultsTotals);
+    pWidget->pScreen->DestroyPanels();
+    delete g_pActiveMenuScreen;
+    g_pPreRaceInfoMenuScreen = nullptr;
+    g_pActiveMenuScreen = g_pCachedMenu_MainMenu;
+    return 0;
+}
+
 int MainMenuUI_OnPlayCredits(MenuWidget *pWidget) {
     SetActiveMenuItemText(" ");
     g_dwGameMode = GAME_MODE_DEMO;
