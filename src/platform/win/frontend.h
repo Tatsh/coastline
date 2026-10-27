@@ -229,8 +229,8 @@ public:
     int (*pfnAction)(MenuActionWidget *);
     int (*pfnIdleAction)(MenuWidget *);
     int (*pfnTextEditComplete)(MenuWidget *);
-    int (*pfnFocusEnter)(MenuWidget *);
-    int (*pfnFocusExit)(MenuWidget *);
+    int (*pfnBeforeUpdate)(MenuWidget *);
+    int (*pfnAfterUpdate)(MenuWidget *);
     unsigned dwFlags;
     char abUnknown20[4]; /* +0x20 */
     unsigned dwSecondaryFlags;
@@ -1069,13 +1069,13 @@ int CreateGameMenuUI_OnToggleTextEdit(MenuWidget *pWidget);
  * @ghidraAddress BRD3D: 0x100409f0
  * @ghidraAddress BRGlide: 0x10039f30
  */
-int RaceResultsPanel_PreUpdateSelectLastRace(MenuWidget *pWidget);
+int RaceResultsPanel_PreUpdateSelectLastRace(void);
 
 /**
  * @ghidraAddress BRD3D: 0x10040a20
  * @ghidraAddress BRGlide: 0x10039f60
  */
-int RaceResultsPanel_PostUpdateRestoreSeasonProgress(MenuWidget *pWidget);
+int RaceResultsPanel_PostUpdateRestoreSeasonProgress(void);
 
 /**
  * @ghidraAddress BRD3D: 0x10047340
@@ -1435,7 +1435,9 @@ extern int g_dwMenuTextEditActive;
 /** A panel of a screen of the front end. */
 class MenuPanel {
 public:
-    int anUnknown4[3]; /* +0x04 */
+    int (*pfnBeforeWidgets)(void);
+    int (*pfnAfterWidgets)(void);
+    int (*pfnUpdate)(void);
     int nFlags;
     unsigned short wWidgetCount;
     char abUnknown16[2];                            /* +0x16 */
@@ -3585,6 +3587,11 @@ extern MenuScreen *g_pRaceResultsSummaryMenuScreen;
 void BuildRaceResultsInfoUI(MenuScreen *pScreen);
 
 /**
+ * @ghidraAddress BRD3D: 0x10040ee0
+ */
+int RaceResultsInfoUI_UpdateSelectedTimeLabel(MenuWidget *pWidget);
+
+/**
  * @ghidraAddress BRD3D: 0x10053cf0
  */
 void BuildRaceResultsSummaryUI(MenuScreen *pScreen);
@@ -3639,7 +3646,7 @@ int ShowRaceResultsTotalsScreen(void);
  * @return Whether both initial allocations succeeded, or the summary was already cached.
  * @ghidraAddress BRD3D: 0x10045f70
  */
-int ShowRaceResultsSummaryScreen(void);
+int ShowRaceResultsSummaryScreen(MenuWidget *pWidget = nullptr);
 
 /**
  * @ghidraAddress BRD3D: 0x100509f0
