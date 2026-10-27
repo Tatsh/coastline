@@ -4925,6 +4925,97 @@ int BuildModemConnectionUI(MenuScreen *screen) {
     return 1;
 }
 
+int BuildAudioOptionsUI(MenuScreen *screen) {
+    screen->SetCurrentPanelIndex(0);
+    screen->SetPanelActive(screen->GetPanelCount(), 1);
+    MenuPanel *panel = new (std::nothrow) MenuPanel();
+    screen->SetPanel(screen->GetPanelCount(), panel);
+    if (!panel) {
+        ShowErrorMessage(4);
+    }
+    screen->SetPanelCount(screen->GetPanelCount() + 1);
+    panel->SetScreen(screen);
+    panel->SetFlags(0);
+    panel->SetX(195);
+    panel->SetY(130);
+    AddMenuWidget(panel, screen, 0, 0, 9, 0, 0);
+    panel->SetWidgetCount(panel->GetWidgetCount() + 1);
+    SetMenuWidgetLabel(
+        AddMenuWidget(panel, screen, panel->GetX(), 10, 0x100009, 1, -1), 0x21, &g_rcMenuTitleBar);
+    panel->SetWidgetCount(panel->GetWidgetCount() + 1);
+    AddMenuWidget(panel, screen, 80, 46, 9, 0, 9);
+    panel->SetWidgetCount(panel->GetWidgetCount() + 1);
+    MenuWidget *widget = AddMenuWidget(panel, screen, panel->GetX(), panel->GetY(), 0x3001, 1, -1);
+    widget->SetUpdateCallback(AudioOptionsUI_UpdateCdTrackSelection);
+    MenuItemList &list = widget->GetItemList();
+    list.SetVerticalScrollbar(1);
+    int selection = g_dwSelectedCdTrack < 0 ? 0 : g_dwSelectedCdTrack;
+    if (selection > 11) {
+        selection = 11;
+    }
+    list.Initialize(0x40001, &g_rcMenuAudioListBox, 4, selection, -1);
+    list.SetSelectionChangedCallback(AudioOptionsUI_OnMusicTrackChanged);
+    for (const char *track : g_apszBgmTrackNames) {
+        list.AddItem(track, 0, 1, &g_rcMenuListBox, true);
+    }
+    if (g_dwSelectedCdTrack < 0) {
+        list.SetScrollThumbY(list.GetMinScrollThumbY());
+    } else if (g_dwSelectedCdTrack < 12) {
+        volatile long double span =
+            static_cast<long double>(list.GetMaxScrollThumbY()) - list.GetMinScrollThumbY();
+        volatile long double position = span * g_dwSelectedCdTrack;
+        volatile long double scaledPosition = position * -0.09090909f;
+        list.SetScrollThumbY(static_cast<float>(list.GetMinScrollThumbY() - scaledPosition));
+    } else {
+        list.SetScrollThumbY(list.GetMaxScrollThumbY());
+    }
+    int top = ConvertMenuCoordinate(list.GetScrollThumbY());
+    list.SetScrollThumbTop(top);
+    list.SetScrollThumbBottom(static_cast<int>(static_cast<unsigned>(top) + 16u));
+    panel->SetWidgetCount(panel->GetWidgetCount() + 1);
+    panel->SetNavigationCount(panel->GetNavigationCount() + 1);
+    const int strings[] = {0x2e, 0x2f, 0xc};
+    const float offsets[] = {76, 95, 114};
+    int (*const actions[])(MenuWidget *) = {AudioOptionsUI_OnCycleSfxVolume,
+                                            AudioOptionsUI_OnCycleMusicVolume,
+                                            AudioOptionsUI_OnBackAndSave};
+    for (int index = 0; index < 3; index++) {
+        widget = AddMenuWidget(
+            panel,
+            screen,
+            panel->GetX(),
+            static_cast<float>(static_cast<long double>(panel->GetY()) + offsets[index]),
+            0x102001,
+            1,
+            -1);
+        widget->SetIdleActionCallback(ValidateEntityState);
+        widget->SetActionCallback(actions[index]);
+        SetMenuWidgetLabel(widget, strings[index], &g_rcMenuCenterPanel);
+        if (index == 2) {
+            g_pOptionsSubMenu = widget;
+        }
+        panel->SetWidgetCount(panel->GetWidgetCount() + 1);
+        panel->SetNavigationCount(panel->GetNavigationCount() + 1);
+    }
+    widget = AddMenuWidget(panel, screen, 76, 211, 1, 1, 0x68);
+    widget->SetUpdateCallback(AudioOptionsUI_UpdateVolumeChannelImage);
+    panel->SetWidgetCount(panel->GetWidgetCount() + 1);
+    AddMenuWidget(panel, screen, 75, 267, 9, 1, 0x6a);
+    panel->SetWidgetCount(panel->GetWidgetCount() + 1);
+    widget = AddMenuWidget(panel, screen, 79, 256, 1, 1, 0x6b);
+    widget->SetUpdateCallback(AudioOptionsUI_UpdateVolumeLevelIndicatorPos);
+    panel->SetWidgetCount(panel->GetWidgetCount() + 1);
+    widget = AddMenuWidget(panel, screen, 339, 90, 0x102001, 1, -1);
+    widget->SetUpdateCallback(DrawGameplaySliderA);
+    SetMenuWidgetLabel(widget, 0x2e, &g_rcMenuRightLabel);
+    panel->SetWidgetCount(panel->GetWidgetCount() + 1);
+    widget = AddMenuWidget(panel, screen, 339, 128, 0x102001, 1, -1);
+    widget->SetUpdateCallback(DrawGameplaySliderB);
+    SetMenuWidgetLabel(widget, 0x2f, &g_rcMenuRightLabel);
+    panel->SetWidgetCount(panel->GetWidgetCount() + 1);
+    return 1;
+}
+
 static inline int CreateGameUI_OnHost(MenuWidget *) {
     return ShowHostRaceSetupScreen();
 }

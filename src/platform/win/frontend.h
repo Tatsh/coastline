@@ -213,6 +213,27 @@ public:
     int SetVerticalScrollbar(int value) {
         return bVerticalScrollbar = value;
     }
+    void SetSelectionChangedCallback(int (*callback)(MenuItemList *, int *)) {
+        pfnSelectionChanged = callback;
+    }
+    float GetMinScrollThumbY() const {
+        return fMinScrollThumbY;
+    }
+    float GetMaxScrollThumbY() const {
+        return fMaxScrollThumbY;
+    }
+    float GetScrollThumbY() const {
+        return fScrollThumbY;
+    }
+    void SetScrollThumbY(float value) {
+        fScrollThumbY = value;
+    }
+    void SetScrollThumbTop(int value) {
+        rcScrollThumb.top = value;
+    }
+    void SetScrollThumbBottom(int value) {
+        rcScrollThumb.bottom = value;
+    }
 
 private:
     int (*pfnSelectionChanged)(MenuItemList *, int *);
@@ -853,9 +874,17 @@ int ShowGameOptionsMenu(void);
 
 /**
  * @ghidraAddress BRD3D: 0x1004dfc0
- * @stub
  */
 int BuildAudioOptionsUI(MenuScreen *pScreen);
+
+/** @ghidraAddress BRD3D: 0x1003e980 */
+int DrawGameplaySliderA(MenuWidget *pWidget);
+/** @ghidraAddress BRD3D: 0x1003e9e0 */
+int DrawGameplaySliderB(MenuWidget *pWidget);
+/** @ghidraAddress BRD3D: 0x100ab548 */
+extern RECT g_rcMenuAudioListBox;
+/** @ghidraAddress BRD3D: 0x100b89c8 */
+extern const char *g_apszBgmTrackNames[12];
 
 /**
  * @ghidraAddress BRD3D: 0x1004e830
