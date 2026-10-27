@@ -1,6 +1,6 @@
 # PC port game code from 0x10040000 to 0x10050000
 
-246 of 264 routines done.
+247 of 264 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -14,7 +14,7 @@ the same name, for a routine the port retained from the N64 game.
 | `BuildFrontEndRootMenuUI`                          |   📝   |                 |      1 |   2659 | `0x100491b0` | `0x100425e0` | `void BuildFrontEndRootMenuUI(MenuScreen * pScreen)`                                                                                                      |
 | `BuildRaceSetupUI`                                 |   🚧   |                 |      4 |   2439 | `0x1004b430` | `0x10044860` | `void BuildRaceSetupUI(MenuScreen * pScreen)`                                                                                                             |
 | `BuildLoadSeasonUI`                                |   📝   |                 |      2 |   2387 | `0x1004f700` | `0x100485b0` | `void BuildLoadSeasonUI(MenuScreen * pScreen)`                                                                                                            |
-| `BuildAudioOptionsUI`                              |   🚧   |                 |      2 |   2114 | `0x1004dfc0` | `0x10046e70` | `int BuildAudioOptionsUI(MenuScreen * screen)`                                                                                                            |
+| `BuildAudioOptionsUI`                              |   ✅   |                 |      2 |   2114 | `0x1004dfc0` | `0x10046e70` | `int BuildAudioOptionsUI(MenuScreen * screen)`                                                                                                            |
 | `BuildKeyConfigUI`                                 |   🚧   |                 |      2 |   1834 | `0x1004cac0` | `0x10045ef0` | `void BuildKeyConfigUI(MenuScreen * pScreen)`                                                                                                             |
 | `BuildOptionsMenuUI`                               |   ✅   |                 |      2 |   1749 | `0x1004bdc0` | `0x100451f0` | `int BuildOptionsMenuUI(MenuScreen * screen)`                                                                                                             |
 | `MenuScreen::ShutdownFrontEnd`                     |   ✅   |                 |      1 |   1668 | `0x10048b20` | `0x10041f50` | `void ShutdownFrontEnd(MenuScreen * this, int bPartial)`                                                                                                  |
@@ -260,7 +260,7 @@ the same name, for a routine the port retained from the N64 game.
 | `MultiplayerConnectionUI_UpdateModemItem`          |   ✅   |                 |      1 |     29 | `0x100440b0` |              | `int MultiplayerConnectionUI_UpdateModemItem(MenuWidget * pWidget)`                                                                                       |
 | `MultiplayerConnectionUI_UpdateTcpIpItem`          |   ✅   |                 |      1 |     29 | `0x10044070` |              | `int MultiplayerConnectionUI_UpdateTcpIpItem(MenuWidget * pWidget)`                                                                                       |
 | `SaveSeasonUI_UpdateItemEnabledState`              |   ✅   |                 |      1 |     26 | `0x100418d0` | `0x1003ae30` | `int SaveSeasonUI_UpdateItemEnabledState(MenuWidget * pWidget)`                                                                                           |
-| `AudioOptionsUI_OnMusicTrackChanged`               |   ✅   |                 |      1 |     24 | `0x1004e810` | `0x100476c0` | `int AudioOptionsUI_OnMusicTrackChanged(MenuWidget * pWidget, int * pTrack)`                                                                              |
+| `AudioOptionsUI_OnMusicTrackChanged`               |   ✅   |                 |      1 |     24 | `0x1004e810` | `0x100476c0` | `int AudioOptionsUI_OnMusicTrackChanged(MenuItemList * list, int * track)`                                                                                |
 | `ProcessCheatInputAndValidateEntity`               |   ✅   |                 |      1 |     24 | `0x100475f0` | `0x10040a20` | `int ProcessCheatInputAndValidateEntity(MenuWidget * pWidget)`                                                                                            |
 | `ValidateEntityStateAlwaysTrue`                    |   ✅   |                 |      7 |     19 | `0x100474b0` | `0x10040af0` | `int ValidateEntityStateAlwaysTrue(MenuWidget * pWidget)`                                                                                                 |
 | `RaceResultsInfoUI_OnSelectLap1`                   |   ✅   |                 |      1 |     16 | `0x100412c0` | `0x1003a820` | `int RaceResultsInfoUI_OnSelectLap1(MenuWidget * pWidget)`                                                                                                |
