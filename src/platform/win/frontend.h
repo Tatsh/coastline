@@ -397,6 +397,15 @@ public:
     void SetImageMode(int value) {
         nImageMode = value;
     }
+    void SetImageRects(const RECT *rects) {
+        pImageRects = rects;
+    }
+    void SetCustomFrameDurations(bool value) {
+        bCustomFrameDurations = value;
+    }
+    void SetFrameDuration(int index, int value) {
+        anFrameDurations[index] = value;
+    }
     short GetLinkedWidgetCount() const {
         return nLinkedWidgetCount;
     }
@@ -3491,12 +3500,12 @@ int BuildResultsSummaryExitSeasonConfirmUI(MenuScreen *pScreen);
 /**
  * @ghidraAddress BRD3D: 0x10051990
  */
-void BuildSeasonCongratsUI(MenuScreen *pScreen);
+int BuildSeasonCongratsUI(MenuScreen *pScreen);
 
 /**
  * @ghidraAddress BRD3D: 0x10051d30
  */
-void BuildNotEnoughPointsUI(MenuScreen *pScreen);
+int BuildNotEnoughPointsUI(MenuScreen *pScreen);
 
 /**
  * Show cached championship congratulations, building the screen on its first visit.

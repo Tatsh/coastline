@@ -134,10 +134,8 @@ int g_adwFrontEndResourceFlags[FRONT_END_RESOURCE_FLAG_COUNT];
 int g_dwSaveSlotListIsSaveMode;
 // @ghidraAddress BRD3D: 0x10a9da50
 // @ghidraAddress BRGlide: 0x10ac4ad8
-RECT g_aMenuLargeIconRects[MENU_LARGE_ICON_RECT_COUNT];
-// @ghidraAddress BRD3D: 0x10a9db40
-// @ghidraAddress BRGlide: 0x10ac4bc8
-RECT g_aMenuLargeIconRects3Col[MENU_LARGE_ICON_3_COLUMN_RECT_COUNT];
+// Both grids form a single animation sequence.
+RECT g_aMenuLargeIconRects[MENU_LARGE_ICON_RECT_COUNT + MENU_LARGE_ICON_3_COLUMN_RECT_COUNT];
 // @ghidraAddress BRD3D: 0x10aa2a4c
 // @ghidraAddress BRGlide: 0x10ac5da4
 int g_dwFrontEndFrameCounter;
@@ -4173,12 +4171,20 @@ int ShowRaceResultsTotalsScreen(MenuWidget *) {
     return ShowCachedMenuScreen(g_pCachedMenu_RaceResultsTotals, BuildRaceResultsTotalsUI);
 }
 
+static inline void BuildSeasonCongratsScreen(MenuScreen *screen) {
+    BuildSeasonCongratsUI(screen);
+}
+
+static inline void BuildNotEnoughPointsScreen(MenuScreen *screen) {
+    BuildNotEnoughPointsUI(screen);
+}
+
 int ShowSeasonCongratsScreen(void) {
-    return ShowCachedMenuScreen(g_pCachedMenu_SeasonCongrats, BuildSeasonCongratsUI);
+    return ShowCachedMenuScreen(g_pCachedMenu_SeasonCongrats, BuildSeasonCongratsScreen);
 }
 
 int ShowNotEnoughPointsScreen(void) {
-    return ShowCachedMenuScreen(g_pCachedMenu_NotEnoughPoints, BuildNotEnoughPointsUI);
+    return ShowCachedMenuScreen(g_pCachedMenu_NotEnoughPoints, BuildNotEnoughPointsScreen);
 }
 
 static inline void BuildPreRaceExitSeasonConfirmScreen(MenuScreen *screen) {
@@ -4277,6 +4283,77 @@ static inline int BuildConfirmationUI(MenuScreen *screen,
     widget->SetIdleActionCallback(ValidateEntityState);
     widget->SetActionCallback(noAction);
     SetMenuWidgetLabel(widget, noLabel, &g_rcMenuCenterPanel);
+    panel->SetWidgetCount(panel->GetWidgetCount() + 1);
+    panel->SetNavigationCount(panel->GetNavigationCount() + 1);
+    return 1;
+}
+
+static inline MenuPanel *CreateSeasonResultPanel(MenuScreen *screen) {
+    screen->SetCurrentPanelIndex(0);
+    screen->SetPanelActive(screen->GetPanelCount(), 1);
+    MenuPanel *panel = new (std::nothrow) MenuPanel();
+    screen->SetPanel(screen->GetPanelCount(), panel);
+    if (!panel) {
+        ShowErrorMessage(4);
+    }
+    screen->SetPanelCount(screen->GetPanelCount() + 1);
+    panel->SetScreen(screen);
+    panel->SetFlags(0);
+    panel->SetX(195);
+    panel->SetY(130);
+    return panel;
+}
+
+int BuildSeasonCongratsUI(MenuScreen *screen) {
+    MenuPanel *panel = CreateSeasonResultPanel(screen);
+    AddMenuWidget(panel, screen, 0, 0, 9, 0, 0);
+    panel->SetWidgetCount(panel->GetWidgetCount() + 1);
+    AddMenuWidget(panel, screen, 0, 29, 9, 0, 78);
+    panel->SetWidgetCount(panel->GetWidgetCount() + 1);
+    AddMenuWidget(panel, screen, 13, 7, 9, 0, 79);
+    panel->SetWidgetCount(panel->GetWidgetCount() + 1);
+    MenuWidget *widget = AddMenuWidget(panel, screen, 16, 153, 9, 1, 71);
+    widget->SetUpdateCallback(SeasonCongratsUI_UpdatePrimaryBannerImage);
+    panel->SetWidgetCount(panel->GetWidgetCount() + 1);
+    widget = AddMenuWidget(panel, screen, 392, 181, 9, 1, 72);
+    widget->SetUpdateCallback(SeasonCongratsUI_UpdateSecondaryBannerImage);
+    panel->SetWidgetCount(panel->GetWidgetCount() + 1);
+    widget = AddMenuWidget(panel, screen, panel->GetX(), 460, 0x102001, 0, -1);
+    widget->SetIdleActionCallback(ValidateEntityState);
+    widget->SetActionCallback(OnPressAnyKeyContinue);
+    widget->SetUpdateCallback(SeasonCongratsUI_PollAnyKey);
+    widget->SetSpriteId(2);
+    widget->SetText(GetStringResource(66), 1, 0, &g_rcMenuFullScreen);
+    panel->SetWidgetCount(panel->GetWidgetCount() + 1);
+    panel->SetNavigationCount(panel->GetNavigationCount() + 1);
+    return 1;
+}
+
+int BuildNotEnoughPointsUI(MenuScreen *screen) {
+    MenuPanel *panel = CreateSeasonResultPanel(screen);
+    AddMenuWidget(panel, screen, 0, 0, 9, 0, 0);
+    panel->SetWidgetCount(panel->GetWidgetCount() + 1);
+    MenuWidget *widget = AddMenuWidget(panel, screen, panel->GetX(), 10, 0x100009, 1, -1);
+    SetMenuWidgetLabel(widget, 67, &g_rcMenuFullScreen);
+    panel->SetWidgetCount(panel->GetWidgetCount() + 1);
+    float y = static_cast<float>(static_cast<long double>(panel->GetY()) - 12);
+    float x = static_cast<float>(static_cast<long double>(panel->GetX()) - 8);
+    widget = AddMenuWidget(panel, screen, x, y, 0x22001, 0, 80);
+    widget->SetImageRects(g_aMenuLargeIconRects);
+    widget->SetImageMode(1);
+    widget->SetCustomFrameDurations(true);
+    for (int i = 0; i < 24; ++i) {
+        widget->SetFrameDuration(i, 60);
+        widget->SetAnimationSpriteId(i, i < 15 ? 80 : 81);
+    }
+    widget->SetActionCallback(OnListDialogItemSelected);
+    widget->SetSpriteId(80);
+    widget->SetBoundsTop(ConvertMenuCoordinate(panel->GetY()));
+    widget->SetBoundsLeft(ConvertMenuCoordinate(panel->GetX()));
+    widget->SetBoundsRight(
+        static_cast<int>(static_cast<unsigned>(ConvertMenuCoordinate(panel->GetX())) + 128u));
+    widget->SetBoundsBottom(
+        static_cast<int>(static_cast<unsigned>(ConvertMenuCoordinate(panel->GetY())) + 128u));
     panel->SetWidgetCount(panel->GetWidgetCount() + 1);
     panel->SetNavigationCount(panel->GetNavigationCount() + 1);
     return 1;
@@ -5802,7 +5879,11 @@ void InitMenuSpriteRects(void) {
     SetGridRects(g_aMenuGlyphRects, MENU_GLYPH_RECT_COUNT, 8, 16, 16);
     SetGridRects(g_aMenuAltGlyphRects, MENU_ALT_GLYPH_RECT_COUNT, 5, 39, 44);
     SetGridRects(g_aMenuLargeIconRects, MENU_LARGE_ICON_RECT_COUNT, 5, 128, 128);
-    SetGridRects(g_aMenuLargeIconRects3Col, MENU_LARGE_ICON_3_COLUMN_RECT_COUNT, 3, 128, 128);
+    SetGridRects(g_aMenuLargeIconRects + MENU_LARGE_ICON_RECT_COUNT,
+                 MENU_LARGE_ICON_3_COLUMN_RECT_COUNT,
+                 3,
+                 128,
+                 128);
 }
 
 bool InitializeFrontEndResources(void) {
