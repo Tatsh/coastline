@@ -184,7 +184,11 @@ private:
     Vec3f previousCollisionPosition;
     char checkpointMessageText[20];
     u8 abUnknown2ad0[0x98]; /* +0x2ad0 */
+    void ColorSpraySegment(s32 wheel);
+    void AgeSpraySegment(s32 wheel, s32 age);
+
 public:
+    void MoveTireSpraySegments(s32 step, s16 fall);
     /**
      * @ghidraAddress BRD3D: 0x10039020
      */
