@@ -10,6 +10,9 @@ s32 IsVehicleModelValid(void) {
     return 1;
 }
 
+void FixupVehicleModelPointers(VehicleModel *model) {
+}
+
 void AppendVehicleModelTextureEntry(s32 entry) {
     VehicleModel *model = g_pTextureCaptureVehicleModel;
     s32 count = model->textureEntryCount;

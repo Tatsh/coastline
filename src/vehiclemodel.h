@@ -119,6 +119,19 @@ extern VehicleModel g_aVehicleModels[];
  * @ghidraAddress BRD3D: 0x100350ee
  */
 void SetMaterialColor(VehicleModel *model, s32 red, s32 green, s32 blue);
+
+/**
+ * Relocate loaded model pointers on N64. Windows does not require relocation here.
+ *
+ * @param model The model.
+ * @ghidraAddress USA: 0x8021d32c
+ * @ghidraAddress EUR: 0x8021e52c
+ * @ghidraAddress JPN: 0x8021ddfc
+ * @ghidraAddress BRD3D: 0x1003551b
+ * @ghidraAddress BRGlide: 0x1002ebcc
+ */
+void FixupVehicleModelPointers(VehicleModel *model);
+
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
 
 /**

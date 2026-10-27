@@ -656,16 +656,6 @@ void ChooseVehicleCar(Vehicle *vehicle);
 void DriveAiVehicle(Vehicle *vehicle);
 
 /**
- * Turn the offsets of a loaded model into pointers.
- *
- * @param model The model.
- * @ghidraAddress USA: 0x8021d32c
- * @ghidraAddress EUR: 0x8021e52c
- * @ghidraAddress JPN: 0x8021ddfc
- */
-void FixupVehicleModelPointers(VehicleModel *model);
-
-/**
  * Load the model of a car into a slot from the cartridge, or copy it from memory that holds it,
  * then fix up its pointers and record the car of the slot.
  *
