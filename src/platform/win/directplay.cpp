@@ -726,6 +726,21 @@ int ToggleSelectedSessionSlotFlag(void) {
     return 0;
 }
 
+BOOL CALLBACK EnumPlayersCallback_AddPlayerToList(
+    DPID dpidPlayer, DWORD, LPCDPNAME pName, DWORD dwFlags, void *) {
+    if (g_pNetworkPlayerListMenu == nullptr) {
+        return false;
+    }
+    if (!(dwFlags & DPENUMPLAYERS_SPECTATOR)) {
+        MenuItemList *list = &g_pNetworkPlayerListMenu->itemList;
+        list->pVTable->AddItem(list, pName->lpszShortNameA, 0, 1, &g_rcMenuNetworkPlayers, true);
+        list = &g_pNetworkPlayerListMenu->itemList;
+        list->fonts[list->wItemCount - 1].dwItemData = dpidPlayer;
+        MarkSessionListEntrySeen(dpidPlayer);
+    }
+    return true;
+}
+
 void HandleDirectPlaySystemMessageHost(
     DirectPlayInfo *pInfo, DPMSG_GENERIC *pMessage, DWORD, DPID, DPID dpidTo) {
     DPMSG_SECUREMESSAGE *pSecure;

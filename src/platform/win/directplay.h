@@ -1619,6 +1619,11 @@ extern SessionSlot g_aSessionSlots[SESSION_SLOT_COUNT];
  * @ghidraAddress BRGlide: 0x10036080
  */
 void MarkSessionListEntrySeen(DPID dpidPlayer);
+/**
+ * @ghidraAddress BRD3D: 0x1003caa0
+ */
+BOOL CALLBACK EnumPlayersCallback_AddPlayerToList(
+    DPID dpidPlayer, DWORD dwPlayerType, LPCDPNAME pName, DWORD dwFlags, void *pContext);
 
 /**
  * Free each slot of the session whose player was not found since the last purge.

@@ -552,6 +552,43 @@ bool MenuWidget::Update() {
     return true;
 }
 
+int MenuItemList::SetItemData(const void *data, unsigned size, int index) {
+    if (index == -1) {
+        index = wItemCount - 1;
+        if (index < 0) {
+            index = 0;
+        }
+    }
+    MenuItemData &item = itemData[index];
+    if (item.pData == nullptr) {
+        item.pData = static_cast<unsigned char *>(::operator new(size, std::nothrow));
+    }
+    // Existing allocations are reused without resizing.
+    memcpy(item.pData, data, size);
+    item.dwSize = size;
+    return 1;
+}
+
+int MenuItemList::BlitSurfaceById(unsigned short image, float x, float y) {
+    const MenuSprite &sprite = g_aMenuSprites[image];
+    int destinationY = ConvertMenuCoordinate(y);
+    int destinationX = ConvertMenuCoordinate(x);
+    BlitSurfaceRegion(
+        destinationX, destinationY, static_cast<WORD>(sprite.nImage), &sprite.rc, sprite.dwFlags);
+    return 1;
+}
+
+int MenuItemList::UpdateAndRenderMenuWidget(int selection) {
+    int result = -1;
+    MenuItemListVTable *vtable = pVTable;
+    vtable->Draw(this, selection);
+    if (!g_dwMenuTextEditActive && !g_dwModalDialogBlocking) {
+        vtable->ProcessInput(this, &result);
+    }
+    ++g_wMenuHoverIndexPrev;
+    return result;
+}
+
 int MenuItemList::UpdateItemAndNotify(int nIndex) {
     MenuFont *font = &fonts[nIndex];
     MenuFontVTable *vtable = font->pVTable;

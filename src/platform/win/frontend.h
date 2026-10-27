@@ -105,15 +105,24 @@ using NetworkMenuWidget = MenuWidget;
 struct MenuItemList;
 
 struct MenuItemListVTable {
-    char abUnknown0[0x10]; /* +0x00 */
+    char abUnknown0[4]; /* +0x00 */
+    int(__thiscall *BlitSurfaceById)(MenuItemList *, unsigned short, float, float);
+    int(__thiscall *Draw)(MenuItemList *, int);
+    char abUnknownc[4]; /* +0x0c */
     int(__thiscall *AddItem)(
         MenuItemList *, const char *, unsigned, unsigned char, const RECT *, bool);
     int(__thiscall *Initialize)(MenuItemList *, unsigned, const RECT *, int, int, int);
-    char abUnknown18[8]; /* +0x18 */
+    char abUnknown18[4]; /* +0x18 */
+    int(__thiscall *ProcessInput)(MenuItemList *, int *);
     int(__thiscall *PollSelection)(MenuItemList *, int);
     int(__thiscall *UpdateItemAndNotify)(MenuItemList *, int);
-    char abUnknown28[4]; /* +0x28 */
+    int(__thiscall *SetItemData)(MenuItemList *, const void *, unsigned, int);
     int(__thiscall *RemoveItem)(MenuItemList *, int);
+};
+
+struct MenuItemData {
+    unsigned dwSize;
+    unsigned char *pData;
 };
 
 struct MenuItemList {
@@ -123,7 +132,7 @@ struct MenuItemList {
     unsigned dwFlags;
     char abUnknown1c[0x10]; /* +0x1c */
     MenuFont fonts[100];
-    char abUnknown1a60c[0x320]; /* +0x1a60c */
+    MenuItemData itemData[100];
     unsigned short wItemCount;
     char abUnknown1a92e[0x8e]; /* +0x1a92e */
     int nSelectionMode;
@@ -134,6 +143,18 @@ struct MenuItemList {
      * @ghidraAddress BRGlide: 0x100549a0
      */
     int UpdateItemAndNotify(int nIndex);
+    /**
+     * @ghidraAddress BRD3D: 0x1005c200
+     */
+    int SetItemData(const void *data, unsigned size, int index);
+    /**
+     * @ghidraAddress BRD3D: 0x1005c270
+     */
+    int BlitSurfaceById(unsigned short image, float x, float y);
+    /**
+     * @ghidraAddress BRD3D: 0x1005cb40
+     */
+    int UpdateAndRenderMenuWidget(int selection);
 };
 
 /** An item of a panel of the front end. */
