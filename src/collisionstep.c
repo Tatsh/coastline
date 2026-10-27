@@ -1,6 +1,8 @@
 #include "physics.h"
 
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
+#include <string.h>
+
 #include "screen.h"
 #define osSyncPrintf(...) NullStub()
 #define COLLISION_PRODUCT(a, b) ((long double)(a) * (b))
@@ -16,6 +18,11 @@ TrackTriangle *g_pCollisionTriangle;
 #include "game.h"
 #include "timing.h"
 #include "trianglebox.h"
+#include "vehicle.h"
+
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#define AddTimingMarker(...) NullStub()
+#endif
 
 #define ABS(x) ((x) < 0.0f ? -(x) : (x))
 
@@ -170,13 +177,20 @@ s32 CollideBodyWithTriangles(RigidBody *body, f32 box[4][4]) {
 }
 #pragma GCC diagnostic pop
 
-#if TGR_PLATFORM == TGR_PLATFORM_N64
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+void StepVehicleCollisions(Vehicle *vehicle, RigidBody *body) {
+#else
 void StepVehicleCollisions(RigidBody *body) {
+#endif
     f32 box[4][4];
     Vec3f scale;
     /* The original reserves stack for twelve bytes of locals it does not use. */
     f32 unused[3];
     f32 remaining, step;
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+    long double highRemaining, dx, dy, dz, displacement;
+    f32 storedDx, storedDz;
+#endif
     /* The count of the steps is a variable, and the original divides by it at run time. */
     f32 steps;
 
@@ -220,19 +234,51 @@ void StepVehicleCollisions(RigidBody *body) {
                 QuaternionToMatrix(body->orientation, &body->stepStates[1]);
             }
             memcpy(&body->stepStates[0], &body->stepStates[1], sizeof(RigidBodyState));
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+            highRemaining = (long double)remaining - step;
+            remaining = highRemaining;
+        } while (0.002f < highRemaining);
+#else
             remaining = remaining - step;
         } while (0.002f < remaining);
+#endif
     }
     QuaternionToMatrix(body->orientation, &body->stepStates[1]);
     AddTimingMarker(0, 0x80, 0x80, 0, 0xFF);
     memcpy(&body->stepStates[0], &body->stepStates[1], sizeof(RigidBodyState));
-    if (body->orientation[2][2] < UPRIGHT_LIMIT) {
-        if (body->uprightFrames < 0) {
-            body->uprightFrames = -1;
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+    if (vehicle->driver != AiVehicleControllerCallback) {
+        if (COLLISION_LESS(body->orientation[2][2], UPRIGHT_LIMIT)) {
+            if (body->uprightFrames < 0) {
+                body->uprightFrames = -1;
+            }
+            dx = (long double)body->orientation[3][0] - vehicle->previousCollisionPosition.x;
+            dy = (long double)body->orientation[3][1] - vehicle->previousCollisionPosition.y;
+            dz = (long double)body->orientation[3][2] - vehicle->previousCollisionPosition.z;
+            storedDx = dx;
+            storedDz = dz;
+            displacement = (dx * storedDx + dy * dy) + dz * storedDz;
+            if (COLLISION_LESS(displacement, 1.0f)) {
+                body->uprightFrames--;
+            }
+        } else {
+            body->uprightFrames = 120;
         }
-        body->uprightFrames--;
-    } else {
-        body->uprightFrames = UPRIGHT_FRAMES;
-    }
-}
+    } else
 #endif
+    {
+        if (COLLISION_LESS(body->orientation[2][2], UPRIGHT_LIMIT)) {
+            if (body->uprightFrames < 0) {
+                body->uprightFrames = -1;
+            }
+            body->uprightFrames--;
+        } else {
+            body->uprightFrames = UPRIGHT_FRAMES;
+        }
+    }
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+    vehicle->previousCollisionPosition.x = body->orientation[3][0];
+    vehicle->previousCollisionPosition.y = body->orientation[3][1];
+    vehicle->previousCollisionPosition.z = body->orientation[3][2];
+#endif
+}

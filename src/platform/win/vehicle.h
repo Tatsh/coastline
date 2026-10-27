@@ -65,7 +65,8 @@ typedef struct Vehicle {
     u8 abUnknownEb0[0x50]; /* +0xeb0 */
     struct RacerSlot *racer;
     s32 slotCooldown;
-    u8 abUnknownF08[0x54]; /* +0xf08 */
+    void (*driver)(struct Vehicle *vehicle);
+    u8 abUnknownF0c[0x50]; /* +0xf0c */
     Vec3f previousListenerPosition;
     s32 effectSound;
     s32 effectVolume;
@@ -139,8 +140,17 @@ typedef struct Vehicle {
     VehicleModel *model;
     s16 dents[VEHICLE_DENT_SIDES];
     s16 dentJitter;
-    u8 abUnknown29da[0x18e]; /* +0x29da */
+    u8 abUnknown29da[0xd6]; /* +0x29da */
+    Vec3f previousCollisionPosition;
+    u8 abUnknown2abc[0xac]; /* +0x2abc */
 #ifdef __cplusplus
+    /**
+     * Drive the vehicle with its computer controller.
+     *
+     * @ghidraAddress BRD3D: 0x10064700
+     * @stub
+     */
+    void ComputeAiVehicleInput(void);
     /**
      * Initialise the player slot, profile defaults, and vehicle selection.
      *
@@ -245,6 +255,20 @@ typedef struct Vehicle {
     void SetVehicleTurnRate(f32 x, f32 y, f32 z);
 #endif
 } Vehicle;
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+/**
+ * Dispatch the computer controller through its vehicle method.
+ *
+ * @param vehicle The vehicle.
+ * @ghidraAddress BRD3D: 0x10065620
+ */
+void AiVehicleControllerCallback(Vehicle *vehicle);
+#ifdef __cplusplus
+}
+#endif
 
 /**
  * Vehicles of the Windows race.

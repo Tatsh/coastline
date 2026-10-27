@@ -7,6 +7,10 @@
 #include "vehiclechoice.h"
 #include "vehiclereset.h"
 
+void AiVehicleControllerCallback(Vehicle *vehicle) {
+    vehicle->ComputeAiVehicleInput();
+}
+
 void Vehicle::SetVehicleVelocity(f32 x, f32 y, f32 z) {
     ::SetVehicleVelocity(this, x, y, z);
 }
