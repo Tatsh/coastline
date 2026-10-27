@@ -8,6 +8,7 @@
 
 #include <PR/ultratypes.h>
 
+#include "cameraprojection.h"
 #include "instantreplay.h"
 #include "render.h"
 #include "vecmath.h"
@@ -181,6 +182,9 @@ void InitCameraForVehicle(Vehicle *vehicle);
 }
 #endif
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 /**
  * Build the view and the perspective of a camera for a rectangle of the screen, and set the far
  * distance.
@@ -193,8 +197,12 @@ void InitCameraForVehicle(Vehicle *vehicle);
  * @ghidraAddress USA: 0x8021b2f8
  * @ghidraAddress EUR: 0x8021c434
  * @ghidraAddress JPN: 0x8021bd04
+ * @ghidraAddress BRD3D: 0x10033e83
  */
 void SetupCameraMatrix(CameraFrame *camera, f32 fov, f32 farDistance, f32 width, f32 height);
+#ifdef __cplusplus
+}
+#endif
 
 /**
  * The size of the rear-view mirror over the bumper view: 0 for none, 1 small, 2 middling and 3

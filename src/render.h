@@ -114,8 +114,13 @@ typedef struct {
  * @ghidraAddress USA: 0x8028a878
  * @ghidraAddress EUR: 0x8028ca78
  * @ghidraAddress JPN: 0x8028c548
+ * @ghidraAddress BRD3D: 0x106c32d0
  */
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+extern f32 (*g_pProjectionMtx)[4];
+#else
 extern Mtx *g_pProjectionMtx;
+#endif
 
 /**
  * A matrix the renderer builds before converting it.
@@ -132,6 +137,7 @@ extern f32 g_afMvpMatrix[4][4];
  * @ghidraAddress USA: 0x8031aa90
  * @ghidraAddress EUR: 0x8031cf90
  * @ghidraAddress JPN: 0x8031bbc0
+ * @ghidraAddress BRD3D: 0x106c0218
  */
 extern f32 g_afPerspectiveMatrix[4][4];
 
@@ -141,6 +147,7 @@ extern f32 g_afPerspectiveMatrix[4][4];
  * @ghidraAddress USA: 0x8031ab50
  * @ghidraAddress EUR: 0x8031d050
  * @ghidraAddress JPN: 0x8031bc80
+ * @ghidraAddress BRD3D: 0x106c08a0
  */
 extern f32 g_afScratchMatrix[4][4];
 
@@ -264,6 +271,7 @@ extern f32 g_afViewProjMatrix[4][4];
  * @ghidraAddress USA: 0x8028a874
  * @ghidraAddress EUR: 0x8028ca74
  * @ghidraAddress JPN: 0x8028c544
+ * @ghidraAddress BRD3D: 0x106c067c
  */
 extern u16 g_wPerspNorm;
 
@@ -291,6 +299,7 @@ extern f32 g_fFrustumFovAngle;
  * @ghidraAddress USA: 0x8031aad0
  * @ghidraAddress EUR: 0x8031cfd0
  * @ghidraAddress JPN: 0x8031bc00
+ * @ghidraAddress BRD3D: 0x106c58c0
  */
 extern f32 g_ViewLookAtMtx[4][4];
 

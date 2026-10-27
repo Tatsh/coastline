@@ -12,6 +12,7 @@
 #include <PR/sptask.h>
 #include <PR/ultratypes.h>
 
+#include "cameraprojection.h"
 #include "debugmessage.h"
 #include "displaylistops.h"
 #include "frametime.h"
@@ -313,58 +314,6 @@ void FlushDisplayList(void);
  * @ghidraAddress JPN: 0x8021a568
  */
 void SetViewport(s32 x, s32 y, s32 width, s32 height, s32 setScissor);
-
-/**
- * Set up a fixed projection, looking at (512, 384) from 1000 along z, and load it into the display
- * list.
- *
- * @param width The width of the screen, which is not read.
- * @param height The height of the screen, which is not read.
- * @ghidraAddress USA: 0x8021b458
- * @ghidraAddress EUR: 0x8021c594
- * @ghidraAddress JPN: 0x8021be64
- */
-void SetupProjectionMatrix(f32 width, f32 height);
-
-/**
- * Set up the projection of a menu that draws models, looking at the middle of the screen, and load
- * it into the display list.
- *
- * @param width The width of the screen, which is not read.
- * @param height The height of the screen, which is not read.
- * @ghidraAddress USA: 0x8021b5a4
- * @ghidraAddress EUR: 0x8021c6e0
- * @ghidraAddress JPN: 0x8021bfb0
- */
-void SetupMenuProjection(f32 width, f32 height);
-
-/**
- * Whether SetupMenuProjection() keeps the near scale and far distance set before it once,
- * instead of its defaults. It clears this.
- *
- * @ghidraAddress USA: 0x8028a868
- * @ghidraAddress EUR: 0x8028ca68
- * @ghidraAddress JPN: 0x8028c538
- */
-extern s32 g_dwKeepCustomClipPlanes;
-
-/**
- * The near plane SetupMenuProjection() uses.
- *
- * @ghidraAddress USA: 0x8028a86c
- * @ghidraAddress EUR: 0x8028ca6c
- * @ghidraAddress JPN: 0x8028c53c
- */
-extern f32 g_fCameraNearScale;
-
-/**
- * The far plane SetupMenuProjection() uses.
- *
- * @ghidraAddress USA: 0x8028a870
- * @ghidraAddress EUR: 0x8028ca70
- * @ghidraAddress JPN: 0x8028c540
- */
-extern f32 g_fCameraFarDistance;
 
 /**
  * Fill the whole depth buffer with the farthest depth, then draw to the frame buffer again.
