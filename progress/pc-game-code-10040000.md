@@ -1,6 +1,6 @@
 # PC port game code from 0x10040000 to 0x10050000
 
-208 of 264 routines done.
+209 of 264 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -97,7 +97,7 @@ the same name, for a routine the port retained from the N64 game.
 | `SeasonProgressInfoUI_UpdateRoundLabel`            |   ✅   |                 |      1 |    196 | `0x10040b30` | `0x1003a070` | `int SeasonProgressInfoUI_UpdateRoundLabel(MenuWidget * pWidget)`                                                                                         |
 | `ShowD3DDeviceSelectMenu`                          |        |                 |      1 |    184 | `0x10045460` | `0x1003e9b0` | `undefined ShowD3DDeviceSelectMenu()`                                                                                                                     |
 | `ShowDisplayModeSelectMenu`                        |        |                 |      1 |    184 | `0x10045520` |              | `undefined ShowDisplayModeSelectMenu()`                                                                                                                   |
-| `RaceResultsTotalsUI_UpdatePointsNeededLabel`      |        |                 |      1 |    180 | `0x100417b0` | `0x1003ad10` | `undefined RaceResultsTotalsUI_UpdatePointsNeededLabel()`                                                                                                 |
+| `RaceResultsTotalsUI_UpdatePointsNeededLabel`      |   ✅   |                 |      1 |    180 | `0x100417b0` | `0x1003ad10` | `int RaceResultsTotalsUI_UpdatePointsNeededLabel(MenuWidget * pWidget)`                                                                                   |
 | `ToggleMenuItemTextEditA`                          |   ✅   |                 |      2 |    179 | `0x10041a00` | `0x1003af60` | `int ToggleMenuItemTextEditA(MenuWidget * pWidget)`                                                                                                       |
 | `ToggleMenuItemTextEditB`                          |   ✅   |                 |      2 |    179 | `0x10042410` | `0x1003b970` | `int ToggleMenuItemTextEditB(MenuWidget * pWidget)`                                                                                                       |
 | `InputOptionsUI_OnCycleInputDevice`                |   ✅   |                 |      1 |    178 | `0x10043400` | `0x1003c950` | `int InputOptionsUI_OnCycleInputDevice(MenuWidget * pWidget)`                                                                                             |
