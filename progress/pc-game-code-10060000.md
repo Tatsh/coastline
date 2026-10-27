@@ -1,6 +1,6 @@
 # PC port game code from 0x10060000 to 0x10070000
 
-84 of 173 routines done.
+85 of 173 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -62,7 +62,7 @@ the same name, for a routine the port retained from the N64 game.
 | `RallyConfig::InitRallyConfigDefaults`   |   ✅   |                 |      2 |    330 | `0x10069c90` | `0x10062d00` | `void InitRallyConfigDefaults(RallyConfig * this)`                                                                                       |
 | `DoesTriangleCrossUnitCube`              |        | ✅ `0x8025ce28` |      1 |    322 | `0x1006d9a0` | `0x10066950` | `undefined DoesTriangleCrossUnitCube()`                                                                                                  |
 | `SumBodyForces`                          |   ✅   | ✅ `0x802594bc` |      1 |    310 | `0x1006aeb0` | `0x10063e60` | `void SumBodyForces(RigidBody * body)`                                                                                                   |
-| `ComputeDragForce`                       |        | ✅ `0x8025e820` |      1 |    305 | `0x1006ef80` | `0x10067f30` | `undefined ComputeDragForce()`                                                                                                           |
+| `ComputeDragForce`                       |   ✅   | ✅ `0x8025e820` |      1 |    305 | `0x1006ef80` | `0x10067f30` | `void ComputeDragForce(RigidBody * body, RigidBodyForce * force)`                                                                        |
 | `ApplyColorTintToRegion`                 |        |                 |      5 |    297 | `0x10061480` | `0x1005a500` | `undefined ApplyColorTintToRegion()`                                                                                                     |
 | `ApplyPaintDamageOverlay`                |        |                 |      1 |    286 | `0x10061290` | `0x1005a300` | `undefined ApplyPaintDamageOverlay()`                                                                                                    |
 | `RacerSlot::UpdateRacerSlotRaceState`    |        | ✅ `0x8022cf88` |      1 |    286 | `0x10069370` | `0x100623e0` | `undefined UpdateRacerSlotRaceState(RacerSlot * this)`                                                                                   |
