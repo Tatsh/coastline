@@ -1,6 +1,6 @@
 # PC port game code from 0x10000000 to 0x10010000
 
-205 of 247 routines done.
+206 of 247 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -35,7 +35,7 @@ the same name, for a routine the port retained from the N64 game.
 | `D3DTexture::CreateD3DTexture`                             |   ✅   |                 |      2 |    492 | `0x10009c40` |              | `bool CreateD3DTexture(D3DTexture * this, void * pDevice, void * pImage, int nWidth, int nHeight, int nPixelFormatId, uint dwColorKey)`                                                 |
 | `InitializeMusicPlayback`                                  |   📝   |                 |      2 |    471 | `0x10002260` | `0x10002580` | `bool InitializeMusicPlayback(void)`                                                                                                                                                    |
 | `HandleDirectPlaySystemMessage`                            |   ✅   |                 |      1 |    468 | `0x1000c170` | `0x100096a0` | `void HandleDirectPlaySystemMessage(DirectPlayInfo * pInfo, void * pMessage, uint dwSize, uint dpidFrom, uint dpidTo)`                                                                  |
-| `ConvertRGBAToPixelFormatWithColorKey`                     |   🚧   |                 |      6 |    452 | `0x10009660` |              | `int ConvertRGBAToPixelFormatWithColorKey(void * pDest, void * pSrc, int nSize, int nPixelFormatId, uint * pColorKey)`                                                                  |
+| `ConvertRGBAToPixelFormatWithColorKey`                     |   ✅   |                 |      6 |    452 | `0x10009660` |              | `int ConvertRGBAToPixelFormatWithColorKey(void * pDest, void * pSrc, int nSize, int nPixelFormatId, uint * pColorKey)`                                                                  |
 | `ResetNetworkState`                                        |   ✅   |                 |      3 |    430 | `0x10005960` | `0x10005cd0` | `bool ResetNetworkState(void)`                                                                                                                                                          |
 | `ConvertRGBAToPixelFormat`                                 |   ✅   |                 |      9 |    420 | `0x100098a0` |              | `int ConvertRGBAToPixelFormat(void * pDest, void * pSrc, int nSize, int nPixelFormatId)`                                                                                                |
 | `DirectDrawRenderer::InitializeViewportAndRenderContext`   |   ✅   |                 |      1 |    411 | `0x1000afb0` |              | `long InitializeViewportAndRenderContext(DirectDrawRenderer * this)`                                                                                                                    |
