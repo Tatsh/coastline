@@ -263,6 +263,22 @@ extern Vec3f g_vTrackLightDirection;
  */
 extern Vec3f g_vShadowForward;
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+/**
+ * Project a point and its radius to screen bounds outside the near-camera interval.
+ * @param viewports The records of the views.
+ * @param point The point in world coordinates.
+ * @param size The radius in world coordinates.
+ * @param low The left and lower screen bounds.
+ * @param high The right and upper screen bounds.
+ * @ghidraAddress BRD3D: 0x1000f480
+ */
+void ProjectWorldToScreenRect(
+    const ViewportRect *viewports, const Vec3f *point, s32 size, s16 low[2], s16 high[2]);
+#else
 /**
  * Take a point and a size around it to the corners of the rectangle of the screen they cover in
  * the view being drawn, which are left as they were when the point is at the camera.
@@ -275,7 +291,11 @@ extern Vec3f g_vShadowForward;
  * @ghidraAddress EUR: 0x80235320
  * @ghidraAddress JPN: 0x80235120
  */
-void ProjectWorldToScreenRect(Vec3f *point, s32 size, s16 low[2], s16 high[2]);
+void ProjectWorldToScreenRect(const Vec3f *point, s32 size, s16 low[2], s16 high[2]);
+#endif
+#ifdef __cplusplus
+}
+#endif
 
 #ifdef __cplusplus
 extern "C" {
