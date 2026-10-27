@@ -1,6 +1,6 @@
 # PC port game code from 0x10050000 to 0x10060000
 
-29 of 85 routines done.
+29 of 86 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -22,7 +22,7 @@ the same name, for a routine the port retained from the N64 game.
 | `BuildMultiplayerGameSetupUI`             |   🚧   |                 |      4 |   2701 | `0x10057c10` | `0x10050ac0` | `void BuildMultiplayerGameSetupUI(MenuScreen * pScreen)`                                                                                        |
 | `BuildSaveSeasonUI`                       |   📝   |                 |      2 |   2433 | `0x10050060` | `0x10048f10` | `void BuildSaveSeasonUI(MenuScreen * pScreen)`                                                                                                  |
 | `ApplyPlayerVehicleInput`                 |        |                 |      3 |   1960 |              | `0x1005d050` | `undefined ApplyPlayerVehicleInput()`                                                                                                           |
-| `BuildSaveTimeAttackMenuUI`               |        |                 |      2 |   1932 | `0x1005a6e0` | `0x10053590` | `undefined BuildSaveTimeAttackMenuUI()`                                                                                                         |
+| `BuildSaveTimeAttackMenuUI`               |   🚧   |                 |      2 |   1932 | `0x1005a6e0` | `0x10053590` | `void BuildSaveTimeAttackMenuUI(MenuScreen * pScreen)`                                                                                          |
 | `BuildPlayerNameEntryUI`                  |   🚧   |                 |      2 |   1570 | `0x100563e0` | `0x1004f290` | `void BuildPlayerNameEntryUI(MenuScreen * pScreen)`                                                                                             |
 | `BuildCreateGameMenuUI`                   |        |                 |      2 |   1558 | `0x100575f0` | `0x100504a0` | `undefined BuildCreateGameMenuUI()`                                                                                                             |
 | `BuildJoinCreateGameUI`                   |   🚧   |                 |      2 |   1532 | `0x10056ff0` | `0x1004fea0` | `void BuildJoinCreateGameUI(MenuScreen * pScreen)`                                                                                              |
@@ -94,3 +94,4 @@ the same name, for a routine the port retained from the N64 game.
 | `MenuFont::~MenuFont`                     |        |                 |      5 |      7 | `0x1005b0c0` | `0x10053ee0` | `void ~MenuFont(MenuFont * this)`                                                                                                               |
 | `SaveFileList::~SaveFileList`             |   ✅   |                 |      1 |      7 | `0x1005cc10` | `0x10055a30` | `void ~SaveFileList(SaveFileList * this)`                                                                                                       |
 | `MenuFont::DrawGlyphNoOp`                 |        |                 |      1 |      5 | `0x1005b7e0` | `0x10054600` | `undefined DrawGlyphNoOp(MenuFont * this, undefined4 param_1, undefined4 param_2, undefined4 param_3)`                                          |
+| `ReturnZero`                              |        |                 |      4 |      3 |              | `0x10053e60` | `undefined ReturnZero()`                                                                                                                        |
