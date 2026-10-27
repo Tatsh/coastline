@@ -398,6 +398,22 @@ int LoadTimeAttackMenuUI_UpdateItemEnabledState(MenuWidget *pWidget);
 int SeasonUI_UpdateTotalPointsLabel(MenuWidget *pWidget);
 
 /**
+ * Draw the total points of the race results.
+ *
+ * @ghidraAddress BRD3D: 0x10041710
+ * @ghidraAddress BRGlide: 0x1003ac70
+ */
+int RaceResultsTotalsUI_UpdateTotalPointsLabel(MenuWidget *pWidget);
+
+/**
+ * Draw the number of completed rounds in the race results.
+ *
+ * @ghidraAddress BRD3D: 0x10041670
+ * @ghidraAddress BRGlide: 0x1003abd0
+ */
+int RaceResultsTotalsUI_UpdateRoundsCompletedLabel(MenuWidget *pWidget);
+
+/**
  * Draw the remaining points required to advance, with negative results clamped to zero.
  *
  * @ghidraAddress BRD3D: 0x100415a0

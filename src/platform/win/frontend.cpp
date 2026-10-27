@@ -2406,6 +2406,25 @@ int SeasonUI_UpdateTotalPointsLabel(MenuWidget *pWidget) {
     return 1;
 }
 
+static inline int DrawResultsNumericLabel(MenuWidget *pWidget, int value) {
+    char text[32] = {};
+    _itoa(value, text, 10);
+    if (strlen(text) == 0) {
+        return 0;
+    }
+    DrawAlternateMenuLabel(pWidget, _strupr(text));
+    return 1;
+}
+
+int RaceResultsTotalsUI_UpdateTotalPointsLabel(MenuWidget *pWidget) {
+    return DrawResultsNumericLabel(pWidget, g_dwSeasonTotalPoints);
+}
+
+int RaceResultsTotalsUI_UpdateRoundsCompletedLabel(MenuWidget *pWidget) {
+    return DrawResultsNumericLabel(pWidget,
+                                   static_cast<int>(static_cast<unsigned>(g_dwSeasonRound) + 1));
+}
+
 int SeasonProgressInfoUI_UpdatePointsNeededLabel(MenuWidget *pWidget) {
     char text[32] = {};
     int season = g_dwSeasonLoaded ? g_bSeasonClass : 0;
