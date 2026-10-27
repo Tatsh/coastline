@@ -19,6 +19,10 @@ __asm__(".set push\n"
         ".set pop\n");
 #else
 s32 FloatToInt(float value) {
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+    return (s32)(s64)value;
+#else
     return (s32)value;
+#endif
 }
 #endif
