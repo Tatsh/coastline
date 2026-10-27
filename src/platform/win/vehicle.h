@@ -52,7 +52,8 @@ typedef struct Vehicle {
     f32 progress;
     u8 abUnknownFf8[0x2c]; /* +0xff8 */
     Vec3f placedVelocity;
-    u8 abUnknown1030[0x16a4]; /* +0x1030 */
+    u8 abUnknown1030[0x1698]; /* +0x1030 */
+    Vec3f sprayOrigin;
     f32 inputMatrix[4][4];
     u8 abUnknown2714[0x20]; /* +0x2714 */
     CameraFrame *activeCamera;
@@ -95,6 +96,26 @@ typedef struct Vehicle {
      * @ghidraAddress BRD3D: 0x10076b20
      */
     void ResetVehicleState(void);
+    /**
+     * @ghidraAddress BRD3D: 0x10076420
+     */
+    void SetVehiclePosition(f32 x, f32 y, f32 z);
+    /**
+     * @ghidraAddress BRD3D: 0x100764c0
+     */
+    void InitVehicleOrientationFromAngle(f32 angle);
+    /**
+     * @ghidraAddress BRD3D: 0x10076700
+     */
+    void SetVehicleFrameMatrix(f32 m[4][4]);
+    /**
+     * @ghidraAddress BRD3D: 0x10076820
+     */
+    void RotateVehicleByEuler(f32 yaw, f32 pitch, f32 roll);
+    /**
+     * @ghidraAddress BRD3D: 0x100769a0
+     */
+    void SetVehicleTurnRate(f32 x, f32 y, f32 z);
 #endif
 } Vehicle;
 

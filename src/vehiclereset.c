@@ -1,12 +1,122 @@
 #include "vehiclereset.h"
 
 #if TGR_PLATFORM == TGR_PLATFORM_N64
+#include <PR/gu.h>
 #include <PR/os_libc.h>
 #else
+#include <math.h>
 #include <string.h>
 #endif
 
 #define DEFAULT_CAMERA_FOV 0.5235987902f
+#define HALF_PI 1.570796371f
+
+/* Copy the orientation of the body into both of its step states, a coordinate at a time. */
+#define COPY_ORIENTATION_TO_STEPS(vehicle)                                                         \
+    (vehicle)->body.stepStates[1].orientation.w = (vehicle)->body.state.orientation.w;             \
+    (vehicle)->body.stepStates[0].orientation.w = (vehicle)->body.state.orientation.w;             \
+    (vehicle)->body.stepStates[1].orientation.x = (vehicle)->body.state.orientation.x;             \
+    (vehicle)->body.stepStates[0].orientation.x = (vehicle)->body.state.orientation.x;             \
+    (vehicle)->body.stepStates[1].orientation.y = (vehicle)->body.state.orientation.y;             \
+    (vehicle)->body.stepStates[0].orientation.y = (vehicle)->body.state.orientation.y;             \
+    (vehicle)->body.stepStates[1].orientation.z = (vehicle)->body.state.orientation.z;             \
+    (vehicle)->body.stepStates[0].orientation.z = (vehicle)->body.state.orientation.z
+
+void SetVehiclePosition(Vehicle *vehicle, f32 x, f32 y, f32 z) {
+    vehicle->matrix[3][0] = x;
+    vehicle->matrix[3][1] = y;
+    vehicle->matrix[3][2] = z;
+    vehicle->sprayOrigin.x = x;
+    vehicle->sprayOrigin.y = y;
+    vehicle->sprayOrigin.z = z;
+    vehicle->body.state.position.x = x;
+    vehicle->body.state.position.y = y;
+    vehicle->body.state.position.z = z;
+    vehicle->body.stepStates[1].position.x = x;
+    vehicle->body.stepStates[1].position.y = y;
+    vehicle->body.stepStates[1].position.z = z;
+    vehicle->body.stepStates[0].position.x = x;
+    vehicle->body.stepStates[0].position.y = y;
+    vehicle->body.stepStates[0].position.z = z;
+    QuaternionToMatrix(vehicle->body.orientation, &vehicle->body.state);
+}
+
+void InitVehicleOrientationFromAngle(Vehicle *vehicle, f32 angle) {
+    f32 forwardX = cosf(angle);
+    f32 forwardY = sinf(angle);
+    f32 sideX = cosf(angle + HALF_PI);
+    f32 sideY = sinf(angle + HALF_PI);
+    f32 half = angle * 0.5f;
+#if TGR_PLATFORM == TGR_PLATFORM_N64
+    /* The original reserves stack for 44 bytes of locals it does not use. */
+    f32 unused[11];
+
+    (void)unused;
+#endif
+    vehicle->matrix[0][0] = forwardX;
+    vehicle->matrix[0][1] = forwardY;
+    vehicle->matrix[0][2] = 0.0f;
+    vehicle->matrix[1][0] = sideX;
+    vehicle->matrix[1][1] = sideY;
+    vehicle->matrix[1][2] = 0.0f;
+    vehicle->matrix[2][1] = 0.0f;
+    vehicle->matrix[2][0] = 0.0f;
+    vehicle->matrix[2][2] = 1.0f;
+    vehicle->body.state.orientation.w = cosf(half);
+    vehicle->body.state.orientation.y = 0.0f;
+    vehicle->body.state.orientation.x = 0.0f;
+    vehicle->body.state.orientation.z = sinf(half);
+    COPY_ORIENTATION_TO_STEPS(vehicle);
+    QuaternionToMatrix(vehicle->body.orientation, &vehicle->body.state);
+}
+
+void SetVehicleFrameMatrix(Vehicle *vehicle, f32 (*m)[4]) {
+    memcpy(vehicle->matrix, m, sizeof(vehicle->matrix));
+    MatrixToQuaternion(m, &vehicle->body.state.orientation);
+    COPY_ORIENTATION_TO_STEPS(vehicle);
+    QuaternionToMatrix(vehicle->body.orientation, &vehicle->body.state);
+}
+
+void RotateVehicleByEuler(Vehicle *vehicle, f32 yaw, f32 pitch, f32 roll) {
+    Quaternion turn;
+    f32 sine;
+
+    yaw *= 0.5f;
+    pitch *= 0.5f;
+    roll *= 0.5f;
+    sine = sinf(yaw);
+    turn.w = cosf(yaw);
+    turn.x = 0.0f;
+    turn.y = 0.0f;
+    turn.z = sine;
+    QuaternionMultiply(&vehicle->body.state.orientation, &vehicle->body.state.orientation, &turn);
+    sine = sinf(pitch);
+    turn.w = cosf(pitch);
+    turn.x = 0.0f;
+    turn.y = sine;
+    turn.z = 0.0f;
+    QuaternionMultiply(&vehicle->body.state.orientation, &vehicle->body.state.orientation, &turn);
+    sine = sinf(roll);
+    turn.w = cosf(roll);
+    turn.x = sine;
+    turn.y = 0.0f;
+    turn.z = 0.0f;
+    QuaternionMultiply(&vehicle->body.state.orientation, &vehicle->body.state.orientation, &turn);
+    QuaternionNormalize(&vehicle->body.state.orientation);
+    COPY_ORIENTATION_TO_STEPS(vehicle);
+}
+
+void SetVehicleTurnRate(Vehicle *vehicle, f32 x, f32 y, f32 z) {
+    vehicle->body.state.angularVelocity.x = x;
+    vehicle->body.state.angularVelocity.y = y;
+    vehicle->body.state.angularVelocity.z = z;
+    vehicle->body.stepStates[1].angularVelocity.x = x;
+    vehicle->body.stepStates[1].angularVelocity.y = y;
+    vehicle->body.stepStates[1].angularVelocity.z = z;
+    vehicle->body.stepStates[0].angularVelocity.x = x;
+    vehicle->body.stepStates[0].angularVelocity.y = y;
+    vehicle->body.stepStates[0].angularVelocity.z = z;
+}
 
 void SetVehicleVelocity(Vehicle *vehicle, f32 x, f32 y, f32 z) {
     Vec3f *placed = &vehicle->placedVelocity;

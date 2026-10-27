@@ -3,6 +3,7 @@
 #include "game.h"
 #include "trackselect.h"
 #include "vehicle.h"
+#include "vehiclechoice.h"
 #include "vehiclereset.h"
 
 void Vehicle::SetVehicleVelocity(f32 x, f32 y, f32 z) {
@@ -12,8 +13,26 @@ void Vehicle::SetVehicleVelocity(f32 x, f32 y, f32 z) {
 void Vehicle::ResetVehicleState(void) {
     ::ResetVehicleState(this);
 }
-#include "vehiclechoice.h"
 
+void Vehicle::SetVehiclePosition(f32 x, f32 y, f32 z) {
+    ::SetVehiclePosition(this, x, y, z);
+}
+
+void Vehicle::InitVehicleOrientationFromAngle(f32 angle) {
+    ::InitVehicleOrientationFromAngle(this, angle);
+}
+
+void Vehicle::SetVehicleFrameMatrix(f32 m[4][4]) {
+    ::SetVehicleFrameMatrix(this, m);
+}
+
+void Vehicle::RotateVehicleByEuler(f32 yaw, f32 pitch, f32 roll) {
+    ::RotateVehicleByEuler(this, yaw, pitch, roll);
+}
+
+void Vehicle::SetVehicleTurnRate(f32 x, f32 y, f32 z) {
+    ::SetVehicleTurnRate(this, x, y, z);
+}
 void Vehicle::BindPlayerInputToVehicle(void) {
     input = &g_aPlayerInputState[this - g_aVehicles];
     guMtxIdentF(inputMatrix);
