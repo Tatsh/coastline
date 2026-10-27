@@ -564,32 +564,6 @@ void SetTextStyleBold(void) {
     g_bTextStyleBold = TRUE;
 }
 
-void EnableTextShadow(void) {
-    g_bTextShadowEnabled = TRUE;
-}
-
-void DisableTextShadow(void) {
-    g_bTextShadowEnabled = FALSE;
-}
-
-void SetTextAlignLeft(void) {
-    g_nTextAlignment = TEXT_ALIGN_LEFT;
-}
-
-void SetTextAlignRight(void) {
-    g_nTextAlignment = TEXT_ALIGN_RIGHT;
-}
-
-void SetTextCustomColors(s32 red, s32 green, s32 blue, s32 red2, s32 green2, s32 blue2) {
-    g_bTextCustomColorsEnabled = TRUE;
-    g_dwTextCustomColorR = red;
-    g_dwTextCustomColorG = green;
-    g_dwTextCustomColorB = blue;
-    g_dwTextCustomColor2R = red2;
-    g_dwTextCustomColor2G = green2;
-    g_dwTextCustomColor2B = blue2;
-}
-
 void SetTextGradientColorsFromBytes(const u8 *color, const u8 *color2) {
     g_bTextCustomColorsEnabled = TRUE;
     g_dwTextCustomColorR = color[0];

@@ -385,6 +385,7 @@ void SetTextStyleBold(void);
  * @ghidraAddress USA: 0x8022f4dc
  * @ghidraAddress EUR: 0x802309ec
  * @ghidraAddress JPN: 0x8023070c
+ * @ghidraAddress BRD3D: 0x10019240
  */
 void EnableTextShadow(void);
 
@@ -394,6 +395,7 @@ void EnableTextShadow(void);
  * @ghidraAddress USA: 0x8022f4ec
  * @ghidraAddress EUR: 0x802309fc
  * @ghidraAddress JPN: 0x8023071c
+ * @ghidraAddress BRD3D: 0x10019250
  */
 void DisableTextShadow(void);
 
@@ -423,6 +425,7 @@ void SetTextAlignCenter(void);
  * @ghidraAddress USA: 0x8022f514
  * @ghidraAddress EUR: 0x80230a24
  * @ghidraAddress JPN: 0x80230744
+ * @ghidraAddress BRD3D: 0x10019280
  */
 void SetTextAlignLeft(void);
 
@@ -432,6 +435,7 @@ void SetTextAlignLeft(void);
  * @ghidraAddress USA: 0x8022f520
  * @ghidraAddress EUR: 0x80230a30
  * @ghidraAddress JPN: 0x80230750
+ * @ghidraAddress BRD3D: 0x10019290
  */
 void SetTextAlignRight(void);
 
@@ -447,6 +451,7 @@ void SetTextAlignRight(void);
  * @ghidraAddress USA: 0x8022f530
  * @ghidraAddress EUR: 0x80230a40
  * @ghidraAddress JPN: 0x80230760
+ * @ghidraAddress BRD3D: 0x100192a0
  */
 void SetTextCustomColors(s32 red, s32 green, s32 blue, s32 red2, s32 green2, s32 blue2);
 
