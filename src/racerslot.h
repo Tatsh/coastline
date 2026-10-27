@@ -59,6 +59,12 @@ typedef struct RacerSlot {
 
 #ifdef __cplusplus
 public:
+    /**
+     * Update the assigned vehicle after its movement and contacts for a frame.
+     *
+     * @ghidraAddress BRD3D: 0x10069370
+     */
+    void UpdateRacerSlotRaceState(void);
     Vec3f &GetPosition() {
         return position;
     }
@@ -250,6 +256,18 @@ extern RacerSlot g_aRacerSlots[RACER_SLOTS];
  * @ghidraAddress JPN: 0x80229d4c
  */
 void InitRacerSlot(RacerSlot *slot);
+
+#if TGR_PLATFORM == TGR_PLATFORM_N64
+/**
+ * Update the assigned vehicle timers, messages, progress, and velocity for a frame.
+ *
+ * @param slot The slot of g_aRacerSlots.
+ * @ghidraAddress USA: 0x8022cf88
+ * @ghidraAddress EUR: 0x8022e498
+ * @ghidraAddress JPN: 0x8022dc50
+ */
+void UpdateRacerSlotRaceState(RacerSlot *slot);
+#endif
 
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
 /**

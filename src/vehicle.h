@@ -793,16 +793,6 @@ void ManageAiRacerSlots(Vehicle *player);
  */
 void UpdateRacerSlotMotion(RacerSlot *slot);
 
-/**
- * Update the race of a racer's vehicle for a frame: its timers, messages, progress and velocity.
- *
- * @param slot The slot of g_aRacerSlots.
- * @ghidraAddress USA: 0x8022cf88
- * @ghidraAddress EUR: 0x8022e498
- * @ghidraAddress JPN: 0x8022dc50
- */
-void UpdateRacerSlotRaceState(RacerSlot *slot);
-
 #endif
 
 #endif

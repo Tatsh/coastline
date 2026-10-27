@@ -78,28 +78,3 @@ void SortRacersByPosition(void) {
         }
     }
 }
-
-void UpdateRacerSlotRaceState(RacerSlot *slot) {
-    if (g_dwRacePauseState || slot->vehicle == NULL) {
-        return;
-    }
-    if (slot->vehicle->body.impactSpeed) {
-        DeformVehicleMeshByImpact(
-            slot->vehicle, &slot->vehicle->body.impactPoint, (s16)slot->vehicle->body.impactSpeed);
-        slot->vehicle->body.impactSpeed = 0;
-    }
-    UpdateRaceTimers(slot->vehicle);
-    UpdateHudMessageTimers(slot->vehicle);
-    CheckWrongWayWarning(slot->vehicle);
-    UpdateRaceProgress(slot);
-    UpdateVehicleGridPosition(slot->vehicle);
-    Vec3fSubtract(&slot->vehicle->placedVelocity,
-                  &slot->vehicle->frame.position,
-                  &slot->vehicle->previousPosition);
-    Vec3fScaleInPlace(&slot->vehicle->placedVelocity, 1.0f / g_fFrameDeltaTime);
-    slot->vehicle->cameraHeading =
-        Atan2f(slot->vehicle->activeCamera->forward.x, slot->vehicle->activeCamera->forward.y);
-    if (slot->vehicle->slotCooldown) {
-        slot->vehicle->slotCooldown--;
-    }
-}
