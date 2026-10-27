@@ -14,6 +14,7 @@
 #include "vehicleeffects.h"
 #include "vehicleforces.h"
 #include "vehiclemodel.h"
+#include "wheelframe.h"
 
 #define VEHICLE_GHOST 2
 
@@ -23,7 +24,10 @@ typedef struct Vehicle {
         CameraFrame frame;
         struct {
             f32 matrix[4][4];
-            f32 wheelMatrices[4][4][4];
+            union {
+                f32 wheelMatrices[4][4][4];
+                WheelFrame wheelFrames[4];
+            };
         };
     };
     s32 index;
@@ -67,7 +71,7 @@ typedef struct Vehicle {
     struct RacerSlot *racer;
     s32 slotCooldown;
     void (*driver)(struct Vehicle *vehicle);
-    u8 abUnknownF0c[0xc]; /* +0xf0c */
+    Vec3f aiTarget;
     Vec3f trackPoint;
     Vec3f trackForward;
     Vec3f trackSide;
@@ -201,7 +205,6 @@ typedef struct Vehicle {
      * Drive the vehicle with its computer controller.
      *
      * @ghidraAddress BRD3D: 0x10064700
-     * @stub
      */
     void ComputeAiVehicleInput(void);
 

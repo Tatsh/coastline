@@ -1,16 +1,43 @@
 #include "driving.h"
 
+#if TGR_PLATFORM == TGR_PLATFORM_N64
 #include <PR/gu.h>
 #include <PR/os_libc.h>
+#else
+#include "screen.h"
+#define AddTimingMarker(...) NullStub()
+#define RACER_HELD 1
+#endif
 
 #include "camera.h"
+#include "frametime.h"
 #include "game.h"
 #include "input.h"
+#if TGR_PLATFORM == TGR_PLATFORM_N64
 #include "racemenu.h"
+#endif
 #include "render.h"
 #include "system.h"
 #include "timing.h"
+#include "trackmenuitem.h"
+#include "vehiclecount.h"
+#include "vehiclephysics.h"
+#include "vehiclereset.h"
 #include "weather.h"
+
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+typedef long double AiReal;
+#define AI_INTERMEDIATE(value) ((long double)(value))
+#define AI_LESS(a, b) (!((a) >= (b)))
+#define AI_ZERO(value) (!((value) < 0.0f) && !((value) > 0.0f))
+#define AI_ACTIVE_PROFILE (g_aVehicles[0].profile)
+#else
+typedef f32 AiReal;
+#define AI_INTERMEDIATE(value) (value)
+#define AI_LESS(a, b) ((a) < (b))
+#define AI_ZERO(value) ((value) == 0.0f)
+#define AI_ACTIVE_PROFILE g_pActiveProfile
+#endif
 
 /* How far a computer looks ahead: 20, 3 more for each unit of speed, and at most 80. */
 #define AI_LOOK_BASE 20.0f
@@ -25,11 +52,11 @@
 #define AI_SIGN_DEAD_ZONE 0.1f
 
 #if TGR_REGION == TGR_REGION_EU
-/* The European release scales the velocity a computer keeps in the championship by this. */
+/* The European release scales the velocity a computer retains in the championship by this. */
 #define AI_RETENTION_SCALE 0.9988f
 #endif
 
-/* A computer keeps at least 3 from the side of a track wider than 10, and to the middle 60% of a
+/* A computer stays at least 3 from the side of a track wider than 10, and in the middle 60% of a
  * narrower one. */
 #define AI_WIDE_HALF_WIDTH 5.0f
 #define AI_SIDE_MARGIN 3.0f
@@ -50,13 +77,13 @@
 #define AI_PASS_PUSH 10.0f
 #define AI_PASS_PUSH_MAX 5.0f
 
-/* The speeds of a computer's vehicle: it keeps to the route over 3, losing up to 40% of its
+/* The speeds of a computer's vehicle above which it follows the route, losing up to 40% of its
  * sideways speed. */
 #define AI_HOLD_SPEED 3.0f
 #define AI_HOLD_SCALE 0.015625f
 #define AI_HOLD_MAX 0.4f
 
-/* How much of its velocity a computer's vehicle keeps each frame in the arcade, in snow and
+/* How much of its velocity a computer's vehicle retains each frame in the arcade, in snow and
  * otherwise. */
 #define AI_ARCADE_SNOW_RETENTION 0.99f
 #define AI_ARCADE_RETENTION 0.999f
@@ -65,11 +92,11 @@
 #define AI_MAX_SPIN 1.0f
 
 /* 1 above the dead zone of the computer's tests, -1 below it, and 0 within. */
-static s32 AiSign(f32 value) {
+static s32 AiSign(AiReal value) {
     if (AI_SIGN_DEAD_ZONE < value) {
         return 1;
     }
-    if (value < -AI_SIGN_DEAD_ZONE) {
+    if (AI_LESS(value, -AI_SIGN_DEAD_ZONE)) {
         return -1;
     }
     return 0;
@@ -80,8 +107,8 @@ static void FindAiLookPoint(Vehicle *vehicle, Vec3f *out) {
     TrackSection *section = vehicle->section;
     s32 index = vehicle->pointIndex;
     TrackPoint *point;
-    f32 look = Vec3fLength(&vehicle->placedVelocity) * AI_LOOK_PER_SPEED + AI_LOOK_BASE;
-    f32 step;
+    AiReal look = Vec3fLength(&vehicle->placedVelocity) * AI_LOOK_PER_SPEED + AI_LOOK_BASE;
+    AiReal step;
 
     /* The original stores the point of the vehicle first and overwrites it after the walk. */
     out->x = vehicle->section->points[vehicle->pointIndex].position.x;
@@ -92,7 +119,7 @@ static void FindAiLookPoint(Vehicle *vehicle, Vec3f *out) {
     }
     point = &section->points[index];
     for (;;) {
-        step = point[0].distance - point[1].distance;
+        step = AI_INTERMEDIATE(point[0].distance) - point[1].distance;
         index++;
         point++;
         look -= step;
@@ -104,7 +131,7 @@ static void FindAiLookPoint(Vehicle *vehicle, Vec3f *out) {
             }
             point = section->points;
         }
-        if (look < 0.0f) {
+        if (AI_LESS(look, 0.0f)) {
             break;
         }
     }
@@ -135,18 +162,23 @@ static f32 MeasureAiRoutePosition(Vehicle *vehicle) {
 }
 
 /* Correct a computer that strays from the route or skids across it. Return how hard it corrects. */
-static f32 CorrectAiLine(
-    Vehicle *vehicle, f32 sideOffset, f32 sideDistance, f32 heading, f32 halfWidth, Vec3f *across) {
-    f32 limit;
+static f32 CorrectAiLine(Vehicle *vehicle,
+                         f32 sideOffset,
+                         f32 sideDistance,
+                         f32 heading,
+                         AiReal rawHalfWidth,
+                         Vec3f *across) {
+    f32 halfWidth = rawHalfWidth;
+    AiReal limit;
     f32 steer = 0.0f;
     s32 velocitySign;
     s32 wheelSign;
     s32 forwardSign;
 
-    if (AI_WIDE_HALF_WIDTH < halfWidth) {
-        limit = halfWidth - AI_SIDE_MARGIN;
+    if (AI_WIDE_HALF_WIDTH < rawHalfWidth) {
+        limit = AI_INTERMEDIATE(halfWidth) - AI_SIDE_MARGIN;
     } else {
-        limit = halfWidth * AI_NARROW_SHARE;
+        limit = AI_INTERMEDIATE(halfWidth) * AI_NARROW_SHARE;
     }
 
     if (limit < sideDistance) {
@@ -155,21 +187,29 @@ static f32 CorrectAiLine(
             if (heading > -0.05) {
                 g_bAiNudgeLeft = FALSE;
                 g_bAiNudgeRight = TRUE;
-                steer = heading * -0.2f * ((sideDistance - limit) / sideDistance) + 0.03f;
+                steer = AI_INTERMEDIATE(heading) * -0.2f *
+                            ((AI_INTERMEDIATE(sideDistance) - limit) / sideDistance) +
+                        0.03f;
             } else if (heading < -0.15) {
                 g_bAiNudgeLeft = TRUE;
                 g_bAiNudgeRight = FALSE;
-                steer = heading * -0.3f * ((sideDistance - limit) / sideDistance) + 0.1f;
+                steer = AI_INTERMEDIATE(heading) * -0.3f *
+                            ((AI_INTERMEDIATE(sideDistance) - limit) / sideDistance) +
+                        0.1f;
             }
         } else {
             if (heading < 0.05) {
                 g_bAiNudgeLeft = TRUE;
                 g_bAiNudgeRight = FALSE;
-                steer = heading * 0.2f * ((sideDistance - limit) / sideDistance) + 0.03f;
+                steer = AI_INTERMEDIATE(heading) * 0.2f *
+                            ((AI_INTERMEDIATE(sideDistance) - limit) / sideDistance) +
+                        0.03f;
             } else if (heading > 0.15) {
                 g_bAiNudgeLeft = FALSE;
                 g_bAiNudgeRight = TRUE;
-                steer = heading * 0.3f * ((sideDistance - limit) / sideDistance) + 0.1f;
+                steer = AI_INTERMEDIATE(heading) * 0.3f *
+                            ((AI_INTERMEDIATE(sideDistance) - limit) / sideDistance) +
+                        0.1f;
             }
         }
     } else if (AI_CORRECT_SPEED < Vec3fLength(&vehicle->placedVelocity)) {
@@ -224,14 +264,22 @@ static f32 ReadAiLineAhead(Vehicle *vehicle) {
     Vec3f ahead;
     Vec3f normal;
     f32 climb;
-    f32 lateral;
+    AiReal lateral;
     f32 excess;
     s32 i = 0;
 
     while (i < g_dwBestTraceDepth) {
         Vec3fSubtract(&toLeft, &g_avBestLeftLane[i], &g_avBestCenterLine[i]);
-        /* The point after the last is the first of the right lane, which follows in memory. */
-        Vec3fSubtract(&ahead, &g_avBestCenterLine[i + 1], &g_avBestCenterLine[i]);
+        /* The boundary read follows the original data layout of each platform. */
+        if (i + 1 == TRACE_DEPTH) {
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+            Vec3fSubtract(&ahead, &g_avTraceCenterLine[0], &g_avBestCenterLine[i]);
+#else
+            Vec3fSubtract(&ahead, &g_avBestRightLane[0], &g_avBestCenterLine[i]);
+#endif
+        } else {
+            Vec3fSubtract(&ahead, &g_avBestCenterLine[i + 1], &g_avBestCenterLine[i]);
+        }
         Vec3fCross(&normal, &ahead, &toLeft);
         Vec3fNormalize(&normal);
         climb = Vec3fDot(&vehicle->placedVelocity, &normal);
@@ -239,7 +287,7 @@ static f32 ReadAiLineAhead(Vehicle *vehicle) {
         i++;
         if (climb < lateral) {
             excess = lateral;
-        } else if (lateral < -climb) {
+        } else if (AI_LESS(lateral, -climb)) {
             excess = -lateral;
         } else {
             excess = climb;
@@ -261,20 +309,27 @@ static f32 ReadAiLineAhead(Vehicle *vehicle) {
 }
 
 /* Shape the steering of a computer, easing it to the side it is nudged to. */
-static f32 ShapeAiSteering(f32 side, f32 steer) {
-    if (steer < 0.01f) {
+static f32 ShapeAiSteering(AiReal side, f32 steer) {
+    f32 threshold;
+
+    if (AI_LESS(steer, 0.01f)) {
         steer = 0.01f;
     }
-    if (side < 0.0f) {
+    threshold = AI_INTERMEDIATE(0.2f) / steer;
+    if (AI_LESS(side, 0.0f)) {
         if (g_bAiNudgeLeft) {
-            if (side < -(0.2f / steer)) {
+            if (AI_LESS(side, -threshold)) {
                 side -= steer * side;
             } else {
                 side += 0.2f;
             }
         } else if (g_bAiNudgeRight) {
-            if (side < -(0.2f / steer)) {
+            if (AI_LESS(side, -threshold)) {
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+                side *= AI_INTERMEDIATE(steer) + 1.0f;
+#else
                 side += steer * side;
+#endif
             } else {
                 side -= 0.2f;
             }
@@ -283,13 +338,17 @@ static f32 ShapeAiSteering(f32 side, f32 steer) {
         return side * side * side * side - 1.0f;
     }
     if (g_bAiNudgeLeft) {
-        if (0.2f / steer < side) {
+        if (threshold < side) {
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+            side *= AI_INTERMEDIATE(steer) + 1.0f;
+#else
             side += steer * side;
+#endif
         } else {
             side += 0.2f;
         }
     } else if (g_bAiNudgeRight) {
-        if (0.2f / steer < side) {
+        if (threshold < side) {
             side -= steer * side;
         } else {
             side -= 0.2f;
@@ -309,7 +368,7 @@ static void ApplyAiDrive(Vehicle *vehicle, f32 side, f32 forwardSpeed) {
         if (vehicle->forcedReverseFrames != 0) {
             vehicle->forcedReverseFrames--;
             reverse = TRUE;
-        } else if (forwardSpeed < -1.0f) {
+        } else if (AI_LESS(forwardSpeed, -1.0f)) {
             vehicle->input->buttons |= INPUT_BRAKE;
             return;
         } else {
@@ -328,7 +387,7 @@ static void ApplyAiDrive(Vehicle *vehicle, f32 side, f32 forwardSpeed) {
     if (!reverse) {
         vehicle->input->steering = -side;
         vehicle->forwardFrames++;
-        if (vehicle->forwardFrames >= AI_STUCK_CHECK_FRAMES && speed < AI_STUCK_SPEED) {
+        if (vehicle->forwardFrames >= AI_STUCK_CHECK_FRAMES && AI_LESS(speed, AI_STUCK_SPEED)) {
             vehicle->forcedReverseFrames = AI_UNSTICK_FRAMES;
             vehicle->reverseFrames = 0;
             vehicle->forwardFrames = 0;
@@ -336,7 +395,7 @@ static void ApplyAiDrive(Vehicle *vehicle, f32 side, f32 forwardSpeed) {
         return;
     }
     vehicle->input->buttons |= INPUT_ACCELERATE;
-    if (side < 0.0f) {
+    if (AI_LESS(side, 0.0f)) {
         vehicle->input->steering = -1.0f;
     } else {
         vehicle->input->steering = 1.0f;
@@ -350,7 +409,7 @@ static void ApplyAiDrive(Vehicle *vehicle, f32 side, f32 forwardSpeed) {
         }
     }
     vehicle->reverseFrames++;
-    if (vehicle->reverseFrames >= AI_STUCK_CHECK_FRAMES && speed < AI_STUCK_SPEED) {
+    if (vehicle->reverseFrames >= AI_STUCK_CHECK_FRAMES && AI_LESS(speed, AI_STUCK_SPEED)) {
         vehicle->forcedForwardFrames = AI_UNSTICK_FRAMES;
         vehicle->reverseFrames = 0;
         vehicle->forwardFrames = 0;
@@ -364,8 +423,9 @@ static f32 PassAiVehicles(Vehicle *vehicle, f32 sideOffset) {
     f32 best = AI_PASS_RANGE;
     f32 push = 0.0f;
     f32 lapLength;
-    f32 gap;
-    f32 sideGap;
+    AiReal gap;
+    AiReal sideGap;
+    AiReal highPush, updated;
     s32 found = -1;
     s32 i;
 
@@ -375,26 +435,28 @@ static f32 PassAiVehicles(Vehicle *vehicle, f32 sideOffset) {
             continue;
         }
         lapLength = g_LoadedTrack.rootSection->points[0].distance;
-        gap = other->distance - vehicle->distance;
+        gap = AI_INTERMEDIATE(other->distance) - vehicle->distance;
         while (lapLength < gap) {
             gap -= lapLength;
         }
-        while (gap < -lapLength) {
+        while (AI_LESS(gap, -lapLength)) {
             gap += lapLength;
         }
-        if (0.0f < gap && gap < best) {
+        if (0.0f < gap && AI_LESS(gap, best)) {
             best = gap;
-            sideGap = other->trackSideOffset - sideOffset;
-            if (sideGap < AI_PASS_SIDE) {
-                push = (1.0f - gap * (1.0f / AI_PASS_RANGE)) * -AI_PASS_PUSH;
-                if (push < -AI_PASS_PUSH_MAX) {
+            sideGap = AI_INTERMEDIATE(other->trackSideOffset) - sideOffset;
+            if (AI_LESS(sideGap, AI_PASS_SIDE)) {
+                highPush = (1.0f - gap * (1.0f / AI_PASS_RANGE)) * -AI_PASS_PUSH;
+                push = highPush;
+                if (AI_LESS(highPush, -AI_PASS_PUSH_MAX)) {
                     push = -AI_PASS_PUSH_MAX;
                 }
                 found = i;
             } else if (-AI_PASS_SIDE < sideGap) {
                 /* Always true here: a gap of at least 3 is above -3. */
-                push = (1.0f - gap * (1.0f / AI_PASS_RANGE)) * AI_PASS_PUSH;
-                if (AI_PASS_PUSH_MAX < push) {
+                highPush = (1.0f - gap * (1.0f / AI_PASS_RANGE)) * AI_PASS_PUSH;
+                push = highPush;
+                if (AI_PASS_PUSH_MAX < highPush) {
                     push = AI_PASS_PUSH_MAX;
                 }
                 found = i;
@@ -402,25 +464,26 @@ static f32 PassAiVehicles(Vehicle *vehicle, f32 sideOffset) {
         }
     }
     if (found != -1) {
-        sideOffset += push;
-        vehicle->trackSideDistance = sideOffset < 0.0f ? -sideOffset : sideOffset;
+        updated = AI_INTERMEDIATE(sideOffset) + push;
+        sideOffset = updated;
+        vehicle->trackSideDistance = AI_LESS(updated, 0.0f) ? -sideOffset : sideOffset;
     }
     return sideOffset;
 }
 
-/* Hold a computer's vehicle to the route by taking away its speed across it, and slow it by the
+/* Constrain a computer's vehicle to the route by removing its speed across it, and slow it by the
  * mode. */
 static void HoldAiToRoute(Vehicle *vehicle, f32 sideOffset, f32 halfWidth, f32 forwardSpeed) {
     Vec3f *velocity = &vehicle->body.state.velocity;
-    f32 hold;
+    AiReal hold;
     f32 along;
     f32 across;
     f32 upward;
     s16 weather;
 
-    if (vehicle->trackSideDistance < halfWidth + 1.0f) {
-        hold = (forwardSpeed - AI_HOLD_SPEED) * AI_HOLD_SCALE;
-        if (hold < 0.0f) {
+    if (AI_LESS(vehicle->trackSideDistance, AI_INTERMEDIATE(halfWidth) + 1.0f)) {
+        hold = (AI_INTERMEDIATE(forwardSpeed) - AI_HOLD_SPEED) * AI_HOLD_SCALE;
+        if (AI_LESS(hold, 0.0f)) {
             hold *= -0.25f;
         }
         if (AI_HOLD_MAX < hold) {
@@ -439,16 +502,20 @@ static void HoldAiToRoute(Vehicle *vehicle, f32 sideOffset, f32 halfWidth, f32 f
 #if TGR_REGION == TGR_REGION_EU
         Vec3fScaleInPlace(
             velocity,
-            g_aafAiVelocityRetention[g_pActiveProfile->season][g_pActiveProfile->round]
+            g_aafAiVelocityRetention[AI_ACTIVE_PROFILE->season][AI_ACTIVE_PROFILE->round]
                                     [vehicle->racer->straggler] *
                 AI_RETENTION_SCALE);
 #else
         Vec3fScaleInPlace(
             velocity,
-            g_aafAiVelocityRetention[g_pActiveProfile->season][g_pActiveProfile->round]
+            g_aafAiVelocityRetention[AI_ACTIVE_PROFILE->season][AI_ACTIVE_PROFILE->round]
                                     [vehicle->racer->straggler]);
 #endif
-    } else if (g_dwGameMode == GAME_MODE_ARCADE) {
+    } else if (g_dwGameMode == GAME_MODE_ARCADE
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+               || g_dwGameMode == GAME_MODE_NETWORK
+#endif
+    ) {
         weather = g_dwCurrentWeather - 1;
         if (weather >= ARCADE_WEATHERS || weather < 0) {
             weather = 0;
@@ -471,7 +538,8 @@ static void PlanAiDrive(Vehicle *vehicle) {
     Vec3f edge;
     TrackPoint *point;
     f32 forwardSpeed;
-    f32 side;
+    AiReal side;
+    AiReal rawHalfWidth;
     f32 sideOffset;
     f32 sideDistance;
     f32 heading;
@@ -487,8 +555,8 @@ static void PlanAiDrive(Vehicle *vehicle) {
     FindAiLookPoint(vehicle, &target);
     if (TraceTrackSplineRecursive(vehicle, 0, vehicle->pointIndex, vehicle->section)) {
         Vec3fMidpoint(&g_vTraceFarPoint, &g_vTraceFarPoint, &g_vTraceHalfwayPoint);
-        if (vehicle->aiTarget.x == 0.0f && vehicle->aiTarget.y == 0.0f &&
-            vehicle->aiTarget.z == 0.0f) {
+        if (AI_ZERO(vehicle->aiTarget.x) && AI_ZERO(vehicle->aiTarget.y) &&
+            AI_ZERO(vehicle->aiTarget.z)) {
             vehicle->aiTarget.x = g_vTraceFarPoint.x;
             vehicle->aiTarget.y = g_vTraceFarPoint.y;
             vehicle->aiTarget.z = g_vTraceFarPoint.z;
@@ -496,17 +564,23 @@ static void PlanAiDrive(Vehicle *vehicle) {
             Vec3fLerp(&vehicle->aiTarget,
                       &vehicle->aiTarget,
                       &g_vTraceFarPoint,
-                      AI_TARGET_FOLLOW + g_fFrameDeltaTime);
+                      AI_TARGET_FOLLOW + AI_INTERMEDIATE(g_fFrameDeltaTime));
         }
     }
     Vec3fLerp(&vehicle->aiTarget, &vehicle->aiTarget, &target, AI_TARGET_PULL);
     forwardSpeed = Vec3fDot(&vehicle->placedVelocity, &vehicle->frame.forward);
     Vec3fDirection(&direction, &vehicle->frame.position, &vehicle->aiTarget);
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+    up.x = 0.0f;
+    up.y = 0.0f;
+    up.z = 1.0f;
+#else
     up = g_vUpAxis;
+#endif
     Vec3fCross(&across, &up, &direction);
     /* The original computes this product and never reads it. */
     Vec3fCross(&unread, &direction, &across);
-    side = Vec3fDot(&vehicle->frame.side, &direction);
+    side = (f32)Vec3fDot(&vehicle->frame.side, &direction);
     vehicle->accelerator = Vec3fDot(&vehicle->frame.forward, &direction);
     vehicle->input->buttons |= INPUT_ACCELERATE;
 
@@ -514,11 +588,12 @@ static void PlanAiDrive(Vehicle *vehicle) {
     heading = Vec3fDot(&vehicle->frame.forward, &vehicle->trackSide);
     g_bAiNudgeLeft = FALSE;
     g_bAiNudgeRight = FALSE;
-    sideDistance = sideOffset < 0.0f ? -sideOffset : sideOffset;
+    sideDistance = AI_LESS(sideOffset, 0.0f) ? -sideOffset : sideOffset;
     point = &vehicle->section->points[vehicle->pointIndex];
     Vec3fSubtract(&edge, &point->left, &point->position);
-    halfWidth = Vec3fDot(&vehicle->trackSide, &edge);
-    steer = CorrectAiLine(vehicle, sideOffset, sideDistance, heading, halfWidth, &across);
+    rawHalfWidth = Vec3fDot(&vehicle->trackSide, &edge);
+    halfWidth = rawHalfWidth;
+    steer = CorrectAiLine(vehicle, sideOffset, sideDistance, heading, rawHalfWidth, &across);
 
     multiplier = ReadAiLineAhead(vehicle);
     if (AI_CORRECT_SPEED < Vec3fLength(&vehicle->placedVelocity)) {
@@ -526,7 +601,7 @@ static void PlanAiDrive(Vehicle *vehicle) {
         if (1.0f < side) {
             vehicle->input->buttons &= ~INPUT_ACCELERATE;
             side = 1.0f;
-        } else if (side < -1.0f) {
+        } else if (AI_LESS(side, -1.0f)) {
             side = -1.0f;
             vehicle->input->buttons &= ~INPUT_ACCELERATE;
         }
@@ -544,14 +619,16 @@ static void PlanAiDrive(Vehicle *vehicle) {
 void UpdateAiVehicleBehavior(Vehicle *vehicle) {
     Vec3f *spin = &vehicle->body.state.angularVelocity;
     f32 length;
+    AiReal rawLength;
 
     if (!(vehicle->racer->status & RACER_HELD)) {
         PlanAiDrive(vehicle);
     }
     AddTimingMarker(0, 0, 130, 0, 255);
-    length = Vec3fLength(spin);
-    if (AI_MAX_SPIN < length && vehicle->wheelBodies[0].contactFrames) {
-        Vec3fScaleInPlace(spin, 1.0f / length);
+    rawLength = Vec3fLength(spin);
+    length = rawLength;
+    if (AI_MAX_SPIN < rawLength && vehicle->wheelBodies[0].contactFrames) {
+        Vec3fScaleInPlace(spin, AI_INTERMEDIATE(1.0f) / length);
     }
     UpdateVehiclePhysicsFrame(vehicle);
     RespawnVehicle(vehicle);

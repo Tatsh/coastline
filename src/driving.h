@@ -32,12 +32,13 @@ extern "C" {
 extern Vec3f g_vUpAxis;
 
 /**
- * How much of its velocity a computer's vehicle keeps each frame in the championship, by season,
+ * How much of its velocity a computer's vehicle retains each frame in the championship, by season,
  * race and the class of the racer.
  *
  * @ghidraAddress USA: 0x8028b9f0
  * @ghidraAddress EUR: 0x8028dca4
  * @ghidraAddress JPN: 0x8028d6d4
+ * @ghidraAddress BRD3D: 0x100b38a0
  */
 extern f32 g_aafAiVelocityRetention[SEASONS][SEASON_RACES][2];
 

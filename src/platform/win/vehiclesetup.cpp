@@ -25,6 +25,10 @@ void Vehicle::SetVehiclePaintColorRgb(u8 red, u8 green, u8 blue) {
     color[2] = blue;
 }
 
+void Vehicle::ComputeAiVehicleInput(void) {
+    ::UpdateAiVehicleBehavior(this);
+}
+
 void PlayerVehicleControllerCallback(Vehicle *vehicle) {
     vehicle->ApplyPlayerVehicleInput();
 }
