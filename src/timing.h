@@ -174,4 +174,4 @@ void RestoreClockAfterPause(void);
 }
 #endif
 
-#endif
+#endif /* COASTLINE_TIMING_H */

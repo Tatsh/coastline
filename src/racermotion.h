@@ -21,4 +21,4 @@ void ClearRacerSoundChannels(void);
 }
 #endif
 
-#endif
+#endif /* COASTLINE_RACER_MOTION_H */

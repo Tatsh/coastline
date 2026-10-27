@@ -40,7 +40,7 @@ typedef f32 AiReal;
 #define AI_LESS(a, b) ((a) < (b))
 #define AI_ZERO(value) ((value) == 0.0f)
 #define AI_ACTIVE_PROFILE g_pActiveProfile
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 
 /* How far a computer looks ahead: 20, 3 more for each unit of speed, and at most 80. */
 #define AI_LOOK_BASE 20.0f
@@ -525,7 +525,7 @@ static void HoldAiToRoute(Vehicle *vehicle, f32 sideOffset, f32 halfWidth, f32 f
             velocity,
             g_aafAiVelocityRetention[AI_ACTIVE_PROFILE->season][AI_ACTIVE_PROFILE->round]
                                     [RACER_SLOT_GET(VEHICLE_GET(vehicle, Racer), Straggler)]);
-#endif
+#endif /* TGR_REGION == TGR_REGION_EU */
     } else if (g_dwGameMode == GAME_MODE_ARCADE
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
                || g_dwGameMode == GAME_MODE_NETWORK

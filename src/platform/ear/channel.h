@@ -20,4 +20,4 @@ int __stdcall EarRegisterChannelExportWrapper(uint32_t channel,
 }
 #endif
 
-#endif
+#endif /* COASTLINE_EAR_CHANNEL_H */

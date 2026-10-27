@@ -246,4 +246,4 @@ void ExchangeWordBuffers(u32 *a, u32 *b, u32 size);
 }
 #endif
 
-#endif
+#endif /* COASTLINE_UTIL_H */

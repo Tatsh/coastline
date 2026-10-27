@@ -42,7 +42,7 @@
 #define DIALOG_TEXT_SIZE 12
 #define DELETE_WIDTH 0x128
 #define DELETE_WIDE_WIDTH 0x134
-#endif
+#endif /* TGR_REGION == TGR_REGION_JP */
 
 /* The width of the screen the dialogs are centered in. */
 #define DIALOG_SCREEN_WIDTH 0x280
@@ -175,7 +175,7 @@ static void DrawNote(s32 note) {
     } else {
         p[0] = '\0';
     }
-#endif
+#endif /* TGR_REGION == TGR_REGION_JP */
 
     SetTextAlignLeft();
     SetNoteColors(note);
@@ -252,7 +252,7 @@ void ProcessPakMenuScreen(void) {
     DrawText("%ywGAME NOTE", 0x74, 0x34);
     SetTextAlignRight();
     DrawText("%ywPAGES", 0xFA, 0x34);
-#endif
+#endif /* TGR_REGION == TGR_REGION_JP */
 
     /* The numbers of the notes, then the notes the directory holds. */
     SetTextSize(NOTE_TEXT_SIZE);
@@ -478,7 +478,7 @@ void ProcessPakMenuScreen(void) {
         DrawText("%ywWAS INSERTED.", 0x5F, 0x77);
         DrawText("%ywTHIS CONTROLLER PAK", 0x5F, 0x8A);
         DrawText("%ywWILL BE USED.", 0x5F, 0x97);
-#endif
+#endif /* TGR_REGION == TGR_REGION_JP */
         if (input->buttons & (INPUT_Z | INPUT_A | INPUT_B)) {
             TransferFlags(input, INPUT_Z | INPUT_A | INPUT_B);
             g_bPakDirLoaded = FALSE;
@@ -545,7 +545,7 @@ void ProcessPakMenuScreen(void) {
 #else
 #define UNUSED_ABOVE 1
 #define UNUSED_BELOW 7
-#endif
+#endif /* TGR_REGION == TGR_REGION_US */
 
 s32 InitPakAndEnumerateFiles(void) {
     /* The original reserves stack for locals it does not use, around maxFiles. */

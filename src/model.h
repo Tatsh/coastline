@@ -317,4 +317,4 @@ Model *DmaReadAndFixupTrackModel(void *dst, u32 romStart, u32 romEnd);
 }
 #endif
 
-#endif
+#endif /* COASTLINE_MODEL_H */

@@ -222,7 +222,7 @@ void guFrustumF(float mf[4][4],
                 float near,
                 float far,
                 float scale);
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 
 /**
  * Build a floating-point perspective projection.
@@ -524,4 +524,4 @@ s16 sins(u16 x);
 }
 #endif
 
-#endif
+#endif /* PR_GU_H */

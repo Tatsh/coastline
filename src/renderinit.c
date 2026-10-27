@@ -22,7 +22,7 @@ DisplayListCommand *g_pDisplayListBase;
 f32 g_fCountsPerMillisecond;
 OSContStatus g_aContStatus[MAXCONTROLLERS];
 u8 g_abRumblePakPresent[MAXCONTROLLERS];
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 
 #define IO_MESSAGES 32
 #define COUNTS_PER_MILLISECOND 46875.0f

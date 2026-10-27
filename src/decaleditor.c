@@ -1389,7 +1389,7 @@ void ProcessPaintShopExitConfirm(void) {
     DrawText("%jセーブせずに", g_dwScreenWidth / 2, 0x6D);
     DrawText("EXIT%jしますか？", g_dwScreenWidth / 2, 0x7B);
     SetTextAlignLeft();
-#endif
+#endif /* TGR_REGION == TGR_REGION_US */
     SetTextSize(10);
     textY = (buttonY + 0x12) >> 1;
     DrawText("%wwYES", (g_texButtonA.drawWidth + 0xF9) >> 1, textY);

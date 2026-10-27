@@ -30,4 +30,4 @@ s32 FloatToInt(float value);
 }
 #endif
 
-#endif
+#endif /* COASTLINE_MATHUTIL_H */

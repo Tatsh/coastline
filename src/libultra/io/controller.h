@@ -418,6 +418,6 @@ s32 __osEepStatus(OSMesgQueue *mq, OSContStatus *data);
  * @ghidraAddress JPN: 0x8026acc0
  */
 void __osPackEepReadData(u8 address);
-#endif
+#endif /* TGR_REGION == TGR_REGION_JP || TGR_REGION == TGR_REGION_EU */
 
-#endif
+#endif /* LIBULTRA_IO_CONTROLLER_H */

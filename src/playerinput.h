@@ -78,7 +78,7 @@ typedef struct PlayerInputState {
      * @ghidraAddress BRD3D: 0x10035fe0
      */
     void InitPlayerInputState(void);
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN && defined(__cplusplus) */
 } PlayerInputState;
 
 #ifdef __cplusplus
@@ -141,4 +141,4 @@ void InitPlayerInputState(PlayerInputState *state);
 }
 #endif
 
-#endif
+#endif /* COASTLINE_PLAYERINPUT_H */

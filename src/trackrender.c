@@ -33,7 +33,7 @@
 #define PHYSICAL(address) ((u32)(address) + 0x80000000)
 #define TRACK_TIMING(bar, red, green, blue, alpha) AddTimingMarker(bar, red, green, blue, alpha)
 #define TRACK_WEATHER_EXCLUDED 7
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 
 /* The minimum level of detail of the primitive colour, and the colour itself. */
 #define PRIM_MIN_LEVEL 0x17
@@ -132,7 +132,7 @@ static inline void ForceUnrotatedMatrix(TrackInstance *instance, s32 index, s32 
             scale;
     }
     scale *= m[0][0];
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
     for (row = 0; row < 3; row++) {
         for (column = 0; column < 4; column++) {
             mvp[row][column] = vp[row][column] * scale;
@@ -223,7 +223,7 @@ static inline void ForceUnrotatedMatrix(TrackInstance *instance, s32 index, s32 
                          mvp[3][2],
                          mvp[3][3]);
         }
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN || TGR_REGION != TGR_REGION_JP */
         scale = -low < high ? FIXED_MATRIX_MAX / high : -FIXED_MATRIX_MAX / low;
         for (row = 0; row < 4; row++) {
             for (column = 0; column < 4; column++) {
@@ -278,7 +278,7 @@ void RenderTrackGeometry(s32 deferred) {
         BuildVisibleInstanceList(viewports, slots, vehicles);
 #else
         BuildVisibleInstanceList();
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
         g_nDeferredInstanceLastIdx = -1;
         deferredLast = -1;
         g_nOpaqueVisibleInstanceCount = opaqueCount = g_nVisibleInstanceCount;

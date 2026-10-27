@@ -84,7 +84,7 @@ typedef struct VehicleModel {
     s32 gearImageBytes;
     u16 dashboardPalettes[2][256];
     u8 dashboardImages[0x7b00];
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
     u32 triangleCount; /*!< The triangles of the model, counted into the statistics of the frame. */
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
     void *unreconstructed4; /* +0x8004 */
@@ -246,10 +246,10 @@ void AppendVehicleModelTextureEntry(s32 entry);
  * @ghidraAddress BRD3D: 0x10037070
  */
 s32 IsVehicleMaterialPalette(const void *palette);
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif
+#endif /* COASTLINE_VEHICLEMODEL_H */

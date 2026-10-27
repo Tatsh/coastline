@@ -119,7 +119,7 @@ s32 ComputeScreenDepthZ(f32 z, f32 w);
  * @ghidraAddress JPN: 0x8023c188
  */
 void SpawnExhaustParticle(Vehicle *vehicle);
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_N64 */
 
 #if TGR_PLATFORM == TGR_PLATFORM_N64
 /**
@@ -132,7 +132,7 @@ void SpawnExhaustParticle(Vehicle *vehicle);
  * @ghidraAddress JPN: 0x8023c428
  */
 void EmitTireSpray(Vehicle *vehicle);
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_N64 */
 
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
 #ifdef __cplusplus
@@ -158,7 +158,7 @@ void DrawTireSpray(const RacerSlot *slots);
  * @ghidraAddress JPN: 0x8023cb60
  */
 void DrawTireSpray(void);
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 
 #if TGR_PLATFORM == TGR_PLATFORM_N64
 /**
@@ -171,7 +171,7 @@ void DrawTireSpray(void);
  * @ghidraAddress JPN: 0x8023d810
  */
 void SpawnTireSmoke(Vehicle *vehicle);
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_N64 */
 
 #ifdef __cplusplus
 extern "C" {
@@ -260,7 +260,7 @@ void RenderBillboardParticles(
  * @ghidraAddress JPN: 0x8023e144
  */
 void RenderBillboardParticles(u16 head, s32 red, s32 green, s32 blue);
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
 #ifdef __cplusplus
@@ -286,7 +286,7 @@ void RenderTireSmoke(const ViewportRect *viewports);
  * @ghidraAddress JPN: 0x8023e724
  */
 void RenderTireSmoke(void);
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
 #ifdef __cplusplus
@@ -312,6 +312,6 @@ void RenderExhaustAndTireSpray(const ViewportRect *viewports, const RacerSlot *s
  * @ghidraAddress JPN: 0x8023ebd0
  */
 void RenderExhaustAndTireSpray(void);
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 
-#endif
+#endif /* COASTLINE_EFFECTS_H */

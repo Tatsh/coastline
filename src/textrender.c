@@ -27,7 +27,7 @@ s32 g_dwTextCustomColor2G;
 s32 g_dwTextCustomColor2B;
 #else
 #define SPACE_ADVANCE 12
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 
 #define SMALL_FONT_MAX_SIZE 25
 #define SMALL_FONT_CELL 20
@@ -86,7 +86,7 @@ void RenderTextToDisplayList(const char *text) {
         offsets = g_adwSmallFontGlyphOffsets;
         textureWidth = SMALL_FONT_WIDTH;
         texture = g_aSmallFontTexture;
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
         gradient = g_abSmallFontGradient;
         shadowGradient = g_abSmallFontShadowGradient;
         cell = SMALL_FONT_CELL;
@@ -100,7 +100,7 @@ void RenderTextToDisplayList(const char *text) {
         offsets = g_adwLargeFontGlyphOffsets;
         textureWidth = LARGE_FONT_WIDTH;
         texture = g_aLargeFontTexture;
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
         gradient = g_abLargeFontGradient;
         shadowGradient = g_abLargeFontShadowGradient;
         cell = LARGE_FONT_CELL;
@@ -248,7 +248,7 @@ void RenderTextToDisplayList(const char *text) {
                 gDPSetEnvColor(gDisplayListPtr++, red, green, blue, 0xFF);
                 s += 7;
                 continue;
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
             } else if (s[2] != '\0') {
                 gDPPipeSync(gDisplayListPtr++);
                 switch (s[1]) {
@@ -466,7 +466,7 @@ void RenderTextToDisplayList(const char *text) {
                                 dsdx,
                                 dtdy);
         }
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
         x += ((columns - padding) * size) / cell;
     }
 
@@ -474,4 +474,4 @@ void RenderTextToDisplayList(const char *text) {
     gDPSetTexturePersp(gDisplayListPtr++, G_TP_PERSP);
     gDPSetCycleType(gDisplayListPtr++, G_CYC_1CYCLE);
 }
-#endif
+#endif /* TGR_REGION != TGR_REGION_JP || TGR_PLATFORM == TGR_PLATFORM_WIN */

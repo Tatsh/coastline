@@ -143,7 +143,7 @@ void LoadTextureFromRom(Sprite *sprite) {
             sprite->height,
             sprite->bitsPerTexel,
             DmaReadAssetSize(sprite->romOffset));
-#endif
+#endif /* TGR_REGION != TGR_REGION_JP */
         for (;;) {
         }
     }
@@ -1107,7 +1107,7 @@ void DrawPakErrorMessage(s32 error, u8 operation, u8 inCarSelect) {
         break;
     }
 }
-#endif
+#endif /* TGR_REGION == TGR_REGION_JP */
 
 void DrawRectBorder(s32 x,
                     s32 y,
@@ -1212,7 +1212,7 @@ void ProcessFillClearMenu(void) {
 #else
     const char *scopeTexts[2] = {"CLEAR CURRENT DECAL", "CLEAR ALL DECALS"};
     const char *colorTexts[2] = {"TO SELECTED COLOR", "TO BODY COLOR"};
-#endif
+#endif /* TGR_REGION == TGR_REGION_JP */
     ScreenRect options[CLEAR_OPTIONS];
     s32 buttonY = 0x160 - g_texButtonA.height;
     s32 cancelX = 0x161 - g_texButtonB.width;
@@ -1295,7 +1295,7 @@ void ProcessFillClearMenu(void) {
     SetTextCustomColors(0xFF, 0xFF, 0xFF, 0xFF, 0xF5, 0);
     DrawText(scopeTexts[g_texPaintToolClear.style >> 1], 0x9E, 0x8E);
     DrawText(colorTexts[g_texPaintToolClear.style & CLEAR_TO_BODY_COLOR], 0x9E, 0x9B);
-#endif
+#endif /* TGR_REGION == TGR_REGION_JP */
     DrawMenuButtons(buttonY, cancelX);
     UpdateStickRepeat(&g_aPlayerInputState[g_bPaintShopPlayer]);
     input = &g_aPlayerInputState[g_bPaintShopPlayer];
@@ -1371,7 +1371,7 @@ void ProcessMirrorFlipMenu(void) {
 #else
     const char *flipTexts[2] = {"FLIP CURRENT DECAL", "FLIP CURRENT DECAL"};
     const char *axisTexts[2] = {"HORIZONTALLY", "VERTICALLY"};
-#endif
+#endif /* TGR_REGION == TGR_REGION_JP */
 #if TGR_REGION == TGR_REGION_EU
     /* The two lines of the text of each slot a decal mirrors from. */
     const char *mirrorTexts[MIRROR_TEXT_SLOTS][2] = {
@@ -1384,7 +1384,7 @@ void ProcessMirrorFlipMenu(void) {
         {"MIRROR CURRENT DECAL TO", "THE RIGHT REAR FENDER"},
         {"MIRROR CURRENT DECAL TO", "THE LEFT REAR FENDER"},
     };
-#endif
+#endif /* TGR_REGION == TGR_REGION_EU */
     ScreenRect options[MIRROR_OPTIONS];
     /* The row of the buttons is placed by the width of the A button. */
     s32 buttonY = 0x155 - g_texButtonA.width;
@@ -1488,7 +1488,7 @@ void ProcessMirrorFlipMenu(void) {
             DrawText("THE LEFT REAR FENDER", 0x9F, 0x94);
             break;
         }
-#endif
+#endif /* TGR_REGION == TGR_REGION_EU || TGR_REGION == TGR_REGION_JP */
     }
     DrawMenuButtons(buttonY, cancelX);
     UpdateStickRepeat(&g_aPlayerInputState[g_bPaintShopPlayer]);
@@ -1694,7 +1694,7 @@ static inline void TransferDecal(VehicleModel *model, OSPfs *pfs, u8 operation) 
                     osSyncPrintf("%02x\n", texture->image[i]);
                 }
             }
-#endif
+#endif /* TGR_REGION == TGR_REGION_EU */
         } else {
             osSyncPrintf("Saving decal %d...\n", g_bPakDecalIndex);
         }
@@ -1805,7 +1805,7 @@ s32 ProcessDecalSaveLoad(VehicleModel *model, u8 player, u8 operation, u8 inCarS
         SetPakTextColors(FALSE);
         DrawText(operation == PAINT_TOOL_LOAD ? "LOAD DECALS?" : "SAVE DECALS?", 0x77, 0x74);
         DrawPakButtons(buttonY, g_texButtonA.width + 0xF2, g_texButtonB.width + 0x136, 0xEC, 0x130);
-#endif
+#endif /* TGR_REGION == TGR_REGION_JP */
         input = &g_aPlayerInputState[player];
         if (input->buttons & INPUT_A) {
             TransferFlags(input, INPUT_A);
@@ -1887,7 +1887,7 @@ s32 ProcessDecalSaveLoad(VehicleModel *model, u8 player, u8 operation, u8 inCarS
 #endif
         DrawText("OK TO OVERWRITE", 0x72, 0x6C);
         DrawText("SAVED DECALS?", 0x72, 0x7A);
-#endif
+#endif /* TGR_REGION == TGR_REGION_JP */
         /* The label of the B button is placed by its height. */
         DrawPakButtons(
             buttonY, g_texButtonA.width + 0xEE, g_texButtonB.height + 0x13A, 0xE8, 0x134);
@@ -1921,7 +1921,7 @@ s32 ProcessDecalSaveLoad(VehicleModel *model, u8 player, u8 operation, u8 inCarS
 #else
                 y = inCarSelect == 1 ? 0xDB : 0xC5;
                 DrawPakProgressBox(y, "LOADING DECALS...", 0x72, (y + 30) >> 1);
-#endif
+#endif /* TGR_REGION != TGR_REGION_US */
                 g_bPakDialogState = PAK_STATE_TRANSFER_DECALS;
             } else {
                 g_bPakDialogState = PAK_STATE_CONFIRM_OVERWRITE;
@@ -1994,7 +1994,7 @@ s32 ProcessDecalSaveLoad(VehicleModel *model, u8 player, u8 operation, u8 inCarS
         } else {
             DrawPakProgressBox(y, "SAVING DECALS...", 0x73, textY);
         }
-#endif
+#endif /* TGR_REGION == TGR_REGION_JP */
         if (g_bPakWaitFrames++ < PAK_TRANSFER_DELAY_FRAMES) {
             break;
         }
@@ -2089,7 +2089,7 @@ s32 ProcessDecalSaveLoad(VehicleModel *model, u8 player, u8 operation, u8 inCarS
                         osSyncPrintf("%02x\n%02x\n", palette[i >> 1] >> 8, palette[i >> 1] & 0xFF);
                     }
                 }
-#endif
+#endif /* TGR_REGION == TGR_REGION_EU */
                 model->textures[model->materialTextures[VEHICLE_MATERIAL_HEADLIGHTS]].palette[0] =
                     palette[0];
                 model->textures[model->materialTextures[VEHICLE_MATERIAL_HEADLIGHTS]].palette[1] =
@@ -2177,7 +2177,7 @@ s32 ProcessDecalSaveLoad(VehicleModel *model, u8 player, u8 operation, u8 inCarS
         DrawText("WAS INSERTED.", 0x5F, textY + 13);
         DrawText("THIS CONTROLLER PAK", 0x5F, textY + 32);
         DrawText("WILL BE USED.", 0x5F, textY + 45);
-#endif
+#endif /* TGR_REGION == TGR_REGION_JP */
         input = &g_aPlayerInputState[player];
         if (input->buttons & PAK_DISMISS_BUTTONS) {
             TransferFlags(input, PAK_DISMISS_BUTTONS);
@@ -2221,7 +2221,7 @@ s32 ProcessDecalSaveLoad(VehicleModel *model, u8 player, u8 operation, u8 inCarS
             DrawPakButtons(
                 buttonY, g_texButtonA.width + 0xDE, g_texButtonB.width + 0x14A, 0xD8, 0x144);
         }
-#endif
+#endif /* TGR_REGION == TGR_REGION_JP */
         input = &g_aPlayerInputState[player];
         if (g_dwPakError != PAK_ERROR_RUMBLE_PAK) {
             /* A pak that cannot be repaired shows nothing and waits for a button. */
@@ -2280,7 +2280,7 @@ s32 ProcessDecalSaveLoad(VehicleModel *model, u8 player, u8 operation, u8 inCarS
         DrawText("INSERT THE RUMBLE PAK INTO THE", 0x41, 0x90);
         DrawText("CONTROLLER.  PRESS THE A BUTTON", 0x41, 0x9D);
         DrawText("TO CONTINUE.", 0x41, 0xAA);
-#endif
+#endif /* TGR_REGION == TGR_REGION_JP */
         input = &g_aPlayerInputState[player];
         if (input->buttons & (INPUT_Z | INPUT_A)) {
             TransferFlags(input, INPUT_Z | INPUT_A);

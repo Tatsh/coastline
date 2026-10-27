@@ -874,4 +874,4 @@ void ProcessPaintShopExitConfirm(void);
  */
 void ResetBrushAndSlotHistory(void);
 
-#endif
+#endif /* COASTLINE_DECALEDITOR_H */

@@ -861,7 +861,7 @@ extern s32 g_dwPreNmiResetPending;
  * @ghidraAddress JPN: 0x8021c758
  */
 void PreNmiResetHandlerThread(void *arg);
-#endif
+#endif /* TGR_REGION == TGR_REGION_JP || TGR_REGION == TGR_REGION_EU */
 
 #ifdef __cplusplus
 extern "C" {
@@ -1208,4 +1208,4 @@ extern OSViMode g_ViModePalLan1;
  */
 extern s32 g_dwViGammaEnabled;
 
-#endif
+#endif /* COASTLINE_SYSTEM_H */

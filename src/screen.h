@@ -172,4 +172,4 @@ void NullStub(void);
 }
 #endif
 
-#endif
+#endif /* COASTLINE_SCREEN_H */

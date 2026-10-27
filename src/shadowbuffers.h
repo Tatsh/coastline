@@ -60,7 +60,7 @@ extern ConvertedModelVertex *g_pTrackQuadVertexWritePtr;
  * @ghidraAddress JPN: 0x80356630
  */
 extern Vtx g_aShadowVertices[2][SHADOW_VERTICES];
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 
 /**
  * Start the display lists and vertices of the shadows of the frame.
@@ -125,4 +125,4 @@ extern Vtx *g_pShadowVertexStart;
 }
 #endif
 
-#endif
+#endif /* COASTLINE_SHADOWBUFFERS_H */

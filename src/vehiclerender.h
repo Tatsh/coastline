@@ -364,4 +364,4 @@ void EmitTachometerDisplayList(Vehicle *vehicle);
  */
 void RenderTrackShadow(Vehicle *vehicle);
 
-#endif
+#endif /* COASTLINE_VEHICLERENDER_H */

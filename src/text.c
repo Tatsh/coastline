@@ -123,7 +123,7 @@ void LoadCachedGlyphTextures(void) {
         g_abGlyphSlotChar[i] = 0;
     }
 }
-#endif
+#endif /* TGR_REGION == TGR_REGION_JP */
 
 #if TGR_REGION == TGR_REGION_JP
 void RenderTextToDisplayList(const char *text) {
@@ -558,7 +558,7 @@ void RenderTextToDisplayList(const char *text) {
     gDPSetTexturePersp(gDisplayListPtr++, G_TP_PERSP);
     gDPSetCycleType(gDisplayListPtr++, G_CYC_1CYCLE);
 }
-#endif
+#endif /* TGR_REGION == TGR_REGION_JP */
 
 void SetTextStyleBold(void) {
     g_bTextStyleBold = TRUE;

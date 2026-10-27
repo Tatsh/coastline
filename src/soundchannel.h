@@ -66,10 +66,10 @@ void InitSoundChannel(s16 channel, s8 *sample, u32 length, u32 loopLength);
  * @ghidraAddress JPN: 0x80258ad8
  */
 void StartSoundChannelMuted(s16 channel, s8 *sample, u32 length, u32 loopLength);
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif
+#endif /* COASTLINE_SOUNDCHANNEL_H */

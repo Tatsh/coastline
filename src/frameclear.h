@@ -37,4 +37,4 @@ void ClearPerFrameVariables(void);
 }
 #endif
 
-#endif
+#endif /* COASTLINE_FRAMECLEAR_H */

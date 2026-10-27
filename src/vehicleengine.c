@@ -68,7 +68,7 @@ static void SteerVehicleByAnalogueInput(Vehicle *vehicle, f32 stick) {
     }
     VEHICLE_SET(vehicle, SteerAngle, target);
 }
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 
 #define PI_F 3.141592741f
 #define TWO_PI_F 6.283185482f
@@ -99,7 +99,7 @@ typedef f32 EngineReal;
 #define ENGINE_LESS(a, b) ((a) < (b))
 #define ENGINE_ZERO(x) ((x) == 0.0f)
 #define SIGN_OF(x) ((x) == 0.0f ? 0.0f : (0.0f < (x) ? 1.0f : -1.0f))
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 
 #define ABS_OF(x) ((x) < 0.0f ? -(x) : (x))
 
@@ -226,7 +226,7 @@ static inline void SteerByStick(Vehicle *vehicle, f32 stick) {
         share = g_wSteerGainSpeedShare;
         break;
     }
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
     rate = g_fSteerRate;
 
     /* The lock narrows with the speed; a hard push takes all of it, a soft one the gain. */
@@ -265,7 +265,7 @@ static inline void SteerByStick(Vehicle *vehicle, f32 stick) {
         most = lock * PI_F / 180.0f;
         least = -lock * PI_F / 180.0f;
     }
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
     if (most < target) {
         target = most;
     }
@@ -348,7 +348,7 @@ void UpdateVehicleEngineAndGearbox(Vehicle *vehicle) {
         SteerByStick(vehicle, stick);
     }
 
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
     previous = VEHICLE_GET(vehicle, EngineRpm);
     if (ENGINE_LESS(VEHICLE_GET(vehicle, EngineRpm), IDLE_RPM)) {
         VEHICLE_SET(vehicle, EngineRpm, IDLE_RPM);
@@ -438,7 +438,7 @@ void UpdateVehicleEngineAndGearbox(Vehicle *vehicle) {
     if (!vehicle->transmission) {
         torque = (f32)((f64)torque * 1.03);
     }
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
     if (!(buttons & INPUT_ACCELERATE)) {
         torque = 0.0f;
     }
@@ -477,7 +477,7 @@ void UpdateVehicleEngineAndGearbox(Vehicle *vehicle) {
         vehicle->engineRpm = VEHICLE_GET(vehicle, GearRatios)[gear] *
                              (-(VEHICLE_GET(vehicle, WheelBodies)[1].spinRate / TWO_PI_F) * 60.0f *
                               vehicle->finalDrive);
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
     } else {
         if (VEHICLE_GET(vehicle, Input)->buttons & INPUT_ACCELERATE) {
             VEHICLE_SET(vehicle, EngineRpm, VEHICLE_GET(vehicle, EngineRpm) + 300.0f);
@@ -507,7 +507,7 @@ void UpdateVehicleEngineAndGearbox(Vehicle *vehicle) {
             VEHICLE_SET(vehicle, EngineRpm, limit);
         }
     }
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
     change = (EngineReal)VEHICLE_GET(vehicle, EngineRpm) - previous;
     if (MAX_RPM_CHANGE < ABS_OF(change)) {
         change = SIGN_OF(change) * MAX_RPM_CHANGE;

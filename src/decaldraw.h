@@ -293,4 +293,4 @@ void SwapBytes(u8 *a, u8 *b);
 void EmitScaledTextureRect(
     s32 textureWidth, s32 textureHeight, s32 x, s32 y, s32 width, s32 height);
 
-#endif
+#endif /* COASTLINE_DECALDRAW_H */

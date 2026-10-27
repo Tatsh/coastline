@@ -38,4 +38,4 @@ static inline void RecordImpactVolume(RigidBody *body, f32 speed) {
     body->impactVolume = body->impactVolume < volume ? volume : body->impactVolume;
 }
 
-#endif
+#endif /* COASTLINE_PHYSICSIMPACT_H */

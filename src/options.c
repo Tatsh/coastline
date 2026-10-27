@@ -231,7 +231,7 @@ void ProcessOptionsMenu(void) {
         g_dwMenuTitleImageY = 9;
         g_dwMenuTitleImageWidth = 280;
         g_dwMenuTitleImageHeight = 42;
-#endif
+#endif /* TGR_REGION == TGR_REGION_JP */
         if (g_dwOptionsMenuState == 0) {
 #if TGR_REGION != TGR_REGION_US
             g_dwOptionsChangedNeedsSave = FALSE;
@@ -257,7 +257,7 @@ void ProcessOptionsMenu(void) {
     } else {
         g_aOptionsMenuItems[OPTIONS_ITEM_UNITS].name = "Units: kph";
     }
-#endif
+#endif /* TGR_REGION == TGR_REGION_JP */
 
     switch (ProcessScreenState("OPTIONS",
                                g_dwOptionsMenuItemCount,
@@ -359,7 +359,7 @@ void ProcessOptionsMenu(void) {
         DrawText("THIS CONTROLLER PAK", 0x5F, (textY) + 0x20);                                     \
         DrawText("WILL BE USED.", 0x5F, (textY) + 0x2D);                                           \
     }
-#endif
+#endif /* TGR_REGION == TGR_REGION_JP */
 
 /* The message that asks the player to swap the Rumble Pak for the Controller Pak, with its OK and
  * CANCEL buttons. */
@@ -507,7 +507,7 @@ void SaveGameDataToEeprom(void) {
                          g_pPakDataBuffer[2],
                          g_pPakDataBuffer[3],
                          size);
-#endif
+#endif /* TGR_REGION == TGR_REGION_EU */
             memcpy(&save->profile, g_aVehicles[0].profile, sizeof(PlayerProfile));
             GET_EQUIPMENT(save->equipment, g_aVehicles[1].profile);
             memcpy(&save->options, &g_OptionSettings, sizeof(OptionSettings));
@@ -537,7 +537,7 @@ void SaveGameDataToEeprom(void) {
     }
     g_wSerialInterfaceIdle = TRUE;
 }
-#endif
+#endif /* TGR_REGION == TGR_REGION_JP || TGR_REGION == TGR_REGION_EU */
 
 #if TGR_REGION != TGR_REGION_US
 /* The height of a row of the save and load menu. */
@@ -576,7 +576,7 @@ void SaveGameDataToEeprom(void) {
             g_bSaveLoadStep = SAVE_LOAD_STEP_DONE;                                                 \
         }                                                                                          \
     }
-#endif
+#endif /* TGR_REGION != TGR_REGION_US */
 
 void ProcessDataSaveLoadMenu(void) {
     /* TOP GEAR SEASON, TOP GEAR GHOST and TOP GEAR OPTIONS in the font of the Controller Pak. */
@@ -652,7 +652,7 @@ void ProcessDataSaveLoadMenu(void) {
     s32 row;
     s32 height;
     u8 cursor;
-#endif
+#endif /* TGR_REGION == TGR_REGION_US */
     PlayerProfile *other;
     u8 *noteName;
     s32 noteSize;
@@ -713,7 +713,7 @@ void ProcessDataSaveLoadMenu(void) {
         if (items[0].action == SAVE_LOAD_ROW_HEADING) {
             g_bSaveLoadMenuCursor = 1;
         }
-#endif
+#endif /* TGR_REGION == TGR_REGION_US */
         g_bSaveLoadStep = SAVE_LOAD_STEP_FADE_IN;
         SetFadeTarget(1.0f, FADE_SECONDS);
 #if TGR_REGION != TGR_REGION_US
@@ -837,7 +837,7 @@ void ProcessDataSaveLoadMenu(void) {
         DrawText("%wwYES", 0x84, g_dwScreenHeight * 19 / 20 - 3);
         DrawText("%wwNO", 0xB9, g_dwScreenHeight * 19 / 20 - 3);
     }
-#endif
+#endif /* TGR_REGION != TGR_REGION_US */
 
     switch (g_bSaveLoadStep) {
     case SAVE_LOAD_STEP_FADE_IN:
@@ -897,7 +897,7 @@ void ProcessDataSaveLoadMenu(void) {
                 }
             }
         }
-#endif
+#endif /* TGR_REGION != TGR_REGION_US */
         if (CHOOSING_INPUT->buttons & INPUT_A) {
             TransferFlags(CHOOSING_INPUT, INPUT_A);
             g_bSaveLoadStep = SAVE_LOAD_STEP_QUIET;
@@ -929,7 +929,7 @@ void ProcessDataSaveLoadMenu(void) {
             } else {
                 g_bSaveLoadStep = SAVE_LOAD_STEP_FADE_OUT;
             }
-#endif
+#endif /* TGR_REGION == TGR_REGION_US */
         }
         break;
 
@@ -1072,7 +1072,7 @@ void ProcessDataSaveLoadMenu(void) {
         DrawText("%wwCANCEL", (u32)(g_texButtonB.height + 0x19D) >> 1, textY);
         DrawTexturedSprite(&g_texButtonA, 0x85, buttonY);
         DrawTexturedSprite(&g_texButtonB, 0x197, buttonY);
-#endif
+#endif /* TGR_REGION == TGR_REGION_JP */
         if (CHOOSING_INPUT->buttons & INPUT_A) {
             TransferFlags(CHOOSING_INPUT, INPUT_A);
             g_bSaveLoadStep = SAVE_LOAD_STEP_ERASE;
@@ -1083,7 +1083,7 @@ void ProcessDataSaveLoadMenu(void) {
             g_bSaveLoadStep = SAVE_LOAD_STEP_CHOOSE;
         }
         break;
-#endif
+#endif /* TGR_REGION != TGR_REGION_US */
 
     case SAVE_LOAD_STEP_MOUNT:
         osPfsIsPlug(&g_SiMesgQueue, &plugged);
@@ -1347,7 +1347,7 @@ void ProcessDataSaveLoadMenu(void) {
         textY = (top + 0x1E) >> 1;
         DrawText("OK TO OVERWRITE", 0x72, textY);
         DrawText("SAVED DATA?", 0x72, textY + 0xE);
-#endif
+#endif /* TGR_REGION == TGR_REGION_JP */
         SetTextSize(10);
         textY = (buttonY + 0x12) >> 1;
         DrawText("%wwOK", (u32)(g_texButtonA.width + 0xED) >> 1, textY);
@@ -1380,7 +1380,7 @@ void ProcessDataSaveLoadMenu(void) {
             FadeSfxTo(1.0f, FADE_SECONDS);
             FadeMusicTo(1.0f, FADE_SECONDS);
             g_bSaveLoadStep = SAVE_LOAD_STEP_CHOOSE;
-#endif
+#endif /* TGR_REGION == TGR_REGION_US */
         }
         break;
 
@@ -1625,7 +1625,7 @@ void ProcessDataSaveLoadMenu(void) {
                        SAVE_LOAD_ACTION == SAVE_LOAD_SAVE_OPTIONS) {
                 DrawText("DATA CANNOT BE SAVED.", 0x52, 0x8A);
             }
-#endif
+#endif /* TGR_REGION != TGR_REGION_US */
             break;
         case PAK_STATE_RUMBLE_PAK:
             DRAW_SWAP_FOR_CONTROLLER_PAK_MESSAGE(
@@ -1685,7 +1685,7 @@ void ProcessDataSaveLoadMenu(void) {
                        SAVE_LOAD_ACTION == SAVE_LOAD_SAVE_OPTIONS) {
                 DRAW_SHORT_MESSAGE(0xB6, 0x114, 0x63, "UNABLE TO SAVE DATA", "TO CONTROLLER PAK.");
             }
-#endif
+#endif /* TGR_REGION != TGR_REGION_US */
             break;
         case PFS_ERR_NEW_PACK:
             DRAW_NEW_PAK_MESSAGE(0xBB, 0x6D);
@@ -1694,7 +1694,7 @@ void ProcessDataSaveLoadMenu(void) {
             DRAW_SHORT_MESSAGE(0xB1, 0x11E, 0x60, "CONTROLLER PAK ERROR", "HAS BEEN DETECTED!");
             break;
         }
-#endif
+#endif /* TGR_REGION == TGR_REGION_JP */
         if (gControllerPakState != PAK_STATE_RUMBLE_PAK) {
             if (CHOOSING_INPUT->buttons & DISMISS_BUTTONS) {
                 TransferFlags(CHOOSING_INPUT, DISMISS_BUTTONS);
@@ -1804,7 +1804,7 @@ void ProcessDataSaveLoadMenu(void) {
             g_bSaveLoadStep = SAVE_LOAD_STEP_CHOOSE;
             break;
         }
-#endif
+#endif /* TGR_REGION == TGR_REGION_JP */
         if (CHOOSING_INPUT->buttons & DISMISS_BUTTONS) {
             TransferFlags(CHOOSING_INPUT, DISMISS_BUTTONS);
 #if TGR_REGION != TGR_REGION_US
@@ -1829,7 +1829,7 @@ void ProcessDataSaveLoadMenu(void) {
             } else {
                 g_bSaveLoadStep = SAVE_LOAD_STEP_FADE_OUT;
             }
-#endif
+#endif /* TGR_REGION != TGR_REGION_US */
         }
         break;
 
@@ -1854,7 +1854,7 @@ void ProcessDataSaveLoadMenu(void) {
 #else
         SET_MESSAGE_TEXT();
         DRAW_SWAP_FOR_RUMBLE_PAK_MESSAGE(0x72, 0xB2, 0x19C, 0x69);
-#endif
+#endif /* TGR_REGION == TGR_REGION_JP */
         if (CHOOSING_INPUT->buttons & INPUT_A) {
             TransferFlags(CHOOSING_INPUT, INPUT_A);
 #if TGR_REGION != TGR_REGION_US
@@ -1879,7 +1879,7 @@ void ProcessDataSaveLoadMenu(void) {
             } else {
                 g_bSaveLoadStep = SAVE_LOAD_STEP_FADE_OUT;
             }
-#endif
+#endif /* TGR_REGION != TGR_REGION_US */
             g_bSaveLoadRumbleSwapPending = FALSE;
             if (osMotorInit(&g_SiMesgQueue,
                             &g_aContPfs[g_dwMenuChoosingPlayer],
@@ -1959,7 +1959,7 @@ void ProcessDataSaveLoadMenu(void) {
     /* This also clears the flag just set for the next screen, so the motors stay stopped until
      * another screen frees the serial interface. */
     g_wSerialInterfaceIdle = FALSE;
-#endif
+#endif /* TGR_REGION != TGR_REGION_US */
 }
 #pragma GCC diagnostic pop
 
@@ -1993,7 +1993,7 @@ s32 DrawRumblePakPrompt(s32 anyPlayer) {
         DrawText("%j振動パックを使うときは、", 0x5D, 0x77);
         DrawText("%jコントローラパックと", 0x5D, 0x84);
         DrawText("%j振動パックを交換して下さい。", 0x5D, 0x91);
-#endif
+#endif /* TGR_REGION == TGR_REGION_US */
     for (player = 0; player != 2; player++) {
         if (!anyPlayer && player != g_dwMenuChoosingPlayer) {
             continue;
@@ -2512,7 +2512,7 @@ s32 ProcessPakDataScreen(s32 dataType, u8 quiet) {
         default:
             DRAW_SHORT_MESSAGE(0xAF, 0x122, 0x5F, "CONTROLLER PAK ERROR", "HAS BEEN DETECTED.");
             break;
-#endif
+#endif /* TGR_REGION == TGR_REGION_JP */
         }
         if (gControllerPakState != PAK_STATE_RUMBLE_PAK) {
             if (CHOOSING_INPUT->buttons & DISMISS_BUTTONS) {
@@ -2562,7 +2562,7 @@ s32 ProcessPakDataScreen(s32 dataType, u8 quiet) {
             top = g_bSaveLoadEntryPoint != SAVE_LOAD_FROM_MAIN_MENU ? 0xCE : unsetOffset + 0xCB;
             DRAW_DONE_MESSAGE(0xE2, 0xBC, top, "%ywGHOST DATA", "%ywLOADED OK!");
         }
-#endif
+#endif /* TGR_REGION == TGR_REGION_JP */
 #if TGR_REGION == TGR_REGION_US
         /* The later releases do not report a loaded or saved configuration. */
         else if (dataType == PAK_DATA_LOAD_CONFIGURATION ||
@@ -2575,7 +2575,7 @@ s32 ProcessPakDataScreen(s32 dataType, u8 quiet) {
                 DrawText("%ywSAVED OK!", 0x9F, 0x8A);
             }
         }
-#endif
+#endif /* TGR_REGION == TGR_REGION_US */
         if (CHOOSING_INPUT->buttons & DISMISS_BUTTONS) {
             TransferFlags(CHOOSING_INPUT, DISMISS_BUTTONS);
             if (dataType == PAK_DATA_LOAD_CONFIGURATION) {

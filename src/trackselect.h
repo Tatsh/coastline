@@ -74,4 +74,4 @@ s32 IsTrackIndexValid(s32 track);
 }
 #endif
 
-#endif
+#endif /* COASTLINE_TRACKSELECT_H */

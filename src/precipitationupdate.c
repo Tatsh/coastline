@@ -32,7 +32,7 @@
 #define PRECIPITATION_INTEGER(value) ((s32)(value))
 #define PRECIPITATION_CAMERA(view) g_aVehicles[view].activeCamera
 #define NEGATE_DRIFT(value) (-(value))
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 
 void UpdatePrecipitationParticles(void) {
     CameraFrame *camera;
@@ -110,7 +110,7 @@ void UpdatePrecipitationParticles(void) {
             g_fRainCameraSpeedScale = 1.0f;
         }
 
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
         /* Snow falls slowly. Rain falls faster and blows with the wind. */
         if (g_dwSnowMode) {
 #if TGR_PLATFORM == TGR_PLATFORM_WIN

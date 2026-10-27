@@ -38,4 +38,4 @@ extern s32 g_dwNumActiveVehicles;
 }
 #endif
 
-#endif
+#endif /* COASTLINE_VEHICLECOUNT_H */

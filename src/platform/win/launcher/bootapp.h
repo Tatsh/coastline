@@ -23,4 +23,4 @@ private:
     DECLARE_MESSAGE_MAP()
 };
 
-#endif
+#endif /* COASTLINE_LAUNCHER_BOOTAPP_H */

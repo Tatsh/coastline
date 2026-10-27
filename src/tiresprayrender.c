@@ -20,7 +20,7 @@ LoadSprayVertices(GbiCommand *command, const ConvertedModelVertex *vertices, u32
 #define SPRAY_DRAW_VERTICES(vehicle) ((vehicle)->sprayVertices)
 #define SPRAY_DRAW_VELOCITIES(vehicle) ((vehicle)->sprayVelocities)
 #define SPRAY_DRAW_LOAD_VERTICES gSPVertex
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
 void DrawTireSpray(const RacerSlot *slots) {
@@ -32,7 +32,7 @@ void DrawTireSpray(void) {
     RacerSlot *slot;
     Vehicle *vehicle;
     s16(*velocities)[SPRAY_SEGMENT_VERTICES][3];
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
     s32 wheel, first;
 
     if (g_dwSnowMode && g_dwSelectedTrackId != TRACK_COASTLINE &&
@@ -77,7 +77,7 @@ void DrawTireSpray(void) {
                       0,
                       0,
                       COMBINED);
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
     gDPSetRenderMode(gDisplayListPtr++,
                      GBL_c1(G_BL_CLR_IN, G_BL_0, G_BL_CLR_IN, G_BL_1),
                      Z_CMP | IM_RD | CVG_DST_FULL | ZMODE_XLU | FORCE_BL |
@@ -122,7 +122,7 @@ void DrawTireSpray(void) {
                G_TX_NOLOD);
     gDPSetTileSize(gDisplayListPtr++, G_TX_RENDERTILE, 0, 0, 31 << 2, 63 << 2);
     /* The size is set again half a texel in, which replaces the first. */
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
     gDPSetTileSize(gDisplayListPtr++, G_TX_RENDERTILE, 2, 2, (31 << 2) + 2, (63 << 2) + 2);
     gSPTexture(gDisplayListPtr++, 0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON);
 

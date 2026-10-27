@@ -34,4 +34,4 @@ void DrawFormattedLapTimeText(const char *color, s32 lap, f32 seconds, s32 x, s3
     sprintf(text, "%s%d. %d:%02d.%02d", color, lap, minutes, whole % 60, hundredths % 100);
     DrawText(text, x, y);
 }
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */

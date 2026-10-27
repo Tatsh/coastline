@@ -44,4 +44,4 @@ void ramMain(void);
  */
 void OsBootEntry(void);
 
-#endif
+#endif /* PLATFORM_N64_BOOT_H */

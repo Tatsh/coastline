@@ -25,4 +25,4 @@ s32 FloatToInt(float value) {
     return (s32)value;
 #endif
 }
-#endif
+#endif /* __mips__ */

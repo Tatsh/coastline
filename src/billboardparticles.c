@@ -49,7 +49,7 @@ static inline s32 ClampToScreen(s32 coordinate) {
     return clamped > 0 ? clamped : 0;
 }
 
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
 void RenderBillboardParticles(
@@ -87,7 +87,7 @@ void RenderBillboardParticles(u16 head, s32 red, s32 green, s32 blue) {
     span = (f32)(view->width * 2);
     height = view->height;
     scaleX = g_dwViewportMirrored != g_dwTrackMirrored ? -span : span;
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 
     for (index = head; index != 0; index = particle->next) {
         particle = &BILLBOARD_PARTICLES[index];
@@ -156,7 +156,7 @@ void RenderBillboardParticles(u16 head, s32 red, s32 green, s32 blue) {
         }
         x = (s32)(clip[0] * scaleX) + centerX;
         y = (s32)(clip[1] * (f32)(height * 2)) + centerY;
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 
         gDPPipeSync(gDisplayListPtr++);
         gDPSetPrimColor(gDisplayListPtr++,
@@ -193,6 +193,6 @@ void RenderBillboardParticles(u16 head, s32 red, s32 green, s32 blue) {
                             PARTICLE_TEXTURE_LAST_T - t,
                             stepS,
                             stepT);
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
     }
 }

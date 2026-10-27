@@ -30,7 +30,7 @@ void SortRacersByPosition(void) {
         }
         return;
     }
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
     for (i = 0; i < g_dwNumVehicles; i++) {
         slot = &g_aRacerSlots[i];
         if (RACER_SLOT_GET(slot, Status) & RACER_FINISHED) {

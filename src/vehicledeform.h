@@ -34,4 +34,4 @@ void DeformVehicleMeshByImpact(Vehicle *vehicle, Vec3f *direction, s16 amount);
 }
 #endif
 
-#endif
+#endif /* COASTLINE_VEHICLE_DEFORM_H */

@@ -19,4 +19,4 @@ u64 AdvanceEmulatedOsTime(void);
 }
 #endif
 
-#endif
+#endif /* COASTLINE_WIN_EMULATEDCLOCK_H */

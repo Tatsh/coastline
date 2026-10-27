@@ -27,4 +27,4 @@ extern s32 g_dwTotalLaps;
 }
 #endif
 
-#endif
+#endif /* COASTLINE_LAPS_H */

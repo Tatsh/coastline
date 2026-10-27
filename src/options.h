@@ -68,7 +68,7 @@ typedef struct {
     u8 action;        /*!< The SAVE_LOAD_ action of the row. */
     const char *text; /*!< The text of the row, or NULL after the last row. */
 } SaveLoadMenuItem;
-#endif
+#endif /* TGR_REGION == TGR_REGION_EU || TGR_REGION == TGR_REGION_JP */
 
 /** The data ProcessPakDataScreen() loads or saves. */
 enum {
@@ -135,7 +135,7 @@ extern s32 g_adwSfxVolumeLevels[VOLUME_LEVELS];
  * @ghidraAddress JPN: 0x80273f40
  */
 extern s32 g_dwOptionsChangedNeedsSave;
-#endif
+#endif /* TGR_REGION == TGR_REGION_EU || TGR_REGION == TGR_REGION_JP */
 
 /**
  * Which screen opened the save and load menu, by the SAVE_LOAD_FROM_ values.
@@ -250,7 +250,7 @@ extern SaveLoadMenuItem g_aSaveGhostMenuItems[];
  * @ghidraAddress JPN: 0x80274068
  */
 extern u8 g_bSaveLoadMenuCursor;
-#endif
+#endif /* TGR_REGION == TGR_REGION_EU || TGR_REGION == TGR_REGION_JP */
 
 /**
  * The step of the save and load menu.
@@ -351,7 +351,7 @@ extern u8 g_bSaveLoadDataWasLoaded;
  * @ghidraAddress JPN: 0x80316d38
  */
 extern u8 g_bSaveLoadSkipEepromProbe;
-#endif
+#endif /* TGR_REGION == TGR_REGION_EU || TGR_REGION == TGR_REGION_JP */
 
 /**
  * Whether the save and load menu takes the input of its choices.
@@ -469,7 +469,7 @@ s32 LoadSaveDataFromEeprom(void);
  * @ghidraAddress JPN: 0x80211d38
  */
 void SaveGameDataToEeprom(void);
-#endif
+#endif /* TGR_REGION == TGR_REGION_JP || TGR_REGION == TGR_REGION_EU */
 
 /**
  * Load the pictures of the A and B buttons, and allocate the buffer of the Controller Pak data.
@@ -523,4 +523,4 @@ s32 IsRumblePakMissing(void);
  */
 s32 ProcessPakDataScreen(s32 dataType, u8 quiet);
 
-#endif
+#endif /* COASTLINE_OPTIONS_H */

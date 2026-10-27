@@ -42,4 +42,4 @@ void SetVehicleTurnRate(Vehicle *vehicle, f32 x, f32 y, f32 z);
 }
 #endif
 
-#endif
+#endif /* COASTLINE_VEHICLERESET_H */

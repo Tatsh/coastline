@@ -28,7 +28,7 @@
 #else
 #define FRAME_LESS(a, b) ((a) < (b))
 #define SIGN_OF(x) ((x) == 0.0f ? 0.0f : (0.0f < (x) ? 1.0f : -1.0f))
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 
 #define PHYSICS_STEP (1.0f / 30.0f)
 #define WHEEL_DRAW_DROP 0.254f
@@ -107,7 +107,7 @@ void Vehicle::ApplyWheelSideGrip(RigidBody *body, f32 dt) {
                   &(vehicle)->frontLoad,                                                           \
                   &(vehicle)->rearSliding,                                                         \
                   &(vehicle)->frontSliding)
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 
 void UpdateVehiclePhysicsFrame(Vehicle *vehicle) {
     RigidBody **wheels = VEHICLE_GET(vehicle, Body).wheels;
@@ -149,7 +149,7 @@ void UpdateVehiclePhysicsFrame(Vehicle *vehicle) {
             vehicle->steering * FLY_TURN_RATE * FLY_TURN_SCALE * g_fFrameDeltaTime,
             vehicle->pitchInput * FLY_TURN_RATE * FLY_TURN_SCALE * g_fFrameDeltaTime,
             vehicle->rollInput * FLY_TURN_RATE * FLY_TURN_SCALE * g_fFrameDeltaTime);
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
         if (VEHICLE_GET(vehicle, Input)->buttons & INPUT_FLY_LEVEL) {
             VEHICLE_GET(vehicle, Frame).up.x = 0.0f;
             VEHICLE_GET(vehicle, Frame).up.y = 0.0f;
@@ -215,7 +215,7 @@ void UpdateVehiclePhysicsFrame(Vehicle *vehicle) {
                     wheels[i]->drive = -vehicle->throttle;
                 }
             }
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
         }
         if (FRAME_LESS(VEHICLE_GET(vehicle, Brake), 0.0f)) {
             wheels[0]->brake = -VEHICLE_GET(vehicle, Brake);
@@ -256,7 +256,7 @@ void UpdateVehiclePhysicsFrame(Vehicle *vehicle) {
         vehicle->speedKph = sqrtf(velocity->z * velocity->z +
                                   (velocity->x * velocity->x + velocity->y * velocity->y)) *
                             SPEED_TO_DISPLAY;
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
     }
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
     if (g_dwNetworkPlayMode) {

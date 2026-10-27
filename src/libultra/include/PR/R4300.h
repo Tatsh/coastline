@@ -99,4 +99,4 @@
 #define TLBPGMASK_4M 0x007FE000   /*!< The mask of a 4 MB page. */
 #define TLBPGMASK_16M 0x01FFE000  /*!< The mask of a 16 MB page. */
 
-#endif
+#endif /* PR_R4300_H */

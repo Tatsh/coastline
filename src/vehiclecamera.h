@@ -13,4 +13,4 @@ enum {
     VEHICLE_CAMERAS,          /*!< The number of cameras of a vehicle. */
 };
 
-#endif
+#endif /* COASTLINE_VEHICLECAMERA_H */

@@ -19,7 +19,7 @@
 #define RACER_AI_DRIVER AiVehicleControllerCallback
 #define MOTION_INTERMEDIATE(value) ((long double)(value))
 #define MOTION_LESS(a, b) (!((a) >= (b)))
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_N64 */
 
 /* A ghost fades in this fast, up to this in time attack; a racer without a vehicle moves this far
  * a frame when no vehicle of its kind sets the pace. */

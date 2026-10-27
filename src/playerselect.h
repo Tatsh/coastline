@@ -53,4 +53,4 @@ void TwoControllersPostDrawCallback(s32 item);
  */
 void ProcessPlayerCountSelect(void);
 
-#endif
+#endif /* COASTLINE_PLAYERSELECT_H */

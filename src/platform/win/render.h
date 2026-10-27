@@ -1,14 +1,6 @@
 #pragma once
 
 /**
- * Display the current debug message on the fatal error screen.
- *
- * @param unused Not read.
- * @ghidraAddress BRD3D: 0x10035ba7
- */
-[[noreturn]] void ShowDebugMessageFatalError(int unused);
-
-/**
  * @file
  * The renderer of the PC port: its mode, the routines that start and stop it, and the pool of the
  * data of the models it draws.
@@ -27,6 +19,14 @@
 #include "track.h"
 #include "vecmath.h"
 #include "vehicleview.h"
+
+/**
+ * Display the current debug message on the fatal error screen.
+ *
+ * @param unused Not read.
+ * @ghidraAddress BRD3D: 0x10035ba7
+ */
+[[noreturn]] void ShowDebugMessageFatalError(int unused);
 
 struct GbiCommand;
 struct TextureImageData;
@@ -249,7 +249,7 @@ int InitGlideRenderDevice(void);
  * @ghidraAddress BRGlide: 0x10023b10
  */
 void InitGbiGlideRenderer(void);
-#endif
+#endif /* TGR_RENDERER == TGR_RENDERER_D3D */
 
 /**
  * Start the texture subsystem.
@@ -297,7 +297,7 @@ void CalculateTextureDimensions(int *pWidth, int *pHeight, int nLod, int nAspect
  * @ghidraAddress BRD3D: 0x10029e10
  */
 int ComputeMipChainByteSize(int nSmallLod, int nLargeLod, int nAspectRatio, int nPixelFormatId);
-#endif
+#endif /* TGR_RENDERER == TGR_RENDERER_D3D */
 
 /**
  * The number of vertices converted into g_afModelVertexPool.

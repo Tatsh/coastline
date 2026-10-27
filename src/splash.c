@@ -44,7 +44,7 @@
 #define ROM_SPLASH_TITLE_C 0x1E2B40
 #define ROM_SPLASH_TITLE_A 0x1E09F0
 #define ROM_SPLASH_TITLE_B 0x1E3DB0
-#endif
+#endif /* TGR_REGION == TGR_REGION_EU */
 
 /* The silence after each sound, so that the mixer reads zeros past its end. */
 #define SOUND_PADDING 0x100
@@ -135,7 +135,7 @@
 #define SKIP_TIME 17.2f
 #define SKIP_END_TIME 19.2f
 #define SPLASH_END_TIME 24.2f
-#endif
+#endif /* TGR_REGION == TGR_REGION_EU */
 
 /* The buttons that skip the splash screens. */
 #define SKIP_BUTTONS (INPUT_Z | INPUT_START | INPUT_A)
@@ -363,7 +363,7 @@ static void DrawSplashTitle(void) {
                     1.0f / 12.0f);
     }
 }
-#endif
+#endif /* TGR_REGION == TGR_REGION_JP */
 
 /* Fade in the copyright, and the date of the build while every C button is held. */
 static void DrawSplashCopyright(void) {
@@ -403,7 +403,7 @@ static void DrawSplashCopyright(void) {
     /* A small c inside the O of the first line makes the copyright sign. */
     SetTextSize(3);
     DrawText("c", 78, 190);
-#endif
+#endif /* TGR_REGION != TGR_REGION_US */
 }
 
 /* Fade out on a skip or at the end, and leave for the main menu or the demo once faded. */
@@ -436,7 +436,7 @@ static void UpdateSplashExit(void) {
             } else {
                 StartAttractDemo();
             }
-#endif
+#endif /* TGR_REGION != TGR_REGION_US */
         }
         return;
     }
@@ -500,7 +500,7 @@ void ProcessSplashScreens(void) {
         LoopModelAnimations(g_pSplashTitleModelD);
         g_pSplashTitleModelC = LoadSplashModel(ROM_SPLASH_TITLE_C);
         LoopModelAnimations(g_pSplashTitleModelC);
-#endif
+#endif /* TGR_REGION == TGR_REGION_JP */
 
         g_dwSplashSoundALength = DmaReadAssetSize(ROM_SPLASH_SOUND_A);
         g_pSplashSoundA = AllocHeapAligned(g_dwSplashSoundALength + SOUND_PADDING);
@@ -582,7 +582,7 @@ void ProcessSplashScreens(void) {
                          &g_dwSplashProducerSoundA,
                          &g_bSplashProducerSoundB);
     }
-#endif
+#endif /* TGR_REGION == TGR_REGION_US */
     if (g_fSplashTime >= DEVELOPER_LOGO_START) {
         DrawSplashCaption("Developed by", DEVELOPER_LOGO_START, 60);
         UpdateSplashLogo(g_pSplashDeveloperLogo,
@@ -636,7 +636,7 @@ void ProcessControllerCheck(void) {
         BlankDisplay();
         StartHighResFrame();
         FlushDisplayList();
-#endif
+#endif /* TGR_REGION == TGR_REGION_US */
         LoadTextureFromRom(&g_texBackground);
         LoadTextureFromRom(&g_texLogo);
         LoadTextureFromRom(&g_texButtonA);
@@ -732,7 +732,7 @@ void ProcessControllerCheck(void) {
     SetTextSize(11);
     DrawTexturedSprite(&g_texButtonA, 278, 432);
     DrawText("%wwOK", 154, g_dwScreenHeight * 19 / 20 - 3);
-#endif
+#endif /* TGR_REGION == TGR_REGION_US */
     gDPPipeSync(gDisplayListPtr++);
     ApplyScreenFade();
     FlushDisplayList();

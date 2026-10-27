@@ -17,4 +17,4 @@
 #include <PR/sptask.h>
 #include <PR/ultratypes.h>
 
-#endif
+#endif /* ULTRA64_H */

@@ -4,6 +4,11 @@
 #include "system.h"
 #include "weather.h"
 
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#include "platform/win/displaylist.h"
+#include "platform/win/render.h"
+#endif
+
 /* Load the console particle-image commands retained by the exhaust path. */
 #define LoadParticleTextureImage()                                                                 \
     gDPSetTextureImage(gDisplayListPtr++, G_IM_FMT_I, G_IM_SIZ_16b, 1, g_aParticleTexture);        \
@@ -41,9 +46,6 @@
     gDPSetTexturePersp(gDisplayListPtr++, G_TP_NONE)
 
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
-#include "platform/win/displaylist.h"
-#include "platform/win/render.h"
-
 static inline void WriteParticleCombineMode(void) {
     PackCombineMode(gDisplayListPtr++,
                     0,
@@ -113,7 +115,7 @@ static inline void ConfigureExhaustParticleTexture(void) {
     LoadParticleTextureImage()
 #define ConfigureExhaustParticleTexture() ConfigureParticleTexture()
 
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 
 /* Put back the modes the rest of the frame draws with. */
 #define RestoreParticleModes()                                                                     \
@@ -124,4 +126,4 @@ static inline void ConfigureExhaustParticleTexture(void) {
     gDPSetAlphaDither(gDisplayListPtr++, g_dwAlphaDitherMode);                                     \
     gDPSetAlphaCompare(gDisplayListPtr++, G_AC_THRESHOLD)
 
-#endif
+#endif /* COASTLINE_PARTICLE_COMMANDS_H */

@@ -70,6 +70,39 @@ private:
     DirectDrawDriver *pPrev;        /*!< The driver found before. */
     DirectDrawDriver *pNext;        /*!< The next driver found. */
 
+    /**
+     * Find the display modes of the driver.
+     *
+     * @param pDirectDraw2 The DirectDraw interface of the driver.
+     * @return `S_OK`, or the error of DirectDraw.
+     * @ghidraAddress BRD3D: 0x1001b320
+     */
+    HRESULT EnumerateDisplayModes(IDirectDraw2 *pDirectDraw2);
+
+    /**
+     * Free the display modes of the driver.
+     *
+     * @ghidraAddress BRD3D: 0x1001b3b0
+     */
+    void FlushDirectDrawModeEnumerationList();
+
+    /**
+     * Find the Direct3D devices of the driver.
+     *
+     * @param pDirect3D2 The Direct3D interface of the driver.
+     * @return `S_OK`, or the error of Direct3D.
+     * @ghidraAddress BRD3D: 0x1001b510
+     */
+    HRESULT EnumerateD3DDevices(IDirect3D2 *pDirect3D2);
+
+    /**
+     * Free the Direct3D devices of the driver.
+     *
+     * @return 0.
+     * @ghidraAddress BRD3D: 0x1001b5a0
+     */
+    int FlushDirect3DDeviceList();
+
 public:
     unsigned GetFlags() const {
         return dwFlags;
@@ -114,41 +147,6 @@ public:
         pD3DDevicesTail = nullptr;
     }
 
-private:
-    /**
-     * Find the display modes of the driver.
-     *
-     * @param pDirectDraw2 The DirectDraw interface of the driver.
-     * @return `S_OK`, or the error of DirectDraw.
-     * @ghidraAddress BRD3D: 0x1001b320
-     */
-    HRESULT EnumerateDisplayModes(IDirectDraw2 *pDirectDraw2);
-
-    /**
-     * Free the display modes of the driver.
-     *
-     * @ghidraAddress BRD3D: 0x1001b3b0
-     */
-    void FlushDirectDrawModeEnumerationList();
-
-    /**
-     * Find the Direct3D devices of the driver.
-     *
-     * @param pDirect3D2 The Direct3D interface of the driver.
-     * @return `S_OK`, or the error of Direct3D.
-     * @ghidraAddress BRD3D: 0x1001b510
-     */
-    HRESULT EnumerateD3DDevices(IDirect3D2 *pDirect3D2);
-
-    /**
-     * Free the Direct3D devices of the driver.
-     *
-     * @return 0.
-     * @ghidraAddress BRD3D: 0x1001b5a0
-     */
-    int FlushDirect3DDeviceList();
-
-public:
     /**
      * Add a display mode to the end of the modes of the driver.
      *
@@ -291,6 +289,13 @@ private:
     D3DDeviceNode *pPrev;             /*!< The device of the driver before. */
     D3DDeviceNode *pNext;             /*!< The next device of the driver. */
 
+    /**
+     * Free the texture formats of the device.
+     *
+     * @ghidraAddress BRD3D: 0x1001afb0
+     */
+    void FlushTextureFormatList();
+
 public:
     GUID *GetGuid() {
         return &guid;
@@ -360,15 +365,6 @@ public:
                               D3DDEVICEDESC *pHardwareDesc,
                               D3DDEVICEDESC *pSoftwareDesc);
 
-private:
-    /**
-     * Free the texture formats of the device.
-     *
-     * @ghidraAddress BRD3D: 0x1001afb0
-     */
-    void FlushTextureFormatList();
-
-public:
     /**
      * Add a texture format to the end of the formats of the device.
      *
@@ -402,6 +398,14 @@ private:
     DDSURFACEDESC desc; /*!< The description of the mode. */
     DisplayMode *pPrev; /*!< The mode of the driver before. */
     DisplayMode *pNext; /*!< The next mode of the driver. */
+
+    /**
+     * The bits of a pixel of the mode.
+     *
+     * @return The bits, or 0 for a description without a pixel format.
+     * @ghidraAddress BRD3D: 0x1001ac60
+     */
+    int GetSurfaceDescBitDepth();
 
 public:
     void SetDescription(const DDSURFACEDESC &description) {
@@ -439,16 +443,6 @@ public:
     HRESULT
     GetSurfaceDescDimensions(int *pnWidth, int *pnHeight, int *pnBitDepth, int *pnRefreshRate);
 
-private:
-    /**
-     * The bits of a pixel of the mode.
-     *
-     * @return The bits, or 0 for a description without a pixel format.
-     * @ghidraAddress BRD3D: 0x1001ac60
-     */
-    int GetSurfaceDescBitDepth();
-
-public:
     /**
      * Whether a device can draw in the depth of the mode.
      *
@@ -645,95 +639,6 @@ private:
     void RecordDisplayMode(int nWidth, int nHeight, int nBitDepth);
     HRESULT CreateDepthBuffer(const D3DDEVICEDESC *pDesc, DWORD dwMemoryCaps, bool *pbAttached);
 
-public:
-    D3DMaterial *GetMaterial() const {
-        return pMaterial;
-    }
-    int GetDeviceInit() const {
-        return dwDeviceInit;
-    }
-    int GetFlags() const {
-        return dwFlags;
-    }
-    void AddFlags(int flags) {
-        dwFlags |= flags;
-    }
-    void RemoveFlags(int flags) {
-        dwFlags &= ~flags;
-    }
-    int GetRenderStateFlags() const {
-        return dwRenderStateFlags;
-    }
-    int GetGdiModeRefCount() const {
-        return nGdiModeRefCount;
-    }
-    DirectDrawDriver *GetDriver() const {
-        return pDriver;
-    }
-    DisplayMode *GetMode() const {
-        return pMode;
-    }
-    D3DDeviceNode *GetDevice() const {
-        return pDevice;
-    }
-    IDirectDraw2 *GetDirectDraw2() const {
-        return pDirectDraw2;
-    }
-    IDirect3D2 *GetDirect3D2() const {
-        return pDirect3D2;
-    }
-    IDirectDrawSurface *GetPrimarySurface() const {
-        return pPrimarySurface;
-    }
-    IDirectDrawSurface *GetBackBuffer() const {
-        return pBackBuffer;
-    }
-    IDirect3DDevice2 *GetD3DDevice() const {
-        return pD3DDevice;
-    }
-    IDirect3DViewport2 *GetViewport() const {
-        return pViewport;
-    }
-
-    /**
-     * Clear the renderer.
-     *
-     * @ghidraAddress BRD3D: 0x1000a190
-     */
-    DirectDrawRenderer();
-
-    /**
-     * Release every object of the renderer and forget its window.
-     *
-     * @ghidraAddress BRD3D: 0x1000a1c0
-     */
-    void Cleanup();
-
-    /**
-     * Select a driver, a device, and a mode, and create the objects that draw into a window. A
-     * failure releases what was created.
-     *
-     * @param hWnd The window.
-     * @param pDriverGuid The DirectDraw driver, or `nullptr` for the default.
-     * @param nWidth The width of the mode, or 0.
-     * @param nHeight The height of the mode, or 0.
-     * @param nBitDepth The bits of a pixel of the mode, or 0.
-     * @param pSurfaceFormat The format of the surfaces, or `nullptr`.
-     * @param pDeviceGuid The Direct3D device, or `nullptr` for the default.
-     * @param bOption Whether bit 2 of dwFlags is set. Its meaning is not recovered yet.
-     * @return `S_OK`, or the error of the step that failed.
-     * @ghidraAddress BRD3D: 0x1000a1e0
-     */
-    HRESULT InitializeWindow(HWND hWnd,
-                             GUID *pDriverGuid,
-                             int nWidth,
-                             int nHeight,
-                             int nBitDepth,
-                             void *pSurfaceFormat,
-                             GUID *pDeviceGuid,
-                             bool bOption);
-
-private:
     /**
      * Tell the window that the objects are going and release them.
      *
@@ -860,7 +765,127 @@ private:
      */
     HRESULT InitializeViewportAndRenderContext();
 
+    /**
+     * Release the Direct3D device, its viewport, and the back and depth buffers, telling the host
+     * first.
+     *
+     * @return 0.
+     * @ghidraAddress BRD3D: 0x1000ad70
+     */
+    int DestroyD3DDevice();
+
+    /**
+     * Release the viewport of the device and its material.
+     *
+     * @return 0.
+     * @ghidraAddress BRD3D: 0x1000aea0
+     */
+    int ReleaseViewportAndMaterial();
+
+    /**
+     * Give the screen to GDI, with its palette, so a menu or a dialog can show.
+     *
+     * @return `S_OK`, or the error of DirectDraw.
+     * @ghidraAddress BRD3D: 0x1000b170
+     */
+    HRESULT RestoreGdiPaletteAndFlipToGdi();
+
+    /**
+     * Take the screen back from GDI with the palette of the game.
+     *
+     * @return `S_OK`, or the error of DirectDraw.
+     * @ghidraAddress BRD3D: 0x1000b1f0
+     */
+    HRESULT RestoreGamePaletteEntries();
+
 public:
+    D3DMaterial *GetMaterial() const {
+        return pMaterial;
+    }
+    int GetDeviceInit() const {
+        return dwDeviceInit;
+    }
+    int GetFlags() const {
+        return dwFlags;
+    }
+    void AddFlags(int flags) {
+        dwFlags |= flags;
+    }
+    void RemoveFlags(int flags) {
+        dwFlags &= ~flags;
+    }
+    int GetRenderStateFlags() const {
+        return dwRenderStateFlags;
+    }
+    int GetGdiModeRefCount() const {
+        return nGdiModeRefCount;
+    }
+    DirectDrawDriver *GetDriver() const {
+        return pDriver;
+    }
+    DisplayMode *GetMode() const {
+        return pMode;
+    }
+    D3DDeviceNode *GetDevice() const {
+        return pDevice;
+    }
+    IDirectDraw2 *GetDirectDraw2() const {
+        return pDirectDraw2;
+    }
+    IDirect3D2 *GetDirect3D2() const {
+        return pDirect3D2;
+    }
+    IDirectDrawSurface *GetPrimarySurface() const {
+        return pPrimarySurface;
+    }
+    IDirectDrawSurface *GetBackBuffer() const {
+        return pBackBuffer;
+    }
+    IDirect3DDevice2 *GetD3DDevice() const {
+        return pD3DDevice;
+    }
+    IDirect3DViewport2 *GetViewport() const {
+        return pViewport;
+    }
+
+    /**
+     * Clear the renderer.
+     *
+     * @ghidraAddress BRD3D: 0x1000a190
+     */
+    DirectDrawRenderer();
+
+    /**
+     * Release every object of the renderer and forget its window.
+     *
+     * @ghidraAddress BRD3D: 0x1000a1c0
+     */
+    void Cleanup();
+
+    /**
+     * Select a driver, a device, and a mode, and create the objects that draw into a window. A
+     * failure releases what was created.
+     *
+     * @param hWnd The window.
+     * @param pDriverGuid The DirectDraw driver, or `nullptr` for the default.
+     * @param nWidth The width of the mode, or 0.
+     * @param nHeight The height of the mode, or 0.
+     * @param nBitDepth The bits of a pixel of the mode, or 0.
+     * @param pSurfaceFormat The format of the surfaces, or `nullptr`.
+     * @param pDeviceGuid The Direct3D device, or `nullptr` for the default.
+     * @param bOption Whether bit 2 of dwFlags is set. Its meaning is not recovered yet.
+     * @return `S_OK`, or the error of the step that failed.
+     * @ghidraAddress BRD3D: 0x1000a1e0
+     */
+    HRESULT InitializeWindow(HWND hWnd,
+                             GUID *pDriverGuid,
+                             int nWidth,
+                             int nHeight,
+                             int nBitDepth,
+                             void *pSurfaceFormat,
+                             GUID *pDeviceGuid,
+                             bool bOption);
+
     /**
      * Create the material of the background of the viewport.
      *
@@ -903,25 +928,6 @@ public:
     HRESULT
     ChangeDisplayModeAndReinitDirectDraw(GUID *pGuid, D3DDeviceNode *pDevice, DisplayMode *pMode);
 
-private:
-    /**
-     * Release the Direct3D device, its viewport, and the back and depth buffers, telling the host
-     * first.
-     *
-     * @return 0.
-     * @ghidraAddress BRD3D: 0x1000ad70
-     */
-    int DestroyD3DDevice();
-
-    /**
-     * Release the viewport of the device and its material.
-     *
-     * @return 0.
-     * @ghidraAddress BRD3D: 0x1000aea0
-     */
-    int ReleaseViewportAndMaterial();
-
-public:
     /**
      * Give the renderer the host that draws through it, and give the host the renderer.
      *
@@ -939,24 +945,6 @@ public:
      */
     HRESULT SetPrimarySurfacePalette();
 
-private:
-    /**
-     * Give the screen to GDI, with its palette, so a menu or a dialog can show.
-     *
-     * @return `S_OK`, or the error of DirectDraw.
-     * @ghidraAddress BRD3D: 0x1000b170
-     */
-    HRESULT RestoreGdiPaletteAndFlipToGdi();
-
-    /**
-     * Take the screen back from GDI with the palette of the game.
-     *
-     * @return `S_OK`, or the error of DirectDraw.
-     * @ghidraAddress BRD3D: 0x1000b1f0
-     */
-    HRESULT RestoreGamePaletteEntries();
-
-public:
     /**
      * Give the screen to GDI or take it back. The screen goes to GDI on the first request and
      * comes back on the last.
@@ -990,6 +978,14 @@ public:
 class RenderHost {
 private:
     DirectDrawRenderer *pRenderer; /*!< The renderer, set by SetRenderer(). */
+
+    /**
+     * Whether the renderer is ready and has Direct3D, a device, and a viewport.
+     *
+     * @return `S_OK`, or `E_FAIL`.
+     * @ghidraAddress BRD3D: 0x100011b0
+     */
+    HRESULT ValidateObjectRenderResources();
 
 public:
     DirectDrawRenderer *GetRenderer() const {
@@ -1050,15 +1046,6 @@ public:
      * @ghidraAddress BRD3D: 0x10001160
      */
     HRESULT ValidateRenderDeviceState();
-
-private:
-    /**
-     * Whether the renderer is ready and has Direct3D, a device, and a viewport.
-     *
-     * @return `S_OK`, or `E_FAIL`.
-     * @ghidraAddress BRD3D: 0x100011b0
-     */
-    HRESULT ValidateObjectRenderResources();
 };
 
 /**

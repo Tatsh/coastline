@@ -52,7 +52,7 @@ void SelectVehiclePhysicsTables(s32 model) {
 #else
 #define CONTACT_LESS(a, b) ((a) < (b))
 #define FORCE_PRODUCT(a, b) ((a) * (b))
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 
 #define CONTACT_ABS(a) ((a) < 0.0f ? -(a) : (a))
 #define COMPONENT(v, axis) ((&(v)->x)[axis])
@@ -112,7 +112,7 @@ void DriveWheel(RigidBody *body, RigidBody *wheel, f32 *load, u8 *sliding, f32 d
     side.x = normal->y * forward.z - forward.y * normal->z;
     side.y = normal->z * forward.x - forward.z * normal->x;
     side.z = normal->x * forward.y - forward.x * normal->y;
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
     c = cosf(wheel->steerAngle);
     s = sinf(wheel->steerAngle);
     roll.x = forward.x * c;
@@ -141,7 +141,7 @@ void DriveWheel(RigidBody *body, RigidBody *wheel, f32 *load, u8 *sliding, f32 d
     slide.z = forward.z + slide.z;
     (void)slide;
 
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 
     if (body->wheels[0]->contactFrames && body->wheels[2]->contactFrames &&
         body->wheels[1]->contactFrames && body->wheels[3]->contactFrames) {
@@ -160,7 +160,7 @@ void DriveWheel(RigidBody *body, RigidBody *wheel, f32 *load, u8 *sliding, f32 d
         weight.z = (body->mass + 4.0f * wheel->mass) * WHEEL_WEIGHT_SHARE +
                    (f32)((f64)wheel->state.position.z - -0.97) * 0.0f;
         pressure = normal->z * weight.z + (weight.x * normal->x + weight.y * normal->y);
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
         drive = wheel->drive;
         force = drive / wheel->radius;
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
@@ -183,7 +183,7 @@ void DriveWheel(RigidBody *body, RigidBody *wheel, f32 *load, u8 *sliding, f32 d
                                   force);
 #else
             force = (f32)((f64)force * 0.9);
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
         }
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
         if (ABS(grip) < ABS(force)) {
@@ -194,7 +194,7 @@ void DriveWheel(RigidBody *body, RigidBody *wheel, f32 *load, u8 *sliding, f32 d
             ratio = grip / force;
             force = (f32)((f64)force * ((f64)ABS(ratio) * 0.1));
         }
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
         push.x = roll.x * -force;
         push.y = roll.y * -force;
         push.z = roll.z * -force;
@@ -214,7 +214,7 @@ void DriveWheel(RigidBody *body, RigidBody *wheel, f32 *load, u8 *sliding, f32 d
         if (ABS(wheel->spinRate) > MAX_SPIN_RATE) {
             wheel->spinRate = (f32)(SIGN(wheel->spinRate) * 300.0);
         }
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
     } else {
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
         highSpin = wheel->spinRate + FORCE_PRODUCT(wheel->drive, dt);
@@ -262,7 +262,7 @@ void DriveWheel(RigidBody *body, RigidBody *wheel, f32 *load, u8 *sliding, f32 d
     while ((f64)wheel->rollAngle < 0.0) {
         wheel->rollAngle = wheel->rollAngle + 360.0f;
     }
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 }
 
 void ComputeCollisionPenetration(
@@ -290,7 +290,7 @@ void ComputeCollisionPenetration(
                         (COMPONENT(&triangle[0], i) + COMPONENT(&triangle[1], i));
             /* The original stores the sum before dividing it. */
             middle[i] = middle[i] / 3.0f;
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
         }
         if (CONTACT_LESS(CONTACT_ABS(middle[0]), CONTACT_ABS(middle[1]))) {
             if (CONTACT_LESS(CONTACT_ABS(middle[0]), CONTACT_ABS(middle[2]))) {
@@ -381,7 +381,7 @@ s32 ApplyCollisionImpulse(
         return 0;
     }
 
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 
     /* The mass the point moves with along each axis. */
     BuildSkewSymmetricMatrix(skew, &arm);
@@ -458,7 +458,7 @@ s32 ApplyCollisionImpulse(
     target.x = across.x + slide.x;
     target.y = across.y + slide.y;
     target.z = across.z + slide.z;
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
     SolveLinearSystem3x3(&impulse, k, &target);
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
     inverseMass = 1.0f / body->mass;
@@ -475,7 +475,7 @@ s32 ApplyCollisionImpulse(
     turn.x = arm.y * impulse.z - impulse.y * arm.z;
     turn.y = arm.z * impulse.x - impulse.z * arm.x;
     turn.z = arm.x * impulse.y - impulse.x * arm.y;
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
     Mtx3fMulVec3f(&spin, b, &turn);
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
     bounce = (long double)restitution - -1.05f;
@@ -499,7 +499,7 @@ s32 ApplyCollisionImpulse(
     angular->x = angular->x - spin.x;
     angular->y = angular->y - spin.y;
     angular->z = angular->z - spin.z;
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
     return 1;
 }
 
@@ -528,7 +528,7 @@ s32 BounceOffPlane(RigidBody *body, Vec3f *normal, s32 damp, s32 spin) {
         return 0;
     }
     bounce = (f64)into * 1.05;
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
     impulse.x = (f32)((f64)normal->x * bounce);
     impulse.y = (f32)((f64)normal->y * bounce);
     impulse.z = (f32)((f64)normal->z * bounce);
@@ -543,7 +543,7 @@ s32 BounceOffPlane(RigidBody *body, Vec3f *normal, s32 damp, s32 spin) {
     velocity->x = velocity->x - impulse.x;
     velocity->y = velocity->y - impulse.y;
     velocity->z = velocity->z - impulse.z;
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
     if (body->framesSinceImpact < 10) {
         damping = 0.9f;
     } else {
@@ -595,7 +595,7 @@ s32 BounceOffPlane(RigidBody *body, Vec3f *normal, s32 damp, s32 spin) {
     basis[2][0] = normal->y * basis[1][2] - basis[1][1] * normal->z;
     basis[2][1] = normal->z * basis[1][0] - basis[1][2] * normal->x;
     basis[2][2] = normal->x * basis[1][1] - basis[1][0] * normal->y;
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
     basis[0][0] = normal->x;
     basis[0][1] = normal->y;
     basis[0][2] = normal->z;
@@ -668,7 +668,7 @@ f32 CastWheelRay(RigidBody *body, RigidBody *wheel) {
         hit.x = origin.x + hit.x;
         hit.y = origin.y + hit.y;
         hit.z = origin.z + hit.z;
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
         if (!((f64)distance > -2.0) || !((f64)distance < 2.0) || !(distance < nearest)) {
             continue;
         }
@@ -987,7 +987,7 @@ void ComputeVehicleAccelerations(RigidBody *body) {
     local.y = (body->force.y + body->wheels[0]->force.y + body->wheels[1]->force.y +
                body->wheels[2]->force.y + body->wheels[3]->force.y) /
               body->mass;
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
     local.z = body->force.z / body->mass;
     Mtx3x3MulVec3f(&body->force, body->orientation, &local);
     Mtx4fInverseRotate(&angular, body->orientation, &body->torque);
@@ -1087,7 +1087,7 @@ f32 PlaneDistance(Vec3f *normal, f32 offset, Vec3f *point) {
     return point->z * normal->z + (normal->x * point->x + normal->y * point->y) + offset;
 }
 
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 
 void GetBodyPointVelocity(Vec3f *out, RigidBody *body, Vec3f *point) {
     Vec3f copy;

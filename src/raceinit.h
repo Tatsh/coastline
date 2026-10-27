@@ -11,4 +11,4 @@ void SetupFromRecording(Vehicle *vehicle);
 /** Set up the vehicles, controller recordings, and replays of the current race mode. */
 void SetupRaceVehicles(void);
 
-#endif
+#endif /* COASTLINE_RACE_INIT_H */

@@ -18,4 +18,4 @@ extern int g_earPlaybackSmoothingEnabled;
 }
 #endif
 
-#endif
+#endif /* COASTLINE_EAR_PLAYBACKSMOOTHING_H */

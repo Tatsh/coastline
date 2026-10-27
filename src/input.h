@@ -115,7 +115,7 @@ extern s32 g_dwCheatFinishRacePending;
  * @ghidraAddress JPN: 0x80255e88
  */
 void CheatFinishRace(void);
-#endif
+#endif /* TGR_REGION == TGR_REGION_JP || TGR_REGION == TGR_REGION_EU */
 
 /**
  * Unlock the first five tracks.
@@ -224,7 +224,7 @@ void ProcessInputCommandBuffer(PlayerInputState *state);
  * @ghidraAddress JPN: 0x80256080
  */
 void TranslateControllerInput(PlayerInputState *state);
-#endif
+#endif /* TGR_PLATFORM != TGR_PLATFORM_WIN */
 
 /**
  * Press a direction when a stick axis passes 0.6, then again after half a second and every 0.2
@@ -338,4 +338,4 @@ void InitControllersAndPaks(void);
 }
 #endif
 
-#endif
+#endif /* COASTLINE_INPUT_H */

@@ -511,4 +511,4 @@ void ProcessCarSelectScreen(void);
  */
 void ProcessRaceResultsScreen(void);
 
-#endif
+#endif /* COASTLINE_CARSELECT_H */

@@ -25,7 +25,7 @@
 #else
 #define GAME_CODE 0x4E54524A /*!< The game code of the notes, "NTRJ" in ASCII. */
 #define COMPANY_CODE 0x3238  /*!< The company code of the notes, "28" in ASCII. */
-#endif
+#endif /* TGR_REGION == TGR_REGION_US */
 
 /** The states of the Controller Pak menu. */
 enum {
@@ -250,4 +250,4 @@ void ProcessPakMenuScreen(void);
  */
 s32 InitPakAndEnumerateFiles(void);
 
-#endif
+#endif /* COASTLINE_PAKMENU_H */

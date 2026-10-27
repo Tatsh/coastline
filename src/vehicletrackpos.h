@@ -24,4 +24,4 @@ s32 UpdateVehicleTrackPosition(Vehicle *vehicle);
 }
 #endif
 
-#endif
+#endif /* COASTLINE_VEHICLE_TRACK_POSITION_H */

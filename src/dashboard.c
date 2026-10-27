@@ -24,7 +24,7 @@
 #include "options.h"
 #include "system.h"
 #include "text.h"
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
 #define DASHBOARD_ADD(a, b) ((s32)((u32)(a) + (u32)(b)))
@@ -58,7 +58,7 @@ s32 g_bHudShowSpeedometer = 1;
 #define DASHBOARD_COORD(value) ((s32)(value))
 #define DASHBOARD_COS cosf
 #define DASHBOARD_SIN sinf
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 
 /* The right edge of the times, the speed and the dashboard. */
 #define HUD_RIGHT 296
@@ -264,7 +264,7 @@ void RenderDashboardGauges(void) {
                          TEXRECT_BLEND_TEXTURE);
     }
 
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
     jitter = g_dwRacePauseState ? NEEDLE_JITTER_PAUSED : AdvanceRng() & NEEDLE_JITTER_MASK;
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
     rpm = (long double)jitter + VEHICLE_GET(g_pActiveCameraVehicle, EngineRpm);
@@ -305,7 +305,7 @@ void RenderDashboardGauges(void) {
         y = SCREEN_HEIGHT - y;
 #define DASHBOARD_NEEDLE_X x
 #define DASHBOARD_NEEDLE_Y y
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
         angle = car->needleRestAngle;
         if (rpm > 0.0f) {
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
@@ -349,7 +349,7 @@ void RenderDashboardGauges(void) {
             verts[i].v.cn[1] = 0xFF;
             verts[i].v.cn[2] = 0;
             verts[i].v.cn[3] = 0xFF;
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
         }
         gDPPipeSync(gDisplayListPtr++);
         gDPSetCycleType(gDisplayListPtr++, G_CYC_1CYCLE);
@@ -364,7 +364,7 @@ void RenderDashboardGauges(void) {
                          AA_EN | IM_RD | ALPHA_CVG_SEL |
                              GBL_c1(G_BL_CLR_IN, G_BL_A_IN, G_BL_CLR_MEM, G_BL_A_MEM),
                          GBL_c2(G_BL_CLR_IN, G_BL_A_IN, G_BL_CLR_MEM, G_BL_A_MEM));
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
         gSPClearGeometryMode(gDisplayListPtr++, G_CULL_FRONT | G_CULL_BACK | G_FOG | G_LIGHTING);
         gSPSetGeometryMode(gDisplayListPtr++, G_SHADE);
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
@@ -413,5 +413,5 @@ void RenderDashboardGauges(void) {
             palette[i] = g_awDashboardBarPalette[i] & ~PALETTE_OPAQUE;
         }
     }
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_N64 */
 }

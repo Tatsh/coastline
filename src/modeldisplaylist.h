@@ -33,4 +33,4 @@ static inline void SetVehicleLightColors(u32 dir, u32 ambient) {
     gSPLightColor(gDisplayListPtr++, LIGHT_2, ambient);
 }
 
-#endif
+#endif /* COASTLINE_MODEL_DISPLAY_LIST_H */

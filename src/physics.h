@@ -90,7 +90,7 @@ void SelectVehiclePhysicsTables(s32 model);
 #ifdef __cplusplus
 }
 #endif
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 
 /** A node of the list of the triangles that cross the box of a body. */
 typedef struct CollisionTriangleNode {
@@ -145,7 +145,7 @@ extern CollisionTriangleNode *g_pNextCollisionTriangleNode;
  * @ghidraAddress JPN: 0x802a6c88
  */
 extern s32 g_dwCollisionContactType;
-#endif
+#endif /* TGR_PLATFORM != TGR_PLATFORM_WIN */
 
 #ifdef __cplusplus
 extern "C" {
@@ -256,7 +256,7 @@ extern Vec3f g_vCollisionContact;
  * @ghidraAddress JPN: 0x8037fc24
  */
 extern f32 g_fCollisionContactW;
-#endif
+#endif /* TGR_PLATFORM != TGR_PLATFORM_WIN */
 
 #ifdef __cplusplus
 extern "C" {
@@ -537,7 +537,7 @@ s32 ComputeAabbCornerPlaneClipCode(Vec3f *v, s32 mask);
 #ifdef __cplusplus
 }
 #endif
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 
 #ifdef __cplusplus
 extern "C" {
@@ -720,7 +720,7 @@ void StepVehicleCollisions(Vehicle *vehicle, RigidBody *body);
  * @ghidraAddress JPN: 0x8025f4e8
  */
 void StepVehicleCollisions(RigidBody *body);
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 /**
  * Set a force to the drag on the body of a vehicle, which grows on the surface that slows it.
  *
@@ -815,4 +815,4 @@ void CollideVehicles(void);
 }
 #endif
 
-#endif
+#endif /* COASTLINE_PHYSICS_H */

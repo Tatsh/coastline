@@ -87,4 +87,4 @@ void ClearFramebuffersForNormalMode(void);
 }
 #endif
 
-#endif
+#endif /* COASTLINE_HEAP_H */

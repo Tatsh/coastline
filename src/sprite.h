@@ -254,4 +254,4 @@ void DrawRectBorder(s32 x,
                     u8 green,
                     u8 blue);
 
-#endif
+#endif /* COASTLINE_SPRITE_H */

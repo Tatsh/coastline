@@ -506,7 +506,7 @@ void HalveAmbientLightColor(GbiLight *pLight);
  * @ghidraAddress BRGlide: 0x10019270
  */
 void HalveLightColors(GbiLight *pLight);
-#endif
+#endif /* TGR_RENDERER == TGR_RENDERER_D3D */
 
 /**
  * The number of lights the display lists set, as their command gives it.
@@ -1100,7 +1100,7 @@ extern int g_nBoundTextureEntry;
  * @ghidraAddress BRD3D: 0x10028ca0
  */
 void BindTextureEntry(int nEntry);
-#endif
+#endif /* TGR_RENDERER == TGR_RENDERER_D3D */
 
 /**
  * Draw the triangles waiting, and bind a texture the game loaded in place of the commands that load
@@ -1457,7 +1457,7 @@ extern int g_bCombineModeSpecialSubmitter;
  * @ghidraAddress BRD3D: 0x104c0bb4
  */
 extern D3DCOLOR g_dwVertexConstantColor;
-#endif
+#endif /* TGR_RENDERER == TGR_RENDERER_D3D */
 
 /** The opcodes of the commands of the display lists that have handlers of their own. */
 enum GbiOpcode {

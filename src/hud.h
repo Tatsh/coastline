@@ -34,7 +34,7 @@ extern s32 g_adwDashboardLoadedGear[DASHBOARD_VIEWS];
 #ifdef __cplusplus
 }
 #endif
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 
 #if TGR_PLATFORM == TGR_PLATFORM_N64
 /**
@@ -90,7 +90,7 @@ extern u16 g_aawDashboardPalettes[DASHBOARD_VIEWS][DASHBOARD_PALETTE_COLORS];
  * @ghidraAddress JPN: 0x80362aa0
  */
 extern u16 g_awDashboardBarPalette[DASHBOARD_PALETTE_COLORS];
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_N64 */
 
 #if TGR_PLATFORM == TGR_PLATFORM_N64
 /**
@@ -101,7 +101,7 @@ extern u16 g_awDashboardBarPalette[DASHBOARD_PALETTE_COLORS];
  * @ghidraAddress JPN: 0x80362ca0
  */
 extern Vtx g_aGaugeNeedleVerts[2][DASHBOARD_VIEWS][4];
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_N64 */
 
 /**
  * The text of the speed.
@@ -144,7 +144,7 @@ void RenderDashboardGauges(const ViewportRect *viewports);
  * @ghidraAddress JPN: 0x80238990
  */
 void RenderDashboardGauges(void);
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 
 /**
  * Does nothing.
@@ -199,7 +199,7 @@ void DrawFormattedLapTimeText(const char *color, s32 lap, f32 seconds, s32 x, s3
 #ifdef __cplusplus
 }
 #endif
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
 #ifdef __cplusplus
@@ -263,7 +263,7 @@ void DrawRaceTimerHud(void);
  * @ghidraAddress JPN: 0x80239ac8
  */
 void DrawLapCounterHud(void);
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
 #ifdef __cplusplus
@@ -287,7 +287,7 @@ void DrawHudMessage(const ViewportRect *viewports);
  * @ghidraAddress JPN: 0x80239de4
  */
 void DrawHudMessage(void);
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
 #ifdef __cplusplus
@@ -313,7 +313,7 @@ void DrawSpeedAndHudOverlay(const ViewportRect *viewports, const Vehicle *vehicl
  * @ghidraAddress JPN: 0x80239f40
  */
 void DrawSpeedAndHudOverlay(void);
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 
 /**
  * Whether the views draw the HUD and the help of the instant replay.
@@ -324,4 +324,4 @@ void DrawSpeedAndHudOverlay(void);
  */
 extern s32 g_bShowHudHelpText;
 
-#endif
+#endif /* COASTLINE_HUD_H */

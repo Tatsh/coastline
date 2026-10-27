@@ -88,7 +88,7 @@ typedef struct {
     unsigned animated : 1; /*!< Whether source points to the frames of an animated texture. */
     unsigned : 2;          /*!< Bits not yet reconstructed. */
     unsigned size : 18;    /*!< The length of the texels in bytes. */
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 } ModelTexture;
 
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
@@ -871,7 +871,7 @@ void BlankDisplay(void);
  * @ghidraAddress JPN: 0x8021ae68
  */
 void UnblankDisplay(void);
-#endif
+#endif /* TGR_REGION == TGR_REGION_JP || TGR_REGION == TGR_REGION_EU */
 
 #if TGR_REGION == TGR_REGION_US
 #define BLANK_SCREEN() osViBlack(TRUE)
@@ -908,4 +908,4 @@ void StreamAnimatedTrackTextures(void);
 }
 #endif
 
-#endif
+#endif /* COASTLINE_RENDER_H */

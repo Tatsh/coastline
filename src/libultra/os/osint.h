@@ -269,4 +269,4 @@ void __osDispatchThread(void);
  */
 void __osCleanupThread(void);
 
-#endif
+#endif /* LIBULTRA_OS_OSINT_H */

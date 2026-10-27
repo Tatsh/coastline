@@ -117,24 +117,6 @@ private:
     char szPath[POD_PATH_SIZE]; /*!< The path of the file. */
     unsigned dwDirectorySize;   /*!< The size of the directory in bytes. */
 
-public:
-    /**
-     * An archive without a file.
-     *
-     * @ghidraAddress BRD3D: 0x10008580
-     * @ghidraAddress BRGlide: 0x10008760
-     */
-    PodArchive();
-
-    /**
-     * Do nothing.
-     *
-     * @ghidraAddress BRD3D: 0x100085e0
-     * @ghidraAddress BRGlide: 0x100087c0
-     */
-    virtual ~PodArchive();
-
-private:
     /**
      * Make the name of an entry from a path: the name of the file, in capitals, padded with zeros
      * to #POD_ENTRY_NAME_SIZE bytes. A longer name ends the game.
@@ -186,19 +168,6 @@ private:
      */
     virtual void ReadPodBytesFromFile(unsigned nIndex, void *pBuffer);
 
-public:
-    /**
-     * Read the data of the entry of a path.
-     *
-     * @param pszPath The path.
-     * @param pBuffer Receives the data.
-     * @return pBuffer.
-     * @ghidraAddress BRD3D: 0x100088b0
-     * @ghidraAddress BRGlide: 0x10008a90
-     */
-    virtual void *LoadPodByName(const char *pszPath, void *pBuffer);
-
-private:
     /**
      * Read the data of an entry.
      *
@@ -237,10 +206,7 @@ private:
      * @ghidraAddress BRD3D: 0x100088d0
      * @ghidraAddress BRGlide: 0x10008ab0
      */
-public:
-    virtual void OpenPodFile();
 
-private:
     /**
      * Create a pod file to write, after the space of its header, and clear the entries of the
      * writer.
@@ -279,7 +245,37 @@ private:
      * @ghidraAddress BRD3D: 0x10008970
      * @ghidraAddress BRGlide: 0x10008b50
      */
+
 public:
+    /**
+     * An archive without a file.
+     *
+     * @ghidraAddress BRD3D: 0x10008580
+     * @ghidraAddress BRGlide: 0x10008760
+     */
+    PodArchive();
+
+    /**
+     * Do nothing.
+     *
+     * @ghidraAddress BRD3D: 0x100085e0
+     * @ghidraAddress BRGlide: 0x100087c0
+     */
+    virtual ~PodArchive();
+
+    /**
+     * Read the data of the entry of a path.
+     *
+     * @param pszPath The path.
+     * @param pBuffer Receives the data.
+     * @return pBuffer.
+     * @ghidraAddress BRD3D: 0x100088b0
+     * @ghidraAddress BRGlide: 0x10008a90
+     */
+    virtual void *LoadPodByName(const char *pszPath, void *pBuffer);
+
+    virtual void OpenPodFile();
+
     void ClosePodFile();
 
     /**

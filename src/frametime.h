@@ -27,4 +27,4 @@ extern f32 g_fFrameDeltaTime;
 }
 #endif
 
-#endif
+#endif /* COASTLINE_FRAMETIME_H */

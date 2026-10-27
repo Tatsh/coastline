@@ -226,7 +226,7 @@ extern u8 _paintShopPaletteSegmentRomStart[];
 
 /** The end of the palette of the buttons on the cartridge. The link script places it. */
 extern u8 _paintShopPaletteSegmentRomEnd[];
-#endif
+#endif /* TGR_REGION == TGR_REGION_JP */
 
 /**
  * The texels of the decal before the last edit.
@@ -505,4 +505,4 @@ void AllocateEditorBuffers(void);
  */
 s32 ProcessDecalSaveLoad(VehicleModel *model, u8 player, u8 operation, u8 inCarSelect, u8 *done);
 
-#endif
+#endif /* COASTLINE_PAINTSHOP_H */

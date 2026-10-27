@@ -22,4 +22,4 @@ void ResetVehicleEffects(Vehicle *vehicle);
 }
 #endif
 
-#endif
+#endif /* COASTLINE_VEHICLEEFFECTS_H */

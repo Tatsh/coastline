@@ -349,7 +349,7 @@ s16 BuildTrackTriangleCache(f32 x, f32 y) {
             e2[0] = triangle->vertices[2]->x - triangle->vertices[0]->x;
             e2[1] = triangle->vertices[2]->y - triangle->vertices[0]->y;
             e2[2] = triangle->vertices[2]->z - triangle->vertices[0]->z;
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
             triangle->normal.x = e1[1] * e2[2] - e2[1] * e1[2];
             triangle->normal.y = e1[2] * e2[0] - e2[2] * e1[0];
             triangle->normal.z = e1[0] * e2[1] - e2[0] * e1[1];

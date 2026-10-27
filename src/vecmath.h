@@ -436,7 +436,7 @@ long double Vec3fDistance(Vec3f *a, Vec3f *b);
  * @ghidraAddress JPN: 0x802255a8
  */
 f32 Vec3fDistance(Vec3f *a, Vec3f *b);
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 
 /**
  * The square of the distance between two points.
@@ -825,10 +825,10 @@ long double Vec3dDot(Vec3d *a, Vec3d *b);
  * @ghidraAddress BRGlide: 0x1001dd00
  */
 void Vec3dCross(Vec3d *a, Vec3d *b, Vec3d *out);
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif
+#endif /* COASTLINE_VECMATH_H */

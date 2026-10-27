@@ -33,4 +33,4 @@ void CopyConvertedModelVertex(ConvertedModelVertex *dest, const ConvertedModelVe
 }
 #endif
 
-#endif
+#endif /* COASTLINE_CONVERTEDVERTEX_H */

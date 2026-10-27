@@ -49,4 +49,4 @@ void DecreaseSfxVolume(void);
 }
 #endif
 
-#endif
+#endif /* COASTLINE_VOLUME_CONTROLS_H */

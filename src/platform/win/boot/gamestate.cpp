@@ -125,7 +125,7 @@ int GameState_RunFrontEnd(void) {
                                             &g_dwFrontEndSurfaceBitDepth,
                                             &g_dwFrontEndSurfaceRefreshRate);
         }
-#endif
+#endif /* TGR_RENDERER == TGR_RENDERER_D3D */
         pScreen->ActivateMenuScreen();
     } else {
         pScreen->RunFrame();

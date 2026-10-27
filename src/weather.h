@@ -374,4 +374,4 @@ void RenderPrecipitationEffect(void);
 }
 #endif
 
-#endif
+#endif /* COASTLINE_WEATHER_H */

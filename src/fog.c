@@ -49,7 +49,7 @@ static s32 FogTruncateToWord(long double value) {
     }
     return (s32)(u32)(s64)value;
 }
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 
 void SetupFog(void) {
     Vehicle *vehicle;
@@ -103,7 +103,7 @@ void SetupFog(void) {
             g_bFogR = g_bFogR * fade + 240.0f * flash;
             g_bFogG = g_bFogG * fade + 248.0f * flash;
             g_bFogB = g_bFogB * fade + 255.0f * flash;
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
         }
         if (g_dwNumLocalPlayers == 2) {
             g_dwFogMinDistance = 930;
@@ -153,7 +153,7 @@ void SetupFog(void) {
             g_bFogR = g_LoadedTrack.fogColor[0] * fade + haze;
             g_bFogG = g_LoadedTrack.fogColor[1] * fade + haze;
             g_bFogB = g_LoadedTrack.fogColor[2] * fade + haze;
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
         } else {
             g_bFogR = g_LoadedTrack.fogColor[0];
             g_bFogG = g_LoadedTrack.fogColor[1];
@@ -205,7 +205,7 @@ f32 ComputeFogFactorAtPoint(Vec3f *point) {
     if (fog < 0.0f) {
         return 0.0f;
     }
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
     if (1.0f < fog) {
         return 1.0f;
     }

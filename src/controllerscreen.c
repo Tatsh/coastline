@@ -184,7 +184,7 @@ void ProcessControllerConfigScreen(void) {
         g_dwMenuTitleImageY = 9;
         g_dwMenuTitleImageWidth = 280;
         g_dwMenuTitleImageHeight = 42;
-#endif
+#endif /* TGR_REGION == TGR_REGION_JP */
         g_pfnScreenPostDrawCallback = DrawControllerLayoutDiagram;
 
         /* Open on the layout the player already uses. */

@@ -48,4 +48,4 @@ extern u8 g_abVehicleReflectionTexSelect[4][2];
  */
 extern s32 g_dwVehicleViewModeIndex;
 
-#endif
+#endif /* COASTLINE_VEHICLE_VIEW_H */

@@ -105,4 +105,4 @@ private:
     std::uint16_t notificationEvent;
 };
 
-#endif
+#endif /* COASTLINE_EAR_SCHEDULEDEVENT_H */

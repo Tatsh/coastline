@@ -31,7 +31,7 @@ Vec3f g_vTraceFarPoint;
 Vec3f g_vTraceHalfwayPoint;
 #else
 #define TRACE_REAL(value) (value)
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 
 #define TRACE_LANE_SHARE 0.2f
 

@@ -34,4 +34,4 @@ struct GbiCommand {
     };
 };
 
-#endif
+#endif /* COASTLINE_PLATFORM_WIN_GBICOMMAND_H */

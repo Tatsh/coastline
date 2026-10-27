@@ -124,4 +124,4 @@ s32 __osSpRawStartDma(s32 direction, u32 devAddr, void *dramAddr, u32 size);
  */
 u32 __osSpDeviceBusy(void);
 
-#endif
+#endif /* PR_SPTASK_H */

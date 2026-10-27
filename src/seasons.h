@@ -41,4 +41,4 @@ extern Season g_SeasonTable[SEASONS];
 }
 #endif
 
-#endif
+#endif /* COASTLINE_SEASONS_H */

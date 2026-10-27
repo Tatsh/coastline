@@ -36,7 +36,7 @@ void TwoControllersPostDrawCallback(s32 item) {
     DrawText("%wwYou Need To Have", g_dwScreenWidth / 2, g_dwScreenHeight * 10 / 16 - 30);
     DrawText("%wwTwo Controllers", g_dwScreenWidth / 2, g_dwScreenHeight * 10 / 16 - 15);
     DrawText("%wwPlugged in", g_dwScreenWidth / 2, g_dwScreenHeight * 10 / 16);
-#endif
+#endif /* TGR_REGION == TGR_REGION_JP */
 }
 
 void ProcessPlayerCountSelect(void) {

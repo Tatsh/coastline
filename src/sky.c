@@ -53,7 +53,7 @@ void RenderSkybox(const ViewportRect *viewports) {
 void RenderSkybox(void) {
     ViewportRect *rect;
     Mtx *mtx;
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 
     gSPClipRatio(gDisplayListPtr++, FRUSTRATIO_1);
     if (g_dwSkyboxDisabled) {
@@ -121,7 +121,7 @@ void RenderSkybox(void) {
                           0,
                           0,
                           TEXEL0);
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
         gDPSetEnvColor(gDisplayListPtr++, g_bFogR, g_bFogG, g_bFogB, g_bFogIntensity);
     } else {
 #if TGR_PLATFORM == TGR_PLATFORM_WIN

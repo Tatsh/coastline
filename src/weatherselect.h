@@ -40,4 +40,4 @@ s32 IsWeatherSelectable(s32 weather);
  */
 void ProcessWeatherSelect(void);
 
-#endif
+#endif /* COASTLINE_WEATHERSELECT_H */

@@ -78,4 +78,4 @@ extern EarWordPointerRegistry<EarChannel> g_ChannelRegistry;
 /** @ghidraAddress EAR: 0x1003b370 */
 extern EarWordPointerRegistry<EarPresetTable> g_MatrixRegistry;
 
-#endif
+#endif /* COASTLINE_EAR_REGISTRY_H */

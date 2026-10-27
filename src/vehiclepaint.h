@@ -22,4 +22,4 @@ void ExtractVehicleBaseColor(Vehicle *vehicle, VehicleModel *model);
 }
 #endif
 
-#endif
+#endif /* COASTLINE_VEHICLE_PAINT_H */

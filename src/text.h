@@ -357,7 +357,7 @@ u8 *GetCachedGlyphTexture(u32 character);
  * @ghidraAddress JPN: 0x8022f2b0
  */
 void LoadCachedGlyphTextures(void);
-#endif
+#endif /* TGR_REGION == TGR_REGION_JP */
 
 /**
  * Draw text at g_nTextDrawX and g_nTextDrawY.
@@ -525,4 +525,4 @@ s32 MeasureTextWidth(const char *text, s32 size);
 }
 #endif
 
-#endif
+#endif /* COASTLINE_TEXT_H */

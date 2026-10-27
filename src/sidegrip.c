@@ -35,7 +35,7 @@
 #define GRIP_MAX_LOAD(weather, surface) g_afSurfaceMaxLoad[weather][surface]
 #define GRIP_SIGN(x) SIGN(x)
 #define ABS(x) ((x) < 0.0f ? -(x) : (x))
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 
 #define SIGN(x) ((x) == 0.0f ? 0.0 : (0.0f < (x) ? 1.0 : -1.0))
 
@@ -81,7 +81,7 @@ static inline f32 SlideShare(RigidBody *body, f32 grip, s32 weather, s32 surface
     if (ABS(keep) > 1.0f) {
         keep = 1.0f;
     }
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
     return keep;
 }
 
@@ -97,7 +97,7 @@ static inline f32 SlideShare(RigidBody *body, f32 grip, s32 weather, s32 surface
           ((body)->state.velocity.x * (body)->state.velocity.x +                                   \
            (body)->state.velocity.y * (body)->state.velocity.y))
 
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 
 /* The step the side grip works with: the step given in the USA release, and a fixed thirtieth of a
  * second in the European and Japanese releases. */
@@ -151,7 +151,7 @@ void ApplySideGrip(
     rearBrake = rearBrake / quarter;
     frontBrake = frontBrake * dt2;
     rearBrake = rearBrake * dt2;
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
     if (ABS(frontBrake) > 1.0f) {
         frontBrake = (f32)(GRIP_SIGN(frontBrake) * 1.5);
     }
@@ -295,7 +295,7 @@ void ApplySideGrip(
         lateralSpeed =
             sqrtf(lateral.z * lateral.z + (lateral.x * lateral.x + lateral.y * lateral.y));
         load = ABS(*frontLoad) + lateralSpeed * body->mass / GRIP_STEP(dt);
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
         limit = SLIDE_LOAD;
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
         load = (f32)(load + 10000.0f * (f32)((f64)ABS(frontBrake) > 0.0001));
@@ -336,7 +336,7 @@ void ApplySideGrip(
             front.x = old.x - lateral.x;
             front.y = old.y - lateral.y;
             front.z = old.z - lateral.z;
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
             *frontSliding = 1;
         }
     }
@@ -355,7 +355,7 @@ void ApplySideGrip(
         yaw = (rear.y - front.y) /
               (body->wheels[0]->state.position.x - body->wheels[2]->state.position.x);
         side = rear.y - yaw * body->wheels[0]->state.position.x;
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
         Mtx4fInverseRotate(&local, body->orientation, &body->state.angularVelocity);
         local.z = yaw;
         Mtx3x3MulVec3f(&body->state.angularVelocity, body->orientation, &local);

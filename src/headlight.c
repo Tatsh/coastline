@@ -98,7 +98,7 @@ void RenderVehicleHeadlightBeams(Vehicle *vehicle) {
                 if (0.95f < glare) {
                     g_fHeadlightGlare += 750.0f * (glare - 0.95f) / (distance * distance);
                 }
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
             }
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
             if (Vec3fDot(&toCamera, &g_pActiveCamera->forward) > 0.95f) {
@@ -111,7 +111,7 @@ void RenderVehicleHeadlightBeams(Vehicle *vehicle) {
                         750.0f * (glare - 0.95f) / ((long double)distance * distance);
                 }
             }
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
         }
     }
     gDPPipeSync(gDisplayListPtr++);

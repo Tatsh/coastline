@@ -34,4 +34,4 @@ s32 osRecvMesg(OSMesgQueue *mq, OSMesg *msg, s32 flag) {
     __osRestoreInt(saveMask);
     return 0;
 }
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */

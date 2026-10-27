@@ -28,7 +28,7 @@
     AddTimingMarker(bar, red, green, blue, alpha)
 #define FRAME_WAIT_QUEUE(queue) osRecvMesg(queue, NULL, OS_MESG_BLOCK)
 #define FRAME_DECREMENT(value) (--(value))
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 
 #if TGR_REGION == TGR_REGION_US
 #define VI_MODE_LAN1_MPAL g_ViModeMpalLan1
@@ -39,7 +39,7 @@
 #else
 #define VI_MODE_LAN1_MPAL osViModeMpalLan1
 #define VI_MODE_LAN1 osViModeNtscLan1
-#endif
+#endif /* TGR_REGION == TGR_REGION_US */
 
 #define SCREEN_MAY_SHOW()                                                                          \
     (!g_dwKeepScreenBlanked && !g_dwScreenUnblankDelay && !g_dwPreNmiResetPending)
@@ -115,7 +115,7 @@ void FlushDisplayList(void) {
                 pairsOut[i] = pairsIn[i];
             }
         }
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_N64 */
         /* The test is of the second routine, but the call is of the next. The next is NULL here
          * unless a routine has set it since it was cleared. */
         if (g_pfnSecondaryScreen != NULL) {
@@ -146,14 +146,14 @@ void FlushDisplayList(void) {
             } else {
                 osViSetMode(osTvType == OS_TV_MPAL ? &VI_MODE_LAN1_MPAL : &VI_MODE_LAN1);
             }
-#endif
+#endif /* TGR_REGION == TGR_REGION_EU */
 #if TGR_REGION == TGR_REGION_US
             osViBlack(TRUE);
 #endif
 #else
             NullStub();
             NullStub();
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_N64 */
             g_dwAppliedScreenScaleShift = g_dwScreenScaleShift;
         }
         FRAME_TIMING_MARKER(1, 0x20, 0x20, 0x20, 0xFF);
@@ -182,7 +182,7 @@ void FlushDisplayList(void) {
         if (!g_dwKeepScreenBlanked && !g_dwScreenUnblankDelay) {
             NullStub();
         }
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_N64 */
         if (g_dwScreenUnblankDelay) {
             FRAME_DECREMENT(g_dwScreenUnblankDelay);
         }

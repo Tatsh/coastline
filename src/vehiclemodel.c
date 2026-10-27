@@ -10,7 +10,7 @@
 #include "render.h"
 #include "system.h"
 #include "vehicle.h"
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
 
@@ -118,4 +118,4 @@ void LoadVehicleModelFromRom(VehicleModel *model, s32 car) {
 s32 IsVehicleModelValid(s32 car) {
     return g_aCarModels[car].modelRomEnd != 0;
 }
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */

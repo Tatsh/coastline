@@ -27,7 +27,7 @@
 #include <PR/os_libc.h>
 
 #include "replay.h"
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
 #define RACE_GHOST_TRACK ((u32)(s32)g_GhostRecordingInfo.track)
@@ -81,7 +81,7 @@ static void HoldBeforeStart(void) {
             VEHICLE_SET(&g_aVehicles[i], SubMessageTime, 0.01f);
         }
     }
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
     g_bStartLightsVisible = TRUE;
     for (i = 0; i < g_dwNumVehicles; i++) {
         RACER_SLOT_SET(
@@ -152,7 +152,7 @@ static void KeepTimeAttackRecording(s32 player) {
                      VEHICLE_GET(&g_aVehicles[player], Input)->recordBuffers[player][j],
                      VEHICLE_GET(&g_aVehicles[player], Input)->recordBuffers[player][j + 1]);
     }
-#endif
+#endif /* TGR_PLATFORM != TGR_PLATFORM_WIN */
     if (player == 0) {
         if (
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
@@ -189,7 +189,7 @@ static void KeepTimeAttackRecording(s32 player) {
             memcpy(g_abGhostRecording,
                    VEHICLE_GET(&g_aVehicles[player], Input)->recordBuffers[player],
                    g_dwGhostRecordingSize);
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
             VEHICLE_SET(&g_aVehicles[player], Message, GetStringResource(0xef));
 #else
@@ -228,7 +228,7 @@ static s32 RunRacingPhase(void) {
           (g_dwRaceSessionType == RACE_SESSION_ATTRACT &&
            VEHICLE_GET(&g_aVehicles[0], Input)->playbackPosition ==
                VEHICLE_GET(&g_aVehicles[0], Input)->playbackLimit))) ||
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN || TGR_REGION == TGR_REGION_US */
         (g_dwGameMode == GAME_MODE_AFTER_SEASON &&
          AFTER_SEASON_RACE_SECONDS < VEHICLE_GET(&g_aVehicles[0], TotalTime))) {
         if (!IsFadingOut()) {
@@ -272,7 +272,7 @@ static s32 RunRacingPhase(void) {
         g_aVehicles[0].messageTime = g_aVehicles[1].messageTime;
         return TRUE;
     }
-#endif
+#endif /* TGR_PLATFORM != TGR_PLATFORM_WIN */
     return FALSE;
 }
 
@@ -319,7 +319,7 @@ void StepRacePhases(void) {
         g_fStartLightsDrop = (g_aRacePhaseTable[g_dwRacePhaseIndex].seconds - g_fRacePhaseTimer) /
                              g_aRacePhaseTable[g_dwRacePhaseIndex].seconds;
         g_fStartLightsDrop = g_fStartLightsDrop * (15.0f * g_fStartLightsDrop);
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
         goto tick;
     } else if (g_dwRacePhase == RACE_PHASE_RACING) {
         if (RunRacingPhase()) {

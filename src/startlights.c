@@ -72,7 +72,7 @@ void RenderStartLights(void) {
     f32(*m)[4] = matrix.values;
 #else
     f32 m[4][4];
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 
     if (!g_bStartLightsVisible || g_LoadedTrack.rootSection == NULL) {
         return;

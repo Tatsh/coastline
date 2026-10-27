@@ -28,10 +28,10 @@ s32 IsVehicleSoundChannelPlaying(s32 channel);
 void SetVehicleSoundEchoOffset(s32 offset);
 /** Play Windows impact and event sounds for a vehicle. */
 void PlayVehicleEventSounds(Vehicle *vehicle, CameraFrame *listener);
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif
+#endif /* COASTLINE_VEHICLE_SOUND_H */

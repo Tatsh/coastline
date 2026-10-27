@@ -208,4 +208,4 @@
 #define PIF_RAM_START 0x1FC007C0 /*!< The first byte of PIF RAM. */
 #define PIF_RAM_END 0x1FC007FF   /*!< The last byte of PIF RAM. */
 
-#endif
+#endif /* PR_RCP_H */

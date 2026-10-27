@@ -40,4 +40,4 @@ static inline u32 PackVolume(s32 volume, f32 upper, f32 lower) {
 #endif
 }
 
-#endif
+#endif /* COASTLINE_SOUND_MIX_H */

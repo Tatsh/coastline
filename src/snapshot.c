@@ -49,4 +49,4 @@ void RestoreReplayKeyframeState(void) {
                                     &g_aVehicles[0].cameras[VEHICLE_CAMERA_TRACKSIDE]);
     }
 }
-#endif
+#endif /* TGR_REGION == TGR_REGION_JP || TGR_REGION == TGR_REGION_EU */

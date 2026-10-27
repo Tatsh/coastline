@@ -33,4 +33,4 @@ extern Gfx *gDisplayListPtr;
 }
 #endif
 
-#endif
+#endif /* COASTLINE_DISPLAYLISTPTR_H */

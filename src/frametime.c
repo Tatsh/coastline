@@ -62,6 +62,6 @@ void UpdateFrameTiming(void) {
     DebugFrameStubB();
     delta = g_dwElapsedTimeMs - g_dwPrevElapsedTimeMs;
     g_fFrameDeltaTime = (f32)delta / 1000.0f;
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
     g_dwFrameDeltaMs = delta;
 }

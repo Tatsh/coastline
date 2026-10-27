@@ -213,7 +213,7 @@ void DrawSpriteStrip(Sprite *sprite,
             gDPSetRenderMode(gDisplayListPtr++, G_RM_OPA_SURF, G_RM_OPA_SURF2);
         } else {
             format = G_IM_FMT_I;
-#endif
+#endif /* TGR_REGION == TGR_REGION_JP || TGR_REGION == TGR_REGION_EU */
             if (sprite == &g_texBackground) {
                 gDPSetCombineLERP(gDisplayListPtr++,
                                   PRIMITIVE,
@@ -356,7 +356,7 @@ void DrawSpriteStrip(Sprite *sprite,
     }
 #else
     gDPSetTextureLUT(gDisplayListPtr++, G_TT_NONE);
-#endif
+#endif /* TGR_REGION == TGR_REGION_JP || TGR_REGION == TGR_REGION_EU */
     gDPSetTexturePersp(gDisplayListPtr++, G_TP_NONE);
     if (!g_dwScreenScaleShift) {
         x >>= 1;

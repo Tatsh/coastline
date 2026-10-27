@@ -149,7 +149,7 @@ void PlaceTrackCamera(Vehicle *vehicle);
  * @ghidraAddress JPN: 0x80221ca0
  */
 void UpdateCameraViewBasisAndFov(Vehicle *vehicle, CameraFrame *camera);
-#endif
+#endif /* TGR_REGION == TGR_REGION_JP || TGR_REGION == TGR_REGION_EU */
 
 #if TGR_PLATFORM == TGR_PLATFORM_WIN && defined(__cplusplus)
 extern "C" {
@@ -297,4 +297,4 @@ void SetupFrustumCorners(CameraFrame *camera, f32 fov, f32 farDistance, f32 widt
 }
 #endif
 
-#endif
+#endif /* COASTLINE_CAMERA_H */

@@ -206,7 +206,7 @@ void LoadBossRallyIniSettings(const char *pszCmdLine) {
         ApplyCommandLine(pszCmdLine);
     }
 }
-#endif
+#endif /* TGR_RENDERER == TGR_RENDERER_D3D */
 
 #if TGR_RENDERER == TGR_RENDERER_GLIDE
 // The value of the second argument of ShowGlideSplashImage() for the splash image.

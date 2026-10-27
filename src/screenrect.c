@@ -71,5 +71,5 @@ void ProjectWorldToScreenRect(const Vec3f *point, s32 size, s16 low[2], s16 high
     low[1] = centerY - (s32)(clip[1] * halfHeight);
     high[0] = (s32)(upper[0] * halfWidth) + centerX;
     high[1] = centerY - (s32)(upper[1] * halfHeight);
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 }

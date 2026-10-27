@@ -708,7 +708,7 @@ extern "C"
 extern "C"
 #endif
     void RunRaceGameScreen(void);
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 
 /**
  * Score championship progress and unlock bonuses when the season's points qualify.
@@ -720,4 +720,4 @@ extern "C"
  */
 void ProcessSeasonResults(void);
 
-#endif
+#endif /* COASTLINE_RACE_H */

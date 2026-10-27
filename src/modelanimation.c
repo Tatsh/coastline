@@ -16,7 +16,7 @@ static inline s32 BlendKeyComponent(s32 from, s32 to, s32 blend) {
 #define ANIMATION_HIGH(value) (value)
 #define ANIMATION_LESS(a, b) ((a) < (b))
 #define ANIMATION_LENGTH(animation, length) (length)
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 
 /* The blend between two keys, in 4096ths. */
 #define BLEND_ONE 4096.0f
@@ -69,7 +69,7 @@ BlendModelKeys(ModelAnimation *animation, ModelKeyframe *from, ModelKeyframe *to
                 fromNormals[j][c] + ((toNormals[j][c] - fromNormals[j][c]) * blend >> BLEND_SHIFT);
         }
     }
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 }
 
 /* Blend an animation at a time between the keys around it, searching from its start key. The

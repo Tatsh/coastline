@@ -110,4 +110,4 @@ extern PlayerProfile g_SeasonProgress;
 }
 #endif
 
-#endif
+#endif /* COASTLINE_PROFILE_H */

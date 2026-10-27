@@ -15,4 +15,4 @@ void __stdcall UpdateEarPlaybackEngine(void);
 }
 #endif
 
-#endif
+#endif /* COASTLINE_EAR_PLAYBACK_H */

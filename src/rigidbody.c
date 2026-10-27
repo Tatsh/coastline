@@ -80,7 +80,7 @@ void Vec3fNormalizeFast(Vec3f *v) {
     v->x *= inverse;
     v->y *= inverse;
     v->z *= inverse;
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 }
 
 void ComputeDeltaQuaternion(RigidBodyState *state) {
@@ -313,7 +313,7 @@ void ApplyAllForcesToBody(RigidBody *body) {
         ApplySingleForceWithDebug(body, force);
     }
 }
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_N64 */
 
 void InitRigidBody(RigidBody *body) {
     f32 boxShare, xx, yy, zz;

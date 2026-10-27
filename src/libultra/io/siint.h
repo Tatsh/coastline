@@ -78,4 +78,4 @@ s32 __osSiRawWriteIo(u32 devAddr, u32 data);
  */
 int __osSiDeviceBusy(void);
 
-#endif
+#endif /* LIBULTRA_IO_SIINT_H */

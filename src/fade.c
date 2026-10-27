@@ -34,7 +34,7 @@ s32 g_dwSfxFadeSkipFrame;
 #define FADE_LESS_EQUAL(left, right) ((left) <= (right))
 #define FADE_VOLUME_LESS(left, right) FADE_LESS(left, right)
 #define FADE_REAL f32
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 
 void SetFadeTarget(float target, float seconds) {
     g_dwFadeSkipFrame = 1;
@@ -83,7 +83,7 @@ void SetSfxFadeLevelImmediate(float level) {
     g_fSfxFadeTarget = level;
     g_fSfxFadeCurrent = g_fSfxFadeTarget;
 }
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_N64 */
 
 void SnapScreenFade(float level) {
     g_fFadeTarget = level;
@@ -151,4 +151,4 @@ void DrawScreenFadeOverlay(float level) {
     gDPSetColorDither(gDisplayListPtr++, g_dwColorDitherMode);
 }
 
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_N64 */

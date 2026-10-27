@@ -70,7 +70,7 @@ void DrawModelList(Model *model, f32 m[4][4]) {
                       0,
                       0,
                       COMBINED);
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
     gDPSetBlendColor(gDisplayListPtr++, 0, 0, 0, 0);
     gDPSetTextureDetail(gDisplayListPtr++, G_TD_CLAMP);
     gDPSetTextureLOD(gDisplayListPtr++, G_TL_TILE);

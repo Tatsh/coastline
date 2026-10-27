@@ -66,4 +66,4 @@ void ClipShadowPolygon(ShadowClipPolygon *polygon, ShadowClipDistance distance);
 }
 #endif
 
-#endif
+#endif /* COASTLINE_SHADOW_CLIP_H */

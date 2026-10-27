@@ -182,4 +182,4 @@ void __osDevMgrMain(void *arg);
  */
 s32 __osLeoInterrupt(void);
 
-#endif
+#endif /* LIBULTRA_IO_PIINT_H */

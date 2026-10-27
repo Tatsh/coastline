@@ -107,4 +107,4 @@ void DrawTexturedTile(s32 index, ModelTexture *textures) {
     gSPTexture(gDisplayListPtr++, scaleS, scaleT, 0, tile, G_ON);
 }
 #pragma GCC diagnostic pop
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */

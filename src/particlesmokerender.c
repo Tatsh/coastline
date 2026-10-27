@@ -20,7 +20,7 @@
 #define SMOKE_LIST_HEAD g_wTireSmokeListHead
 #define PAVED_SMOKE_LIST_HEAD g_wPavedTireSmokeListHead
 #define RENDER_SMOKE_LIST(head, red, green, blue) RenderBillboardParticles(head, red, green, blue)
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
 void RenderTireSmoke(const ViewportRect *viewports) {
@@ -64,7 +64,7 @@ void RenderTireSmoke(void) {
                              GBL_c1(G_BL_CLR_IN, G_BL_0, G_BL_CLR_IN, G_BL_1),
                          GBL_c2(G_BL_CLR_IN, G_BL_0, G_BL_CLR_IN, G_BL_1));
         gDPSetBlendColor(gDisplayListPtr++, 0, 0, 0, 0);
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_N64 */
         switch (g_dwSelectedTrackId) {
         case TRACK_MOUNTAIN:
         case TRACK_MIRROR_MOUNTAIN:

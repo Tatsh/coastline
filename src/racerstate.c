@@ -20,7 +20,7 @@ void RacerSlot::UpdateRacerSlotRaceState(void) {
 #define RACER_RECIPROCAL(value) (1.0f / (value))
 
 void UpdateRacerSlotRaceState(RacerSlot *slot) {
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
     if (g_dwRacePauseState || RACER_SLOT_GET(slot, Vehicle) == NULL) {
         return;
     }
@@ -42,7 +42,7 @@ void UpdateRacerSlotRaceState(RacerSlot *slot) {
             RACER_SLOT_GET(slot, Vehicle),
             &VEHICLE_GET(RACER_SLOT_GET(slot, Vehicle), Body).impactPoint,
             (s16)VEHICLE_GET(RACER_SLOT_GET(slot, Vehicle), Body).impactSpeed);
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
         VEHICLE_GET(RACER_SLOT_GET(slot, Vehicle), Body).impactSpeed = 0;
     }
     VEHICLE_RACE_CALL(RACER_SLOT_GET(slot, Vehicle), UpdateRaceTimers);

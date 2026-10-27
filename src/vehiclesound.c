@@ -78,7 +78,7 @@ static void TakeHitEffect(Vehicle *vehicle,
         Rumble(vehicle, onFrames, offFrames, frames);
     }
 }
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_N64 */
 
 /* Whether an effect is a skid. */
 static s32 IsSkidSound(s32 sound) {
@@ -186,7 +186,7 @@ static void ChooseRollEffect(Vehicle *vehicle, s32 surface) {
 #else
     vehicle->effectVolume = (s32)(Vec3fLength(&VEHICLE_GET(vehicle, PlacedVelocity)) *
                                   (f32)ROLL_MAX_VOLUME / ROLL_FULL_SPEED);
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
     if (VEHICLE_GET(vehicle, EffectVolume) > ROLL_MAX_VOLUME) {
         VEHICLE_SET(vehicle, EffectVolume, ROLL_MAX_VOLUME);
     }
@@ -236,7 +236,7 @@ ChooseVehicleEffect(Vehicle *vehicle, s32 channel, s32 previousSound, CameraFram
                   2,
                   20);
     VEHICLE_GET(vehicle, Body).landed = 0;
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 
     sound = VEHICLE_GET(vehicle, EffectSound);
     if (sound != SOUND_EFFECT_NONE && !IsSkidSound(sound) && !IsRollSound(sound)) {
@@ -323,7 +323,7 @@ void UpdateVehicleSounds(Vehicle *vehicle) {
         frequency = vehicle->engineRpm * -0.5f * ENGINE_RPM_SCALE * SAMPLE_RATE;
     }
     frequency = vehicle->dopplerFactor * frequency;
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
     if (ENGINE_MAX_FREQUENCY < frequency) {
         /* Too high, the engine falls silent. */
         frequency = 0.0f;
@@ -350,7 +350,7 @@ void UpdateVehicleSounds(Vehicle *vehicle) {
         } else {
             g_dwSoundEffectEchoOffset = 0;
         }
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
     }
     if (!changed) {
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
@@ -389,7 +389,7 @@ void UpdateVehicleSounds(Vehicle *vehicle) {
         } else if (frequency < 0.0f) {
             frequency = 0.0f;
         }
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
         if (previousSound != VEHICLE_GET(vehicle, EffectSound) && channel == 0) {
             effect = &g_aSoundEffects[VEHICLE_GET(vehicle, EffectSound)];
             StartSoundChannelMuted(

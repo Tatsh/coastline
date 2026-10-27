@@ -104,7 +104,7 @@ void ComputeTrackPosition(Vehicle *vehicle) {
     t = length * fromAlong / (fromAlong + toAlong) / length;
     t2 = t * t;
     t3 = t2 * t;
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 
     /* A Hermite curve between the middles of the two segments. */
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
@@ -122,7 +122,7 @@ void ComputeTrackPosition(Vehicle *vehicle) {
     Vec3fMulAddInPlace(&VEHICLE_GET(vehicle, TrackPoint), &toMiddle, -2.0f * t3 + 3.0f * t2);
     Vec3fMulAddInPlace(&VEHICLE_GET(vehicle, TrackPoint), &fromTangent, t3 - (t2 + t2) + t);
     Vec3fMulAddInPlace(&VEHICLE_GET(vehicle, TrackPoint), &toTangent, t3 - t2);
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
     Vec3fLerp(&VEHICLE_GET(vehicle, TrackForward), &toTangent, &fromTangent, t);
     Vec3fNormalize(&VEHICLE_GET(vehicle, TrackForward));
     Vec3fCross(&VEHICLE_GET(vehicle, TrackSide),
@@ -148,5 +148,5 @@ void ComputeTrackPosition(Vehicle *vehicle) {
     } else {
         vehicle->trackSideDistance = vehicle->trackSideOffset;
     }
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 }

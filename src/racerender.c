@@ -14,7 +14,7 @@
 #include <PR/os_libc.h>
 
 #include "options.h"
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 
 #include "camera.h"
 #include "effects.h"
@@ -87,7 +87,7 @@ namespace {
 #define RACE_VIEW_EXHAUST() RenderExhaustAndTireSpray()
 #define RACE_VIEW_GLARE() RenderHeadlightGlare()
 #define RACE_VIEW_MIRROR_GLARE() RenderHeadlightGlare()
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 
 #define SCREEN_CENTER_X 160
 
@@ -197,7 +197,7 @@ static void RenderRearViewMirror(RACE_VIEW_PARAMETERS s32 index) {
             }
         }
     }
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
     RACE_VIEW_TIMING(0, 0x80, 0x80, 0x80, 0xFF);
     RenderRacerVehicles(RACE_VIEW_ARGUMENTS TRUE);
     RACE_VIEW_MIRROR_GLARE();
@@ -308,7 +308,7 @@ static void DrawViewOverlay(void) {
                RACER_FINISHED) {
         DrawHudMessage();
     }
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 }
 
 /* Draw a view of the race. */
@@ -469,7 +469,7 @@ void DrawPauseMenu(RACE_VIEW_CONTEXT) {
              y);
     /* The original steps past the last item and does not use the result. */
     y += 20;
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 }
 
 #undef RACE_VIEW_CONTEXT
@@ -526,7 +526,7 @@ void DrawCreditCaption(void) {
             DrawText(g_aCreditCaptions[g_dwRaceCaptionIndex].lines[lines],
                      SCREEN_CENTER_X,
                      lines * 40 / 2 + top);
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
         }
         SetTextSize(15);
 #if TGR_PLATFORM == TGR_PLATFORM_WIN

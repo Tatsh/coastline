@@ -21,4 +21,4 @@ void ClearCameraChanged(Vehicle *vehicle);
 }
 #endif
 
-#endif
+#endif /* COASTLINE_CAMERA_CHANGE_H */

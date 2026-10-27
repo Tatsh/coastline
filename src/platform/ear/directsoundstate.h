@@ -33,4 +33,4 @@ private:
     DWORD playCursor;
 };
 
-#endif
+#endif /* COASTLINE_EAR_DIRECTSOUNDSTATE_H */

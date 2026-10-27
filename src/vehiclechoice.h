@@ -17,4 +17,4 @@ VehicleCarChoice ChooseVehicleCarId(Vehicle *vehicle, s32 *carId);
 }
 #endif
 
-#endif
+#endif /* COASTLINE_VEHICLECHOICE_H */

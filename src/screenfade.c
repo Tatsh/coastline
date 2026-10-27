@@ -25,7 +25,7 @@
                      0,                                                                            \
                      ((right) << g_dwScreenScaleShift) - 1,                                        \
                      (g_dwScreenHeight << g_dwScreenScaleShift) - 1)
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 
 void ApplyScreenFade(void) {
     /* Two boot frames precede the normal three-frame clear. */
@@ -61,7 +61,7 @@ void ApplyScreenFade(void) {
                   0,
                   g_dwScreenWidth << g_dwScreenScaleShift,
                   g_dwScreenHeight << g_dwScreenScaleShift);
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
     gDPSetPrimColor(gDisplayListPtr++, 0xFF, 0xFF, 0, 0, 0, 0);
 
     if (g_dwFadeRectLeft) {
@@ -79,7 +79,7 @@ void ApplyScreenFade(void) {
         if (left) {
             left--;
         }
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
         if (IsFadedToBlack()) {
             g_dwScreenFadeFramesRemaining = BLACK_FRAMES;
         }

@@ -40,4 +40,4 @@ extern int32_t g_bEarInitializationComplete;
 }
 #endif
 
-#endif
+#endif /* COASTLINE_EAR_RUNTIME_H */

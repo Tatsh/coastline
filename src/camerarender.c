@@ -27,7 +27,7 @@ Vec3f g_vFrustumHalfRight;
 Vec3f g_vFrustumHalfUp;
 f32 gFrustumFar;
 f32 g_fFrustumFovAngle;
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 
 /* The perspective of a camera: its near plane, the shape of the screen, and degrees a radian. */
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
@@ -72,7 +72,7 @@ f32 g_fFrustumFovAngle;
         g_pProjectionMtx = (Mtx *)AllocDisplayListBlock();                                         \
         guMtxF2L(g_afViewProjMatrix, g_pProjectionMtx);                                            \
     }
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 
 /* The share of the way from the camera to each corner of the far rectangle the frustum keeps. */
 #define FRUSTUM_CORNER_SHARE 0.75f
@@ -88,7 +88,7 @@ void SetupFrustumCorners(CameraFrame *camera, f32 fov, f32 farDistance, f32 widt
 #else
     f32 halfWidth = sinf(fov) * farDistance;
     f32 halfHeight = halfWidth * height / width;
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 
     if (g_dwNumViewports == 2) {
         halfHeight *= 0.5f;
@@ -214,7 +214,7 @@ void SetupMenuProjection(f32 width, f32 height) {
                    g_fCameraFarDistance,
                    1.0f);
     guMtxCatF(g_ViewLookAtMtx, g_afPerspectiveMatrix, g_afViewProjMatrix);
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
     gSPPerspNormalize(gDisplayListPtr++, g_wPerspNorm);
     COPY_PROJECTION_MATRIX();
     gSPMatrix(gDisplayListPtr++,

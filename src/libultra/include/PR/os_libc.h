@@ -132,4 +132,4 @@ ldiv_t ldiv(long num, long denom);
  */
 lldiv_t lldiv(long long num, long long denom);
 
-#endif
+#endif /* PR_OS_LIBC_H */

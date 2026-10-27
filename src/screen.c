@@ -12,7 +12,7 @@ void NullStub(void) {
 /* @ghidraAddress BRGlide: 0x1002e2de */
 [[maybe_unused]] static void StubUnusedCallback(void) {
 }
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 
 void StubRenderCallback(void) {
 }

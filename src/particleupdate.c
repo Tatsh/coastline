@@ -56,7 +56,7 @@ void UpdateExhaustParticles(void) {
         particle->position.y += g_vWindVelocity.y + particle->velocity.y * share * step;
         particle->position.z += g_vWindVelocity.z + (particle->velocity.z * share + 0.8f) * step;
         particle->fade = (s32)(5.7375f / (particle->size * particle->size));
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
         if (share < PARTICLE_MIN_SHARE) {
             *link = particle->next;
             particle->next = g_wParticleFreeListHead;
@@ -112,7 +112,7 @@ void UpdateTireSmoke(void) {
             particle->position.z += g_vWindVelocity.z + (rise * share + 0.8f) * step;
             particle->velocity.z = rise - step * 19.62f;
             particle->fade = (s32)(102.0f / particle->size);
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
             if (share < PARTICLE_MIN_SHARE || PARTICLE_FALLING(particle->velocity.z)) {
                 *link = particle->next;
                 particle->next = g_wParticleFreeListHead;

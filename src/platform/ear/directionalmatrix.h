@@ -29,4 +29,4 @@ int __stdcall EarRegisterMatrixExportWrapper(uint32_t flags);
 }
 #endif
 
-#endif
+#endif /* COASTLINE_EAR_DIRECTIONALMATRIX_H */

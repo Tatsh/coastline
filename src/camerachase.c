@@ -297,7 +297,7 @@ void InitCameraForVehicle(Vehicle *vehicle) {
      (VEHICLE_GET(vehicle, Frame).position.axis +                                                  \
       (VEHICLE_GET(vehicle, Frame).forward.axis * model->mirrorForward +                           \
        VEHICLE_GET(vehicle, Frame).forward.axis * model->mirrorForward)))
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 
 #if TGR_PLATFORM == TGR_PLATFORM_N64 && (TGR_REGION == TGR_REGION_JP || TGR_REGION == TGR_REGION_EU)
 void UpdateCameraViewBasisAndFov(Vehicle *vehicle, CameraFrame *camera) {
@@ -331,7 +331,9 @@ void UpdateCameraViewBasisAndFov(Vehicle *vehicle, CameraFrame *camera) {
          (TRACKSIDE_MID - distance) * TRACKSIDE_DISTANCE_SCALE) *
         g_fCameraFovRadians;
 }
-#endif
+#endif /*
+ * TGR_PLATFORM == TGR_PLATFORM_N64 && (TGR_REGION == TGR_REGION_JP || TGR_REGION == TGR_REGION_EU)
+ */
 
 void UpdateCameraSystem(Vehicle *vehicle) {
     f32 previousCockpit[3];
@@ -543,7 +545,9 @@ void UpdateCameraSystem(Vehicle *vehicle) {
            (TRACKSIDE_MID - distance) * TRACKSIDE_DISTANCE_SCALE;
 #endif
     VEHICLE_GET(vehicle, Cameras)[VEHICLE_CAMERA_TRACKSIDE].fov = zoom * g_fCameraFovRadians;
-#endif
+#endif /*
+ * TGR_PLATFORM == TGR_PLATFORM_N64 && (TGR_REGION == TGR_REGION_EU || TGR_REGION == TGR_REGION_JP)
+ */
     VEHICLE_GET(vehicle, Cameras)[VEHICLE_CAMERA_BUMPER].fov = g_fCameraFovRadians;
     VEHICLE_GET(vehicle, Cameras)[VEHICLE_CAMERA_CHASE].fov = g_fCameraFovRadians;
     VEHICLE_GET(vehicle, Cameras)[VEHICLE_CAMERA_COCKPIT].fov = g_fCameraFovRadians;

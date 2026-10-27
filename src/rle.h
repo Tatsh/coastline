@@ -44,4 +44,4 @@ s32 DecompressInterleavedRle(u8 *dst, s32 dstSize, u8 *src, s32 channels);
 }
 #endif
 
-#endif
+#endif /* COASTLINE_RLE_H */

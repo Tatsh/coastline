@@ -22,7 +22,7 @@ static inline void BindVehicleTextureEntry(u32 entry) {
     gDisplayListPtr->words.w1 = 1;
     gDisplayListPtr++;
 }
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 
 static inline s32 HasVehicleAltVariant(Vehicle *vehicle) {
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
@@ -127,7 +127,7 @@ DrawLitParts(u32 dir, u32 ambient, DisplayListCommand *displayList, s32 undersid
                           SHADE,
                           0);
     } else
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
     {
         gDPSetCombineLERP(gDisplayListPtr++,
                           TEXEL0,
@@ -598,7 +598,7 @@ void RenderVehicleModel(Vehicle *vehicle, s32 lodOffset) {
             palette[6] = 0xC631;
         }
     }
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
     gDPSetTextureLOD(gDisplayListPtr++, G_TL_LOD);
     gSPTexture(gDisplayListPtr++, 0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON);
     SetModelTiles();
@@ -624,7 +624,7 @@ void RenderVehicleModel(Vehicle *vehicle, s32 lodOffset) {
         DrawTexturedTile(NEAR_DETAIL_TEXTURE, g_pCurrentVehicleModelData->textures);
         DrawLitParts(dirColor, ambientColor, displayLists[VEHICLE_DL_NEAR_DETAIL], FALSE);
     }
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 
     /* The specular highlight, in a single view by day, or in a tunnel only at night. */
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
@@ -636,7 +636,7 @@ void RenderVehicleModel(Vehicle *vehicle, s32 lodOffset) {
         !g_dwSnowMode && !g_dwRainMode && (!inTunnel || g_dwNightMode) && closeRange &&
         !(g_dwNightMode && vehicle == g_pActiveCameraVehicle) && !g_bForceVehicleAltVariant &&
         !HasVehicleAltVariant(vehicle)) {
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
         gDPPipeSync(gDisplayListPtr++);
         gDPSetCycleType(gDisplayListPtr++, G_CYC_1CYCLE);
         gSPSetGeometryMode(gDisplayListPtr++, G_TEXTURE_GEN);
@@ -687,7 +687,7 @@ void RenderVehicleModel(Vehicle *vehicle, s32 lodOffset) {
                                6,
                                G_TX_NOLOD,
                                G_TX_NOLOD);
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
         gDPSetColorDither(gDisplayListPtr++, G_CD_DISABLE);
         gDPSetHilite1Tile(gDisplayListPtr++, G_TX_RENDERTILE, hilite, HILITE_SIZE, HILITE_SIZE);
         DrawModelDisplayList(displayLists[VEHICLE_DL_HIGHLIGHTED]);
@@ -754,7 +754,7 @@ void RenderVehicleModel(Vehicle *vehicle, s32 lodOffset) {
                            15);
     gDPLoadSync(gDisplayListPtr++);
     gDPLoadTLUT_pal16(gDisplayListPtr++, 0, g_apVehicleReflectionTluts[reflection]);
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
     gDPSetTextureLUT(gDisplayListPtr++, G_TT_RGBA16);
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
     offset =

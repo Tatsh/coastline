@@ -128,4 +128,4 @@ void UpdateClosestSoundSource(
 }
 #endif
 
-#endif
+#endif /* COASTLINE_SOUND_SOURCE_H */

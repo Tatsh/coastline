@@ -132,4 +132,4 @@ extern s32 g_dwDmaReadPending;
 }
 #endif
 
-#endif
+#endif /* COASTLINE_ASSET_DMA_H */

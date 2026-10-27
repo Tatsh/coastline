@@ -169,5 +169,5 @@ void ProcessMainMenu(void) {
     } else {
         g_dwUnlockAllCheatPressCount = 0;
     }
-#endif
+#endif /* TGR_REGION == TGR_REGION_EU || TGR_REGION == TGR_REGION_JP */
 }

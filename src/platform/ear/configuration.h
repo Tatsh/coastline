@@ -22,4 +22,4 @@ int ValidateEarAudioComponents(void);
 }
 #endif
 
-#endif
+#endif /* COASTLINE_EAR_CONFIGURATION_H */

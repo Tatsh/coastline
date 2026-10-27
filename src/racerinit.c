@@ -97,7 +97,7 @@ void InitRacerSlot(RacerSlot *slot) {
                      slot->lap,
                      slot->gate,
                      (double)slot->distance);
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
         RACER_SLOT_GET(slot, PreviousPosition).x = RACER_SLOT_GET(slot, Position).x;
         RACER_SLOT_GET(slot, PreviousPosition).y = RACER_SLOT_GET(slot, Position).y;
         RACER_SLOT_GET(slot, PreviousPosition).z = RACER_SLOT_GET(slot, Position).z;

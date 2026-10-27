@@ -1068,4 +1068,4 @@ double __ull_to_d(unsigned long long u);
  */
 float __ull_to_f(unsigned long long u);
 
-#endif
+#endif /* PR_OS_H */

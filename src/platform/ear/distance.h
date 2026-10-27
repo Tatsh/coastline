@@ -20,4 +20,4 @@ extern double g_adDistanceUnitToCentimeters[4];
 }
 #endif
 
-#endif
+#endif /* COASTLINE_EAR_DISTANCE_H */

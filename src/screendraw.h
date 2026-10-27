@@ -134,4 +134,4 @@ void DrawRdpBorderRect(s32 x, s32 y, s32 width, s32 height);
 }
 #endif
 
-#endif
+#endif /* COASTLINE_SCREENDRAW_H */

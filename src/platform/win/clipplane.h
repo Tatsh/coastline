@@ -78,4 +78,4 @@ static inline void ClipLinkedPolygonPlane(Polygon *pPolygon,
     }
 }
 
-#endif
+#endif /* COASTLINE_WIN_CLIP_PLANE_H */

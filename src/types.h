@@ -29,6 +29,6 @@ typedef int64_t s64; /*!< A signed 64-bit integer. */
 
 typedef float f32;  /*!< A 32-bit floating-point number. */
 typedef double f64; /*!< A 64-bit floating-point number. */
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_N64 */
 
-#endif
+#endif /* COASTLINE_TYPES_H */

@@ -17,4 +17,4 @@ uint32_t __stdcall EAR_DLL_GetVersion(void);
 }
 #endif
 
-#endif
+#endif /* COASTLINE_EAR_VERSION_H */

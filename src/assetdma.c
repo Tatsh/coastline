@@ -31,7 +31,7 @@ void DmaRead(void *dst, u32 romOffset, s32 size) {
     osPiStartDma(
         AllocIoMessage(), OS_MESG_PRI_NORMAL, OS_READ, romOffset, dst, size, &g_DmaMessageQueue);
     WaitForDmaMessages();
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 }
 
 u32 DmaReadAssetSize(u32 romOffset) {

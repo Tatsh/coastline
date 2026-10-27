@@ -34,7 +34,7 @@ unsigned long long __d_to_ull(double d) {
     return (long long)d;
 #else
     return d;
-#endif
+#endif /* __GNUC__ */
 }
 
 unsigned long long __f_to_ull(float f) {
@@ -50,7 +50,7 @@ unsigned long long __f_to_ull(float f) {
     return (long long)f;
 #else
     return f;
-#endif
+#endif /* __GNUC__ */
 }
 
 double __ll_to_d(long long s) {
@@ -72,7 +72,7 @@ double __ull_to_d(unsigned long long u) {
     return d;
 #else
     return u;
-#endif
+#endif /* __GNUC__ */
 }
 
 float __ull_to_f(unsigned long long u) {
@@ -86,5 +86,5 @@ float __ull_to_f(unsigned long long u) {
     return f;
 #else
     return u;
-#endif
+#endif /* __GNUC__ */
 }

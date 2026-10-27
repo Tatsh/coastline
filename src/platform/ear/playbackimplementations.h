@@ -113,4 +113,4 @@ private:
     [[maybe_unused]] std::uint8_t unknownAc[0x69]; /* +0xac */
 };
 
-#endif
+#endif /* COASTLINE_EAR_PLAYBACKIMPLEMENTATIONS_H */

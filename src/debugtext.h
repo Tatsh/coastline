@@ -151,4 +151,4 @@ void DebugFrameStubB(void);
 }
 #endif
 
-#endif
+#endif /* COASTLINE_DEBUGTEXT_H */

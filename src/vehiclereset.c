@@ -504,7 +504,7 @@ void ResetVehicleEffects(Vehicle *vehicle) {
         }
         vertex->v.cn[2] = 0;
         vertex->v.cn[3] = SPRAY_VERTEX_ALPHA;
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
         vertex++;
     }
 
@@ -689,7 +689,7 @@ void SetupVehicleForRaceStart(Vehicle *vehicle) {
         g_LoadedTrack.startPosition.y - sideY * GRID_COLUMN_SPACING * (column - 0.5f) -
             forwardY * GRID_ROW_SPACING * (row + 1.0f),
         g_LoadedTrack.startPosition.z + GRID_HEIGHT);
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
     VEHICLE_SET(vehicle, Distance, (row + 0.5f) * -GRID_ROW_SPACING);
     RESET_FREE(InitVehicleOrientationFromAngle)(vehicle, g_LoadedTrack.startHeading);
     VEHICLE_GET(vehicle, PreviousPosition) = VEHICLE_GET(vehicle, Frame).position;

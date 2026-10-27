@@ -7,4 +7,4 @@ class Vehicle;
 typedef struct Vehicle Vehicle;
 #endif
 
-#endif
+#endif /* COASTLINE_VEHICLE_FORWARD_H */

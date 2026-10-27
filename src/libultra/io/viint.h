@@ -148,4 +148,4 @@ void __osViSwapContext(void);
  */
 __OSViContext *__osViGetCurrentContext(void);
 
-#endif
+#endif /* LIBULTRA_IO_VIINT_H */

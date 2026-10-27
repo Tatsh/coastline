@@ -43,7 +43,7 @@ void guFrustumF(float mf[4][4],
     mf[2][3] = -1.0f;
     mf[3][2] = -(((long double)far * near + (long double)far * near) / depth);
 }
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 
 void guPerspectiveF(
     float mf[4][4], u16 *perspNorm, float fovy, float aspect, float near, float far, float scale) {
@@ -85,7 +85,7 @@ void guPerspectiveF(
             }
         }
     }
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 }
 
 #if TGR_PLATFORM != TGR_PLATFORM_WIN

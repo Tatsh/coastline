@@ -17,4 +17,4 @@ extern double g_dMasterAttenuationLevel;
 }
 #endif
 
-#endif
+#endif /* COASTLINE_EAR_VOLUME_H */

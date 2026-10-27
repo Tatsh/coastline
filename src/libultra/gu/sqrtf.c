@@ -14,5 +14,5 @@ float sqrtf(float x) {
     return r;
 #else
     return sqrtf(x);
-#endif
+#endif /* __GNUC__ */
 }

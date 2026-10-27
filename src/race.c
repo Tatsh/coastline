@@ -261,7 +261,7 @@ void ProcessRacingScreen(void) {
         }
         g_dwCheatFinishRacePending = FALSE;
     }
-#endif
+#endif /* TGR_REGION != TGR_REGION_US */
 
     if (g_dwRacePauseState) {
         paused = ProcessPauseMenu(paused);
@@ -299,7 +299,7 @@ void ProcessRacingScreen(void) {
             DEMO_FADE_BYTES);
 #endif
     }
-#endif
+#endif /* TGR_REGION != TGR_REGION_US */
     FlushDisplayList();
     if (IsFadingOut() && IsFadeComplete()) {
         FinishRace();

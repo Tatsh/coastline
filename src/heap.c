@@ -72,4 +72,4 @@ void ClearFramebuffersForNormalMode(void) {
     FlushDisplayList();
     g_dwKeepScreenBlanked = FALSE;
 }
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_N64 */

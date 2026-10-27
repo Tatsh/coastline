@@ -29,4 +29,4 @@ void ComputeStereoPan(
 }
 #endif
 
-#endif
+#endif /* COASTLINE_SOUND_PAN_H */

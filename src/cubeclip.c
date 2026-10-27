@@ -42,7 +42,7 @@ s32 DoesTriangleCrossUnitCube(Vec3f triangle[3], Vec3f *normal) {
     t = (normal->x * triangle[0].x + normal->y * triangle[0].y + normal->z * triangle[0].z) /
         (sz * normal->z + (normal->x * sx + normal->y * sy));
     if (((f64)t - -0.5) * ((f64)t - 0.5) <= 0.0) {
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
         point.x = sx * t;
         point.y = sy * t;
         point.z = sz * t;
@@ -149,7 +149,7 @@ s32 DoesSegmentCrossUnitCube(Vec3f *start, Vec3f *end) {
         across = d[k] * COMPONENT(start, j) - d[j] * COMPONENT(start, k);
         reach = (f32)((f64)(d[k] * (f32)sign[j] + d[j] * (f32)sign[k]) * 0.5);
         if (reach * reach < across * across) {
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
             return 0;
         }
     }

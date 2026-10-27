@@ -12,7 +12,7 @@
 #define RETRACE_INCREMENT(value) ((s32)((u32)(value) + 1u))
 #else
 #define RETRACE_INCREMENT(value) ((value) + 1)
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 
 void RspDoneThread(void *arg) {
     osCreateMesgQueue(&g_RspEventMsgQueue, g_aRspEventMsgBuf, 1);

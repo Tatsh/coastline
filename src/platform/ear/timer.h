@@ -40,4 +40,4 @@ extern DWORD g_dwPlaybackUpdateTimeMs;
 }
 #endif
 
-#endif
+#endif /* COASTLINE_EAR_TIMER_H */

@@ -35,4 +35,4 @@ extern u8 *(*g_pfnGetTextureEntryPixelsWithPaint)(int nEntry, unsigned *pSize);
 }
 #endif
 
-#endif
+#endif /* COASTLINE_PLATFORM_WIN_TEXTUREUPLOAD_H */

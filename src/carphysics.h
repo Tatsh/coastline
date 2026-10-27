@@ -20,4 +20,4 @@ typedef struct {
     s32 tableIndex;     /*!< The class of the car among the arcade times of each track. */
 } CarPhysicsSpec;
 
-#endif
+#endif /* COASTLINE_CARPHYSICS_H */

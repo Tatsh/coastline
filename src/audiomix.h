@@ -135,4 +135,4 @@ void MixAudioStereoSamples(s16 *ring, u32 bytes, u32 pairOffset);
  */
 void MixSoundEffectChannels(s16 *ring, u32 bytes, u32 offset);
 
-#endif
+#endif /* COASTLINE_AUDIOMIX_H */

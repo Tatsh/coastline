@@ -31,7 +31,7 @@ static void CopySnapshotBytes(u8 *destination, const void *sourceData, u32 size)
 #define SNAPSHOT_COPY CopySnapshotBytes
 #else
 #define SNAPSHOT_COPY memcpy
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 
 /* The room for the message of an overflow. */
 #define OVERFLOW_MESSAGE_SIZE 0x50
@@ -97,7 +97,9 @@ void DeserializeSaveData(SaveField *fields, u8 *buffer) {
         buffer += fields[i].size;
     }
 }
-#endif
+#endif /*
+ * TGR_PLATFORM != TGR_PLATFORM_WIN && (TGR_REGION == TGR_REGION_JP || TGR_REGION == TGR_REGION_EU)
+ */
 
 void SaveRaceSnapshot(LastLapBuffer *buffer) {
 /* The capacity given is that of the whole buffer, not of the room after the recordings. */

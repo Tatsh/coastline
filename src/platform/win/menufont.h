@@ -64,25 +64,6 @@ public:
      */
     virtual signed char HandleTextInput();
 
-private:
-    /**
-     * @ghidraAddress BRD3D: 0x1005b730
-     */
-    virtual int DrawGlyph(short nImage, float x, float y, int nStyle);
-    /**
-     * @ghidraAddress BRD3D: 0x1005b7e0
-     */
-    virtual int DrawGlyphNoOp(short nImage, float x, float y);
-    /**
-     * @ghidraAddress BRD3D: 0x1005b7a0
-     */
-    virtual int DrawGlyphAltFont(short nImage, float x, float y, int nStyle);
-    /**
-     * @ghidraAddress BRD3D: 0x1005b250
-     */
-    virtual void DrawThrottledMenuGlyph(float x, float y);
-
-public:
     /**
      * @ghidraAddress BRD3D: 0x1005b200
      */
@@ -187,6 +168,23 @@ public:
     }
 
 private:
+    /**
+     * @ghidraAddress BRD3D: 0x1005b730
+     */
+    virtual int DrawGlyph(short nImage, float x, float y, int nStyle);
+    /**
+     * @ghidraAddress BRD3D: 0x1005b7e0
+     */
+    virtual int DrawGlyphNoOp(short nImage, float x, float y);
+    /**
+     * @ghidraAddress BRD3D: 0x1005b7a0
+     */
+    virtual int DrawGlyphAltFont(short nImage, float x, float y, int nStyle);
+    /**
+     * @ghidraAddress BRD3D: 0x1005b250
+     */
+    virtual void DrawThrottledMenuGlyph(float x, float y);
+
     void MeasureMenuText(bool alternate);
     void DrawMenuText(float x, float y, bool alternate, bool useFontY);
 

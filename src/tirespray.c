@@ -70,7 +70,7 @@ typedef f32 SprayMoveReal;
     (SPRAY_POSITION(segment, vertex, coordinate, field) =                                          \
          SPRAY_POSITION(segment, vertex, coordinate, field) +                                      \
          (((velocity) * step) >> SPRAY_STEP_SHIFT) + (shift))
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 
 /** Set the colours of the two drawn vertices of the newest segment of a spray. */
 static inline void SetSprayColors(
@@ -191,7 +191,7 @@ void MoveTireSpray(void) {
             continue;
         }
 
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
     /* The origin moves to the vehicle in whole units of the vertices, which move back. */
     shiftX = SPRAY_MOVE_INTEGER(
         ((SprayMoveReal)vehicle->sprayOrigin.x - vehicle->frame.position.x) * SPRAY_UNITS);
@@ -232,7 +232,7 @@ void MoveTireSpray(void) {
             }
             segment[0].v.cn[3] = alpha;
             segment[1].v.cn[3] = alpha;
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_N64 */
             if (surface == TRACK_SURFACE_PAVED) {
                 SPRAY_TEXCOORD(segment, 0, 0, x) = SPRAY_TEXTURE_FAR;
                 SPRAY_TEXCOORD(segment, 1, 0, x) = SPRAY_TEXTURE_NEAR;
@@ -280,7 +280,7 @@ void MoveTireSpray(void) {
                     } else {
                         velocities[1][2] -= fall;
                     }
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
             }
         }
     }
@@ -307,4 +307,4 @@ void MoveTireSpray(void) {
         }
     }
 }
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */

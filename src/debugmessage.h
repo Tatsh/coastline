@@ -30,4 +30,4 @@ extern const char *g_pszDebugMessage;
 }
 #endif
 
-#endif
+#endif /* COASTLINE_DEBUGMESSAGE_H */

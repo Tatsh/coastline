@@ -27,7 +27,7 @@ static inline void TriangleInBox(Vec3f corners[3], Vec3f *normal, f32 box[4][4],
     e2.x = corners[2].x - corners[0].x;
     e2.y = corners[2].y - corners[0].y;
     e2.z = corners[2].z - corners[0].z;
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
     /* The normal mixes retained second-edge values with their stored float copies. */
     normal->x = e1.y * highE2[2] - highE2[1] * e1.z;
@@ -37,7 +37,7 @@ static inline void TriangleInBox(Vec3f corners[3], Vec3f *normal, f32 box[4][4],
     normal->x = e1.y * e2.z - e2.y * e1.z;
     normal->y = e1.z * e2.x - e2.z * e1.x;
     normal->z = e1.x * e2.y - e2.x * e1.y;
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 }
 
-#endif
+#endif /* COASTLINE_TRIANGLEBOX_H */

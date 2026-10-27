@@ -38,4 +38,4 @@ typedef double f64; /*!< A 64-bit floating-point number. */
 #define FALSE 0 /*!< The value of a false condition. */
 #endif
 
-#endif
+#endif /* PR_ULTRATYPES_H */

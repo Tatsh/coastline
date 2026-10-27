@@ -28,7 +28,7 @@
 #include "options.h"
 #include "racemenu.h"
 #include "splash.h"
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
 /**
@@ -43,7 +43,7 @@ static u8 g_bNoSoundSample;
 static volatile u8 g_bReturnToSeasonMenu;
 #else
 #define RACE_SOUND_CHANNELS 6
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 
 /* Choose the instant replay of the best recording of the players. */
 static void ChooseInstantReplay(void) {
@@ -103,7 +103,7 @@ void FinishRace(void) {
         g_aSoundEffectChannels[i].step = 0;
         g_aSoundEffectChannels[i].sample = g_SilenceSampleData;
     }
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
     g_bRaceScreenActive = FALSE;
     if (g_dwRaceExitState) {
         if (g_bReplayAfterRace) {
@@ -180,7 +180,7 @@ void FinishRace(void) {
                 SetCurrentScreenCallback(ExitRaceSessionToMenu);
 #else
                 SetCurrentScreenCallback(ProcessMainMenu);
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
             }
             gInstantReplayActive = FALSE;
         }

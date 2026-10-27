@@ -18,7 +18,7 @@
 #define DENT_LESS(value, limit) ((value) < (limit))
 #define DENT_COORDINATE(vertex, index, field) ((vertex)->v.ob[index] + jitter)
 #define DENT_MOVE(vertex, index, field, offset) ((vertex)->v.ob[index] += (offset))
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 
 #define UNDENTED_DISPLAY_LIST VEHICLE_DL_HIGHLIGHTED
 

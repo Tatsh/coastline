@@ -29,4 +29,4 @@ int __stdcall SetSampleMemoryLimit(uint32_t bytes);
 }
 #endif
 
-#endif
+#endif /* COASTLINE_EAR_MEMORY_BUDGET_H */

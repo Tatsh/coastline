@@ -19,4 +19,4 @@ int ConvertDoubleToSignedByte(double dValue);
 }
 #endif
 
-#endif
+#endif /* COASTLINE_PLATFORM_WIN_PACKEDVALUE_H */

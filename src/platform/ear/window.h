@@ -26,4 +26,4 @@ BOOL __stdcall EAR_DLL_AssignHwnd(HWND window);
 }
 #endif
 
-#endif
+#endif /* COASTLINE_EAR_WINDOW_H */

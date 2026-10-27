@@ -95,7 +95,7 @@ s32 ProcessPauseMenu(s32 paused) {
             g_dwScreenClearFrames = 2;
             paused = FALSE;
         }
-#endif
+#endif /* TGR_PLATFORM != TGR_PLATFORM_WIN */
         if (
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
             (g_dwInputButtonMask & 0x8000) ||
@@ -148,7 +148,7 @@ s32 ProcessPauseMenu(s32 paused) {
                     SendNetworkMessage6ToSession();
                     DisableNetworkReceive();
                 }
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
                 break;
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
             case PAUSE_CONFIRM_EXIT:

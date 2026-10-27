@@ -52,4 +52,4 @@ void UpdateVehicleGridPosition(Vehicle *vehicle);
 }
 #endif
 
-#endif
+#endif /* COASTLINE_VEHICLE_STATUS_H */

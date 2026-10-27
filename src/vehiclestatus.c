@@ -38,7 +38,7 @@ typedef f32 StatusReal;
 #define STATUS_GRID_COORD(value) FloatToInt((value) / GRID_CELL)
 #define STATUS_COMPARE_TIME(field) VEHICLE_GET(vehicle, field)
 static const char sWrongWay[] = "%yyWRONG WAY";
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 
 void UpdateRaceTimers(Vehicle *vehicle) {
 #if TGR_PLATFORM == TGR_PLATFORM_WIN

@@ -45,7 +45,7 @@ static inline void SetTrackCombiner(DisplayListCommand *pkt) {
                       0,
                       0,
                       COMBINED);
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 }
 
-#endif
+#endif /* COASTLINE_TRACKDISPLAYLIST_H */

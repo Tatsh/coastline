@@ -223,7 +223,7 @@ GbiCommand *HandleGbiSetViewport(GbiCommand *pCommand) {
     g_fViewportTranslateX = static_cast<float>(pViewport->vp.vtrans[0]) * GBI_VIEWPORT_UNIT;
     g_fViewportTranslateY =
         fHeight - static_cast<float>(pViewport->vp.vtrans[1]) * GBI_VIEWPORT_UNIT;
-#endif
+#endif /* TGR_RENDERER == TGR_RENDERER_D3D */
     return pCommand + 1;
 }
 
@@ -358,7 +358,7 @@ void HalveLightColors(GbiLight *pLight) {
     pLight->l.col[0] >>= 1;
     HalveAmbientLightColor(pLight);
 }
-#endif
+#endif /* TGR_RENDERER == TGR_RENDERER_D3D */
 
 GbiCommand *HandleGbiMoveWord(GbiCommand *pCommand) {
     unsigned dwOffset;
@@ -675,7 +675,7 @@ GbiCommand *HandleGbiBindTextureEntry(GbiCommand *pCommand) {
     g_pfnBindTextureEntry(nEntry);
     return pCommand + pCommand->w1;
 }
-#endif
+#endif /* TGR_RENDERER == TGR_RENDERER_D3D */
 
 void (*g_pfnUploadTextureEntryToSurface)(int nEntry, TextureUploadData payload);
 
@@ -726,7 +726,7 @@ GbiCommand *HandleGbiSetScissorIntCoords(GbiCommand *pCommand) {
                             GbiField12(pCommand->w1, 0));
     return pCommand + 1;
 }
-#endif
+#endif /* TGR_RENDERER == TGR_RENDERER_D3D */
 
 GbiCommand *HandleGbiEndDisplayList(GbiCommand *pCommand) {
     if (g_dwGbiDisplayListStackDepth == 0) {
@@ -2016,4 +2016,4 @@ void SelectVertexSubmitterForCombineMode(unsigned dwCombineHi, unsigned dwCombin
         g_apfnGbiHandlers[GBI_OP_VERTEX] = HandleGbiVertexLit;
     }
 }
-#endif
+#endif /* TGR_RENDERER == TGR_RENDERER_D3D */

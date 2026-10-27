@@ -212,7 +212,9 @@ void SerializeSaveData(SaveField *fields, u8 *buffer, s32 capacity);
  * @ghidraAddress BRD3D: 0x10067900
  */
 void DeserializeSaveData(SaveField *fields, u8 *buffer);
-#endif
+#endif /*
+ * TGR_PLATFORM != TGR_PLATFORM_WIN && (TGR_REGION == TGR_REGION_JP || TGR_REGION == TGR_REGION_EU)
+ */
 
 /**
  * Take a snapshot of the race into the buffer of a last lap.
@@ -247,7 +249,7 @@ void RestoreRaceSnapshot(LastLapBuffer *buffer);
  * @ghidraAddress JPN: 0x8022bc58
  */
 void SaveLastLapSnapshot(Vehicle *vehicle);
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_N64 */
 
 #if TGR_REGION == TGR_REGION_JP || TGR_REGION == TGR_REGION_EU
 /**
@@ -286,10 +288,10 @@ extern SaveField g_aReplayKeyframeDescTable3[];
  * @ghidraAddress JPN: 0x8022baf8
  */
 void RestoreReplayKeyframeState(void);
-#endif
+#endif /* TGR_REGION == TGR_REGION_JP || TGR_REGION == TGR_REGION_EU */
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif
+#endif /* COASTLINE_REPLAY_H */

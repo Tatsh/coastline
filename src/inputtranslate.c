@@ -267,7 +267,7 @@ void TranslateControllerInput(PlayerInputState *state) {
             }
             break;
         }
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
     }
 
     if (state->recordBuffers[0] != NULL || state->recordBuffers[1] != NULL) {
@@ -304,7 +304,7 @@ void TranslateControllerInput(PlayerInputState *state) {
     }
 #else
     }
-#endif
+#endif /* TGR_PLATFORM != TGR_PLATFORM_WIN */
 
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
     state->stickX = state->pad->stick_x * (1.0f / STICK_RANGE);

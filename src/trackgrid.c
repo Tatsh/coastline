@@ -62,7 +62,7 @@ u32 FindTrackGridCellByIndex(s32 column, s32 row) {
     return PACK_GRID_CELL(g_LoadedTrack.gridCellStarts, cell, start);
 }
 
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_N64 */
 
 u32 LookupInstanceGridCell(s32 column, s32 row) {
     u16 cell;
@@ -85,7 +85,7 @@ u16 GetInstanceGridCellCount(TrackGridCursor *cursor) {
     return cursor->count;
 }
 
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_N64 */
 
 /* The cursor of a cell advanced past the entry at start, packed as LookupTrackGridCell packs it. */
 #define NEXT_GRID_CURSOR(cursor, start) (((start) + 1) | ((u32)((cursor)->count - 1) << 16))

@@ -12,7 +12,7 @@ s32 g_nTextDrawX;
 s32 g_nTextDrawY;
 s32 g_nFontSize;
 s32 g_dwScreenScaleShift;
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 
 #define SMALL_FONT_MAX_SIZE 25
 #define SMALL_FONT_CELL 20
@@ -152,7 +152,7 @@ s32 MeasureTextWidth(const char *text, s32 size) {
                 text++;
                 japanese = FALSE;
                 continue;
-#endif
+#endif /* TGR_REGION == TGR_REGION_JP && TGR_PLATFORM != TGR_PLATFORM_WIN */
             } else if (next == 'i' || next == 'n') {
                 text++;
                 continue;
@@ -179,7 +179,7 @@ s32 MeasureTextWidth(const char *text, s32 size) {
         }
 #else
         glyph = g_abHudFontCharToGlyph[c - '!'];
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
         width += ((offsets[glyph + 1] - offsets[glyph] - padding + 1) * size) / cell;
     }
     if (g_dwScreenScaleShift) {

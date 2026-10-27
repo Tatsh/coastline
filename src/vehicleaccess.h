@@ -213,6 +213,6 @@
 #define VEHICLE_GET_WheelBodies(vehicle) ((vehicle)->wheelBodies)
 #define VEHICLE_GET_WheelFrames(vehicle) ((vehicle)->wheelFrames)
 #define VEHICLE_GET_WheelMatrices(vehicle) ((vehicle)->wheelMatrices)
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 
-#endif
+#endif /* COASTLINE_VEHICLE_ACCESS_H */

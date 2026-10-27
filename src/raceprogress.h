@@ -18,10 +18,10 @@ const char *GetNetworkRaceFinishMessage(void);
  * @ghidraAddress BRD3D: 0x100b3960
  */
 extern s32 g_anRaceProgressStringIds[RACER_SLOTS];
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif
+#endif /* COASTLINE_RACE_PROGRESS_H */

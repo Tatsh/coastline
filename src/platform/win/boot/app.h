@@ -251,7 +251,7 @@ bool OpenBossRallyPodAndInit(void);
  * @ghidraAddress BRGlide: 0x1006c990
  */
 void ShowGlideSplashImage(const char *pszPath, int nUnknown);
-#endif
+#endif /* TGR_RENDERER == TGR_RENDERER_GLIDE */
 
 /**
  * Free the colour buffers of each racer.

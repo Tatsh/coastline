@@ -24,4 +24,4 @@ extern uint16_t g_earMaximumStreamingBufferBytes;
 }
 #endif
 
-#endif
+#endif /* COASTLINE_EAR_WAVECHUNKS_H */

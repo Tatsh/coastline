@@ -41,4 +41,4 @@ private:
     DECLARE_MESSAGE_MAP()
 };
 
-#endif
+#endif /* COASTLINE_LAUNCHER_BOOTDLG_H */

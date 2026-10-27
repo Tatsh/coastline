@@ -14,7 +14,7 @@
 #define CREDITS_SCREEN_CALLBACK ProcessRacingScreen
 #define CREDIT_SCREEN_CENTER 160
 #define CREDIT_SCREEN_BOTTOM 280
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 
 void StartEndingCredits(void) {
     g_dwGameMode = GAME_MODE_DEMO;

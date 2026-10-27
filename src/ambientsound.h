@@ -19,4 +19,4 @@ void UpdateAmbientSoundChannel(void);
 }
 #endif
 
-#endif
+#endif /* COASTLINE_AMBIENT_SOUND_H */

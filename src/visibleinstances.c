@@ -32,7 +32,7 @@
 #define VIS_SORT QuickSort
 #define VIS_INTERMEDIATE(value) (value)
 #define VIS_TRUNCATE(value) ((s32)(value))
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 
 #define GRID_CELL_SIZE 32.0f
 #define GRID_CELLS 64
@@ -80,7 +80,7 @@ inline void Vehicle::UpdateShadowScreenRect(const ViewportRect *viewports) {
                                              viewports[g_dwCurrentSplitScreenIndex].height);
     }
 }
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
 void BuildVisibleInstanceList(const ViewportRect *viewports,
@@ -147,7 +147,7 @@ terminate:
         rowDistance = g_aVisibleCellTuples[i].row - cameraRow;
         g_aVisibleCellTuples[i].distance =
             columnDistance * columnDistance + rowDistance * rowDistance;
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
     }
     VIS_SORT(g_aVisibleCellTuples, count, sizeof(VisibleCell), CompareVisibleCellDistance);
 
@@ -169,7 +169,7 @@ terminate:
     farDistance *= farDistance;
     if (g_pActiveCameraVehicle->input->playbackBuffer != NULL &&
         g_pActiveCamera == &g_pActiveCameraVehicle->cameras[VEHICLE_CAMERA_TRACKSIDE]) {
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
         midDistance = NEAR_CELL_DISTANCE;
     } else {
         midDistance = 1;
@@ -233,7 +233,7 @@ terminate:
             continue;
         }
         for (j = g_nNearbyVehicleCount - 1; j >= 0 && dot < g_afNearbyVehicleDot[j]; j--) {
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
             g_afNearbyVehicleDot[j + 1] = g_afNearbyVehicleDot[j];
             g_anNearbyVehicleIdx[j + 1] = g_anNearbyVehicleIdx[j];
         }
@@ -255,7 +255,7 @@ terminate:
         for (j = 0; j < vehicle->nearbyInstanceCount; j++) {
             g_abInstanceVisibilityMask[vehicle->nearbyInstances[j]] |= bit;
         }
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
     }
 
     g_wActiveInstanceHideMask = 0;
@@ -306,7 +306,7 @@ terminate:
             g_pActiveCameraVehicle->frame.forward.y * -4.0f + g_pActiveCameraVehicle->frame.up.y;
         g_vTrackLightDirection.z =
             g_pActiveCameraVehicle->frame.forward.z * -4.0f + g_pActiveCameraVehicle->frame.up.z;
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
     } else {
         g_vTrackLightDirection.x = g_afLightDirection[0];
         g_vTrackLightDirection.y = g_afLightDirection[1];
@@ -377,6 +377,6 @@ terminate:
             vehicle->shadowCorners[1][1] = g_aViewportRects[g_dwCurrentSplitScreenIndex].y +
                                            g_aViewportRects[g_dwCurrentSplitScreenIndex].height;
         }
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
     }
 }

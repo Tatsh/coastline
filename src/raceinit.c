@@ -27,7 +27,7 @@
 
 #include "assetdma.h"
 #include "audiomix.h"
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
 /**
@@ -55,7 +55,7 @@ void Vehicle::SetupFromRecording(void) {
 #define RECORDING_OPTION(offset) (vehicle->input->playbackBuffer[offset])
 #define RECORDING_TRACK(byte) (byte)
 void SetupFromRecording(Vehicle *vehicle) {
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
     RECORDING_SELF->steeringMode = RECORDING_OPTION(2);
     RECORDING_SELF->chosenTransmission = RECORDING_OPTION(3);
     RECORDING_SELF->tireType = RECORDING_OPTION(4);
@@ -105,7 +105,7 @@ void SetupRaceVehicles(void) {
                 VEHICLE_GET(&g_aVehicles[i], Input)->playbackLimit = g_adwReplayGhostSizes[i];
                 VEHICLE_GET(&g_aVehicles[i], Input)->playbackPosition = 0;
             }
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
         } else {
             for (i = 0; i < (s32)g_dwNumLocalPlayers; i++) {
                 VEHICLE_GET(&g_aVehicles[i], Input)->playbackBuffer = NULL;
@@ -237,7 +237,7 @@ void SetupRaceVehicles(void) {
         g_aVehicles[0].carModel = g_aVehicles[0].selectedCar =
             VEHICLE_GET(&g_aVehicles[0], Input)->playbackBuffer[1];
         SetupFromRecording(&g_aVehicles[0]);
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
         break;
 
     case GAME_MODE_TIME_ATTACK:
@@ -251,7 +251,7 @@ void SetupRaceVehicles(void) {
         } else {
             g_dwCurrentWeather = 0;
         }
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
         g_dwNumVehicles = g_dwNumActiveVehicles = g_dwNumLocalPlayers + 1;
         ghost = VEHICLE_GET(&g_aVehicles[g_dwNumLocalPlayers], Input);
         g_bReplayAfterRace = FALSE;
@@ -286,7 +286,7 @@ void SetupRaceVehicles(void) {
             recording[1];
         if (VEHICLE_GET(&g_aVehicles[g_dwNumLocalPlayers], Input)->playbackBuffer[0] !=
             g_dwSelectedTrackId) {
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
             osSyncPrintf(
                 "WRONG TRACK (%d!=%d)\n",
                 RECORDING_TRACK(

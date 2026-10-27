@@ -64,6 +64,6 @@ void RenderSkybox(const ViewportRect *viewports);
  * @ghidraAddress JPN: 0x80230c78
  */
 void RenderSkybox(void);
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 
-#endif
+#endif /* COASTLINE_SKY_H */

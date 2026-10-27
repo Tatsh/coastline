@@ -16,4 +16,4 @@ int __stdcall EAR_DLL_InitializeEar(uint32_t flags);
 }
 #endif
 
-#endif
+#endif /* COASTLINE_EAR_INITIALIZATION_H */

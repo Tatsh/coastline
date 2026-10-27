@@ -34,4 +34,4 @@ extern uint16_t g_earAudioComponentValidationFlags;
 }
 #endif
 
-#endif
+#endif /* COASTLINE_EAR_BACKEND_H */

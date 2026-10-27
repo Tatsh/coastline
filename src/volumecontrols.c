@@ -18,7 +18,7 @@
 #define SFX_LEVEL g_OptionSettings.sfxVolume
 #define EFFECT_VOLUME g_bSfxMasterVolume
 #define VOLUME_COUNT VOLUME_LEVELS
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 
 void IncreaseBgmVolume(void) {
     if (BGM_LEVEL < VOLUME_COUNT - 1) {

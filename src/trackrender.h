@@ -312,7 +312,7 @@ void ProjectWorldToScreenRect(
  * @ghidraAddress JPN: 0x80235120
  */
 void ProjectWorldToScreenRect(const Vec3f *point, s32 size, s16 low[2], s16 high[2]);
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 #ifdef __cplusplus
 }
 #endif
@@ -348,7 +348,7 @@ void RenderTrackInstance(
  * @ghidraAddress JPN: 0x80235360
  */
 void RenderTrackInstance(s32 index, s32 vehicles, s32 deferred);
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 
 #ifdef __cplusplus
 }
@@ -400,7 +400,7 @@ void BuildVisibleInstanceList(const ViewportRect *viewports,
  * @ghidraAddress JPN: 0x80236308
  */
 void BuildVisibleInstanceList(void);
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 #ifdef __cplusplus
 }
 #endif
@@ -430,6 +430,6 @@ void RenderTrackGeometry(const ViewportRect *viewports,
  * @ghidraAddress JPN: 0x80236ebc
  */
 void RenderTrackGeometry(s32 deferred);
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 
-#endif
+#endif /* COASTLINE_TRACKRENDER_H */

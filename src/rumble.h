@@ -142,4 +142,4 @@ void UpdateRumblePaks(s32 unused);
  */
 void PrepareRumblePaks(void);
 
-#endif
+#endif /* COASTLINE_RUMBLE_H */

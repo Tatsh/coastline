@@ -27,7 +27,7 @@ void SpawnExhaustParticle(Vehicle *vehicle) {
     revs = vehicle->engineRpm * 0.001f;
     vehicle->exhaustTimer += g_fFrameDeltaTime * (1.0f + revs + random * (1.0f / 65536.0f));
     if (!(vehicle->exhaustTimer > 0.25f)) {
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
         return;
     }
     index = g_wParticleFreeListHead;
@@ -66,6 +66,6 @@ void SpawnExhaustParticle(Vehicle *vehicle) {
     size = 1.0f + revs * 0.1f;
     particle->size = size * 0.15f;
     particle->fade = (u32)(1.0f / (Vec3fLength(&vehicle->placedVelocity) + size) * 255.0f);
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
     particle->alpha = 255;
 }

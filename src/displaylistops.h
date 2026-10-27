@@ -6,9 +6,13 @@
 
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
 #include "platform/win/gbicommand.h"
-typedef GbiCommand DisplayListCommand;
 #else
 #include <PR/gbi.h>
+#endif
+
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+typedef GbiCommand DisplayListCommand;
+#else
 typedef Gfx DisplayListCommand;
 #endif
 
@@ -122,4 +126,4 @@ void ProcessTrackNodeDisplayList(TrackInstance *instance);
 }
 #endif
 
-#endif
+#endif /* COASTLINE_DISPLAYLISTOPS_H */

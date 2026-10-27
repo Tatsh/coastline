@@ -19,4 +19,4 @@ unsigned ReadInputDevicesButtonMask(int *pnSteering, int *pnAcceleration);
 }
 #endif
 
-#endif
+#endif /* COASTLINE_PLATFORM_WIN_INPUTPOLL_H */

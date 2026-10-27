@@ -48,6 +48,6 @@
 #define RACER_SLOT_SET_Status(slot, value) ((slot)->status = (value))
 #define RACER_SLOT_GET_Straggler(slot) ((slot)->straggler)
 #define RACER_SLOT_SET_Straggler(slot, value) ((slot)->straggler = (value))
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 
-#endif
+#endif /* COASTLINE_RACER_SLOT_ACCESS_H */

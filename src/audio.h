@@ -482,4 +482,4 @@ void AudioMixingThreadMain(void *arg);
  */
 void StubSoundUpdate(CameraFrame *camera);
 
-#endif
+#endif /* COASTLINE_AUDIO_H */

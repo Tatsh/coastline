@@ -15,7 +15,7 @@
 #define TRACK_LESS(a, b) ((a) < (b))
 #define GRID_PATCH_SECOND_TRACK 8
 #define TRACK_DISTANCE_SUM(vehicle, change) (VEHICLE_GET(vehicle, Distance) + (change))
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 
 /* A vehicle that has not crossed out of its point of the route keeps it while this near. */
 #define POINT_KEEP_DISTANCE 64.0f
@@ -150,7 +150,7 @@ s32 UpdateVehicleTrackPosition(Vehicle *vehicle) {
             dz = point->position.z - z;
             distance = dx * dx + dy * dy + dz * dz;
             if (distance < best) {
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
                 TrackPointDirection(&direction, point);
                 Vec3fSubtract(&offset, &VEHICLE_GET(vehicle, Frame).position, &point->position);
                 if (0.0f <= Vec3fDot(&direction, &offset)) {
@@ -185,7 +185,7 @@ found:
                                                   (f32)(VEHICLE_GET(vehicle, DistanceLaps) + 1) -
                                               point->distance);
     change -= VEHICLE_GET(vehicle, Distance);
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
     if (!checked || (-ROUTE_DISTANCE_WINDOW < change && change < ROUTE_DISTANCE_WINDOW)) {
         VEHICLE_SET(vehicle, Distance, TRACK_DISTANCE_SUM(vehicle, change));
     }

@@ -30,4 +30,4 @@ void FreeIniFile(LauncherIniFile *file);
 /** @ghidraAddress BRally: 0x00401ae0 */
 char *GetIniSectionValue(LauncherIniSectionIterator *iterator, const char *key);
 
-#endif
+#endif /* COASTLINE_LAUNCHER_INI_H */

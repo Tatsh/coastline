@@ -32,7 +32,7 @@ static inline void WritePrecipitationRectangle(s32 left, s32 top, s32 width, s32
 #define PRECIPITATION_RENDER_REAL f32
 #define PRECIPITATION_RENDER_INTEGER(value) ((s32)(value))
 #define WRITE_PRECIPITATION_TEXEL(dx, dy) (texel[(dy) * RAIN_STREAK_TEXTURE_SIDE + (dx)] = shade)
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 
 /* The scale from a particle position back to the units of the world. */
 #define PARTICLE_SCALE 6.10370189e-05f
@@ -130,7 +130,7 @@ void RenderPrecipitationEffect(void) {
                       0,
                       0,
                       TEXEL0);
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
     gDPSetRenderMode(gDisplayListPtr++,
                      FORCE_BL | CVG_DST_FULL | IM_RD |
                          GBL_c1(G_BL_CLR_IN, G_BL_A_IN, G_BL_CLR_MEM, G_BL_1MA),
@@ -194,7 +194,7 @@ void RenderPrecipitationEffect(void) {
     gDPSetTileSize(gDisplayListPtr++, G_TX_RENDERTILE, 0, 0, 63 << 2, 63 << 2);
     gDPSetTextureLUT(gDisplayListPtr++, G_TT_NONE);
     gDPSetTexturePersp(gDisplayListPtr++, G_TP_NONE);
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
     if (g_dwSnowMode) {
         gDPSetPrimColor(gDisplayListPtr++, 0xFF, 0xFF, 0xE0, 0xE0, 0xFF, 0xFF);
     } else {
@@ -251,7 +251,7 @@ void RenderPrecipitationEffect(void) {
         v = fall.y * STREAK_START + STREAK_CENTER;
         du = fall.x * STREAK_STEP;
         dv = -fall.y * STREAK_STEP;
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
         v = (PRECIPITATION_RENDER_REAL)v + dv;
         for (step = 0; step < STREAK_STEPS; step++) {
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
@@ -405,7 +405,7 @@ void RenderPrecipitationEffect(void) {
                             PARTICLE_TEXTURE_LAST_T,
                             PARTICLE_TEXTURE_STEPS / sizeX,
                             -PARTICLE_TEXTURE_STEPS / sizeY);
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
     }
 
     gDPPipeSync(gDisplayListPtr++);

@@ -75,7 +75,7 @@
 #else
 #define VI_MODE_LAN1_MPAL osViModeMpalLan1
 #define VI_MODE_LAN1 osViModeNtscLan1
-#endif
+#endif /* TGR_REGION == TGR_REGION_US */
 
 /* Whether the European and Japanese releases may show the screen: it is not held blank, no delay
  * before showing it runs, and no reset is pending. */
@@ -182,7 +182,7 @@ void UnblankDisplay(void) {
 #endif
     g_dwDisplayBlanked = FALSE;
 }
-#endif
+#endif /* TGR_REGION == TGR_REGION_JP || TGR_REGION == TGR_REGION_EU */
 
 void ClearFramebuffersHighRes(void) {
 #if TGR_REGION == TGR_REGION_US
@@ -214,7 +214,7 @@ void ClearFramebuffersHighRes(void) {
     ClearScreen(0, 0, 0);
     FlushDisplayList();
     g_dwKeepScreenBlanked = FALSE;
-#endif
+#endif /* TGR_REGION == TGR_REGION_US */
 }
 
 void ClearFramebuffersLowRes(void) {
@@ -250,7 +250,7 @@ void ClearFramebuffersLowRes(void) {
     ClearScreen(0, 0, 0);
     FlushDisplayList();
     g_dwKeepScreenBlanked = FALSE;
-#endif
+#endif /* TGR_REGION == TGR_REGION_US */
 }
 
 #if TGR_REGION == TGR_REGION_JP || TGR_REGION == TGR_REGION_EU
@@ -265,7 +265,7 @@ void PreNmiResetHandlerThread(void *arg) {
         BlankDisplay();
     }
 }
-#endif
+#endif /* TGR_REGION == TGR_REGION_JP || TGR_REGION == TGR_REGION_EU */
 
 void UnusedFrameTimingStub(void) {
 }
@@ -455,7 +455,7 @@ void BootIdleThread(void *arg) {
         (osViModePalLan1.fldRegs[1].vStart & PAL_VSTART_KEEP) | PAL_VSTART_FIELD1;
     g_ViModePalLan1.fldRegs[0].yScale = PAL_LAN1_YSCALE;
     g_ViModePalLan1.fldRegs[1].yScale = PAL_LAN1_YSCALE;
-#endif
+#endif /* TGR_REGION == TGR_REGION_EU */
     if (osTvType == OS_TV_MPAL) {
         osViSetMode(&VI_MODE_LAN1_MPAL);
     } else {

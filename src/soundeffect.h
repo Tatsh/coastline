@@ -138,4 +138,4 @@ void PlayGoSound(void);
 }
 #endif
 
-#endif
+#endif /* COASTLINE_SOUNDEFFECT_H */

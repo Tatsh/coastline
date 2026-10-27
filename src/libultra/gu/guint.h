@@ -109,4 +109,4 @@ extern const float g_fCosfZero;
  */
 extern const float __libm_qnan_f;
 
-#endif
+#endif /* LIBULTRA_GU_GUINT_H */

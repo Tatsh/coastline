@@ -52,7 +52,7 @@ void StreamAnimatedTrackTextures(void) {
                 frame = g_dwSnowMode == 0;
                 imageRom = frame ? TEXTURE_ROM_NONE : animation->frames[frame].imageRom;
                 paletteRom = animation->frames[frame].paletteRom;
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
             } else {
                 if (g_dwRacePauseState
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
@@ -89,7 +89,7 @@ void StreamAnimatedTrackTextures(void) {
                              MODEL_TEXTURE_SIZE(texture),
                              &g_DmaMessageQueue);
                 texture = &g_LoadedTrack.textures[i];
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
             }
         }
         if (texture->palette != NULL && paletteRom != TEXTURE_ROM_NONE) {
@@ -108,7 +108,7 @@ void StreamAnimatedTrackTextures(void) {
                          MODEL_TEXTURE_FORMAT(texture) == TEXTURE_FORMAT_CI4 ? CI4_PALETTE_BYTES :
                                                                                PALETTE_BYTES,
                          &g_DmaMessageQueue);
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
         }
     }
     g_dwStreamedSnowMode = g_dwSnowMode;

@@ -54,4 +54,4 @@ private:
     int blockSize;
 };
 
-#endif
+#endif /* COASTLINE_EAR_MFC_H */

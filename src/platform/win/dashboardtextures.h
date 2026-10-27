@@ -11,4 +11,4 @@ void InitializeDashboardTextures(void);
 }
 #endif
 
-#endif
+#endif /* COASTLINE_PLATFORM_WIN_DASHBOARD_TEXTURES_H */

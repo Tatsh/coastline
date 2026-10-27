@@ -410,7 +410,7 @@ void ProcessTrackMenu(void) {
                     g_aVehicles[0].profile->round + 1,
                     name,
                     g_apWeatherMenuItems[g_dwCurrentWeather]->name);
-#endif
+#endif /* TGR_REGION == TGR_REGION_JP */
             g_apTrackMenuItems[named]->name = g_szTrackMenuTextBuf;
         }
         result = ProcessScreenState(g_SeasonTable[g_aVehicles[0].profile->season].name,

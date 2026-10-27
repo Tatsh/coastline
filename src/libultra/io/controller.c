@@ -45,7 +45,7 @@ s32 osContInit(OSMesgQueue *mq, u8 *bitpattern, OSContStatus *data) {
     __osSiCreateAccessQueue();
     osCreateMesgQueue(&__osEepromTimerQ, &__osEepromTimerMsg, 1);
     return ret;
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 }
 
 #if TGR_PLATFORM == TGR_PLATFORM_N64
@@ -96,4 +96,4 @@ void __osPackRequestData(u8 cmd) {
     }
     *ptr = CONT_CMD_END;
 }
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_N64 */

@@ -441,7 +441,7 @@ extern u32 g_dwCurrentTrackRomOffset;
  * @ghidraAddress JPN: 0x8028c550
  */
 extern u32 g_dwTrackTextureRomOffset;
-#endif
+#endif /* TGR_PLATFORM != TGR_PLATFORM_WIN */
 
 /**
  * The segment of textures last streamed, or -1.
@@ -515,4 +515,4 @@ u16 GetTrackGridCellCount(TrackGridCursor *cursor);
  */
 u16 GetInstanceGridCellCount(TrackGridCursor *cursor);
 
-#endif
+#endif /* COASTLINE_TRACK_H */

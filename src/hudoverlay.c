@@ -17,7 +17,7 @@
 
 #include "input.h"
 #include "options.h"
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
 
@@ -36,7 +36,7 @@
 #define HUD_MPH_LABEL "%wwmph"
 #define HUD_KPH_LABEL "%wwkph"
 #define HUD_SPEED_Y (y - 3)
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 
 /* The right edge of the times, the speed and the dashboard. */
 #define HUD_RIGHT 296
@@ -80,7 +80,7 @@ void DrawSpeedAndHudOverlay(void) {
                    HUD_SCISSOR_RIGHT,
                    g_aViewportRects[g_dwCurrentSplitScreenIndex].height);
     if ((f64)speed < 0.0) {
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
         speed = 0.0f;
     }
 #if TGR_PLATFORM == TGR_PLATFORM_N64
@@ -136,7 +136,7 @@ void DrawSpeedAndHudOverlay(void) {
         x = SPEED_DASHBOARD_RIGHT;
         y -= g_aDashboardTextures[g_dwCurrentSplitScreenIndex].height;
     }
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
     SetTextSize(SPEED_TEXT_SIZE);
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
     y = HUD_OVERLAY_ADD(y, -3);
@@ -154,7 +154,7 @@ void DrawSpeedAndHudOverlay(void) {
     } else {
         DrawText(g_szHudSpeedTextBuf, HUD_OVERLAY_ADD(x, -3), HUD_SPEED_Y);
     }
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_N64 && TGR_REGION == TGR_REGION_JP */
 #if TGR_PLATFORM == TGR_PLATFORM_N64
     if (g_pActiveCamera == &g_pActiveCameraVehicle->cameras[VEHICLE_CAMERA_BUMPER]) {
         return;
@@ -174,5 +174,5 @@ void DrawSpeedAndHudOverlay(void) {
     } else {
         DrawText(HUD_KPH_LABEL, HUD_OVERLAY_ADD(x, -3), HUD_SPEED_Y);
     }
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_N64 && TGR_REGION == TGR_REGION_JP */
 }

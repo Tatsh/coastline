@@ -22,7 +22,7 @@
 #define TO_RSP_ADDRESS(p) ((u32)((u8 *)(p) - K0BASE))
 #endif
 #define FRAME_SUB(a, b) ((a) - (b))
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 
 #define VIEWPORT_MARGIN 8
 #define DISPLAY_LIST_START()                                                                       \
@@ -37,7 +37,7 @@ s32 g_dwStatPolygonsDrawn;
 s32 g_dwStatUnused0;
 s32 g_dwStatVerticesDrawn;
 s32 g_dwStatTrianglesDrawn;
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 
 void ClearRenderStats(void) {
     g_dwStatUnused1 = g_dwStatUnused2 = g_dwStatUnused3 = 0;
@@ -75,7 +75,7 @@ void BeginDisplayList(s32 highRes) {
         views[0].y = VIEWPORT_MARGIN;
         views[0].width = g_dwScreenWidth - 2 * VIEWPORT_MARGIN;
         views[0].height = g_dwScreenHeight - 2 * VIEWPORT_MARGIN;
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
         break;
     case 2:
         /* The two views stop 88 pixels short of the right of the screen. */
@@ -102,7 +102,7 @@ void BeginDisplayList(s32 highRes) {
             g_apFramebuffers[1] = g_aFramebuffer1;
         }
     }
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_N64 */
     gDisplayListPtr = DISPLAY_LIST_START();
     g_dwTextureFilterMode = g_bBilinearFiltering ? G_TF_BILERP : G_TF_POINT;
     g_dwColorDitherMode = G_CD_BAYER;
@@ -169,7 +169,7 @@ void BeginDisplayList(s32 highRes) {
     NullStub();
     NullStub();
     NullStub();
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_N64 */
 }
 
 #if TGR_PLATFORM == TGR_PLATFORM_WIN

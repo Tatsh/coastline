@@ -26,7 +26,7 @@ static inline void SetVehicleLightPalette(u16 *palette, s32 variant, s32 dark) {
     palette[9] = variant & 1 ? 0x04f9 : 0x01a0;
     palette[8] = variant & 1 ? 0x04f9 : palette[10];
 }
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 
 static inline u16 PackMaterialPaletteColor(u16 color) {
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
@@ -63,4 +63,4 @@ static inline void SetMaterialPaletteColors(VehicleModel *model, s32 red, s32 gr
     }
 }
 
-#endif
+#endif /* COASTLINE_VEHICLECOLOR_H */

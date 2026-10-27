@@ -60,7 +60,7 @@ extern Texture g_SplashTitleLogoTexture;
  * @ghidraAddress JPN: 0x803165b8
  */
 extern u16 g_awSplashTitlePalette[256];
-#endif
+#endif /* TGR_REGION == TGR_REGION_JP */
 
 /* The warnings of the controller check. */
 #define CONTROLLER_WARNING_NO_CONTROLLER 0 /*!< No controller is plugged in. */
@@ -271,4 +271,4 @@ void ProcessSplashScreens(void);
  */
 void ProcessControllerCheck(void);
 
-#endif
+#endif /* COASTLINE_SPLASH_H */

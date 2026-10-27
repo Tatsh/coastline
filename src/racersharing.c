@@ -13,7 +13,7 @@
 #include "screen.h"
 #define osSyncPrintf(...) NullStub()
 #define QuickSort qsort
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_N64 */
 
 #include "game.h"
 #include "input.h"

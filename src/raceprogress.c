@@ -33,7 +33,7 @@
 #define PROGRESS_MESSAGE(text, id) GetRaceProgressMessage(id)
 #define PROGRESS_ZERO(value) (!((value) < 0.0f) && !((value) > 0.0f))
 #define PROGRESS_LESS(a, b) (!((a) >= (b)))
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_N64 */
 
 /* The message durations of a lap, in seconds. */
 #define LAP_MESSAGE_TIME 1.0f
@@ -121,7 +121,7 @@ static void FinishRacer(RacerSlot *slot, Vehicle *vehicle) {
                 GetRaceProgressMessage(g_anRaceProgressStringIds[g_dwRaceFinishOrderCounter]));
 #else
         vehicle->message = g_apszRaceProgressStrings[g_dwRaceFinishOrderCounter];
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
         VEHICLE_SET(vehicle, MessageTime, FINISH_MESSAGE_TIME);
         if (RACER_SLOT_GET(slot, Index) < (s32)g_dwNumLocalPlayers &&
             g_dwTotalLaps == RECORD_LAPS) {
@@ -172,7 +172,7 @@ static void PassArcadeCheckpoint(RacerSlot *slot, s32 gate, f32 gapFallback) {
     }
 #else
     gap = g_aVehicles[0].distance - g_aVehicles[1].distance;
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
     if (PROGRESS_LESS(gap, 0.0f)) {
         gap = -gap;
     }
@@ -193,7 +193,7 @@ static void PassArcadeCheckpoint(RacerSlot *slot, s32 gate, f32 gapFallback) {
     } else {
         pace = gap / pace;
     }
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
     for (i = 0; i < (s32)g_dwNumLocalPlayers; i++) {
         other = RACER_SLOT_GET(&(g_aRacerSlots[i]), Vehicle);
 #if TGR_PLATFORM == TGR_PLATFORM_WIN

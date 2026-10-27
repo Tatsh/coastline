@@ -473,4 +473,4 @@ void SolveLinearSystem3x3(Vec3f *out, f32 a[3][3], Vec3f *b);
 }
 #endif
 
-#endif
+#endif /* COASTLINE_RIGIDBODY_H */

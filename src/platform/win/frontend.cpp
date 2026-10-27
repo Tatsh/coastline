@@ -1629,7 +1629,7 @@ HRESULT MenuScreen::ClearBackBuffer() {
 HRESULT MenuScreen::ClearBackBuffer() {
     return 0;
 }
-#endif
+#endif /* TGR_RENDERER == TGR_RENDERER_D3D */
 
 int g_dwMenuSurfaceInitCount;
 
@@ -1750,7 +1750,7 @@ void MenuScreen::FlipAndWait() {
         Sleep(0);
     }
 }
-#endif
+#endif /* TGR_RENDERER == TGR_RENDERER_D3D */
 
 // The delays of the shutdown in milliseconds, in states 2 and 3 of g_dwNetworkMenuState.
 #define SHUTDOWN_DELAY_STATE_2_MS 4570
@@ -2262,7 +2262,7 @@ int ShowD3DDeviceSelectMenu(void) {
     PopulateVideoSettingsLists();
     return 1;
 }
-#endif
+#endif /* TGR_RENDERER == TGR_RENDERER_D3D */
 
 int IsGameCdInDrive(int nDrive) {
     char szRoot[MAX_PATH];
@@ -5334,7 +5334,7 @@ void BuildVideoOptionsUI(MenuScreen *screen) {
         panel->SetNavigationCount(panel->GetNavigationCount() + 1);
     }
 }
-#endif
+#endif /* TGR_RENDERER == TGR_RENDERER_D3D */
 
 static inline int LoadSeasonUI_SelectSlot(MenuItemList *list, int *slot) {
     return LoadSeasonUI_OnSlotSelected(list, slot);
@@ -7860,7 +7860,7 @@ void SelectConfiguredDisplayMode(void) {
                                                          0,
                                                          g_pSelectedRenderDevice);
 }
-#endif
+#endif /* TGR_RENDERER == TGR_RENDERER_D3D */
 
 void RestoreMenuSelections(void) {
     const int *pBackup = g_GlobalRallyConfig.adwMenuSelectionBackup;

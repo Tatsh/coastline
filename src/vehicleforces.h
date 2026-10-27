@@ -24,4 +24,4 @@ enum {
     VEHICLE_FORCES,        /*!< The number of forces of a vehicle. */
 };
 
-#endif
+#endif /* COASTLINE_VEHICLEFORCES_H */

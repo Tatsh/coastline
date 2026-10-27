@@ -31,7 +31,7 @@
 #define AMBIENT_VOLUME volume
 #define AMBIENT_MIX_VOLUME mixVolume
 #define FREQUENCY_NEGATIVE(value) ((value) < 0.0f)
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 
 #define TRACK_SOUND_CHANNEL 3
 #define VOLUME_HALVES_MASK 0x7FFF7FFF
@@ -141,7 +141,7 @@ void UpdateAmbientSoundChannel(void) {
             } else {
                 channel->AMBIENT_VOLUME = PackVolume(volume, upper, lower);
             }
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
         }
         g_ClosestSoundSource.previousPosition.x = g_ClosestSoundSource.position.x;
         g_ClosestSoundSource.previousPosition.y = g_ClosestSoundSource.position.y;

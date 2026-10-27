@@ -34,4 +34,4 @@ extern const char *const g_earErrorMessages[47];
 }
 #endif
 
-#endif
+#endif /* COASTLINE_EAR_ERROR_H */

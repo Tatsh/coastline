@@ -63,7 +63,7 @@ void InitGbiD3DRenderer(void) {
 int GetRenderBackendMode(void) {
     return g_dwRenderBackendMode;
 }
-#endif
+#endif /* TGR_RENDERER == TGR_RENDERER_D3D */
 
 void SetRenderBackendMode(int nMode) {
     g_dwRenderBackendMode = nMode;
@@ -79,7 +79,7 @@ void SetRenderBackendMode(int nMode) {
         g_pfnRenderBackendInit = InitGbiGlideRenderer;
         g_pfnInitializeTextureSubsystem = InitializeTextureSubsystem;
     }
-#endif
+#endif /* TGR_RENDERER == TGR_RENDERER_D3D */
 }
 
 void ResetRenderSubsystems(int nMode, int nWidth, int nHeight, int nBitDepth, int nExtra) {
@@ -301,7 +301,7 @@ void ByteSwapAndRelocateDisplayList(GbiCommand *pCommands) {
         }
     }
 }
-#endif
+#endif /* TGR_RENDERER == TGR_RENDERER_D3D */
 
 int IsPointerInRelocatedList(void *pPointer) {
     if (pPointer == nullptr) {
@@ -482,7 +482,7 @@ int ComputeMipChainByteSize(int nSmallLod, int nLargeLod, int nAspectRatio, int 
     }
     return nBytes;
 }
-#endif
+#endif /* TGR_RENDERER == TGR_RENDERER_D3D */
 
 void ResetRenderCommandBufferStack(void) {
     ShadowClipVertex *pNext = nullptr;
@@ -870,7 +870,7 @@ void CreateNightSkyTexture(void) {
     g_apVehicleReflectionTextures[2] = nTexture;
     g_apVehicleReflectionTextures[1] = nTexture;
 }
-#endif
+#endif /* TGR_RENDERER == TGR_RENDERER_D3D */
 
 TextureUploadRequest g_aTextureUploadQueue[TEXTURE_UPLOAD_QUEUE_SIZE];
 int g_dwTextureUploadQueueHead;

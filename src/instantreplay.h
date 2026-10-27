@@ -27,4 +27,4 @@ extern s32 gInstantReplayActive;
 }
 #endif
 
-#endif
+#endif /* COASTLINE_INSTANTREPLAY_H */

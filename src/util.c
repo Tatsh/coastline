@@ -270,4 +270,4 @@ void ExchangeWordBuffers(u32 *a, u32 *b, u32 size) {
         }
     }
 }
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_N64 */

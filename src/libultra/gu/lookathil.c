@@ -171,7 +171,7 @@ void guLookAtHiliteF(float mf[4][4],
     mf[1][3] = 0.0f;
     mf[2][3] = 0.0f;
     mf[3][3] = 1.0f;
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 }
 
 #if TGR_PLATFORM != TGR_PLATFORM_WIN
@@ -219,4 +219,4 @@ void guLookAtHilite(Mtx *m,
                     theight);
     guMtxF2L(mf, m);
 }
-#endif
+#endif /* TGR_PLATFORM != TGR_PLATFORM_WIN */

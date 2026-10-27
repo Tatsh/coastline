@@ -46,7 +46,7 @@ void guMtxCatF(float mf[4][4], float nf[4][4], float res[4][4]) {
             }
         }
     }
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
     /* The product goes through a copy so that the result may alias an operand. */
     for (i = 0; i < 4; i++) {
         for (j = 0; j < 4; j++) {

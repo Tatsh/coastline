@@ -30,4 +30,4 @@ void ShutdownDirectSoundOutput(void);
 /** @ghidraAddress EAR: 0x1001018d */
 int InitializeDirectSoundOutput(void);
 
-#endif
+#endif /* COASTLINE_EAR_DIRECTSOUNDOUTPUT_H */

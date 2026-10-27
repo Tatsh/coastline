@@ -16,7 +16,7 @@
 #define GLARE_VIEWPORTS g_aViewportRects
 #define GLARE_ALPHA(value) ((s32)(255.0f * (value)))
 #define GLARE_ADD(left, right) ((left) + (right))
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
 void RenderHeadlightGlare(const ViewportRect *viewports, f32 level) {

@@ -24,7 +24,7 @@
 #define FADE_SUB(left, right) ((left) - (right))
 #define FADE_VOLUME(value) ((s32)((f64)(value) * MAX_VOLUME))
 #define FADE_SFX_VOLUME g_bSfxVolume
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 
 void UpdateFadeTransitions(void) {
     f32 rate;

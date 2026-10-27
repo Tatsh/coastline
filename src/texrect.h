@@ -158,4 +158,4 @@ void DrawColoredTexturedRect(u8 *texture,
                              s32 green,
                              s32 blue);
 
-#endif
+#endif /* COASTLINE_TEXRECT_H */

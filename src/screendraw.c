@@ -18,7 +18,7 @@ s32 g_dwViewportScaleZ;
 s32 g_dwViewportTransZ;
 s32 g_dwTrackMirrored;
 s32 g_dwViewportMirrored;
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
 /* Screen coordinate operations retain the original 32-bit wrap. */
@@ -42,7 +42,7 @@ s32 g_dwViewportMirrored;
 /* A fill of the frame buffer with a colour of 8-bit components, as two pixels. */
 #define FILL_COLOR(red, green, blue)                                                               \
     ((u16)GPACK_RGBA5551(red, green, blue, 1) | (u16)GPACK_RGBA5551(red, green, blue, 1) << 16)
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 
 /* A blend of the colour of the frame buffer and the colour drawn, by the alpha of the fog. */
 #define RENDER_MODE_FOG_BLEND_C1                                                                   \
@@ -205,7 +205,7 @@ void DrawRdpOutlineRect(s32 x, s32 y, s32 width, s32 height) {
                      y,
                      COORD_ADD(x, width),
                      COORD_ADD(y, height));
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_N64 */
 }
 
 void DrawRdpBorderRect(s32 x, s32 y, s32 width, s32 height) {

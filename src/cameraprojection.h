@@ -67,4 +67,4 @@ extern f32 g_fCameraFarDistance;
 }
 #endif
 
-#endif
+#endif /* COASTLINE_CAMERAPROJECTION_H */

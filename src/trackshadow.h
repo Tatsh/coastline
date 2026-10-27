@@ -90,4 +90,4 @@ void ProjectClippedShadowTriangle(const TrackInstance *instance,
 }
 #endif
 
-#endif
+#endif /* COASTLINE_TRACK_SHADOW_H */

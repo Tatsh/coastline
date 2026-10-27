@@ -28,7 +28,7 @@ typedef f32 SprayReal;
 #define SPRAY_INTEGER(value) ((s32)(value))
 #define SPRAY_COORDINATE(value) SPRAY_INTEGER(value)
 #define SPRAY_VERTEX(head, vertex, coordinate, field) ((head)[vertex].v.ob[coordinate])
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
 void Vehicle::EmitTireSpray(void) {

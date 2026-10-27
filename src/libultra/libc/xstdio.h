@@ -28,7 +28,7 @@
 #define _D1 1
 #define _D2 2
 #define _D3 3
-#endif
+#endif /* defined(__BYTE_ORDER__) && __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__ */
 
 /** A routine that appends count characters to arg and returns the new position, or NULL. */
 typedef void *(*outfun)(void *arg, const char *s, size_t count);
@@ -129,4 +129,4 @@ extern char g_szHexDigitsUpper[17];
  */
 extern const double g_adblPowersOfTen[9];
 
-#endif
+#endif /* LIBULTRA_LIBC_XSTDIO_H */

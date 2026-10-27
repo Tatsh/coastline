@@ -24,7 +24,7 @@ static inline long double WindSine(f32 angle) {
     __asm__("fsin" : "=t"(result) : "0"((long double)angle));
     return result;
 }
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 
 void UpdateWindDirection(void) {
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
@@ -73,5 +73,5 @@ void UpdateWindDirection(void) {
     g_vWindVelocity.x = cosf(g_fWindAngle) * (g_fFrameDeltaTime * g_fWindStrength);
     g_vWindVelocity.y = sinf(g_fWindAngle) * (g_fFrameDeltaTime * g_fWindStrength);
     g_vWindVelocity.z = 0.0f;
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 }

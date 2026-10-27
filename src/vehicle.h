@@ -471,7 +471,7 @@ void InstallVehicleModel(Vehicle *vehicle, s32 slot, s32 car);
  * @ghidraAddress EUR: 0x80221774
  */
 void InstallVehicleModelCopy(Vehicle *vehicle, s32 slot, s32 car);
-#endif
+#endif /* TGR_REGION == TGR_REGION_EU */
 
 #if TGR_REGION == TGR_REGION_JP
 /**
@@ -484,7 +484,7 @@ void InstallVehicleModelCopy(Vehicle *vehicle, s32 slot, s32 car);
  * @ghidraAddress JPN: 0x80220f38
  */
 void LoadAndActivateTrackWithPaintColor(Vehicle *vehicle, s32 slot, s32 car);
-#endif
+#endif /* TGR_REGION == TGR_REGION_JP */
 
 /**
  * Start loading the model of a car into a slot through a buffer of g_aDmaWorkBuffers.
@@ -765,6 +765,6 @@ void ManageAiRacerSlots(Vehicle *player);
  */
 void UpdateRacerSlotMotion(RacerSlot *slot);
 
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 
-#endif
+#endif /* COASTLINE_VEHICLE_H */

@@ -39,7 +39,7 @@ typedef ConvertedModelVertex ShadowVertex;
 typedef Vtx ShadowVertex;
 #define SHADOW_PRODUCT(a, b) ((a) * (b))
 #define SHADOW_DIFFERENCE(a, b) ((a) - (b))
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 
 /* The bits of a vertex off the texture: to the left, the right, above, and below. */
 #define SHADOW_OFF_LOW_S 0x1
@@ -128,7 +128,7 @@ void RenderTrackInstance(
 void RenderTrackInstance(s32 index, s32 vehicles, s32 deferred) {
     ViewportRect *viewports = g_aViewportRects;
     Vehicle *firstVehicle = g_aVehicles;
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
     TrackInstance *instance = &g_LoadedTrack.instances[index];
     DisplayListCommand *displayList = instance->displayList;
     DisplayListCommand *out = g_pShadowDisplayListWritePtr;
@@ -221,7 +221,7 @@ void RenderTrackInstance(s32 index, s32 vehicles, s32 deferred) {
                    15);
         gDPSetTileSize(gDisplayListPtr++, G_TX_RENDERTILE, 0, 0, 63 << 2, 63 << 2);
         gSPTexture(gDisplayListPtr++, 0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON);
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
         gDPSetTextureLOD(gDisplayListPtr++, G_TL_TILE);
         gDPSetPrimColor(gDisplayListPtr++, PRIM_MIN_LEVEL, 0, 0xFF, 0, 0, 0xFF);
         if (deferred && !g_dwNightMode && !g_dwRainMode) {
@@ -357,7 +357,7 @@ void RenderTrackInstance(s32 index, s32 vehicles, s32 deferred) {
             /* The first wheel of the model sizes the shadow. */
             lengthScale = SHADOW_LENGTH_SCALE / vehicle->model->wheels[0].x / lengthScale;
             widthScale = SHADOW_WIDTH_SCALE / vehicle->model->wheels[0].y / widthScale;
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
             Vec3fNormalize(&g_vShadowForward);
             alongX = SHADOW_PRODUCT(g_vShadowForward.x, lengthScale);
             alongY = SHADOW_PRODUCT(-g_vShadowForward.y, lengthScale);
@@ -493,7 +493,7 @@ void RenderTrackInstance(s32 index, s32 vehicles, s32 deferred) {
                         } else if (t >= SHADOW_TEXTURE_T) {
                             bits |= SHADOW_OFF_HIGH_T;
                         }
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
                         *flag++ = bits;
                     }
                 } else if ((w0 >> 24) == G_TRI2) {
@@ -511,7 +511,7 @@ void RenderTrackInstance(s32 index, s32 vehicles, s32 deferred) {
                                 instance, vehicle, savedVertex, source->words.w1);
                         }
                         source++;
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
                     } else if (TriangleOffTexture(offTexture, w0)) {
                         if (!TriangleOffTexture(offTexture, source->words.w1)) {
                             out->words.w0 = _SHIFTL(G_TRI1, 24, 8);

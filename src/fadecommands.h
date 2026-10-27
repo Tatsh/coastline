@@ -43,6 +43,6 @@
                       0,                                                                           \
                       0,                                                                           \
                       secondCycle)
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 
-#endif
+#endif /* COASTLINE_FADE_COMMANDS_H */

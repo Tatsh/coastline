@@ -452,6 +452,6 @@ s32 osEepromWrite(OSMesgQueue *mq, u8 address, u8 *buffer);
  * @ghidraAddress JPN: 0x8026aad0
  */
 s32 osEepromRead(OSMesgQueue *mq, u8 address, u8 *buffer);
-#endif
+#endif /* TGR_REGION == TGR_REGION_JP || TGR_REGION == TGR_REGION_EU */
 
-#endif
+#endif /* PR_OS_CONT_H */

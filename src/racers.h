@@ -116,4 +116,4 @@ void UpdateRaceProgress(RacerSlot *slot);
 }
 #endif
 
-#endif
+#endif /* COASTLINE_RACERS_H */

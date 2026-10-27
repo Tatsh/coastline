@@ -117,4 +117,4 @@ void __osPackReadData(void) {
     }
     *ptr = CONT_CMD_END;
 }
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */

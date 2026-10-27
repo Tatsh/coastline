@@ -51,4 +51,4 @@ extern s32 g_dwPauseMenuSelection;
 }
 #endif
 
-#endif
+#endif /* COASTLINE_PAUSE_H */

@@ -28,4 +28,4 @@ void ManageAiRacerSlots(Vehicle *player);
 }
 #endif
 
-#endif
+#endif /* COASTLINE_RACER_SHARING_H */

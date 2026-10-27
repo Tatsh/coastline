@@ -34,7 +34,7 @@ static f32 ReadVehicleControlAxis(f32 value, f32 offset, f32 scale, s32 negative
 #define CONTROL_LESS(a, b) ((a) < (b))
 #define CONTROL_NONZERO(x) ((x) != 0.0f)
 #define CONTROL_EQUAL(a, b) ((a) == (b))
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 
 /* The dead zone of the steering and of the stick that drives, and the share of the stick past
  * each. */

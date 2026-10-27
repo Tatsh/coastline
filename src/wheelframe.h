@@ -15,4 +15,4 @@ typedef struct {
     f32 positionW;  /*!< 1, the last column of the matrix. */
 } WheelFrame;
 
-#endif
+#endif /* COASTLINE_WHEEL_FRAME_H */

@@ -79,7 +79,7 @@ extern s32 g_dwIsPaintMode;
  * @ghidraAddress JPN: 0x80273e18
  */
 extern s32 g_dwUnlockAllCheatPressCount;
-#endif
+#endif /* TGR_REGION == TGR_REGION_EU || TGR_REGION == TGR_REGION_JP */
 
 /**
  * Start the next race of the championship for one player.
@@ -108,4 +108,4 @@ void StartTimeAttack(void);
  */
 void ProcessMainMenu(void);
 
-#endif
+#endif /* COASTLINE_MAINMENU_H */

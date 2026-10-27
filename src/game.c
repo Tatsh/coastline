@@ -20,7 +20,7 @@
 #include "displaylistops.h"
 #include "platform/win/gameinit.h"
 #include "screen.h"
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_N64 */
 
 #if TGR_PLATFORM == TGR_PLATFORM_N64
 
@@ -33,7 +33,7 @@ u32 g_dwNightMode;
 u32 g_dwSnowMode;
 u32 g_dwRainMode;
 u32 g_dwNumLocalPlayers = 1;
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_N64 */
 
 void ApplyWeather(u32 weather) {
     g_dwNightMode = g_dwRainMode = g_dwSnowMode = 0;
@@ -86,7 +86,7 @@ void ResetAllPlayers(void) {
         InitPlayerInputState(&g_aPlayerInputState[i]);
     }
 }
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_N64 */
 
 void InitGameAndShowMenus(void) {
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
@@ -108,7 +108,7 @@ void InitGameAndShowMenus(void) {
     g_dwGhostRecordingSize = DmaReadAssetSize(ROM_GHOST_RECORDING);
     DecompressFromRom(g_abGhostRecording, ROM_GHOST_RECORDING, NULL);
     g_dwGhostRecordingSize = 8;
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 
     ResetHeap();
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
@@ -155,7 +155,7 @@ void InitGameAndShowMenus(void) {
     osSyncPrintf("sizeof(Vehicle)=%d\n", (int)sizeof(Vehicle));
     osSyncPrintf("sizeof(Enemy)=%d\n", 0x78);
 #endif
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 
     GameModeMainLoop();
 }

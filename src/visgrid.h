@@ -187,4 +187,4 @@ void BuildVisibleGrid(void);
 }
 #endif
 
-#endif
+#endif /* COASTLINE_VISGRID_H */

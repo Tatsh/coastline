@@ -54,4 +54,4 @@ void PackCombineMode(GbiCommand *pCommand,
 }
 #endif
 
-#endif
+#endif /* COASTLINE_PLATFORM_WIN_COMBINE_H */

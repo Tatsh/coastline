@@ -54,7 +54,7 @@
 #define DECALS_LABEL "Decals"
 #define PLAYER_NOT_FINISHED_FORMAT "%%ryP%d: Did not finish"
 #define NOT_FINISHED_FORMAT "%%ryDid not finish"
-#endif
+#endif /* TGR_REGION == TGR_REGION_JP */
 
 /* The height of the cars over their stage. */
 #define STAGE_HEIGHT 0.254f
@@ -351,7 +351,7 @@ static inline void StartCarSelect(void) {
         StartHighResFrame();
         FlushDisplayList();
     }
-#endif
+#endif /* TGR_REGION != TGR_REGION_US */
     g_dwCarSelectStartTime = g_dwElapsedTimeMs;
     SetFadeTarget(1.0f, SCREEN_FADE_RATE);
     FadeSfxTo(1.0f, SCREEN_FADE_RATE);
@@ -491,7 +491,7 @@ static inline void PaintPendingModels(void) {
                          vehicle->color[2] >> 3);
     }
 }
-#endif
+#endif /* TGR_REGION == TGR_REGION_JP */
 
 /** The models of the option a player chose and of the one the cursor left, or NULL for cars. */
 static inline Model *OptionModel(s32 player, s32 option) {
@@ -564,7 +564,7 @@ static inline void DrawCarSelectTitle(char *text) {
                     prefix,
                     g_apTrackMenuItems[track]->name,
                     g_apWeatherMenuItems[g_dwCarSelectWeather]->name);
-#endif
+#endif /* TGR_REGION == TGR_REGION_JP */
         } else {
             sprintf(text, "%%ry%s", g_SeasonTable[g_dwResultsSeason].name);
         }
@@ -681,7 +681,7 @@ static inline void DrawSeasonResults(void) {
                 g_apTrackMenuItems[track]->name,
                 g_apWeatherMenuItems[season->races[race][1]]->name);
         DrawText(g_szResultsBuf, g_dwScreenWidth * 3 / 16 - shift, y);
-#endif
+#endif /* TGR_REGION == TGR_REGION_JP */
         SetTextAlignCenter();
         if (race <= g_dwResultsRound) {
             FormatLapTime(g_szResultsBuf, g_pActiveProfile->seasonTimes[g_dwResultsSeason][race]);
@@ -760,7 +760,7 @@ static inline void DrawRumbleNote(s32 player, s32 y) {
     DrawText("%wwshould ensure that it", x, y + 37);
     DrawText("%wwis plugged in before", x, y + 45);
     DrawText("%wwpressing A.", x, y + 54);
-#endif
+#endif /* TGR_REGION == TGR_REGION_JP */
 }
 
 /** Draw the engine, gearbox, acceleration and top speed of the car of a player. */
@@ -844,7 +844,7 @@ static inline void DrawOnePlayerChoices(char *text) {
         DrawText("%wwensure that it is plugged in before pressing A.",
                  g_dwScreenWidth / 2,
                  g_dwScreenHeight * 3 / 8 + 2);
-#endif
+#endif /* TGR_REGION == TGR_REGION_JP */
     }
     if (g_adwCarSelectState[0] != CAR_SELECT_CAR) {
         return;
@@ -1442,7 +1442,7 @@ void ProcessCarSelectScreen(void) {
             }
         }
     }
-#endif
+#endif /* TGR_REGION == TGR_REGION_JP */
     SetupMenuProjection((f32)g_dwScreenWidth, (f32)g_dwScreenHeight);
     SetViewport(0, 0, g_dwScreenWidth, g_dwScreenHeight, TRUE);
     if (g_dwTitleRedrawFrames != 0 || !IsFadeComplete()) {

@@ -22,6 +22,22 @@ private:
     unsigned char *pBuffer; /*!< The bytes, abBuffer or a buffer attached. */
     unsigned char abBuffer[NET_STREAM_BUFFER_SIZE]; /*!< The bytes of a stream of its own. */
 
+    /**
+     * Move the reading to the next whole byte.
+     *
+     * @ghidraAddress BRD3D: 0x10073d20
+     * @ghidraAddress BRGlide: 0x1006cf60
+     */
+    void StreamAlignReadByte();
+
+    /**
+     * Move the writing to the next whole byte.
+     *
+     * @ghidraAddress BRD3D: 0x10073f20
+     * @ghidraAddress BRGlide: 0x1006d160
+     */
+    void StreamFlushWriteByte();
+
 public:
     /**
      * An empty stream of its own bytes.
@@ -112,16 +128,6 @@ public:
      */
     unsigned BitStreamReadBits(int nBits);
 
-private:
-    /**
-     * Move the reading to the next whole byte.
-     *
-     * @ghidraAddress BRD3D: 0x10073d20
-     * @ghidraAddress BRGlide: 0x1006cf60
-     */
-    void StreamAlignReadByte();
-
-public:
     /**
      * Whether the reading arrived at the end of the data written.
      *
@@ -177,16 +183,6 @@ public:
      */
     void BitStreamWriteBits(unsigned nValue, int nBits);
 
-private:
-    /**
-     * Move the writing to the next whole byte.
-     *
-     * @ghidraAddress BRD3D: 0x10073f20
-     * @ghidraAddress BRGlide: 0x1006d160
-     */
-    void StreamFlushWriteByte();
-
-public:
     /**
      * The number of bytes written, counting a byte partly written.
      *

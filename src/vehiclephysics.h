@@ -45,10 +45,10 @@ s32 ShouldStepVehiclePhysics(Vehicle *vehicle);
 
 /** Update drawing transforms or send the local driver's motion. */
 void FinishVehiclePhysicsFrame(Vehicle *vehicle);
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif
+#endif /* COASTLINE_VEHICLEPHYSICS_H */

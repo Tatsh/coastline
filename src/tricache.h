@@ -109,4 +109,4 @@ s16 BuildTrackTriangleCache(f32 x, f32 y);
 }
 #endif
 
-#endif
+#endif /* COASTLINE_TRICACHE_H */

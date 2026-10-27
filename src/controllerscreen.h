@@ -85,4 +85,4 @@ void DrawControllerLayoutDiagram(s32 layout);
  */
 void ProcessControllerConfigScreen(void);
 
-#endif
+#endif /* COASTLINE_CONTROLLERSCREEN_H */

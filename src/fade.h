@@ -77,7 +77,7 @@ extern f32 g_fScreenFogPulse;
  * @ghidraAddress BRD3D: 0x100bbae4
  */
 extern u8 g_bSfxFadeVolume;
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 
 /**
  * The level the screen fades to.
@@ -256,7 +256,7 @@ void RenderHeadlightGlare(const ViewportRect *viewports, f32 level);
  * @ghidraAddress JPN: 0x80223fb0
  */
 void RenderHeadlightGlare(void);
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 
 /**
  * Fade the screen towards a level over a time in seconds. A fade out asked for while the screen
@@ -427,4 +427,4 @@ void UpdateFadeTransitions(void);
 }
 #endif
 
-#endif
+#endif /* COASTLINE_FADE_H */

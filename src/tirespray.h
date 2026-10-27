@@ -22,4 +22,4 @@ void MoveTireSpray(void);
 }
 #endif
 
-#endif
+#endif /* COASTLINE_TIRE_SPRAY_H */

@@ -91,4 +91,4 @@ private:
     std::uint32_t requestedHandle;
 };
 
-#endif
+#endif /* COASTLINE_EAR_ENVIRONMENT_H */

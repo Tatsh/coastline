@@ -60,7 +60,7 @@ static inline void DrawHudTimeLabel(unsigned label, const char *color, f32 secon
 #define HUD_SUFFIX_RD "rd"
 #define HUD_SUFFIX_TH "th"
 #define DRAW_HUD_TIME DrawLabelWithTime
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
 void DrawRaceTimerHud(const ViewportRect *viewports) {
@@ -134,7 +134,7 @@ void DrawRaceTimerHud(void) {
                           HUD_RACE_ADD(y, below));
         }
         break;
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_N64 */
     case GAME_MODE_PRACTICE:
         if (g_dwNumViewports == 1) {
             DRAW_HUD_TIME(HUD_BEST_LAP,

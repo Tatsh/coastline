@@ -407,7 +407,7 @@ typedef struct {
         _g->words.w0 = (c0);                                                                       \
         _g->words.w1 = (c1);                                                                       \
     }
-#endif
+#endif /* defined(TGR_PLATFORM) && TGR_PLATFORM == TGR_PLATFORM_WIN */
 
 /** Write command cmd with no parameters. */
 #define gDPNoParam(pkt, cmd) gDisplayListWords(pkt, _SHIFTL(cmd, 24, 8), 0)
@@ -450,7 +450,7 @@ typedef struct {
     ((flag) == 0 ? _SHIFTL((v0) * 2, 16, 8) | _SHIFTL((v1) * 2, 8, 8) | _SHIFTL((v2) * 2, 0, 8) :  \
      (flag) == 1 ? _SHIFTL((v1) * 2, 16, 8) | _SHIFTL((v2) * 2, 8, 8) | _SHIFTL((v0) * 2, 0, 8) :  \
                    _SHIFTL((v2) * 2, 16, 8) | _SHIFTL((v0) * 2, 8, 8) | _SHIFTL((v1) * 2, 0, 8))
-#endif
+#endif /* defined(TGR_PLATFORM) && TGR_PLATFORM == TGR_PLATFORM_WIN */
 
 /** Draw two triangles of the vertex buffer. */
 #define gSP2Triangles(pkt, v00, v01, v02, flag0, v10, v11, v12, flag1)                             \
@@ -595,7 +595,7 @@ typedef struct {
                           _SHIFTL((s32)((f32)(uly) * 4.0f), 0, 12),                                \
                       _SHIFTL(mode, 24, 2) | _SHIFTL((s32)((f32)(lrx) * 4.0f), 12, 12) |           \
                           _SHIFTL((s32)((f32)(lry) * 4.0f), 0, 12))
-#endif
+#endif /* defined(TGR_PLATFORM) && TGR_PLATFORM == TGR_PLATFORM_WIN */
 /** Set the render mode from the modes of the first and second cycles. */
 #define gDPSetRenderMode(pkt, c0, c1)                                                              \
     gSPSetOtherMode(pkt, G_SETOTHERMODE_L, G_MDSFT_RENDERMODE, 29, (c0) | (c1))
@@ -669,7 +669,7 @@ typedef struct {
     gDisplayListWords(pkt,                                                                         \
                       _SHIFTL(G_FILLRECT, 24, 8) | _SHIFTL(lrx, 14, 10) | _SHIFTL(lry, 2, 10),     \
                       _SHIFTL(ulx, 14, 10) | _SHIFTL(uly, 2, 10))
-#endif
+#endif /* defined(TGR_PLATFORM) && TGR_PLATFORM == TGR_PLATFORM_WIN */
 /** Set the G_TT_* texture palette. */
 #define gDPSetTextureLUT(pkt, type) gSPSetOtherMode(pkt, G_SETOTHERMODE_H, G_MDSFT_TEXTLUT, 2, type)
 /** Set the G_TP_* texture perspective correction. */
@@ -902,4 +902,4 @@ typedef struct {
         gImmp1(pkt, G_RDPHALF_2, _SHIFTL(dsdx, 16, 16) | _SHIFTL(dtdy, 0, 16));                    \
     }
 
-#endif
+#endif /* PR_GBI_H */

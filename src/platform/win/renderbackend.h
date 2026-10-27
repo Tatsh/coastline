@@ -54,4 +54,4 @@ extern int g_bForceTextureClone;
 }
 #endif
 
-#endif
+#endif /* COASTLINE_WIN_RENDERBACKEND_H */

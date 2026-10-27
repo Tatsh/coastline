@@ -23,4 +23,4 @@ void FormatLapTime(char *out, f32 seconds);
 }
 #endif
 
-#endif
+#endif /* COASTLINE_LAP_TIME_H */

@@ -22,4 +22,4 @@ extern char *g_pszInstallDir;
 }
 #endif
 
-#endif
+#endif /* COASTLINE_LAUNCHER_INSTALLER_H */

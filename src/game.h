@@ -164,4 +164,4 @@ void StartEndingCredits(void);
 }
 #endif
 
-#endif
+#endif /* COASTLINE_GAME_H */

@@ -258,7 +258,9 @@ void AddVehicleJolt(s32 index, f32 amount);
  * @ghidraAddress JPN: 0x80226fc0
  */
 void ChooseReplayCamera(Vehicle *vehicle);
-#endif
+#endif /*
+ * TGR_PLATFORM == TGR_PLATFORM_N64 && (TGR_REGION == TGR_REGION_JP || TGR_REGION == TGR_REGION_EU)
+ */
 
 /**
  * Read the controls of a vehicle, choose the view of a replay, and step the vehicle.
@@ -317,4 +319,4 @@ void UpdateAiVehicleBehavior(Vehicle *vehicle);
 }
 #endif
 
-#endif
+#endif /* COASTLINE_DRIVING_H */

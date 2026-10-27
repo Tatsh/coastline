@@ -49,7 +49,7 @@ void NormalizeLightMatrix(f32 m[4][4]) {
     SCALE_ROW(m[1], max);
     SCALE_ROW(m[2], max);
     SCALE_ROW(m[3], max);
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_N64 */
 }
 
 f32 GetMaxAbsValue12(f32 m[4][4]) {
@@ -134,7 +134,7 @@ f32 Powf(f32 base, f32 exponent) {
     }
     return result * sum;
 }
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_N64 */
 
 void Vec3fCross(Vec3f *out, Vec3f *a, Vec3f *b) {
     f32 ax = a->x, ay = a->y, az = a->z;
@@ -183,7 +183,7 @@ void Vec3fComponentProduct(Vec3f *out, Vec3f *a, Vec3f *b) {
     out->y = b->y * a->y;
     out->z = b->z * a->z;
 }
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_N64 */
 
 void Vec3fScale(Vec3f *out, Vec3f *v, f32 scale) {
     out->x = v->x * scale;
@@ -215,7 +215,7 @@ void Vec3fDivideInPlace(Vec3f *v, f32 divisor) {
     v->x *= divisor;
     v->y *= divisor;
     v->z *= divisor;
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 }
 
 void Vec3fCopy(Vec3f *out, Vec3f *v) {
@@ -233,7 +233,7 @@ void Vec3fCopy(Vec3f *out, Vec3f *v) {
     out->x = v->x;
     out->y = v->y;
     out->z = v->z;
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 }
 
 void Vec3fDirection(Vec3f *out, Vec3f *from, Vec3f *to) {
@@ -254,7 +254,7 @@ void Vec3fDirection(Vec3f *out, Vec3f *from, Vec3f *to) {
     f32 length = sqrtf(dx * dx + dy * dy + dz * dz);
 
     if (length != 0.0f) {
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
         length = 1.0f / length;
         out->x = dx * length;
         out->y = dy * length;
@@ -281,7 +281,7 @@ void Vec3fNormalizeSafe(Vec3f *out, Vec3f *v) {
         out->z = 1.0f;
     }
 }
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_N64 */
 
 void Vec3fNormalize(Vec3f *v) {
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
@@ -311,7 +311,7 @@ void Vec3fNormalize(Vec3f *v) {
         v->y = 0.0f;
         v->z = 1.0f;
     }
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 }
 
 void Vec3fSubtract(Vec3f *out, const Vec3f *a, const Vec3f *b) {
@@ -391,7 +391,7 @@ f32 Vec2fDistance(Vec2f *a, Vec2f *b) {
 
     return sqrtf(dx * dx + dy * dy);
 }
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
 long double Vec3fDistance(Vec3f *a, Vec3f *b) {
@@ -412,7 +412,7 @@ f32 Vec3fDistance(Vec3f *a, Vec3f *b) {
 
     return sqrtf(dx * dx + dy * dy + dz * dz);
 }
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
 long double Vec3fDistanceSquared(Vec3f *a, Vec3f *b) {
@@ -432,7 +432,7 @@ f32 Vec3fDistanceSquared(Vec3f *a, Vec3f *b) {
 
     return dx * dx + dy * dy + dz * dz;
 }
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
 long double Vec3fLength(Vec3f *v) {
@@ -445,7 +445,7 @@ long double Vec3fLength(Vec3f *v) {
 f32 Vec3fLength(Vec3f *v) {
     return sqrtf(v->z * v->z + (v->x * v->x + v->y * v->y));
 }
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
 long double Vec2fLength(Vec2f *v) {
@@ -456,7 +456,7 @@ long double Vec2fLength(Vec2f *v) {
 f32 Vec2fLength(Vec2f *v) {
     return sqrtf(v->y * v->y + v->x * v->x);
 }
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 
 #if TGR_PLATFORM == TGR_PLATFORM_N64
 void Vec3fRotateAroundAxis(Vec3f *v, f32 angle, Vec3f *axis) {
@@ -479,7 +479,7 @@ void Vec3fRotateAroundAxis(Vec3f *v, f32 angle, Vec3f *axis) {
     v->y = (txy - sz) * vx + (t * y * y + c) * vy + (tyz + sx) * vz;
     v->z = (sy + txz) * vx + (tyz - sx) * vy + (t * z * z + c) * vz;
 }
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_N64 */
 
 void Mtx4x4ProjectPoint(Vec3f *out, Vec3f *in, f32 m[4][4]) {
     f32 x = in->x, y = in->y, z = in->z;
@@ -505,7 +505,7 @@ void Vec3fTransformByMatrix(f32 out[4], const Vec3f *in, f32 m[4][4]) {
         }
 #else
         out[i] = x * m[0][i] + y * m[1][i] + z * m[2][i] + m[3][i];
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
     }
 }
 
@@ -526,7 +526,7 @@ void ProjectVec3fToScreen(Vec2f *out, Vec3f *in, f32 m[4][4]) {
     out->x = (x * m[0][0] + y * m[1][0] + z * m[2][0] + m[3][0]) * inverseW;
     out->y = (x * m[0][1] + y * m[1][1] + z * m[2][1] + m[3][1]) * inverseW;
 }
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_N64 */
 
 void Mtx4x4TransformNoTranslation(Vec3f *out, Vec3f *in, f32 m[4][4]) {
     f32 x = in->x, y = in->y, z = in->z;
@@ -546,7 +546,7 @@ void Mtx4x4TransformNoTranslation(Vec3f *out, Vec3f *in, f32 m[4][4]) {
     out->x = (x * m[0][0] + y * m[1][0] + z * m[2][0]) * inverseW;
     out->y = (x * m[0][1] + y * m[1][1] + z * m[2][1]) * inverseW;
     out->z = (x * m[0][2] + y * m[1][2] + z * m[2][2]) * inverseW;
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 }
 
 void Mtx3x3TransformVec(Vec3f *out, Vec3f *in, f32 m[4][4]) {
@@ -577,7 +577,7 @@ void Mtx4x4Multiply(f32 out[4][4], f32 a[4][4], f32 b[4][4]) {
             for (i = 0; i < 4; i++) {
                 product[row][column] += a[row][i] * b[i][column];
             }
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
         }
     }
     for (row = 0; row < 4; row++) {
@@ -606,7 +606,7 @@ void Mtx4fTranspose(f32 out[4][4], f32 in[4][4]) {
     SWAP_ENTRY(1, 3);
     SWAP_ENTRY(2, 3);
 }
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_N64 */
 
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
 void CopyMatrix4x4(f32 in[4][4], f32 out[4][4]) {
@@ -624,7 +624,7 @@ void CopyMatrix4x4(f32 in[4][4], f32 out[4][4]) {
 void CopyMatrix4x4(f32 out[4][4], f32 in[4][4]) {
     memcpy(out, in, sizeof(f32[4][4]));
 }
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 
 s32 MtxInvert4x4(f32 out[4][4], f32 in[4][4]) {
     f32 negative = 0.0f, positive = 0.0f;
@@ -687,7 +687,7 @@ s32 MtxInvert4x4(f32 out[4][4], f32 in[4][4]) {
             }
         }
         return 1;
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_N64 */
     }
 
     /* The determinant becomes its reciprocal. */
@@ -730,7 +730,7 @@ long double Atan2f(f32 x, f32 y) {
 #define ATAN_ZERO(value) ((value) == 0.0f)
 f32 Atan2f(f32 x, f32 y) {
     f32 base = 0.0f, angle, step, s, swap, length;
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
     s32 direct = TRUE;
     s32 i;
 
@@ -803,7 +803,7 @@ f32 Atan2f(f32 x, f32 y) {
         base += QUARTER_PI_F - angle;
     }
     return base;
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 }
 
 #undef ATAN_LESS
@@ -856,7 +856,7 @@ s32 IsPointInsideTriangle(
     }
     return TRUE;
 }
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_N64 */
 
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
 #define INTERSECTION_REAL(value) ((long double)(value))
@@ -949,7 +949,7 @@ s32 SegmentCrossesLine2D(const Vec3f *a, const Vec3f *b, const Vec3f *p, const V
         return 2;
     }
     return 1;
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 }
 
 void SetRngSeed(u32 seed) {
@@ -994,4 +994,4 @@ void Vec3dCross(Vec3d *a, Vec3d *b, Vec3d *out) {
     out->y = (long double)a->z * b->x - (long double)a->x * b->z;
     out->z = (long double)a->x * b->y - (long double)a->y * b->x;
 }
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */

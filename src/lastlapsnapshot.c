@@ -31,7 +31,7 @@ static inline void StoreLastLapBuffer(u8 **destination, u8 *value) {
 #define LAST_LAP_RECORDING_ACTIVE() (vehicle->input->recordBuffers[vehicle->index] != NULL)
 #define LAST_LAP_STORE_INTEGER(field, value) ((field) = (value))
 #define LAST_LAP_STORE_BUFFER(field, value) ((field) = (value))
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
 void Vehicle::SaveLastLapSnapshot(void) {

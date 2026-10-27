@@ -25,8 +25,6 @@
 
 /** The names of the saved files a screen of the front end lists. */
 class SaveFileList {
-    char aszNames[SAVE_FILE_NAME_COUNT][SAVE_FILE_NAME_SIZE]; /*!< The names, empty at the start. */
-
 public:
     /**
      * Clear every name.
@@ -53,7 +51,19 @@ public:
      */
     virtual int ScanSaveFiles(const char *pszPattern);
 
+    const char *GetName(int index) const {
+        return aszNames[index];
+    }
+    void SetName(int index, const char *text) {
+        std::strcpy(aszNames[index], text);
+    }
+    void SetFormattedName(int index, const char *format, int value) {
+        std::sprintf(aszNames[index], format, value);
+    }
+
 private:
+    char aszNames[SAVE_FILE_NAME_COUNT][SAVE_FILE_NAME_SIZE]; /*!< The names, empty at the start. */
+
     /**
      * Count matches after the first, stopping after 100 files.
      *
@@ -99,17 +109,6 @@ private:
      * @ghidraAddress BRD3D: 0x1005ce30
      */
     virtual int SetEntryFromSaveFileName(const char *pszFileName, const char *pszDescription);
-
-public:
-    const char *GetName(int index) const {
-        return aszNames[index];
-    }
-    void SetName(int index, const char *text) {
-        std::strcpy(aszNames[index], text);
-    }
-    void SetFormattedName(int index, const char *format, int value) {
-        std::sprintf(aszNames[index], format, value);
-    }
 };
 
 class MenuScreen;
@@ -134,22 +133,6 @@ public:
      */
     virtual ~MenuItemList();
 
-private:
-    /**
-     * @ghidraAddress BRD3D: 0x1005c270
-     */
-    virtual int BlitSurfaceById(unsigned short image, float x, float y);
-    /**
-     * @ghidraAddress BRD3D: 0x1005c2c0
-     */
-    virtual int Draw(int selection);
-    /**
-     * @ghidraAddress BRD3D: 0x10042af0
-     * @stub
-     */
-    virtual int ReturnOne();
-
-public:
     /**
      * @ghidraAddress BRD3D: 0x1005bc10
      */
@@ -164,17 +147,6 @@ public:
                            int firstVisibleRow,
                            int backgroundImage);
 
-private:
-    /**
-     * @ghidraAddress BRD3D: 0x1005c510
-     */
-    virtual int UpdateHoverInRect(const RECT *bounds);
-    /**
-     * @ghidraAddress BRD3D: 0x1005c590
-     */
-    virtual int ProcessInput(int *selection);
-
-public:
     /**
      * @ghidraAddress BRD3D: 0x1005cb40
      */
@@ -242,6 +214,29 @@ public:
     }
 
 private:
+    /**
+     * @ghidraAddress BRD3D: 0x1005c270
+     */
+    virtual int BlitSurfaceById(unsigned short image, float x, float y);
+    /**
+     * @ghidraAddress BRD3D: 0x1005c2c0
+     */
+    virtual int Draw(int selection);
+    /**
+     * @ghidraAddress BRD3D: 0x10042af0
+     * @stub
+     */
+    virtual int ReturnOne();
+
+    /**
+     * @ghidraAddress BRD3D: 0x1005c510
+     */
+    virtual int UpdateHoverInRect(const RECT *bounds);
+    /**
+     * @ghidraAddress BRD3D: 0x1005c590
+     */
+    virtual int ProcessInput(int *selection);
+
     int (*pfnSelectionChanged)(MenuItemList *, int *);
     void (*pfnScrollUp)(void);
     void (*pfnScrollDown)(void);
@@ -301,14 +296,6 @@ public:
      */
     virtual int UpdateBlinkTimer();
 
-private:
-    /**
-     * @ghidraAddress BRD3D: 0x10048010
-     * @ghidraAddress BRGlide: 0x10041460
-     */
-    virtual int Draw();
-
-public:
     /**
      * Run a frame of the item.
      *
@@ -318,49 +305,11 @@ public:
      */
     virtual bool Update();
 
-private:
-    /**
-     * @ghidraAddress BRD3D: 0x10047a10
-     */
-    virtual int DrawCurrentImage();
-
-public:
     /**
      * @ghidraAddress BRD3D: 0x100479d0
      */
     virtual int BlitSurfaceById(int nImage, int x, int y);
 
-private:
-    /**
-     * @ghidraAddress BRD3D: 0x10047980
-     */
-    virtual int DrawSpriteRegion(const RECT *pRect);
-    /**
-     * @ghidraAddress BRD3D: 0x10047930
-     */
-    virtual int DrawSprite();
-    /**
-     * @ghidraAddress BRD3D: 0x10047a60
-     */
-    virtual bool UpdateHoverState();
-    /**
-     * @ghidraAddress BRD3D: 0x10047cb0
-     */
-    virtual int InitSlideAnimation(int nDuration);
-    /**
-     * @ghidraAddress BRD3D: 0x10047ce0
-     */
-    virtual long double ComputeSlideOffset(int nTicks);
-    /**
-     * @ghidraAddress BRD3D: 0x10047d10
-     */
-    virtual int StartSlideAnimation();
-    /**
-     * @ghidraAddress BRD3D: 0x10047d30
-     */
-    virtual int UpdateSlideAnimation();
-
-public:
     /**
      * @ghidraAddress BRD3D: 0x10047eb0
      */
@@ -378,20 +327,6 @@ public:
                             int nMode,
                             short nImage);
 
-private:
-    /**
-     * @ghidraAddress BRD3D: 0x10048060
-     */
-    virtual bool IsBlockedByModalDialog();
-
-    MenuWidget *LinkedMenuWidget(int index);
-    bool UpdateMenuSlideAxis(int enabled,
-                             signed char direction,
-                             const float &saved,
-                             const float &target,
-                             float &current);
-
-public:
     MenuScreen *GetScreen() const {
         return pScreen;
     }
@@ -493,6 +428,58 @@ public:
     }
 
 private:
+    /**
+     * @ghidraAddress BRD3D: 0x10048010
+     * @ghidraAddress BRGlide: 0x10041460
+     */
+    virtual int Draw();
+
+    /**
+     * @ghidraAddress BRD3D: 0x10047a10
+     */
+    virtual int DrawCurrentImage();
+
+    /**
+     * @ghidraAddress BRD3D: 0x10047980
+     */
+    virtual int DrawSpriteRegion(const RECT *pRect);
+    /**
+     * @ghidraAddress BRD3D: 0x10047930
+     */
+    virtual int DrawSprite();
+    /**
+     * @ghidraAddress BRD3D: 0x10047a60
+     */
+    virtual bool UpdateHoverState();
+    /**
+     * @ghidraAddress BRD3D: 0x10047cb0
+     */
+    virtual int InitSlideAnimation(int nDuration);
+    /**
+     * @ghidraAddress BRD3D: 0x10047ce0
+     */
+    virtual long double ComputeSlideOffset(int nTicks);
+    /**
+     * @ghidraAddress BRD3D: 0x10047d10
+     */
+    virtual int StartSlideAnimation();
+    /**
+     * @ghidraAddress BRD3D: 0x10047d30
+     */
+    virtual int UpdateSlideAnimation();
+
+    /**
+     * @ghidraAddress BRD3D: 0x10048060
+     */
+    virtual bool IsBlockedByModalDialog();
+
+    MenuWidget *LinkedMenuWidget(int index);
+    bool UpdateMenuSlideAxis(int enabled,
+                             signed char direction,
+                             const float &saved,
+                             const float &target,
+                             float &current);
+
     int (*pfnUpdate)(MenuWidget *);
     int (*pfnAction)(MenuActionWidget *);
     int (*pfnIdleAction)(MenuWidget *);
@@ -2426,25 +2413,6 @@ public:
      */
     static int OnReturnToMainMenu(MenuWidget *pWidget);
 
-private:
-    /**
-     * Start a frame of the screen.
-     *
-     * @return Always true.
-     * @ghidraAddress BRD3D: 0x100488b0
-     * @ghidraAddress BRGlide: 0x10041d00
-     */
-    virtual bool BeginFrame();
-    /**
-     * Finish a frame of the screen.
-     *
-     * @return Whether the frame finished.
-     * @ghidraAddress BRD3D: 0x100488c0
-     * @ghidraAddress BRGlide: 0x10041d10
-     */
-    virtual bool EndFrame();
-
-public:
     /**
      * Run a frame of the screen, and shut the front end down once the screen stops running.
      *
@@ -2544,6 +2512,23 @@ public:
     }
 
 private:
+    /**
+     * Start a frame of the screen.
+     *
+     * @return Always true.
+     * @ghidraAddress BRD3D: 0x100488b0
+     * @ghidraAddress BRGlide: 0x10041d00
+     */
+    virtual bool BeginFrame();
+    /**
+     * Finish a frame of the screen.
+     *
+     * @return Whether the frame finished.
+     * @ghidraAddress BRD3D: 0x100488c0
+     * @ghidraAddress BRGlide: 0x10041d10
+     */
+    virtual bool EndFrame();
+
     void (*pfnBuildMenu)(MenuScreen *pScreen); /*!< Builds the items of the screen. */
     int dwFlags;                  /*!< Options of the screen. Bit 0x10 stops EndFrame(). */
     int bBuilt;                   /*!< Whether pfnBuildMenu built the items of the screen. */
@@ -3106,7 +3091,7 @@ extern IDirectDraw2 *g_pMenuDirectDraw;
  * @ghidraAddress BRD3D: 0x1005f690
  */
 bool InitMenuDirectDrawSurfaces(void);
-#endif
+#endif /* TGR_RENDERER == TGR_RENDERER_D3D */
 
 #if TGR_RENDERER == TGR_RENDERER_GLIDE
 /**
@@ -3227,7 +3212,7 @@ extern int g_dwFrontEndSurfaceBitDepth;
  * @ghidraAddress BRD3D: 0x10690a04
  */
 extern int g_dwFrontEndSurfaceRefreshRate;
-#endif
+#endif /* TGR_RENDERER == TGR_RENDERER_D3D */
 
 /**
  * Whether the screen of the setup of the car of network play shows.

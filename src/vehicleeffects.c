@@ -12,7 +12,7 @@
 #define EMIT_EXHAUST(vehicle) SpawnExhaustParticle(vehicle)
 #define EMIT_SMOKE(vehicle) SpawnTireSmoke(vehicle)
 #define EMIT_SPRAY(vehicle) EmitTireSpray(vehicle)
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 
 void UpdateAllVehicleEffects(void) {
     /**
