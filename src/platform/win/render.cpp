@@ -1379,3 +1379,51 @@ void UploadTrackTextureVariants(ModelTexture *pTextures, int nCount) {
         entryCount = g_dwTextureEntryCount;
     }
 }
+
+int DecodeN64TextureToPixelBuffer(void *pDest,
+                                  const unsigned char *pImage,
+                                  const unsigned char *pPalette,
+                                  int nWidth,
+                                  int nHeight,
+                                  int nLineBytes,
+                                  int nSize,
+                                  int nFormat) {
+    int widthBits = GetMipLevelFromDimension(nWidth);
+    int heightBits = GetMipLevelFromDimension(nHeight);
+    unsigned width = 1u << widthBits;
+    unsigned height = 1u << heightBits;
+    TexScanTile tiles[TEX_SCAN_TILE_COUNT];
+    tiles[0].nTmem = 0;
+    tiles[0].nMaskS = widthBits;
+    tiles[0].nMaskT = heightBits;
+    tiles[0].nLineBytes = nLineBytes;
+    tiles[0].nSize = nSize;
+    tiles[0].nFormat = nFormat;
+    g_bTexScanPrimColorSet = 0;
+    g_bTexScanEnvColorSet = 0;
+    int format = ChooseTexturePixelFormat(nSize, nFormat, 0);
+    int size = static_cast<int>(GetTexturePixelSize(format) * width * height);
+    DecodeTexturePixels(g_abDecodedTexturePixels,
+                        size,
+                        nSize,
+                        pImage,
+                        pPalette,
+                        nFormat,
+                        0,
+                        0,
+                        0,
+                        1,
+                        tiles,
+                        g_dwTextureLoadCategory,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0);
+    return ConvertRGBAToPixelFormat(pDest, g_abDecodedTexturePixels, size, format);
+}

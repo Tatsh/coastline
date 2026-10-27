@@ -1444,3 +1444,26 @@ extern const char g_szTidFromTextureAppendAmid[];
  * @ghidraAddress BRD3D: 0x1002a430
  */
 void UploadTrackTextureVariants(ModelTexture *pTextures, int nCount);
+
+/**
+ * Decode an N64 image into the pixel format selected for its texel size and format.
+ *
+ * @param pDest Receives device pixels.
+ * @param pImage The source image bytes.
+ * @param pPalette The source palette bytes.
+ * @param nWidth The source width.
+ * @param nHeight The source height.
+ * @param nLineBytes The captured tile line size.
+ * @param nSize The N64 texel size.
+ * @param nFormat The N64 image format.
+ * @return The device pixel byte count.
+ * @ghidraAddress BRD3D: 0x10025830
+ */
+int DecodeN64TextureToPixelBuffer(void *pDest,
+                                  const unsigned char *pImage,
+                                  const unsigned char *pPalette,
+                                  int nWidth,
+                                  int nHeight,
+                                  int nLineBytes,
+                                  int nSize,
+                                  int nFormat);
