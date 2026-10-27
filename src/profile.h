@@ -17,7 +17,11 @@ extern "C" {
 #define SEASON_RACES 4 /*!< The most races of a season. */
 
 /** The tracks a profile keeps records for: the five tracks and their mirrored versions. */
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#define PROFILE_RECORD_TRACKS 14
+#else
 #define PROFILE_RECORD_TRACKS 10
+#endif
 
 /**
  * The saved settings and progress of a player. Its fields join this structure as the routines that
@@ -42,7 +46,11 @@ typedef struct {
                                                  seconds. */
     f32 lapRecords[PROFILE_RECORD_TRACKS];  /*!< The best lap on each track, in seconds, or 0 when
                                                  none was set. */
-    u8 unreconstructedB4[0xCC - 0xB4];      /*!< Not read by the routines reconstructed so far. */
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+    u8 abUnknownE8[8]; /* +0xe8 */
+#else
+    u8 unreconstructedB4[0xCC - 0xB4]; /*!< Not read by the routines reconstructed so far. */
+#endif
     u16 unlocks;          /*!< The unlocked cars, a bit for each from bit 0, and further unlocks
                                above them. */
     u16 unlockedTracks;   /*!< The unlocked tracks, a bit for each. */
@@ -59,7 +67,11 @@ typedef struct {
     s32 controllerLayout; /*!< The button layout the player chose on the controller screen. */
     f32 raceRecords[PROFILE_RECORD_TRACKS]; /*!< The best race on each track, in seconds, or 0 when
                                                  none was set. */
-    u8 unreconstructed110[0x128 - 0x110];   /*!< Not read by the routines reconstructed so far. */
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+    u8 abUnknown144[8]; /* +0x144 */
+#else
+    u8 unreconstructed110[0x128 - 0x110]; /*!< Not read by the routines reconstructed so far. */
+#endif
 } PlayerProfile;
 
 /**
