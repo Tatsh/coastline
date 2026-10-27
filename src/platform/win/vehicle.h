@@ -4,6 +4,9 @@
 #include "profile.h"
 #include "rigidbody.h"
 #include "types.h"
+#include "vehiclemodel.h"
+
+#define VEHICLE_GHOST 2
 
 /** Recovered fields of a Windows vehicle. */
 typedef struct Vehicle {
@@ -27,9 +30,11 @@ typedef struct Vehicle {
     f32 progress;
     u8 abUnknownFf8[0x19b4]; /* +0xff8 */
     u8 color[3];
-    u8 abUnknown29af[0x11]; /* +0x29af */
+    u8 ghostMode;
+    u8 abUnknown29b0[0x10]; /* +0x29b0 */
     PlayerInputState *input;
-    u8 abUnknown29c4[0x1a4]; /* +0x29c4 */
+    VehicleModel *model;
+    u8 abUnknown29c8[0x1a0]; /* +0x29c8 */
 #ifdef __cplusplus
     /**
      * Initialise the player slot, profile defaults, and vehicle selection.
