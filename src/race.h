@@ -605,8 +605,23 @@ void RestoreRaceResultsFromSlots(void);
  * @ghidraAddress USA: 0x80206304
  * @ghidraAddress EUR: 0x802064c4
  * @ghidraAddress JPN: 0x80206598
+ * @ghidraAddress BRD3D: 0x1002f460
  */
-void SetTrackFromSeason(void);
+#ifdef __cplusplus
+extern "C"
+#endif
+    void SetTrackFromSeason(void);
+
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+/**
+ * @ghidraAddress BRD3D: 0x1002c500
+ * @stub{BRD3D}
+ */
+#ifdef __cplusplus
+extern "C"
+#endif
+    void RunRaceGameScreen(void);
+#endif
 
 /**
  * Score the season of the championship: advance to the next season when its points allow, unlock

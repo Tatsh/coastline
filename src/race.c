@@ -1739,20 +1739,6 @@ void RestoreRaceResultsFromSlots(void) {
     }
 }
 
-void SetTrackFromSeason(void) {
-    PlayerProfile *profile = g_pActiveProfile;
-
-    g_dwSelectedTrackId = g_SeasonTable[profile->season].races[profile->round][0];
-    if (profile->championshipFlags & 1) {
-        if ((s32)g_dwSelectedTrackId < TRACK_MIRRORED) {
-            g_dwSelectedTrackId += TRACK_MIRRORED;
-        } else {
-            g_dwSelectedTrackId -= TRACK_MIRRORED;
-        }
-    }
-    g_dwCurrentWeather = g_SeasonTable[profile->season].races[profile->round][1];
-}
-
 /* Add a line of the bonus of a finished championship, after a blank line when others precede it. */
 #define ADD_BONUS_LINE(line)                                                                       \
     {                                                                                              \

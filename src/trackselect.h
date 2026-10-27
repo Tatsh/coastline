@@ -27,7 +27,11 @@ enum {
 };
 
 /** The places between a track and its mirrored version. */
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#define TRACK_MIRRORED 6
+#else
 #define TRACK_MIRRORED 5
+#endif
 
 /**
  * The track chosen for the next race.
