@@ -1,6 +1,7 @@
 #ifndef COASTLINE_EAR_REGISTRY_H
 #define COASTLINE_EAR_REGISTRY_H
 
+#include <bit>
 #include <cstdint>
 #include <type_traits>
 
@@ -27,13 +28,13 @@ public:
 
 template <typename Value>
     requires std::is_class_v<Value>
-class EarDwordPointerRegistry : public CMap<DWORD, DWORD, void *, void *> {
+class EarDwordPointerRegistry : public CMapPtrToPtr {
 public:
     void SetDwordPointerMapValue(DWORD key, Value *value) {
-        SetAt(key, value);
+        SetAt(std::bit_cast<void *>(key), value);
     }
     BOOL RemovePlaybackRegistryKey(DWORD key) {
-        return RemoveKey(key);
+        return RemoveKey(std::bit_cast<void *>(key));
     }
 };
 

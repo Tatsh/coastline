@@ -2,7 +2,6 @@
 #define COASTLINE_EAR_MFC_H
 
 #include <cstddef>
-#include <type_traits>
 
 #include <windows.h>
 
@@ -36,14 +35,12 @@ private:
     int blockSize;
 };
 
-template <typename Key, typename ArgumentKey, typename Value, typename ArgumentValue>
-    requires(std::is_integral_v<Key> && std::is_pointer_v<Value>)
-class CMap : public CObject {
+class CMapPtrToPtr : public CObject {
 public:
     int GetCount() const;
     UINT GetHashTableSize() const;
-    void SetAt(ArgumentKey key, ArgumentValue value);
-    BOOL RemoveKey(ArgumentKey key);
+    void SetAt(void *key, void *value);
+    BOOL RemoveKey(void *key);
 
 private:
     class Association;
