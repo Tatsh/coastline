@@ -1,6 +1,6 @@
 # PC port game code from 0x10060000 to 0x10070000
 
-106 of 173 routines done.
+108 of 173 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -9,7 +9,7 @@ the same name, for a routine the port retained from the N64 game.
 
 | Name                                     | Status | N64             | # xref | Length | BRD3D        | BRGlide      | Signature                                                                                                                                |
 | ---------------------------------------- | :----: | --------------- | -----: | -----: | ------------ | ------------ | ---------------------------------------------------------------------------------------------------------------------------------------- |
-| `Vehicle::ComputeAiVehicleInput`         |        |                 |      1 |   3858 | `0x10064700` |              | `void ComputeAiVehicleInput(Vehicle * this)`                                                                                             |
+| `Vehicle::ComputeAiVehicleInput`         |   🚧   |                 |      1 |   3858 | `0x10064700` |              | `void ComputeAiVehicleInput(Vehicle * this)`                                                                                             |
 | `Vehicle::UpdateVehicleEngineAndGearbox` |        | ✅ `0x80222050` |      1 |   3226 | `0x10061f70` | `0x1005aff0` | `undefined UpdateVehicleEngineAndGearbox(Vehicle * this)`                                                                                |
 | `ApplySideGrip`                          |        | ✅ `0x80259d14` |      1 |   3070 | `0x1006b5f0` | `0x100645a0` | `undefined ApplySideGrip()`                                                                                                              |
 | `Vehicle::UpdateVehicleSounds`           |        | ✅ `0x8022bcb4` |      1 |   2757 | `0x10068400` | `0x10061470` | `undefined UpdateVehicleSounds(Vehicle * this)`                                                                                          |
@@ -34,7 +34,7 @@ the same name, for a routine the port retained from the N64 game.
 | `Vehicle::ComputeTrackPosition`          |        | ✅ `0x80227214` |      3 |    937 | `0x10064350` | `0x1005d3c0` | `undefined ComputeTrackPosition(Vehicle * this)`                                                                                         |
 | `Vehicle::TraceTrackSplineRecursive`     |        | ✅ `0x80226d9c` |      3 |    856 | `0x10063ff0` | `0x1005d060` | `undefined TraceTrackSplineRecursive(Vehicle * this, undefined4 param_1, undefined4 param_2, undefined4 param_3)`                        |
 | `Vehicle::TransformAllWheelMatrices`     |        | ✅ `0x80221e0c` |      2 |    776 | `0x10061c60` | `0x1005ace0` | `undefined TransformAllWheelMatrices(Vehicle * this)`                                                                                    |
-| `StepVehicleCollisions`                  |        | ✅ `0x8025e55c` |      1 |    762 | `0x1006ec80` | `0x10067c30` | `void StepVehicleCollisions(Vehicle * vehicle, RigidBody * body)`                                                                        |
+| `StepVehicleCollisions`                  |   ✅   | ✅ `0x8025e55c` |      1 |    762 | `0x1006ec80` | `0x10067c30` | `void StepVehicleCollisions(Vehicle * vehicle, RigidBody * body)`                                                                        |
 | `BounceOffPlane`                         |   ✅   | ✅ `0x8025b73c` |      1 |    760 | `0x1006c9d0` | `0x10065980` | `int BounceOffPlane(RigidBody * body, Vec3f * normal, int damp, int spin)`                                                               |
 | `UpdateAmbientSoundChannel`              |        | ✅ `0x8022b534` |      1 |    683 | `0x10067ed0` | `0x10060f40` | `undefined UpdateAmbientSoundChannel()`                                                                                                  |
 | `ApplyVehicleKeyframe`                   |   ✅   |                 |      2 |    673 | `0x10060a10` | `0x10059a80` | `void ApplyVehicleKeyframe(Vehicle * pVehicle, KeyframeState * pState)`                                                                  |
@@ -175,8 +175,8 @@ the same name, for a routine the port retained from the N64 game.
 | `PlayGoSound`                            |        | ✅ `0x8022b3e4` |      1 |     11 | `0x10067d90` | `0x10060e00` | `undefined PlayGoSound()`                                                                                                                |
 | `Vehicle::ClearCameraChanged`            |        | ✅ `0x8022bcac` |      1 |     11 | `0x100683c0` | `0x10061430` | `undefined ClearCameraChanged(Vehicle * this)`                                                                                           |
 | `InitGlobalRallyConfig`                  |        |                 |      1 |     10 | `0x10069a60` | `0x10062ad0` | `undefined InitGlobalRallyConfig()`                                                                                                      |
-| `AiVehicleControllerCallback`            |        |                 |      3 |      9 | `0x10065620` |              | `void AiVehicleControllerCallback(Vehicle * vehicle)`                                                                                    |
 | `PlayerVehicleControllerCallback`        |        |                 |      3 |      9 | `0x10063fe0` |              | `undefined PlayerVehicleControllerCallback()`                                                                                            |
+| `AiVehicleControllerCallback`            |   ✅   |                 |      3 |      9 | `0x10065620` |              | `void AiVehicleControllerCallback(Vehicle * vehicle)`                                                                                    |
 | `GetSelectedPaintOption`                 |   ✅   |                 |      3 |      6 | `0x10061000` |              | `int GetSelectedPaintOption(void)`                                                                                                       |
 | `GetGhostKeyframeBuffer`                 |   ✅   |                 |      2 |      6 | `0x1006ab90` | `0x10063b40` | `uchar * GetGhostKeyframeBuffer(void)`                                                                                                   |
 | `GetGhostPlaybackKeyframeBuffer`         |   ✅   |                 |      2 |      6 | `0x1006adf0` | `0x10063da0` | `uchar * GetGhostPlaybackKeyframeBuffer(void)`                                                                                           |

@@ -661,20 +661,25 @@ extern "C" {
  */
 s32 CollideBodyWithTriangles(RigidBody *body, f32 box[4][4]);
 
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
 /**
  * Step the body of a vehicle through the time of a frame in parts, colliding it with the track
  * and the other vehicles, and count how long it has been upside down.
  * Windows also receives the vehicle for its driver and previous collision position.
  *
  * @param body The body of the vehicle.
+ * @ghidraAddress BRD3D: 0x1006ec80
+ */
+void StepVehicleCollisions(struct Vehicle *vehicle, RigidBody *body);
+#else
+/**
+ * Step the vehicle body through a frame, collide it, and count its upside-down frames.
+ *
+ * @param body The body of the vehicle.
  * @ghidraAddress USA: 0x8025e55c
  * @ghidraAddress EUR: 0x8025fa38
  * @ghidraAddress JPN: 0x8025f4e8
- * @ghidraAddress BRD3D: 0x1006ec80
  */
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
-void StepVehicleCollisions(struct Vehicle *vehicle, RigidBody *body);
-#else
 void StepVehicleCollisions(RigidBody *body);
 #endif
 /**
