@@ -664,8 +664,13 @@ void FinishFrameMatrix(f32 m[4][4]);
  * @ghidraAddress JPN: 0x8022629c
  * @ghidraAddress BRD3D: 0x1003b7b0
  * @ghidraAddress BRGlide: 0x10034e30
+ * @stub{BRGlide}
  */
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+long double Atan2f(f32 x, f32 y);
+#else
 f32 Atan2f(f32 x, f32 y);
+#endif
 
 /**
  * Whether a point lies within a triangle, on the side of each edge the normal gives.

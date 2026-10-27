@@ -679,24 +679,40 @@ s32 MtxInvert4x4(f32 out[4][4], f32 in[4][4]) {
     return 1;
 }
 
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+static inline long double AtanSine(f32 angle) {
+    long double result;
+    __asm__("fsin" : "=t"(result) : "0"((long double)angle));
+    return result;
+}
+
+#define ATAN_LESS(a, b) (!((a) >= (b)))
+#define ATAN_ZERO(value) (!((value) < 0.0L) && !((value) > 0.0L))
+long double Atan2f(f32 x, f32 y) {
+    f32 base = 0.0f, angle, step, swap, squared;
+    long double s, length;
+#else
+#define ATAN_LESS(a, b) ((a) < (b))
+#define ATAN_ZERO(value) ((value) == 0.0f)
 f32 Atan2f(f32 x, f32 y) {
     f32 base = 0.0f, angle, step, s, swap, length;
+#endif
     s32 direct = TRUE;
     s32 i;
 
     /* Fold the point into the first eighth of the circle, keeping the angle folded away. */
-    if (y < 0.0f) {
+    if (ATAN_LESS(y, 0.0f)) {
         x = -x;
         y = -y;
         base += PI_F;
     }
-    if (x < 0.0f) {
+    if (ATAN_LESS(x, 0.0f)) {
         swap = x;
         x = y;
         y = -swap;
         base += HALF_PI_F;
     }
-    if (x < y) {
+    if (ATAN_LESS(x, y)) {
         swap = x;
         x = y;
         y = swap;
@@ -704,8 +720,13 @@ f32 Atan2f(f32 x, f32 y) {
         base += QUARTER_PI_F;
     }
 
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+    squared = (long double)y * y + (long double)x * x;
+    __asm__("fsqrt" : "=t"(length) : "0"((long double)squared));
+#else
     length = sqrtf(y * y + x * x);
-    if (length == 0.0f) {
+#endif
+    if (ATAN_ZERO(length)) {
         return 0.0f;
     }
     y /= length;
@@ -714,15 +735,19 @@ f32 Atan2f(f32 x, f32 y) {
     angle = EIGHTH_PI_F;
     step = angle * 0.5f;
     for (i = 0; i < ATAN2_STEPS;) {
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+        s = AtanSine(angle);
+#else
         s = sinf(angle);
+#endif
         i++;
-        if (s < y) {
-            if (y - s < ATAN2_TOLERANCE) {
+        if (ATAN_LESS(s, y)) {
+            if (ATAN_LESS(y - s, ATAN2_TOLERANCE)) {
                 break;
             }
             angle += step;
         } else if (y < s) {
-            if (s - y < ATAN2_TOLERANCE) {
+            if (ATAN_LESS(s - y, ATAN2_TOLERANCE)) {
                 break;
             }
             angle -= step;
@@ -732,13 +757,23 @@ f32 Atan2f(f32 x, f32 y) {
         step *= 0.5f;
     }
 
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+    if (direct) {
+        return (long double)base + angle;
+    }
+    return (long double)base - ((long double)angle - QUARTER_PI_F);
+#else
     if (direct) {
         base += angle;
     } else {
         base += QUARTER_PI_F - angle;
     }
     return base;
+#endif
 }
+
+#undef ATAN_LESS
+#undef ATAN_ZERO
 
 s32 PointInTriangle3D(Vec3f *point, Vec3f *v0, Vec3f *v1, Vec3f *v2, Vec3f *normal) {
     Vec3f toV0, toV1, edge01, edge12, edge20, cross;
