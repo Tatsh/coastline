@@ -111,3 +111,53 @@ void MenuFont::DrawThrottledMenuGlyph(float x, float y) {
             this, g_MenuFontGlyphTable['_' - ' '].nImage, x, y, static_cast<signed char>(bStyle));
     }
 }
+
+static inline void DrawMenuText(MenuFont *pFont, float x, float y, bool alternate, bool useFontY) {
+    if (pFont->dwFlags & 1) {
+        x = pFont->pVTable->ComputeCenteredX(pFont);
+    }
+    short index = 0;
+    for (;;) {
+        signed char character = pFont->szText[index];
+        if (!character) {
+            break;
+        }
+        int glyphIndex = character - ' ';
+        if ((glyphIndex < 0 || glyphIndex > 0x7f) && character != ' ') {
+            break;
+        }
+        if (character >= '!' && character <= (alternate ? 'z' : '~')) {
+            const MenuGlyph &glyph =
+                alternate ? g_AltFontGlyphTable[glyphIndex] : g_MenuFontGlyphTable[glyphIndex];
+            if (glyph.nImage != -1) {
+                auto draw =
+                    alternate ? pFont->pVTable->DrawGlyphAltFont : pFont->pVTable->DrawGlyph;
+                draw(pFont,
+                     glyph.nImage,
+                     x,
+                     useFontY ? pFont->fY : y,
+                     static_cast<signed char>(pFont->bStyle));
+                int width = glyph.nWidth - (alternate ? 6 : 0);
+                x = static_cast<long double>(x) + width;
+            }
+        } else if (character == ' ') {
+            x = static_cast<long double>(x) + 6.0f;
+        }
+        index = static_cast<short>(static_cast<unsigned short>(index) + 1);
+    }
+    if (pFont->bDrawCaret) {
+        pFont->pVTable->DrawThrottledMenuGlyph(pFont, x, useFontY ? pFont->fY : y);
+    }
+}
+
+void MenuFont::DrawText() {
+    DrawMenuText(this, fX, fY, false, true);
+}
+
+void MenuFont::DrawMenuItemText(float x, float y) {
+    DrawMenuText(this, x, y, false, false);
+}
+
+void MenuFont::DrawTextAltFont() {
+    DrawMenuText(this, fX, fY, true, true);
+}
