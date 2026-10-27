@@ -532,7 +532,6 @@ void MenuScreen::FlipAndWait() {
 #define SHUTDOWN_DELAY_STATE_2_MS 4570
 #define SHUTDOWN_DELAY_STATE_3_MS 1540
 
-// Free a cached screen and report whether there was one.
 static inline int ShowCachedMenuScreen(MenuScreen *&pScreen, void (*pfnBuild)(MenuScreen *)) {
     if (!pScreen) {
         pScreen = new (std::nothrow) MenuScreen();
@@ -566,21 +565,63 @@ int ShowNotEnoughPointsScreen(void) {
     return ShowCachedMenuScreen(g_pCachedMenu_NotEnoughPoints, BuildNotEnoughPointsUI);
 }
 
-int ShowRaceResultsSummaryScreen(void) {
-    const bool wasCached = g_pCachedMenu_RaceResultsSummary != nullptr;
-    if (!ShowCachedMenuScreen(g_pCachedMenu_RaceResultsSummary, BuildRaceResultsSummaryUI)) {
+static inline int ShowCachedMenuWithExitConfirmation(MenuScreen *&pScreen,
+                                                     void (*pfnBuild)(MenuScreen *),
+                                                     MenuScreen *&pConfirmation,
+                                                     void (*pfnBuildConfirmation)(MenuScreen *)) {
+    const bool wasCached = pScreen != nullptr;
+    if (!ShowCachedMenuScreen(pScreen, pfnBuild)) {
         return 0;
     }
     if (!wasCached) {
-        g_pRaceResultsSummaryMenuScreen = new (std::nothrow) MenuScreen();
-        if (!g_pRaceResultsSummaryMenuScreen) {
+        pConfirmation = new (std::nothrow) MenuScreen();
+        if (!pConfirmation) {
             return 0;
         }
-        g_pRaceResultsSummaryMenuScreen->pfnBuildMenu = BuildResultsSummaryExitSeasonConfirmUI;
-        g_pRaceResultsSummaryMenuScreen->pfnBuildMenu(g_pRaceResultsSummaryMenuScreen);
-        g_pRaceResultsSummaryMenuScreen->bBuilt = true;
+        pConfirmation->pfnBuildMenu = pfnBuildConfirmation;
+        pConfirmation->pfnBuildMenu(pConfirmation);
+        pConfirmation->bBuilt = true;
     }
     return 1;
+}
+
+int ShowRaceResultsSummaryScreen(void) {
+    return ShowCachedMenuWithExitConfirmation(g_pCachedMenu_RaceResultsSummary,
+                                              BuildRaceResultsSummaryUI,
+                                              g_pRaceResultsSummaryMenuScreen,
+                                              BuildResultsSummaryExitSeasonConfirmUI);
+}
+
+int ShowPreRaceInfoScreen(void) {
+    return ShowCachedMenuWithExitConfirmation(g_pCachedMenu_PreRaceInfo,
+                                              BuildPreRaceInfoUI,
+                                              g_pPreRaceInfoMenuScreen,
+                                              BuildPreRaceExitSeasonConfirmUI);
+}
+
+int RaceResultsTotalsUI_OnContinue(MenuActionWidget *pItem) {
+    ApplyLoadedSeasonSettings(true);
+    if (g_pCachedMenu_RaceResults) {
+        g_pCachedMenu_RaceResults->DestroyPanels();
+        g_pCachedMenu_RaceResults = nullptr;
+    }
+    if (g_pCachedMenu_RaceResultsSummary) {
+        g_pCachedMenu_RaceResultsSummary->DestroyPanels();
+        g_pCachedMenu_RaceResultsSummary = nullptr;
+    }
+    if (g_dwSeasonFailed) {
+        ShowSeasonCongratsScreen();
+        g_dwSeasonFailed = 0;
+    } else if (g_dwSeasonRoundQualified) {
+        ShowNotEnoughPointsScreen();
+        g_dwSeasonRoundQualified = 0;
+    } else {
+        ShowPreRaceInfoScreen();
+    }
+    pItem->pScreen->DestroyPanels();
+    delete g_pCachedMenu_RaceResultsTotals;
+    g_pCachedMenu_RaceResultsTotals = nullptr;
+    return 0;
 }
 
 static inline bool DestroyCachedMenu(MenuScreen *&pScreen) {

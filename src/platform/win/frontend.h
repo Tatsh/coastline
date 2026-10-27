@@ -77,6 +77,15 @@ public:
 
 struct MenuItemList;
 
+class MenuScreen;
+
+/** A menu action item linked to the screen that created it. */
+class MenuActionWidget : public MenuWidget {
+public:
+    char abUnknown44[0x2aa4]; /* +0x44 */
+    MenuScreen *pScreen;
+};
+
 struct MenuItemListVTable {
     char abUnknown0[0x10]; /* +0x00 */
     int(__thiscall *AddItem)(
@@ -1658,3 +1667,30 @@ int ShowRaceResultsTotalsScreen(void);
  * @ghidraAddress BRD3D: 0x10045f70
  */
 int ShowRaceResultsSummaryScreen(void);
+
+/**
+ * @ghidraAddress BRD3D: 0x100509f0
+ */
+void BuildPreRaceInfoUI(MenuScreen *pScreen);
+
+/**
+ * @ghidraAddress BRD3D: 0x10049f40
+ */
+void BuildPreRaceExitSeasonConfirmUI(MenuScreen *pScreen);
+
+/**
+ * Show cached pre-race information and build an exit confirmation on the first visit.
+ *
+ * @return Whether both initial allocations succeeded, or the information screen was cached.
+ * @ghidraAddress BRD3D: 0x10045c90
+ */
+int ShowPreRaceInfoScreen(void);
+
+/**
+ * Apply championship progress and switch from totals to the next championship screen.
+ *
+ * @param pItem The action item on the totals screen.
+ * @return Zero.
+ * @ghidraAddress BRD3D: 0x10047290
+ */
+int RaceResultsTotalsUI_OnContinue(MenuActionWidget *pItem);
