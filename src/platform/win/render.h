@@ -1256,3 +1256,23 @@ void SampleTexturePixelBilinear(unsigned char *pDest,
                                 const unsigned char *pBottomRight,
                                 float x,
                                 float y);
+
+/**
+ * Resize a decoded texture with bilinear sampling at pixel centers.
+ *
+ * @param pDest The output pixels.
+ * @param width The output width.
+ * @param height The output height.
+ * @param pSource The source pixels.
+ * @param sourceWidth The source width.
+ * @param sourceHeight The source height.
+ * @param nPixelFormatId The decoded pixel format.
+ * @ghidraAddress BRD3D: 0x10025350
+ */
+void ResizeTextureImage(unsigned char *pDest,
+                        int width,
+                        int height,
+                        const unsigned char *pSource,
+                        int sourceWidth,
+                        int sourceHeight,
+                        int nPixelFormatId);

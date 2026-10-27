@@ -1099,3 +1099,63 @@ void SampleTexturePixelBilinear(unsigned char *pDest,
     }
     std::memcpy(pDest, result, sizeof(result));
 }
+
+static int FloorTextureSampleCoordinate(float coordinate) {
+    long double value = floorl(static_cast<double>(coordinate));
+    if (!(value >= -0x1p63L && value < 0x1p63L)) {
+        return 0;
+    }
+    return static_cast<int>(static_cast<long long>(value));
+}
+
+void ResizeTextureImage(unsigned char *pDest,
+                        int width,
+                        int height,
+                        const unsigned char *pSource,
+                        int sourceWidth,
+                        int sourceHeight,
+                        int nPixelFormatId) {
+    int pixelSize = GetTexturePixelSize(nPixelFormatId);
+    long double verticalRatio = static_cast<long double>(sourceHeight) / height;
+    float yStep = verticalRatio;
+    float xStep = static_cast<long double>(sourceWidth) / width;
+    float y = verticalRatio * 0.5L - 0.5L;
+    float xStart = static_cast<long double>(xStep) * 0.5L - 0.5L;
+    int maxY = static_cast<int>(static_cast<unsigned>(sourceHeight) - 1);
+    int maxX = static_cast<int>(static_cast<unsigned>(sourceWidth) - 1);
+    auto pixel = [pSource, sourceWidth, pixelSize](int x, int y) {
+        unsigned index = static_cast<unsigned>(y) * static_cast<unsigned>(sourceWidth) +
+                         static_cast<unsigned>(x);
+        int offset = static_cast<int>(index * static_cast<unsigned>(pixelSize));
+        return pSource + offset;
+    };
+    for (int row = 0; row < height; row++) {
+        int iy = FloorTextureSampleCoordinate(y);
+        float fractionY = static_cast<long double>(y) - iy;
+        int y0 = iy > 0 ? iy : 0;
+        int y1 = static_cast<int>(static_cast<unsigned>(iy) + 1);
+        if (y1 >= maxY) {
+            y1 = maxY;
+        }
+        float x = xStart;
+        for (int column = 0; column < width; column++) {
+            int ix = FloorTextureSampleCoordinate(x);
+            float fractionX = static_cast<long double>(x) - ix;
+            int x0 = ix > 0 ? ix : 0;
+            int x1 = static_cast<int>(static_cast<unsigned>(ix) + 1);
+            if (x1 >= maxX) {
+                x1 = maxX;
+            }
+            SampleTexturePixelBilinear(pDest,
+                                       pixel(x0, y0),
+                                       pixel(x1, y0),
+                                       pixel(x0, y1),
+                                       pixel(x1, y1),
+                                       fractionX,
+                                       fractionY);
+            pDest += pixelSize;
+            x = static_cast<long double>(x) + xStep;
+        }
+        y = static_cast<long double>(y) + yStep;
+    }
+}
