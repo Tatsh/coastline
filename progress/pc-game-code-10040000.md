@@ -1,6 +1,6 @@
 # PC port game code from 0x10040000 to 0x10050000
 
-255 of 264 routines done.
+256 of 264 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -13,7 +13,7 @@ the same name, for a routine the port retained from the N64 game.
 | `BuildGameOptionsUI`                               |   ✅   |                 |      2 |   2679 | `0x1004e830` | `0x100476e0` | `int BuildGameOptionsUI(MenuScreen * screen)`                                                                                                             |
 | `BuildFrontEndRootMenuUI`                          |   ✅   |                 |      1 |   2659 | `0x100491b0` | `0x100425e0` | `void BuildFrontEndRootMenuUI(MenuScreen * pScreen)`                                                                                                      |
 | `BuildRaceSetupUI`                                 |   🚧   |                 |      4 |   2439 | `0x1004b430` | `0x10044860` | `void BuildRaceSetupUI(MenuScreen * pScreen)`                                                                                                             |
-| `BuildLoadSeasonUI`                                |   📝   |                 |      2 |   2387 | `0x1004f700` | `0x100485b0` | `void BuildLoadSeasonUI(MenuScreen * pScreen)`                                                                                                            |
+| `BuildLoadSeasonUI`                                |   ✅   |                 |      2 |   2387 | `0x1004f700` | `0x100485b0` | `void BuildLoadSeasonUI(MenuScreen * pScreen)`                                                                                                            |
 | `BuildAudioOptionsUI`                              |   ✅   |                 |      2 |   2114 | `0x1004dfc0` | `0x10046e70` | `int BuildAudioOptionsUI(MenuScreen * screen)`                                                                                                            |
 | `BuildKeyConfigUI`                                 |   ✅   |                 |      2 |   1834 | `0x1004cac0` | `0x10045ef0` | `void BuildKeyConfigUI(MenuScreen * pScreen)`                                                                                                             |
 | `BuildOptionsMenuUI`                               |   ✅   |                 |      2 |   1749 | `0x1004bdc0` | `0x100451f0` | `int BuildOptionsMenuUI(MenuScreen * screen)`                                                                                                             |

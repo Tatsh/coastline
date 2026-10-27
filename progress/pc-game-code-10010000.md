@@ -1,6 +1,6 @@
 # PC port game code from 0x10010000 to 0x10020000
 
-145 of 162 routines done.
+146 of 162 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -57,7 +57,7 @@ the same name, for a routine the port retained from the N64 game.
 | `DirectDrawDriver::SelectPreferredD3DDevice`           |   ✅   |                 |      2 |    291 | `0x1001b690` |              | `D3DDeviceNode * SelectPreferredD3DDevice(DirectDrawDriver * this, GUID * pGuid, D3DDeviceNode * * ppPreferred, D3DDeviceNode * pFirst)`                                                                                                     |
 | `UpdateShadowCornerVertex`                             |   ✅   |                 |      4 |    287 | `0x10010bf0` | `0x1000e150` | `void UpdateShadowCornerVertex(TrackInstance * instance, ConvertedModelVertex * quad, int * cornerValid, int corner, ConvertedModelVertex * vertex, float s, float t, float[4] * vehicleMatrix)`                                             |
 | `SubmitVertexToRenderBufferEx`                         |   ✅   |                 |      7 |    257 | `0x1001c690` |              | `int SubmitVertexToRenderBufferEx(GbiVertex * pVertex)`                                                                                                                                                                                      |
-| `DrawFpsCounterOverlay`                                |        |                 |      1 |    252 | `0x10014930` | `0x10011ea0` | `void DrawFpsCounterOverlay(void)`                                                                                                                                                                                                           |
+| `DrawFpsCounterOverlay`                                |   ✅   |                 |      1 |    252 | `0x10014930` | `0x10011ea0` | `void DrawFpsCounterOverlay(void)`                                                                                                                                                                                                           |
 | `DrawHudMessage`                                       |   ✅   | ✅ `0x80238dd4` |      2 |    246 | `0x10017790` | `0x10014d00` | `void DrawHudMessage(ViewportRect * viewports)`                                                                                                                                                                                              |
 | `D3DDeviceNode::InitD3DDeviceNode`                     |   ✅   |                 |      1 |    244 | `0x1001ade0` |              | `long InitD3DDeviceNode(D3DDeviceNode * this, GUID * pGuid, char * pszDescription, char * pszName, void * pHardwareDesc, void * pSoftwareDesc)`                                                                                              |
 | `SubmitTriangleToRenderBuffer`                         |   ✅   |                 |      2 |    236 | `0x1001e4e0` |              | `void SubmitTriangleToRenderBuffer(GbiVertex * pVertex0, GbiVertex * pVertex1, GbiVertex * pVertex2)`                                                                                                                                        |
