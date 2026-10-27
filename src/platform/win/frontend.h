@@ -170,7 +170,6 @@ public:
 private:
     /**
      * @ghidraAddress BRD3D: 0x1005c510
-     * @stub
      */
     virtual int UpdateHoverInRect(const RECT *bounds);
     /**

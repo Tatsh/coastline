@@ -894,6 +894,25 @@ static inline bool MenuBoundsIncludeCursor(const RECT &bounds, const MouseDevice
            bounds.top <= pMouse->GetCursorY() && bounds.bottom >= pMouse->GetCursorY();
 }
 
+int MenuItemList::UpdateHoverInRect(const RECT *bounds) {
+    if (!MenuBoundsIncludeCursor(*bounds, g_pMousePosition)) {
+        return 0;
+    }
+    if (dwFlags & 0x40000) {
+        if (g_pMouseDevice->IsButtonHeld(0) || g_pMouseDevice->IsButtonHeld(1)) {
+            dwFlags |= 0x80002;
+        } else {
+            dwFlags &= ~2u;
+        }
+    } else if (IsInputOrEventActive()) {
+        dwFlags |= 2;
+    } else {
+        dwFlags &= ~2u;
+    }
+    dwFlags |= 0x20;
+    return 1;
+}
+
 bool MenuWidget::UpdateHoverState() {
     if (dwFlags & 8) {
         return false;
