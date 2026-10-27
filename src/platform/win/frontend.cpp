@@ -72,6 +72,10 @@ int g_dwAccumUnlockedTrackMask;
 int g_dwHandlingTypeMenuIndex = 4;
 int g_dwSelectedCarClass;
 const int g_adwCarClassLabelStrIds[5] = {157, 158, 159, 160, 161};
+const int g_adwTireLabelStrIds[3] = {126, 127, 128};
+const int g_adwCarImageIds[32] = {31,  33,  39,  42,  43,  41,  37,  35,  36,  34,  11,
+                                  32,  44,  40,  30,  38,  124, 126, 132, 135, 136, 134,
+                                  130, 128, 129, 127, 122, 125, 137, 133, 123, 131};
 int g_dwAppliedCarGroupPreset;
 unsigned g_dwSelectableCarMask = 0x102;
 const int g_adwInputDeviceMenuIndexToDevice[INPUT_DEVICE_MENU_CHOICES] = {0, 1, 2, 3};
@@ -1856,6 +1860,14 @@ int CarSetupUI_UpdateTransmissionImage(MenuWidget *pWidget) {
     return 1;
 }
 
+int CarSetupUI_UpdateCarImage(MenuWidget *pWidget) {
+    if (g_pActiveMenuScreen == g_pCachedMenu_LoadGhost && !g_dwTimeAttackLoadSelected) {
+        return -2;
+    }
+    pWidget->nSpriteId = g_adwCarImageIds[g_dwCarMenuIndex];
+    return 1;
+}
+
 int CarSetupUI_UpdateTiresImage(MenuWidget *pWidget) {
     pWidget->nSpriteId = g_abTireImageIds[g_dwTireMenuIndex];
     return 1;
@@ -2998,6 +3010,11 @@ int CarSetupUI_UpdateTransmissionLabel(MenuWidget *pWidget) {
 int CarSetupUI_UpdateShocksLabel(MenuWidget *pWidget) {
     DrawPrimaryMenuLabel(pWidget,
                          GetStringResource(g_adwSuspensionLabelStrIds[g_dwSuspensionMenuIndex]));
+    return 1;
+}
+
+int CarSetupUI_UpdateTiresLabel(MenuWidget *pWidget) {
+    DrawPrimaryMenuLabel(pWidget, GetStringResource(g_adwTireLabelStrIds[g_dwTireMenuIndex]));
     return 1;
 }
 

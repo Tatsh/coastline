@@ -2366,9 +2366,17 @@ int NetworkCarSetupUI_UpdateSelectedPlayer(MenuWidget *pWidget);
  */
 int CarSetupUI_UpdateTiresLabel(MenuWidget *pWidget);
 /**
+ * @ghidraAddress BRD3D: 0x100ac348
+ */
+extern const int g_adwTireLabelStrIds[3];
+/**
  * @ghidraAddress BRD3D: 0x1003f720
  */
 int CarSetupUI_UpdateCarImage(MenuWidget *pWidget);
+/**
+ * @ghidraAddress BRD3D: 0x100ac5a8
+ */
+extern const int g_adwCarImageIds[32];
 
 /**
  * @ghidraAddress BRD3D: 0x1003e100
