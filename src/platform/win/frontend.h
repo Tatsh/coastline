@@ -277,6 +277,18 @@ int CarSetupUI_OnAcceptAndSave(MenuActionWidget *pWidget);
 int RaceSetupUI_UpdateLapCountLabel(MenuWidget *pWidget);
 
 /**
+ * @ghidraAddress BRD3D: 0x10040a50
+ * @ghidraAddress BRGlide: 0x10039f90
+ */
+int SeasonFileUI_UpdateYearLabel(MenuWidget *pWidget);
+
+/**
+ * @ghidraAddress BRD3D: 0x10040ac0
+ * @ghidraAddress BRGlide: 0x1003a000
+ */
+int SeasonFileUI_UpdateRoundLabel(MenuWidget *pWidget);
+
+/**
  * @ghidraAddress BRD3D: 0x10aa28e8
  * @ghidraAddress BRGlide: 0x10ac5c40
  */

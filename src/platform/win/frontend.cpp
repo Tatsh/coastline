@@ -1729,6 +1729,27 @@ int GameOptionsUI_OnToggleSpecularLighting(MenuWidget *) {
     return 1;
 }
 
+static inline void DrawAlternateMenuLabel(MenuWidget *pWidget, const char *text) {
+    MenuFont *font = &pWidget->fonts[0];
+    strcpy(font->szText, text);
+    MenuFontVTable *vtable = font->pVTable;
+    vtable->MeasureTextAltFont(font);
+    vtable->DrawTextAltFont(font);
+}
+
+int SeasonFileUI_UpdateYearLabel(MenuWidget *pWidget) {
+    sprintf(g_szSeasonYearLabel, "%d", static_cast<int>(static_cast<unsigned>(g_dwSeasonYear) + 1));
+    DrawAlternateMenuLabel(pWidget, g_szSeasonYearLabel);
+    return 1;
+}
+
+int SeasonFileUI_UpdateRoundLabel(MenuWidget *pWidget) {
+    sprintf(
+        g_szSeasonRoundLabel, "%d", static_cast<int>(static_cast<unsigned>(g_dwSeasonRound) + 1));
+    DrawAlternateMenuLabel(pWidget, g_szSeasonRoundLabel);
+    return 1;
+}
+
 int RaceSetupUI_UpdateLapCountLabel(MenuWidget *pWidget) {
     if (g_pActiveMenuScreen != g_pCachedMenu_LoadGhost || g_dwTimeAttackLoadSelected) {
         MenuFont *font = &pWidget->fonts[0];
