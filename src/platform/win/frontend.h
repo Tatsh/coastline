@@ -2933,7 +2933,7 @@ int ShowRaceResultsScreen(void);
  * @ghidraAddress BRD3D: 0x100447d0
  * @ghidraAddress BRGlide: 0x1003dd20
  */
-void ReturnToNetworkLobbyScreen(void);
+int ReturnToNetworkLobbyScreen(void);
 
 /**
  * Show the menu of a finished time attack, when it is not shown already.

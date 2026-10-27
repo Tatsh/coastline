@@ -2404,6 +2404,46 @@ void EnterNetworkLobbyScreen(void) {
     }
 }
 
+int ReturnToNetworkLobbyScreen(void) {
+    g_dwDirectPlaySessionActive = 1;
+    ResetSessionSlotTable();
+    if (g_dwLobbyIsHost) {
+        DPSESSIONDESC2 *desc = nullptr;
+        if (g_DirectPlayInfo.pDirectPlay) {
+            GetDirectPlaySessionDesc(g_DirectPlayInfo.pDirectPlay, &desc);
+        }
+        if (desc) {
+            desc->dwFlags &= ~0x20u;
+            g_DirectPlayInfo.pDirectPlay->SetSessionDesc(desc, 0);
+        }
+    }
+    ShowMultiplayerNameScreen();
+    ShowMultiplayerConnectionScreen();
+    ShowJoinCreateGameScreen();
+    if (g_dwLobbyIsHost) {
+        ShowCreateGameScreen();
+        ShowHostRaceSetupScreen();
+    } else {
+        JoinSessionAndShowRaceSetup();
+    }
+    if (!ShowCachedMenuScreen(g_pCachedMenu_NetworkCarSetup, BuildNetworkCarSetupUI)) {
+        return 0;
+    }
+    g_dwGameMode = GAME_MODE_NETWORK;
+    if (g_dwLobbyIsHost) {
+        if (!g_dwNetworkCarSetupShown) {
+            HostNetworkSession();
+            g_dwNetworkCarSetupShown = 1;
+        } else {
+            UpdateNetworkSessionSettings();
+        }
+    }
+    if (g_pDirectPlayInfo && g_pDirectPlayInfo->dpidPlayer) {
+        SendNetworkMessage7(g_pDirectPlayInfo, g_pDirectPlayInfo->dpidPlayer);
+    }
+    return 1;
+}
+
 int NetworkCarSetupUI_OnEscape(MenuWidget *pWidget) {
     if (g_dwNetworkDataStreamActive) {
         if (!g_dwLaunchedFromLobby) {
