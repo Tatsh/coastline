@@ -98,6 +98,8 @@ MenuWidget *g_pOptionsSubMenu;
 int g_dwFileListSelectedSlot = -1;
 
 namespace {
+// @ghidraAddress BRD3D: 0x10aa2598
+unsigned g_dwUnlockedCarMask = 0x102;
 // @ghidraAddress BRD3D: 0x100ab3d8
 // @ghidraAddress BRGlide: 0x100aab78
 int g_bAudioOptionsSfxSelected;
@@ -140,7 +142,7 @@ const int g_adwCarClassLabelStrIds[5] = {157, 158, 159, 160, 161};
 int g_dwAppliedCarGroupPreset;
 // @ghidraAddress BRD3D: 0x100ab3e8
 // @ghidraAddress BRGlide: 0x100aab88
-[[maybe_unused]] unsigned g_dwSelectableCarMask = 0x102;
+unsigned g_dwSelectableCarMask = 0x102;
 // @ghidraAddress BRD3D: 0x100ac520
 // @ghidraAddress BRGlide: 0x100abcc0
 const int g_adwInputDeviceMenuIndexToDevice[INPUT_DEVICE_MENU_CHOICES] = {0, 1, 2, 3};
@@ -158,7 +160,7 @@ int g_dwOptionSpecularLighting;
 int g_dwOptionSkidMarks;
 // @ghidraAddress BRD3D: 0x100ab3e4
 // @ghidraAddress BRGlide: 0x100aab84
-[[maybe_unused]] unsigned short g_wUnlockedCarModeMask = 0x102;
+unsigned short g_wUnlockedCarModeMask = 0x102;
 // @ghidraAddress BRD3D: 0x100ab3ec
 // @ghidraAddress BRGlide: 0x100aab8c
 int g_dwSelectableTrackMaskAlt = 0x24;
@@ -5174,6 +5176,39 @@ void ApplyCarGroupPreset(void) {
         g_dwSelectableCarMask = 0x102;
         break;
     }
+}
+
+int IsCarSelectable(int nCar) {
+    if (g_dwCheatBonusCarsUnlocked && nCar > 15) {
+        nCar -= 16;
+    }
+    if (g_dwSeasonLoaded && nCar > 15 && (g_SeasonProgress.unlocks & 0x8000)) {
+        nCar -= 16;
+    }
+    unsigned available;
+    if (g_dwGameMode == GAME_MODE_CHAMPIONSHIP) {
+        if (nCar == 15) {
+            nCar = 11;
+        }
+        available = g_dwSeasonLoaded ? g_SeasonProgress.unlocks : g_dwUnlockedCarMask;
+    } else if (g_dwGameMode == GAME_MODE_NETWORK) {
+        if (nCar == 15) {
+            nCar = 7;
+        }
+        available = g_dwSelectableCarMask;
+    } else {
+        if (g_dwGameMode == GAME_MODE_TIME_ATTACK && nCar == g_LoadedSeasonSettings.car) {
+            return 1;
+        }
+        if (nCar == 15) {
+            nCar = 11;
+        }
+        available = static_cast<unsigned>(static_cast<short>(g_wUnlockedCarModeMask));
+    }
+    if (g_dwCheatAllCarsUnlocked && nCar <= 15) {
+        return 1;
+    }
+    return static_cast<int>((1u << (static_cast<unsigned>(nCar) & 31)) & available);
 }
 
 unsigned IsTrackSelectable(int nTrack) {
