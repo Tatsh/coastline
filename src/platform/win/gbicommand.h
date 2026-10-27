@@ -26,6 +26,7 @@ struct GbiCommand {
             union {
                 const GbiViewport *pViewport; /*!< The viewport a command sets. */
                 const void *pData;            /*!< The memory a command moves. */
+                float (*pMatrix)[4];          /*!< The floating-point matrix a command loads. */
                 unsigned w1;                  /*!< The second word. */
                 float f1;                     /*!< The second word as a float. */
                 GbiCommand *pTarget;          /*!< The display list a branch or a call runs. */

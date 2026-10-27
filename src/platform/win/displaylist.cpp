@@ -5,6 +5,8 @@
 #include <cstring>
 #include <functional>
 
+#include <PR/gu.h>
+
 #include "displaylistptr.h"
 #include "platform/win/boot/app.h"
 #include "platform/win/render.h"
@@ -793,6 +795,41 @@ void ApplyGeometryModeChanges(void) {
 D3DCOLOR g_dwVertexConstantColor;
 float g_fVertexFogRange;
 int g_dwFogAlphaCutoff;
+
+float g_GbiProjectionMatrix[4][4];
+float g_aGbiModelViewStack[GBI_MATRIX_STACK_RESET_DEPTH][4][4];
+
+GbiCommand *HandleGbiMatrix(GbiCommand *pCommand) {
+    if (pCommand->w0 & 0x10000) {
+        if (pCommand->w0 & 0x20000) {
+            memcpy(g_GbiProjectionMatrix, pCommand->pMatrix, sizeof(g_GbiProjectionMatrix));
+        } else {
+            guMtxCatF(pCommand->pMatrix, g_GbiProjectionMatrix, g_GbiProjectionMatrix);
+        }
+    } else {
+        float product[4][4];
+        float (*pSource)[4] = pCommand->pMatrix;
+        if (!(pCommand->w0 & 0x20000)) {
+            guMtxCatF(pSource,
+                      g_dwGbiMatrixStackDepth ? g_aGbiModelViewStack[g_dwGbiMatrixStackDepth - 1] :
+                                                nullptr,
+                      product);
+            pSource = product;
+        }
+        if (pCommand->w0 & 0x40000) {
+            if (g_dwGbiMatrixStackDepth == GBI_MATRIX_STACK_RESET_DEPTH) {
+                g_dwGbiMatrixStackDepth = 0;
+            }
+            ++g_dwGbiMatrixStackDepth;
+        }
+        memcpy(g_aGbiModelViewStack[g_dwGbiMatrixStackDepth - 1], pSource, sizeof(product));
+        g_bGbiLightsTransformed = false;
+    }
+    guMtxCatF(g_dwGbiMatrixStackDepth ? g_aGbiModelViewStack[g_dwGbiMatrixStackDepth - 1] : nullptr,
+              g_GbiProjectionMatrix,
+              g_GbiMvpMatrix);
+    return pCommand + 1;
+}
 
 GbiVertexSource *
 LerpVertexFromPool(const GbiVertexSource *pFirst, const GbiVertexSource *pSecond, float fFraction) {

@@ -550,6 +550,14 @@ GbiCommand *HandleGbiMoveWord(GbiCommand *pCommand);
  */
 extern float g_GbiMvpMatrix[4][4];
 
+#if TGR_RENDERER == TGR_RENDERER_D3D
+/** @ghidraAddress BRD3D: 0x104bbec0 */
+extern float g_GbiProjectionMatrix[4][4];
+
+/** @ghidraAddress BRD3D: 0x104bbf10 */
+extern float g_aGbiModelViewStack[GBI_MATRIX_STACK_RESET_DEPTH][4][4];
+#endif
+
 /**
  * The second vector of the look-at of the display lists, as a move memory command gives it.
  *
