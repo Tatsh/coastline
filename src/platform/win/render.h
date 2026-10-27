@@ -871,6 +871,24 @@ extern unsigned (*g_pfnCreateTextureFromN64ImageAutoLoadSize)(const unsigned cha
                                                               int);
 
 /**
+ * @ghidraAddress BRD3D: 0x10028bf0
+ */
+unsigned CreateTextureFromN64ImageAutoLoadSize(const unsigned char *pImage,
+                                               const unsigned char *pPalette,
+                                               int nWidth,
+                                               int nHeight,
+                                               int nSize,
+                                               int nFormat,
+                                               int nOption6,
+                                               int nOption7,
+                                               int nOption8,
+                                               int nOption9,
+                                               int nOption10,
+                                               int nOption11,
+                                               int nOption12,
+                                               int nOption13);
+
+/**
  * @ghidraAddress BRD3D: 0x118aa0d8
  */
 extern unsigned char g_abDaySkyPalette[32];

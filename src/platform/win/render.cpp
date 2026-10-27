@@ -470,6 +470,38 @@ void CreateGlobalEffectTextures(void) {
 }
 
 #if TGR_RENDERER == TGR_RENDERER_D3D
+unsigned CreateTextureFromN64ImageAutoLoadSize(const unsigned char *pImage,
+                                               const unsigned char *pPalette,
+                                               int nWidth,
+                                               int nHeight,
+                                               int nSize,
+                                               int nFormat,
+                                               int nOption6,
+                                               int nOption7,
+                                               int nOption8,
+                                               int nOption9,
+                                               int nOption10,
+                                               int nOption11,
+                                               int nOption12,
+                                               int nOption13) {
+    int nLoadBytes = ((1 << GetMipLevelFromDimension(nWidth)) / GetTexelsPerLoadWord(nSize)) * 8;
+    return g_pfnCreateTextureFromN64Image(pImage,
+                                          pPalette,
+                                          nWidth,
+                                          nHeight,
+                                          nLoadBytes,
+                                          nSize,
+                                          nFormat,
+                                          nOption6,
+                                          nOption7,
+                                          nOption8,
+                                          nOption9,
+                                          nOption10,
+                                          nOption11,
+                                          nOption12,
+                                          nOption13);
+}
+
 unsigned DuplicateTextureEntryHalfScale(unsigned nTexture) {
     unsigned nDuplicate = AllocateTextureEntry();
     g_pTextureEntries[nDuplicate] = g_pTextureEntries[nTexture];
