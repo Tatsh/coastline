@@ -187,6 +187,10 @@ void InitParticleSystem(void);
 }
 #endif
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /**
  * Update the effects of every racer for the weather: the exhaust in the snow, the tyre smoke in
  * the dry, and the spray in all.
@@ -194,8 +198,12 @@ void InitParticleSystem(void);
  * @ghidraAddress USA: 0x8023cfc4
  * @ghidraAddress EUR: 0x8023e4d4
  * @ghidraAddress JPN: 0x8023dfd4
+ * @ghidraAddress BRD3D: 0x1003a530
  */
 void UpdateAllVehicleEffects(void);
+#ifdef __cplusplus
+}
+#endif
 
 /**
  * Draw a list of puffs of the pool as rectangles of the particle texture facing the screen.

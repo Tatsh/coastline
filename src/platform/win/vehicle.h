@@ -184,6 +184,21 @@ private:
     char checkpointMessageText[20];
     u8 abUnknown2ad0[0x98]; /* +0x2ad0 */
 public:
+    /**
+     * @ghidraAddress BRD3D: 0x10039020
+     * @stub
+     */
+    void SpawnExhaustParticle();
+    /**
+     * @ghidraAddress BRD3D: 0x10039f20
+     * @stub
+     */
+    void SpawnTireSmoke();
+    /**
+     * @ghidraAddress BRD3D: 0x10039200
+     * @stub
+     */
+    void EmitTireSpray();
     void SetExhaustTimer(f32 value) {
         exhaustTimer = value;
     }

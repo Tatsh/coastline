@@ -664,45 +664,6 @@ void SpawnTireSmoke(Vehicle *vehicle) {
     }
 }
 
-void UpdateAllVehicleEffects(void) {
-    /* Whether InitParticleSystem() has run. */
-    /**
-     * @ghidraAddress USA: 0x8028c840
-     * @ghidraAddress EUR: 0x8028efa0
-     * @ghidraAddress JPN: 0x8028e9f0
-     */
-    static s32 g_dwVehicleEffectsInitialized = FALSE;
-    s32 i;
-
-    if (!g_dwVehicleEffectsInitialized) {
-        InitParticleSystem();
-        g_dwVehicleEffectsInitialized = TRUE;
-    }
-    if (g_dwSnowMode) {
-        UpdateExhaustParticles();
-        for (i = 0; i < g_dwNumVehicles; i++) {
-            if (g_aRacerSlots[i].vehicle != NULL) {
-                SpawnExhaustParticle(g_aRacerSlots[i].vehicle);
-                EmitTireSpray(g_aRacerSlots[i].vehicle);
-            }
-        }
-    } else if (!g_dwNightMode && !g_dwRainMode) {
-        UpdateTireSmoke();
-        for (i = 0; i < g_dwNumVehicles; i++) {
-            if (g_aRacerSlots[i].vehicle != NULL) {
-                SpawnTireSmoke(g_aRacerSlots[i].vehicle);
-                EmitTireSpray(g_aRacerSlots[i].vehicle);
-            }
-        }
-    } else {
-        for (i = 0; i < g_dwNumVehicles; i++) {
-            if (g_aRacerSlots[i].vehicle != NULL) {
-                EmitTireSpray(g_aRacerSlots[i].vehicle);
-            }
-        }
-    }
-}
-
 void RenderBillboardParticles(u16 head, s32 red, s32 green, s32 blue) {
     ViewportRect *view;
     Particle *particle;
