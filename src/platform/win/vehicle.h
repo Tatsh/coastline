@@ -188,6 +188,7 @@ private:
     void AgeSpraySegment(s32 wheel, s32 age);
 
 public:
+    void InterpolateSnapshotState(const Vehicle &from, const Vehicle &to, long double share);
     /**
      * Start last-lap input recording in spare vehicle-model storage and snapshot the race.
      * @ghidraAddress BRD3D: 0x100679c0

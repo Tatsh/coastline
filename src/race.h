@@ -623,8 +623,17 @@ void DrawScrollingText(void);
  * @ghidraAddress USA: 0x8020082c
  * @ghidraAddress EUR: 0x8020085c
  * @ghidraAddress JPN: 0x8020081c
+ * @ghidraAddress BRD3D: 0x10014a30
+ * @stub{BRD3D}
  */
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#ifdef __cplusplus
+extern "C"
+#endif
+    void ProcessRacingScreen(int snapshotSlot);
+#else
 void ProcessRacingScreen(void);
+#endif
 
 /**
  * Keep the results of the local players for the results screen.

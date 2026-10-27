@@ -1,7 +1,5 @@
 #include "platform/win/snapshot.h"
 
-#include <stdbool.h>
-
 int g_bFrameSnapshotsInitialized;
 int g_bFrameTimerReset = true;
 
@@ -26,7 +24,7 @@ void InitFrameSnapshotSlots(void) {
     g_dwInterpolatedFrameCount = 0;
     g_abFrameSnapshotInUse[4] = 0;
     for (i = 0; i < FRAME_SNAPSHOT_COUNT; i++) {
-        g_aFrameSnapshots[i].sequence = 0;
+        g_aFrameSnapshots[i].SetSequence(0);
     }
     g_bFrameSnapshotsInitialized = true;
 }
@@ -40,17 +38,17 @@ void AcquireNextFrameSnapshotSlot(void) {
 
     for (i = 0; i < FRAME_SNAPSHOT_COUNT; i++) {
         if (g_abFrameSnapshotInUse[i] == 0 && i != writeSlot &&
-            g_aFrameSnapshots[i].sequence <= oldestSequence) {
+            g_aFrameSnapshots[i].GetSequence() <= oldestSequence) {
             oldestSlot = i;
-            oldestSequence = g_aFrameSnapshots[i].sequence;
+            oldestSequence = g_aFrameSnapshots[i].GetSequence();
         }
     }
-    nextSequence = writeSlot < 0 ? 0 : g_aFrameSnapshots[writeSlot].sequence;
+    nextSequence = writeSlot < 0 ? 0 : g_aFrameSnapshots[writeSlot].GetSequence();
     g_dwFrameSnapshotPreviousSlot = g_dwFrameSnapshotCurrentSlot;
     g_dwFrameSnapshotCurrentSlot = writeSlot;
     g_dwFrameSnapshotWriteSlot = oldestSlot;
     /* An exhausted pool still writes through the index of -1. */
-    g_aFrameSnapshots[oldestSlot].sequence = nextSequence + 1;
+    g_aFrameSnapshots[oldestSlot].SetSequence(nextSequence + 1);
 }
 
 void InvalidateFrameSnapshotSlots(void) {

@@ -40,7 +40,8 @@ add_library(
   racesound.cpp
   render.cpp
   season.cpp
-  snapshot.c
+  snapshot.cpp
+  snapshotinterpolation.cpp
   sound.cpp
   terrain.c
   texturescan.cpp

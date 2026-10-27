@@ -6,23 +6,48 @@
  * The snapshots of frames of the PC port.
  */
 
-#ifndef __cplusplus
-#include <stdbool.h>
-#endif
+#include "platform/win/particlesnapshot.h"
+#include "racerslot.h"
+#include "vehicle.h"
+
+enum { FRAME_SNAPSHOT_COUNT = 5 };
+
+class FrameSnapshot {
+private:
+    unsigned sequence;
+    RacerSlot racers[RACER_SLOTS];
+    [[maybe_unused]] unsigned char unreconstructedA04[4]; /* +0xa04 */
+    Vehicle vehicles[MAX_VEHICLES];
+    ViewportRect viewport;
+    unsigned unreconstructed2c0e0; /* +0x2c0e0 */
+    ParticleSnapshot particles;
+    [[maybe_unused]] unsigned char unreconstructed2e0ec[4]; /* +0x2e0ec */
+
+public:
+    unsigned GetSequence() const {
+        return sequence;
+    }
+    void SetSequence(unsigned value) {
+        sequence = value;
+    }
+    const CameraFrame &GetPrimaryCamera() const {
+        return *vehicles[0].GetActiveCamera();
+    }
+    void InterpolateFrom(const FrameSnapshot &from, const FrameSnapshot &to, long double share);
+};
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-enum { FRAME_SNAPSHOT_COUNT = 5 };
-
-typedef struct {
-    unsigned sequence;
-    unsigned char unreconstructed4[0x2e0f0 - 4]; /* +0x04 */
-} FrameSnapshot;
-
 /** @ghidraAddress BRD3D: 0x1039b760 */
 extern FrameSnapshot g_aFrameSnapshots[FRAME_SNAPSHOT_COUNT];
+/** @ghidraAddress BRD3D: 0x10481c10 */
+extern FrameSnapshot g_InterpolatedFrameSnapshot;
+
+/** @ghidraAddress BRD3D: 0x10015c70 */
+int InterpolateFrameSnapshotsAndRender(int forceRender);
+
 /** @ghidraAddress BRD3D: 0x1039b728 */
 extern int g_abFrameSnapshotInUse[FRAME_SNAPSHOT_COUNT];
 /** @ghidraAddress BRD3D: 0x104afd14 */
