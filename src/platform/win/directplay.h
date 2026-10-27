@@ -472,6 +472,23 @@ struct NetworkSessionSettings {
     BOOL bSecureServer;      /*!< Whether the session is created with DPSESSION_SECURESERVER. */
 };
 
+/** The local user and optional authentication fields used when joining a session. */
+struct NetworkJoinCredentials {
+    char localUserName[200];
+    char userName[200];
+    char password[200];
+    char domain[200];
+};
+
+/** @ghidraAddress BRD3D: 0x1022af1c */
+extern int g_bNetSpectator;
+
+/** @ghidraAddress BRD3D: 0x1003c740 */
+HRESULT JoinDirectPlaySession(IDirectPlay3A *pDirectPlay,
+                              const GUID *instance,
+                              NetworkJoinCredentials *credentials,
+                              DirectPlayInfo *pInfo);
+
 /**
  * @ghidraAddress BRD3D: 0x1003c5c0
  */

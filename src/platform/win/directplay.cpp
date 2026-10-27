@@ -3003,6 +3003,80 @@ static inline void FreeSessionDesc(DPSESSIONDESC2 *pDesc) {
     GlobalFree(GlobalHandle(pDesc));
 }
 
+HRESULT JoinDirectPlaySession(IDirectPlay3A *pDirectPlay,
+                              const GUID *instance,
+                              NetworkJoinCredentials *credentials,
+                              DirectPlayInfo *pInfo) {
+    DPSESSIONDESC2 *description = nullptr;
+    if (pDirectPlay == nullptr) {
+        return DPERR_INVALIDOBJECT;
+    }
+    DPSESSIONDESC2 request = {};
+    request.dwSize = sizeof(request);
+    request.guidInstance = *instance;
+    DPCREDENTIALS authentication = {};
+    authentication.dwSize = sizeof(authentication);
+    DPCREDENTIALS *optionalAuthentication = nullptr;
+    if (lstrlenA(credentials->userName)) {
+        authentication.lpszUsernameA = credentials->userName;
+        optionalAuthentication = &authentication;
+    }
+    if (lstrlenA(credentials->password)) {
+        authentication.lpszPasswordA = credentials->password;
+        optionalAuthentication = &authentication;
+    }
+    if (lstrlenA(credentials->domain)) {
+        authentication.lpszDomainA = credentials->domain;
+        optionalAuthentication = &authentication;
+    }
+    HRESULT result = pDirectPlay->SecureOpen(
+        &request, DPOPEN_JOIN | DPOPEN_RETURNSTATUS, nullptr, optionalAuthentication);
+    if (SUCCEEDED(result)) {
+        DPNAME name = {};
+        name.dwSize = sizeof(name);
+        name.lpszShortNameA = g_GlobalRallyConfig.szPlayerName;
+        result = GetDirectPlaySessionDesc(pDirectPlay, &description);
+        if (SUCCEEDED(result)) {
+            if (description->dwCurrentPlayers >= 8) {
+                result = DPERR_CANTADDPLAYER;
+            } else {
+                DWORD flags = g_bNetSpectator ? DPPLAYER_SPECTATOR : 0;
+                IDirectPlay3A *previousInterface = pInfo->pDirectPlay;
+                BOOL previousHost = pInfo->bIsHost;
+                BOOL previousIgnoreMessages = pInfo->bIgnoreMessages;
+                pInfo->pDirectPlay = pDirectPlay;
+                pInfo->bIsHost = false;
+                pInfo->bIgnoreMessages = (description->dwFlags & DPSESSION_SECURESERVER) != 0;
+                DPID player;
+                result = pDirectPlay->CreatePlayer(
+                    &player, &name, pInfo->hPlayerEvent, nullptr, 0, flags);
+                if (FAILED(result)) {
+                    pInfo->pDirectPlay = previousInterface;
+                    pInfo->bIsHost = previousHost;
+                    pInfo->bIgnoreMessages = previousIgnoreMessages;
+                } else {
+                    pInfo->dpidPlayer = player;
+                    g_dwTrackMenuIndex = description->dwUser1;
+                    g_dwSelectedTrackId = description->dwUser1;
+                    g_dwSelectedWeather = description->dwUser2;
+                    g_dwChosenWeather = description->dwUser2;
+                    g_dwSelectedCarClass = description->dwUser3;
+                    g_dwTotalLapsSetting = description->dwUser4;
+                    g_dwTotalLaps = description->dwUser4;
+                    // The original copies all 80 bytes, including bytes after a terminator.
+                    std::memcpy(g_szSessionName, description->lpszSessionNameA, 80);
+                    FreeSessionDesc(description);
+                    return DP_OK;
+                }
+            }
+        }
+    }
+    if (description != nullptr) {
+        FreeSessionDesc(description);
+    }
+    return result;
+}
+
 HRESULT CreateDirectPlaySession(IDirectPlay3A *pDirectPlay,
                                 NetworkSessionSettings *pSettings,
                                 DirectPlayInfo *pInfo) {
