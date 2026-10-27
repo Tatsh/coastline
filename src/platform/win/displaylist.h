@@ -1108,6 +1108,21 @@ void RenderGbiDisplayListFrame(GbiCommand *pDisplayList);
  * @ghidraAddress BRD3D: 0x118aa0b4
  */
 extern void (*g_pfnBindTextureEntry)(int nEntry);
+
+/**
+ * The entry whose texture is bound, or -1 after texture initialization.
+ *
+ * @ghidraAddress BRD3D: 0x104d51b8
+ */
+extern int g_nBoundTextureEntry;
+
+/**
+ * Bind an entry's device texture and stage its addressing, scale and active tile bounds.
+ *
+ * @param nEntry The loaded texture entry.
+ * @ghidraAddress BRD3D: 0x10028ca0
+ */
+void BindTextureEntry(int nEntry);
 #endif
 
 /**

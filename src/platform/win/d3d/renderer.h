@@ -11,6 +11,8 @@
 #include <ddraw.h>
 #include <windows.h>
 
+#include "platform/win/texturetile.h"
+
 /** A renderer told to take the screen back from GDI that had not given it. */
 #define RENDERER_E_NOT_IN_GDI_MODE static_cast<HRESULT>(0x88762711)
 
@@ -1150,15 +1152,21 @@ int ReturnZero(void);
 
 /** A texture the game loaded. The layout is not recovered past its size. */
 struct TextureEntry {
-    int nTextureId;          /*!< The entry of g_ppTextureIdTable of the texture. */
-    char abUnknown4[0x1c];   /* +0x04 */
-    int nLod;                /*!< The level of detail, as CalculateTextureDimensions() reads it. */
-    int nAspectRatio;        /*!< The aspect ratio, as CalculateTextureDimensions() reads it. */
-    char abUnknown28[0x248]; /* +0x28 */
-    int bOwnsPaintBuffers;   /*!< Whether release frees the four paint buffers. */
-    char abUnknown274[8];    /* +0x274 */
-    int nDamageLevel;        /*!< The level of damage, from 0 to 3. */
-    char abUnknown280[4];    /* +0x280 */
+    int nTextureId;         /*!< The entry of g_ppTextureIdTable of the texture. */
+    char abUnknown4[0x1c];  /* +0x04 */
+    int nLod;               /*!< The level of detail, as CalculateTextureDimensions() reads it. */
+    int nAspectRatio;       /*!< The aspect ratio, as CalculateTextureDimensions() reads it. */
+    int bClampS;            /*!< Whether texture binding clamps s. */
+    int bClampT;            /*!< Whether texture binding clamps t. */
+    char abUnknown30[0x30]; /* +0x30 */
+    int nTileIndex;         /*!< The active tile of aTiles. */
+    char abUnknown64[4];    /* +0x64 */
+    TexScanTile aTiles[TEX_SCAN_TILE_COUNT];
+    char abUnknown268[8];             /* +0x268 */
+    int bOwnsPaintBuffers;            /*!< Whether release frees the four paint buffers. */
+    char abUnknown274[8];             /* +0x274 */
+    int nDamageLevel;                 /*!< The level of damage, from 0 to 3. */
+    char abUnknown280[4];             /* +0x280 */
     unsigned char *apPaintBuffers[4]; /*!< The pixel buffers for the four damage levels. */
     char abUnknown294[0x1c];          /* +0x294 */
     float fTextureScaleS;

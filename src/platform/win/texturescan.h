@@ -6,6 +6,7 @@
  */
 
 #include "platform/win/displaylist.h"
+#include "platform/win/texturetile.h"
 
 /** The states of the scan of a load of a texture, by the command that sets each. */
 enum TexScanLoadState {
@@ -19,29 +20,6 @@ enum TexScanLoadState {
     TEX_SCAN_TLUT_LOADED = 7,  /*!< ScanGbiLoadTlut(). */
     TEX_SCAN_PIPE_SYNCED = 8,  /*!< ScanGbiPipeSync(). */
 };
-
-/** A tile the scan records. */
-struct TexScanTile {
-    int nFormat;    /*!< The format of the texels. */
-    int nSize;      /*!< The size of the texels. */
-    int nLineBytes; /*!< The bytes of a line of texels in the texture memory. */
-    int nTmem;      /*!< The address of the tile in the texture memory, in words of 8 bytes. */
-    int bMirrorS;   /*!< Whether s mirrors. */
-    int bClampS;    /*!< Whether s clamps. */
-    int bMirrorT;   /*!< Whether t mirrors. */
-    int bClampT;    /*!< Whether t clamps. */
-    int nMaskS;     /*!< The bits of s that wrap. */
-    int nMaskT;     /*!< The bits of t that wrap. */
-    int nShiftS;    /*!< The shift of s. */
-    int nShiftT;    /*!< The shift of t. */
-    int nUls;       /*!< The left edge, in texels with two bits of fraction. */
-    int nUlt;       /*!< The top edge, in texels with two bits of fraction. */
-    int nLrs;       /*!< The right edge, in texels with two bits of fraction. */
-    int nLrt;       /*!< The bottom edge, in texels with two bits of fraction. */
-};
-
-/** The number of entries of g_aTexScanTiles. */
-#define TEX_SCAN_TILE_COUNT 8
 
 /** The size of g_abTmemShadow. */
 #define TMEM_SHADOW_SIZE 0x800

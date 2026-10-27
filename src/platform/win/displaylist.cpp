@@ -744,6 +744,33 @@ SetPendingRenderState(DWORD *pdwPending, DWORD dwApplied, DWORD dwValue, DWORD d
     }
 }
 
+int g_nBoundTextureEntry;
+
+void BindTextureEntry(int nEntry) {
+    if (nEntry == g_nBoundTextureEntry) {
+        return;
+    }
+    const TextureEntry &entry = g_pTextureEntries[nEntry];
+    g_pD3DDevice2->SetRenderState(D3DRENDERSTATE_TEXTUREHANDLE,
+                                  g_ppTextureIdTable[entry.nTextureId]->hTexture);
+    SetPendingRenderState(&g_dwPendingRS_AddressU,
+                          g_dwAppliedRS_AddressU,
+                          entry.bClampS == 1 ? D3DTADDRESS_CLAMP : D3DTADDRESS_WRAP,
+                          RENDER_STATE_DIRTY_ADDRESS_U);
+    SetPendingRenderState(&g_dwPendingRS_AddressV,
+                          g_dwAppliedRS_AddressV,
+                          entry.bClampT == 1 ? D3DTADDRESS_CLAMP : D3DTADDRESS_WRAP,
+                          RENDER_STATE_DIRTY_ADDRESS_V);
+    g_fTexCoordScaleS = entry.fTextureScaleS;
+    g_fTexCoordScaleT = entry.fTextureScaleT;
+    const TexScanTile &tile = entry.aTiles[entry.nTileIndex];
+    g_dwTileSizeUls = tile.nUls;
+    g_dwTileSizeUlt = tile.nUlt;
+    g_dwTileSizeLrs = tile.nLrs;
+    g_dwTileSizeLrt = tile.nLrt;
+    g_nBoundTextureEntry = nEntry;
+}
+
 void ApplyRdpRenderMode(unsigned dwRenderMode) {
     auto zWrite = [](DWORD value) {
         SetPendingRenderState(&g_dwPendingRS_ZWriteEnable,
