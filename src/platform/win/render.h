@@ -1435,3 +1435,12 @@ void PreparePaintTexture(int *pWidth, int *pHeight, TextureImageData *pImage);
  * @ghidraAddress BRD3D: 0x100a7e20
  */
 extern const char g_szTidFromTextureAppendAmid[];
+
+/**
+ * Create device textures for animated track frames and replace their image offsets with entries.
+ *
+ * @param pTextures The track texture descriptors.
+ * @param nCount The descriptor count.
+ * @ghidraAddress BRD3D: 0x1002a430
+ */
+void UploadTrackTextureVariants(ModelTexture *pTextures, int nCount);

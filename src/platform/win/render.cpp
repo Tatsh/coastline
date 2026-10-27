@@ -1339,3 +1339,43 @@ int CreateTextureFromImage(TextureImageData *pImage, unsigned char *pPixels) {
     }
     return RegisterTextureEntry(pImage, textureId);
 }
+
+void UploadTrackTextureVariants(ModelTexture *pTextures, int nCount) {
+    if (nCount <= 0) {
+        return;
+    }
+    unsigned entryCount = g_dwTextureEntryCount;
+    for (int i = 0; i < nCount; i++) {
+        ModelTexture &texture = pTextures[i];
+        if (!texture.image || !(texture.textureFlags & 0x100000)) {
+            continue;
+        }
+        TextureAnimation *animation = texture.source.animation;
+        if (animation->frameCount == 2 && animation->frames[0].time == 0xffffffff) {
+            continue;
+        }
+        unsigned sourceEntry = 0;
+        while (sourceEntry < entryCount &&
+               g_pTextureEntries[sourceEntry].data.pImage != texture.image) {
+            sourceEntry++;
+        }
+        if (!animation->frameCount) {
+            continue;
+        }
+        for (int frame = 0; frame < animation->frameCount; frame++) {
+            TextureImageData image = g_pTextureEntries[sourceEntry].data;
+            image.pImage = g_pTrackTextureTable + animation->frames[frame].imageRom;
+            unsigned paletteOffset = animation->frames[frame].paletteRom;
+            if (static_cast<int>(paletteOffset) > 0) {
+                image.pPalette = g_pTrackTextureTable + paletteOffset;
+                std::memcpy(g_pTlutLoadList, image.pPalette, 512);
+            }
+            g_bTexScanPrimColorSet = 0;
+            g_bTexScanEnvColorSet = 0;
+            unsigned char *pixels = GetTextureImagePixels(&image);
+            unsigned entry = CreateTextureFromImage(&image, pixels);
+            animation->frames[frame].imageRom = entry | (sourceEntry << 16);
+        }
+        entryCount = g_dwTextureEntryCount;
+    }
+}
