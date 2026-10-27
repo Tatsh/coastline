@@ -1,6 +1,6 @@
 # PC port game code from 0x10050000 to 0x10060000
 
-56 of 96 routines done.
+57 of 96 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -65,7 +65,7 @@ the same name, for a routine the port retained from the N64 game.
 | `ConvertInputToN64ControllerPad`          |        |                 |      1 |    136 |              | `0x10059e70` | `undefined ConvertInputToN64ControllerPad()`                                                                                                    |
 | `MenuItemList::UpdateItemAndNotify`       |   ✅   |                 |      1 |    132 | `0x1005bb80` | `0x100549a0` | `int UpdateItemAndNotify(MenuItemList * this, int nIndex)`                                                                                      |
 | `UpdateWheelTransforms`                   |        |                 |      4 |    119 |              | `0x1005ac60` | `undefined UpdateWheelTransforms()`                                                                                                             |
-| `MenuItemList::UpdateHoverInRect`         |   🚧   |                 |      1 |    117 | `0x1005c510` | `0x10055330` | `undefined UpdateHoverInRect(MenuItemList * this, undefined4 param_1)`                                                                          |
+| `MenuItemList::UpdateHoverInRect`         |   ✅   |                 |      1 |    117 | `0x1005c510` | `0x10055330` | `int UpdateHoverInRect(MenuItemList * this, tagRECT * bounds)`                                                                                  |
 | `MenuFont::DrawGlyph`                     |   ✅   |                 |      1 |    112 | `0x1005b730` | `0x10054550` | `int DrawGlyph(MenuFont * this, short nImage, float x, float y, int nStyle)`                                                                    |
 | `MenuItemList::SetItemData`               |   ✅   |                 |      1 |    110 | `0x1005c200` | `0x10055020` | `int SetItemData(MenuItemList * this, void * data, uint size, int index)`                                                                       |
 | `HasKeyColorPixelInRect`                  |        |                 |      2 |    105 |              | `0x1005a630` | `undefined HasKeyColorPixelInRect()`                                                                                                            |
