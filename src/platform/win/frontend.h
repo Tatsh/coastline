@@ -39,6 +39,61 @@ public:
      * @ghidraAddress BRGlide: 0x10055a30
      */
     virtual ~SaveFileList();
+
+    /**
+     * Read descriptions from the last 128 bytes of matching saved files.
+     *
+     * @param pszPattern The file search pattern.
+     * @return Zero when the first search fails, otherwise one.
+     * @ghidraAddress BRD3D: 0x1005cf20
+     */
+    virtual int ScanSaveFiles(const char *pszPattern);
+
+    /**
+     * Count matches after the first, stopping after 100 files.
+     *
+     * @param pszPattern The file search pattern.
+     * @return Minus one when the first search fails, otherwise the count after the first match.
+     * @ghidraAddress BRD3D: 0x1005d0a0
+     */
+    virtual int CountMatchingFiles(const char *pszPattern);
+
+    /**
+     * Replace pattern markers with zeroes and derive a filename from matching list entries.
+     *
+     * @param pszPattern The mutable pattern, with X or x marking the numeric suffix.
+     * @param ppszName The destination filename buffer.
+     * @ghidraAddress BRD3D: 0x1005d110
+     */
+    virtual void GenerateNextSaveFileName(char *pszPattern, char **ppszName);
+
+    /**
+     * Write 100-byte records from the active screen's first file list.
+     *
+     * @param nUnused Not read.
+     * @return One, including after reported file errors.
+     * @ghidraAddress BRD3D: 0x1005cc20
+     */
+    virtual int WriteSeasonDescFile(int nUnused);
+
+    /**
+     * Load and uppercase a season description into the active screen's first file list.
+     *
+     * @param nSlot The signed slot index.
+     * @return One, including when the file does not open.
+     * @ghidraAddress BRD3D: 0x1005ccd0
+     */
+    virtual int LoadSeasonDescription(short nSlot);
+
+    /**
+     * Set a root screen file-list entry using the numeric part of its filename.
+     *
+     * @param pszFileName The saved filename.
+     * @param pszDescription The description copied into the entry.
+     * @return One.
+     * @ghidraAddress BRD3D: 0x1005ce30
+     */
+    virtual int SetEntryFromSaveFileName(const char *pszFileName, const char *pszDescription);
 };
 
 /** An item of a panel of the front end. The layout is not recovered past the position. */
@@ -1694,3 +1749,10 @@ int ShowPreRaceInfoScreen(void);
  * @ghidraAddress BRD3D: 0x10047290
  */
 int RaceResultsTotalsUI_OnContinue(MenuActionWidget *pItem);
+
+/**
+ * Whether file-list entries refer to season saves rather than ghost recordings.
+ *
+ * @ghidraAddress BRD3D: 0x10aa2848
+ */
+extern int g_dwSaveSlotListIsSaveMode;

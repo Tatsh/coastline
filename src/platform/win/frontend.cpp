@@ -5,6 +5,7 @@
 #include <cstring>
 #include <new>
 
+#include <io.h>
 #include <windows.h>
 
 #include "game.h"
@@ -37,6 +38,7 @@ unsigned short g_wUnusedFrontEndWord1;
 FrontEndResourceSlot g_aFrontEndResourceSlots[FRONT_END_RESOURCE_SLOT_COUNT];
 int g_adwFrontEndResourceFlags[FRONT_END_RESOURCE_FLAG_COUNT];
 MenuScreen *g_pRootMenuScreen;
+int g_dwSaveSlotListIsSaveMode;
 char g_szSeasonSaveFileName[MAX_PATH];
 char g_szTimeAttackSaveFileName[MAX_PATH];
 RECT g_aMenuGlyphRects[MENU_GLYPH_RECT_COUNT];
@@ -192,6 +194,150 @@ SaveFileList::SaveFileList() {
 }
 
 SaveFileList::~SaveFileList() {
+}
+
+int SaveFileList::WriteSeasonDescFile(int nUnused) {
+    FILE *file = fopen("seasondesc.dat", "wb");
+    if (!file) {
+        ShowErrorMessage(7);
+    }
+    char description[100];
+    for (int slot = 0; slot < SAVE_FILE_NAME_COUNT; ++slot) {
+        strcpy(description, g_pActiveMenuScreen->apFiles[0]->aszNames[slot]);
+        // The unused tail of each record retains the preceding stack contents.
+        if (fwrite(description, 1, sizeof(description), file) < sizeof(description)) {
+            ShowErrorMessage(7);
+        }
+    }
+    fclose(file);
+    return 1;
+}
+
+int SaveFileList::LoadSeasonDescription(short nSlot) {
+    char fileName[SAVE_FILE_NAME_SIZE];
+    char number[4];
+    strcpy(fileName, "RallySeason");
+    _itoa(nSlot, number, 10);
+    strcat(fileName, number);
+    strcat(fileName, ".brf");
+    FILE *file = fopen(fileName, "rb");
+    if (file) {
+        char description[SAVE_FILE_NAME_SIZE] = {};
+        if (fread(description, 1, 128, file) < 128) {
+            ShowErrorMessage(7);
+        }
+        strcpy(g_pActiveMenuScreen->apFiles[0]->aszNames[nSlot], _strupr(description));
+        fclose(file);
+    }
+    return 1;
+}
+
+int SaveFileList::SetEntryFromSaveFileName(const char *pszFileName, const char *pszDescription) {
+    char number[32];
+    const bool season = g_dwSaveSlotListIsSaveMode != 0;
+    const char *prefix = season ? "RallySeason" : "TimeAttack";
+    strcpy(number, pszFileName + strlen(prefix));
+    const int slot = atoi(number);
+    strcpy(g_pRootMenuScreen->apFiles[season ? 0 : 1]->aszNames[slot], pszDescription);
+    return 1;
+}
+
+int SaveFileList::ScanSaveFiles(const char *pszPattern) {
+    _finddata32_t found;
+    const intptr_t handle = _findfirst32(pszPattern, &found);
+    if (handle == -1) {
+        return 0;
+    }
+    char description[SAVE_FILE_NAME_SIZE] = {};
+    for (int fileIndex = 0; fileIndex < SAVE_FILE_NAME_COUNT; ++fileIndex) {
+        if (fileIndex != 0) {
+            memset(description, 0, sizeof(description));
+            if (_findnext32(handle, &found) != 0) {
+                break;
+            }
+        }
+        FILE *file = fopen(found.name, "rb");
+        fseek(file, 0, SEEK_END);
+        const long descriptionOffset = ftell(file) - 128;
+        fseek(file, descriptionOffset, SEEK_SET);
+        fread(description, 1, 128, file);
+        if (fileIndex == 0) {
+            fclose(file);
+        }
+        SetEntryFromSaveFileName(found.name, description);
+        if (fileIndex != 0) {
+            fclose(file);
+        }
+    }
+    _findclose(handle);
+    return 1;
+}
+
+int SaveFileList::CountMatchingFiles(const char *pszPattern) {
+    _finddata32_t found;
+    const intptr_t handle = _findfirst32(pszPattern, &found);
+    if (handle == -1) {
+        return -1;
+    }
+    int count = 0;
+    while (count < SAVE_FILE_NAME_COUNT - 1 && _findnext32(handle, &found) == 0) {
+        ++count;
+    }
+    _findclose(handle);
+    return count;
+}
+
+void SaveFileList::GenerateNextSaveFileName(char *pszPattern, char **ppszName) {
+    char candidate[SAVE_FILE_NAME_SIZE] = {};
+    char number[SAVE_FILE_NAME_SIZE] = {};
+    char extension[SAVE_FILE_NAME_SIZE] = {};
+    char prefix[SAVE_FILE_NAME_SIZE] = {};
+    strcpy(candidate, pszPattern);
+    int prefixLength = 0;
+    bool suffix = false;
+    for (size_t index = 0; index < strlen(pszPattern); ++index) {
+        if (pszPattern[index] == 'X' || pszPattern[index] == 'x') {
+            pszPattern[index] = '0';
+            suffix = true;
+        } else if (!suffix) {
+            if (pszPattern[index] == '.') {
+                suffix = true;
+            } else {
+                prefix[index] = pszPattern[index];
+                ++prefixLength;
+            }
+        }
+    }
+    const short numericStart = static_cast<short>(prefixLength);
+    for (const char *name : aszNames) {
+        // Each comparison uses the pattern, rather than the preceding candidate.
+        if (strncmp(pszPattern, name, numericStart) == 0 && strcmp(pszPattern, name) < 0) {
+            strcpy(candidate, name);
+        }
+    }
+    char *dot = candidate + strlen(candidate) - 1;
+    while (dot != candidate && *dot != '.') {
+        --dot;
+    }
+    if (dot != candidate) {
+        strcpy(extension, dot);
+    }
+    for (size_t index = numericStart; index < strlen(candidate); ++index) {
+        if (candidate[index] < '0' || candidate[index] > '9') {
+            break;
+        }
+        number[index - numericStart] = candidate[index];
+    }
+    const int next = static_cast<int>(static_cast<unsigned>(atoi(number)) + 1);
+    memset(number, 0, sizeof(number));
+    // Overlapping decimal writes preserve the original suffix conversion.
+    _itoa(next & 0xff000000, number, 10);
+    _itoa(next & 0xff0000, number + 1, 10);
+    _itoa(next & 0xff00, number + 2, 10);
+    _itoa(next & 0xff, number + 3, 10);
+    strcpy(*ppszName, prefix);
+    strcat(*ppszName, number);
+    strcat(*ppszName, extension);
 }
 
 MenuScreen::MenuScreen() {

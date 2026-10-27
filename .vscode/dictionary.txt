@@ -31,6 +31,7 @@ arrowud
 arrowuu
 asciz
 ashft
+atdb
 atexit
 attachedonly
 audiomix
@@ -52,6 +53,7 @@ blez
 blit
 bnel
 bnez
+bootplayer
 boxz
 brielle
 bsky
@@ -94,6 +96,7 @@ colc
 colored
 colorkeyenable
 combkey
+configfile
 congrat
 contpfs
 contramread
@@ -218,6 +221,7 @@ donotupdateextents
 doubleword
 dpaid
 dpal
+dpcompoundaddresselement
 dperr
 dplconnection
 dpmsg
@@ -349,6 +353,7 @@ histk
 hmenu
 hmmio
 horzres
+hoststarted
 hpstr
 hresult
 huft
@@ -590,6 +595,7 @@ pirawread
 pjrwd
 placedvel
 playerlost
+playerready
 playerselect
 podarchive
 popmtx
@@ -653,6 +659,7 @@ sbclaude
 schemafile
 seasn
 seasoncars
+seasondesc
 seasonpoints
 seasonraces
 sendmesg
