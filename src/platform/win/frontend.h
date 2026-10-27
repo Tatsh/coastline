@@ -429,6 +429,29 @@ int ShowModemDialUpScreen(void);
 void BuildModemConnectionUI(MenuScreen *pScreen);
 
 /**
+ * Open display mode selection and populate its settings lists after successful creation.
+ *
+ * @ghidraAddress BRD3D: 0x10045520
+ */
+int ShowDisplayModeSelectMenu(void);
+
+/**
+ * Build display mode selection on the supplied screen.
+ *
+ * @ghidraAddress BRD3D: 0x1004db00
+ * @stub
+ */
+void BuildDisplayModeSelectUI(MenuScreen *pScreen);
+
+/**
+ * Populate the video settings lists.
+ *
+ * @ghidraAddress BRD3D: 0x1007ac00
+ * @stub
+ */
+int PopulateVideoSettingsLists(void);
+
+/**
  * @ghidraAddress BRD3D: 0x10a9d078
  * @ghidraAddress BRGlide: 0x10ac4100
  */

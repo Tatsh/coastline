@@ -1088,6 +1088,14 @@ int ShowModemDialUpScreen(void) {
     return ShowCachedMenuScreen(g_pCachedMenu_ModemDialUp, BuildModemConnectionUI);
 }
 
+int ShowDisplayModeSelectMenu(void) {
+    if (!ShowCachedMenuScreen(g_pCachedMenu_AudioSettings, BuildDisplayModeSelectUI)) {
+        return 0;
+    }
+    PopulateVideoSettingsLists();
+    return 1;
+}
+
 int IsGameCdInDrive(int nDrive) {
     char szRoot[MAX_PATH];
     char szVolume[MAX_PATH];
