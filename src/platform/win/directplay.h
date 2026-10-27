@@ -1080,6 +1080,26 @@ DWORD WINAPI NetworkWorkerThreadProc(LPVOID pParameter);
 void CreateNetworkPlayerSlotMutexes(void);
 
 /**
+ * @ghidraAddress BRD3D: 0x100713c0
+ */
+void ResetAllPlayerSlots(void);
+
+/**
+ * @ghidraAddress BRD3D: 0x1178feec
+ */
+extern DWORD g_dwNetSlotResetTime;
+
+/**
+ * @ghidraAddress BRD3D: 0x11826af8
+ */
+extern unsigned g_dwNetNextFinishPosition;
+
+/**
+ * @ghidraAddress BRD3D: 0x1003db50
+ */
+HRESULT SendNetworkFinishPositionMessage(DirectPlayInfo *pInfo, DPID dpidPlayer, DWORD dwPosition);
+
+/**
  * Start the thread that works for the host of a network game.
  *
  * @ghidraAddress BRD3D: 0x10071630
@@ -1258,9 +1278,10 @@ void ResetSessionSlotTable(void);
 
 /** A network player of a race. The layout is not recovered past the members below. */
 struct NetPlayerSlot {
-    HANDLE hMutex;         /*!< The mutex of the slot. */
-    DPID dpidOwner;        /*!< The player of the session that controls the slot. */
-    char abUnknown8[0x24]; /* +0x08 */
+    HANDLE hMutex;  /*!< The mutex of the slot. */
+    DPID dpidOwner; /*!< The player of the session that controls the slot. */
+    DWORD dwLastUpdateTime;
+    char abUnknownC[0x20]; /* +0x0c */
     int dwState;           /*!< The state of the slot in its low 6 bits, 0 for free. */
     int nStatusValue;
     unsigned char bStatusOptionA;
@@ -1270,8 +1291,7 @@ struct NetPlayerSlot {
     char szPlayerName[0x400];
     unsigned dwLastTimeSync;
     unsigned dwRaceTime;
-    unsigned short wTimeSyncValue;
-    char abUnknown966[2]; /* +0x966 */
+    unsigned dwTimeSyncValue;
     unsigned dwFinishTime;
 };
 

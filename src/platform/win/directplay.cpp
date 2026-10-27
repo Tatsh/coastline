@@ -756,6 +756,67 @@ int g_nNetPauseRequestTicks;
 
 int g_bNetRaceStarted;
 unsigned g_dwNetRaceStartCountdownTime;
+DWORD g_dwNetSlotResetTime;
+unsigned g_dwNetNextFinishPosition;
+
+void ResetAllPlayerSlots(void) {
+    g_bNetRaceStarted = false;
+    g_dwNetNextFinishPosition = 0;
+    for (int i = 0; i < NET_PLAYER_SLOT_COUNT; i++) {
+        NetPlayerSlot &slot = g_aNetPlayerSlots[i];
+        WaitForSingleObject(slot.hMutex, INFINITE);
+        slot.dwLastTimeSync = 0;
+        slot.dwRaceTime = 0;
+        slot.dwTimeSyncValue = 0;
+        slot.dwFinishTime = 0;
+        slot.dwState = 0;
+        ReleaseMutex(slot.hMutex);
+        for (int j = 0; j < NET_PLAYER_SLOT_COUNT; j++) {
+            NetPlayerSlot &peer = g_aNetPeerSlotMatrix[j][i];
+            WaitForSingleObject(peer.hMutex, INFINITE);
+            peer.dwLastUpdateTime = g_dwNetSlotResetTime;
+            peer.dwLastTimeSync = 0;
+            peer.dwRaceTime = 0;
+            peer.dwTimeSyncValue = 0;
+            peer.dwFinishTime = 0;
+            peer.dwState = 0;
+            ReleaseMutex(peer.hMutex);
+        }
+    }
+}
+
+void CreateNetworkPlayerSlotMutexes(void) {
+    g_dwNetSessionStartTime = GetHighResolutionTime();
+    g_dwNetSlotResetTime = GetElapsedTimeSinceStart();
+    for (int i = 0; i < NET_PLAYER_SLOT_COUNT; i++) {
+        g_aNetPlayerSlots[i].hMutex = CreateMutexA(nullptr, FALSE, nullptr);
+        for (int j = 0; j < NET_PLAYER_SLOT_COUNT; j++) {
+            g_aNetPeerSlotMatrix[j][i].hMutex = CreateMutexA(nullptr, FALSE, nullptr);
+        }
+    }
+    ResetAllPlayerSlots();
+}
+
+HRESULT SendNetworkFinishPositionMessage(DirectPlayInfo *pInfo, DPID dpidPlayer, DWORD dwPosition) {
+    if (pInfo == nullptr || pInfo->pDirectPlay == nullptr) {
+        return 0;
+    }
+    struct {
+        DWORD dwType;
+        DPID dpidPlayer;
+        DWORD dwPosition;
+    } message = {0x60000008, dpidPlayer, dwPosition};
+    if (pInfo->bIsHost) {
+        ProcessNetworkDataStream(
+            pInfo, &message, sizeof(message), pInfo->dpidPlayer, DPID_SERVERPLAYER);
+    }
+    return DirectPlaySendLocked(pInfo->pDirectPlay,
+                                pInfo->dpidPlayer,
+                                DPID_ALLPLAYERS,
+                                DPSEND_GUARANTEED,
+                                &message,
+                                sizeof(message));
+}
 
 static inline void LockNetworkWorkerSlot(NetPlayerSlot &slot) {
     HANDLE handles[2] = {g_hNetWorkerStopEvent, slot.hMutex};
@@ -884,7 +945,7 @@ void BuildNetworkPlayerStatusPackets(void) {
                 WriteTimeSyncPacket(&stream,
                                     static_cast<unsigned char>(i),
                                     recipient.dwRaceTime,
-                                    recipient.wTimeSyncValue)) {
+                                    recipient.dwTimeSyncValue)) {
                 recipient.dwLastTimeSync = g_dwNetWorkerCurrentTime;
                 for (int j = 0; j < NET_PLAYER_SLOT_COUNT; j++) {
                     if (j == i) {
@@ -897,7 +958,7 @@ void BuildNetworkPlayerStatusPackets(void) {
                         fits = WriteTimeSyncPacket(&stream,
                                                    static_cast<unsigned char>(j),
                                                    subject.dwRaceTime,
-                                                   subject.wTimeSyncValue);
+                                                   subject.dwTimeSyncValue);
                     }
                     ReleaseMutex(subject.hMutex);
                     if (!fits) {
