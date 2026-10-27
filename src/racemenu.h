@@ -29,9 +29,6 @@
 /** The flag of an item that cannot be chosen, whose screen explains why. */
 #define MENU_ITEM_UNAVAILABLE 0x08
 
-/** The flag of an item whose model is drawn mirrored. */
-#define MENU_ITEM_MIRRORED 0x10
-
 /** The flag of an item only the first player may choose. */
 #define MENU_ITEM_FIRST_PLAYER 0x20
 
@@ -578,4 +575,4 @@ void LoadMenuItemModels(MenuItem **items, s32 *itemCount);
  */
 void ResetAndInitDisplay(MenuItem **items, s32 *itemCount);
 
-#endif
+#endif /* COASTLINE_RACEMENU_H */

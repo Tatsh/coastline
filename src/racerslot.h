@@ -58,6 +58,26 @@ typedef struct RacerSlot {
     s32 colorPanelCount;
 
 #ifdef __cplusplus
+    /**
+     * @ghidraAddress BRD3D: 0x10069330
+     * @ghidraAddress BRGlide: 0x100623a0
+     */
+    void UpdateRemoteVehicleFrame(void);
+
+    /**
+     * Drive the assigned vehicle or advance this racer along the route.
+     *
+     * @ghidraAddress BRD3D: 0x10068ef0
+     */
+    void UpdateRacerSlotMotion(void);
+
+    /**
+     * Count crossed gates and laps and update race records.
+     *
+     * @ghidraAddress BRD3D: 0x10066e90
+     */
+    void UpdateRaceProgress(void);
+
 public:
     /**
      * Update the assigned vehicle after its movement and contacts for a frame.
@@ -192,40 +212,18 @@ public:
         return colorPanelCount = value;
     }
 
-private:
-    /**
-     * @ghidraAddress BRD3D: 0x10069330
-     * @ghidraAddress BRGlide: 0x100623a0
-     */
-    void UpdateRemoteVehicleFrame(void);
-
-public:
     /**
      * @ghidraAddress BRD3D: 0x100664c0
      */
     void FreeEnemyCarColorPanels(void);
 
-private:
     /**
      * @ghidraAddress BRD3D: 0x100662a0
      */
     void InitRacerSlot(void);
 
-    /**
-     * Drive the assigned vehicle or advance this racer along the route.
-     *
-     * @ghidraAddress BRD3D: 0x10068ef0
-     */
-    void UpdateRacerSlotMotion(void);
-
-    /**
-     * Count crossed gates and laps and update race records.
-     *
-     * @ghidraAddress BRD3D: 0x10066e90
-     */
-    void UpdateRaceProgress(void);
-#endif
-#endif
+#endif /* __cplusplus */
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 #if TGR_PLATFORM == TGR_PLATFORM_WIN && defined(__cplusplus)
 };
 #else
@@ -277,7 +275,7 @@ void SortRacersByPosition(void);
  * @ghidraAddress JPN: 0x8022dc50
  */
 void UpdateRacerSlotRaceState(RacerSlot *slot);
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_N64 */
 
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
 /**
@@ -289,10 +287,10 @@ void MakeEnemyCarColorPanels(RacerSlot *slot);
  * @ghidraAddress BRD3D: 0x100661b0
  */
 void ApplyEnemyCarColorPanels(Vehicle *vehicle, RacerSlot *slot);
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif
+#endif /* COASTLINE_RACERSLOT_H */

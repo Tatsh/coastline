@@ -5,6 +5,10 @@
 #include "render.h"
 #include "vehicle.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
 void RenderRaceView(ViewportRect *views, const RacerSlot *slots, Vehicle *vehicles, s32 index);
 void DrawPauseMenu(ViewportRect *views, const RacerSlot *slots, Vehicle *vehicles);
@@ -15,4 +19,8 @@ void DrawPauseMenu(void);
 
 void DrawCreditCaption(void);
 
+#ifdef __cplusplus
+}
 #endif
+
+#endif /* COASTLINE_RACE_RENDER_H */

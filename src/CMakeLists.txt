@@ -112,7 +112,7 @@ else()
     exhaustspawn.c tiresmokespawn.c tiresprayemit.c tirespray.c vehiclepaint.c precipitationupdate.c
     billboardparticles.c particlesmokerender.c particleexhaustrender.c tiresprayrender.c precipitationrender.c
     sky.c hudrace.c hudmessage.c dashboard.c raceresults.c hudoverlay.c visibleinstances.c
-    lastlapsnapshot.c trackrender.c racerender.c
+    lastlapsnapshot.c trackrender.c racerender.c raceload.c
     PROPERTIES LANGUAGE CXX)
   set_source_files_properties(controllerread.c inputtranslate.c PROPERTIES LANGUAGE CXX)
   set_source_files_properties(volumecontrols.c PROPERTIES LANGUAGE CXX)
@@ -132,7 +132,7 @@ else()
   target_link_libraries(coastline_game PRIVATE coastline_common)
   list(APPEND COASTLINE_LIBRARIES coastline_game)
 
-  target_sources(coastline_game PRIVATE racerender.c)
+  target_sources(coastline_game PRIVATE racerender.c raceload.c)
 
   # The PC libraries link the checksum of the vendored zlib 1.0.4 and not its inflate side.
   set(_zlib "${CMAKE_SOURCE_DIR}/3rdparty/zlib-1.0.4")

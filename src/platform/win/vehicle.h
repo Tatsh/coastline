@@ -187,9 +187,145 @@ private:
     void ColorSpraySegment(s32 wheel);
     void AgeSpraySegment(s32 wheel, s32 age);
 
+    /**
+     * @ghidraAddress BRD3D: 0x10075360
+     */
+    s32 UpdateVehicleTrackPosition();
+    /**
+     * @ghidraAddress BRD3D: 0x10064350
+     */
+    void ComputeTrackPosition(void);
+
+    /**
+     * @ghidraAddress BRD3D: 0x10061f70
+     */
+    void UpdateVehicleEngineAndGearbox(void);
+
+    /**
+     * Advance spring, tyre, damping, and collision calculations.
+     *
+     * @ghidraAddress BRD3D: 0x10061720
+     */
+    void SimulateVehiclePhysicsSubstep(void);
+
+    /**
+     * Assign computer vehicles to racers near this player.
+     *
+     * @ghidraAddress BRD3D: 0x10066650
+     */
+    void ManageAiRacerSlots(void);
+
+    /**
+     * Update engine, event, skid, and rolling sounds.
+     *
+     * @ghidraAddress BRD3D: 0x10068400
+     */
+    void UpdateVehicleSounds(void);
+
+    /** @ghidraAddress BRD3D: 0x10063ff0 */
+    s32 TraceTrackSplineRecursive(s32 depth, s32 pointIndex, TrackSection *section);
+
+    /**
+     * @ghidraAddress BRD3D: 0x10076c90
+     */
+    void BindPlayerInputToVehicle(void);
+    /**
+     * @ghidraAddress BRD3D: 0x10063420
+     */
+    void ChooseVehicleCar(void);
+
+    /**
+     * @ghidraAddress BRD3D: 0x100767a0
+     */
+    void SetVehicleVelocity(f32 x, f32 y, f32 z);
+    /**
+     * @ghidraAddress BRD3D: 0x10076b20
+     */
+    void ResetVehicleState(void);
+    /**
+     * @ghidraAddress BRD3D: 0x10062c50
+     */
+    void InitVehiclePhysics(void);
+    /**
+     * @ghidraAddress BRD3D: 0x10076a00
+     */
+    void InitVehicleColorAndPhysics(void);
+    /**
+     * @ghidraAddress BRD3D: 0x10076a40
+     */
+    void SetVehicleModelSlot(s32 slot);
+    /**
+     * @ghidraAddress BRD3D: 0x10065710
+     */
+    void ClearVehicleDamageState(void);
+    /**
+     * @ghidraAddress BRD3D: 0x10065740
+     */
+    void SetupVehicleForRaceStart(void);
+    /**
+     * @ghidraAddress BRD3D: 0x10065630
+     */
+    void ResetVehicleEffects(void);
+    /**
+     * @ghidraAddress BRD3D: 0x10063660
+     */
+    void RespawnVehicle(void);
+    /**
+     * @ghidraAddress BRD3D: 0x100015d0
+     */
+    void UpdateCameraChase(CameraFrame *camera, f32 share);
+    /**
+     * @ghidraAddress BRD3D: 0x10001760
+     */
+    void UpdateCameraLookAtTarget(void);
+    /**
+     * @ghidraAddress BRD3D: 0x10001890
+     */
+    void ComputeCameraBasis(CameraFrame *camera);
+    /**
+     * @ghidraAddress BRD3D: 0x10001970
+     */
+    void PlaceTrackCamera(void);
+    /**
+     * @ghidraAddress BRD3D: 0x10001ff0
+     */
+    void InitCameraForVehicle(void);
+
+    /**
+     * @ghidraAddress BRD3D: 0x100683c0
+     */
+    void ClearCameraChanged(void);
+    /**
+     * @ghidraAddress BRD3D: 0x100011f0
+     */
+    void ResolveVehicleTrackCollision(CameraFrame *camera, Vec3f *target);
+    /**
+     * @ghidraAddress BRD3D: 0x10076420
+     */
+    void SetVehiclePosition(f32 x, f32 y, f32 z);
+    /**
+     * @ghidraAddress BRD3D: 0x100764c0
+     */
+    void InitVehicleOrientationFromAngle(f32 angle);
+    /**
+     * @ghidraAddress BRD3D: 0x10076700
+     */
+    void SetVehicleFrameMatrix(f32 m[4][4]);
+    /**
+     * @ghidraAddress BRD3D: 0x10076820
+     */
+    void RotateVehicleByEuler(f32 yaw, f32 pitch, f32 roll);
+    /**
+     * @ghidraAddress BRD3D: 0x100769a0
+     */
+    void SetVehicleTurnRate(f32 x, f32 y, f32 z);
+
 public:
     /** Apply the control options from the current input recording. */
     void SetupFromRecording(void);
+    void ConfigureRaceControls(bool localPlayer);
+    void PrepareRaceVehicle(s32 vehicleIndex);
+    void PrepareEmptyRaceView(void);
 
     void SetCustomDecals(s32 value) {
         customDecals = value;
@@ -992,27 +1128,9 @@ public:
     /** @ghidraAddress BRD3D: 0x10063840 */
     void ApplyPlayerVehicleInput(void);
 
-private:
-    /**
-     * @ghidraAddress BRD3D: 0x10075360
-     */
-    s32 UpdateVehicleTrackPosition();
-    /**
-     * @ghidraAddress BRD3D: 0x10064350
-     */
-    void ComputeTrackPosition(void);
-
-public:
     /** @ghidraAddress BRD3D: 0x10075f10 */
     void UpdateVehiclePhysicsFrame(void);
 
-private:
-    /**
-     * @ghidraAddress BRD3D: 0x10061f70
-     */
-    void UpdateVehicleEngineAndGearbox(void);
-
-public:
     /**
      * Store the vehicle's three paint colour bytes.
      *
@@ -1021,15 +1139,6 @@ public:
      */
     void SetVehiclePaintColorRgb(u8 red, u8 green, u8 blue);
 
-private:
-    /**
-     * Advance spring, tyre, damping, and collision calculations.
-     *
-     * @ghidraAddress BRD3D: 0x10061720
-     */
-    void SimulateVehiclePhysicsSubstep(void);
-
-public:
     /**
      * Transform the body and wheel matrices for drawing.
      *
@@ -1044,25 +1153,6 @@ public:
      */
     void ComputeAiVehicleInput(void);
 
-private:
-    /**
-     * Assign computer vehicles to racers near this player.
-     *
-     * @ghidraAddress BRD3D: 0x10066650
-     */
-    void ManageAiRacerSlots(void);
-
-    /**
-     * Update engine, event, skid, and rolling sounds.
-     *
-     * @ghidraAddress BRD3D: 0x10068400
-     */
-    void UpdateVehicleSounds(void);
-
-    /** @ghidraAddress BRD3D: 0x10063ff0 */
-    s32 TraceTrackSplineRecursive(s32 depth, s32 pointIndex, TrackSection *section);
-
-public:
     /**
      * Initialise the player slot, profile defaults, and vehicle selection.
      *
@@ -1070,117 +1160,17 @@ public:
      */
     void InitPlayerVehicleSlot(void);
 
-private:
-    /**
-     * @ghidraAddress BRD3D: 0x10076c90
-     */
-    void BindPlayerInputToVehicle(void);
-    /**
-     * @ghidraAddress BRD3D: 0x10063420
-     */
-    void ChooseVehicleCar(void);
-
-public:
     /**
      * @ghidraAddress BRD3D: 0x10076ae0
      */
     void SetVehicleCarId(s32 carId);
 
-private:
-    /**
-     * @ghidraAddress BRD3D: 0x100767a0
-     */
-    void SetVehicleVelocity(f32 x, f32 y, f32 z);
-    /**
-     * @ghidraAddress BRD3D: 0x10076b20
-     */
-    void ResetVehicleState(void);
-    /**
-     * @ghidraAddress BRD3D: 0x10062c50
-     */
-    void InitVehiclePhysics(void);
-    /**
-     * @ghidraAddress BRD3D: 0x10076a00
-     */
-    void InitVehicleColorAndPhysics(void);
-    /**
-     * @ghidraAddress BRD3D: 0x10076a40
-     */
-    void SetVehicleModelSlot(s32 slot);
-    /**
-     * @ghidraAddress BRD3D: 0x10065710
-     */
-    void ClearVehicleDamageState(void);
-    /**
-     * @ghidraAddress BRD3D: 0x10065740
-     */
-    void SetupVehicleForRaceStart(void);
-    /**
-     * @ghidraAddress BRD3D: 0x10065630
-     */
-    void ResetVehicleEffects(void);
-    /**
-     * @ghidraAddress BRD3D: 0x10063660
-     */
-    void RespawnVehicle(void);
-    /**
-     * @ghidraAddress BRD3D: 0x100015d0
-     */
-    void UpdateCameraChase(CameraFrame *camera, f32 share);
-    /**
-     * @ghidraAddress BRD3D: 0x10001760
-     */
-    void UpdateCameraLookAtTarget(void);
-    /**
-     * @ghidraAddress BRD3D: 0x10001890
-     */
-    void ComputeCameraBasis(CameraFrame *camera);
-    /**
-     * @ghidraAddress BRD3D: 0x10001970
-     */
-    void PlaceTrackCamera(void);
-    /**
-     * @ghidraAddress BRD3D: 0x10001ff0
-     */
-    void InitCameraForVehicle(void);
-
-public:
     /**
      * @ghidraAddress BRD3D: 0x100019d0
      */
     void UpdateCameraSystem(void);
-
-private:
-    /**
-     * @ghidraAddress BRD3D: 0x100683c0
-     */
-    void ClearCameraChanged(void);
-    /**
-     * @ghidraAddress BRD3D: 0x100011f0
-     */
-    void ResolveVehicleTrackCollision(CameraFrame *camera, Vec3f *target);
-    /**
-     * @ghidraAddress BRD3D: 0x10076420
-     */
-    void SetVehiclePosition(f32 x, f32 y, f32 z);
-    /**
-     * @ghidraAddress BRD3D: 0x100764c0
-     */
-    void InitVehicleOrientationFromAngle(f32 angle);
-    /**
-     * @ghidraAddress BRD3D: 0x10076700
-     */
-    void SetVehicleFrameMatrix(f32 m[4][4]);
-    /**
-     * @ghidraAddress BRD3D: 0x10076820
-     */
-    void RotateVehicleByEuler(f32 yaw, f32 pitch, f32 roll);
-    /**
-     * @ghidraAddress BRD3D: 0x100769a0
-     */
-    void SetVehicleTurnRate(f32 x, f32 y, f32 z);
 };
-#endif
+#endif /* __cplusplus */
 
 #ifdef __cplusplus
 extern "C" {

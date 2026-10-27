@@ -5,6 +5,9 @@
 
 struct Model;
 
+/** The flag of an item whose model is drawn mirrored. */
+#define MENU_ITEM_MIRRORED 0x10
+
 /** An item of a menu screen. */
 typedef struct {
     const char *name;    /*!< The text of the item. */
@@ -56,7 +59,7 @@ typedef struct {
     u32 sectionARomEnd; /*!< The cartridge offset of the end of the first section of route. */
     u32 sectionBRom;    /*!< The cartridge offset of the second section of route. */
     u32 sectionBRomEnd; /*!< The cartridge offset of the end of the second section of route. */
-#endif
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
     ArcadeTimes arcadeTimes[ARCADE_CAR_CLASSES][ARCADE_WEATHERS]; /*!< The arcade times by car
                                                                      class and by weather less 1. */
 } TrackMenuItem;
@@ -93,4 +96,4 @@ extern MenuItem *g_apTrackMenuItems[];
 }
 #endif
 
-#endif
+#endif /* COASTLINE_TRACKMENUITEM_H */
