@@ -1023,6 +1023,11 @@ int ProcessCheatInputAndValidateEntity(MenuWidget *pWidget);
 int MultiplayerConnectionUI_OnSelectIpx(MenuWidget *pWidget);
 
 /**
+ * @ghidraAddress BRD3D: 0x100558a0
+ */
+void BuildMultiplayerConnectionUI(MenuScreen *pScreen);
+
+/**
  * @ghidraAddress BRD3D: 0x10044030
  */
 int MultiplayerConnectionUI_UpdateIpxItem(MenuWidget *pWidget);

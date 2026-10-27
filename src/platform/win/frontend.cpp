@@ -9,6 +9,11 @@
 #include <io.h>
 #include <windows.h>
 
+#pragma push_macro("errno")
+#undef errno
+#include <PR/os_cont.h>
+#pragma pop_macro("errno")
+
 #include "game.h"
 #include "laps.h"
 #include "platform/win/boot/app.h"
@@ -3365,6 +3370,11 @@ int ShowRaceResultsSummaryScreen(MenuWidget *) {
                                               BuildResultsSummaryExitSeasonConfirmUI);
 }
 
+static inline int CompleteConnectionTextEdit(MenuWidget *) {
+    /* The text callback shares the controller initialiser's constant return. */
+    return osContInit(nullptr, nullptr, nullptr);
+}
+
 static inline MenuWidget *AddMenuWidget(
     MenuPanel *panel, MenuScreen *screen, float x, float y, unsigned flags, int mode, short image) {
     MenuWidget *widget = new (std::nothrow) MenuWidget();
@@ -3778,6 +3788,97 @@ void BuildSeasonProgressInfoUI(MenuScreen *pScreen) {
     widget->pfnUpdate = SeasonProgressInfoUI_UpdateRoundLabel;
     widget->nSpriteId = 0x34;
     widget->SetText(g_szEmptyUiString, 1, 4, &g_rcMenuCenterPanel);
+    ++panel->wWidgetCount;
+}
+
+void BuildMultiplayerConnectionUI(MenuScreen *pScreen) {
+    pScreen->wCurrentPanel = 0;
+    g_dwGameMode = 6;
+    pScreen->anPanelActive[pScreen->wPanelCount] = 1;
+    MenuPanel *panel = new (std::nothrow) MenuPanel();
+    pScreen->apPanels[pScreen->wPanelCount] = panel;
+    if (!panel) {
+        ShowErrorMessage(4);
+    }
+    ++pScreen->wPanelCount;
+    panel->pScreen = pScreen;
+    panel->nFlags = 0;
+    panel->fX = 195;
+    panel->fY = 130;
+    auto add = [&](float x, float y, unsigned flags, int mode, short image) {
+        return AddMenuWidget(panel, pScreen, x, y, flags, mode, image);
+    };
+    add(0, 0, 9, 0, 0);
+    ++panel->wWidgetCount;
+    SetMenuWidgetLabel(add(panel->fX, 10, 0x100009, 1, -1), 0x54, &g_rcMenuTitleBar);
+    ++panel->wWidgetCount;
+    int (*actions[3])(MenuWidget *) = {MultiplayerConnectionUI_OnSelectIpx,
+                                       MultiplayerConnectionUI_OnSelectTcpIp,
+                                       MultiplayerConnectionUI_OnSelectModem};
+    int (*updates[3])(MenuWidget *) = {MultiplayerConnectionUI_UpdateIpxItem,
+                                       MultiplayerConnectionUI_UpdateTcpIpItem,
+                                       MultiplayerConnectionUI_UpdateModemItem};
+    for (int i = 0; i < 3; ++i) {
+        MenuWidget *widget = add(panel->fX, panel->fY + 19 * i, 0x102001, 1, -1);
+        widget->pfnIdleAction = updates[i];
+        widget->pfnAction = actions[i];
+        SetMenuWidgetLabel(widget, 0x55 + i, &g_rcMenuCenterPanel);
+        ++panel->wWidgetCount;
+        ++panel->wNavigationCount;
+    }
+    MenuWidget *widget = add(panel->fX, panel->fY + 114, 0x102001, 1, -1);
+    widget->pfnIdleAction = ValidateEntityState;
+    widget->pfnAction = MultiplayerConnectionUI_OnBack;
+    SetMenuWidgetLabel(widget, 0xc, &g_rcMenuCenterPanel);
+    ++panel->wWidgetCount;
+    ++panel->wNavigationCount;
+    add(95, 317, 9, 0, 103);
+    ++panel->wWidgetCount;
+    widget = add(130, 336, 0x100009, 1, -1);
+    widget->nSpriteId = 0x34;
+    widget->SetText(GetStringResource(0x59), 1, 4, &g_rcMenuCenterPanel);
+    ++panel->wWidgetCount;
+    SetMenuWidgetLabel(add(130, 374, 0x100009, 1, -1), 0x5a, &g_rcMenuCenterPanel);
+    ++panel->wWidgetCount;
+    add(155, 393, 9, 0, 57);
+    ++panel->wWidgetCount;
+    for (int i = 0; i < 2; ++i) {
+        int top = 393 + 38 * i;
+        widget = add(155, static_cast<float>(top), 0x200001, 1, -1);
+        widget->pfnAction = ConnectionUI_OnToggleTextEdit;
+        widget->pfnUpdate = i == 0 ? OnTcpIpPortEdited : OnTcpIpAddressEdited;
+        widget->pfnTextEditComplete = CompleteConnectionTextEdit;
+        widget->nSpriteId = 3;
+        widget->SetText(g_szEmptyUiString, 1, 1, &g_rcMenuCenterPanel);
+        MenuFont *font = &widget->fonts[0];
+        font->pVTable->MeasureText(font);
+        widget->rcBounds.left = font->rcBounds.left = 155;
+        widget->rcBounds.right = font->rcBounds.right = 347;
+        widget->rcBounds.top = font->rcBounds.top = top;
+        widget->rcBounds.bottom = font->rcBounds.bottom = top + 16;
+        font->nInputMaxWidth =
+            static_cast<short>(static_cast<unsigned short>(font->rcBounds.right) -
+                               static_cast<unsigned short>(font->rcBounds.left) - 16);
+        ++panel->wWidgetCount;
+        ++panel->wNavigationCount;
+        if (i == 0) {
+            SetMenuWidgetLabel(add(130, 412, 0x100009, 1, -1), 0x5b, &g_rcMenuCenterPanel);
+            ++panel->wWidgetCount;
+            add(155, 431, 9, 0, 57);
+            ++panel->wWidgetCount;
+        }
+    }
+    add(80, 46, 9, 0, 7);
+    ++panel->wWidgetCount;
+    widget = add(339, 61, 1, 1, 69);
+    widget->pfnUpdate = ConnectionUI_UpdateServiceProviderImage;
+    ++widget->nLinkedWidgetCount;
+    widget->anLinkedWidgetIndices[0] = panel->wWidgetCount + 1;
+    ++panel->wWidgetCount;
+    widget = add(panel->fX, 160, 0x101001, 1, -1);
+    widget->pfnUpdate = ConnectionUI_UpdateServiceProviderLabel;
+    widget->nSpriteId = 3;
+    widget->SetText(g_szSpace, 1, 1, &g_rcMenuRightColumnMid);
     ++panel->wWidgetCount;
 }
 
