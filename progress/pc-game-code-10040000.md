@@ -1,6 +1,6 @@
 # PC port game code from 0x10040000 to 0x10050000
 
-209 of 264 routines done.
+210 of 264 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -155,7 +155,7 @@ the same name, for a routine the port retained from the N64 game.
 | `AudioOptionsUI_OnBackAndSave`                     |   ✅   |                 |      1 |     76 | `0x100466c0` | `0x1003fb10` | `int AudioOptionsUI_OnBackAndSave(MenuActionWidget * pItem)`                                                                                              |
 | `PreRaceInfoUI_OnBackToChampionshipSeason`         |   ✅   |                 |      1 |     76 | `0x10046d70` | `0x100401c0` | `int PreRaceInfoUI_OnBackToChampionshipSeason(MenuActionWidget * pItem)`                                                                                  |
 | `ReturnToMultiplayerLobby`                         |        |                 |      3 |     74 | `0x10046400` | `0x1003f8a0` | `undefined ReturnToMultiplayerLobby()`                                                                                                                    |
-| `ChampionshipSeasonUI_OnStartNewSeason`            |        |                 |      1 |     72 | `0x10045aa0` | `0x1003ef40` | `undefined ChampionshipSeasonUI_OnStartNewSeason()`                                                                                                       |
+| `ChampionshipSeasonUI_OnStartNewSeason`            |   ✅   |                 |      1 |     72 | `0x10045aa0` | `0x1003ef40` | `int ChampionshipSeasonUI_OnStartNewSeason(MenuWidget * pWidget)`                                                                                         |
 | `QuitGameConfirmUI_OnConfirmQuit`                  |   ✅   |                 |      1 |     72 | `0x10043710` | `0x1003cc60` | `int QuitGameConfirmUI_OnConfirmQuit(MenuWidget * pWidget)`                                                                                               |
 | `ProcessCheatCodeInput`                            |   ✅   |                 |      1 |     71 | `0x10047610` | `0x10040a40` | `void ProcessCheatCodeInput(void)`                                                                                                                        |
 | `MenuWidget::Draw`                                 |   ✅   |                 |      1 |     70 | `0x10048010` | `0x10041460` | `int Draw(MenuWidget * this)`                                                                                                                             |
