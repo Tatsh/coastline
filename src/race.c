@@ -17,6 +17,7 @@
 #include "mainmenu.h"
 #include "options.h"
 #include "physics.h"
+#include "racecontrols.h"
 #include "raceinit.h"
 #include "raceload.h"
 #include "racemenu.h"
@@ -56,9 +57,6 @@
 
 /* The sound effect channels a race uses. */
 #define RACE_SOUND_CHANNELS 6
-
-/* The buttons that close the pause menu or end a race the computer drives. */
-#define CONFIRM_BUTTONS (INPUT_A | INPUT_START | INPUT_Z)
 
 /* The x of the middle of the screen. */
 #define SCREEN_CENTER_X 160
@@ -131,136 +129,6 @@ static void CheckInstantReplayEnd(void) {
     if (g_aVehicles[other].input->playbackLimit == g_aVehicles[other].input->playbackPosition) {
         LeaveRace();
     }
-}
-
-/* Take the input of the pause menu, and tell whether the race stays paused. */
-static s32 ProcessPauseMenu(s32 paused) {
-    s32 i;
-
-    for (i = 0; i < (s32)g_dwNumLocalPlayers; i++) {
-        UpdateStickRepeat(g_aVehicles[i].input);
-        if (g_aVehicles[i].input->buttons & INPUT_B) {
-            TransferFlags(g_aVehicles[i].input, INPUT_B);
-            FadeSfxTo(1.0f, FADE_SECONDS);
-            FadeMusicTo(1.0f, FADE_SECONDS);
-            g_dwScreenClearFrames = 2;
-            paused = FALSE;
-        }
-        if (g_aVehicles[i].input->buttons & CONFIRM_BUTTONS) {
-            /* A that continues the race is left for the race to take. */
-            if (g_dwPauseMenuSelection != PAUSE_CONTINUE ||
-                !(g_aVehicles[i].input->buttons & INPUT_A)) {
-                TransferFlags(g_aVehicles[i].input, CONFIRM_BUTTONS);
-            }
-            switch (g_dwPauseMenuSelection) {
-            case PAUSE_CONTINUE:
-                FadeSfxTo(1.0f, FADE_SECONDS);
-                FadeMusicTo(1.0f, FADE_SECONDS);
-                g_dwScreenClearFrames = 2;
-                paused = FALSE;
-                break;
-            case PAUSE_RESTART:
-                SetFadeTarget(0.0f, FADE_SECONDS);
-                g_dwRaceExitState = FALSE;
-                g_bReplayAfterRace = FALSE;
-                g_dwRaceInitialized = FALSE;
-                break;
-            case PAUSE_EXIT:
-                SetFadeTarget(0.0f, FADE_SECONDS);
-                FadeSfxTo(0.0f, FADE_SECONDS);
-                FadeMusicTo(0.0f, FADE_SECONDS);
-                g_bReplayAfterRace = FALSE;
-                g_dwRaceExitState = TRUE;
-                break;
-            }
-        }
-        if (g_aVehicles[i].input->buttons & INPUT_UP) {
-            TransferFlags(g_aVehicles[i].input, INPUT_RIGHT | INPUT_LEFT);
-            g_aVehicles[i].input->buttons &= ~(INPUT_RIGHT | INPUT_LEFT);
-            TransferFlags(g_aVehicles[i].input, INPUT_UP);
-            g_dwPauseMenuSelection = (g_dwPauseMenuSelection + PAUSE_ITEMS - 1) % PAUSE_ITEMS;
-        }
-        if (g_aVehicles[i].input->buttons & INPUT_DOWN) {
-            TransferFlags(g_aVehicles[i].input, INPUT_RIGHT | INPUT_LEFT);
-            g_aVehicles[i].input->buttons &= ~(INPUT_RIGHT | INPUT_LEFT);
-            TransferFlags(g_aVehicles[i].input, INPUT_DOWN);
-            g_dwPauseMenuSelection = (g_dwPauseMenuSelection + 1) % PAUSE_ITEMS;
-        }
-        if (g_aVehicles[i].input->buttons & INPUT_LEFT) {
-            if (g_dwPauseMenuSelection != PAUSE_CONTINUE) {
-                TransferFlags(g_aVehicles[i].input, INPUT_LEFT);
-            }
-            if (g_dwPauseMenuSelection == PAUSE_MUSIC) {
-                DecreaseBgmVolume();
-            } else if (g_dwPauseMenuSelection == PAUSE_SOUND) {
-                DecreaseSfxVolume();
-            }
-        }
-        if (g_aVehicles[i].input->buttons & INPUT_RIGHT) {
-            if (g_dwPauseMenuSelection != PAUSE_CONTINUE) {
-                TransferFlags(g_aVehicles[i].input, INPUT_RIGHT);
-            }
-            if (g_dwPauseMenuSelection == PAUSE_MUSIC) {
-                IncreaseBgmVolume();
-            } else if (g_dwPauseMenuSelection == PAUSE_SOUND) {
-                IncreaseSfxVolume();
-            }
-        }
-    }
-    DrawPauseMenu();
-    return paused;
-}
-
-/* Take the buttons of the players while the race runs, and tell whether it is paused. */
-static s32 ProcessRaceButtons(s32 paused) {
-    s32 i;
-
-    if (g_dwGameMode == GAME_MODE_DEMO || g_dwGameMode == GAME_MODE_AFTER_SEASON) {
-        if (IsFadingOut()) {
-            return paused;
-        }
-        /* Either controller ends a race the computer drives. */
-        for (i = 0; i < 2; i++) {
-            if (g_aPlayerInputState[i].buttons & CONFIRM_BUTTONS) {
-                TransferFlags(&g_aPlayerInputState[i], CONFIRM_BUTTONS);
-                g_bDemoInterrupted = TRUE;
-                g_dwRaceExitState = TRUE;
-                g_bReplayAfterRace = FALSE;
-                FadeSfxTo(0.0f, FADE_SECONDS);
-                SetFadeTarget(0.0f, FADE_SECONDS);
-            }
-        }
-        return paused;
-    }
-    for (i = 0; i < (s32)g_dwNumLocalPlayers; i++) {
-        if (g_aVehicles[i].input->buttons & INPUT_START) {
-            if (gInstantReplayActive) {
-                SetFadeTarget(0.0f, FADE_SECONDS);
-                g_bReplayAfterRace = FALSE;
-                g_dwRaceExitState = TRUE;
-            } else {
-                paused = TRUE;
-                g_dwPauseMenuSelection = PAUSE_CONTINUE;
-            }
-            FadeSfxTo(0.0f, FADE_SECONDS);
-            FadeMusicTo(0.0f, FADE_SECONDS);
-            TransferFlags(g_aVehicles[0].input, INPUT_START);
-            TransferFlags(g_aVehicles[1].input, INPUT_START);
-            return paused;
-        }
-        if (g_aVehicles[i].input->buttons & INPUT_A) {
-            /* A restarts the instant replay. */
-            if (gInstantReplayActive) {
-                SetFadeTarget(0.0f, FADE_SECONDS);
-                g_bReplayAfterRace = TRUE;
-                g_dwRaceExitState = TRUE;
-            }
-            TransferFlags(g_aVehicles[0].input, INPUT_A);
-            TransferFlags(g_aVehicles[1].input, INPUT_A);
-            return paused;
-        }
-    }
-    return paused;
 }
 
 /* Choose the instant replay of the best recording of the players. */
