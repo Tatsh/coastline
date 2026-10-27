@@ -280,18 +280,6 @@ void RenderDashboardGauges(void) {
 void StubDashboard(void) {
 }
 
-void DrawLabelWithTime(const char *label, const char *color, f32 seconds, s32 x, s32 y) {
-    s32 hundredths = (s32)(seconds * 100.0f);
-    s32 whole = hundredths / 100;
-    s32 minutes = whole / 60;
-    char text[32];
-
-    sprintf(
-        text, "%s%d'%02d\"%02d", color, minutes, whole - minutes * 60, hundredths - whole * 100);
-    DrawText(text, x, y + TIME_TEXT_SIZE);
-    DrawText(label, x, y);
-}
-
 void DrawRaceTimerHud(void) {
     s32 below = g_dwNumViewports == 1 ? 2 * TIME_TEXT_SIZE : 0;
     s32 y = g_aViewportRects[g_dwCurrentSplitScreenIndex].y + 20;

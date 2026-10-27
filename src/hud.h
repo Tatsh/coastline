@@ -119,6 +119,7 @@ void StubDashboard(void);
  * @ghidraAddress USA: 0x80238714
  * @ghidraAddress EUR: 0x80239c24
  * @ghidraAddress JPN: 0x80239724
+ * @ghidraAddress BRD3D: 0x100171f0
  */
 void DrawLabelWithTime(const char *label, const char *color, f32 seconds, s32 x, s32 y);
 
