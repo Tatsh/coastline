@@ -31,17 +31,18 @@ typedef struct {
 
 /** A section of the route. Its fields join this structure as they are reconstructed. */
 typedef struct TrackSection {
-    struct TrackSection *child;      /*!< The first section that branches from this one, or NULL. */
-    struct TrackSection *next;       /*!< The next branch of the same parent, or NULL. */
-    u8 unreconstructed8[0x10 - 0x8]; /*!< Not yet reconstructed. */
+    struct TrackSection *child;  /*!< The first section that branches from this one, or NULL. */
+    struct TrackSection *next;   /*!< The next branch of the same parent, or NULL. */
+    struct TrackSection *parent; /*!< The first preceding section, linked through reverseNext. */
+    struct TrackSection *reverseNext; /*!< The next section in a list of preceding sections. */
     u8 gridMinX;    /*!< The first column of the 32-unit grid of the track the section covers. */
     u8 gridMinY;    /*!< The first row of the grid the section covers. */
     u8 gridMaxX;    /*!< The last column of the grid the section covers, inclusive. */
     u8 gridMaxY;    /*!< The last row of the grid the section covers, inclusive. */
     u16 pointCount; /*!< The number of points, without the point at the end of the last. */
     u16 flags;      /*!< The TRACK_SECTION_ flags. */
-    u8 unreconstructed18[0x40 - 0x18]; /*!< Not yet reconstructed. */
-    TrackPoint points[];               /*!< The points, and the point at the end of the last. */
+    TrackPoint previousPoint; /*!< The route point preceding the first point of the section. */
+    TrackPoint points[];      /*!< The points, and the point at the end of the last. */
 } TrackSection;
 
 /** The flag of a branch the computer drivers do not take, and that the walks do not enter. */
