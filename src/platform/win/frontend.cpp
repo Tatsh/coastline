@@ -768,6 +768,24 @@ int ShowHostRaceSetupScreen(void) {
     return 1;
 }
 
+int ShowNetworkCarSetupScreen(void) {
+    if (!ShowCachedMenuScreen(g_pCachedMenu_NetworkCarSetup, BuildNetworkCarSetupUI)) {
+        return 0;
+    }
+    g_dwGameMode = GAME_MODE_NETWORK;
+    if (g_dwLobbyIsHost) {
+        if (!g_dwNetworkCarSetupShown) {
+            if (g_dwServiceProviderIndex == 2 || g_dwServiceProviderIndex == 3) {
+                InitServiceProviderAndStartTimer();
+            }
+            HostNetworkSession();
+            g_dwNetworkCarSetupShown = 1;
+        }
+        UpdateNetworkSessionSettings();
+    }
+    return 1;
+}
+
 int ShowMultiplayerNameScreen(void) {
     SetActiveMenuItemText(" ");
     ResolveRaceSelections();

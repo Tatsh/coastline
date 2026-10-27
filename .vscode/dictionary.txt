@@ -229,6 +229,7 @@ dperr
 dplconnection
 dpmsg
 dpname
+dpopen
 dpplayer
 dpreceive
 dpref
@@ -647,6 +648,7 @@ refguid
 reflow
 regen
 reginfo
+renderinit
 rendermode
 rendertile
 reques

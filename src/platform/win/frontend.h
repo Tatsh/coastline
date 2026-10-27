@@ -819,6 +819,17 @@ extern MenuWidget *g_pD3DDeviceSelectMenu;
 extern MenuWidget *g_pSaveSeasonBackHandlerMenu;
 
 /**
+ * @ghidraAddress BRD3D: 0x100446d0
+ */
+int ShowNetworkCarSetupScreen(void);
+
+/**
+ * @ghidraAddress BRD3D: 0x10058750
+ * @stub
+ */
+void BuildNetworkCarSetupUI(MenuScreen *pScreen);
+
+/**
  * @ghidraAddress BRD3D: 0x1003e100
  */
 int IsGameCdInDrive(int nDrive);

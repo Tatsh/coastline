@@ -467,6 +467,29 @@ struct NetworkSessionSettings {
 };
 
 /**
+ * @ghidraAddress BRD3D: 0x1003c5c0
+ */
+HRESULT CreateDirectPlaySession(IDirectPlay3A *pDirectPlay,
+                                NetworkSessionSettings *pSettings,
+                                DirectPlayInfo *pInfo);
+
+/**
+ * @ghidraAddress BRD3D: 0x1003c150
+ */
+void HostNetworkSession(void);
+
+/**
+ * @ghidraAddress BRD3D: 0x1003cda0
+ */
+HRESULT UpdateNetworkSessionSettings(void);
+
+/**
+ * @ghidraAddress BRD3D: 0x10005b10
+ * @stub
+ */
+bool InitializeNetworkMutexes(void);
+
+/**
  * Copy g_szSessionName into the settings of a session when it is longer than one character, and
  * clear whether the session is secure.
  *

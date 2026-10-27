@@ -2537,6 +2537,96 @@ static inline void FreeSessionDesc(DPSESSIONDESC2 *pDesc) {
     GlobalFree(GlobalHandle(pDesc));
 }
 
+HRESULT CreateDirectPlaySession(IDirectPlay3A *pDirectPlay,
+                                NetworkSessionSettings *pSettings,
+                                DirectPlayInfo *pInfo) {
+    if (g_dwLaunchedFromLobby) {
+        return DP_OK;
+    }
+    if (!pDirectPlay) {
+        return DPERR_INVALIDOBJECT;
+    }
+    DPSESSIONDESC2 description = {};
+    description.dwSize = sizeof(description);
+    description.dwFlags = DPSESSION_KEEPALIVE;
+    if (pSettings->bSecureServer) {
+        description.dwFlags |= DPSESSION_SECURESERVER;
+    }
+    description.guidApplication = g_BossRallyAppGuid;
+    description.dwMaxPlayers = 8;
+    description.lpszSessionNameA = pSettings->szSessionName;
+    description.dwUser1 = g_dwSelectedTrackId;
+    description.dwUser2 = g_dwChosenWeather;
+    description.dwUser3 = g_dwSelectedCarClass;
+    description.dwUser4 = g_dwTotalLapsSetting;
+    HRESULT result = pDirectPlay->SecureOpen(
+        &description, DPOPEN_CREATE | DPOPEN_RETURNSTATUS, nullptr, nullptr);
+    if (FAILED(result)) {
+        return result;
+    }
+    const DirectPlayInfo previous = *pInfo;
+    pInfo->pDirectPlay = pDirectPlay;
+    pInfo->bIsHost = true;
+    pInfo->bIgnoreMessages = pSettings->bSecureServer;
+    DPNAME name = {};
+    name.dwSize = sizeof(name);
+    name.lpszShortNameA = g_GlobalRallyConfig.szPlayerName;
+    DPID player;
+    result = pDirectPlay->CreatePlayer(
+        &player, &name, pInfo->hPlayerEvent, nullptr, 0, DPPLAYER_SERVERPLAYER);
+    if (FAILED(result)) {
+        pInfo->pDirectPlay = previous.pDirectPlay;
+        pInfo->bIsHost = previous.bIsHost;
+        pInfo->bIgnoreMessages = previous.bIgnoreMessages;
+        return result;
+    }
+    pInfo->dpidPlayer = player;
+    return DP_OK;
+}
+
+void HostNetworkSession(void) {
+    if (!g_DirectPlayInfo.pDirectPlay) {
+        return;
+    }
+    NetworkSessionSettings settings = {};
+    CopySessionNameToBuffer(&settings);
+    HRESULT result =
+        CreateDirectPlaySession(g_DirectPlayInfo.pDirectPlay, &settings, g_pDirectPlayInfo);
+    if (FAILED(result)) {
+        char szError[1024];
+        /* The original formats the error without displaying it. */
+        sprintf(szError,
+                "Could not host session because of error 0x%08X",
+                static_cast<unsigned>(result));
+        return;
+    }
+    g_dwNetworkPlayMode = 2;
+    InitializeNetworkThreading();
+    InitializeNetworkMutexes();
+}
+
+HRESULT UpdateNetworkSessionSettings(void) {
+    DPSESSIONDESC2 *description = nullptr;
+    if (!g_DirectPlayInfo.pDirectPlay) {
+        return DPERR_INVALIDOBJECT;
+    }
+    HRESULT result = GetDirectPlaySessionDesc(g_DirectPlayInfo.pDirectPlay, &description);
+    if (FAILED(result)) {
+        if (description) {
+            FreeSessionDesc(description);
+        }
+        return result;
+    }
+    description->dwUser1 = g_dwSelectedTrackId;
+    description->dwUser2 = g_dwChosenWeather;
+    description->dwUser3 = g_dwSelectedCarClass;
+    description->dwUser4 = g_dwTotalLapsSetting;
+    ApplyCarGroupPreset();
+    result = g_DirectPlayInfo.pDirectPlay->SetSessionDesc(description, 0);
+    FreeSessionDesc(description);
+    return FAILED(result) ? result : DP_OK;
+}
+
 HRESULT LoadNetworkSettings(void) {
     DPSESSIONDESC2 *pDesc = nullptr;
     DPSESSIONDESC2 descUnused;
