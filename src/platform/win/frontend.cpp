@@ -1560,6 +1560,30 @@ int SaveSeasonUI_UpdateSlotSelection(MenuWidget *pWidget) {
     return 1;
 }
 
+int SaveTimeAttackUI_UpdateSlotSelection(MenuWidget *pWidget) {
+    return SaveSeasonUI_UpdateSlotSelection(pWidget);
+}
+
+void RefreshSessionListSlots(void) {
+    if (g_pNetworkPlayerListMenu != nullptr) {
+        unsigned count = g_pNetworkPlayerListMenu->GetItemList().GetItemCount();
+        for (unsigned i = 0; i < count; i++) {
+            g_pNetworkPlayerListMenu->GetItemList().RemoveItem(i);
+        }
+    }
+}
+
+int GetSelectedSessionGuid(GUID *guid) {
+    if (g_pJoinCreateGameMenu != nullptr) {
+        const GUID *data = static_cast<const GUID *>(
+            g_pJoinCreateGameMenu->GetItemList().GetItemData(g_dwSelectedSessionIndex));
+        if (data != nullptr) {
+            *guid = *data;
+        }
+    }
+    return 0;
+}
+
 int LoadFileListUI_UpdateSlotSelection(MenuWidget *pWidget) {
     UpdateMenuListSelection(pWidget, g_dwFileListSelectedSlot);
     return 1;

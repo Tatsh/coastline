@@ -206,6 +206,9 @@ public:
     unsigned short GetItemCount() const {
         return wItemCount;
     }
+    const void *GetItemData(int index) const {
+        return itemData[index].pData;
+    }
     unsigned GetFlags() const {
         return dwFlags;
     }
@@ -615,6 +618,15 @@ int SaveSeasonUI_OnSlotSelected(MenuItemList *pList, int *pnSlot);
  * @ghidraAddress BRGlide: 0x10038100
  */
 int SaveSeasonUI_UpdateSlotSelection(MenuWidget *pWidget);
+
+/** @ghidraAddress BRD3D: 0x1003ec30 */
+int SaveTimeAttackUI_UpdateSlotSelection(MenuWidget *pWidget);
+
+/** @ghidraAddress BRD3D: 0x1003c9b0 */
+void RefreshSessionListSlots(void);
+
+/** @ghidraAddress BRD3D: 0x1003d030 */
+int GetSelectedSessionGuid(GUID *guid);
 
 /**
  * @ghidraAddress BRD3D: 0x10041df0
