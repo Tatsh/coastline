@@ -10,6 +10,7 @@ add_library(
   boot/rallyconfig.cpp
   boot/startup.cpp
   boot/strings.cpp
+  configfile.cpp
   directplay.cpp
   displaylist.cpp
   dllmain.c
