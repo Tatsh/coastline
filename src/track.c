@@ -11,10 +11,6 @@
 /* The room for the messages of the loading. */
 #define LOAD_MESSAGE_SIZE 0x50
 
-s32 IsTrackIndexValid(s32 track) {
-    return track < g_dwNumTracks && g_aTrackDescriptors[track].trackRomEnd != 0;
-}
-
 void LoadTrackGeometryFromRom(s32 track) {
     TrackMenuItem *descriptor = &g_aTrackDescriptors[track];
     /* The messages stay where the debug display points until it shows them. */

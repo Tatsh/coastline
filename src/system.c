@@ -111,10 +111,6 @@
 /* A fill of the depth buffer with the farthest depth, as two depths. */
 #define FARTHEST_DEPTHS ((u32)GPACK_ZDZ(G_MAXFIXED, 0) << 16 | GPACK_ZDZ(G_MAXFIXED, 0))
 
-s32 UnusedVblankQueryStub(s32 unused0, s32 unused1) {
-    return 0;
-}
-
 void StubEmpty(void) {
 }
 

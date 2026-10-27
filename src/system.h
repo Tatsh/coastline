@@ -774,7 +774,7 @@ void WaitForDmaMessages(void);
 #endif
 
 /**
- * Return 0. Nothing calls it.
+ * Return 0. The routine has no callers.
  *
  * @param unused0 Not read.
  * @param unused1 Not read.
@@ -782,7 +782,12 @@ void WaitForDmaMessages(void);
  * @ghidraAddress USA: 0x802173b8
  * @ghidraAddress EUR: 0x802183d8
  * @ghidraAddress JPN: 0x80217d28
+ * @ghidraAddress BRD3D: 0x10031212
+ * @ghidraAddress BRGlide: 0x1002a8c2
  */
+#ifdef __cplusplus
+extern "C"
+#endif
 s32 UnusedVblankQueryStub(s32 unused0, s32 unused1);
 
 /**

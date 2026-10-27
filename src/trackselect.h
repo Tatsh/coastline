@@ -61,10 +61,12 @@ extern s32 g_dwNumTracks;
  * Whether a track exists on the cartridge.
  *
  * @param track The index of the track.
- * @return Whether it is below g_dwNumTracks and has data.
+ * @return Whether the track has data on N64, or 1 on Windows.
  * @ghidraAddress USA: 0x8021e180
  * @ghidraAddress EUR: 0x8021f380
  * @ghidraAddress JPN: 0x8021ec50
+ * @ghidraAddress BRD3D: 0x10035b87
+ * @ghidraAddress BRGlide: 0x1002f238
  */
 s32 IsTrackIndexValid(s32 track);
 
