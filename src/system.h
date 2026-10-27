@@ -97,6 +97,8 @@ extern u32 g_dwScreenUnblankDelay;
  * @ghidraAddress USA: 0x8021be88
  * @ghidraAddress EUR: 0x8021d068
  * @ghidraAddress JPN: 0x8021c938
+ * @ghidraAddress BRD3D: 0x10034812
+ * @stub{BRD3D}
  */
 void InitRenderingSubsystem(void);
 

@@ -126,6 +126,7 @@ void ResetAllPlayers(void);
  * @ghidraAddress JPN: 0x802001b4
  * @ghidraAddress BRD3D: 0x10069840
  * @ghidraAddress BRGlide: 0x100628b0
+ * @stub{BRGlide}
  */
 void InitGameAndShowMenus(void);
 

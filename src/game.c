@@ -20,7 +20,12 @@
 #define ROM_MENU_MUSIC ((u32)_menuMusicSegmentRomStart)
 #else
 #include "displaylistops.h"
+#include "fade.h"
+#include "heap.h"
+#include "input.h"
+#include "platform/win/gameinit.h"
 #include "screen.h"
+#include "system.h"
 #include "weather.h"
 
 u32 g_dwWeatherActive;
@@ -81,14 +86,21 @@ void ResetAllPlayers(void) {
         InitPlayerInputState(&g_aPlayerInputState[i]);
     }
 }
+#endif
 
 void InitGameAndShowMenus(void) {
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+    PrepareWindowsGameSession();
+#endif
     InitRenderingSubsystem();
     StubUpdateCallback();
     StubRenderCallback();
     ResetAllPlayers();
     InitControllersAndPaks();
     SnapScreenFade(0.0f);
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+    PrepareWindowsGameMenus();
+#else
     SetCurrentScreenCallback(ProcessSplashScreens);
 
     /* The cartridge holds a ghost recording. The size the game sets afterwards marks the buffer
@@ -96,11 +108,23 @@ void InitGameAndShowMenus(void) {
     g_dwGhostRecordingSize = DmaReadAssetSize(ROM_GHOST_RECORDING);
     DecompressFromRom(g_abGhostRecording, ROM_GHOST_RECORDING, NULL);
     g_dwGhostRecordingSize = 8;
+#endif
 
+    ResetHeap();
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+    NullStub();
+    while (!LoadWindowsMenuData(0)) {
+    }
+    ResetHeap();
+    NullStub();
+    while (!LoadWindowsMenuData(2)) {
+    }
+    ApplyWindowsMenuVolumeSettings();
+    FinishWindowsGameSessionSetup();
+#else
     /* Load the season data and the configuration from a Controller Pak, if one holds them. The
      * European and Japanese releases read the EEPROM of the cartridge first and use a Controller
      * Pak only when the EEPROM holds no data. */
-    ResetHeap();
     PreparePakDataScreen();
 #if TGR_REGION == TGR_REGION_EU || TGR_REGION == TGR_REGION_JP
     if (!LoadSaveDataFromEeprom()) {
@@ -131,10 +155,11 @@ void InitGameAndShowMenus(void) {
     osSyncPrintf("sizeof(Vehicle)=%d\n", (int)sizeof(Vehicle));
     osSyncPrintf("sizeof(Enemy)=%d\n", 0x78);
 #endif
+#endif
 
     GameModeMainLoop();
 }
-#else
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
 void SetWeatherAndRefreshVehicleMaterials(u32 weather) {
     ApplyWeather(weather);
     ProcessAllDisplayLists();

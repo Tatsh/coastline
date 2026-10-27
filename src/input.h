@@ -330,11 +330,19 @@ void UpdateControllerState(void);
 /**
  * Probe the controllers and the Controller and Rumble Paks, running the controller check until each
  * warning is dismissed and the Controller Pak menu while the first player holds start.
+ * The Windows routine returns without probing controllers.
  *
  * @ghidraAddress USA: 0x8021c188
  * @ghidraAddress EUR: 0x8021d37c
  * @ghidraAddress JPN: 0x8021cc4c
+ * @ghidraAddress BRD3D: 0x10034a85
  */
+#ifdef __cplusplus
+extern "C" {
+#endif
 void InitControllersAndPaks(void);
+#ifdef __cplusplus
+}
+#endif
 
 #endif

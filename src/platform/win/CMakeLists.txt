@@ -19,6 +19,7 @@ add_library(
   fileio.c
   frametimer.cpp
   frontend.cpp
+  gameinit.cpp
   ghost.cpp
   hud.cpp
   input.cpp
