@@ -1,6 +1,6 @@
 # PC port game code from 0x10040000 to 0x10050000
 
-205 of 264 routines done.
+206 of 264 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -172,8 +172,8 @@ the same name, for a routine the port retained from the N64 game.
 | `SaveTimeAttackMenuUI_OnBack`                      |   ✅   |                 |      1 |     66 | `0x10044f00` | `0x1003e450` | `int SaveTimeAttackMenuUI_OnBack(MenuActionWidget * pItem)`                                                                                               |
 | `MenuWidget::DrawSpriteRegion`                     |   ✅   | ✅ `0x8024594c` |      1 |     65 | `0x10047980` | `0x10040dd0` | `int DrawSpriteRegion(MenuWidget * this, RECT * pRect)`                                                                                                   |
 | `MenuPanel::RestoreSelection`                      |   ✅   |                 |      3 |     64 | `0x100484f0` | `0x10041940` | `int RestoreSelection(MenuPanel * this)`                                                                                                                  |
-| `MultiplayerGameSetupUI_OnEscape`                  |        |                 |      1 |     64 | `0x100437d0` | `0x1003cd20` | `undefined MultiplayerGameSetupUI_OnEscape()`                                                                                                             |
 | `GameOptionsUI_UpdateForceFeedbackImage`           |   ✅   |                 |      1 |     64 | `0x10040950` | `0x10039e90` | `int GameOptionsUI_UpdateForceFeedbackImage(MenuWidget * pWidget)`                                                                                        |
+| `MultiplayerGameSetupUI_OnEscape`                  |   ✅   |                 |      1 |     64 | `0x100437d0` | `0x1003cd20` | `int MultiplayerGameSetupUI_OnEscape(MenuWidget * pWidget)`                                                                                               |
 | `MenuScreen::~MenuScreen`                          |   ✅   |                 |      1 |     63 | `0x10048870` | `0x10041cc0` | `void ~MenuScreen(MenuScreen * this)`                                                                                                                     |
 | `SaveSeasonUI_HandleTextEntry`                     |   ✅   |                 |      1 |     63 | `0x10047210` | `0x10040660` | `int SaveSeasonUI_HandleTextEntry(MenuWidget * pWidget)`                                                                                                  |
 | `SaveTimeAttackMenuUI_HandleTextEntry`             |   ✅   |                 |      1 |     63 | `0x10047250` | `0x100406a0` | `int SaveTimeAttackMenuUI_HandleTextEntry(MenuWidget * pWidget)`                                                                                          |
