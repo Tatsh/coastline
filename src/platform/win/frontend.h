@@ -342,6 +342,14 @@ int SeasonProgressInfoUI_UpdateRoundLabel(MenuWidget *pWidget);
 int SeasonUI_UpdateSeasonNameLabel(MenuWidget *pWidget);
 
 /**
+ * Draw the year with the translated suffix for its ordinal.
+ *
+ * @ghidraAddress BRD3D: 0x100413b0
+ * @ghidraAddress BRGlide: 0x1003a910
+ */
+int SeasonUI_UpdateYearOrdinalLabel(MenuWidget *pWidget);
+
+/**
  * Draw the sum of the selected season's four race scores, or zero before loading.
  *
  * @ghidraAddress BRD3D: 0x100414b0

@@ -2292,6 +2292,30 @@ int SeasonUI_UpdateSeasonNameLabel(MenuWidget *pWidget) {
     return 1;
 }
 
+int SeasonUI_UpdateYearOrdinalLabel(MenuWidget *pWidget) {
+    sprintf(g_szSeasonYearLabel, "%d", static_cast<int>(static_cast<unsigned>(g_dwSeasonYear) + 1));
+    unsigned suffix = 0xb6;
+    switch (g_dwSeasonYear) {
+    case 0:
+        suffix = 0xb3;
+        break;
+    case 1:
+        suffix = 0xb4;
+        break;
+    case 2:
+        suffix = 0xb5;
+        break;
+    }
+    char text[128];
+    sprintf(text, "%s%s", g_szSeasonYearLabel, GetStringResource(suffix));
+    MenuFont *font = &pWidget->fonts[0];
+    strcpy(font->szText, text);
+    MenuFontVTable *vtable = font->pVTable;
+    vtable->MeasureText(font);
+    vtable->DrawText(font);
+    return 1;
+}
+
 static inline void DrawAlternateMenuLabel(MenuWidget *pWidget, const char *text) {
     MenuFont *font = &pWidget->fonts[0];
     strcpy(font->szText, text);
