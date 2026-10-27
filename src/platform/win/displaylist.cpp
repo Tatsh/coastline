@@ -296,15 +296,15 @@ void HalveGbiTrianglePairVertexIndices(GbiCommand *pCommand) {
 }
 #else
 void HalveAmbientLightColor(GbiLight *pLight) {
-    pLight->abColorCopy[2] >>= 1;
-    pLight->abColorCopy[1] >>= 1;
-    pLight->abColorCopy[0] >>= 1;
+    pLight->l.colc[2] >>= 1;
+    pLight->l.colc[1] >>= 1;
+    pLight->l.colc[0] >>= 1;
 }
 
 void HalveLightColors(GbiLight *pLight) {
-    pLight->abColor[2] >>= 1;
-    pLight->abColor[1] >>= 1;
-    pLight->abColor[0] >>= 1;
+    pLight->l.col[2] >>= 1;
+    pLight->l.col[1] >>= 1;
+    pLight->l.col[0] >>= 1;
     HalveAmbientLightColor(pLight);
 }
 #endif
@@ -319,10 +319,10 @@ GbiCommand *HandleGbiMoveWord(GbiCommand *pCommand) {
     case GBI_MOVE_WORD_LIGHT_COLOR:
         dwOffset = pCommand->w0 >> 8 & 0xffff;
         if (dwOffset & 0xf) {
-            SetGbiLightColor(g_aGbiLights[dwOffset / GBI_MOVE_WORD_LIGHT_STRIDE].abColorCopy,
+            SetGbiLightColor(g_aGbiLights[dwOffset / GBI_MOVE_WORD_LIGHT_STRIDE].l.colc,
                              pCommand->w1);
         } else {
-            SetGbiLightColor(g_aGbiLights[dwOffset / GBI_MOVE_WORD_LIGHT_STRIDE].abColor,
+            SetGbiLightColor(g_aGbiLights[dwOffset / GBI_MOVE_WORD_LIGHT_STRIDE].l.col,
                              pCommand->w1);
         }
         g_bGbiLightsTransformed = false;
@@ -795,6 +795,39 @@ void ApplyGeometryModeChanges(void) {
 D3DCOLOR g_dwVertexConstantColor;
 float g_fVertexFogRange;
 int g_dwFogAlphaCutoff;
+
+float g_fGbiLight0ColorR;
+float g_fGbiLight0ColorG;
+float g_fGbiLight0ColorB;
+Vec3f g_GbiLight0Direction;
+float g_fGbiAmbientColorR;
+float g_fGbiAmbientColorG;
+float g_fGbiAmbientColorB;
+
+void ComputeVertexDirectionalLight(const ConvertedModelVertex *pVertex, GbiVertexSource *pDest) {
+    if (!g_dwGbiNumLights) {
+        pDest->fRed = g_fGbiPrimColorR;
+        pDest->fGreen = g_fGbiPrimColorG;
+        pDest->fBlue = g_fGbiPrimColorB;
+        return;
+    }
+    float dot = static_cast<long double>(pVertex->normal.z) * g_GbiLight0Direction.z +
+                (static_cast<long double>(pVertex->normal.x) * g_GbiLight0Direction.x +
+                 static_cast<long double>(pVertex->normal.y) * g_GbiLight0Direction.y);
+    if (!(dot >= 0.0f)) {
+        pDest->fRed = g_fGbiAmbientColorR;
+        pDest->fGreen = g_fGbiAmbientColorG;
+        pDest->fBlue = g_fGbiAmbientColorB;
+        return;
+    }
+    auto channel = [dot](float light, float ambient) {
+        float color = static_cast<long double>(dot) * light + ambient;
+        return color > 1.0f ? 1.0f : color;
+    };
+    pDest->fRed = channel(g_fGbiLight0ColorR, g_fGbiAmbientColorR);
+    pDest->fGreen = channel(g_fGbiLight0ColorG, g_fGbiAmbientColorG);
+    pDest->fBlue = channel(g_fGbiLight0ColorB, g_fGbiAmbientColorB);
+}
 
 float g_GbiProjectionMatrix[4][4];
 float g_aGbiModelViewStack[GBI_MATRIX_STACK_RESET_DEPTH][4][4];

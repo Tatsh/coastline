@@ -10,6 +10,7 @@
 
 #include "platform/win/gbicommand.h"
 #include "platform/win/textureupload.h"
+#include "vecmath.h"
 
 #if TGR_RENDERER == TGR_RENDERER_D3D
 #include <d3d.h>
@@ -469,14 +470,8 @@ extern float g_fViewportTranslateY;
  */
 GbiCommand *HandleGbiSetViewport(GbiCommand *pCommand);
 
-/** A light of the display lists. The layout is not recovered past its colours. */
-struct GbiLight {
-    unsigned char abColor[3];     /*!< The red, green, and blue of the light. */
-    unsigned char bPad3;          /* +0x03 */
-    unsigned char abColorCopy[3]; /*!< The second copy of the colour, as the console has. */
-    unsigned char bPad7;          /* +0x07 */
-    char abUnknown8[8];           /* +0x08 */
-};
+/** A light of the display lists, in the shared console format. */
+using GbiLight = Light;
 
 /** The number of entries of g_aGbiLights. */
 #define GBI_LIGHT_COUNT 8
@@ -706,6 +701,28 @@ struct GbiVertex {
     GbiVertexSource source; /*!< The vertex as the command loaded it. */
     int nRenderBufferIndex; /*!< The entry of g_renderBuffer of the vertex, -1 for none. */
 };
+
+/** @ghidraAddress BRD3D: 0x104c15d0 */
+extern float g_fGbiLight0ColorR;
+/** @ghidraAddress BRD3D: 0x104c15d4 */
+extern float g_fGbiLight0ColorG;
+/** @ghidraAddress BRD3D: 0x104c15d8 */
+extern float g_fGbiLight0ColorB;
+/** @ghidraAddress BRD3D: 0x104c15dc */
+extern Vec3f g_GbiLight0Direction;
+/** @ghidraAddress BRD3D: 0x104c15e8 */
+extern float g_fGbiAmbientColorR;
+/** @ghidraAddress BRD3D: 0x104c15ec */
+extern float g_fGbiAmbientColorG;
+/** @ghidraAddress BRD3D: 0x104c15f0 */
+extern float g_fGbiAmbientColorB;
+
+/**
+ * Light a vertex normal with the first directional light and the ambient colour.
+ *
+ * @ghidraAddress BRD3D: 0x10022350
+ */
+void ComputeVertexDirectionalLight(const ConvertedModelVertex *pVertex, GbiVertexSource *pDest);
 
 /**
  * @ghidraAddress BRD3D: 0x100a79e0
