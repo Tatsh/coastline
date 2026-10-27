@@ -1,6 +1,6 @@
 # PC port game code from 0x10060000 to 0x10070000
 
-134 of 173 routines done.
+135 of 173 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -50,7 +50,7 @@ the same name, for a routine the port retained from the N64 game.
 | `RallyConfig::CopyRallyConfig`           |   ✅   |                 |      2 |    524 | `0x10069de0` | `0x10062e50` | `RallyConfig * CopyRallyConfig(RallyConfig * this, RallyConfig * other)`                                                                 |
 | `CountTriangleWinding`                   |   ✅   | ✅ `0x8025c8dc` |      1 |    492 | `0x1006d660` | `0x10066610` | `int CountTriangleWinding(Vec3f * triangle, Vec3f * normal, Vec3f * point)`                                                              |
 | `Vehicle::RespawnVehicle`                |   ✅   | ✅ `0x80226248` |      2 |    468 | `0x10063660` | `0x1005c6d0` | `void RespawnVehicle(Vehicle * this)`                                                                                                    |
-| `FrontEndWindowProc`                     |   📝   |                 |      1 |    419 | `0x10060060` | `0x100590d0` | `LRESULT FrontEndWindowProc(void * pUnused, HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)`                                          |
+| `FrontEndWindowProc`                     |   ✅   |                 |      1 |    419 | `0x10060060` | `0x100590d0` | `LRESULT FrontEndWindowProc(void * pUnused, HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)`                                          |
 | `LoadCarPaintTextures`                   |        |                 |      1 |    396 | `0x10061010` | `0x1005a080` | `undefined LoadCarPaintTextures()`                                                                                                       |
 | `RaycastTerrainHeight`                   |        |                 |      7 |    389 | `0x1006f310` | `0x100682c0` | `float RaycastTerrainHeight(float * pPosition)`                                                                                          |
 | `SumWheelForces`                         |   ✅   | ✅ `0x80259634` |      4 |    382 | `0x1006aff0` | `0x10063fa0` | `void SumWheelForces(RigidBody * body, RigidBody * wheel)`                                                                               |
@@ -131,7 +131,7 @@ the same name, for a routine the port retained from the N64 game.
 | `PlaySoundEffect`                        |   ✅   | ✅ `0x8022b370` |      2 |     50 | `0x10067d40` | `0x10060db0` | `void PlaySoundEffect(int sound)`                                                                                                        |
 | `FreeAllPaintBitmaps`                    |   ✅   |                 |      1 |     50 | `0x10061620` | `0x1005a6a0` | `void FreeAllPaintBitmaps(void)`                                                                                                         |
 | `ResetAllPlayers`                        |   ✅   | ✅ `0x80200154` |      1 |     49 | `0x10069800` | `0x10062870` | `void ResetAllPlayers(void)`                                                                                                             |
-| `MouseDevice::SyncMouseAcquireState`     |        |                 |      3 |     48 | `0x10060750` | `0x100597c0` | `undefined SyncMouseAcquireState(MouseDevice * this, undefined4 param_1)`                                                                |
+| `MouseDevice::SyncMouseAcquireState`     |   🚧   |                 |      3 |     48 | `0x10060750` | `0x100597c0` | `undefined SyncMouseAcquireState(MouseDevice * this, undefined4 param_1)`                                                                |
 | `ApplyAudioVolumeSettings`               |   ✅   |                 |      6 |     46 | `0x10060d90` | `0x10059e00` | `void ApplyAudioVolumeSettings(void)`                                                                                                    |
 | `RecordVehicleKeyframe`                  |   🚧   |                 |      1 |     44 | `0x100609e0` | `0x10059a50` | `void RecordVehicleKeyframe(Vehicle * vehicle)`                                                                                          |
 | `CompareRacerProgressAsc`                |   ✅   | ✅ `0x80229510` |      2 |     43 | `0x10066620` |              | `int CompareRacerProgressAsc(RacerProgress * first, RacerProgress * second)`                                                             |
