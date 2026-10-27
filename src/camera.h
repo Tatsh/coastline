@@ -29,6 +29,7 @@ extern s32 g_bVehicleTrackCollisionCorrected;
  * @ghidraAddress USA: 0x8028aaf0
  * @ghidraAddress EUR: 0x8028ccf8
  * @ghidraAddress JPN: 0x8028c7c8
+ * @ghidraAddress BRD3D: 0x106c2cf8
  */
 extern Vehicle *g_pActiveCameraVehicle;
 

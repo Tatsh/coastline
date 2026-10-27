@@ -114,6 +114,7 @@ extern u8 g_bFogIntensity;
  * @ghidraAddress USA: 0x8028c818
  * @ghidraAddress EUR: 0x8028ef78
  * @ghidraAddress JPN: 0x8028e9c8
+ * @ghidraAddress BRD3D: 0x100a79cc
  */
 extern s32 g_dwLightningFlashCounter;
 
@@ -270,6 +271,7 @@ extern Vec3f g_avRainVelocity[WEATHER_VIEWS];
  * @ghidraAddress USA: 0x803634f8
  * @ghidraAddress EUR: 0x803659f8
  * @ghidraAddress JPN: 0x80364668
+ * @ghidraAddress BRD3D: 0x104b0378
  */
 extern Vec3f g_avLightningBolt[LIGHTNING_BOLT_POINTS];
 

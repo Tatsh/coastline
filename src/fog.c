@@ -1,5 +1,16 @@
+#include "camera.h"
+#include "displaylistptr.h"
+#include "game.h"
 #include "render.h"
+#include "track.h"
+#include "trackselect.h"
 #include "weather.h"
+
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#include "platform/win/gbicommand.h"
+#endif
+
+#define DESERT_HAZE_Y 1024.0f
 
 #define LIGHT_COLOR(red, green, blue) ((u32)(red) << 24 | (u32)(green) << 16 | (u32)(blue) << 8)
 
@@ -7,6 +18,9 @@
 f32 g_afViewProjMatrix[4][4];
 s32 g_dwFogFactorOffset;
 s32 g_dwFogFactorScale;
+s32 g_dwFogMinDistance;
+s32 g_dwFogMaxDistance;
+CameraFrame *g_pActiveCamera;
 u32 g_dwDirLightColor;
 u32 g_dwAmbientLightColor;
 f32 g_afLightDirection[3];
@@ -24,7 +38,146 @@ u8 g_bFogR;
 u8 g_bFogG;
 u8 g_bFogB;
 u8 g_bFogIntensity;
+
+static s32 FogTruncateToWord(long double value) {
+    /* The runtime converts to signed 64-bit; fog uses its low word, even on failure. */
+    if (!(value >= -9223372036854775808.0L && value < 9223372036854775808.0L)) {
+        return 0;
+    }
+    return (s32)(u32)(s64)value;
+}
 #endif
+
+void SetupFog(void) {
+    Vehicle *vehicle;
+    f32 flash, haze, y;
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+    long double level;
+#else
+    f32 fade;
+    f32 level;
+#endif
+    s32 intensity;
+
+    if (g_dwNightMode) {
+        g_bFogR = g_bFogG = g_bFogB = 0;
+        g_bFogIntensity = 0x40;
+        if (g_dwNumLocalPlayers == 2) {
+            g_dwFogMinDistance = 992;
+            g_dwFogMaxDistance = 1020;
+        } else {
+            g_dwFogMinDistance = 968;
+            g_dwFogMaxDistance = 1020;
+        }
+    } else if (g_dwSnowMode) {
+        g_bFogR = 0xB8;
+        g_bFogG = 0xB8;
+        g_bFogB = 0xD8;
+        g_bFogIntensity = 0x40;
+        if (g_dwNumLocalPlayers == 2) {
+            g_dwFogMinDistance = 950;
+            g_dwFogMaxDistance = 1000;
+        } else {
+            g_dwFogMinDistance = 800;
+            g_dwFogMaxDistance = 1050;
+        }
+    } else if (g_dwRainMode) {
+        g_bFogR = 0x60;
+        g_bFogG = 0x68;
+        g_bFogB = 0x70;
+        g_bFogIntensity = 0x40;
+        if (g_dwLightningFlashCounter > 0 && (g_dwLightningFlashCounter & 1)) {
+            /* A flash of lightning lights the fog, the more the nearer the bolt. */
+            flash = 100.0f / (Vec2fDistance((Vec2f *)&g_pActiveCamera->position,
+                                            (Vec2f *)g_avLightningBolt) +
+                              100.0f);
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+            g_bFogR = FogTruncateToWord((1.0L - flash) * g_bFogR + 240.0L * flash);
+            g_bFogG = FogTruncateToWord((1.0L - flash) * g_bFogG + 248.0L * flash);
+            g_bFogB = FogTruncateToWord((1.0L - flash) * g_bFogB + 255.0L * flash);
+#else
+            fade = 1.0f - flash;
+            g_bFogR = g_bFogR * fade + 240.0f * flash;
+            g_bFogG = g_bFogG * fade + 248.0f * flash;
+            g_bFogB = g_bFogB * fade + 255.0f * flash;
+#endif
+        }
+        if (g_dwNumLocalPlayers == 2) {
+            g_dwFogMinDistance = 930;
+            g_dwFogMaxDistance = 1000;
+        } else {
+            g_dwFogMinDistance = 850;
+            g_dwFogMaxDistance = 1025;
+        }
+    } else if (g_dwWeatherActive) {
+        /* The intensity follows the height of the vehicle of the view within the track. */
+        vehicle = g_pActiveCameraVehicle;
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+        level = ((long double)vehicle->frame.position.z - g_LoadedTrack.minZ) /
+                ((long double)g_LoadedTrack.maxZ - g_LoadedTrack.minZ) * 255.0L;
+        intensity = FogTruncateToWord(level);
+#else
+        level = (vehicle->frame.position.z - g_LoadedTrack.minZ) /
+                (g_LoadedTrack.maxZ - g_LoadedTrack.minZ) * 255.0f;
+        intensity = (s32)level;
+#endif
+        if (intensity < 0) {
+            intensity = 0;
+        } else if (intensity >= 0x100) {
+            intensity = 0xFF;
+        }
+        if (g_dwSelectedTrackId == TRACK_DESERT) {
+            /* Past a y of 1024, the fog of the desert turns grey by an amount with no limit. */
+            y = g_pActiveCamera->position.y;
+            if (DESERT_HAZE_Y < y) {
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+                haze = ((long double)g_pActiveCamera->position.x * 0.00043945311f) *
+                       (((long double)y - DESERT_HAZE_Y) * 0.00087890622f);
+#else
+                haze = (y - DESERT_HAZE_Y) * 0.00087890622f *
+                       (g_pActiveCamera->position.x * 0.00043945311f);
+#endif
+            } else {
+                haze = 0.0f;
+            }
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+            g_bFogR = FogTruncateToWord((1.0L - haze) * g_LoadedTrack.fogColor[0] + 160.0L * haze);
+            g_bFogG = FogTruncateToWord((1.0L - haze) * g_LoadedTrack.fogColor[1] + 160.0L * haze);
+            g_bFogB = FogTruncateToWord((1.0L - haze) * g_LoadedTrack.fogColor[2] + 160.0L * haze);
+#else
+            fade = 1.0f - haze;
+            haze = 160.0f * haze;
+            g_bFogR = g_LoadedTrack.fogColor[0] * fade + haze;
+            g_bFogG = g_LoadedTrack.fogColor[1] * fade + haze;
+            g_bFogB = g_LoadedTrack.fogColor[2] * fade + haze;
+#endif
+        } else {
+            g_bFogR = g_LoadedTrack.fogColor[0];
+            g_bFogG = g_LoadedTrack.fogColor[1];
+            g_bFogB = g_LoadedTrack.fogColor[2];
+        }
+        g_bFogIntensity = intensity;
+        if (g_dwNumLocalPlayers == 2) {
+            g_dwFogMinDistance = 995;
+            g_dwFogMaxDistance = 1000;
+        } else {
+            g_dwFogMinDistance = 980;
+            g_dwFogMaxDistance = 1000;
+        }
+    } else {
+        g_bFogR = 0;
+        g_bFogG = 0;
+        g_bFogB = 0;
+        g_bFogIntensity = 0xFF;
+        g_dwFogMinDistance = 0;
+        g_dwFogMaxDistance = 1000;
+    }
+    g_dwFogFactorScale = 128000 / (g_dwFogMaxDistance - g_dwFogMinDistance);
+    g_dwFogFactorOffset =
+        (500 - g_dwFogMinDistance) * 256 / (g_dwFogMaxDistance - g_dwFogMinDistance);
+    gSPFogPosition(gDisplayListPtr++, g_dwFogMinDistance, g_dwFogMaxDistance);
+    gDPSetFogColor(gDisplayListPtr++, g_bFogR, g_bFogG, g_bFogB, 0xFF);
+}
 
 f32 ComputeFogFactorAtPoint(Vec3f *point) {
     f32 depth;

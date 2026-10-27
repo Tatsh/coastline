@@ -178,6 +178,7 @@ extern s32 g_dwViewportMirrored;
  * @ghidraAddress USA: 0x8028aaf4
  * @ghidraAddress EUR: 0x8028ccfc
  * @ghidraAddress JPN: 0x8028c7cc
+ * @ghidraAddress BRD3D: 0x106c6490
  */
 extern CameraFrame *g_pActiveCamera;
 
@@ -539,6 +540,7 @@ extern u32 g_dwTextureRenderTile;
  * @ghidraAddress USA: 0x8028ab30
  * @ghidraAddress EUR: 0x8028cd38
  * @ghidraAddress JPN: 0x8028c808
+ * @ghidraAddress BRD3D: 0x106c3398
  */
 extern s32 g_dwFogMinDistance;
 
@@ -546,6 +548,7 @@ extern s32 g_dwFogMinDistance;
  * @ghidraAddress USA: 0x8028ab34
  * @ghidraAddress EUR: 0x8028cd3c
  * @ghidraAddress JPN: 0x8028c80c
+ * @ghidraAddress BRD3D: 0x106c64d8
  */
 extern s32 g_dwFogMaxDistance;
 
@@ -716,6 +719,9 @@ void SetupWeatherLights(void);
 }
 #endif
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 /**
  * Set the colour and the range of the fog for the weather and the track, and add them to the
  * display list.
@@ -723,8 +729,12 @@ void SetupWeatherLights(void);
  * @ghidraAddress USA: 0x802182a8
  * @ghidraAddress EUR: 0x802192c8
  * @ghidraAddress JPN: 0x80218c18
+ * @ghidraAddress BRD3D: 0x10031866
  */
 void SetupFog(void);
+#ifdef __cplusplus
+}
+#endif
 
 /**
  * Load the viewport of the view being drawn again.
