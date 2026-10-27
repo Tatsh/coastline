@@ -3839,6 +3839,13 @@ int TimeAttackUI_UpdateBestLapLabel(MenuWidget *pWidget) {
     return DrawTimeAttackTimeLabel(pWidget, g_fGhostBestLapTime);
 }
 
+int RaceResultsInfoUI_UpdateSelectedTimeLabel(MenuWidget *pWidget) {
+    float seconds = g_dwRaceResultsSelectedLap == 3 ?
+                        g_fGhostBestRaceTime :
+                        g_afLastRaceLapTimes[g_dwRaceResultsSelectedLap];
+    return DrawTimeAttackTimeLabel(pWidget, seconds);
+}
+
 static inline int DrawResultsNumericLabel(MenuWidget *pWidget, int value) {
     char text[32] = {};
     _itoa(value, text, 10);
