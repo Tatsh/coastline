@@ -65,6 +65,7 @@ void guMtxIdent(Mtx *m);
  * @ghidraAddress USA: 0x80260940
  * @ghidraAddress EUR: 0x80261e40
  * @ghidraAddress JPN: 0x802618b0
+ * @ghidraAddress BRD3D: 0x100306c0
  */
 void guMtxCatF(float mf[4][4], float nf[4][4], float res[4][4]);
 
