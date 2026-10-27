@@ -1,6 +1,6 @@
 # PC port game code from 0x10050000 to 0x10060000
 
-41 of 91 routines done.
+41 of 93 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -46,6 +46,7 @@ the same name, for a routine the port retained from the N64 game.
 | `InitJoystickBindingNames`                |   ✅   |                 |      1 |    333 | `0x1005fdb0` | `0x10058af0` | `void InitJoystickBindingNames(void)`                                                                                                           |
 | `InitMenuSpriteRects`                     |   ✅   |                 |      1 |    309 | `0x1005f800` | `0x10058540` | `void InitMenuSpriteRects(void)`                                                                                                                |
 | `MenuScreen::ActivateMenuScreen`          |   ✅   |                 |      1 |    304 | `0x1005ae70` | `0x10053d20` | `bool ActivateMenuScreen(MenuScreen * this)`                                                                                                    |
+| `ApplyColorTintToRegion`                  |        |                 |      5 |    297 |              | `0x1005a500` | `undefined ApplyColorTintToRegion()`                                                                                                            |
 | `ApplyLoadedSeasonSettings`               |   ✅   |                 |      2 |    289 | `0x1005fbc0` | `0x10058900` | `void ApplyLoadedSeasonSettings(bool bUpdatePoints)`                                                                                            |
 | `BlitSurfaceRegion`                       |   ✅   |                 |      7 |    237 | `0x1005f5a0` | `0x10058380` | `void BlitSurfaceRegion(int nDestX, int nDestY, WORD wImage, RECT * pRect, DWORD dwFlags)`                                                      |
 | `SaveFileList::SetEntryFromSaveFileName`  |   ✅   |                 |      1 |    236 | `0x1005ce30` | `0x10055c50` | `int SetEntryFromSaveFileName(SaveFileList * this, char * pszFileName, char * pszDescription)`                                                  |
@@ -65,6 +66,7 @@ the same name, for a routine the port retained from the N64 game.
 | `MenuItemList::UpdateHoverInRect`         |        |                 |      1 |    117 | `0x1005c510` | `0x10055330` | `undefined UpdateHoverInRect(MenuItemList * this, undefined4 param_1)`                                                                          |
 | `MenuFont::DrawGlyph`                     |   ✅   |                 |      1 |    112 | `0x1005b730` | `0x10054550` | `int DrawGlyph(MenuFont * this, short nImage, float x, float y, int nStyle)`                                                                    |
 | `MenuItemList::SetItemData`               |        |                 |      1 |    110 | `0x1005c200` | `0x10055020` | `undefined SetItemData(MenuItemList * this, undefined4 param_1, undefined4 param_2, undefined4 param_3)`                                        |
+| `HasKeyColorPixelInRect`                  |        |                 |      2 |    105 |              | `0x1005a630` | `undefined HasKeyColorPixelInRect()`                                                                                                            |
 | `SaveFileList::CountMatchingFiles`        |   ✅   |                 |      1 |    101 | `0x1005d0a0` | `0x10055ed0` | `int CountMatchingFiles(SaveFileList * this, char * pszPattern)`                                                                                |
 | `MenuFont::DrawThrottledMenuGlyph`        |   ✅   |                 |      1 |     86 | `0x1005b250` | `0x10054070` | `void DrawThrottledMenuGlyph(MenuFont * this, float x, float y)`                                                                                |
 | `SaveFileList::SaveFileList`              |   ✅   |                 |      2 |     82 | `0x1005cb90` | `0x100559b0` | `SaveFileList * SaveFileList(SaveFileList * this)`                                                                                              |

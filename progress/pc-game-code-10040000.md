@@ -1,6 +1,6 @@
 # PC port game code from 0x10040000 to 0x10050000
 
-166 of 264 routines done.
+167 of 264 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -29,7 +29,7 @@ the same name, for a routine the port retained from the N64 game.
 | `MenuWidget::Update`                               |   ✅   |                 |      1 |    738 | `0x10048180` | `0x100415d0` | `bool Update(MenuWidget * this)`                                                                                                                          |
 | `LoadSeasonUI_OnSlotSelected`                      |   ✅   |                 |      1 |    668 | `0x10042170` | `0x1003b6d0` | `int LoadSeasonUI_OnSlotSelected(MenuWidget * pUnused, int * pnSlot)`                                                                                     |
 | `MenuWidget::UpdateHoverState`                     |   ✅   |                 |      1 |    587 | `0x10047a60` | `0x10040eb0` | `bool UpdateHoverState(MenuWidget * this)`                                                                                                                |
-| `KeyConfigUI_UpdateBindingLabel`                   |        |                 |      1 |    563 | `0x100400e0` | `0x10039620` | `undefined KeyConfigUI_UpdateBindingLabel()`                                                                                                              |
+| `KeyConfigUI_UpdateBindingLabel`                   |   ✅   |                 |      1 |    563 | `0x100400e0` | `0x10039620` | `int KeyConfigUI_UpdateBindingLabel(MenuWidget * pWidget)`                                                                                                |
 | `SaveSeasonUI_OnSlotNameEntered`                   |        |                 |      1 |    553 | `0x10041df0` | `0x1003b350` | `undefined SaveSeasonUI_OnSlotNameEntered()`                                                                                                              |
 | `KeyConfigUI_PollKeyCapture`                       |        |                 |      1 |    540 | `0x10040450` | `0x10039990` | `undefined KeyConfigUI_PollKeyCapture()`                                                                                                                  |
 | `LoadAutoSaveSeason`                               |   ✅   |                 |      1 |    534 | `0x10041bd0` | `0x1003b130` | `void LoadAutoSaveSeason(void)`                                                                                                                           |
