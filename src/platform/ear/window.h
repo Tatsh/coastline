@@ -10,6 +10,12 @@ extern "C" {
 /** @ghidraAddress EAR: 0x1003b618 */
 extern HWND g_hEarNotifyWindow;
 
+/** @ghidraAddress EAR: 0x1003b3c0 */
+extern UINT g_uEarNotifyMessage;
+
+/** @ghidraAddress EAR: 0x10004ae6 */
+BOOL __stdcall PostEarWindowMessage(WPARAM event, LPARAM notification);
+
 /** @ghidraAddress EAR: 0x1000baa0 */
 BOOL __stdcall EarAssignHwndExportWrapper(HWND window);
 

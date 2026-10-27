@@ -93,24 +93,15 @@ private:
     virtual std::uint16_t AllocateEarEventId();
     /** @ghidraAddress EAR: 0x100125fd */
     virtual void UpdateDirectSoundPlaybackFrequency();
-    /**
-     * @ghidraAddress EAR: 0x1000a9bf
-     * @stub
-     */
+    /** @ghidraAddress EAR: 0x1000a9bf */
     virtual int StartEarPlayback();
     /** @ghidraAddress EAR: 0x10012860 */
     virtual int PlayDirectSoundEventBuffer();
-    /**
-     * @ghidraAddress EAR: 0x1000a99f
-     * @stub
-     */
+    /** @ghidraAddress EAR: 0x1000a99f */
     virtual void PauseEarPlayback();
     /** @ghidraAddress EAR: 0x100128f8 */
     virtual int StopDirectSoundEventBuffer();
-    /**
-     * @ghidraAddress EAR: 0x1000add8
-     * @stub
-     */
+    /** @ghidraAddress EAR: 0x1000add8 */
     virtual int ResumeEarPlayback();
     /**
      * @ghidraAddress EAR: 0x1000a88b
@@ -125,10 +116,7 @@ private:
     virtual void CopyEarPlaybackSamplesToOutput();
     /** @ghidraAddress EAR: 0x1000a8e5 */
     virtual void CompleteEarPlayback();
-    /**
-     * @ghidraAddress EAR: 0x100129a3
-     * @stub
-     */
+    /** @ghidraAddress EAR: 0x100129a3 */
     virtual int CheckEarPlaybackLoopCompletion();
     /**
      * Native slot shares the empty CObject serialization body.
@@ -136,10 +124,7 @@ private:
      * @stub
      */
     virtual void ApplyPreset(const EarPreset *preset);
-    /**
-     * @ghidraAddress EAR: 0x100129bc
-     * @stub
-     */
+    /** @ghidraAddress EAR: 0x100129bc */
     virtual void OnPlaybackWaveSampleAttached(EarWaveSample *sample);
     /** @ghidraAddress EAR: 0x100094e0 */
     virtual std::uint32_t GetEarPlaybackMediaLength();

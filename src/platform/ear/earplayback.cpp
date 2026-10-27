@@ -6,6 +6,7 @@
 
 #include "error.h"
 #include "volume.h"
+#include "window.h"
 
 std::uint16_t g_wPlaybackSmoothingPassCount = 2;
 int g_earPlaybackSmoothingEnabled;
@@ -25,6 +26,38 @@ const double g_earDirectSoundGainPercentScale = 100;
 
 int EarPlayback::GetStatus() {
     return status;
+}
+
+int EarPlayback::StartEarPlayback() {
+    if (notificationFlags & 1) {
+        PostEarWindowMessage(notificationEvent, 1);
+    }
+    if (!PlayDirectSoundEventBuffer()) {
+        return 0;
+    }
+    active = 1;
+    status = 0;
+    return 1;
+}
+
+void EarPlayback::PauseEarPlayback() {
+    status = 1;
+    StopDirectSoundEventBuffer();
+}
+
+int EarPlayback::ResumeEarPlayback() {
+    if (status && active) {
+        StartEarPlayback();
+    }
+    status = 0;
+    return 1;
+}
+
+int EarPlayback::CheckEarPlaybackLoopCompletion() {
+    return IsDirectSoundBufferStopped();
+}
+
+void EarPlayback::OnPlaybackWaveSampleAttached(EarWaveSample *sample) {
 }
 
 int EarPlayback::IsActive() {

@@ -3,6 +3,11 @@
 #include "error.h"
 
 HWND g_hEarNotifyWindow;
+UINT g_uEarNotifyMessage;
+
+BOOL __stdcall PostEarWindowMessage(WPARAM event, LPARAM notification) {
+    return PostMessageA(g_hEarNotifyWindow, g_uEarNotifyMessage, event, notification);
+}
 
 /** @ghidraAddress EAR: 0x1000bab0 */
 static BOOL CALLBACK FindEarProcessWindowCallback(HWND window, LPARAM context) {
