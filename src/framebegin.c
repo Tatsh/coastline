@@ -6,6 +6,10 @@
 #include "timing.h"
 #include "util.h"
 
+#if TGR_PLATFORM == TGR_PLATFORM_N64
+#include "text.h"
+#endif
+
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
 #include "platform/win/gbicommand.h"
 #include "platform/win/settings.h"

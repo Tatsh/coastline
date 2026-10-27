@@ -8,6 +8,10 @@
 
 #include <PR/ultratypes.h>
 
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+struct GbiCommand;
+#endif
+
 /** A task for the RSP: its microcode, its stack and output buffers, and the data it runs. */
 typedef struct {
     u32 type;              /*!< The kind of task, such as M_GFXTASK for graphics. */
@@ -22,10 +26,14 @@ typedef struct {
     u32 dram_stack_size;   /*!< The size of the matrix stack, in bytes. */
     u64 *output_buff;      /*!< The start of the buffer the RSP writes RDP commands to. */
     u64 *output_buff_size; /*!< The end of the output buffer, despite the name. */
-    u64 *data_ptr;         /*!< The display list or command list the task runs. */
-    u32 data_size;         /*!< The size of the display list or command list, in bytes. */
-    u64 *yield_data_ptr;   /*!< The buffer the RSP saves its state to when the task yields. */
-    u32 yield_data_size;   /*!< The size of the yield buffer, OS_YIELD_DATA_SIZE bytes. */
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+    struct GbiCommand *data_ptr; /*!< The display list the backend runs. */
+#else
+    u64 *data_ptr; /*!< The display list or command list the task runs. */
+#endif
+    u32 data_size;       /*!< The size of the display list or command list, in bytes. */
+    u64 *yield_data_ptr; /*!< The buffer the RSP saves its state to when the task yields. */
+    u32 yield_data_size; /*!< The size of the yield buffer, OS_YIELD_DATA_SIZE bytes. */
 } OSTask_t;
 
 /** A task for the RSP, aligned to 8 bytes. */

@@ -10,6 +10,7 @@
 #include <PR/gbi.h>
 #include <PR/ultratypes.h>
 
+#include "shadowbuffers.h"
 #include "vecmath.h"
 #include "vehicle.h"
 
@@ -32,38 +33,6 @@ extern Gfx g_aShadowDisplayLists[2][SHADOW_COMMANDS];
  * @ghidraAddress JPN: 0x80356630
  */
 extern Vtx g_aShadowVertices[2][SHADOW_VERTICES];
-
-/**
- * The next command of the shadows, and their first this frame.
- *
- * @ghidraAddress USA: 0x8028c75c
- * @ghidraAddress EUR: 0x8028eebc
- * @ghidraAddress JPN: 0x8028e90c
- */
-extern Gfx *g_pShadowDisplayListWritePtr;
-
-/**
- * @ghidraAddress USA: 0x8028c760
- * @ghidraAddress EUR: 0x8028eec0
- * @ghidraAddress JPN: 0x8028e910
- */
-extern Gfx *g_pShadowDisplayListStart;
-
-/**
- * The next vertex of the shadows, and their first this frame.
- *
- * @ghidraAddress USA: 0x8028c764
- * @ghidraAddress EUR: 0x8028eec4
- * @ghidraAddress JPN: 0x8028e914
- */
-extern Vtx *g_pShadowVertexWritePtr;
-
-/**
- * @ghidraAddress USA: 0x8028c768
- * @ghidraAddress EUR: 0x8028eec8
- * @ghidraAddress JPN: 0x8028e918
- */
-extern Vtx *g_pShadowVertexStart;
 
 /**
  * Whether the shadows keep the triangles off their texture, and draw beyond the rectangle of the

@@ -19,6 +19,7 @@
 
 #include "../../render.h"
 #include "convertedvertex.h"
+#include "renderbackend.h"
 #include "platform/win/fontdata.h"
 #include "platform/win/textureupload.h"
 #include "vecmath.h"

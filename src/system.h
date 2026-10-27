@@ -93,6 +93,7 @@ extern InflateAllocator g_inflateAllocator;
  * @ghidraAddress USA: 0x8028a888
  * @ghidraAddress EUR: 0x8028ca88
  * @ghidraAddress JPN: 0x8028c558
+ * @ghidraAddress BRD3D: 0x106c65f8
  */
 extern u32 g_dwScreenUnblankDelay;
 
@@ -112,6 +113,7 @@ void InitRenderingSubsystem(void);
  * @ghidraAddress USA: 0x8028a884
  * @ghidraAddress EUR: 0x8028ca84
  * @ghidraAddress JPN: 0x8028c554
+ * @ghidraAddress BRD3D: 0x106c65f4
  */
 extern u32 g_dwKeepScreenBlanked;
 
@@ -203,14 +205,23 @@ void StartHighResFrame(void);
 }
 #endif
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /**
  * End the display list of the frame and run it.
  *
  * @ghidraAddress USA: 0x8021aa08
  * @ghidraAddress EUR: 0x8021bb20
  * @ghidraAddress JPN: 0x8021b3fc
+ * @ghidraAddress BRD3D: 0x10033838
  */
 void FlushDisplayList(void);
+
+#ifdef __cplusplus
+}
+#endif
 
 /**
  * Fill the whole depth buffer with the farthest depth, then draw to the frame buffer again.
@@ -325,6 +336,7 @@ extern OSMesg g_aRspEventMsgBuf[1];
  * @ghidraAddress USA: 0x8031a320
  * @ghidraAddress EUR: 0x8031c800
  * @ghidraAddress JPN: 0x8031b430
+ * @ghidraAddress BRD3D: 0x106c33a0
  */
 extern OSMesgQueue g_RspDoneMsgQueue;
 
@@ -355,6 +367,7 @@ extern OSMesg g_aRdpEventMsgBuf[1];
  * @ghidraAddress USA: 0x8031a358
  * @ghidraAddress EUR: 0x8031c838
  * @ghidraAddress JPN: 0x8031b468
+ * @ghidraAddress BRD3D: 0x106c3380
  */
 extern OSMesgQueue g_RdpDoneMsgQueue;
 
@@ -886,6 +899,7 @@ void StubEmptyVoid(s32 unused0, ...);
  * @ghidraAddress USA: 0x8031a9a8
  * @ghidraAddress EUR: 0x8031cea8
  * @ghidraAddress JPN: 0x8031bad8
+ * @ghidraAddress BRD3D: 0x106c1588
  */
 extern OSTask g_aGfxTask[2];
 
@@ -902,6 +916,7 @@ extern u64 g_aRspBootUcode[];
  * @ghidraAddress USA: 0x8026ead0
  * @ghidraAddress EUR: 0x80270aa0
  * @ghidraAddress JPN: 0x80270550
+ * @ghidraAddress BRD3D: 0x118ab150
  */
 extern u64 g_aGspUcodeText[];
 
@@ -911,6 +926,7 @@ extern u64 g_aGspUcodeText[];
  * @ghidraAddress USA: 0x802abc00
  * @ghidraAddress EUR: 0x802ad8f0
  * @ghidraAddress JPN: 0x802ac330
+ * @ghidraAddress BRD3D: 0x118ab160
  */
 extern u64 g_abRspUcodeData[];
 
@@ -920,6 +936,7 @@ extern u64 g_abRspUcodeData[];
  * @ghidraAddress USA: 0x8031a598
  * @ghidraAddress EUR: 0x8031ca98
  * @ghidraAddress JPN: 0x8031b6c8
+ * @ghidraAddress BRD3D: 0x106c2d00
  */
 extern u8 g_abRspDramStackBuffer[];
 
@@ -929,6 +946,7 @@ extern u8 g_abRspDramStackBuffer[];
  * @ghidraAddress USA: 0x8028a860
  * @ghidraAddress EUR: 0x8028ca60
  * @ghidraAddress JPN: 0x8028c530
+ * @ghidraAddress BRD3D: 0x100aa728
  */
 extern u64 *g_pRdpOutputBuffer;
 
@@ -936,6 +954,7 @@ extern u64 *g_pRdpOutputBuffer;
  * @ghidraAddress USA: 0x8028a864
  * @ghidraAddress EUR: 0x8028ca64
  * @ghidraAddress JPN: 0x8028c534
+ * @ghidraAddress BRD3D: 0x100aa72c
  */
 extern u64 *g_pRdpOutputBufferEnd;
 
@@ -945,6 +964,7 @@ extern u64 *g_pRdpOutputBufferEnd;
  * @ghidraAddress USA: 0x8028ab84
  * @ghidraAddress EUR: 0x8028ce30
  * @ghidraAddress JPN: 0x8028c860
+ * @ghidraAddress BRD3D: 0x106c6668
  */
 extern s32 g_dwOutputBuffReserve;
 
@@ -954,6 +974,7 @@ extern s32 g_dwOutputBuffReserve;
  * @ghidraAddress USA: 0x8028ab70
  * @ghidraAddress EUR: 0x8028ce1c
  * @ghidraAddress JPN: 0x8028c84c
+ * @ghidraAddress BRD3D: 0x106c1170
  */
 extern s32 g_dwDisplayListCommandCount;
 
@@ -963,6 +984,7 @@ extern s32 g_dwDisplayListCommandCount;
  * @ghidraAddress USA: 0x8028ab74
  * @ghidraAddress EUR: 0x8028ce20
  * @ghidraAddress JPN: 0x8028c850
+ * @ghidraAddress BRD3D: 0x106c6658
  */
 extern s32 g_dwPeakShadowCommandCount;
 
@@ -970,6 +992,7 @@ extern s32 g_dwPeakShadowCommandCount;
  * @ghidraAddress USA: 0x8028ab78
  * @ghidraAddress EUR: 0x8028ce24
  * @ghidraAddress JPN: 0x8028c854
+ * @ghidraAddress BRD3D: 0x106c665c
  */
 extern s32 g_dwPeakShadowVertexCount;
 
@@ -977,6 +1000,7 @@ extern s32 g_dwPeakShadowVertexCount;
  * @ghidraAddress USA: 0x8028ab7c
  * @ghidraAddress EUR: 0x8028ce28
  * @ghidraAddress JPN: 0x8028c858
+ * @ghidraAddress BRD3D: 0x106c6660
  */
 extern s32 g_dwPeakDisplayListCommands;
 
@@ -986,6 +1010,7 @@ extern s32 g_dwPeakDisplayListCommands;
  * @ghidraAddress USA: 0x8028ab80
  * @ghidraAddress EUR: 0x8028ce2c
  * @ghidraAddress JPN: 0x8028c85c
+ * @ghidraAddress BRD3D: 0x106c6664
  */
 extern s32 g_dwFirstFlushDone;
 
@@ -996,6 +1021,7 @@ extern s32 g_dwFirstFlushDone;
  * @ghidraAddress USA: 0x8028aae8
  * @ghidraAddress EUR: 0x8028ccf0
  * @ghidraAddress JPN: 0x8028c7c0
+ * @ghidraAddress BRD3D: 0x106c020c
  */
 extern u32 g_dwFlushDuration;
 
@@ -1003,6 +1029,7 @@ extern u32 g_dwFlushDuration;
  * @ghidraAddress USA: 0x8028aae0
  * @ghidraAddress EUR: 0x8028cce8
  * @ghidraAddress JPN: 0x8028c7b8
+ * @ghidraAddress BRD3D: 0x106c1620
  */
 extern u32 g_dwFlushInterval;
 
@@ -1010,6 +1037,7 @@ extern u32 g_dwFlushInterval;
  * @ghidraAddress USA: 0x8028aae4
  * @ghidraAddress EUR: 0x8028ccec
  * @ghidraAddress JPN: 0x8028c7bc
+ * @ghidraAddress BRD3D: 0x106c0208
  */
 extern u32 g_dwFlushStartTime;
 
@@ -1019,6 +1047,7 @@ extern u32 g_dwFlushStartTime;
  * @ghidraAddress USA: 0x8028aa20
  * @ghidraAddress EUR: 0x8028cc28
  * @ghidraAddress JPN: 0x8028c6f8
+ * @ghidraAddress BRD3D: 0x106c6598
  */
 extern u32 g_dwFlushValueSource;
 
@@ -1026,6 +1055,7 @@ extern u32 g_dwFlushValueSource;
  * @ghidraAddress USA: 0x8028aa24
  * @ghidraAddress EUR: 0x8028cc2c
  * @ghidraAddress JPN: 0x8028c6fc
+ * @ghidraAddress BRD3D: 0x106c56e4
  */
 extern u32 g_dwLastFlushValue;
 
@@ -1045,6 +1075,7 @@ extern s32 g_dwDisplayModeChangeCountdown;
  * @ghidraAddress USA: 0x8028a854
  * @ghidraAddress EUR: 0x8028ca54
  * @ghidraAddress JPN: 0x8028c524
+ * @ghidraAddress BRD3D: 0x106c65e8
  */
 extern s32 g_dwAppliedScreenScaleShift;
 
