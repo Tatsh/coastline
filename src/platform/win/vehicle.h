@@ -531,6 +531,9 @@ public:
     const auto &GetGroundInstances() const {
         return groundInstances;
     }
+    const auto &GetNearbyInstances() const {
+        return nearbyInstances;
+    }
     s32 GetInTunnel() const {
         return inTunnel;
     }
@@ -959,6 +962,9 @@ public:
     }
     const auto &GetWheelBodies() const {
         return wheelBodies;
+    }
+    auto &GetWheelFrames() {
+        return wheelFrames;
     }
     const auto &GetWheelFrames() const {
         return wheelFrames;
