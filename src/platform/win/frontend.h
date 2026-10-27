@@ -388,6 +388,25 @@ int JoinCreateGameUI_UpdateSessionSelection(MenuWidget *pWidget);
  */
 int KeyConfigUI_UpdateActionSelection(MenuWidget *pWidget);
 
+#if TGR_RENDERER == TGR_RENDERER_D3D
+/**
+ * @ghidraAddress BRD3D: 0x1003ed10
+ */
+int D3DDeviceSelectUI_UpdateDeviceSelection(MenuWidget *pWidget);
+#endif
+
+/**
+ * @ghidraAddress BRD3D: 0x1003edf0
+ * @ghidraAddress BRGlide: 0x10038320
+ */
+int DisplayModeSelectUI_UpdateModeSelection(MenuWidget *pWidget);
+
+/**
+ * @ghidraAddress BRD3D: 0x10aa2a30
+ * @ghidraAddress BRGlide: 0x10ac5d88
+ */
+extern int g_dwSelectedDisplayModeIndex;
+
 /**
  * Open cached input options, building the screen on its first visit.
  *

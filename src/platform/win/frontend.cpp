@@ -77,6 +77,7 @@ unsigned short g_wUnlockedCarModeMask = 0x102;
 int g_dwSelectableTrackMaskAlt = 0x24;
 int g_dwNetworkMenuState;
 int g_dwSelectedSessionIndex;
+int g_dwSelectedDisplayModeIndex;
 NetworkMenuWidget *g_pJoinCreateGameMenu;
 MenuScreen *g_pCachedMenu_MainMenu;
 MenuScreen *g_pCachedMenu_MainMenuAlternate;
@@ -1134,6 +1135,18 @@ static inline void UpdateMenuListSelection(MenuWidget *pWidget, int &selection) 
     if (result >= 0) {
         selection = result;
     }
+}
+
+#if TGR_RENDERER == TGR_RENDERER_D3D
+int D3DDeviceSelectUI_UpdateDeviceSelection(MenuWidget *pWidget) {
+    UpdateMenuListSelection(pWidget, g_dwSelectedDisplayDeviceIndex);
+    return 1;
+}
+#endif
+
+int DisplayModeSelectUI_UpdateModeSelection(MenuWidget *pWidget) {
+    UpdateMenuListSelection(pWidget, g_dwSelectedDisplayModeIndex);
+    return 1;
 }
 
 int JoinCreateGameUI_UpdateSessionSelection(MenuWidget *pWidget) {
