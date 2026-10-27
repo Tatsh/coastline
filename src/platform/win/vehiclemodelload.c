@@ -1,7 +1,7 @@
-#include <cstdio>
-#include <cstring>
+#include <stdio.h>
+#include <string.h>
 
-#include "platform/win/boot/app.h"
+#include "platform/win/boot/fatalerror.h"
 #include "platform/win/fileio.h"
 #include "platform/win/paintshop.h"
 #include "platform/win/settings.h"
@@ -21,13 +21,13 @@ void LoadVehicleModelFromRom(VehicleModel *model, s32 car) {
     }
     LoadCarPaintTextures(car, model == g_aVehicleModels);
     g_nPaintTextureSetIndex = 0;
-    std::strcpy(path, g_szCarsDirPath);
-    std::strcat(path, g_apszCarModelPrefixes[car]);
-    std::strcat(path, ".rca");
+    strcpy(path, g_szCarsDirPath);
+    strcat(path, g_apszCarModelPrefixes[car]);
+    strcat(path, ".rca");
     ReadEntireFile(model, path, -1);
-    if (std::memcmp(model, "RCar", 4) != 0) {
+    if (memcmp(model, "RCar", 4) != 0) {
         /* The original error formatter reads its uninitialised destination as the filename. */
-        std::sprintf(error, "not a car file: %s", error);
+        sprintf(error, "not a car file: %s", error);
         ShowFatalErrorScreen(error);
     }
     ByteSwapAndRelocateCarModel(model);
