@@ -19,6 +19,7 @@
 #include "platform/win/sound.h"
 #include "platform/win/timer.h"
 #include "profile.h"
+#include "seasons.h"
 #include "trackselect.h"
 #if TGR_RENDERER == TGR_RENDERER_D3D
 #include "platform/win/d3d/ddutil.h"
@@ -840,6 +841,66 @@ void ApplyCarGroupPreset(void) {
         g_dwSelectableCarMask = 0x102;
         break;
     }
+}
+
+unsigned IsTrackSelectable(int nTrack) {
+    if (nTrack == 12) {
+        return 0;
+    }
+    if (g_dwCheatAllTracksUnlocked) {
+        return 1;
+    }
+    const unsigned mask = 1u << (static_cast<unsigned>(nTrack) & 31);
+    if (g_dwGameMode == GAME_MODE_CHAMPIONSHIP) {
+        return mask & (g_dwSeasonLoaded ? g_SeasonProgress.unlockedTracks : g_dwUnlockedTrackMask);
+    }
+    if (g_dwCheatBonusTracksUnlocked && (nTrack == 13 || nTrack == 14)) {
+        return 1;
+    }
+    return mask & static_cast<unsigned>(g_dwSelectableTrackMaskAlt);
+}
+
+void ResolveRaceSelections(void) {
+    RestoreMenuSelections();
+    g_dwHandlingType = g_dwHandlingTypeMenuIndex;
+    if (g_dwGameMode == GAME_MODE_NETWORK) {
+        ApplyCarGroupPreset();
+    }
+    const int originalCar = g_dwCarMenuIndex;
+    if (!IsCarSelectable(g_dwCarMenuIndex)) {
+        do {
+            if (++g_dwCarMenuIndex > 31) {
+                g_dwCarMenuIndex = 0;
+            }
+            if (g_dwCarMenuIndex == originalCar) {
+                break;
+            }
+        } while (!IsCarSelectable(g_dwCarMenuIndex));
+    }
+    g_dwChosenCar = g_adwCarMenuIndexToCarId[g_dwCarMenuIndex];
+    g_dwTireType = g_adwTireMenuIndexToTireType[g_dwTireMenuIndex];
+    g_dwSuspensionType = g_adwSuspensionMenuIndexToType[g_dwSuspensionMenuIndex];
+    g_dwTransmissionType = g_adwTransmissionMenuIndexToType[g_dwSelectedTransmission];
+    if (g_dwGameMode != GAME_MODE_CHAMPIONSHIP) {
+        const int originalTrack = g_dwTrackMenuIndex;
+        if (!IsTrackSelectable(g_dwTrackMenuIndex)) {
+            do {
+                if (++g_dwTrackMenuIndex > (g_dwCheatBonusTracksUnlocked ? 14 : 11)) {
+                    g_dwTrackMenuIndex = 0;
+                } else if (g_dwTrackMenuIndex == originalTrack) {
+                    break;
+                }
+            } while (!IsTrackSelectable(g_dwTrackMenuIndex));
+        }
+        g_dwSelectedTrackId = g_adwTrackMenuIndexToTrackId[g_dwTrackMenuIndex];
+        g_dwTotalLaps = g_dwTotalLapsSetting;
+        g_dwChosenWeather = g_adwWeatherMenuIndexToWeather[g_dwSelectedWeather];
+    } else {
+        const u8 *race = g_SeasonTable[g_SeasonProgress.season].races[g_SeasonProgress.round];
+        g_dwSelectedTrackId = race[0];
+        g_dwChosenWeather = race[1];
+    }
+    SyncSeasonProgress();
 }
 
 void BackupMenuSelections(void) {

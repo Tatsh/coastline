@@ -1503,3 +1503,56 @@ extern KeyCharacter g_KeyNameLookupTable[KEY_CHARACTER_COUNT];
  * @ghidraAddress BRGlide: 0x10054360
  */
 char LookupKeyCharacter(DWORD dwKey);
+
+/**
+ * The track mask used before loading a championship profile.
+ *
+ * @ghidraAddress BRD3D: 0x10a9d010
+ */
+extern unsigned g_dwUnlockedTrackMask;
+
+/**
+ * @ghidraAddress BRD3D: 0x100ac420
+ */
+extern int g_adwCarMenuIndexToCarId[32];
+
+/**
+ * @ghidraAddress BRD3D: 0x100ac4a0
+ */
+extern int g_adwTireMenuIndexToTireType[3];
+
+/**
+ * @ghidraAddress BRD3D: 0x100ac4b0
+ */
+extern int g_adwSuspensionMenuIndexToType[3];
+
+/**
+ * @ghidraAddress BRD3D: 0x100ac4c0
+ */
+extern int g_adwWeatherMenuIndexToWeather[5];
+
+/**
+ * @ghidraAddress BRD3D: 0x100ac4d8
+ */
+extern int g_adwTrackMenuIndexToTrackId[15];
+
+/**
+ * @ghidraAddress BRD3D: 0x100ac518
+ */
+extern int g_adwTransmissionMenuIndexToType[2];
+
+/**
+ * Report a track's selection mask or a cheat override.
+ *
+ * @param nTrack The track menu index.
+ * @return Zero when unavailable, otherwise a nonzero mask or one.
+ * @ghidraAddress BRD3D: 0x1003f2b0
+ */
+unsigned IsTrackSelectable(int nTrack);
+
+/**
+ * Restore menu choices, advance unavailable selections, and apply race settings.
+ *
+ * @ghidraAddress BRD3D: 0x1003e510
+ */
+void ResolveRaceSelections(void);
