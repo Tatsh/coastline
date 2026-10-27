@@ -506,3 +506,17 @@ bool WriteGameSettingsPacket(NetStream *pStream, unsigned char bPlayer);
  * @ghidraAddress BRD3D: 0x10221280
  */
 extern int g_bNetGameSettingUnk_10221280;
+
+struct KeyframeState;
+
+/**
+ * @ghidraAddress BRD3D: 0x10006ec0
+ */
+void DeserializeVehicleState(KeyframeState *pState, NetStream *pStream);
+
+/**
+ * @ghidraAddress BRD3D: 0x100073e0
+ */
+void DeserializeKeyframeDelta(KeyframeState *pState,
+                              const KeyframeState *pBase,
+                              NetStream *pStream);

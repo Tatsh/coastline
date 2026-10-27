@@ -410,3 +410,96 @@ bool WriteGameSettingsPacket(NetStream *pStream, unsigned char bPlayer) {
     pStream->StreamWriteByte(static_cast<unsigned char>(g_bNetSuspensionSetting));
     return true;
 }
+
+static inline void ReadNetworkQuaternion(KeyframeState *pState, NetStream *pStream) {
+    pState->orientation.w =
+        ConvertFixedAngleToFloat(static_cast<short>(pStream->BitStreamReadBits(8) << 8));
+    pState->orientation.x =
+        ConvertFixedAngleToFloat(static_cast<short>(pStream->BitStreamReadBits(8) << 8));
+    pState->orientation.y =
+        ConvertFixedAngleToFloat(static_cast<short>(pStream->BitStreamReadBits(8) << 8));
+    pState->orientation.z =
+        ConvertFixedAngleToFloat(static_cast<short>(pStream->BitStreamReadBits(8) << 8));
+}
+
+static inline void ReadNetworkLightsAndEffects(KeyframeState *pState, NetStream *pStream) {
+    pState->fSector = IndexToWorldCoord(static_cast<unsigned char>(pStream->BitStreamReadBits(6)));
+    pState->afLight[0] = GetLightLevelScale(static_cast<char>(pStream->BitStreamReadBits(2)));
+    pState->afLight[1] = GetLightLevelScale(static_cast<char>(pStream->BitStreamReadBits(2)));
+    for (int i = 0; i < 6; i++) {
+        pState->afEffectFlags[i] = pStream->BitStreamReadBits(1) != 0 ? 128.0f : 0.0f;
+    }
+}
+
+void DeserializeVehicleState(KeyframeState *pState, NetStream *pStream) {
+    ReadNetworkQuaternion(pState, pStream);
+    pState->position.x = ConvertUintToScaledFloat(pStream->BitStreamReadBits(17) << 7);
+    pState->position.y = ConvertUintToScaledFloat(pStream->BitStreamReadBits(17) << 7);
+    pState->position.z = FixedToRadians(static_cast<short>(pStream->BitStreamReadBits(15) << 1));
+    pState->linearVelocity.x =
+        SignedShortToFloat(static_cast<short>(pStream->BitStreamReadBits(16)));
+    pState->linearVelocity.y =
+        SignedShortToFloat(static_cast<short>(pStream->BitStreamReadBits(16)));
+    pState->linearVelocity.z = 0.0f;
+    pState->angularVelocity.x =
+        ConvertCharToScaledFloat(static_cast<signed char>(pStream->BitStreamReadBits(5) << 3));
+    pState->angularVelocity.y =
+        ConvertCharToScaledFloat(static_cast<signed char>(pStream->BitStreamReadBits(5) << 3));
+    pState->angularVelocity.z =
+        ConvertCharToScaledFloat(static_cast<signed char>(pStream->BitStreamReadBits(5) << 3));
+    pState->fSteering =
+        ConvertCharToScaledFloat(static_cast<signed char>(pStream->BitStreamReadBits(4) << 4));
+    pState->fWheelOffset =
+        SignedByteToFloat(static_cast<unsigned char>(pStream->BitStreamReadBits(4) << 2));
+    pState->afWheelAngle[0] =
+        ByteToFloat(static_cast<unsigned char>(pStream->BitStreamReadBits(4) << 4));
+    pState->afWheelAngle[1] = pState->afWheelAngle[0];
+    float rearAngle = pState->afWheelAngle[0] + 35.0f;
+    if (rearAngle >= 360.0f) {
+        rearAngle -= 360.0f;
+    }
+    pState->afWheelAngle[2] = rearAngle;
+    pState->afWheelAngle[3] = rearAngle;
+    for (int i = 0; i < 4; i++) {
+        pState->afWheelContact[i] = static_cast<float>(pStream->BitStreamReadBits(1));
+    }
+    pState->fGearControl = pStream->BitStreamReadBits(1) != 0 ? 128.0f : 0.0f;
+    pState->fBraking = pStream->BitStreamReadBits(1) != 0 ? 1.0f : 0.0f;
+    pState->fReverse = pStream->BitStreamReadBits(1) != 0 ? 1.0f : 0.0f;
+    pState->fProgress = Signed24BitToFloat(pStream->BitStreamReadBits(24));
+    ReadNetworkLightsAndEffects(pState, pStream);
+}
+
+static inline unsigned MergeNetworkDelta(
+    unsigned base, unsigned delta, unsigned baseMask, unsigned lowMask, unsigned step) {
+    unsigned mode = delta & (step * 3);
+    unsigned high = base & baseMask;
+    if (mode == step || mode == step * 2) {
+        high += mode;
+    } else if (mode == step * 3) {
+        high -= step;
+    }
+    return high | (delta & lowMask);
+}
+
+void DeserializeKeyframeDelta(KeyframeState *pState,
+                              const KeyframeState *pBase,
+                              NetStream *pStream) {
+    ReadNetworkQuaternion(pState, pStream);
+    unsigned base = static_cast<unsigned>(ConvertFloatToFixedAngleNoClamp(pBase->position.x)) >> 7;
+    unsigned delta = pStream->BitStreamReadBits(14);
+    pState->position.x =
+        ConvertUintToScaledFloat(MergeNetworkDelta(base, delta, 0x1f000, 0xfff, 0x1000) << 7);
+    base = static_cast<unsigned>(ConvertFloatToFixedAngleNoClamp(pBase->position.y)) >> 7;
+    delta = pStream->BitStreamReadBits(14);
+    pState->position.y =
+        ConvertUintToScaledFloat(MergeNetworkDelta(base, delta, 0x1f000, 0xfff, 0x1000) << 7);
+    base = static_cast<short>(ConvertFloatToFixedAngle16B(pBase->position.z)) >> 1;
+    delta = pStream->BitStreamReadBits(11);
+    pState->position.z = FixedToRadians(
+        static_cast<short>(MergeNetworkDelta(base, delta, 0x7e00, 0x1ff, 0x200) << 1));
+    base = ConvertFloatToFixed24(pBase->fProgress);
+    delta = pStream->BitStreamReadBits(9);
+    pState->fProgress = Signed24BitToFloat(MergeNetworkDelta(base, delta, 0xffff80, 0x7f, 0x80));
+    ReadNetworkLightsAndEffects(pState, pStream);
+}
