@@ -1,6 +1,6 @@
 # PC port game code from 0x10040000 to 0x10050000
 
-258 of 264 routines done.
+259 of 264 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -33,7 +33,7 @@ the same name, for a routine the port retained from the N64 game.
 | `SaveSeasonUI_OnSlotNameEntered`                   |   ✅   |                 |      1 |    553 | `0x10041df0` | `0x1003b350` | `int SaveSeasonUI_OnSlotNameEntered(MenuItemList * pList, int nStatus)`                                                                                   |
 | `KeyConfigUI_PollKeyCapture`                       |   ✅   |                 |      1 |    540 | `0x10040450` | `0x10039990` | `int KeyConfigUI_PollKeyCapture(MenuWidget * pWidget)`                                                                                                    |
 | `LoadAutoSaveSeason`                               |   ✅   |                 |      1 |    534 | `0x10041bd0` | `0x1003b130` | `void LoadAutoSaveSeason(void)`                                                                                                                           |
-| `LoadTimeAttackMenuUI_OnSlotSelected`              |        |                 |      1 |    527 | `0x10042880` | `0x1003bde0` | `undefined LoadTimeAttackMenuUI_OnSlotSelected()`                                                                                                         |
+| `LoadTimeAttackMenuUI_OnSlotSelected`              |   ✅   |                 |      1 |    527 | `0x10042880` | `0x1003bde0` | `int LoadTimeAttackMenuUI_OnSlotSelected(MenuItemList * list, int * slot)`                                                                                |
 | `NetworkCarSetupUI_OnRefreshSessionDesc`           |   ✅   |                 |      1 |    491 | `0x10043a00` | `0x1003cf50` | `int NetworkCarSetupUI_OnRefreshSessionDesc(MenuWidget * pWidget)`                                                                                        |
 | `NetworkCarSetupUI_OnEscape`                       |   ✅   |                 |      1 |    490 | `0x10043810` | `0x1003cd60` | `int NetworkCarSetupUI_OnEscape(MenuWidget * pWidget)`                                                                                                    |
 | `MenuWidget::MenuWidget`                           |   ✅   |                 |    410 |    478 | `0x100476c0` | `0x10040b10` | `MenuWidget * MenuWidget(MenuWidget * this)`                                                                                                              |
