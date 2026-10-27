@@ -141,6 +141,7 @@ void EmitTireSpray(Vehicle *vehicle);
  */
 void DrawTireSpray(void);
 
+#if TGR_PLATFORM == TGR_PLATFORM_N64
 /**
  * Count down to the next puff of smoke of each wheel, faster with the speed of the vehicle and the
  * spin of the wheel, and raise one from a wheel on a surface that smokes.
@@ -151,6 +152,7 @@ void DrawTireSpray(void);
  * @ghidraAddress JPN: 0x8023d810
  */
 void SpawnTireSmoke(Vehicle *vehicle);
+#endif
 
 #ifdef __cplusplus
 extern "C" {

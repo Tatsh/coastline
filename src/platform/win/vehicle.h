@@ -123,7 +123,7 @@ private:
     f32 exhaustTimer;
     Vec3f exhaustPosition;
     f32 smokeTimers[VEHICLE_WHEELS];
-    u8 abUnknown107c[0x30]; /* +0x107c */
+    Vec3f smokePositions[VEHICLE_WHEELS];
     f32 sprayFramesLeft[VEHICLE_WHEELS];
     s32 spraySurfaces[VEHICLE_WHEELS];
     f32 sprayPhases[VEHICLE_WHEELS];
@@ -190,7 +190,6 @@ public:
     void SpawnExhaustParticle();
     /**
      * @ghidraAddress BRD3D: 0x10039f20
-     * @stub
      */
     void SpawnTireSmoke();
     /**
