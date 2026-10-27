@@ -496,6 +496,7 @@ void Mtx4x4ProjectPoint(Vec3f *out, Vec3f *in, f32 m[4][4]);
  * @ghidraAddress JPN: 0x8022590c
  * @ghidraAddress BRD3D: 0x1003b2a0
  * @ghidraAddress BRGlide: 0x10034920
+ * @stub{BRGlide}
  */
 void Vec3fTransformByMatrix(f32 out[4], Vec3f *in, f32 m[4][4]);
 

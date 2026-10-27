@@ -353,7 +353,17 @@ void Vec3fTransformByMatrix(f32 out[4], Vec3f *in, f32 m[4][4]) {
     s32 i;
 
     for (i = 0; i < 4; i++) {
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+        if (i == 0) {
+            out[i] = ((long double)z * m[2][i] + (long double)x * m[0][i]) +
+                     (long double)y * m[1][i] + m[3][i];
+        } else {
+            out[i] = ((long double)z * m[2][i] + (long double)y * m[1][i]) +
+                     (long double)x * m[0][i] + m[3][i];
+        }
+#else
         out[i] = x * m[0][i] + y * m[1][i] + z * m[2][i] + m[3][i];
+#endif
     }
 }
 
