@@ -896,6 +896,12 @@ int SendPlayerJoinPacket(DirectPlayInfo *pInfo,
 extern NetPeerSlot g_aNetPeerSlots[NET_PEER_SLOT_COUNT];
 
 /**
+ * @ghidraAddress BRD3D: 0x10005ee0
+ * @ghidraAddress BRGlide: 0x10006250
+ */
+void CopyPlayerNameToSlotBuffer(int slotIndex, const char *name);
+
+/**
  * Get the time of the last round trip to the player of a slot, under the mutex of the slot.
  *
  * @param nSlot The slot.

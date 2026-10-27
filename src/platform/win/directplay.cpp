@@ -1388,6 +1388,23 @@ bool RequestNetworkPause(void) {
     return true;
 }
 
+void CopyPlayerNameToSlotBuffer(int slotIndex, const char *name) {
+    WaitForSingleObject(g_aNetPeerSlots[slotIndex].hMutex, INFINITE);
+    char *destination = g_aNetPeerSlots[slotIndex].szName;
+    size_t length = std::strlen(name) + 1;
+    size_t offset = 0;
+    /* Forward four-byte groups preserve the original overlapping-copy behaviour. */
+    for (; length - offset >= 4; offset += 4) {
+        unsigned word;
+        std::memcpy(&word, name + offset, 4);
+        std::memcpy(destination + offset, &word, 4);
+    }
+    for (; offset < length; ++offset) {
+        destination[offset] = name[offset];
+    }
+    ReleaseMutex(g_aNetPeerSlots[slotIndex].hMutex);
+}
+
 int CountActivePlayerSlots(void) {
     const int count = g_dwNumActiveVehicles;
     int active = 0;
