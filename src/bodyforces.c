@@ -203,6 +203,17 @@ void GetWheelWorldVelocity(Vec3f *out, RigidBody *body, RigidBody *wheel) {
     out->z = turn[2] + out->z;
 }
 
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+long double PlaneDistance(Vec3f *normal, f32 offset, Vec3f *point) {
+    return Vec3fDot(normal, point) + offset;
+}
+#else
+f32 PlaneDistance(Vec3f *normal, f32 offset, Vec3f *point) {
+    return point->z * normal->z + (normal->x * point->x + normal->y * point->y) + offset;
+}
+
+#endif
+
 void GetBodyPointVelocity(Vec3f *out, RigidBody *body, Vec3f *point) {
     Vec3f copy;
 #if TGR_PLATFORM == TGR_PLATFORM_WIN

@@ -32,7 +32,11 @@ typedef struct CollisionTriangleNode {
 /** The nodes of the list. */
 #define COLLISION_TRIANGLE_NODES 200
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 /**
+ * @ghidraAddress BRD3D: 0x11754e50
  * @ghidraAddress USA: 0x80379940
  * @ghidraAddress EUR: 0x8037be40
  * @ghidraAddress JPN: 0x8037aab0
@@ -42,6 +46,7 @@ extern CollisionTriangleNode g_aCollisionTriangleNodes[COLLISION_TRIANGLE_NODES]
 /**
  * The list, the latest first.
  *
+ * @ghidraAddress BRD3D: 0x11754e38
  * @ghidraAddress USA: 0x802a4a20
  * @ghidraAddress EUR: 0x802a71e0
  * @ghidraAddress JPN: 0x802a6c80
@@ -51,11 +56,15 @@ extern CollisionTriangleNode *g_pCollisionTriangleList;
 /**
  * The next free node.
  *
+ * @ghidraAddress BRD3D: 0x117554e4
  * @ghidraAddress USA: 0x802a4a24
  * @ghidraAddress EUR: 0x802a71e4
  * @ghidraAddress JPN: 0x802a6c84
  */
 extern CollisionTriangleNode *g_pNextCollisionTriangleNode;
+#ifdef __cplusplus
+}
+#endif
 
 /**
  * How the last collision with a triangle is resolved: 1 against its plane alone, 2 at the face of
@@ -169,18 +178,19 @@ extern f32 g_fCollisionContactW;
  */
 extern Vec3f g_vCollisionPenetration;
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 /**
  * Empty the cache of the triangles and the list of the triangles that cross the box.
  *
+ * @ghidraAddress BRD3D: 0x1006ae20
  * @ghidraAddress USA: 0x80259350
  * @ghidraAddress EUR: 0x8025a920
  * @ghidraAddress JPN: 0x8025a2b0
  */
 void ResetCollisionCaches(void);
 
-#ifdef __cplusplus
-extern "C" {
-#endif
 /**
  * Add the forces of the list of a body to its sums of force and torque.
  *
@@ -315,6 +325,9 @@ void DriveWheel(RigidBody *body, RigidBody *wheel, f32 *load, u8 *sliding, f32 d
  */
 s16 IsPointInTrackTriangle(TrackTriangle *triangle, Vec3f *point);
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 /**
  * The distance of a point from a plane.
  *
@@ -325,8 +338,16 @@ s16 IsPointInTrackTriangle(TrackTriangle *triangle, Vec3f *point);
  * @ghidraAddress USA: 0x8025b704
  * @ghidraAddress EUR: 0x8025cce8
  * @ghidraAddress JPN: 0x8025c678
+ * @ghidraAddress BRD3D: 0x1006c9a0
  */
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+long double PlaneDistance(Vec3f *normal, f32 offset, Vec3f *point);
+#else
 f32 PlaneDistance(Vec3f *normal, f32 offset, Vec3f *point);
+#endif
+#ifdef __cplusplus
+}
+#endif
 
 /**
  * Stop the next step of a body moving into a plane, with a little bounce, record a hard hit, and
@@ -373,6 +394,9 @@ s32 UnusedCollisionResponseStub(void *body, void *normal, void *damp);
 s32 ApplyCollisionImpulse(
     RigidBody *body, Vec3f *point, Vec3f *normal, s32 friction, f32 restitution);
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 /**
  * Add a triangle to the list of those that cross the box.
  *
@@ -380,8 +404,12 @@ s32 ApplyCollisionImpulse(
  * @ghidraAddress USA: 0x8025c24c
  * @ghidraAddress EUR: 0x8025d830
  * @ghidraAddress JPN: 0x8025d1c0
+ * @ghidraAddress BRD3D: 0x1006d280
  */
 void PushCollisionTriangle(TrackTriangle *triangle);
+#ifdef __cplusplus
+}
+#endif
 
 /**
  * Print the length of the list on the debug output.

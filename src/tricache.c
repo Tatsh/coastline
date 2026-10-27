@@ -1,5 +1,6 @@
 #include "tricache.h"
 
+#include "physics.h"
 #include "rigidbody.h"
 #include "track.h"
 
@@ -92,3 +93,40 @@ s16 BuildTrackTriangleCache(f32 x, f32 y) {
     return best;
 }
 #pragma GCC diagnostic pop
+
+void ResetCollisionCaches(void) {
+    TrackTriangle *triangle;
+    s32 slot, i;
+
+    /* Every slot then holds cell 0, empty, until it is reused. */
+    for (slot = 0; slot < TRI_CACHE_SLOTS; slot++) {
+        g_awTriCacheSectorId[slot] = 0;
+        g_adwTriCacheLruStamp[slot] = 0;
+        g_awTriCacheTriCount[slot] = 0;
+        for (i = 0; i < TRI_CACHE_TRIANGLES; i++) {
+            triangle = &g_aTriCacheTriangles[slot][i];
+            triangle->normal.x = 0.0f;
+            triangle->normal.y = 0.0f;
+            triangle->normal.z = 0.0f;
+            triangle->planeOffset = 0.0f;
+            triangle->vertices[0] = NULL;
+            triangle->vertices[1] = NULL;
+            triangle->vertices[2] = NULL;
+        }
+    }
+    for (slot = 0; slot < COLLISION_TRIANGLE_NODES; slot++) {
+        g_aCollisionTriangleNodes[slot].triangle = NULL;
+        g_aCollisionTriangleNodes[slot].next = NULL;
+    }
+    g_pCollisionTriangleList = NULL;
+    g_pNextCollisionTriangleNode = NULL;
+    g_dwTriCacheLruCounter = 0;
+}
+
+void PushCollisionTriangle(TrackTriangle *triangle) {
+    CollisionTriangleNode *node = g_pNextCollisionTriangleNode++;
+
+    node->triangle = triangle;
+    node->next = g_pCollisionTriangleList;
+    g_pCollisionTriangleList = node;
+}
