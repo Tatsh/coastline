@@ -3,6 +3,8 @@
 
 #include <cstdint>
 
+#include "directionalmatrix.h"
+
 class EarWaveSample;
 class EarPreset;
 
@@ -43,42 +45,33 @@ private:
      * @stub
      */
     virtual void InitializeDirectSoundPlaybackState();
-    /**
-     * @ghidraAddress EAR: 0x10012596
-     * @stub
-     */
+    /** @ghidraAddress EAR: 0x10012596 */
     virtual void FinalizeDirectSoundPlaybackState();
-    /**
-     * @ghidraAddress EAR: 0x1000a86a
-     * @stub
-     */
-    virtual void ReleaseEarPlaybackResources();
 
 public:
+    /** @ghidraAddress EAR: 0x1000a86a */
+    virtual void ReleaseEarPlaybackResources();
+
     /** @ghidraAddress EAR: 0x10003a40 */
     virtual void SetEarPlaybackDirectionalMatrix(std::uint16_t direction, std::uint16_t matrix);
 
-private:
-    /**
-     * @ghidraAddress EAR: 0x1000aa26
-     * @stub
-     */
+    /** @ghidraAddress EAR: 0x1000aa26 */
     virtual void
     SetEarPlaybackDirectionalGain(std::uint16_t direction, double gain, std::uint16_t matrix);
+
+private:
     /**
      * @ghidraAddress EAR: 0x1001273a
      * @stub
      */
     virtual void UpdateDirectSoundPlaybackGainAndPan();
-    /**
-     * @ghidraAddress EAR: 0x1000ae0f
-     * @stub
-     */
+
+public:
+    /** @ghidraAddress EAR: 0x1000ae0f */
     virtual void ProcessEarPlaybackSmoothing();
-    /**
-     * @ghidraAddress EAR: 0x1000aee1
-     * @stub
-     */
+
+private:
+    /** @ghidraAddress EAR: 0x1000aee1 */
     virtual void ResetEarPlaybackSmoothingPass();
 
 public:
@@ -91,12 +84,10 @@ public:
     /** @ghidraAddress EAR: 0x10003ac0 */
     virtual void SetReservedPlaybackEventControl(std::uint32_t control);
 
-private:
-    /**
-     * @ghidraAddress EAR: 0x1000aa14
-     * @stub
-     */
+    /** @ghidraAddress EAR: 0x1000aa14 */
     virtual int InitializeEarPlayback(const void *source, int streaming, int looping);
+
+private:
     /**
      * @ghidraAddress EAR: 0x10012715
      * @stub
@@ -142,20 +133,11 @@ private:
      * @stub
      */
     virtual void ReleaseDirectSoundEventBuffer();
-    /**
-     * @ghidraAddress EAR: 0x1000a880
-     * @stub
-     */
+    /** @ghidraAddress EAR: 0x1000a880 */
     virtual void RefillEarPlaybackStream();
-    /**
-     * @ghidraAddress EAR: 0x100125a1
-     * @stub
-     */
+    /** @ghidraAddress EAR: 0x100125a1 */
     virtual void CopyEarPlaybackSamplesToOutput();
-    /**
-     * @ghidraAddress EAR: 0x1000a8e5
-     * @stub
-     */
+    /** @ghidraAddress EAR: 0x1000a8e5 */
     virtual void CompleteEarPlayback();
     /**
      * @ghidraAddress EAR: 0x100129a3
@@ -173,10 +155,7 @@ private:
      * @stub
      */
     virtual void OnPlaybackWaveSampleAttached(EarWaveSample *sample);
-    /**
-     * @ghidraAddress EAR: 0x100094e0
-     * @stub
-     */
+    /** @ghidraAddress EAR: 0x100094e0 */
     virtual std::uint32_t GetEarPlaybackMediaLength();
 
 public:
@@ -192,10 +171,7 @@ public:
     virtual void SetCachedBackendPlaybackParameter(double value);
 
 private:
-    /**
-     * @ghidraAddress EAR: 0x10012e2b
-     * @stub
-     */
+    /** @ghidraAddress EAR: 0x10012e2b */
     virtual void OnBackendPlaybackParameterChanged();
     /**
      * @ghidraAddress EAR: 0x1000a8f0
@@ -215,7 +191,7 @@ public:
     virtual void SetEarPlaybackNotification(std::uint32_t flags, std::uint16_t event);
 
 private:
-    [[maybe_unused]] std::uint8_t unknown4[4]; /* +0x04 */
+    EarWaveSample *sample;
     std::uint32_t reservedEventControl;
     std::uint32_t notificationFlags;
     std::uint16_t notificationEvent;
@@ -234,10 +210,15 @@ private:
     std::uint16_t startMilliseconds;
     std::uint16_t matrixId;
     std::uint16_t directionIndex;
-    [[maybe_unused]] std::uint8_t unknown44[0x20]; /* +0x44 */
+    double previousGain;
+    double targetGain;
+    EarDirectionalMatrixEntry previousMatrixEntry;
+    EarDirectionalMatrixEntry targetMatrixEntry;
     std::uint32_t frequency;
     std::uint32_t previousFrequency;
-    [[maybe_unused]] std::uint8_t unknown6c[0xc]; /* +0x6c */
+    [[maybe_unused]] std::uint8_t unknown6c[2]; /* +0x6c */
+    std::uint16_t smoothingPass;
+    [[maybe_unused]] std::uint8_t unknown70[8]; /* +0x70 */
     double startPosition;
     double frequencyScale;
     double baseFrequencyScale;
@@ -251,5 +232,14 @@ extern const double g_earPlaybackScaleZero;
 
 /** @ghidraAddress EAR: 0x1002ea80 */
 extern const double g_earPlaybackMaximumFrequencyScale;
+
+/** @ghidraAddress EAR: 0x1002ea70 */
+extern const double g_earMaximumDirectionalGain;
+
+/** @ghidraAddress EAR: 0x100360b8 */
+extern std::uint16_t g_wPlaybackSmoothingPassCount;
+
+/** @ghidraAddress EAR: 0x1003b7b8 */
+extern int g_earPlaybackSmoothingEnabled;
 
 #endif
