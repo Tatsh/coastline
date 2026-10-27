@@ -1,6 +1,6 @@
 # PC port game code from 0x10010000 to 0x10020000
 
-129 of 162 routines done.
+130 of 162 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -101,7 +101,7 @@ the same name, for a routine the port retained from the N64 game.
 | `DirectDrawDriver::FindDisplayMode`                    |   ✅   |                 |      3 |    127 | `0x1001b490` |              | `DisplayMode * FindDisplayMode(DirectDrawDriver * this, int nWidth, int nHeight, int nBitDepth, void * pUnused, DisplayMode * * ppFallback, DisplayMode * pFirst)`                                                                           |
 | `SubmitVertexToRenderBufferConstColor`                 |   ✅   |                 |      1 |    126 | `0x1001ca10` |              | `int SubmitVertexToRenderBufferConstColor(GbiVertex * pVertex)`                                                                                                                                                                              |
 | `SetDisplayModeWithFallback`                           |   ✅   |                 |      1 |    125 | `0x1001bb00` | `0x1001e130` | `void SetDisplayModeWithFallback(int nWidth, int nHeight, int nBitDepth, int nExtra)`                                                                                                                                                        |
-| `CopyTileColumnScaled`                                 |        |                 |     21 |    121 | `0x1001a4d0` |              | `void CopyTileColumnScaled(int nTileIndex, int nSrcX, int nSrcY, int nSrcRow)`                                                                                                                                                               |
+| `CopyTileColumnScaled`                                 |   ✅   |                 |     21 |    121 | `0x1001a4d0` |              | `void CopyTileColumnScaled(int nTileIndex, int nSrcX, int nSrcY, int nSrcRow)`                                                                                                                                                               |
 | `ProjectShadowTextureCoordinates`                      |   ✅   |                 |      3 |    121 | `0x10010d10` |              | `void ProjectShadowTextureCoordinates(ConvertedModelVertex * vertex)`                                                                                                                                                                        |
 | `D3DDeviceNode::FlushTextureFormatList`                |   ✅   |                 |      1 |    119 | `0x1001afb0` |              | `void FlushTextureFormatList(D3DDeviceNode * this)`                                                                                                                                                                                          |
 | `FlushIndexedRenderBuffer`                             |   ✅   |                 |      2 |    117 | `0x1001d3a0` |              | `void FlushIndexedRenderBuffer(void)`                                                                                                                                                                                                        |
