@@ -96,10 +96,10 @@ The programs are `BRD3D.dll`, `BRGlide.dll`.
 | Excluded as Compiler-generated (static initialisers, atexit registrations, and exception funclets) |   115 |
 | Excluded as Thunk (import or jump thunk the linker generates)                                      |    73 |
 | To reconstruct                                                                                     | 1,670 |
-| Done                                                                                               | 1,110 |
+| Done                                                                                               | 1,119 |
 | Stubbed (not counted as done)                                                                      |    16 |
 | Declared only (not counted as done)                                                                |    26 |
-| Share done                                                                                         | 66.5% |
+| Share done                                                                                         | 67.0% |
 | Only in BRGlide                                                                                    |    77 |
 
 ### By release
@@ -108,14 +108,14 @@ A routine counts for a release when its address in that release is tagged.
 
 | Release       | Routines |  Done | Share |
 | ------------- | -------: | ----: | ----: |
-| `BRD3D.dll`   |    1,593 | 1,107 | 69.5% |
-| `BRGlide.dll` |    1,446 |   530 | 36.7% |
+| `BRD3D.dll`   |    1,593 | 1,116 | 70.1% |
+| `BRGlide.dll` |    1,446 |   538 | 37.2% |
 
 ### By component
 
 | Component | Routines |  Done | Stubbed | Share |
 | --------- | -------: | ----: | ------: | ----: |
-| Game code |    1,669 | 1,110 |      16 | 66.5% |
+| Game code |    1,669 | 1,119 |      16 | 67.0% |
 | zlib      |        1 |     0 |       0 |  0.0% |
 
 ## All releases
@@ -131,8 +131,8 @@ address in the PC libraries.
 | `usa.z64`     | Nintendo 64 |      801 |   801 | 100.0% |
 | `eur.z64`     | Nintendo 64 |      819 |   819 | 100.0% |
 | `jpn.z64`     | Nintendo 64 |      822 |   822 | 100.0% |
-| `BRD3D.dll`   | PC port     |    1,593 | 1,107 |  69.5% |
-| `BRGlide.dll` | PC port     |    1,446 |   530 |  36.7% |
+| `BRD3D.dll`   | PC port     |    1,593 | 1,116 |  70.1% |
+| `BRGlide.dll` | PC port     |    1,446 |   538 |  37.2% |
 
 | Measure                                         | Count |
 | ----------------------------------------------- | ----: |
@@ -163,8 +163,8 @@ block of the master program.
 | [pc-game-code-10010000.md](progress/pc-game-code-10010000.md)         | PC port     | Game code      | `0x10010000`-`0x10020000` |      161 |  108 |  67.1% |
 | [pc-game-code-10020000.md](progress/pc-game-code-10020000.md)         | PC port     | Game code      | `0x10020000`-`0x10030000` |      188 |  132 |  70.2% |
 | [pc-game-code-10030000.md](progress/pc-game-code-10030000.md)         | PC port     | Game code      | `0x10030000`-`0x10040000` |      308 |  134 |  43.5% |
-| [pc-game-code-10040000.md](progress/pc-game-code-10040000.md)         | PC port     | Game code      | `0x10040000`-`0x10050000` |      264 |  169 |  64.0% |
+| [pc-game-code-10040000.md](progress/pc-game-code-10040000.md)         | PC port     | Game code      | `0x10040000`-`0x10050000` |      264 |  177 |  67.0% |
 | [pc-game-code-10050000.md](progress/pc-game-code-10050000.md)         | PC port     | Game code      | `0x10050000`-`0x10060000` |       93 |   41 |  44.1% |
-| [pc-game-code-10060000.md](progress/pc-game-code-10060000.md)         | PC port     | Game code      | `0x10060000`-`0x10070000` |      173 |  104 |  60.1% |
+| [pc-game-code-10060000.md](progress/pc-game-code-10060000.md)         | PC port     | Game code      | `0x10060000`-`0x10070000` |      173 |  105 |  60.7% |
 | [pc-game-code-10070000.md](progress/pc-game-code-10070000.md)         | PC port     | Game code      | `0x10070000`-`0x10080000` |      232 |  215 |  92.7% |
 | [pc-game-code-10080000.md](progress/pc-game-code-10080000.md)         | PC port     | Game code      | `0x10080000`-`0x10090000` |        3 |    1 |  33.3% |

@@ -1,6 +1,6 @@
 # PC port game code from 0x10060000 to 0x10070000
 
-104 of 173 routines done.
+105 of 173 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -39,7 +39,7 @@ the same name, for a routine the port retained from the N64 game.
 | `UpdateAmbientSoundChannel`              |        | ✅ `0x8022b534` |      1 |    683 | `0x10067ed0` | `0x10060f40` | `undefined UpdateAmbientSoundChannel()`                                                                                                  |
 | `ApplyVehicleKeyframe`                   |   ✅   |                 |      2 |    673 | `0x10060a10` | `0x10059a80` | `void ApplyVehicleKeyframe(Vehicle * pVehicle, KeyframeState * pState)`                                                                  |
 | `CollectTrianglesInBox`                  |   ✅   | ✅ `0x8025d060` |      1 |    669 | `0x1006db20` | `0x10066ad0` | `int CollectTrianglesInBox(RigidBody * body, float[4] * box)`                                                                            |
-| `ComputeCollisionPenetration`            |        | ✅ `0x8025dcb8` |      1 |    668 | `0x1006e4c0` | `0x10067470` | `undefined ComputeCollisionPenetration()`                                                                                                |
+| `ComputeCollisionPenetration`            |   ✅   | ✅ `0x8025dcb8` |      1 |    668 | `0x1006e4c0` | `0x10067470` | `void ComputeCollisionPenetration(RigidBody * body, Vec3f * normal, float offset, Vec3f * contact, Vec3f * triangle)`                    |
 | `ClassifyTriangleInUnitCube`             |   ✅   | ✅ `0x8025c2c8` |      1 |    644 | `0x1006d2b0` | `0x10066260` | `int ClassifyTriangleInUnitCube(Vec3f * triangle)`                                                                                       |
 | `IsPointInTrackTriangle`                 |   ✅   | ✅ `0x8025b3b0` |      2 |    599 | `0x1006c740` | `0x100656f0` | `short IsPointInTrackTriangle(TrackTriangle * triangle, Vec3f * point)`                                                                  |
 | `CastWheelRay`                           |   ✅   | ✅ `0x8025e96c` |      1 |    581 | `0x1006f0c0` | `0x10068070` | `float CastWheelRay(RigidBody * body, RigidBody * wheel)`                                                                                |
