@@ -3,14 +3,18 @@
 
 #include <windows.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /** @ghidraAddress EAR: 0x1000f870 */
-void __stdcall EarShutDownTimerExportWrapper();
+void __stdcall EarShutDownTimerExportWrapper(void);
 
 /** @ghidraAddress EAR: 0x1000f87a */
-extern "C" void __stdcall EAR_DLL_ShutDownTimer();
+void __stdcall EAR_DLL_ShutDownTimer(void);
 
 /** @ghidraAddress EAR: 0x1000fa7a */
-extern "C" int __stdcall EAR_DLL_StartTimer();
+int __stdcall EAR_DLL_StartTimer(void);
 
 /** @ghidraAddress EAR: 0x1003b4a0 */
 extern UINT g_uPlaybackTimerId;
@@ -29,5 +33,9 @@ extern DWORD g_dwPreviousPlaybackUpdateTimeMs;
 
 /** @ghidraAddress EAR: 0x1003b4d4 */
 extern DWORD g_dwPlaybackUpdateTimeMs;
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

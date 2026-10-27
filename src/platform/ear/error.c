@@ -1,11 +1,11 @@
 #include "error.h"
 
-#include <cstdlib>
-#include <cstring>
+#include <stdlib.h>
+#include <string.h>
 
 #include "window.h"
 
-std::uint32_t g_bShowEarErrors;
+uint32_t g_bShowEarErrors;
 const char *const g_earErrorMessages[47] = {
     "No Error",
     "EAR was passed an incorrect validation number",
@@ -56,43 +56,41 @@ const char *const g_earErrorMessages[47] = {
     "Hardware does not recognize A3D interface",
 };
 
-namespace {
 // @ghidraAddress EAR: 0x1003b7e4
-std::uint32_t g_dwEarLastError;
+static uint32_t g_dwEarLastError;
 // @ghidraAddress EAR: 0x100371e4
-const char g_szEarErrorPrefix[] = "Ear Error: ";
+static const char g_szEarErrorPrefix[] = "Ear Error: ";
 // @ghidraAddress EAR: 0x1003b978
-char g_earLastErrorDecimalText[12];
+static char g_earLastErrorDecimalText[12];
 // @ghidraAddress EAR: 0x1003b988
-char g_earLastErrorDialogCaption[23];
-} // namespace
+static char g_earLastErrorDialogCaption[23];
 
-void __stdcall SetEarLastError(std::uint32_t error) {
+void __stdcall SetEarLastError(uint32_t error) {
     g_dwEarLastError = error;
     if (g_bShowEarErrors) {
         EarShowLastErrorExportWrapper();
     }
 }
 
-std::uint32_t __stdcall EarGetLastErrorExportWrapper() {
+uint32_t __stdcall EarGetLastErrorExportWrapper(void) {
     return EAR_DLL_GetLastError();
 }
 
-std::uint32_t __stdcall EAR_DLL_GetLastError() {
+uint32_t __stdcall EAR_DLL_GetLastError(void) {
     return g_dwEarLastError;
 }
 
-void __stdcall EarShowLastErrorExportWrapper() {
+void __stdcall EarShowLastErrorExportWrapper(void) {
     EAR_DLL_ShowLastError();
 }
 
-void __stdcall EAR_DLL_ShowLastError() {
+void __stdcall EAR_DLL_ShowLastError(void) {
     if (g_dwEarLastError == 0) {
         return;
     }
-    std::strcpy(g_earLastErrorDialogCaption, g_szEarErrorPrefix);
-    _itoa(static_cast<int>(g_dwEarLastError), g_earLastErrorDecimalText, 10);
-    std::strcat(g_earLastErrorDialogCaption, g_earLastErrorDecimalText);
+    strcpy(g_earLastErrorDialogCaption, g_szEarErrorPrefix);
+    _itoa((int)g_dwEarLastError, g_earLastErrorDecimalText, 10);
+    strcat(g_earLastErrorDialogCaption, g_earLastErrorDecimalText);
     MessageBoxA(g_hEarNotifyWindow,
                 g_earErrorMessages[g_dwEarLastError],
                 g_earLastErrorDialogCaption,

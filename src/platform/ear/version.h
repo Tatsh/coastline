@@ -1,12 +1,20 @@
 #ifndef COASTLINE_EAR_VERSION_H
 #define COASTLINE_EAR_VERSION_H
 
-#include <cstdint>
+#include <stdint.h>
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /** @ghidraAddress EAR: 0x1000c8c0 */
-std::uint32_t __stdcall EarGetVersionExportWrapper();
+uint32_t __stdcall EarGetVersionExportWrapper(void);
 
 /** @ghidraAddress EAR: 0x1000c8ca */
-extern "C" std::uint32_t __stdcall EAR_DLL_GetVersion();
+uint32_t __stdcall EAR_DLL_GetVersion(void);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

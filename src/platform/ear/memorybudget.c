@@ -4,16 +4,14 @@
 
 #include "error.h"
 
-namespace {
 // @ghidraAddress EAR: 0x1003b7ec
-std::uint32_t g_earSampleMemoryBudgetBytes;
+static uint32_t g_earSampleMemoryBudgetBytes;
 // @ghidraAddress EAR: 0x1003b7f4
-std::uint32_t g_dwSampleMemoryLimit;
+static uint32_t g_dwSampleMemoryLimit;
 // @ghidraAddress EAR: 0x1003b7f8
-std::uint32_t g_dwSampleMemoryUsed;
-} // namespace
+static uint32_t g_dwSampleMemoryUsed;
 
-int InitializeSampleMemoryBudget() {
+int InitializeSampleMemoryBudget(void) {
     if (g_earSampleMemoryBudgetBytes > 0) {
         return 1;
     }
@@ -23,10 +21,10 @@ int InitializeSampleMemoryBudget() {
         SetEarLastError(0x10);
         return 0;
     }
-    std::uint32_t blocks = status.dwAvailPageFile / 512000;
+    uint32_t blocks = status.dwAvailPageFile / 512000;
     int level = 3;
     bool complete = false;
-    std::uint32_t threshold;
+    uint32_t threshold;
     do {
         threshold = 4 * level + 3;
         if (blocks <= threshold) {
@@ -48,15 +46,15 @@ int InitializeSampleMemoryBudget() {
     return 1;
 }
 
-std::uint32_t GetSampleMemoryLimit() {
+uint32_t GetSampleMemoryLimit(void) {
     return g_dwSampleMemoryLimit;
 }
 
-std::uint32_t GetSampleMemoryUsed() {
+uint32_t GetSampleMemoryUsed(void) {
     return g_dwSampleMemoryUsed;
 }
 
-int __stdcall ReserveSampleMemory(std::uint32_t bytes) {
+int __stdcall ReserveSampleMemory(uint32_t bytes) {
     if (g_dwSampleMemoryUsed + bytes > g_dwSampleMemoryLimit) {
         return 0;
     }
@@ -64,11 +62,11 @@ int __stdcall ReserveSampleMemory(std::uint32_t bytes) {
     return 1;
 }
 
-void __stdcall ReleaseSampleMemory(std::uint32_t bytes) {
+void __stdcall ReleaseSampleMemory(uint32_t bytes) {
     g_dwSampleMemoryUsed -= bytes;
 }
 
-int __stdcall SetSampleMemoryLimit(std::uint32_t bytes) {
+int __stdcall SetSampleMemoryLimit(uint32_t bytes) {
     // The original accepts only limits no greater than current usage.
     if (bytes > g_dwSampleMemoryUsed) {
         return 0;

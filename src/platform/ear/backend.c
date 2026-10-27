@@ -1,23 +1,22 @@
 #include "backend.h"
 
-#include <cstdlib>
-#include <cstring>
+#include <stdlib.h>
+#include <string.h>
 
 #include <windows.h>
 #include <winver.h>
 
-std::int32_t g_earAudioComponentsValidated;
-std::uint16_t g_earAudioComponentValidationFlags;
+int32_t g_earAudioComponentsValidated;
+uint16_t g_earAudioComponentValidationFlags;
 
-namespace {
 // @ghidraAddress EAR: 0x1003b9a0
-const char g_earEmptyVersionPrefix[] = "";
+static const char g_earEmptyVersionPrefix[] = "";
 // @ghidraAddress EAR: 0x1003722c
-const char g_earVersionHexLeadingZero[] = "0";
+static const char g_earVersionHexLeadingZero[] = "0";
 // @ghidraAddress EAR: 0x10037250
-const char g_earVersionResourcePathSeparator[] = "\\";
+static const char g_earVersionResourcePathSeparator[] = "\\";
 // @ghidraAddress EAR: 0x10037264
-const char g_earVersionComponentSeparator[] = ".";
+static const char g_earVersionComponentSeparator[] = ".";
 
 static inline void BuildProductVersionQuery(void *versionData, char *queryPath) {
     void *translationValue;
@@ -26,17 +25,17 @@ static inline void BuildProductVersionQuery(void *versionData, char *queryPath) 
     lstrcpyA(queryPath, "\\VarFileInfo\\Translation");
     if (VerQueryValueA(versionData, queryPath, &translationValue, &translationSize)) {
         DWORD translation;
-        std::memcpy(&translation, translationValue, sizeof(translation));
+        memcpy(&translation, translationValue, sizeof(translation));
         DWORD packed = (translation >> 16) | (translation << 16);
-        std::strcpy(language, g_earEmptyVersionPrefix);
+        strcpy(language, g_earEmptyVersionPrefix);
         if (packed < 0x10000000) {
-            std::strcpy(language, g_earVersionHexLeadingZero);
+            strcpy(language, g_earVersionHexLeadingZero);
         }
         char hexadecimal[9];
-        _itoa(static_cast<int>(packed), hexadecimal, 16);
-        std::strcat(language, hexadecimal);
+        _itoa((int)packed, hexadecimal, 16);
+        strcat(language, hexadecimal);
     } else {
-        std::strcpy(language, "040904B0");
+        strcpy(language, "040904B0");
     }
     lstrcpyA(queryPath, "\\StringFileInfo\\");
     lstrcatA(queryPath, language);
@@ -44,33 +43,32 @@ static inline void BuildProductVersionQuery(void *versionData, char *queryPath) 
     lstrcatA(queryPath, "ProductVersion");
 }
 
-static inline void GetExpectedDirectSoundVersion(DWORD &versionMS, DWORD &versionLS) {
-    versionMS = 0;
-    versionLS = 0;
+static inline void GetExpectedDirectSoundVersion(DWORD *versionMS, DWORD *versionLS) {
+    *versionMS = 0;
+    *versionLS = 0;
     OSVERSIONINFOA info;
     info.dwOSVersionInfoSize = sizeof(info);
     if (GetVersionExA(&info)) {
         if (info.dwPlatformId == VER_PLATFORM_WIN32_NT) {
-            versionMS = 0x00050000;
-            versionLS = 0x074f0001;
+            *versionMS = 0x00050000;
+            *versionLS = 0x074f0001;
         } else if (info.dwPlatformId == VER_PLATFORM_WIN32_WINDOWS && info.dwMajorVersion == 4) {
             if (info.dwMinorVersion == 10) {
-                versionMS = 0x00040005;
-                versionLS = 0x000107ce;
+                *versionMS = 0x00040005;
+                *versionLS = 0x000107ce;
             } else if (info.dwMinorVersion == 0) {
-                versionMS = 0x00040005;
-                versionLS = 0x000000a5;
+                *versionMS = 0x00040005;
+                *versionLS = 0x000000a5;
             }
         }
     }
 }
-} // namespace
 
-int __stdcall GetDirectSoundVersion() {
+int __stdcall GetDirectSoundVersion(void) {
     return QueryDirectSoundProductVersion();
 }
 
-int __stdcall QueryDirectSoundProductVersion() {
+int __stdcall QueryDirectSoundProductVersion(void) {
     char path[256];
     lstrcpyA(path, "c:\\windows\\system\\dsound.dll");
     DWORD handle = 0;
@@ -89,20 +87,17 @@ int __stdcall QueryDirectSoundProductVersion() {
     if (result) {
         DWORD expectedMS;
         DWORD expectedLS;
-        GetExpectedDirectSoundVersion(expectedMS, expectedLS);
+        GetExpectedDirectSoundVersion(&expectedMS, &expectedLS);
         char delimiters[] = {g_earVersionComponentSeparator[0], g_earVersionComponentSeparator[1]};
-        char *text = static_cast<char *>(productVersionValue);
-        std::uint16_t major = static_cast<std::uint16_t>(std::atoi(std::strtok(text, delimiters)));
-        std::uint16_t minor =
-            static_cast<std::uint16_t>(std::atoi(std::strtok(nullptr, delimiters)));
-        std::uint16_t build =
-            static_cast<std::uint16_t>(std::atoi(std::strtok(nullptr, delimiters)));
-        std::uint16_t revision =
-            static_cast<std::uint16_t>(std::atoi(std::strtok(nullptr, delimiters)));
-        std::uint16_t expectedMajor = static_cast<std::uint16_t>(expectedMS >> 16);
-        std::uint16_t expectedMinor = static_cast<std::uint16_t>(expectedMS);
-        std::uint16_t expectedBuild = static_cast<std::uint16_t>(expectedLS >> 16);
-        std::uint16_t expectedRevision = static_cast<std::uint16_t>(expectedLS);
+        char *text = productVersionValue;
+        uint16_t major = (uint16_t)(atoi(strtok(text, delimiters)));
+        uint16_t minor = (uint16_t)(atoi(strtok(nullptr, delimiters)));
+        uint16_t build = (uint16_t)(atoi(strtok(nullptr, delimiters)));
+        uint16_t revision = (uint16_t)(atoi(strtok(nullptr, delimiters)));
+        uint16_t expectedMajor = (uint16_t)(expectedMS >> 16);
+        uint16_t expectedMinor = (uint16_t)expectedMS;
+        uint16_t expectedBuild = (uint16_t)(expectedLS >> 16);
+        uint16_t expectedRevision = (uint16_t)expectedLS;
         if (major == expectedMajor && minor == expectedMinor && build == expectedBuild &&
             revision == expectedRevision) {
             result = TRUE;

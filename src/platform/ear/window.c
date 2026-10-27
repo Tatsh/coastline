@@ -4,9 +4,8 @@
 
 HWND g_hEarNotifyWindow;
 
-namespace {
 /** @ghidraAddress EAR: 0x1000bab0 */
-BOOL CALLBACK FindEarProcessWindowCallback(HWND window, LPARAM context) {
+static BOOL CALLBACK FindEarProcessWindowCallback(HWND window, LPARAM context) {
     DWORD processId;
     GetWindowThreadProcessId(window, &processId);
     if (processId == GetCurrentProcessId()) {
@@ -15,7 +14,6 @@ BOOL CALLBACK FindEarProcessWindowCallback(HWND window, LPARAM context) {
     }
     return TRUE;
 }
-} // namespace
 
 BOOL __stdcall EarAssignHwndExportWrapper(HWND window) {
     return EAR_DLL_AssignHwnd(window);

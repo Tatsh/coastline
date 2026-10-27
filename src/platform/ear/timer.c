@@ -13,19 +13,17 @@ DWORD g_dwTimerMaximumPeriodMs;
 DWORD g_dwPreviousPlaybackUpdateTimeMs;
 DWORD g_dwPlaybackUpdateTimeMs;
 
-namespace {
 // @ghidraAddress EAR: 0x100046e2
-void CALLBACK
+static void CALLBACK
 EarTimerCallback(UINT timerId, UINT message, DWORD_PTR user, DWORD_PTR first, DWORD_PTR second) {
     UpdateEarPlaybackEngine();
 }
-} // namespace
 
-void __stdcall EarShutDownTimerExportWrapper() {
+void __stdcall EarShutDownTimerExportWrapper(void) {
     EAR_DLL_ShutDownTimer();
 }
 
-void __stdcall EAR_DLL_ShutDownTimer() {
+void __stdcall EAR_DLL_ShutDownTimer(void) {
     SetEarLastError(0);
     if (g_uPlaybackTimerId == 0) {
         return;
@@ -38,7 +36,7 @@ void __stdcall EAR_DLL_ShutDownTimer() {
     g_uPlaybackTimerId = 0;
 }
 
-int __stdcall EAR_DLL_StartTimer() {
+int __stdcall EAR_DLL_StartTimer(void) {
     SetEarLastError(0);
     if (!IsEarReady()) {
         return FALSE;
@@ -51,7 +49,7 @@ int __stdcall EAR_DLL_StartTimer() {
     if (period >= g_dwTimerMaximumPeriodMs) {
         period = g_dwTimerMaximumPeriodMs;
     }
-    g_wTimerResolutionMs = static_cast<WORD>(period);
+    g_wTimerResolutionMs = (WORD)period;
     timeBeginPeriod(g_wTimerResolutionMs);
     g_uPlaybackTimerId = timeSetEvent(50, g_wTimerResolutionMs, EarTimerCallback, 0, TIME_PERIODIC);
     if (g_uPlaybackTimerId == 0) {

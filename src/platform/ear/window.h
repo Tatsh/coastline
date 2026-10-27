@@ -3,6 +3,10 @@
 
 #include <windows.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /** @ghidraAddress EAR: 0x1003b618 */
 extern HWND g_hEarNotifyWindow;
 
@@ -10,6 +14,10 @@ extern HWND g_hEarNotifyWindow;
 BOOL __stdcall EarAssignHwndExportWrapper(HWND window);
 
 /** @ghidraAddress EAR: 0x1000bae5 */
-extern "C" BOOL __stdcall EAR_DLL_AssignHwnd(HWND window);
+BOOL __stdcall EAR_DLL_AssignHwnd(HWND window);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif
