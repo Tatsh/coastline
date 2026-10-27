@@ -528,6 +528,24 @@ bool MenuWidget::Update() {
     return true;
 }
 
+int MenuItemList::UpdateItemAndNotify(int nIndex) {
+    MenuFont *font = &fonts[nIndex];
+    MenuFontVTable *vtable = font->pVTable;
+    vtable->MeasureText(font);
+    if (!font->bDrawCaret) {
+        return 0;
+    }
+    signed char result = vtable->HandleTextInput(font);
+    if (result <= 0) {
+        g_dwMenuTextEditActive = 0;
+        font->bDrawCaret = 0;
+        if (pfnItemChanged) {
+            pfnItemChanged(this, result < 0 ? -1 : nIndex);
+        }
+    }
+    return 1;
+}
+
 int MenuPanel::RestoreSelection() {
     short index = static_cast<short>(g_wMenuHoverIndex);
     if (index >= static_cast<int>(wNavigationCount)) {
@@ -1156,6 +1174,21 @@ int JoinCreateGameUI_UpdateSessionSelection(MenuWidget *pWidget) {
 
 int KeyConfigUI_UpdateActionSelection(MenuWidget *pWidget) {
     UpdateMenuListSelection(pWidget, g_dwKeyConfigSelectedAction);
+    return 1;
+}
+
+int SaveSeasonUI_UpdateSlotSelection(MenuWidget *pWidget) {
+    MenuItemList *list = &pWidget->itemList;
+    MenuItemListVTable *vtable = list->pVTable;
+    int selection = vtable->PollSelection(list, g_dwFileListSelectedSlot);
+    if (selection >= 0) {
+        g_dwFileListSelectedSlot = selection;
+    } else {
+        selection = g_dwFileListSelectedSlot;
+    }
+    if (g_dwMenuTextEditActive && selection >= 0) {
+        vtable->UpdateItemAndNotify(list, selection);
+    }
     return 1;
 }
 
@@ -2799,6 +2832,20 @@ int SeasonProgressInfoUI_UpdateRoundLabel(MenuWidget *pWidget) {
     MenuFontVTable *vtable = font->pVTable;
     vtable->MeasureText(font);
     vtable->DrawText(font);
+    return 1;
+}
+
+int KeyConfigUI_UpdateDuplicateBindingWarning(MenuWidget *pWidget) {
+    MenuFont *font = &pWidget->fonts[0];
+    if (g_dwKeyBindingDuplicatesFound) {
+        strcpy(font->szText, GetStringResource(0xaf));
+        font->bStyle = g_adwKeyBindingDuplicateFlags[g_dwKeyConfigSelectedAction] ? 4 : 1;
+    } else {
+        strcpy(font->szText, " ");
+    }
+    MenuFontVTable *vtable = font->pVTable;
+    vtable->MeasureText(font);
+    ProcessMenuTextEditInput(pWidget, 0);
     return 1;
 }
 

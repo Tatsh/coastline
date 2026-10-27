@@ -110,19 +110,27 @@ struct MenuItemListVTable {
         MenuItemList *, const char *, unsigned, unsigned char, const RECT *, bool);
     char abUnknown14[0xc]; /* +0x14 */
     int(__thiscall *PollSelection)(MenuItemList *, int);
-    char abUnknown24[8]; /* +0x24 */
+    int(__thiscall *UpdateItemAndNotify)(MenuItemList *, int);
+    char abUnknown28[4]; /* +0x28 */
     int(__thiscall *RemoveItem)(MenuItemList *, int);
 };
 
 struct MenuItemList {
     MenuItemListVTable *pVTable;
-    char abUnknown4[0x14]; /* +0x04 */
+    char abUnknown4[0x10]; /* +0x04 */
+    int (*pfnItemChanged)(MenuItemList *, int);
     unsigned dwFlags;
     char abUnknown1c[0x10]; /* +0x1c */
     MenuFont fonts[100];
     char abUnknown1a60c[0x320]; /* +0x1a60c */
     unsigned short wItemCount;
     char abUnknown1a92e[0xa6]; /* +0x1a92e */
+
+    /**
+     * @ghidraAddress BRD3D: 0x1005bb80
+     * @ghidraAddress BRGlide: 0x100549a0
+     */
+    int UpdateItemAndNotify(int nIndex);
 };
 
 /** An item of a panel of the front end. */
@@ -369,6 +377,12 @@ int ModemConnectionUI_OnAccept(MenuWidget *pWidget);
  * @ghidraAddress BRGlide: 0x1003b580
  */
 int SaveSeasonUI_OnSlotSelected(MenuItemList *pList, int *pnSlot);
+
+/**
+ * @ghidraAddress BRD3D: 0x1003eb10
+ * @ghidraAddress BRGlide: 0x10038100
+ */
+int SaveSeasonUI_UpdateSlotSelection(MenuWidget *pWidget);
 
 /**
  * @ghidraAddress BRD3D: 0x10041df0
@@ -853,6 +867,12 @@ extern int g_dwKeyCaptureComplete;
  * @ghidraAddress BRGlide: 0x10ac5ba8
  */
 extern int g_dwKeyBindingDuplicatesFound;
+
+/**
+ * @ghidraAddress BRD3D: 0x1003f8d0
+ * @ghidraAddress BRGlide: 0x10038e10
+ */
+int KeyConfigUI_UpdateDuplicateBindingWarning(MenuWidget *pWidget);
 
 /**
  * @ghidraAddress BRD3D: 0x10a9d5c0
