@@ -1,6 +1,6 @@
 # PC port game code from 0x10060000 to 0x10070000
 
-121 of 173 routines done.
+122 of 173 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -9,7 +9,7 @@ the same name, for a routine the port retained from the N64 game.
 
 | Name                                     | Status | N64             | # xref | Length | BRD3D        | BRGlide      | Signature                                                                                                                                |
 | ---------------------------------------- | :----: | --------------- | -----: | -----: | ------------ | ------------ | ---------------------------------------------------------------------------------------------------------------------------------------- |
-| `Vehicle::ComputeAiVehicleInput`         |   🚧   |                 |      1 |   3858 | `0x10064700` |              | `void ComputeAiVehicleInput(Vehicle * this)`                                                                                             |
+| `Vehicle::ComputeAiVehicleInput`         |   ✅   |                 |      1 |   3858 | `0x10064700` |              | `void ComputeAiVehicleInput(Vehicle * this)`                                                                                             |
 | `Vehicle::UpdateVehicleEngineAndGearbox` |   ✅   | ✅ `0x80222050` |      1 |   3226 | `0x10061f70` | `0x1005aff0` | `void UpdateVehicleEngineAndGearbox(Vehicle * this)`                                                                                     |
 | `ApplySideGrip`                          |   ✅   | ✅ `0x80259d14` |      1 |   3070 | `0x1006b5f0` | `0x100645a0` | `void ApplySideGrip(RigidBody * body, float dt, float * rearLoad, float * frontLoad, uchar * rearSliding, uchar * frontSliding)`         |
 | `Vehicle::UpdateVehicleSounds`           |        | ✅ `0x8022bcb4` |      1 |   2757 | `0x10068400` | `0x10061470` | `undefined UpdateVehicleSounds(Vehicle * this)`                                                                                          |
