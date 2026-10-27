@@ -192,6 +192,7 @@ void FixupDisplayListPointers(Gfx *displayList, u32 lo, u32 hi, u32 base);
  * @ghidraAddress USA: 0x8021d828
  * @ghidraAddress EUR: 0x8021ea28
  * @ghidraAddress JPN: 0x8021e2f8
+ * @ghidraAddress BRD3D: 0x10035625
  */
 void BounceModelAnimations(Model *model);
 
@@ -215,6 +216,7 @@ void RelocateModelPointers(Model *model);
  * @ghidraAddress USA: 0x8021d6dc
  * @ghidraAddress EUR: 0x8021e8dc
  * @ghidraAddress JPN: 0x8021e1ac
+ * @ghidraAddress BRD3D: 0x10035585
  */
 void SetModelAnimationFlags(Model *model, s32 set, s32 clear);
 
@@ -225,6 +227,7 @@ void SetModelAnimationFlags(Model *model, s32 set, s32 clear);
  * @ghidraAddress USA: 0x8021d804
  * @ghidraAddress EUR: 0x8021ea04
  * @ghidraAddress JPN: 0x8021e2d4
+ * @ghidraAddress BRD3D: 0x10035610
  */
 void LoopModelAnimations(Model *model);
 
@@ -246,6 +249,7 @@ void AdvanceModelAnimations(Model *model);
  * @ghidraAddress USA: 0x8021d7e0
  * @ghidraAddress EUR: 0x8021e9e0
  * @ghidraAddress JPN: 0x8021e2b0
+ * @ghidraAddress BRD3D: 0x100355fb
  */
 void PlayModelAnimationsOnce(Model *model);
 
