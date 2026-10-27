@@ -173,3 +173,46 @@ void PlaceTrackCamera(Vehicle *vehicle) {
     Vec3fAddInPlace(&vehicle->cameras[VEHICLE_CAMERA_TRACKSIDE].position, &vehicle->frame.up);
     vehicle->cameraChanged = 2;
 }
+
+#define START_CHASE_HEIGHT 4.0f
+#define START_CHASE_REPLAY_FORWARD 10.0f
+#define START_LOOK_AHEAD 2.0f
+
+void InitCameraForVehicle(Vehicle *vehicle) {
+    Vec3f position;
+    /* The original reserves stack for sixteen bytes of locals it does not use. */
+    f32 unused[4];
+
+    (void)unused;
+    if (g_dwGameMode == GAME_MODE_AFTER_SEASON) {
+        vehicle->activeCamera = &vehicle->cameras[VEHICLE_CAMERA_CHASE];
+        vehicle->previousCamera = &vehicle->cameras[VEHICLE_CAMERA_CHASE];
+    } else {
+        vehicle->activeCamera = &vehicle->cameras[VEHICLE_CAMERA_COCKPIT];
+        vehicle->previousCamera = &vehicle->cameras[VEHICLE_CAMERA_COCKPIT];
+    }
+    Vec3fMulAdd(&vehicle->cameras[VEHICLE_CAMERA_CHASE].position,
+                &vehicle->frame.position,
+                &vehicle->frame.up,
+                START_CHASE_HEIGHT);
+    if (gInstantReplayActive) {
+        Vec3fMulAddInPlace(&vehicle->cameras[VEHICLE_CAMERA_CHASE].position,
+                           &vehicle->frame.forward,
+                           START_CHASE_REPLAY_FORWARD);
+    }
+    Vec3fSubtractInPlace(&vehicle->cameras[VEHICLE_CAMERA_CHASE].position, &vehicle->frame.forward);
+    position.x = vehicle->cameras[VEHICLE_CAMERA_CHASE].position.x;
+    position.y = vehicle->cameras[VEHICLE_CAMERA_CHASE].position.y;
+    position.z = vehicle->cameras[VEHICLE_CAMERA_CHASE].position.z;
+    vehicle->cameras[VEHICLE_CAMERA_TRACKSIDE].position.x = position.x;
+    vehicle->chasePosition.x = position.x;
+    vehicle->initialChasePosition.x = position.x;
+    vehicle->cameras[VEHICLE_CAMERA_TRACKSIDE].position.y = position.y;
+    vehicle->chasePosition.y = position.y;
+    vehicle->initialChasePosition.y = position.y;
+    vehicle->cameras[VEHICLE_CAMERA_TRACKSIDE].position.z = position.z;
+    vehicle->chasePosition.z = position.z;
+    vehicle->initialChasePosition.z = position.z;
+    vehicle->collisionPull = 0.0f;
+    vehicle->lookAhead = START_LOOK_AHEAD;
+}

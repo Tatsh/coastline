@@ -43,6 +43,10 @@ void Vehicle::PlaceTrackCamera(void) {
     ::PlaceTrackCamera(this);
 }
 
+void Vehicle::InitCameraForVehicle(void) {
+    ::InitCameraForVehicle(this);
+}
+
 void Vehicle::SetVehiclePosition(f32 x, f32 y, f32 z) {
     ::SetVehiclePosition(this, x, y, z);
 }

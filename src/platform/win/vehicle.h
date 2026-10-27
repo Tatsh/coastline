@@ -101,7 +101,10 @@ typedef struct Vehicle {
     f32 lookAhead;
     Vec3f lookAt;
     Vec3f chasePosition;
-    u8 abUnknown28f8[0xb0]; /* +0x28f8 */
+    f32 collisionPull;
+    u8 abUnknown28fc[4]; /* +0x28fc */
+    Vec3f initialChasePosition;
+    u8 abUnknown290c[0x9c]; /* +0x290c */
     s32 carModel;
     u8 color[3];
     u8 ghostMode;
@@ -166,6 +169,10 @@ typedef struct Vehicle {
      * @ghidraAddress BRD3D: 0x10001970
      */
     void PlaceTrackCamera(void);
+    /**
+     * @ghidraAddress BRD3D: 0x10001ff0
+     */
+    void InitCameraForVehicle(void);
     /**
      * @ghidraAddress BRD3D: 0x10076420
      */

@@ -161,7 +161,13 @@ void UpdateCameraSystem(Vehicle *vehicle);
  * @ghidraAddress EUR: 0x80222ba4
  * @ghidraAddress JPN: 0x80222394
  */
+#if TGR_PLATFORM == TGR_PLATFORM_WIN && defined(__cplusplus)
+extern "C" {
+#endif
 void InitCameraForVehicle(Vehicle *vehicle);
+#if TGR_PLATFORM == TGR_PLATFORM_WIN && defined(__cplusplus)
+}
+#endif
 
 /**
  * Build the view and the perspective of a camera for a rectangle of the screen, and set the far
