@@ -15,6 +15,10 @@
 #include "vecmath.h"
 #include "vehicle.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /** The points of the route a search for a straight line looks ahead. */
 #define TRACE_DEPTH 8
 
@@ -38,12 +42,12 @@ extern Vec3f g_vUpAxis;
 extern f32 g_aafAiVelocityRetention[SEASONS][SEASON_RACES][2];
 
 /**
- * Whether a replay that leaves the trackside camera takes the cockpit next, rather than the chase
- * camera.
+ * Whether a replay switches from the trackside camera to the cockpit next.
  *
  * @ghidraAddress USA: 0x8028b9ec
  * @ghidraAddress EUR: 0x8028dca0
  * @ghidraAddress JPN: 0x8028d6d0
+ * @ghidraAddress BRD3D: 0x10af9bb8
  */
 extern s32 g_bReplayCockpitNext;
 
@@ -53,6 +57,7 @@ extern s32 g_bReplayCockpitNext;
  * @ghidraAddress USA: 0x8031b1d8
  * @ghidraAddress EUR: 0x8031d6d8
  * @ghidraAddress JPN: 0x8031c308
+ * @ghidraAddress BRD3D: 0x106c5468
  */
 extern f32 g_afVehicleJolts[];
 
@@ -218,10 +223,11 @@ extern Vec3f g_vTraceHalfwayPoint;
  * @ghidraAddress USA: 0x8021be28
  * @ghidraAddress EUR: 0x8021d008
  * @ghidraAddress JPN: 0x8021c8d8
+ * @ghidraAddress BRD3D: 0x100347ba
  */
 void AddVehicleJolt(s32 index, f32 amount);
 
-#if TGR_REGION == TGR_REGION_JP || TGR_REGION == TGR_REGION_EU
+#if TGR_PLATFORM == TGR_PLATFORM_N64 && (TGR_REGION == TGR_REGION_JP || TGR_REGION == TGR_REGION_EU)
 /**
  * Stand the trackside camera of a vehicle at the nearest point of the track no more than 10 below
  * the vehicle and within 150 of it, or switch from the trackside camera to the cockpit or the
@@ -243,6 +249,13 @@ void ChooseReplayCamera(Vehicle *vehicle);
  * @ghidraAddress JPN: 0x80227170
  */
 void ProcessVehicleInputAndPhysics(Vehicle *vehicle);
+
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+/** Apply effect bytes requested by the current input mask. */
+void ApplyPlayerVehicleEffects(Vehicle *vehicle);
+/** Consume the input poll's respawn request. */
+void ApplyPlayerVehicleRespawnRequest(Vehicle *vehicle);
+#endif
 
 /**
  * Search the route ahead of a vehicle for straight lines it could drive, keeping the deepest.
@@ -279,5 +292,9 @@ void ComputeTrackPosition(Vehicle *vehicle);
  * @ghidraAddress JPN: 0x80228180
  */
 void UpdateAiVehicleBehavior(Vehicle *vehicle);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

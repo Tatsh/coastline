@@ -126,7 +126,7 @@ else()
 endif()
 
 target_sources(coastline_game PRIVATE camerarender.c collisionstep.c cubeclip.c framebegin.c materialcolor.c
-                                     modelanimation.c modelanimationflags.c modelrelocation.c racerinit.c routewalk.c sidegrip.c
+                                     modelanimation.c modelanimationflags.c modelrelocation.c playercontrol.c racerinit.c routewalk.c sidegrip.c
                                      rledecompress.c textrender.c textstyle.c
                                      vehicleengine.c vehiclephysics.c)
 

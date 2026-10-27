@@ -3,6 +3,7 @@
 #include "boot/rallyconfig.h"
 #include "camera.h"
 #include "directplay.h"
+#include "driving.h"
 #include "game.h"
 #include "ghost.h"
 #include "input.h"
@@ -22,6 +23,45 @@ void Vehicle::SetVehiclePaintColorRgb(u8 red, u8 green, u8 blue) {
     color[0] = red;
     color[1] = green;
     color[2] = blue;
+}
+
+void PlayerVehicleControllerCallback(Vehicle *vehicle) {
+    vehicle->ApplyPlayerVehicleInput();
+}
+
+void Vehicle::ApplyPlayerVehicleInput(void) {
+    ::ProcessVehicleInputAndPhysics(this);
+}
+
+void ComputeTrackPosition(Vehicle *vehicle) {
+    vehicle->ComputeTrackPosition();
+}
+
+void ApplyPlayerVehicleEffects(Vehicle *vehicle) {
+    if (g_dwInputButtonMask & 0x10000) {
+        vehicle->body.unreconstructed202 = 0x80;
+    }
+    if (g_dwInputButtonMask & 0x20000) {
+        vehicle->body.unreconstructed203 = 0x80;
+    }
+    if (g_dwInputButtonMask & 0x40000) {
+        vehicle->body.unreconstructed204 = 0x80;
+    }
+    if (g_dwInputButtonMask & 0x80000) {
+        vehicle->body.replayEffects[0] = 0x80;
+    }
+    if (g_dwInputButtonMask & 0x80) {
+        vehicle->body.replayEffects[1] = 0x80;
+    }
+}
+
+void ApplyPlayerVehicleRespawnRequest(Vehicle *vehicle) {
+    if (g_bRespawnRequested) {
+        if (!(vehicle->racer->status & 3) && !gInstantReplayActive) {
+            vehicle->body.uprightFrames = -1;
+        }
+        g_bRespawnRequested = 0;
+    }
 }
 
 void Vehicle::SimulateVehiclePhysicsSubstep(void) {

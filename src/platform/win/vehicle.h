@@ -67,7 +67,11 @@ typedef struct Vehicle {
     struct RacerSlot *racer;
     s32 slotCooldown;
     void (*driver)(struct Vehicle *vehicle);
-    u8 abUnknownF0c[0x50]; /* +0xf0c */
+    u8 abUnknownF0c[0x18]; /* +0xf0c */
+    Vec3f trackForward;
+    u8 abUnknownF30[0x1c]; /* +0xf30 */
+    Vec3f trackOffset;
+    u8 abUnknownF58[4]; /* +0xf58 */
     Vec3f previousListenerPosition;
     s32 effectSound;
     s32 effectVolume;
@@ -152,6 +156,15 @@ typedef struct Vehicle {
     Vec3f previousCollisionPosition;
     u8 abUnknown2abc[0xac]; /* +0x2abc */
 #ifdef __cplusplus
+    /** @ghidraAddress BRD3D: 0x10063840 */
+    void ApplyPlayerVehicleInput(void);
+
+    /**
+     * @ghidraAddress BRD3D: 0x10064350
+     * @stub
+     */
+    void ComputeTrackPosition(void);
+
     /** @ghidraAddress BRD3D: 0x10075f10 */
     void UpdateVehiclePhysicsFrame(void);
 
@@ -307,7 +320,6 @@ void AiVehicleControllerCallback(Vehicle *vehicle);
 
 /**
  * @ghidraAddress BRD3D: 0x10063fe0
- * @stub
  */
 void PlayerVehicleControllerCallback(Vehicle *vehicle);
 #ifdef __cplusplus
