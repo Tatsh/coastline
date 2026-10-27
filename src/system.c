@@ -137,12 +137,6 @@
      GBL_c1(G_BL_CLR_MEM, G_BL_A_FOG, G_BL_CLR_IN, G_BL_1MA))
 #define RENDER_MODE_FOG_BLEND_C2 GBL_c2(G_BL_CLR_MEM, G_BL_A_FOG, G_BL_CLR_IN, G_BL_1MA)
 
-/* NormalizeLightMatrix() scales a matrix to this range, less a margin, for the lighting. */
-#define LIGHT_MATRIX_RANGE 1.9997559f
-#define LIGHT_MATRIX_MARGIN 0.375f
-
-/* The y past which the fog of the desert turns grey. */
-
 /* The gap between the views and the edges of the screen. */
 #define VIEWPORT_MARGIN 8
 
@@ -189,42 +183,6 @@ void ClearRenderStats(void) {
     g_dwStatUnused1 = g_dwStatUnused2 = g_dwStatUnused3 = 0;
     g_dwStatPolygonsDrawn = g_dwStatVehicleTriangles = 0;
     g_dwStatTrianglesDrawn = g_dwStatVerticesDrawn = g_dwStatUnused0 = 0;
-}
-
-/* Scale the four elements of a row of a matrix. */
-#define SCALE_ROW(row, scale)                                                                      \
-    {                                                                                              \
-        (row)[0] *= scale;                                                                         \
-        (row)[1] *= scale;                                                                         \
-        (row)[2] *= scale;                                                                         \
-        (row)[3] *= scale;                                                                         \
-    }
-
-void NormalizeLightMatrix(f32 m[4][4]) {
-    f32 *element;
-    f32 max, min;
-
-    max = 0.0f;
-    min = 0.0f;
-    for (element = &m[0][0]; element < &m[3][0]; element++) {
-        if (*element < 0.0f) {
-            if (*element < min) {
-                min = *element;
-            }
-        } else if (max < *element) {
-            max = *element;
-        }
-    }
-    min = -min;
-    if (max < min) {
-        max = min;
-    }
-    /* The largest magnitude becomes the scale. */
-    max = LIGHT_MATRIX_RANGE / (max + LIGHT_MATRIX_MARGIN);
-    SCALE_ROW(m[0], max);
-    SCALE_ROW(m[1], max);
-    SCALE_ROW(m[2], max);
-    SCALE_ROW(m[3], max);
 }
 
 /* The original sets the palette only for a 4-bit texture, and the others read it unset. */

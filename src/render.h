@@ -652,6 +652,9 @@ void ClearRenderStats(void);
  */
 void ClearFramebuffersLowRes(void);
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 /**
  * Scale a whole matrix down by the largest magnitude of its first three rows, plus 0.375, so that
  * it fits the fixed point of the matrix the lighting is forced to.
@@ -660,8 +663,12 @@ void ClearFramebuffersLowRes(void);
  * @ghidraAddress USA: 0x802174b4
  * @ghidraAddress EUR: 0x802184d4
  * @ghidraAddress JPN: 0x80217e24
+ * @ghidraAddress BRD3D: 0x10031342
  */
 void NormalizeLightMatrix(f32 m[4][4]);
+#ifdef __cplusplus
+}
+#endif
 
 /**
  * Load a texture of a model into the texture memory and set up the tiles to draw it.

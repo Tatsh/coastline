@@ -10,6 +10,7 @@
 #include "platform/win/gbicommand.h"
 #endif
 
+/* The y past which the fog of the desert turns grey. */
 #define DESERT_HAZE_Y 1024.0f
 
 #define LIGHT_COLOR(red, green, blue) ((u32)(red) << 24 | (u32)(green) << 16 | (u32)(blue) << 8)
