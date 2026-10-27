@@ -1,5 +1,7 @@
 #include "physics.h"
 
+#define COMPONENT(v, axis) ((&(v)->x)[axis])
+
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
 #define CUBE_VALUE(a) ((long double)(a))
 #define CUBE_LESS(a, b) (!((a) >= (b)))
@@ -7,6 +9,102 @@
 #define CUBE_VALUE(a) (a)
 #define CUBE_LESS(a, b) ((a) < (b))
 #endif
+
+s32 CountTriangleWinding(Vec3f triangle[3], Vec3f *normal, Vec3f *point) {
+    f32 n[3];
+    f32 p0, p1, a0, a1, b0, b1;
+    s32 i, axis, i0, i1, edge, next, cross0, cross1;
+    s32 winding = 0;
+
+    for (i = 0; i < 3; i++) {
+        n[i] = (COMPONENT(normal, i) < 0.0f ? -COMPONENT(normal, i) : COMPONENT(normal, i));
+    }
+    if (n[2] < n[0]) {
+        axis = n[1] < n[0] ? 0 : 1;
+    } else {
+        axis = (n[2] < n[1] ? 0 : 1) + 1;
+    }
+    if (CUBE_LESS(COMPONENT(normal, axis), 0.0f)) {
+        i0 = (axis + 2) % 3;
+        i1 = (axis + 1) % 3;
+    } else {
+        i0 = (axis + 1) % 3;
+        i1 = (axis + 2) % 3;
+    }
+    p0 = COMPONENT(point, i0);
+    for (edge = 0; edge < 3; edge++) {
+        next = (edge + 1) % 3;
+        a0 = COMPONENT(&triangle[edge], i0);
+        b0 = COMPONENT(&triangle[next], i0);
+        cross0 = CUBE_LESS(p0, b0) - CUBE_LESS(p0, a0);
+        if (cross0) {
+            b1 = COMPONENT(&triangle[next], i1);
+            p1 = COMPONENT(point, i1);
+            a1 = COMPONENT(&triangle[edge], i1);
+            cross1 = CUBE_LESS(p1, b1) - CUBE_LESS(p1, a1);
+            if (cross1) {
+                if ((f32)cross0 * (CUBE_VALUE(p0) - a0) * (CUBE_VALUE(b1) - a1) <=
+                    (CUBE_VALUE(b0) - a0) * ((f32)cross0 * (CUBE_VALUE(p1) - a1))) {
+                    winding += cross0;
+                }
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+            } else if (!(a1 > p1)) {
+#else
+            } else if (a1 <= p1) {
+#endif
+                winding += cross0;
+            }
+        }
+    }
+    return winding;
+}
+
+s32 DoesSegmentCrossUnitCube(Vec3f *start, Vec3f *end) {
+    s32 i, j, k;
+    s32 sign[3];
+    f32 d[3];
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+    long double across, reach;
+    f32 storedAcross;
+#else
+    f32 across, reach;
+#endif
+
+    d[0] = end->x - start->x;
+    d[1] = end->y - start->y;
+    d[2] = end->z - start->z;
+    for (i = 0; i < 3; i++) {
+        sign[i] = CUBE_LESS(d[i], 0.0f) ? -1 : 1;
+    }
+    /* Both ends beyond a face. */
+    for (i = 0; i < 3; i++) {
+        if ((f64)(COMPONENT(start, i) * (f32)sign[i]) > 0.5) {
+            return 0;
+        }
+        if (CUBE_LESS(COMPONENT(end, i) * (f32)sign[i], -0.5)) {
+            return 0;
+        }
+    }
+    /* The line passes beside the cube, seen along an axis. */
+    for (i = 0; i < 3; i++) {
+        j = (i + 1) % 3;
+        k = (i + 2) % 3;
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+        across = CUBE_VALUE(d[k]) * COMPONENT(start, j) - CUBE_VALUE(d[j]) * COMPONENT(start, k);
+        reach = (CUBE_VALUE(d[k]) * sign[j] + CUBE_VALUE(d[j]) * sign[k]) * 0.5f;
+        /* Only one factor of the squared cross term is rounded to float. */
+        storedAcross = across;
+        if (CUBE_LESS(reach * reach, across * storedAcross)) {
+#else
+        across = d[k] * COMPONENT(start, j) - d[j] * COMPONENT(start, k);
+        reach = (f32)((f64)(d[k] * (f32)sign[j] + d[j] * (f32)sign[k]) * 0.5);
+        if (reach * reach < across * across) {
+#endif
+            return 0;
+        }
+    }
+    return 1;
+}
 
 /* The faces of the unit cube a point is outside, two bits an axis. */
 static inline s32 FaceOutcode(Vec3f *v) {

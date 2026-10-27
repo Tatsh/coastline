@@ -488,6 +488,9 @@ s32 ClassifyTriangleInUnitCube(Vec3f triangle[3]);
 }
 #endif
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 /**
  * How many times a triangle winds about a point of its plane, seen along the main axis of its
  * normal.
@@ -499,6 +502,7 @@ s32 ClassifyTriangleInUnitCube(Vec3f triangle[3]);
  * @ghidraAddress USA: 0x8025c8dc
  * @ghidraAddress EUR: 0x8025dec0
  * @ghidraAddress JPN: 0x8025d850
+ * @ghidraAddress BRD3D: 0x1006d660
  */
 s32 CountTriangleWinding(Vec3f triangle[3], Vec3f *normal, Vec3f *point);
 
@@ -511,8 +515,12 @@ s32 CountTriangleWinding(Vec3f triangle[3], Vec3f *normal, Vec3f *point);
  * @ghidraAddress USA: 0x8025cbf8
  * @ghidraAddress EUR: 0x8025e1dc
  * @ghidraAddress JPN: 0x8025db6c
+ * @ghidraAddress BRD3D: 0x1006d850
  */
 s32 DoesSegmentCrossUnitCube(Vec3f *start, Vec3f *end);
+#ifdef __cplusplus
+}
+#endif
 
 /**
  * Whether an edge of a triangle, or a diagonal of the unit cube, crosses the other.
