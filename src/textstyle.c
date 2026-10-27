@@ -144,6 +144,13 @@ s32 MeasureTextWidth(const char *text, s32 size) {
 #endif
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
         glyph = (s8)g_abHudFontCharToGlyph[c - '!'];
+        if (glyph >= 28) {
+            s32 *secondRow =
+                cell == SMALL_FONT_CELL ? g_adwHudFont3GlyphOffsets : g_adwHudFont1GlyphOffsets;
+            glyph -= 28;
+            width += ((secondRow[glyph + 1] - secondRow[glyph]) * size) / cell;
+            continue;
+        }
 #else
         glyph = g_abHudFontCharToGlyph[c - '!'];
 #endif
