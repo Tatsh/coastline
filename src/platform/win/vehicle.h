@@ -41,4 +41,4 @@ typedef struct Vehicle {
  *
  * @ghidraAddress BRD3D: 0x10acdea8
  */
-extern Vehicle g_aVehicles[8];
+extern Vehicle g_aVehicles[16];
