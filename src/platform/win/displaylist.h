@@ -8,6 +8,8 @@
 
 #include <array>
 
+#include <PR/gbi.h>
+
 #if TGR_RENDERER == TGR_RENDERER_D3D
 #include <d3d.h>
 #include <windows.h>
@@ -19,6 +21,13 @@ struct GbiViewport {
     short anTranslate[4]; /*!< The translation of x, y, z, and an unused fourth value. */
 };
 
+struct ConvertedModelVertex;
+
+union ModelVertexData {
+    Vtx *pSource;
+    ConvertedModelVertex *pConverted;
+};
+
 /** A command of a display list of the game. */
 struct GbiCommand {
     unsigned w0; /*!< The first word, the opcode in its high byte. */
@@ -28,6 +37,7 @@ struct GbiCommand {
         unsigned w1;                  /*!< The second word. */
         float f1;                     /*!< The second word as a float. */
         GbiCommand *pTarget; /*!< The second word as the display list a branch or a call runs. */
+        ModelVertexData vertexData;
     };
 };
 
@@ -496,11 +506,21 @@ struct GbiLight {
 /** The number of entries of g_aGbiLights. */
 #define GBI_LIGHT_COUNT 8
 
+#if TGR_RENDERER == TGR_RENDERER_D3D
+/**
+ * @ghidraAddress BRD3D: 0x1002c190
+ */
+void HalveGbiTriangleVertexIndices(GbiCommand *pCommand);
+
+/**
+ * @ghidraAddress BRD3D: 0x1002c1b0
+ */
+void HalveGbiTrianglePairVertexIndices(GbiCommand *pCommand);
+#else
 /**
  * Halve each channel of the second copy of the colour of a light.
  *
  * @param pLight The light.
- * @ghidraAddress BRD3D: 0x1002c190
  * @ghidraAddress BRGlide: 0x10019250
  */
 void HalveAmbientLightColor(GbiLight *pLight);
@@ -509,10 +529,10 @@ void HalveAmbientLightColor(GbiLight *pLight);
  * Halve each channel of both copies of the colour of a light.
  *
  * @param pLight The light.
- * @ghidraAddress BRD3D: 0x1002c1b0
  * @ghidraAddress BRGlide: 0x10019270
  */
 void HalveLightColors(GbiLight *pLight);
+#endif
 
 /**
  * The number of lights the display lists set, as their command gives it.

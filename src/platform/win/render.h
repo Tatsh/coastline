@@ -11,6 +11,8 @@
 
 #include "vecmath.h"
 
+struct GbiCommand;
+
 /** The mode of the renderer of the Direct3D library. */
 #define RENDER_BACKEND_MODE_D3D 1
 /** The mode of the renderer of the Glide library. */
@@ -357,10 +359,7 @@ void AddVertexConversionCacheEntry(const Vtx *pSource,
                                    int nVertexCount,
                                    ConvertedModelVertex *pFloatVerts);
 
-union ModelVertexData {
-    Vtx *pSource;
-    ConvertedModelVertex *pConverted;
-};
+union ModelVertexData;
 
 /**
  * @ghidraAddress BRD3D: 0x1002bdd0
@@ -376,6 +375,16 @@ ConvertedModelVertex *ConvertVerticesToFloat(const Vtx *pVertices, int nCount);
  * @ghidraAddress BRD3D: 0x1002bd50
  */
 void ConvertN64VerticesCached(ModelVertexData *pVertices, int nCount);
+
+/**
+ * @ghidraAddress BRD3D: 0x1002c150
+ */
+void RelocateGbiVertexCommand(GbiCommand *pCommand);
+
+/**
+ * @ghidraAddress BRD3D: 0x1002bf80
+ */
+void ByteSwapAndRelocateDisplayList(GbiCommand *pCommands);
 
 /**
  * The number of pointers relocated.

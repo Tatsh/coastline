@@ -144,6 +144,43 @@ void ConvertN64VerticesCached(ModelVertexData *pVertices, int nCount) {
     AddVertexConversionCacheEntry(pSource, nCount, pConverted);
     pVertices->pConverted = pConverted;
 }
+
+void RelocateGbiVertexCommand(GbiCommand *pCommand) {
+    pCommand->w1 = (g_dwOldBaseAddress & 0xff000000) | (pCommand->w1 & 0xffffff);
+    RelocatePointerValue(&pCommand->w1);
+    ConvertN64VerticesCached(&pCommand->vertexData, pCommand->w0 >> 10 & 0x3f);
+}
+
+static inline unsigned SwapDisplayListWord(unsigned dwWord) {
+    return dwWord << 24 | (dwWord << 8 & 0xff0000) | (dwWord >> 8 & 0xff00) | dwWord >> 24;
+}
+
+void ByteSwapAndRelocateDisplayList(GbiCommand *pCommands) {
+    if (pCommands == nullptr) {
+        return;
+    }
+    AddPointerToRelocatedList(pCommands);
+    for (GbiCommand *pCommand = pCommands;; pCommand++) {
+        pCommand->w0 = SwapDisplayListWord(pCommand->w0);
+        pCommand->w1 = SwapDisplayListWord(pCommand->w1);
+        switch (pCommand->w0 >> 24) {
+        case G_VTX:
+            RelocateGbiVertexCommand(pCommand);
+            break;
+        case G_TRI2:
+            HalveGbiTrianglePairVertexIndices(pCommand);
+            break;
+        case G_ENDDL:
+            return;
+        case G_TRI1:
+            HalveGbiTriangleVertexIndices(pCommand);
+            break;
+        case G_SETTIMG:
+            RelocatePointerValue(&pCommand->w1);
+            break;
+        }
+    }
+}
 #endif
 
 bool IsPointerInRelocatedList(void *pPointer) {

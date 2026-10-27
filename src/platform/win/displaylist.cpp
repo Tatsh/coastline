@@ -283,6 +283,16 @@ static inline void SetGbiLightColor(unsigned char *pColor, unsigned dwRgba) {
     pColor[2] = static_cast<unsigned char>(dwRgba >> 8);
 }
 
+#if TGR_RENDERER == TGR_RENDERER_D3D
+void HalveGbiTriangleVertexIndices(GbiCommand *pCommand) {
+    pCommand->w1 = (pCommand->w1 & 0xff000000) | (pCommand->w1 >> 1 & 0x7f7f7f);
+}
+
+void HalveGbiTrianglePairVertexIndices(GbiCommand *pCommand) {
+    pCommand->w0 = (pCommand->w0 & 0xff000000) | (pCommand->w0 >> 1 & 0x7f7f7f);
+    HalveGbiTriangleVertexIndices(pCommand);
+}
+#else
 void HalveAmbientLightColor(GbiLight *pLight) {
     pLight->abColorCopy[2] >>= 1;
     pLight->abColorCopy[1] >>= 1;
@@ -295,6 +305,7 @@ void HalveLightColors(GbiLight *pLight) {
     pLight->abColor[0] >>= 1;
     HalveAmbientLightColor(pLight);
 }
+#endif
 
 GbiCommand *HandleGbiMoveWord(GbiCommand *pCommand) {
     unsigned dwOffset;
