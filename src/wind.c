@@ -2,6 +2,10 @@
 #include "vecmath.h"
 #include "weather.h"
 
+#if TGR_PLATFORM != TGR_PLATFORM_WIN
+#include <PR/gu.h>
+#endif
+
 #define RANDOM_TO_TWO (2.0f / 65535.0f)
 #define WIND_TURN 6.2831855f
 #define WIND_STRENGTH_MAX 1.0f
