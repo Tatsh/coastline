@@ -3498,7 +3498,7 @@ int SaveSeasonUI_InvokeBackHandler(MenuWidget *pWidget) {
     return 0;
 }
 
-int AudioOptionsUI_OnMusicTrackChanged(MenuWidget *, int *pTrack) {
+int AudioOptionsUI_OnMusicTrackChanged(MenuItemList *, int *pTrack) {
     SetCurrentMusicTrack(static_cast<int>(static_cast<unsigned>(*pTrack) + 2));
     return 1;
 }

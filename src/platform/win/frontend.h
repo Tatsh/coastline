@@ -1391,7 +1391,7 @@ int SaveSeasonUI_InvokeBackHandler(MenuWidget *pWidget);
  * @ghidraAddress BRD3D: 0x1004e810
  * @ghidraAddress BRGlide: 0x100476c0
  */
-int AudioOptionsUI_OnMusicTrackChanged(MenuWidget *pWidget, int *pTrack);
+int AudioOptionsUI_OnMusicTrackChanged(MenuItemList *pList, int *pTrack);
 
 /**
  * @ghidraAddress BRD3D: 0x10043710
