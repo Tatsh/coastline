@@ -8,6 +8,8 @@
 
 #include <windows.h>
 // The headers below need the types of windows.h.
+#include <cstdio>
+
 #include <ddraw.h>
 
 #include "platform/win/menufont.h"
@@ -23,9 +25,9 @@
 
 /** The names of the saved files a screen of the front end lists. */
 class SaveFileList {
-public:
     char aszNames[SAVE_FILE_NAME_COUNT][SAVE_FILE_NAME_SIZE]; /*!< The names, empty at the start. */
 
+public:
     /**
      * Clear every name.
      *
@@ -42,6 +44,7 @@ public:
      */
     virtual ~SaveFileList();
 
+private:
     /**
      * Read descriptions from the last 128 bytes of matching saved files.
      *
@@ -96,6 +99,17 @@ public:
      * @ghidraAddress BRD3D: 0x1005ce30
      */
     virtual int SetEntryFromSaveFileName(const char *pszFileName, const char *pszDescription);
+
+public:
+    const char *GetName(int index) const {
+        return aszNames[index];
+    }
+    void SetName(int index, const char *text) {
+        std::strcpy(aszNames[index], text);
+    }
+    void SetFormattedName(int index, const char *format, int value) {
+        std::sprintf(aszNames[index], format, value);
+    }
 };
 
 class MenuScreen;
@@ -1558,7 +1572,6 @@ extern int g_dwMenuTextEditActive;
 
 /** A panel of a screen of the front end. */
 class MenuPanel {
-public:
     int (*pfnBeforeWidgets)(void);
     int (*pfnAfterWidgets)(void);
     int (*pfnUpdate)(void);
@@ -1572,6 +1585,7 @@ public:
     unsigned short wNavigationCount;
     unsigned short wSelectedIndex;
 
+public:
     /**
      * Clear widget pointers and panel selections.
      *
@@ -1597,6 +1611,49 @@ public:
      * @ghidraAddress BRGlide: 0x10041980
      */
     virtual bool RunFrame();
+
+    void SetBeforeWidgetsCallback(int (*callback)(void)) {
+        pfnBeforeWidgets = callback;
+    }
+    void SetAfterWidgetsCallback(int (*callback)(void)) {
+        pfnAfterWidgets = callback;
+    }
+    int SetFlags(int value) {
+        return nFlags = value;
+    }
+    unsigned short GetWidgetCount() const {
+        return wWidgetCount;
+    }
+    unsigned short SetWidgetCount(unsigned short value) {
+        return wWidgetCount = value;
+    }
+    MenuWidget *GetWidget(int index) const {
+        return apWidgets[index];
+    }
+    MenuWidget *SetWidget(int index, MenuWidget *widget) {
+        return apWidgets[index] = widget;
+    }
+    float GetX() const {
+        return fX;
+    }
+    float SetX(float value) {
+        return fX = value;
+    }
+    float GetY() const {
+        return fY;
+    }
+    float SetY(float value) {
+        return fY = value;
+    }
+    MenuScreen *SetScreen(MenuScreen *screen) {
+        return pScreen = screen;
+    }
+    unsigned short GetNavigationCount() const {
+        return wNavigationCount;
+    }
+    unsigned short SetNavigationCount(unsigned short value) {
+        return wNavigationCount = value;
+    }
 };
 
 /** A screen of the front end menus. */
@@ -1616,6 +1673,8 @@ public:
      * @ghidraAddress BRGlide: 0x10041cc0
      */
     virtual ~MenuScreen();
+
+private:
     /**
      * Start a frame of the screen.
      *
@@ -1632,6 +1691,8 @@ public:
      * @ghidraAddress BRGlide: 0x10041d10
      */
     virtual bool EndFrame();
+
+public:
     /**
      * Run a frame of the screen, and shut the front end down once the screen stops running.
      *
@@ -1684,6 +1745,53 @@ public:
      */
     virtual HRESULT ClearBackBuffer();
 
+    auto GetBuildCallback() const {
+        return pfnBuildMenu;
+    }
+    void SetBuildCallback(void (*callback)(MenuScreen *)) {
+        pfnBuildMenu = callback;
+    }
+    bool IsBuilt() const {
+        return bBuilt != 0;
+    }
+    void SetBuilt(bool value) {
+        bBuilt = value;
+    }
+    unsigned short GetPanelCount() const {
+        return wPanelCount;
+    }
+    unsigned short SetPanelCount(unsigned short value) {
+        return wPanelCount = value;
+    }
+    unsigned short SetCurrentPanelIndex(unsigned short value) {
+        return wCurrentPanel = value;
+    }
+    MenuPanel *GetPanel(int index) const {
+        return apPanels[index];
+    }
+    MenuPanel *SetPanel(int index, MenuPanel *panel) {
+        return apPanels[index] = panel;
+    }
+    MenuPanel *GetCurrentPanel() const {
+        return pCurrentPanel;
+    }
+    bool IsRunning() const {
+        return bRunning != 0;
+    }
+    void SetRunning(bool value) {
+        bRunning = value;
+    }
+    int GetPanelActive(int index) const {
+        return anPanelActive[index];
+    }
+    int SetPanelActive(int index, int value) {
+        return anPanelActive[index] = value;
+    }
+    SaveFileList *GetFileList(int index) const {
+        return apFiles[index];
+    }
+
+private:
     void (*pfnBuildMenu)(MenuScreen *pScreen); /*!< Builds the items of the screen. */
     int dwFlags;                  /*!< Options of the screen. Bit 0x10 stops EndFrame(). */
     int bBuilt;                   /*!< Whether pfnBuildMenu built the items of the screen. */
@@ -1695,8 +1803,8 @@ public:
     /** Whether each panel of apPanels runs its items. */
     int anPanelActive[MENU_SCREEN_PANEL_COUNT];
     unsigned short wUnknownBC; /*!< Cleared at the start. Its meaning is not recovered yet. */
-    char abUnknownBE[2];       /* +0xbe */
-    SaveFileList *apFiles[2];  /*!< The two lists of saved files of the screen. */
+    [[maybe_unused]] char abUnknownBE[2]; /* +0xbe */
+    SaveFileList *apFiles[2];             /*!< The two lists of saved files of the screen. */
 };
 
 /**
