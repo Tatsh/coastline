@@ -518,9 +518,6 @@ s32 CountTriangleWinding(Vec3f triangle[3], Vec3f *normal, Vec3f *point);
  * @ghidraAddress BRD3D: 0x1006d850
  */
 s32 DoesSegmentCrossUnitCube(Vec3f *start, Vec3f *end);
-#ifdef __cplusplus
-}
-#endif
 
 /**
  * Whether an edge of a triangle, or a diagonal of the unit cube, crosses the other.
@@ -531,6 +528,7 @@ s32 DoesSegmentCrossUnitCube(Vec3f *start, Vec3f *end);
  * @ghidraAddress USA: 0x8025ce28
  * @ghidraAddress EUR: 0x8025e40c
  * @ghidraAddress JPN: 0x8025dd9c
+ * @ghidraAddress BRD3D: 0x1006d9a0
  */
 s32 DoesTriangleCrossUnitCube(Vec3f triangle[3], Vec3f *normal);
 
@@ -543,8 +541,12 @@ s32 DoesTriangleCrossUnitCube(Vec3f triangle[3], Vec3f *normal);
  * @ghidraAddress USA: 0x8025d018
  * @ghidraAddress EUR: 0x8025e5fc
  * @ghidraAddress JPN: 0x8025df8c
+ * @ghidraAddress BRD3D: 0x1006daf0
  */
 s32 IsTriangleInUnitCube(Vec3f triangle[3], Vec3f *normal);
+#ifdef __cplusplus
+}
+#endif
 
 /**
  * List the triangles of the cache under a body that cross its box.

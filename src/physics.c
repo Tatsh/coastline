@@ -393,44 +393,6 @@ void PrintCollisionTriangleCount(void) {
     }
 }
 
-s32 DoesTriangleCrossUnitCube(Vec3f triangle[3], Vec3f *normal) {
-    s32 sign[3];
-    f32 sx, sy, sz, t;
-    Vec3f point;
-    s32 edge, i;
-
-    for (edge = 0; edge < 3; edge++) {
-        if (DoesSegmentCrossUnitCube(&triangle[edge], &triangle[(edge + 1) % 3])) {
-            return 1;
-        }
-    }
-    /* Where the diagonal of the cube nearest the normal meets the plane of the triangle. */
-    for (i = 0; i < 3; i++) {
-        sign[i] = COMPONENT(normal, i) < 0.0f ? -1 : 1;
-    }
-    sx = (f32)sign[0];
-    sy = (f32)sign[1];
-    sz = (f32)sign[2];
-    t = (normal->x * triangle[0].x + normal->y * triangle[0].y + normal->z * triangle[0].z) /
-        (sz * normal->z + (normal->x * sx + normal->y * sy));
-    if (((f64)t - -0.5) * ((f64)t - 0.5) <= 0.0) {
-        point.x = sx * t;
-        point.y = sy * t;
-        point.z = sz * t;
-        return CountTriangleWinding(triangle, normal, &point);
-    }
-    return 0;
-}
-
-s32 IsTriangleInUnitCube(Vec3f triangle[3], Vec3f *normal) {
-    s32 inside = ClassifyTriangleInUnitCube(triangle);
-
-    if (inside == -1) {
-        return DoesTriangleCrossUnitCube(triangle, normal);
-    }
-    return inside;
-}
-
 /* Move a triangle into the unit cube of a box, and find its normal there. */
 static inline void TriangleInBox(Vec3f corners[3], Vec3f *normal, f32 box[4][4], TrackTriangle *t) {
     Vec3f e1, e2;

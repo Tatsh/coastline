@@ -10,6 +10,56 @@
 #define CUBE_LESS(a, b) ((a) < (b))
 #endif
 
+s32 DoesTriangleCrossUnitCube(Vec3f triangle[3], Vec3f *normal) {
+    s32 sign[3];
+    f32 sx, sy, sz, t;
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+    long double ratio;
+#endif
+    Vec3f point;
+    s32 edge, i;
+
+    for (edge = 0; edge < 3; edge++) {
+        if (DoesSegmentCrossUnitCube(&triangle[edge], &triangle[(edge + 1) % 3])) {
+            return 1;
+        }
+    }
+    /* Where the diagonal of the cube nearest the normal meets the plane of the triangle. */
+    for (i = 0; i < 3; i++) {
+        sign[i] = CUBE_LESS(COMPONENT(normal, i), 0.0f) ? -1 : 1;
+    }
+    sx = (f32)sign[0];
+    sy = (f32)sign[1];
+    sz = (f32)sign[2];
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+    ratio =
+        (CUBE_VALUE(normal->x) * triangle[0].x +
+         (CUBE_VALUE(normal->y) * triangle[0].y + CUBE_VALUE(normal->z) * triangle[0].z)) /
+        ((CUBE_VALUE(normal->x) * sx + CUBE_VALUE(normal->y) * sy) + CUBE_VALUE(normal->z) * sz);
+    t = ratio;
+    if (!((ratio - -0.5) * ((long double)t - 0.5) > 0.0)) {
+#else
+    t = (normal->x * triangle[0].x + normal->y * triangle[0].y + normal->z * triangle[0].z) /
+        (sz * normal->z + (normal->x * sx + normal->y * sy));
+    if (((f64)t - -0.5) * ((f64)t - 0.5) <= 0.0) {
+#endif
+        point.x = sx * t;
+        point.y = sy * t;
+        point.z = sz * t;
+        return CountTriangleWinding(triangle, normal, &point);
+    }
+    return 0;
+}
+
+s32 IsTriangleInUnitCube(Vec3f triangle[3], Vec3f *normal) {
+    s32 inside = ClassifyTriangleInUnitCube(triangle);
+
+    if (inside == -1) {
+        return DoesTriangleCrossUnitCube(triangle, normal);
+    }
+    return inside;
+}
+
 s32 CountTriangleWinding(Vec3f triangle[3], Vec3f *normal, Vec3f *point) {
     f32 n[3];
     f32 p0, p1, a0, a1, b0, b1;
