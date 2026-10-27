@@ -708,6 +708,72 @@ bool MenuWidget::Update() {
     return true;
 }
 
+int MenuItemList::Initialize(
+    unsigned flags, const RECT *bounds, int visibleRows, int firstVisibleRow, int backgroundImage) {
+    auto add = [](int left, int right) {
+        return static_cast<int>(static_cast<unsigned>(left) + static_cast<unsigned>(right));
+    };
+    auto subtract = [](int left, int right) {
+        return static_cast<int>(static_cast<unsigned>(left) - static_cast<unsigned>(right));
+    };
+    fX = static_cast<float>(bounds->left);
+    fY = static_cast<float>(bounds->top);
+    rcBounds = *bounds;
+    dwFlags = flags;
+    wVisibleRowCount = static_cast<unsigned short>(visibleRows);
+    nFirstVisibleRow = static_cast<short>(firstVisibleRow);
+    nBackgroundImage = static_cast<short>(backgroundImage);
+    nScrollUpImage = 0x30;
+    nScrollDownImage = 0x2e;
+    nScrollThumbImage = 0x3a;
+    int width = subtract(g_aMenuSprites[48].rc.right, g_aMenuSprites[48].rc.left);
+    int height = subtract(g_aMenuSprites[48].rc.bottom, g_aMenuSprites[48].rc.top);
+    if (width < 0) {
+        width = 0;
+    }
+    if (height < 0) {
+        height = 0;
+    }
+    if (bHorizontalScrollbar) {
+        rcHorizontalScrollLeft.left = bounds->left;
+        rcHorizontalScrollLeft.top = add(bounds->bottom, 3);
+        rcHorizontalScrollLeft.right = add(bounds->left, width);
+        rcHorizontalScrollLeft.bottom = add(rcHorizontalScrollLeft.top, height);
+        rcHorizontalScrollRight.left = subtract(bounds->right, width);
+        rcHorizontalScrollRight.top = add(bounds->bottom, 3);
+        rcHorizontalScrollRight.right = add(rcHorizontalScrollRight.left, width);
+        rcHorizontalScrollRight.bottom = add(rcHorizontalScrollRight.top, height);
+        long double position = static_cast<long double>(rcHorizontalScrollLeft.right) + 1;
+        fScrollThumbX = static_cast<float>(position);
+        fScrollThumbY = static_cast<float>(rcHorizontalScrollLeft.top);
+        int maximum = subtract(rcHorizontalScrollRight.left, width);
+        fScrollThumbTravel = static_cast<float>(static_cast<long double>(maximum) - position);
+        fMinScrollThumbX = static_cast<float>(add(rcHorizontalScrollLeft.right, 1));
+        fMaxScrollThumbX = static_cast<float>(maximum);
+    } else if (bVerticalScrollbar) {
+        rcScrollUp.left = add(bounds->right, 3);
+        rcScrollUp.top = bounds->top;
+        rcScrollUp.right = add(rcScrollUp.left, g_aMenuSprites[48].rc.right);
+        rcScrollUp.bottom = add(rcScrollUp.top, g_aMenuSprites[48].rc.bottom);
+        rcScrollDown.left = add(bounds->right, 3);
+        rcScrollDown.top = subtract(bounds->bottom, g_aMenuSprites[46].rc.bottom);
+        rcScrollDown.right = add(rcScrollDown.left, g_aMenuSprites[46].rc.right);
+        rcScrollDown.bottom = bounds->bottom;
+        fScrollThumbX = static_cast<float>(rcScrollUp.left);
+        long double position = static_cast<long double>(rcScrollUp.bottom) + 1;
+        fScrollThumbY = static_cast<float>(position);
+        int maximum = subtract(rcScrollDown.top, height);
+        fScrollThumbTravel = static_cast<float>(static_cast<long double>(maximum) - position);
+        fMinScrollThumbY = static_cast<float>(add(rcScrollUp.bottom, 1));
+        fMaxScrollThumbY = static_cast<float>(maximum);
+    }
+    rcScrollThumb.left = ConvertMenuCoordinate(fScrollThumbX);
+    rcScrollThumb.top = ConvertMenuCoordinate(fScrollThumbY);
+    rcScrollThumb.right = add(rcScrollThumb.left, width);
+    rcScrollThumb.bottom = add(rcScrollThumb.top, height);
+    return 1;
+}
+
 int MenuItemList::AddItem(
     const char *text, unsigned flags, unsigned char style, const RECT *bounds, bool full) {
     if (text == nullptr) {

@@ -157,7 +157,6 @@ public:
     AddItem(const char *text, unsigned flags, unsigned char style, const RECT *bounds, bool full);
     /**
      * @ghidraAddress BRD3D: 0x1005b910
-     * @stub
      */
     virtual int Initialize(unsigned flags,
                            const RECT *bounds,
