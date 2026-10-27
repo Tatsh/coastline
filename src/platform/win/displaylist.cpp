@@ -1044,7 +1044,45 @@ static inline float TransformGbiVertexComponent(const Vec3f &position, int nColu
            g_GbiMvpMatrix[3][nColumn];
 }
 
-static inline GbiCommand *LoadUnlitGbiVertices(GbiCommand *pCommand, bool bUseZBuffer) {
+static void UpdateGbiDirectionalLight(void) {
+    if (g_bGbiLightsTransformed) {
+        return;
+    }
+    if (g_dwGbiNumLights) {
+        const Light_t &light = g_aGbiLights[0].l;
+        g_fGbiLight0ColorR = static_cast<float>(light.col[0]) * (1.0f / 255.0f);
+        g_fGbiLight0ColorG = static_cast<float>(light.col[1]) * (1.0f / 255.0f);
+        g_fGbiLight0ColorB = static_cast<float>(light.col[2]) * (1.0f / 255.0f);
+        float (*matrix)[4] =
+            g_dwGbiMatrixStackDepth ? g_aGbiModelViewStack[g_dwGbiMatrixStackDepth - 1] : nullptr;
+        float x = light.dir[0];
+        float y = light.dir[1];
+        float z = light.dir[2];
+        g_GbiLight0Direction.x = (static_cast<long double>(matrix[0][0]) * x +
+                                  (static_cast<long double>(matrix[0][1]) * y +
+                                   static_cast<long double>(matrix[0][2]) * z)) /
+                                 128.0f;
+        g_GbiLight0Direction.y = (static_cast<long double>(matrix[1][2]) * z +
+                                  (static_cast<long double>(matrix[1][1]) * y +
+                                   static_cast<long double>(matrix[1][0]) * x)) /
+                                 128.0f;
+        g_GbiLight0Direction.z = (static_cast<long double>(matrix[2][2]) * z +
+                                  (static_cast<long double>(matrix[2][1]) * y +
+                                   static_cast<long double>(matrix[2][0]) * x)) /
+                                 128.0f;
+        Vec3fNormalize(&g_GbiLight0Direction);
+        const Light_t &ambient = g_aGbiLights[1].l;
+        g_fGbiAmbientColorR = static_cast<float>(ambient.col[0]) * (1.0f / 255.0f);
+        g_fGbiAmbientColorG = static_cast<float>(ambient.col[1]) * (1.0f / 255.0f);
+        g_fGbiAmbientColorB = static_cast<float>(ambient.col[2]) * (1.0f / 255.0f);
+    }
+    g_bGbiLightsTransformed = true;
+}
+
+static inline GbiCommand *LoadGbiVertices(GbiCommand *pCommand, bool bUseZBuffer, bool bLighting) {
+    if (bLighting) {
+        UpdateGbiDirectionalLight();
+    }
     FlushIndexedRenderBuffer();
     int nFirst = pCommand->w0 >> 16 & 0xff;
     int nCount = pCommand->w0 >> 10 & 0x3f;
@@ -1058,9 +1096,13 @@ static inline GbiCommand *LoadUnlitGbiVertices(GbiCommand *pCommand, bool bUseZB
         vertex.source.fW = TransformGbiVertexComponent(input.position, 3);
         vertex.source.fS = input.texture.x;
         vertex.source.fT = input.texture.y;
-        vertex.source.fRed = static_cast<long double>(input.normal.x) * (1.0f / 255.0f);
-        vertex.source.fGreen = static_cast<long double>(input.normal.y) * (1.0f / 255.0f);
-        vertex.source.fBlue = static_cast<long double>(input.normal.z) * (1.0f / 255.0f);
+        if (bLighting) {
+            ComputeVertexDirectionalLight(&input, &vertex.source);
+        } else {
+            vertex.source.fRed = static_cast<long double>(input.normal.x) * (1.0f / 255.0f);
+            vertex.source.fGreen = static_cast<long double>(input.normal.y) * (1.0f / 255.0f);
+            vertex.source.fBlue = static_cast<long double>(input.normal.z) * (1.0f / 255.0f);
+        }
         vertex.nClipFlags = ComputeVertexClipCodes(&vertex.source);
         if (vertex.nClipFlags != 0) {
             continue;
@@ -1088,11 +1130,15 @@ static inline GbiCommand *LoadUnlitGbiVertices(GbiCommand *pCommand, bool bUseZB
 }
 
 GbiCommand *HandleGbiVertexUnlit(GbiCommand *pCommand) {
-    return LoadUnlitGbiVertices(pCommand, true);
+    return LoadGbiVertices(pCommand, true, false);
 }
 
 GbiCommand *HandleGbiVertexUnlitNoZBuffer(GbiCommand *pCommand) {
-    return LoadUnlitGbiVertices(pCommand, false);
+    return LoadGbiVertices(pCommand, false, false);
+}
+
+GbiCommand *HandleGbiVertexLit(GbiCommand *pCommand) {
+    return LoadGbiVertices(pCommand, true, true);
 }
 
 // The scale from a channel of the colour of a vertex to a byte.
