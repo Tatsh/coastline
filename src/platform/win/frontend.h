@@ -369,6 +369,29 @@ int InputOptionsUI_OnCycleInputDevice(MenuWidget *pWidget);
  */
 int ProcessMenuTextEditInput(MenuWidget *pWidget, short nFont);
 
+struct KeyConfigEntry {
+    unsigned nStringId;
+    int nControl;
+};
+
+/**
+ * @ghidraAddress BRD3D: 0x100ab330
+ * @ghidraAddress BRGlide: 0x100aaad0
+ */
+extern KeyConfigEntry g_aKeyConfigEntries[];
+
+/**
+ * @ghidraAddress BRD3D: 0x10aa2840
+ * @ghidraAddress BRGlide: 0x10ac5b98
+ */
+extern int g_dwKeyConfigSelectedAction;
+
+/**
+ * @ghidraAddress BRD3D: 0x100400e0
+ * @ghidraAddress BRGlide: 0x10039620
+ */
+int KeyConfigUI_UpdateBindingLabel(MenuWidget *pWidget);
+
 /**
  * @ghidraAddress BRD3D: 0x10043710
  * @ghidraAddress BRGlide: 0x1003cc60

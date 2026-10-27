@@ -1814,6 +1814,42 @@ int MainMenuUI_OnPlayCredits(MenuWidget *pWidget) {
     return 0;
 }
 
+int KeyConfigUI_UpdateBindingLabel(MenuWidget *pWidget) {
+    const char *text = nullptr;
+    bool updateText = true;
+    if (g_fCharInputSuppressed) {
+        text = GetStringResource(0xb2);
+    } else {
+        int device = g_dwSelectedInputDevice;
+        if (static_cast<unsigned>(device) <= 3) {
+            unsigned char code =
+                static_cast<unsigned char>(g_GlobalRallyConfig.GetInputBindingKeyCode(
+                    device, g_aKeyConfigEntries[g_dwKeyConfigSelectedAction].nControl));
+            if (device == 0) {
+                text = g_aKeyboardControlNames[FindControlNameIndex(0, code)].szName;
+            } else if (g_GlobalRallyConfig.GetInputBindingFlags(
+                           device, g_aKeyConfigEntries[g_dwKeyConfigSelectedAction].nControl)) {
+                int index = FindControlNameIndex(device, code);
+                text = device == 3 ? g_aJoystickButtonNamesA[index].szName :
+                                     g_aJoystickButtonNamesB[index].szName;
+            } else if (code) {
+                text = g_aKeyboardControlNames[FindControlNameIndex(0, code)].szName;
+            } else {
+                text = GetStringResource(0xb1);
+            }
+        } else {
+            updateText = false;
+        }
+    }
+    MenuFont *font = &pWidget->fonts[0];
+    if (updateText) {
+        strcpy(font->szText, text);
+    }
+    font->pVTable->MeasureText(font);
+    ProcessMenuTextEditInput(pWidget, 0);
+    return 1;
+}
+
 void PollInputAndUpdateEdges(void) {
     UpdateKeyboardEdgeState();
     UpdateMouseButtonEdges();
