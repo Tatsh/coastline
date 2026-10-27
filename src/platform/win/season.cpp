@@ -12,8 +12,38 @@
 #include "platform/win/ghost.h"
 #include "platform/win/settings.h"
 #include "profile.h"
+#include "race.h"
 #include "seasons.h"
 #include "trackselect.h"
+#include "weather.h"
+
+void ExitRaceAndProcessSeasonResults(void) {
+    std::memset(&g_SeasonResumeState, 0, sizeof(g_SeasonResumeState));
+    g_SeasonResumeState.state = g_dwGameMode;
+    if (g_dwGameMode == GAME_MODE_CHAMPIONSHIP) {
+        PlayerProfile *profile = g_pPrimarySeasonSave;
+        g_SeasonResumeState.season = profile->season;
+        g_SeasonResumeState.round = profile->round;
+        g_SeasonResumeState.year = profile->championshipFlags;
+        g_SeasonResumeState.track = g_dwSelectedTrackId;
+        g_SeasonResumeState.weather = g_dwCurrentWeather;
+        Vehicle &vehicle = g_aVehicles[0];
+        SeasonRacePlayerResult &result = g_SeasonResumeState.player;
+        result.resultValue = vehicle.GetLap();
+        unsigned position =
+            profile->seasonPlaces[g_SeasonResumeState.season][g_SeasonResumeState.round];
+        result.position = position;
+        result.points = static_cast<s8>(g_abRacePositionPoints[position]);
+        result.raceTime = vehicle.GetTotalTime();
+        std::memcpy(result.lapTimes, vehicle.GetLapTimes(), sizeof(result.lapTimes));
+        std::memcpy(&g_SeasonProgressPrev, profile, sizeof(g_SeasonProgressPrev));
+        g_dwNumLocalPlayers = 1;
+        ProcessSeasonResults();
+        std::memcpy(&g_SeasonProgress, g_pPrimarySeasonSave, sizeof(g_SeasonProgress));
+        SetTrackFromSeason();
+    }
+    ShutdownGameSession();
+}
 
 void ShutdownGameSessionToSeasonMenu(void) {
     g_SeasonResumeState.state = SEASON_RESUME_STATE_RESTART;
@@ -116,13 +146,14 @@ bool RestoreSeasonProgressState(void) {
     g_bSeasonClass = g_SeasonResumeState.season;
     g_dwSeasonYear = g_SeasonResumeState.year;
     g_dwSelectedTrackId = g_SeasonResumeState.track;
-    g_dwLastRaceResultField18 = g_SeasonResumeState.resultValue;
+    g_dwLastRaceResultField18 = g_SeasonResumeState.player.resultValue;
     g_dwSeasonRound = g_SeasonResumeState.round;
-    g_abSeasonRoundPlace[g_dwSeasonRound] = g_SeasonResumeState.position + 1;
-    g_awSeasonRoundPoints[g_dwSeasonRound] = g_SeasonResumeState.points;
-    g_fGhostBestRaceTime = g_SeasonResumeState.raceTime;
+    g_abSeasonRoundPlace[g_dwSeasonRound] =
+        static_cast<unsigned>(g_SeasonResumeState.player.position) + 1;
+    g_awSeasonRoundPoints[g_dwSeasonRound] = g_SeasonResumeState.player.points;
+    g_fGhostBestRaceTime = g_SeasonResumeState.player.raceTime;
     UpdateSeasonLabels();
-    memcpy(g_afLastRaceLapTimes, g_SeasonResumeState.lapTimes, sizeof(g_afLastRaceLapTimes));
+    memcpy(g_afLastRaceLapTimes, g_SeasonResumeState.player.lapTimes, sizeof(g_afLastRaceLapTimes));
     g_dwSeasonTotalPoints = CurrentSeasonPoints();
     if (g_SeasonProgress.round || g_dwGameMode == GAME_MODE_AFTER_SEASON ||
         g_SeasonResumeState.state) {

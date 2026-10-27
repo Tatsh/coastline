@@ -38,25 +38,31 @@ void ExitRaceSessionToMenu(void);
  */
 void ShutdownGameSession(void);
 
+/** @ghidraAddress BRD3D: 0x10002140 */
+void ExitRaceAndProcessSeasonResults(void);
+
 /** The year label's buffer size. */
 #define SEASON_YEAR_LABEL_SIZE 32
 
+/** A local player's retained championship race result. */
+struct SeasonRacePlayerResult {
+    int resultValue;
+    int position;
+    int points;
+    float raceTime;
+    float lapTimes[12];
+};
+
 /** The result record retained when returning from a championship race. */
 struct SeasonRaceResult {
-    int state;                         /*!< The front-end resume state. */
-    int season;                        /*!< The championship class. */
-    int round;                         /*!< The race within the class. */
-    int year;                          /*!< The championship year. */
-    int track;                         /*!< The track just raced. */
-    int weather;                       /*!< The weather just raced. */
-    int resultValue;                   /*!< An additional retained result value. */
-    u8 position;                       /*!< The finishing position, from zero. */
-    u8 unreconstructed1D[3];           /*!< Padding before points. */
-    u16 points;                        /*!< The points earned in the race. */
-    u8 unreconstructed22[2];           /*!< Padding before raceTime. */
-    float raceTime;                    /*!< The race time in seconds. */
-    float lapTimes[12];                /*!< The recorded lap times. */
-    u8 unreconstructed58[0xb0 - 0x58]; /*!< The remaining saved result fields. */
+    int state;   /*!< The front-end resume state. */
+    int season;  /*!< The championship class. */
+    int round;   /*!< The race within the class. */
+    int year;    /*!< The championship year. */
+    int track;   /*!< The track just raced. */
+    int weather; /*!< The weather just raced. */
+    SeasonRacePlayerResult player;
+    u8 unreconstructed58[0xb0 - 0x58]; /* +0x58 */
 };
 
 /** The result prefix and additional state reset when returning from a race. */

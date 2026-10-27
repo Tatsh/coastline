@@ -291,6 +291,7 @@ extern s32 g_dwSaveAvailable;
  * @ghidraAddress USA: 0x802707ac
  * @ghidraAddress EUR: 0x8027277c
  * @ghidraAddress JPN: 0x8027222c
+ * @ghidraAddress BRD3D: 0x100aa210
  */
 extern u8 g_abRacePositionPoints[];
 
@@ -651,6 +652,8 @@ extern "C"
  * @ghidraAddress USA: 0x802063a4
  * @ghidraAddress EUR: 0x80206564
  * @ghidraAddress JPN: 0x80206638
+ * @ghidraAddress BRD3D: 0x1002f4c0
+ * @stub{BRD3D}
  */
 void ProcessSeasonResults(void);
 
