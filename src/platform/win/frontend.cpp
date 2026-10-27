@@ -125,6 +125,9 @@ MenuWidget *g_pModemContinueItem;
 MenuWidget *g_pDisplayModeSelectMenu;
 MenuWidget *g_pD3DDeviceSelectMenu;
 MenuWidget *g_pSaveSeasonBackHandlerMenu;
+MenuWidget *g_pOptionsSubMenu;
+int g_dwSaveSeasonSlotNamed;
+int g_dwFileListSelectedSlot = -1;
 
 // The size of the scratch buffer of the front end.
 #define FRONT_END_SCRATCH_SIZE 0x400
@@ -694,6 +697,101 @@ static inline int ShowCachedMenuScreen(MenuScreen *&pScreen, void (*pfnBuild)(Me
         g_pActiveMenuScreen = pScreen;
     }
     return 1;
+}
+
+int ShowOptionsMenu(void) {
+    SetActiveMenuItemText(" ");
+    return ShowCachedMenuScreen(g_pCachedMenu_Options, BuildOptionsMenuUI);
+}
+
+static inline int ReturnFromOptionsMenu(MenuActionWidget *pItem, MenuScreen *&pTarget) {
+    pItem->pScreen->DestroyPanels();
+    delete g_pActiveMenuScreen;
+    g_pCachedMenu_Options = nullptr;
+    g_pActiveMenuScreen = pTarget;
+    return 0;
+}
+
+static inline int ReturnFromSaveSeasonMenu(MenuActionWidget *pItem, MenuScreen *&pTarget) {
+    pItem->pScreen->DestroyPanels();
+    delete g_pActiveMenuScreen;
+    g_pCachedMenu_SaveSeason = nullptr;
+    g_pSaveSeasonMenu = nullptr;
+    g_pSaveSeasonEditMenu = nullptr;
+    g_dwSaveSeasonSlotNamed = 0;
+    g_dwFileListSelectedSlot = -1;
+    strcpy(g_szSeasonYearLabel, "");
+    strcpy(g_szSeasonRoundLabel, "");
+    g_pActiveMenuScreen = pTarget;
+    return 0;
+}
+
+int OptionsMenuUI_OnBackToRaceResultsInfo(MenuActionWidget *pItem) {
+    return ReturnFromOptionsMenu(pItem, g_pCachedMenu_RaceResults);
+}
+
+int RaceResultsInfoUI_OnOpenOptions(MenuActionWidget *) {
+    ShowOptionsMenu();
+    g_pOptionsSubMenu->pfnAction = OptionsMenuUI_OnBackToRaceResultsInfo;
+    return 1;
+}
+
+int SaveSeasonUI_OnBackToRaceResultsInfo(MenuActionWidget *pItem) {
+    return ReturnFromSaveSeasonMenu(pItem, g_pCachedMenu_RaceResults);
+}
+
+int RaceResultsInfoUI_OnOpenSaveSeason(MenuActionWidget *) {
+    ShowSaveSeasonScreen();
+    g_pSaveSeasonBackHandlerMenu->pfnAction = SaveSeasonUI_OnBackToRaceResultsInfo;
+    return 1;
+}
+
+int OptionsMenuUI_OnBackToRaceResultsSummary(MenuActionWidget *pItem) {
+    return ReturnFromOptionsMenu(pItem, g_pCachedMenu_RaceResultsSummary);
+}
+
+int RaceResultsSummaryUI_OnOpenOptions(MenuActionWidget *) {
+    ShowOptionsMenu();
+    g_pOptionsSubMenu->pfnAction = OptionsMenuUI_OnBackToRaceResultsSummary;
+    return 1;
+}
+
+int SaveSeasonUI_OnBackToRaceResultsSummary(MenuActionWidget *pItem) {
+    return ReturnFromSaveSeasonMenu(pItem, g_pCachedMenu_RaceResultsSummary);
+}
+
+int RaceResultsSummaryUI_OnOpenSaveSeason(MenuActionWidget *) {
+    ShowSaveSeasonScreen();
+    g_pSaveSeasonBackHandlerMenu->pfnAction = SaveSeasonUI_OnBackToRaceResultsSummary;
+    return 1;
+}
+
+int OptionsMenuUI_OnBackToRaceResultsTotals(MenuActionWidget *pItem) {
+    return ReturnFromOptionsMenu(pItem, g_pCachedMenu_RaceResultsTotals);
+}
+
+int RaceResultsTotalsUI_OnOpenOptions(MenuActionWidget *) {
+    ShowOptionsMenu();
+    g_pOptionsSubMenu->pfnAction = OptionsMenuUI_OnBackToRaceResultsTotals;
+    return 1;
+}
+
+int SaveSeasonUI_OnBackToRaceResultsTotals(MenuActionWidget *pItem) {
+    return ReturnFromSaveSeasonMenu(pItem, g_pCachedMenu_RaceResultsTotals);
+}
+
+int RaceResultsTotalsUI_OnOpenSaveSeason(MenuActionWidget *) {
+    ShowSaveSeasonScreen();
+    g_pSaveSeasonBackHandlerMenu->pfnAction = SaveSeasonUI_OnBackToRaceResultsTotals;
+    return 1;
+}
+
+int RaceResultsSummaryUI_OnBack(MenuActionWidget *pItem) {
+    pItem->pScreen->DestroyPanels();
+    delete g_pActiveMenuScreen;
+    g_pCachedMenu_RaceResultsSummary = nullptr;
+    g_pActiveMenuScreen = g_pCachedMenu_RaceResults;
+    return 0;
 }
 
 int ShowRaceResultsScreen(void) {

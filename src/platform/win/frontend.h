@@ -96,6 +96,8 @@ public:
     virtual int SetEntryFromSaveFileName(const char *pszFileName, const char *pszDescription);
 };
 
+class MenuActionWidget;
+
 /** An item of a panel of the front end. The layout is not recovered past the position. */
 class MenuWidget {
 public:
@@ -123,7 +125,9 @@ public:
      */
     virtual bool Update();
 
-    char abUnknown4[0x18]; /* +0x04 */
+    char abUnknown4[4]; /* +0x04 */
+    int (*pfnAction)(MenuActionWidget *);
+    char abUnknownC[0x10]; /* +0x0c */
     unsigned dwFlags;
     char abUnknown20[0x1c]; /* +0x20 */
     float fX;               /*!< The left of the item on the screen. */
@@ -813,6 +817,103 @@ extern MenuWidget *g_pD3DDeviceSelectMenu;
  * @ghidraAddress BRGlide: 0x10ac5d4c
  */
 extern MenuWidget *g_pSaveSeasonBackHandlerMenu;
+
+/**
+ * @ghidraAddress BRD3D: 0x10045800
+ */
+int RaceResultsInfoUI_OnOpenOptions(MenuActionWidget *pItem);
+
+/**
+ * @ghidraAddress BRD3D: 0x10045820
+ */
+int RaceResultsInfoUI_OnOpenSaveSeason(MenuActionWidget *pItem);
+
+/**
+ * @ghidraAddress BRD3D: 0x10045840
+ */
+int RaceResultsSummaryUI_OnOpenOptions(MenuActionWidget *pItem);
+
+/**
+ * @ghidraAddress BRD3D: 0x10045860
+ */
+int RaceResultsSummaryUI_OnOpenSaveSeason(MenuActionWidget *pItem);
+
+/**
+ * @ghidraAddress BRD3D: 0x10045880
+ */
+int RaceResultsTotalsUI_OnOpenOptions(MenuActionWidget *pItem);
+
+/**
+ * @ghidraAddress BRD3D: 0x100458a0
+ */
+int RaceResultsTotalsUI_OnOpenSaveSeason(MenuActionWidget *pItem);
+
+/**
+ * @ghidraAddress BRD3D: 0x10046910
+ */
+int OptionsMenuUI_OnBackToRaceResultsInfo(MenuActionWidget *pItem);
+
+/**
+ * @ghidraAddress BRD3D: 0x10046950
+ */
+int SaveSeasonUI_OnBackToRaceResultsInfo(MenuActionWidget *pItem);
+
+/**
+ * @ghidraAddress BRD3D: 0x100469f0
+ */
+int OptionsMenuUI_OnBackToRaceResultsSummary(MenuActionWidget *pItem);
+
+/**
+ * @ghidraAddress BRD3D: 0x10046a30
+ */
+int SaveSeasonUI_OnBackToRaceResultsSummary(MenuActionWidget *pItem);
+
+/**
+ * @ghidraAddress BRD3D: 0x10046ad0
+ */
+int OptionsMenuUI_OnBackToRaceResultsTotals(MenuActionWidget *pItem);
+
+/**
+ * @ghidraAddress BRD3D: 0x10046b10
+ */
+int SaveSeasonUI_OnBackToRaceResultsTotals(MenuActionWidget *pItem);
+
+/**
+ * @ghidraAddress BRD3D: 0x100470a0
+ */
+int RaceResultsSummaryUI_OnBack(MenuActionWidget *pItem);
+
+/**
+ * @ghidraAddress BRD3D: 0x100451e0
+ */
+int ShowOptionsMenu(void);
+
+/**
+ * @ghidraAddress BRD3D: 0x1004bdc0
+ * @stub
+ */
+void BuildOptionsMenuUI(MenuScreen *pScreen);
+
+/**
+ * @ghidraAddress BRD3D: 0x100419d0
+ * @stub
+ */
+void SetActiveMenuItemText(const char *pszText);
+
+/**
+ * @ghidraAddress BRD3D: 0x10aa29c8
+ */
+extern MenuWidget *g_pOptionsSubMenu;
+
+/**
+ * @ghidraAddress BRD3D: 0x10aa28e4
+ */
+extern int g_dwSaveSeasonSlotNamed;
+
+/**
+ * @ghidraAddress BRD3D: 0x100ab3f4
+ */
+extern int g_dwFileListSelectedSlot;
 
 /**
  * The path of the file of the saved season.
