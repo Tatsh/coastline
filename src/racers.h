@@ -18,13 +18,6 @@
 extern "C" {
 #endif
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
-/**
- * @ghidraAddress BRD3D: 0x106c7cb8
- */
-extern TrackSection *g_TrackHeader_pSplineModel;
-#endif
-
 /**
  * The point the route walks last found.
  *
@@ -90,7 +83,6 @@ extern const char *g_apszRaceProgressStrings[RACER_SLOTS];
  * @ghidraAddress EUR: 0x8022a1c4
  * @ghidraAddress JPN: 0x802299a0
  * @ghidraAddress BRD3D: 0x10065b20
- * @stub{BRD3D}
  */
 void FindTrackRoutePoint(TrackSection *section, f32 distance);
 
@@ -105,6 +97,7 @@ void FindTrackRoutePoint(TrackSection *section, f32 distance);
  * @ghidraAddress USA: 0x802290c4
  * @ghidraAddress EUR: 0x8022a43c
  * @ghidraAddress JPN: 0x80229c18
+ * @ghidraAddress BRD3D: 0x10065c80
  */
 void AdvanceAlongTrackRoute(TrackSection *section, s32 pointIndex, f32 fraction, f32 distance);
 

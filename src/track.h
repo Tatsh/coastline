@@ -204,6 +204,7 @@ typedef struct {
     s32 gateCount;                /*!< The number of gates. */
     TrackSpecial specials[TRACK_SPECIALS]; /*!< The objects of the track that move or sound. */
     s32 specialCount;                      /*!< The number of specials. */
+    u8 unreconstructed228[0x230 - 0x228];  /* +0x228 */
 } TrackHeader;
 
 /**
@@ -212,6 +213,7 @@ typedef struct {
  * @ghidraAddress USA: 0x80025c00
  * @ghidraAddress EUR: 0x80025c00
  * @ghidraAddress JPN: 0x80025c00
+ * @ghidraAddress BRD3D: 0x106c7c48
  */
 extern TrackHeader g_LoadedTrack;
 

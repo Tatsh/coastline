@@ -74,13 +74,7 @@ void InitRacerSlot(RacerSlot *slot) {
         } else {
             slot->distance = (f32)(slot->index * RACER_SPACING);
         }
-        FindTrackRoutePoint(
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
-            g_TrackHeader_pSplineModel,
-#else
-            g_LoadedTrack.rootSection,
-#endif
-            slot->distance);
+        FindTrackRoutePoint(g_LoadedTrack.rootSection, slot->distance);
         slot->position.x = g_vTrackRoutePoint.x;
         slot->position.y = g_vTrackRoutePoint.y;
         slot->position.z = g_vTrackRoutePoint.z;
