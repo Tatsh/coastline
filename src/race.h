@@ -103,6 +103,7 @@ extern s32 g_dwStartLightsAnimation;
  * @ghidraAddress USA: 0x8026ff5c
  * @ghidraAddress EUR: 0x80271f2c
  * @ghidraAddress JPN: 0x802719dc
+ * @ghidraAddress BRD3D: 0x106909d0
  */
 extern s32 g_bStartLightsVisible;
 
@@ -112,6 +113,7 @@ extern s32 g_bStartLightsVisible;
  * @ghidraAddress USA: 0x8026ff60
  * @ghidraAddress EUR: 0x80271f30
  * @ghidraAddress JPN: 0x802719e0
+ * @ghidraAddress BRD3D: 0x106805bc
  */
 extern f32 g_fStartLightsDrop;
 
@@ -560,14 +562,23 @@ void AnimateStartLights(void);
  */
 void UpdateRaceAnimations(void);
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /**
  * Draw the start lights over the start of the track.
  *
  * @ghidraAddress USA: 0x8020046c
  * @ghidraAddress EUR: 0x8020049c
  * @ghidraAddress JPN: 0x8020045c
+ * @ghidraAddress BRD3D: 0x100147b0
  */
 void RenderStartLights(void);
+
+#ifdef __cplusplus
+}
+#endif
 
 /**
  * Place the lines of the scrolling credits below the screen.

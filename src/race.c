@@ -99,37 +99,6 @@ void LoadAndPlayTrackBgm(void) {
     InitMusicPlayback(g_abMenuMusicModule, g_abMusicModuleWorkBuffer);
 }
 
-void RenderStartLights(void) {
-    f32 m[4][4];
-
-    if (!g_bStartLightsVisible || g_LoadedTrack.rootSection == NULL) {
-        return;
-    }
-    /* Face the lights across the track from the right edge of its first point. */
-    m[0][3] = 0.0f;
-    m[1][3] = 0.0f;
-    m[2][3] = 0.0f;
-    m[2][0] = 0.0f;
-    m[2][1] = 0.0f;
-    m[3][3] = 1.0f;
-    m[2][2] = 1.0f;
-    Vec3fDirection((Vec3f *)m[1],
-                   &g_LoadedTrack.rootSection->points[0].position,
-                   &g_LoadedTrack.rootSection->points[0].right);
-    Vec3fCross((Vec3f *)m[0], (Vec3f *)m[1], (Vec3f *)m[2]);
-    Vec3fCross((Vec3f *)m[1], (Vec3f *)m[2], (Vec3f *)m[0]);
-    m[3][0] = g_LoadedTrack.rootSection->points[0].position.x;
-    m[3][1] = g_LoadedTrack.rootSection->points[0].position.y;
-    m[3][2] = g_LoadedTrack.rootSection->points[0].position.z + 2.0f + g_fStartLightsDrop;
-    Vec3fMulAdd((Vec3f *)m[3], (Vec3f *)m[3], (Vec3f *)m[0], -0.3f);
-    Vec3fMulAdd((Vec3f *)m[3], (Vec3f *)m[3], (Vec3f *)m[1], -0.6f);
-    gSPMatrix(gDisplayListPtr++, &g_mtxIdentity, G_MTX_MODELVIEW | G_MTX_LOAD | G_MTX_PUSH);
-    gSPMatrix(gDisplayListPtr++, g_pProjectionMtx, G_MTX_PROJECTION | G_MTX_LOAD | G_MTX_NOPUSH);
-    guScaleF(g_afMvpMatrix, 1.0f / 1024.0f, 1.0f / 1024.0f, 1.0f / 1024.0f);
-    guMtxCatF(g_afMvpMatrix, m, m);
-    DrawModelList(g_pStartLightsModel, m);
-}
-
 void StartAttractDemo(void) {
     g_dwGameMode = GAME_MODE_DEMO;
     g_dwRaceSessionType = RACE_SESSION_ATTRACT;

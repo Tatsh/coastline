@@ -136,6 +136,8 @@ extern s32 g_dwDrawModelListNoZBuffer;
  * @ghidraAddress USA: 0x80209d70
  * @ghidraAddress EUR: 0x80209b50
  * @ghidraAddress JPN: 0x80209750
+ * @ghidraAddress BRD3D: 0x1002fb20
+ * @stub{BRD3D}
  */
 void DrawModelList(Model *model, f32 m[4][4]);
 
