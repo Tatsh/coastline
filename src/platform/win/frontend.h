@@ -857,7 +857,7 @@ extern MenuWidget *g_pCreateGameContinueItem;
  *
  * @ghidraAddress BRD3D: 0x1004c4a0
  * @ghidraAddress BRGlide: 0x100458d0
- * @stub
+ * @stub{BRGlide}
  */
 void BuildInputOptionsUI(MenuScreen *pScreen);
 
