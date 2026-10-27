@@ -393,12 +393,21 @@ typedef struct {
 } Lights1;
 
 /** Write a command of two words at pkt, which is evaluated once. */
+#if defined(TGR_PLATFORM) && TGR_PLATFORM == TGR_PLATFORM_WIN
+#define gDisplayListWords(pkt, c0, c1)                                                             \
+    {                                                                                              \
+        Gwords *_g = &(pkt)->words;                                                                \
+        _g->w0 = (c0);                                                                             \
+        _g->w1 = (c1);                                                                             \
+    }
+#else
 #define gDisplayListWords(pkt, c0, c1)                                                             \
     {                                                                                              \
         Gfx *_g = (Gfx *)(pkt);                                                                    \
         _g->words.w0 = (c0);                                                                       \
         _g->words.w1 = (c1);                                                                       \
     }
+#endif
 
 /** Write command cmd with no parameters. */
 #define gDPNoParam(pkt, cmd) gDisplayListWords(pkt, _SHIFTL(cmd, 24, 8), 0)

@@ -7,6 +7,7 @@
 #include "fade.h"
 #include "input.h"
 #include "mathutil.h"
+#include "modeldisplaylist.h"
 #include "racemenu.h"
 #include "render.h"
 #include "track.h"
@@ -84,37 +85,10 @@
 #define FLAGS_GHOST                                                                                \
     (AA_EN | Z_CMP | IM_RD | CVG_DST_WRAP | CLR_ON_CVG | ZMODE_XLU | FORCE_BL |                    \
      GBL_c2(G_BL_CLR_IN, G_BL_A_FOG, G_BL_CLR_MEM, G_BL_1MA))
-#define FLAGS_GHOST_WHEEL                                                                          \
-    (Z_CMP | IM_RD | CVG_DST_FULL | ZMODE_XLU | FORCE_BL |                                         \
-     GBL_c2(G_BL_CLR_IN, G_BL_A_IN, G_BL_CLR_MEM, G_BL_1MA))
-
 /** Set the colours of the light of the sun and of the ambient light. */
 static inline void SetVehicleLightColors(u32 dir, u32 ambient) {
     gSPLightColor(gDisplayListPtr++, LIGHT_1, dir);
     gSPLightColor(gDisplayListPtr++, LIGHT_2, ambient);
-}
-
-/** Set up the tiles of the textures of a model: the load tile and the two render tiles. */
-static inline void SetModelTiles(void) {
-    gDPSetTile(
-        gDisplayListPtr++, G_IM_FMT_RGBA, G_IM_SIZ_16b, 0, 0, G_TX_LOADTILE, 0, 0, 0, 0, 0, 0, 0);
-    gDPSetTile(gDisplayListPtr++, G_IM_FMT_RGBA, G_IM_SIZ_4b, 0, 0x1F0, 6, 0, 0, 0, 0, 0, 0, 0);
-    gDPSetTile(gDisplayListPtr++, G_IM_FMT_RGBA, G_IM_SIZ_4b, 0, 0x100, 5, 0, 0, 0, 0, 0, 0, 0);
-}
-
-/** Turn the textures on at full scale and set up the tiles. */
-static inline void SetModelTextures(void) {
-    gSPTexture(gDisplayListPtr++, 0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON);
-    gSPClearGeometryMode(gDisplayListPtr++, G_TEXTURE_GEN | G_TEXTURE_GEN_LINEAR);
-    gDPTileSync(gDisplayListPtr++);
-    SetModelTiles();
-}
-
-/** Draw a display list of the current model when it has one. */
-static inline void DrawModelDisplayList(Gfx *displayList) {
-    if (displayList != NULL) {
-        gSPDisplayList(gDisplayListPtr++, displayList);
-    }
 }
 
 /** Draw lit, textured parts of the model with the render mode of the vehicle. */
@@ -157,79 +131,6 @@ void TransformWheelPositions(s32 index) {
         memcpy(&vehicle->wheelFrames[i], &vehicle->frame, 3 * sizeof(f32[4]));
         Vec3fTransformByMatrix(
             vehicle->wheelMatrices[i][3], &g_pCurrentVehicleModelData->wheels[i], vehicle->matrix);
-    }
-}
-
-void RenderWheelModels(Vehicle *vehicle) {
-    Mtx *block;
-    s32 i;
-
-    if (g_pCurrentVehicleModelData->wheelDisplayLists[0][VEHICLE_WHEEL_DL_NORMAL] == NULL) {
-        return;
-    }
-    for (i = 0; i < VEHICLE_WHEELS; i++) {
-        gDPPipeSync(gDisplayListPtr++);
-        gDPSetCycleType(gDisplayListPtr++, G_CYC_2CYCLE);
-        if (vehicle->ghostMode == VEHICLE_GHOST) {
-            /* A ghost fades out through the alpha of the environment. */
-            gDPSetRenderMode(gDisplayListPtr++, g_dwVehicleOtherModeLBlend, FLAGS_GHOST_WHEEL);
-            gDPSetEnvColor(gDisplayListPtr++, 0, 0, 0, g_dwVehicleFogAlpha);
-            gDPSetCombineLERP(gDisplayListPtr++,
-                              TEXEL0,
-                              0,
-                              SHADE,
-                              0,
-                              0,
-                              0,
-                              0,
-                              TEXEL0,
-                              0,
-                              0,
-                              0,
-                              COMBINED,
-                              COMBINED,
-                              0,
-                              ENVIRONMENT,
-                              0);
-        } else {
-            gDPSetCombineLERP(gDisplayListPtr++,
-                              TEXEL0,
-                              0,
-                              SHADE,
-                              0,
-                              0,
-                              0,
-                              0,
-                              TEXEL0,
-                              0,
-                              0,
-                              0,
-                              COMBINED,
-                              0,
-                              0,
-                              0,
-                              COMBINED);
-            gDPSetRenderMode(gDisplayListPtr++, g_dwVehicleOtherModeLBlend, FLAGS_FAR);
-        }
-        guScaleF(g_afScratchMatrix, 1.0f / 255.0f, 1.0f / 255.0f, 1.0f / 255.0f);
-        guMtxCatF(g_afScratchMatrix, vehicle->wheelMatrices[i], g_mtxVehicleModelScaled);
-        block = (Mtx *)AllocDisplayListBlock();
-        guMtxF2L(g_mtxVehicleModelScaled, block);
-        gSPMatrix(gDisplayListPtr++, block, G_MTX_MODELVIEW | G_MTX_LOAD | G_MTX_PUSH);
-        guMtxCatF(g_mtxVehicleModelScaled, g_afViewProjMatrix, g_afMvpMatrix);
-        NormalizeLightMatrix(g_afMvpMatrix);
-        block = (Mtx *)AllocDisplayListBlock();
-        guMtxF2L(g_afMvpMatrix, block);
-        gSPForceMatrix(gDisplayListPtr++, PHYSICAL(block));
-        SetModelTextures();
-        if (g_dwSnowMode) {
-            DrawModelDisplayList(
-                g_pCurrentVehicleModelData->wheelDisplayLists[0][VEHICLE_WHEEL_DL_SNOW]);
-        } else {
-            DrawModelDisplayList(
-                g_pCurrentVehicleModelData->wheelDisplayLists[0][VEHICLE_WHEEL_DL_NORMAL]);
-        }
-        gSPPopMatrix(gDisplayListPtr++, G_MTX_MODELVIEW);
     }
 }
 

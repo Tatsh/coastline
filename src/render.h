@@ -142,6 +142,7 @@ extern Mtx *g_pProjectionMtx;
  * @ghidraAddress USA: 0x8031ab10
  * @ghidraAddress EUR: 0x8031d010
  * @ghidraAddress JPN: 0x8031bc40
+ * @ghidraAddress BRD3D: 0x106c0860
  */
 extern f32 g_afMvpMatrix[4][4];
 

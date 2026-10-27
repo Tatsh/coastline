@@ -18,6 +18,7 @@
  * @ghidraAddress USA: 0x8028ab08
  * @ghidraAddress EUR: 0x8028cd10
  * @ghidraAddress JPN: 0x8028c7e0
+ * @ghidraAddress BRD3D: 0x106c3308
  */
 extern VehicleModel *g_pCurrentVehicleModelData;
 
@@ -27,6 +28,7 @@ extern VehicleModel *g_pCurrentVehicleModelData;
  * @ghidraAddress USA: 0x80351cc0
  * @ghidraAddress EUR: 0x803541c0
  * @ghidraAddress JPN: 0x80352e30
+ * @ghidraAddress BRD3D: 0x10277d88
  */
 extern f32 g_mtxVehicleModelScaled[4][4];
 
@@ -36,6 +38,7 @@ extern f32 g_mtxVehicleModelScaled[4][4];
  * @ghidraAddress USA: 0x8028c300
  * @ghidraAddress EUR: 0x8028ea60
  * @ghidraAddress JPN: 0x8028e4b0
+ * @ghidraAddress BRD3D: 0x10277e5c
  */
 extern u32 g_dwVehicleOtherModeLBlend;
 
@@ -52,6 +55,7 @@ extern u32 g_dwVehicleOtherModeLFlags;
  * @ghidraAddress USA: 0x80351d00
  * @ghidraAddress EUR: 0x80354200
  * @ghidraAddress JPN: 0x80352e70
+ * @ghidraAddress BRD3D: 0x10277e14
  */
 extern s32 g_dwVehicleFogAlpha;
 
@@ -255,6 +259,10 @@ extern Gfx g_aTrackShadowDisplayList[];
  */
 void TransformWheelPositions(s32 index);
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /**
  * Draw the four wheels of a vehicle, faded like a ghost when it is one, and with the wheel for the
  * snow in the snow.
@@ -263,8 +271,13 @@ void TransformWheelPositions(s32 index);
  * @ghidraAddress USA: 0x8022ffb4
  * @ghidraAddress EUR: 0x802314c4
  * @ghidraAddress JPN: 0x802312c4
+ * @ghidraAddress BRD3D: 0x1000c6e0
  */
 void RenderWheelModels(Vehicle *vehicle);
+
+#ifdef __cplusplus
+}
+#endif
 
 #ifdef __cplusplus
 extern "C" {

@@ -23,7 +23,14 @@ extern "C" {
 
 /** A block of eight display list commands. */
 typedef struct {
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+    union {
+        u64 commands[8];
+        f32 matrix[4][4];
+    };
+#else
     u64 commands[8]; /*!< The commands, one 64-bit word each. */
+#endif
 } DisplayListBlock;
 
 /**
