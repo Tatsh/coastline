@@ -819,6 +819,96 @@ extern MenuWidget *g_pD3DDeviceSelectMenu;
 extern MenuWidget *g_pSaveSeasonBackHandlerMenu;
 
 /**
+ * @ghidraAddress BRD3D: 0x10046520
+ */
+int OptionsMenuUI_OnBack(MenuActionWidget *pItem);
+
+/**
+ * @ghidraAddress BRD3D: 0x10046bb0
+ */
+int OptionsMenuUI_OnBackToCarSetup(MenuActionWidget *pItem);
+
+/**
+ * @ghidraAddress BRD3D: 0x10046750
+ */
+int OptionsMenuUI_OnBackToPreRaceInfo(MenuActionWidget *pItem);
+
+/**
+ * @ghidraAddress BRD3D: 0x10046830
+ */
+int OptionsMenuUI_OnBackToSeasonProgressInfo(MenuActionWidget *pItem);
+
+/**
+ * @ghidraAddress BRD3D: 0x10046bf0
+ */
+int SaveSeasonUI_OnBackToCarSetup(MenuActionWidget *pItem);
+
+/**
+ * @ghidraAddress BRD3D: 0x10046790
+ */
+int SaveSeasonUI_OnBackToPreRaceInfo(MenuActionWidget *pItem);
+
+/**
+ * @ghidraAddress BRD3D: 0x10046870
+ */
+int SaveSeasonUI_OnBackToSeasonProgressInfo(MenuActionWidget *pItem);
+
+/**
+ * @ghidraAddress BRD3D: 0x10046eb0
+ */
+int SaveSeasonUI_OnBack(MenuActionWidget *pItem);
+
+/**
+ * @ghidraAddress BRD3D: 0x10046c90
+ */
+int ChampionshipSeasonUI_OnBack(MenuActionWidget *pItem);
+
+/**
+ * @ghidraAddress BRD3D: 0x10046710
+ */
+int GameOptionsUI_OnBack(MenuActionWidget *pItem);
+
+/**
+ * @ghidraAddress BRD3D: 0x100465a0
+ */
+int InputOptionsUI_OnBack(MenuActionWidget *pItem);
+
+/**
+ * @ghidraAddress BRD3D: 0x10044de0
+ */
+int LoadTimeAttackMenuUI_OnBack(MenuActionWidget *pItem);
+
+/**
+ * @ghidraAddress BRD3D: 0x100463c0
+ */
+int MultiplayerConnectionUI_OnBack(MenuActionWidget *pItem);
+
+/**
+ * @ghidraAddress BRD3D: 0x100464a0
+ */
+int QuitGameConfirmUI_OnBack(MenuActionWidget *pItem);
+
+/**
+ * @ghidraAddress BRD3D: 0x100470e0
+ */
+int RaceResultsTotalsUI_OnBack(MenuActionWidget *pItem);
+
+/**
+ * @ghidraAddress BRD3D: 0x10047060
+ */
+int SeasonProgressInfoUI_OnBack(MenuActionWidget *pItem);
+
+/**
+ * @ghidraAddress BRD3D: 0x10044c70
+ */
+int TimeAttackMenuUI_OnBack(MenuActionWidget *pItem);
+
+/**
+ * @ghidraAddress BRD3D: 0x100465e0
+ */
+int VideoOptionsUI_OnBack(MenuActionWidget *pItem);
+
+/**
  * @ghidraAddress BRD3D: 0x10045800
  */
 int RaceResultsInfoUI_OnOpenOptions(MenuActionWidget *pItem);

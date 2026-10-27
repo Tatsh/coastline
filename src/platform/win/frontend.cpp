@@ -726,6 +726,91 @@ static inline int ReturnFromSaveSeasonMenu(MenuActionWidget *pItem, MenuScreen *
     return 0;
 }
 
+static inline int
+ReturnFromCachedMenu(MenuActionWidget *pItem, MenuScreen *&pCached, MenuScreen *&pTarget) {
+    MenuScreen *pDestination;
+    pItem->pScreen->DestroyPanels();
+    delete g_pActiveMenuScreen;
+    pDestination = pTarget;
+    pCached = nullptr;
+    g_pActiveMenuScreen = pDestination;
+    return 0;
+}
+
+int OptionsMenuUI_OnBack(MenuActionWidget *pItem) {
+    return ReturnFromOptionsMenu(pItem, g_pRootMenuScreen);
+}
+
+int OptionsMenuUI_OnBackToCarSetup(MenuActionWidget *pItem) {
+    return ReturnFromOptionsMenu(pItem, g_pCachedMenu_CarSetup);
+}
+
+int OptionsMenuUI_OnBackToPreRaceInfo(MenuActionWidget *pItem) {
+    return ReturnFromOptionsMenu(pItem, g_pCachedMenu_PreRaceInfo);
+}
+
+int OptionsMenuUI_OnBackToSeasonProgressInfo(MenuActionWidget *pItem) {
+    return ReturnFromOptionsMenu(pItem, g_pCachedMenu_SeasonProgressInfo);
+}
+
+int SaveSeasonUI_OnBackToCarSetup(MenuActionWidget *pItem) {
+    return ReturnFromSaveSeasonMenu(pItem, g_pCachedMenu_CarSetup);
+}
+
+int SaveSeasonUI_OnBackToPreRaceInfo(MenuActionWidget *pItem) {
+    return ReturnFromSaveSeasonMenu(pItem, g_pCachedMenu_PreRaceInfo);
+}
+
+int SaveSeasonUI_OnBackToSeasonProgressInfo(MenuActionWidget *pItem) {
+    return ReturnFromSaveSeasonMenu(pItem, g_pCachedMenu_SeasonProgressInfo);
+}
+
+int SaveSeasonUI_OnBack(MenuActionWidget *pItem) {
+    return ReturnFromSaveSeasonMenu(pItem, g_pCachedMenu_RaceResults);
+}
+
+int ChampionshipSeasonUI_OnBack(MenuActionWidget *pItem) {
+    return ReturnFromCachedMenu(pItem, g_pCachedMenu_TimeTrial, g_pRootMenuScreen);
+}
+
+int GameOptionsUI_OnBack(MenuActionWidget *pItem) {
+    return ReturnFromCachedMenu(pItem, g_pCachedMenu_Championship, g_pCachedMenu_Options);
+}
+
+int InputOptionsUI_OnBack(MenuActionWidget *pItem) {
+    return ReturnFromCachedMenu(pItem, g_pCachedMenu_GameplaySettings, g_pCachedMenu_Options);
+}
+
+int LoadTimeAttackMenuUI_OnBack(MenuActionWidget *pItem) {
+    return ReturnFromCachedMenu(pItem, g_pCachedMenu_LoadGhost, g_pCachedMenu_TimeAttack);
+}
+
+int MultiplayerConnectionUI_OnBack(MenuActionWidget *pItem) {
+    return ReturnFromCachedMenu(
+        pItem, g_pCachedMenu_MultiplayerConnection, g_pCachedMenu_MultiplayerName);
+}
+
+int QuitGameConfirmUI_OnBack(MenuActionWidget *pItem) {
+    return ReturnFromCachedMenu(pItem, g_pCachedMenu_MainMenuAlternate, g_pRootMenuScreen);
+}
+
+int RaceResultsTotalsUI_OnBack(MenuActionWidget *pItem) {
+    return ReturnFromCachedMenu(
+        pItem, g_pCachedMenu_RaceResultsTotals, g_pCachedMenu_RaceResultsSummary);
+}
+
+int SeasonProgressInfoUI_OnBack(MenuActionWidget *pItem) {
+    return ReturnFromCachedMenu(pItem, g_pCachedMenu_SeasonProgressInfo, g_pCachedMenu_PreRaceInfo);
+}
+
+int TimeAttackMenuUI_OnBack(MenuActionWidget *pItem) {
+    return ReturnFromCachedMenu(pItem, g_pCachedMenu_TimeAttack, g_pRootMenuScreen);
+}
+
+int VideoOptionsUI_OnBack(MenuActionWidget *pItem) {
+    return ReturnFromCachedMenu(pItem, g_pCachedMenu_InputConfig, g_pCachedMenu_Options);
+}
+
 int OptionsMenuUI_OnBackToRaceResultsInfo(MenuActionWidget *pItem) {
     return ReturnFromOptionsMenu(pItem, g_pCachedMenu_RaceResults);
 }
