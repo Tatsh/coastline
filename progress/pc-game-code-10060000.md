@@ -1,6 +1,6 @@
 # PC port game code from 0x10060000 to 0x10070000
 
-81 of 172 routines done.
+84 of 173 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -91,7 +91,8 @@ the same name, for a routine the port retained from the N64 game.
 | `ResetAllSoundState`                     |        | ✅ `0x8022b428` |      1 |    143 | `0x10067dc0` | `0x10060e30` | `undefined ResetAllSoundState()`                                                                                                         |
 | `ConvertInputToN64ControllerPad`         |        |                 |      1 |    136 | `0x10060e00` | `0x10059e70` | `undefined ConvertInputToN64ControllerPad()`                                                                                             |
 | `UpdateWheelHeights`                     |        | ✅ `0x8025ec7c` |      2 |    134 | `0x1006f4a0` | `0x10068450` | `undefined UpdateWheelHeights()`                                                                                                         |
-| `ResetTrackTriangleCache`                |        |                 |      1 |    134 | `0x1006ae20` | `0x10063dd0` | `undefined ResetTrackTriangleCache()`                                                                                                    |
+| `ResetTrackTriangleCache`                |        |                 |      1 |    134 |              | `0x10063dd0` | `undefined ResetTrackTriangleCache()`                                                                                                    |
+| `ResetCollisionCaches`                   |   ✅   | ✅ `0x80259350` |      1 |    134 | `0x1006ae20` |              | `void ResetCollisionCaches(void)`                                                                                                        |
 | `ApplyRemoteVehicleState`                |        |                 |      1 |    129 | `0x10060cc0` | `0x10059d30` | `undefined ApplyRemoteVehicleState()`                                                                                                    |
 | `UpdateClosestSoundSource`               |        | ✅ `0x8022b494` |      2 |    120 | `0x10067e50` | `0x10060ec0` | `undefined UpdateClosestSoundSource()`                                                                                                   |
 | `UpdateWheelTransforms`                  |        |                 |      4 |    119 | `0x10061be0` | `0x1005ac60` | `undefined UpdateWheelTransforms()`                                                                                                      |
@@ -136,9 +137,9 @@ the same name, for a routine the port retained from the N64 game.
 | `CompareRacerSortKeyAscending`           |        |                 |      2 |     43 | `0x10066620` | `0x1005f690` | `undefined CompareRacerSortKeyAscending()`                                                                                               |
 | `FillMemoryPatternBytes`                 |   ✅   |                 |      2 |     43 | `0x10060780` | `0x100597f0` | `void FillMemoryPatternBytes(void * pDest, uint nCount, int nByte)`                                                                      |
 | `SetRenderBackendMode`                   |   ✅   |                 |      2 |     43 | `0x1006a990` | `0x10063940` | `void SetRenderBackendMode(int nMode)`                                                                                                   |
-| `PlaneDistance`                          |        | ✅ `0x8025b704` |     14 |     41 | `0x1006c9a0` | `0x10065950` | `float PlaneDistance(float * pVecA, float fBias, float * pVecB)`                                                                         |
+| `PlaneDistance`                          |   ✅   | ✅ `0x8025b704` |     14 |     41 | `0x1006c9a0` | `0x10065950` | `float10 PlaneDistance(Vec3f * normal, float offset, Vec3f * point)`                                                                     |
 | `MatrixToPositionQuaternion`             |   ✅   |                 |      1 |     41 | `0x100695a0` | `0x10062610` | `void MatrixToPositionQuaternion(QuaternionPose * pPose, float * m)`                                                                     |
-| `PushCollisionTriangle`                  |        | ✅ `0x8025c24c` |      2 |     38 | `0x1006d280` | `0x10066230` | `undefined PushCollisionTriangle()`                                                                                                      |
+| `PushCollisionTriangle`                  |   ✅   | ✅ `0x8025c24c` |      2 |     38 | `0x1006d280` | `0x10066230` | `void PushCollisionTriangle(TrackTriangle * triangle)`                                                                                   |
 | `MuteVehicleSoundVoices`                 |   ✅   |                 |      1 |     37 | `0x100683d0` | `0x10061440` | `void MuteVehicleSoundVoices(void)`                                                                                                      |
 | `InitializeRenderSubsystems`             |   ✅   |                 |      1 |     36 | `0x1006aa20` | `0x100639d0` | `void InitializeRenderSubsystems(int nMode)`                                                                                             |
 | `IsTriangleInUnitCube`                   |        | ✅ `0x8025d018` |      3 |     35 | `0x1006daf0` | `0x10066aa0` | `undefined IsTriangleInUnitCube()`                                                                                                       |
