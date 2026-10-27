@@ -123,6 +123,7 @@ void guMtxXFML(Mtx *m, float x, float y, float z, float *ox, float *oy, float *o
  * @ghidraAddress USA: 0x80260800
  * @ghidraAddress EUR: 0x80261d00
  * @ghidraAddress JPN: 0x80261770
+ * @ghidraAddress BRD3D: 0x100310f0
  */
 void guScaleF(float mf[4][4], float x, float y, float z);
 
@@ -149,6 +150,7 @@ void guScale(Mtx *m, float x, float y, float z);
  * @ghidraAddress USA: 0x80260e30
  * @ghidraAddress EUR: 0x802622c0
  * @ghidraAddress JPN: 0x80261d70
+ * @ghidraAddress BRD3D: 0x10031140
  */
 void guTranslateF(float mf[4][4], float x, float y, float z);
 

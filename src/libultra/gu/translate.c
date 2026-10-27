@@ -1,4 +1,4 @@
-#include <ultra64.h>
+#include <PR/gu.h>
 
 void guTranslateF(float mf[4][4], float x, float y, float z) {
     guMtxIdentF(mf);
@@ -7,9 +7,11 @@ void guTranslateF(float mf[4][4], float x, float y, float z) {
     mf[3][2] = z;
 }
 
+#if TGR_PLATFORM != TGR_PLATFORM_WIN
 void guTranslate(Mtx *m, float x, float y, float z) {
     float mf[4][4];
 
     guTranslateF(mf, x, y, z);
     guMtxF2L(mf, m);
 }
+#endif
