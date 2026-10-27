@@ -518,9 +518,23 @@ void Mtx4fTranspose(f32 out[4][4], f32 in[4][4]) {
 }
 #endif
 
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+void CopyMatrix4x4(f32 in[4][4], f32 out[4][4]) {
+    u32 word;
+    s32 i, j;
+
+    for (i = 0; i < 4; i++) {
+        for (j = 0; j < 4; j++) {
+            memcpy(&word, &in[i][j], sizeof(word));
+            memcpy(&out[i][j], &word, sizeof(word));
+        }
+    }
+}
+#else
 void CopyMatrix4x4(f32 out[4][4], f32 in[4][4]) {
     memcpy(out, in, sizeof(f32[4][4]));
 }
+#endif
 
 s32 MtxInvert4x4(f32 out[4][4], f32 in[4][4]) {
     f32 negative = 0.0f, positive = 0.0f;

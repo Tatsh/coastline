@@ -592,8 +592,13 @@ void Mtx4fTranspose(f32 out[4][4], f32 in[4][4]);
  * @ghidraAddress JPN: 0x80225e80
  * @ghidraAddress BRD3D: 0x100307a0
  * @ghidraAddress BRGlide: 0x10029e50
+ * @stub{BRGlide}
  */
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+void CopyMatrix4x4(f32 in[4][4], f32 out[4][4]);
+#else
 void CopyMatrix4x4(f32 out[4][4], f32 in[4][4]);
+#endif
 
 /**
  * Invert an affine matrix. On the N64 a singular matrix is reported on the debug display and
