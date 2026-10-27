@@ -11,9 +11,16 @@
 
 namespace {
 // @ghidraAddress EAR: 0x1002e7a8
-const double g_earInitialGainUnitScale = 0.0001;
+const double g_earInitialEventAttenuationScale = 0.0001;
 // @ghidraAddress EAR: 0x1002e7b0
-const double g_earScheduledGainScale = 10000;
+const double g_earEventTimeUnitScale = 10000;
+// @ghidraAddress EAR: 0x1002e7b8
+const double g_earDopplerUnity = 1;
+
+static inline std::uint32_t AbsoluteDistance(std::int32_t distance) {
+    std::uint32_t bits = static_cast<std::uint32_t>(distance);
+    return distance < 0 ? 0u - bits : bits;
+}
 
 static inline std::uint16_t TruncateGain(long double gain) {
     if (gain >= -0x1p63L && gain < 0x1p63L) {
@@ -56,7 +63,7 @@ int ScheduledEarEvent::InitializeScheduledEarEventPlayback() {
         g_EnvironmentRegistry.LookupWordPointerMapValue(environmentId, environment);
         attenuation =
             TruncateGain(static_cast<long double>(environment->GetEnvironmentInitialGain()) *
-                         g_earInitialGainUnitScale * g_earScheduledGainScale);
+                         g_earInitialEventAttenuationScale * g_earEventTimeUnitScale);
         matrixId = 1;
         streaming = 1;
         looping = 1;
@@ -119,6 +126,81 @@ void ScheduledEarEvent::UpdateScheduledEventDopplerScale() {
     }
 }
 
+long double ScheduledEarEvent::CalculateScheduledEventDopplerScale() {
+    if (!dopplerEnabled) {
+        return frequencyScale;
+    }
+    DWORD now = timeGetTime();
+    if (!previousDistance || !previousDistanceTime) {
+        previousDistance = distance;
+        previousDistanceTime = now;
+        return frequencyScale;
+    }
+    EarEnvironment *environment;
+    if (!g_EnvironmentRegistry.LookupWordPointerMapValue(environmentId, environment)) {
+        SetEarLastError(0x1f);
+        return frequencyScale;
+    }
+    ++distanceSampleCount;
+    accumulatedDistance += AbsoluteDistance(SubtractTimer(previousDistance, distance));
+    accumulatedTime += now - previousDistanceTime;
+    // Native unsigned quotients feed signed x87 integer loads.
+    std::uint32_t averageDistance = accumulatedDistance / distanceSampleCount;
+    std::uint32_t averageTime = accumulatedTime / distanceSampleCount;
+    std::uint16_t crossover = environment->GetEnvironmentDopplerCrossoverDistance();
+    if (std::bit_cast<std::int32_t>(AbsoluteDistance(distance)) <= crossover || crossingActive) {
+        if (!crossingActive) {
+            crossingInitialSpeed = previousRadialSpeed;
+            crossingSpeedStep = static_cast<double>(static_cast<long double>(crossingInitialSpeed) /
+                                                    (static_cast<long double>(crossover) /
+                                                     std::bit_cast<std::int32_t>(averageDistance)));
+            crossingActive = 1;
+            crossingStep = 1;
+        }
+        previousRadialSpeed =
+            static_cast<double>(static_cast<long double>(crossingInitialSpeed) -
+                                static_cast<long double>(crossingSpeedStep) * crossingStep);
+        crossingStep =
+            static_cast<double>(static_cast<long double>(crossingStep) + g_earDopplerUnity);
+        if (-crossingInitialSpeed >= previousRadialSpeed) {
+            crossingActive = 0;
+        }
+    } else {
+        crossingActive = 0;
+    }
+    double radialSpeed;
+    if (previousDistance == distance) {
+        radialSpeed = previousRadialSpeed;
+    } else {
+        if (!averageTime) {
+            return frequencyScale;
+        }
+        if (!crossingActive) {
+            radialSpeed = static_cast<double>(
+                static_cast<long double>(std::bit_cast<std::int32_t>(averageDistance)) /
+                std::bit_cast<std::int32_t>(averageTime));
+        } else {
+            radialSpeed = previousRadialSpeed;
+        }
+        radialDirection = previousDistance < distance ? -1 : 1;
+        previousDistance = distance;
+        previousDistanceTime = now;
+        previousRadialSpeed = radialSpeed;
+        // Native distance updates increment the sample count twice.
+        ++distanceSampleCount;
+    }
+    std::int32_t direction = crossingActive ? 1 : radialDirection;
+    double velocity = static_cast<double>(static_cast<long double>(direction) * radialSpeed);
+    double denominator =
+        static_cast<double>(g_earDopplerUnity - static_cast<long double>(velocity) /
+                                                    environment->GetEnvironmentSoundSpeed());
+    // Unordered comparisons also select the cached frequency scale.
+    if (!(denominator < 0 || denominator > 0)) {
+        return frequencyScale;
+    }
+    return (static_cast<long double>(g_earDopplerUnity) / denominator) * frequencyScale;
+}
+
 int ScheduledEarEvent::StartScheduledEarEvent() {
     if (!playbackInitialized) {
         playbackInitialized = InitializeScheduledEarEventPlayback();
@@ -146,7 +228,7 @@ int ScheduledEarEvent::StartScheduledEarEvent() {
 
 int ScheduledEarEvent::CanStartScheduledEarEvent() {
     return !playbackInitialized && startDelayMs <= 0 && (!attenuationRequired || attenuation > 0) &&
-           (!repeatLimitEnabled || repeatCount < repeatLimit);
+           (!distanceLimitEnabled || distance < maximumDistance);
 }
 
 void ScheduledEarEvent::AdvanceScheduledEventTimers(std::uint32_t elapsedMilliseconds) {

@@ -44,10 +44,7 @@ private:
     int InitializeScheduledEarEventPlayback();
     /** @ghidraAddress EAR: 0x100080e8 */
     void UpdateScheduledEventDopplerScale();
-    /**
-     * @ghidraAddress EAR: 0x100081ec
-     * @stub
-     */
+    /** @ghidraAddress EAR: 0x100081ec */
     long double CalculateScheduledEventDopplerScale();
     /** @ghidraAddress EAR: 0x1000854e */
     void DeactivateScheduledEarEvent();
@@ -66,7 +63,7 @@ private:
     int lifetimeCountdownSuppressed;
     int activeDurationLimitEnabled;
     int attenuationRequired;
-    int repeatLimitEnabled;
+    int distanceLimitEnabled;
     int trackElapsedTime;
     std::uint32_t suppressionEnabled;
     std::uint16_t suppressionMarker;
@@ -79,13 +76,22 @@ private:
     std::int32_t remainingActiveTimeMs;
     std::int32_t elapsedTimeMs;
     [[maybe_unused]] std::uint8_t unknown5e[2]; /* +0x5e */
-    std::int32_t repeatCount;
-    std::int32_t repeatLimit;
-    [[maybe_unused]] std::uint8_t unknown68[0xc]; /* +0x68 */
+    std::int32_t distance;
+    std::int32_t maximumDistance;
+    std::int32_t previousDistance;
+    double previousRadialSpeed;
     DWORD previousDistanceTime;
-    [[maybe_unused]] std::uint8_t unknown78[0x2c]; /* +0x78 */
+    std::uint32_t accumulatedDistance;
+    std::uint32_t accumulatedTime;
+    std::uint32_t distanceSampleCount;
+    int crossingActive;
+    double crossingInitialSpeed;
+    double crossingSpeedStep;
+    double crossingStep;
+    std::int32_t radialDirection;
     std::uint16_t environmentId;
-    [[maybe_unused]] std::uint8_t unknownA6[0xa]; /* +0xa6 */
+    [[maybe_unused]] std::uint8_t unknownA6[2]; /* +0xa6 */
+    double frequencyScale;
     double baseFrequencyScale;
     double startPosition;
     double backendParameter;
