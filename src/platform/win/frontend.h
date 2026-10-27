@@ -428,6 +428,14 @@ void BuildKeyConfigUI(MenuScreen *pScreen);
 int ShowModemDialUpScreen(void);
 
 /**
+ * Reset time attack choices and restore race setup after a season.
+ *
+ * @ghidraAddress BRD3D: 0x10046260
+ * @ghidraAddress BRGlide: 0x1003f700
+ */
+int ReturnToMainMenuFromSeason(void);
+
+/**
  * Build modem connection options on the supplied screen.
  *
  * @ghidraAddress BRD3D: 0x10056a10

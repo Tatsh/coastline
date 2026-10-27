@@ -1355,6 +1355,27 @@ int ShowRaceSetupMenu(void) {
     return 1;
 }
 
+int ReturnToMainMenuFromSeason(void) {
+    g_dwGameMode = GAME_MODE_TIME_ATTACK;
+    ResetMenuSelectionsToDefaults();
+    bool wasCached = g_pCachedMenu_MainMenu != nullptr;
+    g_pPrimarySeasonSave = nullptr;
+    g_LoadedSeasonSettings.car = 1;
+    g_dwGameMode = GAME_MODE_TIME_ATTACK;
+    g_bRaceSetupShowCarSetup = 1;
+    g_GhostRecordingInfo.track = -1;
+    if (!ShowCachedMenuScreen(g_pCachedMenu_MainMenu, BuildRaceSetupUI)) {
+        return 0;
+    }
+    if (!wasCached) {
+        NullStub();
+        ResetGameModeConfig();
+        ResolveRaceSelections();
+        g_pRaceSetupMenu->pfnAction = RaceSetupUI_OnBackToTimeAttack;
+    }
+    return 1;
+}
+
 int ShowQuitGameConfirmMenu(void) {
     SetActiveMenuItemText(" ");
     PlaySoundChannelOneOnce(3, 0x200020);
