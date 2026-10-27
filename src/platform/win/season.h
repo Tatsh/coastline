@@ -110,6 +110,7 @@ extern int g_dwUnusedSeasonMenuValue;
  * The lap selected on race result menus.
  *
  * @ghidraAddress BRD3D: 0x10aa28d0
+ * @ghidraAddress BRGlide: 0x10ac5c28
  */
 extern int g_dwRaceResultsSelectedLap;
 

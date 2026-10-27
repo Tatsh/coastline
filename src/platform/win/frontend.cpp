@@ -1591,6 +1591,73 @@ int GameOptionsUI_UpdateSkidMarksImage(MenuWidget *pWidget) {
     return 1;
 }
 
+int RaceResultsInfoUI_OnSelectLap1(MenuWidget *) {
+    g_dwRaceResultsSelectedLap = 0;
+    return 1;
+}
+
+int RaceResultsInfoUI_OnSelectLap2(MenuWidget *) {
+    g_dwRaceResultsSelectedLap = 1;
+    return 1;
+}
+
+int RaceResultsInfoUI_OnSelectLap3(MenuWidget *) {
+    g_dwRaceResultsSelectedLap = 2;
+    return 1;
+}
+
+int RaceResultsInfoUI_OnSelectTotalTime(MenuWidget *) {
+    g_dwRaceResultsSelectedLap = 3;
+    return 1;
+}
+
+int SaveSeasonUI_UpdateItemEnabledState(MenuWidget *pWidget) {
+    if (g_dwSaveSeasonSlotNamed) {
+        pWidget->dwFlags &= ~0x1010u;
+    }
+    return 1;
+}
+
+int PreRaceExitSeasonConfirmUI_OnNo(MenuWidget *) {
+    g_pActiveMenuScreen = g_pCachedMenu_PreRaceInfo;
+    return 0;
+}
+
+int ResultsSummaryExitSeasonConfirmUI_OnNo(MenuWidget *) {
+    g_pActiveMenuScreen = g_pCachedMenu_RaceResultsTotals;
+    return 0;
+}
+
+int MenuScreen_OnReturnToMainMenu(MenuWidget *pWidget) {
+    pWidget->pScreen->ShutdownFrontEnd(1);
+    g_pActiveMenuScreen = g_pCachedMenu_MainMenu;
+    return 0;
+}
+
+int PreRaceInfoUI_OnOptions(MenuWidget *) {
+    ShowOptionsMenu();
+    g_pOptionsSubMenu->pfnAction = OptionsMenuUI_OnBackToPreRaceInfo;
+    return 1;
+}
+
+int PreRaceInfoUI_OnSaveSeason(MenuWidget *) {
+    ShowSaveSeasonScreen();
+    g_pSaveSeasonBackHandlerMenu->pfnAction = SaveSeasonUI_OnBackToPreRaceInfo;
+    return 1;
+}
+
+int SeasonProgressInfoUI_OnOptions(MenuWidget *) {
+    ShowOptionsMenu();
+    g_pOptionsSubMenu->pfnAction = OptionsMenuUI_OnBackToSeasonProgressInfo;
+    return 1;
+}
+
+int SeasonProgressInfoUI_OnSaveSeason(MenuWidget *) {
+    ShowSaveSeasonScreen();
+    g_pSaveSeasonBackHandlerMenu->pfnAction = SaveSeasonUI_OnBackToSeasonProgressInfo;
+    return 1;
+}
+
 int CarSetupUI_OnAcceptAndSave(MenuActionWidget *pWidget) {
     pWidget->pScreen->bRunning = 0;
     pWidget->pScreen->ShutdownFrontEnd(0);

@@ -271,6 +271,78 @@ public:
 int CarSetupUI_OnAcceptAndSave(MenuActionWidget *pWidget);
 
 /**
+ * @ghidraAddress BRD3D: 0x100412c0
+ * @ghidraAddress BRGlide: 0x1003a820
+ */
+int RaceResultsInfoUI_OnSelectLap1(MenuWidget *pWidget);
+
+/**
+ * @ghidraAddress BRD3D: 0x100412d0
+ * @ghidraAddress BRGlide: 0x1003a830
+ */
+int RaceResultsInfoUI_OnSelectLap2(MenuWidget *pWidget);
+
+/**
+ * @ghidraAddress BRD3D: 0x100412e0
+ * @ghidraAddress BRGlide: 0x1003a840
+ */
+int RaceResultsInfoUI_OnSelectLap3(MenuWidget *pWidget);
+
+/**
+ * @ghidraAddress BRD3D: 0x100412f0
+ * @ghidraAddress BRGlide: 0x1003a850
+ */
+int RaceResultsInfoUI_OnSelectTotalTime(MenuWidget *pWidget);
+
+/**
+ * @ghidraAddress BRD3D: 0x100418d0
+ * @ghidraAddress BRGlide: 0x1003ae30
+ */
+int SaveSeasonUI_UpdateItemEnabledState(MenuWidget *pWidget);
+
+/**
+ * @ghidraAddress BRD3D: 0x10046fc0
+ * @ghidraAddress BRGlide: 0x10040410
+ */
+int PreRaceExitSeasonConfirmUI_OnNo(MenuWidget *pWidget);
+
+/**
+ * @ghidraAddress BRD3D: 0x10047050
+ * @ghidraAddress BRGlide: 0x100404a0
+ */
+int ResultsSummaryExitSeasonConfirmUI_OnNo(MenuWidget *pWidget);
+
+/**
+ * @ghidraAddress BRD3D: 0x10043fa0
+ * @ghidraAddress BRGlide: 0x1003d4f0
+ */
+int MenuScreen_OnReturnToMainMenu(MenuWidget *pWidget);
+
+/**
+ * @ghidraAddress BRD3D: 0x10045780
+ * @ghidraAddress BRGlide: 0x1003ec10
+ */
+int PreRaceInfoUI_OnOptions(MenuWidget *pWidget);
+
+/**
+ * @ghidraAddress BRD3D: 0x100457a0
+ * @ghidraAddress BRGlide: 0x1003ec30
+ */
+int PreRaceInfoUI_OnSaveSeason(MenuWidget *pWidget);
+
+/**
+ * @ghidraAddress BRD3D: 0x100457c0
+ * @ghidraAddress BRGlide: 0x1003ec50
+ */
+int SeasonProgressInfoUI_OnOptions(MenuWidget *pWidget);
+
+/**
+ * @ghidraAddress BRD3D: 0x100457e0
+ * @ghidraAddress BRGlide: 0x1003ec70
+ */
+int SeasonProgressInfoUI_OnSaveSeason(MenuWidget *pWidget);
+
+/**
  * @ghidraAddress BRD3D: 0x10042cf0
  * @ghidraAddress BRGlide: 0x1003c240
  */
@@ -1494,6 +1566,7 @@ extern MenuWidget *g_pOptionsSubMenu;
 
 /**
  * @ghidraAddress BRD3D: 0x10aa28e4
+ * @ghidraAddress BRGlide: 0x10ac5c3c
  */
 extern int g_dwSaveSeasonSlotNamed;
 
