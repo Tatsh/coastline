@@ -112,7 +112,9 @@ struct MenuItemListVTable {
 
 struct MenuItemList {
     MenuItemListVTable *pVTable;
-    char abUnknown4[0x1a928]; /* +0x04 */
+    char abUnknown4[0x14]; /* +0x04 */
+    unsigned dwFlags;
+    char abUnknown1c[0x1a910]; /* +0x1c */
     unsigned short wItemCount;
     char abUnknown1a92e[0xa6]; /* +0x1a92e */
 };
@@ -134,7 +136,7 @@ public:
      * @ghidraAddress BRD3D: 0x100480a0
      * @ghidraAddress BRGlide: 0x100414f0
      */
-    virtual void UpdateBlinkTimer();
+    virtual int UpdateBlinkTimer();
     /**
      * @ghidraAddress BRD3D: 0x10048010
      * @ghidraAddress BRGlide: 0x10041460
@@ -226,9 +228,14 @@ public:
     float fX;
     float fY;
     float fZ;
-    char abUnknown48[0x2920]; /* +0x48 */
+    char abUnknown48[0xe0]; /* +0x48 */
+    short nAnimationFrame;
+    char abUnknown12a[0x283e]; /* +0x12a */
     int nImageMode;
-    char abUnknown296c[0xd4]; /* +0x296c */
+    int bCustomFrameDurations;
+    int nAnimationLastTime;
+    int nAnimationElapsed;
+    int anFrameDurations[50];
     short anSpriteIds[50];
     char abUnknown2aa4[0x44]; /* +0x2aa4 */
     MenuScreen *pScreen;

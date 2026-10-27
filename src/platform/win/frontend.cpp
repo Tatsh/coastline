@@ -347,6 +347,32 @@ void SaveFileList::GenerateNextSaveFileName(char *pszPattern, char **ppszName) {
     strcat(*ppszName, extension);
 }
 
+int MenuWidget::UpdateBlinkTimer() {
+    if (nImageMode) {
+        unsigned now = GetHighResolutionTime();
+        unsigned delta = now - static_cast<unsigned>(nAnimationLastTime);
+        nAnimationLastTime = static_cast<int>(now);
+        nAnimationElapsed = static_cast<int>(static_cast<unsigned>(nAnimationElapsed) + delta);
+        if (bCustomFrameDurations) {
+            if (nAnimationElapsed > anFrameDurations[nAnimationFrame]) {
+                nAnimationElapsed = 0;
+                dwFlags |= 0x100;
+                itemList.dwFlags |= 0x100;
+                nAnimationFrame =
+                    static_cast<short>(static_cast<unsigned short>(nAnimationFrame) + 1);
+                if (anFrameDurations[nAnimationFrame] <= 0) {
+                    nAnimationFrame = 0;
+                }
+            }
+        } else if (nAnimationElapsed > 60) {
+            nAnimationElapsed = 0;
+            dwFlags |= 0x100;
+            itemList.dwFlags |= 0x100;
+        }
+    }
+    return 1;
+}
+
 int MenuWidget::InitSlideAnimation(int nDuration) {
     fSlideStep = (static_cast<long double>(fSlideEnd) - fSlideStart) / nDuration;
     fSavedX = fX;
@@ -371,8 +397,8 @@ int MenuWidget::StartSlideAnimation() {
 static inline bool UpdateMenuSlideAxis(MenuWidget *pWidget,
                                        int bEnabled,
                                        signed char direction,
-                                      const float &saved,
-                                      const float &target,
+                                       const float &saved,
+                                       const float &target,
                                        float &current) {
     if (!bEnabled || direction == 0) {
         return true;
