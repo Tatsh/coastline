@@ -210,9 +210,10 @@ public:
      */
     virtual bool IsBlockedByModalDialog();
 
-    char abUnknown4[4]; /* +0x04 */
+    int (*pfnUpdate)(MenuWidget *);
     int (*pfnAction)(MenuActionWidget *);
-    char abUnknownC[0x10]; /* +0x0c */
+    int (*pfnIdleAction)(MenuWidget *);
+    char abUnknown10[0xc]; /* +0x10 */
     unsigned dwFlags;
     char abUnknown20[4]; /* +0x20 */
     unsigned dwSecondaryFlags;
@@ -237,7 +238,9 @@ public:
     int nAnimationElapsed;
     int anFrameDurations[50];
     short anSpriteIds[50];
-    char abUnknown2aa4[0x44]; /* +0x2aa4 */
+    char abUnknown2aa4[0x10]; /* +0x2aa4 */
+    short nLinkedWidgetCount;
+    short anLinkedWidgetIndices[25];
     MenuScreen *pScreen;
     char abUnknown2aec[0x70]; /* +0x2aec */
     MenuFont fonts[3];
@@ -260,6 +263,26 @@ public:
     char abUnknown1e20e[2]; /* +0x1e20e */
     const RECT *pImageRects;
 };
+
+/**
+ * @ghidraAddress BRD3D: 0x10043760
+ * @ghidraAddress BRGlide: 0x1003ccb0
+ * @stub
+ */
+int CarSetupUI_OnAcceptAndSave(MenuActionWidget *pWidget);
+
+/**
+ * @ghidraAddress BRD3D: 0x10042cf0
+ * @ghidraAddress BRGlide: 0x1003c240
+ * @stub
+ */
+int AudioOptionsUI_OnCycleSfxVolume(MenuActionWidget *pWidget);
+
+/**
+ * @ghidraAddress BRD3D: 0x10aa28d8
+ * @ghidraAddress BRGlide: 0x10ac5c30
+ */
+extern int g_dwMenuTextEditActive;
 
 /** The index in apWidgets of the mouse cursor of the first panel of the root screen. */
 #define MENU_CURSOR_WIDGET_INDEX (MENU_PANEL_WIDGET_COUNT - 1)

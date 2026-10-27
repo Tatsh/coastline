@@ -119,6 +119,7 @@ MenuWidget *g_pCarSetupMenu;
 MenuWidget *g_pMultiplayerGameSetupMenu;
 MenuWidget *g_pSaveSeasonMenu;
 int g_dwModalDialogBlocking;
+int g_dwMenuTextEditActive;
 unsigned short g_wMenuHoverIndexPrev;
 int g_dwMenuHoverActive;
 RECT g_rcMenuCenterPanel = {148, 110, 358, 260};
@@ -434,6 +435,94 @@ int MenuWidget::Draw() {
         }
     }
     return 1;
+}
+
+static inline void PlayMenuActionSound(int sample) {
+    PlaySoundChannelOneOnce(sample, 0x200020);
+    g_dwNetworkMenuState = sample;
+}
+
+static inline MenuWidget *LinkedMenuWidget(MenuWidget *pWidget, int index) {
+    return pWidget->pScreen->pCurrentPanel->apWidgets[pWidget->anLinkedWidgetIndices[index]];
+}
+
+bool MenuWidget::Update() {
+    short previousFrame = nAnimationFrame;
+    if ((dwFlags & 0x10) || IsBlockedByModalDialog()) {
+        Draw();
+        return true;
+    }
+    if (bSliding) {
+        UpdateSlideAnimation();
+    }
+    UpdateBlinkTimer();
+    if (pfnUpdate) {
+        int result = pfnUpdate(this);
+        if (result == -2) {
+            return true;
+        }
+        if (result == -1) {
+            return false;
+        }
+    }
+    if (UpdateHoverState() && !g_dwMenuTextEditActive) {
+        unsigned flags = dwFlags;
+        if ((flags & 0x400000) && (g_pMouseDevice->abHeld[0] || g_pMouseDevice->abHeld[1])) {
+            nSpriteId = anSpriteIds[1];
+        }
+        if (flags & 2) {
+            if (pfnAction) {
+                if (pfnAction == CarSetupUI_OnAcceptAndSave) {
+                    PlayMenuActionSound(2);
+                } else if (pfnAction != AudioOptionsUI_OnCycleSfxVolume) {
+                    PlayMenuActionSound(1);
+                }
+                if (!pfnAction(this)) {
+                    return false;
+                }
+                if (pfnAction == AudioOptionsUI_OnCycleSfxVolume) {
+                    PlayMenuActionSound(1);
+                }
+                g_dwLastWmCharParam = 0;
+            }
+            dwFlags &= ~2u;
+        } else if (pfnIdleAction) {
+            pfnIdleAction(this);
+        }
+        if ((dwFlags & 0x10000) && nLinkedWidgetCount > 0) {
+            for (int i = 0; i < nLinkedWidgetCount; i++) {
+                MenuWidget *linked = LinkedMenuWidget(this, i);
+                linked->dwFlags |= 0x20000;
+                linked->nAnimationFrame = previousFrame;
+                linked->nAnimationElapsed = 0;
+                linked->nAnimationLastTime = 0;
+                rcBounds.right =
+                    static_cast<int>(static_cast<unsigned>(rcBounds.right) + linked->nWidth);
+                linked->Update();
+                LinkedMenuWidget(this, i)->dwFlags &= ~0x20000u;
+            }
+            Draw();
+            return true;
+        }
+    } else {
+        unsigned flags = dwFlags;
+        if (flags & 0x400000) {
+            nSpriteId = anSpriteIds[0];
+        }
+        if (!(flags & (4 | 0x20000))) {
+            nAnimationFrame = 0;
+            if ((flags & 0x100000) && !(flags & 0x10) && pfnIdleAction) {
+                nSpriteId = 3;
+                fonts[0].bStyle = 1;
+                Draw();
+                return true;
+            }
+        } else if (pfnIdleAction) {
+            pfnIdleAction(this);
+        }
+    }
+    Draw();
+    return true;
 }
 
 int MenuPanel::RestoreSelection() {
