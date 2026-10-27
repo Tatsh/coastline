@@ -25,6 +25,7 @@ add_library(
   gameinit.cpp
   ghost.cpp
   hudlaplist.cpp
+  hudquad.cpp
   hud.cpp
   input.cpp
   menufont.cpp
