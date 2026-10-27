@@ -20,6 +20,7 @@ add_library(
   fileio.c
   frametimer.cpp
   framebuffer.cpp
+  fpshud.cpp
   frontend.cpp
   gameinit.cpp
   ghost.cpp

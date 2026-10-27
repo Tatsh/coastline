@@ -175,6 +175,16 @@ extern s32 g_bHudShowRaceTimer;
  */
 extern s32 g_bHudShowPosition;
 /**
+ * Whether to display the frame rate.
+ * @ghidraAddress BRD3D: 0x10b501d8
+ */
+extern s32 g_bShowFpsCounter;
+/**
+ * Refresh game and renderer frame rates and draw the renderer rate.
+ * @ghidraAddress BRD3D: 0x10014930
+ */
+void DrawFpsCounterOverlay(void);
+/**
  * Draw the active vehicle's total and lap times for the current game mode.
  * @param viewports The records of the views.
  * @ghidraAddress BRD3D: 0x10017290

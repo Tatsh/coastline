@@ -194,12 +194,6 @@ int g_bHudShowSpeedometer = 1;
 int g_bHudShowNetworkStandings = 1;
 
 /**
- * Whether to display the frame rate.
- * @ghidraAddress BRD3D: 0x10b501d8
- */
-int g_bShowFpsCounter;
-
-/**
  * Whether to hide network standings through the P key toggle.
  * @ghidraAddress BRD3D: 0x118abdc8
  */
