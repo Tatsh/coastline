@@ -3,7 +3,7 @@
 /**
  * @file
  * The routines of the EAR library, earias.dll or earpds.dll, found when the library loads.
- * Unrecovered parameters use integer arguments.
+ * Parameters with unknown types use integer arguments.
  */
 
 #include <windows.h>
