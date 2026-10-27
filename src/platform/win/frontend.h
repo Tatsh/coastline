@@ -377,6 +377,22 @@ int SaveSeasonUI_OnSlotSelected(MenuItemList *pList, int *pnSlot);
 int ShowInputOptionsMenu(void);
 
 /**
+ * Select saved-round browsing for season previews.
+ *
+ * @ghidraAddress BRD3D: 0x1003e8b0
+ * @ghidraAddress BRGlide: 0x10037ed0
+ */
+int SeasonRoundList_SetBrowsingFlag(void);
+
+/**
+ * Select the current round for season previews.
+ *
+ * @ghidraAddress BRD3D: 0x1003e8c0
+ * @ghidraAddress BRGlide: 0x10037ee0
+ */
+int SeasonRoundList_ClearBrowsingFlag(void);
+
+/**
  * Build input options on the supplied screen.
  *
  * @ghidraAddress BRD3D: 0x1004c4a0

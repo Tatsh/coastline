@@ -1076,6 +1076,16 @@ int ShowInputOptionsMenu(void) {
     return ShowCachedMenuScreen(g_pCachedMenu_Credits, BuildInputOptionsUI);
 }
 
+int SeasonRoundList_SetBrowsingFlag(void) {
+    g_bSeasonRoundListBrowsing = 1;
+    return 1;
+}
+
+int SeasonRoundList_ClearBrowsingFlag(void) {
+    g_bSeasonRoundListBrowsing = 0;
+    return 1;
+}
+
 int ShowVideoOptionsMenu(void) {
     return ShowCachedMenuScreen(g_pCachedMenu_InputConfig, BuildVideoOptionsUI);
 }
