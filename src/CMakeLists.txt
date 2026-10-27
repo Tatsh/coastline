@@ -143,6 +143,10 @@ target_sources(coastline_game PRIVATE assetdma.c camerarender.c collisionstep.c 
                                      vehicleengine.c vehiclephysics.c)
 
 target_sources(coastline_game PRIVATE tracetrack.c iomessage.c texturestream.c soundeffect.c soundsource.c)
+target_sources(coastline_game PRIVATE completionthreads.c)
+if(TGR_PLATFORM STREQUAL "win")
+  target_sources(coastline_game PRIVATE libultra/os/recvmesg.c libultra/os/sendmesg.c)
+endif()
 target_sources(coastline_game PRIVATE soundpan.c)
 target_sources(coastline_game PRIVATE vehiclestatus.c)
 target_sources(coastline_game PRIVATE vehicletrackpos.c)

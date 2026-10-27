@@ -42,9 +42,6 @@
 /* The words of the header of a compressed asset: its compressed and decompressed sizes. */
 #define ASSET_HEADER_WORD 4
 
-/* The retraces the counter of the vertical blank counts before it wraps. */
-#define VBLANK_COUNTER_MASK 15
-
 /* The priorities of the threads. */
 #define FAULT_THREAD_ID 5
 #define FAULT_THREAD_PRIORITY 50
@@ -256,26 +253,6 @@ void ClearFramebuffersLowRes(void) {
 #endif
 }
 
-void RspDoneThread(void *arg) {
-    osCreateMesgQueue(&g_RspEventMsgQueue, g_aRspEventMsgBuf, 1);
-    osSetEventMesg(OS_EVENT_SP, &g_RspEventMsgQueue, (OSMesg)g_dwDummyOsMesg);
-    for (;;) {
-        osRecvMesg(&g_RspEventMsgQueue, NULL, OS_MESG_BLOCK);
-        AddTimingMarker(1, 0, 0, 0, 0xFF);
-        osSendMesg(&g_RspDoneMsgQueue, (OSMesg)g_dwDummyOsMesg, OS_MESG_BLOCK);
-    }
-}
-
-void RdpDoneThread(void *arg) {
-    osCreateMesgQueue(&g_RdpEventMsgQueue, g_aRdpEventMsgBuf, 1);
-    osSetEventMesg(OS_EVENT_DP, &g_RdpEventMsgQueue, (OSMesg)g_dwDummyOsMesg);
-    for (;;) {
-        osRecvMesg(&g_RdpEventMsgQueue, NULL, OS_MESG_BLOCK);
-        AddTimingMarker(2, 0, 0, 0, 0xFF);
-        osSendMesg(&g_RdpDoneMsgQueue, (OSMesg)g_dwDummyOsMesg, OS_MESG_BLOCK);
-    }
-}
-
 #if TGR_REGION == TGR_REGION_JP || TGR_REGION == TGR_REGION_EU
 void PreNmiResetHandlerThread(void *arg) {
     osCreateMesgQueue(&g_PreNmiMesgQueue, g_aPreNmiMesgBuf, 1);
@@ -289,16 +266,6 @@ void PreNmiResetHandlerThread(void *arg) {
     }
 }
 #endif
-
-void ViRetraceThread(void *arg) {
-    osCreateMesgQueue(&g_ViRetracePollMesgQueue, g_ViRetracePollMesgBuf, 1);
-    osViSetEvent(&g_ViRetracePollMesgQueue, (OSMesg)g_dwDummyOsMesg, 1);
-    for (;;) {
-        osRecvMesg(&g_ViRetracePollMesgQueue, NULL, OS_MESG_BLOCK);
-        osSendMesg(&g_ViRetraceMesgQueue, (OSMesg)g_dwDummyOsMesg, OS_MESG_BLOCK);
-        g_dwVblankCounter = (g_dwVblankCounter + 1) & VBLANK_COUNTER_MASK;
-    }
-}
 
 void UnusedFrameTimingStub(void) {
 }

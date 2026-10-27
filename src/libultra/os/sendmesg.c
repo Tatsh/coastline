@@ -1,3 +1,10 @@
+#include <PR/os.h>
+
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+s32 osSendMesg(OSMesgQueue *mq, OSMesg msg, s32 flag) {
+    return 1;
+}
+#else
 #include <ultra64.h>
 
 #include "osint.h"
@@ -24,3 +31,4 @@ s32 osSendMesg(OSMesgQueue *mq, OSMesg msg, s32 flag) {
     __osRestoreInt(saveMask);
     return 0;
 }
+#endif

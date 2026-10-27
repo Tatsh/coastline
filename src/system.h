@@ -347,6 +347,7 @@ extern OSMesg g_aDmaMsgBuf[32];
  * The queue the RSP event reaches, and the queue the thread forwards it to.
  *
  * @ghidraAddress USA: 0x8031a338
+ * @ghidraAddress BRD3D: 0x106c65c0
  * @ghidraAddress EUR: 0x8031c818
  * @ghidraAddress JPN: 0x8031b448
  */
@@ -354,6 +355,7 @@ extern OSMesgQueue g_RspEventMsgQueue;
 
 /**
  * @ghidraAddress USA: 0x8031a354
+ * @ghidraAddress BRD3D: 0x106c0940
  * @ghidraAddress EUR: 0x8031c834
  * @ghidraAddress JPN: 0x8031b464
  */
@@ -378,6 +380,7 @@ extern OSMesg g_aRspDoneMsgBuf[1];
  * The queue the RDP event reaches, and the queue the thread forwards it to.
  *
  * @ghidraAddress USA: 0x8031a370
+ * @ghidraAddress BRD3D: 0x106c5ab8
  * @ghidraAddress EUR: 0x8031c850
  * @ghidraAddress JPN: 0x8031b480
  */
@@ -385,6 +388,7 @@ extern OSMesgQueue g_RdpEventMsgQueue;
 
 /**
  * @ghidraAddress USA: 0x8031a38c
+ * @ghidraAddress BRD3D: 0x106c32f8
  * @ghidraAddress EUR: 0x8031c86c
  * @ghidraAddress JPN: 0x8031b49c
  */
@@ -410,6 +414,7 @@ extern OSMesg g_aRdpDoneMsgBuf[1];
  * reaches.
  *
  * @ghidraAddress USA: 0x8031a3b0
+ * @ghidraAddress BRD3D: 0x106c5618
  * @ghidraAddress EUR: 0x8031c8b0
  * @ghidraAddress JPN: 0x8031b4e0
  */
@@ -417,6 +422,7 @@ extern OSMesgQueue g_ViRetracePollMesgQueue;
 
 /**
  * @ghidraAddress USA: 0x8031a3c8
+ * @ghidraAddress BRD3D: 0x106c29a0
  * @ghidraAddress EUR: 0x8031c8c8
  * @ghidraAddress JPN: 0x8031b4f8
  */
@@ -424,6 +430,7 @@ extern OSMesg g_ViRetracePollMesgBuf[1];
 
 /**
  * @ghidraAddress USA: 0x8031a390
+ * @ghidraAddress BRD3D: 0x106c6540
  * @ghidraAddress EUR: 0x8031c890
  * @ghidraAddress JPN: 0x8031b4c0
  */
@@ -440,6 +447,7 @@ extern OSMesg g_ViRetraceMesgBuf[1];
  * The value the events send.
  *
  * @ghidraAddress USA: 0x8031a3cc
+ * @ghidraAddress BRD3D: 0x106c06a8
  * @ghidraAddress EUR: 0x8031c8cc
  * @ghidraAddress JPN: 0x8031b4fc
  */
@@ -449,6 +457,7 @@ extern u32 g_dwDummyOsMesg;
  * The retraces ViRetraceThread() forwarded, from 0 to 15.
  *
  * @ghidraAddress USA: 0x8028adec
+ * @ghidraAddress BRD3D: 0x106c6670
  * @ghidraAddress EUR: 0x8028d09c
  * @ghidraAddress JPN: 0x8028cacc
  */
@@ -790,11 +799,16 @@ extern "C"
 #endif
 s32 UnusedVblankQueryStub(s32 unused0, s32 unused1);
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /**
  * Forward each finished task of the RSP to g_RspDoneMsgQueue, marking the timing bars.
  *
  * @param arg Not read.
  * @ghidraAddress USA: 0x8021bbdc
+ * @ghidraAddress BRD3D: 0x1003467f
  * @ghidraAddress EUR: 0x8021cd18
  * @ghidraAddress JPN: 0x8021c5e8
  */
@@ -805,10 +819,15 @@ void RspDoneThread(void *arg);
  *
  * @param arg Not read.
  * @ghidraAddress USA: 0x8021bca8
+ * @ghidraAddress BRD3D: 0x100346e9
  * @ghidraAddress EUR: 0x8021cdc8
  * @ghidraAddress JPN: 0x8021c698
  */
 void RdpDoneThread(void *arg);
+
+#ifdef __cplusplus
+}
+#endif
 
 #if TGR_REGION == TGR_REGION_JP || TGR_REGION == TGR_REGION_EU
 /**
@@ -844,15 +863,24 @@ extern s32 g_dwPreNmiResetPending;
 void PreNmiResetHandlerThread(void *arg);
 #endif
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /**
  * Forward each retrace to g_ViRetraceMesgQueue and count it. Nothing starts it.
  *
  * @param arg Not read.
  * @ghidraAddress USA: 0x8021bd68
+ * @ghidraAddress BRD3D: 0x10034753
  * @ghidraAddress EUR: 0x8021cf50
  * @ghidraAddress JPN: 0x8021c820
  */
 void ViRetraceThread(void *arg);
+
+#ifdef __cplusplus
+}
+#endif
 
 /**
  * Do nothing.
