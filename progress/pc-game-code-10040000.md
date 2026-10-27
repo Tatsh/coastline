@@ -1,6 +1,6 @@
 # PC port game code from 0x10040000 to 0x10050000
 
-108 of 264 routines done.
+110 of 264 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -28,7 +28,7 @@ the same name, for a routine the port retained from the N64 game.
 | `BuildQuitGameConfirmUI`                           |   🚧   |                 |      2 |    794 | `0x10049c20` | `0x10043050` | `void BuildQuitGameConfirmUI(MenuScreen * pScreen)`                                                                                                       |
 | `MenuWidget::Update`                               |   📝   |                 |      1 |    738 | `0x10048180` | `0x100415d0` | `bool Update(MenuWidget * this)`                                                                                                                          |
 | `LoadSeasonUI_OnSlotSelected`                      |   ✅   |                 |      1 |    668 | `0x10042170` | `0x1003b6d0` | `int LoadSeasonUI_OnSlotSelected(MenuWidget * pUnused, int * pnSlot)`                                                                                     |
-| `MenuWidget::UpdateHoverState`                     |   🚧   |                 |      1 |    587 | `0x10047a60` | `0x10040eb0` | `undefined UpdateHoverState(MenuWidget * this)`                                                                                                           |
+| `MenuWidget::UpdateHoverState`                     |   ✅   |                 |      1 |    587 | `0x10047a60` | `0x10040eb0` | `bool UpdateHoverState(MenuWidget * this)`                                                                                                                |
 | `KeyConfigUI_UpdateBindingLabel`                   |        |                 |      1 |    563 | `0x100400e0` | `0x10039620` | `undefined KeyConfigUI_UpdateBindingLabel()`                                                                                                              |
 | `SaveSeasonUI_OnSlotNameEntered`                   |        |                 |      1 |    553 | `0x10041df0` | `0x1003b350` | `undefined SaveSeasonUI_OnSlotNameEntered()`                                                                                                              |
 | `KeyConfigUI_PollKeyCapture`                       |        |                 |      1 |    540 | `0x10040450` | `0x10039990` | `undefined KeyConfigUI_PollKeyCapture()`                                                                                                                  |
@@ -171,7 +171,7 @@ the same name, for a routine the port retained from the N64 game.
 | `RaceSetupUI_OnBackToTimeAttack`                   |   ✅   |                 |      1 |     66 | `0x10044cb0` | `0x1003e200` | `int RaceSetupUI_OnBackToTimeAttack(MenuActionWidget * pItem)`                                                                                            |
 | `SaveTimeAttackMenuUI_OnBack`                      |   ✅   |                 |      1 |     66 | `0x10044f00` | `0x1003e450` | `int SaveTimeAttackMenuUI_OnBack(MenuActionWidget * pItem)`                                                                                               |
 | `MenuWidget::DrawSpriteRegion`                     |   🚧   | ✅ `0x8024594c` |      1 |     65 | `0x10047980` | `0x10040dd0` | `undefined DrawSpriteRegion(MenuWidget * this, undefined4 param_1)`                                                                                       |
-| `MenuPanel::RestoreSelection`                      |        |                 |      3 |     64 | `0x100484f0` | `0x10041940` | `undefined RestoreSelection(MenuPanel * this)`                                                                                                            |
+| `MenuPanel::RestoreSelection`                      |   ✅   |                 |      3 |     64 | `0x100484f0` | `0x10041940` | `int RestoreSelection(MenuPanel * this)`                                                                                                                  |
 | `GameOptionsUI_UpdateForceFeedbackImage`           |        |                 |      1 |     64 | `0x10040950` | `0x10039e90` | `undefined GameOptionsUI_UpdateForceFeedbackImage()`                                                                                                      |
 | `MultiplayerGameSetupUI_OnEscape`                  |        |                 |      1 |     64 | `0x100437d0` | `0x1003cd20` | `undefined MultiplayerGameSetupUI_OnEscape()`                                                                                                             |
 | `SaveSeasonUI_HandleTextEntry`                     |        |                 |      1 |     63 | `0x10047210` | `0x10040660` | `undefined SaveSeasonUI_HandleTextEntry()`                                                                                                                |
