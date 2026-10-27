@@ -317,10 +317,14 @@ private:
      * @ghidraAddress BRD3D: 0x10047a10
      */
     virtual int DrawCurrentImage();
+
+public:
     /**
      * @ghidraAddress BRD3D: 0x100479d0
      */
     virtual int BlitSurfaceById(int nImage, int x, int y);
+
+private:
     /**
      * @ghidraAddress BRD3D: 0x10047980
      */
@@ -396,6 +400,9 @@ public:
     }
     void SetFlags(unsigned value) {
         dwFlags = value;
+    }
+    float GetX() const {
+        return fX;
     }
     float GetY() const {
         return fY;

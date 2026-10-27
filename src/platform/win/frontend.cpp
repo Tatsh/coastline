@@ -1852,6 +1852,24 @@ int AudioOptionsUI_UpdateVolumeLevelIndicatorPos(MenuWidget *pWidget) {
     return 1;
 }
 
+static inline int DrawAudioVolumeSlider(MenuWidget *widget, const int &volume) {
+    unsigned x = static_cast<unsigned>(ConvertMenuCoordinate(widget->GetX()));
+    int y = static_cast<int>(static_cast<unsigned>(ConvertMenuCoordinate(widget->GetY())) + 19u);
+    widget->BlitSurfaceById(0x74, static_cast<int>(x), y);
+    for (unsigned index = 0; index < static_cast<unsigned>(volume); index++, x += 12u) {
+        widget->BlitSurfaceById(0x75, static_cast<int>(x), y);
+    }
+    return 1;
+}
+
+int DrawGameplaySliderA(MenuWidget *pWidget) {
+    return DrawAudioVolumeSlider(pWidget, g_GlobalRallyConfig.dwSfxVolume);
+}
+
+int DrawGameplaySliderB(MenuWidget *pWidget) {
+    return DrawAudioVolumeSlider(pWidget, g_GlobalRallyConfig.dwMusicVolume);
+}
+
 static inline void UpdateMenuListSelection(MenuWidget *pWidget, int &selection) {
     MenuItemList *list = &pWidget->GetItemList();
     int result = list->UpdateAndRenderMenuWidget(selection);
