@@ -2326,7 +2326,7 @@ extern int g_adwForceFeedbackLabelStrIds[];
 /**
  * @ghidraAddress BRD3D: 0x100446d0
  */
-int ShowNetworkCarSetupScreen(void);
+int ShowNetworkCarSetupScreen(MenuWidget *pWidget = nullptr);
 
 /**
  * @ghidraAddress BRD3D: 0x10058750
@@ -2410,9 +2410,18 @@ void BuildLoadTimeAttackMenuUI(MenuScreen *pScreen);
 
 /**
  * @ghidraAddress BRD3D: 0x10057c10
- * @stub
  */
 void BuildMultiplayerGameSetupUI(MenuScreen *pScreen);
+
+/**
+ * @ghidraAddress BRD3D: 0x10044600
+ */
+int MultiplayerGameSetupUI_OnCycleCarClass(MenuWidget *pWidget);
+
+/**
+ * @ghidraAddress BRD3D: 0x100ad274
+ */
+extern const char g_szMenuDigitOne[];
 
 /**
  * @ghidraAddress BRD3D: 0x100563e0

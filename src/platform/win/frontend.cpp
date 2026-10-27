@@ -140,6 +140,7 @@ RECT g_rcMenuRightColumnWide = {478, 0, 578, 0};
 RECT g_rcMenuSubPanel = {87, 61, 186, 132};
 RECT g_rcMenuRightLabel = {330, 70, 447, 86};
 const char g_szSpace[] = " ";
+const char g_szMenuDigitOne[] = "1";
 RECT g_rcHoverTopLeft = {0, 0, 200, 200};
 RECT g_rcHoverBottomLeft = {0, 380, 200, 480};
 MenuWidget *g_pSaveTimeAttackMenu;
@@ -1507,7 +1508,7 @@ int ShowHostRaceSetupScreen(void) {
     return 1;
 }
 
-int ShowNetworkCarSetupScreen(void) {
+int ShowNetworkCarSetupScreen(MenuWidget *) {
     if (!ShowCachedMenuScreen(g_pCachedMenu_NetworkCarSetup, BuildNetworkCarSetupUI)) {
         return 0;
     }
@@ -3883,6 +3884,88 @@ void BuildMultiplayerConnectionUI(MenuScreen *pScreen) {
     widget->pfnUpdate = ConnectionUI_UpdateServiceProviderLabel;
     widget->nSpriteId = 3;
     widget->SetText(g_szSpace, 1, 1, &g_rcMenuRightColumnMid);
+    ++panel->wWidgetCount;
+}
+
+void BuildMultiplayerGameSetupUI(MenuScreen *pScreen) {
+    pScreen->wCurrentPanel = 0;
+    pScreen->anPanelActive[pScreen->wPanelCount] = 1;
+    MenuPanel *panel = new (std::nothrow) MenuPanel();
+    pScreen->apPanels[pScreen->wPanelCount] = panel;
+    if (!panel) {
+        ShowErrorMessage(4);
+    }
+    ++pScreen->wPanelCount;
+    panel->pScreen = pScreen;
+    panel->nFlags = 0;
+    panel->fX = 195;
+    panel->fY = 130;
+    auto add = [&](float x, float y, unsigned flags, int mode, short image) {
+        return AddMenuWidget(panel, pScreen, x, y, flags, mode, image);
+    };
+    add(0, 0, 9, 0, 0);
+    ++panel->wWidgetCount;
+    SetMenuWidgetLabel(add(panel->fX, 10, 0x100009, 1, -1), 0x64, &g_rcMenuTitleBar);
+    ++panel->wWidgetCount;
+    if (g_dwNetworkPlayMode == 2) {
+        int (*actions[4])(MenuWidget *) = {RaceSetupUI_OnCycleTrack,
+                                           RaceSetupUI_OnCycleWeather,
+                                           RaceSetupUI_OnCycleLapCount,
+                                           MultiplayerGameSetupUI_OnCycleCarClass};
+        for (int i = 0; i < 4; ++i) {
+            MenuWidget *widget = add(panel->fX, panel->fY + 19 * i, 0x102001, 1, -1);
+            widget->pfnIdleAction = i == 0 ? ValidateEntityStateAlwaysTrue : ValidateEntityState;
+            widget->pfnAction = actions[i];
+            SetMenuWidgetLabel(widget, i == 3 ? 0x65 : 0x1b + i, &g_rcMenuCenterPanel);
+            ++panel->wWidgetCount;
+            ++panel->wNavigationCount;
+        }
+    }
+    MenuWidget *widget = add(panel->fX, panel->fY + 95, 0x102001, 1, -1);
+    widget->pfnIdleAction = ValidateEntityState;
+    widget->pfnAction = ShowNetworkCarSetupScreen;
+    widget->pfnAfterUpdate = MultiplayerGameSetupUI_OnEscape;
+    SetMenuWidgetLabel(widget, g_dwLobbyIsHost ? 0x66 : 0x1e, &g_rcMenuCenterPanel);
+    ++panel->wWidgetCount;
+    ++panel->wNavigationCount;
+    widget = add(panel->fX, panel->fY + 114, 0x102001, 1, -1);
+    widget->pfnIdleAction = ValidateEntityState;
+    SetMenuWidgetLabel(widget, g_dwLaunchedFromLobby ? 0x67 : 0xc, &g_rcMenuCenterPanel);
+    g_pMultiplayerGameSetupMenu = widget;
+    ++panel->wWidgetCount;
+    ++panel->wNavigationCount;
+    widget = add(73, 212, 1, 1, 22);
+    widget->pfnUpdate = RaceSetupUI_UpdateWeatherImage;
+    ++widget->nLinkedWidgetCount;
+    widget->anLinkedWidgetIndices[0] = panel->wWidgetCount + 1;
+    ++panel->wWidgetCount;
+    widget = add(panel->fX, 275, 0x101001, 1, -1);
+    widget->pfnUpdate = RaceSetupUI_UpdateWeatherLabel;
+    widget->nSpriteId = 3;
+    widget->SetText(g_szSpace, 1, 1, &g_rcMenuLeftColumn);
+    ++panel->wWidgetCount;
+    widget = add(325, 72, 1, 1, 17);
+    widget->pfnUpdate = RaceSetupUI_UpdateTrackImage;
+    ++widget->nLinkedWidgetCount;
+    widget->anLinkedWidgetIndices[0] = panel->wWidgetCount + 1;
+    ++panel->wWidgetCount;
+    widget = add(panel->fX, 152, 0x101001, 1, -1);
+    widget->pfnUpdate = RaceSetupUI_UpdateTrackNameLabel;
+    widget->nSpriteId = 3;
+    widget->SetText(g_szSpace, 1, 1, &g_rcMenuRightColumnMid);
+    ++panel->wWidgetCount;
+    widget = add(106, 68, 0x5001, 1, -1);
+    widget->pfnUpdate = RaceSetupUI_UpdateLapCountLabel;
+    widget->nSpriteId = 5;
+    widget->SetText(g_szMenuDigitOne, 1, 3, &g_rcMenuSubPanel);
+    ++panel->wWidgetCount;
+    SetMenuWidgetLabel(add(106, 115, 0x100001, 1, -1), 0x1d, &g_rcMenuSubPanel);
+    ++panel->wWidgetCount;
+    widget = add(437, 141, 1, 1, 86);
+    widget->pfnUpdate = MultiplayerSetupUI_UpdateCarGroupImage;
+    ++panel->wWidgetCount;
+    widget = add(476, 224, 1, 1, -1);
+    widget->pfnUpdate = MultiplayerSetupUI_UpdateCarGroupSubImage;
     ++panel->wWidgetCount;
 }
 
