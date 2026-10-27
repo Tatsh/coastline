@@ -1,6 +1,6 @@
 # PC port game code from 0x10060000 to 0x10070000
 
-63 of 170 routines done.
+65 of 171 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -57,7 +57,7 @@ the same name, for a routine the port retained from the N64 game.
 | `ComputeStereoPan`                       |        | ✅ `0x8022b1d4` |     10 |    380 | `0x10067bc0` | `0x10060c30` | `void ComputeStereoPan(float * pPosition, float pViewMatrix, float * pOutLeft, float * pOutRight, DWORD * pOutDistance, int bHalfScale)` |
 | `Vehicle::InitPlayerVehicleSlot`         |   ✅   | ✅ `0x80226100` |      1 |    368 | `0x100634f0` | `0x1005c560` | `void InitPlayerVehicleSlot(Vehicle * this)`                                                                                             |
 | `PositionQuaternionToMatrix4x4`          |   ✅   |                 |      1 |    363 | `0x100695d0` | `0x10062640` | `void PositionQuaternionToMatrix4x4(float[4] * matrix, QuaternionPose * pPose)`                                                          |
-| `FindTrackRoutePoint`                    |   🚧   | ✅ `0x80228e4c` |      1 |    345 | `0x10065b20` | `0x1005eb90` | `void FindTrackRoutePoint(TrackSection * section, float distance)`                                                                       |
+| `FindTrackRoutePoint`                    |   ✅   | ✅ `0x80228e4c` |      1 |    345 | `0x10065b20` | `0x1005eb90` | `void FindTrackRoutePoint(TrackSection * section, float distance)`                                                                       |
 | `DoesSegmentCrossUnitCube`               |        | ✅ `0x8025cbf8` |      1 |    332 | `0x1006d850` | `0x10066800` | `undefined DoesSegmentCrossUnitCube()`                                                                                                   |
 | `RallyConfig::InitRallyConfigDefaults`   |   ✅   |                 |      2 |    330 | `0x10069c90` | `0x10062d00` | `void InitRallyConfigDefaults(RallyConfig * this)`                                                                                       |
 | `DoesTriangleCrossUnitCube`              |        | ✅ `0x8025ce28` |      1 |    322 | `0x1006d9a0` | `0x10066950` | `undefined DoesTriangleCrossUnitCube()`                                                                                                  |
@@ -82,7 +82,7 @@ the same name, for a routine the port retained from the N64 game.
 | `UpdateReplayScrubControls`              |   ✅   |                 |      1 |    215 | `0x1006ad10` | `0x10063cc0` | `void UpdateReplayScrubControls(void)`                                                                                                   |
 | `GetBodyPointVelocity`                   |        | ✅ `0x80259c18` |      3 |    214 | `0x1006b510` | `0x100644c0` | `undefined GetBodyPointVelocity()`                                                                                                       |
 | `ReadInstallDirectoryFromRegistry`       |   ✅   |                 |      1 |    212 | `0x1006a8a0` | `0x10063860` | `void ReadInstallDirectoryFromRegistry(void)`                                                                                            |
-| `AdvanceAlongTrackRoute`                 |        | ✅ `0x802290c4` |      2 |    204 | `0x10065c80` | `0x1005ecf0` | `undefined AdvanceAlongTrackRoute()`                                                                                                     |
+| `AdvanceAlongTrackRoute`                 |   ✅   | ✅ `0x802290c4` |      2 |    204 | `0x10065c80` | `0x1005ecf0` | `void AdvanceAlongTrackRoute(TrackSection * section, int pointIndex, float fraction, float distance)`                                    |
 | `Vehicle::ChooseVehicleCar`              |   ✅   | ✅ `0x80225f88` |      3 |    201 | `0x10063420` |              | `void ChooseVehicleCar(Vehicle * this)`                                                                                                  |
 | `ComputeDampingForces`                   |        | ✅ `0x8025ef70` |      1 |    200 | `0x1006f650` | `0x10068600` | `undefined ComputeDampingForces()`                                                                                                       |
 | `MouseDevice::CreateMouseDevice`         |   ✅   |                 |      1 |    181 | `0x100602e0` | `0x10059350` | `bool CreateMouseDevice(MouseDevice * this, void * hWnd)`                                                                                |
@@ -158,6 +158,7 @@ the same name, for a routine the port retained from the N64 game.
 | `ApplyGhostKeyframeForVehicle`           |   ✅   |                 |      2 |     21 | `0x1006acf0` | `0x10063ca0` | `void ApplyGhostKeyframeForVehicle(Vehicle * pVehicle)`                                                                                  |
 | `SaveClockForPause`                      |   ✅   | ✅ `0x8022af34` |      2 |     21 | `0x10067980` | `0x100609f0` | `void SaveClockForPause(void)`                                                                                                           |
 | `SetGhostFrameCountFromSize`             |   ✅   |                 |      1 |     20 | `0x1006ae00` | `0x10063db0` | `uint SetGhostFrameCountFromSize(uint dwSize)`                                                                                           |
+| `ResetTimerState`                        |        |                 |     10 |     19 |              | `0x1006e5a0` | `undefined ResetTimerState()`                                                                                                            |
 | `RestoreClockAfterPause`                 |        | ✅ `0x8022af64` |      1 |     19 | `0x100679a0` | `0x10060a10` | `undefined RestoreClockAfterPause()`                                                                                                     |
 | `SetGameModeAndRefreshVehicleMaterials`  |        |                 |      1 |     18 |              | `0x10062830` | `undefined SetGameModeAndRefreshVehicleMaterials()`                                                                                      |
 | `ResetFrameBlocks`                       |   ✅   | ✅ `0x80255e64` |      1 |     18 | `0x10069580` | `0x100625f0` | `void ResetFrameBlocks(void)`                                                                                                            |

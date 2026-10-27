@@ -1,6 +1,6 @@
 # PC port game code from 0x10030000 to 0x10040000
 
-128 of 308 routines done.
+129 of 308 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -40,7 +40,7 @@ the same name, for a routine the port retained from the N64 game.
 | `RaceSetupUI_UpdateTrackNameLabel`                |        |                 |      7 |    567 | `0x1003fa00` | `0x10038f40` | `undefined RaceSetupUI_UpdateTrackNameLabel()`                                                                                                                          |
 | `ByteSwapTrackInstance`                           |        |                 |      1 |    563 | `0x10038010` | `0x100316d0` | `undefined ByteSwapTrackInstance()`                                                                                                                                     |
 | `TestLineSegmentIntersection`                     |   ✅   | ✅ `0x80225b64` |      7 |    544 | `0x1003ba70` | `0x100350f0` | `int TestLineSegmentIntersection(float * pA1, float * pA2, float * pB1, float * pB2)`                                                                                   |
-| `guRotateF`                                       |        | ✅ `0x80260bc0` |      8 |    514 | `0x10030ee0` | `0x1002a590` | `undefined guRotateF()`                                                                                                                                                 |
+| `guRotateF`                                       |   ✅   | ✅ `0x80260bc0` |      8 |    514 | `0x10030ee0` | `0x1002a590` | `void guRotateF(float[4] * mf, float a, float x, float y, float z)`                                                                                                     |
 | `SetViewport`                                     |        | ✅ `0x80219bf0` |      4 |    502 | `0x10032a42` | `0x1002c0f3` | `undefined SetViewport()`                                                                                                                                               |
 | `InitializeDirectPlay`                            |   ✅   |                 |      1 |    479 | `0x1003bd80` | `0x10035400` | `bool InitializeDirectPlay(void)`                                                                                                                                       |
 | `DrawFilledRect`                                  |        | ✅ `0x80218104` |      2 |    478 | `0x10031688` | `0x1002ad39` | `undefined DrawFilledRect()`                                                                                                                                            |
