@@ -1,6 +1,6 @@
 # PC port game code from 0x10010000 to 0x10020000
 
-136 of 162 routines done.
+137 of 162 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -27,7 +27,7 @@ the same name, for a routine the port retained from the N64 game.
 | `HandleGbiTri1Smooth`                                  |   ✅   |                 |      2 |    934 | `0x1001cff0` | `0x1001ecf0` | `GbiCommand * HandleGbiTri1Smooth(GbiCommand * pCommand)`                                                                                                                                                                                    |
 | `HandleGbiTri1SmoothNoZBuffer`                         |   ✅   |                 |      1 |    934 | `0x1001fbe0` | `0x10020900` | `GbiCommand * HandleGbiTri1SmoothNoZBuffer(GbiCommand * pCommand)`                                                                                                                                                                           |
 | `RenderTireSmoke`                                      |        | ✅ `0x8023d714` |      3 |    847 | `0x100140e0` | `0x10011650` | `undefined RenderTireSmoke()`                                                                                                                                                                                                                |
-| `RenderBillboardParticles`                             |        | ✅ `0x8023d134` |      5 |    846 | `0x10013d90` | `0x10011300` | `undefined RenderBillboardParticles()`                                                                                                                                                                                                       |
+| `RenderBillboardParticles`                             |   ✅   | ✅ `0x8023d134` |      5 |    846 | `0x10013d90` | `0x10011300` | `void RenderBillboardParticles(ViewportRect * viewports, uint head, int red, int green, int blue)`                                                                                                                                           |
 | `DrawTireSpray`                                        |        | ✅ `0x8023bb50` |      1 |    843 | `0x10013a40` | `0x10010fb0` | `void DrawTireSpray(short * pHudLayout)`                                                                                                                                                                                                     |
 | `RenderExhaustAndTireSpray`                            |        | ✅ `0x8023dbc0` |      1 |    837 | `0x10014450` | `0x100119c0` | `void RenderExhaustAndTireSpray(void * pRenderNode, void * pHudState)`                                                                                                                                                                       |
 | `HandleGbiTri2Smooth`                                  |   ✅   |                 |      2 |    823 | `0x1001e170` | `0x1001fa30` | `GbiCommand * HandleGbiTri2Smooth(GbiCommand * pCommand)`                                                                                                                                                                                    |
