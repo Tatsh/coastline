@@ -1551,6 +1551,46 @@ int KeyConfigUI_OnBack(MenuActionWidget *pItem) {
     return 0;
 }
 
+int CarSetupUI_UpdateTransmissionImage(MenuWidget *pWidget) {
+    pWidget->nSpriteId = g_abTransmissionImageIds[g_dwSelectedTransmission];
+    return 1;
+}
+
+int CarSetupUI_UpdateTiresImage(MenuWidget *pWidget) {
+    pWidget->nSpriteId = g_abTireImageIds[g_dwTireMenuIndex];
+    return 1;
+}
+
+int CarSetupUI_UpdateShocksImage(MenuWidget *pWidget) {
+    pWidget->nSpriteId = g_abSuspensionImageIds[g_dwSuspensionMenuIndex];
+    return 1;
+}
+
+int InputOptionsUI_UpdateInputDeviceImage(MenuWidget *pWidget) {
+    pWidget->nSpriteId = g_abInputDeviceImageIds[g_dwSelectedInputDevice];
+    return 1;
+}
+
+int ConnectionUI_UpdateServiceProviderImage(MenuWidget *pWidget) {
+    pWidget->nSpriteId = g_abServiceProviderImageIds[g_dwServiceProviderIndex];
+    return 1;
+}
+
+int GameOptionsUI_UpdateCarShadowImage(MenuWidget *pWidget) {
+    pWidget->nSpriteId = g_abCarShadowImageIds[g_dwOptionCarShadow];
+    return 1;
+}
+
+int GameOptionsUI_UpdateSpecularLightingImage(MenuWidget *pWidget) {
+    pWidget->nSpriteId = g_abSpecularLightingImageIds[g_dwOptionSpecularLighting];
+    return 1;
+}
+
+int GameOptionsUI_UpdateSkidMarksImage(MenuWidget *pWidget) {
+    pWidget->nSpriteId = static_cast<short>(g_awSkidMarksImageIds[g_dwOptionSkidMarks]);
+    return 1;
+}
+
 int CarSetupUI_OnAcceptAndSave(MenuActionWidget *pWidget) {
     pWidget->pScreen->bRunning = 0;
     pWidget->pScreen->ShutdownFrontEnd(0);

@@ -283,6 +283,102 @@ int AudioOptionsUI_OnCycleSfxVolume(MenuActionWidget *pWidget);
 int AudioOptionsUI_OnCycleMusicVolume(MenuActionWidget *pWidget);
 
 /**
+ * @ghidraAddress BRD3D: 0x10040870
+ * @ghidraAddress BRGlide: 0x10039db0
+ */
+int CarSetupUI_UpdateTransmissionImage(MenuWidget *pWidget);
+
+/**
+ * @ghidraAddress BRD3D: 0x100ac598
+ * @ghidraAddress BRGlide: 0x100abd38
+ */
+extern const signed char g_abTransmissionImageIds[2];
+
+/**
+ * @ghidraAddress BRD3D: 0x10040890
+ * @ghidraAddress BRGlide: 0x10039dd0
+ */
+int CarSetupUI_UpdateTiresImage(MenuWidget *pWidget);
+
+/**
+ * @ghidraAddress BRD3D: 0x100ac59c
+ * @ghidraAddress BRGlide: 0x100abd3c
+ */
+extern const signed char g_abTireImageIds[3];
+
+/**
+ * @ghidraAddress BRD3D: 0x100408b0
+ * @ghidraAddress BRGlide: 0x10039df0
+ */
+int CarSetupUI_UpdateShocksImage(MenuWidget *pWidget);
+
+/**
+ * @ghidraAddress BRD3D: 0x100ac5a0
+ * @ghidraAddress BRGlide: 0x100abd40
+ */
+extern const signed char g_abSuspensionImageIds[3];
+
+/**
+ * @ghidraAddress BRD3D: 0x10041870
+ * @ghidraAddress BRGlide: 0x1003add0
+ */
+int InputOptionsUI_UpdateInputDeviceImage(MenuWidget *pWidget);
+
+/**
+ * @ghidraAddress BRD3D: 0x100ac628
+ * @ghidraAddress BRGlide: 0x100abdc8
+ */
+extern const signed char g_abInputDeviceImageIds[4];
+
+/**
+ * @ghidraAddress BRD3D: 0x10040930
+ * @ghidraAddress BRGlide: 0x10039e70
+ */
+int ConnectionUI_UpdateServiceProviderImage(MenuWidget *pWidget);
+
+/**
+ * @ghidraAddress BRD3D: 0x100ac62c
+ * @ghidraAddress BRGlide: 0x100abdcc
+ */
+extern const signed char g_abServiceProviderImageIds[4];
+
+/**
+ * @ghidraAddress BRD3D: 0x100409b0
+ * @ghidraAddress BRGlide: 0x10039ef0
+ */
+int GameOptionsUI_UpdateCarShadowImage(MenuWidget *pWidget);
+
+/**
+ * @ghidraAddress BRD3D: 0x100ac634
+ * @ghidraAddress BRGlide: 0x100abdd4
+ */
+extern const signed char g_abCarShadowImageIds[2];
+
+/**
+ * @ghidraAddress BRD3D: 0x100409d0
+ * @ghidraAddress BRGlide: 0x10039f10
+ */
+int GameOptionsUI_UpdateSpecularLightingImage(MenuWidget *pWidget);
+
+/**
+ * @ghidraAddress BRD3D: 0x100ac638
+ * @ghidraAddress BRGlide: 0x100abdd8
+ */
+extern const signed char g_abSpecularLightingImageIds[2];
+
+/**
+ * @ghidraAddress BRD3D: 0x10040990
+ * @ghidraAddress BRGlide: 0x10039ed0
+ */
+int GameOptionsUI_UpdateSkidMarksImage(MenuWidget *pWidget);
+
+/**
+ * @ghidraAddress BRD3D: 0x100ac640
+ * @ghidraAddress BRGlide: 0x100abde0
+ */
+extern const int g_awSkidMarksImageIds[2];
+
+/**
  * @ghidraAddress BRD3D: 0x100ab3d8
  * @ghidraAddress BRGlide: 0x100aab78
  */
