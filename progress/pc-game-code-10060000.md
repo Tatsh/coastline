@@ -1,6 +1,6 @@
 # PC port game code from 0x10060000 to 0x10070000
 
-132 of 173 routines done.
+134 of 173 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -104,8 +104,8 @@ the same name, for a routine the port retained from the N64 game.
 | `RallyConfig::LoadDeviceDefaultBindings` |   ✅   |                 |      4 |    103 | `0x10069aa0` | `0x10062b10` | `void LoadDeviceDefaultBindings(RallyConfig * this, int nDevice)`                                                                        |
 | `RecordGhostKeyframe`                    |   ✅   |                 |      1 |    103 | `0x1006aab0` | `0x10063a60` | `void RecordGhostKeyframe(Vehicle * pVehicle)`                                                                                           |
 | `ApplyWeather`                           |   ✅   | ✅ `0x80200050` |      2 |    102 | `0x10069740` | `0x100627b0` | `void ApplyWeather(uint weather)`                                                                                                        |
-| `UpdateAirplaneSound`                    |        | ✅ `0x8022b954` |      1 |    102 | `0x10068180` | `0x100611f0` | `undefined UpdateAirplaneSound()`                                                                                                        |
 | `CopyBgr24ToRgba32Flipped`               |   ✅   |                 |      1 |    102 | `0x10060f00` | `0x10059f70` | `undefined CopyBgr24ToRgba32Flipped()`                                                                                                   |
+| `UpdateAirplaneSound`                    |   ✅   | ✅ `0x8022b954` |      1 |    102 | `0x10068180` | `0x100611f0` | `void UpdateAirplaneSound(int instance, Vec3f * position, CameraFrame * camera)`                                                         |
 | `LoadBitmapFromFile`                     |   ✅   |                 |      3 |    101 | `0x100611a0` | `0x1005a210` | `undefined LoadBitmapFromFile()`                                                                                                         |
 | `RallyConfig::GetInputBindingFlags`      |   ✅   |                 |      6 |     98 | `0x10069bc0` | `0x10062c30` | `WORD GetInputBindingFlags(RallyConfig * this, int nDevice, int nControl)`                                                               |
 | `ResetRenderSubsystems`                  |   ✅   |                 |      3 |     90 | `0x1006a9c0` | `0x10063970` | `void ResetRenderSubsystems(int nMode, int nWidth, int nHeight, int nBitDepth, int nExtra)`                                              |
@@ -119,8 +119,8 @@ the same name, for a routine the port retained from the N64 game.
 | `GetPaintRectangle`                      |   ✅   |                 |      2 |     72 | `0x10060fb0` |              | `void GetPaintRectangle(int nGroup, int nSet, int * pLeft, int * pRight, int * pTop, int * pBottom)`                                     |
 | `FreeCarPaintTextures`                   |   ✅   |                 |      2 |     71 | `0x100613b0` | `0x1005a420` | `void FreeCarPaintTextures(void)`                                                                                                        |
 | `ResetMouseCursorToCenter`               |   ✅   |                 |      1 |     71 | `0x10060210` | `0x10059280` | `bool ResetMouseCursorToCenter(int nUnused)`                                                                                             |
-| `UpdateWaterfallSound`                   |        | ✅ `0x8022ba10` |      1 |     70 | `0x10068210` | `0x10061280` | `undefined UpdateWaterfallSound()`                                                                                                       |
 | `LoadPaintDamageBitmaps`                 |   ✅   |                 |      1 |     70 | `0x10061410` | `0x1005a490` | `void LoadPaintDamageBitmaps(void)`                                                                                                      |
+| `UpdateWaterfallSound`                   |   ✅   | ✅ `0x8022ba10` |      1 |     70 | `0x10068210` | `0x10061280` | `void UpdateWaterfallSound(int instance, Vec3f * position, CameraFrame * camera)`                                                        |
 | `GetPaintImage`                          |   ✅   |                 |      4 |     63 | `0x10060f70` |              | `void * GetPaintImage(int nGroup, int nSet, int nDamage)`                                                                                |
 | `ClearPerFrameVariables`                 |   ✅   | ✅ `0x80225f30` |      1 |     62 | `0x100633e0` | `0x1005c450` | `void ClearPerFrameVariables(void)`                                                                                                      |
 | `ReinitPlayerEngineSoundChannel`         |   ✅   |                 |      1 |     62 | `0x10068260` | `0x100612d0` | `void ReinitPlayerEngineSoundChannel(int nPlayer, int nIndex)`                                                                           |
