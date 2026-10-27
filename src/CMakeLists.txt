@@ -106,7 +106,7 @@ else()
                           frameclear.c game.c heap.c mathutil.c playerinput.c profileinit.c
                           rigidbody.c renderinit.c screen.c seasontrack.c trackgrid.c tricache.c
                           util.c vecmath.c
-                          vehiclechoice.c vehiclereset.c visgrid.c
+                          vehiclechoice.c vehiclemodel.c vehiclereset.c visgrid.c
                           libultra/gu/lookat.c libultra/gu/lookathil.c libultra/gu/lookatref.c
                           libultra/gu/mtxcatf.c
                           libultra/gu/mtxutil.c libultra/gu/scale.c libultra/gu/translate.c

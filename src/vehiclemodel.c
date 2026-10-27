@@ -1,3 +1,39 @@
+#include "types.h"
+
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#include "vehiclemodel.h"
+
+VehicleModel *g_pTextureCaptureVehicleModel;
+s32 g_dwTextureCaptureOverflowCount;
+
+void AppendVehicleModelTextureEntry(s32 entry) {
+    VehicleModel *model = g_pTextureCaptureVehicleModel;
+    s32 count = model->textureEntryCount;
+    if (count < 30) {
+        model->textureEntries[count] = entry;
+        g_pTextureCaptureVehicleModel->textureEntryCount =
+            (s32)((u32)g_pTextureCaptureVehicleModel->textureEntryCount + 1);
+    } else {
+        g_dwTextureCaptureOverflowCount = (s32)((u32)g_dwTextureCaptureOverflowCount + 1);
+        model->textureEntryCount = (s32)((u32)model->textureEntryCount + 1);
+    }
+}
+
+s32 IsVehicleMaterialPalette(const void *palette) {
+    VehicleModel *model = g_pTextureCaptureVehicleModel;
+    s32 i;
+    for (i = 0; i < VEHICLE_MATERIALS; i++) {
+        ModelTexture *texture = &model->textures[model->materialTextures[i]];
+        if (texture->palette != NULL &&
+            (texture->textureFlags & 0xf000000) == (TEXTURE_FORMAT_CI4 << 24) &&
+            texture->palette == palette) {
+            return 1;
+        }
+    }
+    return 0;
+}
+
+#else
 #include <PR/os.h>
 #include <PR/os_libc.h>
 
@@ -102,3 +138,4 @@ void LoadCar(s32 slot, s32 car, void *source) {
 s32 IsVehicleModelValid(s32 car) {
     return g_aCarModels[car].modelRomEnd != 0;
 }
+#endif

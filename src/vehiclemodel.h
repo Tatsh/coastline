@@ -118,6 +118,39 @@ extern VehicleModel g_aVehicleModels[];
  * @ghidraAddress BRD3D: 0x100350ee
  */
 void SetMaterialColor(VehicleModel *model, s32 red, s32 green, s32 blue);
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+
+/**
+ * The model whose material textures are being captured.
+ *
+ * @ghidraAddress BRD3D: 0x106c7c3c
+ */
+extern VehicleModel *g_pTextureCaptureVehicleModel;
+
+/**
+ * The captured entries that exceeded the model's texture entry array.
+ *
+ * @ghidraAddress BRD3D: 0x106c7c40
+ */
+extern s32 g_dwTextureCaptureOverflowCount;
+
+/**
+ * Append a texture entry to the current model, counting entries beyond its array capacity.
+ *
+ * @param entry The captured texture entry.
+ * @ghidraAddress BRD3D: 0x10037030
+ */
+void AppendVehicleModelTextureEntry(s32 entry);
+
+/**
+ * Test whether the palette belongs to a CI4 material of the current model.
+ *
+ * @param palette The palette to find.
+ * @return Whether a material uses the palette.
+ * @ghidraAddress BRD3D: 0x10037070
+ */
+s32 IsVehicleMaterialPalette(const void *palette);
+#endif
 
 #ifdef __cplusplus
 }
