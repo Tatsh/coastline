@@ -2397,11 +2397,15 @@ int ReturnToMainMenuFromSeason(void) {
     return 1;
 }
 
+static inline void BuildQuitGameConfirmScreen(MenuScreen *screen) {
+    BuildQuitGameConfirmUI(screen);
+}
+
 int ShowQuitGameConfirmMenu(void) {
     SetActiveMenuItemText(" ");
     PlaySoundChannelOneOnce(3, 0x200020);
     g_dwNetworkMenuState = 3;
-    return ShowCachedMenuScreen(g_pCachedMenu_MainMenuAlternate, BuildQuitGameConfirmUI);
+    return ShowCachedMenuScreen(g_pCachedMenu_MainMenuAlternate, BuildQuitGameConfirmScreen);
 }
 
 int ShowOptionsMenu(void) {
@@ -4173,6 +4177,14 @@ int ShowNotEnoughPointsScreen(void) {
     return ShowCachedMenuScreen(g_pCachedMenu_NotEnoughPoints, BuildNotEnoughPointsUI);
 }
 
+static inline void BuildPreRaceExitSeasonConfirmScreen(MenuScreen *screen) {
+    BuildPreRaceExitSeasonConfirmUI(screen);
+}
+
+static inline void BuildResultsSummaryExitSeasonConfirmScreen(MenuScreen *screen) {
+    BuildResultsSummaryExitSeasonConfirmUI(screen);
+}
+
 static inline int ShowCachedMenuWithExitConfirmation(MenuScreen *&pScreen,
                                                      void (*pfnBuild)(MenuScreen *),
                                                      MenuScreen *&pConfirmation,
@@ -4197,7 +4209,7 @@ int ShowRaceResultsSummaryScreen(MenuWidget *) {
     return ShowCachedMenuWithExitConfirmation(g_pCachedMenu_RaceResultsSummary,
                                               BuildRaceResultsSummaryUI,
                                               g_pRaceResultsSummaryMenuScreen,
-                                              BuildResultsSummaryExitSeasonConfirmUI);
+                                              BuildResultsSummaryExitSeasonConfirmScreen);
 }
 
 static inline int CompleteConnectionTextEdit(MenuWidget *) {
@@ -4219,6 +4231,87 @@ static inline MenuWidget *AddMenuWidget(
 static inline void SetMenuWidgetLabel(MenuWidget *widget, int stringId, const RECT *rect) {
     widget->SetSpriteId(3);
     widget->SetText(GetStringResource(stringId), 1, 1, rect);
+}
+
+static inline int BuildConfirmationUI(MenuScreen *screen,
+                                      int prompt,
+                                      const RECT *promptBounds,
+                                      int yesLabel,
+                                      int noLabel,
+                                      float spacing,
+                                      int (*yesAction)(MenuWidget *),
+                                      int (*noAction)(MenuWidget *),
+                                      bool exitSeason) {
+    screen->SetCurrentPanelIndex(0);
+    screen->SetPanelActive(screen->GetPanelCount(), 1);
+    MenuPanel *panel = new (std::nothrow) MenuPanel();
+    screen->SetPanel(screen->GetPanelCount(), panel);
+    if (!panel) {
+        ShowErrorMessage(4);
+    }
+    screen->SetPanelCount(screen->GetPanelCount() + 1);
+    panel->SetScreen(screen);
+    panel->SetFlags(0);
+    panel->SetX(195);
+    panel->SetY(130);
+    AddMenuWidget(panel, screen, 0, 0, 9, 0, 0);
+    panel->SetWidgetCount(panel->GetWidgetCount() + 1);
+    MenuWidget *widget = AddMenuWidget(panel, screen, panel->GetX(), 10, 0x100009, 1, -1);
+    SetMenuWidgetLabel(widget, prompt, promptBounds);
+    panel->SetWidgetCount(panel->GetWidgetCount() + 1);
+    widget = AddMenuWidget(panel, screen, panel->GetX(), panel->GetY(), 0x102001, 1, -1);
+    widget->SetIdleActionCallback(ValidateEntityState);
+    widget->SetActionCallback(yesAction);
+    SetMenuWidgetLabel(widget, yesLabel, &g_rcMenuCenterPanel);
+    if (exitSeason) {
+        g_pExitSeasonConfirmMenu = widget;
+    }
+    panel->SetWidgetCount(panel->GetWidgetCount() + 1);
+    panel->SetNavigationCount(panel->GetNavigationCount() + 1);
+    float y = static_cast<float>(static_cast<long double>(panel->GetY()) + spacing);
+    widget = AddMenuWidget(panel, screen, panel->GetX(), y, 0x102001, 1, -1);
+    widget->SetIdleActionCallback(ValidateEntityState);
+    widget->SetActionCallback(noAction);
+    SetMenuWidgetLabel(widget, noLabel, &g_rcMenuCenterPanel);
+    panel->SetWidgetCount(panel->GetWidgetCount() + 1);
+    panel->SetNavigationCount(panel->GetNavigationCount() + 1);
+    return 1;
+}
+
+int BuildQuitGameConfirmUI(MenuScreen *screen) {
+    return BuildConfirmationUI(screen,
+                               14,
+                               &g_rcMenuTitleBar,
+                               15,
+                               12,
+                               114,
+                               QuitGameConfirmUI_OnConfirmQuit,
+                               QuitGameConfirmUI_OnBack,
+                               false);
+}
+
+int BuildPreRaceExitSeasonConfirmUI(MenuScreen *screen) {
+    return BuildConfirmationUI(screen,
+                               16,
+                               &g_rcMenuFullScreen,
+                               17,
+                               18,
+                               19,
+                               PreRaceExitSeasonConfirmUI_OnYes,
+                               PreRaceExitSeasonConfirmUI_OnNo,
+                               true);
+}
+
+int BuildResultsSummaryExitSeasonConfirmUI(MenuScreen *screen) {
+    return BuildConfirmationUI(screen,
+                               16,
+                               &g_rcMenuFullScreen,
+                               17,
+                               18,
+                               19,
+                               ResultsSummaryExitSeasonConfirmUI_OnYes,
+                               ResultsSummaryExitSeasonConfirmUI_OnNo,
+                               true);
 }
 
 void BuildNetworkCarSetupUI(MenuScreen *pScreen) {
@@ -5058,7 +5151,7 @@ int ShowPreRaceInfoScreen(void) {
     return ShowCachedMenuWithExitConfirmation(g_pCachedMenu_PreRaceInfo,
                                               BuildPreRaceInfoUI,
                                               g_pPreRaceInfoMenuScreen,
-                                              BuildPreRaceExitSeasonConfirmUI);
+                                              BuildPreRaceExitSeasonConfirmScreen);
 }
 
 int RaceResultsTotalsUI_OnContinue(MenuActionWidget *pItem) {

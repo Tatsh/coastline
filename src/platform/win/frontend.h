@@ -2430,9 +2430,8 @@ void BuildRaceSetupUI(MenuScreen *pScreen);
 
 /**
  * @ghidraAddress BRD3D: 0x10049c20
- * @stub
  */
-void BuildQuitGameConfirmUI(MenuScreen *pScreen);
+int BuildQuitGameConfirmUI(MenuScreen *pScreen);
 
 /**
  * @ghidraAddress BRD3D: 0x10044970
@@ -3488,7 +3487,7 @@ void BuildRaceResultsTotalsUI(MenuScreen *pScreen);
 /**
  * @ghidraAddress BRD3D: 0x1004a260
  */
-void BuildResultsSummaryExitSeasonConfirmUI(MenuScreen *pScreen);
+int BuildResultsSummaryExitSeasonConfirmUI(MenuScreen *pScreen);
 
 /**
  * @ghidraAddress BRD3D: 0x10051990
@@ -3549,7 +3548,7 @@ int PreRaceInfoUI_UpdateBestLapLabel(MenuWidget *pWidget);
 /**
  * @ghidraAddress BRD3D: 0x10049f40
  */
-void BuildPreRaceExitSeasonConfirmUI(MenuScreen *pScreen);
+int BuildPreRaceExitSeasonConfirmUI(MenuScreen *pScreen);
 
 /**
  * Show cached pre-race information and build an exit confirmation on the first visit.
