@@ -1313,6 +1313,120 @@ void DrawFlatShadedTriangleDepthScaled(int nVertex0, int nVertex1, int nVertex2)
     DrawFlatShadedTriangleImpl<true>(nVertex0, nVertex1, nVertex2);
 }
 
+static unsigned char ConvertFillColorChannel(float fChannel) {
+    long double value = static_cast<long double>(fChannel) * 255.0f;
+    if (!(value >= -0x1p63L && value < 0x1p63L)) {
+        return 0;
+    }
+    return static_cast<unsigned char>(static_cast<long long>(value));
+}
+
+void DrawFillRectangle(int nLeft, int nTop, int nRight, int nBottom) {
+    if (nLeft < g_dwScissorLeft) {
+        nLeft = g_dwScissorLeft;
+    }
+    if (nTop < g_dwScissorBottom) {
+        nTop = g_dwScissorBottom;
+    }
+    if (nRight > g_dwScissorRight) {
+        nRight = g_dwScissorRight;
+    }
+    if (nBottom > g_dwScissorTop) {
+        nBottom = g_dwScissorTop;
+    }
+    unsigned char red = g_bGbiFillColorR;
+    unsigned char green = g_bGbiFillColorG;
+    unsigned char blue = g_bGbiFillColorB;
+    unsigned char alpha = g_bGbiFillColorA;
+    if (g_dwGbiCombineModeHi == 0xfcffffff && g_dwGbiCombineModeLo == 0xfffdf6fb) {
+        red = ConvertFillColorChannel(g_fGbiPrimColorR);
+        green = ConvertFillColorChannel(g_fGbiPrimColorG);
+        blue = ConvertFillColorChannel(g_fGbiPrimColorB);
+        alpha = ConvertFillColorChannel(g_fGbiPrimColorA);
+    }
+    int nScreenTop = static_cast<int>(static_cast<unsigned>(g_dwConfigFramebufferHeight) -
+                                      static_cast<unsigned>(nBottom));
+    int nScreenBottom = static_cast<int>(static_cast<unsigned>(g_dwConfigFramebufferHeight) -
+                                         static_cast<unsigned>(nTop));
+    if (g_dwGbiRenderMode != 0x504340) {
+        FlushIndexedRenderBuffer();
+        D3DMaterial *pMaterial = g_pMainRenderWindow->pMaterial;
+        pMaterial->desc.diffuse.r = static_cast<float>(red) * (1.0f / 255.0f);
+        pMaterial->desc.diffuse.g = static_cast<float>(green) * (1.0f / 255.0f);
+        pMaterial->desc.diffuse.b = static_cast<float>(blue) * (1.0f / 255.0f);
+        pMaterial->desc.dwRampSize = 1;
+        pMaterial->bDirty = true;
+        pMaterial->CommitMaterialIfDirty();
+        g_pMainRenderWindow->pViewport->SetBackground(pMaterial->hMaterial);
+        D3DRECT rect;
+        rect.x1 = nLeft;
+        rect.y1 = nScreenTop;
+        rect.x2 = nRight;
+        rect.y2 = nScreenBottom;
+        g_pMainRenderWindow->pViewport->Clear(1, &rect, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER);
+        return;
+    }
+    g_pfnSubmitVertexToRenderBuffer =
+        g_dwWeatherActive ? SubmitVertexToRenderBufferEx : SubmitVertexToRenderBuffer;
+    SetPendingRenderState(&g_dwPendingRS_SrcBlend,
+                          g_dwAppliedRS_SrcBlend,
+                          D3DBLEND_SRCALPHA,
+                          RENDER_STATE_DIRTY_SRC_BLEND);
+    SetPendingRenderState(&g_dwPendingRS_DestBlend,
+                          g_dwAppliedRS_DestBlend,
+                          D3DBLEND_INVSRCALPHA,
+                          RENDER_STATE_DIRTY_DEST_BLEND);
+    SetPendingRenderState(
+        &g_dwPendingRS_AlphaRef, g_dwAppliedRS_AlphaRef, 0, RENDER_STATE_DIRTY_ALPHA_REF);
+    g_dwD3DAlphaFunc = D3DCMP_ALWAYS;
+    SetPendingRenderState(&g_dwPendingRS_AlphaFunc,
+                          g_dwAppliedRS_AlphaFunc,
+                          g_dwD3DAlphaFunc,
+                          RENDER_STATE_DIRTY_ALPHA_FUNC);
+    SetPendingRenderState(&g_dwPendingRS_AlphaTestEnable,
+                          g_dwAppliedRS_AlphaTestEnable,
+                          false,
+                          RENDER_STATE_DIRTY_ALPHA_TEST_ENABLE);
+    SetPendingRenderState(&g_dwPendingRS_AlphaBlendEnable,
+                          g_dwAppliedRS_AlphaBlendEnable,
+                          true,
+                          RENDER_STATE_DIRTY_ALPHA_BLEND_ENABLE);
+    g_dwD3DZFunc = D3DCMP_ALWAYS;
+    SetPendingRenderState(
+        &g_dwPendingRS_ZFunc, g_dwAppliedRS_ZFunc, g_dwD3DZFunc, RENDER_STATE_DIRTY_Z_FUNC);
+    SetPendingRenderState(&g_dwPendingRS_ZWriteEnable,
+                          g_dwAppliedRS_ZWriteEnable,
+                          false,
+                          RENDER_STATE_DIRTY_Z_WRITE_ENABLE);
+    FlushDirtyRenderStates();
+    D3DCOLOR color = static_cast<D3DCOLOR>(alpha) << 24 | static_cast<D3DCOLOR>(red) << 16 |
+                     static_cast<D3DCOLOR>(green) << 8 | blue;
+    g_pD3DDevice2->SetRenderState(D3DRENDERSTATE_TEXTUREHANDLE, 0);
+    g_pD3DDevice2->SetRenderState(D3DRENDERSTATE_CULLMODE, D3DCULL_NONE);
+    auto makeVertex = [color](float x, float y, float u, float v) {
+        D3DTLVERTEX vertex;
+        vertex.sx = x;
+        vertex.sy = y;
+        vertex.sz = 0.0f;
+        vertex.rhw = 1.0f;
+        vertex.color = color;
+        vertex.specular = 0xff0000ff;
+        vertex.tu = u;
+        vertex.tv = v;
+        return vertex;
+    };
+    D3DTLVERTEX triangle[3] = {makeVertex(nLeft, nScreenTop, 0, 0),
+                               makeVertex(nRight, nScreenBottom, 1, 1),
+                               makeVertex(nLeft, nScreenBottom, 0, 1)};
+    g_pD3DDevice2->DrawPrimitive(
+        D3DPT_TRIANGLELIST, D3DVT_TLVERTEX, triangle, 3, D3DDP_WAIT | D3DDP_DONOTUPDATEEXTENTS);
+    triangle[1] = makeVertex(nRight, nScreenTop, 1, 0);
+    triangle[2] = makeVertex(nRight, nScreenBottom, 1, 1);
+    g_pD3DDevice2->DrawPrimitive(
+        D3DPT_TRIANGLELIST, D3DVT_TLVERTEX, triangle, 3, D3DDP_WAIT | D3DDP_DONOTUPDATEEXTENTS);
+    g_pD3DDevice2->SetRenderState(D3DRENDERSTATE_CULLMODE, g_dwAppliedRS_CullMode);
+}
+
 // A routine that clips a triangle of g_aGbiVertexCache and submits what remains.
 typedef void (*TriangleClipper)(GbiVertex *pVertex0, GbiVertex *pVertex1, GbiVertex *pVertex2);
 
