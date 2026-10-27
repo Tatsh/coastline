@@ -286,7 +286,12 @@ s32 CastRayAgainstTrack(Vec3f *outPoint,
  * @ghidraAddress USA: 0x8021e620
  * @ghidraAddress EUR: 0x8021f920
  * @ghidraAddress JPN: 0x8021f110
+ * @ghidraAddress BRD3D: 0x10002de0
+ * @stub{BRD3D}
  */
+#if TGR_PLATFORM == TGR_PLATFORM_WIN && defined(__cplusplus)
+extern "C" {
+#endif
 u32 LookupTrackGridCell(f32 x, f32 y);
 
 /**
@@ -297,8 +302,13 @@ u32 LookupTrackGridCell(f32 x, f32 y);
  * @ghidraAddress USA: 0x8021ea90
  * @ghidraAddress EUR: 0x8021fd90
  * @ghidraAddress JPN: 0x8021f580
+ * @ghidraAddress BRD3D: 0x10002ef0
+ * @stub{BRD3D}
  */
 u16 NextGridCellTriangle(TrackGridCursor *cursor);
+#if TGR_PLATFORM == TGR_PLATFORM_WIN && defined(__cplusplus)
+}
+#endif
 
 /**
  * The placed models of a cell of the grid of the track.

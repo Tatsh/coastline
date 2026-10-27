@@ -67,11 +67,20 @@ void QuaternionNormalize(Quaternion *q) {
 }
 
 void Vec3fNormalizeFast(Vec3f *v) {
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+    long double inverse = 1.0f / Vec3fLength(v);
+    f32 rounded = (f32)inverse;
+
+    v->x *= rounded;
+    v->y = (f32)((long double)v->y * inverse);
+    v->z *= rounded;
+#else
     f32 inverse = 1.0f / sqrtf(v->z * v->z + (v->x * v->x + v->y * v->y));
 
     v->x *= inverse;
     v->y *= inverse;
     v->z *= inverse;
+#endif
 }
 
 void ComputeDeltaQuaternion(RigidBodyState *state) {

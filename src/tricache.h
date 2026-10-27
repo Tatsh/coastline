@@ -45,6 +45,7 @@ extern TrackTriangle g_aTriCacheTriangles[TRI_CACHE_SLOTS][TRI_CACHE_TRIANGLES];
  * @ghidraAddress USA: 0x8037ea80
  * @ghidraAddress EUR: 0x80380f80
  * @ghidraAddress JPN: 0x8037fbf0
+ * @ghidraAddress BRD3D: 0x117554d8
  */
 extern u16 g_awTriCacheSectorId[TRI_CACHE_SLOTS];
 
@@ -64,6 +65,7 @@ extern u16 g_awTriCacheTriCount[TRI_CACHE_SLOTS];
  * @ghidraAddress USA: 0x8037ea90
  * @ghidraAddress EUR: 0x80380f90
  * @ghidraAddress JPN: 0x8037fc00
+ * @ghidraAddress BRD3D: 0x117554c8
  */
 extern u32 g_adwTriCacheLruStamp[TRI_CACHE_SLOTS];
 
@@ -73,6 +75,7 @@ extern u32 g_adwTriCacheLruStamp[TRI_CACHE_SLOTS];
  * @ghidraAddress USA: 0x8037eaa0
  * @ghidraAddress EUR: 0x80380fa0
  * @ghidraAddress JPN: 0x8037fc10
+ * @ghidraAddress BRD3D: 0x117554e0
  */
 extern u32 g_dwTriCacheLruCounter;
 
@@ -99,7 +102,6 @@ s32 InvalidateTriCacheSectorAt(f32 x, f32 y);
  * @ghidraAddress EUR: 0x80260668
  * @ghidraAddress JPN: 0x80260118
  * @ghidraAddress BRD3D: 0x1006f720
- * @stub{BRD3D}
  */
 s16 BuildTrackTriangleCache(f32 x, f32 y);
 
