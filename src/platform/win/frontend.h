@@ -839,6 +839,28 @@ void BuildInputOptionsUI(MenuScreen *pScreen);
 int ShowVideoOptionsMenu(void);
 
 /**
+ * @ghidraAddress BRD3D: 0x100455e0
+ */
+int ShowAudioOptionsMenu(void);
+
+/**
+ * @ghidraAddress BRD3D: 0x100456b0
+ */
+int ShowGameOptionsMenu(void);
+
+/**
+ * @ghidraAddress BRD3D: 0x1004dfc0
+ * @stub
+ */
+int BuildAudioOptionsUI(MenuScreen *pScreen);
+
+/**
+ * @ghidraAddress BRD3D: 0x1004e830
+ * @stub
+ */
+int BuildGameOptionsUI(MenuScreen *pScreen);
+
+/**
  * Build video options on the supplied screen.
  *
  * @ghidraAddress BRD3D: 0x1004d1f0
@@ -2721,9 +2743,8 @@ int ShowOptionsMenu(void);
 
 /**
  * @ghidraAddress BRD3D: 0x1004bdc0
- * @stub
  */
-void BuildOptionsMenuUI(MenuScreen *pScreen);
+int BuildOptionsMenuUI(MenuScreen *pScreen);
 
 /**
  * @ghidraAddress BRD3D: 0x100419d0

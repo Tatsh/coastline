@@ -101,6 +101,8 @@ int g_dwFileListSelectedSlot = -1;
 namespace {
 // @ghidraAddress BRD3D: 0x100ab4e8
 RECT g_rcMenuSessionListBox = {188, 130, 300, 197};
+// @ghidraAddress BRD3D: 0x100ab4c8
+RECT g_rcMenuWideColumn = {230, 0, 547, 0};
 // @ghidraAddress BRD3D: 0x10aa2a5c
 unsigned g_dwMenuListRepeatAccumMs;
 // @ghidraAddress BRD3D: 0x10aa2a60
@@ -1994,6 +1996,22 @@ int ShowVideoOptionsMenu(void) {
     return ShowCachedMenuScreen(g_pCachedMenu_InputConfig, BuildVideoOptionsUI);
 }
 
+static inline void BuildAudioOptionsScreen(MenuScreen *screen) {
+    BuildAudioOptionsUI(screen);
+}
+
+static inline void BuildGameOptionsScreen(MenuScreen *screen) {
+    BuildGameOptionsUI(screen);
+}
+
+int ShowAudioOptionsMenu(void) {
+    return ShowCachedMenuScreen(g_pCachedMenu_GameplaySettings, BuildAudioOptionsScreen);
+}
+
+int ShowGameOptionsMenu(void) {
+    return ShowCachedMenuScreen(g_pCachedMenu_Championship, BuildGameOptionsScreen);
+}
+
 int ShowKeyConfigScreen(void) {
     return ShowCachedMenuScreen(g_pCachedMenu_KeyConfig, BuildKeyConfigUI);
 }
@@ -2478,9 +2496,13 @@ int ShowQuitGameConfirmMenu(void) {
     return ShowCachedMenuScreen(g_pCachedMenu_MainMenuAlternate, BuildQuitGameConfirmScreen);
 }
 
+static inline void BuildOptionsMenuScreen(MenuScreen *screen) {
+    BuildOptionsMenuUI(screen);
+}
+
 int ShowOptionsMenu(void) {
     SetActiveMenuItemText(" ");
-    return ShowCachedMenuScreen(g_pCachedMenu_Options, BuildOptionsMenuUI);
+    return ShowCachedMenuScreen(g_pCachedMenu_Options, BuildOptionsMenuScreen);
 }
 
 static inline int ReturnFromOptionsMenu(MenuActionWidget *pItem, MenuScreen *&pTarget) {
@@ -4592,6 +4614,79 @@ int BuildJoinCreateGameUI(MenuScreen *screen) {
         panel->SetNavigationCount(panel->GetNavigationCount() + 1);
     }
     AddMenuWidget(panel, screen, 80, 46, 9, 0, 7);
+    panel->SetWidgetCount(panel->GetWidgetCount() + 1);
+    return 1;
+}
+
+static inline int OptionsMenuUI_OnInput(MenuWidget *) {
+    return ShowInputOptionsMenu();
+}
+
+static inline int OptionsMenuUI_OnVideo(MenuWidget *) {
+    return ShowVideoOptionsMenu();
+}
+
+static inline int OptionsMenuUI_OnAudio(MenuWidget *) {
+    return ShowAudioOptionsMenu();
+}
+
+static inline int OptionsMenuUI_OnGame(MenuWidget *) {
+    return ShowGameOptionsMenu();
+}
+
+int BuildOptionsMenuUI(MenuScreen *screen) {
+    screen->SetCurrentPanelIndex(0);
+    screen->SetPanelActive(screen->GetPanelCount(), 1);
+    MenuPanel *panel = new (std::nothrow) MenuPanel();
+    screen->SetPanel(screen->GetPanelCount(), panel);
+    if (!panel) {
+        ShowErrorMessage(4);
+    }
+    screen->SetPanelCount(screen->GetPanelCount() + 1);
+    panel->SetScreen(screen);
+    panel->SetFlags(0);
+    panel->SetX(195);
+    panel->SetY(130);
+    AddMenuWidget(panel, screen, 0, 0, 9, 0, 0);
+    panel->SetWidgetCount(panel->GetWidgetCount() + 1);
+    SetMenuWidgetLabel(
+        AddMenuWidget(panel, screen, panel->GetX(), 10, 0x100009, 1, -1), 6, &g_rcMenuTitleBar);
+    panel->SetWidgetCount(panel->GetWidgetCount() + 1);
+    int (*actions[5])(MenuWidget *) = {OptionsMenuUI_OnInput,
+                                       OptionsMenuUI_OnVideo,
+                                       OptionsMenuUI_OnAudio,
+                                       OptionsMenuUI_OnGame,
+                                       OptionsMenuUI_OnBack};
+    for (int i = 0; i < 5; ++i) {
+        int spacing = i < 4 ? 19 * i : 114;
+        MenuWidget *widget =
+            AddMenuWidget(panel,
+                          screen,
+                          panel->GetX(),
+                          static_cast<float>(static_cast<long double>(panel->GetY()) + spacing),
+                          0x102001,
+                          1,
+                          -1);
+        widget->SetIdleActionCallback(ValidateEntityState);
+        widget->SetActionCallback(actions[i]);
+        SetMenuWidgetLabel(widget, i < 4 ? 0x1f + i : 0xc, &g_rcMenuCenterPanel);
+        if (i == 4) {
+            g_pOptionsSubMenu = widget;
+        }
+        panel->SetWidgetCount(panel->GetWidgetCount() + 1);
+        panel->SetNavigationCount(panel->GetNavigationCount() + 1);
+    }
+    AddMenuWidget(panel, screen, 80, 46, 9, 0, 9);
+    panel->SetWidgetCount(panel->GetWidgetCount() + 1);
+    MenuWidget *widget = AddMenuWidget(panel, screen, 324, 46, 1, 1, 22);
+    widget->SetUpdateCallback(InputOptionsUI_UpdateInputDeviceImage);
+    widget->SetLinkedWidgetCount(widget->GetLinkedWidgetCount() + 1);
+    widget->SetLinkedWidgetIndex(0, panel->GetWidgetCount() + 1);
+    panel->SetWidgetCount(panel->GetWidgetCount() + 1);
+    widget = AddMenuWidget(panel, screen, panel->GetX(), 155, 0x101001, 1, -1);
+    widget->SetUpdateCallback(InputOptionsUI_UpdateInputDeviceLabel);
+    widget->SetSpriteId(3);
+    widget->SetText(g_szSpace, 1, 1, &g_rcMenuWideColumn);
     panel->SetWidgetCount(panel->GetWidgetCount() + 1);
     return 1;
 }
