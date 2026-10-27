@@ -38,6 +38,16 @@ void ByteSwapTrackInstances(TrackHeader *track);
 void ByteSwapTrackAnimationTable(TrackHeader *track);
 
 /**
+ * @ghidraAddress BRD3D: 0x10038250
+ */
+void ByteSwapTrackSegmentList(TrackHeader *track);
+
+/**
+ * @ghidraAddress BRD3D: 0x100382a0
+ */
+void ByteSwapTrackSegment(TrackSection *section);
+
+/**
  * @ghidraAddress BRD3D: 0x10038410
  */
 void ByteSwapTrackVec3Array(TrackHeader *track);

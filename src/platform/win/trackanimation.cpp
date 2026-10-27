@@ -22,6 +22,16 @@ static inline void RelocateTrackPath(Vec3f *&path) {
     std::memcpy(&path, &address, sizeof(address));
 }
 
+void ByteSwapTrackSegmentList(TrackHeader *track) {
+    TrackSection **section = track->sections;
+    for (int i = 0; i < track->sectionCount; i++, section++) {
+        unsigned address = std::byteswap(std::bit_cast<unsigned>(*section));
+        RelocatePointerValue(&address);
+        *section = std::bit_cast<TrackSection *>(address);
+        ByteSwapTrackSegment(*section);
+    }
+}
+
 void ByteSwapTrackAnimationTable(TrackHeader *track) {
     int pathLength = 0;
     ByteSwapTrackField(track->specialCount);
