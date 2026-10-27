@@ -1,6 +1,6 @@
 # PC port game code from 0x10060000 to 0x10070000
 
-128 of 173 routines done.
+129 of 173 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -94,7 +94,7 @@ the same name, for a routine the port retained from the N64 game.
 | `ResetTrackTriangleCache`                |        |                 |      1 |    134 |              | `0x10063dd0` | `undefined ResetTrackTriangleCache()`                                                                                                    |
 | `ResetCollisionCaches`                   |   ✅   | ✅ `0x80259350` |      1 |    134 | `0x1006ae20` |              | `void ResetCollisionCaches(void)`                                                                                                        |
 | `ApplyRemoteVehicleState`                |        |                 |      1 |    129 | `0x10060cc0` | `0x10059d30` | `undefined ApplyRemoteVehicleState()`                                                                                                    |
-| `UpdateClosestSoundSource`               |        | ✅ `0x8022b494` |      2 |    120 | `0x10067e50` | `0x10060ec0` | `undefined UpdateClosestSoundSource()`                                                                                                   |
+| `UpdateClosestSoundSource`               |   ✅   | ✅ `0x8022b494` |      2 |    120 | `0x10067e50` | `0x10060ec0` | `void UpdateClosestSoundSource(int source, int sound, int volume, float frequency, Vec3f * position, CameraFrame * listener)`            |
 | `UpdateVehicleWheelTransforms`           |   ✅   |                 |      4 |    119 | `0x10061be0` |              | `void UpdateVehicleWheelTransforms(Vehicle * vehicle)`                                                                                   |
 | `ModulateRgbaByMask`                     |        |                 |      1 |    119 | `0x10061210` | `0x1005a280` | `undefined ModulateRgbaByMask()`                                                                                                         |
 | `SerializeSaveData`                      |        | ✅ `0x8022adcc` |      2 |    117 | `0x10067880` | `0x100608f0` | `undefined SerializeSaveData()`                                                                                                          |
