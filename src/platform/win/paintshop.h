@@ -40,6 +40,20 @@ typedef struct CarPaintTextureSet {
 extern int g_nSelectedPaintOption10;
 
 /**
+ * The group used to prepare car paint textures.
+ *
+ * @ghidraAddress BRD3D: 0x10aa3444
+ */
+extern int g_nPaintTextureGroup;
+
+/**
+ * The paint set index, advanced before preparing each texture.
+ *
+ * @ghidraAddress BRD3D: 0x10aa3460
+ */
+extern int g_nPaintTextureSetIndex;
+
+/**
  * Select a paint set and return its bitmap for a damage level.
  *
  * @param nGroup The paint group.

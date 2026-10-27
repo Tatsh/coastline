@@ -1530,3 +1530,102 @@ unsigned char *GetTextureEntryPixelsWithPaint(int nEntry, unsigned *pSize) {
     return reinterpret_cast<unsigned char *>(
         static_cast<std::uintptr_t>(static_cast<unsigned>(right)));
 }
+
+int PreparePaintTexture(int *pWidth, int *pHeight, TextureImageData *pImage) {
+    pImage->bOwnsPaintBuffers = 0;
+    if (g_dwTextureLoadCategory != 2) {
+        return 0;
+    }
+    g_nPaintTextureSetIndex = static_cast<int>(static_cast<unsigned>(g_nPaintTextureSetIndex) + 1);
+    void *paint = GetPaintImage(g_nPaintTextureGroup, g_nPaintTextureSetIndex, 0);
+    if (!paint) {
+        return 0;
+    }
+    int left;
+    int right;
+    int top;
+    int bottom;
+    GetPaintRectangle(g_nPaintTextureGroup, g_nPaintTextureSetIndex, &left, &right, &top, &bottom);
+    int sourceWidth = static_cast<int>(static_cast<unsigned>(pImage->nSourceWidth) << 1);
+    int sourceHeight = static_cast<int>(static_cast<unsigned>(pImage->nSourceHeight) << 1);
+    if (!(left || right || top || bottom)) {
+        left = 0;
+        right = sourceWidth;
+        top = 0;
+        bottom = sourceHeight;
+    }
+    bool enlarge = pImage->nSourceWidth == pImage->nWidth &&
+                   pImage->nSourceHeight == pImage->nHeight && g_dwTextureQualityLevel <= 0;
+    unsigned char *paintPixels = enlarge ? g_abDecodedTexturePixels : g_abTextureResampleBuffer;
+    auto blit = [&](const void *pixels) {
+        return BlitPaintImageToPixels(
+            pixels, left, right, top, bottom, paintPixels, sourceWidth, sourceHeight);
+    };
+    if (!blit(paint)) {
+        return 1;
+    }
+    if (enlarge) {
+        pImage->nWidth = static_cast<int>(static_cast<unsigned>(pImage->nWidth) << 1);
+        pImage->nHeight = static_cast<int>(static_cast<unsigned>(pImage->nHeight) << 1);
+        pImage->nPixelBytes = static_cast<int>(static_cast<unsigned>(pImage->nPixelBytes) << 2);
+        CalculateTextureLodFromDimensions(&pImage->nLod, pImage->nWidth, pImage->nHeight);
+        pImage->nLargestLod = pImage->nLod;
+        *pWidth = static_cast<int>(static_cast<unsigned>(*pWidth) << 1);
+        *pHeight = static_cast<int>(static_cast<unsigned>(*pHeight) << 1);
+    }
+    pImage->bOwnsPaintBuffers = 1;
+    pImage->nPaintGroup = g_nPaintTextureGroup;
+    pImage->nPaintSet = g_nPaintTextureSetIndex;
+    pImage->nDamageLevel = 0;
+    pImage->bHasTintPixels = HasPaintTintPixels(paint, left, right, top, bottom);
+    auto convert = [&]() {
+        if (!enlarge) {
+            ResizeTextureImage(g_abDecodedTexturePixels,
+                               pImage->nWidth,
+                               pImage->nHeight,
+                               g_abTextureResampleBuffer,
+                               sourceWidth,
+                               sourceHeight,
+                               pImage->nPixelFormatId);
+        }
+        if (pImage->nColorKey) {
+            pImage->nPaintPixelBytes =
+                ConvertRGBAToPixelFormatWithColorKey(g_abDecodedTexturePixels,
+                                                     g_abDecodedTexturePixels,
+                                                     pImage->nPixelBytes,
+                                                     pImage->nPixelFormatId,
+                                                     &pImage->nColorKey);
+        } else {
+            pImage->nPaintPixelBytes = ConvertRGBAToPixelFormat(g_abDecodedTexturePixels,
+                                                                g_abDecodedTexturePixels,
+                                                                pImage->nPixelBytes,
+                                                                pImage->nPixelFormatId);
+        }
+    };
+    auto save = [&](int damage) {
+        pImage->apPaintBuffers[damage] =
+            static_cast<unsigned char *>(std::malloc(pImage->nPaintPixelBytes));
+        std::memcpy(
+            pImage->apPaintBuffers[damage], g_abDecodedTexturePixels, pImage->nPaintPixelBytes);
+    };
+    convert();
+    if (GetSelectedPaintOption() < 0) {
+        pImage->apPaintBuffers[3] = nullptr;
+        pImage->apPaintBuffers[2] = nullptr;
+        pImage->apPaintBuffers[1] = nullptr;
+        save(0);
+    } else {
+        for (int damage = 3; damage >= 0; damage--) {
+            paint = GetPaintImage(g_nPaintTextureGroup, g_nPaintTextureSetIndex, damage);
+            if (paint) {
+                if (blit(paint)) {
+                    convert();
+                }
+                save(damage);
+            } else {
+                pImage->apPaintBuffers[damage] = nullptr;
+            }
+        }
+    }
+    return 1;
+}

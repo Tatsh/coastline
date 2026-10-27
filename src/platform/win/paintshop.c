@@ -12,6 +12,8 @@ int g_dwColorTintBlue;
 int g_dwConvertedBitmapWidth;
 int g_dwConvertedBitmapHeight;
 int g_nSelectedPaintOption10;
+int g_nPaintTextureGroup;
+int g_nPaintTextureSetIndex;
 
 void *GetPaintImage(int nGroup, int nSet, int nDamage) {
     CarPaintTextureSet *set = &g_CarPaintTextureSets[nGroup][nSet];

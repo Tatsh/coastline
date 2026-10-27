@@ -1432,10 +1432,10 @@ int CloneTextureEntryWithNewImageData(int nEntry,
  * @param pWidth Receives the device width.
  * @param pHeight Receives the device height.
  * @param pImage The image metadata to prepare.
+ * @return 0 when paint is unavailable, otherwise 1.
  * @ghidraAddress BRD3D: 0x10024bf0
- * @stub{BRD3D}
  */
-void PreparePaintTexture(int *pWidth, int *pHeight, TextureImageData *pImage);
+int PreparePaintTexture(int *pWidth, int *pHeight, TextureImageData *pImage);
 
 /**
  * Allocation label for the device texture table.
