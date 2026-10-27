@@ -2062,10 +2062,28 @@ int RaceSetupUI_OnCycleLapCount(MenuActionWidget *pItem);
 /** @ghidraAddress BRD3D: 0x10043180 */
 int RaceSetupUI_OnCycleWeather(MenuActionWidget *pItem);
 
-/** @ghidraAddress BRD3D: 0x100ac368 */
+/**
+ * @ghidraAddress BRD3D: 0x100ac368
+ * @ghidraAddress BRGlide: 0x100abb08
+ */
 extern int g_adwCarNameStringIds[];
-/** @ghidraAddress BRD3D: 0x100ac308 */
+/**
+ * @ghidraAddress BRD3D: 0x100ac308
+ * @ghidraAddress BRGlide: 0x100abaa8
+ */
 extern int g_adwTrackNameStringIds[];
+
+/**
+ * @ghidraAddress BRD3D: 0x1003f760
+ * @ghidraAddress BRGlide: 0x10038ca0
+ */
+int CarSetupUI_UpdateCarNameLabel(MenuWidget *pWidget);
+
+/**
+ * @ghidraAddress BRD3D: 0x1003fa00
+ * @ghidraAddress BRGlide: 0x10038f40
+ */
+int RaceSetupUI_UpdateTrackNameLabel(MenuWidget *pWidget);
 /**
  * @ghidraAddress BRD3D: 0x100ac3b0
  * @ghidraAddress BRGlide: 0x100abb50

@@ -2802,6 +2802,56 @@ int SeasonProgressInfoUI_UpdateRoundLabel(MenuWidget *pWidget) {
     return 1;
 }
 
+static inline void DrawPrimaryMenuLabel(MenuWidget *pWidget, const char *text) {
+    MenuFont *font = &pWidget->fonts[0];
+    MenuFontVTable *vtable = font->pVTable;
+    strcpy(font->szText, text);
+    vtable->MeasureText(font);
+    ProcessMenuTextEditInput(pWidget, 0);
+}
+
+int CarSetupUI_UpdateCarNameLabel(MenuWidget *pWidget) {
+    int stringId = 0x14;
+    if (g_pActiveMenuScreen != g_pCachedMenu_LoadGhost || g_dwTimeAttackLoadSelected) {
+        int car = g_dwCarMenuIndex;
+        if (car > 15) {
+            car -= 16;
+        }
+        stringId = g_adwCarNameStringIds[car];
+    }
+    DrawPrimaryMenuLabel(pWidget, GetStringResource(stringId));
+    return 1;
+}
+
+int RaceSetupUI_UpdateTrackNameLabel(MenuWidget *pWidget) {
+    if (g_pActiveMenuScreen == g_pCachedMenu_LoadGhost && !g_dwTimeAttackLoadSelected) {
+        DrawPrimaryMenuLabel(pWidget, GetStringResource(0x1b));
+        return 1;
+    }
+    char text[128];
+    int track;
+    if (g_dwGameMode == GAME_MODE_CHAMPIONSHIP) {
+        bool browsing = g_bSeasonRoundListBrowsing != 0;
+        int round = browsing ? g_dwSeasonSavedRound : g_dwSeasonRound;
+        track = g_SeasonTable[g_bSeasonClass].races[round][0];
+        strcpy(text, GetStringResource(g_adwTrackNameStringIds[track]));
+        round = browsing ? g_dwSeasonSavedRound : g_dwSeasonRound;
+        track = g_SeasonTable[g_bSeasonClass].races[round][0];
+    } else {
+        strcpy(text, GetStringResource(g_adwTrackNameStringIds[g_dwTrackMenuIndex]));
+        track = g_dwTrackMenuIndex;
+    }
+    if (g_apTrackMenuItems[track]->flags & 0x10) {
+        float y = pWidget->fY;
+        pWidget->fonts[0].fY = 130.0f;
+        DrawPrimaryMenuLabel(pWidget, GetStringResource(0xb0));
+        // The widget supplies the font's restored coordinate.
+        pWidget->fonts[0].fY = y;
+    }
+    DrawPrimaryMenuLabel(pWidget, text);
+    return 1;
+}
+
 int RaceSetupUI_UpdateWeatherLabel(MenuWidget *pWidget) {
     bool loadingGhost =
         g_pActiveMenuScreen == g_pCachedMenu_LoadGhost && !g_dwTimeAttackLoadSelected;
