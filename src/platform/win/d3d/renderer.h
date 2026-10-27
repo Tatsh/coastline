@@ -1430,16 +1430,6 @@ unsigned AllocateTextureEntry(void);
 extern D3DTexture **g_ppTextureIdTable;
 
 /**
- * @ghidraAddress BRD3D: 0x10575424
- */
-extern unsigned g_dwTextureIdCount;
-
-/**
- * @ghidraAddress BRD3D: 0x10575428
- */
-extern unsigned g_dwTextureIdCapacity;
-
-/**
  * Load every texture the game loaded into its texture surface again, after the surfaces were lost.
  *
  * @ghidraAddress BRD3D: 0x10024bb0

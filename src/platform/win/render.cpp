@@ -932,8 +932,12 @@ unsigned QueryAvailableTextureMemory(void) {
     return available;
 }
 
+namespace {
+// @ghidraAddress BRD3D: 0x10575424
 unsigned g_dwTextureIdCount;
+// @ghidraAddress BRD3D: 0x10575428
 unsigned g_dwTextureIdCapacity;
+} // namespace
 
 void ShutdownTextureSubsystem(void) {
     DestroyTextureUploadQueue();
