@@ -373,6 +373,7 @@ extern s32 g_dwStatPolygonsDrawn;
  * @ghidraAddress USA: 0x8028aa44
  * @ghidraAddress EUR: 0x8028cc4c
  * @ghidraAddress JPN: 0x8028c71c
+ * @ghidraAddress BRD3D: 0x100aa87c
  */
 extern s32 g_bTrackTextureLod;
 

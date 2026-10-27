@@ -15,12 +15,13 @@
 #include "vehicle.h"
 
 /**
- * Whether the shadows keep the triangles off their texture, and draw beyond the rectangle of the
- * screen of their vehicle.
+ * Whether shadows include triangles outside their texture and extend beyond their vehicle's
+ * screen rectangle.
  *
  * @ghidraAddress USA: 0x8028aa60
  * @ghidraAddress EUR: 0x8028cc68
  * @ghidraAddress JPN: 0x8028c738
+ * @ghidraAddress BRD3D: 0x106c660c
  */
 extern s32 g_bShadowCullDisabled;
 
@@ -163,6 +164,7 @@ extern s32 g_bDebugHideInstance;
  * @ghidraAddress USA: 0x8028c74c
  * @ghidraAddress EUR: 0x8028eeac
  * @ghidraAddress JPN: 0x8028e8fc
+ * @ghidraAddress BRD3D: 0x1036439c
  */
 extern u32 g_dwTrackOtherModeLBlend;
 
@@ -170,6 +172,7 @@ extern u32 g_dwTrackOtherModeLBlend;
  * @ghidraAddress USA: 0x8028c750
  * @ghidraAddress EUR: 0x8028eeb0
  * @ghidraAddress JPN: 0x8028e900
+ * @ghidraAddress BRD3D: 0x103643a0
  */
 extern u32 g_dwTrackOtherModeLFlags;
 
@@ -256,6 +259,7 @@ extern Vec3f g_vTrackLightDirection;
  * @ghidraAddress USA: 0x8035d1c0
  * @ghidraAddress EUR: 0x8035f6c0
  * @ghidraAddress JPN: 0x8035e330
+ * @ghidraAddress BRD3D: 0x10364390
  */
 extern Vec3f g_vShadowForward;
 
@@ -273,18 +277,42 @@ extern Vec3f g_vShadowForward;
  */
 void ProjectWorldToScreenRect(Vec3f *point, s32 size, s16 low[2], s16 high[2]);
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
 /**
  * Draw a placed model, and on it the shadow of each vehicle in a mask, by its vertices taken to the
- * texture of the shadow and its triangles off the texture left out.
+ * texture of the shadow and its triangles outside the texture omitted.
+ *
+ * @param viewports The view rectangles.
+ * @param index The placed model.
+ * @param vehicles A bit for each vehicle whose shadow falls on it.
+ * @param deferred Whether to draw shadows as translucent in the second pass.
+ * @param firstVehicle The first vehicle in the shadow mask.
+ * @ghidraAddress BRD3D: 0x1000f640
+ */
+void RenderTrackInstance(
+    ViewportRect *viewports, s32 index, s32 vehicles, s32 deferred, Vehicle *firstVehicle);
+#else
+/**
+ * Draw a placed model, and on it the shadow of each vehicle in a mask, by its vertices taken to the
+ * texture of the shadow and its triangles outside the texture omitted.
  *
  * @param index The placed model.
  * @param vehicles A bit for each vehicle whose shadow falls on it.
- * @param deferred Whether this is the second pass, which draws the shadows as translucent.
+ * @param deferred Whether to draw shadows as translucent in the second pass.
  * @ghidraAddress USA: 0x80234050
  * @ghidraAddress EUR: 0x80235560
  * @ghidraAddress JPN: 0x80235360
  */
 void RenderTrackInstance(s32 index, s32 vehicles, s32 deferred);
+#endif
+
+#ifdef __cplusplus
+}
+#endif
 
 /**
  * Order two cells in view by their distance from the camera.

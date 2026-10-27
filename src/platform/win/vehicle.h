@@ -155,7 +155,8 @@ typedef struct Vehicle {
     s32 nearbyInstanceCount;
     f32 groundDistance;
     s32 groundSurface;
-    u8 abUnknown299c[0xc]; /* +0x299c */
+    s16 shadowCorners[2][2];
+    u8 abUnknown29a4[4]; /* +0x29a4 */
     s32 carModel;
     u8 color[3];
     u8 ghostMode;
@@ -166,7 +167,11 @@ typedef struct Vehicle {
     VehicleModel *model;
     s16 dents[VEHICLE_DENT_SIDES];
     s16 dentJitter;
-    u8 abUnknown29da[0xd6]; /* +0x29da */
+    u8 abUnknown29da[2]; /* +0x29da */
+    s32 shadowCornerValid[4];
+    u8 abUnknown29ec[4]; /* +0x29ec */
+    ConvertedModelVertex shadowQuad[4];
+    u8 abUnknown2a70[0x40]; /* +0x2a70 */
     Vec3f previousCollisionPosition;
     char checkpointMessageText[20];
     u8 abUnknown2ad0[0x98]; /* +0x2ad0 */
