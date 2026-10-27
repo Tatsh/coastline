@@ -1,6 +1,6 @@
 # PC port game code from 0x10050000 to 0x10060000
 
-48 of 96 routines done.
+49 of 96 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -19,7 +19,7 @@ the same name, for a routine the port retained from the N64 game.
 | `BuildRaceResultsTotalsUI`                |   ✅   |                 |      2 |   3394 | `0x10054b50` | `0x1004da00` | `void BuildRaceResultsTotalsUI(MenuScreen * pScreen)`                                                                                           |
 | `BuildMultiplayerConnectionUI`            |   ✅   |                 |      2 |   2877 | `0x100558a0` | `0x1004e750` | `void BuildMultiplayerConnectionUI(MenuScreen * pScreen)`                                                                                       |
 | `BuildLoadTimeAttackMenuUI`               |   🚧   |                 |      2 |   2863 | `0x10059bb0` | `0x10052a60` | `void BuildLoadTimeAttackMenuUI(MenuScreen * pScreen)`                                                                                          |
-| `BuildMultiplayerGameSetupUI`             |   🚧   |                 |      4 |   2701 | `0x10057c10` | `0x10050ac0` | `void BuildMultiplayerGameSetupUI(MenuScreen * pScreen)`                                                                                        |
+| `BuildMultiplayerGameSetupUI`             |   ✅   |                 |      4 |   2701 | `0x10057c10` | `0x10050ac0` | `void BuildMultiplayerGameSetupUI(MenuScreen * pScreen)`                                                                                        |
 | `BuildSaveSeasonUI`                       |   📝   |                 |      2 |   2433 | `0x10050060` | `0x10048f10` | `void BuildSaveSeasonUI(MenuScreen * pScreen)`                                                                                                  |
 | `ApplyPlayerVehicleInput`                 |        |                 |      3 |   1960 |              | `0x1005d050` | `undefined ApplyPlayerVehicleInput()`                                                                                                           |
 | `BuildSaveTimeAttackMenuUI`               |   🚧   |                 |      2 |   1932 | `0x1005a6e0` | `0x10053590` | `void BuildSaveTimeAttackMenuUI(MenuScreen * pScreen)`                                                                                          |
