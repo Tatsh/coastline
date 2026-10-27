@@ -596,6 +596,9 @@ f32 CastWheelRay(RigidBody *body, RigidBody *wheel);
  */
 void UpdateWheelHeights(RigidBody *body);
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 /**
  * Set the springs of the wheels of a vehicle, and count the frames each wheel touches the ground.
  *
@@ -603,6 +606,7 @@ void UpdateWheelHeights(RigidBody *body);
  * @ghidraAddress USA: 0x8025edbc
  * @ghidraAddress EUR: 0x80260298
  * @ghidraAddress JPN: 0x8025fd48
+ * @ghidraAddress BRD3D: 0x1006f540
  */
 void ComputeSpringForces(RigidBody *body);
 
@@ -613,8 +617,12 @@ void ComputeSpringForces(RigidBody *body);
  * @ghidraAddress USA: 0x8025ef70
  * @ghidraAddress EUR: 0x8026044c
  * @ghidraAddress JPN: 0x8025fefc
+ * @ghidraAddress BRD3D: 0x1006f650
  */
 void ComputeDampingForces(RigidBody *body);
+#ifdef __cplusplus
+}
+#endif
 
 /**
  * Whether two boxes overlap, by the separating axes of their faces and of the products of their

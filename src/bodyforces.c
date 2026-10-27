@@ -2,6 +2,7 @@
 
 #include "physics.h"
 #include "track.h"
+#include "vehiclemodel.h"
 #include "weather.h"
 
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
@@ -9,6 +10,122 @@
 #else
 #define FORCE_PRODUCT(a, b) ((a) * (b))
 #endif
+
+#define SIGN(x) ((x) == 0.0f ? 0.0 : (0.0f < (x) ? 1.0 : -1.0))
+
+void ComputeSpringForces(RigidBody *body) {
+    RigidBodyForce *force = body->forces;
+    RigidBody *wheel;
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+    long double extension, compression;
+#else
+    f64 extension;
+    f32 compression;
+#endif
+    s16 previous;
+    s32 i;
+
+    for (i = 0; i < VEHICLE_WHEELS; i++) {
+        force->vector.y = 0.0f;
+        force->vector.x = 0.0f;
+        switch (i) {
+        case 0:
+            wheel = body->wheels[0];
+            break;
+        case 1:
+            wheel = body->wheels[1];
+            break;
+        case 2:
+            wheel = body->wheels[2];
+            break;
+        default:
+            wheel = body->wheels[3];
+            break;
+        }
+        previous = wheel->contactFrames;
+        if (wheel->contactFrames < 100) {
+            wheel->contactFrames++;
+        }
+        /* A wheel hanging at full droop is off the ground. */
+        extension = (f64)wheel->suspension;
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+        if (!(extension > -0.3999000134110451)) {
+#else
+        if (extension <= -0.3999) {
+#endif
+            wheel->contactFrames = 0;
+            extension = (f64)-0.3f;
+        }
+        if (0.0 < extension) {
+            extension = (f64)0.0f;
+        }
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+        compression = extension - -0.3f;
+#else
+        compression = (f32)(extension - -0.3);
+#endif
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+        if (!(compression >= 0.0f)) {
+#else
+        if (compression < 0.0f) {
+#endif
+            compression = 0.0f;
+        }
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+        force->vector.z = compression * compression * body->springRate;
+#else
+        force->vector.z =
+            (f32)((f64)compression * (SIGN(compression) * (f64)compression)) * body->springRate;
+#endif
+        if (wheel->contactFrames && !previous) {
+            body->landed = 0x80;
+        }
+        force = force->next;
+    }
+}
+
+void ComputeDampingForces(RigidBody *body) {
+    /* The original reserves stack for sixteen bytes of locals it does not use. */
+    f32 unused[4];
+    RigidBodyForce *force = body->forces;
+    RigidBody *wheel;
+    Vec3f velocity;
+    s32 i;
+    f32 damping;
+
+    (void)unused;
+    for (i = 0; i < VEHICLE_WHEELS; i++) {
+        force->vector.y = 0.0f;
+        force->vector.x = 0.0f;
+        switch (i) {
+        case 0:
+            ComputeWheelLocalVelocity(&velocity, body, body->wheels[0]);
+            wheel = body->wheels[0];
+            break;
+        case 1:
+            ComputeWheelLocalVelocity(&velocity, body, body->wheels[1]);
+            wheel = body->wheels[1];
+            break;
+        case 2:
+            ComputeWheelLocalVelocity(&velocity, body, body->wheels[2]);
+            wheel = body->wheels[2];
+            break;
+        default:
+            ComputeWheelLocalVelocity(&velocity, body, body->wheels[3]);
+            wheel = body->wheels[3];
+            break;
+        }
+        if (wheel->contactFrames == 0) {
+            damping = 0.0f;
+        } else if (velocity.z < 0.0f) {
+            damping = 0.0f;
+        } else {
+            damping = velocity.z * body->damping;
+        }
+        force->vector.z = damping;
+        force = force->next;
+    }
+}
 
 void ComputeDragForce(RigidBody *body, RigidBodyForce *force) {
     s32 surface0, surface1, surface2, surface3;
