@@ -180,6 +180,7 @@ private:
      */
     virtual void ReadPodBytesFromFile(unsigned nIndex, void *pBuffer);
 
+public:
     /**
      * Read the data of the entry of a path.
      *
@@ -191,6 +192,7 @@ private:
      */
     virtual void *LoadPodByName(const char *pszPath, void *pBuffer);
 
+private:
     /**
      * Read the data of an entry.
      *
