@@ -2419,6 +2419,11 @@ void BuildMultiplayerGameSetupUI(MenuScreen *pScreen);
 int MultiplayerGameSetupUI_OnCycleCarClass(MenuWidget *pWidget);
 
 /**
+ * @ghidraAddress BRD3D: 0x100ac3c8
+ */
+extern const int g_adwCarClassLabelStrIds[5];
+
+/**
  * @ghidraAddress BRD3D: 0x100ad274
  */
 extern const char g_szMenuDigitOne[];

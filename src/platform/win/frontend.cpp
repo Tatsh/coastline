@@ -71,6 +71,7 @@ int g_dwAccumUnlockedCarMask;
 int g_dwAccumUnlockedTrackMask;
 int g_dwHandlingTypeMenuIndex = 4;
 int g_dwSelectedCarClass;
+const int g_adwCarClassLabelStrIds[5] = {157, 158, 159, 160, 161};
 int g_dwAppliedCarGroupPreset;
 unsigned g_dwSelectableCarMask = 0x102;
 const int g_adwInputDeviceMenuIndexToDevice[INPUT_DEVICE_MENU_CHOICES] = {0, 1, 2, 3};
@@ -1421,6 +1422,28 @@ int CarSetupUI_OnCycleCar(MenuActionWidget *) {
         sprintf(g_szNetworkChatText,
                 GetStringResource(0xb7),
                 GetStringResource(g_adwCarNameStringIds[car]));
+        PostSelectionNotice();
+    }
+    return 1;
+}
+
+int MultiplayerGameSetupUI_OnCycleCarClass(MenuWidget *) {
+    if (g_adwMouseButtonPressed[1]) {
+        g_dwSelectedCarClass = static_cast<int>(static_cast<unsigned>(g_dwSelectedCarClass) + 1);
+        if (g_dwSelectedCarClass >= 5) {
+            g_dwSelectedCarClass = 0;
+        }
+        ApplyCarGroupPreset();
+    } else if (g_adwMouseButtonPressed[0]) {
+        g_dwSelectedCarClass = static_cast<int>(static_cast<unsigned>(g_dwSelectedCarClass) - 1);
+        if (g_dwSelectedCarClass < 0) {
+            g_dwSelectedCarClass = 4;
+        }
+        ApplyCarGroupPreset();
+    }
+    if (g_DirectPlayInfo.pDirectPlay) {
+        const char *label = GetStringResource(g_adwCarClassLabelStrIds[g_dwSelectedCarClass]);
+        sprintf(g_szNetworkChatText, GetStringResource(0xbd), label);
         PostSelectionNotice();
     }
     return 1;
