@@ -132,6 +132,7 @@ extern s32 g_dwAirplaneInstance;
  * @ghidraAddress USA: 0x8026ff68
  * @ghidraAddress EUR: 0x80271f38
  * @ghidraAddress JPN: 0x802719e8
+ * @ghidraAddress BRD3D: 0x1068061c
  */
 extern s32 g_dwAirplaneTrigger;
 
@@ -139,6 +140,7 @@ extern s32 g_dwAirplaneTrigger;
  * @ghidraAddress USA: 0x8026ff6c
  * @ghidraAddress EUR: 0x80271f3c
  * @ghidraAddress JPN: 0x802719ec
+ * @ghidraAddress BRD3D: 0x10680620
  */
 extern s32 g_dwAirplaneTriggerLap;
 
@@ -148,6 +150,7 @@ extern s32 g_dwAirplaneTriggerLap;
  * @ghidraAddress USA: 0x8026ff70
  * @ghidraAddress EUR: 0x80271f40
  * @ghidraAddress JPN: 0x802719f0
+ * @ghidraAddress BRD3D: 0x10680624
  */
 extern s32 g_bAirplaneFlying;
 
@@ -157,6 +160,7 @@ extern s32 g_bAirplaneFlying;
  * @ghidraAddress USA: 0x8026ff74
  * @ghidraAddress EUR: 0x80271f44
  * @ghidraAddress JPN: 0x802719f4
+ * @ghidraAddress BRD3D: 0x10680628
  */
 extern s32 g_dwAirplaneNode;
 
@@ -164,6 +168,7 @@ extern s32 g_dwAirplaneNode;
  * @ghidraAddress USA: 0x8026ff78
  * @ghidraAddress EUR: 0x80271f48
  * @ghidraAddress JPN: 0x802719f8
+ * @ghidraAddress BRD3D: 0x1068062c
  */
 extern s32 g_dwAirplaneNodeCount;
 
@@ -173,6 +178,7 @@ extern s32 g_dwAirplaneNodeCount;
  * @ghidraAddress USA: 0x8026ff7c
  * @ghidraAddress EUR: 0x80271f4c
  * @ghidraAddress JPN: 0x802719fc
+ * @ghidraAddress BRD3D: 0x10680630
  */
 extern f32 g_fAirplaneScale;
 
@@ -182,6 +188,7 @@ extern f32 g_fAirplaneScale;
  * @ghidraAddress USA: 0x8026ff80
  * @ghidraAddress EUR: 0x80271f50
  * @ghidraAddress JPN: 0x80271a00
+ * @ghidraAddress BRD3D: 0x10680634
  */
 extern Vec3f *g_pAirplanePathLeft;
 
@@ -189,6 +196,7 @@ extern Vec3f *g_pAirplanePathLeft;
  * @ghidraAddress USA: 0x8026ff84
  * @ghidraAddress EUR: 0x80271f54
  * @ghidraAddress JPN: 0x80271a04
+ * @ghidraAddress BRD3D: 0x10680638
  */
 extern Vec3f *g_pAirplanePathRight;
 
@@ -198,6 +206,7 @@ extern Vec3f *g_pAirplanePathRight;
  * @ghidraAddress USA: 0x8026ff88
  * @ghidraAddress EUR: 0x80271f58
  * @ghidraAddress JPN: 0x80271a08
+ * @ghidraAddress BRD3D: 0x1068063c
  */
 extern f32 g_fAirplaneDistance;
 
@@ -205,6 +214,7 @@ extern f32 g_fAirplaneDistance;
  * @ghidraAddress USA: 0x8026ff8c
  * @ghidraAddress EUR: 0x80271f5c
  * @ghidraAddress JPN: 0x80271a0c
+ * @ghidraAddress BRD3D: 0x10680640
  */
 extern f32 g_fAirplaneSegmentLength;
 
@@ -215,6 +225,7 @@ extern f32 g_fAirplaneSegmentLength;
  * @ghidraAddress USA: 0x8026ff90
  * @ghidraAddress EUR: 0x80271f60
  * @ghidraAddress JPN: 0x80271a10
+ * @ghidraAddress BRD3D: 0x10680644
  */
 extern Vec3f g_vAirplaneDirPrev;
 
@@ -222,6 +233,7 @@ extern Vec3f g_vAirplaneDirPrev;
  * @ghidraAddress USA: 0x8026ff9c
  * @ghidraAddress EUR: 0x80271f6c
  * @ghidraAddress JPN: 0x80271a1c
+ * @ghidraAddress BRD3D: 0x10680650
  */
 extern Vec3f g_vAirplaneDir;
 
@@ -229,6 +241,7 @@ extern Vec3f g_vAirplaneDir;
  * @ghidraAddress USA: 0x8026ffa8
  * @ghidraAddress EUR: 0x80271f78
  * @ghidraAddress JPN: 0x80271a28
+ * @ghidraAddress BRD3D: 0x1068065c
  */
 extern Vec3f g_vAirplaneDirNext;
 
@@ -449,6 +462,7 @@ extern s32 g_adwSavedResultLaps[SAVED_RESULTS];
  * @ghidraAddress USA: 0x80315db0
  * @ghidraAddress EUR: 0x80317aa0
  * @ghidraAddress JPN: 0x803164e0
+ * @ghidraAddress BRD3D: 0x10680940
  */
 extern const char *g_apszSeasonResultMsgLines[];
 
@@ -465,6 +479,7 @@ extern char g_szFormatBuffer[0x20];
  * @ghidraAddress USA: 0x80315df8
  * @ghidraAddress EUR: 0x80317ae8
  * @ghidraAddress JPN: 0x80316528
+ * @ghidraAddress BRD3D: 0x106805d0
  */
 extern s32 g_adwWaterfallInstances[16];
 
