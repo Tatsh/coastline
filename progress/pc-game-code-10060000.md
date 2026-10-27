@@ -1,6 +1,6 @@
 # PC port game code from 0x10060000 to 0x10070000
 
-71 of 172 routines done.
+72 of 172 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -143,8 +143,8 @@ the same name, for a routine the port retained from the N64 game.
 | `InitializeRenderSubsystems`             |   ✅   |                 |      1 |     36 | `0x1006aa20` | `0x100639d0` | `void InitializeRenderSubsystems(int nMode)`                                                                                             |
 | `IsTriangleInUnitCube`                   |        | ✅ `0x8025d018` |      3 |     35 | `0x1006daf0` | `0x10066aa0` | `undefined IsTriangleInUnitCube()`                                                                                                       |
 | `MouseDevice::Init`                      |   ✅   |                 |      1 |     35 | `0x10060280` | `0x100592f0` | `MouseDevice * Init(MouseDevice * this)`                                                                                                 |
-| `Vehicle::ClearVehicleDamageState`       |        | ✅ `0x80228a3c` |      1 |     34 | `0x10065710` | `0x1005e780` | `undefined ClearVehicleDamageState(Vehicle * this)`                                                                                      |
 | `MouseDevice::ReleaseMouseDevice`        |   ✅   |                 |      1 |     34 | `0x100602b0` | `0x10059320` | `void ReleaseMouseDevice(MouseDevice * this)`                                                                                            |
+| `Vehicle::ClearVehicleDamageState`       |   ✅   | ✅ `0x80228a3c` |      1 |     34 | `0x10065710` | `0x1005e780` | `void ClearVehicleDamageState(Vehicle * this)`                                                                                           |
 | `ShowInfoMessageBox`                     |   ✅   |                 |      4 |     33 | `0x10060030` | `0x100590a0` | `int ShowInfoMessageBox(void * hWnd, long hResult, char * pszText)`                                                                      |
 | `SetColorTintMultipliers`                |   ✅   |                 |      3 |     30 | `0x10061460` | `0x1005a4e0` | `void SetColorTintMultipliers(int nRed, int nGreen, int nBlue)`                                                                          |
 | `PrepareTrackSections`                   |        | ✅ `0x80255ca0` |      1 |     30 | `0x10061700` | `0x1005a780` | `undefined PrepareTrackSections()`                                                                                                       |
