@@ -22,6 +22,7 @@ andi
 apfn
 appnotstarted
 apsz
+aptex
 arcadetimes
 argn
 argparse
@@ -107,6 +108,7 @@ contramwrite
 contreaddata
 contrfail
 controllerscreen
+convertedvertex
 cosf
 counterclockwise
 coveragerc
@@ -115,6 +117,7 @@ cpdist
 cplens
 cplext
 cppreference
+cptex
 createdibsection
 createmesgqueue
 createplayerorgroup
@@ -470,6 +473,7 @@ mainpage
 makeintresourcea
 maptlbrdb
 maskt
+materialcolor
 math
 mathutil
 maxcontrollers
@@ -573,6 +577,7 @@ parms
 parmsa
 pathlib
 pcmwaveformat
+penm
 permuter
 persp
 perspnorm
@@ -624,6 +629,7 @@ pylock
 pyproject
 racedata
 racemenu
+racercolor
 racerecords
 racerinit
 racerslot
@@ -844,7 +850,10 @@ vars
 vecmath
 vehiclecamera
 vehiclechoice
+vehiclecolor
 vehiclecount
+vehicleeffects
+vehicleforces
 vehicleindex
 vehiclemodel
 vehiclerender
