@@ -1410,6 +1410,12 @@ int RaceSetupUI_UpdateTrackImage(MenuWidget *pWidget);
  */
 int TimeAttackUI_UpdateTrackImage(MenuWidget *pWidget);
 
+/** @ghidraAddress BRD3D: 0x10041040 */
+int TimeAttackUI_UpdateRaceTimeLabel(MenuWidget *pWidget);
+
+/** @ghidraAddress BRD3D: 0x10041180 */
+int TimeAttackUI_UpdateBestLapLabel(MenuWidget *pWidget);
+
 /**
  * Draw the force feedback choice, displaying off when the device lacks support.
  *

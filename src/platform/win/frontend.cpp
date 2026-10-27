@@ -3777,6 +3777,48 @@ int SeasonUI_UpdateTotalPointsLabel(MenuWidget *pWidget) {
     return 1;
 }
 
+static inline s32 TruncateMenuTime(long double value) {
+    return value >= -0x1p63L && value < 0x1p63L ? static_cast<s32>(static_cast<s64>(value)) : 0;
+}
+
+static inline int DrawTimeAttackTimeLabel(MenuWidget *widget, float seconds) {
+    char text[32] = {};
+    if (seconds > 0.0f) {
+        // Staged products preserve x87 rounding and the single-precision seconds spill.
+        volatile long double scaledTime = static_cast<long double>(seconds) * 100.0f;
+        s32 totalHundredths = TruncateMenuTime(scaledTime);
+        volatile long double wholeTime = static_cast<long double>(totalHundredths) * 0.01f;
+        s32 wholeSeconds = TruncateMenuTime(wholeTime);
+        float storedSeconds = wholeSeconds;
+        volatile long double scaledSeconds = static_cast<long double>(wholeSeconds) * 100.0f;
+        s32 hundredths =
+            TruncateMenuTime(static_cast<long double>(totalHundredths) - scaledSeconds);
+        volatile long double minuteTime = static_cast<long double>(storedSeconds) * 0.016666668f;
+        s32 minutes = TruncateMenuTime(minuteTime);
+        volatile long double minuteSeconds = static_cast<long double>(minutes) * 60.0f;
+        s32 remainingSeconds = TruncateMenuTime(storedSeconds - minuteSeconds);
+        std::sprintf(text, "%d:%02d.%02d", minutes, remainingSeconds, hundredths);
+    } else {
+        std::strcpy(text, "--:--");
+    }
+    if (std::strlen(text) == 0) {
+        return 0;
+    }
+    MenuFont &font = widget->GetFont(0);
+    font.SetText(_strupr(text));
+    font.MeasureText();
+    font.DrawText();
+    return 1;
+}
+
+int TimeAttackUI_UpdateRaceTimeLabel(MenuWidget *pWidget) {
+    return DrawTimeAttackTimeLabel(pWidget, g_fGhostBestRaceTime);
+}
+
+int TimeAttackUI_UpdateBestLapLabel(MenuWidget *pWidget) {
+    return DrawTimeAttackTimeLabel(pWidget, g_fGhostBestLapTime);
+}
+
 static inline int DrawResultsNumericLabel(MenuWidget *pWidget, int value) {
     char text[32] = {};
     _itoa(value, text, 10);
