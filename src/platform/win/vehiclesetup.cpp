@@ -47,6 +47,10 @@ void Vehicle::InitCameraForVehicle(void) {
     ::InitCameraForVehicle(this);
 }
 
+void Vehicle::UpdateCameraSystem(void) {
+    ::UpdateCameraSystem(this);
+}
+
 void Vehicle::ResolveVehicleTrackCollision(CameraFrame *camera, Vec3f *target) {
     ::ResolveVehicleTrackCollision(this, camera, target);
 }

@@ -180,6 +180,7 @@ extern CameraFrame *g_pActiveCamera;
  * @ghidraAddress USA: 0x8028aac0
  * @ghidraAddress EUR: 0x8028ccc8
  * @ghidraAddress JPN: 0x8028c798
+ * @ghidraAddress BRD3D: 0x100aa8ac
  */
 extern f32 g_fCameraFovRadians;
 

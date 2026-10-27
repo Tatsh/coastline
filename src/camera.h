@@ -38,6 +38,7 @@ extern Vehicle *g_pActiveCameraVehicle;
  * @ghidraAddress USA: 0x8028b7fc
  * @ghidraAddress EUR: 0x8028daac
  * @ghidraAddress JPN: 0x8028d4dc
+ * @ghidraAddress BRD3D: 0x10af9bb4
  */
 extern s32 g_dwReplayCameraHoldTimer;
 
@@ -45,6 +46,7 @@ extern s32 g_dwReplayCameraHoldTimer;
  * @ghidraAddress USA: 0x8028b7f8
  * @ghidraAddress EUR: 0x8028daa8
  * @ghidraAddress JPN: 0x8028d4d8
+ * @ghidraAddress BRD3D: 0x10af9bb0
  */
 extern s32 g_dwReplayCameraSwitchTimer;
 
@@ -145,6 +147,9 @@ void PlaceTrackCamera(Vehicle *vehicle);
 void UpdateCameraViewBasisAndFov(Vehicle *vehicle, CameraFrame *camera);
 #endif
 
+#if TGR_PLATFORM == TGR_PLATFORM_WIN && defined(__cplusplus)
+extern "C" {
+#endif
 /**
  * Update every camera of a vehicle for a frame.
  *
@@ -154,6 +159,9 @@ void UpdateCameraViewBasisAndFov(Vehicle *vehicle, CameraFrame *camera);
  * @ghidraAddress JPN: 0x80221df0
  */
 void UpdateCameraSystem(Vehicle *vehicle);
+#if TGR_PLATFORM == TGR_PLATFORM_WIN && defined(__cplusplus)
+}
+#endif
 
 #if TGR_PLATFORM == TGR_PLATFORM_WIN && defined(__cplusplus)
 extern "C" {
