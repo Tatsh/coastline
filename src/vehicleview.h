@@ -1,5 +1,5 @@
-#ifndef COASTLINE_VEHICLEVIEW_H
-#define COASTLINE_VEHICLEVIEW_H
+#ifndef COASTLINE_VEHICLE_VIEW_H
+#define COASTLINE_VEHICLE_VIEW_H
 
 #include <PR/ultratypes.h>
 

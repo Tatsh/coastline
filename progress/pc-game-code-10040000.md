@@ -1,6 +1,6 @@
 # PC port game code from 0x10040000 to 0x10050000
 
-226 of 264 routines done.
+227 of 264 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -77,7 +77,7 @@ the same name, for a routine the port retained from the N64 game.
 | `RaceSetupUI_OnCycleWeather`                       |   ✅   |                 |      2 |    210 | `0x10043180` | `0x1003c6d0` | `int RaceSetupUI_OnCycleWeather(MenuActionWidget * pItem)`                                                                                                |
 | `EnterNetworkLobbyScreen`                          |   📝   |                 |      1 |    210 | `0x100441a0` | `0x1003d6f0` | `undefined EnterNetworkLobbyScreen()`                                                                                                                     |
 | `RaceSetupUI_OnCycleLapCount`                      |   ✅   |                 |      2 |    206 | `0x100430b0` | `0x1003c600` | `int RaceSetupUI_OnCycleLapCount(MenuActionWidget * pItem)`                                                                                               |
-| `MultiplayerGameSetupUI_OnCycleCarClass`           |   📝   |                 |      1 |    202 | `0x10044600` | `0x1003db50` | `int MultiplayerGameSetupUI_OnCycleCarClass(MenuWidget * pWidget)`                                                                                        |
+| `MultiplayerGameSetupUI_OnCycleCarClass`           |   ✅   |                 |      1 |    202 | `0x10044600` | `0x1003db50` | `int MultiplayerGameSetupUI_OnCycleCarClass(MenuWidget * pWidget)`                                                                                        |
 | `ShowSaveSeasonScreen`                             |   ✅   |                 |      6 |    201 | `0x10045bc0` | `0x1003f060` | `int ShowSaveSeasonScreen(void)`                                                                                                                          |
 | `ShowCreateGameScreen`                             |        |                 |      4 |    201 | `0x100440d0` | `0x1003d620` | `undefined ShowCreateGameScreen()`                                                                                                                        |
 | `ShowCarSetupScreen`                               |   ✅   |                 |      3 |    201 | `0x10045110` | `0x1003e660` | `int ShowCarSetupScreen(void)`                                                                                                                            |

@@ -1,6 +1,6 @@
 # PC port game code from 0x10000000 to 0x10010000
 
-228 of 247 routines done.
+229 of 247 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -9,7 +9,7 @@ the same name, for a routine the port retained from the N64 game.
 
 | Name                                                       | Status | N64             | # xref | Length | BRD3D        | BRGlide      | Signature                                                                                                                                                                               |
 | ---------------------------------------------------------- | :----: | --------------- | -----: | -----: | ------------ | ------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `RenderVehicleModel`                                       |        | ✅ `0x80230554` |      6 |   7524 | `0x1000cbe0` | `0x1000a110` | `void RenderVehicleModel(float * pModel, int nLodBias)`                                                                                                                                 |
+| `RenderVehicleModel`                                       |   ✅   | ✅ `0x80230554` |      6 |   7524 | `0x1000cbe0` | `0x1000a110` | `void RenderVehicleModel(Vehicle * vehicle, int lodOffset)`                                                                                                                             |
 | `RenderTrackInstance`                                      |        | ✅ `0x80234050` |      1 |   3971 | `0x1000f640` | `0x1000cba0` | `void RenderTrackInstance(int param1, int split, float * pVerts, int flags, float param5)`                                                                                              |
 | `ProcessNetworkDataStream`                                 |   ✅   |                 |      5 |   3792 | `0x10003580` | `0x100038f0` | `void ProcessNetworkDataStream(DirectPlayInfo * pInfo, void * pData, uint dwSize, uint dpidFrom, uint dpidTo)`                                                                          |
 | `LoadBossRallyIniSettings`                                 |   ✅   |                 |      1 |   2471 | `0x10007bd0` | `0x10007f40` | `void LoadBossRallyIniSettings(char * pszExtraCmdLine)`                                                                                                                                 |
