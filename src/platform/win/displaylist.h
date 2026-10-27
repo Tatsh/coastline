@@ -9,6 +9,7 @@
 #include <array>
 
 #include "platform/win/gbicommand.h"
+#include "platform/win/textureupload.h"
 
 #if TGR_RENDERER == TGR_RENDERER_D3D
 #include <d3d.h>
@@ -661,7 +662,7 @@ GbiCommand *HandleGbiSetTileSize(GbiCommand *pCommand);
  * @ghidraAddress BRD3D: 0x118aa0b8
  * @ghidraAddress BRGlide: 0x118ed1d0
  */
-extern void (*g_pfnUploadTextureEntryToSurface)(int nEntry, unsigned dwUnused);
+extern void (*g_pfnUploadTextureEntryToSurface)(int nEntry, TextureUploadData payload);
 
 /**
  * Upload a texture the game loaded to its surface.

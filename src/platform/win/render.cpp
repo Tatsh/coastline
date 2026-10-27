@@ -884,7 +884,7 @@ void ProcessTextureUploadQueueEntry(void) {
     WaitForSingleObject(g_hTextureUploadQueueMutex, INFINITE);
     if (g_dwTextureUploadQueueTail != g_dwTextureUploadQueueHead) {
         const TextureUploadRequest &request = g_aTextureUploadQueue[g_dwTextureUploadQueueTail];
-        g_pfnUploadTextureEntryToSurface(request.nEntry, request.dwData);
+        g_pfnUploadTextureEntryToSurface(request.nEntry, request.payload);
         if (++g_dwTextureUploadQueueTail >= TEXTURE_UPLOAD_QUEUE_SIZE) {
             g_dwTextureUploadQueueTail = 0;
         }
@@ -892,10 +892,10 @@ void ProcessTextureUploadQueueEntry(void) {
     ReleaseMutex(g_hTextureUploadQueueMutex);
 }
 
-void EnqueueTextureUploadEntry(int nEntry, unsigned dwData) {
+void EnqueueTextureUploadEntry(int nEntry, TextureUploadData payload) {
     WaitForSingleObject(g_hTextureUploadQueueMutex, INFINITE);
     g_aTextureUploadQueue[g_dwTextureUploadQueueHead].nEntry = nEntry;
-    g_aTextureUploadQueue[g_dwTextureUploadQueueHead].dwData = dwData;
+    g_aTextureUploadQueue[g_dwTextureUploadQueueHead].payload = payload;
     // A full ring overwrites the textures still waiting.
     if (++g_dwTextureUploadQueueHead >= TEXTURE_UPLOAD_QUEUE_SIZE) {
         g_dwTextureUploadQueueHead = 0;

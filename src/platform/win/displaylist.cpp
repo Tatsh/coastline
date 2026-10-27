@@ -626,7 +626,7 @@ GbiCommand *HandleGbiBindTextureEntry(GbiCommand *pCommand) {
 }
 #endif
 
-void (*g_pfnUploadTextureEntryToSurface)(int nEntry, unsigned dwUnused);
+void (*g_pfnUploadTextureEntryToSurface)(int nEntry, TextureUploadData payload);
 
 GbiCommand *HandleGbiLoadPreparedTexture(GbiCommand *pCommand) {
     g_pfnUploadTextureEntryToSurface(pCommand->w0 & GBI_TEXTURE_ENTRY_MASK, pCommand->w1);

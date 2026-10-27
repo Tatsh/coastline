@@ -89,6 +89,11 @@ void InitRacerSlot(RacerSlot *slot);
  * @stub
  */
 void MakeEnemyCarColorPanels(RacerSlot *slot);
+
+/**
+ * @ghidraAddress BRD3D: 0x100661b0
+ */
+void ApplyEnemyCarColorPanels(struct Vehicle *vehicle, RacerSlot *slot);
 #endif
 
 #ifdef __cplusplus

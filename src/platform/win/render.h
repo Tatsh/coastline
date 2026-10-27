@@ -11,6 +11,7 @@
 
 #include "../../render.h"
 #include "platform/win/fontdata.h"
+#include "platform/win/textureupload.h"
 #include "vecmath.h"
 
 struct GbiCommand;
@@ -639,12 +640,6 @@ extern int g_anSkidMarkTail[SKID_MARK_TRACK_COUNT];
  */
 void ClearSplitScreenRenderState(void);
 
-/** A texture waiting in g_aTextureUploadQueue. */
-struct TextureUploadRequest {
-    int nEntry;      /*!< The entry of the texture the game loaded. */
-    unsigned dwData; /*!< The second argument of g_pfnUploadTextureEntryToSurface. */
-};
-
 /** The number of entries of g_aTextureUploadQueue. */
 #define TEXTURE_UPLOAD_QUEUE_SIZE 256
 
@@ -1107,11 +1102,11 @@ void ProcessTextureUploadQueueEntry(void);
  * Queue a texture to upload, under the mutex of the queue.
  *
  * @param nEntry The entry of the texture the game loaded.
- * @param dwData The second argument of g_pfnUploadTextureEntryToSurface.
+ * @param payload The second argument of g_pfnUploadTextureEntryToSurface.
  * @ghidraAddress BRD3D: 0x10074f70
  * @ghidraAddress BRGlide: 0x1006e1d0
  */
-void EnqueueTextureUploadEntry(int nEntry, unsigned dwData);
+void EnqueueTextureUploadEntry(int nEntry, TextureUploadData payload);
 
 /**
  * Empty the cache of converted vertices and the count of relocated pointers.

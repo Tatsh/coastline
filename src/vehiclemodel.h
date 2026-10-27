@@ -42,7 +42,12 @@ enum {
  */
 typedef struct VehicleModel {
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
-    u8 abUnknown0[0x96]; /* +0x00 */
+    u8 abUnknown0[4]; /* +0x00 */
+    s32 textureEntries[30];
+    s32 textureEntryCount;
+    u8 abUnknown80[4]; /* +0x80 */
+    s32 lightTextureEntries[4];
+    u8 abUnknown94[2]; /* +0x94 */
     s8 rearWheelDrive;
     s8 tableIndex;
     f32 gearRatios[CAR_GEAR_RATIOS];
