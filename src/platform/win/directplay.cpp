@@ -1,5 +1,6 @@
 #include "platform/win/directplay.h"
 
+#include <bit>
 #include <concepts>
 #include <cstdio>
 #include <cstdlib>
@@ -2347,6 +2348,93 @@ void DestroyNetworkGroups(void) {
             list.RemoveItem(i);
         }
     }
+}
+
+HRESULT EnumerateNetworkPlayers(GUID *instance,
+                                LPDPENUMPLAYERSCALLBACK2 callback,
+                                void *context,
+                                DWORD flags) {
+    HRESULT result = E_FAIL;
+    if (g_pNetworkPlayerListMenu != nullptr) {
+        RefreshSessionListSlots();
+    }
+    for (SessionSlot &slot : g_aSessionSlots) {
+        slot.nSeen = 0;
+    }
+    if (g_DirectPlayInfo.pDirectPlay != nullptr) {
+        result = g_DirectPlayInfo.pDirectPlay->EnumPlayers(instance, callback, context, flags);
+    }
+    PurgeStaleSessionListEntries();
+    DWORD ready = GetSessionSlotFlag(g_pDirectPlayInfo->dpidPlayer);
+    SendNetworkReadyMessage(g_pDirectPlayInfo, ready);
+    return result;
+}
+
+BOOL CALLBACK EnumSessionsCallback_AddSessionToList(LPCDPSESSIONDESC2 description,
+                                                    DWORD *,
+                                                    DWORD flags,
+                                                    void *context) {
+    if (g_pJoinCreateGameMenu == nullptr || (flags & DPESC_TIMEDOUT)) {
+        return false;
+    }
+    GUID *instance;
+    if (g_dwSessionEnumPending) {
+        bool available =
+            description->dwCurrentPlayers < 8 && !(description->dwFlags & DPSESSION_JOINDISABLED);
+        MenuItemList &list = g_pJoinCreateGameMenu->GetItemList();
+        list.AddItem(description->lpszSessionNameA,
+                     available ? 1 : 0x11,
+                     available,
+                     &g_rcMenuCenterPanel,
+                     true);
+        instance = static_cast<GUID *>(
+            GlobalLock(GlobalAlloc(GMEM_MOVEABLE | GMEM_ZEROINIT, sizeof(GUID))));
+        if (instance == nullptr) {
+            return true;
+        }
+        *instance = description->guidInstance;
+        g_pJoinCreateGameMenu->GetItemList().SetItemData(instance, sizeof(GUID), -1);
+    } else {
+        // Without enumeration, the original passes the callback flags as the instance pointer.
+        instance = std::bit_cast<GUID *>(flags);
+    }
+    EnumerateNetworkPlayers(instance, EnumPlayersCallback_AddPlayerToList, context, 0);
+    return true;
+}
+
+HRESULT RefreshNetworkSessionList(IDirectPlay3A *pDirectPlay) {
+    if (pDirectPlay == nullptr) {
+        return DPERR_INVALIDOBJECT;
+    }
+    DestroyNetworkGroups();
+    DPSESSIONDESC2 description = {};
+    description.dwSize = sizeof(description);
+    description.guidApplication = g_BossRallyAppGuid;
+    g_dwSessionListRefreshing = 1;
+    // Without an enumeration, the interface pointer remains the return value.
+    HRESULT result = std::bit_cast<HRESULT>(pDirectPlay);
+    if (g_dwSessionEnumPending) {
+        result = pDirectPlay->EnumSessions(&description,
+                                           0,
+                                           EnumSessionsCallback_AddSessionToList,
+                                           g_hMainWindow,
+                                           DPENUMSESSIONS_AVAILABLE | DPENUMSESSIONS_ASYNC |
+                                               DPENUMSESSIONS_RETURNSTATUS);
+    }
+    EnumerateNetworkPlayers(
+        &description.guidInstance, EnumPlayersCallback_AddPlayerToList, g_hMainWindow, 0);
+    g_dwSessionListRefreshing = 0;
+    if (g_pNetworkSessionJoinMenu != nullptr &&
+        g_pJoinCreateGameMenu->GetItemList().GetItemCount() != 0 &&
+        !(g_pJoinCreateGameMenu->GetItemList().GetFont(g_dwSelectedSessionIndex).GetFlags() &
+          0x10)) {
+        g_pNetworkSessionJoinMenu->SetFlags(g_pNetworkSessionJoinMenu->GetFlags() & ~0x10u);
+        g_pNetworkSessionJoinMenu->GetFont(0).SetStyle(1);
+    } else {
+        g_pNetworkSessionJoinMenu->SetFlags(g_pNetworkSessionJoinMenu->GetFlags() | 0x10u);
+        g_pNetworkSessionJoinMenu->GetFont(0).SetStyle(0);
+    }
+    return result;
 }
 
 void DisconnectNetworkSession(void) {

@@ -565,6 +565,18 @@ HRESULT CreateDirectPlayLobby(IDirectPlayLobby2A **ppLobby);
  */
 HRESULT RefreshNetworkSessionList(IDirectPlay3A *pDirectPlay);
 
+/** @ghidraAddress BRD3D: 0x1003cb10 */
+HRESULT EnumerateNetworkPlayers(GUID *instance,
+                                LPDPENUMPLAYERSCALLBACK2 callback,
+                                void *context,
+                                DWORD flags);
+
+/** @ghidraAddress BRD3D: 0x1003cb90 */
+BOOL CALLBACK EnumSessionsCallback_AddSessionToList(LPCDPSESSIONDESC2 description,
+                                                    DWORD *timeout,
+                                                    DWORD flags,
+                                                    void *context);
+
 /**
  * Store a service provider of IPX, TCP/IP, modem, or serial in g_aServiceProviders, and skip any
  * other.

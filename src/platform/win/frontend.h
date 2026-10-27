@@ -186,13 +186,11 @@ public:
      */
     virtual int UpdateItemAndNotify(int nIndex);
 
-private:
     /**
      * @ghidraAddress BRD3D: 0x1005c200
      */
     virtual int SetItemData(const void *data, unsigned size, int index);
 
-public:
     /**
      * @ghidraAddress BRD3D: 0x1005c000
      */
