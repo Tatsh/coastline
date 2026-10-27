@@ -530,15 +530,25 @@ extern int g_dwVehicleStateSendCounter;
 
 /**
  * @ghidraAddress BRD3D: 0x10004c60
- * @stub
  */
 unsigned SendKeyframePacket(KeyframeState *state);
 
 /**
  * @ghidraAddress BRD3D: 0x10004e50
- * @stub
  */
 unsigned SendDeltaKeyframePacket(KeyframeState *state, KeyframeState *base);
+
+/**
+ * @ghidraAddress BRD3D: 0x100061a0
+ * @stub
+ */
+void EncodeKeyframeBitstreamFull(NetStream *stream, KeyframeState *state);
+
+/**
+ * @ghidraAddress BRD3D: 0x10006830
+ * @stub
+ */
+void EncodeKeyframeBitstreamDelta(NetStream *stream, KeyframeState *state, KeyframeState *base);
 
 /**
  * @ghidraAddress BRD3D: 0x100073e0

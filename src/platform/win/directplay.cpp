@@ -1591,6 +1591,44 @@ int SendPlayerJoinPacket(DirectPlayInfo *pInfo,
     return SendNetworkStreamReliable(pInfo, &stream);
 }
 
+static inline void StoreOutgoingKeyframe(KeyframeState *state, unsigned type) {
+    NetPeerSlot &slot = g_aNetPeerSlots[g_dwLocalNetPlayerId];
+    HANDLE mutexes[2] = {g_hNetKeyframeMutex, slot.hMutex};
+    WaitForMultipleObjects(2, mutexes, true, INFINITE);
+    g_dwNetLastKeyframeFrame = GetElapsedFrameCount();
+    slot.nCurrentSnapshot = static_cast<int>(static_cast<unsigned>(slot.nCurrentSnapshot) + 1u);
+    if (slot.nCurrentSnapshot >= 8) {
+        slot.nCurrentSnapshot = 0;
+    }
+    slot.adwSnapshotTimes[slot.nCurrentSnapshot] = g_dwNetLastKeyframeFrame;
+    slot.adwSnapshotTypes[slot.nCurrentSnapshot] = type;
+    slot.aSnapshots[slot.nCurrentSnapshot] = *state;
+    ReleaseMutex(slot.hMutex);
+    ReleaseMutex(g_hNetKeyframeMutex);
+}
+
+unsigned SendKeyframePacket(KeyframeState *state) {
+    StoreOutgoingKeyframe(state, 0x40);
+    NetStream stream;
+    WriteTimestampToStream(&stream);
+    stream.StreamWriteByte(static_cast<unsigned char>(g_dwLocalNetPlayerId) | 0x40);
+    EncodeKeyframeBitstreamFull(&stream, state);
+    int result = SendNetworkStreamUnreliable(&g_DirectPlayInfo, &stream);
+    NullStub();
+    return result != -1;
+}
+
+unsigned SendDeltaKeyframePacket(KeyframeState *state, KeyframeState *base) {
+    StoreOutgoingKeyframe(state, 0x80);
+    NetStream stream;
+    WriteTimestampToStream(&stream);
+    stream.StreamWriteByte(static_cast<unsigned char>(g_dwLocalNetPlayerId) | 0x80);
+    EncodeKeyframeBitstreamDelta(&stream, state, base);
+    int result = SendNetworkStreamUnreliable(&g_DirectPlayInfo, &stream);
+    NullStub();
+    return result != -1;
+}
+
 int SendNetworkStreamUnreliable(DirectPlayInfo *pInfo, NetStream *pStream) {
     if (g_dwNetworkDataStreamActive) {
         return pStream->StreamGetWriteSize();
