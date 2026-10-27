@@ -728,6 +728,10 @@ void NormalizeLightMatrix(f32 m[4][4]);
 }
 #endif
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /**
  * Load a texture of a model into the texture memory and set up the tiles to draw it.
  *
@@ -736,8 +740,13 @@ void NormalizeLightMatrix(f32 m[4][4]);
  * @ghidraAddress USA: 0x80217734
  * @ghidraAddress EUR: 0x80218754
  * @ghidraAddress JPN: 0x802180a4
+ * @ghidraAddress BRD3D: 0x10031481
  */
 void DrawTexturedTile(s32 index, ModelTexture *textures);
+
+#ifdef __cplusplus
+}
+#endif
 
 #ifdef __cplusplus
 extern "C" {
