@@ -1,6 +1,6 @@
 # PC port game code from 0x10000000 to 0x10010000
 
-215 of 247 routines done.
+216 of 247 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -21,7 +21,7 @@ the same name, for a routine the port retained from the N64 game.
 | `EncodeKeyframeBitstreamFull`                              |   ✅   |                 |      1 |   1018 | `0x100061a0` | `0x10006510` | `void EncodeKeyframeBitstreamFull(NetStream * stream, KeyframeState * state)`                                                                                                           |
 | `Vehicle::ResolveVehicleTrackCollision`                    |   ✅   | ✅ `0x80220810` |      1 |    977 | `0x100011f0` | `0x10001510` | `void ResolveVehicleTrackCollision(Vehicle * this, CameraFrame * camera, Vec3f * target)`                                                                                               |
 | `RenderWheelModels`                                        |        | ✅ `0x8022ffb4` |      2 |    932 | `0x1000c6e0` | `0x10009c10` | `void RenderWheelModels(float * pChunk)`                                                                                                                                                |
-| `EncodeKeyframeBitstreamDelta`                             |   🚧   |                 |      1 |    925 | `0x10006830` | `0x10006ba0` | `void EncodeKeyframeBitstreamDelta(NetStream * stream, KeyframeState * state, KeyframeState * base)`                                                                                    |
+| `EncodeKeyframeBitstreamDelta`                             |   ✅   |                 |      1 |    925 | `0x10006830` | `0x10006ba0` | `void EncodeKeyframeBitstreamDelta(NetStream * stream, KeyframeState * state, KeyframeState * base)`                                                                                    |
 | `HandleMultiplayerSessionMessage`                          |   ✅   |                 |      1 |    908 | `0x1000baf0` | `0x10009010` | `void HandleMultiplayerSessionMessage(DirectPlayInfo * pInfo, void * pMessage, uint dwSize, uint dpidFrom, uint dpidTo)`                                                                |
 | `DeserializeVehicleState`                                  |   ✅   |                 |      4 |    901 | `0x10006ec0` | `0x10007230` | `void DeserializeVehicleState(KeyframeState * pState, NetStream * pStream)`                                                                                                             |
 | `DeserializeKeyframeDelta`                                 |   ✅   |                 |      3 |    845 | `0x100073e0` | `0x10007750` | `void DeserializeKeyframeDelta(KeyframeState * pState, KeyframeState * pBase, NetStream * pStream)`                                                                                     |

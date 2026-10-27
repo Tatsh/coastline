@@ -1,6 +1,6 @@
 # PC port game code from 0x10060000 to 0x10070000
 
-143 of 174 routines done.
+143 of 173 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -90,7 +90,6 @@ the same name, for a routine the port retained from the N64 game.
 | `RallyConfig::SetInputBinding`           |   ✅   |                 |      4 |    169 | `0x10069b10` | `0x10062b80` | `void SetInputBinding(RallyConfig * this, int nDevice, int nControl, WORD wKind, BYTE nKeyCode)`                                   |
 | `SetVehicleFrameMatrix`                  |        | ✅ `0x80220150` |      1 |    152 |              | `0x1006f970` | `undefined SetVehicleFrameMatrix()`                                                                                                |
 | `ResetAllSoundState`                     |   ✅   | ✅ `0x8022b428` |      1 |    143 | `0x10067dc0` | `0x10060e30` | `void ResetAllSoundState(void)`                                                                                                    |
-| `ConvertInputToN64ControllerPad`         |        |                 |      1 |    136 | `0x10060e00` | `0x10059e70` | `undefined ConvertInputToN64ControllerPad()`                                                                                       |
 | `UpdateWheelHeights`                     |   ✅   | ✅ `0x8025ec7c` |      2 |    134 | `0x1006f4a0` | `0x10068450` | `void UpdateWheelHeights(RigidBody * body)`                                                                                        |
 | `ResetTrackTriangleCache`                |        |                 |      1 |    134 |              | `0x10063dd0` | `undefined ResetTrackTriangleCache()`                                                                                              |
 | `ResetCollisionCaches`                   |   ✅   | ✅ `0x80259350` |      1 |    134 | `0x1006ae20` |              | `void ResetCollisionCaches(void)`                                                                                                  |

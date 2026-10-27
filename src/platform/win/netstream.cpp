@@ -64,6 +64,53 @@ void EncodeKeyframeBitstreamFull(NetStream *stream, KeyframeState *state) {
     }
 }
 
+static inline unsigned
+KeyframeDeltaBits(unsigned previous, unsigned current, unsigned regionMask, unsigned step) {
+    unsigned code = 0;
+    if (((previous ^ current) & regionMask) != 0) {
+        previous &= regionMask;
+        unsigned region = current & regionMask;
+        if (previous + step == region) {
+            code = step;
+        } else {
+            code = previous < region ? 2 * step : 3 * step;
+        }
+    }
+    return (current & (step - 1)) | (code & (3 * step));
+}
+
+void EncodeKeyframeBitstreamDelta(NetStream *stream, KeyframeState *state, KeyframeState *base) {
+    stream->BitStreamWriteBits(
+        static_cast<short>(ConvertFloatToFixedAngle(state->orientation.w)) >> 8, 8);
+    stream->BitStreamWriteBits(
+        static_cast<short>(ConvertFloatToFixedAngle(state->orientation.x)) >> 8, 8);
+    stream->BitStreamWriteBits(
+        static_cast<short>(ConvertFloatToFixedAngle(state->orientation.y)) >> 8, 8);
+    stream->BitStreamWriteBits(
+        static_cast<short>(ConvertFloatToFixedAngle(state->orientation.z)) >> 8, 8);
+    unsigned previous =
+        static_cast<unsigned>(ConvertFloatToFixedAngleNoClamp(base->position.x)) >> 7;
+    unsigned current =
+        static_cast<unsigned>(ConvertFloatToFixedAngleNoClamp(state->position.x)) >> 7;
+    stream->BitStreamWriteBits(KeyframeDeltaBits(previous, current, 0x1f000, 0x1000), 14);
+    previous = static_cast<unsigned>(ConvertFloatToFixedAngleNoClamp(base->position.y)) >> 7;
+    current = static_cast<unsigned>(ConvertFloatToFixedAngleNoClamp(state->position.y)) >> 7;
+    stream->BitStreamWriteBits(KeyframeDeltaBits(previous, current, 0x1f000, 0x1000), 14);
+    previous = static_cast<short>(ConvertFloatToFixedAngle16B(base->position.z)) >> 1;
+    current = static_cast<short>(ConvertFloatToFixedAngle16B(state->position.z)) >> 1;
+    stream->BitStreamWriteBits(KeyframeDeltaBits(previous, current, 0x7e00, 0x200), 11);
+    previous = ConvertFloatToFixed24(base->fProgress);
+    current = ConvertFloatToFixed24(state->fProgress);
+    stream->BitStreamWriteBits(KeyframeDeltaBits(previous, current, 0xffff80, 0x80), 9);
+    stream->BitStreamWriteBits(static_cast<unsigned char>(FloatToEngineRpmIndex(state->fEngineRpm)),
+                               6);
+    stream->BitStreamWriteBits(QuantizeFloatToLightIndex(state->afLight[0]), 2);
+    stream->BitStreamWriteBits(QuantizeFloatToLightIndex(state->afLight[1]), 2);
+    for (int i = 0; i < 6; ++i) {
+        stream->BitStreamWriteBits(KeyframeFlag(state->afEffectFlags[i]), 1);
+    }
+}
+
 unsigned SendLocalVehicleStateUpdate(KeyframeState *state) {
     if (state->fProgress >= 4188888.0f && !(g_LastSentKeyframe.fProgress >= 4188888.0f)) {
         g_LastSentKeyframe = *state;

@@ -545,7 +545,6 @@ void EncodeKeyframeBitstreamFull(NetStream *stream, KeyframeState *state);
 
 /**
  * @ghidraAddress BRD3D: 0x10006830
- * @stub
  */
 void EncodeKeyframeBitstreamDelta(NetStream *stream, KeyframeState *state, KeyframeState *base);
 
