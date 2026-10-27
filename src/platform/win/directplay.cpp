@@ -16,6 +16,7 @@
 #include "platform/win/frontend.h"
 #include "platform/win/netstream.h"
 #include "platform/win/settings.h"
+#include "platform/win/sound.h"
 #include "platform/win/timer.h"
 #include "trackselect.h"
 
@@ -1158,6 +1159,166 @@ int g_dwLocalNetPlayerId = -1;
 
 const RECT g_rcNetCarSetupPlayerList = {32, 370, 610, 467};
 int g_dwNetworkCarSetupShown;
+int g_dwNetworkDataStreamActive;
+const char *g_apszPlaceNames[8] = {
+    "First!", "Second!", "Third!", "Fourth.", "Fifth.", "Sixth.", "7th.", "8th."};
+
+HRESULT GetDirectPlayPlayerName(IDirectPlay3A *pDirectPlay, DPID dpidPlayer, DPNAME **ppName) {
+    DWORD size = 0;
+    DPNAME *name = nullptr;
+    HRESULT result = pDirectPlay->GetPlayerName(dpidPlayer, nullptr, &size);
+    if (result == DPERR_BUFFERTOOSMALL) {
+        name = static_cast<DPNAME *>(GlobalLock(GlobalAlloc(GHND, size)));
+        if (name == nullptr) {
+            result = E_OUTOFMEMORY;
+        } else {
+            result = pDirectPlay->GetPlayerName(dpidPlayer, name, &size);
+            if (SUCCEEDED(result)) {
+                *ppName = name;
+                return DP_OK;
+            }
+        }
+    }
+    if (name != nullptr) {
+        GlobalUnlock(GlobalHandle(name));
+        GlobalFree(GlobalHandle(name));
+    }
+    return result;
+}
+
+HRESULT FormatNetworkChatLine(
+    IDirectPlay3A *pDirectPlay, DPID dpidPlayer, const char *text, char **ppLine, bool bNotice) {
+    if (pDirectPlay == nullptr) {
+        return DP_OK;
+    }
+    const char *format = bNotice ? "%s%s\r\n" : "%s: %s\r\n";
+    DPNAME *name = nullptr;
+    HRESULT result = GetDirectPlayPlayerName(pDirectPlay, dpidPlayer, &name);
+    if (SUCCEEDED(result)) {
+        const char *playerName = name->lpszShortNameA != nullptr ? name->lpszShortNameA : "unknown";
+        DWORD size = lstrlenA(format) + lstrlenA(playerName) + lstrlenA(text) + 1;
+        char *line = static_cast<char *>(GlobalLock(GlobalAlloc(GHND, size)));
+        if (line == nullptr) {
+            result = E_OUTOFMEMORY;
+        } else {
+            wsprintfA(line, format, playerName, text);
+            *ppLine = line;
+        }
+    }
+    if (name != nullptr) {
+        GlobalUnlock(GlobalHandle(name));
+        GlobalFree(GlobalHandle(name));
+    }
+    return result;
+}
+
+struct NetworkSessionMessage {
+    DWORD dwType;
+    union {
+        char szText[1];
+        DWORD dwValue;
+        struct {
+            DPID dpidPlayer;
+            int nPosition;
+        } finish;
+    };
+};
+
+void HandleMultiplayerSessionMessage(
+    DirectPlayInfo *pInfo, void *pMessage, DWORD dwSize, DPID dpidFrom, DPID dpidTo) {
+    if (g_dwNetworkSendBlocked) {
+        if (!pInfo->bIgnoreMessages) {
+            if (pInfo->bIsHost) {
+                ProcessMultiplayerPackets(pInfo, pMessage, dwSize, dpidFrom, dpidTo);
+            } else {
+                ProcessNetworkDataStream(pInfo, pMessage, dwSize, dpidFrom, dpidTo);
+            }
+        }
+        return;
+    }
+    NetworkSessionMessage *message = static_cast<NetworkSessionMessage *>(pMessage);
+    char *line = nullptr;
+    char debug[0x104];
+    char text[0x400];
+    switch (message->dwType) {
+    case 0x60000000:
+    case 0x60000001:
+        FormatNetworkChatLine(
+            pInfo->pDirectPlay, dpidFrom, message->szText, &line, message->dwType == 0x60000001);
+        break;
+    case 0x60000002:
+        if (dpidFrom == DPID_SERVERPLAYER) {
+            for (SessionSlot &slot : g_aSessionSlots) {
+                if (slot.dpidPlayer == 0xffffffff) {
+                    slot.dpidPlayer = DPID_SERVERPLAYER;
+                    slot.nFlag = true;
+                    std::sprintf(debug, "Host set ready message received %d", DPID_SERVERPLAYER);
+                    OutputDebugStringA(debug);
+                    break;
+                }
+            }
+        } else {
+            for (SessionSlot &slot : g_aSessionSlots) {
+                if (slot.dpidPlayer == dpidFrom) {
+                    slot.nFlag = message->dwValue;
+                    std::sprintf(debug,
+                                 "APPMSG_PLAYERREADY: Set: %d, ID: %d\n",
+                                 static_cast<int>(message->dwValue),
+                                 static_cast<int>(dpidFrom));
+                    OutputDebugStringA(debug);
+                }
+            }
+        }
+        break;
+    case 0x60000003:
+        g_dwNetworkSendBlocked = true;
+        std::sprintf(debug, "APPMSG_HOSTSTARTED: received");
+        OutputDebugStringA(debug);
+        return;
+    case 0x60000004:
+        if (pInfo->dpidPlayer == message->dwValue) {
+            g_dwNetworkDataStreamActive = true;
+        }
+        std::sprintf(debug, "APPMSG_BOOTPLAYER: received\n");
+        OutputDebugStringA(debug);
+        break;
+    case 0x60000005:
+        if (message->dwValue >= 4 && message->dwValue <= 7) {
+            PlaySoundChannelOneOnce(message->dwValue, 0x200020);
+            g_dwNetworkMenuState = message->dwValue;
+        }
+        break;
+    case 0x60000006:
+        if (dpidFrom == message->dwValue) {
+            FormatNetworkChatLine(pInfo->pDirectPlay, dpidFrom, " left the race.", &line, true);
+        }
+        break;
+    case 0x60000007:
+        if (dpidFrom == message->dwValue) {
+            FormatNetworkChatLine(
+                pInfo->pDirectPlay, dpidFrom, " returned to race lobby.", &line, true);
+        }
+        break;
+    case 0x60000008:
+        if (dpidFrom == DPID_SERVERPLAYER && message->finish.nPosition >= 0 &&
+            message->finish.nPosition < 8) {
+            std::sprintf(text, " finished %s", g_apszPlaceNames[message->finish.nPosition]);
+            FormatNetworkChatLine(
+                pInfo->pDirectPlay, message->finish.dpidPlayer, text, &line, true);
+        }
+        break;
+    default:
+        break;
+    }
+    if (line != nullptr) {
+        if (g_hMainWindow != nullptr) {
+            PostMessageA(g_hMainWindow, WM_NETWORK_NOTICE, 0, reinterpret_cast<LPARAM>(line));
+        } else {
+            GlobalUnlock(GlobalHandle(line));
+            GlobalFree(GlobalHandle(line));
+        }
+    }
+}
 
 void DestroyNetworkGroups(void) {
     if (g_pJoinCreateGameMenu != nullptr) {

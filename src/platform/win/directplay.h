@@ -17,7 +17,7 @@ struct DirectPlayInfo {
     HANDLE hPlayerEvent;        /*!< Signalled when a message for the local player arrives. */
     DPID dpidPlayer;            /*!< The local player. */
     BOOL bIsHost;               /*!< Whether the game hosts the session. */
-    char abUnknown10[4];        /* +0x10 */
+    BOOL bIgnoreMessages;
 };
 
 /** A service provider of DirectPlay found by EnumConnections. */
@@ -1478,9 +1478,31 @@ int GetSessionSlotFlag(DPID dpidPlayer);
  * @param dpidTo The receiver.
  * @ghidraAddress BRD3D: 0x1000baf0
  * @ghidraAddress BRGlide: 0x10009010
+ * @stub{BRGlide}
  */
 void HandleMultiplayerSessionMessage(
-    DirectPlayInfo *pInfo, DPMSG_GENERIC *pMessage, DWORD dwSize, DPID dpidFrom, DPID dpidTo);
+    DirectPlayInfo *pInfo, void *pMessage, DWORD dwSize, DPID dpidFrom, DPID dpidTo);
+
+/**
+ * @ghidraAddress BRD3D: 0x1003d180
+ */
+HRESULT GetDirectPlayPlayerName(IDirectPlay3A *pDirectPlay, DPID dpidPlayer, DPNAME **ppName);
+
+/**
+ * @ghidraAddress BRD3D: 0x1003d3a0
+ */
+HRESULT FormatNetworkChatLine(
+    IDirectPlay3A *pDirectPlay, DPID dpidPlayer, const char *text, char **ppLine, bool bNotice);
+
+/**
+ * @ghidraAddress BRD3D: 0x10aa2894
+ */
+extern int g_dwNetworkDataStreamActive;
+
+/**
+ * @ghidraAddress BRD3D: 0x100aac48
+ */
+extern const char *g_apszPlaceNames[8];
 
 /**
  * End the network play of a game. The host stops its worker thread, the session of DirectPlay
