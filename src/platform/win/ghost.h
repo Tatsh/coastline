@@ -9,6 +9,7 @@
 
 #include "rigidbody.h"
 #include "vecmath.h"
+#include "vehicle.h"
 
 /** The size of a frame of the recording of a ghost car. */
 #define GHOST_FRAME_SIZE 24
@@ -25,8 +26,8 @@ struct KeyframeState {
     Vec3f position;
     Vec3f linearVelocity;
     Vec3f angularVelocity;
-    float fSteering;
-    float fWheelOffset;
+    float fBodyRollAngle;
+    float fSteerAngle;
     float afWheelAngle[4];
     float afWheelContact[4];
     float afWheelSurface[4];
@@ -289,3 +290,55 @@ struct QuaternionPose {
  * @ghidraAddress BRGlide: 0x10062610
  */
 void MatrixToPositionQuaternion(QuaternionPose *pPose, f32 m[4][4]);
+
+/**
+ * Convert a quaternion and position into a matrix, compensating for quaternion magnitude.
+ *
+ * @param matrix Destination matrix.
+ * @param pPose Quaternion and position.
+ * @ghidraAddress BRD3D: 0x100695d0
+ */
+void PositionQuaternionToMatrix4x4(f32 matrix[4][4], const QuaternionPose *pPose);
+
+/**
+ * Sample a vehicle pose, wheel motion, and replay effects.
+ *
+ * @param pState Destination frame.
+ * @param pVehicle Vehicle to sample.
+ * @ghidraAddress BRD3D: 0x100607b0
+ */
+void BuildVehicleKeyframe(KeyframeState *pState, Vehicle *pVehicle);
+
+/**
+ * Restore sampled motion and effects, then synchronise integration states.
+ *
+ * @param pVehicle Destination vehicle.
+ * @param pState Frame to restore.
+ * @ghidraAddress BRD3D: 0x10060a10
+ */
+void ApplyVehicleKeyframe(Vehicle *pVehicle, const KeyframeState *pState);
+
+/**
+ * Record one vehicle frame while recording is active and the race is not paused.
+ *
+ * @param pVehicle Vehicle to record.
+ * @ghidraAddress BRD3D: 0x1006aab0
+ */
+void RecordGhostKeyframe(Vehicle *pVehicle);
+
+/**
+ * Restore a ghost frame and estimate velocity from the following frame when available.
+ *
+ * @param pVehicle Destination vehicle.
+ * @param nRecording Recording slot.
+ * @ghidraAddress BRD3D: 0x1006abd0
+ */
+void ApplyGhostKeyframeToVehicle(Vehicle *pVehicle, int nRecording);
+
+/**
+ * Restore the ghost frame from the recording slot matching a vehicle index.
+ *
+ * @param pVehicle Destination vehicle.
+ * @ghidraAddress BRD3D: 0x1006acf0
+ */
+void ApplyGhostKeyframeForVehicle(Vehicle *pVehicle);

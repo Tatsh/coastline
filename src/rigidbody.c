@@ -20,6 +20,33 @@ void StubPhysics1(void *data) {
 void StubPhysics2(void *data) {
 }
 
+void MatrixToQuaternion(f32 m[4][4], Quaternion *q) {
+    if (0.0f <= m[0][0]) {
+        if (0.0f <= m[1][1] + m[2][2]) {
+            q->w = 1.0f + m[0][0] + m[1][1] + m[2][2];
+            q->x = m[1][2] - m[2][1];
+            q->y = m[2][0] - m[0][2];
+            q->z = m[0][1] - m[1][0];
+        } else {
+            q->w = m[1][2] - m[2][1];
+            q->x = 1.0f + m[0][0] - m[1][1] - m[2][2];
+            q->y = m[0][1] + m[1][0];
+            q->z = m[2][0] + m[0][2];
+        }
+    } else if (m[2][2] <= m[1][1]) {
+        q->w = m[2][0] - m[0][2];
+        q->x = m[0][1] + m[1][0];
+        q->y = 1.0f - m[0][0] + m[1][1] - m[2][2];
+        q->z = m[1][2] + m[2][1];
+    } else {
+        q->w = m[0][1] - m[1][0];
+        q->x = m[2][0] + m[0][2];
+        q->y = m[1][2] + m[2][1];
+        q->z = 1.0f - m[0][0] - m[1][1] + m[2][2];
+    }
+    QuaternionNormalize(q);
+}
+
 void QuaternionMultiply(Quaternion *out, Quaternion *a, Quaternion *b) {
     f32 bw = b->w, bx = b->x, by = b->y, bz = b->z;
     f32 aw = a->w, ax = a->x, ay = a->y, az = a->z;

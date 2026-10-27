@@ -7,6 +7,7 @@
 
 #include "game.h"
 #include "instantreplay.h"
+#include "laps.h"
 #include "pause.h"
 #include "platform/win/frontend.h"
 #include "platform/win/input.h"
@@ -67,9 +68,9 @@ void PackKeyframeToCompactBuffer(u8 *pBuffer, const KeyframeState *pState) {
                                (QuantizeFloatToLightIndex(pState->afLight[1]) << 6))
          << 24);
     frame.nPositionZ = static_cast<short>(ConvertFloatToFixedAngle16B(pState->position.z));
-    frame.nSteering = static_cast<signed char>(ConvertFloatToSignedByte(pState->fSteering));
+    frame.nSteering = static_cast<signed char>(ConvertFloatToSignedByte(pState->fBodyRollAngle));
     frame.bWheelOffsetAndLight =
-        static_cast<unsigned char>((FloatToSignedByteIndex(pState->fWheelOffset) & 0x3f) |
+        static_cast<unsigned char>((FloatToSignedByteIndex(pState->fSteerAngle) & 0x3f) |
                                    (QuantizeFloatToLightIndex(pState->afLight[0]) << 6));
     for (int pair = 0; pair < 2; ++pair) {
         const int first = pair * 2;
@@ -93,8 +94,8 @@ void DeserializeKeyframeState(KeyframeState *pState, const u8 *pBuffer) {
     pState->position.x = ConvertUintToScaledFloat(frame.nPositionXAndFlags & 0xffffff);
     pState->position.y = ConvertUintToScaledFloat(frame.nPositionYAndFlags & 0xffffff);
     pState->position.z = FixedToRadians(frame.nPositionZ);
-    pState->fSteering = ConvertCharToScaledFloat(frame.nSteering);
-    pState->fWheelOffset = SignedByteToFloat(frame.bWheelOffsetAndLight & 0x3f);
+    pState->fBodyRollAngle = ConvertCharToScaledFloat(frame.nSteering);
+    pState->fSteerAngle = SignedByteToFloat(frame.bWheelOffsetAndLight & 0x3f);
     pState->afLight[0] = GetLightLevelScale(frame.bWheelOffsetAndLight >> 6);
     pState->afWheelAngle[0] = ByteToFloat(frame.nPositionXAndFlags >> 24);
     pState->afWheelAngle[1] = pState->afWheelAngle[0];
@@ -153,8 +154,8 @@ void InterpolateKeyframeState(KeyframeState *pOut,
     Vec3fLerp(&pOut->position, &pTo->position, &pFrom->position, fShare);
     Vec3fLerp(&pOut->linearVelocity, &pTo->linearVelocity, &pFrom->linearVelocity, fShare);
     Vec3fLerp(&pOut->angularVelocity, &pTo->angularVelocity, &pFrom->angularVelocity, fShare);
-    pOut->fSteering = BlendKeyframeValue(pFrom->fSteering, pTo->fSteering, fShare);
-    pOut->fWheelOffset = BlendKeyframeValue(pFrom->fWheelOffset, pTo->fWheelOffset, fShare);
+    pOut->fBodyRollAngle = BlendKeyframeValue(pFrom->fBodyRollAngle, pTo->fBodyRollAngle, fShare);
+    pOut->fSteerAngle = BlendKeyframeValue(pFrom->fSteerAngle, pTo->fSteerAngle, fShare);
     for (int i = 0; i < 4; ++i) {
         pOut->afWheelAngle[i] =
             BlendKeyframeValue(pFrom->afWheelAngle[i], pTo->afWheelAngle[i], fShare);
@@ -417,4 +418,154 @@ void MatrixToPositionQuaternion(QuaternionPose *pPose, f32 m[4][4]) {
     pPose->position.x = m[3][0];
     pPose->position.y = m[3][1];
     pPose->position.z = m[3][2];
+}
+
+void PositionQuaternionToMatrix4x4(f32 matrix[4][4], const QuaternionPose *pPose) {
+    const Quaternion &q = pPose->orientation;
+    const float xx = q.x * q.x;
+    const float yy = q.y * q.y;
+    const float zz = q.z * q.z;
+    const float magnitude = q.w * q.w + xx + yy + zz;
+    const float scale = IsKeyframeFlagSet(magnitude) ? 2.0f / magnitude : 0.0f;
+    const float xy = q.x * scale * q.y;
+    const float wz = q.z * scale * q.w;
+    const float xz = q.x * scale * q.z;
+    const float wy = q.y * scale * q.w;
+    const float yz = q.y * scale * q.z;
+    const float wx = q.x * scale * q.w;
+    matrix[0][0] = 1.0f - (yy + zz) * scale;
+    matrix[1][1] = 1.0f - (xx + zz) * scale;
+    matrix[2][2] = 1.0f - (xx + yy) * scale;
+    matrix[1][0] = xy - wz;
+    matrix[0][1] = xy + wz;
+    matrix[2][0] = xz + wy;
+    matrix[0][2] = xz - wy;
+    matrix[2][1] = yz - wx;
+    matrix[1][2] = yz + wx;
+    matrix[3][0] = pPose->position.x;
+    matrix[3][1] = pPose->position.y;
+    matrix[3][2] = pPose->position.z;
+    matrix[0][3] = 0.0f;
+    matrix[1][3] = 0.0f;
+    matrix[2][3] = 0.0f;
+    matrix[3][3] = 1.0f;
+}
+
+void BuildVehicleKeyframe(KeyframeState *pState, Vehicle *pVehicle) {
+    QuaternionPose pose;
+    MatrixToPositionQuaternion(&pose, pVehicle->body.orientation);
+    pState->orientation = pose.orientation;
+    pState->position = pose.position;
+    pState->linearVelocity = pVehicle->body.state.velocity;
+    pState->angularVelocity = pVehicle->body.state.angularVelocity;
+    pState->fBodyRollAngle = pVehicle->body.rollAngle;
+    pState->fSteerAngle = pVehicle->wheelBodies[1].steerAngle;
+    const int wheels[4] = {0, 2, 1, 3};
+    for (int i = 0; i < 4; ++i) {
+        const RigidBody &wheel = pVehicle->wheelBodies[wheels[i]];
+        pState->afWheelAngle[i] = wheel.rollAngle;
+        pState->afWheelContact[i] = static_cast<float>(wheel.contactFrames);
+        pState->afWheelSurface[i] = static_cast<float>(static_cast<s8>(wheel.surface));
+    }
+    pState->fGearControl = static_cast<float>(pVehicle->body.replayEffects[4]);
+    pState->fBraking = (pVehicle->input->buttons & 0xc0000) ? 1.0f : 0.0f;
+    pState->fReverse = !(pVehicle->throttle >= 0.0f) ? 1.0f : 0.0f;
+    pState->fProgress = pVehicle->lap == g_dwTotalLaps ? 4188888.0f : pVehicle->progress;
+    pState->fSector = pVehicle->sector;
+    pState->afLight[0] = static_cast<float>(pVehicle->body.vehicleImpactVolume);
+    pState->afLight[1] = static_cast<float>(pVehicle->body.impactVolume);
+    pState->afEffectFlags[0] = static_cast<float>(pVehicle->body.replayEffects[3]);
+    pState->afEffectFlags[1] = static_cast<float>(pVehicle->body.unreconstructed202);
+    pState->afEffectFlags[2] = static_cast<float>(pVehicle->body.landed);
+    pState->afEffectFlags[3] = static_cast<float>(pVehicle->body.skidding);
+    pState->afEffectFlags[4] = static_cast<float>(pVehicle->body.replayEffects[0]);
+    pState->afEffectFlags[5] = static_cast<float>(pVehicle->body.replayEffects[1]);
+}
+
+void ApplyVehicleKeyframe(Vehicle *pVehicle, const KeyframeState *pState) {
+    pVehicle->body.state.orientation = pState->orientation;
+    pVehicle->body.state.position = pState->position;
+    const QuaternionPose pose = {pState->orientation, pState->position};
+    PositionQuaternionToMatrix4x4(pVehicle->body.orientation, &pose);
+    pVehicle->body.state.velocity = pState->linearVelocity;
+    pVehicle->body.state.angularVelocity = pState->angularVelocity;
+    pVehicle->body.rollAngle = pState->fBodyRollAngle;
+    pVehicle->wheelBodies[1].steerAngle = pState->fSteerAngle;
+    pVehicle->wheelBodies[3].steerAngle = pState->fSteerAngle;
+    const int wheels[4] = {0, 2, 1, 3};
+    for (int i = 0; i < 4; ++i) {
+        RigidBody &wheel = pVehicle->wheelBodies[wheels[i]];
+        wheel.rollAngle = pState->afWheelAngle[i];
+        wheel.contactFrames = static_cast<int>(pState->afWheelContact[i]);
+        wheel.surface = static_cast<u8>(static_cast<int>(pState->afWheelSurface[i]));
+    }
+    pVehicle->body.replayEffects[4] = static_cast<u8>(static_cast<int>(pState->fGearControl));
+    if (IsKeyframeFlagSet(pState->fBraking)) {
+        pVehicle->input->buttons |= 0x40000;
+    } else {
+        pVehicle->input->buttons &= ~0x40000u;
+    }
+    pVehicle->throttle = IsKeyframeFlagSet(pState->fReverse) ? -1.0f : 1.0f;
+    if (!(pVehicle->progress > 0.0f) || pVehicle->progress + 1000.0f > pState->fProgress) {
+        pVehicle->progress = pState->fProgress;
+    }
+    pVehicle->sector = pState->fSector;
+    pVehicle->body.vehicleImpactVolume = static_cast<u8>(static_cast<int>(pState->afLight[0]));
+    pVehicle->body.impactVolume = static_cast<u8>(static_cast<int>(pState->afLight[1]));
+    pVehicle->body.replayEffects[3] = static_cast<u8>(static_cast<int>(pState->afEffectFlags[0]));
+    pVehicle->body.unreconstructed202 = static_cast<u8>(static_cast<int>(pState->afEffectFlags[1]));
+    pVehicle->body.landed = static_cast<u8>(static_cast<int>(pState->afEffectFlags[2]));
+    pVehicle->body.skidding = static_cast<u8>(static_cast<int>(pState->afEffectFlags[3]));
+    pVehicle->body.replayEffects[0] = static_cast<u8>(static_cast<int>(pState->afEffectFlags[4]));
+    pVehicle->body.replayEffects[1] = static_cast<u8>(static_cast<int>(pState->afEffectFlags[5]));
+    ComputeDeltaQuaternion(&pVehicle->body.state);
+    pVehicle->body.stepStates[0] = pVehicle->body.state;
+    pVehicle->body.stepStates[1] = pVehicle->body.state;
+}
+
+void RecordGhostKeyframe(Vehicle *pVehicle) {
+    const int index = pVehicle->index;
+    if (!g_bGhostRecordingActive || g_dwRacePauseState ||
+        static_cast<int>(g_adwGhostFrameCount[index]) >= GHOST_MAX_FRAMES) {
+        return;
+    }
+    KeyframeState state;
+    BuildVehicleKeyframe(&state, pVehicle);
+    PackKeyframeToCompactBuffer(
+        g_aGhostKeyframes[index] + g_adwGhostFrameCount[index] * GHOST_FRAME_SIZE, &state);
+}
+
+void ApplyGhostKeyframeToVehicle(Vehicle *pVehicle, int nRecording) {
+    // Compact frames do not initialise velocity before the original restore reads it.
+    KeyframeState state;
+    const u8 *frame =
+        g_aGhostKeyframes[nRecording] + g_adwGhostPlaybackFrame[nRecording] * GHOST_FRAME_SIZE;
+    DeserializeKeyframeState(&state, frame);
+    state.fProgress = pVehicle->progress;
+    ApplyVehicleKeyframe(pVehicle, &state);
+    if (gInstantReplayActive == 2) {
+        pVehicle->body.vehicleImpactVolume = 0;
+        pVehicle->body.impactVolume = 0;
+        pVehicle->body.replayEffects[3] = 0;
+        pVehicle->body.unreconstructed202 = 0;
+        pVehicle->body.landed = 0;
+        pVehicle->body.skidding = 0;
+        pVehicle->body.replayEffects[0] = 0;
+        pVehicle->body.replayEffects[1] = 0;
+        pVehicle->body.replayEffects[2] = 0;
+    }
+    if (g_adwGhostPlaybackFrame[nRecording] <
+        static_cast<int>(g_adwGhostFrameCount[nRecording] - 2)) {
+        DeserializeKeyframeState(&state, frame + GHOST_FRAME_SIZE);
+        pVehicle->body.state.velocity.x =
+            (state.position.x - pVehicle->body.state.position.x) * 30.0f;
+        pVehicle->body.state.velocity.y =
+            (state.position.y - pVehicle->body.state.position.y) * 30.0f;
+        pVehicle->body.state.velocity.z =
+            (state.position.z - pVehicle->body.state.position.z) * 30.0f;
+    }
+}
+
+void ApplyGhostKeyframeForVehicle(Vehicle *pVehicle) {
+    ApplyGhostKeyframeToVehicle(pVehicle, pVehicle->index);
 }

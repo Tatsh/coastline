@@ -129,6 +129,7 @@ void StubPhysics1(void *data);
  * @ghidraAddress USA: 0x8021ff90
  * @ghidraAddress EUR: 0x80221290
  * @ghidraAddress JPN: 0x80220a80
+ * @ghidraAddress BRD3D: 0x100765e0
  */
 void MatrixToQuaternion(f32 m[4][4], Quaternion *q);
 
