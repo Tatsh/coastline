@@ -1,6 +1,6 @@
 # PC port game code from 0x10050000 to 0x10060000
 
-57 of 96 routines done.
+59 of 96 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -51,7 +51,7 @@ the same name, for a routine the port retained from the N64 game.
 | `BlitSurfaceRegion`                       |   ✅   |                 |      7 |    237 | `0x1005f5a0` | `0x10058380` | `void BlitSurfaceRegion(int nDestX, int nDestY, WORD wImage, RECT * pRect, DWORD dwFlags)`                                                      |
 | `SaveFileList::SetEntryFromSaveFileName`  |   ✅   |                 |      1 |    236 | `0x1005ce30` | `0x10055c50` | `int SetEntryFromSaveFileName(SaveFileList * this, char * pszFileName, char * pszDescription)`                                                  |
 | `MenuFont::DrawTextAltFont`               |   ✅   |                 |      1 |    219 | `0x1005b460` | `0x10054280` | `void DrawTextAltFont(MenuFont * this)`                                                                                                         |
-| `MenuItemList::MenuItemList`              |   🚧   |                 |      1 |    218 | `0x1005b7f0` | `0x10054610` | `undefined MenuItemList(MenuItemList * this)`                                                                                                   |
+| `MenuItemList::MenuItemList`              |   ✅   |                 |      1 |    218 | `0x1005b7f0` | `0x10054610` | `MenuItemList * MenuItemList(MenuItemList * this)`                                                                                              |
 | `ResetVehicleEffects`                     |        | ✅ `0x802288d4` |      3 |    216 |              | `0x1005e6a0` | `undefined ResetVehicleEffects()`                                                                                                               |
 | `BuildGlideDisplayModeList`               |        |                 |      1 |    215 |              | `0x10058d40` | `undefined BuildGlideDisplayModeList()`                                                                                                         |
 | `MenuFont::DrawText`                      |   ✅   | ✅ `0x8022f5dc` |      1 |    212 | `0x1005b2b0` | `0x100540d0` | `void DrawText(MenuFont * this)`                                                                                                                |
@@ -95,8 +95,8 @@ the same name, for a routine the port retained from the N64 game.
 | `MenuItemList::ScalarDeletingDestructor`  |        |                 |      1 |     30 | `0x1005b8d0` | `0x100546f0` | `undefined ScalarDeletingDestructor(MenuItemList * this, undefined4 param_1)`                                                                   |
 | `SaveFileList::ScalarDeletingDestructor`  |        |                 |      1 |     30 | `0x1005cbf0` | `0x10055a10` | `undefined ScalarDeletingDestructor(SaveFileList * this, undefined4 param_1)`                                                                   |
 | `MenuFont::ScalarDeletingDestructor`      |        |                 |      0 |     30 | `0x1005b0a0` | `0x10053ec0` | `undefined ScalarDeletingDestructor(MenuFont * this, undefined4 param_1)`                                                                       |
-| `MenuItemList::~MenuItemList`             |   🚧   |                 |      2 |     28 | `0x1005b8f0` | `0x10054710` | `undefined ~MenuItemList(MenuItemList * this)`                                                                                                  |
 | `GetFirstPressedKeyIndex`                 |   ✅   |                 |      2 |     28 | `0x1005ffd0` | `0x10059040` | `int GetFirstPressedKeyIndex(void)`                                                                                                             |
+| `MenuItemList::~MenuItemList`             |   ✅   |                 |      2 |     28 | `0x1005b8f0` | `0x10054710` | `void ~MenuItemList(MenuItemList * this)`                                                                                                       |
 | `PollKeyboardState`                       |   ✅   |                 |      1 |     23 | `0x1005ffb0` | `0x10059020` | `void PollKeyboardState(void)`                                                                                                                  |
 | `GlideDisplayModeNode::Init`              |        |                 |      1 |     19 |              | `0x10058c70` | `undefined Init(GlideDisplayModeNode * this)`                                                                                                   |
 | `ReleaseMenuSurfacesAndFail`              |   ✅   |                 |      2 |     18 | `0x1005f580` | `0x10058360` | `bool ReleaseMenuSurfacesAndFail(HWND hWnd)`                                                                                                    |
