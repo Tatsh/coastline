@@ -96,7 +96,7 @@ typedef struct RigidBody {
     Vec3f impactPoint;      /*!< Where the last hard hit was. */
     s32 uprightFrames;      /*!< 35 while the vehicle is upright, then counting down each step it is
                                  upside down. */
-    u8 impactSpeed;         /*!< How fast the last hit was, from 10 on. */
+    u8 impactSpeed;         /*!< The recorded speed of the last hit. */
     u8 tireType;            /*!< The tyres of the car, from 1; a higher type has less grip. */
     u8 vehicleImpactVolume; /*!< The loudest hit of another vehicle since the sounds played. */
     u8 impactVolume;        /*!< The loudest hit of the track since the sounds played. */

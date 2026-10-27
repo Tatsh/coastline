@@ -5,6 +5,7 @@
 #include <PR/os_libc.h>
 
 #include "game.h"
+#include "physicsimpact.h"
 #include "timing.h"
 #include "track.h"
 #include "vehicle.h"
@@ -26,9 +27,6 @@
 /* How fast the body of a vehicle leans into a skid, by step. */
 #define LEAN_STEP 0.2666666806f
 
-/* The speed a hit is counted up to for its sound. */
-#define MAX_IMPACT_SPEED 27.0f
-
 /* The weather of the grip of the dry surfaces, which fog and night share. */
 #define GRIP_WEATHER_DRY 0
 
@@ -47,11 +45,6 @@
 
 /* A coordinate of a vector by its axis, read as an element of an array of three. */
 #define COMPONENT(v, axis) ((&(v)->x)[axis])
-
-/* The loudness of a hit at a speed, which the sound of a crash plays at. */
-static inline u8 ImpactVolume(f32 speed) {
-    return (u32)(speed * 127.0f / MAX_IMPACT_SPEED + 128.0f);
-}
 
 /* The slowing a brake gives a wheel against its spin. */
 static inline f32 BrakeSlowing(RigidBody *wheel) {
@@ -380,90 +373,6 @@ void DriveWheel(RigidBody *body, RigidBody *wheel, f32 *load, u8 *sliding, f32 d
     while ((f64)wheel->rollAngle < 0.0) {
         wheel->rollAngle = wheel->rollAngle + 360.0f;
     }
-}
-
-/* Record a hard hit at a speed into a surface for its sound, and where it was. */
-static inline void RecordImpact(RigidBody *body, f32 speed) {
-    body->impactSpeed = (u32)speed;
-    if (body->impactSpeed < 10) {
-        body->impactSpeed = 0;
-    } else {
-        body->impactPoint.x = g_vCollisionContact.x;
-        body->impactPoint.y = g_vCollisionContact.y;
-        body->impactPoint.z = g_vCollisionContact.z;
-    }
-}
-
-/* Keep the loudest hit for the sound. */
-static inline void RecordImpactVolume(RigidBody *body, f32 speed) {
-    u8 volume = ImpactVolume(speed);
-
-    /* The original writes the volume back even when it does not change. */
-    body->impactVolume = body->impactVolume < volume ? volume : body->impactVolume;
-}
-
-s32 BounceOffPlane(RigidBody *body, Vec3f *normal, s32 damp, s32 spin) {
-    Vec3f *velocity = &body->stepStates[1].velocity;
-    Vec3f *angular = &body->stepStates[1].angularVelocity;
-    Vec3f impulse, pivot, scale, turn;
-    f32 basis[4][4];
-    f32 into, damping, speed;
-    f64 bounce;
-
-    into = velocity->z * normal->z + (normal->x * velocity->x + normal->y * velocity->y);
-    if (0.0f <= into) {
-        return 0;
-    }
-    bounce = (f64)into * 1.05;
-    impulse.x = (f32)((f64)normal->x * bounce);
-    impulse.y = (f32)((f64)normal->y * bounce);
-    impulse.z = (f32)((f64)normal->z * bounce);
-    velocity->x = velocity->x - impulse.x;
-    velocity->y = velocity->y - impulse.y;
-    velocity->z = velocity->z - impulse.z;
-    if (body->framesSinceImpact < 10) {
-        damping = 0.9f;
-    } else {
-        speed = ABS(into);
-        if (MAX_IMPACT_SPEED < speed) {
-            speed = MAX_IMPACT_SPEED;
-        }
-        RecordImpact(body, speed);
-        RecordImpactVolume(body, speed);
-        damping = 0.9f;
-        velocity->x = velocity->x * damping;
-        velocity->y = velocity->y * damping;
-        velocity->z = velocity->z * damping;
-    }
-    if (damp) {
-        velocity->x = velocity->x * damping;
-        velocity->y = velocity->y * damping;
-        velocity->z = velocity->z * damping;
-    }
-    if (!spin) {
-        return 1;
-    }
-
-    /* Damp the spin by its parts in a frame of the normal and two axes across it. */
-    pivot.x = normal->y;
-    pivot.y = normal->z;
-    pivot.z = normal->x;
-    basis[1][0] = normal->y * pivot.z - pivot.y * normal->z;
-    basis[1][1] = normal->z * pivot.x - pivot.z * normal->x;
-    basis[1][2] = normal->x * pivot.y - pivot.x * normal->y;
-    basis[2][0] = normal->y * basis[1][2] - basis[1][1] * normal->z;
-    basis[2][1] = normal->z * basis[1][0] - basis[1][2] * normal->x;
-    basis[2][2] = normal->x * basis[1][1] - basis[1][0] * normal->y;
-    basis[0][0] = normal->x;
-    basis[0][1] = normal->y;
-    basis[0][2] = normal->z;
-    Mtx3x3MulVec3f(&scale, basis, normal);
-    Mtx3x3MulVec3f(&turn, basis, angular);
-    turn.x = turn.x * scale.x;
-    turn.y = turn.y * scale.y;
-    turn.z = turn.z * scale.z;
-    Mtx4fInverseRotate(angular, basis, &turn);
-    return 1;
 }
 
 s32 UnusedCollisionResponseStub(void *body, void *normal, void *damp) {

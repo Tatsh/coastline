@@ -1,6 +1,7 @@
 #include <PR/gu.h>
 
 #include "physics.h"
+#include "physicsimpact.h"
 #include "track.h"
 #include "vehiclemodel.h"
 #include "weather.h"
@@ -12,6 +13,111 @@
 #endif
 
 #define SIGN(x) ((x) == 0.0f ? 0.0 : (0.0f < (x) ? 1.0 : -1.0))
+
+s32 BounceOffPlane(RigidBody *body, Vec3f *normal, s32 damp, s32 spin) {
+    Vec3f *velocity = &body->stepStates[1].velocity;
+    Vec3f *angular = &body->stepStates[1].angularVelocity;
+    Vec3f impulse, pivot, scale, turn;
+    f32 basis[4][4];
+    f32 into, damping, speed;
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+    long double bounce, rawInto, reflected[3], tangent[3];
+#else
+    f64 bounce;
+#endif
+
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+    rawInto = Vec3fDot(normal, velocity);
+    into = (f32)rawInto;
+    if (0.0f <= rawInto) {
+        return 0;
+    }
+    bounce = FORCE_PRODUCT(into, 1.05f);
+#else
+    into = velocity->z * normal->z + (normal->x * velocity->x + normal->y * velocity->y);
+    if (0.0f <= into) {
+        return 0;
+    }
+    bounce = (f64)into * 1.05;
+#endif
+    impulse.x = (f32)((f64)normal->x * bounce);
+    impulse.y = (f32)((f64)normal->y * bounce);
+    impulse.z = (f32)((f64)normal->z * bounce);
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+    reflected[0] = (long double)velocity->x - impulse.x;
+    reflected[1] = (long double)velocity->y - impulse.y;
+    reflected[2] = (long double)velocity->z - impulse.z;
+    velocity->x = reflected[0];
+    velocity->y = reflected[1];
+    velocity->z = reflected[2];
+#else
+    velocity->x = velocity->x - impulse.x;
+    velocity->y = velocity->y - impulse.y;
+    velocity->z = velocity->z - impulse.z;
+#endif
+    if (body->framesSinceImpact < 10) {
+        damping = 0.9f;
+    } else {
+        speed = into < 0.0f ? -into : into;
+        if (MAX_IMPACT_SPEED < speed) {
+            speed = MAX_IMPACT_SPEED;
+        }
+        RecordImpact(body, speed);
+        RecordImpactVolume(body, speed);
+        damping = 0.9f;
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+        velocity->x = reflected[0] * damping;
+        velocity->y = reflected[1] * damping;
+        velocity->z = reflected[2] * damping;
+#else
+        velocity->x = velocity->x * damping;
+        velocity->y = velocity->y * damping;
+        velocity->z = velocity->z * damping;
+#endif
+    }
+    if (damp) {
+        velocity->x = velocity->x * damping;
+        velocity->y = velocity->y * damping;
+        velocity->z = velocity->z * damping;
+    }
+    if (!spin) {
+        return 1;
+    }
+
+    /* Damp the spin by its parts in a frame of the normal and two axes across it. */
+    pivot.x = normal->y;
+    pivot.y = normal->z;
+    pivot.z = normal->x;
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+    tangent[0] = FORCE_PRODUCT(normal->y, pivot.z) - FORCE_PRODUCT(pivot.y, normal->z);
+    tangent[1] = FORCE_PRODUCT(normal->z, pivot.x) - FORCE_PRODUCT(pivot.z, normal->x);
+    tangent[2] = FORCE_PRODUCT(normal->x, pivot.y) - FORCE_PRODUCT(pivot.x, normal->y);
+    basis[1][0] = tangent[0];
+    basis[1][1] = tangent[1];
+    basis[1][2] = tangent[2];
+    /* The second cross product mixes retained x87 values with the stored first row. */
+    basis[2][0] = normal->y * tangent[2] - tangent[1] * normal->z;
+    basis[2][1] = normal->z * tangent[0] - FORCE_PRODUCT(basis[1][2], normal->x);
+    basis[2][2] = FORCE_PRODUCT(normal->x, basis[1][1]) - FORCE_PRODUCT(basis[1][0], normal->y);
+#else
+    basis[1][0] = normal->y * pivot.z - pivot.y * normal->z;
+    basis[1][1] = normal->z * pivot.x - pivot.z * normal->x;
+    basis[1][2] = normal->x * pivot.y - pivot.x * normal->y;
+    basis[2][0] = normal->y * basis[1][2] - basis[1][1] * normal->z;
+    basis[2][1] = normal->z * basis[1][0] - basis[1][2] * normal->x;
+    basis[2][2] = normal->x * basis[1][1] - basis[1][0] * normal->y;
+#endif
+    basis[0][0] = normal->x;
+    basis[0][1] = normal->y;
+    basis[0][2] = normal->z;
+    Mtx3x3MulVec3f(&scale, basis, normal);
+    Mtx3x3MulVec3f(&turn, basis, angular);
+    turn.x = turn.x * scale.x;
+    turn.y = turn.y * scale.y;
+    turn.z = turn.z * scale.z;
+    Mtx4fInverseRotate(angular, basis, &turn);
+    return 1;
+}
 
 f32 CastWheelRay(RigidBody *body, RigidBody *wheel) {
     TrackTriangle *triangle;

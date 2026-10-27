@@ -151,14 +151,21 @@ extern Vec3f g_vecNegUnitZ;
  */
 extern Vec3f g_vVehicleObbHalfExtents;
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 /**
  * Where the last collision with the track touched the body, in its frame.
  *
  * @ghidraAddress USA: 0x8037eaa8
  * @ghidraAddress EUR: 0x80380fa8
  * @ghidraAddress JPN: 0x8037fc18
+ * @ghidraAddress BRD3D: 0x11755490
  */
 extern Vec3f g_vCollisionContact;
+#ifdef __cplusplus
+}
+#endif
 
 /**
  * The word after g_vCollisionContact, which ComputeCollisionPenetration() scales.
@@ -350,6 +357,9 @@ f32 PlaneDistance(Vec3f *normal, f32 offset, Vec3f *point);
 }
 #endif
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 /**
  * Stop the next step of a body moving into a plane, with a little bounce, record a hard hit, and
  * damp its spin about the plane.
@@ -362,8 +372,12 @@ f32 PlaneDistance(Vec3f *normal, f32 offset, Vec3f *point);
  * @ghidraAddress USA: 0x8025b73c
  * @ghidraAddress EUR: 0x8025cd20
  * @ghidraAddress JPN: 0x8025c6b0
+ * @ghidraAddress BRD3D: 0x1006c9d0
  */
 s32 BounceOffPlane(RigidBody *body, Vec3f *normal, s32 damp, s32 spin);
+#ifdef __cplusplus
+}
+#endif
 
 /**
  * An empty collision response.
