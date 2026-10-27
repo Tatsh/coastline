@@ -1811,6 +1811,28 @@ int ChampionshipSeasonUI_OnStartNewSeason(MenuWidget *) {
     return 1;
 }
 
+int ReturnToMultiplayerLobby(MenuWidget *pWidget) {
+    pWidget->pScreen->DestroyPanels();
+    delete g_pActiveMenuScreen;
+    MenuScreen *screen = g_pCachedMenu_RaceSetupNetwork;
+    g_pCachedMenu_NetworkCarSetup = nullptr;
+    g_pNetworkPlayerListMenu = nullptr;
+    g_pNetworkCarSetupMenu = nullptr;
+    g_dwInNetworkCarSetup = 0;
+    g_pActiveMenuScreen = screen;
+    return 0;
+}
+
+int ReturnToVideoOptionsFromResolution(MenuWidget *pWidget) {
+    pWidget->pScreen->DestroyPanels();
+    delete g_pActiveMenuScreen;
+    MenuScreen *screen = g_pCachedMenu_InputConfig;
+    g_pCachedMenu_AudioSettings = nullptr;
+    g_pDisplayModeSelectMenu = nullptr;
+    g_pActiveMenuScreen = screen;
+    return 0;
+}
+
 int PreRaceExitSeasonConfirmUI_OnYes(MenuWidget *pWidget) {
     pWidget->pScreen->DestroyPanels();
     delete g_pActiveMenuScreen;

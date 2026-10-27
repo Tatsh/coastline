@@ -330,6 +330,22 @@ int MultiplayerGameSetupUI_OnEscape(MenuWidget *pWidget);
 int ChampionshipSeasonUI_OnStartNewSeason(MenuWidget *pWidget);
 
 /**
+ * Destroy the active network setup screen and restore the cached race setup.
+ *
+ * @ghidraAddress BRD3D: 0x10046400
+ * @ghidraAddress BRGlide: 0x1003f8a0
+ */
+int ReturnToMultiplayerLobby(MenuWidget *pWidget);
+
+/**
+ * Destroy display mode panels and restore the cached input configuration screen.
+ *
+ * @ghidraAddress BRD3D: 0x10046670
+ * @ghidraAddress BRGlide: 0x1003fac0
+ */
+int ReturnToVideoOptionsFromResolution(MenuWidget *pWidget);
+
+/**
  * @ghidraAddress BRD3D: 0x10a9d078
  * @ghidraAddress BRGlide: 0x10ac4100
  */
