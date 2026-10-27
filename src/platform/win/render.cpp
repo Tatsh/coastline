@@ -303,7 +303,7 @@ void ByteSwapAndRelocateDisplayList(GbiCommand *pCommands) {
 }
 #endif
 
-bool IsPointerInRelocatedList(void *pPointer) {
+int IsPointerInRelocatedList(void *pPointer) {
     if (pPointer == nullptr) {
         return true;
     }

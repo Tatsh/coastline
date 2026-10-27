@@ -481,7 +481,7 @@ void AddPointerToRelocatedList(void *pPointer);
  * @ghidraAddress BRD3D: 0x1002bf40
  * @ghidraAddress BRGlide: 0x10019000
  */
-bool IsPointerInRelocatedList(void *pPointer);
+int IsPointerInRelocatedList(void *pPointer);
 
 /**
  * Move a pointer from g_dwOldBaseAddress to g_dwNewBaseAddress. A pointer below the old base

@@ -60,9 +60,15 @@ typedef struct VehicleModel {
     u8 abUnknownDa[0x7f26]; /* +0xda */
 #endif
     u32 triangleCount; /*!< The triangles of the model, counted into the statistics of the frame. */
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+    void *unreconstructed4; /* +0x8004 */
+    u32 unreconstructed8;   /* +0x8008 */
+    void *unreconstructedC; /* +0x800c */
+#else
     u8 unreconstructed4[0x10 - 0x4]; /*!< Not read by the routines reconstructed so far. */
-    s32 textureCount;                /*!< The number of textures of the model. */
-    ModelTexture *textures;          /*!< The textures of the model, textureCount of them. */
+#endif
+    s32 textureCount;       /*!< The number of textures of the model. */
+    ModelTexture *textures; /*!< The textures of the model, textureCount of them. */
     DisplayListCommand *displayLists[VEHICLE_LODS][VEHICLE_DISPLAY_LISTS]; /*!< The display lists of
                                                                  each level of detail, by the
                                                                  VEHICLE_DL_ values. */
