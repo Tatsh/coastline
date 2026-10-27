@@ -100,9 +100,9 @@ else()
   # The game code the PC port retained from the N64 releases. A source joins this list when every
   # routine of it that the PC libraries have compiles for them.
   add_library(
-    coastline_game STATIC displaylistops.c game.c mathutil.c playerinput.c profileinit.c rigidbody.c
-                          screen.c util.c vecmath.c vehiclechoice.c visgrid.c libultra/gu/mtxcatf.c
-                          libultra/gu/mtxutil.c)
+    coastline_game STATIC displaylistops.c fade.c game.c heap.c mathutil.c playerinput.c profileinit.c
+                          rigidbody.c screen.c util.c vecmath.c vehiclechoice.c visgrid.c
+                          libultra/gu/mtxcatf.c libultra/gu/mtxutil.c)
   target_link_libraries(coastline_game PRIVATE coastline_common)
   list(APPEND COASTLINE_LIBRARIES coastline_game)
 

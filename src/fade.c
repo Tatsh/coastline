@@ -1,5 +1,6 @@
 #include "fade.h"
 
+#if TGR_PLATFORM == TGR_PLATFORM_N64
 #include "audio.h"
 #include "render.h"
 #include "system.h"
@@ -106,12 +107,17 @@ void SetSfxFadeLevelImmediate(float level) {
     g_fSfxFadeTarget = level;
     g_fSfxFadeCurrent = g_fSfxFadeTarget;
 }
+#else
+f32 g_fFadeTarget;
+f32 g_fFadeLevel;
+#endif
 
 void SnapScreenFade(float level) {
     g_fFadeTarget = level;
     g_fFadeLevel = g_fFadeTarget;
 }
 
+#if TGR_PLATFORM == TGR_PLATFORM_N64
 s32 IsFadingIn(void) {
     return g_fFadeRate > 0.0f && !g_dwFadeAutoReverse;
 }
@@ -337,3 +343,4 @@ void UpdateFadeTransitions(void) {
     }
     g_bMusicVolume = (s32)((f64)g_fMusicFadeCurrent * MAX_VOLUME);
 }
+#endif

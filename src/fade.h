@@ -12,6 +12,10 @@
 
 #include <PR/ultratypes.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /**
  * The edges of the picture the wipe leaves, in pixels.
  *
@@ -57,6 +61,7 @@ extern f32 g_fHeadlightGlare;
  * @ghidraAddress USA: 0x8028b754
  * @ghidraAddress EUR: 0x8028da04
  * @ghidraAddress JPN: 0x8028d434
+ * @ghidraAddress BRD3D: 0x10575510
  */
 extern f32 g_fFadeTarget;
 
@@ -73,6 +78,7 @@ extern f32 g_fFadeRate;
  * @ghidraAddress USA: 0x8028b75c
  * @ghidraAddress EUR: 0x8028da0c
  * @ghidraAddress JPN: 0x8028d43c
+ * @ghidraAddress BRD3D: 0x10575518
  */
 extern f32 g_fFadeLevel;
 
@@ -252,6 +258,7 @@ void SetSfxFadeLevelImmediate(float level);
  * @ghidraAddress USA: 0x8022389c
  * @ghidraAddress EUR: 0x80224bdc
  * @ghidraAddress JPN: 0x802243cc
+ * @ghidraAddress BRD3D: 0x1002b280
  */
 void SnapScreenFade(float level);
 
@@ -340,5 +347,9 @@ void DrawScreenFadeOverlay(float level);
  * @ghidraAddress JPN: 0x80224a84
  */
 void UpdateFadeTransitions(void);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

@@ -9,12 +9,17 @@
 
 #include <PR/ultratypes.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /**
  * The next free byte of the interface heap.
  *
  * @ghidraAddress USA: 0x80369b70
  * @ghidraAddress EUR: 0x8036c070
  * @ghidraAddress JPN: 0x8036ace0
+ * @ghidraAddress BRD3D: 0x106c7c38
  */
 extern u8 *g_pHeapCurrent;
 
@@ -24,6 +29,7 @@ extern u8 *g_pHeapCurrent;
  * @ghidraAddress USA: 0x80242940
  * @ghidraAddress EUR: 0x80243e50
  * @ghidraAddress JPN: 0x80243950
+ * @ghidraAddress BRD3D: 0x10036020
  */
 void ResetHeap(void);
 
@@ -76,5 +82,9 @@ void ClearFramebuffersForWideMode(void);
  * @ghidraAddress JPN: 0x80243a88
  */
 void ClearFramebuffersForNormalMode(void);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

@@ -1,10 +1,14 @@
 #include "heap.h"
 
+#if TGR_PLATFORM == TGR_PLATFORM_N64
 #include <PR/os.h>
 #include <PR/os_libc.h>
 
 #include "render.h"
 #include "system.h"
+#else
+u8 *g_pHeapCurrent;
+#endif
 
 /* The interface heap lies below the program. */
 #define HEAP_START ((u8 *)0x80096400)
@@ -14,6 +18,7 @@ void ResetHeap(void) {
     g_pHeapCurrent = HEAP_START;
 }
 
+#if TGR_PLATFORM == TGR_PLATFORM_N64
 u8 *GetHeapCurrentAddress(void) {
     return g_pHeapCurrent;
 }
@@ -67,3 +72,4 @@ void ClearFramebuffersForNormalMode(void) {
     FlushDisplayList();
     g_dwKeepScreenBlanked = FALSE;
 }
+#endif
