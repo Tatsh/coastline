@@ -1,4 +1,5 @@
-add_library(coastline_ear STATIC environment.cpp error.cpp exports.def memorybudget.cpp window.cpp)
+add_library(coastline_ear STATIC distance.cpp environment.cpp error.cpp exports.def memorybudget.cpp
+                                runtime.cpp window.cpp)
 target_include_directories(coastline_ear PUBLIC "${CMAKE_SOURCE_DIR}/src")
 target_compile_options(coastline_ear PRIVATE -Wall -Wextra -Wno-unused-parameter)
 target_link_libraries(coastline_ear PRIVATE kernel32 user32)
