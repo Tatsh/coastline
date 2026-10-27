@@ -2066,8 +2066,17 @@ int RaceSetupUI_OnCycleWeather(MenuActionWidget *pItem);
 extern int g_adwCarNameStringIds[];
 /** @ghidraAddress BRD3D: 0x100ac308 */
 extern int g_adwTrackNameStringIds[];
-/** @ghidraAddress BRD3D: 0x100ac3b0 */
+/**
+ * @ghidraAddress BRD3D: 0x100ac3b0
+ * @ghidraAddress BRGlide: 0x100abb50
+ */
 extern int g_adwWeatherLabelStrIds[];
+
+/**
+ * @ghidraAddress BRD3D: 0x1003fe80
+ * @ghidraAddress BRGlide: 0x100393c0
+ */
+int RaceSetupUI_UpdateWeatherLabel(MenuWidget *pWidget);
 
 /**
  * @ghidraAddress BRD3D: 0x100446d0

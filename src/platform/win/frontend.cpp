@@ -2802,6 +2802,33 @@ int SeasonProgressInfoUI_UpdateRoundLabel(MenuWidget *pWidget) {
     return 1;
 }
 
+int RaceSetupUI_UpdateWeatherLabel(MenuWidget *pWidget) {
+    bool loadingGhost =
+        g_pActiveMenuScreen == g_pCachedMenu_LoadGhost && !g_dwTimeAttackLoadSelected;
+    MenuFont *font = &pWidget->fonts[0];
+    int stringId;
+    if (loadingGhost) {
+        font->fY -= 8.0f;
+        stringId = 0x1c;
+    } else {
+        int weather = g_dwSelectedWeather;
+        if (g_dwGameMode == GAME_MODE_CHAMPIONSHIP) {
+            int round = g_bSeasonRoundListBrowsing ? g_dwSeasonSavedRound : g_dwSeasonRound;
+            weather = g_SeasonTable[g_bSeasonClass].races[round][1];
+        }
+        stringId = g_adwWeatherLabelStrIds[weather];
+    }
+    const char *text = GetStringResource(stringId);
+    MenuFontVTable *vtable = font->pVTable;
+    strcpy(font->szText, text);
+    vtable->MeasureText(font);
+    ProcessMenuTextEditInput(pWidget, 0);
+    if (loadingGhost) {
+        font->fY += 8.0f;
+    }
+    return 1;
+}
+
 int RaceSetupUI_UpdateLapCountLabel(MenuWidget *pWidget) {
     if (g_pActiveMenuScreen != g_pCachedMenu_LoadGhost || g_dwTimeAttackLoadSelected) {
         MenuFont *font = &pWidget->fonts[0];
