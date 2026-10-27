@@ -7,11 +7,10 @@
 
 #include "ini.h"
 #include "platform/win/fileio.h"
+#include "registry.h"
 
 typedef int(__cdecl *RallyMainProc)(HINSTANCE, HINSTANCE, LPSTR, int);
 
-// @ghidraAddress BRally: 0x004032a8
-static char g_szInstallDir[260];
 // @ghidraAddress BRally: 0x004033b0
 static char g_szIniFilePath[1024];
 // @ghidraAddress BRally: 0x00403bb0
@@ -26,26 +25,6 @@ static unsigned g_dwSpawnArgCount;
 static unsigned g_dwSpawnArgBufferUsed;
 // @ghidraAddress BRally: 0x0040bdbc
 static HMODULE g_hRendererDll;
-
-// @ghidraAddress BRally: 0x004016d0
-static void ReadInstallDirectoryFromRegistry(void) {
-    HKEY key;
-    if (RegOpenKeyExA(
-            HKEY_LOCAL_MACHINE, "SOFTWARE\\SouthPeak Interactive\\Boss Rally", 0, KEY_READ, &key) ==
-        ERROR_SUCCESS) {
-        DWORD bytes = 260;
-        LSTATUS result =
-            RegQueryValueExA(key, "Directory", nullptr, nullptr, (BYTE *)g_szInstallDir, &bytes);
-        RegCloseKey(key);
-        if (result == ERROR_SUCCESS) {
-            if (g_szInstallDir[strlen(g_szInstallDir) - 1] != '\\') {
-                strcat(g_szInstallDir, "\\");
-            }
-            return;
-        }
-    }
-    strcpy(g_szInstallDir, "c:\\");
-}
 
 // @ghidraAddress BRally: 0x004017b0
 static int LoadRendererDll(const char *path) {

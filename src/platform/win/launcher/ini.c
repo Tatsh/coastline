@@ -6,16 +6,31 @@
 
 #include "platform/win/fileio.h"
 
-// @ghidraAddress BRally: 0x0040308c
+/**
+ * @ghidraAddress BRally: 0x0040308c
+ * @ghidraAddress SetVideo: 0x0040b1ec
+ */
 static char g_cListCommentChar = '#';
-// @ghidraAddress BRally: 0x00403220
+/**
+ * @ghidraAddress BRally: 0x00403220
+ * @ghidraAddress SetVideo: 0x0040e008
+ */
 static FILE *g_apIncludeFileStack[32];
-// @ghidraAddress BRally: 0x004032a0
+/**
+ * @ghidraAddress BRally: 0x004032a0
+ * @ghidraAddress SetVideo: 0x0040e088
+ */
 static unsigned g_dwIncludeFileDepth;
-// @ghidraAddress BRally: 0x004037b0
+/**
+ * @ghidraAddress BRally: 0x004037b0
+ * @ghidraAddress SetVideo: 0x0040e598
+ */
 static char g_szIniLineBuffer[1024];
 
-// @ghidraAddress BRally: 0x00401000
+/**
+ * @ghidraAddress BRally: 0x00401000
+ * @ghidraAddress SetVideo: 0x00401000
+ */
 static void FreeStringList(LauncherStringList *list) {
     if (list->count) {
         for (int index = 0; index < list->count; ++index) {
@@ -48,16 +63,68 @@ void FreeIniSectionIterator(LauncherIniSectionIterator *iterator) {
     free(iterator);
 }
 
-// @ghidraAddress BRally: 0x004011d0
-static char *GetIniSectionName(LauncherIniSectionIterator *iterator) {
+LauncherIniSectionIterator *FindFirstIniSection(LauncherIniFile *file) {
+    LauncherIniSectionIterator *iterator =
+        CHK_AllocateMemory(sizeof(*iterator), "SetSubstituteDir():pins");
+    iterator->file = file;
+    iterator->sectionIndex = -1;
+    if (file) {
+        int count = file->list->count;
+        for (int index = 0; index < count; index++) {
+            if (file->list->lines[index][0] == '[') {
+                iterator->sectionIndex = index;
+                break;
+            }
+        }
+    }
+    return iterator;
+}
+
+LauncherIniSectionIterator *FindNextIniSection(LauncherIniSectionIterator *iterator) {
+    if (!iterator || !iterator->file) {
+        return nullptr;
+    }
+    LauncherStringList *list = iterator->file->list;
+    int index = (int)((unsigned)iterator->sectionIndex + 1u);
+    for (; index < list->count; index++) {
+        if (list->lines[index][0] == '[') {
+            iterator->sectionIndex = index;
+            return iterator;
+        }
+    }
+    iterator->sectionIndex = -1;
+    return iterator;
+}
+
+int CountIniSections(LauncherIniFile *file) {
+    int count = 0;
+    LauncherIniSectionIterator *iterator = FindFirstIniSection(file);
+    while (iterator->sectionIndex != -1) {
+        count++;
+        iterator = FindNextIniSection(iterator);
+    }
+    FreeIniSectionIterator(iterator);
+    return count;
+}
+
+char *GetIniSectionName(LauncherIniSectionIterator *iterator) {
     if (iterator && iterator->file && iterator->sectionIndex != -1) {
         return iterator->file->list->lines[iterator->sectionIndex];
     }
     return nullptr;
 }
 
-// @ghidraAddress BRally: 0x00401200
-static LauncherIniFile *SelectIniSection(LauncherIniSectionIterator *iterator) {
+char *GetIniSectionHeaderByIndex(int index, LauncherIniFile *file) {
+    LauncherIniSectionIterator *iterator = FindFirstIniSection(file);
+    for (; index > 0; index--) {
+        iterator = FindNextIniSection(iterator);
+    }
+    char *name = GetIniSectionName(iterator);
+    FreeIniSectionIterator(iterator);
+    return name;
+}
+
+LauncherIniFile *SelectIniSection(LauncherIniSectionIterator *iterator) {
     if (iterator && iterator->file && iterator->sectionIndex != -1) {
         iterator->file->currentLine = iterator->sectionIndex;
         return iterator->file;
@@ -65,8 +132,7 @@ static LauncherIniFile *SelectIniSection(LauncherIniSectionIterator *iterator) {
     return nullptr;
 }
 
-// @ghidraAddress BRally: 0x00401220
-static char *GetNextIniSectionLine(LauncherIniFile *file) {
+char *GetNextIniSectionLine(LauncherIniFile *file) {
     if (file && file->currentLine >= 0) {
         ++file->currentLine;
         if (file->currentLine < file->list->count) {
@@ -80,37 +146,58 @@ static char *GetNextIniSectionLine(LauncherIniFile *file) {
     return nullptr;
 }
 
-// @ghidraAddress BRally: 0x004014a0
+/**
+ * @ghidraAddress BRally: 0x004014a0
+ * @ghidraAddress SetVideo: 0x00401910
+ */
 static void ResetIncludeFileStack(void) {
     g_dwIncludeFileDepth = 0;
 }
 
-// @ghidraAddress BRally: 0x00401660
+/**
+ * @ghidraAddress BRally: 0x00401660
+ * @ghidraAddress SetVideo: 0x00401ac0
+ */
 static int IsIncludeFileStackEmpty(void) {
     return g_dwIncludeFileDepth == 0;
 }
 
-// @ghidraAddress BRally: 0x00401670
+/**
+ * @ghidraAddress BRally: 0x00401670
+ * @ghidraAddress SetVideo: 0x00401ad0
+ */
 static void PushIncludeFile(FILE *file) {
     g_apIncludeFileStack[g_dwIncludeFileDepth++] = file;
 }
 
-// @ghidraAddress BRally: 0x00401690
+/**
+ * @ghidraAddress BRally: 0x00401690
+ * @ghidraAddress SetVideo: 0x00401af0
+ */
 static FILE *PopIncludeFile(void) {
     return g_apIncludeFileStack[--g_dwIncludeFileDepth];
 }
 
-// @ghidraAddress BRally: 0x004016b0
+/**
+ * @ghidraAddress BRally: 0x004016b0
+ * @ghidraAddress SetVideo: 0x00401b10
+ */
 static char GetListCommentChar(void) {
     return g_cListCommentChar;
 }
 
-// @ghidraAddress BRally: 0x004016c0
+/**
+ * @ghidraAddress BRally: 0x004016c0
+ * @ghidraAddress SetVideo: 0x00401b20
+ */
 static void SetListCommentChar(char comment) {
     g_cListCommentChar = comment;
 }
 
-// @ghidraAddress BRally: 0x004014b0
+/**
+ * @ghidraAddress BRally: 0x004014b0
+ * @ghidraAddress SetVideo: 0x00401920
+ */
 static FILE *ReadNextListLine(char *buffer, int capacity, FILE *file) {
     char includePath[32768];
     for (;;) {
@@ -156,7 +243,10 @@ static FILE *ReadNextListLine(char *buffer, int capacity, FILE *file) {
     }
 }
 
-// @ghidraAddress BRally: 0x004012c0
+/**
+ * @ghidraAddress BRally: 0x004012c0
+ * @ghidraAddress SetVideo: 0x00401740
+ */
 static LauncherStringList *ReadStringListFile(const char *path) {
     char buffer[32768];
     int count = 0;

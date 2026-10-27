@@ -22,7 +22,7 @@ extern "C" {
  */
 void ReadEntireFile(void *buffer, const char *path, int size);
 
-/** A file opened by CHK_FReadOpen(). */
+/** A file opened by the checked read or write routines. */
 typedef struct GameFile {
     FILE *pFile;   /*!< The stream of the C library. */
     char *pszPath; /*!< A copy of the path, for the messages. */
@@ -75,6 +75,18 @@ int CHK_FileExists(const char *pszPath);
  * @ghidraAddress SetVideo: 0x00401050
  */
 GameFile *CHK_FReadOpen(const char *pszPath);
+
+/**
+ * Open a file in the requested mode, reporting a failure before ending the process.
+ * @ghidraAddress SetVideo: 0x00401230
+ */
+GameFile *CHK_FWriteOpen(const char *path, const char *mode);
+
+/**
+ * Write a string, reporting a failure before ending the process.
+ * @ghidraAddress SetVideo: 0x00401310
+ */
+void CHK_FPutS(const char *text, GameFile *file);
 
 /**
  * Read items of a file. A read that ends part way through ends the process.
