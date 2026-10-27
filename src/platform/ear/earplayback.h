@@ -4,6 +4,7 @@
 #include <cstdint>
 
 #include "directionalmatrix.h"
+#include "directsoundstate.h"
 
 class EarWaveSample;
 class EarPreset;
@@ -40,10 +41,10 @@ private:
     /** @ghidraAddress EAR: 0x1000ad5a */
     int GetEarPlaybackLooping();
 
-    /**
-     * @ghidraAddress EAR: 0x10012570
-     * @stub
-     */
+    /** @ghidraAddress EAR: 0x100125ac */
+    DWORD GetDirectSoundPlaybackCursor();
+
+    /** @ghidraAddress EAR: 0x10012570 */
     virtual void InitializeDirectSoundPlaybackState();
     /** @ghidraAddress EAR: 0x10012596 */
     virtual void FinalizeDirectSoundPlaybackState();
@@ -93,30 +94,21 @@ private:
      * @stub
      */
     virtual std::uint16_t AllocateEarEventId();
-    /**
-     * @ghidraAddress EAR: 0x100125fd
-     * @stub
-     */
+    /** @ghidraAddress EAR: 0x100125fd */
     virtual void UpdateDirectSoundPlaybackFrequency();
     /**
      * @ghidraAddress EAR: 0x1000a9bf
      * @stub
      */
     virtual int StartEarPlayback();
-    /**
-     * @ghidraAddress EAR: 0x10012860
-     * @stub
-     */
+    /** @ghidraAddress EAR: 0x10012860 */
     virtual int PlayDirectSoundEventBuffer();
     /**
      * @ghidraAddress EAR: 0x1000a99f
      * @stub
      */
     virtual void PauseEarPlayback();
-    /**
-     * @ghidraAddress EAR: 0x100128f8
-     * @stub
-     */
+    /** @ghidraAddress EAR: 0x100128f8 */
     virtual int StopDirectSoundEventBuffer();
     /**
      * @ghidraAddress EAR: 0x1000add8
@@ -128,10 +120,7 @@ private:
      * @stub
      */
     virtual void CloseRegisteredEarPlayback();
-    /**
-     * @ghidraAddress EAR: 0x1001294f
-     * @stub
-     */
+    /** @ghidraAddress EAR: 0x1001294f */
     virtual void ReleaseDirectSoundEventBuffer();
     /** @ghidraAddress EAR: 0x1000a880 */
     virtual void RefillEarPlaybackStream();
@@ -178,10 +167,7 @@ private:
      * @stub
      */
     virtual int IsBufferedEarPlaybackComplete();
-    /**
-     * @ghidraAddress EAR: 0x100126dd
-     * @stub
-     */
+    /** @ghidraAddress EAR: 0x100126dd */
     virtual int IsDirectSoundBufferStopped();
 
 public:
@@ -224,7 +210,8 @@ private:
     double baseFrequencyScale;
     std::uint32_t baseFrequency;
     double cachedBackendParameter;
-    [[maybe_unused]] std::uint8_t unknown9c[0x10]; /* +0x9c */
+    [[maybe_unused]] std::uint8_t unknown9c[4]; /* +0x9c */
+    EarDirectSoundPlaybackState directSound;
 };
 
 /** @ghidraAddress EAR: 0x1002ea78 */
@@ -241,5 +228,8 @@ extern std::uint16_t g_wPlaybackSmoothingPassCount;
 
 /** @ghidraAddress EAR: 0x1003b7b8 */
 extern int g_earPlaybackSmoothingEnabled;
+
+/** @ghidraAddress EAR: 0x100360c0 */
+extern const double g_adPlaybackSmoothingWeights[3];
 
 #endif

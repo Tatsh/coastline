@@ -1,10 +1,17 @@
 #include "earplayback.h"
 
+#include <bit>
+
+#include <dsound.h>
+
+#include "error.h"
+
 const double g_earPlaybackScaleZero = 0;
 const double g_earPlaybackMaximumFrequencyScale = 6.5535;
 const double g_earMaximumDirectionalGain = 1;
 std::uint16_t g_wPlaybackSmoothingPassCount = 2;
 int g_earPlaybackSmoothingEnabled;
+const double g_adPlaybackSmoothingWeights[3] = {1.0, 0.5, 1.0};
 
 int EarPlayback::GetStatus() {
     return status;
@@ -179,4 +186,89 @@ void EarPlayback::CompleteEarPlayback() {
 }
 
 void EarPlayback::OnBackendPlaybackParameterChanged() {
+}
+
+void EarDirectSoundPlaybackState::Initialize() {
+    buffer = nullptr;
+    writeCursor = 0;
+    playCursor = 0;
+}
+
+void EarPlayback::InitializeDirectSoundPlaybackState() {
+    directSound.Initialize();
+    directSound.playCursor = 1;
+}
+
+DWORD EarPlayback::GetDirectSoundPlaybackCursor() {
+    if (sample && !completionRequested) {
+        // Native heap allocation and cursor offsets provide DWORD alignment.
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Waddress-of-packed-member"
+        directSound.buffer->GetCurrentPosition(&directSound.playCursor, &directSound.writeCursor);
+#pragma clang diagnostic pop
+    }
+    return directSound.playCursor;
+}
+
+void EarPlayback::UpdateDirectSoundPlaybackFrequency() {
+    if (!directSound.buffer) {
+        return;
+    }
+    std::uint32_t smoothed;
+    if (frequency != previousFrequency) {
+        std::int32_t delta = std::bit_cast<std::int32_t>(frequency - previousFrequency);
+        std::uint32_t step = static_cast<std::uint32_t>(static_cast<std::int64_t>(
+            static_cast<long double>(delta) * g_adPlaybackSmoothingWeights[smoothingPass]));
+        smoothed = previousFrequency + step;
+    } else {
+        smoothed = previousFrequency;
+    }
+    if (smoothed < DSBFREQUENCY_MIN) {
+        smoothed = DSBFREQUENCY_MIN;
+    }
+    if (smoothed > 100000) {
+        smoothed = 100000;
+    }
+    directSound.buffer->SetFrequency(smoothed);
+}
+
+int EarPlayback::PlayDirectSoundEventBuffer() {
+    if (!directSound.buffer) {
+        SetEarLastError(19);
+        return FALSE;
+    }
+    if (suppressionEnabled && suppressionMarker == 1) {
+        return TRUE;
+    }
+    DWORD flags = looping || streaming ? DSBPLAY_LOOPING : 0;
+    if (directSound.buffer->Play(0, 0, flags) != DS_OK) {
+        SetEarLastError(20);
+        return FALSE;
+    }
+    return TRUE;
+}
+
+int EarPlayback::StopDirectSoundEventBuffer() {
+    if (!directSound.buffer) {
+        return FALSE;
+    }
+    if (active && directSound.buffer->Stop() != DS_OK) {
+        SetEarLastError(37);
+        return FALSE;
+    }
+    return TRUE;
+}
+
+void EarPlayback::ReleaseDirectSoundEventBuffer() {
+    if (directSound.buffer) {
+        directSound.buffer->Stop();
+        directSound.buffer->Release();
+        directSound.buffer = nullptr;
+    }
+}
+
+int EarPlayback::IsDirectSoundBufferStopped() {
+    DWORD bufferStatus;
+    directSound.buffer->GetStatus(&bufferStatus);
+    return (bufferStatus & DSBSTATUS_PLAYING) == 0;
 }
