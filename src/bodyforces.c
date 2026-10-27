@@ -11,6 +11,36 @@ f32 g_fCollisionImpulseScale = 1.0f;
 CollisionContactState g_CollisionContactState;
 Vec3f g_vCollisionContact;
 Vec3f g_vCollisionPenetration;
+f32 (*g_pSteeringFrictionTableA)[GRIP_WEATHERS][TRACK_SURFACES];
+f32 (*g_pSteeringFrictionTableB)[TRACK_SURFACES];
+f32 (*g_pWheelSteeringTable)[GRIP_WEATHERS][TRACK_SURFACES];
+
+void SelectVehiclePhysicsTables(s32 model) {
+    switch (model) {
+    case 0:
+    case 1:
+    case 2:
+    case 3:
+    case 4:
+    case 6:
+    case 7:
+    case 8:
+    case 9:
+    case 10:
+    case 12:
+        g_pSteeringFrictionTableA = g_afVehiclePhysicsTableA0;
+        g_pSteeringFrictionTableB = g_afVehiclePhysicsTableB0;
+        g_pWheelSteeringTable = g_afVehiclePhysicsTableC0;
+        g_fCollisionImpulseScale = 1.0f;
+        break;
+    default:
+        g_pSteeringFrictionTableA = g_afVehiclePhysicsTableA1;
+        g_pSteeringFrictionTableB = g_afVehiclePhysicsTableB1;
+        g_pWheelSteeringTable = g_afVehiclePhysicsTableC1;
+        g_fCollisionImpulseScale = 0.9f;
+        break;
+    }
+}
 
 #define CONTACT_LESS(a, b) (!((a) >= (b)))
 

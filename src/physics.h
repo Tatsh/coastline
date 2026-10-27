@@ -52,6 +52,41 @@ extern CollisionContactState g_CollisionContactState;
  * @ghidraAddress BRD3D: 0x100b5968
  */
 extern f32 g_fCollisionImpulseScale;
+
+/** @ghidraAddress BRD3D: 0x117554a8 */
+extern f32 (*g_pSteeringFrictionTableA)[GRIP_WEATHERS][TRACK_SURFACES];
+
+/** @ghidraAddress BRD3D: 0x117554c0 */
+extern f32 (*g_pSteeringFrictionTableB)[TRACK_SURFACES];
+
+/** @ghidraAddress BRD3D: 0x11750330 */
+extern f32 (*g_pWheelSteeringTable)[GRIP_WEATHERS][TRACK_SURFACES];
+
+/** @ghidraAddress BRD3D: 0x100b5428 */
+extern f32 g_afVehiclePhysicsTableA0[3][GRIP_WEATHERS][TRACK_SURFACES];
+
+/** @ghidraAddress BRD3D: 0x100b5548 */
+extern f32 g_afVehiclePhysicsTableA1[3][GRIP_WEATHERS][TRACK_SURFACES];
+
+/** @ghidraAddress BRD3D: 0x100b5668 */
+extern f32 g_afVehiclePhysicsTableB0[GRIP_WEATHERS][TRACK_SURFACES];
+
+/** @ghidraAddress BRD3D: 0x100b56c8 */
+extern f32 g_afVehiclePhysicsTableB1[GRIP_WEATHERS][TRACK_SURFACES];
+
+/** @ghidraAddress BRD3D: 0x100b5728 */
+extern f32 g_afVehiclePhysicsTableC0[3][GRIP_WEATHERS][TRACK_SURFACES];
+
+/** @ghidraAddress BRD3D: 0x100b5848 */
+extern f32 g_afVehiclePhysicsTableC1[3][GRIP_WEATHERS][TRACK_SURFACES];
+
+/**
+ * Select tyre grip and load tables for the vehicle model.
+ *
+ * @param model The vehicle model index.
+ * @ghidraAddress BRD3D: 0x10070580
+ */
+void SelectVehiclePhysicsTables(s32 model);
 #ifdef __cplusplus
 }
 #endif
