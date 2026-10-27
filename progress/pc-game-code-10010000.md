@@ -1,6 +1,6 @@
 # PC port game code from 0x10010000 to 0x10020000
 
-131 of 162 routines done.
+132 of 162 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -52,7 +52,7 @@ the same name, for a routine the port retained from the N64 game.
 | `ClipPolygonRightPlane`                                |   ✅   |                 |      4 |    311 | `0x1001db30` | `0x1001f3f0` | `void ClipPolygonRightPlane(GbiClipPolygon * pPolygon)`                                                                                                                                                                                      |
 | `ClipPolygonTopPlane`                                  |   ✅   |                 |      4 |    311 | `0x1001ddb0` | `0x1001f670` | `void ClipPolygonTopPlane(GbiClipPolygon * pPolygon)`                                                                                                                                                                                        |
 | `DrawRaceTimerHud`                                     |        | ✅ `0x8023880c` |      1 |    310 | `0x10017290` | `0x10014800` | `void DrawRaceTimerHud(void * pRenderNode)`                                                                                                                                                                                                  |
-| `UpdateWindDirection`                                  |        | ✅ `0x80239d84` |      1 |    306 | `0x100194e0` | `0x10016aa0` | `void UpdateWindDirection(void)`                                                                                                                                                                                                             |
+| `UpdateWindDirection`                                  |   ✅   | ✅ `0x80239d84` |      1 |    306 | `0x100194e0` | `0x10016aa0` | `void UpdateWindDirection(void)`                                                                                                                                                                                                             |
 | `ClipPolygonPositiveWPlane`                            |   ✅   |                 |      4 |    303 | `0x1001d810` | `0x1001f0d0` | `void ClipPolygonPositiveWPlane(GbiClipPolygon * pPolygon)`                                                                                                                                                                                  |
 | `DirectDrawDriver::SelectPreferredD3DDevice`           |   ✅   |                 |      2 |    291 | `0x1001b690` |              | `D3DDeviceNode * SelectPreferredD3DDevice(DirectDrawDriver * this, GUID * pGuid, D3DDeviceNode * * ppPreferred, D3DDeviceNode * pFirst)`                                                                                                     |
 | `UpdateShadowCornerVertex`                             |   ✅   |                 |      4 |    287 | `0x10010bf0` | `0x1000e150` | `void UpdateShadowCornerVertex(TrackInstance * instance, ConvertedModelVertex * quad, int * cornerValid, int corner, ConvertedModelVertex * vertex, float s, float t, float[4] * vehicleMatrix)`                                             |
