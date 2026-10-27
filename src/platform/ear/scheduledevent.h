@@ -3,7 +3,14 @@
 
 #include <cstdint>
 
+#include <windows.h>
+
 class EarPlayback;
+
+union EarEventSource {
+    const void *address;
+    std::uint16_t presetHandle;
+};
 
 class [[gnu::packed]] ScheduledEarEvent {
 public:
@@ -33,10 +40,7 @@ public:
     int StartScheduledEarEvent();
 
 private:
-    /**
-     * @ghidraAddress EAR: 0x10007dfc
-     * @stub
-     */
+    /** @ghidraAddress EAR: 0x10007dfc */
     int InitializeScheduledEarEventPlayback();
     /** @ghidraAddress EAR: 0x100080e8 */
     void UpdateScheduledEventDopplerScale();
@@ -45,17 +49,17 @@ private:
      * @stub
      */
     long double CalculateScheduledEventDopplerScale();
-    /**
-     * @ghidraAddress EAR: 0x1000854e
-     * @stub
-     */
+    /** @ghidraAddress EAR: 0x1000854e */
     void DeactivateScheduledEarEvent();
 
-    [[maybe_unused]] std::uint8_t unknown0[0xc]; /* +0x00 */
+    EarEventSource source;
+    std::uint16_t sourceType;
+    [[maybe_unused]] std::uint8_t unknown6[6]; /* +0x06 */
     EarPlayback *playback;
     int playbackInitialized;
     int playbackStarted;
-    [[maybe_unused]] std::uint8_t unknown18[8]; /* +0x18 */
+    int looping;
+    int streaming;
     int frequencyScaleOverrideEnabled;
     int dopplerEnabled;
     [[maybe_unused]] std::uint8_t unknown28[4]; /* +0x28 */
@@ -64,9 +68,12 @@ private:
     int attenuationRequired;
     int repeatLimitEnabled;
     int trackElapsedTime;
-    [[maybe_unused]] std::uint8_t unknown40[8]; /* +0x40 */
+    std::uint32_t suppressionEnabled;
+    std::uint16_t suppressionMarker;
+    [[maybe_unused]] std::uint8_t unknown46[2]; /* +0x46 */
     std::uint16_t attenuation;
-    [[maybe_unused]] std::uint8_t unknown4a[4]; /* +0x4a */
+    std::uint16_t directionIndex;
+    std::uint16_t matrixId;
     std::int32_t startDelayMs;
     std::int32_t remainingLifetimeMs;
     std::int32_t remainingActiveTimeMs;
@@ -74,7 +81,19 @@ private:
     [[maybe_unused]] std::uint8_t unknown5e[2]; /* +0x5e */
     std::int32_t repeatCount;
     std::int32_t repeatLimit;
-    [[maybe_unused]] std::uint8_t unknown68[0x70]; /* +0x68 */
+    [[maybe_unused]] std::uint8_t unknown68[0xc]; /* +0x68 */
+    DWORD previousDistanceTime;
+    [[maybe_unused]] std::uint8_t unknown78[0x2c]; /* +0x78 */
+    std::uint16_t environmentId;
+    [[maybe_unused]] std::uint8_t unknownA6[0xa]; /* +0xa6 */
+    double baseFrequencyScale;
+    double startPosition;
+    double backendParameter;
+    std::uint32_t notificationFlags;
+    [[maybe_unused]] std::uint8_t unknownCc[4]; /* +0xcc */
+    std::uint32_t reservedEventControl;
+    [[maybe_unused]] std::uint8_t unknownD4[2]; /* +0xd4 */
+    std::uint16_t notificationEvent;
 };
 
 #endif

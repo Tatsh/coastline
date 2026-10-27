@@ -118,16 +118,24 @@ private:
     virtual void RefillEarPlaybackStream();
     /** @ghidraAddress EAR: 0x100125a1 */
     virtual void CopyEarPlaybackSamplesToOutput();
+
+public:
     /** @ghidraAddress EAR: 0x1000a8e5 */
     virtual void CompleteEarPlayback();
+
+private:
     /** @ghidraAddress EAR: 0x100129a3 */
     virtual int CheckEarPlaybackLoopCompletion();
+
+public:
     /**
      * Native slot shares the empty CObject serialization body.
      * @ghidraAddress EAR: 0x10006710
      * @stub
      */
     virtual void ApplyPreset(const EarPreset *preset);
+
+private:
     /** @ghidraAddress EAR: 0x100129bc */
     virtual void OnPlaybackWaveSampleAttached(EarWaveSample *sample);
     /** @ghidraAddress EAR: 0x100094e0 */
