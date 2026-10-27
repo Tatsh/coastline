@@ -1,5 +1,34 @@
 #include "fade.h"
 
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+/* The x87 queries accept unordered comparisons as less than or equal. */
+#define FADE_LESS(left, right) (!((left) >= (right)))
+#define FADE_EQUAL(left, right) (!((left) < (right) || (left) > (right)))
+#define FADE_LESS_EQUAL(left, right) (!((left) > (right)))
+#define FADE_VOLUME_LESS(left, right) FADE_LESS((long double)(left) - (right), 0.0L)
+#define FADE_REAL long double
+
+f32 g_fFadeTarget;
+f32 g_fFadeLevel;
+f32 g_fFadeRate;
+s32 g_dwFadeAutoReverse;
+s32 g_dwFadeSkipFrame;
+f32 g_fMusicFadeTarget = 1.0f;
+f32 g_fMusicFadeCurrent = 1.0f;
+f32 g_fSfxFadeTarget = 1.0f;
+f32 g_fSfxFadeCurrent = 1.0f;
+f32 g_fMusicFadeSpeed;
+f32 g_fSfxFadeSpeed;
+s32 g_dwMusicFadeSkipFrame;
+s32 g_dwSfxFadeSkipFrame;
+#else
+#define FADE_LESS(left, right) ((left) < (right))
+#define FADE_EQUAL(left, right) ((left) == (right))
+#define FADE_LESS_EQUAL(left, right) ((left) <= (right))
+#define FADE_VOLUME_LESS(left, right) FADE_LESS(left, right)
+#define FADE_REAL f32
+#endif
+
 #if TGR_PLATFORM == TGR_PLATFORM_N64
 #include "audio.h"
 #include "render.h"
@@ -59,11 +88,13 @@ void RenderHeadlightGlare(void) {
     gDPSetColorDither(gDisplayListPtr++, g_dwColorDitherMode);
 }
 
+#endif
+
 void SetFadeTarget(float target, float seconds) {
     g_dwFadeSkipFrame = 1;
-    if (target < g_fFadeLevel || target == 0.0f) {
-        if (g_fFadeLevel == 1.0f || (f64)g_fFadeRate <= 0.0) {
-            g_fFadeRate = -1.0f / seconds;
+    if (FADE_LESS(target, g_fFadeLevel) || FADE_EQUAL(target, 0.0f)) {
+        if (FADE_EQUAL(g_fFadeLevel, 1.0f) || FADE_LESS_EQUAL((f64)g_fFadeRate, 0.0)) {
+            g_fFadeRate = (f32)((FADE_REAL)-1.0f / seconds);
             g_fFadeTarget = target;
         } else {
             /* Still fading in: fade out once the picture is whole. */
@@ -72,29 +103,32 @@ void SetFadeTarget(float target, float seconds) {
         return;
     }
     g_fFadeTarget = target;
-    g_fFadeRate = 1.0f / seconds;
+    g_fFadeRate = (f32)((FADE_REAL)1.0f / seconds);
 }
 
 void FadeSfxTo(float target, float seconds) {
     g_dwSfxFadeSkipFrame = 1;
     g_fSfxFadeTarget = target;
-    if (g_fSfxFadeTarget < g_fSfxFadeCurrent || g_fSfxFadeTarget == 0.0f) {
-        g_fSfxFadeSpeed = -1.0f / seconds;
+    if (FADE_VOLUME_LESS(g_fSfxFadeTarget, g_fSfxFadeCurrent) ||
+        FADE_EQUAL(g_fSfxFadeTarget, 0.0f)) {
+        g_fSfxFadeSpeed = (f32)((FADE_REAL)-1.0f / seconds);
     } else {
-        g_fSfxFadeSpeed = 1.0f / seconds;
+        g_fSfxFadeSpeed = (f32)((FADE_REAL)1.0f / seconds);
     }
 }
 
 void FadeMusicTo(float target, float seconds) {
     g_dwMusicFadeSkipFrame = 1;
     g_fMusicFadeTarget = target;
-    if (g_fMusicFadeTarget < g_fMusicFadeCurrent || g_fMusicFadeTarget == 0.0f) {
-        g_fMusicFadeSpeed = -1.0f / seconds;
+    if (FADE_VOLUME_LESS(g_fMusicFadeTarget, g_fMusicFadeCurrent) ||
+        FADE_EQUAL(g_fMusicFadeTarget, 0.0f)) {
+        g_fMusicFadeSpeed = (f32)((FADE_REAL)-1.0f / seconds);
     } else {
-        g_fMusicFadeSpeed = 1.0f / seconds;
+        g_fMusicFadeSpeed = (f32)((FADE_REAL)1.0f / seconds);
     }
 }
 
+#if TGR_PLATFORM == TGR_PLATFORM_N64
 s32 HasSfxFadeFinished(void) {
     return g_fSfxFadeTarget == g_fSfxFadeCurrent;
 }
@@ -103,11 +137,6 @@ void SetSfxFadeLevelImmediate(float level) {
     g_fSfxFadeTarget = level;
     g_fSfxFadeCurrent = g_fSfxFadeTarget;
 }
-#else
-f32 g_fFadeTarget;
-f32 g_fFadeLevel;
-f32 g_fFadeRate;
-s32 g_dwFadeAutoReverse;
 #endif
 
 void SnapScreenFade(float level) {
@@ -119,15 +148,6 @@ void SnapScreenFade(float level) {
 s32 IsFadingIn(void) {
     return g_fFadeRate > 0.0f && !g_dwFadeAutoReverse;
 }
-#endif
-
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
-/* The x87 queries accept unordered comparisons as less than or equal. */
-#define FADE_LESS(left, right) (!((left) >= (right)))
-#define FADE_EQUAL(left, right) (!((left) < (right) || (left) > (right)))
-#else
-#define FADE_LESS(left, right) ((left) < (right))
-#define FADE_EQUAL(left, right) ((left) == (right))
 #endif
 
 s32 IsFadingOut(void) {

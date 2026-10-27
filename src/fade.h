@@ -106,6 +106,8 @@ extern f32 g_fFadeLevel;
  * @ghidraAddress USA: 0x8028b760
  * @ghidraAddress EUR: 0x8028da10
  * @ghidraAddress JPN: 0x8028d440
+ * @ghidraAddress BRD3D: 0x100a81ac
+ * @ghidraAddress BRGlide: 0x100a7500
  */
 extern f32 g_fMusicFadeTarget;
 
@@ -113,6 +115,8 @@ extern f32 g_fMusicFadeTarget;
  * @ghidraAddress USA: 0x8028b764
  * @ghidraAddress EUR: 0x8028da14
  * @ghidraAddress JPN: 0x8028d444
+ * @ghidraAddress BRD3D: 0x1057551c
+ * @ghidraAddress BRGlide: 0x104b16c4
  */
 extern f32 g_fMusicFadeSpeed;
 
@@ -120,6 +124,8 @@ extern f32 g_fMusicFadeSpeed;
  * @ghidraAddress USA: 0x8028b768
  * @ghidraAddress EUR: 0x8028da18
  * @ghidraAddress JPN: 0x8028d448
+ * @ghidraAddress BRD3D: 0x100a81b0
+ * @ghidraAddress BRGlide: 0x100a7504
  */
 extern f32 g_fMusicFadeCurrent;
 
@@ -129,6 +135,8 @@ extern f32 g_fMusicFadeCurrent;
  * @ghidraAddress USA: 0x8028b76c
  * @ghidraAddress EUR: 0x8028da1c
  * @ghidraAddress JPN: 0x8028d44c
+ * @ghidraAddress BRD3D: 0x100a81b4
+ * @ghidraAddress BRGlide: 0x100a7508
  */
 extern f32 g_fSfxFadeTarget;
 
@@ -136,6 +144,8 @@ extern f32 g_fSfxFadeTarget;
  * @ghidraAddress USA: 0x8028b770
  * @ghidraAddress EUR: 0x8028da20
  * @ghidraAddress JPN: 0x8028d450
+ * @ghidraAddress BRD3D: 0x10575520
+ * @ghidraAddress BRGlide: 0x104b16c8
  */
 extern f32 g_fSfxFadeSpeed;
 
@@ -143,6 +153,8 @@ extern f32 g_fSfxFadeSpeed;
  * @ghidraAddress USA: 0x8028b774
  * @ghidraAddress EUR: 0x8028da24
  * @ghidraAddress JPN: 0x8028d454
+ * @ghidraAddress BRD3D: 0x100a81b8
+ * @ghidraAddress BRGlide: 0x100a750c
  */
 extern f32 g_fSfxFadeCurrent;
 
@@ -153,6 +165,8 @@ extern f32 g_fSfxFadeCurrent;
  * @ghidraAddress USA: 0x8028b778
  * @ghidraAddress EUR: 0x8028da28
  * @ghidraAddress JPN: 0x8028d458
+ * @ghidraAddress BRD3D: 0x10575524
+ * @ghidraAddress BRGlide: 0x104b16cc
  */
 extern s32 g_dwFadeSkipFrame;
 
@@ -160,6 +174,8 @@ extern s32 g_dwFadeSkipFrame;
  * @ghidraAddress USA: 0x8028b77c
  * @ghidraAddress EUR: 0x8028da2c
  * @ghidraAddress JPN: 0x8028d45c
+ * @ghidraAddress BRD3D: 0x10575528
+ * @ghidraAddress BRGlide: 0x104b16d0
  */
 extern s32 g_dwMusicFadeSkipFrame;
 
@@ -167,6 +183,8 @@ extern s32 g_dwMusicFadeSkipFrame;
  * @ghidraAddress USA: 0x8028b780
  * @ghidraAddress EUR: 0x8028da30
  * @ghidraAddress JPN: 0x8028d460
+ * @ghidraAddress BRD3D: 0x1057552c
+ * @ghidraAddress BRGlide: 0x104b16d4
  */
 extern s32 g_dwSfxFadeSkipFrame;
 
@@ -227,6 +245,8 @@ void RenderHeadlightGlare(void);
  * @ghidraAddress USA: 0x80223688
  * @ghidraAddress EUR: 0x802249c8
  * @ghidraAddress JPN: 0x802241b8
+ * @ghidraAddress BRD3D: 0x1002b130
+ * @ghidraAddress BRGlide: 0x100181a0
  */
 void SetFadeTarget(float target, float seconds);
 
@@ -238,6 +258,8 @@ void SetFadeTarget(float target, float seconds);
  * @ghidraAddress USA: 0x80223750
  * @ghidraAddress EUR: 0x80224a90
  * @ghidraAddress JPN: 0x80224280
+ * @ghidraAddress BRD3D: 0x1002b1c0
+ * @ghidraAddress BRGlide: 0x10018230
  */
 void FadeSfxTo(float target, float seconds);
 
@@ -249,6 +271,8 @@ void FadeSfxTo(float target, float seconds);
  * @ghidraAddress USA: 0x802237d0
  * @ghidraAddress EUR: 0x80224b10
  * @ghidraAddress JPN: 0x80224300
+ * @ghidraAddress BRD3D: 0x1002b220
+ * @ghidraAddress BRGlide: 0x10018290
  */
 void FadeMusicTo(float target, float seconds);
 
