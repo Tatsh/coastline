@@ -39,23 +39,12 @@
 #endif
 
 MenuScreen *g_pActiveMenuScreen;
-int g_bAudioOptionsSfxSelected;
 void *g_pFrontEndScratchBuffer;
-MenuImage g_aMenuImages[MENU_IMAGE_COUNT];
-unsigned short g_wMenuImageLoadedCount;
-unsigned short g_wUnusedFrontEndWord0;
-unsigned short g_wUnusedFrontEndWord1;
-FrontEndResourceSlot g_aFrontEndResourceSlots[FRONT_END_RESOURCE_SLOT_COUNT];
-int g_adwFrontEndResourceFlags[FRONT_END_RESOURCE_FLAG_COUNT];
 MenuScreen *g_pRootMenuScreen;
-int g_dwSaveSlotListIsSaveMode;
 char g_szSeasonSaveFileName[MAX_PATH];
 char g_szTimeAttackSaveFileName[MAX_PATH];
 RECT g_aMenuGlyphRects[MENU_GLYPH_RECT_COUNT];
 RECT g_aMenuAltGlyphRects[MENU_ALT_GLYPH_RECT_COUNT];
-RECT g_aMenuLargeIconRects[MENU_LARGE_ICON_RECT_COUNT];
-RECT g_aMenuLargeIconRects3Col[MENU_LARGE_ICON_3_COLUMN_RECT_COUNT];
-int g_dwFrontEndFrameCounter;
 int g_dwSelectedCdTrack;
 int g_dwSessionListRefreshing;
 int g_dwFrontEndAtRootMenu;
@@ -65,96 +54,36 @@ int g_dwSelectedTransmission;
 int g_dwTireMenuIndex = 1;
 int g_dwSuspensionMenuIndex = 1;
 int g_dwCarMenuIndex = 1;
-int g_dwSelectedInputDevice;
 int g_dwTotalLapsSetting = 3;
 int g_dwAccumUnlockedCarMask;
 int g_dwAccumUnlockedTrackMask;
 int g_dwHandlingTypeMenuIndex = 4;
 int g_dwSelectedCarClass;
-const int g_adwCarClassLabelStrIds[5] = {157, 158, 159, 160, 161};
 const int g_adwTireLabelStrIds[3] = {126, 127, 128};
 const int g_adwCarImageIds[32] = {31,  33,  39,  42,  43,  41,  37,  35,  36,  34,  11,
                                   32,  44,  40,  30,  38,  124, 126, 132, 135, 136, 134,
                                   130, 128, 129, 127, 122, 125, 137, 133, 123, 131};
-int g_dwAppliedCarGroupPreset;
-unsigned g_dwSelectableCarMask = 0x102;
-const int g_adwInputDeviceMenuIndexToDevice[INPUT_DEVICE_MENU_CHOICES] = {0, 1, 2, 3};
-int g_dwOptionForceFeedback;
-int g_dwOptionCarShadow;
-int g_dwOptionSpecularLighting;
-int g_dwOptionSkidMarks;
-unsigned short g_wUnlockedCarModeMask = 0x102;
-int g_dwSelectableTrackMaskAlt = 0x24;
 int g_dwNetworkMenuState;
 int g_dwSelectedSessionIndex;
 int g_dwSelectedDisplayModeIndex;
 NetworkMenuWidget *g_pJoinCreateGameMenu;
-MenuScreen *g_pCachedMenu_MainMenu;
-MenuScreen *g_pCachedMenu_MainMenuAlternate;
-MenuScreen *g_pCachedMenu_CarSetup;
-MenuScreen *g_pCachedMenu_Options;
-MenuScreen *g_pCachedMenu_TimeTrial;
-MenuScreen *g_pCachedMenu_Unused2920;
-MenuScreen *g_pCachedMenu_LoadSeason;
-MenuScreen *g_pCachedMenu_SaveSeason;
-MenuScreen *g_pCachedMenu_PreRaceInfo;
-MenuScreen *g_pCachedMenu_SeasonProgressInfo;
-MenuScreen *g_pCachedMenu_RaceResults;
-MenuScreen *g_pCachedMenu_RaceResultsSummary;
-MenuScreen *g_pCachedMenu_RaceResultsTotals;
-MenuScreen *g_pRaceResultsSummaryMenuScreen;
-MenuScreen *g_pCachedMenu_MultiplayerConnection;
-MenuScreen *g_pCachedMenu_Unused2944;
-MenuScreen *g_pCachedMenu_JoinCreateGame;
-MenuScreen *g_pCachedMenu_CreateGame;
 MenuScreen *g_pCachedMenu_RaceSetupNetwork;
-MenuScreen *g_pCachedMenu_NetworkCarSetup;
-MenuScreen *g_pCachedMenu_MultiplayerName;
-MenuScreen *g_pCachedMenu_TimeAttack;
-MenuScreen *g_pCachedMenu_Unused2960;
-MenuScreen *g_pCachedMenu_LoadGhost;
-MenuScreen *g_pCachedMenu_SaveGhost;
-MenuScreen *g_pCachedMenu_SeasonCongrats;
-MenuScreen *g_pCachedMenu_NotEnoughPoints;
-MenuScreen *g_pPreRaceInfoMenuScreen;
-MenuScreen *g_pCachedMenu_Credits;
-MenuScreen *g_pCachedMenu_InputConfig;
 MenuScreen *g_pCachedMenu_GameplaySettings;
 MenuScreen *g_pCachedMenu_Championship;
-MenuScreen *g_pCachedMenu_ModemDialUp;
-MenuScreen *g_pCachedMenu_VideoSettings;
-MenuScreen *g_pCachedMenu_AudioSettings;
-MenuScreen *g_pCachedMenu_KeyConfig;
 MenuWidget *g_pPlayerNameContinueItem;
-MenuWidget *g_pRaceSetupMenu;
-MenuWidget *g_pExitSeasonConfirmMenu;
-MenuWidget *g_pCarSetupMenu;
 MenuWidget *g_pMultiplayerGameSetupMenu;
-MenuWidget *g_pSaveSeasonMenu;
-int g_dwModalDialogBlocking;
 int g_dwMenuTextEditActive;
-unsigned short g_wMenuHoverIndexPrev;
-int g_dwMenuHoverActive;
 RECT g_rcMenuCenterPanel = {148, 110, 358, 260};
 RECT g_rcMenuTitleBar = {100, 10, 410, 29};
 RECT g_rcMenuListBox = {188, 130, 300, 225};
 RECT g_rcMenuLeftColumn = {67, 0, 167, 0};
-RECT g_rcMenuRightColumnMid = {330, 0, 447, 0};
-RECT g_rcMenuRightListBox = {440, 128, 540, 204};
 RECT g_rcMenuRightColumnWide = {478, 0, 578, 0};
 RECT g_rcMenuNetworkPlayers = {484, 10, 621, 96};
-RECT g_rcMenuLeftColumnNarrow = {88, 0, 185, 0};
 RECT g_rcMenuRightColumn = {440, 0, 540, 0};
-RECT g_rcMenuFullScreen = {0, 0, 639, 479};
-RECT g_rcMenuSubPanel = {87, 61, 186, 132};
 RECT g_rcMenuRightLabel = {330, 70, 447, 86};
 const char g_szSpace[] = " ";
 char g_szEmptyString[1];
-const char g_szMenuDigitOne[] = "1";
-RECT g_rcHoverTopLeft = {0, 0, 200, 200};
-RECT g_rcHoverBottomLeft = {0, 380, 200, 480};
 MenuWidget *g_pSaveTimeAttackMenu;
-MenuItemList *g_pSaveSeasonEditMenu;
 MenuItemList *g_pSaveTimeAttackEditMenu;
 NetworkMenuWidget *g_pNetworkSessionJoinMenu;
 NetworkMenuWidget *g_pNetworkCarSetupMenu;
@@ -162,16 +91,222 @@ MenuWidget *g_pNetworkPlayerListMenu;
 MenuWidget *g_pModemContinueItem;
 MenuWidget *g_pDisplayModeSelectMenu;
 MenuWidget *g_pD3DDeviceSelectMenu;
-MenuWidget *g_pSaveSeasonBackHandlerMenu;
 MenuWidget *g_pOptionsSubMenu;
-int g_dwSaveSeasonSlotNamed;
 int g_dwFileListSelectedSlot = -1;
+
+namespace {
+// @ghidraAddress BRD3D: 0x100ab3d8
+// @ghidraAddress BRGlide: 0x100aab78
+int g_bAudioOptionsSfxSelected;
+// @ghidraAddress BRD3D: 0x10a9e360
+// @ghidraAddress BRGlide: 0x10ac53e8
+MenuImage g_aMenuImages[MENU_IMAGE_COUNT];
+// @ghidraAddress BRD3D: 0x10aa28d4
+// @ghidraAddress BRGlide: 0x10ac5c2c
+unsigned short g_wMenuImageLoadedCount;
+// @ghidraAddress BRD3D: 0x10aa29f8
+// @ghidraAddress BRGlide: 0x10ac5d50
+[[maybe_unused]] unsigned short g_wUnusedFrontEndWord0;
+// @ghidraAddress BRD3D: 0x10aa29fc
+// @ghidraAddress BRGlide: 0x10ac5d54
+[[maybe_unused]] unsigned short g_wUnusedFrontEndWord1;
+// @ghidraAddress BRD3D: 0x10a9d778
+// @ghidraAddress BRGlide: 0x10ac4800
+FrontEndResourceSlot g_aFrontEndResourceSlots[FRONT_END_RESOURCE_SLOT_COUNT];
+// @ghidraAddress BRD3D: 0x10a9e1d0
+// @ghidraAddress BRGlide: 0x10ac5258
+int g_adwFrontEndResourceFlags[FRONT_END_RESOURCE_FLAG_COUNT];
+// @ghidraAddress BRD3D: 0x10aa2848
+int g_dwSaveSlotListIsSaveMode;
+// @ghidraAddress BRD3D: 0x10a9da50
+// @ghidraAddress BRGlide: 0x10ac4ad8
+RECT g_aMenuLargeIconRects[MENU_LARGE_ICON_RECT_COUNT];
+// @ghidraAddress BRD3D: 0x10a9db40
+// @ghidraAddress BRGlide: 0x10ac4bc8
+RECT g_aMenuLargeIconRects3Col[MENU_LARGE_ICON_3_COLUMN_RECT_COUNT];
+// @ghidraAddress BRD3D: 0x10aa2a4c
+// @ghidraAddress BRGlide: 0x10ac5da4
+int g_dwFrontEndFrameCounter;
+// @ghidraAddress BRD3D: 0x10aa2a0c
+// @ghidraAddress BRGlide: 0x10ac5d64
+int g_dwSelectedInputDevice;
+// @ghidraAddress BRD3D: 0x100ac3c8
+const int g_adwCarClassLabelStrIds[5] = {157, 158, 159, 160, 161};
+// @ghidraAddress BRD3D: 0x10aa2a44
+// @ghidraAddress BRGlide: 0x10ac5d9c
+int g_dwAppliedCarGroupPreset;
+// @ghidraAddress BRD3D: 0x100ab3e8
+// @ghidraAddress BRGlide: 0x100aab88
+[[maybe_unused]] unsigned g_dwSelectableCarMask = 0x102;
+// @ghidraAddress BRD3D: 0x100ac520
+// @ghidraAddress BRGlide: 0x100abcc0
+const int g_adwInputDeviceMenuIndexToDevice[INPUT_DEVICE_MENU_CHOICES] = {0, 1, 2, 3};
+// @ghidraAddress BRD3D: 0x10aa2a1c
+// @ghidraAddress BRGlide: 0x10ac5d74
+int g_dwOptionForceFeedback;
+// @ghidraAddress BRD3D: 0x10aa2a20
+// @ghidraAddress BRGlide: 0x10ac5d78
+int g_dwOptionCarShadow;
+// @ghidraAddress BRD3D: 0x10aa2a24
+// @ghidraAddress BRGlide: 0x10ac5d7c
+int g_dwOptionSpecularLighting;
+// @ghidraAddress BRD3D: 0x10aa2a28
+// @ghidraAddress BRGlide: 0x10ac5d80
+int g_dwOptionSkidMarks;
+// @ghidraAddress BRD3D: 0x100ab3e4
+// @ghidraAddress BRGlide: 0x100aab84
+[[maybe_unused]] unsigned short g_wUnlockedCarModeMask = 0x102;
+// @ghidraAddress BRD3D: 0x100ab3ec
+// @ghidraAddress BRGlide: 0x100aab8c
+int g_dwSelectableTrackMaskAlt = 0x24;
+// @ghidraAddress BRD3D: 0x10aa290c
+// @ghidraAddress BRGlide: 0x10ac5c64
+MenuScreen *g_pCachedMenu_MainMenu;
+// @ghidraAddress BRD3D: 0x10aa2910
+// @ghidraAddress BRGlide: 0x10ac5c68
+MenuScreen *g_pCachedMenu_MainMenuAlternate;
+// @ghidraAddress BRD3D: 0x10aa2914
+// @ghidraAddress BRGlide: 0x10ac5c6c
+MenuScreen *g_pCachedMenu_CarSetup;
+// @ghidraAddress BRD3D: 0x10aa2918
+// @ghidraAddress BRGlide: 0x10ac5c70
+MenuScreen *g_pCachedMenu_Options;
+// @ghidraAddress BRD3D: 0x10aa291c
+// @ghidraAddress BRGlide: 0x10ac5c74
+MenuScreen *g_pCachedMenu_TimeTrial;
+// @ghidraAddress BRD3D: 0x10aa2920
+// @ghidraAddress BRGlide: 0x10ac5c78
+MenuScreen *g_pCachedMenu_Unused2920;
+// @ghidraAddress BRD3D: 0x10aa2924
+// @ghidraAddress BRGlide: 0x10ac5c7c
+MenuScreen *g_pCachedMenu_LoadSeason;
+// @ghidraAddress BRD3D: 0x10aa2928
+// @ghidraAddress BRGlide: 0x10ac5c80
+MenuScreen *g_pCachedMenu_SaveSeason;
+// @ghidraAddress BRD3D: 0x10aa292c
+// @ghidraAddress BRGlide: 0x10ac5c84
+MenuScreen *g_pCachedMenu_PreRaceInfo;
+// @ghidraAddress BRD3D: 0x10aa2930
+// @ghidraAddress BRGlide: 0x10ac5c88
+MenuScreen *g_pCachedMenu_SeasonProgressInfo;
+// @ghidraAddress BRD3D: 0x10aa2934
+// @ghidraAddress BRGlide: 0x10ac5c8c
+MenuScreen *g_pCachedMenu_RaceResults;
+// @ghidraAddress BRD3D: 0x10aa2938
+// @ghidraAddress BRGlide: 0x10ac5c90
+MenuScreen *g_pCachedMenu_RaceResultsSummary;
+// @ghidraAddress BRD3D: 0x10aa293c
+// @ghidraAddress BRGlide: 0x10ac5c94
+MenuScreen *g_pCachedMenu_RaceResultsTotals;
+// @ghidraAddress BRD3D: 0x10aa2978
+MenuScreen *g_pRaceResultsSummaryMenuScreen;
+// @ghidraAddress BRD3D: 0x10aa2940
+// @ghidraAddress BRGlide: 0x10ac5c98
+MenuScreen *g_pCachedMenu_MultiplayerConnection;
+// @ghidraAddress BRD3D: 0x10aa2944
+// @ghidraAddress BRGlide: 0x10ac5c9c
+MenuScreen *g_pCachedMenu_Unused2944;
+// @ghidraAddress BRD3D: 0x10aa2948
+// @ghidraAddress BRGlide: 0x10ac5ca0
+MenuScreen *g_pCachedMenu_JoinCreateGame;
+// @ghidraAddress BRD3D: 0x10aa294c
+// @ghidraAddress BRGlide: 0x10ac5ca4
+MenuScreen *g_pCachedMenu_CreateGame;
+// @ghidraAddress BRD3D: 0x10aa2954
+// @ghidraAddress BRGlide: 0x10ac5cac
+MenuScreen *g_pCachedMenu_NetworkCarSetup;
+// @ghidraAddress BRD3D: 0x10aa2958
+// @ghidraAddress BRGlide: 0x10ac5cb0
+MenuScreen *g_pCachedMenu_MultiplayerName;
+// @ghidraAddress BRD3D: 0x10aa295c
+// @ghidraAddress BRGlide: 0x10ac5cb4
+MenuScreen *g_pCachedMenu_TimeAttack;
+// @ghidraAddress BRD3D: 0x10aa2960
+// @ghidraAddress BRGlide: 0x10ac5cb8
+MenuScreen *g_pCachedMenu_Unused2960;
+// @ghidraAddress BRD3D: 0x10aa2964
+// @ghidraAddress BRGlide: 0x10ac5cbc
+MenuScreen *g_pCachedMenu_LoadGhost;
+// @ghidraAddress BRD3D: 0x10aa2968
+// @ghidraAddress BRGlide: 0x10ac5cc0
+MenuScreen *g_pCachedMenu_SaveGhost;
+// @ghidraAddress BRD3D: 0x10aa296c
+// @ghidraAddress BRGlide: 0x10ac5cc4
+MenuScreen *g_pCachedMenu_SeasonCongrats;
+// @ghidraAddress BRD3D: 0x10aa2970
+// @ghidraAddress BRGlide: 0x10ac5cc8
+MenuScreen *g_pCachedMenu_NotEnoughPoints;
+// @ghidraAddress BRD3D: 0x10aa2974
+// @ghidraAddress BRGlide: 0x10ac5ccc
+MenuScreen *g_pPreRaceInfoMenuScreen;
+// @ghidraAddress BRD3D: 0x10aa297c
+// @ghidraAddress BRGlide: 0x10ac5cd4
+MenuScreen *g_pCachedMenu_Credits;
+// @ghidraAddress BRD3D: 0x10aa2980
+// @ghidraAddress BRGlide: 0x10ac5cd8
+MenuScreen *g_pCachedMenu_InputConfig;
+// @ghidraAddress BRD3D: 0x10aa298c
+// @ghidraAddress BRGlide: 0x10ac5ce4
+MenuScreen *g_pCachedMenu_ModemDialUp;
+// @ghidraAddress BRD3D: 0x10aa2990
+// @ghidraAddress BRGlide: 0x10ac5ce8
+MenuScreen *g_pCachedMenu_VideoSettings;
+// @ghidraAddress BRD3D: 0x10aa2994
+// @ghidraAddress BRGlide: 0x10ac5cec
+MenuScreen *g_pCachedMenu_AudioSettings;
+// @ghidraAddress BRD3D: 0x10aa2998
+// @ghidraAddress BRGlide: 0x10ac5cf0
+MenuScreen *g_pCachedMenu_KeyConfig;
+// @ghidraAddress BRD3D: 0x10aa29ac
+// @ghidraAddress BRGlide: 0x10ac5d04
+MenuWidget *g_pRaceSetupMenu;
+// @ghidraAddress BRD3D: 0x10aa29b0
+// @ghidraAddress BRGlide: 0x10ac5d08
+MenuWidget *g_pExitSeasonConfirmMenu;
+// @ghidraAddress BRD3D: 0x10aa29b4
+// @ghidraAddress BRGlide: 0x10ac5d0c
+MenuWidget *g_pCarSetupMenu;
+// @ghidraAddress BRD3D: 0x10aa29c0
+// @ghidraAddress BRGlide: 0x10ac5d18
+MenuWidget *g_pSaveSeasonMenu;
+// @ghidraAddress BRD3D: 0x10aa2858
+int g_dwModalDialogBlocking;
+// @ghidraAddress BRD3D: 0x10aa2870
+unsigned short g_wMenuHoverIndexPrev;
+// @ghidraAddress BRD3D: 0x10aa284c
+// @ghidraAddress BRGlide: 0x10ac5ba4
+int g_dwMenuHoverActive;
+// @ghidraAddress BRD3D: 0x100ab4a8
+RECT g_rcMenuRightColumnMid = {330, 0, 447, 0};
+// @ghidraAddress BRD3D: 0x100ab4f8
+RECT g_rcMenuRightListBox = {440, 128, 540, 204};
+// @ghidraAddress BRD3D: 0x100ab498
+RECT g_rcMenuLeftColumnNarrow = {88, 0, 185, 0};
+// @ghidraAddress BRD3D: 0x100ab438
+RECT g_rcMenuFullScreen = {0, 0, 639, 479};
+// @ghidraAddress BRD3D: 0x100ab458
+RECT g_rcMenuSubPanel = {87, 61, 186, 132};
+// @ghidraAddress BRD3D: 0x100ad274
+const char g_szMenuDigitOne[] = "1";
+// @ghidraAddress BRD3D: 0x100ab418
+RECT g_rcHoverTopLeft = {0, 0, 200, 200};
+// @ghidraAddress BRD3D: 0x100ab428
+RECT g_rcHoverBottomLeft = {0, 380, 200, 480};
+// @ghidraAddress BRD3D: 0x10aa29cc
+// @ghidraAddress BRGlide: 0x10ac5d24
+MenuItemList *g_pSaveSeasonEditMenu;
+// @ghidraAddress BRD3D: 0x10aa29f4
+// @ghidraAddress BRGlide: 0x10ac5d4c
+MenuWidget *g_pSaveSeasonBackHandlerMenu;
+// @ghidraAddress BRD3D: 0x10aa28e4
+// @ghidraAddress BRGlide: 0x10ac5c3c
+int g_dwSaveSeasonSlotNamed;
 
 // The size of the scratch buffer of the front end.
 #define FRONT_END_SCRATCH_SIZE 0x400
 
 // The files of the menu images, in the order of g_aMenuImages.
-static const char *const s_apszMenuImageFiles[MENU_IMAGE_COUNT] = {
+const char *const s_apszMenuImageFiles[MENU_IMAGE_COUNT] = {
     "images\\work1a.bmp",    "images\\cursor.bmp",    "images\\type_gry.bmp",
     "images\\type_wit.bmp",  "images\\type_mid.bmp",  "images\\bignums.bmp",
     "images\\champ.bmp",     "images\\mp.bmp",        "images\\ta.bmp",
@@ -221,6 +356,7 @@ static const char *const s_apszMenuImageFiles[MENU_IMAGE_COUNT] = {
     "images\\lightr.bmp",    "images\\lightg.bmp",    "images\\tire2on.bmp",
     "images\\tire2off.bmp",  "images\\listbox2.bmp",  "images\\trakQ.bmp",
     "images\\trakQ_.bmp"};
+} // namespace
 
 // The string of the format of the default names of the saved files.
 #define SAVE_FILE_DEFAULT_NAME_STRING 0xbe

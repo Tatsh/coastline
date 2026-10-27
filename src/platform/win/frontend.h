@@ -1662,12 +1662,6 @@ int GameOptionsUI_UpdateSkidMarksImage(MenuWidget *pWidget);
 extern const int g_awSkidMarksImageIds[2];
 
 /**
- * @ghidraAddress BRD3D: 0x100ab3d8
- * @ghidraAddress BRGlide: 0x100aab78
- */
-extern int g_bAudioOptionsSfxSelected;
-
-/**
  * @ghidraAddress BRD3D: 0x10aa28d8
  * @ghidraAddress BRGlide: 0x10ac5c30
  */
@@ -1964,38 +1958,6 @@ struct MenuImage {
     char *pszPath; /*!< The path of the file of the image, from new. */
 };
 
-/**
- * The images of the menus.
- *
- * @ghidraAddress BRD3D: 0x10a9e360
- * @ghidraAddress BRGlide: 0x10ac53e8
- */
-extern MenuImage g_aMenuImages[MENU_IMAGE_COUNT];
-
-/**
- * The number of menu images loaded.
- *
- * @ghidraAddress BRD3D: 0x10aa28d4
- * @ghidraAddress BRGlide: 0x10ac5c2c
- */
-extern unsigned short g_wMenuImageLoadedCount;
-
-/**
- * A word InitializeFrontEndResources() clears and no routine reads.
- *
- * @ghidraAddress BRD3D: 0x10aa29f8
- * @ghidraAddress BRGlide: 0x10ac5d50
- */
-extern unsigned short g_wUnusedFrontEndWord0;
-
-/**
- * A word InitializeFrontEndResources() clears and no routine reads.
- *
- * @ghidraAddress BRD3D: 0x10aa29fc
- * @ghidraAddress BRGlide: 0x10ac5d54
- */
-extern unsigned short g_wUnusedFrontEndWord1;
-
 /** A resource of the front end. Its layout is not recovered yet. */
 struct FrontEndResourceSlot {
     int anValues[3]; /*!< Values that start at -1 but the third, which starts at 0. */
@@ -2007,22 +1969,6 @@ struct FrontEndResourceSlot {
 #define FRONT_END_RESOURCE_FLAG_COUNT 100
 
 /**
- * The resources of the front end.
- *
- * @ghidraAddress BRD3D: 0x10a9d778
- * @ghidraAddress BRGlide: 0x10ac4800
- */
-extern FrontEndResourceSlot g_aFrontEndResourceSlots[FRONT_END_RESOURCE_SLOT_COUNT];
-
-/**
- * Flags of the resources of the front end, -1 at the start. Their meaning is not recovered yet.
- *
- * @ghidraAddress BRD3D: 0x10a9e1d0
- * @ghidraAddress BRGlide: 0x10ac5258
- */
-extern int g_adwFrontEndResourceFlags[FRONT_END_RESOURCE_FLAG_COUNT];
-
-/**
  * The screen the front end starts at.
  *
  * @ghidraAddress BRD3D: 0x10aa2908
@@ -2031,236 +1977,12 @@ extern int g_adwFrontEndResourceFlags[FRONT_END_RESOURCE_FLAG_COUNT];
 extern MenuScreen *g_pRootMenuScreen;
 
 /**
- * The cached screen of the main menu.
- *
- * @ghidraAddress BRD3D: 0x10aa290c
- * @ghidraAddress BRGlide: 0x10ac5c64
- */
-extern MenuScreen *g_pCachedMenu_MainMenu;
-
-/**
- * The cached second screen of the main menu.
- *
- * @ghidraAddress BRD3D: 0x10aa2910
- * @ghidraAddress BRGlide: 0x10ac5c68
- */
-extern MenuScreen *g_pCachedMenu_MainMenuAlternate;
-
-/**
- * The cached screen of the setup of the car.
- *
- * @ghidraAddress BRD3D: 0x10aa2914
- * @ghidraAddress BRGlide: 0x10ac5c6c
- */
-extern MenuScreen *g_pCachedMenu_CarSetup;
-
-/**
- * The cached screen of the options.
- *
- * @ghidraAddress BRD3D: 0x10aa2918
- * @ghidraAddress BRGlide: 0x10ac5c70
- */
-extern MenuScreen *g_pCachedMenu_Options;
-
-/**
- * The cached screen of the time trial.
- *
- * @ghidraAddress BRD3D: 0x10aa291c
- * @ghidraAddress BRGlide: 0x10ac5c74
- */
-extern MenuScreen *g_pCachedMenu_TimeTrial;
-
-/**
- * A cached screen ShutdownFrontEnd() frees and no routine creates.
- *
- * @ghidraAddress BRD3D: 0x10aa2920
- * @ghidraAddress BRGlide: 0x10ac5c78
- */
-extern MenuScreen *g_pCachedMenu_Unused2920;
-
-/**
- * The cached screen to load a season.
- *
- * @ghidraAddress BRD3D: 0x10aa2924
- * @ghidraAddress BRGlide: 0x10ac5c7c
- */
-extern MenuScreen *g_pCachedMenu_LoadSeason;
-
-/**
- * The cached screen to save a season.
- *
- * @ghidraAddress BRD3D: 0x10aa2928
- * @ghidraAddress BRGlide: 0x10ac5c80
- */
-extern MenuScreen *g_pCachedMenu_SaveSeason;
-
-/**
- * The cached screen of the information before a race.
- *
- * @ghidraAddress BRD3D: 0x10aa292c
- * @ghidraAddress BRGlide: 0x10ac5c84
- */
-extern MenuScreen *g_pCachedMenu_PreRaceInfo;
-
-/**
- * The cached screen of the progress of a season.
- *
- * @ghidraAddress BRD3D: 0x10aa2930
- * @ghidraAddress BRGlide: 0x10ac5c88
- */
-extern MenuScreen *g_pCachedMenu_SeasonProgressInfo;
-
-/**
- * The cached screen of the results of a race.
- *
- * @ghidraAddress BRD3D: 0x10aa2934
- * @ghidraAddress BRGlide: 0x10ac5c8c
- */
-extern MenuScreen *g_pCachedMenu_RaceResults;
-
-/**
- * The cached screen of the summary of the results of a race.
- *
- * @ghidraAddress BRD3D: 0x10aa2938
- * @ghidraAddress BRGlide: 0x10ac5c90
- */
-extern MenuScreen *g_pCachedMenu_RaceResultsSummary;
-
-/**
- * The cached screen of the totals of the results.
- *
- * @ghidraAddress BRD3D: 0x10aa293c
- * @ghidraAddress BRGlide: 0x10ac5c94
- */
-extern MenuScreen *g_pCachedMenu_RaceResultsTotals;
-
-/**
- * The cached screen of the connection of network play.
- *
- * @ghidraAddress BRD3D: 0x10aa2940
- * @ghidraAddress BRGlide: 0x10ac5c98
- */
-extern MenuScreen *g_pCachedMenu_MultiplayerConnection;
-
-/**
- * A cached screen ShutdownFrontEnd() frees and no routine creates.
- *
- * @ghidraAddress BRD3D: 0x10aa2944
- * @ghidraAddress BRGlide: 0x10ac5c9c
- */
-extern MenuScreen *g_pCachedMenu_Unused2944;
-
-/**
- * The cached screen to join or create a network game.
- *
- * @ghidraAddress BRD3D: 0x10aa2948
- * @ghidraAddress BRGlide: 0x10ac5ca0
- */
-extern MenuScreen *g_pCachedMenu_JoinCreateGame;
-
-/**
- * The cached screen to create a network game.
- *
- * @ghidraAddress BRD3D: 0x10aa294c
- * @ghidraAddress BRGlide: 0x10ac5ca4
- */
-extern MenuScreen *g_pCachedMenu_CreateGame;
-
-/**
  * The cached screen of the setup of a network race.
  *
  * @ghidraAddress BRD3D: 0x10aa2950
  * @ghidraAddress BRGlide: 0x10ac5ca8
  */
 extern MenuScreen *g_pCachedMenu_RaceSetupNetwork;
-
-/**
- * The cached screen of the setup of the car of network play.
- *
- * @ghidraAddress BRD3D: 0x10aa2954
- * @ghidraAddress BRGlide: 0x10ac5cac
- */
-extern MenuScreen *g_pCachedMenu_NetworkCarSetup;
-
-/**
- * The cached screen of the name of the player of network play.
- *
- * @ghidraAddress BRD3D: 0x10aa2958
- * @ghidraAddress BRGlide: 0x10ac5cb0
- */
-extern MenuScreen *g_pCachedMenu_MultiplayerName;
-
-/**
- * The cached screen of the time attack.
- *
- * @ghidraAddress BRD3D: 0x10aa295c
- * @ghidraAddress BRGlide: 0x10ac5cb4
- */
-extern MenuScreen *g_pCachedMenu_TimeAttack;
-
-/**
- * A cached screen ShutdownFrontEnd() frees and no routine creates.
- *
- * @ghidraAddress BRD3D: 0x10aa2960
- * @ghidraAddress BRGlide: 0x10ac5cb8
- */
-extern MenuScreen *g_pCachedMenu_Unused2960;
-
-/**
- * The cached screen to load a ghost.
- *
- * @ghidraAddress BRD3D: 0x10aa2964
- * @ghidraAddress BRGlide: 0x10ac5cbc
- */
-extern MenuScreen *g_pCachedMenu_LoadGhost;
-
-/**
- * The cached screen to save a ghost.
- *
- * @ghidraAddress BRD3D: 0x10aa2968
- * @ghidraAddress BRGlide: 0x10ac5cc0
- */
-extern MenuScreen *g_pCachedMenu_SaveGhost;
-
-/**
- * The cached screen of the congratulations at the end of a season.
- *
- * @ghidraAddress BRD3D: 0x10aa296c
- * @ghidraAddress BRGlide: 0x10ac5cc4
- */
-extern MenuScreen *g_pCachedMenu_SeasonCongrats;
-
-/**
- * The cached screen shown when the points of a season are too few to go on.
- *
- * @ghidraAddress BRD3D: 0x10aa2970
- * @ghidraAddress BRGlide: 0x10ac5cc8
- */
-extern MenuScreen *g_pCachedMenu_NotEnoughPoints;
-
-/**
- * The screen of the information before a race.
- *
- * @ghidraAddress BRD3D: 0x10aa2974
- * @ghidraAddress BRGlide: 0x10ac5ccc
- */
-extern MenuScreen *g_pPreRaceInfoMenuScreen;
-
-/**
- * The cached screen of the credits.
- *
- * @ghidraAddress BRD3D: 0x10aa297c
- * @ghidraAddress BRGlide: 0x10ac5cd4
- */
-extern MenuScreen *g_pCachedMenu_Credits;
-
-/**
- * The cached screen of the configuration of the input.
- *
- * @ghidraAddress BRD3D: 0x10aa2980
- * @ghidraAddress BRGlide: 0x10ac5cd8
- */
-extern MenuScreen *g_pCachedMenu_InputConfig;
 
 /**
  * The cached screen of the settings of the game.
@@ -2279,68 +2001,12 @@ extern MenuScreen *g_pCachedMenu_GameplaySettings;
 extern MenuScreen *g_pCachedMenu_Championship;
 
 /**
- * The cached screen that dials a modem.
- *
- * @ghidraAddress BRD3D: 0x10aa298c
- * @ghidraAddress BRGlide: 0x10ac5ce4
- */
-extern MenuScreen *g_pCachedMenu_ModemDialUp;
-
-/**
- * The cached screen of the settings of the video.
- *
- * @ghidraAddress BRD3D: 0x10aa2990
- * @ghidraAddress BRGlide: 0x10ac5ce8
- */
-extern MenuScreen *g_pCachedMenu_VideoSettings;
-
-/**
- * The cached screen of the settings of the sound.
- *
- * @ghidraAddress BRD3D: 0x10aa2994
- * @ghidraAddress BRGlide: 0x10ac5cec
- */
-extern MenuScreen *g_pCachedMenu_AudioSettings;
-
-/**
- * The cached screen of the configuration of the keys.
- *
- * @ghidraAddress BRD3D: 0x10aa2998
- * @ghidraAddress BRGlide: 0x10ac5cf0
- */
-extern MenuScreen *g_pCachedMenu_KeyConfig;
-
-/**
  * The item that continues from the name of the player.
  *
  * @ghidraAddress BRD3D: 0x10aa29a8
  * @ghidraAddress BRGlide: 0x10ac5d00
  */
 extern MenuWidget *g_pPlayerNameContinueItem;
-
-/**
- * The menu of the setup of a race.
- *
- * @ghidraAddress BRD3D: 0x10aa29ac
- * @ghidraAddress BRGlide: 0x10ac5d04
- */
-extern MenuWidget *g_pRaceSetupMenu;
-
-/**
- * The menu that confirms the exit from a season.
- *
- * @ghidraAddress BRD3D: 0x10aa29b0
- * @ghidraAddress BRGlide: 0x10ac5d08
- */
-extern MenuWidget *g_pExitSeasonConfirmMenu;
-
-/**
- * The menu of the setup of the car.
- *
- * @ghidraAddress BRD3D: 0x10aa29b4
- * @ghidraAddress BRGlide: 0x10ac5d0c
- */
-extern MenuWidget *g_pCarSetupMenu;
 
 /**
  * The menu of the setup of a network game.
@@ -2350,28 +2016,6 @@ extern MenuWidget *g_pCarSetupMenu;
  */
 extern MenuWidget *g_pMultiplayerGameSetupMenu;
 
-/**
- * The menu to save a season.
- *
- * @ghidraAddress BRD3D: 0x10aa29c0
- * @ghidraAddress BRGlide: 0x10ac5d18
- */
-extern MenuWidget *g_pSaveSeasonMenu;
-
-/**
- * @ghidraAddress BRD3D: 0x10aa2858
- */
-extern int g_dwModalDialogBlocking;
-
-/**
- * @ghidraAddress BRD3D: 0x10aa2870
- */
-extern unsigned short g_wMenuHoverIndexPrev;
-/**
- * @ghidraAddress BRD3D: 0x10aa284c
- * @ghidraAddress BRGlide: 0x10ac5ba4
- */
-extern int g_dwMenuHoverActive;
 /**
  * @ghidraAddress BRD3D: 0x100ab448
  */
@@ -2389,14 +2033,6 @@ extern RECT g_rcMenuListBox;
  */
 extern RECT g_rcMenuLeftColumn;
 /**
- * @ghidraAddress BRD3D: 0x100ab4a8
- */
-extern RECT g_rcMenuRightColumnMid;
-/**
- * @ghidraAddress BRD3D: 0x100ab4f8
- */
-extern RECT g_rcMenuRightListBox;
-/**
  * @ghidraAddress BRD3D: 0x100ab478
  */
 extern RECT g_rcMenuRightColumnWide;
@@ -2405,21 +2041,9 @@ extern RECT g_rcMenuRightColumnWide;
  */
 extern RECT g_rcMenuNetworkPlayers;
 /**
- * @ghidraAddress BRD3D: 0x100ab498
- */
-extern RECT g_rcMenuLeftColumnNarrow;
-/**
  * @ghidraAddress BRD3D: 0x100ab488
  */
 extern RECT g_rcMenuRightColumn;
-/**
- * @ghidraAddress BRD3D: 0x100ab438
- */
-extern RECT g_rcMenuFullScreen;
-/**
- * @ghidraAddress BRD3D: 0x100ab458
- */
-extern RECT g_rcMenuSubPanel;
 /**
  * @ghidraAddress BRD3D: 0x100ab468
  */
@@ -2432,14 +2056,6 @@ extern const char g_szSpace[];
  * @ghidraAddress BRD3D: 0x10aa2a70
  */
 extern char g_szEmptyString[1];
-/**
- * @ghidraAddress BRD3D: 0x100ab418
- */
-extern RECT g_rcHoverTopLeft;
-/**
- * @ghidraAddress BRD3D: 0x100ab428
- */
-extern RECT g_rcHoverBottomLeft;
 
 /**
  * The menu to save a time attack.
@@ -2448,14 +2064,6 @@ extern RECT g_rcHoverBottomLeft;
  * @ghidraAddress BRGlide: 0x10ac5d1c
  */
 extern MenuWidget *g_pSaveTimeAttackMenu;
-
-/**
- * The field of the name of a saved season.
- *
- * @ghidraAddress BRD3D: 0x10aa29cc
- * @ghidraAddress BRGlide: 0x10ac5d24
- */
-extern MenuItemList *g_pSaveSeasonEditMenu;
 
 /**
  * The field of the name of a saved time attack.
@@ -2512,14 +2120,6 @@ extern MenuWidget *g_pDisplayModeSelectMenu;
  * @ghidraAddress BRGlide: 0x10ac5d48
  */
 extern MenuWidget *g_pD3DDeviceSelectMenu;
-
-/**
- * The menu that handles the return from saving a season.
- *
- * @ghidraAddress BRD3D: 0x10aa29f4
- * @ghidraAddress BRGlide: 0x10ac5d4c
- */
-extern MenuWidget *g_pSaveSeasonBackHandlerMenu;
 
 /**
  * @ghidraAddress BRD3D: 0x10042b30
@@ -2794,16 +2394,6 @@ void BuildMultiplayerGameSetupUI(MenuScreen *pScreen);
  * @ghidraAddress BRD3D: 0x10044600
  */
 int MultiplayerGameSetupUI_OnCycleCarClass(MenuWidget *pWidget);
-
-/**
- * @ghidraAddress BRD3D: 0x100ac3c8
- */
-extern const int g_adwCarClassLabelStrIds[5];
-
-/**
- * @ghidraAddress BRD3D: 0x100ad274
- */
-extern const char g_szMenuDigitOne[];
 
 /**
  * @ghidraAddress BRD3D: 0x100563e0
@@ -3129,12 +2719,6 @@ extern const RECT g_rcMenuRootTitleBar;
 extern MenuWidget *g_pOptionsSubMenu;
 
 /**
- * @ghidraAddress BRD3D: 0x10aa28e4
- * @ghidraAddress BRGlide: 0x10ac5c3c
- */
-extern int g_dwSaveSeasonSlotNamed;
-
-/**
  * @ghidraAddress BRD3D: 0x100ab3f4
  */
 extern int g_dwFileListSelectedSlot;
@@ -3188,22 +2772,6 @@ extern RECT g_aMenuGlyphRects[MENU_GLYPH_RECT_COUNT];
  * @ghidraAddress BRGlide: 0x10ac46c0
  */
 extern RECT g_aMenuAltGlyphRects[MENU_ALT_GLYPH_RECT_COUNT];
-
-/**
- * The 128 by 128 icons of the menus, five to a row.
- *
- * @ghidraAddress BRD3D: 0x10a9da50
- * @ghidraAddress BRGlide: 0x10ac4ad8
- */
-extern RECT g_aMenuLargeIconRects[MENU_LARGE_ICON_RECT_COUNT];
-
-/**
- * The 128 by 128 icons of the menus, three to a row. The table follows g_aMenuLargeIconRects.
- *
- * @ghidraAddress BRD3D: 0x10a9db40
- * @ghidraAddress BRGlide: 0x10ac4bc8
- */
-extern RECT g_aMenuLargeIconRects3Col[MENU_LARGE_ICON_3_COLUMN_RECT_COUNT];
 
 /**
  * Set the rectangles of the sprites of the menus.
@@ -3286,62 +2854,6 @@ void SelectConfiguredDisplayMode(void);
 
 /** The number of entries of g_adwInputDeviceMenuIndexToDevice. */
 #define INPUT_DEVICE_MENU_CHOICES 4
-
-/**
- * The input device of each choice of the menu, 0 for the keyboard and 1 to 3 for a controller.
- *
- * @ghidraAddress BRD3D: 0x100ac520
- * @ghidraAddress BRGlide: 0x100abcc0
- */
-extern const int g_adwInputDeviceMenuIndexToDevice[INPUT_DEVICE_MENU_CHOICES];
-
-/**
- * The choice of the menu of force feedback, 0 for on.
- *
- * @ghidraAddress BRD3D: 0x10aa2a1c
- * @ghidraAddress BRGlide: 0x10ac5d74
- */
-extern int g_dwOptionForceFeedback;
-
-/**
- * The choice of the menu of the shadow of the car, 0 for on.
- *
- * @ghidraAddress BRD3D: 0x10aa2a20
- * @ghidraAddress BRGlide: 0x10ac5d78
- */
-extern int g_dwOptionCarShadow;
-
-/**
- * The choice of the menu of specular lighting, 0 for on.
- *
- * @ghidraAddress BRD3D: 0x10aa2a24
- * @ghidraAddress BRGlide: 0x10ac5d7c
- */
-extern int g_dwOptionSpecularLighting;
-
-/**
- * The choice of the menu of skid marks, 0 for on.
- *
- * @ghidraAddress BRD3D: 0x10aa2a28
- * @ghidraAddress BRGlide: 0x10ac5d80
- */
-extern int g_dwOptionSkidMarks;
-
-/**
- * The cars that can be chosen, one bit to a car.
- *
- * @ghidraAddress BRD3D: 0x100ab3e4
- * @ghidraAddress BRGlide: 0x100aab84
- */
-extern unsigned short g_wUnlockedCarModeMask;
-
-/**
- * The tracks that can be chosen, one bit to a track.
- *
- * @ghidraAddress BRD3D: 0x100ab3ec
- * @ghidraAddress BRGlide: 0x100aab8c
- */
-extern int g_dwSelectableTrackMaskAlt;
 
 /**
  * Show the screen of the results of a race.
@@ -3684,14 +3196,6 @@ extern int g_dwSelectedSessionIndex;
 void BackupMenuSelections(void);
 
 /**
- * The number of frames of the front end, counted while the music is not chosen by hand.
- *
- * @ghidraAddress BRD3D: 0x10aa2a4c
- * @ghidraAddress BRGlide: 0x10ac5da4
- */
-extern int g_dwFrontEndFrameCounter;
-
-/**
  * The track of the CD the menus show, counted from the first music track.
  *
  * @ghidraAddress BRD3D: 0x10aa2a34
@@ -3764,14 +3268,6 @@ extern int g_dwSuspensionMenuIndex;
 extern int g_dwCarMenuIndex;
 
 /**
- * The chosen input device.
- *
- * @ghidraAddress BRD3D: 0x10aa2a0c
- * @ghidraAddress BRGlide: 0x10ac5d64
- */
-extern int g_dwSelectedInputDevice;
-
-/**
  * The chosen number of laps.
  *
  * @ghidraAddress BRD3D: 0x100ac658
@@ -3810,22 +3306,6 @@ extern int g_dwHandlingTypeMenuIndex;
  * @ghidraAddress BRGlide: 0x10ac5d70
  */
 extern int g_dwSelectedCarClass;
-
-/**
- * The class of car ApplyCarGroupPreset() last applied.
- *
- * @ghidraAddress BRD3D: 0x10aa2a44
- * @ghidraAddress BRGlide: 0x10ac5d9c
- */
-extern int g_dwAppliedCarGroupPreset;
-
-/**
- * The cars of the chosen class, one bit for each car.
- *
- * @ghidraAddress BRD3D: 0x100ab3e8
- * @ghidraAddress BRGlide: 0x100aab88
- */
-extern unsigned g_dwSelectableCarMask;
 
 /**
  * Set the cars of the chosen class and choose the first of them, when the class changed since the
@@ -3984,11 +3464,6 @@ void ResolveRaceSelections(void);
 void ResetMenuSelectionsToDefaults(void);
 
 /**
- * @ghidraAddress BRD3D: 0x10aa2978
- */
-extern MenuScreen *g_pRaceResultsSummaryMenuScreen;
-
-/**
  * @ghidraAddress BRD3D: 0x10052f50
  */
 void BuildRaceResultsInfoUI(MenuScreen *pScreen);
@@ -4116,10 +3591,3 @@ int ShowSaveSeasonScreen(void);
  * @ghidraAddress BRD3D: 0x10047290
  */
 int RaceResultsTotalsUI_OnContinue(MenuActionWidget *pItem);
-
-/**
- * Whether file-list entries refer to season saves rather than ghost recordings.
- *
- * @ghidraAddress BRD3D: 0x10aa2848
- */
-extern int g_dwSaveSlotListIsSaveMode;
