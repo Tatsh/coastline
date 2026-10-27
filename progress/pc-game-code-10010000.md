@@ -1,6 +1,6 @@
 # PC port game code from 0x10010000 to 0x10020000
 
-132 of 162 routines done.
+133 of 162 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -135,7 +135,7 @@ the same name, for a routine the port retained from the N64 game.
 | `DisplayMode::IsDisplayModeMatch`                      |   ✅   |                 |      4 |     51 | `0x1001ad50` |              | `bool IsDisplayModeMatch(DisplayMode * this, int nWidth, int nHeight, int nBitDepth)`                                                                                                                                                        |
 | `D3DDeviceNode::CompareD3DDeviceGuid`                  |   ✅   |                 |      2 |     51 | `0x1001ada0` |              | `bool CompareD3DDeviceGuid(D3DDeviceNode * this, GUID * pGuid)`                                                                                                                                                                              |
 | `HalveLightColors`                                     |   ✅   |                 |      1 |     51 |              | `0x10019270` | `void HalveLightColors(GbiLight * pLight)`                                                                                                                                                                                                   |
-| `LoadParticleListHeads`                                |        |                 |      1 |     47 | `0x10013a10` | `0x10010f80` | `void LoadParticleListHeads(void * pHeader)`                                                                                                                                                                                                 |
+| `LoadParticleListHeads`                                |   ✅   |                 |      1 |     47 | `0x10013a10` | `0x10010f80` | `void LoadParticleListHeads(ParticleSnapshot * snapshot)`                                                                                                                                                                                    |
 | `FreeAllTrackSectorBuffers`                            |        |                 |      3 |     44 |              | `0x10019a10` | `undefined FreeAllTrackSectorBuffers()`                                                                                                                                                                                                      |
 | `EnsureDirectDrawDriversEnumerated`                    |   ✅   |                 |      2 |     43 | `0x1001b970` |              | `long EnsureDirectDrawDriversEnumerated(void)`                                                                                                                                                                                               |
 | `HandleGbiSetFogColor`                                 |   ✅   |                 |      1 |     40 | `0x1001cc70` | `0x1001ea60` | `GbiCommand * HandleGbiSetFogColor(GbiCommand * pCommand)`                                                                                                                                                                                   |
