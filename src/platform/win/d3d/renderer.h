@@ -1154,9 +1154,13 @@ struct TextureEntry {
     char abUnknown4[0x1c];   /* +0x04 */
     int nLod;                /*!< The level of detail, as CalculateTextureDimensions() reads it. */
     int nAspectRatio;        /*!< The aspect ratio, as CalculateTextureDimensions() reads it. */
-    char abUnknown28[0x254]; /* +0x28 */
+    char abUnknown28[0x248]; /* +0x28 */
+    int bOwnsPaintBuffers;   /*!< Whether release frees the four paint buffers. */
+    char abUnknown274[8];    /* +0x274 */
     int nDamageLevel;        /*!< The level of damage, from 0 to 3. */
-    char abUnknown280[0x30]; /* +0x280 */
+    char abUnknown280[4];    /* +0x280 */
+    unsigned char *apPaintBuffers[4]; /*!< The pixel buffers for the four damage levels. */
+    char abUnknown294[0x1c];          /* +0x294 */
     float fTextureScaleS;
     float fTextureScaleT;
 };
@@ -1248,6 +1252,16 @@ unsigned AllocateTextureEntry(void);
  * @ghidraAddress BRD3D: 0x1057542c
  */
 extern D3DTexture **g_ppTextureIdTable;
+
+/**
+ * @ghidraAddress BRD3D: 0x10575424
+ */
+extern unsigned g_dwTextureIdCount;
+
+/**
+ * @ghidraAddress BRD3D: 0x10575428
+ */
+extern unsigned g_dwTextureIdCapacity;
 
 /**
  * Load every texture the game loaded into its texture surface again, after the surfaces were lost.

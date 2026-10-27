@@ -3,6 +3,7 @@
 #include <bit>
 #include <cstdlib>
 #include <cstring>
+#include <new>
 
 #include "displaylistops.h"
 #include "platform/win/boot/app.h"
@@ -925,4 +926,34 @@ unsigned QueryAvailableTextureMemory(void) {
     DWORD available;
     g_pRenderHost->pRenderer->pDirectDraw2->GetAvailableVidMem(&caps, &total, &available);
     return available;
+}
+
+unsigned g_dwTextureIdCount;
+unsigned g_dwTextureIdCapacity;
+
+void ShutdownTextureSubsystem(void) {
+    DestroyTextureUploadQueue();
+    for (unsigned i = 1; i <= g_dwTextureIdCount; i++) {
+        g_ppTextureIdTable[i]->ReleaseD3DTextureInterfaces();
+        ::operator delete(g_ppTextureIdTable[i]);
+    }
+    std::free(g_ppTextureIdTable);
+    g_dwTextureIdCount = 0;
+    g_dwTextureIdCapacity = 0;
+    g_ppTextureIdTable = nullptr;
+    for (unsigned i = 0; i < g_dwTextureEntryCount; i++) {
+        TextureEntry &entry = g_pTextureEntries[i];
+        if (entry.bOwnsPaintBuffers) {
+            for (unsigned char *&pixels : entry.apPaintBuffers) {
+                if (pixels) {
+                    std::free(pixels);
+                    pixels = nullptr;
+                }
+            }
+        }
+    }
+    g_dwTextureEntryCount = 0;
+    g_dwTextureEntryCapacity = 0;
+    std::free(g_pTextureEntries);
+    g_pTextureEntries = nullptr;
 }

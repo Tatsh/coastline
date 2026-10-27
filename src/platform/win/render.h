@@ -1160,3 +1160,10 @@ void CreateWeatherShadeTexture(void);
  * @ghidraAddress BRD3D: 0x1003e220
  */
 unsigned QueryAvailableTextureMemory(void);
+
+/**
+ * Stop texture uploads and release texture surfaces and owned paint buffers.
+ *
+ * @ghidraAddress BRD3D: 0x1002a7a0
+ */
+void ShutdownTextureSubsystem(void);
