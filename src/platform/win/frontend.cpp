@@ -128,8 +128,8 @@ RECT g_rcMenuCenterPanel = {148, 110, 358, 260};
 RECT g_rcHoverTopLeft = {0, 0, 200, 200};
 RECT g_rcHoverBottomLeft = {0, 380, 200, 480};
 MenuWidget *g_pSaveTimeAttackMenu;
-MenuWidget *g_pSaveSeasonEditMenu;
-MenuWidget *g_pSaveTimeAttackEditMenu;
+MenuItemList *g_pSaveSeasonEditMenu;
+MenuItemList *g_pSaveTimeAttackEditMenu;
 NetworkMenuWidget *g_pNetworkSessionJoinMenu;
 NetworkMenuWidget *g_pNetworkCarSetupMenu;
 MenuWidget *g_pNetworkPlayerListMenu;
@@ -1728,6 +1728,45 @@ int GameOptionsUI_OnToggleSpecularLighting(MenuWidget *) {
     g_GlobalRallyConfig.bSpecularLightingSelection =
         g_adwSpecularLightingMenuIndexToValue[g_dwOptionSpecularLighting];
     return 1;
+}
+
+static inline int ToggleSavedMenuText(MenuWidget *pWidget, MenuItemList *&list) {
+    pWidget->pScreen->anPanelActive[1] = 0;
+    MenuFont &font = list->fonts[g_dwFileListSelectedSlot];
+    font.bDrawCaret = !font.bDrawCaret;
+    MenuFont &selected = list->fonts[g_dwFileListSelectedSlot];
+    g_dwMenuTextEditActive = selected.bDrawCaret;
+    if (g_dwMenuTextEditActive) {
+        strcpy(g_szMenuItemTextBackup, selected.szText);
+        strcpy(selected.szText, g_szEmptyUiString);
+    }
+    return 1;
+}
+
+int ToggleMenuItemTextEditA(MenuWidget *pWidget) {
+    return ToggleSavedMenuText(pWidget, g_pSaveSeasonEditMenu);
+}
+
+int ToggleMenuItemTextEditB(MenuWidget *pWidget) {
+    return ToggleSavedMenuText(pWidget, g_pSaveTimeAttackEditMenu);
+}
+
+static inline int RestoreSavedMenuText(MenuWidget *pWidget, MenuItemList *&list, int &named) {
+    pWidget->pScreen->anPanelActive[1] = 0;
+    named = 0;
+    if (g_dwMenuTextEditActive) {
+        strcpy(list->fonts[g_dwFileListSelectedSlot].szText, g_szMenuItemTextBackup);
+        strcpy(g_szMenuItemTextBackup, g_szEmptyUiString);
+    }
+    return 1;
+}
+
+int RestoreMenuItemTextA(MenuWidget *pWidget) {
+    return RestoreSavedMenuText(pWidget, g_pSaveSeasonEditMenu, g_dwSaveSeasonSlotNamed);
+}
+
+int RestoreMenuItemTextB(MenuWidget *pWidget) {
+    return RestoreSavedMenuText(pWidget, g_pSaveTimeAttackEditMenu, g_dwTimeAttackSaveSlotNamed);
 }
 
 int PreRaceExitSeasonConfirmUI_OnYes(MenuWidget *pWidget) {

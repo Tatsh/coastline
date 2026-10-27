@@ -116,7 +116,9 @@ struct MenuItemList {
     MenuItemListVTable *pVTable;
     char abUnknown4[0x14]; /* +0x04 */
     unsigned dwFlags;
-    char abUnknown1c[0x1a910]; /* +0x1c */
+    char abUnknown1c[0x10]; /* +0x1c */
+    MenuFont fonts[100];
+    char abUnknown1a60c[0x320]; /* +0x1a60c */
     unsigned short wItemCount;
     char abUnknown1a92e[0xa6]; /* +0x1a92e */
 };
@@ -269,6 +271,42 @@ public:
  * @ghidraAddress BRGlide: 0x1003ccb0
  */
 int CarSetupUI_OnAcceptAndSave(MenuActionWidget *pWidget);
+
+/**
+ * @ghidraAddress BRD3D: 0x10041a00
+ * @ghidraAddress BRGlide: 0x1003af60
+ */
+int ToggleMenuItemTextEditA(MenuWidget *pWidget);
+
+/**
+ * @ghidraAddress BRD3D: 0x10042410
+ * @ghidraAddress BRGlide: 0x1003b970
+ */
+int ToggleMenuItemTextEditB(MenuWidget *pWidget);
+
+/**
+ * @ghidraAddress BRD3D: 0x10041ac0
+ * @ghidraAddress BRGlide: 0x1003b020
+ */
+int RestoreMenuItemTextA(MenuWidget *pWidget);
+
+/**
+ * @ghidraAddress BRD3D: 0x100424d0
+ * @ghidraAddress BRGlide: 0x1003ba30
+ */
+int RestoreMenuItemTextB(MenuWidget *pWidget);
+
+/**
+ * @ghidraAddress BRD3D: 0x10a9d078
+ * @ghidraAddress BRGlide: 0x10ac4100
+ */
+extern char g_szMenuItemTextBackup[];
+
+/**
+ * @ghidraAddress BRD3D: 0x10aa28ec
+ * @ghidraAddress BRGlide: 0x10ac5c44
+ */
+extern int g_dwTimeAttackSaveSlotNamed;
 
 /**
  * @ghidraAddress BRD3D: 0x100408d0
@@ -1241,7 +1279,7 @@ extern MenuWidget *g_pSaveTimeAttackMenu;
  * @ghidraAddress BRD3D: 0x10aa29cc
  * @ghidraAddress BRGlide: 0x10ac5d24
  */
-extern MenuWidget *g_pSaveSeasonEditMenu;
+extern MenuItemList *g_pSaveSeasonEditMenu;
 
 /**
  * The field of the name of a saved time attack.
@@ -1249,7 +1287,7 @@ extern MenuWidget *g_pSaveSeasonEditMenu;
  * @ghidraAddress BRD3D: 0x10aa29d0
  * @ghidraAddress BRGlide: 0x10ac5d28
  */
-extern MenuWidget *g_pSaveTimeAttackEditMenu;
+extern MenuItemList *g_pSaveTimeAttackEditMenu;
 
 /**
  * The menu to join a network session.
