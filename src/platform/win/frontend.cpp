@@ -1216,6 +1216,12 @@ int JoinCreateGameUI_UpdateSessionSelection(MenuWidget *pWidget) {
     return 1;
 }
 
+int NetworkCarSetupUI_UpdateSelectedPlayer(MenuWidget *pWidget) {
+    UpdateMenuListSelection(pWidget, g_dwSelectedSessionIndex);
+    g_dwNetCarSetupSelectedPlayerId = pWidget->itemList.fonts[g_dwSelectedSessionIndex].dwItemData;
+    return 1;
+}
+
 int KeyConfigUI_UpdateActionSelection(MenuWidget *pWidget) {
     UpdateMenuListSelection(pWidget, g_dwKeyConfigSelectedAction);
     return 1;

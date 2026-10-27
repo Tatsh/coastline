@@ -1518,6 +1518,7 @@ void DisableNetworkReceive(void) {
 int g_dwLocalNetPlayerId = -1;
 
 const RECT g_rcNetCarSetupPlayerList = {32, 370, 610, 467};
+DPID g_dwNetCarSetupSelectedPlayerId = 0xffffffff;
 int g_dwNetworkCarSetupShown;
 int g_dwNetworkDataStreamActive;
 int g_dwNetworkEscapePending;

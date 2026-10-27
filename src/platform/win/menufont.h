@@ -123,5 +123,5 @@ struct MenuFont {
     char abUnknown41e[2]; /* +0x41e */
     int bDrawCaret;
     RECT rcBounds;
-    char abUnknown434[4]; /* +0x434 */
+    unsigned dwItemData;
 };
