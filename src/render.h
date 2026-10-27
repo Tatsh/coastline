@@ -327,6 +327,7 @@ extern Mtx g_mtxIdentity;
  * @ghidraAddress USA: 0x8028aa08
  * @ghidraAddress EUR: 0x8028cc10
  * @ghidraAddress JPN: 0x8028c6e0
+ * @ghidraAddress BRD3D: 0x106c06a4
  */
 extern s32 g_dwStatVerticesDrawn;
 
@@ -334,6 +335,7 @@ extern s32 g_dwStatVerticesDrawn;
  * @ghidraAddress USA: 0x8028aa10
  * @ghidraAddress EUR: 0x8028cc18
  * @ghidraAddress JPN: 0x8028c6e8
+ * @ghidraAddress BRD3D: 0x106c069c
  */
 extern s32 g_dwStatTrianglesDrawn;
 
@@ -341,6 +343,7 @@ extern s32 g_dwStatTrianglesDrawn;
  * @ghidraAddress USA: 0x8028aa38
  * @ghidraAddress EUR: 0x8028cc40
  * @ghidraAddress JPN: 0x8028c710
+ * @ghidraAddress BRD3D: 0x106c1610
  */
 extern s32 g_dwStatPolygonsDrawn;
 
@@ -503,6 +506,7 @@ extern s32 g_dwVehicleCullingDisabled;
  * @ghidraAddress USA: 0x8028aa3c
  * @ghidraAddress EUR: 0x8028cc44
  * @ghidraAddress JPN: 0x8028c714
+ * @ghidraAddress BRD3D: 0x106c161c
  */
 extern s32 g_dwStatVehicleTriangles;
 
@@ -512,6 +516,7 @@ extern s32 g_dwStatVehicleTriangles;
  * @ghidraAddress USA: 0x8028aa0c
  * @ghidraAddress EUR: 0x8028cc14
  * @ghidraAddress JPN: 0x8028c6e4
+ * @ghidraAddress BRD3D: 0x106c33b8
  */
 extern s32 g_dwStatUnused0;
 
@@ -519,6 +524,7 @@ extern s32 g_dwStatUnused0;
  * @ghidraAddress USA: 0x8028aa2c
  * @ghidraAddress EUR: 0x8028cc34
  * @ghidraAddress JPN: 0x8028c704
+ * @ghidraAddress BRD3D: 0x106c1178
  */
 extern s32 g_dwStatUnused1;
 
@@ -526,6 +532,7 @@ extern s32 g_dwStatUnused1;
  * @ghidraAddress USA: 0x8028aa30
  * @ghidraAddress EUR: 0x8028cc38
  * @ghidraAddress JPN: 0x8028c708
+ * @ghidraAddress BRD3D: 0x106c56dc
  */
 extern s32 g_dwStatUnused2;
 
@@ -533,6 +540,7 @@ extern s32 g_dwStatUnused2;
  * @ghidraAddress USA: 0x8028aa34
  * @ghidraAddress EUR: 0x8028cc3c
  * @ghidraAddress JPN: 0x8028c70c
+ * @ghidraAddress BRD3D: 0x106c32cc
  */
 extern s32 g_dwStatUnused3;
 
@@ -656,14 +664,21 @@ extern s32 g_dwClipRatioIndex;
  */
 extern s32 g_bGbiClipping;
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 /**
  * Clear the counts of the vertices, triangles, and polygons drawn in a frame.
  *
  * @ghidraAddress USA: 0x802173c8
  * @ghidraAddress EUR: 0x802183e8
  * @ghidraAddress JPN: 0x80217d38
+ * @ghidraAddress BRD3D: 0x10031227
  */
 void ClearRenderStats(void);
+#ifdef __cplusplus
+}
+#endif
 
 /**
  * Blank the screen and clear both frame buffers in the low resolution.

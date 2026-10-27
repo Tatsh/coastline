@@ -125,7 +125,7 @@ else()
   list(APPEND COASTLINE_LIBRARIES coastline_zlib)
 endif()
 
-target_sources(coastline_game PRIVATE camerarender.c collisionstep.c cubeclip.c materialcolor.c
+target_sources(coastline_game PRIVATE camerarender.c collisionstep.c cubeclip.c framebegin.c materialcolor.c
                                      modelanimation.c modelanimationflags.c modelrelocation.c racerinit.c routewalk.c sidegrip.c
                                      rledecompress.c textrender.c textstyle.c
                                      vehicleengine.c vehiclephysics.c)

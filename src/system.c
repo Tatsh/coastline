@@ -160,12 +160,6 @@ s32 UnusedVblankQueryStub(s32 unused0, s32 unused1) {
     return 0;
 }
 
-void ClearRenderStats(void) {
-    g_dwStatUnused1 = g_dwStatUnused2 = g_dwStatUnused3 = 0;
-    g_dwStatPolygonsDrawn = g_dwStatVehicleTriangles = 0;
-    g_dwStatTrianglesDrawn = g_dwStatVerticesDrawn = g_dwStatUnused0 = 0;
-}
-
 /* The original sets the palette only for a 4-bit texture, and the others read it unset. */
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wuninitialized"
