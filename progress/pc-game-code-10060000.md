@@ -1,6 +1,6 @@
 # PC port game code from 0x10060000 to 0x10070000
 
-68 of 172 routines done.
+70 of 172 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -49,7 +49,7 @@ the same name, for a routine the port retained from the N64 game.
 | `InitGameAndShowMenus`                   |   ✅   | ✅ `0x802001b4` |      1 |    525 | `0x10069840` | `0x100628b0` | `void InitGameAndShowMenus(void)`                                                                                                        |
 | `RallyConfig::CopyRallyConfig`           |   ✅   |                 |      2 |    524 | `0x10069de0` | `0x10062e50` | `RallyConfig * CopyRallyConfig(RallyConfig * this, RallyConfig * other)`                                                                 |
 | `CountTriangleWinding`                   |        | ✅ `0x8025c8dc` |      1 |    492 | `0x1006d660` | `0x10066610` | `undefined CountTriangleWinding()`                                                                                                       |
-| `Vehicle::RespawnVehicle`                |        | ✅ `0x80226248` |      2 |    468 | `0x10063660` | `0x1005c6d0` | `undefined RespawnVehicle(Vehicle * this)`                                                                                               |
+| `Vehicle::RespawnVehicle`                |   ✅   | ✅ `0x80226248` |      2 |    468 | `0x10063660` | `0x1005c6d0` | `void RespawnVehicle(Vehicle * this)`                                                                                                    |
 | `FrontEndWindowProc`                     |   📝   |                 |      1 |    419 | `0x10060060` | `0x100590d0` | `LRESULT FrontEndWindowProc(void * pUnused, HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)`                                          |
 | `LoadCarPaintTextures`                   |        |                 |      1 |    396 | `0x10061010` | `0x1005a080` | `undefined LoadCarPaintTextures()`                                                                                                       |
 | `RaycastTerrainHeight`                   |        |                 |      7 |    389 | `0x1006f310` | `0x100682c0` | `float RaycastTerrainHeight(float * pPosition)`                                                                                          |
@@ -78,7 +78,7 @@ the same name, for a routine the port retained from the N64 game.
 | `ComputeVehicleForces`                   |        | ✅ `0x8025993c` |      2 |    223 | `0x1006b260` | `0x10064210` | `undefined ComputeVehicleForces(RigidBody * pChassisBody)`                                                                               |
 | `GetWheelWorldVelocity`                  |        | ✅ `0x80259b1c` |      1 |    218 | `0x1006b430` | `0x100643e0` | `undefined GetWheelWorldVelocity()`                                                                                                      |
 | `ComputeDopplerFactor`                   |        | ✅ `0x8022b0f8` |      3 |    216 | `0x10067ae0` | `0x10060b50` | `undefined ComputeDopplerFactor()`                                                                                                       |
-| `ResetVehicleEffects`                    |        | ✅ `0x802288d4` |      3 |    216 | `0x10065630` | `0x1005e6a0` | `undefined ResetVehicleEffects()`                                                                                                        |
+| `Vehicle::ResetVehicleEffects`           |   ✅   | ✅ `0x802288d4` |      3 |    216 | `0x10065630` |              | `void ResetVehicleEffects(Vehicle * this)`                                                                                               |
 | `UpdateReplayScrubControls`              |   ✅   |                 |      1 |    215 | `0x1006ad10` | `0x10063cc0` | `void UpdateReplayScrubControls(void)`                                                                                                   |
 | `GetBodyPointVelocity`                   |        | ✅ `0x80259c18` |      3 |    214 | `0x1006b510` | `0x100644c0` | `undefined GetBodyPointVelocity()`                                                                                                       |
 | `ReadInstallDirectoryFromRegistry`       |   ✅   |                 |      1 |    212 | `0x1006a8a0` | `0x10063860` | `void ReadInstallDirectoryFromRegistry(void)`                                                                                            |

@@ -1,6 +1,6 @@
 # PC port game code from 0x10040000 to 0x10050000
 
-107 of 264 routines done.
+108 of 264 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -69,7 +69,7 @@ the same name, for a routine the port retained from the N64 game.
 | `ShowHostRaceSetupScreen`                          |   ✅   |                 |      4 |    222 | `0x100443e0` | `0x1003d930` | `int ShowHostRaceSetupScreen(void)`                                                                                                                       |
 | `ShowLoadGhostMenu`                                |   ✅   |                 |      1 |    221 | `0x10044d00` | `0x1003e250` | `int ShowLoadGhostMenu(void)`                                                                                                                             |
 | `ShowMultiplayerNameScreen`                        |   ✅   |                 |      3 |    219 | `0x10043bf0` | `0x1003d140` | `int ShowMultiplayerNameScreen(void)`                                                                                                                     |
-| `MenuWidget::UpdateBlinkTimer`                     |   📝   |                 |      1 |    218 | `0x100480a0` | `0x100414f0` | `undefined UpdateBlinkTimer(MenuWidget * this)`                                                                                                           |
+| `MenuWidget::UpdateBlinkTimer`                     |   ✅   |                 |      1 |    218 | `0x100480a0` | `0x100414f0` | `int UpdateBlinkTimer(MenuWidget * this)`                                                                                                                 |
 | `ShowJoinCreateGameScreen`                         |   ✅   |                 |      5 |    216 | `0x10043e70` | `0x1003d3c0` | `int ShowJoinCreateGameScreen(void * this)`                                                                                                               |
 | `ShowOptionsMenu`                                  |   ✅   |                 |      7 |    214 | `0x100451e0` | `0x1003e730` | `int ShowOptionsMenu(void)`                                                                                                                               |
 | `ShowTimeAttackMenu`                               |   ✅   |                 |      2 |    214 | `0x10044b90` | `0x1003e0e0` | `int ShowTimeAttackMenu(int nUnused)`                                                                                                                     |

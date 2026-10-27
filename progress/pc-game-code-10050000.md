@@ -1,6 +1,6 @@
 # PC port game code from 0x10050000 to 0x10060000
 
-29 of 87 routines done.
+29 of 88 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -51,6 +51,7 @@ the same name, for a routine the port retained from the N64 game.
 | `SaveFileList::SetEntryFromSaveFileName`  |   ✅   |                 |      1 |    236 | `0x1005ce30` | `0x10055c50` | `int SetEntryFromSaveFileName(SaveFileList * this, char * pszFileName, char * pszDescription)`                                                  |
 | `MenuFont::DrawTextAltFont`               |        |                 |      1 |    219 | `0x1005b460` | `0x10054280` | `undefined DrawTextAltFont(MenuFont * this)`                                                                                                    |
 | `MenuItemList::MenuItemList`              |        |                 |      1 |    218 | `0x1005b7f0` | `0x10054610` | `undefined MenuItemList(MenuItemList * this)`                                                                                                   |
+| `ResetVehicleEffects`                     |        | ✅ `0x802288d4` |      3 |    216 |              | `0x1005e6a0` | `undefined ResetVehicleEffects()`                                                                                                               |
 | `BuildGlideDisplayModeList`               |        |                 |      1 |    215 |              | `0x10058d40` | `undefined BuildGlideDisplayModeList()`                                                                                                         |
 | `MenuFont::DrawText`                      |        | ✅ `0x8022f5dc` |      1 |    212 | `0x1005b2b0` | `0x100540d0` | `undefined DrawText(MenuFont * this)`                                                                                                           |
 | `ChooseVehicleCar`                        |        | ✅ `0x80225f88` |      3 |    201 |              | `0x1005c490` | `undefined ChooseVehicleCar()`                                                                                                                  |
