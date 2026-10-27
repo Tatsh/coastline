@@ -1,6 +1,6 @@
 # PC port game code from 0x10040000 to 0x10050000
 
-196 of 264 routines done.
+198 of 264 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -64,7 +64,7 @@ the same name, for a routine the port retained from the N64 game.
 | `ShowChampionshipSeasonMenu`                       |   ✅   |                 |      1 |    244 | `0x10045900` | `0x1003ed90` | `int ShowChampionshipSeasonMenu(void)`                                                                                                                    |
 | `ShowRaceSetupMenu`                                |   ✅   |                 |      1 |    244 | `0x10044f50` | `0x1003e4a0` | `int ShowRaceSetupMenu(void)`                                                                                                                             |
 | `ShowQuitGameConfirmMenu`                          |   ✅   |                 |      1 |    239 | `0x10046170` | `0x1003f610` | `int ShowQuitGameConfirmMenu(void)`                                                                                                                       |
-| `SeasonUI_UpdateTotalPointsLabel`                  |        |                 |      2 |    236 | `0x100414b0` | `0x1003aa10` | `undefined SeasonUI_UpdateTotalPointsLabel()`                                                                                                             |
+| `SeasonUI_UpdateTotalPointsLabel`                  |   ✅   |                 |      2 |    236 | `0x100414b0` | `0x1003aa10` | `int SeasonUI_UpdateTotalPointsLabel(MenuWidget * pWidget)`                                                                                               |
 | `ShowSaveGhostMenu`                                |   ✅   |                 |      1 |    223 | `0x10044e20` | `0x1003e370` | `int ShowSaveGhostMenu(int nUnused)`                                                                                                                      |
 | `ShowHostRaceSetupScreen`                          |   ✅   |                 |      4 |    222 | `0x100443e0` | `0x1003d930` | `int ShowHostRaceSetupScreen(void)`                                                                                                                       |
 | `ShowLoadGhostMenu`                                |   ✅   |                 |      1 |    221 | `0x10044d00` | `0x1003e250` | `int ShowLoadGhostMenu(void)`                                                                                                                             |
@@ -93,7 +93,7 @@ the same name, for a routine the port retained from the N64 game.
 | `ShowNotEnoughPointsScreen`                        |   ✅   |                 |      1 |    201 | `0x10043330` | `0x1003c880` | `int ShowNotEnoughPointsScreen(void)`                                                                                                                     |
 | `ShowRaceResultsTotalsScreen`                      |   ✅   |                 |      1 |    201 | `0x100460a0` | `0x1003f540` | `int ShowRaceResultsTotalsScreen(void)`                                                                                                                   |
 | `ShowSeasonCongratsScreen`                         |   ✅   |                 |      1 |    201 | `0x10043260` | `0x1003c7b0` | `int ShowSeasonCongratsScreen(void)`                                                                                                                      |
-| `SeasonProgressInfoUI_UpdatePointsNeededLabel`     |        |                 |      1 |    198 | `0x100415a0` | `0x1003ab00` | `undefined SeasonProgressInfoUI_UpdatePointsNeededLabel()`                                                                                                |
+| `SeasonProgressInfoUI_UpdatePointsNeededLabel`     |   ✅   |                 |      1 |    198 | `0x100415a0` | `0x1003ab00` | `int SeasonProgressInfoUI_UpdatePointsNeededLabel(MenuWidget * pWidget)`                                                                                  |
 | `SeasonProgressInfoUI_UpdateRoundLabel`            |   ✅   |                 |      1 |    196 | `0x10040b30` | `0x1003a070` | `int SeasonProgressInfoUI_UpdateRoundLabel(MenuWidget * pWidget)`                                                                                         |
 | `ShowD3DDeviceSelectMenu`                          |        |                 |      1 |    184 | `0x10045460` | `0x1003e9b0` | `undefined ShowD3DDeviceSelectMenu()`                                                                                                                     |
 | `ShowDisplayModeSelectMenu`                        |        |                 |      1 |    184 | `0x10045520` |              | `undefined ShowDisplayModeSelectMenu()`                                                                                                                   |
