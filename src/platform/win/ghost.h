@@ -176,6 +176,42 @@ void ResetGhostRecording(void);
 void StartGhostRecording(void);
 
 /**
+ * Read the ghost recording flag.
+ *
+ * @return Recording flag without boolean conversion.
+ * @ghidraAddress BRD3D: 0x1006aaa0
+ */
+int IsGhostRecordingActive(void);
+
+/**
+ * Current playback frame of each recording.
+ *
+ * @ghidraAddress BRD3D: 0x11750310
+ */
+extern int g_adwGhostPlaybackFrame[GHOST_RECORDING_COUNT];
+
+/**
+ * Advance active recordings and the time attack or demonstration ghost playback.
+ *
+ * @ghidraAddress BRD3D: 0x1006ab20
+ */
+void AdvanceGhostRecordFrame(void);
+
+/**
+ * Reset every ghost playback frame to zero.
+ *
+ * @ghidraAddress BRD3D: 0x1006abb0
+ */
+void ClearGhostPlaybackState(void);
+
+/**
+ * Translate replay controls into playback mode and bounded frame changes.
+ *
+ * @ghidraAddress BRD3D: 0x1006ad10
+ */
+void UpdateReplayScrubControls(void);
+
+/**
  * Fill memory with a byte.
  *
  * @param pDest The memory.

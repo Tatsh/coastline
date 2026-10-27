@@ -6,11 +6,15 @@
 #include <zlib.h>
 
 #include "game.h"
+#include "instantreplay.h"
+#include "pause.h"
 #include "platform/win/frontend.h"
+#include "platform/win/input.h"
 #include "platform/win/season.h"
 
 unsigned g_adwGhostFrameCount[GHOST_RECORDING_COUNT];
 int g_bGhostRecordingActive;
+int g_adwGhostPlaybackFrame[GHOST_RECORDING_COUNT];
 GhostRecordingInfo g_GhostRecordingInfo;
 unsigned g_dwGhostRecordingSize;
 u8 g_aGhostKeyframes[GHOST_RECORDING_COUNT][GHOST_MAX_FRAMES * GHOST_FRAME_SIZE];
@@ -177,6 +181,67 @@ void FillMemoryPatternBytes(void *pDest, size_t nCount, int nByte) {
 
 void StartGhostRecording(void) {
     g_bGhostRecordingActive = true;
+}
+
+int IsGhostRecordingActive(void) {
+    return g_bGhostRecordingActive;
+}
+
+void AdvanceGhostRecordFrame(void) {
+    if (!g_bGhostRecordingActive || g_dwRacePauseState) {
+        return;
+    }
+    const bool singleRecording =
+        g_dwGameMode == GAME_MODE_TIME_ATTACK || g_dwGameMode == GAME_MODE_DEMO;
+    const int count = singleRecording ? 1 : GHOST_RECORDING_COUNT;
+    for (int i = 0; i < count; ++i) {
+        if (static_cast<int>(g_adwGhostFrameCount[i]) < GHOST_MAX_FRAMES) {
+            ++g_adwGhostFrameCount[i];
+        }
+    }
+    if (singleRecording &&
+        g_adwGhostPlaybackFrame[1] < static_cast<int>(g_adwGhostFrameCount[1] - 1)) {
+        ++g_adwGhostPlaybackFrame[1];
+    }
+}
+
+void ClearGhostPlaybackState(void) {
+    memset(g_adwGhostPlaybackFrame, 0, sizeof(g_adwGhostPlaybackFrame));
+}
+
+void UpdateReplayScrubControls(void) {
+    int step = 0;
+    if (g_dwInputButtonMask & 0x200000) {
+        gInstantReplayActive = 3;
+        step = 1;
+    } else if (g_dwInputButtonMask & 0x400000) {
+        gInstantReplayActive = 3;
+        step = -1;
+    }
+    if (g_dwInputButtonMask & 0x800000) {
+        gInstantReplayActive = 3;
+        step = 10;
+    } else if (g_dwInputButtonMask & 0x1000000) {
+        gInstantReplayActive = 3;
+        step = -10;
+    }
+    if (g_dwInputButtonMask & 0x100000) {
+        gInstantReplayActive = 1;
+    }
+    if (gInstantReplayActive == 1) {
+        step = 1;
+    } else if (gInstantReplayActive == 3 && step == 0) {
+        gInstantReplayActive = 2;
+    }
+    for (int i = 0; i < GHOST_RECORDING_COUNT; ++i) {
+        g_adwGhostPlaybackFrame[i] += step;
+        if (g_adwGhostPlaybackFrame[i] < 0) {
+            g_adwGhostPlaybackFrame[i] = 0;
+        } else if (g_adwGhostPlaybackFrame[i] > static_cast<int>(g_adwGhostFrameCount[i] - 1)) {
+            // Empty recordings can finish at frame -1 after the upper-bound comparison.
+            g_adwGhostPlaybackFrame[i] = static_cast<int>(g_adwGhostFrameCount[i] - 1);
+        }
+    }
 }
 
 void ResetGhostRecording(void) {
