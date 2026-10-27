@@ -7,40 +7,40 @@
 class [[gnu::packed]] EarEnvironment {
 public:
     /** @ghidraAddress EAR: 0x1000ea30 */
-    void __thiscall SetReservedRegistrationDwordA(std::uint32_t value);
+    void SetReservedRegistrationDwordA(std::uint32_t value);
     /** @ghidraAddress EAR: 0x1000ea50 */
-    void __thiscall SetReservedRegistrationWord(std::uint16_t value);
+    void SetReservedRegistrationWord(std::uint16_t value);
     /** @ghidraAddress EAR: 0x1000ea70 */
-    void __thiscall SetEnvironmentInitialGain(std::uint16_t value);
+    void SetEnvironmentInitialGain(std::uint16_t value);
     /** @ghidraAddress EAR: 0x1000ea90 */
-    void __thiscall SetReservedRegistrationDwordB(std::uint32_t value);
+    void SetReservedRegistrationDwordB(std::uint32_t value);
     /** @ghidraAddress EAR: 0x1000eab0 */
-    void __thiscall SetEnvironmentSoundSpeed(std::uint16_t value);
+    void SetEnvironmentSoundSpeed(std::uint16_t value);
     /** @ghidraAddress EAR: 0x1000ead0 */
-    void __thiscall SetReservedRegistrationDwordC(std::uint32_t value);
+    void SetReservedRegistrationDwordC(std::uint32_t value);
     /** @ghidraAddress EAR: 0x1000eaf0 */
-    void __thiscall SetEnvironmentPitchVariationRange(std::uint16_t value);
+    void SetEnvironmentPitchVariationRange(std::uint16_t value);
     /** @ghidraAddress EAR: 0x1000eb10 */
-    void __thiscall SetEnvironmentDopplerCrossoverDistance(std::uint16_t value);
+    void SetEnvironmentDopplerCrossoverDistance(std::uint16_t value);
     /** @ghidraAddress EAR: 0x1000eb30 */
-    void __thiscall SetReservedAuxiliaryWordB(std::uint16_t value);
+    void SetReservedAuxiliaryWordB(std::uint16_t value);
     /** @ghidraAddress EAR: 0x1000eb50 */
-    void __thiscall SetReservedAuxiliaryWordA(std::uint16_t value);
+    void SetReservedAuxiliaryWordA(std::uint16_t value);
     /** @ghidraAddress EAR: 0x1000eb70 */
-    void __thiscall SetReservedAuxiliaryWordC(std::uint16_t value);
+    void SetReservedAuxiliaryWordC(std::uint16_t value);
     /** @ghidraAddress EAR: 0x1000eb90 */
-    void __thiscall SetReservedAuxiliaryWordD(std::uint16_t value);
+    void SetReservedAuxiliaryWordD(std::uint16_t value);
     /** @ghidraAddress EAR: 0x1000ebb0 */
-    void __thiscall SetReservedAuxiliaryWordE(std::uint16_t value);
+    void SetReservedAuxiliaryWordE(std::uint16_t value);
 
     /** @ghidraAddress EAR: 0x10008a40 */
-    std::uint16_t __thiscall GetEnvironmentInitialGain() const;
+    std::uint16_t GetEnvironmentInitialGain() const;
     /** @ghidraAddress EAR: 0x10008a60 */
-    std::uint16_t __thiscall GetEnvironmentSoundSpeed() const;
+    std::uint16_t GetEnvironmentSoundSpeed() const;
     /** @ghidraAddress EAR: 0x10008a80 */
-    std::uint16_t __thiscall GetEnvironmentDopplerCrossoverDistance() const;
+    std::uint16_t GetEnvironmentDopplerCrossoverDistance() const;
     /** @ghidraAddress EAR: 0x1000d710 */
-    std::uint16_t __thiscall GetEnvironmentPitchVariationRange() const;
+    std::uint16_t GetEnvironmentPitchVariationRange() const;
 
 private:
     std::uint32_t reservedRegistrationDwordA;
@@ -62,7 +62,7 @@ private:
 class [[gnu::packed]] EarEnvironmentRegistration {
 public:
     /** @ghidraAddress EAR: 0x10007220 */
-    void __thiscall InitializeDefaultEnvironment();
+    void InitializeDefaultEnvironment();
 
 private:
     std::uint16_t size;
