@@ -58,6 +58,32 @@ void ResetSoundSourceTracking(void);
 void ResetAllSoundState(void);
 
 /**
+ * Offer the sound of the airplane as the nearest sound of the track, on the tracks that have one.
+ *
+ * @param instance The placed model of the airplane.
+ * @param position Its position.
+ * @param camera The camera that hears it.
+ * @ghidraAddress USA: 0x8022b954
+ * @ghidraAddress EUR: 0x8022ce64
+ * @ghidraAddress JPN: 0x8022c61c
+ * @ghidraAddress BRD3D: 0x10068180
+ */
+void UpdateAirplaneSound(s32 instance, Vec3f *position, CameraFrame *camera);
+
+/**
+ * Offer the sound of a waterfall as the nearest sound of the track, on the tracks that have one.
+ *
+ * @param instance The source the sound is kept under.
+ * @param position The position of the waterfall.
+ * @param camera The camera that hears it.
+ * @ghidraAddress USA: 0x8022ba10
+ * @ghidraAddress EUR: 0x8022cf20
+ * @ghidraAddress JPN: 0x8022c6d8
+ * @ghidraAddress BRD3D: 0x10068210
+ */
+void UpdateWaterfallSound(s32 instance, Vec3f *position, CameraFrame *camera);
+
+/**
  * The factor the Doppler effect raises a sound by, from the motion of the source and the listener
  * along the line between them over the frame.
  *

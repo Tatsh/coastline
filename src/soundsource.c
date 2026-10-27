@@ -4,8 +4,52 @@
 
 #include "frametime.h"
 #include "soundeffect.h"
+#include "trackselect.h"
 
 #define SOUND_FAR 8589934592.0f
+
+#define TRACK_SOUND_FREQUENCY 11000.0f
+#define FAST_AIRPLANE_FREQUENCY 22000.0f
+#define DEFAULT_SOUND_VOLUME 0x80
+#define LOUD_SOUND_VOLUME 0xFF
+#define WATERFALL_VOLUME 0x180
+
+void UpdateAirplaneSound(s32 instance, Vec3f *position, CameraFrame *camera) {
+    s32 sound = -1;
+    f32 frequency = TRACK_SOUND_FREQUENCY;
+    s32 volume = DEFAULT_SOUND_VOLUME;
+
+    switch (g_dwSelectedTrackId) {
+    case TRACK_COASTLINE:
+    case TRACK_MIRROR_COASTLINE:
+        sound = SOUND_EFFECT_ENGINE;
+        frequency = FAST_AIRPLANE_FREQUENCY;
+        volume = LOUD_SOUND_VOLUME;
+        break;
+    case TRACK_JUNGLE:
+    case TRACK_MIRROR_JUNGLE:
+        sound = SOUND_EFFECT_ENGINE;
+        volume = LOUD_SOUND_VOLUME;
+        break;
+    }
+    if (sound != -1) {
+        UpdateClosestSoundSource(instance, sound, volume, frequency, position, camera);
+    }
+}
+
+void UpdateWaterfallSound(s32 instance, Vec3f *position, CameraFrame *camera) {
+    s32 sound = -1;
+    f32 frequency = TRACK_SOUND_FREQUENCY;
+    s32 volume = DEFAULT_SOUND_VOLUME;
+
+    if (g_dwSelectedTrackId == TRACK_JUNGLE || g_dwSelectedTrackId == TRACK_MIRROR_JUNGLE) {
+        sound = SOUND_EFFECT_WATERFALL;
+        volume = WATERFALL_VOLUME;
+    }
+    if (sound != -1) {
+        UpdateClosestSoundSource(instance, sound, volume, frequency, position, camera);
+    }
+}
 
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
 long double
