@@ -1,6 +1,6 @@
 # PC port game code from 0x10060000 to 0x10070000
 
-61 of 170 routines done.
+62 of 170 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -46,7 +46,7 @@ the same name, for a routine the port retained from the N64 game.
 | `BuildVehicleKeyframe`                   |   ✅   |                 |      2 |    554 | `0x100607b0` | `0x10059820` | `void BuildVehicleKeyframe(KeyframeState * pState, Vehicle * pVehicle)`                                                                  |
 | `BuildTrackTriangleCache`                |        | ✅ `0x8025f18c` |      6 |    551 | `0x1006f720` | `0x100686d0` | `uint BuildTrackTriangleCache(float fPosX, int fPosY)`                                                                                   |
 | `InitRacerSlot`                          |        | ✅ `0x802291f8` |      1 |    538 | `0x100662a0` | `0x1005f310` | `undefined InitRacerSlot()`                                                                                                              |
-| `InitGameAndShowMenus`                   |   ✅   | ✅ `0x802001b4` |      1 |    525 | `0x10069840` | `0x100628b0` | `undefined InitGameAndShowMenus()`                                                                                                       |
+| `InitGameAndShowMenus`                   |   ✅   | ✅ `0x802001b4` |      1 |    525 | `0x10069840` | `0x100628b0` | `void InitGameAndShowMenus(void)`                                                                                                        |
 | `RallyConfig::CopyRallyConfig`           |   ✅   |                 |      2 |    524 | `0x10069de0` | `0x10062e50` | `RallyConfig * CopyRallyConfig(RallyConfig * this, RallyConfig * other)`                                                                 |
 | `CountTriangleWinding`                   |        | ✅ `0x8025c8dc` |      1 |    492 | `0x1006d660` | `0x10066610` | `undefined CountTriangleWinding()`                                                                                                       |
 | `Vehicle::RespawnVehicle`                |        | ✅ `0x80226248` |      2 |    468 | `0x10063660` | `0x1005c6d0` | `undefined RespawnVehicle(Vehicle * this)`                                                                                               |
@@ -113,7 +113,7 @@ the same name, for a routine the port retained from the N64 game.
 | `AllocDisplayListBlock`                  |   ✅   | ✅ `0x80255cd0` |     13 |     77 | `0x10069490` | `0x10062500` | `DisplayListBlock * AllocDisplayListBlock(void)`                                                                                         |
 | `AllocLightBlock`                        |   ✅   | ✅ `0x80255dd8` |      4 |     77 | `0x10069530` | `0x100625a0` | `LookAt * AllocLightBlock(void)`                                                                                                         |
 | `AllocHiliteBlock`                       |   ✅   | ✅ `0x80255d4c` |      1 |     77 | `0x100694e0` | `0x10062550` | `Hilite * AllocHiliteBlock(void)`                                                                                                        |
-| `RacerSlot::FreeEnemyCarColorPanels`     |        |                 |      1 |     75 | `0x100664c0` | `0x1005f530` | `undefined FreeEnemyCarColorPanels(RacerSlot * this)`                                                                                    |
+| `RacerSlot::FreeEnemyCarColorPanels`     |   ✅   |                 |      1 |     75 | `0x100664c0` | `0x1005f530` | `void FreeEnemyCarColorPanels(RacerSlot * this)`                                                                                         |
 | `GetPaintJobEntryParams`                 |        |                 |      2 |     72 | `0x10060fb0` | `0x1005a020` | `undefined GetPaintJobEntryParams()`                                                                                                     |
 | `FreeCarPaintTextures`                   |   ✅   |                 |      2 |     71 | `0x100613b0` | `0x1005a420` | `void FreeCarPaintTextures(void)`                                                                                                        |
 | `ResetMouseCursorToCenter`               |   ✅   |                 |      1 |     71 | `0x10060210` | `0x10059280` | `bool ResetMouseCursorToCenter(int nUnused)`                                                                                             |
