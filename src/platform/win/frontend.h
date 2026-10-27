@@ -314,6 +314,14 @@ int SaveSeasonUI_HandleTextEntry(MenuWidget *pWidget);
 int SaveTimeAttackMenuUI_HandleTextEntry(MenuWidget *pWidget);
 
 /**
+ * Exit an active network game launched through a lobby.
+ *
+ * @ghidraAddress BRD3D: 0x100437d0
+ * @ghidraAddress BRGlide: 0x1003cd20
+ */
+int MultiplayerGameSetupUI_OnEscape(MenuWidget *pWidget);
+
+/**
  * @ghidraAddress BRD3D: 0x10a9d078
  * @ghidraAddress BRGlide: 0x10ac4100
  */

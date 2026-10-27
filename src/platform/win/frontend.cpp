@@ -1791,6 +1791,15 @@ int SaveTimeAttackMenuUI_HandleTextEntry(MenuWidget *pWidget) {
     return HandleSavedMenuTextEntry(pWidget, ToggleMenuItemTextEditB, RestoreMenuItemTextB);
 }
 
+int MultiplayerGameSetupUI_OnEscape(MenuWidget *pWidget) {
+    if (g_dwNetworkDataStreamActive && g_dwLaunchedFromLobby) {
+        pWidget->pScreen->bRunning = 0;
+        pWidget->pScreen->ShutdownFrontEnd(0);
+        ShutdownApplication(0);
+    }
+    return 1;
+}
+
 int PreRaceExitSeasonConfirmUI_OnYes(MenuWidget *pWidget) {
     pWidget->pScreen->DestroyPanels();
     delete g_pActiveMenuScreen;
