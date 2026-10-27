@@ -256,6 +256,7 @@ extern ViewportRect g_aViewportRects[];
  * @ghidraAddress USA: 0x8028aaec
  * @ghidraAddress EUR: 0x8028ccf4
  * @ghidraAddress JPN: 0x8028c7c4
+ * @ghidraAddress BRD3D: 0x106c5708
  */
 extern s32 g_dwCurrentSplitScreenIndex;
 

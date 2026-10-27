@@ -480,7 +480,7 @@ void Mtx4x4ProjectPoint(Vec3f *out, Vec3f *in, f32 m[4][4]) {
     out->z = (x * m[0][2] + y * m[1][2] + z * m[2][2] + m[3][2]) * inverseW;
 }
 
-void Vec3fTransformByMatrix(f32 out[4], Vec3f *in, f32 m[4][4]) {
+void Vec3fTransformByMatrix(f32 out[4], const Vec3f *in, f32 m[4][4]) {
     f32 x = in->x, y = in->y, z = in->z;
     s32 i;
 

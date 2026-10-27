@@ -83,6 +83,7 @@ extern u16 g_wPavedTireSmokeListHead;
  * @ghidraAddress USA: 0x80368a80
  * @ghidraAddress EUR: 0x8036af80
  * @ghidraAddress JPN: 0x80369bf0
+ * @ghidraAddress BRD3D: 0x1039b6d0
  */
 extern f32 g_afBillboardMatrix[4][4];
 
@@ -211,6 +212,26 @@ void UpdateAllVehicleEffects(void);
 }
 #endif
 
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#ifdef __cplusplus
+extern "C" {
+#endif
+/**
+ * Draw snapshot particle puffs as rectangles in the current view.
+ *
+ * @param viewports The viewport records indexed by the current split-screen view.
+ * @param head The first particle index, or zero for an empty list.
+ * @param red The red component, of which the low eight bits count.
+ * @param green The green component.
+ * @param blue The blue component.
+ * @ghidraAddress BRD3D: 0x10013d90
+ */
+void RenderBillboardParticles(
+    const ViewportRect *viewports, u32 head, s32 red, s32 green, s32 blue);
+#ifdef __cplusplus
+}
+#endif
+#else
 /**
  * Draw a list of puffs of the pool as rectangles of the particle texture facing the screen.
  *
@@ -223,6 +244,7 @@ void UpdateAllVehicleEffects(void);
  * @ghidraAddress JPN: 0x8023e144
  */
 void RenderBillboardParticles(u16 head, s32 red, s32 green, s32 blue);
+#endif
 
 /**
  * Set g_afBillboardMatrix for the current view, and draw the tyre smoke in the colours of the

@@ -11,25 +11,6 @@
 #include "trackselect.h"
 #include "weather.h"
 
-/** The texels of a puff left of or above the screen, from its step a pixel, within its sign. */
-static inline s32 OffscreenTexels(s16 offscreen, s16 step) {
-    s32 texels;
-
-    if (step < 0) {
-        texels = (offscreen * step) >> 7;
-        return texels > 0 ? texels : 0;
-    }
-    texels = (offscreen * step) >> 7;
-    return texels < 0 ? texels : 0;
-}
-
-/** Clamp a coordinate of the screen, taken to 16 bits, to its left or top edge. */
-static inline s32 ClampToScreen(s32 coordinate) {
-    s16 clamped = coordinate;
-
-    return clamped > 0 ? clamped : 0;
-}
-
 /* Load the particle texture to be drawn as rectangles of the primitive colour. */
 #define LoadParticleTexture()                                                                      \
     gDPPipeSync(gDisplayListPtr++);                                                                \
@@ -204,85 +185,6 @@ void DrawTireSpray(void) {
         gSPPopMatrix(gDisplayListPtr++, G_MTX_MODELVIEW);
     }
     gSPSetGeometryMode(gDisplayListPtr++, G_CULL_BACK);
-}
-
-void RenderBillboardParticles(u16 head, s32 red, s32 green, s32 blue) {
-    ViewportRect *view;
-    Particle *particle;
-    f32 clip[4];
-    f32 span, scaleX, inverse, size, edge;
-    s32 centerX, centerY, height, halfWidth, halfHeight, x, y, top, stepS, stepT, s, t;
-    s16 left;
-    u16 index;
-
-    view = &g_aViewportRects[g_dwCurrentSplitScreenIndex];
-    centerX = (view->x * 2 + view->width) * 2;
-    centerY = (view->y * 2 + view->height) * 2;
-    span = (f32)(view->width * 2);
-    height = view->height;
-    scaleX = g_dwViewportMirrored != g_dwTrackMirrored ? -span : span;
-
-    for (index = head; index != 0; index = particle->next) {
-        particle = &g_aParticlePool[index];
-        Vec3fTransformByMatrix(clip, &particle->position, g_afBillboardMatrix);
-        if (clip[3] <= 0.001f && clip[3] >= -0.001f) {
-            continue;
-        }
-        inverse = 1.0f / clip[3];
-        clip[2] *= inverse;
-        if (clip[2] >= 1.0f || clip[2] <= -0.3f) {
-            continue;
-        }
-        clip[0] *= inverse;
-        size = particle->size * (4.0f * inverse);
-        edge = 1.0f + size;
-        if (clip[0] <= -edge || clip[0] >= edge) {
-            continue;
-        }
-        clip[1] *= inverse;
-        if (clip[1] <= -edge || clip[1] >= edge) {
-            continue;
-        }
-        /* The width is three quarters of the height for the shape of the screen. */
-        halfWidth = (s32)(span * 0.75f * size);
-        if (halfWidth <= 0) {
-            continue;
-        }
-        halfHeight = (s32)(span * size);
-        if (halfHeight <= 0) {
-            continue;
-        }
-        x = (s32)(clip[0] * scaleX) + centerX;
-        y = (s32)(clip[1] * (f32)(height * 2)) + centerY;
-
-        gDPPipeSync(gDisplayListPtr++);
-        gDPSetPrimColor(gDisplayListPtr++,
-                        0xFF,
-                        0xFF,
-                        red,
-                        green,
-                        blue,
-                        (particle->alpha * particle->fade) >> 8);
-        gDPSetPrimDepth(gDisplayListPtr++, (s32)(clip[2] * 16352.0f) + 0x3FE0, 0);
-
-        /* A rectangle off the left or the top of the screen starts its texture further in. */
-        left = x - halfWidth;
-        top = y - halfHeight;
-        stepS = PARTICLE_TEXTURE_STEPS / 2 / halfWidth;
-        stepT = -(PARTICLE_TEXTURE_STEPS / 2) / halfHeight;
-        s = left < 0 ? OffscreenTexels(left, stepS) : 0;
-        t = top < 0 ? OffscreenTexels(top, stepT) : 0;
-        gSPTextureRectangle(gDisplayListPtr++,
-                            ClampToScreen(left),
-                            ClampToScreen(top),
-                            ClampToScreen(x + halfWidth),
-                            ClampToScreen(y + halfHeight),
-                            G_TX_RENDERTILE,
-                            -s,
-                            PARTICLE_TEXTURE_LAST_T - t,
-                            stepS,
-                            stepT);
-    }
 }
 
 void RenderTireSmoke(void) {

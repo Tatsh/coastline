@@ -529,7 +529,7 @@ void Mtx4x4ProjectPoint(Vec3f *out, Vec3f *in, f32 m[4][4]);
  * @ghidraAddress BRGlide: 0x10034920
  * @stub{BRGlide}
  */
-void Vec3fTransformByMatrix(f32 out[4], Vec3f *in, f32 m[4][4]);
+void Vec3fTransformByMatrix(f32 out[4], const Vec3f *in, f32 m[4][4]);
 
 /**
  * Transform a point of short integers by a matrix into four components.
