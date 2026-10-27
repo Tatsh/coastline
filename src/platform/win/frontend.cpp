@@ -5238,6 +5238,116 @@ void BuildVideoOptionsUI(MenuScreen *screen) {
 }
 #endif
 
+static inline int LoadSeasonUI_SelectSlot(MenuItemList *list, int *slot) {
+    return LoadSeasonUI_OnSlotSelected(list, slot);
+}
+
+static inline void BuildSeasonFilePreview(MenuPanel *panel, MenuScreen *screen) {
+    const float x[] = {330, 440, 440};
+    const float labelY[] = {153, 181, 243};
+    const float valueY[] = {97, 129, 224};
+    const RECT *bounds[] = {&g_rcMenuRightLabel, &g_rcMenuRightColumn, &g_rcMenuRightColumnWide};
+    int (*const updates[])(MenuWidget *) = {SeasonFileUI_UpdateYearLabel,
+                                            SeasonFileUI_UpdateRoundLabel,
+                                            SeasonUI_UpdateSeasonNameLabel};
+    for (int index = 0; index < 3; index++) {
+        SetMenuWidgetLabel(AddMenuWidget(panel, screen, x[index], labelY[index], 0x100009, 1, -1),
+                           0x36 + index,
+                           bounds[index]);
+        panel->SetWidgetCount(panel->GetWidgetCount() + 1);
+        MenuWidget *widget = AddMenuWidget(panel, screen, x[index], valueY[index], 0x5001, 1, -1);
+        widget->SetUpdateCallback(updates[index]);
+        widget->SetSpriteId(index == 2 ? 0x34 : 5);
+        widget->SetText(g_szEmptyUiString, 1, index == 2 ? 4 : 3, bounds[index]);
+        panel->SetWidgetCount(panel->GetWidgetCount() + 1);
+    }
+}
+
+void BuildLoadSeasonUI(MenuScreen *screen) {
+    screen->SetCurrentPanelIndex(0);
+    g_dwFileListSelectedSlot = -1;
+    g_dwSaveSlotListIsSaveMode = 1;
+    g_pRootMenuScreen->GetFileList(0)->ScanSaveFiles("RallySeason*.BRF");
+    g_dwSaveSlotListIsSaveMode = 0;
+    screen->SetPanelActive(screen->GetPanelCount(), 1);
+    MenuPanel *panel = new (std::nothrow) MenuPanel();
+    screen->SetPanel(screen->GetPanelCount(), panel);
+    if (!panel) {
+        ShowErrorMessage(4);
+    }
+    screen->SetPanelCount(screen->GetPanelCount() + 1);
+    panel->SetScreen(screen);
+    panel->SetFlags(0);
+    panel->SetX(195);
+    panel->SetY(130);
+    AddMenuWidget(panel, screen, 0, 0, 9, 0, 0);
+    panel->SetWidgetCount(panel->GetWidgetCount() + 1);
+    SetMenuWidgetLabel(
+        AddMenuWidget(panel, screen, panel->GetX(), 10, 0x100009, 1, -1), 0x34, &g_rcMenuTitleBar);
+    panel->SetWidgetCount(panel->GetWidgetCount() + 1);
+    MenuWidget *widget = AddMenuWidget(panel, screen, panel->GetX(), panel->GetY(), 0x3001, 1, -1);
+    widget->SetUpdateCallback(LoadFileListUI_UpdateSlotSelection);
+    MenuItemList &list = widget->GetItemList();
+    list.SetVerticalScrollbar(1);
+    list.Initialize(0x40001, &g_rcMenuLoadSeasonListBox, 4, 0, -1);
+    list.SetSelectionChangedCallback(LoadSeasonUI_SelectSlot);
+    for (int index = 0; index < SAVE_FILE_NAME_COUNT; index++) {
+        const char *name = g_pRootMenuScreen->GetFileList(0)->GetName(index);
+        if (name) {
+            list.AddItem(name, 0, 1, &g_rcMenuListBox, true);
+        }
+    }
+    panel->SetWidgetCount(panel->GetWidgetCount() + 1);
+    panel->SetNavigationCount(panel->GetNavigationCount() + 1);
+    widget = AddMenuWidget(panel,
+                           screen,
+                           panel->GetX(),
+                           static_cast<float>(static_cast<long double>(panel->GetY()) + 76),
+                           0x103011,
+                           1,
+                           -1);
+    widget->SetIdleActionCallback(ValidateEntityState);
+    widget->SetActionCallback(LoadSeasonUI_OnContinueSeason);
+    widget->SetUpdateCallback(LoadSeasonUI_UpdateContinueButtonState);
+    widget->SetSpriteId(2);
+    widget->SetText(GetStringResource(0x1e), 1, 0, &g_rcMenuCenterPanel);
+    panel->SetWidgetCount(panel->GetWidgetCount() + 1);
+    panel->SetNavigationCount(panel->GetNavigationCount() + 1);
+    FILE *file = std::fopen(g_szAutoSaveBrf, "r");
+    bool autosave = file != nullptr;
+    if (file) {
+        std::fclose(file);
+    }
+    widget = AddMenuWidget(panel,
+                           screen,
+                           panel->GetX(),
+                           static_cast<float>(static_cast<long double>(panel->GetY()) + 95),
+                           autosave ? 0x102001 : 0x102011,
+                           1,
+                           -1);
+    widget->SetIdleActionCallback(ValidateEntityState);
+    widget->SetActionCallback(LoadSeasonUI_OnLoadAutoSave);
+    widget->SetSpriteId(autosave ? 3 : 2);
+    widget->SetText(GetStringResource(0x35), 1, autosave, &g_rcMenuCenterPanel);
+    panel->SetWidgetCount(panel->GetWidgetCount() + 1);
+    panel->SetNavigationCount(panel->GetNavigationCount() + 1);
+    widget = AddMenuWidget(panel,
+                           screen,
+                           panel->GetX(),
+                           static_cast<float>(static_cast<long double>(panel->GetY()) + 114),
+                           0x102001,
+                           1,
+                           -1);
+    widget->SetIdleActionCallback(ValidateEntityState);
+    widget->SetActionCallback(LoadSeasonUI_OnBack);
+    SetMenuWidgetLabel(widget, 0xc, &g_rcMenuCenterPanel);
+    panel->SetWidgetCount(panel->GetWidgetCount() + 1);
+    panel->SetNavigationCount(panel->GetNavigationCount() + 1);
+    AddMenuWidget(panel, screen, 80, 46, 9, 0, 6);
+    panel->SetWidgetCount(panel->GetWidgetCount() + 1);
+    BuildSeasonFilePreview(panel, screen);
+}
+
 void BuildKeyConfigUI(MenuScreen *screen) {
     screen->SetCurrentPanelIndex(0);
     screen->SetPanelActive(screen->GetPanelCount(), 1);

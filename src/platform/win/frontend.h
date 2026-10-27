@@ -44,7 +44,6 @@ public:
      */
     virtual ~SaveFileList();
 
-private:
     /**
      * Read descriptions from the last 128 bytes of matching saved files.
      *
@@ -54,6 +53,7 @@ private:
      */
     virtual int ScanSaveFiles(const char *pszPattern);
 
+private:
     /**
      * Count matches after the first, stopping after 100 files.
      *
@@ -990,6 +990,9 @@ int CompareDisplayModes(const void *left, const void *right);
 
 /** @ghidraAddress BRD3D: 0x100ab528 */
 extern RECT g_rcMenuDeviceListBox;
+
+/** @ghidraAddress BRD3D: 0x100ab538 */
+extern RECT g_rcMenuLoadSeasonListBox;
 
 /**
  * Populate available display modes for the selected device.
