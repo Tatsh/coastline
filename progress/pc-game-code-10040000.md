@@ -1,6 +1,6 @@
 # PC port game code from 0x10040000 to 0x10050000
 
-221 of 264 routines done.
+222 of 264 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -54,7 +54,7 @@ the same name, for a routine the port retained from the N64 game.
 | `SaveTimeAttackMenuUI_OnSlotSelected`              |        |                 |      1 |    306 | `0x10042740` | `0x1003bca0` | `undefined SaveTimeAttackMenuUI_OnSlotSelected()`                                                                                                         |
 | `ShowPreRaceInfoScreen`                            |   ✅   |                 |      6 |    293 | `0x10045c90` | `0x1003f130` | `int ShowPreRaceInfoScreen(void)`                                                                                                                         |
 | `ShowRaceResultsSummaryScreen`                     |   ✅   |                 |      1 |    293 | `0x10045f70` | `0x1003f410` | `int ShowRaceResultsSummaryScreen(void)`                                                                                                                  |
-| `ReturnToMainMenuFromSeason`                       |        |                 |      1 |    284 | `0x10046260` | `0x1003f700` | `undefined ReturnToMainMenuFromSeason()`                                                                                                                  |
+| `ReturnToMainMenuFromSeason`                       |   ✅   |                 |      1 |    284 | `0x10046260` | `0x1003f700` | `int ReturnToMainMenuFromSeason(void)`                                                                                                                    |
 | `DetectDuplicateKeyBindings`                       |   ✅   |                 |      5 |    277 | `0x10040330` | `0x10039870` | `int DetectDuplicateKeyBindings(int nDevice)`                                                                                                             |
 | `ShowNetworkCarSetupScreen`                        |   ✅   |                 |      2 |    254 | `0x100446d0` | `0x1003dc20` | `int ShowNetworkCarSetupScreen(void)`                                                                                                                     |
 | `ValidateEntityState`                              |   ✅   |                 |    122 |    251 | `0x10047360` | `0x100407b0` | `int ValidateEntityState(MenuWidget * pWidget)`                                                                                                           |
