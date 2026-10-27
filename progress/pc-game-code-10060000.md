@@ -1,6 +1,6 @@
 # PC port game code from 0x10060000 to 0x10070000
 
-117 of 173 routines done.
+119 of 173 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -15,7 +15,7 @@ the same name, for a routine the port retained from the N64 game.
 | `Vehicle::UpdateVehicleSounds`           |        | ✅ `0x8022bcb4` |      1 |   2757 | `0x10068400` | `0x10061470` | `undefined UpdateVehicleSounds(Vehicle * this)`                                                                                          |
 | `RacerSlot::UpdateRaceProgress`          |        | ✅ `0x8022a0e0` |      2 |   2534 | `0x10066e90` | `0x1005ff00` | `undefined UpdateRaceProgress(RacerSlot * this)`                                                                                         |
 | `Vehicle::ManageAiRacerSlots`            |        | ✅ `0x80229700` |      1 |   2103 | `0x10066650` | `0x1005f6c0` | `undefined ManageAiRacerSlots(Vehicle * this)`                                                                                           |
-| `Vehicle::ApplyPlayerVehicleInput`       |        |                 |      1 |   1951 | `0x10063840` |              | `void ApplyPlayerVehicleInput(Vehicle * this)`                                                                                           |
+| `Vehicle::ApplyPlayerVehicleInput`       |   ✅   |                 |      1 |   1951 | `0x10063840` |              | `void ApplyPlayerVehicleInput(Vehicle * this)`                                                                                           |
 | `Vehicle::InitVehiclePhysics`            |   ✅   | ✅ `0x80222d54` |      3 |   1909 | `0x10062c50` | `0x1005bcc0` | `void InitVehiclePhysics(Vehicle * this)`                                                                                                |
 | `TipBalancedVehicle`                     |   ✅   | ✅ `0x8025d368` |      1 |   1782 | `0x1006ddc0` | `0x10066d70` | `int TipBalancedVehicle(RigidBody * body)`                                                                                               |
 | `TestObbIntersection`                    |   ✅   | ✅ `0x8025f4f8` |      1 |   1651 | `0x1006f950` | `0x10068900` | `int TestObbIntersection(float[3] * rotation, Vec3f * offset, Vec3f * halfA, Vec3f * halfB)`                                             |
@@ -31,7 +31,7 @@ the same name, for a routine the port retained from the N64 game.
 | `ShowGlideSplashImage`                   |   📝   |                 |      2 |    994 |              | `0x1006c990` | `undefined ShowGlideSplashImage()`                                                                                                       |
 | `Vehicle::SetupVehicleForRaceStart`      |   ✅   | ✅ `0x80228a6c` |      2 |    979 | `0x10065740` | `0x1005e7b0` | `void SetupVehicleForRaceStart(Vehicle * this)`                                                                                          |
 | `MouseDevice::PollMouseDevice`           |   ✅   |                 |      1 |    939 | `0x100603a0` | `0x10059410` | `void PollMouseDevice(MouseDevice * this, void * hWnd)`                                                                                  |
-| `Vehicle::ComputeTrackPosition`          |        | ✅ `0x80227214` |      3 |    937 | `0x10064350` | `0x1005d3c0` | `void ComputeTrackPosition(Vehicle * this)`                                                                                              |
+| `Vehicle::ComputeTrackPosition`          |   🚧   | ✅ `0x80227214` |      3 |    937 | `0x10064350` | `0x1005d3c0` | `void ComputeTrackPosition(Vehicle * this)`                                                                                              |
 | `Vehicle::TraceTrackSplineRecursive`     |        | ✅ `0x80226d9c` |      3 |    856 | `0x10063ff0` | `0x1005d060` | `undefined TraceTrackSplineRecursive(Vehicle * this, undefined4 param_1, undefined4 param_2, undefined4 param_3)`                        |
 | `Vehicle::TransformAllWheelMatrices`     |   ✅   | ✅ `0x80221e0c` |      2 |    776 | `0x10061c60` | `0x1005ace0` | `void TransformAllWheelMatrices(Vehicle * this)`                                                                                         |
 | `StepVehicleCollisions`                  |   ✅   | ✅ `0x8025e55c` |      1 |    762 | `0x1006ec80` | `0x10067c30` | `void StepVehicleCollisions(Vehicle * vehicle, RigidBody * body)`                                                                        |
@@ -175,8 +175,8 @@ the same name, for a routine the port retained from the N64 game.
 | `PlayGoSound`                            |        | ✅ `0x8022b3e4` |      1 |     11 | `0x10067d90` | `0x10060e00` | `undefined PlayGoSound()`                                                                                                                |
 | `Vehicle::ClearCameraChanged`            |        | ✅ `0x8022bcac` |      1 |     11 | `0x100683c0` | `0x10061430` | `undefined ClearCameraChanged(Vehicle * this)`                                                                                           |
 | `InitGlobalRallyConfig`                  |        |                 |      1 |     10 | `0x10069a60` | `0x10062ad0` | `undefined InitGlobalRallyConfig()`                                                                                                      |
-| `PlayerVehicleControllerCallback`        |   🚧   |                 |      3 |      9 | `0x10063fe0` |              | `void PlayerVehicleControllerCallback(Vehicle * vehicle)`                                                                                |
 | `AiVehicleControllerCallback`            |   ✅   |                 |      3 |      9 | `0x10065620` |              | `void AiVehicleControllerCallback(Vehicle * vehicle)`                                                                                    |
+| `PlayerVehicleControllerCallback`        |   ✅   |                 |      3 |      9 | `0x10063fe0` |              | `void PlayerVehicleControllerCallback(Vehicle * vehicle)`                                                                                |
 | `GetSelectedPaintOption`                 |   ✅   |                 |      3 |      6 | `0x10061000` |              | `int GetSelectedPaintOption(void)`                                                                                                       |
 | `GetGhostKeyframeBuffer`                 |   ✅   |                 |      2 |      6 | `0x1006ab90` | `0x10063b40` | `uchar * GetGhostKeyframeBuffer(void)`                                                                                                   |
 | `GetGhostPlaybackKeyframeBuffer`         |   ✅   |                 |      2 |      6 | `0x1006adf0` | `0x10063da0` | `uchar * GetGhostPlaybackKeyframeBuffer(void)`                                                                                           |
