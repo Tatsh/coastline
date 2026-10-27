@@ -5085,6 +5085,81 @@ static inline int VideoOptionsUI_ShowDeviceSelect(MenuWidget *) {
     return ShowD3DDeviceSelectMenu();
 }
 
+static inline void BuildDisplaySelectionUI(MenuScreen *screen,
+                                           int title,
+                                           int (*update)(MenuWidget *),
+                                           MenuWidget *&selection,
+                                           int (*apply)(MenuWidget *),
+                                           int applyLabel,
+                                           int (*back)(MenuWidget *)) {
+    screen->SetCurrentPanelIndex(0);
+    screen->SetPanelActive(screen->GetPanelCount(), 1);
+    MenuPanel *panel = new (std::nothrow) MenuPanel();
+    screen->SetPanel(screen->GetPanelCount(), panel);
+    if (!panel) {
+        ShowErrorMessage(4);
+    }
+    screen->SetPanelCount(screen->GetPanelCount() + 1);
+    panel->SetScreen(screen);
+    panel->SetFlags(0);
+    panel->SetX(195);
+    panel->SetY(130);
+    AddMenuWidget(panel, screen, 0, 0, 9, 0, 0);
+    panel->SetWidgetCount(panel->GetWidgetCount() + 1);
+    SetMenuWidgetLabel(
+        AddMenuWidget(panel, screen, panel->GetX(), 10, 0x100009, 1, -1), title, &g_rcMenuTitleBar);
+    panel->SetWidgetCount(panel->GetWidgetCount() + 1);
+    AddMenuWidget(panel, screen, 80, 46, 9, 0, 9);
+    panel->SetWidgetCount(panel->GetWidgetCount() + 1);
+    AddMenuWidget(panel, screen, 96, 61, 9, 0, 0x8e);
+    panel->SetWidgetCount(panel->GetWidgetCount() + 1);
+    MenuWidget *widget = AddMenuWidget(panel, screen, panel->GetX(), panel->GetY(), 0x3001, 1, -1);
+    widget->SetUpdateCallback(update);
+    MenuItemList &list = widget->GetItemList();
+    list.SetVerticalScrollbar(1);
+    list.Initialize(0x40001, &g_rcMenuDeviceListBox, 7, 0, -1);
+    selection = widget;
+    panel->SetWidgetCount(panel->GetWidgetCount() + 1);
+    panel->SetNavigationCount(panel->GetNavigationCount() + 1);
+    const float offsets[] = {95, 114};
+    for (int index = 0; index < 2; index++) {
+        widget = AddMenuWidget(
+            panel,
+            screen,
+            panel->GetX(),
+            static_cast<float>(static_cast<long double>(panel->GetY()) + offsets[index]),
+            0x102001,
+            1,
+            -1);
+        widget->SetIdleActionCallback(ValidateEntityState);
+        widget->SetActionCallback(index == 0 ? apply : back);
+        SetMenuWidgetLabel(widget, index == 0 ? applyLabel : 0xc, &g_rcMenuCenterPanel);
+        g_pOptionsSubMenu = widget;
+        panel->SetWidgetCount(panel->GetWidgetCount() + 1);
+        panel->SetNavigationCount(panel->GetNavigationCount() + 1);
+    }
+}
+
+void BuildD3DDeviceSelectUI(MenuScreen *screen) {
+    BuildDisplaySelectionUI(screen,
+                            0x2b,
+                            D3DDeviceSelectUI_UpdateDeviceSelection,
+                            g_pD3DDeviceSelectMenu,
+                            D3DDeviceSelectUI_OnSetDriver,
+                            0x2c,
+                            ReturnToVideoOptionsFromDeviceSelect);
+}
+
+void BuildDisplayModeSelectUI(MenuScreen *screen) {
+    BuildDisplaySelectionUI(screen,
+                            0x2a,
+                            DisplayModeSelectUI_UpdateModeSelection,
+                            g_pDisplayModeSelectMenu,
+                            DisplayModeSelectUI_OnSetMode,
+                            0x2d,
+                            ReturnToVideoOptionsFromResolution);
+}
+
 static inline int VideoOptionsUI_ShowDisplayModeSelect(MenuWidget *) {
     return ShowDisplayModeSelectMenu();
 }

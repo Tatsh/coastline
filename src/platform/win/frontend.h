@@ -960,9 +960,13 @@ int ShowDisplayModeSelectMenu(void);
  * Build display mode selection on the supplied screen.
  *
  * @ghidraAddress BRD3D: 0x1004db00
- * @stub
  */
 void BuildDisplayModeSelectUI(MenuScreen *pScreen);
+
+/** @ghidraAddress BRD3D: 0x1003ecb0 */
+int D3DDeviceSelectUI_OnSetDriver(MenuWidget *pWidget);
+/** @ghidraAddress BRD3D: 0x1003ed40 */
+int DisplayModeSelectUI_OnSetMode(MenuWidget *pWidget);
 
 /**
  * Populate the video settings lists.
@@ -1004,7 +1008,6 @@ int ShowD3DDeviceSelectMenu(void);
  * Build Direct3D device selection on the supplied screen.
  *
  * @ghidraAddress BRD3D: 0x1004d640
- * @stub
  */
 void BuildD3DDeviceSelectUI(MenuScreen *pScreen);
 
