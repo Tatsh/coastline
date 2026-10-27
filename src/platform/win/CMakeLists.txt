@@ -74,4 +74,8 @@ if(TGR_RENDERER STREQUAL "d3d")
 endif()
 target_link_libraries(coastline_main PRIVATE coastline_common)
 
+if(TGR_RENDERER STREQUAL "glide")
+  target_sources(coastline_main PRIVATE rgb565image.c)
+endif()
+
 add_subdirectory(launcher)
