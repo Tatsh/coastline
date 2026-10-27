@@ -1,6 +1,6 @@
 # PC port game code from 0x10010000 to 0x10020000
 
-135 of 162 routines done.
+136 of 162 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -18,7 +18,7 @@ the same name, for a routine the port retained from the N64 game.
 | `DrawFillRectangle`                                    |   ✅   |                 |      2 |   1934 | `0x1001be90` | `0x1001e380` | `void DrawFillRectangle(int nLeft, int nTop, int nRight, int nBottom)`                                                                                                                                                                       |
 | `RenderDashboardGauges`                                |        | ✅ `0x80237980` |      1 |   1703 | `0x10016b40` | `0x100140b0` | `void RenderDashboardGauges(void * pRenderNode, void * pEntityList)`                                                                                                                                                                         |
 | `RenderSkybox`                                         |        | ✅ `0x8022f968` |      2 |   1239 | `0x100180b0` | `0x10015630` | `void RenderSkybox(void * pRenderNode)`                                                                                                                                                                                                      |
-| `UpdatePrecipitationParticles`                         |        | ✅ `0x8023a1c8` |      1 |   1142 | `0x100196d0` | `0x10016c90` | `void UpdatePrecipitationParticles(void)`                                                                                                                                                                                                    |
+| `UpdatePrecipitationParticles`                         |   ✅   | ✅ `0x8023a1c8` |      1 |   1142 | `0x100196d0` | `0x10016c90` | `void UpdatePrecipitationParticles(void)`                                                                                                                                                                                                    |
 | `ClipPolygonAndSubmitFlat`                             |   ✅   |                 |      1 |   1021 | `0x1001eeb0` | `0x10020190` | `void ClipPolygonAndSubmitFlat(GbiVertex * pVertex0, GbiVertex * pVertex1, GbiVertex * pVertex2, float fRed, float fGreen, float fBlue)`                                                                                                     |
 | `ClipPolygonAndSubmitDepthScaled`                      |   ✅   |                 |      1 |   1014 | `0x1001f7e0` | `0x10020690` | `void ClipPolygonAndSubmitDepthScaled(GbiVertex * pVertex0, GbiVertex * pVertex1, GbiVertex * pVertex2, float fRed, float fGreen, float fBlue)`                                                                                              |
 | `ClipAndSubmitTriangle`                                |   ✅   |                 |      7 |   1008 | `0x1001d420` | `0x1001ee70` | `void ClipAndSubmitTriangle(GbiVertex * pVertex0, GbiVertex * pVertex1, GbiVertex * pVertex2)`                                                                                                                                               |

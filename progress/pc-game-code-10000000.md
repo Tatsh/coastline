@@ -1,6 +1,6 @@
 # PC port game code from 0x10000000 to 0x10010000
 
-233 of 254 routines done.
+234 of 254 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -62,7 +62,7 @@ the same name, for a routine the port retained from the N64 game.
 | `CHK_FReadOpen`                                            |   ✅   |                 |      6 |    255 | `0x10002fe0` | `0x10003320` | `GameFile * CHK_FReadOpen(char * pszPath)`                                                                                                                                              |
 | `DDColorMatch`                                             |   ✅   |                 |      1 |    255 | `0x1000b940` |              | `DWORD DDColorMatch(IDirectDrawSurface * pSurface, COLORREF color)`                                                                                                                     |
 | `LoadRgba5551ImageFile`                                    |   ✅   |                 |      1 |    253 | `0x10009ad0` |              | `void * LoadRgba5551ImageFile(char * pszPath, uint nAdlerExpected, int * pnWidth, int * pnHeight)`                                                                                      |
-| `ExitRaceAndProcessSeasonResults`                          |        |                 |      1 |    252 | `0x10002140` | `0x10002460` | `undefined ExitRaceAndProcessSeasonResults()`                                                                                                                                           |
+| `ExitRaceAndProcessSeasonResults`                          |   ✅   |                 |      1 |    252 | `0x10002140` | `0x10002460` | `void ExitRaceAndProcessSeasonResults(void)`                                                                                                                                            |
 | `ReceiveAndDispatchDirectPlayMessages`                     |   ✅   |                 |      1 |    236 | `0x1000c350` | `0x10009880` | `long ReceiveAndDispatchDirectPlayMessages(DirectPlayInfo * pInfo)`                                                                                                                     |
 | `DirectDrawRenderer::SelectDriverDeviceAndMode`            |   ✅   |                 |      1 |    225 | `0x1000a390` |              | `HRESULT SelectDriverDeviceAndMode(DirectDrawRenderer * this)`                                                                                                                          |
 | `DirectDrawRenderer::InitializeWindow`                     |   ✅   |                 |      1 |    222 | `0x1000a1e0` |              | `long InitializeWindow(DirectDrawRenderer * this, HWND hWnd, GUID * pDriverGuid, int nWidth, int nHeight, int nBitDepth, void * pSurfaceFormat, GUID * pDeviceGuid, bool bOption)`      |
