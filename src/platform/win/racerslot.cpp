@@ -6,6 +6,8 @@
 #include "platform/win/settings.h"
 #include "vehicleaccess.h"
 
+RacerSlot g_aRacerSlots[RACER_SLOTS];
+
 void RacerSlot::UpdateRemoteVehicleFrame(void) {
     if (vehicle == nullptr) {
         return;

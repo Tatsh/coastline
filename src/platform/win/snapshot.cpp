@@ -1,5 +1,8 @@
 #include "platform/win/snapshot.h"
 
+FrameSnapshot g_aFrameSnapshots[FRAME_SNAPSHOT_COUNT];
+FrameSnapshot g_InterpolatedFrameSnapshot;
+
 int g_bFrameSnapshotsInitialized;
 int g_bFrameTimerReset = true;
 
