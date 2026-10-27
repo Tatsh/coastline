@@ -71,8 +71,8 @@ private:
     std::uint32_t reservedRegistrationDwordA;
     std::uint32_t reservedRegistrationDwordB;
     std::uint32_t reservedRegistrationDwordC;
-    std::uint16_t reservedDefaultWordA;
-    std::uint16_t reservedDefaultWordB;
+    std::uint16_t frequency;
+    std::uint16_t bitDepth;
     std::uint16_t pitchVariationRange;
     std::uint16_t initialGain;
     std::uint16_t reservedAuxiliaryWordA;

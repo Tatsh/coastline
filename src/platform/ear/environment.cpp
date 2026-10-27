@@ -77,8 +77,8 @@ void EarEnvironmentRegistration::InitializeDefaultEnvironment() {
     reservedRegistrationDwordB = 0;
     soundSpeed = 33;
     reservedRegistrationDwordC = 500;
-    reservedDefaultWordA = 22050;
-    reservedDefaultWordB = 16;
+    frequency = 22050;
+    bitDepth = 16;
     pitchVariationRange = 1500;
     initialGain = 6000;
     reservedAuxiliaryWordA = 0;
