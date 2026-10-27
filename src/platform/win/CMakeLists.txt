@@ -70,3 +70,5 @@ if(TGR_RENDERER STREQUAL "d3d")
             gamesession-d3d.cpp)
 endif()
 target_link_libraries(coastline_main PRIVATE coastline_common)
+
+add_subdirectory(launcher)
