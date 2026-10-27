@@ -1,5 +1,8 @@
 #include "trackskidmarks.h"
 
+// Parse the SDK error fields before Windows headers define the errno macro.
+#include <PR/os_cont.h>
+
 #include "displaylistptr.h"
 #include "platform/win/boot/rallyconfig.h"
 #include "platform/win/render.h"
