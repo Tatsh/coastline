@@ -29,7 +29,7 @@ void InitFrameSnapshotSlots(void) {
     g_bFrameSnapshotsInitialized = true;
 }
 
-void AcquireNextFrameSnapshotSlot(void) {
+int AcquireNextFrameSnapshotSlot(void) {
     int writeSlot = g_dwFrameSnapshotWriteSlot;
     int oldestSlot = -1;
     unsigned oldestSequence = 0xffffffffu;
@@ -49,6 +49,7 @@ void AcquireNextFrameSnapshotSlot(void) {
     g_dwFrameSnapshotWriteSlot = oldestSlot;
     /* An exhausted pool still writes through the index of -1. */
     g_aFrameSnapshots[oldestSlot].SetSequence(nextSequence + 1);
+    return oldestSlot;
 }
 
 void InvalidateFrameSnapshotSlots(void) {

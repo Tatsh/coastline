@@ -74,7 +74,7 @@ extern unsigned g_dwFrameSnapshotBlendStartTime;
 void InitFrameSnapshotSlots(void);
 
 /** @ghidraAddress BRD3D: 0x100169b0 */
-void AcquireNextFrameSnapshotSlot(void);
+int AcquireNextFrameSnapshotSlot(void);
 
 /**
  * Whether the snapshots of frames are set up.
