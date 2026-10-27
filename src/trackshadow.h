@@ -9,6 +9,50 @@ extern "C" {
 #endif
 
 /**
+ * The signed distance from the left boundary of the shadow texture.
+ *
+ * @param vertex The vertex measured.
+ * @return The texture s coordinate.
+ * @ghidraAddress BRD3D: 0x10010960
+ */
+long double ShadowTextureDistanceLeft(const ConvertedModelVertex *vertex);
+
+/**
+ * The signed distance from the right boundary of the shadow texture.
+ *
+ * @param vertex The vertex measured.
+ * @return 1024 minus the texture s coordinate.
+ * @ghidraAddress BRD3D: 0x10010970
+ */
+long double ShadowTextureDistanceRight(const ConvertedModelVertex *vertex);
+
+/**
+ * The signed distance from the top boundary of the shadow texture.
+ *
+ * @param vertex The vertex measured.
+ * @return The texture t coordinate.
+ * @ghidraAddress BRD3D: 0x10010980
+ */
+long double ShadowTextureDistanceTop(const ConvertedModelVertex *vertex);
+
+/**
+ * The signed distance from the bottom boundary of the shadow texture.
+ *
+ * @param vertex The vertex measured.
+ * @return 1024 minus the texture t coordinate.
+ * @ghidraAddress BRD3D: 0x10010990
+ */
+long double ShadowTextureDistanceBottom(const ConvertedModelVertex *vertex);
+
+/**
+ * Set the texture coordinates of a shadow vertex with the current projection matrix.
+ *
+ * @param vertex The vertex to project.
+ * @ghidraAddress BRD3D: 0x10010d10
+ */
+void ProjectShadowTextureCoordinates(ConvertedModelVertex *vertex);
+
+/**
  * Clip a shadow triangle to its texture and update the covered corners of its vehicle quad.
  *
  * @param instance The placed model.
