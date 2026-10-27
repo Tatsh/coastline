@@ -781,6 +781,126 @@ void LoadHudOverlayTexture(void);
 void LoadHudGlyphTextureSets(void);
 
 /**
+ * @ghidraAddress BRD3D: 0x100b8c90
+ */
+extern int g_dwTextureQualityLevel;
+/**
+ * @ghidraAddress BRD3D: 0x100a6070
+ */
+extern int g_adwHudFont0GlyphOffsets[27];
+/**
+ * @ghidraAddress BRD3D: 0x100a60e0
+ */
+extern int g_adwHudFont1GlyphOffsets[26];
+/**
+ * @ghidraAddress BRD3D: 0x100a6150
+ */
+extern int g_adwHudFont2GlyphOffsets[27];
+/**
+ * @ghidraAddress BRD3D: 0x100a61c0
+ */
+extern int g_adwHudFont3GlyphOffsets[26];
+/**
+ * @ghidraAddress BRD3D: 0x1009b4c8
+ */
+extern unsigned char g_abHudFont0GlyphPixels[];
+/**
+ * @ghidraAddress BRD3D: 0x100946c8
+ */
+extern unsigned char g_abHudFont1GlyphPixels[];
+/**
+ * @ghidraAddress BRD3D: 0x100a4170
+ */
+extern unsigned char g_abHudFont2GlyphPixels[];
+/**
+ * @ghidraAddress BRD3D: 0x100a22d0
+ */
+extern unsigned char g_abHudFont3GlyphPixels[];
+/**
+ * @ghidraAddress BRD3D: 0x11829238
+ */
+extern unsigned g_adwLargeFontGlyphTexturesA[27];
+/**
+ * @ghidraAddress BRD3D: 0x118292a8
+ */
+extern unsigned g_adwLargeFontGlyphTexturesB[26];
+/**
+ * @ghidraAddress BRD3D: 0x11829158
+ */
+extern unsigned g_adwSmallFontGlyphTexturesA[27];
+/**
+ * @ghidraAddress BRD3D: 0x118291c8
+ */
+extern unsigned g_adwSmallFontGlyphTexturesB[26];
+
+/**
+ * @ghidraAddress BRD3D: 0x118aa0ac
+ */
+extern unsigned (*g_pfnCreateTextureFromN64Image)(const unsigned char *,
+                                                  const unsigned char *,
+                                                  int,
+                                                  int,
+                                                  int,
+                                                  int,
+                                                  int,
+                                                  int,
+                                                  int,
+                                                  int,
+                                                  int,
+                                                  int,
+                                                  int,
+                                                  int,
+                                                  int);
+
+/**
+ * @ghidraAddress BRD3D: 0x118aa0b0
+ */
+extern unsigned (*g_pfnCreateTextureFromN64ImageAutoLoadSize)(const unsigned char *,
+                                                              const unsigned char *,
+                                                              int,
+                                                              int,
+                                                              int,
+                                                              int,
+                                                              int,
+                                                              int,
+                                                              int,
+                                                              int,
+                                                              int,
+                                                              int,
+                                                              int,
+                                                              int);
+
+/**
+ * @ghidraAddress BRD3D: 0x118aa0d8
+ */
+extern unsigned char g_abDaySkyPalette[32];
+/**
+ * @ghidraAddress BRD3D: 0x118aa8f8
+ */
+extern unsigned char g_abDaySkyTexture[2048];
+/**
+ * @ghidraAddress BRD3D: 0x118ab0f8
+ */
+extern unsigned char g_abNightSkyPalette[32];
+/**
+ * @ghidraAddress BRD3D: 0x118aa0f8
+ */
+extern unsigned char g_abNightSkyTexture[2048];
+/**
+ * @ghidraAddress BRD3D: 0x100a6498
+ */
+extern unsigned g_apVehicleReflectionTextures[3];
+
+/**
+ * @ghidraAddress BRD3D: 0x10073ac0
+ */
+void CreateDaySkyTexture(void);
+/**
+ * @ghidraAddress BRD3D: 0x10073b00
+ */
+void CreateNightSkyTexture(void);
+
+/**
  * Create the texture of the particles, 64 by 64 texels.
  *
  * @ghidraAddress BRD3D: 0x10073950

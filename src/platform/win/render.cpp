@@ -466,6 +466,97 @@ void CreateGlobalEffectTextures(void) {
     CreateAlphaRampTextures();
 }
 
+#if TGR_RENDERER == TGR_RENDERER_D3D
+void LoadHudGlyphTextureSets(void) {
+    if (g_dwTextureQualityLevel <= 1) {
+        for (int nGlyph = 0; nGlyph < 27; nGlyph++) {
+            g_adwLargeFontGlyphTexturesA[nGlyph] = g_pfnCreateTextureFromN64Image(
+                g_abHudFont0GlyphPixels + g_adwHudFont0GlyphOffsets[nGlyph],
+                nullptr,
+                64,
+                64,
+                0x2c0,
+                1,
+                3,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                1,
+                0);
+        }
+        for (int nGlyph = 0; nGlyph < 26; nGlyph++) {
+            g_adwLargeFontGlyphTexturesB[nGlyph] = g_pfnCreateTextureFromN64Image(
+                g_abHudFont1GlyphPixels + g_adwHudFont1GlyphOffsets[nGlyph],
+                nullptr,
+                64,
+                64,
+                0x2c0,
+                1,
+                3,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                1,
+                0);
+        }
+    }
+    for (int nGlyph = 0; nGlyph < 27; nGlyph++) {
+        g_adwSmallFontGlyphTexturesA[nGlyph] = g_pfnCreateTextureFromN64Image(
+            g_abHudFont2GlyphPixels + g_adwHudFont2GlyphOffsets[nGlyph],
+            nullptr,
+            32,
+            32,
+            0x188,
+            1,
+            3,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0);
+    }
+    for (int nGlyph = 0; nGlyph < 26; nGlyph++) {
+        g_adwSmallFontGlyphTexturesB[nGlyph] = g_pfnCreateTextureFromN64Image(
+            g_abHudFont3GlyphPixels + g_adwHudFont3GlyphOffsets[nGlyph],
+            nullptr,
+            32,
+            32,
+            0x188,
+            1,
+            3,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0);
+    }
+}
+
+void CreateDaySkyTexture(void) {
+    g_apVehicleReflectionTextures[0] = g_pfnCreateTextureFromN64ImageAutoLoadSize(
+        g_abDaySkyTexture, g_abDaySkyPalette, 32, 128, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0);
+}
+
+void CreateNightSkyTexture(void) {
+    unsigned nTexture = g_pfnCreateTextureFromN64ImageAutoLoadSize(
+        g_abNightSkyTexture, g_abNightSkyPalette, 32, 128, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0);
+    g_apVehicleReflectionTextures[2] = nTexture;
+    g_apVehicleReflectionTextures[1] = nTexture;
+}
+#endif
+
 TextureUploadRequest g_aTextureUploadQueue[TEXTURE_UPLOAD_QUEUE_SIZE];
 int g_dwTextureUploadQueueHead;
 int g_dwTextureUploadQueueTail;
