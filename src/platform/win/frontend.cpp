@@ -397,6 +397,27 @@ MenuItemList::MenuItemList()
 MenuItemList::~MenuItemList() {
 }
 
+MenuWidget::MenuWidget()
+    : pfnUpdate(nullptr), pfnAction(nullptr), pfnIdleAction(nullptr), pfnTextEditComplete(nullptr),
+      pfnBeforeUpdate(nullptr), pfnAfterUpdate(nullptr), dwFlags(1), abUnknown20{},
+      dwSecondaryFlags(0), dwTertiaryFlags(0), fSavedX(0), fSavedY(0), fSavedZ(0), fX(0), fY(0),
+      fZ(0.99f), nWidth(0), nHeight(0), abUnknown4c{}, abUnknown60{}, nAnimationFrame(0),
+      abUnknown283c{}, abUnknown2904{}, nImageMode(0), bCustomFrameDurations(0),
+      nAnimationLastTime(0), nAnimationElapsed(0), anFrameDurations{}, abUnknown2aa4{},
+      nLinkedWidgetCount(0), anLinkedWidgetIndices{}, pScreen(nullptr), abUnknown2aec{1},
+      abUnknown2b54{1}, abUnknown2b58{}, bSlideX(0), bSlideY(0), nSlideDirectionX(0),
+      nSlideDirectionY(0), fSlideTargetX(0), fSlideTargetY(0), bSliding(0), fSlideStart(0),
+      fSlideEnd(0), fSlideStep(0), nSlideLastTime(0), nSlideElapsed(0), abUnknown3830{},
+      nSpriteId(0) {
+    abUnknown2c[0] = static_cast<char>(0xff);
+    memset(abUnknown12a, 0xff, sizeof(abUnknown12a));
+    memset(anSpriteIds, 0xff, sizeof(anSpriteIds));
+    memset(abUnknown2af0, 0xff, sizeof(abUnknown2af0));
+}
+
+MenuWidget::~MenuWidget() {
+}
+
 SaveFileList::~SaveFileList() {
 }
 

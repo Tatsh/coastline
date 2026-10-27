@@ -261,7 +261,6 @@ class MenuWidget {
 public:
     /**
      * @ghidraAddress BRD3D: 0x100476c0
-     * @stub
      */
     MenuWidget();
     /**
@@ -458,7 +457,7 @@ private:
     int (*pfnBeforeUpdate)(MenuWidget *);
     int (*pfnAfterUpdate)(MenuWidget *);
     unsigned dwFlags;
-    char abUnknown20[4]; /* +0x20 */
+    [[maybe_unused]] char abUnknown20[4]; /* +0x20 */
     unsigned dwSecondaryFlags;
     unsigned dwTertiaryFlags;
     char abUnknown2c[4]; /* +0x2c */
@@ -470,28 +469,35 @@ private:
     float fZ;
     short nWidth;
     short nHeight;
-    char abUnknown4c[4]; /* +0x4c */
+    [[maybe_unused]] char abUnknown4c[4]; /* +0x4c */
     RECT rcBounds;
-    char abUnknown60[0xc8]; /* +0x60 */
+    [[maybe_unused]] char abUnknown60[0xc8]; /* +0x60 */
     short nAnimationFrame;
-    char abUnknown12a[0x283e]; /* +0x12a */
+    char abUnknown12a[10000];                 /* +0x12a */
+    [[maybe_unused]] char abUnknown283a[2];   /* +0x283a */
+    [[maybe_unused]] char abUnknown283c[200]; /* +0x283c */
+    [[maybe_unused]] char abUnknown2904[100]; /* +0x2904 */
     int nImageMode;
     int bCustomFrameDurations;
     int nAnimationLastTime;
     int nAnimationElapsed;
     int anFrameDurations[50];
     short anSpriteIds[50];
-    char abUnknown2aa4[0x10]; /* +0x2aa4 */
+    [[maybe_unused]] char abUnknown2aa4[10]; /* +0x2aa4 */
+    [[maybe_unused]] char abUnknown2aae[6];  /* +0x2aae */
     short nLinkedWidgetCount;
     short anLinkedWidgetIndices[25];
     MenuScreen *pScreen;
-    char abUnknown2aec[0x70]; /* +0x2aec */
+    [[maybe_unused]] char abUnknown2aec[4]; /* +0x2aec */
+    char abUnknown2af0[100];                /* +0x2af0 */
+    [[maybe_unused]] char abUnknown2b54[4]; /* +0x2b54 */
+    [[maybe_unused]] char abUnknown2b58[4]; /* +0x2b58 */
     MenuFont fonts[3];
     int bSlideX;
     int bSlideY;
     signed char nSlideDirectionX;
     signed char nSlideDirectionY;
-    char abUnknown380e[2]; /* +0x380e */
+    [[maybe_unused]] char abUnknown380e[2]; /* +0x380e */
     float fSlideTargetX;
     float fSlideTargetY;
     int bSliding;
@@ -500,10 +506,10 @@ private:
     float fSlideStep;
     int nSlideLastTime;
     int nSlideElapsed;
-    char abUnknown3830[8]; /* +0x3830 */
+    [[maybe_unused]] char abUnknown3830[8]; /* +0x3830 */
     MenuItemList itemList;
     short nSpriteId;
-    char abUnknown1e20e[2]; /* +0x1e20e */
+    [[maybe_unused]] char abUnknown1e20e[2]; /* +0x1e20e */
     const RECT *pImageRects;
 };
 
