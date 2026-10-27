@@ -1780,6 +1780,14 @@ int ShowMultiplayerConnectionScreen(MenuWidget *) {
     return ShowCachedMenuScreen(g_pCachedMenu_MultiplayerConnection, BuildMultiplayerConnectionUI);
 }
 
+static inline void BuildCreateGameScreen(MenuScreen *screen) {
+    BuildCreateGameMenuUI(screen);
+}
+
+int ShowCreateGameScreen(void) {
+    return ShowCachedMenuScreen(g_pCachedMenu_CreateGame, BuildCreateGameScreen);
+}
+
 int SeasonRoundList_SetBrowsingFlag(MenuWidget *) {
     g_bSeasonRoundListBrowsing = 1;
     return 1;
