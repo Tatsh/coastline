@@ -854,6 +854,69 @@ void ApplyRdpRenderMode(unsigned dwRenderMode) {
     alphaBlend(FALSE);
 }
 
+void DrawTextureRectangle(
+    int nUpperLeftX, int nUpperLeftY, int nLowerRightX, int nLowerRightY, int nTile) {
+    float width = g_dwConfigFramebufferWidth;
+    float height = g_dwConfigFramebufferHeight;
+    float halfWidth = static_cast<long double>(width) / 2.0f;
+    float halfHeight = static_cast<long double>(height) / 2.0f;
+    auto xCoordinate = [halfWidth](int coordinate) {
+        return static_cast<float>(
+            (static_cast<long double>(static_cast<float>(static_cast<unsigned>(coordinate))) /
+                 4.0f -
+             halfWidth) /
+            halfWidth / g_fTexRectScaleW);
+    };
+    auto yCoordinate = [height, halfHeight](int coordinate) {
+        return static_cast<float>(
+            (static_cast<long double>(height) -
+             static_cast<long double>(static_cast<float>(static_cast<unsigned>(coordinate))) /
+                 4.0f -
+             halfHeight) /
+            halfHeight / g_fTexRectScaleW);
+    };
+    float left = xCoordinate(nUpperLeftX);
+    float right = xCoordinate(nLowerRightX);
+    float top = yCoordinate(nUpperLeftY);
+    float bottom = yCoordinate(nLowerRightY);
+    float depth = static_cast<long double>(g_fTexRectDepth) / g_fTexRectScaleW;
+    float w = 1.0L / g_fTexRectScaleW;
+    float sLeft = static_cast<long double>(static_cast<float>(g_dwTileSizeUls)) * 8.0f;
+    float sRight = static_cast<long double>(static_cast<float>(g_dwTileSizeLrs)) * 8.0f;
+    float tTop = static_cast<long double>(static_cast<float>(g_dwTileSizeUlt)) * 8.0f;
+    float tBottom = static_cast<long double>(static_cast<float>(g_dwTileSizeLrt)) * 8.0f;
+    GbiVertex vertices[4];
+    const float xs[4] = {right, left, right, left};
+    const float ys[4] = {top, bottom, bottom, top};
+    const float ss[4] = {sRight, sLeft, sRight, sLeft};
+    const float ts[4] = {tBottom, tTop, tTop, tBottom};
+    for (int i = 0; i < 4; i++) {
+        GbiVertexSource &source = vertices[i].source;
+        source.fX = xs[i];
+        source.fY = ys[i];
+        source.fZ = depth;
+        source.fW = w;
+        source.fS = ss[i];
+        source.fT = ts[i];
+        if (g_bCombineModeSpecialSubmitter) {
+            bool bTop = i == 0 || i == 3;
+            source.fRed = bTop ? g_fGbiEnvColorR : g_fGbiPrimColorR;
+            source.fGreen = bTop ? g_fGbiEnvColorG : g_fGbiPrimColorG;
+            source.fBlue = bTop ? g_fGbiEnvColorB : g_fGbiPrimColorB;
+        } else {
+            source.fRed = source.fGreen = source.fBlue = 1.0f;
+        }
+    }
+    FlushDirtyRenderStates();
+    if (g_dwGbiGeometryMode & GBI_GEOMETRY_CULL_FRONT) {
+        ClipAndSubmitTriangle(&vertices[3], &vertices[0], &vertices[1]);
+        ClipAndSubmitTriangle(&vertices[0], &vertices[2], &vertices[1]);
+    } else {
+        ClipAndSubmitTriangle(&vertices[1], &vertices[0], &vertices[3]);
+        ClipAndSubmitTriangle(&vertices[1], &vertices[2], &vertices[0]);
+    }
+}
+
 void ApplyGeometryModeChanges(void) {
     unsigned dwChanged = g_dwGbiPrevGeometryMode ^ g_dwGbiGeometryMode;
     unsigned dwMode = g_dwGbiGeometryMode;
