@@ -1,32 +1,32 @@
 #include "game.h"
 
+#include "fade.h"
+#include "heap.h"
+#include "input.h"
+#include "system.h"
+#include "weather.h"
+
 #if TGR_PLATFORM == TGR_PLATFORM_N64
 #include <PR/os.h>
 
 #include "audio.h"
-#include "fade.h"
-#include "heap.h"
-#include "input.h"
 #include "mainmenu.h"
 #include "options.h"
 #include "racemenu.h"
 #include "replay.h"
 #include "splash.h"
-#include "system.h"
 #include "vehicle.h"
-#include "weather.h"
+#else
+#include "displaylistops.h"
+#include "platform/win/gameinit.h"
+#include "screen.h"
+#endif
+
+#if TGR_PLATFORM == TGR_PLATFORM_N64
 
 /* The cartridge offset of the music of the menus. */
 #define ROM_MENU_MUSIC ((u32)_menuMusicSegmentRomStart)
 #else
-#include "displaylistops.h"
-#include "fade.h"
-#include "heap.h"
-#include "input.h"
-#include "platform/win/gameinit.h"
-#include "screen.h"
-#include "system.h"
-#include "weather.h"
 
 u32 g_dwWeatherActive;
 u32 g_dwNightMode;

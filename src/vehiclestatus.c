@@ -9,6 +9,10 @@
 #include "vehicleaccess.h"
 #include "vehicletrackpos.h"
 
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#include "platform/win/boot/strings.h"
+#endif
+
 #define GRID_CELL 32
 #define GRID_CELLS 64
 #define WRONG_WAY_FRAMES 32
@@ -16,7 +20,6 @@
 #define WRONG_WAY_TIME 0.25f
 
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
-#include "platform/win/boot/strings.h"
 typedef long double StatusReal;
 #define STATUS_TIME_SUM(value) ((long double)g_fFrameDeltaTime + (value))
 #define STATUS_NONZERO(value) ((value) < 0.0f || (value) > 0.0f)

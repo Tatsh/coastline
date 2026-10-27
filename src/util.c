@@ -2,6 +2,7 @@
 
 #include "debugmessage.h"
 #include "texrect.h"
+#include "trackselect.h"
 
 #if TGR_PLATFORM == TGR_PLATFORM_N64
 #include <PR/os_libc.h>
@@ -60,8 +61,6 @@ void GetTextureScaleAndMask(u32 size, s32 *scale, s32 *maskBits) {
 #if defined(__GNUC__) && !defined(__clang__)
 #pragma GCC diagnostic pop
 #endif
-
-#include "trackselect.h"
 
 /* The first grid row extended to row 0 on the strip mine and its mirrored version. */
 #define TRACK_SECTION_ROW_EXTENDED 2

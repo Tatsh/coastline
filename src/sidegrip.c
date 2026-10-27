@@ -1,13 +1,12 @@
 #include "physics.h"
+#include "vehiclemodel.h"
+#include "weather.h"
 
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
 #include <math.h>
 #else
 #include <PR/gu.h>
 #endif
-
-#include "vehiclemodel.h"
-#include "weather.h"
 
 /* The speed below which a sliding tyre grips more and more, as a vehicle slows to a stop. */
 #define SLOW_GRIP_SPEED 27.0f

@@ -4,6 +4,11 @@
 #include <PR/gu.h>
 
 #include "vecmath.h"
+#else
+#include "guint.h"
+#endif
+
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
 
 static u32 TruncateHiliteCoordinate(long double value) {
     if (!(value >= -0x1p63L && value < 0x1p63L)) {
@@ -11,8 +16,6 @@ static u32 TruncateHiliteCoordinate(long double value) {
     }
     return (u32)(s64)value;
 }
-#else
-#include "guint.h"
 #endif
 
 /* Below this length the halfway vector is too short to give a direction. */

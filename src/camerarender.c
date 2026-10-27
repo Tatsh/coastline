@@ -8,6 +8,11 @@
 
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
 #include "platform/win/gbicommand.h"
+#else
+#include <PR/R4300.h>
+#endif
+
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
 
 f32 (*g_pProjectionMtx)[4];
 f32 g_ViewLookAtMtx[4][4];
@@ -22,8 +27,6 @@ Vec3f g_vFrustumHalfRight;
 Vec3f g_vFrustumHalfUp;
 f32 gFrustumFar;
 f32 g_fFrustumFovAngle;
-#else
-#include <PR/R4300.h>
 #endif
 
 /* The perspective of a camera: its near plane, the shape of the screen, and degrees a radian. */

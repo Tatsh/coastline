@@ -3,13 +3,17 @@
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
 #include "platform/win/boot/rallyconfig.h"
 #include "platform/win/sound.h"
+#else
+#include "audio.h"
+#include "options.h"
+#endif
+
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
 #define BGM_LEVEL g_GlobalRallyConfig.dwMusicVolume
 #define SFX_LEVEL g_GlobalRallyConfig.dwSfxVolume
 #define EFFECT_VOLUME g_bSfxVolume
 #define VOLUME_COUNT VOLUME_LEVEL_COUNT
 #else
-#include "audio.h"
-#include "options.h"
 #define BGM_LEVEL g_OptionSettings.musicVolume
 #define SFX_LEVEL g_OptionSettings.sfxVolume
 #define EFFECT_VOLUME g_bSfxMasterVolume

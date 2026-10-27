@@ -3,6 +3,11 @@
 #include <stdio.h>
 
 #include <PR/gu.h>
+#else
+#include <ultra64.h>
+#endif
+
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
 
 void guFrustumF(float mf[4][4],
                 float left,
@@ -38,8 +43,6 @@ void guFrustumF(float mf[4][4],
     mf[2][3] = -1.0f;
     mf[3][2] = -(((long double)far * near + (long double)far * near) / depth);
 }
-#else
-#include <ultra64.h>
 #endif
 
 void guPerspectiveF(

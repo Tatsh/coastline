@@ -1,14 +1,15 @@
 #include <PR/os.h>
+
+#include "debugmessage.h"
+#include "replay.h"
+#include "timing.h"
+
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
 #include <stdio.h>
 #include <string.h>
 #else
 #include <PR/os_libc.h>
 #endif
-
-#include "debugmessage.h"
-#include "replay.h"
-#include "timing.h"
 
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
 static void CopySnapshotBytes(u8 *destination, const void *sourceData, u32 size) {

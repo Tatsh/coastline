@@ -16,6 +16,17 @@
 #include "platform/win/hudquad.h"
 #include "platform/win/render.h"
 #include "platform/win/settings.h"
+#else
+#include <PR/gu.h>
+#include <PR/os_libc.h>
+
+#include "input.h"
+#include "options.h"
+#include "system.h"
+#include "text.h"
+#endif
+
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
 #define DASHBOARD_ADD(a, b) ((s32)((u32)(a) + (u32)(b)))
 #define DASHBOARD_AXIS_0 x
 #define DASHBOARD_AXIS_1 y
@@ -41,13 +52,7 @@ namespace {
 s32 g_adwDashboardLoadedGear[DASHBOARD_VIEWS] = {-1, -1};
 s32 g_bHudShowSpeedometer = 1;
 #else
-#include <PR/gu.h>
-#include <PR/os_libc.h>
 
-#include "input.h"
-#include "options.h"
-#include "system.h"
-#include "text.h"
 #define DASHBOARD_ADD(a, b) ((a) + (b))
 #define DASHBOARD_VERTEX(vertex, axis) ((vertex).v.ob[axis])
 #define DASHBOARD_COORD(value) ((s32)(value))

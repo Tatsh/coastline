@@ -1,5 +1,12 @@
 #include "fade.h"
 
+#if TGR_PLATFORM == TGR_PLATFORM_N64
+#include "audio.h"
+#include "render.h"
+#include "system.h"
+#include "util.h"
+#endif
+
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
 /* The x87 queries accept unordered comparisons as less than or equal. */
 #define FADE_LESS(left, right) (!((left) >= (right)))
@@ -27,14 +34,6 @@ s32 g_dwSfxFadeSkipFrame;
 #define FADE_LESS_EQUAL(left, right) ((left) <= (right))
 #define FADE_VOLUME_LESS(left, right) FADE_LESS(left, right)
 #define FADE_REAL f32
-#endif
-
-#if TGR_PLATFORM == TGR_PLATFORM_N64
-#include "audio.h"
-#include "render.h"
-#include "system.h"
-#include "util.h"
-
 #endif
 
 void SetFadeTarget(float target, float seconds) {

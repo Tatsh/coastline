@@ -2,6 +2,17 @@
 
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
 #include "vehiclemodel.h"
+#else
+#include <PR/os.h>
+#include <PR/os_libc.h>
+
+#include "model.h"
+#include "render.h"
+#include "system.h"
+#include "vehicle.h"
+#endif
+
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
 
 VehicleModel *g_pTextureCaptureVehicleModel;
 s32 g_dwTextureCaptureOverflowCount;
@@ -41,13 +52,6 @@ s32 IsVehicleMaterialPalette(const void *palette) {
 }
 
 #else
-#include <PR/os.h>
-#include <PR/os_libc.h>
-
-#include "model.h"
-#include "render.h"
-#include "system.h"
-#include "vehicle.h"
 
 /* The room for the message of a car too big. */
 #define LOAD_MESSAGE_SIZE 0x50

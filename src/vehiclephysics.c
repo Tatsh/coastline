@@ -15,12 +15,17 @@
 
 #include "platform/win/settings.h"
 #include "screen.h"
+#else
+#include <PR/os_libc.h>
+#endif
+
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+
 #define FRAME_PRODUCT(a, b) ((long double)(a) * (b))
 #define FRAME_LESS(a, b) (!((a) >= (b)))
 #define AddTimingMarker(...) NullStub()
 #define SIGN_OF(x) (!((x) < 0.0f) && !((x) > 0.0f) ? 0.0f : ((x) > 0.0f ? 1.0f : -1.0f))
 #else
-#include <PR/os_libc.h>
 #define FRAME_LESS(a, b) ((a) < (b))
 #define SIGN_OF(x) ((x) == 0.0f ? 0.0f : (0.0f < (x) ? 1.0f : -1.0f))
 #endif

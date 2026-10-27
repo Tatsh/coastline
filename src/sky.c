@@ -2,15 +2,16 @@
 
 #include <PR/gu.h>
 
+#include "render.h"
+#include "track.h"
+#include "util.h"
+#include "weather.h"
+
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
 #include "platform/win/render.h"
 #else
 #include <PR/R4300.h>
 #endif
-#include "render.h"
-#include "track.h"
-#include "util.h"
-#include "weather.h"
 
 /* The sky sits just inside the far end of the view along the depth of the camera. */
 #define SKY_DEPTH_SCALE 0.99f

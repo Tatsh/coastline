@@ -4,6 +4,11 @@
 
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
 #include "platform/win/gbicommand.h"
+#else
+#include "texrect.h"
+#endif
+
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
 
 void DrawTexturedTile(s32 index, ModelTexture *textures) {
     if (!MODEL_TEXTURE_ANIMATED(&textures[index])) {
@@ -13,7 +18,6 @@ void DrawTexturedTile(s32 index, ModelTexture *textures) {
     }
 }
 #else
-#include "texrect.h"
 
 /* The original sets the palette only for a 4-bit texture, and the others read it unset. */
 #pragma GCC diagnostic push

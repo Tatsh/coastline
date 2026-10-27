@@ -12,6 +12,12 @@
 
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
 #include "platform/win/sound.h"
+#else
+#include "audio.h"
+#include "audiomix.h"
+#endif
+
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
 #define AMBIENT_CHANNEL_STATE SoundChannelState
 #define AMBIENT_CHANNELS g_aSoundChannelRequested
 #define AMBIENT_STEP llFrequency
@@ -19,8 +25,6 @@
 #define AMBIENT_MIX_VOLUME dwReserved
 #define FREQUENCY_NEGATIVE(value) (!((value) >= 0.0f))
 #else
-#include "audio.h"
-#include "audiomix.h"
 #define AMBIENT_CHANNEL_STATE MixerChannel
 #define AMBIENT_CHANNELS g_aSoundEffectChannels
 #define AMBIENT_STEP step

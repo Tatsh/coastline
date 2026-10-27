@@ -12,13 +12,17 @@
 
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
 #include "platform/win/renderbackend.h"
+#else
+#include "libultra/os/osint.h"
+#endif
+
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
 #define FRAME_WRITEBACK() NullStub()
 #define FRAME_TIMING_MARKER(bar, red, green, blue, alpha) NullStub()
 /* Windows maps queue waits to the controller stub that returns 1. */
 #define FRAME_WAIT_QUEUE(queue) osContInit(queue, NULL, NULL)
 #define FRAME_DECREMENT(value) ((value) = (s32)((u32)(value) - 1u))
 #else
-#include "libultra/os/osint.h"
 #define FRAME_WRITEBACK() osWritebackDCacheAll()
 #define FRAME_TIMING_MARKER(bar, red, green, blue, alpha)                                          \
     AddTimingMarker(bar, red, green, blue, alpha)

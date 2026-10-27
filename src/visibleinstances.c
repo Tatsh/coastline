@@ -17,12 +17,17 @@
 #include <stdlib.h>
 
 #include "platform/win/ghost.h"
+#else
+#include "audiomix.h"
+#endif
+
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+
 #define VIS_FILL_MASK FillMemoryPatternBytes
 #define VIS_SORT qsort
 #define VIS_INTERMEDIATE(value) ((long double)(value))
 #define VIS_TRUNCATE(value) ((s32)(s64)(value))
 #else
-#include "audiomix.h"
 #define VIS_FILL_MASK MemFill64Aligned
 #define VIS_SORT QuickSort
 #define VIS_INTERMEDIATE(value) (value)

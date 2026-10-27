@@ -1,5 +1,15 @@
 #include "vecmath.h"
 
+#if TGR_PLATFORM == TGR_PLATFORM_N64
+#include <PR/gu.h>
+#include <PR/os_libc.h>
+
+#include "system.h"
+#else
+#include <math.h>
+#include <string.h>
+#endif
+
 /* NormalizeLightMatrix() scales a matrix to this range, less a margin, for the lighting. */
 #define LIGHT_MATRIX_RANGE 1.9997559f
 #define LIGHT_MATRIX_MARGIN 0.375f
@@ -63,16 +73,6 @@ f32 GetMaxAbsValue12(f32 m[4][4]) {
     }
     return max;
 }
-
-#if TGR_PLATFORM == TGR_PLATFORM_N64
-#include <PR/gu.h>
-#include <PR/os_libc.h>
-
-#include "system.h"
-#else
-#include <math.h>
-#include <string.h>
-#endif
 
 void FinishFrameMatrix(f32 m[4][4]) {
     m[2][3] = 0.0f;

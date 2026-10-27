@@ -4,6 +4,12 @@
 #include <PR/os_cont.h>
 
 #include "platform/win/inputpoll.h"
+#else
+#include "controller.h"
+#include "siint.h"
+#endif
+
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
 
 void osContGetReadData(OSContPad *data) {
     int steering;
@@ -49,8 +55,6 @@ void osContGetReadData(OSContPad *data) {
 }
 
 #else
-#include "controller.h"
-#include "siint.h"
 
 s32 osContStartReadData(OSMesgQueue *mq) {
     s32 ret = 0;

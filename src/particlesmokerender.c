@@ -6,12 +6,17 @@
 #include <string.h>
 
 #include "platform/win/particlesnapshot.h"
+#else
+#include <PR/os_libc.h>
+#endif
+
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+
 #define SMOKE_LIST_HEAD g_wRenderTireSmokeListHead
 #define PAVED_SMOKE_LIST_HEAD g_wRenderPavedTireSmokeListHead
 #define RENDER_SMOKE_LIST(head, red, green, blue)                                                  \
     RenderBillboardParticles(viewports, head, red, green, blue)
 #else
-#include <PR/os_libc.h>
 #define SMOKE_LIST_HEAD g_wTireSmokeListHead
 #define PAVED_SMOKE_LIST_HEAD g_wPavedTireSmokeListHead
 #define RENDER_SMOKE_LIST(head, red, green, blue) RenderBillboardParticles(head, red, green, blue)

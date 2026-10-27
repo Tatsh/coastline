@@ -12,6 +12,15 @@
 #include "platform/win/configfile.h"
 #include "platform/win/directplay.h"
 #include "platform/win/settings.h"
+#else
+#include <PR/os_libc.h>
+
+#include "input.h"
+#include "options.h"
+#endif
+
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+
 #undef DrawText
 #define HUD_OVERLAY_ADD(a, b) ((s32)((u32)(a) + (u32)(b)))
 #define HUD_SPEED_MPH g_bSpeedUnitsMph
@@ -20,10 +29,7 @@
 #define HUD_KPH_LABEL GetStringResource(0xec)
 #define HUD_SPEED_Y y
 #else
-#include <PR/os_libc.h>
 
-#include "input.h"
-#include "options.h"
 #define HUD_OVERLAY_ADD(a, b) ((a) + (b))
 #define HUD_SPEED_MPH g_OptionSettings.speedInMph
 #define HUD_OVERLAY_DRAW(function) function()

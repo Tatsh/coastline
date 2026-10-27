@@ -5,6 +5,16 @@
 #include "text.h"
 #include "vehicleaccess.h"
 
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#include <stdio.h>
+
+#include "platform/win/boot/strings.h"
+#include "platform/win/directplay.h"
+#include "platform/win/settings.h"
+#else
+#include <PR/os_libc.h>
+#endif
+
 #define TIME_TEXT_SIZE 15
 #define LAP_TEXT_SIZE 15
 #define PLACE_TEXT_SIZE 40
@@ -13,11 +23,7 @@
 #define PLACE_SUFFIX_TEXT_SIZE_SPLIT 13
 
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
-#include <stdio.h>
 
-#include "platform/win/boot/strings.h"
-#include "platform/win/directplay.h"
-#include "platform/win/settings.h"
 #undef DrawText
 
 s32 g_bHudShowLapCounter = 1;
@@ -41,7 +47,6 @@ static inline void DrawHudTimeLabel(unsigned label, const char *color, f32 secon
 }
 #define DRAW_HUD_TIME DrawHudTimeLabel
 #else
-#include <PR/os_libc.h>
 #define HUD_VIEWPORTS g_aViewportRects
 #define HUD_RACE_ADD(a, b) ((a) + (b))
 #define HUD_RACE_RIGHT 296

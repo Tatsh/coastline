@@ -1,18 +1,21 @@
 #include "camera.h"
+#include "driving.h"
+#include "game.h"
+#include "input.h"
 #include "racerslotaccess.h"
 #include "vehicleaccess.h"
+#include "vehiclephysics.h"
+#include "vehiclereset.h"
+
 #if TGR_PLATFORM == TGR_PLATFORM_N64
 #include <PR/gu.h>
 #endif
 
-#include "driving.h"
-#include "game.h"
-#include "input.h"
-#include "vehiclephysics.h"
-#include "vehiclereset.h"
-
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
 #include <math.h>
+#endif
+
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
 #define CONTROL_REAL long double
 #define CONTROL_LESS(a, b) (!((a) >= (b)))
 #define CONTROL_NONZERO(x) ((x) < 0.0L || (x) > 0.0L)

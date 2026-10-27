@@ -1,7 +1,12 @@
+#include "game.h"
 #include "physics.h"
 #include "physicsimpact.h"
 #include "racerslotaccess.h"
+#include "timing.h"
+#include "trianglebox.h"
+#include "vehicle.h"
 #include "vehicleaccess.h"
+#include "vehiclecount.h"
 
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
 #include <math.h>
@@ -9,23 +14,22 @@
 
 #include "platform/win/settings.h"
 #include "screen.h"
+#else
+#include <PR/gu.h>
+#include <PR/os.h>
+#include <PR/os_libc.h>
+#endif
+
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+
 #define osSyncPrintf(...) NullStub()
 #define COLLISION_PRODUCT(a, b) ((long double)(a) * (b))
 #define COLLISION_LESS(a, b) (!((a) >= (b)))
 TrackTriangle *g_pCollisionTriangle;
 #else
-#include <PR/gu.h>
-#include <PR/os.h>
-#include <PR/os_libc.h>
 #define COLLISION_PRODUCT(a, b) ((a) * (b))
 #define COLLISION_LESS(a, b) ((a) < (b))
 #endif
-
-#include "game.h"
-#include "timing.h"
-#include "trianglebox.h"
-#include "vehicle.h"
-#include "vehiclecount.h"
 
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
 #define AddTimingMarker(...) NullStub()

@@ -12,11 +12,6 @@
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
 #include "platform/win/settings.h"
 #include "screen.h"
-#define RESET_FREE(name) ::name
-#define SET_MODEL_SLOT(vehicle, slot) (vehicle)->SetVehicleModelSlot(slot)
-#else
-#define RESET_FREE(name) name
-#define SET_MODEL_SLOT(vehicle, slot) SetVehicleModelSlot(vehicle, slot)
 #endif
 
 #if TGR_PLATFORM == TGR_PLATFORM_N64
@@ -25,6 +20,14 @@
 #else
 #include <math.h>
 #include <string.h>
+#endif
+
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#define RESET_FREE(name) ::name
+#define SET_MODEL_SLOT(vehicle, slot) (vehicle)->SetVehicleModelSlot(slot)
+#else
+#define RESET_FREE(name) name
+#define SET_MODEL_SLOT(vehicle, slot) SetVehicleModelSlot(vehicle, slot)
 #endif
 
 #define DEFAULT_CAMERA_FOV 0.5235987902f

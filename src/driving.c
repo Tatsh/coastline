@@ -1,31 +1,32 @@
 #include "driving.h"
 
-#include "racerslotaccess.h"
-#include "vehicleaccess.h"
-
-#if TGR_PLATFORM == TGR_PLATFORM_N64
-#include <PR/gu.h>
-#include <PR/os_libc.h>
-#else
-#include "screen.h"
-#define AddTimingMarker(...) NullStub()
-#endif
-
 #include "camera.h"
 #include "frametime.h"
 #include "game.h"
 #include "input.h"
-#if TGR_PLATFORM == TGR_PLATFORM_N64
-#include "racemenu.h"
-#endif
+#include "racerslotaccess.h"
 #include "render.h"
 #include "system.h"
 #include "timing.h"
 #include "trackmenuitem.h"
+#include "vehicleaccess.h"
 #include "vehiclecount.h"
 #include "vehiclephysics.h"
 #include "vehiclereset.h"
 #include "weather.h"
+
+#if TGR_PLATFORM == TGR_PLATFORM_N64
+#include <PR/gu.h>
+#include <PR/os_libc.h>
+
+#include "racemenu.h"
+#else
+#include "screen.h"
+#endif
+
+#if !(TGR_PLATFORM == TGR_PLATFORM_N64)
+#define AddTimingMarker(...) NullStub()
+#endif
 
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
 typedef long double AiReal;

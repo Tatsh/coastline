@@ -15,13 +15,13 @@
 #include "platform/win/timer.h"
 #include "weather.h"
 
+// Windows headers define DrawText as a GDI alias.
+#undef DrawText
+#include "text.h"
+
 #if TGR_RENDERER == TGR_RENDERER_D3D
 #include "platform/win/d3d/renderer.h"
 #endif
-
-// The headers of Windows name the drawing of text of GDI DrawText.
-#undef DrawText
-#include "text.h"
 
 // The bits of the geometry mode of the console the handlers read.
 #define GBI_GEOMETRY_Z_BUFFER 0x1

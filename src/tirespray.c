@@ -8,6 +8,12 @@
 #include "vehiclecount.h"
 #include "weather.h"
 
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#include <string.h>
+#else
+#include <PR/os_libc.h>
+#endif
+
 #define SPRAY_UNITS 127.0f
 #define SPRAY_STEP_SHIFT 12
 #define SPRAY_FADE_SEGMENT 5
@@ -16,7 +22,6 @@
 #define SPRAY_TEXTURE_SEGMENT_SHIFT 11
 
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
-#include <string.h>
 typedef ConvertedModelVertex SprayMoveVertex;
 typedef long double SprayMoveReal;
 static inline f32 &SprayColor(SprayMoveVertex *vertices, s32 vertex, s32 channel) {
@@ -47,7 +52,6 @@ static inline f32 &SprayColor(SprayMoveVertex *vertices, s32 vertex, s32 channel
          (long double)(SPRAY_VELOCITY(velocity, step) + (shift)) +                                 \
          SPRAY_POSITION(segment, vertex, coordinate, field))
 #else
-#include <PR/os_libc.h>
 typedef Vtx SprayMoveVertex;
 typedef f32 SprayMoveReal;
 #define SPRAY_COLOR(vertices, vertex, channel) ((vertices)[vertex].v.cn[channel])

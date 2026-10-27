@@ -3,6 +3,11 @@
 
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
 #include <string.h>
+#else
+#include <PR/os_libc.h>
+#endif
+
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
 #define TRACE_REAL(value) ((long double)(value))
 
 s32 g_dwBestTraceDepth;
@@ -25,7 +30,6 @@ Vec3f g_avTraceRightLane[TRACE_DEPTH];
 Vec3f g_vTraceFarPoint;
 Vec3f g_vTraceHalfwayPoint;
 #else
-#include <PR/os_libc.h>
 #define TRACE_REAL(value) (value)
 #endif
 

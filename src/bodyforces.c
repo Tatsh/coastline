@@ -1,14 +1,14 @@
 #include <PR/gu.h>
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
-#include <math.h>
-#endif
-
 #include "physics.h"
 #include "physicsimpact.h"
 #include "track.h"
 #include "vehiclemodel.h"
 #include "weather.h"
+
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#include <math.h>
+#endif
 
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
 f32 g_fCollisionImpulseScale = 1.0f;
