@@ -38,6 +38,10 @@ public:
     void AdvanceScheduledEventTimers(std::uint32_t elapsedMilliseconds);
     /** @ghidraAddress EAR: 0x10008126 */
     int StartScheduledEarEvent();
+    /** @ghidraAddress EAR: 0x100074c0 */
+    void UpdateScheduledEventPlayback(double gain);
+    /** @ghidraAddress EAR: 0x100088ea */
+    void ApplyScheduledEventStopControl(std::uint16_t control);
 
 private:
     /** @ghidraAddress EAR: 0x10007dfc */
@@ -48,6 +52,11 @@ private:
     long double CalculateScheduledEventDopplerScale();
     /** @ghidraAddress EAR: 0x1000854e */
     void DeactivateScheduledEarEvent();
+    /**
+     * @ghidraAddress EAR: 0x10008832
+     * @stub
+     */
+    void ReleaseScheduledEventPlayback();
 
     EarEventSource source;
     std::uint16_t sourceType;
@@ -59,7 +68,7 @@ private:
     int streaming;
     int frequencyScaleOverrideEnabled;
     int dopplerEnabled;
-    [[maybe_unused]] std::uint8_t unknown28[4]; /* +0x28 */
+    int fadingOut;
     int lifetimeCountdownSuppressed;
     int activeDurationLimitEnabled;
     int attenuationRequired;
@@ -75,7 +84,7 @@ private:
     std::int32_t remainingLifetimeMs;
     std::int32_t remainingActiveTimeMs;
     std::int32_t elapsedTimeMs;
-    [[maybe_unused]] std::uint8_t unknown5e[2]; /* +0x5e */
+    std::uint16_t attenuationDecrement;
     std::int32_t distance;
     std::int32_t maximumDistance;
     std::int32_t previousDistance;

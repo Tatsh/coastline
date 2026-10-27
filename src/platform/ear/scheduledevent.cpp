@@ -16,6 +16,10 @@ const double g_earInitialEventAttenuationScale = 0.0001;
 const double g_earEventTimeUnitScale = 10000;
 // @ghidraAddress EAR: 0x1002e7b8
 const double g_earDopplerUnity = 1;
+// @ghidraAddress EAR: 0x1002e710
+const double g_earPlaybackAttenuationScale = 0.0001;
+// @ghidraAddress EAR: 0x1002e7c8
+const double g_earStopControlPercentScale = 0.02;
 
 static inline std::uint32_t AbsoluteDistance(std::int32_t distance) {
     std::uint32_t bits = static_cast<std::uint32_t>(distance);
@@ -117,6 +121,58 @@ int ScheduledEarEvent::IsScheduledEventPlaybackComplete() {
 void ScheduledEarEvent::RequestScheduledEventStop() {
     playback->SetEarPlaybackLooping(0);
     playback->MarkComplete();
+}
+
+void ScheduledEarEvent::ApplyScheduledEventStopControl(std::uint16_t control) {
+    if (control & 1) {
+        looping = 0;
+        playback->SetEarPlaybackLooping(looping);
+        StartScheduledEarEvent();
+        return;
+    }
+    fadingOut = 1;
+    switch (control & 15) {
+    case 2:
+        attenuationDecrement = 500;
+        break;
+    case 4:
+        attenuationDecrement = 250;
+        break;
+    case 8:
+        attenuationDecrement = 125;
+        break;
+    case 14:
+        attenuationDecrement =
+            TruncateGain(static_cast<long double>(g_earEventTimeUnitScale) /
+                         (static_cast<long double>(control >> 4) * g_earStopControlPercentScale));
+        break;
+    default:
+        attenuationDecrement = 0;
+        break;
+    }
+}
+
+void ScheduledEarEvent::UpdateScheduledEventPlayback(double gain) {
+    if (fadingOut) {
+        if (!attenuation) {
+            RequestScheduledEventStop();
+        } else {
+            std::uint16_t decrement =
+                attenuation >= attenuationDecrement ? attenuationDecrement : attenuation;
+            attenuation -= decrement;
+        }
+    }
+    double scaledGain = static_cast<double>(static_cast<long double>(attenuation) *
+                                            g_earPlaybackAttenuationScale * gain);
+    playback->SetEarPlaybackDirectionalGain(directionIndex, scaledGain, matrixId);
+    if (frequencyScaleOverrideEnabled || dopplerEnabled) {
+        UpdateScheduledEventDopplerScale();
+    }
+    playback->ProcessEarPlaybackSmoothing();
+    playback->SetCachedBackendPlaybackParameter(backendParameter);
+    if (!attenuation && attenuationRequired && !fadingOut) {
+        ReleaseScheduledEventPlayback();
+    }
 }
 
 void ScheduledEarEvent::UpdateScheduledEventDopplerScale() {
