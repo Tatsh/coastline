@@ -732,8 +732,9 @@ s32 TestLineSegmentIntersection(Vec2f *p1, Vec2f *p2, Vec2f *q1, Vec2f *q2);
  * @ghidraAddress JPN: 0x8022694c
  * @ghidraAddress BRD3D: 0x1003bc90
  * @ghidraAddress BRGlide: 0x10035310
+ * @stub{BRGlide}
  */
-s32 SegmentCrossesLine2D(Vec3f *a, Vec3f *b, Vec3f *p, Vec3f *q);
+s32 SegmentCrossesLine2D(const Vec3f *a, const Vec3f *b, const Vec3f *p, const Vec3f *q);
 
 /**
  * Set the seed of the random numbers.

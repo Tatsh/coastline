@@ -856,7 +856,20 @@ s32 TestLineSegmentIntersection(Vec2f *p1, Vec2f *p2, Vec2f *q1, Vec2f *q2) {
 #undef INTERSECTION_LESS
 #undef INTERSECTION_NONZERO
 
-s32 SegmentCrossesLine2D(Vec3f *a, Vec3f *b, Vec3f *p, Vec3f *q) {
+s32 SegmentCrossesLine2D(const Vec3f *a, const Vec3f *b, const Vec3f *p, const Vec3f *q) {
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+    f32 dx = (long double)b->x - a->x;
+    f32 dy = (long double)b->y - a->y;
+    long double side1 = ((long double)p->x - a->x) * dy - ((long double)p->y - a->y) * dx;
+    long double side2 = ((long double)q->x - a->x) * dy - ((long double)q->y - a->y) * dx;
+    long double difference;
+
+    if ((side1 < 0.0L || side1 > 0.0L) && (side2 < 0.0L || side2 > 0.0L) && side1 * side2 > 0.0L) {
+        return 0;
+    }
+    difference = side1 - side2;
+    return !(difference < 0.0L) && !(difference > 0.0L) ? 2 : 1;
+#else
     f32 side1 = (p->x - a->x) * (b->y - a->y) - (b->x - a->x) * (p->y - a->y);
     f32 side2 = (q->x - a->x) * (b->y - a->y) - (b->x - a->x) * (q->y - a->y);
 
@@ -867,6 +880,7 @@ s32 SegmentCrossesLine2D(Vec3f *a, Vec3f *b, Vec3f *p, Vec3f *q) {
         return 2;
     }
     return 1;
+#endif
 }
 
 void SetRngSeed(u32 seed) {
