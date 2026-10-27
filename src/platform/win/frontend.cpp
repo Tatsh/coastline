@@ -149,6 +149,7 @@ RECT g_rcMenuFullScreen = {0, 0, 639, 479};
 RECT g_rcMenuSubPanel = {87, 61, 186, 132};
 RECT g_rcMenuRightLabel = {330, 70, 447, 86};
 const char g_szSpace[] = " ";
+char g_szEmptyString[1];
 const char g_szMenuDigitOne[] = "1";
 RECT g_rcHoverTopLeft = {0, 0, 200, 200};
 RECT g_rcHoverBottomLeft = {0, 380, 200, 480};
@@ -550,6 +551,126 @@ bool MenuWidget::Update() {
     }
     Draw();
     return true;
+}
+
+int MenuItemList::AddItem(
+    const char *text, unsigned flags, unsigned char style, const RECT *bounds, bool full) {
+    if (text == nullptr) {
+        return 0;
+    }
+    if (wItemCount >= 100) {
+        pVTable->RemoveItem(this, 0);
+        wItemCount = 99;
+    }
+    if (full) {
+        strcpy(fonts[wItemCount].szText, text);
+    } else {
+        strncpy(fonts[wItemCount].szText, text, 10);
+        strcat(fonts[wItemCount].szText, g_szEmptyString);
+    }
+    MenuFont &font = fonts[wItemCount];
+    font.dwFlags |= flags;
+    font.bStyle = style;
+    font.nInputMaxWidth = 0;
+    font.nHeight = 0;
+    font.nWidth = 0;
+    font.rcBounds.left = bounds->left;
+    font.rcBounds.right = bounds->right;
+    font.rcBounds.top =
+        static_cast<int>(static_cast<unsigned>(ConvertMenuCoordinate(fY)) + 19u * wItemCount);
+    font.rcBounds.bottom = static_cast<int>(static_cast<unsigned>(font.rcBounds.top) + 18u);
+    font.fX = static_cast<float>(bounds->left);
+    font.fY = static_cast<float>(font.rcBounds.top);
+    font.fZ = 0;
+    font.bDrawCaret = 0;
+    if (style == 3) {
+        font.pVTable->MeasureTextAltFont(&font);
+    } else {
+        font.pVTable->MeasureText(&font);
+    }
+    MenuFont &measured = fonts[wItemCount];
+    measured.nInputMaxWidth = static_cast<short>(static_cast<unsigned>(measured.rcBounds.right) -
+                                                 measured.rcBounds.left - 16u);
+    ++wItemCount;
+    if (dwFlags & 0x800000) {
+        short row = static_cast<short>(wVisibleRowCount + nFirstVisibleRow);
+        if (row >= 100) {
+            row = static_cast<short>(wItemCount - 1);
+        }
+        if (!_stricmp(fonts[row].szText, g_szEmptyUiString)) {
+            return 0;
+        }
+        ++nFirstVisibleRow;
+        if (nFirstVisibleRow >= wItemCount) {
+            nFirstVisibleRow = static_cast<short>(wItemCount - 1);
+        }
+        if (pfnScrollDown) {
+            pfnScrollDown();
+        }
+        unsigned rows = static_cast<unsigned short>(wItemCount - 1);
+        if (!rows) {
+            rows = 1;
+        }
+        long double y = static_cast<long double>(fScrollThumbTravel) / rows + fScrollThumbY;
+        fScrollThumbY = static_cast<float>(y);
+        if (!(y >= fMinScrollThumbY)) {
+            fScrollThumbY = fMinScrollThumbY;
+        } else if (y > fMaxScrollThumbY) {
+            fScrollThumbY = fMaxScrollThumbY;
+        }
+        rcScrollThumb.top = ConvertMenuCoordinate(fScrollThumbY);
+        rcScrollThumb.bottom = static_cast<int>(static_cast<unsigned>(rcScrollThumb.top) + 16u);
+    }
+    return 1;
+}
+
+int MenuItemList::Draw(int selection) {
+    if (nBackgroundImage >= 0) {
+        pVTable->BlitSurfaceById(this, nBackgroundImage, fBackgroundX, fBackgroundY);
+    }
+    if (!(dwFlags & 0x1000000) && selection >= 0 && !(fonts[selection].dwFlags & 0x10)) {
+        fonts[selection].bStyle = 4;
+    }
+    int rowOffset = 0;
+    for (int row = 0; row < wVisibleRowCount; ++row, rowOffset += 19) {
+        int index = row + nFirstVisibleRow;
+        if (index < 0 || index >= wItemCount) {
+            continue;
+        }
+        MenuFont *font = &fonts[index];
+        MenuFontVTable *vtable = font->pVTable;
+        vtable->MeasureText(font);
+        font->rcBounds.left = rcBounds.left;
+        font->rcBounds.right = rcBounds.right;
+        int y = static_cast<int>(static_cast<unsigned>(rcBounds.top) + rowOffset);
+        font->rcBounds.top = y;
+        font->rcBounds.bottom = static_cast<int>(static_cast<unsigned>(y) + 18u);
+        vtable->DrawMenuItemText(font, static_cast<float>(rcBounds.left), static_cast<float>(y));
+        if (dwFlags & 0x2000000) {
+            int x = static_cast<int>(static_cast<unsigned>(rcBounds.left) - 19u);
+            bool ready = GetSessionSlotFlag(font->dwItemData) != 0;
+            pVTable->BlitSurfaceById(
+                this, ready ? 0x8b : 0x8a, static_cast<float>(x), static_cast<float>(y));
+        }
+    }
+    if (!(dwFlags & 0x200000)) {
+        if (nScrollUpImage > 0) {
+            pVTable->BlitSurfaceById(this,
+                                     bScrollUpHovered ? 0x2f : nScrollUpImage,
+                                     static_cast<float>(rcScrollUp.left),
+                                     static_cast<float>(rcScrollUp.top));
+        }
+        if (nScrollDownImage > 0) {
+            pVTable->BlitSurfaceById(this,
+                                     bScrollDownHovered ? 0x2d : nScrollDownImage,
+                                     static_cast<float>(rcScrollDown.left),
+                                     static_cast<float>(rcScrollDown.top));
+        }
+        if (nScrollThumbImage > 0) {
+            pVTable->BlitSurfaceById(this, nScrollThumbImage, fScrollThumbX, fScrollThumbY);
+        }
+    }
+    return 1;
 }
 
 int MenuItemList::SetItemData(const void *data, unsigned size, int index) {
@@ -3652,7 +3773,7 @@ void BuildNetworkCarSetupUI(MenuScreen *pScreen) {
     ++panel->wNavigationCount;
     widget = add(32, 330, 0x3001, 1, -1);
     widget->pfnUpdate = NetworkCarSetupUI_PollChatListSelection;
-    widget->itemList.nSelectionMode = 1;
+    widget->itemList.bVerticalScrollbar = 1;
     MenuItemList *list = &widget->itemList;
     list->pVTable->Initialize(list, 0x1840001, &g_rcNetCarSetupPlayerList, 5, 0, -1);
     g_pNetworkCarSetupMenu = widget;
@@ -3675,7 +3796,7 @@ void BuildNetworkCarSetupUI(MenuScreen *pScreen) {
     ++panel->wWidgetCount;
     widget = add(484, 2, 0x1001, 1, -1);
     widget->pfnUpdate = NetworkCarSetupUI_UpdateSelectedPlayer;
-    widget->itemList.nSelectionMode = 1;
+    widget->itemList.bVerticalScrollbar = 1;
     list = &widget->itemList;
     list->pVTable->Initialize(
         list, g_dwNetworkPlayMode == 2 ? 0x2040001 : 0x3040001, &g_rcMenuNetworkPlayers, 4, 0, -1);
@@ -3953,7 +4074,7 @@ void BuildRaceResultsSummaryUI(MenuScreen *pScreen) {
     MenuItemList *list = &widget->itemList;
     MenuItemListVTable *listVTable = list->pVTable;
     widget->pfnUpdate = SeasonRoundList_UpdateRoundSelection;
-    list->nSelectionMode = 1;
+    list->bVerticalScrollbar = 1;
     listVTable->Initialize(list, 0x200000, &g_rcMenuListBox, 5, 0, -1);
     widget->pfnBeforeUpdate = SeasonRoundList_SetBrowsingFlag;
     widget->pfnAfterUpdate = SeasonRoundList_ClearBrowsingFlag;
@@ -4336,7 +4457,7 @@ void BuildPreRaceInfoUI(MenuScreen *pScreen) {
     widget = add(panel->fX, panel->fY, 0x3001, 1, -1);
     MenuItemList *list = &widget->itemList;
     widget->pfnUpdate = SeasonRoundList_UpdateRoundSelection;
-    list->nSelectionMode = 1;
+    list->bVerticalScrollbar = 1;
     list->pVTable->Initialize(list, 0x240000, &g_rcMenuListBox, 5, 0, -1);
     widget->pfnBeforeUpdate = SeasonRoundList_SetBrowsingFlag;
     widget->pfnAfterUpdate = SeasonRoundList_ClearBrowsingFlag;

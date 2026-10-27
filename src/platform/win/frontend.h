@@ -127,16 +127,45 @@ struct MenuItemData {
 
 struct MenuItemList {
     MenuItemListVTable *pVTable;
-    char abUnknown4[0x10]; /* +0x04 */
+    int (*pfnSelectionChanged)(MenuItemList *, int *);
+    void (*pfnScrollUp)(void);
+    void (*pfnScrollDown)(void);
+    void (*pfnScrollDrag)(void);
     int (*pfnItemChanged)(MenuItemList *, int);
     unsigned dwFlags;
-    char abUnknown1c[0x10]; /* +0x1c */
+    float fX;
+    float fY;
+    float fBackgroundX;
+    float fBackgroundY;
     MenuFont fonts[100];
     MenuItemData itemData[100];
     unsigned short wItemCount;
-    char abUnknown1a92e[0x8e]; /* +0x1a92e */
-    int nSelectionMode;
-    char abUnknown1a9c0[0x14]; /* +0x1a9c0 */
+    short nFirstVisibleRow;
+    unsigned short wVisibleRowCount;
+    short nScrollUpImage;
+    short nScrollDownImage;
+    short nBackgroundImage;
+    short nScrollThumbImage;
+    char abUnknown1a93a[2]; /* +0x1a93a */
+    RECT rcBounds;
+    RECT rcScrollUp;
+    RECT rcScrollDown;
+    RECT rcHorizontalScrollLeft;
+    RECT rcHorizontalScrollRight;
+    RECT rcScrollThumb;
+    int bScrollUpHovered;
+    int bScrollDownHovered;
+    char abUnknown1a9a4[8]; /* +0x1a9a4 */
+    float fScrollThumbX;
+    float fScrollThumbY;
+    int bScrollDragging;
+    int bHorizontalScrollbar;
+    int bVerticalScrollbar;
+    float fMinScrollThumbX;
+    float fMaxScrollThumbX;
+    float fMinScrollThumbY;
+    float fMaxScrollThumbY;
+    float fScrollThumbTravel;
 
     /**
      * @ghidraAddress BRD3D: 0x1005bb80
@@ -155,6 +184,15 @@ struct MenuItemList {
      * @ghidraAddress BRD3D: 0x1005cb40
      */
     int UpdateAndRenderMenuWidget(int selection);
+    /**
+     * @ghidraAddress BRD3D: 0x1005bc10
+     */
+    int
+    AddItem(const char *text, unsigned flags, unsigned char style, const RECT *bounds, bool full);
+    /**
+     * @ghidraAddress BRD3D: 0x1005c2c0
+     */
+    int Draw(int selection);
 };
 
 /** An item of a panel of the front end. */
@@ -2124,6 +2162,10 @@ extern RECT g_rcMenuRightLabel;
  * @ghidraAddress BRD3D: 0x100ad300
  */
 extern const char g_szSpace[];
+/**
+ * @ghidraAddress BRD3D: 0x10aa2a70
+ */
+extern char g_szEmptyString[1];
 /**
  * @ghidraAddress BRD3D: 0x100ab418
  */
