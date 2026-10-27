@@ -8,6 +8,7 @@
 // The headers below need the types of windows.h.
 #include <objbase.h>
 
+#include "instantreplay.h"
 #include "laps.h"
 #include "platform/win/boot/app.h"
 #include "platform/win/boot/rallyconfig.h"
@@ -18,6 +19,7 @@
 #include "platform/win/settings.h"
 #include "platform/win/sound.h"
 #include "platform/win/timer.h"
+#include "platform/win/vehicle.h"
 #include "trackselect.h"
 
 // The index of each service provider in g_aServiceProviders.
@@ -1119,6 +1121,36 @@ bool RequestNetworkPause(void) {
     }
     ReleaseMutex(g_hNetPauseMutex);
     return true;
+}
+
+void TickNetworkPauseRequest(void) {
+    WaitForSingleObject(g_hNetPauseMutex, INFINITE);
+    int ticks = g_nNetPauseRequestTicks;
+    if (ticks != 0) {
+        ticks++;
+        g_nNetPauseRequestTicks = ticks;
+        if (ticks >= 27) {
+            g_bNetGamePaused = true;
+            ticks = 0;
+            g_nNetPauseRequestTicks = 0;
+        }
+    }
+    ReleaseMutex(g_hNetPauseMutex);
+    if (ticks != 0 && g_dwNetworkPlayMode && g_bNetRaceStartReached && !gInstantReplayActive &&
+        g_aVehicles[0].lap < g_dwTotalLaps) {
+        int state = GetSlotStatusThreadSafe(g_dwLocalNetPlayerId);
+        state = (state & ~0x40) | 0x80;
+        SendPlayerInfoPacket(&g_DirectPlayInfo,
+                             static_cast<unsigned char>(g_dwLocalNetPlayerId),
+                             static_cast<unsigned char>(g_dwChosenCar),
+                             g_aVehicles[0].color[0],
+                             g_aVehicles[0].color[1],
+                             g_aVehicles[0].color[2],
+                             g_DirectPlayInfo.dpidPlayer,
+                             g_GlobalRallyConfig.szPlayerName,
+                             state,
+                             0);
+    }
 }
 
 int g_nNetUnpauseRequestTicks;
