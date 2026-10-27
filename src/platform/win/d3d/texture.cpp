@@ -155,7 +155,9 @@ static inline unsigned ShiftChannel(unsigned char nChannel, int nShift) {
                          static_cast<unsigned>(nChannel) >> -nShift;
 }
 
-int ConvertRGBAToPixelFormat(void *pDest, const void *pSrc, int nSize, int nPixelFormatId) {
+template <bool bColorKey>
+static int ConvertRGBAToPixelFormatImpl(
+    void *pDest, const void *pSrc, int nSize, int nPixelFormatId, unsigned *pColorKey) {
     const DDPIXELFORMAT *pFormat = LookupPixelFormatById(nPixelFormatId);
     unsigned char *pOut = static_cast<unsigned char *>(pDest);
     const unsigned char *pIn = static_cast<const unsigned char *>(pSrc);
@@ -166,12 +168,19 @@ int ConvertRGBAToPixelFormat(void *pDest, const void *pSrc, int nSize, int nPixe
     int nAlphaShift = CountBitWidth(pFormat->dwRGBAlphaBitMask) - 8;
     unsigned nPixel;
 
+    if constexpr (bColorKey) {
+        *pColorKey = 1u << CountTrailingZeroBits32(pFormat->dwGBitMask);
+    }
     if (nSize > 0) {
         for (unsigned nCount = (static_cast<unsigned>(nSize) + 3) >> 2; nCount != 0; nCount--) {
-            nPixel = (ShiftChannel(pIn[0], nRedShift) & pFormat->dwRBitMask) |
-                     (ShiftChannel(pIn[1], nGreenShift) & pFormat->dwGBitMask) |
-                     (ShiftChannel(pIn[2], nBlueShift) & pFormat->dwBBitMask) |
-                     (ShiftChannel(pIn[3], nAlphaShift) & pFormat->dwRGBAlphaBitMask);
+            if (bColorKey && pIn[3] < 0x80) {
+                nPixel = *pColorKey;
+            } else {
+                nPixel = (ShiftChannel(pIn[0], nRedShift) & pFormat->dwRBitMask) |
+                         (ShiftChannel(pIn[1], nGreenShift) & pFormat->dwGBitMask) |
+                         (ShiftChannel(pIn[2], nBlueShift) & pFormat->dwBBitMask) |
+                         (ShiftChannel(pIn[3], nAlphaShift) & pFormat->dwRGBAlphaBitMask);
+            }
             pIn += 4;
             if (nBytesPerPixel == 1) {
                 *pOut = static_cast<unsigned char>(nPixel);
@@ -186,6 +195,15 @@ int ConvertRGBAToPixelFormat(void *pDest, const void *pSrc, int nSize, int nPixe
         }
     }
     return static_cast<int>(pOut - static_cast<unsigned char *>(pDest));
+}
+
+int ConvertRGBAToPixelFormat(void *pDest, const void *pSrc, int nSize, int nPixelFormatId) {
+    return ConvertRGBAToPixelFormatImpl<false>(pDest, pSrc, nSize, nPixelFormatId, nullptr);
+}
+
+int ConvertRGBAToPixelFormatWithColorKey(
+    void *pDest, const void *pSrc, int nSize, int nPixelFormatId, unsigned *pColorKey) {
+    return ConvertRGBAToPixelFormatImpl<true>(pDest, pSrc, nSize, nPixelFormatId, pColorKey);
 }
 unsigned char g_abTextureDecodeBuffer[RGBA5551_IMAGE_PIXEL_COUNT * 4];
 

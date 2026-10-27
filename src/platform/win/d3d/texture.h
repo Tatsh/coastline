@@ -130,16 +130,15 @@ void UnpackRgba5551ToRgba8(unsigned char *pDest, const unsigned short *pSrc, int
 int ConvertRGBAToPixelFormat(void *pDest, const void *pSrc, int nSize, int nPixelFormatId);
 
 /**
- * Convert RGBA pixels and a transparent color into a device pixel format.
+ * Convert RGBA pixels, replacing alpha below 128 with the lowest green bit of the device format.
  *
  * @param pDest Receives the pixels.
  * @param pSrc The source pixels.
  * @param nSize The source byte count.
  * @param nPixelFormatId The device format identifier.
- * @param pColorKey Receives the converted transparent color.
+ * @param pColorKey Receives the transparent pixel value, even when the source byte count is zero.
  * @return The output byte count.
  * @ghidraAddress BRD3D: 0x10009660
- * @stub{BRD3D}
  */
 int ConvertRGBAToPixelFormatWithColorKey(
     void *pDest, const void *pSrc, int nSize, int nPixelFormatId, unsigned *pColorKey);
