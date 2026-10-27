@@ -469,24 +469,6 @@ void CheckSoundEffectLoopPoints(void);
 void AudioMixingThreadMain(void *arg);
 
 /**
- * The factor the Doppler effect raises a sound by, from the motion of the source and the listener
- * along the line between them over the frame.
- *
- * @param source The source.
- * @param previousSource Where the source was.
- * @param listener The listener.
- * @param previousListener Where the listener was.
- * @return The factor.
- * @ghidraAddress USA: 0x8022b0f8
- * @ghidraAddress EUR: 0x8022c608
- * @ghidraAddress JPN: 0x8022bdc0
- */
-f32 ComputeDopplerFactor(Vec3f *source,
-                         Vec3f *previousSource,
-                         Vec3f *listener,
-                         Vec3f *previousListener);
-
-/**
  * Pan a sound between the two halves of the volume of a channel by where it is across a camera, and
  * set its volume by its distance.
  *

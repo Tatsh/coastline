@@ -9,9 +9,6 @@
 #include "trackselect.h"
 #include "weather.h"
 
-/* The speed of sound, in units a second. */
-#define SPEED_OF_SOUND 343.0f
-
 /* A sound pans over 10 units across the camera, from 0 to 1, with the far side at 1.7 and the near
  * side raised 60% of the way to full. A narrow pan moves 40% as far. */
 #define PAN_RANGE 10.0f
@@ -68,29 +65,6 @@
 
 /* The weather the skids and rolling sound as snow in. */
 #define SNOW_WEATHER WEATHER_SNOW
-
-f32 ComputeDopplerFactor(Vec3f *source,
-                         Vec3f *previousSource,
-                         Vec3f *listener,
-                         Vec3f *previousListener) {
-    Vec3f direction;
-    f32 length;
-    Vec3f sourceStep;
-    Vec3f listenerStep;
-    f32 approach;
-    f32 listenerSpeed;
-
-    Vec3fSubtract(&direction, source, listener);
-    Vec3fSubtract(&listenerStep, listener, previousListener);
-    Vec3fSubtract(&sourceStep, source, previousSource);
-    length = Vec3fLength(&direction);
-    if (length != 0.0f) {
-        Vec3fDivideInPlace(&direction, length);
-    }
-    approach = -Vec3fDot(&sourceStep, &direction) / g_fFrameDeltaTime;
-    listenerSpeed = Vec3fDot(&listenerStep, &direction) / g_fFrameDeltaTime;
-    return (listenerSpeed / SPEED_OF_SOUND + 1.0f) / (1.0f - approach / SPEED_OF_SOUND);
-}
 
 void ComputeStereoPan(
     Vec3f *source, CameraFrame *camera, f32 *upper, f32 *lower, s32 *volume, s32 narrow) {

@@ -58,6 +58,30 @@ void ResetSoundSourceTracking(void);
 void ResetAllSoundState(void);
 
 /**
+ * The factor the Doppler effect raises a sound by, from the motion of the source and the listener
+ * along the line between them over the frame.
+ *
+ * @param source The source.
+ * @param previousSource Where the source was.
+ * @param listener The listener.
+ * @param previousListener Where the listener was.
+ * @return The factor.
+ * @ghidraAddress USA: 0x8022b0f8
+ * @ghidraAddress EUR: 0x8022c608
+ * @ghidraAddress JPN: 0x8022bdc0
+ * @ghidraAddress BRD3D: 0x10067ae0
+ */
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+long double
+#else
+f32
+#endif
+ComputeDopplerFactor(Vec3f *source,
+                     Vec3f *previousSource,
+                     Vec3f *listener,
+                     Vec3f *previousListener);
+
+/**
  * Offer a sound of the track as the nearest this frame; the nearest plays.
  *
  * @param source The source the sound is kept under.

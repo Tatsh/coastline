@@ -2,9 +2,54 @@
 
 #include <stddef.h>
 
+#include "frametime.h"
 #include "soundeffect.h"
 
 #define SOUND_FAR 8589934592.0f
+
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+long double
+#else
+f32
+#endif
+ComputeDopplerFactor(Vec3f *source,
+                     Vec3f *previousSource,
+                     Vec3f *listener,
+                     Vec3f *previousListener) {
+    Vec3f direction;
+    f32 length;
+    Vec3f sourceStep;
+    Vec3f listenerStep;
+    f32 approach;
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+    long double listenerSpeed;
+    long double rawLength;
+#else
+    f32 listenerSpeed;
+#endif
+
+    Vec3fSubtract(&direction, source, listener);
+    Vec3fSubtract(&listenerStep, listener, previousListener);
+    Vec3fSubtract(&sourceStep, source, previousSource);
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+    rawLength = Vec3fLength(&direction);
+    length = rawLength;
+    if (rawLength < 0.0L || rawLength > 0.0L) {
+#else
+    length = Vec3fLength(&direction);
+    if (length != 0.0f) {
+#endif
+        Vec3fDivideInPlace(&direction, length);
+    }
+    approach = -Vec3fDot(&sourceStep, &direction) / g_fFrameDeltaTime;
+    listenerSpeed = Vec3fDot(&listenerStep, &direction) / g_fFrameDeltaTime;
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+    return (1.0L - listenerSpeed * -0x1.7e2256p-9f) /
+           (1.0L - (long double)approach * 0x1.7e2256p-9f);
+#else
+    return (listenerSpeed / 343.0f + 1.0f) / (1.0f - approach / 343.0f);
+#endif
+}
 
 void UpdateClosestSoundSource(
     s32 source, s32 sound, s32 volume, f32 frequency, Vec3f *position, CameraFrame *listener) {
