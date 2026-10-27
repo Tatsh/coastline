@@ -5,3 +5,5 @@ EXPORTS
     _EAR_DLL_GetVersion@0=EAR_DLL_GetVersion@0
     _EAR_DLL_SetUserDistanceUnit@8=EAR_DLL_SetUserDistanceUnit@8
     _EAR_DLL_ShowLastError@0=EAR_DLL_ShowLastError@0
+ _EAR_DLL_ShutDownTimer@0=EAR_DLL_ShutDownTimer@0
+ _EAR_DLL_StartTimer@0=EAR_DLL_StartTimer@0
