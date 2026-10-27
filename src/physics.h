@@ -194,6 +194,7 @@ extern f32 g_afSurfaceMaxLoad[GRIP_WEATHERS][TRACK_SURFACES];
  * @ghidraAddress USA: 0x802a4af8
  * @ghidraAddress EUR: 0x802a72b8
  * @ghidraAddress JPN: 0x802a6d58
+ * @ghidraAddress BRD3D: 0x100b5970
  */
 extern f32 g_afSurfaceSlipLoad[GRIP_WEATHERS][TRACK_SURFACES];
 
@@ -370,6 +371,9 @@ void GetBodyPointVelocity(Vec3f *out, RigidBody *body, Vec3f *point);
 }
 #endif
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 /**
  * Cancel the sideways slip of the rear and the front of the body of a vehicle as far as the grip of
  * the tyres allows on their surfaces, and lean the body as it skids.
@@ -383,13 +387,11 @@ void GetBodyPointVelocity(Vec3f *out, RigidBody *body, Vec3f *point);
  * @ghidraAddress USA: 0x80259d14
  * @ghidraAddress EUR: 0x8025b2e4
  * @ghidraAddress JPN: 0x8025ac74
+ * @ghidraAddress BRD3D: 0x1006b5f0
  */
 void ApplySideGrip(
     RigidBody *body, f32 dt, f32 *rearLoad, f32 *frontLoad, u8 *rearSliding, u8 *frontSliding);
 
-#ifdef __cplusplus
-extern "C" {
-#endif
 /**
  * Drive a wheel on the ground, pushing the body along the way the wheel rolls by its drive, as far
  * as the weight on it lets it, and spin and turn the wheel.
