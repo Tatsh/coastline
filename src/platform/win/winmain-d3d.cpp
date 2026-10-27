@@ -286,7 +286,7 @@ LRESULT CALLBACK MainWindowProc(HWND hWnd, UINT nMessage, WPARAM wParam, LPARAM 
     LRESULT result;
 
     // The front end and the network play see each message first.
-    if (g_pActiveMenuScreen != nullptr && g_pActiveMenuScreen->bRunning) {
+    if (g_pActiveMenuScreen != nullptr && g_pActiveMenuScreen->IsRunning()) {
         FrontEndWindowProc(g_pFrontEndScratchBuffer, hWnd, nMessage, wParam, lParam);
         if (g_dwDirectPlaySessionActive) {
             HandleNetworkWindowMessage(hWnd, nMessage, wParam, lParam);

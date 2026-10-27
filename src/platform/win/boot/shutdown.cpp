@@ -18,7 +18,7 @@
 
 void ShutdownApplication(int nExitCode) {
     if (g_pActiveMenuScreen != nullptr && g_dwNullStubEnable) {
-        g_pActiveMenuScreen->bRunning = false;
+        g_pActiveMenuScreen->SetRunning(false);
         g_pActiveMenuScreen->ShutdownFrontEnd(false);
     }
     FreeAllRacerColorPanels();

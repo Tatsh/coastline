@@ -115,7 +115,7 @@ int GameState_RunFrontEnd(void) {
         g_dwGameState = GAME_STATE_LOAD_GAME;
         return true;
     }
-    if (!pScreen->bBuilt) {
+    if (!pScreen->IsBuilt()) {
 #if TGR_RENDERER == TGR_RENDERER_D3D
         DisplayMode *pMode = g_pMainRenderWindow->GetMode();
 
@@ -134,7 +134,7 @@ int GameState_RunFrontEnd(void) {
         if (!g_dwFrontEndAtRootMenu) {
             g_dwLastInputActivityTime = GetHighResolutionTime();
         } else if (g_dwLastInputActivityTime + ATTRACT_IDLE_MS < GetHighResolutionTime()) {
-            g_pActiveMenuScreen->bRunning = false;
+            g_pActiveMenuScreen->SetRunning(false);
             g_pActiveMenuScreen->ShutdownFrontEnd(false);
             g_dwGameMode = GAME_MODE_DEMO;
             g_dwRaceSessionType = RACE_SESSION_ATTRACT;

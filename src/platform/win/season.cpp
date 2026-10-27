@@ -150,7 +150,7 @@ bool RestoreSeasonProgressState(void) {
     if (g_SeasonResumeState.season < 4 && g_SeasonResumeState.year < 1) {
         g_dwSeasonFailed = true;
     }
-    g_pActiveMenuScreen->bRunning = false;
+    g_pActiveMenuScreen->SetRunning(false);
     g_pActiveMenuScreen->ShutdownFrontEnd(false);
     return false;
 }
