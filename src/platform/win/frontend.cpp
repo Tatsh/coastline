@@ -1096,6 +1096,16 @@ int ShowDisplayModeSelectMenu(void) {
     return 1;
 }
 
+#if TGR_RENDERER == TGR_RENDERER_D3D
+int ShowD3DDeviceSelectMenu(void) {
+    if (!ShowCachedMenuScreen(g_pCachedMenu_VideoSettings, BuildD3DDeviceSelectUI)) {
+        return 0;
+    }
+    PopulateVideoSettingsLists();
+    return 1;
+}
+#endif
+
 int IsGameCdInDrive(int nDrive) {
     char szRoot[MAX_PATH];
     char szVolume[MAX_PATH];

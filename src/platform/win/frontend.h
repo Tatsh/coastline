@@ -452,6 +452,23 @@ void BuildDisplayModeSelectUI(MenuScreen *pScreen);
 int PopulateVideoSettingsLists(void);
 
 /**
+ * Open Direct3D device selection and populate its settings lists.
+ *
+ * @ghidraAddress BRD3D: 0x10045460
+ * @ghidraAddress BRGlide: 0x1003e9b0
+ * @stub{BRGlide}
+ */
+int ShowD3DDeviceSelectMenu(void);
+
+/**
+ * Build Direct3D device selection on the supplied screen.
+ *
+ * @ghidraAddress BRD3D: 0x1004d640
+ * @stub
+ */
+void BuildD3DDeviceSelectUI(MenuScreen *pScreen);
+
+/**
  * @ghidraAddress BRD3D: 0x10a9d078
  * @ghidraAddress BRGlide: 0x10ac4100
  */
