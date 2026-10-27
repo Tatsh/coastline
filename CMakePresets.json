@@ -41,6 +41,9 @@
     },
     {
       "binaryDir": "${sourceDir}/build/${presetName}",
+      "cacheVariables": {
+        "CMAKE_EXPORT_COMPILE_COMMANDS": "ON"
+      },
       "generator": "Ninja",
       "hidden": true,
       "name": "base"

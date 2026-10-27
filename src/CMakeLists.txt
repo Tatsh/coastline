@@ -24,6 +24,7 @@ endforeach()
 # The entry points sit outside the subsystems. The Windows port is C++, and this directory links its
 # libraries, so the language is enabled here. The Nintendo 64 entry is assembly.
 if(TGR_PLATFORM STREQUAL "win")
+  target_compile_options(coastline_common INTERFACE "$<$<COMPILE_LANGUAGE:CXX>:-x;c++>")
   enable_language(CXX)
   add_subdirectory(platform/ear)
   add_subdirectory(platform/win)

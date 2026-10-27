@@ -69,6 +69,7 @@
     configurePresets: [super.configurePresets[0] { hidden: true }] + [
       {
         binaryDir: '${sourceDir}/build/${presetName}',
+        cacheVariables: { CMAKE_EXPORT_COMPILE_COMMANDS: 'ON' },
         generator: 'Ninja',
         hidden: true,
         name: 'base',
@@ -183,6 +184,7 @@
           cStandard: 'gnu89',
           compilerArgs: ['-G0', '-ffreestanding', '-fno-pic', '-mabi=32', '-march=vr4300', '-mno-abicalls'],
           compilerPath: 'mips64-libdragon-elf-gcc',
+          compileCommands: '${workspaceFolder}/build/n64-us/compile_commands.json',
           configurationProvider: 'ms-vscode.cmake-tools',
           defines: [
             'TGR_PLATFORM=1',
@@ -204,6 +206,36 @@
           intelliSenseMode: 'linux-gcc-x86',
           name: 'N64 (USA)',
         },
+      ] + [
+        {
+          cStandard: 'c23',
+          compilerArgs: ['-m32'],
+          compilerPath: '/usr/lib/mingw64-toolchain/bin/x86_64-w64-mingw32-g++',
+          compileCommands: '${workspaceFolder}/build/win-' + renderer + '/compile_commands.json',
+          configurationProvider: 'ms-vscode.cmake-tools',
+          cppStandard: 'c++23',
+          defines: [
+            'TGR_PLATFORM=2',
+            'TGR_PLATFORM_N64=1',
+            'TGR_PLATFORM_WIN=2',
+            'TGR_REGION=1',
+            'TGR_REGION_EU=3',
+            'TGR_REGION_JP=2',
+            'TGR_REGION_US=1',
+            'TGR_RENDERER=' + (if renderer == 'd3d' then '1' else '2'),
+            'TGR_RENDERER_D3D=1',
+            'TGR_RENDERER_GLIDE=2',
+          ],
+          includePath: [
+            '${workspaceFolder}/src',
+            '${workspaceFolder}/src/libultra/include',
+            '/usr/lib/mingw64-toolchain/x86_64-w64-mingw32/include',
+            '/usr/lib/mingw64-toolchain/lib/gcc/x86_64-w64-mingw32/16/include/',
+          ],
+          intelliSenseMode: 'windows-gcc-x86',
+          name: 'Windows (' + (if renderer == 'd3d' then 'Direct3D' else 'Glide') + ')',
+        }
+        for renderer in ['d3d', 'glide']
       ],
       env: {},
       version: 4,

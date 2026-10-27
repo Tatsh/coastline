@@ -2,6 +2,7 @@
   "configurations": [
     {
       "cStandard": "gnu89",
+      "compileCommands": "${workspaceFolder}/build/n64-us/compile_commands.json",
       "compilerArgs": [
         "-G0",
         "-ffreestanding",
@@ -34,8 +35,10 @@
     },
     {
       "cStandard": "c23",
+      "compileCommands": "${workspaceFolder}/build/win-d3d/compile_commands.json",
       "compilerArgs": ["-m32"],
       "compilerPath": "/usr/lib/mingw64-toolchain/bin/x86_64-w64-mingw32-g++",
+      "configurationProvider": "ms-vscode.cmake-tools",
       "cppStandard": "c++23",
       "defines": [
         "TGR_PLATFORM=2",
@@ -60,8 +63,10 @@
     },
     {
       "cStandard": "c23",
+      "compileCommands": "${workspaceFolder}/build/win-glide/compile_commands.json",
       "compilerArgs": ["-m32"],
       "compilerPath": "/usr/lib/mingw64-toolchain/bin/x86_64-w64-mingw32-g++",
+      "configurationProvider": "ms-vscode.cmake-tools",
       "cppStandard": "c++23",
       "defines": [
         "TGR_PLATFORM=2",
