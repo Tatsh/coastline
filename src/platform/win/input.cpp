@@ -22,6 +22,7 @@
 #include "platform/win/snapshot.h"
 #include "platform/win/sound.h"
 #include "platform/win/timer.h"
+#include "vehicle.h"
 
 IDirectInputA *g_pDirectInput;
 int g_dwDirectInputRefCount;
@@ -162,8 +163,6 @@ unsigned char IsInputBindingPressed(int nBinding) {
 
 int g_dwInputPollCounter;
 unsigned g_dwInputButtonMask;
-int g_dwPlayerMouseSensitivity;
-int g_aVehicles_LapCount;
 int g_bHudShowLapCounter = 1;
 int g_bHudShowRaceTimer = 1;
 int g_bHudShowLapTimes = 1;
@@ -212,7 +211,7 @@ static inline void ReadMouseBindingState(void) {
     // All three accumulators use the previous horizontal accumulator in the binary.
     state.lAccumulatedY = previous.lAccumulatedX + mouse.lY;
     state.lAccumulatedZ = previous.lAccumulatedX + mouse.lZ;
-    int sensitivity = g_dwPlayerMouseSensitivity;
+    int sensitivity = g_aVehicles[0].mouseSensitivity;
     if (sensitivity < 0) {
         sensitivity = 0;
     } else if (sensitivity > 7) {
@@ -273,7 +272,7 @@ unsigned ReadInputDevicesButtonMask(int *pnSteering, int *pnAcceleration) {
     ReadMouseBindingState();
     if (IsInputBindingPressed(15)) {
         if (!g_dwNetworkPlayMode || !g_bNetRaceStartReached || gInstantReplayActive ||
-            g_aVehicles_LapCount >= g_dwTotalLaps) {
+            g_aVehicles[0].lap >= g_dwTotalLaps) {
             g_bNetGamePaused = 1;
             g_dwInputButtonMask = 0x4000;
             return g_dwInputButtonMask;

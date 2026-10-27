@@ -398,18 +398,6 @@ extern int g_dwInputPollCounter;
 extern unsigned g_dwInputButtonMask;
 
 /**
- * Mouse sensitivity index from the first vehicle setup.
- * @ghidraAddress BRD3D: 0x10aced40
- */
-extern int g_dwPlayerMouseSensitivity;
-
-/**
- * Completed lap count of the first vehicle.
- * @ghidraAddress BRD3D: 0x10acee50
- */
-extern int g_aVehicles_LapCount;
-
-/**
  * Whether to display the lap counter.
  * @ghidraAddress BRD3D: 0x100bd3e8
  */

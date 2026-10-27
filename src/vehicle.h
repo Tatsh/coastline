@@ -6,6 +6,10 @@
  * The vehicles of a race, the cars they are, and their place on the track.
  */
 
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#include "platform/win/vehicle.h"
+#else
+
 #include <PR/gbi.h>
 #include <PR/ultratypes.h>
 
@@ -31,8 +35,8 @@
 #define VEHICLE_DENT_SIDES 8
 
 /* The detail of the model of a car. */
-#define VEHICLE_LODS 3           /*!< The levels of detail of the model, the nearest first. */
-#define VEHICLE_DISPLAY_LISTS 10 /*!< The display lists of each level of detail. */
+#define VEHICLE_LODS 3                 /*!< The levels of detail of the model, the nearest first. */
+#define VEHICLE_DISPLAY_LISTS 10       /*!< The display lists of each level of detail. */
 
 /** The display lists of a wheel of a car: the plain wheel, one not drawn, and one in the snow. */
 enum {
@@ -43,9 +47,9 @@ enum {
 };
 
 /* The textures whose palettes give the colors of a car. */
-#define VEHICLE_MATERIALS 12            /*!< The textures of the materials of a car. */
-#define VEHICLE_MATERIAL_PAINT 2        /*!< The texture whose palette is the paint. */
-#define VEHICLE_MATERIAL_HEADLIGHTS 10  /*!< The texture whose palette is the headlights. */
+#define VEHICLE_MATERIALS 12           /*!< The textures of the materials of a car. */
+#define VEHICLE_MATERIAL_PAINT 2       /*!< The texture whose palette is the paint. */
+#define VEHICLE_MATERIAL_HEADLIGHTS 10 /*!< The texture whose palette is the headlights. */
 #define VEHICLE_MATERIAL_REAR_LIGHTS 11 /*!< The texture whose palette is the rear lights. */
 
 /** The display lists of the model of a car that the renderer draws. */
@@ -1121,5 +1125,7 @@ void UpdateRacerSlotMotion(RacerSlot *slot);
  * @ghidraAddress JPN: 0x8022dc50
  */
 void UpdateRacerSlotRaceState(RacerSlot *slot);
+
+#endif
 
 #endif

@@ -106,6 +106,9 @@ typedef struct RigidBody {
                                       effect other than a skid or a roll plays. */
     u8 landed;   /*!< Set to 0x80 when a wheel lands, then cleared when the sound plays. */
     u8 skidding; /*!< Set to 0x80 when the tyres skid. */
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+    u8 replayEffects[5]; /*!< Additional effects and controls sampled by Windows replays. */
+#endif
 } RigidBody;
 
 /**
