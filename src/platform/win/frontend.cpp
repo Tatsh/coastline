@@ -118,6 +118,7 @@ MenuWidget *g_pExitSeasonConfirmMenu;
 MenuWidget *g_pCarSetupMenu;
 MenuWidget *g_pMultiplayerGameSetupMenu;
 MenuWidget *g_pSaveSeasonMenu;
+int g_dwModalDialogBlocking;
 MenuWidget *g_pSaveTimeAttackMenu;
 MenuWidget *g_pSaveSeasonEditMenu;
 MenuWidget *g_pSaveTimeAttackEditMenu;
@@ -344,6 +345,101 @@ void SaveFileList::GenerateNextSaveFileName(char *pszPattern, char **ppszName) {
     strcpy(*ppszName, prefix);
     strcat(*ppszName, number);
     strcat(*ppszName, extension);
+}
+
+int MenuWidget::InitSlideAnimation(int nDuration) {
+    fSlideStep = (static_cast<long double>(fSlideEnd) - fSlideStart) / nDuration;
+    fSavedX = fX;
+    fSavedY = fY;
+    fSavedZ = fZ;
+    return 1;
+}
+
+long double MenuWidget::ComputeSlideOffset(int nTicks) {
+    int square = static_cast<int>(static_cast<unsigned>(nTicks) * static_cast<unsigned>(nTicks));
+    return static_cast<long double>(square) * fSlideStep * 0.5f * 0.001f;
+}
+
+int MenuWidget::StartSlideAnimation() {
+    fX = fSavedX;
+    fY = fSavedY;
+    fZ = fSavedZ;
+    bSliding = 1;
+    return 1;
+}
+
+static inline bool UpdateMenuSlideAxis(MenuWidget *pWidget,
+                                       int bEnabled,
+                                       signed char direction,
+                                      const float &saved,
+                                      const float &target,
+                                       float &current) {
+    if (!bEnabled || direction == 0) {
+        return true;
+    }
+    if (direction != 1 && direction != -1) {
+        return false;
+    }
+    long double offset = pWidget->ComputeSlideOffset(pWidget->nSlideElapsed);
+    long double position = direction == 1 ? saved + offset : saved - offset;
+    current = position;
+    bool done = direction == 1 ? position >= target : !(position > target);
+    if (done) {
+        current = target;
+    }
+    return done;
+}
+
+int MenuWidget::UpdateSlideAnimation() {
+    if (bSliding) {
+        unsigned now = GetHighResolutionTime();
+        if (nSlideLastTime <= 0) {
+            nSlideLastTime = static_cast<int>(now);
+        }
+        unsigned delta = now - static_cast<unsigned>(nSlideLastTime);
+        nSlideLastTime = static_cast<int>(now);
+        nSlideElapsed = static_cast<int>(static_cast<unsigned>(nSlideElapsed) + delta);
+        bool doneX =
+            UpdateMenuSlideAxis(this, bSlideX, nSlideDirectionX, fSavedX, fSlideTargetX, fX);
+        bool doneY =
+            UpdateMenuSlideAxis(this, bSlideY, nSlideDirectionY, fSavedY, fSlideTargetY, fY);
+        if (doneX && doneY) {
+            nSlideElapsed = 0;
+            bSliding = 0;
+        }
+    }
+    return 1;
+}
+
+void MenuWidget::Initialize(MenuScreen *pOwner,
+                            float x,
+                            float y,
+                            unsigned dwItemFlags,
+                            unsigned dwSecondary,
+                            unsigned dwTertiary,
+                            int nMode,
+                            short nImage) {
+    pScreen = pOwner;
+    dwFlags |= dwItemFlags;
+    dwSecondaryFlags |= dwSecondary;
+    dwTertiaryFlags |= dwTertiary;
+    nImageMode = nMode;
+    fY = y;
+    fX = x;
+    anSpriteIds[0] = nImage;
+    nSpriteId = nImage;
+}
+
+bool MenuWidget::IsBlockedByModalDialog() {
+    if (g_pSaveSeasonMenu && g_pSaveSeasonMenu->pScreen->anPanelActive[1] == 1) {
+        if (this != g_pSaveSeasonMenu) {
+            g_dwModalDialogBlocking = 1;
+            return true;
+        }
+        return false;
+    }
+    g_dwModalDialogBlocking = 0;
+    return false;
 }
 
 MenuScreen::MenuScreen() {
@@ -1230,7 +1326,7 @@ int MultiplayerGameSetupUI_OnBackAsHost(MenuActionWidget *pItem) {
     if ((g_dwServiceProviderIndex == 2 || g_dwServiceProviderIndex == 3) &&
         g_pNetworkSessionJoinMenu) {
         g_pNetworkSessionJoinMenu->dwFlags &= ~0x10u;
-        g_pNetworkSessionJoinMenu->bJoining = 0;
+        g_pNetworkSessionJoinMenu->bTextStyle = 0;
     }
     return 0;
 }

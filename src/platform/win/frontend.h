@@ -96,11 +96,35 @@ public:
     virtual int SetEntryFromSaveFileName(const char *pszFileName, const char *pszDescription);
 };
 
-class MenuActionWidget;
+class MenuScreen;
+class MenuWidget;
+using MenuActionWidget = MenuWidget;
+using NetworkMenuWidget = MenuWidget;
+struct MenuItemList;
 
-/** An item of a panel of the front end. The layout is not recovered past the position. */
+struct MenuItemListVTable {
+    char abUnknown0[0x10]; /* +0x00 */
+    int(__thiscall *AddItem)(
+        MenuItemList *, const char *, unsigned, unsigned char, const RECT *, bool);
+    char abUnknown14[0x18]; /* +0x14 */
+    int(__thiscall *RemoveItem)(MenuItemList *, int);
+};
+
+struct MenuItemList {
+    MenuItemListVTable *pVTable;
+    char abUnknown4[0x1a928]; /* +0x04 */
+    unsigned short wItemCount;
+    char abUnknown1a92e[0xa6]; /* +0x1a92e */
+};
+
+/** An item of a panel of the front end. */
 class MenuWidget {
 public:
+    /**
+     * @ghidraAddress BRD3D: 0x100476c0
+     * @stub
+     */
+    MenuWidget();
     /**
      * @ghidraAddress BRD3D: 0x100478c0
      * @ghidraAddress BRGlide: 0x10040d10
@@ -125,47 +149,110 @@ public:
      */
     virtual bool Update();
 
+    /**
+     * @ghidraAddress BRD3D: 0x10047a10
+     * @stub
+     */
+    virtual int DrawCurrentImage();
+    /**
+     * @ghidraAddress BRD3D: 0x100479d0
+     * @stub
+     */
+    virtual int BlitSurfaceById(int nImage, int x, int y);
+    /**
+     * @ghidraAddress BRD3D: 0x10047980
+     * @stub
+     */
+    virtual int DrawSpriteRegion(const RECT *pRect);
+    /**
+     * @ghidraAddress BRD3D: 0x10047930
+     * @stub
+     */
+    virtual int DrawSprite();
+    /**
+     * @ghidraAddress BRD3D: 0x10047a60
+     * @stub
+     */
+    virtual bool UpdateHoverState();
+    /**
+     * @ghidraAddress BRD3D: 0x10047cb0
+     */
+    virtual int InitSlideAnimation(int nDuration);
+    /**
+     * @ghidraAddress BRD3D: 0x10047ce0
+     */
+    virtual long double ComputeSlideOffset(int nTicks);
+    /**
+     * @ghidraAddress BRD3D: 0x10047d10
+     */
+    virtual int StartSlideAnimation();
+    /**
+     * @ghidraAddress BRD3D: 0x10047d30
+     */
+    virtual int UpdateSlideAnimation();
+    /**
+     * @ghidraAddress BRD3D: 0x10047eb0
+     * @stub
+     */
+    virtual void
+    SetText(const char *pszText, unsigned dwTextFlags, unsigned char bStyle, const RECT *pRect);
+    /**
+     * @ghidraAddress BRD3D: 0x10047fb0
+     */
+    virtual void Initialize(MenuScreen *pOwner,
+                            float x,
+                            float y,
+                            unsigned dwItemFlags,
+                            unsigned dwSecondary,
+                            unsigned dwTertiary,
+                            int nMode,
+                            short nImage);
+    /**
+     * @ghidraAddress BRD3D: 0x10048060
+     */
+    virtual bool IsBlockedByModalDialog();
+
     char abUnknown4[4]; /* +0x04 */
     int (*pfnAction)(MenuActionWidget *);
     char abUnknownC[0x10]; /* +0x0c */
     unsigned dwFlags;
-    char abUnknown20[0x1c]; /* +0x20 */
-    float fX;               /*!< The left of the item on the screen. */
-    float fY;               /*!< The top of the item on the screen. */
-};
-
-struct MenuItemList;
-
-class MenuScreen;
-
-/** A menu action item linked to the screen that created it. */
-class MenuActionWidget : public MenuWidget {
-public:
-    char abUnknown44[0x2aa4]; /* +0x44 */
+    char abUnknown20[4]; /* +0x20 */
+    unsigned dwSecondaryFlags;
+    unsigned dwTertiaryFlags;
+    char abUnknown2c[4]; /* +0x2c */
+    float fSavedX;
+    float fSavedY;
+    float fSavedZ;
+    float fX;
+    float fY;
+    float fZ;
+    char abUnknown48[0x2920]; /* +0x48 */
+    int nImageMode;
+    char abUnknown296c[0xd4]; /* +0x296c */
+    short anSpriteIds[50];
+    char abUnknown2aa4[0x44]; /* +0x2aa4 */
     MenuScreen *pScreen;
-};
-
-struct MenuItemListVTable {
-    char abUnknown0[0x10]; /* +0x00 */
-    int(__thiscall *AddItem)(
-        MenuItemList *, const char *, unsigned, unsigned char, const RECT *, bool);
-    char abUnknown14[0x18]; /* +0x14 */
-    int(__thiscall *RemoveItem)(MenuItemList *, int);
-};
-
-struct MenuItemList {
-    MenuItemListVTable *pVTable;
-    char abUnknown4[0x1a928]; /* +0x04 */
-    unsigned short wItemCount;
-    char abUnknown1a92e[0xa6]; /* +0x1a92e */
-};
-
-class NetworkMenuWidget : public MenuWidget {
-public:
-    char abUnknown44[0x2b20]; /* +0x44 */
-    unsigned char bJoining;
-    char abUnknown2b65[0xcd3]; /* +0x2b65 */
+    char abUnknown2aec[0x78]; /* +0x2aec */
+    unsigned char bTextStyle;
+    char abUnknown2b65[0xc9f]; /* +0x2b65 */
+    int bSlideX;
+    int bSlideY;
+    signed char nSlideDirectionX;
+    signed char nSlideDirectionY;
+    char abUnknown380e[2]; /* +0x380e */
+    float fSlideTargetX;
+    float fSlideTargetY;
+    int bSliding;
+    float fSlideStart;
+    float fSlideEnd;
+    float fSlideStep;
+    int nSlideLastTime;
+    int nSlideElapsed;
+    char abUnknown3830[8]; /* +0x3830 */
     MenuItemList itemList;
+    short nSpriteId;
+    char abUnknown1e20e[2]; /* +0x1e20e */
+    const RECT *pImageRects;
 };
 
 /** The index in apWidgets of the mouse cursor of the first panel of the root screen. */
@@ -737,6 +824,11 @@ extern MenuWidget *g_pMultiplayerGameSetupMenu;
  * @ghidraAddress BRGlide: 0x10ac5d18
  */
 extern MenuWidget *g_pSaveSeasonMenu;
+
+/**
+ * @ghidraAddress BRD3D: 0x10aa2858
+ */
+extern int g_dwModalDialogBlocking;
 
 /**
  * The menu to save a time attack.
