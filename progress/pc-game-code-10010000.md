@@ -1,6 +1,6 @@
 # PC port game code from 0x10010000 to 0x10020000
 
-126 of 162 routines done.
+127 of 162 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -118,7 +118,7 @@ the same name, for a routine the port retained from the N64 game.
 | `EnqueueTextureFormatNode`                             |   ✅   |                 |      1 |     85 | `0x1001b030` |              | `long EnqueueTextureFormatNode(void * this, DisplayMode * pFormat)`                                                                                                                                                                          |
 | `EnumerateDirectDrawDrivers`                           |   ✅   |                 |      1 |     85 | `0x1001b9a0` |              | `long EnumerateDirectDrawDrivers(void)`                                                                                                                                                                                                      |
 | `IsDisplayModeSupportedByDevice`                       |   ✅   |                 |     10 |     81 | `0x1001acf0` |              | `bool IsDisplayModeSupportedByDevice(void * this, D3DDeviceNode * pDevice)`                                                                                                                                                                  |
-| `FormatGapToLeaderString`                              |        |                 |      2 |     79 | `0x10017c80` | `0x100151f0` | `void FormatGapToLeaderString(char * szOut, float flSeconds)`                                                                                                                                                                                |
+| `FormatGapToLeaderString`                              |   ✅   |                 |      2 |     79 | `0x10017c80` | `0x100151f0` | `char * FormatGapToLeaderString(Vehicle * vehicles, int index)`                                                                                                                                                                              |
 | `DDBDToBitDepth`                                       |   ✅   |                 |      1 |     77 | `0x1001a870` |              | `int DDBDToBitDepth(DWORD dwMask)`                                                                                                                                                                                                           |
 | `DirectDrawDriver::ShutdownDirectDrawDriver`           |   ✅   |                 |      1 |     77 | `0x1001b280` |              | `void ShutdownDirectDrawDriver(DirectDrawDriver * this)`                                                                                                                                                                                     |
 | `InitRandomRainParticles`                              |        | ✅ `0x80239cf0` |      1 |     75 | `0x10019490` | `0x10016a50` | `void InitRandomRainParticles(void)`                                                                                                                                                                                                         |
