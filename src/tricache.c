@@ -5,6 +5,199 @@
 #include "track.h"
 #include "trianglebox.h"
 
+#define RAY_HEADROOM 1.5f
+#define RAY_NEARBY_DISTANCE 5.0f
+#define RAY_CEILING_DEPTH -1.0f
+
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#define RAY_LESS(a, b) (!((a) >= (b)))
+#else
+#define RAY_LESS(a, b) ((a) < (b))
+#endif
+
+s32 CastRayAgainstTrack(Vec3f *outPoint,
+                        Vec3f *outNormal,
+                        Vec3f *origin,
+                        u16 *groundInstances,
+                        s32 *groundInstanceCount,
+                        u16 *nearbyInstances,
+                        s32 *nearbyCount,
+                        f32 *groundDistance,
+                        s32 *groundSurface) {
+    TrackTriangle *triangle, *end;
+    Vec3f ceilingNormal = {0.0f, 0.0f, 1.0f};
+    Vec3f groundNormal = {0.0f, 0.0f, 1.0f};
+    Vec3f line, direction, toVertex, hit;
+    f32 nearest, nearestCeiling, groundZ, ceilingZ, denominator, below;
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+    long double highRange, highBelow, highDenominator;
+#endif
+    s32 slot, groundHits = 0, groundCount = 0, nearby = 0, j;
+    s16 ceilingTriangle = 0;
+    u16 ceilingInstance = 0, instance;
+
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+    highRange = (long double)g_LoadedTrack.maxZ - g_LoadedTrack.minZ;
+    nearest = highRange;
+    nearest = highRange * nearest + 1.0f;
+#else
+    nearest = g_LoadedTrack.maxZ - g_LoadedTrack.minZ;
+    nearest = nearest * nearest + 1.0f;
+#endif
+    nearestCeiling = nearest;
+    groundZ = origin->z;
+    ceilingZ = origin->z;
+    direction.x = 0.0f;
+    direction.y = 0.0f;
+    direction.z = 1.0f;
+    line.x = origin->x;
+    line.y = origin->y;
+    line.z = 1.0f;
+    *groundSurface = 0;
+
+    slot = BuildTrackTriangleCache(line.x, line.y);
+    triangle = g_aTriCacheTriangles[slot];
+    end = triangle + g_awTriCacheTriCount[slot];
+    for (; triangle != end; triangle++) {
+        /* The vertical line meets the plane of each triangle facing up. */
+        if (RAY_LESS(triangle->normal.z, 0.0f)) {
+            continue;
+        }
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+        highDenominator = Vec3fDot(&direction, &triangle->normal);
+        denominator = highDenominator;
+        if (!(highDenominator < 0.0L) && !(highDenominator > 0.0L)) {
+#else
+        denominator = Vec3fDot(&direction, &triangle->normal);
+        if (denominator == 0.0f) {
+#endif
+            continue;
+        }
+        Vec3fSubtract(&toVertex, triangle->vertices[0], &line);
+        Vec3fMulAdd(&hit, &line, &direction, Vec3fDot(&toVertex, &triangle->normal) / denominator);
+        if (!PointInTriangle3D(&hit,
+                               triangle->vertices[0],
+                               triangle->vertices[1],
+                               triangle->vertices[2],
+                               &triangle->normal)) {
+            continue;
+        }
+
+        /* Ground triangles are inserted with the nearest first. */
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+        highBelow = (long double)origin->z + RAY_HEADROOM - hit.z;
+        below = highBelow;
+        if (0.0L <= highBelow) {
+#else
+        below = origin->z + RAY_HEADROOM - hit.z;
+        if (0.0f <= below) {
+#endif
+            groundHits++;
+            if (RAY_LESS(below, nearest)) {
+                *groundSurface = triangle->index;
+                nearest = below;
+                groundZ = hit.z;
+                if (RAY_LESS(triangle->normal.z, 0.0f)) {
+                    Vec3fNegate(&groundNormal, &triangle->normal);
+                } else {
+                    groundNormal.x = triangle->normal.x;
+                    groundNormal.y = triangle->normal.y;
+                    groundNormal.z = triangle->normal.z;
+                }
+                if (groundCount < RAY_INSTANCES) {
+                    groundInstances[groundCount++] = groundInstances[0];
+                }
+                groundInstances[0] = g_LoadedTrack.surfaces[triangle->index].instance + 1;
+                if (RAY_LESS(below, RAY_NEARBY_DISTANCE)) {
+                    for (j = g_LoadedTrack.triangleNearbyInstances[triangle->index];
+                         g_LoadedTrack.nearbyInstances[j] != 0;
+                         j++) {
+                        if (nearby < RAY_INSTANCES) {
+                            nearbyInstances[nearby++] = nearbyInstances[0];
+                        }
+                        nearbyInstances[0] = g_LoadedTrack.nearbyInstances[j];
+                    }
+                }
+            } else if (groundCount < RAY_INSTANCES) {
+                groundInstances[groundCount++] =
+                    g_LoadedTrack.surfaces[triangle->index].instance + 1;
+                if (RAY_LESS(below, RAY_NEARBY_DISTANCE)) {
+                    j = g_LoadedTrack.triangleNearbyInstances[triangle->index];
+                    for (instance = g_LoadedTrack.nearbyInstances[j]; instance != 0;
+                         instance = g_LoadedTrack.nearbyInstances[++j]) {
+                        if (nearby < RAY_INSTANCES) {
+                            nearbyInstances[nearby++] = instance;
+                        }
+                    }
+                }
+            }
+        }
+
+        /* Ceiling selection follows the original signed distance order. */
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+        highBelow = (long double)below - RAY_HEADROOM;
+        below = highBelow;
+        if (!(highBelow > 0.0L) && RAY_LESS(below, nearestCeiling)) {
+#else
+        below -= RAY_HEADROOM;
+        if (below <= 0.0f && below < nearestCeiling) {
+#endif
+            ceilingInstance = g_LoadedTrack.surfaces[triangle->index].instance + 1;
+            if (RAY_CEILING_DEPTH < below) {
+                ceilingTriangle = triangle->index;
+                nearestCeiling = below;
+                ceilingZ = hit.z;
+                if (RAY_LESS(triangle->normal.z, 0.0f)) {
+                    Vec3fNegate(&ceilingNormal, &triangle->normal);
+                } else {
+                    ceilingNormal.x = triangle->normal.x;
+                    ceilingNormal.y = triangle->normal.y;
+                    ceilingNormal.z = triangle->normal.z;
+                }
+            }
+        }
+    }
+
+    if (groundHits != 0) {
+        if (outPoint != NULL) {
+            outPoint->z = groundZ;
+            *groundDistance = nearest - RAY_HEADROOM;
+        }
+        if (outNormal != NULL) {
+            outNormal->x = groundNormal.x;
+            outNormal->y = groundNormal.y;
+            outNormal->z = groundNormal.z;
+        }
+    } else {
+        /* Without ground, the ceiling stands in for it. */
+        j = g_LoadedTrack.triangleNearbyInstances[(u16)ceilingTriangle];
+        for (instance = g_LoadedTrack.nearbyInstances[j]; instance != 0;
+             instance = g_LoadedTrack.nearbyInstances[++j]) {
+            if (nearby >= RAY_INSTANCES) {
+                nearbyInstances[RAY_INSTANCES - 1] = instance;
+                break;
+            }
+            nearbyInstances[nearby++] = instance;
+        }
+        if (groundCount < RAY_INSTANCES) {
+            groundInstances[groundCount] = ceilingInstance;
+        } else {
+            groundInstances[RAY_INSTANCES - 1] = ceilingInstance;
+        }
+        if (outPoint != NULL) {
+            outPoint->z = ceilingZ;
+        }
+        if (outNormal != NULL) {
+            outNormal->x = ceilingNormal.x;
+            outNormal->y = ceilingNormal.y;
+            outNormal->z = ceilingNormal.z;
+        }
+    }
+    *groundInstanceCount = 1;
+    *nearbyCount = nearby;
+    return groundHits;
+}
+
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
 s32 g_bTrackCollisionFrameToggle;
 #endif

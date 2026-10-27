@@ -269,7 +269,6 @@ extern "C" {
  * @ghidraAddress EUR: 0x80220680
  * @ghidraAddress JPN: 0x8021fe70
  * @ghidraAddress BRD3D: 0x100759d0
- * @stub{BRD3D}
  */
 s32 CastRayAgainstTrack(Vec3f *outPoint,
                         Vec3f *outNormal,
