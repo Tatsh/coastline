@@ -3,6 +3,28 @@
 #include "platform/win/render.h"
 #include "platform/win/trackrelocation.h"
 
+void ComputeTrackMaxCellIndex(TrackHeader *track) {
+    int maximum = 0;
+    int count = track->gridCellStarts[4096];
+    for (int i = 1; i < count; i++) {
+        if (track->gridTriangles[i] > maximum) {
+            maximum = track->gridTriangles[i];
+        }
+    }
+    track->surfaceCount = maximum + 1;
+}
+
+void ByteSwapTerrainVertex(TrackPoint *point) {
+    ByteSwap3DWords(&point->left);
+    ByteSwap3DWords(&point->position);
+    ByteSwap3DWords(&point->right);
+    unsigned distance;
+    std::memcpy(&distance, &point->distance, sizeof(distance));
+    distance = ((distance & 0x000000ffu) << 24) | ((distance & 0x0000ff00u) << 8) |
+               ((distance & 0x00ff0000u) >> 8) | ((distance & 0xff000000u) >> 24);
+    std::memcpy(&point->distance, &distance, sizeof(distance));
+}
+
 static inline void CopyTrackTextureBytes(void *destination, const u8 *source, unsigned count) {
     u8 *output = static_cast<u8 *>(destination);
     for (unsigned wordIndex = 0; wordIndex < count / sizeof(unsigned); wordIndex++) {

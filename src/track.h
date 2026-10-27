@@ -172,17 +172,17 @@ typedef struct {
 /** The header of the loaded track. Its fields join this structure as they are reconstructed. */
 typedef struct {
     u32 size; /*!< The bytes of the track once decompressed, first written here by the loading. */
-    s32 headerSize; /*!< The size of this header, which must be #TRACK_HEADER_SIZE. */
-    u8 unreconstructed8[0xC - 0x8];    /*!< Not yet reconstructed. */
-    TrackSurface *surfaces;            /*!< What each triangle belongs to, by its index. */
-    u8 unreconstructed10[0x14 - 0x10]; /*!< Not yet reconstructed. */
-    Vec3f *vertices;                   /*!< The corners of the triangles. */
-    s32 textureCount;                  /*!< The number of textures. */
-    ModelTexture *textures;            /*!< The textures of the placed models. */
-    u16 *gridTriangles;  /*!< The triangles of each cell of the 64 by 64 grid, cell by cell. */
-    u16 *gridCellStarts; /*!< Where the list of each cell starts in gridTriangles, by cell. */
-    f32 minX;            /*!< The least x of the track. */
-    f32 maxX;            /*!< The greatest x of the track. */
+    s32 headerSize;         /*!< The size of this header, which must be #TRACK_HEADER_SIZE. */
+    s32 surfaceCount;       /*!< The number of triangle surfaces. */
+    TrackSurface *surfaces; /*!< What each triangle belongs to, by its index. */
+    s32 vertexCount;        /*!< The number of triangle corners. */
+    Vec3f *vertices;        /*!< The corners of the triangles. */
+    s32 textureCount;       /*!< The number of textures. */
+    ModelTexture *textures; /*!< The textures of the placed models. */
+    u16 *gridTriangles;     /*!< The triangles of each cell of the 64 by 64 grid, cell by cell. */
+    u16 *gridCellStarts;    /*!< Where the list of each cell starts in gridTriangles, by cell. */
+    f32 minX;               /*!< The least x of the track. */
+    f32 maxX;               /*!< The greatest x of the track. */
     u8 unreconstructed30[0x38 - 0x30]; /*!< Not yet reconstructed. */
     f32 minZ;            /*!< The least z of the track, where lightning strikes from. */
     f32 maxZ;            /*!< The greatest z of the track. */

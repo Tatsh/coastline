@@ -3,6 +3,16 @@
 #include "track.h"
 
 /**
+ * @ghidraAddress BRD3D: 0x10037fa0
+ */
+void ComputeTrackMaxCellIndex(TrackHeader *track);
+
+/**
+ * @ghidraAddress BRD3D: 0x10038380
+ */
+void ByteSwapTerrainVertex(TrackPoint *point);
+
+/**
  * @ghidraAddress BRD3D: 0x10038010
  */
 void ByteSwapTrackInstance(TrackInstance *instance);
