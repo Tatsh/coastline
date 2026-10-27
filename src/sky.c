@@ -1,9 +1,12 @@
 #include "sky.h"
 
-#include <PR/R4300.h>
 #include <PR/gu.h>
 
-#include "input.h"
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#include "platform/win/render.h"
+#else
+#include <PR/R4300.h>
+#endif
 #include "render.h"
 #include "track.h"
 #include "util.h"
@@ -18,11 +21,38 @@
 #define FLASH_BLUE 0xFF
 
 /* The RSP takes physical addresses, which are the KSEG0 addresses less its base. */
-#define TO_RSP_ADDRESS(p) ((u32)((u8 *)(p) - K0BASE))
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#define TO_RSP_ADDRESS(p) (p)
 
+static inline void WriteSkyCombineMode(void) {
+    PackCombineMode(gDisplayListPtr++,
+                    0,
+                    0,
+                    0,
+                    1000 + G_CCMUX_TEXEL0,
+                    0,
+                    0,
+                    0,
+                    1000 + G_ACMUX_SHADE,
+                    0,
+                    0,
+                    0,
+                    1000 + G_CCMUX_TEXEL0,
+                    0,
+                    0,
+                    0,
+                    1000 + G_ACMUX_SHADE);
+}
+
+void RenderSkybox(const ViewportRect *viewports) {
+    const ViewportRect *rect;
+    f32(*mtx)[4];
+#else
+#define TO_RSP_ADDRESS(p) ((u32)((u8 *)(p) - K0BASE))
 void RenderSkybox(void) {
     ViewportRect *rect;
     Mtx *mtx;
+#endif
 
     gSPClipRatio(gDisplayListPtr++, FRUSTRATIO_1);
     if (g_dwSkyboxDisabled) {
@@ -30,7 +60,11 @@ void RenderSkybox(void) {
     }
 
     if (IsSkyFogFilled()) {
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+        rect = &viewports[g_dwCurrentSplitScreenIndex];
+#else
         rect = &g_aViewportRects[g_dwCurrentSplitScreenIndex];
+#endif
         if (g_dwLightningFlashCounter > 0 && (g_dwLightningFlashCounter & 1)) {
             DrawFilledRect(rect->x,
                            rect->y,
@@ -50,8 +84,13 @@ void RenderSkybox(void) {
                  g_pActiveCamera->position.x,
                  g_pActiveCamera->position.y,
                  g_pActiveCamera->position.z * SKY_DEPTH_SCALE);
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+    mtx = AllocDisplayListBlock()->matrix;
+    CopyMatrix4x4(g_afMvpMatrix, mtx);
+#else
     mtx = (Mtx *)AllocDisplayListBlock();
     guMtxF2L(g_afMvpMatrix, mtx);
+#endif
     gSPMatrix(gDisplayListPtr++,
               TO_RSP_ADDRESS(g_pProjectionMtx),
               G_MTX_PROJECTION | G_MTX_LOAD | G_MTX_NOPUSH);
@@ -60,6 +99,9 @@ void RenderSkybox(void) {
     gDPPipeSync(gDisplayListPtr++);
     gDPSetCycleType(gDisplayListPtr++, G_CYC_1CYCLE);
     if (g_dwWeatherActive) {
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+        WriteSkyCombineMode();
+#else
         /* Blend the sky towards the fog colour by the intensity of the fog. */
         gDPSetCombineLERP(gDisplayListPtr++,
                           TEXEL0,
@@ -78,10 +120,15 @@ void RenderSkybox(void) {
                           0,
                           0,
                           TEXEL0);
+#endif
         gDPSetEnvColor(gDisplayListPtr++, g_bFogR, g_bFogG, g_bFogB, g_bFogIntensity);
     } else {
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+        WriteSkyCombineMode();
+#else
         gDPSetCombineLERP(
             gDisplayListPtr++, 0, 0, 0, TEXEL0, 0, 0, 0, SHADE, 0, 0, 0, TEXEL0, 0, 0, 0, SHADE);
+#endif
     }
     gDPSetRenderMode(gDisplayListPtr++,
                      FORCE_BL | CVG_DST_FULL | GBL_c1(G_BL_CLR_IN, G_BL_0, G_BL_CLR_IN, G_BL_1),
@@ -90,6 +137,11 @@ void RenderSkybox(void) {
     gSPClearGeometryMode(gDisplayListPtr++,
                          G_ZBUFFER | G_SHADE | G_SHADING_SMOOTH | G_FOG | G_LIGHTING |
                              G_TEXTURE_GEN | G_TEXTURE_GEN_LINEAR);
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+    if (g_dwWeatherActive) {
+        gSPSetGeometryMode(gDisplayListPtr++, G_FOG);
+    }
+#endif
 
     /* Cull the back faces, or the front faces when only one of the track and view is mirrored. */
     gSPSetGeometryMode(gDisplayListPtr++,

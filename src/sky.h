@@ -7,6 +7,9 @@
  */
 
 #include <PR/ultratypes.h>
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#include "render.h"
+#endif
 
 /**
  * Whether the sky is left undrawn.
@@ -14,6 +17,7 @@
  * @ghidraAddress USA: 0x8028aa5c
  * @ghidraAddress EUR: 0x8028cc64
  * @ghidraAddress JPN: 0x8028c734
+ * @ghidraAddress BRD3D: 0x106c6608
  */
 extern s32 g_dwSkyboxDisabled;
 
@@ -37,6 +41,21 @@ s32 IsSkyFogFilled(void);
 }
 #endif
 
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#ifdef __cplusplus
+extern "C" {
+#endif
+/**
+ * Draw the current sky or fog fill and set the frame's clipping ratio.
+ *
+ * @param viewports The records of the views, indexed by the current split-screen view.
+ * @ghidraAddress BRD3D: 0x100180b0
+ */
+void RenderSkybox(const ViewportRect *viewports);
+#ifdef __cplusplus
+}
+#endif
+#else
 /**
  * Draw the sky of the current view, and set the clipping ratio for the frame.
  *
@@ -45,5 +64,6 @@ s32 IsSkyFogFilled(void);
  * @ghidraAddress JPN: 0x80230c78
  */
 void RenderSkybox(void);
+#endif
 
 #endif
