@@ -172,6 +172,8 @@ Model *DecompressModel(void *dst, u32 romOffset);
  * @ghidraAddress USA: 0x8021d070
  * @ghidraAddress EUR: 0x8021e270
  * @ghidraAddress JPN: 0x8021db40
+ * @ghidraAddress BRD3D: 0x10035060
+ * @ghidraAddress BRGlide: 0x1002e711
  */
 void RemapPointer(u32 *pointer, u32 lo, u32 hi, u32 base);
 
@@ -186,6 +188,8 @@ void RemapPointer(u32 *pointer, u32 lo, u32 hi, u32 base);
  * @ghidraAddress USA: 0x8021d098
  * @ghidraAddress EUR: 0x8021e298
  * @ghidraAddress JPN: 0x8021db68
+ * @ghidraAddress BRD3D: 0x10035089
+ * @ghidraAddress BRGlide: 0x1002e73a
  */
 void FixupDisplayListPointers(Gfx *displayList, u32 lo, u32 hi, u32 base);
 
