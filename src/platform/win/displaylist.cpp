@@ -836,6 +836,64 @@ void TransformVertexToScreen(
     pDest->fBlue = fBlue;
 }
 
+static inline float TransformGbiVertexComponent(const Vec3f &position, int nColumn) {
+    long double fYz = static_cast<long double>(position.y) * g_GbiMvpMatrix[1][nColumn] +
+                      static_cast<long double>(position.z) * g_GbiMvpMatrix[2][nColumn];
+    return fYz + static_cast<long double>(position.x) * g_GbiMvpMatrix[0][nColumn] +
+           g_GbiMvpMatrix[3][nColumn];
+}
+
+static inline GbiCommand *LoadUnlitGbiVertices(GbiCommand *pCommand, bool bUseZBuffer) {
+    FlushIndexedRenderBuffer();
+    int nFirst = pCommand->w0 >> 16 & 0xff;
+    int nCount = pCommand->w0 >> 10 & 0x3f;
+    const ConvertedModelVertex *pVertices = pCommand->vertexData.pConverted;
+    for (int nVertex = 0; nVertex < nCount; nVertex++) {
+        GbiVertex &vertex = g_aGbiVertexCache[nFirst + nVertex];
+        const ConvertedModelVertex &input = pVertices[nVertex];
+        vertex.source.fX = TransformGbiVertexComponent(input.position, 0);
+        vertex.source.fY = TransformGbiVertexComponent(input.position, 1);
+        vertex.source.fZ = TransformGbiVertexComponent(input.position, 2);
+        vertex.source.fW = TransformGbiVertexComponent(input.position, 3);
+        vertex.source.fS = input.texture.x;
+        vertex.source.fT = input.texture.y;
+        vertex.source.fRed = static_cast<long double>(input.normal.x) * (1.0f / 255.0f);
+        vertex.source.fGreen = static_cast<long double>(input.normal.y) * (1.0f / 255.0f);
+        vertex.source.fBlue = static_cast<long double>(input.normal.z) * (1.0f / 255.0f);
+        vertex.nClipFlags = ComputeVertexClipCodes(&vertex.source);
+        if (vertex.nClipFlags != 0) {
+            continue;
+        }
+        if (bUseZBuffer) {
+            TransformVertexToScreen(&vertex,
+                                    &vertex.source,
+                                    vertex.source.fRed,
+                                    vertex.source.fGreen,
+                                    vertex.source.fBlue);
+        } else {
+            float fRhw = 1.0L / vertex.source.fW;
+            vertex.fX = static_cast<long double>(g_fViewportScaleX) * fRhw * vertex.source.fX +
+                        g_fViewportTranslateX;
+            vertex.fY = static_cast<long double>(g_fViewportScaleY) * fRhw * vertex.source.fY +
+                        g_fViewportTranslateY;
+            vertex.fZ = 0.999f;
+            vertex.fRhw = 1.0f / 65535.0f;
+            vertex.fRed = vertex.source.fRed;
+            vertex.fGreen = vertex.source.fGreen;
+            vertex.fBlue = vertex.source.fBlue;
+        }
+    }
+    return pCommand + 1;
+}
+
+GbiCommand *HandleGbiVertexUnlit(GbiCommand *pCommand) {
+    return LoadUnlitGbiVertices(pCommand, true);
+}
+
+GbiCommand *HandleGbiVertexUnlitNoZBuffer(GbiCommand *pCommand) {
+    return LoadUnlitGbiVertices(pCommand, false);
+}
+
 // The scale from a channel of the colour of a vertex to a byte.
 #define VERTEX_COLOR_SCALE 255.0f
 
