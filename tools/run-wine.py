@@ -23,8 +23,6 @@ def arguments():
                         help='Wine prefix, created when absent.')
     parser.add_argument('--build-dir', type=Path, default=ROOT / 'build/win-d3d',
                         help='CMake directory with the rebuilt DLL and launchers.')
-    parser.add_argument('--original', action='store_true',
-                        help='Use the original CD binaries for a Wine baseline.')
     parser.add_argument('--stage-only', action='store_true',
                         help='Copy files without Wine; configure the prefix on a later run.')
     parser.add_argument('--no-launch', action='store_true',
@@ -49,26 +47,26 @@ def stage(options):
     build = options.build_dir.expanduser().resolve()
     if not (data / 'BossRally.pod').is_file():
         raise ValueError(f'BossRally.pod is absent from {data}. Use --data with the extracted CD.')
-    for name in ('BRD3D.dll', 'BRally.exe', 'BRString.dll'):
+    for name in ('BRString.dll',):
         if not (data / name).is_file():
             raise ValueError(f'{name} is absent from the extracted CD directory {data}.')
     rebuilt = {
         'BRD3D.dll': build / 'src/BRD3D.dll',
         'BRally.exe': build / 'src/platform/win/launcher/BRally.exe',
+        'BossRally.exe': build / 'src/platform/win/launcher/BossRally.exe',
     }
-    if not options.original:
-        missing = [str(path) for path in rebuilt.values() if not path.is_file()]
-        if missing:
-            raise ValueError('Rebuilt binaries are absent:\n' + '\n'.join(missing)
-                             + '\nBuild BRD3D and coastline_brally first.'
-                             + '\nUse --original explicitly to test the CD binaries instead.')
+    missing = [str(path) for path in rebuilt.values() if not path.is_file()]
+    if missing:
+        raise ValueError('Rebuilt binaries are absent:\n' + '\n'.join(missing)
+                         + '\nBuild BRD3D, coastline_brally, and coastline_bossrally first.')
     installation = prefix / 'drive_c/BossRally'
     if data == installation or data in installation.parents or installation in data.parents:
         raise ValueError('The installation and extracted CD directories must be separate.')
     installation.mkdir(parents=True, exist_ok=True)
     for source in data.rglob('*'):
         relative = source.relative_to(data)
-        if any(part.lower() in ('msvcrt.dll', 'boot.exe', 'setvideo.exe')
+        if any(part.lower() in ('msvcrt.dll', 'boot.exe', 'setvideo.exe', 'brally.exe',
+                               'bossrally.exe', 'brd3d.dll', 'brglide.dll', 'earpds.dll')
                for part in relative.parts):
             continue
         destination = installation / relative
@@ -77,12 +75,9 @@ def stage(options):
         elif source.is_file():
             destination.parent.mkdir(parents=True, exist_ok=True)
             copy_file(source, destination)
-    if not options.original:
-        for name, source in rebuilt.items():
-            shutil.copy2(source, installation / name)
-    ear = ROOT / '.wiswa-ci/earpds.dll'
-    if ear.is_file():
-        copy_file(ear, installation / 'earpds.dll')
+    for name, source in rebuilt.items():
+        shutil.copy2(source, installation / name)
+        print(f'Copied {source} to {installation / name}', flush=True)
     ini = installation / 'BossRally.ini'
     if not ini.exists():
         ini.write_text('[Video]\nDriver=D3D\n\n[Game]\nPlayMusic=0\nPlaySFX=1\n',
@@ -99,8 +94,6 @@ def stage(options):
     else:
         drive.symlink_to(installation, target_is_directory=True)
     print(f'Prepared {installation}', flush=True)
-    print('Binary mode: original CD.' if options.original else 'Binary mode: rebuilt game.',
-          flush=True)
     return prefix, installation
 
 
@@ -117,17 +110,18 @@ def main():
         raise ValueError(f'Wine executable {options.wine!r} was not found.')
     wine = str(Path(wine).resolve())
     environment = dict(os.environ, WINEPREFIX=str(prefix))
-    environment.setdefault('WINEDEBUG', '-all')
+    environment.setdefault('WINEDEBUG', 'err+all')
+    overrides = environment.get('WINEDLLOVERRIDES', '')
+    environment['WINEDLLOVERRIDES'] = overrides + (';' if overrides else '') + 'mscoree,mshtml=d'
 
     def run(*command):
         subprocess.run([wine, *command], env=environment, cwd=installation, check=True)
 
-    run('wineboot', '-u')
+    print('Configuring the Wine installation registry entry.', flush=True)
     run('reg', 'add', INSTALL_KEY, '/v', 'Directory', '/t', 'REG_SZ',
         '/d', INSTALL_DIRECTORY, '/f', '/reg:32')
     run('reg', 'add', r'HKCU\Software\Wine\Drives', '/v', 'd:', '/t', 'REG_SZ',
         '/d', 'cdrom', '/f')
-    run('wineboot', '-u')
     if options.no_launch:
         print('Wine prefix configured. Run this script again to start the game.')
         return 0
