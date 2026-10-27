@@ -314,6 +314,10 @@ void RenderTrackInstance(s32 index, s32 vehicles, s32 deferred);
 }
 #endif
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /**
  * Order two cells in view by their distance from the camera.
  *
@@ -323,8 +327,13 @@ void RenderTrackInstance(s32 index, s32 vehicles, s32 deferred);
  * @ghidraAddress USA: 0x80234fc0
  * @ghidraAddress EUR: 0x802364d0
  * @ghidraAddress JPN: 0x802362d0
+ * @ghidraAddress BRD3D: 0x10010d90
  */
 s32 CompareVisibleCellDistance(const void *a, const void *b);
+
+#ifdef __cplusplus
+}
+#endif
 
 /**
  * List the placed models of the cells in view, the nearest cells first, mark the models the

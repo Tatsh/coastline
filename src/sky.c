@@ -20,11 +20,6 @@
 /* The RSP takes physical addresses, which are the KSEG0 addresses less its base. */
 #define TO_RSP_ADDRESS(p) ((u32)((u8 *)(p) - K0BASE))
 
-s32 IsSkyFogFilled(void) {
-    return g_dwNightMode != 0 || g_dwSnowMode != 0 || g_dwRainMode != 0 ||
-           g_LoadedTrack.skyDisplayList == NULL || g_dwNumLocalPlayers == 2;
-}
-
 void RenderSkybox(void) {
     ViewportRect *rect;
     Mtx *mtx;

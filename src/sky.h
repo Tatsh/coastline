@@ -17,6 +17,10 @@
  */
 extern s32 g_dwSkyboxDisabled;
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /**
  * Whether the sky is a fill of the fog colour: at night, in snow or rain, on a track without a
  * sky, or with two players.
@@ -25,8 +29,13 @@ extern s32 g_dwSkyboxDisabled;
  * @ghidraAddress USA: 0x8022f900
  * @ghidraAddress EUR: 0x80230e10
  * @ghidraAddress JPN: 0x80230c10
+ * @ghidraAddress BRD3D: 0x10018070
  */
 s32 IsSkyFogFilled(void);
+
+#ifdef __cplusplus
+}
+#endif
 
 /**
  * Draw the sky of the current view, and set the clipping ratio for the frame.
