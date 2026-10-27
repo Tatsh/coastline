@@ -2747,6 +2747,22 @@ void AddNetworkPlayerSlot(int slotIndex) {
     g_dwNumVehicles = static_cast<s32>(static_cast<u32>(g_dwNumVehicles) + 1u);
 }
 
+void RemoveNetworkPlayerById(int slotIndex) {
+    for (int index = 0; index < g_dwNumActiveVehicles; index++) {
+        Vehicle &vehicle = g_aVehicles[index];
+        if (vehicle.GetGridIndex() == slotIndex) {
+            vehicle.ClearDriver();
+            StopAudioChannel(index * 2);
+            const int count = g_dwNumVehicles;
+            for (int racer = 0; racer < count; racer++) {
+                if (g_aRacerSlots[racer].GetVehicle() == &vehicle) {
+                    g_aRacerSlots[racer].SetVehicle(nullptr);
+                }
+            }
+        }
+    }
+}
+
 int g_anDepartedPlayerSlotStack[PLAYER_SLOT_STACK_SIZE];
 int g_nDepartedPlayerStackTop;
 int g_anJoinedPlayerSlotStack[PLAYER_SLOT_STACK_SIZE];

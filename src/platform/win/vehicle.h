@@ -386,6 +386,9 @@ public:
     auto GetDriver() const {
         return driver;
     }
+    void ClearDriver() {
+        driver = nullptr;
+    }
     s32 GetEffectPriority() const {
         return effectPriority;
     }
