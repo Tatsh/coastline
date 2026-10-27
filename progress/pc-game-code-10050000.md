@@ -1,6 +1,6 @@
 # PC port game code from 0x10050000 to 0x10060000
 
-62 of 96 routines done.
+63 of 96 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -28,7 +28,7 @@ the same name, for a routine the port retained from the N64 game.
 | `BuildJoinCreateGameUI`                   |   🚧   |                 |      2 |   1532 | `0x10056ff0` | `0x1004fea0` | `void BuildJoinCreateGameUI(MenuScreen * pScreen)`                                                                          |
 | `BuildModemConnectionUI`                  |   🚧   |                 |      2 |   1498 | `0x10056a10` | `0x1004f8c0` | `void BuildModemConnectionUI(MenuScreen * pScreen)`                                                                         |
 | `MenuItemList::ProcessInput`              |   ✅   |                 |      1 |   1453 | `0x1005c590` | `0x100553b0` | `int ProcessInput(MenuItemList * this, int * selection)`                                                                    |
-| `BuildTimeAttackMenuUI`                   |   🚧   |                 |      2 |   1091 | `0x10059760` | `0x10052610` | `void BuildTimeAttackMenuUI(MenuScreen * pScreen)`                                                                          |
+| `BuildTimeAttackMenuUI`                   |   ✅   |                 |      2 |   1091 | `0x10059760` | `0x10052610` | `int BuildTimeAttackMenuUI(MenuScreen * screen)`                                                                            |
 | `MenuItemList::AddItem`                   |   ✅   |                 |      1 |    997 | `0x1005bc10` | `0x10054a30` | `int AddItem(MenuItemList * this, char * text, uint flags, uchar style, RECT * bounds, bool full)`                          |
 | `BuildSeasonCongratsUI`                   |   📝   |                 |      2 |    923 | `0x10051990` | `0x1004a840` | `void BuildSeasonCongratsUI(MenuScreen * pScreen)`                                                                          |
 | `SaveFileList::GenerateNextSaveFileName`  |   ✅   |                 |      1 |    803 | `0x1005d110` | `0x10055f40` | `void GenerateNextSaveFileName(SaveFileList * this, char * pszPattern, char * * ppszName)`                                  |

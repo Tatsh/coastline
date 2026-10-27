@@ -1,6 +1,6 @@
 # PC port game code from 0x10060000 to 0x10070000
 
-163 of 175 routines done.
+165 of 175 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -65,14 +65,14 @@ the same name, for a routine the port retained from the N64 game.
 | `SumBodyForces`                          |   ✅   | ✅ `0x802594bc` |      1 |    310 | `0x1006aeb0` | `0x10063e60` | `void SumBodyForces(RigidBody * body)`                                                                                             |
 | `ComputeDragForce`                       |   ✅   | ✅ `0x8025e820` |      1 |    305 | `0x1006ef80` | `0x10067f30` | `void ComputeDragForce(RigidBody * body, RigidBodyForce * force)`                                                                  |
 | `BlitPaintImageToPixels`                 |   ✅   |                 |      5 |    297 | `0x10061480` |              | `int BlitPaintImageToPixels(uchar * pImage, int nLeft, int nRight, int nTop, int nBottom, uchar * pDest, int nWidth, int nHeight)` |
-| `RacerSlot::UpdateRacerSlotRaceState`    |        | ✅ `0x8022cf88` |      1 |    286 | `0x10069370` | `0x100623e0` | `undefined UpdateRacerSlotRaceState(RacerSlot * this)`                                                                             |
 | `Vehicle::SaveLastLapSnapshot`           |        | ✅ `0x8022af90` |      1 |    286 | `0x100679c0` | `0x10060a30` | `undefined SaveLastLapSnapshot(Vehicle * this)`                                                                                    |
 | `ApplyPaintDamageOverlay`                |   ✅   |                 |      1 |    286 | `0x10061290` | `0x1005a300` | `void ApplyPaintDamageOverlay(int damage, uchar * pixels, int width, int height)`                                                  |
+| `RacerSlot::UpdateRacerSlotRaceState`    |   ✅   | ✅ `0x8022cf88` |      1 |    286 | `0x10069370` | `0x100623e0` | `void UpdateRacerSlotRaceState(RacerSlot * this)`                                                                                  |
 | `ApplyGhostKeyframeToVehicle`            |   ✅   |                 |      2 |    282 | `0x1006abd0` | `0x10063b80` | `void ApplyGhostKeyframeToVehicle(Vehicle * pVehicle, int nRecording)`                                                             |
 | `ComputeAabbCornerPlaneClipCode`         |   ✅   |                 |      1 |    278 | `0x1006d540` | `0x100664f0` | `int ComputeAabbCornerPlaneClipCode(Vec3f * v, int mask)`                                                                          |
 | `LoadAllSoundEffects`                    |   ✅   | ✅ `0x8022baa0` |      1 |    273 | `0x100682a0` | `0x10061310` | `void LoadAllSoundEffects(void)`                                                                                                   |
 | `ComputeSpringForces`                    |   ✅   | ✅ `0x8025edbc` |      1 |    265 | `0x1006f540` | `0x100684f0` | `void ComputeSpringForces(RigidBody * body)`                                                                                       |
-| `SortRacersByPosition`                   |        | ✅ `0x80229550` |      1 |    258 | `0x10066510` | `0x1005f580` | `undefined SortRacersByPosition()`                                                                                                 |
+| `SortRacersByPosition`                   |   ✅   | ✅ `0x80229550` |      1 |    258 | `0x10066510` | `0x1005f580` | `void SortRacersByPosition(void)`                                                                                                  |
 | `ComputeVehicleAccelerations`            |   ✅   | ✅ `0x8025980c` |      1 |    238 | `0x1006b170` | `0x10064120` | `void ComputeVehicleAccelerations(RigidBody * body)`                                                                               |
 | `ApplyEnemyCarColorPanels`               |   ✅   |                 |      1 |    233 | `0x100661b0` | `0x1005f220` | `void ApplyEnemyCarColorPanels(Vehicle * vehicle, RacerSlot * slot)`                                                               |
 | `ComputeWheelLocalVelocity`              |   ✅   | ✅ `0x80259a18` |      4 |    228 | `0x1006b340` | `0x100642f0` | `void ComputeWheelLocalVelocity(Vec3f * out, RigidBody * body, RigidBody * wheel)`                                                 |
