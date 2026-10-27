@@ -276,12 +276,23 @@ void Vec3fClear(Vec3f *v) {
     v->x = 0.0f;
 }
 
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+long double Vec2fDistance(Vec2f *a, Vec2f *b) {
+    long double dx = (long double)a->x - b->x;
+    long double dy = (long double)a->y - b->y;
+    f32 roundedDx = dx;
+    f32 square = dx * roundedDx + dy * dy;
+
+    return sqrtl(square);
+}
+#else
 f32 Vec2fDistance(Vec2f *a, Vec2f *b) {
     f32 dx = a->x - b->x;
     f32 dy = a->y - b->y;
 
     return sqrtf(dx * dx + dy * dy);
 }
+#endif
 
 f32 Vec3fDistance(Vec3f *a, Vec3f *b) {
     f32 dx = a->x - b->x;

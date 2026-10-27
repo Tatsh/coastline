@@ -398,8 +398,13 @@ void Vec3fClear(Vec3f *v);
  * @ghidraAddress JPN: 0x80225564
  * @ghidraAddress BRD3D: 0x1003b0a0
  * @ghidraAddress BRGlide: 0x10034720
+ * @stub{BRGlide}
  */
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+long double Vec2fDistance(Vec2f *a, Vec2f *b);
+#else
 f32 Vec2fDistance(Vec2f *a, Vec2f *b);
+#endif
 
 /**
  * The distance between two points.
