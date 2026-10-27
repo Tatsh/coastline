@@ -716,6 +716,11 @@ int CreateGameUI_EnableContinueIfNameEntered(MenuWidget *pWidget);
 int PlayerNameEntryUI_EnableContinueIfNameEntered(MenuWidget *pWidget);
 
 /**
+ * @ghidraAddress BRD3D: 0x1003eef0
+ */
+int OnPlayerNameEdited(MenuWidget *pWidget);
+
+/**
  * Enable continuing after a modem number has been entered.
  *
  * @ghidraAddress BRD3D: 0x1003f020
@@ -2415,9 +2420,8 @@ int MultiplayerGameSetupUI_OnCycleCarClass(MenuWidget *pWidget);
 
 /**
  * @ghidraAddress BRD3D: 0x100563e0
- * @stub
  */
-void BuildPlayerNameEntryUI(MenuScreen *pScreen);
+int BuildPlayerNameEntryUI(MenuScreen *pScreen);
 
 /**
  * @ghidraAddress BRD3D: 0x10056ff0

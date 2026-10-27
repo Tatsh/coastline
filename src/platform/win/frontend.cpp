@@ -1963,6 +1963,18 @@ int OnTcpIpPortEdited(MenuWidget *pWidget) {
     return SynchronizeEditedMenuText(pWidget, g_GlobalRallyConfig.szTcpIpPort);
 }
 
+int OnPlayerNameEdited(MenuWidget *pWidget) {
+    ProcessMenuTextEditInput(pWidget, 0);
+    const char *text = pWidget->GetFont(0).GetText();
+    if (strlen(text)) {
+        g_pPlayerNameContinueItem->SetFlags(g_pPlayerNameContinueItem->GetFlags() & ~0x10u);
+    }
+    if (_stricmp(g_GlobalRallyConfig.szPlayerName, text)) {
+        strcpy(g_GlobalRallyConfig.szPlayerName, text);
+    }
+    return 1;
+}
+
 int ShowVideoOptionsMenu(void) {
     return ShowCachedMenuScreen(g_pCachedMenu_InputConfig, BuildVideoOptionsUI);
 }
@@ -2339,10 +2351,14 @@ int NetworkCarSetupUI_OnEscape(MenuWidget *pWidget) {
     return 1;
 }
 
+static inline void BuildPlayerNameEntryScreen(MenuScreen *screen) {
+    BuildPlayerNameEntryUI(screen);
+}
+
 int ShowMultiplayerNameScreen(void) {
     SetActiveMenuItemText(" ");
     ResolveRaceSelections();
-    return ShowCachedMenuScreen(g_pCachedMenu_MultiplayerName, BuildPlayerNameEntryUI);
+    return ShowCachedMenuScreen(g_pCachedMenu_MultiplayerName, BuildPlayerNameEntryScreen);
 }
 
 int ShowJoinCreateGameScreen(void) {
@@ -4437,6 +4453,82 @@ int BuildResultsSummaryExitSeasonConfirmUI(MenuScreen *screen) {
                                ResultsSummaryExitSeasonConfirmUI_OnYes,
                                ResultsSummaryExitSeasonConfirmUI_OnNo,
                                true);
+}
+
+int BuildPlayerNameEntryUI(MenuScreen *screen) {
+    screen->SetCurrentPanelIndex(0);
+    screen->SetPanelActive(screen->GetPanelCount(), 1);
+    MenuPanel *panel = new (std::nothrow) MenuPanel();
+    screen->SetPanel(screen->GetPanelCount(), panel);
+    if (!panel) {
+        ShowErrorMessage(4);
+    }
+    screen->SetPanelCount(screen->GetPanelCount() + 1);
+    panel->SetScreen(screen);
+    panel->SetFlags(0);
+    panel->SetX(190);
+    panel->SetY(130);
+    AddMenuWidget(panel, screen, 0, 0, 9, 0, 0);
+    panel->SetWidgetCount(panel->GetWidgetCount() + 1);
+    SetMenuWidgetLabel(
+        AddMenuWidget(panel, screen, panel->GetX(), 10, 0x100009, 1, -1), 0x5c, &g_rcMenuTitleBar);
+    panel->SetWidgetCount(panel->GetWidgetCount() + 1);
+    MenuWidget *widget =
+        AddMenuWidget(panel, screen, panel->GetX(), panel->GetY(), 0x100009, 1, -1);
+    widget->SetSpriteId(0x34);
+    widget->SetText(GetStringResource(0x3c), 1, 4, &g_rcMenuCenterPanel);
+    panel->SetWidgetCount(panel->GetWidgetCount() + 1);
+    AddMenuWidget(panel, screen, 156, 172, 9, 0, 57);
+    panel->SetWidgetCount(panel->GetWidgetCount() + 1);
+    widget = AddMenuWidget(panel, screen, panel->GetX(), 174, 0x200001, 1, -1);
+    widget->SetUpdateCallback(OnPlayerNameEdited);
+    widget->SetActionCallback(PlayerNameEntryUI_OnToggleTextEdit);
+    widget->SetTextEditCompleteCallback(PlayerNameEntryUI_EnableContinueIfNameEntered);
+    widget->SetSpriteId(3);
+    widget->SetText(g_szEmptyUiString, 1, 1, &g_rcMenuCenterPanel);
+    if (strlen(g_GlobalRallyConfig.szPlayerName) <= 1) {
+        strcpy(g_GlobalRallyConfig.szPlayerName, GetStringResource(0xc0));
+    }
+    MenuFont *font = &widget->GetFont(0);
+    font->SetText(g_GlobalRallyConfig.szPlayerName);
+    font->MeasureText();
+    widget->SetBoundsLeft(font->SetBoundsLeft(186));
+    widget->SetBoundsRight(font->SetBoundsRight(316));
+    widget->SetBoundsTop(font->SetBoundsTop(172));
+    widget->SetBoundsBottom(font->SetBoundsBottom(188));
+    font->SetInputMaxWidth(static_cast<short>(static_cast<unsigned short>(font->GetBoundsRight()) -
+                                              static_cast<unsigned short>(font->GetBoundsLeft()) -
+                                              16));
+    panel->SetWidgetCount(panel->GetWidgetCount() + 1);
+    panel->SetNavigationCount(panel->GetNavigationCount() + 1);
+    widget = AddMenuWidget(panel,
+                           screen,
+                           panel->GetX(),
+                           static_cast<float>(static_cast<long double>(panel->GetY()) + 95),
+                           0x102001,
+                           1,
+                           -1);
+    widget->SetIdleActionCallback(ValidateEntityState);
+    widget->SetActionCallback(ShowMultiplayerConnectionScreen);
+    SetMenuWidgetLabel(widget, 0x1e, &g_rcMenuCenterPanel);
+    g_pPlayerNameContinueItem = widget;
+    panel->SetWidgetCount(panel->GetWidgetCount() + 1);
+    panel->SetNavigationCount(panel->GetNavigationCount() + 1);
+    widget = AddMenuWidget(panel,
+                           screen,
+                           panel->GetX(),
+                           static_cast<float>(static_cast<long double>(panel->GetY()) + 114),
+                           0x102001,
+                           1,
+                           -1);
+    widget->SetIdleActionCallback(ValidateEntityState);
+    widget->SetActionCallback(PlayerNameEntryUI_OnBack);
+    SetMenuWidgetLabel(widget, 0xc, &g_rcMenuCenterPanel);
+    panel->SetWidgetCount(panel->GetWidgetCount() + 1);
+    panel->SetNavigationCount(panel->GetNavigationCount() + 1);
+    AddMenuWidget(panel, screen, 80, 46, 9, 0, 7);
+    panel->SetWidgetCount(panel->GetWidgetCount() + 1);
+    return 1;
 }
 
 void BuildNetworkCarSetupUI(MenuScreen *pScreen) {
