@@ -864,6 +864,14 @@ void UpdateD3DFogRenderState(void) {
     }
 }
 
+static void RecycleClipVertex(GbiVertexSource *pVertex) {
+    if (std::greater_equal<>{}(pVertex, g_aClipVertexPool) &&
+        std::less<>{}(pVertex, g_aClipVertexPool + GBI_CLIP_VERTEX_POOL_SIZE)) {
+        pVertex->pNext = g_pVertexFreeList;
+        g_pVertexFreeList = pVertex;
+    }
+}
+
 template <typename Distance>
 static void ClipPolygonPlane(GbiClipPolygon *pPolygon, Distance distance) {
     GbiVertexSource *pCurrent = pPolygon->pHead;
@@ -916,11 +924,7 @@ static void ClipPolygonPlane(GbiClipPolygon *pPolygon, Distance distance) {
     while (pRemoved) {
         GbiVertexSource *pVertex = pRemoved;
         pRemoved = pRemoved->pNext;
-        if (std::greater_equal<>{}(pVertex, g_aClipVertexPool) &&
-            std::less<>{}(pVertex, g_aClipVertexPool + GBI_CLIP_VERTEX_POOL_SIZE)) {
-            pVertex->pNext = g_pVertexFreeList;
-            g_pVertexFreeList = pVertex;
-        }
+        RecycleClipVertex(pVertex);
     }
 }
 
@@ -1177,6 +1181,44 @@ void SubmitTriangleToRenderBuffer(GbiVertex *pVertex0, GbiVertex *pVertex1, GbiV
 void ScaleVertexTexCoords(GbiVertex *pVertex, const GbiVertexSource *pSource) {
     pVertex->fU = pSource->fS * g_fTexCoordScaleS;
     pVertex->fV = pSource->fT * g_fTexCoordScaleT;
+}
+
+void ClipAndSubmitTriangle(GbiVertex *pVertex0, GbiVertex *pVertex1, GbiVertex *pVertex2) {
+    pVertex0->source.pNext = &pVertex1->source;
+    pVertex1->source.pNext = &pVertex2->source;
+    pVertex2->source.pNext = &pVertex0->source;
+    GbiClipPolygon polygon = {&pVertex0->source, 3};
+    using PlaneClipper = void (*)(GbiClipPolygon *);
+    const PlaneClipper clippers[] = {ClipPolygonNearZPlane,
+                                     ClipPolygonLeftPlane,
+                                     ClipPolygonRightPlane,
+                                     ClipPolygonTopPlane,
+                                     ClipPolygonFarZPlane,
+                                     ClipPolygonBottomPlane,
+                                     ClipPolygonPositiveWPlane};
+    for (auto clip : clippers) {
+        clip(&polygon);
+        if (polygon.nCount < TRIANGLE_VERTICES) {
+            for (int i = 0; i < polygon.nCount; ++i) {
+                GbiVertexSource *pVertex = polygon.pHead;
+                polygon.pHead = pVertex->pNext;
+                RecycleClipVertex(pVertex);
+            }
+            return;
+        }
+    }
+    GbiVertex vertices[9];
+    for (int i = 0; i < polygon.nCount; ++i) {
+        GbiVertexSource *pVertex = polygon.pHead;
+        polygon.pHead = pVertex->pNext;
+        TransformVertexToScreen(
+            &vertices[i], pVertex, pVertex->fRed, pVertex->fGreen, pVertex->fBlue);
+        ScaleVertexTexCoords(&vertices[i], pVertex);
+        RecycleClipVertex(pVertex);
+    }
+    for (int i = 2; i < polygon.nCount; ++i) {
+        SubmitTriangleToRenderBuffer(&vertices[0], &vertices[i - 1], &vertices[i]);
+    }
 }
 
 // A routine that clips a triangle of g_aGbiVertexCache and submits what remains.
