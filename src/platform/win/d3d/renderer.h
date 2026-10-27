@@ -1178,9 +1178,10 @@ struct TextureImageData {
     unsigned dwFlags;
     int bColorCombine;     /*!< Whether texture matching compares the captured colors. */
     int bOwnsPaintBuffers; /*!< Whether paint buffer memory is released with this image. */
-    char abUnknown270[8];  /* +0x270 */
-    int nDamageLevel;      /*!< The level of damage, from 0 to 3. */
-    char abUnknown27c[4];  /* +0x27c */
+    int nPaintGroup;
+    int nPaintSet;
+    int nDamageLevel;                 /*!< The level of damage, from 0 to 3. */
+    char abUnknown27c[4];             /* +0x27c */
     unsigned char *apPaintBuffers[4]; /*!< Pixel buffers for the four damage levels. */
     unsigned nPaintPixelBytes;
     unsigned char abEnvColor[4];

@@ -21,11 +21,79 @@ extern "C" {
 /** The number of entries of g_apPaintDamageBitmaps. */
 #define PAINT_DAMAGE_BITMAP_COUNT 3
 
-/** The bitmaps of a set of paint of a car. The layout past the bitmaps is not recovered yet. */
+/** The bitmaps, selection option and rectangle of a car paint set. */
 typedef struct CarPaintTextureSet {
     void *apBitmaps[CAR_PAINT_BITMAP_COUNT]; /*!< The bitmaps, from malloc(). */
-    char abUnknown10[0x18];                  /* +0x10 */
+    int nOption10;
+    int nLeft;
+    int nRight;
+    int nTop;
+    int nBottom;
+    char abUnknown24[4];
 } CarPaintTextureSet;
+
+/**
+ * The option at offset 16 of the paint set selected last.
+ *
+ * @ghidraAddress BRD3D: 0x100b2ad0
+ */
+extern int g_nSelectedPaintOption10;
+
+/**
+ * Select a paint set and return its bitmap for a damage level.
+ *
+ * @param nGroup The paint group.
+ * @param nSet The paint set.
+ * @param nDamage The damage level.
+ * @return The selected bitmap.
+ * @ghidraAddress BRD3D: 0x10060f70
+ */
+void *GetPaintImage(int nGroup, int nSet, int nDamage);
+
+/**
+ * Get the bounds of the rectangle of a paint set.
+ *
+ * @param nGroup The paint group.
+ * @param nSet The paint set.
+ * @param pLeft Receives the left bound.
+ * @param pRight Receives the right bound.
+ * @param pTop Receives the top bound.
+ * @param pBottom Receives the bottom bound.
+ * @ghidraAddress BRD3D: 0x10060fb0
+ */
+void GetPaintRectangle(int nGroup, int nSet, int *pLeft, int *pRight, int *pTop, int *pBottom);
+
+/**
+ * Get the option of the paint set selected last.
+ *
+ * @return The captured selection option.
+ * @ghidraAddress BRD3D: 0x10061000
+ */
+int GetSelectedPaintOption(void);
+
+/**
+ * Copy paint pixels into the destination rectangle, flipping rows and applying the paint tint.
+ *
+ * @param pImage The paint image.
+ * @param nLeft The left bound.
+ * @param nRight The right bound.
+ * @param nTop The top bound.
+ * @param nBottom The bottom bound.
+ * @param pDest Receives the pixels.
+ * @param nWidth The destination width.
+ * @param nHeight The destination height.
+ * @return Whether the paint rectangle was copied.
+ * @ghidraAddress BRD3D: 0x10061480
+ * @stub{BRD3D}
+ */
+int BlitPaintImageToPixels(const void *pImage,
+                           int nLeft,
+                           int nRight,
+                           int nTop,
+                           int nBottom,
+                           unsigned char *pDest,
+                           int nWidth,
+                           int nHeight);
 
 /**
  * The sets of paint of the cars. The meaning of the two dimensions is not recovered yet.

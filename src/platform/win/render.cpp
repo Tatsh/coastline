@@ -2,6 +2,7 @@
 
 #include <bit>
 #include <cmath>
+#include <cstdint>
 #include <cstdlib>
 #include <cstring>
 #include <new>
@@ -12,6 +13,7 @@
 #include "platform/win/d3d/texture.h"
 #include "platform/win/displaylist.h"
 #include "platform/win/fileio.h"
+#include "platform/win/paintshop.h"
 #include "platform/win/settings.h"
 #include "platform/win/texturescan.h"
 #include "screen.h"
@@ -1468,4 +1470,63 @@ void InitializeTextureSubsystem(void) {
     g_bTexScanRenderModeBlendBit16 = 0;
     CreateWeatherShadeTexture();
     InitializeTextureUploadQueue();
+}
+
+unsigned char *GetTextureEntryPixelsWithPaint(int nEntry, unsigned *pSize) {
+    TextureImageData &image = g_pTextureEntries[nEntry].data;
+    if (!image.bOwnsPaintBuffers) {
+        unsigned char *pixels = GetTextureImagePixels(&image);
+        *pSize = g_dwTexturePixelByteCount;
+        return pixels;
+    }
+    int right = nEntry;
+    void *paint = GetPaintImage(image.nPaintGroup, image.nPaintSet, image.nDamageLevel);
+    if (paint) {
+        int left;
+        int top;
+        int bottom;
+        GetPaintRectangle(image.nPaintGroup, image.nPaintSet, &left, &right, &top, &bottom);
+        int sourceWidth = static_cast<int>(static_cast<unsigned>(image.nSourceWidth) << 1);
+        int sourceHeight = static_cast<int>(static_cast<unsigned>(image.nSourceHeight) << 1);
+        if (!(left || right || top || bottom)) {
+            left = 0;
+            right = sourceWidth;
+            top = 0;
+            bottom = sourceHeight;
+        }
+        if (BlitPaintImageToPixels(paint,
+                                   left,
+                                   right,
+                                   top,
+                                   bottom,
+                                   g_abDecodedTexturePixels,
+                                   sourceWidth,
+                                   sourceHeight)) {
+            unsigned char *pixels = g_abDecodedTexturePixels;
+            if (sourceWidth != image.nWidth || sourceHeight != image.nHeight) {
+                ResizeTextureImage(g_abTextureResampleBuffer,
+                                   image.nWidth,
+                                   image.nHeight,
+                                   pixels,
+                                   sourceWidth,
+                                   sourceHeight,
+                                   image.nPixelFormatId);
+                pixels = g_abTextureResampleBuffer;
+            }
+            g_dwTexturePixelByteCount = image.nDecodedBytes;
+            if (image.nColorKey) {
+                g_dwTexturePixelByteCount = ConvertRGBAToPixelFormatWithColorKey(
+                    pixels, pixels, image.nPixelBytes, image.nPixelFormatId, &image.nColorKey);
+            } else {
+                g_dwTexturePixelByteCount = ConvertRGBAToPixelFormat(
+                    pixels, pixels, image.nPixelBytes, image.nPixelFormatId);
+            }
+            *pSize = g_dwTexturePixelByteCount;
+            return pixels;
+        }
+    }
+    *pSize = g_dwTexturePixelByteCount;
+    // The failure path returns the argument slot reused for the right rectangle bound.
+    return reinterpret_cast<unsigned char *>(
+        static_cast<std::uintptr_t>(static_cast<unsigned>(right)));
 }

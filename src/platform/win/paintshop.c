@@ -10,6 +10,25 @@ int g_dwColorTintGreen;
 int g_dwColorTintBlue;
 int g_dwConvertedBitmapWidth;
 int g_dwConvertedBitmapHeight;
+int g_nSelectedPaintOption10;
+
+void *GetPaintImage(int nGroup, int nSet, int nDamage) {
+    CarPaintTextureSet *set = &g_CarPaintTextureSets[nGroup][nSet];
+    g_nSelectedPaintOption10 = set->nOption10;
+    return set->apBitmaps[nDamage];
+}
+
+void GetPaintRectangle(int nGroup, int nSet, int *pLeft, int *pRight, int *pTop, int *pBottom) {
+    CarPaintTextureSet *set = &g_CarPaintTextureSets[nGroup][nSet];
+    *pLeft = set->nLeft;
+    *pRight = set->nRight;
+    *pTop = set->nTop;
+    *pBottom = set->nBottom;
+}
+
+int GetSelectedPaintOption(void) {
+    return g_nSelectedPaintOption10;
+}
 
 // The bits of a pixel of the bitmaps the paint shop reads.
 #define PAINT_BITMAP_BITS 24

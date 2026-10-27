@@ -1497,7 +1497,6 @@ unsigned CreateTextureFromN64Image(const unsigned char *pImage,
  * @param pSize Receives the decoded byte count.
  * @return The decoded pixels.
  * @ghidraAddress BRD3D: 0x10028e70
- * @stub{BRD3D}
  */
 unsigned char *GetTextureEntryPixelsWithPaint(int nEntry, unsigned *pSize);
 
