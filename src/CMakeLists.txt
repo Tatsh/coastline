@@ -127,7 +127,7 @@ endif()
 
 target_sources(coastline_game PRIVATE camerarender.c collisionstep.c cubeclip.c materialcolor.c
                                      modelanimation.c modelanimationflags.c modelrelocation.c racerinit.c routewalk.c sidegrip.c
-                                     textrender.c textstyle.c
+                                     rledecompress.c textrender.c textstyle.c
                                      vehicleengine.c vehiclephysics.c)
 
 add_custom_target(archives DEPENDS ${COASTLINE_LIBRARIES})

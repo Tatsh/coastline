@@ -1,0 +1,30 @@
+#ifndef COASTLINE_RLE_H
+#define COASTLINE_RLE_H
+
+#include "types.h"
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+/**
+ * Expand the data CompressRleChannels() wrote, interleaving its channels again.
+ *
+ * @param dst The buffer to write.
+ * @param dstSize The size of dst, which is not checked.
+ * @param src The compressed data.
+ * @param channels The number of interleaved channels.
+ * @return The final channel's expanded byte count multiplied by the number of channels.
+ * @ghidraAddress USA: 0x8021cb4c
+ * @ghidraAddress EUR: 0x8021dd4c
+ * @ghidraAddress JPN: 0x8021d61c
+ * @ghidraAddress BRD3D: 0x10034f08
+ * @ghidraAddress BRGlide: 0x1002e5b9
+ */
+s32 DecompressInterleavedRle(u8 *dst, s32 dstSize, u8 *src, s32 channels);
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif

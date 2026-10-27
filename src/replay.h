@@ -9,6 +9,7 @@
 #include <PR/ultratypes.h>
 
 #include "input.h"
+#include "rle.h"
 #include "vehicle.h"
 
 /**
@@ -275,19 +276,5 @@ void RestoreReplayKeyframeState(void);
  * @ghidraAddress JPN: 0x8021d348
  */
 s32 CompressRleChannels(u8 *dst, s32 dstSize, u8 *src, s32 srcSize, s32 channels);
-
-/**
- * Expand the data CompressRleChannels() wrote, interleaving its channels again.
- *
- * @param dst The buffer to write.
- * @param dstSize The size of dst, which is not checked.
- * @param src The compressed data.
- * @param channels The number of interleaved channels.
- * @return The size of the expanded data, in bytes.
- * @ghidraAddress USA: 0x8021cb4c
- * @ghidraAddress EUR: 0x8021dd4c
- * @ghidraAddress JPN: 0x8021d61c
- */
-s32 DecompressInterleavedRle(u8 *dst, s32 dstSize, u8 *src, s32 channels);
 
 #endif
