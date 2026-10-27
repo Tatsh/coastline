@@ -322,6 +322,14 @@ int SaveTimeAttackMenuUI_HandleTextEntry(MenuWidget *pWidget);
 int MultiplayerGameSetupUI_OnEscape(MenuWidget *pWidget);
 
 /**
+ * Reset championship choices and open pre-race information for a new season.
+ *
+ * @ghidraAddress BRD3D: 0x10045aa0
+ * @ghidraAddress BRGlide: 0x1003ef40
+ */
+int ChampionshipSeasonUI_OnStartNewSeason(MenuWidget *pWidget);
+
+/**
  * @ghidraAddress BRD3D: 0x10a9d078
  * @ghidraAddress BRGlide: 0x10ac4100
  */

@@ -1800,6 +1800,17 @@ int MultiplayerGameSetupUI_OnEscape(MenuWidget *pWidget) {
     return 1;
 }
 
+int ChampionshipSeasonUI_OnStartNewSeason(MenuWidget *) {
+    g_dwGameMode = GAME_MODE_CHAMPIONSHIP;
+    ResetMenuSelectionsToDefaults();
+    g_pPrimarySeasonSave = nullptr;
+    ShowPreRaceInfoScreen();
+    g_pExitSeasonConfirmMenu->pfnAction = PreRaceInfoUI_OnBackToChampionshipSeason;
+    g_dwGameMode = GAME_MODE_CHAMPIONSHIP;
+    ResolveRaceSelections();
+    return 1;
+}
+
 int PreRaceExitSeasonConfirmUI_OnYes(MenuWidget *pWidget) {
     pWidget->pScreen->DestroyPanels();
     delete g_pActiveMenuScreen;
