@@ -29,7 +29,7 @@ typedef struct CarPaintTextureSet {
     int nRight;
     int nTop;
     int nBottom;
-    char abUnknown24[4];
+    const char *pszBitmapName;
 } CarPaintTextureSet;
 
 /**
@@ -148,6 +148,21 @@ extern void *g_apPaintDamageBitmaps[PAINT_DAMAGE_BITMAP_COUNT];
  * @ghidraAddress BRGlide: 0x1005a300
  */
 void ApplyPaintDamageOverlay(int damage, unsigned char *pixels, int width, int height);
+
+/**
+ * @ghidraAddress BRD3D: 0x10061210
+ */
+void ModulateRgbaByMask(unsigned char *pixels, int width, int height, const unsigned char *mask);
+
+/**
+ * @ghidraAddress BRD3D: 0x100adfc8
+ */
+extern int g_bCarPaintTexturesEnabled;
+
+/**
+ * @ghidraAddress BRD3D: 0x10061010
+ */
+void LoadCarPaintTextures(int group, int damageVariants);
 
 /**
  * The multiplier of the red of the tint of the paint.

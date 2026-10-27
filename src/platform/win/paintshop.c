@@ -4,6 +4,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "platform/win/fileio.h"
+
 CarPaintTextureSet g_CarPaintTextureSets[CAR_PAINT_GROUP_COUNT][CAR_PAINT_SET_COUNT];
 void *g_apPaintDamageBitmaps[PAINT_DAMAGE_BITMAP_COUNT];
 int g_dwColorTintRed;
@@ -14,6 +16,59 @@ int g_dwConvertedBitmapHeight;
 int g_nSelectedPaintOption10;
 int g_nPaintTextureGroup;
 int g_nPaintTextureSetIndex;
+int g_bCarPaintTexturesEnabled = 1;
+
+void LoadCarPaintTextures(int group, int damageVariants) {
+    CarPaintTextureSet *set = g_CarPaintTextureSets[group];
+    char path[0x400];
+
+    for (int i = 0; i < CAR_PAINT_SET_COUNT; i++, set++) {
+        if (set->apBitmaps[0] != NULL || set->pszBitmapName == NULL) {
+            continue;
+        }
+        sprintf(path, "Paint\\%s", set->pszBitmapName);
+        if (!CHK_FileExists(path)) {
+            continue;
+        }
+        set->apBitmaps[0] = LoadBitmapFromFile(path);
+        path[8] = 'd';
+        if (CHK_FileExists(path)) {
+            unsigned char *mask = LoadBitmapFromFile(path);
+            if (set->apBitmaps[0] != NULL && mask != NULL) {
+                ModulateRgbaByMask(
+                    set->apBitmaps[0], g_dwConvertedBitmapWidth, g_dwConvertedBitmapHeight, mask);
+                free(mask);
+            }
+        }
+        if (set->apBitmaps[0] == NULL || set->nOption10 < 0 || !damageVariants ||
+            !g_bCarPaintTexturesEnabled) {
+            continue;
+        }
+        for (int damage = 1; damage < CAR_PAINT_BITMAP_COUNT; damage++) {
+            unsigned allocationSize =
+                (unsigned)g_dwConvertedBitmapHeight * (unsigned)g_dwConvertedBitmapWidth * 4;
+            unsigned char *destination = malloc(allocationSize);
+            set->apBitmaps[damage] = destination;
+            if (destination != NULL) {
+                const unsigned char *source = set->apBitmaps[0];
+                unsigned bytes =
+                    (unsigned)g_dwConvertedBitmapHeight * (unsigned)g_dwConvertedBitmapWidth * 4;
+                while (bytes != 0) {
+                    unsigned word;
+                    memcpy(&word, source, 4);
+                    memcpy(destination, &word, 4);
+                    source += 4;
+                    destination += 4;
+                    bytes -= 4;
+                }
+                ApplyPaintDamageOverlay(damage,
+                                        set->apBitmaps[damage],
+                                        g_dwConvertedBitmapWidth,
+                                        g_dwConvertedBitmapHeight);
+            }
+        }
+    }
+}
 
 void ApplyPaintDamageOverlay(int damage, unsigned char *pixels, int width, int height) {
     const unsigned char *mask = g_apPaintDamageBitmaps[damage - 1];
