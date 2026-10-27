@@ -287,7 +287,6 @@ s32 CastRayAgainstTrack(Vec3f *outPoint,
  * @ghidraAddress EUR: 0x8021f920
  * @ghidraAddress JPN: 0x8021f110
  * @ghidraAddress BRD3D: 0x10002de0
- * @stub{BRD3D}
  */
 #if TGR_PLATFORM == TGR_PLATFORM_WIN && defined(__cplusplus)
 extern "C" {
@@ -303,12 +302,8 @@ u32 LookupTrackGridCell(f32 x, f32 y);
  * @ghidraAddress EUR: 0x8021fd90
  * @ghidraAddress JPN: 0x8021f580
  * @ghidraAddress BRD3D: 0x10002ef0
- * @stub{BRD3D}
  */
 u16 NextGridCellTriangle(TrackGridCursor *cursor);
-#if TGR_PLATFORM == TGR_PLATFORM_WIN && defined(__cplusplus)
-}
-#endif
 
 /**
  * The placed models of a cell of the grid of the track.
@@ -320,6 +315,7 @@ u16 NextGridCellTriangle(TrackGridCursor *cursor);
  * @ghidraAddress USA: 0x8021ea0c
  * @ghidraAddress EUR: 0x8021fd0c
  * @ghidraAddress JPN: 0x8021f4fc
+ * @ghidraAddress BRD3D: 0x10002e90
  */
 u32 LookupInstanceGridCell(s32 column, s32 row);
 
@@ -331,8 +327,12 @@ u32 LookupInstanceGridCell(s32 column, s32 row);
  * @ghidraAddress USA: 0x8021eadc
  * @ghidraAddress EUR: 0x8021fddc
  * @ghidraAddress JPN: 0x8021f5cc
+ * @ghidraAddress BRD3D: 0x10002f40
  */
 u16 NextGridCellInstance(TrackGridCursor *cursor);
+#if TGR_PLATFORM == TGR_PLATFORM_WIN && defined(__cplusplus)
+}
+#endif
 
 /**
  * Decompress a track and its sections from the cartridge into g_LoadedTrack, and prepare it.
