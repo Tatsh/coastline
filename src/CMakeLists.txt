@@ -79,6 +79,7 @@ if(TGR_PLATFORM STREQUAL "n64")
   set(_game_sources audio.c audiomix.s camera.c carselect.c controllerscreen.c debugtext.c decaldraw.c decaleditor.c driving.c effects.c fade.c game.c hud.c input.c heap.c mainmenu.c mathutil.c model.c options.c paintshop.c pakmenu.c physics.c playerselect.c race.c
                     racemenu.c racers.c racesound.c replay.c rigidbody.c rumble.c sky.c snapshot.c splash.c sprite.c system.c text.c texrect.c timing.c track.c trackrender.c util.c vecmath.c vehicle.c vehiclemodel.c vehiclerender.c vehiclesetup.c visgrid.c weather.c weatherselect.c)
   list(APPEND _game_sources bodyforces.c camerachase.c cameracollision.c displaylistops.c
+                           racerender.c
                            frameclear.c playerinput.c profileinit.c renderinit.c screen.c seasontrack.c
                            vehiclechoice.c trackgrid.c tricache.c vehiclereset.c fog.c screendraw.c)
   # These sources write the Japanese text in UTF-8. The Japanese release compiles copies with the
@@ -111,7 +112,7 @@ else()
     exhaustspawn.c tiresmokespawn.c tiresprayemit.c tirespray.c vehiclepaint.c precipitationupdate.c
     billboardparticles.c particlesmokerender.c particleexhaustrender.c tiresprayrender.c precipitationrender.c
     sky.c hudrace.c hudmessage.c dashboard.c raceresults.c hudoverlay.c visibleinstances.c
-    lastlapsnapshot.c trackrender.c
+    lastlapsnapshot.c trackrender.c racerender.c
     PROPERTIES LANGUAGE CXX)
   set_source_files_properties(controllerread.c inputtranslate.c PROPERTIES LANGUAGE CXX)
   set_source_files_properties(volumecontrols.c PROPERTIES LANGUAGE CXX)
@@ -130,6 +131,8 @@ else()
                           libultra/gu/perspective.c libultra/gu/rotate.c libultra/io/controller.c libultra/os/getcount.c)
   target_link_libraries(coastline_game PRIVATE coastline_common)
   list(APPEND COASTLINE_LIBRARIES coastline_game)
+
+  target_sources(coastline_game PRIVATE racerender.c)
 
   # The PC libraries link the checksum of the vendored zlib 1.0.4 and not its inflate side.
   set(_zlib "${CMAKE_SOURCE_DIR}/3rdparty/zlib-1.0.4")

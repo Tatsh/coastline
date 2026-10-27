@@ -40,15 +40,21 @@ typedef struct {
 } RacePhaseStep;
 
 /** The lines of a caption of the credits. */
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#define CAPTION_LINES 6
+#else
 #define CAPTION_LINES 5
+#endif
 
 /** A caption the credits show over a race. */
 typedef struct {
     const char *title; /*!< The small title above the lines, or NULL to end the captions. */
     f32 duration;      /*!< The time it shows, in seconds. */
-    const char *lines[CAPTION_LINES];  /*!< The lines, ending with NULL when there are fewer than
-                                            #CAPTION_LINES. */
+    const char *lines[CAPTION_LINES]; /*!< The lines, ending with NULL when there are fewer than
+                                           #CAPTION_LINES. */
+#if TGR_PLATFORM != TGR_PLATFORM_WIN
     u8 unreconstructed1C[0x20 - 0x1C]; /*!< Not yet reconstructed. */
+#endif
 } RaceCaption;
 
 /** A line of the credits that scroll up at the end of the championship. */
@@ -251,6 +257,7 @@ extern Vec3f g_vAirplaneDirNext;
  * @ghidraAddress USA: 0x8026ffb4
  * @ghidraAddress EUR: 0x80271f84
  * @ghidraAddress JPN: 0x80271a34
+ * @ghidraAddress BRD3D: 0x100aa018
  */
 extern RaceCaption g_aCreditCaptions[];
 
@@ -632,14 +639,13 @@ void DrawScrollingText(void);
 #endif
 
 /**
- * Run one frame of the screen of a race: set the race up, step its phases, move and draw the
- * vehicles in each view, and handle the pause menu, the instant replay and leaving the race.
+ * Process the racing screen. The N64 version steps the race and renders its views; the Windows
+ * version renders a captured frame, its HUD, and its pause or credits overlays.
  *
  * @ghidraAddress USA: 0x8020082c
  * @ghidraAddress EUR: 0x8020085c
  * @ghidraAddress JPN: 0x8020081c
  * @ghidraAddress BRD3D: 0x10014a30
- * @stub{BRD3D}
  */
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
 #ifdef __cplusplus

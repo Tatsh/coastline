@@ -39,6 +39,7 @@ add_library(
   racercolor.cpp
   racerslot.cpp
   racesound.cpp
+  racescreen.cpp
   render.cpp
   season.cpp
   snapshot.cpp
