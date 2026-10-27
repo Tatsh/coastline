@@ -204,6 +204,9 @@ typedef struct Vehicle {
      * @stub
      */
     void ComputeAiVehicleInput(void);
+
+    /** @ghidraAddress BRD3D: 0x10063ff0 */
+    s32 TraceTrackSplineRecursive(s32 depth, s32 pointIndex, TrackSection *section);
     /**
      * Initialise the player slot, profile defaults, and vehicle selection.
      *

@@ -130,6 +130,8 @@ target_sources(coastline_game PRIVATE assetdma.c camerarender.c collisionstep.c 
                                      rledecompress.c routeposition.c textrender.c textstyle.c timingframe.c
                                      vehicleengine.c vehiclephysics.c)
 
+target_sources(coastline_game PRIVATE tracetrack.c)
+
 add_custom_target(archives DEPENDS ${COASTLINE_LIBRARIES})
 
 # A Windows library cannot link until every routine has a body, and TGR_LINK turns its link on. A

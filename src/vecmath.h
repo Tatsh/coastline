@@ -707,6 +707,7 @@ s32 IsPointInsideTriangle(
  * @ghidraAddress JPN: 0x80226694
  * @ghidraAddress BRD3D: 0x1003ba70
  * @ghidraAddress BRGlide: 0x100350f0
+ * @stub{BRGlide}
  */
 s32 TestLineSegmentIntersection(Vec2f *p1, Vec2f *p2, Vec2f *q1, Vec2f *q2);
 

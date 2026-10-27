@@ -62,20 +62,22 @@ extern s32 g_bReplayCockpitNext;
 extern f32 g_afVehicleJolts[];
 
 /**
- * The deepest a search reached along a straight line.
+ * The deepest level found by a straight-line search.
  *
  * @ghidraAddress USA: 0x8028b804
  * @ghidraAddress EUR: 0x8028dab4
  * @ghidraAddress JPN: 0x8028d4e4
+ * @ghidraAddress BRD3D: 0x10aa34ac
  */
 extern s32 g_dwBestTraceDepth;
 
 /**
- * The section and point where that search started.
+ * The section and point at the deepest end of the search.
  *
  * @ghidraAddress USA: 0x8028b814
  * @ghidraAddress EUR: 0x8028dac4
  * @ghidraAddress JPN: 0x8028d4f4
+ * @ghidraAddress BRD3D: 0x10aa3474
  */
 extern TrackSection *g_pBestTraceSection;
 
@@ -83,15 +85,17 @@ extern TrackSection *g_pBestTraceSection;
  * @ghidraAddress USA: 0x8028b810
  * @ghidraAddress EUR: 0x8028dac0
  * @ghidraAddress JPN: 0x8028d4f0
+ * @ghidraAddress BRD3D: 0x10af9528
  */
 extern s32 g_dwBestTracePoint;
 
 /**
- * The points of that line.
+ * The number of points in the deepest straight line.
  *
  * @ghidraAddress USA: 0x8028b800
  * @ghidraAddress EUR: 0x8028dab0
  * @ghidraAddress JPN: 0x8028d4e0
+ * @ghidraAddress BRD3D: 0x10af96bc
  */
 extern s32 g_dwBestTraceLength;
 
@@ -101,6 +105,7 @@ extern s32 g_dwBestTraceLength;
  * @ghidraAddress USA: 0x8028b81c
  * @ghidraAddress EUR: 0x8028dacc
  * @ghidraAddress JPN: 0x8028d4fc
+ * @ghidraAddress BRD3D: 0x10af96b8
  */
 extern s32 g_dwTraceUnusedA;
 
@@ -110,15 +115,17 @@ extern s32 g_dwTraceUnusedA;
  * @ghidraAddress USA: 0x8028b818
  * @ghidraAddress EUR: 0x8028dac8
  * @ghidraAddress JPN: 0x8028d4f8
+ * @ghidraAddress BRD3D: 0x10af9ba8
  */
 extern s32 g_dwTraceUnusedB;
 
 /**
- * Set when a line of a search left the route; never read.
+ * Set when a searched line crosses outside the route; never read.
  *
  * @ghidraAddress USA: 0x8028b820
  * @ghidraAddress EUR: 0x8028dad0
  * @ghidraAddress JPN: 0x8028d500
+ * @ghidraAddress BRD3D: 0x10af9bac
  */
 extern s32 g_bTraceBlocked;
 
@@ -128,6 +135,7 @@ extern s32 g_bTraceBlocked;
  * @ghidraAddress USA: 0x8028b80c
  * @ghidraAddress EUR: 0x8028dabc
  * @ghidraAddress JPN: 0x8028d4ec
+ * @ghidraAddress BRD3D: 0x10af9888
  */
 extern s32 g_bAiNudgeLeft;
 
@@ -135,6 +143,7 @@ extern s32 g_bAiNudgeLeft;
  * @ghidraAddress USA: 0x8028b808
  * @ghidraAddress EUR: 0x8028dab8
  * @ghidraAddress JPN: 0x8028d4e8
+ * @ghidraAddress BRD3D: 0x10af9ba4
  */
 extern s32 g_bAiNudgeRight;
 
@@ -144,6 +153,7 @@ extern s32 g_bAiNudgeRight;
  * @ghidraAddress USA: 0x8031b430
  * @ghidraAddress EUR: 0x8031d930
  * @ghidraAddress JPN: 0x8031c560
+ * @ghidraAddress BRD3D: 0x10af9658
  */
 extern Vec3f g_avBestLeftLane[TRACE_DEPTH];
 
@@ -151,6 +161,7 @@ extern Vec3f g_avBestLeftLane[TRACE_DEPTH];
  * @ghidraAddress USA: 0x8031b490
  * @ghidraAddress EUR: 0x8031d990
  * @ghidraAddress JPN: 0x8031c5c0
+ * @ghidraAddress BRD3D: 0x10af96c8
  */
 extern Vec3f g_avBestCenterLine[TRACE_DEPTH];
 
@@ -158,6 +169,7 @@ extern Vec3f g_avBestCenterLine[TRACE_DEPTH];
  * @ghidraAddress USA: 0x8031b4f0
  * @ghidraAddress EUR: 0x8031d9f0
  * @ghidraAddress JPN: 0x8031c620
+ * @ghidraAddress BRD3D: 0x10af95f8
  */
 extern Vec3f g_avBestRightLane[TRACE_DEPTH];
 
@@ -168,6 +180,7 @@ extern Vec3f g_avBestRightLane[TRACE_DEPTH];
  * @ghidraAddress USA: 0x8031b550
  * @ghidraAddress EUR: 0x8031da50
  * @ghidraAddress JPN: 0x8031c680
+ * @ghidraAddress BRD3D: 0x10af9788
  */
 extern Vec3f g_avTraceLeftLane[TRACE_DEPTH];
 
@@ -175,6 +188,7 @@ extern Vec3f g_avTraceLeftLane[TRACE_DEPTH];
  * @ghidraAddress USA: 0x8031b5b0
  * @ghidraAddress EUR: 0x8031dab0
  * @ghidraAddress JPN: 0x8031c6e0
+ * @ghidraAddress BRD3D: 0x10af9590
  */
 extern Vec3f g_avTraceLeftHalf[TRACE_DEPTH];
 
@@ -182,6 +196,7 @@ extern Vec3f g_avTraceLeftHalf[TRACE_DEPTH];
  * @ghidraAddress USA: 0x8031b610
  * @ghidraAddress EUR: 0x8031db10
  * @ghidraAddress JPN: 0x8031c740
+ * @ghidraAddress BRD3D: 0x10af9728
  */
 extern Vec3f g_avTraceCenterLine[TRACE_DEPTH];
 
@@ -189,6 +204,7 @@ extern Vec3f g_avTraceCenterLine[TRACE_DEPTH];
  * @ghidraAddress USA: 0x8031b670
  * @ghidraAddress EUR: 0x8031db70
  * @ghidraAddress JPN: 0x8031c7a0
+ * @ghidraAddress BRD3D: 0x10af9530
  */
 extern Vec3f g_avTraceRightHalf[TRACE_DEPTH];
 
@@ -196,6 +212,7 @@ extern Vec3f g_avTraceRightHalf[TRACE_DEPTH];
  * @ghidraAddress USA: 0x8031b6d0
  * @ghidraAddress EUR: 0x8031dbd0
  * @ghidraAddress JPN: 0x8031c800
+ * @ghidraAddress BRD3D: 0x10af97e8
  */
 extern Vec3f g_avTraceRightLane[TRACE_DEPTH];
 
@@ -205,6 +222,7 @@ extern Vec3f g_avTraceRightLane[TRACE_DEPTH];
  * @ghidraAddress USA: 0x8031b730
  * @ghidraAddress EUR: 0x8031dc30
  * @ghidraAddress JPN: 0x8031c860
+ * @ghidraAddress BRD3D: 0x10af9b28
  */
 extern Vec3f g_vTraceFarPoint;
 
@@ -212,6 +230,7 @@ extern Vec3f g_vTraceFarPoint;
  * @ghidraAddress USA: 0x8031b740
  * @ghidraAddress EUR: 0x8031dc40
  * @ghidraAddress JPN: 0x8031c870
+ * @ghidraAddress BRD3D: 0x10acde98
  */
 extern Vec3f g_vTraceHalfwayPoint;
 

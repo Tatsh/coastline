@@ -764,39 +764,72 @@ s32 IsPointInsideTriangle(
 }
 #endif
 
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#define INTERSECTION_REAL(value) ((long double)(value))
+#define INTERSECTION_LESS(a, b) (!((a) >= (b)))
+#define INTERSECTION_NONZERO(value) ((value) < 0.0L || (value) > 0.0L)
+#else
+#define INTERSECTION_REAL(value) (value)
+#define INTERSECTION_LESS(a, b) ((a) < (b))
+#define INTERSECTION_NONZERO(value) ((value) != 0.0f)
+#endif
+
 s32 TestLineSegmentIntersection(Vec2f *p1, Vec2f *p2, Vec2f *q1, Vec2f *q2) {
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+    long double side1, side3;
+    f32 side2, side4;
+#else
     f32 side1, side2, side3, side4;
+#endif
 
     /* The boxes of the two segments must overlap on each axis. */
-    if ((p2->x < p1->x ? p1->x : p2->x) < (q1->x < q2->x ? q1->x : q2->x)) {
+    if (INTERSECTION_LESS((p2->x < p1->x ? p1->x : p2->x),
+                          (INTERSECTION_LESS(q1->x, q2->x) ? q1->x : q2->x))) {
         return 0;
     }
-    if ((q2->x < q1->x ? q1->x : q2->x) < (p1->x < p2->x ? p1->x : p2->x)) {
+    if (INTERSECTION_LESS((q2->x < q1->x ? q1->x : q2->x),
+                          (INTERSECTION_LESS(p1->x, p2->x) ? p1->x : p2->x))) {
         return 0;
     }
-    if ((p2->y < p1->y ? p1->y : p2->y) < (q1->y < q2->y ? q1->y : q2->y)) {
+    if (INTERSECTION_LESS((p2->y < p1->y ? p1->y : p2->y),
+                          (INTERSECTION_LESS(q1->y, q2->y) ? q1->y : q2->y))) {
         return 0;
     }
-    if ((q2->y < q1->y ? q1->y : q2->y) < (p1->y < p2->y ? p1->y : p2->y)) {
+    if (INTERSECTION_LESS((q2->y < q1->y ? q1->y : q2->y),
+                          (INTERSECTION_LESS(p1->y, p2->y) ? p1->y : p2->y))) {
         return 0;
     }
 
     /* Each segment must have the ends of the other on both sides of its line. */
-    side1 = (q1->x - p1->x) * (p2->y - p1->y) - (p2->x - p1->x) * (q1->y - p1->y);
-    side2 = (q2->x - p1->x) * (p2->y - p1->y) - (p2->x - p1->x) * (q2->y - p1->y);
-    if (side1 != 0.0f && side2 != 0.0f && side1 * side2 > 0.0f) {
+    side1 = (INTERSECTION_REAL(q1->x) - p1->x) * (f32)(INTERSECTION_REAL(p2->y) - p1->y) -
+            (INTERSECTION_REAL(p2->x) - p1->x) * (INTERSECTION_REAL(q1->y) - p1->y);
+    side2 = (INTERSECTION_REAL(q2->x) - p1->x) * (f32)(INTERSECTION_REAL(p2->y) - p1->y) -
+            (INTERSECTION_REAL(p2->x) - p1->x) * (INTERSECTION_REAL(q2->y) - p1->y);
+    if (INTERSECTION_NONZERO(side1) && INTERSECTION_NONZERO(side2) &&
+        INTERSECTION_REAL((f32)side1) * side2 > 0.0f) {
         return 0;
     }
-    side3 = (p1->x - q1->x) * (q2->y - q1->y) - (q2->x - q1->x) * (p1->y - q1->y);
-    side4 = (p2->x - q1->x) * (q2->y - q1->y) - (q2->x - q1->x) * (p2->y - q1->y);
-    if (side3 != 0.0f && side4 != 0.0f && side3 * side4 > 0.0f) {
+    side3 = (INTERSECTION_REAL(p1->x) - q1->x) * (f32)(INTERSECTION_REAL(q2->y) - q1->y) -
+            (INTERSECTION_REAL(q2->x) - q1->x) * (INTERSECTION_REAL(p1->y) - q1->y);
+    side4 = (INTERSECTION_REAL(p2->x) - q1->x) * (f32)(INTERSECTION_REAL(q2->y) - q1->y) -
+            (INTERSECTION_REAL(q2->x) - q1->x) * (INTERSECTION_REAL(p2->y) - q1->y);
+    if (INTERSECTION_NONZERO(side3) && INTERSECTION_NONZERO(side4) &&
+        INTERSECTION_REAL((f32)side3) * side4 > 0.0f) {
         return 0;
     }
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+    if (!INTERSECTION_NONZERO((long double)(f32)side1 - side2)) {
+#else
     if (side1 == side2) {
+#endif
         return 2;
     }
     return 1;
 }
+
+#undef INTERSECTION_REAL
+#undef INTERSECTION_LESS
+#undef INTERSECTION_NONZERO
 
 s32 SegmentCrossesLine2D(Vec3f *a, Vec3f *b, Vec3f *p, Vec3f *q) {
     f32 side1 = (p->x - a->x) * (b->y - a->y) - (b->x - a->x) * (p->y - a->y);

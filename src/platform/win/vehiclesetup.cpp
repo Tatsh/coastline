@@ -37,6 +37,10 @@ void Vehicle::ComputeTrackPosition(void) {
     ::ComputeTrackPosition(this);
 }
 
+s32 Vehicle::TraceTrackSplineRecursive(s32 depth, s32 pointIndex, TrackSection *section) {
+    return ::TraceTrackSplineRecursive(this, depth, pointIndex, section);
+}
+
 void ApplyPlayerVehicleEffects(Vehicle *vehicle) {
     if (g_dwInputButtonMask & 0x10000) {
         vehicle->body.unreconstructed202 = 0x80;
