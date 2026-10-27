@@ -200,6 +200,22 @@ unsigned char g_bTexScanEnvColorB;
 unsigned char g_bTexScanEnvColorA;
 void (*g_pfnPreprocessDisplayListTextures)(GbiCommand *pCommand);
 
+void FlushPendingTextureLoad(GbiCommand *pCommand) {
+    if (g_dwTexScanLoadState == TEX_SCAN_IDLE) {
+        return;
+    }
+    if (!g_pTexScanCmdBlockStart) {
+        g_pTexScanCmdBlockStart = pCommand;
+    }
+    int nEntry = CreateTextureFromTmemShadow(g_abTmemShadow);
+    if (nEntry != -1) {
+        g_pTexScanSetTextureImageCmd->w0 = (static_cast<unsigned>(nEntry) & 0xffffff) |
+                                           (static_cast<unsigned>(GBI_OP_BIND_TEXTURE_ENTRY) << 24);
+        g_pTexScanSetTextureImageCmd->w1 = g_pTexScanCmdBlockStart - g_pTexScanSetTextureImageCmd;
+    }
+    g_dwTexScanLoadState = TEX_SCAN_IDLE;
+}
+
 void PreprocessDisplayListTextures(GbiCommand *pCommand) {
     if (!pCommand) {
         return;

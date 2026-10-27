@@ -342,9 +342,18 @@ extern unsigned char g_bTexScanEnvColorA;
  *
  * @param pCommand The drawing command.
  * @ghidraAddress BRD3D: 0x10029410
- * @stub{BRD3D}
  */
 void FlushPendingTextureLoad(GbiCommand *pCommand);
+
+/**
+ * Find or create a texture entry from the captured texture memory and scan state.
+ *
+ * @param pTmem The captured texture memory.
+ * @return The texture entry, or -1 when conversion fails.
+ * @ghidraAddress BRD3D: 0x10029470
+ * @stub{BRD3D}
+ */
+int CreateTextureFromTmemShadow(unsigned char *pTmem);
 
 /**
  * Scan a display list for texture loads until its end command.
