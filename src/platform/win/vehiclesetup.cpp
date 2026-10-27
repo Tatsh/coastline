@@ -31,6 +31,10 @@ void Vehicle::ClearVehicleDamageState(void) {
     ::ClearVehicleDamageState(this);
 }
 
+void Vehicle::SetupVehicleForRaceStart(void) {
+    ::SetupVehicleForRaceStart(this);
+}
+
 void Vehicle::ResetVehicleEffects(void) {
     ::ResetVehicleEffects(this);
 }

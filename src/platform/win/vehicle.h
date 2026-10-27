@@ -26,7 +26,8 @@ typedef struct Vehicle {
         };
     };
     s32 index;
-    u8 abUnknown144[0x20]; /* +0x144 */
+    s32 gridIndex;
+    u8 abUnknown148[0x1c]; /* +0x148 */
     RigidBody body;
     RigidBody wheelBodies[4];
     RigidBodyForce forces[VEHICLE_FORCES];
@@ -63,24 +64,40 @@ typedef struct Vehicle {
     s32 forwardFrames;
     u8 abUnknownEb0[0x50]; /* +0xeb0 */
     struct RacerSlot *racer;
-    u8 abUnknownF04[0x74]; /* +0xf04 */
+    s32 slotCooldown;
+    u8 abUnknownF08[0x54]; /* +0xf08 */
+    Vec3f previousListenerPosition;
+    s32 effectSound;
+    s32 effectVolume;
+    s32 effectPriority;
+    f32 dopplerFactor;
     s32 cameraChanged;
     s32 flyMode;
-    u8 abUnknownF80[0xc]; /* +0xf80 */
+    Vec3f previousPosition;
     struct TrackSection *section;
     s32 pointIndex;
     Vec3f trackDirection;
-    u8 abUnknownFa0[8]; /* +0xfa0 */
+    s32 maxGate;
+    s32 gate;
     s32 lap;
-    u8 abUnknownFac[0x38]; /* +0xfac */
+    s32 distanceLaps;
+    f32 lapTime;
+    u8 abUnknownFb4[0x30]; /* +0xfb4 */
     f32 bestLapTime;
-    u8 abUnknownFe8[4]; /* +0xfe8 */
-    f32 raceTime;
-    u8 abUnknownFf0[4]; /* +0xff0 */
-    f32 progress;
-    u8 abUnknownFf8[0x2c]; /* +0xff8 */
+    s32 bestLap;
+    f32 totalTime;
+    f32 timeLeft;
+    f32 distance;
+    s32 racePosition;
+    u8 abUnknownFfc[0x24]; /* +0xffc */
+    s32 groundHits;
     Vec3f placedVelocity;
-    u8 abUnknown1030[0x3c]; /* +0x1030 */
+    f32 speedKph;
+    f32 odometer;
+    Vec3f joltPosition;
+    Vec3f joltVelocity;
+    Vec3f joltOffset;
+    u8 abUnknown105c[0x10]; /* +0x105c */
     f32 smokeTimers[VEHICLE_WHEELS];
     u8 abUnknown107c[0x30]; /* +0x107c */
     f32 sprayFramesLeft[VEHICLE_WHEELS];
@@ -93,7 +110,9 @@ typedef struct Vehicle {
     s16 spraySegmentSurfaces[VEHICLE_WHEELS][SPRAY_SEGMENTS];
     Vec3f sprayOrigin;
     f32 inputMatrix[4][4];
-    u8 abUnknown2714[0x20]; /* +0x2714 */
+    u8 abUnknown2714[4]; /* +0x2714 */
+    f32 cameraHeading;
+    u8 abUnknown271c[0x18]; /* +0x271c */
     CameraFrame *activeCamera;
     CameraFrame *previousCamera;
     CameraFrame cameras[VEHICLE_CAMERAS];
@@ -105,7 +124,11 @@ typedef struct Vehicle {
     f32 collisionPull;
     u8 abUnknown28fc[4]; /* +0x28fc */
     Vec3f initialChasePosition;
-    u8 abUnknown290c[0x9c]; /* +0x290c */
+    u8 abUnknown290c[0x40]; /* +0x290c */
+    s32 groundInstanceCount;
+    u8 abUnknown2950[0x40]; /* +0x2950 */
+    s32 nearbyInstanceCount;
+    u8 abUnknown2994[0x14]; /* +0x2994 */
     s32 carModel;
     u8 color[3];
     u8 ghostMode;
@@ -160,6 +183,10 @@ typedef struct Vehicle {
      * @ghidraAddress BRD3D: 0x10065710
      */
     void ClearVehicleDamageState(void);
+    /**
+     * @ghidraAddress BRD3D: 0x10065740
+     */
+    void SetupVehicleForRaceStart(void);
     /**
      * @ghidraAddress BRD3D: 0x10065630
      */

@@ -17,6 +17,8 @@ void InitVehicleColorAndPhysics(Vehicle *vehicle);
 void SetVehicleModelSlot(Vehicle *vehicle, s32 slot);
 /** Clear dents and the dent variation. */
 void ClearVehicleDamageState(Vehicle *vehicle);
+/** Place the vehicle on the starting grid and initialise race state. */
+void SetupVehicleForRaceStart(Vehicle *vehicle);
 /** Return an overturned or fallen vehicle to its current route point. */
 void RespawnVehicle(Vehicle *vehicle);
 /** Set velocity in the rigid-body integration states and the recorded placement. */

@@ -470,7 +470,7 @@ void BuildVehicleKeyframe(KeyframeState *pState, Vehicle *pVehicle) {
     pState->fGearControl = static_cast<float>(pVehicle->body.replayEffects[4]);
     pState->fBraking = (pVehicle->input->buttons & 0xc0000) ? 1.0f : 0.0f;
     pState->fReverse = !(pVehicle->throttle >= 0.0f) ? 1.0f : 0.0f;
-    pState->fProgress = pVehicle->lap == g_dwTotalLaps ? 4188888.0f : pVehicle->progress;
+    pState->fProgress = pVehicle->lap == g_dwTotalLaps ? 4188888.0f : pVehicle->distance;
     pState->fEngineRpm = pVehicle->engineRpm;
     pState->afLight[0] = static_cast<float>(pVehicle->body.vehicleImpactVolume);
     pState->afLight[1] = static_cast<float>(pVehicle->body.impactVolume);
@@ -506,8 +506,8 @@ void ApplyVehicleKeyframe(Vehicle *pVehicle, const KeyframeState *pState) {
         pVehicle->input->buttons &= ~0x40000u;
     }
     pVehicle->throttle = IsKeyframeFlagSet(pState->fReverse) ? -1.0f : 1.0f;
-    if (!(pVehicle->progress > 0.0f) || pVehicle->progress + 1000.0f > pState->fProgress) {
-        pVehicle->progress = pState->fProgress;
+    if (!(pVehicle->distance > 0.0f) || pVehicle->distance + 1000.0f > pState->fProgress) {
+        pVehicle->distance = pState->fProgress;
     }
     pVehicle->engineRpm = pState->fEngineRpm;
     pVehicle->body.vehicleImpactVolume = static_cast<u8>(static_cast<int>(pState->afLight[0]));
@@ -541,7 +541,7 @@ void ApplyGhostKeyframeToVehicle(Vehicle *pVehicle, int nRecording) {
     const u8 *frame =
         g_aGhostKeyframes[nRecording] + g_adwGhostPlaybackFrame[nRecording] * GHOST_FRAME_SIZE;
     DeserializeKeyframeState(&state, frame);
-    state.fProgress = pVehicle->progress;
+    state.fProgress = pVehicle->distance;
     ApplyVehicleKeyframe(pVehicle, &state);
     if (gInstantReplayActive == 2) {
         pVehicle->body.vehicleImpactVolume = 0;
