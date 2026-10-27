@@ -25,6 +25,7 @@ add_library(
   gameinit.cpp
   ghost.cpp
   hudlaplist.cpp
+  hudnetwork.cpp
   hudquad.c
   hud.c
   input.cpp

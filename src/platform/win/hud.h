@@ -9,6 +9,26 @@ extern "C" {
 #endif
 
 /**
+ * Whether to draw the network race standings.
+ * @ghidraAddress BRD3D: 0x100bd3fc
+ */
+extern int g_bHudShowNetworkStandings;
+
+/**
+ * Whether the network standings include connection diagnostics.
+ * @ghidraAddress BRD3D: 0x118abdc8
+ */
+extern int g_bHideNetStandingsHud;
+
+/**
+ * Draw network race positions, player colours, time gaps, and optional connection diagnostics.
+ * @param viewport The view whose origin positions the standings.
+ * @param vehicles The active vehicle array.
+ * @ghidraAddress BRD3D: 0x10017890
+ */
+void DrawNetworkRaceStandingsHud(const ViewportRect *viewport, const Vehicle *vehicles);
+
+/**
  * @file
  * Race HUD helpers and debug-overlay messages.
  */

@@ -509,6 +509,9 @@ public:
     char *GetPlayerName() {
         return playerName;
     }
+    const char *GetPlayerName() const {
+        return playerName;
+    }
     s32 SetGroundHits(s32 value) {
         return groundHits = value;
     }

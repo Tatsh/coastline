@@ -19,6 +19,7 @@
 #include "platform/win/directplay.h"
 #include "platform/win/frontend.h"
 #include "platform/win/ghost.h"
+#include "platform/win/hud.h"
 #include "platform/win/settings.h"
 #include "platform/win/snapshot.h"
 #include "platform/win/sound.h"
@@ -180,18 +181,6 @@ int g_adwKeyPrevDown[KEYBOARD_KEY_COUNT];
  * @ghidraAddress BRD3D: 0x118abddc
  */
 int g_dwInputPollCounter;
-
-/**
- * Whether to display network standings.
- * @ghidraAddress BRD3D: 0x100bd3fc
- */
-int g_bHudShowNetworkStandings = 1;
-
-/**
- * Whether to hide network standings through the P key toggle.
- * @ghidraAddress BRD3D: 0x118abdc8
- */
-int g_bHideNetStandingsHud;
 
 /**
  * Initial timestamp for benchmark frame rate measurement, in milliseconds.
