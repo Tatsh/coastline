@@ -369,6 +369,9 @@ int InputOptionsUI_OnCycleInputDevice(MenuWidget *pWidget);
  */
 int ProcessMenuTextEditInput(MenuWidget *pWidget, short nFont);
 
+/** The number of controls displayed by key configuration. */
+#define KEY_CONFIG_ENTRY_COUNT 21
+
 struct KeyConfigEntry {
     unsigned nStringId;
     int nControl;
@@ -378,7 +381,7 @@ struct KeyConfigEntry {
  * @ghidraAddress BRD3D: 0x100ab330
  * @ghidraAddress BRGlide: 0x100aaad0
  */
-extern KeyConfigEntry g_aKeyConfigEntries[];
+extern KeyConfigEntry g_aKeyConfigEntries[KEY_CONFIG_ENTRY_COUNT];
 
 /**
  * @ghidraAddress BRD3D: 0x10aa2840
@@ -391,6 +394,48 @@ extern int g_dwKeyConfigSelectedAction;
  * @ghidraAddress BRGlide: 0x10039620
  */
 int KeyConfigUI_UpdateBindingLabel(MenuWidget *pWidget);
+
+/**
+ * @ghidraAddress BRD3D: 0x100ac6a0
+ * @ghidraAddress BRGlide: 0x100abe40
+ */
+extern int g_dwCapturedKeyBindingValue;
+
+/**
+ * @ghidraAddress BRD3D: 0x10aa2a38
+ * @ghidraAddress BRGlide: 0x10ac5d90
+ */
+extern int g_dwKeyCaptureWaitRelease;
+
+/**
+ * @ghidraAddress BRD3D: 0x10aa2a3c
+ * @ghidraAddress BRGlide: 0x10ac5d94
+ */
+extern int g_dwKeyCaptureComplete;
+
+/**
+ * @ghidraAddress BRD3D: 0x10aa2850
+ * @ghidraAddress BRGlide: 0x10ac5ba8
+ */
+extern int g_dwKeyBindingDuplicatesFound;
+
+/**
+ * @ghidraAddress BRD3D: 0x10a9d5c0
+ * @ghidraAddress BRGlide: 0x10ac4648
+ */
+extern int g_adwKeyBindingDuplicateFlags[KEY_CONFIG_ENTRY_COUNT];
+
+/**
+ * @ghidraAddress BRD3D: 0x10040330
+ * @ghidraAddress BRGlide: 0x10039870
+ */
+int DetectDuplicateKeyBindings(int nDevice);
+
+/**
+ * @ghidraAddress BRD3D: 0x10040450
+ * @ghidraAddress BRGlide: 0x10039990
+ */
+int KeyConfigUI_PollKeyCapture(MenuWidget *pWidget);
 
 /**
  * @ghidraAddress BRD3D: 0x10043710

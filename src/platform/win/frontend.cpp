@@ -1814,6 +1814,97 @@ int MainMenuUI_OnPlayCredits(MenuWidget *pWidget) {
     return 0;
 }
 
+int DetectDuplicateKeyBindings(int nDevice) {
+    int found = 0;
+    for (int i = 0; i < KEY_CONFIG_ENTRY_COUNT; i++) {
+        // Later rows clear duplicate marks assigned by earlier rows.
+        g_adwKeyBindingDuplicateFlags[i] = 0;
+        int flags =
+            g_GlobalRallyConfig.GetInputBindingFlags(nDevice, g_aKeyConfigEntries[i].nControl);
+        unsigned char code = static_cast<unsigned char>(
+            g_GlobalRallyConfig.GetInputBindingKeyCode(nDevice, g_aKeyConfigEntries[i].nControl));
+        for (int j = i + 1; j < KEY_CONFIG_ENTRY_COUNT; j++) {
+            int control = g_aKeyConfigEntries[j].nControl;
+            if (i < 12 && (control == 12 || control == 13 || control == 14)) {
+                continue;
+            }
+            int otherFlags = g_GlobalRallyConfig.GetInputBindingFlags(nDevice, control);
+            unsigned char otherCode = static_cast<unsigned char>(
+                g_GlobalRallyConfig.GetInputBindingKeyCode(nDevice, control));
+            if ((flags || code) && flags == otherFlags && code == otherCode) {
+                found = 1;
+                g_adwKeyBindingDuplicateFlags[j] = 1;
+                g_adwKeyBindingDuplicateFlags[i] = 1;
+            }
+        }
+    }
+    return found;
+}
+
+int KeyConfigUI_PollKeyCapture(MenuWidget *) {
+    if (!g_fCharInputSuppressed) {
+        return 1;
+    }
+    int code = GetFirstPressedKeyIndex();
+    g_dwCapturedKeyBindingValue = code;
+    if (code == -1 && g_dwKeyCaptureWaitRelease) {
+        g_dwLastWmCharParam = 0;
+        g_dwMenuTextEditActive = 0;
+        g_fCharInputSuppressed = 0;
+        g_dwKeyCaptureWaitRelease = 0;
+        return 1;
+    }
+    int device = g_dwSelectedInputDevice;
+    if (static_cast<unsigned>(device) > 3) {
+        return 1;
+    }
+    if (device == 0) {
+        if (code >= 0) {
+            g_dwKeyCaptureWaitRelease = 1;
+            int flags = g_GlobalRallyConfig.GetInputBindingFlags(
+                0, g_aKeyConfigEntries[g_dwKeyConfigSelectedAction].nControl);
+            g_GlobalRallyConfig.SetInputBinding(
+                0,
+                g_aKeyConfigEntries[g_dwKeyConfigSelectedAction].nControl,
+                flags,
+                g_dwCapturedKeyBindingValue);
+        }
+    } else {
+        unsigned flags = 0;
+        if (code == -1) {
+            if (device == 3) {
+                code = GetPressedMouseButton();
+                flags = 0x300;
+            } else {
+                code = GetPressedJoystickControl(&flags);
+            }
+        }
+        if (code >= 0) {
+            g_dwCapturedKeyBindingValue = code;
+            if (device != 3) {
+                g_dwKeyCaptureWaitRelease = 1;
+            }
+            g_GlobalRallyConfig.SetInputBinding(
+                device, g_aKeyConfigEntries[g_dwKeyConfigSelectedAction].nControl, flags, code);
+            if (device == 3) {
+                g_dwKeyCaptureComplete = 1;
+            }
+        }
+    }
+    g_dwKeyBindingDuplicatesFound = DetectDuplicateKeyBindings(device);
+    if (device == 3 && g_dwKeyCaptureComplete) {
+        GetPressedMouseButton();
+        for (int i = 0; i < MOUSE_BUTTON_COUNT; i++) {
+            if (g_adwMouseButtonRaw[i]) {
+                return 1;
+            }
+        }
+        g_dwKeyCaptureComplete = 0;
+        g_dwKeyCaptureWaitRelease = 1;
+    }
+    return 1;
+}
+
 int KeyConfigUI_UpdateBindingLabel(MenuWidget *pWidget) {
     const char *text = nullptr;
     bool updateText = true;
