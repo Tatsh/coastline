@@ -138,6 +138,7 @@ void LoadCar(s32 slot, s32 car, void *source);
  * @ghidraAddress USA: 0x8021d534
  * @ghidraAddress EUR: 0x8021e734
  * @ghidraAddress JPN: 0x8021e004
+ * @ghidraAddress BRD3D: 0x10037740
  */
 void LoadVehicleModelFromRom(VehicleModel *model, s32 car);
 
@@ -168,6 +169,12 @@ void SetMaterialColor(VehicleModel *model, s32 red, s32 green, s32 blue);
 void FixupVehicleModelPointers(VehicleModel *model);
 
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
+
+/** @ghidraAddress BRD3D: 0x100b84f8 */
+extern const char *g_apszCarModelPrefixes[];
+
+/** @ghidraAddress BRD3D: 0x100370d0 */
+void ByteSwapAndRelocateCarModel(VehicleModel *model);
 
 /**
  * Accept the vehicle model without checking cartridge metadata.

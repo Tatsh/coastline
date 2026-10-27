@@ -44,6 +44,7 @@ add_library(
   tracktexture.cpp
   timer.c
   vehicle.cpp
+  vehiclemodelload.cpp
   vehiclesetup.cpp
   wavread.c
   winmain-${TGR_RENDERER}.cpp)
