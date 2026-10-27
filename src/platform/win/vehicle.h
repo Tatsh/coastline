@@ -9,6 +9,7 @@
 #include "rigidbody.h"
 #include "types.h"
 #include "vehiclecamera.h"
+#include "vehicleforces.h"
 #include "vehiclemodel.h"
 
 #define VEHICLE_GHOST 2
@@ -21,7 +22,9 @@ typedef struct Vehicle {
     u8 abUnknown144[0x20]; /* +0x144 */
     RigidBody body;
     RigidBody wheelBodies[4];
-    u8 abUnknownBa0[0x284]; /* +0xba0 */
+    RigidBodyForce forces[VEHICLE_FORCES];
+    u8 abUnknownDa0[0x80]; /* +0xda0 */
+    f32 steerAngle;
     f32 engineRpm;
     f32 gearRatios[CAR_GEAR_RATIOS];
     f32 torqueCurve[4];
@@ -31,10 +34,20 @@ typedef struct Vehicle {
     s32 transmission;
     s32 tableIndex;
     f32 throttle;
-    u8 abUnknownE6c[0x1c]; /* +0xe6c */
+    f32 brake;
+    s32 gear;
+    f32 frontLoad;
+    u8 frontSliding;
+    u8 abUnknownE79[3]; /* +0xe79 */
+    f32 rearLoad;
+    u8 rearSliding;
+    s8 steerReturn;
+    u8 abUnknownE82[2]; /* +0xe82 */
+    s32 skipDrive;
     s32 customDecals;
     PlayerProfile *profile;
-    u8 abUnknownE90[8]; /* +0xe90 */
+    s32 tireType;
+    s32 suspensionStiffness;
     s32 mouseSensitivity;
     s32 chosenTransmission;
     u8 abUnknownEa0[0x60]; /* +0xea0 */
@@ -96,6 +109,10 @@ typedef struct Vehicle {
      * @ghidraAddress BRD3D: 0x10076b20
      */
     void ResetVehicleState(void);
+    /**
+     * @ghidraAddress BRD3D: 0x10062c50
+     */
+    void InitVehiclePhysics(void);
     /**
      * @ghidraAddress BRD3D: 0x10076420
      */

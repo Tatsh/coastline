@@ -9,6 +9,8 @@ extern "C" {
 
 /** Reset vehicle transforms and apply the selected car's physics. */
 void ResetVehicleState(Vehicle *vehicle);
+/** Initialise the body, wheels, and force chains for the selected model. */
+void InitVehiclePhysics(Vehicle *vehicle);
 /** Set velocity in the rigid-body integration states and the recorded placement. */
 void SetVehicleVelocity(Vehicle *vehicle, f32 x, f32 y, f32 z);
 /** Set the position in the frame, spray origin, and rigid-body integration states. */
