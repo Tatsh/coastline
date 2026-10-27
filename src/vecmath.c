@@ -425,9 +425,16 @@ f32 Vec3fLength(Vec3f *v) {
 }
 #endif
 
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+long double Vec2fLength(Vec2f *v) {
+    f32 squared = (long double)v->y * v->y + (long double)v->x * v->x;
+    return sqrtl(squared);
+}
+#else
 f32 Vec2fLength(Vec2f *v) {
     return sqrtf(v->y * v->y + v->x * v->x);
 }
+#endif
 
 #if TGR_PLATFORM == TGR_PLATFORM_N64
 void Vec3fRotateAroundAxis(Vec3f *v, f32 angle, Vec3f *axis) {

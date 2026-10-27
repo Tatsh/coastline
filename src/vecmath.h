@@ -477,8 +477,13 @@ f32 Vec3fLength(Vec3f *v);
  * @ghidraAddress JPN: 0x80225678
  * @ghidraAddress BRD3D: 0x1003b1c0
  * @ghidraAddress BRGlide: 0x10034840
+ * @stub{BRGlide}
  */
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+long double Vec2fLength(Vec2f *v);
+#else
 f32 Vec2fLength(Vec2f *v);
+#endif
 
 /**
  * Rotate a vector by an angle about a unit axis, clockwise as seen from the tip of the axis.
