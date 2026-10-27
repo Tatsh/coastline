@@ -212,6 +212,8 @@ void Vec3fDivideInPlace(Vec3f *v, f32 divisor);
  * @ghidraAddress USA: 0x802245d4
  * @ghidraAddress EUR: 0x80225914
  * @ghidraAddress JPN: 0x80225104
+ * @ghidraAddress BRD3D: 0x10035c70
+ * @ghidraAddress BRGlide: 0x1002f310
  */
 void Vec3fCopy(Vec3f *out, Vec3f *v);
 

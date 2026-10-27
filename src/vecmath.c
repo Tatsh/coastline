@@ -218,13 +218,23 @@ void Vec3fDivideInPlace(Vec3f *v, f32 divisor) {
 #endif
 }
 
-#if TGR_PLATFORM == TGR_PLATFORM_N64
 void Vec3fCopy(Vec3f *out, Vec3f *v) {
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+    u32 bits;
+
+    /* Each component is copied before the next is read, including overlapping vectors. */
+    memcpy(&bits, &v->x, sizeof(bits));
+    memcpy(&out->x, &bits, sizeof(bits));
+    memcpy(&bits, &v->y, sizeof(bits));
+    memcpy(&out->y, &bits, sizeof(bits));
+    memcpy(&bits, &v->z, sizeof(bits));
+    memcpy(&out->z, &bits, sizeof(bits));
+#else
     out->x = v->x;
     out->y = v->y;
     out->z = v->z;
-}
 #endif
+}
 
 void Vec3fDirection(Vec3f *out, Vec3f *from, Vec3f *to) {
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
