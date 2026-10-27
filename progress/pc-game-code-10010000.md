@@ -1,6 +1,6 @@
 # PC port game code from 0x10010000 to 0x10020000
 
-128 of 162 routines done.
+129 of 162 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -129,7 +129,7 @@ the same name, for a routine the port retained from the N64 game.
 | `SetTextCustomColors`                                  |   ✅   | ✅ `0x8022f530` |      3 |     69 | `0x100192a0` | `0x10016860` | `void SetTextCustomColors(int red, int green, int blue, int red2, int green2, int blue2)`                                                                                                                                                    |
 | `DirectDrawDriver::CompareDirectDrawDriverGuid`        |   ✅   |                 |      1 |     65 | `0x1001b2d0` |              | `bool CompareDirectDrawDriverGuid(DirectDrawDriver * this, GUID * pGuid)`                                                                                                                                                                    |
 | `D3DDeviceNode::ReleaseD3DDeviceNode`                  |   ✅   |                 |      1 |     64 | `0x1001aee0` |              | `void ReleaseD3DDeviceNode(D3DDeviceNode * this)`                                                                                                                                                                                            |
-| `ResolveRenderDeviceOrFind`                            |        |                 |      1 |     63 | `0x1001a5d0` |              | `int ResolveRenderDeviceOrFind(void * pDeviceList, uint dwFlags)`                                                                                                                                                                            |
+| `ResolveRenderDeviceOrFind`                            |   ✅   |                 |      1 |     63 | `0x1001a5d0` |              | `D3DDeviceNode * ResolveRenderDeviceOrFind(DirectDrawDriver * pDriver, GUID * pDeviceGuid, DisplayMode * pMode)`                                                                                                                             |
 | `IsPixelFormatPalettized`                              |   ✅   |                 |      1 |     56 | `0x1001a950` |              | `bool IsPixelFormatPalettized(void * pFormat)`                                                                                                                                                                                               |
 | `IsSkyFogFilled`                                       |   ✅   | ✅ `0x8022f900` |      1 |     54 | `0x10018070` | `0x100155f0` | `int IsSkyFogFilled(void)`                                                                                                                                                                                                                   |
 | `DisplayMode::IsDisplayModeMatch`                      |   ✅   |                 |      4 |     51 | `0x1001ad50` |              | `bool IsDisplayModeMatch(DisplayMode * this, int nWidth, int nHeight, int nBitDepth)`                                                                                                                                                        |
