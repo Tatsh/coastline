@@ -438,6 +438,60 @@ int DetectDuplicateKeyBindings(int nDevice);
 int KeyConfigUI_PollKeyCapture(MenuWidget *pWidget);
 
 /**
+ * @ghidraAddress BRD3D: 0x10040680
+ * @ghidraAddress BRGlide: 0x10039bc0
+ */
+int KeyConfigUI_BeginKeyCapture(MenuWidget *pWidget);
+
+/**
+ * @ghidraAddress BRD3D: 0x10047360
+ * @ghidraAddress BRGlide: 0x100407b0
+ */
+int ValidateEntityState(MenuWidget *pWidget);
+
+/**
+ * @ghidraAddress BRD3D: 0x100474b0
+ * @ghidraAddress BRGlide: 0x10040af0
+ */
+int ValidateEntityStateAlwaysTrue(MenuWidget *pWidget);
+
+/**
+ * @ghidraAddress BRD3D: 0x100475f0
+ * @ghidraAddress BRGlide: 0x10040a20
+ */
+int ProcessCheatInputAndValidateEntity(MenuWidget *pWidget);
+
+/**
+ * @ghidraAddress BRD3D: 0x10044010
+ */
+int MultiplayerConnectionUI_OnSelectIpx(MenuWidget *pWidget);
+
+/**
+ * @ghidraAddress BRD3D: 0x10044030
+ */
+int MultiplayerConnectionUI_UpdateIpxItem(MenuWidget *pWidget);
+
+/**
+ * @ghidraAddress BRD3D: 0x10044050
+ */
+int MultiplayerConnectionUI_OnSelectTcpIp(MenuWidget *pWidget);
+
+/**
+ * @ghidraAddress BRD3D: 0x10044070
+ */
+int MultiplayerConnectionUI_UpdateTcpIpItem(MenuWidget *pWidget);
+
+/**
+ * @ghidraAddress BRD3D: 0x10044090
+ */
+int MultiplayerConnectionUI_OnSelectModem(MenuWidget *pWidget);
+
+/**
+ * @ghidraAddress BRD3D: 0x100440b0
+ */
+int MultiplayerConnectionUI_UpdateModemItem(MenuWidget *pWidget);
+
+/**
  * @ghidraAddress BRD3D: 0x10042a90
  * @ghidraAddress BRGlide: 0x1003bff0
  */
@@ -1379,6 +1433,7 @@ extern int g_dwModalDialogBlocking;
 extern unsigned short g_wMenuHoverIndexPrev;
 /**
  * @ghidraAddress BRD3D: 0x10aa284c
+ * @ghidraAddress BRGlide: 0x10ac5ba4
  */
 extern int g_dwMenuHoverActive;
 /**

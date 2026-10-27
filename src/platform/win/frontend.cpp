@@ -1814,6 +1814,99 @@ int MainMenuUI_OnPlayCredits(MenuWidget *pWidget) {
     return 0;
 }
 
+int KeyConfigUI_BeginKeyCapture(MenuWidget *) {
+    if (!g_fCharInputSuppressed) {
+        g_dwMenuTextEditActive = 1;
+        g_fCharInputSuppressed = 1;
+        g_dwLastWmCharParam = 0;
+        ClearKeyboardStateBuffers();
+        PollInputAndUpdateEdges();
+    }
+    return 1;
+}
+
+int ValidateEntityState(MenuWidget *pWidget) {
+    unsigned flags = pWidget->dwFlags;
+    if ((flags & (0x10 | 0x1000000)) || (pWidget->itemList.dwFlags & 0x1000000)) {
+        return 0;
+    }
+    if (g_dwMenuHoverActive && (g_pMouseDevice->abHeld[0] || g_pMouseDevice->abHeld[1] ||
+                                g_pMouseDevice->abHeld[2] || g_pMouseDevice->abHeld[3])) {
+        pWidget->fonts[0].bStyle = 4;
+        return 1;
+    }
+    if (flags & 0x100) {
+        pWidget->nSpriteId =
+            static_cast<short>(static_cast<unsigned short>(pWidget->nSpriteId) + 1);
+        switch (pWidget->nSpriteId) {
+        case 2:
+            pWidget->fonts[0].bStyle = 0;
+            break;
+        case 3:
+            pWidget->fonts[0].bStyle = 1;
+            break;
+        case 4:
+            pWidget->fonts[0].bStyle = 2;
+            break;
+        case 52:
+            pWidget->fonts[0].bStyle = 4;
+            break;
+        default:
+            pWidget->nSpriteId = 2;
+            break;
+        }
+        pWidget->dwFlags = flags & ~0x100u;
+    }
+    return 1;
+}
+
+int ValidateEntityStateAlwaysTrue(MenuWidget *pWidget) {
+    ValidateEntityState(pWidget);
+    return 1;
+}
+
+int ProcessCheatInputAndValidateEntity(MenuWidget *pWidget) {
+    ProcessCheatCodeInput();
+    ValidateEntityState(pWidget);
+    return 1;
+}
+
+int MultiplayerConnectionUI_OnSelectIpx(MenuWidget *pWidget) {
+    g_dwServiceProviderIndex = 0;
+    ShowJoinCreateGameScreen();
+    return 1;
+}
+
+int MultiplayerConnectionUI_UpdateIpxItem(MenuWidget *pWidget) {
+    g_dwServiceProviderIndex = 0;
+    ValidateEntityState(pWidget);
+    return 1;
+}
+
+int MultiplayerConnectionUI_OnSelectTcpIp(MenuWidget *pWidget) {
+    g_dwServiceProviderIndex = 1;
+    ShowJoinCreateGameScreen();
+    return 1;
+}
+
+int MultiplayerConnectionUI_UpdateTcpIpItem(MenuWidget *pWidget) {
+    g_dwServiceProviderIndex = 1;
+    ValidateEntityState(pWidget);
+    return 1;
+}
+
+int MultiplayerConnectionUI_OnSelectModem(MenuWidget *pWidget) {
+    g_dwServiceProviderIndex = 2;
+    ShowJoinCreateGameScreen();
+    return 1;
+}
+
+int MultiplayerConnectionUI_UpdateModemItem(MenuWidget *pWidget) {
+    g_dwServiceProviderIndex = 2;
+    ValidateEntityState(pWidget);
+    return 1;
+}
+
 static inline int BeginMenuTextEdit(MenuWidget *pWidget) {
     if (!g_dwMenuTextEditActive) {
         g_dwMenuTextEditActive = 1;
