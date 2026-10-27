@@ -1,6 +1,6 @@
 # PC port game code from 0x10040000 to 0x10050000
 
-198 of 264 routines done.
+199 of 264 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -60,7 +60,7 @@ the same name, for a routine the port retained from the N64 game.
 | `ValidateEntityState`                              |   ✅   |                 |    122 |    251 | `0x10047360` | `0x100407b0` | `int ValidateEntityState(MenuWidget * pWidget)`                                                                                                           |
 | `MenuScreen::RunFrame`                             |   ✅   |                 |      1 |    249 | `0x100489a0` | `0x10041dd0` | `bool RunFrame(MenuScreen * this)`                                                                                                                        |
 | `MenuWidget::SetText`                              |   ✅   |                 |      1 |    247 | `0x10047eb0` | `0x10041300` | `void SetText(MenuWidget * this, char * pszText, uint dwTextFlags, uchar bStyle, RECT * pRect)`                                                           |
-| `SeasonUI_UpdateYearOrdinalLabel`                  |        |                 |      4 |    245 | `0x100413b0` | `0x1003a910` | `undefined SeasonUI_UpdateYearOrdinalLabel()`                                                                                                             |
+| `SeasonUI_UpdateYearOrdinalLabel`                  |   ✅   |                 |      4 |    245 | `0x100413b0` | `0x1003a910` | `int SeasonUI_UpdateYearOrdinalLabel(MenuWidget * pWidget)`                                                                                               |
 | `ShowChampionshipSeasonMenu`                       |   ✅   |                 |      1 |    244 | `0x10045900` | `0x1003ed90` | `int ShowChampionshipSeasonMenu(void)`                                                                                                                    |
 | `ShowRaceSetupMenu`                                |   ✅   |                 |      1 |    244 | `0x10044f50` | `0x1003e4a0` | `int ShowRaceSetupMenu(void)`                                                                                                                             |
 | `ShowQuitGameConfirmMenu`                          |   ✅   |                 |      1 |    239 | `0x10046170` | `0x1003f610` | `int ShowQuitGameConfirmMenu(void)`                                                                                                                       |
