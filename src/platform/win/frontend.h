@@ -2419,7 +2419,6 @@ int ShowChampionshipSeasonMenu(void);
 
 /**
  * @ghidraAddress BRD3D: 0x1004f2b0
- * @stub
  */
 void BuildChampionshipSeasonUI(MenuScreen *pScreen);
 
