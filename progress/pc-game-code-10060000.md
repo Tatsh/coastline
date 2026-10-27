@@ -1,6 +1,6 @@
 # PC port game code from 0x10060000 to 0x10070000
 
-126 of 173 routines done.
+128 of 173 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -88,7 +88,7 @@ the same name, for a routine the port retained from the N64 game.
 | `MouseDevice::CreateMouseDevice`         |   ✅   |                 |      1 |    181 | `0x100602e0` | `0x10059350` | `bool CreateMouseDevice(MouseDevice * this, void * hWnd)`                                                                                |
 | `RallyConfig::SetInputBinding`           |   ✅   |                 |      4 |    169 | `0x10069b10` | `0x10062b80` | `void SetInputBinding(RallyConfig * this, int nDevice, int nControl, WORD wKind, BYTE nKeyCode)`                                         |
 | `SetVehicleFrameMatrix`                  |        | ✅ `0x80220150` |      1 |    152 |              | `0x1006f970` | `undefined SetVehicleFrameMatrix()`                                                                                                      |
-| `ResetAllSoundState`                     |        | ✅ `0x8022b428` |      1 |    143 | `0x10067dc0` | `0x10060e30` | `undefined ResetAllSoundState()`                                                                                                         |
+| `ResetAllSoundState`                     |   ✅   | ✅ `0x8022b428` |      1 |    143 | `0x10067dc0` | `0x10060e30` | `void ResetAllSoundState(void)`                                                                                                          |
 | `ConvertInputToN64ControllerPad`         |        |                 |      1 |    136 | `0x10060e00` | `0x10059e70` | `undefined ConvertInputToN64ControllerPad()`                                                                                             |
 | `UpdateWheelHeights`                     |   ✅   | ✅ `0x8025ec7c` |      2 |    134 | `0x1006f4a0` | `0x10068450` | `void UpdateWheelHeights(RigidBody * body)`                                                                                              |
 | `ResetTrackTriangleCache`                |        |                 |      1 |    134 |              | `0x10063dd0` | `undefined ResetTrackTriangleCache()`                                                                                                    |
@@ -154,8 +154,8 @@ the same name, for a routine the port retained from the N64 game.
 | `SaveRaceSnapshot`                       |        | ✅ `0x8022aed8` |      1 |     29 | `0x10067940` | `0x100609b0` | `undefined SaveRaceSnapshot()`                                                                                                           |
 | `DecreaseBgmVolume`                      |        | ✅ `0x8021187c` |      1 |     28 | `0x10060d70` | `0x10059de0` | `undefined DecreaseBgmVolume()`                                                                                                          |
 | `DecreaseSfxVolume`                      |        | ✅ `0x80211934` |      1 |     28 | `0x10060de0` | `0x10059e50` | `undefined DecreaseSfxVolume()`                                                                                                          |
-| `ResetSoundSourceTracking`               |        | ✅ `0x8022b404` |      1 |     24 | `0x10067da0` | `0x10060e10` | `undefined ResetSoundSourceTracking()`                                                                                                   |
 | `RestoreRaceSnapshot`                    |        | ✅ `0x8022af08` |      1 |     24 | `0x10067960` | `0x100609d0` | `undefined RestoreRaceSnapshot()`                                                                                                        |
+| `ResetSoundSourceTracking`               |   ✅   | ✅ `0x8022b404` |      1 |     24 | `0x10067da0` | `0x10060e10` | `void ResetSoundSourceTracking(void)`                                                                                                    |
 | `StartRaceWithPlayerCount`               |   ✅   | ✅ `0x80200128` |      1 |     23 | `0x100697e0` | `0x10062850` | `void StartRaceWithPlayerCount(uint players)`                                                                                            |
 | `ApplyGhostKeyframeForVehicle`           |   ✅   |                 |      2 |     21 | `0x1006acf0` | `0x10063ca0` | `void ApplyGhostKeyframeForVehicle(Vehicle * pVehicle)`                                                                                  |
 | `SaveClockForPause`                      |   ✅   | ✅ `0x8022af34` |      2 |     21 | `0x10067980` | `0x100609f0` | `void SaveClockForPause(void)`                                                                                                           |
