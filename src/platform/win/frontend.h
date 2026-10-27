@@ -978,6 +978,9 @@ int PopulateVideoSettingsLists(void);
  */
 int PopulateDisplayDeviceList(void);
 
+/** @ghidraAddress BRD3D: 0x1007a710 */
+int CompareDisplayModes(const void *left, const void *right);
+
 /** @ghidraAddress BRD3D: 0x100ab528 */
 extern RECT g_rcMenuDeviceListBox;
 

@@ -2078,6 +2078,37 @@ int PopulateVideoSettingsLists(void) {
 }
 
 #if TGR_RENDERER == TGR_RENDERER_D3D
+int CompareDisplayModes(const void *left, const void *right) {
+    DisplayMode *leftMode = *static_cast<DisplayMode *const *>(left);
+    DisplayMode *rightMode = *static_cast<DisplayMode *const *>(right);
+    if (!leftMode && !rightMode) {
+        return 0;
+    }
+    if (leftMode && !rightMode) {
+        return -1;
+    }
+    int leftWidth, leftHeight, leftDepth, leftRefresh;
+    int rightWidth, rightHeight, rightDepth, rightRefresh;
+    // A null left mode still enters the dimension query, as in the original comparator.
+    leftMode->GetSurfaceDescDimensions(&leftWidth, &leftHeight, &leftDepth, &leftRefresh);
+    rightMode->GetSurfaceDescDimensions(&rightWidth, &rightHeight, &rightDepth, &rightRefresh);
+    const unsigned leftValues[] = {static_cast<unsigned>(leftDepth),
+                                   static_cast<unsigned>(leftWidth),
+                                   static_cast<unsigned>(leftHeight)};
+    const unsigned rightValues[] = {static_cast<unsigned>(rightDepth),
+                                    static_cast<unsigned>(rightWidth),
+                                    static_cast<unsigned>(rightHeight)};
+    for (int index = 0; index < 3; index++) {
+        if (leftValues[index] < rightValues[index]) {
+            return -1;
+        }
+        if (leftValues[index] > rightValues[index]) {
+            return 1;
+        }
+    }
+    return 0;
+}
+
 int PopulateDisplayDeviceList(void) {
     GUID *guid =
         g_pSelectedDisplayDriver ? g_pSelectedDisplayDriver->GetDirectDrawDriverGuid() : nullptr;
