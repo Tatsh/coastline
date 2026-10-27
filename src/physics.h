@@ -768,6 +768,7 @@ s32 TestObbIntersection(f32 rotation[3][3], Vec3f *offset, Vec3f *halfA, Vec3f *
  * between them and pushing them apart. It stops at the first pair whose boxes do not meet.
  *
  * @ghidraAddress USA: 0x8025fde4
+ * @ghidraAddress BRD3D: 0x1006ffd0
  * @ghidraAddress EUR: 0x802612c0
  * @ghidraAddress JPN: 0x80260d70
  */
