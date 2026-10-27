@@ -13,6 +13,134 @@
 
 #define SIGN(x) ((x) == 0.0f ? 0.0 : (0.0f < (x) ? 1.0 : -1.0))
 
+f32 CastWheelRay(RigidBody *body, RigidBody *wheel) {
+    TrackTriangle *triangle;
+    Vec3f down, start, origin, direction, hit;
+    f32 nearest;
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+    long double distance, facing;
+#else
+    f32 distance, facing;
+#endif
+    s32 slot, count, i;
+
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+    down.x = 0.0f;
+    down.y = 0.0f;
+    down.z = -1.0f;
+#else
+    down = g_vecNegUnitZ;
+#endif
+    nearest = 100.0f;
+    start.x = wheel->state.position.x;
+    start.y = wheel->state.position.y;
+    start.z = 0.0f;
+    Mtx4x4TransformPoint(&origin, body->orientation, &start);
+    Mtx3x3MulVec3f(&direction, body->orientation, &down);
+    wheel->ground = NULL;
+    slot = BuildTrackTriangleCache(origin.x, origin.y);
+    count = g_awTriCacheTriCount[slot];
+    triangle = g_aTriCacheTriangles[slot];
+    for (i = 0; i < count; i++, triangle++) {
+        distance = PlaneDistance(&triangle->normal, triangle->planeOffset, &origin);
+        if (!(distance > -2.0) || !(distance < 2.0)) {
+            continue;
+        }
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+        facing = Vec3fDot(&triangle->normal, &direction);
+#else
+        facing = direction.z * triangle->normal.z +
+                 (triangle->normal.x * direction.x + triangle->normal.y * direction.y);
+#endif
+        if (!((facing < 0 ? -facing : facing) > 0.001)) {
+            continue;
+        }
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+        distance =
+            (f32)(-PlaneDistance(&triangle->normal, triangle->planeOffset, &origin) / facing);
+        hit.x = FORCE_PRODUCT(direction.x, distance) + origin.x;
+        hit.y = FORCE_PRODUCT(direction.y, distance) + origin.y;
+        hit.z = FORCE_PRODUCT(direction.z, distance) + origin.z;
+#else
+        distance = -(triangle->planeOffset +
+                     (origin.z * triangle->normal.z +
+                      (triangle->normal.x * origin.x + triangle->normal.y * origin.y))) /
+                   facing;
+        /* The original stores the scaled direction before adding the origin to it. */
+        hit.x = direction.x * distance;
+        hit.y = direction.y * distance;
+        hit.z = direction.z * distance;
+        hit.x = origin.x + hit.x;
+        hit.y = origin.y + hit.y;
+        hit.z = origin.z + hit.z;
+#endif
+        if (!((f64)distance > -2.0) || !((f64)distance < 2.0) || !(distance < nearest)) {
+            continue;
+        }
+        if (!((f64)triangle->normal.z > 0.2)) {
+            continue;
+        }
+        if (!IsPointInTrackTriangle(triangle, &hit)) {
+            continue;
+        }
+        wheel->ground = triangle;
+        nearest = distance;
+        wheel->surface = triangle->surface;
+        wheel->groundNormal.x = triangle->normal.x;
+        wheel->groundNormal.y = triangle->normal.y;
+        wheel->groundNormal.z = triangle->normal.z;
+        wheel->groundOffset = triangle->planeOffset;
+    }
+    return nearest;
+}
+
+/* The original picks the wheel by a switch without a default, and keeps the last one otherwise. */
+#pragma GCC diagnostic push
+#if !defined(__clang__)
+#pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
+#endif
+#pragma GCC diagnostic ignored "-Wuninitialized"
+void UpdateWheelHeights(RigidBody *body) {
+    /* The original reserves stack for sixteen bytes of locals it does not use. */
+    f32 unused[4];
+    RigidBody *wheel;
+    f32 height;
+    s32 i;
+
+    (void)unused;
+    for (i = 0; i < VEHICLE_WHEELS; i++) {
+        switch (i) {
+        case 0:
+            wheel = body->wheels[0];
+            break;
+        case 1:
+            wheel = body->wheels[1];
+            break;
+        case 2:
+            wheel = body->wheels[2];
+            break;
+        case 3:
+            wheel = body->wheels[3];
+            break;
+        }
+        height = -CastWheelRay(body, wheel);
+        wheel->suspension = height;
+        if ((f64)height > 0.0) {
+            height = 0.0f;
+        }
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+        if (!(height >= -0.4f)) {
+#else
+        if ((f64)height < -0.4) {
+#endif
+            wheel->state.position.z = -0.4f;
+        } else {
+            wheel->state.position.z = height;
+        }
+    }
+}
+#pragma GCC diagnostic pop
+
 void ComputeSpringForces(RigidBody *body) {
     RigidBodyForce *force = body->forces;
     RigidBody *wheel;

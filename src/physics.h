@@ -313,6 +313,9 @@ void ApplySideGrip(
  */
 void DriveWheel(RigidBody *body, RigidBody *wheel, f32 *load, u8 *sliding, f32 dt);
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 /**
  * Whether a point lies within a triangle of the track, seen along the main axis of its normal.
  *
@@ -322,12 +325,10 @@ void DriveWheel(RigidBody *body, RigidBody *wheel, f32 *load, u8 *sliding, f32 d
  * @ghidraAddress USA: 0x8025b3b0
  * @ghidraAddress EUR: 0x8025c994
  * @ghidraAddress JPN: 0x8025c324
+ * @ghidraAddress BRD3D: 0x1006c740
  */
 s16 IsPointInTrackTriangle(TrackTriangle *triangle, Vec3f *point);
 
-#ifdef __cplusplus
-extern "C" {
-#endif
 /**
  * The distance of a point from a plane.
  *
@@ -574,6 +575,9 @@ void ComputeDragForce(RigidBody *body, RigidBodyForce *force);
 }
 #endif
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 /**
  * Find the ground below a wheel in the cache of the triangles.
  *
@@ -583,6 +587,7 @@ void ComputeDragForce(RigidBody *body, RigidBodyForce *force);
  * @ghidraAddress USA: 0x8025e96c
  * @ghidraAddress EUR: 0x8025fe48
  * @ghidraAddress JPN: 0x8025f8f8
+ * @ghidraAddress BRD3D: 0x1006f0c0
  */
 f32 CastWheelRay(RigidBody *body, RigidBody *wheel);
 
@@ -593,12 +598,10 @@ f32 CastWheelRay(RigidBody *body, RigidBody *wheel);
  * @ghidraAddress USA: 0x8025ec7c
  * @ghidraAddress EUR: 0x80260158
  * @ghidraAddress JPN: 0x8025fc08
+ * @ghidraAddress BRD3D: 0x1006f4a0
  */
 void UpdateWheelHeights(RigidBody *body);
 
-#ifdef __cplusplus
-extern "C" {
-#endif
 /**
  * Set the springs of the wheels of a vehicle, and count the frames each wheel touches the ground.
  *

@@ -6,6 +6,57 @@
 
 #define GRID_SECTOR(x, y) ((s32)(y) / 32 * 64 + (s32)(x) / 32)
 
+#define ABS(x) ((x) < 0.0f ? -(x) : (x))
+#define COMPONENT(v, axis) ((&(v)->x)[axis])
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#define TRI_PRODUCT(a, b) ((long double)(a) * (b))
+#else
+#define TRI_PRODUCT(a, b) ((a) * (b))
+#endif
+
+s16 IsPointInTrackTriangle(TrackTriangle *triangle, Vec3f *point) {
+    f32 u0, v0, pu, pv, au, av, bu, bv, beta;
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+    long double alpha, quotient;
+#else
+    f32 alpha, quotient;
+#endif
+    s32 axis, i1, i2;
+    s32 inside = 0;
+
+    /* Drop the main axis of the normal, and solve for the triangle there. */
+    if (ABS(triangle->normal.y) < ABS(triangle->normal.x)) {
+        axis = ABS(triangle->normal.z) < ABS(triangle->normal.x) ? 0 : 2;
+    } else {
+        axis = ABS(triangle->normal.z) < ABS(triangle->normal.y) ? 1 : 2;
+    }
+    i1 = (axis + 1) % 3;
+    i2 = (axis + 2) % 3;
+    u0 = COMPONENT(triangle->vertices[0], i1);
+    v0 = COMPONENT(triangle->vertices[0], i2);
+    pu = COMPONENT(point, i1) - u0;
+    pv = COMPONENT(point, i2) - v0;
+    au = COMPONENT(triangle->vertices[1], i1) - u0;
+    av = COMPONENT(triangle->vertices[1], i2) - v0;
+    bu = COMPONENT(triangle->vertices[2], i1) - u0;
+    bv = COMPONENT(triangle->vertices[2], i2) - v0;
+    if (au == 0.0f) {
+        beta = quotient = TRI_PRODUCT(pu, 1.0f) / bu;
+        if (0.0f <= quotient && beta <= 1.0f) {
+            alpha = (pv - TRI_PRODUCT(beta, bv)) / av;
+            inside = 0.0f <= alpha && alpha + beta <= 1.0f;
+        }
+    } else {
+        beta = quotient = (TRI_PRODUCT(pv, au) - TRI_PRODUCT(pu, av)) /
+                          (TRI_PRODUCT(bv, au) - TRI_PRODUCT(bu, av));
+        if (0.0f <= quotient && beta <= 1.0f) {
+            alpha = (pu - TRI_PRODUCT(beta, bu)) / au;
+            inside = 0.0f <= alpha && alpha + beta <= 1.0f;
+        }
+    }
+    return inside;
+}
+
 /* The original slot remains unset when every timestamp is at least 2^30. */
 #pragma GCC diagnostic push
 #if !defined(__clang__)
