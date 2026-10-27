@@ -17,19 +17,39 @@
 
 /** The mouse of the game. The layout is not recovered past the members below. */
 class MouseDevice {
+private:
+    int nCursorX;                            /*!< The horizontal position of the cursor. */
+    int nCursorY;                            /*!< The vertical position of the cursor. */
+    int nWheel;                              /*!< The position of the wheel. */
+    int nPrevCursorX;                        /*!< nCursorX when the mouse was read before. */
+    int nPrevCursorY;                        /*!< nCursorY when the mouse was read before. */
+    [[maybe_unused]] char abUnknown14[0x10]; /* +0x14 */
+    unsigned char abButtons[4];              /*!< The buttons that are down, 0x80 for down. */
+    unsigned char abPrevButtons[4];          /*!< abButtons when the mouse was read before. */
+    int abHeld[4];                           /*!< Whether each button is held down. */
+    int abClicked[4];             /*!< Whether each button was let go since the read before. */
+    int bPressPending;            /*!< Set while a button is down, cleared when one is let go. */
+    IDirectInputDeviceA *pDevice; /*!< The DirectInput device of the mouse. */
+
 public:
-    int nCursorX;                   /*!< The horizontal position of the cursor. */
-    int nCursorY;                   /*!< The vertical position of the cursor. */
-    int nWheel;                     /*!< The position of the wheel. */
-    int nPrevCursorX;               /*!< nCursorX when the mouse was read before. */
-    int nPrevCursorY;               /*!< nCursorY when the mouse was read before. */
-    char abUnknown14[0x10];         /* +0x14 */
-    unsigned char abButtons[4];     /*!< The buttons that are down, 0x80 for down. */
-    unsigned char abPrevButtons[4]; /*!< abButtons when the mouse was read before. */
-    int abHeld[4];                  /*!< Whether each button is held down. */
-    int abClicked[4];               /*!< Whether each button was let go since the read before. */
-    int bPressPending;              /*!< Set while a button is down, cleared when one is let go. */
-    IDirectInputDeviceA *pDevice;   /*!< The DirectInput device of the mouse. */
+    int GetCursorX() const {
+        return nCursorX;
+    }
+    int GetCursorY() const {
+        return nCursorY;
+    }
+    void SetCursorX(int value) {
+        nCursorX = value;
+    }
+    void SetCursorY(int value) {
+        nCursorY = value;
+    }
+    bool IsButtonHeld(int index) const {
+        return abHeld[index] != 0;
+    }
+    IDirectInputDeviceA *GetDirectInputDevice() const {
+        return pDevice;
+    }
 
     /**
      * Clear the state of the mouse.

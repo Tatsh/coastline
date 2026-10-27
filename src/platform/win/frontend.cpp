@@ -495,7 +495,8 @@ bool MenuWidget::Update() {
     }
     if (UpdateHoverState() && !g_dwMenuTextEditActive) {
         unsigned flags = dwFlags;
-        if ((flags & 0x400000) && (g_pMouseDevice->abHeld[0] || g_pMouseDevice->abHeld[1])) {
+        if ((flags & 0x400000) &&
+            (g_pMouseDevice->IsButtonHeld(0) || g_pMouseDevice->IsButtonHeld(1))) {
             nSpriteId = anSpriteIds[1];
         }
         if (flags & 2) {
@@ -756,8 +757,8 @@ int MenuPanel::RestoreSelection() {
 }
 
 static inline bool MenuBoundsIncludeCursor(const RECT &bounds, const MouseDevice *pMouse) {
-    return bounds.left <= pMouse->nCursorX && bounds.right >= pMouse->nCursorX &&
-           bounds.top <= pMouse->nCursorY && bounds.bottom >= pMouse->nCursorY;
+    return bounds.left <= pMouse->GetCursorX() && bounds.right >= pMouse->GetCursorX() &&
+           bounds.top <= pMouse->GetCursorY() && bounds.bottom >= pMouse->GetCursorY();
 }
 
 bool MenuWidget::UpdateHoverState() {
@@ -796,7 +797,7 @@ bool MenuWidget::UpdateHoverState() {
         return true;
     }
     if (dwFlags & 0x40000) {
-        if (g_pMouseDevice->abHeld[0] || g_pMouseDevice->abHeld[1]) {
+        if (g_pMouseDevice->IsButtonHeld(0) || g_pMouseDevice->IsButtonHeld(1)) {
             dwFlags |= 0x80002;
         } else {
             dwFlags &= ~2u;
@@ -1059,8 +1060,8 @@ bool MenuScreen::EndFrame() {
     pActiveScreen = g_pActiveMenuScreen;
     g_pActiveMenuScreen = g_pRootMenuScreen;
     pCursor = g_pRootMenuScreen->apPanels[0]->apWidgets[MENU_CURSOR_WIDGET_INDEX];
-    pCursor->fX = static_cast<float>(g_pMouseDevice->nCursorX);
-    pCursor->fY = static_cast<float>(g_pMouseDevice->nCursorY);
+    pCursor->fX = static_cast<float>(g_pMouseDevice->GetCursorX());
+    pCursor->fY = static_cast<float>(g_pMouseDevice->GetCursorY());
     pCursor->Update();
     g_pActiveMenuScreen = pActiveScreen;
     if (!g_dwSessionListRefreshing) {
@@ -2678,8 +2679,9 @@ int ValidateEntityState(MenuWidget *pWidget) {
     if ((flags & (0x10 | 0x1000000)) || (pWidget->itemList.dwFlags & 0x1000000)) {
         return 0;
     }
-    if (g_dwMenuHoverActive && (g_pMouseDevice->abHeld[0] || g_pMouseDevice->abHeld[1] ||
-                                g_pMouseDevice->abHeld[2] || g_pMouseDevice->abHeld[3])) {
+    if (g_dwMenuHoverActive &&
+        (g_pMouseDevice->IsButtonHeld(0) || g_pMouseDevice->IsButtonHeld(1) ||
+         g_pMouseDevice->IsButtonHeld(2) || g_pMouseDevice->IsButtonHeld(3))) {
         pWidget->fonts[0].bStyle = 4;
         return 1;
     }

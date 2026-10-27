@@ -194,15 +194,15 @@ static inline void ReadMouseBindingState(void) {
     g_dwMouseStatePrevIndex = g_dwMouseStateCurIndex;
     g_dwMouseStateCurIndex = (g_dwMouseStateCurIndex - 1) & 1;
     MouseInputState &state = g_aMouseStateBuffers[g_dwMouseStateCurIndex];
-    if (g_pMouseDevice == nullptr || g_pMouseDevice->pDevice == nullptr) {
+    if (g_pMouseDevice == nullptr || g_pMouseDevice->GetDirectInputDevice() == nullptr) {
         memset(&state, 0, sizeof(state));
         return;
     }
     DIMOUSESTATE mouse;
-    const HRESULT result = g_pMouseDevice->pDevice->GetDeviceState(sizeof(mouse), &mouse);
+    const HRESULT result = g_pMouseDevice->GetDirectInputDevice()->GetDeviceState(sizeof(mouse), &mouse);
     if (result != DI_OK) {
         if (result == DIERR_INPUTLOST) {
-            g_pMouseDevice->pDevice->Acquire();
+            g_pMouseDevice->GetDirectInputDevice()->Acquire();
         }
         memset(state.abButtons, 0, sizeof(state.abButtons));
         return;
@@ -474,9 +474,9 @@ void UpdateMouseButtonEdges(void) {
 
 bool WINAPI ResetMouseCursorToCenter(HWND) {
     g_dwEntityHalfWidth = g_dwConfigFramebufferWidth;
-    g_pMouseDevice->nCursorX = g_dwConfigFramebufferWidth / 2;
+    g_pMouseDevice->SetCursorX(g_dwConfigFramebufferWidth / 2);
     g_dwEntityHalfHeight = g_dwConfigFramebufferHeight;
-    g_pMouseDevice->nCursorY = g_dwConfigFramebufferHeight / 2;
+    g_pMouseDevice->SetCursorY(g_dwConfigFramebufferHeight / 2);
     memset(&g_MouseMenuState, 0, sizeof(g_MouseMenuState));
     return true;
 }
@@ -536,16 +536,16 @@ int GetPressedMouseButton(void) {
     DIMOUSESTATE state;
     HRESULT hResult;
 
-    if (g_pMouseDevice == nullptr || g_pMouseDevice->pDevice == nullptr) {
+    if (g_pMouseDevice == nullptr || g_pMouseDevice->GetDirectInputDevice() == nullptr) {
         return -1;
     }
     for (int &bDown : g_adwMouseButtonRaw) {
         bDown = 0;
     }
-    hResult = g_pMouseDevice->pDevice->GetDeviceState(sizeof(state), &state);
+    hResult = g_pMouseDevice->GetDirectInputDevice()->GetDeviceState(sizeof(state), &state);
     // A lost device is acquired again and the state that was not read is used.
     if (hResult == DIERR_INPUTLOST) {
-        g_pMouseDevice->pDevice->Acquire();
+        g_pMouseDevice->GetDirectInputDevice()->Acquire();
     }
     for (int i = 0; i < MOUSE_BUTTON_COUNT; i++) {
         if (state.rgbButtons[i] & BUTTON_DOWN_MASK) {
