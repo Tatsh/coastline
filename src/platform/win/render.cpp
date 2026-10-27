@@ -471,6 +471,24 @@ void CreateGlobalEffectTextures(void) {
 }
 
 #if TGR_RENDERER == TGR_RENDERER_D3D
+void SelectTextureQualityFromVideoMemory(void) {
+    if (g_dwAvailableTextureMemory > g_dwHiResTextureMemoryThreshold &&
+        !g_dwD3DAlwaysSquareTextures) {
+        g_dwTextureQualityLevel =
+            g_dwTotalPhysicalMemory > 0x2000000 ? g_dwAvailableTextureMemory < 4000000 : 1;
+        g_dwMaxTexWidthHighQuality = 256;
+        g_dwMaxTexHeightHighQuality = 256;
+        g_dwMaxTexWidthLowQuality = 256;
+        g_dwMaxTexHeightLowQuality = 256;
+    } else {
+        g_dwTextureQualityLevel = 2;
+        g_dwMaxTexWidthHighQuality = 64;
+        g_dwMaxTexHeightHighQuality = 64;
+        g_dwMaxTexWidthLowQuality = 32;
+        g_dwMaxTexHeightLowQuality = 32;
+    }
+}
+
 unsigned AllocateTextureEntry(void) {
     if (g_dwTextureEntryCount >= g_dwTextureEntryCapacity) {
         g_dwTextureEntryCapacity += 256;

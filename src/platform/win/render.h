@@ -784,6 +784,36 @@ void LoadHudGlyphTextureSets(void);
  * @ghidraAddress BRD3D: 0x100b8c90
  */
 extern int g_dwTextureQualityLevel;
+
+/**
+ * @ghidraAddress BRD3D: 0x11829844
+ */
+extern unsigned g_dwAvailableTextureMemory;
+/**
+ * @ghidraAddress BRD3D: 0x11829848
+ */
+extern unsigned g_dwHiResTextureMemoryThreshold;
+/**
+ * @ghidraAddress BRD3D: 0x100a7dfc
+ */
+extern int g_dwMaxTexWidthHighQuality;
+/**
+ * @ghidraAddress BRD3D: 0x100a7e00
+ */
+extern int g_dwMaxTexHeightHighQuality;
+/**
+ * @ghidraAddress BRD3D: 0x100a7e04
+ */
+extern int g_dwMaxTexWidthLowQuality;
+/**
+ * @ghidraAddress BRD3D: 0x100a7e08
+ */
+extern int g_dwMaxTexHeightLowQuality;
+
+/**
+ * @ghidraAddress BRD3D: 0x1002a5a0
+ */
+void SelectTextureQualityFromVideoMemory(void);
 /**
  * @ghidraAddress BRD3D: 0x100a6070
  */
