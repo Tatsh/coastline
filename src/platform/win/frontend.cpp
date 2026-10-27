@@ -1086,6 +1086,27 @@ int SeasonRoundList_ClearBrowsingFlag(void) {
     return 1;
 }
 
+int CreateGameUI_EnableContinueIfNameEntered(MenuWidget *pWidget) {
+    if (strlen(pWidget->fonts[0].szText)) {
+        g_pCreateGameContinueItem->dwFlags &= ~0x10u;
+    }
+    return 1;
+}
+
+int PlayerNameEntryUI_EnableContinueIfNameEntered(MenuWidget *pWidget) {
+    if (strlen(pWidget->fonts[0].szText)) {
+        g_pPlayerNameContinueItem->dwFlags &= ~0x10u;
+    }
+    return 1;
+}
+
+int ModemConnectionUI_EnableContinueIfNumberEntered(MenuWidget *pWidget) {
+    if (strlen(pWidget->fonts[0].szText)) {
+        g_pModemContinueItem->dwFlags &= ~0x10u;
+    }
+    return 1;
+}
+
 int ShowVideoOptionsMenu(void) {
     return ShowCachedMenuScreen(g_pCachedMenu_InputConfig, BuildVideoOptionsUI);
 }

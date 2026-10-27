@@ -393,6 +393,36 @@ int SeasonRoundList_SetBrowsingFlag(void);
 int SeasonRoundList_ClearBrowsingFlag(void);
 
 /**
+ * Enable game creation after text has been entered.
+ *
+ * @ghidraAddress BRD3D: 0x1003f280
+ * @ghidraAddress BRGlide: 0x100387c0
+ */
+int CreateGameUI_EnableContinueIfNameEntered(MenuWidget *pWidget);
+
+/**
+ * Enable continuing after a player name has been entered.
+ *
+ * @ghidraAddress BRD3D: 0x1003ef60
+ * @ghidraAddress BRGlide: 0x10038490
+ */
+int PlayerNameEntryUI_EnableContinueIfNameEntered(MenuWidget *pWidget);
+
+/**
+ * Enable continuing after a modem number has been entered.
+ *
+ * @ghidraAddress BRD3D: 0x1003f020
+ * @ghidraAddress BRGlide: 0x10038550
+ */
+int ModemConnectionUI_EnableContinueIfNumberEntered(MenuWidget *pWidget);
+
+/**
+ * @ghidraAddress BRD3D: 0x10aa29bc
+ * @ghidraAddress BRGlide: 0x10ac5d14
+ */
+extern MenuWidget *g_pCreateGameContinueItem;
+
+/**
  * Build input options on the supplied screen.
  *
  * @ghidraAddress BRD3D: 0x1004c4a0
