@@ -294,6 +294,7 @@ DWORD g_dwForceFeedbackDuration = 125000;
  * Gain used in spring ramp calculations, in ten-thousandths.
  *
  * @ghidraAddress BRD3D: 0x100bd424
+ * @ghidraAddress BRGlide: 0x100bcc2c
  */
 int g_dwForceFeedbackGain = 10000;
 
@@ -301,6 +302,7 @@ int g_dwForceFeedbackGain = 10000;
  * Lower bound of the spring ramp before gain scaling.
  *
  * @ghidraAddress BRD3D: 0x100bd428
+ * @ghidraAddress BRGlide: 0x100bcc30
  */
 int g_dwForceFeedbackMagnitudeMax = 2000;
 
@@ -308,6 +310,7 @@ int g_dwForceFeedbackMagnitudeMax = 2000;
  * Upper bound of the spring ramp before gain scaling.
  *
  * @ghidraAddress BRD3D: 0x100bd42c
+ * @ghidraAddress BRGlide: 0x100bcc34
  */
 int g_dwForceFeedbackConstantForce = 10000;
 

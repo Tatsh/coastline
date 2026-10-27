@@ -69,6 +69,7 @@ typedef struct PlayerInputState {
      * Remove held buttons from current input and discard released held buttons.
      *
      * @ghidraAddress BRD3D: 0x10035fc0
+     * @ghidraAddress BRGlide: 0x1002f660
      */
     void ConsumeInputFlags(void);
 

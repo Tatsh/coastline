@@ -333,6 +333,7 @@ struct MouseInputState {
  * @param nBinding Binding index.
  * @return One for a button edge, 0x80 for an axis edge, or their bitwise union.
  * @ghidraAddress BRD3D: 0x100786e0
+ * @ghidraAddress BRGlide: 0x100719d0
  */
 unsigned char IsInputBindingPressed(int nBinding);
 
@@ -342,6 +343,7 @@ unsigned char IsInputBindingPressed(int nBinding);
  * @param nBinding Binding index.
  * @return The high bit when a button or an axis beyond fifty is active.
  * @ghidraAddress BRD3D: 0x10078420
+ * @ghidraAddress BRGlide: 0x10071710
  */
 unsigned char IsInputBindingHeld(int nBinding);
 
@@ -598,6 +600,7 @@ extern LONG g_adwForceFeedbackDirection[2];
  * @param bEnableForce Whether to play the spring.
  * @param nForce Upper bound input, offset by eight before scaling.
  * @ghidraAddress BRD3D: 0x10078f20
+ * @ghidraAddress BRGlide: 0x10072210
  */
 void UpdateForceFeedbackForce(int bReduceForce, int bEnableForce, int nForce);
 
