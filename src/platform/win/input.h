@@ -68,7 +68,18 @@ public:
      * @ghidraAddress BRGlide: 0x10059410
      */
     void PollMouseDevice(HWND hWnd);
+
+    /**
+     * @ghidraAddress BRD3D: 0x10060750
+     * @stub
+     */
+    void SyncMouseAcquireState(HWND hWnd);
 };
+
+/**
+ * @ghidraAddress BRD3D: 0x10aa33e0
+ */
+extern int g_fHostWindowActive;
 
 /** The state of the menus the mouse and the arrows of the keyboard move. */
 struct MouseMenuState {

@@ -1,3 +1,4 @@
+aabb
 abicalls
 abiflags
 accel
@@ -32,6 +33,7 @@ arrowud
 arrowuu
 asciz
 ashft
+assetdma
 atdb
 atexit
 attachedonly
@@ -49,11 +51,13 @@ bestlaptime
 bgdim
 bgtz
 bilerp
+bilinearly
 bitspixel
 blez
 blit
 bnel
 bnez
+bodyforces
 bootplayer
 boxz
 brielle
@@ -63,6 +67,10 @@ btire
 bufbusy
 buildsystems
 bzero
+camerachase
+cameracollision
+cameraprojection
+camerarender
 camframe
 campoints
 canflip
@@ -97,6 +105,7 @@ clipintersectionall
 coasttr
 coasttrk
 colc
+collisionstep
 colored
 colorkeyenable
 combkey
@@ -127,6 +136,7 @@ ctrlfrequency
 ctrlpan
 ctrlvolume
 ctype
+cubeclip
 cullmode
 cupra
 curwd
@@ -242,6 +252,7 @@ dpsession
 dpsessiondesc
 dpspguid
 dpsys
+dptexturecaps
 drawtexturedrect
 drenderstate
 drenderstatetype
@@ -280,6 +291,7 @@ eepromlongwrite
 eepromprobe
 eepromread
 eepromwrite
+emulatedclock
 encryptionfailed
 encryptionnotsupported
 enddl
@@ -288,6 +300,7 @@ endfunction
 endlabel
 engsound
 entermenuloop
+entersizemove
 enumvalue
 epirawdma
 epirawread
@@ -319,6 +332,9 @@ fovy
 foxundermoon
 fpart
 fpcsr
+framebegin
+frameclear
+frameflush
 frametimer
 freeable
 frontwheel
@@ -389,6 +405,7 @@ invalicache
 invalidplayer
 invsrcalpha
 iobusy
+iomessage
 isrc
 iwyu
 jalr
@@ -488,6 +505,7 @@ medshok
 medtire
 memcpy
 memset
+menufont
 menuitemrom
 mesg
 mfhi
@@ -504,11 +522,14 @@ mmio
 mmioinfo
 mnrwd
 moddi
+modelanimation
+modelanimationflags
 modelpart
 modelpartflags
 modelpartpos
 modelparts
 modelptrs
+modelrelocation
 modeltex
 modelview
 monitr
@@ -596,6 +617,7 @@ pfsnumfiles
 pfsreadwritefile
 pfsrepairid
 phmmio
+physicsimpact
 piacs
 pidma
 pifdata
@@ -608,6 +630,7 @@ pirawdma
 pirawread
 pjrwd
 placedvel
+playercontrol
 playerinput
 playerlost
 playerready
@@ -632,6 +655,7 @@ racemenu
 racercolor
 racerecords
 racerinit
+racersharing
 racerslot
 racesound
 rallyconfig
@@ -656,6 +680,7 @@ refguid
 reflow
 regen
 reginfo
+renderbackend
 renderinit
 rendermode
 rendertile
@@ -668,9 +693,11 @@ rgbdither
 rgdw
 rigidbody
 ripgreprc
+rledecompress
 rmonspin
 rodata
 rombuilder
+routeposition
 routewalk
 rshift
 rtti
@@ -678,6 +705,7 @@ rxsize
 savd
 sbclaude
 schemafile
+screendraw
 seasn
 seasoncars
 seasondesc
@@ -712,6 +740,7 @@ shellcheck
 shellformat
 shiftl
 shiftt
+sidegrip
 signfailed
 siint
 simgr
@@ -729,6 +758,7 @@ softshok
 soundchannel
 soundeffect
 soundptr
+soundsource
 soundtik
 specon
 specularenable
@@ -803,9 +833,11 @@ textureanim
 texturemag
 textureperspective
 texturescan
+texturestream
 tgmath
 thiscall
 timerintr
+timingframe
 tiretype
 tlbp
 tlbpgmask
@@ -818,6 +850,9 @@ tlvertex
 tmsf
 tolower
 toupper
+tracetrack
+trackanimation
+trackgrid
 trackmenuitem
 trackrender
 trak
@@ -826,6 +861,7 @@ trakd
 trakraceb
 trakracel
 tranx
+tricache
 trisurface
 trrwd
 txls
@@ -853,9 +889,11 @@ vehiclechoice
 vehiclecolor
 vehiclecount
 vehicleeffects
+vehicleengine
 vehicleforces
 vehicleindex
 vehiclemodel
+vehiclephysics
 vehiclerender
 vehiclereset
 vehiclesetup

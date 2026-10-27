@@ -3532,6 +3532,59 @@ ErrorMessage g_ErrorMessageTable[ERROR_MESSAGE_COUNT] = {
     {true, 0xa9},
 };
 
+LRESULT WINAPI
+FrontEndWindowProc(void *pUnused, HWND hWnd, UINT nMessage, WPARAM wParam, LPARAM lParam) {
+    LRESULT result = 1;
+    switch (nMessage) {
+    case WM_ACTIVATE:
+        g_fHostWindowActive = wParam == 0;
+        break;
+    case WM_CHAR:
+        if (!g_fCharInputSuppressed && !(g_abKeyboardState[DIK_UP] & 0x80) &&
+            !(g_abKeyboardState[DIK_DOWN] & 0x80) && !(g_abKeyboardState[DIK_LEFT] & 0x80) &&
+            !(g_abKeyboardState[DIK_RIGHT] & 0x80)) {
+            g_dwLastWmCharParam = static_cast<int>(wParam);
+        }
+        return 1;
+    case WM_COMMAND:
+        if (LOWORD(wParam) == 0x9c41) {
+            g_dwLastWmCharParam = VK_ESCAPE;
+        }
+        return 1;
+    case WM_SYSCOMMAND:
+        result = DefWindowProcA(hWnd, WM_SYSCOMMAND, wParam, lParam);
+        if (!IsWindow(hWnd)) {
+            return result;
+        }
+        break;
+    case WM_ENTERMENULOOP:
+    case WM_ENTERSIZEMOVE:
+        g_fHostWindowActive = 1;
+        break;
+    case WM_EXITMENULOOP:
+    case WM_EXITSIZEMOVE:
+        if (GetActiveWindow() == hWnd) {
+            BOOL iconic = IsIconic(hWnd);
+            g_fHostWindowActive = 0;
+            if (iconic) {
+                g_fHostWindowActive = 1;
+            }
+        } else {
+            g_fHostWindowActive = 1;
+        }
+        PostMessageA(hWnd, WM_USER, 0, 0);
+        return 1;
+    case WM_USER:
+        break;
+    default:
+        return 1;
+    }
+    if (g_pMouseDevice) {
+        g_pMouseDevice->SyncMouseAcquireState(hWnd);
+    }
+    return result;
+}
+
 void ShowErrorMessage(int nErrorCode) {
     // A code of ERROR_MESSAGE_COUNT passes the test and reads past the end of the table.
     if (nErrorCode > ERROR_MESSAGE_COUNT) {
