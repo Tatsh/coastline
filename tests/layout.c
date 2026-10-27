@@ -1,15 +1,23 @@
-/* The layouts the physics reads, against the offsets in the disassembly. */
 #include <stddef.h>
 
+#include <PR/os_cont.h>
+
 #include "audiomix.h"
+#include "decaleditor.h"
 #include "effects.h"
 #include "input.h"
 #include "model.h"
+#include "options.h"
+#include "paintshop.h"
 #include "physics.h"
+#include "race.h"
 #include "racemenu.h"
+#include "sprite.h"
 #include "track.h"
 #include "trackrender.h"
 #include "vehicle.h"
+
+/* The layouts the physics reads, against the offsets in the disassembly. */
 
 _Static_assert(sizeof(RigidBody) == 0x208, "body");
 _Static_assert(offsetof(RigidBody, stepStates) == 0x114, "steps");
@@ -218,11 +226,7 @@ _Static_assert(offsetof(CarModel, gearCount) == 0x54, "gears");
 _Static_assert(offsetof(VehicleModel, materialTextures[VEHICLE_MATERIAL_PAINT]) == 0x112,
                "painttex");
 _Static_assert(sizeof(Ambient) == 8 && sizeof(Light) == 16, "lights2");
-#include <PR/os_cont.h>
 
-#include "options.h"
-#include "paintshop.h"
-#include "sprite.h"
 _Static_assert(sizeof(PlayerProfile) == 0x128, "profilesize");
 _Static_assert(offsetof(PlayerProfile, unlocks) == 0xCC &&
                    offsetof(PlayerProfile, unlockedTracks) == 0xCE,
@@ -238,7 +242,6 @@ _Static_assert(sizeof(OSPfs) == 0x68 && offsetof(OSPfs, id) == 0xC, "pfs");
 _Static_assert(offsetof(Sprite, width) == 0x10 && offsetof(Sprite, height) == 0x14, "spritewh");
 _Static_assert(offsetof(Sprite, originX) == 0x1C && offsetof(Sprite, originY) == 0x20,
                "spriteorigin");
-#include "decaleditor.h"
 _Static_assert(offsetof(Sprite, drawWidth) == 0x24 && offsetof(Sprite, drawHeight) == 0x28 &&
                    offsetof(Sprite, style) == 0x2C && sizeof(Sprite) == 0x30,
                "sprite draw");
@@ -251,8 +254,6 @@ _Static_assert(sizeof(DecalGlyph) == 0x1C && offsetof(DecalGlyph, character) == 
                    offsetof(DecalGlyph, cellX) == 0xC && offsetof(DecalGlyph, kernRight) == 0x18,
                "glyph");
 _Static_assert(offsetof(Vehicle, profile) == 0xE5C && sizeof(Vehicle) == 0x2090, "vehprofile");
-#include "audiomix.h"
-#include "race.h"
 _Static_assert(offsetof(TrackHeader, specials) == 0x164 &&
                    offsetof(TrackHeader, specialCount) == 0x224,
                "specials");
