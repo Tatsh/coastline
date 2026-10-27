@@ -508,14 +508,14 @@ void SetTextureLoadCategory(int nCategory) {
     g_dwTextureLoadCategory = nCategory;
 }
 
-DWORD g_adwDamageTextureLevels[DAMAGE_TEXTURE_LEVEL_COUNT];
+int g_anDamageTextureEntries[DAMAGE_TEXTURE_COUNT];
 
-void ClearDamageTextureLevels(void) {
-    memset(g_adwDamageTextureLevels, 0, sizeof(g_adwDamageTextureLevels));
+void ClearDamageTextureEntries(void) {
+    memset(g_anDamageTextureEntries, 0, sizeof(g_anDamageTextureEntries));
 }
 
-void CopyDamageTextureLevels(DWORD *pdwLevels) {
-    memcpy(pdwLevels, g_adwDamageTextureLevels, sizeof(g_adwDamageTextureLevels));
+void CopyDamageTextureEntries(int *pnEntries) {
+    memcpy(pnEntries, g_anDamageTextureEntries, sizeof(g_anDamageTextureEntries));
 }
 
 void (*g_pfnReloadTextureEntryData)(int nEntry);

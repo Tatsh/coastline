@@ -709,33 +709,30 @@ extern int g_dwTextureLoadCategory;
  */
 void SetTextureLoadCategory(int nCategory);
 
-/** The number of entries of g_adwDamageTextureLevels. */
-#define DAMAGE_TEXTURE_LEVEL_COUNT 8
-
 /**
- * The levels of damage of the textures of the vehicles.
+ * The texture entries of the damage textures of the vehicles.
  *
  * @ghidraAddress BRD3D: 0x11829850
  * @ghidraAddress BRGlide: 0x1186c968
  */
-extern DWORD g_adwDamageTextureLevels[DAMAGE_TEXTURE_LEVEL_COUNT];
+extern int g_anDamageTextureEntries[DAMAGE_TEXTURE_COUNT];
 
 /**
- * Clear g_adwDamageTextureLevels.
+ * Clear g_anDamageTextureEntries.
  *
  * @ghidraAddress BRD3D: 0x10074e00
  * @ghidraAddress BRGlide: 0x1006e060
  */
-void ClearDamageTextureLevels(void);
+void ClearDamageTextureEntries(void);
 
 /**
- * Copy g_adwDamageTextureLevels.
+ * Copy g_anDamageTextureEntries.
  *
- * @param pdwLevels Receives the #DAMAGE_TEXTURE_LEVEL_COUNT levels.
+ * @param pnEntries Receives the #DAMAGE_TEXTURE_COUNT texture entries.
  * @ghidraAddress BRD3D: 0x10074e20
  * @ghidraAddress BRGlide: 0x1006e080
  */
-void CopyDamageTextureLevels(DWORD *pdwLevels);
+void CopyDamageTextureEntries(int *pnEntries);
 
 /**
  * Get the texels of a word of 8 bytes of the texture memory of the console for a size of texel.

@@ -490,8 +490,8 @@ int CreateTextureFromTmemShadow(unsigned char *pTmem) {
     int entry = CreateTextureFromImage(&image, pixels);
     if (g_pTextureEntries[entry].data.bOwnsPaintBuffers) {
         int option = GetSelectedPaintOption();
-        if (option >= 0 && option < DAMAGE_TEXTURE_LEVEL_COUNT) {
-            g_adwDamageTextureLevels[option] = entry;
+        if (option >= 0 && option < DAMAGE_TEXTURE_COUNT) {
+            g_anDamageTextureEntries[option] = entry;
         }
     }
     if (image.dwFlags & 2) {

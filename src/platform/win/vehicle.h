@@ -178,7 +178,8 @@ private:
     s32 shadowCornerValid[4];
     u8 abUnknown29ec[4]; /* +0x29ec */
     ConvertedModelVertex shadowQuad[4];
-    u8 abUnknown2a70[0x40]; /* +0x2a70 */
+    s32 damageTextureEntries[VEHICLE_DENT_SIDES];
+    s32 damageTextureLevels[VEHICLE_DENT_SIDES];
     Vec3f previousCollisionPosition;
     char checkpointMessageText[20];
     u8 abUnknown2ad0[0x98]; /* +0x2ad0 */
@@ -218,6 +219,8 @@ public:
     void CheckWrongWayWarning();
     /** @ghidraAddress BRD3D: 0x10075960 */
     void UpdateVehicleGridPosition();
+    /** @ghidraAddress BRD3D: 0x10076a70 */
+    void InstallVehicleModel(s32 slot, s32 car);
     s32 AdvanceSkidFrames() {
         return skidFrames++;
     }

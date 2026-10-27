@@ -1,3 +1,5 @@
+#include <cstring>
+
 #include <PR/gu.h>
 
 #include "boot/rallyconfig.h"
@@ -9,11 +11,13 @@
 #include "ghost.h"
 #include "input.h"
 #include "instantreplay.h"
+#include "paintshop.h"
 #include "raceprogress.h"
 #include "racermotion.h"
 #include "racers.h"
 #include "racersharing.h"
 #include "racerslotaccess.h"
+#include "render.h"
 #include "settings.h"
 #include "sound.h"
 #include "trackselect.h"
@@ -191,6 +195,14 @@ void Vehicle::InitVehicleColorAndPhysics(void) {
 
 void Vehicle::SetVehicleModelSlot(s32 slot) {
     ::SetVehicleModelSlot(this, slot);
+}
+
+void Vehicle::InstallVehicleModel(s32 slot, s32 car) {
+    SetColorTintMultipliers(color[0], color[1], color[2]);
+    LoadCar(slot, car, nullptr);
+    CopyDamageTextureEntries(damageTextureEntries);
+    std::memset(damageTextureLevels, 0, sizeof(damageTextureLevels));
+    SetVehicleModelSlot(slot);
 }
 
 void Vehicle::ClearVehicleDamageState(void) {
