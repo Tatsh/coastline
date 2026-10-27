@@ -2810,6 +2810,57 @@ static inline void DrawPrimaryMenuLabel(MenuWidget *pWidget, const char *text) {
     ProcessMenuTextEditInput(pWidget, 0);
 }
 
+int CarSetupUI_UpdateTransmissionLabel(MenuWidget *pWidget) {
+    DrawPrimaryMenuLabel(pWidget,
+                         GetStringResource(g_adwTransmissionLabelStrIds[g_dwSelectedTransmission]));
+    return 1;
+}
+
+int CarSetupUI_UpdateShocksLabel(MenuWidget *pWidget) {
+    DrawPrimaryMenuLabel(pWidget,
+                         GetStringResource(g_adwSuspensionLabelStrIds[g_dwSuspensionMenuIndex]));
+    return 1;
+}
+
+int InputOptionsUI_UpdateInputDeviceLabel(MenuWidget *pWidget) {
+    DrawPrimaryMenuLabel(pWidget,
+                         GetStringResource(g_adwInputDeviceLabelStrIds[g_dwSelectedInputDevice]));
+    return 1;
+}
+
+int ConnectionUI_UpdateServiceProviderLabel(MenuWidget *pWidget) {
+    DrawPrimaryMenuLabel(
+        pWidget, GetStringResource(g_adwServiceProviderLabelStrIds[g_dwServiceProviderIndex]));
+    return 1;
+}
+
+int GameOptionsUI_UpdateCarShadowLabel(MenuWidget *pWidget) {
+    DrawPrimaryMenuLabel(pWidget,
+                         GetStringResource(g_adwCarShadowLabelStrIds[g_dwOptionCarShadow]));
+    return 1;
+}
+
+int GameOptionsUI_UpdateSkidMarksLabel(MenuWidget *pWidget) {
+    DrawPrimaryMenuLabel(pWidget,
+                         GetStringResource(g_adwSkidMarksLabelStrIds[g_dwOptionSkidMarks]));
+    return 1;
+}
+
+int GameOptionsUI_UpdateSpecularLightingLabel(MenuWidget *pWidget) {
+    DrawPrimaryMenuLabel(
+        pWidget, GetStringResource(g_adwSpecularLightingLabelStrIds[g_dwOptionSpecularLighting]));
+    return 1;
+}
+
+int GameOptionsUI_UpdateForceFeedbackLabel(MenuWidget *pWidget) {
+    DrawPrimaryMenuLabel(
+        pWidget,
+        GetStringResource(g_bForceFeedbackAvailable ?
+                              g_adwForceFeedbackLabelStrIds[g_dwOptionForceFeedback] :
+                              0x74));
+    return 1;
+}
+
 int CarSetupUI_UpdateCarNameLabel(MenuWidget *pWidget) {
     int stringId = 0x14;
     if (g_pActiveMenuScreen != g_pCachedMenu_LoadGhost || g_dwTimeAttackLoadSelected) {

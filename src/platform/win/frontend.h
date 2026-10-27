@@ -2097,6 +2097,102 @@ extern int g_adwWeatherLabelStrIds[];
 int RaceSetupUI_UpdateWeatherLabel(MenuWidget *pWidget);
 
 /**
+ * @ghidraAddress BRD3D: 0x1003f860
+ * @ghidraAddress BRGlide: 0x10038da0
+ */
+int CarSetupUI_UpdateTransmissionLabel(MenuWidget *pWidget);
+
+/**
+ * @ghidraAddress BRD3D: 0x100ac3a8
+ * @ghidraAddress BRGlide: 0x100abb48
+ */
+extern int g_adwTransmissionLabelStrIds[];
+
+/**
+ * @ghidraAddress BRD3D: 0x1003f990
+ * @ghidraAddress BRGlide: 0x10038ed0
+ */
+int CarSetupUI_UpdateShocksLabel(MenuWidget *pWidget);
+
+/**
+ * @ghidraAddress BRD3D: 0x100ac358
+ * @ghidraAddress BRGlide: 0x100abaf8
+ */
+extern int g_adwSuspensionLabelStrIds[];
+
+/**
+ * @ghidraAddress BRD3D: 0x1003ffd0
+ * @ghidraAddress BRGlide: 0x10039510
+ */
+int InputOptionsUI_UpdateInputDeviceLabel(MenuWidget *pWidget);
+
+/**
+ * @ghidraAddress BRD3D: 0x100ac3e0
+ * @ghidraAddress BRGlide: 0x100abb80
+ */
+extern int g_adwInputDeviceLabelStrIds[];
+
+/**
+ * @ghidraAddress BRD3D: 0x1003fc40
+ * @ghidraAddress BRGlide: 0x10039180
+ */
+int ConnectionUI_UpdateServiceProviderLabel(MenuWidget *pWidget);
+
+/**
+ * @ghidraAddress BRD3D: 0x100ac3f0
+ * @ghidraAddress BRGlide: 0x100abb90
+ */
+extern int g_adwServiceProviderLabelStrIds[];
+
+/**
+ * @ghidraAddress BRD3D: 0x1003fda0
+ * @ghidraAddress BRGlide: 0x100392e0
+ */
+int GameOptionsUI_UpdateCarShadowLabel(MenuWidget *pWidget);
+
+/**
+ * @ghidraAddress BRD3D: 0x100ac408
+ * @ghidraAddress BRGlide: 0x100abba8
+ */
+extern int g_adwCarShadowLabelStrIds[];
+
+/**
+ * @ghidraAddress BRD3D: 0x1003fd30
+ * @ghidraAddress BRGlide: 0x10039270
+ */
+int GameOptionsUI_UpdateSkidMarksLabel(MenuWidget *pWidget);
+
+/**
+ * @ghidraAddress BRD3D: 0x100ac418
+ * @ghidraAddress BRGlide: 0x100abbb8
+ */
+extern int g_adwSkidMarksLabelStrIds[];
+
+/**
+ * @ghidraAddress BRD3D: 0x1003fe10
+ * @ghidraAddress BRGlide: 0x10039350
+ */
+int GameOptionsUI_UpdateSpecularLightingLabel(MenuWidget *pWidget);
+
+/**
+ * @ghidraAddress BRD3D: 0x100ac410
+ * @ghidraAddress BRGlide: 0x100abbb0
+ */
+extern int g_adwSpecularLightingLabelStrIds[];
+
+/**
+ * @ghidraAddress BRD3D: 0x1003fcb0
+ * @ghidraAddress BRGlide: 0x100391f0
+ */
+int GameOptionsUI_UpdateForceFeedbackLabel(MenuWidget *pWidget);
+
+/**
+ * @ghidraAddress BRD3D: 0x100ac400
+ * @ghidraAddress BRGlide: 0x100abba0
+ */
+extern int g_adwForceFeedbackLabelStrIds[];
+
+/**
  * @ghidraAddress BRD3D: 0x100446d0
  */
 int ShowNetworkCarSetupScreen(void);
