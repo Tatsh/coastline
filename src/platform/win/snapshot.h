@@ -7,6 +7,7 @@
  */
 
 #include "platform/win/particlesnapshot.h"
+#include "platform/win/snapshotops.h"
 #include "racerslot.h"
 #include "vehicle.h"
 
@@ -47,9 +48,6 @@ extern FrameSnapshot g_aFrameSnapshots[FRAME_SNAPSHOT_COUNT];
 /** @ghidraAddress BRD3D: 0x10481c10 */
 extern FrameSnapshot g_InterpolatedFrameSnapshot;
 
-/** @ghidraAddress BRD3D: 0x10015c70 */
-int InterpolateFrameSnapshotsAndRender(int forceRender);
-
 /** @ghidraAddress BRD3D: 0x1039b728 */
 extern int g_abFrameSnapshotInUse[FRAME_SNAPSHOT_COUNT];
 /** @ghidraAddress BRD3D: 0x104afd14 */
@@ -62,11 +60,6 @@ extern int g_dwFrameSnapshotWriteSlot;
 extern int g_dwFrameSnapshotCurrentSlot;
 /** @ghidraAddress BRD3D: 0x104afd18 */
 extern int g_dwFrameSnapshotPreviousSlot;
-/**
- * @ghidraAddress BRD3D: 0x100a66e8
- * @ghidraAddress BRGlide: 0x100a5ea8
- */
-extern int g_bFrameTimerReset;
 /** @ghidraAddress BRD3D: 0x1039b73c */
 extern float g_fFrameSnapshotBlendCarry;
 /** @ghidraAddress BRD3D: 0x104afd0c */

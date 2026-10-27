@@ -38,6 +38,7 @@ add_library(
   particlesnapshot.c
   podarchive.cpp
   racercolor.cpp
+  racepacing.c
   racerslot.cpp
   racesound.cpp
   racescreen.cpp

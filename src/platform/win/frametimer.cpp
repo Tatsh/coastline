@@ -1,11 +1,10 @@
 #include "platform/win/frametimer.h"
 
+#include <mmsystem.h>
 #include <windows.h>
 
+#include "platform/win/racepacing.h"
 #include "platform/win/snapshot.h"
-// The headers below need the types of windows.h.
-#include <mmsystem.h>
-
 #include "platform/win/timer.h"
 
 namespace {
@@ -74,15 +73,9 @@ const DWORD g_adwFrameTickIncrements[TICKS_PER_PERIOD] = {33, 33, 34};
  */
 [[maybe_unused]] DWORD g_dwFrameTickCounter;
 
-/**
- * The frame of the race, -1 before the first.
- *
- * @ghidraAddress BRD3D: 0x1068093c
- * @ghidraAddress BRGlide: 0x105bcae4
- */
-[[maybe_unused]] int g_dwRaceFrameCounter;
-
 } // namespace
+
+int g_dwRaceFrameCounter;
 
 // The frames of a second.
 #define FRAMES_PER_SECOND 30
