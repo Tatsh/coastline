@@ -7,6 +7,11 @@ ScreenCallback g_pfnSecondaryScreen;
 
 void NullStub(void) {
 }
+
+/* @ghidraAddress BRD3D: 0x10034c2d */
+/* @ghidraAddress BRGlide: 0x1002e2de */
+[[maybe_unused]] static void StubUnusedCallback(void) {
+}
 #endif
 
 void StubRenderCallback(void) {
