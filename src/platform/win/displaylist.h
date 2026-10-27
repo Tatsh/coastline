@@ -1296,6 +1296,16 @@ void GenerateGbiVertexTextureCoordinates(const ConvertedModelVertex *pInput,
                                          GbiVertexSource *pSource);
 
 /**
+ * Generate texture coordinates with the linear-mode vertical arcsine mapping.
+ *
+ * @param pInput The converted model vertex.
+ * @param pSource The vertex that receives the texture coordinates.
+ * @ghidraAddress BRD3D: 0x100236a0
+ */
+void GenerateGbiVertexTextureCoordinatesLinear(const ConvertedModelVertex *pInput,
+                                               GbiVertexSource *pSource);
+
+/**
  * Load vertices that generate their texture coordinates linearly.
  *
  * @param pCommand The command.

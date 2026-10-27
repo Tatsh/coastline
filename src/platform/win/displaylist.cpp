@@ -1174,8 +1174,9 @@ static inline GbiCommand *LoadGbiVertices(GbiCommand *pCommand,
     return pCommand + 1;
 }
 
-void GenerateGbiVertexTextureCoordinates(const ConvertedModelVertex *pInput,
-                                         GbiVertexSource *pSource) {
+static void GenerateGbiTextureCoordinates(const ConvertedModelVertex *pInput,
+                                          GbiVertexSource *pSource,
+                                          bool bLinear) {
     const float (*matrix)[4] =
         g_dwGbiMatrixStackDepth != 0 ? g_aGbiModelViewStack[g_dwGbiMatrixStackDepth - 1] : nullptr;
     Vec3f normal;
@@ -1188,18 +1189,25 @@ void GenerateGbiVertexTextureCoordinates(const ConvertedModelVertex *pInput,
     Vec3fNormalize(&normal);
     const Light_t &lookX = g_pGbiLookAtX->l;
     const Light_t &lookY = g_pGbiLookAtY->l;
-    float s = ((static_cast<long double>(lookX.dir[0]) * normal.x +
-                static_cast<long double>(lookX.dir[1]) * normal.y) +
-               static_cast<long double>(lookX.dir[2]) * normal.z) /
-              128.0f;
-    float t = ((static_cast<long double>(lookY.dir[0]) * normal.x +
-                static_cast<long double>(lookY.dir[2]) * normal.z) +
-               static_cast<long double>(lookY.dir[1]) * normal.y) /
-              128.0f;
+    long double sx = static_cast<long double>(lookX.dir[0]) * normal.x;
+    long double sy = static_cast<long double>(lookX.dir[1]) * normal.y;
+    long double sz = static_cast<long double>(lookX.dir[2]) * normal.z;
+    float s = (bLinear ? (sx + sz) + sy : (sx + sy) + sz) / 128.0f;
+    long double tDot = ((static_cast<long double>(lookY.dir[0]) * normal.x +
+                         static_cast<long double>(lookY.dir[2]) * normal.z) +
+                        static_cast<long double>(lookY.dir[1]) * normal.y) /
+                       128.0f;
+    float t;
+    if (bLinear) {
+        float angle = asinl(static_cast<double>(tDot));
+        t = static_cast<long double>(angle) / 3.1415927f;
+    } else {
+        t = tDot;
+    }
     long double generatedS =
         (static_cast<long double>(s) * static_cast<float>(g_dwTileSizeWidth) + 128.0f) /
         (static_cast<long double>(g_fTexCoordScaleS) * 256.0f -
-         static_cast<float>(g_dwTileSizeUls));
+         static_cast<float>(g_dwTileSizeUls) * (bLinear ? 0.5L : 1.0L));
     if (g_dwTileSizeWidth < g_dwTileSizeHeight) {
         generatedS *= static_cast<float>(g_dwTileSizeHeight / g_dwTileSizeWidth);
     }
@@ -1207,11 +1215,21 @@ void GenerateGbiVertexTextureCoordinates(const ConvertedModelVertex *pInput,
     long double generatedT =
         (static_cast<long double>(t) * static_cast<float>(g_dwTileSizeHeight) + 128.0f) /
         (static_cast<long double>(g_fTexCoordScaleT) * 256.0f -
-         static_cast<float>(g_dwTileSizeUlt));
+         static_cast<float>(g_dwTileSizeUlt) * (bLinear ? 0.5L : 1.0L));
     if (g_dwTileSizeWidth > g_dwTileSizeHeight) {
         generatedT *= static_cast<float>(g_dwTileSizeWidth / g_dwTileSizeHeight);
     }
     pSource->fT = generatedT;
+}
+
+void GenerateGbiVertexTextureCoordinates(const ConvertedModelVertex *pInput,
+                                         GbiVertexSource *pSource) {
+    GenerateGbiTextureCoordinates(pInput, pSource, false);
+}
+
+void GenerateGbiVertexTextureCoordinatesLinear(const ConvertedModelVertex *pInput,
+                                               GbiVertexSource *pSource) {
+    GenerateGbiTextureCoordinates(pInput, pSource, true);
 }
 
 GbiCommand *HandleGbiVertexUnlit(GbiCommand *pCommand) {
