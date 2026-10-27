@@ -97,7 +97,9 @@ typedef struct Vehicle {
     CameraFrame *activeCamera;
     CameraFrame *previousCamera;
     CameraFrame cameras[VEHICLE_CAMERAS];
-    u8 abUnknown28d4[0x18]; /* +0x28d4 */
+    u8 abUnknown28d4[8]; /* +0x28d4 */
+    f32 lookAhead;
+    Vec3f lookAt;
     Vec3f chasePosition;
     u8 abUnknown28f8[0xb0]; /* +0x28f8 */
     s32 carModel;
@@ -152,6 +154,18 @@ typedef struct Vehicle {
      * @ghidraAddress BRD3D: 0x100015d0
      */
     void UpdateCameraChase(CameraFrame *camera, f32 share);
+    /**
+     * @ghidraAddress BRD3D: 0x10001760
+     */
+    void UpdateCameraLookAtTarget(void);
+    /**
+     * @ghidraAddress BRD3D: 0x10001890
+     */
+    void ComputeCameraBasis(CameraFrame *camera);
+    /**
+     * @ghidraAddress BRD3D: 0x10001970
+     */
+    void PlaceTrackCamera(void);
     /**
      * @ghidraAddress BRD3D: 0x10076420
      */

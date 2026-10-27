@@ -95,9 +95,6 @@ void ResolveVehicleTrackCollision(Vehicle *vehicle, CameraFrame *camera, Vec3f *
 extern "C" {
 #endif
 void UpdateCameraChase(Vehicle *vehicle, CameraFrame *camera, f32 share);
-#if TGR_PLATFORM == TGR_PLATFORM_WIN && defined(__cplusplus)
-}
-#endif
 
 /**
  * Put the look-at point above a vehicle, ahead of it by a lead that shrinks with its speed.
@@ -129,6 +126,9 @@ void ComputeCameraBasis(Vehicle *vehicle, CameraFrame *camera);
  * @ghidraAddress JPN: 0x80221c38
  */
 void PlaceTrackCamera(Vehicle *vehicle);
+#if TGR_PLATFORM == TGR_PLATFORM_WIN && defined(__cplusplus)
+}
+#endif
 
 #if TGR_REGION == TGR_REGION_JP || TGR_REGION == TGR_REGION_EU
 /**

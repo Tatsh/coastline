@@ -31,6 +31,18 @@ void Vehicle::UpdateCameraChase(CameraFrame *camera, f32 share) {
     ::UpdateCameraChase(this, camera, share);
 }
 
+void Vehicle::UpdateCameraLookAtTarget(void) {
+    ::UpdateCameraLookAtTarget(this);
+}
+
+void Vehicle::ComputeCameraBasis(CameraFrame *camera) {
+    ::ComputeCameraBasis(this, camera);
+}
+
+void Vehicle::PlaceTrackCamera(void) {
+    ::PlaceTrackCamera(this);
+}
+
 void Vehicle::SetVehiclePosition(f32 x, f32 y, f32 z) {
     ::SetVehiclePosition(this, x, y, z);
 }

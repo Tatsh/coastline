@@ -13,15 +13,6 @@
 /* How far in front of a triangle the track puts a camera. */
 #define TRACK_CLEARANCE 0.1f
 
-/* The look-at point and its lead ahead of the vehicle. */
-#define LOOK_AT_HEIGHT 0.66f
-#define LOCKED_LOOK_AT_HEIGHT 1.1f
-#define LOOK_AHEAD_SLOW 2.0f
-#define LOOK_AHEAD_SLOW_SPEED 3.5f
-#define LOOK_AHEAD_FAST_SPEED 7.0f
-#define LOOK_AHEAD_SLOPE 0.571428597f
-#define LOOK_AHEAD_STEP 0.1f
-
 /* The smoothing of the chase camera. */
 #define CHASE_SPEED_FLOOR 2.5f
 #define CHASE_SPEED_MAX 31.4159279f
@@ -59,12 +50,10 @@
 #define TRACKSIDE_MID 51.0f
 #define TRACKSIDE_DISTANCE_SCALE 0.004f
 
-/* Where the cameras start, and where PlaceTrackCamera() puts the trackside camera. */
+/* Where the cameras start. */
 #define START_CHASE_HEIGHT 4.0f
 #define START_CHASE_REPLAY_FORWARD 10.0f
 #define START_LOOK_AHEAD 2.0f
-#define TRACKSIDE_FORWARD 6.0f
-#define TRACKSIDE_SIDE 2.0f
 
 /* The share of the way from the camera to each corner of the far rectangle the frustum keeps. */
 #define FRUSTUM_CORNER_SHARE 0.75f
@@ -165,83 +154,6 @@ void ResolveVehicleTrackCollision(Vehicle *vehicle, CameraFrame *camera, Vec3f *
         Vec3fAdd(&camera->position, &vehicle->lookAt, &offset);
     }
     g_bVehicleTrackCollisionCorrected = TRUE;
-}
-
-void UpdateCameraLookAtTarget(Vehicle *vehicle) {
-    f32 speed, target;
-
-    if (vehicle->flyMode) {
-        Vec3fMulAdd(
-            &vehicle->lookAt, &vehicle->frame.position, &vehicle->frame.up, LOCKED_LOOK_AT_HEIGHT);
-        return;
-    }
-    vehicle->lookAt.x = vehicle->frame.position.x;
-    vehicle->lookAt.y = vehicle->frame.position.y;
-    vehicle->lookAt.z = vehicle->frame.position.z + LOOK_AT_HEIGHT;
-    speed = Vec3fLength(&vehicle->body.state.angularVelocity);
-    if (g_dwGameMode == GAME_MODE_AFTER_SEASON) {
-        return;
-    }
-
-    /* The lead falls from 2 at a walk to nothing at speed. */
-    target = 0.0f;
-    if (speed < LOOK_AHEAD_SLOW_SPEED) {
-        target = LOOK_AHEAD_SLOW;
-    } else if (speed < LOOK_AHEAD_FAST_SPEED) {
-        target = 4.0f - speed * LOOK_AHEAD_SLOPE;
-    }
-    if (vehicle->lookAhead < target) {
-        vehicle->lookAhead += LOOK_AHEAD_STEP;
-        if (target < vehicle->lookAhead) {
-            vehicle->lookAhead = target;
-        }
-    } else if (target < vehicle->lookAhead) {
-        vehicle->lookAhead -= LOOK_AHEAD_STEP;
-        if (vehicle->lookAhead < target) {
-            vehicle->lookAhead = target;
-        }
-    }
-    Vec3fMulAddInPlace(&vehicle->lookAt, &vehicle->frame.forward, vehicle->lookAhead);
-}
-
-void ComputeCameraBasis(Vehicle *vehicle, CameraFrame *camera) {
-    Vec3f direction;
-    f32 length;
-    /* The original reserves stack for eight bytes of locals it does not use. */
-    f32 unused[2];
-
-    (void)unused;
-    Vec3fSubtract(&direction, &vehicle->lookAt, &camera->position);
-    length = Vec3fLength(&direction);
-    if (length != 0.0f) {
-        Vec3fScaleByInverse(&camera->forward, &direction, length);
-    } else if (Vec3fLength(&camera->forward) == 0.0f) {
-        camera->forward.x = vehicle->frame.forward.x;
-        camera->forward.y = vehicle->frame.forward.y;
-        camera->forward.z = vehicle->frame.forward.z;
-    }
-    if (vehicle->flyMode) {
-        Vec3fCross(&camera->side, &vehicle->frame.up, &camera->forward);
-    } else {
-        /* The direction is reused for the world up. */
-        direction.x = 0.0f;
-        direction.y = 0.0f;
-        direction.z = 1.0f;
-        Vec3fCross(&camera->side, &direction, &camera->forward);
-    }
-    Vec3fCross(&camera->up, &camera->forward, &camera->side);
-}
-
-void PlaceTrackCamera(Vehicle *vehicle) {
-    vehicle->activeCamera = &vehicle->cameras[VEHICLE_CAMERA_TRACKSIDE];
-    Vec3fMulAdd(&vehicle->cameras[VEHICLE_CAMERA_TRACKSIDE].position,
-                &vehicle->frame.position,
-                &vehicle->frame.forward,
-                TRACKSIDE_FORWARD);
-    Vec3fMulAddInPlace(
-        &vehicle->cameras[VEHICLE_CAMERA_TRACKSIDE].position, &vehicle->frame.side, TRACKSIDE_SIDE);
-    Vec3fAddInPlace(&vehicle->cameras[VEHICLE_CAMERA_TRACKSIDE].position, &vehicle->frame.up);
-    vehicle->cameraChanged = 2;
 }
 
 #if TGR_REGION == TGR_REGION_JP || TGR_REGION == TGR_REGION_EU
