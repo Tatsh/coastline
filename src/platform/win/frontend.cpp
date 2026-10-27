@@ -1107,6 +1107,12 @@ int ModemConnectionUI_EnableContinueIfNumberEntered(MenuWidget *pWidget) {
     return 1;
 }
 
+int CarSetupUI_UpdateSteeringIndicatorPos(MenuWidget *pWidget) {
+    int position = static_cast<int>(static_cast<unsigned>(g_dwHandlingTypeMenuIndex) * 11u + 61u);
+    pWidget->fX = static_cast<float>(position);
+    return 1;
+}
+
 int ShowVideoOptionsMenu(void) {
     return ShowCachedMenuScreen(g_pCachedMenu_InputConfig, BuildVideoOptionsUI);
 }

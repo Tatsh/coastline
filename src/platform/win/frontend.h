@@ -417,6 +417,14 @@ int PlayerNameEntryUI_EnableContinueIfNameEntered(MenuWidget *pWidget);
 int ModemConnectionUI_EnableContinueIfNumberEntered(MenuWidget *pWidget);
 
 /**
+ * Position the steering indicator for the selected handling choice.
+ *
+ * @ghidraAddress BRD3D: 0x1003e920
+ * @ghidraAddress BRGlide: 0x10037f40
+ */
+int CarSetupUI_UpdateSteeringIndicatorPos(MenuWidget *pWidget);
+
+/**
  * @ghidraAddress BRD3D: 0x10aa29bc
  * @ghidraAddress BRGlide: 0x10ac5d14
  */
