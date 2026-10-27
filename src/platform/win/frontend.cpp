@@ -1833,6 +1833,16 @@ int ReturnToVideoOptionsFromResolution(MenuWidget *pWidget) {
     return 0;
 }
 
+int ReturnToVideoOptionsFromDeviceSelect(MenuWidget *pWidget) {
+    pWidget->pScreen->DestroyPanels();
+    delete g_pActiveMenuScreen;
+    MenuScreen *screen = g_pCachedMenu_InputConfig;
+    g_pCachedMenu_VideoSettings = nullptr;
+    g_pD3DDeviceSelectMenu = nullptr;
+    g_pActiveMenuScreen = screen;
+    return 0;
+}
+
 int PreRaceExitSeasonConfirmUI_OnYes(MenuWidget *pWidget) {
     pWidget->pScreen->DestroyPanels();
     delete g_pActiveMenuScreen;

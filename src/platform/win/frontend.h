@@ -346,6 +346,13 @@ int ReturnToMultiplayerLobby(MenuWidget *pWidget);
 int ReturnToVideoOptionsFromResolution(MenuWidget *pWidget);
 
 /**
+ * Destroy device selection panels and restore the cached input configuration screen.
+ *
+ * @ghidraAddress BRD3D: 0x10046620
+ */
+int ReturnToVideoOptionsFromDeviceSelect(MenuWidget *pWidget);
+
+/**
  * @ghidraAddress BRD3D: 0x10a9d078
  * @ghidraAddress BRGlide: 0x10ac4100
  */
