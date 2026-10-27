@@ -221,6 +221,9 @@ public:
     void UpdateVehicleGridPosition();
     /** @ghidraAddress BRD3D: 0x10076a70 */
     void InstallVehicleModel(s32 slot, s32 car);
+    /** @ghidraAddress BRD3D: 0x1000ef80 */
+    void DeformVehicleMeshByImpact(Vec3f *direction, s32 amount);
+    void ApplyImpactDamageTexture(s32 side);
     s32 AdvanceSkidFrames() {
         return skidFrames++;
     }
@@ -329,6 +332,9 @@ public:
     }
     s32 GetCustomCarModel() const {
         return customCarModel;
+    }
+    s16 GetDentJitter() const {
+        return dentJitter;
     }
     s16 SetDentJitter(s16 value) {
         return dentJitter = value;

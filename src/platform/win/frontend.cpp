@@ -11,6 +11,7 @@
 #include <windows.h>
 
 #include "vehicleaccess.h"
+#include "vehicledeform.h"
 
 #pragma push_macro("errno")
 #undef errno
@@ -5293,7 +5294,7 @@ int g_dwCheatAllTracksUnlocked;
 int g_dwCheatBonusTracksUnlocked;
 int g_dwCheatBonusCarsUnlocked;
 int g_dwCheatOutroSequenceEnabled;
-short g_wVehicleDeformMinThreshold = 0x100;
+s16 g_wVehicleDeformMaxDent = 0x100;
 
 // The samples of the sounds of the cheats, and the levels of both sides they play at.
 #define CHEAT_SOUND_SAMPLE 2
@@ -5302,8 +5303,8 @@ short g_wVehicleDeformMinThreshold = 0x100;
 // The states of the network menus after a cheat.
 #define CHEAT_NETWORK_MENU_STATE 2
 #define CHEAT_DEFORMATION_NETWORK_MENU_STATE 3
-// The force no impact reaches.
-#define VEHICLE_DEFORM_THRESHOLD_NEVER 0x7fff
+// The maximum accumulated dent under the deformation cheat.
+#define VEHICLE_DEFORM_CHEAT_MAXIMUM 0x7fff
 
 static inline void EnableCheat(int *pbFlag) {
     *pbFlag = true;
@@ -5320,7 +5321,7 @@ void Cheat_Brielle_UnlockBonusTracks(void) {
 }
 
 void Cheat_DisableVehicleDeformation(void) {
-    g_wVehicleDeformMinThreshold = VEHICLE_DEFORM_THRESHOLD_NEVER;
+    g_wVehicleDeformMaxDent = VEHICLE_DEFORM_CHEAT_MAXIMUM;
     PlaySoundChannelOneOnce(CHEAT_DEFORMATION_SOUND_SAMPLE, CHEAT_SOUND_LEVELS);
     g_dwNetworkMenuState = CHEAT_DEFORMATION_NETWORK_MENU_STATE;
 }

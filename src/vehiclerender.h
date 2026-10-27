@@ -11,6 +11,7 @@
 
 #include "vecmath.h"
 #include "vehicle.h"
+#include "vehicledeform.h"
 #include "vehicleview.h"
 
 /**
@@ -362,17 +363,5 @@ void EmitTachometerDisplayList(Vehicle *vehicle);
  * @ghidraAddress JPN: 0x802349f0
  */
 void RenderTrackShadow(Vehicle *vehicle);
-
-/**
- * Dent the model of a car on the side a blow comes from, unless that side is dented deeply enough.
- *
- * @param vehicle The vehicle.
- * @param direction The direction of the blow.
- * @param amount How hard the blow is.
- * @ghidraAddress USA: 0x80233880
- * @ghidraAddress EUR: 0x80234d90
- * @ghidraAddress JPN: 0x80234b90
- */
-void DeformVehicleMeshByImpact(Vehicle *vehicle, Vec3f *direction, s16 amount);
 
 #endif

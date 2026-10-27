@@ -4,10 +4,15 @@
 
 #include "camerachange.h"
 #include "vehicleaccess.h"
+#include "vehicledeform.h"
 #include "vehiclestatus.h"
 #include "vehicletrackpos.h"
 
 Vehicle g_aVehicles[16];
+
+void Vehicle::DeformVehicleMeshByImpact(Vec3f *direction, s32 amount) {
+    ::DeformVehicleMeshByImpact(this, direction, amount);
+}
 
 s32 Vehicle::UpdateVehicleTrackPosition() {
     return ::UpdateVehicleTrackPosition(this);

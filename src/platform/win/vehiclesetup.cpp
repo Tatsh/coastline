@@ -205,6 +205,11 @@ void Vehicle::InstallVehicleModel(s32 slot, s32 car) {
     SetVehicleModelSlot(slot);
 }
 
+void Vehicle::ApplyImpactDamageTexture(s32 side) {
+    SetColorTintMultipliers(color[0], color[1], color[2]);
+    ApplyRandomAdjacentDamageTexture(side, damageTextureEntries, damageTextureLevels);
+}
+
 void Vehicle::ClearVehicleDamageState(void) {
     ::ClearVehicleDamageState(this);
 }

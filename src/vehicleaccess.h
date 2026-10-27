@@ -51,6 +51,7 @@
 #define VEHICLE_SET_CollisionPull(vehicle, value) ((vehicle)->collisionPull = (value))
 #define VEHICLE_GET_Color(vehicle) ((vehicle)->color)
 #define VEHICLE_GET_CustomCarModel(vehicle) ((vehicle)->customCarModel)
+#define VEHICLE_GET_DentJitter(vehicle) ((vehicle)->dentJitter)
 #define VEHICLE_SET_DentJitter(vehicle, value) ((vehicle)->dentJitter = (value))
 #define VEHICLE_GET_Dents(vehicle) ((vehicle)->dents)
 #define VEHICLE_GET_Distance(vehicle) ((vehicle)->distance)

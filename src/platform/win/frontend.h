@@ -3058,14 +3058,6 @@ extern int g_dwCheatBonusCarsUnlocked;
 extern int g_dwCheatOutroSequenceEnabled;
 
 /**
- * The force of an impact below which a vehicle does not deform.
- *
- * @ghidraAddress BRD3D: 0x100ac6a4
- * @ghidraAddress BRGlide: 0x100abe44
- */
-extern short g_wVehicleDeformMinThreshold;
-
-/**
  * Unlock every track, play the sound of a cheat, and set the network menus to state 2.
  *
  * @ghidraAddress BRD3D: 0x10047500
