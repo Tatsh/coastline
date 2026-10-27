@@ -1005,3 +1005,28 @@ void CreateDeviceTextureFromImageHeader(ModelTexture *pTexture, int nOption13) {
         1,
         nOption13);
 }
+
+int CalculateTextureLodFromDimensions(int *pLod, int width, int height) {
+    int dimension = width > height ? width : height;
+    *pLod = TEXTURE_LOD_MAX - GetMipLevelFromDimension(dimension);
+    return dimension <= TEXTURE_LOD_0_SIZE;
+}
+
+int ChooseTexturePixelFormat(int nSize, int nFormat, int bColorCombine) {
+    if (nSize == G_IM_SIZ_4b && nFormat == G_IM_FMT_I) {
+        return bColorCombine == 1 ? 0xb : 2;
+    }
+    if (nSize == G_IM_SIZ_8b) {
+        if (nFormat == G_IM_FMT_IA) {
+            return bColorCombine == 1 ? 0xc : 4;
+        }
+        if (nFormat == G_IM_FMT_I) {
+            return 2;
+        }
+    }
+    return 0xb;
+}
+
+int GetTexturePixelSize(int nPixelFormatId) {
+    return 4;
+}

@@ -1185,3 +1185,34 @@ void UploadTextureEntryToSurface(int nEntry, TextureUploadData payload);
  * @ghidraAddress BRD3D: 0x1002a280
  */
 void CreateDeviceTextureFromImageHeader(ModelTexture *pTexture, int nOption13);
+
+/**
+ * Derive a texture level of detail from its larger dimension.
+ *
+ * @param pLod Receives the level, clamped to zero for dimensions above 256.
+ * @param width The width.
+ * @param height The height.
+ * @return Whether the larger dimension is at most 256.
+ * @ghidraAddress BRD3D: 0x100251a0
+ */
+int CalculateTextureLodFromDimensions(int *pLod, int width, int height);
+
+/**
+ * Select a device pixel format from N64 texture size, format and combine state.
+ *
+ * @param nSize The N64 texel size.
+ * @param nFormat The N64 image format.
+ * @param bColorCombine The scan's color combine state.
+ * @return The device pixel format identifier.
+ * @ghidraAddress BRD3D: 0x10027b90
+ */
+int ChooseTexturePixelFormat(int nSize, int nFormat, int bColorCombine);
+
+/**
+ * Get the decoded bytes per texture pixel.
+ *
+ * @param nPixelFormatId The device pixel format identifier, ignored.
+ * @return Four bytes.
+ * @ghidraAddress BRD3D: 0x100257f0
+ */
+int GetTexturePixelSize(int nPixelFormatId);
