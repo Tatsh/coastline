@@ -11,6 +11,10 @@
 
 #include "vecmath.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /** The cells of the grid the cache holds at once. */
 #define TRI_CACHE_SLOTS 4
 
@@ -31,6 +35,7 @@ typedef struct TrackTriangle {
  * @ghidraAddress USA: 0x80379f80
  * @ghidraAddress EUR: 0x8037c480
  * @ghidraAddress JPN: 0x8037b0f0
+ * @ghidraAddress BRD3D: 0x11750338
  */
 extern TrackTriangle g_aTriCacheTriangles[TRI_CACHE_SLOTS][TRI_CACHE_TRIANGLES];
 
@@ -49,6 +54,7 @@ extern u16 g_awTriCacheSectorId[TRI_CACHE_SLOTS];
  * @ghidraAddress USA: 0x8037ea88
  * @ghidraAddress EUR: 0x80380f88
  * @ghidraAddress JPN: 0x8037fbf8
+ * @ghidraAddress BRD3D: 0x117554a0
  */
 extern u16 g_awTriCacheTriCount[TRI_CACHE_SLOTS];
 
@@ -92,7 +98,13 @@ s32 InvalidateTriCacheSectorAt(f32 x, f32 y);
  * @ghidraAddress USA: 0x8025f18c
  * @ghidraAddress EUR: 0x80260668
  * @ghidraAddress JPN: 0x80260118
+ * @ghidraAddress BRD3D: 0x1006f720
+ * @stub{BRD3D}
  */
 s16 BuildTrackTriangleCache(f32 x, f32 y);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

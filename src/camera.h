@@ -19,6 +19,7 @@
  * @ghidraAddress USA: 0x8028b710
  * @ghidraAddress EUR: 0x8028d9c0
  * @ghidraAddress JPN: 0x8028d3f0
+ * @ghidraAddress BRD3D: 0x100c129c
  */
 extern s32 g_bVehicleTrackCollisionCorrected;
 
@@ -78,6 +79,9 @@ extern u16 g_awCameraRayHitInstances[];
  * @ghidraAddress EUR: 0x80221b50
  * @ghidraAddress JPN: 0x80221340
  */
+#if TGR_PLATFORM == TGR_PLATFORM_WIN && defined(__cplusplus)
+extern "C" {
+#endif
 void ResolveVehicleTrackCollision(Vehicle *vehicle, CameraFrame *camera, Vec3f *target);
 
 /**
@@ -91,9 +95,6 @@ void ResolveVehicleTrackCollision(Vehicle *vehicle, CameraFrame *camera, Vec3f *
  * @ghidraAddress EUR: 0x80221f98
  * @ghidraAddress JPN: 0x80221788
  */
-#if TGR_PLATFORM == TGR_PLATFORM_WIN && defined(__cplusplus)
-extern "C" {
-#endif
 void UpdateCameraChase(Vehicle *vehicle, CameraFrame *camera, f32 share);
 
 /**

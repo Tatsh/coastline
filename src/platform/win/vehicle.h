@@ -174,6 +174,10 @@ typedef struct Vehicle {
      */
     void InitCameraForVehicle(void);
     /**
+     * @ghidraAddress BRD3D: 0x100011f0
+     */
+    void ResolveVehicleTrackCollision(CameraFrame *camera, Vec3f *target);
+    /**
      * @ghidraAddress BRD3D: 0x10076420
      */
     void SetVehiclePosition(f32 x, f32 y, f32 z);

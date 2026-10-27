@@ -10,9 +10,6 @@
 #include "util.h"
 #include "visgrid.h"
 
-/* How far in front of a triangle the track puts a camera. */
-#define TRACK_CLEARANCE 0.1f
-
 /* The smoothing of the chase camera. */
 #define CHASE_SPEED_FLOOR 2.5f
 #define CHASE_SPEED_MAX 31.4159279f
@@ -75,81 +72,6 @@
 
 /* The RSP takes physical addresses, which are the KSEG0 addresses less its base. */
 #define TO_RSP_ADDRESS(p) ((u32)((u8 *)(p) - K0BASE))
-
-/*
- * Find the nearest triangle of the cached slots that the line from start along direction crosses
- * between 0 and limit, and the point where it does, in hit and hitPoint.
- */
-#define FIND_TRACK_HIT(start)                                                                      \
-    {                                                                                              \
-        hit = NULL;                                                                                \
-        for (i = 0; i < slotCount; i++) {                                                          \
-            triangle = g_aTriCacheTriangles[slots[i]];                                             \
-            end = triangle + g_awTriCacheTriCount[slots[i]];                                       \
-            for (; triangle != end; triangle++) {                                                  \
-                facing = Vec3fDot(&direction, &triangle->normal);                                  \
-                if (!(facing < 0.0f)) {                                                            \
-                    continue;                                                                      \
-                }                                                                                  \
-                Vec3fSubtract(&toVertex, triangle->vertices[0], start);                            \
-                t = Vec3fDot(&toVertex, &triangle->normal) / facing;                               \
-                if (!(0.0f < t) || !(t < limit)) {                                                 \
-                    continue;                                                                      \
-                }                                                                                  \
-                Vec3fMulAdd(&point, start, &direction, t);                                         \
-                if (PointInTriangle3D(&point,                                                      \
-                                      triangle->vertices[0],                                       \
-                                      triangle->vertices[1],                                       \
-                                      triangle->vertices[2],                                       \
-                                      &triangle->normal)) {                                        \
-                    limit = t;                                                                     \
-                    hit = triangle;                                                                \
-                    hitPoint = point;                                                              \
-                }                                                                                  \
-            }                                                                                      \
-        }                                                                                          \
-    }
-
-void ResolveVehicleTrackCollision(Vehicle *vehicle, CameraFrame *camera, Vec3f *target) {
-    Vec3f direction, point, toVertex;
-    s32 i;
-    s32 slots[2];
-    s32 slotCount;
-    Vec3f hitPoint, offset;
-    TrackTriangle *hit, *triangle, *end;
-    f32 length, limit, distance, newLength, facing, t;
-
-    g_bVehicleTrackCollisionCorrected = FALSE;
-    slots[0] = BuildTrackTriangleCache(vehicle->lookAt.x, vehicle->lookAt.y);
-    slots[1] = BuildTrackTriangleCache(camera->position.x, camera->position.y);
-    slotCount = slots[0] == slots[1] ? 1 : 2;
-
-    /* The line from the look-at point to just beyond the camera. */
-    Vec3fSubtract(&direction, &camera->position, &vehicle->lookAt);
-    length = Vec3fLength(&direction);
-    limit = length != 0.0f ? (length + TRACK_CLEARANCE) / length : 1.0f;
-    FIND_TRACK_HIT(&vehicle->lookAt);
-    if (hit == NULL) {
-        return;
-    }
-
-    /* The line from the target to the camera. */
-    Vec3fSubtract(&direction, &camera->position, target);
-    limit = 1.0f;
-    FIND_TRACK_HIT(target);
-    if (hit == NULL) {
-        return;
-    }
-    distance = Vec3fDistance(&camera->position, &vehicle->lookAt);
-    Vec3fMulAdd(&camera->position, &hitPoint, &hit->normal, TRACK_CLEARANCE);
-    Vec3fSubtract(&offset, &camera->position, &vehicle->lookAt);
-    newLength = Vec3fLength(&offset);
-    if (distance < newLength && newLength != 0.0f) {
-        Vec3fScaleInPlace(&offset, distance / newLength);
-        Vec3fAdd(&camera->position, &vehicle->lookAt, &offset);
-    }
-    g_bVehicleTrackCollisionCorrected = TRUE;
-}
 
 #if TGR_REGION == TGR_REGION_JP || TGR_REGION == TGR_REGION_EU
 void UpdateCameraViewBasisAndFov(Vehicle *vehicle, CameraFrame *camera) {
