@@ -61,10 +61,7 @@ public:
     SetEarPlaybackDirectionalGain(std::uint16_t direction, double gain, std::uint16_t matrix);
 
 private:
-    /**
-     * @ghidraAddress EAR: 0x1001273a
-     * @stub
-     */
+    /** @ghidraAddress EAR: 0x1001273a */
     virtual void UpdateDirectSoundPlaybackGainAndPan();
 
 public:
@@ -214,22 +211,10 @@ private:
     EarDirectSoundPlaybackState directSound;
 };
 
-/** @ghidraAddress EAR: 0x1002ea78 */
-extern const double g_earPlaybackScaleZero;
-
-/** @ghidraAddress EAR: 0x1002ea80 */
-extern const double g_earPlaybackMaximumFrequencyScale;
-
-/** @ghidraAddress EAR: 0x1002ea70 */
-extern const double g_earMaximumDirectionalGain;
-
 /** @ghidraAddress EAR: 0x100360b8 */
 extern std::uint16_t g_wPlaybackSmoothingPassCount;
 
 /** @ghidraAddress EAR: 0x1003b7b8 */
 extern int g_earPlaybackSmoothingEnabled;
-
-/** @ghidraAddress EAR: 0x100360c0 */
-extern const double g_adPlaybackSmoothingWeights[3];
 
 #endif

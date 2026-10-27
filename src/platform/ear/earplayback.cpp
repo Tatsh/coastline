@@ -5,13 +5,23 @@
 #include <dsound.h>
 
 #include "error.h"
+#include "volume.h"
 
-const double g_earPlaybackScaleZero = 0;
-const double g_earPlaybackMaximumFrequencyScale = 6.5535;
-const double g_earMaximumDirectionalGain = 1;
 std::uint16_t g_wPlaybackSmoothingPassCount = 2;
 int g_earPlaybackSmoothingEnabled;
+
+namespace {
+// @ghidraAddress EAR: 0x1002ea78
+const double g_earPlaybackScaleZero = 0;
+// @ghidraAddress EAR: 0x1002ea80
+const double g_earPlaybackMaximumFrequencyScale = 6.5535;
+// @ghidraAddress EAR: 0x1002ea70
+const double g_earMaximumDirectionalGain = 1;
+// @ghidraAddress EAR: 0x100360c0
 const double g_adPlaybackSmoothingWeights[3] = {1.0, 0.5, 1.0};
+// @ghidraAddress EAR: 0x1002ee40
+const double g_earDirectSoundGainPercentScale = 100;
+} // namespace
 
 int EarPlayback::GetStatus() {
     return status;
@@ -271,4 +281,29 @@ int EarPlayback::IsDirectSoundBufferStopped() {
     DWORD bufferStatus;
     directSound.buffer->GetStatus(&bufferStatus);
     return (bufferStatus & DSBSTATUS_PLAYING) == 0;
+}
+
+void EarPlayback::UpdateDirectSoundPlaybackGainAndPan() {
+    double target = muted ? 0.0 :
+                            static_cast<double>(static_cast<long double>(targetGain) *
+                                                g_dMasterAttenuationLevel * targetMatrixEntry.gain *
+                                                g_earDirectSoundGainPercentScale);
+    double previous =
+        muted ?
+            0.0 :
+            static_cast<double>(static_cast<long double>(previousGain) * g_dMasterAttenuationLevel *
+                                previousMatrixEntry.gain * g_earDirectSoundGainPercentScale);
+    double interpolated = static_cast<double>((static_cast<long double>(target) - previous) *
+                                                  g_adPlaybackSmoothingWeights[smoothingPass] +
+                                              previous);
+    std::int32_t delta =
+        std::bit_cast<std::int32_t>(static_cast<std::uint32_t>(targetMatrixEntry.pan) -
+                                    static_cast<std::uint32_t>(previousMatrixEntry.pan));
+    std::uint32_t step = static_cast<std::uint32_t>(static_cast<std::int64_t>(
+        static_cast<long double>(delta) * g_adPlaybackSmoothingWeights[smoothingPass]));
+    LONG pan = std::bit_cast<LONG>(static_cast<std::uint32_t>(previousMatrixEntry.pan) + step);
+    if (sample) {
+        directSound.buffer->SetVolume(ConvertPercentGainToDirectSoundVolume(interpolated));
+        directSound.buffer->SetPan(pan);
+    }
 }
