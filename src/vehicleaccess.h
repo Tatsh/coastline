@@ -22,6 +22,7 @@
 #define VEHICLE_SET_GridY(vehicle, value) ((vehicle)->gridY = (value))
 #define VEHICLE_GET_MessageTime(vehicle) ((vehicle)->messageTime)
 #define VEHICLE_GET_SubMessageTime(vehicle) ((vehicle)->subMessageTime)
+#define VEHICLE_GET_SubMessage(vehicle) ((vehicle)->subMessage)
 
 #define VEHICLE_GET_Accelerator(vehicle) ((vehicle)->accelerator)
 #define VEHICLE_SET_Accelerator(vehicle, value) ((vehicle)->accelerator = (value))

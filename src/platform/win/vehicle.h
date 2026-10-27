@@ -587,6 +587,9 @@ public:
     const char *GetMessage() const {
         return message;
     }
+    const char *GetSubMessage() const {
+        return subMessage;
+    }
     const char *SetMessage(const char *value) {
         return message = value;
     }

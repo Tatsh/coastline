@@ -274,33 +274,6 @@ void RenderDashboardGauges(void) {
 void StubDashboard(void) {
 }
 
-void DrawHudMessage(void) {
-    s32 x, top, large, small;
-
-    if (g_dwRacePauseState != 0) {
-        return;
-    }
-    if (g_dwNumViewports == 1) {
-        large = 30;
-        small = 20;
-    } else {
-        large = 20;
-        small = 15;
-    }
-    x = g_aViewportRects[g_dwCurrentSplitScreenIndex].x +
-        g_aViewportRects[g_dwCurrentSplitScreenIndex].width / 2;
-    top = g_aViewportRects[g_dwCurrentSplitScreenIndex].y +
-          g_aViewportRects[g_dwCurrentSplitScreenIndex].height / 3;
-    SetTextAlignCenter();
-    if (g_pActiveCameraVehicle->message != NULL) {
-        SetTextSize(large);
-        DrawText(g_pActiveCameraVehicle->message, x, large / 4 + top);
-    } else if (g_pActiveCameraVehicle->subMessage != NULL) {
-        SetTextSize(small);
-        DrawText(g_pActiveCameraVehicle->subMessage, x, large * 3 / 16 + top);
-    }
-}
-
 void DrawSpeedAndHudOverlay(void) {
     f32 speed = g_pActiveCameraVehicle->speedKph;
     s32 x, y;

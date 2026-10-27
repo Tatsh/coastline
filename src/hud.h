@@ -209,6 +209,20 @@ void DrawRaceTimerHud(void);
 void DrawLapCounterHud(void);
 #endif
 
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#ifdef __cplusplus
+extern "C" {
+#endif
+/**
+ * Draw the active vehicle's message unless paused or fading out.
+ * @param viewports The records of the views.
+ * @ghidraAddress BRD3D: 0x10017790
+ */
+void DrawHudMessage(const ViewportRect *viewports);
+#ifdef __cplusplus
+}
+#endif
+#else
 /**
  * Draw the message of the active vehicle in the middle of a view.
  *
@@ -217,6 +231,7 @@ void DrawLapCounterHud(void);
  * @ghidraAddress JPN: 0x80239de4
  */
 void DrawHudMessage(void);
+#endif
 
 /**
  * Draw the whole display of a view: the dashboard and times unless the camera is on the bumper,
