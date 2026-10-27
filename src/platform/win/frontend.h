@@ -2414,6 +2414,10 @@ int ShowLoadGhostMenu(void);
  * @ghidraAddress BRD3D: 0x100443e0
  */
 int ShowHostRaceSetupScreen(void);
+/**
+ * @ghidraAddress BRD3D: 0x100440d0
+ */
+int ShowCreateGameScreen(void);
 
 /**
  * @ghidraAddress BRD3D: 0x10043bf0

@@ -1684,6 +1684,14 @@ HRESULT FormatNetworkChatLine(
  * @ghidraAddress BRD3D: 0x10aa2894
  */
 extern int g_dwNetworkDataStreamActive;
+/**
+ * @ghidraAddress BRD3D: 0x10aa2890
+ */
+extern int g_dwNetworkEscapePending;
+/**
+ * @ghidraAddress BRD3D: 0x10058700
+ */
+int ToggleSelectedSessionSlotFlag(void);
 
 /**
  * @ghidraAddress BRD3D: 0x100aac48

@@ -1557,6 +1557,116 @@ int ShowNetworkCarSetupScreen(MenuWidget *) {
     return 1;
 }
 
+static inline void FreeMenuSessionDesc(DPSESSIONDESC2 *desc) {
+    GlobalUnlock(GlobalHandle(desc));
+    GlobalFree(GlobalHandle(desc));
+}
+
+int NetworkCarSetupUI_OnRefreshSessionDesc(MenuWidget *) {
+    DPSESSIONDESC2 *desc = nullptr;
+    GetDirectPlaySessionDesc(g_DirectPlayInfo.pDirectPlay, &desc);
+    if (desc == nullptr) {
+        return 1;
+    }
+    if (desc->dwCurrentPlayers <= 1) {
+        strcpy(g_szNetworkChatText, GetStringResource(0xbb));
+        SendNetworkChatMessage(g_hMainWindow, g_pDirectPlayInfo, true);
+        strcpy(g_szNetworkChatText, g_szEmptyUiString);
+        FreeMenuSessionDesc(desc);
+        return 1;
+    }
+    if (g_dwLobbyIsHost) {
+        bool ready = true;
+        for (const SessionSlot &slot : g_aSessionSlots) {
+            if (!slot.nFlag && slot.dpidPlayer != 0xffffffff) {
+                ready = false;
+                break;
+            }
+        }
+        if (ready) {
+            SendNetworkMessage3(g_pDirectPlayInfo);
+            g_dwNetworkSendBlocked = 1;
+            desc->dwFlags |= 0x20;
+            g_DirectPlayInfo.pDirectPlay->SetSessionDesc(desc, 0);
+        } else {
+            strcpy(g_szNetworkChatText, GetStringResource(0xbc));
+            SendNetworkChatMessage(g_hMainWindow, g_pDirectPlayInfo, true);
+            strcpy(g_szNetworkChatText, g_szEmptyUiString);
+        }
+    } else {
+        int ready = ToggleSelectedSessionSlotFlag();
+        SendNetworkReadyMessage(g_pDirectPlayInfo, ready);
+    }
+    FreeMenuSessionDesc(desc);
+    return 1;
+}
+
+int NetworkCarSetupUI_OnEscape(MenuWidget *pWidget) {
+    if (g_dwNetworkDataStreamActive) {
+        if (!g_dwLaunchedFromLobby) {
+            ReturnToMultiplayerLobby(pWidget);
+            if (g_pCachedMenu_RaceSetupNetwork != nullptr) {
+                g_pCachedMenu_RaceSetupNetwork->DestroyPanels();
+                g_pCachedMenu_RaceSetupNetwork = nullptr;
+            }
+            g_pActiveMenuScreen = g_pCachedMenu_JoinCreateGame;
+            DisconnectNetworkSession();
+            g_dwSessionEnumPending = 1;
+            if (g_dwServiceProviderIndex == 0 || g_dwServiceProviderIndex == 1) {
+                InitializeNetworkServiceProvider();
+            }
+            if ((g_dwServiceProviderIndex == 2 || g_dwServiceProviderIndex == 3) &&
+                g_pNetworkSessionJoinMenu != nullptr) {
+                g_pNetworkSessionJoinMenu->dwFlags &= ~0x10u;
+            }
+            g_dwNetworkDataStreamActive = 0;
+            return 0;
+        }
+        pWidget->pScreen->bRunning = 0;
+        pWidget->pScreen->ShutdownFrontEnd(0);
+        ShutdownApplication(0);
+    }
+    if (g_dwNetworkEscapePending) {
+        ReturnToMultiplayerLobby(pWidget);
+        if (g_pCachedMenu_RaceSetupNetwork != nullptr) {
+            g_pCachedMenu_RaceSetupNetwork->DestroyPanels();
+            g_pCachedMenu_RaceSetupNetwork = nullptr;
+        }
+        ShowCreateGameScreen();
+        ShowHostRaceSetupScreen();
+        ShowNetworkCarSetupScreen();
+        g_dwNetworkEscapePending = 0;
+        return 0;
+    }
+    if (g_dwLobbyIsHost) {
+        DPSESSIONDESC2 *desc = nullptr;
+        if (g_DirectPlayInfo.pDirectPlay != nullptr) {
+            GetDirectPlaySessionDesc(g_DirectPlayInfo.pDirectPlay, &desc);
+        }
+        if (desc != nullptr) {
+            DPID localPlayer = g_pDirectPlayInfo->dpidPlayer;
+            for (SessionSlot &slot : g_aSessionSlots) {
+                if (slot.dpidPlayer == localPlayer) {
+                    slot.nFlag = desc->dwCurrentPlayers > 1;
+                    break;
+                }
+            }
+            FreeMenuSessionDesc(desc);
+        }
+    }
+    if (g_dwNetworkSendBlocked) {
+        BackupMenuSelections();
+        g_GlobalRallyConfig.SaveConfigToFile(g_szConfigFilePath);
+        pWidget->pScreen->bRunning = 0;
+        pWidget->pScreen->ShutdownFrontEnd(0);
+        g_dwInNetworkCarSetup = 0;
+        PlaySoundChannelOneOnce(2, 0x200020);
+        g_dwNetworkMenuState = 2;
+        return 0;
+    }
+    return 1;
+}
+
 int ShowMultiplayerNameScreen(void) {
     SetActiveMenuItemText(" ");
     ResolveRaceSelections();

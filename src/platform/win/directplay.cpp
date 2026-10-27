@@ -713,6 +713,19 @@ int GetSessionSlotFlag(DPID dpidPlayer) {
     return 0;
 }
 
+int ToggleSelectedSessionSlotFlag(void) {
+    if (g_pDirectPlayInfo == nullptr) {
+        return 0;
+    }
+    for (SessionSlot &slot : g_aSessionSlots) {
+        if (slot.dpidPlayer == g_pDirectPlayInfo->dpidPlayer) {
+            slot.nFlag = !slot.nFlag;
+            return slot.nFlag;
+        }
+    }
+    return 0;
+}
+
 void HandleDirectPlaySystemMessageHost(
     DirectPlayInfo *pInfo, DPMSG_GENERIC *pMessage, DWORD, DPID, DPID dpidTo) {
     DPMSG_SECUREMESSAGE *pSecure;
@@ -1507,6 +1520,7 @@ int g_dwLocalNetPlayerId = -1;
 const RECT g_rcNetCarSetupPlayerList = {32, 370, 610, 467};
 int g_dwNetworkCarSetupShown;
 int g_dwNetworkDataStreamActive;
+int g_dwNetworkEscapePending;
 unsigned g_dwNetRaceStartTimeMs;
 NetClockSample g_aNetClockSamples[8];
 int g_nNetClockSampleIndex;
