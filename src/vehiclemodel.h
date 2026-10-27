@@ -91,4 +91,26 @@ typedef struct VehicleModel {
                                                 the routines reconstructed so far. */
 } VehicleModel;
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+/**
+ * Paint the materials of a model a colour of 5 bits a channel.
+ *
+ * @param model The model.
+ * @param red The red of the colour, from 0 to 31.
+ * @param green The green of the colour, from 0 to 31.
+ * @param blue The blue of the colour, from 0 to 31.
+ * @ghidraAddress USA: 0x8021d140
+ * @ghidraAddress EUR: 0x8021e340
+ * @ghidraAddress JPN: 0x8021dc10
+ * @ghidraAddress BRD3D: 0x100350ee
+ */
+void SetMaterialColor(VehicleModel *model, s32 red, s32 green, s32 blue);
+
+#ifdef __cplusplus
+}
+#endif
+
 #endif

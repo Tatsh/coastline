@@ -3,6 +3,31 @@
 
 #include "vehiclemodel.h"
 
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#ifdef __cplusplus
+extern "C" {
+#endif
+void RefreshVehicleMaterialTextures(VehicleModel *model);
+#ifdef __cplusplus
+}
+#endif
+
+static inline void SetVehicleLightPalette(u16 *palette, s32 variant, s32 dark) {
+    if (variant == 0) {
+        palette[15] = dark ? 0x0070 : 0x0190;
+        palette[10] = dark ? 0x8290 : 0x01a0;
+        palette[12] = 0x8179;
+        palette[7] = 0x4192;
+    }
+    palette[11] = variant < 2 ? 0x6bad : 0x38e7;
+    palette[6] = variant < 2 ? 0x31c6 : 0xfeff;
+    palette[14] = variant & 1 ? 0x00c0 : 0x0190;
+    palette[13] = variant & 1 ? 0x00c0 : palette[15];
+    palette[9] = variant & 1 ? 0x04f9 : 0x01a0;
+    palette[8] = variant & 1 ? 0x04f9 : palette[10];
+}
+#endif
+
 static inline u16 PackMaterialPaletteColor(u16 color) {
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
     return (color >> 8) | (color << 8);

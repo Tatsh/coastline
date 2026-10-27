@@ -5,14 +5,9 @@
 #include "render.h"
 #include "system.h"
 #include "vehicle.h"
-#include "vehiclecolor.h"
 
 /* The room for the message of a car too big. */
 #define LOAD_MESSAGE_SIZE 0x50
-
-void SetMaterialColor(VehicleModel *model, s32 red, s32 green, s32 blue) {
-    SetMaterialPaletteColors(model, red, green, blue);
-}
 
 void ExtractVehicleBaseColor(Vehicle *vehicle, VehicleModel *model) {
     ModelTexture *texture = &model->textures[model->materialTextures[VEHICLE_MATERIAL_PAINT]];

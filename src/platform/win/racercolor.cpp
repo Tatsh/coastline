@@ -11,6 +11,22 @@
 #include "vehiclecolor.h"
 #include "weather.h"
 
+void RefreshVehicleMaterialTextures(VehicleModel *model) {
+    for (s32 index = 0; index < model->textureEntryCount; index++) {
+        g_pfnReloadTextureEntryData(model->textureEntries[index]);
+    }
+    u16 *palette = model->textures[model->materialTextures[VEHICLE_MATERIAL_REAR_LIGHTS]].palette;
+    if (palette == nullptr || g_dwNullStubEnable) {
+        return;
+    }
+    for (s32 index = 0; index < 4; index++) {
+        if (model->lightTextureEntries[index] != 0) {
+            SetVehicleLightPalette(palette, index, index == 0 && (g_dwNightMode || g_dwRainMode));
+            g_pfnReloadTextureEntryData(model->lightTextureEntries[index]);
+        }
+    }
+}
+
 static inline void CopyRacerColorPanel(RacerSlot *slot, s32 index, s32 entry, const char *caller) {
     unsigned size;
     u8 *source = g_pfnGetTextureEntryPixelsWithPaint(entry, &size);
@@ -42,57 +58,28 @@ void MakeEnemyCarColorPanels(RacerSlot *slot) {
     }
     /* Unused light-panel entries remain uninitialised, as in the original. */
     if (vehicle->model->lightTextureEntries[0] != 0) {
-        if (g_dwNightMode || g_dwRainMode) {
-            palette[15] = 0x0070;
-            palette[10] = 0x8290;
-        } else {
-            palette[15] = 0x0190;
-            palette[10] = 0x01a0;
-        }
-        palette[14] = 0x0190;
-        palette[13] = palette[15];
-        palette[9] = 0x01a0;
-        palette[8] = palette[10];
-        palette[12] = 0x8179;
-        palette[7] = 0x4192;
-        palette[11] = 0x6bad;
-        palette[6] = 0x31c6;
+        SetVehicleLightPalette(palette, 0, g_dwNightMode || g_dwRainMode);
         CopyRacerColorPanel(slot,
                             count,
                             vehicle->model->lightTextureEntries[0],
                             "MakeEnemyCarColorPanels: penm->aptex[cptex+0]");
     }
     if (vehicle->model->lightTextureEntries[1] != 0) {
-        palette[11] = 0x6bad;
-        palette[14] = 0x00c0;
-        palette[13] = 0x00c0;
-        palette[6] = 0x31c6;
-        palette[9] = 0x04f9;
-        palette[8] = 0x04f9;
+        SetVehicleLightPalette(palette, 1, 0);
         CopyRacerColorPanel(slot,
                             count + 1,
                             vehicle->model->lightTextureEntries[1],
                             "MakeEnemyCarColorPanels: penm->aptex[cptex+1]");
     }
     if (vehicle->model->lightTextureEntries[2] != 0) {
-        palette[14] = 0x0190;
-        palette[13] = palette[15];
-        palette[9] = 0x01a0;
-        palette[8] = palette[10];
-        palette[11] = 0x38e7;
-        palette[6] = 0xfeff;
+        SetVehicleLightPalette(palette, 2, 0);
         CopyRacerColorPanel(slot,
                             count + 2,
                             vehicle->model->lightTextureEntries[2],
                             "MakeEnemyCarColorPanels: penm->aptex[cptex+2]");
     }
     if (vehicle->model->lightTextureEntries[3] != 0) {
-        palette[11] = 0x38e7;
-        palette[14] = 0x00c0;
-        palette[13] = 0x00c0;
-        palette[6] = 0xfeff;
-        palette[9] = 0x04f9;
-        palette[8] = 0x04f9;
+        SetVehicleLightPalette(palette, 3, 0);
         CopyRacerColorPanel(slot,
                             count + 3,
                             vehicle->model->lightTextureEntries[3],

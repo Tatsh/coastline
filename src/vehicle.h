@@ -644,19 +644,6 @@ void ResetVehicleState(Vehicle *vehicle);
 void BindPlayerInputToVehicle(Vehicle *vehicle);
 
 /**
- * Paint the materials of a model a colour of 5 bits a channel.
- *
- * @param model The model.
- * @param red The red of the colour, from 0 to 31.
- * @param green The green of the colour, from 0 to 31.
- * @param blue The blue of the colour, from 0 to 31.
- * @ghidraAddress USA: 0x8021d140
- * @ghidraAddress EUR: 0x8021e340
- * @ghidraAddress JPN: 0x8021dc10
- */
-void SetMaterialColor(VehicleModel *model, s32 red, s32 green, s32 blue);
-
-/**
  * Set the colour of the paint of a vehicle from the first colour of the palette of the paint
  * texture of a model, when that texture has a palette and is of the format 1.
  *

@@ -122,7 +122,7 @@ else()
   list(APPEND COASTLINE_LIBRARIES coastline_zlib)
 endif()
 
-target_sources(coastline_game PRIVATE racerinit.c routewalk.c textrender.c textstyle.c)
+target_sources(coastline_game PRIVATE materialcolor.c racerinit.c routewalk.c textrender.c textstyle.c)
 
 add_custom_target(archives DEPENDS ${COASTLINE_LIBRARIES})
 
