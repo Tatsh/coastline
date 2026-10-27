@@ -483,6 +483,9 @@ struct NetworkJoinCredentials {
 /** @ghidraAddress BRD3D: 0x1022af1c */
 extern int g_bNetSpectator;
 
+/** @ghidraAddress BRD3D: 0x1003c260 */
+int JoinNetworkSession(void);
+
 /** @ghidraAddress BRD3D: 0x1003c740 */
 HRESULT JoinDirectPlaySession(IDirectPlay3A *pDirectPlay,
                               const GUID *instance,

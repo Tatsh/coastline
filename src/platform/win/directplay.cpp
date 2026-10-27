@@ -3124,6 +3124,52 @@ HRESULT CreateDirectPlaySession(IDirectPlay3A *pDirectPlay,
     return DP_OK;
 }
 
+static inline int CompleteNetworkJoinCredentials(NetworkJoinCredentials *) {
+    // The credentials callback shares the controller initialiser's constant return.
+    return 1;
+}
+
+int JoinNetworkSession(void) {
+    if (g_DirectPlayInfo.pDirectPlay == nullptr) {
+        return 0;
+    }
+    if (g_pNetworkSessionJoinMenu != nullptr &&
+        g_pJoinCreateGameMenu->GetItemList().GetItemCount() > 0) {
+        if (!g_dwLaunchedFromLobby) {
+            GUID instance;
+            HRESULT result = GetSelectedSessionGuid(&instance);
+            if (SUCCEEDED(result)) {
+                NetworkJoinCredentials credentials = {};
+                DWORD userNameSize = sizeof(credentials.localUserName);
+                GetUserNameA(credentials.localUserName, &userNameSize);
+                result = JoinDirectPlaySession(
+                    g_DirectPlayInfo.pDirectPlay, &instance, &credentials, g_pDirectPlayInfo);
+                if (result == DPERR_LOGONDENIED) {
+                    if (!CompleteNetworkJoinCredentials(&credentials)) {
+                        return 0;
+                    }
+                    result = JoinDirectPlaySession(
+                        g_DirectPlayInfo.pDirectPlay, &instance, &credentials, g_pDirectPlayInfo);
+                }
+            }
+            if (FAILED(result)) {
+                DisconnectNetworkSession();
+                InitializeNetworkServiceProvider();
+                char error[1024];
+                // The original formats the error without displaying it.
+                std::sprintf(error,
+                             "Could not join session because of error 0x%08X",
+                             static_cast<unsigned>(result));
+                return 0;
+            }
+        }
+        g_dwNetworkPlayMode = 1;
+        InitializeNetworkMutexes();
+        LoadNetworkSettings();
+    }
+    return 1;
+}
+
 void HostNetworkSession(void) {
     if (!g_DirectPlayInfo.pDirectPlay) {
         return;
