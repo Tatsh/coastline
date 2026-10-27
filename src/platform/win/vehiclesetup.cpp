@@ -13,6 +13,7 @@
 #include "racermotion.h"
 #include "racers.h"
 #include "racersharing.h"
+#include "racerslotaccess.h"
 #include "settings.h"
 #include "sound.h"
 #include "trackselect.h"
@@ -56,7 +57,7 @@ const char *GetNetworkRaceFinishMessage(void) {
 }
 
 s32 IsNetworkRacerMotionDisabled(RacerSlot *slot) {
-    return g_dwNetworkPlayMode && slot->vehicle == nullptr;
+    return g_dwNetworkPlayMode && RACER_SLOT_GET(slot, Vehicle) == nullptr;
 }
 
 void ClearRacerSoundChannels(void) {
@@ -102,7 +103,7 @@ void ApplyPlayerVehicleEffects(Vehicle *vehicle) {
 
 void ApplyPlayerVehicleRespawnRequest(Vehicle *vehicle) {
     if (g_bRespawnRequested) {
-        if (!(vehicle->racer->status & 3) && !gInstantReplayActive) {
+        if (!(RACER_SLOT_GET(vehicle->racer, Status) & 3) && !gInstantReplayActive) {
             vehicle->body.uprightFrames = -1;
         }
         g_bRespawnRequested = 0;

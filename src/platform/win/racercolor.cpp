@@ -7,6 +7,7 @@
 #include "platform/win/render.h"
 #include "platform/win/textureupload.h"
 #include "racerslot.h"
+#include "racerslotaccess.h"
 #include "vehicle.h"
 #include "vehiclecolor.h"
 #include "weather.h"
@@ -30,21 +31,28 @@ void RefreshVehicleMaterialTextures(VehicleModel *model) {
 static inline void CopyRacerColorPanel(RacerSlot *slot, s32 index, s32 entry, const char *caller) {
     unsigned size;
     u8 *source = g_pfnGetTextureEntryPixelsWithPaint(entry, &size);
-    slot->colorPanels[index] = static_cast<u8 *>(CHK_AllocateMemory(size, caller));
+    RACER_SLOT_GET(slot, ColorPanels)[index] = static_cast<u8 *>(CHK_AllocateMemory(size, caller));
     if (size != 0) {
-        memcpy(slot->colorPanels[index], source, size);
+        memcpy(RACER_SLOT_GET(slot, ColorPanels)[index], source, size);
     }
 }
 
 void MakeEnemyCarColorPanels(RacerSlot *slot) {
-    Vehicle *vehicle = &g_aVehicles[g_dwNumLocalPlayers + slot->straggler];
-    SetColorTintMultipliers(slot->color[0], slot->color[1], slot->color[2]);
-    SetMaterialPaletteColors(
-        vehicle->model, slot->color[0] >> 3, slot->color[1] >> 3, slot->color[2] >> 3);
+    Vehicle *vehicle = &g_aVehicles[g_dwNumLocalPlayers + RACER_SLOT_GET(slot, Straggler)];
+    SetColorTintMultipliers(RACER_SLOT_GET(slot, Color)[0],
+                            RACER_SLOT_GET(slot, Color)[1],
+                            RACER_SLOT_GET(slot, Color)[2]);
+    SetMaterialPaletteColors(vehicle->model,
+                             RACER_SLOT_GET(slot, Color)[0] >> 3,
+                             RACER_SLOT_GET(slot, Color)[1] >> 3,
+                             RACER_SLOT_GET(slot, Color)[2] >> 3);
     s32 count = vehicle->model->textureEntryCount;
-    slot->colorPanelCount = count + 4;
-    slot->colorPanels = static_cast<u8 **>(CHK_AllocateMemory(
-        slot->colorPanelCount * sizeof(u8 *), "MakeEnemyCarColorPanels: penm->aptex"));
+    RACER_SLOT_SET(slot, ColorPanelCount, count + 4);
+    RACER_SLOT_SET(
+        slot,
+        ColorPanels,
+        static_cast<u8 **>(CHK_AllocateMemory(RACER_SLOT_GET(slot, ColorPanelCount) * sizeof(u8 *),
+                                              "MakeEnemyCarColorPanels: penm->aptex")));
     for (s32 index = 0; index < count; index++) {
         CopyRacerColorPanel(slot,
                             index,
@@ -91,14 +99,15 @@ void ApplyEnemyCarColorPanels(Vehicle *vehicle, RacerSlot *slot) {
     VehicleModel *model = vehicle->model;
     s32 count = model->textureEntryCount;
     for (s32 index = 0; index < count; index++) {
-        EnqueueTextureUploadEntry(model->textureEntries[index], slot->colorPanels[index]);
+        EnqueueTextureUploadEntry(model->textureEntries[index],
+                                  RACER_SLOT_GET(slot, ColorPanels)[index]);
     }
     ModelTexture *lights = &model->textures[model->materialTextures[VEHICLE_MATERIAL_REAR_LIGHTS]];
     if (lights->palette != nullptr && !g_dwNullStubEnable) {
         for (s32 index = 0; index < 4; index++) {
             if (model->lightTextureEntries[index] != 0) {
                 EnqueueTextureUploadEntry(model->lightTextureEntries[index],
-                                          slot->colorPanels[count + index]);
+                                          RACER_SLOT_GET(slot, ColorPanels)[count + index]);
             }
         }
     }

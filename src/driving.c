@@ -1,5 +1,7 @@
 #include "driving.h"
 
+#include "racerslotaccess.h"
+
 #if TGR_PLATFORM == TGR_PLATFORM_N64
 #include <PR/gu.h>
 #include <PR/os_libc.h>
@@ -429,7 +431,7 @@ static f32 PassAiVehicles(Vehicle *vehicle, f32 sideOffset) {
     s32 i;
 
     for (i = 0; i < g_dwNumVehicles; i++) {
-        other = g_aRacerSlots[i].vehicle;
+        other = RACER_SLOT_GET(&(g_aRacerSlots[i]), Vehicle);
         if (other == NULL || other == vehicle) {
             continue;
         }
@@ -508,7 +510,7 @@ static void HoldAiToRoute(Vehicle *vehicle, f32 sideOffset, f32 halfWidth, f32 f
         Vec3fScaleInPlace(
             velocity,
             g_aafAiVelocityRetention[AI_ACTIVE_PROFILE->season][AI_ACTIVE_PROFILE->round]
-                                    [vehicle->racer->straggler]);
+                                    [RACER_SLOT_GET(vehicle->racer, Straggler)]);
 #endif
     } else if (g_dwGameMode == GAME_MODE_ARCADE
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
@@ -620,7 +622,7 @@ void UpdateAiVehicleBehavior(Vehicle *vehicle) {
     f32 length;
     AiReal rawLength;
 
-    if (!(vehicle->racer->status & RACER_HELD)) {
+    if (!(RACER_SLOT_GET(vehicle->racer, Status) & RACER_HELD)) {
         PlanAiDrive(vehicle);
     }
     AddTimingMarker(0, 0, 130, 0, 255);

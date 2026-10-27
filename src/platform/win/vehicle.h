@@ -70,8 +70,8 @@ typedef struct Vehicle {
     s32 forcedReverseFrames;
     s32 reverseFrames;
     s32 forwardFrames;
-    struct RacerSlot *nearestRacers[RACER_SLOTS];
-    struct RacerSlot *racer;
+    RacerSlot *nearestRacers[RACER_SLOTS];
+    RacerSlot *racer;
     s32 slotCooldown;
     void (*driver)(struct Vehicle *vehicle);
     Vec3f aiTarget;

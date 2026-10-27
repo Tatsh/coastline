@@ -104,6 +104,8 @@ else()
   set_source_files_properties(controllerread.c inputtranslate.c PROPERTIES LANGUAGE CXX)
   set_source_files_properties(volumecontrols.c PROPERTIES LANGUAGE CXX)
   set_source_files_properties(ambientsound.c PROPERTIES LANGUAGE CXX)
+  set_source_files_properties(racerinit.c racermotion.c racersharing.c raceprogress.c
+                              vehicleengine.c collisionstep.c driving.c PROPERTIES LANGUAGE CXX)
   add_library(
     coastline_game STATIC bodyforces.c camerachase.c cameracollision.c displaylistops.c fade.c
                           fog.c frameclear.c game.c heap.c mathutil.c playerinput.c profileinit.c

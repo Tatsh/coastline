@@ -1,5 +1,7 @@
 #include "raceprogress.h"
 
+#include "racerslotaccess.h"
+
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
 #include <stdio.h>
 #include <string.h>
@@ -86,12 +88,15 @@ static s32 GateInLap(s32 gate, s32 count) {
 /* Practice returns a racer to lap 0 after the first lap. */
 static void LapBack(RacerSlot *slot, const char *format) {
     osSyncPrintf(format, slot->index);
-    slot->lap--;
-    slot->distanceLaps--;
-    slot->maxGate -= g_LoadedTrack.gateCount;
-    slot->gate -= g_LoadedTrack.gateCount;
+    RACER_SLOT_SET(slot, Lap, RACER_SLOT_GET(slot, Lap) - 1);
+    RACER_SLOT_SET(slot, DistanceLaps, RACER_SLOT_GET(slot, DistanceLaps) - 1);
+    RACER_SLOT_SET(slot, MaxGate, RACER_SLOT_GET(slot, MaxGate) - (g_LoadedTrack.gateCount));
+    RACER_SLOT_SET(slot, Gate, RACER_SLOT_GET(slot, Gate) - (g_LoadedTrack.gateCount));
     if (g_LoadedTrack.rootSection != NULL) {
-        slot->distance -= g_LoadedTrack.rootSection->points[0].distance;
+        RACER_SLOT_SET(slot,
+                       Distance,
+                       RACER_SLOT_GET(slot, Distance) -
+                           (g_LoadedTrack.rootSection->points[0].distance));
     }
 }
 
@@ -99,11 +104,11 @@ static void LapBack(RacerSlot *slot, const char *format) {
 static void FinishRacer(RacerSlot *slot, Vehicle *vehicle) {
     f32 *record;
 
-    slot->status |= RACER_FINISHED;
+    RACER_SLOT_SET(slot, Status, RACER_SLOT_GET(slot, Status) | (RACER_FINISHED));
     if (vehicle != NULL) {
         vehicle->opacity = FINISH_OPACITY;
-        vehicle->totalTime -= slot->lapTime;
-        slot->lapTime = 0.0f;
+        vehicle->totalTime -= RACER_SLOT_GET(slot, LapTime);
+        RACER_SLOT_SET(slot, LapTime, 0.0f);
         vehicle->racePosition = g_dwRaceFinishOrderCounter;
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
         vehicle->message =
@@ -114,7 +119,8 @@ static void FinishRacer(RacerSlot *slot, Vehicle *vehicle) {
         vehicle->message = g_apszRaceProgressStrings[g_dwRaceFinishOrderCounter];
 #endif
         vehicle->messageTime = FINISH_MESSAGE_TIME;
-        if (slot->index < (s32)g_dwNumLocalPlayers && g_dwTotalLaps == RECORD_LAPS) {
+        if (RACER_SLOT_GET(slot, Index) < (s32)g_dwNumLocalPlayers &&
+            g_dwTotalLaps == RECORD_LAPS) {
             record = &PROGRESS_PROFILE->raceRecords[g_dwSelectedTrackId];
             if (PROGRESS_ZERO(*record) || PROGRESS_LESS(vehicle->totalTime, *record)) {
                 *record = vehicle->totalTime;
@@ -165,7 +171,7 @@ static void PassArcadeCheckpoint(RacerSlot *slot, s32 gate, f32 gapFallback) {
         gap = -gap;
     }
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
-    speed = (long double)slot->vehicle->speedKph * 0.44642857f;
+    speed = (long double)RACER_SLOT_GET(slot, Vehicle)->speedKph * 0.44642857f;
     if (PROGRESS_ZERO(speed)) {
         pace = NO_PACE;
     } else {
@@ -183,7 +189,7 @@ static void PassArcadeCheckpoint(RacerSlot *slot, s32 gate, f32 gapFallback) {
     }
 #endif
     for (i = 0; i < (s32)g_dwNumLocalPlayers; i++) {
-        other = g_aRacerSlots[i].vehicle;
+        other = RACER_SLOT_GET(&(g_aRacerSlots[i]), Vehicle);
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
         if (other->message == other->messageText) {
             strcpy(other->checkpointMessageText, other->messageText);
@@ -230,7 +236,7 @@ static void PassArcadeCheckpoint(RacerSlot *slot, s32 gate, f32 gapFallback) {
             other->subMessage = other->messageText;
             other->subMessageTime = CHECKPOINT_SUB_MESSAGE_TIME;
         }
-        other->maxGate = slot->maxGate;
+        other->maxGate = RACER_SLOT_GET(slot, MaxGate);
     }
 }
 
@@ -240,50 +246,53 @@ ReachNewGate(RacerSlot *slot, Vehicle *vehicle, s32 next, f32 lapTime, f32 gapFa
     const char *message;
     f32 *record;
 
-    slot->maxGate = slot->gate;
+    RACER_SLOT_SET(slot, MaxGate, RACER_SLOT_GET(slot, Gate));
     osSyncPrintf("moved ahead one gate, getting %f seconds\n",
                  (double)g_LoadedTrack.gates[next].seconds);
     if (next == 0) {
-        if (slot->lap < g_dwTotalLaps) {
+        if (RACER_SLOT_GET(slot, Lap) < g_dwTotalLaps) {
             /* Retain the best lap, and choose the message of a record of a player. */
             message = NULL;
-            if (PROGRESS_ZERO(slot->bestLapTime) || PROGRESS_LESS(lapTime, slot->bestLapTime)) {
-                slot->bestLapTime = lapTime;
-                if (slot->index < (s32)g_dwNumLocalPlayers) {
+            if (PROGRESS_ZERO(RACER_SLOT_GET(slot, BestLapTime)) ||
+                PROGRESS_LESS(lapTime, RACER_SLOT_GET(slot, BestLapTime))) {
+                RACER_SLOT_SET(slot, BestLapTime, lapTime);
+                if (RACER_SLOT_GET(slot, Index) < (s32)g_dwNumLocalPlayers) {
                     /* A player's racer always has its vehicle. */
-                    slot->vehicle->bestLap = slot->lap;
+                    RACER_SLOT_GET(slot, Vehicle)->bestLap = RACER_SLOT_GET(slot, Lap);
                     record = &PROGRESS_PROFILE->lapRecords[g_dwSelectedTrackId];
-                    if (PROGRESS_ZERO(*record) || PROGRESS_LESS(slot->bestLapTime, *record)) {
+                    if (PROGRESS_ZERO(*record) ||
+                        PROGRESS_LESS(RACER_SLOT_GET(slot, BestLapTime), *record)) {
                         /* The record is read back from the racer here, not from the lap. */
-                        *record = slot->bestLapTime;
+                        *record = RACER_SLOT_GET(slot, BestLapTime);
                         message = PROGRESS_MESSAGE("%ryNEW LAP RECORD!", 0x109);
-                    } else if (slot->lap != 0) {
+                    } else if (RACER_SLOT_GET(slot, Lap) != 0) {
                         message = PROGRESS_MESSAGE("%ryBEST LAP!", 0x10a);
                     }
                 }
             }
             if (vehicle != NULL) {
                 osSyncPrintf("veh->lapTimeFinal[%d]=%f\n", slot->lap, (double)lapTime);
-                vehicle->lapTimes[slot->lap] = lapTime;
+                vehicle->lapTimes[RACER_SLOT_GET(slot, Lap)] = lapTime;
             }
-            slot->lap++;
-            slot->distanceLaps = slot->lap;
-            slot->lapTime -= lapTime;
+            RACER_SLOT_SET(slot, Lap, RACER_SLOT_GET(slot, Lap) + 1);
+            RACER_SLOT_SET(slot, DistanceLaps, RACER_SLOT_GET(slot, Lap));
+            RACER_SLOT_SET(slot, LapTime, RACER_SLOT_GET(slot, LapTime) - (lapTime));
             if (g_dwGameMode == GAME_MODE_PRACTICE) {
-                if (slot->lap == 1) {
+                if (RACER_SLOT_GET(slot, Lap) == 1) {
                     LapBack(slot, "lapping %d back to 0 (a)\n");
                 }
             } else if (vehicle != NULL) {
                 /* Show the lap the racer starts and its record. */
                 osSyncPrintf("******* LAP #%d ********\n", slot->lap);
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
-                if (slot->lap == g_dwTotalLaps - 1) {
+                if (RACER_SLOT_GET(slot, Lap) == g_dwTotalLaps - 1) {
                     strcpy(vehicle->messageText, GetRaceProgressMessage(0x10b));
                 } else
 #endif
                 {
-                    sprintf(
-                        vehicle->messageText, PROGRESS_MESSAGE("%%ryLAP %d", 0x10c), slot->lap + 1);
+                    sprintf(vehicle->messageText,
+                            PROGRESS_MESSAGE("%%ryLAP %d", 0x10c),
+                            RACER_SLOT_GET(slot, Lap) + 1);
                 }
                 vehicle->message = vehicle->messageText;
                 vehicle->messageTime = LAP_MESSAGE_TIME;
@@ -293,7 +302,7 @@ ReachNewGate(RacerSlot *slot, Vehicle *vehicle, s32 next, f32 lapTime, f32 gapFa
                 }
             }
         }
-        if (g_dwTotalLaps == slot->lap) {
+        if (g_dwTotalLaps == RACER_SLOT_GET(slot, Lap)) {
             FinishRacer(slot, vehicle);
             return;
         }
@@ -301,7 +310,7 @@ ReachNewGate(RacerSlot *slot, Vehicle *vehicle, s32 next, f32 lapTime, f32 gapFa
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
     if ((g_dwGameMode == GAME_MODE_ARCADE || g_dwGameMode == GAME_MODE_NETWORK ||
          g_dwGameMode == GAME_MODE_TIME_ATTACK) &&
-        slot->index < (s32)g_dwNumLocalPlayers) {
+        RACER_SLOT_GET(slot, Index) < (s32)g_dwNumLocalPlayers) {
 #else
     if (g_dwGameMode == GAME_MODE_ARCADE && slot->index < (s32)g_dwNumLocalPlayers &&
         0.0f < slot->vehicle->timeLeft) {
@@ -318,34 +327,38 @@ static void ReachGateAgain(RacerSlot *slot, Vehicle *vehicle, TrackGate *gate, f
     if (gate != &g_LoadedTrack.gates[0]) {
         return;
     }
-    slot->distanceLaps++;
-    if (slot->lap < slot->distanceLaps) {
+    RACER_SLOT_SET(slot, DistanceLaps, RACER_SLOT_GET(slot, DistanceLaps) + 1);
+    if (RACER_SLOT_GET(slot, Lap) < RACER_SLOT_GET(slot, DistanceLaps)) {
         /* Retain the best lap, and choose the message of a record of a player. */
         message = NULL;
-        if (PROGRESS_ZERO(slot->bestLapTime) || PROGRESS_LESS(lapTime, slot->bestLapTime)) {
-            slot->bestLapTime = lapTime;
-            if (slot->index < (s32)g_dwNumLocalPlayers) {
+        if (PROGRESS_ZERO(RACER_SLOT_GET(slot, BestLapTime)) ||
+            PROGRESS_LESS(lapTime, RACER_SLOT_GET(slot, BestLapTime))) {
+            RACER_SLOT_SET(slot, BestLapTime, lapTime);
+            if (RACER_SLOT_GET(slot, Index) < (s32)g_dwNumLocalPlayers) {
                 /* A player's racer always has its vehicle. */
-                slot->vehicle->bestLap = slot->lap;
+                RACER_SLOT_GET(slot, Vehicle)->bestLap = RACER_SLOT_GET(slot, Lap);
                 record = &PROGRESS_PROFILE->lapRecords[g_dwSelectedTrackId];
-                if (PROGRESS_ZERO(*record) || PROGRESS_LESS(slot->bestLapTime, *record)) {
+                if (PROGRESS_ZERO(*record) ||
+                    PROGRESS_LESS(RACER_SLOT_GET(slot, BestLapTime), *record)) {
                     *record = lapTime;
                     message = PROGRESS_MESSAGE("%ryNEW LAP RECORD!", 0x109);
-                } else if (slot->lap != 0) {
+                } else if (RACER_SLOT_GET(slot, Lap) != 0) {
                     message = PROGRESS_MESSAGE("%ryBEST LAP!", 0x10a);
                 }
             }
         }
         if (vehicle != NULL) {
             osSyncPrintf("veh->lapTimeFinal[%d]=%f\n", slot->lap, (double)lapTime);
-            vehicle->lapTimes[slot->lap] = lapTime;
+            vehicle->lapTimes[RACER_SLOT_GET(slot, Lap)] = lapTime;
         }
-        slot->lap = slot->distanceLaps;
-        slot->lapTime -= lapTime;
+        RACER_SLOT_SET(slot, Lap, RACER_SLOT_GET(slot, DistanceLaps));
+        RACER_SLOT_SET(slot, LapTime, RACER_SLOT_GET(slot, LapTime) - (lapTime));
         if (vehicle != NULL) {
             /* Show the lap the racer starts and its record. */
             osSyncPrintf("******* LAP #%d ********\n", slot->lap);
-            sprintf(vehicle->messageText, PROGRESS_MESSAGE("%%ryLAP %d", 0x10c), slot->lap + 1);
+            sprintf(vehicle->messageText,
+                    PROGRESS_MESSAGE("%%ryLAP %d", 0x10c),
+                    RACER_SLOT_GET(slot, Lap) + 1);
             vehicle->message = vehicle->messageText;
             vehicle->messageTime = LAP_MESSAGE_TIME;
             if (message != NULL) {
@@ -358,13 +371,13 @@ static void ReachGateAgain(RacerSlot *slot, Vehicle *vehicle, TrackGate *gate, f
                  slot->distanceLaps,
                  slot->lap,
                  slot->index);
-    if (g_dwGameMode == GAME_MODE_PRACTICE && slot->lap == 1) {
+    if (g_dwGameMode == GAME_MODE_PRACTICE && RACER_SLOT_GET(slot, Lap) == 1) {
         LapBack(slot, "lapping %d back to 0 (b)\n");
     }
 }
 
 void UpdateRaceProgress(RacerSlot *slot) {
-    Vehicle *vehicle = slot->vehicle;
+    Vehicle *vehicle = RACER_SLOT_GET(slot, Vehicle);
     TrackGate *gate;
     s32 current;
     s32 next;
@@ -381,32 +394,34 @@ void UpdateRaceProgress(RacerSlot *slot) {
         return;
     }
     if (vehicle != NULL) {
-        slot->position = vehicle->frame.position;
-        slot->previousPosition = vehicle->previousPosition;
-        slot->maxGate = vehicle->maxGate;
-        slot->gate = vehicle->gate;
-        slot->lap = vehicle->lap;
-        slot->distanceLaps = vehicle->distanceLaps;
-        slot->lapTime = vehicle->lapTime;
-        slot->bestLapTime = vehicle->bestLapTime;
-        slot->distance = vehicle->distance;
+        RACER_SLOT_GET(slot, Position) = vehicle->frame.position;
+        RACER_SLOT_GET(slot, PreviousPosition) = vehicle->previousPosition;
+        RACER_SLOT_SET(slot, MaxGate, vehicle->maxGate);
+        RACER_SLOT_SET(slot, Gate, vehicle->gate);
+        RACER_SLOT_SET(slot, Lap, vehicle->lap);
+        RACER_SLOT_SET(slot, DistanceLaps, vehicle->distanceLaps);
+        RACER_SLOT_SET(slot, LapTime, vehicle->lapTime);
+        RACER_SLOT_SET(slot, BestLapTime, vehicle->bestLapTime);
+        RACER_SLOT_SET(slot, Distance, vehicle->distance);
     }
-    current = GateInLap(slot->gate, g_LoadedTrack.gateCount);
+    current = GateInLap(RACER_SLOT_GET(slot, Gate), g_LoadedTrack.gateCount);
     next = (current + 1) % g_LoadedTrack.gateCount;
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
-    timer.hundredths = FloatToInt(slot->lapTime * LAP_TIME_SCALE);
+    timer.hundredths = FloatToInt(RACER_SLOT_GET(slot, LapTime) * LAP_TIME_SCALE);
     lapTime = (long double)timer.hundredths * 0.01f;
 #else
     lapTime = (f32)FloatToInt(slot->lapTime * LAP_TIME_SCALE) / LAP_TIME_SCALE;
 #endif
 
-    if (CROSSES_GATE(&g_LoadedTrack.gates[current], &slot->previousPosition, &slot->position)) {
+    if (CROSSES_GATE(&g_LoadedTrack.gates[current],
+                     &RACER_SLOT_GET(slot, PreviousPosition),
+                     &RACER_SLOT_GET(slot, Position))) {
         osSyncPrintf("%d went backwards, from gate %d to gate %d\n",
                      slot->index,
                      slot->gate,
                      slot->gate - 1);
         if (current == 0) {
-            slot->distanceLaps--;
+            RACER_SLOT_SET(slot, DistanceLaps, RACER_SLOT_GET(slot, DistanceLaps) - 1);
         }
         osSyncPrintf("Hmm %d == %d %% %d && %d < 0 ? %d\n",
                      current,
@@ -417,24 +432,29 @@ void UpdateRaceProgress(RacerSlot *slot) {
                              (slot->gate + 2 * g_LoadedTrack.gateCount) % g_LoadedTrack.gateCount ?
                          slot->gate < 0 :
                          0);
-        if (current == slot->maxGate % g_LoadedTrack.gateCount && slot->gate < 0) {
-            slot->gate += g_LoadedTrack.gateCount;
-            slot->distanceLaps++;
+        if (current == RACER_SLOT_GET(slot, MaxGate) % g_LoadedTrack.gateCount &&
+            RACER_SLOT_GET(slot, Gate) < 0) {
+            RACER_SLOT_SET(slot, Gate, RACER_SLOT_GET(slot, Gate) + (g_LoadedTrack.gateCount));
+            RACER_SLOT_SET(slot, DistanceLaps, RACER_SLOT_GET(slot, DistanceLaps) + 1);
             if (g_LoadedTrack.rootSection != NULL) {
-                slot->distance += g_LoadedTrack.rootSection->points[0].distance;
+                RACER_SLOT_SET(slot,
+                               Distance,
+                               RACER_SLOT_GET(slot, Distance) +
+                                   (g_LoadedTrack.rootSection->points[0].distance));
             }
             osSyncPrintf("lapping %d forward to -1\n", slot->index);
         }
-        slot->gate--;
+        RACER_SLOT_SET(slot, Gate, RACER_SLOT_GET(slot, Gate) - 1);
     } else {
         gate = &g_LoadedTrack.gates[next];
-        if (CROSSES_GATE(gate, &slot->previousPosition, &slot->position)) {
+        if (CROSSES_GATE(
+                gate, &RACER_SLOT_GET(slot, PreviousPosition), &RACER_SLOT_GET(slot, Position))) {
             osSyncPrintf("%d went forward, from gate %d to gate %d\n",
                          slot->index,
                          slot->gate,
                          slot->gate + 1);
-            slot->gate++;
-            if (slot->maxGate < slot->gate) {
+            RACER_SLOT_SET(slot, Gate, RACER_SLOT_GET(slot, Gate) + 1);
+            if (RACER_SLOT_GET(slot, MaxGate) < RACER_SLOT_GET(slot, Gate)) {
                 ReachNewGate(
                     slot,
                     vehicle,
@@ -454,12 +474,12 @@ void UpdateRaceProgress(RacerSlot *slot) {
     }
 
     if (vehicle != NULL) {
-        vehicle->maxGate = slot->maxGate;
-        vehicle->gate = slot->gate;
-        vehicle->lap = slot->lap;
-        vehicle->distanceLaps = slot->distanceLaps;
-        vehicle->lapTime = slot->lapTime;
-        vehicle->bestLapTime = slot->bestLapTime;
-        vehicle->distance = slot->distance;
+        vehicle->maxGate = RACER_SLOT_GET(slot, MaxGate);
+        vehicle->gate = RACER_SLOT_GET(slot, Gate);
+        vehicle->lap = RACER_SLOT_GET(slot, Lap);
+        vehicle->distanceLaps = RACER_SLOT_GET(slot, DistanceLaps);
+        vehicle->lapTime = RACER_SLOT_GET(slot, LapTime);
+        vehicle->bestLapTime = RACER_SLOT_GET(slot, BestLapTime);
+        vehicle->distance = RACER_SLOT_GET(slot, Distance);
     }
 }

@@ -21,7 +21,12 @@ struct Vehicle;
  * A racer of a race. A racer with a vehicle copies the progress of the vehicle; one without moves
  * along the route by itself, and keeps the progress a vehicle takes up when it gets one.
  */
+#if TGR_PLATFORM == TGR_PLATFORM_WIN && defined(__cplusplus)
+class RacerSlot {
+private:
+#else
 typedef struct RacerSlot {
+#endif
     Vec3f position;                    /*!< The position of the racer. */
     Vec3f previousPosition;            /*!< The position of the last frame. */
     Vec3f velocity;                    /*!< How far the racer moves a second. */
@@ -53,16 +58,148 @@ typedef struct RacerSlot {
     s32 colorPanelCount;
 
 #ifdef __cplusplus
+public:
+    Vec3f &GetPosition() {
+        return position;
+    }
+    Vec3f &GetPreviousPosition() {
+        return previousPosition;
+    }
+    Vec3f &GetVelocity() {
+        return velocity;
+    }
+    u8 *GetColor() {
+        return color;
+    }
+    f32 GetSpeedKph() const {
+        return speedKph;
+    }
+    f32 SetSpeedKph(f32 value) {
+        return speedKph = value;
+    }
+    TrackSection *GetSection() const {
+        return section;
+    }
+    TrackSection *SetSection(TrackSection *value) {
+        return section = value;
+    }
+    s32 GetPointIndex() const {
+        return pointIndex;
+    }
+    s32 SetPointIndex(s32 value) {
+        return pointIndex = value;
+    }
+    f32 GetLapTime() const {
+        return lapTime;
+    }
+    f32 SetLapTime(f32 value) {
+        return lapTime = value;
+    }
+    f32 GetBestLapTime() const {
+        return bestLapTime;
+    }
+    f32 SetBestLapTime(f32 value) {
+        return bestLapTime = value;
+    }
+    f32 GetTotalTime() const {
+        return totalTime;
+    }
+    f32 SetTotalTime(f32 value) {
+        return totalTime = value;
+    }
+    f32 GetTimeLeft() const {
+        return timeLeft;
+    }
+    f32 SetTimeLeft(f32 value) {
+        return timeLeft = value;
+    }
+    s32 GetLap() const {
+        return lap;
+    }
+    s32 SetLap(s32 value) {
+        return lap = value;
+    }
+    s32 GetDistanceLaps() const {
+        return distanceLaps;
+    }
+    s32 SetDistanceLaps(s32 value) {
+        return distanceLaps = value;
+    }
+    s32 GetMaxGate() const {
+        return maxGate;
+    }
+    s32 SetMaxGate(s32 value) {
+        return maxGate = value;
+    }
+    s32 GetGate() const {
+        return gate;
+    }
+    s32 SetGate(s32 value) {
+        return gate = value;
+    }
+    f32 GetDistance() const {
+        return distance;
+    }
+    f32 SetDistance(f32 value) {
+        return distance = value;
+    }
+    s32 GetRacePosition() const {
+        return racePosition;
+    }
+    s32 SetRacePosition(s32 value) {
+        return racePosition = value;
+    }
+    Vehicle *GetVehicle() const {
+        return vehicle;
+    }
+    Vehicle *SetVehicle(Vehicle *value) {
+        return vehicle = value;
+    }
+    s32 GetIndex() const {
+        return index;
+    }
+    s32 SetIndex(s32 value) {
+        return index = value;
+    }
+    u32 GetStatus() const {
+        return status;
+    }
+    u32 SetStatus(u32 value) {
+        return status = value;
+    }
+    s32 GetStraggler() const {
+        return straggler;
+    }
+    s32 SetStraggler(s32 value) {
+        return straggler = value;
+    }
+    u8 **GetColorPanels() const {
+        return colorPanels;
+    }
+    u8 **SetColorPanels(u8 **value) {
+        return colorPanels = value;
+    }
+    s32 GetColorPanelCount() const {
+        return colorPanelCount;
+    }
+    s32 SetColorPanelCount(s32 value) {
+        return colorPanelCount = value;
+    }
+
+private:
     /**
      * @ghidraAddress BRD3D: 0x10069330
      * @ghidraAddress BRGlide: 0x100623a0
      */
     void UpdateRemoteVehicleFrame(void);
 
+public:
     /**
      * @ghidraAddress BRD3D: 0x100664c0
      */
     void FreeEnemyCarColorPanels(void);
+
+private:
     /**
      * @ghidraAddress BRD3D: 0x100662a0
      */
@@ -83,7 +220,11 @@ typedef struct RacerSlot {
     void UpdateRaceProgress(void);
 #endif
 #endif
+#if TGR_PLATFORM == TGR_PLATFORM_WIN && defined(__cplusplus)
+};
+#else
 } RacerSlot;
+#endif
 
 #ifdef __cplusplus
 extern "C" {

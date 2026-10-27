@@ -3,6 +3,7 @@
 #include "mathutil.h"
 #include "physics.h"
 #include "race.h"
+#include "racerslotaccess.h"
 #include "vehiclecount.h"
 #include "vehiclephysics.h"
 
@@ -380,8 +381,9 @@ void UpdateVehicleEngineAndGearbox(Vehicle *vehicle) {
     if (g_dwGameMode == GAME_MODE_ARCADE && vehicle->racePosition != 0) {
         leader = 0.0f;
         for (i = 0; i < g_dwNumVehicles; i++) {
-            distance = g_aRacerSlots[i].vehicle ? g_aRacerSlots[i].vehicle->distance :
-                                                  g_aRacerSlots[i].distance;
+            distance = RACER_SLOT_GET(&(g_aRacerSlots[i]), Vehicle) ?
+                           RACER_SLOT_GET(&(g_aRacerSlots[i]), Vehicle)->distance :
+                           RACER_SLOT_GET(&(g_aRacerSlots[i]), Distance);
             if (ENGINE_LESS(leader, distance)) {
                 leader = distance;
             }
@@ -435,7 +437,7 @@ void UpdateVehicleEngineAndGearbox(Vehicle *vehicle) {
 #else
     vehicle->throttle = torque * 7.0f;
 #endif
-    if (vehicle->racer->status & RACER_HELD) {
+    if (RACER_SLOT_GET(vehicle->racer, Status) & RACER_HELD) {
         vehicle->gear = 0;
         gear = 0;
     } else {

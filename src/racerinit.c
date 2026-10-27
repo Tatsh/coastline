@@ -1,5 +1,6 @@
 #include "game.h"
 #include "racers.h"
+#include "racerslotaccess.h"
 #include "screen.h"
 #include "trackmenuitem.h"
 #include "trackselect.h"
@@ -50,38 +51,42 @@ void InitRacerSlot(RacerSlot *slot) {
         break;
     }
     index = slot - g_aRacerSlots;
-    slot->index = index;
-    slot->color[0] = g_abPlayerColorsRgb[index][0];
-    slot->color[1] = g_abPlayerColorsRgb[index][1];
-    slot->color[2] = g_abPlayerColorsRgb[index][2];
-    slot->status = 0;
-    slot->straggler = index < (s32)g_dwNumLocalPlayers + LEADING_RACERS ? 0 : 1;
-    if (slot->index < count) {
-        slot->vehicle = &g_aVehicles[slot->index];
-        slot->vehicle->racer = slot;
+    RACER_SLOT_SET(slot, Index, index);
+    RACER_SLOT_GET(slot, Color)[0] = g_abPlayerColorsRgb[index][0];
+    RACER_SLOT_GET(slot, Color)[1] = g_abPlayerColorsRgb[index][1];
+    RACER_SLOT_GET(slot, Color)[2] = g_abPlayerColorsRgb[index][2];
+    RACER_SLOT_SET(slot, Status, 0);
+    RACER_SLOT_SET(slot, Straggler, index < (s32)g_dwNumLocalPlayers + LEADING_RACERS ? 0 : 1);
+    if (RACER_SLOT_GET(slot, Index) < count) {
+        RACER_SLOT_SET(slot, Vehicle, &g_aVehicles[RACER_SLOT_GET(slot, Index)]);
+        RACER_SLOT_GET(slot, Vehicle)->racer = slot;
 #if TGR_PLATFORM != TGR_PLATFORM_WIN
         return;
 #endif
     } else {
 
-        slot->vehicle = NULL;
-        if (slot->straggler == 1) {
-            slot->distance = (f32)(STRAGGLER_SPACING * (slot->index - (s32)g_dwNumLocalPlayers) -
-                                   STRAGGLER_START);
+        RACER_SLOT_SET(slot, Vehicle, NULL);
+        if (RACER_SLOT_GET(slot, Straggler) == 1) {
+            RACER_SLOT_SET(
+                slot,
+                Distance,
+                (f32)(STRAGGLER_SPACING * (RACER_SLOT_GET(slot, Index) - (s32)g_dwNumLocalPlayers) -
+                      STRAGGLER_START));
         } else if (g_dwSelectedTrackId == TRACK_COASTLINE ||
                    g_dwSelectedTrackId == TRACK_COASTLINE + TRACK_MIRRORED) {
-            slot->distance = (f32)(slot->index * NARROW_RACER_SPACING);
+            RACER_SLOT_SET(
+                slot, Distance, (f32)(RACER_SLOT_GET(slot, Index) * NARROW_RACER_SPACING));
         } else {
-            slot->distance = (f32)(slot->index * RACER_SPACING);
+            RACER_SLOT_SET(slot, Distance, (f32)(RACER_SLOT_GET(slot, Index) * RACER_SPACING));
         }
-        FindTrackRoutePoint(g_LoadedTrack.rootSection, slot->distance);
-        slot->position.x = g_vTrackRoutePoint.x;
-        slot->position.y = g_vTrackRoutePoint.y;
-        slot->position.z = g_vTrackRoutePoint.z;
-        slot->section = g_pTrackRouteSection;
-        slot->pointIndex = g_dwTrackRoutePointIndex;
-        slot->maxGate = slot->gate = g_dwTrackRouteGates;
-        slot->lap = slot->distanceLaps = g_dwTrackRouteLaps;
+        FindTrackRoutePoint(g_LoadedTrack.rootSection, RACER_SLOT_GET(slot, Distance));
+        RACER_SLOT_GET(slot, Position).x = g_vTrackRoutePoint.x;
+        RACER_SLOT_GET(slot, Position).y = g_vTrackRoutePoint.y;
+        RACER_SLOT_GET(slot, Position).z = g_vTrackRoutePoint.z;
+        RACER_SLOT_SET(slot, Section, g_pTrackRouteSection);
+        RACER_SLOT_SET(slot, PointIndex, g_dwTrackRoutePointIndex);
+        RACER_SLOT_SET(slot, MaxGate, RACER_SLOT_SET(slot, Gate, g_dwTrackRouteGates));
+        RACER_SLOT_SET(slot, Lap, RACER_SLOT_SET(slot, DistanceLaps, g_dwTrackRouteLaps));
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
         NullStub();
 #elif TGR_REGION != TGR_REGION_JP
@@ -92,21 +97,23 @@ void InitRacerSlot(RacerSlot *slot) {
                      slot->gate,
                      (double)slot->distance);
 #endif
-        slot->previousPosition.x = slot->position.x;
-        slot->previousPosition.y = slot->position.y;
-        slot->previousPosition.z = slot->position.z;
-        slot->lapTime = 0.0f;
-        slot->totalTime = 0.0f;
-        slot->bestLapTime = 0.0f;
+        RACER_SLOT_GET(slot, PreviousPosition).x = RACER_SLOT_GET(slot, Position).x;
+        RACER_SLOT_GET(slot, PreviousPosition).y = RACER_SLOT_GET(slot, Position).y;
+        RACER_SLOT_GET(slot, PreviousPosition).z = RACER_SLOT_GET(slot, Position).z;
+        RACER_SLOT_SET(slot, LapTime, 0.0f);
+        RACER_SLOT_SET(slot, TotalTime, 0.0f);
+        RACER_SLOT_SET(slot, BestLapTime, 0.0f);
         ARCADE_WEATHER(weather);
-        slot->timeLeft =
-            SELECTED_TRACK_ITEM()->arcadeTimes[g_aVehicles[0].tableIndex][weather].startTime;
-        slot->racePosition = g_dwNumVehicles - slot->index - 1;
+        RACER_SLOT_SET(
+            slot,
+            TimeLeft,
+            SELECTED_TRACK_ITEM()->arcadeTimes[g_aVehicles[0].tableIndex][weather].startTime);
+        RACER_SLOT_SET(slot, RacePosition, g_dwNumVehicles - RACER_SLOT_GET(slot, Index) - 1);
     }
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
-    if (slot->index < (s32)g_dwNumLocalPlayers) {
-        slot->colorPanels = NULL;
-        slot->colorPanelCount = 0;
+    if (RACER_SLOT_GET(slot, Index) < (s32)g_dwNumLocalPlayers) {
+        RACER_SLOT_SET(slot, ColorPanels, NULL);
+        RACER_SLOT_SET(slot, ColorPanelCount, 0);
     } else {
         MakeEnemyCarColorPanels(slot);
     }
