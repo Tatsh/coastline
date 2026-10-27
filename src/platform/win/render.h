@@ -1467,3 +1467,57 @@ int DecodeN64TextureToPixelBuffer(void *pDest,
                                   int nLineBytes,
                                   int nSize,
                                   int nFormat);
+
+/**
+ * Create a device texture from an N64 image and its load options.
+ *
+ * @ghidraAddress BRD3D: 0x10027c60
+ * @stub{BRD3D}
+ */
+unsigned CreateTextureFromN64Image(const unsigned char *pImage,
+                                   const unsigned char *pPalette,
+                                   int nWidth,
+                                   int nHeight,
+                                   int nLineBytes,
+                                   int nSize,
+                                   int nFormat,
+                                   int nOption7,
+                                   int nOption8,
+                                   int nOption9,
+                                   int nOption10,
+                                   int nOption11,
+                                   int nOption12,
+                                   int nOption13,
+                                   int nOption14);
+
+/**
+ * Decode texture pixels, applying the selected paint damage image when needed.
+ *
+ * @param nEntry The texture entry.
+ * @param pSize Receives the decoded byte count.
+ * @return The decoded pixels.
+ * @ghidraAddress BRD3D: 0x10028e70
+ * @stub{BRD3D}
+ */
+unsigned char *GetTextureEntryPixelsWithPaint(int nEntry, unsigned *pSize);
+
+/**
+ * @ghidraAddress BRD3D: 0x118aa0a4
+ */
+extern void (*g_pfnAliasTextureEntrySurface)(int nEntry, int nSourceEntry);
+/**
+ * @ghidraAddress BRD3D: 0x118aa0a8
+ */
+extern decltype(&DecodeN64TextureToPixelBuffer) g_pfnDecodeN64TextureToPixelBuffer;
+/**
+ * @ghidraAddress BRD3D: 0x118aa0c8
+ */
+extern decltype(&CreateDeviceTextureFromImageHeader) g_pfnCreateDeviceTextureFromImageHeader;
+/**
+ * @ghidraAddress BRD3D: 0x118aa084
+ */
+extern decltype(&CloneTextureEntryWithNewImageData) g_pfnCloneTextureEntryWithNewImageData;
+/**
+ * @ghidraAddress BRD3D: 0x118aa0cc
+ */
+extern decltype(&UploadTrackTextureVariants) g_pfnUploadTrackTextureVariants;

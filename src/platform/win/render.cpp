@@ -1427,3 +1427,45 @@ int DecodeN64TextureToPixelBuffer(void *pDest,
                         0);
     return ConvertRGBAToPixelFormat(pDest, g_abDecodedTexturePixels, size, format);
 }
+
+decltype(g_pfnAliasTextureEntrySurface) g_pfnAliasTextureEntrySurface;
+decltype(g_pfnDecodeN64TextureToPixelBuffer) g_pfnDecodeN64TextureToPixelBuffer;
+decltype(g_pfnCreateTextureFromN64Image) g_pfnCreateTextureFromN64Image;
+decltype(g_pfnCreateTextureFromN64ImageAutoLoadSize) g_pfnCreateTextureFromN64ImageAutoLoadSize;
+decltype(g_pfnGetTextureEntryPixelsWithPaint) g_pfnGetTextureEntryPixelsWithPaint;
+decltype(g_pfnCreateDeviceTextureFromImageHeader) g_pfnCreateDeviceTextureFromImageHeader;
+decltype(g_pfnCloneTextureEntryWithNewImageData) g_pfnCloneTextureEntryWithNewImageData;
+decltype(g_pfnUploadTrackTextureVariants) g_pfnUploadTrackTextureVariants;
+decltype(g_pfnShutdownTextureSubsystem) g_pfnShutdownTextureSubsystem;
+
+void InitializeTextureSubsystem(void) {
+    g_pfnAliasTextureEntrySurface = AliasTextureEntrySurface;
+    g_pfnDecodeN64TextureToPixelBuffer = DecodeN64TextureToPixelBuffer;
+    g_pfnCreateTextureFromN64Image = CreateTextureFromN64Image;
+    g_pfnCreateTextureFromN64ImageAutoLoadSize = CreateTextureFromN64ImageAutoLoadSize;
+    g_pfnBindTextureEntry = BindTextureEntry;
+    g_pfnUploadTextureEntryToSurface = UploadTextureEntryToSurface;
+    g_pfnGetTextureEntryPixelsWithPaint = GetTextureEntryPixelsWithPaint;
+    g_pfnReloadTextureEntryData = ReloadTextureEntryData;
+    g_pfnPreprocessDisplayListTextures = PreprocessDisplayListTextures;
+    g_pfnCreateDeviceTextureFromImageHeader = CreateDeviceTextureFromImageHeader;
+    g_pfnCloneTextureEntryWithNewImageData = CloneTextureEntryWithNewImageData;
+    g_pfnUploadTrackTextureVariants = UploadTrackTextureVariants;
+    g_pfnShutdownTextureSubsystem = ShutdownTextureSubsystem;
+    g_dwTextureIdCount = 0;
+    g_dwTextureIdCapacity = 0;
+    std::free(g_ppTextureIdTable);
+    g_ppTextureIdTable = nullptr;
+    g_dwAvailableTextureMemory = QueryAvailableTextureMemory();
+    SelectTextureQualityFromVideoMemory();
+    g_nBoundTextureEntry = -1;
+    g_dwTextureEntryCount = 0;
+    g_dwTextureEntryCapacity = 0;
+    std::free(g_pTextureEntries);
+    g_pTextureEntries = nullptr;
+    g_dwTexScanTileIndex = 0;
+    g_dwTexScanMipLevels = 0;
+    g_bTexScanRenderModeBlendBit16 = 0;
+    CreateWeatherShadeTexture();
+    InitializeTextureUploadQueue();
+}
