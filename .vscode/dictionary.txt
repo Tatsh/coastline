@@ -11,6 +11,7 @@ addiu
 addrs
 addu
 adpcm
+advapi
 aiframes
 airplane
 airplanetrigger
@@ -63,7 +64,9 @@ bnel
 bnez
 bodyforces
 bootplayer
+bossrally
 boxz
+brally
 brielle
 bsky
 bsuspension
@@ -332,6 +335,7 @@ epirawwrite
 erasebkgnd
 eret
 errck
+errorabort
 esbenp
 exceptasm
 excmask
@@ -414,6 +418,7 @@ hmmio
 horzres
 hoststarted
 hpstr
+hredraw
 hresult
 hudlaplist
 hudmessage
@@ -425,6 +430,7 @@ hudtime
 huft
 iasm
 iconerror
+iconhand
 icsum
 immp
 imref
@@ -524,9 +530,11 @@ lsavercp
 lsaverest
 lsend
 lshift
+lstatus
 lstrcat
 lstrcpy
 lstrlen
+ltgray
 lyield
 mabi
 maind
@@ -539,6 +547,7 @@ materialcolor
 math
 mathutil
 maxcontrollers
+maximizebox
 maxz
 mcideviceid
 mcierror
@@ -627,13 +636,18 @@ numlight
 numlights
 numpadenter
 numpydoc
+oaevent
+oahwnd
+oatrue
 objcopy
 objdump
+obji
 offscreenplain
 oneline
 osversioninfoa
 otherlook
 outfun
+overlappedwindow
 pacboy
 paintshop
 painttex
@@ -678,6 +692,7 @@ pifdata
 pifstatus
 pigetcmdq
 pimgr
+pini
 pipebusy
 pipx
 pirawdma
@@ -710,17 +725,22 @@ pylock
 pyproject
 racecredits
 racedata
+raceinit
 racemenu
+racephases
 raceprogress
 racercolor
 racerecords
+racerender
 raceresults
 racerinit
 racermotion
 racersharing
 racerslot
 racerstate
+racescreen
 racesound
+racespecials
 raininit
 rallyconfig
 ramarray
@@ -755,6 +775,7 @@ respawn
 restartfrom
 rgbdither
 rgdw
+rgsz
 rigidbody
 ripgreprc
 rledecompress
@@ -834,6 +855,7 @@ soundpan
 soundptr
 soundsource
 soundtik
+spawnv
 specon
 specularenable
 speedgate
@@ -881,6 +903,7 @@ stickx
 stickyfocus
 stkptr
 strequal
+strmiids
 strupr
 subu
 sunweth
@@ -967,6 +990,7 @@ unrotated
 urlkey
 urllib
 urlopen
+userabort
 vars
 vblankquery
 vecmath
@@ -1028,6 +1052,7 @@ wheeldl
 wheelpos
 wheelrender
 windowposchanging
+windres
 winget
 winmain
 winmm
