@@ -25,6 +25,7 @@ endforeach()
 # libraries, so the language is enabled here. The Nintendo 64 entry is assembly.
 if(TGR_PLATFORM STREQUAL "win")
   enable_language(CXX)
+  add_subdirectory(platform/ear)
   add_subdirectory(platform/win)
 else()
   add_library(coastline_main OBJECT main.s)
@@ -197,6 +198,9 @@ if(TGR_PLATFORM STREQUAL "win")
 endif()
 
 add_custom_target(archives DEPENDS ${COASTLINE_LIBRARIES})
+if(TARGET coastline_ear)
+  add_dependencies(archives coastline_ear)
+endif()
 
 # A Windows library cannot link until every routine has a body, and TGR_LINK turns its link on. A
 # release whose routines all have a body, in C or in the assembly of the original, links whenever

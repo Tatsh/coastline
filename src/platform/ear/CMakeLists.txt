@@ -1,0 +1,3 @@
+add_library(coastline_ear STATIC environment.cpp)
+target_include_directories(coastline_ear PUBLIC "${CMAKE_SOURCE_DIR}/src")
+target_compile_options(coastline_ear PRIVATE -Wall -Wextra -Wno-unused-parameter)
