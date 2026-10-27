@@ -1,6 +1,6 @@
 # PC port game code from 0x10060000 to 0x10070000
 
-140 of 174 routines done.
+141 of 174 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -134,7 +134,7 @@ the same name, for a routine the port retained from the N64 game.
 | `ResetAllPlayers`                        |   ✅   | ✅ `0x80200154` |      1 |     49 | `0x10069800` | `0x10062870` | `void ResetAllPlayers(void)`                                                                                                             |
 | `MouseDevice::SyncMouseAcquireState`     |   ✅   |                 |      3 |     48 | `0x10060750` | `0x100597c0` | `void SyncMouseAcquireState(MouseDevice * this, HWND hWnd)`                                                                              |
 | `ApplyAudioVolumeSettings`               |   ✅   |                 |      6 |     46 | `0x10060d90` | `0x10059e00` | `void ApplyAudioVolumeSettings(void)`                                                                                                    |
-| `RecordVehicleKeyframe`                  |   🚧   |                 |      1 |     44 | `0x100609e0` | `0x10059a50` | `void RecordVehicleKeyframe(Vehicle * vehicle)`                                                                                          |
+| `RecordVehicleKeyframe`                  |   ✅   |                 |      1 |     44 | `0x100609e0` | `0x10059a50` | `void RecordVehicleKeyframe(Vehicle * vehicle)`                                                                                          |
 | `CompareRacerProgressAsc`                |   ✅   | ✅ `0x80229510` |      2 |     43 | `0x10066620` |              | `int CompareRacerProgressAsc(RacerProgress * first, RacerProgress * second)`                                                             |
 | `FillMemoryPatternBytes`                 |   ✅   |                 |      2 |     43 | `0x10060780` | `0x100597f0` | `void FillMemoryPatternBytes(void * pDest, uint nCount, int nByte)`                                                                      |
 | `SetRenderBackendMode`                   |   ✅   |                 |      2 |     43 | `0x1006a990` | `0x10063940` | `void SetRenderBackendMode(int nMode)`                                                                                                   |
