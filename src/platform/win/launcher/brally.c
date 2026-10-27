@@ -1,10 +1,9 @@
-#include "brally.h"
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
 #include <process.h>
+#include <windows.h>
 
 #include "ini.h"
 
@@ -76,6 +75,7 @@ static void AppendSpawnArgument(const char *argument) {
     g_dwSpawnArgBufferUsed += strlen(argument) + 1;
 }
 
+/** @ghidraAddress BRally: 0x00401810 */
 int WINAPI WinMain(HINSTANCE instance,
                    HINSTANCE previousInstance,
                    LPSTR commandLine,
