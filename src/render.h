@@ -143,6 +143,7 @@ extern f32 g_afScratchMatrix[4][4];
  * @ghidraAddress USA: 0x8028a898
  * @ghidraAddress EUR: 0x8028ca9c
  * @ghidraAddress JPN: 0x8028c56c
+ * @ghidraAddress BRD3D: 0x106c0258
  */
 extern u32 g_dwTextureFilterMode;
 

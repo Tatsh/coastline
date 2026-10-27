@@ -24,6 +24,26 @@ extern int g_adwHudFont2GlyphOffsets[28];
  */
 extern int g_adwHudFont3GlyphOffsets[27];
 
+/**
+ * @ghidraAddress BRD3D: 0x11829238
+ */
+extern unsigned g_adwLargeFontGlyphTexturesA[27];
+
+/**
+ * @ghidraAddress BRD3D: 0x118292a8
+ */
+extern unsigned g_adwLargeFontGlyphTexturesB[26];
+
+/**
+ * @ghidraAddress BRD3D: 0x11829158
+ */
+extern unsigned g_adwSmallFontGlyphTexturesA[27];
+
+/**
+ * @ghidraAddress BRD3D: 0x118291c8
+ */
+extern unsigned g_adwSmallFontGlyphTexturesB[26];
+
 #ifdef __cplusplus
 }
 #endif

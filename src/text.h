@@ -53,6 +53,7 @@ extern u8 g_nTextAlignment;
  * @ghidraAddress USA: 0x8028bdc8
  * @ghidraAddress EUR: 0x8028e528
  * @ghidraAddress JPN: 0x8028df78
+ * @ghidraAddress BRD3D: 0x104b0360
  */
 extern u8 g_bTextShadowEnabled;
 
@@ -62,6 +63,7 @@ extern u8 g_bTextShadowEnabled;
  * @ghidraAddress USA: 0x8028bdcc
  * @ghidraAddress EUR: 0x8028e52c
  * @ghidraAddress JPN: 0x8028df7c
+ * @ghidraAddress BRD3D: 0x104b0364
  */
 extern s32 g_bTextCustomColorsEnabled;
 
@@ -71,6 +73,7 @@ extern s32 g_bTextCustomColorsEnabled;
  * @ghidraAddress USA: 0x8028bdd0
  * @ghidraAddress EUR: 0x8028e530
  * @ghidraAddress JPN: 0x8028df80
+ * @ghidraAddress BRD3D: 0x100a74a8
  */
 extern s32 g_dwTextCustomColorR;
 
@@ -80,6 +83,7 @@ extern s32 g_dwTextCustomColorR;
  * @ghidraAddress USA: 0x8028bdd4
  * @ghidraAddress EUR: 0x8028e534
  * @ghidraAddress JPN: 0x8028df84
+ * @ghidraAddress BRD3D: 0x100a74ac
  */
 extern s32 g_dwTextCustomColorG;
 
@@ -89,6 +93,7 @@ extern s32 g_dwTextCustomColorG;
  * @ghidraAddress USA: 0x8028bdd8
  * @ghidraAddress EUR: 0x8028e538
  * @ghidraAddress JPN: 0x8028df88
+ * @ghidraAddress BRD3D: 0x100a74b0
  */
 extern s32 g_dwTextCustomColorB;
 
@@ -98,6 +103,7 @@ extern s32 g_dwTextCustomColorB;
  * @ghidraAddress USA: 0x8028bddc
  * @ghidraAddress EUR: 0x8028e53c
  * @ghidraAddress JPN: 0x8028df8c
+ * @ghidraAddress BRD3D: 0x104b0368
  */
 extern s32 g_dwTextCustomColor2R;
 
@@ -107,6 +113,7 @@ extern s32 g_dwTextCustomColor2R;
  * @ghidraAddress USA: 0x8028bde0
  * @ghidraAddress EUR: 0x8028e540
  * @ghidraAddress JPN: 0x8028df90
+ * @ghidraAddress BRD3D: 0x104b036c
  */
 extern s32 g_dwTextCustomColor2G;
 
@@ -116,6 +123,7 @@ extern s32 g_dwTextCustomColor2G;
  * @ghidraAddress USA: 0x8028bde4
  * @ghidraAddress EUR: 0x8028e544
  * @ghidraAddress JPN: 0x8028df94
+ * @ghidraAddress BRD3D: 0x104b0370
  */
 extern s32 g_dwTextCustomColor2B;
 
@@ -125,6 +133,7 @@ extern s32 g_dwTextCustomColor2B;
  * @ghidraAddress USA: 0x8028bdf0
  * @ghidraAddress EUR: 0x8028e550
  * @ghidraAddress JPN: 0x8028dfa0
+ * @ghidraAddress BRD3D: 0x100a74b8
  */
 extern u8 g_abLargeFontGradient[];
 
@@ -134,6 +143,7 @@ extern u8 g_abLargeFontGradient[];
  * @ghidraAddress USA: 0x8028bf30
  * @ghidraAddress EUR: 0x8028e690
  * @ghidraAddress JPN: 0x8028e0e0
+ * @ghidraAddress BRD3D: 0x100a75f8
  */
 extern u8 g_abLargeFontShadowGradient[];
 
@@ -143,6 +153,7 @@ extern u8 g_abLargeFontShadowGradient[];
  * @ghidraAddress USA: 0x8028c070
  * @ghidraAddress EUR: 0x8028e7d0
  * @ghidraAddress JPN: 0x8028e220
+ * @ghidraAddress BRD3D: 0x100a7738
  */
 extern u8 g_abSmallFontGradient[];
 
@@ -152,6 +163,7 @@ extern u8 g_abSmallFontGradient[];
  * @ghidraAddress USA: 0x8028c1b0
  * @ghidraAddress EUR: 0x8028e910
  * @ghidraAddress JPN: 0x8028e360
+ * @ghidraAddress BRD3D: 0x100a7878
  */
 extern u8 g_abSmallFontShadowGradient[];
 
@@ -355,7 +367,6 @@ void LoadCachedGlyphTextures(void);
  * @ghidraAddress EUR: 0x8022f9f0
  * @ghidraAddress JPN: 0x8022f460
  * @ghidraAddress BRD3D: 0x10018590
- * @stub{BRD3D}
  */
 void RenderTextToDisplayList(const char *text);
 
