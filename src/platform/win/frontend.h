@@ -2425,9 +2425,14 @@ int BuildPlayerNameEntryUI(MenuScreen *pScreen);
 
 /**
  * @ghidraAddress BRD3D: 0x10056ff0
+ */
+int BuildJoinCreateGameUI(MenuScreen *pScreen);
+
+/**
+ * @ghidraAddress BRD3D: 0x10044280
  * @stub
  */
-void BuildJoinCreateGameUI(MenuScreen *pScreen);
+int JoinSessionAndShowRaceSetup(void);
 
 /**
  * @ghidraAddress BRD3D: 0x10052030

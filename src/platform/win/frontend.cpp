@@ -99,6 +99,8 @@ MenuWidget *g_pOptionsSubMenu;
 int g_dwFileListSelectedSlot = -1;
 
 namespace {
+// @ghidraAddress BRD3D: 0x100ab4e8
+RECT g_rcMenuSessionListBox = {188, 130, 300, 197};
 // @ghidraAddress BRD3D: 0x10aa2a5c
 unsigned g_dwMenuListRepeatAccumMs;
 // @ghidraAddress BRD3D: 0x10aa2a60
@@ -2361,8 +2363,12 @@ int ShowMultiplayerNameScreen(void) {
     return ShowCachedMenuScreen(g_pCachedMenu_MultiplayerName, BuildPlayerNameEntryScreen);
 }
 
+static inline void BuildJoinCreateGameScreen(MenuScreen *screen) {
+    BuildJoinCreateGameUI(screen);
+}
+
 int ShowJoinCreateGameScreen(void) {
-    if (!ShowCachedMenuScreen(g_pCachedMenu_JoinCreateGame, BuildJoinCreateGameUI)) {
+    if (!ShowCachedMenuScreen(g_pCachedMenu_JoinCreateGame, BuildJoinCreateGameScreen)) {
         return 0;
     }
     if (!g_dwDirectPlaySessionActive && !g_dwLaunchedFromLobby &&
@@ -4453,6 +4459,95 @@ int BuildResultsSummaryExitSeasonConfirmUI(MenuScreen *screen) {
                                ResultsSummaryExitSeasonConfirmUI_OnYes,
                                ResultsSummaryExitSeasonConfirmUI_OnNo,
                                true);
+}
+
+static inline int JoinCreateGameUI_OnDial(MenuWidget *) {
+    return ShowModemDialUpScreen();
+}
+
+static inline int JoinCreateGameUI_OnJoin(MenuWidget *) {
+    return JoinSessionAndShowRaceSetup();
+}
+
+static inline int JoinCreateGameUI_OnCreate(MenuWidget *) {
+    return ShowCreateGameScreen();
+}
+
+int BuildJoinCreateGameUI(MenuScreen *screen) {
+    screen->SetCurrentPanelIndex(0);
+    ResetSessionSlotTable();
+    g_dwSessionEnumPending = 1;
+    screen->SetPanelActive(screen->GetPanelCount(), 1);
+    MenuPanel *panel = new (std::nothrow) MenuPanel();
+    screen->SetPanel(screen->GetPanelCount(), panel);
+    if (!panel) {
+        ShowErrorMessage(4);
+    }
+    screen->SetPanelCount(screen->GetPanelCount() + 1);
+    panel->SetScreen(screen);
+    panel->SetFlags(0);
+    panel->SetX(195);
+    panel->SetY(130);
+    AddMenuWidget(panel, screen, 0, 0, 9, 0, 0);
+    panel->SetWidgetCount(panel->GetWidgetCount() + 1);
+    SetMenuWidgetLabel(
+        AddMenuWidget(panel, screen, panel->GetX(), 10, 0x100009, 1, -1), 0x5f, &g_rcMenuTitleBar);
+    panel->SetWidgetCount(panel->GetWidgetCount() + 1);
+    MenuWidget *widget = AddMenuWidget(panel, screen, panel->GetX(), panel->GetY(), 0x3001, 1, -1);
+    widget->SetUpdateCallback(JoinCreateGameUI_UpdateSessionSelection);
+    widget->GetItemList().SetVerticalScrollbar(1);
+    widget->GetItemList().Initialize(0x40001, &g_rcMenuSessionListBox, 3, 0, -1);
+    g_pJoinCreateGameMenu = widget;
+    panel->SetWidgetCount(panel->GetWidgetCount() + 1);
+    panel->SetNavigationCount(panel->GetNavigationCount() + 1);
+    if (g_dwServiceProviderIndex == 2) {
+        widget = AddMenuWidget(panel,
+                               screen,
+                               panel->GetX(),
+                               static_cast<float>(static_cast<long double>(panel->GetY()) + 57),
+                               0x102001,
+                               1,
+                               -1);
+        widget->SetIdleActionCallback(ValidateEntityState);
+        widget->SetActionCallback(JoinCreateGameUI_OnDial);
+        SetMenuWidgetLabel(widget, 0x5e, &g_rcMenuCenterPanel);
+        panel->SetWidgetCount(panel->GetWidgetCount() + 1);
+        panel->SetNavigationCount(panel->GetNavigationCount() + 1);
+    }
+    const bool canJoin = g_dwServiceProviderIndex == 2 || g_dwServiceProviderIndex == 3;
+    widget = AddMenuWidget(panel,
+                           screen,
+                           panel->GetX(),
+                           static_cast<float>(static_cast<long double>(panel->GetY()) + 76),
+                           canJoin ? 0x102001 : 0x102011,
+                           1,
+                           -1);
+    widget->SetIdleActionCallback(ValidateEntityState);
+    widget->SetActionCallback(JoinCreateGameUI_OnJoin);
+    widget->SetSpriteId(2);
+    widget->SetText(GetStringResource(0x60), 1, canJoin ? 1 : 0, &g_rcMenuCenterPanel);
+    g_pNetworkSessionJoinMenu = widget;
+    panel->SetWidgetCount(panel->GetWidgetCount() + 1);
+    panel->SetNavigationCount(panel->GetNavigationCount() + 1);
+    int (*actions[2])(MenuWidget *) = {JoinCreateGameUI_OnCreate, JoinCreateGameUI_OnBack};
+    for (int i = 0; i < 2; ++i) {
+        widget = AddMenuWidget(
+            panel,
+            screen,
+            panel->GetX(),
+            static_cast<float>(static_cast<long double>(panel->GetY()) + (i == 0 ? 95 : 114)),
+            0x102001,
+            1,
+            -1);
+        widget->SetIdleActionCallback(ValidateEntityState);
+        widget->SetActionCallback(actions[i]);
+        SetMenuWidgetLabel(widget, i == 0 ? 0x61 : 0xc, &g_rcMenuCenterPanel);
+        panel->SetWidgetCount(panel->GetWidgetCount() + 1);
+        panel->SetNavigationCount(panel->GetNavigationCount() + 1);
+    }
+    AddMenuWidget(panel, screen, 80, 46, 9, 0, 7);
+    panel->SetWidgetCount(panel->GetWidgetCount() + 1);
+    return 1;
 }
 
 int BuildPlayerNameEntryUI(MenuScreen *screen) {
