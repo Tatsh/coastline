@@ -2611,6 +2611,25 @@ static inline void DrawAlternateMenuLabel(MenuWidget *pWidget, const char *text)
     vtable->DrawTextAltFont(font);
 }
 
+static inline int DrawSeasonRoundValue(MenuWidget *pWidget, int value) {
+    MenuFont *font = &pWidget->fonts[0];
+    _itoa(value, font->szText, 10);
+    MenuFontVTable *vtable = font->pVTable;
+    vtable->MeasureTextAltFont(font);
+    vtable->DrawTextAltFont(font);
+    return 1;
+}
+
+int SeasonUI_UpdateRoundPointsLabel(MenuWidget *pWidget) {
+    return DrawSeasonRoundValue(pWidget,
+                                static_cast<short>(g_awSeasonRoundPoints[g_dwSeasonSavedRound]));
+}
+
+int SeasonUI_UpdateRoundPlaceLabel(MenuWidget *pWidget) {
+    return DrawSeasonRoundValue(
+        pWidget, static_cast<signed char>(g_abSeasonRoundPlace[g_dwSeasonSavedRound]));
+}
+
 int SeasonUI_UpdateTotalPointsLabel(MenuWidget *pWidget) {
     char text[32] = {};
     if (!g_dwSeasonLoaded) {

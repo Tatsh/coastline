@@ -447,6 +447,18 @@ int LoadFileListUI_UpdateSlotSelection(MenuWidget *pWidget);
 int SeasonRoundList_UpdateRoundSelection(MenuWidget *pWidget);
 
 /**
+ * @ghidraAddress BRD3D: 0x1003ea90
+ * @ghidraAddress BRGlide: 0x100380b0
+ */
+int SeasonUI_UpdateRoundPointsLabel(MenuWidget *pWidget);
+
+/**
+ * @ghidraAddress BRD3D: 0x1003e8d0
+ * @ghidraAddress BRGlide: 0x10037ef0
+ */
+int SeasonUI_UpdateRoundPlaceLabel(MenuWidget *pWidget);
+
+/**
  * @ghidraAddress BRD3D: 0x1003ee20
  * @ghidraAddress BRGlide: 0x10038350
  */
