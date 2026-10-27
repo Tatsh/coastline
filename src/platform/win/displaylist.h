@@ -8,38 +8,12 @@
 
 #include <array>
 
-#include <PR/gbi.h>
+#include "platform/win/gbicommand.h"
 
 #if TGR_RENDERER == TGR_RENDERER_D3D
 #include <d3d.h>
 #include <windows.h>
 #endif
-
-/** A viewport of the console, in pixels with two bits of fraction. */
-struct GbiViewport {
-    short anScale[4];     /*!< The scale of x, y, z, and an unused fourth value. */
-    short anTranslate[4]; /*!< The translation of x, y, z, and an unused fourth value. */
-};
-
-struct ConvertedModelVertex;
-
-union ModelVertexData {
-    Vtx *pSource;
-    ConvertedModelVertex *pConverted;
-};
-
-/** A command of a display list of the game. */
-struct GbiCommand {
-    unsigned w0; /*!< The first word, the opcode in its high byte. */
-    union {
-        const GbiViewport *pViewport; /*!< The second word as the viewport a command sets. */
-        const void *pData;            /*!< The second word as the memory a command moves. */
-        unsigned w1;                  /*!< The second word. */
-        float f1;                     /*!< The second word as a float. */
-        GbiCommand *pTarget; /*!< The second word as the display list a branch or a call runs. */
-        ModelVertexData vertexData;
-    };
-};
 
 /** The number of entries of g_apGbiDisplayListReturnStack. */
 #define GBI_DISPLAY_LIST_STACK_SIZE 10
