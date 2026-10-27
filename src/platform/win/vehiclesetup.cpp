@@ -5,10 +5,15 @@
 #include "trackselect.h"
 #include "vehicle.h"
 #include "vehiclechoice.h"
+#include "vehiclephysics.h"
 #include "vehiclereset.h"
 
 void AiVehicleControllerCallback(Vehicle *vehicle) {
     vehicle->ComputeAiVehicleInput();
+}
+
+void Vehicle::SimulateVehiclePhysicsSubstep(void) {
+    ::SimulateVehiclePhysicsSubstep(this);
 }
 
 void Vehicle::SetVehicleVelocity(f32 x, f32 y, f32 z) {

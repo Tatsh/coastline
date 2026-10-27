@@ -145,6 +145,13 @@ typedef struct Vehicle {
     u8 abUnknown2abc[0xac]; /* +0x2abc */
 #ifdef __cplusplus
     /**
+     * Advance spring, tyre, damping, and collision calculations.
+     *
+     * @ghidraAddress BRD3D: 0x10061720
+     */
+    void SimulateVehiclePhysicsSubstep(void);
+
+    /**
      * Drive the vehicle with its computer controller.
      *
      * @ghidraAddress BRD3D: 0x10064700
