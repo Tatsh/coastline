@@ -119,6 +119,11 @@ MenuWidget *g_pCarSetupMenu;
 MenuWidget *g_pMultiplayerGameSetupMenu;
 MenuWidget *g_pSaveSeasonMenu;
 int g_dwModalDialogBlocking;
+unsigned short g_wMenuHoverIndexPrev;
+int g_dwMenuHoverActive;
+RECT g_rcMenuCenterPanel = {148, 110, 358, 260};
+RECT g_rcHoverTopLeft = {0, 0, 200, 200};
+RECT g_rcHoverBottomLeft = {0, 380, 200, 480};
 MenuWidget *g_pSaveTimeAttackMenu;
 MenuWidget *g_pSaveSeasonEditMenu;
 MenuWidget *g_pSaveTimeAttackEditMenu;
@@ -345,6 +350,74 @@ void SaveFileList::GenerateNextSaveFileName(char *pszPattern, char **ppszName) {
     strcpy(*ppszName, prefix);
     strcat(*ppszName, number);
     strcat(*ppszName, extension);
+}
+
+int MenuPanel::RestoreSelection() {
+    short index = static_cast<short>(g_wMenuHoverIndex);
+    if (index >= static_cast<int>(wNavigationCount)) {
+        g_wMenuHoverIndex = 0;
+    } else if (index < 0) {
+        g_wMenuHoverIndex = static_cast<unsigned short>(wNavigationCount - 1);
+    }
+    wSelectedIndex = g_wMenuHoverIndex;
+    return 1;
+}
+
+static inline bool MenuBoundsIncludeCursor(const RECT &bounds, const MouseDevice *pMouse) {
+    return bounds.left <= pMouse->nCursorX && bounds.right >= pMouse->nCursorX &&
+           bounds.top <= pMouse->nCursorY && bounds.bottom >= pMouse->nCursorY;
+}
+
+bool MenuWidget::UpdateHoverState() {
+    if (dwFlags & 8) {
+        return false;
+    }
+    if (dwFlags & 0x10) {
+        if (g_wMenuHoverIndex == g_wMenuHoverIndexPrev) {
+            g_wMenuHoverIndex =
+                static_cast<unsigned short>(g_wMenuHoverIndex + g_dwMouseScrollDirection);
+            pScreen->pCurrentPanel->RestoreSelection();
+        }
+        g_wMenuHoverIndexPrev++;
+        return false;
+    }
+    if (dwFlags & 0x80000) {
+        if (!IsInputOrEventActive()) {
+            dwFlags &= 0xfff7fffd;
+        } else if ((dwFlags & 0x80000) && IsInputOrEventActive()) {
+            dwFlags |= 0x22;
+            return true;
+        }
+    }
+    bool cursorInPanel = MenuBoundsIncludeCursor(g_rcMenuCenterPanel, g_pMousePosition) ||
+                         MenuBoundsIncludeCursor(g_rcHoverTopLeft, g_pMousePosition) ||
+                         MenuBoundsIncludeCursor(g_rcHoverBottomLeft, g_pMousePosition);
+    bool selectedByIndex = !cursorInPanel && g_wMenuHoverIndex == g_wMenuHoverIndexPrev;
+    g_wMenuHoverIndexPrev++;
+    g_dwMenuHoverActive = cursorInPanel;
+    if (!MenuBoundsIncludeCursor(rcBounds, g_pMousePosition) && !selectedByIndex) {
+        dwFlags &= ~0x22u;
+        return false;
+    }
+    if (selectedByIndex && (g_adwMouseButtonPressed[0] || g_adwMouseButtonPressed[1] ||
+                            g_adwMouseButtonPressed[2] || g_adwMouseButtonPressed[3])) {
+        return true;
+    }
+    if (dwFlags & 0x40000) {
+        if (g_pMouseDevice->abHeld[0] || g_pMouseDevice->abHeld[1]) {
+            dwFlags |= 0x80002;
+        } else {
+            dwFlags &= ~2u;
+        }
+    } else if ((!g_dwInNetworkCarSetup &&
+                (g_adwKeyPressedEdge[DIK_RETURN] || g_adwKeyPressedEdge[DIK_NUMPADENTER])) ||
+               IsInputOrEventActive()) {
+        dwFlags |= 2;
+    } else {
+        dwFlags &= ~2u;
+    }
+    dwFlags |= 0x20;
+    return true;
 }
 
 int MenuWidget::UpdateBlinkTimer() {

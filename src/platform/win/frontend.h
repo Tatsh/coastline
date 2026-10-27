@@ -173,7 +173,6 @@ public:
     virtual int DrawSprite();
     /**
      * @ghidraAddress BRD3D: 0x10047a60
-     * @stub
      */
     virtual bool UpdateHoverState();
     /**
@@ -228,7 +227,9 @@ public:
     float fX;
     float fY;
     float fZ;
-    char abUnknown48[0xe0]; /* +0x48 */
+    char abUnknown48[8]; /* +0x48 */
+    RECT rcBounds;
+    char abUnknown60[0xc8]; /* +0x60 */
     short nAnimationFrame;
     char abUnknown12a[0x283e]; /* +0x12a */
     int nImageMode;
@@ -270,7 +271,14 @@ class MenuPanel {
 public:
     char abUnknown4[0x14];                          /* +0x04 */
     MenuWidget *apWidgets[MENU_PANEL_WIDGET_COUNT]; /*!< The items of the panel. */
-    char abUnknown338[0x10];                        /* +0x338 */
+    char abUnknown338[0xc];                         /* +0x338 */
+    unsigned short wNavigationCount;
+    unsigned short wSelectedIndex;
+
+    /**
+     * @ghidraAddress BRD3D: 0x100484f0
+     */
+    int RestoreSelection();
 
     /**
      * @ghidraAddress BRD3D: 0x100484e0
@@ -836,6 +844,27 @@ extern MenuWidget *g_pSaveSeasonMenu;
  * @ghidraAddress BRD3D: 0x10aa2858
  */
 extern int g_dwModalDialogBlocking;
+
+/**
+ * @ghidraAddress BRD3D: 0x10aa2870
+ */
+extern unsigned short g_wMenuHoverIndexPrev;
+/**
+ * @ghidraAddress BRD3D: 0x10aa284c
+ */
+extern int g_dwMenuHoverActive;
+/**
+ * @ghidraAddress BRD3D: 0x100ab448
+ */
+extern RECT g_rcMenuCenterPanel;
+/**
+ * @ghidraAddress BRD3D: 0x100ab418
+ */
+extern RECT g_rcHoverTopLeft;
+/**
+ * @ghidraAddress BRD3D: 0x100ab428
+ */
+extern RECT g_rcHoverBottomLeft;
 
 /**
  * The menu to save a time attack.
