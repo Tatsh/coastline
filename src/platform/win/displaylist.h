@@ -745,6 +745,27 @@ extern GbiVertexSource *g_pVertexFreeList;
 GbiVertexSource *
 LerpVertexFromPool(const GbiVertexSource *pFirst, const GbiVertexSource *pSecond, float fFraction);
 
+/** A circular list of vertices undergoing homogeneous clipping. */
+struct GbiClipPolygon {
+    GbiVertexSource *pHead;
+    int nCount;
+};
+
+/** @ghidraAddress BRD3D: 0x1001d810 */
+void ClipPolygonPositiveWPlane(GbiClipPolygon *pPolygon);
+/** @ghidraAddress BRD3D: 0x1001d9f0 */
+void ClipPolygonLeftPlane(GbiClipPolygon *pPolygon);
+/** @ghidraAddress BRD3D: 0x1001db30 */
+void ClipPolygonRightPlane(GbiClipPolygon *pPolygon);
+/** @ghidraAddress BRD3D: 0x1001dc70 */
+void ClipPolygonBottomPlane(GbiClipPolygon *pPolygon);
+/** @ghidraAddress BRD3D: 0x1001ddb0 */
+void ClipPolygonTopPlane(GbiClipPolygon *pPolygon);
+/** @ghidraAddress BRD3D: 0x1001def0 */
+void ClipPolygonNearZPlane(GbiClipPolygon *pPolygon);
+/** @ghidraAddress BRD3D: 0x1001e030 */
+void ClipPolygonFarZPlane(GbiClipPolygon *pPolygon);
+
 /** @ghidraAddress BRD3D: 0x104c5184 */
 extern int g_bRdpBlendStateOverride;
 

@@ -864,6 +864,100 @@ void UpdateD3DFogRenderState(void) {
     }
 }
 
+template <typename Distance>
+static void ClipPolygonPlane(GbiClipPolygon *pPolygon, Distance distance) {
+    GbiVertexSource *pCurrent = pPolygon->pHead;
+    GbiVertexSource *pNext = pCurrent->pNext;
+    GbiVertexSource *pPrevious = pCurrent;
+    GbiVertexSource *pRemoved = nullptr;
+    int nRemaining = pPolygon->nCount;
+    while (nRemaining > 0) {
+        float fNextDistance = distance(pNext);
+        float fCurrentDistance = distance(pCurrent);
+        GbiVertexSource *pFollowing = pNext->pNext;
+        if (fNextDistance >= 0.0f) {
+            if (fCurrentDistance >= 0.0f) {
+                pPrevious = pNext;
+            } else {
+                float fFraction = static_cast<float>(
+                    fCurrentDistance /
+                    (static_cast<long double>(fCurrentDistance) - fNextDistance));
+                GbiVertexSource *pIntersection = LerpVertexFromPool(pCurrent, pNext, fFraction);
+                pIntersection->pNext = pPrevious->pNext;
+                pPrevious->pNext = pIntersection;
+                pPrevious = pNext;
+                ++pPolygon->nCount;
+            }
+        } else {
+            if (pPrevious->pNext) {
+                pPrevious->pNext = pPrevious->pNext->pNext;
+            }
+            pNext->pNext = pRemoved;
+            pRemoved = pNext;
+            if (fCurrentDistance >= 0.0f) {
+                float fFraction = static_cast<float>(
+                    fNextDistance / (static_cast<long double>(fNextDistance) - fCurrentDistance));
+                GbiVertexSource *pIntersection = LerpVertexFromPool(pNext, pCurrent, fFraction);
+                pIntersection->pNext = pPrevious->pNext;
+                pPrevious->pNext = pIntersection;
+                pPrevious = pIntersection;
+            } else {
+                --pPolygon->nCount;
+            }
+        }
+        pCurrent = pNext;
+        pNext = pFollowing;
+        if (pPolygon->nCount < 2) {
+            break;
+        }
+        --nRemaining;
+    }
+    pPolygon->pHead = pNext;
+    while (pRemoved) {
+        GbiVertexSource *pVertex = pRemoved;
+        pRemoved = pRemoved->pNext;
+        if (std::greater_equal<>{}(pVertex, g_aClipVertexPool) &&
+            std::less<>{}(pVertex, g_aClipVertexPool + GBI_CLIP_VERTEX_POOL_SIZE)) {
+            pVertex->pNext = g_pVertexFreeList;
+            g_pVertexFreeList = pVertex;
+        }
+    }
+}
+
+void ClipPolygonPositiveWPlane(GbiClipPolygon *pPolygon) {
+    ClipPolygonPlane(pPolygon, [](const GbiVertexSource *pVertex) { return pVertex->fW; });
+}
+
+void ClipPolygonLeftPlane(GbiClipPolygon *pPolygon) {
+    ClipPolygonPlane(pPolygon,
+                     [](const GbiVertexSource *pVertex) { return pVertex->fW + pVertex->fX; });
+}
+
+void ClipPolygonRightPlane(GbiClipPolygon *pPolygon) {
+    ClipPolygonPlane(pPolygon,
+                     [](const GbiVertexSource *pVertex) { return pVertex->fW - pVertex->fX; });
+}
+
+void ClipPolygonBottomPlane(GbiClipPolygon *pPolygon) {
+    ClipPolygonPlane(pPolygon,
+                     [](const GbiVertexSource *pVertex) { return pVertex->fY + pVertex->fW; });
+}
+
+void ClipPolygonTopPlane(GbiClipPolygon *pPolygon) {
+    ClipPolygonPlane(pPolygon,
+                     [](const GbiVertexSource *pVertex) { return pVertex->fW - pVertex->fY; });
+}
+
+void ClipPolygonNearZPlane(GbiClipPolygon *pPolygon) {
+    ClipPolygonPlane(pPolygon,
+                     [](const GbiVertexSource *pVertex) { return pVertex->fZ + pVertex->fW; });
+}
+
+void ClipPolygonFarZPlane(GbiClipPolygon *pPolygon) {
+    ClipPolygonPlane(pPolygon,
+                     [](const GbiVertexSource *pVertex) { return pVertex->fW - pVertex->fZ; });
+}
+
 int ComputeVertexClipCodes(const GbiVertexSource *pVertex) {
     int nFlags = 0;
     // The x87 comparisons also classify unordered values as outside.
