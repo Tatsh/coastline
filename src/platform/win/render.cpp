@@ -4,6 +4,7 @@
 #include <cstdlib>
 #include <cstring>
 
+#include "displaylistops.h"
 #include "platform/win/boot/app.h"
 #include "platform/win/d3d/renderer.h"
 #include "platform/win/d3d/texture.h"
@@ -16,6 +17,31 @@
 int g_dwRenderBackendMode;
 
 #if TGR_RENDERER == TGR_RENDERER_D3D
+GbiVertexSource g_aClipVertexPool[GBI_CLIP_VERTEX_POOL_SIZE];
+GbiVertexSource *g_pVertexFreeList;
+int g_bRdpBlendStateOverride;
+
+void InitGbiD3DRenderer(void) {
+    g_pfnRenderBackendSubmitDisplayList = RenderGbiDisplayListFrame;
+    g_pfnRenderBackendUpdateFog = UpdateD3DFogRenderState;
+    g_pfnRenderBackendShutdown = NullStub;
+    GbiVertexSource *pNext = nullptr;
+    for (int i = GBI_CLIP_VERTEX_POOL_SIZE - 1; i >= 0; --i) {
+        g_aClipVertexPool[i].pNext = pNext;
+        pNext = &g_aClipVertexPool[i];
+    }
+    g_pVertexFreeList = pNext;
+    g_dwGbiDisplayListStackDepth = 0;
+    g_dwGbiMatrixStackDepth = 1;
+    for (auto &vertex : g_aGbiVertexCache) {
+        vertex.nRenderBufferIndex = -1;
+    }
+    for (auto &vertex : g_renderBuffer) {
+        vertex.specular = 0;
+    }
+    g_bRdpBlendStateOverride = 0;
+}
+
 int GetRenderBackendMode(void) {
     return g_dwRenderBackendMode;
 }

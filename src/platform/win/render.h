@@ -72,6 +72,9 @@ extern void (*g_pfnInitializeTextureSubsystem)(void);
  */
 extern void (*g_pfnRenderBackendShutdown)(void);
 
+/** @ghidraAddress BRD3D: 0x10b501d0 */
+extern void (*g_pfnRenderBackendSubmitDisplayList)(GbiCommand *pDisplayList);
+
 /**
  * Release the texture subsystem, if one is set.
  *

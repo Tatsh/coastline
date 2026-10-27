@@ -668,7 +668,7 @@ GbiCommand *HandleGbiLoadPreparedTexture(GbiCommand *pCommand);
 #if TGR_RENDERER == TGR_RENDERER_D3D
 /** The vertex a command of the display lists loaded. The layout is not recovered in full. */
 struct GbiVertexSource {
-    char abUnknown0[4]; /* +0x00 */
+    GbiVertexSource *pNext;
     float fX;
     float fY;
     float fZ;
@@ -720,6 +720,17 @@ void TransformVertexToScreen(
 
 /** The number of entries of g_aGbiVertexCache and g_apVertexPool. */
 #define GBI_VERTEX_CACHE_SIZE 128
+
+#define GBI_CLIP_VERTEX_POOL_SIZE 64
+
+/** @ghidraAddress BRD3D: 0x104c01a8 */
+extern GbiVertexSource g_aClipVertexPool[GBI_CLIP_VERTEX_POOL_SIZE];
+
+/** @ghidraAddress BRD3D: 0x104c0bbc */
+extern GbiVertexSource *g_pVertexFreeList;
+
+/** @ghidraAddress BRD3D: 0x104c5184 */
+extern int g_bRdpBlendStateOverride;
 
 /** The number of entries of g_renderBuffer and g_awRenderIndexBuffer. */
 #define RENDER_BUFFER_SIZE 512
