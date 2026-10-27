@@ -429,32 +429,6 @@ void UpdateStickRepeat(PlayerInputState *state) {
     CheckAnalogStickPositive(state, &state->repeatRight, &state->stickX, INPUT_RIGHT);
 }
 
-void StartControllerRead(void) {
-    if (!g_dwContReadPending) {
-        g_dwContReadPending = TRUE;
-        g_wSerialInterfaceIdle = FALSE;
-        osContStartReadData(&g_SiMesgQueue);
-    }
-}
-
-void ReadControllers(void) {
-    StartControllerRead();
-    osRecvMesg(&g_SiMesgQueue, NULL, OS_MESG_BLOCK);
-    osContGetReadData(g_aContPadData);
-    g_wSerialInterfaceIdle = TRUE;
-    g_dwContReadPending = FALSE;
-}
-
-void UpdateControllerState(void) {
-    s32 i;
-
-    ReadControllers();
-    for (i = 0; i < MAX_PLAYERS; i++) {
-        TranslateControllerInput(&g_aPlayerInputState[i]);
-        ConsumeInputFlags(&g_aPlayerInputState[i]);
-    }
-}
-
 /* Run the controller check with a warning until the player dismisses it. */
 static void WarnAboutController(u8 warning) {
     SetCurrentScreenCallback(ProcessControllerCheck);

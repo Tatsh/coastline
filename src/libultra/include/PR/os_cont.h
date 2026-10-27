@@ -150,12 +150,14 @@ s32 osContStartReadData(OSMesgQueue *mq);
 
 /**
  * Copy the buttons and sticks of the read osContStartReadData() started.
+ * On Windows, update only the first pad and preserve its error byte.
  *
  * @param data Receives the pad of each of the MAXCONTROLLERS controllers. A pad with a nonzero
  *     errno is not otherwise written.
  * @ghidraAddress USA: 0x80264824
  * @ghidraAddress EUR: 0x80266084
  * @ghidraAddress JPN: 0x80265ab4
+ * @ghidraAddress BRD3D: 0x10060e00
  */
 void osContGetReadData(OSContPad *data);
 

@@ -213,6 +213,17 @@ void CheatToggleBilinearFilter(void);
  */
 void ProcessInputCommandBuffer(PlayerInputState *state);
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+/**
+ * @ghidraAddress BRD3D: 0x10035ce0
+ * @stub{BRD3D}
+ */
+void __attribute__((thiscall)) TranslateControllerInput(PlayerInputState *state);
+#else
 /**
  * Read the pad of a player into buttons, race actions for the button layout, and the stick, record
  * the input or replay a recording in its place, and check the cheats.
@@ -223,6 +234,11 @@ void ProcessInputCommandBuffer(PlayerInputState *state);
  * @ghidraAddress JPN: 0x80256080
  */
 void TranslateControllerInput(PlayerInputState *state);
+#endif
+
+#ifdef __cplusplus
+}
+#endif
 
 /**
  * Press a direction when a stick axis passes 0.6, then again after half a second and every 0.2
@@ -267,6 +283,7 @@ void UpdateStickRepeat(PlayerInputState *state);
  * @ghidraAddress USA: 0x8028ab6c
  * @ghidraAddress EUR: 0x8028ce18
  * @ghidraAddress JPN: 0x8028c848
+ * @ghidraAddress BRD3D: 0x106c56e8
  */
 extern s32 g_dwContReadPending;
 
@@ -279,12 +296,17 @@ extern s32 g_dwContReadPending;
  */
 extern u8 g_bPakPort0Initialized;
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /**
  * Start a read of the controllers, unless one is already pending.
  *
  * @ghidraAddress USA: 0x8021a920
  * @ghidraAddress EUR: 0x8021ba38
  * @ghidraAddress JPN: 0x8021b314
+ * @ghidraAddress BRD3D: 0x10033780
  */
 void StartControllerRead(void);
 
@@ -294,12 +316,9 @@ void StartControllerRead(void);
  * @ghidraAddress USA: 0x8021a964
  * @ghidraAddress EUR: 0x8021ba7c
  * @ghidraAddress JPN: 0x8021b358
+ * @ghidraAddress BRD3D: 0x100337ae
  */
 void ReadControllers(void);
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 /**
  * Read the controllers and turn their state into the input of the players.
@@ -308,7 +327,6 @@ extern "C" {
  * @ghidraAddress EUR: 0x8021bacc
  * @ghidraAddress JPN: 0x8021b3a8
  * @ghidraAddress BRD3D: 0x100337e9
- * @stub{BRD3D}
  */
 void UpdateControllerState(void);
 

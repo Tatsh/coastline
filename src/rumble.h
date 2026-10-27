@@ -28,6 +28,7 @@ extern OSPfs g_aContPfs[MAXCONTROLLERS];
  * @ghidraAddress USA: 0x80272d48
  * @ghidraAddress EUR: 0x80274f48
  * @ghidraAddress JPN: 0x80274a18
+ * @ghidraAddress BRD3D: 0x10691000
  */
 extern OSMesgQueue g_SiMesgQueue;
 
@@ -48,6 +49,7 @@ extern u8 g_abRumblePakPresent[MAXCONTROLLERS];
  * @ghidraAddress USA: 0x802a4be8
  * @ghidraAddress EUR: 0x802a7370
  * @ghidraAddress JPN: 0x802a6e10
+ * @ghidraAddress BRD3D: 0x100b5d90
  */
 extern s16 g_wSerialInterfaceIdle;
 

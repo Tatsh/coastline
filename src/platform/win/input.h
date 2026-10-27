@@ -13,6 +13,7 @@
 #include <dinput.h>
 
 #include "emulatedclock.h"
+#include "inputpoll.h"
 
 /** The mouse of the game. The layout is not recovered past the members below. */
 class MouseDevice {
@@ -388,16 +389,6 @@ unsigned char IsInputBindingPressed(int nBinding);
  * @ghidraAddress BRD3D: 0x10078420
  */
 unsigned char IsInputBindingHeld(int nBinding);
-
-/**
- * Poll input devices and translate active bindings into race or replay actions.
- *
- * @param pnSteering Receives steering outside replay and early failure paths.
- * @param pnAcceleration Receives acceleration outside replay, pause, and early failure paths.
- * @return Action mask, also written to g_dwInputButtonMask.
- * @ghidraAddress BRD3D: 0x100773f0
- */
-unsigned ReadInputDevicesButtonMask(int *pnSteering, int *pnAcceleration);
 
 /**
  * Input poll count, saturated at 32767.

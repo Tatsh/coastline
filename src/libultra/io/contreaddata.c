@@ -1,3 +1,54 @@
+#include "types.h"
+
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#include <PR/os_cont.h>
+
+#include "platform/win/inputpoll.h"
+
+void osContGetReadData(OSContPad *data) {
+    int steering;
+    int acceleration;
+    unsigned buttons = ReadInputDevicesButtonMask(&steering, &acceleration);
+
+    data->stick_x = steering;
+    data->stick_y = acceleration;
+    data->button = 0;
+    if (buttons & 0x10) {
+        data->button = A_BUTTON | D_JPAD;
+    }
+    if (buttons & 0x4) {
+        data->button |= A_BUTTON | U_JPAD;
+    }
+    if (buttons & 0x1) {
+        data->button |= L_JPAD;
+    }
+    if (buttons & 0x2) {
+        data->button |= R_JPAD;
+    }
+    if (buttons & 0x8) {
+        data->button |= B_BUTTON;
+    }
+    if (buttons & 0x100) {
+        data->button |= U_CBUTTONS;
+    }
+    if (buttons & 0x200) {
+        data->button |= L_CBUTTONS;
+    }
+    if (buttons & 0x400) {
+        data->button |= D_CBUTTONS;
+    }
+    if (buttons & 0x8000) {
+        data->button |= START_BUTTON;
+    }
+    if (buttons & 0x20) {
+        data->button |= R_TRIG;
+    }
+    if (buttons & 0x40) {
+        data->button |= L_TRIG;
+    }
+}
+
+#else
 #include "controller.h"
 #include "siint.h"
 
@@ -62,3 +113,4 @@ void __osPackReadData(void) {
     }
     *ptr = CONT_CMD_END;
 }
+#endif
