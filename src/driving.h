@@ -10,27 +10,13 @@
 
 #include <PR/ultratypes.h>
 
+#include "frameclear.h"
 #include "track.h"
 #include "vecmath.h"
 #include "vehicle.h"
 
 /** The points of the route a search for a straight line looks ahead. */
 #define TRACE_DEPTH 8
-
-/** A block of variables cleared at the start of each frame. */
-typedef struct {
-    u8 *start; /*!< The first byte of the block, or NULL to end the list. */
-    u32 size;  /*!< The size of the block, in bytes. */
-} PerFrameVariable;
-
-/**
- * The variables of the searches for straight lines, cleared each frame, ending in a NULL start.
- *
- * @ghidraAddress USA: 0x8028b834
- * @ghidraAddress EUR: 0x8028dae4
- * @ghidraAddress JPN: 0x8028d514
- */
-extern PerFrameVariable g_aPerFrameVariables[];
 
 /**
  * The axis that points up.
@@ -223,15 +209,6 @@ extern Vec3f g_vTraceFarPoint;
  * @ghidraAddress JPN: 0x8031c870
  */
 extern Vec3f g_vTraceHalfwayPoint;
-
-/**
- * Clear the variables g_aPerFrameVariables lists.
- *
- * @ghidraAddress USA: 0x80225f30
- * @ghidraAddress EUR: 0x80227270
- * @ghidraAddress JPN: 0x80226a60
- */
-void ClearPerFrameVariables(void);
 
 /**
  * Add a jolt to a vehicle, at most 2.5 at once and 5 in all.

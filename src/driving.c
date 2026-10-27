@@ -101,20 +101,6 @@
 /* The angular speed above which a computer's vehicle on the ground is slowed to 1. */
 #define AI_MAX_SPIN 1.0f
 
-void ClearPerFrameVariables(void) {
-    s32 i;
-    u8 *byte;
-    u8 *end;
-
-    for (i = 0; g_aPerFrameVariables[i].start != NULL; i++) {
-        byte = g_aPerFrameVariables[i].start;
-        end = byte + g_aPerFrameVariables[i].size;
-        while (byte < end) {
-            *byte++ = 0;
-        }
-    }
-}
-
 void AddVehicleJolt(s32 index, f32 amount) {
     if (JOLT_MAX_ONCE < amount) {
         amount = JOLT_MAX_ONCE;
