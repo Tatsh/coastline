@@ -127,17 +127,6 @@
 
 u64 g_qwTimestampBase = 0;
 
-OSIoMesg *AllocIoMessage(void) {
-    if (g_dwIoMessagePendingCount == IO_MESSAGES) {
-        /* With every message in flight, one finished DMA frees its message. */
-        osRecvMesg(&g_DmaMessageQueue, NULL, OS_MESG_BLOCK);
-    } else {
-        g_dwIoMessagePendingCount++;
-    }
-    g_dwIoMessagePoolIndex = (g_dwIoMessagePoolIndex + 1) % IO_MESSAGES;
-    return &g_aIoMessagePool[g_dwIoMessagePoolIndex];
-}
-
 void WaitForDmaMessages(void) {
     if (g_dwIoMessagePendingCount != 0) {
         do {

@@ -279,6 +279,7 @@ void ResetFrameClock(void);
  * @ghidraAddress USA: 0x8031a020
  * @ghidraAddress EUR: 0x8031c500
  * @ghidraAddress JPN: 0x8031b130
+ * @ghidraAddress BRD3D: 0x106c29f0
  */
 extern OSIoMesg g_aIoMessagePool[32];
 
@@ -288,6 +289,7 @@ extern OSIoMesg g_aIoMessagePool[32];
  * @ghidraAddress USA: 0x80272d44
  * @ghidraAddress EUR: 0x80274f44
  * @ghidraAddress JPN: 0x80274a14
+ * @ghidraAddress BRD3D: 0x106c65dc
  */
 extern s32 g_dwIoMessagePendingCount;
 
@@ -297,6 +299,7 @@ extern s32 g_dwIoMessagePendingCount;
  * @ghidraAddress USA: 0x80272d40
  * @ghidraAddress EUR: 0x80274f40
  * @ghidraAddress JPN: 0x80274a10
+ * @ghidraAddress BRD3D: 0x106c65d8
  */
 extern s32 g_dwIoMessagePoolIndex;
 
@@ -306,6 +309,7 @@ extern s32 g_dwIoMessagePoolIndex;
  * @ghidraAddress USA: 0x80319f88
  * @ghidraAddress EUR: 0x8031c468
  * @ghidraAddress JPN: 0x8031b098
+ * @ghidraAddress BRD3D: 0x106c64e0
  */
 extern OSMesgQueue g_DmaMessageQueue;
 
@@ -705,6 +709,10 @@ extern OSViMode g_ViModeNtscLan1;
 /** @ghidraAddress USA: 0x802a5d70 */
 extern OSViMode g_ViModeMpalLan1;
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /**
  * Take a message of the DMA, waiting for a DMA to finish when every one is in flight.
  *
@@ -712,8 +720,13 @@ extern OSViMode g_ViModeMpalLan1;
  * @ghidraAddress USA: 0x802172d0
  * @ghidraAddress EUR: 0x802182f0
  * @ghidraAddress JPN: 0x80217c40
+ * @ghidraAddress BRD3D: 0x10031190
  */
 OSIoMesg *AllocIoMessage(void);
+
+#ifdef __cplusplus
+}
+#endif
 
 /**
  * Wait for every DMA started to finish.

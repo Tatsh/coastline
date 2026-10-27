@@ -130,7 +130,7 @@ target_sources(coastline_game PRIVATE assetdma.c camerarender.c collisionstep.c 
                                      rledecompress.c routeposition.c textrender.c textstyle.c timingframe.c
                                      vehicleengine.c vehiclephysics.c)
 
-target_sources(coastline_game PRIVATE tracetrack.c)
+target_sources(coastline_game PRIVATE tracetrack.c iomessage.c)
 
 add_custom_target(archives DEPENDS ${COASTLINE_LIBRARIES})
 
