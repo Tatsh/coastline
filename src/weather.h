@@ -199,6 +199,7 @@ extern s32 g_nLightningBoltDepth;
  * @ghidraAddress USA: 0x8028c820
  * @ghidraAddress EUR: 0x8028ef80
  * @ghidraAddress JPN: 0x8028e9d0
+ * @ghidraAddress BRD3D: 0x104b255c
  */
 extern f32 g_fLightningFlashTimer;
 
@@ -323,6 +324,7 @@ void SubdivideLightningBolt(s32 index, s32 span);
  * @ghidraAddress USA: 0x8023a0bc
  * @ghidraAddress EUR: 0x8023b5cc
  * @ghidraAddress JPN: 0x8023b0cc
+ * @ghidraAddress BRD3D: 0x10019620
  */
 void UpdateLightningFlash(void);
 

@@ -21,17 +21,6 @@
 #define WIND_STRENGTH_MAX 1.0f
 #define WIND_STRENGTH_MIN 0.5f
 
-/* The time between strikes runs at this rate, and a strike may come once it passes the limit. */
-#define LIGHTNING_TIMER_RATE 343.0f
-#define LIGHTNING_TIMER_LIMIT 2048.0
-
-/* A strike comes in a frame when 16 random bits fall below this. */
-#define LIGHTNING_CHANCE 0x80
-
-/* The frames a strike flashes for, and the extent of the area it strikes in. */
-#define LIGHTNING_FLASH_FRAMES 3
-#define LIGHTNING_AREA_MASK 0x7FF
-
 /* The rain is kept around a point this far ahead of the camera. */
 #define EYE_AHEAD 3.0f
 
@@ -124,23 +113,6 @@ void SubdivideLightningBolt(s32 index, s32 span) {
         SubdivideLightningBolt(index - span, span);
         SubdivideLightningBolt(index + span, span);
         g_nLightningBoltDepth -= 4;
-    }
-}
-
-void UpdateLightningFlash(void) {
-    if (g_dwLightningFlashCounter >= 0) {
-        g_fLightningFlashTimer += LIGHTNING_TIMER_RATE * g_fFrameDeltaTime;
-        if (g_dwLightningFlashCounter > 0) {
-            g_dwLightningFlashCounter--;
-        } else if (g_fLightningFlashTimer > LIGHTNING_TIMER_LIMIT) {
-            g_dwLightningFlashCounter = -1;
-        }
-    } else if ((s32)(AdvanceRng() & 0xFFFF) < LIGHTNING_CHANCE) {
-        g_dwLightningFlashCounter = LIGHTNING_FLASH_FRAMES;
-        g_fLightningFlashTimer = 0.0f;
-        g_avLightningBolt[0].x = (f32)(s32)(AdvanceRng() & LIGHTNING_AREA_MASK);
-        g_avLightningBolt[0].y = (f32)(s32)(AdvanceRng() & LIGHTNING_AREA_MASK);
-        g_avLightningBolt[0].z = g_LoadedTrack.minZ;
     }
 }
 
