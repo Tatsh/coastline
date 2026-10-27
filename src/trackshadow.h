@@ -53,6 +53,21 @@ long double ShadowTextureDistanceBottom(const ConvertedModelVertex *vertex);
 void ProjectShadowTextureCoordinates(ConvertedModelVertex *vertex);
 
 /**
+ * Update a shadow corner when a vertex is closer to its texture corner and below the vehicle.
+ *
+ * @ghidraAddress BRD3D: 0x10010bf0
+ * @stub
+ */
+void UpdateShadowCornerVertex(const TrackInstance *instance,
+                              ConvertedModelVertex quad[4],
+                              s32 cornerValid[4],
+                              s32 corner,
+                              const ConvertedModelVertex *vertex,
+                              f32 s,
+                              f32 t,
+                              const f32 vehicleMatrix[4][4]);
+
+/**
  * Clip a shadow triangle to its texture and update the covered corners of its vehicle quad.
  *
  * @param instance The placed model.
@@ -63,7 +78,6 @@ void ProjectShadowTextureCoordinates(ConvertedModelVertex *vertex);
  * @param c The third vertex.
  * @param vehicleMatrix The vehicle frame.
  * @ghidraAddress BRD3D: 0x100106a0
- * @stub
  */
 void ProjectClippedShadowTriangle(const TrackInstance *instance,
                                   ConvertedModelVertex quad[4],
