@@ -13,6 +13,57 @@ static inline float &KeyframePeakField(KeyframeState &state, int index) {
     return index < 2 ? state.afLight[index] : state.afEffectFlags[index - 2];
 }
 
+static inline unsigned KeyframeFlag(float value) {
+    return value < 0.0f || value > 0.0f;
+}
+
+void EncodeKeyframeBitstreamFull(NetStream *stream, KeyframeState *state) {
+    stream->BitStreamWriteBits(
+        static_cast<short>(ConvertFloatToFixedAngle(state->orientation.w)) >> 8, 8);
+    stream->BitStreamWriteBits(
+        static_cast<short>(ConvertFloatToFixedAngle(state->orientation.x)) >> 8, 8);
+    stream->BitStreamWriteBits(
+        static_cast<short>(ConvertFloatToFixedAngle(state->orientation.y)) >> 8, 8);
+    stream->BitStreamWriteBits(
+        static_cast<short>(ConvertFloatToFixedAngle(state->orientation.z)) >> 8, 8);
+    stream->BitStreamWriteBits(
+        static_cast<unsigned>(ConvertFloatToFixedAngleNoClamp(state->position.x)) >> 7, 17);
+    stream->BitStreamWriteBits(
+        static_cast<unsigned>(ConvertFloatToFixedAngleNoClamp(state->position.y)) >> 7, 17);
+    stream->BitStreamWriteBits(
+        static_cast<short>(ConvertFloatToFixedAngle16B(state->position.z)) >> 1, 15);
+    stream->BitStreamWriteBits(static_cast<short>(FloatToSignedShortIndex(state->linearVelocity.x)),
+                               16);
+    stream->BitStreamWriteBits(static_cast<short>(FloatToSignedShortIndex(state->linearVelocity.y)),
+                               16);
+    stream->BitStreamWriteBits(
+        static_cast<signed char>(ConvertFloatToSignedByte(state->angularVelocity.x)) >> 3, 5);
+    stream->BitStreamWriteBits(
+        static_cast<signed char>(ConvertFloatToSignedByte(state->angularVelocity.y)) >> 3, 5);
+    stream->BitStreamWriteBits(
+        static_cast<signed char>(ConvertFloatToSignedByte(state->angularVelocity.z)) >> 3, 5);
+    stream->BitStreamWriteBits(
+        static_cast<signed char>(ConvertFloatToSignedByte(state->fBodyRollAngle)) >> 4, 4);
+    stream->BitStreamWriteBits(
+        static_cast<signed char>(FloatToSignedByteIndex(state->fSteerAngle)) >> 2, 4);
+    stream->BitStreamWriteBits(
+        static_cast<unsigned char>(FloatToByteIndex(state->afWheelAngle[0])) >> 4, 4);
+    for (int i = 0; i < 4; ++i) {
+        stream->BitStreamWriteBits(KeyframeFlag(state->afWheelContact[i]), 1);
+    }
+    stream->BitStreamWriteBits(KeyframeFlag(state->fGearControl), 1);
+    stream->BitStreamWriteBits(KeyframeFlag(state->fBraking), 1);
+    stream->BitStreamWriteBits(KeyframeFlag(state->fReverse), 1);
+    stream->BitStreamWriteBits(ConvertFloatToFixed24(state->fProgress), 24);
+    stream->BitStreamWriteBits(static_cast<unsigned char>(FloatToEngineRpmIndex(state->fEngineRpm)),
+                               6);
+    stream->BitStreamWriteBits(QuantizeFloatToLightIndex(state->afLight[0]), 2);
+    stream->BitStreamWriteBits(QuantizeFloatToLightIndex(state->afLight[1]), 2);
+    for (int i = 0; i < 6; ++i) {
+        stream->BitStreamWriteBits(KeyframeFlag(state->afEffectFlags[i]), 1);
+    }
+}
+
 unsigned SendLocalVehicleStateUpdate(KeyframeState *state) {
     if (state->fProgress >= 4188888.0f && !(g_LastSentKeyframe.fProgress >= 4188888.0f)) {
         g_LastSentKeyframe = *state;

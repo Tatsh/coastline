@@ -540,7 +540,6 @@ unsigned SendDeltaKeyframePacket(KeyframeState *state, KeyframeState *base);
 
 /**
  * @ghidraAddress BRD3D: 0x100061a0
- * @stub
  */
 void EncodeKeyframeBitstreamFull(NetStream *stream, KeyframeState *state);
 
