@@ -235,17 +235,6 @@ void TranslateControllerInput(PlayerInputState *state);
 void TransferFlags(PlayerInputState *state, u32 mask);
 
 /**
- * Drop from the input the held buttons that are still pressed, and forget the held buttons that
- * are released.
- *
- * @param state The input of the player.
- * @ghidraAddress USA: 0x80255934
- * @ghidraAddress EUR: 0x80256f04
- * @ghidraAddress JPN: 0x80256894
- */
-void ConsumeInputFlags(PlayerInputState *state);
-
-/**
  * Press a direction when a stick axis passes 0.6, then again after half a second and every 0.2
  * seconds while the axis stays above 0.3.
  *

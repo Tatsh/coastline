@@ -5,6 +5,13 @@ PlayerInputState g_aPlayerInputState[MAX_PLAYERS];
 OSContPad g_aContPadData[MAXCONTROLLERS];
 #endif
 
+void ConsumeInputFlags(PlayerInputState *state) {
+    u32 buttons = state->buttons;
+
+    state->buttons ^= buttons & state->heldButtons;
+    state->heldButtons &= buttons;
+}
+
 void InitPlayerInputState(PlayerInputState *state) {
     s32 player = state - g_aPlayerInputState;
 

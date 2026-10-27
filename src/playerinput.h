@@ -58,6 +58,13 @@ typedef struct PlayerInputState {
 
 #if TGR_PLATFORM == TGR_PLATFORM_WIN && defined(__cplusplus)
     /**
+     * Remove held buttons from current input and discard released held buttons.
+     *
+     * @ghidraAddress BRD3D: 0x10035fc0
+     */
+    void ConsumeInputFlags(void);
+
+    /**
      * Reset recording pointers and bind the player index and controller pad.
      *
      * @ghidraAddress BRD3D: 0x10035fe0
@@ -69,6 +76,17 @@ typedef struct PlayerInputState {
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+/**
+ * Drop from the input the held buttons that are still pressed, and forget the held buttons that
+ * are released.
+ *
+ * @param state The input of the player.
+ * @ghidraAddress USA: 0x80255934
+ * @ghidraAddress EUR: 0x80256f04
+ * @ghidraAddress JPN: 0x80256894
+ */
+void ConsumeInputFlags(PlayerInputState *state);
 
 /**
  * Input state of every player.

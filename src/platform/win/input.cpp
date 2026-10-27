@@ -453,6 +453,10 @@ unsigned short g_wMenuHoverIndex;
 DWORD g_dwLastInputActivityTime;
 MouseDevice *g_pMousePosition;
 
+void PlayerInputState::ConsumeInputFlags(void) {
+    ::ConsumeInputFlags(this);
+}
+
 void PlayerInputState::InitPlayerInputState(void) {
     ::InitPlayerInputState(this);
 }

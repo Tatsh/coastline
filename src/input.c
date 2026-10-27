@@ -376,13 +376,6 @@ void TransferFlags(PlayerInputState *state, u32 mask) {
     state->buttons &= ~mask;
 }
 
-void ConsumeInputFlags(PlayerInputState *state) {
-    u32 buttons = state->buttons;
-
-    state->buttons ^= buttons & state->heldButtons;
-    state->heldButtons &= buttons;
-}
-
 void CheckAnalogStickPositive(PlayerInputState *state, s32 *timer, f32 *axis, u32 button) {
     s32 time = *timer;
 
