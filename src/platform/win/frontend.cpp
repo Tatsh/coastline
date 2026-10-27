@@ -1977,6 +1977,19 @@ int OnPlayerNameEdited(MenuWidget *pWidget) {
     return 1;
 }
 
+int OnModemPhoneNumberEdited(MenuWidget *pWidget) {
+    ProcessMenuTextEditInput(pWidget, 0);
+    const char *text = pWidget->GetFont(0).GetText();
+    if (strlen(text)) {
+        g_pModemContinueItem->SetFlags(g_pModemContinueItem->GetFlags() & ~0x10u);
+    }
+    if (_stricmp(g_szModemPhoneNumber, text)) {
+        strcpy(g_szModemPhoneNumber, text);
+        strcpy(g_GlobalRallyConfig.szSavedModemPhoneNumber, g_szModemPhoneNumber);
+    }
+    return 1;
+}
+
 int ShowVideoOptionsMenu(void) {
     return ShowCachedMenuScreen(g_pCachedMenu_InputConfig, BuildVideoOptionsUI);
 }
@@ -1985,8 +1998,12 @@ int ShowKeyConfigScreen(void) {
     return ShowCachedMenuScreen(g_pCachedMenu_KeyConfig, BuildKeyConfigUI);
 }
 
+static inline void BuildModemConnectionScreen(MenuScreen *screen) {
+    BuildModemConnectionUI(screen);
+}
+
 int ShowModemDialUpScreen(void) {
-    return ShowCachedMenuScreen(g_pCachedMenu_ModemDialUp, BuildModemConnectionUI);
+    return ShowCachedMenuScreen(g_pCachedMenu_ModemDialUp, BuildModemConnectionScreen);
 }
 
 int ShowDisplayModeSelectMenu(void) {
@@ -4574,6 +4591,80 @@ int BuildJoinCreateGameUI(MenuScreen *screen) {
         panel->SetWidgetCount(panel->GetWidgetCount() + 1);
         panel->SetNavigationCount(panel->GetNavigationCount() + 1);
     }
+    AddMenuWidget(panel, screen, 80, 46, 9, 0, 7);
+    panel->SetWidgetCount(panel->GetWidgetCount() + 1);
+    return 1;
+}
+
+int BuildModemConnectionUI(MenuScreen *screen) {
+    screen->SetCurrentPanelIndex(0);
+    screen->SetPanelActive(screen->GetPanelCount(), 1);
+    MenuPanel *panel = new (std::nothrow) MenuPanel();
+    screen->SetPanel(screen->GetPanelCount(), panel);
+    if (!panel) {
+        ShowErrorMessage(4);
+    }
+    screen->SetPanelCount(screen->GetPanelCount() + 1);
+    panel->SetScreen(screen);
+    panel->SetFlags(0);
+    panel->SetX(190);
+    panel->SetY(130);
+    AddMenuWidget(panel, screen, 0, 0, 9, 0, 0);
+    panel->SetWidgetCount(panel->GetWidgetCount() + 1);
+    SetMenuWidgetLabel(
+        AddMenuWidget(panel, screen, panel->GetX(), 10, 0x100009, 1, -1), 0x5d, &g_rcMenuTitleBar);
+    panel->SetWidgetCount(panel->GetWidgetCount() + 1);
+    MenuWidget *widget =
+        AddMenuWidget(panel, screen, panel->GetX(), panel->GetY(), 0x100009, 1, -1);
+    widget->SetSpriteId(0x34);
+    widget->SetText(GetStringResource(0x5e), 1, 4, &g_rcMenuCenterPanel);
+    panel->SetWidgetCount(panel->GetWidgetCount() + 1);
+    AddMenuWidget(panel, screen, 156, 172, 9, 0, 57);
+    panel->SetWidgetCount(panel->GetWidgetCount() + 1);
+    widget = AddMenuWidget(panel, screen, panel->GetX(), 174, 0x200001, 1, -1);
+    widget->SetActionCallback(ConnectionUI_OnToggleTextEdit);
+    widget->SetUpdateCallback(OnModemPhoneNumberEdited);
+    widget->SetTextEditCompleteCallback(ModemConnectionUI_EnableContinueIfNumberEntered);
+    widget->SetSpriteId(3);
+    widget->SetText(g_szEmptyUiString, 1, 1, &g_rcMenuCenterPanel);
+    MenuFont *font = &widget->GetFont(0);
+    font->SetText(g_szModemPhoneNumber);
+    font->MeasureText();
+    widget->SetBoundsLeft(font->SetBoundsLeft(155));
+    widget->SetBoundsRight(font->SetBoundsRight(347));
+    widget->SetBoundsTop(font->SetBoundsTop(172));
+    widget->SetBoundsBottom(font->SetBoundsBottom(188));
+    font->SetInputMaxWidth(static_cast<short>(static_cast<unsigned short>(font->GetBoundsRight()) -
+                                              static_cast<unsigned short>(font->GetBoundsLeft()) -
+                                              16));
+    panel->SetWidgetCount(panel->GetWidgetCount() + 1);
+    panel->SetNavigationCount(panel->GetNavigationCount() + 1);
+    widget = AddMenuWidget(panel,
+                           screen,
+                           panel->GetX(),
+                           static_cast<float>(static_cast<long double>(panel->GetY()) + 95),
+                           0x102011,
+                           1,
+                           -1);
+    widget->SetIdleActionCallback(ValidateEntityState);
+    widget->SetActionCallback(ModemConnectionUI_OnAccept);
+    widget->SetSpriteId(2);
+    widget->SetText(GetStringResource(0x1e), 1, 0, &g_rcMenuCenterPanel);
+    g_pModemContinueItem = widget;
+    panel->SetWidgetCount(panel->GetWidgetCount() + 1);
+    panel->SetNavigationCount(panel->GetNavigationCount() + 1);
+    widget = AddMenuWidget(panel,
+                           screen,
+                           panel->GetX(),
+                           static_cast<float>(static_cast<long double>(panel->GetY()) + 114),
+                           0x102001,
+                           1,
+                           -1);
+    widget->SetIdleActionCallback(ValidateEntityState);
+    widget->SetActionCallback(ModemConnectionUI_OnBack);
+    SetMenuWidgetLabel(widget, 0xc, &g_rcMenuCenterPanel);
+    panel->SetWidgetCount(panel->GetWidgetCount() + 1);
+    panel->SetNavigationCount(panel->GetNavigationCount() + 1);
     AddMenuWidget(panel, screen, 80, 46, 9, 0, 7);
     panel->SetWidgetCount(panel->GetWidgetCount() + 1);
     return 1;

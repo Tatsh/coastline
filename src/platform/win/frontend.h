@@ -721,6 +721,11 @@ int PlayerNameEntryUI_EnableContinueIfNameEntered(MenuWidget *pWidget);
 int OnPlayerNameEdited(MenuWidget *pWidget);
 
 /**
+ * @ghidraAddress BRD3D: 0x1003ef90
+ */
+int OnModemPhoneNumberEdited(MenuWidget *pWidget);
+
+/**
  * Enable continuing after a modem number has been entered.
  *
  * @ghidraAddress BRD3D: 0x1003f020
@@ -880,9 +885,9 @@ int ReturnToMainMenuFromSeason(void);
  *
  * @ghidraAddress BRD3D: 0x10056a10
  * @ghidraAddress BRGlide: 0x1004f8c0
- * @stub
+ * @stub{BRGlide}
  */
-void BuildModemConnectionUI(MenuScreen *pScreen);
+int BuildModemConnectionUI(MenuScreen *pScreen);
 
 /**
  * Open display mode selection and populate its settings lists after successful creation.
