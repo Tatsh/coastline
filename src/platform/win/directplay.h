@@ -815,7 +815,9 @@ struct NetPeerSlot {
     unsigned nSnapshotCount;
     int nCurrentSnapshot;
     int nAppliedSnapshot;
-    char abUnknown564[0xc]; /* +0x564 */
+    unsigned dwPredictionFrame;
+    int nRepeatedSnapshotFrames;
+    int nLateSnapshotFrames;
     char szName[0x400];
     unsigned dwRaceTime;
     int dwPingMs;

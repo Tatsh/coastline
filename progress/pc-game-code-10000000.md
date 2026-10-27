@@ -1,6 +1,6 @@
 # PC port game code from 0x10000000 to 0x10010000
 
-219 of 247 routines done.
+220 of 247 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -17,7 +17,7 @@ the same name, for a routine the port retained from the N64 game.
 | `Vehicle::UpdateCameraSystem`                              |   ✅   | ✅ `0x80221170` |      3 |   1567 | `0x100019d0` | `0x10001cf0` | `void UpdateCameraSystem(Vehicle * this)`                                                                                                                                               |
 | `RenderHost::RenderLoadingScreen`                          |   ✅   |                 |      2 |   1328 | `0x10008e30` |              | `long RenderLoadingScreen(RenderHost * this, DirectDrawRenderer * pWindowRenderer, char * pszImage, uint nImageKey)`                                                                    |
 | `Vehicle::DeformVehicleMeshByImpact`                       |        | ✅ `0x80233880` |      1 |   1246 | `0x1000ef80` | `0x1000c4e0` | `void DeformVehicleMeshByImpact(Vehicle * this, int pThis, float * pVec)`                                                                                                               |
-| `GetInterpolatedRemoteVehicleState`                        |        |                 |      1 |   1070 | `0x100054a0` | `0x10005810` | `uint GetInterpolatedRemoteVehicleState(float * pKeyframe, int slotIndex)`                                                                                                              |
+| `GetInterpolatedRemoteVehicleState`                        |   ✅   |                 |      1 |   1070 | `0x100054a0` | `0x10005810` | `uint GetInterpolatedRemoteVehicleState(KeyframeState * state, int slotIndex)`                                                                                                          |
 | `EncodeKeyframeBitstreamFull`                              |   ✅   |                 |      1 |   1018 | `0x100061a0` | `0x10006510` | `void EncodeKeyframeBitstreamFull(NetStream * stream, KeyframeState * state)`                                                                                                           |
 | `Vehicle::ResolveVehicleTrackCollision`                    |   ✅   | ✅ `0x80220810` |      1 |    977 | `0x100011f0` | `0x10001510` | `void ResolveVehicleTrackCollision(Vehicle * this, CameraFrame * camera, Vec3f * target)`                                                                                               |
 | `RenderWheelModels`                                        |        | ✅ `0x8022ffb4` |      2 |    932 | `0x1000c6e0` | `0x10009c10` | `void RenderWheelModels(float * pChunk)`                                                                                                                                                |

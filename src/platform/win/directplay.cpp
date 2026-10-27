@@ -2008,7 +2008,9 @@ static inline void ResetPeerSnapshotsForJoin(NetPeerSlot &slot) {
     slot.nSnapshotCount = 0;
     slot.nCurrentSnapshot = 0;
     slot.nAppliedSnapshot = -1;
-    std::memset(slot.abUnknown564, 0, sizeof(slot.abUnknown564));
+    slot.dwPredictionFrame = 0;
+    slot.nRepeatedSnapshotFrames = 0;
+    slot.nLateSnapshotFrames = 0;
     slot.dwPingMs = 0;
 }
 
@@ -2022,7 +2024,9 @@ bool ResetNetworkState(void) {
         slot.nSnapshotCount = 0;
         slot.nCurrentSnapshot = 0;
         slot.nAppliedSnapshot = -1;
-        std::memset(slot.abUnknown564, 0, sizeof(slot.abUnknown564));
+        slot.dwPredictionFrame = 0;
+        slot.nRepeatedSnapshotFrames = 0;
+        slot.nLateSnapshotFrames = 0;
         slot.dwPingMs = 0;
         ReleaseMutex(slot.hMutex);
     }

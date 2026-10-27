@@ -544,6 +544,11 @@ unsigned SendDeltaKeyframePacket(KeyframeState *state, KeyframeState *base);
 void EncodeKeyframeBitstreamFull(NetStream *stream, KeyframeState *state);
 
 /**
+ * @ghidraAddress BRD3D: 0x100054a0
+ */
+unsigned GetInterpolatedRemoteVehicleState(KeyframeState *state, int slotIndex);
+
+/**
  * @ghidraAddress BRD3D: 0x10006830
  */
 void EncodeKeyframeBitstreamDelta(NetStream *stream, KeyframeState *state, KeyframeState *base);

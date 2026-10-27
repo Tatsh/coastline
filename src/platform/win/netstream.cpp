@@ -5,9 +5,106 @@
 #include "platform/win/directplay.h"
 #include "platform/win/ghost.h"
 #include "platform/win/settings.h"
+#include "platform/win/terrain.h"
 #include "trackselect.h"
 
 NetStream g_aNetPlayerStreams[NET_PLAYER_STREAM_COUNT];
+
+static inline void PredictRemoteKeyframe(
+    KeyframeState *state, NetPeerSlot &slot, int previous, int latest, int interval) {
+    int elapsed = static_cast<int>(GetElapsedFrameCount() - slot.adwSnapshotTimes[latest]);
+    if (elapsed > 6) {
+        elapsed = 6;
+    }
+    int numerator = static_cast<int>(static_cast<unsigned>(elapsed) + interval);
+    // A new snapshot can divide by zero when both timestamps match.
+    float share = static_cast<float>(static_cast<long double>(numerator) / interval);
+    InterpolateKeyframeState(state, share, &slot.aSnapshots[previous], &slot.aSnapshots[latest]);
+    Vec3f position = slot.aSnapshots[latest].position;
+    float height = RaycastTerrainHeight(&position);
+    position = state->position;
+    float predictedHeight = RaycastTerrainHeight(&position);
+    state->position.z =
+        static_cast<float>(static_cast<long double>(height) - predictedHeight + state->position.z);
+}
+
+unsigned GetInterpolatedRemoteVehicleState(KeyframeState *state, int slotIndex) {
+    NetPeerSlot &slot = g_aNetPeerSlots[slotIndex];
+    HANDLE mutexes[2] = {g_hNetKeyframeMutex, slot.hMutex};
+    WaitForMultipleObjects(2, mutexes, TRUE, INFINITE);
+    if (slotIndex != g_dwLocalNetPlayerId) {
+        if (static_cast<int>(slot.nSnapshotCount) < 2) {
+            state->fEngineRpm = 400.0f;
+            ReleaseMutex(slot.hMutex);
+            ReleaseMutex(g_hNetKeyframeMutex);
+            return 0;
+        }
+        int latest = 0;
+        unsigned latestTime = 0;
+        for (int i = 0; i < 8; ++i) {
+            if (slot.adwSnapshotTypes[i] != 0 && slot.adwSnapshotTimes[i] > latestTime) {
+                latest = i;
+                latestTime = slot.adwSnapshotTimes[i];
+            }
+        }
+        int previous = 0;
+        unsigned previousTime = 0;
+        for (int i = 0; i < 8; ++i) {
+            if (slot.adwSnapshotTypes[i] != 0 && slot.adwSnapshotTimes[i] > previousTime &&
+                i != latest) {
+                previous = i;
+                previousTime = slot.adwSnapshotTimes[i];
+            }
+        }
+        int interval =
+            static_cast<int>(slot.adwSnapshotTimes[latest] - slot.adwSnapshotTimes[previous]);
+        if (slot.nAppliedSnapshot == latest) {
+            if (slot.nRepeatedSnapshotFrames < 15) {
+                ++slot.nRepeatedSnapshotFrames;
+                ++slot.dwPredictionFrame;
+            }
+            if (interval == 0) {
+                *state = slot.aSnapshots[slot.nAppliedSnapshot];
+            } else {
+                PredictRemoteKeyframe(state, slot, previous, latest, interval);
+            }
+        } else {
+            slot.nAppliedSnapshot = latest;
+            unsigned nextFrame = slot.dwPredictionFrame + 1;
+            if (slot.adwSnapshotTimes[latest] < nextFrame && slot.nLateSnapshotFrames < 20 &&
+                interval != 0) {
+                slot.nRepeatedSnapshotFrames = 1;
+                ++slot.nLateSnapshotFrames;
+                slot.dwPredictionFrame = nextFrame;
+            } else {
+                slot.nRepeatedSnapshotFrames = 0;
+                slot.nLateSnapshotFrames = 0;
+                slot.dwPredictionFrame = slot.adwSnapshotTimes[latest];
+            }
+            PredictRemoteKeyframe(state, slot, previous, latest, interval);
+        }
+    }
+    ReleaseMutex(slot.hMutex);
+    ReleaseMutex(g_hNetKeyframeMutex);
+    ClampFloat(&state->orientation.w);
+    ClampFloat(&state->orientation.x);
+    ClampFloat(&state->orientation.y);
+    ClampFloat(&state->orientation.z);
+    long double sum = static_cast<long double>(state->orientation.w) + state->orientation.x +
+                      state->orientation.z + state->orientation.y;
+    if (!(sum < 0.0L || sum > 0.0L)) {
+        state->orientation.w = 1.0f;
+        state->orientation.x = 0.0f;
+        state->orientation.y = 0.0f;
+        state->orientation.z = 0.0f;
+    } else {
+        QuaternionNormalize(&state->orientation);
+    }
+    ClampWorldCoordinate(&state->position.x);
+    ClampWorldCoordinate(&state->position.y);
+    ClampTerrainHeightCoordinate(&state->position.z);
+    return 1;
+}
 
 static inline float &KeyframePeakField(KeyframeState &state, int index) {
     return index < 2 ? state.afLight[index] : state.afEffectFlags[index - 2];
