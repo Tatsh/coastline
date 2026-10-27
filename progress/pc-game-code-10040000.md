@@ -1,6 +1,6 @@
 # PC port game code from 0x10040000 to 0x10050000
 
-210 of 264 routines done.
+212 of 264 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -154,14 +154,14 @@ the same name, for a routine the port retained from the N64 game.
 | `PreRaceInfoUI_OnBackToLoadSeason`                 |   ✅   |                 |      2 |     76 | `0x10046dc0` | `0x10040210` | `int PreRaceInfoUI_OnBackToLoadSeason(MenuActionWidget * pItem)`                                                                                          |
 | `AudioOptionsUI_OnBackAndSave`                     |   ✅   |                 |      1 |     76 | `0x100466c0` | `0x1003fb10` | `int AudioOptionsUI_OnBackAndSave(MenuActionWidget * pItem)`                                                                                              |
 | `PreRaceInfoUI_OnBackToChampionshipSeason`         |   ✅   |                 |      1 |     76 | `0x10046d70` | `0x100401c0` | `int PreRaceInfoUI_OnBackToChampionshipSeason(MenuActionWidget * pItem)`                                                                                  |
-| `ReturnToMultiplayerLobby`                         |        |                 |      3 |     74 | `0x10046400` | `0x1003f8a0` | `undefined ReturnToMultiplayerLobby()`                                                                                                                    |
+| `ReturnToMultiplayerLobby`                         |   ✅   |                 |      3 |     74 | `0x10046400` | `0x1003f8a0` | `int ReturnToMultiplayerLobby(MenuWidget * pWidget)`                                                                                                      |
 | `ChampionshipSeasonUI_OnStartNewSeason`            |   ✅   |                 |      1 |     72 | `0x10045aa0` | `0x1003ef40` | `int ChampionshipSeasonUI_OnStartNewSeason(MenuWidget * pWidget)`                                                                                         |
 | `QuitGameConfirmUI_OnConfirmQuit`                  |   ✅   |                 |      1 |     72 | `0x10043710` | `0x1003cc60` | `int QuitGameConfirmUI_OnConfirmQuit(MenuWidget * pWidget)`                                                                                               |
 | `ProcessCheatCodeInput`                            |   ✅   |                 |      1 |     71 | `0x10047610` | `0x10040a40` | `void ProcessCheatCodeInput(void)`                                                                                                                        |
 | `MenuWidget::Draw`                                 |   ✅   |                 |      1 |     70 | `0x10048010` | `0x10041460` | `int Draw(MenuWidget * this)`                                                                                                                             |
 | `MenuWidget::DrawCurrentImage`                     |   ✅   |                 |      1 |     68 | `0x10047a10` | `0x10040e60` | `int DrawCurrentImage(MenuWidget * this)`                                                                                                                 |
 | `ReturnToVideoOptionsFromDeviceSelect`             |        |                 |      2 |     66 | `0x10046620` |              | `undefined ReturnToVideoOptionsFromDeviceSelect()`                                                                                                        |
-| `ReturnToVideoOptionsFromResolution`               |        |                 |      2 |     66 | `0x10046670` | `0x1003fac0` | `undefined ReturnToVideoOptionsFromResolution()`                                                                                                          |
+| `ReturnToVideoOptionsFromResolution`               |   ✅   |                 |      2 |     66 | `0x10046670` | `0x1003fac0` | `int ReturnToVideoOptionsFromResolution(MenuWidget * pWidget)`                                                                                            |
 | `ModemConnectionUI_OnAccept`                       |        |                 |      1 |     66 | `0x10043f50` | `0x1003d4a0` | `undefined ModemConnectionUI_OnAccept()`                                                                                                                  |
 | `CarSetupUI_OnBackToSeasonProgressInfo`            |   ✅   |                 |      1 |     66 | `0x10046cd0` | `0x10040120` | `int CarSetupUI_OnBackToSeasonProgressInfo(MenuActionWidget * pItem)`                                                                                     |
 | `CarSetupUI_OnBackToTimeAttack`                    |   ✅   |                 |      1 |     66 | `0x10046d20` | `0x10040170` | `int CarSetupUI_OnBackToTimeAttack(MenuActionWidget * pItem)`                                                                                             |
