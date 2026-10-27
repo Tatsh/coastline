@@ -57,6 +57,7 @@
 #define VEHICLE_GET_EffectSound(vehicle) ((vehicle)->effectSound)
 #define VEHICLE_SET_EffectSound(vehicle, value) ((vehicle)->effectSound = (value))
 #define VEHICLE_GET_EffectVolume(vehicle) ((vehicle)->effectVolume)
+#define VEHICLE_SET_ExhaustTimer(vehicle, value) ((vehicle)->exhaustTimer = (value))
 #define VEHICLE_SET_EffectVolume(vehicle, value) ((vehicle)->effectVolume = (value))
 #define VEHICLE_GET_EngineRpm(vehicle) ((vehicle)->engineRpm)
 #define VEHICLE_SET_EngineRpm(vehicle, value) ((vehicle)->engineRpm = (value))

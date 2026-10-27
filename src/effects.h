@@ -168,14 +168,22 @@ void UpdateExhaustParticles(void);
  */
 void UpdateTireSmoke(void);
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /**
  * Free every puff of the pool and stop the exhaust of the vehicles.
  *
  * @ghidraAddress USA: 0x8023cf30
  * @ghidraAddress EUR: 0x8023e440
  * @ghidraAddress JPN: 0x8023df40
+ * @ghidraAddress BRD3D: 0x1003a4d0
  */
 void InitParticleSystem(void);
+#ifdef __cplusplus
+}
+#endif
 
 /**
  * Update the effects of every racer for the weather: the exhaust in the snow, the tyre smoke in

@@ -120,7 +120,8 @@ private:
     Vec3f joltPosition;
     Vec3f joltVelocity;
     Vec3f joltOffset;
-    u8 abUnknown105c[0x10]; /* +0x105c */
+    f32 exhaustTimer;
+    Vec3f exhaustPosition;
     f32 smokeTimers[VEHICLE_WHEELS];
     u8 abUnknown107c[0x30]; /* +0x107c */
     f32 sprayFramesLeft[VEHICLE_WHEELS];
@@ -179,6 +180,9 @@ private:
     char checkpointMessageText[20];
     u8 abUnknown2ad0[0x98]; /* +0x2ad0 */
 public:
+    void SetExhaustTimer(f32 value) {
+        exhaustTimer = value;
+    }
     s32 AdvanceSkidFrames() {
         return skidFrames++;
     }

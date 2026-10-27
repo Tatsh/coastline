@@ -739,23 +739,6 @@ void UpdateTireSmoke(void) {
     }
 }
 
-void InitParticleSystem(void) {
-    s32 i;
-
-    for (i = 1; i < PARTICLES; i++) {
-        g_aParticlePool[i].next = i + 1;
-    }
-    /* The loop links the last puff past the pool, and this ends the list there. */
-    g_aParticlePool[PARTICLES - 1].next = 0;
-    g_wParticleFreeListHead = 1;
-    for (i = 0; i < g_dwNumActiveVehicles; i++) {
-        g_aVehicles[i].exhaustTimer = 0.0f;
-    }
-    g_wExhaustParticleListHead = 0;
-    g_wTireSmokeListHead = 0;
-    g_wPavedTireSmokeListHead = 0;
-}
-
 void UpdateAllVehicleEffects(void) {
     /* Whether InitParticleSystem() has run. */
     /**
