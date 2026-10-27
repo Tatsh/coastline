@@ -335,6 +335,7 @@ extern s32 g_dwSeasonResultMsgLineCount;
  * @ghidraAddress USA: 0x802707c4
  * @ghidraAddress EUR: 0x80272794
  * @ghidraAddress JPN: 0x80272244
+ * @ghidraAddress BRD3D: 0x10680940
  */
 extern s32 g_dwWaterfallCount;
 
@@ -344,6 +345,7 @@ extern s32 g_dwWaterfallCount;
  * @ghidraAddress USA: 0x802707c8
  * @ghidraAddress EUR: 0x8027279c
  * @ghidraAddress JPN: 0x8027224c
+ * @ghidraAddress BRD3D: 0x106909ec
  */
 extern s32 g_dwRaceInitialized;
 
@@ -413,6 +415,7 @@ extern s32 g_dwRacePhaseIndex;
  * @ghidraAddress USA: 0x802a4c04
  * @ghidraAddress EUR: 0x802a738c
  * @ghidraAddress JPN: 0x802a6e2c
+ * @ghidraAddress BRD3D: 0x11782bc0
  */
 extern s16 g_wRaceScreenLoopExited;
 
@@ -513,6 +516,7 @@ extern s32 g_dwScreenClearFrames;
  * @ghidraAddress USA: 0x80315e68
  * @ghidraAddress EUR: 0x80317b58
  * @ghidraAddress JPN: 0x80316598
+ * @ghidraAddress BRD3D: 0x106806dc
  */
 extern f32 g_fRaceCaptionTimer;
 
@@ -520,6 +524,7 @@ extern f32 g_fRaceCaptionTimer;
  * @ghidraAddress USA: 0x80315e6c
  * @ghidraAddress EUR: 0x80317b5c
  * @ghidraAddress JPN: 0x8031659c
+ * @ghidraAddress BRD3D: 0x106805c0
  */
 extern s32 g_dwRaceCaptionIndex;
 
@@ -702,7 +707,6 @@ extern "C"
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
 /**
  * @ghidraAddress BRD3D: 0x1002c500
- * @stub{BRD3D}
  */
 #ifdef __cplusplus
 extern "C"

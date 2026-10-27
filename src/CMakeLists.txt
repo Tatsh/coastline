@@ -189,9 +189,9 @@ target_sources(coastline_game PRIVATE ambientsound.c)
 target_sources(coastline_game PRIVATE lightning.c)
 target_sources(coastline_game PRIVATE hudtime.c)
 target_sources(coastline_game PRIVATE hudrace.c racephases.c racespecials.c raceinit.c)
-target_sources(coastline_game PRIVATE racecontrols.c racefinish.c)
+target_sources(coastline_game PRIVATE racecontrols.c racefinish.c racerun.c)
 if(TGR_PLATFORM STREQUAL "win")
-  set_source_files_properties(racephases.c racespecials.c raceinit.c racecontrols.c racefinish.c
+  set_source_files_properties(racephases.c racespecials.c raceinit.c racecontrols.c racefinish.c racerun.c
                               PROPERTIES LANGUAGE CXX)
 endif()
 target_sources(coastline_game PRIVATE hudmessage.c)
