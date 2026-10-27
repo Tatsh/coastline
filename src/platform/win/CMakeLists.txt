@@ -39,6 +39,7 @@ add_library(
   season.cpp
   snapshot.c
   sound.cpp
+  terrain.cpp
   texturescan.cpp
   trackanimation.cpp
   tracktexture.cpp
