@@ -1,6 +1,6 @@
 # PC port game code from 0x10060000 to 0x10070000
 
-72 of 172 routines done.
+73 of 172 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -29,7 +29,7 @@ the same name, for a routine the port retained from the N64 game.
 | `UpdateRacerSlotMotion`                  |        | ✅ `0x8022c9fc` |      1 |   1073 | `0x10068ef0` | `0x10061f60` | `undefined UpdateRacerSlotMotion()`                                                                                                      |
 | `RallyConfig::SaveConfigToFile`          |   ✅   |                 |      8 |   1023 | `0x1006a4a0` | `0x100634b0` | `bool SaveConfigToFile(RallyConfig * this, char * pszPath)`                                                                              |
 | `ShowGlideSplashImage`                   |   📝   |                 |      2 |    994 |              | `0x1006c990` | `undefined ShowGlideSplashImage()`                                                                                                       |
-| `Vehicle::SetupVehicleForRaceStart`      |        | ✅ `0x80228a6c` |      2 |    979 | `0x10065740` | `0x1005e7b0` | `undefined SetupVehicleForRaceStart(Vehicle * this)`                                                                                     |
+| `Vehicle::SetupVehicleForRaceStart`      |   ✅   | ✅ `0x80228a6c` |      2 |    979 | `0x10065740` | `0x1005e7b0` | `void SetupVehicleForRaceStart(Vehicle * this)`                                                                                          |
 | `MouseDevice::PollMouseDevice`           |   ✅   |                 |      1 |    939 | `0x100603a0` | `0x10059410` | `void PollMouseDevice(MouseDevice * this, void * hWnd)`                                                                                  |
 | `Vehicle::ComputeTrackPosition`          |        | ✅ `0x80227214` |      3 |    937 | `0x10064350` | `0x1005d3c0` | `undefined ComputeTrackPosition(Vehicle * this)`                                                                                         |
 | `Vehicle::TraceTrackSplineRecursive`     |        | ✅ `0x80226d9c` |      3 |    856 | `0x10063ff0` | `0x1005d060` | `undefined TraceTrackSplineRecursive(Vehicle * this, undefined4 param_1, undefined4 param_2, undefined4 param_3)`                        |
