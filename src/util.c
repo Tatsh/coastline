@@ -1,5 +1,6 @@
 #include "util.h"
 
+#if TGR_PLATFORM == TGR_PLATFORM_N64
 #include "trackselect.h"
 
 /* The first grid row of the sections that tracks 3 and 8 extend to row 0. */
@@ -41,6 +42,7 @@ void PrepareTrackSections(void) {
     MarkTrackSections(g_LoadedTrack.rootSection);
     UnmarkTrackSections(g_LoadedTrack.rootSection);
 }
+#endif
 
 DisplayListBlock *AllocDisplayListBlock(void) {
     if (g_dwDisplayListBlockCount < FRAME_DISPLAY_LIST_BLOCKS) {
@@ -72,6 +74,7 @@ void ResetFrameBlocks(void) {
     g_dwLightBlockCount = 0;
 }
 
+#if TGR_PLATFORM == TGR_PLATFORM_N64
 void QuickSort(void *base, u32 count, u32 size, CompareFunc compare) {
     u8 *lo, *hi, *mid, *loguy, *higuy;
     u32 n;
@@ -206,3 +209,4 @@ void ExchangeWordBuffers(u32 *a, u32 *b, u32 size) {
         }
     }
 }
+#endif

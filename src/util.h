@@ -12,6 +12,10 @@
 
 #include "track.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /* The blocks of each kind a frame can allocate before they run out. */
 #define FRAME_DISPLAY_LIST_BLOCKS 256 /*!< The display list blocks of a frame. */
 #define FRAME_HILITE_BLOCKS 20        /*!< The specular highlight blocks of a frame. */
@@ -29,6 +33,7 @@ typedef struct {
  * @ghidraAddress USA: 0x8036ae50
  * @ghidraAddress EUR: 0x8036d350
  * @ghidraAddress JPN: 0x8036bfc0
+ * @ghidraAddress BRD3D: 0x10af9bc0
  */
 extern DisplayListBlock g_aDisplayListBlocks[2][FRAME_DISPLAY_LIST_BLOCKS + 1];
 
@@ -36,6 +41,7 @@ extern DisplayListBlock g_aDisplayListBlocks[2][FRAME_DISPLAY_LIST_BLOCKS + 1];
  * @ghidraAddress USA: 0x80372ed0
  * @ghidraAddress EUR: 0x803753d0
  * @ghidraAddress JPN: 0x80374040
+ * @ghidraAddress BRD3D: 0x10b02190
  */
 extern Hilite g_aHiliteBlocks[2][FRAME_HILITE_BLOCKS + 1];
 
@@ -43,6 +49,7 @@ extern Hilite g_aHiliteBlocks[2][FRAME_HILITE_BLOCKS + 1];
  * @ghidraAddress USA: 0x80373170
  * @ghidraAddress EUR: 0x80375670
  * @ghidraAddress JPN: 0x803742e0
+ * @ghidraAddress BRD3D: 0x10b01c50
  */
 extern LookAt g_aLightBlocks[2][FRAME_LIGHT_BLOCKS + 1];
 
@@ -52,6 +59,7 @@ extern LookAt g_aLightBlocks[2][FRAME_LIGHT_BLOCKS + 1];
  * @ghidraAddress USA: 0x8028dfb0
  * @ghidraAddress EUR: 0x80290770
  * @ghidraAddress JPN: 0x80290210
+ * @ghidraAddress BRD3D: 0x10b01c40
  */
 extern s32 g_dwDisplayListBlockCount;
 
@@ -59,6 +67,7 @@ extern s32 g_dwDisplayListBlockCount;
  * @ghidraAddress USA: 0x8028dfb4
  * @ghidraAddress EUR: 0x80290774
  * @ghidraAddress JPN: 0x80290214
+ * @ghidraAddress BRD3D: 0x10b01c48
  */
 extern s32 g_dwHiliteBlockCount;
 
@@ -66,6 +75,7 @@ extern s32 g_dwHiliteBlockCount;
  * @ghidraAddress USA: 0x8028dfb8
  * @ghidraAddress EUR: 0x80290778
  * @ghidraAddress JPN: 0x80290218
+ * @ghidraAddress BRD3D: 0x10b01c44
  */
 extern s32 g_dwLightBlockCount;
 
@@ -75,6 +85,7 @@ extern s32 g_dwLightBlockCount;
  * @ghidraAddress USA: 0x8028a85c
  * @ghidraAddress EUR: 0x8028ca5c
  * @ghidraAddress JPN: 0x8028c52c
+ * @ghidraAddress BRD3D: 0x106c65ec
  */
 extern s32 g_dwFrameBufferIndex;
 
@@ -121,6 +132,7 @@ void PrepareTrackSections(void);
  * @ghidraAddress USA: 0x80255cd0
  * @ghidraAddress EUR: 0x802572a0
  * @ghidraAddress JPN: 0x80256c30
+ * @ghidraAddress BRD3D: 0x10069490
  */
 DisplayListBlock *AllocDisplayListBlock(void);
 
@@ -131,6 +143,7 @@ DisplayListBlock *AllocDisplayListBlock(void);
  * @ghidraAddress USA: 0x80255d4c
  * @ghidraAddress EUR: 0x8025731c
  * @ghidraAddress JPN: 0x80256cac
+ * @ghidraAddress BRD3D: 0x100694e0
  */
 Hilite *AllocHiliteBlock(void);
 
@@ -141,6 +154,7 @@ Hilite *AllocHiliteBlock(void);
  * @ghidraAddress USA: 0x80255dd8
  * @ghidraAddress EUR: 0x802573a8
  * @ghidraAddress JPN: 0x80256d38
+ * @ghidraAddress BRD3D: 0x10069530
  */
 LookAt *AllocLightBlock(void);
 
@@ -150,6 +164,7 @@ LookAt *AllocLightBlock(void);
  * @ghidraAddress USA: 0x80255e64
  * @ghidraAddress EUR: 0x80257434
  * @ghidraAddress JPN: 0x80256dc4
+ * @ghidraAddress BRD3D: 0x10069580
  */
 void ResetFrameBlocks(void);
 
@@ -215,5 +230,9 @@ void ExchangeHalfwordBuffers(s16 *a, s16 *b, u32 size);
  * @ghidraAddress JPN: 0x80257188
  */
 void ExchangeWordBuffers(u32 *a, u32 *b, u32 size);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif
