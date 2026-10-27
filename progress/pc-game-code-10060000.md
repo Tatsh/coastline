@@ -1,6 +1,6 @@
 # PC port game code from 0x10060000 to 0x10070000
 
-58 of 170 routines done.
+59 of 170 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -55,7 +55,7 @@ the same name, for a routine the port retained from the N64 game.
 | `RaycastTerrainHeight`                   |        |                 |      7 |    389 | `0x1006f310` | `0x100682c0` | `float RaycastTerrainHeight(float * pPosition)`                                                                                          |
 | `SumWheelForces`                         |        | ✅ `0x80259634` |      4 |    382 | `0x1006aff0` | `0x10063fa0` | `void SumWheelForces(RigidBody * pChassisBody, RigidBody * pWheelBody)`                                                                  |
 | `ComputeStereoPan`                       |        | ✅ `0x8022b1d4` |     10 |    380 | `0x10067bc0` | `0x10060c30` | `void ComputeStereoPan(float * pPosition, float pViewMatrix, float * pOutLeft, float * pOutRight, DWORD * pOutDistance, int bHalfScale)` |
-| `Vehicle::InitPlayerVehicleSlot`         |        | ✅ `0x80226100` |      1 |    368 | `0x100634f0` | `0x1005c560` | `undefined InitPlayerVehicleSlot(Vehicle * this)`                                                                                        |
+| `Vehicle::InitPlayerVehicleSlot`         |   🚧   | ✅ `0x80226100` |      1 |    368 | `0x100634f0` | `0x1005c560` | `undefined InitPlayerVehicleSlot(Vehicle * this)`                                                                                        |
 | `PositionQuaternionToMatrix4x4`          |   ✅   |                 |      1 |    363 | `0x100695d0` | `0x10062640` | `void PositionQuaternionToMatrix4x4(float[4] * matrix, QuaternionPose * pPose)`                                                          |
 | `FindTrackRoutePoint`                    |        | ✅ `0x80228e4c` |      1 |    345 | `0x10065b20` | `0x1005eb90` | `undefined FindTrackRoutePoint()`                                                                                                        |
 | `DoesSegmentCrossUnitCube`               |        | ✅ `0x8025cbf8` |      1 |    332 | `0x1006d850` | `0x10066800` | `undefined DoesSegmentCrossUnitCube()`                                                                                                   |
@@ -128,7 +128,7 @@ the same name, for a routine the port retained from the N64 game.
 | `ResetGhostRecording`                    |   ✅   |                 |      1 |     51 | `0x1006aa50` | `0x10063a00` | `void ResetGhostRecording(void)`                                                                                                         |
 | `PlaySoundEffect`                        |        | ✅ `0x8022b370` |      2 |     50 | `0x10067d40` | `0x10060db0` | `undefined PlaySoundEffect()`                                                                                                            |
 | `FreeAllPaintBitmaps`                    |   ✅   |                 |      1 |     50 | `0x10061620` | `0x1005a6a0` | `void FreeAllPaintBitmaps(void)`                                                                                                         |
-| `ResetAllPlayers`                        |        | ✅ `0x80200154` |      1 |     49 | `0x10069800` | `0x10062870` | `undefined ResetAllPlayers()`                                                                                                            |
+| `ResetAllPlayers`                        |   ✅   | ✅ `0x80200154` |      1 |     49 | `0x10069800` | `0x10062870` | `void ResetAllPlayers(void)`                                                                                                             |
 | `MouseDevice::SyncMouseAcquireState`     |        |                 |      3 |     48 | `0x10060750` | `0x100597c0` | `undefined SyncMouseAcquireState(MouseDevice * this, undefined4 param_1)`                                                                |
 | `ApplyAudioVolumeSettings`               |   ✅   |                 |      6 |     46 | `0x10060d90` | `0x10059e00` | `void ApplyAudioVolumeSettings(void)`                                                                                                    |
 | `RecordVehicleKeyframe`                  |        |                 |      1 |     44 | `0x100609e0` | `0x10059a50` | `void RecordVehicleKeyframe(void * pVideoSettings)`                                                                                      |
