@@ -1183,7 +1183,9 @@ void ScaleVertexTexCoords(GbiVertex *pVertex, const GbiVertexSource *pSource) {
     pVertex->fV = pSource->fT * g_fTexCoordScaleT;
 }
 
-void ClipAndSubmitTriangle(GbiVertex *pVertex0, GbiVertex *pVertex1, GbiVertex *pVertex2) {
+template <bool FarDepth>
+static void
+ClipAndSubmitTriangleImpl(GbiVertex *pVertex0, GbiVertex *pVertex1, GbiVertex *pVertex2) {
     pVertex0->source.pNext = &pVertex1->source;
     pVertex1->source.pNext = &pVertex2->source;
     pVertex2->source.pNext = &pVertex0->source;
@@ -1211,14 +1213,37 @@ void ClipAndSubmitTriangle(GbiVertex *pVertex0, GbiVertex *pVertex1, GbiVertex *
     for (int i = 0; i < polygon.nCount; ++i) {
         GbiVertexSource *pVertex = polygon.pHead;
         polygon.pHead = pVertex->pNext;
-        TransformVertexToScreen(
-            &vertices[i], pVertex, pVertex->fRed, pVertex->fGreen, pVertex->fBlue);
+        if constexpr (FarDepth) {
+            float fRhw = 1.0L / pVertex->fW;
+            vertices[i].fX = static_cast<long double>(pVertex->fX) * g_fViewportScaleX * fRhw +
+                             g_fViewportTranslateX;
+            vertices[i].fY = static_cast<long double>(pVertex->fY) * g_fViewportScaleY * fRhw +
+                             g_fViewportTranslateY;
+            vertices[i].fZ = 0.999f;
+            vertices[i].fRhw = 1.0f / 65535.0f;
+            vertices[i].fRed = pVertex->fRed;
+            vertices[i].fGreen = pVertex->fGreen;
+            vertices[i].fBlue = pVertex->fBlue;
+        } else {
+            TransformVertexToScreen(
+                &vertices[i], pVertex, pVertex->fRed, pVertex->fGreen, pVertex->fBlue);
+        }
         ScaleVertexTexCoords(&vertices[i], pVertex);
         RecycleClipVertex(pVertex);
     }
     for (int i = 2; i < polygon.nCount; ++i) {
         SubmitTriangleToRenderBuffer(&vertices[0], &vertices[i - 1], &vertices[i]);
     }
+}
+
+void ClipAndSubmitTriangle(GbiVertex *pVertex0, GbiVertex *pVertex1, GbiVertex *pVertex2) {
+    ClipAndSubmitTriangleImpl<false>(pVertex0, pVertex1, pVertex2);
+}
+
+void ClipAndSubmitTriangleAtFarDepth(GbiVertex *pVertex0,
+                                     GbiVertex *pVertex1,
+                                     GbiVertex *pVertex2) {
+    ClipAndSubmitTriangleImpl<true>(pVertex0, pVertex1, pVertex2);
 }
 
 // A routine that clips a triangle of g_aGbiVertexCache and submits what remains.
