@@ -207,19 +207,37 @@ void guRotate(Mtx *m, float a, float x, float y, float z);
  */
 void guNormalize(float *x, float *y, float *z);
 
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+/**
+ * Build a floating-point frustum matrix. The scale parameter is unused.
+ *
+ * @ghidraAddress BRD3D: 0x10030810
+ */
+void guFrustumF(float mf[4][4],
+                float left,
+                float right,
+                float bottom,
+                float top,
+                float near,
+                float far,
+                float scale);
+#endif
+
 /**
  * Build a floating-point perspective projection.
  *
  * @param mf Receives the matrix, as f32[4][4].
- * @param perspNorm Receives the factor that normalises the projected W, unless it is NULL.
+ * @param perspNorm Receives the factor that normalises the projected W. Windows requires a pointer
+ * and writes 1. N64 permits NULL.
  * @param fovy The vertical field of view in degrees.
  * @param aspect The ratio of the width of the view to its height.
  * @param near The distance to the near clipping plane.
  * @param far The distance to the far clipping plane.
- * @param scale The factor applied to every element of the matrix.
+ * @param scale The factor applied to every element of the N64 matrix. Windows ignores it.
  * @ghidraAddress USA: 0x80265180
  * @ghidraAddress EUR: 0x80266910
  * @ghidraAddress JPN: 0x80266410
+ * @ghidraAddress BRD3D: 0x10030930
  */
 void guPerspectiveF(
     float mf[4][4], u16 *perspNorm, float fovy, float aspect, float near, float far, float scale);
