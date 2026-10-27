@@ -2353,6 +2353,9 @@ int IsGameCdInDrive(int nDrive) {
 }
 
 int FindGameCdDrive(void) {
+#ifdef ENABLE_PATCHES
+    return 1;
+#else
     char szDirectory[MAX_PATH];
     int nFound = 0;
     const int nOriginalDrive = _getdrive();
@@ -2367,6 +2370,7 @@ int FindGameCdDrive(void) {
     _chdrive(nOriginalDrive);
     _chdir(szDirectory);
     return nFound;
+#endif /* ENABLE_PATCHES */
 }
 
 int ShowChampionshipSeasonMenu(void) {
