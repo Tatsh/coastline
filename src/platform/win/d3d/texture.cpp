@@ -255,12 +255,12 @@ void AliasTextureEntrySurface(int nEntry, int nSourceEntry) {
 }
 
 void SetTextureEntryDamageLevel(int nEntry, int nDamageLevel) {
-    g_pTextureEntries[nEntry].nDamageLevel = nDamageLevel;
+    g_pTextureEntries[nEntry].data.nDamageLevel = nDamageLevel;
 }
 
 void GetTextureEntryDimensions(int *pWidth, int *pHeight, int nEntry) {
     const TextureEntry &entry = g_pTextureEntries[nEntry];
-    CalculateTextureDimensions(pWidth, pHeight, entry.nLod, entry.nAspectRatio);
+    CalculateTextureDimensions(pWidth, pHeight, entry.data.nLod, entry.data.nAspectRatio);
 }
 
 void GetPrecipitationTextureDimensions(int nIndex) {

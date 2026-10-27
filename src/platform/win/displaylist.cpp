@@ -755,15 +755,15 @@ void BindTextureEntry(int nEntry) {
                                   g_ppTextureIdTable[entry.nTextureId]->hTexture);
     SetPendingRenderState(&g_dwPendingRS_AddressU,
                           g_dwAppliedRS_AddressU,
-                          entry.bClampS == 1 ? D3DTADDRESS_CLAMP : D3DTADDRESS_WRAP,
+                          entry.data.bClampS == 1 ? D3DTADDRESS_CLAMP : D3DTADDRESS_WRAP,
                           RENDER_STATE_DIRTY_ADDRESS_U);
     SetPendingRenderState(&g_dwPendingRS_AddressV,
                           g_dwAppliedRS_AddressV,
-                          entry.bClampT == 1 ? D3DTADDRESS_CLAMP : D3DTADDRESS_WRAP,
+                          entry.data.bClampT == 1 ? D3DTADDRESS_CLAMP : D3DTADDRESS_WRAP,
                           RENDER_STATE_DIRTY_ADDRESS_V);
     g_fTexCoordScaleS = entry.fTextureScaleS;
     g_fTexCoordScaleT = entry.fTextureScaleT;
-    const TexScanTile &tile = entry.aTiles[entry.nTileIndex];
+    const TexScanTile &tile = entry.data.aTiles[entry.data.nTileIndex];
     g_dwTileSizeUls = tile.nUls;
     g_dwTileSizeUlt = tile.nUlt;
     g_dwTileSizeLrs = tile.nLrs;

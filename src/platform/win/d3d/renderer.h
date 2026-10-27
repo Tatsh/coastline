@@ -1150,25 +1150,30 @@ FindDirectDrawDriverByGuid(GUID *pGuid, DirectDrawDriver **ppPrimary, DirectDraw
  */
 int ReturnZero(void);
 
-/** A texture the game loaded. The layout is not recovered past its size. */
-struct TextureEntry {
-    int nTextureId;         /*!< The entry of g_ppTextureIdTable of the texture. */
-    char abUnknown4[0x1c];  /* +0x04 */
+/** Image metadata shared by texture entries and temporary texture conversions. */
+struct TextureImageData {
+    char abUnknown0[0x1c];  /* +0x00 */
     int nLod;               /*!< The level of detail, as CalculateTextureDimensions() reads it. */
     int nAspectRatio;       /*!< The aspect ratio, as CalculateTextureDimensions() reads it. */
     int bClampS;            /*!< Whether texture binding clamps s. */
     int bClampT;            /*!< Whether texture binding clamps t. */
-    char abUnknown30[0x30]; /* +0x30 */
+    char abUnknown2c[0x30]; /* +0x2c */
     int nTileIndex;         /*!< The active tile of aTiles. */
-    char abUnknown64[4];    /* +0x64 */
+    char abUnknown60[4];    /* +0x60 */
     TexScanTile aTiles[TEX_SCAN_TILE_COUNT];
-    char abUnknown268[8];             /* +0x268 */
-    int bOwnsPaintBuffers;            /*!< Whether release frees the four paint buffers. */
-    char abUnknown274[8];             /* +0x274 */
-    int nDamageLevel;                 /*!< The level of damage, from 0 to 3. */
-    char abUnknown280[4];             /* +0x280 */
-    unsigned char *apPaintBuffers[4]; /*!< The pixel buffers for the four damage levels. */
-    char abUnknown294[0x1c];          /* +0x294 */
+    char abUnknown264[8];  /* +0x264 */
+    int bOwnsPaintBuffers; /*!< Whether paint buffer memory is released with this image. */
+    char abUnknown270[8];  /* +0x270 */
+    int nDamageLevel;      /*!< The level of damage, from 0 to 3. */
+    char abUnknown27c[4];  /* +0x27c */
+    unsigned char *apPaintBuffers[4]; /*!< Pixel buffers for the four damage levels. */
+    char abUnknown290[0x1c];          /* +0x290 */
+};
+
+/** A loaded texture, its image metadata and texture-coordinate scales. */
+struct TextureEntry {
+    int nTextureId; /*!< The entry of g_ppTextureIdTable of the texture. */
+    TextureImageData data;
     float fTextureScaleS;
     float fTextureScaleT;
 };

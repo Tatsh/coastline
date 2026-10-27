@@ -943,8 +943,8 @@ void ShutdownTextureSubsystem(void) {
     g_ppTextureIdTable = nullptr;
     for (unsigned i = 0; i < g_dwTextureEntryCount; i++) {
         TextureEntry &entry = g_pTextureEntries[i];
-        if (entry.bOwnsPaintBuffers) {
-            for (unsigned char *&pixels : entry.apPaintBuffers) {
+        if (entry.data.bOwnsPaintBuffers) {
+            for (unsigned char *&pixels : entry.data.apPaintBuffers) {
                 if (pixels) {
                     std::free(pixels);
                     pixels = nullptr;
@@ -965,7 +965,7 @@ void UploadTextureEntryToSurface(int nEntry, TextureUploadData payload) {
     const TextureEntry &entry = g_pTextureEntries[nEntry];
     int width;
     int height;
-    CalculateTextureDimensions(&width, &height, entry.nLod, entry.nAspectRatio);
+    CalculateTextureDimensions(&width, &height, entry.data.nLod, entry.data.nAspectRatio);
     g_ppTextureIdTable[entry.nTextureId]->UploadSurfaceToTexture(payload.pixels, width, height);
 }
 
