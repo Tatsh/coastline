@@ -31,6 +31,10 @@ def arguments():
                         help='Size of the Wine desktop window, such as 800x600.')
     parser.add_argument('--wine', default=os.environ.get('WINE', 'wine'),
                         help='Wine executable; inherited Wine architecture settings are preserved.')
+    parser.add_argument('--winecfg', default=os.environ.get('WINECFG', 'winecfg'),
+                        help='winecfg executable for initialising a fresh prefix.')
+    parser.add_argument('--configure-prefix', action='store_true',
+                        help='Open winecfg even when the prefix already exists.')
     parser.add_argument('game_args', nargs=argparse.REMAINDER,
                         help='Arguments after -- go to the game.')
     return parser.parse_args()
@@ -39,6 +43,17 @@ def arguments():
 def copy_file(source, destination):
     if not destination.exists() or source.stat().st_mtime_ns != destination.stat().st_mtime_ns:
         shutil.copy2(source, destination)
+
+
+def initialise_prefix(options, prefix, installation, environment):
+    if (prefix / 'system.reg').is_file() and not options.configure_prefix:
+        return
+    winecfg = shutil.which(options.winecfg)
+    if winecfg is None:
+        raise ValueError(f'winecfg executable {options.winecfg!r} was not found.')
+    print('Opening winecfg. Close its window when prefix configuration is complete.', flush=True)
+    subprocess.run([str(Path(winecfg).resolve())], env=environment,
+                   cwd=installation, check=True)
 
 
 def stage(options):
@@ -110,9 +125,7 @@ def main():
         raise ValueError(f'Wine executable {options.wine!r} was not found.')
     wine = str(Path(wine).resolve())
     environment = dict(os.environ, WINEPREFIX=str(prefix))
-    environment.setdefault('WINEDEBUG', 'err+all')
-    overrides = environment.get('WINEDLLOVERRIDES', '')
-    environment['WINEDLLOVERRIDES'] = overrides + (';' if overrides else '') + 'mscoree,mshtml=d'
+    initialise_prefix(options, prefix, installation, environment)
 
     def run(*command):
         subprocess.run([wine, *command], env=environment, cwd=installation, check=True)
