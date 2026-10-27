@@ -271,6 +271,78 @@ public:
 int CarSetupUI_OnAcceptAndSave(MenuActionWidget *pWidget);
 
 /**
+ * @ghidraAddress BRD3D: 0x10042c80
+ * @ghidraAddress BRGlide: 0x1003c1d0
+ */
+int CarSetupUI_OnCycleHandlingType(MenuWidget *pWidget);
+
+/**
+ * @ghidraAddress BRD3D: 0x10042dc0
+ * @ghidraAddress BRGlide: 0x1003c310
+ */
+int CarSetupUI_OnCycleTireType(MenuWidget *pWidget);
+
+/**
+ * @ghidraAddress BRD3D: 0x10042e20
+ * @ghidraAddress BRGlide: 0x1003c370
+ */
+int CarSetupUI_OnCycleSuspensionType(MenuWidget *pWidget);
+
+/**
+ * @ghidraAddress BRD3D: 0x10042e80
+ * @ghidraAddress BRGlide: 0x1003c3d0
+ */
+int CarSetupUI_OnCycleTransmissionType(MenuWidget *pWidget);
+
+/**
+ * @ghidraAddress BRD3D: 0x10043590
+ * @ghidraAddress BRGlide: 0x1003cae0
+ */
+int GameOptionsUI_OnToggleForceFeedback(MenuWidget *pWidget);
+
+/**
+ * @ghidraAddress BRD3D: 0x100435f0
+ * @ghidraAddress BRGlide: 0x1003cb40
+ */
+int GameOptionsUI_OnToggleSkidMarks(MenuWidget *pWidget);
+
+/**
+ * @ghidraAddress BRD3D: 0x10043650
+ * @ghidraAddress BRGlide: 0x1003cba0
+ */
+int GameOptionsUI_OnToggleCarShadow(MenuWidget *pWidget);
+
+/**
+ * @ghidraAddress BRD3D: 0x100436b0
+ * @ghidraAddress BRGlide: 0x1003cc00
+ */
+int GameOptionsUI_OnToggleSpecularLighting(MenuWidget *pWidget);
+
+/**
+ * @ghidraAddress BRD3D: 0x100ac530
+ * @ghidraAddress BRGlide: 0x100abcd0
+ */
+extern const int g_adwForceFeedbackMenuIndexToValue[2];
+
+/**
+ * @ghidraAddress BRD3D: 0x100ac548
+ * @ghidraAddress BRGlide: 0x100abce8
+ */
+extern const int g_adwSkidMarksMenuIndexToValue[2];
+
+/**
+ * @ghidraAddress BRD3D: 0x100ac538
+ * @ghidraAddress BRGlide: 0x100abcd8
+ */
+extern const int g_adwCarShadowMenuIndexToValue[2];
+
+/**
+ * @ghidraAddress BRD3D: 0x100ac540
+ * @ghidraAddress BRGlide: 0x100abce0
+ */
+extern const int g_adwSpecularLightingMenuIndexToValue[2];
+
+/**
  * @ghidraAddress BRD3D: 0x100412c0
  * @ghidraAddress BRGlide: 0x1003a820
  */

@@ -1665,6 +1665,70 @@ void SetActiveMenuItemText(const char *pszText) {
     }
 }
 
+static inline void CycleMenuSetting(int &value, int maximum) {
+    if (g_adwMouseButtonPressed[1]) {
+        value = static_cast<int>(static_cast<unsigned>(value) + 1);
+        if (value > maximum) {
+            value = 0;
+        }
+    } else if (g_adwMouseButtonPressed[0]) {
+        value = static_cast<int>(static_cast<unsigned>(value) - 1);
+        if (value < 0) {
+            value = maximum;
+        }
+    }
+}
+
+int CarSetupUI_OnCycleHandlingType(MenuWidget *) {
+    CycleMenuSetting(g_dwHandlingTypeMenuIndex, 7);
+    g_dwHandlingType = g_dwHandlingTypeMenuIndex;
+    return 1;
+}
+
+int CarSetupUI_OnCycleTireType(MenuWidget *) {
+    CycleMenuSetting(g_dwTireMenuIndex, 2);
+    g_dwTireType = g_adwTireMenuIndexToTireType[g_dwTireMenuIndex];
+    return 1;
+}
+
+int CarSetupUI_OnCycleSuspensionType(MenuWidget *) {
+    CycleMenuSetting(g_dwSuspensionMenuIndex, 2);
+    g_dwSuspensionType = g_adwSuspensionMenuIndexToType[g_dwSuspensionMenuIndex];
+    return 1;
+}
+
+int CarSetupUI_OnCycleTransmissionType(MenuWidget *) {
+    CycleMenuSetting(g_dwSelectedTransmission, 1);
+    g_dwTransmissionType = g_adwTransmissionMenuIndexToType[g_dwSelectedTransmission];
+    return 1;
+}
+
+int GameOptionsUI_OnToggleForceFeedback(MenuWidget *) {
+    CycleMenuSetting(g_dwOptionForceFeedback, 1);
+    g_GlobalRallyConfig.bForceFeedbackEnabled =
+        g_adwForceFeedbackMenuIndexToValue[g_dwOptionForceFeedback];
+    return 1;
+}
+
+int GameOptionsUI_OnToggleSkidMarks(MenuWidget *) {
+    CycleMenuSetting(g_dwOptionSkidMarks, 1);
+    g_GlobalRallyConfig.bSkidMarksSelection = g_adwSkidMarksMenuIndexToValue[g_dwOptionSkidMarks];
+    return 1;
+}
+
+int GameOptionsUI_OnToggleCarShadow(MenuWidget *) {
+    CycleMenuSetting(g_dwOptionCarShadow, 1);
+    g_GlobalRallyConfig.bCarShadowSelection = g_adwCarShadowMenuIndexToValue[g_dwOptionCarShadow];
+    return 1;
+}
+
+int GameOptionsUI_OnToggleSpecularLighting(MenuWidget *) {
+    CycleMenuSetting(g_dwOptionSpecularLighting, 1);
+    g_GlobalRallyConfig.bSpecularLightingSelection =
+        g_adwSpecularLightingMenuIndexToValue[g_dwOptionSpecularLighting];
+    return 1;
+}
+
 int CarSetupUI_OnAcceptAndSave(MenuActionWidget *pWidget) {
     pWidget->pScreen->bRunning = 0;
     pWidget->pScreen->ShutdownFrontEnd(0);
