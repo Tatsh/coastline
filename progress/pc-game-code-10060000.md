@@ -1,6 +1,6 @@
 # PC port game code from 0x10060000 to 0x10070000
 
-85 of 173 routines done.
+87 of 173 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -70,7 +70,7 @@ the same name, for a routine the port retained from the N64 game.
 | `ApplyGhostKeyframeToVehicle`            |   ✅   |                 |      2 |    282 | `0x1006abd0` | `0x10063b80` | `void ApplyGhostKeyframeToVehicle(Vehicle * pVehicle, int nRecording)`                                                                   |
 | `ComputeAabbCornerPlaneClipCode`         |        |                 |      1 |    278 | `0x1006d540` | `0x100664f0` | `undefined ComputeAabbCornerPlaneClipCode()`                                                                                             |
 | `LoadAllSoundEffects`                    |        | ✅ `0x8022baa0` |      1 |    273 | `0x100682a0` | `0x10061310` | `undefined LoadAllSoundEffects()`                                                                                                        |
-| `ComputeSpringForces`                    |        | ✅ `0x8025edbc` |      1 |    265 | `0x1006f540` | `0x100684f0` | `undefined ComputeSpringForces()`                                                                                                        |
+| `ComputeSpringForces`                    |   ✅   | ✅ `0x8025edbc` |      1 |    265 | `0x1006f540` | `0x100684f0` | `void ComputeSpringForces(RigidBody * body)`                                                                                             |
 | `SortRacersByPosition`                   |        | ✅ `0x80229550` |      1 |    258 | `0x10066510` | `0x1005f580` | `undefined SortRacersByPosition()`                                                                                                       |
 | `ComputeVehicleAccelerations`            |   ✅   | ✅ `0x8025980c` |      1 |    238 | `0x1006b170` | `0x10064120` | `void ComputeVehicleAccelerations(RigidBody * body)`                                                                                     |
 | `ApplyEnemyCarColorPanels`               |   ✅   |                 |      1 |    233 | `0x100661b0` | `0x1005f220` | `void ApplyEnemyCarColorPanels(Vehicle * vehicle, RacerSlot * slot)`                                                                     |
@@ -84,7 +84,7 @@ the same name, for a routine the port retained from the N64 game.
 | `ReadInstallDirectoryFromRegistry`       |   ✅   |                 |      1 |    212 | `0x1006a8a0` | `0x10063860` | `void ReadInstallDirectoryFromRegistry(void)`                                                                                            |
 | `AdvanceAlongTrackRoute`                 |   ✅   | ✅ `0x802290c4` |      2 |    204 | `0x10065c80` | `0x1005ecf0` | `void AdvanceAlongTrackRoute(TrackSection * section, int pointIndex, float fraction, float distance)`                                    |
 | `Vehicle::ChooseVehicleCar`              |   ✅   | ✅ `0x80225f88` |      3 |    201 | `0x10063420` |              | `void ChooseVehicleCar(Vehicle * this)`                                                                                                  |
-| `ComputeDampingForces`                   |        | ✅ `0x8025ef70` |      1 |    200 | `0x1006f650` | `0x10068600` | `undefined ComputeDampingForces()`                                                                                                       |
+| `ComputeDampingForces`                   |   ✅   | ✅ `0x8025ef70` |      1 |    200 | `0x1006f650` | `0x10068600` | `void ComputeDampingForces(RigidBody * body)`                                                                                            |
 | `MouseDevice::CreateMouseDevice`         |   ✅   |                 |      1 |    181 | `0x100602e0` | `0x10059350` | `bool CreateMouseDevice(MouseDevice * this, void * hWnd)`                                                                                |
 | `RallyConfig::SetInputBinding`           |   ✅   |                 |      4 |    169 | `0x10069b10` | `0x10062b80` | `void SetInputBinding(RallyConfig * this, int nDevice, int nControl, WORD wKind, BYTE nKeyCode)`                                         |
 | `SetVehicleFrameMatrix`                  |        | ✅ `0x80220150` |      1 |    152 |              | `0x1006f970` | `undefined SetVehicleFrameMatrix()`                                                                                                      |
