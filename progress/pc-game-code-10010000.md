@@ -1,6 +1,6 @@
 # PC port game code from 0x10010000 to 0x10020000
 
-146 of 162 routines done.
+147 of 162 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -63,7 +63,7 @@ the same name, for a routine the port retained from the N64 game.
 | `SubmitTriangleToRenderBuffer`                         |   ✅   |                 |      2 |    236 | `0x1001e4e0` |              | `void SubmitTriangleToRenderBuffer(GbiVertex * pVertex0, GbiVertex * pVertex1, GbiVertex * pVertex2)`                                                                                                                                        |
 | `LerpShadowClipVertex`                                 |   ✅   |                 |      2 |    231 | `0x10010b00` | `0x1000e060` | `ShadowClipVertex * LerpShadowClipVertex(ShadowClipVertex * first, ShadowClipVertex * second, float fraction)`                                                                                                                               |
 | `EnumDirectDrawDriversCallback`                        |   ✅   |                 |      1 |    224 | `0x1001a990` |              | `BOOL EnumDirectDrawDriversCallback(GUID * pGuid, char * pszDescription, char * pszName, void * pContext)`                                                                                                                                   |
-| `EmitIndexedQuadDrawCommand`                           |        |                 |      2 |    217 | `0x10016a60` | `0x10013fd0` | `void EmitIndexedQuadDrawCommand(void)`                                                                                                                                                                                                      |
+| `EmitIndexedQuadDrawCommand`                           |   ✅   |                 |      2 |    217 | `0x10016a60` | `0x10013fd0` | `void EmitIndexedQuadDrawCommand(int textureEntry, int x, int y, int width, int height)`                                                                                                                                                     |
 | `SelectDriverDeviceAndModeFromConfig`                  |   ✅   |                 |      1 |    217 | `0x1001a790` |              | `long SelectDriverDeviceAndModeFromConfig(GUID * pDriverGuid, int nWidth, int nHeight, int nBitDepth, void * pSurfaceFormat, GUID * pDeviceGuid, bool bMatchMode, DirectDrawDriver * * ppDriver, DisplayMode * * ppMode, void * * ppDevice)` |
 | `SubmitVertexToRenderBuffer`                           |   ✅   |                 |     49 |    213 | `0x1001bc90` |              | `int SubmitVertexToRenderBuffer(GbiVertex * pVertex)`                                                                                                                                                                                        |
 | `FindDisplayModeForDevice`                             |   ✅   |                 |      2 |    210 | `0x1001b880` |              | `DisplayMode * FindDisplayModeForDevice(void * this, int nWidth, int nHeight, int nBitDepth, void * pUnused, D3DDeviceNode * pDevice, DisplayMode * * ppFallback, DisplayMode * pFirst)`                                                     |
