@@ -707,6 +707,9 @@ int SeasonRoundList_ClearBrowsingFlag(MenuWidget *pWidget = nullptr);
  */
 int CreateGameUI_EnableContinueIfNameEntered(MenuWidget *pWidget);
 
+/** @ghidraAddress BRD3D: 0x1003f210 */
+int OnSessionNameEdited(MenuWidget *pWidget);
+
 /**
  * Enable continuing after a player name has been entered.
  *
@@ -2460,6 +2463,9 @@ int BuildPlayerNameEntryUI(MenuScreen *pScreen);
  * @ghidraAddress BRD3D: 0x10056ff0
  */
 int BuildJoinCreateGameUI(MenuScreen *pScreen);
+
+/** @ghidraAddress BRD3D: 0x100575f0 */
+int BuildCreateGameMenuUI(MenuScreen *pScreen);
 
 /**
  * @ghidraAddress BRD3D: 0x10044280

@@ -1797,6 +1797,18 @@ int CreateGameUI_EnableContinueIfNameEntered(MenuWidget *pWidget) {
     return 1;
 }
 
+int OnSessionNameEdited(MenuWidget *pWidget) {
+    ProcessMenuTextEditInput(pWidget, 0);
+    const char *text = pWidget->GetFont(0).GetText();
+    if (std::strlen(text) != 0) {
+        g_pCreateGameContinueItem->SetFlags(g_pCreateGameContinueItem->GetFlags() & ~0x10u);
+    }
+    if (_stricmp(g_szSessionName, text) != 0) {
+        std::strcpy(g_szSessionName, text);
+    }
+    return 1;
+}
+
 int PlayerNameEntryUI_EnableContinueIfNameEntered(MenuWidget *pWidget) {
     if (strlen(pWidget->GetFont(0).GetText())) {
         g_pPlayerNameContinueItem->SetFlags(g_pPlayerNameContinueItem->GetFlags() & ~0x10u);
@@ -4799,6 +4811,85 @@ int BuildModemConnectionUI(MenuScreen *screen) {
                            -1);
     widget->SetIdleActionCallback(ValidateEntityState);
     widget->SetActionCallback(ModemConnectionUI_OnBack);
+    SetMenuWidgetLabel(widget, 0xc, &g_rcMenuCenterPanel);
+    panel->SetWidgetCount(panel->GetWidgetCount() + 1);
+    panel->SetNavigationCount(panel->GetNavigationCount() + 1);
+    AddMenuWidget(panel, screen, 80, 46, 9, 0, 7);
+    panel->SetWidgetCount(panel->GetWidgetCount() + 1);
+    return 1;
+}
+
+static inline int CreateGameUI_OnHost(MenuWidget *) {
+    return ShowHostRaceSetupScreen();
+}
+
+int BuildCreateGameMenuUI(MenuScreen *screen) {
+    screen->SetCurrentPanelIndex(0);
+    ResetSessionSlotTable();
+    screen->SetPanelActive(screen->GetPanelCount(), 1);
+    MenuPanel *panel = new (std::nothrow) MenuPanel();
+    screen->SetPanel(screen->GetPanelCount(), panel);
+    if (!panel) {
+        ShowErrorMessage(4);
+    }
+    screen->SetPanelCount(screen->GetPanelCount() + 1);
+    panel->SetScreen(screen);
+    panel->SetFlags(0);
+    panel->SetX(195);
+    panel->SetY(130);
+    AddMenuWidget(panel, screen, 0, 0, 9, 0, 0);
+    panel->SetWidgetCount(panel->GetWidgetCount() + 1);
+    SetMenuWidgetLabel(
+        AddMenuWidget(panel, screen, panel->GetX(), 10, 0x100009, 1, -1), 0x62, &g_rcMenuTitleBar);
+    panel->SetWidgetCount(panel->GetWidgetCount() + 1);
+    MenuWidget *widget =
+        AddMenuWidget(panel, screen, panel->GetX(), panel->GetY(), 0x100009, 1, -1);
+    widget->SetSpriteId(0x34);
+    widget->SetText(GetStringResource(0x63), 1, 4, &g_rcMenuCenterPanel);
+    panel->SetWidgetCount(panel->GetWidgetCount() + 1);
+    panel->SetNavigationCount(panel->GetNavigationCount() + 1);
+    AddMenuWidget(panel, screen, 156, 172, 9, 0, 57);
+    panel->SetWidgetCount(panel->GetWidgetCount() + 1);
+    widget = AddMenuWidget(panel, screen, panel->GetX(), 174, 0x200001, 1, -1);
+    widget->SetActionCallback(CreateGameMenuUI_OnToggleTextEdit);
+    widget->SetUpdateCallback(OnSessionNameEdited);
+    widget->SetTextEditCompleteCallback(CreateGameUI_EnableContinueIfNameEntered);
+    widget->SetSpriteId(3);
+    widget->SetText(g_szEmptyUiString, 1, 1, &g_rcMenuCenterPanel);
+    MenuFont *font = &widget->GetFont(0);
+    font->SetText(std::strlen(g_szSessionName) <= 1 ? GetStringResource(0xc1) : g_szSessionName);
+    font->MeasureText();
+    widget->SetBoundsLeft(font->SetBoundsLeft(197));
+    widget->SetBoundsRight(font->SetBoundsRight(309));
+    widget->SetBoundsTop(font->SetBoundsTop(172));
+    widget->SetBoundsBottom(font->SetBoundsBottom(188));
+    font->SetInputMaxWidth(static_cast<short>(static_cast<unsigned short>(font->GetBoundsRight()) -
+                                              static_cast<unsigned short>(font->GetBoundsLeft()) -
+                                              16));
+    panel->SetWidgetCount(panel->GetWidgetCount() + 1);
+    panel->SetNavigationCount(panel->GetNavigationCount() + 1);
+    widget = AddMenuWidget(panel,
+                           screen,
+                           panel->GetX(),
+                           static_cast<float>(static_cast<long double>(panel->GetY()) + 95),
+                           0x102001,
+                           1,
+                           -1);
+    widget->SetIdleActionCallback(ValidateEntityState);
+    widget->SetActionCallback(CreateGameUI_OnHost);
+    SetMenuWidgetLabel(widget, 0x1e, &g_rcMenuCenterPanel);
+    g_pCreateGameContinueItem = widget;
+    panel->SetWidgetCount(panel->GetWidgetCount() + 1);
+    panel->SetNavigationCount(panel->GetNavigationCount() + 1);
+    widget = AddMenuWidget(panel,
+                           screen,
+                           panel->GetX(),
+                           static_cast<float>(static_cast<long double>(panel->GetY()) + 114),
+                           0x102001,
+                           1,
+                           -1);
+    widget->SetIdleActionCallback(ValidateEntityState);
+    widget->SetActionCallback(CreateGameMenuUI_OnBack);
     SetMenuWidgetLabel(widget, 0xc, &g_rcMenuCenterPanel);
     panel->SetWidgetCount(panel->GetWidgetCount() + 1);
     panel->SetNavigationCount(panel->GetNavigationCount() + 1);
