@@ -350,6 +350,22 @@ int SeasonUI_UpdateSeasonNameLabel(MenuWidget *pWidget);
 int SeasonUI_UpdateYearOrdinalLabel(MenuWidget *pWidget);
 
 /**
+ * Enable continuing after a championship slot has been opened.
+ *
+ * @ghidraAddress BRD3D: 0x10041890
+ * @ghidraAddress BRGlide: 0x1003adf0
+ */
+int LoadSeasonUI_UpdateContinueButtonState(MenuWidget *pWidget);
+
+/**
+ * Enable a time attack item after a saved slot has been selected.
+ *
+ * @ghidraAddress BRD3D: 0x100418f0
+ * @ghidraAddress BRGlide: 0x1003ae50
+ */
+int LoadTimeAttackMenuUI_UpdateItemEnabledState(MenuWidget *pWidget);
+
+/**
  * Draw the sum of the selected season's four race scores, or zero before loading.
  *
  * @ghidraAddress BRD3D: 0x100414b0

@@ -2316,6 +2316,25 @@ int SeasonUI_UpdateYearOrdinalLabel(MenuWidget *pWidget) {
     return 1;
 }
 
+static inline int UpdateLoadedMenuItemState(MenuWidget *pWidget, int loaded) {
+    if (loaded) {
+        pWidget->dwFlags &= ~0x1010u;
+    } else {
+        pWidget->dwFlags |= 0x1010u;
+        pWidget->nSpriteId = 2;
+        pWidget->fonts[0].bStyle = 0;
+    }
+    return 1;
+}
+
+int LoadSeasonUI_UpdateContinueButtonState(MenuWidget *pWidget) {
+    return UpdateLoadedMenuItemState(pWidget, g_dwLoadSeasonSlotValid);
+}
+
+int LoadTimeAttackMenuUI_UpdateItemEnabledState(MenuWidget *pWidget) {
+    return UpdateLoadedMenuItemState(pWidget, g_dwTimeAttackLoadSelected);
+}
+
 static inline void DrawAlternateMenuLabel(MenuWidget *pWidget, const char *text) {
     MenuFont *font = &pWidget->fonts[0];
     strcpy(font->szText, text);
