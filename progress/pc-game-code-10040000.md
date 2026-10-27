@@ -1,6 +1,6 @@
 # PC port game code from 0x10040000 to 0x10050000
 
-219 of 264 routines done.
+220 of 264 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -19,7 +19,7 @@ the same name, for a routine the port retained from the N64 game.
 | `BuildOptionsMenuUI`                               |   🚧   |                 |      2 |   1749 | `0x1004bdc0` | `0x100451f0` | `void BuildOptionsMenuUI(MenuScreen * pScreen)`                                                                                                           |
 | `MenuScreen::ShutdownFrontEnd`                     |   ✅   |                 |      1 |   1668 | `0x10048b20` | `0x10041f50` | `void ShutdownFrontEnd(MenuScreen * this, int bPartial)`                                                                                                  |
 | `BuildInputOptionsUI`                              |   🚧   |                 |      2 |   1565 | `0x1004c4a0` | `0x100458d0` | `void BuildInputOptionsUI(MenuScreen * pScreen)`                                                                                                          |
-| `BuildD3DDeviceSelectUI`                           |        |                 |      2 |   1210 | `0x1004d640` |              | `undefined BuildD3DDeviceSelectUI()`                                                                                                                      |
+| `BuildD3DDeviceSelectUI`                           |   🚧   |                 |      2 |   1210 | `0x1004d640` |              | `void BuildD3DDeviceSelectUI(MenuScreen * pScreen)`                                                                                                       |
 | `BuildDisplayModeSelectUI`                         |   🚧   |                 |      2 |   1210 | `0x1004db00` | `0x100469b0` | `void BuildDisplayModeSelectUI(MenuScreen * pScreen)`                                                                                                     |
 | `BuildVideoOptionsUI`                              |   🚧   |                 |      2 |   1092 | `0x1004d1f0` | `0x10046620` | `void BuildVideoOptionsUI(MenuScreen * pScreen)`                                                                                                          |
 | `BuildChampionshipSeasonUI`                        |   🚧   |                 |      2 |   1091 | `0x1004f2b0` | `0x10048160` | `void BuildChampionshipSeasonUI(MenuScreen * pScreen)`                                                                                                    |
@@ -95,7 +95,7 @@ the same name, for a routine the port retained from the N64 game.
 | `ShowVideoOptionsMenu`                             |   ✅   |                 |      1 |    201 | `0x10045390` | `0x1003e8e0` | `int ShowVideoOptionsMenu(void)`                                                                                                                          |
 | `SeasonProgressInfoUI_UpdatePointsNeededLabel`     |   ✅   |                 |      1 |    198 | `0x100415a0` | `0x1003ab00` | `int SeasonProgressInfoUI_UpdatePointsNeededLabel(MenuWidget * pWidget)`                                                                                  |
 | `SeasonProgressInfoUI_UpdateRoundLabel`            |   ✅   |                 |      1 |    196 | `0x10040b30` | `0x1003a070` | `int SeasonProgressInfoUI_UpdateRoundLabel(MenuWidget * pWidget)`                                                                                         |
-| `ShowD3DDeviceSelectMenu`                          |        |                 |      1 |    184 | `0x10045460` | `0x1003e9b0` | `undefined ShowD3DDeviceSelectMenu()`                                                                                                                     |
+| `ShowD3DDeviceSelectMenu`                          |   ✅   |                 |      1 |    184 | `0x10045460` | `0x1003e9b0` | `int ShowD3DDeviceSelectMenu(void)`                                                                                                                       |
 | `ShowDisplayModeSelectMenu`                        |   ✅   |                 |      1 |    184 | `0x10045520` |              | `int ShowDisplayModeSelectMenu(void)`                                                                                                                     |
 | `RaceResultsTotalsUI_UpdatePointsNeededLabel`      |   ✅   |                 |      1 |    180 | `0x100417b0` | `0x1003ad10` | `int RaceResultsTotalsUI_UpdatePointsNeededLabel(MenuWidget * pWidget)`                                                                                   |
 | `ToggleMenuItemTextEditA`                          |   ✅   |                 |      2 |    179 | `0x10041a00` | `0x1003af60` | `int ToggleMenuItemTextEditA(MenuWidget * pWidget)`                                                                                                       |
