@@ -352,14 +352,6 @@ void SaveFileList::GenerateNextSaveFileName(char *pszPattern, char **ppszName) {
     strcat(*ppszName, extension);
 }
 
-static inline int ConvertMenuCoordinate(float value) {
-    if (!(static_cast<long double>(value) >= -0x1p63L &&
-          static_cast<long double>(value) < 0x1p63L)) {
-        return 0;
-    }
-    return static_cast<int>(static_cast<long long>(value));
-}
-
 void MenuWidget::SetText(const char *pszText,
                          unsigned dwTextFlags,
                          unsigned char bStyle,

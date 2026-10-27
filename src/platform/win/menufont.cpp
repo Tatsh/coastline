@@ -2,6 +2,12 @@
 
 #include <cstring>
 
+#include "platform/win/frontend.h"
+#include "platform/win/timer.h"
+
+int g_dwGlyphThrottleAccumMs;
+unsigned g_dwGlyphThrottleLastTick;
+
 MenuFont::MenuFont() {
     pVTable = &g_MenuFontVTable;
     std::memset(szText, 0, sizeof(szText));
@@ -60,4 +66,48 @@ long double MenuFont::ComputeCenteredX() {
     long double centered = (static_cast<long double>(span) - nWidth) * 0.5f + rcBounds.left;
     fX = centered;
     return centered;
+}
+
+int MenuFont::DrawGlyph(short nImage, float x, float y, int nStyle) {
+    unsigned short image = 0;
+    switch (bStyle) {
+    case 0:
+        image = 2;
+        break;
+    case 1:
+        image = 3;
+        break;
+    case 2:
+        image = 4;
+        break;
+    case 4:
+        image = 52;
+        break;
+    }
+    DWORD flags = g_aMenuSprites[image].dwFlags;
+    int destY = ConvertMenuCoordinate(y);
+    int destX = ConvertMenuCoordinate(x);
+    BlitSurfaceRegion(destX, destY, image, &g_aMenuGlyphRects[nImage], flags);
+    return 1;
+}
+
+int MenuFont::DrawGlyphAltFont(short nImage, float x, float y, int nStyle) {
+    DWORD flags = g_aMenuSprites[5].dwFlags;
+    int destY = ConvertMenuCoordinate(y);
+    int destX = ConvertMenuCoordinate(x);
+    BlitSurfaceRegion(destX, destY, 5, &g_aMenuAltGlyphRects[nImage], flags);
+    return 1;
+}
+
+void MenuFont::DrawThrottledMenuGlyph(float x, float y) {
+    unsigned now = GetHighResolutionTime();
+    unsigned delta = now - g_dwGlyphThrottleLastTick;
+    g_dwGlyphThrottleLastTick = now;
+    g_dwGlyphThrottleAccumMs =
+        static_cast<int>(static_cast<unsigned>(g_dwGlyphThrottleAccumMs) + delta);
+    if (g_dwGlyphThrottleAccumMs >= 120) {
+        g_dwGlyphThrottleAccumMs = 0;
+        pVTable->DrawGlyph(
+            this, g_MenuFontGlyphTable['_' - ' '].nImage, x, y, static_cast<signed char>(bStyle));
+    }
 }
