@@ -1,6 +1,6 @@
 # PC port game code from 0x10040000 to 0x10050000
 
-216 of 264 routines done.
+217 of 264 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -15,7 +15,7 @@ the same name, for a routine the port retained from the N64 game.
 | `BuildRaceSetupUI`                                 |   🚧   |                 |      4 |   2439 | `0x1004b430` | `0x10044860` | `void BuildRaceSetupUI(MenuScreen * pScreen)`                                                                                                             |
 | `BuildLoadSeasonUI`                                |   📝   |                 |      2 |   2387 | `0x1004f700` | `0x100485b0` | `void BuildLoadSeasonUI(MenuScreen * pScreen)`                                                                                                            |
 | `BuildAudioOptionsUI`                              |        |                 |      2 |   2114 | `0x1004dfc0` | `0x10046e70` | `undefined BuildAudioOptionsUI()`                                                                                                                         |
-| `BuildKeyConfigUI`                                 |        |                 |      2 |   1834 | `0x1004cac0` | `0x10045ef0` | `undefined BuildKeyConfigUI()`                                                                                                                            |
+| `BuildKeyConfigUI`                                 |   🚧   |                 |      2 |   1834 | `0x1004cac0` | `0x10045ef0` | `void BuildKeyConfigUI(MenuScreen * pScreen)`                                                                                                             |
 | `BuildOptionsMenuUI`                               |   🚧   |                 |      2 |   1749 | `0x1004bdc0` | `0x100451f0` | `void BuildOptionsMenuUI(MenuScreen * pScreen)`                                                                                                           |
 | `MenuScreen::ShutdownFrontEnd`                     |   ✅   |                 |      1 |   1668 | `0x10048b20` | `0x10041f50` | `void ShutdownFrontEnd(MenuScreen * this, int bPartial)`                                                                                                  |
 | `BuildInputOptionsUI`                              |   🚧   |                 |      2 |   1565 | `0x1004c4a0` | `0x100458d0` | `void BuildInputOptionsUI(MenuScreen * pScreen)`                                                                                                          |
@@ -85,9 +85,9 @@ the same name, for a routine the port retained from the N64 game.
 | `ShowRaceResultsScreen`                            |   ✅   |                 |      2 |    201 | `0x10045ea0` | `0x1003f340` | `int ShowRaceResultsScreen(void)`                                                                                                                         |
 | `ShowAudioOptionsMenu`                             |        |                 |      1 |    201 | `0x100455e0` | `0x1003ea70` | `undefined ShowAudioOptionsMenu()`                                                                                                                        |
 | `ShowGameOptionsMenu`                              |        |                 |      1 |    201 | `0x100456b0` | `0x1003eb40` | `undefined ShowGameOptionsMenu()`                                                                                                                         |
-| `ShowKeyConfigScreen`                              |        |                 |      1 |    201 | `0x100434c0` | `0x1003ca10` | `uint ShowKeyConfigScreen(uint allocParam)`                                                                                                               |
 | `ShowModemDialUpScreen`                            |        |                 |      1 |    201 | `0x10043da0` | `0x1003d2f0` | `uint ShowModemDialUpScreen(uint allocParam)`                                                                                                             |
 | `ShowInputOptionsMenu`                             |   ✅   |                 |      1 |    201 | `0x100452c0` | `0x1003e810` | `int ShowInputOptionsMenu(void)`                                                                                                                          |
+| `ShowKeyConfigScreen`                              |   ✅   |                 |      1 |    201 | `0x100434c0` | `0x1003ca10` | `int ShowKeyConfigScreen(void)`                                                                                                                           |
 | `ShowLoadSeasonMenu`                               |   ✅   |                 |      1 |    201 | `0x10045af0` | `0x1003ef90` | `int ShowLoadSeasonMenu(void)`                                                                                                                            |
 | `ShowNotEnoughPointsScreen`                        |   ✅   |                 |      1 |    201 | `0x10043330` | `0x1003c880` | `int ShowNotEnoughPointsScreen(void)`                                                                                                                     |
 | `ShowRaceResultsTotalsScreen`                      |   ✅   |                 |      1 |    201 | `0x100460a0` | `0x1003f540` | `int ShowRaceResultsTotalsScreen(void)`                                                                                                                   |
