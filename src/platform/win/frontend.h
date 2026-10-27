@@ -2260,12 +2260,6 @@ extern const int g_adwCarShadowMenuIndexToValue[2];
 extern const int g_adwSpecularLightingMenuIndexToValue[2];
 
 /**
- * @ghidraAddress BRD3D: 0x10043fa0
- * @ghidraAddress BRGlide: 0x1003d4f0
- */
-int MenuScreen_OnReturnToMainMenu(MenuWidget *pWidget);
-
-/**
  * @ghidraAddress BRD3D: 0x100ac598
  * @ghidraAddress BRGlide: 0x100abd38
  */
@@ -2425,6 +2419,12 @@ public:
      * @ghidraAddress BRGlide: 0x10041cc0
      */
     virtual ~MenuScreen();
+
+    /**
+     * @ghidraAddress BRD3D: 0x10043fa0
+     * @ghidraAddress BRGlide: 0x1003d4f0
+     */
+    static int OnReturnToMainMenu(MenuWidget *pWidget);
 
 private:
     /**

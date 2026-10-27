@@ -3104,7 +3104,7 @@ int ResultsSummaryExitSeasonConfirmUI::OnNo(MenuWidget *) {
     return 0;
 }
 
-int MenuScreen_OnReturnToMainMenu(MenuWidget *pWidget) {
+int MenuScreen::OnReturnToMainMenu(MenuWidget *pWidget) {
     pWidget->GetScreen()->ShutdownFrontEnd(1);
     g_pActiveMenuScreen = g_pCachedMenu_MainMenu;
     return 0;
@@ -6494,7 +6494,7 @@ static inline void AddMenuActionButtons(MenuPanel *panel,
     const int first = includeSave ? 0 : 1;
     for (int i = first; i < 3; ++i) {
         const short images[3] = {120, 82, 84};
-        int (*actions[3])(MenuWidget *) = {save, MenuScreen_OnReturnToMainMenu, options};
+        int (*actions[3])(MenuWidget *) = {save, MenuScreen::OnReturnToMainMenu, options};
         MenuWidget *widget = AddMenuWidget(panel, screen, x, y, 0x402001, 1, images[i]);
         widget->SetIdleActionCallback(ValidateEntityState);
         widget->SetActionCallback(actions[i]);
