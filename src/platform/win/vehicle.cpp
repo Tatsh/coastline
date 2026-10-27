@@ -4,8 +4,22 @@
 
 #include "camerachange.h"
 #include "vehicleaccess.h"
+#include "vehiclestatus.h"
 
 Vehicle g_aVehicles[16];
+
+void Vehicle::UpdateRaceTimers() {
+    ::UpdateRaceTimers(this);
+}
+void Vehicle::UpdateHudMessageTimers() {
+    ::UpdateHudMessageTimers(this);
+}
+void Vehicle::CheckWrongWayWarning() {
+    ::CheckWrongWayWarning(this);
+}
+void Vehicle::UpdateVehicleGridPosition() {
+    ::UpdateVehicleGridPosition(this);
+}
 
 void Vehicle::ClearCameraChanged(void) {
     ::ClearCameraChanged(this);

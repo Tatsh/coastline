@@ -11,6 +11,7 @@
 #include "timing.h"
 #include "trackselect.h"
 #include "tricache.h"
+#include "vehiclestatus.h"
 
 /* The rows of a frame matrix whose last column FinishFrameMatrix() sets. */
 #define MATRIX_ROWS 4
@@ -29,18 +30,6 @@
 #define GRID_PATCH_END_Y 28
 #define GRID_PATCH_X 57
 #define GRID_PATCH_Y 25
-
-/* The size of a cell of the grid, and the cells across the track. */
-#define GRID_CELL 32
-#define GRID_CELLS 64
-
-/* The warning of a vehicle facing against the track: the frames before it, its flash and its
- * time on the screen. */
-#define WRONG_WAY_FRAMES 32
-#define WRONG_WAY_FLASH 0x10
-#define WRONG_WAY_TIME 0.25f
-
-static const char sWrongWay[] = "%yyWRONG WAY";
 
 /* The direction along the track at a point, across from its left edge to its right. */
 static void TrackPointDirection(Vec3f *out, TrackPoint *point) {
@@ -161,85 +150,6 @@ found:
     vehicle->trackDirection.z = direction.z;
     return 1;
 }
-
-void UpdateRaceTimers(Vehicle *vehicle) {
-    if (vehicle->racer->status & RACER_CLOCK_STOPPED) {
-        return;
-    }
-    if (g_dwGameMode == GAME_MODE_PRACTICE) {
-        vehicle->lapTime = vehicle->lapTime + g_fFrameDeltaTime;
-        return;
-    }
-    vehicle->totalTime = vehicle->totalTime + g_fFrameDeltaTime;
-    vehicle->lapTime = vehicle->lapTime + g_fFrameDeltaTime;
-    if (g_dwGameMode == GAME_MODE_ARCADE) {
-        vehicle->timeLeft = vehicle->timeLeft - g_fFrameDeltaTime;
-        if (vehicle->timeLeft < 0.0f) {
-            vehicle->timeLeft = 0.0f;
-        }
-    }
-}
-
-void UpdateHudMessageTimers(Vehicle *vehicle) {
-    if (vehicle->messageTime != 0) {
-        vehicle->messageTime -= g_fFrameDeltaTime;
-        if (vehicle->messageTime <= 0.0f) {
-            vehicle->messageTime = 0.0f;
-            vehicle->message = NULL;
-        }
-    } else if (vehicle->subMessageTime != 0) {
-        vehicle->subMessageTime -= g_fFrameDeltaTime;
-        if (vehicle->subMessageTime <= 0.0f) {
-            vehicle->subMessageTime = 0.0f;
-            vehicle->subMessage = NULL;
-        }
-    }
-}
-
-void CheckWrongWayWarning(Vehicle *vehicle) {
-    if (g_LoadedTrack.rootSection != NULL) {
-        if (vehicle->lap < g_dwTotalLaps && !vehicle->flyMode &&
-            (f64)Vec3fDot(&vehicle->trackDirection, &vehicle->frame.forward) < 0.0) {
-            vehicle->wrongWayFrames++;
-            if (vehicle->wrongWayFrames >= WRONG_WAY_FRAMES &&
-                (vehicle->wrongWayFrames & WRONG_WAY_FLASH) == WRONG_WAY_FLASH) {
-                if (vehicle->message == NULL) {
-                    vehicle->message = sWrongWay;
-                    vehicle->subMessage = NULL;
-                    vehicle->messageTime = WRONG_WAY_TIME;
-                }
-            } else if (vehicle->message == sWrongWay) {
-                vehicle->subMessage = NULL;
-                vehicle->message = NULL;
-            }
-        } else {
-            vehicle->wrongWayFrames = 0;
-        }
-    }
-}
-
-/* The original tests the unsigned cells against zero as well. */
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wtype-limits"
-void UpdateVehicleGridPosition(Vehicle *vehicle) {
-    if (g_LoadedTrack.rootSection == NULL) {
-        return;
-    }
-    vehicle->gridX = FloatToInt(vehicle->frame.position.x / GRID_CELL);
-    vehicle->gridY = FloatToInt(vehicle->frame.position.y / GRID_CELL);
-    if (vehicle->gridX < 0) {
-        vehicle->gridX = 0;
-    } else if (vehicle->gridX >= GRID_CELLS) {
-        vehicle->gridX = GRID_CELLS - 1;
-    }
-    if (vehicle->gridY < 0) {
-        vehicle->gridY = 0;
-    } else if (vehicle->gridY >= GRID_CELLS) {
-        vehicle->gridY = GRID_CELLS - 1;
-    }
-    UpdateVehicleTrackPosition(vehicle);
-}
-#pragma GCC diagnostic pop
 
 void InstallVehicleModel(Vehicle *vehicle, s32 slot, s32 car) {
     LoadCar(slot, car, NULL);

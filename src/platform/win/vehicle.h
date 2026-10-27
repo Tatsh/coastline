@@ -166,7 +166,10 @@ private:
     u8 ghostMode;
     f32 opacity;
     s32 customCarModel;
-    u8 abUnknown29b8[8]; /* +0x29b8 */
+    s32 wrongWayFrames;
+    u8 gridX;
+    u8 gridY;
+    u8 abUnknown29be[2]; /* +0x29be */
     PlayerInputState *input;
     VehicleModel *model;
     s16 dents[VEHICLE_DENT_SIDES];
@@ -183,6 +186,43 @@ public:
     void SetExhaustTimer(f32 value) {
         exhaustTimer = value;
     }
+    s32 GetWrongWayFrames() const {
+        return wrongWayFrames;
+    }
+    s32 SetWrongWayFrames(s32 value) {
+        return wrongWayFrames = value;
+    }
+    u8 GetGridX() const {
+        return gridX;
+    }
+    u8 SetGridX(u8 value) {
+        return gridX = value;
+    }
+    u8 GetGridY() const {
+        return gridY;
+    }
+    u8 SetGridY(u8 value) {
+        return gridY = value;
+    }
+    f32 GetMessageTime() const {
+        return messageTime;
+    }
+    f32 GetSubMessageTime() const {
+        return subMessageTime;
+    }
+    /** @ghidraAddress BRD3D: 0x10075780 */
+    void UpdateRaceTimers();
+    /** @ghidraAddress BRD3D: 0x10075810 */
+    void UpdateHudMessageTimers();
+    /** @ghidraAddress BRD3D: 0x100758a0 */
+    void CheckWrongWayWarning();
+    /** @ghidraAddress BRD3D: 0x10075960 */
+    void UpdateVehicleGridPosition();
+    /**
+     * @ghidraAddress BRD3D: 0x10075360
+     * @stub{BRD3D}
+     */
+    s32 UpdateVehicleTrackPosition();
     s32 AdvanceSkidFrames() {
         return skidFrames++;
     }

@@ -105,7 +105,7 @@ else()
     camerachange.c camerachase.c cameracollision.c displaylistops.c fog.c headlight.c
     playercontrol.c routeposition.c seasontrack.c tracetrack.c trackinstance.c vehiclechoice.c
     vehiclemodelrender.c vehiclephysics.c vehiclereset.c vehiclesound.c vehiclevisibility.c
-    wheelrender.c PROPERTIES LANGUAGE CXX)
+    wheelrender.c vehiclestatus.c PROPERTIES LANGUAGE CXX)
   set_source_files_properties(controllerread.c inputtranslate.c PROPERTIES LANGUAGE CXX)
   set_source_files_properties(volumecontrols.c PROPERTIES LANGUAGE CXX)
   set_source_files_properties(ambientsound.c PROPERTIES LANGUAGE CXX)
@@ -142,6 +142,7 @@ target_sources(coastline_game PRIVATE assetdma.c camerarender.c collisionstep.c 
 
 target_sources(coastline_game PRIVATE tracetrack.c iomessage.c texturestream.c soundeffect.c soundsource.c)
 target_sources(coastline_game PRIVATE soundpan.c)
+target_sources(coastline_game PRIVATE vehiclestatus.c)
 target_sources(coastline_game PRIVATE vehiclesound.c)
 target_sources(coastline_game PRIVATE racersharing.c)
 target_sources(coastline_game PRIVATE racermotion.c frametime.c)
