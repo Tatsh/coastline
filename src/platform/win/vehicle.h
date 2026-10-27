@@ -188,6 +188,11 @@ private:
     void AgeSpraySegment(s32 wheel, s32 age);
 
 public:
+    /**
+     * Start last-lap input recording in spare vehicle-model storage and snapshot the race.
+     * @ghidraAddress BRD3D: 0x100679c0
+     */
+    void SaveLastLapSnapshot(void);
     void MarkNearbyInstanceShadows(u8 *mask, u8 bit) const {
         for (s32 index = 0; index < nearbyInstanceCount; ++index) {
             mask[nearbyInstances[index]] |= bit;

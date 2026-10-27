@@ -910,6 +910,10 @@ extern u8 aiHdwrBugFlag;
  */
 void osInitialize(void);
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /**
  * Print to the debugger. The retail library discards the output.
  *
@@ -917,8 +921,13 @@ void osInitialize(void);
  * @ghidraAddress USA: 0x802607dc
  * @ghidraAddress EUR: 0x80261cdc
  * @ghidraAddress JPN: 0x80261a3c
+ * @ghidraAddress BRD3D: 0x10008b80
  */
 void osSyncPrintf(const char *fmt, ...);
+
+#ifdef __cplusplus
+}
+#endif
 
 /**
  * Print to the remote monitor. The retail library discards the output.

@@ -1,4 +1,4 @@
-#include <ultra64.h>
+#include <PR/os.h>
 
 /* The retail library discards debugging output. */
 

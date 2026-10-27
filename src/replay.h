@@ -105,13 +105,20 @@ typedef struct {
 } LastLapBuffer;
 
 /**
- * The buffers of the last laps. They are the memory of g_aVehicleModels, whose last slots hold
- * the last lap of each player, the first player in the last slot. The link script places them.
+ * Last-lap buffers share vehicle-model storage and descend through slots by local-player index.
  */
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+extern LastLapBuffer g_aLastLapBuffers[] __asm__("_g_aVehicleModels");
+#else
 extern LastLapBuffer g_aLastLapBuffers[];
+#endif
 
 /** The slot of g_aLastLapBuffers of the first player; the others count down from it. */
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#define LAST_LAP_FIRST_SLOT 15
+#else
 #define LAST_LAP_FIRST_SLOT 3
+#endif
 
 /** A block of variables a snapshot saves, in a list ending in a NULL block. */
 typedef struct {
@@ -153,8 +160,7 @@ extern SaveField g_aPausedClockFields[];
  */
 extern u8 g_abPausedClockState[PAUSED_CLOCK_STATE_SIZE];
 
-#if TGR_PLATFORM != TGR_PLATFORM_WIN && \
-    (TGR_REGION == TGR_REGION_JP || TGR_REGION == TGR_REGION_EU)
+#if TGR_PLATFORM != TGR_PLATFORM_WIN && (TGR_REGION == TGR_REGION_JP || TGR_REGION == TGR_REGION_EU)
 /**
  * Copy the variables of a list one after another into a buffer, and report when they overflow it.
  *
@@ -224,6 +230,7 @@ void SaveRaceSnapshot(LastLapBuffer *buffer);
  */
 void RestoreRaceSnapshot(LastLapBuffer *buffer);
 
+#if TGR_PLATFORM == TGR_PLATFORM_N64
 /**
  * At the start of the last lap, give each local player a buffer to record the lap into and take a
  * snapshot of the race, which the instant replay starts from.
@@ -234,6 +241,7 @@ void RestoreRaceSnapshot(LastLapBuffer *buffer);
  * @ghidraAddress JPN: 0x8022bc58
  */
 void SaveLastLapSnapshot(Vehicle *vehicle);
+#endif
 
 #if TGR_REGION == TGR_REGION_JP || TGR_REGION == TGR_REGION_EU
 /**
