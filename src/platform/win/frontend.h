@@ -819,6 +819,71 @@ extern MenuWidget *g_pD3DDeviceSelectMenu;
 extern MenuWidget *g_pSaveSeasonBackHandlerMenu;
 
 /**
+ * @ghidraAddress BRD3D: 0x10046dc0
+ */
+int PreRaceInfoUI_OnBackToLoadSeason(MenuActionWidget *pItem);
+
+/**
+ * @ghidraAddress BRD3D: 0x10046d70
+ */
+int PreRaceInfoUI_OnBackToChampionshipSeason(MenuActionWidget *pItem);
+
+/**
+ * @ghidraAddress BRD3D: 0x10046cd0
+ */
+int CarSetupUI_OnBackToSeasonProgressInfo(MenuActionWidget *pItem);
+
+/**
+ * @ghidraAddress BRD3D: 0x10046d20
+ */
+int CarSetupUI_OnBackToTimeAttack(MenuActionWidget *pItem);
+
+/**
+ * @ghidraAddress BRD3D: 0x10043fc0
+ */
+int PlayerNameEntryUI_OnBack(MenuActionWidget *pItem);
+
+/**
+ * @ghidraAddress BRD3D: 0x10046450
+ */
+int RaceSetupUI_OnBack(MenuActionWidget *pItem);
+
+/**
+ * @ghidraAddress BRD3D: 0x10044cb0
+ */
+int RaceSetupUI_OnBackToTimeAttack(MenuActionWidget *pItem);
+
+/**
+ * @ghidraAddress BRD3D: 0x10044b40
+ */
+int ModemConnectionUI_OnBack(MenuActionWidget *pItem);
+
+/**
+ * @ghidraAddress BRD3D: 0x10046e10
+ */
+int LoadSeasonUI_OnBack(MenuActionWidget *pItem);
+
+/**
+ * @ghidraAddress BRD3D: 0x10044f00
+ */
+int SaveTimeAttackMenuUI_OnBack(MenuActionWidget *pItem);
+
+/**
+ * @ghidraAddress BRD3D: 0x10046560
+ */
+int KeyConfigUI_OnBack(MenuActionWidget *pItem);
+
+/**
+ * @ghidraAddress BRD3D: 0x100466c0
+ */
+int AudioOptionsUI_OnBackAndSave(MenuActionWidget *pItem);
+
+/**
+ * @ghidraAddress BRD3D: 0x10046f50
+ */
+int PreRaceInfoUI_OnBack(MenuActionWidget *pItem);
+
+/**
  * @ghidraAddress BRD3D: 0x10046520
  */
 int OptionsMenuUI_OnBack(MenuActionWidget *pItem);

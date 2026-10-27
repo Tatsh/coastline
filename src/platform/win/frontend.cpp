@@ -811,6 +811,137 @@ int VideoOptionsUI_OnBack(MenuActionWidget *pItem) {
     return ReturnFromCachedMenu(pItem, g_pCachedMenu_InputConfig, g_pCachedMenu_Options);
 }
 
+int PreRaceInfoUI_OnBackToLoadSeason(MenuActionWidget *pItem) {
+    MenuScreen *pDestination;
+    pItem->pScreen->DestroyPanels();
+    delete g_pActiveMenuScreen;
+    pDestination = g_pCachedMenu_LoadSeason;
+    g_pCachedMenu_PreRaceInfo = nullptr;
+    g_pExitSeasonConfirmMenu = nullptr;
+    g_pPreRaceInfoMenuScreen = nullptr;
+    g_pActiveMenuScreen = pDestination;
+    return 0;
+}
+
+int PreRaceInfoUI_OnBackToChampionshipSeason(MenuActionWidget *pItem) {
+    MenuScreen *pDestination;
+    pItem->pScreen->DestroyPanels();
+    delete g_pActiveMenuScreen;
+    pDestination = g_pCachedMenu_TimeTrial;
+    g_pCachedMenu_PreRaceInfo = nullptr;
+    g_pExitSeasonConfirmMenu = nullptr;
+    g_pPreRaceInfoMenuScreen = nullptr;
+    g_pActiveMenuScreen = pDestination;
+    return 0;
+}
+
+int CarSetupUI_OnBackToSeasonProgressInfo(MenuActionWidget *pItem) {
+    MenuScreen *pDestination;
+    pItem->pScreen->DestroyPanels();
+    delete g_pActiveMenuScreen;
+    pDestination = g_pCachedMenu_SeasonProgressInfo;
+    g_pCachedMenu_CarSetup = nullptr;
+    g_pCarSetupMenu = nullptr;
+    g_pActiveMenuScreen = pDestination;
+    return 0;
+}
+
+int CarSetupUI_OnBackToTimeAttack(MenuActionWidget *pItem) {
+    MenuScreen *pDestination;
+    pItem->pScreen->DestroyPanels();
+    delete g_pActiveMenuScreen;
+    pDestination = g_pCachedMenu_TimeAttack;
+    g_pCachedMenu_CarSetup = nullptr;
+    g_pCarSetupMenu = nullptr;
+    g_pActiveMenuScreen = pDestination;
+    return 0;
+}
+
+int PlayerNameEntryUI_OnBack(MenuActionWidget *pItem) {
+    MenuScreen *pDestination;
+    pItem->pScreen->DestroyPanels();
+    delete g_pActiveMenuScreen;
+    pDestination = g_pRootMenuScreen;
+    g_pCachedMenu_MultiplayerName = nullptr;
+    g_pPlayerNameContinueItem = nullptr;
+    g_pActiveMenuScreen = pDestination;
+    return 0;
+}
+
+int RaceSetupUI_OnBack(MenuActionWidget *pItem) {
+    MenuScreen *pDestination;
+    pItem->pScreen->DestroyPanels();
+    delete g_pActiveMenuScreen;
+    pDestination = g_pRootMenuScreen;
+    g_pCachedMenu_MainMenu = nullptr;
+    g_pRaceSetupMenu = nullptr;
+    g_pActiveMenuScreen = pDestination;
+    return 0;
+}
+
+int RaceSetupUI_OnBackToTimeAttack(MenuActionWidget *pItem) {
+    MenuScreen *pDestination;
+    pItem->pScreen->DestroyPanels();
+    delete g_pActiveMenuScreen;
+    pDestination = g_pCachedMenu_TimeAttack;
+    g_pCachedMenu_MainMenu = nullptr;
+    g_pRaceSetupMenu = nullptr;
+    g_pActiveMenuScreen = pDestination;
+    return 0;
+}
+
+int ModemConnectionUI_OnBack(MenuActionWidget *pItem) {
+    MenuScreen *pDestination;
+    pItem->pScreen->DestroyPanels();
+    delete g_pActiveMenuScreen;
+    pDestination = g_pCachedMenu_MultiplayerConnection;
+    g_pCachedMenu_ModemDialUp = nullptr;
+    g_pModemContinueItem = nullptr;
+    g_pActiveMenuScreen = pDestination;
+    return 0;
+}
+
+int LoadSeasonUI_OnBack(MenuActionWidget *pItem) {
+    pItem->pScreen->DestroyPanels();
+    delete g_pActiveMenuScreen;
+    g_pCachedMenu_LoadSeason = nullptr;
+    g_dwLoadSeasonSlotValid = 0;
+    g_dwFileListSelectedSlot = -1;
+    strcpy(g_szSeasonYearLabel, "");
+    strcpy(g_szSeasonRoundLabel, "");
+    g_pActiveMenuScreen = g_pCachedMenu_TimeTrial;
+    return 0;
+}
+
+int SaveTimeAttackMenuUI_OnBack(MenuActionWidget *pItem) {
+    MenuScreen *pDestination;
+    pItem->pScreen->DestroyPanels();
+    delete g_pCachedMenu_SaveGhost;
+    pDestination = g_pCachedMenu_TimeAttack;
+    g_pCachedMenu_SaveGhost = nullptr;
+    g_pActiveMenuScreen = pDestination;
+    g_dwGameMode = GAME_MODE_TIME_ATTACK;
+    return 0;
+}
+
+int KeyConfigUI_OnBack(MenuActionWidget *pItem) {
+    ReturnFromCachedMenu(pItem, g_pCachedMenu_KeyConfig, g_pCachedMenu_Credits);
+    ReleaseJoystickDevice();
+    return 0;
+}
+
+int AudioOptionsUI_OnBackAndSave(MenuActionWidget *pItem) {
+    ReturnFromCachedMenu(pItem, g_pCachedMenu_GameplaySettings, g_pCachedMenu_Options);
+    BackupMenuSelections();
+    g_GlobalRallyConfig.SaveConfigToFile(g_szConfigFilePath);
+    return 0;
+}
+
+int PreRaceInfoUI_OnBack(MenuActionWidget *) {
+    g_pActiveMenuScreen = g_pPreRaceInfoMenuScreen;
+    return 0;
+}
+
 int OptionsMenuUI_OnBackToRaceResultsInfo(MenuActionWidget *pItem) {
     return ReturnFromOptionsMenu(pItem, g_pCachedMenu_RaceResults);
 }
