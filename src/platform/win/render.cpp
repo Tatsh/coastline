@@ -79,7 +79,9 @@ void ResetVertexConversionCache(void) {
     g_dwRelocatedPointerCount = 0;
 }
 
-void AddVertexConversionCacheEntry(const void *pSource, int nVertexCount, float *pFloatVerts) {
+void AddVertexConversionCacheEntry(const Vtx *pSource,
+                                   int nVertexCount,
+                                   ConvertedModelVertex *pFloatVerts) {
     if (g_dwVertexConvCacheCount >= VERTEX_CONV_CACHE_SIZE) {
         return;
     }
@@ -88,6 +90,61 @@ void AddVertexConversionCacheEntry(const void *pSource, int nVertexCount, float 
     entry.nVertexCount = nVertexCount;
     entry.pFloatVerts = pFloatVerts;
 }
+
+#if TGR_RENDERER == TGR_RENDERER_D3D
+static inline unsigned short SwapVertexHalfword(unsigned short nValue) {
+    return nValue >> 8 | nValue << 8;
+}
+
+void ByteSwapVertexArray(Vtx *pVertices, int nCount) {
+    for (int nVertex = 0; nVertex < nCount; nVertex++) {
+        for (int nCoordinate = 0; nCoordinate < 3; nCoordinate++) {
+            pVertices[nVertex].v.ob[nCoordinate] =
+                SwapVertexHalfword(pVertices[nVertex].v.ob[nCoordinate]);
+        }
+        pVertices[nVertex].v.flag = SwapVertexHalfword(pVertices[nVertex].v.flag);
+        for (int nCoordinate = 0; nCoordinate < 2; nCoordinate++) {
+            pVertices[nVertex].v.tc[nCoordinate] =
+                SwapVertexHalfword(pVertices[nVertex].v.tc[nCoordinate]);
+        }
+    }
+}
+
+ConvertedModelVertex *ConvertVerticesToFloat(const Vtx *pVertices, int nCount) {
+    ConvertedModelVertex *pFirst = g_pModelDataPoolCursor;
+    for (int nVertex = 0; nVertex < nCount; nVertex++) {
+        g_pModelDataPoolCursor->position.x = pVertices[nVertex].n.ob[0];
+        g_pModelDataPoolCursor->position.y = pVertices[nVertex].n.ob[1];
+        g_pModelDataPoolCursor->position.z = pVertices[nVertex].n.ob[2];
+        g_pModelDataPoolCursor->texture.x = pVertices[nVertex].n.tc[0];
+        g_pModelDataPoolCursor->texture.y = pVertices[nVertex].n.tc[1];
+        g_pModelDataPoolCursor->normal.x = pVertices[nVertex].n.n[0] * (1.0f / 128.0f);
+        g_pModelDataPoolCursor->normal.y = pVertices[nVertex].n.n[1] * (1.0f / 128.0f);
+        g_pModelDataPoolCursor->normal.z = pVertices[nVertex].n.n[2] * (1.0f / 128.0f);
+        g_pModelDataPoolCursor++;
+        g_dwConvertedVertexCount++;
+    }
+    return pFirst;
+}
+
+void ConvertN64VerticesCached(ModelVertexData *pVertices, int nCount) {
+    Vtx *pSource = pVertices->pSource;
+    if (pSource == nullptr || nCount == 0) {
+        return;
+    }
+    for (int nEntry = 0; nEntry < g_dwVertexConvCacheCount; nEntry++) {
+        if (g_aVertexConvCache[nEntry].pSource == pSource &&
+            g_aVertexConvCache[nEntry].nVertexCount == nCount) {
+            pVertices->pConverted = g_aVertexConvCache[nEntry].pFloatVerts;
+            return;
+        }
+    }
+    ByteSwapVertexArray(pSource, nCount);
+    ConvertedModelVertex *pConverted = ConvertVerticesToFloat(pSource, nCount);
+    AddVertexConversionCacheEntry(pSource, nCount, pConverted);
+    pVertices->pConverted = pConverted;
+}
+#endif
 
 bool IsPointerInRelocatedList(void *pPointer) {
     if (pPointer == nullptr) {

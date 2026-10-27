@@ -6,7 +6,10 @@
  * data of the models it draws.
  */
 
+#include <PR/gbi.h>
 #include <windows.h>
+
+#include "vecmath.h"
 
 /** The mode of the renderer of the Direct3D library. */
 #define RENDER_BACKEND_MODE_D3D 1
@@ -285,13 +288,19 @@ int ComputeMipChainByteSize(int nSmallLod, int nLargeLod, int nAspectRatio);
  */
 extern int g_dwConvertedVertexCount;
 
+struct ConvertedModelVertex {
+    Vec3f position;
+    Vec2f texture;
+    Vec3f normal;
+};
+
 /**
  * The pool of the data of the models the renderer draws.
  *
  * @ghidraAddress BRD3D: 0x10575540
  * @ghidraAddress BRGlide: 0x104b16e8
  */
-extern float g_afModelVertexPool[];
+extern ConvertedModelVertex g_afModelVertexPool[];
 
 /**
  * The next free entry of g_afModelVertexPool.
@@ -299,7 +308,7 @@ extern float g_afModelVertexPool[];
  * @ghidraAddress BRD3D: 0x100a81c8
  * @ghidraAddress BRGlide: 0x100a751c
  */
-extern float *g_pModelDataPoolCursor;
+extern ConvertedModelVertex *g_pModelDataPoolCursor;
 
 /**
  * Make the size of the frame the size of the framebuffer of the configuration.
@@ -311,9 +320,9 @@ void CopyConfigFramebufferSize(void);
 
 /** A run of vertices of the console converted to floats. */
 struct VertexConvCacheEntry {
-    const void *pSource; /*!< The vertices of the console. */
-    int nVertexCount;    /*!< The number of vertices. */
-    float *pFloatVerts;  /*!< The vertices converted. */
+    const Vtx *pSource;                /*!< The vertices of the console. */
+    int nVertexCount;                  /*!< The number of vertices. */
+    ConvertedModelVertex *pFloatVerts; /*!< The vertices converted. */
 };
 
 /** The number of entries of g_aVertexConvCache. */
@@ -344,7 +353,29 @@ extern int g_dwVertexConvCacheCount;
  * @ghidraAddress BRD3D: 0x1002bf00
  * @ghidraAddress BRGlide: 0x10018fc0
  */
-void AddVertexConversionCacheEntry(const void *pSource, int nVertexCount, float *pFloatVerts);
+void AddVertexConversionCacheEntry(const Vtx *pSource,
+                                   int nVertexCount,
+                                   ConvertedModelVertex *pFloatVerts);
+
+union ModelVertexData {
+    Vtx *pSource;
+    ConvertedModelVertex *pConverted;
+};
+
+/**
+ * @ghidraAddress BRD3D: 0x1002bdd0
+ */
+void ByteSwapVertexArray(Vtx *pVertices, int nCount);
+
+/**
+ * @ghidraAddress BRD3D: 0x1002be30
+ */
+ConvertedModelVertex *ConvertVerticesToFloat(const Vtx *pVertices, int nCount);
+
+/**
+ * @ghidraAddress BRD3D: 0x1002bd50
+ */
+void ConvertN64VerticesCached(ModelVertexData *pVertices, int nCount);
 
 /**
  * The number of pointers relocated.

@@ -11,11 +11,8 @@
 add_library(coastline_common INTERFACE)
 # A reconstructed routine retains the parameters of the original, used or not.
 target_compile_options(coastline_common INTERFACE -Wall -Wextra -Wno-unused-parameter)
-target_include_directories(coastline_common INTERFACE "${CMAKE_SOURCE_DIR}/src")
-# The PC port takes the integer types of libultra from types.h and does not include libultra.
-if(TGR_PLATFORM STREQUAL "n64")
-  target_include_directories(coastline_common INTERFACE "${CMAKE_SOURCE_DIR}/src/libultra/include")
-endif()
+target_include_directories(coastline_common INTERFACE "${CMAKE_SOURCE_DIR}/src"
+                                                    "${CMAKE_SOURCE_DIR}/src/libultra/include")
 
 # Subsystems join this list as their directories are reconstructed.
 set(COASTLINE_SUBSYSTEMS)
