@@ -155,6 +155,41 @@ void DrawFormattedLapTimeText(const char *color, s32 lap, f32 seconds, s32 x, s3
 #endif
 #endif
 
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#ifdef __cplusplus
+extern "C" {
+#endif
+/**
+ * Whether to display the lap counter.
+ * @ghidraAddress BRD3D: 0x100bd3e8
+ */
+extern s32 g_bHudShowLapCounter;
+/**
+ * Whether to display the race timer.
+ * @ghidraAddress BRD3D: 0x100bd3ec
+ */
+extern s32 g_bHudShowRaceTimer;
+/**
+ * Whether to display race position.
+ * @ghidraAddress BRD3D: 0x100bd3f8
+ */
+extern s32 g_bHudShowPosition;
+/**
+ * Draw the active vehicle's total and lap times for the current game mode.
+ * @param viewports The records of the views.
+ * @ghidraAddress BRD3D: 0x10017290
+ */
+void DrawRaceTimerHud(const ViewportRect *viewports);
+/**
+ * Draw the current lap and race position according to the HUD display flags.
+ * @param viewports The records of the views.
+ * @ghidraAddress BRD3D: 0x100173f0
+ */
+void DrawLapCounterHud(const ViewportRect *viewports);
+#ifdef __cplusplus
+}
+#endif
+#else
 /**
  * Draw the times the mode of play shows at the top right of a view.
  *
@@ -172,6 +207,7 @@ void DrawRaceTimerHud(void);
  * @ghidraAddress JPN: 0x80239ac8
  */
 void DrawLapCounterHud(void);
+#endif
 
 /**
  * Draw the message of the active vehicle in the middle of a view.

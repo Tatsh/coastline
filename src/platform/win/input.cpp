@@ -182,28 +182,10 @@ int g_adwKeyPrevDown[KEYBOARD_KEY_COUNT];
 int g_dwInputPollCounter;
 
 /**
- * Whether to display the lap counter.
- * @ghidraAddress BRD3D: 0x100bd3e8
- */
-int g_bHudShowLapCounter = 1;
-
-/**
- * Whether to display the race timer.
- * @ghidraAddress BRD3D: 0x100bd3ec
- */
-int g_bHudShowRaceTimer = 1;
-
-/**
  * Whether to display the speedometer.
  * @ghidraAddress BRD3D: 0x100bd3f4
  */
 int g_bHudShowSpeedometer = 1;
-
-/**
- * Whether to display race position.
- * @ghidraAddress BRD3D: 0x100bd3f8
- */
-int g_bHudShowPosition = 1;
 
 /**
  * Whether to display network standings.
