@@ -2244,6 +2244,59 @@ int OnPressAnyKeyContinue(MenuWidget *pWidget) {
     return 0;
 }
 
+int SeasonCongratsUI_UpdatePrimaryBannerImage(MenuWidget *pWidget) {
+    int flags = g_SeasonProgress.championshipFlags;
+    if (flags > 0) {
+        pWidget->nSpriteId = flags <= 5 ? 0x74 - flags : -1;
+    }
+    if (g_SeasonProgress.championshipFlags == 0) {
+        unsigned season = g_SeasonProgress.season;
+        if (season >= 1 && season <= 3) {
+            pWidget->nSpriteId = 0x45 + season * 2;
+        } else {
+            pWidget->nSpriteId = season >= 4 && season <= 6 ? 0x4d : -1;
+        }
+    }
+    return 1;
+}
+
+int SeasonCongratsUI_UpdateSecondaryBannerImage(MenuWidget *pWidget) {
+    int flags = g_SeasonProgress.championshipFlags;
+    if (flags > 0) {
+        switch (flags) {
+        case 2:
+            pWidget->nSpriteId = 0x6d;
+            break;
+        case 3:
+            pWidget->nSpriteId = 0x6e;
+            break;
+        case 4:
+            pWidget->nSpriteId = 0x6c;
+            break;
+        default:
+            pWidget->nSpriteId = -1;
+            break;
+        }
+    }
+    if (g_SeasonProgress.championshipFlags == 0) {
+        unsigned season = g_SeasonProgress.season;
+        pWidget->nSpriteId = season >= 1 && season <= 3 ? 0x46 + season * 2 : -1;
+    }
+    return 1;
+}
+
+int MultiplayerSetupUI_UpdateCarGroupImage(MenuWidget *pWidget) {
+    unsigned group = static_cast<unsigned>(g_dwSelectedCarClass);
+    pWidget->nSpriteId = group >= 1 && group <= 4 ? 0x55 + group * 2 : 0x56;
+    return 1;
+}
+
+int MultiplayerSetupUI_UpdateCarGroupSubImage(MenuWidget *pWidget) {
+    unsigned group = static_cast<unsigned>(g_dwSelectedCarClass);
+    pWidget->nSpriteId = group >= 1 && group <= 4 ? 0x56 + group * 2 : -1;
+    return 1;
+}
+
 int SeasonCongratsUI_PollAnyKey(MenuWidget *pWidget) {
     if (CheckForUserInput()) {
         OnPressAnyKeyContinue(pWidget);

@@ -954,6 +954,30 @@ int OnPressAnyKeyContinue(MenuWidget *pWidget);
 int SeasonCongratsUI_PollAnyKey(MenuWidget *pWidget);
 
 /**
+ * @ghidraAddress BRD3D: 0x1003f440
+ * @ghidraAddress BRGlide: 0x10038980
+ */
+int SeasonCongratsUI_UpdatePrimaryBannerImage(MenuWidget *pWidget);
+
+/**
+ * @ghidraAddress BRD3D: 0x1003f540
+ * @ghidraAddress BRGlide: 0x10038a80
+ */
+int SeasonCongratsUI_UpdateSecondaryBannerImage(MenuWidget *pWidget);
+
+/**
+ * @ghidraAddress BRD3D: 0x1003f5e0
+ * @ghidraAddress BRGlide: 0x10038b20
+ */
+int MultiplayerSetupUI_UpdateCarGroupImage(MenuWidget *pWidget);
+
+/**
+ * @ghidraAddress BRD3D: 0x1003f680
+ * @ghidraAddress BRGlide: 0x10038bc0
+ */
+int MultiplayerSetupUI_UpdateCarGroupSubImage(MenuWidget *pWidget);
+
+/**
  * @ghidraAddress BRD3D: 0x10040680
  * @ghidraAddress BRGlide: 0x10039bc0
  */
