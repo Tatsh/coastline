@@ -1591,6 +1591,22 @@ int SendPlayerJoinPacket(DirectPlayInfo *pInfo,
     return SendNetworkStreamReliable(pInfo, &stream);
 }
 
+int SendNetworkStreamUnreliable(DirectPlayInfo *pInfo, NetStream *pStream) {
+    if (g_dwNetworkDataStreamActive) {
+        return pStream->StreamGetWriteSize();
+    }
+    if (pInfo->bIsHost) {
+        unsigned size = pStream->StreamGetWriteSize();
+        void *buffer = pStream->StreamGetBufferPtr();
+        ProcessMultiplayerPackets(pInfo, buffer, size, 1, 1);
+    }
+    unsigned size = pStream->StreamGetWriteSize();
+    void *buffer = pStream->StreamGetBufferPtr();
+    HRESULT result =
+        DirectPlaySendLocked(pInfo->pDirectPlay, pInfo->dpidPlayer, 0, 0, buffer, size);
+    return result == 0 ? pStream->StreamGetWriteSize() : -1;
+}
+
 int SendNetworkStreamReliable(DirectPlayInfo *pInfo, NetStream *pStream) {
     if (!g_dwNetworkDataStreamActive) {
         if (pInfo->bIsHost) {

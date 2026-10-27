@@ -755,6 +755,12 @@ int CountActivePlayerSlots(void);
 int SendNetworkStreamReliable(DirectPlayInfo *pInfo, NetStream *pStream);
 
 /**
+ * @ghidraAddress BRD3D: 0x10004dd0
+ * @ghidraAddress BRGlide: 0x10005140
+ */
+int SendNetworkStreamUnreliable(DirectPlayInfo *pInfo, NetStream *pStream);
+
+/**
  * @ghidraAddress BRD3D: 0x10004760
  */
 int SendPlayerInfoPacket(DirectPlayInfo *pInfo,
