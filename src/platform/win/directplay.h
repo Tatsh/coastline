@@ -11,6 +11,8 @@
 #include <dplay.h>
 #include <dplobby.h>
 
+#include "platform/win/ghost.h"
+
 /** The DirectPlay object of the game and its local player. */
 struct DirectPlayInfo {
     IDirectPlay3A *pDirectPlay; /*!< The DirectPlay object. */
@@ -1292,12 +1294,6 @@ extern int g_dwNetworkSendBlocked;
  */
 void ResetSessionSlotTable(void);
 
-struct NetCarSnapshot {
-    char abUnknown0[0x78]; /* +0x00 */
-    float fProgress;
-    char abUnknown7c[0x24]; /* +0x7c */
-};
-
 /** A network player of a race. */
 struct NetPlayerSlot {
     HANDLE hMutex;  /*!< The mutex of the slot. */
@@ -1311,7 +1307,7 @@ struct NetPlayerSlot {
     unsigned char bStatusOptionC;
     char abUnknown37; /* +0x37 */
     unsigned adwSnapshotTypes[8];
-    NetCarSnapshot aSnapshots[8];
+    KeyframeState aSnapshots[8];
     int nCurrentSnapshot;
     char szPlayerName[0x400];
     unsigned dwLastTimeSync;
