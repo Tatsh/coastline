@@ -1,6 +1,6 @@
 # PC port game code from 0x10050000 to 0x10060000
 
-71 of 96 routines done.
+72 of 96 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -22,7 +22,7 @@ the same name, for a routine the port retained from the N64 game.
 | `BuildMultiplayerGameSetupUI`             |   ✅   |                 |      4 |   2701 | `0x10057c10` | `0x10050ac0` | `void BuildMultiplayerGameSetupUI(MenuScreen * pScreen)`                                                                    |
 | `BuildSaveSeasonUI`                       |   ✅   |                 |      2 |   2433 | `0x10050060` | `0x10048f10` | `void BuildSaveSeasonUI(MenuScreen * pScreen)`                                                                              |
 | `ApplyPlayerVehicleInput`                 |        |                 |      3 |   1960 |              | `0x1005d050` | `undefined ApplyPlayerVehicleInput()`                                                                                       |
-| `BuildSaveTimeAttackMenuUI`               |   🚧   |                 |      2 |   1932 | `0x1005a6e0` | `0x10053590` | `void BuildSaveTimeAttackMenuUI(MenuScreen * pScreen)`                                                                      |
+| `BuildSaveTimeAttackMenuUI`               |   ✅   |                 |      2 |   1932 | `0x1005a6e0` | `0x10053590` | `void BuildSaveTimeAttackMenuUI(MenuScreen * pScreen)`                                                                      |
 | `BuildPlayerNameEntryUI`                  |   ✅   |                 |      2 |   1570 | `0x100563e0` | `0x1004f290` | `int BuildPlayerNameEntryUI(MenuScreen * screen)`                                                                           |
 | `BuildCreateGameMenuUI`                   |   ✅   |                 |      2 |   1558 | `0x100575f0` | `0x100504a0` | `int BuildCreateGameMenuUI(MenuScreen * screen)`                                                                            |
 | `BuildJoinCreateGameUI`                   |   ✅   |                 |      2 |   1532 | `0x10056ff0` | `0x1004fea0` | `int BuildJoinCreateGameUI(MenuScreen * screen)`                                                                            |
