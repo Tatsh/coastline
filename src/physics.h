@@ -451,6 +451,27 @@ void PushCollisionTriangle(TrackTriangle *triangle);
  */
 void PrintCollisionTriangleCount(void);
 
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#ifdef __cplusplus
+extern "C" {
+#endif
+/**
+ * Classify a point against selected planes through the corners of the unit cube.
+ *
+ * @param v The point.
+ * @param mask The planes to test.
+ * @return The bits of the planes the point lies beyond.
+ * @ghidraAddress BRD3D: 0x1006d540
+ */
+s32 ComputeAabbCornerPlaneClipCode(Vec3f *v, s32 mask);
+#ifdef __cplusplus
+}
+#endif
+#endif
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 /**
  * Sort out a triangle against the unit cube by its corners and its edges.
  *
@@ -460,8 +481,12 @@ void PrintCollisionTriangleCount(void);
  * @ghidraAddress USA: 0x8025c2c8
  * @ghidraAddress EUR: 0x8025d8ac
  * @ghidraAddress JPN: 0x8025d23c
+ * @ghidraAddress BRD3D: 0x1006d2b0
  */
 s32 ClassifyTriangleInUnitCube(Vec3f triangle[3]);
+#ifdef __cplusplus
+}
+#endif
 
 /**
  * How many times a triangle winds about a point of its plane, seen along the main axis of its
