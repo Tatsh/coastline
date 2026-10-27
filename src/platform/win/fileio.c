@@ -161,3 +161,20 @@ void *CHK_AllocateMemory(size_t nSize, const char *szCaller) {
     }
     return pMemory;
 }
+
+void *CHK_ReAllocateMemory(void *pMemory, size_t nSize, const char *szCaller) {
+    char szMessage[MESSAGE_SIZE];
+    void *pResizedMemory = realloc(pMemory, nSize);
+
+    // Zero-size requests still call realloc().
+    if (nSize == 0) {
+        return nullptr;
+    }
+    if (pResizedMemory == nullptr) {
+        sprintf(
+            szMessage, "CHK_ReAllocateMemory(): Out of memory: couldn't reallocate %s\n", szCaller);
+        OutputDebugStringA(szMessage);
+        exit(1);
+    }
+    return pResizedMemory;
+}
