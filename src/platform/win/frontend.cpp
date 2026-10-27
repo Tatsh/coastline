@@ -23,6 +23,7 @@
 #include "platform/win/boot/app.h"
 #include "platform/win/boot/rallyconfig.h"
 #include "platform/win/boot/strings.h"
+#include "platform/win/configfile.h"
 #include "platform/win/directplay.h"
 #include "platform/win/ghost.h"
 #include "platform/win/input.h"
@@ -3355,6 +3356,46 @@ int SaveSeasonUI_OnSlotNameEntered(MenuItemList *pList, int nStatus) {
     // The slot is marked as named even when writing fails.
     SaveSeasonSaveFile();
     g_dwSaveSeasonSlotNamed = 1;
+    return 1;
+}
+
+int LoadTimeAttackMenuUI_OnSlotSelected(MenuItemList *, int *slot) {
+    g_dwGameMode = GAME_MODE_TIME_ATTACK;
+    g_dwTimeAttackLoadSelected = 0;
+    g_dwSaveSlotPlayerIndex = 0;
+    ResetMenuSelectionsToDefaults();
+    char fileName[260];
+    char number[4];
+    std::strcpy(fileName, "TimeAttack");
+    _itoa(*slot, number, 10);
+    std::strcat(fileName, number);
+    std::strcat(fileName, ".grf");
+    std::strcpy(g_szTimeAttackSaveFileName, fileName);
+    LoadConfigData(CONFIG_LOAD_GHOST, true);
+    if (g_GhostRecordingInfo.track < 0) {
+        return 0;
+    }
+    g_dwTireMenuIndex = g_LoadedSeasonSettings.tires;
+    g_dwSuspensionMenuIndex = g_LoadedSeasonSettings.suspension;
+    g_dwCarMenuIndex = g_LoadedSeasonSettings.car;
+    g_dwHandlingTypeMenuIndex = g_LoadedSeasonSettings.handling;
+    g_dwSelectedTransmission = g_LoadedSeasonSettings.transmission;
+    g_dwTotalLapsSetting = g_dwLoadedGhostLapCount;
+    g_dwNumLocalPlayers = 1;
+    g_dwTrackMenuIndex = g_GhostRecordingInfo.track;
+    g_dwSelectedWeather = g_GhostRecordingInfo.weather;
+    g_dwSelectedTrackId = g_adwTrackMenuIndexToTrackId[g_dwTrackMenuIndex];
+    g_SeasonProgress = *g_aVehicles[0].GetProfile();
+    g_dwTotalLaps = g_dwLoadedGhostLapCount;
+    g_dwHandlingType = g_LoadedSeasonSettings.handling;
+    g_dwChosenWeather = g_adwWeatherMenuIndexToWeather[g_dwSelectedWeather];
+    g_dwChosenCar = g_adwCarMenuIndexToCarId[g_LoadedSeasonSettings.car];
+    g_dwTimeAttackLoadSelected = 1;
+    g_dwTireType = g_adwTireMenuIndexToTireType[g_LoadedSeasonSettings.tires];
+    g_dwSuspensionType = g_adwSuspensionMenuIndexToType[g_LoadedSeasonSettings.suspension];
+    g_dwTransmissionType = g_adwTransmissionMenuIndexToType[g_LoadedSeasonSettings.transmission];
+    SyncSeasonProgress();
+    g_dwSeasonLoaded = 1;
     return 1;
 }
 

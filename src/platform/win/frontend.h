@@ -2501,6 +2501,9 @@ int BuildTimeAttackMenuUI(MenuScreen *pScreen);
  */
 void BuildLoadTimeAttackMenuUI(MenuScreen *pScreen);
 
+/** @ghidraAddress BRD3D: 0x10042880 */
+int LoadTimeAttackMenuUI_OnSlotSelected(MenuItemList *pList, int *pnSlot);
+
 /**
  * @ghidraAddress BRD3D: 0x10057c10
  */
