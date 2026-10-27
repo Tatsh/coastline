@@ -140,6 +140,26 @@ bool FindDesktopDisplayModeAndDevice(DirectDrawDriver *pDriver,
     return true;
 }
 
+D3DDeviceNode *
+ResolveRenderDeviceOrFind(DirectDrawDriver *pDriver, GUID *pDeviceGuid, DisplayMode *pMode) {
+    if (pDriver == nullptr) {
+        return nullptr;
+    }
+    union {
+        GUID *guid;
+        D3DDeviceNode *device;
+    } fallback = {pDeviceGuid};
+    D3DDeviceNode *device;
+
+    if (pMode == nullptr) {
+        device = pDriver->SelectPreferredD3DDevice(pDeviceGuid, &fallback.device, nullptr);
+    } else {
+        device = pDriver->FindRenderDevice(pDeviceGuid, pMode, &fallback.device, nullptr);
+    }
+    /* The fallback reuses the GUID argument slot, including when the query does not write it. */
+    return device != nullptr ? device : fallback.device;
+}
+
 // The mode a renderer takes when it is not given a size and a depth.
 #define DEFAULT_MODE_WIDTH 640
 #define DEFAULT_MODE_HEIGHT 480

@@ -1351,6 +1351,14 @@ bool FindDesktopDisplayModeAndDevice(DirectDrawDriver *pDriver,
                                      D3DDeviceNode **ppDevice);
 
 /**
+ * Resolve a device by GUID and optional display mode, using the reported fallback on failure.
+ *
+ * @ghidraAddress BRD3D: 0x1001a5d0
+ */
+extern "C" D3DDeviceNode *
+ResolveRenderDeviceOrFind(DirectDrawDriver *pDriver, GUID *pDeviceGuid, DisplayMode *pMode);
+
+/**
  * The bits of a depth from the `DDBD_` flags of the depths.
  *
  * @param dwMask The flags of the depths, of which the shallowest counts.
