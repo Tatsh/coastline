@@ -14,6 +14,7 @@
 #include <PR/os.h>
 #include <PR/ultratypes.h>
 
+#include "ambientsound.h"
 #include "audiomix.h"
 #include "render.h"
 #include "soundchannel.h"
@@ -470,14 +471,6 @@ void CheckSoundEffectLoopPoints(void);
  */
 void AudioMixingThreadMain(void *arg);
 
-/**
- * Play the nearest sound of the track on its channel, panned and pitched for the camera.
- *
- * @ghidraAddress USA: 0x8022b534
- * @ghidraAddress EUR: 0x8022ca44
- * @ghidraAddress JPN: 0x8022c1fc
- */
-void UpdateAmbientSoundChannel(void);
 
 /**
  * Do nothing with a camera.

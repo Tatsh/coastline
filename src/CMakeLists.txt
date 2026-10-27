@@ -103,6 +103,7 @@ else()
   # routine of it that the PC libraries have compiles for them.
   set_source_files_properties(controllerread.c inputtranslate.c PROPERTIES LANGUAGE CXX)
   set_source_files_properties(volumecontrols.c PROPERTIES LANGUAGE CXX)
+  set_source_files_properties(ambientsound.c PROPERTIES LANGUAGE CXX)
   add_library(
     coastline_game STATIC bodyforces.c camerachase.c cameracollision.c displaylistops.c fade.c
                           fog.c frameclear.c game.c heap.c mathutil.c playerinput.c profileinit.c
@@ -146,6 +147,7 @@ target_sources(coastline_game PRIVATE shadowreset.c)
 target_sources(coastline_game PRIVATE savestate.c)
 target_sources(coastline_game PRIVATE volumecontrols.c)
 target_sources(coastline_game PRIVATE camerachange.c)
+target_sources(coastline_game PRIVATE ambientsound.c)
 target_sources(coastline_game PRIVATE wheelrender.c)
 target_sources(coastline_game PRIVATE texturebind.c)
 target_sources(coastline_game PRIVATE headlight.c)
