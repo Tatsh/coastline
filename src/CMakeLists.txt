@@ -102,6 +102,7 @@ else()
   # The game code the PC port retained from the N64 releases. A source joins this list when every
   # routine of it that the PC libraries have compiles for them.
   set_source_files_properties(controllerread.c inputtranslate.c PROPERTIES LANGUAGE CXX)
+  set_source_files_properties(volumecontrols.c PROPERTIES LANGUAGE CXX)
   add_library(
     coastline_game STATIC bodyforces.c camerachase.c cameracollision.c displaylistops.c fade.c
                           fog.c frameclear.c game.c heap.c mathutil.c playerinput.c profileinit.c
@@ -143,6 +144,7 @@ target_sources(coastline_game PRIVATE vehiclevisibility.c)
 target_sources(coastline_game PRIVATE debuginstance.c)
 target_sources(coastline_game PRIVATE shadowreset.c)
 target_sources(coastline_game PRIVATE savestate.c)
+target_sources(coastline_game PRIVATE volumecontrols.c)
 target_sources(coastline_game PRIVATE wheelrender.c)
 target_sources(coastline_game PRIVATE texturebind.c)
 if(TGR_PLATFORM STREQUAL "win")

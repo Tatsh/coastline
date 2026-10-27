@@ -10,6 +10,7 @@
 #include <PR/ultratypes.h>
 
 #include "racemenu.h"
+#include "volumecontrols.h"
 
 /** The levels of each volume, from 0 for silence. */
 #define VOLUME_LEVELS 11
@@ -406,23 +407,7 @@ extern u8 g_bPakDataStep;
  */
 extern u8 g_bPakDataWaitFrames;
 
-/**
- * Raise the music a level, and apply it.
- *
- * @ghidraAddress USA: 0x80211840
- * @ghidraAddress EUR: 0x80211730
- * @ghidraAddress JPN: 0x80211620
- */
-void IncreaseBgmVolume(void);
 
-/**
- * Lower the music a level, and apply it.
- *
- * @ghidraAddress USA: 0x8021187c
- * @ghidraAddress EUR: 0x8021176c
- * @ghidraAddress JPN: 0x8021165c
- */
-void DecreaseBgmVolume(void);
 
 /**
  * Apply the music and effect volumes of the options.
@@ -433,23 +418,7 @@ void DecreaseBgmVolume(void);
  */
 void ApplyVolumeSettings(void);
 
-/**
- * Raise the effects a level, and apply it.
- *
- * @ghidraAddress USA: 0x802118f8
- * @ghidraAddress EUR: 0x802117e8
- * @ghidraAddress JPN: 0x802116d8
- */
-void IncreaseSfxVolume(void);
 
-/**
- * Lower the effects a level, and apply it.
- *
- * @ghidraAddress USA: 0x80211934
- * @ghidraAddress EUR: 0x80211824
- * @ghidraAddress JPN: 0x80211714
- */
-void DecreaseSfxVolume(void);
 
 /**
  * Draw the hint of the volume items, and run the screen that loads or saves the configuration

@@ -154,36 +154,8 @@ enum {
         g_aVehicles[vehicle].profile->controllerLayout = (equipment)[4];                           \
     } while (0)
 
-void IncreaseBgmVolume(void) {
-    if (g_OptionSettings.musicVolume < VOLUME_LEVELS - 1) {
-        g_OptionSettings.musicVolume++;
-    }
-    g_bBgmVolume = g_adwBgmVolumeLevels[g_OptionSettings.musicVolume];
-}
-
-void DecreaseBgmVolume(void) {
-    if (g_OptionSettings.musicVolume > 0) {
-        g_OptionSettings.musicVolume--;
-    }
-    g_bBgmVolume = g_adwBgmVolumeLevels[g_OptionSettings.musicVolume];
-}
-
 void ApplyVolumeSettings(void) {
     g_bBgmVolume = g_adwBgmVolumeLevels[g_OptionSettings.musicVolume];
-    g_bSfxMasterVolume = g_adwSfxVolumeLevels[g_OptionSettings.sfxVolume];
-}
-
-void IncreaseSfxVolume(void) {
-    if (g_OptionSettings.sfxVolume < VOLUME_LEVELS - 1) {
-        g_OptionSettings.sfxVolume++;
-    }
-    g_bSfxMasterVolume = g_adwSfxVolumeLevels[g_OptionSettings.sfxVolume];
-}
-
-void DecreaseSfxVolume(void) {
-    if (g_OptionSettings.sfxVolume > 0) {
-        g_OptionSettings.sfxVolume--;
-    }
     g_bSfxMasterVolume = g_adwSfxVolumeLevels[g_OptionSettings.sfxVolume];
 }
 
