@@ -41,6 +41,11 @@ extern int g_bVerboseFileTrace;
 void *CHK_AllocateMemory(size_t nSize, const char *szCaller);
 
 /**
+ * @ghidraAddress BRD3D: 0x100033f0
+ */
+void *CHK_ReAllocateMemory(void *pMemory, size_t nSize, const char *szCaller);
+
+/**
  * Whether a file can be opened for reading.
  *
  * @param pszPath The path of the file.

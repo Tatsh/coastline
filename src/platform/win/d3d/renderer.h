@@ -1221,6 +1221,16 @@ void GetPrecipitationTextureDimensions(int nIndex);
 extern unsigned g_dwTextureEntryCount;
 
 /**
+ * @ghidraAddress BRD3D: 0x105553f4
+ */
+extern unsigned g_dwTextureEntryCapacity;
+
+/**
+ * @ghidraAddress BRD3D: 0x100a7e0c
+ */
+extern char g_szAppendTextureAtdb[];
+
+/**
  * The textures the game loaded.
  *
  * @ghidraAddress BRD3D: 0x1057543c

@@ -7,6 +7,7 @@
 #include "platform/win/d3d/renderer.h"
 #include "platform/win/d3d/texture.h"
 #include "platform/win/displaylist.h"
+#include "platform/win/fileio.h"
 #include "platform/win/settings.h"
 #include "screen.h"
 #include "weather.h"
@@ -470,6 +471,17 @@ void CreateGlobalEffectTextures(void) {
 }
 
 #if TGR_RENDERER == TGR_RENDERER_D3D
+unsigned AllocateTextureEntry(void) {
+    if (g_dwTextureEntryCount >= g_dwTextureEntryCapacity) {
+        g_dwTextureEntryCapacity += 256;
+        g_pTextureEntries = static_cast<TextureEntry *>(
+            CHK_ReAllocateMemory(g_pTextureEntries,
+                                 g_dwTextureEntryCapacity * sizeof(TextureEntry),
+                                 g_szAppendTextureAtdb));
+    }
+    return g_dwTextureEntryCount++;
+}
+
 unsigned CreateTextureFromN64ImageAutoLoadSize(const unsigned char *pImage,
                                                const unsigned char *pPalette,
                                                int nWidth,
