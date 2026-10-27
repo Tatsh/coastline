@@ -1,0 +1,73 @@
+#include <bit>
+
+#include "model.h"
+#include "platform/win/render.h"
+#include "platform/win/texturescan.h"
+
+template <typename T>
+static inline void SwapModelValue(T &value) {
+    if constexpr (sizeof(T) == 2) {
+        value = std::bit_cast<T>(std::byteswap(std::bit_cast<u16>(value)));
+    } else {
+        value = std::bit_cast<T>(std::byteswap(std::bit_cast<u32>(value)));
+    }
+}
+
+template <typename T>
+static inline void RelocateModelPointer(T *&pointer) {
+    unsigned word = std::bit_cast<unsigned>(pointer);
+    RelocatePointerValue(&word);
+    pointer = std::bit_cast<T *>(word);
+}
+
+void RelocateModelPointers(Model *model) {
+    SwapModelValue(model->wUnknown0);
+    SwapModelValue(model->partCount);
+    if (model->animations) {
+        SwapModelValue(model->animations);
+        RelocateModelPointer(model->animations);
+        SwapModelValue(model->animations->count);
+        for (int i = 0; i < model->animations->count; ++i) {
+            SwapModelValue(model->animations->entries[i]);
+            RelocateModelPointer(model->animations->entries[i]);
+            SwapModelValue(model->animations->entries[i]->vertexCount);
+            SwapModelValue(model->animations->entries[i]->vertices.pSource);
+            RelocateModelPointer(model->animations->entries[i]->vertices.pSource);
+            ConvertN64VerticesCached(&model->animations->entries[i]->vertices,
+                                     model->animations->entries[i]->vertexCount);
+            SwapModelValue(model->animations->entries[i]->unreconstructed8);
+            RelocateModelPointer(model->animations->entries[i]->unreconstructed8);
+            SwapModelValue(model->animations->entries[i]->keyCount);
+            SwapModelValue(model->animations->entries[i]->flags);
+            SwapModelValue(model->animations->entries[i]->startKey);
+            SwapModelValue(model->animations->entries[i]->startTime);
+            SwapModelValue(model->animations->entries[i]->endTime);
+            SwapModelValue(model->animations->entries[i]->time);
+            for (int k = 0; k < model->animations->entries[i]->keyCount; ++k) {
+                SwapModelValue(model->animations->entries[i]->keys[k]);
+                RelocateModelPointer(model->animations->entries[i]->keys[k]);
+                SwapModelValue(model->animations->entries[i]->keys[k]->time);
+                for (int j = 0;
+                     j < static_cast<int>(
+                             static_cast<u32>(model->animations->entries[i]->vertexCount) * 3u);
+                     ++j) {
+                    SwapModelValue(model->animations->entries[i]->keys[k]->positions[j / 3][j % 3]);
+                }
+            }
+        }
+    }
+    for (int i = 0; i < model->partCount; ++i) {
+        if (model->parts[i].displayList) {
+            SwapModelValue(model->parts[i].displayList);
+            RelocateModelPointer(model->parts[i].displayList);
+            SwapModelValue(model->parts[i].flags);
+            SwapModelValue(model->parts[i].wUnknown6);
+            SwapModelValue(model->parts[i].position.x);
+            SwapModelValue(model->parts[i].position.y);
+            SwapModelValue(model->parts[i].position.z);
+            ByteSwapAndRelocateDisplayList(model->parts[i].displayList);
+            SetTextureLoadCategory(8);
+            g_pfnPreprocessDisplayListTextures(model->parts[i].displayList);
+        }
+    }
+}

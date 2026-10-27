@@ -24,6 +24,7 @@ add_library(
   hud.cpp
   input.cpp
   menufont.cpp
+  modelrelocation.cpp
   netstream.cpp
   paintshop.c
   podarchive.cpp
