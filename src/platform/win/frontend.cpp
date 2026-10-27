@@ -3379,6 +3379,29 @@ int SaveTimeAttackMenuUI_OnSlotSelected(MenuItemList *list, int *slot) {
     return 1;
 }
 
+int SaveTimeAttackMenuUI_OnSlotNameEntered(MenuItemList *list, int status) {
+    if (status == -1) {
+        list->GetFont(g_dwFileListSelectedSlot).SetText(g_szMenuItemTextBackup);
+        return 1;
+    }
+    if (list->GetFont(g_dwFileListSelectedSlot).GetText()) {
+        char fileName[260];
+        char number[4];
+        std::strcpy(fileName, "TimeAttack");
+        _itoa(g_dwFileListSelectedSlot, number, 10);
+        std::strcat(fileName, number);
+        std::strcat(fileName, ".grf");
+        std::strcpy(g_szTimeAttackSaveFileName, fileName);
+        g_pRootMenuScreen->GetFileList(1)->SetName(
+            g_dwFileListSelectedSlot, list->GetFont(g_dwFileListSelectedSlot).GetText());
+        std::strcpy(g_szSeasonSaveSlotName, list->GetFont(g_dwFileListSelectedSlot).GetText());
+        // The slot is marked as named even when writing fails.
+        SaveGhostFile();
+        g_dwTimeAttackSaveSlotNamed = 1;
+    }
+    return 1;
+}
+
 int SaveSeasonUI_OnSlotSelected(MenuItemList *pList, int *pnSlot) {
     int slot = *pnSlot;
     if (slot < 0) {
