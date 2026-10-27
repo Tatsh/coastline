@@ -923,7 +923,7 @@ int ShowKeyConfigScreen(void);
  *
  * @ghidraAddress BRD3D: 0x1004cac0
  * @ghidraAddress BRGlide: 0x10045ef0
- * @stub
+ * @stub{BRGlide}
  */
 void BuildKeyConfigUI(MenuScreen *pScreen);
 

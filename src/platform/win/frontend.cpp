@@ -5238,6 +5238,92 @@ void BuildVideoOptionsUI(MenuScreen *screen) {
 }
 #endif
 
+void BuildKeyConfigUI(MenuScreen *screen) {
+    screen->SetCurrentPanelIndex(0);
+    screen->SetPanelActive(screen->GetPanelCount(), 1);
+    MenuPanel *panel = new (std::nothrow) MenuPanel();
+    screen->SetPanel(screen->GetPanelCount(), panel);
+    if (!panel) {
+        ShowErrorMessage(4);
+    }
+    screen->SetPanelCount(screen->GetPanelCount() + 1);
+    panel->SetScreen(screen);
+    panel->SetFlags(0);
+    panel->SetX(195);
+    panel->SetY(130);
+    AddMenuWidget(panel, screen, 0, 0, 9, 0, 0);
+    panel->SetWidgetCount(panel->GetWidgetCount() + 1);
+    SetMenuWidgetLabel(
+        AddMenuWidget(panel, screen, panel->GetX(), 10, 0x100009, 1, -1), 0x26, &g_rcMenuTitleBar);
+    panel->SetWidgetCount(panel->GetWidgetCount() + 1);
+    MenuWidget *widget = AddMenuWidget(panel, screen, panel->GetX(), panel->GetY(), 0x3001, 1, -1);
+    widget->SetUpdateCallback(KeyConfigUI_UpdateActionSelection);
+    MenuItemList &list = widget->GetItemList();
+    list.SetVerticalScrollbar(1);
+    list.Initialize(0x40001, &g_rcMenuListBox, 5, 0, -1);
+    for (int index = 0; index < KEY_CONFIG_ENTRY_COUNT; index++) {
+        unsigned flags = 0;
+        if (g_dwSelectedInputDevice == 3 && index < 2) {
+            flags = 0x10;
+            g_dwKeyConfigSelectedAction = 2;
+        }
+        if (GetStringResource(g_aKeyConfigEntries[index].nStringId)) {
+            list.AddItem(GetStringResource(g_aKeyConfigEntries[index].nStringId),
+                         flags,
+                         1,
+                         &g_rcMenuListBox,
+                         false);
+        }
+    }
+    panel->SetWidgetCount(panel->GetWidgetCount() + 1);
+    panel->SetNavigationCount(panel->GetNavigationCount() + 1);
+    const float offsets[] = {95, 114};
+    for (int index = 0; index < 2; index++) {
+        widget = AddMenuWidget(
+            panel,
+            screen,
+            panel->GetX(),
+            static_cast<float>(static_cast<long double>(panel->GetY()) + offsets[index]),
+            0x102001,
+            1,
+            -1);
+        widget->SetIdleActionCallback(ValidateEntityState);
+        widget->SetActionCallback(index == 0 ? KeyConfigUI_BeginKeyCapture : KeyConfigUI_OnBack);
+        if (index == 0) {
+            widget->SetAfterUpdateCallback(KeyConfigUI_PollKeyCapture);
+        }
+        SetMenuWidgetLabel(widget, index == 0 ? 0x27 : 0xc, &g_rcMenuCenterPanel);
+        if (index == 1) {
+            g_pOptionsSubMenu = widget;
+        }
+        panel->SetWidgetCount(panel->GetWidgetCount() + 1);
+        panel->SetNavigationCount(panel->GetNavigationCount() + 1);
+    }
+    AddMenuWidget(panel, screen, 80, 46, 9, 0, 9);
+    panel->SetWidgetCount(panel->GetWidgetCount() + 1);
+    widget = AddMenuWidget(panel, screen, panel->GetX(), 135, 0x101001, 1, -1);
+    widget->SetUpdateCallback(KeyConfigUI_UpdateDuplicateBindingWarning);
+    widget->SetSpriteId(3);
+    widget->SetText(g_szSpace, 1, 1, &g_rcMenuRightColumn);
+    panel->SetWidgetCount(panel->GetWidgetCount() + 1);
+    widget = AddMenuWidget(panel, screen, 324, 46, 1, 1, 0x16);
+    widget->SetUpdateCallback(InputOptionsUI_UpdateInputDeviceImage);
+    widget->SetLinkedWidgetCount(widget->GetLinkedWidgetCount() + 1);
+    widget->SetLinkedWidgetIndex(0, panel->GetWidgetCount() + 1);
+    panel->SetWidgetCount(panel->GetWidgetCount() + 1);
+    SetMenuWidgetLabel(AddMenuWidget(panel, screen, panel->GetX(), 155, 0x100001, 1, -1),
+                       0x28,
+                       &g_rcMenuWideColumn);
+    panel->SetWidgetCount(panel->GetWidgetCount() + 1);
+    widget = AddMenuWidget(panel, screen, panel->GetX(), 100, 0x101001, 1, -1);
+    widget->SetUpdateCallback(KeyConfigUI_UpdateBindingLabel);
+    widget->SetSpriteId(3);
+    widget->SetText(g_szSpace, 1, 1, &g_rcMenuWideColumn);
+    panel->SetWidgetCount(panel->GetWidgetCount() + 1);
+    g_dwKeyBindingDuplicatesFound =
+        DetectDuplicateKeyBindings(g_adwInputDeviceMenuIndexToDevice[g_dwSelectedInputDevice]);
+}
+
 template <auto Action>
     requires std::invocable<decltype(Action)> && std::same_as<decltype(Action()), int>
 static int InvokeRootMenuAction(MenuWidget *) {
