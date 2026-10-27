@@ -1,6 +1,6 @@
 # PC port game code from 0x10040000 to 0x10050000
 
-256 of 264 routines done.
+257 of 264 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -51,7 +51,7 @@ the same name, for a routine the port retained from the N64 game.
 | `TimeAttackUI_UpdateBestLapLabel`                  |   ✅   |                 |      2 |    320 | `0x10041180` | `0x1003a6d0` | `int TimeAttackUI_UpdateBestLapLabel(MenuWidget * widget)`                                                                                                |
 | `TimeAttackUI_UpdateRaceTimeLabel`                 |   ✅   |                 |      2 |    320 | `0x10041040` | `0x1003a580` | `int TimeAttackUI_UpdateRaceTimeLabel(MenuWidget * widget)`                                                                                               |
 | `MenuScreen::MenuScreen`                           |   ✅   |                 |     37 |    310 | `0x10048710` | `0x10041b60` | `MenuScreen * MenuScreen(MenuScreen * this)`                                                                                                              |
-| `SaveTimeAttackMenuUI_OnSlotSelected`              |   📝   |                 |      1 |    306 | `0x10042740` | `0x1003bca0` | `undefined SaveTimeAttackMenuUI_OnSlotSelected()`                                                                                                         |
+| `SaveTimeAttackMenuUI_OnSlotSelected`              |   ✅   |                 |      1 |    306 | `0x10042740` | `0x1003bca0` | `int SaveTimeAttackMenuUI_OnSlotSelected(MenuItemList * list, int * slot)`                                                                                |
 | `ShowPreRaceInfoScreen`                            |   ✅   |                 |      6 |    293 | `0x10045c90` | `0x1003f130` | `int ShowPreRaceInfoScreen(void)`                                                                                                                         |
 | `ShowRaceResultsSummaryScreen`                     |   ✅   |                 |      1 |    293 | `0x10045f70` | `0x1003f410` | `int ShowRaceResultsSummaryScreen(MenuWidget * pWidget)`                                                                                                  |
 | `ReturnToMainMenuFromSeason`                       |   ✅   |                 |      1 |    284 | `0x10046260` | `0x1003f700` | `int ReturnToMainMenuFromSeason(void)`                                                                                                                    |
