@@ -1,6 +1,6 @@
 # PC port game code from 0x10060000 to 0x10070000
 
-90 of 173 routines done.
+91 of 173 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -35,7 +35,7 @@ the same name, for a routine the port retained from the N64 game.
 | `Vehicle::TraceTrackSplineRecursive`     |        | ✅ `0x80226d9c` |      3 |    856 | `0x10063ff0` | `0x1005d060` | `undefined TraceTrackSplineRecursive(Vehicle * this, undefined4 param_1, undefined4 param_2, undefined4 param_3)`                        |
 | `Vehicle::TransformAllWheelMatrices`     |        | ✅ `0x80221e0c` |      2 |    776 | `0x10061c60` | `0x1005ace0` | `undefined TransformAllWheelMatrices(Vehicle * this)`                                                                                    |
 | `StepVehicleCollisions`                  |        | ✅ `0x8025e55c` |      1 |    762 | `0x1006ec80` | `0x10067c30` | `undefined StepVehicleCollisions()`                                                                                                      |
-| `BounceOffPlane`                         |        | ✅ `0x8025b73c` |      1 |    760 | `0x1006c9d0` | `0x10065980` | `undefined BounceOffPlane()`                                                                                                             |
+| `BounceOffPlane`                         |   ✅   | ✅ `0x8025b73c` |      1 |    760 | `0x1006c9d0` | `0x10065980` | `int BounceOffPlane(RigidBody * body, Vec3f * normal, int damp, int spin)`                                                               |
 | `UpdateAmbientSoundChannel`              |        | ✅ `0x8022b534` |      1 |    683 | `0x10067ed0` | `0x10060f40` | `undefined UpdateAmbientSoundChannel()`                                                                                                  |
 | `ApplyVehicleKeyframe`                   |   ✅   |                 |      2 |    673 | `0x10060a10` | `0x10059a80` | `void ApplyVehicleKeyframe(Vehicle * pVehicle, KeyframeState * pState)`                                                                  |
 | `CollectTrianglesInBox`                  |        | ✅ `0x8025d060` |      1 |    669 | `0x1006db20` | `0x10066ad0` | `undefined CollectTrianglesInBox()`                                                                                                      |
