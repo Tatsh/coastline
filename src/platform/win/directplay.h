@@ -1222,9 +1222,15 @@ void HandlePlayerDisconnect(DPID dpidPlayer);
  * @param dpidTo The receiver.
  * @ghidraAddress BRD3D: 0x100360f0
  * @ghidraAddress BRGlide: 0x1002f790
+ * @stub{BRGlide}
  */
 void ProcessMultiplayerPackets(
     DirectPlayInfo *pInfo, void *pData, DWORD dwSize, DPID dpidFrom, DPID dpidTo);
+
+/**
+ * @ghidraAddress BRD3D: 0x10036030
+ */
+int FindNetworkSlotByPlayerId(DPID dpidPlayer);
 
 /**
  * Handle the packets of a secure message as a client.
@@ -1398,6 +1404,7 @@ void DestroyNetworkGroups(void);
  *
  * @ghidraAddress BRD3D: 0x1003c020
  * @ghidraAddress BRGlide: 0x100356b0
+ * @stub{BRGlide}
  */
 void InitializeNetworkServiceProvider(void);
 
