@@ -29,12 +29,6 @@
 /* How near a puff or a segment must be to the last to be scattered back towards it. */
 #define SCATTER_DISTANCE_SQUARED 256.0f
 
-/* The puffs that have faded below this are freed. */
-#define PARTICLE_MIN_SHARE (1.0f / 32.0f)
-
-/* The opacity of a puff from the product of its fade and its alpha. */
-#define PARTICLE_SHARE (1.0f / 65280.0f)
-
 /* A random number of 16 bits as a fraction. */
 #define RANDOM_SHARE (1.0f / 65535.0f)
 
@@ -667,75 +661,6 @@ void SpawnTireSmoke(Vehicle *vehicle) {
         particle->size = 0.4f;
         particle->fade = 25;
         particle->alpha = (s32)(239.0f * fade * 0.7f + 16.0f);
-    }
-}
-
-void UpdateExhaustParticles(void) {
-    Particle *particle;
-    u16 *link;
-    s32 index;
-    u16 next;
-    f32 grow, share, step;
-
-    grow = 0.3f * g_fFrameDeltaTime;
-    link = &g_wExhaustParticleListHead;
-    for (index = *link; index != 0; index = next) {
-        particle = &g_aParticlePool[index];
-        step = g_fFrameDeltaTime;
-        next = particle->next;
-        share = (f32)(particle->alpha * particle->fade) * PARTICLE_SHARE;
-        particle->size += grow;
-        particle->position.x += g_vWindVelocity.x + particle->velocity.x * share * step;
-        particle->position.y += g_vWindVelocity.y + particle->velocity.y * share * step;
-        particle->position.z += g_vWindVelocity.z + (particle->velocity.z * share + 0.8f) * step;
-        particle->fade = (s32)(5.7375f / (particle->size * particle->size));
-        if (share < PARTICLE_MIN_SHARE) {
-            *link = particle->next;
-            particle->next = g_wParticleFreeListHead;
-            g_wParticleFreeListHead = index;
-        } else {
-            link = &particle->next;
-        }
-    }
-}
-
-void UpdateTireSmoke(void) {
-    Particle *particle;
-    u16 *link;
-    s32 index;
-    u16 next;
-    s32 list;
-    f32 grow, share, step, rise;
-
-    grow = 0.7f * g_fFrameDeltaTime;
-    for (list = 0; list < 2; list++) {
-        if (list != 0) {
-            link = &g_wTireSmokeListHead;
-            index = g_wTireSmokeListHead;
-        } else {
-            link = &g_wPavedTireSmokeListHead;
-            index = g_wPavedTireSmokeListHead;
-        }
-        for (; index != 0; index = next) {
-            particle = &g_aParticlePool[index];
-            step = g_fFrameDeltaTime;
-            rise = particle->velocity.z;
-            next = particle->next;
-            share = (f32)(particle->alpha * particle->fade) * PARTICLE_SHARE;
-            particle->size += grow;
-            particle->position.x += g_vWindVelocity.x + particle->velocity.x * share * step;
-            particle->position.y += g_vWindVelocity.y + particle->velocity.y * share * step;
-            particle->position.z += g_vWindVelocity.z + (rise * share + 0.8f) * step;
-            particle->velocity.z = rise - step * 19.62f;
-            particle->fade = (s32)(102.0f / particle->size);
-            if (share < PARTICLE_MIN_SHARE || particle->velocity.z < -30.0f) {
-                *link = particle->next;
-                particle->next = g_wParticleFreeListHead;
-                g_wParticleFreeListHead = index;
-            } else {
-                link = &particle->next;
-            }
-        }
     }
 }
 

@@ -150,12 +150,17 @@ void DrawTireSpray(void);
  */
 void SpawnTireSmoke(Vehicle *vehicle);
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /**
  * Drift, grow, and fade the exhaust, and free the puffs that have faded.
  *
  * @ghidraAddress USA: 0x8023cbfc
  * @ghidraAddress EUR: 0x8023e10c
  * @ghidraAddress JPN: 0x8023dc0c
+ * @ghidraAddress BRD3D: 0x1003a200
  */
 void UpdateExhaustParticles(void);
 
@@ -165,12 +170,9 @@ void UpdateExhaustParticles(void);
  * @ghidraAddress USA: 0x8023cd60
  * @ghidraAddress EUR: 0x8023e270
  * @ghidraAddress JPN: 0x8023dd70
+ * @ghidraAddress BRD3D: 0x1003a340
  */
 void UpdateTireSmoke(void);
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 /**
  * Free every puff of the pool and stop the exhaust of the vehicles.
