@@ -589,6 +589,7 @@ void Mtx3x3TransformVec(Vec3f *out, Vec3f *in, f32 m[4][4]);
  * @ghidraAddress JPN: 0x80225cb0
  * @ghidraAddress BRD3D: 0x1003b470
  * @ghidraAddress BRGlide: 0x10034af0
+ * @stub{BRGlide}
  */
 void Mtx4x4Multiply(f32 out[4][4], f32 a[4][4], f32 b[4][4]);
 

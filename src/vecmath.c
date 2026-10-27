@@ -526,13 +526,24 @@ void Mtx3x3TransformVec(Vec3f *out, Vec3f *in, f32 m[4][4]) {
 void Mtx4x4Multiply(f32 out[4][4], f32 a[4][4], f32 b[4][4]) {
     f32 product[4][4];
     s32 row, column, i;
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+    long double total;
+#endif
 
     for (row = 0; row < 4; row++) {
         for (column = 0; column < 4; column++) {
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+            total = 0.0L;
+            for (i = 0; i < 4; i++) {
+                total += (long double)a[row][i] * b[i][column];
+            }
+            product[row][column] = total;
+#else
             product[row][column] = 0.0f;
             for (i = 0; i < 4; i++) {
                 product[row][column] += a[row][i] * b[i][column];
             }
+#endif
         }
     }
     for (row = 0; row < 4; row++) {
