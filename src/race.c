@@ -17,6 +17,7 @@
 #include "mainmenu.h"
 #include "options.h"
 #include "physics.h"
+#include "raceinit.h"
 #include "racemenu.h"
 #include "racephases.h"
 #include "racerender.h"
@@ -109,15 +110,6 @@ void StartCreditsRace(void) {
         g_dwRaceSessionType = RACE_SESSION_CREDIT_CAPTIONS;
     }
     SetCurrentScreenCallback(ProcessRacingScreen);
-}
-
-/* Read the car and its setup from the header of the recording a vehicle replays. */
-static void SetupFromRecording(Vehicle *vehicle) {
-    vehicle->steeringMode = vehicle->input->playbackBuffer[2];
-    vehicle->chosenTransmission = vehicle->input->playbackBuffer[3];
-    vehicle->tireType = vehicle->input->playbackBuffer[4];
-    vehicle->suspensionStiffness = vehicle->input->playbackBuffer[5];
-    vehicle->input->controllerLayout = vehicle->input->playbackBuffer[6];
 }
 
 /* Set up the vehicles, the recordings and the replays of the mode of play. */

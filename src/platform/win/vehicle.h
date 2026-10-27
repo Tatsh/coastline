@@ -188,6 +188,9 @@ private:
     void AgeSpraySegment(s32 wheel, s32 age);
 
 public:
+    /** Apply the control options from the current input recording. */
+    void SetupFromRecording(void);
+
     void CopySnapshotState(const Vehicle &from);
     void InterpolateSnapshotState(const Vehicle &from, const Vehicle &to, long double share);
     /**

@@ -74,11 +74,15 @@ void InterpolateKeyframeState(KeyframeState *pOut,
 
 /** The metadata stored before the frames of a recording. */
 struct GhostRecordingInfo {
-    s8 track;                /*!< The recorded track, or -1 without a valid recording. */
-    u8 car;                  /*!< The recorded car. */
-    u8 unreconstructed02[5]; /*!< The remaining recorded race settings. */
-    s8 weather;              /*!< The recorded weather option. */
-    u32 reserved[2];         /*!< Zero for a new recording, or all bits set after a failed load. */
+    s8 track;            /*!< The recorded track, or -1 without a valid recording. */
+    s8 car;              /*!< The recorded car. */
+    s8 steeringMode;     /*!< The recorded handling option. */
+    s8 transmission;     /*!< The recorded transmission option. */
+    s8 tires;            /*!< The recorded tyre option. */
+    s8 suspension;       /*!< The recorded suspension option. */
+    u8 controllerLayout; /*!< The recorded controller layout. */
+    s8 weather;          /*!< The recorded weather option. */
+    u32 reserved[2];     /*!< Zero for a new recording, or all bits set after a failed load. */
 };
 
 /**
