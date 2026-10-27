@@ -83,6 +83,11 @@ extern int g_dwTireType;
 extern char g_szTracks[];
 
 /**
+ * @ghidraAddress BRD3D: 0x100b80b8
+ */
+extern const char *g_apszTrackFilenames[];
+
+/**
  * The directory of the cars, from `CarDir=`.
  *
  * @ghidraAddress BRD3D: 0x100b80f8

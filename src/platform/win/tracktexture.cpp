@@ -1,7 +1,47 @@
+#include <cstdio>
 #include <cstring>
 
+#include "platform/win/fileio.h"
 #include "platform/win/render.h"
+#include "platform/win/settings.h"
 #include "platform/win/trackrelocation.h"
+
+void LoadTextureMapFile(const char *path) {
+    char line[1024];
+    g_dwTextureMapEntryCount = 0;
+    g_dwHiResTextureMemoryThreshold = 0x300000;
+    if (CHK_FileExists(path)) {
+        GameFile *file = CHK_FReadOpen(path);
+        if (FileReadLine(line, sizeof(line), file) != nullptr) {
+            std::sscanf(line, "%u", &g_dwHiResTextureMemoryThreshold);
+            if (FileReadLine(line, sizeof(line), file) != nullptr) {
+                do {
+                    TextureMapEntry &entry = g_aTextureMapEntries[g_dwTextureMapEntryCount];
+                    std::sscanf(line,
+                                "%u %x %d %d",
+                                &entry.nId,
+                                &entry.dwAddress,
+                                &entry.nWidth,
+                                &entry.nHeight);
+                    g_dwTextureMapEntryCount++;
+                    if (g_dwTextureMapEntryCount >= TEXTURE_MAP_ENTRY_COUNT) {
+                        break;
+                    }
+                } while (FileReadLine(line, sizeof(line), file) != nullptr);
+            }
+        }
+        CHK_FClose(file);
+    }
+    SelectTextureQualityFromVideoMemory();
+}
+
+void LoadTrackTextureMap(int track) {
+    char path[1024];
+    std::sprintf(path, "%s%s", g_szTracks, g_apszTrackFilenames[track]);
+    /* Extension replacement starts at the first dot in the complete path. */
+    std::strcpy(std::strchr(path, '.'), ".hnd");
+    LoadTextureMapFile(path);
+}
 
 void ComputeTrackMaxCellIndex(TrackHeader *track) {
     int maximum = 0;

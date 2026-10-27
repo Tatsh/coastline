@@ -3,6 +3,16 @@
 #include "track.h"
 
 /**
+ * @ghidraAddress BRD3D: 0x10037990
+ */
+void LoadTextureMapFile(const char *path);
+
+/**
+ * @ghidraAddress BRD3D: 0x10037a90
+ */
+void LoadTrackTextureMap(int track);
+
+/**
  * @ghidraAddress BRD3D: 0x10037fa0
  */
 void ComputeTrackMaxCellIndex(TrackHeader *track);
