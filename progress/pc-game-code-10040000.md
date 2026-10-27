@@ -1,6 +1,6 @@
 # PC port game code from 0x10040000 to 0x10050000
 
-242 of 264 routines done.
+244 of 264 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -42,8 +42,8 @@ the same name, for a routine the port retained from the N64 game.
 | `RaceSetupUI_OnCycleTrack`                         |   ✅   |                 |      2 |    457 | `0x10042ee0` | `0x1003c430` | `int RaceSetupUI_OnCycleTrack(MenuActionWidget * pItem)`                                                                                                  |
 | `ReturnToNetworkLobbyScreen`                       |   📝   |                 |      1 |    407 | `0x100447d0` | `0x1003dd20` | `undefined ReturnToNetworkLobbyScreen()`                                                                                                                  |
 | `MenuWidget::UpdateSlideAnimation`                 |   ✅   |                 |      1 |    373 | `0x10047d30` | `0x10041180` | `int UpdateSlideAnimation(MenuWidget * this)`                                                                                                             |
-| `PreRaceInfoUI_UpdateBestLapLabel`                 |   📝   |                 |      1 |    358 | `0x10040d70` | `0x1003a2b0` | `undefined PreRaceInfoUI_UpdateBestLapLabel()`                                                                                                            |
-| `PreRaceInfoUI_UpdateBestTimeLabel`                |   📝   |                 |      1 |    358 | `0x10040c00` | `0x1003a140` | `undefined PreRaceInfoUI_UpdateBestTimeLabel()`                                                                                                           |
+| `PreRaceInfoUI_UpdateBestLapLabel`                 |   ✅   |                 |      1 |    358 | `0x10040d70` | `0x1003a2b0` | `int PreRaceInfoUI_UpdateBestLapLabel(MenuWidget * widget)`                                                                                               |
+| `PreRaceInfoUI_UpdateBestTimeLabel`                |   ✅   |                 |      1 |    358 | `0x10040c00` | `0x1003a140` | `int PreRaceInfoUI_UpdateBestTimeLabel(MenuWidget * widget)`                                                                                              |
 | `JoinSessionAndShowRaceSetup`                      |   ✅   |                 |      3 |    340 | `0x10044280` | `0x1003d7d0` | `int JoinSessionAndShowRaceSetup(void)`                                                                                                                   |
 | `RaceResultsInfoUI_UpdateSelectedTimeLabel`        |   ✅   |                 |      1 |    339 | `0x10040ee0` | `0x1003a420` | `int RaceResultsInfoUI_UpdateSelectedTimeLabel(MenuWidget * pWidget)`                                                                                     |
 | `CarSetupUI_OnCycleCar`                            |   ✅   |                 |      2 |    330 | `0x10042b30` |              | `int CarSetupUI_OnCycleCar(MenuActionWidget * pItem)`                                                                                                     |
