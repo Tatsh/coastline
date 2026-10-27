@@ -1,6 +1,14 @@
 #pragma once
 
 /**
+ * Display the current debug message on the fatal error screen.
+ *
+ * @param unused Not read.
+ * @ghidraAddress BRD3D: 0x10035ba7
+ */
+[[noreturn]] void ShowDebugMessageFatalError(int unused);
+
+/**
  * @file
  * The renderer of the PC port: its mode, the routines that start and stop it, and the pool of the
  * data of the models it draws.

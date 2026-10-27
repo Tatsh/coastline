@@ -12,6 +12,7 @@
 #include <PR/sptask.h>
 #include <PR/ultratypes.h>
 
+#include "debugmessage.h"
 #include "displaylistops.h"
 #include "frametime.h"
 #include "screen.h"
@@ -259,16 +260,6 @@ extern s32 g_dwElapsedTimeMs;
  * @ghidraAddress JPN: 0x8021a3f0
  */
 void SetScissorRect(s32 x, s32 y, s32 width, s32 height);
-
-/**
- * Show a message on the debug display.
- *
- * @param message The message to show.
- * @ghidraAddress USA: 0x8021e1f4
- * @ghidraAddress EUR: 0x8021f3f4
- * @ghidraAddress JPN: 0x8021ecc4
- */
-void SetDebugMessage(const char *message);
 
 /**
  * Add a fill of the whole frame with a colour to the display list.
@@ -778,15 +769,6 @@ extern u32 g_dwDmaReadWordBuffer;
  * @ghidraAddress JPN: 0x8031c498
  */
 extern u32 g_dwDmaChunkSize;
-
-/**
- * The message the debug display shows.
- *
- * @ghidraAddress USA: 0x8028a88c
- * @ghidraAddress EUR: 0x8028ca90
- * @ghidraAddress JPN: 0x8028c560
- */
-extern const char *g_pszDebugMessage;
 
 /**
  * The queue of the fault event and the thread that faulted.

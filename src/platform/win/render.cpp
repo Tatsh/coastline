@@ -7,6 +7,7 @@
 #include <cstring>
 #include <new>
 
+#include "debugmessage.h"
 #include "displaylistops.h"
 #include "platform/win/boot/app.h"
 #include "platform/win/d3d/renderer.h"
@@ -20,6 +21,17 @@
 #include "weather.h"
 
 int g_dwRenderBackendMode;
+
+const char *g_pszDebugMessage;
+
+[[noreturn]] void ShowDebugMessageFatalError(s32 unused) {
+    ShowFatalErrorScreen(g_pszDebugMessage);
+}
+
+void SetDebugMessage(const char *message) {
+    g_pszDebugMessage = message;
+    ShowDebugMessageFatalError(0);
+}
 
 #if TGR_RENDERER == TGR_RENDERER_D3D
 GbiVertexSource g_aClipVertexPool[GBI_CLIP_VERTEX_POOL_SIZE];
