@@ -22,6 +22,7 @@
 #include "platform/win/fontdata.h"
 #include "platform/win/textureupload.h"
 #include "renderbackend.h"
+#include "shadowclip.h"
 #include "vecmath.h"
 #include "vehicleview.h"
 
@@ -587,32 +588,6 @@ bool LookupTextureMapEntry(unsigned dwAddress, int *pnWidth, int *pnHeight);
  * @ghidraAddress BRGlide: 0x10018ad0
  */
 void ByteSwap3DWordsArray(Vec3f *pData, int nCount);
-
-/** A vertex of the pool of the clipping of shadows. The layout past the link is not recovered yet.
- */
-struct ShadowClipVertex {
-    ShadowClipVertex *pNext; /*!< The next free vertex. */
-    char abUnknown4[0x24];   /* +0x04 */
-};
-
-/** The number of entries of g_aShadowClipVertexPool. */
-#define SHADOW_CLIP_VERTEX_COUNT 64
-
-/**
- * The pool of the vertices of the clipping of shadows.
- *
- * @ghidraAddress BRD3D: 0x102e54c0
- * @ghidraAddress BRGlide: 0x102e0ca8
- */
-extern ShadowClipVertex g_aShadowClipVertexPool[SHADOW_CLIP_VERTEX_COUNT];
-
-/**
- * The first free vertex of g_aShadowClipVertexPool.
- *
- * @ghidraAddress BRD3D: 0x102e5ecc
- * @ghidraAddress BRGlide: 0x102e16b4
- */
-extern ShadowClipVertex *g_pShadowClipVertexFreeList;
 
 /**
  * Link every vertex of g_aShadowClipVertexPool into its free list, in order.
@@ -1344,7 +1319,6 @@ extern unsigned char g_abDecodedTexturePixels[];
  * @ghidraAddress BRD3D: 0x10028a10
  */
 void ModulateTextureWithIntensityPlane(const TextureImageData *pImage, unsigned char *pPixels);
-
 
 /**
  * The byte count produced by the last decoded texture operation.
