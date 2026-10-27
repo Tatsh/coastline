@@ -366,6 +366,7 @@ void UpdatePrecipitationParticles(void);
  * @ghidraAddress USA: 0x8023a784
  * @ghidraAddress EUR: 0x8023bc94
  * @ghidraAddress JPN: 0x8023b794
+ * @ghidraAddress BRD3D: 0x10019b50
  */
 void RenderPrecipitationEffect(void);
 
