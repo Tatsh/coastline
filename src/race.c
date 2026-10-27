@@ -1612,51 +1612,6 @@ void ProcessRacingScreen(void) {
     }
 }
 
-void SaveRaceResultsToSlots(void) {
-    s32 i, j;
-
-    for (i = 0; i < (s32)g_dwNumLocalPlayers; i++) {
-        g_adwSavedResultPositions[i] = g_aVehicles[i].racePosition;
-        g_afSavedResultTimes[i] = g_aVehicles[i].totalTime;
-        g_afSavedResultBestLapTimes[i] = g_aVehicles[i].bestLapTime;
-        g_adwSavedResultBestLaps[i] = g_aVehicles[i].bestLap;
-        g_adwSavedResultLaps[i] = g_aVehicles[i].lap;
-        for (j = 0; j < g_dwTotalLaps; j++) {
-            g_aafSavedResultLapTimes[i][j] = g_aVehicles[i].lapTimes[j];
-        }
-    }
-    g_dwSavedResultsValid = TRUE;
-}
-
-void RestoreRaceResultsFromSlots(void) {
-    PlayerProfile *profile;
-    s32 i, j;
-
-    if (g_dwGameMode == GAME_MODE_CHAMPIONSHIP && g_dwSavedResultsValid) {
-        for (i = 0; i < (s32)g_dwNumLocalPlayers; i++) {
-            profile = g_aVehicles[i].profile;
-            profile->seasonPoints[profile->season] +=
-                g_abRacePositionPoints[g_adwSavedResultPositions[i]];
-            profile = g_aVehicles[i].profile;
-            profile->seasonPlaces[profile->season][profile->round] = g_adwSavedResultPositions[i];
-            profile = g_aVehicles[i].profile;
-            profile->seasonTimes[profile->season][profile->round] = g_afSavedResultTimes[i];
-            profile = g_aVehicles[i].profile;
-            osSyncPrintf("points = %d\n", profile->seasonPoints[profile->season]);
-        }
-    }
-    /* The best lap time is kept but not given back. */
-    for (i = 0; i < (s32)g_dwNumLocalPlayers; i++) {
-        for (j = 0; j < g_dwTotalLaps; j++) {
-            g_aVehicles[i].lapTimes[j] = g_aafSavedResultLapTimes[i][j];
-        }
-        g_aVehicles[i].lap = g_adwSavedResultLaps[i];
-        g_aVehicles[i].bestLap = g_adwSavedResultBestLaps[i];
-        g_aVehicles[i].totalTime = g_afSavedResultTimes[i];
-        g_aVehicles[i].racePosition = g_adwSavedResultPositions[i];
-    }
-}
-
 /* Add a line of the bonus of a finished championship, after a blank line when others precede it. */
 #define ADD_BONUS_LINE(line)                                                                       \
     {                                                                                              \

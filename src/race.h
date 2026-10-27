@@ -392,6 +392,7 @@ extern s16 g_wRaceScreenLoopExited;
  * @ghidraAddress USA: 0x80315d60
  * @ghidraAddress EUR: 0x80317a50
  * @ghidraAddress JPN: 0x80316490
+ * @ghidraAddress BRD3D: 0x106805c8
  */
 extern s32 g_adwSavedResultPositions[SAVED_RESULTS];
 
@@ -399,6 +400,7 @@ extern s32 g_adwSavedResultPositions[SAVED_RESULTS];
  * @ghidraAddress USA: 0x80315d68
  * @ghidraAddress EUR: 0x80317a58
  * @ghidraAddress JPN: 0x80316498
+ * @ghidraAddress BRD3D: 0x10680728
  */
 extern f32 g_afSavedResultTimes[SAVED_RESULTS];
 
@@ -406,6 +408,7 @@ extern f32 g_afSavedResultTimes[SAVED_RESULTS];
  * @ghidraAddress USA: 0x80315d70
  * @ghidraAddress EUR: 0x80317a60
  * @ghidraAddress JPN: 0x803164a0
+ * @ghidraAddress BRD3D: 0x106909c0
  */
 extern f32 g_afSavedResultBestLapTimes[SAVED_RESULTS];
 
@@ -413,13 +416,19 @@ extern f32 g_afSavedResultBestLapTimes[SAVED_RESULTS];
  * @ghidraAddress USA: 0x80315d78
  * @ghidraAddress EUR: 0x80317a68
  * @ghidraAddress JPN: 0x803164a8
+ * @ghidraAddress BRD3D: 0x10690950
  */
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+extern f32 g_aafSavedResultLapTimes[SAVED_RESULTS][12];
+#else
 extern f32 g_aafSavedResultLapTimes[SAVED_RESULTS][5];
+#endif
 
 /**
  * @ghidraAddress USA: 0x80315da0
  * @ghidraAddress EUR: 0x80317a90
  * @ghidraAddress JPN: 0x803164d0
+ * @ghidraAddress BRD3D: 0x10680748
  */
 extern s32 g_adwSavedResultBestLaps[SAVED_RESULTS];
 
@@ -427,6 +436,7 @@ extern s32 g_adwSavedResultBestLaps[SAVED_RESULTS];
  * @ghidraAddress USA: 0x80315da8
  * @ghidraAddress EUR: 0x80317a98
  * @ghidraAddress JPN: 0x803164d8
+ * @ghidraAddress BRD3D: 0x106805b0
  */
 extern s32 g_adwSavedResultLaps[SAVED_RESULTS];
 
@@ -610,6 +620,7 @@ void ProcessRacingScreen(void);
  * @ghidraAddress USA: 0x80205fdc
  * @ghidraAddress EUR: 0x8020619c
  * @ghidraAddress JPN: 0x80206270
+ * @ghidraAddress BRD3D: 0x1002f2a0
  */
 void SaveRaceResultsToSlots(void);
 
@@ -619,6 +630,7 @@ void SaveRaceResultsToSlots(void);
  * @ghidraAddress USA: 0x802060dc
  * @ghidraAddress EUR: 0x8020629c
  * @ghidraAddress JPN: 0x80206370
+ * @ghidraAddress BRD3D: 0x1002f320
  */
 void RestoreRaceResultsFromSlots(void);
 

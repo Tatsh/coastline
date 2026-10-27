@@ -29,6 +29,7 @@
 #define VEHICLE_GET_ActiveCamera(vehicle) ((vehicle)->activeCamera)
 #define VEHICLE_SET_ActiveCamera(vehicle, value) ((vehicle)->activeCamera = (value))
 #define VEHICLE_GET_AiTarget(vehicle) ((vehicle)->aiTarget)
+#define VEHICLE_GET_BestLap(vehicle) ((vehicle)->bestLap)
 #define VEHICLE_SET_BestLap(vehicle, value) ((vehicle)->bestLap = (value))
 #define VEHICLE_GET_BestLapTime(vehicle) ((vehicle)->bestLapTime)
 #define VEHICLE_SET_BestLapTime(vehicle, value) ((vehicle)->bestLapTime = (value))

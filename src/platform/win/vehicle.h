@@ -266,6 +266,9 @@ public:
     const auto &GetAiTarget() const {
         return aiTarget;
     }
+    s32 GetBestLap() const {
+        return bestLap;
+    }
     s32 SetBestLap(s32 value) {
         return bestLap = value;
     }
