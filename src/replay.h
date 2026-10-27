@@ -48,12 +48,16 @@ extern u8 _endingRecordingSegmentRomStart[];
 /**
  * The buffer the recording a race replays is copied to. The link script places it, below the
  * frame buffers.
+ *
+ * @ghidraAddress BRD3D: 0x117554f0
  */
 extern u8 g_abPlaybackRecording[];
 
 /**
  * The buffers the input of each local player is recorded into, 0xF000 bytes apart. The link script
  * places them, below and over the frame buffers.
+ *
+ * @ghidraAddress BRD3D: 0x117644f0
  */
 extern u8 g_aabInputRecordings[][0xF000];
 

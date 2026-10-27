@@ -16,6 +16,10 @@
 /** The settings saved in BossRally.cfg. */
 class RallyConfig {
 public:
+    const char *GetPlayerName() const {
+        return szPlayerName;
+    }
+
     InputBinding aInputBindingsKeyboard[INPUT_BINDING_COUNT]; /*!< The keyboard bindings. */
     InputBinding aInputBindingsDevice1[INPUT_BINDING_COUNT]; /*!< First game controller bindings. */
     InputBinding aInputBindingsDevice2[INPUT_BINDING_COUNT]; /*!< Second controller bindings. */

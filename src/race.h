@@ -530,6 +530,7 @@ extern s32 g_dwRaceCaptionIndex;
  * @ghidraAddress USA: 0x80315e70
  * @ghidraAddress EUR: 0x80317b60
  * @ghidraAddress JPN: 0x803165a0
+ * @ghidraAddress BRD3D: 0x10680938
  */
 extern s32 g_bDemoInterrupted;
 

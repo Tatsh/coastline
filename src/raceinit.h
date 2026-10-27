@@ -8,4 +8,7 @@
 void SetupFromRecording(Vehicle *vehicle);
 #endif
 
+/** Set up the vehicles, controller recordings, and replays of the current race mode. */
+void SetupRaceVehicles(void);
+
 #endif

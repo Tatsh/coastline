@@ -161,7 +161,7 @@ private:
     f32 groundDistance;
     s32 groundSurface;
     s16 shadowCorners[2][2];
-    u8 abUnknown29a4[4]; /* +0x29a4 */
+    s32 selectedCar;
     s32 carModel;
     u8 color[3];
     u8 ghostMode;
@@ -190,6 +190,16 @@ private:
 public:
     /** Apply the control options from the current input recording. */
     void SetupFromRecording(void);
+
+    void SetCustomDecals(s32 value) {
+        customDecals = value;
+    }
+    void SetCustomCarModel(s32 value) {
+        customCarModel = value;
+    }
+    void SetSelectedCar(s32 value) {
+        selectedCar = value;
+    }
 
     void CopySnapshotState(const Vehicle &from);
     void InterpolateSnapshotState(const Vehicle &from, const Vehicle &to, long double share);
