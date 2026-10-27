@@ -1084,6 +1084,10 @@ int ShowKeyConfigScreen(void) {
     return ShowCachedMenuScreen(g_pCachedMenu_KeyConfig, BuildKeyConfigUI);
 }
 
+int ShowModemDialUpScreen(void) {
+    return ShowCachedMenuScreen(g_pCachedMenu_ModemDialUp, BuildModemConnectionUI);
+}
+
 int IsGameCdInDrive(int nDrive) {
     char szRoot[MAX_PATH];
     char szVolume[MAX_PATH];

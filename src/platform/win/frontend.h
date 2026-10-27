@@ -412,6 +412,23 @@ int ShowKeyConfigScreen(void);
 void BuildKeyConfigUI(MenuScreen *pScreen);
 
 /**
+ * Open cached modem connection options, building the screen on its first visit.
+ *
+ * @ghidraAddress BRD3D: 0x10043da0
+ * @ghidraAddress BRGlide: 0x1003d2f0
+ */
+int ShowModemDialUpScreen(void);
+
+/**
+ * Build modem connection options on the supplied screen.
+ *
+ * @ghidraAddress BRD3D: 0x10056a10
+ * @ghidraAddress BRGlide: 0x1004f8c0
+ * @stub
+ */
+void BuildModemConnectionUI(MenuScreen *pScreen);
+
+/**
  * @ghidraAddress BRD3D: 0x10a9d078
  * @ghidraAddress BRGlide: 0x10ac4100
  */
