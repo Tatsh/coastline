@@ -1,6 +1,6 @@
 # PC port game code from 0x10060000 to 0x10070000
 
-87 of 173 routines done.
+90 of 173 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -41,8 +41,8 @@ the same name, for a routine the port retained from the N64 game.
 | `CollectTrianglesInBox`                  |        | ✅ `0x8025d060` |      1 |    669 | `0x1006db20` | `0x10066ad0` | `undefined CollectTrianglesInBox()`                                                                                                      |
 | `ComputeCollisionPenetration`            |        | ✅ `0x8025dcb8` |      1 |    668 | `0x1006e4c0` | `0x10067470` | `undefined ComputeCollisionPenetration()`                                                                                                |
 | `ClassifyTriangleInUnitCube`             |        | ✅ `0x8025c2c8` |      1 |    644 | `0x1006d2b0` | `0x10066260` | `undefined ClassifyTriangleInUnitCube()`                                                                                                 |
-| `IsPointInTrackTriangle`                 |        | ✅ `0x8025b3b0` |      2 |    599 | `0x1006c740` | `0x100656f0` | `undefined IsPointInTrackTriangle()`                                                                                                     |
-| `CastWheelRay`                           |        | ✅ `0x8025e96c` |      1 |    581 | `0x1006f0c0` | `0x10068070` | `undefined CastWheelRay()`                                                                                                               |
+| `IsPointInTrackTriangle`                 |   ✅   | ✅ `0x8025b3b0` |      2 |    599 | `0x1006c740` | `0x100656f0` | `short IsPointInTrackTriangle(TrackTriangle * triangle, Vec3f * point)`                                                                  |
+| `CastWheelRay`                           |   ✅   | ✅ `0x8025e96c` |      1 |    581 | `0x1006f0c0` | `0x10068070` | `float CastWheelRay(RigidBody * body, RigidBody * wheel)`                                                                                |
 | `BuildVehicleKeyframe`                   |   ✅   |                 |      2 |    554 | `0x100607b0` | `0x10059820` | `void BuildVehicleKeyframe(KeyframeState * pState, Vehicle * pVehicle)`                                                                  |
 | `BuildTrackTriangleCache`                |   ✅   | ✅ `0x8025f18c` |      6 |    551 | `0x1006f720` | `0x100686d0` | `short BuildTrackTriangleCache(float x, float y)`                                                                                        |
 | `RacerSlot::InitRacerSlot`               |   ✅   | ✅ `0x802291f8` |      1 |    538 | `0x100662a0` |              | `void InitRacerSlot(RacerSlot * this)`                                                                                                   |
@@ -90,7 +90,7 @@ the same name, for a routine the port retained from the N64 game.
 | `SetVehicleFrameMatrix`                  |        | ✅ `0x80220150` |      1 |    152 |              | `0x1006f970` | `undefined SetVehicleFrameMatrix()`                                                                                                      |
 | `ResetAllSoundState`                     |        | ✅ `0x8022b428` |      1 |    143 | `0x10067dc0` | `0x10060e30` | `undefined ResetAllSoundState()`                                                                                                         |
 | `ConvertInputToN64ControllerPad`         |        |                 |      1 |    136 | `0x10060e00` | `0x10059e70` | `undefined ConvertInputToN64ControllerPad()`                                                                                             |
-| `UpdateWheelHeights`                     |        | ✅ `0x8025ec7c` |      2 |    134 | `0x1006f4a0` | `0x10068450` | `undefined UpdateWheelHeights()`                                                                                                         |
+| `UpdateWheelHeights`                     |   ✅   | ✅ `0x8025ec7c` |      2 |    134 | `0x1006f4a0` | `0x10068450` | `void UpdateWheelHeights(RigidBody * body)`                                                                                              |
 | `ResetTrackTriangleCache`                |        |                 |      1 |    134 |              | `0x10063dd0` | `undefined ResetTrackTriangleCache()`                                                                                                    |
 | `ResetCollisionCaches`                   |   ✅   | ✅ `0x80259350` |      1 |    134 | `0x1006ae20` |              | `void ResetCollisionCaches(void)`                                                                                                        |
 | `ApplyRemoteVehicleState`                |        |                 |      1 |    129 | `0x10060cc0` | `0x10059d30` | `undefined ApplyRemoteVehicleState()`                                                                                                    |
