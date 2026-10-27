@@ -36,7 +36,12 @@ void UpdateControllerState(void) {
 #else
     for (i = 0; i < MAX_PLAYERS; i++) {
 #endif
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+        g_aPlayerInputState[i].TranslateControllerInput();
+        g_aPlayerInputState[i].ConsumeInputFlags();
+#else
         TranslateControllerInput(&g_aPlayerInputState[i]);
         ConsumeInputFlags(&g_aPlayerInputState[i]);
+#endif
     }
 }

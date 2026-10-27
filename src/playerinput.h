@@ -57,6 +57,11 @@ typedef struct PlayerInputState {
     OSContPad *pad;   /*!< The pad the controller reads fill. */
 
 #if TGR_PLATFORM == TGR_PLATFORM_WIN && defined(__cplusplus)
+    /**
+     * @ghidraAddress BRD3D: 0x10035ce0
+     */
+    void TranslateControllerInput(void);
+
     /** @ghidraAddress BRD3D: 0x10035fa0 */
     void TransferFlags(u32 mask);
 

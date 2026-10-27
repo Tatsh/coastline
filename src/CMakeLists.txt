@@ -101,6 +101,7 @@ if(TGR_PLATFORM STREQUAL "n64")
 else()
   # The game code the PC port retained from the N64 releases. A source joins this list when every
   # routine of it that the PC libraries have compiles for them.
+  set_source_files_properties(controllerread.c inputtranslate.c PROPERTIES LANGUAGE CXX)
   add_library(
     coastline_game STATIC bodyforces.c camerachase.c cameracollision.c displaylistops.c fade.c
                           fog.c frameclear.c game.c heap.c mathutil.c playerinput.c profileinit.c
@@ -136,6 +137,7 @@ target_sources(coastline_game PRIVATE racersharing.c)
 target_sources(coastline_game PRIVATE racermotion.c frametime.c)
 target_sources(coastline_game PRIVATE raceprogress.c laptime.c)
 target_sources(coastline_game PRIVATE controllerread.c)
+target_sources(coastline_game PRIVATE inputtranslate.c)
 if(TGR_PLATFORM STREQUAL "win")
   target_sources(coastline_game PRIVATE libultra/io/contreaddata.c)
 endif()

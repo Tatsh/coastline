@@ -213,17 +213,7 @@ void CheatToggleBilinearFilter(void);
  */
 void ProcessInputCommandBuffer(PlayerInputState *state);
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
-/**
- * @ghidraAddress BRD3D: 0x10035ce0
- * @stub{BRD3D}
- */
-void __attribute__((thiscall)) TranslateControllerInput(PlayerInputState *state);
-#else
+#if TGR_PLATFORM != TGR_PLATFORM_WIN
 /**
  * Read the pad of a player into buttons, race actions for the button layout, and the stick, record
  * the input or replay a recording in its place, and check the cheats.
@@ -234,10 +224,6 @@ void __attribute__((thiscall)) TranslateControllerInput(PlayerInputState *state)
  * @ghidraAddress JPN: 0x80256080
  */
 void TranslateControllerInput(PlayerInputState *state);
-#endif
-
-#ifdef __cplusplus
-}
 #endif
 
 /**

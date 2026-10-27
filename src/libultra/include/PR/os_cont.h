@@ -121,6 +121,10 @@ typedef struct {
     char game_name[16]; /*!< The file name, in the pak character set. */
 } OSPfsState;
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /**
  * Wait until the controllers have powered up, then find which are present.
  * Windows returns 1 without changing the output arguments.
@@ -160,6 +164,10 @@ s32 osContStartReadData(OSMesgQueue *mq);
  * @ghidraAddress BRD3D: 0x10060e00
  */
 void osContGetReadData(OSContPad *data);
+
+#ifdef __cplusplus
+}
+#endif
 
 /**
  * Find which controllers have a Controller Pak inserted.
