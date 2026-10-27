@@ -4,9 +4,11 @@
 #include <cstring>
 
 #include "platform/win/boot/app.h"
+#include "platform/win/d3d/texture.h"
 #include "platform/win/displaylist.h"
 #include "platform/win/settings.h"
 #include "screen.h"
+#include "weather.h"
 
 int g_dwRenderBackendMode;
 
@@ -467,6 +469,47 @@ void CreateGlobalEffectTextures(void) {
 }
 
 #if TGR_RENDERER == TGR_RENDERER_D3D
+void LoadHudOverlayTexture(void) {
+    g_dwHudOverlayTextureId = g_pfnCreateTextureFromN64ImageAutoLoadSize(
+        g_abHudOverlayTextureData, nullptr, 64, 64, 1, 4, 0, 0, 1, 1, 15, 15, 1, 0);
+    g_dwHudOverlayHalfTextureId = DuplicateTextureEntryHalfScale(g_dwHudOverlayTextureId);
+}
+
+void LoadParticleTexture(void) {
+    g_dwParticleTextureId = g_pfnCreateTextureFromN64ImageAutoLoadSize(
+        g_abHudTexture64AData, nullptr, 64, 64, 1, 4, 0, 0, 1, 1, 0, 0, 1, 0);
+}
+
+void LoadTireTrailTexture(void) {
+    g_dwTireTrailTextureId = g_pfnCreateTextureFromN64ImageAutoLoadSize(
+        g_abHudTexture32x64Data, nullptr, 32, 64, 0, 4, 0, 0, 0, 0, 0, 0, 1, 0);
+}
+
+void LoadVehicleEnvMapTexture(void) {
+    g_dwVehicleEnvMapTextureId = g_pfnCreateTextureFromN64ImageAutoLoadSize(
+        g_abHudTexture64BData, nullptr, 64, 64, 0, 4, 0, 0, 0, 0, 0, 0, 1, 0);
+}
+
+void CreateFallbackEnvironmentTexture(void) {
+    g_dwFallbackEnvMapTextureId = g_pfnCreateTextureFromN64ImageAutoLoadSize(
+        g_abFallbackEnvTextureData, nullptr, 64, 64, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0);
+}
+
+void CreateAlphaRampTextures(void) {
+    g_adwPrecipitationTextureIds[0] = g_pfnCreateTextureFromN64ImageAutoLoadSize(
+        g_abPrecipitationTextures[0], nullptr, 64, 64, 1, 4, 0, 0, 1, 1, 0, 0, 1, 0);
+    g_adwPrecipitationTextureIds[1] = g_pfnCreateTextureFromN64ImageAutoLoadSize(
+        g_abPrecipitationTextures[1], nullptr, 64, 64, 1, 4, 0, 0, 1, 1, 0, 0, 1, 0);
+    for (int nAlpha = 0; nAlpha < 16; nAlpha++) {
+        g_abAlphaRampRgba[nAlpha][0] = 255;
+        g_abAlphaRampRgba[nAlpha][1] = 255;
+        g_abAlphaRampRgba[nAlpha][2] = 255;
+        g_abAlphaRampRgba[nAlpha][3] = nAlpha << 4 | nAlpha;
+    }
+    g_dwAlphaRampStripRowCount =
+        ConvertRGBAToPixelFormat(g_abAlphaRampPixelStrip, g_abAlphaRampRgba, 64, 2) / 16;
+}
+
 void LoadHudGlyphTextureSets(void) {
     if (g_dwTextureQualityLevel <= 1) {
         for (int nGlyph = 0; nGlyph < 27; nGlyph++) {

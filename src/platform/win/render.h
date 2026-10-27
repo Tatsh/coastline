@@ -901,6 +901,73 @@ void CreateDaySkyTexture(void);
 void CreateNightSkyTexture(void);
 
 /**
+ * @ghidraAddress BRD3D: 0x100baac8
+ */
+extern unsigned char g_abHudOverlayTextureData[];
+/**
+ * @ghidraAddress BRD3D: 0x100b6ca8
+ */
+extern unsigned char g_abHudTexture64AData[];
+/**
+ * @ghidraAddress BRD3D: 0x100b9cb0
+ */
+extern unsigned char g_abHudTexture32x64Data[];
+/**
+ * @ghidraAddress BRD3D: 0x100b94a8
+ */
+extern unsigned char g_abHudTexture64BData[];
+/**
+ * @ghidraAddress BRD3D: 0x100b8ca0
+ */
+extern unsigned char g_abFallbackEnvTextureData[];
+/**
+ * @ghidraAddress BRD3D: 0x11829110
+ */
+extern unsigned g_dwHudOverlayTextureId;
+/**
+ * @ghidraAddress BRD3D: 0x1182931c
+ */
+extern unsigned g_dwHudOverlayHalfTextureId;
+/**
+ * @ghidraAddress BRD3D: 0x11829328
+ */
+extern unsigned g_dwParticleTextureId;
+/**
+ * @ghidraAddress BRD3D: 0x11829108
+ */
+extern unsigned g_dwTireTrailTextureId;
+/**
+ * @ghidraAddress BRD3D: 0x11829314
+ */
+extern unsigned g_dwVehicleEnvMapTextureId;
+/**
+ * @ghidraAddress BRD3D: 0x11829324
+ */
+extern unsigned g_dwFallbackEnvMapTextureId;
+
+/**
+ * @ghidraAddress BRD3D: 0x10024ae0
+ */
+unsigned DuplicateTextureEntryHalfScale(unsigned nTexture);
+
+/**
+ * @ghidraAddress BRD3D: 0x11829100
+ */
+extern unsigned g_adwPrecipitationTextureIds[2];
+/**
+ * @ghidraAddress BRD3D: 0x11829330
+ */
+extern unsigned char g_abAlphaRampRgba[16][4];
+/**
+ * @ghidraAddress BRD3D: 0x11829118
+ */
+extern unsigned char g_abAlphaRampPixelStrip[64];
+/**
+ * @ghidraAddress BRD3D: 0x11829318
+ */
+extern int g_dwAlphaRampStripRowCount;
+
+/**
  * Create the texture of the particles, 64 by 64 texels.
  *
  * @ghidraAddress BRD3D: 0x10073950

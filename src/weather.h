@@ -125,6 +125,12 @@ extern s32 g_dwLightningFlashCounter;
 /** The side of the texture of the rain streaks, in texels. */
 #define RAIN_STREAK_TEXTURE_SIDE 64
 
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#define RAIN_STREAK_TEXTURE_BYTES_PER_TEXEL 4
+#else
+#define RAIN_STREAK_TEXTURE_BYTES_PER_TEXEL 1
+#endif
+
 /** The points of the lightning bolt. */
 #define LIGHTNING_BOLT_POINTS 459
 
@@ -269,9 +275,11 @@ extern Vec3f g_avLightningBolt[LIGHTNING_BOLT_POINTS];
  * @ghidraAddress USA: 0x80364a80
  * @ghidraAddress EUR: 0x80366f80
  * @ghidraAddress JPN: 0x80365bf0
+ * @ghidraAddress BRD3D: 0x104b3de8
  */
-extern u8 g_abPrecipitationTextures[WEATHER_VIEWS]
-                                   [RAIN_STREAK_TEXTURE_SIDE * RAIN_STREAK_TEXTURE_SIDE];
+extern u8 g_abPrecipitationTextures[WEATHER_VIEWS][RAIN_STREAK_TEXTURE_SIDE *
+                                                   RAIN_STREAK_TEXTURE_SIDE *
+                                                   RAIN_STREAK_TEXTURE_BYTES_PER_TEXEL];
 
 /**
  * Scatter the rain particles of every view.
