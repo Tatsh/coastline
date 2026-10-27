@@ -1,15 +1,33 @@
 #include "scheduledevent.h"
 
 #include <bit>
+#include <concepts>
+#include <new>
 
 #include <mmsystem.h>
 
 #include "earplayback.h"
 #include "environment.h"
 #include "error.h"
+#include "playbackimplementations.h"
 #include "registry.h"
 
 namespace {
+static inline void ReleasePlaybackStorage(EarPlayback *playback) {
+    if (playback) {
+        // Native cleanup invokes only the base destructor before deallocation.
+        playback->EarPlayback::~EarPlayback();
+        ::operator delete(playback);
+    }
+}
+
+template <typename Implementation>
+    requires std::derived_from<Implementation, EarPlayback>
+static inline EarPlayback *AllocatePlaybackImplementation() {
+    void *storage = MfcAllocateWithNewHandler(sizeof(Implementation));
+    return storage ? new (storage) Implementation : nullptr;
+}
+
 // @ghidraAddress EAR: 0x1002e7a8
 const double g_earInitialEventAttenuationScale = 0.0001;
 // @ghidraAddress EAR: 0x1002e7b0
@@ -41,6 +59,67 @@ static inline std::int32_t AddTimer(std::int32_t timer, std::uint32_t elapsed) {
     return std::bit_cast<std::int32_t>(static_cast<std::uint32_t>(timer) + elapsed);
 }
 } // namespace
+
+ScheduledEarEvent::~ScheduledEarEvent() {
+    if (playback) {
+        playback->ReleaseEarPlaybackResources();
+        ReleasePlaybackStorage(playback);
+        playback = nullptr;
+    }
+    if (allocatedSource && suppressionMarker != 1) {
+        ::operator delete(allocatedSource);
+        // Native failure cleanup can invoke destruction repeatedly on the same storage.
+        static_cast<char *volatile &>(allocatedSource) = nullptr;
+    }
+}
+
+int ScheduledEarEvent::CreateEarPlaybackImplementation(std::uint16_t flags) {
+    switch (sourceType) {
+    case 0:
+        playback = AllocatePlaybackImplementation<PcmWaveStream>();
+        break;
+    case 2:
+        playback = AllocatePlaybackImplementation<MemoryWaveStream>();
+        break;
+    case 3:
+        playback = AllocatePlaybackImplementation<SampleWavePlayback>();
+        break;
+    case 6:
+        playback = AllocatePlaybackImplementation<MidiPlayback>();
+        break;
+    case 30:
+        playback = AllocatePlaybackImplementation<CdAudioPlayback>();
+        break;
+    case 31:
+        playback = AllocatePlaybackImplementation<ImaAdpcmWaveStream>();
+        break;
+    default:
+        playback = nullptr;
+        return 0;
+    }
+    // Native allocation failure still proceeds to the flags write.
+    playback->SetEarPlaybackFlags(flags);
+    return 1;
+}
+
+void ScheduledEarEvent::ReleaseScheduledEventPlayback() {
+    if (!attenuationRequired) {
+        RequestScheduledEventStop();
+        return;
+    }
+    if (attenuation || !playbackInitialized) {
+        return;
+    }
+    playback->ReleaseEarPlaybackResources();
+    ReleasePlaybackStorage(playback);
+    playback = nullptr;
+    playbackInitialized = 0;
+    CreateEarPlaybackImplementation(sourceFlags);
+    if (!playback) {
+        SetEarLastError(0x10);
+        this->~ScheduledEarEvent();
+    }
+}
 
 void ScheduledEarEvent::DeactivateScheduledEarEvent() {
     if (!g_ActiveEventRegistry.IsEmpty()) {

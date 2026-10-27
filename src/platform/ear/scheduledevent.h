@@ -19,10 +19,7 @@ public:
      * @stub
      */
     ScheduledEarEvent(std::uint16_t flags, const void *source);
-    /**
-     * @ghidraAddress EAR: 0x10007d6a
-     * @stub
-     */
+    /** @ghidraAddress EAR: 0x10007d6a */
     ~ScheduledEarEvent();
 
     /** @ghidraAddress EAR: 0x10007310 */
@@ -52,15 +49,15 @@ private:
     long double CalculateScheduledEventDopplerScale();
     /** @ghidraAddress EAR: 0x1000854e */
     void DeactivateScheduledEarEvent();
-    /**
-     * @ghidraAddress EAR: 0x10008832
-     * @stub
-     */
+    /** @ghidraAddress EAR: 0x10008832 */
     void ReleaseScheduledEventPlayback();
+    /** @ghidraAddress EAR: 0x100085bb */
+    int CreateEarPlaybackImplementation(std::uint16_t flags);
 
     EarEventSource source;
     std::uint16_t sourceType;
-    [[maybe_unused]] std::uint8_t unknown6[6]; /* +0x06 */
+    std::uint16_t sourceFlags;
+    char *allocatedSource;
     EarPlayback *playback;
     int playbackInitialized;
     int playbackStarted;

@@ -1,12 +1,16 @@
 #ifndef COASTLINE_EAR_MFC_H
 #define COASTLINE_EAR_MFC_H
 
+#include <cstddef>
+
 #include <windows.h>
 
 class CArchive;
 class CDumpContext;
 class CRuntimeClass;
 class CPlex;
+
+void *MfcAllocateWithNewHandler(std::size_t size);
 
 class CObject {
 public:

@@ -11,11 +11,11 @@ class EarPreset;
 
 class [[gnu::packed]] EarPlayback {
 public:
-    /**
-     * @ghidraAddress EAR: 0x1000a84e
-     * @stub
-     */
+    /** @ghidraAddress EAR: 0x1000a84e */
     ~EarPlayback();
+
+    /** @ghidraAddress EAR: 0x10008aa0 */
+    void SetEarPlaybackFlags(std::uint16_t flags);
 
     /** @ghidraAddress EAR: 0x1000ab77 */
     int GetStatus();
@@ -176,7 +176,7 @@ private:
     std::uint32_t reservedEventControl;
     std::uint32_t notificationFlags;
     std::uint16_t notificationEvent;
-    [[maybe_unused]] std::uint8_t unknown12[2]; /* +0x12 */
+    std::uint16_t flags;
     int looping;
     int streaming;
     int completionRequested;

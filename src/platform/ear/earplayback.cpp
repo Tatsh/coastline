@@ -28,6 +28,10 @@ std::uint32_t g_earBufferedPlaybackCurrentHalfStart;
 std::uint32_t g_earBufferedPlaybackCursor;
 } // namespace
 
+void EarPlayback::SetEarPlaybackFlags(std::uint16_t value) {
+    flags = value;
+}
+
 int EarPlayback::GetStatus() {
     return status;
 }
