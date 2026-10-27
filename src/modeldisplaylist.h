@@ -1,5 +1,5 @@
-#ifndef COASTLINE_MODELDISPLAYLIST_H
-#define COASTLINE_MODELDISPLAYLIST_H
+#ifndef COASTLINE_MODEL_DISPLAY_LIST_H
+#define COASTLINE_MODEL_DISPLAY_LIST_H
 
 #include "displaylistops.h"
 #include "render.h"

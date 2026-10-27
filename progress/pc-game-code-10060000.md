@@ -1,6 +1,6 @@
 # PC port game code from 0x10060000 to 0x10070000
 
-144 of 173 routines done.
+146 of 173 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -93,7 +93,7 @@ the same name, for a routine the port retained from the N64 game.
 | `UpdateWheelHeights`                     |   ✅   | ✅ `0x8025ec7c` |      2 |    134 | `0x1006f4a0` | `0x10068450` | `void UpdateWheelHeights(RigidBody * body)`                                                                                        |
 | `ResetTrackTriangleCache`                |        |                 |      1 |    134 |              | `0x10063dd0` | `undefined ResetTrackTriangleCache()`                                                                                              |
 | `ResetCollisionCaches`                   |   ✅   | ✅ `0x80259350` |      1 |    134 | `0x1006ae20` |              | `void ResetCollisionCaches(void)`                                                                                                  |
-| `ApplyRemoteVehicleState`                |        |                 |      1 |    129 | `0x10060cc0` | `0x10059d30` | `undefined ApplyRemoteVehicleState()`                                                                                              |
+| `ApplyRemoteVehicleState`                |   ✅   |                 |      1 |    129 | `0x10060cc0` | `0x10059d30` | `uint ApplyRemoteVehicleState(Vehicle * vehicle, int slotIndex)`                                                                   |
 | `UpdateClosestSoundSource`               |   ✅   | ✅ `0x8022b494` |      2 |    120 | `0x10067e50` | `0x10060ec0` | `void UpdateClosestSoundSource(int source, int sound, int volume, float frequency, Vec3f * position, CameraFrame * listener)`      |
 | `UpdateVehicleWheelTransforms`           |   ✅   |                 |      4 |    119 | `0x10061be0` |              | `void UpdateVehicleWheelTransforms(Vehicle * vehicle)`                                                                             |
 | `ModulateRgbaByMask`                     |        |                 |      1 |    119 | `0x10061210` | `0x1005a280` | `undefined ModulateRgbaByMask()`                                                                                                   |
@@ -125,7 +125,7 @@ the same name, for a routine the port retained from the N64 game.
 | `ClearPerFrameVariables`                 |   ✅   | ✅ `0x80225f30` |      1 |     62 | `0x100633e0` | `0x1005c450` | `void ClearPerFrameVariables(void)`                                                                                                |
 | `ReinitPlayerEngineSoundChannel`         |   ✅   |                 |      1 |     62 | `0x10068260` | `0x100612d0` | `void ReinitPlayerEngineSoundChannel(int nPlayer, int nIndex)`                                                                     |
 | `DeserializeSaveData`                    |        | ✅ `0x8022ae70` |      2 |     60 | `0x10067900` | `0x10060970` | `undefined DeserializeSaveData()`                                                                                                  |
-| `RacerSlot::UpdateRemoteVehicleFrame`    |        |                 |      1 |     58 | `0x10069330` | `0x100623a0` | `undefined UpdateRemoteVehicleFrame(RacerSlot * this)`                                                                             |
+| `RacerSlot::UpdateRemoteVehicleFrame`    |   ✅   |                 |      1 |     58 | `0x10069330` | `0x100623a0` | `void UpdateRemoteVehicleFrame(RacerSlot * this)`                                                                                  |
 | `UnmarkTrackSections`                    |   ✅   | ✅ `0x80255c50` |      2 |     53 | `0x100616c0` | `0x1005a740` | `void UnmarkTrackSections(TrackSection * section)`                                                                                 |
 | `ResetGhostRecording`                    |   ✅   |                 |      1 |     51 | `0x1006aa50` | `0x10063a00` | `void ResetGhostRecording(void)`                                                                                                   |
 | `PlaySoundEffect`                        |   ✅   | ✅ `0x8022b370` |      2 |     50 | `0x10067d40` | `0x10060db0` | `void PlaySoundEffect(int sound)`                                                                                                  |
