@@ -1,6 +1,6 @@
 # PC port game code from 0x10060000 to 0x10070000
 
-151 of 173 routines done.
+155 of 173 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -149,11 +149,11 @@ the same name, for a routine the port retained from the N64 game.
 | `ShowInfoMessageBox`                     |   ✅   |                 |      4 |     33 | `0x10060030` | `0x100590a0` | `int ShowInfoMessageBox(void * hWnd, long hResult, char * pszText)`                                                                |
 | `SetColorTintMultipliers`                |   ✅   |                 |      3 |     30 | `0x10061460` | `0x1005a4e0` | `void SetColorTintMultipliers(int nRed, int nGreen, int nBlue)`                                                                    |
 | `PrepareTrackSections`                   |   ✅   | ✅ `0x80255ca0` |      1 |     30 | `0x10061700` | `0x1005a780` | `void PrepareTrackSections(void)`                                                                                                  |
-| `IncreaseBgmVolume`                      |        | ✅ `0x80211840` |      1 |     29 | `0x10060d50` | `0x10059dc0` | `undefined IncreaseBgmVolume()`                                                                                                    |
-| `IncreaseSfxVolume`                      |        | ✅ `0x802118f8` |      1 |     29 | `0x10060dc0` | `0x10059e30` | `undefined IncreaseSfxVolume()`                                                                                                    |
+| `IncreaseBgmVolume`                      |   ✅   | ✅ `0x80211840` |      1 |     29 | `0x10060d50` | `0x10059dc0` | `void IncreaseBgmVolume(void)`                                                                                                     |
+| `IncreaseSfxVolume`                      |   ✅   | ✅ `0x802118f8` |      1 |     29 | `0x10060dc0` | `0x10059e30` | `void IncreaseSfxVolume(void)`                                                                                                     |
 | `SaveRaceSnapshot`                       |   ✅   | ✅ `0x8022aed8` |      1 |     29 | `0x10067940` | `0x100609b0` | `void SaveRaceSnapshot(LastLapBuffer * buffer)`                                                                                    |
-| `DecreaseBgmVolume`                      |        | ✅ `0x8021187c` |      1 |     28 | `0x10060d70` | `0x10059de0` | `undefined DecreaseBgmVolume()`                                                                                                    |
-| `DecreaseSfxVolume`                      |        | ✅ `0x80211934` |      1 |     28 | `0x10060de0` | `0x10059e50` | `undefined DecreaseSfxVolume()`                                                                                                    |
+| `DecreaseBgmVolume`                      |   ✅   | ✅ `0x8021187c` |      1 |     28 | `0x10060d70` | `0x10059de0` | `void DecreaseBgmVolume(void)`                                                                                                     |
+| `DecreaseSfxVolume`                      |   ✅   | ✅ `0x80211934` |      1 |     28 | `0x10060de0` | `0x10059e50` | `void DecreaseSfxVolume(void)`                                                                                                     |
 | `ResetSoundSourceTracking`               |   ✅   | ✅ `0x8022b404` |      1 |     24 | `0x10067da0` | `0x10060e10` | `void ResetSoundSourceTracking(void)`                                                                                              |
 | `RestoreRaceSnapshot`                    |   ✅   | ✅ `0x8022af08` |      1 |     24 | `0x10067960` | `0x100609d0` | `void RestoreRaceSnapshot(LastLapBuffer * buffer)`                                                                                 |
 | `StartRaceWithPlayerCount`               |   ✅   | ✅ `0x80200128` |      1 |     23 | `0x100697e0` | `0x10062850` | `void StartRaceWithPlayerCount(uint players)`                                                                                      |
@@ -161,7 +161,7 @@ the same name, for a routine the port retained from the N64 game.
 | `SaveClockForPause`                      |   ✅   | ✅ `0x8022af34` |      2 |     21 | `0x10067980` | `0x100609f0` | `void SaveClockForPause(void)`                                                                                                     |
 | `SetGhostFrameCountFromSize`             |   ✅   |                 |      1 |     20 | `0x1006ae00` | `0x10063db0` | `uint SetGhostFrameCountFromSize(uint dwSize)`                                                                                     |
 | `ResetTimerState`                        |        |                 |     10 |     19 |              | `0x1006e5a0` | `undefined ResetTimerState()`                                                                                                      |
-| `RestoreClockAfterPause`                 |   ✅   | ✅ `0x8022af64` |      1 |     19 | `0x100679a0` | `0x10060a10` | `undefined RestoreClockAfterPause()`                                                                                               |
+| `RestoreClockAfterPause`                 |   ✅   | ✅ `0x8022af64` |      1 |     19 | `0x100679a0` | `0x10060a10` | `void RestoreClockAfterPause(void)`                                                                                                |
 | `SetGameModeAndRefreshVehicleMaterials`  |        |                 |      1 |     18 |              | `0x10062830` | `undefined SetGameModeAndRefreshVehicleMaterials()`                                                                                |
 | `ResetFrameBlocks`                       |   ✅   | ✅ `0x80255e64` |      1 |     18 | `0x10069580` | `0x100625f0` | `void ResetFrameBlocks(void)`                                                                                                      |
 | `SetWeatherAndRefreshVehicleMaterials`   |   ✅   |                 |      1 |     18 | `0x100697c0` |              | `void SetWeatherAndRefreshVehicleMaterials(uint weather)`                                                                          |
