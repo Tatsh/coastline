@@ -720,7 +720,7 @@ u32 AdvanceRng(void);
  * @ghidraAddress BRD3D: 0x100305b0
  * @ghidraAddress BRGlide: 0x1001dc40
  */
-f64 Vec3dLengthSquared(Vec3d *v);
+long double Vec3dLengthSquared(Vec3d *v);
 
 /**
  * The length of a vector in double precision.
@@ -730,7 +730,7 @@ f64 Vec3dLengthSquared(Vec3d *v);
  * @ghidraAddress BRD3D: 0x100305f0
  * @ghidraAddress BRGlide: 0x1001dc80
  */
-f64 Vec3dLength(Vec3d *v);
+long double Vec3dLength(Vec3d *v);
 
 /**
  * Scale a vector in double precision to a length of 1 in place, unless its length is 0.
@@ -751,7 +751,7 @@ Vec3d *Vec3dNormalize(Vec3d *v);
  * @ghidraAddress BRD3D: 0x10030640
  * @ghidraAddress BRGlide: 0x1001dcd0
  */
-f64 Vec3dDot(Vec3d *a, Vec3d *b);
+long double Vec3dDot(Vec3d *a, Vec3d *b);
 
 /**
  * The cross product of two vectors in double precision.
