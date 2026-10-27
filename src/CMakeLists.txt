@@ -104,7 +104,7 @@ else()
   add_library(
     coastline_game STATIC bodyforces.c camerachase.c cameracollision.c displaylistops.c fade.c
                           fog.c frameclear.c game.c heap.c mathutil.c playerinput.c profileinit.c
-                          rigidbody.c renderinit.c screen.c screendraw.c seasontrack.c trackgrid.c tricache.c
+                          replay.c rigidbody.c renderinit.c screen.c screendraw.c seasontrack.c trackgrid.c tricache.c
                           util.c vecmath.c
                           vehiclechoice.c vehiclemodel.c vehiclereset.c visgrid.c
                           libultra/gu/lookat.c libultra/gu/lookathil.c libultra/gu/lookatref.c
