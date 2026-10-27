@@ -346,10 +346,34 @@ bool ShutdownDirectInput(void);
 /** The number of keys of the state of a keyboard. */
 #define KEYBOARD_KEY_COUNT 256
 
-/** The state of a mouse the game polls. The layout is not recovered yet. */
+/** Mouse axes, accumulated movement, and buttons from input polling. */
 struct MouseInputState {
-    char abUnknown0[0x1c]; /* +0x00 */
+    LONG lX;
+    LONG lY;
+    LONG lZ;
+    LONG lAccumulatedX;
+    LONG lAccumulatedY;
+    LONG lAccumulatedZ;
+    unsigned char abButtons[4];
 };
+
+/**
+ * Read rising edges of an active binding and its keyboard alternatives.
+ *
+ * @param nBinding Binding index.
+ * @return One for a button edge, 0x80 for an axis edge, or their bitwise union.
+ * @ghidraAddress BRD3D: 0x100786e0
+ */
+unsigned char IsInputBindingPressed(int nBinding);
+
+/**
+ * Read an active binding and its keyboard alternatives.
+ *
+ * @param nBinding Binding index.
+ * @return The high bit when a button or an axis beyond fifty is active.
+ * @ghidraAddress BRD3D: 0x10078420
+ */
+unsigned char IsInputBindingHeld(int nBinding);
 
 /**
  * The two states of the keyboard, the current one and the one before.
@@ -713,6 +737,37 @@ extern DWORD g_dwForceFeedbackDuration;
  * @ghidraAddress BRGlide: 0x100bcc38
  */
 extern LONG g_adwForceFeedbackDirection[2];
+
+/**
+ * Gain used in spring ramp calculations, in ten-thousandths.
+ *
+ * @ghidraAddress BRD3D: 0x100bd424
+ */
+extern int g_dwForceFeedbackGain;
+
+/**
+ * Lower bound of the spring ramp before gain scaling.
+ *
+ * @ghidraAddress BRD3D: 0x100bd428
+ */
+extern int g_dwForceFeedbackMagnitudeMax;
+
+/**
+ * Upper bound of the spring ramp before gain scaling.
+ *
+ * @ghidraAddress BRD3D: 0x100bd42c
+ */
+extern int g_dwForceFeedbackConstantForce;
+
+/**
+ * Start or stop the spring and ramp its coefficient towards the scaled force bounds.
+ *
+ * @param bReduceForce Whether to reduce the coefficient towards the lower bound.
+ * @param bEnableForce Whether to play the spring.
+ * @param nForce Upper bound input, offset by eight before scaling.
+ * @ghidraAddress BRD3D: 0x10078f20
+ */
+void UpdateForceFeedbackForce(int bReduceForce, int bEnableForce, int nForce);
 
 /**
  * Set the first direction of the effects of force feedback, when a joystick with force feedback is

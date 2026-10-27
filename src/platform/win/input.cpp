@@ -38,6 +38,120 @@ unsigned char g_abKeyboardState[KEYBOARD_KEY_COUNT];
 int g_adwKeyPressedEdge[KEYBOARD_KEY_COUNT];
 int g_adwKeyPrevDown[KEYBOARD_KEY_COUNT];
 
+static inline bool IsButtonPressedEdge(unsigned char previous, unsigned char current) {
+    return !(previous & 0x80) && (current & 0x80);
+}
+
+static inline LONG GetJoystickBindingAxis(const DIJOYSTATE2 &state, unsigned nAxis) {
+    switch (nAxis) {
+    case 0:
+        return state.lX;
+    case 1:
+        return state.lY;
+    default:
+        return state.lZ;
+    }
+}
+
+static inline LONG GetMouseBindingAxis(const MouseInputState &state, unsigned nAxis) {
+    switch (nAxis) {
+    case 0:
+        return state.lX;
+    case 1:
+        return state.lY;
+    default:
+        return state.lZ;
+    }
+}
+
+unsigned char IsInputBindingHeld(int nBinding) {
+    const InputBinding &binding = g_GlobalRallyConfig.pActiveInputBindings[nBinding];
+    const unsigned nKind = binding.wControl & 0xff00;
+    const unsigned nButton = binding.wControl & 0xff;
+    unsigned char result = 0;
+
+    switch (nKind) {
+    case 0:
+        result = g_aabKeyboardStateBuffers[g_dwKeyboardStateCurIndex][nButton] & 0x80;
+        break;
+    case 0x100:
+        result = g_aJoystickStateBuffers[g_dwJoystickStateCurIndex].rgbButtons[nButton] & 0x80;
+        break;
+    case 0x300:
+        result = g_aMouseStateBuffers[g_dwMouseStateCurIndex].abButtons[nButton] & 0x80;
+        break;
+    default:
+        if (nKind >= 0x8000 && nKind <= 0x8b00) {
+            const unsigned nAxis = (nKind - 0x8000) >> 9;
+            const LONG current =
+                nAxis < 3 ?
+                    GetJoystickBindingAxis(g_aJoystickStateBuffers[g_dwJoystickStateCurIndex],
+                                           nAxis) :
+                    GetMouseBindingAxis(g_aMouseStateBuffers[g_dwMouseStateCurIndex], nAxis - 3);
+            result = ((nKind & 0x100) ? current > 50 : current < -50) ? 0x80 : 0;
+        }
+        break;
+    }
+    for (unsigned short control : binding.awAlternateControls) {
+        if ((control & 0xff00) == 0) {
+            result |= g_aabKeyboardStateBuffers[g_dwKeyboardStateCurIndex][control & 0xff] & 0x80;
+        }
+    }
+    return result;
+}
+
+unsigned char IsInputBindingPressed(int nBinding) {
+    const InputBinding &binding = g_GlobalRallyConfig.pActiveInputBindings[nBinding];
+    const unsigned nKind = binding.wControl & 0xff00;
+    const unsigned nButton = binding.wControl & 0xff;
+    unsigned char result = 0;
+
+    switch (nKind) {
+    case 0:
+        result = IsButtonPressedEdge(g_aabKeyboardStateBuffers[g_dwKeyboardStatePrevIndex][nButton],
+                                     g_aabKeyboardStateBuffers[g_dwKeyboardStateCurIndex][nButton]);
+        break;
+    case 0x100:
+        result = IsButtonPressedEdge(
+            g_aJoystickStateBuffers[g_dwJoystickStatePrevIndex].rgbButtons[nButton],
+            g_aJoystickStateBuffers[g_dwJoystickStateCurIndex].rgbButtons[nButton]);
+        break;
+    case 0x300:
+        result =
+            IsButtonPressedEdge(g_aMouseStateBuffers[g_dwMouseStatePrevIndex].abButtons[nButton],
+                                g_aMouseStateBuffers[g_dwMouseStateCurIndex].abButtons[nButton]);
+        break;
+    default:
+        if (nKind >= 0x8000 && nKind <= 0x8b00) {
+            const unsigned nAxis = (nKind - 0x8000) >> 9;
+            const LONG previous =
+                nAxis < 3 ?
+                    GetJoystickBindingAxis(g_aJoystickStateBuffers[g_dwJoystickStatePrevIndex],
+                                           nAxis) :
+                    GetMouseBindingAxis(g_aMouseStateBuffers[g_dwMouseStatePrevIndex], nAxis - 3);
+            const LONG current =
+                nAxis < 3 ?
+                    GetJoystickBindingAxis(g_aJoystickStateBuffers[g_dwJoystickStateCurIndex],
+                                           nAxis) :
+                    GetMouseBindingAxis(g_aMouseStateBuffers[g_dwMouseStateCurIndex], nAxis - 3);
+            if (nKind & 0x100) {
+                result = previous <= 50 && current > 50 ? 0x80 : 0;
+            } else {
+                result = previous >= -50 && current < -50 ? 0x80 : 0;
+            }
+        }
+        break;
+    }
+    for (unsigned short control : binding.awAlternateControls) {
+        if ((control & 0xff00) == 0) {
+            result |= IsButtonPressedEdge(
+                g_aabKeyboardStateBuffers[g_dwKeyboardStatePrevIndex][control & 0xff],
+                g_aabKeyboardStateBuffers[g_dwKeyboardStateCurIndex][control & 0xff]);
+        }
+    }
+    return result;
+}
+
 // The bit of a key in the state of DirectInput that is set while the key is down.
 #define KEY_DOWN_BIT 7
 // The entries of the edges of the keys ClearKeyboardStateBuffers() clears.
@@ -533,6 +647,9 @@ DIEFFECT g_DiJoltEffect;
 DIPERIODIC g_DiJoltPeriodic;
 DWORD g_dwForceFeedbackDuration = 125000;
 LONG g_adwForceFeedbackDirection[2] = {-1, 0};
+int g_dwForceFeedbackGain = 10000;
+int g_dwForceFeedbackMagnitudeMax = 2000;
+int g_dwForceFeedbackConstantForce = 10000;
 
 // The durations of the effects of force feedback, in microseconds.
 #define FORCE_FEEDBACK_LONG_DURATION 250000
@@ -543,6 +660,56 @@ static inline bool IsForceFeedbackInUse(void) {
             g_GlobalRallyConfig.dwInputDeviceType == 2) &&
            g_GlobalRallyConfig.bForceFeedbackEnabled && g_bForceFeedbackAvailable &&
            !gInstantReplayActive;
+}
+
+static inline int ScaleForceFeedback(int value, int multiplier) {
+    return static_cast<int>(static_cast<unsigned>(value) * static_cast<unsigned>(multiplier)) /
+           10000;
+}
+
+void UpdateForceFeedbackForce(int bReduceForce, int bEnableForce, int nForce) {
+    if (!IsForceFeedbackInUse()) {
+        return;
+    }
+    g_dwForceFeedbackConstantForce =
+        ScaleForceFeedback(static_cast<int>((static_cast<unsigned>(nForce) + 8) *
+                                            static_cast<unsigned>(g_dwForceFeedbackGain)),
+                           1000);
+    if (!bEnableForce) {
+        if (!g_bForceFeedbackForceStopped) {
+            if (g_pConditionEffect != nullptr) {
+                g_pConditionEffect->Stop();
+            }
+            g_bForceFeedbackForceStopped = true;
+        }
+        return;
+    }
+    if (g_bForceFeedbackForceStopped) {
+        if (g_pConditionEffect != nullptr) {
+            g_pConditionEffect->Start(1, 0);
+        }
+        SetForceFeedbackLongDuration();
+        g_bForceFeedbackForceStopped = false;
+    }
+    const int previous = g_dwForceFeedbackMagnitude;
+    if (bReduceForce) {
+        g_dwForceFeedbackMagnitude += ScaleForceFeedback(g_dwForceFeedbackGain, -1000);
+        const int minimum =
+            ScaleForceFeedback(g_dwForceFeedbackMagnitudeMax, g_dwForceFeedbackGain);
+        if (g_dwForceFeedbackMagnitude < minimum) {
+            g_dwForceFeedbackMagnitude = minimum;
+        }
+    } else {
+        g_dwForceFeedbackMagnitude += ScaleForceFeedback(g_dwForceFeedbackGain, 1000);
+        const int maximum =
+            ScaleForceFeedback(g_dwForceFeedbackConstantForce, g_dwForceFeedbackGain);
+        if (g_dwForceFeedbackMagnitude > maximum) {
+            g_dwForceFeedbackMagnitude = maximum;
+        }
+    }
+    if (g_dwForceFeedbackMagnitude != previous) {
+        SetForceFeedbackMagnitude(g_dwForceFeedbackMagnitude);
+    }
 }
 
 void SetForceFeedbackDirection(LONG lDirection) {
