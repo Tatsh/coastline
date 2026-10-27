@@ -1084,34 +1084,6 @@ unsigned RegisterTextureEntry(const TextureImageData *pImage, int nTextureId) {
     return nEntry;
 }
 
-void SampleTexturePixelBilinear(unsigned char *pDest,
-                                const unsigned char *pTopLeft,
-                                const unsigned char *pTopRight,
-                                const unsigned char *pBottomLeft,
-                                const unsigned char *pBottomRight,
-                                float x,
-                                float y) {
-    unsigned char result[4];
-    const int channels[4] = {3, 0, 1, 2};
-    for (int channel : channels) {
-        long double top = pTopLeft[channel] +
-                          (static_cast<long double>(pTopRight[channel]) - pTopLeft[channel]) * x;
-        long double bottom =
-            pBottomLeft[channel] +
-            (static_cast<long double>(pBottomRight[channel]) - pBottomLeft[channel]) * x;
-        long double value = top + (bottom - top) * y;
-        long double rounded = floorl(static_cast<double>(value + 0.5L));
-        if (!(rounded >= 0.0L)) {
-            result[channel] = 0;
-        } else if (rounded > 255.0L) {
-            result[channel] = 255;
-        } else {
-            result[channel] = static_cast<unsigned char>(rounded);
-        }
-    }
-    std::memcpy(pDest, result, sizeof(result));
-}
-
 static int FloorTextureSampleCoordinate(float coordinate) {
     long double value = floorl(static_cast<double>(coordinate));
     if (!(value >= -0x1p63L && value < 0x1p63L)) {

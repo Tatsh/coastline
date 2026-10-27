@@ -48,6 +48,7 @@ add_library(
   snapshotinterpolation.cpp
   sound.cpp
   terrain.c
+  texturesampling.c
   texturescan.cpp
   trackanimation.cpp
   trackload.cpp
