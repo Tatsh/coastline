@@ -14,6 +14,7 @@ add_library(
   boot/startup.cpp
   boot/strings.c
   configfile.cpp
+  dashboardtextures.c
   directplay.cpp
   displaylist.cpp
   dllmain.c

@@ -22,6 +22,20 @@
 /** The colors of a palette of the dashboard. */
 #define DASHBOARD_PALETTE_COLORS 256
 
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#ifdef __cplusplus
+extern "C" {
+#endif
+/**
+ * The gear cell each view has loaded.
+ * @ghidraAddress BRD3D: 0x100a73a8
+ */
+extern s32 g_adwDashboardLoadedGear[DASHBOARD_VIEWS];
+#ifdef __cplusplus
+}
+#endif
+#endif
+
 #if TGR_PLATFORM == TGR_PLATFORM_N64
 /**
  * The car and the night flag of the dashboard each view has loaded, the car in the low byte.

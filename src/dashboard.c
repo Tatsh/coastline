@@ -35,11 +35,10 @@ static inline long double DashboardSin(long double angle) {
     return result;
 }
 namespace {
-    /** @ghidraAddress BRD3D: 0x100a73a8 */
-    s32 g_adwDashboardLoadedGear[DASHBOARD_VIEWS] = {-1, -1};
     /** @ghidraAddress BRD3D: 0x104afd20 */
     ConvertedModelVertex g_aGaugeNeedleVerts[2][DASHBOARD_VIEWS][4];
 }
+s32 g_adwDashboardLoadedGear[DASHBOARD_VIEWS] = {-1, -1};
 s32 g_bHudShowSpeedometer = 1;
 #else
 #include <PR/gu.h>

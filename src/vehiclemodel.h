@@ -82,7 +82,7 @@ typedef struct VehicleModel {
     f32 needleRestAngle;
     u8 abUnknownF4[8]; /* +0xf4 */
     s32 gearImageBytes;
-    u8 abUnknown100[0x400]; /* +0x100 */
+    u16 dashboardPalettes[2][256];
     u8 dashboardImages[0x7b00];
 #endif
     u32 triangleCount; /*!< The triangles of the model, counted into the statistics of the frame. */

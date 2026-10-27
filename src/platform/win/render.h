@@ -834,24 +834,6 @@ extern unsigned char g_abHudFont2GlyphPixels[];
  * @ghidraAddress BRD3D: 0x100a22d0
  */
 extern unsigned char g_abHudFont3GlyphPixels[];
-/**
- * @ghidraAddress BRD3D: 0x118aa0ac
- */
-extern unsigned (*g_pfnCreateTextureFromN64Image)(const unsigned char *,
-                                                  const unsigned char *,
-                                                  int,
-                                                  int,
-                                                  int,
-                                                  int,
-                                                  int,
-                                                  int,
-                                                  int,
-                                                  int,
-                                                  int,
-                                                  int,
-                                                  int,
-                                                  int,
-                                                  int);
 
 /**
  * @ghidraAddress BRD3D: 0x118aa0b0
@@ -1334,13 +1316,6 @@ void DecodeTexturePixels(unsigned char *pDest,
                          unsigned nRowSwapMask);
 
 /**
- * Bypass texture metadata matching while creating a new device texture.
- *
- * @ghidraAddress BRD3D: 0x118aa09c
- */
-extern int g_bForceTextureClone;
-
-/**
  * Create a device texture from captured metadata and decoded pixels.
  *
  * @param pImage The image metadata.
@@ -1455,10 +1430,6 @@ unsigned CreateTextureFromN64Image(const unsigned char *pImage,
  */
 unsigned char *GetTextureEntryPixelsWithPaint(int nEntry, unsigned *pSize);
 
-/**
- * @ghidraAddress BRD3D: 0x118aa0a8
- */
-extern decltype(&DecodeN64TextureToPixelBuffer) g_pfnDecodeN64TextureToPixelBuffer;
 /**
  * @ghidraAddress BRD3D: 0x118aa0c8
  */
