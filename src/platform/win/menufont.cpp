@@ -2,7 +2,10 @@
 
 #include <cstring>
 
+#include "platform/win/directplay.h"
 #include "platform/win/frontend.h"
+#include "platform/win/input.h"
+#include "platform/win/sound.h"
 #include "platform/win/timer.h"
 
 int g_dwGlyphThrottleAccumMs;
@@ -160,4 +163,51 @@ void MenuFont::DrawMenuItemText(float x, float y) {
 
 void MenuFont::DrawTextAltFont() {
     DrawMenuText(this, fX, fY, true, true);
+}
+
+signed char MenuFont::HandleTextInput() {
+    if (g_dwInNetworkCarSetup) {
+        for (int i = 0; i < 4; i++) {
+            if (g_adwKeyPressedEdge[DIK_F1 + i]) {
+                SendNetworkRaceStateMessage(g_pDirectPlayInfo, i + 4);
+                PlaySoundChannelOneOnce(i + 4, 0x200020);
+                g_dwNetworkMenuState = i + 4;
+                break;
+            }
+        }
+    }
+    if (g_adwKeyPressedEdge[DIK_ESCAPE]) {
+        g_dwLastWmCharParam = 0;
+        return -1;
+    }
+    if (g_adwKeyPressedEdge[DIK_RETURN] || g_adwKeyPressedEdge[DIK_NUMPADENTER] ||
+        (IsInputOrEventActive() && !g_dwInNetworkCarSetup)) {
+        if (std::strlen(szText) != 0) {
+            g_dwLastWmCharParam = 0;
+            return 0;
+        }
+    }
+    if (g_dwLastWmCharParam != 0) {
+        if (g_dwLastWmCharParam == 8) {
+            size_t length = std::strlen(szText);
+            if (length != 0) {
+                szText[length - 1] = 0;
+            }
+            g_dwLastWmCharParam = 0;
+            return 1;
+        }
+        char character = LookupKeyCharacter(static_cast<unsigned>(g_dwLastWmCharParam));
+        if (character == 0) {
+            // Unmapped input remains pending.
+            return 1;
+        }
+        pVTable->MeasureText(this);
+        if (nWidth < nInputMaxWidth) {
+            size_t length = std::strlen(szText);
+            szText[length] = character;
+            szText[length + 1] = 0;
+        }
+    }
+    g_dwLastWmCharParam = 0;
+    return 1;
 }

@@ -43,7 +43,7 @@ struct MenuFontVTable {
     void(__thiscall *MeasureTextAltFont)(MenuFont *);
     void(__thiscall *DrawMenuItemText)(MenuFont *, float, float);
     void(__thiscall *DrawText)(MenuFont *);
-    char abUnknown14[4]; /* +0x14 */
+    signed char(__thiscall *HandleTextInput)(MenuFont *);
     int(__thiscall *DrawGlyph)(MenuFont *, short, float, float, int);
     char abUnknown1c[4]; /* +0x1c */
     int(__thiscall *DrawGlyphAltFont)(MenuFont *, short, float, float, int);
@@ -99,6 +99,10 @@ struct MenuFont {
      * @ghidraAddress BRD3D: 0x1005b460
      */
     void DrawTextAltFont();
+    /**
+     * @ghidraAddress BRD3D: 0x1005b570
+     */
+    signed char HandleTextInput();
 
     MenuFontVTable *pVTable;
     unsigned dwFlags;
