@@ -43,14 +43,15 @@ int main(int argc, char *argv[]) {
         return EXIT_FAILURE;
     }
     if (const auto region = parser.present("--region");
-        region && *region != regionName(rom->region)) {
-        spdlog::error(
-            "The image is the {} release, not the {} release.", regionName(rom->region), *region);
+        region && *region != regionName(rom->getRegion())) {
+        spdlog::error("The image is the {} release, not the {} release.",
+                      regionName(rom->getRegion()),
+                      *region);
         return EXIT_FAILURE;
     }
     const auto assets = scan(*rom);
     if (assets.empty() || !assets.front().compressed) {
-        spdlog::error("No compressed asset starts the asset area at {:#x}.", rom->assetStart);
+        spdlog::error("No compressed asset starts the asset area at {:#x}.", rom->getAssetStart());
         return EXIT_FAILURE;
     }
     const std::filesystem::path output = parser.get<std::string>("output_directory");
@@ -65,7 +66,7 @@ int main(int argc, char *argv[]) {
     std::cout << std::format("Extracted {} compressed and {} raw assets of the {} release to {}.\n",
                              compressed,
                              assets.size() - compressed,
-                             regionName(rom->region),
+                             regionName(rom->getRegion()),
                              output.string());
     return EXIT_SUCCESS;
 }

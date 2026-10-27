@@ -16,7 +16,7 @@ constexpr char kLevelFlag = '*';
 // The formatter writes Python's level names. spdlog writes some differently (`warning` in lower
 // case, for one).
 class LevelNameFormatter : public spdlog::custom_flag_formatter {
-public:
+private:
     void format(const spdlog::details::log_msg &message,
                 const std::tm &,
                 spdlog::memory_buf_t &destination) override {

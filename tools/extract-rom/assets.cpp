@@ -93,16 +93,17 @@ std::expected<std::vector<std::uint8_t>, Error> decompress(std::span<const std::
 }
 
 std::vector<Asset> scan(const Rom &rom) {
-    const std::span<const std::uint8_t> bytes(rom.bytes);
+    const std::span<const std::uint8_t> bytes(rom.getBytes());
     const auto end = static_cast<std::uint32_t>(bytes.size());
     std::vector<Asset> assets;
-    std::uint32_t rawStart = rom.assetStart;
+    std::uint32_t rawStart = rom.getAssetStart();
     auto flushRaw = [&](std::uint32_t rawEnd) {
         if (rawEnd > rawStart) {
             assets.push_back({rawStart, rawEnd - rawStart, false, 0, 0});
         }
     };
-    for (std::uint32_t position = rom.assetStart; position + kHeaderSize + kChunkHeaderSize < end;
+    for (std::uint32_t position = rom.getAssetStart();
+         position + kHeaderSize + kChunkHeaderSize < end;
          position += 2) {
         const std::uint32_t total = readBig32(bytes, position);
         if (total < kHeaderSize + kChunkHeaderSize * 2 || total > end - position ||
@@ -140,13 +141,13 @@ extract(const Rom &rom, const std::vector<Asset> &assets, const std::filesystem:
         return std::unexpected(
             Error{ErrorCode::Io, std::format("Cannot create {}.", directory.string())});
     }
-    const std::span<const std::uint8_t> boot(rom.bytes.data(), kBootSize);
+    const std::span<const std::uint8_t> boot(rom.getBytes().data(), kBootSize);
     if (auto written = Common::writeFile(directory / "boot.bin", boot); !written) {
         return written;
     }
     std::string manifest;
     for (const auto &asset : assets) {
-        const std::span<const std::uint8_t> blob(rom.bytes.data() + asset.offset, asset.size);
+        const std::span<const std::uint8_t> blob(rom.getBytes().data() + asset.offset, asset.size);
         const std::string stem = std::format("{:06X}", asset.offset);
         if (asset.compressed) {
             if (auto written = Common::writeFile(directory / (stem + ".z"), blob); !written) {

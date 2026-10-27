@@ -3,6 +3,7 @@
 #include <cstdint>
 #include <expected>
 #include <filesystem>
+#include <span>
 #include <string_view>
 #include <vector>
 
@@ -27,10 +28,24 @@ enum class Region {
 std::string_view regionName(Region region);
 
 /** Cartridge image in big-endian byte order. */
-struct Rom {
+class Rom {
+private:
     std::vector<std::uint8_t> bytes; /*!< The image, `.z64` order whatever the input order was. */
     Region region;                   /*!< Release the image belongs to. */
     std::uint32_t assetStart;        /*!< Offset of the first asset. */
+
+    Rom(std::vector<std::uint8_t> bytes, Region region, std::uint32_t assetStart);
+
+public:
+    [[nodiscard]] std::span<const std::uint8_t> getBytes() const {
+        return bytes;
+    }
+    [[nodiscard]] Region getRegion() const {
+        return region;
+    }
+    [[nodiscard]] std::uint32_t getAssetStart() const {
+        return assetStart;
+    }
 
     /**
      * Read a cartridge image and identify its release.

@@ -59,6 +59,10 @@ std::string_view regionName(Region region) {
     }
 }
 
+Rom::Rom(std::vector<std::uint8_t> bytes, Region region, std::uint32_t assetStart)
+    : bytes(std::move(bytes)), region(region), assetStart(assetStart) {
+}
+
 std::expected<Rom, Error> Rom::open(const std::filesystem::path &path) {
     auto bytes = Common::readFile(path);
     if (!bytes) {
