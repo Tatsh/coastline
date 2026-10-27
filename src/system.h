@@ -98,7 +98,6 @@ extern u32 g_dwScreenUnblankDelay;
  * @ghidraAddress EUR: 0x8021d068
  * @ghidraAddress JPN: 0x8021c938
  * @ghidraAddress BRD3D: 0x10034812
- * @stub{BRD3D}
  */
 void InitRenderingSubsystem(void);
 
@@ -685,14 +684,23 @@ extern u32 g_adwFaultThreadStack[FAULT_STACK_WORDS];
  */
 extern Gfx g_aGfxDisplayListPool[];
 
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+/**
+ * @ghidraAddress BRD3D: 0x10691018
+ */
+extern DisplayListCommand g_abDisplayListMemory[];
+#define g_aGfxDisplayListPool g_abDisplayListMemory
+#endif
+
 /**
  * The start of the display lists.
  *
  * @ghidraAddress USA: 0x8028a848
  * @ghidraAddress EUR: 0x8028ca48
  * @ghidraAddress JPN: 0x8028c518
+ * @ghidraAddress BRD3D: 0x106c0944
  */
-extern Gfx *g_pDisplayListBase;
+extern DisplayListCommand *g_pDisplayListBase;
 
 /**
  * The counts of the CPU counter a millisecond.
@@ -700,6 +708,7 @@ extern Gfx *g_pDisplayListBase;
  * @ghidraAddress USA: 0x8028a8b0
  * @ghidraAddress EUR: 0x8028cab4
  * @ghidraAddress JPN: 0x8028c584
+ * @ghidraAddress BRD3D: 0x106c56e0
  */
 extern f32 g_fCountsPerMillisecond;
 
@@ -709,6 +718,7 @@ extern f32 g_fCountsPerMillisecond;
  * @ghidraAddress USA: 0x8031a3d0
  * @ghidraAddress EUR: 0x8031c8d0
  * @ghidraAddress JPN: 0x8031b500
+ * @ghidraAddress BRD3D: 0x106c0928
  */
 extern OSContStatus g_aContStatus[MAXCONTROLLERS];
 

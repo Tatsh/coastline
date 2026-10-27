@@ -1,11 +1,17 @@
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#include <PR/os_cont.h>
+#else
 #include "controller.h"
-
 #include "siint.h"
 
 /* The controllers need half a second after power on before they answer. */
 #define CONT_POWER_UP_USEC 500000
+#endif
 
 s32 osContInit(OSMesgQueue *mq, u8 *bitpattern, OSContStatus *data) {
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+    return 1;
+#else
     OSMesg dummy;
     s32 ret = 0;
     OSTime t;
@@ -39,8 +45,10 @@ s32 osContInit(OSMesgQueue *mq, u8 *bitpattern, OSContStatus *data) {
     __osSiCreateAccessQueue();
     osCreateMesgQueue(&__osEepromTimerQ, &__osEepromTimerMsg, 1);
     return ret;
+#endif
 }
 
+#if TGR_PLATFORM == TGR_PLATFORM_N64
 void __osContGetInitData(u8 *pattern, OSContStatus *data) {
     u8 *ptr;
     __OSContRequesFormat requestformat;
@@ -88,3 +96,4 @@ void __osPackRequestData(u8 cmd) {
     }
     *ptr = CONT_CMD_END;
 }
+#endif

@@ -123,6 +123,7 @@ typedef struct {
 
 /**
  * Wait until the controllers have powered up, then find which are present.
+ * Windows returns 1 without changing the output arguments.
  *
  * @param mq The queue of SI events, registered with osSetEventMesg() for OS_EVENT_SI.
  * @param bitpattern Receives a bit for each controller that answered.
@@ -131,6 +132,7 @@ typedef struct {
  * @ghidraAddress USA: 0x80265910
  * @ghidraAddress EUR: 0x802670a0
  * @ghidraAddress JPN: 0x80266ba0
+ * @ghidraAddress BRD3D: 0x10042af0
  */
 s32 osContInit(OSMesgQueue *mq, u8 *bitpattern, OSContStatus *data);
 

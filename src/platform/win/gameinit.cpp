@@ -8,6 +8,7 @@
 #include "platform/win/ghost.h"
 #include "platform/win/hud.h"
 #include "platform/win/input.h"
+#include "platform/win/renderinit.h"
 #include "platform/win/settings.h"
 #include "platform/win/sound.h"
 #include "race.h"
@@ -22,6 +23,15 @@ s32 g_dwUnk_InitGameAndShowMenus_106c664c;
 s32 g_dwUnk_InitGameAndShowMenus_10b4df28;
 s32 g_dwNumActiveVehicles = 2;
 u32 g_dwCurrentWeather;
+HANDLE g_hRenderMutex;
+
+void CreateWindowsRenderMutex(void) {
+    g_hRenderMutex = CreateMutexA(nullptr, false, nullptr);
+}
+
+s32 ControllerPakCompatibilityStub(void) {
+    return 0;
+}
 
 void InitControllersAndPaks(void) {
 }

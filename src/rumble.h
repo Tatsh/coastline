@@ -38,6 +38,7 @@ extern OSMesgQueue g_SiMesgQueue;
  * @ghidraAddress USA: 0x8031b1e8
  * @ghidraAddress EUR: 0x8031d6e8
  * @ghidraAddress JPN: 0x8031c318
+ * @ghidraAddress BRD3D: 0x106c06a0
  */
 extern u8 g_abRumblePakPresent[MAXCONTROLLERS];
 

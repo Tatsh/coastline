@@ -48,9 +48,6 @@
 /* The retraces the counter of the vertical blank counts before it wraps. */
 #define VBLANK_COUNTER_MASK 15
 
-/* The CPU counter counts 46875 times a millisecond. */
-#define COUNTS_PER_MILLISECOND 46875.0f
-
 /* The fixed step of a race in nanoseconds, a frame of 1/30 of a second, or 1/25 at PAL rates. */
 #if TGR_REGION == TGR_REGION_EU
 #define RACE_STEP_NANOSECONDS 40000000
@@ -59,10 +56,6 @@
 #endif
 
 /* The priorities of the threads. */
-#define RSP_DONE_THREAD_ID 10
-#define RDP_DONE_THREAD_ID 11
-#define PRE_NMI_THREAD_ID 12
-#define EVENT_THREAD_PRIORITY 60
 #define FAULT_THREAD_ID 5
 #define FAULT_THREAD_PRIORITY 50
 #define MAIN_THREAD_ID 3
@@ -1276,76 +1269,6 @@ void ViRetraceThread(void *arg) {
         osRecvMesg(&g_ViRetracePollMesgQueue, NULL, OS_MESG_BLOCK);
         osSendMesg(&g_ViRetraceMesgQueue, (OSMesg)g_dwDummyOsMesg, OS_MESG_BLOCK);
         g_dwVblankCounter = (g_dwVblankCounter + 1) & VBLANK_COUNTER_MASK;
-    }
-}
-
-/* Whether a controller holds a pak that may be a Rumble Pak. */
-static s32 IsPakController(OSContStatus *status, u8 pattern, s32 i) {
-    return ((pattern >> i) & 1) && !(status->errno & CONT_NO_RESPONSE_ERROR) &&
-           (status->type & CONT_JOYPORT) && (status->status & CONT_CARD_ON);
-}
-
-void InitRenderingSubsystem(void) {
-    OSMesgQueue queue;
-    OSMesg message;
-    u8 pattern;
-    s32 result;
-    s32 i;
-
-    g_pDisplayListBase = g_aGfxDisplayListPool;
-    g_apFramebuffers[0] = g_aFramebuffer0;
-    g_apFramebuffers[1] = g_aFramebuffer1;
-    osCreateMesgQueue(&g_DmaMessageQueue, g_aDmaMsgBuf, IO_MESSAGES);
-    osCreateMesgQueue(&g_RspDoneMsgQueue, g_aRspDoneMsgBuf, 1);
-    osSetEventMesg(OS_EVENT_SP, &g_RspDoneMsgQueue, (OSMesg)g_dwDummyOsMesg);
-    osCreateMesgQueue(&g_RdpDoneMsgQueue, g_aRdpDoneMsgBuf, 1);
-    osSetEventMesg(OS_EVENT_DP, &g_RdpDoneMsgQueue, (OSMesg)g_dwDummyOsMesg);
-    osCreateMesgQueue(&g_ViRetraceMesgQueue, g_ViRetraceMesgBuf, 1);
-    osViSetEvent(&g_ViRetraceMesgQueue, (OSMesg)g_dwDummyOsMesg, 1);
-    osCreateThread(&g_RspDoneThreadObj,
-                   RSP_DONE_THREAD_ID,
-                   RspDoneThread,
-                   g_ppszMainArgv,
-                   &g_adwRspDoneThreadStack[THREAD_STACK_WORDS],
-                   EVENT_THREAD_PRIORITY);
-    osStartThread(&g_RspDoneThreadObj);
-    osCreateThread(&g_RdpDoneThreadObj,
-                   RDP_DONE_THREAD_ID,
-                   RdpDoneThread,
-                   g_ppszMainArgv,
-                   &g_adwRdpDoneThreadStack[THREAD_STACK_WORDS],
-                   EVENT_THREAD_PRIORITY);
-    osStartThread(&g_RdpDoneThreadObj);
-#if TGR_REGION == TGR_REGION_EU || TGR_REGION == TGR_REGION_JP
-    osCreateThread(&g_PreNmiResetHandlerThreadObj,
-                   PRE_NMI_THREAD_ID,
-                   PreNmiResetHandlerThread,
-                   g_ppszMainArgv,
-                   &g_adwPreNmiResetThreadStack[THREAD_STACK_WORDS],
-                   EVENT_THREAD_PRIORITY);
-    osStartThread(&g_PreNmiResetHandlerThreadObj);
-#endif
-    g_fCountsPerMillisecond = COUNTS_PER_MILLISECOND;
-
-    /* The serial event reaches the queue on the stack until it is pointed elsewhere below. */
-    osCreateMesgQueue(&queue, &message, 1);
-    osSetEventMesg(OS_EVENT_SI, &queue, (OSMesg)1);
-    osContInit(&queue, &pattern, g_aContStatus);
-    osCreateMesgQueue(&g_SiMesgQueue, g_aSiEventMesgBuf, 1);
-    osSetEventMesg(OS_EVENT_SI, &g_SiMesgQueue, (OSMesg)0);
-    PrepareRumblePaks();
-    for (i = 0; i < MAXCONTROLLERS; i++) {
-        g_abRumblePakPresent[i] = FALSE;
-        if (!IsPakController(&g_aContStatus[i], pattern, i)) {
-            continue;
-        }
-        /* A pak that is not a Controller Pak may be a Rumble Pak. */
-        result = osPfsInit(&g_SiMesgQueue, &g_aContPfs[i], i);
-        if (result != 0 && (result == PFS_ERR_ID_FATAL || result == PFS_ERR_DEVICE) &&
-            osMotorInit(&g_SiMesgQueue, &g_aContPfs[i], i) == 0) {
-            g_abRumblePakPresent[i] = TRUE;
-            osMotorStop(&g_aContPfs[i]);
-        }
     }
 }
 

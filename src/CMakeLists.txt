@@ -76,8 +76,8 @@ if(TGR_PLATFORM STREQUAL "n64")
   # the assembly of the original into C.
   set(_game_sources audio.c audiomix.s camera.c carselect.c controllerscreen.c debugtext.c decaldraw.c decaleditor.c driving.c effects.c fade.c game.c hud.c input.c heap.c mainmenu.c mathutil.c model.c options.c paintshop.c pakmenu.c physics.c playerselect.c race.c
                     racemenu.c racers.c racesound.c replay.c rigidbody.c rumble.c sky.c snapshot.c splash.c sprite.c system.c text.c texrect.c timing.c track.c trackrender.c util.c vecmath.c vehicle.c vehiclemodel.c vehiclerender.c vehiclesetup.c visgrid.c weather.c weatherselect.c)
-  list(APPEND _game_sources displaylistops.c playerinput.c profileinit.c screen.c seasontrack.c
-                           vehiclechoice.c)
+  list(APPEND _game_sources displaylistops.c playerinput.c profileinit.c renderinit.c screen.c
+                           seasontrack.c vehiclechoice.c)
   # These sources write the Japanese text in UTF-8. The Japanese release compiles copies with the
   # text in the glyph codes of its font.
   if(TGR_REGION STREQUAL "jp")
@@ -102,9 +102,10 @@ else()
   # routine of it that the PC libraries have compiles for them.
   add_library(
     coastline_game STATIC displaylistops.c fade.c game.c heap.c mathutil.c playerinput.c profileinit.c
-                          rigidbody.c screen.c seasontrack.c util.c vecmath.c vehiclechoice.c visgrid.c
+                          rigidbody.c renderinit.c screen.c seasontrack.c util.c vecmath.c
+                          vehiclechoice.c visgrid.c
                           libultra/gu/mtxcatf.c libultra/gu/mtxutil.c libultra/gu/scale.c
-                          libultra/gu/translate.c libultra/gu/perspective.c)
+                          libultra/gu/translate.c libultra/gu/perspective.c libultra/io/controller.c)
   target_link_libraries(coastline_game PRIVATE coastline_common)
   list(APPEND COASTLINE_LIBRARIES coastline_game)
 
