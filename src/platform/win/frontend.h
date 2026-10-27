@@ -378,6 +378,23 @@ int ShowInputOptionsMenu(void);
 void BuildInputOptionsUI(MenuScreen *pScreen);
 
 /**
+ * Open cached video options, building the screen on its first visit.
+ *
+ * @ghidraAddress BRD3D: 0x10045390
+ * @ghidraAddress BRGlide: 0x1003e8e0
+ */
+int ShowVideoOptionsMenu(void);
+
+/**
+ * Build video options on the supplied screen.
+ *
+ * @ghidraAddress BRD3D: 0x1004d1f0
+ * @ghidraAddress BRGlide: 0x10046620
+ * @stub
+ */
+void BuildVideoOptionsUI(MenuScreen *pScreen);
+
+/**
  * @ghidraAddress BRD3D: 0x10a9d078
  * @ghidraAddress BRGlide: 0x10ac4100
  */

@@ -1076,6 +1076,10 @@ int ShowInputOptionsMenu(void) {
     return ShowCachedMenuScreen(g_pCachedMenu_Credits, BuildInputOptionsUI);
 }
 
+int ShowVideoOptionsMenu(void) {
+    return ShowCachedMenuScreen(g_pCachedMenu_InputConfig, BuildVideoOptionsUI);
+}
+
 int IsGameCdInDrive(int nDrive) {
     char szRoot[MAX_PATH];
     char szVolume[MAX_PATH];
