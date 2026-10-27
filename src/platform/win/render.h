@@ -279,10 +279,11 @@ void CalculateTextureDimensions(int *pWidth, int *pHeight, int nLod, int nAspect
  * reads it.
  * @param nLargeLod The level of detail of the largest level.
  * @param nAspectRatio The aspect ratio, as CalculateTextureDimensions() reads it.
+ * @param nPixelFormatId The pixel format, unused.
  * @return The bytes, or 0 when the smallest level is larger than the largest.
  * @ghidraAddress BRD3D: 0x10029e10
  */
-int ComputeMipChainByteSize(int nSmallLod, int nLargeLod, int nAspectRatio);
+int ComputeMipChainByteSize(int nSmallLod, int nLargeLod, int nAspectRatio, int nPixelFormatId);
 #endif
 
 /**

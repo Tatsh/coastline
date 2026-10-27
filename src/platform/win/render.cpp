@@ -450,7 +450,7 @@ void CalculateTextureDimensions(int *pWidth, int *pHeight, int nLod, int nAspect
 // The bytes of a texel of the textures of Direct3D.
 #define RGBA32_BYTES_PER_TEXEL 4
 
-int ComputeMipChainByteSize(int nSmallLod, int nLargeLod, int nAspectRatio) {
+int ComputeMipChainByteSize(int nSmallLod, int nLargeLod, int nAspectRatio, int nPixelFormatId) {
     int nWidth;
     int nHeight;
     int nBytes = 0;

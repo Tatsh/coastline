@@ -348,10 +348,9 @@ void FlushPendingTextureLoad(GbiCommand *pCommand);
 /**
  * Find or create a texture entry from the captured texture memory and scan state.
  *
- * @param pTmem The captured texture memory.
- * @return The texture entry, or -1 when conversion fails.
+ * @param pTmem The captured texture memory, unused.
+ * @return The texture entry.
  * @ghidraAddress BRD3D: 0x10029470
- * @stub{BRD3D}
  */
 int CreateTextureFromTmemShadow(unsigned char *pTmem);
 
