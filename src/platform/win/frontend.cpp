@@ -1814,6 +1814,52 @@ int MainMenuUI_OnPlayCredits(MenuWidget *pWidget) {
     return 0;
 }
 
+int NetworkCarSetupUI_OnBootPlayer(MenuWidget *) {
+    if (g_pDirectPlayInfo->dpidPlayer != g_dwNetCarSetupSelectedPlayerId) {
+        SendNetworkMessage4(g_pDirectPlayInfo, g_dwNetCarSetupSelectedPlayerId);
+    }
+    return 1;
+}
+
+int LoadSeasonUI_OnLoadAutoSave(MenuWidget *) {
+    LoadAutoSaveSeason();
+    ShowPreRaceInfoScreen();
+    g_pExitSeasonConfirmMenu->pfnAction = PreRaceInfoUI_OnBackToLoadSeason;
+    g_dwGameMode = GAME_MODE_CHAMPIONSHIP;
+    return 1;
+}
+
+int OnListDialogItemSelected(MenuWidget *pWidget) {
+    ShowPreRaceInfoScreen();
+    pWidget->pScreen->DestroyPanels();
+    delete g_pCachedMenu_NotEnoughPoints;
+    g_pCachedMenu_NotEnoughPoints = nullptr;
+    return 0;
+}
+
+int OnPressAnyKeyContinue(MenuWidget *pWidget) {
+    ShowPreRaceInfoScreen();
+    if (g_SeasonProgress.championshipFlags > 0 && !g_SeasonProgress.season &&
+        !g_SeasonProgress.round) {
+        memset(g_SeasonProgress.seasonPlaces, 0, sizeof(g_SeasonProgress.seasonPlaces));
+        memset(g_SeasonProgress.seasonRacePoints, 0, sizeof(g_SeasonProgress.seasonRacePoints));
+        memset(g_SeasonProgress.seasonTimes, 0, sizeof(g_SeasonProgress.seasonTimes));
+    }
+    g_dwSeasonTotalPoints = 0;
+    pWidget->pScreen->DestroyPanels();
+    delete g_pCachedMenu_SeasonCongrats;
+    g_pCachedMenu_SeasonCongrats = nullptr;
+    return 0;
+}
+
+int SeasonCongratsUI_PollAnyKey(MenuWidget *pWidget) {
+    if (CheckForUserInput()) {
+        OnPressAnyKeyContinue(pWidget);
+        return -1;
+    }
+    return 1;
+}
+
 int KeyConfigUI_BeginKeyCapture(MenuWidget *) {
     if (!g_fCharInputSuppressed) {
         g_dwMenuTextEditActive = 1;

@@ -50,6 +50,12 @@ extern DirectPlayInfo g_DirectPlayInfo;
 extern DirectPlayInfo *g_pDirectPlayInfo;
 
 /**
+ * @ghidraAddress BRD3D: 0x100ab3e0
+ * @ghidraAddress BRGlide: 0x100aab80
+ */
+extern DPID g_dwNetCarSetupSelectedPlayerId;
+
+/**
  * The service providers, indexed by IPX, TCP/IP, modem, and serial in that order.
  *
  * @ghidraAddress BRD3D: 0x10a9bff0

@@ -438,6 +438,36 @@ int DetectDuplicateKeyBindings(int nDevice);
 int KeyConfigUI_PollKeyCapture(MenuWidget *pWidget);
 
 /**
+ * @ghidraAddress BRD3D: 0x100437b0
+ * @ghidraAddress BRGlide: 0x1003cd00
+ */
+int NetworkCarSetupUI_OnBootPlayer(MenuWidget *pWidget);
+
+/**
+ * @ghidraAddress BRD3D: 0x100450c0
+ * @ghidraAddress BRGlide: 0x1003e610
+ */
+int LoadSeasonUI_OnLoadAutoSave(MenuWidget *pWidget);
+
+/**
+ * @ghidraAddress BRD3D: 0x100471b0
+ * @ghidraAddress BRGlide: 0x10040600
+ */
+int OnListDialogItemSelected(MenuWidget *pWidget);
+
+/**
+ * @ghidraAddress BRD3D: 0x10047120
+ * @ghidraAddress BRGlide: 0x10040570
+ */
+int OnPressAnyKeyContinue(MenuWidget *pWidget);
+
+/**
+ * @ghidraAddress BRD3D: 0x100471f0
+ * @ghidraAddress BRGlide: 0x10040640
+ */
+int SeasonCongratsUI_PollAnyKey(MenuWidget *pWidget);
+
+/**
  * @ghidraAddress BRD3D: 0x10040680
  * @ghidraAddress BRGlide: 0x10039bc0
  */
