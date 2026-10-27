@@ -395,6 +395,23 @@ int ShowVideoOptionsMenu(void);
 void BuildVideoOptionsUI(MenuScreen *pScreen);
 
 /**
+ * Open cached key configuration, building the screen on its first visit.
+ *
+ * @ghidraAddress BRD3D: 0x100434c0
+ * @ghidraAddress BRGlide: 0x1003ca10
+ */
+int ShowKeyConfigScreen(void);
+
+/**
+ * Build key configuration on the supplied screen.
+ *
+ * @ghidraAddress BRD3D: 0x1004cac0
+ * @ghidraAddress BRGlide: 0x10045ef0
+ * @stub
+ */
+void BuildKeyConfigUI(MenuScreen *pScreen);
+
+/**
  * @ghidraAddress BRD3D: 0x10a9d078
  * @ghidraAddress BRGlide: 0x10ac4100
  */
