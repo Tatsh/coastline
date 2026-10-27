@@ -794,6 +794,28 @@ D3DCOLOR g_dwVertexConstantColor;
 float g_fVertexFogRange;
 int g_dwFogAlphaCutoff;
 
+GbiVertexSource *
+LerpVertexFromPool(const GbiVertexSource *pFirst, const GbiVertexSource *pSecond, float fFraction) {
+    GbiVertexSource *pVertex = g_pVertexFreeList;
+    if (pVertex) {
+        g_pVertexFreeList = pVertex->pNext;
+    }
+    auto interpolate = [fFraction](float fFirst, float fSecond) {
+        return static_cast<float>((static_cast<long double>(fSecond) - fFirst) * fFraction +
+                                  fFirst);
+    };
+    pVertex->fX = interpolate(pFirst->fX, pSecond->fX);
+    pVertex->fY = interpolate(pFirst->fY, pSecond->fY);
+    pVertex->fZ = interpolate(pFirst->fZ, pSecond->fZ);
+    pVertex->fS = interpolate(pFirst->fS, pSecond->fS);
+    pVertex->fT = interpolate(pFirst->fT, pSecond->fT);
+    pVertex->fW = interpolate(pFirst->fW, pSecond->fW);
+    pVertex->fRed = interpolate(pFirst->fRed, pSecond->fRed);
+    pVertex->fGreen = interpolate(pFirst->fGreen, pSecond->fGreen);
+    pVertex->fBlue = interpolate(pFirst->fBlue, pSecond->fBlue);
+    return pVertex;
+}
+
 void UpdateD3DFogRenderState(void) {
     if (g_dwWeatherActive) {
         g_fVertexFogRange = !g_dwRainMode && !g_dwSnowMode && g_dwNightMode ? 16384.0f : 8192.0f;

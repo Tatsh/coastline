@@ -729,6 +729,14 @@ extern GbiVertexSource g_aClipVertexPool[GBI_CLIP_VERTEX_POOL_SIZE];
 /** @ghidraAddress BRD3D: 0x104c0bbc */
 extern GbiVertexSource *g_pVertexFreeList;
 
+/**
+ * Take a clipping vertex from the free list and interpolate its attributes.
+ *
+ * @ghidraAddress BRD3D: 0x1001d940
+ */
+GbiVertexSource *
+LerpVertexFromPool(const GbiVertexSource *pFirst, const GbiVertexSource *pSecond, float fFraction);
+
 /** @ghidraAddress BRD3D: 0x104c5184 */
 extern int g_bRdpBlendStateOverride;
 
