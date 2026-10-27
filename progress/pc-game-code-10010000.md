@@ -1,6 +1,6 @@
 # PC port game code from 0x10010000 to 0x10020000
 
-155 of 162 routines done.
+156 of 162 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -10,7 +10,7 @@ the same name, for a routine the port retained from the N64 game.
 | Name                                                   | Status | N64             | # xref | Length | BRD3D        | BRGlide      | Signature                                                                                                                                                                                                                                    |
 | ------------------------------------------------------ | :----: | --------------- | -----: | -----: | ------------ | ------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `RenderTrackGeometry`                                  |   ✅   | ✅ `0x80235bac` |      4 |   9329 | `0x10011590` | `0x1000eaf0` | `void RenderTrackGeometry(ViewportRect * viewports, int deferred, RacerSlot * slots, Vehicle * vehicles)`                                                                                                                                    |
-| `ProcessRacingScreen`                                  |   🚧   | ✅ `0x8020082c` |      1 |   4500 | `0x10014a30` | `0x10011fa0` | `void ProcessRacingScreen(int nSplitScreenSlot)`                                                                                                                                                                                             |
+| `ProcessRacingScreen`                                  |   ✅   | ✅ `0x8020082c` |      1 |   4500 | `0x10014a30` | `0x10011fa0` | `void ProcessRacingScreen(int snapshotSlot)`                                                                                                                                                                                                 |
 | `InterpolateFrameSnapshotsAndRender`                   |   ✅   |                 |      2 |   3217 | `0x10015c70` | `0x100131e0` | `int InterpolateFrameSnapshotsAndRender(int forceRender)`                                                                                                                                                                                    |
 | `RenderTextToDisplayList`                              |   ✅   | ✅ `0x8022e4e0` |      3 |   2992 | `0x10018590` | `0x10015b10` | `void RenderTextToDisplayList(char * text)`                                                                                                                                                                                                  |
 | `RenderPrecipitationEffect`                            |   ✅   | ✅ `0x8023a784` |      1 |   2389 | `0x10019b50` | `0x10017110` | `void RenderPrecipitationEffect(void)`                                                                                                                                                                                                       |
