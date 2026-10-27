@@ -72,21 +72,28 @@ s32 ProcessDisplayList(DisplayListCommand *displayList, DisplayListCommand table
     return translucent;
 }
 
+void ProcessTrackNodeDisplayList(TrackInstance *instance) {
+    s32 snowTint;
+
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+    g_bDisplayListSnowTint = FALSE;
+#endif
+    snowTint = g_dwSelectedTrackId != TRACK_COASTLINE &&
+               g_dwSelectedTrackId != TRACK_COASTLINE + TRACK_MIRRORED;
+    if (!(instance->flags & TRACK_INSTANCE_TWO_SIDED)) {
+        g_bDisplayListSnowTint = snowTint;
+    }
+    if (ProcessDisplayList(instance->displayList, g_aaDlTrackRenderModes)) {
+        instance->flags |= TRACK_INSTANCE_TRANSLUCENT;
+    }
+}
+
 void ProcessAllDisplayLists(void) {
     Vehicle *vehicle;
     s32 i, lod, k;
 #if TGR_PLATFORM == TGR_PLATFORM_N64
-    s32 snowTint;
-
-    snowTint =
-        g_dwSelectedTrackId != TRACK_COASTLINE && g_dwSelectedTrackId != TRACK_MIRROR_COASTLINE;
     for (i = 0; i < g_LoadedTrack.instanceCount; i++) {
-        if (!(g_LoadedTrack.instances[i].flags & TRACK_INSTANCE_TWO_SIDED)) {
-            g_bDisplayListSnowTint = snowTint;
-        }
-        if (ProcessDisplayList(g_LoadedTrack.instances[i].displayList, g_aaDlTrackRenderModes)) {
-            g_LoadedTrack.instances[i].flags |= TRACK_INSTANCE_TRANSLUCENT;
-        }
+        ProcessTrackNodeDisplayList(&g_LoadedTrack.instances[i]);
     }
 #else
     g_bDisplayListSnowTint = FALSE;

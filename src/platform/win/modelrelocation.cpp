@@ -1,5 +1,6 @@
 #include <bit>
 
+#include "displaylistops.h"
 #include "model.h"
 #include "platform/win/render.h"
 #include "platform/win/texturescan.h"

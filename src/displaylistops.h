@@ -1,6 +1,7 @@
 #ifndef COASTLINE_DISPLAYLISTOPS_H
 #define COASTLINE_DISPLAYLISTOPS_H
 
+#include "track.h"
 #include "types.h"
 
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
@@ -111,6 +112,11 @@ extern void (*g_pfnRenderBackendUpdateFog)(void);
  * @ghidraAddress BRD3D: 0x100344d7
  */
 void ProcessAllDisplayLists(void);
+
+/**
+ * @ghidraAddress BRD3D: 0x1003445a
+ */
+void ProcessTrackNodeDisplayList(TrackInstance *instance);
 
 #ifdef __cplusplus
 }

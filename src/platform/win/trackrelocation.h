@@ -11,9 +11,3 @@ void ByteSwapTrackInstance(TrackInstance *instance);
  * @ghidraAddress BRD3D: 0x10037fe0
  */
 void ByteSwapTrackInstances(TrackHeader *track);
-
-/**
- * @ghidraAddress BRD3D: 0x1003445a
- * @stub
- */
-void ProcessTrackNodeDisplayList(TrackInstance *instance);
