@@ -1,6 +1,6 @@
 # PC port game code from 0x10040000 to 0x10050000
 
-195 of 264 routines done.
+196 of 264 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -94,7 +94,7 @@ the same name, for a routine the port retained from the N64 game.
 | `ShowRaceResultsTotalsScreen`                      |   ✅   |                 |      1 |    201 | `0x100460a0` | `0x1003f540` | `int ShowRaceResultsTotalsScreen(void)`                                                                                                                   |
 | `ShowSeasonCongratsScreen`                         |   ✅   |                 |      1 |    201 | `0x10043260` | `0x1003c7b0` | `int ShowSeasonCongratsScreen(void)`                                                                                                                      |
 | `SeasonProgressInfoUI_UpdatePointsNeededLabel`     |        |                 |      1 |    198 | `0x100415a0` | `0x1003ab00` | `undefined SeasonProgressInfoUI_UpdatePointsNeededLabel()`                                                                                                |
-| `SeasonProgressInfoUI_UpdateRoundLabel`            |        |                 |      1 |    196 | `0x10040b30` | `0x1003a070` | `undefined SeasonProgressInfoUI_UpdateRoundLabel()`                                                                                                       |
+| `SeasonProgressInfoUI_UpdateRoundLabel`            |   ✅   |                 |      1 |    196 | `0x10040b30` | `0x1003a070` | `int SeasonProgressInfoUI_UpdateRoundLabel(MenuWidget * pWidget)`                                                                                         |
 | `ShowD3DDeviceSelectMenu`                          |        |                 |      1 |    184 | `0x10045460` | `0x1003e9b0` | `undefined ShowD3DDeviceSelectMenu()`                                                                                                                     |
 | `ShowDisplayModeSelectMenu`                        |        |                 |      1 |    184 | `0x10045520` |              | `undefined ShowDisplayModeSelectMenu()`                                                                                                                   |
 | `RaceResultsTotalsUI_UpdatePointsNeededLabel`      |        |                 |      1 |    180 | `0x100417b0` | `0x1003ad10` | `undefined RaceResultsTotalsUI_UpdatePointsNeededLabel()`                                                                                                 |
