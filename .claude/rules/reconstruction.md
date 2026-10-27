@@ -65,10 +65,13 @@ source lives in [general.md](general.md) and `.clang-format`; this file is about
   wrong but matches the binary. One line.
 - For a large body, save the decompiler and disassembler output under `.wiswa-ci/`, then break the
   body into helpers at the repeated or logically distinct blocks and reconstruct with those helpers.
-  Mark such helpers `static inline` unless the block is performance-critical.
+  Define free-function helpers in `.c` or `.cpp` files. Declare helpers used by another translation
+  unit in an associated header. A helper used within one translation unit has internal linkage.
+  Do not define static free functions in headers.
 
 ## Files and build units
 
+- Put all `#include` directives at the top of the file, before declarations and definitions.
 - A routine that differs substantially between targets has one translation unit per target, named
   with the target suffix (`winmain-d3d.cpp`, `winmain-glide.cpp`), and CMake selects the unit. A
   difference of a few lines stays in one unit under `#if`. One header serves every target, with
