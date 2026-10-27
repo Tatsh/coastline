@@ -917,14 +917,6 @@ void DisableTextShadow(void) {
     g_bTextShadowEnabled = FALSE;
 }
 
-void SetTextStyleNormal(void) {
-    g_bTextStyleBold = FALSE;
-}
-
-void SetTextAlignCenter(void) {
-    g_nTextAlignment = TEXT_ALIGN_CENTER;
-}
-
 void SetTextAlignLeft(void) {
     g_nTextAlignment = TEXT_ALIGN_LEFT;
 }
@@ -953,99 +945,8 @@ void SetTextGradientColorsFromBytes(const u8 *color, const u8 *color2) {
     g_dwTextCustomColor2B = color2[2];
 }
 
-void SetTextSize(s32 size) {
-    g_nFontSize = size;
-}
-
-void DrawText(const char *text, s32 x, s32 y) {
-    switch (g_nTextAlignment) {
-    case TEXT_ALIGN_LEFT:
-        g_nTextDrawX = x;
-        break;
-    case TEXT_ALIGN_CENTER:
-        g_nTextDrawX = x - (MeasureTextWidth(text, g_nFontSize) >> 1);
-        break;
-    case TEXT_ALIGN_RIGHT:
-        g_nTextDrawX = x - MeasureTextWidth(text, g_nFontSize);
-        break;
-    }
-    g_nTextDrawY = y;
-    RenderTextToDisplayList(text);
-}
-
 void DrawHudLabelAtFraction(const char *text, f32 x, f32 y, s32 unused) {
     DrawText(text,
              (s32)((f32)g_dwScreenWidth * x * 0.0009267578134f) + 8,
              g_dwScreenHeight - (s32)((f32)g_dwScreenHeight * y * 0.001214843825f) - 9);
-}
-
-s32 MeasureTextWidth(const char *text, s32 size) {
-    s32 width = 0;
-    s32 cell, padding;
-    s32 *offsets;
-    s32 c, next;
-    u8 glyph;
-#if TGR_REGION == TGR_REGION_JP
-    s32 japanese = FALSE;
-#endif
-
-    if (g_dwScreenScaleShift) {
-        size *= 2;
-    }
-    if (size < SMALL_FONT_MAX_SIZE) {
-        cell = SMALL_FONT_CELL;
-        padding = SMALL_FONT_PADDING;
-        offsets = g_adwSmallFontGlyphOffsets;
-    } else {
-        cell = LARGE_FONT_CELL;
-        padding = LARGE_FONT_PADDING;
-        offsets = g_adwLargeFontGlyphOffsets;
-    }
-    for (; *text != '\0'; text++) {
-        c = (u8)*text;
-#if TGR_REGION == TGR_REGION_JP
-        if ((c < '!' || c >= 0x80) && !japanese) {
-#else
-        if (c < '!' || c >= 0x80) {
-#endif
-            width += (size * SPACE_ADVANCE) / SIZE_UNITS;
-            continue;
-        }
-        if (c == '%' && text[1] != '\0') {
-            next = text[1];
-            if (next == '%') {
-                text++;
-#if TGR_REGION == TGR_REGION_JP
-            } else if (next == 'j') {
-                /* %j starts Japanese text and %e ends it. */
-                text++;
-                japanese = TRUE;
-                continue;
-            } else if (next == 'e') {
-                text++;
-                japanese = FALSE;
-                continue;
-#endif
-            } else if (next == 'i' || next == 'n') {
-                text++;
-                continue;
-            } else if (text[2] != '\0') {
-                text += 2;
-                continue;
-            }
-        }
-#if TGR_REGION == TGR_REGION_JP
-        /* Every Japanese glyph has the same advance. */
-        if (japanese) {
-            width += ((cell * JAPANESE_ADVANCE / SIZE_UNITS - padding) * size) / cell;
-            continue;
-        }
-#endif
-        glyph = g_abHudFontCharToGlyph[c - '!'];
-        width += ((offsets[glyph + 1] - offsets[glyph] - padding + 1) * size) / cell;
-    }
-    if (g_dwScreenScaleShift) {
-        width >>= 1;
-    }
-    return width;
 }

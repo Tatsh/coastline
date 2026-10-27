@@ -5,6 +5,7 @@
 # them from an archive, and the objects go into each library directly.
 add_library(
   coastline_main OBJECT
+  boot/app.cpp
   boot/dxversion.cpp
   boot/gamestate.cpp
   boot/rallyconfig.cpp

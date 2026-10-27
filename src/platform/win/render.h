@@ -10,9 +10,15 @@
 #include <windows.h>
 
 #include "../../render.h"
+#include "platform/win/fontdata.h"
 #include "vecmath.h"
 
 struct GbiCommand;
+
+/**
+ * @ghidraAddress BRD3D: 0x10b501d0
+ */
+extern void (*g_pfnRenderBackendSubmitDisplayList)(GbiCommand *pDisplayList);
 
 /** The mode of the renderer of the Direct3D library. */
 #define RENDER_BACKEND_MODE_D3D 1
@@ -847,11 +853,6 @@ void LoadHudOverlayTexture(void);
 void LoadHudGlyphTextureSets(void);
 
 /**
- * @ghidraAddress BRD3D: 0x100b8c90
- */
-extern int g_dwTextureQualityLevel;
-
-/**
  * @ghidraAddress BRD3D: 0x11829844
  */
 extern unsigned g_dwAvailableTextureMemory;
@@ -881,17 +882,9 @@ extern int g_dwMaxTexHeightLowQuality;
  */
 void SelectTextureQualityFromVideoMemory(void);
 /**
- * @ghidraAddress BRD3D: 0x100a6070
- */
-extern int g_adwHudFont0GlyphOffsets[27];
-/**
  * @ghidraAddress BRD3D: 0x100a60e0
  */
 extern int g_adwHudFont1GlyphOffsets[26];
-/**
- * @ghidraAddress BRD3D: 0x100a6150
- */
-extern int g_adwHudFont2GlyphOffsets[27];
 /**
  * @ghidraAddress BRD3D: 0x100a61c0
  */

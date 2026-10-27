@@ -643,6 +643,5 @@ void ShutdownMainWindow(void);
  *
  * @param pszMessage Error message.
  * @ghidraAddress BRD3D: 0x10008cf0
- * @stub
  */
-void ShowFatalErrorScreen(const char *pszMessage);
+[[noreturn]] void ShowFatalErrorScreen(const char *pszMessage);

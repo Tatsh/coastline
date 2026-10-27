@@ -9,6 +9,11 @@
 #include "trackselect.h"
 
 /**
+ * @ghidraAddress BRD3D: 0x100b8c90
+ */
+extern int g_dwTextureQualityLevel;
+
+/**
  * Path of BossRally.ini, built from g_szInstallDirectory.
  *
  * @ghidraAddress BRD3D: 0x1022af48

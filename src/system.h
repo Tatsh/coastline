@@ -202,15 +202,6 @@ extern u32 g_dwKeepScreenBlanked;
 extern u16 g_wScreenFrameCount;
 
 /**
- * The shift from the size of the frame to the size of the frame buffer, 1 in high resolution.
- *
- * @ghidraAddress USA: 0x8028a850
- * @ghidraAddress EUR: 0x8028ca50
- * @ghidraAddress JPN: 0x8028c520
- */
-extern s32 g_dwScreenScaleShift;
-
-/**
  * The color dither the screens draw with, as the other-mode bits gDPSetColorDither() takes.
  *
  * @ghidraAddress USA: 0x8028a8a0

@@ -12,6 +12,10 @@
 
 #include "types.h"
 
+#if TGR_PLATFORM == TGR_PLATFORM_WIN && defined(DrawText)
+#undef DrawText
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -29,6 +33,7 @@ enum TextAlignment {
  * @ghidraAddress USA: 0x8028bdc0
  * @ghidraAddress EUR: 0x8028e520
  * @ghidraAddress JPN: 0x8028df70
+ * @ghidraAddress BRD3D: 0x104b0358
  */
 extern u8 g_bTextStyleBold;
 
@@ -38,6 +43,7 @@ extern u8 g_bTextStyleBold;
  * @ghidraAddress USA: 0x8028bdc4
  * @ghidraAddress EUR: 0x8028e524
  * @ghidraAddress JPN: 0x8028df74
+ * @ghidraAddress BRD3D: 0x104b035c
  */
 extern u8 g_nTextAlignment;
 
@@ -173,6 +179,7 @@ extern u8 g_aSmallFontTexture[];
  * @ghidraAddress USA: 0x802a1740
  * @ghidraAddress EUR: 0x802a3f00
  * @ghidraAddress JPN: 0x802a39a0
+ * @ghidraAddress BRD3D: 0x100a6010
  */
 extern u8 g_abHudFontCharToGlyph[];
 
@@ -200,6 +207,7 @@ extern s32 g_adwSmallFontGlyphOffsets[];
  * @ghidraAddress USA: 0x803519d0
  * @ghidraAddress EUR: 0x80353ed0
  * @ghidraAddress JPN: 0x80352b40
+ * @ghidraAddress BRD3D: 0x104b0340
  */
 extern s32 g_nTextDrawX;
 
@@ -209,6 +217,7 @@ extern s32 g_nTextDrawX;
  * @ghidraAddress USA: 0x803519d4
  * @ghidraAddress EUR: 0x80353ed4
  * @ghidraAddress JPN: 0x80352b44
+ * @ghidraAddress BRD3D: 0x104b0344
  */
 extern s32 g_nTextDrawY;
 
@@ -218,6 +227,7 @@ extern s32 g_nTextDrawY;
  * @ghidraAddress USA: 0x803519d8
  * @ghidraAddress EUR: 0x80353ed8
  * @ghidraAddress JPN: 0x80352b48
+ * @ghidraAddress BRD3D: 0x104b0348
  */
 extern s32 g_nFontSize;
 
@@ -344,6 +354,8 @@ void LoadCachedGlyphTextures(void);
  * @ghidraAddress USA: 0x8022e4e0
  * @ghidraAddress EUR: 0x8022f9f0
  * @ghidraAddress JPN: 0x8022f460
+ * @ghidraAddress BRD3D: 0x10018590
+ * @stub{BRD3D}
  */
 void RenderTextToDisplayList(const char *text);
 
@@ -380,6 +392,7 @@ void DisableTextShadow(void);
  * @ghidraAddress USA: 0x8022f4f8
  * @ghidraAddress EUR: 0x80230a08
  * @ghidraAddress JPN: 0x80230728
+ * @ghidraAddress BRD3D: 0x10019260
  */
 void SetTextStyleNormal(void);
 
@@ -389,6 +402,7 @@ void SetTextStyleNormal(void);
  * @ghidraAddress USA: 0x8022f504
  * @ghidraAddress EUR: 0x80230a14
  * @ghidraAddress JPN: 0x80230734
+ * @ghidraAddress BRD3D: 0x10019270
  */
 void SetTextAlignCenter(void);
 
@@ -445,6 +459,7 @@ void SetTextGradientColorsFromBytes(const u8 *color, const u8 *color2);
  * @ghidraAddress JPN: 0x80230800
  * @ghidraAddress BRD3D: 0x100192f0
  * @ghidraAddress BRGlide: 0x100168b0
+ * @stub{BRGlide}
  */
 void SetTextSize(s32 size);
 
@@ -459,6 +474,7 @@ void SetTextSize(s32 size);
  * @ghidraAddress JPN: 0x8023080c
  * @ghidraAddress BRD3D: 0x10019300
  * @ghidraAddress BRGlide: 0x100168c0
+ * @stub{BRGlide}
  */
 void DrawText(const char *text, s32 x, s32 y);
 
@@ -485,6 +501,7 @@ void DrawHudLabelAtFraction(const char *text, f32 x, f32 y, s32 unused);
  * @ghidraAddress USA: 0x8022f720
  * @ghidraAddress EUR: 0x80230c30
  * @ghidraAddress JPN: 0x80230950
+ * @ghidraAddress BRD3D: 0x100193c0
  */
 s32 MeasureTextWidth(const char *text, s32 size);
 

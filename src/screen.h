@@ -16,6 +16,16 @@ extern "C" {
 typedef void (*ScreenCallback)(void);
 
 /**
+ * The shift from the size of the frame to the size of the frame buffer, 1 in high resolution.
+ *
+ * @ghidraAddress USA: 0x8028a850
+ * @ghidraAddress EUR: 0x8028ca50
+ * @ghidraAddress JPN: 0x8028c520
+ * @ghidraAddress BRD3D: 0x106c65e4
+ */
+extern s32 g_dwScreenScaleShift;
+
+/**
  * The size of the frame in pixels.
  *
  * @ghidraAddress USA: 0x8028aab0
