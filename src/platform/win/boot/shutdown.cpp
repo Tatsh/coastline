@@ -21,7 +21,7 @@ void ShutdownApplication(int nExitCode) {
         g_pActiveMenuScreen->bRunning = false;
         g_pActiveMenuScreen->ShutdownFrontEnd(false);
     }
-    FreeAllTrackSectorBuffers();
+    FreeAllRacerColorPanels();
     InvalidateFrameSnapshotSlots();
     if (g_pfnRenderBackendShutdown != nullptr) {
         g_pfnRenderBackendShutdown();

@@ -5,7 +5,15 @@
 #include "platform/win/render.h"
 #include "platform/win/settings.h"
 #include "platform/win/snapshot.h"
+#include "racerslot.h"
 #include "text.h"
+#include "vehiclecount.h"
+
+void FreeAllRacerColorPanels(void) {
+    for (s32 index = 0; index < g_dwNumVehicles; index++) {
+        g_aRacerSlots[index].FreeEnemyCarColorPanels();
+    }
+}
 
 [[noreturn]] void ShowFatalErrorScreen(const char *pszMessage) {
     GbiCommand commands[0x1000];

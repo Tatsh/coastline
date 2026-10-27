@@ -26,6 +26,7 @@ add_library(
   netstream.cpp
   paintshop.c
   podarchive.cpp
+  racerslot.cpp
   racesound.cpp
   render.cpp
   season.cpp

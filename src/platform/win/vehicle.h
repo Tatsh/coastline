@@ -2,6 +2,7 @@
 
 #include "playerinput.h"
 #include "profile.h"
+#include "racerslot.h"
 #include "rigidbody.h"
 #include "types.h"
 #include "vehiclemodel.h"

@@ -253,11 +253,11 @@ void ShowGlideSplashImage(const char *pszPath, int nUnknown);
 #endif
 
 /**
- * Free the buffers of the sectors of the track.
+ * Free the colour buffers of each racer.
  *
  * @ghidraAddress BRD3D: 0x1002c4a0
  */
-void FreeAllTrackSectorBuffers(void);
+void FreeAllRacerColorPanels(void);
 
 class DirectDrawRenderer;
 
