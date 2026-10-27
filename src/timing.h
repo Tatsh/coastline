@@ -166,6 +166,7 @@ void SaveClockForPause(void);
  * @ghidraAddress USA: 0x8022af64
  * @ghidraAddress EUR: 0x8022c310
  * @ghidraAddress JPN: 0x8022bac8
+ * @ghidraAddress BRD3D: 0x100679a0
  */
 void RestoreClockAfterPause(void);
 

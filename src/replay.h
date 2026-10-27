@@ -12,6 +12,10 @@
 #include "rle.h"
 #include "vehicle.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /**
  * The recorded input of the ghost. A Controller Pak or the cartridge fills it.
  *
@@ -122,6 +126,7 @@ typedef struct {
  * @ghidraAddress USA: 0x8028bb0c
  * @ghidraAddress EUR: 0x8028ddc0
  * @ghidraAddress JPN: 0x8028d7f0
+ * @ghidraAddress BRD3D: 0x100b39b0
  */
 extern SaveField g_aRaceSnapshotFields[];
 
@@ -131,6 +136,7 @@ extern SaveField g_aRaceSnapshotFields[];
  * @ghidraAddress USA: 0x8028bbc4
  * @ghidraAddress EUR: 0x8028de78
  * @ghidraAddress JPN: 0x8028d8a8
+ * @ghidraAddress BRD3D: 0x100b3a68
  */
 extern SaveField g_aPausedClockFields[];
 
@@ -143,10 +149,12 @@ extern SaveField g_aPausedClockFields[];
  * @ghidraAddress USA: 0x8034e570
  * @ghidraAddress EUR: 0x80326800
  * @ghidraAddress JPN: 0x80325430
+ * @ghidraAddress BRD3D: 0x10af9848
  */
 extern u8 g_abPausedClockState[PAUSED_CLOCK_STATE_SIZE];
 
-#if TGR_REGION == TGR_REGION_JP || TGR_REGION == TGR_REGION_EU
+#if TGR_PLATFORM != TGR_PLATFORM_WIN && \
+    (TGR_REGION == TGR_REGION_JP || TGR_REGION == TGR_REGION_EU)
 /**
  * Copy the variables of a list one after another into a buffer, and report when they overflow it.
  *
@@ -179,6 +187,7 @@ s32 DeserializeSaveData(SaveField *fields, u8 *buffer, s32 offset);
  * @param buffer The buffer.
  * @param capacity The bytes the buffer holds.
  * @ghidraAddress USA: 0x8022adcc
+ * @ghidraAddress BRD3D: 0x10067880
  */
 void SerializeSaveData(SaveField *fields, u8 *buffer, s32 capacity);
 
@@ -188,6 +197,7 @@ void SerializeSaveData(SaveField *fields, u8 *buffer, s32 capacity);
  * @param fields The list of variables.
  * @param buffer The buffer.
  * @ghidraAddress USA: 0x8022ae70
+ * @ghidraAddress BRD3D: 0x10067900
  */
 void DeserializeSaveData(SaveField *fields, u8 *buffer);
 #endif
@@ -199,6 +209,7 @@ void DeserializeSaveData(SaveField *fields, u8 *buffer);
  * @ghidraAddress USA: 0x8022aed8
  * @ghidraAddress EUR: 0x8022c274
  * @ghidraAddress JPN: 0x8022ba2c
+ * @ghidraAddress BRD3D: 0x10067940
  */
 void SaveRaceSnapshot(LastLapBuffer *buffer);
 
@@ -209,6 +220,7 @@ void SaveRaceSnapshot(LastLapBuffer *buffer);
  * @ghidraAddress USA: 0x8022af08
  * @ghidraAddress EUR: 0x8022c2ac
  * @ghidraAddress JPN: 0x8022ba64
+ * @ghidraAddress BRD3D: 0x10067960
  */
 void RestoreRaceSnapshot(LastLapBuffer *buffer);
 
@@ -260,6 +272,10 @@ extern SaveField g_aReplayKeyframeDescTable3[];
  * @ghidraAddress JPN: 0x8022baf8
  */
 void RestoreReplayKeyframeState(void);
+#endif
+
+#ifdef __cplusplus
+}
 #endif
 
 #endif
