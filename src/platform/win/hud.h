@@ -24,6 +24,14 @@ extern const char *g_pszDebugOverlayMessage;
 extern float g_fDebugOverlayMessageTimer;
 
 /**
+ * Draw the current debug message inside the selected viewport unless fading out.
+ *
+ * @param viewports The viewport array.
+ * @ghidraAddress BRD3D: 0x10017690
+ */
+extern "C" void DrawDebugOverlayBanner(const ViewportRect *viewports);
+
+/**
  * Count down the time of the message of the debug overlay by the time of the last frame, and clear
  * the message when the time runs out.
  *
