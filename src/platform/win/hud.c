@@ -20,7 +20,7 @@ void DrawDebugOverlayBanner(const ViewportRect *viewports) {
     s32 y = (s32)((u32)viewport->y + (u32)(viewport->height / 3) + 24);
 
     SetTextAlignCenter();
-    if (g_pszDebugOverlayMessage != nullptr) {
+    if (g_pszDebugOverlayMessage != NULL) {
         SetTextSize(size);
         DrawText(g_pszDebugOverlayMessage, x, (s32)((u32)y + lineHeight * 3 / 16));
     }
@@ -33,6 +33,6 @@ void TickDebugOverlayMessageTimer(void) {
     g_fDebugOverlayMessageTimer -= g_fFrameDeltaTime;
     if (g_fDebugOverlayMessageTimer <= 0.0f) {
         g_fDebugOverlayMessageTimer = 0.0f;
-        g_pszDebugOverlayMessage = nullptr;
+        g_pszDebugOverlayMessage = NULL;
     }
 }

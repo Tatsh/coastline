@@ -5,7 +5,11 @@
  * The strings of the language resource library, loaded into a table by identifier.
  */
 
-#include <cstddef>
+#include <stddef.h>
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /** The number of strings of the language resource library, numbered from 1. */
 #define STRING_RESOURCE_COUNT 302
@@ -64,3 +68,6 @@ char *GetStringResource(unsigned nResourceId);
  * @ghidraAddress BRD3D: 0x10074050
  */
 void FreeStringTable(void);
+#ifdef __cplusplus
+}
+#endif

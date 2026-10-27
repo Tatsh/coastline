@@ -1,6 +1,6 @@
 #include "platform/win/particlesnapshot.h"
 
-#include <cstring>
+#include <string.h>
 
 void LoadParticleListHeads(const ParticleSnapshot *snapshot) {
     g_pParticleListData = snapshot->particles;
@@ -14,5 +14,5 @@ void SnapshotParticleState(ParticleSnapshot *snapshot) {
     snapshot->exhaustListHead = g_wExhaustParticleListHead;
     snapshot->tireSmokeListHead = g_wTireSmokeListHead;
     snapshot->pavedTireSmokeListHead = g_wPavedTireSmokeListHead;
-    std::memcpy(snapshot->particles, g_aParticlePool, sizeof(snapshot->particles));
+    memcpy(snapshot->particles, g_aParticlePool, sizeof(snapshot->particles));
 }

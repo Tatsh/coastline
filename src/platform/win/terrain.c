@@ -12,22 +12,21 @@ float RaycastTerrainHeight(Vec3f *position) {
         if (!(distance > -2.0) || !(distance < 2.0)) {
             continue;
         }
-        long double facing = static_cast<long double>(triangle->normal.z) * -1.0f;
-        float roundedFacing = static_cast<float>(facing);
+        long double facing = (long double)triangle->normal.z * -1.0f;
+        float roundedFacing = (float)facing;
         if (!((facing < 0.0f ? -facing : facing) > 0.001)) {
             continue;
         }
-        long double plane = (static_cast<long double>(triangle->normal.x) * position->x +
-                             static_cast<long double>(triangle->normal.z) * position->z) +
-                            static_cast<long double>(triangle->normal.y) * position->y +
-                            triangle->planeOffset;
+        long double plane = ((long double)triangle->normal.x * position->x +
+                             (long double)triangle->normal.z * position->z) +
+                            (long double)triangle->normal.y * position->y + triangle->planeOffset;
         distance = -(plane / roundedFacing);
-        float roundedDistance = static_cast<float>(distance);
+        float roundedDistance = (float)distance;
         Vec3f hit;
         hit.x = 0.0f + position->x;
         hit.y = position->y + 0.0f;
         // The intersection uses the quotient before its float store.
-        hit.z = static_cast<float>(distance * -1.0f + position->z);
+        hit.z = (float)(distance * -1.0f + position->z);
         if (!(roundedDistance > -2.0) || !(roundedDistance < 2.0) || !(roundedDistance < nearest) ||
             !(triangle->normal.z > 0.2)) {
             continue;

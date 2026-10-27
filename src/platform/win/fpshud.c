@@ -8,14 +8,12 @@
 
 #undef DrawText
 
-namespace {
 /** @ghidraAddress BRD3D: 0x100a6cf0 */
 /* The original updates the game rate but draws only the renderer rate. */
-[[maybe_unused, gnu::used]] float g_fGameFrameRate = 30.0f;
+[[maybe_unused, gnu::used]] static float g_fGameFrameRate = 30.0f;
 
 /** @ghidraAddress BRD3D: 0x100a6cf4 */
-float g_fRenderFrameRate = 30.0f;
-} // namespace
+static float g_fRenderFrameRate = 30.0f;
 
 s32 g_bShowFpsCounter;
 

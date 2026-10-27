@@ -1,6 +1,12 @@
 #pragma once
 
-#include "vehicle.h"
+#include <render.h>
+
+#include "vehiclefwd.h"
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /**
  * @file
@@ -29,7 +35,7 @@ extern float g_fDebugOverlayMessageTimer;
  * @param viewports The viewport array.
  * @ghidraAddress BRD3D: 0x10017690
  */
-extern "C" void DrawDebugOverlayBanner(const ViewportRect *viewports);
+void DrawDebugOverlayBanner(const ViewportRect *viewports);
 
 /**
  * Count down the time of the message of the debug overlay by the time of the last frame, and clear
@@ -48,7 +54,7 @@ void TickDebugOverlayMessageTimer(void);
  * @return The distance gap divided by speed, zero for an equal distance, or 1000 at zero speed.
  * @ghidraAddress BRD3D: 0x10017cd0
  */
-extern "C" long double ComputeTimeGapToLeader(const Vehicle *vehicles, int index);
+long double ComputeTimeGapToLeader(const Vehicle *vehicles, int index);
 
 /**
  * The shared buffer for the gap prefix and formatted time.
@@ -65,4 +71,7 @@ extern char g_szGapToLeaderText[];
  * @return The shared gap text buffer.
  * @ghidraAddress BRD3D: 0x10017c80
  */
-extern "C" char *FormatGapToLeaderString(const Vehicle *vehicles, int index);
+char *FormatGapToLeaderString(const Vehicle *vehicles, int index);
+#ifdef __cplusplus
+}
+#endif

@@ -1,7 +1,7 @@
 #include "platform/win/boot/strings.h"
 
-#include <cstdlib>
-#include <cstring>
+#include <stdlib.h>
+#include <string.h>
 
 #include <windows.h>
 
@@ -21,7 +21,7 @@ void LoadStringTableFromDll(void) {
     int nLength;
 
     memset(&g_apszStringResourceTable[1], 0, STRING_RESOURCE_COUNT * sizeof(char *));
-    if (g_pStringTableBuffer != nullptr) {
+    if (g_pStringTableBuffer != NULL) {
         return;
     }
     // The strings take less room than the library that includes them.
@@ -29,11 +29,11 @@ void LoadStringTableFromDll(void) {
     g_dwStringTableBufferSize = GetFileLength(pFile);
     CHK_FClose(pFile);
     hLibrary = LoadLibraryA(STRING_LIBRARY);
-    if (hLibrary == nullptr) {
+    if (hLibrary == NULL) {
         return;
     }
-    g_pStringTableBuffer = static_cast<char *>(malloc(g_dwStringTableBufferSize));
-    if (g_pStringTableBuffer != nullptr) {
+    g_pStringTableBuffer = malloc(g_dwStringTableBufferSize);
+    if (g_pStringTableBuffer != NULL) {
         for (unsigned nId = 1; nId <= STRING_RESOURCE_COUNT; nId++) {
             nLength = LoadStringA(hLibrary,
                                   nId,
@@ -50,18 +50,18 @@ void LoadStringTableFromDll(void) {
 
 char *GetStringResource(unsigned nResourceId) {
     if (nResourceId < 1 || nResourceId > STRING_RESOURCE_COUNT) {
-        return nullptr;
+        return NULL;
     }
     return g_apszStringResourceTable[nResourceId];
 }
 
 void FreeStringTable(void) {
-    if (g_pStringTableBuffer == nullptr) {
+    if (g_pStringTableBuffer == NULL) {
         return;
     }
     // The entries of the table still point into the freed buffer.
     free(g_pStringTableBuffer);
-    g_pStringTableBuffer = nullptr;
+    g_pStringTableBuffer = NULL;
     g_dwStringTableUsedBytes = 0;
     g_dwStringTableBufferSize = 0;
 }

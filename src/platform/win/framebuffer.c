@@ -1,4 +1,5 @@
 #include <render.h>
+
 #include "system.h"
 
 // The Windows backend clears buffers outside these compatibility entry points.

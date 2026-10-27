@@ -11,7 +11,7 @@ add_library(
   boot/gamestate.cpp
   boot/rallyconfig.cpp
   boot/startup.cpp
-  boot/strings.cpp
+  boot/strings.c
   configfile.cpp
   directplay.cpp
   displaylist.cpp
@@ -19,20 +19,20 @@ add_library(
   earsound.cpp
   fileio.c
   frametimer.cpp
-  framebuffer.cpp
-  fpshud.cpp
+  framebuffer.c
+  fpshud.c
   frontend.cpp
   gameinit.cpp
   ghost.cpp
   hudlaplist.cpp
-  hudquad.cpp
-  hud.cpp
+  hudquad.c
+  hud.c
   input.cpp
   menufont.cpp
   modelrelocation.cpp
   netstream.cpp
   paintshop.c
-  particlesnapshot.cpp
+  particlesnapshot.c
   podarchive.cpp
   racercolor.cpp
   racerslot.cpp
@@ -41,7 +41,7 @@ add_library(
   season.cpp
   snapshot.c
   sound.cpp
-  terrain.cpp
+  terrain.c
   texturescan.cpp
   trackanimation.cpp
   trackload.cpp
