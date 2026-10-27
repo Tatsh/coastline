@@ -571,28 +571,6 @@ void SetupFog(void) {
     gDPSetFogColor(gDisplayListPtr++, g_bFogR, g_bFogG, g_bFogB, 0xFF);
 }
 
-f32 ComputeFogFactorAtPoint(Vec3f *point) {
-    f32 depth;
-    f32 clip[4];
-    f32 fog;
-
-    if (!g_dwWeatherActive) {
-        return 0.0f;
-    }
-    Vec3fTransformByMatrix(clip, point, g_afViewProjMatrix);
-    depth = clip[2];
-    depth /= clip[3];
-    /* The cast is redundant, and the original compiles with the depth as the first factor. */
-    fog = ((f32)depth * g_dwFogFactorScale + g_dwFogFactorOffset) * (1.0 / 255.0);
-    if (fog < 0.0f) {
-        return 0.0f;
-    }
-    if (1.0f < fog) {
-        return 1.0f;
-    }
-    return fog;
-}
-
 void SetupWeatherLights(void) {
     s32 i;
 

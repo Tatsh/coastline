@@ -253,6 +253,7 @@ extern s32 g_dwViewportTransZ;
  * @ghidraAddress USA: 0x8031aa50
  * @ghidraAddress EUR: 0x8031cf50
  * @ghidraAddress JPN: 0x8031bb80
+ * @ghidraAddress BRD3D: 0x106c29a8
  */
 extern f32 g_afViewProjMatrix[4][4];
 
@@ -545,6 +546,7 @@ extern s32 g_dwFogMaxDistance;
  * @ghidraAddress USA: 0x8028ab38
  * @ghidraAddress EUR: 0x8028cd40
  * @ghidraAddress JPN: 0x8028c810
+ * @ghidraAddress BRD3D: 0x106c1618
  */
 extern s32 g_dwFogFactorOffset;
 
@@ -552,6 +554,7 @@ extern s32 g_dwFogFactorOffset;
  * @ghidraAddress USA: 0x8028ab3c
  * @ghidraAddress EUR: 0x8028cd44
  * @ghidraAddress JPN: 0x8028c814
+ * @ghidraAddress BRD3D: 0x106c2cf4
  */
 extern s32 g_dwFogFactorScale;
 
@@ -655,6 +658,9 @@ void NormalizeLightMatrix(f32 m[4][4]);
  */
 void DrawTexturedTile(s32 index, ModelTexture *textures);
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 /**
  * How thick the fog is at a point of the world, in the view being drawn.
  *
@@ -663,8 +669,12 @@ void DrawTexturedTile(s32 index, ModelTexture *textures);
  * @ghidraAddress USA: 0x80218c8c
  * @ghidraAddress EUR: 0x80219cac
  * @ghidraAddress JPN: 0x802195fc
+ * @ghidraAddress BRD3D: 0x10031d3f
  */
 f32 ComputeFogFactorAtPoint(Vec3f *point);
+#ifdef __cplusplus
+}
+#endif
 
 /**
  * The largest absolute value of the first three rows of a matrix.
