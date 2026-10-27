@@ -1556,3 +1556,10 @@ unsigned IsTrackSelectable(int nTrack);
  * @ghidraAddress BRD3D: 0x1003e510
  */
 void ResolveRaceSelections(void);
+
+/**
+ * Reset menu selections, championship profiles, and result display values.
+ *
+ * @ghidraAddress BRD3D: 0x1003e680
+ */
+void ResetMenuSelectionsToDefaults(void);

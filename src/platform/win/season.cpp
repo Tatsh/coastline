@@ -7,6 +7,7 @@
 
 #include "game.h"
 #include "platform/win/boot/rallyconfig.h"
+#include "platform/win/configfile.h"
 #include "platform/win/frontend.h"
 #include "platform/win/ghost.h"
 #include "platform/win/settings.h"
@@ -40,7 +41,11 @@ char g_szSeasonRoundLabel[SEASON_ROUND_LABEL_SIZE];
 int g_dwSeasonSavedRound;
 int g_dwLastRaceResultField18;
 int g_dwSeasonTotalPoints;
-int g_SeasonProgressPrev_Class;
+PlayerProfile g_SeasonProgressPrev;
+int g_dwUnusedSeasonMenuValue;
+int g_dwRaceResultsSelectedLap;
+int g_dwLoadSeasonSlotValid;
+int g_dwSeasonLoaded;
 int g_dwSeasonFailed;
 int g_dwSeasonRoundQualified;
 const char g_szSeasonSaveMagic[4] = {'R', 'S', 'e', 'a'};
@@ -114,7 +119,7 @@ bool RestoreSeasonProgressState(void) {
         g_SeasonResumeState.state) {
         return true;
     }
-    u8 nPreviousClass = static_cast<u8>(g_SeasonProgressPrev_Class);
+    u8 nPreviousClass = g_SeasonProgressPrev.season;
     if (g_SeasonProgress.season <= nPreviousClass &&
         (g_SeasonProgress.season != 0 || nPreviousClass == 0)) {
         g_dwGameMode = GAME_MODE_CHAMPIONSHIP;
@@ -252,6 +257,53 @@ bool SaveSeasonSaveFile(void) {
     }
     fclose(pFile);
     return true;
+}
+
+void LoadAutoSaveSeason(void) {
+    g_dwGameMode = GAME_MODE_CHAMPIONSHIP;
+    ResetMenuSelectionsToDefaults();
+    g_dwSaveSlotPlayerIndex = 0;
+    strcpy(g_szSeasonYearLabel, "");
+    strcpy(g_szSeasonRoundLabel, "");
+    char fileName[260];
+    strcpy(fileName, g_szAutoSaveBrf);
+    FILE *file = fopen(fileName, "rb");
+    if (!file) {
+        return;
+    }
+    fclose(file);
+    strcpy(g_szSeasonSaveFileName, fileName);
+    if (!LoadConfigData(CONFIG_LOAD_SEASON_FILE, true)) {
+        ShowErrorMessage(7);
+    }
+    g_SeasonProgress = *g_pPrimarySeasonSave;
+    g_dwLoadSeasonSlotValid = true;
+    const int year = g_pPrimarySeasonSave->championshipFlags;
+    const int round = g_pPrimarySeasonSave->round;
+    g_dwSeasonYear = year;
+    g_dwSeasonSavedRound = round;
+    g_dwSeasonRound = round;
+    g_bSeasonClass = g_pPrimarySeasonSave->season;
+    g_dwSelectedTransmission = g_LoadedSeasonSettings.transmission;
+    g_dwTireMenuIndex = g_LoadedSeasonSettings.tires;
+    g_dwSuspensionMenuIndex = g_LoadedSeasonSettings.suspension;
+    g_dwCarMenuIndex = g_LoadedSeasonSettings.car;
+    g_dwHandlingTypeMenuIndex = g_LoadedSeasonSettings.handling;
+    g_dwSeasonLoaded = true;
+    BackupMenuSelections();
+    ResolveRaceSelections();
+    g_dwSeasonTotalPoints = CurrentSeasonPoints();
+    memcpy(g_abSeasonRoundPlace,
+           g_SeasonProgress.seasonPlaces[g_bSeasonClass],
+           sizeof(g_abSeasonRoundPlace));
+    for (int race = 0; race < g_dwSeasonRound; ++race) {
+        ++g_abSeasonRoundPlace[race];
+    }
+    memcpy(g_awSeasonRoundPoints,
+           g_SeasonProgress.seasonRacePoints[g_bSeasonClass],
+           sizeof(g_awSeasonRoundPoints));
+    sprintf(g_szSeasonYearLabel, "%d", year + 1);
+    sprintf(g_szSeasonRoundLabel, "%d", round + 1);
 }
 
 void SaveAutoSaveSeason(void) {

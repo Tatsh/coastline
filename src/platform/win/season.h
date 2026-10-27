@@ -92,11 +92,32 @@ extern int g_dwLastRaceResultField18;
 extern int g_dwSeasonTotalPoints;
 
 /**
- * The class before the race's progress was applied.
+ * The profile before the race's progress was applied.
  *
- * @ghidraAddress BRD3D: 0x10a9dbdc
+ * @ghidraAddress BRD3D: 0x10a9dbd8
  */
-extern int g_SeasonProgressPrev_Class;
+extern PlayerProfile g_SeasonProgressPrev;
+
+/**
+ * An unused value reset with championship menus.
+ *
+ * @ghidraAddress BRD3D: 0x10aa28bc
+ */
+extern int g_dwUnusedSeasonMenuValue;
+
+/**
+ * The lap selected on race result menus.
+ *
+ * @ghidraAddress BRD3D: 0x10aa28d0
+ */
+extern int g_dwRaceResultsSelectedLap;
+
+/**
+ * Whether a saved championship slot has been opened.
+ *
+ * @ghidraAddress BRD3D: 0x10aa28e0
+ */
+extern int g_dwLoadSeasonSlotValid;
 
 /**
  * Whether the front end reports a failed season.
@@ -308,3 +329,10 @@ bool RestoreSeasonProgressState(void);
  * @ghidraAddress BRGlide: 0x1003b0b0
  */
 void SaveAutoSaveSeason(void);
+
+/**
+ * Reset championship menus and restore the automatic save when its file exists.
+ *
+ * @ghidraAddress BRD3D: 0x10041bd0
+ */
+void LoadAutoSaveSeason(void);

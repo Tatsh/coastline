@@ -13,6 +13,7 @@
 #include "platform/win/boot/rallyconfig.h"
 #include "platform/win/boot/strings.h"
 #include "platform/win/directplay.h"
+#include "platform/win/ghost.h"
 #include "platform/win/input.h"
 #include "platform/win/season.h"
 #include "platform/win/settings.h"
@@ -901,6 +902,42 @@ void ResolveRaceSelections(void) {
         g_dwChosenWeather = race[1];
     }
     SyncSeasonProgress();
+}
+
+void ResetMenuSelectionsToDefaults(void) {
+    memset(g_awSeasonRoundPoints, 0, sizeof(g_awSeasonRoundPoints));
+    g_dwTrackMenuIndex = 2;
+    g_dwSelectedWeather = 0;
+    g_dwSelectedTransmission = 0;
+    g_dwTireMenuIndex = 1;
+    g_dwSuspensionMenuIndex = 1;
+    g_dwCarMenuIndex = 1;
+    g_dwTotalLapsSetting = 3;
+    g_dwAccumUnlockedCarMask = 0;
+    g_dwAccumUnlockedTrackMask = 0;
+    g_dwSeasonYear = 0;
+    g_dwSeasonRound = 0;
+    g_dwSeasonSavedRound = 0;
+    g_dwSeasonFailed = 0;
+    g_dwSeasonRoundQualified = 0;
+    g_bSeasonClass = 0;
+    g_dwUnusedSeasonMenuValue = 0;
+    g_dwLastRaceResultField18 = 0;
+    memset(g_abSeasonRoundPlace, 0, sizeof(g_abSeasonRoundPlace));
+    g_dwSeasonTotalPoints = 0;
+    g_fGhostBestRaceTime = 0;
+    g_dwRaceResultsSelectedLap = 0;
+    g_dwSeasonLoaded = 0;
+    sprintf(g_szSeasonYearLabel, "%d", 1);
+    sprintf(g_szSeasonRoundLabel, "%d", g_dwSeasonRound + 1);
+    ResetSeasonSaveBuffers();
+    g_dwSeasonLoaded = 0;
+    memset(&g_SeasonProgress, 0, sizeof(g_SeasonProgress));
+    memset(&g_SeasonProgressPrev, 0, sizeof(g_SeasonProgressPrev));
+    memset(&g_SeasonResumeState, 0, sizeof(g_SeasonResumeState));
+    g_SeasonProgress.unlocks = 0x102;
+    g_SeasonResumeState.state = -1;
+    ResolveRaceSelections();
 }
 
 void BackupMenuSelections(void) {
