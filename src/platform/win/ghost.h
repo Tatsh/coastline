@@ -169,6 +169,13 @@ unsigned SetGhostFrameCountFromSize(unsigned dwSize);
 void ResetGhostRecording(void);
 
 /**
+ * Start ghost recording.
+ *
+ * @ghidraAddress BRD3D: 0x1006aa90
+ */
+void StartGhostRecording(void);
+
+/**
  * Fill memory with a byte.
  *
  * @param pDest The memory.

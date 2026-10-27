@@ -376,6 +376,124 @@ unsigned char IsInputBindingPressed(int nBinding);
 unsigned char IsInputBindingHeld(int nBinding);
 
 /**
+ * Poll input devices and translate active bindings into race or replay actions.
+ *
+ * @param pnSteering Receives steering outside replay and early failure paths.
+ * @param pnAcceleration Receives acceleration outside replay, pause, and early failure paths.
+ * @return Action mask, also written to g_dwInputButtonMask.
+ * @ghidraAddress BRD3D: 0x100773f0
+ */
+unsigned ReadInputDevicesButtonMask(int *pnSteering, int *pnAcceleration);
+
+/**
+ * Input poll count, saturated at 32767.
+ * @ghidraAddress BRD3D: 0x118abddc
+ */
+extern int g_dwInputPollCounter;
+
+/**
+ * Most recent race or replay action mask.
+ * @ghidraAddress BRD3D: 0x118abad0
+ */
+extern unsigned g_dwInputButtonMask;
+
+/**
+ * Mouse sensitivity index from the first vehicle setup.
+ * @ghidraAddress BRD3D: 0x10aced40
+ */
+extern int g_dwPlayerMouseSensitivity;
+
+/**
+ * Completed lap count of the first vehicle.
+ * @ghidraAddress BRD3D: 0x10acee50
+ */
+extern int g_aVehicles_LapCount;
+
+/**
+ * Whether to display the lap counter.
+ * @ghidraAddress BRD3D: 0x100bd3e8
+ */
+extern int g_bHudShowLapCounter;
+
+/**
+ * Whether to display the race timer.
+ * @ghidraAddress BRD3D: 0x100bd3ec
+ */
+extern int g_bHudShowRaceTimer;
+
+/**
+ * Whether to display lap times.
+ * @ghidraAddress BRD3D: 0x100bd3f0
+ */
+extern int g_bHudShowLapTimes;
+
+/**
+ * Whether to display the speedometer.
+ * @ghidraAddress BRD3D: 0x100bd3f4
+ */
+extern int g_bHudShowSpeedometer;
+
+/**
+ * Whether to display race position.
+ * @ghidraAddress BRD3D: 0x100bd3f8
+ */
+extern int g_bHudShowPosition;
+
+/**
+ * Whether to display network standings.
+ * @ghidraAddress BRD3D: 0x100bd3fc
+ */
+extern int g_bHudShowNetworkStandings;
+
+/**
+ * Whether to display the frame rate.
+ * @ghidraAddress BRD3D: 0x10b501d8
+ */
+extern int g_bShowFpsCounter;
+
+/**
+ * Whether to hide network standings through the P key toggle.
+ * @ghidraAddress BRD3D: 0x118abdc8
+ */
+extern int g_bHideNetStandingsHud;
+
+/**
+ * Whether the respawn binding was pressed.
+ * @ghidraAddress BRD3D: 0x118abdcc
+ */
+extern int g_bRespawnRequested;
+
+/**
+ * Whether input polling sent network readiness.
+ * @ghidraAddress BRD3D: 0x118abdc0
+ */
+extern int g_bNetReadyToStartSent;
+
+/**
+ * Whether local input requested a pause action.
+ * @ghidraAddress BRD3D: 0x1022af20
+ */
+extern int g_bNetGamePaused;
+
+/**
+ * Initial timestamp for benchmark frame rate measurement, in milliseconds.
+ * @ghidraAddress BRD3D: 0x118abd00
+ */
+extern DWORD g_dwBenchmarkStartTime;
+
+/**
+ * Initial interpolated frame count for benchmark measurement.
+ * @ghidraAddress BRD3D: 0x118abd74
+ */
+extern int g_dwBenchmarkStartFrameCount;
+
+/**
+ * Movement ranges for the eight mouse sensitivity settings.
+ * @ghidraAddress BRD3D: 0x100bd400
+ */
+extern int g_anMouseAxisRanges[8];
+
+/**
  * The two states of the keyboard, the current one and the one before.
  *
  * @ghidraAddress BRD3D: 0x118ab8b8

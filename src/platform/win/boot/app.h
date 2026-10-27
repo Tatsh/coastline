@@ -643,3 +643,12 @@ void RunMessageLoop(void);
  * @ghidraAddress BRD3D: 0x10079720
  */
 void ShutdownMainWindow(void);
+
+/**
+ * Display an error message and wait for Escape to exit the application.
+ *
+ * @param pszMessage Error message.
+ * @ghidraAddress BRD3D: 0x10008cf0
+ * @stub
+ */
+void ShowFatalErrorScreen(const char *pszMessage);

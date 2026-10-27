@@ -1,17 +1,25 @@
 #include "platform/win/input.h"
 
 #include <cstdio>
+#include <cstdlib>
 #include <cstring>
+#include <initializer_list>
 #include <new>
 
 #include <windows.h>
 
+#include "game.h"
 #include "instantreplay.h"
+#include "laps.h"
+#include "pause.h"
 #include "platform/win/boot/app.h"
 #include "platform/win/boot/rallyconfig.h"
 #include "platform/win/boot/strings.h"
+#include "platform/win/directplay.h"
 #include "platform/win/frontend.h"
+#include "platform/win/ghost.h"
 #include "platform/win/settings.h"
+#include "platform/win/snapshot.h"
 #include "platform/win/sound.h"
 #include "platform/win/timer.h"
 
@@ -150,6 +158,282 @@ unsigned char IsInputBindingPressed(int nBinding) {
         }
     }
     return result;
+}
+
+int g_dwInputPollCounter;
+unsigned g_dwInputButtonMask;
+int g_dwPlayerMouseSensitivity;
+int g_aVehicles_LapCount;
+int g_bHudShowLapCounter = 1;
+int g_bHudShowRaceTimer = 1;
+int g_bHudShowLapTimes = 1;
+int g_bHudShowSpeedometer = 1;
+int g_bHudShowPosition = 1;
+int g_bHudShowNetworkStandings = 1;
+int g_bShowFpsCounter;
+int g_bHideNetStandingsHud;
+int g_bRespawnRequested;
+int g_bNetReadyToStartSent;
+int g_bNetGamePaused;
+DWORD g_dwBenchmarkStartTime;
+int g_dwBenchmarkStartFrameCount;
+int g_anMouseAxisRanges[8] = {803, 618, 475, 366, 281, 216, 166, 128};
+
+static inline void ClampMouseAxis(LONG &axis, LONG &accumulated, int range) {
+    axis = static_cast<int>(static_cast<unsigned>(accumulated) * 128) / range;
+    if (axis < -128) {
+        axis = -128;
+        accumulated = -range;
+    } else if (axis > 128) {
+        axis = 128;
+        accumulated = range;
+    }
+}
+
+static inline void ReadMouseBindingState(void) {
+    g_dwMouseStatePrevIndex = g_dwMouseStateCurIndex;
+    g_dwMouseStateCurIndex = (g_dwMouseStateCurIndex - 1) & 1;
+    MouseInputState &state = g_aMouseStateBuffers[g_dwMouseStateCurIndex];
+    if (g_pMouseDevice == nullptr || g_pMouseDevice->pDevice == nullptr) {
+        memset(&state, 0, sizeof(state));
+        return;
+    }
+    DIMOUSESTATE mouse;
+    const HRESULT result = g_pMouseDevice->pDevice->GetDeviceState(sizeof(mouse), &mouse);
+    if (result != DI_OK) {
+        if (result == DIERR_INPUTLOST) {
+            g_pMouseDevice->pDevice->Acquire();
+        }
+        memset(state.abButtons, 0, sizeof(state.abButtons));
+        return;
+    }
+    const MouseInputState &previous = g_aMouseStateBuffers[g_dwMouseStatePrevIndex];
+    state.lAccumulatedX = previous.lAccumulatedX + mouse.lX;
+    // All three accumulators use the previous horizontal accumulator in the binary.
+    state.lAccumulatedY = previous.lAccumulatedX + mouse.lY;
+    state.lAccumulatedZ = previous.lAccumulatedX + mouse.lZ;
+    int sensitivity = g_dwPlayerMouseSensitivity;
+    if (sensitivity < 0) {
+        sensitivity = 0;
+    } else if (sensitivity > 7) {
+        sensitivity = 7;
+    }
+    const int range = g_anMouseAxisRanges[sensitivity];
+    ClampMouseAxis(state.lX, state.lAccumulatedX, range);
+    ClampMouseAxis(state.lY, state.lAccumulatedY, range);
+    ClampMouseAxis(state.lZ, state.lAccumulatedZ, range);
+    memcpy(state.abButtons, mouse.rgbButtons, sizeof(state.abButtons));
+}
+
+static inline int ReadBindingAxisMagnitude(int nBinding) {
+    const unsigned kind = g_GlobalRallyConfig.pActiveInputBindings[nBinding].wControl & 0xff00;
+    if (kind < 0x8000 || kind > 0x8b00) {
+        return -1;
+    }
+    const unsigned axis = (kind - 0x8000) >> 9;
+    const LONG value =
+        axis < 3 ?
+            GetJoystickBindingAxis(g_aJoystickStateBuffers[g_dwJoystickStateCurIndex], axis) :
+            GetMouseBindingAxis(g_aMouseStateBuffers[g_dwMouseStateCurIndex], axis - 3);
+    if (kind & 0x100) {
+        return value > 0 ? value * 80 / 128 : -1;
+    }
+    return value < 0 ? -value * 80 / 128 : -1;
+}
+
+unsigned ReadInputDevicesButtonMask(int *pnSteering, int *pnAcceleration) {
+    if (g_dwInputPollCounter < 0x7fff) {
+        ++g_dwInputPollCounter;
+    }
+    g_dwKeyboardStatePrevIndex = g_dwKeyboardStateCurIndex;
+    g_dwKeyboardStateCurIndex = (g_dwKeyboardStateCurIndex - 1) & 1;
+    unsigned char *keys = g_aabKeyboardStateBuffers[g_dwKeyboardStateCurIndex];
+    HRESULT result = g_pKeyboardDevice->GetDeviceState(KEYBOARD_KEY_COUNT, keys);
+    if (FAILED(result)) {
+        if (result != DIERR_INPUTLOST || FAILED(g_pKeyboardDevice->Acquire()) ||
+            FAILED(g_pKeyboardDevice->GetDeviceState(KEYBOARD_KEY_COUNT, keys))) {
+            g_dwInputButtonMask = 0;
+            return 0;
+        }
+    }
+    keys[0] = 0;
+    if (g_GlobalRallyConfig.dwInputDeviceType == 1 || g_GlobalRallyConfig.dwInputDeviceType == 2) {
+        g_dwJoystickStatePrevIndex = g_dwJoystickStateCurIndex;
+        g_dwJoystickStateCurIndex = (g_dwJoystickStateCurIndex - 1) & 1;
+        g_pJoystickDevice->Poll();
+        DIJOYSTATE2 &joystick = g_aJoystickStateBuffers[g_dwJoystickStateCurIndex];
+        result = g_pJoystickDevice->GetDeviceState(sizeof(joystick), &joystick);
+        if (result != DI_OK) {
+            if (result == DIERR_INPUTLOST) {
+                TryAcquireJoystickDevice();
+            }
+            memset(joystick.rgbButtons, 0, sizeof(joystick.rgbButtons));
+        }
+    }
+    ReadMouseBindingState();
+    if (IsInputBindingPressed(15)) {
+        if (!g_dwNetworkPlayMode || !g_bNetRaceStartReached || gInstantReplayActive ||
+            g_aVehicles_LapCount >= g_dwTotalLaps) {
+            g_bNetGamePaused = 1;
+            g_dwInputButtonMask = 0x4000;
+            return g_dwInputButtonMask;
+        }
+        RequestNetworkPause();
+    }
+    int *toggles[6] = {&g_bHudShowLapCounter,
+                       &g_bHudShowRaceTimer,
+                       &g_bHudShowLapTimes,
+                       &g_bHudShowSpeedometer,
+                       &g_bHudShowPosition,
+                       &g_bHudShowNetworkStandings};
+    for (int i = 0; i < 6; ++i) {
+        if (IsButtonPressedEdge(g_aabKeyboardStateBuffers[g_dwKeyboardStatePrevIndex][DIK_F5 + i],
+                                keys[DIK_F5 + i])) {
+            *toggles[i] = !*toggles[i];
+        }
+    }
+    if (IsButtonPressedEdge(g_aabKeyboardStateBuffers[g_dwKeyboardStatePrevIndex][DIK_F11],
+                            keys[DIK_F11])) {
+        SelectPreviousMusicTrack();
+    }
+    if (IsButtonPressedEdge(g_aabKeyboardStateBuffers[g_dwKeyboardStatePrevIndex][DIK_F12],
+                            keys[DIK_F12])) {
+        SelectNextMusicTrack();
+    }
+    if ((GetAsyncKeyState('F') & 1) && g_dwInputPollCounter > 15) {
+        g_bShowFpsCounter = !g_bShowFpsCounter;
+    }
+    if ((GetAsyncKeyState('P') & 1) && g_dwInputPollCounter > 15) {
+        g_bHideNetStandingsHud = !g_bHideNetStandingsHud;
+    }
+    unsigned mask = 0;
+    if (gInstantReplayActive) {
+        if (gInstantReplayActive == 2) {
+            for (int binding = 8; binding <= 10; ++binding) {
+                if (IsInputBindingPressed(binding)) {
+                    mask |= 1u << binding;
+                }
+            }
+        }
+        if (IsInputBindingPressed(11)) {
+            mask |= 0x800;
+        }
+        if (IsInputBindingPressed(21)) {
+            mask |= 0x100400;
+        }
+        for (int binding = 22; binding <= 25; ++binding) {
+            if (IsInputBindingHeld(binding)) {
+                mask |= 1u << (binding - 1);
+            }
+        }
+        if (IsInputBindingPressed(26)) {
+            mask |= 0x200000;
+        }
+        if (IsInputBindingPressed(27)) {
+            mask |= 0x400000;
+        }
+        g_dwInputButtonMask = mask;
+        return mask;
+    }
+    if (IsInputBindingPressed(16)) {
+        if (!g_dwRacePauseState && g_dwGameMode != GAME_MODE_DEMO &&
+            g_dwGameMode != GAME_MODE_AFTER_SEASON) {
+            g_bRespawnRequested = 1;
+        }
+        if (g_dwNetworkPlayMode) {
+            if (!g_bNetReadyToStartSent) {
+                SetNetworkReadyToStartFlag();
+                g_bNetReadyToStartSent = 1;
+            }
+        } else {
+            g_bNetRaceStartReached = 1;
+            if (g_dwGameMode == GAME_MODE_TIME_ATTACK) {
+                StartGhostRecording();
+            }
+        }
+    }
+    if (IsInputBindingPressed(14)) {
+        mask = 0x8000;
+    }
+    *pnSteering = 0;
+    if (g_dwGameMode != GAME_MODE_DEMO && g_dwGameMode != GAME_MODE_AFTER_SEASON) {
+        const int left = ReadBindingAxisMagnitude(0);
+        if (left >= 0) {
+            *pnSteering = -left;
+        }
+        const int right = ReadBindingAxisMagnitude(1);
+        if (right >= 0) {
+            *pnSteering = right;
+        }
+    }
+    if (g_dwRacePauseState) {
+        for (int binding : {12, 13, 0, 1, 2}) {
+            if (IsInputBindingPressed(binding)) {
+                mask |= 1u << binding;
+            }
+        }
+    } else {
+        *pnAcceleration = 0;
+        if (IsInputBindingHeld(2)) {
+            mask |= 4;
+            if (!(g_GlobalRallyConfig.pActiveInputBindings[2].wControl & 0x8000)) {
+                *pnAcceleration = 80;
+            }
+        }
+        const int acceleration = ReadBindingAxisMagnitude(2);
+        if (acceleration >= 0) {
+            *pnAcceleration = acceleration;
+        }
+        if (IsInputBindingHeld(3)) {
+            mask |= 8;
+        }
+        if (IsInputBindingHeld(4)) {
+            mask |= 16;
+            *pnAcceleration = -80;
+        }
+        if (g_dwGameMode != GAME_MODE_DEMO && g_dwGameMode != GAME_MODE_AFTER_SEASON) {
+            for (int binding : {0, 1}) {
+                if (IsInputBindingHeld(binding)) {
+                    mask |= 1u << binding;
+                }
+            }
+        }
+        for (int binding : {5, 6, 7}) {
+            if (IsInputBindingHeld(binding)) {
+                mask |= 1u << binding;
+            }
+        }
+        for (int binding : {8, 9, 10, 17, 18, 19, 20}) {
+            if (IsInputBindingPressed(binding)) {
+                mask |= 1u << (binding >= 17 ? binding - 1 : binding);
+            }
+        }
+        if (g_dwRunBenchmark) {
+            if (g_dwInputPollCounter == 1) {
+                g_dwBenchmarkStartTime = GetHighResolutionTime();
+                g_dwBenchmarkStartFrameCount = GetInterpolatedFrameCount();
+            }
+            if (g_dwInputPollCounter == 441) {
+                const DWORD now = GetHighResolutionTime();
+                const DWORD elapsed = now - g_dwBenchmarkStartTime;
+                g_dwBenchmarkStartTime = now;
+                const int frames = GetInterpolatedFrameCount() - g_dwBenchmarkStartFrameCount;
+                char message[256];
+                sprintf(message, "fps = %0.2f", frames * 1000.0 / static_cast<int>(elapsed));
+                exit(1);
+                ShowFatalErrorScreen(message);
+            }
+            GetAsyncKeyState(VK_ESCAPE);
+            if (g_dwInputPollCounter == 1) {
+                mask = 0x400;
+                g_bShowFpsCounter = 1;
+            } else {
+                mask = g_dwInputPollCounter < 60 ? 0 : 4;
+            }
+        }
+    }
+    g_dwInputButtonMask = mask;
+    return mask;
 }
 
 // The bit of a key in the state of DirectInput that is set while the key is down.
