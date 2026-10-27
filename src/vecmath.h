@@ -447,8 +447,13 @@ f32 Vec3fDistance(Vec3f *a, Vec3f *b);
  * @ghidraAddress JPN: 0x802255fc
  * @ghidraAddress BRD3D: 0x1003b130
  * @ghidraAddress BRGlide: 0x100347b0
+ * @stub{BRGlide}
  */
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+long double Vec3fDistanceSquared(Vec3f *a, Vec3f *b);
+#else
 f32 Vec3fDistanceSquared(Vec3f *a, Vec3f *b);
+#endif
 
 /**
  * The length of a vector.

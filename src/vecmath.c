@@ -404,6 +404,17 @@ f32 Vec3fDistance(Vec3f *a, Vec3f *b) {
 }
 #endif
 
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+long double Vec3fDistanceSquared(Vec3f *a, Vec3f *b) {
+    long double dx = (long double)a->x - b->x;
+    long double dy = (long double)a->y - b->y;
+    long double dz = (long double)a->z - b->z;
+    f32 roundedDx = dx;
+    f32 roundedDy = dy;
+
+    return dx * roundedDx + dy * roundedDy + dz * dz;
+}
+#else
 f32 Vec3fDistanceSquared(Vec3f *a, Vec3f *b) {
     f32 dx = a->x - b->x;
     f32 dy = a->y - b->y;
@@ -411,6 +422,7 @@ f32 Vec3fDistanceSquared(Vec3f *a, Vec3f *b) {
 
     return dx * dx + dy * dy + dz * dz;
 }
+#endif
 
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
 long double Vec3fLength(Vec3f *v) {
