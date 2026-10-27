@@ -438,6 +438,54 @@ int DetectDuplicateKeyBindings(int nDevice);
 int KeyConfigUI_PollKeyCapture(MenuWidget *pWidget);
 
 /**
+ * @ghidraAddress BRD3D: 0x10042a90
+ * @ghidraAddress BRGlide: 0x1003bff0
+ */
+int PlayerNameEntryUI_OnToggleTextEdit(MenuWidget *pWidget);
+
+/**
+ * @ghidraAddress BRD3D: 0x10042ac0
+ * @ghidraAddress BRGlide: 0x1003c020
+ */
+int ConnectionUI_OnToggleTextEdit(MenuWidget *pWidget);
+
+/**
+ * @ghidraAddress BRD3D: 0x10042b00
+ * @ghidraAddress BRGlide: 0x1003c050
+ */
+int CreateGameMenuUI_OnToggleTextEdit(MenuWidget *pWidget);
+
+/**
+ * @ghidraAddress BRD3D: 0x100409f0
+ * @ghidraAddress BRGlide: 0x10039f30
+ */
+int RaceResultsPanel_PreUpdateSelectLastRace(MenuWidget *pWidget);
+
+/**
+ * @ghidraAddress BRD3D: 0x10040a20
+ * @ghidraAddress BRGlide: 0x10039f60
+ */
+int RaceResultsPanel_PostUpdateRestoreSeasonProgress(MenuWidget *pWidget);
+
+/**
+ * @ghidraAddress BRD3D: 0x10047340
+ * @ghidraAddress BRGlide: 0x10040790
+ */
+int SeasonProgressInfoUI_OnResetRound(MenuWidget *pWidget);
+
+/**
+ * @ghidraAddress BRD3D: 0x100450f0
+ * @ghidraAddress BRGlide: 0x1003e640
+ */
+int SaveSeasonUI_InvokeBackHandler(MenuWidget *pWidget);
+
+/**
+ * @ghidraAddress BRD3D: 0x1004e810
+ * @ghidraAddress BRGlide: 0x100476c0
+ */
+int AudioOptionsUI_OnMusicTrackChanged(MenuWidget *pWidget, int *pTrack);
+
+/**
  * @ghidraAddress BRD3D: 0x10043710
  * @ghidraAddress BRGlide: 0x1003cc60
  */

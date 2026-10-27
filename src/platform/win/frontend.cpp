@@ -1814,6 +1814,58 @@ int MainMenuUI_OnPlayCredits(MenuWidget *pWidget) {
     return 0;
 }
 
+static inline int BeginMenuTextEdit(MenuWidget *pWidget) {
+    if (!g_dwMenuTextEditActive) {
+        g_dwMenuTextEditActive = 1;
+        pWidget->fonts[0].bDrawCaret = !pWidget->fonts[0].bDrawCaret;
+    }
+    return 1;
+}
+
+int PlayerNameEntryUI_OnToggleTextEdit(MenuWidget *pWidget) {
+    return BeginMenuTextEdit(pWidget);
+}
+
+int ConnectionUI_OnToggleTextEdit(MenuWidget *pWidget) {
+    return BeginMenuTextEdit(pWidget);
+}
+
+int CreateGameMenuUI_OnToggleTextEdit(MenuWidget *pWidget) {
+    return BeginMenuTextEdit(pWidget);
+}
+
+int RaceResultsPanel_PreUpdateSelectLastRace(MenuWidget *) {
+    g_dwSeasonYear = g_LastRaceResultCopy.year;
+    g_bSeasonClass = static_cast<s8>(g_LastRaceResultCopy.season);
+    g_dwSeasonRound = g_LastRaceResultCopy.round;
+    return 1;
+}
+
+int RaceResultsPanel_PostUpdateRestoreSeasonProgress(MenuWidget *) {
+    g_dwSeasonYear = g_SeasonProgress.championshipFlags;
+    g_bSeasonClass = static_cast<s8>(g_SeasonProgress.season);
+    g_dwSeasonRound = g_SeasonProgress.round;
+    return 1;
+}
+
+int SeasonProgressInfoUI_OnResetRound(MenuWidget *) {
+    memset(g_szSeasonRoundLabel, 0, sizeof(g_szSeasonRoundLabel));
+    g_dwSeasonRound = 0;
+    g_SeasonProgress.round = 0;
+    return 1;
+}
+
+int SaveSeasonUI_InvokeBackHandler(MenuWidget *pWidget) {
+    g_pSaveSeasonBackHandlerMenu->pfnAction(pWidget);
+    g_dwGameMode = GAME_MODE_CHAMPIONSHIP;
+    return 0;
+}
+
+int AudioOptionsUI_OnMusicTrackChanged(MenuWidget *, int *pTrack) {
+    SetCurrentMusicTrack(static_cast<int>(static_cast<unsigned>(*pTrack) + 2));
+    return 1;
+}
+
 int DetectDuplicateKeyBindings(int nDevice) {
     int found = 0;
     for (int i = 0; i < KEY_CONFIG_ENTRY_COUNT; i++) {

@@ -40,6 +40,7 @@ struct SeasonRaceResult {
  * The previous complete result record.
  *
  * @ghidraAddress BRD3D: 0x10aa25d0
+ * @ghidraAddress BRGlide: 0x10ac5928
  */
 extern SeasonRaceResult g_LastRaceResultCopy;
 
