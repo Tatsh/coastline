@@ -87,12 +87,7 @@ static void LeaveRace(void) {
     }
 }
 
-/* Go on to the next phase of the race. */
-static void AdvanceRacePhase(void) {
-    g_dwRacePhaseIndex++;
-    g_dwRacePhase = g_aRacePhaseTable[g_dwRacePhaseIndex].phase;
-    g_fRacePhaseTimer = g_aRacePhaseTable[g_dwRacePhaseIndex].seconds;
-}
+#include "racephaseadvance.h"
 
 void LoadAndPlayTrackBgm(void) {
     ResetMusicPlaybackState();
@@ -599,57 +594,7 @@ static s32 RunRacingPhase(void) {
     return FALSE;
 }
 
-/* Step the phases of the race. */
-static void StepRacePhases(void) {
-    s32 i;
-
-    /* The phases share the countdown of the timer and the step to the next phase. */
-    if (g_dwRacePhase < RACE_PHASE_GO) {
-        HoldBeforeStart();
-    tick:
-        if (!g_dwRacePauseState) {
-            g_fRacePhaseTimer -= g_fFrameDeltaTime;
-            if (g_fRacePhaseTimer < 0.0f) {
-            advance:
-                AdvanceRacePhase();
-            }
-        }
-    } else if (g_dwRacePhase == RACE_PHASE_GO) {
-        g_dwStartLightsAnimation = 1;
-        g_bStartLightsVisible = TRUE;
-        for (i = 0; i < g_dwNumVehicles; i++) {
-            g_aRacerSlots[i].status &= ~RACER_HELD;
-        }
-        /* The lights rise away faster and faster through the phase. */
-        g_fStartLightsDrop = (g_aRacePhaseTable[g_dwRacePhaseIndex].seconds - g_fRacePhaseTimer) /
-                             g_aRacePhaseTable[g_dwRacePhaseIndex].seconds;
-        g_fStartLightsDrop = g_fStartLightsDrop * (15.0f * g_fStartLightsDrop);
-        goto tick;
-    } else if (g_dwRacePhase == RACE_PHASE_RACING) {
-        if (RunRacingPhase()) {
-            goto advance;
-        }
-    } else if (g_dwRacePhase == RACE_PHASE_FINISHED) {
-        if ((g_dwGameMode == GAME_MODE_TIME_ATTACK || g_dwGameMode == GAME_MODE_ARCADE ||
-             g_dwGameMode == GAME_MODE_CHAMPIONSHIP) &&
-            !gInstantReplayActive) {
-            SaveRaceResultsToSlots();
-        }
-        goto advance;
-    } else if (g_dwRacePhase == RACE_PHASE_AFTER) {
-        goto tick;
-    } else if (g_dwRacePhase == RACE_PHASE_LEAVE) {
-        if (!g_dwRaceExitState) {
-            FadeSfxTo(0.0f, FADE_SECONDS);
-            if (!g_bReplayAfterRace) {
-                FadeMusicTo(0.0f, FADE_SECONDS);
-            }
-            SetFadeTarget(0.0f, FADE_SECONDS);
-            g_dwRaceExitState = TRUE;
-        }
-    }
-}
-
+#include "racephasestep.h"
 #include "racespecials.h"
 
 

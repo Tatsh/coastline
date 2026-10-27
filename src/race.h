@@ -278,6 +278,7 @@ extern CreditLine g_aCreditScrollLines[];
  * @ghidraAddress USA: 0x8027078c
  * @ghidraAddress EUR: 0x8027275c
  * @ghidraAddress JPN: 0x8027220c
+ * @ghidraAddress BRD3D: 0x106909e4
  */
 extern s32 g_bReplayAfterRace;
 
@@ -351,6 +352,7 @@ extern s32 g_dwRaceInitialized;
  * @ghidraAddress USA: 0x802707cc
  * @ghidraAddress EUR: 0x802727a0
  * @ghidraAddress JPN: 0x80272250
+ * @ghidraAddress BRD3D: 0x106909f0
  */
 extern s32 g_dwRaceExitState;
 
@@ -360,6 +362,7 @@ extern s32 g_dwRaceExitState;
  * @ghidraAddress USA: 0x802707d0
  * @ghidraAddress EUR: 0x802727a4
  * @ghidraAddress JPN: 0x80272254
+ * @ghidraAddress BRD3D: 0x100aa228
  */
 extern RacePhaseStep g_aRacePhaseTable[RACE_PHASES];
 
@@ -399,6 +402,7 @@ extern s32 g_dwStartLightsStep;
  * @ghidraAddress USA: 0x802f7ef8
  * @ghidraAddress EUR: 0x802f9bec
  * @ghidraAddress JPN: 0x802f862c
+ * @ghidraAddress BRD3D: 0x106805a8
  */
 extern s32 g_dwRacePhaseIndex;
 
