@@ -738,6 +738,12 @@ int GetLocalPlayerIndex(void);
 void TickNetworkPauseRequest(void);
 
 /**
+ * @ghidraAddress BRD3D: 0x100053f0
+ * @stub
+ */
+void MaybeSendAllPlayersReadyPacket(void);
+
+/**
  * @ghidraAddress BRD3D: 0x100046d0
  */
 int SendNetworkStreamReliable(DirectPlayInfo *pInfo, NetStream *pStream);

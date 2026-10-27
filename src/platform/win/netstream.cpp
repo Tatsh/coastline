@@ -2,11 +2,51 @@
 
 #include <cmath>
 
+#include "platform/win/directplay.h"
 #include "platform/win/ghost.h"
 #include "platform/win/settings.h"
 #include "trackselect.h"
 
 NetStream g_aNetPlayerStreams[NET_PLAYER_STREAM_COUNT];
+
+static inline float &KeyframePeakField(KeyframeState &state, int index) {
+    return index < 2 ? state.afLight[index] : state.afEffectFlags[index - 2];
+}
+
+unsigned SendLocalVehicleStateUpdate(KeyframeState *state) {
+    if (state->fProgress >= 4188888.0f && !(g_LastSentKeyframe.fProgress >= 4188888.0f)) {
+        g_LastSentKeyframe = *state;
+        return SendKeyframePacket(state);
+    }
+    g_nKeyframeAccumFrames = static_cast<int>(static_cast<unsigned>(g_nKeyframeAccumFrames) + 1u);
+    if (g_nKeyframeAccumFrames < 3) {
+        for (int i = 0; i < 7; ++i) {
+            if (!(g_afKeyframeAccumMax[i] >= KeyframePeakField(*state, i))) {
+                g_afKeyframeAccumMax[i] = KeyframePeakField(*state, i);
+            }
+        }
+        return 1;
+    }
+    for (int i = 0; i < 7; ++i) {
+        if (!(KeyframePeakField(*state, i) >= g_afKeyframeAccumMax[i])) {
+            KeyframePeakField(*state, i) = g_afKeyframeAccumMax[i];
+        }
+    }
+    g_dwVehicleStateSendCounter =
+        static_cast<int>(static_cast<unsigned>(g_dwVehicleStateSendCounter) + 1u);
+    for (float &value : g_afKeyframeAccumMax) {
+        value = 0.0f;
+    }
+    g_nKeyframeAccumFrames = 0;
+    if ((static_cast<unsigned>(g_dwVehicleStateSendCounter) & 3u) == 0) {
+        g_LastSentKeyframe = *state;
+        return SendKeyframePacket(state);
+    }
+    unsigned result = SendDeltaKeyframePacket(state, &g_LastSentKeyframe);
+    MaybeSendAllPlayersReadyPacket();
+    TickNetworkPauseRequest();
+    return result;
+}
 
 // The number of bits of a byte.
 #define BYTE_BITS 8
