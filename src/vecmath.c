@@ -293,9 +293,18 @@ f32 Vec3fDistanceSquared(Vec3f *a, Vec3f *b) {
     return dx * dx + dy * dy + dz * dz;
 }
 
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+long double Vec3fLength(Vec3f *v) {
+    f32 squared =
+        (f32)((long double)v->x * v->x + ((long double)v->y * v->y + (long double)v->z * v->z));
+
+    return sqrtl(squared);
+}
+#else
 f32 Vec3fLength(Vec3f *v) {
     return sqrtf(v->z * v->z + (v->x * v->x + v->y * v->y));
 }
+#endif
 
 f32 Vec2fLength(Vec2f *v) {
     return sqrtf(v->y * v->y + v->x * v->x);

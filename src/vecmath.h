@@ -436,7 +436,11 @@ f32 Vec3fDistanceSquared(Vec3f *a, Vec3f *b);
  * @ghidraAddress BRD3D: 0x1003b170
  * @ghidraAddress BRGlide: 0x100347f0
  */
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+long double Vec3fLength(Vec3f *v);
+#else
 f32 Vec3fLength(Vec3f *v);
+#endif
 
 /**
  * The length of a vector of the plane.

@@ -199,6 +199,7 @@ extern f32 g_fCameraProjectionScale;
  * @ghidraAddress USA: 0x8028ab0c
  * @ghidraAddress EUR: 0x8028cd14
  * @ghidraAddress JPN: 0x8028c7e4
+ * @ghidraAddress BRD3D: 0x100aa8b4
  */
 extern s32 g_dwNumViewports;
 

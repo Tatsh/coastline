@@ -27,8 +27,8 @@ void Vehicle::RespawnVehicle(void) {
     ::RespawnVehicle(this);
 }
 
-void UpdateCameraChase(Vehicle *vehicle, CameraFrame *camera, f32 share) {
-    vehicle->UpdateCameraChase(camera, share);
+void Vehicle::UpdateCameraChase(CameraFrame *camera, f32 share) {
+    ::UpdateCameraChase(this, camera, share);
 }
 
 void Vehicle::SetVehiclePosition(f32 x, f32 y, f32 z) {

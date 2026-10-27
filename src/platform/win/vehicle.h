@@ -18,8 +18,13 @@
 
 /** Recovered fields of a Windows vehicle. */
 typedef struct Vehicle {
-    f32 matrix[4][4];
-    f32 wheelMatrices[4][4][4];
+    union {
+        CameraFrame frame;
+        struct {
+            f32 matrix[4][4];
+            f32 wheelMatrices[4][4][4];
+        };
+    };
     s32 index;
     u8 abUnknown144[0x20]; /* +0x144 */
     RigidBody body;
@@ -60,7 +65,8 @@ typedef struct Vehicle {
     struct RacerSlot *racer;
     u8 abUnknownF04[0x74]; /* +0xf04 */
     s32 cameraChanged;
-    u8 abUnknownF7c[0x10]; /* +0xf7c */
+    s32 flyMode;
+    u8 abUnknownF80[0xc]; /* +0xf80 */
     struct TrackSection *section;
     s32 pointIndex;
     Vec3f trackDirection;
@@ -144,7 +150,6 @@ typedef struct Vehicle {
     void RespawnVehicle(void);
     /**
      * @ghidraAddress BRD3D: 0x100015d0
-     * @stub
      */
     void UpdateCameraChase(CameraFrame *camera, f32 share);
     /**
