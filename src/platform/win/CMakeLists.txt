@@ -36,6 +36,7 @@ add_library(
   snapshot.c
   sound.cpp
   texturescan.cpp
+  trackanimation.cpp
   timer.c
   vehicle.cpp
   vehiclesetup.cpp

@@ -513,13 +513,13 @@ void ByteSwapFourShorts(unsigned short *pData);
 void ByteSwapShortQuadArray(unsigned short *pData, int nCount);
 
 /**
- * Reverse the four bytes of each of three words.
+ * Reverse the four bytes of each component of a vector.
  *
- * @param pData The words.
+ * @param pData The vector.
  * @ghidraAddress BRD3D: 0x100383c0
  * @ghidraAddress BRGlide: 0x10018af0
  */
-void ByteSwap3DWords(unsigned char *pData);
+void ByteSwap3DWords(Vec3f *pData);
 
 /** A texture of the console that a texture of another size replaces, from the texture map. */
 struct TextureMapEntry {
@@ -570,14 +570,14 @@ extern unsigned g_dwTextureMapAddressBias;
 bool LookupTextureMapEntry(unsigned dwAddress, int *pnWidth, int *pnHeight);
 
 /**
- * Reverse the bytes of each word of a run of groups of three words.
+ * Reverse the bytes of each component of a run of vectors.
  *
- * @param pData The groups.
- * @param nCount The number of groups.
+ * @param pData The vectors.
+ * @param nCount The number of vectors.
  * @ghidraAddress BRD3D: 0x1002ba60
  * @ghidraAddress BRGlide: 0x10018ad0
  */
-void ByteSwap3DWordsArray(unsigned char *pData, int nCount);
+void ByteSwap3DWordsArray(Vec3f *pData, int nCount);
 
 /** A vertex of the pool of the clipping of shadows. The layout past the link is not recovered yet.
  */

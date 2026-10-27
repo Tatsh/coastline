@@ -344,10 +344,7 @@ void ByteSwapArray16(unsigned short *pData, int nCount) {
     }
 }
 
-// The halfwords of a group ByteSwapFourShorts() swaps, and the words of a group ByteSwap3DWords()
-// reverses.
 #define SHORT_QUAD_COUNT 4
-#define WORD_TRIPLE_COUNT 3
 
 void ByteSwapShortQuadArray(unsigned short *pData, int nCount) {
     for (int i = 0; i < nCount; i++) {
@@ -361,22 +358,23 @@ void ByteSwapFourShorts(unsigned short *pData) {
     }
 }
 
-void ByteSwap3DWordsArray(unsigned char *pData, int nCount) {
+void ByteSwap3DWordsArray(Vec3f *pData, int nCount) {
     for (int i = 0; i < nCount; i++) {
-        ByteSwap3DWords(pData + i * WORD_TRIPLE_COUNT * sizeof(unsigned));
+        ByteSwap3DWords(&pData[i]);
     }
 }
 
-void ByteSwap3DWords(unsigned char *pData) {
-    for (int i = 0; i < WORD_TRIPLE_COUNT; i++) {
-        unsigned char *pWord = pData + i * sizeof(unsigned);
-        unsigned char bByte = pWord[3];
-        pWord[3] = pWord[0];
-        pWord[0] = bByte;
-        bByte = pWord[2];
-        pWord[2] = pWord[1];
-        pWord[1] = bByte;
-    }
+static inline void ByteSwapVectorComponent(float &component) {
+    unsigned word;
+    std::memcpy(&word, &component, sizeof(word));
+    word = SwapDisplayListWord(word);
+    std::memcpy(&component, &word, sizeof(word));
+}
+
+void ByteSwap3DWords(Vec3f *pData) {
+    ByteSwapVectorComponent(pData->x);
+    ByteSwapVectorComponent(pData->y);
+    ByteSwapVectorComponent(pData->z);
 }
 
 TextureMapEntry g_aTextureMapEntries[TEXTURE_MAP_ENTRY_COUNT];
