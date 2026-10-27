@@ -80,6 +80,8 @@ extern u8 _startLightsSegmentRomEnd[];
  * @ghidraAddress USA: 0x8026ff54
  * @ghidraAddress EUR: 0x80271f24
  * @ghidraAddress JPN: 0x802719d4
+ * @ghidraAddress BRD3D: 0x10680944
+ * @ghidraAddress BRGlide: 0x105bcaec
  */
 extern Model *g_pStartLightsModel;
 
@@ -89,6 +91,8 @@ extern Model *g_pStartLightsModel;
  * @ghidraAddress USA: 0x8026ff58
  * @ghidraAddress EUR: 0x80271f28
  * @ghidraAddress JPN: 0x802719d8
+ * @ghidraAddress BRD3D: 0x106909b0
+ * @ghidraAddress BRGlide: 0x105ccb58
  */
 extern s32 g_dwStartLightsAnimation;
 
@@ -526,6 +530,8 @@ void LoadAndPlayTrackBgm(void);
  * @ghidraAddress USA: 0x8020037c
  * @ghidraAddress EUR: 0x802003ac
  * @ghidraAddress JPN: 0x8020036c
+ * @ghidraAddress BRD3D: 0x1002c2d0
+ * @ghidraAddress BRGlide: 0x10019840
  */
 void AnimateStartLights(void);
 
@@ -535,6 +541,8 @@ void AnimateStartLights(void);
  * @ghidraAddress USA: 0x802003e4
  * @ghidraAddress EUR: 0x80200414
  * @ghidraAddress JPN: 0x802003d4
+ * @ghidraAddress BRD3D: 0x1002c320
+ * @ghidraAddress BRGlide: 0x10019890
  */
 void UpdateRaceAnimations(void);
 

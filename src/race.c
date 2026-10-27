@@ -99,39 +99,6 @@ void LoadAndPlayTrackBgm(void) {
     InitMusicPlayback(g_abMenuMusicModule, g_abMusicModuleWorkBuffer);
 }
 
-/* The original saves the frame time only when the lights are held. A step that holds the lights
- * restores an uninitialised value. */
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
-void AnimateStartLights(void) {
-    f32 delta;
-
-    if (g_dwStartLightsAnimation == 0) {
-        return;
-    }
-    if (g_dwStartLightsAnimation == -1) {
-        /* Held, the lights take their first pose without moving on. */
-        delta = g_fFrameDeltaTime;
-        g_fFrameDeltaTime = 0.0f;
-    }
-    AdvanceModelAnimations(g_pStartLightsModel);
-    if (g_dwStartLightsAnimation == -1) {
-        g_fFrameDeltaTime = delta;
-    }
-}
-#pragma GCC diagnostic pop
-
-void UpdateRaceAnimations(void) {
-    if (g_dwRacePauseState) {
-        return;
-    }
-    AddTimingMarker(0, 0x80, 0x80, 0xF0, 0xFF);
-    AnimateStartLights();
-    AddTimingMarker(0, 0, 0, 0xC0, 0xFF);
-    MoveTireSpray();
-    AddTimingMarker(0, 0, 0x82, 0, 0xFF);
-}
-
 void RenderStartLights(void) {
     f32 m[4][4];
 

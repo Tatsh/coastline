@@ -9,6 +9,7 @@
 
 #include <PR/ultratypes.h>
 
+#include "tirespray.h"
 #include "vecmath.h"
 #include "vehicle.h"
 
@@ -132,16 +133,6 @@ void EmitTireSpray(Vehicle *vehicle);
  * @ghidraAddress JPN: 0x8023cb60
  */
 void DrawTireSpray(void);
-
-/**
- * Keep the spray of every racer around its vehicle, move each segment by its velocity, age the
- * segments by one when a wheel begins a new one, and fade the old.
- *
- * @ghidraAddress USA: 0x8023bf60
- * @ghidraAddress EUR: 0x8023d470
- * @ghidraAddress JPN: 0x8023cf70
- */
-void MoveTireSpray(void);
 
 /**
  * Count down to the next puff of smoke of each wheel, faster with the speed of the vehicle and the
