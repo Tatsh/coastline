@@ -208,20 +208,6 @@ private:
      */
     void SimulateVehiclePhysicsSubstep(void);
 
-    /**
-     * Assign computer vehicles to racers near this player.
-     *
-     * @ghidraAddress BRD3D: 0x10066650
-     */
-    void ManageAiRacerSlots(void);
-
-    /**
-     * Update engine, event, skid, and rolling sounds.
-     *
-     * @ghidraAddress BRD3D: 0x10068400
-     */
-    void UpdateVehicleSounds(void);
-
     /** @ghidraAddress BRD3D: 0x10063ff0 */
     s32 TraceTrackSplineRecursive(s32 depth, s32 pointIndex, TrackSection *section);
 
@@ -292,10 +278,6 @@ private:
     void InitCameraForVehicle(void);
 
     /**
-     * @ghidraAddress BRD3D: 0x100683c0
-     */
-    void ClearCameraChanged(void);
-    /**
      * @ghidraAddress BRD3D: 0x100011f0
      */
     void ResolveVehicleTrackCollision(CameraFrame *camera, Vec3f *target);
@@ -321,6 +303,25 @@ private:
     void SetVehicleTurnRate(f32 x, f32 y, f32 z);
 
 public:
+    /**
+     * @ghidraAddress BRD3D: 0x100683c0
+     */
+    void ClearCameraChanged(void);
+
+    /**
+     * Assign computer vehicles to racers near this player.
+     *
+     * @ghidraAddress BRD3D: 0x10066650
+     */
+    void ManageAiRacerSlots(void);
+
+    /**
+     * Update engine, event, skid, and rolling sounds.
+     *
+     * @ghidraAddress BRD3D: 0x10068400
+     */
+    void UpdateVehicleSounds(void);
+
     /** Apply the control options from the current input recording. */
     void SetupFromRecording(void);
     void ConfigureRaceControls(bool localPlayer);

@@ -58,18 +58,6 @@ typedef struct RacerSlot {
     s32 colorPanelCount;
 
 #ifdef __cplusplus
-    /**
-     * @ghidraAddress BRD3D: 0x10069330
-     * @ghidraAddress BRGlide: 0x100623a0
-     */
-    void UpdateRemoteVehicleFrame(void);
-
-    /**
-     * Drive the assigned vehicle or advance this racer along the route.
-     *
-     * @ghidraAddress BRD3D: 0x10068ef0
-     */
-    void UpdateRacerSlotMotion(void);
 
     /**
      * Count crossed gates and laps and update race records.
@@ -79,6 +67,19 @@ typedef struct RacerSlot {
     void UpdateRaceProgress(void);
 
 public:
+    /**
+     * Drive the assigned vehicle or advance this racer along the route.
+     *
+     * @ghidraAddress BRD3D: 0x10068ef0
+     */
+    void UpdateRacerSlotMotion(void);
+
+    /**
+     * @ghidraAddress BRD3D: 0x10069330
+     * @ghidraAddress BRGlide: 0x100623a0
+     */
+    void UpdateRemoteVehicleFrame(void);
+
     /**
      * Update the assigned vehicle after its movement and contacts for a frame.
      *
