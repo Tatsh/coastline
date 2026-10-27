@@ -1228,6 +1228,7 @@ void ModulateTextureWithIntensityPlane(const TextureImageData *pImage, unsigned 
 }
 
 unsigned g_dwTexturePixelByteCount;
+int g_bForceTextureClone;
 
 unsigned char *GetTextureImagePixels(TextureImageData *pImage) {
     if (pImage->dwFlags & 0x40) {
@@ -1283,4 +1284,25 @@ unsigned char *GetTextureImagePixels(TextureImageData *pImage) {
             ConvertRGBAToPixelFormat(pixels, pixels, pImage->nPixelBytes, pImage->nPixelFormatId);
     }
     return pixels;
+}
+
+int CloneTextureEntryWithNewImageData(int nEntry,
+                                      unsigned char *pImage,
+                                      const unsigned char *pPalette) {
+    g_bForceTextureClone = 1;
+    TextureImageData image = g_pTextureEntries[nEntry].data;
+    image.pImage = pImage;
+    image.pPalette = pPalette;
+    if (image.bOwnsPaintBuffers) {
+        image.nWidth /= 2;
+        image.nHeight /= 2;
+        image.nPixelBytes /= 4;
+        CalculateTextureLodFromDimensions(&image.nLod, image.nWidth, image.nHeight);
+        image.nLargestLod = image.nLod;
+        image.bOwnsPaintBuffers = 0;
+    }
+    unsigned char *pixels = GetTextureImagePixels(&image);
+    int entry = CreateTextureFromImage(&image, pixels);
+    g_bForceTextureClone = 0;
+    return entry;
 }

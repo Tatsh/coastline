@@ -1387,3 +1387,34 @@ void DecodeTexturePixels(unsigned char *pDest,
                          unsigned primB,
                          unsigned primA,
                          unsigned nRowSwapMask);
+
+/**
+ * Bypass texture metadata matching while creating a new device texture.
+ *
+ * @ghidraAddress BRD3D: 0x118aa09c
+ */
+extern int g_bForceTextureClone;
+
+/**
+ * Create a device texture from captured metadata and decoded pixels.
+ *
+ * @param pImage The image metadata.
+ * @param pPixels The decoded pixels.
+ * @return The registered texture entry.
+ * @ghidraAddress BRD3D: 0x10028350
+ * @stub{BRD3D}
+ */
+int CreateTextureFromImage(TextureImageData *pImage, const unsigned char *pPixels);
+
+/**
+ * Clone texture metadata with replacement image and palette bytes.
+ *
+ * @param nEntry The source texture entry.
+ * @param pImage The replacement image bytes.
+ * @param pPalette The replacement palette bytes.
+ * @return The new texture entry.
+ * @ghidraAddress BRD3D: 0x1002a350
+ */
+int CloneTextureEntryWithNewImageData(int nEntry,
+                                      unsigned char *pImage,
+                                      const unsigned char *pPalette);
