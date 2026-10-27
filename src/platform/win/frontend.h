@@ -361,6 +361,23 @@ int ReturnToVideoOptionsFromDeviceSelect(MenuWidget *pWidget);
 int ModemConnectionUI_OnAccept(MenuWidget *pWidget);
 
 /**
+ * Open cached input options, building the screen on its first visit.
+ *
+ * @ghidraAddress BRD3D: 0x100452c0
+ * @ghidraAddress BRGlide: 0x1003e810
+ */
+int ShowInputOptionsMenu(void);
+
+/**
+ * Build input options on the supplied screen.
+ *
+ * @ghidraAddress BRD3D: 0x1004c4a0
+ * @ghidraAddress BRGlide: 0x100458d0
+ * @stub
+ */
+void BuildInputOptionsUI(MenuScreen *pScreen);
+
+/**
  * @ghidraAddress BRD3D: 0x10a9d078
  * @ghidraAddress BRGlide: 0x10ac4100
  */

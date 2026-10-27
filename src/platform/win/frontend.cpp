@@ -1072,6 +1072,10 @@ static inline int ShowCachedMenuScreen(MenuScreen *&pScreen, void (*pfnBuild)(Me
     return 1;
 }
 
+int ShowInputOptionsMenu(void) {
+    return ShowCachedMenuScreen(g_pCachedMenu_Credits, BuildInputOptionsUI);
+}
+
 int IsGameCdInDrive(int nDrive) {
     char szRoot[MAX_PATH];
     char szVolume[MAX_PATH];
