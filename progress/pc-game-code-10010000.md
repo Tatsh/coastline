@@ -1,6 +1,6 @@
 # PC port game code from 0x10010000 to 0x10020000
 
-148 of 162 routines done.
+149 of 162 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -42,7 +42,7 @@ the same name, for a routine the port retained from the N64 game.
 | `SelectVertexSubmitterForCombineMode`                  |   ✅   |                 |      1 |    488 | `0x1001c820` | `0x1001e7a0` | `void SelectVertexSubmitterForCombineMode(uint dwCombineHi, uint dwCombineLo)`                                                                                                                                                               |
 | `ApplyGeometryModeChanges`                             |   ✅   |                 |      2 |    441 | `0x1001e7c0` | `0x1001fd70` | `void ApplyGeometryModeChanges(void)`                                                                                                                                                                                                        |
 | `SubmitIndexedTriangle`                                |   ✅   |                 |      1 |    439 | `0x1001e5d0` |              | `void SubmitIndexedTriangle(int nVertex0, int nVertex1, int nVertex2)`                                                                                                                                                                       |
-| `DrawSpeedAndHudOverlay`                               |        | ✅ `0x80238f30` |      1 |    401 | `0x10017d90` | `0x10015300` | `void DrawSpeedAndHudOverlay(void * pRenderNode, void * pEntityList)`                                                                                                                                                                        |
+| `DrawSpeedAndHudOverlay`                               |   ✅   | ✅ `0x80238f30` |      1 |    401 | `0x10017d90` | `0x10015300` | `void DrawSpeedAndHudOverlay(ViewportRect * viewports, Vehicle * vehicles)`                                                                                                                                                                  |
 | `RenderStartLights`                                    |        | ✅ `0x8020046c` |      1 |    383 | `0x100147b0` | `0x10011d20` | `void RenderStartLights(void)`                                                                                                                                                                                                               |
 | `ClipShadowPolygon`                                    |   ✅   |                 |      4 |    347 | `0x100109a0` |              | `void ClipShadowPolygon(ShadowClipPolygon * polygon, ShadowClipDistance * distance)`                                                                                                                                                         |
 | `ClipPolygonBottomPlane`                               |   ✅   |                 |      4 |    311 | `0x1001dc70` | `0x1001f530` | `void ClipPolygonBottomPlane(GbiClipPolygon * pPolygon)`                                                                                                                                                                                     |

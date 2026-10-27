@@ -1,6 +1,6 @@
 # PC port game code from 0x10000000 to 0x10010000
 
-234 of 254 routines done.
+235 of 254 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -51,7 +51,7 @@ the same name, for a routine the port retained from the N64 game.
 | `DirectDrawRenderer::ChangeDisplayModeAndReinitDirectDraw` |   ✅   |                 |      1 |    316 | `0x1000b390` |              | `HRESULT ChangeDisplayModeAndReinitDirectDraw(DirectDrawRenderer * this, GUID * pGuid, D3DDeviceNode * pDevice, DisplayMode * pMode)`                                                   |
 | `DirectDrawRenderer::SwitchDisplayModeAndRebuildDevice`    |   ✅   |                 |      2 |    315 | `0x1000b4d0` |              | `int SwitchDisplayModeAndRebuildDevice(DirectDrawRenderer * this, int nWidth, int nHeight, int nBitDepth, int nExtra)`                                                                  |
 | `SendPlayerJoinPacket`                                     |   ✅   |                 |      3 |    309 | `0x10004590` | `0x10004900` | `int SendPlayerJoinPacket(DirectPlayInfo * pInfo, uchar player, uchar red, uchar green, uchar blue, char * name, uchar tag)`                                                            |
-| `ProjectWorldToScreenRect`                                 |        | ✅ `0x80233e10` |      1 |    308 | `0x1000f480` | `0x1000c9e0` | `void ProjectWorldToScreenRect(int base, uint matrix, int scale, short * outA, short * outB)`                                                                                           |
+| `ProjectWorldToScreenRect`                                 |   ✅   | ✅ `0x80233e10` |      1 |    308 | `0x1000f480` | `0x1000c9e0` | `void ProjectWorldToScreenRect(ViewportRect * viewports, Vec3f * point, int size, short * low, short * high)`                                                                           |
 | `UpdateCameraLookAtTarget`                                 |        | ✅ `0x80220e84` |      1 |    302 |              | `0x10001a80` | `undefined UpdateCameraLookAtTarget()`                                                                                                                                                  |
 | `Vehicle::UpdateCameraLookAtTarget`                        |   ✅   | ✅ `0x80220e84` |      1 |    302 | `0x10001760` |              | `void UpdateCameraLookAtTarget(Vehicle * this)`                                                                                                                                         |
 | `InterpolateKeyframeState`                                 |   ✅   |                 |      5 |    291 | `0x100079e0` | `0x10007d50` | `void InterpolateKeyframeState(KeyframeState * pOut, float fShare, KeyframeState * pFrom, KeyframeState * pTo)`                                                                         |
