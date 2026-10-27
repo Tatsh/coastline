@@ -1,6 +1,6 @@
 # PC port game code from 0x10040000 to 0x10050000
 
-164 of 264 routines done.
+166 of 264 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -100,7 +100,7 @@ the same name, for a routine the port retained from the N64 game.
 | `RaceResultsTotalsUI_UpdatePointsNeededLabel`      |        |                 |      1 |    180 | `0x100417b0` | `0x1003ad10` | `undefined RaceResultsTotalsUI_UpdatePointsNeededLabel()`                                                                                                 |
 | `ToggleMenuItemTextEditA`                          |   ✅   |                 |      2 |    179 | `0x10041a00` | `0x1003af60` | `int ToggleMenuItemTextEditA(MenuWidget * pWidget)`                                                                                                       |
 | `ToggleMenuItemTextEditB`                          |   ✅   |                 |      2 |    179 | `0x10042410` | `0x1003b970` | `int ToggleMenuItemTextEditB(MenuWidget * pWidget)`                                                                                                       |
-| `InputOptionsUI_OnCycleInputDevice`                |        |                 |      1 |    178 | `0x10043400` | `0x1003c950` | `undefined InputOptionsUI_OnCycleInputDevice()`                                                                                                           |
+| `InputOptionsUI_OnCycleInputDevice`                |   ✅   |                 |      1 |    178 | `0x10043400` | `0x1003c950` | `int InputOptionsUI_OnCycleInputDevice(MenuWidget * pWidget)`                                                                                             |
 | `MultiplayerGameSetupUI_OnBackAsClient`            |   ✅   |                 |      1 |    178 | `0x10044970` | `0x1003dec0` | `int MultiplayerGameSetupUI_OnBackAsClient(MenuActionWidget * pItem)`                                                                                     |
 | `MultiplayerGameSetupUI_OnBackAsHost`              |   ✅   |                 |      1 |    170 | `0x10044a30` | `0x1003df80` | `int MultiplayerGameSetupUI_OnBackAsHost(MenuActionWidget * pItem)`                                                                                       |
 | `SeasonUI_UpdateSeasonNameLabel`                   |   ✅   |                 |      6 |    163 | `0x10041300` | `0x1003a860` | `int SeasonUI_UpdateSeasonNameLabel(MenuWidget * pWidget)`                                                                                                |
@@ -120,7 +120,7 @@ the same name, for a routine the port retained from the N64 game.
 | `LoadSeasonUI_OnBack`                              |   ✅   |                 |      1 |    146 | `0x10046e10` | `0x10040260` | `int LoadSeasonUI_OnBack(MenuActionWidget * pItem)`                                                                                                       |
 | `RestoreMenuItemTextA`                             |   ✅   |                 |      1 |    144 | `0x10041ac0` | `0x1003b020` | `int RestoreMenuItemTextA(MenuWidget * pWidget)`                                                                                                          |
 | `RestoreMenuItemTextB`                             |   ✅   |                 |      1 |    144 | `0x100424d0` | `0x1003ba30` | `int RestoreMenuItemTextB(MenuWidget * pWidget)`                                                                                                          |
-| `FindDeviceIndexByGuid`                            |        |                 |      5 |    136 | `0x10040040` | `0x10039580` | `int FindDeviceIndexByGuid(int nTableId, int dwGuid)`                                                                                                     |
+| `FindControlNameIndex`                             |   ✅   |                 |      5 |    136 | `0x10040040` | `0x10039580` | `int FindControlNameIndex(int nTable, int nCode)`                                                                                                         |
 | `OnPressAnyKeyContinue`                            |        |                 |      2 |    132 | `0x10047120` | `0x10040570` | `undefined OnPressAnyKeyContinue()`                                                                                                                       |
 | `RaceSetupUI_UpdateWeatherImage`                   |   ✅   |                 |      7 |    129 | `0x100407e0` | `0x10039d20` | `int RaceSetupUI_UpdateWeatherImage(MenuWidget * pWidget)`                                                                                                |
 | `CreateGameMenuUI_OnBack`                          |   ✅   |                 |      1 |    122 | `0x100444c0` | `0x1003da10` | `int CreateGameMenuUI_OnBack(MenuActionWidget * pItem)`                                                                                                   |

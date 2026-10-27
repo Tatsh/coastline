@@ -1,6 +1,6 @@
 # PC port game code from 0x10050000 to 0x10060000
 
-41 of 88 routines done.
+41 of 91 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -72,10 +72,12 @@ the same name, for a routine the port retained from the N64 game.
 | `MenuFont::MenuFont`                      |   ✅   |                 |      2 |     77 | `0x1005b050` | `0x10053e70` | `MenuFont * MenuFont(MenuFont * this)`                                                                                                          |
 | `MenuItemList::BlitSurfaceById`           |        |                 |      1 |     73 | `0x1005c270` | `0x10055090` | `undefined BlitSurfaceById(MenuItemList * this, undefined4 param_1, undefined4 param_2, undefined4 param_3)`                                    |
 | `RestoreMenuSurfaces`                     |   ✅   |                 |      1 |     73 | `0x1005f4e0` | `0x10001320` | `bool RestoreMenuSurfaces(void)`                                                                                                                |
+| `GetPaintJobEntryParams`                  |        |                 |      2 |     72 |              | `0x1005a020` | `undefined GetPaintJobEntryParams()`                                                                                                            |
 | `ToggleSelectedSessionSlotFlag`           |        |                 |      1 |     72 | `0x10058700` | `0x100515b0` | `undefined ToggleSelectedSessionSlotFlag()`                                                                                                     |
 | `ReleaseMenuSurfaces`                     |   ✅   |                 |      2 |     68 | `0x1005f530` | `0x10058300` | `void ReleaseMenuSurfaces(void)`                                                                                                                |
 | `MenuItemList::UpdateAndRenderMenuWidget` |        |                 |      1 |     68 | `0x1005cb40` | `0x10055960` | `undefined UpdateAndRenderMenuWidget(MenuItemList * this, undefined4 param_1)`                                                                  |
 | `UpdateKeyboardEdgeState`                 |   ✅   |                 |      3 |     67 | `0x1005ff60` | `0x10058fd0` | `void UpdateKeyboardEdgeState(void)`                                                                                                            |
+| `GetCarPaintBitmap`                       |        |                 |      4 |     63 |              | `0x10059fe0` | `undefined GetCarPaintBitmap()`                                                                                                                 |
 | `GlideDisplayModeNode::IsLessOrEqual`     |        |                 |      2 |     59 |              | `0x10058cc0` | `undefined IsLessOrEqual(GlideDisplayModeNode * this, undefined4 param_1)`                                                                      |
 | `MenuFont::DrawGlyphAltFont`              |   ✅   |                 |      1 |     59 | `0x1005b7a0` | `0x100545c0` | `int DrawGlyphAltFont(MenuFont * this, short nImage, float x, float y, int nStyle)`                                                             |
 | `UpdateMouseButtonEdges`                  |   ✅   |                 |      6 |     56 | `0x1005fff0` | `0x10059060` | `void UpdateMouseButtonEdges(void)`                                                                                                             |
@@ -95,5 +97,6 @@ the same name, for a routine the port retained from the N64 game.
 | `ReleaseMenuSurfacesAndFail`              |   ✅   |                 |      2 |     18 | `0x1005f580` | `0x10058360` | `bool ReleaseMenuSurfacesAndFail(HWND hWnd)`                                                                                                    |
 | `MenuFont::~MenuFont`                     |   ✅   |                 |      5 |      7 | `0x1005b0c0` | `0x10053ee0` | `void ~MenuFont(MenuFont * this)`                                                                                                               |
 | `SaveFileList::~SaveFileList`             |   ✅   |                 |      1 |      7 | `0x1005cc10` | `0x10055a30` | `void ~SaveFileList(SaveFileList * this)`                                                                                                       |
+| `GetCarPaintEntryValue`                   |        |                 |      3 |      6 |              | `0x1005a070` | `undefined GetCarPaintEntryValue()`                                                                                                             |
 | `MenuFont::DrawGlyphNoOp`                 |        |                 |      0 |      5 | `0x1005b7e0` | `0x10054600` | `undefined DrawGlyphNoOp(MenuFont * this, undefined4 param_1, undefined4 param_2, undefined4 param_3)`                                          |
 | `ReturnZero`                              |        |                 |      4 |      3 |              | `0x10053e60` | `undefined ReturnZero()`                                                                                                                        |
