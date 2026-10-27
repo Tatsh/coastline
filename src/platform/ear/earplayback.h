@@ -6,7 +6,7 @@
 class EarWaveSample;
 class EarPreset;
 
-class EarPlayback {
+class [[gnu::packed]] EarPlayback {
 public:
     /**
      * @ghidraAddress EAR: 0x1000a84e
@@ -20,6 +20,10 @@ public:
     int IsActive();
     /** @ghidraAddress EAR: 0x1000ad45 */
     void MarkComplete();
+    /** @ghidraAddress EAR: 0x1000ab88 */
+    int GetEarPlaybackMute();
+    /** @ghidraAddress EAR: 0x1000ab99 */
+    int IsEarPlaybackStreaming();
 
 protected:
     /**
@@ -29,6 +33,11 @@ protected:
     EarPlayback();
 
 private:
+    /** @ghidraAddress EAR: 0x1000abc0 */
+    int GetBackendPlaybackOverrideEnabled();
+    /** @ghidraAddress EAR: 0x1000ad5a */
+    int GetEarPlaybackLooping();
+
     /**
      * @ghidraAddress EAR: 0x10012570
      * @stub
@@ -44,11 +53,12 @@ private:
      * @stub
      */
     virtual void ReleaseEarPlaybackResources();
-    /**
-     * @ghidraAddress EAR: 0x10003a40
-     * @stub
-     */
+
+public:
+    /** @ghidraAddress EAR: 0x10003a40 */
     virtual void SetEarPlaybackDirectionalMatrix(std::uint16_t direction, std::uint16_t matrix);
+
+private:
     /**
      * @ghidraAddress EAR: 0x1000aa26
      * @stub
@@ -70,26 +80,18 @@ private:
      * @stub
      */
     virtual void ResetEarPlaybackSmoothingPass();
-    /**
-     * @ghidraAddress EAR: 0x10003a70
-     * @stub
-     */
+
+public:
+    /** @ghidraAddress EAR: 0x10003a70 */
     virtual void SetPlaybackSuppressionParameters(std::uint32_t enabled, std::uint16_t marker);
-    /**
-     * @ghidraAddress EAR: 0x1000ad81
-     * @stub
-     */
+    /** @ghidraAddress EAR: 0x1000ad81 */
     virtual void SetEarPlaybackStartPosition(double position);
-    /**
-     * @ghidraAddress EAR: 0x10003aa0
-     * @stub
-     */
+    /** @ghidraAddress EAR: 0x10003aa0 */
     virtual void SetEarPlaybackStartMilliseconds(std::uint16_t milliseconds);
-    /**
-     * @ghidraAddress EAR: 0x10003ac0
-     * @stub
-     */
+    /** @ghidraAddress EAR: 0x10003ac0 */
     virtual void SetReservedPlaybackEventControl(std::uint32_t control);
+
+private:
     /**
      * @ghidraAddress EAR: 0x1000aa14
      * @stub
@@ -176,31 +178,20 @@ private:
      * @stub
      */
     virtual std::uint32_t GetEarPlaybackMediaLength();
-    /**
-     * @ghidraAddress EAR: 0x1000ab3f
-     * @stub
-     */
+
+public:
+    /** @ghidraAddress EAR: 0x1000ab3f */
     virtual void SetEarPlaybackMute(int muted);
-    /**
-     * @ghidraAddress EAR: 0x1000abaa
-     * @stub
-     */
+    /** @ghidraAddress EAR: 0x1000abaa */
     virtual void SetBackendPlaybackOverrideEnabled(int enabled);
-    /**
-     * @ghidraAddress EAR: 0x1000ac36
-     * @stub
-     */
+    /** @ghidraAddress EAR: 0x1000ac36 */
     virtual void SetEarPlaybackFrequencyScale(double scale);
-    /**
-     * @ghidraAddress EAR: 0x1000abd1
-     * @stub
-     */
+    /** @ghidraAddress EAR: 0x1000abd1 */
     virtual void SetEarPlaybackBaseFrequencyScale(double scale);
-    /**
-     * @ghidraAddress EAR: 0x1000abf3
-     * @stub
-     */
+    /** @ghidraAddress EAR: 0x1000abf3 */
     virtual void SetCachedBackendPlaybackParameter(double value);
+
+private:
     /**
      * @ghidraAddress EAR: 0x10012e2b
      * @stub
@@ -216,24 +207,49 @@ private:
      * @stub
      */
     virtual int IsDirectSoundBufferStopped();
-    /**
-     * @ghidraAddress EAR: 0x1000ad6b
-     * @stub
-     */
+
+public:
+    /** @ghidraAddress EAR: 0x1000ad6b */
     virtual void SetEarPlaybackLooping(int enabled);
-    /**
-     * @ghidraAddress EAR: 0x1000adb7
-     * @stub
-     */
+    /** @ghidraAddress EAR: 0x1000adb7 */
     virtual void SetEarPlaybackNotification(std::uint32_t flags, std::uint16_t event);
 
-    std::uint8_t unknown4[0x18]; /* +0x04 */
+private:
+    [[maybe_unused]] std::uint8_t unknown4[4]; /* +0x04 */
+    std::uint32_t reservedEventControl;
+    std::uint32_t notificationFlags;
+    std::uint16_t notificationEvent;
+    [[maybe_unused]] std::uint8_t unknown12[2]; /* +0x12 */
+    int looping;
+    int streaming;
     int completionRequested;
-    std::uint8_t unknown20[4]; /* +0x20 */
+    [[maybe_unused]] std::uint8_t unknown20[4]; /* +0x20 */
     int active;
-    std::uint8_t unknown28[4]; /* +0x28 */
+    int muted;
     int status;
-    std::uint8_t unknown30[0x7c]; /* +0x30 */
+    int backendOverrideEnabled;
+    std::uint32_t suppressionEnabled;
+    int startPositionSpecified;
+    std::uint16_t suppressionMarker;
+    std::uint16_t startMilliseconds;
+    std::uint16_t matrixId;
+    std::uint16_t directionIndex;
+    [[maybe_unused]] std::uint8_t unknown44[0x20]; /* +0x44 */
+    std::uint32_t frequency;
+    std::uint32_t previousFrequency;
+    [[maybe_unused]] std::uint8_t unknown6c[0xc]; /* +0x6c */
+    double startPosition;
+    double frequencyScale;
+    double baseFrequencyScale;
+    std::uint32_t baseFrequency;
+    double cachedBackendParameter;
+    [[maybe_unused]] std::uint8_t unknown9c[0x10]; /* +0x9c */
 };
+
+/** @ghidraAddress EAR: 0x1002ea78 */
+extern const double g_earPlaybackScaleZero;
+
+/** @ghidraAddress EAR: 0x1002ea80 */
+extern const double g_earPlaybackMaximumFrequencyScale;
 
 #endif
