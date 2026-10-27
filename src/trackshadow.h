@@ -53,10 +53,9 @@ long double ShadowTextureDistanceBottom(const ConvertedModelVertex *vertex);
 void ProjectShadowTextureCoordinates(ConvertedModelVertex *vertex);
 
 /**
- * Update a shadow corner when a vertex is closer to its texture corner and below the vehicle.
+ * Update a shadow corner for a closer vertex at most one unit above the vehicle frame.
  *
  * @ghidraAddress BRD3D: 0x10010bf0
- * @stub
  */
 void UpdateShadowCornerVertex(const TrackInstance *instance,
                               ConvertedModelVertex quad[4],
