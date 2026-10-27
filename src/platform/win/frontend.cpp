@@ -1059,6 +1059,69 @@ int MenuPanel::RestoreSelection() {
     return 1;
 }
 
+bool MenuPanel::RunFrame() {
+    if (pfnBeforeWidgets) {
+        pfnBeforeWidgets();
+    }
+    if (pfnUpdate) {
+        pfnUpdate();
+    }
+    g_wMenuHoverIndexPrev = 0;
+    RestoreSelection();
+    for (int index = 0; index < wWidgetCount; ++index) {
+        MenuWidget *widget = apWidgets[index];
+        if (!widget) {
+            return false;
+        }
+        if (auto callback = widget->GetBeforeUpdateCallback(); callback && !callback(widget)) {
+            return false;
+        }
+        unsigned flags = widget->GetFlags();
+        bool update = true;
+        if (flags & 0x1000u) {
+            widget->UpdateBlinkTimer();
+            if (auto callback = widget->GetUpdateCallback()) {
+                callback(widget);
+            }
+            if (widget->GetFlags() & 0x10u) {
+                if (g_wMenuHoverIndex == g_wMenuHoverIndexPrev) {
+                    g_wMenuHoverIndex =
+                        static_cast<unsigned short>(g_wMenuHoverIndex + g_dwMouseScrollDirection);
+                    RestoreSelection();
+                }
+                ++g_wMenuHoverIndexPrev;
+            }
+            flags = widget->GetFlags();
+            update = (flags & 0x10u) != 0;
+        }
+        if (update && !(flags & 0x800u)) {
+            if (!widget->Update()) {
+                g_bSeasonRoundListBrowsing = 0;
+                return false;
+            }
+            flags = widget->GetFlags();
+            if ((flags & 0x6000u) &&
+                (pScreen->GetPanelResetWidgetIndex() == index || (flags & 0x4000u))) {
+                for (int linked = 0; linked < widget->GetLinkedWidgetCount(); ++linked) {
+                    apWidgets[widget->GetLinkedWidgetIndex(linked)]->Update();
+                }
+            }
+            if (auto callback = widget->GetAfterUpdateCallback(); callback && !callback(widget)) {
+                return false;
+            }
+            flags = widget->GetFlags();
+            if ((flags & 0x20u) && !g_dwMenuTextEditActive && (flags & 0x2000u) &&
+                pScreen->GetPanelResetWidgetIndex() != index) {
+                pScreen->ResetPanelActivation(static_cast<unsigned short>(index));
+            }
+        }
+    }
+    if (pfnAfterWidgets) {
+        pfnAfterWidgets();
+    }
+    return true;
+}
+
 static inline bool MenuBoundsIncludeCursor(const RECT &bounds, const MouseDevice *pMouse) {
     return bounds.left <= pMouse->GetCursorX() && bounds.right >= pMouse->GetCursorX() &&
            bounds.top <= pMouse->GetCursorY() && bounds.bottom >= pMouse->GetCursorY();
@@ -1434,7 +1497,7 @@ MenuScreen::MenuScreen() {
     wCurrentPanel = 0;
     pCurrentPanel = nullptr;
     bRunning = true;
-    wUnknownBC = 0;
+    wPanelResetWidgetIndex = 0;
     for (SaveFileList *&pFiles : apFiles) {
         pFiles = new (std::nothrow) SaveFileList();
         if (pFiles == nullptr) {
@@ -1569,6 +1632,12 @@ static inline void StopMenuScreen(MenuScreen *pScreen) {
     g_GlobalRallyConfig.SaveConfigToFile(g_szConfigFilePath);
     pScreen->SetCurrentPanelIndex(0);
     pScreen->ShutdownFrontEnd(false);
+}
+
+void MenuScreen::ResetPanelActivation(unsigned short widgetIndex) {
+    wPanelResetWidgetIndex = widgetIndex;
+    memset(anPanelActive, 0, sizeof(anPanelActive));
+    anPanelActive[0] = 1;
 }
 
 bool MenuScreen::RunFrame() {

@@ -377,6 +377,9 @@ public:
     short GetLinkedWidgetCount() const {
         return nLinkedWidgetCount;
     }
+    short GetLinkedWidgetIndex(int index) const {
+        return anLinkedWidgetIndices[index];
+    }
     void SetLinkedWidgetCount(short value) {
         nLinkedWidgetCount = value;
     }
@@ -404,6 +407,9 @@ public:
     void SetUpdateCallback(int (*callback)(MenuWidget *)) {
         pfnUpdate = callback;
     }
+    auto GetUpdateCallback() const {
+        return pfnUpdate;
+    }
     void SetActionCallback(int (*callback)(MenuActionWidget *)) {
         pfnAction = callback;
     }
@@ -422,8 +428,14 @@ public:
     void SetBeforeUpdateCallback(int (*callback)(MenuWidget *)) {
         pfnBeforeUpdate = callback;
     }
+    auto GetBeforeUpdateCallback() const {
+        return pfnBeforeUpdate;
+    }
     void SetAfterUpdateCallback(int (*callback)(MenuWidget *)) {
         pfnAfterUpdate = callback;
+    }
+    auto GetAfterUpdateCallback() const {
+        return pfnAfterUpdate;
     }
 
 private:
@@ -2516,6 +2528,10 @@ public:
     SaveFileList *GetFileList(int index) const {
         return apFiles[index];
     }
+    unsigned short GetPanelResetWidgetIndex() const {
+        return wPanelResetWidgetIndex;
+    }
+    void ResetPanelActivation(unsigned short widgetIndex);
 
 private:
     /**
@@ -2545,7 +2561,7 @@ private:
     int bRunning; /*!< Whether the screen runs and reads window messages. */
     /** Whether each panel of apPanels runs its items. */
     int anPanelActive[MENU_SCREEN_PANEL_COUNT];
-    unsigned short wUnknownBC; /*!< Cleared at the start. Its meaning is not recovered yet. */
+    unsigned short wPanelResetWidgetIndex;
     [[maybe_unused]] char abUnknownBE[2]; /* +0xbe */
     SaveFileList *apFiles[2];             /*!< The two lists of saved files of the screen. */
 };
