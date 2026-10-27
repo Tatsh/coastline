@@ -1862,6 +1862,19 @@ static inline int DrawAudioVolumeSlider(MenuWidget *widget, const int &volume) {
     return 1;
 }
 
+int OverwritePromptUI_DrawPromptBox(MenuWidget *widget) {
+    const MenuFont &font = widget->GetFont(0);
+    unsigned x = static_cast<unsigned>(ConvertMenuCoordinate(font.GetX())) - 3u;
+    int y = static_cast<int>(static_cast<unsigned>(ConvertMenuCoordinate(font.GetY())) - 12u);
+    unsigned segments = static_cast<unsigned>(font.GetWidth() / 16 + 1);
+    widget->BlitSurfaceById(0x3d, static_cast<int>(x - 8u), y);
+    for (unsigned index = 0; index < segments; index++) {
+        widget->BlitSurfaceById(0x3b, static_cast<int>(x + index * 16u), y);
+    }
+    widget->BlitSurfaceById(0x3c, static_cast<int>(x + segments * 16u), y);
+    return 1;
+}
+
 int DrawGameplaySliderA(MenuWidget *pWidget) {
     return DrawAudioVolumeSlider(pWidget, g_GlobalRallyConfig.dwSfxVolume);
 }

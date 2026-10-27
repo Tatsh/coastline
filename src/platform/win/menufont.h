@@ -134,6 +134,9 @@ public:
     float SetX(float value) {
         return fX = value;
     }
+    float GetX() const {
+        return fX;
+    }
     float GetY() const {
         return fY;
     }
