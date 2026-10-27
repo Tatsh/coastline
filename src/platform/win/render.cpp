@@ -4,6 +4,7 @@
 #include <cstring>
 
 #include "platform/win/boot/app.h"
+#include "platform/win/d3d/renderer.h"
 #include "platform/win/d3d/texture.h"
 #include "platform/win/displaylist.h"
 #include "platform/win/settings.h"

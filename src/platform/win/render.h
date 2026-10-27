@@ -951,10 +951,6 @@ extern unsigned g_dwFallbackEnvMapTextureId;
 unsigned DuplicateTextureEntryHalfScale(unsigned nTexture);
 
 /**
- * @ghidraAddress BRD3D: 0x11829100
- */
-extern unsigned g_adwPrecipitationTextureIds[2];
-/**
  * @ghidraAddress BRD3D: 0x11829330
  */
 extern unsigned char g_abAlphaRampRgba[16][4];
