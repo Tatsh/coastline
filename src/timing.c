@@ -30,12 +30,6 @@
 #define BOX_COLOR 0x00010001
 #define TICK_COLOR 0xFFFFFFFF
 
-/* The colour that ends each frame on every bar. */
-#define END_RED 0xFF
-#define END_GREEN 0x00
-#define END_BLUE 0xFF
-#define END_ALPHA 0x7F
-
 /* The RSP takes physical addresses, which are the KSEG0 addresses less its base. */
 #define TO_RSP_ADDRESS(p) ((u32)((u8 *)(p) - K0BASE))
 
@@ -55,21 +49,6 @@ void AddTimingMarker(s32 bar, s32 red, s32 green, s32 blue, s32 alpha) {
     g_aTimingMarkerCounts[g_dwTimingFrame][bar]++;
     marker[1].color = (color << 16) | color;
     marker[0].time = osGetCount() - g_dwTimingFrameStart;
-}
-
-void BeginTimingFrame(void) {
-    s32 bar;
-
-    for (bar = 0; bar < TIMING_BARS; bar++) {
-        AddTimingMarker(bar, END_RED, END_GREEN, END_BLUE, END_ALPHA);
-    }
-    g_dwTimingFrame ^= 1;
-    g_dwTimingFrameStart = osGetCount();
-    g_dwTimingFrameElapsed = 0;
-    for (bar = 0; bar < TIMING_BARS; bar++) {
-        g_aTimingMarkerCounts[g_dwTimingFrame][bar] = 0;
-        g_aTimingMarkers[g_dwTimingFrame][bar][0].time = 0;
-    }
 }
 
 void DrawTimingBars(void) {

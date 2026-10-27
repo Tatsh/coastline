@@ -30,6 +30,7 @@ typedef struct {
  * @ghidraAddress USA: 0x8034e9b0
  * @ghidraAddress EUR: 0x80350eb0
  * @ghidraAddress JPN: 0x8034ef30
+ * @ghidraAddress BRD3D: 0x1067d580
  */
 extern TimingMarker g_aTimingMarkers[2][TIMING_BARS][TIMING_MARKERS];
 
@@ -37,6 +38,7 @@ extern TimingMarker g_aTimingMarkers[2][TIMING_BARS][TIMING_MARKERS];
  * @ghidraAddress USA: 0x803519b0
  * @ghidraAddress EUR: 0x80353eb0
  * @ghidraAddress JPN: 0x80351f30
+ * @ghidraAddress BRD3D: 0x1067d558
  */
 extern s32 g_aTimingMarkerCounts[2][TIMING_BARS];
 
@@ -46,6 +48,7 @@ extern s32 g_aTimingMarkerCounts[2][TIMING_BARS];
  * @ghidraAddress USA: 0x8028bda0
  * @ghidraAddress EUR: 0x8028e500
  * @ghidraAddress JPN: 0x8028df30
+ * @ghidraAddress BRD3D: 0x1067d570
  */
 extern s32 g_dwTimingFrame;
 
@@ -55,6 +58,7 @@ extern s32 g_dwTimingFrame;
  * @ghidraAddress USA: 0x8028bdac
  * @ghidraAddress EUR: 0x8028e50c
  * @ghidraAddress JPN: 0x8028df3c
+ * @ghidraAddress BRD3D: 0x1067d578
  */
 extern u32 g_dwTimingFrameStart;
 
@@ -64,6 +68,7 @@ extern u32 g_dwTimingFrameStart;
  * @ghidraAddress USA: 0x8028bda8
  * @ghidraAddress EUR: 0x8028e508
  * @ghidraAddress JPN: 0x8028df38
+ * @ghidraAddress BRD3D: 0x1067d57c
  */
 extern u32 g_dwTimingFrameElapsed;
 
@@ -122,6 +127,7 @@ void AddTimingMarker(s32 bar, s32 red, s32 green, s32 blue, s32 alpha);
  * @ghidraAddress USA: 0x8022d8ac
  * @ghidraAddress EUR: 0x8022edbc
  * @ghidraAddress JPN: 0x8022e56c
+ * @ghidraAddress BRD3D: 0x1002c210
  */
 void BeginTimingFrame(void);
 
