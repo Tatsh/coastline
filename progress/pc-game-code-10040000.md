@@ -1,6 +1,6 @@
 # PC port game code from 0x10040000 to 0x10050000
 
-227 of 264 routines done.
+229 of 264 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -34,8 +34,8 @@ the same name, for a routine the port retained from the N64 game.
 | `KeyConfigUI_PollKeyCapture`                       |   ✅   |                 |      1 |    540 | `0x10040450` | `0x10039990` | `int KeyConfigUI_PollKeyCapture(MenuWidget * pWidget)`                                                                                                    |
 | `LoadAutoSaveSeason`                               |   ✅   |                 |      1 |    534 | `0x10041bd0` | `0x1003b130` | `void LoadAutoSaveSeason(void)`                                                                                                                           |
 | `LoadTimeAttackMenuUI_OnSlotSelected`              |        |                 |      1 |    527 | `0x10042880` | `0x1003bde0` | `undefined LoadTimeAttackMenuUI_OnSlotSelected()`                                                                                                         |
-| `NetworkCarSetupUI_OnRefreshSessionDesc`           |   📝   |                 |      1 |    491 | `0x10043a00` | `0x1003cf50` | `int NetworkCarSetupUI_OnRefreshSessionDesc(MenuWidget * pWidget)`                                                                                        |
-| `NetworkCarSetupUI_OnEscape`                       |   📝   |                 |      1 |    490 | `0x10043810` | `0x1003cd60` | `int NetworkCarSetupUI_OnEscape(MenuWidget * pWidget)`                                                                                                    |
+| `NetworkCarSetupUI_OnRefreshSessionDesc`           |   ✅   |                 |      1 |    491 | `0x10043a00` | `0x1003cf50` | `int NetworkCarSetupUI_OnRefreshSessionDesc(MenuWidget * pWidget)`                                                                                        |
+| `NetworkCarSetupUI_OnEscape`                       |   ✅   |                 |      1 |    490 | `0x10043810` | `0x1003cd60` | `int NetworkCarSetupUI_OnEscape(MenuWidget * pWidget)`                                                                                                    |
 | `MenuWidget::MenuWidget`                           |   🚧   |                 |    410 |    478 | `0x100476c0` | `0x10040b10` | `void * MenuWidget(MenuWidget * this)`                                                                                                                    |
 | `SaveTimeAttackMenuUI_OnSlotNameEntered`           |        |                 |      1 |    468 | `0x10042560` | `0x1003bac0` | `undefined SaveTimeAttackMenuUI_OnSlotNameEntered()`                                                                                                      |
 | `MenuPanel::RunFrame`                              |   ✅   |                 |      0 |    468 | `0x10048530` | `0x10041980` | `bool RunFrame(MenuPanel * this)`                                                                                                                         |
@@ -79,7 +79,7 @@ the same name, for a routine the port retained from the N64 game.
 | `RaceSetupUI_OnCycleLapCount`                      |   ✅   |                 |      2 |    206 | `0x100430b0` | `0x1003c600` | `int RaceSetupUI_OnCycleLapCount(MenuActionWidget * pItem)`                                                                                               |
 | `MultiplayerGameSetupUI_OnCycleCarClass`           |   ✅   |                 |      1 |    202 | `0x10044600` | `0x1003db50` | `int MultiplayerGameSetupUI_OnCycleCarClass(MenuWidget * pWidget)`                                                                                        |
 | `ShowSaveSeasonScreen`                             |   ✅   |                 |      6 |    201 | `0x10045bc0` | `0x1003f060` | `int ShowSaveSeasonScreen(void)`                                                                                                                          |
-| `ShowCreateGameScreen`                             |        |                 |      4 |    201 | `0x100440d0` | `0x1003d620` | `undefined ShowCreateGameScreen()`                                                                                                                        |
+| `ShowCreateGameScreen`                             |   📝   |                 |      4 |    201 | `0x100440d0` | `0x1003d620` | `int ShowCreateGameScreen(void)`                                                                                                                          |
 | `ShowCarSetupScreen`                               |   ✅   |                 |      3 |    201 | `0x10045110` | `0x1003e660` | `int ShowCarSetupScreen(void)`                                                                                                                            |
 | `ShowMultiplayerConnectionScreen`                  |   ✅   |                 |      3 |    201 | `0x10043cd0` | `0x1003d220` | `int ShowMultiplayerConnectionScreen(MenuWidget * pWidget)`                                                                                               |
 | `ShowRaceResultsScreen`                            |   ✅   |                 |      2 |    201 | `0x10045ea0` | `0x1003f340` | `int ShowRaceResultsScreen(void)`                                                                                                                         |

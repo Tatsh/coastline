@@ -1,6 +1,6 @@
 # PC port game code from 0x10050000 to 0x10060000
 
-50 of 96 routines done.
+51 of 96 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -77,7 +77,7 @@ the same name, for a routine the port retained from the N64 game.
 | `MenuItemList::BlitSurfaceById`           |        |                 |      1 |     73 | `0x1005c270` | `0x10055090` | `undefined BlitSurfaceById(MenuItemList * this, undefined4 param_1, undefined4 param_2, undefined4 param_3)`                                    |
 | `RestoreMenuSurfaces`                     |   ✅   |                 |      1 |     73 | `0x1005f4e0` | `0x10001320` | `bool RestoreMenuSurfaces(void)`                                                                                                                |
 | `GetPaintJobEntryParams`                  |        |                 |      2 |     72 |              | `0x1005a020` | `undefined GetPaintJobEntryParams()`                                                                                                            |
-| `ToggleSelectedSessionSlotFlag`           |        |                 |      1 |     72 | `0x10058700` | `0x100515b0` | `undefined ToggleSelectedSessionSlotFlag()`                                                                                                     |
+| `ToggleSelectedSessionSlotFlag`           |   ✅   |                 |      1 |     72 | `0x10058700` | `0x100515b0` | `int ToggleSelectedSessionSlotFlag(void)`                                                                                                       |
 | `ReleaseMenuSurfaces`                     |   ✅   |                 |      2 |     68 | `0x1005f530` | `0x10058300` | `void ReleaseMenuSurfaces(void)`                                                                                                                |
 | `MenuItemList::UpdateAndRenderMenuWidget` |        |                 |      1 |     68 | `0x1005cb40` | `0x10055960` | `undefined UpdateAndRenderMenuWidget(MenuItemList * this, undefined4 param_1)`                                                                  |
 | `UpdateKeyboardEdgeState`                 |   ✅   |                 |      3 |     67 | `0x1005ff60` | `0x10058fd0` | `void UpdateKeyboardEdgeState(void)`                                                                                                            |
