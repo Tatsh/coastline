@@ -110,7 +110,7 @@ else()
     exhaustspawn.c tiresmokespawn.c tiresprayemit.c tirespray.c vehiclepaint.c precipitationupdate.c
     billboardparticles.c particlesmokerender.c particleexhaustrender.c tiresprayrender.c precipitationrender.c
     sky.c hudrace.c hudmessage.c dashboard.c raceresults.c hudoverlay.c visibleinstances.c
-    lastlapsnapshot.c
+    lastlapsnapshot.c trackrender.c
     PROPERTIES LANGUAGE CXX)
   set_source_files_properties(controllerread.c inputtranslate.c PROPERTIES LANGUAGE CXX)
   set_source_files_properties(volumecontrols.c PROPERTIES LANGUAGE CXX)
@@ -154,6 +154,7 @@ target_sources(coastline_game PRIVATE particlesmokerender.c)
 target_sources(coastline_game PRIVATE particleexhaustrender.c tiresprayrender.c)
 target_sources(coastline_game PRIVATE precipitationrender.c)
 if(TGR_PLATFORM STREQUAL "win")
+  target_sources(coastline_game PRIVATE trackrender.c)
   target_sources(coastline_game PRIVATE libultra/os/recvmesg.c libultra/os/sendmesg.c)
   target_sources(coastline_game PRIVATE libultra/os/syncprintf.c)
   target_sources(coastline_game PRIVATE sky.c)

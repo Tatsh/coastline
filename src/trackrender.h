@@ -110,6 +110,7 @@ extern s32 g_nVisibleCellIdxFar;
  * @ghidraAddress USA: 0x8028c78c
  * @ghidraAddress EUR: 0x8028eeec
  * @ghidraAddress JPN: 0x8028e93c
+ * @ghidraAddress BRD3D: 0x102e54b8
  */
 extern s32 g_nTrackTransparentStartIdx;
 
@@ -119,6 +120,7 @@ extern s32 g_nTrackTransparentStartIdx;
  * @ghidraAddress USA: 0x8028c77c
  * @ghidraAddress EUR: 0x8028eedc
  * @ghidraAddress JPN: 0x8028e92c
+ * @ghidraAddress BRD3D: 0x102e5ed4
  */
 extern s32 g_nTrackTransparentStartIdxNear;
 
@@ -126,6 +128,7 @@ extern s32 g_nTrackTransparentStartIdxNear;
  * @ghidraAddress USA: 0x8028c784
  * @ghidraAddress EUR: 0x8028eee4
  * @ghidraAddress JPN: 0x8028e934
+ * @ghidraAddress BRD3D: 0x102e54b4
  */
 extern s32 g_nTrackTransparentStartIdxFar;
 
@@ -163,6 +166,7 @@ extern u16 g_wActiveInstanceHideMask;
  * @ghidraAddress USA: 0x8028c758
  * @ghidraAddress EUR: 0x8028eeb8
  * @ghidraAddress JPN: 0x8028e908
+ * @ghidraAddress BRD3D: 0x1039b6c4
  */
 extern s32 g_bDebugHideInstance;
 
@@ -330,7 +334,7 @@ extern "C" {
  * @ghidraAddress BRD3D: 0x1000f640
  */
 void RenderTrackInstance(
-    ViewportRect *viewports, s32 index, s32 vehicles, s32 deferred, Vehicle *firstVehicle);
+    const ViewportRect *viewports, s32 index, s32 vehicles, s32 deferred, Vehicle *firstVehicle);
 #else
 /**
  * Draw a placed model, and on it the shadow of each vehicle in a mask, by its vertices taken to the
@@ -410,7 +414,6 @@ void BuildVisibleInstanceList(void);
  * @param slots The racers and their current vehicles.
  * @param vehicles The active vehicle array.
  * @ghidraAddress BRD3D: 0x10011590
- * @stub{BRD3D}
  */
 void RenderTrackGeometry(const ViewportRect *viewports,
                          s32 deferred,

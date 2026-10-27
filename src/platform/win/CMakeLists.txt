@@ -7,6 +7,7 @@ add_library(
   coastline_main OBJECT
   assetfile.cpp
   boot/app.cpp
+  boot/displaymodelist.cpp
   boot/dxversion.cpp
   boot/gamestate.cpp
   boot/rallyconfig.cpp

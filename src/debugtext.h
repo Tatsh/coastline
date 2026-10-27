@@ -9,6 +9,10 @@
 
 #include <PR/ultratypes.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /** The characters of the bitmap fonts, from space to the last of `{|}~`. */
 #define BITMAP_FONT_GLYPHS 69
 
@@ -142,5 +146,9 @@ void BeginDebugStats(void);
  * @ghidraAddress JPN: 0x80255e5c
  */
 void DebugFrameStubB(void);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

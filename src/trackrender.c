@@ -22,8 +22,18 @@
 #include "visgrid.h"
 #include "weather.h"
 
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#include "platform/win/trackskidmarks.h"
+#include "vehiclecount.h"
+#define PHYSICAL(address) ((u32)(address))
+#define TRACK_TIMING(bar, red, green, blue, alpha) NullStub()
+#define TRACK_WEATHER_EXCLUDED 8
+#else
 /* The physical address of a matrix in the cached segment, which wraps past the top of memory. */
 #define PHYSICAL(address) ((u32)(address) + 0x80000000)
+#define TRACK_TIMING(bar, red, green, blue, alpha) AddTimingMarker(bar, red, green, blue, alpha)
+#define TRACK_WEATHER_EXCLUDED 7
+#endif
 
 /* The minimum level of detail of the primitive colour, and the colour itself. */
 #define PRIM_MIN_LEVEL 0x17
@@ -93,10 +103,23 @@ static inline void ForceUnrotatedMatrix(TrackInstance *instance, s32 index, s32 
     f32(*vp)[4] = g_afViewProjMatrix;
     f32(*mvp)[4] = g_afMvpMatrix;
     f32(*m)[4] = instance->matrix;
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+    f32(*block)[4];
+    f32 scale, high, low;
+#else
     Mtx *block;
     f32 divisor, scale, high, low;
+#endif
     s32 row, column;
 
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+    for (column = 0; column < 4; column++) {
+        mvp[3][column] =
+            (f32)(((long double)vp[0][column] * m[3][0] + (long double)vp[3][column] * m[3][3]) +
+                  (long double)vp[2][column] * m[3][2] + (long double)vp[1][column] * m[3][1]);
+    }
+    scale = m[0][0];
+#else
     divisor = m[0][0] * g_fViewMatrixMaxAbs + 0.375f;
     if (divisor == 0.0f) {
         divisor = m[0][0] * (1.1 * g_fViewMatrixMaxAbs) + 0.375;
@@ -109,12 +132,17 @@ static inline void ForceUnrotatedMatrix(TrackInstance *instance, s32 index, s32 
             scale;
     }
     scale *= m[0][0];
+#endif
     for (row = 0; row < 3; row++) {
         for (column = 0; column < 4; column++) {
             mvp[row][column] = vp[row][column] * scale;
         }
     }
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+    block = AllocDisplayListBlock()->matrix;
+#else
     block = (Mtx *)AllocDisplayListBlock();
+#endif
 
     high = 0.0f;
     low = 0.0f;
@@ -122,12 +150,20 @@ static inline void ForceUnrotatedMatrix(TrackInstance *instance, s32 index, s32 
         if (high <= mvp[3][column]) {
             high = mvp[3][column];
         }
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+        if (!(mvp[3][column] > low)) {
+#else
         if (mvp[3][column] <= low) {
+#endif
             low = mvp[3][column];
         }
     }
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+    if (FIXED_MATRIX_MAX < (f64)high || !((f64)low >= -FIXED_MATRIX_MAX)) {
+#else
     if (FIXED_MATRIX_MAX < (f64)high || (f64)low < -FIXED_MATRIX_MAX) {
-#if TGR_REGION != TGR_REGION_JP
+#endif
+#if TGR_PLATFORM == TGR_PLATFORM_WIN || TGR_REGION != TGR_REGION_JP
         /* Only the second model in view reports its overflow. */
         if (listIndex == 1) {
             osSyncPrintf("Bad Final Matrix: in=%d (%s), s=%f\n-------------\n"
@@ -195,20 +231,54 @@ static inline void ForceUnrotatedMatrix(TrackInstance *instance, s32 index, s32 
             }
         }
     }
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+    CopyMatrix4x4(g_afMvpMatrix, block);
+#else
     guMtxF2L(g_afMvpMatrix, block);
+#endif
     gSPForceMatrix(gDisplayListPtr++, block);
 }
 
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+void RenderTrackGeometry(const ViewportRect *viewports,
+                         s32 deferred,
+                         const RacerSlot *slots,
+                         Vehicle *vehicles) {
+#else
 void RenderTrackGeometry(s32 deferred) {
+#endif
     TrackInstance *instance;
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+    f32(*block)[4];
+#else
     Mtx *block;
+#endif
     u32 identity;
     s32 clear, deferredLast, opaqueCount, matrixLoaded, i, index;
 
     clear = !g_dwNightMode && !g_dwRainMode;
     matrixLoaded = FALSE;
     if (!deferred) {
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+        for (i = 0; i < g_dwNumActiveVehicles; ++i) {
+            ConvertedModelVertex *quad = vehicles[i].GetShadowQuad();
+            quad[0].texture.x = 1024.0f;
+            quad[0].texture.y = 1024.0f;
+            quad[1].texture.x = 0.0f;
+            quad[1].texture.y = 1024.0f;
+            quad[2].texture.x = 1024.0f;
+            quad[2].texture.y = 0.0f;
+            quad[3].texture.x = 0.0f;
+            quad[3].texture.y = 0.0f;
+            vehicles[i].GetShadowCornerValid()[3] = 0;
+            vehicles[i].GetShadowCornerValid()[2] = 0;
+            vehicles[i].GetShadowCornerValid()[1] = 0;
+            vehicles[i].GetShadowCornerValid()[0] = 0;
+        }
+        BuildVisibleInstanceList(viewports, slots, vehicles);
+#else
         BuildVisibleInstanceList();
+#endif
         g_nDeferredInstanceLastIdx = -1;
         deferredLast = -1;
         g_nOpaqueVisibleInstanceCount = opaqueCount = g_nVisibleInstanceCount;
@@ -217,19 +287,24 @@ void RenderTrackGeometry(s32 deferred) {
         if (clear) {
             g_dwInstanceHideFlags = TRACK_INSTANCE_DARK_OR_WET;
         }
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+        if (g_dwGameMode != GAME_MODE_ARCADE && g_dwGameMode != GAME_MODE_NETWORK &&
+            (g_dwGameMode != GAME_MODE_AFTER_SEASON || vehicles[0].GetProfile()->season != 0)) {
+#else
         if (g_dwGameMode != GAME_MODE_ARCADE &&
             (g_dwGameMode != GAME_MODE_AFTER_SEASON || g_pActiveProfile->season != 0)) {
+#endif
             g_dwInstanceHideFlags |= TRACK_INSTANCE_ARCADE;
         }
         if (g_dwWeatherActive && (g_dwSnowMode || g_dwRainMode || g_dwNightMode) &&
-            g_dwSelectedTrackId != 2 && g_dwSelectedTrackId != 7) {
+            g_dwSelectedTrackId != 2 && g_dwSelectedTrackId != TRACK_WEATHER_EXCLUDED) {
             g_dwInstanceHideFlags |= TRACK_INSTANCE_CLEAR_SKY;
         }
         g_nTrackTransparentStartIdxFar = TRANSPARENT_START_UNKNOWN;
         g_nTrackTransparentStartIdxNear = TRANSPARENT_START_UNKNOWN;
         g_nTrackTransparentStartIdx = TRANSPARENT_START_UNKNOWN;
     }
-    AddTimingMarker(0, 0xFF, 0x80, 0x80, 0xFF);
+    TRACK_TIMING(0, 0xFF, 0x80, 0x80, 0xFF);
     /* The blender mixes in the fog in fog, and passes the colour through otherwise. */
     if (g_dwWeatherActive) {
         g_dwTrackOtherModeLBlend = GBL_c1(G_BL_CLR_FOG, G_BL_A_SHADE, G_BL_CLR_IN, G_BL_1MA);
@@ -344,8 +419,13 @@ void RenderTrackGeometry(s32 deferred) {
             ForceUnrotatedMatrix(instance, index, i);
         } else {
             matrixLoaded = FALSE;
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+            block = AllocDisplayListBlock()->matrix;
+            CopyMatrix4x4(instance->matrix, block);
+#else
             block = (Mtx *)AllocDisplayListBlock();
             guMtxF2L(instance->matrix, block);
+#endif
             gSPMatrix(
                 gDisplayListPtr++, PHYSICAL(block), G_MTX_MODELVIEW | G_MTX_LOAD | G_MTX_NOPUSH);
         }
@@ -378,7 +458,12 @@ void RenderTrackGeometry(s32 deferred) {
         if (g_nVisibleCellIdxMid < i && i < g_nTrackTransparentStartIdx) {
             DrawPlainInstance(instance);
         } else {
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+            RenderTrackInstance(
+                viewports, index, g_abInstanceVisibilityMask[index], deferred, vehicles);
+#else
             RenderTrackInstance(index, g_abInstanceVisibilityMask[index], deferred);
+#endif
         }
 
         if (instance->flags & TRACK_INSTANCE_MODE_FLAGS) {
@@ -401,6 +486,11 @@ void RenderTrackGeometry(s32 deferred) {
         }
     }
 
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+    if (deferred) {
+        DrawTrackShadows(vehicles);
+    }
+#endif
     /* After the first pass, where the second starts the translucent models past the middle. */
     if (!deferred) {
         if (g_nTrackTransparentStartIdx == TRANSPARENT_START_UNKNOWN) {
@@ -411,6 +501,6 @@ void RenderTrackGeometry(s32 deferred) {
     gSPMatrix(gDisplayListPtr++, identity, G_MTX_MODELVIEW | G_MTX_LOAD | G_MTX_NOPUSH);
     gSPClearGeometryMode(gDisplayListPtr++, G_FOG);
     gDPPipeSync(gDisplayListPtr++);
-    AddTimingMarker(0, 0, 0xB4, 0, 0xFF);
+    TRACK_TIMING(0, 0, 0xB4, 0, 0xFF);
     g_nDeferredInstanceLastIdx = deferredLast;
 }

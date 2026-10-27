@@ -123,7 +123,7 @@ static inline void ProjectShadowTriangleWord(TrackInstance *instance,
 }
 
 void RenderTrackInstance(
-    ViewportRect *viewports, s32 index, s32 vehicles, s32 deferred, Vehicle *firstVehicle) {
+    const ViewportRect *viewports, s32 index, s32 vehicles, s32 deferred, Vehicle *firstVehicle) {
 #else
 void RenderTrackInstance(s32 index, s32 vehicles, s32 deferred) {
     ViewportRect *viewports = g_aViewportRects;
