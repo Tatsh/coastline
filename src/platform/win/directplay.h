@@ -705,6 +705,30 @@ int GetLocalPlayerIndex(void);
 void TickNetworkPauseRequest(void);
 
 /**
+ * @ghidraAddress BRD3D: 0x100046d0
+ */
+int SendNetworkStreamReliable(DirectPlayInfo *pInfo, NetStream *pStream);
+
+/**
+ * @ghidraAddress BRD3D: 0x10004760
+ */
+int SendPlayerInfoPacket(DirectPlayInfo *pInfo,
+                         unsigned char bPlayer,
+                         unsigned char bCar,
+                         unsigned char bColorR,
+                         unsigned char bColorG,
+                         unsigned char bColorB,
+                         DPID dpidOwner,
+                         const char *szPlayerName,
+                         int nState,
+                         unsigned char bTag);
+
+/**
+ * @ghidraAddress BRD3D: 0x1022aefc
+ */
+extern unsigned g_dwNetRaceStartTimeMs;
+
+/**
  * Give a message of the main window to the network play.
  *
  * @param hWnd The main window.

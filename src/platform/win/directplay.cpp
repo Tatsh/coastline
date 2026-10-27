@@ -1160,8 +1160,69 @@ int g_dwLocalNetPlayerId = -1;
 const RECT g_rcNetCarSetupPlayerList = {32, 370, 610, 467};
 int g_dwNetworkCarSetupShown;
 int g_dwNetworkDataStreamActive;
+unsigned g_dwNetRaceStartTimeMs;
 const char *g_apszPlaceNames[8] = {
     "First!", "Second!", "Third!", "Fourth.", "Fifth.", "Sixth.", "7th.", "8th."};
+
+int SendNetworkStreamReliable(DirectPlayInfo *pInfo, NetStream *pStream) {
+    if (!g_dwNetworkDataStreamActive) {
+        if (pInfo->bIsHost) {
+            ProcessMultiplayerPackets(pInfo,
+                                      pStream->StreamGetBufferPtr(),
+                                      pStream->StreamGetWriteSize(),
+                                      DPID_SERVERPLAYER,
+                                      DPID_SERVERPLAYER);
+        } else if (DirectPlaySendLocked(pInfo->pDirectPlay,
+                                        pInfo->dpidPlayer,
+                                        DPID_SERVERPLAYER,
+                                        0,
+                                        pStream->StreamGetBufferPtr(),
+                                        pStream->StreamGetWriteSize()) != 0) {
+            return -1;
+        }
+    }
+    return pStream->StreamGetWriteSize();
+}
+
+int SendPlayerInfoPacket(DirectPlayInfo *pInfo,
+                         unsigned char bPlayer,
+                         unsigned char bCar,
+                         unsigned char bColorR,
+                         unsigned char bColorG,
+                         unsigned char bColorB,
+                         DPID dpidOwner,
+                         const char *szPlayerName,
+                         int nState,
+                         unsigned char bTag) {
+    NetStream stream;
+    WriteTimestampToStream(&stream);
+    stream.StreamWriteByte(static_cast<unsigned char>(g_dwLocalNetPlayerId) | bTag);
+    stream.StreamWriteByte(bPlayer);
+    stream.StreamWriteByte(static_cast<unsigned char>(nState));
+    stream.StreamWriteByte(bCar);
+    stream.StreamWriteByte(bColorR);
+    stream.StreamWriteByte(bColorG);
+    stream.StreamWriteByte(bColorB);
+    stream.StreamWriteInt32(dpidOwner);
+    int state = nState & 0x3f;
+    if (state <= 2) {
+        bool ended = false;
+        for (int i = 0; i < 24; i++) {
+            if (ended) {
+                stream.StreamWriteByte(0);
+            } else {
+                stream.StreamWriteByte(static_cast<unsigned char>(szPlayerName[i]));
+                if (szPlayerName[i] == 0) {
+                    ended = true;
+                }
+            }
+        }
+    }
+    if (state == 4) {
+        stream.StreamWriteInt24(g_dwNetRaceStartTimeMs);
+    }
+    return SendNetworkStreamReliable(pInfo, &stream);
+}
 
 HRESULT GetDirectPlayPlayerName(IDirectPlay3A *pDirectPlay, DPID dpidPlayer, DPNAME **ppName) {
     DWORD size = 0;
