@@ -534,6 +534,12 @@ int NetworkCarSetupUI_PollChatListSelection(MenuWidget *pWidget);
 int OnChatMessageEdited(MenuWidget *pWidget);
 
 /**
+ * @ghidraAddress BRD3D: 0x1003f170
+ * @ghidraAddress BRGlide: 0x100386b0
+ */
+int NetworkCarSetupUI_SendChatMessage(MenuWidget *pWidget);
+
+/**
  * @ghidraAddress BRD3D: 0x1003f0b0
  * @ghidraAddress BRGlide: 0x100385f0
  */
@@ -952,6 +958,12 @@ int OnPressAnyKeyContinue(MenuWidget *pWidget);
  * @ghidraAddress BRGlide: 0x10040640
  */
 int SeasonCongratsUI_PollAnyKey(MenuWidget *pWidget);
+
+/**
+ * @ghidraAddress BRD3D: 0x1003e840
+ * @ghidraAddress BRGlide: 0x10037e60
+ */
+int PreRaceInfoUI_UpdateBackButtonText(MenuWidget *pWidget);
 
 /**
  * @ghidraAddress BRD3D: 0x1003f440

@@ -1234,6 +1234,15 @@ int OnChatMessageEdited(MenuWidget *pWidget) {
     return SynchronizeEditedMenuText(pWidget, g_szNetworkChatText);
 }
 
+int NetworkCarSetupUI_SendChatMessage(MenuWidget *pWidget) {
+    DirectPlayInfo *info = g_pDirectPlayInfo;
+    strcpy(g_szNetworkChatText, pWidget->fonts[0].szText);
+    SendNetworkChatMessage(g_hMainWindow, info, false);
+    strcpy(g_szNetworkChatText, g_szEmptyUiString);
+    strcpy(pWidget->fonts[0].szText, g_szEmptyUiString);
+    return 1;
+}
+
 int OnTcpIpAddressEdited(MenuWidget *pWidget) {
     return SynchronizeEditedMenuText(pWidget, g_GlobalRallyConfig.szTcpIpAddress);
 }
@@ -2899,6 +2908,14 @@ int KeyConfigUI_UpdateDuplicateBindingWarning(MenuWidget *pWidget) {
     MenuFontVTable *vtable = font->pVTable;
     vtable->MeasureText(font);
     ProcessMenuTextEditInput(pWidget, 0);
+    return 1;
+}
+
+int PreRaceInfoUI_UpdateBackButtonText(MenuWidget *pWidget) {
+    int stringId = g_dwGameMode == 0 && g_SeasonResumeState.state == 0 ? 0x51 : 0xc;
+    strcpy(pWidget->fonts[0].szText, GetStringResource(stringId));
+    MenuFont *font = &pWidget->fonts[0];
+    font->pVTable->MeasureText(font);
     return 1;
 }
 
