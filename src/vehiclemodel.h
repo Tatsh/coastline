@@ -1,6 +1,7 @@
 #ifndef COASTLINE_VEHICLEMODEL_H
 #define COASTLINE_VEHICLEMODEL_H
 
+#include "carphysics.h"
 #include "displaylistops.h"
 #include "render.h"
 
@@ -41,7 +42,16 @@ enum {
  */
 typedef struct VehicleModel {
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
-    u8 abUnknown0[0x8000]; /* +0x00 */
+    u8 abUnknown0[0x96]; /* +0x00 */
+    s8 rearWheelDrive;
+    s8 tableIndex;
+    f32 gearRatios[CAR_GEAR_RATIOS];
+    f32 torqueCurve[4];
+    f32 finalDrive;
+    Vec3f boxSize;
+    f32 boxCenterZ;
+    s8 gearCount;
+    u8 abUnknownD9[0x7f27]; /* +0xd9 */
 #endif
     u32 triangleCount; /*!< The triangles of the model, counted into the statistics of the frame. */
     u8 unreconstructed4[0x10 - 0x4]; /*!< Not read by the routines reconstructed so far. */

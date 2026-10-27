@@ -13,6 +13,7 @@
 #include <PR/gbi.h>
 #include <PR/ultratypes.h>
 
+#include "carphysics.h"
 #include "input.h"
 #include "profile.h"
 #include "racerslot.h"
@@ -21,6 +22,7 @@
 #include "system.h"
 #include "track.h"
 #include "vecmath.h"
+#include "vehiclecamera.h"
 #include "vehiclecount.h"
 #include "vehiclemodel.h"
 
@@ -106,23 +108,6 @@ extern CarModel g_aCarModels[CAR_MODELS];
  */
 extern s32 g_dwCarCount;
 
-/** The gears of a gearbox, neutral first. */
-#define CAR_GEAR_RATIOS 7
-
-/** The physics of a car. */
-typedef struct {
-    f32 gearRatios[CAR_GEAR_RATIOS]; /*!< The ratio of each gear, from 0 for neutral. */
-    f32 torqueCurve[4]; /*!< The torque of the engine as a cubic of its revolutions, the highest
-                             power first. */
-    f32 finalDrive;     /*!< The ratio of the final drive. */
-    s32 gearCount;      /*!< The number of forward gears. */
-    s32 rearWheelDrive; /*!< Whether the throttle drives the rear wheels alone, rather than all
-                             four. */
-    Vec3f boxSize;      /*!< The size of the box the track collides with. */
-    f32 boxCenterZ;     /*!< The height of the middle of the box. */
-    s32 tableIndex;     /*!< The class of the car among the arcade times of each track. */
-} CarPhysicsSpec;
-
 /**
  * @ghidraAddress USA: 0x8028b330
  * @ghidraAddress EUR: 0x8028d5e0
@@ -158,17 +143,6 @@ typedef struct {
 /** The slots the models of the cars of the menus load into. */
 #define VEHICLE_MODEL_SLOTS 4
 
-/** The cameras of a vehicle. */
-enum {
-    VEHICLE_CAMERA_COCKPIT,   /*!< The view from the driver's seat. */
-    VEHICLE_CAMERA_CHASE,     /*!< The camera that follows behind the vehicle. */
-    VEHICLE_CAMERA_BUMPER,    /*!< The cockpit camera moved forward to the bumper. */
-    VEHICLE_CAMERA_TRACKSIDE, /*!< A camera by the track that watches the vehicle and zooms with its
-                                   distance. */
-    VEHICLE_CAMERA_4,         /*!< A camera the routines reconstructed so far do not use. */
-    VEHICLE_CAMERA_MIRROR,    /*!< The rear-view mirror. */
-    VEHICLE_CAMERAS,          /*!< The number of cameras of a vehicle. */
-};
 
 /** The bits of the status of a racer that stop its clock. */
 #define RACER_CLOCK_STOPPED 0x3

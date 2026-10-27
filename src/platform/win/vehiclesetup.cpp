@@ -3,6 +3,15 @@
 #include "game.h"
 #include "trackselect.h"
 #include "vehicle.h"
+#include "vehiclereset.h"
+
+void Vehicle::SetVehicleVelocity(f32 x, f32 y, f32 z) {
+    ::SetVehicleVelocity(this, x, y, z);
+}
+
+void Vehicle::ResetVehicleState(void) {
+    ::ResetVehicleState(this);
+}
 #include "vehiclechoice.h"
 
 void Vehicle::BindPlayerInputToVehicle(void) {

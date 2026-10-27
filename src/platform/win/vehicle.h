@@ -1,10 +1,14 @@
 #pragma once
 
+#include <render.h>
+
+#include "carphysics.h"
 #include "playerinput.h"
 #include "profile.h"
 #include "racerslot.h"
 #include "rigidbody.h"
 #include "types.h"
+#include "vehiclecamera.h"
 #include "vehiclemodel.h"
 
 #define VEHICLE_GHOST 2
@@ -19,7 +23,12 @@ typedef struct Vehicle {
     RigidBody wheelBodies[4];
     u8 abUnknownBa0[0x284]; /* +0xba0 */
     f32 sector;
-    u8 abUnknownE28[0x3c]; /* +0xe28 */
+    f32 gearRatios[CAR_GEAR_RATIOS];
+    f32 torqueCurve[4];
+    f32 finalDrive;
+    s32 gearCount;
+    s32 rearWheelDrive;
+    s32 transmission;
     s32 tableIndex;
     f32 throttle;
     u8 abUnknownE6c[0x1c]; /* +0xe6c */
@@ -30,7 +39,10 @@ typedef struct Vehicle {
     s32 chosenTransmission;
     u8 abUnknownEa0[0x60]; /* +0xea0 */
     struct RacerSlot *racer;
-    u8 abUnknownF04[0xa4]; /* +0xf04 */
+    u8 abUnknownF04[0x88]; /* +0xf04 */
+    struct TrackSection *section;
+    s32 pointIndex;
+    u8 abUnknownF94[0x14]; /* +0xf94 */
     s32 lap;
     u8 abUnknownFac[0x38]; /* +0xfac */
     f32 bestLapTime;
@@ -38,9 +50,15 @@ typedef struct Vehicle {
     f32 raceTime;
     u8 abUnknownFf0[4]; /* +0xff0 */
     f32 progress;
-    u8 abUnknownFf8[0x16dc]; /* +0xff8 */
+    u8 abUnknownFf8[0x2c]; /* +0xff8 */
+    Vec3f placedVelocity;
+    u8 abUnknown1030[0x16a4]; /* +0x1030 */
     f32 inputMatrix[4][4];
-    u8 abUnknown2714[0x294]; /* +0x2714 */
+    u8 abUnknown2714[0x20]; /* +0x2714 */
+    CameraFrame *activeCamera;
+    CameraFrame *previousCamera;
+    CameraFrame cameras[VEHICLE_CAMERAS];
+    u8 abUnknown28d4[0xd4]; /* +0x28d4 */
     s32 carModel;
     u8 color[3];
     u8 ghostMode;
@@ -69,6 +87,14 @@ typedef struct Vehicle {
      * @ghidraAddress BRD3D: 0x10076ae0
      */
     void SetVehicleCarId(s32 carId);
+    /**
+     * @ghidraAddress BRD3D: 0x100767a0
+     */
+    void SetVehicleVelocity(f32 x, f32 y, f32 z);
+    /**
+     * @ghidraAddress BRD3D: 0x10076b20
+     */
+    void ResetVehicleState(void);
 #endif
 } Vehicle;
 

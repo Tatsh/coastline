@@ -602,8 +602,13 @@ s32 MtxInvert4x4(f32 out[4][4], f32 in[4][4]);
  * @ghidraAddress USA: 0x8021eb30
  * @ghidraAddress EUR: 0x8021fe30
  * @ghidraAddress JPN: 0x8021f620
+ * @ghidraAddress BRD3D: 0x10075340
  */
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+void __thiscall FinishFrameMatrix(f32 m[4][4]);
+#else
 void FinishFrameMatrix(f32 m[4][4]);
+#endif
 
 /**
  * The angle of a point counterclockwise from the x axis, from 0 to two pi, found by a search of

@@ -67,16 +67,8 @@
 
 /* A quarter of a turn, and the field of view of the cameras. */
 #define HALF_PI 1.570796371f
-#define DEFAULT_CAMERA_FOV 0.5235987902f
 
 static const char sWrongWay[] = "%yyWRONG WAY";
-
-void FinishFrameMatrix(f32 m[4][4]) {
-    m[2][3] = 0.0f;
-    m[1][3] = 0.0f;
-    m[0][3] = 0.0f;
-    m[3][3] = 1.0f;
-}
 
 /* The direction along the track at a point, across from its left edge to its right. */
 static void TrackPointDirection(Vec3f *out, TrackPoint *point) {
@@ -596,23 +588,6 @@ void SetVehicleFrameMatrix(Vehicle *vehicle, f32 (*m)[4]) {
     QuaternionToMatrix(vehicle->body.orientation, &vehicle->body.state);
 }
 
-void SetVehicleVelocity(Vehicle *vehicle, f32 x, f32 y, f32 z) {
-    Vec3f *placed = &vehicle->placedVelocity;
-
-    vehicle->body.state.velocity.x = x;
-    vehicle->body.state.velocity.y = y;
-    vehicle->body.state.velocity.z = z;
-    vehicle->body.stepStates[1].velocity.x = x;
-    vehicle->body.stepStates[1].velocity.y = y;
-    vehicle->body.stepStates[1].velocity.z = z;
-    vehicle->body.stepStates[0].velocity.x = x;
-    vehicle->body.stepStates[0].velocity.y = y;
-    vehicle->body.stepStates[0].velocity.z = z;
-    placed->x = x;
-    placed->y = y;
-    placed->z = z;
-}
-
 void RotateVehicleByEuler(Vehicle *vehicle, f32 yaw, f32 pitch, f32 roll) {
     Quaternion turn;
     f32 sine;
@@ -715,50 +690,6 @@ u32 PollVehicleModelDma(VehicleModelLoad *load) {
         }
     }
     return load->job.remaining;
-}
-
-void ResetVehicleState(Vehicle *vehicle) {
-    s32 car;
-
-    /* The frames of the vehicle and its cameras, all but camera 4, and of its wheels. */
-    FinishFrameMatrix(vehicle->matrix);
-    FinishFrameMatrix((f32(*)[4]) & vehicle->cameras[VEHICLE_CAMERA_COCKPIT]);
-    vehicle->cameras[VEHICLE_CAMERA_COCKPIT].fov = DEFAULT_CAMERA_FOV;
-    FinishFrameMatrix((f32(*)[4]) & vehicle->cameras[VEHICLE_CAMERA_CHASE]);
-    vehicle->cameras[VEHICLE_CAMERA_CHASE].fov = DEFAULT_CAMERA_FOV;
-    FinishFrameMatrix((f32(*)[4]) & vehicle->cameras[VEHICLE_CAMERA_BUMPER]);
-    vehicle->cameras[VEHICLE_CAMERA_BUMPER].fov = DEFAULT_CAMERA_FOV;
-    FinishFrameMatrix((f32(*)[4]) & vehicle->cameras[VEHICLE_CAMERA_TRACKSIDE]);
-    vehicle->cameras[VEHICLE_CAMERA_TRACKSIDE].fov = DEFAULT_CAMERA_FOV;
-    FinishFrameMatrix((f32(*)[4]) & vehicle->cameras[VEHICLE_CAMERA_MIRROR]);
-    vehicle->cameras[VEHICLE_CAMERA_MIRROR].fov = DEFAULT_CAMERA_FOV;
-    vehicle->activeCamera = &vehicle->cameras[VEHICLE_CAMERA_COCKPIT];
-    vehicle->model = NULL;
-    FinishFrameMatrix(vehicle->wheelMatrices[0]);
-    FinishFrameMatrix(vehicle->wheelMatrices[1]);
-    FinishFrameMatrix(vehicle->wheelMatrices[2]);
-    FinishFrameMatrix(vehicle->wheelMatrices[3]);
-    SetVehicleVelocity(vehicle, 0.0f, 0.0f, 0.0f);
-    vehicle->section = NULL;
-    vehicle->pointIndex = 0;
-    vehicle->previousCamera = NULL;
-
-    /* The gearbox and engine of the car. */
-    car = vehicle->carModel;
-    memcpy(vehicle->gearRatios, g_aCarPhysicsSpecs[car].gearRatios, sizeof(vehicle->gearRatios));
-    vehicle->torqueCurve[0] = g_aCarPhysicsSpecs[car].torqueCurve[0];
-    vehicle->torqueCurve[1] = g_aCarPhysicsSpecs[car].torqueCurve[1];
-    vehicle->torqueCurve[2] = g_aCarPhysicsSpecs[car].torqueCurve[2];
-    vehicle->torqueCurve[3] = g_aCarPhysicsSpecs[car].torqueCurve[3];
-    vehicle->finalDrive = g_aCarPhysicsSpecs[car].finalDrive;
-    vehicle->gearCount = g_aCarPhysicsSpecs[car].gearCount;
-    vehicle->transmission = vehicle->chosenTransmission;
-    vehicle->rearWheelDrive = g_aCarPhysicsSpecs[car].rearWheelDrive;
-    vehicle->body.boxSize.x = g_aCarPhysicsSpecs[car].boxSize.x;
-    vehicle->body.boxSize.y = g_aCarPhysicsSpecs[car].boxSize.y;
-    vehicle->body.boxSize.z = g_aCarPhysicsSpecs[car].boxSize.z;
-    vehicle->body.boxCenterZ = g_aCarPhysicsSpecs[car].boxCenterZ;
-    vehicle->tableIndex = g_aCarPhysicsSpecs[car].tableIndex;
 }
 
 void BindPlayerInputToVehicle(Vehicle *vehicle) {
