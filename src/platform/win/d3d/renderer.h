@@ -435,6 +435,7 @@ public:
     IDirectDrawSurface *pDeviceSurface; /*!< The texture surface, pSysMemSurface in software. */
     IUnknown *pUnknown8;                /*!< Released with the surfaces. */
     D3DTEXTUREHANDLE hTexture;          /*!< The handle of the texture on the device. */
+    unsigned char abUnknown10[0x10];
 
     /**
      * Create the texture from an image. A device of hardware gets a texture surface in video

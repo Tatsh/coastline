@@ -1402,9 +1402,8 @@ extern int g_bForceTextureClone;
  * @param pPixels The decoded pixels.
  * @return The registered texture entry.
  * @ghidraAddress BRD3D: 0x10028350
- * @stub{BRD3D}
  */
-int CreateTextureFromImage(TextureImageData *pImage, const unsigned char *pPixels);
+int CreateTextureFromImage(TextureImageData *pImage, unsigned char *pPixels);
 
 /**
  * Clone texture metadata with replacement image and palette bytes.
@@ -1418,3 +1417,21 @@ int CreateTextureFromImage(TextureImageData *pImage, const unsigned char *pPixel
 int CloneTextureEntryWithNewImageData(int nEntry,
                                       unsigned char *pImage,
                                       const unsigned char *pPalette);
+
+/**
+ * Prepare paint texture metadata and adjust device dimensions.
+ *
+ * @param pWidth Receives the device width.
+ * @param pHeight Receives the device height.
+ * @param pImage The image metadata to prepare.
+ * @ghidraAddress BRD3D: 0x10024bf0
+ * @stub{BRD3D}
+ */
+void PreparePaintTexture(int *pWidth, int *pHeight, TextureImageData *pImage);
+
+/**
+ * Allocation label for the device texture table.
+ *
+ * @ghidraAddress BRD3D: 0x100a7e20
+ */
+extern const char g_szTidFromTextureAppendAmid[];

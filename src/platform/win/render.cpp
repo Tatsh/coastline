@@ -1229,6 +1229,7 @@ void ModulateTextureWithIntensityPlane(const TextureImageData *pImage, unsigned 
 
 unsigned g_dwTexturePixelByteCount;
 int g_bForceTextureClone;
+const char g_szTidFromTextureAppendAmid[] = "TIDFromTextureAppend: amid";
 
 unsigned char *GetTextureImagePixels(TextureImageData *pImage) {
     if (pImage->dwFlags & 0x40) {
@@ -1305,4 +1306,36 @@ int CloneTextureEntryWithNewImageData(int nEntry,
     int entry = CreateTextureFromImage(&image, pixels);
     g_bForceTextureClone = 0;
     return entry;
+}
+
+int CreateTextureFromImage(TextureImageData *pImage, unsigned char *pPixels) {
+    if (!g_bForceTextureClone) {
+        int entry = FindMatchingTextureEntry(pImage);
+        if (entry != -1) {
+            return entry;
+        }
+    }
+    unsigned textureId = ++g_dwTextureIdCount;
+    if (textureId >= g_dwTextureIdCapacity) {
+        g_dwTextureIdCapacity += 256;
+        g_ppTextureIdTable = static_cast<D3DTexture **>(
+            CHK_ReAllocateMemory(g_ppTextureIdTable,
+                                 g_dwTextureIdCapacity * sizeof(*g_ppTextureIdTable),
+                                 g_szTidFromTextureAppendAmid));
+    }
+    g_ppTextureIdTable[textureId] = new (std::nothrow) D3DTexture{};
+    int width;
+    int height;
+    CalculateTextureDimensions(&width, &height, pImage->nLod, pImage->nAspectRatio);
+    g_bTexScanPrimColorSet = 0;
+    g_bTexScanEnvColorSet = 0;
+    PreparePaintTexture(&width, &height, pImage);
+    if (pImage->nColorKey) {
+        g_ppTextureIdTable[textureId]->CreateD3DTexture(
+            g_pD3DDevice2, pPixels, width, height, pImage->nPixelFormatId, pImage->nColorKey);
+    } else {
+        g_ppTextureIdTable[textureId]->CreateD3DTextureDefault(
+            g_pD3DDevice2, pPixels, width, height, pImage->nPixelFormatId);
+    }
+    return RegisterTextureEntry(pImage, textureId);
 }
