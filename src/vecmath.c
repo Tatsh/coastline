@@ -520,11 +520,23 @@ void ProjectVec3fToScreen(Vec2f *out, Vec3f *in, f32 m[4][4]) {
 
 void Mtx4x4TransformNoTranslation(Vec3f *out, Vec3f *in, f32 m[4][4]) {
     f32 x = in->x, y = in->y, z = in->z;
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+    long double inverseW = 1.0L / (((long double)y * m[1][3] + (long double)z * m[2][3]) +
+                                   (long double)x * m[0][3] + m[3][3]);
+
+    out->x = (((long double)x * m[0][0] + (long double)z * m[2][0]) + (long double)y * m[1][0]) *
+             inverseW;
+    out->y = (((long double)y * m[1][1] + (long double)z * m[2][1]) + (long double)x * m[0][1]) *
+             inverseW;
+    out->z = (((long double)y * m[1][2] + (long double)z * m[2][2]) + (long double)x * m[0][2]) *
+             inverseW;
+#else
     f32 inverseW = 1.0f / (x * m[0][3] + y * m[1][3] + z * m[2][3] + m[3][3]);
 
     out->x = (x * m[0][0] + y * m[1][0] + z * m[2][0]) * inverseW;
     out->y = (x * m[0][1] + y * m[1][1] + z * m[2][1]) * inverseW;
     out->z = (x * m[0][2] + y * m[1][2] + z * m[2][2]) * inverseW;
+#endif
 }
 
 void Mtx3x3TransformVec(Vec3f *out, Vec3f *in, f32 m[4][4]) {
