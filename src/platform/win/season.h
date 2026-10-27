@@ -337,3 +337,15 @@ void SaveAutoSaveSeason(void);
  * @ghidraAddress BRD3D: 0x10041bd0
  */
 void LoadAutoSaveSeason(void);
+
+class MenuWidget;
+
+/**
+ * Reset championship menus and load the selected season slot.
+ *
+ * @param pUnused Not read.
+ * @param pnSlot The selected slot index.
+ * @return Zero when the file does not open, otherwise one.
+ * @ghidraAddress BRD3D: 0x10042170
+ */
+int LoadSeasonUI_OnSlotSelected(MenuWidget *pUnused, const int *pnSlot);

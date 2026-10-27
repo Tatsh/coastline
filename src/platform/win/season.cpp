@@ -257,20 +257,21 @@ bool SaveSeasonSaveFile(void) {
     return true;
 }
 
-void LoadAutoSaveSeason(void) {
+static inline void ResetSeasonMenuForLoad(void) {
     g_dwGameMode = GAME_MODE_CHAMPIONSHIP;
     ResetMenuSelectionsToDefaults();
     g_dwSaveSlotPlayerIndex = 0;
     strcpy(g_szSeasonYearLabel, "");
     strcpy(g_szSeasonRoundLabel, "");
-    char fileName[260];
-    strcpy(fileName, g_szAutoSaveBrf);
-    FILE *file = fopen(fileName, "rb");
+}
+
+static inline bool LoadSeasonMenuFile(const char *pszFileName) {
+    FILE *file = fopen(pszFileName, "rb");
     if (!file) {
-        return;
+        return false;
     }
     fclose(file);
-    strcpy(g_szSeasonSaveFileName, fileName);
+    strcpy(g_szSeasonSaveFileName, pszFileName);
     if (!LoadConfigData(CONFIG_LOAD_SEASON_FILE, true)) {
         ShowErrorMessage(7);
     }
@@ -302,6 +303,26 @@ void LoadAutoSaveSeason(void) {
            sizeof(g_awSeasonRoundPoints));
     sprintf(g_szSeasonYearLabel, "%d", year + 1);
     sprintf(g_szSeasonRoundLabel, "%d", round + 1);
+    return true;
+}
+
+void LoadAutoSaveSeason(void) {
+    ResetSeasonMenuForLoad();
+    char fileName[260];
+    strcpy(fileName, g_szAutoSaveBrf);
+    LoadSeasonMenuFile(fileName);
+}
+
+int LoadSeasonUI_OnSlotSelected(MenuWidget *pUnused, const int *pnSlot) {
+    g_dwLoadSeasonSlotValid = 0;
+    ResetSeasonMenuForLoad();
+    char fileName[260];
+    char number[8];
+    strcpy(fileName, "RallySeason");
+    sprintf(number, "%d", *pnSlot);
+    strcat(fileName, number);
+    strcat(fileName, ".brf");
+    return LoadSeasonMenuFile(fileName);
 }
 
 void SaveAutoSaveSeason(void) {

@@ -700,6 +700,14 @@ int ShowRaceResultsScreen(void) {
     return ShowCachedMenuScreen(g_pCachedMenu_RaceResults, BuildRaceResultsInfoUI);
 }
 
+int ShowLoadSeasonMenu(void) {
+    return ShowCachedMenuScreen(g_pCachedMenu_LoadSeason, BuildLoadSeasonUI);
+}
+
+int ShowSaveSeasonScreen(void) {
+    return ShowCachedMenuScreen(g_pCachedMenu_SaveSeason, BuildSaveSeasonUI);
+}
+
 int ShowRaceResultsTotalsScreen(void) {
     return ShowCachedMenuScreen(g_pCachedMenu_RaceResultsTotals, BuildRaceResultsTotalsUI);
 }

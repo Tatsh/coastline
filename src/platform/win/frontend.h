@@ -1742,6 +1742,32 @@ void BuildPreRaceExitSeasonConfirmUI(MenuScreen *pScreen);
 int ShowPreRaceInfoScreen(void);
 
 /**
+ * @ghidraAddress BRD3D: 0x1004f700
+ */
+void BuildLoadSeasonUI(MenuScreen *pScreen);
+
+/**
+ * @ghidraAddress BRD3D: 0x10050060
+ */
+void BuildSaveSeasonUI(MenuScreen *pScreen);
+
+/**
+ * Show cached season loading, building the screen on its first visit.
+ *
+ * @return Whether the screen was allocated or already cached.
+ * @ghidraAddress BRD3D: 0x10045af0
+ */
+int ShowLoadSeasonMenu(void);
+
+/**
+ * Show cached season saving, building the screen on its first visit.
+ *
+ * @return Whether the screen was allocated or already cached.
+ * @ghidraAddress BRD3D: 0x10045bc0
+ */
+int ShowSaveSeasonScreen(void);
+
+/**
  * Apply championship progress and switch from totals to the next championship screen.
  *
  * @param pItem The action item on the totals screen.
