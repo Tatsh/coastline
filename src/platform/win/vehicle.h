@@ -19,14 +19,18 @@ typedef struct Vehicle {
     RigidBody wheelBodies[4];
     u8 abUnknownBa0[0x284]; /* +0xba0 */
     f32 sector;
-    u8 abUnknownE28[0x40]; /* +0xe28 */
+    u8 abUnknownE28[0x3c]; /* +0xe28 */
+    s32 tableIndex;
     f32 throttle;
     u8 abUnknownE6c[0x1c]; /* +0xe6c */
     s32 customDecals;
     PlayerProfile *profile;
     u8 abUnknownE90[8]; /* +0xe90 */
     s32 mouseSensitivity;
-    u8 abUnknownE9c[0x10c]; /* +0xe9c */
+    s32 chosenTransmission;
+    u8 abUnknownEa0[0x60]; /* +0xea0 */
+    struct RacerSlot *racer;
+    u8 abUnknownF04[0xa4]; /* +0xf04 */
     s32 lap;
     u8 abUnknownFac[0x38]; /* +0xfac */
     f32 bestLapTime;

@@ -14,12 +14,24 @@
 #include "vecmath.h"
 #include "vehicle.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+/**
+ * @ghidraAddress BRD3D: 0x106c7cb8
+ */
+extern TrackSection *g_TrackHeader_pSplineModel;
+#endif
+
 /**
  * The point the route walks last found.
  *
  * @ghidraAddress USA: 0x8031b750
  * @ghidraAddress EUR: 0x8031dc50
  * @ghidraAddress JPN: 0x8031c880
+ * @ghidraAddress BRD3D: 0x10af9b38
  */
 extern Vec3f g_vTrackRoutePoint;
 
@@ -29,6 +41,7 @@ extern Vec3f g_vTrackRoutePoint;
  * @ghidraAddress USA: 0x8028b824
  * @ghidraAddress EUR: 0x8028dad4
  * @ghidraAddress JPN: 0x8028d504
+ * @ghidraAddress BRD3D: 0x10af988c
  */
 extern TrackSection *g_pTrackRouteSection;
 
@@ -36,6 +49,7 @@ extern TrackSection *g_pTrackRouteSection;
  * @ghidraAddress USA: 0x8028b828
  * @ghidraAddress EUR: 0x8028dad8
  * @ghidraAddress JPN: 0x8028d508
+ * @ghidraAddress BRD3D: 0x10acd490
  */
 extern s32 g_dwTrackRoutePointIndex;
 
@@ -45,6 +59,7 @@ extern s32 g_dwTrackRoutePointIndex;
  * @ghidraAddress USA: 0x8028b82c
  * @ghidraAddress EUR: 0x8028dadc
  * @ghidraAddress JPN: 0x8028d50c
+ * @ghidraAddress BRD3D: 0x10af96c0
  */
 extern s32 g_dwTrackRouteGates;
 
@@ -52,6 +67,7 @@ extern s32 g_dwTrackRouteGates;
  * @ghidraAddress USA: 0x8028b830
  * @ghidraAddress EUR: 0x8028dae0
  * @ghidraAddress JPN: 0x8028d510
+ * @ghidraAddress BRD3D: 0x10af9b44
  */
 extern s32 g_dwTrackRouteLaps;
 
@@ -73,6 +89,8 @@ extern const char *g_apszRaceProgressStrings[RACER_SLOTS];
  * @ghidraAddress USA: 0x80228e4c
  * @ghidraAddress EUR: 0x8022a1c4
  * @ghidraAddress JPN: 0x802299a0
+ * @ghidraAddress BRD3D: 0x10065b20
+ * @stub{BRD3D}
  */
 void FindTrackRoutePoint(TrackSection *section, f32 distance);
 
@@ -100,5 +118,9 @@ void AdvanceAlongTrackRoute(TrackSection *section, s32 pointIndex, f32 fraction,
  * @ghidraAddress JPN: 0x8022ac10
  */
 void UpdateRaceProgress(RacerSlot *slot);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

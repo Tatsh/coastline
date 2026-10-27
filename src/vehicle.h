@@ -170,9 +170,6 @@ enum {
     VEHICLE_CAMERAS,          /*!< The number of cameras of a vehicle. */
 };
 
-/** The racers of a race. */
-#define RACER_SLOTS 20
-
 /** The bits of the status of a racer that stop its clock. */
 #define RACER_CLOCK_STOPPED 0x3
 
@@ -954,17 +951,6 @@ void SetupVehicleForRaceStart(Vehicle *vehicle);
  * @ghidraAddress JPN: 0x80229998
  */
 void UnusedRaceStartStub(s32 unused);
-
-/**
- * Set up a racer slot for the start of the race: attach its vehicle, or place it on the route of
- * the track when it has none.
- *
- * @param slot The slot of g_aRacerSlots.
- * @ghidraAddress USA: 0x802291f8
- * @ghidraAddress EUR: 0x8022a570
- * @ghidraAddress JPN: 0x80229d4c
- */
-void InitRacerSlot(RacerSlot *slot);
 
 /**
  * Give each racer its place in the race, by how far along the route it is.

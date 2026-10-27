@@ -7,6 +7,9 @@
 struct TrackSection;
 struct Vehicle;
 
+/** The racers of a race. */
+#define RACER_SLOTS 20
+
 /**
  * A racer of a race. A racer with a vehicle copies the progress of the vehicle; one without moves
  * along the route by itself, and keeps the progress a vehicle takes up when it gets one.
@@ -47,6 +50,10 @@ typedef struct RacerSlot {
      * @ghidraAddress BRD3D: 0x100664c0
      */
     void FreeEnemyCarColorPanels(void);
+    /**
+     * @ghidraAddress BRD3D: 0x100662a0
+     */
+    void InitRacerSlot(void);
 #endif
 #endif
 } RacerSlot;
@@ -63,7 +70,26 @@ extern "C" {
  * @ghidraAddress JPN: 0x80324ad0
  * @ghidraAddress BRD3D: 0x10acd498
  */
-extern RacerSlot g_aRacerSlots[];
+extern RacerSlot g_aRacerSlots[RACER_SLOTS];
+
+/**
+ * Set up a racer slot for the start of the race: attach its vehicle, or place it on the route of
+ * the track when it has none.
+ *
+ * @param slot The slot of g_aRacerSlots.
+ * @ghidraAddress USA: 0x802291f8
+ * @ghidraAddress EUR: 0x8022a570
+ * @ghidraAddress JPN: 0x80229d4c
+ */
+void InitRacerSlot(RacerSlot *slot);
+
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+/**
+ * @ghidraAddress BRD3D: 0x10065d50
+ * @stub
+ */
+void MakeEnemyCarColorPanels(RacerSlot *slot);
+#endif
 
 #ifdef __cplusplus
 }
