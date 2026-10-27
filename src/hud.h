@@ -12,6 +12,9 @@
 
 #include "render.h"
 #include "texrect.h"
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#include "vehiclefwd.h"
+#endif
 
 /** The views that keep their own dashboard. */
 #define DASHBOARD_VIEWS 2
@@ -92,8 +95,13 @@ extern Vtx g_aGaugeNeedleVerts[2][DASHBOARD_VIEWS][4];
  * @ghidraAddress USA: 0x80361c30
  * @ghidraAddress EUR: 0x80364130
  * @ghidraAddress JPN: 0x80362da0
+ * @ghidraAddress BRD3D: 0x104b0320
  */
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+extern char g_szHudSpeedTextBuf[];
+#else
 extern char g_szHudSpeedTextBuf[16];
+#endif
 
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
 #ifdef __cplusplus
@@ -267,6 +275,21 @@ void DrawHudMessage(const ViewportRect *viewports);
 void DrawHudMessage(void);
 #endif
 
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#ifdef __cplusplus
+extern "C" {
+#endif
+/**
+ * Draw the dashboard, times, laps, messages, and speed for a viewport.
+ * @param viewports The records of the views.
+ * @param vehicles The vehicle array. The original lap counter ignores the forwarded argument.
+ * @ghidraAddress BRD3D: 0x10017d90
+ */
+void DrawSpeedAndHudOverlay(const ViewportRect *viewports, const Vehicle *vehicles);
+#ifdef __cplusplus
+}
+#endif
+#else
 /**
  * Draw the whole display of a view: the dashboard and times unless the camera is on the bumper,
  * the lap, place and message, and the speed.
@@ -276,6 +299,7 @@ void DrawHudMessage(void);
  * @ghidraAddress JPN: 0x80239f40
  */
 void DrawSpeedAndHudOverlay(void);
+#endif
 
 /**
  * Whether the views draw the HUD and the help of the instant replay.
