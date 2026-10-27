@@ -1,6 +1,6 @@
 # PC port game code from 0x10060000 to 0x10070000
 
-114 of 173 routines done.
+116 of 173 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -33,7 +33,7 @@ the same name, for a routine the port retained from the N64 game.
 | `MouseDevice::PollMouseDevice`           |   ✅   |                 |      1 |    939 | `0x100603a0` | `0x10059410` | `void PollMouseDevice(MouseDevice * this, void * hWnd)`                                                                                  |
 | `Vehicle::ComputeTrackPosition`          |        | ✅ `0x80227214` |      3 |    937 | `0x10064350` | `0x1005d3c0` | `undefined ComputeTrackPosition(Vehicle * this)`                                                                                         |
 | `Vehicle::TraceTrackSplineRecursive`     |        | ✅ `0x80226d9c` |      3 |    856 | `0x10063ff0` | `0x1005d060` | `undefined TraceTrackSplineRecursive(Vehicle * this, undefined4 param_1, undefined4 param_2, undefined4 param_3)`                        |
-| `Vehicle::TransformAllWheelMatrices`     |        | ✅ `0x80221e0c` |      2 |    776 | `0x10061c60` | `0x1005ace0` | `undefined TransformAllWheelMatrices(Vehicle * this)`                                                                                    |
+| `Vehicle::TransformAllWheelMatrices`     |   ✅   | ✅ `0x80221e0c` |      2 |    776 | `0x10061c60` | `0x1005ace0` | `void TransformAllWheelMatrices(Vehicle * this)`                                                                                         |
 | `StepVehicleCollisions`                  |   ✅   | ✅ `0x8025e55c` |      1 |    762 | `0x1006ec80` | `0x10067c30` | `void StepVehicleCollisions(Vehicle * vehicle, RigidBody * body)`                                                                        |
 | `BounceOffPlane`                         |   ✅   | ✅ `0x8025b73c` |      1 |    760 | `0x1006c9d0` | `0x10065980` | `int BounceOffPlane(RigidBody * body, Vec3f * normal, int damp, int spin)`                                                               |
 | `UpdateAmbientSoundChannel`              |        | ✅ `0x8022b534` |      1 |    683 | `0x10067ed0` | `0x10060f40` | `undefined UpdateAmbientSoundChannel()`                                                                                                  |
@@ -95,7 +95,7 @@ the same name, for a routine the port retained from the N64 game.
 | `ResetCollisionCaches`                   |   ✅   | ✅ `0x80259350` |      1 |    134 | `0x1006ae20` |              | `void ResetCollisionCaches(void)`                                                                                                        |
 | `ApplyRemoteVehicleState`                |        |                 |      1 |    129 | `0x10060cc0` | `0x10059d30` | `undefined ApplyRemoteVehicleState()`                                                                                                    |
 | `UpdateClosestSoundSource`               |        | ✅ `0x8022b494` |      2 |    120 | `0x10067e50` | `0x10060ec0` | `undefined UpdateClosestSoundSource()`                                                                                                   |
-| `UpdateWheelTransforms`                  |        |                 |      4 |    119 | `0x10061be0` | `0x1005ac60` | `undefined UpdateWheelTransforms()`                                                                                                      |
+| `UpdateVehicleWheelTransforms`           |   ✅   |                 |      4 |    119 | `0x10061be0` |              | `void UpdateVehicleWheelTransforms(Vehicle * vehicle)`                                                                                   |
 | `ModulateRgbaByMask`                     |        |                 |      1 |    119 | `0x10061210` | `0x1005a280` | `undefined ModulateRgbaByMask()`                                                                                                         |
 | `SerializeSaveData`                      |        | ✅ `0x8022adcc` |      2 |    117 | `0x10067880` | `0x100608f0` | `undefined SerializeSaveData()`                                                                                                          |
 | `AdvanceGhostRecordFrame`                |   ✅   |                 |      1 |    111 | `0x1006ab20` | `0x10063ad0` | `void AdvanceGhostRecordFrame(void)`                                                                                                     |

@@ -1,6 +1,6 @@
 # PC port game code from 0x10050000 to 0x10060000
 
-41 of 93 routines done.
+41 of 94 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -63,6 +63,7 @@ the same name, for a routine the port retained from the N64 game.
 | `MenuFont::MeasureTextAltFont`            |   ✅   |                 |      1 |    153 | `0x1005b160` | `0x10053f80` | `void MeasureTextAltFont(MenuFont * this)`                                                                                                      |
 | `MenuFont::MeasureText`                   |   ✅   |                 |      1 |    140 | `0x1005b0d0` | `0x10053ef0` | `void MeasureText(MenuFont * this)`                                                                                                             |
 | `MenuItemList::UpdateItemAndNotify`       |        |                 |      1 |    132 | `0x1005bb80` | `0x100549a0` | `undefined UpdateItemAndNotify(MenuItemList * this, undefined4 param_1)`                                                                        |
+| `UpdateWheelTransforms`                   |        |                 |      4 |    119 |              | `0x1005ac60` | `undefined UpdateWheelTransforms()`                                                                                                             |
 | `MenuItemList::UpdateHoverInRect`         |        |                 |      1 |    117 | `0x1005c510` | `0x10055330` | `undefined UpdateHoverInRect(MenuItemList * this, undefined4 param_1)`                                                                          |
 | `MenuFont::DrawGlyph`                     |   ✅   |                 |      1 |    112 | `0x1005b730` | `0x10054550` | `int DrawGlyph(MenuFont * this, short nImage, float x, float y, int nStyle)`                                                                    |
 | `MenuItemList::SetItemData`               |        |                 |      1 |    110 | `0x1005c200` | `0x10055020` | `undefined SetItemData(MenuItemList * this, undefined4 param_1, undefined4 param_2, undefined4 param_3)`                                        |
