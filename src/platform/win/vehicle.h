@@ -354,6 +354,15 @@ extern "C" {
 void AiVehicleControllerCallback(Vehicle *vehicle);
 
 /**
+ * Refresh displayed speed when the second wheel has contact, then advance vehicle physics.
+ *
+ * @param vehicle The vehicle.
+ * @ghidraAddress BRD3D: 0x1002c430
+ * @ghidraAddress BRGlide: 0x100199a0
+ */
+void UpdateVehicleSpeedAndPhysics(Vehicle *vehicle);
+
+/**
  * @ghidraAddress BRD3D: 0x10063fe0
  */
 void PlayerVehicleControllerCallback(Vehicle *vehicle);
