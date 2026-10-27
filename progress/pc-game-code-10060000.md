@@ -1,6 +1,6 @@
 # PC port game code from 0x10060000 to 0x10070000
 
-162 of 175 routines done.
+163 of 175 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -53,7 +53,7 @@ the same name, for a routine the port retained from the N64 game.
 | `Vehicle::RespawnVehicle`                |   ✅   | ✅ `0x80226248` |      2 |    468 | `0x10063660` | `0x1005c6d0` | `void RespawnVehicle(Vehicle * this)`                                                                                              |
 | `FrontEndWindowProc`                     |   ✅   |                 |      1 |    419 | `0x10060060` | `0x100590d0` | `LRESULT FrontEndWindowProc(void * pUnused, HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)`                                    |
 | `LoadCarPaintTextures`                   |   ✅   |                 |      1 |    396 | `0x10061010` | `0x1005a080` | `void LoadCarPaintTextures(int group, int damageVariants)`                                                                         |
-| `RaycastTerrainHeight`                   |   📝   |                 |      7 |    389 | `0x1006f310` | `0x100682c0` | `float RaycastTerrainHeight(Vec3f * position)`                                                                                     |
+| `RaycastTerrainHeight`                   |   ✅   |                 |      7 |    389 | `0x1006f310` | `0x100682c0` | `float RaycastTerrainHeight(Vec3f * position)`                                                                                     |
 | `SumWheelForces`                         |   ✅   | ✅ `0x80259634` |      4 |    382 | `0x1006aff0` | `0x10063fa0` | `void SumWheelForces(RigidBody * body, RigidBody * wheel)`                                                                         |
 | `ComputeStereoPan`                       |   ✅   | ✅ `0x8022b1d4` |     10 |    380 | `0x10067bc0` | `0x10060c30` | `void ComputeStereoPan(Vec3f * source, CameraFrame * camera, float * upper, float * lower, int * volume, int narrow)`              |
 | `Vehicle::InitPlayerVehicleSlot`         |   ✅   | ✅ `0x80226100` |      1 |    368 | `0x100634f0` | `0x1005c560` | `void InitPlayerVehicleSlot(Vehicle * this)`                                                                                       |
