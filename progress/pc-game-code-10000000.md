@@ -1,6 +1,6 @@
 # PC port game code from 0x10000000 to 0x10010000
 
-225 of 247 routines done.
+226 of 247 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -119,8 +119,8 @@ the same name, for a routine the port retained from the N64 game.
 | `ProcessPendingNetworkNotifications`                       |   ✅   |                 |      1 |    100 | `0x100060f0` | `0x10006460` | `void ProcessPendingNetworkNotifications(void)`                                                                                                                                         |
 | `EnumerateTextureFormats`                                  |   ✅   |                 |      1 |     98 | `0x10009bd0` |              | `void EnumerateTextureFormats(void * pD3DDevice)`                                                                                                                                       |
 | `GetSlotPlayerName`                                        |   ✅   |                 |      6 |     97 | `0x10005e70` | `0x100061e0` | `char * GetSlotPlayerName(int nSlot)`                                                                                                                                                   |
-| `ResetShadowBuffers`                                       |        | ✅ `0x80233fdc` |      1 |     96 | `0x1000f5c0` | `0x1000cb20` | `void ResetShadowBuffers(void)`                                                                                                                                                         |
 | `ReadPlayerSlotColorRgb`                                   |   ✅   |                 |      1 |     96 | `0x10005de0` | `0x10006150` | `uint ReadPlayerSlotColorRgb(int slotIndex, uchar * red, uchar * green, uchar * blue)`                                                                                                  |
+| `ResetShadowBuffers`                                       |   ✅   | ✅ `0x80233fdc` |      1 |     96 | `0x1000f5c0` | `0x1000cb20` | `void ResetShadowBuffers(void)`                                                                                                                                                         |
 | `CHK_AllocateMemory`                                       |   ✅   |                 |      8 |     94 | `0x10003390` | `0x100036f0` | `void * CHK_AllocateMemory(int nSize, char * szCaller)`                                                                                                                                 |
 | `PauseCdAudio`                                             |   ✅   |                 |      2 |     94 | `0x10002ae0` | `0x10002e20` | `bool PauseCdAudio(void)`                                                                                                                                                               |
 | `LookupInstanceGridCell`                                   |   ✅   | ✅ `0x8021ea0c` |      1 |     94 | `0x10002e90` | `0x100031d0` | `uint LookupInstanceGridCell(int column, int row)`                                                                                                                                      |

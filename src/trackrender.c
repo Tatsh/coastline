@@ -184,12 +184,6 @@ void ProjectWorldToScreenRect(Vec3f *point, s32 size, s16 low[2], s16 high[2]) {
     high[1] = centerY - (s32)(upper[1] * halfHeight);
 }
 
-void ResetShadowBuffers(void) {
-    g_pShadowDisplayListWritePtr = g_pShadowDisplayListStart =
-        g_aShadowDisplayLists[g_dwFrameBufferIndex];
-    g_pShadowVertexWritePtr = g_pShadowVertexStart = g_aShadowVertices[g_dwFrameBufferIndex];
-}
-
 void RenderTrackInstance(s32 index, s32 vehicles, s32 deferred) {
     TrackInstance *instance = &g_LoadedTrack.instances[index];
     Gfx *displayList = instance->displayList;

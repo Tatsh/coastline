@@ -14,26 +14,6 @@
 #include "vecmath.h"
 #include "vehicle.h"
 
-/* The room for the shadows, in each of two frames. */
-#define SHADOW_COMMANDS 500  /*!< The display list commands the shadows of a frame can use. */
-#define SHADOW_VERTICES 1000 /*!< The vertices the shadows of a frame can use. */
-
-/**
- * The display lists and vertices of the shadows, one of each for each frame buffer.
- *
- * @ghidraAddress USA: 0x80353580
- * @ghidraAddress EUR: 0x80355a80
- * @ghidraAddress JPN: 0x803546f0
- */
-extern Gfx g_aShadowDisplayLists[2][SHADOW_COMMANDS];
-
-/**
- * @ghidraAddress USA: 0x803554c0
- * @ghidraAddress EUR: 0x803579c0
- * @ghidraAddress JPN: 0x80356630
- */
-extern Vtx g_aShadowVertices[2][SHADOW_VERTICES];
-
 /**
  * Whether the shadows keep the triangles off their texture, and draw beyond the rectangle of the
  * screen of their vehicle.
@@ -292,15 +272,6 @@ extern Vec3f g_vShadowForward;
  * @ghidraAddress JPN: 0x80235120
  */
 void ProjectWorldToScreenRect(Vec3f *point, s32 size, s16 low[2], s16 high[2]);
-
-/**
- * Start the display lists and vertices of the shadows of the frame.
- *
- * @ghidraAddress USA: 0x80233fdc
- * @ghidraAddress EUR: 0x802354ec
- * @ghidraAddress JPN: 0x802352ec
- */
-void ResetShadowBuffers(void);
 
 /**
  * Draw a placed model, and on it the shadow of each vehicle in a mask, by its vertices taken to the
