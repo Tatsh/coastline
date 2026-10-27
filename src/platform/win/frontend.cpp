@@ -33,6 +33,7 @@
 #endif
 
 MenuScreen *g_pActiveMenuScreen;
+int g_bAudioOptionsSfxSelected;
 void *g_pFrontEndScratchBuffer;
 MenuImage g_aMenuImages[MENU_IMAGE_COUNT];
 unsigned short g_wMenuImageLoadedCount;
@@ -1548,6 +1549,25 @@ int KeyConfigUI_OnBack(MenuActionWidget *pItem) {
     ReturnFromCachedMenu(pItem, g_pCachedMenu_KeyConfig, g_pCachedMenu_Credits);
     ReleaseJoystickDevice();
     return 0;
+}
+
+int AudioOptionsUI_OnCycleSfxVolume(MenuActionWidget *) {
+    g_bAudioOptionsSfxSelected = 1;
+    if (g_adwMouseButtonPressed[1]) {
+        g_GlobalRallyConfig.dwSfxVolume =
+            static_cast<int>(static_cast<unsigned>(g_GlobalRallyConfig.dwSfxVolume) + 1);
+        if (g_GlobalRallyConfig.dwSfxVolume > 9) {
+            g_GlobalRallyConfig.dwSfxVolume = 0;
+        }
+    } else if (g_adwMouseButtonPressed[0]) {
+        g_GlobalRallyConfig.dwSfxVolume =
+            static_cast<int>(static_cast<unsigned>(g_GlobalRallyConfig.dwSfxVolume) - 1);
+        if (g_GlobalRallyConfig.dwSfxVolume < 0) {
+            g_GlobalRallyConfig.dwSfxVolume = 9;
+        }
+    }
+    ApplyAudioVolumeSettings();
+    return 1;
 }
 
 int AudioOptionsUI_OnBackAndSave(MenuActionWidget *pItem) {
