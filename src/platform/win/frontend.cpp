@@ -3846,6 +3846,24 @@ int RaceResultsInfoUI_UpdateSelectedTimeLabel(MenuWidget *pWidget) {
     return DrawTimeAttackTimeLabel(pWidget, seconds);
 }
 
+int PreRaceInfoUI_UpdateBestTimeLabel(MenuWidget *pWidget) {
+    float seconds = 0.0f;
+    if (g_dwSeasonLoaded) {
+        u8 track = g_SeasonTable[g_bSeasonClass].races[g_dwSeasonSavedRound][0];
+        seconds = g_SeasonProgress.raceRecords[track];
+    }
+    return DrawTimeAttackTimeLabel(pWidget, seconds);
+}
+
+int PreRaceInfoUI_UpdateBestLapLabel(MenuWidget *pWidget) {
+    float seconds = 0.0f;
+    if (g_dwSeasonLoaded) {
+        u8 track = g_SeasonTable[g_bSeasonClass].races[g_dwSeasonSavedRound][0];
+        seconds = g_SeasonProgress.lapRecords[track];
+    }
+    return DrawTimeAttackTimeLabel(pWidget, seconds);
+}
+
 static inline int DrawResultsNumericLabel(MenuWidget *pWidget, int value) {
     char text[32] = {};
     _itoa(value, text, 10);
