@@ -96,10 +96,10 @@ The programs are `BRD3D.dll`, `BRGlide.dll`.
 | Excluded as Compiler-generated (static initialisers, atexit registrations, and exception funclets) |   115 |
 | Excluded as Thunk (import or jump thunk the linker generates)                                      |    73 |
 | To reconstruct                                                                                     | 1,674 |
-| Done                                                                                               | 1,187 |
+| Done                                                                                               | 1,188 |
 | Stubbed (not counted as done)                                                                      |    25 |
 | Declared only (not counted as done)                                                                |    27 |
-| Share done                                                                                         | 70.9% |
+| Share done                                                                                         | 71.0% |
 | Only in BRGlide                                                                                    |    81 |
 
 ### By release
@@ -108,14 +108,14 @@ A routine counts for a release when its address in that release is tagged.
 
 | Release       | Routines |  Done | Share |
 | ------------- | -------: | ----: | ----: |
-| `BRD3D.dll`   |    1,593 | 1,184 | 74.3% |
+| `BRD3D.dll`   |    1,593 | 1,185 | 74.4% |
 | `BRGlide.dll` |    1,446 |   575 | 39.8% |
 
 ### By component
 
 | Component | Routines |  Done | Stubbed | Share |
 | --------- | -------: | ----: | ------: | ----: |
-| Game code |    1,673 | 1,187 |      25 | 71.0% |
+| Game code |    1,673 | 1,188 |      25 | 71.0% |
 | zlib      |        1 |     0 |       0 |  0.0% |
 
 ## All releases
@@ -131,7 +131,7 @@ address in the PC libraries.
 | `usa.z64`     | Nintendo 64 |      801 |   801 | 100.0% |
 | `eur.z64`     | Nintendo 64 |      819 |   819 | 100.0% |
 | `jpn.z64`     | Nintendo 64 |      822 |   822 | 100.0% |
-| `BRD3D.dll`   | PC port     |    1,593 | 1,184 |  74.3% |
+| `BRD3D.dll`   | PC port     |    1,593 | 1,185 |  74.4% |
 | `BRGlide.dll` | PC port     |    1,446 |   575 |  39.8% |
 
 | Measure                                         | Count |
@@ -165,6 +165,6 @@ block of the master program.
 | [pc-game-code-10030000.md](progress/pc-game-code-10030000.md)         | PC port     | Game code      | `0x10030000`-`0x10040000` |      310 |  144 |  46.5% |
 | [pc-game-code-10040000.md](progress/pc-game-code-10040000.md)         | PC port     | Game code      | `0x10040000`-`0x10050000` |      264 |  222 |  84.1% |
 | [pc-game-code-10050000.md](progress/pc-game-code-10050000.md)         | PC port     | Game code      | `0x10050000`-`0x10060000` |       93 |   41 |  44.1% |
-| [pc-game-code-10060000.md](progress/pc-game-code-10060000.md)         | PC port     | Game code      | `0x10060000`-`0x10070000` |      173 |  113 |  65.3% |
+| [pc-game-code-10060000.md](progress/pc-game-code-10060000.md)         | PC port     | Game code      | `0x10060000`-`0x10070000` |      173 |  114 |  65.9% |
 | [pc-game-code-10070000.md](progress/pc-game-code-10070000.md)         | PC port     | Game code      | `0x10070000`-`0x10080000` |      232 |  218 |  94.0% |
 | [pc-game-code-10080000.md](progress/pc-game-code-10080000.md)         | PC port     | Game code      | `0x10080000`-`0x10090000` |        3 |    1 |  33.3% |

@@ -1,6 +1,6 @@
 # PC port game code from 0x10060000 to 0x10070000
 
-113 of 173 routines done.
+114 of 173 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -23,7 +23,7 @@ the same name, for a routine the port retained from the N64 game.
 | `CollideVehicles`                        |   ✅   | ✅ `0x8025fde4` |      1 |   1444 | `0x1006ffd0` | `0x10068f80` | `void CollideVehicles(void)`                                                                                                             |
 | `DriveWheel`                             |   ✅   | ✅ `0x8025ac9c` |      4 |   1354 | `0x1006c1f0` | `0x100651a0` | `void DriveWheel(RigidBody * body, RigidBody * wheel, float * load, uchar * sliding, float dt)`                                          |
 | `CollideBodyWithTriangles`               |   ✅   | ✅ `0x8025dfcc` |      1 |   1301 | `0x1006e760` | `0x10067710` | `int CollideBodyWithTriangles(RigidBody * body, float[4] * box)`                                                                         |
-| `Vehicle::SimulateVehiclePhysicsSubstep` |        | ✅ `0x80221940` |      1 |   1206 | `0x10061720` | `0x1005a7a0` | `void SimulateVehiclePhysicsSubstep(Vehicle * this)`                                                                                     |
+| `Vehicle::SimulateVehiclePhysicsSubstep` |   ✅   | ✅ `0x80221940` |      1 |   1206 | `0x10061720` | `0x1005a7a0` | `void SimulateVehiclePhysicsSubstep(Vehicle * this)`                                                                                     |
 | `RallyConfig::LoadRallyConfigFile`       |   ✅   |                 |      1 |   1194 | `0x10069ff0` | `0x10063060` | `BOOL LoadRallyConfigFile(RallyConfig * this, char * pszPath)`                                                                           |
 | `MakeEnemyCarColorPanels`                |   ✅   |                 |      1 |   1110 | `0x10065d50` | `0x1005edc0` | `void MakeEnemyCarColorPanels(RacerSlot * slot)`                                                                                         |
 | `UpdateRacerSlotMotion`                  |        | ✅ `0x8022c9fc` |      1 |   1073 | `0x10068ef0` | `0x10061f60` | `undefined UpdateRacerSlotMotion()`                                                                                                      |
