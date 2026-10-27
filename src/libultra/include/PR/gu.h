@@ -275,6 +275,7 @@ void guPerspective(
  * @ghidraAddress USA: 0x80264e50
  * @ghidraAddress EUR: 0x802665e0
  * @ghidraAddress JPN: 0x802660e0
+ * @ghidraAddress BRD3D: 0x100309a0
  */
 void guLookAtF(float mf[4][4],
                float xEye,
