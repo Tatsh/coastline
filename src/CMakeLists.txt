@@ -105,7 +105,7 @@ else()
     camerachange.c camerachase.c cameracollision.c displaylistops.c fog.c headlight.c
     playercontrol.c routeposition.c seasontrack.c tracetrack.c trackinstance.c vehiclechoice.c
     vehiclemodelrender.c vehiclephysics.c vehiclereset.c vehiclesound.c vehiclevisibility.c
-    wheelrender.c vehiclestatus.c vehicletrackpos.c vehicledeform.c racerstate.c
+    wheelrender.c vehiclestatus.c vehicletrackpos.c vehicledeform.c racerstate.c racers.c
     PROPERTIES LANGUAGE CXX)
   set_source_files_properties(controllerread.c inputtranslate.c PROPERTIES LANGUAGE CXX)
   set_source_files_properties(volumecontrols.c PROPERTIES LANGUAGE CXX)
@@ -113,7 +113,7 @@ else()
   set_source_files_properties(racerinit.c racermotion.c racersharing.c raceprogress.c
                               vehicleengine.c collisionstep.c driving.c PROPERTIES LANGUAGE CXX)
   add_library(
-    coastline_game STATIC bodyforces.c camerachase.c cameracollision.c displaylistops.c fade.c
+    coastline_game STATIC bodyforces.c camerachase.c cameracollision.c displaylistops.c fade.c racers.c
                           fog.c frameclear.c game.c heap.c mathutil.c playerinput.c profileinit.c
                           replay.c rigidbody.c renderinit.c screen.c screendraw.c seasontrack.c trackgrid.c tricache.c
                           util.c vecmath.c

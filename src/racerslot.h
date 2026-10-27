@@ -257,6 +257,16 @@ extern RacerSlot g_aRacerSlots[RACER_SLOTS];
  */
 void InitRacerSlot(RacerSlot *slot);
 
+/**
+ * Give each racer its place by distance, or read assigned vehicle positions from the network.
+ *
+ * @ghidraAddress USA: 0x80229550
+ * @ghidraAddress EUR: 0x8022a8c8
+ * @ghidraAddress JPN: 0x8022a080
+ * @ghidraAddress BRD3D: 0x10066510
+ */
+void SortRacersByPosition(void);
+
 #if TGR_PLATFORM == TGR_PLATFORM_N64
 /**
  * Update the assigned vehicle timers, messages, progress, and velocity for a frame.

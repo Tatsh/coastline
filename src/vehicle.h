@@ -763,15 +763,6 @@ void SetupVehicleForRaceStart(Vehicle *vehicle);
 void UnusedRaceStartStub(s32 unused);
 
 /**
- * Give each racer its place in the race, by how far along the route it is.
- *
- * @ghidraAddress USA: 0x80229550
- * @ghidraAddress EUR: 0x8022a8c8
- * @ghidraAddress JPN: 0x8022a080
- */
-void SortRacersByPosition(void);
-
-/**
  * Move the vehicles the computer drives to the racers nearest a player, so that the racers around
  * the player are driven in full.
  *
