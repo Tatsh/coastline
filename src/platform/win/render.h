@@ -1477,6 +1477,17 @@ int DecodeN64TextureToPixelBuffer(void *pDest,
                                   int nFormat);
 
 /**
+ * Select an aspect ratio code from the truncated ratio of the dimensions.
+ *
+ * @param pAspectRatio Receives the aspect ratio code.
+ * @param nWidth The width, nonzero when it is the divisor.
+ * @param nHeight The height, nonzero when it is the divisor.
+ * @return Whether the ratio in eighths truncates to 8, 16, 32 or 64.
+ * @ghidraAddress BRD3D: 0x10028200
+ */
+int CalculateTextureAspectRatio(int *pAspectRatio, int nWidth, int nHeight);
+
+/**
  * Create a device texture from an N64 image and its load options.
  *
  * @ghidraAddress BRD3D: 0x10027c60

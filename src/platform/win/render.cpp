@@ -1629,3 +1629,12 @@ int PreparePaintTexture(int *pWidth, int *pHeight, TextureImageData *pImage) {
     }
     return 1;
 }
+
+int CalculateTextureAspectRatio(int *pAspectRatio, int nWidth, int nHeight) {
+    bool wide = nWidth > nHeight;
+    int ratio = wide ? static_cast<int>(static_cast<unsigned>(nWidth) << 3) / nHeight :
+                       static_cast<int>(static_cast<unsigned>(nHeight) << 3) / nWidth;
+    int level = ratio >= 64 ? 0 : ratio >= 32 ? 1 : ratio >= 16 ? 2 : 3;
+    *pAspectRatio = wide ? level : 6 - level;
+    return ratio == 64 || ratio == 32 || ratio == 16 || (!wide && ratio == 8);
+}
