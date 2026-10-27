@@ -41,3 +41,20 @@ void TickDebugOverlayMessageTimer(void);
  * @ghidraAddress BRD3D: 0x10017cd0
  */
 extern "C" long double ComputeTimeGapToLeader(const Vehicle *vehicles, int index);
+
+/**
+ * The shared buffer for the gap prefix and formatted time.
+ *
+ * @ghidraAddress BRD3D: 0x104aff20
+ */
+extern char g_szGapToLeaderText[];
+
+/**
+ * Format a positive time gap with a plus prefix, or clear the buffer otherwise.
+ *
+ * @param vehicles The active vehicle array.
+ * @param index The vehicle whose gap is measured.
+ * @return The shared gap text buffer.
+ * @ghidraAddress BRD3D: 0x10017c80
+ */
+extern "C" char *FormatGapToLeaderString(const Vehicle *vehicles, int index);

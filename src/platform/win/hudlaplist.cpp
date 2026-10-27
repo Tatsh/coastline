@@ -3,6 +3,7 @@
 #include <hud.h>
 
 #include "camera.h"
+#include "laptime.h"
 #include "platform/win/hud.h"
 #include "platform/win/settings.h"
 #include "render.h"
@@ -51,4 +52,17 @@ long double ComputeTimeGapToLeader(const Vehicle *vehicles, int index) {
         speed = 25.0L;
     }
     return gap / speed;
+}
+
+char *FormatGapToLeaderString(const Vehicle *vehicles, int index) {
+    long double gap = ComputeTimeGapToLeader(vehicles, index);
+    f32 seconds = gap;
+
+    if (gap > 0.0L) {
+        g_szGapToLeaderText[0] = '+';
+        FormatLapTime(g_szGapToLeaderText + 1, seconds);
+    } else {
+        g_szGapToLeaderText[0] = '\0';
+    }
+    return g_szGapToLeaderText;
 }
