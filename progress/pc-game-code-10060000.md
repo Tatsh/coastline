@@ -1,6 +1,6 @@
 # PC port game code from 0x10060000 to 0x10070000
 
-160 of 173 routines done.
+162 of 175 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -148,6 +148,7 @@ the same name, for a routine the port retained from the N64 game.
 | `Vehicle::ClearVehicleDamageState`       |   ✅   | ✅ `0x80228a3c` |      1 |     34 | `0x10065710` | `0x1005e780` | `void ClearVehicleDamageState(Vehicle * this)`                                                                                     |
 | `ShowInfoMessageBox`                     |   ✅   |                 |      4 |     33 | `0x10060030` | `0x100590a0` | `int ShowInfoMessageBox(void * hWnd, long hResult, char * pszText)`                                                                |
 | `SetColorTintMultipliers`                |   ✅   |                 |      3 |     30 | `0x10061460` | `0x1005a4e0` | `void SetColorTintMultipliers(int nRed, int nGreen, int nBlue)`                                                                    |
+| `CopyDamageTextureLevels`                |   ✅   |                 |      1 |     30 |              | `0x1006e080` | `void CopyDamageTextureLevels(uint * pdwLevels)`                                                                                   |
 | `PrepareTrackSections`                   |   ✅   | ✅ `0x80255ca0` |      1 |     30 | `0x10061700` | `0x1005a780` | `void PrepareTrackSections(void)`                                                                                                  |
 | `IncreaseBgmVolume`                      |   ✅   | ✅ `0x80211840` |      1 |     29 | `0x10060d50` | `0x10059dc0` | `void IncreaseBgmVolume(void)`                                                                                                     |
 | `IncreaseSfxVolume`                      |   ✅   | ✅ `0x802118f8` |      1 |     29 | `0x10060dc0` | `0x10059e30` | `void IncreaseSfxVolume(void)`                                                                                                     |
@@ -167,6 +168,7 @@ the same name, for a routine the port retained from the N64 game.
 | `SetWeatherAndRefreshVehicleMaterials`   |   ✅   |                 |      1 |     18 | `0x100697c0` |              | `void SetWeatherAndRefreshVehicleMaterials(uint weather)`                                                                          |
 | `UpdateMouseInput`                       |   ✅   |                 |      1 |     18 | `0x10060260` | `0x100592d0` | `void UpdateMouseInput(void)`                                                                                                      |
 | `ClearGhostPlaybackState`                |   ✅   |                 |      3 |     17 | `0x1006abb0` | `0x10063b60` | `void ClearGhostPlaybackState(void)`                                                                                               |
+| `ClearDamageTextureLevels`               |   ✅   |                 |      1 |     17 |              | `0x1006e060` | `void ClearDamageTextureLevels(void)`                                                                                              |
 | `RegisterRallyConfigAtExit`              |        |                 |      1 |     14 | `0x10069a70` | `0x10062ae0` | `undefined RegisterRallyConfigAtExit()`                                                                                            |
 | `GetGhostKeyframeDataSize`               |   ✅   |                 |      4 |     12 | `0x1006aba0` | `0x10063b50` | `uint GetGhostKeyframeDataSize(void)`                                                                                              |
 | `RallyConfig::RallyConfig`               |   ✅   |                 |      2 |     12 | `0x10069a90` | `0x10062b00` | `RallyConfig * RallyConfig(RallyConfig * this)`                                                                                    |
