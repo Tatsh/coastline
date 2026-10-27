@@ -1376,6 +1376,11 @@ void DestroyNetworkGroups(void);
 void InitializeNetworkServiceProvider(void);
 
 /**
+ * @ghidraAddress BRD3D: 0x1003d480
+ */
+HRESULT CreateServiceProviderAddress(void **ppAddress, DWORD *pdwSize);
+
+/**
  * Start the service provider chosen and the timer of network play of the main window, and mark the
  * DirectPlay session open.
  *

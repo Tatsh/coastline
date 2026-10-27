@@ -1167,6 +1167,117 @@ bool InitServiceProviderAndStartTimer(void) {
     return true;
 }
 
+HRESULT CreateServiceProviderAddress(void **ppAddress, DWORD *pdwSize) {
+    GUID *pGuid = nullptr;
+    HRESULT result = GetSelectedServiceProvider(&pGuid);
+    void *address = nullptr;
+    DWORD size = 0;
+    DPCOMPOUNDADDRESSELEMENT elements[3];
+    DWORD count = 1;
+    if (SUCCEEDED(result)) {
+        elements[0].guidDataType = DPAID_ServiceProvider;
+        elements[0].dwDataSize = sizeof(GUID);
+        if (IsEqualGUID(*pGuid, DPSPGUID_MODEM)) {
+            elements[0].lpData = const_cast<GUID *>(&DPSPGUID_MODEM);
+            if (std::strlen(g_szModemDeviceName) > 1) {
+                elements[count].guidDataType = DPAID_Modem;
+                elements[count].dwDataSize = lstrlenA(g_szModemDeviceName) + 1;
+                elements[count++].lpData = g_szModemDeviceName;
+            }
+            elements[count].guidDataType = DPAID_Phone;
+            elements[count].dwDataSize = lstrlenA(g_szModemPhoneNumber) + 1;
+            elements[count++].lpData = g_szModemPhoneNumber;
+        } else if (IsEqualGUID(*pGuid, DPSPGUID_TCPIP)) {
+            elements[0].lpData = const_cast<GUID *>(&DPSPGUID_TCPIP);
+            if (std::strlen(g_GlobalRallyConfig.szTcpIpAddress) <= 1) {
+                lstrcpyA(g_GlobalRallyConfig.szTcpIpAddress, g_szEmptyUiString);
+            }
+            elements[1].guidDataType = DPAID_INet;
+            elements[1].dwDataSize = lstrlenA(g_GlobalRallyConfig.szTcpIpAddress) + 1;
+            elements[1].lpData = g_GlobalRallyConfig.szTcpIpAddress;
+            if (std::strlen(g_GlobalRallyConfig.szTcpIpPort) <= 1) {
+                lstrcpyA(g_GlobalRallyConfig.szTcpIpPort, g_szEmptyUiString);
+            }
+            elements[2].guidDataType = DPAID_INetPort;
+            // The original supplies the port as a string, including its terminator.
+            elements[2].dwDataSize = lstrlenA(g_GlobalRallyConfig.szTcpIpPort) + 1;
+            elements[2].lpData = g_GlobalRallyConfig.szTcpIpPort;
+            count = 3;
+        } else if (IsEqualGUID(*pGuid, DPSPGUID_IPX)) {
+            elements[0].lpData = const_cast<GUID *>(&DPSPGUID_IPX);
+        } else {
+            // The original passes the address of the GUID pointer for an unknown provider.
+            elements[0].lpData = &pGuid;
+        }
+        result = g_pDirectPlayLobby->CreateCompoundAddress(elements, count, nullptr, &size);
+        if (result == DPERR_BUFFERTOOSMALL) {
+            address = GlobalLock(GlobalAlloc(GHND, size));
+            if (address == nullptr) {
+                result = E_OUTOFMEMORY;
+            } else {
+                result = g_pDirectPlayLobby->CreateCompoundAddress(elements, count, address, &size);
+                if (SUCCEEDED(result)) {
+                    *ppAddress = address;
+                    *pdwSize = size;
+                    return DP_OK;
+                }
+            }
+        }
+    }
+    if (address != nullptr) {
+        GlobalUnlock(GlobalHandle(address));
+        GlobalFree(GlobalHandle(address));
+    }
+    return result;
+}
+
+void InitializeNetworkServiceProvider(void) {
+    void *address = nullptr;
+    DWORD size = 0;
+    HRESULT result;
+    char error[0x400];
+    KillTimer(g_hMainWindow, g_dwNetworkTimerId);
+    CloseAndReleaseDirectPlay();
+    result = CreateServiceProviderAddress(&address, &size);
+    if (address != nullptr) {
+        result = CreateDirectPlayObject(&g_DirectPlayInfo.pDirectPlay);
+        g_dwDirectPlayInstanceCount++;
+        if (SUCCEEDED(result) && g_DirectPlayInfo.pDirectPlay != nullptr) {
+            result = g_DirectPlayInfo.pDirectPlay->InitializeConnection(address, 0);
+            if (SUCCEEDED(result)) {
+                if (g_dwServiceProviderIndex != SERVICE_PROVIDER_MODEM &&
+                    g_dwServiceProviderIndex != SERVICE_PROVIDER_SERIAL) {
+                    if (g_pJoinCreateGameMenu != nullptr) {
+                        result = RefreshNetworkSessionList(g_DirectPlayInfo.pDirectPlay);
+                        if (FAILED(result)) {
+                            goto finished;
+                        }
+                    }
+                    g_dwNetworkTimerId =
+                        SetTimer(g_hMainWindow, NETWORK_TIMER_ID, NETWORK_TIMER_PERIOD, nullptr);
+                    g_dwDirectPlaySessionActive = true;
+                }
+                if (g_DirectPlayInfo.hPlayerEvent == nullptr) {
+                    g_DirectPlayInfo.hPlayerEvent = CreateEventA(nullptr, FALSE, FALSE, nullptr);
+                    if (g_DirectPlayInfo.hPlayerEvent != nullptr) {
+                        return;
+                    }
+                    result = E_OUTOFMEMORY;
+                } else {
+                    return;
+                }
+            }
+        }
+    }
+finished:
+    if (result != DPERR_USERCANCEL) {
+        // The message is formatted and not shown.
+        std::sprintf(error,
+                     "Could not select service provider because of error 0x%08X",
+                     static_cast<unsigned>(result));
+    }
+}
+
 bool InitServiceProviderAndStartSession(void) {
     InitializeNetworkServiceProvider();
     g_dwNetworkTimerId = SetTimer(g_hMainWindow, NETWORK_TIMER_ID, NETWORK_TIMER_PERIOD, nullptr);
