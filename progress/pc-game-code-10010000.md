@@ -1,6 +1,6 @@
 # PC port game code from 0x10010000 to 0x10020000
 
-107 of 161 routines done.
+108 of 161 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -15,7 +15,7 @@ the same name, for a routine the port retained from the N64 game.
 | `RenderTextToDisplayList`                              |   ✅   | ✅ `0x8022e4e0` |      3 |   2992 | `0x10018590` | `0x10015b10` | `void RenderTextToDisplayList(char * text)`                                                                                                                                                                                                  |
 | `RenderPrecipitationEffect`                            |        | ✅ `0x8023a784` |      1 |   2389 | `0x10019b50` | `0x10017110` | `void RenderPrecipitationEffect(void)`                                                                                                                                                                                                       |
 | `BuildVisibleInstanceList`                             |        | ✅ `0x80234ff8` |      1 |   1991 | `0x10010dc0` | `0x1000e320` | `void BuildVisibleInstanceList(int context, int region, int * pFrustumState)`                                                                                                                                                                |
-| `DrawFillRectangle`                                    |   📝   |                 |      2 |   1934 | `0x1001be90` | `0x1001e380` | `void DrawFillRectangle(int nLeft, int nTop, int nRight, int nBottom)`                                                                                                                                                                       |
+| `DrawFillRectangle`                                    |   ✅   |                 |      2 |   1934 | `0x1001be90` | `0x1001e380` | `void DrawFillRectangle(int nLeft, int nTop, int nRight, int nBottom)`                                                                                                                                                                       |
 | `RenderDashboardGauges`                                |        | ✅ `0x80237980` |      1 |   1703 | `0x10016b40` | `0x100140b0` | `void RenderDashboardGauges(void * pRenderNode, void * pEntityList)`                                                                                                                                                                         |
 | `RenderSkybox`                                         |        | ✅ `0x8022f968` |      2 |   1239 | `0x100180b0` | `0x10015630` | `void RenderSkybox(void * pRenderNode)`                                                                                                                                                                                                      |
 | `UpdatePrecipitationParticles`                         |        | ✅ `0x8023a1c8` |      1 |   1142 | `0x100196d0` | `0x10016c90` | `void UpdatePrecipitationParticles(void)`                                                                                                                                                                                                    |
