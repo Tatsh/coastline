@@ -10,6 +10,7 @@ addi
 addiu
 addrs
 addu
+adpcm
 aiframes
 airplane
 airplanetrigger
@@ -54,6 +55,7 @@ bgdim
 bgtz
 bilerp
 bilinearly
+billboardparticles
 bitspixel
 blez
 blit
@@ -67,6 +69,7 @@ bsky
 bsuspension
 btire
 bufbusy
+bufferlost
 buildsystems
 bzero
 camerachange
@@ -97,6 +100,7 @@ ccmux
 cdaudio
 cdrom
 centered
+centimeters
 channelmix
 chatbar
 chdrive
@@ -112,6 +116,7 @@ collisionstep
 colored
 colorkeyenable
 combkey
+completionthreads
 configfile
 congrat
 contpfs
@@ -217,7 +222,10 @@ diprop
 dipropautocenter
 dipropdword
 diproprange
+directionalmatrix
 directplay
+directsoundoutput
+directsoundstate
 directx
 diref
 disasm
@@ -244,6 +252,7 @@ doubleword
 dpaid
 dpal
 dpcompoundaddresselement
+dpcredentials
 dpenumplayers
 dpenumsessions
 dperr
@@ -266,12 +275,15 @@ drenderstate
 drenderstatetype
 drytire
 dsbcaps
+dsbfrequency
 dsbpan
 dsbplay
 dsbstatus
 dsbufferdesc
 dsbvolume
+dscaps
 dsdx
+dserr
 dshade
 dsinf
 dsll
@@ -284,10 +296,12 @@ dtdy
 dtgr
 dtlvertex
 dvcpkg
+dxguid
 dxversion
 dzlib
 earias
 earpds
+earplayback
 earsound
 ebrake
 edma
@@ -321,8 +335,10 @@ esbenp
 exceptasm
 excmask
 exhaustpos
+exhaustspawn
 exitmenuloop
 extraout
+fadeupdate
 farproc
 fbrwd
 fcntl
@@ -341,6 +357,7 @@ fovy
 foxundermoon
 fpart
 fpcsr
+fpshud
 framebegin
 frameclear
 frameflush
@@ -384,7 +401,9 @@ hasm
 hbitmap
 hdlr
 hdwr
+headlightglare
 headtex
+hglobal
 higuy
 hilite
 hinstance
@@ -396,6 +415,11 @@ hoststarted
 hpstr
 hresult
 hudlaplist
+hudmessage
+hudnetwork
+hudoverlay
+hudquad
+hudrace
 hudtime
 huft
 iasm
@@ -435,12 +459,12 @@ jsonschema
 jtbl
 kemco
 keybd
-kilometers
 kseg
 kuseg
 laprecords
 laptime
 laptimes
+lastlapsnapshot
 lbcmp
 lbcopy
 lbzero
@@ -499,6 +523,7 @@ lsavercp
 lsaverest
 lsend
 lshift
+lstrcat
 lstrcpy
 lstrlen
 lyield
@@ -523,6 +548,7 @@ mdsft
 medshok
 medtire
 memcpy
+memorybudget
 memset
 menufont
 menuitemrom
@@ -539,10 +565,12 @@ mktemp
 mmckinfo
 mmio
 mmioinfo
+mmsyserr
 mnrwd
 moddi
 modelanimation
 modelanimationflags
+modeldraw
 modelpart
 modelpartflags
 modelpartpos
@@ -615,9 +643,13 @@ paletteindexed
 palettized
 parms
 parmsa
+particleexhaustrender
 particleinit
+particlesmokerender
 particlesnapshot
+particleupdate
 pathlib
+pcmstream
 pcmwaveformat
 penm
 permuter
@@ -651,6 +683,7 @@ pirawdma
 pirawread
 pjrwd
 placedvel
+playbacklifetime
 playercontrol
 playerinput
 playerlost
@@ -660,6 +693,8 @@ podarchive
 popmtx
 ppsz
 preapproved
+precipitationrender
+precipitationupdate
 prenmi
 primarybuffer
 primarysurface
@@ -677,10 +712,12 @@ racemenu
 raceprogress
 racercolor
 racerecords
+raceresults
 racerinit
 racermotion
 racersharing
 racerslot
+racerstate
 racesound
 raininit
 rallyconfig
@@ -730,8 +767,11 @@ rxsize
 savd
 savestate
 sbclaude
+scheduledevent
 schemafile
 screendraw
+screenfade
+screenrect
 seasn
 seasoncars
 seasondesc
@@ -782,6 +822,7 @@ slti
 sltu
 smokepos
 snapcraft
+snapshotinterpolation
 sndlevl
 snowdl
 softshok
@@ -871,6 +912,10 @@ tgmath
 thiscall
 timerintr
 timingframe
+tiresmokespawn
+tirespray
+tiresprayemit
+tiresprayrender
 tiretype
 tlbp
 tlbpgmask
@@ -887,8 +932,10 @@ tracetrack
 trackanimation
 trackgrid
 trackinstance
+trackload
 trackmenuitem
 trackrender
+trackskidmarks
 tracktexture
 trackvalid
 trak
@@ -925,6 +972,7 @@ vehiclecamera
 vehiclechoice
 vehiclecolor
 vehiclecount
+vehicledeform
 vehicleeffects
 vehicleengine
 vehicleforces
@@ -932,6 +980,7 @@ vehicleindex
 vehiclemodel
 vehiclemodelload
 vehiclemodelrender
+vehiclepaint
 vehiclephysics
 vehiclerender
 vehiclereset
@@ -954,6 +1003,7 @@ visetmode
 visetspecial
 visgrid
 visiblecompare
+visibleinstances
 viswapbuf
 viswapcontext
 vmodeldl
@@ -963,6 +1013,7 @@ vretrace
 vsince
 waitforsingleobject
 wasstilldrawing
+wavechunks
 waveformatex
 wavread
 wctype
@@ -977,6 +1028,7 @@ wheelrender
 windowposchanging
 winget
 winmain
+winmm
 winprog
 wiswa
 wiswa's
