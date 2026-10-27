@@ -9,6 +9,10 @@
 #include <PR/gbi.h>
 #include <PR/ultratypes.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /**
  * Convert a floating-point matrix to the fixed-point form of the RSP.
  *
@@ -38,6 +42,7 @@ void guMtxL2F(float mf[4][4], Mtx *m);
  * @ghidraAddress USA: 0x80260fd0
  * @ghidraAddress EUR: 0x80262460
  * @ghidraAddress JPN: 0x80261f10
+ * @ghidraAddress BRD3D: 0x100307d0
  */
 void guMtxIdentF(float mf[4][4]);
 
@@ -489,5 +494,9 @@ float sqrtf(float x);
  * @ghidraAddress JPN: 0x80265640
  */
 s16 sins(u16 x);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

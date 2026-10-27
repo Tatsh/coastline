@@ -33,6 +33,7 @@ add_library(
   texturescan.cpp
   timer.c
   vehicle.cpp
+  vehiclesetup.cpp
   wavread.c
   winmain-${TGR_RENDERER}.cpp)
 # The DirectDraw and Direct3D renderer belongs to the Direct3D library alone.

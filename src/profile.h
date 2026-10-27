@@ -74,6 +74,9 @@ typedef struct {
 #endif
 } PlayerProfile;
 
+/** Initialise profile options and clear records for the available tracks. */
+void InitPlayerProfileDefaults(PlayerProfile *profile, s32 trackCount);
+
 /**
  * The profile of the player being played.
  *

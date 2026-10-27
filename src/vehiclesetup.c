@@ -8,23 +8,8 @@
 #include "trackselect.h"
 #include "vecmath.h"
 #include "vehicle.h"
+#include "vehiclechoice.h"
 #include "weather.h"
-
-/* The seasons whose unlocks choose the car of a computer. */
-#define CAR_CHOICE_SEASONS 4
-
-/* The car of a computer when its season unlocks none of the first sixteen. */
-#define FALLBACK_CAR 5
-#define UNLOCK_BITS 16
-
-/* The unlocks, tracks and weathers of a new profile, and its car options. */
-#define NEW_PROFILE_UNLOCKS 0x102
-#define NEW_PROFILE_TRACKS 4
-#define NEW_PROFILE_WEATHERS 1
-#define NEW_PROFILE_TRANSMISSION 1
-#define NEW_PROFILE_HANDLING 0
-#define NEW_PROFILE_SUSPENSION 1
-#define NEW_PROFILE_TIRES 2
 
 /* The profiles a controller pak keeps, one for each of the first two players. */
 #define SAVED_PROFILES 2
@@ -52,41 +37,10 @@
 #define SPRAY_VERTEX_ALPHA 0xFF
 
 void ChooseVehicleCar(Vehicle *vehicle) {
-    s32 season = g_aVehicles[0].profile->season;
-    s32 unlockSeason = season;
-    s16 unlocks;
     s32 car;
 
-    if (season >= CAR_CHOICE_SEASONS) {
-        unlockSeason = CAR_CHOICE_SEASONS - 1;
-    }
-
-    if (vehicle->index >= (s32)g_dwNumLocalPlayers) {
-        if (g_dwGameMode == GAME_MODE_ARCADE) {
-            vehicle->carModel = g_aVehicles[0].carModel;
-            return;
-        }
-        /* The lowest car the season unlocks; the clamped season chooses it, the season itself
-         * the first car. */
-        unlocks = g_SeasonTable[unlockSeason].unlocks;
-        for (car = 0; car < UNLOCK_BITS; car++) {
-            if (unlocks & 1) {
-                break;
-            }
-            unlocks >>= 1;
-        }
-        if (car == UNLOCK_BITS) {
-            car = FALLBACK_CAR;
-        }
-        if ((s32)g_dwNumLocalPlayers < vehicle->index) {
-            vehicle->carModel = car;
-            return;
-        }
-        vehicle->carModel = g_SeasonTable[season].cars[vehicle->index - g_dwNumLocalPlayers];
-        return;
-    }
-    if (g_dwGameMode == GAME_MODE_CHAMPIONSHIP) {
-        vehicle->carModel = g_SeasonTable[season].cars[0];
+    if (ChooseVehicleCarId(vehicle, &car) != CAR_CHOICE_UNCHANGED) {
+        vehicle->carModel = car;
     }
 }
 
@@ -107,29 +61,13 @@ void InitVehicleColor(Vehicle *vehicle) {
 
 void InitPlayerVehicleSlot(Vehicle *vehicle) {
     PlayerProfile *profile;
-    s32 i;
 
     BindPlayerInputToVehicle(vehicle);
     vehicle->index = vehicle - g_aVehicles;
     if (vehicle->index < SAVED_PROFILES) {
         profile = &g_aSeasonSaveBuffers[vehicle->index];
         vehicle->profile = profile;
-        profile->championshipFlags = 0;
-        vehicle->profile->season = 0;
-        vehicle->profile->seasonPoints[0] = 0;
-        vehicle->profile->round = 0;
-        vehicle->profile->unlocks = NEW_PROFILE_UNLOCKS;
-        vehicle->profile->unlockedTracks = NEW_PROFILE_TRACKS;
-        vehicle->profile->unlockedWeathers = NEW_PROFILE_WEATHERS;
-        vehicle->profile->transmission = NEW_PROFILE_TRANSMISSION;
-        vehicle->profile->handling = NEW_PROFILE_HANDLING;
-        vehicle->profile->suspension = NEW_PROFILE_SUSPENSION;
-        vehicle->profile->tires = NEW_PROFILE_TIRES;
-        vehicle->profile->controllerLayout = 0;
-        for (i = 0; i < g_dwNumTracks; i++) {
-            vehicle->profile->lapRecords[i] = 0.0f;
-            vehicle->profile->raceRecords[i] = 0.0f;
-        }
+        InitPlayerProfileDefaults(profile, g_dwNumTracks);
     } else {
         vehicle->profile = NULL;
     }
