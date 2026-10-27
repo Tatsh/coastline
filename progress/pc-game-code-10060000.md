@@ -1,6 +1,6 @@
 # PC port game code from 0x10060000 to 0x10070000
 
-103 of 173 routines done.
+104 of 173 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -38,7 +38,7 @@ the same name, for a routine the port retained from the N64 game.
 | `BounceOffPlane`                         |   ✅   | ✅ `0x8025b73c` |      1 |    760 | `0x1006c9d0` | `0x10065980` | `int BounceOffPlane(RigidBody * body, Vec3f * normal, int damp, int spin)`                                                               |
 | `UpdateAmbientSoundChannel`              |        | ✅ `0x8022b534` |      1 |    683 | `0x10067ed0` | `0x10060f40` | `undefined UpdateAmbientSoundChannel()`                                                                                                  |
 | `ApplyVehicleKeyframe`                   |   ✅   |                 |      2 |    673 | `0x10060a10` | `0x10059a80` | `void ApplyVehicleKeyframe(Vehicle * pVehicle, KeyframeState * pState)`                                                                  |
-| `CollectTrianglesInBox`                  |        | ✅ `0x8025d060` |      1 |    669 | `0x1006db20` | `0x10066ad0` | `undefined CollectTrianglesInBox()`                                                                                                      |
+| `CollectTrianglesInBox`                  |   ✅   | ✅ `0x8025d060` |      1 |    669 | `0x1006db20` | `0x10066ad0` | `int CollectTrianglesInBox(RigidBody * body, float[4] * box)`                                                                            |
 | `ComputeCollisionPenetration`            |        | ✅ `0x8025dcb8` |      1 |    668 | `0x1006e4c0` | `0x10067470` | `undefined ComputeCollisionPenetration()`                                                                                                |
 | `ClassifyTriangleInUnitCube`             |   ✅   | ✅ `0x8025c2c8` |      1 |    644 | `0x1006d2b0` | `0x10066260` | `int ClassifyTriangleInUnitCube(Vec3f * triangle)`                                                                                       |
 | `IsPointInTrackTriangle`                 |   ✅   | ✅ `0x8025b3b0` |      2 |    599 | `0x1006c740` | `0x100656f0` | `short IsPointInTrackTriangle(TrackTriangle * triangle, Vec3f * point)`                                                                  |

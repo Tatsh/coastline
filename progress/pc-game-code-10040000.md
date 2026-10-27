@@ -1,6 +1,6 @@
 # PC port game code from 0x10040000 to 0x10050000
 
-167 of 264 routines done.
+169 of 264 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -31,7 +31,7 @@ the same name, for a routine the port retained from the N64 game.
 | `MenuWidget::UpdateHoverState`                     |   ✅   |                 |      1 |    587 | `0x10047a60` | `0x10040eb0` | `bool UpdateHoverState(MenuWidget * this)`                                                                                                                |
 | `KeyConfigUI_UpdateBindingLabel`                   |   ✅   |                 |      1 |    563 | `0x100400e0` | `0x10039620` | `int KeyConfigUI_UpdateBindingLabel(MenuWidget * pWidget)`                                                                                                |
 | `SaveSeasonUI_OnSlotNameEntered`                   |        |                 |      1 |    553 | `0x10041df0` | `0x1003b350` | `undefined SaveSeasonUI_OnSlotNameEntered()`                                                                                                              |
-| `KeyConfigUI_PollKeyCapture`                       |        |                 |      1 |    540 | `0x10040450` | `0x10039990` | `undefined KeyConfigUI_PollKeyCapture()`                                                                                                                  |
+| `KeyConfigUI_PollKeyCapture`                       |   ✅   |                 |      1 |    540 | `0x10040450` | `0x10039990` | `int KeyConfigUI_PollKeyCapture(MenuWidget * pWidget)`                                                                                                    |
 | `LoadAutoSaveSeason`                               |   ✅   |                 |      1 |    534 | `0x10041bd0` | `0x1003b130` | `void LoadAutoSaveSeason(void)`                                                                                                                           |
 | `LoadTimeAttackMenuUI_OnSlotSelected`              |        |                 |      1 |    527 | `0x10042880` | `0x1003bde0` | `undefined LoadTimeAttackMenuUI_OnSlotSelected()`                                                                                                         |
 | `NetworkCarSetupUI_OnRefreshSessionDesc`           |        |                 |      1 |    491 | `0x10043a00` | `0x1003cf50` | `undefined NetworkCarSetupUI_OnRefreshSessionDesc()`                                                                                                      |
@@ -55,7 +55,7 @@ the same name, for a routine the port retained from the N64 game.
 | `ShowPreRaceInfoScreen`                            |   ✅   |                 |      6 |    293 | `0x10045c90` | `0x1003f130` | `int ShowPreRaceInfoScreen(void)`                                                                                                                         |
 | `ShowRaceResultsSummaryScreen`                     |   ✅   |                 |      1 |    293 | `0x10045f70` | `0x1003f410` | `int ShowRaceResultsSummaryScreen(void)`                                                                                                                  |
 | `ReturnToMainMenuFromSeason`                       |        |                 |      1 |    284 | `0x10046260` | `0x1003f700` | `undefined ReturnToMainMenuFromSeason()`                                                                                                                  |
-| `DetectDuplicateKeyBindings`                       |        |                 |      5 |    277 | `0x10040330` | `0x10039870` | `BOOL DetectDuplicateKeyBindings(DWORD dwParam)`                                                                                                          |
+| `DetectDuplicateKeyBindings`                       |   ✅   |                 |      5 |    277 | `0x10040330` | `0x10039870` | `int DetectDuplicateKeyBindings(int nDevice)`                                                                                                             |
 | `ShowNetworkCarSetupScreen`                        |   ✅   |                 |      2 |    254 | `0x100446d0` | `0x1003dc20` | `int ShowNetworkCarSetupScreen(void)`                                                                                                                     |
 | `ValidateEntityState`                              |        |                 |    122 |    251 | `0x10047360` | `0x100407b0` | `BOOL ValidateEntityState(int pEntity)`                                                                                                                   |
 | `MenuScreen::RunFrame`                             |   ✅   |                 |      1 |    249 | `0x100489a0` | `0x10041dd0` | `bool RunFrame(MenuScreen * this)`                                                                                                                        |
