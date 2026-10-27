@@ -16,6 +16,7 @@
 #include "platform/win/boot/strings.h"
 #include "platform/win/frametimer.h"
 #include "platform/win/frontend.h"
+#include "platform/win/hud.h"
 #include "platform/win/input.h"
 #include "platform/win/netstream.h"
 #include "platform/win/settings.h"
@@ -2497,6 +2498,34 @@ HRESULT CloseAndReleaseDirectPlay(void) {
 
 char g_szNetStatusString[0x400];
 int g_bNetStatusStringDirty;
+
+void ProcessPendingNetworkNotifications(void) {
+    WaitForSingleObject(g_hNetNotifyMutex, INFINITE);
+    if (g_nPendingNetSoundEffect >= 0) {
+        PlaySoundChannelOneOnce(g_nPendingNetSoundEffect, 0x200020);
+        g_nPendingNetSoundEffect = -1;
+    }
+    if (g_bNetStatusStringDirty != 0) {
+        g_pszDebugOverlayMessage = g_szNetStatusString;
+        g_fDebugOverlayMessageTimer = 3.0f;
+        g_bNetStatusStringDirty = 0;
+    }
+    ReleaseMutex(g_hNetNotifyMutex);
+}
+
+unsigned ReadPlayerSlotColorRgb(int slotIndex,
+                                unsigned char *red,
+                                unsigned char *green,
+                                unsigned char *blue) {
+    NetPeerSlot &slot = g_aNetPeerSlots[slotIndex];
+    WaitForSingleObject(slot.hMutex, INFINITE);
+    unsigned car = slot.nCar;
+    *red = slot.color[0];
+    *green = slot.color[1];
+    *blue = slot.color[2];
+    ReleaseMutex(slot.hMutex);
+    return car;
+}
 int g_anDepartedPlayerSlotStack[PLAYER_SLOT_STACK_SIZE];
 int g_nDepartedPlayerStackTop;
 int g_anJoinedPlayerSlotStack[PLAYER_SLOT_STACK_SIZE];

@@ -1003,6 +1003,21 @@ extern char g_szNetStatusString[];
 extern int g_bNetStatusStringDirty;
 
 /**
+ * @ghidraAddress BRD3D: 0x100060f0
+ * @ghidraAddress BRGlide: 0x10006460
+ */
+void ProcessPendingNetworkNotifications(void);
+
+/**
+ * @ghidraAddress BRD3D: 0x10005de0
+ * @ghidraAddress BRGlide: 0x10006150
+ */
+unsigned ReadPlayerSlotColorRgb(int slotIndex,
+                                unsigned char *red,
+                                unsigned char *green,
+                                unsigned char *blue);
+
+/**
  * Set the line of status of network play under the mutex of the notices.
  *
  * @param pszStatus The line.
