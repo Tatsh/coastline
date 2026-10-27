@@ -11,6 +11,10 @@
 int g_dwGlyphThrottleAccumMs;
 unsigned g_dwGlyphThrottleLastTick;
 
+MenuFont::~MenuFont() {
+    pVTable = &g_MenuFontVTable;
+}
+
 MenuFont::MenuFont() {
     pVTable = &g_MenuFontVTable;
     std::memset(szText, 0, sizeof(szText));

@@ -64,6 +64,11 @@ struct MenuFont {
     MenuFont();
 
     /**
+     * @ghidraAddress BRD3D: 0x1005b0c0
+     */
+    ~MenuFont();
+
+    /**
      * @ghidraAddress BRD3D: 0x1005b0d0
      */
     void MeasureText();
