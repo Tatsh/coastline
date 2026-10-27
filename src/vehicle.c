@@ -46,25 +46,6 @@
 #define RAY_NEARBY_DISTANCE 5.0f
 #define RAY_CEILING_DEPTH -1.0f
 
-/* The rates of a flying vehicle. */
-#define FLY_SPEED 100.0f
-#define FLY_TURN_RATE 3.141592741f
-#define FLY_TURN_SCALE 0.4f
-
-/* The input bit that toggles reverse in first gear, and the one that rights a flying vehicle. */
-#define INPUT_REVERSE_TOGGLE (1 << 17)
-#define INPUT_FLY_LEVEL 0x10
-
-/* The share of the drive the rear wheels take with rear-wheel drive, and the front ones. */
-#define REAR_DRIVE_SHARE 2.0f
-#define FRONT_DRIVE_SHARE 0.0f
-
-/* The drive of a front wheel below which the brakes act on the front wheels as well. */
-#define FRONT_BRAKE_DRIVE_LIMIT 1.0e-4f
-
-/* The scale from the speed of a vehicle to the speed the display shows. */
-#define SPEED_TO_DISPLAY 2.24f
-
 static const char sWrongWay[] = "%yyWRONG WAY";
 
 /* The direction along the track at a point, across from its left edge to its right. */
@@ -420,105 +401,6 @@ s32 CastRayAgainstTrack(Vec3f *outPoint,
     *groundInstanceCount = 1;
     *nearbyCount = nearby;
     return groundHits;
-}
-
-void UpdateVehiclePhysicsFrame(Vehicle *vehicle) {
-    RigidBody **wheels = vehicle->body.wheels;
-    Vec3f step;
-    Vec3f *velocity;
-    f32 drive;
-    s32 i;
-
-    if (vehicle->flyMode) {
-        /* Fly along the vehicle and turn with the controls. */
-        Vec3fScale(
-            &step, &vehicle->frame.forward, vehicle->accelerator * g_fFrameDeltaTime * FLY_SPEED);
-        Vec3fAddInPlace(&vehicle->frame.position, &step);
-        SetVehiclePosition(vehicle,
-                           vehicle->frame.position.x,
-                           vehicle->frame.position.y,
-                           vehicle->frame.position.z);
-        SetVehicleVelocity(vehicle, 0.0f, 0.0f, 0.0f);
-        SetVehicleTurnRate(vehicle, 0.0f, 0.0f, 0.0f);
-        vehicle->engineRpm = 0.0f;
-        RotateVehicleByEuler(
-            vehicle,
-            vehicle->steering * FLY_TURN_RATE * FLY_TURN_SCALE * g_fFrameDeltaTime,
-            vehicle->pitchInput * FLY_TURN_RATE * FLY_TURN_SCALE * g_fFrameDeltaTime,
-            vehicle->rollInput * FLY_TURN_RATE * FLY_TURN_SCALE * g_fFrameDeltaTime);
-        if (vehicle->input->buttons & INPUT_FLY_LEVEL) {
-            vehicle->frame.up.x = 0.0f;
-            vehicle->frame.up.y = 0.0f;
-            vehicle->frame.up.z = 1.0f;
-            Vec3fCross(&vehicle->frame.side, &vehicle->frame.up, &vehicle->frame.forward);
-            Vec3fCross(&vehicle->frame.up, &vehicle->frame.forward, &vehicle->frame.side);
-            TransferFlags(vehicle->input, INPUT_FLY_LEVEL);
-        }
-    } else {
-        /* Put the vehicle on the ground, then drive and brake its wheels and step its physics. */
-        vehicle->groundHits = CastRayAgainstTrack(&vehicle->frame.position,
-                                                  &vehicle->frame.up,
-                                                  &vehicle->frame.position,
-                                                  vehicle->groundInstances,
-                                                  &vehicle->groundInstanceCount,
-                                                  vehicle->nearbyInstances,
-                                                  &vehicle->nearbyInstanceCount,
-                                                  &vehicle->groundDistance,
-                                                  &vehicle->groundSurface);
-        wheels[1]->steerAngle = 0.0f;
-        wheels[0]->steerAngle = wheels[1]->steerAngle;
-        UpdateVehicleEngineAndGearbox(vehicle);
-        wheels[3]->steerAngle = vehicle->steerAngle;
-        wheels[2]->steerAngle = vehicle->steerAngle;
-        for (i = 0; i < VEHICLE_WHEELS; i++) {
-            wheels[i]->drive = 0.0f;
-        }
-        for (i = 0; i < VEHICLE_WHEELS; i++) {
-            wheels[i]->brake = 0.0f;
-        }
-        if (0.0f < vehicle->throttle) {
-            if ((vehicle->input->buttons & INPUT_REVERSE_TOGGLE) && vehicle->gear == 1) {
-                vehicle->throttle = -vehicle->throttle;
-            }
-            if (vehicle->rearWheelDrive) {
-                wheels[0]->drive = -vehicle->throttle * REAR_DRIVE_SHARE;
-                wheels[1]->drive = -vehicle->throttle * REAR_DRIVE_SHARE;
-                wheels[2]->drive = -vehicle->throttle * FRONT_DRIVE_SHARE;
-                wheels[3]->drive = -vehicle->throttle * FRONT_DRIVE_SHARE;
-            } else {
-                for (i = 0; i < VEHICLE_WHEELS; i++) {
-                    wheels[i]->drive = -vehicle->throttle;
-                }
-            }
-        }
-        if (vehicle->brake < 0.0f) {
-            wheels[0]->brake = -vehicle->brake;
-            wheels[1]->brake = -vehicle->brake;
-            wheels[0]->drive = 0.0f;
-            wheels[1]->drive = 0.0f;
-            drive = wheels[2]->drive < 0.0f ? -wheels[2]->drive : wheels[2]->drive;
-            if (drive < FRONT_BRAKE_DRIVE_LIMIT) {
-                wheels[2]->brake = -vehicle->brake;
-                wheels[3]->brake = -vehicle->brake;
-            }
-        }
-        SimulateVehiclePhysicsSubstep(vehicle);
-    }
-
-    TransformAllWheelMatrices(vehicle);
-    /* The speed changes while the first front wheel is on the ground. */
-    if (vehicle->wheelBodies[1].contactFrames) {
-        velocity = &vehicle->body.state.velocity;
-        vehicle->speedKph = sqrtf(velocity->z * velocity->z +
-                                  (velocity->x * velocity->x + velocity->y * velocity->y)) *
-                            SPEED_TO_DISPLAY;
-    }
-    for (i = 0; i < g_dwNumViewports; i++) {
-        if (vehicle->index == g_aViewportRects[i].vehicleIndex) {
-            UpdateCameraSystem(vehicle);
-            return;
-        }
-    }
 }
 
 void InstallVehicleModel(Vehicle *vehicle, s32 slot, s32 car) {

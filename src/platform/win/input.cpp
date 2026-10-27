@@ -457,6 +457,10 @@ void PlayerInputState::ConsumeInputFlags(void) {
     ::ConsumeInputFlags(this);
 }
 
+void PlayerInputState::TransferFlags(u32 mask) {
+    ::TransferFlags(this, mask);
+}
+
 void PlayerInputState::InitPlayerInputState(void) {
     ::InitPlayerInputState(this);
 }

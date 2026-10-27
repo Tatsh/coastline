@@ -1,9 +1,11 @@
 #include <PR/gu.h>
 
 #include "camera.h"
+#include "directplay.h"
 #include "game.h"
 #include "ghost.h"
 #include "instantreplay.h"
+#include "settings.h"
 #include "trackselect.h"
 #include "vehicle.h"
 #include "vehiclechoice.h"
@@ -22,6 +24,35 @@ void Vehicle::SetVehiclePaintColorRgb(u8 red, u8 green, u8 blue) {
 
 void Vehicle::SimulateVehiclePhysicsSubstep(void) {
     ::SimulateVehiclePhysicsSubstep(this);
+}
+
+void Vehicle::UpdateVehiclePhysicsFrame(void) {
+    ::UpdateVehiclePhysicsFrame(this);
+}
+
+void UpdateVehicleEngineAndGearbox(Vehicle *vehicle) {
+    vehicle->UpdateVehicleEngineAndGearbox();
+}
+
+s32 ShouldStepVehiclePhysics(Vehicle *vehicle) {
+    if (gInstantReplayActive ||
+        (g_dwGameMode == GAME_MODE_TIME_ATTACK && vehicle->index == 1 &&
+         vehicle->input->playbackBuffer) ||
+        (g_dwGameMode == GAME_MODE_DEMO && vehicle->index == 0 && vehicle->input->playbackBuffer)) {
+        return 0;
+    }
+    return g_dwGameMode == GAME_MODE_DEMO || g_dwGameMode == GAME_MODE_AFTER_SEASON ||
+           g_bNetRaceStartReached || vehicle->wheelBodies[1].contactFrames <= 90;
+}
+
+void FinishVehiclePhysicsFrame(Vehicle *vehicle) {
+    if (g_dwNetworkPlayMode) {
+        if (vehicle->driver == PlayerVehicleControllerCallback && !gInstantReplayActive) {
+            RecordVehicleKeyframe(vehicle);
+        }
+    } else if (!gInstantReplayActive) {
+        vehicle->TransformAllWheelMatrices();
+    }
 }
 
 void UpdateVehicleReplayPose(Vehicle *vehicle) {

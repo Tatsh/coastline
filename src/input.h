@@ -224,17 +224,6 @@ void ProcessInputCommandBuffer(PlayerInputState *state);
 void TranslateControllerInput(PlayerInputState *state);
 
 /**
- * Move buttons out of the input until they are released, so that they act once.
- *
- * @param state The input of the player.
- * @param mask The buttons to move.
- * @ghidraAddress USA: 0x80255910
- * @ghidraAddress EUR: 0x80256ee0
- * @ghidraAddress JPN: 0x80256870
- */
-void TransferFlags(PlayerInputState *state, u32 mask);
-
-/**
  * Press a direction when a stick axis passes 0.6, then again after half a second and every 0.2
  * seconds while the axis stays above 0.3.
  *

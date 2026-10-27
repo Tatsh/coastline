@@ -56,7 +56,8 @@ typedef struct VehicleModel {
     Vec3f boxSize;
     f32 boxCenterZ;
     s8 gearCount;
-    u8 abUnknownD9[0x7f27]; /* +0xd9 */
+    s8 driveMode;
+    u8 abUnknownDa[0x7f26]; /* +0xda */
 #endif
     u32 triangleCount; /*!< The triangles of the model, counted into the statistics of the frame. */
     u8 unreconstructed4[0x10 - 0x4]; /*!< Not read by the routines reconstructed so far. */

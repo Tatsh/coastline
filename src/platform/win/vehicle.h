@@ -8,6 +8,7 @@
 #include "profile.h"
 #include "racerslot.h"
 #include "rigidbody.h"
+#include "track.h"
 #include "types.h"
 #include "vehiclecamera.h"
 #include "vehicleeffects.h"
@@ -113,7 +114,12 @@ typedef struct Vehicle {
     f32 inputMatrix[4][4];
     u8 abUnknown2714[4]; /* +0x2714 */
     f32 cameraHeading;
-    u8 abUnknown271c[0x18]; /* +0x271c */
+    u8 abUnknown271c[4]; /* +0x271c */
+    f32 steering;
+    f32 pitchInput;
+    f32 accelerator;
+    f32 rollInput;
+    u8 abUnknown2730[4]; /* +0x2730 */
     CameraFrame *activeCamera;
     CameraFrame *previousCamera;
     CameraFrame cameras[VEHICLE_CAMERAS];
@@ -125,11 +131,13 @@ typedef struct Vehicle {
     f32 collisionPull;
     u8 abUnknown28fc[4]; /* +0x28fc */
     Vec3f initialChasePosition;
-    u8 abUnknown290c[0x40]; /* +0x290c */
+    u16 groundInstances[RAY_INSTANCES];
     s32 groundInstanceCount;
-    u8 abUnknown2950[0x40]; /* +0x2950 */
+    u16 nearbyInstances[RAY_INSTANCES];
     s32 nearbyInstanceCount;
-    u8 abUnknown2994[0x14]; /* +0x2994 */
+    f32 groundDistance;
+    s32 groundSurface;
+    u8 abUnknown299c[0xc]; /* +0x299c */
     s32 carModel;
     u8 color[3];
     u8 ghostMode;
@@ -144,6 +152,15 @@ typedef struct Vehicle {
     Vec3f previousCollisionPosition;
     u8 abUnknown2abc[0xac]; /* +0x2abc */
 #ifdef __cplusplus
+    /** @ghidraAddress BRD3D: 0x10075f10 */
+    void UpdateVehiclePhysicsFrame(void);
+
+    /**
+     * @ghidraAddress BRD3D: 0x10061f70
+     * @stub
+     */
+    void UpdateVehicleEngineAndGearbox(void);
+
     /**
      * Store the vehicle's three paint colour bytes.
      *
@@ -288,6 +305,12 @@ extern "C" {
  * @ghidraAddress BRD3D: 0x10065620
  */
 void AiVehicleControllerCallback(Vehicle *vehicle);
+
+/**
+ * @ghidraAddress BRD3D: 0x10063fe0
+ * @stub
+ */
+void PlayerVehicleControllerCallback(Vehicle *vehicle);
 #ifdef __cplusplus
 }
 #endif

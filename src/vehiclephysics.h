@@ -10,6 +10,12 @@ extern "C" {
 /** Advance spring, tyre, damping, and collision calculations for a vehicle. */
 void SimulateVehiclePhysicsSubstep(Vehicle *vehicle);
 
+/** Drive or fly a vehicle for a frame, then update its drawing transforms and cameras. */
+void UpdateVehiclePhysicsFrame(Vehicle *vehicle);
+
+/** Update steering, engine torque, and gearbox selection. */
+void UpdateVehicleEngineAndGearbox(Vehicle *vehicle);
+
 /**
  * Update wheel heights and rebuild their rigid-body orientation matrices.
  *
@@ -24,6 +30,12 @@ void TransformAllWheelMatrices(Vehicle *vehicle);
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
 /** Restore replay motion or record the current pose before drawing. */
 void UpdateVehicleReplayPose(Vehicle *vehicle);
+
+/** Whether replay and race conditions permit a physics step. */
+s32 ShouldStepVehiclePhysics(Vehicle *vehicle);
+
+/** Update drawing transforms or send the local driver's motion. */
+void FinishVehiclePhysicsFrame(Vehicle *vehicle);
 #endif
 
 #ifdef __cplusplus

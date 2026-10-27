@@ -57,6 +57,9 @@ typedef struct PlayerInputState {
     OSContPad *pad;   /*!< The pad the controller reads fill. */
 
 #if TGR_PLATFORM == TGR_PLATFORM_WIN && defined(__cplusplus)
+    /** @ghidraAddress BRD3D: 0x10035fa0 */
+    void TransferFlags(u32 mask);
+
     /**
      * Remove held buttons from current input and discard released held buttons.
      *
@@ -87,6 +90,17 @@ extern "C" {
  * @ghidraAddress JPN: 0x80256894
  */
 void ConsumeInputFlags(PlayerInputState *state);
+
+/**
+ * Move buttons out of the input until they are released, for a single action per press.
+ *
+ * @param state The input of the player.
+ * @param mask The buttons to move.
+ * @ghidraAddress USA: 0x80255910
+ * @ghidraAddress EUR: 0x80256ee0
+ * @ghidraAddress JPN: 0x80256870
+ */
+void TransferFlags(PlayerInputState *state, u32 mask);
 
 /**
  * Input state of every player.

@@ -310,6 +310,12 @@ void PositionQuaternionToMatrix4x4(f32 matrix[4][4], const QuaternionPose *pPose
 void BuildVehicleKeyframe(KeyframeState *pState, Vehicle *pVehicle);
 
 /**
+ * @ghidraAddress BRD3D: 0x100609e0
+ * @stub
+ */
+void RecordVehicleKeyframe(Vehicle *vehicle);
+
+/**
  * Restore sampled motion and effects, then synchronise integration states.
  *
  * @param pVehicle Destination vehicle.

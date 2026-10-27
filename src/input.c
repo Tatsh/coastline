@@ -371,11 +371,6 @@ void TranslateControllerInput(PlayerInputState *state) {
     ProcessInputCommandBuffer(state);
 }
 
-void TransferFlags(PlayerInputState *state, u32 mask) {
-    state->heldButtons |= state->buttons & mask;
-    state->buttons &= ~mask;
-}
-
 void CheckAnalogStickPositive(PlayerInputState *state, s32 *timer, f32 *axis, u32 button) {
     s32 time = *timer;
 

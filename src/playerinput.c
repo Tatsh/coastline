@@ -12,6 +12,11 @@ void ConsumeInputFlags(PlayerInputState *state) {
     state->heldButtons &= buttons;
 }
 
+void TransferFlags(PlayerInputState *state, u32 mask) {
+    state->heldButtons |= state->buttons & mask;
+    state->buttons &= ~mask;
+}
+
 void InitPlayerInputState(PlayerInputState *state) {
     s32 player = state - g_aPlayerInputState;
 
