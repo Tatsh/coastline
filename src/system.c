@@ -32,9 +32,6 @@
 /* The messages of the DMA that may wait at once. */
 #define IO_MESSAGES 32
 
-/* A DMA copies at most 4 KB at once. */
-#define DMA_BLOCK_SIZE 0x1000
-
 /* Each half of a buffer of compressed data, and the room the decompression of one gets. */
 #define CHUNK_BUFFER_SIZE 16000
 #define CHUNK_OUTPUT_SIZE 16000
@@ -795,40 +792,6 @@ void UpdateFrameTiming(void) {
 }
 
 void UnusedFrameTimingStub(void) {
-}
-
-void DmaRead(void *dst, u32 romOffset, s32 size) {
-    osInvalDCache(dst, size);
-    while (size > DMA_BLOCK_SIZE) {
-        osPiStartDma(AllocIoMessage(),
-                     OS_MESG_PRI_NORMAL,
-                     OS_READ,
-                     romOffset,
-                     dst,
-                     DMA_BLOCK_SIZE,
-                     &g_DmaMessageQueue);
-        size -= DMA_BLOCK_SIZE;
-        romOffset += DMA_BLOCK_SIZE;
-        dst = (u8 *)dst + DMA_BLOCK_SIZE;
-    }
-    osPiStartDma(
-        AllocIoMessage(), OS_MESG_PRI_NORMAL, OS_READ, romOffset, dst, size, &g_DmaMessageQueue);
-    WaitForDmaMessages();
-}
-
-u32 DmaReadAssetSize(u32 romOffset) {
-    DmaRead(&g_dwDmaAssetSizeBuffer, romOffset + ASSET_HEADER_WORD, sizeof(g_dwDmaAssetSizeBuffer));
-    return g_dwDmaAssetSizeBuffer;
-}
-
-u32 DmaReadWord(u32 romOffset) {
-    DmaRead(&g_dwDmaReadWordBuffer, romOffset, sizeof(g_dwDmaReadWordBuffer));
-    return g_dwDmaReadWordBuffer;
-}
-
-void InitDmaRequest(DecompressJob *job, u8 *buffer) {
-    job->dst = NULL;
-    job->buffer = buffer;
 }
 
 /* The size of a chunk on the cartridge: its length word, then its bytes, padded to an even count.
