@@ -898,23 +898,6 @@ extern unsigned char g_abHudFont2GlyphPixels[];
  */
 extern unsigned char g_abHudFont3GlyphPixels[];
 /**
- * @ghidraAddress BRD3D: 0x11829238
- */
-extern unsigned g_adwLargeFontGlyphTexturesA[27];
-/**
- * @ghidraAddress BRD3D: 0x118292a8
- */
-extern unsigned g_adwLargeFontGlyphTexturesB[26];
-/**
- * @ghidraAddress BRD3D: 0x11829158
- */
-extern unsigned g_adwSmallFontGlyphTexturesA[27];
-/**
- * @ghidraAddress BRD3D: 0x118291c8
- */
-extern unsigned g_adwSmallFontGlyphTexturesB[26];
-
-/**
  * @ghidraAddress BRD3D: 0x118aa0ac
  */
 extern unsigned (*g_pfnCreateTextureFromN64Image)(const unsigned char *,
