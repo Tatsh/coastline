@@ -1363,7 +1363,6 @@ extern unsigned g_dwTexturePixelByteCount;
  * @param primA The primitive alpha byte.
  * @param nRowSwapMask The row mask for swapped texture words.
  * @ghidraAddress BRD3D: 0x10025ab0
- * @stub{BRD3D}
  */
 void DecodeTexturePixels(unsigned char *pDest,
                          int nSize,

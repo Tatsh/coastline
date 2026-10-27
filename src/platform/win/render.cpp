@@ -1768,3 +1768,150 @@ unsigned CreateTextureFromN64Image(const unsigned char *pImage,
     unsigned char *pixels = GetTextureImagePixels(&image);
     return CreateTextureFromImage(&image, pixels);
 }
+
+void DecodeTexturePixels(unsigned char *pDest,
+                         int nSize,
+                         int nTexelSize,
+                         const unsigned char *pImage,
+                         const unsigned char *pPalette,
+                         int nFormat,
+                         int bMirrorS,
+                         int bMirrorT,
+                         int nTileIndex,
+                         int nTileLimit,
+                         const TexScanTile *pTiles,
+                         unsigned flags,
+                         int bColorCombine,
+                         unsigned envR,
+                         unsigned envG,
+                         unsigned envB,
+                         unsigned envA,
+                         unsigned primR,
+                         unsigned primG,
+                         unsigned primB,
+                         unsigned primA,
+                         unsigned nRowSwapMask) {
+    unsigned written = 0;
+    unsigned char *output = pDest;
+    auto emit = [&](unsigned pixel, bool checkLimit = true) {
+        std::memcpy(output, &pixel, sizeof(pixel));
+        output += 4;
+        written += 4;
+        return checkLimit && static_cast<int>(written) >= nSize;
+    };
+    auto loadPixel = [](const unsigned char *pixels) {
+        unsigned pixel;
+        std::memcpy(&pixel, pixels, sizeof(pixel));
+        return pixel;
+    };
+    auto palettePixel = [&](unsigned index) {
+        unsigned short pixel;
+        std::memcpy(&pixel, pPalette + index * 2, sizeof(pixel));
+        return ConvertN64Rgba5551ToRgba8(pixel);
+    };
+    unsigned environment[] = {envR & 0xff, envG & 0xff, envB & 0xff, envA & 0xff};
+    unsigned primitive[] = {primR & 0xff, primG & 0xff, primB & 0xff, primA & 0xff};
+    auto intensityPixel = [&](unsigned intensity) {
+        if (bColorCombine != 1) {
+            return 0xffffff | (intensity << 24);
+        }
+        unsigned pixel = 0;
+        for (int channel = 0; channel < 4; channel++) {
+            int difference =
+                static_cast<int>(environment[channel]) - static_cast<int>(primitive[channel]);
+            unsigned value = static_cast<unsigned>(difference * static_cast<int>(intensity) / 255) +
+                             primitive[channel];
+            pixel |= (value & 0xff) << (channel * 8);
+        }
+        return pixel;
+    };
+    auto intensityAlphaPixel = [&](unsigned texel) {
+        unsigned intensity = (texel & 0xf0) | (texel >> 4);
+        unsigned alpha = (texel & 0xf) * 17;
+        if (bColorCombine != 1) {
+            return intensity | (intensity << 8) | (intensity << 16) | (alpha << 24);
+        }
+        unsigned pixel = alpha << 24;
+        for (int channel = 0; channel < 3; channel++) {
+            // IA interpolation divides unsigned products, including wrapped negative differences.
+            unsigned difference = environment[channel] - primitive[channel];
+            unsigned value = (difference * intensity) / 255 + primitive[channel];
+            pixel |= value << (channel * 8);
+        }
+        return pixel;
+    };
+    for (int tileIndex = nTileIndex; tileIndex < nTileLimit; tileIndex++) {
+        bool supported =
+            (nTexelSize == G_IM_SIZ_4b && (nFormat == G_IM_FMT_CI || nFormat == G_IM_FMT_I)) ||
+            (nTexelSize == G_IM_SIZ_8b &&
+             (nFormat == G_IM_FMT_CI || nFormat == G_IM_FMT_IA || nFormat == G_IM_FMT_I)) ||
+            (nTexelSize == G_IM_SIZ_16b && nFormat == G_IM_FMT_RGBA);
+        if (!supported) {
+            continue;
+        }
+        const TexScanTile &tile = pTiles[tileIndex];
+        unsigned widthShift = static_cast<unsigned>(tile.nMaskS) - (nTexelSize == G_IM_SIZ_4b);
+        int units = static_cast<int>(1u << (widthShift & 31));
+        int height = static_cast<int>(1u << (static_cast<unsigned>(tile.nMaskT) & 31));
+        if (units <= 0 || height <= 0) {
+            continue;
+        }
+        unsigned width = static_cast<unsigned>(units) * (nTexelSize == G_IM_SIZ_4b ? 2 : 1);
+        const unsigned char *row =
+            pImage + static_cast<int>(static_cast<unsigned>(tile.nTmem) << 3);
+        for (int y = 0; y < height; y++) {
+            bool swapped = (static_cast<unsigned>(y) & nRowSwapMask) != 0;
+            unsigned packed = 0;
+            for (unsigned x = 0; x < width; x++) {
+                unsigned pixel;
+                if (nTexelSize == G_IM_SIZ_4b) {
+                    unsigned offset = (x >> 1) ^ (swapped ? 4 : 0);
+                    if (!(x & 1)) {
+                        packed = row[offset];
+                    }
+                    unsigned index = (x & 1) ? packed & 0xf : packed >> 4;
+                    if (nFormat == G_IM_FMT_CI) {
+                        pixel = (flags & 2) && tileIndex == 1 ? index : palettePixel(index);
+                    } else {
+                        pixel = intensityPixel(index * 17);
+                    }
+                } else if (nTexelSize == G_IM_SIZ_8b) {
+                    unsigned texel = row[x ^ (swapped ? 4 : 0)];
+                    pixel = nFormat == G_IM_FMT_CI ? palettePixel(texel) :
+                            nFormat == G_IM_FMT_IA ? intensityAlphaPixel(texel) :
+                                                     0xffffff | (texel << 24);
+                } else {
+                    unsigned short texel;
+                    std::memcpy(&texel, row + ((x * 2) ^ (swapped ? 4 : 0)), sizeof(texel));
+                    pixel = ConvertN64Rgba5551ToRgba8(texel);
+                }
+                // The swapped 16-bit loop checks its row end before the output limit.
+                bool checkLimit = !(nTexelSize == G_IM_SIZ_16b && swapped && x + 1 == width);
+                if (emit(pixel, checkLimit)) {
+                    return;
+                }
+            }
+            if (bMirrorS && static_cast<int>(width) > 0) {
+                const unsigned char *rowEnd = output;
+                for (unsigned x = 0; x < width; x++) {
+                    if (emit(loadPixel(rowEnd - (x + 1) * 4))) {
+                        return;
+                    }
+                }
+            }
+            row += tile.nLineBytes;
+        }
+        if (bMirrorT) {
+            unsigned rowWidth = width * (bMirrorS ? 2 : 1);
+            const unsigned char *rowPixels = output;
+            for (int y = 0; y < height; y++) {
+                rowPixels -= rowWidth * 4;
+                for (unsigned x = 0; static_cast<int>(rowWidth) > 0 && x < rowWidth; x++) {
+                    if (emit(loadPixel(rowPixels + x * 4))) {
+                        return;
+                    }
+                }
+            }
+        }
+    }
+}
