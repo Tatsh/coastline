@@ -5,11 +5,7 @@
 
 typedef struct GbiCommand GbiCommand;
 
-/** A viewport of the console, in pixels with two bits of fraction. */
-typedef struct GbiViewport {
-    short anScale[4];     /*!< The scale of x, y, z, and an unused fourth value. */
-    short anTranslate[4]; /*!< The translation of x, y, z, and an unused fourth value. */
-} GbiViewport;
+typedef Vp GbiViewport;
 
 struct ConvertedModelVertex;
 

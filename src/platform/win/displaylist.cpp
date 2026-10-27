@@ -161,17 +161,17 @@ float g_fViewportTranslateY;
 GbiCommand *HandleGbiSetViewport(GbiCommand *pCommand) {
     const GbiViewport *pViewport = pCommand->pViewport;
 #if TGR_RENDERER == TGR_RENDERER_D3D
-    g_fViewportScaleX = static_cast<float>(pViewport->anScale[0]) * GBI_VIEWPORT_UNIT;
-    g_fViewportScaleY = static_cast<float>(pViewport->anScale[1]) * -GBI_VIEWPORT_UNIT;
-    g_fViewportTranslateX = static_cast<float>(pViewport->anTranslate[0]) * GBI_VIEWPORT_UNIT;
-    g_fViewportTranslateY = static_cast<float>(pViewport->anTranslate[1]) * GBI_VIEWPORT_UNIT;
+    g_fViewportScaleX = static_cast<float>(pViewport->vp.vscale[0]) * GBI_VIEWPORT_UNIT;
+    g_fViewportScaleY = static_cast<float>(pViewport->vp.vscale[1]) * -GBI_VIEWPORT_UNIT;
+    g_fViewportTranslateX = static_cast<float>(pViewport->vp.vtrans[0]) * GBI_VIEWPORT_UNIT;
+    g_fViewportTranslateY = static_cast<float>(pViewport->vp.vtrans[1]) * GBI_VIEWPORT_UNIT;
 #else
     float fHeight = static_cast<float>(g_dwConfigFramebufferHeight);
-    g_fViewportScaleX = static_cast<float>(pViewport->anScale[0]) * GBI_VIEWPORT_UNIT;
-    g_fViewportScaleY = static_cast<float>(pViewport->anScale[1]) * GBI_VIEWPORT_UNIT;
-    g_fViewportTranslateX = static_cast<float>(pViewport->anTranslate[0]) * GBI_VIEWPORT_UNIT;
+    g_fViewportScaleX = static_cast<float>(pViewport->vp.vscale[0]) * GBI_VIEWPORT_UNIT;
+    g_fViewportScaleY = static_cast<float>(pViewport->vp.vscale[1]) * GBI_VIEWPORT_UNIT;
+    g_fViewportTranslateX = static_cast<float>(pViewport->vp.vtrans[0]) * GBI_VIEWPORT_UNIT;
     g_fViewportTranslateY =
-        fHeight - static_cast<float>(pViewport->anTranslate[1]) * GBI_VIEWPORT_UNIT;
+        fHeight - static_cast<float>(pViewport->vp.vtrans[1]) * GBI_VIEWPORT_UNIT;
 #endif
     return pCommand + 1;
 }

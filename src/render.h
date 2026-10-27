@@ -168,6 +168,7 @@ extern u32 g_dwTextureFilterMode;
  * @ghidraAddress USA: 0x8028a8ac
  * @ghidraAddress EUR: 0x8028cab0
  * @ghidraAddress JPN: 0x8028c580
+ * @ghidraAddress BRD3D: 0x106c3364
  */
 extern s32 g_dwTrackMirrored;
 
@@ -177,6 +178,7 @@ extern s32 g_dwTrackMirrored;
  * @ghidraAddress USA: 0x8028a8a8
  * @ghidraAddress EUR: 0x8028caac
  * @ghidraAddress JPN: 0x8028c57c
+ * @ghidraAddress BRD3D: 0x106c1174
  */
 extern s32 g_dwViewportMirrored;
 
@@ -244,6 +246,7 @@ extern s32 g_dwCurrentSplitScreenIndex;
  * @ghidraAddress USA: 0x8028ab64
  * @ghidraAddress EUR: 0x8028cd6c
  * @ghidraAddress JPN: 0x8028c83c
+ * @ghidraAddress BRD3D: 0x106c62d8
  */
 extern s32 g_dwViewportScaleZ;
 
@@ -253,6 +256,7 @@ extern s32 g_dwViewportScaleZ;
  * @ghidraAddress USA: 0x8028ab68
  * @ghidraAddress EUR: 0x8028cd70
  * @ghidraAddress JPN: 0x8028c840
+ * @ghidraAddress BRD3D: 0x106c65b8
  */
 extern s32 g_dwViewportTransZ;
 
@@ -616,6 +620,7 @@ extern u8 g_abLightRampB[4];
  * @ghidraAddress USA: 0x80318cd0
  * @ghidraAddress EUR: 0x8031c1b0
  * @ghidraAddress JPN: 0x8031adf8
+ * @ghidraAddress BRD3D: 0x106c1788
  */
 extern Vp g_aViewports[VIEWPORTS];
 
@@ -625,6 +630,7 @@ extern Vp g_aViewports[VIEWPORTS];
  * @ghidraAddress USA: 0x8028ab60
  * @ghidraAddress EUR: 0x8028cd68
  * @ghidraAddress JPN: 0x8028c838
+ * @ghidraAddress BRD3D: 0x106c6654
  */
 extern s32 g_dwViewportIndex;
 
@@ -763,15 +769,6 @@ void SetupFog(void);
 #endif
 
 /**
- * Load the viewport of the view being drawn again.
- *
- * @ghidraAddress USA: 0x80219f04
- * @ghidraAddress EUR: 0x8021af24
- * @ghidraAddress JPN: 0x8021a87c
- */
-void RestoreCurrentViewport(void);
-
-/**
  * Do nothing.
  *
  * @ghidraAddress USA: 0x80217c8c
@@ -779,20 +776,6 @@ void RestoreCurrentViewport(void);
  * @ghidraAddress JPN: 0x802185fc
  */
 void StubEmpty(void);
-
-/**
- * Set the scissor to a rectangle, and the viewport to the whole of the low-resolution screen.
- *
- * @param x The left edge of the scissor.
- * @param y The upper edge of the scissor.
- * @param width The width of the scissor, of which only the size counts.
- * @param height The height of the scissor.
- * @param setScissor Whether the scissor is set.
- * @ghidraAddress USA: 0x80219df0
- * @ghidraAddress EUR: 0x8021ae10
- * @ghidraAddress JPN: 0x8021a768
- */
-void SetupViewportAndScissor(s32 x, s32 y, s32 width, s32 height, s32 setScissor);
 
 #if TGR_REGION == TGR_REGION_JP || TGR_REGION == TGR_REGION_EU
 /**

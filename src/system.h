@@ -278,20 +278,6 @@ void StartHighResFrame(void);
 void FlushDisplayList(void);
 
 /**
- * Set the view to a rectangle of the screen, and the scissor to it as well if asked.
- *
- * @param x The left edge, in pixels.
- * @param y The top edge, in pixels.
- * @param width The width, in pixels.
- * @param height The height, in pixels.
- * @param setScissor Non-zero to set the scissor to the rectangle as well.
- * @ghidraAddress USA: 0x80219bf0
- * @ghidraAddress EUR: 0x8021ac10
- * @ghidraAddress JPN: 0x8021a568
- */
-void SetViewport(s32 x, s32 y, s32 width, s32 height, s32 setScissor);
-
-/**
  * Fill the whole depth buffer with the farthest depth, then draw to the frame buffer again.
  *
  * @ghidraAddress USA: 0x80217c94

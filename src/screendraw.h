@@ -21,6 +21,46 @@ extern "C" {
 void ClearScreen(s32 red, s32 green, s32 blue);
 
 /**
+ * Set the view to a rectangle of the screen, and the scissor to it as well if asked.
+ *
+ * @param x The left edge, in pixels.
+ * @param y The top edge, in pixels.
+ * @param width The width, in pixels.
+ * @param height The height, in pixels.
+ * @param setScissor Non-zero to set the scissor to the rectangle as well.
+ * @ghidraAddress USA: 0x80219bf0
+ * @ghidraAddress EUR: 0x8021ac10
+ * @ghidraAddress JPN: 0x8021a568
+ * @ghidraAddress BRD3D: 0x10032a42
+ */
+void SetViewport(s32 x, s32 y, s32 width, s32 height, s32 setScissor);
+
+/**
+ * Set the scissor to a rectangle, and the viewport to the whole frame buffer (320 by 240 on N64).
+ *
+ * @param x The left edge of the scissor.
+ * @param y The upper edge of the scissor.
+ * @param width The width of the scissor, of which only the size counts.
+ * @param height The height of the scissor.
+ * @param setScissor Whether the scissor is set.
+ * @ghidraAddress USA: 0x80219df0
+ * @ghidraAddress EUR: 0x8021ae10
+ * @ghidraAddress JPN: 0x8021a768
+ * @ghidraAddress BRD3D: 0x10032c38
+ */
+void SetupViewportAndScissor(s32 x, s32 y, s32 width, s32 height, s32 setScissor);
+
+/**
+ * Load the viewport of the view being drawn again.
+ *
+ * @ghidraAddress USA: 0x80219f04
+ * @ghidraAddress EUR: 0x8021af24
+ * @ghidraAddress JPN: 0x8021a87c
+ * @ghidraAddress BRD3D: 0x10032df2
+ */
+void RestoreCurrentViewport(void);
+
+/**
  * Limit drawing to a rectangle, clipped to the frame.
  *
  * @param x The left edge, in pixels.

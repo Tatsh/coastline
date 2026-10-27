@@ -128,13 +128,6 @@
 /* The gap between the views and the edges of the screen. */
 #define VIEWPORT_MARGIN 8
 
-/* The size of the low resolution, the viewport of SetupViewportAndScissor(). */
-#define LOW_RES_WIDTH 320
-#define LOW_RES_HEIGHT 240
-
-/* Half of the range of depths of a viewport. */
-#define VIEWPORT_HALF_DEPTH 0x1FF
-
 /* A frame of an animated texture with no texels or no palette on the cartridge. */
 #define TEXTURE_ROM_NONE ((u32) - 1)
 
@@ -420,72 +413,6 @@ void StartHighResFrame(void) {
 }
 
 void StubEmptyVoid(s32 unused0, ...) {
-}
-
-void SetViewport(s32 x, s32 y, s32 width, s32 height, s32 setScissor) {
-    g_dwViewportIndex = (g_dwViewportIndex + 1) & (VIEWPORTS - 1);
-    if (setScissor) {
-        SetScissorRect(x, y, width < 0 ? -width : width, height);
-    }
-    if (g_dwScreenScaleShift) {
-        x *= 2;
-        y *= 2;
-        width *= 2;
-        height *= 2;
-    }
-    /* A negative width mirrors the view, and a mirrored track mirrors it again. */
-    if (width < 0) {
-        if (g_dwTrackMirrored) {
-            g_aViewports[g_dwViewportIndex].vp.vscale[0] = -width * 2;
-        } else {
-            g_aViewports[g_dwViewportIndex].vp.vscale[0] = width * 2;
-        }
-        width = -width;
-        g_dwViewportMirrored = TRUE;
-    } else {
-        if (g_dwTrackMirrored) {
-            g_aViewports[g_dwViewportIndex].vp.vscale[0] = -width * 2;
-        } else {
-            g_aViewports[g_dwViewportIndex].vp.vscale[0] = width * 2;
-        }
-        g_dwViewportMirrored = FALSE;
-    }
-    g_aViewports[g_dwViewportIndex].vp.vscale[1] = height * 2;
-    g_aViewports[g_dwViewportIndex].vp.vscale[2] = VIEWPORT_HALF_DEPTH;
-    g_aViewports[g_dwViewportIndex].vp.vscale[3] = 0;
-    g_aViewports[g_dwViewportIndex].vp.vtrans[0] = (x * 2 + width) * 2;
-    g_aViewports[g_dwViewportIndex].vp.vtrans[1] = (y * 2 + height) * 2;
-    g_aViewports[g_dwViewportIndex].vp.vtrans[2] = VIEWPORT_HALF_DEPTH;
-    g_aViewports[g_dwViewportIndex].vp.vtrans[3] = 0;
-    gSPViewport(gDisplayListPtr++, &g_aViewports[g_dwViewportIndex]);
-    g_dwViewportScaleZ = g_aViewports[g_dwViewportIndex].vp.vscale[2];
-    g_dwViewportTransZ = g_aViewports[g_dwViewportIndex].vp.vtrans[2];
-}
-
-void SetupViewportAndScissor(s32 x, s32 y, s32 width, s32 height, s32 setScissor) {
-    g_dwViewportIndex = (g_dwViewportIndex + 1) & (VIEWPORTS - 1);
-    if (setScissor) {
-        gDPPipeSync(gDisplayListPtr++);
-        SetScissorRect(x, y, width < 0 ? -width : width, height);
-    }
-    g_dwViewportMirrored = FALSE;
-    g_aViewports[g_dwViewportIndex].vp.vscale[0] = LOW_RES_WIDTH * 2;
-    g_aViewports[g_dwViewportIndex].vp.vscale[1] = LOW_RES_HEIGHT * 2;
-    g_aViewports[g_dwViewportIndex].vp.vscale[2] = VIEWPORT_HALF_DEPTH;
-    g_aViewports[g_dwViewportIndex].vp.vscale[3] = 0;
-    g_aViewports[g_dwViewportIndex].vp.vtrans[0] = LOW_RES_WIDTH * 2;
-    g_aViewports[g_dwViewportIndex].vp.vtrans[1] = LOW_RES_HEIGHT * 2;
-    g_aViewports[g_dwViewportIndex].vp.vtrans[2] = VIEWPORT_HALF_DEPTH;
-    g_aViewports[g_dwViewportIndex].vp.vtrans[3] = 0;
-    gSPViewport(gDisplayListPtr++, &g_aViewports[g_dwViewportIndex]);
-    g_dwViewportScaleZ = g_aViewports[g_dwViewportIndex].vp.vscale[2];
-    g_dwViewportTransZ = g_aViewports[g_dwViewportIndex].vp.vtrans[2];
-}
-
-void RestoreCurrentViewport(void) {
-    gSPViewport(gDisplayListPtr++, &g_aViewports[g_dwViewportIndex]);
-    g_dwViewportScaleZ = g_aViewports[g_dwViewportIndex].vp.vscale[2];
-    g_dwViewportTransZ = g_aViewports[g_dwViewportIndex].vp.vtrans[2];
 }
 
 #if TGR_REGION == TGR_REGION_JP || TGR_REGION == TGR_REGION_EU

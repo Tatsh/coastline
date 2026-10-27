@@ -4,18 +4,29 @@
 
 #include "displaylistptr.h"
 #include "fade.h"
+#include "render.h"
 #include "screen.h"
 
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
 #include "platform/win/gbicommand.h"
+#include "platform/win/settings.h"
 
 s32 g_dwScreenScaleShift;
+Vp g_aViewports[VIEWPORTS];
+s32 g_dwViewportIndex;
+s32 g_dwViewportScaleZ;
+s32 g_dwViewportTransZ;
+s32 g_dwTrackMirrored;
+s32 g_dwViewportMirrored;
 #endif
 
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
 /* Screen coordinate operations retain the original 32-bit wrap. */
 #define COORD_ADD(a, b) ((s32)((u32)(a) + (u32)(b)))
 #define COORD_SUB(a, b) ((s32)((u32)(a) - (u32)(b)))
+#define COORD_NEGATE(value) ((s32)(0u - (u32)(value)))
+#define VIEWPORT_BASE_WIDTH g_dwConfigFramebufferWidth
+#define VIEWPORT_BASE_HEIGHT g_dwConfigFramebufferHeight
 #define COORD_DOUBLE(value) ((s32)((u32)(value) * 2u))
 #define COORD_SHIFT(value, shift) ((s32)((u32)(value) << ((u32)(shift) & 31u)))
 #define FILL_COLOR(red, green, blue)                                                               \
@@ -23,6 +34,9 @@ s32 g_dwScreenScaleShift;
 #else
 #define COORD_ADD(a, b) ((a) + (b))
 #define COORD_SUB(a, b) ((a) - (b))
+#define COORD_NEGATE(value) (-(value))
+#define VIEWPORT_BASE_WIDTH 320
+#define VIEWPORT_BASE_HEIGHT 240
 #define COORD_DOUBLE(value) ((value) * 2)
 #define COORD_SHIFT(value, shift) ((value) << (shift))
 /* A fill of the frame buffer with a colour of 8-bit components, as two pixels. */
@@ -35,6 +49,75 @@ s32 g_dwScreenScaleShift;
     (IM_RD | CVG_DST_FULL | ZMODE_OPA | FORCE_BL |                                                 \
      GBL_c1(G_BL_CLR_MEM, G_BL_A_FOG, G_BL_CLR_IN, G_BL_1MA))
 #define RENDER_MODE_FOG_BLEND_C2 GBL_c2(G_BL_CLR_MEM, G_BL_A_FOG, G_BL_CLR_IN, G_BL_1MA)
+
+/* Half of the range of depths of a viewport. */
+#define VIEWPORT_HALF_DEPTH 0x1FF
+
+void SetViewport(s32 x, s32 y, s32 width, s32 height, s32 setScissor) {
+    g_dwViewportIndex = COORD_ADD(g_dwViewportIndex, 1) & (VIEWPORTS - 1);
+    if (setScissor) {
+        SetScissorRect(x, y, width < 0 ? COORD_NEGATE(width) : width, height);
+    }
+    if (g_dwScreenScaleShift) {
+        x = COORD_DOUBLE(x);
+        y = COORD_DOUBLE(y);
+        width = COORD_DOUBLE(width);
+        height = COORD_DOUBLE(height);
+    }
+    /* A negative width mirrors the view, and a mirrored track mirrors it again. */
+    if (width < 0) {
+        if (g_dwTrackMirrored) {
+            g_aViewports[g_dwViewportIndex].vp.vscale[0] = COORD_DOUBLE(COORD_NEGATE(width));
+        } else {
+            g_aViewports[g_dwViewportIndex].vp.vscale[0] = COORD_DOUBLE(width);
+        }
+        width = COORD_NEGATE(width);
+        g_dwViewportMirrored = TRUE;
+    } else {
+        if (g_dwTrackMirrored) {
+            g_aViewports[g_dwViewportIndex].vp.vscale[0] = COORD_DOUBLE(COORD_NEGATE(width));
+        } else {
+            g_aViewports[g_dwViewportIndex].vp.vscale[0] = COORD_DOUBLE(width);
+        }
+        g_dwViewportMirrored = FALSE;
+    }
+    g_aViewports[g_dwViewportIndex].vp.vscale[1] = COORD_DOUBLE(height);
+    g_aViewports[g_dwViewportIndex].vp.vscale[2] = VIEWPORT_HALF_DEPTH;
+    g_aViewports[g_dwViewportIndex].vp.vscale[3] = 0;
+    g_aViewports[g_dwViewportIndex].vp.vtrans[0] = COORD_DOUBLE(COORD_ADD(COORD_DOUBLE(x), width));
+    g_aViewports[g_dwViewportIndex].vp.vtrans[1] = COORD_DOUBLE(COORD_ADD(COORD_DOUBLE(y), height));
+    g_aViewports[g_dwViewportIndex].vp.vtrans[2] = VIEWPORT_HALF_DEPTH;
+    g_aViewports[g_dwViewportIndex].vp.vtrans[3] = 0;
+    gSPViewport(gDisplayListPtr++, &g_aViewports[g_dwViewportIndex]);
+    g_dwViewportScaleZ = g_aViewports[g_dwViewportIndex].vp.vscale[2];
+    g_dwViewportTransZ = g_aViewports[g_dwViewportIndex].vp.vtrans[2];
+}
+
+void SetupViewportAndScissor(s32 x, s32 y, s32 width, s32 height, s32 setScissor) {
+    g_dwViewportIndex = COORD_ADD(g_dwViewportIndex, 1) & (VIEWPORTS - 1);
+    if (setScissor) {
+        gDPPipeSync(gDisplayListPtr++);
+        SetScissorRect(x, y, width < 0 ? COORD_NEGATE(width) : width, height);
+    }
+    g_dwViewportMirrored = FALSE;
+    g_aViewports[g_dwViewportIndex].vp.vscale[0] = COORD_DOUBLE(VIEWPORT_BASE_WIDTH);
+    g_aViewports[g_dwViewportIndex].vp.vscale[1] = COORD_DOUBLE(VIEWPORT_BASE_HEIGHT);
+    g_aViewports[g_dwViewportIndex].vp.vscale[2] = VIEWPORT_HALF_DEPTH;
+    g_aViewports[g_dwViewportIndex].vp.vscale[3] = 0;
+    g_aViewports[g_dwViewportIndex].vp.vtrans[0] = COORD_SHIFT(VIEWPORT_BASE_WIDTH / 2, 2);
+    g_aViewports[g_dwViewportIndex].vp.vtrans[1] = COORD_SHIFT(VIEWPORT_BASE_HEIGHT / 2, 2);
+    g_aViewports[g_dwViewportIndex].vp.vtrans[2] = VIEWPORT_HALF_DEPTH;
+    g_aViewports[g_dwViewportIndex].vp.vtrans[3] = 0;
+    gSPViewport(gDisplayListPtr++, &g_aViewports[g_dwViewportIndex]);
+    g_dwViewportScaleZ = g_aViewports[g_dwViewportIndex].vp.vscale[2];
+    g_dwViewportTransZ = g_aViewports[g_dwViewportIndex].vp.vtrans[2];
+}
+
+void RestoreCurrentViewport(void) {
+    gSPViewport(gDisplayListPtr++, &g_aViewports[g_dwViewportIndex]);
+    g_dwViewportScaleZ = g_aViewports[g_dwViewportIndex].vp.vscale[2];
+    g_dwViewportTransZ = g_aViewports[g_dwViewportIndex].vp.vtrans[2];
+}
 
 void ClearScreen(s32 red, s32 green, s32 blue) {
     gDPPipeSync(gDisplayListPtr++);
