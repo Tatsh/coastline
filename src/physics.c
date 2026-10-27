@@ -12,12 +12,6 @@
 #include "vehicle.h"
 #include "weather.h"
 
-/* The weight on a wheel for each unit of mass of the vehicle: gravity times 0.3. */
-#define WHEEL_WEIGHT_SHARE (9.81f * 0.3f)
-
-/* The most a wheel spins, in radians a second. */
-#define MAX_SPIN_RATE 300.0f
-
 /* The speed below which a sliding tyre grips more and more, as a vehicle slows to a stop. */
 #define SLOW_GRIP_SPEED 27.0f
 
@@ -269,101 +263,6 @@ void ApplySideGrip(
         body->rollAngle = lean + LEAN_STEP;
     } else {
         body->rollAngle = lean - LEAN_STEP;
-    }
-}
-
-void DriveWheel(RigidBody *body, RigidBody *wheel, f32 *load, u8 *sliding, f32 dt) {
-    Vec3f unitY, axle, forward, side, roll, slide, velocity, weight, push, local;
-    Vec3f *normal = &wheel->groundNormal;
-    f32 c, s, rollSpeed, pressure, drive, force, grip, ratio;
-
-    unitY = g_vecUnitY;
-    if (!wheel->ground) {
-        return;
-    }
-    if ((f64)normal->z < 0.7) {
-        return;
-    }
-    /* The ways the wheel rolls and slides on the ground. */
-    Mtx3x3MulVec3f(&axle, body->orientation, &unitY);
-    forward.x = axle.y * normal->z - normal->y * axle.z;
-    forward.y = axle.z * normal->x - normal->z * axle.x;
-    forward.z = axle.x * normal->y - normal->x * axle.y;
-    side.x = normal->y * forward.z - forward.y * normal->z;
-    side.y = normal->z * forward.x - forward.z * normal->x;
-    side.z = normal->x * forward.y - forward.x * normal->y;
-    c = cosf(wheel->steerAngle);
-    s = sinf(wheel->steerAngle);
-    roll.x = forward.x * c;
-    roll.y = forward.y * c;
-    roll.z = forward.z * c;
-    /* The original also turns the slide direction with the wheel and never reads it. */
-    slide.x = forward.x * -s;
-    slide.y = forward.y * -s;
-    slide.z = forward.z * -s;
-    forward.x = side.x * s;
-    forward.y = side.y * s;
-    forward.z = side.z * s;
-    roll.x = forward.x + roll.x;
-    roll.y = forward.y + roll.y;
-    roll.z = forward.z + roll.z;
-    forward.x = side.x * c;
-    forward.y = side.y * c;
-    forward.z = side.z * c;
-    slide.x = forward.x + slide.x;
-    slide.y = forward.y + slide.y;
-    slide.z = forward.z + slide.z;
-    (void)slide;
-
-    if (body->wheels[0]->contactFrames && body->wheels[2]->contactFrames &&
-        body->wheels[1]->contactFrames && body->wheels[3]->contactFrames) {
-        GetWheelWorldVelocity(&velocity, body, wheel);
-        rollSpeed = roll.z * velocity.z + (velocity.x * roll.x + velocity.y * roll.y);
-        /* The weight on the wheel, which bounds how hard its drive can push. */
-        weight.x = 0.0f;
-        weight.y = 0.0f;
-        weight.z = (body->mass + 4.0f * wheel->mass) * WHEEL_WEIGHT_SHARE +
-                   (f32)((f64)wheel->state.position.z - -0.97) * 0.0f;
-        pressure = normal->z * weight.z + (weight.x * normal->x + weight.y * normal->y);
-        drive = wheel->drive;
-        force = drive / wheel->radius;
-        grip = pressure * 3.0f;
-        *load = *load + force / 2.0f;
-        if (*sliding) {
-            force = (f32)((f64)force * 0.9);
-        }
-        if (ABS(grip) < ABS(force)) {
-            ratio = grip / force;
-            force = (f32)((f64)force * ((f64)ABS(ratio) * 0.1));
-        }
-        push.x = roll.x * -force;
-        push.y = roll.y * -force;
-        push.z = roll.z * -force;
-        Mtx4fInverseRotate(&local, body->orientation, &push);
-        wheel->forces->vector.x = local.x + wheel->forces->vector.x;
-        wheel->forces->vector.y = local.y + wheel->forces->vector.y;
-        wheel->forces->vector.z = local.z + wheel->forces->vector.z;
-        /* The drive spins the wheel against its push, and the ground turns it to the speed. */
-        wheel->spinRate = wheel->spinRate + (drive - wheel->radius * force) * dt;
-        wheel->spinRate =
-            (f32)((f64)wheel->spinRate - (f64)(wheel->spinRate * wheel->radius + rollSpeed) * 0.4);
-        if (ABS(wheel->spinRate) > MAX_SPIN_RATE) {
-            wheel->spinRate = (f32)(SIGN(wheel->spinRate) * 300.0);
-        }
-    } else {
-        wheel->spinRate = wheel->spinRate + wheel->drive * dt;
-        if (ABS(wheel->spinRate) > MAX_SPIN_RATE) {
-            wheel->spinRate = (f32)(SIGN(wheel->spinRate) * 300.0);
-        }
-    }
-
-    /* Turn the wheel by its spin, within a turn. */
-    wheel->rollAngle = wheel->rollAngle - wheel->spinRate * 57.29577637f * dt;
-    while ((f64)wheel->rollAngle > 360.0) {
-        wheel->rollAngle = (f32)((f64)wheel->rollAngle - 360.0);
-    }
-    while ((f64)wheel->rollAngle < 0.0) {
-        wheel->rollAngle = wheel->rollAngle + 360.0f;
     }
 }
 

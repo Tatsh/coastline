@@ -387,24 +387,25 @@ void GetBodyPointVelocity(Vec3f *out, RigidBody *body, Vec3f *point);
 void ApplySideGrip(
     RigidBody *body, f32 dt, f32 *rearLoad, f32 *frontLoad, u8 *rearSliding, u8 *frontSliding);
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 /**
- * Drive a wheel on the ground: push the body along the way the wheel rolls by its drive, as far as
- * the weight on it lets it, and spin and turn the wheel.
+ * Drive a wheel on the ground, pushing the body along the way the wheel rolls by its drive, as far
+ * as the weight on it lets it, and spin and turn the wheel.
  *
  * @param body The body of the vehicle.
  * @param wheel The wheel to drive.
  * @param load The load of its tyres, to which half the push is added.
- * @param sliding Whether its tyres slid, in which case the push is cut by a tenth.
+ * @param sliding Whether its tyres slid, selecting sliding traction.
  * @param dt The time of the step.
  * @ghidraAddress USA: 0x8025ac9c
  * @ghidraAddress EUR: 0x8025c280
  * @ghidraAddress JPN: 0x8025bc10
+ * @ghidraAddress BRD3D: 0x1006c1f0
  */
 void DriveWheel(RigidBody *body, RigidBody *wheel, f32 *load, u8 *sliding, f32 dt);
 
-#ifdef __cplusplus
-extern "C" {
-#endif
 /**
  * Whether a point lies within a triangle of the track, seen along the main axis of its normal.
  *

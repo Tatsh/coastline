@@ -1,5 +1,9 @@
 #include <PR/gu.h>
 
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#include <math.h>
+#endif
+
 #include "physics.h"
 #include "physicsimpact.h"
 #include "track.h"
@@ -53,7 +57,213 @@ void SelectVehiclePhysicsTables(s32 model) {
 #define CONTACT_ABS(a) ((a) < 0.0f ? -(a) : (a))
 #define COMPONENT(v, axis) ((&(v)->x)[axis])
 
+#define WHEEL_WEIGHT_SHARE (9.81f * 0.3f)
+#define MAX_SPIN_RATE 300.0f
+#define ABS(x) ((x) < 0.0f ? -(x) : (x))
 #define SIGN(x) ((x) == 0.0f ? 0.0 : (0.0f < (x) ? 1.0 : -1.0))
+
+void DriveWheel(RigidBody *body, RigidBody *wheel, f32 *load, u8 *sliding, f32 dt) {
+    Vec3f unitY, axle, forward, side, roll, velocity, push, local;
+#if TGR_PLATFORM == TGR_PLATFORM_N64
+    Vec3f slide, weight;
+#endif
+    Vec3f *normal = &wheel->groundNormal;
+    f32 c, s, rollSpeed, drive, force;
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+    long double highForward[3], highWeight, highSpin, highAngle, pressure, grip;
+    s16 weather;
+#else
+    f32 pressure, grip, ratio;
+#endif
+
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+    unitY.x = 0.0f;
+    unitY.y = 1.0f;
+    unitY.z = 0.0f;
+#else
+    unitY = g_vecUnitY;
+#endif
+    if (!wheel->ground) {
+        return;
+    }
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+    if (!(normal->z >= 0.7)) {
+#else
+    if ((f64)normal->z < 0.7) {
+#endif
+        return;
+    }
+    /* The ways the wheel rolls and slides on the ground. */
+    Mtx3x3MulVec3f(&axle, body->orientation, &unitY);
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+    highForward[0] = FORCE_PRODUCT(axle.y, normal->z) - FORCE_PRODUCT(normal->y, axle.z);
+    highForward[1] = FORCE_PRODUCT(axle.z, normal->x) - FORCE_PRODUCT(normal->z, axle.x);
+    highForward[2] = FORCE_PRODUCT(axle.x, normal->y) - FORCE_PRODUCT(normal->x, axle.y);
+    forward.x = highForward[0];
+    forward.y = highForward[1];
+    forward.z = highForward[2];
+    side.x = normal->y * highForward[2] - highForward[1] * normal->z;
+    side.y = normal->z * highForward[0] - FORCE_PRODUCT(forward.z, normal->x);
+    side.z = FORCE_PRODUCT(normal->x, forward.y) - FORCE_PRODUCT(forward.x, normal->y);
+#else
+    forward.x = axle.y * normal->z - normal->y * axle.z;
+    forward.y = axle.z * normal->x - normal->z * axle.x;
+    forward.z = axle.x * normal->y - normal->x * axle.y;
+    side.x = normal->y * forward.z - forward.y * normal->z;
+    side.y = normal->z * forward.x - forward.z * normal->x;
+    side.z = normal->x * forward.y - forward.x * normal->y;
+#endif
+    c = cosf(wheel->steerAngle);
+    s = sinf(wheel->steerAngle);
+    roll.x = forward.x * c;
+    roll.y = forward.y * c;
+    roll.z = forward.z * c;
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+    roll.x = FORCE_PRODUCT(side.x, s) + roll.x;
+    roll.y = FORCE_PRODUCT(side.y, s) + roll.y;
+    roll.z = FORCE_PRODUCT(side.z, s) + roll.z;
+#else
+    /* The original also turns the slide direction with the wheel and never reads it. */
+    slide.x = forward.x * -s;
+    slide.y = forward.y * -s;
+    slide.z = forward.z * -s;
+    forward.x = side.x * s;
+    forward.y = side.y * s;
+    forward.z = side.z * s;
+    roll.x = forward.x + roll.x;
+    roll.y = forward.y + roll.y;
+    roll.z = forward.z + roll.z;
+    forward.x = side.x * c;
+    forward.y = side.y * c;
+    forward.z = side.z * c;
+    slide.x = forward.x + slide.x;
+    slide.y = forward.y + slide.y;
+    slide.z = forward.z + slide.z;
+    (void)slide;
+
+#endif
+
+    if (body->wheels[0]->contactFrames && body->wheels[2]->contactFrames &&
+        body->wheels[1]->contactFrames && body->wheels[3]->contactFrames) {
+        GetWheelWorldVelocity(&velocity, body, wheel);
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+        rollSpeed = (FORCE_PRODUCT(velocity.x, roll.x) + FORCE_PRODUCT(velocity.y, roll.y)) +
+                    FORCE_PRODUCT(roll.z, velocity.z);
+        highWeight = ((long double)body->mass - FORCE_PRODUCT(wheel->mass, -4.0f)) *
+                     2.943000316619873046875f;
+        pressure = normal->z * highWeight;
+#else
+        rollSpeed = roll.z * velocity.z + (velocity.x * roll.x + velocity.y * roll.y);
+        /* The weight on the wheel, which bounds how hard its drive can push. */
+        weight.x = 0.0f;
+        weight.y = 0.0f;
+        weight.z = (body->mass + 4.0f * wheel->mass) * WHEEL_WEIGHT_SHARE +
+                   (f32)((f64)wheel->state.position.z - -0.97) * 0.0f;
+        pressure = normal->z * weight.z + (weight.x * normal->x + weight.y * normal->y);
+#endif
+        drive = wheel->drive;
+        force = drive / wheel->radius;
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+        grip = pressure * 3.5f;
+#else
+        grip = pressure * 3.0f;
+#endif
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+        *load = *load + FORCE_PRODUCT(force, 0.5f);
+#else
+        *load = *load + force / 2.0f;
+#endif
+        if (*sliding) {
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+            weather = g_dwCurrentWeather - 1;
+            if (weather >= GRIP_WEATHERS || weather < 0) {
+                weather = 0;
+            }
+            force = FORCE_PRODUCT(g_pWheelSteeringTable[body->tireType][weather][wheel->surface],
+                                  force);
+#else
+            force = (f32)((f64)force * 0.9);
+#endif
+        }
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+        if (ABS(grip) < ABS(force)) {
+            force = (ABS(grip / force) * force) * 0.1f;
+        }
+#else
+        if (ABS(grip) < ABS(force)) {
+            ratio = grip / force;
+            force = (f32)((f64)force * ((f64)ABS(ratio) * 0.1));
+        }
+#endif
+        push.x = roll.x * -force;
+        push.y = roll.y * -force;
+        push.z = roll.z * -force;
+        Mtx4fInverseRotate(&local, body->orientation, &push);
+        wheel->forces->vector.x = local.x + wheel->forces->vector.x;
+        wheel->forces->vector.y = local.y + wheel->forces->vector.y;
+        wheel->forces->vector.z = local.z + wheel->forces->vector.z;
+        /* The drive spins the wheel against its push, and the ground turns it to the speed. */
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+        highSpin =
+            wheel->spinRate + ((long double)drive - FORCE_PRODUCT(wheel->radius, force)) * dt;
+        highSpin -= (wheel->radius * highSpin + rollSpeed) * 0.4f;
+#else
+        wheel->spinRate = wheel->spinRate + (drive - wheel->radius * force) * dt;
+        wheel->spinRate =
+            (f32)((f64)wheel->spinRate - (f64)(wheel->spinRate * wheel->radius + rollSpeed) * 0.4);
+        if (ABS(wheel->spinRate) > MAX_SPIN_RATE) {
+            wheel->spinRate = (f32)(SIGN(wheel->spinRate) * 300.0);
+        }
+#endif
+    } else {
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+        highSpin = wheel->spinRate + FORCE_PRODUCT(wheel->drive, dt);
+#else
+        wheel->spinRate = wheel->spinRate + wheel->drive * dt;
+        if (ABS(wheel->spinRate) > MAX_SPIN_RATE) {
+            wheel->spinRate = (f32)(SIGN(wheel->spinRate) * 300.0);
+        }
+#endif
+    }
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+    wheel->spinRate = highSpin;
+    if (ABS(highSpin) > MAX_SPIN_RATE) {
+        wheel->spinRate = highSpin > 0.0L ? MAX_SPIN_RATE : -MAX_SPIN_RATE;
+    }
+#endif
+
+    /* Turn the wheel by its spin, within a turn. */
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+    highAngle = wheel->rollAngle - FORCE_PRODUCT(wheel->spinRate, 57.29577637f) * dt;
+    wheel->rollAngle = highAngle;
+    if (!isfinite((double)highAngle) || !(wheel->rollAngle >= -36000.0) ||
+        !(wheel->rollAngle < 36000.0)) {
+        wheel->rollAngle = 0.0f;
+        return;
+    }
+    if (wheel->rollAngle > 360.0) {
+        do {
+            highAngle = (long double)wheel->rollAngle - 360.0;
+            wheel->rollAngle = highAngle;
+        } while (highAngle > 360.0);
+    }
+    if (wheel->rollAngle < 0.0) {
+        highAngle = wheel->rollAngle;
+        do {
+            highAngle -= -360.0f;
+        } while (highAngle < 0.0);
+        wheel->rollAngle = highAngle;
+    }
+#else
+    wheel->rollAngle = wheel->rollAngle - wheel->spinRate * 57.29577637f * dt;
+    while ((f64)wheel->rollAngle > 360.0) {
+        wheel->rollAngle = (f32)((f64)wheel->rollAngle - 360.0);
+    }
+    while ((f64)wheel->rollAngle < 0.0) {
+        wheel->rollAngle = wheel->rollAngle + 360.0f;
+    }
+#endif
+}
 
 void ComputeCollisionPenetration(
     RigidBody *body, Vec3f *normal, f32 offset, Vec3f *contact, Vec3f triangle[3]) {
