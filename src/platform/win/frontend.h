@@ -353,6 +353,14 @@ int ReturnToVideoOptionsFromResolution(MenuWidget *pWidget);
 int ReturnToVideoOptionsFromDeviceSelect(MenuWidget *pWidget);
 
 /**
+ * Select the modem provider and restore the cached join or create screen.
+ *
+ * @ghidraAddress BRD3D: 0x10043f50
+ * @ghidraAddress BRGlide: 0x1003d4a0
+ */
+int ModemConnectionUI_OnAccept(MenuWidget *pWidget);
+
+/**
  * @ghidraAddress BRD3D: 0x10a9d078
  * @ghidraAddress BRGlide: 0x10ac4100
  */

@@ -1843,6 +1843,16 @@ int ReturnToVideoOptionsFromDeviceSelect(MenuWidget *pWidget) {
     return 0;
 }
 
+int ModemConnectionUI_OnAccept(MenuWidget *pWidget) {
+    g_dwServiceProviderIndex = 2;
+    pWidget->pScreen->DestroyPanels();
+    delete g_pActiveMenuScreen;
+    MenuScreen *screen = g_pCachedMenu_JoinCreateGame;
+    g_pCachedMenu_ModemDialUp = nullptr;
+    g_pActiveMenuScreen = screen;
+    return 0;
+}
+
 int PreRaceExitSeasonConfirmUI_OnYes(MenuWidget *pWidget) {
     pWidget->pScreen->DestroyPanels();
     delete g_pActiveMenuScreen;
