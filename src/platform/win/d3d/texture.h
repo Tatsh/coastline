@@ -130,6 +130,21 @@ void UnpackRgba5551ToRgba8(unsigned char *pDest, const unsigned short *pSrc, int
 int ConvertRGBAToPixelFormat(void *pDest, const void *pSrc, int nSize, int nPixelFormatId);
 
 /**
+ * Convert RGBA pixels and a transparent color into a device pixel format.
+ *
+ * @param pDest Receives the pixels.
+ * @param pSrc The source pixels.
+ * @param nSize The source byte count.
+ * @param nPixelFormatId The device format identifier.
+ * @param pColorKey Receives the converted transparent color.
+ * @return The output byte count.
+ * @ghidraAddress BRD3D: 0x10009660
+ * @stub{BRD3D}
+ */
+int ConvertRGBAToPixelFormatWithColorKey(
+    void *pDest, const void *pSrc, int nSize, int nPixelFormatId, unsigned *pColorKey);
+
+/**
  * Load an image file of RGBA 5551 pixels and convert it to pixel format 0xb. The file has the
  * width, the height, a word that is not read, and the pixels. A checksum that does not match ends
  * the process.

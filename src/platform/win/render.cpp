@@ -1226,3 +1226,61 @@ void ModulateTextureWithIntensityPlane(const TextureImageData *pImage, unsigned 
         }
     }
 }
+
+unsigned g_dwTexturePixelByteCount;
+
+unsigned char *GetTextureImagePixels(TextureImageData *pImage) {
+    if (pImage->dwFlags & 0x40) {
+        g_dwTexturePixelByteCount = pImage->nDecodedBytes;
+        return pImage->pImage;
+    }
+    if (pImage->bOwnsPaintBuffers) {
+        unsigned char *pixels = pImage->apPaintBuffers[pImage->nDamageLevel];
+        g_dwTexturePixelByteCount = pImage->nPaintPixelBytes;
+        return pixels ? pixels : pImage->apPaintBuffers[0];
+    }
+    unsigned char *pixels = g_abDecodedTexturePixels;
+    if (!(pImage->dwFlags & 0x10)) {
+        const TexScanTile &tile = pImage->aTiles[pImage->nTileIndex];
+        DecodeTexturePixels(pixels,
+                            pImage->nDecodedBytes,
+                            tile.nSize,
+                            pImage->pImage,
+                            pImage->pPalette,
+                            tile.nFormat,
+                            pImage->nLoadBytes,
+                            pImage->nOption8,
+                            pImage->nTileIndex,
+                            pImage->nTileLimit,
+                            pImage->aTiles,
+                            pImage->dwFlags,
+                            pImage->bColorCombine,
+                            pImage->abEnvColor[0],
+                            pImage->abEnvColor[1],
+                            pImage->abEnvColor[2],
+                            pImage->abEnvColor[3],
+                            pImage->abPrimColor[0],
+                            pImage->abPrimColor[1],
+                            pImage->abPrimColor[2],
+                            pImage->abPrimColor[3],
+                            pImage->nRowSwapMask);
+    }
+    g_dwTexturePixelByteCount = pImage->nDecodedBytes;
+    if ((pImage->dwFlags & 0x82) == 0x82) {
+        pImage->nLargestLod = pImage->nLod;
+        ModulateTextureWithIntensityPlane(pImage, pixels);
+    }
+    if (pImage->nSourceWidth != pImage->nWidth || pImage->nSourceHeight != pImage->nHeight) {
+        pImage->nPixelBytes = ResizeTextureMipChain(g_abTextureResampleBuffer, pixels, pImage);
+        g_dwTexturePixelByteCount = pImage->nPixelBytes;
+        pixels = g_abTextureResampleBuffer;
+    }
+    if (pImage->nColorKey) {
+        g_dwTexturePixelByteCount = ConvertRGBAToPixelFormatWithColorKey(
+            pixels, pixels, pImage->nPixelBytes, pImage->nPixelFormatId, &pImage->nColorKey);
+    } else {
+        g_dwTexturePixelByteCount =
+            ConvertRGBAToPixelFormat(pixels, pixels, pImage->nPixelBytes, pImage->nPixelFormatId);
+    }
+    return pixels;
+}

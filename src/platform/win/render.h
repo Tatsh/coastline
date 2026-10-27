@@ -17,6 +17,7 @@
 
 struct GbiCommand;
 struct TextureImageData;
+struct TexScanTile;
 
 /**
  * @ghidraAddress BRD3D: 0x10b501d0
@@ -1283,7 +1284,6 @@ void ResizeTextureImage(unsigned char *pDest,
  * @param pImage The image metadata.
  * @return The decoded pixels.
  * @ghidraAddress BRD3D: 0x10028860
- * @stub{BRD3D}
  */
 unsigned char *GetTextureImagePixels(TextureImageData *pImage);
 
@@ -1329,3 +1329,61 @@ extern unsigned char g_abDecodedTexturePixels[];
  * @ghidraAddress BRD3D: 0x10028a10
  */
 void ModulateTextureWithIntensityPlane(const TextureImageData *pImage, unsigned char *pPixels);
+
+/**
+ * The byte count produced by the last decoded texture operation.
+ *
+ * @ghidraAddress BRD3D: 0x105553f8
+ */
+extern unsigned g_dwTexturePixelByteCount;
+
+/**
+ * Decode captured N64 texture tiles into four-byte pixels.
+ *
+ * @param pDest Receives decoded pixels.
+ * @param nSize The output byte limit.
+ * @param nTexelSize The N64 texel size.
+ * @param pImage The captured image bytes.
+ * @param pPalette The captured palette bytes.
+ * @param nFormat The N64 image format.
+ * @param nLoadBytes The load line byte count.
+ * @param nOption8 The eighth decode option.
+ * @param nTileIndex The first tile.
+ * @param nTileLimit The exclusive tile limit.
+ * @param pTiles The captured tile records.
+ * @param flags The image control flags.
+ * @param bColorCombine The captured combine state.
+ * @param envR The environment red byte.
+ * @param envG The environment green byte.
+ * @param envB The environment blue byte.
+ * @param envA The environment alpha byte.
+ * @param primR The primitive red byte.
+ * @param primG The primitive green byte.
+ * @param primB The primitive blue byte.
+ * @param primA The primitive alpha byte.
+ * @param nRowSwapMask The row mask for swapped texture words.
+ * @ghidraAddress BRD3D: 0x10025ab0
+ * @stub{BRD3D}
+ */
+void DecodeTexturePixels(unsigned char *pDest,
+                         int nSize,
+                         int nTexelSize,
+                         const unsigned char *pImage,
+                         const unsigned char *pPalette,
+                         int nFormat,
+                         int nLoadBytes,
+                         int nOption8,
+                         int nTileIndex,
+                         int nTileLimit,
+                         const TexScanTile *pTiles,
+                         unsigned flags,
+                         int bColorCombine,
+                         unsigned envR,
+                         unsigned envG,
+                         unsigned envB,
+                         unsigned envA,
+                         unsigned primR,
+                         unsigned primG,
+                         unsigned primB,
+                         unsigned primA,
+                         unsigned nRowSwapMask);
