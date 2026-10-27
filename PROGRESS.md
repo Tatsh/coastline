@@ -109,7 +109,7 @@ A routine counts for a release when its address in that release is tagged.
 | Release       | Routines |  Done | Share |
 | ------------- | -------: | ----: | ----: |
 | `BRD3D.dll`   |    1,593 | 1,175 | 73.8% |
-| `BRGlide.dll` |    1,446 |   572 | 39.6% |
+| `BRGlide.dll` |    1,446 |   571 | 39.5% |
 
 ### By component
 
@@ -132,14 +132,14 @@ address in the PC libraries.
 | `eur.z64`     | Nintendo 64 |      819 |   819 | 100.0% |
 | `jpn.z64`     | Nintendo 64 |      822 |   822 | 100.0% |
 | `BRD3D.dll`   | PC port     |    1,593 | 1,175 |  73.8% |
-| `BRGlide.dll` | PC port     |    1,446 |   572 |  39.6% |
+| `BRGlide.dll` | PC port     |    1,446 |   571 |  39.5% |
 
 | Measure                                         | Count |
 | ----------------------------------------------- | ----: |
 | Routines of the PC port shared with the N64     |   362 |
 | Shared and done in every N64 release            |   362 |
-| Shared and done in every release of both groups |    73 |
-| Shared, done on the N64, and not yet on the PC  |   289 |
+| Shared and done in every release of both groups |    72 |
+| Shared, done on the N64, and not yet on the PC  |   290 |
 
 ## Parts
 
