@@ -1,6 +1,6 @@
 # PC port game code from 0x10040000 to 0x10050000
 
-234 of 264 routines done.
+235 of 264 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -44,7 +44,7 @@ the same name, for a routine the port retained from the N64 game.
 | `MenuWidget::UpdateSlideAnimation`                 |   ✅   |                 |      1 |    373 | `0x10047d30` | `0x10041180` | `int UpdateSlideAnimation(MenuWidget * this)`                                                                                                             |
 | `PreRaceInfoUI_UpdateBestLapLabel`                 |   📝   |                 |      1 |    358 | `0x10040d70` | `0x1003a2b0` | `undefined PreRaceInfoUI_UpdateBestLapLabel()`                                                                                                            |
 | `PreRaceInfoUI_UpdateBestTimeLabel`                |   📝   |                 |      1 |    358 | `0x10040c00` | `0x1003a140` | `undefined PreRaceInfoUI_UpdateBestTimeLabel()`                                                                                                           |
-| `JoinSessionAndShowRaceSetup`                      |        |                 |      3 |    340 | `0x10044280` | `0x1003d7d0` | `int JoinSessionAndShowRaceSetup(void)`                                                                                                                   |
+| `JoinSessionAndShowRaceSetup`                      |   ✅   |                 |      3 |    340 | `0x10044280` | `0x1003d7d0` | `int JoinSessionAndShowRaceSetup(void)`                                                                                                                   |
 | `RaceResultsInfoUI_UpdateSelectedTimeLabel`        |   📝   |                 |      1 |    339 | `0x10040ee0` | `0x1003a420` | `undefined RaceResultsInfoUI_UpdateSelectedTimeLabel(MenuWidget * pWidget)`                                                                               |
 | `CarSetupUI_OnCycleCar`                            |   ✅   |                 |      2 |    330 | `0x10042b30` |              | `int CarSetupUI_OnCycleCar(MenuActionWidget * pItem)`                                                                                                     |
 | `SaveSeasonUI_OnSlotSelected`                      |   ✅   |                 |      1 |    328 | `0x10042020` | `0x1003b580` | `int SaveSeasonUI_OnSlotSelected(MenuItemList * pList, int * pnSlot)`                                                                                     |
