@@ -1,6 +1,6 @@
 # PC port game code from 0x10050000 to 0x10060000
 
-33 of 88 routines done.
+36 of 88 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -63,10 +63,10 @@ the same name, for a routine the port retained from the N64 game.
 | `MenuFont::MeasureText`                   |   ✅   |                 |      1 |    140 | `0x1005b0d0` | `0x10053ef0` | `void MeasureText(MenuFont * this)`                                                                                                             |
 | `MenuItemList::UpdateItemAndNotify`       |        |                 |      1 |    132 | `0x1005bb80` | `0x100549a0` | `undefined UpdateItemAndNotify(MenuItemList * this, undefined4 param_1)`                                                                        |
 | `MenuItemList::UpdateHoverInRect`         |        |                 |      1 |    117 | `0x1005c510` | `0x10055330` | `undefined UpdateHoverInRect(MenuItemList * this, undefined4 param_1)`                                                                          |
-| `MenuFont::DrawGlyph`                     |        |                 |      0 |    112 | `0x1005b730` | `0x10054550` | `undefined DrawGlyph(MenuFont * this, undefined4 param_1, undefined4 param_2, undefined4 param_3, undefined4 param_4)`                          |
+| `MenuFont::DrawGlyph`                     |   ✅   |                 |      0 |    112 | `0x1005b730` | `0x10054550` | `int DrawGlyph(MenuFont * this, short nImage, float x, float y, int nStyle)`                                                                    |
 | `MenuItemList::SetItemData`               |        |                 |      1 |    110 | `0x1005c200` | `0x10055020` | `undefined SetItemData(MenuItemList * this, undefined4 param_1, undefined4 param_2, undefined4 param_3)`                                        |
 | `SaveFileList::CountMatchingFiles`        |   ✅   |                 |      1 |    101 | `0x1005d0a0` | `0x10055ed0` | `int CountMatchingFiles(SaveFileList * this, char * pszPattern)`                                                                                |
-| `MenuFont::DrawThrottledMenuGlyph`        |        |                 |      0 |     86 | `0x1005b250` | `0x10054070` | `undefined DrawThrottledMenuGlyph(MenuFont * this, undefined4 param_1, undefined4 param_2)`                                                     |
+| `MenuFont::DrawThrottledMenuGlyph`        |   ✅   |                 |      0 |     86 | `0x1005b250` | `0x10054070` | `void DrawThrottledMenuGlyph(MenuFont * this, float x, float y)`                                                                                |
 | `SaveFileList::SaveFileList`              |   ✅   |                 |      2 |     82 | `0x1005cb90` | `0x100559b0` | `SaveFileList * SaveFileList(SaveFileList * this)`                                                                                              |
 | `MenuFont::ComputeCenteredX`              |   ✅   |                 |      1 |     80 | `0x1005b200` | `0x10054020` | `float10 ComputeCenteredX(MenuFont * this)`                                                                                                     |
 | `MenuFont::MenuFont`                      |   ✅   |                 |      2 |     77 | `0x1005b050` | `0x10053e70` | `MenuFont * MenuFont(MenuFont * this)`                                                                                                          |
@@ -77,7 +77,7 @@ the same name, for a routine the port retained from the N64 game.
 | `MenuItemList::UpdateAndRenderMenuWidget` |        |                 |      1 |     68 | `0x1005cb40` | `0x10055960` | `undefined UpdateAndRenderMenuWidget(MenuItemList * this, undefined4 param_1)`                                                                  |
 | `UpdateKeyboardEdgeState`                 |   ✅   |                 |      3 |     67 | `0x1005ff60` | `0x10058fd0` | `void UpdateKeyboardEdgeState(void)`                                                                                                            |
 | `GlideDisplayModeNode::IsLessOrEqual`     |        |                 |      2 |     59 |              | `0x10058cc0` | `undefined IsLessOrEqual(GlideDisplayModeNode * this, undefined4 param_1)`                                                                      |
-| `MenuFont::DrawGlyphAltFont`              |        |                 |      0 |     59 | `0x1005b7a0` | `0x100545c0` | `undefined DrawGlyphAltFont(MenuFont * this, undefined4 param_1, undefined4 param_2, undefined4 param_3, undefined4 param_4)`                   |
+| `MenuFont::DrawGlyphAltFont`              |   ✅   |                 |      0 |     59 | `0x1005b7a0` | `0x100545c0` | `int DrawGlyphAltFont(MenuFont * this, short nImage, float x, float y, int nStyle)`                                                             |
 | `UpdateMouseButtonEdges`                  |   ✅   |                 |      6 |     56 | `0x1005fff0` | `0x10059060` | `void UpdateMouseButtonEdges(void)`                                                                                                             |
 | `GlideDisplayModeNode::InsertSorted`      |        |                 |      1 |     53 |              | `0x10058d00` | `undefined InsertSorted(GlideDisplayModeNode * this, undefined4 param_1)`                                                                       |
 | `ClearKeyboardStateBuffers`               |   ✅   |                 |      2 |     41 | `0x1005ff30` | `0x10058fa0` | `void ClearKeyboardStateBuffers(void)`                                                                                                          |

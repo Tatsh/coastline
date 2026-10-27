@@ -1,6 +1,6 @@
 # PC port game code from 0x10000000 to 0x10010000
 
-204 of 247 routines done.
+205 of 247 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -14,7 +14,7 @@ the same name, for a routine the port retained from the N64 game.
 | `ProcessNetworkDataStream`                                 |   ✅   |                 |      5 |   3792 | `0x10003580` | `0x100038f0` | `void ProcessNetworkDataStream(DirectPlayInfo * pInfo, void * pData, uint dwSize, uint dpidFrom, uint dpidTo)`                                                                          |
 | `LoadBossRallyIniSettings`                                 |   ✅   |                 |      1 |   2471 | `0x10007bd0` | `0x10007f40` | `void LoadBossRallyIniSettings(char * pszExtraCmdLine)`                                                                                                                                 |
 | `RenderVehicleHeadlightBeams`                              |        | ✅ `0x80232ed4` |      2 |   1576 | `0x1000e950` | `0x1000beb0` | `void RenderVehicleHeadlightBeams(float * pEntity)`                                                                                                                                     |
-| `Vehicle::UpdateCameraSystem`                              |        | ✅ `0x80221170` |      3 |   1567 | `0x100019d0` | `0x10001cf0` | `undefined UpdateCameraSystem(Vehicle * this)`                                                                                                                                          |
+| `Vehicle::UpdateCameraSystem`                              |   ✅   | ✅ `0x80221170` |      3 |   1567 | `0x100019d0` | `0x10001cf0` | `void UpdateCameraSystem(Vehicle * this)`                                                                                                                                               |
 | `RenderHost::RenderLoadingScreen`                          |   ✅   |                 |      2 |   1328 | `0x10008e30` |              | `long RenderLoadingScreen(RenderHost * this, DirectDrawRenderer * pWindowRenderer, char * pszImage, uint nImageKey)`                                                                    |
 | `Vehicle::DeformVehicleMeshByImpact`                       |        | ✅ `0x80233880` |      1 |   1246 | `0x1000ef80` | `0x1000c4e0` | `void DeformVehicleMeshByImpact(Vehicle * this, int pThis, float * pVec)`                                                                                                               |
 | `GetInterpolatedRemoteVehicleState`                        |        |                 |      1 |   1070 | `0x100054a0` | `0x10005810` | `uint GetInterpolatedRemoteVehicleState(float * pKeyframe, int slotIndex)`                                                                                                              |
