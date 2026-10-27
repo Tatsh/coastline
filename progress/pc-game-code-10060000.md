@@ -1,6 +1,6 @@
 # PC port game code from 0x10060000 to 0x10070000
 
-40 of 169 routines done.
+41 of 169 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -166,7 +166,7 @@ the same name, for a routine the port retained from the N64 game.
 | `RegisterRallyConfigAtExit`              |        |                 |      1 |     14 | `0x10069a70` | `0x10062ae0` | `undefined RegisterRallyConfigAtExit()`                                                                                                  |
 | `GetGhostKeyframeDataSize`               |   ✅   |                 |      4 |     12 | `0x1006aba0` | `0x10063b50` | `uint GetGhostKeyframeDataSize(void)`                                                                                                    |
 | `RallyConfig::RallyConfig`               |   ✅   |                 |      2 |     12 | `0x10069a90` | `0x10062b00` | `RallyConfig * RallyConfig(RallyConfig * this)`                                                                                          |
-| `StartGhostRecording`                    |        |                 |      3 |     11 | `0x1006aa90` | `0x10063a40` | `undefined StartGhostRecording()`                                                                                                        |
+| `StartGhostRecording`                    |   ✅   |                 |      3 |     11 | `0x1006aa90` | `0x10063a40` | `void StartGhostRecording(void)`                                                                                                         |
 | `PlayBeepSound`                          |        | ✅ `0x8022b3c4` |      2 |     11 | `0x10067d80` | `0x10060df0` | `undefined PlayBeepSound()`                                                                                                              |
 | `PlayGoSound`                            |        | ✅ `0x8022b3e4` |      1 |     11 | `0x10067d90` | `0x10060e00` | `undefined PlayGoSound()`                                                                                                                |
 | `Vehicle::ClearCameraChanged`            |        | ✅ `0x8022bcac` |      1 |     11 | `0x100683c0` | `0x10061430` | `undefined ClearCameraChanged(Vehicle * this)`                                                                                           |

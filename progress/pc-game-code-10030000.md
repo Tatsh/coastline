@@ -1,6 +1,6 @@
 # PC port game code from 0x10030000 to 0x10040000
 
-90 of 307 routines done.
+91 of 307 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -129,8 +129,8 @@ the same name, for a routine the port retained from the N64 game.
 | `GameOptionsUI_UpdateForceFeedbackLabel`          |        |                 |      1 |    113 | `0x1003fcb0` | `0x100391f0` | `undefined GameOptionsUI_UpdateForceFeedbackLabel()`                                                                                                                    |
 | `IsTrackSelectable`                               |        |                 |      6 |    112 | `0x1003f2b0` | `0x100387f0` | `uint IsTrackSelectable(int nDepthIndex)`                                                                                                                               |
 | `DisconnectNetworkSession`                        |   📝   |                 |      7 |    111 | `0x1003bf60` | `0x100355f0` | `void DisconnectNetworkSession(void)`                                                                                                                                   |
-| `SendNetworkFinishPositionMessage`                |        |                 |      2 |    108 | `0x1003db50` | `0x100371f0` | `undefined SendNetworkFinishPositionMessage()`                                                                                                                          |
 | `CloseAndReleaseDirectPlay`                       |   ✅   |                 |      2 |    108 | `0x1003c550` | `0x10035be0` | `long CloseAndReleaseDirectPlay(void)`                                                                                                                                  |
+| `SendNetworkFinishPositionMessage`                |   ✅   |                 |      2 |    108 | `0x1003db50` | `0x100371f0` | `int SendNetworkFinishPositionMessage(DirectPlayInfo * pInfo, uint dpidPlayer, uint dwPosition)`                                                                        |
 | `guPerspectiveF`                                  |        | ✅ `0x80265180` |      2 |    106 | `0x10030930` | `0x10029fe0` | `undefined guPerspectiveF()`                                                                                                                                            |
 | `OnPlayerNameEdited`                              |        |                 |      1 |    106 | `0x1003eef0` | `0x10038420` | `undefined OnPlayerNameEdited()`                                                                                                                                        |
 | `OnSessionNameEdited`                             |        |                 |      1 |    106 | `0x1003f210` | `0x10038750` | `undefined OnSessionNameEdited()`                                                                                                                                       |

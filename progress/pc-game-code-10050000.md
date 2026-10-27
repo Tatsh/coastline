@@ -1,6 +1,6 @@
 # PC port game code from 0x10050000 to 0x10060000
 
-21 of 84 routines done.
+23 of 84 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -33,7 +33,7 @@ the same name, for a routine the port retained from the N64 game.
 | `BuildSeasonCongratsUI`                   |        |                 |      2 |    923 | `0x10051990` | `0x1004a840` | `undefined BuildSeasonCongratsUI()`                                                                                                             |
 | `SaveFileList::GenerateNextSaveFileName`  |        |                 |      1 |    803 | `0x1005d110` | `0x10055f40` | `undefined GenerateNextSaveFileName(SaveFileList * this, undefined4 param_1, undefined4 param_2)`                                               |
 | `BuildNotEnoughPointsUI`                  |        |                 |      2 |    760 | `0x10051d30` | `0x1004abe0` | `undefined BuildNotEnoughPointsUI()`                                                                                                            |
-| `RestoreSeasonProgressState`              |   📝   |                 |      1 |    629 | `0x1005f940` | `0x10058680` | `undefined RestoreSeasonProgressState()`                                                                                                        |
+| `RestoreSeasonProgressState`              |   ✅   |                 |      1 |    629 | `0x1005f940` | `0x10058680` | `bool RestoreSeasonProgressState(void)`                                                                                                         |
 | `MenuItemList::Initialize`                |        |                 |      1 |    618 | `0x1005b910` | `0x10054730` | `undefined Initialize(MenuItemList * this, undefined4 param_1, undefined4 param_2, undefined4 param_3, undefined4 param_4, undefined4 param_5)` |
 | `MenuItemList::Draw`                      |        |                 |      1 |    581 | `0x1005c2c0` | `0x100550e0` | `undefined Draw(MenuItemList * this, undefined4 param_1)`                                                                                       |
 | `MenuItemList::RemoveItem`                |        |                 |      1 |    510 | `0x1005c000` | `0x10054e20` | `undefined RemoveItem(MenuItemList * this, undefined4 param_1)`                                                                                 |
@@ -45,7 +45,7 @@ the same name, for a routine the port retained from the N64 game.
 | `InitJoystickBindingNames`                |   ✅   |                 |      1 |    333 | `0x1005fdb0` | `0x10058af0` | `void InitJoystickBindingNames(void)`                                                                                                           |
 | `InitMenuSpriteRects`                     |   ✅   |                 |      1 |    309 | `0x1005f800` | `0x10058540` | `void InitMenuSpriteRects(void)`                                                                                                                |
 | `MenuScreen::ActivateMenuScreen`          |   ✅   |                 |      1 |    304 | `0x1005ae70` | `0x10053d20` | `bool ActivateMenuScreen(MenuScreen * this)`                                                                                                    |
-| `ApplyLoadedSeasonSettings`               |        |                 |      2 |    289 | `0x1005fbc0` | `0x10058900` | `undefined ApplyLoadedSeasonSettings()`                                                                                                         |
+| `ApplyLoadedSeasonSettings`               |   ✅   |                 |      2 |    289 | `0x1005fbc0` | `0x10058900` | `void ApplyLoadedSeasonSettings(bool bUpdatePoints)`                                                                                            |
 | `BlitSurfaceRegion`                       |   ✅   |                 |      7 |    237 | `0x1005f5a0` | `0x10058380` | `void BlitSurfaceRegion(int nDestX, int nDestY, WORD wImage, RECT * pRect, DWORD dwFlags)`                                                      |
 | `SaveFileList::SetEntryFromSaveFileName`  |        |                 |      1 |    236 | `0x1005ce30` | `0x10055c50` | `undefined SetEntryFromSaveFileName(SaveFileList * this, undefined4 param_1, undefined4 param_2)`                                               |
 | `MenuFont::DrawTextAltFont`               |        |                 |      1 |    219 | `0x1005b460` | `0x10054280` | `undefined DrawTextAltFont(MenuFont * this)`                                                                                                    |
