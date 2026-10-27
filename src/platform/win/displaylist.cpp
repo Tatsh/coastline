@@ -1157,6 +1157,46 @@ static inline GbiCommand *LoadGbiVertices(GbiCommand *pCommand,
     return pCommand + 1;
 }
 
+void GenerateGbiVertexTextureCoordinates(const ConvertedModelVertex *pInput,
+                                         GbiVertexSource *pSource) {
+    const float (*matrix)[4] =
+        g_dwGbiMatrixStackDepth != 0 ? g_aGbiModelViewStack[g_dwGbiMatrixStackDepth - 1] : nullptr;
+    Vec3f normal;
+    float *components[3] = {&normal.x, &normal.y, &normal.z};
+    for (int column = 0; column < 3; column++) {
+        *components[column] = (static_cast<long double>(matrix[1][column]) * pInput->normal.y +
+                               static_cast<long double>(matrix[2][column]) * pInput->normal.z) +
+                              static_cast<long double>(matrix[0][column]) * pInput->normal.x;
+    }
+    Vec3fNormalize(&normal);
+    const Light_t &lookX = static_cast<const Light *>(g_pGbiLookAtX)->l;
+    const Light_t &lookY = static_cast<const Light *>(g_pGbiLookAtY)->l;
+    float s = ((static_cast<long double>(lookX.dir[0]) * normal.x +
+                static_cast<long double>(lookX.dir[1]) * normal.y) +
+               static_cast<long double>(lookX.dir[2]) * normal.z) /
+              128.0f;
+    float t = ((static_cast<long double>(lookY.dir[0]) * normal.x +
+                static_cast<long double>(lookY.dir[2]) * normal.z) +
+               static_cast<long double>(lookY.dir[1]) * normal.y) /
+              128.0f;
+    long double generatedS =
+        (static_cast<long double>(s) * static_cast<float>(g_dwTileSizeWidth) + 128.0f) /
+        (static_cast<long double>(g_fTexCoordScaleS) * 256.0f -
+         static_cast<float>(g_dwTileSizeUls));
+    if (g_dwTileSizeWidth < g_dwTileSizeHeight) {
+        generatedS *= static_cast<float>(g_dwTileSizeHeight / g_dwTileSizeWidth);
+    }
+    pSource->fS = generatedS;
+    long double generatedT =
+        (static_cast<long double>(t) * static_cast<float>(g_dwTileSizeHeight) + 128.0f) /
+        (static_cast<long double>(g_fTexCoordScaleT) * 256.0f -
+         static_cast<float>(g_dwTileSizeUlt));
+    if (g_dwTileSizeWidth > g_dwTileSizeHeight) {
+        generatedT *= static_cast<float>(g_dwTileSizeWidth / g_dwTileSizeHeight);
+    }
+    pSource->fT = generatedT;
+}
+
 GbiCommand *HandleGbiVertexUnlit(GbiCommand *pCommand) {
     return LoadGbiVertices(pCommand, true, false);
 }

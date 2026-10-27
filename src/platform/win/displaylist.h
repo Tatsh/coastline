@@ -1286,6 +1286,16 @@ GbiCommand *HandleGbiVertexLitEnvColorModulated(GbiCommand *pCommand);
 GbiCommand *HandleGbiVertexTexGen(GbiCommand *pCommand);
 
 /**
+ * Generate tile-relative texture coordinates from the transformed vertex normal.
+ *
+ * @param pInput The converted model vertex.
+ * @param pSource The vertex that receives the texture coordinates.
+ * @ghidraAddress BRD3D: 0x10022e70
+ */
+void GenerateGbiVertexTextureCoordinates(const ConvertedModelVertex *pInput,
+                                         GbiVertexSource *pSource);
+
+/**
  * Load vertices that generate their texture coordinates linearly.
  *
  * @param pCommand The command.
