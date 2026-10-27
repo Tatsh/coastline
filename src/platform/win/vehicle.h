@@ -130,7 +130,7 @@ typedef struct Vehicle {
     s16 spraySegmentSurfaces[VEHICLE_WHEELS][SPRAY_SEGMENTS];
     Vec3f sprayOrigin;
     f32 inputMatrix[4][4];
-    u8 abUnknown2714[4]; /* +0x2714 */
+    s32 inTunnel;
     f32 cameraHeading;
     u8 abUnknown271c[4]; /* +0x271c */
     f32 steering;

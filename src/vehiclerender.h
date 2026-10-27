@@ -46,6 +46,7 @@ extern u32 g_dwVehicleOtherModeLBlend;
  * @ghidraAddress USA: 0x8028c304
  * @ghidraAddress EUR: 0x8028ea64
  * @ghidraAddress JPN: 0x8028e4b4
+ * @ghidraAddress BRD3D: 0x10277e58
  */
 extern u32 g_dwVehicleOtherModeLFlags;
 
@@ -75,6 +76,7 @@ extern s32 g_adwVehicleInViewRange[MAX_VEHICLES];
  * @ghidraAddress USA: 0x80351c90
  * @ghidraAddress EUR: 0x80354190
  * @ghidraAddress JPN: 0x80352e00
+ * @ghidraAddress BRD3D: 0x10277d38
  */
 extern s32 g_anVehicleLod[MAX_VEHICLES];
 
@@ -112,6 +114,7 @@ extern Mtx *g_apVehicleLightMatrix[MAX_VEHICLES];
  * @ghidraAddress USA: 0x80351c10
  * @ghidraAddress EUR: 0x80354110
  * @ghidraAddress JPN: 0x80352d80
+ * @ghidraAddress BRD3D: 0x10277bb8
  */
 extern Lights1 g_aVehicleLights[MAX_VEHICLES];
 
@@ -121,6 +124,7 @@ extern Lights1 g_aVehicleLights[MAX_VEHICLES];
  * @ghidraAddress USA: 0x80351d08
  * @ghidraAddress EUR: 0x80354208
  * @ghidraAddress JPN: 0x80352e78
+ * @ghidraAddress BRD3D: 0x10277ba8
  */
 extern Vec3f g_vecVehicleLightDir;
 
@@ -130,6 +134,7 @@ extern Vec3f g_vecVehicleLightDir;
  * @ghidraAddress USA: 0x80351d18
  * @ghidraAddress EUR: 0x80354218
  * @ghidraAddress JPN: 0x80352e88
+ * @ghidraAddress BRD3D: 0x10277d78
  */
 extern Vec3f g_vecVehicleHiliteDir;
 
@@ -139,6 +144,7 @@ extern Vec3f g_vecVehicleHiliteDir;
  * @ghidraAddress USA: 0x8028c340
  * @ghidraAddress EUR: 0x8028eaa0
  * @ghidraAddress JPN: 0x8028e4f0
+ * @ghidraAddress BRD3D: 0x100a64c8
  */
 extern u16 g_awVehicleShadePalette[16];
 
@@ -148,6 +154,7 @@ extern u16 g_awVehicleShadePalette[16];
  * @ghidraAddress USA: 0x8028ddc8
  * @ghidraAddress EUR: 0x80290568
  * @ghidraAddress JPN: 0x80290008
+ * @ghidraAddress BRD3D: 0x10277b1c
  */
 extern s32 g_bForceVehicleAltVariant;
 
@@ -157,6 +164,7 @@ extern s32 g_bForceVehicleAltVariant;
  * @ghidraAddress USA: 0x8028ddcc
  * @ghidraAddress EUR: 0x8029056c
  * @ghidraAddress JPN: 0x8029000c
+ * @ghidraAddress BRD3D: 0x100a6380
  */
 extern s32 g_bVehicleEnvMapLinearTexGen;
 
