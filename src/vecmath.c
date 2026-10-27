@@ -179,6 +179,21 @@ void Vec3fNormalizeSafe(Vec3f *out, Vec3f *v) {
 #endif
 
 void Vec3fNormalize(Vec3f *v) {
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+    f32 square = (long double)v->x * v->x + ((long double)v->y * v->y + (long double)v->z * v->z);
+    long double length = sqrtl(square);
+
+    if (length != 0.0L && !isnan(length)) {
+        length = 1.0L / length;
+        v->x *= length;
+        v->y *= length;
+        v->z *= length;
+    } else {
+        v->x = 0.0f;
+        v->y = 0.0f;
+        v->z = 1.0f;
+    }
+#else
     f32 length = sqrtf(v->z * v->z + (v->x * v->x + v->y * v->y));
 
     if (length != 0.0f) {
@@ -191,6 +206,7 @@ void Vec3fNormalize(Vec3f *v) {
         v->y = 0.0f;
         v->z = 1.0f;
     }
+#endif
 }
 
 void Vec3fSubtract(Vec3f *out, Vec3f *a, Vec3f *b) {

@@ -235,7 +235,8 @@ void Vec3fDirection(Vec3f *out, Vec3f *from, Vec3f *to);
 void Vec3fNormalizeSafe(Vec3f *out, Vec3f *v);
 
 /**
- * Make a vector a unit vector, or (0, 0, 1) if it is the zero vector.
+ * Make a vector a unit vector, or (0, 0, 1) if it is the zero vector. Windows also uses that
+ * direction when the length is unordered.
  *
  * @param v The vector normalised in place.
  * @ghidraAddress USA: 0x80224760
