@@ -493,54 +493,7 @@ static void CheckInstantReplayEnd(void) {
     }
 }
 
-/* Hold the vehicles and run the start lights before the race starts. */
-static void HoldBeforeStart(void) {
-    TrackMenuItem *track;
-    Vehicle *vehicle;
-    s16 weather;
-    s32 i;
-
-    g_bStartLightsVisible = TRUE;
-    for (i = 0; i < g_dwNumVehicles; i++) {
-        g_aRacerSlots[i].status |= RACER_HELD;
-        vehicle = g_aRacerSlots[i].vehicle;
-        if (vehicle == NULL || vehicle->index >= (s32)g_dwNumLocalPlayers) {
-            continue;
-        }
-        if (g_dwGameMode == GAME_MODE_ARCADE) {
-            weather = g_dwCurrentWeather - 1;
-            if (weather >= ARCADE_WEATHERS || weather < 0) {
-                weather = 0;
-            }
-            /* The descriptor of a track starts with its menu item. */
-            track = (TrackMenuItem *)g_apTrackMenuItems[g_dwSelectedTrackId];
-            vehicle->timeLeft = track->arcadeTimes[vehicle->tableIndex][weather].startTime;
-        }
-        vehicle->messageTime = 1.0f;
-        /* The countdown runs once for each local player, so two players step it twice a frame. */
-        switch (g_dwRacePhase) {
-        case RACE_PHASE_HOLD:
-            g_dwStartLightsAnimation = -1;
-            g_dwStartLightsStep = 0;
-            break;
-        case RACE_PHASE_WAIT:
-            /* The original tests for the phase and does nothing in it. */
-            break;
-        case RACE_PHASE_COUNTDOWN:
-            g_dwStartLightsAnimation = 1;
-            if (g_fRacePhaseTimer < g_afStartLightThresholds[g_dwStartLightsStep]) {
-                g_dwStartLightsStep++;
-                if (g_dwStartLightsStep == 4) {
-                    PlayGoSound();
-                } else {
-                    PlayBeepSound();
-                }
-            }
-            break;
-        }
-    }
-    g_fStartLightsDrop = 0.0f;
-}
+#include "racehold.h"
 
 /* Keep a time attack's recording of the first player when it beats the ghost, or when there is
  * none worth keeping. */

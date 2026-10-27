@@ -297,6 +297,7 @@ extern s32 g_dwSavedResultsValid;
  * @ghidraAddress USA: 0x80270794
  * @ghidraAddress EUR: 0x80272764
  * @ghidraAddress JPN: 0x80272214
+ * @ghidraAddress BRD3D: 0x100aa1f8
  */
 extern f32 g_afStartLightThresholds[START_LIGHT_STEPS];
 
@@ -378,6 +379,7 @@ extern s32 g_dwRaceFinishOrderCounter;
  * @ghidraAddress USA: 0x802f7ef0
  * @ghidraAddress EUR: 0x802f9be4
  * @ghidraAddress JPN: 0x802f8624
+ * @ghidraAddress BRD3D: 0x106806d8
  */
 extern f32 g_fRacePhaseTimer;
 
@@ -387,6 +389,7 @@ extern f32 g_fRacePhaseTimer;
  * @ghidraAddress USA: 0x802f7ef4
  * @ghidraAddress EUR: 0x802f9be8
  * @ghidraAddress JPN: 0x802f8628
+ * @ghidraAddress BRD3D: 0x106909cc
  */
 extern s32 g_dwStartLightsStep;
 
@@ -540,6 +543,7 @@ extern s32 g_dwPrevViewportCount;
  * @ghidraAddress USA: 0x80315e78
  * @ghidraAddress EUR: 0x802f9be0
  * @ghidraAddress JPN: 0x802f8620
+ * @ghidraAddress BRD3D: 0x10680750
  */
 extern s32 g_dwRacePhase;
 
