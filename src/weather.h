@@ -154,6 +154,7 @@ extern s32 g_dwRainParticleCount;
  * @ghidraAddress USA: 0x8028c808
  * @ghidraAddress EUR: 0x8028ef68
  * @ghidraAddress JPN: 0x8028e9b8
+ * @ghidraAddress BRD3D: 0x104bbe0c
  */
 extern f32 g_fWindAngle;
 
@@ -163,6 +164,7 @@ extern f32 g_fWindAngle;
  * @ghidraAddress USA: 0x8028c80c
  * @ghidraAddress EUR: 0x8028ef6c
  * @ghidraAddress JPN: 0x8028e9bc
+ * @ghidraAddress BRD3D: 0x100a79c8
  */
 extern f32 g_fWindStrength;
 
@@ -255,6 +257,7 @@ extern Vec3f g_avRainPrevCameraPos[WEATHER_VIEWS];
  * @ghidraAddress USA: 0x803634d0
  * @ghidraAddress EUR: 0x803659d0
  * @ghidraAddress JPN: 0x80364640
+ * @ghidraAddress BRD3D: 0x104b2560
  */
 extern Vec3f g_vWindVelocity;
 
@@ -305,6 +308,7 @@ void InitRandomRainParticles(void);
  * @ghidraAddress USA: 0x80239d84
  * @ghidraAddress EUR: 0x8023b294
  * @ghidraAddress JPN: 0x8023ad94
+ * @ghidraAddress BRD3D: 0x100194e0
  */
 void UpdateWindDirection(void);
 

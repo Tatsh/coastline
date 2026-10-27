@@ -11,16 +11,6 @@
 #include "track.h"
 #include "vehicle.h"
 
-/* Turns 16 random bits into a number from 0 to 2, which less 1 is from -1 to 1. */
-#define RANDOM_TO_TWO (2.0f / 65535.0f)
-
-/* A full turn of the wind. */
-#define WIND_TURN 6.2831855f
-
-/* The limits of the strength of the wind. */
-#define WIND_STRENGTH_MAX 1.0f
-#define WIND_STRENGTH_MIN 0.5f
-
 /* The rain is kept around a point this far ahead of the camera. */
 #define EYE_AHEAD 3.0f
 
@@ -61,25 +51,6 @@
 #define SCREEN_CENTER_Y 480
 #define SCREEN_HALF_WIDTH 640.0f
 #define SCREEN_HALF_HEIGHT 480.0f
-
-void UpdateWindDirection(void) {
-    g_fWindAngle += ((f32)(s32)(AdvanceRng() & 0xFFFF) * RANDOM_TO_TWO - 1.0f) * g_fFrameDeltaTime;
-    if (g_fWindAngle >= WIND_TURN) {
-        g_fWindAngle -= WIND_TURN;
-    } else if (g_fWindAngle < 0.0f) {
-        g_fWindAngle += WIND_TURN;
-    }
-    g_fWindStrength +=
-        ((f32)(s32)(AdvanceRng() & 0xFFFF) * RANDOM_TO_TWO - 1.0f) * g_fFrameDeltaTime;
-    if (g_fWindStrength > WIND_STRENGTH_MAX) {
-        g_fWindStrength = WIND_STRENGTH_MAX;
-    } else if (g_fWindStrength < WIND_STRENGTH_MIN) {
-        g_fWindStrength = WIND_STRENGTH_MIN;
-    }
-    g_vWindVelocity.x = cosf(g_fWindAngle) * (g_fFrameDeltaTime * g_fWindStrength);
-    g_vWindVelocity.y = sinf(g_fWindAngle) * (g_fFrameDeltaTime * g_fWindStrength);
-    g_vWindVelocity.z = 0.0f;
-}
 
 void SubdivideLightningBolt(s32 index, s32 span) {
     s32 mask = span * 8 - 1;
