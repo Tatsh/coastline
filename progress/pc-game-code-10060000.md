@@ -1,6 +1,6 @@
 # PC port game code from 0x10060000 to 0x10070000
 
-165 of 175 routines done.
+165 of 173 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -169,14 +169,12 @@ the same name, for a routine the port retained from the N64 game.
 | `UpdateMouseInput`                       |   ✅   |                 |      1 |     18 | `0x10060260` | `0x100592d0` | `void UpdateMouseInput(void)`                                                                                                      |
 | `ClearGhostPlaybackState`                |   ✅   |                 |      3 |     17 | `0x1006abb0` | `0x10063b60` | `void ClearGhostPlaybackState(void)`                                                                                               |
 | `ClearDamageTextureLevels`               |   ✅   |                 |      1 |     17 |              | `0x1006e060` | `void ClearDamageTextureLevels(void)`                                                                                              |
-| `RegisterRallyConfigAtExit`              |        |                 |      1 |     14 | `0x10069a70` | `0x10062ae0` | `undefined RegisterRallyConfigAtExit()`                                                                                            |
 | `GetGhostKeyframeDataSize`               |   ✅   |                 |      4 |     12 | `0x1006aba0` | `0x10063b50` | `uint GetGhostKeyframeDataSize(void)`                                                                                              |
 | `RallyConfig::RallyConfig`               |   ✅   |                 |      2 |     12 | `0x10069a90` | `0x10062b00` | `RallyConfig * RallyConfig(RallyConfig * this)`                                                                                    |
 | `StartGhostRecording`                    |   ✅   |                 |      3 |     11 | `0x1006aa90` | `0x10063a40` | `void StartGhostRecording(void)`                                                                                                   |
 | `PlayBeepSound`                          |   ✅   | ✅ `0x8022b3c4` |      2 |     11 | `0x10067d80` | `0x10060df0` | `void PlayBeepSound(void)`                                                                                                         |
 | `PlayGoSound`                            |   ✅   | ✅ `0x8022b3e4` |      1 |     11 | `0x10067d90` | `0x10060e00` | `void PlayGoSound(void)`                                                                                                           |
 | `Vehicle::ClearCameraChanged`            |   ✅   | ✅ `0x8022bcac` |      1 |     11 | `0x100683c0` | `0x10061430` | `void ClearCameraChanged(Vehicle * this)`                                                                                          |
-| `InitGlobalRallyConfig`                  |        |                 |      1 |     10 | `0x10069a60` | `0x10062ad0` | `undefined InitGlobalRallyConfig()`                                                                                                |
 | `AiVehicleControllerCallback`            |   ✅   |                 |      3 |      9 | `0x10065620` |              | `void AiVehicleControllerCallback(Vehicle * vehicle)`                                                                              |
 | `PlayerVehicleControllerCallback`        |   ✅   |                 |      3 |      9 | `0x10063fe0` |              | `void PlayerVehicleControllerCallback(Vehicle * vehicle)`                                                                          |
 | `GetSelectedPaintOption`                 |   ✅   |                 |      3 |      6 | `0x10061000` |              | `int GetSelectedPaintOption(void)`                                                                                                 |

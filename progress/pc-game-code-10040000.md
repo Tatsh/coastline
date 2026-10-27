@@ -1,6 +1,6 @@
 # PC port game code from 0x10040000 to 0x10050000
 
-261 of 278 routines done.
+261 of 275 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -257,9 +257,6 @@ the same name, for a routine the port retained from the N64 game.
 | `CarSetupUI::UpdateShocksImage`                    |   ✅   |                 |      2 |     30 | `0x100408b0` | `0x10039df0` | `int UpdateShocksImage(MenuWidget * pWidget)`                                                                                                             |
 | `CarSetupUI::UpdateTiresImage`                     |   ✅   |                 |      2 |     30 | `0x10040890` | `0x10039dd0` | `int UpdateTiresImage(MenuWidget * pWidget)`                                                                                                              |
 | `CarSetupUI::UpdateTransmissionImage`              |   ✅   |                 |      2 |     30 | `0x10040870` | `0x10039db0` | `int UpdateTransmissionImage(MenuWidget * pWidget)`                                                                                                       |
-| `MenuPanel::ScalarDeletingDestructor`              |        |                 |      1 |     30 | `0x100484c0` | `0x10041910` | `undefined ScalarDeletingDestructor(MenuPanel * this, undefined4 param_1)`                                                                                |
-| `MenuScreen::ScalarDeletingDestructor`             |        |                 |      1 |     30 | `0x10048850` | `0x10041ca0` | `undefined ScalarDeletingDestructor(MenuScreen * this, undefined4 param_1)`                                                                               |
-| `MenuWidget::ScalarDeletingDestructor`             |        |                 |      1 |     30 | `0x100478a0` | `0x10040cf0` | `undefined ScalarDeletingDestructor(MenuWidget * this, undefined4 param_1)`                                                                               |
 | `ConnectionUI::UpdateServiceProviderImage`         |   ✅   |                 |      1 |     30 | `0x10040930` | `0x10039e70` | `int UpdateServiceProviderImage(MenuWidget * pWidget)`                                                                                                    |
 | `GameOptionsUI::UpdateCarShadowImage`              |   ✅   |                 |      1 |     30 | `0x100409b0` | `0x10039ef0` | `int UpdateCarShadowImage(MenuWidget * pWidget)`                                                                                                          |
 | `GameOptionsUI::UpdateSkidMarksImage`              |   ✅   |                 |      1 |     30 | `0x10040990` | `0x10039ed0` | `int UpdateSkidMarksImage(MenuWidget * pWidget)`                                                                                                          |

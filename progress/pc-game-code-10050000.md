@@ -1,6 +1,6 @@
 # PC port game code from 0x10050000 to 0x10060000
 
-73 of 96 routines done.
+73 of 93 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -92,9 +92,6 @@ the same name, for a routine the port retained from the N64 game.
 | `GlideDisplayModeNode::DeleteChain`       |        |                 |      2 |     37 |              | `0x10058c90` | `undefined DeleteChain(GlideDisplayModeNode * this)`                                                                        |
 | `LookupKeyCharacter`                      |   ✅   |                 |      1 |     37 | `0x1005b540` | `0x10054360` | `char LookupKeyCharacter(uint dwKey)`                                                                                       |
 | `ResetSessionSlotTable`                   |   ✅   |                 |      5 |     35 | `0x100586a0` | `0x10051550` | `void ResetSessionSlotTable(void)`                                                                                          |
-| `MenuItemList::ScalarDeletingDestructor`  |        |                 |      1 |     30 | `0x1005b8d0` | `0x100546f0` | `undefined ScalarDeletingDestructor(MenuItemList * this, undefined4 param_1)`                                               |
-| `SaveFileList::ScalarDeletingDestructor`  |        |                 |      1 |     30 | `0x1005cbf0` | `0x10055a10` | `undefined ScalarDeletingDestructor(SaveFileList * this, undefined4 param_1)`                                               |
-| `MenuFont::ScalarDeletingDestructor`      |        |                 |      0 |     30 | `0x1005b0a0` | `0x10053ec0` | `undefined ScalarDeletingDestructor(MenuFont * this, undefined4 param_1)`                                                   |
 | `GetFirstPressedKeyIndex`                 |   ✅   |                 |      2 |     28 | `0x1005ffd0` | `0x10059040` | `int GetFirstPressedKeyIndex(void)`                                                                                         |
 | `MenuItemList::~MenuItemList`             |   ✅   |                 |      2 |     28 | `0x1005b8f0` | `0x10054710` | `void ~MenuItemList(MenuItemList * this)`                                                                                   |
 | `PollKeyboardState`                       |   ✅   |                 |      1 |     23 | `0x1005ffb0` | `0x10059020` | `void PollKeyboardState(void)`                                                                                              |
