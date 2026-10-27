@@ -45,13 +45,6 @@
 /* The retraces the counter of the vertical blank counts before it wraps. */
 #define VBLANK_COUNTER_MASK 15
 
-/* The fixed step of a race in nanoseconds, a frame of 1/30 of a second, or 1/25 at PAL rates. */
-#if TGR_REGION == TGR_REGION_EU
-#define RACE_STEP_NANOSECONDS 40000000
-#else
-#define RACE_STEP_NANOSECONDS 33333333
-#endif
-
 /* The priorities of the threads. */
 #define FAULT_THREAD_ID 5
 #define FAULT_THREAD_PRIORITY 50
@@ -117,8 +110,6 @@
 
 /* A fill of the depth buffer with the farthest depth, as two depths. */
 #define FARTHEST_DEPTHS ((u32)GPACK_ZDZ(G_MAXFIXED, 0) << 16 | GPACK_ZDZ(G_MAXFIXED, 0))
-
-u64 g_qwTimestampBase = 0;
 
 s32 UnusedVblankQueryStub(s32 unused0, s32 unused1) {
     return 0;
@@ -403,39 +394,6 @@ void ViRetraceThread(void *arg) {
         osSendMesg(&g_ViRetraceMesgQueue, (OSMesg)g_dwDummyOsMesg, OS_MESG_BLOCK);
         g_dwVblankCounter = (g_dwVblankCounter + 1) & VBLANK_COUNTER_MASK;
     }
-}
-
-void ResetFrameClock(void) {
-    g_qwTimestampBase = 0;
-    g_dwFrameTimestamp = 0;
-    g_dwPrevElapsedTimeMs = g_dwElapsedTimeMs = 0;
-    g_dwFrameDeltaMs = 0;
-    g_fFrameDeltaTime = 0.0f;
-}
-
-void UpdateFrameTiming(void) {
-    u32 now;
-    u32 delta;
-
-    if (g_bRaceScreenActive) {
-        /* A race steps a fixed time a frame. */
-        g_qwTimestampBase += (u64)RACE_STEP_NANOSECONDS * osClockRate / 1000000000;
-        g_dwFrameTimestamp = osGetCount();
-    } else if (g_qwTimestampBase != 0) {
-        now = osGetCount();
-        g_qwTimestampBase += (u32)(now - g_dwFrameTimestamp);
-        g_dwFrameTimestamp = now;
-    } else {
-        g_qwTimestampBase = g_dwFrameTimestamp = osGetCount();
-    }
-    g_dwPrevElapsedTimeMs = g_dwElapsedTimeMs;
-    g_dwElapsedTimeMs = g_qwTimestampBase * 1000000 / osClockRate / 1000;
-    UpdateControllerState();
-    DebugFrameStubA();
-    DebugFrameStubB();
-    delta = g_dwElapsedTimeMs - g_dwPrevElapsedTimeMs;
-    g_fFrameDeltaTime = (f32)delta / 1000.0f;
-    g_dwFrameDeltaMs = delta;
 }
 
 void UnusedFrameTimingStub(void) {

@@ -161,6 +161,7 @@ extern u16 *g_apFramebuffers[2];
  * @ghidraAddress USA: 0x8028aadc
  * @ghidraAddress EUR: 0x8028cce4
  * @ghidraAddress JPN: 0x8028c7b4
+ * @ghidraAddress BRD3D: 0x10690a30
  */
 extern s32 g_dwFrameDeltaMs;
 
@@ -233,14 +234,23 @@ void FlushDisplayList(void);
  */
 void ClearDepthBuffer(void);
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /**
  * Update the timing of the frames from the CPU timer.
  *
  * @ghidraAddress USA: 0x8021c4b4
  * @ghidraAddress EUR: 0x8021d6a8
  * @ghidraAddress JPN: 0x8021cf78
+ * @ghidraAddress BRD3D: 0x10034ad5
  */
 void UpdateFrameTiming(void);
+
+#ifdef __cplusplus
+}
+#endif
 
 /**
  * Whether the screen of a race runs, which makes UpdateFrameTiming() step a fixed 1/30 of a second
@@ -249,6 +259,7 @@ void UpdateFrameTiming(void);
  * @ghidraAddress USA: 0x8028ab10
  * @ghidraAddress EUR: 0x8028cd18
  * @ghidraAddress JPN: 0x8028c7e8
+ * @ghidraAddress BRD3D: 0x106c6648
  */
 extern s32 g_bRaceScreenActive;
 
@@ -265,14 +276,23 @@ extern s32 g_bRaceScreenActive;
  */
 void ClearZBufferRect(s32 x, s32 y, s32 width, s32 height);
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /**
  * Restart the clock of the frames from zero.
  *
  * @ghidraAddress USA: 0x8021c46c
  * @ghidraAddress EUR: 0x8021d660
  * @ghidraAddress JPN: 0x8021cf30
+ * @ghidraAddress BRD3D: 0x10034a8a
  */
 void ResetFrameClock(void);
+
+#ifdef __cplusplus
+}
+#endif
 
 /**
  * The messages of the DMA, which AllocIoMessage() hands out in turn.
@@ -590,6 +610,7 @@ extern OSMesg g_aSiEventMesgBuf[1];
  * @ghidraAddress USA: 0x8028adf8
  * @ghidraAddress EUR: 0x8028d0a8
  * @ghidraAddress JPN: 0x8028cad8
+ * @ghidraAddress BRD3D: 0x106c56b0
  */
 extern u64 g_qwTimestampBase;
 
@@ -599,6 +620,7 @@ extern u64 g_qwTimestampBase;
  * @ghidraAddress USA: 0x8028ae00
  * @ghidraAddress EUR: 0x8028d0b0
  * @ghidraAddress JPN: 0x8028cae0
+ * @ghidraAddress BRD3D: 0x106c0204
  */
 extern u32 g_dwFrameTimestamp;
 
@@ -608,6 +630,7 @@ extern u32 g_dwFrameTimestamp;
  * @ghidraAddress USA: 0x8028aad0
  * @ghidraAddress EUR: 0x8028ccd8
  * @ghidraAddress JPN: 0x8028c7a8
+ * @ghidraAddress BRD3D: 0x106c64f8
  */
 extern s32 g_dwPrevElapsedTimeMs;
 

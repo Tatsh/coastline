@@ -297,14 +297,24 @@ void StartControllerRead(void);
  */
 void ReadControllers(void);
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /**
  * Read the controllers and turn their state into the input of the players.
  *
  * @ghidraAddress USA: 0x8021a9b4
  * @ghidraAddress EUR: 0x8021bacc
  * @ghidraAddress JPN: 0x8021b3a8
+ * @ghidraAddress BRD3D: 0x100337e9
+ * @stub{BRD3D}
  */
 void UpdateControllerState(void);
+
+#ifdef __cplusplus
+}
+#endif
 
 /**
  * Probe the controllers and the Controller and Rumble Paks, running the controller check until each
