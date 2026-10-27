@@ -1,10 +1,14 @@
+#include <cmath>
+
 #include <hud.h>
 
 #include "camera.h"
+#include "platform/win/hud.h"
 #include "platform/win/settings.h"
 #include "render.h"
 #include "text.h"
 #include "vehicle.h"
+#include "vehiclecount.h"
 
 s32 g_bHudShowLapTimes = 1;
 
@@ -24,4 +28,27 @@ void DrawLapTimeListHud(const ViewportRect *viewports) {
             y = (s32)((u32)y + 15);
         }
     }
+}
+
+long double ComputeTimeGapToLeader(const Vehicle *vehicles, int index) {
+    int bestPosition = 255;
+    long double gap = 0.0L;
+
+    for (int other = 0; other < g_dwNumActiveVehicles; ++other) {
+        if (vehicles[other].racePosition < bestPosition) {
+            bestPosition = vehicles[other].racePosition;
+            gap = (long double)vehicles[other].distance - vehicles[index].distance;
+        }
+    }
+    if (gap == 0.0L || std::isnan(gap)) {
+        return gap;
+    }
+    long double speed = (long double)vehicles[index].speedKph * 0.44642857f;
+    if (speed == 0.0L || std::isnan(speed)) {
+        return 1000.0L;
+    }
+    if (speed < 25.0L) {
+        speed = 25.0L;
+    }
+    return gap / speed;
 }

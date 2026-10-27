@@ -1,8 +1,10 @@
 #pragma once
 
+#include "vehicle.h"
+
 /**
  * @file
- * The display of a race of the PC port over the scene: the message of the debug overlay.
+ * Race HUD helpers and debug-overlay messages.
  */
 
 /**
@@ -29,3 +31,13 @@ extern float g_fDebugOverlayMessageTimer;
  * @ghidraAddress BRGlide: 0x10014cb0
  */
 void TickDebugOverlayMessageTimer(void);
+
+/**
+ * Estimate the signed time gap to the best race position below 255.
+ *
+ * @param vehicles The active vehicle array.
+ * @param index The vehicle whose distance and speed are measured.
+ * @return The distance gap divided by speed, zero for an equal distance, or 1000 at zero speed.
+ * @ghidraAddress BRD3D: 0x10017cd0
+ */
+extern "C" long double ComputeTimeGapToLeader(const Vehicle *vehicles, int index);
