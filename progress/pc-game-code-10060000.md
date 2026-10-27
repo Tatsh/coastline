@@ -1,6 +1,6 @@
 # PC port game code from 0x10060000 to 0x10070000
 
-108 of 173 routines done.
+109 of 173 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -17,7 +17,7 @@ the same name, for a routine the port retained from the N64 game.
 | `Vehicle::ManageAiRacerSlots`            |        | ✅ `0x80229700` |      1 |   2103 | `0x10066650` | `0x1005f6c0` | `undefined ManageAiRacerSlots(Vehicle * this)`                                                                                           |
 | `Vehicle::ApplyPlayerVehicleInput`       |        |                 |      1 |   1951 | `0x10063840` |              | `undefined ApplyPlayerVehicleInput(Vehicle * this)`                                                                                      |
 | `Vehicle::InitVehiclePhysics`            |   ✅   | ✅ `0x80222d54` |      3 |   1909 | `0x10062c50` | `0x1005bcc0` | `void InitVehiclePhysics(Vehicle * this)`                                                                                                |
-| `TipBalancedVehicle`                     |        | ✅ `0x8025d368` |      1 |   1782 | `0x1006ddc0` | `0x10066d70` | `undefined TipBalancedVehicle()`                                                                                                         |
+| `TipBalancedVehicle`                     |   ✅   | ✅ `0x8025d368` |      1 |   1782 | `0x1006ddc0` | `0x10066d70` | `int TipBalancedVehicle(RigidBody * body)`                                                                                               |
 | `TestObbIntersection`                    |        | ✅ `0x8025f4f8` |      1 |   1651 | `0x1006f950` | `0x10068900` | `undefined TestObbIntersection()`                                                                                                        |
 | `ApplyCollisionImpulse`                  |   ✅   | ✅ `0x8025bbb8` |      3 |   1448 | `0x1006ccd0` | `0x10065c80` | `int ApplyCollisionImpulse(RigidBody * body, Vec3f * point, Vec3f * normal, int friction, float restitution)`                            |
 | `CollideVehicles`                        |        | ✅ `0x8025fde4` |      1 |   1444 | `0x1006ffd0` | `0x10068f80` | `undefined CollideVehicles()`                                                                                                            |
