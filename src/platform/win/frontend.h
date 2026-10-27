@@ -819,6 +819,33 @@ extern MenuWidget *g_pD3DDeviceSelectMenu;
 extern MenuWidget *g_pSaveSeasonBackHandlerMenu;
 
 /**
+ * @ghidraAddress BRD3D: 0x1003e100
+ */
+int IsGameCdInDrive(int nDrive);
+
+/**
+ * @ghidraAddress BRD3D: 0x10045a00
+ */
+int FindGameCdDrive(void);
+
+/**
+ * @ghidraAddress BRD3D: 0x10045900
+ */
+int ShowChampionshipSeasonMenu(void);
+
+/**
+ * @ghidraAddress BRD3D: 0x1004f2b0
+ * @stub
+ */
+void BuildChampionshipSeasonUI(MenuScreen *pScreen);
+
+/**
+ * @ghidraAddress BRD3D: 0x1005a6e0
+ * @stub
+ */
+void BuildSaveTimeAttackMenuUI(MenuScreen *pScreen);
+
+/**
  * @ghidraAddress BRD3D: 0x10044d00
  */
 int ShowLoadGhostMenu(void);
@@ -1432,6 +1459,7 @@ int ShowTimeAttackMenu(int nUnused);
  * @return 0 when the menu cannot be created, 1 otherwise.
  * @ghidraAddress BRD3D: 0x10044e20
  * @ghidraAddress BRGlide: 0x1003e370
+ * @stub{BRGlide}
  */
 int ShowSaveGhostMenu(int nUnused);
 

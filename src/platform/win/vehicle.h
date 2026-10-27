@@ -28,7 +28,11 @@ typedef struct Vehicle {
     s32 mouseSensitivity;
     u8 abUnknownE9c[0x10c]; /* +0xe9c */
     s32 lap;
-    u8 abUnknownFac[0x48]; /* +0xfac */
+    u8 abUnknownFac[0x38]; /* +0xfac */
+    f32 bestLapTime;
+    u8 abUnknownFe8[4]; /* +0xfe8 */
+    f32 raceTime;
+    u8 abUnknownFf0[4]; /* +0xff0 */
     f32 progress;
     u8 abUnknownFf8[0x16dc]; /* +0xff8 */
     f32 inputMatrix[4][4];

@@ -82,9 +82,11 @@ carwnoshad
 carwshad
 ccmux
 cdaudio
+cdrom
 centered
 channelmix
 chatbar
+chdrive
 chnl
 ckid
 cksize
@@ -202,6 +204,7 @@ diref
 disasm
 discl
 displaylist
+displaylistops
 divdi
 divremi
 dlabel
@@ -304,6 +307,8 @@ finalrom
 finetune
 fixedh
 fogcolor
+fogenable
+fogtablemode
 fourcc
 fovy
 foxundermoon
@@ -316,7 +321,9 @@ fsanitize
 ftofrac
 funclets
 funcs
+gameinit
 gamestate
+gbicommand
 genld
 getcount
 getcurrfaultedthread
@@ -594,6 +601,7 @@ pirawdma
 pirawread
 pjrwd
 placedvel
+playerinput
 playerlost
 playerready
 playerselect
@@ -605,6 +613,7 @@ prenmi
 primarybuffer
 primarysurface
 probetlb
+profileinit
 psdk
 putfld
 pycache
@@ -614,6 +623,7 @@ pyproject
 racedata
 racemenu
 racerecords
+racerslot
 racesound
 rallyconfig
 ramarray
@@ -662,6 +672,7 @@ seasoncars
 seasondesc
 seasonpoints
 seasonraces
+seasontrack
 sendmesg
 serverplayer
 serviceproviderloaded
@@ -773,6 +784,8 @@ textfilt
 textlod
 textlut
 textpersp
+textrender
+textstyle
 textureaddressu
 textureaddressv
 textureanim
@@ -823,6 +836,7 @@ urllib
 urlopen
 vars
 vecmath
+vehiclechoice
 vehiclecount
 vehicleindex
 vehiclemodel

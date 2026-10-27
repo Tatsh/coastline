@@ -5,6 +5,7 @@
 #include <cstring>
 #include <new>
 
+#include <direct.h>
 #include <io.h>
 #include <windows.h>
 
@@ -698,6 +699,51 @@ static inline int ShowCachedMenuScreen(MenuScreen *&pScreen, void (*pfnBuild)(Me
         g_pActiveMenuScreen = pScreen;
     }
     return 1;
+}
+
+int IsGameCdInDrive(int nDrive) {
+    char szRoot[MAX_PATH];
+    char szVolume[MAX_PATH];
+    sprintf(szRoot, "%C:\\", nDrive + '@');
+    if (_chdrive(nDrive) != 0 || GetDriveTypeA(nullptr) != DRIVE_CDROM || _chdir("\\") != 0) {
+        return 0;
+    }
+    if (!GetVolumeInformationA(szRoot, szVolume, MAX_PATH, nullptr, nullptr, nullptr, nullptr, 0)) {
+        return 0;
+    }
+    return strcmp(szVolume, "Boss Rally") == 0;
+}
+
+int FindGameCdDrive(void) {
+    char szDirectory[MAX_PATH];
+    int nFound = 0;
+    const int nOriginalDrive = _getdrive();
+    _getcwd(szDirectory, MAX_PATH);
+    for (int nDrive = 3; nDrive <= 26; nDrive++) {
+        if (_chdrive(nDrive) == 0 && GetDriveTypeA(nullptr) == DRIVE_CDROM && _chdir("\\") == 0 &&
+            IsGameCdInDrive(nDrive)) {
+            nFound = 1;
+            break;
+        }
+    }
+    _chdrive(nOriginalDrive);
+    _chdir(szDirectory);
+    return nFound;
+}
+
+int ShowChampionshipSeasonMenu(void) {
+    if (!FindGameCdDrive()) {
+        SetActiveMenuItemText(GetStringResource(13));
+        return 0;
+    }
+    SetActiveMenuItemText(" ");
+    return ShowCachedMenuScreen(g_pCachedMenu_TimeTrial, BuildChampionshipSeasonUI);
+}
+
+int ShowSaveGhostMenu(int) {
+    g_fGhostBestLapTime = g_aVehicles[0].bestLapTime;
+    g_fGhostBestRaceTime = g_aVehicles[0].raceTime;
+    return ShowCachedMenuScreen(g_pCachedMenu_SaveGhost, BuildSaveTimeAttackMenuUI);
 }
 
 int ShowTimeAttackMenu(int) {
