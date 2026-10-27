@@ -3638,7 +3638,7 @@ int ShowNotEnoughPointsScreen(void);
  * @return Whether the screen was allocated or already cached.
  * @ghidraAddress BRD3D: 0x100460a0
  */
-int ShowRaceResultsTotalsScreen(void);
+int ShowRaceResultsTotalsScreen(MenuWidget *pWidget = nullptr);
 
 /**
  * Show cached race summary results and build an exit confirmation on the first visit.
