@@ -1,6 +1,6 @@
 # PC port game code from 0x10040000 to 0x10050000
 
-201 of 264 routines done.
+203 of 264 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -174,9 +174,9 @@ the same name, for a routine the port retained from the N64 game.
 | `MenuPanel::RestoreSelection`                      |   ✅   |                 |      3 |     64 | `0x100484f0` | `0x10041940` | `int RestoreSelection(MenuPanel * this)`                                                                                                                  |
 | `GameOptionsUI_UpdateForceFeedbackImage`           |        |                 |      1 |     64 | `0x10040950` | `0x10039e90` | `undefined GameOptionsUI_UpdateForceFeedbackImage()`                                                                                                      |
 | `MultiplayerGameSetupUI_OnEscape`                  |        |                 |      1 |     64 | `0x100437d0` | `0x1003cd20` | `undefined MultiplayerGameSetupUI_OnEscape()`                                                                                                             |
-| `SaveSeasonUI_HandleTextEntry`                     |        |                 |      1 |     63 | `0x10047210` | `0x10040660` | `undefined SaveSeasonUI_HandleTextEntry()`                                                                                                                |
-| `SaveTimeAttackMenuUI_HandleTextEntry`             |        |                 |      1 |     63 | `0x10047250` | `0x100406a0` | `undefined SaveTimeAttackMenuUI_HandleTextEntry()`                                                                                                        |
 | `MenuScreen::~MenuScreen`                          |   ✅   |                 |      1 |     63 | `0x10048870` | `0x10041cc0` | `void ~MenuScreen(MenuScreen * this)`                                                                                                                     |
+| `SaveSeasonUI_HandleTextEntry`                     |   ✅   |                 |      1 |     63 | `0x10047210` | `0x10040660` | `int SaveSeasonUI_HandleTextEntry(MenuWidget * pWidget)`                                                                                                  |
+| `SaveTimeAttackMenuUI_HandleTextEntry`             |   ✅   |                 |      1 |     63 | `0x10047250` | `0x100406a0` | `int SaveTimeAttackMenuUI_HandleTextEntry(MenuWidget * pWidget)`                                                                                          |
 | `LoadSeasonUI_UpdateContinueButtonState`           |   ✅   |                 |      1 |     62 | `0x10041890` | `0x1003adf0` | `int LoadSeasonUI_UpdateContinueButtonState(MenuWidget * pWidget)`                                                                                        |
 | `LoadTimeAttackMenuUI_UpdateItemEnabledState`      |   ✅   |                 |      1 |     62 | `0x100418f0` | `0x1003ae50` | `int LoadTimeAttackMenuUI_UpdateItemEnabledState(MenuWidget * pWidget)`                                                                                   |
 | `TimeAttackUI_UpdateTrackImage`                    |        |                 |      1 |     61 | `0x100407a0` | `0x10039ce0` | `undefined TimeAttackUI_UpdateTrackImage()`                                                                                                               |
