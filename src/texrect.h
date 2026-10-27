@@ -91,6 +91,9 @@ void DrawTexturedRect(Texture *texture,
                       s32 envAlpha,
                       s32 blendMode);
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 /**
  * Get the texture coordinate scale of a texture side, and the bits of the mask that wraps it. A
  * side of more than 1024 texels is reported on the debug display and leaves the mask unset.
@@ -101,8 +104,12 @@ void DrawTexturedRect(Texture *texture,
  * @ghidraAddress USA: 0x80217614
  * @ghidraAddress EUR: 0x80218634
  * @ghidraAddress JPN: 0x80217f84
+ * @ghidraAddress BRD3D: 0x10031347
  */
 void GetTextureScaleAndMask(u32 size, s32 *scale, s32 *maskBits);
+#ifdef __cplusplus
+}
+#endif
 
 /**
  * Draw a texture stretched over a rectangle and upside down, shaded from black to red by its

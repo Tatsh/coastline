@@ -1,5 +1,66 @@
 #include "util.h"
 
+#include "debugmessage.h"
+#include "texrect.h"
+
+#if TGR_PLATFORM == TGR_PLATFORM_N64
+#include <PR/os_libc.h>
+#else
+#include <stdio.h>
+#endif
+
+/* The original stores the address of a local message for the debug display. */
+#if defined(__GNUC__) && !defined(__clang__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdangling-pointer"
+#endif
+void GetTextureScaleAndMask(u32 size, s32 *scale, s32 *maskBits) {
+    char message[40];
+
+    /* The size becomes the largest coordinate. */
+    size--;
+    if (size >> 8) {
+        if (size >> 10) {
+            /* The message may overrun the buffer, and the debug display retains a pointer to the
+             * stack this returns from. */
+            sprintf(message, "ERROR: unhandled texture size: %d", size);
+            SetDebugMessage(message);
+        } else if (size >> 9) {
+            *maskBits = 10;
+        } else {
+            *maskBits = 9;
+        }
+    } else if (size & 0xF0) {
+        if (size & 0xC0) {
+            if (size & 0x80) {
+                *maskBits = 8;
+            } else {
+                *maskBits = 7;
+            }
+        } else if (size & 0xE0) {
+            *maskBits = 6;
+        } else {
+            *maskBits = 5;
+        }
+    } else if (size & 0xFC) {
+        if (size & 0xF8) {
+            *maskBits = 4;
+        } else {
+            *maskBits = 3;
+        }
+    } else if (size & 0xFE) {
+        *maskBits = 2;
+    } else if (size != 0) {
+        *maskBits = 1;
+    } else {
+        *maskBits = 0;
+    }
+    *scale = 0xFFFF;
+}
+#if defined(__GNUC__) && !defined(__clang__)
+#pragma GCC diagnostic pop
+#endif
+
 #if TGR_PLATFORM == TGR_PLATFORM_N64
 #include "trackselect.h"
 
