@@ -56,8 +56,18 @@ extern s32 g_dwFadeRectBottom;
  * @ghidraAddress USA: 0x8028b750
  * @ghidraAddress EUR: 0x8028da00
  * @ghidraAddress JPN: 0x8028d430
+ * @ghidraAddress BRD3D: 0x10575504
  */
 extern f32 g_fHeadlightGlare;
+
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+/**
+ * The glare from headlights facing along the camera direction.
+ *
+ * @ghidraAddress BRD3D: 0x105754f8
+ */
+extern f32 g_fScreenFogPulse;
+#endif
 
 /**
  * The level the screen fades to.
@@ -188,6 +198,7 @@ extern s32 g_adwFadeRectRightPerBuffer[2];
  * @ghidraAddress USA: 0x80223470
  * @ghidraAddress EUR: 0x802247b0
  * @ghidraAddress JPN: 0x80223fa0
+ * @ghidraAddress BRD3D: 0x1002aef0
  */
 void ResetHeadlightGlare(void);
 

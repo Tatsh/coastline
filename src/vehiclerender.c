@@ -85,12 +85,6 @@
 #define FLAGS_GHOST                                                                                \
     (AA_EN | Z_CMP | IM_RD | CVG_DST_WRAP | CLR_ON_CVG | ZMODE_XLU | FORCE_BL |                    \
      GBL_c2(G_BL_CLR_IN, G_BL_A_FOG, G_BL_CLR_MEM, G_BL_1MA))
-/** Set the colours of the light of the sun and of the ambient light. */
-static inline void SetVehicleLightColors(u32 dir, u32 ambient) {
-    gSPLightColor(gDisplayListPtr++, LIGHT_1, dir);
-    gSPLightColor(gDisplayListPtr++, LIGHT_2, ambient);
-}
-
 /** Draw lit, textured parts of the model with the render mode of the vehicle. */
 static inline void DrawLitParts(u32 dir, u32 ambient, Gfx *displayList) {
     gDPPipeSync(gDisplayListPtr++);
@@ -648,92 +642,6 @@ void RenderVehicleModel(Vehicle *vehicle, s32 lodOffset) {
                       SHADE,
                       0);
     g_dwStatVehicleTriangles += g_pCurrentVehicleModelData->triangleCount;
-}
-
-void RenderVehicleHeadlightBeams(Vehicle *vehicle) {
-    Vec3f toCamera, beam;
-    f32 distance, along, glare;
-
-    if (!g_dwNightMode && !g_dwRainMode) {
-        return;
-    }
-    if (!g_adwVehicleVisible[vehicle->index]) {
-        return;
-    }
-    if (vehicle == g_pActiveCameraVehicle &&
-        g_pActiveCamera == &g_pActiveCameraVehicle->cameras[VEHICLE_CAMERA_BUMPER]) {
-        return;
-    }
-    if (vehicle->ghostMode == VEHICLE_GHOST) {
-        return;
-    }
-    g_pCurrentVehicleModelData = vehicle->model;
-    gSPMatrix(gDisplayListPtr++,
-              g_apVehicleModelMatrix[vehicle->index],
-              G_MTX_MODELVIEW | G_MTX_LOAD | G_MTX_PUSH);
-    gSPMatrix(gDisplayListPtr++, g_pProjectionMtx, G_MTX_PROJECTION | G_MTX_LOAD | G_MTX_NOPUSH);
-    gSPForceMatrix(gDisplayListPtr++, g_apVehicleLightMatrix[vehicle->index]);
-    gSPDisplayList(gDisplayListPtr++, g_aClipRatioDisplayLists[FAR_CLIP_RATIO - 1]);
-    DrawTexturedTile(HEADLIGHT_BEAM_TEXTURE, g_pCurrentVehicleModelData->textures);
-    gDPPipeSync(gDisplayListPtr++);
-    gDPSetCycleType(gDisplayListPtr++, G_CYC_1CYCLE);
-    SetVehicleLightColors(0, 0xFFFFFF00);
-    gDPSetCombineLERP(gDisplayListPtr++, 0, 0, 0, 1, 0, 0, 0, TEXEL0, 0, 0, 0, 1, 0, 0, 0, TEXEL0);
-    gDPSetRenderMode(gDisplayListPtr++,
-                     AA_EN | Z_CMP | IM_RD | CVG_DST_WRAP | CLR_ON_CVG | ZMODE_XLU | FORCE_BL |
-                         GBL_c1(G_BL_CLR_IN, G_BL_A_IN, G_BL_CLR_MEM, G_BL_1MA),
-                     GBL_c2(G_BL_CLR_IN, G_BL_A_IN, G_BL_CLR_IN, G_BL_1MA));
-    gDPSetColorDither(gDisplayListPtr++, G_CD_NOISE);
-    /* Only the beams of the nearest level of detail are drawn. */
-    DrawModelDisplayList(g_pCurrentVehicleModelData->displayLists[0][VEHICLE_DL_HEADLIGHT_BEAMS]);
-    gDPPipeSync(gDisplayListPtr++);
-    gDPSetColorDither(gDisplayListPtr++, g_dwColorDitherMode);
-
-    /* Beams shining at the camera glare the view, the more the nearer. */
-    if (vehicle != g_pActiveCameraVehicle) {
-        Vec3fAdd(&toCamera, &vehicle->frame.position, &vehicle->frame.forward);
-        Vec3fSubtract(&toCamera, &g_pActiveCamera->position, &toCamera);
-        distance = Vec3fLength(&toCamera);
-        if (distance != 0.0f) {
-            Vec3fDivideInPlace(&toCamera, distance);
-            if (Vec3fDot(&toCamera, &g_pActiveCamera->forward) < 0.0f) {
-                Vec3fScale(&beam, &vehicle->frame.forward, 1.0f);
-                /* The beam is tilted by the up axis times zero, which leaves it as it is. */
-                Vec3fMulAddInPlace(&beam, &vehicle->frame.up, -0.0f);
-                along = Vec3fDot(&toCamera, &beam);
-                glare = -Vec3fDot(&toCamera, &g_pActiveCamera->forward) * along;
-                if (0.95f < glare) {
-                    g_fHeadlightGlare += 750.0f * (glare - 0.95f) / (distance * distance);
-                }
-            }
-        }
-    }
-    gDPPipeSync(gDisplayListPtr++);
-    gDPSetCycleType(gDisplayListPtr++, G_CYC_1CYCLE);
-    gSPPopMatrix(gDisplayListPtr++, G_MTX_MODELVIEW);
-    gSPClearGeometryMode(gDisplayListPtr++, G_TEXTURE_GEN);
-    gSPNumLights(gDisplayListPtr++, NUMLIGHTS_1);
-    gSPLight(gDisplayListPtr++, &g_DefaultLights.l[0], 1);
-    gSPLight(gDisplayListPtr++, &g_DefaultLights.a, 2);
-    gDPSetTextureFilter(gDisplayListPtr++, g_dwTextureFilterMode);
-    gDPSetTextureLUT(gDisplayListPtr++, G_TT_NONE);
-    gDPSetCombineLERP(gDisplayListPtr++,
-                      TEXEL0,
-                      0,
-                      SHADE,
-                      0,
-                      TEXEL0,
-                      0,
-                      SHADE,
-                      0,
-                      TEXEL0,
-                      0,
-                      SHADE,
-                      0,
-                      TEXEL0,
-                      0,
-                      SHADE,
-                      0);
 }
 
 void RenderSpeedometerNeedle(Vehicle *vehicle) {

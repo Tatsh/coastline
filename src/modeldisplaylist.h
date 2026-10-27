@@ -27,4 +27,10 @@ static inline void DrawModelDisplayList(DisplayListCommand *displayList) {
     }
 }
 
+/** Set the colours of the light of the sun and of the ambient light. */
+static inline void SetVehicleLightColors(u32 dir, u32 ambient) {
+    gSPLightColor(gDisplayListPtr++, LIGHT_1, dir);
+    gSPLightColor(gDisplayListPtr++, LIGHT_2, ambient);
+}
+
 #endif

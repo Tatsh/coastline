@@ -16,10 +16,6 @@
 /* The volume of a fade level of 1. */
 #define MAX_VOLUME 255.0
 
-void ResetHeadlightGlare(void) {
-    g_fHeadlightGlare = 0.0f;
-}
-
 void RenderHeadlightGlare(void) {
     if (g_fHeadlightGlare < GLARE_MIN_LEVEL) {
         return;

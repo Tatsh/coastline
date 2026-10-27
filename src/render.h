@@ -13,6 +13,10 @@
 #include "screendraw.h"
 #include "vecmath.h"
 
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#include "platform/win/gbicommand.h"
+#endif
+
 /**
  * A frame of reference: three axes and a position, the rows of a 4 by 4 matrix whose last column
  * FinishFrameMatrix() sets, and a field of view. The world is z up. A vehicle and each of its
@@ -405,6 +409,7 @@ extern u32 g_dwAmbientLightColor;
  * @ghidraAddress USA: 0x8028a9f0
  * @ghidraAddress EUR: 0x8028cbf8
  * @ghidraAddress JPN: 0x8028c6c8
+ * @ghidraAddress BRD3D: 0x100aa860
  */
 extern Lights1 g_DefaultLights;
 
@@ -446,7 +451,11 @@ extern s32 g_adwVehicleVisible[];
  * @ghidraAddress JPN: 0x8028c5d8
  * @ghidraAddress BRD3D: 0x100aa770
  */
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+extern GbiCommand g_aClipRatioDisplayLists[CLIP_RATIOS][5];
+#else
 extern Gfx g_aClipRatioDisplayLists[CLIP_RATIOS][5];
+#endif
 
 /**
  * The colour of the light of the sun, in parts.

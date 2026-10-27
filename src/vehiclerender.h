@@ -84,8 +84,13 @@ extern s32 g_anVehicleLod[MAX_VEHICLES];
  * @ghidraAddress USA: 0x80351ca0
  * @ghidraAddress EUR: 0x803541a0
  * @ghidraAddress JPN: 0x80352e10
+ * @ghidraAddress BRD3D: 0x10277dc8
  */
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+extern f32 (*g_apVehicleModelMatrix[MAX_VEHICLES])[4];
+#else
 extern Mtx *g_apVehicleModelMatrix[MAX_VEHICLES];
+#endif
 
 /**
  * The matrix of each vehicle with the view and projection, forced for its lighting.
@@ -93,8 +98,13 @@ extern Mtx *g_apVehicleModelMatrix[MAX_VEHICLES];
  * @ghidraAddress USA: 0x80351cb0
  * @ghidraAddress EUR: 0x803541b0
  * @ghidraAddress JPN: 0x80352e20
+ * @ghidraAddress BRD3D: 0x10277e18
  */
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+extern f32 (*g_apVehicleLightMatrix[MAX_VEHICLES])[4];
+#else
 extern Mtx *g_apVehicleLightMatrix[MAX_VEHICLES];
+#endif
 
 /**
  * The lights of each vehicle at night or in the rain.
@@ -310,6 +320,10 @@ void CheckVehicleVisibility(Vehicle *vehicle);
  */
 void RenderVehicleModel(Vehicle *vehicle, s32 lodOffset);
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /**
  * Draw the beams of the headlights of a vehicle at night or in the rain, and glare the view when
  * they shine at the camera.
@@ -318,8 +332,13 @@ void RenderVehicleModel(Vehicle *vehicle, s32 lodOffset);
  * @ghidraAddress USA: 0x80232ed4
  * @ghidraAddress EUR: 0x802343e4
  * @ghidraAddress JPN: 0x802341e4
+ * @ghidraAddress BRD3D: 0x1000e950
  */
 void RenderVehicleHeadlightBeams(Vehicle *vehicle);
+
+#ifdef __cplusplus
+}
+#endif
 
 /**
  * Draw the needle of the speedometer, building its fan on the first frame.
