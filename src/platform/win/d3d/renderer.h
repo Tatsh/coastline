@@ -1157,17 +1157,24 @@ struct TextureImageData {
     int nAspectRatio;       /*!< The aspect ratio, as CalculateTextureDimensions() reads it. */
     int bClampS;            /*!< Whether texture binding clamps s. */
     int bClampT;            /*!< Whether texture binding clamps t. */
-    char abUnknown2c[0x30]; /* +0x2c */
-    int nTileIndex;         /*!< The active tile of aTiles. */
-    char abUnknown60[4];    /* +0x60 */
+    char abUnknown2c[0x20]; /* +0x2c */
+    const unsigned char *pImage;
+    const unsigned char *pPalette;
+    char abUnknown54[8]; /* +0x54 */
+    int nTileIndex;      /*!< The active tile of aTiles. */
+    char abUnknown60[4]; /* +0x60 */
     TexScanTile aTiles[TEX_SCAN_TILE_COUNT];
-    char abUnknown264[8];  /* +0x264 */
+    char abUnknown264[4];  /* +0x264 */
+    int bColorCombine;     /*!< Whether texture matching compares the captured colors. */
     int bOwnsPaintBuffers; /*!< Whether paint buffer memory is released with this image. */
     char abUnknown270[8];  /* +0x270 */
     int nDamageLevel;      /*!< The level of damage, from 0 to 3. */
     char abUnknown27c[4];  /* +0x27c */
     unsigned char *apPaintBuffers[4]; /*!< Pixel buffers for the four damage levels. */
-    char abUnknown290[0x1c];          /* +0x290 */
+    char abUnknown290[4];             /* +0x290 */
+    unsigned char abEnvColor[4];
+    unsigned char abPrimColor[4];
+    char abUnknown29c[0x10]; /* +0x29c */
 };
 
 /** A loaded texture, its image metadata and texture-coordinate scales. */

@@ -16,6 +16,7 @@
 #include "vecmath.h"
 
 struct GbiCommand;
+struct TextureImageData;
 
 /**
  * @ghidraAddress BRD3D: 0x10b501d0
@@ -1216,3 +1217,12 @@ int ChooseTexturePixelFormat(int nSize, int nFormat, int bColorCombine);
  * @ghidraAddress BRD3D: 0x100257f0
  */
 int GetTexturePixelSize(int nPixelFormatId);
+
+/**
+ * Find an entry with the same image, palette and applicable captured colors.
+ *
+ * @param pImage The image metadata to match.
+ * @return The first matching entry, or -1.
+ * @ghidraAddress BRD3D: 0x10028630
+ */
+int FindMatchingTextureEntry(const TextureImageData *pImage);

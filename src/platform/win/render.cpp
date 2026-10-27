@@ -1030,3 +1030,18 @@ int ChooseTexturePixelFormat(int nSize, int nFormat, int bColorCombine) {
 int GetTexturePixelSize(int nPixelFormatId) {
     return 4;
 }
+
+int FindMatchingTextureEntry(const TextureImageData *pImage) {
+    for (unsigned i = 0; i < g_dwTextureEntryCount; i++) {
+        const TextureImageData &candidate = g_pTextureEntries[i].data;
+        if (candidate.pImage != pImage->pImage || candidate.pPalette != pImage->pPalette) {
+            continue;
+        }
+        if (candidate.bColorCombine != 1 || pImage->bColorCombine != 1 ||
+            (std::memcmp(candidate.abEnvColor, pImage->abEnvColor, 4) == 0 &&
+             std::memcmp(candidate.abPrimColor, pImage->abPrimColor, 4) == 0)) {
+            return i;
+        }
+    }
+    return -1;
+}
