@@ -80,6 +80,12 @@ public:
     const char *GetName() const {
         return pszName;
     }
+    unsigned GetDisplayModeCount() const {
+        return static_cast<unsigned>(nDisplayModeCount);
+    }
+    DisplayMode *GetDisplayModesHead() const {
+        return pDisplayModesHead;
+    }
     DirectDrawDriver *GetPrevious() const {
         return pPrev;
     }
@@ -1629,3 +1635,8 @@ extern D3DDeviceNode *g_pSelectedRenderDevice;
  * @ghidraAddress BRD3D: 0x118ac240
  */
 extern DisplayMode *g_pSelectedDisplayMode;
+
+/** @ghidraAddress BRD3D: 0x118ac244 */
+extern DisplayMode **g_apSortedDisplayModes;
+/** @ghidraAddress BRD3D: 0x10aa2864 */
+extern int g_dwActiveDisplayModeIndex;

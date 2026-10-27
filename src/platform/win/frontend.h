@@ -988,7 +988,6 @@ extern RECT g_rcMenuDeviceListBox;
  * Populate available display modes for the selected device.
  *
  * @ghidraAddress BRD3D: 0x1007a940
- * @stub
  */
 int PopulateDisplayModeList(void);
 

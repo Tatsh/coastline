@@ -2109,6 +2109,83 @@ int CompareDisplayModes(const void *left, const void *right) {
     return 0;
 }
 
+int PopulateDisplayModeList(void) {
+    if (!g_pSelectedDisplayDriver) {
+        return 0;
+    }
+    if (!g_pSelectedRenderDevice) {
+        g_pSelectedRenderDevice =
+            ResolveRenderDeviceOrFind(g_pSelectedDisplayDriver, nullptr, nullptr);
+        if (!g_pSelectedRenderDevice) {
+            return 0;
+        }
+    }
+    DisplayMode *mode = g_pSelectedDisplayDriver->GetDisplayModesHead();
+    if (!mode) {
+        return 0;
+    }
+    unsigned count = g_pSelectedDisplayDriver->GetDisplayModeCount();
+    if (!count) {
+        return 0;
+    }
+    if (!g_pSelectedDisplayMode) {
+        g_pSelectedDisplayMode = FindDisplayModeWithFallback(
+            g_pSelectedDisplayDriver, 640, 480, 16, 0, g_pSelectedRenderDevice);
+    }
+    if (g_apSortedDisplayModes) {
+        ::operator delete(g_apSortedDisplayModes);
+        g_apSortedDisplayModes = nullptr;
+    }
+    g_apSortedDisplayModes = static_cast<DisplayMode **>(::operator new(count * 4u, std::nothrow));
+    if (!g_apSortedDisplayModes) {
+        return 0;
+    }
+    unsigned index = 0;
+    do {
+        DisplayMode *next = mode->GetNext();
+        g_apSortedDisplayModes[index++] = mode;
+        mode = next;
+    } while (mode);
+    std::qsort(g_apSortedDisplayModes, count, sizeof(DisplayMode *), CompareDisplayModes);
+    int visibleIndex = 0;
+    bool selected = false;
+    for (unsigned sortedIndex = 0; sortedIndex < count; sortedIndex++) {
+        mode = g_apSortedDisplayModes[sortedIndex];
+        if (!mode || !mode->IsDisplayModeSupportedByDevice(g_pSelectedRenderDevice)) {
+            continue;
+        }
+        int width, height, depth, refresh;
+        g_apSortedDisplayModes[sortedIndex]->GetSurfaceDescDimensions(
+            &width, &height, &depth, &refresh);
+        char text[80];
+        if (refresh) {
+            wsprintfA(text, "%4d x %4d x %2d (%4d Hz)", width, height, depth, refresh);
+        } else {
+            wsprintfA(text, "%4d x %4d x %2d", width, height, depth);
+        }
+        if (g_GlobalRallyConfig.dwDisplayModeWidth == width &&
+            g_GlobalRallyConfig.dwDisplayModeHeight == height &&
+            g_GlobalRallyConfig.dwDisplayModeBitDepth == depth &&
+            (!refresh || g_GlobalRallyConfig.dwDisplayModeExtra == refresh)) {
+            g_dwActiveDisplayModeIndex = visibleIndex;
+            g_dwSelectedDisplayModeIndex = visibleIndex;
+            selected = true;
+        }
+        if (!selected && width == 640 && height == 480 && depth == 16) {
+            g_dwActiveDisplayModeIndex = visibleIndex;
+            g_dwSelectedDisplayModeIndex = visibleIndex;
+        }
+        if (g_pDisplayModeSelectMenu) {
+            g_pDisplayModeSelectMenu->GetItemList().AddItem(
+                text, 0, 1, &g_rcMenuDeviceListBox, true);
+            g_pDisplayModeSelectMenu->GetItemList().SetItemData(
+                &sortedIndex, sizeof(sortedIndex), visibleIndex);
+        }
+        visibleIndex++;
+    }
+    return 1;
+}
+
 int PopulateDisplayDeviceList(void) {
     GUID *guid =
         g_pSelectedDisplayDriver ? g_pSelectedDisplayDriver->GetDirectDrawDriverGuid() : nullptr;
