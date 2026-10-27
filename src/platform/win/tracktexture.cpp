@@ -4,7 +4,50 @@
 #include "platform/win/fileio.h"
 #include "platform/win/render.h"
 #include "platform/win/settings.h"
+#include "platform/win/texturescan.h"
 #include "platform/win/trackrelocation.h"
+#include "weather.h"
+
+void ByteSwapTrackData(TrackHeader *track) {
+    ByteSwap3DWordsArray(track->vertices, track->vertexCount);
+    ByteSwapTextureDescriptorArray(track->textures, track->textureCount);
+    ByteSwapArray16(track->gridCellStarts, 4097);
+    ByteSwapArray16(track->gridTriangles, track->gridCellStarts[4096]);
+    // Both maximum-index scans deliberately omit element zero.
+    int maxTriangle = 0;
+    for (int i = track->gridCellStarts[4096] - 1; i > 0; --i) {
+        if (track->gridTriangles[i] > maxTriangle) {
+            maxTriangle = track->gridTriangles[i];
+        }
+    }
+    ByteSwapArray16(track->triangleNearbyInstances, maxTriangle + 1);
+    int lastNearbyStart = 0;
+    for (int i = maxTriangle; i > 0; --i) {
+        if (track->triangleNearbyInstances[i] > lastNearbyStart) {
+            lastNearbyStart = track->triangleNearbyInstances[i];
+        }
+    }
+    int nearbyCount = lastNearbyStart;
+    while (track->nearbyInstances[nearbyCount] != 0) {
+        ++nearbyCount;
+    }
+    ByteSwapArray16(track->nearbyInstances, nearbyCount);
+    ComputeTrackMaxCellIndex(track);
+    ByteSwapShortQuadArray(track->surfaces, track->surfaceCount);
+    ByteSwapAndRelocateDisplayList(track->skyDisplayList);
+    SetTextureLoadCategory(4);
+    if (g_dwCurrentWeather == WEATHER_SNOW) {
+        CopyTextureAndPaletteFromSegment(track->textures, track->textureCount);
+    }
+    g_pfnPreprocessDisplayListTextures(track->skyDisplayList);
+    ByteSwapTrackInstances(track);
+    SetTextureLoadCategory(1);
+    g_pfnUploadTrackTextureVariants(track->textures, track->textureCount);
+    ByteSwapArray16(track->gridInstanceStarts, 4097);
+    ByteSwapArray16(track->gridInstances, track->gridInstanceStarts[4096]);
+    ByteSwapTrackSegmentList(track);
+    ByteSwapTrackVec3Array(track);
+}
 
 void LoadTextureMapFile(const char *path) {
     char line[1024];

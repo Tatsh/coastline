@@ -352,9 +352,12 @@ void ByteSwapArray16(unsigned short *pData, int nCount) {
 
 #define SHORT_QUAD_COUNT 4
 
-void ByteSwapShortQuadArray(unsigned short *pData, int nCount) {
+void ByteSwapShortQuadArray(TrackSurface *pData, int nCount) {
     for (int i = 0; i < nCount; i++) {
-        ByteSwapFourShorts(pData + i * SHORT_QUAD_COUNT);
+        for (unsigned short &vertex : pData[i].vertices) {
+            vertex = std::byteswap(vertex);
+        }
+        pData[i].instance = std::byteswap(pData[i].instance);
     }
 }
 

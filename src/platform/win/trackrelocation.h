@@ -12,6 +12,9 @@ void LoadTextureMapFile(const char *path);
  */
 void LoadTrackTextureMap(int track);
 
+/** @ghidraAddress BRD3D: 0x10037e10 */
+void ByteSwapTrackData(TrackHeader *track);
+
 /**
  * @ghidraAddress BRD3D: 0x10037fa0
  */

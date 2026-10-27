@@ -189,7 +189,11 @@ typedef struct {
     f32 maxZ;            /*!< The greatest z of the track. */
     Vec3f startPosition; /*!< The point the vehicles of the starting grid are placed from. */
     f32 startHeading;    /*!< The heading of the vehicles on the grid of the start, in radians. */
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+    GbiCommand *skyDisplayList;
+#else
     Gfx *skyDisplayList; /*!< The display list of the sky, or NULL for a sky of the fog colour. */
+#endif
     u8 unreconstructed54[0x5C - 0x54]; /*!< Not yet reconstructed. */
     const char **instanceNames;        /*!< The names of the placed models, by index, or NULL. */
     TrackInstance *instances;          /*!< The placed models. */

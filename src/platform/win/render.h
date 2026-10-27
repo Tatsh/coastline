@@ -23,6 +23,7 @@
 #include "platform/win/textureupload.h"
 #include "renderbackend.h"
 #include "shadowclip.h"
+#include "track.h"
 #include "vecmath.h"
 #include "vehicleview.h"
 
@@ -520,7 +521,7 @@ void ByteSwapFourShorts(unsigned short *pData);
  * @ghidraAddress BRD3D: 0x1002ba00
  * @ghidraAddress BRGlide: 0x10018a70
  */
-void ByteSwapShortQuadArray(unsigned short *pData, int nCount);
+void ByteSwapShortQuadArray(TrackSurface *pData, int nCount);
 
 /**
  * Reverse the four bytes of each component of a vector.
