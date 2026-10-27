@@ -240,21 +240,16 @@ if(TARGET coastline_ear)
   add_dependencies(archives coastline_ear)
 endif()
 
-# A Windows library cannot link until every routine has a body, and TGR_LINK turns its link on. A
-# release whose routines all have a body, in C or in the assembly of the original, links whenever
-# the assets of its cartridge are extracted. Without extracted assets, the archives are the check.
 if(TGR_PLATFORM STREQUAL "win")
-  if(TGR_LINK)
-    if(TGR_RENDERER STREQUAL "d3d")
-      set(_library BRD3D)
-    else()
-      set(_library BRGlide)
-    endif()
-    add_library(${_library} SHARED $<TARGET_OBJECTS:coastline_main>)
-    set_target_properties(${_library} PROPERTIES PREFIX "")
-    target_link_libraries(${_library} PRIVATE ${COASTLINE_LIBRARIES} ole32 user32 ddraw dinput
-                                            dplayx dxguid winmm msacm32)
+  if(TGR_RENDERER STREQUAL "d3d")
+    set(_library BRD3D)
+  else()
+    set(_library BRGlide)
   endif()
+  add_library(${_library} SHARED $<TARGET_OBJECTS:coastline_main>)
+  set_target_properties(${_library} PROPERTIES PREFIX "")
+  target_link_libraries(${_library} PRIVATE ${COASTLINE_LIBRARIES} ole32 user32 ddraw dinput
+                                          dplayx dxguid winmm msacm32)
 else()
   if(COASTLINE_ASSETS_DIR AND COASTLINE_ASM_SYMBOLS)
     # The program is flattened into the bytes the IPL3 loads. build-rom puts the bytes after the

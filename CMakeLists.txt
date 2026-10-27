@@ -4,7 +4,6 @@ project(coastline VERSION 0.0.0 LANGUAGES C ASM)
 option(BUILD_DOCS "Build documentation alongside the sources." OFF)
 option(BUILD_DOCS_ONLY "Build documentation and nothing else." OFF)
 option(INSTALL_DOCS "Install documentation." OFF)
-option(TGR_LINK "Link the Windows library. Off until every routine has a body." OFF)
 option(TGR_ENABLE_PATCHES
        "Build the changes of this project to the game, such as the build date that names the \
 commit and the time of the build. Off builds the game as released."

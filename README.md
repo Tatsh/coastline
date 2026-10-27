@@ -53,8 +53,7 @@ The Nintendo 64 compiler is libdragon's GCC, found through `N64_INST`, and no ot
 libdragon is used. The Windows compiler is an i686 mingw-w64 GCC, found through `MINGW_ROOT` or
 on the path. The Windows build is 32-bit only, and its `BRD3D.dll` and `BRGlide.dll` are meant
 as drop-in replacements for the files of the installed game. Every routine compiles into an
-archive. A Windows library does not link until every routine has a body, and `TGR_LINK=ON` turns
-its link on.
+archive. Windows builds link the selected renderer DLL as part of the default build.
 
 Each Nintendo 64 release builds a cartridge image, such as `coastline-us.z64` in the build
 directory, whenever `TGR_ROM` is set. Routines not yet reconstructed in C link from the assembly of
