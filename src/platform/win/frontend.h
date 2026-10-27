@@ -204,6 +204,9 @@ public:
     const void *GetItemData(int index) const {
         return itemData[index].pData;
     }
+    void *GetItemData(int index) {
+        return itemData[index].pData;
+    }
     unsigned GetFlags() const {
         return dwFlags;
     }

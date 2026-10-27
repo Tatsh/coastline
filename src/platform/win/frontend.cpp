@@ -2109,6 +2109,32 @@ int CompareDisplayModes(const void *left, const void *right) {
     return 0;
 }
 
+int D3DDeviceSelectUI_OnSetDriver(MenuWidget *widget) {
+    g_dwActiveDisplayDeviceIndex = g_dwSelectedDisplayDeviceIndex;
+    GUID *guid = static_cast<GUID *>(
+        g_pD3DDeviceSelectMenu->GetItemList().GetItemData(g_dwSelectedDisplayDeviceIndex));
+    g_pSelectedDisplayDriver = FindDisplayDeviceByGuid(guid);
+    g_GlobalRallyConfig.DisplayDriverGuid = *g_pSelectedDisplayDriver->GetGuid();
+    ReturnToVideoOptionsFromDeviceSelect(widget);
+    return 0;
+}
+
+int DisplayModeSelectUI_OnSetMode(MenuWidget *widget) {
+    unsigned index = *static_cast<const unsigned *>(
+        g_pDisplayModeSelectMenu->GetItemList().GetItemData(g_dwSelectedDisplayModeIndex));
+    int width, height, depth, refresh;
+    g_apSortedDisplayModes[index]->GetSurfaceDescDimensions(&width, &height, &depth, &refresh);
+    g_GlobalRallyConfig.dwDisplayModeExtra = refresh;
+    g_dwActiveDisplayModeIndex = g_dwSelectedDisplayModeIndex;
+    g_GlobalRallyConfig.dwDisplayModeWidth = width;
+    g_GlobalRallyConfig.dwDisplayModeHeight = height;
+    g_GlobalRallyConfig.dwDisplayModeBitDepth = depth;
+    g_pSelectedDisplayMode = FindDisplayModeWithFallback(
+        g_pSelectedDisplayDriver, width, height, depth, 0, g_pSelectedRenderDevice);
+    ReturnToVideoOptionsFromResolution(widget);
+    return 0;
+}
+
 int PopulateDisplayModeList(void) {
     if (!g_pSelectedDisplayDriver) {
         return 0;
