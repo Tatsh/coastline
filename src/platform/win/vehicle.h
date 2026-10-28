@@ -291,6 +291,7 @@ private:
     void InitVehicleOrientationFromAngle(f32 angle);
     /**
      * @ghidraAddress BRD3D: 0x10076700
+     * @ghidraAddress BRGlide: 0x1006f970
      */
     void SetVehicleFrameMatrix(f32 m[4][4]);
     /**
