@@ -109,11 +109,11 @@ s32 __osEepStatus(OSMesgQueue *mq, OSContStatus *data) {
         *ptr++ = 0;
     }
     requestformat = *(__OSContRequesFormat *)ptr;
-    data->errno = CHNL_ERR(requestformat);
+    data->CONT_ERRNO = CHNL_ERR(requestformat);
     data->type = (requestformat.typel << 8) | requestformat.typeh;
     data->status = requestformat.status;
-    if (data->errno != 0) {
-        return data->errno;
+    if (data->CONT_ERRNO != 0) {
+        return data->CONT_ERRNO;
     }
     return 0;
 }

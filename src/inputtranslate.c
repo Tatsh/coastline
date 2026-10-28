@@ -41,8 +41,8 @@ void TranslateControllerInput(PlayerInputState *state) {
     u32 pressed;
     s32 i;
 
-    if (pad->errno != 0) {
-        state->controllerMissing = pad->errno == CONT_NO_RESPONSE_ERROR;
+    if (pad->CONT_ERRNO != 0) {
+        state->controllerMissing = pad->CONT_ERRNO == CONT_NO_RESPONSE_ERROR;
         pad->stick_x = 0;
         state->pad->stick_y = 0;
         state->pad->button = 0;

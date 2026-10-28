@@ -32,7 +32,7 @@ u8 g_abRumblePakPresent[MAXCONTROLLERS];
 #define EVENT_THREAD_PRIORITY 60
 
 static s32 IsPakController(OSContStatus *status, u8 pattern, s32 i) {
-    return ((pattern >> i) & 1) && !(status->errno & CONT_NO_RESPONSE_ERROR) &&
+    return ((pattern >> i) & 1) && !(status->CONT_ERRNO & CONT_NO_RESPONSE_ERROR) &&
            (status->type & CONT_JOYPORT) && (status->status & CONT_CARD_ON);
 }
 

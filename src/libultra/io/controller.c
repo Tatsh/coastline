@@ -59,8 +59,8 @@ void __osContGetInitData(u8 *pattern, OSContStatus *data) {
     ptr = (u8 *)__osContPifRam.ramarray;
     for (i = 0; i < __osMaxControllers; i++, ptr += sizeof(requestformat), data++) {
         requestformat = *(__OSContRequesFormat *)ptr;
-        data->errno = CHNL_ERR(requestformat);
-        if (data->errno == 0) {
+        data->CONT_ERRNO = CHNL_ERR(requestformat);
+        if (data->CONT_ERRNO == 0) {
             data->type = (requestformat.typel << 8) | requestformat.typeh;
             data->status = requestformat.status;
             bits |= 1 << i;

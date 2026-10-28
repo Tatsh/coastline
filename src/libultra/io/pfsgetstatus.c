@@ -17,7 +17,7 @@ s32 __osPfsGetStatus(OSMesgQueue *queue, int channel) {
     if ((data[channel].status & CONT_CARD_ON) && (data[channel].status & CONT_CARD_PULL)) {
         return PFS_ERR_NEW_PACK;
     }
-    if (data[channel].errno != 0 || !(data[channel].status & CONT_CARD_ON)) {
+    if (data[channel].CONT_ERRNO != 0 || !(data[channel].status & CONT_CARD_ON)) {
         return PFS_ERR_NOPACK;
     }
     if (data[channel].status & CONT_ADDR_CRC_ER) {

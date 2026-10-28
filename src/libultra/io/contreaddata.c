@@ -84,8 +84,8 @@ void osContGetReadData(OSContPad *data) {
 
     for (i = 0; i < __osMaxControllers; i++, ptr += sizeof(readformat), data++) {
         readformat = *(__OSContReadFormat *)ptr;
-        data->errno = CHNL_ERR(readformat);
-        if (data->errno == 0) {
+        data->CONT_ERRNO = CHNL_ERR(readformat);
+        if (data->CONT_ERRNO == 0) {
             data->button = readformat.button;
             data->stick_x = readformat.stick_x;
             data->stick_y = readformat.stick_y;

@@ -78,25 +78,35 @@ extern "C" {
 /** OSContPad.errno of a controller that does not respond. */
 #define CONT_NO_RESPONSE_ERROR 8
 
+/*
+ * The name of the channel error of OSContStatus and OSContPad. The C runtime of Windows defines
+ * errno as a macro, so the member takes another name there.
+ */
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#define CONT_ERRNO errnum
+#else
+#define CONT_ERRNO errno
+#endif
+
 /* Bits of OSPfs.status. */
 #define PFS_INITIALIZED 0x01 /*!< The file system was initialised. */
 #define PFS_CORRUPTED 0x02   /*!< The file system is corrupted. */
 
 /** What osContInit() learns of a controller. */
 typedef struct {
-    u16 type;  /*!< The controller type, from the CONT_ABSOLUTE, CONT_RELATIVE, and CONT_JOYPORT
-                  bits. */
-    u8 status; /*!< The accessory status, from the CONT_CARD_ON, CONT_CARD_PULL, and
-                  CONT_ADDR_CRC_ER bits. */
-    u8 errno;  /*!< The channel error of the query, 0 or CONT_NO_RESPONSE_ERROR. */
+    u16 type;      /*!< The controller type, from the CONT_ABSOLUTE, CONT_RELATIVE, and CONT_JOYPORT
+                      bits. */
+    u8 status;     /*!< The accessory status, from the CONT_CARD_ON, CONT_CARD_PULL, and
+                      CONT_ADDR_CRC_ER bits. */
+    u8 CONT_ERRNO; /*!< The channel error of the query, 0 or CONT_NO_RESPONSE_ERROR. */
 } OSContStatus;
 
 /** The buttons and stick of a controller. */
 typedef struct {
-    u16 button; /*!< The pressed buttons, from the CONT_* button bits. */
-    s8 stick_x; /*!< The horizontal stick position, positive to the right. */
-    s8 stick_y; /*!< The vertical stick position, positive upward. */
-    u8 errno;   /*!< The channel error of the read, 0 or CONT_NO_RESPONSE_ERROR. */
+    u16 button;    /*!< The pressed buttons, from the CONT_* button bits. */
+    s8 stick_x;    /*!< The horizontal stick position, positive to the right. */
+    s8 stick_y;    /*!< The vertical stick position, positive upward. */
+    u8 CONT_ERRNO; /*!< The channel error of the read, 0 or CONT_NO_RESPONSE_ERROR. */
 } OSContPad;
 
 /** An open Controller Pak. */
