@@ -1,8 +1,9 @@
 # The entry points of the Windows port. A routine that differs substantially between renderers has
-# one translation unit per renderer, suffixed with the renderer, and the build selects the unit. A
-# routine whose difference is a few lines, DllMain() for one, stays in one unit. Each renderer's
-# library exports RallyMain. Nothing refers to DllMain() or RallyMain by name, so the link would drop
-# them from an archive, and the objects go into each library directly.
+# one translation unit per renderer, suffixed with the renderer or under its directory (d3d, glide),
+# and the build selects the unit. A routine whose difference is a few lines, DllMain() for one,
+# stays in one unit. Each renderer's library exports RallyMain. Nothing refers to DllMain() or
+# RallyMain by name, so the link would drop them from an archive, and the objects go into each
+# library directly.
 add_library(
   coastline_main OBJECT
   assetfile.cpp
@@ -60,8 +61,7 @@ add_library(
   vehicle.cpp
   vehiclemodelload.c
   vehiclesetup.cpp
-  wavread.c
-  winmain-${TGR_RENDERER}.cpp)
+  wavread.c)
 # The DirectDraw and Direct3D renderer belongs to the Direct3D library alone.
 if(TGR_RENDERER STREQUAL "d3d")
   target_sources(
@@ -97,12 +97,14 @@ if(TGR_RENDERER STREQUAL "d3d")
             d3d/driver.cpp
             d3d/renderer.cpp
             d3d/texture.cpp
-            gamesession-d3d.cpp)
+            gamesession-d3d.cpp
+            winmain-d3d.cpp)
 endif()
 target_link_libraries(coastline_main PRIVATE coastline_common)
 
+# The Glide renderer and what differs from the Direct3D library belong to the Glide library alone.
 if(TGR_RENDERER STREQUAL "glide")
-  target_sources(coastline_main PRIVATE glidetexture.c rgb565image.c)
+  target_sources(coastline_main PRIVATE glide/rgb565image.c glide/texture.c glide/winmain.cpp)
 endif()
 
 add_subdirectory(launcher)

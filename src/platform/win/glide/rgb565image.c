@@ -1,4 +1,4 @@
-#include "platform/win/rgb565image.h"
+#include "platform/win/glide/rgb565image.h"
 
 static_assert(sizeof(Rgb565Image) == 16, "The native image descriptor has sixteen bytes.");
 

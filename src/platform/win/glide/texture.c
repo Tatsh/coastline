@@ -1,4 +1,4 @@
-#include "platform/win/glidetexture.h"
+#include "platform/win/glide/texture.h"
 
 #include <stdint.h>
 
