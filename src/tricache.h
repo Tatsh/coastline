@@ -36,6 +36,7 @@ typedef struct TrackTriangle {
  * @ghidraAddress EUR: 0x8037c480
  * @ghidraAddress JPN: 0x8037b0f0
  * @ghidraAddress BRD3D: 0x11750338
+ * @ghidraAddress BRGlide: 0x11773698
  */
 extern TrackTriangle g_aTriCacheTriangles[TRI_CACHE_SLOTS][TRI_CACHE_TRIANGLES];
 
@@ -46,6 +47,7 @@ extern TrackTriangle g_aTriCacheTriangles[TRI_CACHE_SLOTS][TRI_CACHE_TRIANGLES];
  * @ghidraAddress EUR: 0x80380f80
  * @ghidraAddress JPN: 0x8037fbf0
  * @ghidraAddress BRD3D: 0x117554d8
+ * @ghidraAddress BRGlide: 0x11778838
  */
 extern u16 g_awTriCacheSectorId[TRI_CACHE_SLOTS];
 
@@ -56,6 +58,7 @@ extern u16 g_awTriCacheSectorId[TRI_CACHE_SLOTS];
  * @ghidraAddress EUR: 0x80380f88
  * @ghidraAddress JPN: 0x8037fbf8
  * @ghidraAddress BRD3D: 0x117554a0
+ * @ghidraAddress BRGlide: 0x11778800
  */
 extern u16 g_awTriCacheTriCount[TRI_CACHE_SLOTS];
 
@@ -66,6 +69,7 @@ extern u16 g_awTriCacheTriCount[TRI_CACHE_SLOTS];
  * @ghidraAddress EUR: 0x80380f90
  * @ghidraAddress JPN: 0x8037fc00
  * @ghidraAddress BRD3D: 0x117554c8
+ * @ghidraAddress BRGlide: 0x11778828
  */
 extern u32 g_adwTriCacheLruStamp[TRI_CACHE_SLOTS];
 

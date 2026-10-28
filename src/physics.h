@@ -252,6 +252,7 @@ extern Vec3f g_vCollisionPenetration;
  * Empty the cache of the triangles and the list of the triangles that cross the box.
  *
  * @ghidraAddress BRD3D: 0x1006ae20
+ * @ghidraAddress BRGlide: 0x10063dd0
  * @ghidraAddress USA: 0x80259350
  * @ghidraAddress EUR: 0x8025a920
  * @ghidraAddress JPN: 0x8025a2b0
