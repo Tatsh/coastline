@@ -1,3 +1,4 @@
+#include <float.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -67,6 +68,11 @@ int WINAPI WinMain(HINSTANCE instance,
                    HINSTANCE previousInstance,
                    LPSTR commandLine,
                    int showCommand) {
+#ifndef _MSC_VER
+    // The start-up of the MSVC runtime sets 53-bit x87 precision before this, and the original
+    // BRGlide.dll runs at the precision the executable leaves; mingw-w64 does not set it.
+    _controlfp(_PC_53, _MCW_PC);
+#endif
     InitializeApplicationDiagnostics();
     WriteApplicationDiagnostic("BRally entered WinMain; requesting desktop window.\n");
     HWND desktop = GetDesktopWindow();
