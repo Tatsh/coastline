@@ -150,7 +150,7 @@ RallyMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR pszCmdLine, int nC
             InitializeDirectPlayForDesktopWindow();
             PrintWineDiagnostic("coastline: DirectPlay initialized; loading menu resources.\n");
             if (InitializeFrontEndResources()) {
-                GetAvailableTextureMemory();
+                QueryAvailableTextureMemory();
                 PrintWineDiagnostic("coastline: Entering game message loop.\n");
                 RunMessageLoop();
                 ShutdownMainWindow();

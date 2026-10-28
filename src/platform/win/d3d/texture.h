@@ -79,14 +79,6 @@ int PopCount32(unsigned nMask);
 HRESULT CALLBACK EnumTextureFormatsCallback_MatchPreset(DDSURFACEDESC *pDesc, void *pContext);
 
 /**
- * Query DirectDraw for the video memory left for textures.
- *
- * @return The free bytes of texture memory.
- * @ghidraAddress BRD3D: 0x1003e220
- */
-unsigned GetAvailableTextureMemory(void);
-
-/**
  * Unpack pixels of RGBA 5551 to RGBA 8888. The low bits of each channel repeat bits of the
  * channel, and an alpha bit becomes 0 or 0xff.
  *

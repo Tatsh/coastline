@@ -260,16 +260,6 @@ LoadRgba5551ImageFile(const char *pszPath, unsigned nAdlerExpected, int *pnWidth
     return GetTextureDecodeBuffer();
 }
 
-unsigned GetAvailableTextureMemory(void) {
-    DDSCAPS caps;
-    DWORD dwTotal;
-    DWORD dwFree;
-
-    caps.dwCaps = DDSCAPS_TEXTURE;
-    g_pRenderHost->GetRenderer()->GetDirectDraw2()->GetAvailableVidMem(&caps, &dwTotal, &dwFree);
-    return dwFree;
-}
-
 D3DTexture **g_ppTextureIdTable;
 namespace {
 // @ghidraAddress BRD3D: 0x104b2554
