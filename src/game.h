@@ -85,6 +85,7 @@ void ApplyWeather(u32 weather);
  *
  * @param weather Weather option.
  * @ghidraAddress BRD3D: 0x100697c0
+ * @ghidraAddress BRGlide: 0x10062830
  */
 void SetWeatherAndRefreshVehicleMaterials(u32 weather);
 #endif

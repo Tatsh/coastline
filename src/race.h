@@ -731,6 +731,7 @@ extern "C"
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
 /**
  * @ghidraAddress BRD3D: 0x1002c500
+ * @ghidraAddress BRGlide: 0x10019a70
  */
 #ifdef __cplusplus
 extern "C"
