@@ -20,6 +20,11 @@
       "dependencies": [
         "argparse",
         "drlibs",
+        {
+          "features": ["tools"],
+          "host": true,
+          "name": "glslang"
+        },
         "libflac",
         {
           "default-features": false,
@@ -31,6 +36,10 @@
           "features": ["alsa", "wayland", "x11"],
           "name": "sdl3",
           "platform": "linux"
+        },
+        {
+          "host": true,
+          "name": "spirv-cross"
         },
         "zlib"
       ],

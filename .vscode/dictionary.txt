@@ -60,12 +60,15 @@ beqz
 berkin
 bestlaptime
 bgdim
+bgra
 bgtz
 bilerp
 bilinearly
 billboardparticles
 bindir
 bitspixel
+blendfactor
+blendop
 blez
 blit
 bnel
@@ -149,6 +152,7 @@ combkey
 completionthreads
 configfile
 congrat
+constexpr
 contpfs
 contramread
 contramwrite
@@ -197,6 +201,8 @@ dblclks
 dbuild
 dclipstatus
 dcmake
+dcmpfunc
+dcolor
 dcosf
 dcull
 ddbd
@@ -294,6 +300,7 @@ donotclip
 donotupdateextents
 dosdevices
 doubleword
+doutput
 dpaid
 dpal
 dpcompoundaddresselement
@@ -339,6 +346,7 @@ dsref
 dsrl
 dsscl
 dtaddress
+dtblend
 dtdy
 dtgr
 dtlvertex
@@ -418,6 +426,7 @@ foxundermoon
 fpart
 fpcsr
 fpshud
+frag
 framebegin
 frameclear
 framefields
@@ -456,6 +465,8 @@ glabel
 glist
 globl
 glos
+glsl
+glslang
 gmem
 gnoias
 gouraud
@@ -531,11 +542,15 @@ inval
 invaldcache
 invalicache
 invalidplayer
+invdestalpha
+invdestcolor
 invsrcalpha
+invsrccolor
 iobusy
 iomessage
 isdvd
 isrc
+ivec
 iwyu
 jalr
 jammesg
@@ -834,6 +849,7 @@ precipitationupdate
 prenmi
 primarybuffer
 primarysurface
+primitivetype
 probetlb
 profileinit
 psdk
@@ -915,11 +931,14 @@ rodata
 rombuilder
 routeposition
 routewalk
+rrggbb
 rshift
 rside
 rtti
 runtimebuffers
 rxsize
+sampleraddressmode
+samplermipmapmode
 savd
 savestate
 sawkins
@@ -963,6 +982,7 @@ setvideo
 setzimg
 shademode
 shaderformat
+shaderstage
 shadowclip
 shadowproject
 shadowreset
@@ -1088,6 +1108,7 @@ tagfile
 tagfiles
 tarmc
 tatsh
+texel
 texelfx
 texfmt
 texrect
@@ -1124,6 +1145,7 @@ tlbpgmask
 tlbr
 tlbwi
 tlnext
+tlrenderer
 tlut
 tluts
 tlvertex
@@ -1202,6 +1224,8 @@ vehiclevisibility
 vehprofile
 vendored
 venv
+vertexelementformat
+vertexinputrate
 viblack
 vigetcurrcontext
 vigetcurrframebuf

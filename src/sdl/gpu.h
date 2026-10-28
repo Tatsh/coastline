@@ -57,6 +57,35 @@ public:
      */
     bool PresentClear(SDL_FColor color, const std::filesystem::path *capture = nullptr);
 
+    /**
+     * Scale the frame texture to the window and submit @p commands, which drew the frame.
+     *
+     * @param commands The command buffer of the frame, submitted here.
+     * @param capture A PNG file to write the frame to.
+     * @return Whether the frame was submitted, and saved when requested.
+     */
+    bool Present(SDL_GPUCommandBuffer *commands, const std::filesystem::path *capture = nullptr);
+
+    /** @return The texture each frame is drawn into. */
+    SDL_GPUTexture *FrameTexture() const {
+        return m_frame;
+    }
+
+    /** @return The format of the frame texture. */
+    static constexpr SDL_GPUTextureFormat FrameFormat() {
+        return SDL_GPU_TEXTUREFORMAT_R8G8B8A8_UNORM;
+    }
+
+    /** @return The width of the frame texture in pixels. */
+    Uint32 FrameWidth() const {
+        return m_frameWidth;
+    }
+
+    /** @return The height of the frame texture in pixels. */
+    Uint32 FrameHeight() const {
+        return m_frameHeight;
+    }
+
 private:
     struct WindowDeleter {
         void operator()(SDL_Window *window) const {

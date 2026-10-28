@@ -10,6 +10,36 @@ find_package(argparse CONFIG REQUIRED)
 find_package(FLAC CONFIG REQUIRED)
 find_package(ZLIB REQUIRED)
 
+# The shaders are GLSL, compiled to SPIR-V for Vulkan and translated to MSL for Metal by the host
+# tools of vcpkg, and embedded in the executable.
+set(_host_tools "${VCPKG_INSTALLED_DIR}/${VCPKG_HOST_TRIPLET}/tools")
+find_program(GLSLANG_VALIDATOR glslangValidator HINTS "${_host_tools}/glslang" REQUIRED)
+find_program(SPIRV_CROSS spirv-cross HINTS "${_host_tools}/spirv-cross" REQUIRED)
+set(_shader_headers)
+foreach(_shader tl.vert tl.frag)
+  string(REPLACE "." "_" _stem "${_shader}")
+  string(TOUPPER "${_stem}" _name)
+  set(_source "${CMAKE_CURRENT_SOURCE_DIR}/shaders/${_shader}")
+  set(_spirv "${CMAKE_CURRENT_BINARY_DIR}/shaders/${_stem}.spv")
+  set(_msl "${CMAKE_CURRENT_BINARY_DIR}/shaders/${_stem}.metal")
+  set(_spirv_header "${CMAKE_CURRENT_BINARY_DIR}/shaders/${_stem}_spirv.h")
+  set(_msl_header "${CMAKE_CURRENT_BINARY_DIR}/shaders/${_stem}_msl.h")
+  add_custom_command(
+    OUTPUT "${_spirv_header}" "${_msl_header}"
+    COMMAND "${CMAKE_COMMAND}" -E make_directory "${CMAKE_CURRENT_BINARY_DIR}/shaders"
+    COMMAND "${GLSLANG_VALIDATOR}" -V --quiet -o "${_spirv}" "${_source}"
+    COMMAND "${SPIRV_CROSS}" --msl --msl-version 20000 --output "${_msl}" "${_spirv}"
+    COMMAND "${CMAKE_COMMAND}" -DINPUT=${_spirv} -DOUTPUT=${_spirv_header} -DNAME=${_name}_SPIRV
+            -P "${CMAKE_SOURCE_DIR}/cmake/embed.cmake"
+    COMMAND "${CMAKE_COMMAND}" -DINPUT=${_msl} -DOUTPUT=${_msl_header} -DNAME=${_name}_MSL -P
+            "${CMAKE_SOURCE_DIR}/cmake/embed.cmake"
+    DEPENDS "${_source}" "${CMAKE_SOURCE_DIR}/cmake/embed.cmake"
+    COMMENT "Compiling the shader ${_shader}"
+    VERBATIM)
+  list(APPEND _shader_headers "${_spirv_header}" "${_msl_header}")
+endforeach()
+add_custom_target(coastline_shaders DEPENDS ${_shader_headers})
+
 # The SHA-1 and the asset chains of the host tools read the cartridge images. The music player of
 # the Nintendo 64 release is shared C.
 add_library(
@@ -21,11 +51,14 @@ add_library(
   log.cpp
   music.cpp
   paths.cpp
+  tlrenderer.cpp
   "${CMAKE_SOURCE_DIR}/src/audio.c"
   "${CMAKE_SOURCE_DIR}/tools/common/assetchain.cpp"
   "${CMAKE_SOURCE_DIR}/tools/common/sha1.cpp")
 target_include_directories(coastline_sdl PRIVATE "${CMAKE_SOURCE_DIR}/src"
-                                                 "${CMAKE_SOURCE_DIR}/tools/common")
+                                                 "${CMAKE_SOURCE_DIR}/tools/common"
+                                                 "${CMAKE_CURRENT_BINARY_DIR}")
+add_dependencies(coastline_sdl coastline_shaders)
 target_link_libraries(coastline_sdl PRIVATE FLAC::FLAC ZLIB::ZLIB)
 # A reconstructed routine retains the parameters of the original, used or not.
 set_source_files_properties("${CMAKE_SOURCE_DIR}/src/audio.c" PROPERTIES COMPILE_OPTIONS

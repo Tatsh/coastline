@@ -23,6 +23,7 @@
 #include "log.h"
 #include "music.h"
 #include "paths.h"
+#include "tlrenderer.h"
 
 namespace {
 
@@ -95,6 +96,80 @@ std::optional<std::vector<std::uint8_t>> LoadMusicFromRom(const std::filesystem:
     return std::move(*module);
 }
 
+coastline::TextureHandle CreateCheckerTexture(coastline::TlRenderer &renderer) {
+    constexpr std::uint32_t SIZE = 64;
+    std::vector<std::uint8_t> texels(SIZE * SIZE * 4);
+    for (std::uint32_t y = 0; y < SIZE; ++y) {
+        for (std::uint32_t x = 0; x < SIZE; ++x) {
+            bool light = ((x / 8) + (y / 8)) % 2 == 0;
+            std::uint8_t *texel = &texels[(y * SIZE + x) * 4];
+            texel[0] = light ? 0xF0 : 0x30;
+            texel[1] = light ? 0xC0 : 0x30;
+            texel[2] = light ? 0x40 : 0x80;
+            texel[3] = 0xFF;
+        }
+    }
+    return renderer.CreateTexture(SIZE, SIZE, texels, false);
+}
+
+// The scene exercises the renderer with the primitives of the game (a textured quad in
+// perspective, a fogged quad behind it, and an alpha-blended triangle in front). The triangle
+// turns with the frame number.
+void DrawRendererTestScene(coastline::TlRenderer &renderer,
+                           coastline::TextureHandle texture,
+                           int frame,
+                           const std::filesystem::path *capture) {
+    using coastline::TlVertex;
+    constexpr std::uint16_t QUAD[] = {0, 1, 2, 0, 2, 3};
+    renderer.BeginScene(0xFF203050);
+    auto &states = renderer.States();
+    states = {};
+    states.cull = coastline::CullMode::None;
+
+    // The far quad has rhw 0.25 and z 0.9, and fades to the fog colour at its top.
+    states.fog = true;
+    states.fogColor = 0xFF8090A0;
+    renderer.SetTexture(0);
+    TlVertex fogged[] = {{40, 40, 0.9f, 0.25f, 0xFF20A020, 0x00000000, 0, 0},
+                         {600, 40, 0.9f, 0.25f, 0xFF20A020, 0x00000000, 0, 0},
+                         {600, 300, 0.9f, 0.25f, 0xFF20A020, 0xFF000000, 0, 0},
+                         {40, 300, 0.9f, 0.25f, 0xFF20A020, 0xFF000000, 0, 0}};
+    renderer.DrawIndexed(fogged, QUAD);
+
+    // A floor in perspective: the near edge has rhw 1 and the far edge rhw 0.2, so the checks
+    // shrink with the distance when the texture coordinates interpolate correctly.
+    states.fog = false;
+    renderer.SetTexture(texture);
+    TlVertex floor[] = {{220, 180, 0.6f, 0.2f, 0xFFFFFFFF, 0, 0, 0},
+                        {420, 180, 0.6f, 0.2f, 0xFFFFFFFF, 0, 4, 0},
+                        {620, 460, 0.1f, 1.0f, 0xFFFFFFFF, 0, 4, 4},
+                        {20, 460, 0.1f, 1.0f, 0xFFFFFFFF, 0, 0, 4}};
+    renderer.DrawIndexed(floor, QUAD);
+
+    states.blend = true;
+    states.sourceBlend = coastline::BlendFactor::SourceAlpha;
+    states.destinationBlend = coastline::BlendFactor::InverseSourceAlpha;
+    renderer.SetTexture(0);
+    float angle = static_cast<float>(frame) * 0.05f;
+    TlVertex triangle[3];
+    for (int i = 0; i < 3; ++i) {
+        float a = angle + static_cast<float>(i) * 2.0943951f;
+        triangle[i] = {320 + 120 * SDL_cosf(a),
+                       240 + 120 * SDL_sinf(a),
+                       0.05f,
+                       1.0f,
+                       i == 0 ? 0x80FF2020u :
+                       i == 1 ? 0x8020FF20u :
+                                0x802020FFu,
+                       0,
+                       0,
+                       0};
+    }
+    constexpr std::uint16_t TRIANGLE[] = {0, 1, 2};
+    renderer.DrawIndexed(triangle, TRIANGLE);
+    renderer.EndScene(capture);
+}
+
 int ImportFromCommandLine(const argparse::ArgumentParser &parser,
                           const std::filesystem::path &data) {
     int status = EXIT_SUCCESS;
@@ -153,6 +228,7 @@ int main(int argc, char *argv[]) {
         .help("length of the WAV file in seconds")
         .default_value(30)
         .scan<'i', int>();
+    parser.add_argument("--scene").help("scene to start in: renderer-test");
     parser.add_argument("--screenshot").help("save a frame to this PNG file");
     parser.add_argument("--screenshot-frame")
         .help("number of the frame to save, from 1")
@@ -254,6 +330,12 @@ int main(int argc, char *argv[]) {
             }
             int screenshotFrame = parser.get<int>("--screenshot-frame");
             bool quitAfterScreenshot = parser.get<bool>("--quit-after-screenshot");
+            std::unique_ptr<coastline::TlRenderer> renderer;
+            coastline::TextureHandle testTexture = 0;
+            if (parser.present("--scene") == "renderer-test") {
+                renderer = coastline::TlRenderer::Create(*window);
+                testTexture = renderer ? CreateCheckerTexture(*renderer) : 0;
+            }
             bool running = true;
             for (int frame = 1; running; ++frame) {
                 SDL_Event event;
@@ -264,14 +346,19 @@ int main(int argc, char *argv[]) {
                     input.HandleEvent(event);
                 }
                 auto ports = input.Poll();
-                // The clear colour follows the stick of the first controller until the game
-                // draws its frames here.
-                float red = 0.5f + ports[0].stickX / 160.0f;
-                float green = 0.5f + ports[0].stickY / 160.0f;
-                float blue = ports[0].buttons != 0 ? 0.6f : 0.2f;
                 bool capture = screenshot && frame == screenshotFrame;
-                window->PresentClear(SDL_FColor{red, green, blue, 1.0f},
-                                     capture ? &*screenshot : nullptr);
+                if (renderer) {
+                    DrawRendererTestScene(
+                        *renderer, testTexture, frame, capture ? &*screenshot : nullptr);
+                } else {
+                    // The clear colour follows the stick of the first controller until the
+                    // game draws its frames here.
+                    float red = 0.5f + ports[0].stickX / 160.0f;
+                    float green = 0.5f + ports[0].stickY / 160.0f;
+                    float blue = ports[0].buttons != 0 ? 0.6f : 0.2f;
+                    window->PresentClear(SDL_FColor{red, green, blue, 1.0f},
+                                         capture ? &*screenshot : nullptr);
+                }
                 if (capture && quitAfterScreenshot) {
                     running = false;
                 }

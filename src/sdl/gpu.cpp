@@ -87,7 +87,10 @@ bool GpuWindow::PresentClear(SDL_FColor color, const std::filesystem::path *capt
     target.load_op = SDL_GPU_LOADOP_CLEAR;
     target.store_op = SDL_GPU_STOREOP_STORE;
     SDL_EndGPURenderPass(SDL_BeginGPURenderPass(commands, &target, 1, nullptr));
+    return Present(commands, capture);
+}
 
+bool GpuWindow::Present(SDL_GPUCommandBuffer *commands, const std::filesystem::path *capture) {
     SDL_GPUTexture *swapchain = nullptr;
     Uint32 width = 0;
     Uint32 height = 0;
