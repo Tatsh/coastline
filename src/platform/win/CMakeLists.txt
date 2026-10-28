@@ -68,6 +68,7 @@ if(TGR_RENDERER STREQUAL "d3d")
             creditdata.c
             boot/shutdown.cpp
             frontenddata.cpp
+            fontdata.c
             hudassets.c
             numericdata.c
             physicsdata.c

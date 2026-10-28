@@ -4,6 +4,18 @@
 extern "C" {
 #endif
 
+typedef struct MenuGlyph {
+    short nWidth;
+    short nHeight;
+    short nImage;
+    char abUnknown6[6]; /* +0x06 */
+} MenuGlyph;
+
+/** @ghidraAddress BRD3D: 0x100ac6e4 */
+extern MenuGlyph g_MenuFontGlyphTable[95];
+/** @ghidraAddress BRD3D: 0x100acb5c */
+extern MenuGlyph g_AltFontGlyphTable[95];
+
 /**
  * @ghidraAddress BRD3D: 0x100a6070
  */

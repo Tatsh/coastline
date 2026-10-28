@@ -5,6 +5,8 @@
 
 #include <windows.h>
 
+#include "platform/win/fontdata.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -21,22 +23,6 @@ static inline int ConvertMenuCoordinate(float value) {
 #endif
 
 class MenuFont;
-
-struct MenuGlyph {
-    short nWidth;
-    short nHeight;
-    short nImage;
-    char abUnknown6[6]; /* +0x06 */
-};
-
-/**
- * @ghidraAddress BRD3D: 0x100ac6e4
- */
-extern MenuGlyph g_MenuFontGlyphTable[95];
-/**
- * @ghidraAddress BRD3D: 0x100acb5c
- */
-extern MenuGlyph g_AltFontGlyphTable[95];
 
 class MenuFont {
 public:
