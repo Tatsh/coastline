@@ -32,10 +32,6 @@ def arguments():
                         help='Prepare and configure the Wine prefix without starting the game.')
     parser.add_argument('--desktop-size', default='800x600',
                         help='Size of the Wine desktop window, such as 800x600.')
-    parser.add_argument('--no-desktop', action='store_true',
-                        help='Start BRally directly without a Wine Explorer desktop.')
-    parser.add_argument('--trace-wine', action='store_true',
-                        help='Record Wine process, desktop, and exception traces in wine-launch.log.')
     parser.add_argument('--wine', default=os.environ.get('WINE', 'wine'),
                         help='Wine executable; inherited Wine architecture settings are preserved.')
     parser.add_argument('--winecfg', default=os.environ.get('WINECFG', 'winecfg'),
@@ -180,54 +176,21 @@ def main():
         '/d', INSTALL_DIRECTORY, '/f', '/reg:32')
     run('reg', 'add', r'HKCU\Software\Wine\Drives', '/v', 'd:', '/t', 'REG_SZ',
         '/d', 'cdrom', '/f')
-    debugger = prefix / 'drive_c/windows/system32/winedbg.exe'
-    if not debugger.is_file():
-        raise ValueError(f'Wine debugger is absent from {debugger}.')
-    debugger_key = r'HKLM\Software\Microsoft\Windows NT\CurrentVersion\AeDebug'
-    debugger_command = (r'C:\windows\system32\cmd.exe /c '
-                        r'C:\windows\system32\winedbg.exe --auto %ld %ld '
-                        r'> C:\BossRally\wine-crash.log 2>&1')
-    for view in ('/reg:32', '/reg:64'):
-        run('reg', 'add', debugger_key, '/v', 'Debugger', '/t', 'REG_SZ',
-            '/d', debugger_command, '/f', view)
-        run('reg', 'add', debugger_key, '/v', 'Auto', '/t', 'REG_SZ', '/d', '1', '/f', view)
-    run('reg', 'add', r'HKCU\Software\Wine\WineDbg', '/v', 'ShowCrashDialog',
-        '/t', 'REG_DWORD', '/d', '0', '/f')
-    run('reg', 'add', r'HKCU\Software\Wine\Explorer', '/v', 'Desktop',
-        '/t', 'REG_SZ', '/d', '', '/f')
     if options.no_launch:
         print('Wine prefix configured. Run this script again to start the game.')
         return 0
     game_args = options.game_args
     if game_args and game_args[0] == '--':
         game_args = game_args[1:]
-    if options.no_desktop:
-        command = [INSTALL_DIRECTORY + r'\BRally.exe', *game_args]
-        print('Starting BRally.exe directly without a Wine desktop.', flush=True)
-    else:
-        command = ['explorer', f'/desktop=BossRally,{options.desktop_size}',
-                   INSTALL_DIRECTORY + r'\BRally.exe', *game_args]
-        print(f'Starting BRally.exe in a {options.desktop_size} Wine desktop window.', flush=True)
-    print(f'Application diagnostics append to {installation / "coastline.log"}', flush=True)
-    print(f'Crash backtraces go to {installation / "wine-crash.log"}', flush=True)
-    if options.trace_wine:
-        environment['WINEDEBUG'] = '+timestamp,+pid,+tid,+explorer,+process,+seh'
-        log_path = installation / 'wine-launch.log'
-        print(f'Wine startup trace goes to {log_path}', flush=True)
-        with log_path.open('wb') as log:
-            subprocess.run([wine, *command], env=environment, cwd=installation,
-                           stderr=log, check=True)
-    else:
-        run(*command)
+    print(f'Starting BRally.exe in a {options.desktop_size} Wine desktop window.', flush=True)
+    run('explorer', f'/desktop=BossRally,{options.desktop_size}',
+        INSTALL_DIRECTORY + r'\BRally.exe', *game_args)
     return 0
 
 
 if __name__ == '__main__':
     try:
         sys.exit(main())
-    except KeyboardInterrupt:
-        print('\nLaunch interrupted.', file=sys.stderr)
-        sys.exit(130)
     except (OSError, ValueError, subprocess.CalledProcessError) as error:
         print(f'Error: {error}', file=sys.stderr)
         sys.exit(1)
