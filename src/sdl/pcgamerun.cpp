@@ -32,6 +32,23 @@ HINSTANCE g_hAppInstance;
 HWND g_hMainWindow;
 WPARAM g_dwAppActive = 1;
 
+namespace {
+
+unsigned g_msvcRandomSeed = 1;
+
+} // namespace
+
+// The random numbers of the C library of Microsoft, which the PC release scales by 0x8000. They
+// take the place of those of the C library of the system for the whole program.
+extern "C" int rand(void) noexcept {
+    g_msvcRandomSeed = g_msvcRandomSeed * 214013u + 2531011u;
+    return static_cast<int>(g_msvcRandomSeed >> 16 & 0x7fff);
+}
+
+extern "C" void srand(unsigned seed) noexcept {
+    g_msvcRandomSeed = seed;
+}
+
 void ShutdownApplication(int nExitCode) {
     FreeAllRacerColorPanels();
     InvalidateFrameSnapshotSlots();
