@@ -19,9 +19,12 @@
 #define PRECIPITATION_RENDER_REAL long double
 #define PRECIPITATION_RENDER_INTEGER(value) ((s32)(s64)(value))
 #if TGR_RENDERER == TGR_RENDERER_D3D
+#define PRECIPITATION_STREAK_REAL f32
 #define WRITE_PRECIPITATION_TEXEL(dx, dy)                                                          \
     CopyTileColumnScaled(g_dwCurrentSplitScreenIndex, row + (dy), column + (dx), step)
 #else
+/* BRGlide holds the streak on the x87 stack and never rounds it to a float. */
+#define PRECIPITATION_STREAK_REAL long double
 #define WRITE_PRECIPITATION_TEXEL(dx, dy) (texel[(dy) * RAIN_STREAK_TEXTURE_SIDE + (dx)] = shade)
 #endif /* TGR_RENDERER == TGR_RENDERER_D3D */
 static inline void WritePrecipitationRectangle(s32 left, s32 top, s32 width, s32 height) {
@@ -34,6 +37,7 @@ static inline void WritePrecipitationRectangle(s32 left, s32 top, s32 width, s32
 }
 #else
 #define PRECIPITATION_RENDER_REAL f32
+#define PRECIPITATION_STREAK_REAL f32
 #define PRECIPITATION_RENDER_INTEGER(value) ((s32)(value))
 #define WRITE_PRECIPITATION_TEXEL(dx, dy) (texel[(dy) * RAIN_STREAK_TEXTURE_SIDE + (dx)] = shade)
 #endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
@@ -76,7 +80,8 @@ void RenderPrecipitationEffect(void) {
     u8 shade;
 #endif
     s32 i, step, row, column, sizeX, sizeY, x, y;
-    f32 u, v, du, dv, width, height, halfWidth, px, py, pz, clipX, clipY, clipW, scale;
+    PRECIPITATION_STREAK_REAL u, v, du, dv;
+    f32 width, height, halfWidth, px, py, pz, clipX, clipY, clipW, scale;
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
     long double updatedU, rawW, rawScale, rawProjected;
     f32 screenHeight;
@@ -209,6 +214,10 @@ void RenderPrecipitationEffect(void) {
     /* The view without its translation, taking the axes of a particle to those of the world. */
     MtxInvert4x4(g_afMvpMatrix, (f32(*)[4])g_pActiveCamera);
     g_afMvpMatrix[3][2] = 0.0f;
+#if TGR_RENDERER == TGR_RENDERER_GLIDE
+    g_afMvpMatrix[3][1] = 0.0f;
+    g_afMvpMatrix[3][0] = 0.0f;
+#endif
     g_afScratchMatrix[0][0] = 0.0f;
     g_afScratchMatrix[0][1] = 0.0f;
     g_afScratchMatrix[0][2] = PARTICLE_SCALE;
@@ -225,8 +234,10 @@ void RenderPrecipitationEffect(void) {
     g_afScratchMatrix[3][1] = 0.0f;
     g_afScratchMatrix[3][2] = 0.0f;
     g_afScratchMatrix[3][3] = 1.0f;
+#if TGR_RENDERER != TGR_RENDERER_GLIDE
     /* The other two terms of the translation are read back from the one cleared. */
     g_afMvpMatrix[3][0] = g_afMvpMatrix[3][1] = g_afMvpMatrix[3][2];
+#endif
     Mtx4x4Multiply(g_afMvpMatrix, g_afMvpMatrix, g_afScratchMatrix);
 
     /* A streak along the fall of the rain on the screen, brighter towards its end. */
