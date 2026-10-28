@@ -17,6 +17,7 @@
 #include "platform/win/boot/app.h"
 #include "platform/win/boot/rallyconfig.h"
 #include "platform/win/boot/strings.h"
+#include "platform/win/buildinfo.h"
 #include "platform/win/d3d/renderer.h"
 #include "platform/win/d3d/texture.h"
 #include "platform/win/directplay.h"
@@ -129,6 +130,7 @@ void RunMessageLoop(void) {
  */
 extern "C" __declspec(dllexport) int
 RallyMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR pszCmdLine, int nCmdShow) {
+    PrintWineBuildIdentification();
     g_dwAppExitCode = 0;
     if (SUCCEEDED(CoInitialize(nullptr))) {
         RefreshTotalPhysicalMemory();

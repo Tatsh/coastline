@@ -23,6 +23,7 @@
 #include "platform/win/boot/app.h"
 #include "platform/win/boot/rallyconfig.h"
 #include "platform/win/boot/strings.h"
+#include "platform/win/buildinfo.h"
 #include "platform/win/configfile.h"
 #include "platform/win/directplay.h"
 #include "platform/win/ghost.h"
@@ -1749,6 +1750,7 @@ bool MenuScreen::RunFrame() {
             return false;
         }
     }
+    DrawMenuBuildIdentification(this == g_pRootMenuScreen);
     EndFrame();
     if (!bRunning) {
         StopMenuScreen(this);
