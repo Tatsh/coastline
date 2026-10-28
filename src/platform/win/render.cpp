@@ -1558,44 +1558,68 @@ int DecodeN64TextureToPixelBuffer(void *pDest,
                                   int nLineBytes,
                                   int nSize,
                                   int nFormat) {
-    int widthBits = GetMipLevelFromDimension(nWidth);
-    int heightBits = GetMipLevelFromDimension(nHeight);
-    unsigned width = 1u << widthBits;
-    unsigned height = 1u << heightBits;
-    TexScanTile tiles[TEX_SCAN_TILE_COUNT];
-    tiles[0].nTmem = 0;
-    tiles[0].nMaskS = widthBits;
-    tiles[0].nMaskT = heightBits;
-    tiles[0].nLineBytes = nLineBytes;
-    tiles[0].nSize = nSize;
-    tiles[0].nFormat = nFormat;
+    unsigned width = 1u << GetMipLevelFromDimension(nWidth);
+    unsigned height = 1u << GetMipLevelFromDimension(nHeight);
+    // The image is described as a texture would be, and its level of detail, sizes and pointers
+    // are written without being read.
+    TextureImageData image;
+    image.nOption1 = 0;
+    image.nOption2 = 3;
+    image.nWidth = nWidth;
+    image.nDecodedWidth = nWidth;
+    image.nHeight = nHeight;
+    image.nDecodedHeight = nHeight;
+    image.nOption3 = 0;
+    CalculateTextureLodFromDimensions(&image.nLargestLod, width, height);
+    image.nLod = image.nLargestLod;
+    image.nTileIndex = 0;
+    image.aTiles[image.nTileIndex].nTmem = 0;
+    image.aTiles[image.nTileIndex].nMaskS = GetMipLevelFromDimension(nWidth);
+    image.aTiles[image.nTileIndex].nMaskT = GetMipLevelFromDimension(nHeight);
     g_bTexScanPrimColorSet = 0;
     g_bTexScanEnvColorSet = 0;
-    int format = ChooseTexturePixelFormat(nSize, nFormat, 0);
-    int size = static_cast<int>(GetTexturePixelSize(format) * width * height);
+    image.aTiles[image.nTileIndex].nLineBytes = nLineBytes;
+    image.aTiles[image.nTileIndex].nSize = nSize;
+    image.aTiles[image.nTileIndex].nFormat = nFormat;
+    image.nTileLimit = 1;
+    image.nRowSwapMask = 0;
+    image.bColorCombine = 0;
+    image.bOwnsPaintBuffers = 0;
+    std::memset(image.abPrimColor, 0, sizeof(image.abPrimColor));
+    std::memset(image.abEnvColor, 0, sizeof(image.abEnvColor));
+    const TexScanTile &tile = image.aTiles[image.nTileIndex];
+    image.nPixelFormatId = ChooseTexturePixelFormat(tile.nSize, tile.nFormat, 0);
+    image.nPixelBytes =
+        static_cast<int>(GetTexturePixelSize(image.nPixelFormatId) * height * width);
+    image.dwFlags = g_dwTextureLoadCategory;
+    image.pImage = const_cast<unsigned char *>(pImage);
+    image.pPalette = pPalette;
+    image.bMirrorS = 0;
+    image.bMirrorT = 0;
     DecodeTexturePixels(GetTextureDecodeBuffer(),
-                        size,
-                        nSize,
+                        image.nPixelBytes,
+                        tile.nSize,
                         pImage,
                         pPalette,
-                        nFormat,
+                        tile.nFormat,
                         0,
                         0,
-                        0,
-                        1,
-                        tiles,
-                        g_dwTextureLoadCategory,
-                        0,
-                        0,
-                        0,
-                        0,
-                        0,
-                        0,
-                        0,
-                        0,
-                        0,
-                        0);
-    return ConvertRGBAToPixelFormat(pDest, GetTextureDecodeBuffer(), size, format);
+                        image.nTileIndex,
+                        image.nTileLimit,
+                        image.aTiles,
+                        image.dwFlags,
+                        image.bColorCombine,
+                        image.abEnvColor[0],
+                        image.abEnvColor[1],
+                        image.abEnvColor[2],
+                        image.abEnvColor[3],
+                        image.abPrimColor[0],
+                        image.abPrimColor[1],
+                        image.abPrimColor[2],
+                        image.abPrimColor[3],
+                        image.nRowSwapMask);
+    return ConvertRGBAToPixelFormat(
+        pDest, GetTextureDecodeBuffer(), image.nPixelBytes, image.nPixelFormatId);
 }
 #endif /* TGR_RENDERER == TGR_RENDERER_D3D */
 
