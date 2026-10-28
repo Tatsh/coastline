@@ -27,6 +27,18 @@ void PrintWineDiagnostic(const char *message) {
         DWORD written;
         WriteFile(output, message, (DWORD)strlen(message), &written, nullptr);
     }
+    HANDLE log = CreateFileA("coastline.log",
+                             FILE_APPEND_DATA,
+                             FILE_SHARE_READ | FILE_SHARE_WRITE,
+                             nullptr,
+                             OPEN_ALWAYS,
+                             FILE_ATTRIBUTE_NORMAL | FILE_FLAG_WRITE_THROUGH,
+                             nullptr);
+    if (log != INVALID_HANDLE_VALUE) {
+        DWORD written;
+        WriteFile(log, message, (DWORD)strlen(message), &written, nullptr);
+        CloseHandle(log);
+    }
 #endif /* ENABLE_PATCHES */
 }
 

@@ -8,7 +8,7 @@ extern "C" {
 /** Print the renderer build identity to inherited stdout under Wine. */
 void PrintWineBuildIdentification(void);
 
-/** Write a diagnostic to inherited stdout under Wine. */
+/** Write a diagnostic to inherited stdout and coastline.log under Wine. */
 void PrintWineDiagnostic(const char *message);
 
 /** Draw the build identity during a race while B is held. */

@@ -176,6 +176,23 @@ def main():
         '/d', INSTALL_DIRECTORY, '/f', '/reg:32')
     run('reg', 'add', r'HKCU\Software\Wine\Drives', '/v', 'd:', '/t', 'REG_SZ',
         '/d', 'cdrom', '/f')
+    debugger = prefix / 'drive_c/windows/system32/winedbg.exe'
+    if not debugger.is_file():
+        raise ValueError(f'Wine debugger is absent from {debugger}.')
+    debugger_key = r'HKLM\Software\Microsoft\Windows NT\CurrentVersion\AeDebug'
+    debugger_command = (r'C:\windows\system32\cmd.exe /c '
+                        r'C:\windows\system32\winedbg.exe --auto %ld %ld '
+                        r'> C:\BossRally\wine-crash.log 2>&1')
+    for view in ('/reg:32', '/reg:64'):
+        run('reg', 'add', debugger_key, '/v', 'Debugger', '/t', 'REG_SZ',
+            '/d', debugger_command, '/f', view)
+        run('reg', 'add', debugger_key, '/v', 'Auto', '/t', 'REG_SZ', '/d', '1', '/f', view)
+    run('reg', 'add', r'HKCU\Software\Wine\WineDbg', '/v', 'ShowCrashDialog',
+        '/t', 'REG_DWORD', '/d', '0', '/f')
+    run('reg', 'add', r'HKCU\Software\Wine\Explorer', '/v', 'Desktop',
+        '/t', 'REG_SZ', '/d', 'BossRally', '/f')
+    run('reg', 'add', r'HKCU\Software\Wine\Explorer\Desktops', '/v', 'BossRally',
+        '/t', 'REG_SZ', '/d', options.desktop_size, '/f')
     if options.no_launch:
         print('Wine prefix configured. Run this script again to start the game.')
         return 0
@@ -183,8 +200,9 @@ def main():
     if game_args and game_args[0] == '--':
         game_args = game_args[1:]
     print(f'Starting BRally.exe in a {options.desktop_size} Wine desktop window.', flush=True)
-    run('explorer', f'/desktop=BossRally,{options.desktop_size}',
-        INSTALL_DIRECTORY + r'\BRally.exe', *game_args)
+    print(f'Application diagnostics append to {installation / "coastline.log"}', flush=True)
+    print(f'Crash backtraces go to {installation / "wine-crash.log"}', flush=True)
+    run(INSTALL_DIRECTORY + r'\BRally.exe', *game_args)
     return 0
 
 
