@@ -164,6 +164,7 @@ extern s32 g_adwVehicleModelSlotCars[];
  * @ghidraAddress EUR: 0x8021e7e4
  * @ghidraAddress JPN: 0x8021e0b4
  * @ghidraAddress BRD3D: 0x10035520
+ * @ghidraAddress BRGlide: 0x1002ebd1
  */
 void LoadCar(s32 slot, s32 car, void *source);
 
@@ -176,6 +177,7 @@ void LoadCar(s32 slot, s32 car, void *source);
  * @ghidraAddress EUR: 0x8021e734
  * @ghidraAddress JPN: 0x8021e004
  * @ghidraAddress BRD3D: 0x10037740
+ * @ghidraAddress BRGlide: 0x10030de0
  */
 void LoadVehicleModelFromRom(VehicleModel *model, s32 car);
 

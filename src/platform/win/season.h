@@ -184,6 +184,7 @@ extern int g_dwSeasonRoundQualified;
  *
  * @param bUpdatePoints Whether to recalculate the current class's points.
  * @ghidraAddress BRD3D: 0x1005fbc0
+ * @ghidraAddress BRGlide: 0x10058900
  */
 void ApplyLoadedSeasonSettings(bool bUpdatePoints);
 
@@ -245,6 +246,7 @@ extern u8 g_abSaveFileReadBuffer[SEASON_SAVE_PAYLOAD_SIZE];
  * @param bAllowFailure Whether open, header, payload, and checksum failures return success.
  * @return Whether loading succeeded or an allowed file failure occurred.
  * @ghidraAddress BRD3D: 0x10070610
+ * @ghidraAddress BRGlide: 0x100695c0
  */
 bool LoadSeasonSaveFile(int nMode, bool bAllowFailure);
 
@@ -275,6 +277,7 @@ extern char g_szSeasonSaveSlotName[SEASON_SAVE_SLOT_NAME_SIZE];
  * @return Whether the file opened and all checked writes completed. Settings writes and close
  * errors are ignored.
  * @ghidraAddress BRD3D: 0x100709a0
+ * @ghidraAddress BRGlide: 0x10069930
  */
 bool SaveSeasonSaveFile(void);
 
@@ -365,7 +368,6 @@ void SyncSeasonProgress(void);
  * @return Whether the progress was restored.
  * @ghidraAddress BRD3D: 0x1005f940
  * @ghidraAddress BRGlide: 0x10058680
- * @stub{BRGlide}
  */
 bool RestoreSeasonProgressState(void);
 
@@ -381,6 +383,7 @@ void SaveAutoSaveSeason(void);
  * Reset championship menus and restore the automatic save when its file exists.
  *
  * @ghidraAddress BRD3D: 0x10041bd0
+ * @ghidraAddress BRGlide: 0x1003b130
  */
 void LoadAutoSaveSeason(void);
 #ifdef __cplusplus
@@ -400,6 +403,7 @@ extern "C" {
  * @param pnSlot The selected slot index.
  * @return Zero when the file does not open, otherwise one.
  * @ghidraAddress BRD3D: 0x10042170
+ * @ghidraAddress BRGlide: 0x1003b6d0
  */
 int LoadSeasonUI_OnSlotSelected(MenuItemList *pUnused, const int *pnSlot);
 #ifdef __cplusplus

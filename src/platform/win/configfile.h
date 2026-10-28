@@ -65,6 +65,7 @@ extern "C" {
  * also provide the read size.
  * @return Whether loading succeeded. An open failure returns the low-byte flag; short reads fail.
  * @ghidraAddress BRD3D: 0x10071130
+ * @ghidraAddress BRGlide: 0x1006a080
  */
 bool LoadConfigData(int nConfigType, ConfigLoadArgument argument);
 #ifdef __cplusplus

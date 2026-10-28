@@ -15,6 +15,7 @@ extern "C" {
  * @ghidraAddress EUR: 0x8023d470
  * @ghidraAddress JPN: 0x8023cf70
  * @ghidraAddress BRD3D: 0x100397c0
+ * @ghidraAddress BRGlide: 0x10032e40
  */
 void MoveTireSpray(void);
 

@@ -816,6 +816,7 @@ int SendNetworkStreamUnreliable(DirectPlayInfo *pInfo, NetStream *pStream);
 
 /**
  * @ghidraAddress BRD3D: 0x10004760
+ * @ghidraAddress BRGlide: 0x10004ad0
  */
 int SendPlayerInfoPacket(DirectPlayInfo *pInfo,
                          unsigned char bPlayer,
@@ -1744,7 +1745,6 @@ HRESULT SendNetworkChatMessage(HWND hWindow, DirectPlayInfo *pInfo, bool bNotice
  * @param dpidTo The receiver.
  * @ghidraAddress BRD3D: 0x1000baf0
  * @ghidraAddress BRGlide: 0x10009010
- * @stub{BRGlide}
  */
 void HandleMultiplayerSessionMessage(
     DirectPlayInfo *pInfo, void *pMessage, DWORD dwSize, DPID dpidFrom, DPID dpidTo);

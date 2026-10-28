@@ -19,6 +19,7 @@ extern "C" {
 
 /**
  * @ghidraAddress BRD3D: 0x100378b0
+ * @ghidraAddress BRGlide: 0x10030f50
  */
 void ReadEntireFile(void *buffer, const char *path, int size);
 
@@ -44,6 +45,7 @@ extern int g_bVerboseFileTrace;
  * @param szCaller What the memory is for, written to the debugger when the allocation fails.
  * @return The memory, or `NULL` for a size of 0.
  * @ghidraAddress BRD3D: 0x10003390
+ * @ghidraAddress BRGlide: 0x100036f0
  * @ghidraAddress BRally: 0x004010c0
  * @ghidraAddress SetVideo: 0x00401470
  */
@@ -51,6 +53,7 @@ void *CHK_AllocateMemory(size_t nSize, const char *szCaller);
 
 /**
  * @ghidraAddress BRD3D: 0x100033f0
+ * @ghidraAddress BRGlide: 0x10003760
  */
 void *CHK_ReAllocateMemory(void *pMemory, size_t nSize, const char *szCaller);
 
@@ -73,6 +76,7 @@ int CHK_FileExists(const char *pszPath);
  * @param pszPath The path of the file.
  * @return The open file.
  * @ghidraAddress BRD3D: 0x10002fe0
+ * @ghidraAddress BRGlide: 0x10003320
  * @ghidraAddress SetVideo: 0x00401050
  */
 GameFile *CHK_FReadOpen(const char *pszPath);
@@ -122,6 +126,7 @@ void *CHK_FRead(void *pBuffer, size_t nSize, size_t nCount, GameFile *pFile);
  * @param pFile The open file.
  * @return The length in bytes.
  * @ghidraAddress BRD3D: 0x10002f90
+ * @ghidraAddress BRGlide: 0x100032d0
  */
 long GetFileLength(GameFile *pFile);
 
@@ -135,6 +140,7 @@ long GetFileLength(GameFile *pFile);
  * @return The byte after the terminator of the line, the end of a full buffer, or `NULL` at the
  * end of the file.
  * @ghidraAddress BRD3D: 0x100031e0
+ * @ghidraAddress BRGlide: 0x10003530
  * @ghidraAddress SetVideo: 0x00401150
  */
 char *FileReadLine(char *pszLine, int nSize, GameFile *pFile);
@@ -144,6 +150,7 @@ char *FileReadLine(char *pszLine, int nSize, GameFile *pFile);
  *
  * @param pFile The open file.
  * @ghidraAddress BRD3D: 0x10003290
+ * @ghidraAddress BRGlide: 0x100035e0
  * @ghidraAddress SetVideo: 0x00401370
  */
 void CHK_FClose(GameFile *pFile);

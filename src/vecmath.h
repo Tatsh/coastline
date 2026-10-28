@@ -374,7 +374,6 @@ void Vec3fMulAddInPlace(Vec3f *v, Vec3f *b, f32 scale);
  * @ghidraAddress JPN: 0x80225504
  * @ghidraAddress BRD3D: 0x1003b050
  * @ghidraAddress BRGlide: 0x100346d0
- * @stub{BRGlide}
  */
 void Vec3fMidpoint(Vec3f *out, Vec3f *a, Vec3f *b);
 
@@ -557,7 +556,6 @@ void ProjectVec3fToScreen(Vec2f *out, Vec3f *in, f32 m[4][4]);
  * @ghidraAddress JPN: 0x80225b68
  * @ghidraAddress BRD3D: 0x1003b340
  * @ghidraAddress BRGlide: 0x100349c0
- * @stub{BRGlide}
  */
 void Mtx4x4TransformNoTranslation(Vec3f *out, Vec3f *in, f32 m[4][4]);
 

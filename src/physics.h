@@ -746,6 +746,7 @@ void ComputeDampingForces(RigidBody *body);
  * @ghidraAddress EUR: 0x802609d4
  * @ghidraAddress JPN: 0x80260484
  * @ghidraAddress BRD3D: 0x1006f950
+ * @ghidraAddress BRGlide: 0x10068900
  */
 s32 TestObbIntersection(f32 rotation[3][3], Vec3f *offset, Vec3f *halfA, Vec3f *halfB);
 

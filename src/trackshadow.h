@@ -57,6 +57,7 @@ void ProjectShadowTextureCoordinates(ConvertedModelVertex *vertex);
  * Update a shadow corner for a closer vertex at most one unit above the vehicle frame.
  *
  * @ghidraAddress BRD3D: 0x10010bf0
+ * @ghidraAddress BRGlide: 0x1000e150
  */
 void UpdateShadowCornerVertex(const TrackInstance *instance,
                               ConvertedModelVertex quad[4],

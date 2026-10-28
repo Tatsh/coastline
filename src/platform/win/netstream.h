@@ -478,7 +478,6 @@ extern int g_adwNetPlayerRankPosition[NET_PLAYER_STREAM_COUNT];
  * @return Whether the packet fit and was written.
  * @ghidraAddress BRD3D: 0x10072110
  * @ghidraAddress BRGlide: 0x1006b080
- * @stub{BRGlide}
  */
 bool WritePlayerRankingPacket(NetStream *pStream, unsigned char bPlayer);
 

@@ -49,6 +49,7 @@ public:
      * @param pszPattern The file search pattern.
      * @return Zero when the first search fails, otherwise one.
      * @ghidraAddress BRD3D: 0x1005cf20
+     * @ghidraAddress BRGlide: 0x10055d40
      */
     virtual int ScanSaveFiles(const char *pszPattern);
 
@@ -71,6 +72,7 @@ private:
      * @param pszPattern The file search pattern.
      * @return Minus one when the first search fails, otherwise the count after the first match.
      * @ghidraAddress BRD3D: 0x1005d0a0
+     * @ghidraAddress BRGlide: 0x10055ed0
      */
     virtual int CountMatchingFiles(const char *pszPattern);
 
@@ -80,6 +82,7 @@ private:
      * @param pszPattern The mutable pattern, with X or x marking the numeric suffix.
      * @param ppszName The destination filename buffer.
      * @ghidraAddress BRD3D: 0x1005d110
+     * @ghidraAddress BRGlide: 0x10055f40
      */
     virtual void GenerateNextSaveFileName(char *pszPattern, char **ppszName);
 
@@ -481,6 +484,7 @@ private:
     virtual int DrawSprite();
     /**
      * @ghidraAddress BRD3D: 0x10047a60
+     * @ghidraAddress BRGlide: 0x10040eb0
      */
     virtual bool UpdateHoverState();
     /**
@@ -3812,6 +3816,7 @@ void ResolveRaceSelections(void);
  * Reset menu selections, championship profiles, and result display values.
  *
  * @ghidraAddress BRD3D: 0x1003e680
+ * @ghidraAddress BRGlide: 0x10037c90
  */
 void ResetMenuSelectionsToDefaults(void);
 

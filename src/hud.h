@@ -229,6 +229,7 @@ void DrawRaceTimerHud(const ViewportRect *viewports);
  * Draw the current lap and race position according to the HUD display flags.
  * @param viewports The records of the views.
  * @ghidraAddress BRD3D: 0x100173f0
+ * @ghidraAddress BRGlide: 0x10014960
  */
 void DrawLapCounterHud(const ViewportRect *viewports);
 #else
