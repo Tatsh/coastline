@@ -2969,6 +2969,7 @@ int IsGameCdInDrive(int nDrive);
 
 /**
  * @ghidraAddress BRD3D: 0x10045a00
+ * @ghidraAddress BRGlide: 0x1003ee90
  */
 int FindGameCdDrive(void);
 
@@ -3580,7 +3581,6 @@ void ProcessCheatCodeInput(void);
  *
  * @ghidraAddress BRD3D: 0x10047660
  * @ghidraAddress BRGlide: 0x10040a90
- * @stub{BRGlide}
  */
 void CheckCheatCodeMatches(void);
 
