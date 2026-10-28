@@ -493,11 +493,19 @@ int g_dwTileSizeLrt;
 int g_dwTileSizeWidth;
 int g_dwTileSizeHeight;
 
+// The 12 bits of a field are stored, then stored again less 0x1000 when the sign bit is set.
+static inline void StoreGbiSignedField12(int &nField, unsigned dwWord, int nShift) {
+    nField = static_cast<int>(dwWord >> nShift & 0xfff);
+    if (nField >= 0x800) {
+        nField -= 0x1000;
+    }
+}
+
 GbiCommand *HandleGbiSetTileSize(GbiCommand *pCommand) {
-    g_dwTileSizeUls = GbiSignedField12(pCommand->w0, 12);
-    g_dwTileSizeUlt = GbiSignedField12(pCommand->w0, 0);
-    g_dwTileSizeLrs = GbiSignedField12(pCommand->w1, 12);
-    g_dwTileSizeLrt = GbiSignedField12(pCommand->w1, 0);
+    StoreGbiSignedField12(g_dwTileSizeUls, pCommand->w0, 12);
+    StoreGbiSignedField12(g_dwTileSizeUlt, pCommand->w0, 0);
+    StoreGbiSignedField12(g_dwTileSizeLrs, pCommand->w1, 12);
+    StoreGbiSignedField12(g_dwTileSizeLrt, pCommand->w1, 0);
     // The edges are inclusive, so the size counts one texel more than their difference.
     g_dwTileSizeWidth = (g_dwTileSizeLrs - g_dwTileSizeUls + 4) >> 2;
     g_dwTileSizeHeight = (g_dwTileSizeLrt - g_dwTileSizeUlt + 4) >> 2;
