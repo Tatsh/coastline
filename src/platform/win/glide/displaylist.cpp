@@ -58,8 +58,6 @@ int g_dwGlideBlendAlphaDest;
 GrFog_t g_aGlideFogTable[GR_FOG_TABLE_SIZE];
 int g_nGbiVertexSnap;
 GbiVertex g_aGbiVertexCache[GBI_VERTEX_CACHE_SIZE];
-float g_fTexCoordScaleS;
-float g_fTexCoordScaleT;
 int g_bCombineModeSpecialSubmitter;
 
 static inline void SetGlideDepthFunction(int nFunction) {
@@ -1049,20 +1047,4 @@ void RenderGbiDisplayListFrame(GbiCommand *pDisplayList) {
     ExecuteGbiDisplayList(aOverlayDisplayList);
     g_pfnPresentFrame();
     RecordFrameTime();
-}
-
-int ConvertRgba32ToArgb1555(unsigned short *pDest, const unsigned char *pSource, int nBytes) {
-    unsigned short *pStart = pDest;
-    if (nBytes > 0) {
-        for (unsigned nPixels = static_cast<unsigned>(nBytes + 3) >> 2; nPixels != 0; nPixels--) {
-            unsigned char red = pSource[0];
-            unsigned char green = pSource[1];
-            unsigned char blue = pSource[2];
-            unsigned char alpha = pSource[3];
-            pSource += 4;
-            *pDest++ = static_cast<unsigned short>(
-                (((alpha >> 7) << 5 | red >> 3) << 5 | green >> 3) << 5 | blue >> 3);
-        }
-    }
-    return static_cast<int>((pDest - pStart) * sizeof(*pDest));
 }

@@ -1169,7 +1169,8 @@ extern DWORD g_dwD3DAlphaFunc;
 #define DEBUG_OVERLAY_TEXT_SIZE 0x408
 
 /**
- * The text drawn over each frame. The game never writes it.
+ * The text drawn over each frame. BRD3D never writes it, and BRGlide appends the errors of its
+ * texture memory to it.
  *
  * @ghidraAddress BRD3D: 0x118ab478
  * @ghidraAddress BRGlide: 0x118ee590
@@ -1212,11 +1213,11 @@ void RenderGbiDisplayListFrame(GbiCommand *pDisplayList);
  */
 extern void (*g_pfnBindTextureEntry)(int nEntry);
 
-#if TGR_RENDERER == TGR_RENDERER_D3D
 /**
  * The entry whose texture is bound, or -1 after texture initialization.
  *
  * @ghidraAddress BRD3D: 0x104d51b8
+ * @ghidraAddress BRGlide: 0x105e1808
  */
 extern int g_nBoundTextureEntry;
 
@@ -1225,9 +1226,9 @@ extern int g_nBoundTextureEntry;
  *
  * @param nEntry The loaded texture entry.
  * @ghidraAddress BRD3D: 0x10028ca0
+ * @ghidraAddress BRGlide: 0x100284e0
  */
 void BindTextureEntry(int nEntry);
-#endif /* TGR_RENDERER == TGR_RENDERER_D3D */
 #ifdef __cplusplus
 }
 #endif

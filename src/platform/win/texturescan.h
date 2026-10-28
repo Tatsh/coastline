@@ -367,6 +367,8 @@ void FlushPendingTextureLoad(GbiCommand *pCommand);
  * @param pTmem The captured texture memory, unused.
  * @return The texture entry.
  * @ghidraAddress BRD3D: 0x10029470
+ * @ghidraAddress BRGlide: 0x10028bb0
+ * @stub{BRGlide}
  */
 int CreateTextureFromTmemShadow(unsigned char *pTmem);
 

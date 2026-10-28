@@ -47,6 +47,17 @@ void SampleTexturePixelBilinear(unsigned char *pDest,
     memcpy(pDest, result, sizeof(result));
 }
 
+void BilinearInterpolate8bpp(unsigned char *destination,
+                             const unsigned char *topLeft,
+                             const unsigned char *topRight,
+                             const unsigned char *bottomLeft,
+                             const unsigned char *bottomRight,
+                             float x,
+                             float y) {
+    *destination =
+        (unsigned char)SampleChannel(*topLeft, *topRight, *bottomLeft, *bottomRight, x, y, 255);
+}
+
 static void SamplePackedPixel(unsigned char *destination,
                               const unsigned char *topLeft,
                               const unsigned char *topRight,

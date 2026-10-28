@@ -47,6 +47,7 @@ extern int (*g_pfnDecodeN64TextureToPixelBuffer)(void *destination,
 /**
  * Bypass texture metadata matching while creating a new device texture.
  * @ghidraAddress BRD3D: 0x118aa09c
+ * @ghidraAddress BRGlide: 0x118ed1b4
  */
 extern int g_bForceTextureClone;
 

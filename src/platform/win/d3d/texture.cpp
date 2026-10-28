@@ -270,24 +270,13 @@ unsigned GetAvailableTextureMemory(void) {
     return dwFree;
 }
 
-unsigned g_dwTextureEntryCount;
-TextureEntry *g_pTextureEntries;
 D3DTexture **g_ppTextureIdTable;
-int g_adwPrecipitationTextureIds[PRECIPITATION_TEXTURE_COUNT];
 namespace {
 // @ghidraAddress BRD3D: 0x104b2554
 int g_dwPrecipTextureWidth;
 // @ghidraAddress BRD3D: 0x104b2558
 int g_dwPrecipTextureHeight;
 } // namespace
-
-void AliasTextureEntrySurface(int nEntry, int nSourceEntry) {
-    g_pTextureEntries[nEntry].nTextureId = g_pTextureEntries[nSourceEntry].nTextureId;
-}
-
-void SetTextureEntryDamageLevel(int nEntry, int nDamageLevel) {
-    g_pTextureEntries[nEntry].data.nDamageLevel = nDamageLevel;
-}
 
 void GetTextureEntryDimensions(int *pWidth, int *pHeight, int nEntry) {
     const TextureEntry &entry = g_pTextureEntries[nEntry];

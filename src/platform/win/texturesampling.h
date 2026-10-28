@@ -26,6 +26,26 @@ void SampleTexturePixelBilinear(unsigned char *pDest,
                                 float y);
 
 /**
+ * Bilinearly sample four texels of one byte, rounding and clamping the result.
+ *
+ * @param destination Receives the sampled texel.
+ * @param topLeft The top-left texel.
+ * @param topRight The top-right texel.
+ * @param bottomLeft The bottom-left texel.
+ * @param bottomRight The bottom-right texel.
+ * @param x The horizontal interpolation fraction.
+ * @param y The vertical interpolation fraction.
+ * @ghidraAddress BRGlide: 0x10024680
+ */
+void BilinearInterpolate8bpp(unsigned char *destination,
+                             const unsigned char *topLeft,
+                             const unsigned char *topRight,
+                             const unsigned char *bottomLeft,
+                             const unsigned char *bottomRight,
+                             float x,
+                             float y);
+
+/**
  * Bilinearly sample four packed ARGB1555 pixels, rounding and clamping each channel.
  * @ghidraAddress BRGlide: 0x10024750
  */

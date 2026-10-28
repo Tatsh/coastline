@@ -859,9 +859,11 @@ SetPendingRenderState(DWORD *pdwPending, DWORD dwApplied, DWORD dwValue, DWORD d
         g_dwDirtyRenderStateMask |= dwDirtyBit;
     }
 }
+#endif /* TGR_RENDERER == TGR_RENDERER_D3D */
 
 int g_nBoundTextureEntry;
 
+#if TGR_RENDERER == TGR_RENDERER_D3D
 void BindTextureEntry(int nEntry) {
     if (nEntry == g_nBoundTextureEntry) {
         return;
@@ -1649,8 +1651,10 @@ int SubmitVertexToRenderBufferFogged(GbiVertex *pVertex) {
 }
 
 int (*g_pfnSubmitVertexToRenderBuffer)(GbiVertex *pVertex) = SubmitVertexToRenderBuffer;
+#endif /* TGR_RENDERER == TGR_RENDERER_D3D */
 float g_fTexCoordScaleS;
 float g_fTexCoordScaleT;
+#if TGR_RENDERER == TGR_RENDERER_D3D
 
 // The entries a triangle takes in each buffer.
 #define TRIANGLE_VERTICES 3

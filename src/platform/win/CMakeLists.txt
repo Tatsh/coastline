@@ -111,6 +111,7 @@ if(TGR_RENDERER STREQUAL "glide")
             glide/renderer.cpp
             glide/rgb565image.c
             glide/texture.c
+            glide/texturecache.cpp
             glide/winmain.cpp)
 
   # The headers of the Glide 2.x SDK for the Voodoo 2, and the import library of glide2x.dll,

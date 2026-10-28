@@ -6,6 +6,7 @@ typedef union {
 } TextureDecodeWorkspace;
 
 /* @ghidraAddress BRD3D: 0x11829870 */
+/* @ghidraAddress BRGlide: 0x1186c988 */
 static TextureDecodeWorkspace g_TextureDecodeWorkspace;
 
 unsigned char *GetTextureDecodeBuffer(void) {

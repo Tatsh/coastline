@@ -43,6 +43,7 @@ extern int g_nSelectedPaintOption10;
  * The group used to prepare car paint textures.
  *
  * @ghidraAddress BRD3D: 0x10aa3444
+ * @ghidraAddress BRGlide: 0x10ac67a4
  */
 extern int g_nPaintTextureGroup;
 
@@ -50,6 +51,7 @@ extern int g_nPaintTextureGroup;
  * The paint set index, advanced before preparing each texture.
  *
  * @ghidraAddress BRD3D: 0x10aa3460
+ * @ghidraAddress BRGlide: 0x10ac67c0
  */
 extern int g_nPaintTextureSetIndex;
 
@@ -84,6 +86,7 @@ void GetPaintRectangle(int nGroup, int nSet, int *pLeft, int *pRight, int *pTop,
  *
  * @return The captured selection option.
  * @ghidraAddress BRD3D: 0x10061000
+ * @ghidraAddress BRGlide: 0x1005a070
  */
 int GetSelectedPaintOption(void);
 
@@ -155,6 +158,7 @@ void ApplyPaintDamageOverlay(int damage, unsigned char *pixels, int width, int h
 
 /**
  * @ghidraAddress BRD3D: 0x10061210
+ * @ghidraAddress BRGlide: 0x1005a280
  */
 void ModulateRgbaByMask(unsigned char *pixels, int width, int height, const unsigned char *mask);
 

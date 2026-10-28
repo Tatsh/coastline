@@ -97,18 +97,6 @@ void TransformVertexToScreenNoZBuffer(
  */
 void UpdateVertexFogRange(void);
 
-/**
- * Convert pixels of eight bits a channel, red first, to pixels of five bits a colour and one of
- * alpha.
- *
- * @param pDest The converted pixels.
- * @param pSource The pixels to convert.
- * @param nBytes The bytes of the pixels to convert, rounded up to a whole pixel.
- * @return The bytes of the converted pixels.
- * @ghidraAddress BRGlide: 0x10023cb0
- */
-int ConvertRgba32ToArgb1555(unsigned short *pDest, const unsigned char *pSource, int nBytes);
-
 #ifdef __cplusplus
 }
 #endif

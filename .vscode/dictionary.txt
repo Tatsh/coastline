@@ -1033,6 +1033,7 @@ tagfiles
 tarmc
 tatsh
 texelfx
+texfmt
 texrect
 textdetail
 textfilt
@@ -1045,6 +1046,7 @@ textureaddressu
 textureaddressv
 textureanim
 texturebind
+texturecache
 texturemag
 textureperspective
 texturesampling

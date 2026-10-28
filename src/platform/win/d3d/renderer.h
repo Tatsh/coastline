@@ -1159,7 +1159,9 @@ struct TextureImageData {
     int nOption5;       /*!< Initialized to 1 by image construction. */
     unsigned dwOption6; /*!< Initialized to 0xc0000000 by image construction. */
     int nOption7;       /*!< Initialized to 0 by image construction. */
-    unsigned nColorKey;
+#if TGR_RENDERER == TGR_RENDERER_D3D
+    unsigned nColorKey; /*!< The colour key of the texture, or 0 for none. */
+#endif
     int nPixelBytes;
     int nDecodedWidth;
     int nDecodedHeight;
@@ -1211,6 +1213,7 @@ void GetTextureEntryDimensions(int *pWidth, int *pHeight, int nEntry);
  * @param nEntry The entry of g_pTextureEntries that takes the texture.
  * @param nSourceEntry The entry whose texture it takes.
  * @ghidraAddress BRD3D: 0x10024ab0
+ * @ghidraAddress BRGlide: 0x10023d20
  */
 void AliasTextureEntrySurface(int nEntry, int nSourceEntry);
 
@@ -1221,6 +1224,7 @@ void AliasTextureEntrySurface(int nEntry, int nSourceEntry);
  * The entries of g_pTextureEntries of the textures of precipitation.
  *
  * @ghidraAddress BRD3D: 0x11829100
+ * @ghidraAddress BRGlide: 0x1184c460
  */
 extern int g_adwPrecipitationTextureIds[PRECIPITATION_TEXTURE_COUNT];
 
@@ -1262,6 +1266,7 @@ extern TextureEntry *g_pTextureEntries;
 
 /**
  * @ghidraAddress BRD3D: 0x10024b60
+ * @ghidraAddress BRGlide: 0x10027a10
  */
 unsigned AllocateTextureEntry(void);
 

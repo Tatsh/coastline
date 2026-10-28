@@ -15,7 +15,10 @@ extern unsigned char g_abHudFont2GlyphPixels[7840];
 extern unsigned char g_abHudFont3GlyphPixels[7840];
 /** @ghidraAddress BRD3D: 0x100baac8 */
 extern unsigned char g_abHudOverlayTextureData[4096];
-/** @ghidraAddress BRD3D: 0x100b6ca8 */
+/**
+ * @ghidraAddress BRD3D: 0x100b6ca8
+ * @ghidraAddress BRGlide: 0x100b64b0
+ */
 extern unsigned char g_abHudTexture64AData[4096];
 /** @ghidraAddress BRD3D: 0x100b9cb0 */
 extern unsigned char g_abHudTexture32x64Data[1024];

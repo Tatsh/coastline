@@ -195,7 +195,6 @@ int SetDisplayModeWithFallback(int nWidth, int nHeight, int nBitDepth, int nExtr
  * @param nDamageLevel The level of damage.
  * @ghidraAddress BRD3D: 0x10025800
  * @ghidraAddress BRGlide: 0x10024e30
- * @stub{BRGlide}
  */
 void SetTextureEntryDamageLevel(int nEntry, int nDamageLevel);
 
@@ -286,7 +285,6 @@ void InitGbiGlideRenderer(void);
  *
  * @ghidraAddress BRD3D: 0x1002a640
  * @ghidraAddress BRGlide: 0x10029b50
- * @stub{BRGlide}
  */
 void InitializeTextureSubsystem(void);
 
@@ -783,7 +781,6 @@ struct GbiCommand;
  *
  * @ghidraAddress BRD3D: 0x100737e0
  * @ghidraAddress BRGlide: 0x1006c750
- * @stub{BRGlide}
  */
 void LoadHudOverlayTexture(void);
 
@@ -819,6 +816,7 @@ extern int g_dwMaxTexHeightLowQuality;
 
 /**
  * @ghidraAddress BRD3D: 0x1002a5a0
+ * @ghidraAddress BRGlide: 0x10029b10
  */
 void SelectTextureQualityFromVideoMemory(void);
 
@@ -842,6 +840,7 @@ extern unsigned (*g_pfnCreateTextureFromN64ImageAutoLoadSize)(const unsigned cha
 
 /**
  * @ghidraAddress BRD3D: 0x10028bf0
+ * @ghidraAddress BRGlide: 0x10027f00
  */
 unsigned CreateTextureFromN64ImageAutoLoadSize(const unsigned char *pImage,
                                                const unsigned char *pPalette,
@@ -933,7 +932,6 @@ extern int g_dwAlphaRampStripRowCount;
  *
  * @ghidraAddress BRD3D: 0x10073950
  * @ghidraAddress BRGlide: 0x1006c800
- * @stub{BRGlide}
  */
 void LoadParticleTexture(void);
 
@@ -969,7 +967,6 @@ void CreateFallbackEnvironmentTexture(void);
  *
  * @ghidraAddress BRD3D: 0x10073a10
  * @ghidraAddress BRGlide: 0x1006c8b0
- * @stub{BRGlide}
  */
 void CreateAlphaRampTextures(void);
 
@@ -1041,7 +1038,10 @@ void ResetModelDataPool(void);
 /** @ghidraAddress BRD3D: 0x104d51c0 */
 extern unsigned char g_abWeatherShadeTexture[16];
 
-/** @ghidraAddress BRD3D: 0x105553e4 */
+/**
+ * @ghidraAddress BRD3D: 0x105553e4
+ * @ghidraAddress BRGlide: 0x10697a4c
+ */
 extern unsigned g_dwWeatherShadeTextureId;
 
 /**
@@ -1064,6 +1064,7 @@ unsigned QueryAvailableTextureMemory(void);
  * Stop texture uploads and release texture surfaces and owned paint buffers.
  *
  * @ghidraAddress BRD3D: 0x1002a7a0
+ * @ghidraAddress BRGlide: 0x10029cd0
  */
 void ShutdownTextureSubsystem(void);
 
@@ -1073,6 +1074,7 @@ void ShutdownTextureSubsystem(void);
  * @param nEntry The loaded texture entry.
  * @param payload The pixel buffer.
  * @ghidraAddress BRD3D: 0x10028e00
+ * @ghidraAddress BRGlide: 0x100285e0
  */
 void UploadTextureEntryToSurface(int nEntry, TextureUploadData payload);
 
@@ -1135,6 +1137,7 @@ int FindMatchingTextureEntry(const TextureImageData *pImage);
  * @param nTextureId The device texture identifier.
  * @return The loaded texture entry.
  * @ghidraAddress BRD3D: 0x100284a0
+ * @ghidraAddress BRGlide: 0x10027850
  */
 unsigned RegisterTextureEntry(const TextureImageData *pImage, int nTextureId);
 
@@ -1149,6 +1152,7 @@ unsigned RegisterTextureEntry(const TextureImageData *pImage, int nTextureId);
  * @param sourceHeight The source height.
  * @param nPixelFormatId The decoded pixel format.
  * @ghidraAddress BRD3D: 0x10025350
+ * @ghidraAddress BRGlide: 0x10024490
  */
 void ResizeTextureImage(unsigned char *pDest,
                         int width,
@@ -1164,6 +1168,7 @@ void ResizeTextureImage(unsigned char *pDest,
  * @param pImage The image metadata.
  * @return The decoded pixels.
  * @ghidraAddress BRD3D: 0x10028860
+ * @ghidraAddress BRGlide: 0x10027b60
  */
 unsigned char *GetTextureImagePixels(TextureImageData *pImage);
 
@@ -1172,6 +1177,7 @@ unsigned char *GetTextureImagePixels(TextureImageData *pImage);
  *
  * @param nEntry The loaded texture entry.
  * @ghidraAddress BRD3D: 0x10029060
+ * @ghidraAddress BRGlide: 0x100287e0
  */
 void ReloadTextureEntryData(int nEntry);
 
@@ -1183,6 +1189,7 @@ void ReloadTextureEntryData(int nEntry);
  * @param pImage The image metadata.
  * @return The output byte count.
  * @ghidraAddress BRD3D: 0x10028b20
+ * @ghidraAddress BRGlide: 0x10027e10
  */
 unsigned
 ResizeTextureMipChain(unsigned char *pDest, const unsigned char *pSource, TextureImageData *pImage);
@@ -1193,6 +1200,7 @@ ResizeTextureMipChain(unsigned char *pDest, const unsigned char *pSource, Textur
  * @param pImage The image metadata.
  * @param pPixels The decoded pixels and following intensity plane.
  * @ghidraAddress BRD3D: 0x10028a10
+ * @ghidraAddress BRGlide: 0x10027cd0
  */
 void ModulateTextureWithIntensityPlane(const TextureImageData *pImage, unsigned char *pPixels);
 
@@ -1200,8 +1208,20 @@ void ModulateTextureWithIntensityPlane(const TextureImageData *pImage, unsigned 
  * The byte count produced by the last decoded texture operation.
  *
  * @ghidraAddress BRD3D: 0x105553f8
+ * @ghidraAddress BRGlide: 0x10697a60
  */
 extern unsigned g_dwTexturePixelByteCount;
+
+/** The bytes of g_abTextureResampleBuffer. */
+#define TEXTURE_RESAMPLE_BUFFER_BYTES 0x80000
+
+/**
+ * The pixels of a texture after resizing, or an intensity plane while it is applied.
+ *
+ * @ghidraAddress BRD3D: 0x104d51d0
+ * @ghidraAddress BRGlide: 0x105e1828
+ */
+extern unsigned char g_abTextureResampleBuffer[TEXTURE_RESAMPLE_BUFFER_BYTES];
 
 /**
  * Decode captured N64 texture tiles into four-byte pixels.
@@ -1229,6 +1249,8 @@ extern unsigned g_dwTexturePixelByteCount;
  * @param primA The primitive alpha byte.
  * @param nRowSwapMask The row mask for swapped texture words.
  * @ghidraAddress BRD3D: 0x10025ab0
+ * @ghidraAddress BRGlide: 0x100250d0
+ * @stub{BRGlide}
  */
 void DecodeTexturePixels(unsigned char *pDest,
                          int nSize,
@@ -1260,6 +1282,7 @@ void DecodeTexturePixels(unsigned char *pDest,
  * @param pPixels The decoded pixels.
  * @return The registered texture entry.
  * @ghidraAddress BRD3D: 0x10028350
+ * @ghidraAddress BRGlide: 0x10027710
  */
 int CreateTextureFromImage(TextureImageData *pImage, unsigned char *pPixels);
 
@@ -1271,6 +1294,7 @@ int CreateTextureFromImage(TextureImageData *pImage, unsigned char *pPixels);
  * @param pPalette The replacement palette bytes.
  * @return The new texture entry.
  * @ghidraAddress BRD3D: 0x1002a350
+ * @ghidraAddress BRGlide: 0x100298c0
  */
 int CloneTextureEntryWithNewImageData(int nEntry,
                                       unsigned char *pImage,
@@ -1284,6 +1308,7 @@ int CloneTextureEntryWithNewImageData(int nEntry,
  * @param pImage The image metadata to prepare.
  * @return 0 when paint is unavailable, otherwise 1.
  * @ghidraAddress BRD3D: 0x10024bf0
+ * @ghidraAddress BRGlide: 0x10023d70
  */
 int PreparePaintTexture(int *pWidth, int *pHeight, TextureImageData *pImage);
 
@@ -1300,6 +1325,7 @@ extern const char g_szTidFromTextureAppendAmid[];
  * @param pTextures The track texture descriptors.
  * @param nCount The descriptor count.
  * @ghidraAddress BRD3D: 0x1002a430
+ * @ghidraAddress BRGlide: 0x100299a0
  */
 void UploadTrackTextureVariants(ModelTexture *pTextures, int nCount);
 
@@ -1316,6 +1342,7 @@ void UploadTrackTextureVariants(ModelTexture *pTextures, int nCount);
  * @param nFormat The N64 image format.
  * @return The device pixel byte count.
  * @ghidraAddress BRD3D: 0x10025830
+ * @ghidraAddress BRGlide: 0x10024e60
  */
 int DecodeN64TextureToPixelBuffer(void *pDest,
                                   const unsigned char *pImage,
@@ -1341,6 +1368,7 @@ int CalculateTextureAspectRatio(int *pAspectRatio, int nWidth, int nHeight);
  * Create a device texture from an N64 image and its load options.
  *
  * @ghidraAddress BRD3D: 0x10027c60
+ * @ghidraAddress BRGlide: 0x100272f0
  */
 unsigned CreateTextureFromN64Image(const unsigned char *pImage,
                                    const unsigned char *pPalette,
@@ -1365,6 +1393,7 @@ unsigned CreateTextureFromN64Image(const unsigned char *pImage,
  * @param pSize Receives the decoded byte count.
  * @return The decoded pixels.
  * @ghidraAddress BRD3D: 0x10028e70
+ * @ghidraAddress BRGlide: 0x10028620
  */
 unsigned char *GetTextureEntryPixelsWithPaint(int nEntry, unsigned *pSize);
 
