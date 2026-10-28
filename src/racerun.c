@@ -39,6 +39,7 @@
 #include "platform/win/sound.h"
 #else
 #include "audiomix.h"
+#include "shadowbuffers.h"
 #include "splash.h"
 #include "text.h"
 #endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */

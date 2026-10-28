@@ -152,7 +152,11 @@ static s16 _Ldunscale(s16 *pex, _Pft *px) {
 }
 
 void _Ldtob(_Pft *px, char code) {
+#ifdef ENABLE_PATCHES
+    char buff[BUFF_LEN] = {0};
+#else
     char buff[BUFF_LEN];
+#endif /* ENABLE_PATCHES */
     char *p = buff;
     double ldval = px->v.ld;
     s16 err;

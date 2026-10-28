@@ -245,7 +245,8 @@ void InitializeApplicationDiagnostics(void) {
                                " " __TIME__ "\n");
     debugLibrary = LoadLibraryA("dbghelp.dll");
     if (debugLibrary) {
-        writeDump = (WriteDumpProc)GetProcAddress(debugLibrary, "MiniDumpWriteDump");
+        writeDump =
+            (WriteDumpProc)(void (*)(void))GetProcAddress(debugLibrary, "MiniDumpWriteDump");
     }
     WriteApplicationDiagnostic(writeDump ? "Crash minidump support ready.\n" :
                                            "Crash minidump support unavailable.\n");

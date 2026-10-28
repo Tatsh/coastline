@@ -115,10 +115,11 @@ int WINAPI WinMain(HINSTANCE instance,
     WriteApplicationDiagnostic("Loading renderer DLL.\n");
     if (!LoadRendererDll(rendererPath)) {
         WriteApplicationDiagnostic("Renderer DLL load failed.\n");
-        char message[1024];
 #ifdef ENABLE_PATCHES
+        char message[sizeof("Error: failed to load .") + sizeof(rendererPath)];
         snprintf(message, sizeof(message), "Error: failed to load %s.", rendererPath);
 #else
+        char message[1024];
         sprintf(message, "Error: failed to load %s.", rendererPath);
 #endif /* ENABLE_PATCHES */
         MessageBoxA(desktop, message, "Boss Rally", MB_ICONHAND);
