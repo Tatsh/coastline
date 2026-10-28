@@ -521,6 +521,8 @@ HRESULT CreateDirectPlayLobby(IDirectPlayLobby2A **ppLobby) {
         return hResult;
     }
     pLobbyA->Release();
+    // The released lobby is cleared and not read again.
+    pLobbyA = nullptr;
     // The result of the enumeration is discarded.
     EnumeratePlayerAddress(g_hMainWindow, pLobby2);
     *ppLobby = pLobby2;
