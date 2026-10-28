@@ -213,6 +213,8 @@ void ScheduledEarEvent::DeactivateScheduledEarEvent() {
 
 int ScheduledEarEvent::InitializeScheduledEarEventPlayback() {
     playbackInitialized = 1;
+    // Native code clears a local that it never reads.
+    [[maybe_unused]] int unusedLocal = 0;
     playback->SetEarPlaybackNotification(notificationFlags, notificationEvent);
     if (frequencyScaleOverrideEnabled || dopplerEnabled) {
         playback->SetBackendPlaybackOverrideEnabled(1);
@@ -380,7 +382,7 @@ long double ScheduledEarEvent::CalculateScheduledEventDopplerScale() {
     } else {
         crossingActive = 0;
     }
-    double radialSpeed;
+    double radialSpeed = 0;
     if (previousDistance == distance) {
         radialSpeed = previousRadialSpeed;
     } else {

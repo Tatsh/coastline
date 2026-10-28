@@ -42,6 +42,8 @@ PcmWaveStream::PcmWaveStream() {
 }
 
 int PcmWaveStream::OpenWaveFileStream(const char *path) {
+    // Native code clears a local that it never reads.
+    [[maybe_unused]] int unusedLocal = 0;
     file = mmioOpenA(const_cast<char *>(path), nullptr, 0);
     if (!file) {
         SetEarLastError(0x0d);
