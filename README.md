@@ -64,6 +64,39 @@ compiles for that release.
 The host tools under `tools/` are built with the host compiler during the configure step. They
 need argparse, spdlog, and zlib, from vcpkg, the system, or a pinned download.
 
+## SDL game
+
+The `sdl` platform builds `coastline`, a stand-alone 64-bit game for every operating system SDL 3
+supports. It draws through the GPU API of SDL (Vulkan, Metal, or Direct3D 12) and takes its
+libraries from vcpkg, found through `VCPKG_ROOT`.
+
+```shell
+VCPKG_ROOT=/path/to/vcpkg cmake --workflow --preset sdl
+```
+
+```shell
+cmake --install build/sdl --prefix ~/.local
+```
+
+On Linux, the vcpkg build of SDL needs the development headers of ALSA, Wayland, xkbcommon, and
+the X11 extensions (Xcursor, Xfixes, Xi, Xrandr, Xss, Xtst), and autoconf-archive.
+
+The game reads `BossRally.ini` from `~/.config/coastline`, its data from `~/.local/share/coastline`,
+and writes `game.log` to `~/.local/state/coastline`. The XDG Base Directory variables move these
+directories. Windows uses the roaming and local application data folders, and macOS uses
+Application Support, Caches, and Logs in the library of the user.
+
+The data comes from a Boss Rally disc image and a Top Gear Rally cartridge image. The import
+checks the cartridge against the SHA-1 of each release, and converts the CD audio of a CUE sheet
+to FLAC. An ISO image has no CD audio.
+
+```shell
+coastline --import-disc 'Boss Rally.cue' --import-rom usa.z64 --import-rom jpn.z64
+```
+
+`coastline --help` lists the options, among them `--screenshot` and `--scene` for unattended
+checks.
+
 ## Testing
 
 The tests under `tests/` build the reconstructed C for the host with the host compiler and check
