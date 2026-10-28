@@ -6,6 +6,7 @@
  * Boost.PFR cannot read field by field, for the data read from the cartridge.
  */
 
+#include <PR/gbi.h>
 #include <PR/os_cont.h>
 
 #include "carphysics.h"
@@ -20,6 +21,42 @@ namespace coastline {
 /** A model, which the menus load from the cartridge later, so their data addresses none. */
 template <>
 struct CartridgeOnDemand<Model> : std::false_type {};
+
+/**
+ * A command of a display list: two words, the second of which is an address for the commands that
+ * call a display list or load memory. A display list it calls is defined on the host, and its
+ * address becomes a Ptr32 offset as GBI_WORD1() writes one. The other memory is read from the copy
+ * of the segment.
+ * ponytail: textures, vertices, matrices, and lights remain big-endian bytes of the segment until
+ * the renderer converts them.
+ */
+template <>
+struct CartridgeLayout<Gfx> {
+    static constexpr std::size_t size = 8;
+    static constexpr std::size_t align = 8;
+
+    static void Read(BigEndianReader &reader, Gfx &value) {
+        value.words.w0 = static_cast<u32>(reader.Word(4));
+        auto address = static_cast<u32>(reader.Word(4));
+        value.words.w1 = address;
+        switch (value.words.w0 >> 24) {
+        case G_DL:
+            if (address != 0 && !CartridgeData::IsDefined(address)) {
+                BigEndianReader::DefineOnDemand<Gfx>(address);
+            }
+            value.words.w1 = EncodePtr32(CartridgeData::Relocate(address, false));
+            break;
+        case G_SETTIMG:
+        case G_VTX:
+        case G_MTX:
+        case G_MOVEMEM:
+            value.words.w1 = EncodePtr32(CartridgeData::Relocate(address, true));
+            break;
+        default:
+            break;
+        }
+    }
+};
 
 /** The physics of a car, all 32-bit numbers. */
 template <>

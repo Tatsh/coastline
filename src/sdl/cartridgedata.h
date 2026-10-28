@@ -294,12 +294,13 @@ public:
         m_address += static_cast<std::uint32_t>(size);
     }
 
-private:
-    std::uint64_t Word(std::size_t size);
-
-    // Define on the host the data at an address no definition covers, which only other data
-    // addresses, as elements of T up to the next symbol of the release. The definition remains
-    // for the rest of the program.
+    /**
+     * Define on the host the data at an address no definition covers, which only other data
+     * addresses, as elements of T up to the next symbol of the release. The definition remains
+     * for the rest of the program.
+     *
+     * @param address The address of the console of the data.
+     */
     template <typename T>
     static void DefineOnDemand(std::uint32_t address) {
         std::size_t consoleSize = ConsoleSizeOf<T>();
@@ -313,6 +314,13 @@ private:
         }
     }
 
+    /**
+     * @param size The bytes of the word, from 1 to 8.
+     * @return The next big-endian word.
+     */
+    std::uint64_t Word(std::size_t size);
+
+private:
     std::uint32_t m_address;
 };
 
