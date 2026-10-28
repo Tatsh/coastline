@@ -8,7 +8,6 @@
 #include "playbacksmoothing.h"
 
 class EarWaveSample;
-class EarPreset;
 struct IDirectSound;
 struct _DSBUFFERDESC;
 
@@ -141,9 +140,9 @@ public:
      * @param preset The preset, unused.
      * @ghidraAddress EAR: 0x10006710
      */
-    virtual void ApplyPreset(const EarPreset *preset);
+    virtual void ApplyPreset(EarWaveSample *preset);
 
-private:
+protected:
     /** @ghidraAddress EAR: 0x100129bc */
     virtual void OnPlaybackWaveSampleAttached(EarWaveSample *sample);
 

@@ -329,7 +329,7 @@ void EarPlayback::CopyEarPlaybackSamplesToOutput() {
 void EarPlayback::CompleteEarPlayback() {
 }
 
-void EarPlayback::ApplyPreset(const EarPreset *preset) {
+void EarPlayback::ApplyPreset(EarWaveSample *preset) {
 }
 
 void EarPlayback::OnBackendPlaybackParameterChanged() {

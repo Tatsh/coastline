@@ -239,7 +239,7 @@ int ScheduledEarEvent::InitializeScheduledEarEventPlayback() {
         playback->SetPlaybackSuppressionParameters(suppressionEnabled, suppressionMarker);
     }
     if (sourceType == 3) {
-        EarPreset *preset;
+        EarWaveSample *preset;
         if (!g_PresetRegistry.LookupWordPointerMapValue(source.presetHandle, preset)) {
             SetEarLastError(0x29);
             playbackInitialized = 0;

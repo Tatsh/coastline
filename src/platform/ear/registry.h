@@ -8,7 +8,7 @@
 #include "mfc.h"
 
 class EarEnvironment;
-class EarPreset;
+class EarWaveSample;
 class EarPlayback;
 class EarChannel;
 class EarPresetTable;
@@ -70,7 +70,7 @@ private:
 /** @ghidraAddress EAR: 0x1003b4a8 */
 extern EarWordPointerRegistry<EarEnvironment> g_EnvironmentRegistry;
 /** @ghidraAddress EAR: 0x1003b480 */
-extern EarWordPointerRegistry<EarPreset> g_PresetRegistry;
+extern EarWordPointerRegistry<EarWaveSample> g_PresetRegistry;
 /** @ghidraAddress EAR: 0x1003b390 */
 extern EarActiveEventRegistry g_ActiveEventRegistry;
 

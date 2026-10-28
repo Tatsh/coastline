@@ -9,6 +9,7 @@
 #include "playbackimplementations.h"
 #include "registry.h"
 #include "wavechunks.h"
+#include "wavesample.h"
 
 namespace {
 // @ghidraAddress EAR: 0x1003b9a4
@@ -25,6 +26,12 @@ DWORD g_dwDirectSoundLockRegion1Bytes;
 const double g_earPcmHalfBufferScale = 0.5;
 // @ghidraAddress EAR: 0x1002ebd0
 const double g_earPcmMillisecondScale = 0.001;
+// @ghidraAddress EAR: 0x1002e910
+const double g_earWaveAttachmentHalfBufferScale = 0.5;
+// @ghidraAddress EAR: 0x1002ea60
+const double g_earMemoryWaveHalfBufferScale = 0.5;
+// @ghidraAddress EAR: 0x1003b868
+char g_earMemoryWaveHeaderPrefix[16];
 
 static inline std::uint32_t TruncatePlaybackInteger(long double value) {
     // Invalid x87 integer conversions produce zero in the low 32 bits.
@@ -391,4 +398,154 @@ void PcmWaveStream::RefillEarPlaybackStream() {
     readOffset += read;
     CopyEarPlaybackSamplesToOutput();
     FlipStreamHalfIndex();
+}
+
+MemoryWaveStream::MemoryWaveStream() {
+}
+
+void MemoryWaveStream::ReleaseEarPlaybackResources() {
+    CloseRegisteredEarPlayback();
+}
+
+void MemoryWaveStream::CloseRegisteredEarPlayback() {
+    EarPlayback::CloseRegisteredEarPlayback();
+}
+
+int MemoryWaveStream::OpenMemoryWaveStream(const void *source) {
+    MMIOINFO info;
+    std::memmove(g_earMemoryWaveHeaderPrefix, source, sizeof(g_earMemoryWaveHeaderPrefix));
+    if (std::memcmp(g_earMemoryWaveHeaderPrefix, "RIFF", 4) ||
+        std::memcmp(g_earMemoryWaveHeaderPrefix + 8, "WAVEfmt ", 8)) {
+        SetEarLastError(0x0f);
+        goto fail;
+    }
+    std::memset(&info, 0, sizeof(info));
+    info.pIOProc = nullptr;
+    info.fccIOProc = FOURCC_MEM;
+    info.pchBuffer = static_cast<HPSTR>(const_cast<void *>(source));
+    std::memcpy(&info.cchBuffer, g_earMemoryWaveHeaderPrefix + 4, sizeof(info.cchBuffer));
+    info.adwInfo[0] = 0;
+    file = mmioOpenA(nullptr, &info, MMIO_READWRITE);
+    if (!file) {
+        SetEarLastError(0x0d);
+        goto fail;
+    }
+    if (mmioDescend(file, &g_RiffWaveChunk, nullptr, 0)) {
+        SetEarLastError(0x0e);
+        goto fail;
+    }
+    if (g_RiffWaveChunk.ckid != FOURCC_RIFF ||
+        g_RiffWaveChunk.fccType != mmioFOURCC('W', 'A', 'V', 'E')) {
+        SetEarLastError(0x0f);
+        goto fail;
+    }
+    if (mmioDescend(file, &g_WaveFormatChunk, &g_RiffWaveChunk, MMIO_FINDCHUNK)) {
+        SetEarLastError(0x0e);
+        goto fail;
+    }
+    // The whole chunk is read into the format, however large it is.
+    if (mmioRead(file, reinterpret_cast<HPSTR>(&format), g_WaveFormatChunk.cksize) !=
+        static_cast<LONG>(g_WaveFormatChunk.cksize)) {
+        SetEarLastError(0x0e);
+        goto fail;
+    }
+    if (format.wFormatTag != WAVE_FORMAT_PCM) {
+        SetEarLastError(0x0f);
+        goto fail;
+    }
+    if (mmioAscend(file, &g_WaveFormatChunk, 0)) {
+        SetEarLastError(0x0e);
+        goto fail;
+    }
+    if (mmioDescend(file, &g_WaveDataChunk, &g_RiffWaveChunk, MMIO_FINDCHUNK)) {
+        SetEarLastError(0x0e);
+        goto fail;
+    }
+    dataBytes = g_WaveDataChunk.cksize;
+    if (!CheckWavePlaybackDeviceAccess()) {
+        SetEarLastError(6);
+        goto fail;
+    }
+    SetPlaybackBufferBytes(dataBytes);
+    DisablePlaybackStreaming();
+    SetStreamHalfBytes(TruncatePlaybackInteger(static_cast<long double>(GetPlaybackBufferBytes()) *
+                                               g_earMemoryWaveHalfBufferScale));
+    dataStartOffset = mmioSeek(file, 0, SEEK_CUR);
+    if (dataStartOffset == -1) {
+        SetEarLastError(0x0e);
+        goto fail;
+    }
+    // The samples are played from the file in memory, after its header.
+    sampleBuffer = static_cast<char *>(const_cast<void *>(source)) + dataStartOffset;
+    // The handle is closed but not cleared, on success as on failure.
+    mmioClose(file, 0);
+    return 1;
+
+fail:
+    // A header that is not of a wave file closes whatever handle the stream had.
+    mmioClose(file, 0);
+    return 0;
+}
+
+int MemoryWaveStream::InitializeEarPlayback(const void *source, int streaming, int looping) {
+    SetPlaybackStreamingAndLooping(streaming, looping);
+    if (!source) {
+        SetEarLastError(0x0d);
+        return 0;
+    }
+    if (!OpenMemoryWaveStream(source)) {
+        return 0;
+    }
+    SetPlaybackBaseFrequency(TruncatePlaybackInteger(
+        static_cast<long double>(format.nSamplesPerSec) * GetPlaybackBaseFrequencyScale()));
+    SetPlaybackHandle(AllocateEarEventId());
+    int count = g_PlaybackRegistry.GetCount();
+    if (static_cast<UINT>(count) == g_PlaybackRegistry.GetHashTableSize()) {
+        SetEarLastError(0x1a);
+        SetPlaybackHandle(0);
+    }
+    if (!HasPlaybackHandle()) {
+        return 0;
+    }
+    g_PlaybackRegistry.SetDwordPointerMapValue(GetPlaybackHandle(), this);
+    return 1;
+}
+
+SampleWavePlayback::SampleWavePlayback() {
+}
+
+void SampleWavePlayback::ReleaseEarPlaybackResources() {
+    CloseRegisteredEarPlayback();
+}
+
+void SampleWavePlayback::CloseRegisteredEarPlayback() {
+    EarPlayback::CloseRegisteredEarPlayback();
+}
+
+int SampleWavePlayback::InitializeEarPlayback(const void *source, int streaming, int looping) {
+    // The samples come from the preset, so the source and the streaming request are not read.
+    SetPlaybackStreamingAndLooping(0, looping);
+    SetPlaybackBaseFrequency(TruncatePlaybackInteger(
+        static_cast<long double>(format.nSamplesPerSec) * GetPlaybackBaseFrequencyScale()));
+    SetPlaybackHandle(AllocateEarEventId());
+    int count = g_PlaybackRegistry.GetCount();
+    if (static_cast<UINT>(count) == g_PlaybackRegistry.GetHashTableSize()) {
+        SetEarLastError(0x1a);
+        SetPlaybackHandle(0);
+    }
+    if (!HasPlaybackHandle()) {
+        return 0;
+    }
+    g_PlaybackRegistry.SetDwordPointerMapValue(GetPlaybackHandle(), this);
+    return 1;
+}
+
+void SampleWavePlayback::ApplyPreset(EarWaveSample *preset) {
+    format = preset->CopyWaveSampleFormat();
+    sampleBuffer = preset->GetWaveSampleBuffer();
+    dataBytes = preset->GetWaveSampleByteCount();
+    SetPlaybackBufferBytes(dataBytes);
+    SetStreamHalfBytes(TruncatePlaybackInteger(static_cast<long double>(GetPlaybackBufferBytes()) *
+                                               g_earWaveAttachmentHalfBufferScale));
+    OnPlaybackWaveSampleAttached(preset);
 }

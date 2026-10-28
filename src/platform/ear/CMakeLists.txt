@@ -20,6 +20,7 @@ add_library(
   version.c
   volume.c
   wavechunks.c
+  wavesample.cpp
   window.c)
 target_include_directories(coastline_ear PUBLIC "${CMAKE_SOURCE_DIR}/src")
 target_compile_options(coastline_ear PRIVATE -Wall -Wextra -Wno-unused-parameter)

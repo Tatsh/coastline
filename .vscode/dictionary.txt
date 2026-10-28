@@ -1178,6 +1178,7 @@ wasstilldrawing
 watr
 wavechunks
 waveformatex
+wavesample
 wavread
 wctype
 wdangling
