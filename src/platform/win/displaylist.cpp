@@ -220,6 +220,17 @@ GbiCommand *HandleGbiTextureRectangle(GbiCommand *pCommand) {
     return pCommand + 1;
 }
 
+#ifdef ENABLE_PATCHES
+static GbiCommand *HandleFullTextureRectangle(GbiCommand *command) {
+    DrawTextureRectangle((int)command->w1 * 4,
+                         (int)command[1].w0 * 4,
+                         (int)command[1].w1 * 4,
+                         (int)command[2].w0 * 4,
+                         command->w0 & 7);
+    return command + 3;
+}
+#endif /* ENABLE_PATCHES */
+
 float g_fViewportScaleX;
 float g_fViewportScaleY;
 float g_fViewportTranslateX;
@@ -784,6 +795,7 @@ static constexpr std::array<GbiHandler, GBI_HANDLER_COUNT> MakeGbiHandlers() {
     }
 #ifdef ENABLE_PATCHES
     apfnHandlers[GBI_OP_HUD_CANVAS] = HandleHudCanvas;
+    apfnHandlers[GBI_OP_FULL_TEXTURE_RECTANGLE] = HandleFullTextureRectangle;
 #if TGR_RENDERER == TGR_RENDERER_D3D
     apfnHandlers[GBI_OP_FULL_SCISSOR] = HandleFullScissor;
 #endif

@@ -7,6 +7,7 @@
 
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
 #include "platform/win/displaylist.h"
+#include "platform/win/hudcanvas.h"
 #include "platform/win/particlesnapshot.h"
 #define BILLBOARD_INDEX u32
 #define BILLBOARD_PARTICLES g_pParticleListData
@@ -14,8 +15,13 @@
 #define BILLBOARD_SUBTRACT(a, b) ((s32)((u32)(a) - (u32)(b)))
 
 static inline u32 BillboardRectangleCoordinate(s32 coordinate) {
+#ifdef ENABLE_PATCHES
+    s32 pixel = coordinate >> 2;
+    return pixel > 0 ? (u32)pixel : 0;
+#else
     s16 pixel = coordinate >> 2;
     return pixel > 0 ? (u32)pixel & 0xfff : 0;
+#endif
 }
 
 static inline void WriteBillboardRectangle(s32 x, s32 y, s32 halfWidth, s32 halfHeight) {
@@ -23,9 +29,15 @@ static inline void WriteBillboardRectangle(s32 x, s32 y, s32 halfWidth, s32 half
     u32 bottom = BillboardRectangleCoordinate(BILLBOARD_ADD(y, halfHeight));
     u32 left = BillboardRectangleCoordinate(BILLBOARD_SUBTRACT(x, halfWidth));
     u32 top = BillboardRectangleCoordinate(BILLBOARD_SUBTRACT(y, halfHeight));
+#ifdef ENABLE_PATCHES
+    gDisplayListWords(gDisplayListPtr++, (u32)GBI_OP_FULL_TEXTURE_RECTANGLE << 24, left);
+    gDisplayListWords(gDisplayListPtr++, top, right);
+    gDisplayListWords(gDisplayListPtr++, bottom, 0);
+#else
     gDisplayListWords(gDisplayListPtr++,
                       ((u32)GBI_OP_TEXTURE_RECTANGLE << 24) | (right << 12) | bottom,
                       (left << 12) | top);
+#endif /* ENABLE_PATCHES */
 }
 #else
 #define BILLBOARD_INDEX u16
@@ -106,7 +118,12 @@ void RenderBillboardParticles(u16 head, s32 red, s32 green, s32 blue) {
         clip[0] = (long double)inverse * clip[0];
         rawSize = (long double)particle->size * inverse * 4.0f;
         size = rawSize;
+#ifdef ENABLE_PATCHES
+        /* Preserve the 4:3 puff size against viewport height, rather than ultrawide width. */
+        rawEdge = rawSize * view->height / view->width + 1.0L;
+#else
         rawEdge = rawSize - -1.0f;
+#endif
         edge = rawEdge;
         volatile long double negativeEdge = -rawEdge;
         f32 lowerEdge = negativeEdge;
@@ -115,10 +132,19 @@ void RenderBillboardParticles(u16 head, s32 red, s32 green, s32 blue) {
         }
         rawY = (long double)inverse * clip[1];
         clip[1] = rawY;
+#ifdef ENABLE_PATCHES
+        rawEdge = rawSize * (4.0L / 3.0L) + 1.0L;
+        edge = rawEdge;
+        negativeEdge = -rawEdge;
+        lowerEdge = negativeEdge;
+#endif
         if (!(rawY > lowerEdge) || clip[1] >= edge) {
             continue;
         }
         heightPixels = (long double)span * size;
+#ifdef ENABLE_PATCHES
+        heightPixels = (long double)view->height * (8.0L / 3.0L) * size;
+#endif
         halfWidth = (s32)(s64)(heightPixels * 0.75f);
         if (halfWidth <= 0) {
             continue;

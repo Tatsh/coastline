@@ -5,6 +5,7 @@
 
 #define GBI_OP_HUD_CANVAS 0xd8
 #define GBI_OP_FULL_SCISSOR 0xd7
+#define GBI_OP_FULL_TEXTURE_RECTANGLE 0xd6
 
 #ifdef __cplusplus
 extern "C" {
