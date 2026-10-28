@@ -99,7 +99,7 @@ s32 MeasureTextWidth(const char *text, s32 size) {
         size *= 2;
     }
     if (size < SMALL_FONT_MAX_SIZE
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PLATFORM == TGR_PLATFORM_WIN && TGR_RENDERER == TGR_RENDERER_D3D
         || g_dwTextureQualityLevel > 1
 #endif
     ) {
