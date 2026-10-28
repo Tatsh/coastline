@@ -191,7 +191,7 @@ void InitRace(void) {
         g_dwTrackMirrored = FALSE;
     } else {
         g_dwTrackMirrored =
-            (g_apTrackMenuItems[g_dwSelectedTrackId]->flags & MENU_ITEM_MIRRORED) != 0;
+            (g_apTrackMenuItems[g_dwSelectedTrackId]->item.flags & MENU_ITEM_MIRRORED) != 0;
     }
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
     ApplyWeather(g_dwCurrentWeather);
