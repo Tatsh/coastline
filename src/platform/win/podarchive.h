@@ -281,8 +281,21 @@ public:
      */
     virtual void *LoadPodByName(const char *pszPath, void *pBuffer);
 
+    /**
+     * Open the pod file of the path to read, and read its header and directory. A file that is
+     * not a pod file ends the game.
+     *
+     * @ghidraAddress BRD3D: 0x100088d0
+     * @ghidraAddress BRGlide: 0x10008ab0
+     */
     virtual void OpenPodFile();
 
+    /**
+     * Close the file, free the directory, and clear the archive and its path.
+     *
+     * @ghidraAddress BRD3D: 0x10008970
+     * @ghidraAddress BRGlide: 0x10008b50
+     */
     void ClosePodFile();
 
     /**

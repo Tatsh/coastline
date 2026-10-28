@@ -114,6 +114,7 @@ extern u16 g_awSeasonRoundPoints[SEASON_RACES];
  * The displayed championship year.
  *
  * @ghidraAddress BRD3D: 0x10aa2518
+ * @ghidraAddress BRGlide: 0x10ac5870
  */
 extern char g_szSeasonYearLabel[SEASON_YEAR_LABEL_SIZE];
 

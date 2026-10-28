@@ -151,6 +151,7 @@ extern VehicleModel g_aVehicleModels[];
  * @ghidraAddress EUR: 0x8031d738
  * @ghidraAddress JPN: 0x8031c368
  * @ghidraAddress BRD3D: 0x106c6558
+ * @ghidraAddress BRGlide: 0x106ed5e8
  */
 extern s32 g_adwVehicleModelSlotCars[];
 

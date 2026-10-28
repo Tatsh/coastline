@@ -24,6 +24,7 @@ void SetDebugMessage(const char *message);
  * @ghidraAddress EUR: 0x8028ca90
  * @ghidraAddress JPN: 0x8028c560
  * @ghidraAddress BRD3D: 0x106c2cf0
+ * @ghidraAddress BRGlide: 0x106e9d80
  */
 extern const char *g_pszDebugMessage;
 
