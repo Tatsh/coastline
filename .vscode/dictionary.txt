@@ -114,6 +114,7 @@ carselect
 cartrominit
 carwnoshad
 carwshad
+cbmxctrl
 ccmux
 cdaudio
 cdrom
@@ -430,8 +431,10 @@ gamewin
 gbicommand
 gelex
 genld
+getcontroldetailsf
 getcount
 getcurrfaultedthread
+getlinecontrolsf
 getthreadpri
 gettime
 gfxtask
@@ -468,6 +471,8 @@ histk
 hkcu
 hklm
 hmenu
+hmixer
+hmixerobj
 hmmio
 horzres
 hoststarted
@@ -642,10 +647,15 @@ minode
 miny
 minz
 mirrwd
+mixercontrol
+mixercontrola
+mixercontroldetails
+mixerlinecontrolsa
 mktemp
 mmckinfo
 mmio
 mmioinfo
+mmresult
 mmsyserr
 mnrwd
 moddi
@@ -680,6 +690,8 @@ mtxcatf
 mtxcatl
 mtxutil
 mult
+musicdevice
+musicplayback
 mypy
 ncpaint
 nearbycount
@@ -733,6 +745,7 @@ paks
 paletteentry
 paletteindexed
 palettized
+pamxctrl
 parms
 parmsa
 particleexhaustrender
@@ -903,6 +916,7 @@ sessionlost
 setblendcolor
 setcimg
 setcompare
+setcontroldetailsf
 seteventmesg
 setfogcolor
 setfpccsr
@@ -1112,6 +1126,7 @@ ucode
 udivdi
 udvare
 ullval
+ultoa
 umoddi
 uncompr
 undraft

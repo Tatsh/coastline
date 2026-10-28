@@ -13,6 +13,21 @@ extern HWND g_hEarNotifyWindow;
 /** @ghidraAddress EAR: 0x1003b3c0 */
 extern UINT g_uEarNotifyMessage;
 
+/**
+ * The caption of the messages of the library.
+ *
+ * @ghidraAddress EAR: 0x10036150
+ */
+extern char g_earProductName[];
+
+/**
+ * Show a message over the window of the game.
+ *
+ * @param message The message.
+ * @ghidraAddress EAR: 0x10003cbc
+ */
+void __stdcall ShowEarMessage(const char *message);
+
 /** @ghidraAddress EAR: 0x10004ae6 */
 BOOL __stdcall PostEarWindowMessage(WPARAM event, LPARAM notification);
 

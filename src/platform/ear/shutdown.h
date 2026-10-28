@@ -27,7 +27,6 @@ void __stdcall EAR_DLL_ResetEar(void);
  * Close the CD audio and MIDI devices and restore the mixer controls.
  *
  * @ghidraAddress EAR: 0x10004d27
- * @stub
  */
 void ShutdownMusicDevicesAndRestoreMixer(void);
 

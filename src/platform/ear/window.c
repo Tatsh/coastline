@@ -4,6 +4,11 @@
 
 HWND g_hEarNotifyWindow;
 UINT g_uEarNotifyMessage;
+char g_earProductName[] = "EAR Interactive Around-Sound";
+
+void __stdcall ShowEarMessage(const char *message) {
+    MessageBoxA(g_hEarNotifyWindow, message, g_earProductName, MB_OK);
+}
 
 BOOL __stdcall PostEarWindowMessage(WPARAM event, LPARAM notification) {
     return PostMessageA(g_hEarNotifyWindow, g_uEarNotifyMessage, event, notification);

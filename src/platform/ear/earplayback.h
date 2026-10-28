@@ -103,7 +103,7 @@ private:
 
 public:
     /** @ghidraAddress EAR: 0x1000a99f */
-    virtual void PauseEarPlayback();
+    virtual int PauseEarPlayback();
 
 private:
     /** @ghidraAddress EAR: 0x100128f8 */
@@ -277,6 +277,7 @@ private:
     /** @ghidraAddress EAR: 0x100125ac */
     DWORD GetDirectSoundPlaybackCursor();
 
+protected:
     std::uint32_t playbackHandle;
     std::uint32_t reservedEventControl;
     std::uint32_t notificationFlags;

@@ -10,6 +10,8 @@ add_library(
   exports.def
   initialization.cpp
   memorybudget.c
+  musicdevice.cpp
+  musicplayback.cpp
   pcmstream.cpp
   playbacklifetime.cpp
   playbacksmoothing.c

@@ -100,28 +100,88 @@ private:
     void ApplyPreset(EarWaveSample *preset) override;
 };
 
+/** A playback of a MIDI file through the MCI sequencer, its volume set through the mixer. */
 class [[gnu::packed]] MidiPlayback : public EarPlayback {
 public:
-    /**
-     * @ghidraAddress EAR: 0x10008d20
-     * @stub
-     */
+    /** @ghidraAddress EAR: 0x10008d20 */
     MidiPlayback();
 
+    /** @ghidraAddress EAR: 0x10008d8d */
+    void ReleaseEarPlaybackResources() override;
+    /** @ghidraAddress EAR: 0x100093d5 */
+    void SetEarPlaybackDirectionalGain(std::uint16_t direction,
+                                       double gain,
+                                       std::uint16_t matrix) override;
+    /** @ghidraAddress EAR: 0x1000914d */
+    int InitializeEarPlayback(const void *source, int streaming, int looping) override;
+    /** @ghidraAddress EAR: 0x10009051 */
+    int StartEarPlayback() override;
+    /** @ghidraAddress EAR: 0x10009009 */
+    int PauseEarPlayback() override;
+    /** @ghidraAddress EAR: 0x1000948b */
+    int ResumeEarPlayback() override;
+    /** @ghidraAddress EAR: 0x10008f83 */
+    void SetEarPlaybackMute(int muted) override;
+    /** @ghidraAddress EAR: 0x10008e5b */
+    int IsBufferedEarPlaybackComplete() override;
+
+protected:
+    /** @ghidraAddress EAR: 0x10008df4 */
+    void CloseRegisteredEarPlayback() override;
+
 private:
-    [[maybe_unused]] std::uint8_t unknownAc[0x2c]; /* +0xac */
+    // The native slots share the empty folded body of CObject::AssertValid.
+    void UpdateDirectSoundPlaybackGainAndPan() override;
+    void UpdateDirectSoundPlaybackFrequency() override;
+
+    MCI_PLAY_PARMS playParameters;   /*!< The play command from the start. */
+    MCI_PLAY_PARMS resumeParameters; /*!< The play command a resume sends. */
+    DWORD lengthMilliseconds;        /*!< The length of the sequence. */
+    char *path;                      /*!< The file the sequencer plays. */
+    int ownsTemporaryFile;           /*!< Whether @ref path is a copy to delete on release. */
+    double pendingGain;              /*!< The gain set while inactive, applied at the start. */
 };
 
+/** A playback of the tracks of the CD through the MCI CD audio device. */
 class [[gnu::packed]] CdAudioPlayback : public EarPlayback {
 public:
-    /**
-     * @ghidraAddress EAR: 0x10009ae0
-     * @stub
-     */
+    /** @ghidraAddress EAR: 0x10009ae0 */
     CdAudioPlayback();
 
+    /** @ghidraAddress EAR: 0x10009b19 */
+    void ReleaseEarPlaybackResources() override;
+    /** @ghidraAddress EAR: 0x1000a187 */
+    void SetEarPlaybackDirectionalGain(std::uint16_t direction,
+                                       double gain,
+                                       std::uint16_t matrix) override;
+    /** @ghidraAddress EAR: 0x1000a051 */
+    int InitializeEarPlayback(const void *source, int streaming, int looping) override;
+    /** @ghidraAddress EAR: 0x10009df1 */
+    int StartEarPlayback() override;
+    /** @ghidraAddress EAR: 0x10009d39 */
+    int PauseEarPlayback() override;
+    /** @ghidraAddress EAR: 0x1000a21a */
+    int ResumeEarPlayback() override;
+    /** @ghidraAddress EAR: 0x1000a280 */
+    std::uint32_t GetEarPlaybackMediaLength() override;
+    /** @ghidraAddress EAR: 0x10009cb3 */
+    void SetEarPlaybackMute(int muted) override;
+    /** @ghidraAddress EAR: 0x10009bba */
+    int IsBufferedEarPlaybackComplete() override;
+
+protected:
+    /** @ghidraAddress EAR: 0x10009b2f */
+    void CloseRegisteredEarPlayback() override;
+
 private:
-    [[maybe_unused]] std::uint8_t unknownAc[0x20]; /* +0xac */
+    // The native slots share the empty folded body of CObject::AssertValid.
+    void UpdateDirectSoundPlaybackGainAndPan() override;
+    void UpdateDirectSoundPlaybackFrequency() override;
+
+    MCI_PLAY_PARMS playParameters; /*!< The play command, from and to positions in milliseconds. */
+    MCI_PLAY_PARMS resumeParameters; /*!< The play command a resume sends. */
+    int wholeDisc;                   /*!< Whether every audio track plays, positions then tracks. */
+    DWORD durationMilliseconds;      /*!< The length of the tracks. */
 };
 
 class [[gnu::packed]] ImaAdpcmWaveStream : public EarPlayback {

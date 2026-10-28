@@ -110,9 +110,9 @@ int EarPlayback::StartEarPlayback() {
     return 1;
 }
 
-void EarPlayback::PauseEarPlayback() {
+int EarPlayback::PauseEarPlayback() {
     status = 1;
-    StopDirectSoundEventBuffer();
+    return StopDirectSoundEventBuffer();
 }
 
 int EarPlayback::ResumeEarPlayback() {

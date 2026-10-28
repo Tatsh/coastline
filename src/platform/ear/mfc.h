@@ -36,6 +36,28 @@ private:
     int blockSize;
 };
 
+class CFileException;
+
+class CFile : public CObject {
+public:
+    enum OpenFlags : UINT {
+        modeWrite = 0x0001,
+        modeCreate = 0x1000,
+        typeBinary = 0x8000,
+    };
+
+    CFile();
+    ~CFile() override;
+    virtual BOOL Open(LPCSTR fileName, UINT openFlags, CFileException *error = nullptr);
+    virtual void Write(const void *buffer, UINT count);
+    virtual void Close();
+
+private:
+    UINT file;
+    BOOL closeOnDelete;
+    char *fileName;
+};
+
 class CMapPtrToPtr : public CObject {
 public:
     int GetCount() const;
