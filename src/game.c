@@ -22,6 +22,10 @@
 #include "win32/gameinit.h"
 #endif /* !TGR_PC */
 
+#if TGR_PLATFORM == TGR_PLATFORM_SDL
+#include "sdl/romsegments.h"
+#endif
+
 #if TGR_PC
 /** @ghidraAddress BRD3D: 0x106805b8 */
 s32 g_dwRaceSessionType;
@@ -30,7 +34,11 @@ s32 g_dwRaceSessionType;
 #if !TGR_PC
 
 /* The cartridge offset of the music of the menus. */
+#if TGR_PLATFORM == TGR_PLATFORM_SDL
+#define ROM_MENU_MUSIC USA_MENU_MUSIC_ROM
+#else
 #define ROM_MENU_MUSIC ((u32)_menuMusicSegmentRomStart)
+#endif
 #else
 
 u32 g_dwWeatherActive;

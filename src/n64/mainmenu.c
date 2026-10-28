@@ -17,8 +17,16 @@
 #include "vehicle.h"
 #include "weather.h"
 
+#if TGR_PLATFORM == TGR_PLATFORM_SDL
+#include "sdl/romsegments.h"
+#endif
+
 /* Assets at fixed cartridge offsets. */
+#if TGR_PLATFORM == TGR_PLATFORM_SDL
+#define ROM_MENU_MUSIC USA_MENU_MUSIC_ROM
+#else
 #define ROM_MENU_MUSIC ((u32)_menuMusicSegmentRomStart)
+#endif
 
 /* The items of the main menu. */
 enum {

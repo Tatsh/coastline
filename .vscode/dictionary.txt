@@ -964,6 +964,7 @@ rledecompress
 rmonspin
 rodata
 rombuilder
+romsegments
 routeposition
 routewalk
 rrggbb

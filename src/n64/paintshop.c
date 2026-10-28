@@ -2076,7 +2076,8 @@ s32 ProcessDecalSaveLoad(VehicleModel *model, u8 player, u8 operation, u8 inCarS
                 PFS_READ,
                 g_dwPakFileOffset,
                 DECAL_PALETTE_BYTES,
-                (u8 *)model->textures[model->materialTextures[VEHICLE_MATERIAL_PAINT]].palette);
+                (u8 *)(u16 *)model->textures[model->materialTextures[VEHICLE_MATERIAL_PAINT]]
+                    .palette);
             if (!g_dwPakError) {
                 /* The lights take the first two colors of the paint. */
                 palette = model->textures[model->materialTextures[VEHICLE_MATERIAL_PAINT]].palette;
@@ -2113,7 +2114,8 @@ s32 ProcessDecalSaveLoad(VehicleModel *model, u8 player, u8 operation, u8 inCarS
                 PFS_WRITE,
                 g_dwPakFileOffset,
                 DECAL_PALETTE_BYTES,
-                (u8 *)model->textures[model->materialTextures[VEHICLE_MATERIAL_PAINT]].palette);
+                (u8 *)(u16 *)model->textures[model->materialTextures[VEHICLE_MATERIAL_PAINT]]
+                    .palette);
         }
         if (g_dwPakError == 0) {
 #if TGR_REGION != TGR_REGION_JP

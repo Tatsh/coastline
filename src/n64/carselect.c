@@ -30,9 +30,18 @@
 #include "weather.h"
 #include "weatherselect.h"
 
+#if TGR_PLATFORM == TGR_PLATFORM_SDL
+#include "sdl/romsegments.h"
+#endif
+
 /* The sounds of moving the cursor and of choosing, on the cartridge. */
+#if TGR_PLATFORM == TGR_PLATFORM_SDL
+#define ROM_SCROLL_SOUND USA_SCROLL_SOUND_ROM
+#define ROM_SELECT_SOUND USA_SELECT_SOUND_ROM
+#else
 #define ROM_SCROLL_SOUND ((u32)_scrollSoundSegmentRomStart)
 #define ROM_SELECT_SOUND ((u32)_selectSoundSegmentRomStart)
+#endif
 
 /* The silence after each sound, in bytes. */
 #define SOUND_TAIL_BYTES 0x100

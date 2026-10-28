@@ -12,6 +12,9 @@
 #include "recordingformat.h"
 #include "rle.h"
 #include "vehicle.h"
+#if TGR_PLATFORM == TGR_PLATFORM_SDL
+#include "sdl/romsegments.h"
+#endif
 
 #ifdef __cplusplus
 extern "C" {
@@ -40,7 +43,11 @@ extern u8 _creditsRecordingSegmentRomStart[];
 extern u8 _endingRecordingSegmentRomStart[];
 
 /** The cartridge offset of the ghost recording, which the race after the splash screens replays. */
+#if TGR_PLATFORM == TGR_PLATFORM_SDL
+#define ROM_GHOST_RECORDING USA_GHOST_RECORDING_ROM
+#else
 #define ROM_GHOST_RECORDING ((u32)_ghostRecordingSegmentRomStart)
+#endif
 
 /** The size of the buffer a player's input is recorded into. */
 #define RECORDING_CAPACITY 0xDE5C
