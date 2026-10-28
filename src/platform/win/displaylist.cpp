@@ -374,7 +374,6 @@ static inline void SetGbiLightColor(unsigned char *pColor, unsigned dwRgba) {
     pColor[2] = static_cast<unsigned char>(dwRgba >> 8);
 }
 
-#if TGR_RENDERER == TGR_RENDERER_D3D
 void HalveGbiTriangleVertexIndices(GbiCommand *pCommand) {
     pCommand->w1 = (pCommand->w1 & 0xff000000) | (pCommand->w1 >> 1 & 0x7f7f7f);
 }
@@ -383,20 +382,6 @@ void HalveGbiTrianglePairVertexIndices(GbiCommand *pCommand) {
     pCommand->w0 = (pCommand->w0 & 0xff000000) | (pCommand->w0 >> 1 & 0x7f7f7f);
     HalveGbiTriangleVertexIndices(pCommand);
 }
-#else
-void HalveAmbientLightColor(GbiLight *pLight) {
-    pLight->l.colc[2] >>= 1;
-    pLight->l.colc[1] >>= 1;
-    pLight->l.colc[0] >>= 1;
-}
-
-void HalveLightColors(GbiLight *pLight) {
-    pLight->l.col[2] >>= 1;
-    pLight->l.col[1] >>= 1;
-    pLight->l.col[0] >>= 1;
-    HalveAmbientLightColor(pLight);
-}
-#endif /* TGR_RENDERER == TGR_RENDERER_D3D */
 
 GbiCommand *HandleGbiMoveWord(GbiCommand *pCommand) {
     unsigned dwOffset;
@@ -1111,6 +1096,7 @@ void ApplyGeometryModeChanges(void) {
 D3DCOLOR g_dwVertexConstantColor;
 float g_fVertexFogRange;
 int g_dwFogAlphaCutoff;
+#endif /* TGR_RENDERER == TGR_RENDERER_D3D */
 
 float g_fGbiLight0ColorR;
 float g_fGbiLight0ColorG;
@@ -1208,6 +1194,7 @@ LerpVertexFromPool(const GbiVertexSource *pFirst, const GbiVertexSource *pSecond
     return pVertex;
 }
 
+#if TGR_RENDERER == TGR_RENDERER_D3D
 void UpdateD3DFogRenderState(void) {
     if (g_dwWeatherActive) {
         g_fVertexFogRange = !g_dwRainMode && !g_dwSnowMode && g_dwNightMode ? 16384.0f : 8192.0f;
@@ -1218,6 +1205,7 @@ void UpdateD3DFogRenderState(void) {
         g_pD3DDevice2->SetRenderState(D3DRENDERSTATE_FOGENABLE, false);
     }
 }
+#endif /* TGR_RENDERER == TGR_RENDERER_D3D */
 
 static void RecycleClipVertex(GbiVertexSource *pVertex) {
     if (std::greater_equal<>{}(pVertex, g_aClipVertexPool) &&
@@ -1295,6 +1283,7 @@ int ComputeVertexClipCodes(const GbiVertexSource *pVertex) {
     return nFlags;
 }
 
+#if TGR_RENDERER == TGR_RENDERER_D3D
 void TransformVertexToScreen(
     GbiVertex *pDest, const GbiVertexSource *pSource, float fRed, float fGreen, float fBlue) {
     // The x87 arithmetic retains extended precision until each float is stored.

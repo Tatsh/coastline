@@ -114,9 +114,10 @@ void SetDebugMessage(const char *message) {
     ShowDebugMessageFatalError(0);
 }
 
-#if TGR_RENDERER == TGR_RENDERER_D3D
 GbiVertexSource g_aClipVertexPool[GBI_CLIP_VERTEX_POOL_SIZE];
 GbiVertexSource *g_pVertexFreeList;
+
+#if TGR_RENDERER == TGR_RENDERER_D3D
 int g_bRdpBlendStateOverride;
 
 void InitGbiD3DRenderer(void) {
@@ -224,7 +225,6 @@ static inline unsigned SwapDisplayListWord(unsigned dwWord) {
     return dwWord << 24 | (dwWord << 8 & 0xff0000) | (dwWord >> 8 & 0xff00) | dwWord >> 24;
 }
 
-#if TGR_RENDERER == TGR_RENDERER_D3D
 static inline unsigned short SwapVertexHalfword(unsigned short nValue) {
     return nValue >> 8 | nValue << 8;
 }
@@ -381,7 +381,6 @@ void ByteSwapAndRelocateDisplayList(GbiCommand *pCommands) {
         }
     }
 }
-#endif /* TGR_RENDERER == TGR_RENDERER_D3D */
 
 int IsPointerInRelocatedList(void *pPointer) {
     if (pPointer == nullptr) {
@@ -769,6 +768,7 @@ void SelectTextureQualityFromVideoMemory(void) {
         g_dwMaxTexHeightLowQuality = 32;
     }
 }
+#endif /* TGR_RENDERER == TGR_RENDERER_D3D */
 
 unsigned AllocateTextureEntry(void) {
     if (g_dwTextureEntryCount >= g_dwTextureEntryCapacity) {
@@ -813,6 +813,7 @@ unsigned CreateTextureFromN64ImageAutoLoadSize(const unsigned char *pImage,
                                           nOption13);
 }
 
+#if TGR_RENDERER == TGR_RENDERER_D3D
 unsigned DuplicateTextureEntryHalfScale(unsigned nTexture) {
     unsigned nDuplicate = AllocateTextureEntry();
     g_pTextureEntries[nDuplicate] = g_pTextureEntries[nTexture];
@@ -831,6 +832,7 @@ void LoadParticleTexture(void) {
     g_dwParticleTextureId = g_pfnCreateTextureFromN64ImageAutoLoadSize(
         g_abHudTexture64AData, nullptr, 64, 64, 1, 4, 0, 0, 1, 1, 0, 0, 1, 0);
 }
+#endif /* TGR_RENDERER == TGR_RENDERER_D3D */
 
 void LoadTireTrailTexture(void) {
     g_dwTireTrailTextureId = g_pfnCreateTextureFromN64ImageAutoLoadSize(
@@ -847,6 +849,7 @@ void CreateFallbackEnvironmentTexture(void) {
         g_abFallbackEnvTextureData, nullptr, 64, 64, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0);
 }
 
+#if TGR_RENDERER == TGR_RENDERER_D3D
 void CreateAlphaRampTextures(void) {
     g_adwPrecipitationTextureIds[0] = g_pfnCreateTextureFromN64ImageAutoLoadSize(
         g_abPrecipitationTextures[0], nullptr, 64, 64, 1, 4, 0, 0, 1, 1, 0, 0, 1, 0);
@@ -938,6 +941,7 @@ void LoadHudGlyphTextureSets(void) {
             0);
     }
 }
+#endif /* TGR_RENDERER == TGR_RENDERER_D3D */
 
 void CreateDaySkyTexture(void) {
     g_apVehicleReflectionTextures[0].entry = g_pfnCreateTextureFromN64ImageAutoLoadSize(
@@ -950,7 +954,6 @@ void CreateNightSkyTexture(void) {
     g_apVehicleReflectionTextures[2].entry = nTexture;
     g_apVehicleReflectionTextures[1].entry = nTexture;
 }
-#endif /* TGR_RENDERER == TGR_RENDERER_D3D */
 
 TextureUploadRequest g_aTextureUploadQueue[TEXTURE_UPLOAD_QUEUE_SIZE];
 int g_dwTextureUploadQueueHead;

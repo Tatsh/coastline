@@ -372,26 +372,31 @@ union ModelVertexData;
 
 /**
  * @ghidraAddress BRD3D: 0x1002bdd0
+ * @ghidraAddress BRGlide: 0x10018e90
  */
 void ByteSwapVertexArray(Vtx *pVertices, int nCount);
 
 /**
  * @ghidraAddress BRD3D: 0x1002be30
+ * @ghidraAddress BRGlide: 0x10018ef0
  */
 ConvertedModelVertex *ConvertVerticesToFloat(const Vtx *pVertices, int nCount);
 
 /**
  * @ghidraAddress BRD3D: 0x1002bd50
+ * @ghidraAddress BRGlide: 0x10018e10
  */
 void ConvertN64VerticesCached(ModelVertexData *pVertices, int nCount);
 
 /**
  * @ghidraAddress BRD3D: 0x1002c150
+ * @ghidraAddress BRGlide: 0x10019210
  */
 void RelocateGbiVertexCommand(GbiCommand *pCommand);
 
 /**
  * @ghidraAddress BRD3D: 0x1002bf80
+ * @ghidraAddress BRGlide: 0x10019040
  */
 void ByteSwapAndRelocateDisplayList(GbiCommand *pCommands);
 
@@ -402,21 +407,25 @@ extern unsigned char *g_pTrackTextureTable;
 
 /**
  * @ghidraAddress BRD3D: 0x1002bc90
+ * @ghidraAddress BRGlide: 0x10018d50
  */
 void ByteSwapTextureVariantTable(TextureAnimation *pAnimation);
 
 /**
  * @ghidraAddress BRD3D: 0x1002baa0
+ * @ghidraAddress BRGlide: 0x10018b60
  */
 void ByteSwapAndRelocateTextureDescriptor(ModelTexture *pTexture);
 
 /**
  * @ghidraAddress BRD3D: 0x1002ba80
+ * @ghidraAddress BRGlide: 0x10018b40
  */
 void ByteSwapTextureDescriptorArray(ModelTexture *pTextures, int nCount);
 
 /**
  * @ghidraAddress BRD3D: 0x10075330
+ * @ghidraAddress BRGlide: 0x1006e590
  */
 void NullStub2(void *pMemory);
 

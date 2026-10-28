@@ -487,41 +487,24 @@ using GbiLight = Light;
 /** The number of entries of g_aGbiLights. */
 #define GBI_LIGHT_COUNT 8
 
-#if TGR_RENDERER == TGR_RENDERER_D3D
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 /**
  * @ghidraAddress BRD3D: 0x1002c190
+ * @ghidraAddress BRGlide: 0x10019250
  */
 void HalveGbiTriangleVertexIndices(GbiCommand *pCommand);
 
 /**
  * @ghidraAddress BRD3D: 0x1002c1b0
+ * @ghidraAddress BRGlide: 0x10019270
  */
 void HalveGbiTrianglePairVertexIndices(GbiCommand *pCommand);
 #ifdef __cplusplus
 }
 #endif
-
-#else
-/**
- * Halve each channel of the second copy of the colour of a light.
- *
- * @param pLight The light.
- * @ghidraAddress BRGlide: 0x10019250
- */
-void HalveAmbientLightColor(GbiLight *pLight);
-
-/**
- * Halve each channel of both copies of the colour of a light.
- *
- * @param pLight The light.
- * @ghidraAddress BRGlide: 0x10019270
- */
-void HalveLightColors(GbiLight *pLight);
-#endif /* TGR_RENDERER == TGR_RENDERER_D3D */
 
 /**
  * The number of lights the display lists set, as their command gives it.
@@ -569,13 +552,11 @@ GbiCommand *HandleGbiMoveWord(GbiCommand *pCommand);
  */
 extern float g_GbiMvpMatrix[4][4];
 
-#if TGR_RENDERER == TGR_RENDERER_D3D
 /** @ghidraAddress BRD3D: 0x104bbec0 */
 extern float g_GbiProjectionMatrix[4][4];
 
 /** @ghidraAddress BRD3D: 0x104bbf10 */
 extern float g_aGbiModelViewStack[GBI_MATRIX_STACK_RESET_DEPTH][4][4];
-#endif
 
 /**
  * The second vector of the look-at of the display lists, as a move memory command gives it.
@@ -698,7 +679,6 @@ GbiCommand *HandleGbiLoadPreparedTexture(GbiCommand *pCommand);
 /** The vertex a command of the display lists loaded, named for C and for both renderers. */
 typedef struct GbiVertexSource GbiVertexSource;
 
-#if TGR_RENDERER == TGR_RENDERER_D3D
 /** The vertex a command of the display lists loaded. The layout is not recovered in full. */
 struct GbiVertexSource {
     GbiVertexSource *pNext;
@@ -713,6 +693,7 @@ struct GbiVertexSource {
     float fBlue;
 };
 
+#if TGR_RENDERER == TGR_RENDERER_D3D
 /** A vertex of the display lists after its transform. The layout is not recovered in full. */
 struct GbiVertex {
     float fX;               /*!< The x on the screen. */
@@ -730,6 +711,7 @@ struct GbiVertex {
     GbiVertexSource source; /*!< The vertex as the command loaded it. */
     int nRenderBufferIndex; /*!< The entry of g_renderBuffer of the vertex, -1 for none. */
 };
+#endif /* TGR_RENDERER == TGR_RENDERER_D3D */
 
 /** @ghidraAddress BRD3D: 0x104c15d0 */
 extern float g_fGbiLight0ColorR;
@@ -757,6 +739,7 @@ extern "C" {
  */
 void ComputeVertexDirectionalLight(const ConvertedModelVertex *pVertex, GbiVertexSource *pDest);
 
+#if TGR_RENDERER == TGR_RENDERER_D3D
 /**
  * @ghidraAddress BRD3D: 0x100a79e0
  */
@@ -765,17 +748,20 @@ extern float g_fDepthScale;
  * @ghidraAddress BRD3D: 0x100a79e4
  */
 extern float g_fDepthOffset;
+#endif /* TGR_RENDERER == TGR_RENDERER_D3D */
 
 /**
  * @ghidraAddress BRD3D: 0x10022dc0
  */
 int ComputeVertexClipCodes(const GbiVertexSource *pVertex);
 
+#if TGR_RENDERER == TGR_RENDERER_D3D
 /**
  * @ghidraAddress BRD3D: 0x100222d0
  */
 void TransformVertexToScreen(
     GbiVertex *pDest, const GbiVertexSource *pSource, float fRed, float fGreen, float fBlue);
+#endif /* TGR_RENDERER == TGR_RENDERER_D3D */
 
 /** The number of entries of g_aGbiVertexCache and g_apVertexPool. */
 #define GBI_VERTEX_CACHE_SIZE 128
@@ -792,6 +778,7 @@ extern GbiVertexSource *g_pVertexFreeList;
  * Take a clipping vertex from the free list and interpolate its attributes.
  *
  * @ghidraAddress BRD3D: 0x1001d940
+ * @ghidraAddress BRGlide: 0x1001f200
  */
 GbiVertexSource *
 LerpVertexFromPool(const GbiVertexSource *pFirst, const GbiVertexSource *pSecond, float fFraction);
@@ -817,6 +804,7 @@ void ClipPolygonNearZPlane(GbiClipPolygon *pPolygon);
 /** @ghidraAddress BRD3D: 0x1001e030 */
 void ClipPolygonFarZPlane(GbiClipPolygon *pPolygon);
 
+#if TGR_RENDERER == TGR_RENDERER_D3D
 /** @ghidraAddress BRD3D: 0x104c5184 */
 extern int g_bRdpBlendStateOverride;
 
@@ -1129,11 +1117,10 @@ extern int g_nBoundTextureEntry;
  * @ghidraAddress BRD3D: 0x10028ca0
  */
 void BindTextureEntry(int nEntry);
+#endif /* TGR_RENDERER == TGR_RENDERER_D3D */
 #ifdef __cplusplus
 }
 #endif
-
-#endif /* TGR_RENDERER == TGR_RENDERER_D3D */
 
 #ifdef __cplusplus
 extern "C" {
