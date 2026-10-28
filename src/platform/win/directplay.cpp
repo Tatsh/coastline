@@ -2537,6 +2537,7 @@ HRESULT RefreshNetworkSessionList(IDirectPlay3A *pDirectPlay) {
     description.guidApplication = g_BossRallyAppGuid;
     g_dwSessionListRefreshing = 1;
     // Without an enumeration, the interface pointer remains the return value.
+    // The cast assumes a 32-bit pointer.
     HRESULT result = std::bit_cast<HRESULT>(pDirectPlay);
     if (g_dwSessionEnumPending) {
         result = pDirectPlay->EnumSessions(&description,
