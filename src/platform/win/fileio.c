@@ -38,11 +38,12 @@ GameFile *CHK_FReadOpen(const char *pszPath) {
     if (pFile->pFile == nullptr) {
         pErrorFile = fopen("c:\\RallyError.txt", "w");
         sprintf(szMessage, "CHK_FReadOpen(): error opening file %s.\n", pFile->pszPath);
+#ifdef ENABLE_PATCHES
+        fprintf(pErrorFile, "%s", szMessage);
+#else
         // The original passes the message to fprintf() as the format.
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wformat-security"
         fprintf(pErrorFile, szMessage);
-#pragma GCC diagnostic pop
+#endif /* ENABLE_PATCHES */
         OutputDebugStringA(szMessage);
         fclose(pErrorFile);
         exit(1);
