@@ -343,11 +343,19 @@ void EarDirectSoundPlaybackState::Initialize() {
 
 HRESULT EarDirectSoundPlaybackState::CreateBuffer(IDirectSound *device,
                                                   _DSBUFFERDESC *description) {
-    return device->CreateSoundBuffer(description, std::addressof(buffer), nullptr);
+    // A packed member cannot be bound to the pointer the call writes, so the call writes a copy.
+    IDirectSoundBuffer *created = buffer;
+    HRESULT result = device->CreateSoundBuffer(description, &created, nullptr);
+    buffer = created;
+    return result;
 }
 
 void EarDirectSoundPlaybackState::UpdateCursors() {
-    buffer->GetCurrentPosition(std::addressof(playCursor), std::addressof(writeCursor));
+    DWORD play = playCursor;
+    DWORD write = writeCursor;
+    buffer->GetCurrentPosition(&play, &write);
+    playCursor = play;
+    writeCursor = write;
 }
 
 void EarPlayback::InitializeDirectSoundPlaybackState() {

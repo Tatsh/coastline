@@ -189,8 +189,10 @@ ScheduledEarEvent::~ScheduledEarEvent() {
     }
     if (allocatedSource && suppressionMarker != 1) {
         ::operator delete(allocatedSource);
-        // Native failure cleanup can invoke destruction repeatedly on the same storage.
-        static_cast<char *volatile &>(allocatedSource) = nullptr;
+        // Native failure cleanup can invoke destruction repeatedly on the same storage, so the
+        // barrier keeps the store from being dropped as dead.
+        allocatedSource = nullptr;
+        __asm__ __volatile__("" : : : "memory");
     }
 }
 
