@@ -91,17 +91,17 @@ The programs are `BRD3D.dll`, `BRGlide.dll`.
 
 | Measure                                                                                                                  | Count |
 | ------------------------------------------------------------------------------------------------------------------------ | ----: |
-| Functions in the programs                                                                                                | 2,273 |
+| Functions in the programs                                                                                                | 2,195 |
 | Excluded as C runtime (MSVC runtime library)                                                                             |   336 |
 | Excluded as Compiler-generated (static initialisers, atexit registrations, deleting destructors, and exception funclets) |   131 |
 | Excluded as Thunk (import or jump thunk the linker generates)                                                            |    73 |
 | Excluded as zlib (provided by open-source zlib, vendored when modified)                                                  |     1 |
-| To reconstruct                                                                                                           | 1,732 |
-| Done                                                                                                                     | 1,593 |
+| To reconstruct                                                                                                           | 1,654 |
+| Done                                                                                                                     | 1,594 |
 | Stubbed (not counted as done)                                                                                            |     0 |
 | Declared only (not counted as done)                                                                                      |     4 |
-| Share done                                                                                                               | 92.0% |
-| Only in BRGlide                                                                                                          |   159 |
+| Share done                                                                                                               | 96.4% |
+| Only in BRGlide                                                                                                          |    81 |
 
 ### By release
 
@@ -110,13 +110,13 @@ A routine counts for a release when its address in that release is tagged.
 | Release       | Routines |  Done |  Share |
 | ------------- | -------: | ----: | -----: |
 | `BRD3D.dll`   |    1,573 | 1,573 | 100.0% |
-| `BRGlide.dll` |    1,431 | 1,136 |  79.4% |
+| `BRGlide.dll` |    1,432 | 1,275 |  89.0% |
 
 ### By component
 
 | Component | Routines |  Done | Stubbed | Share |
 | --------- | -------: | ----: | ------: | ----: |
-| Game code |    1,732 | 1,593 |       0 | 92.0% |
+| Game code |    1,654 | 1,594 |       0 | 96.4% |
 
 ## All releases
 
@@ -132,14 +132,14 @@ address in the PC libraries.
 | `eur.z64`     | Nintendo 64 |      792 |   792 | 100.0% |
 | `jpn.z64`     | Nintendo 64 |      795 |   795 | 100.0% |
 | `BRD3D.dll`   | PC port     |    1,573 | 1,573 | 100.0% |
-| `BRGlide.dll` | PC port     |    1,431 | 1,136 |  79.4% |
+| `BRGlide.dll` | PC port     |    1,432 | 1,275 |  89.0% |
 
 | Measure                                         | Count |
 | ----------------------------------------------- | ----: |
-| Routines of the PC port shared with the N64     |   366 |
-| Shared and done in every N64 release            |   366 |
-| Shared and done in every release of both groups |   338 |
-| Shared, done on the N64, and not yet on the PC  |    28 |
+| Routines of the PC port shared with the N64     |   360 |
+| Shared and done in every N64 release            |   360 |
+| Shared and done in every release of both groups |   349 |
+| Shared, done on the N64, and not yet on the PC  |    11 |
 
 ## Parts
 
@@ -156,12 +156,12 @@ block of the master program.
 | [n64-game-code-80250000.md](progress/n64-game-code-80250000.md)       | Nintendo 64 | Game code      | `0x80250000`-`0x80260000` |      140 |  140 | 100.0% |
 | [n64-game-code-80260000.md](progress/n64-game-code-80260000.md)       | Nintendo 64 | Game code      | `0x80260000`-`0x80270000` |        2 |    2 | 100.0% |
 | [n64-sdk-libultra-80260000.md](progress/n64-sdk-libultra-80260000.md) | Nintendo 64 | SDK (libultra) | `0x80260000`-`0x80270000` |      208 |  208 | 100.0% |
-| [pc-game-code-10000000.md](progress/pc-game-code-10000000.md)         | PC port     | Game code      | `0x10000000`-`0x10010000` |      253 |  244 |  96.4% |
-| [pc-game-code-10010000.md](progress/pc-game-code-10010000.md)         | PC port     | Game code      | `0x10010000`-`0x10020000` |      161 |  156 |  96.9% |
-| [pc-game-code-10020000.md](progress/pc-game-code-10020000.md)         | PC port     | Game code      | `0x10020000`-`0x10030000` |      190 |  164 |  86.3% |
-| [pc-game-code-10030000.md](progress/pc-game-code-10030000.md)         | PC port     | Game code      | `0x10030000`-`0x10040000` |      359 |  299 |  83.3% |
-| [pc-game-code-10040000.md](progress/pc-game-code-10040000.md)         | PC port     | Game code      | `0x10040000`-`0x10050000` |      275 |  261 |  94.9% |
-| [pc-game-code-10050000.md](progress/pc-game-code-10050000.md)         | PC port     | Game code      | `0x10050000`-`0x10060000` |       93 |   73 |  78.5% |
-| [pc-game-code-10060000.md](progress/pc-game-code-10060000.md)         | PC port     | Game code      | `0x10060000`-`0x10070000` |      171 |  166 |  97.1% |
+| [pc-game-code-10000000.md](progress/pc-game-code-10000000.md)         | PC port     | Game code      | `0x10000000`-`0x10010000` |      250 |  246 |  98.4% |
+| [pc-game-code-10010000.md](progress/pc-game-code-10010000.md)         | PC port     | Game code      | `0x10010000`-`0x10020000` |      158 |  154 |  97.5% |
+| [pc-game-code-10020000.md](progress/pc-game-code-10020000.md)         | PC port     | Game code      | `0x10020000`-`0x10030000` |      185 |  164 |  88.6% |
+| [pc-game-code-10030000.md](progress/pc-game-code-10030000.md)         | PC port     | Game code      | `0x10030000`-`0x10040000` |      318 |  299 |  94.0% |
+| [pc-game-code-10040000.md](progress/pc-game-code-10040000.md)         | PC port     | Game code      | `0x10040000`-`0x10050000` |      261 |  261 | 100.0% |
+| [pc-game-code-10050000.md](progress/pc-game-code-10050000.md)         | PC port     | Game code      | `0x10050000`-`0x10060000` |       83 |   74 |  89.2% |
+| [pc-game-code-10060000.md](progress/pc-game-code-10060000.md)         | PC port     | Game code      | `0x10060000`-`0x10070000` |      169 |  166 |  98.2% |
 | [pc-game-code-10070000.md](progress/pc-game-code-10070000.md)         | PC port     | Game code      | `0x10070000`-`0x10080000` |      229 |  229 | 100.0% |
 | [pc-game-code-10080000.md](progress/pc-game-code-10080000.md)         | PC port     | Game code      | `0x10080000`-`0x10090000` |        1 |    1 | 100.0% |

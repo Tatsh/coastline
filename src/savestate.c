@@ -97,9 +97,7 @@ void DeserializeSaveData(SaveField *fields, u8 *buffer) {
         buffer += fields[i].size;
     }
 }
-#endif /*
- * TGR_PLATFORM != TGR_PLATFORM_WIN && (TGR_REGION == TGR_REGION_JP || TGR_REGION == TGR_REGION_EU)
- */
+#endif /* !TGR_PLATFORM_WIN && (TGR_REGION_JP || TGR_REGION_EU) */
 
 void SaveRaceSnapshot(LastLapBuffer *buffer) {
 /* The capacity given is that of the whole buffer, not of the room after the recordings. */

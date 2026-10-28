@@ -627,6 +627,7 @@ meyerhofer
 mfhi
 mflo
 migratehost
+minidump
 minimizebox
 minode
 miny
@@ -776,6 +777,7 @@ playerinput
 playerlost
 playerready
 playerselect
+pminidump
 podarchive
 ponchetti
 popmtx
@@ -944,6 +946,7 @@ slti
 sltu
 smokepos
 snapcraft
+snapmodule
 snapshotfields
 snapshotinterpolation
 sndlevl
@@ -1061,6 +1064,7 @@ tluts
 tlvertex
 tmsf
 tolower
+toolhelp
 toupper
 tracetrack
 trackanimation
@@ -1168,8 +1172,6 @@ wheelrender
 windowposchanging
 windres
 winecfg
-winedbg
-winedebug
 wineprefix
 wineserver
 winget
