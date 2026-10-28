@@ -201,7 +201,7 @@ static f32 CorrectAiLine(Vehicle *vehicle,
                 steer = AI_INTERMEDIATE(heading) * -0.2f *
                             ((AI_INTERMEDIATE(sideDistance) - limit) / sideDistance) +
                         0.03f;
-            } else if (heading < -0.15) {
+            } else if (AI_LESS(heading, -0.15)) {
                 g_bAiNudgeLeft = TRUE;
                 g_bAiNudgeRight = FALSE;
                 steer = AI_INTERMEDIATE(heading) * -0.3f *
@@ -209,7 +209,7 @@ static f32 CorrectAiLine(Vehicle *vehicle,
                         0.1f;
             }
         } else {
-            if (heading < 0.05) {
+            if (AI_LESS(heading, 0.05)) {
                 g_bAiNudgeLeft = TRUE;
                 g_bAiNudgeRight = FALSE;
                 steer = AI_INTERMEDIATE(heading) * 0.2f *
@@ -309,11 +309,11 @@ static f32 ReadAiLineAhead(Vehicle *vehicle) {
             VEHICLE_GET(vehicle, Input)->buttons |= INPUT_BRAKE;
             return 2.0f;
         }
-        if ((f32)i * 4.5f < excess) {
+        if (AI_LESS((f32)i * 4.5f, excess)) {
             VEHICLE_GET(vehicle, Input)->buttons &= ~INPUT_ACCELERATE;
             return 2.0f;
         }
-        if ((f32)i * 3.0f < excess) {
+        if (AI_LESS((f32)i * 3.0f, excess)) {
             return 1.3f;
         }
     }
