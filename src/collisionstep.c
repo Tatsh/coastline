@@ -111,17 +111,29 @@ s32 TipBalancedVehicle(RigidBody *body) {
         return 0;
     }
     GetBodyPointVelocity(&velocity, body, &corner);
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+    along = (COLLISION_PRODUCT(wheel->groundNormal.z, velocity.z) +
+             COLLISION_PRODUCT(wheel->groundNormal.y, velocity.y)) +
+            COLLISION_PRODUCT(wheel->groundNormal.x, velocity.x);
+#else
     along = COLLISION_PRODUCT(wheel->groundNormal.z, velocity.z) +
             (COLLISION_PRODUCT(velocity.x, wheel->groundNormal.x) +
              COLLISION_PRODUCT(velocity.y, wheel->groundNormal.y));
+#endif
     osSyncPrintf("-- Stand Vel = %f\n", (f64)along);
     if (ABS(along) > 0.1f) {
         return 0;
     }
     /* Roll it towards the way its nose leans across the ground. */
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+    tilt = (COLLISION_PRODUCT(body->groundNormal.y, body->orientation[0][1]) +
+            COLLISION_PRODUCT(body->groundNormal.z, body->orientation[0][2])) +
+           COLLISION_PRODUCT(body->groundNormal.x, body->orientation[0][0]);
+#else
     tilt = COLLISION_PRODUCT(body->groundNormal.z, body->orientation[0][2]) +
            (COLLISION_PRODUCT(body->orientation[0][0], body->groundNormal.x) +
             COLLISION_PRODUCT(body->orientation[0][1], body->groundNormal.y));
+#endif
     if (0.0f < tilt) {
         nudge.x = 0.0f;
         nudge.y = 0.1f;
