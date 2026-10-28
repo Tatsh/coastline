@@ -10,6 +10,7 @@
 #include "earplayback.h"
 #include "environment.h"
 #include "error.h"
+#include "platform/win/uninitialized.h"
 #include "playbackimplementations.h"
 #include "registry.h"
 
@@ -257,6 +258,8 @@ void ScheduledEarEvent::DeactivateScheduledEarEvent() {
     }
 }
 
+// A failed lookup of the environment leaves it unset, and the original reads it.
+BEGIN_ORIGINAL_UNINITIALIZED_READ
 int ScheduledEarEvent::InitializeScheduledEarEventPlayback() {
     playbackInitialized = 1;
     // Native code clears a local that it never reads.
@@ -313,6 +316,7 @@ int ScheduledEarEvent::InitializeScheduledEarEventPlayback() {
     streaming = playback->IsEarPlaybackStreaming();
     return 1;
 }
+END_ORIGINAL_UNINITIALIZED_READ
 
 int ScheduledEarEvent::GetScheduledEventPlaybackStatus() {
     return playback->GetStatus();
