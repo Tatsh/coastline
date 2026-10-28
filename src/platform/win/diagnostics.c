@@ -13,6 +13,7 @@
 
 #ifdef ENABLE_PATCHES
 static LPTOP_LEVEL_EXCEPTION_FILTER previousFilter;
+static PVOID exceptionObserver;
 static LONG reportingCrash;
 static bool initialized;
 static HMODULE debugLibrary;
@@ -78,14 +79,10 @@ static void WriteCrashStack(const CONTEXT *context) {
     }
 }
 
-static LONG WINAPI ReportApplicationCrash(EXCEPTION_POINTERS *exception) {
-    if (InterlockedCompareExchange(&reportingCrash, 1, 0)) {
-        return EXCEPTION_CONTINUE_SEARCH;
-    }
+static void WriteExceptionDetails(EXCEPTION_POINTERS *exception) {
     char line[1024];
     EXCEPTION_RECORD *record = exception->ExceptionRecord;
     CONTEXT *context = exception->ContextRecord;
-    WriteApplicationDiagnostic("Unhandled exception.\n");
     snprintf(line,
              sizeof(line),
              "code=0x%08lx address=%p thread=%lu build=%s %s %s\n",
@@ -137,6 +134,30 @@ static LONG WINAPI ReportApplicationCrash(EXCEPTION_POINTERS *exception) {
         }
         CloseHandle(snapshot);
     }
+}
+
+static LONG WINAPI ObserveApplicationException(EXCEPTION_POINTERS *exception) {
+    DWORD code = exception->ExceptionRecord->ExceptionCode;
+    if (code != EXCEPTION_ACCESS_VIOLATION && code != EXCEPTION_ILLEGAL_INSTRUCTION &&
+        code != EXCEPTION_INT_DIVIDE_BY_ZERO) {
+        return EXCEPTION_CONTINUE_SEARCH;
+    }
+    if (!InterlockedCompareExchange(&reportingCrash, 1, 0)) {
+        DWORD savedError = GetLastError();
+        WriteApplicationDiagnostic("First-chance fault; another handler may handle it.\n");
+        WriteExceptionDetails(exception);
+        InterlockedExchange(&reportingCrash, 0);
+        SetLastError(savedError);
+    }
+    return EXCEPTION_CONTINUE_SEARCH;
+}
+
+static LONG WINAPI ReportApplicationCrash(EXCEPTION_POINTERS *exception) {
+    if (InterlockedCompareExchange(&reportingCrash, 1, 0)) {
+        return EXCEPTION_CONTINUE_SEARCH;
+    }
+    WriteApplicationDiagnostic("Unhandled exception.\n");
+    WriteExceptionDetails(exception);
     if (writeDump && dumpPath[0]) {
         HANDLE dump = CreateFileA(dumpPath,
                                   GENERIC_WRITE,
@@ -207,7 +228,18 @@ void InitializeApplicationDiagnostics(void) {
     initialized = true;
     SetDiagnosticPath(logPath, "coastline.log");
     SetDiagnosticPath(dumpPath, "coastline-crash.dmp");
+    HANDLE log = CreateFileA(logPath,
+                             GENERIC_WRITE,
+                             FILE_SHARE_READ | FILE_SHARE_WRITE,
+                             nullptr,
+                             CREATE_ALWAYS,
+                             FILE_ATTRIBUTE_NORMAL,
+                             nullptr);
+    if (log != INVALID_HANDLE_VALUE) {
+        CloseHandle(log);
+    }
     previousFilter = SetUnhandledExceptionFilter(ReportApplicationCrash);
+    exceptionObserver = AddVectoredExceptionHandler(1, ObserveApplicationException);
     WriteApplicationDiagnostic("Application diagnostics initialized.\n");
     WriteApplicationDiagnostic("github.com/Tatsh/coastline " COASTLINE_GIT_SHA " " __DATE__
                                " " __TIME__ "\n");
@@ -224,6 +256,10 @@ void ShutdownApplicationDiagnostics(void) {
         return;
     }
     SetUnhandledExceptionFilter(previousFilter);
+    if (exceptionObserver) {
+        RemoveVectoredExceptionHandler(exceptionObserver);
+        exceptionObserver = nullptr;
+    }
     if (debugLibrary) {
         FreeLibrary(debugLibrary);
         debugLibrary = nullptr;

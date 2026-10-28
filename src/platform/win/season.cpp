@@ -8,6 +8,7 @@
 
 #include "game.h"
 #include "platform/win/boot/rallyconfig.h"
+#include "platform/win/buildinfo.h"
 #include "platform/win/configfile.h"
 #include "platform/win/frontend.h"
 #include "platform/win/ghost.h"
@@ -79,6 +80,7 @@ void ProcessSeasonResults(void) {
 }
 
 void ExitRaceAndProcessSeasonResults(void) {
+    PrintWineDiagnostic("coastline: Leaving replay and processing race results.\n");
     std::memset(&g_SeasonResumeState, 0, sizeof(g_SeasonResumeState));
     g_SeasonResumeState.state = g_dwGameMode;
     if (g_dwGameMode == GAME_MODE_CHAMPIONSHIP) {
@@ -100,6 +102,7 @@ void ExitRaceAndProcessSeasonResults(void) {
         std::memcpy(&g_SeasonProgressPrev, profile, sizeof(g_SeasonProgressPrev));
         g_dwNumLocalPlayers = 1;
         ProcessSeasonResults();
+        PrintWineDiagnostic("coastline: Championship results processed.\n");
         std::memcpy(&g_SeasonProgress, g_pPrimarySeasonSave, sizeof(g_SeasonProgress));
         SetTrackFromSeason();
     }
