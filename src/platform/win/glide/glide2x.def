@@ -1,0 +1,42 @@
+; The routines BRGlide.dll imports from glide2x.dll. The library exports each by its decorated name
+; with the leading underscore, which the name after == gives.
+LIBRARY glide2x.dll
+EXPORTS
+grAlphaBlendFunction@16 == _grAlphaBlendFunction@16
+grAlphaCombine@20 == _grAlphaCombine@20
+grAlphaTestFunction@4 == _grAlphaTestFunction@4
+grAlphaTestReferenceValue@4 == _grAlphaTestReferenceValue@4
+grBufferClear@12 == _grBufferClear@12
+grBufferNumPending@0 == _grBufferNumPending@0
+grBufferSwap@4 == _grBufferSwap@4
+grClipWindow@16 == _grClipWindow@16
+grColorCombine@20 == _grColorCombine@20
+grConstantColorValue@4 == _grConstantColorValue@4
+grCullMode@4 == _grCullMode@4
+grDepthBufferFunction@4 == _grDepthBufferFunction@4
+grDepthBufferMode@4 == _grDepthBufferMode@4
+grDepthMask@4 == _grDepthMask@4
+grDrawPolygonVertexList@8 == _grDrawPolygonVertexList@8
+grDrawTriangle@12 == _grDrawTriangle@12
+grFogColorValue@4 == _grFogColorValue@4
+grFogMode@4 == _grFogMode@4
+grFogTable@4 == _grFogTable@4
+grGlideInit@0 == _grGlideInit@0
+grGlideShutdown@0 == _grGlideShutdown@0
+grLfbWriteRegion@32 == _grLfbWriteRegion@32
+grSstQueryHardware@4 == _grSstQueryHardware@4
+grSstSelect@4 == _grSstSelect@4
+grSstWinClose@0 == _grSstWinClose@0
+grSstWinOpen@28 == _grSstWinOpen@28
+grTexCalcMemRequired@16 == _grTexCalcMemRequired@16
+grTexClampMode@12 == _grTexClampMode@12
+grTexCombine@28 == _grTexCombine@28
+grTexDownloadMipMap@16 == _grTexDownloadMipMap@16
+grTexFilterMode@12 == _grTexFilterMode@12
+grTexLodBiasValue@8 == _grTexLodBiasValue@8
+grTexMaxAddress@4 == _grTexMaxAddress@4
+grTexMinAddress@4 == _grTexMinAddress@4
+grTexMipMapMode@12 == _grTexMipMapMode@12
+grTexSource@16 == _grTexSource@16
+grTexTextureMemRequired@8 == _grTexTextureMemRequired@8
+guFogGenerateLinear@12 == _guFogGenerateLinear@12

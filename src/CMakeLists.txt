@@ -250,6 +250,9 @@ if(TGR_PLATFORM STREQUAL "win")
   set_target_properties(${_library} PROPERTIES PREFIX "")
   target_link_libraries(${_library} PRIVATE ${COASTLINE_LIBRARIES} ole32 user32 ddraw dinput
                                           dplayx dxguid winmm msacm32)
+  if(TARGET coastline_glide)
+    target_link_libraries(${_library} PRIVATE coastline_glide)
+  endif()
 else()
   if(COASTLINE_ASSETS_DIR AND COASTLINE_ASM_SYMBOLS)
     # The program is flattened into the bytes the IPL3 loads. build-rom puts the bytes after the

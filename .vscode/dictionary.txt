@@ -133,6 +133,7 @@ coasttr
 coasttrk
 colc
 collisionstep
+color
 colored
 colorkeyenable
 combkey
@@ -268,6 +269,7 @@ dlabel
 dlbeam
 dlhi
 dllmain
+dlltool
 dlnear
 dmaread
 dmaterial
@@ -413,6 +415,7 @@ fsanitize
 ftofrac
 funclets
 funcs
+fxmisc
 gameinit
 gamesession
 gamestate
@@ -483,6 +486,7 @@ idok
 ilse
 immp
 imref
+incsrc
 infblock
 infcodes
 inffast
@@ -544,6 +548,7 @@ libdragon
 libdragon's
 libera
 libgcc
+libglide
 libsonnet
 libultra
 libunwind
@@ -1007,6 +1012,7 @@ subu
 sunweth
 superbuild
 surfacelost
+swlibs
 swwwwfgdafch
 syms
 synchapi

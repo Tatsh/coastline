@@ -7,6 +7,7 @@ this directory, and upstream code retains its original style.
 | Directory     | Upstream archive                                   | SHA-256 of the archive                                             | Files imported            |
 | ------------- | -------------------------------------------------- | ------------------------------------------------------------------ | ------------------------- |
 | `zlib-1.0.4/` | <https://www.zlib.net/fossils/zlib-1.0.4.tar.gz> | `e5c260cd3db1370fb3e0c193e9cbd9f127a9bd055d622b3fb55b82747f6e5b24` | 19 of the release's files |
+| `glide-2f226f0f9225ce8ee83e6a4a7042981e719d19ee/` | <https://github.com/sezero/glide/archive/2f226f0f9225ce8ee83e6a4a7042981e719d19ee.tar.gz> | `bc57c4e51e6bd0a3c8f464cb693ca62dd5ad0bd9f8cca6d99933fdd702c1b1e9` | 6 of the archive's files |
 
 ## zlib 1.0.4
 
@@ -34,6 +35,16 @@ of [PROGRESS.md](../PROGRESS.md). Each definition carries the USA address of its
 
 The rest of the code is upstream. Its calls match the original routine by routine, and it inflates
 every asset of the USA release to the same bytes as the host zlib.
+
+## Glide 2.x
+
+BRGlide.dll draws through the Glide 2.x API of 3dfx and imports 38 of its routines from
+`glide2x.dll`. The archive is the open-source Glide of 3dfx, as kept in the sezero/glide fork of the
+SourceForge repository. The imported files are the public headers of Glide 2.x for the Voodoo 2
+(`glide2x/cvg/glide/src/glide.h`, `glidesys.h`, and `glideutl.h`, and `glide2x/cvg/incsrc/sst1vid.h`),
+the `swlibs/fxmisc/3dfx.h` they include, and `glide2x/glide_license.txt`, the 3DFX GLIDE Source Code
+General Public License they are distributed under. The headers are not changed. The import library
+of `glide2x.dll` is built from `src/platform/win/glide/glide2x.def`.
 
 ## Verification
 
