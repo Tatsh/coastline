@@ -878,23 +878,33 @@ static inline void GenerateGlideTextureCoordinates(const ConvertedModelVertex &i
                                                    bool bLinear) {
     const float (*matrix)[4] =
         g_dwGbiMatrixStackDepth ? g_aGbiModelViewStack[g_dwGbiMatrixStackDepth - 1] : nullptr;
+    auto row = [matrix, &input](int nColumn) -> float {
+        return (static_cast<long double>(matrix[0][nColumn]) * input.normal.x +
+                static_cast<long double>(matrix[2][nColumn]) * input.normal.z) +
+               static_cast<long double>(matrix[1][nColumn]) * input.normal.y;
+    };
     Vec3f normal;
-    normal.x = matrix[0][0] * input.normal.x + matrix[1][0] * input.normal.y +
-               matrix[2][0] * input.normal.z;
-    normal.y = matrix[0][1] * input.normal.x + matrix[1][1] * input.normal.y +
-               matrix[2][1] * input.normal.z;
-    normal.z = matrix[0][2] * input.normal.x + matrix[1][2] * input.normal.y +
-               matrix[2][2] * input.normal.z;
+    normal.x = row(0);
+    normal.y = row(1);
+    normal.z = row(2);
     Vec3fNormalize(&normal);
-    const Light_t &lookX = g_pGbiLookAtX->l;
-    const Light_t &lookY = g_pGbiLookAtY->l;
-    float s = (lookX.dir[0] * normal.x + lookX.dir[1] * normal.y + lookX.dir[2] * normal.z) /
-              GBI_LIGHT_SCALE;
-    float t = (lookY.dir[0] * normal.x + lookY.dir[1] * normal.y + lookY.dir[2] * normal.z) /
-              GBI_LIGHT_SCALE;
+    auto project = [&normal](const Light_t &look, bool bSumXYFirst) -> long double {
+        long double x = look.dir[0] * static_cast<long double>(normal.x);
+        long double y = look.dir[1] * static_cast<long double>(normal.y);
+        long double z = look.dir[2] * static_cast<long double>(normal.z);
+        return (bSumXYFirst ? (x + y) + z : (x + z) + y) / GBI_LIGHT_SCALE;
+    };
+    long double s = project(g_pGbiLookAtX->l, bLinear);
+    long double t = project(g_pGbiLookAtY->l, false);
     float fEdgeScale = bLinear ? 0.5f : 1.0f;
+    // The handlers round s and t to a float at different points, and the arc sine takes t as a
+    // double.
     if (bLinear) {
-        t = static_cast<float>(asin(t)) / 3.1415927f;
+        s = static_cast<float>(s);
+        float fArc = static_cast<float>(asin(static_cast<double>(t)));
+        t = static_cast<float>(static_cast<long double>(fArc) / 3.1415927f);
+    } else {
+        t = static_cast<float>(t);
     }
     source.fS = (s * static_cast<float>(g_dwTileSizeWidth) + GBI_TEXTURE_GEN_OFFSET -
                  static_cast<float>(g_dwTileSizeUls) * fEdgeScale) /
