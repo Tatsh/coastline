@@ -9,6 +9,7 @@
 #include "platform/win/boot/rallyconfig.h"
 #include "platform/win/d3d/texture.h"
 #include "platform/win/render.h"
+#include "platform/win/renderinit.h"
 #include "platform/win/settings.h"
 #include "screen.h"
 

@@ -24,6 +24,7 @@
 #include "platform/win/frametimer.h"
 #include "platform/win/frontend.h"
 #include "platform/win/render.h"
+#include "platform/win/renderinit.h"
 #include "platform/win/settings.h"
 #include "platform/win/sound.h"
 #include "timing.h"
@@ -480,10 +481,6 @@ LRESULT HandleWindowClose(HWND hWnd) {
 
 LRESULT HandleWindowCommand(HWND hWnd, WPARAM wParam, LPARAM lParam) {
     return DefWindowProcA(hWnd, WM_COMMAND, wParam, lParam);
-}
-
-int ReturnZero(void) {
-    return 0;
 }
 
 LRESULT HandleWindowDestroy(HWND hWnd) {

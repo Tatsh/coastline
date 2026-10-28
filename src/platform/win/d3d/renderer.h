@@ -1139,15 +1139,6 @@ enum RenderStateDirtyBit {
 DirectDrawDriver *
 FindDirectDrawDriverByGuid(GUID *pGuid, DirectDrawDriver **ppPrimary, DirectDrawDriver *pFirst);
 
-/**
- * Do nothing.
- *
- * @return 0.
- * @ghidraAddress BRD3D: 0x1007a1c0
- * @ghidraAddress BRGlide: 0x10053e60
- */
-int ReturnZero(void);
-
 /** Image metadata shared by texture entries and temporary texture conversions. */
 struct TextureImageData {
     int nOption1;           /*!< Initialized to 0 by image construction. */

@@ -30,7 +30,7 @@ void CreateWindowsRenderMutex(void) {
     g_hRenderMutex = CreateMutexA(nullptr, false, nullptr);
 }
 
-s32 ControllerPakCompatibilityStub(void) {
+s32 ReturnZero(void) {
     return 0;
 }
 

@@ -14,9 +14,9 @@
 #define osViSetEvent(...) NullStub()
 #define osCreateThread(...) NullStub()
 #define osStartThread(...) NullStub()
-#define osPfsInit(...) ControllerPakCompatibilityStub()
-#define osMotorInit(...) ControllerPakCompatibilityStub()
-#define osMotorStop(...) ControllerPakCompatibilityStub()
+#define osPfsInit(...) ReturnZero()
+#define osMotorInit(...) ReturnZero()
+#define osMotorStop(...) ReturnZero()
 
 DisplayListCommand *g_pDisplayListBase;
 f32 g_fCountsPerMillisecond;

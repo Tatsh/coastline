@@ -18,10 +18,13 @@ extern HANDLE g_hRenderMutex;
 void CreateWindowsRenderMutex(void);
 
 /**
+ * Do nothing.
+ *
+ * @return 0.
  * @ghidraAddress BRD3D: 0x1007a1c0
  * @ghidraAddress BRGlide: 0x10053e60
  */
-s32 ControllerPakCompatibilityStub(void);
+s32 ReturnZero(void);
 
 #ifdef __cplusplus
 }
