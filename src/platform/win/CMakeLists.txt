@@ -73,6 +73,7 @@ if(TGR_RENDERER STREQUAL "d3d")
             soundbank.c
             raceglobals.c
             trackmenudata.c
+            visibilitydata.c
             creditdata.c
             displaylistdata.c
             effectdata.c
