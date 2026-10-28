@@ -135,7 +135,7 @@ void DeserializeKeyframeState(KeyframeState *pState, const u8 *pBuffer) {
 }
 
 static inline float BlendKeyframeValue(float from, float to, float share) {
-    return from + (to - from) * share;
+    return (static_cast<long double>(to) - from) * share + from;
 }
 
 void InterpolateKeyframeState(KeyframeState *pOut,
