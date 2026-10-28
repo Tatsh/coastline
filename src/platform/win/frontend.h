@@ -3708,6 +3708,14 @@ extern int g_dwTrackMenuIndex;
 extern int g_dwSelectedWeather;
 
 /**
+ * An unused value cleared with the menu selections.
+ *
+ * @ghidraAddress BRD3D: 0x10aa2a04
+ * @ghidraAddress BRGlide: 0x10ac5d5c
+ */
+extern int g_dwUnusedWeatherMenuValue;
+
+/**
  * The chosen transmission.
  *
  * @ghidraAddress BRD3D: 0x10aa2a08

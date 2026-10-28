@@ -137,6 +137,7 @@ int g_dwSessionListRefreshing;
 int g_dwFrontEndAtRootMenu;
 int g_dwTrackMenuIndex = 2;
 int g_dwSelectedWeather;
+int g_dwUnusedWeatherMenuValue;
 int g_dwSelectedTransmission;
 int g_dwTireMenuIndex = 1;
 int g_dwSuspensionMenuIndex = 1;
@@ -8023,6 +8024,7 @@ void ResetMenuSelectionsToDefaults(void) {
     memset(g_awSeasonRoundPoints, 0, sizeof(g_awSeasonRoundPoints));
     g_dwTrackMenuIndex = 2;
     g_dwSelectedWeather = 0;
+    g_dwUnusedWeatherMenuValue = 0;
     g_dwSelectedTransmission = 0;
     g_dwTireMenuIndex = 1;
     g_dwSuspensionMenuIndex = 1;
