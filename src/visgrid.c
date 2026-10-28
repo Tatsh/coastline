@@ -2,6 +2,13 @@
 
 #include "mathutil.h"
 
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+/** @ghidraAddress BRD3D: 0x10a9bbc4 */
+s32 g_dwVisibleGridMaxRow;
+/** @ghidraAddress BRD3D: 0x10a9bbcc */
+s32 g_dwVisibleGridMinRow;
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+
 /* The size of a cell in track units, and its reciprocal. */
 #define CELL_SIZE 32.0f
 #define CELL_SCALE (1.0f / 32.0f)

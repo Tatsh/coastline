@@ -2,6 +2,15 @@
 
 #include <string.h>
 
+/** @ghidraAddress BRD3D: 0x1039b71c */
+const Particle *g_pParticleListData;
+/** @ghidraAddress BRD3D: 0x1039b714 */
+u16 g_wRenderExhaustParticleListHead;
+/** @ghidraAddress BRD3D: 0x1039b718 */
+u16 g_wRenderPavedTireSmokeListHead;
+/** @ghidraAddress BRD3D: 0x1039b710 */
+u16 g_wRenderTireSmokeListHead;
+
 void LoadParticleListHeads(const ParticleSnapshot *snapshot) {
     g_pParticleListData = snapshot->particles;
     g_wRenderExhaustParticleListHead = snapshot->exhaustListHead;

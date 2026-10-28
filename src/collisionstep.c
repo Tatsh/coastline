@@ -21,6 +21,13 @@
 #endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
+/** @ghidraAddress BRD3D: 0x11754e38 */
+CollisionTriangleNode *g_pCollisionTriangleList;
+/** @ghidraAddress BRD3D: 0x117554e4 */
+CollisionTriangleNode *g_pNextCollisionTriangleNode;
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
 
 #define osSyncPrintf(...) NullStub()
 #define COLLISION_PRODUCT(a, b) ((long double)(a) * (b))

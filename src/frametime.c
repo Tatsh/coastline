@@ -9,6 +9,21 @@
 #include "debugtext.h"
 #endif
 
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+/** @ghidraAddress BRD3D: 0x106c6648 */
+s32 g_bRaceScreenActive;
+/** @ghidraAddress BRD3D: 0x106c56d8 */
+s32 g_dwElapsedTimeMs;
+/** @ghidraAddress BRD3D: 0x10690a30 */
+s32 g_dwFrameDeltaMs;
+/** @ghidraAddress BRD3D: 0x106c0204 */
+u32 g_dwFrameTimestamp;
+/** @ghidraAddress BRD3D: 0x106c64f8 */
+s32 g_dwPrevElapsedTimeMs;
+/** @ghidraAddress BRD3D: 0x106c2cfc */
+f32 g_fFrameDeltaTime;
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+
 /* A race advances by 1/30 of a second, or 1/25 at console PAL rates. */
 #if TGR_PLATFORM == TGR_PLATFORM_N64 && TGR_REGION == TGR_REGION_EU
 #define RACE_STEP_NANOSECONDS 40000000

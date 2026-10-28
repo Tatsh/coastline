@@ -7,6 +7,19 @@
 #include "timer.h"
 #include "vehiclecount.h"
 
+/** @ghidraAddress BRD3D: 0x104afd14 */
+int g_dwFrameSnapshotBlendFromSlot;
+/** @ghidraAddress BRD3D: 0x104afd0c */
+unsigned g_dwFrameSnapshotBlendStartTime;
+/** @ghidraAddress BRD3D: 0x104afd04 */
+int g_dwFrameSnapshotCurrentSlot;
+/** @ghidraAddress BRD3D: 0x104afd18 */
+int g_dwFrameSnapshotPreviousSlot;
+/** @ghidraAddress BRD3D: 0x1039b73c */
+float g_fFrameSnapshotBlendCarry;
+/** @ghidraAddress BRD3D: 0x1039b75c */
+int g_nLastInterpolatedSnapshot;
+
 namespace {
 inline float Blend(float from, float to, long double share) {
     return (static_cast<long double>(to) - from) * share + from;

@@ -43,6 +43,11 @@
 #include "platform/win/render.h"
 #endif
 
+/** @ghidraAddress BRD3D: 0x1022b34c */
+int g_dwChosenCar;
+/** @ghidraAddress BRD3D: 0x10aa285c */
+int g_dwInNetworkCarSetup;
+
 MenuScreen *g_pActiveMenuScreen;
 void *g_pFrontEndScratchBuffer;
 MenuScreen *g_pRootMenuScreen;

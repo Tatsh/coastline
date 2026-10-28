@@ -30,6 +30,41 @@
 #endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
+/** @ghidraAddress BRD3D: 0x106909e0 */
+s32 gInstantReplayActive;
+/** @ghidraAddress BRD3D: 0x10680938 */
+s32 g_bDemoInterrupted;
+/** @ghidraAddress BRD3D: 0x106909e4 */
+s32 g_bReplayAfterRace;
+/** @ghidraAddress BRD3D: 0x106909d0 */
+s32 g_bStartLightsVisible;
+/** @ghidraAddress BRD3D: 0x106805c0 */
+s32 g_dwRaceCaptionIndex;
+/** @ghidraAddress BRD3D: 0x106909f0 */
+s32 g_dwRaceExitState;
+/** @ghidraAddress BRD3D: 0x118ab470 */
+s32 g_dwRaceFinishOrderCounter;
+/** @ghidraAddress BRD3D: 0x106909ec */
+s32 g_dwRaceInitialized;
+/** @ghidraAddress BRD3D: 0x10680750 */
+s32 g_dwRacePhase;
+/** @ghidraAddress BRD3D: 0x106805a8 */
+s32 g_dwRacePhaseIndex;
+/** @ghidraAddress BRD3D: 0x10680610 */
+s32 g_dwSaveAvailable;
+/** @ghidraAddress BRD3D: 0x106909b8 */
+s32 g_dwSavedResultsValid;
+/** @ghidraAddress BRD3D: 0x106806dc */
+f32 g_fRaceCaptionTimer;
+/** @ghidraAddress BRD3D: 0x106806d8 */
+f32 g_fRacePhaseTimer;
+/** @ghidraAddress BRD3D: 0x106805bc */
+f32 g_fStartLightsDrop;
+/** @ghidraAddress BRD3D: 0x11782bc0 */
+s16 g_wRaceScreenLoopExited;
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
 #define RACE_GHOST_TRACK ((u32)(s32)g_GhostRecordingInfo.track)
 #else
 #define RACE_GHOST_TRACK g_abGhostRecording[0]

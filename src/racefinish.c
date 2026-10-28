@@ -31,6 +31,11 @@
 #endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
+/** @ghidraAddress BRD3D: 0x10680668 */
+s32 g_dwBestReplayPlayer;
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
 /**
  * An address used as the stopped-channel sample token; its contents are never read.
  * @ghidraAddress BRD3D: 0x118ac70c

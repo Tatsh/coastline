@@ -13,6 +13,11 @@
 #include <PR/R4300.h>
 #endif
 
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+/** @ghidraAddress BRD3D: 0x106c6608 */
+s32 g_dwSkyboxDisabled;
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+
 /* The sky sits just inside the far end of the view along the depth of the camera. */
 #define SKY_DEPTH_SCALE 0.99f
 

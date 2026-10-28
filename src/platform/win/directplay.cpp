@@ -31,6 +31,17 @@
 #include "trackselect.h"
 #include "vehiclecount.h"
 
+/** @ghidraAddress BRD3D: 0x1022af1c */
+int g_bNetSpectator;
+/** @ghidraAddress BRD3D: 0x10a9cffc */
+int g_dwDirectPlaySessionActive;
+/** @ghidraAddress BRD3D: 0x1022af18 */
+int g_dwNetworkPlayMode;
+/** @ghidraAddress BRD3D: 0x10aa287c */
+int g_dwServiceProviderIndex;
+/** @ghidraAddress BRD3D: 0x1039b720 */
+const char g_szEmptyUiString[1] = {0};
+
 // The index of each service provider in g_aServiceProviders.
 #define SERVICE_PROVIDER_IPX 0
 #define SERVICE_PROVIDER_TCPIP 1

@@ -1,6 +1,13 @@
 #include "screen.h"
 
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
+/** @ghidraAddress BRD3D: 0x106c299c */
+s32 g_dwScreenHeight;
+/** @ghidraAddress BRD3D: 0x106c0684 */
+s32 g_dwScreenWidth;
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
 ScreenCallback g_pfnCurrentScreen;
 ScreenCallback g_pfnNextScreen;
 ScreenCallback g_pfnSecondaryScreen;

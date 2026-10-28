@@ -4,6 +4,21 @@
 #include "screen.h"
 #include "util.h"
 
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+/** @ghidraAddress BRD3D: 0x105754fc */
+s32 g_dwFadeRectBottom;
+/** @ghidraAddress BRD3D: 0x10575508 */
+s32 g_dwFadeRectLeft;
+/** @ghidraAddress BRD3D: 0x10575500 */
+s32 g_dwFadeRectRight;
+/** @ghidraAddress BRD3D: 0x1057550c */
+s32 g_dwFadeRectTop;
+/** @ghidraAddress BRD3D: 0x10575504 */
+f32 g_fHeadlightGlare;
+/** @ghidraAddress BRD3D: 0x105754f8 */
+f32 g_fScreenFogPulse;
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+
 #define MAX_VOLUME 255.0
 
 #if TGR_PLATFORM == TGR_PLATFORM_WIN

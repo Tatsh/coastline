@@ -12,6 +12,13 @@
 #include "platform/win/settings.h"
 #include "screen.h"
 
+/** @ghidraAddress BRD3D: 0x10aa2860 */
+int g_dwActiveDisplayDeviceIndex;
+/** @ghidraAddress BRD3D: 0x10aa2a2c */
+int g_dwSelectedDisplayDeviceIndex;
+/** @ghidraAddress BRD3D: 0x118ac238 */
+DirectDrawDriver *g_pSelectedDisplayDriver;
+
 namespace {
 // @ghidraAddress BRD3D: 0x10277680
 D3DTexture g_LoadingScreenImageState;

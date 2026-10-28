@@ -9,6 +9,11 @@
 #include "platform/win/combine.h"
 #endif
 
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+/** @ghidraAddress BRD3D: 0x10690a1c */
+s32 g_dwDrawModelListNoZBuffer;
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+
 void DrawModelList(Model *model, f32 m[4][4]) {
     ModelPart *part;
     LookAt *lookAt;

@@ -10,6 +10,11 @@
 #include <string.h>
 #endif
 
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+/** @ghidraAddress BRD3D: 0x10a9bfd0 */
+u32 g_dwRandomSeed;
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+
 /* NormalizeLightMatrix() scales a matrix to this range, less a margin, for the lighting. */
 #define LIGHT_MATRIX_RANGE 1.9997559f
 #define LIGHT_MATRIX_MARGIN 0.375f

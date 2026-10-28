@@ -20,6 +20,13 @@
 #include "platform/win/sound.h"
 #endif
 
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+/** @ghidraAddress BRD3D: 0x10680734 */
+s32 g_dwPauseMenuSelection;
+/** @ghidraAddress BRD3D: 0x106909b4 */
+u32 g_dwRacePauseState;
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+
 #define FADE_SECONDS 0.2f
 #define CONFIRM_BUTTONS (INPUT_A | INPUT_START | INPUT_Z)
 #if TGR_PLATFORM == TGR_PLATFORM_WIN

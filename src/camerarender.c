@@ -13,6 +13,23 @@
 #endif
 
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
+/** @ghidraAddress BRD3D: 0x100c129c */
+s32 g_bVehicleTrackCollisionCorrected;
+/** @ghidraAddress BRD3D: 0x106c1988 */
+s32 g_dwCameraRayHitCount;
+/** @ghidraAddress BRD3D: 0x106c5708 */
+s32 g_dwCurrentSplitScreenIndex;
+/** @ghidraAddress BRD3D: 0x10af9bb4 */
+s32 g_dwReplayCameraHoldTimer;
+/** @ghidraAddress BRD3D: 0x10af9bb0 */
+s32 g_dwReplayCameraSwitchTimer;
+/** @ghidraAddress BRD3D: 0x106c6614 */
+s32 g_dwVehicleCullingDisabled;
+/** @ghidraAddress BRD3D: 0x106c2cf8 */
+Vehicle *g_pActiveCameraVehicle;
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
 
 f32 (*g_pProjectionMtx)[4];
 f32 g_ViewLookAtMtx[4][4];

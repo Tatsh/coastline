@@ -6,6 +6,11 @@
 #include <PR/gu.h>
 #endif
 
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+/** @ghidraAddress BRD3D: 0x104bbe0c */
+f32 g_fWindAngle;
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+
 #define RANDOM_TO_TWO (2.0f / 65535.0f)
 #define WIND_TURN 6.2831855f
 #define WIND_STRENGTH_MAX 1.0f

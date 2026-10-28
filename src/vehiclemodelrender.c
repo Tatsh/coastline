@@ -17,6 +17,17 @@
 #include "platform/win/render.h"
 #include "platform/win/renderbackend.h"
 
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+/** @ghidraAddress BRD3D: 0x10277e14 */
+s32 g_dwVehicleFogAlpha;
+/** @ghidraAddress BRD3D: 0x10277e5c */
+u32 g_dwVehicleOtherModeLBlend;
+/** @ghidraAddress BRD3D: 0x10277ea0 */
+s32 g_dwVehicleViewModeIndex;
+/** @ghidraAddress BRD3D: 0x106c3308 */
+VehicleModel *g_pCurrentVehicleModelData;
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+
 static inline void BindVehicleTextureEntry(u32 entry) {
     gDisplayListPtr->words.w0 = 0xdc000000 | (entry & 0xffffff);
     gDisplayListPtr->words.w1 = 1;

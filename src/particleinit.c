@@ -3,6 +3,17 @@
 #include "vehiclecount.h"
 
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
+/** @ghidraAddress BRD3D: 0x10a99bb0 */
+u16 g_wExhaustParticleListHead;
+/** @ghidraAddress BRD3D: 0x10a99ba8 */
+u16 g_wParticleFreeListHead;
+/** @ghidraAddress BRD3D: 0x10a99bb4 */
+u16 g_wPavedTireSmokeListHead;
+/** @ghidraAddress BRD3D: 0x10a99bac */
+u16 g_wTireSmokeListHead;
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
 #define PARTICLE_ACTIVE_VEHICLES activeVehicles
 #else
 #define PARTICLE_ACTIVE_VEHICLES g_dwNumActiveVehicles

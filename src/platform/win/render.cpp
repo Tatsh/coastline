@@ -21,6 +21,31 @@
 #include "screen.h"
 #include "weather.h"
 
+/** @ghidraAddress BRD3D: 0x1039b6c8 */
+int g_bDisableCarShadow;
+/** @ghidraAddress BRD3D: 0x11829318 */
+int g_dwAlphaRampStripRowCount;
+/** @ghidraAddress BRD3D: 0x10575420 */
+int g_dwD3DAlwaysSquareTextures;
+/** @ghidraAddress BRD3D: 0x104c5168 */
+int g_dwD3DClearZBuffer;
+/** @ghidraAddress BRD3D: 0x11829324 */
+unsigned g_dwFallbackEnvMapTextureId;
+/** @ghidraAddress BRD3D: 0x11829848 */
+unsigned g_dwHiResTextureMemoryThreshold;
+/** @ghidraAddress BRD3D: 0x1182931c */
+unsigned g_dwHudOverlayHalfTextureId;
+/** @ghidraAddress BRD3D: 0x11829110 */
+unsigned g_dwHudOverlayTextureId;
+/** @ghidraAddress BRD3D: 0x118abdc4 */
+int g_dwRunBenchmark;
+/** @ghidraAddress BRD3D: 0x11829108 */
+unsigned g_dwTireTrailTextureId;
+/** @ghidraAddress BRD3D: 0x11829314 */
+unsigned g_dwVehicleEnvMapTextureId;
+/** @ghidraAddress BRD3D: 0x10690bec */
+unsigned char *g_pTrackTextureTable;
+
 int g_dwRenderBackendMode;
 
 namespace {

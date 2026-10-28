@@ -5,6 +5,9 @@
 
 #include "platform/win/d3d/renderer.h"
 
+/** @ghidraAddress BRD3D: 0x104bbe18 */
+unsigned char g_bDirectDrawDriversEnumerated;
+
 DirectDrawDriver *g_pDirectDrawDriverListHead;
 
 namespace {

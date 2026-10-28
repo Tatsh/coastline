@@ -1,6 +1,11 @@
 #include "vecmath.h"
 #include "weather.h"
 
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+/** @ghidraAddress BRD3D: 0x104b2550 */
+s32 g_dwRainParticleCount;
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+
 void InitRandomRainParticles(void) {
     s32 view, i;
 

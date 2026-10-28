@@ -28,6 +28,9 @@
 #include "vehicle.h"
 #include "vehicleaccess.h"
 
+/** @ghidraAddress BRD3D: 0x10aa33e0 */
+int g_fHostWindowActive;
+
 MouseDevice *g_pMouseDevice;
 
 namespace {

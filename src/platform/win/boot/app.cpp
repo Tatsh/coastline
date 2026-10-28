@@ -9,6 +9,15 @@
 #include "text.h"
 #include "vehiclecount.h"
 
+/** @ghidraAddress BRD3D: 0x106805a0 */
+int g_dwActivateMinimized;
+/** @ghidraAddress BRD3D: 0x1068059c */
+int g_dwActivateState;
+/** @ghidraAddress BRD3D: 0x118abe2c */
+int g_dwAppExitCode;
+/** @ghidraAddress BRD3D: 0x1027736c */
+DirectDrawRenderer *g_pMainRenderWindow;
+
 void FreeAllRacerColorPanels(void) {
     for (s32 index = 0; index < g_dwNumVehicles; index++) {
         g_aRacerSlots[index].FreeEnemyCarColorPanels();

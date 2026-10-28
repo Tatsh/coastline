@@ -1,6 +1,17 @@
 #include "racers.h"
 #include "types.h"
 
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+/** @ghidraAddress BRD3D: 0x10af96c0 */
+s32 g_dwTrackRouteGates;
+/** @ghidraAddress BRD3D: 0x10af9b44 */
+s32 g_dwTrackRouteLaps;
+/** @ghidraAddress BRD3D: 0x10acd490 */
+s32 g_dwTrackRoutePointIndex;
+/** @ghidraAddress BRD3D: 0x10af988c */
+TrackSection *g_pTrackRouteSection;
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+
 /* Whether a segment crosses a gate, seen from above. The original hands the positions themselves
  * to the flat test, which reads only x and y. */
 #define CROSSES_GATE(gate, from, to)                                                               \

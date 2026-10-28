@@ -17,6 +17,27 @@
 #endif
 
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
+/** @ghidraAddress BRD3D: 0x106c65e8 */
+s32 g_dwAppliedScreenScaleShift;
+/** @ghidraAddress BRD3D: 0x106c65e0 */
+s32 g_dwDisplayModeChangeCountdown;
+/** @ghidraAddress BRD3D: 0x106c6598 */
+u32 g_dwFlushValueSource;
+/** @ghidraAddress BRD3D: 0x106c662c */
+s32 g_dwHudDebugLevel;
+/** @ghidraAddress BRD3D: 0x106c65f4 */
+u32 g_dwKeepScreenBlanked;
+/** @ghidraAddress BRD3D: 0x106c6668 */
+s32 g_dwOutputBuffReserve;
+/** @ghidraAddress BRD3D: 0x106c65f8 */
+u32 g_dwScreenUnblankDelay;
+/** @ghidraAddress BRD3D: 0x1067d570 */
+s32 g_dwTimingFrame;
+/** @ghidraAddress BRD3D: 0x1067d578 */
+u32 g_dwTimingFrameStart;
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
 #define FRAME_WRITEBACK() NullStub()
 #define FRAME_TIMING_MARKER(bar, red, green, blue, alpha) NullStub()
 /* Windows maps queue waits to the controller stub that returns 1. */

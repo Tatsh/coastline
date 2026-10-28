@@ -22,6 +22,29 @@
 #endif
 
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
+/** @ghidraAddress BRD3D: 0x1036439c */
+u32 g_dwTrackOtherModeLBlend;
+/** @ghidraAddress BRD3D: 0x103643a0 */
+u32 g_dwTrackOtherModeLFlags;
+/** @ghidraAddress BRD3D: 0x1039b6c0 */
+s32 g_nDebugHiddenInstanceIndex;
+/** @ghidraAddress BRD3D: 0x10364388 */
+s32 g_nTrackLightBufferIndex;
+/** @ghidraAddress BRD3D: 0x102e5f24 */
+s32 g_nVisibleCellIdxFar;
+/** @ghidraAddress BRD3D: 0x102e5ec0 */
+s32 g_nVisibleCellIdxMid;
+/** @ghidraAddress BRD3D: 0x10363fec */
+s32 g_nVisibleCellIdxNear;
+/** @ghidraAddress BRD3D: 0x103643a4 */
+s32 g_nVisibleInstanceCount;
+/** @ghidraAddress BRD3D: 0x103643b8 */
+LookAt *g_pTrackLookAt;
+/** @ghidraAddress BRD3D: 0x1039b6cc */
+u16 g_wActiveInstanceHideMask;
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
 
 #define VIS_FILL_MASK FillMemoryPatternBytes
 #define VIS_SORT qsort

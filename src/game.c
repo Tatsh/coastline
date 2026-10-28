@@ -22,6 +22,11 @@
 #include "screen.h"
 #endif /* TGR_PLATFORM == TGR_PLATFORM_N64 */
 
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+/** @ghidraAddress BRD3D: 0x106805b8 */
+s32 g_dwRaceSessionType;
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+
 #if TGR_PLATFORM == TGR_PLATFORM_N64
 
 /* The cartridge offset of the music of the menus. */

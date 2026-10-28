@@ -13,6 +13,17 @@
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
 #include "platform/win/gbicommand.h"
 #include "platform/win/settings.h"
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+/** @ghidraAddress BRD3D: 0x106c0680 */
+struct GbiCommand *gDisplayListPtr;
+/** @ghidraAddress BRD3D: 0x106c0920 */
+u32 g_dwAlphaDitherMode;
+/** @ghidraAddress BRD3D: 0x106c0688 */
+u32 g_dwColorDitherMode;
+/** @ghidraAddress BRD3D: 0x106c0258 */
+u32 g_dwTextureFilterMode;
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+
 #define TO_RSP_ADDRESS(p) (p)
 #define FRAME_SUB(a, b) ((s32)((u32)(a) - (u32)(b)))
 #else

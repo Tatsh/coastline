@@ -5,6 +5,11 @@
 #include "platform/win/clipplane.h"
 #include "trackshadow.h"
 
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+/** @ghidraAddress BRD3D: 0x102e5ecc */
+ShadowClipVertex *g_pShadowClipVertexFreeList;
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+
 static inline f32 LerpShadowTextureComponent(f32 first, f32 second, f32 fraction) {
     return ((long double)second - first) * fraction + first;
 }

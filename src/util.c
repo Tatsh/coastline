@@ -10,6 +10,11 @@
 #include <stdio.h>
 #endif
 
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+/** @ghidraAddress BRD3D: 0x106c65ec */
+s32 g_dwFrameBufferIndex;
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+
 /* The original stores the address of a local message for the debug display. */
 #if defined(__GNUC__) && !defined(__clang__)
 #pragma GCC diagnostic push

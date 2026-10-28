@@ -12,6 +12,11 @@
 #include "vehicleaccess.h"
 #include "weather.h"
 
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+/** @ghidraAddress BRD3D: 0x10680940 */
+s32 g_dwWaterfallCount;
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+
 /* Find the special objects of the track: the airplane, its path and trigger, and the waterfalls. */
 void FindTrackSpecials(void) {
     Vec3f axis;
