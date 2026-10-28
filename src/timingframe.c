@@ -14,17 +14,23 @@
  * @ghidraAddress BRGlide: 0x105b9724
  */
 [[maybe_unused, gnu::used]] static u32 g_dwTimingFrameElapsed;
+
+/* The libraries share the empty code of this routine with NullStub(), and still pass it the five
+ * arguments. */
+void AddTimingMarker(s32 bar, s32 red, s32 green, s32 blue, s32 alpha) {
+    (void)bar;
+    (void)red;
+    (void)green;
+    (void)blue;
+    (void)alpha;
+}
 #endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 
 void BeginTimingFrame(void) {
     s32 bar;
 
     for (bar = 0; bar < TIMING_BARS; bar++) {
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
-        NullStub();
-#else
         AddTimingMarker(bar, 0xFF, 0, 0xFF, 0x7F);
-#endif
     }
     g_dwTimingFrame ^= 1;
     g_dwTimingFrameStart = osGetCount();
