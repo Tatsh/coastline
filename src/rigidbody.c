@@ -14,6 +14,15 @@
 /* The steering angle a body starts with, about 10 degrees. */
 #define DEFAULT_STEER_ANGLE 0.174f
 
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+/* The libraries do not round a value on the x87 stack until the sum it joins is stored. */
+#define BODY_INTERMEDIATE(value) ((long double)(value))
+#define BODY_PRODUCT(a, b) ((long double)(a) * (b))
+#else
+#define BODY_INTERMEDIATE(value) (value)
+#define BODY_PRODUCT(a, b) ((a) * (b))
+#endif
+
 void StubPhysics1(void *data) {
 }
 
@@ -24,7 +33,7 @@ void MatrixToQuaternion(f32 m[4][4], Quaternion *q) {
     if (0.0f <= m[0][0]) {
         if (0.0f <= m[1][1] + m[2][2]) {
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
-            q->w = m[0][0] + (m[1][1] + m[2][2]) + 1.0f;
+            q->w = m[0][0] + (BODY_INTERMEDIATE(m[1][1]) + m[2][2]) + 1.0f;
 #else
             q->w = 1.0f + m[0][0] + m[1][1] + m[2][2];
 #endif
@@ -33,7 +42,7 @@ void MatrixToQuaternion(f32 m[4][4], Quaternion *q) {
             q->z = m[0][1] - m[1][0];
         } else {
             q->w = m[1][2] - m[2][1];
-            q->x = 1.0f + m[0][0] - m[1][1] - m[2][2];
+            q->x = BODY_INTERMEDIATE(1.0f) + m[0][0] - m[1][1] - m[2][2];
             q->y = m[0][1] + m[1][0];
             q->z = m[2][0] + m[0][2];
         }
@@ -44,14 +53,14 @@ void MatrixToQuaternion(f32 m[4][4], Quaternion *q) {
 #endif
         q->w = m[2][0] - m[0][2];
         q->x = m[0][1] + m[1][0];
-        q->y = 1.0f - m[0][0] + m[1][1] - m[2][2];
+        q->y = BODY_INTERMEDIATE(1.0f) - m[0][0] + m[1][1] - m[2][2];
         q->z = m[1][2] + m[2][1];
     } else {
         q->w = m[0][1] - m[1][0];
         q->x = m[2][0] + m[0][2];
         q->y = m[1][2] + m[2][1];
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
-        q->z = m[2][2] - (m[0][0] + m[1][1] - 1.0f);
+        q->z = m[2][2] - (BODY_INTERMEDIATE(m[0][0]) + m[1][1] - 1.0f);
 #else
         q->z = 1.0f - m[0][0] - m[1][1] + m[2][2];
 #endif
@@ -63,15 +72,22 @@ void QuaternionMultiply(Quaternion *out, Quaternion *a, Quaternion *b) {
     f32 bw = b->w, bx = b->x, by = b->y, bz = b->z;
     f32 aw = a->w, ax = a->x, ay = a->y, az = a->z;
 
-    out->z = az * bw - ay * bx + ax * by + aw * bz;
-    out->y = ay * bw + az * bx + aw * by - ax * bz;
-    out->x = ax * bw + aw * bx - az * by + ay * bz;
-    out->w = aw * bw - ax * bx - ay * by - az * bz;
+    out->z =
+        BODY_PRODUCT(az, bw) - BODY_PRODUCT(ay, bx) + BODY_PRODUCT(ax, by) + BODY_PRODUCT(aw, bz);
+    out->y =
+        BODY_PRODUCT(ay, bw) + BODY_PRODUCT(az, bx) + BODY_PRODUCT(aw, by) - BODY_PRODUCT(ax, bz);
+    out->x =
+        BODY_PRODUCT(ax, bw) + BODY_PRODUCT(aw, bx) - BODY_PRODUCT(az, by) + BODY_PRODUCT(ay, bz);
+    out->w =
+        BODY_PRODUCT(aw, bw) - BODY_PRODUCT(ax, bx) - BODY_PRODUCT(ay, by) - BODY_PRODUCT(az, bz);
 }
 
 void QuaternionNormalize(Quaternion *q) {
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
-    f32 inverse = 1.0f / sqrtf(q->x * q->x + q->y * q->y + q->z * q->z + q->w * q->w);
+    f32 square = BODY_PRODUCT(q->x, q->x) + BODY_PRODUCT(q->y, q->y) + BODY_PRODUCT(q->z, q->z) +
+                 BODY_PRODUCT(q->w, q->w);
+    /* The sqrtf of the libraries returns the root unrounded. */
+    f32 inverse = 1.0f / sqrtl(square);
 #else
     f32 inverse = 1.0f / sqrtf(q->z * q->z + (q->w * q->w + q->x * q->x + q->y * q->y));
 #endif
@@ -108,13 +124,26 @@ void ComputeDeltaQuaternion(RigidBodyState *state) {
     half[1] = state->angularVelocity.y * 0.5f;
     half[2] = state->angularVelocity.z * 0.5f;
     o = &state->orientation.w;
-    state->spin.w = -half[0] * o[1] - half[1] * o[2] - half[2] * o[3];
-    state->spin.x = o[0] * half[0] + half[1] * o[3] - half[2] * o[2];
-    state->spin.y = o[0] * half[1] + half[2] * o[1] - half[0] * o[3];
-    state->spin.z = o[0] * half[2] + half[0] * o[2] - half[1] * o[1];
+    state->spin.w =
+        BODY_PRODUCT(-half[0], o[1]) - BODY_PRODUCT(half[1], o[2]) - BODY_PRODUCT(half[2], o[3]);
+    state->spin.x =
+        BODY_PRODUCT(o[0], half[0]) + BODY_PRODUCT(half[1], o[3]) - BODY_PRODUCT(half[2], o[2]);
+    state->spin.y =
+        BODY_PRODUCT(o[0], half[1]) + BODY_PRODUCT(half[2], o[1]) - BODY_PRODUCT(half[0], o[3]);
+    state->spin.z =
+        BODY_PRODUCT(o[0], half[2]) + BODY_PRODUCT(half[0], o[2]) - BODY_PRODUCT(half[1], o[1]);
 }
 
 void ApplyRigidBodyImpulse(RigidBodyState *state, RigidBody *body, f32 dt) {
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+    /* The libraries round the product for z alone, where the x87 stack is full. */
+    state->velocity.x = BODY_PRODUCT(body->force.x, dt) + state->velocity.x;
+    state->velocity.y = BODY_PRODUCT(body->force.y, dt) + state->velocity.y;
+    state->velocity.z = (f32)(body->force.z * dt) + state->velocity.z;
+    state->angularVelocity.x = BODY_PRODUCT(body->torque.x, dt) + state->angularVelocity.x;
+    state->angularVelocity.y = BODY_PRODUCT(body->torque.y, dt) + state->angularVelocity.y;
+    state->angularVelocity.z = BODY_PRODUCT(body->torque.z, dt) + state->angularVelocity.z;
+#else
     f32 linear[3], angular[3];
 
     linear[0] = body->force.x * dt;
@@ -129,6 +158,7 @@ void ApplyRigidBodyImpulse(RigidBodyState *state, RigidBody *body, f32 dt) {
     state->angularVelocity.x = angular[0] + state->angularVelocity.x;
     state->angularVelocity.y = angular[1] + state->angularVelocity.y;
     state->angularVelocity.z = angular[2] + state->angularVelocity.z;
+#endif
 }
 
 void QuaternionToMatrix(f32 out[4][4], RigidBodyState *state) {
@@ -146,6 +176,21 @@ void QuaternionToMatrix(f32 out[4][4], RigidBodyState *state) {
     wy2 = q->y * (q->w + q->w);
     yz2 = q->z * (q->y + q->y);
     wx2 = q->x * (q->w + q->w);
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+    /* The libraries round the squares and ww - xx, but not the other sums or three products. */
+    out[0][0] = (long double)ww + xx - yy - zz;
+    out[0][1] = (long double)q->z * (q->w + q->w) + xy2;
+    out[0][3] = 0.0f;
+    out[0][2] = (long double)q->z * (q->x + q->x) - wy2;
+    out[1][0] = xy2 - wz2;
+    out[1][1] = (long double)(ww - xx) + yy - zz;
+    out[1][3] = 0.0f;
+    out[1][2] = (long double)q->x * (q->w + q->w) + yz2;
+    out[2][3] = 0.0f;
+    out[2][1] = yz2 - wx2;
+    out[2][0] = xz2 + wy2;
+    out[2][2] = (long double)(ww - xx) - yy + zz;
+#else
     out[0][0] = ww + xx - yy - zz;
     out[0][1] = xy2 + wz2;
     out[0][3] = 0.0f;
@@ -158,6 +203,7 @@ void QuaternionToMatrix(f32 out[4][4], RigidBodyState *state) {
     out[2][1] = yz2 - wx2;
     out[2][0] = xz2 + wy2;
     out[2][2] = ww - xx - yy + zz;
+#endif
     out[3][0] = state->position.x;
     out[3][1] = state->position.y;
     out[3][3] = 1.0f;
@@ -166,6 +212,19 @@ void QuaternionToMatrix(f32 out[4][4], RigidBodyState *state) {
 }
 
 void IntegrateRigidBodyState(RigidBodyState *out, RigidBodyState *in, f32 dt) {
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+    /* The libraries round the products for position.z, orientation.x, and orientation.z alone. */
+    out->position.x = BODY_PRODUCT(in->velocity.x, dt) + in->position.x;
+    out->position.y = BODY_PRODUCT(in->velocity.y, dt) + in->position.y;
+    out->position.z = (f32)(in->velocity.z * dt) + in->position.z;
+    out->velocity.x = in->velocity.x;
+    out->velocity.y = in->velocity.y;
+    out->velocity.z = in->velocity.z;
+    out->orientation.w = BODY_PRODUCT(in->spin.w, dt) + in->orientation.w;
+    out->orientation.x = (f32)(in->spin.x * dt) + in->orientation.x;
+    out->orientation.y = BODY_PRODUCT(in->spin.y, dt) + in->orientation.y;
+    out->orientation.z = (f32)(in->spin.z * dt) + in->orientation.z;
+#else
     f32 move[3];
     f32 turn[4];
 
@@ -187,6 +246,7 @@ void IntegrateRigidBodyState(RigidBodyState *out, RigidBodyState *in, f32 dt) {
     out->orientation.x = turn[1] + in->orientation.x;
     out->orientation.y = turn[2] + in->orientation.y;
     out->orientation.z = turn[3] + in->orientation.z;
+#endif
     QuaternionNormalize(&out->orientation);
 
     out->angularVelocity.x = in->angularVelocity.x;
