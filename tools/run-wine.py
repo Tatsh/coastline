@@ -35,6 +35,8 @@ def arguments():
                         help='Wine executable; inherited Wine architecture settings are preserved.')
     parser.add_argument('--winecfg', default=os.environ.get('WINECFG', 'winecfg'),
                         help='winecfg executable for initialising a fresh prefix.')
+    parser.add_argument('--wineserver', default=os.environ.get('WINESERVER', 'wineserver'),
+                        help='wineserver executable used to wait for prefix setup to finish.')
     parser.add_argument('--configure-prefix', action='store_true',
                         help='Open winecfg even when the prefix already exists.')
     parser.add_argument('game_args', nargs=argparse.REMAINDER,
@@ -55,9 +57,14 @@ def initialise_prefix(options, prefix, installation, environment):
     winecfg = shutil.which(options.winecfg)
     if winecfg is None:
         raise ValueError(f'winecfg executable {options.winecfg!r} was not found.')
+    wineserver = shutil.which(options.wineserver)
+    if wineserver is None:
+        raise ValueError(f'wineserver executable {options.wineserver!r} was not found.')
     print('Opening winecfg. Close its window when prefix configuration is complete.', flush=True)
     subprocess.run([str(Path(winecfg).resolve())], env=environment,
                    cwd=installation, check=True)
+    print('Waiting for Wine prefix setup and registry writes to finish.', flush=True)
+    subprocess.run([wineserver, '-w'], env=environment, cwd=installation, check=True)
     missing = [str(path) for path in required if not path.is_file()]
     if missing:
         raise ValueError('Wine prefix initialisation is incomplete:\n' + '\n'.join(missing))
