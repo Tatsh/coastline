@@ -89,6 +89,7 @@ if(TGR_RENDERER STREQUAL "d3d")
             runtimebuffers.c
             runtimebuffers.cpp
             settings.c
+            textureworkspace.c
             d3d/ddutil.cpp
             d3d/devicecaps.cpp
             d3d/driver.cpp
