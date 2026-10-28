@@ -2146,10 +2146,12 @@ int BuildModemConnectionUI(MenuScreen *pScreen);
 /**
  * Open display mode selection and populate its settings lists after successful creation.
  *
+ * @param pWidget The item chosen, unread.
+ * @return 0 when the screen cannot be created, 1 otherwise.
  * @ghidraAddress BRD3D: 0x10045520
  * @ghidraAddress BRGlide: 0x1003e9b0
  */
-int ShowDisplayModeSelectMenu(void);
+int ShowDisplayModeSelectMenu(MenuWidget *pWidget);
 
 /**
  * Build display mode selection on the supplied screen.
@@ -2200,9 +2202,11 @@ int PopulateDisplayModeList(void);
 /**
  * Open Direct3D device selection and populate its settings lists.
  *
+ * @param pWidget The item chosen, unread.
+ * @return 0 when the screen cannot be created, 1 otherwise.
  * @ghidraAddress BRD3D: 0x10045460
  */
-int ShowD3DDeviceSelectMenu(void);
+int ShowD3DDeviceSelectMenu(MenuWidget *pWidget);
 
 /**
  * Build Direct3D device selection on the supplied screen.

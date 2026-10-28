@@ -2251,7 +2251,7 @@ int ShowModemDialUpScreen(void) {
     return ShowCachedMenuScreen(g_pCachedMenu_ModemDialUp, BuildModemConnectionScreen);
 }
 
-int ShowDisplayModeSelectMenu(void) {
+int ShowDisplayModeSelectMenu(MenuWidget *) {
     if (!ShowCachedMenuScreen(g_pCachedMenu_AudioSettings, BuildDisplayModeSelectUI)) {
         return 0;
     }
@@ -2432,7 +2432,7 @@ int PopulateDisplayDeviceList(void) {
     return 1;
 }
 
-int ShowD3DDeviceSelectMenu(void) {
+int ShowD3DDeviceSelectMenu(MenuWidget *) {
     if (!ShowCachedMenuScreen(g_pCachedMenu_VideoSettings, BuildD3DDeviceSelectUI)) {
         return 0;
     }
@@ -5429,12 +5429,6 @@ int BuildModemConnectionUI(MenuScreen *screen) {
     return 1;
 }
 
-#if TGR_RENDERER == TGR_RENDERER_D3D
-static inline int VideoOptionsUI_ShowDeviceSelect(MenuWidget *) {
-    return ShowD3DDeviceSelectMenu();
-}
-#endif /* TGR_RENDERER == TGR_RENDERER_D3D */
-
 static inline void BuildDisplaySelectionUI(MenuScreen *screen,
                                            int title,
                                            int (*update)(MenuWidget *),
@@ -5512,10 +5506,6 @@ void BuildDisplayModeSelectUI(MenuScreen *screen) {
                             ReturnToVideoOptionsFromResolution);
 }
 
-static inline int VideoOptionsUI_ShowDisplayModeSelect(MenuWidget *) {
-    return ShowDisplayModeSelectMenu();
-}
-
 void BuildVideoOptionsUI(MenuScreen *screen) {
     screen->SetCurrentPanelIndex(0);
     screen->SetPanelActive(screen->GetPanelCount(), 1);
@@ -5540,14 +5530,12 @@ void BuildVideoOptionsUI(MenuScreen *screen) {
 #if TGR_RENDERER == TGR_RENDERER_D3D
     const int strings[] = {0x29, 0x2a, 0xc};
     const float offsets[] = {0, 19, 114};
-    int (*const actions[])(MenuWidget *) = {VideoOptionsUI_ShowDeviceSelect,
-                                            VideoOptionsUI_ShowDisplayModeSelect,
-                                            VideoOptionsUI::OnBack};
+    int (*const actions[])(MenuWidget *) = {
+        ShowD3DDeviceSelectMenu, ShowDisplayModeSelectMenu, VideoOptionsUI::OnBack};
 #else
     const int strings[] = {0x2a, 0xc};
     const float offsets[] = {0, 114};
-    int (*const actions[])(MenuWidget *) = {VideoOptionsUI_ShowDisplayModeSelect,
-                                            VideoOptionsUI::OnBack};
+    int (*const actions[])(MenuWidget *) = {ShowDisplayModeSelectMenu, VideoOptionsUI::OnBack};
 #endif
     const int count = static_cast<int>(std::size(strings));
     for (int index = 0; index < count; index++) {
