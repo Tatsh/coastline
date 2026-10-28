@@ -621,6 +621,7 @@ memorybudget
 memset
 menufont
 menuitemrom
+menusurface
 mesg
 meyerhofer
 mfhi

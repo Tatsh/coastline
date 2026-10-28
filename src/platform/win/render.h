@@ -43,6 +43,14 @@ struct TexScanTile;
  */
 extern void (*g_pfnRenderBackendSubmitDisplayList)(GbiCommand *pDisplayList);
 
+/**
+ * Show the frame drawn, set by the reset of the render device.
+ *
+ * @ghidraAddress BRD3D: 0x10690a24
+ * @ghidraAddress BRGlide: 0x106b7ab8
+ */
+extern void (*g_pfnPresentFrame)(void);
+
 /** The mode of the renderer of the Direct3D library. */
 #define RENDER_BACKEND_MODE_D3D 1
 /** The mode of the renderer of the Glide library. */
